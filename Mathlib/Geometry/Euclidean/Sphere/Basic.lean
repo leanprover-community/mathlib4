@@ -453,6 +453,19 @@ theorem inner_pos_of_dist_lt_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁
     exact False.elim (hp₂.ne hp₁)
   exact (inner_pos_or_eq_of_dist_le_radius hp₁ hp₂.le).resolve_right h
 
+/-- Given two distinct points on a sphere, the inner product of the chord with
+the radius vector at one endpoint is negative. -/
+theorem inner_vsub_vsub_center_lt_zero {A B : P} {s : Sphere P}
+    (hA : A ∈ s) (hB : B ∈ s) (hBA : B ≠ A) :
+    ⟪B -ᵥ A, A -ᵥ s.center⟫ < 0 := by
+  have hA' : ‖A -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hA
+  have hB' : ‖B -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hB
+  have hd : ‖B -ᵥ s.center‖ ^ 2 =
+      ‖B -ᵥ A‖ ^ 2 + 2 * ⟪B -ᵥ A, A -ᵥ s.center⟫ + ‖A -ᵥ s.center‖ ^ 2 := by
+    rw [← vsub_add_vsub_cancel B A s.center, norm_add_sq_real]
+  rw [hB', hA'] at hd
+  nlinarith [sq_pos_of_pos (norm_pos_iff.mpr (vsub_ne_zero.mpr hBA))]
+
 /-- Given three collinear points, two on a sphere and one not outside it, the one not outside it
 is weakly between the other two points. -/
 theorem wbtw_of_collinear_of_dist_center_le_radius {s : Sphere P} {p₁ p₂ p₃ : P}
