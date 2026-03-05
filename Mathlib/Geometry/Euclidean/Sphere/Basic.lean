@@ -400,21 +400,13 @@ with distinct endpoints `A` and `C` is strictly less than the radius. -/
 theorem Sphere.dist_center_midpoint_lt_radius {A C : P} {s : Sphere P}
     (hA : A ∈ s) (hC : C ∈ s) (hAC : A ≠ C) :
     dist s.center (midpoint ℝ A C) < s.radius := by
-  set M := midpoint ℝ A C
-  have hperp : ⟪s.center -ᵥ M, M -ᵥ A⟫ = 0 := by
-    rw [show M -ᵥ A = (2⁻¹ : ℝ) • (C -ᵥ A) from by rw [midpoint_vsub_left, invOf_eq_inv],
-        inner_smul_right, Sphere.inner_vsub_center_midpoint_vsub hA hC, mul_zero]
-  have hradius : ‖s.center -ᵥ A‖ = s.radius := by
-    rw [← dist_eq_norm_vsub']; exact mem_sphere.mp hA
-  have hpyth : s.radius ^ 2 = ‖s.center -ᵥ M‖ ^ 2 + ‖M -ᵥ A‖ ^ 2 := by
-    rw [← hradius, ← vsub_add_vsub_cancel s.center M A, norm_add_sq_real,
-        hperp, mul_zero, add_zero]
-  rw [dist_eq_norm_vsub]
-  have hMA_ne : M -ᵥ A ≠ (0 : V) :=
-    vsub_ne_zero.mpr (fun h => hAC ((midpoint_eq_left_iff ℝ).mp h))
-  exact (abs_lt_of_sq_lt_sq'
-    (by nlinarith [sq_pos_of_pos (norm_pos_iff.mpr hMA_ne)])
-    (by linarith [norm_nonneg (s.center -ᵥ A)])).2
+  have hA' : ‖A -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub]; exact mem_sphere.mp hA
+  have hC' : ‖C -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub]; exact mem_sphere.mp hC
+  rw [dist_comm, dist_eq_norm_vsub, ← midpoint_self ℝ s.center, midpoint_vsub_midpoint, ← hA']
+  convert (norm_midpoint_lt_iff (hA'.trans hC'.symm)).mpr
+    (fun h => hAC (vsub_left_cancel h)) using 2
+  simp only [midpoint, AffineMap.lineMap_apply, invOf_eq_inv, vsub_eq_sub, vadd_eq_add, one_div]
+  module
 
 /-- Two spheres intersect in at most two points in a two-dimensional subspace containing their
 centers; this is a version of `eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two` for bundled
