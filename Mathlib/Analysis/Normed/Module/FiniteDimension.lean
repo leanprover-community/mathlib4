@@ -556,6 +556,9 @@ lemma FiniteDimensional.of_isCompactOperator_id (h : IsCompactOperator (id : E ‚
   have := LocallyCompactSpace.of_isCompactOperator_id h
   exact FiniteDimensional.of_locallyCompactSpace ùïú
 
+@[deprecated (since := "2026-03-05")] alias IsCompactOperator.finiteDimensional :=
+  FiniteDimensional.of_isCompactOperator_id
+
 end Riesz
 
 open ContinuousLinearMap
