@@ -26,7 +26,7 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   for a Markov kernel `κ : Kernel α I`, there exists a jointly measurable function
   `f : α → I → I` such that for all `a : α`, `volume.map (f a) = κ a`.
 
-## Main theorems
+## Main results
 
 * `ProbabilityTheory.Kernel.exists_measurable_map_eq_unitInterval`:
   for a Markov kernel `κ : Kernel α β` with `β` a standard Borel space,
