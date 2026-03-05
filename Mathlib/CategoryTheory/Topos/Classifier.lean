@@ -507,7 +507,7 @@ end Iso
 
 section Equivalence
 
-variable {D : Type*} [Category* D] {E : Type*} [Category* E]
+variable {D : Type*} [Category* D]
 
 /--
 The image of a subobject classifier under an equivalence of categories is a subobject classifier.
