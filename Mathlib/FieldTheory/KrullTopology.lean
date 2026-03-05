@@ -180,7 +180,7 @@ theorem IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L
 
 /-- Given a tower of fields `L/E/K`, with `E/K` algebraic, the subgroup `Gal(L/E) ≤ Gal(L/K)` is
   closed. -/
-theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field L] [Algebra K L]
+theorem IntermediateField.isClosed_fixingSubgroup {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) [Algebra.IsIntegral K E] :
     IsClosed (E.fixingSubgroup : Set Gal(L/K)) := by
   have hx (x : E) : IsClosed ((adjoin K {(x : L)}).fixingSubgroup : Set Gal(L/K)) :=
