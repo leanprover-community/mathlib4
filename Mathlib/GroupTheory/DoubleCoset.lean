@@ -115,6 +115,7 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
 instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq (H K : Subgroup G) (a b : G) :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
   rw [Quotient.eq'']

@@ -124,6 +124,7 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
     `Mathlib.Tactic.Conv.convLHS,
     `Mathlib.Tactic.Conv.convRHS,
     ``Lean.Parser.Tactic.first,
+    ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.repeat',
     ``Lean.Parser.Tactic.tacticIterate____,
     ``Lean.Parser.Tactic.anyGoals,
