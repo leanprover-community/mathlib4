@@ -242,7 +242,7 @@ theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) : coeff b o =
 
 @[simp]
 theorem coeff_zero_left (o : Ordinal) : coeff 0 o = single 0 o :=
-  coeff_of_le_one bot_le o
+  coeff_of_le_one zero_le_one o
 
 @[simp]
 theorem coeff_one_left (o : Ordinal) : coeff 1 o = single 0 o :=
