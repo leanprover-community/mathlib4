@@ -899,12 +899,12 @@ lemma opcyclesToE_map (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (�
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.opcyclesToE f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ n₂ hn₁ hn₂ ≫ X.map _ _ _ _ _ _ α _ _ _ =
       X.opcyclesMap _ _ _ _ β _ ≫ X.opcyclesToE f₁' f₂' f₃' f₁₂' h₁₂' n₀ n₁ n₂ hn₁ hn₂ := by
-  rw [← cancel_mono (X.ιE ..), Category.assoc, Category.assoc, opcyclesToE_ιE _ _ _ _ _ _ _ _ _,
-    ← cancel_epi (X.pOpcycles ..), p_opcyclesToE_assoc _ _ _ _ _ _ _ _ _,
+  rw [← cancel_mono (X.ιE ..), Category.assoc, Category.assoc, opcyclesToE_ιE ..,
+    ← cancel_epi (X.pOpcycles ..), p_opcyclesToE_assoc ..,
     X.πE_map_assoc _ _ _ _ _ _ _
-    (homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1) (naturality' α 1 2)) _ _ _,
-    πE_ιE _ _ _ _ _ _ _, X.cyclesMap_i_assoc _ _ _ _ _ _ _ rfl, toCycles_i_assoc,
-    X.p_opcyclesMap_assoc _ _ _ _ _ _ _ rfl, X.p_opcyclesMap _ _ _ _ _ _ _ rfl,
+    (homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1) (naturality' α 1 2)) ..,
+    πE_ιE .., X.cyclesMap_i_assoc .., toCycles_i_assoc,
+    X.p_opcyclesMap_assoc .., X.p_opcyclesMap ..,
     ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
   congr 2
   ext
