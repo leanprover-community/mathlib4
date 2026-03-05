@@ -41,12 +41,10 @@ lemma monoidWithZeroHom_strictMono :
 lemma embedding_strictMono : StrictMono (embedding (f := f)) := by
   intro x y hxy
   rw [← monoidWithZeroHom_strictMono.lt_iff_lt] at hxy
-  simp only [embedding_apply]
-  exact (OrderEmbedding.lt_iff_lt (OrderIso.withZeroUnits.toOrderEmbedding)).mpr hxy
+  simpa using (OrderEmbedding.lt_iff_lt (OrderIso.withZeroUnits.toOrderEmbedding)).mpr hxy
 
 instance : IsOrderedMonoid (ValueGroup₀ f) :=
-  Function.Injective.isOrderedMonoid (embedding (f := f)) (map_mul _)
-    embedding_strictMono.le_iff_le
+  Function.Injective.isOrderedMonoid embedding (map_mul _) embedding_strictMono.le_iff_le
 
 instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
   zero_le := by simp

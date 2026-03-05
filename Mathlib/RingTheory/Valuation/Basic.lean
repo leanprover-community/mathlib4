@@ -543,19 +543,17 @@ lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
     rw [← restrict_pos_iff, restrict_def, WithZero.pos_iff_ne_zero, ne_eq, restrict₀_eq_zero_iff]
     aesop
   use x, a, hx, zero_lt_iff.mpr ha
-  have hx0 : v.restrict x ≠ 0 := by simp [hx.ne']
   have ha0 : v.restrict a ≠ 0 := by simp [ha]
   rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff, map_mul,
     embedding_restrict, embedding_restrict, ← hax]
   congr
   rw [← WithZero.coe_unzero (Units.ne_zero γ)]
-  rfl
+  exact Eq.refl ..
 
 lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
     {w : Valuation R Γ₀'} (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
   simp only [IsEquiv] at h ⊢
-  intro r s
-  simp only [restrict_le_iff, h]
+  simp [restrict_le_iff, h]
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 @[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
