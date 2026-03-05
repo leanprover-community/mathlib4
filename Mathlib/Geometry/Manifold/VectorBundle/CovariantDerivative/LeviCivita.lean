@@ -188,7 +188,9 @@ noncomputable def myfun (Y Z : Π x : M, TangentSpace I x) :
   letI b : TangentSpace I x →L[ℝ] ℝ := mfderiv% ⟪Y, Z⟫ x
   b - ((innerSL ℝ (Z x)) ∘L (cov Y x)) - ((innerSL ℝ (Y x)) ∘L (cov Z x))
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
+
+variable {I} in
 private lemma aux1 {x : M} (f : M → ℝ) {σ τ : (x : M) → TangentSpace I x}
     (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) :
     myfun I cov (f • σ) τ x = f x • myfun I cov σ τ x := by
@@ -228,7 +230,7 @@ private lemma aux1 {x : M} (f : M → ℝ) {σ τ : (x : M) → TangentSpace I x
   rw [← sub_eq_zero]
   ring
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
+variable {I} in
 private lemma aux2 {x : M} (σ σ' τ : (x : M) → TangentSpace I x)
     (hσ : MDiffAt (T% σ) x)
     (hσ' : MDiffAt (T% σ') x) :
@@ -254,7 +256,7 @@ private lemma aux2 {x : M} (σ σ' τ : (x : M) → TangentSpace I x)
   -- bug: abel fails, but module works
   module
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
+variable {I} in
 private lemma aux3 {x : M } (f : M → ℝ) {σ τ : (x : M) → TangentSpace I x}
     (hf : MDiffAt f x)
     (hτ : MDiffAt (T% τ) x) :
@@ -274,7 +276,7 @@ private lemma aux3 {x : M } (f : M → ℝ) {σ τ : (x : M) → TangentSpace I 
 
 -- TODO: investigate why this takes so long!
 set_option maxHeartbeats 400000 in
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
+variable {I} in
 private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
     (hτ : MDiffAt (T% τ) x)
     (hτ' : MDiffAt (T% τ') x) :
@@ -307,9 +309,9 @@ private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
   -- set D := (cov σ x) X
   module
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
+variable {I} in
 /-- Given a connecion `∇` on `(M, g)`, the tensor `∇ g`. -/
-@[no_expose] noncomputable def MetricTensor {x : M} [FiniteDimensional ℝ E] :
+@[no_expose] noncomputable def MetricTensor [FiniteDimensional ℝ E] (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
   mk2TensorAt I E (myfun I cov)
     (fun f _σ _τ hf hσ ↦ aux1 cov f hf hσ)
@@ -317,14 +319,13 @@ variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] 
     (fun f _σ _τ hf hτ ↦ aux3 cov f hf hτ)
     (fun σ τ τ' hτ hτ' ↦ aux4 cov σ τ τ' hτ hτ')
 
--- TODO: redefine this in terms of MetricTensor!
-/-- Predicate saying for a connection `∇` on a Riemannian manifold `M`  to be compatible with the
-ambient metric, i.e. for all smooth vector fields `X`, `Y` and `Z` on `M`, we have
+/-- Predicate saying for a connection `∇` on a Riemannian manifold `(M, g)` to be compatible with
+the ambient metric, i.e. for all differentiable` vector fields `X`, `Y` and `Z` on `M`, we have
 `X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩`. -/
-def IsCompatible : Prop :=
-  ∀ X Y Z : Π x : M, TangentSpace I x, -- XXX: missing differentiability hypotheses!
-  ∀ x : M,
-  mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x
+def IsCompatible [FiniteDimensional ℝ E] : Prop := MetricTensor cov = 0
+
+lemma IsCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x : M} :
+    mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x := sorry
 
 /-- A covariant derivative on a Riemannian bundle `TM` is called the **Levi-Civita connection**
 iff it is torsion-free and compatible with `g`.
@@ -361,7 +362,7 @@ lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z
   ext x
   simp [rhs_aux]
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {x}
+variable {x : M}
 
 variable (X) in
 @[simp]
@@ -483,8 +484,6 @@ lemma leviCivitaRhs_apply : leviCivitaRhs I X Y Z x = (1 / 2 : ℝ) • leviCivi
   rfl
 
 section leviCivitaRhs
-
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
 @[simp]
 lemma leviCivitaRhs'_addX_apply [CompleteSpace E]
@@ -787,9 +786,8 @@ lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
     (hX : MDiffAt (T% X) x) (hZ : MDiffAt (T% Z) x) : rhs_aux I X Y Z x =
     ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ Z, X⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
   trans ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x
-  · exact h.1 X Y Z x
-  · simp [← cov.isTorsionFree_iff.mp h.2 hX hZ,
-          product, inner_sub_right]
+  · apply cov.IsCompatible_apply I h.1
+  · simp [← cov.isTorsionFree_iff.mp h.2 hX hZ, product, inner_sub_right]
 
 variable {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
