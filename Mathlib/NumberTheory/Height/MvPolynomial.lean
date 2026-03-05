@@ -71,7 +71,7 @@ lemma linearMap_apply_bound (v : AbsoluteValue K ℝ) (A : ι' × ι → K) (x :
   simp only [map_mul]
   grw [Finset.sum_le_sum (g := fun _ ↦ (⨆ ji, v (A ji)) * ⨆ i, v (x i)) fun i _ ↦ ?h]
   case h =>
-    simp only
+    dsimp only
     gcongr
     · exact Real.iSup_nonneg_of_nonnegHomClass v _
     · exact Finite.le_ciSup_of_le (j, i) le_rfl
@@ -79,8 +79,8 @@ lemma linearMap_apply_bound (v : AbsoluteValue K ℝ) (A : ι' × ι → K) (x :
   rw [Finset.sum_const, nsmul_eq_mul, mul_assoc, Finset.card_univ, Nat.card_eq_fintype_card]
 
 -- The "local" version of the bound for nonarchimedean absolute values.
-lemma linearMap_apply_bound_of_isNonarchimedean {v : AbsoluteValue K ℝ}
-    (hv : IsNonarchimedean v) (A : ι' × ι → K) (x : ι → K) :
+lemma linearMap_apply_bound_of_isNonarchimedean {v : AbsoluteValue K ℝ} (hv : IsNonarchimedean v)
+    (A : ι' × ι → K) (x : ι → K) :
     ⨆ j, v (∑ i, A (j, i) * x i) ≤ (⨆ ji, v (A ji)) * ⨆ i, v (x i) := by
   rcases isEmpty_or_nonempty ι
   · simp
