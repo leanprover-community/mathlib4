@@ -38,16 +38,33 @@ namespace MonoidalCategory
 
 namespace Arrow
 
-/-- The Leibniz functor associated to the tensor product on a monoidal category. -/
-@[simp]
+/-- The Leibniz functor associated to the tensor product on a monoidal category. This is the
+bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the canonical map from the
+pushout of `f ◁ X` and `A ▷ g` to `B ⊗ Y`, induced by the following diagram:
+```
+  A ⊗ X --> B ⊗ X
+     |          |
+     v          v
+  A ⊗ Y --> B ⊗ Y
+```
+-/
 noncomputable
 abbrev pushoutProduct [HasPushouts C] [MonoidalCategory C] := (curriedTensor C).leibnizPushout
 
 /-- Notation for the pushout-product of morphisms. -/
 notation3 f " □ " g:10 => (pushoutProduct.obj f).obj g
 
-/-- The Leibniz functor associated to the internal hom on a monoidal closed category. -/
-@[simp]
+/-- The Leibniz functor associated to the internal hom on a monoidal closed category. This is the
+bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the canonical map from
+`B ⟹ X` to the pullback of `(ihom A).map g : A ⟹ X ⟶ A ⟹ Y` and
+`(pre f).app Y : B ⟹ Y ⟶ A ⟹ Y`, induced by the following diagram:
+```
+  B ⟹ X --> A ⟹ X
+     |          |
+     v          v
+  B ⟹ Y --> A ⟹ Y
+```
+-/
 noncomputable
 abbrev pullbackHom [HasPullbacks C] [MonoidalCategory C] [MonoidalClosed C] :
     (Arrow C)ᵒᵖ ⥤ Arrow C ⥤ Arrow C := MonoidalClosed.internalHom.leibnizPullback
@@ -198,73 +215,92 @@ instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalC
   leftUnitor := PushoutProduct.leftUnitor
   rightUnitor := PushoutProduct.rightUnitor
 
-@[simp]
-instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
-    [BraidedCategory C] : MonoidalCategory (Arrow C) where
-  tensorHom_comp_tensorHom f₁ f₂ g₁ g₂ := by
-    ext
-    · apply pushout.hom_ext <;> simp [whisker_exchange_assoc]
-    · simp [whisker_exchange_assoc]
-  associator_naturality {_ _ _ _ Y₂ Y₃} f₁ f₂ f₃ := by
-    ext
-    · apply pushout.hom_ext
-      · simp [whisker_exchange_assoc]
-      · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-        · suffices _ ◁ _ ◁ f₃.right ≫ (α_ _ _ _).inv ≫ f₁.right ▷ _ ▷ _ ≫ (α_ _ _ _).hom ≫
-            _ ◁ f₂.left ▷ _ ≫ _ ◁ pushout.inr _ _ = _ ◁ f₂.left ▷ _ ≫ _ ◁ _ ◁ f₃.right ≫
-            _ ◁ pushout.inr _ _ ≫ f₁.right ▷ pushout (Y₂.hom ▷ Y₃.left) (Y₂.left ◁ Y₃.hom) by
-            simp [← whisker_exchange_assoc, reassoc_of% this]
-          rw [← MonoidalCategory.whiskerLeft_comp_assoc, whisker_exchange, whisker_exchange_assoc,
-            ← whisker_exchange, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
-            ← associator_inv_naturality_left_assoc, associator_naturality_right_assoc,
-            Iso.inv_hom_id_assoc, MonoidalCategory.whiskerLeft_comp_assoc]
-        · suffices ((α_ _ _ _).hom ≫ _ ◁ _ ◁ f₃.right ≫ (α_ _ _ _).inv ≫ f₁.left ▷ _ ▷ _ ≫
-            (α_ _ _ _).hom ≫ _ ◁ f₂.right ▷ _ = f₁.left ▷ _ ▷ _ ≫ (α_ _ _ _).hom ≫
-            _ ◁ f₂.right ▷ _ ≫ _ ◁ _ ◁ f₃.right) by
-            simp [← whisker_exchange_assoc, reassoc_of% this]
-          cat_disch
-    · simp
-  pentagon _ _ _ _ := by
-    ext
-    · apply pushout.hom_ext
-      · simp
-      · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-        · simp
-        · apply ((tensorRight _ ⋙ tensorRight _).map_isPushout
-            (IsPushout.of_hasPushout _ _)).hom_ext <;> simp [associator_naturality_left_assoc]
-    · exact MonoidalCategory.pentagon ..
-  leftUnitor_naturality f := by
-    ext
-    · apply pushout.hom_ext
-      · simp
-      · apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
-    · simp
-  rightUnitor_naturality f := by
-    ext
-    · apply pushout.hom_ext
-      · apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
-      · simp
-    · exact rightUnitor_naturality f.right
-  triangle X Y := by
-    ext
-    · apply pushout.hom_ext
-      · simp
-      · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-        · apply (initialIsInitial.ofIso ((initialIsoIsInitial ?_) ≪≫ (mulZero ?_).symm)).hom_ext
-          <;> exact initialIsInitial.ofIso (zeroMul initialIsInitial).symm
-        · simp [← comp_whiskerRight_assoc]
-    · simp
+variable [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
+  [BraidedCategory C]
 
-instance [HasInitial C] [HasPushouts C] [HasPullbacks C]
-  [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C] :
-    MonoidalClosed (Arrow C) where
+lemma PushoutProduct.tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Arrow C}
+    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+    (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
+  ext
+  · apply pushout.hom_ext <;> simp [whisker_exchange_assoc]
+  · simp [whisker_exchange_assoc]
+
+lemma PushoutProduct.associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C}
+    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
+    ((f₁ ⊗ₘ f₂) ⊗ₘ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ₘ (f₂ ⊗ₘ f₃)) := by
+  ext
+  · apply pushout.hom_ext
+    · simp [whisker_exchange_assoc]
+    · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
+      · suffices _ ◁ _ ◁ f₃.right ≫ (α_ _ _ _).inv ≫ f₁.right ▷ _ ▷ _ ≫ (α_ _ _ _).hom ≫
+          _ ◁ f₂.left ▷ _ ≫ _ ◁ pushout.inr _ _ = _ ◁ f₂.left ▷ _ ≫ _ ◁ _ ◁ f₃.right ≫
+          _ ◁ pushout.inr _ _ ≫ f₁.right ▷ pushout (Y₂.hom ▷ Y₃.left) (Y₂.left ◁ Y₃.hom) by
+          simp [← whisker_exchange_assoc, reassoc_of% this]
+        rw [← MonoidalCategory.whiskerLeft_comp_assoc, whisker_exchange, whisker_exchange_assoc,
+          ← whisker_exchange, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
+          ← associator_inv_naturality_left_assoc, associator_naturality_right_assoc,
+          Iso.inv_hom_id_assoc, MonoidalCategory.whiskerLeft_comp_assoc]
+      · suffices ((α_ _ _ _).hom ≫ _ ◁ _ ◁ f₃.right ≫ (α_ _ _ _).inv ≫ f₁.left ▷ _ ▷ _ ≫
+          (α_ _ _ _).hom ≫ _ ◁ f₂.right ▷ _ = f₁.left ▷ _ ▷ _ ≫ (α_ _ _ _).hom ≫
+          _ ◁ f₂.right ▷ _ ≫ _ ◁ _ ◁ f₃.right) by
+          simp [← whisker_exchange_assoc, reassoc_of% this]
+        cat_disch
+  · simp
+
+lemma PushoutProduct.leftUnitor_naturality {X Y : Arrow C} (f : X ⟶ Y) :
+    𝟙_ _ ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
+  ext
+  · apply pushout.hom_ext
+    · simp
+    · apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
+  · simp
+
+lemma PushoutProduct.rightUnitor_naturality {X Y : Arrow C} (f : X ⟶ Y) :
+    f ▷ 𝟙_ _ ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
+  ext
+  · apply pushout.hom_ext
+    · apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
+    · simp
+  · exact MonoidalCategory.rightUnitor_naturality f.right
+
+lemma PushoutProduct.pentagon (W X Y Z : Arrow C) :
+    (α_ W X Y).hom ▷ Z ≫ (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom =
+      (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom := by
+  ext
+  · apply pushout.hom_ext
+    · simp
+    · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
+      · simp
+      · apply ((tensorRight _ ⋙ tensorRight _).map_isPushout
+          (IsPushout.of_hasPushout _ _)).hom_ext <;> simp [associator_naturality_left_assoc]
+  · exact MonoidalCategory.pentagon ..
+
+lemma PushoutProduct.triangle (X Y : Arrow C) :
+    (α_ X (𝟙_ _) Y).hom ≫ X ◁ (λ_ Y).hom = (ρ_ X).hom ▷ Y := by
+  ext
+  · apply pushout.hom_ext
+    · simp
+    · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
+      · apply (initialIsInitial.ofIso ((initialIsoIsInitial ?_) ≪≫ (mulZero ?_).symm)).hom_ext
+        <;> exact initialIsInitial.ofIso (zeroMul initialIsInitial).symm
+      · simp [← comp_whiskerRight_assoc]
+  · simp
+
+instance : MonoidalCategory (Arrow C) where
+  tensorHom_comp_tensorHom := PushoutProduct.tensorHom_comp_tensorHom
+  associator_naturality := PushoutProduct.associator_naturality
+  leftUnitor_naturality := PushoutProduct.leftUnitor_naturality
+  rightUnitor_naturality := PushoutProduct.rightUnitor_naturality
+  pentagon := PushoutProduct.pentagon
+  triangle := PushoutProduct.triangle
+
+instance [HasPullbacks C] : MonoidalClosed (Arrow C) where
   closed X := {
     rightAdj := pullbackHom.obj (Opposite.op X)
     adj := LeibnizAdjunction.adj _ _ (MonoidalClosed.internalHomAdjunction₂) X }
 
-@[simps]
-instance [HasInitial C] [HasPushouts C] [CartesianMonoidalCategory C] [MonoidalClosed C]
-    [BraidedCategory C] : BraidedCategory (Arrow C) where
+@[simps -isSimp]
+instance braidedCategory : BraidedCategory (Arrow C) where
   braiding := PushoutProduct.braiding
   hexagon_forward _ _ _ := by
     ext
@@ -279,9 +315,9 @@ instance [HasInitial C] [HasPushouts C] [CartesianMonoidalCategory C] [MonoidalC
       · simp
     · exact BraidedCategory.hexagon_reverse ..
 
-@[simps!]
-instance [HasInitial C] [HasPushouts C] [CartesianMonoidalCategory C] [MonoidalClosed C]
-    [BraidedCategory C] : SymmetricCategory (Arrow C) where
+attribute [local simp] braidedCategory_braiding in
+@[simps! -isSimp]
+instance : SymmetricCategory (Arrow C) where
 
 end
 

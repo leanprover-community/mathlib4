@@ -92,7 +92,6 @@ lemma inl_isoPushout_inv_whiskerRight [HasPushout f g] {Q : C} :
     pushout.inl _ _ ▷ Q ≫ hP.isoPushout.inv ▷ Q = inl ▷ Q := by
   simp [← comp_whiskerRight]
 
---not needed
 @[reassoc (attr := simp)]
 lemma inr_isoPushout_inv_whiskerRight [HasPushout f g] {Q : C} :
     pushout.inr _ _ ▷ Q ≫ hP.isoPushout.inv ▷ Q = inr ▷ Q := by
