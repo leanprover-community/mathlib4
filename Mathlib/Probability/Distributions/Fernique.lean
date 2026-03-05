@@ -200,7 +200,6 @@ lemma normThreshold_eq (n : ℕ) : normThreshold a n = a * (1 + √2) * (√2 ^ 
   rw [normThreshold, arithGeom_same_eq_mul_div (by simp), div_eq_mul_inv, Real.inv_sqrt_two_sub_one]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sq_normThreshold_add_one_le (n : ℕ) :
     normThreshold a (n + 1) ^ 2 ≤ a ^ 2 * (1 + √2) ^ 2 * 2 ^ (n + 2) := by
   simp_rw [normThreshold_eq, mul_pow, mul_assoc]

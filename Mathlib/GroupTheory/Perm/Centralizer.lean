@@ -536,7 +536,6 @@ theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
     rintro - ⟨a, rfl⟩ - ⟨-, ⟨b, rfl⟩, ⟨-⟩⟩
     exact (ofSubtype_support_disjoint a).mono_right (mem_cycleFactorsFinset_support_le b.2)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem kerParam_range_eq :
     (kerParam g).range = (toPermHom g).ker.map (Subgroup.subtype _) := by
   apply le_antisymm
