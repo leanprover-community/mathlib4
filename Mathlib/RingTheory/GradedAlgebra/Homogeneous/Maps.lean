@@ -44,7 +44,7 @@ def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
       classical rw [smul_eq_mul, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
       exact sum_mem fun ij hij ↦ Ideal.mul_mem_left _ _ <| ih _
 
-/-- Map a homogeneous ideal along a graded ring homomorphism in the other direction.
+/-- Pull back a homogeneous ideal along a graded ring homomorphism.
 The underlying ideal is (definitionally) equal to `Ideal.comap`, whose underlying set is
 definitionally equal to the preimage. -/
 def comap (I : HomogeneousIdeal ℬ) : HomogeneousIdeal 𝒜 where
@@ -56,9 +56,8 @@ def comap (I : HomogeneousIdeal ℬ) : HomogeneousIdeal 𝒜 where
 variable {I I₁ I₂ I₃ : HomogeneousIdeal 𝒜} {J J₁ J₂ J₃ : HomogeneousIdeal ℬ}
   {K : HomogeneousIdeal 𝒞}
 
-lemma map_le_iff_le_comap :
-    I.map f ≤ J ↔ I ≤ J.comap f :=
-  Ideal.map_le_iff_le_comap
+lemma map_le_iff_le_comap : I.map f ≤ J ↔ I ≤ J.comap f := Ideal.map_le_iff_le_comap
+
 alias ⟨le_comap_of_map_le, map_le_of_le_comap⟩ := map_le_iff_le_comap
 
 theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦
@@ -75,7 +74,7 @@ theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦
 @[simp] lemma toIdeal_map : (I.map f).toIdeal = I.toIdeal.map f := rfl
 
 instance isPrime_comap [J.toIdeal.IsPrime] : (J.comap f).toIdeal.IsPrime :=
-  inferInstanceAs (J.toIdeal.comap f).IsPrime -- this shows that the simpNF is already covered
+  inferInstanceAs (J.toIdeal.comap f).IsPrime -- this shows that the simpNF already has the instance
 
 @[simp] lemma map_id : I.map (GradedRingHom.id 𝒜) = I := ext <| Ideal.map_id _
 
