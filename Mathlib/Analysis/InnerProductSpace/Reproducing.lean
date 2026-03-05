@@ -183,7 +183,7 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
   refine this fun hHerm ↦ ?_
   simp only [nonneg_iff_isPositive, isPositive_def', isSelfAdjoint_finsuppSum hHerm,
     reApplyInnerSelf_apply, true_and]
-  simp only [star_eq_adjoint, zero_apply, add_apply, implies_true, Finsupp.sum_apply'', coe_mul,
+  simp only [star_eq_adjoint, zero_apply, add_apply, implies_true, Finsupp.sum_apply'', coe_mul',
     Function.comp_apply, Finsupp.sum_inner, adjoint_inner_left]
   -- FIXME: nontriviality should work here
   refine (subsingleton_or_nontrivial V).elim (fun h ↦ ?_) fun _ ↦ ?_
@@ -282,7 +282,7 @@ instance instRKHS : RKHS 𝕜 (OfKernel K) X V where
       simp [this]
     | single_add i a =>
     simp only [UniformSpace.Completion.coe_add, inner_add_left, *, add_zero]
-    rw [← UniformSpace.Completion.coe_toComplL (𝕜 := 𝕜)]
+    --rw [← UniformSpace.Completion.coe_toComplL (𝕜 := 𝕜)]
     have := (ext_iff_inner_left 𝕜).mp (congrFun h i.1) i.2
     have := by simpa [OfKernel.kerFun, adjoint_inner_right] using this
     rw [← mul_zero (conj a), ← this, ← inner_smul_left]
