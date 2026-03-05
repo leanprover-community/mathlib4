@@ -794,7 +794,7 @@ lemma cyclesIsoH_hom_EIsoH_inv :
     cat_disch
   obtain rfl : n₀ = n₁ - 1 := by lia
   rw [← cancel_epi (X.cyclesIsoH f n₁ n₂ hn₂).inv,
-    cyclesIsoH_inv _ _ _ _, cyclesIsoH_inv_hom_id_assoc _ _ _ _]
+    cyclesIsoH_inv .., cyclesIsoH_inv_hom_id_assoc ..]
   dsimp [EIsoH]
   rw [← cancel_epi h.π, h.π_comp_homologyIso_inv]
   simp [πE, h, this]
