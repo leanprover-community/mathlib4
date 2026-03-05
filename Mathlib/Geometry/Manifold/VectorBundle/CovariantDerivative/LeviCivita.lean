@@ -345,7 +345,8 @@ def IsCompatible [FiniteDimensional ℝ E] : Prop := MetricTensor cov = 0
 -- TODO: inlining this lemma does not work
 private lemma isCompatible_apply_aux {A B C : ℝ} (h : A - B - C = 0) : A = B + C := by grind
 
-lemma IsCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x : M}
+variable {I} in
+lemma isCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x : M}
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x := by
   rw [IsCompatible] at hcov
@@ -353,6 +354,13 @@ lemma IsCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x 
   rw [metricTensor_apply cov x hY hZ] at this
   change (bar _ ((mfderiv I 𝓘(ℝ, ℝ) ⟪Y, Z⟫ x) (X x))) = _
   exact isCompatible_apply_aux this
+
+lemma isCompatible_iff [FiniteDimensional ℝ E] :
+    cov.IsCompatible ↔ ∀ {x : M} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x),
+      mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x := by
+  refine ⟨fun hcov x hY hZ ↦ cov.isCompatible_apply hcov hY hZ, fun h ↦ ?_⟩
+  unfold IsCompatible
+  sorry
 
 /-- A covariant derivative on a Riemannian bundle `TM` is called the **Levi-Civita connection**
 iff it is torsion-free and compatible with `g`.
@@ -812,7 +820,7 @@ lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) : rhs_aux I X Y Z x =
     ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ X, Z⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
   trans ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x
-  · exact cov.IsCompatible_apply I h.1 hY hZ
+  · exact cov.isCompatible_apply h.1 hY hZ
   · simp [← cov.isTorsionFree_iff.mp h.2 hX hZ, product, inner_sub_right]
 
 variable {cov} in
