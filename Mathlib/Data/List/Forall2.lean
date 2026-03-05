@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.Data.List.Basic
+public import Mathlib.Logic.Relator
 
 /-!
 # Double universal quantification on a list

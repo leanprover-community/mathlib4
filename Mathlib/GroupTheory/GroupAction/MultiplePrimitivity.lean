@@ -13,9 +13,9 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 Let `G` be a group acting on a type `α`.
 
 * `MulAction.IsMultiplyPreprimitive` :
-The action is said to be `n`-primitive if, for every subset `s :
-Set α` with `n` elements, the actions f `stabilizer G s` on the
-complement of `s` is primitive.
+  The action is said to be `n`-primitive if, for every subset `s :
+  Set α` with `n` elements, the actions f `stabilizer G s` on the
+  complement of `s` is primitive.
 
 * `MulAction.is_zero_preprimitive` : any action is 0-primitive
 
@@ -30,15 +30,15 @@ complement of `s` is primitive.
   ofFixingSubgroup.isMultiplyPreprimitive
 
 * `MulAction.ofFixingSubgroup.isMultiplyPreprimitive`:
-If an action is `s.ncard + m`-primitive, then
-the action of `FixingSubgroup G s` on the complement of `s`
-is `m`-primitive.
+  If an action is `s.ncard + m`-primitive, then
+  the action of `FixingSubgroup G s` on the complement of `s`
+  is `m`-primitive.
 
 -/
 
 @[expose] public section
 
-open scoped BigOperators Pointwise Cardinal
+open scoped Pointwise Cardinal
 
 namespace MulAction
 
@@ -133,15 +133,7 @@ theorem is_one_preprimitive_iff :
     rw [isMultiplyPreprimitive_iff]
     constructor
     · exact is_one_pretransitive_iff.mpr h.toIsPretransitive
-    · intro s hs
-      suffices s = ∅ by
-        rwa [this, isPreprimitive_of_fixingSubgroup_empty_iff]
-      rw [← Set.encard_eq_zero]
-      suffices s.encard ≠ (⊤ : ℕ∞) by
-        obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp this
-        rw [← hm, ← Nat.cast_one, ← ENat.coe_add, Nat.cast_inj, Nat.add_eq_right] at hs
-        simp [← hm, hs]
-      exact fun h ↦ by simp [h] at hs
+    · simpa using isPreprimitive_of_fixingSubgroup_empty_iff.mpr h
 
 /-- The action of `stabilizer M a` is one-less preprimitive. -/
 @[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
@@ -164,6 +156,7 @@ theorem isMultiplyPreprimitive_ofStabilizer
       aesop
     exact IsPreprimitive.of_surjective ofFixingSubgroup_insert_map_bijective.surjective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitive action is `n.succ-`preprimitive
 iff the action of stabilizers is `n`-preprimitive. -/
 @[to_additive /-- A pretransitive action is `n.succ-`preprimitive

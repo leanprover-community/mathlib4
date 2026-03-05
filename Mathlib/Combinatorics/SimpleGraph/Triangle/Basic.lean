@@ -119,7 +119,7 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
   constructor
   · rw [Sym2.forall]
     rintro hG a b hab
-    simp only [Sym2.isDiag_iff_proj_eq] at hab
+    simp only [Sym2.mk_isDiag_iff] at hab
     rw [this _ _ (Sym2.mk_isDiag_iff.not.2 hab)]
     rintro _ ⟨hab, c, hac, hbc, rfl⟩ _ ⟨-, d, had, hbd, rfl⟩
     refine hG.eq ?_ ?_ (Set.Nontrivial.not_subsingleton ⟨a, ?_, b, ?_, hab.ne⟩) <;>

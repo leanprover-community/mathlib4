@@ -60,6 +60,7 @@ instance : MonoidalClosed (LightCondMod.{u} R) :=
 instance : (presheafToSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Monoidal :=
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (free R).Monoidal := inferInstanceAs (composeAndSheafify _ _).Monoidal
 
 end LightCondensed

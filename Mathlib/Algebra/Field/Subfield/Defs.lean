@@ -274,7 +274,6 @@ instance toDivisionRing (s : Subfield K) : DivisionRing s := fast_instance%
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ ↦ rfl) fun _ ↦ rfl
 
-/-- A subfield inherits a field structure -/
 instance toField {K} [Field K] (s : Subfield K) : Field s := fast_instance%
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
