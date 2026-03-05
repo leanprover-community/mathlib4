@@ -366,6 +366,46 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
   intro k hk
   rw [key (u \ t) hu k hk, key (v \ t) hv k hk]
 
+theorem IsMultiplicative.finsetProd (f : ι → ArithmeticFunction R) (s : Finset ι)
+    (hf : ∀ i ∈ s, IsMultiplicative (f i)) : IsMultiplicative (∏ i ∈ s, f i) := by
+  classical
+  induction s using Finset.induction
+  case empty => simp [isMultiplicative_one] -- make simp
+  case insert a s ha ih =>
+    rw [Finset.prod_insert ha]
+    exact (hf a (s.mem_insert_self a)).mul (ih fun i hi ↦ hf i (Finset.mem_insert_of_mem hi))
+
+theorem foo {α β : Type*} {F : Filter α} [F.NeBot] {f : α → β} {b₁ b₂ : β}
+    (h₁ : F.Tendsto f (pure b₁)) (h₂ : F.Tendsto f (pure b₂)) : b₁ = b₂ := by
+  rw [tendsto_pure, eventually_iff_exists_mem] at h₁ h₂
+  obtain ⟨u, huF, hu⟩ := h₁
+  obtain ⟨v, hvF, hv⟩ := h₂
+  obtain ⟨a, hau, hav⟩ := nonempty_of_mem (inter_mem huF hvF)
+  exact (hu a hau).symm.trans (hv a hav)
+
+theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
+    (hf : ∀ i, IsMultiplicative (f i)) : IsMultiplicative (eulerProduct f) := by
+  by_cases hf' : Multipliable f
+  · have key (s : Finset ι) : (∏ b ∈ s, f b).IsMultiplicative :=
+      .finsetProd f s fun i a ↦ hf i
+    simp_rw [IsMultiplicative, forall_and] at key
+    obtain ⟨key1, key2⟩ := key
+    have key3 : ∀ n, Tendsto (fun s ↦ (∏ b ∈ s, f b) n) atTop (pure (eulerProduct f n)) :=
+      tendsto_iff.mp hf'.hasProd
+    constructor
+    · specialize key3 1
+      simp_rw [key1] at key3
+      rwa [tendsto_pure, eventually_const, eq_comm] at key3
+    · intro m n hmn
+      have h1 := (key3 m).prodMk (key3 n)
+      have h2 := key3 (m * n)
+      rw [prod_pure_pure] at h1
+      simp_rw [forall_comm.mp (forall_comm.mp (forall_comm.mp key2 m) n) hmn] at h2
+      exact foo h2
+        ((tendsto_pure_pure (fun x ↦ x.1 * x.2) (eulerProduct f m, eulerProduct f n)).comp h1)
+  · rw [eulerProduct, tprod_eq_one_of_not_multipliable hf']
+    exact isMultiplicative_one
+
 end EulerProduct
 
 end ArithmeticFunction
