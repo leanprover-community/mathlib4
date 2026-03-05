@@ -1,12 +1,16 @@
+module
 /-
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Interval.Set.Group
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Order.Interval.Set.Disjoint
+public import Mathlib.Algebra.Order.Interval.Set.Group
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Order.Interval.Set.Disjoint
+
+
+@[expose] public section
 
 /-!
 # Dissection of Cubes

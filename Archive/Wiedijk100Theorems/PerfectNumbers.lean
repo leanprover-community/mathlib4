@@ -1,11 +1,15 @@
+module
 /-
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.NumberTheory.ArithmeticFunction.Misc
-import Mathlib.NumberTheory.LucasLehmer
-import Mathlib.Tactic.NormNum.Prime
+public import Mathlib.NumberTheory.ArithmeticFunction.Misc
+public import Mathlib.NumberTheory.LucasLehmer
+public import Mathlib.Tactic.NormNum.Prime
+
+
+@[expose] public section
 
 /-!
 # Perfect Numbers

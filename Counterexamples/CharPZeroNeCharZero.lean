@@ -1,10 +1,14 @@
+module
 /-
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.Ring.PUnit
+
+
+@[expose] public section
 
 /-! # `CharP R 0` and `CharZero R` need not coincide for semirings
 

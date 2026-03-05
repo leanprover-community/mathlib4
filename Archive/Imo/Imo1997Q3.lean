@@ -1,14 +1,18 @@
+module
 /-
 Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Sign.Defs
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Tactic.Linarith
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Data.Sign.Defs
+public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.Tactic.Linarith
+
+
+@[expose] public section
 
 /-!
 # IMO 1997 Q3

@@ -1,11 +1,15 @@
+module
 /-
 Copyright (c) 2025 Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi Yuan
 -/
-import Mathlib.NumberTheory.LSeries.PrimesInAP
-import Mathlib.NumberTheory.Multiplicity
-import Mathlib.Tactic.Simproc.Factors
+public import Mathlib.NumberTheory.LSeries.PrimesInAP
+public import Mathlib.NumberTheory.Multiplicity
+public import Mathlib.Tactic.Simproc.Factors
+
+
+@[expose] public section
 
 /-!
 # IMO 2025 Q3

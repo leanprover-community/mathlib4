@@ -1,10 +1,14 @@
+module
 /-
 Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Rat.Floor
-import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.SetTheory.Cardinal.Basic
+
+
+@[expose] public section
 
 /-!
 # IMO 2024 Q6

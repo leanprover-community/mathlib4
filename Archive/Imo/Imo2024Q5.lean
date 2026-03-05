@@ -1,15 +1,19 @@
+module
 /-
 Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.List.ChainOfFn
-import Mathlib.Data.List.TakeWhile
-import Mathlib.Data.Nat.Dist
-import Mathlib.Data.Fintype.Fin
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Tactic.FinCases
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.List.ChainOfFn
+public import Mathlib.Data.List.TakeWhile
+public import Mathlib.Data.Nat.Dist
+public import Mathlib.Data.Fintype.Fin
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Tactic.FinCases
+
+
+@[expose] public section
 
 /-!
 # IMO 2024 Q5

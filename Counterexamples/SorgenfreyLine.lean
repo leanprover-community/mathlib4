@@ -1,16 +1,20 @@
+module
 /-
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Real.Cardinality
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.Baire.Lemmas
-import Mathlib.Topology.Baire.LocallyCompactRegular
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Metrizable.Urysohn
-import Mathlib.Topology.Separation.NotNormal
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Baire.LocallyCompactRegular
+public import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Topology.Instances.Irrational
+public import Mathlib.Topology.Metrizable.Urysohn
+public import Mathlib.Topology.Separation.NotNormal
+
+
+@[expose] public section
 
 /-!
 # Sorgenfrey line

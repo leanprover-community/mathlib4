@@ -1,9 +1,13 @@
+module
 /-
 Copyright (c) 2021 Matt Kempster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matt Kempster
 -/
-import Mathlib.Geometry.Euclidean.Triangle
+public import Mathlib.Geometry.Euclidean.Triangle
+
+
+@[expose] public section
 
 /-!
 # Freek № 57: Heron's Formula

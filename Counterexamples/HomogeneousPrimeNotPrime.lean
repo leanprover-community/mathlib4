@@ -1,12 +1,16 @@
+module
 /-
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.Divisibility.Finite
-import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Data.Fintype.Units
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+public import Mathlib.Algebra.Divisibility.Finite
+public import Mathlib.Algebra.Divisibility.Prod
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+
+
+@[expose] public section
 
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime

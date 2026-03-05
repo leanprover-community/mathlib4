@@ -1,10 +1,14 @@
+module
 /-
 Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, Heather Macbeth
 -/
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Positivity
+
+
+@[expose] public section
 
 /-!
 # The Motzkin polynomial

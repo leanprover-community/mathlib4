@@ -1,10 +1,14 @@
+module
 /-
 Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Analysis.Real.Pi.Bounds
-import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
+public import Mathlib.Analysis.Real.Pi.Bounds
+public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
+
+
+@[expose] public section
 
 /-!
 # Weierstrass function: a function that is continuous everywhere but differentiable nowhere

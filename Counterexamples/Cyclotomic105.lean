@@ -1,10 +1,14 @@
+module
 /-
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
-import Mathlib.Tactic.NormNum.Prime
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+public import Mathlib.Tactic.NormNum.Prime
+
+
+@[expose] public section
 
 /-!
 # Not all coefficients of cyclotomic polynomials are -1, 0, or 1

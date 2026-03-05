@@ -1,11 +1,15 @@
+module
 /-
 Copyright (c) 2025 Jan Förster, Leon Müller, Luis Sand, and Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan Förster, Leon Müller, Luis Sand, Junyan Xu
 -/
-import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Instances.Real.Lemmas
-import Archive.Kuratowski
+public import Mathlib.Topology.Instances.Irrational
+public import Mathlib.Topology.Instances.Real.Lemmas
+public import Archive.Kuratowski
+
+
+@[expose] public section
 
 /-!
 # Kuratowski's closure-complement theorem is sharp

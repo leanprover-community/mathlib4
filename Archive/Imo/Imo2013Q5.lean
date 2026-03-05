@@ -1,14 +1,18 @@
+module
 /-
 Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.LinearCombination
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.LinearCombination
+
+
+@[expose] public section
 
 /-!
 # IMO 2013 Q5

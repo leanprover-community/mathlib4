@@ -1,13 +1,17 @@
+module
 /-
 Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Tactic.Ring
+
+
+@[expose] public section
 
 /-!
 # IMO 2013 Q1

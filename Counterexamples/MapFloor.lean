@@ -1,12 +1,16 @@
+module
 /-
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Round
-import Mathlib.Algebra.Order.Group.PiLex
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Algebra.Polynomial.Reverse
+public import Mathlib.Algebra.Order.Round
+public import Mathlib.Algebra.Order.Group.PiLex
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Algebra.Polynomial.Reverse
+
+
+@[expose] public section
 
 /-!
 # Floors and ceils aren't preserved under ordered ring homomorphisms

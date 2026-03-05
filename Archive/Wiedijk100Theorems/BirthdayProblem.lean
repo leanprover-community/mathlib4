@@ -1,11 +1,15 @@
+module
 /-
 Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Data.Fintype.CardEmbedding
-import Mathlib.Probability.UniformOn
-import Mathlib.Probability.Notation
+public import Mathlib.Data.Fintype.CardEmbedding
+public import Mathlib.Probability.UniformOn
+public import Mathlib.Probability.Notation
+
+
+@[expose] public section
 
 /-!
 # Birthday Problem

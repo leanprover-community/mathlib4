@@ -1,11 +1,15 @@
+module
 /-
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
-import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Data.Nat.Cast.Order.Field
-import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Topology.Algebra.InfiniteSum.Real
+public import Mathlib.Data.Nat.Cast.Order.Field
+public import Mathlib.Data.Nat.Squarefree
+
+
+@[expose] public section
 
 /-!
 # Divergence of the Prime Reciprocal Series

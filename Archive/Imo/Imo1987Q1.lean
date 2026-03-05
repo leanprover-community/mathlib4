@@ -1,11 +1,15 @@
+module
 /-
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Dynamics.FixedPoints.Basic
+
+
+@[expose] public section
 
 /-!
 # Formalization of IMO 1987, Q1

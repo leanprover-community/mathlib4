@@ -1,14 +1,18 @@
+module
 /-
 Copyright (c) 2024 Enrico Z. Borba. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Probability.Density
-import Mathlib.Probability.Distributions.Uniform
-import Mathlib.Probability.Notation
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.Probability.Density
+public import Mathlib.Probability.Distributions.Uniform
+public import Mathlib.Probability.Notation
+
+
+@[expose] public section
 
 /-!
 

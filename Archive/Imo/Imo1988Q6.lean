@@ -1,14 +1,18 @@
+module
 /-
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Rat.Defs
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.WLOG
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.WLOG
+
+
+@[expose] public section
 
 /-!
 # IMO 1988 Q6 and constant descent Vieta jumping

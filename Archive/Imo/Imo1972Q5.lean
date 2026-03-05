@@ -1,10 +1,14 @@
+module
 /-
 Copyright (c) 2020 Ruben Van de Velde, Stanislas Polu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde, Stanislas Polu
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
+
+
+@[expose] public section
 
 /-!
 # IMO 1972 Q5

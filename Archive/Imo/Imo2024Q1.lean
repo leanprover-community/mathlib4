@@ -1,15 +1,19 @@
+module
 /-
 Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Recall
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Recall
+
+
+@[expose] public section
 
 /-!
 # IMO 2024 Q1

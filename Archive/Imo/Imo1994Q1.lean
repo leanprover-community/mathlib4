@@ -1,13 +1,17 @@
+module
 /-
 Copyright (c) 2021 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Sort
-import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Tactic.Linarith
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Tactic.Linarith
+
+
+@[expose] public section
 
 /-!
 # IMO 1994 Q1

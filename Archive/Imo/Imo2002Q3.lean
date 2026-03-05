@@ -1,10 +1,14 @@
+module
 /-
 Copyright (c) 2026 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.Polynomial.Basic
-import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.Analysis.Polynomial.Basic
+public import Mathlib.RingTheory.Polynomial.Content
+
+
+@[expose] public section
 
 /-!
 # IMO 2002 Q3

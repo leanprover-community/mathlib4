@@ -1,9 +1,13 @@
+module
 /-
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+
+@[expose] public section
 
 /-!
 # `QuadraticForm R M` and `Subtype LinearMap.IsSymm` are distinct notions in characteristic 2

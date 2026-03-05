@@ -1,10 +1,14 @@
+module
 /-
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Abelian.Pseudoelements
-import Mathlib.Algebra.Category.ModuleCat.Biproducts
+public import Mathlib.CategoryTheory.Abelian.Pseudoelements
+public import Mathlib.Algebra.Category.ModuleCat.Biproducts
+
+
+@[expose] public section
 
 /-!
 # Pseudoelements and pullbacks

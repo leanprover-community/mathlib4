@@ -1,12 +1,16 @@
+module
 /-
 Copyright (c) 2021 Alain Verberkmoes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alain Verberkmoes
 -/
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Order.Group.Int
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.Ring.Int.Defs
+
+
+@[expose] public section
 
 /-!
 # IMO 2011 Q5

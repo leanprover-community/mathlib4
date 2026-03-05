@@ -1,12 +1,16 @@
+module
 /-
 Copyright (c) 2024 Alex Brodbelt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Brodbelt, Violeta Hernández
 -/
 
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Linarith
-import Mathlib.Data.PNat.Basic
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Data.PNat.Basic
+
+
+@[expose] public section
 
 /-!
 # IMO 1982 Q1

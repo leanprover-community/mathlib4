@@ -1,9 +1,13 @@
+module
 /-
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Finite.Basic
+
+
+@[expose] public section
 
 /-!
 # IMO 2005 Q4
