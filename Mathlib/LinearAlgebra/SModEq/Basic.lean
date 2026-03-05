@@ -166,6 +166,7 @@ theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD
 variable (S) in
 theorem restrictScalars [SMul S R] [IsScalarTower S R M] : x ≡ y [SMOD U.restrictScalars S] ↔
     x ≡ y [SMOD U] := by simp [SModEq.sub_mem]
+
 theorem idealQuotientMk {R : Type*} [CommRing R] {I : Ideal R} {x y : R} :
     x ≡ y [SMOD I] ↔ Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := Iff.rfl
 
