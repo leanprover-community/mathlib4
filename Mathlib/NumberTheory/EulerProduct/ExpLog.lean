@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.NumberTheory.EulerProduct.Basic
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.NumberTheory.EulerProduct.Basic
 
 /-!
 # Logarithms of Euler Products
@@ -15,6 +17,8 @@ We consider `f : ℕ →*₀ ℂ` and show that `exp (∑ p in Primes, log (1 - 
 under suitable conditions on `f`. This can be seen as a logarithmic version of the
 Euler product for `f`.
 -/
+
+public section
 
 open Complex
 

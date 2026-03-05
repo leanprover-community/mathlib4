@@ -3,14 +3,16 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Algebra.Order.Star.Prod
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+public import Mathlib.Algebra.Order.Star.Prod
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -48,6 +50,8 @@ only makes sense for nonnegative exponents, and hence we define it such that the
 + Prove the order properties (operator monotonicity and concavity/convexity)
 -/
 
+@[expose] public section
+
 open scoped NNReal
 
 namespace NNReal
@@ -82,6 +86,7 @@ variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [St
 
 /- ## `nnrpow` -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Real powers of operators, based on the non-unital continuous functional calculus. -/
 noncomputable def nnrpow (a : A) (y : ℝ≥0) : A := cfcₙ (NNReal.nnrpow · y) a
 
@@ -93,9 +98,13 @@ noncomputable instance (priority := 100) : Pow A ℝ≥0 where
 @[simp]
 lemma nnrpow_eq_pow {a : A} {y : ℝ≥0} : nnrpow a y = a ^ y := rfl
 
-@[simp, grind]
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma nnrpow_nonneg {a : A} {x : ℝ≥0} : 0 ≤ a ^ x := cfcₙ_predicate _ a
 
+grind_pattern nnrpow_nonneg => NonnegSpectrumClass ℝ A, a ^ x
+
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (NNReal.nnrpow · y) a := rfl
 
 lemma nnrpow_eq_cfcₙ_real [T2Space A] [IsTopologicalRing A] (a : A)
@@ -106,6 +115,7 @@ lemma nnrpow_eq_cfcₙ_real [T2Space A] [IsTopologicalRing A] (a : A)
   have : 0 ≤ x := by grind
   simp [this]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrpow_add {a : A} {x y : ℝ≥0} (hx : 0 < x) (hy : 0 < y) :
     a ^ (x + y) = a ^ x * a ^ y := by
   simp only [nnrpow_def]
@@ -117,16 +127,19 @@ lemma nnrpow_add {a : A} {x y : ℝ≥0} (hx : 0 < x) (hy : 0 < y) :
 lemma nnrpow_zero {a : A} : a ^ (0 : ℝ≥0) = 0 := by
   simp [nnrpow_def, cfcₙ_apply_of_not_map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ≥0) = a := by
   simp only [nnrpow_def, NNReal.nnrpow_def, NNReal.coe_one, NNReal.rpow_one]
   change cfcₙ (id : ℝ≥0 → ℝ≥0) a = a
   rw [cfcₙ_id ℝ≥0 a]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrpow_two (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (2 : ℝ≥0) = a * a := by
   simp only [nnrpow_def, NNReal.nnrpow_def, NNReal.coe_ofNat, NNReal.rpow_ofNat, pow_two]
   change cfcₙ (fun z : ℝ≥0 => id z * id z) a = a * a
   rw [cfcₙ_mul id id a, cfcₙ_id ℝ≥0 a]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrpow_three (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (3 : ℝ≥0) = a * a * a := by
   simp only [nnrpow_def, NNReal.nnrpow_def, NNReal.coe_ofNat, NNReal.rpow_ofNat, pow_three]
   change cfcₙ (fun z : ℝ≥0 => id z * (id z * id z)) a = a * a * a
@@ -139,6 +152,7 @@ section Unique
 
 variable [IsTopologicalRing A] [T2Space A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma nnrpow_nnrpow {a : A} {x y : ℝ≥0} : (a ^ x) ^ y = a ^ (x * y) := by
   by_cases ha : 0 ≤ a
@@ -176,6 +190,7 @@ variable {B : Type*} [PartialOrder B] [NonUnitalRing B] [TopologicalSpace B] [St
   [NonnegSpectrumClass ℝ B] [NonnegSpectrumClass ℝ (A × B)]
   [StarOrderedRing B]
 
+set_option backward.isDefEq.respectTransparency false in
 /- Note that there is higher-priority instance of `Pow (A × B) ℝ≥0` coming from the `Pow` instance
 for products, hence the direct use of `nnrpow` here. -/
 lemma nnrpow_map_prod {a : A} {b : B} {x : ℝ≥0}
@@ -204,6 +219,7 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Non
   [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
   [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /- Note that there is higher-priority instance of `Pow (∀ i, C i) ℝ≥0` coming from the `Pow`
 instance for pi types, hence the direct use of `nnrpow` here. -/
 lemma nnrpow_map_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
@@ -223,11 +239,15 @@ end Unique
 
 section sqrt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Square roots of operators, based on the non-unital continuous functional calculus. -/
 noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
 
-@[simp, grind]
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma sqrt_nonneg (a : A) : 0 ≤ sqrt a := cfcₙ_predicate _ a
+
+grind_pattern sqrt_nonneg => NonnegSpectrumClass ℝ A, sqrt a
 
 lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
   simp only [sqrt]
@@ -240,6 +260,7 @@ lemma sqrt_zero : sqrt (0 : A) = 0 := by simp [sqrt]
 
 variable [IsTopologicalRing A] [T2Space A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma nnrpow_sqrt {a : A} {x : ℝ≥0} : (sqrt a) ^ x = a ^ (x / 2) := by
   rw [sqrt_eq_nnrpow, nnrpow_nnrpow, one_div_mul_eq_div 2 x]
@@ -276,6 +297,10 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
 
 lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
   rw [sqrt_eq_iff a _, mul_zero, eq_comm]
+
+lemma mul_self_eq_mul_self_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
+    a * a = b * b ↔ a = b :=
+  ⟨fun h => sqrt_mul_self a ▸ sqrt_unique h.symm, fun h => h ▸ rfl⟩
 
 /-- Note that the hypothesis `0 ≤ a` is necessary because the continuous functional calculi over
 `ℝ≥0` (for the left-hand side) and `ℝ` (for the right-hand side) use different predicates (i.e.,
@@ -323,13 +348,15 @@ lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
 end pi
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
-* `0 ≤ a`
-* `a = sqrt a * sqrt a`
-* `a = b * b` for some nonnegative `b`
-* `a = b * b` for some self-adjoint `b`
-* `a = star b * b` for some `b`
-* `a = b * star b` for some `b`
-* `a` is self-adjoint and has nonnegative spectrum -/
+1. `0 ≤ a`
+2. `a = sqrt a * sqrt a`
+3. `a = b * b` for some nonnegative `b`
+4. `a = b * b` for some self-adjoint `b`
+5. `a = star b * b` for some `b`
+6. `a = b * star b` for some `b`
+7. `a = a⁺`
+8. `a` is self-adjoint and `a⁻ = 0`
+9. `a` is self-adjoint and has nonnegative spectrum -/
 theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
     [ 0 ≤ a,
       a = sqrt a * sqrt a,
@@ -337,8 +364,13 @@ theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
       ∃ b : A, IsSelfAdjoint b ∧ a = b * b,
       ∃ b : A, a = star b * b,
       ∃ b : A, a = b * star b,
+      a = a⁺,
+      IsSelfAdjoint a ∧ a⁻ = 0,
       IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal ].TFAE := by
-  tfae_have 1 ↔ 7 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
+  tfae_have 1 ↔ 9 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
+  tfae_have 1 ↔ 7 := eq_comm.eq ▸ (CFC.posPart_eq_self a).symm
+  tfae_have 1 ↔ 8 := ⟨fun h => ⟨h.isSelfAdjoint, negPart_eq_zero_iff a |>.mpr h⟩,
+    fun h => negPart_eq_zero_iff a |>.mp h.2⟩
   tfae_have 1 → 2 := fun h => sqrt_mul_sqrt_self a |>.symm
   tfae_have 2 → 3 := fun h => ⟨sqrt a, sqrt_nonneg a, h⟩
   tfae_have 3 → 4 := fun ⟨b, hb⟩ => ⟨b, hb.1.isSelfAdjoint, hb.2⟩
@@ -357,6 +389,8 @@ theorem _root_.CStarAlgebra.nonneg_iff_eq_star_mul_self {a : A} :
     0 ≤ a ↔ ∃ b, a = star b * b := CStarAlgebra.nonneg_TFAE.out 0 4
 theorem _root_.CStarAlgebra.nonneg_iff_eq_mul_star_self {a : A} :
     0 ≤ a ↔ ∃ b, a = b * star b := CStarAlgebra.nonneg_TFAE.out 0 5
+theorem _root_.CStarAlgebra.nonneg_iff_isSelfAdjoint_and_negPart_eq_zero {a : A} :
+    0 ≤ a ↔ IsSelfAdjoint a ∧ a⁻ = 0 := CStarAlgebra.nonneg_TFAE.out 0 7
 
 end sqrt
 
@@ -381,10 +415,20 @@ noncomputable instance (priority := 100) : Pow A ℝ where
 @[simp]
 lemma rpow_eq_pow {a : A} {y : ℝ} : rpow a y = a ^ y := rfl
 
-@[simp, grind]
+@[simp]
 lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
 
+grind_pattern rpow_nonneg => NonnegSpectrumClass ℝ A, a ^ y
+
 lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
+
+lemma rpow_eq_cfc_real [IsTopologicalRing A] [T2Space A] {a : A} {y : ℝ}
+    (ha : 0 ≤ a := by cfc_tac) : a ^ y = cfc (fun x : ℝ => x ^ y) a := by
+  rw [CFC.rpow_def, cfc_nnreal_eq_real ..]
+  refine cfc_congr ?_
+  intro x hx
+  simp only [NNReal.coe_rpow, Real.coe_toNNReal']
+  grind
 
 lemma rpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
   simp only [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]
@@ -521,6 +565,7 @@ variable {B : Type*} [PartialOrder B] [Ring B] [StarRing B] [TopologicalSpace B]
   [IsTopologicalRing B] [T2Space B] [StarOrderedRing (A × B)]
   [NonnegSpectrumClass ℝ B] [NonnegSpectrumClass ℝ (A × B)]
 
+set_option backward.isDefEq.respectTransparency false in
 /- Note that there is higher-priority instance of `Pow (A × B) ℝ` coming from the `Pow` instance for
 products, hence the direct use of `rpow` here. -/
 lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : IsUnit a) (hb : IsUnit b)
@@ -538,8 +583,6 @@ lemma rpow_eq_rpow_prod {a : A} {b : B} {x : ℝ} (ha : IsUnit a) (hb : IsUnit b
     (ha' : 0 ≤ a := by cfc_tac) (hb' : 0 ≤ b := by cfc_tac) :
     rpow (a, b) x = (a, b) ^ x := rpow_map_prod ha hb
 
-@[deprecated (since := "2025-05-13")] alias rpow_eq_rpow_rpod := rpow_eq_rpow_prod
-
 end prod
 
 section pi
@@ -553,6 +596,7 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Rin
   [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
   [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /- Note that there is a higher-priority instance of `Pow (∀ i, B i) ℝ` coming from the `Pow`
 instance for pi types, hence the direct use of `rpow` here. -/
 lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, IsUnit (c i))
@@ -576,6 +620,7 @@ variable [IsTopologicalRing A] [T2Space A]
 -- provides instance `ContinuousFunctionalCalculus.compactSpace_spectrum`
 open scoped ContinuousFunctionalCalculus
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) := by
   rw [nnrpow_def (A := A), rpow_def, cfcₙ_eq_cfc]
 
@@ -583,6 +628,7 @@ lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
   have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
   rw [this, ← nnrpow_eq_rpow (by simp), sqrt_eq_nnrpow a]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sqrt_eq_cfc {a : A} : sqrt a = cfc NNReal.sqrt a := by
   unfold sqrt
   rw [cfcₙ_eq_cfc]
@@ -593,12 +639,27 @@ lemma sqrt_sq (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt (a ^ 2) = a := by
 lemma sq_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ 2 = a := by
   rw [pow_two, sqrt_mul_sqrt_self (A := A) a]
 
+lemma sq_eq_sq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
+    a ^ 2 = b ^ 2 ↔ a = b := by
+  simp_rw [sq, mul_self_eq_mul_self_iff a b]
+
 @[simp]
 lemma sqrt_algebraMap {r : ℝ≥0} : sqrt (algebraMap ℝ≥0 A r) = algebraMap ℝ≥0 A (NNReal.sqrt r) := by
   rw [sqrt_eq_cfc, cfc_algebraMap]
 
 @[simp]
 lemma sqrt_one : sqrt (1 : A) = 1 := by simp [sqrt_eq_cfc]
+
+lemma sqrt_eq_one_iff (a : A) (ha : 0 ≤ a := by cfc_tac) :
+    sqrt a = 1 ↔ a = 1 := by
+  rw [sqrt_eq_iff a _, mul_one, eq_comm]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma sqrt_eq_one_iff' [Nontrivial A] (a : A) :
+    sqrt a = 1 ↔ a = 1 := by
+  refine ⟨fun h ↦ sqrt_eq_one_iff a ?_ |>.mp h, fun h ↦ by subst h; exact sqrt_one⟩
+  rw [sqrt, cfcₙ] at h
+  cfc_tac
 
 -- TODO: relate to a strict positivity condition
 lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)

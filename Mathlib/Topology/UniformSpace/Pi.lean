@@ -3,11 +3,15 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Indexed product of uniform spaces
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -87,11 +91,11 @@ lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
 
 lemma cauchy_pi_iff [Nonempty ι] {l : Filter (∀ i, α i)} :
     Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by
-  simp_rw [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace, cauchy_comap_uniformSpace]
+  simp_rw +instances [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace, cauchy_comap_uniformSpace]
 
 lemma cauchy_pi_iff' {l : Filter (∀ i, α i)} [l.NeBot] :
     Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by
-  simp_rw [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace', cauchy_comap_uniformSpace]
+  simp_rw +instances [Pi.uniformSpace_eq, cauchy_iInf_uniformSpace', cauchy_comap_uniformSpace]
 
 lemma Cauchy.pi [Nonempty ι] {l : ∀ i, Filter (α i)} (hl : ∀ i, Cauchy (l i)) :
     Cauchy (Filter.pi l) := by

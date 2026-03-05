@@ -3,16 +3,20 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Countable.Defs
-import Mathlib.Data.Nat.Factors
-import Mathlib.Data.Nat.Prime.Infinite
-import Mathlib.Data.Set.Finite.Lattice
+module
+
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Nat.Factors
+public import Mathlib.Data.Nat.Prime.Infinite
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Prime numbers
 
 This file contains some results about prime numbers which depend on finiteness of sets.
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -32,11 +36,21 @@ def primeFactors (n : ℕ) : Finset ℕ := n.primeFactorsList.toFinset
 
 @[simp] lemma toFinset_factors (n : ℕ) : n.primeFactorsList.toFinset = n.primeFactors := rfl
 
-@[simp] lemma mem_primeFactors : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
+@[simp, grind =] lemma mem_primeFactors : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
   simp_rw [← toFinset_factors, List.mem_toFinset, mem_primeFactorsList']
 
 lemma mem_primeFactors_of_ne_zero (hn : n ≠ 0) : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n := by
   simp [hn]
+
+lemma Prime.mem_primeFactors (hp : p.Prime) (hdvd : p ∣ n) (hn : n ≠ 0) : p ∈ n.primeFactors :=
+  Nat.mem_primeFactors.mpr ⟨hp, hdvd, hn⟩
+
+/-- A version of `Nat.Prime.mem_primeFactors` using `[NeZero n]` instead of an explicit argument. -/
+lemma Prime.mem_primeFactors' (hp : p.Prime) (hdvd : p ∣ n) [NeZero n] : p ∈ n.primeFactors :=
+  hp.mem_primeFactors hdvd (NeZero.ne n)
+
+lemma Prime.mem_primeFactors_self (hp : p.Prime) : p ∈ p.primeFactors :=
+  hp.mem_primeFactors p.dvd_refl hp.ne_zero
 
 lemma primeFactors_mono (hmn : m ∣ n) (hn : n ≠ 0) : primeFactors m ⊆ primeFactors n := by
   simp only [subset_iff, mem_primeFactors, and_imp]
@@ -67,13 +81,13 @@ lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
   · contrapose!
     rintro hn
     obtain ⟨p, hp, hpn⟩ := exists_prime_and_dvd hn.2
-    exact Nonempty.ne_empty <| ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
+    exact ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
   · rintro (rfl | rfl) <;> simp
 
 @[simp]
 lemma nonempty_primeFactors {n : ℕ} : n.primeFactors.Nonempty ↔ 1 < n := by
-  rw [← not_iff_not, Finset.not_nonempty_iff_eq_empty, primeFactors_eq_empty, not_lt,
-    Nat.le_one_iff_eq_zero_or_eq_one]
+  contrapose!
+  rw [primeFactors_eq_empty, Nat.le_one_iff_eq_zero_or_eq_one]
 
 @[simp] protected lemma Prime.primeFactors (hp : p.Prime) : p.primeFactors = {p} := by
   simp [Nat.primeFactors, primeFactorsList_prime hp]
@@ -89,7 +103,7 @@ lemma Coprime.primeFactors_mul {a b : ℕ} (hab : Coprime a b) :
 
 lemma primeFactors_gcd (ha : a ≠ 0) (hb : b ≠ 0) :
     (a.gcd b).primeFactors = a.primeFactors ∩ b.primeFactors := by
-  ext; simp [dvd_gcd_iff, ha, hb, gcd_ne_zero_left ha]; aesop
+  grind [dvd_gcd_iff]
 
 @[simp] lemma disjoint_primeFactors (ha : a ≠ 0) (hb : b ≠ 0) :
     Disjoint a.primeFactors b.primeFactors ↔ Coprime a b := by

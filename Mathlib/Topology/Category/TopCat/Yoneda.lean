@@ -3,11 +3,13 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.Topology.Category.TopCat.Limits.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.Topology.Category.TopCat.Limits.Products
 
 /-!
 
@@ -16,6 +18,8 @@ import Mathlib.Topology.Category.TopCat.Limits.Products
 This file develops some API for "topologically concrete" categories, defining universe polymorphic
 "Yoneda presheaves" on such categories.
 -/
+
+@[expose] public section
 
 universe w w' v u
 
@@ -41,10 +45,11 @@ space `Y`.
 @[simps]
 def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
   obj X := C((unop X).1, Y)
-  map f g := ContinuousMap.comp g f.unop.hom
+  map f g := ContinuousMap.comp g (ConcreteCategory.hom f.unop)
 
 theorem comp_yonedaPresheaf' : yonedaPresheaf F Y = F.op ⋙ yonedaPresheaf' Y := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem piComparison_fac {α : Type} (X : α → TopCat) :
     piComparison (yonedaPresheaf'.{w, w'} Y) (fun x ↦ op (X x)) =
     (yonedaPresheaf' Y).map ((opCoproductIsoProduct X).inv ≫ (TopCat.sigmaIsoSigma X).inv.op) ≫
@@ -57,6 +62,7 @@ theorem piComparison_fac {α : Type} (X : α → TopCat) :
     Equiv.coe_fn_symm_mk, comp_assoc, sigmaMk_apply, ← opCoproductIsoProduct_inv_comp_ι]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The universe polymorphic Yoneda presheaf on `TopCat` preserves finite products. -/
 noncomputable instance : PreservesFiniteProducts (yonedaPresheaf'.{w, w'} Y) where
   preserves _ :=

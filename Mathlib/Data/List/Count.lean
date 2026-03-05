@@ -3,8 +3,11 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Batteries.Data.List.Perm
-import Mathlib.Tactic.Common
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Tactic.Common
+public import Batteries.Data.List
 
 /-!
 # Counting in lists
@@ -12,6 +15,8 @@ import Mathlib.Tactic.Common
 This file proves basic properties of `List.countP` and `List.count`, which count the number of
 elements of a list satisfying a predicate and equal to a given element respectively.
 -/
+
+public section
 
 assert_not_exists Monoid Set.range
 
@@ -26,15 +31,14 @@ theorem countP_lt_length_iff {l : List α} {p : α → Bool} :
     l.countP p < l.length ↔ ∃ a ∈ l, p a = false := by
   simp [Nat.lt_iff_le_and_ne, countP_le_length]
 
-variable [DecidableEq α] {l l₁ l₂ : List α}
+variable [BEq α] [LawfulBEq α] {l l₁ l₂ : List α}
 
 @[simp]
 theorem count_lt_length_iff {a : α} : l.count a < l.length ↔ ∃ b ∈ l, b ≠ a := by simp [count]
 
 lemma countP_erase (p : α → Bool) (l : List α) (a : α) :
     countP p (l.erase a) = countP p l - if a ∈ l ∧ p a then 1 else 0 := by
-  rw [countP_eq_length_filter, countP_eq_length_filter, ← erase_filter, length_erase]
-  aesop
+  grind [countP_eq_length_filter]
 
 lemma count_diff (a : α) (l₁ : List α) :
     ∀ l₂, count a (l₁.diff l₂) = count a l₁ - count a l₂
@@ -51,7 +55,7 @@ lemma countP_diff (hl : l₂ <+~ l₁) (p : α → Bool) :
     perm_append_comm).countP_eq _
 
 @[simp]
-theorem count_map_of_injective [DecidableEq β] (l : List α) (f : α → β)
+theorem count_map_of_injective [BEq β] [LawfulBEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
   simp only [count, countP_map]
   unfold Function.comp

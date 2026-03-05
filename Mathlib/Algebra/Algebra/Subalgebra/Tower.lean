@@ -3,8 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Subalgebras in towers of algebras
@@ -25,6 +27,8 @@ compatibility condition `(r • s) • a = r • (s • a)`.
   given that `A/S/R` is a tower
 
 -/
+
+@[expose] public section
 
 
 open Pointwise
@@ -79,7 +83,7 @@ variable [IsScalarTower R S A] [IsScalarTower R S B]
 def restrictScalars (U : Subalgebra S A) : Subalgebra R A :=
   { U with
     algebraMap_mem' := fun x ↦ by
-      rw [algebraMap_apply R S A]
+      rw [IsScalarTower.algebraMap_apply R S A]
       exact U.algebraMap_mem _ }
 
 @[simp]
@@ -119,7 +123,7 @@ section CommSemiring
 @[simp]
 lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
     [Algebra R A] (S : Subalgebra R A) :
-    LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
+    LinearMap.range (IsScalarTower.toAlgHom R S A : S →ₗ[R] A) = Subalgebra.toSubmodule S := by
   ext
   simp [algebraMap_eq]
 
@@ -139,10 +143,6 @@ theorem adjoin_range_toAlgHom (t : Set A) :
       (Algebra.adjoin S t).restrictScalars R :=
   Subalgebra.ext fun z ↦
     show z ∈ Subsemiring.closure (Set.range (algebraMap (toAlgHom R S A).range A) ∪ t : Set A) ↔
-         z ∈ Subsemiring.closure (Set.range (algebraMap S A) ∪ t : Set A) by
-      suffices Set.range (algebraMap (toAlgHom R S A).range A) = Set.range (algebraMap S A) by
-        rw [this]
-      ext z
-      exact ⟨fun ⟨⟨_, y, h1⟩, h2⟩ ↦ ⟨y, h2 ▸ h1⟩, fun ⟨y, hy⟩ ↦ ⟨⟨z, y, hy⟩, rfl⟩⟩
+         z ∈ Subsemiring.closure (Set.range (algebraMap S A) ∪ t : Set A) by simp
 
 end IsScalarTower

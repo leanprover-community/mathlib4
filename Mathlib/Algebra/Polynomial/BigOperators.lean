@@ -3,7 +3,11 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
 # Lemmas for the interaction between polynomials and `∑` and `∏`.
@@ -22,6 +26,8 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 - `Polynomial.prod_X_sub_C_coeff_card_pred` carries most of the content for computing
   the second coefficient of the characteristic polynomial.
 -/
+
+public section
 
 
 open Finset
@@ -60,6 +66,20 @@ lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s
     natDegree (∑ i ∈ s, f i) ≤ n :=
   le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
 
+/-- The leading coefficient of a sum of polynomials with the same degree is
+the sum of the leading coefficients, provided that this sum is nonzero.
+-/
+theorem leadingCoeff_sum_of_degree_eq {f : ι → S[X]} {s : Finset ι} {d}
+    (hd : ∀ k ∈ s, (f k).degree = d) (hf : ∑ k ∈ s, (f k).leadingCoeff ≠ 0) :
+    (∑ k ∈ s, f k).leadingCoeff = ∑ k ∈ s, (f k).leadingCoeff := by
+  obtain _ | d := d
+  · simp_all [WithBot.none_eq_bot]
+  · replace hd k (hk : k ∈ s) : (f k).natDegree = d := natDegree_eq_of_degree_eq_some <| hd k hk
+    suffices (∑ k ∈ s, f k).natDegree = d by simp_all [leadingCoeff]
+    apply natDegree_eq_of_le_of_coeff_ne_zero
+    · aesop (add safe natDegree_sum_le_of_forall_le)
+    · simp_all [leadingCoeff]
+
 theorem degree_list_sum_le_of_forall_degree_le (l : List S[X])
     (n : WithBot ℕ) (hl : ∀ p ∈ l, degree p ≤ n) :
     degree l.sum ≤ n := by
@@ -83,15 +103,11 @@ theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).
     use p
     simp [hp]
 
-theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum := by
-  induction l with
-  | nil => simp
-  | cons hd tl IH => simpa using natDegree_mul_le.trans (add_le_add_left IH _)
+theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum :=
+  l.apply_prod_le_sum_map _ natDegree_one.le fun _ _ => natDegree_mul_le
 
-theorem degree_list_prod_le (l : List S[X]) : degree l.prod ≤ (l.map degree).sum := by
-  induction l with
-  | nil => simp
-  | cons hd tl IH => simpa using (degree_mul_le _ _).trans (add_le_add_left IH _)
+theorem degree_list_prod_le (l : List S[X]) : degree l.prod ≤ (l.map degree).sum :=
+  l.apply_prod_le_sum_map _ degree_one_le degree_mul_le
 
 theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p ∈ l, natDegree p ≤ n) :
     coeff (List.prod l) (l.length * n) = (l.map fun p => coeff p n).prod := by
@@ -190,6 +206,7 @@ theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
   apply natDegree_multiset_prod'
   simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degree_multiset_prod_of_monic [Nontrivial R] (h : ∀ f ∈ t, Monic f) :
     t.prod.degree = (t.map degree).sum := by
   have : t.prod ≠ 0 := Monic.ne_zero <| by simpa using monic_multiset_prod_of_monic _ _ h
@@ -266,6 +283,45 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
 theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s) :
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
   simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
+
+lemma degree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f : ι → R[X]}
+    {v : ι → A} (h : LinearIndepOn R v s) :
+    (∑ i ∈ s, v i • (f i).map (algebraMap R A)).degree = s.sup (fun i ↦ (f i).degree) := by
+  apply le_antisymm
+  · exact (degree_sum_le s _).trans <| Finset.sup_le fun i hi ↦ (degree_smul_le _ _).trans <|
+      degree_map_le.trans <| Finset.le_sup (f := fun i ↦ (f i).degree) hi
+  · apply Finset.sup_le
+    intro i hi
+    by_cases hf : f i = 0
+    · simp [hf]
+    rw [degree_eq_natDegree hf]
+    apply le_degree_of_ne_zero
+    rw [finset_sum_coeff]
+    conv in (fun _ ↦ _) =>
+      ext
+      rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
+    intro H
+    exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
+
+-- Note: Proof duplicated from the `degree` version, since the statements don't
+-- trivially follow from each other.
+lemma natDegree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f : ι → R[X]}
+    {v : ι → A} (h : LinearIndepOn R v s) :
+    (∑ i ∈ s, v i • (f i).map (algebraMap R A)).natDegree = s.sup (fun i ↦ (f i).natDegree) := by
+  apply le_antisymm
+  · exact natDegree_sum_le_of_forall_le _ _ fun i hi ↦ (natDegree_smul_le _ _).trans <|
+      natDegree_map_le.trans <| Finset.le_sup (f := fun i ↦ (f i).natDegree) hi
+  · apply Finset.sup_le
+    intro i hi
+    by_cases hf : f i = 0
+    · simp [hf]
+    apply le_natDegree_of_ne_zero
+    rw [finset_sum_coeff]
+    conv in (fun _ ↦ _) =>
+      ext
+      rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
+    intro H
+    exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
 
 variable [Nontrivial R]
 
