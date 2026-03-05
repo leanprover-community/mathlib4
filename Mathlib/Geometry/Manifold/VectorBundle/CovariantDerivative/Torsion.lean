@@ -107,7 +107,7 @@ variable [CompleteSpace 𝕜] [CompleteSpace E] [FiniteDimensional 𝕜 E]
 
 noncomputable def torsion (hcov : IsCovariantDerivativeOn E cov univ) (x : M) :
     TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] TangentSpace I x :=
-  mk2TensorAt I E (Bundle.torsionFun cov)
+  mk2TensorAt I E E (Bundle.torsionFun cov)
     (fun f σ τ hf hσ hτ ↦ hcov.torsionFun_smul_left_apply τ hf hσ)
     (fun σ σ' τ hσ hσ' hτ ↦ hcov.torsionFun_add_left_apply τ hσ hσ')
     (fun f σ τ hf hσ hτ ↦  hcov.torsionFun_smul_right_apply hf hτ)
@@ -117,7 +117,7 @@ theorem torsion_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x) :
     torsion hcov x (X x) (Y x) = Bundle.torsionFun cov X Y x :=
-  mk2TensorAt_apply _ _ _ _ _ hX hY
+  mk2TensorAt_apply _ _ _ _ _ _ hX hY
 
 end
 

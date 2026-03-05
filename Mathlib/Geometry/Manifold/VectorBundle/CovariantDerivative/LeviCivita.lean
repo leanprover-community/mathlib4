@@ -316,7 +316,7 @@ variable {I} in
 /-- The tensor `∇ g` defined by a connection `∇` on a Riemannian manifold `(M, g)`. -/
 @[no_expose] noncomputable def MetricTensor [FiniteDimensional ℝ E] (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
-  mk2TensorAt I E (myfun I cov)
+  mk2TensorAt I E E (myfun I cov)
     (fun _f _σ _τ hf hσ hτ ↦ aux1 cov hf hσ hτ)
     (fun σ σ' τ hσ hσ' hτ ↦ aux2 cov σ σ' τ hσ hσ' hτ)
     (fun _f _σ _τ hf hσ hτ ↦ aux3 cov hf hσ hτ)
@@ -329,7 +329,7 @@ theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
     MetricTensor cov x (Y x) (Z x) (X x) =
     bar _ (mfderiv% ⟪Y, Z⟫ x (X x)) - ⟪∇ Y, X, Z⟫ x - ⟪Y, ∇ Z, X⟫ x := by
   unfold MetricTensor
-  rw [mk2TensorAt_apply _ _ _ _ _ hY hZ]
+  rw [mk2TensorAt_apply _ _ _ _ _ _ hY hZ]
   simp only [myfun, ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp', coe_innerSL_apply,
     Pi.sub_apply, comp_apply]
   conv =>
@@ -891,7 +891,7 @@ open Classical in
 noncomputable def lcAux₀ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] ℝ :=
-  mk2TensorAt I E (fun (X Z : Π x : M, TangentSpace I x) ↦
+  mk2TensorAt I E E (fun (X Z : Π x : M, TangentSpace I x) ↦
       if hX : MDiffAt (T% X) x then if hZ : MDiffAt (T% Z) x then
         leviCivitaRhs I X Y Z
       else 0 else 0) (x := x)
@@ -927,7 +927,7 @@ theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
     lcAux₀ I x hY (X x) (Z x) = leviCivitaRhs I X Y Z x := by
   unfold lcAux₀
-  rw [mk2TensorAt_apply _ _ _ _ _ hX hZ, dif_pos hX, dif_pos hZ]
+  rw [mk2TensorAt_apply _ _ _ _ _ _ hX hZ, dif_pos hX, dif_pos hZ]
 
 noncomputable def lcAux₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
