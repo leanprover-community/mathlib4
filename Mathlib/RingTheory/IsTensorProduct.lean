@@ -559,14 +559,6 @@ theorem IsBaseChange.map_id_lsmul_eq_lsmul_algebraMap
   rw [hf.map_eq hf]
   simpa using smul_comm x s (f m)
 
-lemma IsBaseChange.eq_rTensor_comp {M : Type*} [AddCommGroup M] [Module R M]
-    {R' M' : Type*} [CommRing R'] [Algebra R R'] [AddCommGroup M'] [Module R' M']
-    [Module R M'] [IsScalarTower R R' M'] (f : M →ₗ[R] M') (isb : IsBaseChange R' f) :
-    f = ((isb.equiv.restrictScalars R).comp ((Algebra.linearMap R R').rTensor M)).comp
-    (TensorProduct.lid R M).symm.toLinearMap := by
-  ext
-  simp
-
 variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 variable [IsScalarTower R R' S'] [IsScalarTower R S S']
