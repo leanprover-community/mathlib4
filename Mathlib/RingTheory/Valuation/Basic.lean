@@ -485,6 +485,11 @@ def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀
 @[simp]
 lemma restrict_def (x : R) : v.restrict x = restrict₀ v x := rfl
 
+lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) : v.restrict x = ValueGroup₀.mk v 1 x (by simp) hx := by
+  unfold ValueGroup₀.mk
+  simp only [restrict_def, map_one, Units.mk0_one, inv_one, one_mul, restrict₀_apply]
+  grind
+
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with h
@@ -853,6 +858,16 @@ noncomputable def orderMonoidIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o Value
         exact mul_ne_zero hx10 hy20
       · rw [← map_mul w, ne_eq, ← h.eq_zero, map_mul v]
         exact mul_ne_zero hx20 hy10
+
+theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
+    h.orderMonoidIso (v.restrict a) = w.restrict a := by
+  have h_res := h.restrict
+  by_cases ha : v a = 0
+  · rw [← restrict₀_eq_zero_iff] at ha
+    rwa [restrict_def, ha, map_zero, Eq.comm, ← h_res.eq_zero]
+  · rw [(v.restrict_eq_mk ha)]
+    convert valueGroup₀Fun_spec (h := h) (hs := ha) (r := 1) (by simp)
+    exact w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)
 
 end IsEquiv
 
