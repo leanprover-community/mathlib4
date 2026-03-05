@@ -217,7 +217,8 @@ theorem weightedOrder_eq_nat {n : ℕ} :
   · rintro ⟨⟨d, hd', hd⟩, h⟩
     exact le_antisymm (hd.symm ▸ f.weightedOrder_le w hd') (nat_le_weightedOrder w h)
 
-/-- The `weightedOrder` of the monomial `a*X^d` is infinite if `a = 0` and `weight w d` otherwise. -/
+/-- The `weightedOrder` of the monomial `a*X^d` is infinite if `a = 0` and `weight w d` otherwise.
+-/
 theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
     weightedOrder w (monomial d a) = if a = 0 then (⊤ : ℕ∞) else weight w d := by
   classical
