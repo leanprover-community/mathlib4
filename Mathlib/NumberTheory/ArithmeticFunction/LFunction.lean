@@ -25,14 +25,17 @@ This file constructs L-functions as formal Dirichlet series.
 
 namespace ArithmeticFunction
 
-section EulerProduct -- Euler product of Arithmetic Functions
+section EulerProduct
 
 open Filter
 
 variable {ι R : Type*} [CommSemiring R]
 
-/-- A private uniform space instance on `ArithmeticFunction` in order to define `eulerProduct` as a
-`tprod`. See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
+/-- A private uniform space instance on `ArithmeticFunction R` in order to define `eulerProduct` as
+a `tprod`. If `R` is viewed as having the discrete topology, then the resulting topology on
+`ArithmeticFunction R` is the topology of pointwise convergence (see `tendsto_iff`).
+
+See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
 local instance uniformSpace : UniformSpace (ArithmeticFunction R) :=
   .comap ((↑) : ArithmeticFunction R → (ℕ → R)) <| .ofCore <|
     .mk (⨅ s : Finset ℕ, 𝓟 {(f, g) | Set.EqOn f g s})
@@ -84,7 +87,6 @@ local instance : CompleteSpace (ArithmeticFunction R) where
 noncomputable def eulerProduct (f : ι → ArithmeticFunction R) : ArithmeticFunction R :=
   ∏' i, f i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If arithmetic functions `f i` converges to `1` pointwise, then the partial products
 `∏ i ∈ s, f i` converge to `eulerProduct f` pointwise. -/
 theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
