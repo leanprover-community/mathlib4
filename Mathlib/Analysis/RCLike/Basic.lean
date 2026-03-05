@@ -10,7 +10,7 @@ public import Mathlib.Algebra.BigOperators.Balance
 public import Mathlib.Algebra.Order.BigOperators.Expect
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.Convex.StrictConvex.Extreme
+public import Mathlib.Analysis.Convex.Strict.Extreme
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
@@ -1352,7 +1352,7 @@ theorem not_mem_extremePoints_of_mem_interior {E : Type*} [AddCommGroup E] [Modu
   let f (t : ℝ) : E := x + t • v
   obtain ⟨ε, hε, hεb⟩ : ∃ ε > 0, f '' ball 0 ε ⊆ interior S := by
     simp_rw [image_subset_iff]
-    apply Metric.mem_nhds_iff.mp <| (by fun_prop : Continuous f).continuousAt _
+    refine Metric.mem_nhds_iff.mp <| (by fun_prop : Continuous f).continuousAt ?_
     simp only [zero_smul, add_zero, interior_mem_nhds, f]
     exact mem_interior_iff_mem_nhds.mp hx
   have : f (ε / 2) ≠ f (-ε / 2) := by
