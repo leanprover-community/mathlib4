@@ -42,7 +42,7 @@ def StructuredArrow (S : D) (T : C ⥤ D) :=
 
 /-- See through the type synonym `StructuredArrow S T = Comma _ _`. -/
 instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) :=
-  inferInstanceAs% <| Category (Comma _ _)
+  inferInstaceAs% (Category (Comma _ _))
 
 namespace StructuredArrow
 

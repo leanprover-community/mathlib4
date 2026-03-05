@@ -30,6 +30,6 @@ instance : lightProfiniteToLightCondSet.PreservesEpimorphisms where
     exact ⟨⟨⟨x, y⟩, hx⟩, rfl⟩
 
 instance : IsRegularEpiCategory LightCondSet.{u} :=
-  inferInstanceAs% <| IsRegularEpiCategory (Sheaf _ _)
+  inferInstaceAs% (IsRegularEpiCategory (Sheaf _ _))
 
 example : lightProfiniteToLightCondSet.PreservesEffectiveEpis := inferInstance

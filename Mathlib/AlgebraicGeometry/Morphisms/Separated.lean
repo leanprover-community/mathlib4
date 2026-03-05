@@ -133,7 +133,7 @@ instance [IsSeparated g] :
   rw [← MorphismProperty.cancel_left_of_respectsIso @IsClosedImmersion (pullback.fst f (𝟙 Y))]
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
     (pullback.congrHom rfl (Category.id_comp g)).inv]
-  convert (inferInstanceAs% <| IsClosedImmersion (pullback.mapDesc f (𝟙 _) g)) using 1
+  convert (inferInstaceAs% (IsClosedImmersion (pullback.mapDesc f (𝟙 _) g)) using 1)
   ext : 1 <;> simp [pullback.condition]
 
 end IsSeparated

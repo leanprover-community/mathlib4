@@ -134,7 +134,7 @@ theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul
 /-- The convolution of s-finite measures is s-finite. -/
 @[to_additive /-- The convolution of s-finite measures is s-finite. -/]
 instance sfinite_mconv_of_sfinite (μ : Measure M) (ν : Measure M) [SFinite μ] [SFinite ν] :
-    SFinite (μ ∗ₘ ν) := inferInstanceAs% <| SFinite ((μ.prod ν).map fun (x : M × M) ↦ x.1 * x.2)
+    SFinite (μ ∗ₘ ν) := inferInstaceAs% (SFinite ((μ.prod ν).map fun (x : M × M) ↦ x.1 * x.2))
 
 @[to_additive]
 instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasure μ]

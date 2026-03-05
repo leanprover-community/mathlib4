@@ -504,7 +504,7 @@ lemma RingHom.IsStableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLo
   haveI : IsScalarTower R S Sᵣ := IsScalarTower.of_algebraMap_eq'
     (IsLocalization.map_comp M.le_comap_map)
   haveI : IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ :=
-    inferInstanceAs% <| IsLocalization (M.map f) Sᵣ
+    inferInstaceAs% (IsLocalization (M.map f) Sᵣ)
   apply hP.of_isLocalization M hf
 
 lemma RingHom.IsStableUnderBaseChange.localizationPreserves : LocalizationPreserves P := by

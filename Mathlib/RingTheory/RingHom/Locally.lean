@@ -371,7 +371,7 @@ lemma locally_localizationPreserves (hPl : LocalizationPreserves P) :
     infer_instance
   haveI (a : s) :
       IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val) (M.map f)) (Sₐ a) :=
-    inferInstanceAs% <| IsLocalization (Mₐ a) (Sₐ a)
+    inferInstaceAs% (IsLocalization (Mₐ a) (Sₐ a))
   letI (a : s) : Algebra S' (Sₐ a) :=
     (IsLocalization.map (Sₐ a) (algebraMap S (Localization.Away a.val))
       (M.map f).le_comap_map).toAlgebra

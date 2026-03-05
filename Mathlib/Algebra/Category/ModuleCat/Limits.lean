@@ -36,11 +36,11 @@ variable {J : Type v} [Category.{t} J] (F : J ⥤ ModuleCat.{w} R)
 
 instance addCommGroupObj (j) :
     AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) :=
-  inferInstanceAs% <| AddCommGroup (F.obj j)
+  inferInstaceAs% (AddCommGroup (F.obj j))
 
 instance moduleObj (j) :
     Module.{u, w} R ((F ⋙ forget (ModuleCat R)).obj j) :=
-  inferInstanceAs% <| Module R (F.obj j)
+  inferInstaceAs% (Module R (F.obj j))
 
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
@@ -53,31 +53,31 @@ def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
       simpa [Functor.sections, forget_map] using congr_arg (r • ·) (sh f) }
 
 instance : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections :=
-  inferInstanceAs% <| AddCommMonoid (sectionsSubmodule F)
+  inferInstaceAs% (AddCommMonoid (sectionsSubmodule F))
 
 instance : Module R (F ⋙ forget (ModuleCat R)).sections :=
-  inferInstanceAs% <| Module R (sectionsSubmodule F)
+  inferInstaceAs% (Module R (sectionsSubmodule F))
 
 section
 
 variable [Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R)))]
 
 instance : Small.{w} (sectionsSubmodule F) :=
-  inferInstanceAs% <| Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R)))
+  inferInstaceAs% (Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R))))
 
 -- Adding the following instance speeds up `limitModule` noticeably,
 -- by preventing a bad unfold of `limitAddCommGroup`.
 instance limitAddCommMonoid :
     AddCommMonoid (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
-  inferInstanceAs% <| AddCommMonoid (Shrink (sectionsSubmodule F))
+  inferInstaceAs% (AddCommMonoid (Shrink (sectionsSubmodule F)))
 
 instance limitAddCommGroup :
     AddCommGroup (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
-  inferInstanceAs% <| AddCommGroup (Shrink.{w} (sectionsSubmodule F))
+  inferInstaceAs% (AddCommGroup (Shrink.{w} (sectionsSubmodule F)))
 
 instance limitModule :
     Module R (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
-  inferInstanceAs% <| Module R (Shrink (sectionsSubmodule F))
+  inferInstaceAs% (Module R (Shrink (sectionsSubmodule F)))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget (ModuleCat.{w} R)) j` as an `R`-linear map. -/
@@ -156,7 +156,7 @@ instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
 def forget₂AddCommGroup_preservesLimitsAux :
     IsLimit ((forget₂ (ModuleCat R) AddCommGrpCat).mapCone (limitCone F)) :=
   letI : Small.{w} (Functor.sections ((F ⋙ forget₂ _ AddCommGrpCat) ⋙ forget _)) :=
-    inferInstanceAs% <| Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R)))
+    inferInstaceAs% (Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R))))
   AddCommGrpCat.limitConeIsLimit
     (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGrpCat.{w})
 

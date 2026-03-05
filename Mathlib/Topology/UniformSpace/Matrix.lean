@@ -27,7 +27,7 @@ instance instUniformSpace : UniformSpace (Matrix m n 𝕜) :=
 
 instance instIsUniformAddGroup [AddGroup 𝕜] [IsUniformAddGroup 𝕜] :
     IsUniformAddGroup (Matrix m n 𝕜) :=
-  inferInstanceAs% <| IsUniformAddGroup (m → n → 𝕜)
+  inferInstaceAs% (IsUniformAddGroup (m → n → 𝕜))
 
 theorem uniformity :
     𝓤 (Matrix m n 𝕜) = ⨅ (i : m) (j : n), (𝓤 𝕜).comap fun a => (a.1 i j, a.2 i j) := by

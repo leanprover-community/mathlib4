@@ -43,7 +43,7 @@ captures symmetric matrices. -/
 def IsHermitian (A : Matrix n n α) : Prop := Aᴴ = A
 
 instance (A : Matrix n n α) [Decidable (Aᴴ = A)] : Decidable (IsHermitian A) :=
-  inferInstanceAs% <| Decidable (_ = _)
+  inferInstaceAs% (Decidable (_ = _))
 
 theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 

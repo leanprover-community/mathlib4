@@ -327,7 +327,7 @@ theorem «exists» {p : Interval α → Prop} : (∃ s, p s) ↔ p ⊥ ∨ ∃ s
   Option.exists
 
 instance [IsEmpty α] : Unique (Interval α) :=
-  inferInstanceAs% <| Unique (Option _)
+  inferInstaceAs% (Unique (Option _))
 
 /-- Turn an interval into an interval in the dual order. -/
 def dual : Interval α ≃ Interval αᵒᵈ :=

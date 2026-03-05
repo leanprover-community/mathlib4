@@ -52,7 +52,7 @@ instance : Category FiniteGrp :=
 instance : ConcreteCategory FiniteGrp (· →* ·) := InducedCategory.concreteCategory FiniteGrp.toGrp
 
 @[to_additive]
-instance (G : FiniteGrp) : Group G := inferInstanceAs% <| Group G.toGrp
+instance (G : FiniteGrp) : Group G := inferInstaceAs% (Group G.toGrp)
 
 @[to_additive]
 instance (G : FiniteGrp) : Finite G := G.isFinite

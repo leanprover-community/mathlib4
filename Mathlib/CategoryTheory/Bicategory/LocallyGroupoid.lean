@@ -71,7 +71,7 @@ lemma id_of (a : Pith B) : (𝟙 a : a ⟶ a).of = 𝟙 a.as := rfl
 lemma comp_of {a b c : Pith B} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).of = f.of ≫ g.of := rfl
 
 instance homGroupoid (a b : Pith B) :
-    Groupoid.{w₁} (a ⟶ b) := inferInstanceAs% <| Groupoid <| Core _
+    Groupoid.{w₁} (a ⟶ b) := inferInstaceAs% (Groupoid <| Core _)
 
 @[ext]
 lemma hom₂_ext {a b : Pith B} {x y : a ⟶ b} {f g : x ⟶ y} (h : f.iso.hom = g.iso.hom) :

@@ -193,15 +193,15 @@ instance [h : CommSemigroup α] : CommSemigroup (Lex α) := h
 
 @[to_additive]
 instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Lex α) :=
-  inferInstanceAs% <| IsLeftCancelMul α
+  inferInstaceAs% (IsLeftCancelMul α)
 
 @[to_additive]
 instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Lex α) :=
-  inferInstanceAs% <| IsRightCancelMul α
+  inferInstaceAs% (IsRightCancelMul α)
 
 @[to_additive]
 instance [Mul α] [IsCancelMul α] : IsCancelMul (Lex α) :=
-  inferInstanceAs% <| IsCancelMul α
+  inferInstaceAs% (IsCancelMul α)
 
 @[to_additive]
 instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Lex α) := h
@@ -342,15 +342,15 @@ instance [h : CommSemigroup α] : CommSemigroup (Colex α) := h
 
 @[to_additive]
 instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Colex α) :=
-  inferInstanceAs% <| IsLeftCancelMul α
+  inferInstaceAs% (IsLeftCancelMul α)
 
 @[to_additive]
 instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Colex α) :=
-  inferInstanceAs% <| IsRightCancelMul α
+  inferInstaceAs% (IsRightCancelMul α)
 
 @[to_additive]
 instance [Mul α] [IsCancelMul α] : IsCancelMul (Colex α) :=
-  inferInstanceAs% <| IsCancelMul α
+  inferInstaceAs% (IsCancelMul α)
 
 @[to_additive]
 instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Colex α) := h

@@ -244,7 +244,7 @@ variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 instance subgroup [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L where
   faithful := have := hGKL.faithful; inferInstance
-  commutes := inferInstanceAs% <| SMulCommClass H (FixedPoints.subfield H L) L
+  commutes := inferInstaceAs% (SMulCommClass H (FixedPoints.subfield H L) L)
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in

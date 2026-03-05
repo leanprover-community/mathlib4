@@ -214,7 +214,7 @@ instance {X Y : T} (f : X ⟶ Y) : PreservesFiniteLimits (pullback P ⊤ f) wher
   preservesFiniteLimits J _ _ := by
     have : PreservesLimitsOfShape J
         (MorphismProperty.Over.pullback P ⊤ f ⋙ MorphismProperty.Over.forget _ _ _) :=
-      inferInstanceAs% <| PreservesLimitsOfShape J <|
+      inferInstaceAs% (PreservesLimitsOfShape J <|)
         Over.forget _ _ _ ⋙ CategoryTheory.Over.pullback f
     exact preservesLimitsOfShape_of_reflects_of_preserves
       (MorphismProperty.Over.pullback P ⊤ f) (MorphismProperty.Over.forget _ _ _)

@@ -784,7 +784,7 @@ theorem algebraMap_apply {r : R} : algebraMap R A⟦X⟧ r = C (algebraMap R A r
 
 set_option backward.isDefEq.respectTransparency false in
 instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
-  { inferInstanceAs% <| Nontrivial <| Subalgebra R <| MvPowerSeries Unit R with }
+  { inferInstaceAs% (Nontrivial <| Subalgebra R <| MvPowerSeries Unit R with })
 
 /-- Change of coefficients in power series, as an `AlgHom` -/
 def mapAlgHom (φ : A →ₐ[R] B) :

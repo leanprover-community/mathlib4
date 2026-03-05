@@ -244,7 +244,7 @@ instance decidable [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] (x y : L) :
 
 instance : IsEquiv A (IsConjRoot R) :=
   letI := IsConjRoot.setoid R A
-  inferInstanceAs% <| IsEquiv A (· ≈ ·)
+  inferInstaceAs% (IsEquiv A (· ≈ ·))
 
 /--
 If `y` is a conjugate root of an integral element `x` over `R`, then `y` is also integral

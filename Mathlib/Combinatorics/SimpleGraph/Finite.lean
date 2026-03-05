@@ -565,7 +565,7 @@ lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
   exact ⟨h ⟨_, hadj⟩, h ⟨_, hadj.symm⟩⟩
 
 instance : DecidablePred (· ∈ G.support) :=
-  inferInstanceAs% <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
+  inferInstaceAs% (DecidablePred (· ∈ { v | ∃ w, G.Adj v w }))
 
 theorem map_edgeFinset_induce [DecidableEq V] :
     (G.induce s).edgeFinset.map (Embedding.subtype (· ∈ s)).sym2Map

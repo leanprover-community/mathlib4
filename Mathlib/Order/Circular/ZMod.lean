@@ -32,5 +32,5 @@ lemma Fin.btw_iff : btw a b c ↔ a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a �
 lemma Fin.sbtw_iff : sbtw a b c ↔ a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b := .rfl
 
 instance : ∀ (n : ℕ), CircularOrder (ZMod n)
-  | 0 => inferInstanceAs% <| CircularOrder ℤ
-  | n + 1 => inferInstanceAs% <| CircularOrder <| Fin <| n + 1
+  | 0 => inferInstaceAs% (CircularOrder ℤ)
+  | n + 1 => inferInstaceAs% (CircularOrder <| Fin <| n + 1)

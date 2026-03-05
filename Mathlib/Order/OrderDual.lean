@@ -79,10 +79,10 @@ instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ
 instance (α : Type*) [DecidableEq α] : DecidableEq (αᵒᵈ) := ‹DecidableEq α›
 
 instance (α : Type*) [LT α] [DecidableLT α] : DecidableLT (αᵒᵈ) :=
-  inferInstanceAs% <| DecidableRel (fun a b : α ↦ b < a)
+  inferInstanceAs% (DecidableRel (fun a b : α ↦ b < a))
 
 instance (α : Type*) [LE α] [DecidableLE α] : DecidableLE (αᵒᵈ) :=
-  inferInstanceAs% <| DecidableRel (fun a b : α ↦ b ≤ a)
+  inferInstanceAs% (DecidableRel (fun a b : α ↦ b ≤ a))
 
 instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs% (PartialOrder αᵒᵈ)
@@ -101,7 +101,7 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
 
 /-- The opposite linear order to a given linear order -/
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
-  inferInstanceAs% <| LinearOrder (OrderDual α)
+  inferInstanceAs (LinearOrder (OrderDual α))
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 

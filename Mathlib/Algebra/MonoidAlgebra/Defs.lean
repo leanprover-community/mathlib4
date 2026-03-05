@@ -97,22 +97,22 @@ section Semiring
 variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
 
 @[to_additive] instance inhabited : Inhabited R[M] :=
-  inferInstanceAs% <| Inhabited <| M →₀ R
+  inferInstaceAs% (Inhabited <| M →₀ R)
 
 @[to_additive] instance nontrivial [Nontrivial R] [Nonempty M] : Nontrivial R[M] :=
-  inferInstanceAs% <| Nontrivial <| M →₀ R
+  inferInstaceAs% (Nontrivial <| M →₀ R)
 
 @[to_additive] instance unique [Subsingleton R] : Unique R[M] :=
-  inferInstanceAs% <| Unique <| M →₀ R
+  inferInstaceAs% (Unique <| M →₀ R)
 
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
-  inferInstanceAs% <| AddCommMonoid <| M →₀ R
+  inferInstaceAs% (AddCommMonoid <| M →₀ R)
 
 @[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
-  inferInstanceAs% <| IsCancelAdd <| M →₀ R
+  inferInstaceAs% (IsCancelAdd <| M →₀ R)
 
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
-  inferInstanceAs% <| CoeFun (M →₀ R) fun _ ↦ M → R
+  inferInstaceAs% (CoeFun (M →₀ R) fun _ ↦ M → R)
 
 /-- A copy of `Finsupp.ext` for `MonoidAlgebra`. -/
 @[to_additive (attr := ext) /-- A copy of `Finsupp.ext` for `AddMonoidAlgebra`. -/]
@@ -585,7 +585,7 @@ variable [Ring R]
 
 @[to_additive (dont_translate := R)]
 instance addCommGroup : AddCommGroup R[M] :=
-  inferInstanceAs% <| AddCommGroup <| M →₀ R
+  inferInstaceAs% (AddCommGroup <| M →₀ R)
 
 @[to_additive (attr := simp) (dont_translate := R)]
 lemma neg_apply (m : M) (x : R[M]) : (-x) m = -x m := rfl

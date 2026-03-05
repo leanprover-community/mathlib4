@@ -103,7 +103,7 @@ def GradedMonoid (A : ι → Type*) :=
 namespace GradedMonoid
 
 instance {A : ι → Type*} [Inhabited ι] [Inhabited (A default)] : Inhabited (GradedMonoid A) :=
-  inferInstanceAs% <| Inhabited (Sigma _)
+  inferInstaceAs% (Inhabited (Sigma _))
 
 /-- Construct an element of a graded monoid. -/
 def mk {A : ι → Type*} : ∀ i, A i → GradedMonoid A :=
@@ -540,7 +540,7 @@ def submonoid : Submonoid R where
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
-instance instMonoid : Monoid (A 0) := inferInstanceAs% <| Monoid (GradeZero.submonoid A)
+instance instMonoid : Monoid (A 0) := inferInstaceAs% (Monoid (GradeZero.submonoid A))
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The commutative monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
@@ -548,7 +548,7 @@ instance instCommMonoid
     {R S : Type*} [SetLike S R] [CommMonoid R]
     {A : ι → S} [SetLike.GradedMonoid A] :
     CommMonoid (A 0) :=
-  inferInstanceAs% <| CommMonoid (GradeZero.submonoid A)
+  inferInstaceAs% (CommMonoid (GradeZero.submonoid A))
 
 @[simp, norm_cast] theorem coe_one : ↑(1 : A 0) = (1 : R) := rfl
 

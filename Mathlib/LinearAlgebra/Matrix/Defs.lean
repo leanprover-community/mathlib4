@@ -143,7 +143,7 @@ theorem transpose_apply (M : Matrix m n α) (i j) : transpose M i j = M j i :=
 scoped postfix:1024 "ᵀ" => Matrix.transpose
 
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
-  inferInstanceAs% <| Inhabited <| m → n → α
+  inferInstaceAs% (Inhabited <| m → n → α)
 
 instance add [Add α] : Add (Matrix m n α) :=
   Pi.instAdd
@@ -182,7 +182,7 @@ instance unique [Unique α] : Unique (Matrix m n α) :=
   Pi.unique
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
-  inferInstanceAs% <| Subsingleton <| m → n → α
+  inferInstaceAs% (Subsingleton <| m → n → α)
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial

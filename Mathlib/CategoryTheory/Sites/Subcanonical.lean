@@ -265,7 +265,7 @@ open Limits
 instance preservesLimitsOfSize_yoneda : PreservesLimitsOfSize J.yoneda := by
   refine ⟨fun {I} _ ↦ ?_⟩
   have : PreservesLimitsOfShape I (J.yoneda ⋙ sheafToPresheaf J _) :=
-    inferInstanceAs% <| PreservesLimitsOfShape I CategoryTheory.yoneda
+    inferInstaceAs% (PreservesLimitsOfShape I CategoryTheory.yoneda)
   exact preservesLimitsOfShape_of_reflects_of_preserves _ (sheafToPresheaf J _)
 
 /--

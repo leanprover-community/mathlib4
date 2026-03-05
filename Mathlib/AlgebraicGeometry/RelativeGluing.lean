@@ -103,7 +103,7 @@ noncomputable def cover : OpenCover d.glued :=
   Scheme.IsLocallyDirected.openCover _
 
 instance : Category d.cover.I₀ :=
-  inferInstanceAs% <| Category 𝒰.I₀
+  inferInstaceAs% (Category 𝒰.I₀)
 
 /-- The structure map from the colimit of the `Xᵢ` to `S`. -/
 noncomputable def toBase : d.glued ⟶ S :=

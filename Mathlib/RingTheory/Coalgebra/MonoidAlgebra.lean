@@ -60,9 +60,9 @@ open AddMonoidAlgebra
 
 variable (R A : Type*) [CommSemiring R] [Semiring A] [Module R A] [Coalgebra R A]
 
-instance instCoalgebra : Coalgebra R A[T;T⁻¹] := inferInstanceAs% <| Coalgebra R A[ℤ]
+instance instCoalgebra : Coalgebra R A[T;T⁻¹] := inferInstaceAs% (Coalgebra R A[ℤ])
 
-instance instIsCocomm [IsCocomm R A] : IsCocomm R A[T;T⁻¹] := inferInstanceAs% <| IsCocomm R A[ℤ]
+instance instIsCocomm [IsCocomm R A] : IsCocomm R A[T;T⁻¹] := inferInstaceAs% (IsCocomm R A[ℤ])
 
 variable {R A}
 

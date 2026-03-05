@@ -188,7 +188,7 @@ the instance priority should be even lower, see Note [lower instance priority].
 -/
 
 instance [DecidableRel (IsConj : α → α → Prop)] : DecidableEq (ConjClasses α) :=
-  inferInstanceAs% <| DecidableEq <| Quotient (IsConj.setoid α)
+  inferInstaceAs% (DecidableEq <| Quotient (IsConj.setoid α))
 
 end Monoid
 

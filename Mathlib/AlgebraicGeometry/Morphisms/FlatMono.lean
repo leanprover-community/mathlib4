@@ -27,7 +27,7 @@ lemma Flat.isIso_of_surjective_of_mono {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f]
   apply MorphismProperty.of_pullback_fst_of_descendsAlong
     (P := isomorphisms Scheme.{u}) (Q := @Surjective ⊓ @Flat ⊓ @QuasiCompact) (f := f) (g := f)
   · tauto
-  · exact inferInstanceAs% <| IsIso (pullback.fst f f)
+  · exact inferInstaceAs% (IsIso (pullback.fst f f))
 
 /--
 Flat monomorphisms that are locally of finite presentation are open immersions. In particular,

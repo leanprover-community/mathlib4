@@ -1093,12 +1093,12 @@ instance center.smulCommClass_right : SMulCommClass R (center R) R :=
 /-- The center of a semiring acts commutatively on any `R`-module -/
 instance {M : Type*} [MulAction R M] :
     SMulCommClass R (Subring.center R) M :=
-  inferInstanceAs% <| SMulCommClass R (Submonoid.center R) M
+  inferInstaceAs% (SMulCommClass R (Submonoid.center R) M)
 
 /-- The center of a semiring acts commutatively on any `R`-module -/
 instance {M : Type*} [MulAction R M] :
     SMulCommClass (Subring.center R) R M :=
-  inferInstanceAs% <| SMulCommClass (Submonoid.center R) R M
+  inferInstaceAs% (SMulCommClass (Submonoid.center R) R M)
 
 end Subring
 

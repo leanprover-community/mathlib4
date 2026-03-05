@@ -145,7 +145,7 @@ instance [RepresentablyCoflat F] : RepresentablyFlat F.op :=
 
 instance RepresentablyCoflat.comp (G : D ⥤ E) [RepresentablyCoflat F] [RepresentablyCoflat G] :
     RepresentablyCoflat (F ⋙ G) :=
-  (representablyFlat_op_iff _).1 <| inferInstanceAs% <| RepresentablyFlat (F.op ⋙ G.op)
+  (representablyFlat_op_iff _).1 <| inferInstaceAs% (RepresentablyFlat (F.op ⋙ G.op))
 
 lemma final_of_representablyFlat [h : RepresentablyFlat F] : F.Final where
   out _ := IsCofiltered.isConnected _
@@ -409,7 +409,7 @@ instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)
     IsFiltered (CostructuredArrow (F ⋙ G) X) := by
   rw [← isCofiltered_op_iff_isFiltered, IsCofiltered.iff_of_equivalence
     (costructuredArrowOpEquivalence _ _)] at h ⊢
-  exact inferInstanceAs% <| IsCofiltered (StructuredArrow (op X) (F.op ⋙ G.op))
+  exact inferInstaceAs% (IsCofiltered (StructuredArrow (op X) (F.op ⋙ G.op)))
 
 instance (G : D ⥤ Type*) [RepresentablyFlat F] [IsCofiltered G.Elements] :
     IsCofiltered (F ⋙ G).Elements := by

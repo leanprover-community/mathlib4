@@ -353,7 +353,7 @@ instance : (forget C).Faithful where
 theorem forget₂Mon_comp_forget : forget₂Mon C ⋙ Mon.forget C = forget C := rfl
 
 instance {G H : Grp C} {f : G ⟶ H} [IsIso f] : IsIso f.hom.hom :=
-  inferInstanceAs% <| IsIso <| (forget C).map f
+  inferInstaceAs% (IsIso <| (forget C).map f)
 
 end
 

@@ -32,6 +32,6 @@ instance : compHausToCondensed.PreservesEpimorphisms where
     exact ⟨⟨⟨x, y⟩, hx⟩, rfl⟩
 
 instance : IsRegularEpiCategory CondensedSet.{u} :=
-  inferInstanceAs% <| IsRegularEpiCategory (Sheaf _ _)
+  inferInstaceAs% (IsRegularEpiCategory (Sheaf _ _))
 
 example : compHausToCondensed.PreservesEffectiveEpis := inferInstance

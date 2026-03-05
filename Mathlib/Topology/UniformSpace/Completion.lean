@@ -296,7 +296,7 @@ def Completion := SeparationQuotient (CauchyFilter α)
 namespace Completion
 
 instance inhabited [Inhabited α] : Inhabited (Completion α) :=
-  inferInstanceAs% <| Inhabited (Quotient _)
+  inferInstaceAs% (Inhabited (Quotient _))
 
 instance uniformSpace : UniformSpace (Completion α) :=
   SeparationQuotient.instUniformSpace

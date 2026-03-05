@@ -325,7 +325,7 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
 
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
-  inferInstanceAs% <| DiscreteTopology (span ℤ (Set.range b))
+  inferInstaceAs% (DiscreteTopology (span ℤ (Set.range b)))
 
 theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.IsBounded s) :
     Set.Finite (s ∩ span ℤ (Set.range b)) := by
@@ -366,7 +366,7 @@ theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [Borel
     {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
   convert (ZSpan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
-  exact inferInstanceAs% <| VAddInvariantMeasure (span ℤ (Set.range b)).toAddSubgroup E μ
+  exact inferInstaceAs% (VAddInvariantMeasure (span ℤ (Set.range b)).toAddSubgroup E μ)
 
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :

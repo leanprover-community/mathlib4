@@ -121,13 +121,13 @@ theorem eq_toGHSpace {p : NonemptyCompacts ℓ_infty_ℝ} : ⟦p⟧ = toGHSpace 
 section
 
 instance repGHSpaceMetricSpace {p : GHSpace} : MetricSpace p.Rep :=
-  inferInstanceAs% <| MetricSpace p.out
+  inferInstaceAs% (MetricSpace p.out)
 
 instance rep_gHSpace_compactSpace {p : GHSpace} : CompactSpace p.Rep :=
-  inferInstanceAs% <| CompactSpace p.out
+  inferInstaceAs% (CompactSpace p.out)
 
 instance rep_gHSpace_nonempty {p : GHSpace} : Nonempty p.Rep :=
-  inferInstanceAs% <| Nonempty p.out
+  inferInstaceAs% (Nonempty p.out)
 
 end
 

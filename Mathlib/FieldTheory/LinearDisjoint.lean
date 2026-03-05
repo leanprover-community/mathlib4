@@ -643,8 +643,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `A` and `L` have coprime degree over `F`, then they are linearly disjoint. -/
 theorem of_finrank_coprime (H : (finrank F A).Coprime (finrank F L)) : A.LinearDisjoint L :=
   letI : Field (AlgHom.range (IsScalarTower.toAlgHom F L E)) :=
-    inferInstanceAs% <| Field (AlgHom.fieldRange (IsScalarTower.toAlgHom F L E))
-  letI : Field A.toSubalgebra := inferInstanceAs% <| Field A
+    inferInstaceAs% (Field (AlgHom.fieldRange (IsScalarTower.toAlgHom F L E)))
+  letI : Field A.toSubalgebra := inferInstaceAs% (Field A)
   Subalgebra.LinearDisjoint.of_finrank_coprime_of_free <| by
     rwa [(AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)).toLinearEquiv.finrank_eq] at H
 

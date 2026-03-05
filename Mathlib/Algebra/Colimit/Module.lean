@@ -78,7 +78,7 @@ instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
 instance unique [IsEmpty ι] : Unique (DirectLimit G f) :=
-  inferInstanceAs% <| Unique (Quotient _)
+  inferInstaceAs% (Unique (Quotient _))
 
 variable (R ι)
 

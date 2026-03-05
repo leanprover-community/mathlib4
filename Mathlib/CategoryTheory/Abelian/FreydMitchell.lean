@@ -100,7 +100,7 @@ def EmbeddingRing : Type (max u v) :=
     (Ind.yoneda (C := (AsSmall.{max u v} C)ᵒᵖ)).rightOp
 
 noncomputable instance : Ring (EmbeddingRing C) :=
-  inferInstanceAs% <| Ring <|
+  inferInstaceAs% (Ring <|)
     IsGrothendieckAbelian.OppositeModuleEmbedding.EmbeddingRing
       (Ind.yoneda (C := (AsSmall.{max u v} C)ᵒᵖ)).rightOp
 

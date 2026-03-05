@@ -89,7 +89,7 @@ theorem mem_subring_iff {x : ℚ_[p]} : x ∈ subring p ↔ ‖x‖ ≤ 1 := Iff
 
 variable {p}
 
-instance instCommRing : CommRing ℤ_[p] := inferInstanceAs% <| CommRing (subring p)
+instance instCommRing : CommRing ℤ_[p] := inferInstaceAs% (CommRing (subring p))
 
 instance : Inhabited ℤ_[p] := ⟨0⟩
 
@@ -557,7 +557,7 @@ end Dvr
 section FractionRing
 
 instance algebra : Algebra ℤ_[p] ℚ_[p] :=
-  inferInstanceAs% <| Algebra (subring p) _
+  inferInstaceAs% (Algebra (subring p) _)
 
 @[simp]
 theorem algebraMap_apply (x : ℤ_[p]) : algebraMap ℤ_[p] ℚ_[p] x = x :=

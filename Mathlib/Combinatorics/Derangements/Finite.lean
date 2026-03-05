@@ -37,7 +37,7 @@ variable {α : Type*} [DecidableEq α] [Fintype α]
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
 instance : Fintype (derangements α) :=
-  inferInstanceAs% <| Fintype { f : Perm α | ∀ x : α, f x ≠ x }
+  inferInstaceAs% (Fintype { f : Perm α | ∀ x : α, f x ≠ x })
 
 
 theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]

@@ -202,9 +202,9 @@ theorem leftZigzagIso_symm : (leftZigzagIso η ε).symm = rightZigzagIso ε.symm
 theorem rightZigzagIso_symm : (rightZigzagIso η ε).symm = leftZigzagIso ε.symm η.symm :=
   Iso.ext (rightZigzagIso_inv η ε)
 
-instance : IsIso (leftZigzag η.hom ε.hom) := inferInstanceAs% <| IsIso (leftZigzagIso η ε).hom
+instance : IsIso (leftZigzag η.hom ε.hom) := inferInstaceAs% (IsIso (leftZigzagIso η ε).hom)
 
-instance : IsIso (rightZigzag η.hom ε.hom) := inferInstanceAs% <| IsIso (rightZigzagIso η ε).hom
+instance : IsIso (rightZigzag η.hom ε.hom) := inferInstaceAs% (IsIso (rightZigzagIso η ε).hom)
 
 theorem right_triangle_of_left_triangle (h : leftZigzag η.hom ε.hom = (λ_ f).hom ≫ (ρ_ f).inv) :
     rightZigzag η.hom ε.hom = (ρ_ g).hom ≫ (λ_ g).inv := by

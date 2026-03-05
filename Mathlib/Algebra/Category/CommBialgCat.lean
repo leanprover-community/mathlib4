@@ -124,9 +124,9 @@ lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A 
 
 lemma forget_map (f : A ⟶ B) : (forget (CommBialgCat.{v} R)).map f = (f : _ → _) := rfl
 
-instance : CommRing ((forget (CommBialgCat R)).obj A) := inferInstanceAs% <| CommRing A
+instance : CommRing ((forget (CommBialgCat R)).obj A) := inferInstaceAs% (CommRing A)
 
-instance : Bialgebra R ((forget (CommBialgCat R)).obj A) := inferInstanceAs% <| Bialgebra R A
+instance : Bialgebra R ((forget (CommBialgCat R)).obj A) := inferInstaceAs% (Bialgebra R A)
 
 instance hasForgetToCommAlgCat : HasForget₂ (CommBialgCat.{v} R) (CommAlgCat.{v} R) where
   forget₂.obj M := .of R M
@@ -239,4 +239,4 @@ lemma commBialgCatEquivComonCommAlgCat_inverse_map_unop_hom
 
 instance {A : CommBialgCat.{u} R} [IsCocomm R A] :
     IsCommMonObj ((commBialgCatEquivComonCommAlgCat R).functor.obj A).unop.X :=
-  inferInstanceAs% <| IsCommMonObj <| op <| CommAlgCat.of R A
+  inferInstaceAs% (IsCommMonObj <| op <| CommAlgCat.of R A)

@@ -50,7 +50,7 @@ instance [ToExpr α] : ToExpr (NameMap α) where
     (.const ``Lean.Name.quickCmp [])
   toTypeExpr := .const ``LinterSets []
 
-instance : ToExpr LinterSets := inferInstanceAs% <| ToExpr (NameMap _)
+instance : ToExpr LinterSets := inferInstaceAs% (ToExpr (NameMap _))
 
 /-- Return the linter sets defined at this point of elaborating the current file. -/
 elab "linter_sets%" : term => do

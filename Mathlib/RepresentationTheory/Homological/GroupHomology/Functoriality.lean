@@ -452,7 +452,7 @@ instance map₁_quotientGroupMk'_epi :
 induced map `H₁(G, A) ⟶ H₁(G ⧸ S, A)` is an epimorphism. -/
 instance H1CoresCoinfOfTrivial_g_epi :
     Epi (H1CoresCoinfOfTrivial A S).g :=
-  inferInstanceAs% <| Epi (map _ _ 1)
+  inferInstaceAs% (Epi (map _ _ 1))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the short

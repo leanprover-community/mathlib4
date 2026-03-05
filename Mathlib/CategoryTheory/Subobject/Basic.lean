@@ -103,7 +103,7 @@ def Subobject (X : C) :=
   ThinSkeleton (MonoOver X)
 
 instance (X : C) : PartialOrder (Subobject X) :=
-  inferInstanceAs% <| PartialOrder (ThinSkeleton (MonoOver X))
+  inferInstaceAs% (PartialOrder (ThinSkeleton (MonoOver X)))
 
 namespace Subobject
 

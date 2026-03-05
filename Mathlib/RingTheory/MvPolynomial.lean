@@ -54,7 +54,7 @@ theorem rank_eq {σ : Type v} : Module.rank K (MvPolynomial σ K) = #(σ →₀ 
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
 instance : Module K (MvPolynomial σ K) :=
-  inferInstanceAs% <| Module K (AddMonoidAlgebra K (σ →₀ ℕ))
+  inferInstaceAs% (Module K (AddMonoidAlgebra K (σ →₀ ℕ)))
 
 theorem finrank_eq_zero [Nonempty σ] : Module.finrank K (MvPolynomial σ K) = 0 :=
   (basisMonomials σ K).linearIndependent.finrank_eq_zero_of_infinite

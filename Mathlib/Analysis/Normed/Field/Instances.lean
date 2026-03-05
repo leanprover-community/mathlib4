@@ -21,7 +21,7 @@ open SeminormedAddGroup IsUniformAddGroup Filter
 variable {F : Type*} [NormedField F]
 
 instance NormedField.instCompletableTopField : CompletableTopField F where
-  t0 := (inferInstanceAs% <| T0Space _).t0
+  t0 := (inferInstaceAs% (T0Space _).t0)
   nice f hc hn := by
     obtain ⟨δ, δ_pos, hδ⟩ := (disjoint_nhds_zero ..).mp <| disjoint_iff.mpr hn
     have f_bdd : f.IsBoundedUnder (· ≤ ·) (‖·⁻¹‖) :=

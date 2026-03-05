@@ -216,10 +216,10 @@ theorem mono_iff_injective {A B : Rep k G} (f : A ⟶ B) : Mono f ↔ Function.I
     (forget₂ _ _).map f).2 h)⟩
 
 instance {A B : Rep k G} (f : A ⟶ B) [Mono f] : Mono f.hom :=
-  inferInstanceAs% <| Mono ((forget₂ _ _).map f)
+  inferInstaceAs% (Mono ((forget₂ _ _).map f))
 
 instance {A B : Rep k G} (f : A ⟶ B) [Epi f] : Epi f.hom :=
-  inferInstanceAs% <| Epi ((forget₂ _ _).map f)
+  inferInstaceAs% (Epi ((forget₂ _ _).map f))
 
 open MonoidalCategory in
 @[simp]

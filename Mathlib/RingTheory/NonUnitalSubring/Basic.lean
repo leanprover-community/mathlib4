@@ -359,7 +359,7 @@ theorem center_toNonUnitalSubsemiring :
 /-- The center is commutative and associative. -/
 instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
   { NonUnitalSubsemiring.center.instNonUnitalCommSemiring R,
-    inferInstanceAs% <| NonUnitalNonAssocRing (center R) with }
+    inferInstaceAs% (NonUnitalNonAssocRing (center R) with })
 
 variable {R}
 

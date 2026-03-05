@@ -41,7 +41,7 @@ noncomputable def sigma (𝒰 : Cover.{v} (precoverage P) S) : S.Cover (precover
 variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} (precoverage P) S}
 
 variable (𝒰) in
-instance : Unique 𝒰.sigma.I₀ := inferInstanceAs% <| Unique PUnit.{v + 1}
+instance : Unique 𝒰.sigma.I₀ := inferInstaceAs% (Unique PUnit.{v + 1})
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `𝒰` refines the single object cover defined by `𝒰`. -/

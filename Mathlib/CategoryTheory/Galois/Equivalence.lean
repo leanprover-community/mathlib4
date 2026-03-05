@@ -41,10 +41,10 @@ def functorToContAction : C ⥤ ContAction FintypeCat (Aut F) :=
   ObjectProperty.lift _ (functorToAction F) (fun X ↦ continuousSMul_aut_fiber F X)
 
 instance : (functorToContAction F).Faithful :=
-  inferInstanceAs% <| (ObjectProperty.lift _ _ _).Faithful
+  inferInstaceAs% ((ObjectProperty.lift _ _ _).Faithful)
 
 instance : (functorToContAction F).Full :=
-  inferInstanceAs% <| (ObjectProperty.lift _ _ _).Full
+  inferInstaceAs% ((ObjectProperty.lift _ _ _).Full)
 
 instance {F : C ⥤ FintypeCat.{u₁}} [FiberFunctor F] : (functorToContAction F).EssSurj where
   mem_essImage X := by

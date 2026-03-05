@@ -200,7 +200,7 @@ instance
     (B : C) : HasLimit (parallelPair
       (G.map (F.map (NatTrans.app adj.unit B)))
       (NatTrans.app adj.unit (G.obj (F.obj B)))) :=
-  inferInstanceAs% <| HasEqualizer
+  inferInstaceAs% (HasEqualizer)
     (G.map ((comparison adj).obj B).a)
     (adj.unit.app (G.obj ((comparison adj).obj B).A))
 
@@ -326,7 +326,7 @@ def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
   have I {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] : HasLimit (parallelPair f g ⋙ F) := by
     rw [hasLimit_iff_of_iso (diagramIsoParallelPair _)]
-    exact inferInstanceAs% <| HasEqualizer (F.map f) (F.map g)
+    exact inferInstaceAs% (HasEqualizer (F.map f) (F.map g))
   have : HasEqualizerOfIsCosplitPair F := ⟨fun _ _ => hasLimit_of_created (parallelPair _ _) F⟩
   have : PreservesLimitOfIsCosplitPair F := ⟨by intros; infer_instance⟩
   have : ReflectsLimitOfIsCosplitPair F := ⟨by intros; infer_instance⟩

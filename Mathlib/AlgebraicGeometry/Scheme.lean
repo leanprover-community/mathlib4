@@ -579,7 +579,7 @@ lemma Spec.map_appLE {U V} (e : U ≤ Spec.map f ⁻¹ᵁ V) :
     (Spec.map f).appLE V U e = CommRingCat.ofHom (StructureSheaf.comap f.hom V U e) := rfl
 
 instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
-  inferInstanceAs% <| Nonempty (PrimeSpectrum A)
+  inferInstaceAs% (Nonempty (PrimeSpectrum A))
 
 end
 
@@ -659,7 +659,7 @@ lemma toOpen_eq (U) :
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
 
 instance {K} [Field K] : Unique <| Spec <| .of K :=
-  inferInstanceAs% <| Unique (PrimeSpectrum K)
+  inferInstaceAs% (Unique (PrimeSpectrum K))
 
 @[simp]
 lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := rfl

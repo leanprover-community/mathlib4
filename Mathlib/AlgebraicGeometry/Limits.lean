@@ -102,7 +102,7 @@ instance : IsEmpty (∅ : Scheme.{u}) :=
   show IsEmpty PEmpty by infer_instance
 
 instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u + 1}) :=
-  inferInstanceAs% <| IsEmpty (PrimeSpectrum PUnit)
+  inferInstaceAs% (IsEmpty (PrimeSpectrum PUnit))
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X] : IsOpenImmersion f := by
@@ -233,7 +233,7 @@ instance : HasFiniteCoproducts Scheme.{u} where
   out := inferInstance
 
 instance : MonoCoprod Scheme.{u} :=
-  .mk' fun X Y ↦ ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs% <| Mono coprod.inl⟩
+  .mk' fun X Y ↦ ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstaceAs% (Mono coprod.inl⟩)
 
 /-- The cover of `∐ X` by the `Xᵢ`. -/
 @[simps!]

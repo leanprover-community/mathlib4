@@ -164,7 +164,7 @@ instance monoidalCategory : MonoidalCategory (SemimoduleCat.{u} R) := MonoidalCa
 
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative semiring. -/
 instance : CommSemiring ((𝟙_ (SemimoduleCat.{u} R) : SemimoduleCat.{u} R) : Type u) :=
-  inferInstanceAs% <| CommSemiring R
+  inferInstaceAs% (CommSemiring R)
 
 theorem hom_tensorHom {K L M N : SemimoduleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
     (f ⊗ₘ g).hom = TensorProduct.map f.hom g.hom :=
@@ -319,7 +319,7 @@ open MonoidalCategory
 
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/
 instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
-  inferInstanceAs% <| CommRing R
+  inferInstaceAs% (CommRing R)
 
 theorem hom_tensorHom {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
     (f ⊗ₘ g).hom = TensorProduct.map f.hom g.hom :=

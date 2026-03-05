@@ -166,7 +166,7 @@ variable {J : Type v}
 namespace WidePullbackShape
 
 instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
-  inferInstanceAs% <| Fintype (Option _)
+  inferInstaceAs% (Fintype (Option _))
 
 instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
   elems := by
@@ -188,7 +188,7 @@ end WidePullbackShape
 namespace WidePushoutShape
 
 instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) :=
-  inferInstanceAs% <| Fintype (Option _)
+  inferInstaceAs% (Fintype (Option _))
 
 instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by

@@ -142,7 +142,7 @@ lemma Scheme.Hom.presieve₀_cover {P : MorphismProperty Scheme.{u}} {X S : Sche
 
 instance {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
     [Surjective f] : Unique (Scheme.Hom.cover f hf).I₀ :=
-  inferInstanceAs% <| Unique PUnit
+  inferInstaceAs% (Unique PUnit)
 
 end Surjective
 

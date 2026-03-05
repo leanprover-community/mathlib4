@@ -142,7 +142,7 @@ instance (priority := 100) BoundedLENhdsClass.of_closedIciTopology [LinearOrder 
 -- See note [lower instance priority]
 instance (priority := 100) BoundedGENhdsClass.of_closedIicTopology [LinearOrder α]
     [TopologicalSpace α] [ClosedIicTopology α] : BoundedGENhdsClass α :=
-  inferInstanceAs% <| BoundedGENhdsClass αᵒᵈᵒᵈ
+  inferInstaceAs% (BoundedGENhdsClass αᵒᵈᵒᵈ)
 
 section LiminfLimsup
 

@@ -692,7 +692,7 @@ open ShortComplex
 
 section cyclesIso₀
 
-instance : Epi (shortComplexH0 A).g := inferInstanceAs% <| Epi ((coinvariantsMk k G).app A)
+instance : Epi (shortComplexH0 A).g := inferInstaceAs% (Epi ((coinvariantsMk k G).app A))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
