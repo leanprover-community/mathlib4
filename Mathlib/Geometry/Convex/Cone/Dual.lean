@@ -121,15 +121,15 @@ lemma dual_span (s : Set M) : dual p (span R s) = dual p s := by
 @[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
   := by simp [← dual_span]
 
-lemma dual_id (s : Set M) : dual p s = dual .id (p '' s) := by ext x; simp
+lemma dual_id (s : Set M) : dual p s = dual .id (p '' s) := by ext; simp
 
-lemma dual_id_map (C : PointedCone R M) : dual p C = dual .id (map p C) := by ext x; simp
+lemma dual_id_map (C : PointedCone R M) : dual p C = dual .id (map p C) := by ext; simp
 
 lemma dual_eval (s : Set M) : dual p s = comap p.flip (dual (Module.Dual.eval R M) s) := by
   ext; simp
 
-lemma neg_dual {s : Set M} : -dual p s = dual p (-s) := by ext x; simp
+@[simp] lemma dual_neg {s : Set M} : dual p (-s) = -dual p s := by ext; simp
 
-@[simp] lemma neg_dual_neg (s : Set M) : -dual p (-s) = dual p s := by ext x; simp
+@[simp] lemma neg_dual_neg (s : Set M) : -dual p (-s) = dual p s := by ext; simp
 
 end PointedCone
