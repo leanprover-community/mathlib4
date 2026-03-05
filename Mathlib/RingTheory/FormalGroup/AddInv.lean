@@ -87,7 +87,7 @@ lemma _root_.MvPowerSeries.HasSubst.addInv_fin :
       Polynomial.X (R := R) ^ i).toPowerSeries] :=
   MvPowerSeries.hasSubst_of_constantCoeff_zero (by simp)
 
-lemma coeff_n_aux (n : ℕ) :
+lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
   (coeff n) (F.toFun.subst ![X, (∑ (i : Fin (n + 1)), Polynomial.C (F.addInv_aux i.1) *
     Polynomial.X (R := R) ^ i.1).toPowerSeries]) = 0 := by
   rw [sum_univ_eq_sum_range fun i => (Polynomial.C (F.addInv_aux i) * Polynomial.X (R := R) ^ i)]
@@ -184,7 +184,8 @@ theorem subst_addInv_eq_zero : F.toFun.subst ![X, (addInv_X F)] = 0 := by
   by_cases hn : n = 0
   · simp [hn, constantCoeff, MvPowerSeries.constantCoeff_subst_eq_zero
       (MvPowerSeries.HasSubst.addInv_aux F) (by simp) F.zero_constantCoeff]
-  rw [coeff_subst_addInv_trunc _ _ hn, addInv_trunc_aux, coeff_n_aux, map_zero]
+  rw [coeff_subst_addInv_trunc _ _ hn, addInv_trunc_aux, coeff_subst_sum_C_addInv_mul_X_pow_sub_X,
+    map_zero]
 
 variable (φ : MvPowerSeries σ R)
 
@@ -197,7 +198,7 @@ theorem addInv_apply : addInv F φ = subst φ (addInv_X F) := rfl
 
 /-- For any multivariate power series `φ` with zero constant coefficient, then
 `φ` plus (under `F` sense) additive inverse of `φ` (under `F` sense) equals zero. -/
-lemma add_addInv_eq_zero {f : MvPowerSeries σ R} (h : f.constantCoeff = 0) :
+theorem add_addInv_eq_zero {f : MvPowerSeries σ R} (h : f.constantCoeff = 0) :
   f +[F] addInv F f = 0 := calc
   _ = subst f (MvPowerSeries.subst ![ PowerSeries.X, addInv_X F] F.toFun) := by
     rw [subst, MvPowerSeries.subst_comp_subst_apply (MvPowerSeries.HasSubst.addInv_aux F)
