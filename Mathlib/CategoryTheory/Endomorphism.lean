@@ -158,7 +158,7 @@ def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
   invFun y := { hom := h.hom ≫ y.hom ≫ h.inv, inv := h.hom ≫ y.inv ≫ h.inv }
   left_inv _ := by cat_disch
   right_inv _ := by cat_disch
-  map_mul' := by simp [Aut_mul_def]
+  map_mul' := by intros; ext; simp [Aut_mul_def]
 
 end Aut
 
