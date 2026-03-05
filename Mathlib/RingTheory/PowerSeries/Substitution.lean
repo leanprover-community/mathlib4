@@ -241,6 +241,19 @@ theorem constantCoeff_subst (ha : HasSubst a) (f : PowerSeries R) :
       finsum (fun d ↦ coeff d f • MvPowerSeries.constantCoeff (a ^ d)) := by
   simp only [← MvPowerSeries.coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
+/-- Variant of `constantCoeff_subst` for `PowerSeries.constantCoeff`. -/
+theorem constantCoeff_subst' {a : PowerSeries S} (ha : HasSubst a) (f : PowerSeries R) :
+    constantCoeff (subst a f) = finsum fun d ↦ coeff d f • constantCoeff (a ^ d) :=
+  constantCoeff_subst ha f
+
+@[simp]
+theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
+    constantCoeff (subst (X ^ k) f) = algebraMap R S f.constantCoeff := by
+  rw [PowerSeries.constantCoeff_subst' (.X_pow hk), finsum_eq_single _ 0]
+  · simp [Algebra.algebraMap_eq_smul_one]
+  · intro n hn
+    simp [hk, hn]
+
 theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
     (hf : f.constantCoeff = 0) : MvPowerSeries.constantCoeff (subst a f) = 0 := by
   rw [constantCoeff_subst (HasSubst.of_constantCoeff_zero ha), finsum_eq_zero_of_forall_eq_zero]
