@@ -456,7 +456,7 @@ section Iso
 /-- The unique morphism between classifiers mapping each others characteristic maps -/
 def Classifier.hom (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ⟶ 𝒞₂.Ω := 𝒞₂.χ (𝒞₁.truth)
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma Classifier.hom_comp_hom (𝒞₁ 𝒞₂ 𝒞₃ : Classifier C) : 𝒞₁.hom 𝒞₂ ≫ 𝒞₂.hom 𝒞₃ = 𝒞₁.hom 𝒞₃ :=
   𝒞₃.uniq _ <| (𝒞₂.isPullback _).paste_vert (𝒞₃.isPullback _)
 
@@ -464,7 +464,7 @@ lemma Classifier.hom_comp_hom (𝒞₁ 𝒞₂ 𝒞₃ : Classifier C) : 𝒞₁
 lemma Classifier.hom_refl (𝒞₁ : Classifier C) : 𝒞₁.hom 𝒞₁ = 𝟙 _ :=
   (𝒞₁.uniq (χ₀' := 𝟙 _) (𝒞₁.truth) (IsPullback.of_id_snd)).symm
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma Classifier.χ_comp_hom {𝒞₁ 𝒞₂ : Classifier C} {X Y : C} (m : X ⟶ Y) [Mono m] :
     𝒞₁.χ m ≫ 𝒞₁.hom 𝒞₂ = 𝒞₂.χ m :=
   𝒞₂.uniq m ((𝒞₁.isPullback m).paste_vert (𝒞₂.isPullback (𝒞₁.truth)))
