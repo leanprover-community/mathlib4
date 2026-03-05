@@ -218,7 +218,6 @@ theorem extend_apply {a b : X} (γ : Path a b) {t : ℝ}
 @[deprecated (since := "2025-11-05")]
 alias extend_extends := extend_apply
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extend_zero : γ.extend 0 = x := by simp
 
 theorem extend_one : γ.extend 1 = y := by simp
@@ -609,7 +608,6 @@ theorem truncate_one_one {a b : X} (γ : Path a b) :
     γ.truncate 1 1 = (Path.refl b).cast (by rw [min_self, γ.extend_one]) γ.extend_one := by
   convert γ.truncate_self 1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem truncate_zero_one {a b : X} (γ : Path a b) :
     γ.truncate 0 1 = γ.cast (by simp) (by simp) := by
@@ -641,7 +639,6 @@ theorem reparam_id (γ : Path x y) : γ.reparam id continuous_id rfl rfl = γ :=
   ext
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0)
     (hf₁ : f 1 = 1) : range (γ.reparam f hfcont hf₀ hf₁) = range γ := by
   change range (γ ∘ f) = range γ

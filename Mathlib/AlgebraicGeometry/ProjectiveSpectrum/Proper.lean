@@ -133,7 +133,6 @@ end IsSeparated
 
 section LocallyOfFiniteType
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.FiniteType (𝒜 0) A] : LocallyOfFiniteType (Proj.toSpecZero 𝒜) := by
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
@@ -149,7 +148,6 @@ end LocallyOfFiniteType
 
 section QuasiCompact
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.FiniteType (𝒜 0) A] : QuasiCompact (Proj.toSpecZero 𝒜) := by
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
@@ -168,7 +166,6 @@ end QuasiCompact
 
 section UniversallyClosed
 
-set_option backward.isDefEq.respectTransparency false in
 open ValuationRing in
 /--
 Let `𝒜` be a graded ring generated over `𝒜₀` by finitely many homogeneous elements.
@@ -311,7 +308,6 @@ theorem valuativeCriterion_existence_aux
               Finset.univ.prod_erase_mul d (h := Finset.mem_univ _),
               mul_comm _ a, mul_right_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 01MF]
 lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     ValuativeCriterion.Existence (Proj.toSpecZero 𝒜) := by
@@ -362,14 +358,12 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
       ← RingHom.comp_apply, hφ]
     exact congr($(H.symm) x)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.FiniteType (𝒜 0) A] : UniversallyClosed (Proj.toSpecZero 𝒜) := by
   rw [UniversallyClosed.eq_valuativeCriterion]
   exact ⟨valuativeCriterion_existence 𝒜, inferInstance⟩
 
 end UniversallyClosed
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.FiniteType (𝒜 0) A] : IsProper (Proj.toSpecZero 𝒜) where
 
 end AlgebraicGeometry.Proj

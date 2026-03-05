@@ -332,7 +332,6 @@ section ComplexOrderLemmas
 
 open scoped ComplexOrder
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Riemann zeta function is positive in `ComplexOrder` for real arguments greater than 1.
 This means it is a positive real number:
 both `(riemannZeta x).re > 0` and `(riemannZeta x).im = 0`. -/

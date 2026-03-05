@@ -69,7 +69,7 @@ lemma exists_le_of_le_sup {ι : Type v} {x : X}
     ∃ i : ι, principalOpen x ≤ Us i := by
   grind [principalOpen_le_iff, Opens.mem_iSup]
 
-/-- The right kan extension of `F` along `X ⥤ (Opens X)ᵒᵖ`. -/
+/-- The right Kan extension of `F` along `X ⥤ (Opens X)ᵒᵖ`. -/
 abbrev principalsKanExtension : (Opens X)ᵒᵖ ⥤ C :=
   (principals X).pointwiseRightKanExtension F
 
