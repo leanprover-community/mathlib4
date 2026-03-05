@@ -628,11 +628,10 @@ theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : Arithmet
 theorem isMultiplicative_finsetProd [CommSemiring R] {ι : Type*}
     (f : ι → ArithmeticFunction R) (s : Finset ι) (hf : ∀ i ∈ s, IsMultiplicative (f i)) :
     IsMultiplicative (∏ i ∈ s, f i) := by
-  classical
-  induction s using Finset.induction
+  induction s using Finset.cons_induction
   case empty => simp
-  case insert a s ha ih =>
-    rw [Finset.prod_insert ha]
-    exact (hf a (s.mem_insert_self a)).mul (ih fun i hi ↦ hf i (Finset.mem_insert_of_mem hi))
+  case cons a s ha ih =>
+    rw [Finset.prod_cons]
+    exact (hf a (by grind)).mul (by grind)
 
 end ArithmeticFunction
