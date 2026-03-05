@@ -23,12 +23,12 @@ meta section
 
 /--
 Takes an expression representing a vector `Fin n → α` and returns the corresponding
-list `List α`.
+array `Array α`.
 -/
 partial def Matrix.matchVecConsPrefixQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
-    (vec : Q(Fin $n → $α)) : MetaM (List Q($α) × (m : Q(Nat)) × Q(Fin $m → $α)) := do
+    (vec : Q(Fin $n → $α)) : MetaM (Array Q($α) × (m : Q(Nat)) × Q(Fin $m → $α)) := do
   let (l, m, vec) ← Matrix.matchVecConsPrefix n vec
-  let l ← l.mapM fun a ↦ do
+  let l ← l.toArray.mapM fun a ↦ do
     let some aQ ← checkTypeQ a q($α) | throwError m!"Expected {a} to have type {α}"
     return aQ
   let some vecQ ← checkTypeQ vec q(Fin $m → $α)
@@ -36,28 +36,13 @@ partial def Matrix.matchVecConsPrefixQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
   return (l, ⟨m, vecQ⟩)
 
 /--
-Takes an expression representing a list of elements of type `α` and outputs the corresponding
-vector `Fin n → α`.
--/
-def vecOfListQ {u : Level} {α : Q(Type u)}
-    (n : ℕ) (vec : List Q($α)) : Option Q(Fin $n → $α) := do
-  match n, vec with
-  | n + 1, head :: rest =>
-    return q(Matrix.vecCons $head $(← vecOfListQ n rest))
-  | 0, [] => return q(Matrix.vecEmpty)
-  | _, _ => none
-
-/--
 Given a list `l` of elements of type `α` and a list `perm` of indices (as natural numbers), outputs
 the list whose `i`th entry is `l[perm[i]]`.
 In the case where `perm ~ [0, ..., l.length-1]`, this is just computing the permutation of `l`
 represented by `perm`.
 -/
-private def permList {α : Type*} (vec : List α) (perm : List Nat) : List α :=
-  perm.foldr (init := []) fun head current ↦
-    match vec[head]? with
-    | some entry => entry :: current
-    | none => current
+private def permList {α : Type*} [Inhabited α] (vec : Array α) (perm : Array Nat) : Array α :=
+  perm.map (vec[·]!)
 
 /-- Helper function to produce a term of type `Fin m` given by `n` (and a proof that `n < m` via
 `decide`.)
@@ -68,18 +53,18 @@ def mkFin (n m : Q(Nat)) : MetaM Q(Fin $m) := do
 /-- Given an expression representing a vector `perm : Fin n → Fin n`, computes the corresponding
 list of term of type `Fin n`. This is meant to be used when `perm` corresponds to a permutation
 of `Fin n`, e.g. `perm = Equiv.swap 0 1`, etc. -/
-def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
-    SimpM (Option <| List Nat) := do
+def arrayOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
+    SimpM (Option <| Array Nat) := do
     try
-      let mut out : List Nat := []
-      let _ ← synthInstanceQ q(NeZero $n)
+      let mut out : Array Nat := #[]
+      guard (vn != 0)
       for idx in *...vn do
         let idxQ := mkNatLitQ idx
         let idxQNew ← mkFin idxQ n
         let outIdxQ := q(($perm $idxQNew : Nat))
         let outIdxExpr ← Lean.Meta.Simp.dsimp outIdxQ
         let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
-        out := out ++ [outIdx]
+        out := out.push outIdx
       return out
     catch _ =>
       return none
@@ -104,11 +89,11 @@ of the permutation.
 simproc_decl vecPerm (_ ∘ (_ : Fin _ → Fin _)) := fun e ↦ do
   let ⟨_, ~q(Fin $n → $α), ~q(($v) ∘ ($p : _ → Fin $n'))⟩ ← inferTypeQ' e | return .continue
   let .defEq _ ← isDefEqQ q($n) q($n') | return .continue
-  let (unpermList, ⟨m, _⟩) ← Matrix.matchVecConsPrefixQ (α := α) (n := n) v
+  let (unperm, ⟨m, _⟩) ← Matrix.matchVecConsPrefixQ v
   unless ← isDefEq m q(0) do return .continue
-  let some permAsList ← listOfVecFinQ n unpermList.length p | return .continue
-  let outAsList := permList unpermList permAsList
-  let out := PiFin.mkLiteralQ (n := outAsList.length) (outAsList[·]!)
+  let some perm ← arrayOfVecFinQ n unperm.size p | return .continue
+  let out := permList unperm perm
+  let out := PiFin.mkLiteralQ (n := out.size) (out[·]!)
   let pf ← mkAppM ``FinVec.eq_etaExpand #[e]
   return .continue <| some { expr := out, proof? := pf }
 
