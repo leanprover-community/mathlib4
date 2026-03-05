@@ -92,7 +92,7 @@ theorem intervalGapsWithin_snd_of_lt (hj : j < k) :
   congr
   ext
   simp only [coe_castPred, val_natCast, Nat.mod_succ_eq_iff_lt]
-  omega
+  lia
 
 theorem intervalGapsWithin_mapsTo : (Set.Iio k).MapsTo
     (fun (j : ℕ) ↦ ((F.intervalGapsWithin h a b j).2, (F.intervalGapsWithin h a b j.succ).1))
@@ -128,7 +128,7 @@ theorem intervalGapsWithin_le_fst {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a 
   by_cases hj : j = 0
   · simp [hj]
   · have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind))
-    have hj₀ : j - 1 + 1 = j := by omega
+    have hj₀ : j - 1 + 1 = j := by lia
     simp only [Nat.succ_eq_add_one, hj₀] at this
     grind
 
@@ -174,7 +174,6 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
   have hFabi := hFab (z := G ⟨j, by omega⟩) (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)])
   simp [hFabi, this.le, hG]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem intervalGapsWithin_pairwiseDisjoint_Ioc {a b : α}
     (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
     (Set.Iio (k + 1)).PairwiseDisjoint (fun (j : ℕ) ↦

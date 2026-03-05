@@ -16,7 +16,8 @@ public import Mathlib.CategoryTheory.Adjunction.Reflective
 We define the adjunction `ΓSpec.adjunction : Γ ⊣ Spec` by defining the unit (`toΓSpec`,
 in multiple steps in this file) and counit (done in `Spec.lean`) and checking that they satisfy
 the left and right triangle identities. The constructions and proofs make use of
-maps and lemmas defined and proved in structure_sheaf.lean extensively.
+maps and lemmas defined and proved in `Mathlib/AlgebraicGeometry/StructureSheaf.lean`
+extensively.
 
 Notice that since the adjunction is between contravariant functors, you get to choose
 one of the two categories to have arrows reversed, and it is equally valid to present

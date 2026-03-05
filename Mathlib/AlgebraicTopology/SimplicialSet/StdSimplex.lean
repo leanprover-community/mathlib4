@@ -340,7 +340,6 @@ def nonDegenerateEquiv {n d : ℕ} :
     simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
   left_inv _ := by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : (Δ[n] : SSet.{u}).HasDimensionLE n where
   degenerate_eq_top i hi := by
     ext x

@@ -50,7 +50,6 @@ theorem hahnEmbedding_isOrderedModule_rat :
 
 end Module
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Hahn embedding theorem**
 
