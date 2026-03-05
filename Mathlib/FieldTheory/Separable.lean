@@ -281,6 +281,7 @@ theorem separable_C_mul_X_pow_add_C_mul_X_add_C'
     (C a * X ^ n + C b * X + C c).Separable :=
   separable_C_mul_X_pow_add_C_mul_X_add_C a b c ((CharP.cast_eq_zero_iff R p n).2 hn) hb
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : Separable p)
     (x : R) : rootMultiplicity x p ≤ 1 := by
   classical
