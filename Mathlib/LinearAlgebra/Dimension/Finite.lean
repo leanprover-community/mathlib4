@@ -42,7 +42,7 @@ theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
   intro s li
   apply Cardinal.card_le_of
   intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
+  rw [← Finset.card_map (Embedding.subtype (· ∈ s))]
   apply H
   apply linearIndependent_finset_map_embedding_subtype _ li
 
@@ -221,7 +221,6 @@ lemma natCast_le_rank_iff_finset [Nontrivial R] {n : ℕ} :
   ⟨exists_finset_linearIndependent_of_le_rank,
     fun ⟨s, h₁, h₂⟩ ↦ by simpa [h₁] using h₂.cardinal_le_rank⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
   by_cases h : finrank R M = 0
@@ -435,7 +434,6 @@ lemma Submodule.bot_eq_top_of_rank_eq_zero (h : Module.rank R M = 0) : (⊥ : Su
   rw [rank_zero_iff] at h
   subsingleton
 
-set_option backward.isDefEq.respectTransparency false in
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
 @[simp]
 theorem Submodule.rank_eq_zero {S : Submodule R M} : Module.rank R S = 0 ↔ S = ⊥ :=
