@@ -27,23 +27,20 @@ import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 open WithLp ENNReal
 
-lemma PiLp.coe_proj (p : ENNReal) {ι : Type*} (𝕜 : Type*) {E : ι → Type*} [Semiring 𝕜]
-    [∀ i, SeminormedAddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] {i : ι} :
-    ⇑(proj p (𝕜 := 𝕜) E i) = fun x ↦ x i := rfl
+-- lemma PiLp.coe_proj (p : ENNReal) {ι : Type*} (𝕜 : Type*) {E : ι → Type*} [Semiring 𝕜]
+--     [∀ i, SeminormedAddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] {i : ι} :
+--     ⇑(proj p (𝕜 := 𝕜) E i) = fun x ↦ x i := rfl
 
+@[simp]
 lemma EuclideanSpace.coe_proj {ι : Type*} (𝕜 : Type*) [RCLike 𝕜] {i : ι} :
     ⇑(@proj ι 𝕜 _ i) = fun x ↦ x i := rfl
 
-@[simp]
-lemma EuclideanSpace.proj_apply {ι 𝕜 : Type*} [RCLike 𝕜] {i : ι} (x : EuclideanSpace 𝕜 ι) :
-    proj i x = x i := rfl
+-- lemma ContinuousLinearMap.coe_proj' (R : Type*) {ι : Type*} [Semiring R] {φ : ι → Type*}
+--     [∀ i, TopologicalSpace (φ i)] [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)] (i : ι) :
+--     ⇑(ContinuousLinearMap.proj (R := R) (φ := φ) i) = fun x ↦ x i := rfl
 
-lemma ContinuousLinearMap.coe_proj' (R : Type*) {ι : Type*} [Semiring R] {φ : ι → Type*}
-    [∀ i, TopologicalSpace (φ i)] [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)] (i : ι) :
-    ⇑(ContinuousLinearMap.proj (R := R) (φ := φ) i) = fun x ↦ x i := rfl
-
-lemma EuclideanSpace.coe_equiv_symm {ι 𝕜 : Type*} [RCLike 𝕜] :
-    ⇑(EuclideanSpace.equiv ι 𝕜).symm = toLp 2 := rfl
+-- lemma EuclideanSpace.coe_equiv_symm {ι 𝕜 : Type*} [RCLike 𝕜] :
+--     ⇑(EuclideanSpace.equiv ι 𝕜).symm = toLp 2 := rfl
 
 @[expose] public section
 
@@ -320,13 +317,12 @@ lemma inner_toEuclideanCLM (x y : EuclideanSpace ℝ ι) :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma covarianceBilin_multivariateGaussian (hS : S.PosSemidef) (x y : EuclideanSpace ℝ ι) :
-    covarianceBilin (multivariateGaussian μ S) x y
-      = x ⬝ᵥ S *ᵥ y := by
+    covarianceBilin (multivariateGaussian μ S) x y = x ⬝ᵥ S *ᵥ y := by
   have h : (fun x ↦ μ + x) ∘ ((toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S))) =
     (fun x ↦ μ + (toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S)) x) := rfl
   simp only [multivariateGaussian]
-  rw [← h, ← Measure.map_map (measurable_const_add μ) (by fun_prop), covarianceBilin_map_const_add]
-  rw [covarianceBilin_map, covarianceBilin_stdGaussian, innerSL_apply_apply,
+  rw [← h, ← Measure.map_map (measurable_const_add μ) (by fun_prop), covarianceBilin_map_const_add,
+    covarianceBilin_map, covarianceBilin_stdGaussian, innerSL_apply_apply,
     ContinuousLinearMap.adjoint_inner_left, IsSelfAdjoint.adjoint_eq,
     ← ContinuousLinearMap.comp_apply, ← ContinuousLinearMap.mul_def, ← map_mul,
       CFC.sqrt_mul_sqrt_self _ hS.nonneg, inner_toEuclideanCLM]
@@ -369,9 +365,9 @@ lemma hasLaw_eval_multivariateGaussian (hS : S.PosSemidef) {i : ι} :
     HasLaw (fun x ↦ x i) (gaussianReal (μ i) (S i i).toNNReal) (multivariateGaussian μ S) where
   aemeasurable := Measurable.aemeasurable (by fun_prop)
   map_eq := by
-    rw [← EuclideanSpace.coe_proj ℝ, IsGaussian.map_eq_gaussianReal,
-      ContinuousLinearMap.integral_comp_id_comm, integral_id_multivariateGaussian,
-      EuclideanSpace.proj_apply, EuclideanSpace.coe_proj, variance_eval_multivariateGaussian hS]
+    rw [← EuclideanSpace.coe_proj, IsGaussian.map_eq_gaussianReal,
+      ContinuousLinearMap.integral_comp_id_comm]
+    · simp [variance_eval_multivariateGaussian hS]
     exact IsGaussian.integrable_id
 
 lemma charFun_multivariateGaussian (hS : S.PosSemidef) (x : EuclideanSpace ℝ ι) :
@@ -408,9 +404,9 @@ def _root_.EuclideanSpace.restrict₂ {ι 𝕜 : Type*} [RCLike 𝕜] {I J : Fin
     (Finset.restrict₂CLM 𝕜 (M := fun _ ↦ 𝕜) hIJ) ∘L
       (EuclideanSpace.equiv J 𝕜).toContinuousLinearMap
 
--- lemma _root_.EuclideanSpace.coe_restrict₂
---     {ι 𝕜 : Type*} [RCLike 𝕜] {I J : Finset ι} (hIJ : I ⊆ J) :
---     ⇑(@EuclideanSpace.restrict₂ ι 𝕜 _ I J hIJ) = EuclideanSpace.restrict₂ hIJ := rfl
+lemma _root_.EuclideanSpace.coe_restrict₂
+    {ι 𝕜 : Type*} [RCLike 𝕜] {I J : Finset ι} (hIJ : I ⊆ J) :
+    ⇑(@EuclideanSpace.restrict₂ ι 𝕜 _ I J hIJ) = EuclideanSpace.restrict₂ hIJ := rfl
 
 @[simp]
 lemma _root_.EuclideanSpace.restrict₂_apply {ι 𝕜 : Type*} [RCLike 𝕜] {I J : Finset ι}
@@ -422,7 +418,7 @@ variable {ι : Type*} [DecidableEq ι] {I J : Finset ι}
 variable {μ : EuclideanSpace ℝ I} {S : Matrix I I ℝ} {hS : S.PosSemidef}
 
 set_option backward.isDefEq.respectTransparency false in
-lemma measurePreserving_restrict_multivariateGaussian (hS : S.PosSemidef) (hJI : J ⊆ I) :
+lemma measurePreserving_restrict₂_multivariateGaussian (hS : S.PosSemidef) (hJI : J ⊆ I) :
     MeasurePreserving (EuclideanSpace.restrict₂ hJI) (multivariateGaussian μ S)
       (multivariateGaussian (μ.restrict₂ hJI)
       (S.submatrix (fun i : J ↦ ⟨i.1, hJI i.2⟩) (fun i : J ↦ ⟨i.1, hJI i.2⟩))) where
@@ -433,8 +429,7 @@ lemma measurePreserving_restrict_multivariateGaussian (hS : S.PosSemidef) (hJI :
       rw [ContinuousLinearMap.integral_id_map, integral_id_multivariateGaussian]
       exact IsGaussian.integrable_id
     rw [← ContinuousLinearMap.toBilinForm_inj]
-    apply LinearMap.BilinForm.ext_basis (EuclideanSpace.basisFun J ℝ).toBasis
-    intro i j
+    refine LinearMap.BilinForm.ext_basis (EuclideanSpace.basisFun J ℝ).toBasis fun i j ↦ ?_
     simp_rw [ContinuousLinearMap.toBilinForm_apply]
     rw [covarianceBilin_apply_eq_cov, covariance_map]
     · have (i : J) : (fun u ↦ ⟪(EuclideanSpace.basisFun J ℝ).toBasis i, u⟫) ∘
