@@ -188,6 +188,9 @@ lemma rankOne_hom_eq :
 /-- `ℂ_[p]` is a normed field, where the norm extends from `PadicAlgCl` along completion. -/
 instance normedField : NormedField ℂ_[p] := inferInstance
 
+-- Ensure that the norm instance on `ℂ_[p]` is extended from `PadicAlgCl p`.
+example : (‖·‖ : ℂ_[p] → ℝ)  = (UniformSpace.Completion.instNorm (PadicAlgCl p)).norm := rfl
+
 /-- The norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`. -/
 theorem norm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
   simp
