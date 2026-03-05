@@ -254,9 +254,13 @@ theorem coeff_of_lt {b e : Ordinal} (hb : e < b) : coeff b e = single 0 e := by
   · simp_rw [coeff, CNF.of_lt he hb]
     exact singleton_lookupFinsupp ..
 
-theorem coeff_opow_mul_add {b e x y : Ordinal} (hb : 1 < b) (hxb : x < b) (hy : y < b ^ e) :
+theorem coeff_opow_mul_add {b e x y : Ordinal} (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
-  obtain rfl | hx := eq_or_ne x 0; · simp
+  obtain hb | hb := le_or_gt b 1
+  · have := hxb.trans_le hb
+    simp_all
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
   ext e'
   rw [add_apply]
   obtain rfl | he := eq_or_ne e e'
@@ -277,13 +281,16 @@ theorem coeff_opow_mul_add {b e x y : Ordinal} (hb : 1 < b) (hxb : x < b) (hy : 
       rw [CNF.opow_mul_add hb hx hxb hy]
       simp_all
 
-theorem coeff_opow_mul {b e x : Ordinal} (hb : 1 < b) (hxb : x < b) :
+theorem coeff_opow_mul {b e x : Ordinal} (hxb : x < b) :
     coeff b (b ^ e * x) = single e x := by
-  simpa using coeff_opow_mul_add hb hxb (opow_pos e hb.pos)
+  obtain hb | hb := le_or_gt b 1
+  · have := hxb.trans_le hb
+    simp_all
+  · simpa using coeff_opow_mul_add hxb (opow_pos e hb.pos)
 
 @[simp]
 theorem coeff_opow {b e : Ordinal} (hb : 1 < b) : coeff b (b ^ e) = single e 1 := by
-  simpa using coeff_opow_mul hb hb
+  simpa using coeff_opow_mul_add hb (opow_pos e hb.pos)
 
 /-! ### Evaluate a Cantor normal form -/
 
