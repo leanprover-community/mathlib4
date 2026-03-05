@@ -154,7 +154,7 @@ def mk' (f : 𝒜 →+*ᵍ ℬ) (h : ∀ (c : R) (x), f (c • x) = c • f x) :
 @[simp]
 theorem coe_mk' (f : 𝒜 →+*ᵍ ℬ) (h : ∀ (c : R) (x), f (c • x) = c • f x) : ⇑(mk' f h) = f := rfl
 
-section
+section id
 variable (R 𝒜)
 
 /-- Identity map as a `GradedAlgHom`. -/
@@ -167,7 +167,7 @@ theorem coe_id : ⇑(GradedAlgHom.id R 𝒜) = id := rfl
 @[simp]
 theorem id_toAlgHom : (GradedAlgHom.id R 𝒜 : A →ₐ[R] A) = AlgHom.id R A := rfl
 
-end
+end id
 
 /-- If `g` and `f` are `R`-linear graded algebra homomorphisms with the domain of `g` equal to
 the codomain of `f`, then `g.comp f` is the graded algebra homomorphism `x ↦ g (f x)`.
@@ -219,7 +219,7 @@ lemma cancel_left {g₁ g₂ : 𝒜 →ₐᵍ[R] ℬ} {f : ℬ →ₐᵍ[R] 𝒞
 
 /-- `toAlgHom` as a `MonoidHom`. -/
 @[simps] def toEnd : (𝒜 →ₐᵍ[R] 𝒜) →* (A →ₐ[R] A) where
-  toFun := (↑)
+  toFun := toAlgHom
   map_one' := rfl
   map_mul' _ _ := rfl
 
