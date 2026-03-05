@@ -218,17 +218,14 @@ lemma quotient_power_char_formallySmooth [IsDomain R] [IsCohenRing R] (p : ℕ) 
     · rw [eq0, zero_add]
       --should be able to obtain by extension is separable
       sorry
-    · have ih' := ih eq0
-      have le : Ideal.span {(p ^ (n + 1) : ℤ)} ≤ Ideal.span {(p ^ n : ℤ)} :=
+    · have le : Ideal.span {(p ^ (n + 1) : ℤ)} ≤ Ideal.span {(p ^ n : ℤ)} :=
         Ideal.span_singleton_le_span_singleton.mpr (pow_dvd_pow _ (Nat.le_succ n))
       have le' : Ideal.span {(p ^ (n + 1) : R)} ≤ Ideal.span {(p ^ n : R)} :=
         Ideal.span_singleton_le_span_singleton.mpr (pow_dvd_pow _ (Nat.le_succ n))
-      let K := RingHom.ker (Ideal.Quotient.factor le)
-      have sq0 : K ^ 2 = ⊥ := by
-        simp only [K, Ideal.Quotient.factor_ker, ← Ideal.map_pow, Ideal.span_singleton_pow,
-          ← Nat.cast_pow, ← Nat.pow_mul, Ideal.map_eq_bot_iff_le_ker, Ideal.mk_ker]
-        exact Ideal.span_singleton_le_span_singleton.mpr (Nat.pow_dvd_pow _ (by omega)).natCast
-      refine RingHom.FormallySmooth.of_quotient_of_flat _ sq0 ?_ ?_
+      apply RingHom.FormallySmooth.of_flat_of_ker_eq_map_of_square_zero _ _
+        (Ideal.Quotient.factor le) (Ideal.Quotient.factor le')
+        _ (Ideal.Quotient.factor_surjective le) (Ideal.Quotient.factor_surjective le')
+        _ _ _ (ih eq0)
       · let _ := (padicIntOfCharP R p char).toAlgebra
         let I := Ideal.span {(p ^ (n + 1) : ℤ_[p])}
         let J := Ideal.span {(p ^ (n + 1) : R)}
@@ -245,21 +242,13 @@ lemma quotient_power_char_formallySmooth [IsDomain R] [IsCohenRing R] (p : ℕ) 
         convert (RingHom.Flat.of_bijective (f := e.symm.toRingHom) e.symm.bijective).comp this
         ext
         simp
-      · let f (k : ℕ):= Ideal.quotientMap (I := Ideal.span {(p ^ k : ℤ)})
-          (Ideal.span {(p ^ k : R)}) (Int.castRingHom R)
-          (by simp [← Ideal.map_le_iff_le_comap, Ideal.map_span])
-        let e : (R ⧸ Ideal.span {(p ^ (n + 1) : R)}) ⧸ (K.map (f (n + 1))) ≃+*
-          R ⧸ Ideal.span {(p ^ n : R)} :=
-          (Ideal.quotEquivOfEq (by simp [f, K, Ideal.Quotient.factor_ker, Ideal.map_span])).trans
-          (RingHom.quotientKerEquivOfSurjective (Ideal.Quotient.factor_surjective le'))
-        have : Ideal.quotientMap (K.map (f (n + 1))) (f (n + 1)) Ideal.le_comap_map =
-          e.symm.toRingHom.comp ((f n).comp (RingHom.quotientKerEquivOfSurjective
-          (Ideal.Quotient.factor_surjective le)).toRingHom) := by
-          ext
-          simp
-        rw [this]
-        apply RingHom.FormallySmooth.comp _ (RingHom.FormallySmooth.of_bijective e.symm.bijective)
-        exact (RingHom.FormallySmooth.of_bijective (RingEquiv.bijective _)).comp ih'
+      · ext
+        simp
+      · simp only [Ideal.Quotient.factor_ker, ← Ideal.map_pow, Ideal.span_singleton_pow,
+          Ideal.map_eq_bot_iff_le_ker, Ideal.mk_ker, ← pow_mul,
+          Ideal.span_singleton_le_span_singleton]
+        exact pow_dvd_pow _ (by omega)
+      · simp [Ideal.Quotient.factor_ker, Ideal.map_span]
 
 end IsCohenRing
 
