@@ -247,8 +247,7 @@ lemma hasFDerivWithinAt_of_isOpen (h : IsOpen s) (hx : x ∈ s) :
 theorem hasFDerivWithinAt_insert_self :
     HasFDerivWithinAt f f' (insert x s) x ↔ HasFDerivWithinAt f f' s x := by
   simp_rw [hasFDerivWithinAt_iff_isLittleOTVS]
-  apply isLittleOTVS_insert
-  simp only [sub_self, map_zero]
+  simp only [isLittleOTVS_insert, sub_self, map_zero]
 
 protected alias ⟨_, HasFDerivWithinAt.insert⟩ := hasFDerivWithinAt_insert_self
 
@@ -333,7 +332,7 @@ theorem HasFDerivAt.lim
   · rw [tendsto_norm_atTop_iff_cobounded] at hc
     simpa using (tendsto_inv₀_cobounded.comp hc).smul (tendsto_const_nhds (x := v))
   · refine tendsto_nhds_of_eventually_eq ?_
-    refine (eventually_ne_of_tendsto_norm_atTop hc (0 : 𝕜)).mono fun y hy => ?_
+    refine (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun y hy => ?_
     simp [hy]
 
 theorem hasFDerivWithinAt_inter' (h : t ∈ 𝓝[s] x) :
@@ -346,7 +345,7 @@ theorem hasFDerivWithinAt_inter (h : t ∈ 𝓝 x) :
 
 theorem HasFDerivWithinAt.union (hs : HasFDerivWithinAt f f' s x)
     (ht : HasFDerivWithinAt f f' t x) : HasFDerivWithinAt f f' (s ∪ t) x := by
-  simp only [hasFDerivWithinAt_iff_isLittleOTVS, nhdsWithin_union] at *
+  rw [hasFDerivWithinAt_iff_isLittleOTVS, nhdsWithin_union] at *
   exact hs.sup ht
 
 theorem HasFDerivWithinAt.hasFDerivAt (h : HasFDerivWithinAt f f' s x) (hs : s ∈ 𝓝 x) :
@@ -380,15 +379,14 @@ theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) :
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
-  simp only [fderivWithin, dif_pos h]
+  rw [fderivWithin, dif_pos h]
   split_ifs with h₀
-  exacts [h₀, Classical.choose_spec h]
+  exacts [h₀, h.choose_spec]
 
 theorem DifferentiableAt.hasFDerivAt (h : DifferentiableAt 𝕜 f x) :
     HasFDerivAt f (fderiv 𝕜 f x) x := by
   rw [fderiv, ← hasFDerivWithinAt_univ]
-  rw [← differentiableWithinAt_univ] at h
-  exact h.hasFDerivWithinAt
+  exact (differentiableWithinAt_univ.mpr h).hasFDerivWithinAt
 
 theorem DifferentiableOn.hasFDerivAt (h : DifferentiableOn 𝕜 f s) (hs : s ∈ 𝓝 x) :
     HasFDerivAt f (fderiv 𝕜 f x) x :=
@@ -406,7 +404,6 @@ protected theorem HasFDerivAt.fderiv
     [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
     (h : HasFDerivAt f f' x) :
     fderiv 𝕜 f x = f' := by
-  ext
   rw [h.unique h.differentiableAt.hasFDerivAt]
 
 theorem fderiv_eq
@@ -480,8 +477,7 @@ theorem DifferentiableOn.mono (h : DifferentiableOn 𝕜 f t) (st : s ⊆ t) : D
   fun x hx => (h x (st hx)).mono st
 
 theorem differentiableOn_univ : DifferentiableOn 𝕜 f univ ↔ Differentiable 𝕜 f := by
-  simp only [DifferentiableOn, Differentiable, differentiableWithinAt_univ, mem_univ,
-    forall_true_left]
+  simp [DifferentiableOn, Differentiable, differentiableWithinAt_univ]
 
 @[fun_prop]
 theorem Differentiable.differentiableOn (h : Differentiable 𝕜 f) : DifferentiableOn 𝕜 f s :=
@@ -545,7 +541,7 @@ lemma DifferentiableOn.union_of_isOpen
     (hs : IsOpen s) (ht : IsOpen t) :
     DifferentiableOn 𝕜 f (s ∪ t) := by
   intro x hx
-  obtain (hx | hx) := hx
+  obtain hx | hx := hx
   · exact (hf x hx).differentiableAt (hs.mem_nhds hx) |>.differentiableWithinAt
   · exact (hf' x hx).differentiableAt (ht.mem_nhds hx) |>.differentiableWithinAt
 
@@ -807,7 +803,7 @@ theorem hasFDerivAtFilter_iff_tendsto :
   rw [hasFDerivAtFilter_iff_isLittleO, ← isLittleO_norm_left, ← isLittleO_norm_right,
     isLittleO_iff_tendsto]
   · simp [div_eq_inv_mul]
-  · simp +contextual [sub_eq_zero]
+  · simp [sub_eq_zero]
 
 theorem hasFDerivWithinAt_iff_tendsto :
     HasFDerivWithinAt f f' s x ↔
@@ -850,8 +846,7 @@ theorem DifferentiableAt.isBigO_sub (h : DifferentiableAt 𝕜 f x₀) :
 theorem Asymptotics.IsBigO.hasFDerivWithinAt {n : ℕ}
     (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x₀ := by
-  simp_rw [hasFDerivWithinAt_iff_isLittleO,
-    h.eq_zero_of_norm_pow_within hx₀ hn.ne_bot, zero_apply, sub_zero,
+  simp [hasFDerivWithinAt_iff_isLittleO, h.eq_zero_of_norm_pow_within hx₀ hn.ne_bot,
     h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
 
 theorem Asymptotics.IsBigO.hasFDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀] fun x => ‖x - x₀‖ ^ n)
@@ -937,8 +932,7 @@ theorem norm_fderiv_le_of_lip' {f : E → F} {x₀ : E}
     ‖fderiv 𝕜 f x₀‖ ≤ C := by
   by_cases hf : DifferentiableAt 𝕜 f x₀
   · exact hf.hasFDerivAt.le_of_lip' hC₀ hlip
-  · rw [fderiv_zero_of_not_differentiableAt hf]
-    simp [hC₀]
+  · simp [fderiv_zero_of_not_differentiableAt hf, hC₀]
 
 /-- Converse to the mean value inequality: if `f` is `C`-lipschitz
 on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`.
