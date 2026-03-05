@@ -20,8 +20,8 @@ presheaves `Cᵒᵖ ⥤ A` and show that it is a sheaf when `G` is a sheaf.
 TODO:
 - turn both `presheafHom` and `sheafHom` into bifunctors
 - for a sheaf of types `F`, the `sheafHom` functor from `F` is right-adjoint to
-the product functor with `F`, i.e. for all `X` and `Y`, there is a
-natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
+  the product functor with `F`, i.e. for all `X` and `Y`, there is a
+  natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
 - use these results in order to show that the category of sheaves of types is Cartesian closed
 
 -/

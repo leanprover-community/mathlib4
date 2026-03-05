@@ -160,7 +160,6 @@ theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
     hasFDerivAt_stereoInvFunAux v
   refine this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contDiff_stereoInvFunAux {m : WithTop ℕ∞} : ContDiff ℝ m (stereoInvFunAux v) := by
   have h₀ : ContDiff ℝ ω fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
   have h₁ : ContDiff ℝ ω fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
@@ -280,7 +279,6 @@ theorem stereographic_source (hv : ‖v‖ = 1) : (stereographic hv).source = {�
 theorem stereographic_target (hv : ‖v‖ = 1) : (stereographic hv).target = Set.univ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem stereographic_apply_neg (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere v) (-v) = 0 := by
@@ -438,7 +436,6 @@ variable {m : WithTop ℕ∞} {F : Type*} [NormedAddCommGroup F] [NormedSpace �
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I m M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a `C^m` function `f : M → E`, where `M` is some manifold, takes values in the
 sphere, then it restricts to a `C^m` function from `M` to the sphere. -/
 theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f : M → E}

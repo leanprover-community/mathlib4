@@ -358,6 +358,24 @@ lemma of_isLimit_binaryFan_of_isTerminal
         rfl)⟩
 end
 
+lemma mk' {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
+    (w : fst ≫ f = snd ≫ g)
+    (hom_ext : ∀ ⦃T : C⦄ ⦃φ φ' : T ⟶ P⦄ (_ : φ ≫ fst = φ' ≫ fst)
+      (_ : φ ≫ snd = φ' ≫ snd), φ = φ')
+    (exists_lift : ∀ ⦃T : C⦄ (a : T ⟶ X) (b : T ⟶ Y)
+      (_ : a ≫ f = b ≫ g), ∃ (l : T ⟶ P), l ≫ fst = a ∧ l ≫ snd = b) :
+    IsPullback fst snd f g where
+  w := w
+  isLimit' := by
+    let l (s : PullbackCone f g) := exists_lift _ _ s.condition
+    exact ⟨PullbackCone.IsLimit.mk _
+      (fun s ↦ (l s).choose)
+      (fun s ↦ (l s).choose_spec.1)
+      (fun s ↦ (l s).choose_spec.2)
+      (fun s m h₁ h₂ ↦ hom_ext
+        (h₁.trans (l s).choose_spec.1.symm)
+        (h₂.trans (l s).choose_spec.2.symm))⟩
+
 end IsPullback
 namespace IsPushout
 
@@ -675,6 +693,23 @@ lemma of_isColimit_binaryCofan_of_isInitial
       · rw [h₁, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩]
         rfl)⟩
 
+lemma mk' {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
+    (w : f ≫ inl = g ≫ inr)
+    (hom_ext : ∀ ⦃T : C⦄ ⦃φ φ' : P ⟶ T⦄ (_ : inl ≫ φ = inl ≫ φ')
+      (_ : inr ≫ φ = inr ≫ φ'), φ = φ')
+    (exists_desc : ∀ ⦃T : C⦄ (a : X ⟶ T) (b : Y ⟶ T)
+      (_ : f ≫ a = g ≫ b), ∃ (l : P ⟶ T), inl ≫ l = a ∧ inr ≫ l = b) :
+    IsPushout f g inl inr where
+  w := w
+  isColimit' := by
+    let l (s : PushoutCocone f g) := exists_desc _ _ s.condition
+    exact ⟨PushoutCocone.IsColimit.mk _
+      (fun s ↦ (l s).choose)
+      (fun s ↦ (l s).choose_spec.1)
+      (fun s ↦ (l s).choose_spec.2)
+      (fun s m h₁ h₂ ↦ hom_ext
+        (h₁.trans (l s).choose_spec.1.symm)
+        (h₂.trans (l s).choose_spec.2.symm))⟩
 
 end IsPushout
 

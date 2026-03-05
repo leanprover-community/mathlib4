@@ -354,7 +354,6 @@ theorem MemBaseSet.exists_common_compl
   · exact ⟨π₁.toPrepartition.compl, π₁.toPrepartition.iUnion_compl,
       fun h => (hD h).elim, fun h => (hD h).elim⟩
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c r₁ π₁)
     (hle : ∀ x ∈ Box.Icc I, r₂ x ≤ r₁ x) {π₂ : Prepartition I} (hU : π₂.iUnion = ↑I \ π₁.iUnion)
     (hc : l.bDistortion → π₂.distortion ≤ c) :

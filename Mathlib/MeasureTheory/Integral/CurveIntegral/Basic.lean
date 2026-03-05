@@ -529,7 +529,8 @@ theorem HasFDerivWithinAt.curveIntegral_segment_source' (hs : Convex ℝ s)
   have hsub : [a -[ℝ] b] ⊆ ball a δ ∩ s :=
     ((convex_ball _ _).inter hs).segment_subset (by simp [*]) (by simp [*])
   rw [← curveIntegral_segment_const, ← curveIntegral_fun_sub]
-  · refine norm_curveIntegral_segment_le fun z hz ↦ (hδ (hsub hz)).2
+  · refine norm_curveIntegral_segment_le fun z hz ↦ ?_
+    simpa [dist_eq_norm] using (hδ (hsub hz)).2
   · rw [curveIntegrable_segment]
     refine ContinuousOn.intervalIntegrable_of_Icc zero_le_one fun t ht ↦ ?_
     refine ((hδ ?_).1.eval_const _).comp AffineMap.lineMap_continuous.continuousWithinAt ?_

@@ -66,6 +66,7 @@ lemma iff_finrank_cotangentSpace [IsLocalRing R] [IsNoetherianRing R] :
 instance {k : Type*} [Field k] : IsRegularLocalRing k := by
   simp [isRegularLocalRing_def, maximalIdeal_eq_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsDomain R] [IsDiscreteValuationRing R] : IsRegularLocalRing R := by
   apply of_spanFinrank_maximalIdeal_le
   rcases IsPrincipalIdealRing.principal (maximalIdeal R) with ⟨x, hx⟩

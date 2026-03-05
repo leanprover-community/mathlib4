@@ -53,7 +53,7 @@ def rowStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Partia
     simp [zero_le_one_elem]
 
 lemma mem_rowStochastic :
-    M ∈ rowStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧  M *ᵥ 1 = 1 :=
+    M ∈ rowStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 :=
   Iff.rfl
 
 /-- A square matrix is row stochastic if each element is non-negative and row sums to one. -/
