@@ -1359,24 +1359,22 @@ namespace Multiset
 
 variable {α M : Type*} [DecidableEq α] [CommMonoid M]
 
-open Function in
 @[to_additive]
 lemma mulSupport_fun_pow_count_subset (s : Multiset α) (f : α → M) :
     (fun a ↦ f a ^ count a s).mulSupport ⊆ s.toFinset := by
-  refine Function.mulSupport_subset_iff'.mpr fun a h ↦ ?_
+  refine mulSupport_subset_iff'.mpr fun a h ↦ ?_
   simp only [SetLike.mem_coe, mem_toFinset] at h
   simp [count_eq_zero_of_notMem h]
+
+@[to_additive (attr := fun_prop)]
+lemma hasFiniteMulSupport_fun_pow_count (s : Multiset α) (f : α → M) :
+    (fun a ↦ (f a) ^ s.count a).HasFiniteMulSupport :=
+  s.toFinset.finite_toSet.subset <| mulSupport_fun_pow_count_subset ..
 
 @[to_additive]
 lemma prod_map_eq_finprod (s : Multiset α) (f : α → M) :
     (s.map f).prod = ∏ᶠ a, f a ^ s.count a := by
   rw [Finset.prod_multiset_map_count, eq_comm]
   exact finprod_eq_prod_of_mulSupport_subset _ <| mulSupport_fun_pow_count_subset ..
-
-open Function in
-@[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_fun_pow_count (s : Multiset α) (f : α → M) :
-    (fun a ↦ (f a) ^ s.count a).HasFiniteMulSupport :=
-  s.toFinset.finite_toSet.subset <| mulSupport_fun_pow_count_subset ..
 
 end Multiset
