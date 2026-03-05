@@ -274,15 +274,11 @@ lemma ramificationIdx_eq_one_iff
 
 theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] [Algebra R S]
     [FaithfulSMul R S] {v : Ideal R} {w : Ideal S} {p : Ideal R}
-    (hv : Irreducible v) (hp : Prime p) (hw : Irreducible w)
-    (hvp : v ≠ p) [w.LiesOver v] :
+    (hv : Irreducible v) (hp : Prime p) (hvp : v ≠ p) [i : w.LiesOver v] :
     emultiplicity w (p.map (algebraMap R S)) = 0 := by
-  have hp_bot : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp.ne_zero
-  rw [emultiplicity_eq_count_normalizedFactors hw hp_bot, normalize_eq, ← ENat.coe_zero,
-    ENat.coe_inj, Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff hp_bot, not_and]
-  refine fun _ h ↦ hvp.symm ?_
-  rw [Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at h
-  exact ((isPrime_of_prime hp).isMaximal hp.ne_zero).eq_of_le (isPrime_of_prime hv.prime).ne_top' h
+  refine emultiplicity_eq_zero.2 fun h ↦ hvp.symm ?_
+  rw [Ideal.dvd_iff_le, Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at h
+  exact ((isPrime_of_prime hp).isMaximal hp.ne_zero).eq_of_le (isPrime_of_prime hv.prime).ne_top h
 
 theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDomain R] [Algebra R S]
     [FaithfulSMul R S] {v : Ideal R} {w : Ideal S} {p : Ideal R}
@@ -295,7 +291,7 @@ theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDomain R] [
       ramificationIdx_eq_normalizedFactors_count hp_bot (isPrime_of_prime hw.prime) hw_bot,
       emultiplicity_eq_count_normalizedFactors hw hp_bot]
   · rw [emultiplicity_eq_zero_of_ne hv hp.irreducible hvp hp.ne_zero, mul_zero,
-      emultiplicity_map_eq_zero_of_ne hv hp hw hvp]
+      emultiplicity_map_eq_zero_of_ne hv hp hvp]
 
 /-- If `v` is an irreducible ideal of `R`, `w` is an irreducible ideal of `S` lying over `v`, and
 `I` is an ideal of `R`, then the multiplicity of `w` in `I.map (algebraMap R S)` is given by
