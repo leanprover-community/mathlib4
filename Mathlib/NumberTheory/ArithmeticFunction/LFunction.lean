@@ -257,14 +257,17 @@ theorem isMultiplicative_ofPowerSeries
 
 end PowerSeries
 
-section EulerProduct -- Euler product of Arithmetic Functions
+section EulerProduct
 
 open Filter
 
 variable {ι R : Type*} [CommSemiring R]
 
-/-- A local uniform space instance on `ArithmeticFunction` in order to define `eulerProduct` as a
-`tprod`. See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
+/-- A private uniform space instance on `ArithmeticFunction R` in order to define `eulerProduct` as
+a `tprod`. If `R` is viewed as having the discrete topology, then the resulting topology on
+`ArithmeticFunction R` is the topology of pointwise convergence (see `tendsto_iff`).
+
+See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
 local instance : UniformSpace (ArithmeticFunction R) :=
   .comap ((↑) : ArithmeticFunction R → (ℕ → R)) <| .ofCore <|
     .mk (⨅ s : Finset ℕ, 𝓟 {(f, g) | Set.EqOn f g s})
@@ -319,12 +322,11 @@ instance : CompleteSpace (ArithmeticFunction R) where
 noncomputable def eulerProduct (f : ι → ArithmeticFunction R) : ArithmeticFunction R :=
   ∏' i, f i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If arithmetic functions `f i` converges to `1` pointwise, then the partial products
 `∏ i ∈ s, f i` converge to `eulerProduct f` pointwise. -/
 theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
     (hf : ∀ n, Tendsto (fun i ↦ f i n) cofinite (pure ((1 : ArithmeticFunction R) n))) :
-    ∀ n, Tendsto (fun s : Finset ι ↦ (∏ i ∈ s, f i) n) atTop (pure (eulerProduct f n)) := by
+    ∀ n, Tendsto (fun s ↦ (∏ i ∈ s, f i) n) atTop (pure (eulerProduct f n)) := by
   classical
   suffices Multipliable f from tendsto_iff.mp this.hasProd
   simp_rw [multipliable_iff_cauchySeq_finset, CauchySeq, cauchy_map_iff',
@@ -368,14 +370,16 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
   intro k hk
   rw [key (u \ t) hu k hk, key (v \ t) hv k hk]
 
+/-- Given arithmetic functions `f(q⁻ˢ)` with `q → ∞`, the partial products `∏ i ∈ s, f i` converge
+to the Euler product pointwise. -/
 theorem tendsTo_eulerProduct_ofPowerSeries
-    (f : ι → PowerSeries R) (hf : ∀ i, (f i).constantCoeff = 1) (q : ι → ℕ) [Northcott q] (n : ℕ) :
-    Tendsto (fun s : Finset ι ↦ (∏ i ∈ s, ArithmeticFunction.ofPowerSeries (q i) (f i)) n) atTop
+    (f : ι → PowerSeries R) (hf : ∀ i, (f i).constantCoeff = 1)
+    (q : ι → ℕ) [hq : Northcott q] :
+    ∀ n, Tendsto (fun s ↦ (∏ i ∈ s, ArithmeticFunction.ofPowerSeries (q i) (f i)) n) atTop
       (pure (eulerProduct (fun i ↦ ArithmeticFunction.ofPowerSeries (q i) (f i)) n)) := by
-  revert n
   apply tendsTo_eulerProduct_of_tendsTo
   intro n
-
+  have key := (northcott_iff_tendsto q).mp hq
   sorry
 
 theorem IsMultiplicative.finsetProd (f : ι → ArithmeticFunction R) (s : Finset ι)
@@ -421,3 +425,5 @@ theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
 end EulerProduct
 
 end ArithmeticFunction
+
+-- TODO: Prove that LSeries converges
