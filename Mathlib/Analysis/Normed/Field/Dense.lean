@@ -29,6 +29,9 @@ algebraically closed.
 2 and 3 will be easy to implement once we establish the result that every polynomial can be
 approximated by a *separable* polynomial.
 
+## Reference
+[Notes](https://math.stanford.edu/%7Econrad/248APage/handouts/algclosurecomp.pdf) by Brian Conrad.
+
 ## Tags
 Normed field, algebraically closedness
 -/
@@ -41,8 +44,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `K` is an algebraically closed dense subfield of a complete nonarchimedean normed field `L`
 of characteristic zero, then `L` is also algebraically closed. -/
 theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedField L]
-    [CompleteSpace L] [CharZero L] [IsUltrametricDist L] {i : K →+* L}
-    (hi : DenseRange i) [IsAlgClosed K] : IsAlgClosed L := by
+    [CompleteSpace L] [CharZero L] [IsUltrametricDist L] [Algebra K L]
+    (hi : DenseRange (algebraMap K L)) [IsAlgClosed K] : IsAlgClosed L := by
   -- Fix any monic irreducible polynoial `f` in `L`.
   -- Let `F` be the splitting field of `f`. Let `a` be a root of `f` in `F`.
   apply IsAlgClosed.of_exists_root
@@ -93,7 +96,7 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
     exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt hi fmon hε
   let ⟨b, hb, hab⟩ := exists_aroots_norm_sub_lt_of_norm_coeff_sub_lt
       hε fa0 fmon (gmon.map _) (gdeg ▸ (g.natDegree_map _)) gcoeff
-      (by simpa [Polynomial.map_map] using (IsAlgClosed.splits g).map ((algebraMap L F).comp i))
+      (by simpa [Polynomial.map_map] using (IsAlgClosed.splits g).map ((algebraMap L F).comp _))
   have hab : ‖a - b‖ < δ := by
     rw [← Real.rpow_natCast, ← mul_comm_div, div_self, one_mul,
         ← Real.rpow_mul (div_pos δpos (by positivity)).le, mul_inv_cancel₀] at hab
@@ -101,7 +104,7 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
     · simp [fnatdeg0]
     · positivity
   have bbot : b ∈ (⊥ : IntermediateField L F) := by
-    rw [Polynomial.aroots_def, Splits.roots_map ((IsAlgClosed.splits g).map i),
+    rw [Polynomial.aroots_def, Splits.roots_map ((IsAlgClosed.splits g).map _),
         Multiset.mem_map] at hb
     obtain ⟨bCp, _, hbCp⟩ := hb
     rw [IntermediateField.mem_bot]
@@ -115,7 +118,7 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
         (Polynomial.SplittingField.splits f)
     simpa [IntermediateField.adjoin_simple_eq_bot_iff.mpr bbot] using
       IsKrasner.krasner (minpoly.irreducible ⟨f, fmon, fa0⟩).separable
-        masp ⟨(g.map i), gmon.map _, hb.2⟩ fun a' h1 h2 ↦ lt_of_lt_of_le hab (norm_sub_le a' h1 h2)
+        masp ⟨(g.map _), gmon.map _, hb.2⟩ fun a' h1 h2 ↦ lt_of_lt_of_le hab (norm_sub_le a' h1 h2)
   obtain ⟨aCp, haCp⟩ := IntermediateField.mem_bot.mp abot
   use aCp
   apply_fun algebraMap L F

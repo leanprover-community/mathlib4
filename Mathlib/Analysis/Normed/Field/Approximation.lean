@@ -124,13 +124,14 @@ end ContinuityOfRoots
 
 section Approximation
 
-variable [Field K] [NormedField L] {i : K →+* L}
+variable [Field K] [NormedField L] [Algebra K L]
 
 /-- If `K` is a dense subfield of `L`, then every monic polynomial in `L` can be
 approximated by a monic polynomial in `K` of the same degree. -/
-theorem exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt (hd : DenseRange i)
-    {f : Polynomial L} (hf : f.Monic) {ε : ℝ} (hε : ε > 0) : ∃ g : Polynomial K, g.Monic ∧
-    f.natDegree = g.natDegree ∧ ∀ n : ℕ, ‖(g.map i).coeff n - f.coeff n‖ < ε := by
+theorem exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt
+    (hd : DenseRange (algebraMap K L)) {f : Polynomial L} (hf : f.Monic) {ε : ℝ} (hε : ε > 0) :
+    ∃ g : Polynomial K, g.Monic ∧ f.natDegree = g.natDegree ∧ ∀ n : ℕ,
+    ‖(g.map (algebraMap K L)).coeff n - f.coeff n‖ < ε := by
   by_cases h : f.natDegree = 0
   · use 1
     rw [hf.natDegree_eq_zero.mp]

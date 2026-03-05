@@ -247,8 +247,7 @@ instance charZero : CharZero ℂ_[p] :=
 set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ_[p]` is algebrically closed. -/
 instance isAlgClosed : IsAlgClosed ℂ_[p] :=
-  IsAlgClosed.of_denseRange (i := algebraMap (PadicAlgCl p) ℂ_[p])
-    UniformSpace.Completion.denseRange_coe
+  IsAlgClosed.of_denseRange UniformSpace.Completion.denseRange_coe
 
 end PadicComplex
 
