@@ -186,7 +186,7 @@ theorem expand_eq_expand {φ : MvPolynomial σ R} :
   ext n
   simp only [MvPolynomial.coeff_coe]
   by_cases! h : ∀ i, p ∣ n i
-  · obtain ⟨m, hm⟩ : ∃ m, n = p • m := ⟨Finsupp.divConst p h, Finsupp.smul_div_cancel' h⟩
+  · obtain ⟨m, hm⟩ : ∃ m, n = p • m := ⟨Finsupp.divConst h, Finsupp.smul_div_cancel' h⟩
     rw [hm, coeff_expand_smul p hp _ _, φ.coeff_expand_smul _ hp, φ.coeff_coe]
   · obtain ⟨i, hi⟩ := h
     rw [coeff_expand_of_not_dvd p hp _ hi, MvPolynomial.coeff_expand_of_not_dvd _ hi]
