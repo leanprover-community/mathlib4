@@ -304,10 +304,8 @@ lemma IsPath.concat_proj_inr {s t : σ₂} {x : List (Option α)}
   generalize ht' : Sum.inr t = t' at h
   induction h generalizing s with
   | nil u =>
-    simp
     subst hs'
-    cases ht'
-    rfl
+    simp_all
   | cons _ s'' t'' _ _ h_step _ ih =>
     subst hs' ht'
     simp only [concat, mem_image] at h_step
@@ -336,7 +334,7 @@ lemma IsPath.concat_split_inl_inr {s : σ₁} {t : σ₂} {x : List (Option α)}
     | some a =>
       simp only [concat_step, mem_image] at h_step
       rcases h_step with ⟨q, hq, rfl⟩
-      have ⟨u, v, s_acc, s_start, hx', h_path_rest, h_acc, h_bridge, h_path_M₂⟩ := ih rfl rfl
+      rcases ih rfl rfl with ⟨u, v, s_acc, s_start, hx', h_path_rest, h_acc, h_bridge, h_path_M₂⟩
       use some a :: u, v, s_acc, s_start
       and_intros
       · simp [hx']
@@ -347,7 +345,7 @@ lemma IsPath.concat_split_inl_inr {s : σ₁} {t : σ₂} {x : List (Option α)}
     | none =>
       simp only [concat_step, mem_union, mem_image, mem_ite_empty_right] at h_step
       rcases h_step with ⟨q, hq, rfl⟩ | ⟨hs, q, hq, rfl⟩
-      · have ⟨u, v, s_acc, s_start, hx', h_path_rest, h_acc, h_bridge, h_path_M₂⟩ := ih rfl rfl
+      · rcases ih rfl rfl with ⟨u, v, s_acc, s_start, hx', h_path_rest, h_acc, h_bridge, h_path_M₂⟩
         use none :: u, v, s_acc, s_start
         and_intros
         · simp [hx']
@@ -369,12 +367,12 @@ theorem accepts_concat : (concat M₁ M₂).accepts = M₁.accepts * M₂.accept
   simp only [Language.mem_mul]
   constructor
   · intro h
-    have ⟨q₁, q₂, x', hq₁, hq₂, hx', hM⟩ := (mem_accepts_iff_exists_path (concat M₁ M₂)).mp h
+    rcases (mem_accepts_iff_exists_path (concat M₁ M₂)).mp h with ⟨q₁, q₂, x', hq₁, hq₂, hx', hM⟩
     simp only [concat, mem_image] at hq₁ hq₂
     rcases hq₁ with ⟨s, hs, rfl⟩
     rcases hq₂ with ⟨t, ht, rfl⟩
-    have ⟨u', v', s_acc, s_start, hx, h_path_M₁, h_acc_M₁, h_start_M₂, h_path_M₂⟩ :=
-      IsPath.concat_split_inl_inr hM
+    rcases IsPath.concat_split_inl_inr hM with
+      ⟨u', v', s_acc, s_start, hx, h_path_M₁, h_acc_M₁, h_start_M₂, h_path_M₂⟩
     apply Language.mem_mul.mpr
     refine ⟨u'.reduceOption, ?_, v'.reduceOption, ?_, ?_⟩
     · apply (mem_accepts_iff_exists_path M₁).mpr
@@ -384,8 +382,8 @@ theorem accepts_concat : (concat M₁ M₂).accepts = M₁.accepts * M₂.accept
     · subst hx' hx
       simp [List.reduceOption_append, List.reduceOption_cons_of_none]
   · intro ⟨u, hu, v, hv, hx⟩
-    have ⟨uq₁, uq₂, u', huq₁, huq₂, hu', hM₁⟩ := (mem_accepts_iff_exists_path M₁).mp hu
-    have ⟨vq₁, vq₂, v', hvq₁, hvq₂, hv', hM₂⟩ := (mem_accepts_iff_exists_path M₂).mp hv
+    rcases (mem_accepts_iff_exists_path M₁).mp hu with ⟨uq₁, uq₂, u', huq₁, huq₂, hu', hM₁⟩
+    rcases (mem_accepts_iff_exists_path M₂).mp hv with ⟨vq₁, vq₂, v', hvq₁, hvq₂, hv', hM₂⟩
     apply (mem_accepts_iff_exists_path (concat M₁ M₂)).mpr
     use Sum.inl uq₁, Sum.inr vq₂, u' ++ [none] ++ v'
     and_intros
@@ -395,10 +393,7 @@ theorem accepts_concat : (concat M₁ M₂).accepts = M₁.accepts * M₂.accept
     · simp only [isPath_append]
       use Sum.inr vq₁
       constructor
-      · use Sum.inl uq₂
-        constructor
-        · exact IsPath.concat_lift_inl hM₁
-        · simp [huq₂, hvq₁]
+      · exact ⟨Sum.inl uq₂, IsPath.concat_lift_inl hM₁, by simp [huq₂, hvq₁]⟩
       · exact IsPath.concat_lift_inr hM₂
 
 end concat
@@ -450,21 +445,12 @@ lemma kstar_exists_path_some
     have ⟨s, t, x, hs, ht, hy', hx⟩ := (mem_accepts_iff_exists_path M).mp hy
     subst hy'
     cases L' with
-    | nil =>
-      use s, some t, x
-      and_intros
-      · exact hs
-      · simpa
-      · simp
-      · exact IsPath.kstar_lift_some hx
+    | nil => exact ⟨s, some t, x, hs, by simpa, by simp, IsPath.kstar_lift_some hx⟩
     | cons z L'' =>
       have h_nonempty' : z :: L'' ≠ [] := by simp
       have h_all' : ∀ y ∈ z :: L'', y ∈ M.accepts := by aesop
-      have ⟨s', q, x', hs', hq, hL'', hx'⟩:= ih h_nonempty' h_all'
-      use s, q, x ++ [none] ++ x'
-      and_intros
-      · exact hs
-      · exact hq
+      rcases ih h_nonempty' h_all' with ⟨s', q, x', hs', hq, hL'', hx'⟩
+      refine ⟨s, q, x ++ [none] ++ x', hs, hq, ?_, ?_⟩
       · simp [hL'', List.reduceOption_append]
       · rw [List.append_assoc, isPath_append]
         use some t
@@ -505,11 +491,9 @@ lemma IsPath.kstar_split_some {s t : σ} {x : List (Option α)}
     generalize ht : some t = ot at h
     induction h generalizing s with
     | nil _ =>
-      cases hs
-      cases ht
       left
-      use []
-      simp
+      subst hs
+      exact ⟨[], by simp_all⟩
     | cons _ _ _ oa x' h_step h_path ih =>
       subst hs ht
       simp only [kstar_step_some, mem_union, mem_image, mem_ite_empty_right] at h_step
@@ -578,7 +562,7 @@ lemma IsPath.kstar_exists_decomp {s t : σ} {x : List (Option α)}
         apply (mem_accepts_iff_exists_path M).mpr
         use s, q_acc, u
       subst h_len
-      have ⟨L', hv', hL'⟩ := ih v.length hlt hv h_next rfl
+      rcases ih v.length hlt hv h_next rfl with ⟨L', hv', hL'⟩
       use u.reduceOption :: L'
       constructor
       · subst hx
@@ -594,16 +578,17 @@ theorem accepts_kstar : (kstar M).accepts = (M.accepts)∗ := by
   ext x
   constructor
   · intro h
-    have ⟨s_start, s_end, x', h_start, h_end, hx', h_path⟩ :=
-      (mem_accepts_iff_exists_path (kstar M)).mp h
+    rcases (mem_accepts_iff_exists_path (kstar M)).mp h with
+      ⟨s_start, s_end, x', h_start, h_end, hx', h_path⟩
     simp only [kstar, singleton_union, mem_singleton_iff] at h_start
     subst h_start
     simp only [Language.mem_kstar]
     simp only [kstar, singleton_union, mem_insert_iff, mem_image] at h_end
     rcases h_end with rfl | ⟨q_start, hq_start, rfl⟩
-    · use []
-      cases h_path with
-      | nil _ => simpa using hx'
+    · cases h_path with
+      | nil _ =>
+        use []
+        simpa using hx'
       | cons t' s' u oa x'' h_step h_rest =>
         cases oa with
         | some a => simp at h_step
@@ -619,24 +604,18 @@ theorem accepts_kstar : (kstar M).accepts = (M.accepts)∗ := by
         | none =>
           simp only [kstar, singleton_union, mem_image] at h_step
           rcases h_step with ⟨u', hu', rfl⟩
-          have ⟨L, hx'', hL⟩ := IsPath.kstar_exists_decomp h_rest hu' hq_start
-          use L
-          constructor
-          · simp at hx'
-            simp [hx', hx'']
-          · exact hL
+          rcases IsPath.kstar_exists_decomp h_rest hu' hq_start with ⟨L, hx'', hL⟩
+          exact ⟨L, by simp_all, hL⟩
   · intro h
     simp only [Language.mem_kstar] at h
     rcases h with ⟨L, hx, hL⟩
     apply (mem_accepts_iff_exists_path (kstar M)).mpr
     induction L generalizing x with
-    | nil =>
-      use none, none, []
-      simp [hx]
+    | nil => exact ⟨none, none, [], by simp [hx]⟩
     | cons w L' ih =>
       expose_names
       have h_nonempty : w :: L' ≠ [] := by simp
-      have ⟨s, q, x', hs, hq, hL', hx'⟩ := kstar_exists_path_some (w :: L') h_nonempty hL
+      rcases kstar_exists_path_some (w :: L') h_nonempty hL with ⟨s, q, x', hs, hq, hL', hx'⟩
       use none, q, none :: x'
       and_intros
       · simp
