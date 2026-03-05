@@ -121,7 +121,7 @@ lemma dual_id_map (C : PointedCone R M) : dual p C = dual .id (map p C) := by ex
 lemma dual_eval (s : Set M) : dual p s = comap p.flip (dual (Module.Dual.eval R M) s) := by
   ext; simp
 
-lemma neg_dual {s : Set M} : -(dual p s) = dual p (-s) := by ext x; simp
+lemma neg_dual {s : Set M} : -dual p s = dual p (-s) := by ext x; simp
 
 @[simp] lemma neg_dual_neg (s : Set M) : -dual p (-s) = dual p s := by ext x; simp
 
