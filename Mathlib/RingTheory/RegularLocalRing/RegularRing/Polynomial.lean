@@ -21,6 +21,7 @@ variable (R : Type*) [CommRing R]
 
 open IsLocalRing Polynomial Ideal
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 lemma Polynomial.localization_at_comap_maximal_isRegularRing_isRegularRing
     [IsRegularLocalRing R] (p : Ideal R[X]) [p.IsPrime] (max : p.comap C = maximalIdeal R) :
