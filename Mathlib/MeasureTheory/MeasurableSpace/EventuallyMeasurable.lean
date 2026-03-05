@@ -47,7 +47,7 @@ def eventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : Measura
   measurableSet_compl := fun _ ⟨t, ht, hts⟩ => ⟨tᶜ, ht.compl, hts.compl⟩
   measurableSet_iUnion s hs := by
     choose t ht hts using hs
-    exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, EventuallyEq.countable_iUnion hts⟩
+    exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, .countable_iUnion hts⟩
 
 /-- We say a set `s` is an `EventuallyMeasurableSet` with respect to a given
 σ-algebra `m` and σ-filter `l` if it differs from a set in `m` by a set in

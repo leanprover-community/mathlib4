@@ -239,7 +239,6 @@ open NumberField.Ideal Polynomial
 
 variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
   replace hm : p.Coprime m := hp.out.coprime_iff_not_dvd.mpr hm
@@ -262,7 +261,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
 @[deprecated (since := "2025-12-10")]
 alias inertiaDeg_of_not_dvd := inertiaDeg_eq_of_not_dvd
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger

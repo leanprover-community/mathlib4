@@ -919,7 +919,6 @@ section Succ
 
 variable [PartialOrder α] [SuccOrder α] [∀ a : α, Decidable (succ a = a)]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : SuccOrder (WithTop α) where
   succ a :=
     match a with
@@ -969,7 +968,6 @@ section Pred
 
 variable [Preorder α] [OrderTop α] [PredOrder α]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : PredOrder (WithTop α) where
   pred a :=
     match a with
