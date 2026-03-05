@@ -204,6 +204,14 @@ theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠
   have := IsMulTorsionFree.pow_right_injective₀ (by rwa [one_eq_top]) h₂ this
   simp_all
 
+variable (p P) in
+theorem ramificationIdx_le_ramificationIdx {T : Type*} [CommRing T] (Q : Ideal T) (f : R →+* S)
+    (g : S →+* T) (hp : p = Ideal.comap f P) (h : BddAbove {n | map (g.comp f) p ≤ Q ^ n}) :
+    Ideal.ramificationIdx g P Q ≤ Ideal.ramificationIdx (g.comp f) p Q := by
+  refine csSup_le_csSup' h fun n hn ↦ ?_
+  rw [Set.mem_setOf_eq, ← map_map, map_le_iff_le_comap, map_le_iff_le_comap, hp]
+  refine Ideal.comap_mono <| by rwa [← Ideal.map_le_iff_le_comap]
+
 namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
@@ -272,6 +280,19 @@ lemma ramificationIdx_eq_one_iff
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
 
+theorem ramificationIdx_le_ramificationIdx [IsDomain R] [Algebra R S] [Module.IsTorsionFree R S]
+    {S₀ : Type*} [CommRing S₀] [Algebra R S₀] [Algebra S₀ S] [IsScalarTower R S₀ S] (p : Ideal R)
+    (P : Ideal S₀) (Q : Ideal S) [Q.LiesOver p] [P.LiesOver p] [Q.IsPrime] (hp : p ≠ ⊥) :
+    Ideal.ramificationIdx (algebraMap S₀ S) P Q ≤ Ideal.ramificationIdx (algebraMap R S) p Q := by
+  rw [IsScalarTower.algebraMap_eq R S₀ S]
+  refine Ideal.ramificationIdx_le_ramificationIdx p P Q (algebraMap R S₀) (algebraMap S₀ S) ?_ ?_
+  · rwa [← under_def, ← liesOver_iff]
+  · rw [← IsScalarTower.algebraMap_eq R S₀ S]
+    suffices ramificationIdx (algebraMap R S) p Q ≠ 0 by
+      contrapose! this
+      exact ramificationIdx_eq_zero (by rwa [not_bddAbove_iff] at this)
+    exact ramificationIdx_ne_zero_of_liesOver _ hp
+
 end IsDedekindDomain
 
 variable (f p P) [Algebra R S]
@@ -337,6 +358,16 @@ theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
   rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
     ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
   rfl
+
+theorem inertiaDeg_le_inertiaDeg {T : Type*} [CommRing T] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] [Module.Finite R T] (Q : Ideal T) [P.LiesOver p] [Q.LiesOver P]
+    [p.IsPrime] :
+    Ideal.inertiaDeg P Q ≤ Ideal.inertiaDeg p Q := by
+  have : Q.LiesOver p := Ideal.LiesOver.trans Q P p
+  rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
+  have : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ Q) := IsScalarTower.of_algebraMap_eq <| by
+    rintro ⟨x⟩; exact congr_arg _ (IsScalarTower.algebraMap_apply R S T x)
+  exact Module.finrank_top_le_finrank_of_isScalarTower _ _ _
 
 end DecEq
 
