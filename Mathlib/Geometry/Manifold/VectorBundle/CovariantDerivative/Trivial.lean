@@ -38,6 +38,7 @@ namespace IsCovariantDerivativeOn
 
 section trivial_bundle
 
+set_option backward.isDefEq.respectTransparency false in
 variable (I M F) in
 @[simps]
 noncomputable def trivial [IsManifold I 1 M] :
@@ -66,6 +67,7 @@ namespace CovariantDerivative
 
 section trivial_bundle
 
+set_option backward.isDefEq.respectTransparency false in
 variable (I M F) in
 @[simps]
 noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial M F) where
