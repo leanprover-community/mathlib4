@@ -310,7 +310,7 @@ private lemma max_eq_iSup {α : Type*} [ConditionallyCompleteLattice α] (a b : 
 variable [Finite ι] [Finite ι']
 
 @[fun_prop]
-private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0) :
+private lemma hasFiniteMulSupport_iSup_nonarchAbsVal {x : ι → K} (hx : x ≠ 0) :
     (fun v : nonarchAbsVal ↦ ⨆ i, v.val (x i)).HasFiniteMulSupport := by
   have : Nonempty {j // x j ≠ 0} := nonempty_subtype.mpr <| ne_iff.mp hx
   suffices (fun v : nonarchAbsVal ↦ ⨆ i : {j // x j ≠ 0}, v.val (x i)).HasFiniteMulSupport by
@@ -326,7 +326,7 @@ private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0)
   fun_prop (disch := grind)
 
 @[fun_prop]
-private lemma mulSupport_max_nonarchAbsVal_finite (x : K) :
+private lemma hasFiniteMulSupport_max_nonarchAbsVal (x : K) :
     (fun v : nonarchAbsVal ↦ v.val x ⊔ 1).HasFiniteMulSupport := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp [HasFiniteMulSupport]
@@ -381,8 +381,8 @@ lemma mulHeight_comp_le (f : ι → ι') (x : ι' → K) :
   · exact Multiset.prod_map_nonneg fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass v _
   · exact Multiset.prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass v _)
       fun v _ ↦ H v
-  · exact finprod_le_finprod (mulSupport_iSup_nonarchAbsVal_finite h₀)
-      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) (mulSupport_iSup_nonarchAbsVal_finite hx)
+  · exact finprod_le_finprod (hasFiniteMulSupport_iSup_nonarchAbsVal h₀)
+      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) (hasFiniteMulSupport_iSup_nonarchAbsVal hx)
       fun v ↦ H v.val
 
 open Real in
@@ -543,7 +543,7 @@ lemma mulHeight_pow (x : ι → K) (n : ℕ) :
       (Finite.bddAbove_range _) |>.symm
   have hxn : x ^ n ≠ 0 := by simp [hx]
   simp only [mulHeight_eq hx, mulHeight_eq hxn, H, mul_pow,
-    finprod_pow <| mulSupport_iSup_nonarchAbsVal_finite hx, ← Multiset.prod_map_pow]
+    finprod_pow <| hasFiniteMulSupport_iSup_nonarchAbsVal hx, ← Multiset.prod_map_pow]
 
 /-- The logarithmic height of the coordinate-wise `n`th power of a tuple
 is `n` times its logarithmic height. -/
@@ -627,7 +627,7 @@ lemma mulHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0
     exact ⟨f, prod_ne_zero_iff.mpr fun a _ ↦ hf a⟩
   simp_rw [map_prod, Real.iSup_prod_eq_prod_iSup_of_nonnegHomClass]
   rw [Multiset.prod_map_prod,
-    finprod_prod_comm _ _ fun b _ ↦ mulSupport_iSup_nonarchAbsVal_finite (hx b), ← prod_mul_distrib]
+    finprod_prod_comm _ _ fun b _ ↦ hasFiniteMulSupport_iSup_nonarchAbsVal (hx b), ← prod_mul_distrib]
   exact prod_congr rfl fun a _ ↦ by rw [mulHeight_eq (hx a)]
 
 open Real in
@@ -662,7 +662,7 @@ lemma mulHeight_fun_mul_eq {x : ι → K} (hx : x ≠ 0) {y : ι' → K} (hy : y
     exact ne_iff.mpr ⟨⟨i, j⟩, mul_ne_zero hi hj⟩
   rw [mulHeight_eq hx, mulHeight_eq hy, mulHeight_eq hxy, mul_mul_mul_comm, ← Multiset.prod_map_mul,
     ← finprod_mul_distrib
-        (mulSupport_iSup_nonarchAbsVal_finite hx) (mulSupport_iSup_nonarchAbsVal_finite hy)]
+        (hasFiniteMulSupport_iSup_nonarchAbsVal hx) (hasFiniteMulSupport_iSup_nonarchAbsVal hy)]
   congr <;> ext1 v
   · exact Real.iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg v x y
   · exact Real.iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg v.val x y

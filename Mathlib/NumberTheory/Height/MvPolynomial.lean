@@ -137,12 +137,11 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
     rw [mul_comm (iSup _), ← mul_assoc]
     exact linearMap_apply_bound v A x
   · -- nonarchimedean part: reduce to "local" statement `linearMap_apply_bound_of_isNonarchimedean`
-    rw [← finprod_mul_distrib (mulSupport_iSup_nonarchAbsVal_finite hA)
-      (mulSupport_iSup_nonarchAbsVal_finite hx)]
-    refine finprod_le_finprod (mulSupport_iSup_nonarchAbsVal_finite h)
+    rw [← finprod_mul_distrib (by fun_prop (disch := assumption))
+      (by fun_prop (disch := assumption))]
+    refine finprod_le_finprod (by fun_prop (disch := assumption))
       (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) ?_ fun v ↦ ?_
-    · exact ((mulSupport_iSup_nonarchAbsVal_finite hA).union
-        (mulSupport_iSup_nonarchAbsVal_finite hx)).subset <| Function.mulSupport_mul ..
+    · fun_prop (disch := assumption)
     · exact linearMap_apply_bound_of_isNonarchimedean (isNonarchimedean _ v.prop) A x
 
 open Real in
