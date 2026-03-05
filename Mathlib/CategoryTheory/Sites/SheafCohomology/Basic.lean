@@ -95,18 +95,6 @@ variable [HasSheafify J AddCommGrpCat.{w}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{
 instance (F : Sheaf J AddCommGrpCat.{w}) {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
   subsingleton_of_forall_eq 0 fun x ↦ (Ext.eq_zero_of_injective x)
 
-variable {S : ShortComplex (Sheaf J AddCommGrpCat.{w})} (hS : S.ShortExact) (n₀ n₁ : ℕ)
-    (h : n₀ + 1 = n₁)
-
-/-- The long exact sequence on sheaf cohomology. -/
-noncomputable abbrev H.longSequence (h : n₀ + 1 = n₁ := by lia) :
-    ComposableArrows AddCommGrpCat 5 :=
-  Ext.covariantSequence ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of.{w} (ULift ℤ)))
-    hS n₀ n₁ h
-
-theorem H.longSequence_exact (h : n₀ + 1 = n₁ := by lia) : (H.longSequence hS n₀ n₁ h).Exact :=
-  Ext.covariantSequence_exact _ hS n₀ n₁ h
-
 variable (F : Sheaf J AddCommGrpCat.{w}) {T : C} (hT : Limits.IsTerminal T)
 
 open AddCommGrpCat Opposite
