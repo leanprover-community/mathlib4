@@ -258,7 +258,7 @@ private lemma aux3 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x
     ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', coe_innerSL_apply, Pi.smul_apply,
     comp_apply, ContinuousLinearEquiv.coe_coe, ContinuousLinearMap.toSpanSingleton_apply]
   erw [ContinuousLinearMap.sub_apply, ContinuousLinearMap.sub_apply, ContinuousLinearMap.comp_apply]
-  set A := inner ℝ (σ x) ((cov τ x) X)
+  --set A := inner ℝ (σ x) ((cov τ x) X)
   conv =>
     enter [1, 1, 2]
     erw [ContinuousLinearMap.smul_apply]
@@ -272,10 +272,11 @@ private lemma aux3 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x
   --set D := (mfderiv I 𝓘(ℝ, ℝ) f x) X
   simp only [smul_eq_mul, bar, ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk, LinearMap.coe_mk,
     AddHom.coe_mk, inner_smul_right]
-  -- might be superfluous
-  have : inner ℝ (σ x) (τ x) = ⟪σ, τ⟫ x := by rfl
-  rw [this]
-  sorry -- morally true now!
+  -- would be nice to finish by a tactic now!
+  erw [mul_add, mul_add]
+  rw [Pi.mul_apply, mul_neg, mul_neg,
+    ← sub_eq_add_neg, ← sub_eq_add_neg, sub_add_eq_sub_sub]
+  match_scalars <;> all_goals simp
 
 variable {I} in
 private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
