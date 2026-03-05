@@ -37,7 +37,7 @@ open Lean Parser Tactic Mathlib Meta NormNum Qq
 
 initialize registerTraceClass `CancelDenoms
 
-namespace CancelDenoms
+namespace Mathlib.Tactic.CancelDenoms
 
 /-! ### Lemmas used in the procedure -/
 
@@ -346,3 +346,5 @@ def cancelDenominators (loc : Location) : TacticM Unit := do
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
   Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc?]?))
+
+end Mathlib.Tactic
