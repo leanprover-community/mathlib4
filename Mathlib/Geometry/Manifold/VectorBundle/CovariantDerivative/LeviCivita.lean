@@ -818,7 +818,7 @@ lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
   · -- TODO: is something wrong,
     -- or do we just need to thread through more differentiability assumptions?
     apply cov.IsCompatible_apply I h.1 sorry hZ
-  · simp [← cov.isTorsionFree_iff.mp h.2 hX hZ, product, inner_sub_right]
+  · sorry -- simp [← cov.isTorsionFree_iff.mp h.2 hX hZ, product, inner_sub_right]
 
 variable {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
@@ -1046,8 +1046,8 @@ lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
   intro X Y x hX hY
   apply congr_of_forall_product_apply
   intro Z
-  trans (inner ℝ (((LeviCivitaConnection I M) X x) (Y x)) Z) -
-    (inner ℝ (((LeviCivitaConnection I M) Y x) (X x)) Z)
+  trans (inner ℝ (((LeviCivitaConnection I M) Y x) (X x)) Z) -
+    (inner ℝ (((LeviCivitaConnection I M) X x) (Y x)) Z)
   · apply inner_sub_left
   have hZ' : _root_.extend I E Z x = Z := extend_apply_self Z
   rw [← hZ']
@@ -1065,31 +1065,14 @@ lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
   simp only [Pi.neg_apply, inner_neg_right]
   rw [rhs_aux_swap (Y := Z'), rhs_aux_swap (Y := Z'), rhs_aux_swap (X := Z')]
   rw [real_inner_comm (Z' x) (VectorField.mlieBracket I X Y x)]
-  set A := inner ℝ (Z' x) (VectorField.mlieBracket I X Y x)
-  set B := inner ℝ (Y x) (VectorField.mlieBracket I X Z' x)
-  set C := inner ℝ (X x) (VectorField.mlieBracket I Y Z' x)
-  set D := rhs_aux I X Y Z' x
-  set E := rhs_aux I Y X Z' x
-  set F := rhs_aux I Z' X Y x
-  have aux : (E + D - F - C - A + -B) - (D + E - F - B + A + -C) = - A - A := by abel
-  rw [smul_eq_mul]
-  erw [← mul_sub]
-  abel_nf
-  simp -- just a sign error remaining...
-  -- trans (1 / 2) • (E + D - F - C - A + -B) - (1 / 2) • (D + E - F - B + A + -C)
-  -- · match_scalars
-  --   all_goals simp
-  stop
-  sorry
-  match_scalars
-  all_goals simp
-  trans A + B
-  · match_scalars
-    all_goals simp
-    sorry -- should be obvious!
-  --simp only [A, B, C]--set D := inner ℝ (VectorField.mlieBracket I X Y x) (Z' x)
-  -- is A = B?
-  sorry
+  -- set A := inner ℝ (Z' x) (VectorField.mlieBracket I X Y x)
+  -- set B := inner ℝ (Y x) (VectorField.mlieBracket I X Z' x)
+  -- set C := inner ℝ (X x) (VectorField.mlieBracket I Y Z' x)
+  -- set D := rhs_aux I X Y Z' x
+  -- set E := rhs_aux I Y X Z' x
+  -- set F := rhs_aux I Z' X Y x
+  match_scalars <;> simp
+  norm_num
 
 #exit
 

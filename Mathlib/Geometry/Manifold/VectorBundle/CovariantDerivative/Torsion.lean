@@ -37,7 +37,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 noncomputable def Bundle.torsionFun
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
-  fun X Y x ↦ cov X x (Y x) - cov Y x (X x) - VectorField.mlieBracket I X Y x
+  fun X Y x ↦ cov Y x (X x) - cov X x (Y x) - VectorField.mlieBracket I X Y x
 
 variable
   {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)}
@@ -159,14 +159,14 @@ variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 noncomputable def torsion := cov.isCovariantDerivativeOn.torsion
 
 lemma torsion_vector_field_apply (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
-    cov.torsion x (X x) (Y x) = cov X x (Y x) - cov Y x (X x) - mlieBracket I X Y x := by
+    cov.torsion x (X x) (Y x) = cov Y x (X x) - cov X x (Y x) - mlieBracket I X Y x := by
   unfold torsion IsCovariantDerivativeOn.torsion
   apply mk2TensorAt_apply
   exacts [hX, hY]
 
 lemma torsion_apply (u v : TangentSpace I x) :
-    cov.torsion x u v = cov (extend I E u) x (extend I E v x)
-                        - cov (extend I E v) x (extend I E u x)
+    cov.torsion x u v = cov (extend I E v) x (extend I E u x)
+                        - cov (extend I E u) x (extend I E v x)
                         - mlieBracket I (extend I E u) (extend I E v) x := by
   unfold torsion IsCovariantDerivativeOn.torsion
   apply mk2TensorAt_apply_eq_extend
@@ -176,7 +176,7 @@ def IsTorsionFree : Prop := torsion cov = 0
 
 lemma isTorsionFree_iff : IsTorsionFree cov ↔
     ∀ {X Y x}, MDiffAt (T% X) x → MDiffAt (T% Y) x →
-      cov X x (Y x) - cov Y x (X x) = mlieBracket I X Y x := by
+      cov Y x (X x) - cov X x (Y x) = mlieBracket I X Y x := by
   unfold IsTorsionFree
   constructor
   · intro h X Y x hX hY

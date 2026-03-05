@@ -234,6 +234,7 @@ end IsCovariantDerivativeOn
 /-! Bundled global covariant derivatives -/
 
 variable (I F V) in
+/-- Caution: `cov Y x (X x)` corresponds to `∇ X Y` in textbooks! -/
 @[ext]
 structure CovariantDerivative [IsManifold I 1 M] where
   toFun : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)
