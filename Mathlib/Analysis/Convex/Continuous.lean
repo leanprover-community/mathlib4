@@ -71,7 +71,6 @@ lemma ConcaveOn.lipschitzOnWith_of_abs_le (hf : ConcaveOn ℝ (ball x₀ r) f) (
     LipschitzOnWith (2 * M / ε).toNNReal f (ball x₀ (r - ε)) := by
   simpa using hf.neg.lipschitzOnWith_of_abs_le hε <| by simpa using hM
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ConvexOn.exists_lipschitzOnWith_of_isBounded (hf : ConvexOn ℝ (ball x₀ r) f) (hr : r' < r)
     (hf' : IsBounded (f '' ball x₀ r)) : ∃ K, LipschitzOnWith K f (ball x₀ r') := by
   rw [isBounded_iff_subset_ball 0] at hf'

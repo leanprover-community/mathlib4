@@ -1104,7 +1104,6 @@ theorem pi_eq_generateFrom :
     simp +instances only [generateFrom_setOf_isOpen]
   _ = _ := pi_generateFrom_eq
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pi_generateFrom_eq_finite {X : ι → Type*} {g : ∀ a, Set (Set (X a))} [Finite ι]
     (hg : ∀ a, ⋃₀ g a = univ) :
     (@Pi.topologicalSpace ι X fun a => generateFrom (g a)) =
@@ -1319,6 +1318,14 @@ lemma Topology.IsClosedEmbedding.uliftDown [TopologicalSpace X] :
 
 instance [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (ULift X) :=
   IsEmbedding.uliftDown.discreteTopology
+
+/-- Continuous maps between `ULift X` and `ULift Y` are equivalent to continuous maps between `X`
+and `Y`. -/
+@[simps]
+def ContinuousMap.uliftEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] :
+    C(ULift.{v} X, ULift.{u} Y) ≃ C(X, Y) where
+  toFun f := ⟨ULift.down ∘ f ∘ ULift.up, by fun_prop⟩
+  invFun f := ⟨ULift.up ∘ f ∘ ULift.down, by fun_prop⟩
 
 end ULift
 

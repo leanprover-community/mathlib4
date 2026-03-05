@@ -105,14 +105,12 @@ protected lemma max_le_iff {m : WithBot α} {s : Finset α} : s.max ≤ m ↔ �
 protected lemma max_eq_top [OrderTop α] {s : Finset α} : s.max = ⊤ ↔ ⊤ ∈ s :=
   Finset.sup_eq_top_iff.trans <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `s` be a finset in a linear order. Then `s.min` is the minimum of `s` if `s` is not empty,
 and `⊤` otherwise. It belongs to `WithTop α`. If you want to get an element of `α`, see
 `s.min'`. -/
 protected def min (s : Finset α) : WithTop α :=
   inf s (↑)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem min_eq_inf_withTop (s : Finset α) : s.min = inf s (↑) :=
   rfl
 
@@ -133,7 +131,6 @@ lemma min_pair (a b : α) :
     Finset.min {a, b} = min (↑a) (↑b) := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b :=
   let ⟨b, h, _⟩ := WithTop.le_iff_forall.1 (inf_le (α := WithTop α) h) _ rfl; ⟨b, h⟩
 
@@ -148,7 +145,6 @@ theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ := by
 theorem mem_of_min {s : Finset α} : ∀ {a : α}, s.min = a → a ∈ s :=
   @mem_of_max αᵒᵈ _ s
 
-set_option backward.isDefEq.respectTransparency false in
 theorem min_le {a : α} {s : Finset α} (as : a ∈ s) : s.min ≤ a :=
   inf_le as
 
@@ -161,19 +157,15 @@ theorem min_le_of_eq {s : Finset α} {a b : α} (h₁ : b ∈ s) (h₂ : s.min =
 theorem notMem_of_lt_min {s : Finset α} {a b : α} (h₁ : a < b) (h₂ : s.min = ↑b) : a ∉ s :=
   Finset.notMem_of_coe_lt_min <| (WithTop.coe_lt_coe.mpr h₁).trans_eq h₂.symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem min_union {s t : Finset α} : (s ∪ t).min = s.min ⊓ t.min := inf_union
 
-set_option backward.isDefEq.respectTransparency false in
 @[gcongr]
 theorem min_mono {s t : Finset α} (st : s ⊆ t) : t.min ≤ s.min :=
   inf_mono st
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem le_min {m : WithTop α} {s : Finset α} (st : ∀ a : α, a ∈ s → m ≤ a) : m ≤ s.min :=
   Finset.le_inf st
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem le_min_iff {m : WithTop α} {s : Finset α} : m ≤ s.min ↔ ∀ a ∈ s, m ≤ a :=
   Finset.le_inf_iff
@@ -278,7 +270,6 @@ theorem map_ofDual_min (s : Finset αᵒᵈ) : s.min.map ofDual = (s.image ofDua
   rw [max_eq_sup_withBot, sup_image]
   exact congr_fun WithBot.map_id _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_ofDual_max (s : Finset αᵒᵈ) : s.max.map ofDual = (s.image ofDual).min := by
   rw [min_eq_inf_withTop, inf_image]
   exact congr_fun WithTop.map_id _
@@ -287,7 +278,6 @@ theorem map_toDual_min (s : Finset α) : s.min.map toDual = (s.image toDual).max
   rw [max_eq_sup_withBot, sup_image]
   exact congr_fun WithBot.map_id _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min := by
   rw [min_eq_inf_withTop, inf_image]
   exact congr_fun WithTop.map_id _
@@ -422,7 +412,6 @@ theorem exists_next_left {x : α} {s : Finset α} (h : ∃ y ∈ s, y < x) :
     ∃ y ∈ s, y < x ∧ ∀ z ∈ s, z < x → z ≤ y :=
   @exists_next_right αᵒᵈ _ x s h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card t + 1`. -/
 theorem card_le_of_interleaved {s t : Finset α}
     (h : ∀ᵉ (x ∈ s) (y ∈ s),
