@@ -9,6 +9,7 @@ public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
+import Mathlib.Data.Finset.Max
 
 import Mathlib.Data.Fintype.Order
 
@@ -288,3 +289,22 @@ lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
   simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 
 end Set
+
+section LinearOrder
+/-!
+### Functions taking values on some `LinearOrder`.
+-/
+
+variable [Preorder ι] [LocallyFiniteOrderBot ι] [LinearOrder α]
+
+theorem exists_partialSups_eq (f : ι → α) (i : ι) :
+    ∃ j ≤ i, partialSups f i = f j := by
+  obtain ⟨j, hj_mem, hj_le⟩ : ∃ j ∈ Finset.Iic i, ∀ k ∈ Finset.Iic i, f k ≤ f j :=
+    Finset.exists_max_image _ _ ⟨i, Finset.mem_Iic.mpr le_rfl⟩
+  simp only [Finset.mem_Iic] at hj_mem hj_le
+  use j, hj_mem
+  apply le_antisymm
+  · exact partialSups_le _ _ _ fun k hk => hj_le k hk
+  · exact le_partialSups_of_le f hj_mem
+
+end LinearOrder

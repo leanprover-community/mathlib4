@@ -112,11 +112,11 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
     name  := `to_dual_ignore_args
     descr :=
       "Auxiliary attribute for `to_dual` stating that certain arguments are not dualized."
-    add   := fun _ stx ↦ do
-        let ids ← match stx with
-          | `(attr| to_dual_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
-          | _ => throwUnsupportedSyntax
-        return ids.toList }
+    add := fun _ stx ↦ do
+      let ids ← match stx with
+        | `(attr| to_dual_ignore_args $[$ids:num]*) => pure <| ids.map (·.getNat - 1)
+        | _ => throwUnsupportedSyntax
+      return ids.toList }
 
 @[inherit_doc TranslateData.unfoldBoundaries?]
 initialize unfoldBoundaries : UnfoldBoundaryExt ← registerUnfoldBoundaryExt
@@ -227,6 +227,11 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("predColimit", "PredLimit"),
   ("codirectedOrder", "DirectedOrder"),
   ("directedOrder", "CodirectedOrder"),
+  ("nhdsLT", "NhdsGT"),
+  ("nhdsGT", "NhdsLT"),
+  ("nhdsLE", "NhdsGE"),
+  ("nhdsGE", "NhdsLE"),
+  ("neTop", "NeBot")
 ]
 
 /-- The bundle of environment extensions for `to_dual` -/
