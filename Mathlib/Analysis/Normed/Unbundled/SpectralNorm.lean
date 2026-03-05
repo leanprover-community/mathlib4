@@ -857,6 +857,7 @@ namespace spectralNorm
 variable (K L)
 
 /-- `L` with the spectral norm is a `NormedField`. -/
+@[implicit_reducible]
 def normedField : NormedField L :=
   { (inferInstance : Field L) with
     norm x := (spectralNorm K L x : ℝ)
@@ -875,6 +876,7 @@ def normedField : NormedField L :=
     edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal] }
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
+@[implicit_reducible]
 def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
   __ := spectralNorm.normedField K L
   non_trivial :=
@@ -882,16 +884,19 @@ def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
     ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩
 
 /-- `L` with the spectral norm is a `normed_add_comm_group`. -/
+@[implicit_reducible]
 def normedAddCommGroup : NormedAddCommGroup L := by
   haveI : NormedField L := normedField K L
   infer_instance
 
 /-- `L` with the spectral norm is a `seminormed_add_comm_group`. -/
+@[implicit_reducible]
 def seminormedAddCommGroup : SeminormedAddCommGroup L := by
   have : NormedField L := normedField K L
   infer_instance
 
 /-- `L` with the spectral norm is a `normed_space` over `K`. -/
+@[implicit_reducible]
 def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
   letI _ := seminormedAddCommGroup K L
   { (inferInstance : Module K L) with
@@ -900,9 +905,11 @@ def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
       exact le_of_eq (map_smul_eq_mul _ _ _) }
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
+@[implicit_reducible]
 def metricSpace : MetricSpace L := (normedField K L).toMetricSpace
 
 /-- The uniform space structure on `L` induced by the spectral norm. -/
+@[implicit_reducible]
 def uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
 
 set_option backward.isDefEq.respectTransparency false in

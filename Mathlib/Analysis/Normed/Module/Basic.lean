@@ -482,6 +482,7 @@ instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 �
 /-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
+@[implicit_reducible]
 def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
@@ -523,6 +524,7 @@ instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars �
 /-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
+@[implicit_reducible]
 def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I

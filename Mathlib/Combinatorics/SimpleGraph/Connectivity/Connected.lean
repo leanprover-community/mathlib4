@@ -197,6 +197,7 @@ lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype 
   exact not_reachable_of_left_degree_zero huv.symm hu
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
+@[implicit_reducible]
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
 /-- A graph is preconnected if every pair of vertices is reachable from one another. -/

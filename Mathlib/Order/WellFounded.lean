@@ -312,7 +312,7 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 end Induction
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
-@[to_dual (attr := instance_reducible)
+@[to_dual (attr := implicit_reducible)
 /-- A nonempty linear order with well-founded `>` has a top element. -/]
 noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where

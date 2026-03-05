@@ -165,7 +165,7 @@ instance (priority := high) CWComplex.instRelCWComplex {X : Type*} [TopologicalS
   union' := by simpa only [empty_union] using CWComplex.union'
 
 /-- A relative CW complex with an empty base is an absolute CW complex. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def RelCWComplex.toCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) [RelCWComplex C ∅] :
     CWComplex C where
   cell := cell C

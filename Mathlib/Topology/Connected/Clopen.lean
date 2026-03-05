@@ -471,6 +471,7 @@ end Preconnected
 
 section connectedComponentSetoid
 /-- The setoid of connected components of a topological space -/
+@[implicit_reducible]
 def connectedComponentSetoid (α : Type*) [TopologicalSpace α] : Setoid α :=
   ⟨fun x y => connectedComponent x = connectedComponent y,
     ⟨fun x => by trivial, fun h1 => h1.symm, fun h1 h2 => h1.trans h2⟩⟩

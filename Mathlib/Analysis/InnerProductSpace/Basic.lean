@@ -913,6 +913,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A general inner product implies a real inner product. This is not registered as an instance
 since `𝕜` does not appear in the return type `Inner ℝ E`. -/
+@[implicit_reducible]
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
 /-- A general inner product space structure implies a real inner product structure.
@@ -951,6 +952,7 @@ theorem real_inner_I_smul_self (x : E) :
 /-- A complex inner product implies a real inner product. This cannot be an instance since it
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
+@[implicit_reducible]
 def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G

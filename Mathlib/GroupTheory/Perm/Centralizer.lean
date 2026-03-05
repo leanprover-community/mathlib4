@@ -128,6 +128,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
 
 /-- The action by conjugation of `Subgroup.centralizer {g}`
   on the cycles of a given permutation -/
+@[implicit_reducible]
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     MulAction (centralizer {g}) g.cycleFactorsFinset where
   smul k c := ⟨ConjAct.toConjAct (k : Perm α) • c.val,

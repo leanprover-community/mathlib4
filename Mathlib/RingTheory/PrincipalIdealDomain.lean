@@ -213,6 +213,7 @@ variable (R)
 
 /-- Any Bézout domain is a GCD domain. This is not an instance since `GCDMonoid` contains data,
 and this might not be how we would like to construct it. -/
+@[implicit_reducible]
 noncomputable def toGCDDomain [IsBezout R] [IsDomain R] [DecidableEq R] : GCDMonoid R :=
   gcdMonoidOfGCD (gcd · ·) (gcd_dvd_left · ·) (gcd_dvd_right · ·) dvd_gcd
 

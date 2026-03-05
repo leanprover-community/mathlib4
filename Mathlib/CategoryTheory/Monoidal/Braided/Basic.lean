@@ -207,6 +207,7 @@ end BraidedCategory
 Verifying the axioms for a braiding by checking that the candidate braiding is sent to a braiding
 by a faithful monoidal functor.
 -/
+@[implicit_reducible]
 def BraidedCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [MonoidalCategory C]
     [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Faithful] [BraidedCategory D]
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
@@ -250,6 +251,7 @@ def BraidedCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [Monoid
       braiding_naturality_left_assoc, Functor.LaxMonoidal.associativity_inv, hexagon_reverse_assoc]
 
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
+@[implicit_reducible]
 noncomputable def BraidedCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [BraidedCategory D] : BraidedCategory C :=
@@ -401,6 +403,7 @@ instance (F : C ⥤ D) (G : D ⥤ E) [F.LaxBraided] [G.LaxBraided] :
 /--
 Given two lax monoidal, monoidally isomorphic functors, if one is lax braided, so is the other.
 -/
+@[implicit_reducible]
 def ofNatIso {F G : C ⥤ D} (i : F ≅ G) [F.LaxBraided] [G.LaxMonoidal]
     [NatTrans.IsMonoidal i.hom] : G.LaxBraided where
   braided X Y := by
@@ -528,12 +531,14 @@ lemma Functor.map_braiding (F : C ⥤ D) (X Y : C) [F.Braided] :
 /--
 A braided category with a faithful braided functor to a symmetric category is itself symmetric.
 -/
+@[implicit_reducible]
 def SymmetricCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [MonoidalCategory C]
     [MonoidalCategory D] [BraidedCategory C] [SymmetricCategory D] (F : C ⥤ D) [F.Braided]
     [F.Faithful] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)
 
 /-- Pull back a symmetric braiding along a fully faithful monoidal functor. -/
+@[implicit_reducible]
 noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [SymmetricCategory D] : SymmetricCategory C :=

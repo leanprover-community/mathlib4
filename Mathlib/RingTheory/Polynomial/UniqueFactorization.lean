@@ -99,6 +99,7 @@ instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid
 only finitely many monic factors.
 (Note that its factors up to unit may be more than monic factors.)
 See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/
+@[implicit_reducible]
 noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
     Fintype { g : D[X] // g.Monic ∧ g ∣ f } := by
   set G := { g : D[X] // g.Monic ∧ g ∣ f }

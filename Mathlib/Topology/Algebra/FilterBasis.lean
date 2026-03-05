@@ -253,6 +253,7 @@ theorem mul_right (x₀ : R) {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V ⊆ (fu
 
 /-- The topology associated to a ring filter basis.
 It has the given basis as a basis of neighborhoods of zero. -/
+@[implicit_reducible]
 def topology : TopologicalSpace R :=
   B.toAddGroupFilterBasis.topology
 
@@ -335,12 +336,14 @@ instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
 
 /-- The topology associated to a module filter basis on a module over a topological ring.
 It has the given basis as a basis of neighborhoods of zero. -/
+@[implicit_reducible]
 def topology : TopologicalSpace M :=
   B.toAddGroupFilterBasis.topology
 
 /-- The topology associated to a module filter basis on a module over a topological ring.
 It has the given basis as a basis of neighborhoods of zero. This version gets the ring
 topology by unification instead of type class inference. -/
+@[implicit_reducible]
 def topology' {R M : Type*} [CommRing R] {_ : TopologicalSpace R} [AddCommGroup M] [Module R M]
     (B : ModuleFilterBasis R M) : TopologicalSpace M :=
   B.toAddGroupFilterBasis.topology

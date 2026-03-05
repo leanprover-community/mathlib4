@@ -268,6 +268,7 @@ variable (K) [CommRing K]
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
+@[implicit_reducible]
 def instCommMonoid : CommMonoid (RatFunc K) where
   mul_assoc := by frac_tac
   mul_comm := by frac_tac
@@ -279,6 +280,7 @@ def instCommMonoid : CommMonoid (RatFunc K) where
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
+@[implicit_reducible]
 def instAddCommGroup : AddCommGroup (RatFunc K) where
   add_assoc := by frac_tac
   add_comm := by frac_tac

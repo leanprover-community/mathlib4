@@ -163,6 +163,7 @@ theorem Invertible.congr [Monoid α] (a b : α) [Invertible a] [Invertible b] (h
   invertible_unique a b h
 
 /-- If `r` is invertible and `s = r` and `si = ⅟r`, then `s` is invertible with `⅟s = si`. -/
+@[implicit_reducible]
 def Invertible.copy' [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (si : α) (hs : s = r)
     (hsi : si = ⅟r) : Invertible s where
   invOf := si
@@ -175,6 +176,7 @@ abbrev Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (h
   hr.copy' _ _ hs rfl
 
 /-- Each element of a group is invertible. -/
+@[implicit_reducible]
 def invertibleOfGroup [Group α] (a : α) : Invertible a :=
   ⟨a⁻¹, inv_mul_cancel a, mul_inv_cancel a⟩
 
@@ -183,6 +185,7 @@ theorem invOf_eq_group_inv [Group α] (a : α) [Invertible a] : ⅟a = a⁻¹ :=
   invOf_eq_right_inv (mul_inv_cancel a)
 
 /-- `1` is the inverse of itself -/
+@[implicit_reducible]
 def invertibleOne [Monoid α] : Invertible (1 : α) :=
   ⟨1, mul_one _, one_mul _⟩
 
@@ -205,6 +208,7 @@ theorem invOf_inj [Monoid α] {a b : α} [Invertible a] [Invertible b] : ⅟a = 
   ⟨invertible_unique _ _, invertible_unique _ _⟩
 
 /-- `⅟b * ⅟a` is the inverse of `a * b` -/
+@[implicit_reducible]
 def invertibleMul [Monoid α] (a b : α) [Invertible a] [Invertible b] : Invertible (a * b) :=
   ⟨⅟b * ⅟a, by simp [← mul_assoc], by simp [← mul_assoc]⟩
 
@@ -244,10 +248,12 @@ theorem mul_right_eq_iff_eq_mul_invOf : a * c = b ↔ a = b * ⅟c := by
 variable [IsDedekindFiniteMonoid α] (a b : α)
 
 /-- An element in a Dedekind-finite monoid is invertible if it has a left inverse. -/
+@[implicit_reducible]
 def invertibleOfLeftInverse (h : b * a = 1) : Invertible a :=
   ⟨b, h, mul_eq_one_symm h⟩
 
 /-- An element in a Dedekind-finite monoid is invertible if it has a right inverse. -/
+@[implicit_reducible]
 def invertibleOfRightInverse (h : a * b = 1) : Invertible a :=
   ⟨b, mul_eq_one_symm h, h⟩
 

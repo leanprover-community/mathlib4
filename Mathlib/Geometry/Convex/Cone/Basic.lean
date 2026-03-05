@@ -318,6 +318,7 @@ theorem Blunt.salient : C.Blunt → C.Salient := by
   exact mt Flat.pointed
 
 /-- A pointed convex cone defines a preorder. -/
+@[implicit_reducible]
 def toPreorder (C : ConvexCone R G) (h₁ : C.Pointed) : Preorder G where
   le x y := y - x ∈ C
   le_refl x := by rw [sub_self x]; exact h₁

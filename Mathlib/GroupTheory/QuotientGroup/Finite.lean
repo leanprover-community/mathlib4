@@ -27,7 +27,7 @@ namespace Group
 
 open scoped Classical in
 /-- If `F` and `H` are finite such that `ker(G →* H) ≤ im(F →* G)`, then `G` is finite. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- If `F` and `H` are finite such that `ker(G →+ H) ≤ im(F →+ G)`, then `G` is finite. -/]
 noncomputable def fintypeOfKerLeRange (h : g.ker ≤ f.range) : Fintype G :=
   @Fintype.ofEquiv _ _
@@ -36,7 +36,7 @@ noncomputable def fintypeOfKerLeRange (h : g.ker ≤ f.range) : Fintype G :=
     groupEquivQuotientProdSubgroup.symm
 
 /-- If `F` and `H` are finite such that `ker(G →* H) = im(F →* G)`, then `G` is finite. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- If `F` and `H` are finite such that `ker(G →+ H) = im(F →+ G)`, then `G` is finite. -/]
 noncomputable def fintypeOfKerEqRange (h : g.ker = f.range) : Fintype G :=
   fintypeOfKerLeRange _ _ h.le

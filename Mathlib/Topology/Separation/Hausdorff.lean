@@ -404,6 +404,7 @@ section
 variable (X)
 
 /-- The smallest equivalence relation on a topological space giving a T2 quotient. -/
+@[implicit_reducible]
 def t2Setoid : Setoid X := sInf {s | T2Space (Quotient s)}
 
 /-- The largest T2 quotient of a topological space. This construction is left-adjoint to the

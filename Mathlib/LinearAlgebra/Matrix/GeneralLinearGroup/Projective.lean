@@ -76,6 +76,7 @@ theorem lift_comp_mk {f : GL n R →* M} (hf) : (lift f hf).comp mk = f := by
 
 /-- Given an action of `GL n R` such that the scalar matrices act trivially,
 define an action of `PGL n R`. -/
+@[implicit_reducible]
 def mulActionOfGL {α : Type*} [MulAction (GL n R) α]
     (h : ∀ (u : Rˣ) (a : α), GeneralLinearGroup.scalar n u • a = a) :
     MulAction (PGL(n, R)) α :=

@@ -198,6 +198,7 @@ protected theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
 -- In addition, type class inference would not be able to infer `v`.
 /-- A valuation gives a preorder on the underlying ring. -/
+@[implicit_reducible]
 def toPreorder : Preorder R :=
   Preorder.lift v
 
@@ -971,6 +972,7 @@ theorem ext {v₁ v₂ : AddValuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v�
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
 -- In addition, type class inference would not be able to infer `v`.
 /-- A valuation gives a preorder on the underlying ring. -/
+@[implicit_reducible]
 def toPreorder : Preorder R :=
   Preorder.lift v
 

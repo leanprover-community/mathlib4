@@ -119,8 +119,9 @@ theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
 implies the textbook approach.
 -/
-@[to_additive divisibleByOfSMulRightSurj /-- An `AddMonoid A` is `α`-divisible iff `n • _` is a
-surjective function, i.e. the constructive version implies the textbook approach. -/]
+@[to_additive (attr := implicit_reducible) divisibleByOfSMulRightSurj
+  /-- An `AddMonoid A` is `α`-divisible iff `n • _` is a surjective function, i.e. the
+  constructive version implies the textbook approach. -/]
 noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
@@ -178,6 +179,7 @@ theorem smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n
 
 /-- If for all `n ≠ 0 ∈ ℤ`, `n • A = A`, then `A` is divisible.
 -/
+@[implicit_reducible]
 noncomputable def divisibleByIntOfSMulTopEqTop
     (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ where
   div a n :=
@@ -239,7 +241,7 @@ variable (f : A → B)
 /--
 If `f : A → B` is a surjective homomorphism and `A` is `α`-rootable, then `B` is also `α`-rootable.
 -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
       /-- If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
       `α`-divisible. -/]
 noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)

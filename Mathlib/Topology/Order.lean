@@ -64,6 +64,7 @@ inductive GenerateOpen (g : Set (Set α)) : Set α → Prop
   | sUnion : ∀ S : Set (Set α), (∀ s ∈ S, GenerateOpen g s) → GenerateOpen g (⋃₀ S)
 
 /-- The smallest topological space containing the collection `g` of basic sets -/
+@[implicit_reducible]
 def generateFrom (g : Set (Set α)) : TopologicalSpace α where
   IsOpen := GenerateOpen g
   isOpen_univ := GenerateOpen.univ
@@ -94,6 +95,7 @@ lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α}
     tendsto_principal]; rfl
 
 /-- Construct a topology on α given the filter of neighborhoods of each point of α. -/
+@[implicit_reducible]
 protected def mkOfNhds (n : α → Filter α) : TopologicalSpace α where
   IsOpen s := ∀ a ∈ s, s ∈ n a
   isOpen_univ _ _ := univ_mem
@@ -155,6 +157,7 @@ theorem le_generateFrom_iff_subset_isOpen {g : Set (Set α)} {t : TopologicalSpa
 
 /-- If `s` equals the collection of open sets in the topology it generates, then `s` defines a
 topology. -/
+@[implicit_reducible]
 protected def mkOfClosure (s : Set (Set α)) (hs : { u | GenerateOpen s u } = s) :
     TopologicalSpace α where
   IsOpen u := u ∈ s
@@ -616,6 +619,7 @@ lemma generateFrom_insert_empty {α : Type*} {s : Set (Set α)} :
 
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
+@[implicit_reducible]
 def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
   IsOpen s := a ∈ s → s ∈ f
   isOpen_univ _ := univ_mem

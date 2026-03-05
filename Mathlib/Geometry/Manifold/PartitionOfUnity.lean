@@ -420,6 +420,7 @@ theorem mem_extChartAt_ind_source (x : M) (hx : x ∈ s) :
   fs.mem_extChartAt_source_of_eq_one (fs.apply_ind x hx)
 
 /-- The index type of a `SmoothBumpCovering` of a compact manifold is finite. -/
+@[implicit_reducible]
 protected def fintype [CompactSpace M] : Fintype ι :=
   fs.locallyFinite.fintypeOfCompact fun i => (fs i).nonempty_support
 

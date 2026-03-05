@@ -82,6 +82,7 @@ def ringFilterBasis (I : Ideal R) :=
 
 /-- The adic topology associated to an ideal `I`. This topology admits powers of `I` as a basis of
 neighborhoods of zero. It is compatible with the ring structure and is non-archimedean. -/
+@[implicit_reducible]
 def adicTopology (I : Ideal R) : TopologicalSpace R :=
   (adic_basis I).topology
 
@@ -127,6 +128,7 @@ theorem adic_module_basis :
 
 /-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
 written `I^n • ⊤` form a basis of neighborhoods of zero. -/
+@[implicit_reducible]
 def adicModuleTopology : TopologicalSpace M :=
   @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _
     (I.ringFilterBasis.moduleFilterBasis (I.adic_module_basis M))
@@ -247,6 +249,7 @@ instance (priority := 100) : IsUniformAddGroup R :=
 
 /-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
+@[implicit_reducible]
 def topologicalSpaceModule (M : Type*) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicModuleTopology M
 
