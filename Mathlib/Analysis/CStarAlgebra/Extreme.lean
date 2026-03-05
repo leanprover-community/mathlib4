@@ -12,6 +12,8 @@ public import Mathlib.Analysis.Convex.Extreme
 
 This file contains results on the extreme points of the closed unit ball in (unital) C⋆-algebras. -/
 
+variable {A : Type*} [NonUnitalCStarAlgebra A]
+
 /-- The star projections in a non-unital C⋆-algebra are exactly the extreme points of
 the nonnegative closed unit ball. -/
 theorem isStarProjection_iff_mem_extremePoints_nonneg_and_mem_closedUnitBall
