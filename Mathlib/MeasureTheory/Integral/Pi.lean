@@ -137,8 +137,7 @@ lemma integrable_comp_eval [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i →
   exact hf.smul_measure <| ENNReal.prod_ne_top (by finiteness)
 
 lemma integrable_eval [∀ i, NormedAddCommGroup (X i)] [∀ i, NormedSpace ℝ (X i)]
-    [∀ i, IsFiniteMeasure (μ i)] {i : ι} [OpensMeasurableSpace (X i)]
-    [SecondCountableTopology (X i)] (h : Integrable id (μ i)) :
+    [∀ i, IsFiniteMeasure (μ i)] {i : ι} (h : Integrable id (μ i)) :
     Integrable (fun x ↦ x i) (Measure.pi μ) :=
   integrable_comp_eval h
 
