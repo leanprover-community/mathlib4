@@ -650,7 +650,7 @@ theorem mk_mem_unramifiedPlacesOver
     {φ : L →+* ℂ} {v : InfinitePlace K}
     (h : φ ∈ unmixedEmbeddingsOver L (v.embedding)) :
     mk φ ∈ unramifiedPlacesOver L v :=
-  ⟨⟨have := h.1; mk_embedding v ▸ (AbsoluteValue.LiesOver.comp_eq (mk φ).1 (mk v.embedding).1)⟩,
+  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.comp_eq (mk φ).1 (mk v.embedding).1⟩,
     h.2.mk_isUnramified⟩
 
 theorem liesOver_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L} {v : InfinitePlace K}
