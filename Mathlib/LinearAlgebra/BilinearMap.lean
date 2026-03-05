@@ -612,7 +612,8 @@ variable
 /-- Bundled statement of bilinearity for a function.
 
 The bundled type `E →ₗ[R] F →ₗ[R] G` should be preferred in cases where that can be used.
-`IsBilinearMap` can be useful to have `IsBilinearMap (myFunction ..)` as a hypothesis to a declaration. -/
+`IsBilinearMap` can be useful to have `IsBilinearMap (myFunction ..)` as a hypothesis to a
+declaration. -/
 structure IsBilinearMap (f : E → F → G) : Prop where
   add_left : ∀ (x₁ x₂ : E) (y : F), f (x₁ + x₂) y = f x₁ y + f x₂ y
   smul_left : ∀ (c : R) (x : E) (y : F), f (c • x) y = c • f x y
