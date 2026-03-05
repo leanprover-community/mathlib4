@@ -65,6 +65,7 @@ variable [SMulCommClass S₂ R P₂]
 variable {ρ₁₂ : R →+* R₂} {σ₁₂ : S →+* S₂}
 variable (ρ₁₂ σ₁₂)
 
+-- TODO: refactor to use a structure holding the assumptions, as in `IsBilinearMap` below.
 /-- Create a bilinear map from a function that is semilinear in each component.
 See `mk₂'` and `mk₂` for the linear case. -/
 def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
@@ -598,3 +599,31 @@ lemma restrictScalarsRange₂_apply_eq_zero_iff (m : M') (n : N') :
 end restrictScalarsRange₂
 
 end LinearMap
+
+section IsBilinearMap
+
+variable
+  (R : Type*) [CommSemiring R]
+  {E : Type*} [AddCommMonoid E] [Module R E]
+  {F : Type*} [AddCommMonoid F] [Module R F]
+  {G : Type*} [AddCommMonoid G] [Module R G]
+
+-- TODO Also make a semi-linear version.
+/-- Bundled statement of bilinearity for a function. -/
+structure IsBilinearMap (f : E → F → G) : Prop where
+  add_left : ∀ (x₁ x₂ : E) (y : F), f (x₁ + x₂) y = f x₁ y + f x₂ y
+  smul_left : ∀ (c : R) (x : E) (y : F), f (c • x) y = c • f x y
+  add_right : ∀ (x : E) (y₁ y₂ : F), f x (y₁ + y₂) = f x y₁ + f x y₂
+  smul_right : ∀ (c : R) (x : E) (y : F), f x (c • y) = c • f x y
+
+variable {R} in
+/-- Make a bilinear map from a function and a bundled statement of bilinearity. -/
+def IsBilinearMap.toLinearMap {f : E → F → G} (hf : IsBilinearMap R f) :
+    E →ₗ[R] F →ₗ[R] G :=
+  LinearMap.mk₂ _ f hf.add_left hf.smul_left hf.add_right hf.smul_right
+
+/-- Evaluation of linear maps is bilinear. -/
+lemma isBilinearMap_eval : IsBilinearMap R (fun (e : E) (φ : E →ₗ[R] F) ↦ φ e) := by
+  constructor <;> simp
+
+end IsBilinearMap
