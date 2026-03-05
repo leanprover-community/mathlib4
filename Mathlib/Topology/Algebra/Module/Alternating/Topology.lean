@@ -305,7 +305,7 @@ variable (𝕜 E F G ι : Type*) [NormedField 𝕜]
 Given a continuous linear map `g : F →L[𝕜] G` and a continuous alternating map `f : E [⋀^ι]→L[𝕜] F`,
 it returns the continuous alternating map `g ∘ f`.
 This function is continuous in `f` (for each `g`)
-and in `g` (as a function takinv values in continuous linear maps).
+and in `g` (as a function taking values in continuous linear maps).
 Note that for a general topological vector space,
 the map is not guaranteed to be continuous in `(g, f)`.
 -/
