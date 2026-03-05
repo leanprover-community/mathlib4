@@ -21,9 +21,6 @@ public import Mathlib.GroupTheory.GroupAction.Ring
 
 @[expose] public section
 
-
-noncomputable section
-
 open Finset
 
 open Polynomial
@@ -43,7 +40,7 @@ section Semiring
 variable [Semiring R]
 
 /-- `derivative p` is the formal derivative of the polynomial `p` -/
-def derivative : R[X] →ₗ[R] R[X] where
+noncomputable def derivative : R[X] →ₗ[R] R[X] where
   toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
     rw [sum_add_index] <;>
@@ -395,9 +392,11 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
 Iterated derivatives as a finite support function.
 -/
 @[simps! apply_apply]
-noncomputable def derivativeFinsupp [DecidableEq R[X]] : R[X] →ₗ[R] ℕ →₀ R[X] where
-  toFun p := .onFinset (range (p.natDegree + 1)) (derivative^[·] p) fun i ↦ by
-    contrapose; simp_all [iterate_derivative_eq_zero]
+noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
+  toFun p :=
+    haveI := Classical.decEq R[X]
+    .onFinset (range (p.natDegree + 1)) (derivative^[·] p) fun i ↦ by
+      contrapose; simp_all [iterate_derivative_eq_zero]
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
@@ -405,39 +404,37 @@ noncomputable def derivativeFinsupp [DecidableEq R[X]] : R[X] →ₗ[R] ℕ →�
 alias derivativeFinsupp_apply_toFun := derivativeFinsupp_apply_apply
 
 @[simp]
-theorem support_derivativeFinsupp_subset_range [DecidableEq R[X]] {p : R[X]} {n : ℕ}
-    (h : p.natDegree < n) : (derivativeFinsupp p).support ⊆ range n := by
+theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
+    (derivativeFinsupp p).support ⊆ range n := by
+  letI := Classical.decEq R[X]
   dsimp [derivativeFinsupp]
   exact Finsupp.support_onFinset_subset.trans (Finset.range_subset_range.mpr h)
 
 @[simp]
-theorem derivativeFinsupp_C [DecidableEq R[X]] (r : R) :
-    derivativeFinsupp (C r : R[X]) = .single 0 (C r) := by
+theorem derivativeFinsupp_C (r : R) : derivativeFinsupp (C r : R[X]) = .single 0 (C r) := by
   ext i : 1
   match i with
   | 0 => simp
   | i + 1 => simp
 
 @[simp]
-theorem derivativeFinsupp_one [DecidableEq R[X]] : derivativeFinsupp (1 : R[X]) = .single 0 1 := by
+theorem derivativeFinsupp_one : derivativeFinsupp (1 : R[X]) = .single 0 1 := by
   simpa using derivativeFinsupp_C (1 : R)
 
 @[simp]
-theorem derivativeFinsupp_X [DecidableEq R[X]] :
-    derivativeFinsupp (X : R[X]) = .single 0 X + .single 1 1 := by
+theorem derivativeFinsupp_X : derivativeFinsupp (X : R[X]) = .single 0 X + .single 1 1 := by
   ext i : 1
   match i with
   | 0 => simp
   | 1 => simp
   | (n + 2) => simp
 
-theorem derivativeFinsupp_map [DecidableEq R[X]] [Semiring S] [DecidableEq S[X]] (p : R[X])
-    (f : R →+* S) :
+theorem derivativeFinsupp_map [Semiring S] (p : R[X]) (f : R →+* S) :
     derivativeFinsupp (p.map f) = (derivativeFinsupp p).mapRange (·.map f) (by simp) := by
   ext i : 1
   simp
 
-theorem derivativeFinsupp_derivative [DecidableEq R[X]] (p : R[X]) :
+theorem derivativeFinsupp_derivative (p : R[X]) :
     derivativeFinsupp (derivative p) =
       (derivativeFinsupp p).comapDomain Nat.succ Nat.succ_injective.injOn := by
   ext i : 1
