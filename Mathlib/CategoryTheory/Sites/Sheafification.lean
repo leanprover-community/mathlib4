@@ -215,6 +215,11 @@ theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q 
   apply sheafifyLift_unique
   rw [← Category.assoc, ← toSheafify_naturality, Category.assoc, toSheafify_sheafifyLift]
 
+lemma sheafifyLift_comp {F P Q : Cᵒᵖ ⥤ D} (a : F ⟶ P) (hP : Presheaf.IsSheaf J P)
+    (η : P ⟶ Q) (hQ : CategoryTheory.Presheaf.IsSheaf J Q) :
+    sheafifyLift J (a ≫ η) hQ = sheafifyLift _ a hP ≫ η :=
+  (sheafifyLift_unique _ _ _ _ (by simp)).symm
+
 variable {J}
 
 /-- A sheaf `P` is isomorphic to its own sheafification. -/
