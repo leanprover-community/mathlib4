@@ -44,11 +44,11 @@ theorem Filter.Eventually.exists_lt {a : α} [NeBot (𝓝[<] a)] {p : α → Pro
     (h : ∀ᶠ x in 𝓝 a, p x) : ∃ b < a, p b :=
   ((frequently_lt_nhds a).and_eventually h).exists
 
-@[to_dual nhdsWithin_Iic_neBot]
+@[to_dual]
 theorem nhdsWithin_Ici_neBot {a b : α} (H₂ : a ≤ b) : NeBot (𝓝[Ici a] b) :=
   nhdsWithin_neBot_of_mem H₂
 
-@[to_dual nhdsGE_neBot]
+@[to_dual]
 instance nhdsLE_neBot (a : α) : NeBot (𝓝[≤] a) := nhdsWithin_Iic_neBot (le_refl a)
 
 @[to_dual]
