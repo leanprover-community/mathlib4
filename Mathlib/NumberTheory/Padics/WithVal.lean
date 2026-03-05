@@ -59,8 +59,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     intro x y h
     set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
-    rw [Valuation.map_sub_swap, Units.val_mk0, Valuation.restrict_lt_iff] at h
-    rw [hn] at h
+    rw [Valuation.map_sub_swap, Units.val_mk0, Valuation.restrict_lt_iff, hn] at h
     change Rat.padicValuation p (x' - y') < exp _ at h
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le]
     · rw [map_sub, ← hx, ← hy]
@@ -77,8 +76,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     intro x y h
     set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
-    rw [Valuation.map_sub_swap]
-    rw [Valuation.restrict_lt_iff_lt_embedding]
+    rw [Valuation.map_sub_swap, Valuation.restrict_lt_iff_lt_embedding]
     change Rat.padicValuation p (x' - y') < embedding γ.1
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
     · change padicNorm p (x' - y') ≤ _ at h
@@ -139,14 +137,12 @@ def withValRingEquiv :
 @[simp]
 lemma coe_withValRingEquiv :
     ⇑(Padic.withValRingEquiv (p := p)) = Completion.extension
-      ((↑) ∘ (WithVal.equiv (Rat.padicValuation p))) :=
-  rfl
+      ((↑) ∘ (WithVal.equiv (Rat.padicValuation p))) := rfl
 
 @[simp]
 lemma coe_withValRingEquiv_symm :
     ⇑(Padic.withValRingEquiv (p := p)).symm =
-      Padic.isDenseInducing_cast_withVal.extend Completion.coe' := by
-  rfl
+      Padic.isDenseInducing_cast_withVal.extend Completion.coe' := rfl
 
 /-- The `p`-adic numbers are isomorphic as uniform spaces to the completion of the rationals at
 the `p`-adic valuation. -/
@@ -160,8 +156,7 @@ def withValUniformEquiv :
 @[simp]
 lemma toEquiv_withValUniformEquiv_eq_toEquiv_withValRingEquiv :
     (withValUniformEquiv (p := p) : (Rat.padicValuation p).Completion ≃ ℚ_[p]) =
-      (withValRingEquiv (p := p) :) :=
-  rfl
+      (withValRingEquiv (p := p) :) := rfl
 
 open UniformSpace.Completion in
 @[simp]

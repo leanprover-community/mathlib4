@@ -105,7 +105,7 @@ end NormedField
 
 namespace Valued.integer
 
-variable {K Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
+variable {K Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Valued K Γ₀]
 
 section FiniteResidueField
 

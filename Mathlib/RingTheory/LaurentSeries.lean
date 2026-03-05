@@ -649,10 +649,8 @@ section Complete
 
 open Filter WithZero PowerSeries
 
-
 variable (K) in
-lemma valuation_surjective :
-    Function.Surjective (Valued.v (R := K⸨X⸩)) := by
+lemma valuation_surjective : Function.Surjective (Valued.v (R := K⸨X⸩)) := by
   intro n
   by_cases hn0 : n = 0
   · use 0; simp [hn0]
@@ -666,15 +664,15 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
   refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_
   let γ : (ℤᵐ⁰)ˣ := Units.mk0 (exp (-(d + 1))) coe_ne_zero
   use {P | Valued.v (P.snd - P.fst) < ↑γ}
-  refine ⟨?_, fun _ hP ↦ by simpa [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
-    using  mem_uniformity_of_eq hS rfl⟩
+  refine ⟨?_, fun _ hP ↦ ?_⟩
   · obtain ⟨x, hx⟩ := LaurentSeries.valuation_surjective K γ
     have : Valued.v.restrict x ≠ 0 := fun h ↦ NeZero.ne γ.1 <|
       hx ▸ MonoidWithZeroHom.ValueGroup₀.restrict₀_eq_zero_iff.1 h
     rw [← hx, ← MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
-    simp_rw [ ← Valued.v.restrict_lt_iff_lt_embedding]
+    simp_rw [← Valued.v.restrict_lt_iff_lt_embedding]
     exact (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem
       (i := Units.mk0 (Valued.v.restrict x) this) (by tauto)
+  · simpa [eq_coeff_of_valuation_sub_lt K hP.le (lt_add_one _)] using mem_uniformity_of_eq hS rfl
 
 /-- Since extracting coefficients is uniformly continuous, every Cauchy filter in
 `K⸨X⸩` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
