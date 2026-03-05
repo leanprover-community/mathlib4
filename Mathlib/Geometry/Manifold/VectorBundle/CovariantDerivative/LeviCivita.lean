@@ -192,9 +192,8 @@ variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
 variable {I} in
 private lemma aux1 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x}
-    (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) :
+    (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     myfun I cov (f • σ) τ x = f x • myfun I cov σ τ x := by
-  have hτ : MDiffAt (T% τ) x := sorry -- missing hypothesis?
   unfold myfun
   rw [product_smul_left, cov.isCovariantDerivativeOn.leibniz hσ hf]
   ext X
@@ -248,10 +247,8 @@ private lemma aux2 {x : M} (σ σ' τ : (x : M) → TangentSpace I x)
 
 variable {I} in
 private lemma aux3 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x}
-    (hf : MDiffAt f x)
-    (hτ : MDiffAt (T% τ) x) :
+    (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     myfun I cov σ (f • τ) x = f x • myfun I cov σ τ x := by
-  have hσ : MDiffAt (T% σ) x := sorry -- missing hypothesis?
   unfold myfun
   rw [product_smul_right, cov.isCovariantDerivativeOn.leibniz hτ hf]
   ext X
@@ -314,9 +311,9 @@ variable {I} in
 @[no_expose] noncomputable def MetricTensor [FiniteDimensional ℝ E] (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
   mk2TensorAt I E (myfun I cov)
-    (fun _f _σ _τ hf hσ ↦ aux1 cov hf hσ)
+    (fun _f _σ _τ hf hσ hτ ↦ aux1 cov hf hσ hτ)
     (fun σ σ' τ hσ hσ' hτ ↦ aux2 cov σ σ' τ hσ hσ' hτ)
-    (fun _f _σ _τ hf hτ ↦ aux3 cov hf hτ)
+    (fun _f _σ _τ hf hσ hτ ↦ aux3 cov hf hσ hτ)
     (fun σ τ τ' hσ hτ hτ' ↦ aux4 cov σ τ τ' hσ hτ hτ')
 
 theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
@@ -342,8 +339,6 @@ def IsCompatible [FiniteDimensional ℝ E] : Prop := MetricTensor cov = 0
 
 lemma IsCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x : M} :
     mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x := sorry
-
-#exit
 
 /-- A covariant derivative on a Riemannian bundle `TM` is called the **Levi-Civita connection**
 iff it is torsion-free and compatible with `g`.

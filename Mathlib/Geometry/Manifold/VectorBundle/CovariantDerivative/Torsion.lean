@@ -109,9 +109,9 @@ variable [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M]
 noncomputable def torsion (hcov : IsCovariantDerivativeOn E cov univ) (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] TangentSpace I x :=
   mk2TensorAt I E (Bundle.torsionFun cov)
-    (fun {_ _ τ} ↦ hcov.torsionFun_smul_left_apply τ)
+    (fun f σ τ hf hσ hτ ↦ hcov.torsionFun_smul_left_apply τ hf hσ)
     (fun σ σ' τ hσ hσ' hτ ↦ hcov.torsionFun_add_left_apply τ hσ hσ')
-    (fun {_ _} ↦ hcov.torsionFun_smul_right_apply)
+    (fun f σ τ hf hσ hτ ↦  hcov.torsionFun_smul_right_apply hf hτ)
     (fun {_ _ _ _} ↦ hcov.torsionFun_add_right_apply)
 
 theorem torsion_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
