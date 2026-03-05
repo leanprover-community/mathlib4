@@ -74,11 +74,13 @@ section map
 variable {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact)
   (f : S₁ ⟶ S₂)
 
-/-- The morphism `mappingCone φ₁ ⟶ mappingCone φ₂` that is induced by a commutative square. -/
+/--
+The morphism `triangleOfSES h₁ ⟶ triangleOfSES h₂` that is induced by a morphism of short
+exact sequences of cochain complexes.
+-/
 noncomputable def triangleOfSES.map : triangleOfSES h₁ ⟶ triangleOfSES h₂ :=
-  (DerivedCategory.triangleOfSESIso h₁).hom ≫ Q.mapTriangle.map
-  (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm) ≫
-  (DerivedCategory.triangleOfSESIso h₂).inv
+  (triangleOfSESIso h₁).hom ≫ Q.mapTriangle.map (CochainComplex.mappingCone.triangleMap
+  S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm) ≫ (triangleOfSESIso h₂).inv
 
 lemma triangleOfSES.map_hom₁ : (triangleOfSES.map h₁ h₂ f).hom₁ = Q.map f.τ₁ := by
   dsimp [triangleOfSES.map, triangleOfSESIso]; simp
