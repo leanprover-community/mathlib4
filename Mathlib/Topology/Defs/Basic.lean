@@ -204,3 +204,6 @@ Formulated here when the source space is ℕ.
 Use `dense_iInter_of_isOpen` which works for any countable index type instead. -/
 class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
   baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
+
+structure WithTopology (X : Type*) (t : TopologicalSpace X) where
+  val : X

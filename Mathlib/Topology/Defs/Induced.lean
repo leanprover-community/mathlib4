@@ -83,6 +83,10 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   isOpen_inter _ _ h₁ h₂ := h₁.inter h₂
   isOpen_sUnion s h := by simpa only [preimage_sUnion] using isOpen_biUnion h
 
+instance WithTopology.instTopologicalSpace (X : Type*) (t : TopologicalSpace X) :
+    TopologicalSpace (WithTopology X t) :=
+  .coinduced .mk t
+
 end TopologicalSpace
 
 namespace Topology

@@ -265,19 +265,8 @@ lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨infe
 
 end IsDiscrete
 
-/-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
-finite complements. -/
-def CofiniteTopology (X : Type*) := X
-
-namespace CofiniteTopology
-
-/-- The identity equivalence between `X` and `CofiniteTopology X`. -/
-def of : X ≃ CofiniteTopology X :=
-  Equiv.refl X
-
-instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
-
-instance : TopologicalSpace (CofiniteTopology X) where
+/-- Cofinite topology. A set is open if it's empty or cofinite. -/
+def TopologicalSpace.cofinite {X : Type*} : TopologicalSpace X where
   IsOpen s := s.Nonempty → Set.Finite sᶜ
   isOpen_univ := by simp
   isOpen_inter s t := by
@@ -288,6 +277,19 @@ instance : TopologicalSpace (CofiniteTopology X) where
     rintro s h ⟨x, t, hts, hzt⟩
     rw [compl_sUnion]
     exact Finite.sInter (mem_image_of_mem _ hts) (h t hts ⟨x, hzt⟩)
+
+/-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
+finite complements. -/
+abbrev CofiniteTopology (X : Type*) :=
+  WithTopology X .cofinite
+
+namespace CofiniteTopology
+
+/-- The identity equivalence between `X` and `CofiniteTopology X`. -/
+def of : X ≃ CofiniteTopology X :=
+  Equiv.refl X
+
+instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
 
 theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite :=
   Iff.rfl
