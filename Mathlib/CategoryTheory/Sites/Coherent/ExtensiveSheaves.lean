@@ -78,7 +78,6 @@ instance extensiveTopology.subcanonical : (extensiveTopology C).Subcanonical :=
 
 variable [FinitaryExtensive C]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 A presheaf of sets on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite
 products.
