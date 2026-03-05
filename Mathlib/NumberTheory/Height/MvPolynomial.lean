@@ -58,8 +58,10 @@ namespace Height
 variable {K : Type*} [Field K] {ι ι' : Type*} [Fintype ι] [Finite ι']
 
 -- The "local" version of the bound for (archimedean) absolute values.
-lemma linearMap_apply_bound [Nonempty ι'] (v : AbsoluteValue K ℝ) (A : ι' × ι → K) (x : ι → K) :
+lemma linearMap_apply_bound (v : AbsoluteValue K ℝ) (A : ι' × ι → K) (x : ι → K) :
     ⨆ j, v (∑ i, A (j, i) * x i) ≤ Nat.card ι * (⨆ ji, v (A ji)) * ⨆ i, v (x i) := by
+  rcases isEmpty_or_nonempty ι'
+  · simp
   refine ciSup_le fun j ↦ ?_
   grw [v.sum_le]
   simp only [map_mul]
