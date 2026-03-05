@@ -660,6 +660,19 @@ noncomputable def algEquiv (h : E ≠ ⊥) : RatFunc K ≃ₐ[K] E :=
   (algEquivOfTranscendental (generator E) (transcendental_of_ne_C _ (generator_ne_C h))).trans <|
     IntermediateField.equivOfEq eq_adjoin_generator.symm
 
+@[simp]
+lemma algEquiv_algebraMap (h : E ≠ ⊥) (g : K[X]) :
+    algEquiv h (algebraMap K[X] (RatFunc K) g) = aeval (generator E) g := by
+  simp [algEquiv]
+
+@[simp]
+lemma algEquiv_X (h : E ≠ ⊥) : algEquiv h (X : RatFunc K) = generator E := by
+  simp [algEquiv]
+
+lemma algEquiv_apply (h : E ≠ ⊥) (u : RatFunc K) :
+    algEquiv h u = aeval (generator E) u.num / aeval (generator E) u.denom := by
+  simp [algEquiv, algEquivOfTranscendental_apply]
+
 end Luroth
 
 end RatFunc
