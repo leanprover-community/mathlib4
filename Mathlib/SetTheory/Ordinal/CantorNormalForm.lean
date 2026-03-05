@@ -403,7 +403,7 @@ theorem coeff_eval {b : Ordinal} {f : Ordinal →₀ Ordinal} (hf : ∀ e, f e <
     · exact eval_lt IH' hf'
 
 theorem coeff_injective (b : Ordinal) : Function.Injective (coeff b) :=
-  Function.LeftInverse.injective fun _ ↦ eval_coeff ..
+  Function.LeftInverse.injective (eval_coeff _)
 
 @[simp]
 theorem coeff_inj {b x y : Ordinal} : coeff b x = coeff b y ↔ x = y :=
