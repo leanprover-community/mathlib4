@@ -32,7 +32,7 @@ variable (α : Type u)
 section Infinite
 
 @[to_additive]
-instance [Nonempty α] : Infinite (FreeMonoid α) := inferInstaceAs% (Infinite (List α))
+instance [Nonempty α] : Infinite (FreeMonoid α) := inferInstanceAs% (Infinite (List α))
 
 @[to_additive]
 instance [Nonempty α] : Infinite (FreeGroup α) := by

@@ -46,7 +46,7 @@ def residueField (x : X) : CommRingCat :=
   CommRingCat.of <| IsLocalRing.ResidueField (X.presheaf.stalk x)
 
 instance (x : X) : Field (X.residueField x) :=
-  inferInstaceAs% (Field (IsLocalRing.ResidueField (X.presheaf.stalk x)))
+  inferInstanceAs% (Field (IsLocalRing.ResidueField (X.presheaf.stalk x)))
 
 instance (x : X) : Unique (Spec (X.residueField x)) := inferInstanceAs% (Unique (Spec <| .of _))
 

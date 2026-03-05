@@ -122,7 +122,7 @@ namespace ComonadBicat
 open scoped Oplax.OplaxTrans.OplaxFunctor in
 /-- The bicategory of comonads in `B`. -/
 scoped instance : Bicategory (ComonadBicat B) :=
-  inferInstaceAs% (Bicategory (LocallyDiscrete (Discrete PUnit) ⥤ᵒᵖᴸ B))
+  inferInstanceAs% (Bicategory (LocallyDiscrete (Discrete PUnit) ⥤ᵒᵖᴸ B))
 
 /-- The oplax functor from the trivial bicategory to `B` associated with the comonad. -/
 def toOplax (m : ComonadBicat B) : LocallyDiscrete (Discrete PUnit) ⥤ᵒᵖᴸ B :=

@@ -158,11 +158,11 @@ instance instUniformSpace : UniformSpace (tsze R M) where
   __ := instUniformSpaceProd
 
 instance [CompleteSpace R] [CompleteSpace M] : CompleteSpace (tsze R M) :=
-  inferInstaceAs% (CompleteSpace (R × M))
+  inferInstanceAs% (CompleteSpace (R × M))
 
 instance [AddGroup R] [AddGroup M] [IsUniformAddGroup R] [IsUniformAddGroup M] :
     IsUniformAddGroup (tsze R M) :=
-  inferInstaceAs% (IsUniformAddGroup (R × M))
+  inferInstanceAs% (IsUniformAddGroup (R × M))
 
 open Uniformity
 

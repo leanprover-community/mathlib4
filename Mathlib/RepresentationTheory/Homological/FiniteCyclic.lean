@@ -231,7 +231,7 @@ the left regular representation and `N` is the norm map. -/
 noncomputable def resolution (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     ProjectiveResolution (trivial k G k) where
   complex := (FiniteCyclicGroup.chainComplexFunctor k g).obj (leftRegular k G)
-  projective _ := inferInstaceAs% (Projective (leftRegular k G))
+  projective _ := inferInstanceAs% (Projective (leftRegular k G))
   π := FiniteCyclicGroup.resolution.π k g
   quasiIso := resolution_quasiIso k g hg
 

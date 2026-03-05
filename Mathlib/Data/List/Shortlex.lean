@@ -92,7 +92,7 @@ instance trichotomous [Std.Trichotomous r] : Std.Trichotomous (Shortlex r) :=
   ⟨(InvImage.trichotomous (by simp [Function.Injective])).trichotomous⟩
 
 instance asymm [Std.Asymm r] : Std.Asymm (Shortlex r) :=
-  inferInstaceAs% (Std.Asymm (InvImage _ _))
+  inferInstanceAs% (Std.Asymm (InvImage _ _))
 
 theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s₂) :
     Shortlex r s₁ (s₂ ++ t) := by

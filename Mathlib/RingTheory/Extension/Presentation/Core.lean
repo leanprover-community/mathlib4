@@ -58,11 +58,11 @@ variable (P) in
 /-- The core coerced to a type for performance reasons. -/
 def Core : Type _ := P.core
 
-instance : CommRing P.Core := fast_instance% (inferInstaceAs% (CommRing P.core))
-instance : Algebra P.Core R := fast_instance% (inferInstaceAs% (Algebra P.core R))
-instance : FaithfulSMul P.Core R := inferInstaceAs% (FaithfulSMul P.core R)
-instance : Algebra P.Core S := fast_instance% (inferInstaceAs% (Algebra P.core S))
-instance : IsScalarTower P.Core R S := inferInstaceAs% (IsScalarTower P.core R S)
+instance : CommRing P.Core := fast_instance% (inferInstanceAs% (CommRing P.core))
+instance : Algebra P.Core R := fast_instance% (inferInstanceAs% (Algebra P.core R))
+instance : FaithfulSMul P.Core R := inferInstanceAs% (FaithfulSMul P.core R)
+instance : Algebra P.Core S := fast_instance% (inferInstanceAs% (Algebra P.core S))
+instance : IsScalarTower P.Core R S := inferInstanceAs% (IsScalarTower P.core R S)
 
 instance [Finite σ] : FiniteType ℤ P.Core := .adjoin_of_finite P.finite_coeffs
 

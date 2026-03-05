@@ -196,7 +196,7 @@ variable (K : Type u) [Field K]
 
 set_option backward.isDefEq.respectTransparency false in
 instance (V W : FGModuleCat.{v} K) : Module.Finite K (V.obj ⟶ W.obj) :=
-  (inferInstaceAs% (Module.Finite K (V →ₗ[K] W)).equiv ModuleCat.homLinearEquiv.symm)
+  (inferInstanceAs% (Module.Finite K (V →ₗ[K] W)).equiv ModuleCat.homLinearEquiv.symm)
 
 instance (V W : FGModuleCat.{v} K) : Module.Finite K (V ⟶ W) :=
   (inferInstanceAs% (Module.Finite K (V.obj ⟶ W.obj))).equiv
@@ -204,7 +204,7 @@ instance (V W : FGModuleCat.{v} K) : Module.Finite K (V ⟶ W) :=
 
 instance : (ModuleCat.isFG K).IsMonoidalClosed where
   prop_ihom {X Y} (_ : Module.Finite _ _) (_ : Module.Finite _ _) :=
-    (inferInstaceAs% (Module.Finite K (X →ₗ[K] Y)).equiv ModuleCat.homLinearEquiv.symm)
+    (inferInstanceAs% (Module.Finite K (X →ₗ[K] Y)).equiv ModuleCat.homLinearEquiv.symm)
 
 variable (V W : FGModuleCat K)
 

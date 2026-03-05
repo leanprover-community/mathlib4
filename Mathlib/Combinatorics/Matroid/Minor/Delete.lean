@@ -256,7 +256,7 @@ lemma delete_isColoop_iff (M : Matroid α) (D : Set α) :
 /-! ### Finiteness -/
 
 instance delete_finitary (M : Matroid α) [Finitary M] (D : Set α) : Finitary (M ＼ D) :=
-  inferInstaceAs% (Finitary (M ↾ (M.E \ D)))
+  inferInstanceAs% (Finitary (M ↾ (M.E \ D)))
 
 instance delete_finite [M.Finite] : (M ＼ D).Finite :=
   ⟨M.ground_finite.diff⟩

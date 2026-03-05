@@ -75,7 +75,7 @@ lemma presieve₀_singleton (f : S ⟶ T) : (singleton f).presieve₀ = .singlet
   simp [singleton, presieve₀, Presieve.ofArrows_pUnit]
 
 instance (f : S ⟶ T) : Unique (PreZeroHypercover.singleton f).I₀ :=
-  inferInstaceAs% (Unique PUnit)
+  inferInstanceAs% (Unique PUnit)
 
 /-- Pullback of a pre-`0`-hypercover along a morphism. The components are `pullback f (E.f i)`. -/
 @[simps]

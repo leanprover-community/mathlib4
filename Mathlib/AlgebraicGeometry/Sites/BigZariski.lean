@@ -95,7 +95,7 @@ lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}
   apply (config := { allowSynthFailures := true }) preservesLimitsOfShape_of_discrete
   intro X
   have (i : ι) : Mono (Cofan.inj (Sigma.cocone (Discrete.functor <| unop ∘ X)) i) :=
-    inferInstaceAs% (Mono (Sigma.ι _ _))
+    inferInstanceAs% (Mono (Sigma.ι _ _))
   refine Presieve.preservesProduct_of_isSheafFor F ?_ initialIsInitial
       (Sigma.cocone (Discrete.functor <| unop ∘ X)) (coproductIsCoproduct' _) ?_ ?_
   · apply hF.isSheafFor

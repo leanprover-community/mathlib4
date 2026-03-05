@@ -56,7 +56,7 @@ scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 
 instance [DecidableEq ι] [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] :
     DecidableEq (DirectSum ι β) :=
-  inferInstaceAs% (DecidableEq (Π₀ i, β i))
+  inferInstanceAs% (DecidableEq (Π₀ i, β i))
 
 namespace DirectSum
 

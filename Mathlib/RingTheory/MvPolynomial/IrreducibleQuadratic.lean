@@ -153,7 +153,7 @@ variable (c : n →₀ R)
 #adaptation_note /-- Needed after leanprover/lean4#12564.
 Named to avoid collision with `MvPolynomial.instModule` from `Mathlib.RingTheory.MvPolynomial`. -/
 noncomputable instance instModuleSelf : Module R (MvPolynomial n R) :=
-  inferInstaceAs% (Module R (AddMonoidAlgebra R (n →₀ ℕ)))
+  inferInstanceAs% (Module R (AddMonoidAlgebra R (n →₀ ℕ)))
 
 /-- The linear polynomial $$\sum_i c_i X_i$$. -/
 noncomputable def sumSMulX :

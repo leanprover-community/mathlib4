@@ -91,7 +91,7 @@ declaring instances with data. For example, adding
 ```
 unseal ContinuousLinearMapWOT in
 instance instAddCommMonoid [ContinuousAdd F] : AddCommMonoid (E →WOT[𝕜] F) :=
-  inferInstaceAs% (AddCommMonoid (E →L[𝕜] F))
+  inferInstanceAs% (AddCommMonoid (E →L[𝕜] F))
 ```
 would cause the following to fail :
 ```
@@ -103,12 +103,12 @@ example [IsTopologicalAddGroup F] :
 
 unseal ContinuousLinearMapWOT in
 instance instAddCommGroup [IsTopologicalAddGroup F] : AddCommGroup (E →SWOT[σ] F) :=
-  inferInstaceAs% (AddCommGroup (E →SL[σ] F))
+  inferInstanceAs% (AddCommGroup (E →SL[σ] F))
 
 unseal ContinuousLinearMapWOT in
 instance instModule [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F] :
     Module 𝕜₂ (E →SWOT[σ] F) :=
-  inferInstaceAs% (Module 𝕜₂ (E →SL[σ] F))
+  inferInstanceAs% (Module 𝕜₂ (E →SL[σ] F))
 
 variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F]
 

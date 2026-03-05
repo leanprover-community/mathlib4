@@ -312,7 +312,7 @@ instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P
   | node _ l m r =>
     have : Decidable (All P l) := All.decidable l
     have : Decidable (All P r) := All.decidable r
-    inferInstaceAs% (Decidable (All P l ∧ P m ∧ All P r))
+    inferInstanceAs% (Decidable (All P l ∧ P m ∧ All P r))
 
 /-- O(n). Does any element of the map satisfy property `P`?
 
@@ -327,7 +327,7 @@ instance Any.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P
   | node _ l m r =>
     have : Decidable (Any P l) := Any.decidable l
     have : Decidable (Any P r) := Any.decidable r
-    inferInstaceAs% (Decidable (Any P l ∨ P m ∨ Any P r))
+    inferInstanceAs% (Decidable (Any P l ∨ P m ∨ Any P r))
 
 /-- O(n). Exact membership in the set. This is useful primarily for stating
 correctness properties; use `∈` for a version that actually uses the BST property

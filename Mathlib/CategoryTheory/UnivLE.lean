@@ -44,7 +44,7 @@ def UnivLE.witness [UnivLE.{max u v, v}] : Type u ⥤ Type v :=
   uliftFunctor.{v, u} ⋙ (uliftFunctor.{u, v}).inv
 
 instance [UnivLE.{max u v, v}] : UnivLE.witness.{u, v}.Faithful :=
-  inferInstaceAs% (Functor.Faithful (_ ⋙ _))
+  inferInstanceAs% (Functor.Faithful (_ ⋙ _))
 
 instance [UnivLE.{max u v, v}] : UnivLE.witness.{u, v}.Full :=
-  inferInstaceAs% (Functor.Full (_ ⋙ _))
+  inferInstanceAs% (Functor.Full (_ ⋙ _))

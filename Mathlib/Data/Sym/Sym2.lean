@@ -837,7 +837,7 @@ instance instDecidableRel' [DecidableEq α] : DecidableRel (HasEquiv.Equiv (α :
 end
 
 instance [DecidableEq α] : DecidableEq (Sym2 α) :=
-  inferInstaceAs% (DecidableEq (Quotient (Sym2.Rel.setoid α)))
+  inferInstanceAs% (DecidableEq (Quotient (Sym2.Rel.setoid α)))
 
 /-! ### The other element of an element of the symmetric square -/
 

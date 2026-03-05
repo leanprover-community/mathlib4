@@ -451,7 +451,7 @@ theorem of_isIso_stalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : IsOpenEmbedding
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
     IsIso (f.stalkMap x) :=
-  inferInstaceAs% (IsIso (f.toLRSHom.stalkMap x))
+  inferInstanceAs% (IsIso (f.toLRSHom.stalkMap x))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma of_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion g]
@@ -469,7 +469,7 @@ instance : MorphismProperty.HasOfPostcompProperty @IsOpenImmersion @IsOpenImmers
 
 theorem iff_isIso_stalkMap {X Y : Scheme.{u}} {f : X ⟶ Y} :
     IsOpenImmersion f ↔ IsOpenEmbedding f ∧ ∀ x, IsIso (f.stalkMap x) :=
-  ⟨fun H ↦ ⟨H.1, fun x ↦ inferInstaceAs% (IsIso (f.toPshHom.stalkMap x)⟩,)
+  ⟨fun H ↦ ⟨H.1, fun x ↦ inferInstanceAs% (IsIso (f.toPshHom.stalkMap x)⟩,)
     fun ⟨h, _⟩ ↦ .of_isIso_stalkMap f h⟩
 
 @[deprecated (since := "2025-10-07")] alias iff_stalk_iso := iff_isIso_stalkMap

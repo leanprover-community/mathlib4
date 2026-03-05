@@ -634,7 +634,7 @@ lemma Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
   rcases isEmpty_or_nonempty (D.obj A.i') with h | h
   · exact ⟨A.i', A.hii', isInitialOfIsEmpty.hom_ext _ _⟩
   let O : Finset I := {A.i'} ∪ Finset.univ.image (fun i : 𝒰Df.I₀ ↦ k <| A.𝒰D.idx i.1)
-  let o := Nonempty.some (inferInstaceAs% (Nonempty 𝒰Df.I₀))
+  let o := Nonempty.some (inferInstanceAs% (Nonempty 𝒰Df.I₀))
   have ho : k (A.𝒰D.idx o.1) ∈ O := by
     simp [O]
   obtain ⟨l, hl1, hl2⟩ := IsCofiltered.inf_exists O

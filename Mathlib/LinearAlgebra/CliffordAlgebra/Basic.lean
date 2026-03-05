@@ -98,7 +98,7 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing 
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
 instance : Module R (CliffordAlgebra Q) :=
-  inferInstaceAs% (Module R (RingQuot (CliffordAlgebra.Rel Q)))
+  inferInstanceAs% (Module R (RingQuot (CliffordAlgebra.Rel Q)))
 
 /-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`.
 -/

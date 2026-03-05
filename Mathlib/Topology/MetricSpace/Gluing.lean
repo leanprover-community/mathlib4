@@ -480,7 +480,7 @@ def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
   @SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace.toTopologicalSpace
 
 instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
-  inferInstaceAs% (MetricSpace <|)
+  inferInstanceAs% (MetricSpace <|)
     @SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace.toTopologicalSpace
 
 /-- The canonical map from `X` to the space obtained by gluing isometric subsets in `X` and `Y`. -/
@@ -598,7 +598,7 @@ def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
   @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 
 instance {I : ∀ (n : ℕ), Isometry (f n)} : MetricSpace (InductiveLimit (f := f) I) :=
-  inferInstaceAs% (MetricSpace <|)
+  inferInstanceAs% (MetricSpace <|)
     @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 
 /-- Mapping each `X n` to the inductive limit. -/

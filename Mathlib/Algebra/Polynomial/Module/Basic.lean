@@ -102,7 +102,7 @@ instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower 
 instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
   haveI : IsScalarTower R R[X] (PolynomialModule R M) :=
-    inferInstaceAs% (IsScalarTower R R[X] <| Module.AEval' <| Finsupp.lmapDomain M R Nat.succ)
+    inferInstanceAs% (IsScalarTower R R[X] <| Module.AEval' <| Finsupp.lmapDomain M R Nat.succ)
   constructor
   intro x y z
   rw [← @IsScalarTower.algebraMap_smul S R, ← @IsScalarTower.algebraMap_smul S R, smul_assoc]

@@ -109,7 +109,7 @@ instance {R S : Type*} [Ring R] [Ring S] (f : R →+* S) :
 -- `(restrictScalars f).obj M`.
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
     {M : ModuleCat.{v} S} : Module S <| (restrictScalars f).obj M :=
-  inferInstaceAs% (Module S M)
+  inferInstanceAs% (Module S M)
 
 @[simp]
 theorem restrictScalars.map_apply {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
@@ -471,7 +471,7 @@ def obj' : ModuleCat S :=
   of _ ((restrictScalars f).obj (of _ S) →ₗ[R] M)
 
 instance : CoeFun (obj' f M) fun _ => S → M :=
-  inferInstaceAs% (CoeFun ((restrictScalars f).obj (of _ S) →ₗ[R] M) _)
+  inferInstanceAs% (CoeFun ((restrictScalars f).obj (of _ S) →ₗ[R] M) _)
 
 /-- If `M, M'` are `R`-modules, then any `R`-linear map `g : M ⟶ M'` induces an `S`-linear map
 `(S →ₗ[R] M) ⟶ (S →ₗ[R] M')` defined by `h ↦ g ∘ h` -/
@@ -501,7 +501,7 @@ namespace CoextendScalars
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
 instance (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ => S → M :=
-  inferInstaceAs% (CoeFun (CoextendScalars.obj' f M) _)
+  inferInstanceAs% (CoeFun (CoextendScalars.obj' f M) _)
 
 theorem smul_apply (M : ModuleCat R) (g : (coextendScalars f).obj M) (s s' : S) :
     (s • g) s' = g (s' * s) :=

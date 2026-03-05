@@ -112,7 +112,7 @@ instance {X : BoolAlg} :
 -- We have to add this instance since Lean doesn't see through `R.toBddDistLat`.
 instance {R : Type u} [BooleanRing R] :
     BooleanRing (BoolAlg.of (AsBoolAlg ↑R)).toBddDistLat.toBddLat.toLat :=
-  inferInstaceAs% (BooleanRing R)
+  inferInstanceAs% (BooleanRing R)
 
 @[simps]
 instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where

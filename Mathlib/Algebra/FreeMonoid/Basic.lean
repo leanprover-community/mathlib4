@@ -106,7 +106,7 @@ instance : CancelMonoid (FreeMonoid α) where
 instance : Inhabited (FreeMonoid α) := ⟨1⟩
 
 @[to_additive]
-instance [IsEmpty α] : Unique (FreeMonoid α) := inferInstaceAs% (Unique (List α))
+instance [IsEmpty α] : Unique (FreeMonoid α) := inferInstanceAs% (Unique (List α))
 
 @[to_additive (attr := simp)]
 theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl

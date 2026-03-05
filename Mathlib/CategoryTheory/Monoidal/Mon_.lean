@@ -407,12 +407,12 @@ instance {f : X ⟶ Y} {g : Z ⟶ W} [IsMonHom f] [IsMonHom g] : IsMonHom (f ⊗
 instance : IsMonHom (𝟙 X) where
 
 instance {f : Y ⟶ Z} [IsMonHom f] : IsMonHom (X ◁ f) where
-  one_hom := by simpa using (inferInstaceAs% (IsMonHom (𝟙 X ⊗ₘ f)).one_hom)
-  mul_hom := by simpa using (inferInstaceAs% (IsMonHom (𝟙 X ⊗ₘ f)).mul_hom)
+  one_hom := by simpa using (inferInstanceAs% (IsMonHom (𝟙 X ⊗ₘ f)).one_hom)
+  mul_hom := by simpa using (inferInstanceAs% (IsMonHom (𝟙 X ⊗ₘ f)).mul_hom)
 
 instance {f : X ⟶ Y} [IsMonHom f] : IsMonHom (f ▷ Z) where
-  one_hom := by simpa using (inferInstaceAs% (IsMonHom (f ⊗ₘ (𝟙 Z))).one_hom)
-  mul_hom := by simpa using (inferInstaceAs% (IsMonHom (f ⊗ₘ (𝟙 Z))).mul_hom)
+  one_hom := by simpa using (inferInstanceAs% (IsMonHom (f ⊗ₘ (𝟙 Z))).one_hom)
+  mul_hom := by simpa using (inferInstanceAs% (IsMonHom (f ⊗ₘ (𝟙 Z))).mul_hom)
 
 instance : IsMonHom (α_ X Y Z).hom :=
   ⟨one_associator, mul_associator⟩
@@ -507,7 +507,7 @@ instance : (forget C).ReflectsIsomorphisms where
   reflects f e := ⟨⟨.mk' (inv f.hom), by cat_disch⟩⟩
 
 instance {M N : Mon C} {f : M ⟶ N} [IsIso f] : IsIso f.hom :=
-  inferInstaceAs% (IsIso <| (forget C).map f)
+  inferInstanceAs% (IsIso <| (forget C).map f)
 
 /-- Construct an isomorphism of monoid objects by giving a monoid isomorphism between the underlying
 objects. -/
@@ -590,7 +590,7 @@ instance monMonoidal : MonoidalCategory (Mon C) where
 -- to `(λ_ N.X).inv`.
 @[simps! -isSimp]
 instance {M N : C} [MonObj M] [MonObj N] : MonObj (M ⊗ N) :=
-  inferInstaceAs% (MonObj (Mon.mk M ⊗ Mon.mk N).X)
+  inferInstanceAs% (MonObj (Mon.mk M ⊗ Mon.mk N).X)
 
 variable (C)
 

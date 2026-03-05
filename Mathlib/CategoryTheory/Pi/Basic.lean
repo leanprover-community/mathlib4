@@ -63,7 +63,7 @@ section
 variable {J : Type w₁}
 
 instance (f : J → I) : (j : J) → Category ((C ∘ f) j) :=
-  inferInstaceAs% ((j : J) → Category (C (f j)))
+  inferInstanceAs% ((j : J) → Category (C (f j)))
 
 /-- Pull back an `I`-indexed family of objects to a `J`-indexed family, along a function `J → I`.
 -/

@@ -206,7 +206,7 @@ instance
     (B : D) : HasColimit (parallelPair
       (F.map (G.map (NatTrans.app adj.counit B)))
       (NatTrans.app adj.counit (F.obj (G.obj B)))) :=
-  inferInstaceAs% (HasCoequalizer)
+  inferInstanceAs% (HasCoequalizer)
     (F.map ((comparison adj).obj B).a)
     (adj.counit.app (F.obj ((comparison adj).obj B).A))
 
@@ -348,7 +348,7 @@ def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
     MonadicRightAdjoint G := by
   have I {A B} (f g : A ⟶ B) [G.IsSplitPair f g] : HasColimit (parallelPair f g ⋙ G) := by
     rw [hasColimit_iff_of_iso (diagramIsoParallelPair.{v₁} _)]
-    exact inferInstaceAs% (HasCoequalizer (G.map f) (G.map g))
+    exact inferInstanceAs% (HasCoequalizer (G.map f) (G.map g))
   have : HasCoequalizerOfIsSplitPair G := ⟨fun _ _ => hasColimit_of_created (parallelPair _ _) G⟩
   have : PreservesColimitOfIsSplitPair G := ⟨by intros; infer_instance⟩
   have : ReflectsColimitOfIsSplitPair G := ⟨by intros; infer_instance⟩

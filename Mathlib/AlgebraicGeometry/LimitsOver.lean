@@ -37,7 +37,7 @@ variable {S : Scheme.{u}} {J : Type*} [Category* J] (F : J ⥤ Over S)
 
 noncomputable instance : HasColimit F :=
   have {i j} (f : i ⟶ j) : IsOpenImmersion ((F ⋙ Over.forget S).map f) :=
-    inferInstaceAs% (IsOpenImmersion (F.map f).left)
+    inferInstanceAs% (IsOpenImmersion (F.map f).left)
   have : ((F ⋙ Over.forget S) ⋙ Scheme.forget).IsLocallyDirected := ‹_›
   hasColimit_of_created _ (Over.forget S)
 
@@ -78,7 +78,7 @@ local instance :
 local instance {i j} (f : i ⟶ j) :
     IsOpenImmersion <|
       ((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S).map f :=
-  inferInstaceAs% (IsOpenImmersion (F.map f).left)
+  inferInstanceAs% (IsOpenImmersion (F.map f).left)
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : CreatesColimit F (MorphismProperty.Over.forget P ⊤ S) := by
@@ -109,7 +109,7 @@ instance (j : J) : IsOpenImmersion (colimit.ι F j).left := by
     preservesColimitIso (MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S) F
   rw [← MorphismProperty.cancel_right_of_respectsIso (P := @IsOpenImmersion) _ e.hom]
   simp only [e, CategoryTheory.ι_preservesColimitIso_hom]
-  exact inferInstaceAs% (IsOpenImmersion)
+  exact inferInstanceAs% (IsOpenImmersion)
     (colimit.ι ((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S) j)
 
 instance {ι : Type*} [Small.{u} ι] : HasCoproductsOfShape ι (P.Over ⊤ S) where

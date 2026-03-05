@@ -164,7 +164,7 @@ variable {M}
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizerSubmonoid M a) :=
-  fun _ => inferInstaceAs% (Decidable (_ = _))
+  fun _ => inferInstanceAs% (Decidable (_ = _))
 
 @[to_additive (attr := simp)]
 theorem mem_stabilizerSubmonoid_iff {a : α} {m : M} : m ∈ stabilizerSubmonoid M a ↔ m • a = a :=
@@ -510,7 +510,7 @@ def stabilizer (a : α) : Subgroup G :=
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
-  fun _ => inferInstaceAs% (Decidable (_ = _))
+  fun _ => inferInstanceAs% (Decidable (_ = _))
 
 @[to_additive (attr := simp)]
 theorem mem_stabilizer_iff {a : α} {g : G} : g ∈ stabilizer G a ↔ g • a = a :=

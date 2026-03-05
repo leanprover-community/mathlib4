@@ -74,7 +74,7 @@ lemma mem_factoredNumbers {s : Finset ℕ} {m : ℕ} :
 
 /-- Membership in `Nat.factoredNumbers n` is decidable. -/
 instance (s : Finset ℕ) : DecidablePred (· ∈ factoredNumbers s) :=
-  inferInstaceAs% (DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p ∈ s})
+  inferInstanceAs% (DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p ∈ s})
 
 /-- A number that divides an `s`-factored number is itself `s`-factored. -/
 lemma mem_factoredNumbers_of_dvd {s : Finset ℕ} {m k : ℕ} (h : m ∈ factoredNumbers s)
@@ -292,7 +292,7 @@ lemma smoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
 
 /-- Membership in `Nat.smoothNumbers n` is decidable. -/
 instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
-  inferInstaceAs% (DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p < n})
+  inferInstanceAs% (DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p < n})
 
 /-- A number that divides an `n`-smooth number is itself `n`-smooth. -/
 lemma mem_smoothNumbers_of_dvd {n m k : ℕ} (h : m ∈ smoothNumbers n) (h' : k ∣ m) :

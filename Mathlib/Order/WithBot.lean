@@ -718,7 +718,7 @@ instance _root_.WithTop.distribLattice [DistribLattice α] : DistribLattice (Wit
 
 @[to_dual]
 instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
-  inferInstaceAs% (DecidableEq (Option α))
+  inferInstanceAs% (DecidableEq (Option α))
 
 @[to_dual]
 instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithBot α)

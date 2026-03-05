@@ -197,7 +197,7 @@ def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n +
 
 instance x_projective (G : Type u) [Group G] (n : ℕ) :
     Projective ((standardComplex k G).X n) := by
-  classical exact inferInstaceAs% (Projective (Rep.diagonal k G (n + 1)))
+  classical exact inferInstanceAs% (Projective (Rep.diagonal k G (n + 1)))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Simpler expression for the differential in the standard resolution of `k` as a
@@ -383,7 +383,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps complex]
 def barResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := barComplex k G
-  projective n := inferInstaceAs% (Projective (free k G (Fin n → G)))
+  projective n := inferInstanceAs% (Projective (free k G (Fin n → G)))
   π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
 
 set_option backward.isDefEq.respectTransparency false in

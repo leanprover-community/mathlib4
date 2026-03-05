@@ -50,7 +50,7 @@ Terms of this type are triples `⟨x, ⟨i, h⟩⟩` where `x : α`, `i : ℕ`, 
 This way repeated elements of a multiset appear multiple times from different values of `i`. -/
 instance : CoeSort (Multiset α) (Type _) := ⟨Multiset.ToType⟩
 
-example : DecidableEq m := inferInstaceAs% (DecidableEq ((x : α) × Fin (m.count x)))
+example : DecidableEq m := inferInstanceAs% (DecidableEq ((x : α) × Fin (m.count x)))
 
 /-- Constructor for terms of the coercion of `m` to a type.
 This helps Lean pick up the correct instances. -/

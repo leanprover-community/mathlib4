@@ -234,7 +234,7 @@ variable [CommRing R] [∀ i, Ring (A i)] [∀ i, Algebra R (A i)]
 
 instance instRing : Ring (⨂[R] i, A i) where
   __ := instSemiring
-  __ := inferInstaceAs% (AddCommGroup (⨂[R] i, A i))
+  __ := inferInstanceAs% (AddCommGroup (⨂[R] i, A i))
 
 end Ring
 
@@ -251,7 +251,7 @@ protected lemma mul_comm (x y : ⨂[R] i, A i) : mul x y = mul y x := by
 
 instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
   __ := instSemiring
-  __ := inferInstaceAs% (AddCommMonoid (⨂[R] i, A i))
+  __ := inferInstanceAs% (AddCommMonoid (⨂[R] i, A i))
   mul_comm := PiTensorProduct.mul_comm
 
 @[simp] lemma tprod_prod {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) :
@@ -309,7 +309,7 @@ noncomputable section CommRing
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 instance instCommRing : CommRing (⨂[R] i, A i) where
   __ := instCommSemiring
-  __ := inferInstaceAs% (AddCommGroup (⨂[R] i, A i))
+  __ := inferInstanceAs% (AddCommGroup (⨂[R] i, A i))
 
 end CommRing
 

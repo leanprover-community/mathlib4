@@ -120,7 +120,7 @@ namespace Over
 /-- The forgetful functor from the over category creates any connected limit. -/
 instance createsLimitsOfShapeForgetOfIsConnected [IsConnected J] {B : C} :
     CreatesLimitsOfShape J (forget B) :=
-  inferInstaceAs% (CreatesLimitsOfShape J (CostructuredArrow.proj _ _))
+  inferInstanceAs% (CreatesLimitsOfShape J (CostructuredArrow.proj _ _))
 
 @[deprecated (since := "2025-09-29")]
 noncomputable alias forgetCreatesConnectedLimits := createsLimitsOfShapeForgetOfIsConnected
@@ -128,7 +128,7 @@ noncomputable alias forgetCreatesConnectedLimits := createsLimitsOfShapeForgetOf
 /-- The forgetful functor from the over category preserves any connected limit. -/
 instance preservesLimitsOfShape_forget_of_isConnected [IsConnected J] {B : C} :
     PreservesLimitsOfShape J (forget B) :=
-  inferInstaceAs% (PreservesLimitsOfShape J (CostructuredArrow.proj _ _))
+  inferInstanceAs% (PreservesLimitsOfShape J (CostructuredArrow.proj _ _))
 
 @[deprecated (since := "2025-09-29")]
 alias forgetPreservesConnectedLimits := preservesLimitsOfShape_forget_of_isConnected

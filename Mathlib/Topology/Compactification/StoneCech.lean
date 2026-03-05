@@ -325,16 +325,16 @@ def StoneCech : Type u :=
 variable {α}
 
 instance : TopologicalSpace (StoneCech α) :=
-  inferInstaceAs% (TopologicalSpace <| T2Quotient _)
+  inferInstanceAs% (TopologicalSpace <| T2Quotient _)
 
 instance : T2Space (StoneCech α) :=
-  inferInstaceAs% (T2Space <| T2Quotient _)
+  inferInstanceAs% (T2Space <| T2Quotient _)
 
 instance : CompactSpace (StoneCech α) :=
   Quot.compactSpace
 
 instance [Inhabited α] : Inhabited (StoneCech α) :=
-  inferInstaceAs% (Inhabited <| Quotient _)
+  inferInstanceAs% (Inhabited <| Quotient _)
 
 /-- The natural map from α to its Stone-Čech compactification. -/
 def stoneCechUnit (x : α) : StoneCech α :=

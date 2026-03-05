@@ -56,10 +56,10 @@ def Coinvariants := V ⧸ Coinvariants.ker ρ
 
 namespace Coinvariants
 
-instance : AddCommGroup (Coinvariants ρ) := inferInstaceAs% (AddCommGroup (_ ⧸ _))
+instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs% (AddCommGroup (_ ⧸ _))
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Module k (Coinvariants ρ) := inferInstaceAs% (Module k (_ ⧸ _))
+instance : Module k (Coinvariants ρ) := inferInstanceAs% (Module k (_ ⧸ _))
 
 variable {ρ}
 

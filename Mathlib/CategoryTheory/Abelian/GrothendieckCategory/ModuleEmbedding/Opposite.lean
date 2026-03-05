@@ -73,7 +73,7 @@ def EmbeddingRing : Type v := (End (generator F))ᵐᵒᵖ
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 noncomputable instance : Ring (EmbeddingRing F) :=
-  inferInstaceAs% (Ring (End (generator F))ᵐᵒᵖ)
+  inferInstanceAs% (Ring (End (generator F))ᵐᵒᵖ)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

@@ -422,6 +422,6 @@ instance : Inhabited (Finsets α) :=
   ⟨∅⟩
 
 instance [DecidableEq α] : DecidableEq (Finsets α) :=
-  inferInstaceAs% (DecidableEq (Quotient Lists.instSetoidLists))
+  inferInstanceAs% (DecidableEq (Quotient Lists.instSetoidLists))
 
 end Finsets

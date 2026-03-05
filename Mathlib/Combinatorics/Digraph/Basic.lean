@@ -64,7 +64,7 @@ def Digraph.mk' {V : Type*} : (V → V → Bool) ↪ Digraph V where
     simpa only [eq_iff_iff, Bool.coe_iff_coe] using congr($h v w)
 
 instance {V : Type*} (adj : V → V → Bool) : DecidableRel (Digraph.mk' adj).Adj :=
-  inferInstaceAs% (DecidableRel (fun v w ↦ adj v w))
+  inferInstanceAs% (DecidableRel (fun v w ↦ adj v w))
 
 instance {V : Type*} [DecidableEq V] [Fintype V] : Fintype (Digraph V) :=
   Fintype.ofBijective Digraph.mk' <| by
@@ -213,22 +213,22 @@ section Decidable
 variable (V) (H : Digraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
 
 instance Bot.adjDecidable : DecidableRel (⊥ : Digraph V).Adj :=
-  inferInstaceAs% (DecidableRel fun _ _ ↦ False)
+  inferInstanceAs% (DecidableRel fun _ _ ↦ False)
 
 instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
-  inferInstaceAs% (DecidableRel fun v w ↦ G.Adj v w ∨ H.Adj v w)
+  inferInstanceAs% (DecidableRel fun v w ↦ G.Adj v w ∨ H.Adj v w)
 
 instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
-  inferInstaceAs% (DecidableRel fun v w ↦ G.Adj v w ∧ H.Adj v w)
+  inferInstanceAs% (DecidableRel fun v w ↦ G.Adj v w ∧ H.Adj v w)
 
 instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
-  inferInstaceAs% (DecidableRel fun v w ↦ G.Adj v w ∧ ¬H.Adj v w)
+  inferInstanceAs% (DecidableRel fun v w ↦ G.Adj v w ∧ ¬H.Adj v w)
 
 instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
-  inferInstaceAs% (DecidableRel fun _ _ ↦ True)
+  inferInstanceAs% (DecidableRel fun _ _ ↦ True)
 
 instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
-  inferInstaceAs% (DecidableRel fun v w ↦ ¬G.Adj v w)
+  inferInstanceAs% (DecidableRel fun v w ↦ ¬G.Adj v w)
 
 end Decidable
 

@@ -221,7 +221,7 @@ lemma p₂_sigmaOfIsColimit {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} 
 
 instance {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d) :
     Unique (E.sigmaOfIsColimit hc hd).multicospanShape.L :=
-  inferInstaceAs% (Unique PUnit)
+  inferInstanceAs% (Unique PUnit)
 
 instance {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d) :
     Unique (E.sigmaOfIsColimit hc hd).multicospanShape.R where

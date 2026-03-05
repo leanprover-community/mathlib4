@@ -167,10 +167,10 @@ instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.instNonempty
 instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.instNonempty
 
 instance [Subsingleton β] : Subsingleton (α →ᵤ β) :=
-  inferInstaceAs% (Subsingleton <| α → β)
+  inferInstanceAs% (Subsingleton <| α → β)
 
 instance [Subsingleton β] : Subsingleton (α →ᵤ[𝔖] β) :=
-  inferInstaceAs% (Subsingleton <| α → β)
+  inferInstanceAs% (Subsingleton <| α → β)
 
 /-- Reinterpret `f : α → β` as an element of `α →ᵤ β`. -/
 def UniformFun.ofFun : (α → β) ≃ (α →ᵤ β) :=

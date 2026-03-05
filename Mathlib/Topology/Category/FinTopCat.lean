@@ -61,7 +61,7 @@ instance : HasForget₂ FinTopCat FintypeCat :=
     (fun f ↦ FintypeCat.homMk f) HEq.rfl
 
 instance (X : FinTopCat) : TopologicalSpace ((forget₂ FinTopCat FintypeCat).obj X) :=
-  inferInstaceAs% (TopologicalSpace X)
+  inferInstanceAs% (TopologicalSpace X)
 
 /-- The forgetful functor to `TopCat`. -/
 instance : HasForget₂ FinTopCat TopCat :=

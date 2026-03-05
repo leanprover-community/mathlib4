@@ -385,24 +385,24 @@ section Decidable
 variable (V) (H : SimpleGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
 
 instance Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj :=
-  inferInstaceAs% (DecidableRel fun _ _ => False)
+  inferInstanceAs% (DecidableRel fun _ _ => False)
 
 instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
-  inferInstaceAs% (DecidableRel fun v w => G.Adj v w ∨ H.Adj v w)
+  inferInstanceAs% (DecidableRel fun v w => G.Adj v w ∨ H.Adj v w)
 
 instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
-  inferInstaceAs% (DecidableRel fun v w => G.Adj v w ∧ H.Adj v w)
+  inferInstanceAs% (DecidableRel fun v w => G.Adj v w ∧ H.Adj v w)
 
 instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj :=
-  inferInstaceAs% (DecidableRel fun v w => G.Adj v w ∧ ¬H.Adj v w)
+  inferInstanceAs% (DecidableRel fun v w => G.Adj v w ∧ ¬H.Adj v w)
 
 variable [DecidableEq V]
 
 instance Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj :=
-  inferInstaceAs% (DecidableRel fun v w => v ≠ w)
+  inferInstanceAs% (DecidableRel fun v w => v ≠ w)
 
 instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
-  inferInstaceAs% (DecidableRel fun v w => v ≠ w ∧ ¬G.Adj v w)
+  inferInstanceAs% (DecidableRel fun v w => v ≠ w ∧ ¬G.Adj v w)
 
 end Decidable
 
@@ -445,7 +445,7 @@ def neighborSet (v : V) : Set V := {w | G.Adj v w}
 
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
-  inferInstaceAs% (DecidablePred (Adj G v))
+  inferInstanceAs% (DecidablePred (Adj G v))
 
 lemma neighborSet_subset_support (v : V) : G.neighborSet v ⊆ G.support :=
   fun _ hadj ↦ ⟨v, hadj.symm⟩
@@ -612,7 +612,7 @@ def fromEdgeSet : SimpleGraph V where
   symm _ _ h := ⟨Sym2.toRel_symmetric s h.1, h.2.symm⟩
 
 instance [DecidablePred (· ∈ s)] [DecidableEq V] : DecidableRel (fromEdgeSet s).Adj :=
-  inferInstaceAs% (DecidableRel fun v w ↦ s(v, w) ∈ s ∧ v ≠ w)
+  inferInstanceAs% (DecidableRel fun v w ↦ s(v, w) ∈ s ∧ v ≠ w)
 
 @[simp]
 theorem fromEdgeSet_adj : (fromEdgeSet s).Adj v w ↔ s(v, w) ∈ s ∧ v ≠ w :=
@@ -737,7 +737,7 @@ theorem incidenceSet_inter_incidenceSet_of_not_adj (h : ¬G.Adj a b) (hn : a ≠
 
 instance decidableMemIncidenceSet [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     DecidablePred (· ∈ G.incidenceSet v) :=
-  inferInstaceAs% (DecidablePred fun e => e ∈ G.edgeSet ∧ v ∈ e)
+  inferInstanceAs% (DecidablePred fun e => e ∈ G.edgeSet ∧ v ∈ e)
 
 @[simp]
 theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
@@ -819,7 +819,7 @@ theorem commonNeighbors_subset_neighborSet_right (v w : V) :
 
 instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
     DecidablePred (· ∈ G.commonNeighbors v w) :=
-  inferInstaceAs% (DecidablePred fun u => u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w)
+  inferInstanceAs% (DecidablePred fun u => u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w)
 
 theorem commonNeighbors_top_eq {v w : V} :
     (⊤ : SimpleGraph V).commonNeighbors v w = Set.univ \ {v, w} := by

@@ -292,7 +292,7 @@ def stalkClosedPointTo :
 
 instance isLocalHom_stalkClosedPointTo :
     IsLocalHom (stalkClosedPointTo f).hom :=
-  inferInstaceAs% (IsLocalHom (f.stalkMap (closedPoint R) ≫ (stalkClosedPointIso R).hom).hom)
+  inferInstanceAs% (IsLocalHom (f.stalkMap (closedPoint R) ≫ (stalkClosedPointIso R).hom).hom)
 
 /-- Copy of `isLocalHom_stalkClosedPointTo` which unbundles the comm ring.
 

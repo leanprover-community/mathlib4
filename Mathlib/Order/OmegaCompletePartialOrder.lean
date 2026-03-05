@@ -74,8 +74,8 @@ def Chain (α : Type u) [Preorder α] :=
 namespace Chain
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-instance : FunLike (Chain α) ℕ α := inferInstaceAs% (FunLike (ℕ →o α) ℕ α)
-instance : OrderHomClass (Chain α) ℕ α := inferInstaceAs% (OrderHomClass (ℕ →o α) ℕ α)
+instance : FunLike (Chain α) ℕ α := inferInstanceAs% (FunLike (ℕ →o α) ℕ α)
+instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs% (OrderHomClass (ℕ →o α) ℕ α)
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext] lemma ext ⦃f g : Chain α⦄ (h : ⇑f = ⇑g) : f = g := DFunLike.ext' h
