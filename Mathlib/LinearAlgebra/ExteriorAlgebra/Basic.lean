@@ -318,12 +318,12 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
 
 lemma ιMulti_eq_zero_of_not_inj {n : ℕ} {v : Fin n → M} (hv : ¬Function.Injective v) :
     ιMulti R n v = 0 :=
-  AlternatingMap.map_eq_zero_of_not_injective (ιMulti R n) v hv
+  (ιMulti R n).map_eq_zero_of_not_injective v hv
 
 lemma ιMulti_mul_ιMulti {m n : ℕ} (a : Fin m → M) (b : Fin n → M) :
-    ιMulti R m a * ιMulti R n b = ιMulti R (m+n) (Fin.append a b) := by
+    ιMulti R m a * ιMulti R n b = ιMulti R (m + n) (Fin.append a b) := by
   simp only [ιMulti_apply]
-  rw [show (fun i => (ι R) (Fin.append a b i)) = (ι R) ∘ Fin.append a b by ext; simp]
+  change _ = (List.ofFn ((ι R) ∘ Fin.append a b)).prod
   rw [← List.map_ofFn, List.ofFn_fin_append, List.map_append, List.prod_append]
   simp only [List.map_ofFn]
   congr
@@ -377,34 +377,23 @@ lemma ιMulti_family_mul_of_not_disjoint {m n : ℕ} {I : Type*} [LinearOrder I]
   · apply ne_of_lt
     apply lt_of_lt_of_le (b := m) <;> simp
 
-def ιMulti_perm {m n : ℕ} {I : Type*} [LinearOrder I] {s : powersetCard I m}
-    {t : powersetCard I n} (h : Disjoint s.val t.val) :
-    Equiv.Perm (Fin (m + n)) :=
-  finSumFinEquiv.symm.trans ((Equiv.sumCongr
-  (Finset.orderIsoOfFin s.val s.prop).toEquiv.symm
-  (Finset.orderIsoOfFin t.val t.prop).toEquiv.symm).symm.trans
-  ((Equiv.Finset.union _ _ h).trans
-  ((Finset.orderIsoOfFin (s.val ∪ t.val)
-  (by rw [Finset.card_union_of_disjoint h, s.prop, t.prop]))).toEquiv.symm))
-
 lemma ιMulti_family_mul_of_disjoint {m n : ℕ} {I : Type*} [LinearOrder I] (v : I → M)
     (s : powersetCard I m) (t : powersetCard I n) (h : Disjoint s.val t.val) :
-    ιMulti_family R m v s * ιMulti_family R n v t = (ιMulti_perm h).sign •
-    ιMulti_family R (m + n) v (disjUnion h) := by
+    ιMulti_family R m v s * ιMulti_family R n v t =
+      (permOfDisjoint h).sign • ιMulti_family R (m + n) v (disjUnion h) := by
   simp only [ιMulti_family, ιMulti_mul_ιMulti]
-  rw [← AlternatingMap.map_perm, ιMulti_perm]
+  rw [← AlternatingMap.map_perm, permOfDisjoint]
   congr
   ext i
-  by_cases hi : i < m
-  · rw [← Fin.castAdd_castLT n i hi, Fin.append_left]
-    simp only [ofFinEmbEquiv_symm_apply, Function.comp_apply]
-    congr 1
-    simp [- Fin.castAdd_castLT, ← Finset.coe_orderIsoOfFin_apply]
-  · push_neg at hi
-    rw [← Fin.natAdd_subNat_cast hi, Fin.append_right]
-    simp only [ofFinEmbEquiv_symm_apply, Function.comp_apply]
-    congr 1
-    simp [- Fin.natAdd_subNat_cast, ← Finset.coe_orderIsoOfFin_apply]
+  let e := powersetCard.orderIsoOfFin (powersetCard.disjUnion h)
+  change _ = v (e (e.symm _))
+  by_cases! hi : i < m
+  · rw [← Fin.castAdd_castLT n i hi, Fin.append_left, OrderIso.apply_symm_apply,
+      finSumFinEquiv_symm_apply_castAdd]
+    aesop
+  · rw [← Fin.natAdd_subNat_cast hi, Fin.append_right, OrderIso.apply_symm_apply,
+      finSumFinEquiv_symm_apply_natAdd]
+    aesop
 
 variable {R}
 
