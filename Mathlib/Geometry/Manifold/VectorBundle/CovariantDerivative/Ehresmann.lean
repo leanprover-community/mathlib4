@@ -6,7 +6,6 @@ Authors: Patrick Massot, Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Prelim
-public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary

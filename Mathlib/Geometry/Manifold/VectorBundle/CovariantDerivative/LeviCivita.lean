@@ -340,6 +340,16 @@ theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
     erw [ContinuousLinearMap.comp_apply]
   simp [product, real_inner_comm, fromTangentSpace]
 
+variable {I} in
+-- XXX: the torsion tensor has only this version, none matching `metricTensor_apply`
+theorem metricTensor_apply' [FiniteDimensional ℝ E] (x : M) (X₀ Y₀ Z₀ : TangentSpace I x) :
+    MetricTensor cov x Y₀ Z₀ X₀ =
+      fromTangentSpace _ (mfderiv% ⟪(extend E Y₀), (extend E Z₀)⟫ x X₀)
+        - ⟪∇ extend E Y₀, (extend E X₀), extend E Z₀⟫ x
+        - ⟪extend E Y₀, ∇ extend E Z₀, (extend E X₀)⟫ x := by
+  simpa [extend_apply_self] using metricTensor_apply cov x
+    (X := extend E X₀) (mdifferentiableAt_extend I E Y₀) (mdifferentiableAt_extend I E Z₀)
+
 /-- Predicate saying for a connection `∇` on a Riemannian manifold `(M, g)` to be compatible with
 the ambient metric, i.e. for all differentiable` vector fields `X`, `Y` and `Z` on `M`, we have
 `X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩`. -/
@@ -360,11 +370,17 @@ lemma isCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x 
   exact isCompatible_apply_aux this
 
 lemma isCompatible_iff [FiniteDimensional ℝ E] :
-    cov.IsCompatible ↔ ∀ {x : M} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x),
+    cov.IsCompatible ↔ ∀ {x : M} (X : (x : M) → TangentSpace I x) {Y Z : (x : M) → TangentSpace I x}
+      (_hY : MDiffAt (T% Y) x) (_hZ : MDiffAt (T% Z) x),
       mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x := by
-  refine ⟨fun hcov x hY hZ ↦ cov.isCompatible_apply hcov hY hZ, fun h ↦ ?_⟩
+  refine ⟨fun hcov x X Y Z hY hZ ↦ cov.isCompatible_apply hcov hY hZ, fun h ↦ ?_⟩
   unfold IsCompatible
-  sorry
+  ext x X₀ Y₀ Z₀
+  rw [metricTensor_apply', sub_sub, sub_eq_iff_eq_add']
+  simp only [Pi.zero_apply, ContinuousLinearMap.zero_apply, add_zero]
+  convert h (_root_.extend E Z₀) (mdifferentiableAt_extend I E X₀)
+    (mdifferentiableAt_extend I E Y₀)
+  simp [fromTangentSpace, extend_apply_self]
 
 /-- A covariant derivative on a Riemannian bundle `TM` is called the **Levi-Civita connection**
 iff it is torsion-free and compatible with `g`.
@@ -687,7 +703,8 @@ lemma leviCivitaRhs_smulY_const [CompleteSpace E] {a : ℝ}
 lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I X (f • Y) Z x =
-      f x • leviCivitaRhs' I X Y Z x + ((fromTangentSpace _).toFun <| mfderiv% f x (X x)) • 2 * ⟪Y, Z⟫ x := by
+      f x • leviCivitaRhs' I X Y Z x +
+        ((fromTangentSpace _).toFun <| mfderiv% f x (X x)) • 2 * ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs']
   simp_rw [rhs_aux_smulX I Y Z X f]
   simp only [product_smul_left, Pi.add_apply, Pi.sub_apply, smul_eq_mul, Pi.mul_apply]
@@ -702,10 +719,12 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
       rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
   have h2 : ⟪X, mlieBracket I Z (f • Y)⟫ x =
-      (fromTangentSpace _).toFun (((mfderiv% f x) (Z x))) • ⟪X, Y⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
+      (fromTangentSpace _).toFun (((mfderiv% f x) (Z x))) • ⟪X, Y⟫ x
+        + f x • ⟪X, mlieBracket I Z Y⟫ x := by
     simp_rw [product_apply, mlieBracket_smul_right (V := Z) hf hY, inner_add_right]
     congr
-    · simp only [fromTangentSpace, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul]; rw [real_inner_smul_right]
+    · simp only [fromTangentSpace, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul]
+      rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
   rw [h1, h2, product_swap I Y Z]
   set A := rhs_aux I X Y Z x
@@ -729,7 +748,8 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
 lemma leviCivitaRhs_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I X (f • Y) Z x =
-      f x • leviCivitaRhs I X Y Z x + ((fromTangentSpace _).toFun <| mfderiv% f x (X x)) • ⟪Y, Z⟫ x := by
+      f x • leviCivitaRhs I X Y Z x
+        + ((fromTangentSpace _).toFun <| mfderiv% f x (X x)) • ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs, Pi.smul_apply, leviCivitaRhs'_smulY_apply I hf hX hY hZ]
   rw [smul_add, smul_comm]
   congr 1
@@ -1035,10 +1055,27 @@ theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     inner ℝ (LeviCivitaConnection I M Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x :=
   lcAux_apply _ hX hY hZ
 
+-- Why is everything SOOOO slow here?
 lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).IsCompatible := by
+  rw [isCompatible_iff]
+  intro x X Y Z hY hZ
+  symm
+  unfold product
+  dsimp
+  have hX : MDiffAt (T% X) x := sorry -- missing hypothesis, it seems
+  rw [leviCivitaConnection_apply I hX hY hZ]
+  have : inner ℝ (Y x) (((LeviCivitaConnection I M) Z x) (X x)) =
+      inner ℝ (((LeviCivitaConnection I M) Z x) (X x)) (Y x) := sorry
+  rw [this]
+  have : inner ℝ (((LeviCivitaConnection I M) Z x) (X x)) (Y x) = leviCivitaRhs I X Z Y x := by
+    rw [leviCivitaConnection_apply I hX hZ hY]
+  rw [leviCivitaConnection_apply I hX hZ hY]
+  rw [leviCivitaRhs_apply, leviCivitaRhs_apply]
+  -- to be continued
   sorry
 
+#exit
 lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).IsTorsionFree := by
   have a := (LeviCivitaConnection I M).isCovariantDerivativeOn
