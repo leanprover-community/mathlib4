@@ -81,6 +81,7 @@ instance [NeZero (Nat.card G : k)] (V : FDRep k G) : Projective V :=
 
 variable [IsAlgClosed k]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `G` is finite and its order is nonzero in an algebraically closed field `k`,
 then an object of `FDRep k G` is simple if and only if its space of endomorphisms is

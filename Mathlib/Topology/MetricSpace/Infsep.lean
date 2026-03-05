@@ -123,6 +123,7 @@ theorem einfsep_insert_le : (insert x s).einfsep ≤ ⨅ (y ∈ s) (_ : x ≠ y)
   simp_rw [le_iInf_iff]
   exact fun _ hy hxy => einfsep_le_edist_of_mem (mem_insert _ _) (mem_insert_of_mem _ hy) hxy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_einfsep_pair : edist x y ⊓ edist y x ≤ ({x, y} : Set α).einfsep := by
   simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff, mem_singleton_iff]
   rintro a (rfl | rfl) b (rfl | rfl) hab <;> (try simp only [le_refl, true_or, or_true]) <;>
@@ -181,6 +182,7 @@ theorem einfsep_pair (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y := 
   convert einfsep_pair_eq_inf hxy using 2
   rw [edist_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem einfsep_insert : einfsep (insert x s) =
     (⨅ (y ∈ s) (_ : x ≠ y), edist x y) ⊓ s.einfsep := by
   refine le_antisymm (le_min einfsep_insert_le (einfsep_anti (subset_insert _ _))) ?_

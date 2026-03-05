@@ -37,6 +37,7 @@ def evalOpCoyonedaObjObj : (FormalCoproduct.{v} C)ᵒᵖ ⥤ AddCommGrpCat.{v} w
       map_zero' := by aesop
       map_add' := by aesop }
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def evalOpObjCompPreadditiveCoyonedaObjIso :
     (evalOp.{v} C A).obj F ⋙ preadditiveCoyoneda.obj (op P) ≅ evalOpCoyonedaObjObj F P :=
   NatIso.ofComponents (fun X ↦ AddEquiv.toAddCommGrpIso
@@ -64,6 +65,7 @@ def evalOpAddCommGrpCat :
           map_zero' := by aesop
           map_add' := by aesop } }
 
+set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 noncomputable def evalOpAddCommGrpCatIso :
     evalOp.{v} C AddCommGrpCat.{v} ≅ evalOpAddCommGrpCat C :=

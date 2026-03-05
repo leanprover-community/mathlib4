@@ -51,6 +51,7 @@ abbrev power'Fan :
     Fan (fun (_ : α) ↦ U) :=
   Fan.mk (U.power' fan) (U.power'π fan)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `U.power' fan` identifies to the product of copies of `U` indexed by `α`. -/
 def isLimitPower'Fan (hfan : ∀ i, IsLimit (fan i)) :
     IsLimit (U.power'Fan fan) :=
@@ -123,11 +124,13 @@ noncomputable def powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V) (α : Typ
   f i := f.f ∘ i
   φ i := Pi.map (fun a ↦ f.φ (i a))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma powerMap_id (U : FormalCoproduct.{w} C) (α : Type t) [HasProductsOfShape α C] :
     powerMap (𝟙 U) α = 𝟙 _ := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma powerMap_comp {U V W : FormalCoproduct.{w} C} (f : U ⟶ V) (g : V ⟶ W) (α : Type t)
     [HasProductsOfShape α C] :
@@ -158,12 +161,14 @@ noncomputable def mapPower (U : FormalCoproduct.{w} C) {α β : Type t}
   f i := i ∘ f
   φ _ := Pi.lift (fun _ ↦ Pi.π _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapPower_id (U : FormalCoproduct.{w} C) (α : Type t)
     [HasProductsOfShape α C] :
     U.mapPower (id : α → α) = 𝟙 _ := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapPower_comp (U : FormalCoproduct.{w} C) {α β γ : Type t}
     [HasProductsOfShape α C] [HasProductsOfShape β C] [HasProductsOfShape γ C]
@@ -177,6 +182,7 @@ lemma mapPower_comp (U : FormalCoproduct.{w} C) {α β γ : Type t}
     simp only [Category.comp_id, Category.assoc, Pi.lift_π]
     apply Pi.lift_π
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
     {α β : Type t} [HasProductsOfShape α C] [HasProductsOfShape β C] (g : α → β) :
@@ -189,6 +195,7 @@ lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
       Category.assoc, limit.lift_π, Fan.mk_π_app, Pi.map_π]
     apply limit.lift_π
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapPower_π (U : FormalCoproduct.{w} C) {α β : Type}
     [HasProductsOfShape α C] [HasProductsOfShape β C] (f : α → β) (a : α) :
@@ -197,6 +204,7 @@ lemma mapPower_π (U : FormalCoproduct.{w} C) {α β : Type}
 
 attribute [local simp] mapPower_comp mapPower_powerMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `(Type t)ᵒᵖ ⥤ FormalCoproduct.{w} C ⥤ FormalCoproduct.{max w t} C`
 which sends a type `α` and `U : FormalCoproduct C` to `U.power α`. -/
 @[simps]

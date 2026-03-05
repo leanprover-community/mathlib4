@@ -20,16 +20,16 @@ we say that `Y` is `X`-generated (typeclass `IsGeneratedBy X Y`).
 
 ## TODO (@joelriou)
 * Redefine compactly generated spaces and delta generated spaces using
-these definitions
+  these definitions
 * Define the category of `X`-generated spaces and show that it is coreflective in `TopCat`
 * Show that under suitable assumptions, the category of `X`-generated
-spaces is a closed cartesian monoidal category.
+  spaces is a closed cartesian monoidal category.
 
 ## References
 * [Rainer M. Vogt, *Convenient categories of topological spaces
-for homotopy theory*][vogt-1971]
+  for homotopy theory*][vogt-1971]
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
-categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
+  categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
 -/
 
@@ -74,14 +74,17 @@ instance {Y : Type v} [TopologicalSpace Y] :
     TopologicalSpace (WithGeneratedByTopology X Y) :=
   .generatedBy X (Y := Y)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isOpen_iff {U : Set (WithGeneratedByTopology X Y)} :
     IsOpen U ↔ ∀ ⦃i : ι⦄ (f : C(X i, Y)), IsOpen (f ⁻¹' (equiv.symm ⁻¹' U)) := by
   simp [isOpen_iSup_iff, isOpen_coinduced, equiv, Equiv.refl]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isClosed_iff {U : Set (WithGeneratedByTopology X Y)} :
     IsClosed U ↔ ∀ ⦃i : ι⦄ (f : C(X i, Y)), IsClosed (f ⁻¹' (equiv.symm ⁻¹' U)) := by
   simp [isClosed_iSup_iff, isClosed_coinduced, equiv, Equiv.refl]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma continuous_from_iff (g : WithGeneratedByTopology X Y → Z) :
     Continuous g ↔ ∀ ⦃i : ι⦄ (f : C(X i, Y)), Continuous (g ∘ equiv.symm ∘ f : X i → Z) := by
   simp only [continuous_iSup_dom]

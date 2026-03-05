@@ -56,6 +56,7 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     simpa [f'] using (hus y <| subset_closure hy).le
   exact (hux'.not_ge <| hus' ·)
 
+set_option backward.isDefEq.respectTransparency false in
 open ComplexOrder in
 theorem toWeakSpace_closedConvexHull_eq {s : Set E} :
     (toWeakSpace 𝕜 E) '' (closedConvexHull 𝕜 s) = closedConvexHull 𝕜 (toWeakSpace 𝕜 E '' s) := by

@@ -53,6 +53,7 @@ def single (a : α) (b : M) : α →₀ M where
     Pi.single a b
   mem_support_toFun a' := by grind
 
+set_option backward.isDefEq.respectTransparency false in
 @[grind =]
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical

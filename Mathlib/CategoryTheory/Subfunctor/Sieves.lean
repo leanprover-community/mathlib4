@@ -73,12 +73,14 @@ lemma ofObjects_obj_eq_univ {ι : Type*} {X : ι → C} {U : Cᵒᵖ} {i : ι} (
   simp only [ofObjects, Set.top_eq_univ, Set.mem_univ, iff_true]
   exact ⟨i, ⟨f⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofObjects_obj_eq_empty {ι : Type*} {X : ι → C} {U : Cᵒᵖ}
     (h : ∀ (i : ι), IsEmpty (U.unop ⟶ X i)) :
     (ofObjects X).obj U = ∅ := by
   ext
   simpa [ofObjects]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The value of `ofObjects X` on an object `U : Cᵒᵖ` contains a unique element
 when there is a morphism `f : U.unop ⟶ X i`. -/
 def uniqueOfObjectsObj {ι : Type*} {X : ι → C} {U : Cᵒᵖ} {i : ι} (f : U.unop ⟶ X i) :

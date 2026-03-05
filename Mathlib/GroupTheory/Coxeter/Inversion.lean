@@ -423,7 +423,16 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
   rw [← getD_eq_getElem _ 1, ← getD_eq_getElem _ 1] at dup
   set! t := (ris ω).getD j 1 with h₁
   set! t' := (ris (ω.eraseIdx j)).getD (j' - 1) 1 with h₂
-  have h₃ : t' = (ris ω).getD j' 1 := by grind [cs.getD_rightInvSeq, drop_of_length_le, drop_drop]
+  have h₃ : t' = (ris ω).getD j' 1 := by
+    #adaptation_note
+    /--
+    This was previously `grind [cs.getD_rightInvSeq, drop_of_length_le, drop_drop]`,
+    which no longer works after changes to `grind` annotation lemmas in
+    https://github.com/leanprover/lean4/pull/12170
+    -/
+    grind only [cs.getD_rightInvSeq, = eraseIdx_eq_take_drop_succ, = getElem?_eraseIdx,
+      = drop_append, drop_of_length_le, drop_drop, = length_append, = length_take, = length_drop,
+      = min_def]
   have h₄ : t * t' = 1 := by
     rw [h₁, h₃, dup]
     exact cs.getD_rightInvSeq_mul_self _ _
