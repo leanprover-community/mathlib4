@@ -101,9 +101,8 @@ lemma exists_affine_le_of_lt_real {s : Set ℝ} {f : ℝ → ℝ} {x : ℝ} {a :
 lemma exists_affine_le_real {s : Set ℝ} {f : ℝ → ℝ}
     (hsc : IsClosed s) (hfc : LowerSemicontinuousOn f s) (hf : ConvexOn ℝ s f) :
     ∃ c c', ∀ x ∈ s, c * x + c' ≤ f x := by
-  rcases Set.eq_empty_or_nonempty s with rfl | hs
+  rcases Set.eq_empty_or_nonempty s with rfl | ⟨x, hxs⟩
   · simp
-  obtain ⟨x, hxs⟩ := hs
   obtain ⟨c, c', hlc'_le, -⟩ :=
     hf.exists_affine_le_of_lt_real (a := f x - 1) hxs (by simp) hsc hfc
   exact ⟨c, c', hlc'_le⟩
