@@ -527,7 +527,7 @@ lemma max_abv_sum_one_le [CharZero S] (v : AbsoluteValue R S) {ι : Type*} {s : 
   · nth_rewrite 1 [← mul_one 1]
     gcongr
     · simp [hs]
-    · exact s.one_le_prod fun _ ↦ le_max_right ..
+    · exact s.one_le_prod fun _ _ ↦ le_max_right ..
 
 /-- The "local" version of the height bound for arbitrary sums for nonarchimedean
 absolute values. -/
