@@ -391,7 +391,7 @@ lemma logHeight_comp_le (f : ι → ι') (x : ι' → K) :
   simpa [logHeight_eq_log_mulHeight] using log_le_log (mulHeight_pos _) <| mulHeight_comp_le ..
 
 open Function in
-lemma mulHeight_sumElim_zero_eq {ι : Type*} (ι' : Type*) [Finite ι] [Finite ι'] (x : ι → K) :
+lemma mulHeight_sumElim_zero_eq (x : ι → K) :
     mulHeight (Sum.elim x (0 : ι' → K)) = mulHeight x := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
@@ -409,11 +409,11 @@ lemma mulHeight_sumElim_zero_eq {ι : Type*} (ι' : Type*) [Finite ι] [Finite �
   · exact H v
   · exact H v.val
 
-lemma logHeight_sumElim_zero_eq {ι : Type*} (ι' : Type*) [Finite ι] [Finite ι'] (x : ι → K) :
+lemma logHeight_sumElim_zero_eq (x : ι → K) :
     logHeight (Sum.elim x (0 : ι' → K)) = logHeight x :=
   congrArg log <| mulHeight_sumElim_zero_eq ..
 
-lemma mulHeight_eq_mulHeight_restrict_support {ι : Type*} [Finite ι] (x : ι → K) :
+lemma mulHeight_eq_mulHeight_restrict_support (x : ι → K) :
     mulHeight x = mulHeight fun i : x.support ↦ x i.val := by
   classical
   let e := Equiv.Set.sumCompl x.support
@@ -426,7 +426,7 @@ lemma mulHeight_eq_mulHeight_restrict_support {ι : Type*} [Finite ι] (x : ι �
   rw [← mulHeight_comp_equiv e, hx]
   exact mulHeight_sumElim_zero_eq ..
 
-lemma logHeight_eq_logHeight_restrict_support {ι : Type*} [Finite ι] (x : ι → K) :
+lemma logHeight_eq_logHeight_restrict_support (x : ι → K) :
     logHeight x = logHeight fun i : x.support ↦ x i.val :=
   congrArg log <| mulHeight_eq_mulHeight_restrict_support x
 
