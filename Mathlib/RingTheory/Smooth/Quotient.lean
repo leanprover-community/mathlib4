@@ -27,48 +27,6 @@ universe u v
 
 variable {R : Type u} [CommRing R]
 
-section
-
-lemma IsBaseChange.surjective_of_surjective {M : Type*} [AddCommGroup M] [Module R M]
-    {R' M' : Type*} [CommRing R'] [Algebra R R'] [AddCommGroup M'] [Module R' M']
-    [Module R M'] [IsScalarTower R R' M'] {f : M →ₗ[R] M'} (isb : IsBaseChange R' f)
-    (surj : Function.Surjective (algebraMap R R')) : Function.Surjective f := by
-  rw [isb.eq_rTensor_comp]
-  exact ((isb.equiv.restrictScalars R).surjective.comp (LinearMap.rTensor_surjective M surj)).comp
-    (LinearEquiv.surjective _)
-
-lemma IsBaseChange.ker_of_surjective {M : Type*} [AddCommGroup M] [Module R M]
-    {R' M' : Type*} [CommRing R'] [Algebra R R'] [AddCommGroup M'] [Module R' M']
-    [Module R M'] [IsScalarTower R R' M'] {f : M →ₗ[R] M'} (isb : IsBaseChange R' f)
-    (surj : Function.Surjective (algebraMap R R')) :
-    f.ker = (RingHom.ker (algebraMap R R')) • (⊤ : Submodule R M) := by
-  rw [isb.eq_rTensor_comp, LinearMap.comp_assoc, LinearEquiv.ker_comp, LinearMap.ker_comp]
-  have exac : Function.Exact (RingHom.ker (algebraMap R R')).subtype _ :=
-    (Algebra.linearMap R R').exact_subtype_ker_map
-  rw [LinearMap.exact_iff.mp (rTensor_exact M exac surj), ← Submodule.map_equiv_eq_comap_symm,
-    ← LinearMap.range_comp, Ideal.subtype_rTensor_range]
-
-lemma IsBaseChange.of_ker_eq_smul_top {M : Type*} [AddCommGroup M] [Module R M] {R' M' : Type*}
-    [CommRing R'] [AddCommGroup M'] [Algebra R R'] [Module R M'] [Module R' M']
-    [IsScalarTower R R' M'] (f : M →ₗ[R] M')
-    (surjR : Function.Surjective (algebraMap R R')) (surj : Function.Surjective f)
-    (eq : f.ker = (RingHom.ker (algebraMap R R')) • (⊤ : Submodule R M)) : IsBaseChange R' f := by
-  have exac : Function.Exact (RingHom.ker (algebraMap R R')).subtype _ :=
-    (Algebra.linearMap R R').exact_subtype_ker_map
-  let f' := (((Algebra.linearMap R R').rTensor M).comp (TensorProduct.lid R M).symm.toLinearMap)
-  have eq' : f'.ker = f.ker := by
-    rw [eq, ← Ideal.subtype_rTensor_range, ← LinearMap.exact_iff, LinearEquiv.conj_exact_iff_exact]
-    exact rTensor_exact M exac surjR
-  have surj' : Function.Surjective f' :=
-    ((Algebra.linearMap R R').rTensor_surjective M surjR).comp
-    (TensorProduct.lid R M).symm.surjective
-  let e : TensorProduct R R' M ≃ₗ[R] M' :=
-    ((f'.quotKerEquivOfSurjective surj').symm.trans (Submodule.quotEquivOfEq _ _ eq')).trans
-    (f.quotKerEquivOfSurjective surj)
-  refine IsBaseChange.of_equiv (e.extendScalarsOfSurjective surjR) (fun x ↦ ?_)
-  have : f' x = 1 ⊗ₜ[R] x := by simp [f']
-  simp [e, ← this]
-
 lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] (I : Ideal R) (f : M →ₗ[R] N) (surj : Function.Surjective f)
     [Module.Flat R N] : f.ker ⊓ (I • (⊤ : Submodule R M)) = I • f.ker := by
@@ -99,8 +57,6 @@ lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] 
       simpa [LinearMap.mem_ker.mp hm] using Submodule.smul_mem_smul hr Submodule.mem_top
     | add y ymem z zmem hy hz => exact add_mem hy hz
 
-end
-
 /-- For flat ring homomorphism `f : R →+* S`, `I` an ideal of `R` which is square zero,
 if `R ⧸ I →+* S ⧸ IS` is formally smooth, so do `f`. -/
 @[stacks 031L]
@@ -108,12 +64,13 @@ lemma Algebra.FormallySmooth.of_surjective_of_isPushout_of_flat {S : Type v} [Co
     [Algebra R S] {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra R' S']
     [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [IsScalarTower R R' S']
     [Module.Flat R S] (surj : Function.Surjective (algebraMap R R'))
-    (sq0 : (RingHom.ker (algebraMap R R')) ^ 2 = ⊥) [isp : Algebra.IsPushout R R' S S']
-    (smoothq : Algebra.FormallySmooth R' S') : Algebra.FormallySmooth R S := by
+    (surjS : Function.Surjective (algebraMap S S'))
+    (eqmap : RingHom.ker (algebraMap S S') = (RingHom.ker (algebraMap R R')).map (algebraMap R S))
+    (sq0 : (RingHom.ker (algebraMap R R')) ^ 2 = ⊥) (smoothq : Algebra.FormallySmooth R' S') :
+    Algebra.FormallySmooth R S := by
   let P := (Algebra.Generators.self R S).toExtension
   let : Algebra.FormallySmooth R P.Ring := Algebra.mvPolynomial S
   let IP := (RingHom.ker (algebraMap R R')).map (algebraMap R P.Ring)
-  have surjS : Function.Surjective (algebraMap S S') := isp.1.surjective_of_surjective surj
   let Gen : Algebra.Generators R' S' S := {
     val := algebraMap S S'
     σ' := fun s' ↦ MvPolynomial.X (Classical.choose (surjS s'))
@@ -134,10 +91,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_isPushout_of_flat {S : Type v} [Co
   let J' := RingHom.ker (algebraMap P'.Ring S')
   let I := RingHom.ker (algebraMap R R')
   let IS := I.map (algebraMap R S)
-  have kerS : RingHom.ker (algebraMap S S') = IS := by
-    apply Submodule.restrictScalars_injective R
-    rw [← Ideal.smul_top_eq_map, ← isp.1.ker_of_surjective surj]
-    rfl
+  have kerS : RingHom.ker (algebraMap S S') = IS := eqmap
   let IP := I.map (algebraMap R P.Ring)
   have kerP : RingHom.ker (algebraMap P.Ring P'.Ring) = IP := MvPolynomial.ker_map _
   have surjPP' : Function.Surjective (algebraMap P.Ring P'.Ring) :=
