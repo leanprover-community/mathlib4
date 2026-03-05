@@ -67,6 +67,9 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : Flat f] [hg : Flat g] : Flat (f ≫ g) :=
   MorphismProperty.comp_mem _ f g hf hg
 
+instance : MorphismProperty.Respects @Flat @IsOpenImmersion where
+  postcomp _ _ _ _ := inferInstance
+
 instance : MorphismProperty.IsMultiplicative @Flat where
   id_mem _ := inferInstance
 
@@ -299,7 +302,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
   · have H₁ : e.inv.hom.comp Algebra.TensorProduct.includeLeftRingHom =
         (pushout.inr (C := CommRingCat) _ _).hom :=
       congr($((CommRingCat.isPushout_tensorProduct _ _ _).flip.inr_isoPushout_hom).hom)
-    have H₂ (x j) : φ (x ⊗ₜ[↑Γ(S, US)] 1) j = pushoutSection H hUST (UX := VX j) (by aesop) rfl
+    have H₂ (x j) : φ (x ⊗ₜ[↑Γ(S, US)] 1) j = pushoutSection H hUST (UX := VX j) (by simp_all) rfl
         (pushout.inr (C := CommRingCat) _ _ x) := congr(pushoutSection H hUST (UX := VX j) _ rfl
         ($((CommRingCat.isPushout_tensorProduct ↑Γ(S, US)
           ↑Γ(T, UT) ↑Γ(X, VX j)).flip.inr_isoPushout_hom) x))
@@ -309,7 +312,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
   · have H₁ : e.inv.hom.comp Algebra.TensorProduct.includeRight.toRingHom =
         (pushout.inl (C := CommRingCat) _ _).hom :=
       congr($((CommRingCat.isPushout_tensorProduct _ _ _).flip.inl_isoPushout_hom).hom)
-    have H₂ (x j) : φ (1 ⊗ₜ[↑Γ(S, US)] x) j = pushoutSection H hUST (UX := VX j) (by aesop) rfl
+    have H₂ (x j) : φ (1 ⊗ₜ[↑Γ(S, US)] x) j = pushoutSection H hUST (UX := VX j) (by simp_all) rfl
         (pushout.inl (C := CommRingCat) _ _ (x j)) := congr(pushoutSection H hUST (UX := VX j) _ rfl
         ($((CommRingCat.isPushout_tensorProduct ↑Γ(S, US)
           ↑Γ(T, UT) ↑Γ(X, VX j)).flip.inl_isoPushout_hom) (x j)))

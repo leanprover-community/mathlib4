@@ -288,7 +288,6 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
     simp_rw [TensorProduct.smul_add]
     rw [ihx, ihy, add_add_add_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 instance addMonoid : AddMonoid (M ⊗[R] N) :=
   { TensorProduct.addZeroClass _ _ with
     toAddSemigroup := TensorProduct.addSemigroup _ _

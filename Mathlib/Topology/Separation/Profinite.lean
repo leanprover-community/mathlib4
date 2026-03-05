@@ -196,7 +196,7 @@ lemma exists_clopen_partition_of_clopen_cover
     have : IsClopen C0 := (D_clopen none).diff (isClopen_iUnion_of_finite C'_clopen)
     have : Z none ⊆ C0 := by
       simp only [C0, subset_diff]
-      exact ⟨by grind, Disjoint.mono_left Z0_subset_V (by simpa using by grind)⟩
+      exact ⟨by grind, Disjoint.mono_left Z0_subset_V (by simp; grind)⟩
     -- patch together to define `C none := C0`, `C (some i) := C' i`
     -- and verify the needed properties
     let C : Option I → Set X := fun i ↦ Option.casesOn i C0 C'

@@ -13,6 +13,7 @@ public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.AdicCompletion.Noetherian
 public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.Flat.Extension
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.MvPowerSeries.Basic
@@ -24,6 +25,8 @@ public import Mathlib.RingTheory.RegularLocalRing.PowerSeries
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.RingTheory.Smooth.Quotient
+public import Mathlib.RingTheory.MvPowerSeries.Evaluation
+public import Mathlib.RingTheory.AdicCompletion.Topology
 
 /-!
 
@@ -58,17 +61,6 @@ lemma IsBaseChange.of_eq_map {R S : Type*} [CommRing R] [CommRing S] [Algebra R 
   simp only [LinearEquiv.extendScalarsOfSurjective_apply, LinearEquiv.trans_apply, e]
   rw [← map_one (Ideal.Quotient.mk I), TensorProduct.quotTensorEquivQuotSMul_mk_tmul]
   simp
-
-end
-
-section
-
-lemma exists_isLocalHom_flat [IsLocalRing R] (K : Type v) [Field K] [Algebra (ResidueField R) K] :
-    ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R') (_ : Algebra R R')
-    (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
-    maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
-    Nonempty (K ≃ₐ[ResidueField R] (ResidueField R')) := by
-  sorry
 
 end
 
@@ -229,17 +221,14 @@ lemma quotient_power_char_formallySmooth [IsDomain R] [IsCohenRing R] (p : ℕ) 
     · rw [eq0, zero_add]
       --should be able to obtain by extension is separable
       sorry
-    · have ih' := ih eq0
-      have le : Ideal.span {(p ^ (n + 1) : ℤ)} ≤ Ideal.span {(p ^ n : ℤ)} :=
+    · have le : Ideal.span {(p ^ (n + 1) : ℤ)} ≤ Ideal.span {(p ^ n : ℤ)} :=
         Ideal.span_singleton_le_span_singleton.mpr (pow_dvd_pow _ (Nat.le_succ n))
       have le' : Ideal.span {(p ^ (n + 1) : R)} ≤ Ideal.span {(p ^ n : R)} :=
         Ideal.span_singleton_le_span_singleton.mpr (pow_dvd_pow _ (Nat.le_succ n))
-      let K := RingHom.ker (Ideal.Quotient.factor le)
-      have sq0 : K ^ 2 = ⊥ := by
-        simp only [K, Ideal.Quotient.factor_ker, ← Ideal.map_pow, Ideal.span_singleton_pow,
-          ← Nat.cast_pow, ← Nat.pow_mul, Ideal.map_eq_bot_iff_le_ker, Ideal.mk_ker]
-        exact Ideal.span_singleton_le_span_singleton.mpr (Nat.pow_dvd_pow _ (by omega)).natCast
-      refine RingHom.FormallySmooth.of_quotient_of_flat _ sq0 ?_ ?_
+      apply RingHom.FormallySmooth.of_flat_of_ker_eq_map_of_square_zero _ _
+        (Ideal.Quotient.factor le) (Ideal.Quotient.factor le')
+        _ (Ideal.Quotient.factor_surjective le) (Ideal.Quotient.factor_surjective le')
+        _ _ _ (ih eq0)
       · let _ := (padicIntOfCharP R p char).toAlgebra
         let I := Ideal.span {(p ^ (n + 1) : ℤ_[p])}
         let J := Ideal.span {(p ^ (n + 1) : R)}
@@ -256,21 +245,13 @@ lemma quotient_power_char_formallySmooth [IsDomain R] [IsCohenRing R] (p : ℕ) 
         convert (RingHom.Flat.of_bijective (f := e.symm.toRingHom) e.symm.bijective).comp this
         ext
         simp
-      · let f (k : ℕ):= Ideal.quotientMap (I := Ideal.span {(p ^ k : ℤ)})
-          (Ideal.span {(p ^ k : R)}) (Int.castRingHom R)
-          (by simp [← Ideal.map_le_iff_le_comap, Ideal.map_span])
-        let e : (R ⧸ Ideal.span {(p ^ (n + 1) : R)}) ⧸ (K.map (f (n + 1))) ≃+*
-          R ⧸ Ideal.span {(p ^ n : R)} :=
-          (Ideal.quotEquivOfEq (by simp [f, K, Ideal.Quotient.factor_ker, Ideal.map_span])).trans
-          (RingHom.quotientKerEquivOfSurjective (Ideal.Quotient.factor_surjective le'))
-        have : Ideal.quotientMap (K.map (f (n + 1))) (f (n + 1)) Ideal.le_comap_map =
-          e.symm.toRingHom.comp ((f n).comp (RingHom.quotientKerEquivOfSurjective
-          (Ideal.Quotient.factor_surjective le)).toRingHom) := by
-          ext
-          simp
-        rw [this]
-        apply RingHom.FormallySmooth.of_ringEquiv_comp
-        exact RingHom.FormallySmooth.of_comp_ringEquiv _ _ ih'
+      · ext
+        simp
+      · simp only [Ideal.Quotient.factor_ker, ← Ideal.map_pow, Ideal.span_singleton_pow,
+          Ideal.map_eq_bot_iff_le_ker, Ideal.mk_ker, ← pow_mul,
+          Ideal.span_singleton_le_span_singleton]
+        exact pow_dvd_pow _ (by omega)
+      · simp [Ideal.Quotient.factor_ker, Ideal.map_span]
 
 end IsCohenRing
 
@@ -373,8 +354,9 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
       Ideal.quotEquivOfEq (by simp [cohen.span, ringChar.eq, Ideal.span_singleton_pow])
     let _ := (E.toRingHom.comp F).toAlgebra
     let _ : Algebra.FormallySmooth (ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)})
-      (S ⧸ maximalIdeal S ^ (n + 1 + 1)) := RingHom.FormallySmooth.of_ringEquiv_comp E F
-      (quotient_power_char_formallySmooth S p prime.out char' (n + 1 + 1) (by omega))
+      (S ⧸ maximalIdeal S ^ (n + 1 + 1)) :=
+      (quotient_power_char_formallySmooth S p prime.out char' (n + 1 + 1) (by omega)).comp
+      (RingHom.FormallySmooth.of_bijective E.bijective)
     let G : ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)} →+* R ⧸ (maximalIdeal R) ^ (n + 1 + 1) :=
       Ideal.quotientMap _ (Int.castRingHom R) (by
         simp only [Ideal.span_singleton_le_iff_mem, Ideal.mem_comap, eq_intCast, Int.cast_pow]
@@ -474,15 +456,86 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
   rw [(RingHom.cancel_right residue_surjective).mp ((ResidueField.map_comp_residue f).trans eqe)]
   exact e.bijective
 
-lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective
+end
+
+section fromPR
+
+open WithIdeal
+
+variable {R} in
+theorem Ideal.isLinearTopology (I : Ideal R) :
+    @IsLinearTopology R R _ _ _ I.adicTopology :=
+  letI := I.adicTopology
+  IsLinearTopology.mk_of_hasBasis _ I.hasBasis_nhds_zero_adic
+
+instance (priority := 100) [WithIdeal R] : IsLinearTopology R R := i.isLinearTopology
+
+variable {R} in
+theorem WithIdeal.uniformContinuous_of_map_le [WithIdeal R] {S : Type*} [CommRing S] [WithIdeal S]
+    {f : R →+* S} (hf : i.map f ≤ i) :
+    UniformContinuous f := uniformContinuous_of_continuousAt_zero f (by
+  rw [ContinuousAt, map_zero, i.hasBasis_nhds_zero_adic.tendsto_iff i.hasBasis_nhds_zero_adic]
+  refine fun n _ ↦ ⟨n, trivial, Ideal.map_le_iff_le_comap.mp ?_⟩
+  simpa [Ideal.map_pow] using Ideal.pow_right_mono hf n)
+
+variable {R} in
+lemma WithIdeal.isTopologicallyNilpotent_of_mem [WithIdeal R] {a : R} (ha : a ∈ i) :
+    IsTopologicallyNilpotent a := by
+  suffices ∀ m : ℕ, ∃ n₀, ∀ n, n₀ ≤ n → a ^ n ∈ i ^ m by
+    simpa [IsTopologicallyNilpotent, i.hasBasis_nhds_zero_adic.tendsto_right_iff]
+  exact fun m ↦ ⟨m, fun n hn ↦ Ideal.pow_le_pow_right hn (Ideal.pow_mem_pow ha _)⟩
+
+instance MvPowerSeries.isAdicComplete (σ : Type*) [Finite σ] :
+    IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) :=
+  sorry
+
+end fromPR
+
+variable {R} in
+set_option backward.isDefEq.respectTransparency false in
+open MvPowerSeries in
+lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing R]
     [IsAdicComplete (maximalIdeal R) R] (fg : (maximalIdeal R).FG)
     (S : Type u) [CommRing S] [IsLocalRing S]
     (f : S →+* R) [IsLocalHom f] (bij : Function.Bijective (ResidueField.map f)) :
     ∃ (n : ℕ) (g : MvPowerSeries (Fin n) S →+* R),
     Function.Surjective g ∧ g.comp MvPowerSeries.C = f := by
-  sorry
-
-end
+  let : WithIdeal R := { i := maximalIdeal R }
+  let : WithIdeal S := { i := maximalIdeal S }
+  have f_cont : Continuous f := (WithIdeal.uniformContinuous_of_map_le
+    (((IsLocalRing.local_hom_TFAE f).out 0 2).mp ‹_›)).continuous
+  let : CompleteSpace R := (IsAdic.isPrecomplete_iff (by rfl)).mp inferInstance
+  let : T2Space R := (IsAdic.isHausdorff_iff (by rfl)).mp inferInstance
+  rcases fg with ⟨s, hs⟩
+  have hasEval_equivFin : HasEval (Subtype.val ∘ s.equivFin.symm) := by
+    refine ⟨fun j ↦ ?_, by simp [Filter.cofinite_eq_bot]⟩
+    have : (Subtype.val ∘ s.equivFin.symm) j ∈ maximalIdeal R := by
+      simpa [← hs] using Submodule.mem_span_of_mem (by simp)
+    exact WithIdeal.isTopologicallyNilpotent_of_mem this
+  let F : MvPowerSeries (Fin s.card) S →+* R := eval₂Hom f_cont hasEval_equivFin
+  let : UniformSpace (MvPolynomial (Fin s.card) S) :=
+    (Pi.uniformSpace _).comap MvPolynomial.toMvPowerSeries
+  let I : Ideal (MvPowerSeries (Fin s.card) S) := Ideal.span (Set.range X)
+  have aux_cont : Continuous (MvPolynomial.eval₂ f (Subtype.val ∘ s.equivFin.symm)) :=
+    (MvPolynomial.toMvPowerSeries_uniformContinuous f_cont hasEval_equivFin).continuous
+  have map_F_I : I.map F = maximalIdeal R := by
+    rw [Ideal.map_span, ← hs]
+    congr
+    ext r
+    suffices (∃ a, (s.equivFin.symm a) = r) ↔ r ∈ s by
+      simpa [eval₂Hom_eq_extend, F, ← MvPolynomial.coe_X, IsDenseInducing.extend_eq _ aux_cont]
+    exact ⟨fun ⟨i, hi⟩ ↦ by simp [← hi], fun h ↦ ⟨s.equivFin ⟨r, h⟩, by simp⟩⟩
+  have : IsAdicComplete (I.map F) R := by simpa [map_F_I]
+  have F_C (s : S) : F (C s) = f s := by
+    simp [eval₂Hom_eq_extend, F, ← MvPolynomial.coe_C, IsDenseInducing.extend_eq _ aux_cont]
+  refine ⟨s.card, F, ?_, by ext; exact F_C _⟩
+  refine surjective_of_mk_map_comp_surjective (I := I) F fun z ↦ ?_
+  rcases bij.surjective (Ideal.quotEquivOfEq map_F_I z) with ⟨w, hw⟩
+  induction w using Submodule.Quotient.induction_on with
+  | H s =>
+    use C s
+    rw [RingHom.comp_apply, F_C, ← (Ideal.quotEquivOfEq map_F_I).injective.eq_iff, ← hw]
+    rfl
 
 section corollary
 
@@ -511,7 +564,7 @@ lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoether
     (f : R →+* R') (surj : Function.Surjective f) (le : RingHom.ker f ≤ (maximalIdeal R) ^ 2) :
     (maximalIdeal R').spanFinrank = (maximalIdeal R).spanFinrank := by
   classical
-  apply le_antisymm (spanFinrank_le_of_surjective f surj)
+  apply le_antisymm (spanFinrank_le_of_surjective (maximalIdeal R).fg_of_isNoetherianRing f surj)
   let fin := Submodule.FG.finite_generators (maximalIdeal R').fg_of_isNoetherianRing
   let _ := fin.fintype
   rcases surj.list_map (maximalIdeal R').generators.toFinset.toList with ⟨l, hl⟩
@@ -534,12 +587,13 @@ lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoether
   apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Finset.finite_toSet _))
   exact le_of_eq_of_le (Set.ncard_coe_finset _) (List.toFinset_card_le l)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     [IsAdicComplete (maximalIdeal R) R] : ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
     (f : S →+* R), Function.Surjective f ∧ RingHom.ker f ≤ (maximalIdeal S) ^ 2 := by
   rcases exist_isRegularLocalRing_surjective_of_isAdicComplete R with ⟨S, _, regS, f, surj⟩
   obtain ⟨n, hn⟩ : ∃ n, (maximalIdeal R).spanFinrank + n = (maximalIdeal S).spanFinrank :=
-    Nat.le.dest (spanFinrank_le_of_surjective f surj)
+    Nat.le.dest (spanFinrank_le_of_surjective (maximalIdeal S).fg_of_isNoetherianRing f surj)
   induction n generalizing S f with
   | zero =>
     use S, inferInstance, inferInstance, f, surj
@@ -554,7 +608,7 @@ lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     have surj' := Ideal.Quotient.lift_surjective_of_surjective _ this surj
     rw [← (isRegularLocalRing_def _).mp reg, ← (isRegularLocalRing_def _).mp regS,
       ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim
-    absurd spanFinrank_le_of_surjective _ surj'
+    absurd spanFinrank_le_of_surjective (Ideal.fg_of_isNoetherianRing _) _ surj'
     omega
   | succ n ih =>
     obtain ⟨x, hx, nmem⟩ : ∃ x ∈ RingHom.ker f, x ∉ (maximalIdeal S) ^ 2 := by

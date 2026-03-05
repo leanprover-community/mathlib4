@@ -337,7 +337,6 @@ variable {𝕜}
 theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
   simp [sq_pos_iff]
 
@@ -806,7 +805,6 @@ theorem real_inner_div_norm_mul_norm_eq_one_iff (x y : F) :
   · rintro ⟨hx, ⟨r, ⟨hr, rfl⟩⟩⟩
     exact real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul hx hr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inner product of two vectors, divided by the product of their
 norms, has value -1 if and only if they are nonzero and one is
 a negative multiple of the other. -/

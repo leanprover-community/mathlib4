@@ -121,14 +121,12 @@ recognizes `q`, returning the cast of `q`. -/
     return .isNegNNRat dα qa na da q(isRat_ratCast $pa)
   | _ => failure
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_inv_pos {α} [DivisionSemiring α] [CharZero α] {a : α} {n d : ℕ} :
     IsNNRat a (Nat.succ n) d → IsNNRat a⁻¹ d (Nat.succ n) := by
   rintro ⟨_, rfl⟩
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   exact ⟨this, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.ofNat (Nat.succ n)) d → IsRat a⁻¹ (.ofNat d) (Nat.succ n) := by
   rintro ⟨_, rfl⟩
@@ -147,7 +145,6 @@ theorem isInt_inv_neg_one {α} [DivisionRing α] : {a : α} →
     IsInt a (.negOfNat (nat_lit 1)) → IsInt a⁻¹ (.negOfNat (nat_lit 1))
   | _, ⟨rfl⟩ => ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.negOfNat (Nat.succ n)) d → IsRat a⁻¹ (.negOfNat d) (Nat.succ n) := by
   rintro ⟨_, rfl⟩

@@ -345,7 +345,6 @@ lemma measurableAtom_eq_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
   specialize hx sᶜ hys hs.compl
   exact hx hxs
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_measurableAtom_of_notMem {x y : β} (hx : x ∉ measurableAtom y) :
     Disjoint (measurableAtom x) (measurableAtom y) := by
   rw [Set.disjoint_iff_inter_eq_empty]
@@ -855,6 +854,7 @@ variable [MeasurableSpace α] {p q : α → Prop}
 
 alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
 
+@[fun_prop]
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
 
 @[fun_prop]
