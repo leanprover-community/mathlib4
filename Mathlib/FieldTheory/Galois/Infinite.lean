@@ -21,8 +21,6 @@ closed subgroups of the Galois group.
 
 In `K/k`, for any intermediate field `L` :
 
-* `fixingSubgroup_isClosed` : the subgroup fixing `L` (`Gal(K/L)`) is closed.
-
 * `fixedField_fixingSubgroup` : the field fixed by the
   subgroup fixing `L` is equal to `L` itself.
 
