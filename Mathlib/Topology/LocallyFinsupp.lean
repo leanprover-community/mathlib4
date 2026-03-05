@@ -310,7 +310,7 @@ instance [AddMonoid Y] : SMul ℕ (locallyFinsuppWithin U Y) where
 Assign a function with locally finite support within `U` to a function in the subgroup.
 -/
 @[simps]
-def mk_of_mem' [AddGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubgroup U) :
+def mk_of_mem_addSubgroup [AddGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubgroup U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
 instance [AddGroup Y] : Neg (locallyFinsuppWithin U Y) where
