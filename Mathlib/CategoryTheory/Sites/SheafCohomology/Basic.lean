@@ -131,16 +131,16 @@ lemma H.addEquiv₀_comp (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEq
   rfl
 
 /-- `H.equiv₀` is natural -/
-theorem H.equiv₀_comp (x : H F 0) :
+theorem H.equiv₀_naturality (x : H F 0) :
     f.val.app (op T) (H.equiv₀ F hT x) = H.equiv₀ G hT (H.map f 0 x) := by
   simp only [equiv₀, AddEquiv.trans_apply]
   erw[addEquiv₀_comp f x]
   rfl
 
-theorem H.equiv₀_symm_comp (x : F.val.obj (op T)) :
+theorem H.equiv₀_symm_naturality (x : F.val.obj (op T)) :
     H.map f 0 ((H.equiv₀ F hT).symm x) = (H.equiv₀ G hT).symm (f.val.app (op T) x) := by
   apply (H.equiv₀ G hT).injective
-  simp [← H.equiv₀_comp]
+  simp [← H.equiv₀_naturality]
 
 lemma H.map_apply {n : ℕ} (x : H F n) :
     H.map f n x = x.comp (Ext.mk₀ f) (add_zero n) := rfl
@@ -163,26 +163,6 @@ noncomputable def functorH (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpC
 
 instance (n : ℕ) : (functorH J n).Additive where
   map_add {_ _ f g} := by ext; simp [H.map_apply, Ext.mk₀_add]
-
-variable [HasExt.{w} (Sheaf J AddCommGrpCat.{w})]
-omit [HasExt.{w'} (Sheaf J AddCommGrpCat)]
-
-variable (J) in
-/-- The natural isomorphism between cohomology in degree `0` and global sections. -/
-noncomputable def functorHNatIsoSheafSections :
-    functorH J 0 ≅ (sheafSections J _).obj (op T) where
-  hom := {
-    app F := AddCommGrpCat.ofHom (H.equiv₀ F hT).toAddMonoidHom
-    naturality _ _ _ := by
-      ext
-      simp [H.equiv₀_comp]
-  }
-  inv := {
-    app F := AddCommGrpCat.ofHom (H.equiv₀ F hT).symm.toAddMonoidHom
-    naturality _ _ _ := by
-      ext
-      simp [H.equiv₀_symm_comp]
-  }
 
 end
 
