@@ -52,7 +52,7 @@ set_option backward.privateInPublic.warn false in
 /-- `B ⊗[A] (A ⧸ I)` is isomorphic as an `A`-algebra to `B ⧸ I B`. -/
 noncomputable def quotIdealMapEquivTensorQuot :
     (B ⧸ (I.map <| algebraMap A B)) ≃ₐ[B] B ⊗[A] (A ⧸ I) :=
-  AlgEquiv.ofLinearEquiv (quotIdealMapEquivTensorQuotAux B I) rfl
+  AlgEquiv.ofLinearEquiv (quotIdealMapEquivTensorQuotAux B I)
     (fun x y ↦ by
       obtain ⟨u, rfl⟩ := Ideal.Quotient.mk_surjective x
       obtain ⟨v, rfl⟩ := Ideal.Quotient.mk_surjective y

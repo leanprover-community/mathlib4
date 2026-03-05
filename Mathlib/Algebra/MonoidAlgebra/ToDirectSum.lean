@@ -254,13 +254,12 @@ def addMonoidAlgebraRingEquivDirectSum [DecidableEq ι] [AddMonoid ι] [Semiring
     map_mul' := AddMonoidAlgebra.toDirectSum_mul }
 
 /-- The algebra version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
-@[simps -fullyApplied]
-def addMonoidAlgebraAlgEquivDirectSum [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A]
-    [Algebra R A] [∀ m : A, Decidable (m ≠ 0)] : AddMonoidAlgebra A ι ≃ₐ[R] ⨁ _ : ι, A :=
-  { (addMonoidAlgebraRingEquivDirectSum : AddMonoidAlgebra A ι ≃+* ⨁ _ : ι, A) with
-    toFun := AddMonoidAlgebra.toDirectSum
-    invFun := DirectSum.toAddMonoidAlgebra
-    commutes' := fun _r => AddMonoidAlgebra.toDirectSum_single _ _ }
+@[simps! -fullyApplied]
+noncomputable def addMonoidAlgebraAlgEquivDirectSum [DecidableEq ι] [AddMonoid ι] [CommSemiring R]
+    [Semiring A] [Algebra R A] [∀ m : A, Decidable (m ≠ 0)] :
+    AddMonoidAlgebra A ι ≃ₐ[R] ⨁ _ : ι, A :=
+  .ofCommutes (addMonoidAlgebraRingEquivDirectSum : AddMonoidAlgebra A ι ≃+* ⨁ _ : ι, A)
+    fun _r => AddMonoidAlgebra.toDirectSum_single _ _
 
 @[simp]
 theorem AddMonoidAlgebra.toDirectSum_pow [DecidableEq ι] [AddMonoid ι] [Semiring M]

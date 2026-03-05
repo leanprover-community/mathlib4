@@ -97,7 +97,10 @@ lemma fg_top_iff :
     have : Algebra.EssFiniteType F (adjoin F (s : Set E)) :=
       .comp _ (Algebra.adjoin F (s : Set E)) _
     rw [hs] at this
-    exact .of_surjective IntermediateField.topEquiv.toAlgHom IntermediateField.topEquiv.surjective
+    -- why doesn't exact work immediately here?
+    convert Algebra.EssFiniteType.of_surjective IntermediateField.topEquiv.toAlgHom
+      IntermediateField.topEquiv.surjective
+    exact this
   · intro _
     use Algebra.EssFiniteType.finset F E
     refine top_le_iff.mp fun x _ ↦ ?_

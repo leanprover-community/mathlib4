@@ -101,7 +101,8 @@ theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ
     RingEquiv.trans_apply, AlgEquiv.coe_ringEquiv, quotientEquivAlgOfEq_mk,
     quotientEquiv_symm_apply, quotientMap_mk, RingHom.coe_coe, mapEquiv_symm_apply,
     Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom]
-  exact congr_arg (quotientEquivAlgOfEq ℤ (by simp [map_span])) <|
+  exact congr_arg (quotientEquivAlgOfEq ℤ (I := Ideal.map _ (Ideal.span _)) (J := Ideal.span _)
+    (by simp [map_span])) <|
     quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral Q
 
 variable (p θ) in

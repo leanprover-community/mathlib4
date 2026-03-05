@@ -104,7 +104,8 @@ lemma FinitePresentation.of_finitePresentation_tensorProduct_of_faithfullyFlat
   rw [Algebra.FiniteType.iff_quotient_mvPolynomial''] at this
   obtain ⟨n, f, hf⟩ := this
   have : Module.FaithfullyFlat (MvPolynomial (Fin n) R) (T ⊗[R] MvPolynomial (Fin n) R) :=
-    .of_linearEquiv _ _ (Algebra.TensorProduct.commRight _ _ _).symm.toLinearEquiv
+    .of_linearEquiv _ _
+      (Algebra.TensorProduct.commRight R (MvPolynomial (Fin n) R) T).symm.toLinearEquiv
   let fT := Algebra.TensorProduct.map (.id T T) f
   refine .of_surjective hf (.of_FG_map_of_faithfullyFlat (S := T ⊗[R] MvPolynomial (Fin n) R) ?_)
   have : (RingHom.ker f.toRingHom).map

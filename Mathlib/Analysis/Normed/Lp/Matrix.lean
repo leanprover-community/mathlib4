@@ -75,7 +75,7 @@ theorem toLpLin_symm_comp [Fintype o] [DecidableEq o]
 /-- `Matrix.toLinAlgEquiv'` adapted for `PiLp R _`. -/
 @[simps!]
 def toLpLinAlgEquiv : Matrix n n R ≃ₐ[R] Module.End R (WithLp p (n → R)) :=
-  .ofLinearEquiv (toLpLin p p) (toLpLin_one p) (toLpLin_mul p p p)
+  .ofLinearEquiv (toLpLin p p) (toLpLin_mul p p p)
 
 @[simp]
 theorem toLpLin_pow (A : Matrix n n R) (k : ℕ) : toLpLin p p (A ^ k) = toLpLin p p A ^ k :=

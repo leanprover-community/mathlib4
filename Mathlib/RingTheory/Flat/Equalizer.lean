@@ -307,7 +307,7 @@ def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :
       AlgHom.equalizer (Algebra.TensorProduct.map (AlgHom.id S T) f)
         (Algebra.TensorProduct.map (AlgHom.id S T) g) :=
   AlgEquiv.ofLinearEquiv (LinearMap.tensorEqLocusEquiv S T f.toLinearMap g.toLinearMap)
-    rfl (AlgHom.tensorEqualizerAux_mul S T f g)
+    (AlgHom.tensorEqualizerAux_mul S T f g)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -331,7 +331,7 @@ def Algebra.kerTensorProductMapIdToAlgHomEquiv
   let φ : A ⊗[R] S →ₐ[A] A ⊗[R] T :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
   let ePp : A ⊗[R] S ≃ₐ[S] S ⊗[R] A :=
-    { __ := Algebra.TensorProduct.comm _ _ _, commutes' _ := rfl }
+    .ofCommutes (Algebra.TensorProduct.comm R A S) fun _ ↦ rfl
   let e₃ : (RingHom.ker φ) ≃ₗ[R] A ⊗[R] (RingHom.ker (algebraMap S T)) :=
     (LinearMap.kerLTensorEquivOfSurjective (IsScalarTower.toAlgHom R S T).toLinearMap
       h₁ A).restrictScalars R

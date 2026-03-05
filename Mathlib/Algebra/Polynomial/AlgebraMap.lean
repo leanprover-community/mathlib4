@@ -110,9 +110,7 @@ open AddMonoidAlgebra in
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
 @[simps!]
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
-  { toFinsuppIso R with
-    commutes' := fun r => by
-      dsimp }
+  { toFinsuppIso R with map_smul' _ _ := by dsimp }
 
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by

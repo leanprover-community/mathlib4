@@ -172,6 +172,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     fun q' _ hq'q _ ↦ hm ▸ Ideal.mul_mem_left _ _ (Ideal.mul_mem_right _ _ (hs₁ q' ‹_› hq'q ‹_›)),
     fun q' _ hq'q _ ↦ ?_⟩
   let : Algebra (integralClosure R S) (Localization.Away s₂.1) := OreLocalization.instAlgebra
+  let : Module (integralClosure R S) (Localization.Away s₂.1) := Algebra.toModule
   let e : Localization.Away s₂ ≃ₐ[integralClosure R S] Localization.Away s₂.1 :=
     .ofBijective (Localization.awayMapₐ (Algebra.ofId _ _) s₂) hs₂
   let q's : Ideal (Localization.Away s₂) := q'.map (algebraMap _ _)

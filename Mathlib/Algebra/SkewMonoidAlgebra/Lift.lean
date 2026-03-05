@@ -172,7 +172,7 @@ def domLCongr [Semiring k] [AddCommMonoid A] [Module k A] (e : G ≃ H) :
 variable (k A)
 
 variable [Monoid G] [Monoid H] [Semiring A] [CommSemiring k] [Algebra k A] [MulSemiringAction G A]
-  [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A]
+  [MulSemiringAction H A]
 
 /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids and
  ` ∀ (a : G) (x : A), a • x = (e a) • x`, then `SkewMonoidAlgebra.domCongr e` is an
@@ -181,11 +181,11 @@ def domCongrAlg {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x)
     SkewMonoidAlgebra A G ≃ₐ[k] SkewMonoidAlgebra A H :=
   AlgEquiv.ofLinearEquiv
     (domLCongr e : SkewMonoidAlgebra A G ≃ₗ[k] SkewMonoidAlgebra A H)
-    ((equivMapDomain_eq_mapDomain _ _).trans <| mapDomain_one e)
     (fun f g ↦ (equivMapDomain_eq_mapDomain _ _).trans <| (mapDomain_mul f g he).trans <|
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
 
-theorem domCongrAlg_toAlgHom {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
+theorem domCongrAlg_toAlgHom [SMulCommClass G k A] [SMulCommClass H k A] {e : G ≃* H}
+    (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
     (domCongrAlg k A he).toAlgHom = mapDomainAlgHom k A he :=
   AlgHom.ext <| fun _ ↦ equivMapDomain_eq_mapDomain _ _
 

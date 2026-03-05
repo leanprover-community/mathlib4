@@ -593,7 +593,7 @@ def Algebra.IsPushout.equiv [h : Algebra.IsPushout R S R' S'] : S ⊗[R] R' ≃�
       | zero => simp
       | add x y _ _ => simp [*, mul_add]
       | tmul x y => simp [IsBaseChange.equiv_tmul, Algebra.smul_def, mul_mul_mul_comm]
-  commutes' := by simp [IsBaseChange.equiv_tmul, Algebra.smul_def]
+  map_smul' := by simp
 
 lemma Algebra.IsPushout.equiv_tmul [h : Algebra.IsPushout R S R' S'] (a : S) (b : R') :
     equiv R S R' S' (a ⊗ₜ b) = algebraMap _ _ a * algebraMap _ _ b :=
@@ -790,8 +790,7 @@ variable (C : Type*) [CommRing C] [Algebra R C] [Algebra A C] [IsScalarTower R A
 /-- Algebra version of `IsPushout.cancelBaseChange`. -/
 noncomputable def IsPushout.cancelBaseChangeAlg : B ⊗[A] C ≃ₐ[S] S ⊗[R] C := by
   refine AlgEquiv.symm
-    (AlgEquiv.ofLinearEquiv (IsPushout.cancelBaseChange R S A B C).symm ?_ ?_)
-  · simp [TensorProduct.one_def]
+    (AlgEquiv.ofLinearEquiv (IsPushout.cancelBaseChange R S A B C).symm ?_)
   · apply LinearMap.map_mul_of_map_mul_tmul
     simp
 

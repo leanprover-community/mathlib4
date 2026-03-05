@@ -179,14 +179,14 @@ lemma trans [QuasiFinite R S] [QuasiFinite S T] : QuasiFinite R T := by
   have : Module.Finite P.ResidueField ((P.Fiber S) ⊗[S] T) :=
     .trans (P.Fiber S) _
   let e : P.Fiber S ≃ₐ[S] S ⊗[R] P.ResidueField :=
-    { __ := Algebra.TensorProduct.comm _ _ _, commutes' _ := rfl }
+    .ofCommutes (Algebra.TensorProduct.comm R P.ResidueField S) fun _ ↦ rfl
   let e' : (P.Fiber S) ⊗[S] T ≃ₐ[R] P.Fiber T :=
     ((Algebra.TensorProduct.congr e .refl).restrictScalars R).trans <|
     ((Algebra.TensorProduct.comm _ _ _).restrictScalars R).trans <|
     ((Algebra.TensorProduct.cancelBaseChange _ _ T _ _).restrictScalars R).trans
     (Algebra.TensorProduct.comm _ _ _)
   let e'' : (P.Fiber S) ⊗[S] T ≃ₐ[P.ResidueField] P.Fiber T :=
-    { __ := e', commutes' _ := by simp [e', e] }
+    .ofCommutes e' fun _ ↦ by simp [e', e]
   exact .of_surjective e''.toLinearMap e''.surjective
 
 omit [Algebra S T] in

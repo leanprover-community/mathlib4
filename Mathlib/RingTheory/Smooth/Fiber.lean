@@ -92,7 +92,7 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     simp [RingHom.algebraMap_toAlgebra, ψ, Sp]
   have : IsScalarTower P Sp 𝓀[S] := .to₁₃₄ _ S _ _
   have : IsScalarTower P Pp 𝓀[S] := .to₁₂₄ _ _ Sp _
-  let ePp : Pp ≃ₐ[P] P ⊗[R] 𝓀[R] := { __ := TensorProduct.comm _ _ _, commutes' _ := rfl }
+  let ePp : Pp ≃ₐ[P] P ⊗[R] 𝓀[R] := .ofCommutes (TensorProduct.comm R 𝓀[R] P) fun _ ↦ rfl
   let e₀ : Ω[Pp⁄𝓀[R]] ≃ₗ[Pp] Pp ⊗[P] Ω[P⁄R] :=
     (KaehlerDifferential.tensorKaehlerEquiv R 𝓀[R] P Pp).symm
   have : Module.Free Pp Ω[Pp⁄𝓀[R]] := .of_equiv e₀.symm
@@ -190,6 +190,8 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
 
 end IsLocalRing
 
+set_option maxHeartbeats 220000 in
+-- needed after refactoring `AlgEquiv`
 set_option backward.isDefEq.respectTransparency false in
 -- It is not hard to generalize the proof to get the full generality of the stacks tag.
 -- The hard part is figuring out the right way to state the result. Hence we refrain from this
@@ -224,7 +226,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
     have : FormallySmooth 𝓀[Rp] ((𝓀[Rp] ⊗[R] S) ⊗[S] Sq) :=
       .comp _ (𝓀[Rp] ⊗[R] S) _
     let e : 𝓀[Rp] ⊗[R] S ≃ₐ[S] S ⊗[R] 𝓀[Rp] :=
-      { __ := TensorProduct.comm _ _ _, commutes' _ := rfl }
+      .ofCommutes (TensorProduct.comm R 𝓀[Rp] S) fun _ ↦ rfl
     let e' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[R] 𝓀[Rp] ⊗[Rp] Sq :=
       ((TensorProduct.comm _ _ _).restrictScalars R).trans <|
       ((TensorProduct.congr (.refl (R := S)) e).restrictScalars R).trans <|
@@ -233,7 +235,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
     have : e'.toAlgHom.comp (IsScalarTower.toAlgHom R p.ResidueField _) =
         IsScalarTower.toAlgHom _ _ _ := by ext
     let e'' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[𝓀[Rp]] 𝓀[Rp] ⊗[Rp] Sq :=
-      { __ := e', commutes' r := congr($this r) }
+      .ofCommutes (R := 𝓀[Rp]) e'.toRingEquiv fun r ↦ congr($this r)
     exact .of_equiv e''
   have := FormallySmooth.of_formallySmooth_residueField_tensor
     (R := Rp) (S := Sq) (P := Sp) (algebraMapSubmonoid _ q.primeCompl)

@@ -46,7 +46,6 @@ open scoped ENNReal
 
 section LpPiLp
 
-
 variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
 
 section Finite
@@ -149,7 +148,6 @@ noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →
     map_smul' := fun _ _ ↦ rfl
     norm_map' := fun f ↦ by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
 
-
 variable {𝕜 E}
 
 theorem coe_lpBCFₗᵢ (f : lp (fun _ : α ↦ E) ∞) : (lpBCFₗᵢ E 𝕜 f : α → E) = f :=
@@ -180,15 +178,16 @@ variable (α)
 -- `one_memℓp_infty` to get the `Ring` instance on `lp`.
 /-- The canonical map between `lp (fun _ : α ↦ A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
-  { RingEquiv.lpBCF with commutes' := fun _k ↦ rfl }
-
+  .ofCommutes RingEquiv.lpBCF fun _k ↦ rfl
 
 variable {α 𝕜}
 
-theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) : (AlgEquiv.lpBCF α 𝕜 f : α → A) = f :=
+theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) :
+    -- why is the `A := A` needed?
+    (AlgEquiv.lpBCF α 𝕜 (A := A) f : α → A) = f :=
   rfl
 
-theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF α 𝕜).symm f : α → A) = f :=
+theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF α 𝕜 (A := A)).symm f : α → A) = f :=
   rfl
 
 end RingAlgebra

@@ -366,7 +366,6 @@ theorem isUnit_one_sub_smul_of_lt_inv_radius {a : A} {z : 𝕜} (h : ↑‖z‖�
 
 end OneSubSMul
 
-
 section ExpMapping
 
 local notation "↑ₐ" => algebraMap 𝕜 A

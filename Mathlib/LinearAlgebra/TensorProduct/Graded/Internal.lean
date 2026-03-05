@@ -369,9 +369,6 @@ $(-1)^{\deg a' \deg b} (b \otimes a)$. -/
 def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
   AlgEquiv.ofLinearEquiv
     (auxEquiv R 𝒜 ℬ ≪≫ₗ gradedComm R _ _ ≪≫ₗ (auxEquiv R ℬ 𝒜).symm)
-    (by
-      dsimp
-      simp_rw [auxEquiv_one, gradedComm_one, auxEquiv_symm_one])
     (fun x y => by
       dsimp
       simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq,

@@ -617,12 +617,12 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
   let e₀ := (CommRingCat.isPushout_tensorProduct ..).flip.isoPushout ≪≫
     (pushout.congrHom f.app_eq_appLE rfl ≪≫ @asIso _ _ _ _ _ this :)
   let e : Γ(Y, V) ⊗[Γ(S, U)] Γ(X, f ⁻¹ᵁ U) ≃ₐ[Γ(Y, V)] Γ(pullback f g, pullback.snd f g ⁻¹ᵁ V) :=
-    { toRingEquiv := e₀.commRingCatIsoToRingEquiv,
-      commutes' r := by
+    .ofCommutes e₀.commRingCatIsoToRingEquiv
+      fun r ↦ by
         change (CommRingCat.ofHom Algebra.TensorProduct.includeLeftRingHom ≫ e₀.hom) r =
           (pullback.snd f g).app V r
         congr 2
-        simp [e₀, pushout.inr_desc_assoc, Scheme.Hom.app_eq_appLE] }
+        simp [e₀, pushout.inr_desc_assoc, Scheme.Hom.app_eq_appLE]
   let ψ : Γ(Y, V) ⊗[Γ(S, U)] integralClosure Γ(S, U) Γ(X, f ⁻¹ᵁ U) →ₐ[Γ(Y, V)]
       integralClosure Γ(Y, V) Γ(pullback f g, pullback.snd f g ⁻¹ᵁ V) :=
     e.mapIntegralClosure.toAlgHom.comp (TensorProduct.toIntegralClosure _ _ _)

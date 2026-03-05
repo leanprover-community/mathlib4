@@ -252,7 +252,7 @@ def stalkClosedPointIso :
 lemma stalkClosedPointIso_inv :
     (stalkClosedPointIso R).inv = StructureSheaf.toStalk R _ := by
   ext x
-  exact (StructureSheaf.stalkIso _ _).commutes _
+  exact (StructureSheaf.stalkIso _ _).commutes x
 
 lemma ΓSpecIso_hom_stalkClosedPointIso_inv :
     (Scheme.ΓSpecIso R).hom ≫ (stalkClosedPointIso R).inv =

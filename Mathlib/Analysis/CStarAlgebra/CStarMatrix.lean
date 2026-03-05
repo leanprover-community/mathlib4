@@ -379,13 +379,13 @@ instance instAlgebra [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A] [
     Algebra R (CStarMatrix n n A) := inferInstanceAs <| Algebra R (Matrix n n A)
 
 /-- `ofMatrix` bundled as a star algebra equivalence. -/
-def ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :
+def ofMatrixStarAlgEquiv [Fintype n] [Semiring A] [StarRing A] [Module ℂ A] :
     Matrix n n A ≃⋆ₐ[ℂ] CStarMatrix n n A :=
   { ofMatrixRingEquiv with
     map_star' := fun _ => rfl
     map_smul' := fun _ _ => rfl }
 
-lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :
+lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [Semiring A] [StarRing A] [Module ℂ A] :
     (ofMatrix : Matrix n n A → CStarMatrix n n A)
       = (ofMatrixStarAlgEquiv : Matrix n n A → CStarMatrix n n A) := rfl
 
@@ -406,7 +406,7 @@ lemma reindexₗ_apply {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
-def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
+def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
     [Star A] (e : m ≃ n) : CStarMatrix m m A ≃⋆ₐ[R] CStarMatrix n n A :=
   { reindexₗ R A e e with
     map_mul' M N := by
@@ -424,16 +424,16 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
       simp [Matrix.submatrix_apply] }
 
 @[simp]
-lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A]
+lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Star A]
     [Module R A] {e : m ≃ n} {M : CStarMatrix m m A}
     {i : n} {j : n} : reindexₐ R A e M i j = Matrix.reindex e e M i j := rfl
 
-lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
-    [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
+lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+    [Star A] [NonUnitalNonAssocSemiring B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
     (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := rfl
 
 @[simp]
-lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
+lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
     [Star A] {e : m ≃ n} : reindexₐ R A e.symm = (reindexₐ R A e).symm := by
   simp [reindexₐ, reindexₗ]
 
@@ -461,7 +461,7 @@ theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring 
 
 variable (n) (R) (A) in
 /-- The ⋆-algebra equivalence between `A` and 1×1 matrices with its entry in `A`. -/
-def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Module R A] :
+def toOneByOne [Unique n] [Semiring R] [NonUnitalNonAssocSemiring A] [Star A] [Module R A] :
     A ≃⋆ₐ[R] CStarMatrix n n A where
   toFun a := fun x y => a
   invFun M := M default default

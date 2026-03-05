@@ -20,8 +20,8 @@ which is `Unitary.conjStarAlgAut S R u`, defined to be `x ↦ u * x * star u`.
 @[expose] public section
 
 namespace Unitary
-variable {S R : Type*} [Semiring R] [StarMul R]
-  [SMul S R] [IsScalarTower S R R] [SMulCommClass S R R]
+variable {S R : Type*} [Semiring S] [Semiring R] [StarMul R]
+  [Module S R] [IsScalarTower S R R] [SMulCommClass S R R]
 
 variable (S R) in
 /-- Each unitary element `u` defines a ⋆-algebra automorphism such that
