@@ -346,7 +346,7 @@ Given a continuous linear equivalence `g : F ≃L[𝕜] G`,
 this function returns the equivalence between continuous alternating maps with codomain `F`
 and continuous alternating maps with codomain `G`
 that acts by composing these maps with `g`.
- -/
+-/
 @[simps +simpRhs apply]
 def continuousAlternatingMapCongrRight (g : F ≃L[𝕜] G) :
     (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G) where
