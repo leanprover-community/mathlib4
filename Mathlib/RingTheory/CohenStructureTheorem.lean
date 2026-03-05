@@ -587,6 +587,7 @@ lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoether
   apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Finset.finite_toSet _))
   exact le_of_eq_of_le (Set.ncard_coe_finset _) (List.toFinset_card_le l)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     [IsAdicComplete (maximalIdeal R) R] : ∃ (S : Type u) (_ : CommRing S) (_ : IsRegularLocalRing S)
     (f : S →+* R), Function.Surjective f ∧ RingHom.ker f ≤ (maximalIdeal S) ^ 2 := by
