@@ -132,6 +132,11 @@ lemma variance_of_not_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ
     (hX_not : ¬ MemLp X 2 μ) :
     variance X μ = 0 := by simp [variance, (evariance_eq_top_iff hX).mpr hX_not]
 
+lemma memLp_two_of_variance_ne_zero [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ)
+    (h : Var[X; μ] ≠ 0) : MemLp X 2 μ := by
+  contrapose! h
+  exact variance_of_not_memLp hX h
+
 theorem ofReal_variance [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
     .ofReal (variance X μ) = evariance X μ := by
   rw [variance, ENNReal.ofReal_toReal]

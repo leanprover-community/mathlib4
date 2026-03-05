@@ -6,14 +6,27 @@ Authors: Thomas Zhu, Etienne Marion
 module
 
 public import Mathlib.Probability.Distributions.Gaussian.Real
-public import Mathlib.Probability.IdentDistrib
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
-public import Mathlib.MeasureTheory.Measure.LevyConvergence
-public import Mathlib.Probability.Independence.CharacteristicFunction
+
+import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
+import Mathlib.MeasureTheory.Measure.LevyConvergence
+import Mathlib.Probability.Independence.CharacteristicFunction
 
 /-!
-The Central Limit Theorem
+# Central limit theorem
+
+We prove the central limit theorem in dimension 1.
+
+## Main statement
+
+* `tendstoInDistribution_sqrt_inv_mul_sum`: Given a sequence of random variables `X : ℕ → Ω → ℝ`
+  that are independent, identically distributed with mean `μ` and non-zero variance `v`,
+  and a random variable `Y : Ω → ℝ` following `gaussianReal 0 1`, the sequence
+  `n ↦ (√(n * v)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution.
+
+## Tags
+
+central limit theorem
 -/
 
 public section
@@ -54,6 +67,10 @@ lemma tendsto_charFun_sqrt_inv_mul_pow {X : Ω → ℝ}
   simp
   ring
 
+/-- **Central Limit Theorem:** Given a sequence of random variables `X : ℕ → Ω → ℝ` that are
+independent, identically distributed, centered and with variance `1` and a random variable
+`Y : Ω → ℝ` following `gaussianReal 0 1`, the sequence
+`n ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k` converges to `Y` in distribution. -/
 theorem tendstoInDistribution_sqrt_inv_mul_sum {Y : Ω → ℝ} (hY : HasLaw Y (gaussianReal 0 1) P)
     (h0 : P[X 0] = 0) (h1 : P[X 0 ^ 2] = 1) (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
@@ -66,12 +83,10 @@ theorem tendstoInDistribution_sqrt_inv_mul_sum {Y : Ω → ℝ} (hY : HasLaw Y (
     simpa [charFun_sqrt_inv_mul_sum hindep hident, charFun_gaussianReal, neg_div] using
       tendsto_charFun_sqrt_inv_mul_pow (hident 0).aemeasurable_fst h0 h1 t
 
-lemma memLp_two_of_variance_ne_zero {Y : Ω → ℝ} (mY : AEMeasurable Y P) (h : Var[Y; P] ≠ 0) :
-    MemLp Y 2 P := by
-  contrapose! h
-  rw [← evariance_eq_top_iff mY.aestronglyMeasurable] at h
-  rw [variance, h, ENNReal.toReal_top]
-
+/-- **Central Limit Theorem:** Given a sequence of random variables `X : ℕ → Ω → ℝ` that are
+independent, identically distributed with mean `μ` and non-zero variance `v`, and a random variable
+`Y : Ω → ℝ` following `gaussianReal 0 1`, the sequence
+`n ↦ (√(n * v)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution. -/
 private theorem tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub {Y : Ω → ℝ}
     (hY : HasLaw Y (gaussianReal 0 1) P)
     (hX : Var[X 0; P] ≠ 0) (hindep : iIndepFun X P)
@@ -81,7 +96,7 @@ private theorem tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub {Y : Ω → �
       atTop Y P := by
   have mX0 := (hident 0).aemeasurable_fst
   have intX0 : Integrable (X 0) P := memLp_one_iff_integrable.1 <|
-    (memLp_two_of_variance_ne_zero mX0 hX).mono_exponent (by simp)
+    (memLp_two_of_variance_ne_zero mX0.aestronglyMeasurable hX).mono_exponent (by simp)
   have this (n : ℕ) ω : (√(n * Var[X 0; P]))⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]) =
       (√n)⁻¹ * ∑ k ∈ Finset.range n, (X k ω - P[X 0]) / √Var[X 0; P] := by
     rw [← Finset.sum_div, Finset.sum_sub_distrib]
@@ -95,6 +110,10 @@ private theorem tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub {Y : Ω → �
   · exact hindep.comp (fun _ x ↦ (x - P[X 0]) / √Var[X 0; P]) (by fun_prop)
   · convert fun n ↦ (hident n).comp (u := fun x ↦ (x - P[X 0]) / √Var[X 0; P]) (by fun_prop)
 
+/-- **Central Limit Theorem:** Given a sequence of random variables `X : ℕ → Ω → ℝ` that are
+independent, identically distributed with mean `μ` and non-zero variance `v`, and a random variable
+`Y : Ω → ℝ` following `gaussianReal 0 v`, the sequence
+`n ↦ (√(n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution. -/
 theorem tendstoInDistribution_sqrt_inv_mul_sum_sub {Y : Ω → ℝ}
     (hY : HasLaw Y (gaussianReal 0 Var[X 0; P].toNNReal) P)
     (hX : Var[X 0; P] ≠ 0) (hindep : iIndepFun X P)
