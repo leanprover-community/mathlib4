@@ -177,10 +177,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma eTruncLT_obj_map_eTruncLTι_app (i : EInt) (X : C) :
     (t.eTruncLT.obj i).map ((t.eTruncLTι i).app X) =
     (t.eTruncLTι i).app ((t.eTruncLT.obj i).obj X) := by
-  induction i using WithBotTop.rec with
-  | bot => simp
-  | coe n => simp [truncLT_map_truncLTι_app]
-  | top => simp
+  induction i using WithBotTop.rec with simp [truncLT_map_truncLTι_app]
 
 /-- The natural transformation `𝟭 C ⟶ t.eTruncGE.obj i` for all `i : EInt`. -/
 noncomputable abbrev eTruncGEπ (i : EInt) : 𝟭 C ⟶ t.eTruncGE.obj i :=
