@@ -574,8 +574,7 @@ lemma p_opcyclesToE (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂
 lemma opcyclesToE_ιE (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.opcyclesToE f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ n₂ hn₁ hn₂ ≫ X.ιE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ =
       X.opcyclesMap f₁₂ f₃ f₂ f₃ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) n₁ := by
-  simpa [← cancel_epi (X.pOpcycles f₁₂ f₃ n₁)] using
-    (X.p_opcyclesMap _ _ _ _ _ _ _ (by rfl)).symm
+  simpa [← cancel_epi (X.pOpcycles f₁₂ f₃ n₁)] using (X.p_opcyclesMap ..).symm
 
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Epi (X.opcyclesToE f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ n₂ hn₁ hn₂) :=
