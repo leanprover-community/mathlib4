@@ -480,6 +480,7 @@ def Classifier.uniqueUpToIso (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ≅ �
 
 instance (𝒞₁ 𝒞₂ : Classifier C) : IsIso (𝒞₁.hom 𝒞₂) := (𝒞₁.uniqueUpToIso 𝒞₂).isIso_hom
 
+/-- Being a subobject classifier is preserved under isomorphism. -/
 @[simps]
 def Classifier.ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω) (eΩ₀ : 𝒞.Ω₀ ≅ Ω₀)
     (from' : ∀ C, C ⟶ Ω₀) {t : Ω₀ ⟶ Ω} (ht : t = eΩ₀.inv ≫ 𝒞.truth ≫ eΩ.hom) :
@@ -510,9 +511,9 @@ variable {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
 
 
--- Classifier.ofRightAdjoint?
--- one would hope to prove that this construction is transitive and reflexive
-
+/--
+The image of a subobject classifier under an equivalence of categories is a subobject classifier.
+-/
 @[simps]
 def Classifier.ofEquivalence (𝒞₁ : Classifier C) (e : C ≌ D) : Classifier D where
   Ω₀ := e.functor.obj 𝒞₁.Ω₀
