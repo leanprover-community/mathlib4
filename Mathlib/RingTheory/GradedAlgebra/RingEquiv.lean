@@ -3,7 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.GradedAlgebra.RingHom
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.RingHom
 
 /-! # Graded ring isomorphisms
 We define `GradedRingEquiv 𝒜 ℬ` to mean isomorphisms of graded rings, with notation `𝒜 ≃+*ᵍ ℬ`.
@@ -12,13 +14,17 @@ When possible, instead of parametrizing results over `(e : 𝒜 ≃+*ᵍ ℬ)`, 
 `[GradedEquivLike E 𝒜 ℬ] [RingEquivClass E A B] (e : E)`.
 -/
 
+@[expose] public section
+
+open Graded
+
 variable {A B C D ι σ τ ψ ω : Type*}
 
 /-- A graded ring isomorphism between `𝒜` and `ℬ`. -/
 structure GradedRingEquiv [Semiring A] [Semiring B] [SetLike σ A] [SetLike τ B]
     [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [DecidableEq ι] [AddMonoid ι]
     (𝒜 : ι → σ) (ℬ : ι → τ) [GradedRing 𝒜] [GradedRing ℬ] extends A ≃+* B where
-  map_mem' {i x} : x ∈ 𝒜 i → toFun x ∈ ℬ i
+  map_mem {i x} : x ∈ 𝒜 i → toFun x ∈ ℬ i
 
 @[inherit_doc]
 infixl:25 " ≃+*ᵍ " => GradedRingEquiv
@@ -37,14 +43,24 @@ variable [Semiring A] [Semiring B] [Semiring C] [Semiring D]
   {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ψ} {𝒟 : ι → ω}
   [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞] [GradedRing 𝒟]
 
-/-- Turn an element of a type `E` satisfying `GradedEquivLike E 𝒜 ℬ` into an actual
-`GradedRingEquiv`. This is declared as the default coercion from `E` to `𝒜 ≃+*ᵍ ℬ`. -/
-@[coe]
-def ofClass {E : Type*} [GradedEquivLike E 𝒜 ℬ] [RingEquivClass E A B] (e : E) : 𝒜 ≃+*ᵍ ℬ :=
-  { (e : A ≃ B), (e : 𝒜 →+*ᵍ ℬ) with }
+/-- Turn an element of a type `E` satisfying
+`[EquivLike E A B] [GradedEquivLike E 𝒜 ℬ] [RingEquivClass E A B]` into an actual
+`GradedRingEquiv`.
 
-instance {E : Type*} [GradedEquivLike E 𝒜 ℬ] [RingEquivClass E A B] : CoeTC E (𝒜 ≃+*ᵍ ℬ) :=
-  ⟨ofClass⟩
+The preferred way in future mathlib will be to use structural projections instead. -/
+def ofClass {E : Type*} [EquivLike E A B] [GradedEquivLike E 𝒜 ℬ] [RingEquivClass E A B]
+    (e : E) : 𝒜 ≃+*ᵍ ℬ :=
+  { (e : A ≃ B), (.ofClass e : 𝒜 →+*ᵍ ℬ) with }
+
+/-- The underlying graded ring homomorphism. -/
+@[coe] def toGradedRingHom (e : 𝒜 ≃+*ᵍ ℬ) : 𝒜 →+*ᵍ ℬ :=
+  { e, e.toRingEquiv.toRingHom with }
+
+instance : CoeTC (𝒜 ≃+*ᵍ ℬ) (𝒜 →+*ᵍ ℬ) := ⟨toGradedRingHom⟩
+
+attribute [coe] toRingEquiv
+
+instance : CoeTC (𝒜 ≃+*ᵍ ℬ) (A ≃+* B) := ⟨toRingEquiv⟩
 
 section coe
 
@@ -57,12 +73,12 @@ private lemma mem_of_map_mem' (e : 𝒜 ≃+*ᵍ ℬ) {i x} (h : e.toFun x ∈ �
   rw [DFinsupp.mem_support_iff, ← Subtype.coe_ne_coe, ZeroMemClass.coe_zero,
     ← e.toRingEquiv.map_ne_zero_iff] at hj
   let e' : 𝒜 →+*ᵍ ℬ := { e with map_one' := e.map_one, map_zero' := e.map_zero }
-  conv_lhs at hj => exact map_coe_decompose _ _ e'
+  conv_lhs at hj => exact e'.map_directSumDecompose _ _
   conv_lhs at hj => enter [1,1]; exact DirectSum.decompose_of_mem _ h
   rw [DirectSum.of_eq_of_ne _ _ _ hij.symm] at hj
   exact (hj rfl).elim
 
-instance : GradedEquivLike (𝒜 ≃+*ᵍ ℬ) 𝒜 ℬ where
+instance : EquivLike (𝒜 ≃+*ᵍ ℬ) A B where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' e f h₁ h₂ := by
@@ -72,7 +88,9 @@ instance : GradedEquivLike (𝒜 ≃+*ᵍ ℬ) 𝒜 ℬ where
     exact RingEquiv.ext (congr($h₁ ·))
   left_inv f := f.left_inv
   right_inv f := f.right_inv
-  map_mem_iff e {_ _} := ⟨mem_of_map_mem' e, e.map_mem'⟩
+
+instance : GradedEquivLike (𝒜 ≃+*ᵍ ℬ) 𝒜 ℬ where
+  map_mem_iff e {_ _} := ⟨mem_of_map_mem' e, e.map_mem⟩
 
 instance : RingEquivClass (𝒜 ≃+*ᵍ ℬ) A B where
   map_add f := f.map_add'
@@ -91,6 +109,15 @@ protected theorem congr_arg {f : 𝒜 ≃+*ᵍ ℬ} {x x' : A} : x = x' → f x 
 protected theorem congr_fun {f g : 𝒜 ≃+*ᵍ ℬ} (h : f = g) (x : A) : f x = g x :=
   DFunLike.congr_fun h x
 
+@[simp] theorem gradedRingHom_ofClass_eq_coe (e : 𝒜 ≃+*ᵍ ℬ) :
+    .ofClass e = e.toGradedRingHom := rfl
+
+-- bridging lemma between the old convention and the new convention
+-- in the future `RingEquivClass.toRingEquiv` won't be a coercion and so the name will be
+-- `ringEquiv_ofClass_eq_coe`.
+@[simp] theorem coe_ringEquiv_eq_coe (e : 𝒜 ≃+*ᵍ ℬ) :
+    RingEquivClass.toRingEquiv e = e.toRingEquiv := rfl
+
 @[simp] theorem coe_mk (e h) : ⇑(⟨e, h⟩ : 𝒜 ≃+*ᵍ ℬ) = e := rfl
 
 @[simp]
@@ -99,9 +126,7 @@ theorem mk_coe (e : 𝒜 ≃+*ᵍ ℬ) (e' h₁ h₂ h₃ h₄ h₅) :
 
 @[simp] theorem coe_toEquiv (f : 𝒜 ≃+*ᵍ ℬ) : ⇑(f : A ≃ B) = f := rfl
 
-@[simp] theorem toRingEquiv_eq_coe (f : 𝒜 ≃+*ᵍ ℬ) : f.toRingEquiv = ↑f := rfl
-
-@[simp] theorem coe_toRingEquiv (f : 𝒜 ≃+*ᵍ ℬ) : ⇑(f : A ≃+* B) = f := rfl
+@[simp] theorem coe_coe_ringEquiv (f : 𝒜 ≃+*ᵍ ℬ) : ⇑f.toRingEquiv = f := rfl
 
 @[simp, norm_cast]
 theorem coe_toMulEquiv (f : 𝒜 ≃+*ᵍ ℬ) : ⇑(f : A ≃* B) = f := rfl
@@ -111,7 +136,7 @@ theorem coe_toMulEquiv (f : 𝒜 ≃+*ᵍ ℬ) : ⇑(f : A ≃* B) = f := rfl
 theorem coe_injective : Function.Injective ((↑) : (𝒜 ≃+*ᵍ ℬ) → A → B) :=
   DFunLike.coe_injective'
 
-theorem coe_gRingHom_injective : Function.Injective ((↑) : (𝒜 ≃+*ᵍ ℬ) → 𝒜 →+*ᵍ ℬ) :=
+theorem coe_gradedRingHom_injective : Function.Injective ((↑) : (𝒜 ≃+*ᵍ ℬ) → 𝒜 →+*ᵍ ℬ) :=
   fun _ _ h ↦ coe_injective congr($h)
 
 theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 ≃+*ᵍ ℬ) → A →+* B) :=
@@ -191,7 +216,7 @@ section symm
 /-- The inverse of a graded ring isomorphism is a graded ring isomorphism. -/
 @[symm] protected def symm (e : 𝒜 ≃+*ᵍ ℬ) : ℬ ≃+*ᵍ 𝒜 where
   __ := e.toRingEquiv.symm
-  map_mem' hx := mem_of_map_mem e <| by convert hx; exact EquivLike.apply_inv_apply e _
+  map_mem hx := mem_of_map_mem e <| by convert hx; exact EquivLike.apply_inv_apply e _
 
 @[simp] theorem invFun_eq_symm (f : 𝒜 ≃+*ᵍ ℬ) : EquivLike.inv f = f.symm := rfl
 
@@ -237,7 +262,7 @@ theorem symm_apply_apply (e : 𝒜 ≃+*ᵍ ℬ) : ∀ x, e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply
 
 theorem image_eq_preimage (e : 𝒜 ≃+*ᵍ ℬ) (s : Set A) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+  e.toEquiv.image_eq_preimage_symm s
 
 theorem symm_apply_eq (e : 𝒜 ≃+*ᵍ ℬ) {x : B} {y : A} :
     e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
@@ -279,7 +304,7 @@ variable (𝒜) in
 @[simp] theorem toEquiv_refl : GradedRingEquiv.refl 𝒜 = Equiv.refl A := rfl
 
 @[simp]
-theorem coe_gRingHom_refl : (GradedRingEquiv.refl 𝒜 : 𝒜 →+*ᵍ 𝒜) = .id 𝒜 := rfl
+theorem coe_gradedRingHom_refl : (GradedRingEquiv.refl 𝒜 : 𝒜 →+*ᵍ 𝒜) = .id 𝒜 := rfl
 
 @[simp] theorem coe_ringHom_refl : (GradedRingEquiv.refl 𝒜 : A →+* A) = .id A := rfl
 
@@ -295,7 +320,7 @@ variable (e₁ : 𝒜 ≃+*ᵍ ℬ) (e₂ : ℬ ≃+*ᵍ 𝒞)
 /-- The composition of two graded ring isomorphisms. -/
 @[trans, simps! apply] protected def trans (e₁ : 𝒜 ≃+*ᵍ ℬ) (e₂ : ℬ ≃+*ᵍ 𝒞) : 𝒜 ≃+*ᵍ 𝒞 where
   __ := e₁.toRingEquiv.trans e₂.toRingEquiv
-  map_mem' := e₂.map_mem' ∘ e₁.map_mem'
+  map_mem := e₂.map_mem ∘ e₁.map_mem
 
 @[simp] theorem coe_trans : ⇑(e₁.trans e₂) = e₂ ∘ e₁ := rfl
 
@@ -309,7 +334,7 @@ theorem symm_trans_apply (a : C) : (e₁.trans e₂).symm a = e₁.symm (e₂.sy
 
 @[simp] theorem coe_addEquiv_trans : (e₁.trans e₂ : A ≃+ C) = (e₁ : A ≃+ B).trans ↑e₂ := rfl
 
-@[simp] theorem coe_gRingHom_trans : (e₁.trans e₂ : 𝒜 →+*ᵍ 𝒞) = (e₂ : ℬ →+*ᵍ 𝒞).comp ↑e₁ := rfl
+@[simp] theorem coe_gradedRingHom_trans : (e₁.trans e₂ : 𝒜 →+*ᵍ 𝒞) = (e₂ : ℬ →+*ᵍ 𝒞).comp ↑e₁ := rfl
 
 @[simp] theorem coe_ringHom_trans : (e₁.trans e₂ : A →+* C) = (e₂ : B →+* C).comp ↑e₁ := rfl
 
@@ -330,7 +355,7 @@ section unique
 /-- If `A` and `B` are both unique (i.e. with exactly 1 element) then they are isomorphic. -/
 def ofUnique [Unique A] [Unique B] : 𝒜 ≃+*ᵍ ℬ where
   __ := RingEquiv.ofUnique
-  map_mem' hx := by convert ZeroMemClass.zero_mem (ℬ _); subsingleton
+  map_mem hx := by convert ZeroMemClass.zero_mem (ℬ _); subsingleton
 
 instance [Unique A] [Unique B] : Unique (𝒜 ≃+*ᵍ ℬ) where
   default := .ofUnique
@@ -340,17 +365,15 @@ end unique
 
 section ofBijective
 
-variable {F : Type*} [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]
-
 /-- Produce a graded ring isomorphism from a bijective graded ring homomorphism. -/
-noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : 𝒜 ≃+*ᵍ ℬ :=
+noncomputable def ofBijective (f : 𝒜 →+*ᵍ ℬ) (hf : Function.Bijective f) : 𝒜 ≃+*ᵍ ℬ :=
   { RingEquiv.ofBijective f hf, (f : 𝒜 →+*ᵍ ℬ) with }
 
-variable (f : F) (hf : Function.Bijective f)
+variable (f : 𝒜 →+*ᵍ ℬ) (hf : Function.Bijective f)
 
 @[simp] theorem coe_ofBijective : ⇑(ofBijective f hf) = f := rfl
 
-@[simp] theorem coe_toGRingHom_ofBijective : (ofBijective f hf : 𝒜 →+*ᵍ ℬ) = f := rfl
+@[simp] theorem coe_toGradedRingHom_ofBijective : (ofBijective f hf : 𝒜 →+*ᵍ ℬ) = f := rfl
 
 theorem ofBijective_apply (x : A) : ofBijective f hf x = f x := rfl
 
@@ -376,25 +399,25 @@ end ofBijective
 
 /-- Construct a mutually-inverse pair of graded ring homomorphisms into a graded ring isomorphism.
 -/
-def ofGRingHom (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒜) (h₁ : g.comp f = GradedRingHom.id 𝒜)
+def ofGradedRingHom (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒜) (h₁ : g.comp f = GradedRingHom.id 𝒜)
     (h₂ : f.comp g = GradedRingHom.id ℬ) : 𝒜 ≃+*ᵍ ℬ where
   __ := f
   __ := RingEquiv.ofRingHom f.toRingHom g.toRingHom congr($h₂) congr($h₁)
 
-@[simp] lemma coe_ofGRingHom (f : 𝒜 →+*ᵍ ℬ) (g h₁ h₂) :
-    ⇑(ofGRingHom f g h₁ h₂ : 𝒜 ≃+*ᵍ ℬ) = f := rfl
+@[simp] lemma coe_ofGradedRingHom (f : 𝒜 →+*ᵍ ℬ) (g h₁ h₂) :
+    ⇑(ofGradedRingHom f g h₁ h₂ : 𝒜 ≃+*ᵍ ℬ) = f := rfl
 
-@[simp] lemma toGRingHom_ofGRingHom (f : 𝒜 →+*ᵍ ℬ) (g h₁ h₂) :
-    (ofGRingHom f g h₁ h₂ : 𝒜 →+*ᵍ ℬ) = f := rfl
+@[simp] lemma toGradedRingHom_ofGradedRingHom (f : 𝒜 →+*ᵍ ℬ) (g h₁ h₂) :
+    (ofGradedRingHom f g h₁ h₂ : 𝒜 →+*ᵍ ℬ) = f := rfl
 
-@[simp] lemma toMonoidHom_ofGRingHom (f : 𝒜 →+*ᵍ ℬ) (g h₁ h₂) :
-    (ofGRingHom f g h₁ h₂ : A →* B) = f := rfl
+@[simp] lemma toMonoidHom_ofGradedRingHom (f : 𝒜 →+*ᵍ ℬ) (g h₁ h₂) :
+    (ofGradedRingHom f g h₁ h₂ : A →* B) = f := rfl
 
-@[simp] lemma toAddMonoidHom_ofGRingHom (f : 𝒜 →+*ᵍ ℬ) (g h₁ h₂) :
-    (ofGRingHom f g h₁ h₂ : A →+ B) = f := rfl
+@[simp] lemma toAddMonoidHom_ofGradedRingHom (f : 𝒜 →+*ᵍ ℬ) (g h₁ h₂) :
+    (ofGradedRingHom f g h₁ h₂ : A →+ B) = f := rfl
 
-@[simp] lemma symm_ofGRingHom (f : 𝒜 →+*ᵍ ℬ) (g h₁ h₂) :
-    (ofGRingHom f g h₁ h₂).symm = ofGRingHom g f h₂ h₁ := rfl
+@[simp] lemma symm_ofGradedRingHom (f : 𝒜 →+*ᵍ ℬ) (g h₁ h₂) :
+    (ofGradedRingHom f g h₁ h₂).symm = ofGradedRingHom g f h₂ h₁ := rfl
 
 end GradedSemiring
 
