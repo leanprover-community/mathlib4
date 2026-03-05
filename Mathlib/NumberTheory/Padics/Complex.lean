@@ -5,9 +5,8 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Ultra
+public import Mathlib.Analysis.Normed.Field.Dense
 public import Mathlib.Analysis.Normed.Module.Completion
-public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
@@ -29,6 +28,7 @@ structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 * `PadicComplex.norm_extends` : the norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`, and hence
   the norm on `ℚ_[p]`.
 * `PadicComplex.isNonarchimedean` : The norm on `ℂ_[p]` is nonarchimedean.
+* `PadicComplex.isAlgClosed` : `ℂ_[p]` is algebraically closed.
 
 ## Notation
 
@@ -243,6 +243,11 @@ instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where
 /-- `ℂ_[p]` has characteristic zero. -/
 instance charZero : CharZero ℂ_[p] :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] ℂ_[p]).injective).mp inferInstance
+
+set_option backward.isDefEq.respectTransparency false in
+/-- `ℂ_[p]` is algebrically closed. -/
+instance isAlgClosed : IsAlgClosed ℂ_[p] :=
+  IsAlgClosed.of_denseRange UniformSpace.Completion.denseRange_coe
 
 end PadicComplex
 
