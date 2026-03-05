@@ -174,7 +174,6 @@ theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
 theorem mem_treesOfNumNodesEq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
   mem_treesOfNumNodesEq.mpr rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_treesOfNumNodesEq (n : ℕ) :
     ↑(treesOfNumNodesEq n) = { x : Tree Unit | x.numNodes = n } :=

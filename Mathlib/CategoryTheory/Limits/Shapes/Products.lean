@@ -864,6 +864,12 @@ theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = 
 theorem Pi.reindex_inv_π (b : β) : (Pi.reindex ε f).inv ≫ Pi.π (f ∘ ε) b = Pi.π f (ε b) := by
   simp [Iso.inv_comp_eq]
 
+variable {f} in
+/-- Being a limiting fan is stable under equivalences in the index type. -/
+def Fan.isLimitEquivOfEquiv (c : Fan f) :
+    IsLimit c ≃ IsLimit (Fan.mk _ fun i : β ↦ c.proj (ε i)) :=
+  IsLimit.whiskerEquivalenceEquiv (Discrete.equivalence ε)
+
 end
 
 section
@@ -891,6 +897,12 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem Sigma.ι_reindex_inv (b : β) :
     Sigma.ι f (ε b) ≫ (Sigma.reindex ε f).inv = Sigma.ι (f ∘ ε) b := by simp [Iso.comp_inv_eq]
+
+variable {f} in
+/-- Being a colimiting cofan is stable under equivalences in the index type. -/
+def Cofan.isColimitEquivOfEquiv (c : Cofan f) :
+    IsColimit c ≃ IsColimit (Cofan.mk _ fun i : β ↦ c.inj (ε i)) :=
+  IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence ε)
 
 end
 
@@ -939,5 +951,25 @@ def Cofan.IsColimit.prod (c : ∀ i : ι, Cofan (fun j : ι' ↦ X i j)) (hc : �
     exact Cofan.IsColimit.hom_ext (hc i) _ _ fun j ↦ (by simpa using hm (i, j))
 
 end Fubini
+
+/-- The functor `C ⥤ (Type w)ᵒᵖ ⥤ C` which sends `X : C` and `α : Type w` to
+the product of copies of `X` indexed by `α`. -/
+@[simps]
+def piFunctor [HasProducts.{w} C] :
+    C ⥤ (Type w)ᵒᵖ ⥤ C where
+  obj X :=
+    { obj α := ∏ᶜ (fun (t : α.unop) ↦ X)
+      map f := Pi.map' f.unop (fun _ ↦ 𝟙 _) }
+  map f := { app T := Pi.map (fun _ ↦ f) }
+
+/-- The functor `C ⥤ Type w ⥤ C` which sends `X : C` and `α : Type w` to
+the coproduct of copies of `X` indexed by `α`. -/
+@[simps]
+def sigmaFunctor [HasCoproducts.{w} C] :
+    C ⥤ Type w ⥤ C where
+  obj X :=
+    { obj α := ∐ (fun (t : α) ↦ X)
+      map f := Sigma.map' f (fun _ ↦ 𝟙 _) }
+  map f := { app T := Sigma.map (fun _ ↦ f) }
 
 end CategoryTheory.Limits

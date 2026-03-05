@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 /-!
 # Properties of inner product spaces
@@ -805,7 +806,6 @@ theorem real_inner_div_norm_mul_norm_eq_one_iff (x y : F) :
   · rintro ⟨hx, ⟨r, ⟨hr, rfl⟩⟩⟩
     exact real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul hx hr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inner product of two vectors, divided by the product of their
 norms, has value -1 if and only if they are nonzero and one is
 a negative multiple of the other. -/
@@ -980,3 +980,19 @@ example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProduc
 example :
     (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
   rfl
+
+section IsPosSemidef
+
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+lemma isSymm_inner : LinearMap.IsSymm (innerₗ E) where
+  eq x y := by simp [real_inner_comm]
+
+lemma isNonneg_inner : LinearMap.IsNonneg (innerₗ E) where
+  nonneg x := by simp
+
+lemma isPosSemidef_inner : LinearMap.IsPosSemidef (innerₗ E) where
+  isSymm := isSymm_inner
+  isNonneg := isNonneg_inner
+
+end IsPosSemidef

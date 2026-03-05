@@ -126,7 +126,6 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
   case inl => simp
   case inr => exact (one_sub_sq_div_two_lt_cos hx).le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Half of **Jordan's inequality** for `cos`. -/
 lemma one_sub_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x ≤ cos x := by
   simpa [sin_pi_div_two_sub, mul_sub, div_mul_div_comm, mul_comm π, pi_pos.ne']
@@ -167,7 +166,6 @@ theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
     deriv (fun y : ℝ => tan y - y) x = 1 / cos x ^ 2 - 1 :=
   HasDerivAt.deriv <| by simpa using (hasDerivAt_tan h).add (hasDerivAt_id x).neg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For all `0 < x < π/2` we have `x < tan x`.
 
 This is proved by checking that the function `tan x - x` vanishes
