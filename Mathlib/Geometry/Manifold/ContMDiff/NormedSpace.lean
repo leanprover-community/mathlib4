@@ -103,22 +103,25 @@ variable {HΓ : Type*} [TopologicalSpace HΓ]
   [TopologicalSpace N] [ChartedSpace H' N] [SMul Γ N]
   [ContMDiffSMul IΓ J n Γ N] {f : M → Γ} {g : M → N}
 
-theorem ContMDiffWithinAt.smul (hf : ContMDiffWithinAt I IΓ n f s x)
+theorem ContMDiffWithinAt.smul_of_contMDiffSMul (hf : ContMDiffWithinAt I IΓ n f s x)
     (hg : ContMDiffWithinAt I J n g s x) :
     ContMDiffWithinAt I J n (fun y => f y • g y) s x := by
   have hsmul : ContMDiffAt (IΓ.prod J) J n (fun p : Γ × N => p.1 • p.2) (f x, g x) :=
     (ContMDiffSMul.contMDiff_smul (I := IΓ) (J := J) (n := n) (Γ := Γ) (N := N)).contMDiffAt
   simpa [Prod.mk.eta] using hsmul.comp_contMDiffWithinAt x (hf.prodMk hg)
 
-nonrec theorem ContMDiffAt.smul (hf : ContMDiffAt I IΓ n f x) (hg : ContMDiffAt I J n g x) :
+nonrec theorem ContMDiffAt.smul_of_contMDiffSMul
+    (hf : ContMDiffAt I IΓ n f x) (hg : ContMDiffAt I J n g x) :
     ContMDiffAt I J n (fun y => f y • g y) x :=
-  hf.smul hg
+  hf.smul_of_contMDiffSMul hg
 
-theorem ContMDiffOn.smul (hf : ContMDiffOn I IΓ n f s) (hg : ContMDiffOn I J n g s) :
-    ContMDiffOn I J n (fun y => f y • g y) s := fun y hy => (hf y hy).smul (hg y hy)
+theorem ContMDiffOn.smul_of_contMDiffSMul
+    (hf : ContMDiffOn I IΓ n f s) (hg : ContMDiffOn I J n g s) :
+    ContMDiffOn I J n (fun y => f y • g y) s :=
+  fun y hy => (hf y hy).smul_of_contMDiffSMul (hg y hy)
 
-theorem ContMDiff.smul (hf : ContMDiff I IΓ n f) (hg : ContMDiff I J n g) :
-    ContMDiff I J n (fun y => f y • g y) := fun y => (hf y).smul (hg y)
+theorem ContMDiff.smul_of_contMDiffSMul (hf : ContMDiff I IΓ n f) (hg : ContMDiff I J n g) :
+    ContMDiff I J n (fun y => f y • g y) := fun y => (hf y).smul_of_contMDiffSMul (hg y)
 
 end ContMDiffSMul
 
@@ -352,6 +355,24 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 /-- On any vector space, multiplication by a scalar is a smooth operation. -/
 theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=
   contMDiff_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
+
+
+theorem ContMDiffWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffWithinAt I 𝓘(𝕜) n f s x)
+    (hg : ContMDiffWithinAt I 𝓘(𝕜, V) n g s x) :
+    ContMDiffWithinAt I 𝓘(𝕜, V) n (fun p => f p • g p) s x :=
+  (contMDiff_smul.of_le le_top).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
+
+nonrec theorem ContMDiffAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffAt I 𝓘(𝕜) n f x)
+    (hg : ContMDiffAt I 𝓘(𝕜, V) n g x) : ContMDiffAt I 𝓘(𝕜, V) n (fun p => f p • g p) x :=
+  hf.smul hg
+
+theorem ContMDiffOn.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffOn I 𝓘(𝕜) n f s)
+    (hg : ContMDiffOn I 𝓘(𝕜, V) n g s) : ContMDiffOn I 𝓘(𝕜, V) n (fun p => f p • g p) s :=
+  fun x hx => (hf x hx).smul (hg x hx)
+
+theorem ContMDiff.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiff I 𝓘(𝕜) n f)
+    (hg : ContMDiff I 𝓘(𝕜, V) n g) : ContMDiff I 𝓘(𝕜, V) n fun p => f p • g p := fun x =>
+  (hf x).smul (hg x)
 
 instance : ContMDiffSMul 𝓘(𝕜) 𝓘(𝕜, V) n 𝕜 V where
   contMDiff_smul := (_root_.contMDiff_smul (𝕜 := 𝕜) (V := V)).of_le le_top
