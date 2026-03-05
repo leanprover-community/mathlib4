@@ -120,7 +120,7 @@ lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
             omega
         simpa
     simp_rw [coeff, MvPowerSeries.coeff_subst (MvPowerSeries.HasSubst.addInv_fin F (k + 1)),
-      coeff_coe]
+      coeff_coeToMvPowerSeries]
     generalize hB : (∑ i ∈ range (k + 1), Polynomial.C (F.addInv_aux i) * Polynomial.X ^ i) = B
     have coeff_B : B.coeff 0 = 0 := by simp [← hB]
     calc
