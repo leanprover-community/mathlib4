@@ -218,7 +218,6 @@ theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare 
   simp_rw [← sq, ← mul_pow, sq_sub_sq, Int.mul_eq_one_iff_eq_one_or_neg_one] at hp
   lia
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A solution with `x = 1` is trivial. -/
 theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) : a = 1 := by
   have prop := a.prop_y
@@ -406,7 +405,6 @@ theorem exists_nontrivial_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   refine ⟨mk x y prop, fun H => ?_, fun H => ?_⟩ <;> apply_fun Solution₁.y at H <;>
     simp [hy] at H
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `d` is a positive integer that is not a square, then there exists a solution
 to the Pell equation `x^2 - d*y^2 = 1` with `x > 1` and `y > 0`. -/
 theorem exists_pos_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
@@ -531,7 +529,6 @@ theorem x_le_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ 
     a₁.x ≤ a.x :=
   h.2.2 hax
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `y`-coordinate of a fundamental solution is a lower bound for the `y`-coordinate
 of any positive solution. -/
 theorem y_le_y {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
@@ -571,7 +568,6 @@ theorem mul_inv_x_pos {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solut
     _ = (a.x ^ 2 - 1) * a₁.x := by rw [← a.prop_y]; ring
     _ < a.x * (a.x * a₁.x) := by linarith [h.1]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If we multiply a positive solution with the inverse of a fundamental solution,
 the `x`-coordinate decreases. -/
 theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)

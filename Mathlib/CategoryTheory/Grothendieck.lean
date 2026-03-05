@@ -34,10 +34,10 @@ where morphisms consist again of `β : b ⟶ b'` and `φ : f ⟶ (G.map (op β))
 
 - `Grothendieck F` is the Grothendieck construction.
 - Elements of `Grothendieck F` whose base is `c : C` can be transported along `f : c ⟶ d` using
-`transport`.
+  `transport`.
 - A natural transformation `α : F ⟶ G` induces `map α : Grothendieck F ⥤ Grothendieck G`.
 - The Grothendieck construction and `map` together form a functor (`functor`) from the functor
-category `E ⥤ Cat` to the over category `Over E`.
+  category `E ⥤ Cat` to the over category `Over E`.
 - A functor `G : D ⥤ C` induces `pre F G : Grothendieck (G ⋙ F) ⥤ Grothendieck F`.
 
 ## References

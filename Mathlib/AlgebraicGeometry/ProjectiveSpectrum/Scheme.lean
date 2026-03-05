@@ -552,11 +552,11 @@ def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
   TopCat.ofHom
   { toFun := FromSpec.toFun f_deg hm
     continuous_toFun := by
-      rw [isTopologicalBasis_subtype (ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜) (pbo f).1
-        |>.continuous_iff]
+      rw [isTopologicalBasis_subtype (ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜)
+        (· ∈ pbo f) |>.continuous_iff]
       rintro s ⟨_, ⟨a, rfl⟩, rfl⟩
-      have h₁ : Subtype.val (p := (pbo f).1) ⁻¹' (pbo a) =
-          ⋃ i : ℕ, Subtype.val (p := (pbo f).1) ⁻¹' (pbo (decompose 𝒜 a i)) := by
+      have h₁ : Subtype.val (p := (· ∈ pbo f)) ⁻¹' (pbo a) =
+          ⋃ i : ℕ, Subtype.val (p := (· ∈ pbo f)) ⁻¹' (pbo (decompose 𝒜 a i)) := by
         simp [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]
       let e : _ ≃ _ :=
         ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f, toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩

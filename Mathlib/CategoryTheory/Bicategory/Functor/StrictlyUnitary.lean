@@ -27,10 +27,10 @@ unitary).
 
 ## TODOs
 * Define lax-composable (resp. pseudo-composable) arrows as strictly unitary
-lax (resp. pseudo-) functors out of `LocallyDiscrete Fin n`.
+  lax (resp. pseudo-) functors out of `LocallyDiscrete Fin n`.
 * Define identity-component oplax natural transformations ("icons") between
-strictly unitary pseudofunctors and construct a bicategory structure on
-bicategories, strictly unitary pseudofunctors and icons.
+  strictly unitary pseudofunctors and construct a bicategory structure on
+  bicategories, strictly unitary pseudofunctors and icons.
 * Construct the Duskin nerve of a bicategory using lax-composable arrows
 * Construct the 2-nerve of a bicategory using pseudo-composable arrows
 

@@ -38,12 +38,16 @@ section MetricSpace
 
 open scoped ContinuousFunctionalCalculus
 
-lemma isometry_cfcHom {R A : Type*} {p : outParam (A → Prop)} [CommSemiring R] [StarRing R]
-    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
-    [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
-    (a : A) (ha : p a := by cfc_tac) :
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
+  [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+  [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
+
+lemma isometry_cfcHom (a : A) (ha : p a := by cfc_tac) :
     Isometry (cfcHom (show p a from ha) (R := R)) :=
   IsometricContinuousFunctionalCalculus.isometric a ha
+
+instance [CompleteSpace R] : ClosedEmbeddingContinuousFunctionalCalculus R A p where
+  isClosedEmbedding a ha := (isometry_cfcHom a).isClosedEmbedding
 
 end MetricSpace
 
@@ -180,11 +184,11 @@ open scoped ContinuousFunctionalCalculus in
 protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) :
     IsometricContinuousFunctionalCalculus R A p where
-  toContinuousFunctionalCalculus := SpectrumRestricts.cfc f halg.isUniformEmbedding h0 h
+  toContinuousFunctionalCalculus := SpectrumRestricts.cfc f halg.isClosedEmbedding h0 h
   isometric a ha := by
     obtain ⟨ha', haf⟩ := h a |>.mp ha
-    have := SpectrumRestricts.cfc f halg.isUniformEmbedding h0 h
-    rw [cfcHom_eq_restrict f halg.isUniformEmbedding ha ha' haf]
+    have := SpectrumRestricts.cfc f halg.isClosedEmbedding h0 h
+    rw [cfcHom_eq_restrict f ha ha' haf]
     refine .of_dist_eq fun g₁ g₂ ↦ ?_
     simp only [starAlgHom_apply, isometry_cfcHom a ha' |>.dist_eq]
     refine le_antisymm ?_ ?_
@@ -229,6 +233,9 @@ variable [NonUnitalIsometricContinuousFunctionalCalculus R A p]
 lemma isometry_cfcₙHom (a : A) (ha : p a := by cfc_tac) :
     Isometry (cfcₙHom (show p a from ha) (R := R)) :=
   NonUnitalIsometricContinuousFunctionalCalculus.isometric a ha
+
+instance [CompleteSpace R] : NonUnitalClosedEmbeddingContinuousFunctionalCalculus R A p where
+  isClosedEmbedding a ha := (isometry_cfcₙHom a).isClosedEmbedding
 
 end MetricSpace
 
@@ -368,11 +375,11 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
     (h : ∀ a, p a ↔ q a ∧ QuasispectrumRestricts a f) :
     NonUnitalIsometricContinuousFunctionalCalculus R A p where
   toNonUnitalContinuousFunctionalCalculus := QuasispectrumRestricts.cfc f
-    halg.isUniformEmbedding h0 h
+    halg.isClosedEmbedding h0 h
   isometric a ha := by
     obtain ⟨ha', haf⟩ := h a |>.mp ha
-    have := QuasispectrumRestricts.cfc f halg.isUniformEmbedding h0 h
-    rw [cfcₙHom_eq_restrict f halg.isUniformEmbedding ha ha' haf]
+    have := QuasispectrumRestricts.cfc f halg.isClosedEmbedding h0 h
+    rw [cfcₙHom_eq_restrict f ha ha' haf]
     refine .of_dist_eq fun g₁ g₂ ↦ ?_
     simp only [nonUnitalStarAlgHom_apply, isometry_cfcₙHom a ha' |>.dist_eq]
     refine le_antisymm ?_ ?_
