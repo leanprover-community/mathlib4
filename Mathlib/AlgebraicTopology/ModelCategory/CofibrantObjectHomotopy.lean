@@ -134,7 +134,7 @@ lemma HoCat.exists_resolution (X : C) :
 /-- Given `X : C`, this is a cofibrant object `X'` equipped with a
 trivial fibration `X' ⟶ X` (see `HoCat.pResolutionObj`). -/
 noncomputable def HoCat.resolutionObj (X : C) : C :=
-    (exists_resolution X).choose
+  (exists_resolution X).choose
 
 instance (X : C) : IsCofibrant (HoCat.resolutionObj X) :=
   (HoCat.exists_resolution X).choose_spec.choose
@@ -149,6 +149,9 @@ instance (X : C) : Fibration (HoCat.pResolutionObj X) :=
 
 instance (X : C) : WeakEquivalence (HoCat.pResolutionObj X) :=
   (HoCat.exists_resolution X).choose_spec.choose_spec.choose_spec.2
+
+instance (X : C) [IsFibrant X] : IsFibrant (HoCat.resolutionObj X) :=
+  isFibrant_of_fibration (HoCat.pResolutionObj X)
 
 lemma HoCat.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
     ∃ (g : resolutionObj X ⟶ resolutionObj Y),
@@ -210,7 +213,7 @@ noncomputable def HoCat.localizerMorphismResolution :
       weakEquivalence_homMk_iff] using h
 
 /-- The map `HoCat.pResolutionObj`, when applied to already cofibrant objects, gives
-a natural transformation `ι ⋙ HoCat.resolution ⟶ toπ`. -/
+a natural transformation `ι ⋙ HoCat.resolution ⟶ toHoCat`. -/
 @[simps]
 noncomputable def HoCat.ιCompResolutionNatTrans :
     ι ⋙ HoCat.resolution (C := C) ⟶ toHoCat where
@@ -219,6 +222,7 @@ noncomputable def HoCat.ιCompResolutionNatTrans :
     ext : 1
     exact HoCat.resolutionMap_fac f.hom)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (X : CofibrantObject C) :
     WeakEquivalence (HoCat.ιCompResolutionNatTrans.app X) := by
   dsimp
@@ -249,7 +253,10 @@ def HoCat.toLocalization : HoCat C ⥤ D :=
 if `L : C ⥤ D` is a localization functor, then its restriction on the
 full subcategory of cofibrant objects factors through the homotopy category
 of cofibrant objects. -/
-def HoCat.toπCompToLocalizationIso : toHoCat ⋙ toLocalization L ≅ ι ⋙ L := Iso.refl _
+def HoCat.toHoCatCompToLocalizationIso : toHoCat ⋙ toLocalization L ≅ ι ⋙ L := Iso.refl _
+
+@[deprecated (since := "2026-01-31")]
+alias HoCat.toπCompToLocalizationIso := HoCat.toHoCatCompToLocalizationIso
 
 /-- The natural isomorphism `HoCat.resolution ⋙ HoCat.toLocalization L ⟶ L` when
 `L : C ⥤ D` is a localization functor. -/
@@ -259,6 +266,7 @@ noncomputable def HoCat.resolutionCompToLocalizationNatTrans :
   naturality _ _ f := by
     simpa only [Functor.map_comp] using L.congr_map (HoCat.resolutionMap_fac f)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (HoCat.resolutionCompToLocalizationNatTrans L) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
@@ -287,7 +295,7 @@ instance : (localizerMorphism C).IsLocalizedEquivalence := by
   let eF : ι ⋙ L ≅ Lcof ⋙ F := CatCommSq.iso (localizerMorphism C).functor Lcof L F
   let eF' : HoCat.toLocalization L ≅ Lcofπ ⋙ F :=
     CategoryTheory.Quotient.natIsoLift _
-      (HoCat.toπCompToLocalizationIso L ≪≫ eF ≪≫ associator _ _ _)
+      (HoCat.toHoCatCompToLocalizationIso L ≪≫ eF ≪≫ associator _ _ _)
   let G : H ⥤ Hcof := (HoCat.localizerMorphismResolution C).localizedFunctor L Lcofπ
   let eG : HoCat.resolution ⋙ Lcofπ ≅ L ⋙ G :=
     CatCommSq.iso (HoCat.localizerMorphismResolution C).functor L Lcofπ G

@@ -20,7 +20,8 @@ jobs:
 
     name: Add closed-pr emoji in Zulip
     runs-on: ubuntu-latest
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: github.repository == 'leanprover-community/mathlib4' ||
+        github.repository == 'leanprover-community/mathlib4-nightly-testing'
     steps:
       - name: Debugging information
         run: |
@@ -29,10 +30,25 @@ jobs:
           printf 'PR title:"%s"\n' "${TITLE}"
           printf 'issue number: "%s"\npull request number: "%s"\n' "${{ github.event.issue.number }}" "${{ github.event.pull_request.number }}"
 
+      - name: Checkout mathlib-ci
+        if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
+                github.event_name == 'reopened' }}
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
+                github.event_name == 'reopened' }}
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
+
       - name: Set up Python
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
                 github.event_name == 'reopened' }}
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.x'
 
@@ -41,16 +57,7 @@ jobs:
                 github.event_name == 'reopened' }}
         run: |
           python -m pip install --upgrade pip
-          pip install zulip
-
-      - name: checkout the zulip_emoji_reactions script
-        if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
-                github.event_name == 'reopened' }}
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        with:
-          ref: master
-          sparse-checkout: |
-            scripts/zulip_emoji_reactions.py
+          pip install -r "$CI_SCRIPTS_DIR/zulip/requirements.txt"
 
       - name: Update zulip emoji reactions
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
@@ -63,4 +70,4 @@ jobs:
           # ${{ github.event.action }} is either "closed" or "reopened"
           # We add the "closed-pr" emoji to the message, if it is "closed"
           # and remove the emoji if the action is "reopen".
-          python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "none" "${{ github.event.pull_request.number }}"
+          python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "none" "${{ github.event.pull_request.number }}"

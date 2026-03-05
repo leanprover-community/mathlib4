@@ -119,5 +119,6 @@ theorem reesAlgebra.fg (hI : I.FG) : (reesAlgebra I).FG := by
 instance [IsNoetherianRing R] : Algebra.FiniteType R (reesAlgebra I) :=
   ⟨(reesAlgebra I).fg_top.mpr (reesAlgebra.fg <| IsNoetherian.noetherian I)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsNoetherianRing R] : IsNoetherianRing (reesAlgebra I) :=
   Algebra.FiniteType.isNoetherianRing R _
