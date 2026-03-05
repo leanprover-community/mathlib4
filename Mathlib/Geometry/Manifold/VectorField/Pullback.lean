@@ -244,9 +244,7 @@ variable [IsManifold I 2 M] [IsManifold I' 2 M'] [CompleteSpace E]
 /-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
 differentiable. Version within a set at a point. -/
 protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
-    (hV : MDiffAt[t]
-      (T% V) (f x₀))
-    (hf : CMDiffAt[s] n f x₀) (hf' : (mfderiv[s] f x₀).IsInvertible)
+    (hV : MDiffAt[t] (T% V) (f x₀)) (hf : CMDiffAt[s] n f x₀) (hf' : (mfderiv[s] f x₀).IsInvertible)
     (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) :
     MDiffAt[s ∩ f ⁻¹' t] (T% (mpullbackWithin I I' f V s)) x₀ := by
   /- We want to apply the theorem `MDifferentiableWithinAt.clm_apply_of_inCoordinates`,
@@ -280,10 +278,10 @@ protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
         x₀ x (f x₀) (f x) (mfderiv[s] f x)) s x₀ :=
     ((hf.of_le hmn).mfderivWithin_const le_rfl hx₀ hs).mdifferentiableWithinAt one_ne_zero
   -- therefore, its inverse in coordinates also depends smoothly on the point
-  have : MDifferentiableWithinAt I 𝓘(𝕜, E' →L[𝕜] E)
+  have : MDiffAt[s]
       (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
-        x₀ x (f x₀) (f x) (mfderiv[s] f x))) s x₀ := by
+        x₀ x (f x₀) (f x) (mfderiv[s] f x))) x₀ := by
     apply MDifferentiableAt.comp_mdifferentiableWithinAt _ _ this
     apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
     apply ContDiffAt.contMDiffAt
