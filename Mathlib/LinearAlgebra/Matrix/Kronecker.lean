@@ -387,11 +387,7 @@ theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
     (A : Matrix m m R) (B : Matrix n n R) :
     det (A ⊗ₖ B) = det A ^ Fintype.card n * det B ^ Fintype.card m := by
   refine (det_kroneckerMapBilinear (Algebra.lmul ℕ R).toLinearMap mul_mul_mul_comm _ _).trans ?_
-  congr 3
-  · ext i j
-    exact mul_one _
-  · ext i j
-    exact one_mul _
+  simp
 
 theorem conjTranspose_kronecker [CommMagma R] [StarMul R] (x : Matrix l m R) (y : Matrix n p R) :
     (x ⊗ₖ y)ᴴ = xᴴ ⊗ₖ yᴴ := by

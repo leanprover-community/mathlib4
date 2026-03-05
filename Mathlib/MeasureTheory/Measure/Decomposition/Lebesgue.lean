@@ -680,6 +680,12 @@ theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
   simp_rw [this, ENNReal.smul_def, ENNReal.coe_toNNReal hr_ne_top] at h
   exact h
 
+theorem rnDeriv_smul_same (ν μ : Measure α) [IsFiniteMeasure ν]
+    [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
+    (r • ν).rnDeriv (r • μ) =ᵐ[μ] ν.rnDeriv μ := by
+  filter_upwards [rnDeriv_smul_left ν μ r, rnDeriv_smul_right (r • ν) μ hr] with x hx1 hx2
+  simp [hx1, hx2, hr]
+
 /-- Radon-Nikodym derivative of a sum of two measures.
 See also `rnDeriv_add'`, which requires sigma-finite `ν₁`, `ν₂` and `μ`. -/
 lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFiniteMeasure ν₂]
@@ -698,7 +704,6 @@ lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFinit
   · exact ((measurable_rnDeriv _ _).add (measurable_rnDeriv _ _)).aemeasurable
   · exact (lintegral_rnDeriv_lt_top (ν₁ + ν₂) μ).ne
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two finite measures `μ` and `ν` are not mutually singular, there exists some `ε > 0` and
 a measurable set `E`, such that `ν(E) > 0` and `E` is positive with respect to `μ - εν`.
 
@@ -890,11 +895,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
       refine le_intro fun B hB _ ↦ ?_
       rw [withDensity_apply _ hB]
       exact hξle B hB
-    have : IsFiniteMeasure (ν.withDensity ξ) := by
-      refine isFiniteMeasure_withDensity ?_
-      have hle' := hle univ
-      rw [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ] at hle'
-      exact ne_top_of_le_ne_top (measure_ne_top _ _) hle'
+    have : IsFiniteMeasure (ν.withDensity ξ) := isFiniteMeasure_of_le _ hle
     -- `ξ` is the `f` in the theorem statement and we set `μ₁` to be `μ - ν.withDensity ξ`
     -- since we need `μ₁ + ν.withDensity ξ = μ`
     set μ₁ := μ - ν.withDensity ξ with hμ₁

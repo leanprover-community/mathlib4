@@ -56,7 +56,6 @@ composing them. -/
 def natLERec (m n : ℕ) (h : m ≤ n) : G' m ↪[L] G' n :=
   Nat.leRecOn h (@fun k g => (f' k).comp g) (Embedding.refl L _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
     (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k => f' k) := by
@@ -311,7 +310,6 @@ theorem iSup_range_of_eq_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=
   eq_top_iff.2 (fun x _ ↦ DirectLimit.inductionOn x
     (fun i _ ↦ le_iSup (fun i ↦ Hom.range (Embedding.toHom (of L ι G f i))) i (mem_range_self _)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every finitely generated substructure of the direct limit corresponds to some
 substructure in some component of the directed system. -/
 theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (S_fg : S.FG) :

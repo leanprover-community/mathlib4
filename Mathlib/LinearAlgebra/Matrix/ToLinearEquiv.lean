@@ -219,7 +219,6 @@ end LinearEquiv
 
 section Determinant
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
 column positive has nonzero determinant. -/
 lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
