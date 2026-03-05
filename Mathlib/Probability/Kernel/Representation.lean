@@ -160,6 +160,5 @@ end ProbabilityTheory.Kernel
 theorem MeasureTheory.Measure.exists_measurable_map_eq {β : Type*} {mβ : MeasurableSpace β}
     [Nonempty β] [StandardBorelSpace β] (μ : Measure β) [IsProbabilityMeasure μ] :
     ∃ (f : I → β), Measurable f ∧ volume.map f = μ := by
-  obtain ⟨f, hf_meas, hf_map⟩ := Kernel.exists_measurable_map_eq_unitInterval (Kernel.const Unit μ)
-  specialize hf_map ()
-  exact ⟨f (), by fun_prop, by simpa⟩
+  obtain ⟨f, hf_meas, hf_map⟩ := (Kernel.const Unit μ).exists_measurable_map_eq_unitInterval
+  exact ⟨f (), by fun_prop, by simpa using hf_map ()⟩
