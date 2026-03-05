@@ -640,6 +640,32 @@ theorem isReal_of_isReal_over (hw : w.IsReal) : v.IsReal := by
 
 end LiesOver
 
+theorem IsRamified.liesOver_isReal_under (hw : w.IsRamified K) :
+    v.IsReal := LiesOver.comap_eq w v ▸ (isRamified_iff.1 hw).2
+
+theorem IsUnramified.liesOver_isReal_over
+    (hw : w.IsUnramified K) (hv : v.IsReal) : w.IsReal :=
+  (InfinitePlace.isUnramified_iff.1 hw).resolve_right
+    (by simpa [LiesOver.comap_eq w v] using not_isComplex_iff_isReal.2 hv)
+
+theorem IsUnramified.liesOver_isComplex_under
+    (h : w.IsUnramified K) (hw : w.IsComplex) : v.IsComplex :=
+  not_isReal_iff_isComplex.1 <| mt (h.liesOver_isReal_over w v) <| not_isReal_iff_isComplex.2 hw
+
+open LiesOver in
+theorem IsUnramified.not_comp_iff_conjugate_of_liesOver
+    (hw₀ : w.IsUnramified K) (hw : w.IsComplex) :
+    w.embedding.comp (algebraMap K L) ≠ v.embedding ↔
+      (conjugate w.embedding).comp (algebraMap K L) = v.embedding := by
+  refine ⟨(embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_left, ?_⟩
+  intro hc h
+  have hv_isComplex : v.IsComplex := hw₀.liesOver_isComplex_under w v hw
+  rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv_isComplex
+  let ⟨x, hx⟩ := hv_isComplex
+  exact hx <| RingHom.congr_fun hc x ▸ ComplexEmbedding.conjugate_comp _ (algebraMap K L) ▸
+    RingHom.congr_fun (congrArg conjugate h) x |>.symm
+
+
 variable (L)
 
 /-- The set of infinite places of `L` that lie above a given infinite place of `K`. -/
@@ -701,124 +727,5 @@ theorem union_ramifiedPlacesOver_unramifiedPlacesOver (v : InfinitePlace K) :
     (ramifiedPlacesOver L v) ∪ (unramifiedPlacesOver L v) = placesOver L v := by
   rw [placesOver, ramifiedPlacesOver, unramifiedPlacesOver, ← Set.setOf_or]
   grind
-
-end NumberField.InfinitePlace
-end LiesOver
-
-theorem IsRamified.liesOver_isReal_under (hw : w.IsRamified K) :
-    v.IsReal := LiesOver.comap_eq w v ▸ (isRamified_iff.1 hw).2
-
-theorem IsUnramified.liesOver_isReal_over
-    (hw : w.IsUnramified K) (hv : v.IsReal) : w.IsReal :=
-  (InfinitePlace.isUnramified_iff.1 hw).resolve_right
-    (by simpa [LiesOver.comap_eq w v] using not_isComplex_iff_isReal.2 hv)
-
-theorem IsUnramified.liesOver_isComplex_under
-    (h : w.IsUnramified K) (hw : w.IsComplex) : v.IsComplex :=
-  not_isReal_iff_isComplex.1 <| mt (h.liesOver_isReal_over w v) <| not_isReal_iff_isComplex.2 hw
-
-open LiesOver in
-theorem IsUnramified.not_comp_iff_conjugate_of_liesOver
-    (hw₀ : w.IsUnramified K) (hw : w.IsComplex) :
-    w.embedding.comp (algebraMap K L) ≠ v.embedding ↔
-      (conjugate w.embedding).comp (algebraMap K L) = v.embedding := by
-  refine ⟨(embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_left, ?_⟩
-  intro hc h
-  have hv_isComplex : v.IsComplex := hw₀.liesOver_isComplex_under w v hw
-  rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv_isComplex
-  let ⟨x, hx⟩ := hv_isComplex
-  exact hx <| RingHom.congr_fun hc x ▸ ComplexEmbedding.conjugate_comp _ (algebraMap K L) ▸
-    RingHom.congr_fun (congrArg conjugate h) x |>.symm
-
-variable (L) in
-def placesOver (v : InfinitePlace K) : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 }
-
-variable (L) in
-def unramifiedPlacesOver (v : InfinitePlace K) : Set (InfinitePlace L) :=
-  { w | w.1.LiesOver v.1 ∧ w.IsUnramified K }
-
--- theorem mem_unramifiedPlacesOver {w : InfinitePlace L} {v : InfinitePlace K} :
---     w ∈ unramifiedPlacesOver L v ↔ w.1.LiesOver v.1 ∧ w.IsUnramified K := by
---   simp [unramifiedPlacesOver]
-
--- theorem unramifiedPlacesOver.liesOver {w : InfinitePlace L} {v : InfinitePlace K}
---     (hw : w ∈ unramifiedPlacesOver L v) : w.1.LiesOver v.1 := by
---   simpa using hw.1
-
--- theorem unramifiedPlacesOver.isUnramified {w : InfinitePlace L} {v : InfinitePlace K}
---     (hw : w ∈ unramifiedPlacesOver L v) : w.IsUnramified K := by
---   simpa using hw.2
-
-theorem unramifiedPlacesOver.mk_mem_unramifiedPlacesOver
-    {φ : L →+* ℂ} {v : InfinitePlace K}
-    (h : φ ∈ unmixedEmbeddingsOver L (v.embedding)) :
-    mk φ ∈ unramifiedPlacesOver L v := by
-  simp_all only [unramifiedPlacesOver, unmixedEmbeddingsOver]
-  refine ⟨by simpa using congrArg InfinitePlace.mk h.1.over, h.2.mk_isUnramified⟩
-
-variable (L) in
-def ramifiedPlacesOver (v : InfinitePlace K) : Set (InfinitePlace L) :=
-  { w | w.1.LiesOver v.1 ∧ w.IsRamified K }
-
--- theorem mem_ramifiedPlacesOver {w : InfinitePlace L} {v : InfinitePlace K} :
---     w ∈ ramifiedPlacesOver L v ↔ w.1.LiesOver v.1 ∧ w.IsRamified K := by
---   simp [ramifiedPlacesOver]
-
--- theorem ramifiedPlacesOver.liesOver {w : InfinitePlace L} {v : InfinitePlace K}
---     (hw : w ∈ ramifiedPlacesOver L v) : w.1.LiesOver v.1 := by
---   simpa using hw.1
-
--- theorem ramifiedPlacesOver.isRamified {w : InfinitePlace L} {v : InfinitePlace K}
---     (hw : w ∈ ramifiedPlacesOver L v) : w.IsRamified K := by
---   simpa using hw.2
-
-theorem liesOver_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L} {v : InfinitePlace K}
-    (hw : w ∈ ramifiedPlacesOver L v) :
-    LiesOver v.embedding w.embedding where
-  over := by
-    have := hw.1
-    exact hw.2.comap_embedding ▸ congrArg embedding (LiesOver.comap_eq w v)
-
-theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L}
-    {v : InfinitePlace K} (hw : w ∈ ramifiedPlacesOver L v) :
-    LiesOver v.embedding (conjugate w.embedding) where
-  over := by
-    have := hw.1
-    exact hw.2.comap_embedding_conjugate ▸ congrArg embedding (LiesOver.comap_eq w v)
-
--- theorem ramifiedPlacesOver.isMixed {w : InfinitePlace L} {v : InfinitePlace K}
---     (hw : w ∈ ramifiedPlacesOver L v) : IsMixed K w.embedding :=
---   hw.2.isMixed_embedding
-
--- theorem ramifiedPlacesOver.isMixed_conjugate {w : InfinitePlace L} {v : InfinitePlace K}
---     (hw : w ∈ ramifiedPlacesOver L v) :
---     IsMixed K (conjugate w.embedding) :=
---   hw.2.isMixed_conjugate_embedding
-
-theorem mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} {v : InfinitePlace K}
-    (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) :
-    mk φ ∈ ramifiedPlacesOver L v :=
-  ⟨by simpa using h.1.over ▸ mk_embedding _, h.2.mk_isRamified⟩
-
-theorem embedding_mem_mixedEmbeddingsOver
-    {v : InfinitePlace K} (w : InfinitePlace L) (hw : w ∈ ramifiedPlacesOver L v) :
-    w.embedding ∈ mixedEmbeddingsOver L (v.embedding) :=
-  ⟨liesOver_embedding_of_mem_ramifiedPlacesOver hw, hw.2.isMixed_embedding⟩
-
-theorem conjugate_embedding_mem_mixedEmbeddingsOver
-    {v : InfinitePlace K} (w : InfinitePlace L) (hw : w ∈ ramifiedPlacesOver L v) :
-    conjugate w.embedding ∈ mixedEmbeddingsOver L (v.embedding) :=
-  ⟨liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver hw, hw.2.isMixed_conjugate_embedding⟩
-
-variable (L) in
-theorem disjoint_ramifiedPlacesOver_unramifiedPlacesOver (v : InfinitePlace K) :
-    Disjoint (ramifiedPlacesOver L v) (unramifiedPlacesOver L v) := by
-  aesop (add simp [Set.disjoint_iff, ramifiedPlacesOver, unramifiedPlacesOver])
-
-variable (L) in
-theorem union_ramifiedPlacesOver_unramifiedPlacesOver (v : InfinitePlace K) :
-    (ramifiedPlacesOver L v) ∪ (unramifiedPlacesOver L v) = placesOver L v := by
-  simp only [placesOver, ramifiedPlacesOver, unramifiedPlacesOver, ← Set.setOf_or]
-  exact Set.setOf_inj.2 <| funext_iff.2 fun _ => by aesop (add simp [or_not.symm])
 
 end NumberField.InfinitePlace
