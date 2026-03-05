@@ -253,18 +253,34 @@ private lemma aux3 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x
     (hf : MDiffAt f x)
     (hτ : MDiffAt (T% τ) x) :
     myfun I cov σ (f • τ) x = f x • myfun I cov σ τ x := by
-  -- TODO: should be similar to aux1!
-  simp only [myfun]
-  ext X
-  dsimp
-  rw [map_smul (innerSL ℝ) (f x) (τ x), product_smul_right]
   have hσ : MDiffAt (T% σ) x := sorry -- missing hypothesis?
-  have aux := mfderiv_smul (s := f) (f := ⟪σ, τ⟫) (I := I) (x := x) (hσ.inner_bundle' hτ) hf
-  set A := (f x • (innerSL ℝ) (τ x)).comp (cov σ x)
-  set B := mfderiv I 𝓘(ℝ, ℝ) (f • ⟪σ, τ⟫) x
-  -- issue: A and B live in different tangent spaces, so cannot simply expand and apply aux...
-  -- next steps: apply the Leibniz rule, collect the other terms and suffer some more
-  sorry
+  unfold myfun
+  rw [product_smul_right, cov.isCovariantDerivativeOn.leibniz hτ hf]
+  ext X
+  simp only [smul_eq_mul, Pi.smul_apply', map_smul, ContinuousLinearMap.smul_comp,
+    ContinuousLinearMap.comp_add, ContinuousLinearMap.comp_smulₛₗ, RingHom.id_apply,
+    ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.add_apply,
+    ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', coe_innerSL_apply, Pi.smul_apply,
+    comp_apply, ContinuousLinearEquiv.coe_coe, ContinuousLinearMap.toSpanSingleton_apply]
+  erw [ContinuousLinearMap.sub_apply, ContinuousLinearMap.sub_apply, ContinuousLinearMap.comp_apply]
+  set A := inner ℝ (σ x) ((cov τ x) X)
+  conv =>
+    enter [1, 1, 2]
+    erw [ContinuousLinearMap.smul_apply]
+  conv =>
+    enter [1, 1, 2, 2]
+    erw [ContinuousLinearMap.comp_apply]
+  dsimp
+  --set B := inner ℝ (τ x) ((cov σ x) X)
+  erw [mfderiv_smul (hσ.inner_bundle' hτ) hf]
+  --set C := (mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x) X
+  --set D := (mfderiv I 𝓘(ℝ, ℝ) f x) X
+  simp only [smul_eq_mul, bar, ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk, LinearMap.coe_mk,
+    AddHom.coe_mk, inner_smul_right]
+  -- might be superfluous
+  have : inner ℝ (σ x) (τ x) = ⟪σ, τ⟫ x := by rfl
+  rw [this]
+  sorry -- morally true now!
 
 variable {I} in
 private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
