@@ -25,6 +25,11 @@ Gaussian distributions over `EuclideanSpace ℝ ι`.
 * `multivariateGaussian μ S`: The multivariate Gaussian distribution with mean `μ` and covariance
   matrix `S`.
 
+## TODO
+
+* Generalize `multivariateGaussian μ S` when `S` is a symmetric trace class operator over a
+  Hilbert space.
+
 ## Tags
 
 multivariate Gaussian distribution
