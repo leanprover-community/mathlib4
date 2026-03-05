@@ -608,6 +608,7 @@ private lemma ne_zero_of_tuple_ne_zero {a : K} (ha : ![a, 0] ≠ 0) : a ≠ 0 :=
   · simp at hi
 
 variable (K) in
+/-- A homogeneous version of `Height.abs_logHeight_sym2_sub_le`. -/
 lemma abs_logHeight_sym2_sub_le' :
     ∃ C, ∀ a b c d : K, ![a, b] ≠ 0 → ![c, d] ≠ 0 →
       |logHeight ![a * c, a * d + b * c, b * d] - (logHeight ![a, b] + logHeight ![c, d])| ≤ C := by
