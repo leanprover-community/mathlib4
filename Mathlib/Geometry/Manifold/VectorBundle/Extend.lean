@@ -43,19 +43,35 @@ open Classical in
 The details of the extension are mostly unspecified: for covariant derivatives, the value of
 `s` at points other than `x` will not matter (except for shorter proofs).
 -/
-noncomputable def extend {x : M} (v₀ : V x) :
-    (x' : M) → V x' :=
+noncomputable def extend {x : M} (v₀ : V x) (x' : M) : V x' :=
   letI t := trivializationAt F V x
   letI w : F := (t ⟨x, v₀⟩).2
-  fun x' ↦ t.symm x' w
+  t.symm x' w
 
 variable {I F} in
-@[simp] lemma extend_apply_self {x : M} (v : V x) :
-    extend F v x = v := by
-  unfold extend
-  simp [FiberBundle.mem_baseSet_trivializationAt' x]
+@[simp] lemma extend_apply_self {x : M} (v : V x) : extend F v x = v := by
+  simp [extend, FiberBundle.mem_baseSet_trivializationAt' x]
 
 variable [NormedSpace 𝕜 F]
+
+lemma exists_contMDiffOn_extend {k} [IsManifold I k M] [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
+    [ContMDiffVectorBundle k F V I] {x₀ : M} (σ₀ : V x₀) :
+    ∃ s ∈ 𝓝 x₀, ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (T% (extend F σ₀)) s := by
+  set t := trivializationAt F V x₀
+  refine ⟨t.baseSet, ?_, ?_⟩
+  · refine t.open_baseSet.mem_nhds ?_
+    exact FiberBundle.mem_baseSet_trivializationAt' x₀
+  suffices ContMDiffOn I 𝓘(𝕜, F) k (fun x ↦ (t ⟨x, extend F σ₀ x⟩).2) t.baseSet by
+    intro x hx
+    rw [t.contMDiffWithinAt_section _ hx]
+    exact this x hx
+  let w : F := (t ⟨x₀, σ₀⟩).2
+  have : ContMDiffOn I 𝓘(𝕜, F) k (fun x_1 ↦ w) t.baseSet := contMDiffOn_const
+  refine this.congr ?_
+  intro x hx
+  dsimp only
+  unfold extend
+  rw [t.mk_symm hx, t.apply_symm_apply' hx]
 
 -- TODO there is a lemma already with this name which should be renamed to something like
 -- `Chart.contMDiffAt_extend` or `OpenPartialHomeomorph.contMDiffAt_extend`
@@ -74,11 +90,14 @@ lemma contMDiffAt_extend' {k} [IsManifold I k M] {x : M} (σ₀ : V x) :
     simp [t, hx, w]
   · exact FiberBundle.mem_baseSet_trivializationAt' x
 
+lemma exists_mdifferentiableOn_extend [IsManifold I 1 M] [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
+    [ContMDiffVectorBundle 1 F V I] {x₀ : M} (σ₀ : V x₀) :
+    ∃ s ∈ 𝓝 x₀, MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (T% (extend F σ₀)) s := by
+  obtain ⟨s, hs, hsσ⟩ := exists_contMDiffOn_extend (k := 1) I F σ₀
+  exact ⟨s, hs, hsσ.mdifferentiableOn one_ne_zero⟩
+
 lemma mdifferentiableAt_extend [IsManifold I 1 M] {x : M} (σ₀ : V x) :
     MDiffAt (T% (extend F σ₀)) x :=
-  have := contMDiffAt_extend' (k := 1) I F σ₀
-  this.mdifferentiableAt one_ne_zero
-
--- TODO also prove `ContMDiffOn` and `MDifferentiableOn` in a neighbourhood of the point
+  (contMDiffAt_extend' (k := 1) I F σ₀).mdifferentiableAt one_ne_zero
 
 end extend
