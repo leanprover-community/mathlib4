@@ -230,8 +230,7 @@ instance instPreInnerProductSpaceCoreH₀ : PreInnerProductSpace.Core 𝕜 (H₀
 instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
   InnerProductSpace.Core.toSeminormedAddCommGroup (𝕜 := 𝕜)
 
-instance instInnerProductSpaceH₀ : InnerProductSpace 𝕜 (H₀ K) :=
-  .ofCore instPreInnerProductSpaceCoreH₀
+instance instInnerProductSpaceH₀ : InnerProductSpace 𝕜 (H₀ K) := .ofCore _
 
 private lemma inner_H₀_def (f g : H₀ K) :
     ⟪f, g⟫_𝕜 = f.sum fun ⟨y, u⟩ z ↦ g.sum fun ⟨x, v⟩ w ↦ star z * w * ⟪K x y u, v⟫_𝕜 := rfl
@@ -270,12 +269,7 @@ private abbrev kerFun (x : X) :
     _ ≤ ‖K x x‖ * ‖v‖ * ‖v‖ := by simp [mul_le_mul_of_nonneg_right, le_opNorm]
     _ ≤ _ := by simp [mul_pow, mul_assoc, ← sq]
 
-#synth UniformContinuousConstSMul 𝕜 (X × V →₀ 𝕜)
-#synth UniformContinuousConstSMul 𝕜 (H₀ K)
---instance insttest : UniformContinuousConstSMul 𝕜 (X × V →₀ 𝕜) := sorry
-instance insttestt : UniformContinuousConstSMul 𝕜 (H₀ K) := sorry
-#synth UniformContinuousConstSMul 𝕜 (X × V →₀ 𝕜)
-#synth UniformContinuousConstSMul 𝕜 (H₀ K)
+instance instIsBoundedSMul : IsBoundedSMul 𝕜 (H₀ K) := NormedSpace.toIsBoundedSMul
 
 @[no_expose]
 instance instRKHS : RKHS 𝕜 (OfKernel K) X V where
