@@ -298,6 +298,9 @@ def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y)
     (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
+/--
+Deprecated spelling of `mk_of_mem_addSubmonoid`.
+-/
 @[deprecated mk_of_mem_addSubmonoid (since := "2026-03-05")]
 def mk_of_mem [AddMonoid Y] (f : X → Y)
     (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
