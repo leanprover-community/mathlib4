@@ -28,6 +28,30 @@ in `R` to `R[X]`. We provide several lemmas to deal with coefficients, degree, a
 
 variable {R S : Type*} [Ring R]
 
+namespace MonoidAlgebra
+
+/-- Given a monoid algebra `p` and a subring `S` that contains the coefficients of `p`,
+return the corresponding polynomial whose coefficients are in `S`. -/
+-- TODO: a condition like `p.coeffs ⊆ S` might be more versatile, if we had `MonoidAlgebra.coeffs`.
+@[simps]
+def coeffRestrict (p : R[M]) (hp : ∀ n, p n ∈ S) : S[M] where
+  support := p.support
+  toFun n := ⟨p n, hp n⟩
+  mem_support_toFun n := by simp
+
+variable (hp : ∀ n, p n ∈ S)
+
+@[simp] theorem coeffRestrict_apply {n : M} : p.coeffRestrict S hp n = p n := rfl
+@[simp] theorem support_coeffRestrict : (p.coeffRestrict S hp).support = p.support := rfl
+
+@[simp]
+theorem map_coeffRestrict : (p.coeffRestrict T hp).map (Subring.subtype T) = p := by
+  ext; simp
+
+end MonoidAlgebra
+
+#exit
+
 namespace Polynomial
 
 variable (p : R[X]) (T : Subring R)
