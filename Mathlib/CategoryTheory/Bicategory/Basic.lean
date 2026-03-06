@@ -173,6 +173,7 @@ attribute [simp]
   whiskerLeft_id whiskerLeft_comp id_whiskerLeft comp_whiskerLeft id_whiskerRight comp_whiskerRight
   whiskerRight_id whiskerRight_comp whisker_assoc
 
+
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
 @[reassoc (attr := simp)]
