@@ -59,7 +59,7 @@ def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum 
 
 /-- create an exhaustive list of the values of a given type -/
 def toList (α) [FinEnum α] : List α :=
-  (List.finRange (card α)).map (equiv).symm
+  (List.finRange (card α)).map equiv.symm
 
 open Function
 
@@ -178,7 +178,7 @@ instance PSigma.finEnumPropProp {α : Prop} {β : α → Prop} [Decidable α] [�
 instance [DecidableEq α] (xs : List α) : FinEnum { x : α // x ∈ xs } := ofList xs.attach (by simp)
 
 instance (priority := 100) [FinEnum α] : Fintype α where
-  elems := univ.map (equiv).symm.toEmbedding
+  elems := univ.map equiv.symm.toEmbedding
   complete := by intros; simp
 
 /-- The enumeration merely adds an ordering, leaving the cardinality as is. -/
