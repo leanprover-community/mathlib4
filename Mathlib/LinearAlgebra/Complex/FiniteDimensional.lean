@@ -45,7 +45,7 @@ theorem finrank_real_complex_fact : Fact (finrank ℝ ℂ = 2) :=
 
 end Complex
 
-instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
+instance (priority := 500) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
   FiniteDimensional.trans ℝ ℂ E
 

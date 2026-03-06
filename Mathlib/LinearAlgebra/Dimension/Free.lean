@@ -308,8 +308,8 @@ end Module
 
 namespace Algebra
 
-instance (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
-    [IsQuadraticExtension R S] :
+instance (priority := 100) (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+    [Algebra R S] [IsQuadraticExtension R S] :
     Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticExtension.finrank_eq_two R S
 
 end Algebra
