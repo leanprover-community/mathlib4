@@ -62,6 +62,7 @@ Then `L` is said to be a *topological lattice*.
 class TopologicalLattice (L : Type*) [TopologicalSpace L] [Lattice L] : Prop
   extends ContinuousInf L, ContinuousSup L
 
+set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) OrderDual.topologicalLattice (L : Type*) [TopologicalSpace L]
     [Lattice L] [TopologicalLattice L] : TopologicalLattice Lᵒᵈ where
@@ -135,11 +136,13 @@ lemma finset_sup'_nhds_apply [SemilatticeSup L] [ContinuousSup L]
     Tendsto (fun a ↦ s.sup' hne (f · a)) l (𝓝 (s.sup' hne g)) := by
   simpa only [← Finset.sup'_apply] using finset_sup'_nhds hne hs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finset_inf'_nhds [SemilatticeInf L] [ContinuousInf L]
     (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
     Tendsto (s.inf' hne f) l (𝓝 (s.inf' hne g)) :=
   finset_sup'_nhds (L := Lᵒᵈ) hne hs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finset_inf'_nhds_apply [SemilatticeInf L] [ContinuousInf L]
     (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
     Tendsto (fun a ↦ s.inf' hne (f · a)) l (𝓝 (s.inf' hne g)) :=
@@ -157,10 +160,12 @@ lemma finset_sup_nhds_apply [SemilatticeSup L] [OrderBot L] [ContinuousSup L]
     Tendsto (fun a ↦ s.sup (f · a)) l (𝓝 (s.sup g)) := by
   simpa only [← Finset.sup_apply] using finset_sup_nhds hs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finset_inf_nhds [SemilatticeInf L] [OrderTop L] [ContinuousInf L]
     (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) : Tendsto (s.inf f) l (𝓝 (s.inf g)) :=
   finset_sup_nhds (L := Lᵒᵈ) hs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finset_inf_nhds_apply [SemilatticeInf L] [OrderTop L] [ContinuousInf L]
     (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
     Tendsto (fun a ↦ s.inf (f · a)) l (𝓝 (s.inf g)) :=

@@ -131,10 +131,11 @@ theorem IsCompact.isClosed_image_restrict (S : Set ι)
   rw [Homeomorph.isClosed_image]
   exact hs_closed.preimage continuous_subtype_val
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isClosedMap_restrict_of_compactSpace [∀ i, CompactSpace (α i)] :
     IsClosedMap (S.restrict : (Π i, α i) → _) := fun s hs ↦ by
   classical
-  have : S.restrict (π := α) = Prod.fst ∘ (Homeomorph.piEquivPiSubtypeProd S α) := rfl
+  have : S.restrict (π := α) = Prod.fst ∘ (Homeomorph.piEquivPiSubtypeProd (· ∈ S) α) := rfl
   rw [this, image_comp]
   exact isClosedMap_fst_of_compactSpace _ <| (Homeomorph.isClosed_image _).mpr hs
 

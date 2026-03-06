@@ -107,6 +107,7 @@ instance isProbabilityMeasure_ite {p : Prop} [Decidable p] {μ ν : Measure α}
     [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (ite p μ ν) := by split <;> infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 open unitInterval in
 instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {p : I} :
     IsProbabilityMeasure (toNNReal p • μ + toNNReal (σ p) • ν) where

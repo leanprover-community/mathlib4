@@ -427,6 +427,7 @@ theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Ve
     congr 1
     ext x; cases x <;> rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Deleting the first component preserves the Diophantine property. -/
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
     Dioph {v : Fin2 n → ℕ | ∃ x, (x::v) ∈ S} :=

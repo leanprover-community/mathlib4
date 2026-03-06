@@ -17,3 +17,15 @@ jobs:
         with:
           tool_name: actionlint
           fail_level: any
+
+  ensure-sha-pinned-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Using our fork's PR branch until upstream merges the improved error reporting:
+      # https://github.com/zgosalvez/github-actions-ensure-sha-pinned-actions/pull/288
+      # TODO: Update to upstream release once merged.
+      - name: Ensure all actions are pinned to SHA
+        uses: kim-em/github-actions-ensure-sha-pinned-actions@00f51cdb5bbc21f5bc873ef3a2dceef45df213af # improve-error-reporting

@@ -53,6 +53,7 @@ def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i
       · intro i
         apply c₂.snd ≫ c₁.π.app ⟨i⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Show that if the two given fans in `extendFan` are limits, then the constructed fan is also a
 limit.
 -/
@@ -88,7 +89,7 @@ variable [HasBinaryProducts C] [HasTerminal C]
 
 /-- If `C` has a terminal object and binary products, then it has a product for objects indexed by
 `Fin n`.
-This is a helper lemma for `hasFiniteProductsOfHasBinaryAndTerminal`, which is more general
+This is a helper lemma for `hasFiniteProducts_of_has_binary_and_terminal`, which is more general
 than this.
 -/
 private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
@@ -175,6 +176,7 @@ def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n =>
       · intro i
         apply c₁.ι.app ⟨i⟩ ≫ c₂.inr)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Show that if the two given cofans in `extendCofan` are colimits,
 then the constructed cofan is also a colimit.
 -/
@@ -211,7 +213,7 @@ variable [HasBinaryCoproducts C] [HasInitial C]
 /--
 If `C` has an initial object and binary coproducts, then it has a coproduct for objects indexed by
 `Fin n`.
-This is a helper lemma for `hasCofiniteProductsOfHasBinaryAndTerminal`, which is more general
+This is a helper lemma for `hasFiniteCoproducts_of_has_binary_and_initial`, which is more general
 than this.
 -/
 private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
