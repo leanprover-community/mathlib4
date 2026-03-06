@@ -17,7 +17,7 @@ open Bundle Topology Module
 
 open scoped Manifold ContDiff
 
-@[expose] public section -- TODO: think if we want to expose all definitions!
+@[expose] public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -140,8 +140,8 @@ lemma pointwise (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x}
   · exact fun i ↦ (hc hσ' i).smul_section (hs i)
   · exact fun i ↦ (hc hσ i).smul_section (hs i)
 
-/-- If the operation `Φ` on sections of vector bundles `V` and `V'` is tensorial in each argument at
-`x`, then it depends only on the value of the sections at `x`. -/
+/-- If the operation `Φ` on sections of vector bundles `V` and `V'` is tensorial at `x` in each
+argument, then it depends only on the value of the sections at `x`. -/
 lemma pointwise₂
     {Φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
     (hΦ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (Φ · τ) x)
@@ -198,13 +198,13 @@ theorem mkHom_apply_eq_extend {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialA
   rfl
 
 /-- Given an `A`-valued operation `Φ` on sections of vector bundles `V` and `V'` which is tensorial
-at `x`, the construction `TensorialAt.mkHom₂` provides the associated continuous linear map
-`V x →L[𝕜] V' x →L[𝕜] A`. -/
+at `x` in each argument, the construction `TensorialAt.mkHom₂` provides the associated continuous
+linear map `V x →L[𝕜] V' x →L[𝕜] A`. -/
 noncomputable def mkHom₂
-    -- `φ` and `x` explicit to make it easier to generate the side conditions at point of use
-    (φ : (Π x : M, V x) → (Π x : M, V' x) → A) (x : M)
-    (hφ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (φ · τ) x)
-    (hφ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (φ σ) x) :
+    -- `Φ` and `x` explicit to make it easier to generate the side conditions at point of use
+    (Φ : (Π x : M, V x) → (Π x : M, V' x) → A) (x : M)
+    (hΦ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (Φ · τ) x)
+    (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x) :
     V x →L[𝕜] V' x →L[𝕜] A :=
   let Ψ : V x ≃L[𝕜] F := (trivializationAt F V x).continuousLinearEquivAt 𝕜 x
     (FiberBundle.mem_baseSet_trivializationAt' x)
@@ -215,76 +215,56 @@ noncomputable def mkHom₂
   have : T2Space (V' x) := Ψ'.symm.toHomeomorph.t2Space
   have : FiniteDimensional 𝕜 (V' x) := Ψ'.symm.toLinearEquiv.finiteDimensional
   have H : IsBilinearMap 𝕜
-    (fun (v : V x) (w : V' x) ↦ φ (_root_.extend F v) (_root_.extend F' w)) :=
+    (fun (v : V x) (w : V' x) ↦ Φ (_root_.extend F v) (_root_.extend F' w)) :=
   { add_left v₁ v₂ w := by
-      rw [← (hφ₁ _ (mdifferentiableAt_extend ..)).add (mdifferentiableAt_extend ..)
+      rw [← (hΦ₁ _ (mdifferentiableAt_extend ..)).add (mdifferentiableAt_extend ..)
         (mdifferentiableAt_extend ..)]
-      apply TensorialAt.pointwise₂ hφ₁ hφ₂ (mdifferentiableAt_extend ..) _
+      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..) _
         (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..) _ rfl
       · exact mdifferentiableAt_add_section (mdifferentiableAt_extend ..)
           (mdifferentiableAt_extend ..)
       · simp
     smul_left c v w := by
-      rw [← (hφ₁ _ _).smul (f := fun _ ↦ c)]
-      · apply TensorialAt.pointwise₂ hφ₁ hφ₂ _ _ _ _ _ rfl
-        · exact mdifferentiableAt_extend ..
-        · apply MDifferentiableAt.smul_section
-          · exact mdifferentiableAt_const
-          · exact mdifferentiableAt_extend ..
-        · exact mdifferentiableAt_extend ..
-        · exact mdifferentiableAt_extend ..
-        · simp
-      · exact mdifferentiable_const ..
-      · exact mdifferentiableAt_extend ..
-      · exact mdifferentiableAt_extend ..
+      rw [← (hΦ₁ _ (mdifferentiableAt_extend ..)).smul (f := fun _ ↦ c) (mdifferentiable_const ..)
+        (mdifferentiableAt_extend ..)]
+      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..)
+        (mdifferentiableAt_const.smul_section (mdifferentiableAt_extend ..))
+        (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..)
+      · simp
+      · rfl
     add_right v w₁ w₂ := by
-      rw [← (hφ₂ _ _).add]
-      · apply TensorialAt.pointwise₂ hφ₁ hφ₂
-        · exact mdifferentiableAt_extend ..
-        · exact mdifferentiableAt_extend ..
-        · exact mdifferentiableAt_extend ..
-        · apply mdifferentiableAt_add_section
-          · exact mdifferentiableAt_extend ..
-          · exact mdifferentiableAt_extend ..
-        · rfl
-        · simp
-      · exact mdifferentiableAt_extend ..
-      · exact mdifferentiableAt_extend ..
-      · exact mdifferentiableAt_extend ..
+      rw [← (hΦ₂ _ (mdifferentiableAt_extend ..)).add (mdifferentiableAt_extend ..)
+        (mdifferentiableAt_extend ..)]
+      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..)
+        (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..) <|
+        mdifferentiableAt_add_section (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..)
+      · rfl
+      · simp
     smul_right c v w := by
-      rw [← (hφ₂ _ _).smul (f := fun _ ↦ c)]
-      · apply TensorialAt.pointwise₂ hφ₁ hφ₂
-        · exact mdifferentiableAt_extend ..
-        · exact mdifferentiableAt_extend ..
-        · exact mdifferentiableAt_extend ..
-        · apply MDifferentiableAt.smul_section
-          · exact mdifferentiableAt_const
-          · exact mdifferentiableAt_extend ..
-        · rfl
-        · simp
-      · exact mdifferentiable_const ..
-      · exact mdifferentiableAt_extend ..
-      · exact mdifferentiableAt_extend .. }
+      rw [← (hΦ₂ _ (mdifferentiableAt_extend ..)).smul (f := fun _ ↦ c) (mdifferentiable_const ..)
+        (mdifferentiableAt_extend ..)]
+      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..)
+        (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..) <|
+        mdifferentiableAt_const.smul_section (mdifferentiableAt_extend ..)
+      · rfl
+      · simp }
   H.toLinearMap.toContinuousBilinearMap
 
 theorem mkHom₂_apply
-    {φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
-    (hφ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (φ · τ) x)
-    (hφ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (φ σ) x)
+    {Φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
+    (hΦ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (Φ · τ) x)
+    (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x)
     {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) {τ : Π x : M, V' x} (hτ : MDiffAt (T% τ) x) :
-    mkHom₂ φ x hφ₁ hφ₂ (σ x) (τ x) = φ σ τ := by
-  apply TensorialAt.pointwise₂ hφ₁ hφ₂ _ hσ _ hτ
-  · simp
-  · simp
-  · exact mdifferentiableAt_extend ..
-  · exact mdifferentiableAt_extend ..
+    mkHom₂ Φ x hΦ₁ hΦ₂ (σ x) (τ x) = Φ σ τ :=
+  TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..) hσ (mdifferentiableAt_extend ..) hτ
+    (by simp) (by simp)
 
 theorem mkHom₂_apply_eq_extend
-    {φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
-    (hφ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (φ · τ) x)
-    (hφ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (φ σ) x)
+    {Φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
+    (hΦ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (Φ · τ) x)
+    (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x)
     (σ : V x) (τ : V' x) :
-    mkHom₂ φ x hφ₁ hφ₂ σ τ = φ (_root_.extend F σ) (_root_.extend F' τ) :=
+    mkHom₂ Φ x hΦ₁ hΦ₂ σ τ = Φ (_root_.extend F σ) (_root_.extend F' τ) :=
   rfl
 
 end TensorialAt
