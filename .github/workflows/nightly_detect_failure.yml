@@ -7,7 +7,7 @@ on:
       - completed
 
 env:
-  MATHLIB_CI_REF: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+  MATHLIB_CI_REF: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
 
 jobs:
   handle_failure:
@@ -359,10 +359,6 @@ jobs:
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
       with:
         ref: ${{ env.MATHLIB_CI_REF }}
-
-    - name: Set up CI scripts paths
-      if: steps.check_branch.outputs.result == 'false'
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
 
     - name: Attempt automatic PR creation
       id: auto_pr

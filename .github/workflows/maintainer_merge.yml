@@ -131,10 +131,6 @@ jobs:
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-      - name: Set up CI scripts paths
-        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
-
       - name: Determine Zulip topic
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         id: determine_topic

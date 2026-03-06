@@ -84,10 +84,6 @@ jobs:
       if: steps.pr.outputs.skip != 'true' && steps.action.outputs.ci_action != 'skip'
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-    - name: Set up CI scripts paths
-      if: steps.pr.outputs.skip != 'true' && steps.action.outputs.ci_action != 'skip'
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
-
     - name: Set up Python
       if: steps.pr.outputs.skip != 'true' && steps.action.outputs.ci_action != 'skip'
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0

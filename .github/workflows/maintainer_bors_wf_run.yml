@@ -131,12 +131,6 @@ jobs:
             steps.extract-data.outputs.bot == 'true' ) }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-      - name: Set up CI scripts paths
-        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
-
       - name: Set up Python
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||

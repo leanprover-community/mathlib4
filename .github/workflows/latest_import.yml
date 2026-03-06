@@ -38,9 +38,6 @@ jobs:
     - name: Get mathlib-ci
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-    - name: Set up CI scripts paths
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
-
     - name: Configure Lean
       uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
       with:

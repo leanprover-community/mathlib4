@@ -190,13 +190,6 @@ jobs:
             steps.merge_or_delegate.outputs.bot == 'true' )) }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-      - name: Set up CI scripts paths
-        if: ${{ ! steps.merge_or_delegate.outputs.secrets == '' &&
-          (! steps.merge_or_delegate.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.merge_or_delegate.outputs.bot == 'true' )) }}
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
-
       - name: Set up Python
         if: ${{ ! steps.merge_or_delegate.outputs.secrets == '' &&
           (! steps.merge_or_delegate.outputs.mOrD == '' &&

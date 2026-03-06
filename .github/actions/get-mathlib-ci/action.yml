@@ -17,37 +17,34 @@ inputs:
     description: Number of commits to fetch.
     required: false
     default: '1'
-  token:
-    description: Optional token for checkout.
-    required: false
-    default: ''
 outputs:
   ref:
     description: Effective ref used for the checkout.
-    value: ${{ inputs.ref }}
+    value: ${{ inputs.ref != '' && inputs.ref || '7355aeb4f32cb2a181d02abd7a9d6ab4fe033286' }}
   path:
     description: Checkout path used.
     value: ${{ inputs.path }}
+  scripts_dir:
+    description: Absolute path to the scripts directory.
+    value: ${{ steps.paths.outputs.scripts_dir }}
 runs:
   using: composite
   steps:
-    # Keep two explicit checkout steps so we only pass `token` when non-empty.
-    # Passing an empty token can alter checkout behavior.
     - name: Get mathlib-ci
-      if: ${{ inputs.token == '' }}
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         repository: leanprover-community/mathlib-ci
-        ref: ${{ inputs.ref }}
+        ref: ${{ inputs.ref != '' && inputs.ref || '7355aeb4f32cb2a181d02abd7a9d6ab4fe033286' }}
         fetch-depth: ${{ inputs.fetch-depth }}
         path: ${{ inputs.path }}
 
-    - name: Get mathlib-ci
-      if: ${{ inputs.token != '' }}
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      with:
-        repository: leanprover-community/mathlib-ci
-        ref: ${{ inputs.ref }}
-        fetch-depth: ${{ inputs.fetch-depth }}
-        path: ${{ inputs.path }}
-        token: ${{ inputs.token }}
+    - name: Setup CI Scripts Paths
+      id: paths
+      shell: bash
+      run: |
+        checkout_path="${GITHUB_WORKSPACE}/${{ inputs.path }}"
+        scripts_dir="${checkout_path}/scripts"
+        echo "checkout_path=${checkout_path}" >> "$GITHUB_OUTPUT"
+        echo "scripts_dir=${scripts_dir}" >> "$GITHUB_OUTPUT"
+        echo "CI_CHECKOUT_PATH=${checkout_path}" >> "$GITHUB_ENV"
+        echo "CI_SCRIPTS_DIR=${scripts_dir}" >> "$GITHUB_ENV"

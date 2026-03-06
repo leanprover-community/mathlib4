@@ -29,9 +29,6 @@ jobs:
     - name: Checkout mathlib-ci
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-    - name: Set up CI scripts paths
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
-
     - name: Set up Python
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
       with:

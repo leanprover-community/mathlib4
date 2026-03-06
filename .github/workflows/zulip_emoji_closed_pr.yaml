@@ -44,11 +44,6 @@ jobs:
                 github.event_name == 'reopened' }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-      - name: Set up CI scripts paths
-        if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
-                github.event_name == 'reopened' }}
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
-
       - name: Set up Python
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
                 github.event_name == 'reopened' }}

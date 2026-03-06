@@ -39,13 +39,10 @@ jobs:
           sparse-checkout: .github/actions
           path: workflow-actions
       - name: Get mathlib-ci
+        id: get_mathlib_ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
         with:
           ref: master # Check paths against the latest version of the repo, which should be 'the objective' version for any workflow
-
-      - name: Set up CI scripts paths
-        id: checkout_ci_scripts
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
 
       # We scan literal "$CI_SCRIPTS_DIR/..." and "${CI_SCRIPTS_DIR}/..."
       # references in workflow text and check those paths in the checked out mathlib-ci ref; dynamically
@@ -53,7 +50,7 @@ jobs:
       # but this should catch common typos and missing files in mathlib-ci.
       - name: Validate CI_SCRIPTS_DIR references
         env:
-          CI_SCRIPTS_DIR: ${{ steps.checkout_ci_scripts.outputs.scripts_dir }}
+          CI_SCRIPTS_DIR: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}
         shell: python
         run: |
           import os

@@ -24,9 +24,6 @@ jobs:
     - name: Get mathlib-ci
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-    - name: Set up CI scripts paths
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
-
     - name: Run script
       id: long_files
       run: |
