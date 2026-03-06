@@ -184,8 +184,7 @@ lemma Ψ_opcyclesMap_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro _ z₀ hz₀
   dsimp at z₀ hz₀
-  obtain ⟨A₁, π₁, _, z₁, hz₁⟩ :=
-    surjective_up_to_refinements_of_epi (X.pOpcycles f₁ f₂ n₁) z₀
+  obtain ⟨A₁, π₁, _, z₁, hz₁⟩ := surjective_up_to_refinements_of_epi (X.pOpcycles f₁ f₂ n₁) z₀
   obtain ⟨A₂, π₂, _, z₂, hz₂⟩ :=
       (X.cokernelSequenceOpcycles_exact f₁ f₂₃ n₀ n₁ hn₁).exact_up_to_refinements z₁ (by
     dsimp
