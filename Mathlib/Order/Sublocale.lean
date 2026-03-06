@@ -227,7 +227,6 @@ def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
 lemma nucleusIsoSublocale.eq_toSublocale :
  Nucleus.toSublocale = @nucleusIsoSublocale X _ ∘ OrderDual.toDual := rfl
 
-@[simp]
 lemma nucleusIsoSublocale.symm_eq_toNucleus :
   Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
 
