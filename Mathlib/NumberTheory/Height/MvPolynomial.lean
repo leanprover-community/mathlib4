@@ -603,10 +603,8 @@ lemma logHeight_x_y_zero (x y : K) : logHeight ![x, y, 0] = logHeight ![x, y] :=
 
 omit [AdmissibleAbsValues K] in
 private lemma ne_zero_of_tuple_ne_zero {a : K} (ha : ![a, 0] ≠ 0) : a ≠ 0 := by
-  obtain ⟨i, hi⟩ := Function.ne_iff.mp ha
-  fin_cases i
-  · simpa using hi
-  · simp at hi
+  contrapose! ha
+  simp [ha]
 
 variable (K) in
 /-- A homogeneous version of `Height.abs_logHeight_sym2_sub_le`. -/
