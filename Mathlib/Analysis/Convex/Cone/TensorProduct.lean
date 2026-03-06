@@ -8,16 +8,23 @@ module
 public import Mathlib.Analysis.Convex.Cone.Dual
 public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
+public import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Tensor Products of Pointed Cones
 
-This file proves that the minimal and maximal tensor products of pointed cones living in
-finite-dimensional real vector spaces are equal when one of the cones is simplicial and generating.
-We need to apply the bipolar theorem and therefore topological assumptions
-are required on the factor which is not simplicial and generating.
+This file proves that the minimal and maximal tensor products of pointed cones in
+finite-dimensional real vector spaces are equal when one cone is simplicial and generating
+and the other is proper (pointed and closed).
 
-We are using the following result:
+Finite-dimensionality of the proper cone ambient space is by explicit declaration and is required
+for the `topDualPairing_isContPerfPair` theorem. The simplicial and generating cone ambient space
+is implicitly finite dimensional by the simplicial and generating assumption.
+
+This file uses `topDualPairing` (the canonical pairing of a vector space and its topological dual)
+to avoid explicit topology assumptions on `Module.Dual`.
+
+The proof relies on the following result:
 
 * **Bipolar theorem** (`ProperCone.dual_dual_flip`): The double dual of a proper cone is itself.
 
@@ -27,35 +34,60 @@ This requires:
 
 ## Main results
 
-* All cones are pointed (i.e., closed under nonnegative scalars) unless otherwise noted.
-* A proper cone is pointed and closed.
-* The following results holds for cones in real finite dimensional vector spaces:
+* `PointedCone.minTensorProduct_eq_max_of_simplicial_generating_left`:
+  If `C₁` is simplicial and generating and `C₂` is proper, then the minimal and
+  maximal tensor products are equal.
 
-* `minTensorProduct_eq_max_of_simplicial_generating_left`:
-  If C₁ is a simplicial and generating cone and C₂ is a proper cone,
-  then their minimal and maximal tensor products are equal.
-
-* `minTensorProduct_eq_max_of_simplicial_generating_right`:
-  Symmetric version: If C₁ is a proper cone and C₂ is a simplicial and generating cone,
-  then their minimal and maximal tensor products are equal.
-
-## Implementation notes
-
-Let `F` be the space containing the Proper (closed) cone. The topology on `Module.Dual ℝ F` is
-provided by explicit type class assumptions rather than via custom instances. Since there is a
-canonical choice of topology, this could alternatively be done via instances.
-
-This would be either a set of local instance or a "load when required" namespace-protected
-set of instances. This has been implemented as a test but we have assumed that this type of
-design would be too experimental.
+* `PointedCone.minTensorProduct_eq_max_of_simplicial_generating_right`:
+  If `C₁` is a proper cone and `C₂` is a simplicial and generating cone, then their minimal
+  and maximal tensor products are equal.
 
 ## References
 
 * [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
-
 -/
 
 @[expose] public section
+
+/-! ### IsContPerfPair for topDualPairing -/
+
+section TopDualPairingContPerfPair
+
+open Module
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+variable [FiniteDimensional 𝕜 E] [T2Space E]
+
+/-- The `topDualPairing` is a continuous perfect pairing for finite-dimensional
+Hausdorff spaces over complete nontrivially normed fields. -/
+private theorem topDualPairing_isContPerfPair : (topDualPairing 𝕜 E).IsContPerfPair where
+  continuous_uncurry := by
+    haveI : IsModuleTopology 𝕜 E := isModuleTopologyOfFiniteDimensional
+    haveI : IsModuleTopology 𝕜 (E →L[𝕜] 𝕜) := isModuleTopologyOfFiniteDimensional
+    exact IsModuleTopology.continuous_bilinear_of_finite_left (topDualPairing 𝕜 E)
+  bijective_left :=
+    ⟨fun _ _ h => ContinuousLinearMap.coe_injective (congrArg _ h), fun g => ⟨g, rfl⟩⟩
+  bijective_right := by
+    change Function.Bijective (LinearMap.toContinuousLinearMap ∘ (topDualPairing 𝕜 E).flip)
+    refine LinearMap.toContinuousLinearMap.bijective.comp ⟨?_, ?_⟩
+    · intro x y h
+      apply (evalEquiv 𝕜 E).injective
+      ext f
+      simpa [evalEquiv_apply, Dual.eval_apply] using
+        LinearMap.congr_fun h (LinearMap.toContinuousLinearMap f)
+    · intro g
+      refine ⟨(evalEquiv 𝕜 E).symm (g.comp LinearMap.toContinuousLinearMap.toLinearMap), ?_⟩
+      ext f
+      simpa only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
+        LinearEquiv.apply_symm_apply] using apply_evalEquiv_symm_apply 𝕜 E
+          (LinearMap.toContinuousLinearMap.symm f)
+          (g.comp LinearMap.toContinuousLinearMap.toLinearMap)
+
+end TopDualPairingContPerfPair
+
+/-! ### Equality of minimal and maximal tensor products -/
 
 namespace PointedCone
 
@@ -66,7 +98,7 @@ variable [AddCommGroup M] [Module R M]
 
 open Module
 
-/- If a pointed cone `C` is contained in the conic span of a basis `b`, then the coordinate
+/-- If a pointed cone `C` is contained in the conic span of a basis `b`, then the coordinate
 functionals of `b` lie in the dual cone of `C`. -/
 private lemma basis_coord_mem_dual {ι : Type*} (b : Basis ι R M) (C : PointedCone R M)
     (hC : (C : Set M) ⊆ (span R (Set.range b) : Set M)) (i : ι) :
@@ -77,89 +109,63 @@ private lemma basis_coord_mem_dual {ι : Type*} (b : Basis ι R M) (C : PointedC
 
 end BasisCoordDual
 
-section instIsContPerfPairDualPairing
+section MainTheorems
 
-open Module
-
--- We only require this instance for real vector spaces but we state it more generally
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
--- [CompleteSpace 𝕜] is required for `isModuleTopologyOfFiniteDimensional`
-variable [CompleteSpace 𝕜]
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
-variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-variable [FiniteDimensional 𝕜 E] [T2Space E]
-variable [TopologicalSpace (Dual 𝕜 E)] [IsTopologicalAddGroup (Dual 𝕜 E)]
-variable [ContinuousSMul 𝕜 (Dual 𝕜 E)] [T2Space (Dual 𝕜 E)]
-
-/-- The dual pairing is a continuous perfect pairing for finite-dimensional Hausdorff spaces
-over complete nontrivially normed fields. -/
-private instance instIsContPerfPairDualPairing : (dualPairing 𝕜 E).IsContPerfPair where
-  continuous_uncurry := by
-    haveI : IsModuleTopology 𝕜 E := isModuleTopologyOfFiniteDimensional
-    haveI : IsModuleTopology 𝕜 (Dual 𝕜 E) := isModuleTopologyOfFiniteDimensional
-    exact IsModuleTopology.continuous_bilinear_of_finite_left (dualPairing 𝕜 E)
-  bijective_left := LinearMap.toContinuousLinearMap.bijective
-  bijective_right := LinearMap.toContinuousLinearMap.bijective.comp (evalEquiv 𝕜 E).bijective
-
-end instIsContPerfPairDualPairing
-
-/-! ### Equality of minimal and maximal tensor products of cones -/
-
-variable {E : Type*} [AddCommGroup E] [Module ℝ E]
-variable {F : Type*} [AddCommGroup F] [Module ℝ F]
+variable {E F : Type*} [AddCommGroup E] [Module ℝ E] [AddCommGroup F] [Module ℝ F]
 
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 variable [FiniteDimensional ℝ F] [ContinuousSMul ℝ F] [LocallyConvexSpace ℝ F]
 
--- Explicit topology on the dual space
-variable [TopologicalSpace (Module.Dual ℝ F)] [IsTopologicalAddGroup (Module.Dual ℝ F)]
-variable [ContinuousSMul ℝ (Module.Dual ℝ F)] [T2Space (Module.Dual ℝ F)]
-
 open TensorProduct Module
 
-/-- If C₁ is a simplicial and generating cone and C₂ is a proper cone,
-then their minimal and maximal tensor products are equal. -/
+/-- If `C₁` is a simplicial and generating cone and `C₂` is a proper cone, then their minimal
+and maximal tensor products are equal. -/
 theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCone ℝ E)
-    (C₂ : ProperCone ℝ F) (h₁_simp : C₁.IsSimplicial)
-    (h₁_gen : Submodule.span ℝ (C₁ : Set E) = ⊤) :
+    (C₂ : ProperCone ℝ F) (h₁_simp : C₁.IsSimplicial) (h₁_gen : Submodule.span ℝ (C₁ : Set E) = ⊤) :
     minTensorProduct C₁ C₂.toPointedCone = maxTensorProduct C₁ C₂.toPointedCone := by
   classical
+  letI : (topDualPairing ℝ F).IsContPerfPair := topDualPairing_isContPerfPair
   haveI : Fintype h₁_simp.choose := h₁_simp.choose_spec.1.fintype
   -- Extract basis from `C₁.IsSimplicial` + generating
-  let b := Module.Basis.mk h₁_simp.choose_spec.2.1 <| by
+  let b := Basis.mk h₁_simp.choose_spec.2.1 <| by
     simpa [← Submodule.span_span_of_tower {c : ℝ // 0 ≤ c} ℝ h₁_simp.choose,
       h₁_simp.choose_spec.2.2] using h₁_gen.ge
   -- Dual basis elements are in C₁*
-  have h_coord_dual : ∀ i, b.coord i ∈ dual (dualPairing ℝ E).flip C₁ := fun i => by
+  have h_coord_dual : ∀ i, b.coord i ∈ dual (dualPairing ℝ E).flip C₁ := by
     apply basis_coord_mem_dual
     rw [show Set.range b = h₁_simp.choose by ext; simp [b], h₁_simp.choose_spec.2.2]
   -- Reduce to proving z ∈ max → z ∈ min
   apply le_antisymm (minTensorProduct_le_maxTensorProduct C₁ C₂.toPointedCone)
   intro z hz
   -- Express z using basis: z = ∑ b_i ⊗ y_i
-  let y := equivFinsuppOfBasisLeft b z
   rw [← (equivFinsuppOfBasisLeft b).symm_apply_apply z,
-      TensorProduct.equivFinsuppOfBasisLeft_symm_apply, Finsupp.sum_fintype _ _ (by simp)]
+    TensorProduct.equivFinsuppOfBasisLeft_symm_apply, Finsupp.sum_fintype _ _ (by simp)]
   -- Show z ∈ min by showing b_i ∈ C₁ and y_i ∈ C₂
-  exact Submodule.sum_mem _ fun i _ => tmul_mem_minTensorProduct
-    (by simp only [b, Basis.coe_mk]; exact (h₁_simp.choose_spec.2.2 ▸ subset_span) i.prop)
-    (by simp only [TensorProduct.equivFinsuppOfBasisLeft_apply]
-        rw [← ProperCone.dual_dual_flip (dualPairing ℝ F) C₂]
-        intro ψ hψ
-        simp only [dualPairing_apply, mem_maxTensorProduct] at hz ⊢
-        convert hz (b.coord i) (h_coord_dual i) ψ hψ
-        have h_dual : TensorProduct.dualDistrib ℝ E F ((b.coord i) ⊗ₜ[ℝ] ψ) =
-            ψ ∘ₗ (TensorProduct.lid ℝ F) ∘ₗ (b.coord i).rTensor F := by
-          ext; simp [TensorProduct.dualDistrib_apply, mul_comm]
-        simp only [h_dual, LinearMap.comp_apply, LinearEquiv.coe_coe])
+  refine Submodule.sum_mem _ fun i _ => tmul_mem_minTensorProduct ?_ ?_
+  · simp only [b, Basis.coe_mk]
+    exact (h₁_simp.choose_spec.2.2 ▸ subset_span) i.prop
+  · simp only [equivFinsuppOfBasisLeft_apply]
+    rw [← ProperCone.dual_dual_flip (topDualPairing ℝ F) C₂]
+    intro f hf
+    simp only [topDualPairing_apply]
+    have hψ : (f : F →ₗ[ℝ] ℝ) ∈ dual (dualPairing ℝ F).flip (C₂ : Set F) := hf
+    simp only [mem_maxTensorProduct] at hz
+    have key := hz (b.coord i) (h_coord_dual i) (f : F →ₗ[ℝ] ℝ) hψ
+    have h_eq : dualDistrib ℝ E F ((b.coord i) ⊗ₜ[ℝ] (f : F →ₗ[ℝ] ℝ)) =
+        (f : F →ₗ[ℝ] ℝ) ∘ₗ (TensorProduct.lid ℝ F) ∘ₗ (b.coord i).rTensor F := by
+      ext; simp [dualDistrib_apply, mul_comm]
+    simp only [h_eq, LinearMap.comp_apply, LinearEquiv.coe_coe] at key
+    exact key
 
-/-- If C₁ is a proper cone and C₂ is a simplicial and generating cone,
-then their minimal and maximal tensor products are equal. -/
+/-- If `C₁` is a proper cone and `C₂` is a simplicial and generating cone, then their minimal
+and maximal tensor products are equal. -/
 theorem minTensorProduct_eq_max_of_simplicial_generating_right (C₁ : ProperCone ℝ F)
     (C₂ : PointedCone ℝ E) (h₂_simp : C₂.IsSimplicial)
     (h₂_gen : Submodule.span ℝ (C₂ : Set E) = ⊤) :
     minTensorProduct C₁.toPointedCone C₂ = maxTensorProduct C₁.toPointedCone C₂ := by
   rw [← minTensorProduct_comm, ← maxTensorProduct_comm,
     minTensorProduct_eq_max_of_simplicial_generating_left C₂ C₁ h₂_simp h₂_gen]
+
+end MainTheorems
 
 end PointedCone
