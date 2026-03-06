@@ -314,9 +314,7 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
     apply le_antisymm
     · simp only [le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk, InfHom.coe_mk]
       exact fun _ h ↦ himp_le_himp (le_sSup (by simp [h])) (le_refl _)
-    · simp only [iInf_le_iff, le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk,
-      InfHom.coe_mk]
-      simp [inf_sSup_eq]
+    · simp [↓iInf_le_iff, inf_sSup_eq]
   map_inf' a b := by
     simp only [nucleusIsoSublocale.eq_toSublocale, Function.comp_apply, ← map_inf]
     congr
