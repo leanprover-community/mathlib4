@@ -25,9 +25,9 @@ a vector bundle over `M` with model fiber `F`.
 
 ## Main definitions and constructions
 
-* `IsCovariantDerivativeOn`: A function from sections of a vector bundle $V$ over a manifold $M$ to
-  sections of $Hom(TM, V)$ is a *covariant derivative* on a set $s$ in $M$ if it is additive and
-  satisfies the Leibniz rule when applied to sections that are differentiable at a point of $s$.
+* `IsCovariantDerivativeOn`: A function from sections of a vector bundle `V` over a manifold `M` to
+  sections of $Hom(TM, V)$ is a *covariant derivative* on a set `s` in `M` if it is additive and
+  satisfies the Leibniz rule when applied to sections that are differentiable at a point of `s`.
 * `ContMDiffCovariantDerivativeOn`: A covariant derivative ∇ on some set is called *of class* `C^k`
   iff, whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇_X σ` is a `C^k`
   section. This is a class so typeclass inference can deduce this automatically.
@@ -83,9 +83,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
   [FiberBundle F V]
 
-/-- A function from sections of a vector bundle $V$ on a manifold $M$ to sections of $Hom(TM, E)$
-is a *covariant derivative* over a set $s$ in $M$ if it is additive and satisfies the Leibniz rule
-when applied to sections that are differentiable at a point of $s$.
+/-- A function from sections of a vector bundle `V` on a manifold `M` to sections of $Hom(TM, E)$
+is a *covariant derivative* over a set `s` in `M` if it is additive and satisfies the Leibniz rule
+when applied to sections that are differentiable at a point of `s`.
 
 Caution, the argument order is nonstandard: `cov σ x (X x)` corresponds to `∇_X σ x` on paper.
 -/
