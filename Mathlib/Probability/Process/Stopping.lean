@@ -313,7 +313,6 @@ lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous' [hf : f.IsRightCo
     obtain ⟨i, hi⟩ : ∃ i, s i < u := h_exists_lt' u hu
     exact (h_lt i).trans hi
   rw [h_eq_iInter]
-  have h_meas_lt m : MeasurableSet[f (s m)] {ω | τ ω < s m} := hτ1 (s m)
   have h𝓕_eq_iInf : f t = ⨅ m, f (s m) := by
     nth_rw 1 [← hf.eq, Filtration.rightCont_eq_of_neBot_nhdsGT]
     refine le_antisymm ?_ ?_
@@ -335,8 +334,7 @@ lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous' [hf : f.IsRightCo
     · exact h m hmk
     · exact (h k le_rfl).trans_le (mod_cast hkm)
   rw [h_eq_k]
-  refine MeasurableSet.iInter fun m ↦ MeasurableSet.iInter fun hm ↦ ?_
-  exact f.mono hm _ (h_meas_lt m)
+  exact MeasurableSet.iInter fun m ↦ MeasurableSet.iInter fun hm ↦ f.mono hm _ (hτ1 (s m))
 
 lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous [DenselyOrdered ι] [NoMaxOrder ι]
     {τ : Ω → WithTop ι} [f.IsRightContinuous] (hτ : ∀ i, MeasurableSet[f i] {ω | τ ω < i}) :
