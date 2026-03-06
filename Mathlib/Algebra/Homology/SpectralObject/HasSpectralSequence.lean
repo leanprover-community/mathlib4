@@ -442,7 +442,6 @@ instance : Y.HasSpectralSequence coreE₂HomologicalNat where
     by_contra!
     obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by lia)
     obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by lia)
-    simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     exact hpq ⟨p', q'⟩ (by constructor <;> lia)
 
 end
