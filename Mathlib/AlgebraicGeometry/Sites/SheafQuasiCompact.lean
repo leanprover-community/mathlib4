@@ -39,7 +39,7 @@ nonrec lemma isSheaf_type_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u
         ∀ {R S : CommRingCat.{u}} (f : R ⟶ S), P (Spec.map f) → Surjective (Spec.map f) →
           Presieve.IsSheafFor F (.singleton (Spec.map f)) := by
   refine ⟨fun hF ↦ ⟨?_, fun {R S} f hf hs ↦ ?_⟩, fun ⟨hzar, hff⟩ ↦ ?_⟩
-  · exact Presieve.isSheaf_of_le _ zariskiTopology_le_propqcTopology hF
+  · exact Presieve.isSheaf_of_le _ zariskiTopology_le_propQCTopology hF
   · apply hF.isSheafFor
     rw [← Hom.presieve₀_cover _ hf]
     exact Cover.mem_propQCTopology _
@@ -103,6 +103,6 @@ nonrec lemma isSheaf_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒ�
         ∀ {R S : CommRingCat.{u}} (f : R ⟶ S), P (Spec.map f) → Surjective (Spec.map f) →
           ∀ (M : A),
           Presieve.IsSheafFor (F ⋙ coyoneda.obj (.op M)) (.singleton (Spec.map f)) := by
-  grind [Presheaf.IsSheaf, isSheaf_type_propqcTopology_iff]
+  grind [Presheaf.IsSheaf, isSheaf_type_propQCTopology_iff]
 
 end AlgebraicGeometry
