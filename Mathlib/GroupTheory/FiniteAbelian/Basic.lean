@@ -241,23 +241,22 @@ end Subgroup
 
 namespace Submodule
 
-variable {R M : Type*} [CommRing R] [CommRing M] [Algebra R M] [Module.Finite ℤ R]
+variable {R K M : Type*} [CommRing R] [CommRing K] [Algebra R K] [Module.Finite ℤ R]
+  [AddCommGroup M] [Module R M]
+
+lemma fg_toAddSubgroup {A : Submodule R M} (hfg : A.FG) : A.toAddSubgroup.FG := by
+  suffices A.toAddSubgroup.toIntSubmodule.FG by
+    rwa [fg_iff_addSubgroup_fg, AddSubgroup.toIntSubmodule_toAddSubgroup] at this
+  exact FG.restrictScalars hfg
 
 /-- If `A` and `B` are two submodules of the `R`-algebra `M`, where `R` is finitely generated
 as a `ℤ`-module, `A` is finitely generated, and `B` contains `n • A`, then `B` has finite
 relative index in `A`. -/
-lemma isFiniteRelIndex_of_map_linearMapMulLeft_le {A B : Submodule R M} {n : ℕ} (hn : n ≠ 0)
-    (hfg : A.FG) (h : A.map (LinearMap.mulLeft R (n : M)) ≤ B) :
+lemma isFiniteRelIndex_of_map_linearMapMulLeft_le {A B : Submodule R K} {n : ℕ} (hn : n ≠ 0)
+    (hfg : A.FG) (h : A.map (LinearMap.mulLeft R (n : K)) ≤ B) :
     B.toAddSubgroup.IsFiniteRelIndex A.toAddSubgroup := by
-  have hA : A.toAddSubgroup.FG := by
-    suffices A.toAddSubgroup.toIntSubmodule.FG by
-      rwa [fg_iff_addSubgroup_fg, AddSubgroup.toIntSubmodule_toAddSubgroup] at this
-    rw [Submodule.toIntSubmodule_toAddSubgroup A]
-    have : Module.Finite R ↥(restrictScalars ℤ A) := by
-      rwa [← Module.Finite.iff_fg] at hfg
-    nth_rw 1 [← Module.Finite.iff_fg]
-    exact Module.Finite.trans R _
-  refine A.toAddSubgroup.isFiniteRelIndex_of_range_nsmulAddMonoidHom_le B.toAddSubgroup hA hn ?_
+  refine A.toAddSubgroup.isFiniteRelIndex_of_range_nsmulAddMonoidHom_le B.toAddSubgroup
+    (fg_toAddSubgroup hfg) hn ?_
   rw [SetLike.le_def] at h ⊢
   simpa using h
 
