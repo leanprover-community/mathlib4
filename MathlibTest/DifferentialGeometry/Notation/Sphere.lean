@@ -30,11 +30,11 @@ variable {g : Circle → N} {h : E'' → Circle} {k : Circle → ℝ} {y : Circl
 #guard_msgs in
 #check CMDiff 2 g
 
-/-- info: MDifferentiableAt 𝓘(ℝ, E'') (𝓡 1) h : E'' → Prop -/
+/-- info: MDiffAt h : E'' → Prop -/
 #guard_msgs in
 #check MDiffAt h
 
-/-- info: MDifferentiableAt (𝓡 1) 𝓘(ℝ, ℝ) k y : Prop -/
+/-- info: MDiffAt k y : Prop -/
 #guard_msgs in
 #check MDiffAt k y
 

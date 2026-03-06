@@ -963,6 +963,7 @@ open Lean PrettyPrinter Delaborator SubExpr
 
 open scoped Bundle Manifold ContDiff
 
+/-- Delaborator for `Bundle.TotalSpace.mk` using anonymous constructor notation. -/
 @[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
@@ -970,6 +971,7 @@ open scoped Bundle Manifold ContDiff
   let vd ← withNaryArg 4 <| delab
   `(⟨$bd, $vd⟩)
 
+/-- Delaborator for `Bundle.TotalSpace.mk'` using anonymous constructor notation. -/
 @[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpace_mk' : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
@@ -977,6 +979,8 @@ open scoped Bundle Manifold ContDiff
   let vd ← withNaryArg 4 <| delab
   `(⟨$bd, $vd⟩)
 
+/-- Delaborator for mfderiv using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
 @[app_delab mfderiv] meta def delab_mfderiv : Delab := do
   whenPPOption getPPNotation do
   withOverApp 21 do
@@ -994,6 +998,8 @@ open scoped Bundle Manifold ContDiff
     let fs ← withAppArg delab
     `(mfderiv% $fs) >>= annotateGoToSyntaxDef
 
+/-- Delaborator for MDifferentiableAt using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
   whenPPOption getPPNotation do
   withOverApp 21 do
@@ -1011,6 +1017,8 @@ open scoped Bundle Manifold ContDiff
     let fs ← withAppArg delab
     `(MDiffAt $fs) >>= annotateGoToSyntaxDef
 
+/-- Delaborator for MDifferentiableWithinAt using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableWithinAt] meta def delabMDifferentiableWithinAt : Delab := do
   whenPPOption getPPNotation do
   withOverApp 22 do
