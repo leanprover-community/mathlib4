@@ -138,6 +138,7 @@ theorem colimit_exists_rep [HasColimit F] (x : ToType (colimit F)) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : ToType (F.obj i))
     (y : ToType (F.obj j))
     (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :

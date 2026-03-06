@@ -58,6 +58,7 @@ lemma nerveMap_app_mk₀ (x : C) :
       ComposableArrows.mk₀ (F.obj x) :=
   ComposableArrows.ext₀ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nerveMap_app_mk₁ {x y : C} (f : x ⟶ y) :
     (nerveMap F).app (op ⦋1⦌) (ComposableArrows.mk₁ f) =
       ComposableArrows.mk₁ (F.map f) :=

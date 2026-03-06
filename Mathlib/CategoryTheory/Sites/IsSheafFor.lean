@@ -505,6 +505,7 @@ def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ TypeCat.{v₁}} :
     rintro ⟨x, hx⟩
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). A lemma useful to prove `isSheafFor_iff_yonedaSheafCondition`. -/
 theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ TypeCat.{v₁}} (x : S.functor ⟶ P)
     (g : yoneda.obj X ⟶ P) :

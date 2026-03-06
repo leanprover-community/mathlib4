@@ -207,6 +207,7 @@ variable (F G)
 def binaryCoproductCocone : BinaryCofan F G :=
   BinaryCofan.mk coprod.inl coprod.inr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `coprod F G` is a colimit cocone. -/
 @[simps]
 def binaryCoproductColimit : IsColimit (binaryCoproductCocone F G) where

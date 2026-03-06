@@ -20,6 +20,7 @@ namespace CategoryTheory
 
 open Opposite MonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     (coyoneda.obj (op (𝟙_ C))).LaxMonoidal :=
   Functor.LaxMonoidal.ofTensorHom

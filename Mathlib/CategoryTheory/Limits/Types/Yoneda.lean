@@ -76,6 +76,7 @@ variable {J : Type v} [SmallCategory J] {C : Type u} [Category.{v} C]
 macro (name := aesop_concrete_cat) "aesop_concrete_cat" : tactic => do
   `(tactic| (intros; ext; simp; simp [← CategoryTheory.comp_apply]; cat_disch))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`. -/
 @[simps]
 noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
@@ -90,6 +91,7 @@ noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
   inv_hom_id := by
     aesop_concrete_cat
 
+set_option backward.isDefEq.respectTransparency false in
 variable (J) (C) in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
     naturally in `F` and `X`. -/
@@ -101,6 +103,7 @@ noncomputable def whiskeringLimYonedaIsoCones : whiskeringLeft _ _ _ ⋙
   · aesop_concrete_cat
   · aesop_concrete_cat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`. -/
 @[simps]
 noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
@@ -115,6 +118,7 @@ noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
   inv_hom_id := by
     aesop_concrete_cat
 
+set_option backward.isDefEq.respectTransparency false in
 variable (J) (C) in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
     naturally in `F` and `X`. -/

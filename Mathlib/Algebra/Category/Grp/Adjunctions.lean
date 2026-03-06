@@ -65,6 +65,7 @@ theorem free_map_coe {α β : TypeCat.{u}} {f : α ⟶ β} (x : FreeAbelianGroup
     (free.map f) x = f <$> x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for abelian groups.
 -/
 def adj : free ⊣ forget AddCommGrpCat.{u} :=

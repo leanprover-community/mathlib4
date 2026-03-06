@@ -277,6 +277,7 @@ theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
       ConcreteCategory.comp_apply]
     simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
 def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) :
     (I.multicospan ⋙ forget C).sections ≃

@@ -70,12 +70,25 @@ structure Fun (X Y : Type*) where
   protected as : X → Y
 
 instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
-  coe f := f.as
+  coe f x := f.as x
   coe_injective' _ := by aesop
 
 def Fun.Simps.coe (X Y : Type*) (f : Fun X Y) := (f : _ → _)
 
 initialize_simps_projections Fun (as → coe)
+
+-- unif_hint {X Y : Type*} (f f' : Fun X Y) (x x' : X) where
+--   f ≟ f'
+--   x ≟ x'
+--   ⊢ f'.as x' ≟ f x
+
+-- example {X Y : Type*} (f : Fun X Y) (x : X) :
+--     f.as x = f x := by
+--   with_reducible rfl
+
+@[simp]
+lemma Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
+  rfl
 
 def Fun.id (X : Type*) : Fun X X where
   as x := x
@@ -110,16 +123,19 @@ instance CategoryTheory.types : Category.{u} TypeCat.{u} where
   comp f g := .mk <| g.hom'.comp f.hom'
 
 -- @[simp]
--- lemma TypeCat.Fun.coe_eq_as {X Y : Type*} (f : Fun X Y) (x : X) :
+-- lemma TypeCat.Fun.coe_eq_as {X Y : TypeCat.{u}} (f : Fun X Y) (x : X) :
 --     f.as x = @DFunLike.coe (Fun X Y) X (fun _ ↦ Y) inferInstance f x := by
 --   with_reducible rfl
 
 -- @[simp]
 -- lemma TypeCat.Fun.apply {X Y : Type*} (f : Fun X Y) (x : X) : f x = f.as x := rfl
 
-@[simp]
-lemma TypeCat.Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
-  rfl
+-- unif_hint {X Y : Type*} (f f' : X → Y) (x : X) where
+--   f ≟ f'
+--   ⊢ (Fun.mk f) x ≟ f' x
+
+-- example {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x := by
+--   with_reducible rfl
 
 @[simp]
 lemma TypeCat.Fun.id_apply {X : Type*} (x : X) : Fun.id X x = x :=
@@ -522,12 +538,12 @@ theorem isSplitEpi_iff_surjective {X Y : TypeCat.{u}} (f : X ⟶ Y) :
   Iff.intro (fun _ => surjective_of_epi _)
     fun hf => (by simp only [(epi_iff_surjective f).mpr hf, isSplitEpi_of_epi])
 
-@[simps!]
-def NatIso.ofComponentsEquiv {C : Type*} [Category* C] {F G : C ⥤ TypeCat}
-    (app : ∀ X, F.obj X ≃ G.obj X)
-    (naturality : ∀ {X Y : C} (f : X ⟶ Y) (x : F.obj X),
-      app Y (F.map f x) = G.map f (app X x) := by cat_disch) : F ≅ G :=
-  NatIso.ofComponents (fun X ↦ app X |>.toIso)
+-- unif_hint Functor.comp_obj_types {J J' : Type*} [Category* J] [Category* J']
+--     (G G' : J' ⥤ J) (F F' : J ⥤ TypeCat.{u}) (j j' : J') where
+--   G ≟ G'
+--   F ≟ F'
+--   j ≟ j'
+--   ⊢ (G ⋙ F).obj j ≟ F'.obj (G'.obj j')
 
 end CategoryTheory
 

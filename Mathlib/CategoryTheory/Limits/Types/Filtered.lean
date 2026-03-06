@@ -54,6 +54,7 @@ theorem eqvGen_colimitTypeRel_of_rel (x y : Σ j, F.obj j) :
     · exact (Relation.EqvGen.rel _ _ ⟨f, rfl⟩)
     · exact (Relation.EqvGen.symm _ _ (Relation.EqvGen.rel _ _ ⟨g, h⟩))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Recognizing filtered colimits of types. -/
 noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
     (hinj :
@@ -81,6 +82,7 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
 
 variable [IsFilteredOrEmpty J]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Recognizing filtered colimits of types. The injectivity condition here is
 slightly easier to check as compared to `isColimitOf`. -/
 noncomputable def isColimitOf' (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
@@ -115,6 +117,7 @@ protected theorem rel_eq_eqvGen_colimitTypeRel :
   · rw [← (FilteredColimit.rel_equiv F).eqvGen_iff]
     exact Relation.EqvGen.mono (rel_of_colimitTypeRel F)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimit_eq_iff_aux [HasColimit F] {i j : J} {xi : F.obj i} {xj : F.obj j} :
     (colimitCocone F).ι.app i xi = (colimitCocone F).ι.app j xj ↔
       FilteredColimit.Rel.{v, u} F ⟨i, xi⟩ ⟨j, xj⟩ := by

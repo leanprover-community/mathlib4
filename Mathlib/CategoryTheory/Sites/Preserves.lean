@@ -119,6 +119,7 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
 variable [HasInitial C] [∀ i, Mono (c.inj i)]
   (hd : Pairwise fun i j => IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
 
+set_option backward.isDefEq.respectTransparency false in
 include hd hF hI in
 /--
 The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the

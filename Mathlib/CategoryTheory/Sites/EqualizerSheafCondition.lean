@@ -56,9 +56,6 @@ of the Stacks entry.
 abbrev FirstObj : TypeCat.{max v u} :=
   ∏ᶜ fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)
 
-def FirstObjFan : Fan fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1) :=
-  Fan.mk (TypeCat.of (R.FamilyOfElements P)) (fun ⟨_, b, hb⟩ ↦ TypeCat.ofHom ⟨fun x ↦ x b hb⟩)
-
 variable {P R}
 
 @[ext]
@@ -71,6 +68,7 @@ lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
 
 variable (P R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
 def firstObjEqFamily : FirstObj P R ≅ TypeCat.of (R.FamilyOfElements P) where
@@ -323,6 +321,7 @@ each pullback.
 def secondMap : FirstObj P X ⟶ SecondObj P X π :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
+set_option backward.isDefEq.respectTransparency false in
 theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
   ext x ij
   dsimp [forkMap, firstMap, secondMap]

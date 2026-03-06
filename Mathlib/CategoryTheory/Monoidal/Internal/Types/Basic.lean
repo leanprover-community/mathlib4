@@ -44,6 +44,7 @@ noncomputable def functor : Mon TypeCat.{u} ⥤ MonCat.{u} where
       map_one' := congr_hom (IsMonHom.one_hom f.hom) PUnit.unit
       map_mul' x y := congr_hom (IsMonHom.mul_hom f.hom) (x, y) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
 noncomputable def inverse : MonCat.{u} ⥤ Mon TypeCat.{u} where

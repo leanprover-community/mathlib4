@@ -79,6 +79,7 @@ noncomputable def ofExists
 
 variable {F} (d : F.WellOrderInductionData) [OrderBot J]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `d : F.WellOrderInductionData`, `val₀ : F.obj (op ⊥)` and `j : J`,
 this is the data of an element `val : F.obj (op j)` such that the induced
 compatible family of elements in all `F.obj (op i)` for `i ≤ j`

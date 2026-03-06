@@ -320,6 +320,7 @@ lemma map₁_yonedaEquivFst {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.
     (YonedaCollection.map₁ η p).yonedaEquivFst = p.yonedaEquivFst := by
   simp only [YonedaCollection.yonedaEquivFst_eq, map₁_fst]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map₁_snd {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ G)
     (p : YonedaCollection F X) : (YonedaCollection.map₁ η p).snd =
@@ -341,6 +342,7 @@ lemma map₂_yonedaEquivFst {Y : C} (f : X ⟶ Y) (p : YonedaCollection F Y) :
     (YonedaCollection.map₂ F f p).yonedaEquivFst = A.map f.op p.yonedaEquivFst := by
   simp only [YonedaCollection.yonedaEquivFst_eq, map₂_fst, yonedaEquiv_naturality]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map₂_snd {Y : C} (f : X ⟶ Y) (p : YonedaCollection F Y) :
     (YonedaCollection.map₂ F f p).snd = F.map ((CostructuredArrow.mkPrecomp p.fst f).op ≫
@@ -353,16 +355,19 @@ attribute [local simp] CostructuredArrow.mkPrecomp_id CostructuredArrow.mkPrecom
 lemma map₁_id : YonedaCollection.map₁ (𝟙 F) (X := X) = id := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map₁_comp {G H : (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ G) (μ : G ⟶ H) :
     YonedaCollection.map₁ (η ≫ μ) (X := X) =
       YonedaCollection.map₁ μ (X := X) ∘ YonedaCollection.map₁ η (X := X) := by
   ext; all_goals simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map₂_id : YonedaCollection.map₂ F (𝟙 X) = id := by
   ext; all_goals simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map₂_comp {Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     YonedaCollection.map₂ F (f ≫ g) = YonedaCollection.map₂ F f ∘ YonedaCollection.map₂ F g := by
@@ -423,12 +428,14 @@ def unitForward {F : Cᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ A) (X : C) :
     YonedaCollection (restrictedYonedaObj η) X → F.obj (op X) :=
   fun p => p.snd.val
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma unitForward_naturality₁ {F G : Cᵒᵖ ⥤ TypeCat.{v}} {η : F ⟶ A} {μ : G ⟶ A} (ε : F ⟶ G)
     (hε : ε ≫ μ = η) (X : C) (p : YonedaCollection (restrictedYonedaObj η) X) :
     unitForward μ X (p.map₁ (restrictedYonedaObjMap₁ ε hε)) = ε.app _ (unitForward η X p) := by
   simp [unitForward]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma unitForward_naturality₂ {F : Cᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ A) (X Y : C) (f : X ⟶ Y)
     (p : YonedaCollection (restrictedYonedaObj η) Y) :
@@ -448,6 +455,7 @@ def unitBackward {F : Cᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ A) (X : C) :
     F.obj (op X) → YonedaCollection (restrictedYonedaObj η) X :=
   fun x => YonedaCollection.mk (yonedaEquiv.symm (η.app _ x)) ⟨x, ⟨by simp⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma unitForward_unitBackward {F : Cᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ A) (X : C) :
     unitForward η X ∘ unitBackward η X = id :=
   funext fun x => by simp [unitForward, unitBackward]
@@ -492,11 +500,13 @@ section counit
 
 variable {F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v}} {X : C}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma OverArrows.yonedaCollectionPresheafToA_val_fst (s : yoneda.obj X ⟶ A)
     (p : OverArrows (yonedaCollectionPresheafToA F) s) : p.val.fst = s := by
   simpa [YonedaCollection.yonedaEquivFst_eq] using p.app_val
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Forward direction of the counit. -/
 def counitForward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v})
     (s : CostructuredArrow yoneda A) :
@@ -513,6 +523,7 @@ lemma counitForward_val_snd (s : CostructuredArrow yoneda A) (x : F.obj (op s)) 
     (counitForward F s x).val.snd = F.map (eqToHom (by simp [← CostructuredArrow.eq_mk])) x :=
   YonedaCollection.mk_snd _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma counitForward_naturality₁ {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ G)
     (s : (CostructuredArrow yoneda A)ᵒᵖ) (x : F.obj s) : counitForward G s.unop (η.app s x) =
@@ -543,6 +554,7 @@ def counitBackward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v})
     OverArrows (yonedaCollectionPresheafToA F) s.hom → F.obj (op s) :=
   fun p => F.map (eqToHom (by simp [← CostructuredArrow.eq_mk])) p.val.snd
 
+set_option backward.isDefEq.respectTransparency false in
 lemma counitForward_counitBackward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v})
     (s : CostructuredArrow yoneda A) : counitForward F s ∘ counitBackward F s = id :=
   funext fun p => OverArrows.ext <| YonedaCollection.ext (by simp) (by simp [counitBackward])
@@ -614,6 +626,7 @@ def CostructuredArrow.toOverCompYoneda (A : Cᵒᵖ ⥤ TypeCat.{v}) (T : Over A
         (Iso.refl _)).toIso)
     (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverCompYoneda
     {A : Cᵒᵖ ⥤ TypeCat.{v}} {T : Over A} {X : CostructuredArrow yoneda A}
@@ -624,6 +637,7 @@ theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverC
         f ≫ (overEquivPresheafCostructuredArrow A).unit.app T := by
   simp [CostructuredArrow.toOverCompYoneda]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_functor_map_toOverCompYoneda
     {A : Cᵒᵖ ⥤ TypeCat.{v}} {T : Over A} {X : CostructuredArrow yoneda A}
@@ -648,6 +662,7 @@ def CostructuredArrow.toOverCompCoyoneda (A : Cᵒᵖ ⥤ TypeCat.{v}) :
         ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
         (Iso.refl _)).toIso)) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverCompCoyoneda
     {A : Cᵒᵖ ⥤ TypeCat.{v}} {T : Over A} {X : CostructuredArrow yoneda A}
@@ -658,6 +673,7 @@ theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverC
         f ≫ (overEquivPresheafCostructuredArrow A).unit.app T := by
   simp [CostructuredArrow.toOverCompCoyoneda]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_functor_map_toOverCompCoyoneda
     {A : Cᵒᵖ ⥤ TypeCat.{v}} {T : Over A} {X : CostructuredArrow yoneda A}

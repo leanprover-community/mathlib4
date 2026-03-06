@@ -156,11 +156,11 @@ theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X �
 
 @[simp] theorem _root_.CategoryTheory.id_apply {X : C} (x : ToType X) :
     𝟙 X x = x := by
-  rw [ConcreteCategory.id_apply _]
+  simp [ConcreteCategory.id_apply _]
 
 @[simp] theorem _root_.CategoryTheory.comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     (x : ToType X) : (f ≫ g) x = g (f x) := by
-  rw [ConcreteCategory.comp_apply]
+  simp [ConcreteCategory.comp_apply]
 
 @[deprecated (since := "2026-02-06")] alias _root_.CategoryTheory.comp_apply' :=
   _root_.CategoryTheory.comp_apply

@@ -48,6 +48,7 @@ theorem free_obj_coe {α : TypeCat.{u}} : (free.obj α : Type u) = MvPolynomial 
 theorem free_map_coe {α β : TypeCat.{u}} {f : α ⟶ β} : ⇑(free.map f) = ⇑(rename f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for commutative rings. -/
 def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv

@@ -117,6 +117,7 @@ instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
     dsimp [c] at this
     simpa using ULift.down_injective this
 
+set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
     (h : (restrictedULiftYoneda.{w} F).FullyFaithful) :

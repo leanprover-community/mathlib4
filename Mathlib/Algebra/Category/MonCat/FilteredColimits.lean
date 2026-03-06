@@ -123,6 +123,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
   simp_rw [map_mul, ← ConcreteCategory.comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp,
     ConcreteCategory.comp_apply, hfg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplication in the colimit is well-defined in the right argument. -/
 @[to_additive /-- Addition in the colimit is well-defined in the right argument. -/]
 theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}

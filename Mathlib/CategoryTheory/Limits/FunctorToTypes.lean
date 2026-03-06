@@ -26,6 +26,7 @@ universe w v₁ v₂ u₁ u₂
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 variable (F : J ⥤ K ⥤ TypeCat.{w})
 
+set_option backward.isDefEq.respectTransparency false in
 theorem jointly_surjective (k : K) {t : Cocone F} (h : IsColimit t) (x : t.pt.obj k)
     [∀ k, HasColimit (F.flip.obj k)] : ∃ j y, x = (t.ι.app j).app k y := by
   let hev := isColimitOfPreserves ((evaluation _ _).obj k) h

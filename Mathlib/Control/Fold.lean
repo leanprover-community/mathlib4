@@ -147,19 +147,18 @@ abbrev foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   MulOpposite <| End <| KleisliCat.mk m α
 
 def foldlM.mk (f : α → m α) : foldlM m α :=
-  op ⟨f⟩
+  op f
 
 def foldlM.get (x : foldlM m α) : α → m α :=
-  (unop x).as
+  (unop x)
 
 @[simps]
 def foldlM.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α →* Monoid.foldlM m β where
-  toFun xs := op <| ⟨flip (List.foldlM f) (FreeMonoid.toList xs)⟩
+  toFun xs := op <| flip (List.foldlM f) (FreeMonoid.toList xs)
   map_one' := rfl
   map_mul' := by
     intros
     apply unop_injective
-    apply TypeCat.Fun.ext
     funext
     apply List.foldlM_append
 
@@ -167,16 +166,16 @@ abbrev foldrM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   End <| KleisliCat.mk m α
 
 def foldrM.mk (f : α → m α) : foldrM m α :=
-  ⟨f⟩
+  f
 
 def foldrM.get (x : foldrM m α) : α → m α :=
-  x.as
+  x
 
 @[simps]
 def foldrM.ofFreeMonoid [LawfulMonad m] (f : α → β → m β) : FreeMonoid α →* Monoid.foldrM m β where
-  toFun xs := ⟨flip (List.foldrM f) (FreeMonoid.toList xs)⟩
+  toFun xs := flip (List.foldrM f) (FreeMonoid.toList xs)
   map_one' := rfl
-  map_mul' := by intros; apply TypeCat.Fun.ext; funext; apply List.foldrM_append
+  map_mul' := by intros; funext; apply List.foldrM_append
 
 end Monoid
 
@@ -372,14 +371,14 @@ set_option backward.isDefEq.respectTransparency false in
 theorem foldlm_toList {f : α → β → m α} {x : α} {xs : t β} :
     foldlm f x xs = List.foldlM f x (toList xs) :=
   calc foldlm f x xs
-    _ = (unop (foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs))).as x := by
+    _ = (unop (foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs))) x := by
       simp only [foldlm, toList_spec, foldMap_hom_free (foldlM.ofFreeMonoid f),
         foldlm.ofFreeMonoid_comp_of, foldlM.get, FreeMonoid.ofList_toList]
     _ = List.foldlM f x (toList xs) := by simp [foldlM.ofFreeMonoid, unop_op, flip]
 
 theorem foldrm_toList (f : α → β → m β) (x : β) (xs : t α) :
     foldrm f x xs = List.foldrM f x (toList xs) := by
-  change _ = (foldrM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)).as x
+  change _ = (foldrM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)) x
   simp only [foldrm, toList_spec, foldMap_hom_free (foldrM.ofFreeMonoid f),
     foldrm.ofFreeMonoid_comp_of, foldrM.get, FreeMonoid.ofList_toList]
 

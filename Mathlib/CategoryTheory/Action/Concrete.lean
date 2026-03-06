@@ -69,6 +69,7 @@ theorem ofMulAction_apply {G : Type*} {H : TypeCat} [Monoid G] [MulAction G H] (
     ConcreteCategory.hom ((ofMulAction G H).ρ g) x = (g • x : H) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a family `F` of types with `G`-actions, this is the limit cone demonstrating that the
 product of `F` as types is a product in the category of `G`-sets. -/
 def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι → Type max v u)

@@ -1261,6 +1261,7 @@ def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ TypeCat.{max w v₁}} (f : R ⟶ uli
     refine ⟨R.map g.op t, ?_⟩
     simp [ht]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
     Sieve.sieveOfUliftSubfunctor.{w} (S.uliftFunctorInclusion) = S := by
   cat_disch

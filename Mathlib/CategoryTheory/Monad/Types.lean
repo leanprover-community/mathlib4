@@ -33,7 +33,7 @@ variable (m : Type u → Type u) [_root_.Monad m] [LawfulMonad m]
 /-- A lawful `Control.Monad` gives a category theory `Monad` on the category of types.
 -/
 @[simps! obj map η_app μ_app]
-def ofTypeMonad : Monad (TypeCat.{u}) where
+def ofTypeMonad : Monad TypeCat.{u} where
   toFunctor := ofTypeFunctor m
   η := ⟨fun X ↦ TypeCat.ofHom ⟨@pure m _ X⟩, fun _ _ f => by
     ext x; exact (LawfulApplicative.map_pure f x).symm⟩
@@ -48,25 +48,25 @@ category-theoretic version, provided the monad is lawful.
 @[simps]
 def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
   functor :=
-    { obj X := Kleisli.mk _ (TypeCat.of X.1)
-      map f := ⟨TypeCat.ofHom f⟩ -- fun f => f
+    { obj X := Kleisli.mk _ (TypeCat.of X)
+      map f := ⟨TypeCat.ofHom ⟨f⟩⟩
       map_id := fun _ => rfl
       map_comp := fun f g => by
         ext
         simp [joinM]
         rfl }
   inverse :=
-    { obj X := X.of
-      map f := ⟨f.of⟩
+    { obj X := X.of.carrier
+      map f x := f.of x
       map_id := fun _ => rfl
       map_comp := fun f g => by
         ext t
+        change joinM (g.of <$> f.of t) = (f.of >=> g.of) t
         simp [joinM]
         rfl }
   unitIso := by
     refine NatIso.ofComponents (fun X => Iso.refl X) fun f => ?_
-    ext
-    change (f.as >=> pure) _ = (pure >=> f.as) _
+    change f >=> pure = pure >=> f
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X
 

@@ -164,6 +164,7 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   comp_id f := ConcreteCategory.congr_hom (e_comp_id (TypeCat.{v}) _ _) f
   assoc f g h := ConcreteCategory.congr_hom (e_assoc (TypeCat.{v}) _ _ _ _) ⟨f, g, h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :

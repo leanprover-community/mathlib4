@@ -240,6 +240,7 @@ open Limits
 
 variable {D : Type*} [Category* D]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Presieve.IsSheafFor.comp_iff_of_preservesPairwisePullbacks (F : C ⥤ D) (P : Dᵒᵖ ⥤ TypeCat)
     {X : C} (R : Presieve X) [R.HasPairwisePullbacks]
     [F.PreservesPairwisePullbacks R] :

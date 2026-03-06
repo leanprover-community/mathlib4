@@ -267,7 +267,7 @@ instance types.finitaryExtensive : FinitaryExtensive (TypeCat.{u}) := by
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, _⟩
       simp
-      split_ifs <;> rfl
+      split_ifs with h<;> tauto
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, hx⟩
       simp

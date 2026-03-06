@@ -82,9 +82,7 @@ def graphFunctor : TypeCat.{u} ⥤ RelCat.{u} where
 instance graphFunctor_faithful : graphFunctor.Faithful where
   map_injective h := by
     ext
-    have := Function.graph_injective congr(($h).rel)
-    rw [funext_iff] at this
-    exact this _
+    simp [Function.graph_injective congr(($h).rel)]
 
 instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id

@@ -199,11 +199,11 @@ def equiv (F : J ⥤ C) : TypeCat.of (Cone F) ≅ TypeCat.of (Σ X, F.cones.obj 
 
 /-- A map to the vertex of a cone naturally induces a cone by composition. -/
 @[simps]
-def extensions (c : Cone F) : yoneda.obj c.pt ⋙ uliftFunctor.{u₁} ⟶ F.cones where
+def extensions (c : Cone F) : uliftYoneda.obj c.pt ⟶ F.cones where
   app _ := TypeCat.ofHom ⟨fun f ↦ (const J).map f.down ≫ c.π⟩
 
 /-- A map to the vertex of a cone induces a cone by composition. -/
-@[simps]
+@[simps! π_app pt]
 def extend (c : Cone F) {X : C} (f : X ⟶ c.pt) : Cone F :=
   { pt := X
     π := c.extensions.app (op X) ⟨f⟩ }
@@ -239,7 +239,7 @@ def extensions (c : Cocone F) : coyoneda.obj (op c.pt) ⋙ uliftFunctor.{u₁} �
   app _ := TypeCat.ofHom ⟨fun f ↦ c.ι ≫ (const J).map f.down⟩
 
 /-- A map from the vertex of a cocone induces a cocone by composition. -/
-@[simps]
+@[simps! pt ι_app]
 def extend (c : Cocone F) {Y : C} (f : c.pt ⟶ Y) : Cocone F where
   pt := Y
   ι := c.extensions.app Y ⟨f⟩

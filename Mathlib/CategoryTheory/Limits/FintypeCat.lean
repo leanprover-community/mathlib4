@@ -81,6 +81,7 @@ noncomputable def productEquiv {ι : Type*} [Finite ι] (X : ι → FintypeCat.{
   let e : (∀ i, X i) ≃ Shrink.{u} (∀ i, X i) := equivShrink _
   (equivEquivIso.symm is₁).trans ((equivEquivIso.symm is₂).trans e.symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma productEquiv_apply {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
     (x : (∏ᶜ X : FintypeCat)) (i : ι) : productEquiv X x i = Pi.π X i x := by

@@ -90,6 +90,7 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
     obtain ⟨c, hc₁, hc₂⟩ := h A B
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance monoCoprodType : MonoCoprod (TypeCat.{u}) :=
   MonoCoprod.mk' fun A B => by
     refine ⟨BinaryCofan.mk (TypeCat.ofHom ⟨(Sum.inl : A → A ⊕ B)⟩)

@@ -38,6 +38,7 @@ instance : (monomorphisms (TypeCat.{u})).IsStableUnderCobaseChange where
     simp only [monomorphisms.iff] at ht ⊢
     exact Limits.Types.pushoutCocone_inr_mono_of_isColimit sq.flip.isColimit
 
+set_option backward.isDefEq.respectTransparency false in
 instance : MorphismProperty.IsStableUnderFilteredColimits.{v', u'}
     (monomorphisms (TypeCat.{u})) where
   isStableUnderColimitsOfShape J _ _ := ⟨fun F₁ F₂ c₁ c₂ hc₁ hc₂ f hf φ hφ ↦ by

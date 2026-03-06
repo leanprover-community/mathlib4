@@ -205,6 +205,7 @@ lemma uliftYonedaAdjunction_homEquiv_app {P : Cᵒᵖ ⥤ TypeCat.{max w v₁ v�
     restrictedULiftYonedaHomEquiv', IsColimit.homEquiv]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma uliftYonedaAdjunction_unit_app_app (P : Cᵒᵖ ⥤ TypeCat.{max w v₁ v₂})
     {Z : Cᵒᵖ} (z : P.obj Z) :
@@ -467,6 +468,7 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
         Equiv.coe_fn_mk] at eq₁ eq₂ eq₃ ⊢
       simp [eq₁, eq₂, eq₃])
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
     ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
@@ -494,6 +496,7 @@ def coconeApp {P : Cᵒᵖ ⥤ TypeCat.{max w v₁ v₂}} (x : P.Elements) :
     ((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).app _
       ((φ.app x.1.unop).app _ (ULift.up (𝟙 _))))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coconeApp_naturality {P : Cᵒᵖ ⥤ TypeCat.{max w v₁ v₂}} {x y : P.Elements} (f : x ⟶ y) :
     uliftYoneda.map f.1.unop ≫ coconeApp.{w} φ x = coconeApp φ y := by
@@ -539,6 +542,7 @@ lemma uliftYonedaEquiv_presheafHom_uliftYoneda_obj (X : C) :
       ((φ.app X).app (F.op.obj (Opposite.op X)) (ULift.up (𝟙 _))) := by
   simpa using uliftYonedaEquiv_ι_presheafHom.{w} φ (uliftYoneda.obj X) (𝟙 _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ TypeCat.{max w v₁ v₂}} (f : P ⟶ Q) :
     presheafHom.{w} φ P ≫ Functor.whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
@@ -725,7 +729,7 @@ end Presheaf
 
 namespace Functor.Elements
 
-variable [LocallySmall.{w} C] (F : C ⥤ Type w)
+variable [LocallySmall.{w} C] (F : C ⥤ TypeCat.{w})
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
@@ -735,7 +739,7 @@ this is the colimit cocone which identifies `F.obj X` to the colimit of
 noncomputable def coconeπOpCompShrinkYonedaObj (X : C) :
     Cocone ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj X) where
   pt := F.obj X
-  ι.app u t := F.map (shrinkYonedaObjObjEquiv t) u.unop.snd
+  ι.app u := TypeCat.ofHom ⟨fun t ↦ F.map (shrinkYonedaObjObjEquiv t) u.unop.snd⟩
   ι.naturality u₁ u₂ g := by
     ext f
     obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
@@ -805,18 +809,18 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then `F` identifies to the composition
 `shrinkYoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim`. -/
 noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso
-    [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] :
+    [HasColimitsOfShape F.Elementsᵒᵖ TypeCat.{w}] :
     shrinkYoneda.{w} ⋙
       (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim ≅ F :=
   NatIso.ofComponents (fun X ↦
     IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
       (isColimitCoconeπOpCompShrinkYonedaObj F X)) (fun {X₁ X₂} f ↦ colimit.hom_ext (by
         intro u
-        simp [shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app F f u.unop]))
+        simpa using shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app F f u.unop))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
-    [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] (u : F.Elements) :
+    [HasColimitsOfShape F.Elementsᵒᵖ TypeCat.{w}] (u : F.Elements) :
       (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app _ u.snd =
       (colimit.ι ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u)
         (shrinkYonedaObjObjEquiv.symm (𝟙 _))) := by
@@ -825,8 +829,9 @@ lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
         (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app u.fst =
       colimit.ι ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u) :=
     IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit _) _ (op u)
-  simpa using congr_fun this (shrinkYonedaObjObjEquiv.symm (𝟙 _))
+  simpa using ConcreteCategory.congr_hom this (shrinkYonedaObjObjEquiv.symm (𝟙 _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The object of the category of elements `shrinkYoneda.{w}.flip.obj (op X)`
 corresponding to the identity of `X` is initial. -/
 noncomputable def isInitialElementsMkShrinkYonedaObjObjEquivId (X : C) :

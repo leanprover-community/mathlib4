@@ -5,7 +5,7 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.CategoryTheory.Category.Basic
 
 /-!
 # The Kleisli construction on the Type category
@@ -32,21 +32,21 @@ namespace CategoryTheory
 yet. -/
 @[nolint unusedArguments]
 def KleisliCat (_ : Type u → Type v) :=
-  TypeCat.{u}
+  Type u
 
 /-- Construct an object of the Kleisli category from a type. -/
 def KleisliCat.mk (m) (α : Type u) : KleisliCat m :=
-  TypeCat.of α
+  α
 
 instance KleisliCat.categoryStruct {m} [Monad.{u, v} m] :
     CategoryStruct (KleisliCat m) where
-  Hom α β := TypeCat.Fun α.carrier (m β.carrier)
-  id _ := ⟨fun x ↦ pure x⟩
-  comp f g := ⟨f.as >=> g.as⟩
+  Hom α β := α → m β
+  id _ x := pure x
+  comp f g := f >=> g
 
 @[ext]
 theorem KleisliCat.ext {m} [Monad.{u, v} m] (α β : KleisliCat m)
-    (f g : α ⟶ β) (h : ∀ x, f.as x = g.as x) : f = g := TypeCat.Fun.ext <| funext h
+    (f g : α ⟶ β) (h : ∀ x, f x = g x) : f = g := funext h
 
 instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := by
   refine { id_comp := ?_, comp_id := ?_, assoc := ?_ } <;> intros <;>
@@ -54,17 +54,17 @@ instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (Kl
   simp +unfoldPartialApp [CategoryStruct.id, CategoryStruct.comp, (· >=> ·)]
 
 @[simp]
-theorem KleisliCat.id_def {m} [Monad m] (α : KleisliCat m) : 𝟙 α = ⟨fun x ↦ pure x⟩ :=
+theorem KleisliCat.id_def {m} [Monad m] (α : KleisliCat m) : 𝟙 α = @pure m _ α :=
   rfl
 
-theorem KleisliCat.comp_def {m} [Monad m] (α β γ : KleisliCat m) (xs : α ⟶ β) (ys : β ⟶ γ)
-    (a : α.carrier) : (xs ≫ ys).as a = xs.as a >>= ys.as :=
+theorem KleisliCat.comp_def {m} [Monad m] (α β γ : KleisliCat m) (xs : α ⟶ β) (ys : β ⟶ γ) (a : α) :
+    (xs ≫ ys) a = xs a >>= ys :=
   rfl
 
 instance : Inhabited (KleisliCat id) :=
-  ⟨.mk id PUnit⟩
+  ⟨PUnit⟩
 
-instance {α : Type u} [Inhabited α] : Inhabited (KleisliCat.mk id α).carrier :=
+instance {α : Type u} [Inhabited α] : Inhabited (KleisliCat.mk id α) :=
   ⟨show α from default⟩
 
 end CategoryTheory

@@ -215,6 +215,7 @@ def toCostructuredArrow (F : Cᵒᵖ ⥤ TypeCat.{v}) : F.Elementsᵒᵖ ⥤ Cos
       ext Z y
       simp [yonedaEquiv])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The reverse direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.
 -/
@@ -310,6 +311,7 @@ def Elements.initialOfRepresentableBy {F : Cᵒᵖ ⥤ TypeCat} {X : C} (h : F.R
     F.Elements :=
   ⟨.op X, h.homEquiv (𝟙 X)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is represented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/
 def Elements.isInitialOfRepresentableBy {F : Cᵒᵖ ⥤ TypeCat} {X : C} (h : F.RepresentableBy X) :
@@ -326,6 +328,7 @@ def Elements.initialOfCorepresentableBy {F : C ⥤ TypeCat} {X : C} (h : F.Corep
     F.Elements :=
   ⟨X, h.homEquiv (𝟙 X)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is corepresented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/
 def Elements.isInitialOfCorepresentableBy {F : C ⥤ TypeCat} {X : C} (h : F.CorepresentableBy X) :

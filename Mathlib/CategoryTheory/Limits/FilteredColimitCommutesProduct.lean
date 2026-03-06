@@ -132,6 +132,7 @@ section types
 
 variable {α : Type u} {I : α → Type u} [∀ i, SmallCategory (I i)] [∀ i, IsFiltered (I i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ TypeCat.{u}) :
     IsIso (colimitPointwiseProductToProductColimit F) := by
   -- We follow the proof in [Kashiwara2006], Prop. 3.1.11(ii)

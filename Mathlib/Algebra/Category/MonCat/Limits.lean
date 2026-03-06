@@ -40,6 +40,7 @@ variable {J : Type v} [Category.{w} J] (F : J ⥤ MonCat.{u})
 instance monoidObj (j) : Monoid (F.obj j) :=
   inferInstanceAs <| Monoid (F.obj j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `MonCat` form a submonoid of all sections. -/
 @[to_additive
 /-- The flat sections of a functor into `AddMonCat` form an additive submonoid of all sections. -/]

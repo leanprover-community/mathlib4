@@ -204,6 +204,7 @@ theorem isMittagLeffler_iff_subset_range_comp : F.IsMittagLeffler ↔ ∀ j : J,
     ∀ ⦃k⦄ (g : k ⟶ i), range (F.map f) ⊆ range (F.map <| g ≫ f) := by
   simp_rw [isMittagLeffler_iff_eventualRange, eventualRange_eq_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).IsMittagLeffler :=
   (isMittagLeffler_iff_subset_range_comp _).2 fun j => by
     obtain ⟨j₁, g₁, f₁, -⟩ := IsCofilteredOrEmpty.cone_objs i j

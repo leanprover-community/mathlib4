@@ -47,7 +47,7 @@ def of : Type* → PartialFun :=
   TypeCat.of
 
 instance : Inhabited PartialFun.{u} :=
-  ⟨TypeCat.of PUnit⟩
+  ⟨PartialFun.of PUnit⟩
 
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom X Y := PFun X.carrier Y.carrier
@@ -80,6 +80,7 @@ instance : typeToPartialFun.Faithful where
     exact congrFun (PFun.lift_injective h) x
 
 -- b ∈ PFun.toSubtype (fun x ↦ x ≠ X.point) Subtype.val a ↔ b ∈ Part.some a
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.
 This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 @[simps obj map]

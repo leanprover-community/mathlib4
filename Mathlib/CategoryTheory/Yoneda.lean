@@ -100,6 +100,16 @@ for the category of types. -/
 @[pp_with_univ]
 abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ TypeCat.{max w v₁} := uliftYoneda.{w}.flip
 
+unif_hint uliftCoyoneda_obj_obj_eq_hom (X X' Y Y' : C) where
+  X ≟ X'
+  Y ≟ Y' ⊢
+  (uliftCoyoneda.{w}.obj (op X)).obj Y ≟ ULift (Y' ⟶ X')
+
+unif_hint uliftCoyoneda_obj_obj_eq_hom' (X X' : Cᵒᵖ) (Y Y' : C) where
+  X ≟ X'
+  Y ≟ Y' ⊢
+  (uliftCoyoneda.{w}.obj X).obj Y ≟ ULift (Y' ⟶ unop X')
+
 /-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
 `uliftCoyoneda.{w} (C := C) ≅ coyoneda`. -/
 @[simps! inv_app_app hom_app_app]
@@ -514,7 +524,8 @@ instance {X : C} : IsRepresentable (yoneda.obj X) :=
 instance {X : C} : IsRepresentable (uliftYoneda.{w}.obj X) :=
   RepresentableBy.isRepresentable (representableByUliftFunctorEquiv.symm (RepresentableBy.yoneda X))
 
-/-- A functor `F : C ⥤ TypeCat.{v₁}` is corepresentable if there is object `X` so `F ≅ coyoneda.obj X`.
+/--
+A functor `F : C ⥤ TypeCat.{v₁}` is corepresentable if there is object `X` so `F ≅ coyoneda.obj X`.
 -/
 @[stacks 001Q]
 class IsCorepresentable (F : C ⥤ TypeCat.{v}) : Prop where
@@ -1114,9 +1125,8 @@ def uliftCoyonedaEquiv {X : Cᵒᵖ} {F : C ⥤ TypeCat.{max w v₁}} :
   toFun τ := τ.app X.unop (ULift.up (𝟙 _))
   invFun x := { app Y := ofHom ⟨fun y ↦ F.map y.down x⟩ }
   left_inv τ := by
-    ext Y ⟨y⟩
-    simp only [flip_obj_obj, uliftYoneda_obj_obj, yoneda_obj_obj, ← comp_apply, ← τ.naturality,
-      flip_obj_map, uliftYoneda_map_app, ConcreteCategory.hom_ofHom, hom_as_apply]
+    ext Y ⟨x⟩
+    simp [← comp_apply, ← τ.naturality]
     simp
   right_inv x := by simp
 
@@ -1126,9 +1136,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma uliftCoyonedaEquiv_naturality {X Y : C} {F : C ⥤ TypeCat.{max w v₁}}
     (f : uliftCoyoneda.{w}.obj (op X) ⟶ F) (g : X ⟶ Y) :
     F.map g (uliftCoyonedaEquiv.{w} f) = uliftCoyonedaEquiv.{w} (uliftCoyoneda.map g.op ≫ f) := by
-  simp only [uliftCoyonedaEquiv, flip_obj_obj, uliftYoneda_obj_obj, yoneda_obj_obj, Equiv.coe_fn_mk,
-    ← comp_apply, ← NatTrans.naturality f, flip_obj_map, uliftYoneda_map_app, NatTrans.comp_app,
-    flip_map_app, uliftYoneda_obj_map, Quiver.Hom.unop_op]
+  simp [uliftCoyonedaEquiv, ← comp_apply, ← f.naturality]
   simp
 
 lemma uliftCoyonedaEquiv_comp {X : Cᵒᵖ} {F G : C ⥤ TypeCat.{max w v₁}}
@@ -1230,7 +1238,9 @@ def Functor.sectionsEquivHom (F : C ⥤ TypeCat.{u₂}) (X : TypeCat.{u₂}) [Un
       naturality _ _ _ := by ext x; simp }
   invFun τ := by
     refine ⟨fun j ↦ τ.app _ (default : X), fun φ ↦ ?_⟩
-    simp [← comp_apply, ← NatTrans.naturality]
+    simp [-const_obj_obj, ← comp_apply, -types_comp_apply, ← NatTrans.naturality]
+    simp
+    rfl
   right_inv τ := by
     ext _ (x : X)
     rw [Unique.eq_default x]

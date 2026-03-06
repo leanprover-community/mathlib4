@@ -58,6 +58,7 @@ def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
   pt := .of PUnit
   ι := 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
 cocone. -/
 noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.{w} C) where

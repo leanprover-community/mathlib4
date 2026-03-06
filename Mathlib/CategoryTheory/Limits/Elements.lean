@@ -60,6 +60,7 @@ variable (F : I ⥤ A.Elements)
 
 variable [HasLimitsOfShape I C] [PreservesLimitsOfShape I A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `A(lim_i Fi)`. -/
 noncomputable def liftedConeElement : A.obj (limit (F ⋙ π A)) :=
   (preservesLimitIso A (F ⋙ π A)).inv (Types.Limit.mk _ (fun i => (F.obj i).2) (by simp))
@@ -75,6 +76,7 @@ lemma map_lift_mapCone (c : Cone F) :
   have h₂ := (c.π.app i).property
   simpa [-Functor.comp_obj, ← comp_apply, ← Functor.map_comp, liftedConeElement]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_π_liftedConeElement (i : I) :
     A.map (limit.π (F ⋙ π A) i) (liftedConeElement F) = (F.obj i).snd := by

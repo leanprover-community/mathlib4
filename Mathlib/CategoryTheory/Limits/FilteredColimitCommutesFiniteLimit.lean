@@ -65,6 +65,7 @@ only that there are finitely many objects.
 
 variable [Finite J]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This follows the proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 -/

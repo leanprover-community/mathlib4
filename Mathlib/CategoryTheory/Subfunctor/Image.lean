@@ -77,6 +77,7 @@ def toRange :
 @[reassoc (attr := simp)]
 lemma toRange_ι : toRange p ≫ (range p).ι = p := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toRange_app_val {i : C} (x : F'.obj i) :
     ((toRange p).app i x).val = p.app i x := by
   simp [toRange]

@@ -68,6 +68,7 @@ lemma M.mk_map {j k : J} (f : j ⟶ k) (x : F.obj j) :
 def colimitSMulAux (r : R) (x : Σ j, F.obj j) : M F :=
   M.mk F ⟨x.1, r • x.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
     (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat R)) x y) :
     colimitSMulAux F r x = colimitSMulAux F r y := by
