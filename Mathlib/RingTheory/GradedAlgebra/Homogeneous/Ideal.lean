@@ -581,7 +581,7 @@ def irrelevant : HomogeneousIdeal 𝒜 :=
     · rw [h, hr, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rw [decompose_of_mem_ne 𝒜 (SetLike.coe_mem _) h]⟩
 
-local notation 𝒜 "₊" => irrelevant 𝒜
+scoped notation 𝒜 "₊" => irrelevant 𝒜
 
 @[simp]
 theorem mem_irrelevant_iff (a : A) :

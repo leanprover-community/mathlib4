@@ -18,10 +18,6 @@ universe u
 open HomogeneousIdeal HomogeneousLocalization TopologicalSpace CategoryTheory
 open AlgebraicGeometry ProjectiveSpectrum Proj
 
-local notation 𝒜 "₊" => irrelevant 𝒜
-
--- question: scoped notation?
-
 namespace AlgebraicGeometry
 
 section universe_polymorphic
@@ -30,8 +26,6 @@ variable {A B C σ τ ψ : Type*} [CommRing A] [SetLike σ A] [AddSubgroupClass 
   [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
   {𝒜 : ℕ → σ} {ℬ : ℕ → τ} [GradedRing 𝒜] [GradedRing ℬ]
   (f : 𝒜 →+*ᵍ ℬ) (f_le_map : ℬ₊ ≤ 𝒜₊.map f)
-
--- question: make `f_le_map` a definition?
 
 namespace ProjectiveSpectrum
 
