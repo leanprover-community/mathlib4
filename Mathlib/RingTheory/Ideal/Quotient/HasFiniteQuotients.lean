@@ -32,7 +32,7 @@ variable {R : Type*} [CommRing R]
 A ring `R` has finite quotients if the quotient `R ⧸ I` is finite for all nonzero ideals of `R`.
 -/
 class Ring.HasFiniteQuotients (R : Type*) [CommRing R] : Prop where
-  (finiteQuotient : ∀ {I : Ideal R}, I ≠ ⊥ → Finite (R ⧸ I))
+  finiteQuotient {I : Ideal R} : I ≠ ⊥ → Finite (R ⧸ I)
 
 namespace Ring.HasFiniteQuotients
 
@@ -47,7 +47,6 @@ A prime ideal of a ring with finite quotients is maximal.
 -/
 theorem maximalOfPrime [HasFiniteQuotients R] {P : Ideal R} [P.IsPrime] (hp : P ≠ ⊥) :
     P.IsMaximal :=
-  have : IsDomain (R ⧸ P) := Ideal.Quotient.isDomain P
   have : Finite (R ⧸ P) := finiteQuotient hp
   Ideal.Quotient.maximal_of_isField P <| Finite.isField_of_domain (R ⧸ P)
 
@@ -76,10 +75,13 @@ variable (R) in
 Assume that `R` a finite quotients and that `S` is a domain and a finite `R`-module. Then
 `S` has finite quotients.
 -/
-theorem of_module_finite [h : HasFiniteQuotients R] [Nontrivial R] (S : Type*) [CommRing S]
-    [IsDomain S] [Algebra R S] [Module.Finite R S] :
+theorem of_module_finite [h : HasFiniteQuotients R] (S : Type*) [CommRing S] [IsDomain S]
+    [Algebra R S] [Module.Finite R S] :
     HasFiniteQuotients S := ⟨fun {I} hI ↦ by
   classical
+  obtain hR | hR := subsingleton_or_nontrivial R
+  · have : Finite S := Module.finite_of_finite R
+    exact Quotient.finite _
   let J : Ideal R := Ideal.under R I
   have : Finite (R ⧸ J) := h.finiteQuotient <| Ideal.under_ne_bot R hI
   exact Module.finite_of_finite (R ⧸ J)⟩
