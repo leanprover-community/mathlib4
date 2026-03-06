@@ -224,8 +224,7 @@ instance : EquivLike (Equiv ρ σ) V W where
   right_inv e := e.right_inv
   coe_injective' φ ψ h1 h2 := by
     cases φ; cases ψ
-    simp only [LinearEquiv.coe_mk, DFunLike.coe_fn_eq, mk.injEq, IntertwiningMap.ext_iff] at h1 h2 ⊢
-    simp [h1, h2]
+    simp_all [IntertwiningMap.ext_iff]
 
 instance : LinearEquivClass (σ.Equiv ρ) A W V where
   map_add f := f.map_add
