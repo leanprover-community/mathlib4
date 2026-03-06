@@ -14,6 +14,7 @@ public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.Valuation.LocalSubring
 
+
 /-!
 # Adic valuations on Dedekind domains
 Given a Dedekind domain `R` of Krull dimension 1 and a maximal ideal `v` of `R`, we define the
@@ -456,49 +457,19 @@ instance : Algebra R (valuationSubringAtPrime K v) :=
 instance : IsScalarTower R (valuationSubringAtPrime K v) K :=
   IsScalarTower.of_algebraMap_eq (fun _ ↦ rfl)
 
-instance : NoZeroSMulDivisors R (valuationSubringAtPrime K v) := Subalgebra.noZeroSMulDivisors_bot _
-
 instance : IsDedekindDomain (valuationSubringAtPrime K v) :=
   IsLocalization.AtPrime.isDedekindDomain R v.asIdeal
     (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors)
 
-open scoped WithZero algebraMap in
-theorem idealOfLE_valuationSubringAtPrime_valuationSubring_eq :
-    (valuationSubringAtPrime K v).idealOfLE (v.valuation K).valuationSubring
-    (valuationSubringAtPrime_le_valuationValuationSubring ..) =
-      IsLocalRing.maximalIdeal (valuationSubringAtPrime K v) := by
-  let π : IsDedekindDomain.HeightOneSpectrum (valuationSubringAtPrime K v) := {
-    asIdeal := (valuationSubringAtPrime K v).idealOfLE (valuation K v).valuationSubring
-      (valuationSubringAtPrime_le_valuationValuationSubring ..)
-    isPrime := ValuationSubring.prime_idealOfLE _ _
-      (valuationSubringAtPrime_le_valuationValuationSubring ..)
-    ne_bot := by
-      simp only [ValuationSubring.idealOfLE, Submodule.ne_bot_iff, Ideal.mem_comap]
-      obtain ⟨π, hπ⟩ := valuation_exists_uniformizer' K v
-      use (algebraMap R (valuationSubringAtPrime K v) π)
-      constructor
-      · rw [Valuation.mem_maximalIdeal_iff K (valuation K v)]
-        change (valuation K v) π < 1
-        rw [hπ, ← WithZero.exp_zero]
-        grind [WithZero.exp_lt_exp]
-      · have := (WithZero.exp_ne_zero (a := (1 : ℤ))).symm
-        aesop
-  }
-  simpa only [IsLocalRing.isMaximal_iff, ValuationSubring.idealOfLE] using π.isMaximal
+instance : Ring.KrullDimLE 1 ↥(valuationSubringAtPrime K v) :=
+  Ring.KrullDimLE.mk₁' (fun _ a _ ↦ IsPrime.to_maximal_ideal a)
 
 /-- Given `v : HeightOneSpectrum R`, the valuation associated to `v` has the localization of
   `R` at `v` as valuation subring. -/
 theorem valuationSubringAtPrime_eq_valuationSubring :
-    valuationSubringAtPrime K v = (v.valuation K).valuationSubring := by
-  apply ValuationSubring.toLocalSubring_injective
-  apply IsMax.eq_of_le (ValuationSubring.isMax_toLocalSubring (valuationSubringAtPrime K v))
-  use (valuationSubringAtPrime_le_valuationValuationSubring ..)
-  change IsLocalHom (ValuationSubring.inclusion ..)
-  simp only [(IsLocalRing.local_hom_TFAE
-    (ValuationSubring.inclusion _ _
-    (valuationSubringAtPrime_le_valuationValuationSubring v))).out 0 3]
-  convert le_rfl
-  simpa [ValuationSubring.idealOfLE] using idealOfLE_valuationSubringAtPrime_valuationSubring_eq v
+    valuationSubringAtPrime K v = (v.valuation K).valuationSubring :=
+  ValuationSubring.eq_of_le_of_ne_top _ (valuationSubringAtPrime_le_valuationValuationSubring v)
+    (by simp only [ne_eq, Valuation.valuationSubring_eq_top_iff, not_not]; infer_instance)
 
 end Localization
 
