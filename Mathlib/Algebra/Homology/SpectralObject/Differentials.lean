@@ -193,11 +193,9 @@ lemma Ψ_opcyclesMap_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
       (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃) (𝟙 _) n₁ (by cat_disch)
     rw [Functor.map_id, id_comp] at H
     rw [← H, ← reassoc_of% hz₁, hz₀, comp_zero])
-  dsimp at z₂ hz₂
   refine ⟨A₂, π₂ ≫ π₁, inferInstance, z₂ ≫ X.toCycles f₂ f₃ f₂₃ h₂₃ n₀, ?_⟩
-  dsimp
   rw [← cancel_mono (X.fromOpcycles f₁ f₂ f₁₂ h₁₂ n₁), assoc, assoc,
-    assoc, assoc, toCycles_Ψ_assoc .., p_fromOpcycles, ← reassoc_of% hz₂,
+    assoc, assoc, toCycles_Ψ_assoc .., p_fromOpcycles, ← reassoc_of% dsimp% hz₂,
     reassoc_of% hz₁, p_fromOpcycles]
 
 lemma sequenceΨ_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
