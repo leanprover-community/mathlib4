@@ -265,14 +265,30 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
   -- 步骤 2: 定义误差项 E = F(b) - F(a) - F'(m)(b-a)
   set E := F b - F a - (derivWithin F (Icc a b) m) * (b - a) with hE_def
 
-  -- 步骤 3: 证明关键引理 - 存在 ξ₁ ∈ (m,b) 和 ξ₂ ∈ (a,m) 使得
-  -- F(b) - F(m) = F'(m)(b-m) + F''(m)(b-m)²/2 + iteratedDerivWithin 3 F (Icc a b) ξ₁ * (b-m)³/6
-  -- F(a) - F(m) = F'(m)(a-m) + F''(m)(a-m)²/2 + iteratedDerivWithin 3 F (Icc a b) ξ₂ * (a-m)³/6
+  -- 步骤 3.1: 验证 F 在 Icc a b 上是 2 阶连续可微的（从假设直接得到）
+  have hF_Icc : ContDiffOn ℝ 2 F (Icc a b) := by sorry
+
+  -- 步骤 3.2: 验证 iteratedDerivWithin 2 F 在 Ioo a b 上可微（从假设直接得到）
+  have hF_diff_Ioo : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b) := by sorry
+
+  -- 步骤 3.3: 验证 m ∈ Icc a b（中点在闭区间内）
+  have h_m_in_Icc : m ∈ Icc a b := by sorry
+
+  -- 步骤 3.4: 验证 b ∈ Icc a b（右端点在闭区间内）
+  have h_b_in_Icc : b ∈ Icc a b := by sorry
+
+  -- 步骤 3.5: 验证 a ∈ Icc a b（左端点在闭区间内）
+  have h_a_in_Icc : a ∈ Icc a b := by sorry
+
+  -- 步骤 3.6: 对 F 在 m 处进行带 Lagrange 余项的 Taylor 展开到 2 阶，展开到 b
+  -- 需要验证：m ∈ Ioo a b, b ∈ Icc a b, 以及可微性条件
   have h_taylor_b : ∃ ξ₁ ∈ Ioo m b,
       F b = F m + (derivWithin F (Icc a b) m) * (b - m) +
             (iteratedDerivWithin 2 F (Icc a b) m) * (b - m) ^ 2 / 2 +
             (iteratedDerivWithin 3 F (Icc a b) ξ₁) * (b - m) ^ 3 / 6 := by sorry
 
+  -- 步骤 3.7: 对 F 在 m 处进行带 Lagrange 余项的 Taylor 展开到 2 阶，展开到 a
+  -- 需要验证：m ∈ Ioo a b, a ∈ Icc a b, 以及可微性条件
   have h_taylor_a : ∃ ξ₂ ∈ Ioo a m,
       F a = F m + (derivWithin F (Icc a b) m) * (a - m) +
             (iteratedDerivWithin 2 F (Icc a b) m) * (a - m) ^ 2 / 2 +
