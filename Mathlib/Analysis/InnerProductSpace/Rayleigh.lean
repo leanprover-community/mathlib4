@@ -135,7 +135,7 @@ theorem norm_eq_iSup_rayleighQuotient (hT : T.IsSymmetric) :
   · rw [parallelogram_law_with_norm 𝕜 x y, hx, hy]
     grind
 
-theorem rayleighQuotient_le_of_mem_resolventSet
+private theorem rayleighQuotient_le_of_mem_resolventSet
     (t : ℝ) (ht : 0 < t) (hT' : (algebraMap ℝ 𝕜) t ∈ resolventSet 𝕜 T) :
     ∃ c > 0, ∀ x, T.rayleighQuotient x ≤ (t ^ 2 + ‖T‖ ^ 2) / (2 * t) - c := by
   by_cases hT0 : T = 0
@@ -156,28 +156,31 @@ theorem rayleighQuotient_le_of_mem_resolventSet
   field_simp
   grind
 
+/-- If `‖T‖` is not in the spectrum, then `T.rayleighQuotient x` don't reach `‖T‖`. -/
 theorem rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
     (hT' : algebraMap ℝ 𝕜 ‖T‖ ∈ resolventSet 𝕜 T) :
-    ∃ c > 0, ∀ x, T.rayleighQuotient x ≤ ‖T‖ - c := by
+    ∃ ε > 0, ∀ x, T.rayleighQuotient x ≤ ‖T‖ - ε := by
   by_cases hT0 : T = 0
   · simp [hT0, spectrum.mem_resolventSet_iff] at hT'
-  obtain ⟨c, hc0, hc⟩ := T.rayleighQuotient_le_of_mem_resolventSet ‖T‖ (by positivity) hT'
-  refine ⟨c, hc0, fun x ↦ ?_⟩
-  grw [hc]
+  obtain ⟨ε, hε0, hε⟩ := T.rayleighQuotient_le_of_mem_resolventSet ‖T‖ (by positivity) hT'
+  refine ⟨ε, hε0, fun x ↦ ?_⟩
+  grw [hε]
   field_simp
   grind
 
+/-- If `±‖T‖` are not in the spectrum, then `|T.rayleighQuotient x|` doesn't reach `‖T‖`. -/
 theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
     (hT' : algebraMap ℝ 𝕜 ‖T‖ ∈ resolventSet 𝕜 T) (hT'' : -algebraMap ℝ 𝕜 ‖T‖ ∈ resolventSet 𝕜 T) :
-    ∃ c > 0, ∀ x, |T.rayleighQuotient x| ≤ ‖T‖ - c := by
+    ∃ ε > 0, ∀ x, |T.rayleighQuotient x| ≤ ‖T‖ - ε := by
   replace hT'' : (algebraMap ℝ 𝕜) (‖-T‖) ∈ resolventSet 𝕜 (-T) := by
     rwa [resolventSet_neg, Set.mem_neg, norm_neg]
-  obtain ⟨c, hc0, hc⟩ := T.rayleighQuotient_le_of_norm_mem_resolventSet hT'
-  obtain ⟨d, hd0, hd⟩ := (-T).rayleighQuotient_le_of_norm_mem_resolventSet hT''
-  refine ⟨min c d, lt_min hc0 hd0, fun x ↦ ?_⟩
-  simp_rw [rayleighQuotient_neg_apply, norm_neg] at hd
+  obtain ⟨ε, hε0, hε⟩ := T.rayleighQuotient_le_of_norm_mem_resolventSet hT'
+  obtain ⟨ε', hε'0, hε'⟩ := (-T).rayleighQuotient_le_of_norm_mem_resolventSet hT''
+  refine ⟨min ε ε', lt_min hε0 hε'0, fun x ↦ ?_⟩
+  simp_rw [rayleighQuotient_neg_apply, norm_neg] at hε'
   grind
 
+/-- The spectral radius of a self-adjoint operator on a complete space equals the norm. -/
 theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
     spectralRadius 𝕜 T = ‖T‖₊ := by
   cases subsingleton_or_nontrivial E
