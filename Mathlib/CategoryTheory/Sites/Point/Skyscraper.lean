@@ -279,7 +279,6 @@ instance [HasWeakSheafify J A] :
         (IsColimit.ofIsoColimit (isColimitOfPreserves Φ.presheafFiber
           (colimit.isColimit (F ⋙ sheafToPresheaf J A))) (by
             let G := colimit (F ⋙ sheafToPresheaf J A)
-            let φ := CategoryTheory.toSheafify J G
             have : IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)) :=
               W_isInvertedBy_presheafFiber _ _ (W_toSheafify J _)
             refine Cocones.ext (asIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)))
