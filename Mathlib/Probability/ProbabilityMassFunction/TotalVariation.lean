@@ -72,7 +72,7 @@ lemma tsum_fiber {α β : Type*} [DecidableEq β] (f : α → β)
   rw [ENNReal.tsum_comm]
   congr 1; ext x
   simp only [eq_comm (a := f x)]
-  exact tsum_ite_eq (f x) (g x)
+  exact tsum_ite_eq (f x) (fun _ ↦ g x) (SummationFilter.unconditional β)
 
 end ENNReal
 
@@ -193,9 +193,10 @@ lemma map_apply_eq [DecidableEq β] (f : α' → β) (p : PMF α')
 
 /-- **Data processing inequality** for deterministic maps: post-processing by a function
 cannot increase total variation distance. -/
-lemma etvDist_map_le [DecidableEq β] (f : α' → β)
+lemma etvDist_map_le (f : α' → β)
     (p q : PMF α') :
     (f <$> p).etvDist (f <$> q) ≤ p.etvDist q := by
+  classical
   simp only [PMF.etvDist]
   apply ENNReal.div_le_div_right
   calc ∑' y, ENNReal.absDiff ((f <$> p) y) ((f <$> q) y)
@@ -216,9 +217,10 @@ lemma etvDist_map_le [DecidableEq β] (f : α' → β)
           ENNReal.tsum_fiber f _
 
 /-- Data processing inequality for `PMF.tvDist` under deterministic maps. -/
-lemma tvDist_map_le [DecidableEq β] (f : α' → β)
+lemma tvDist_map_le (f : α' → β)
     (p q : PMF α') :
     (f <$> p).tvDist (f <$> q) ≤ p.tvDist q := by
+  classical
   simp only [PMF.tvDist]
   exact ENNReal.toReal_mono (etvDist_ne_top p q)
     (etvDist_map_le f p q)
