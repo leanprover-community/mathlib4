@@ -30,7 +30,8 @@ namespace MeasureTheory
 
 variable {𝓧 : Type*}
 
-/-- The two definitions of the conditional expectation agree almost everywhere. -/
+/-- The two definitions of the conditional expectation `condExp` and `condLExp` (for Bochner and
+Lebesgue integrals respectively) agree almost everywhere. -/
 lemma toReal_condLExp (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} {μ : Measure 𝓧}
     {f : 𝓧 → ℝ≥0∞} (hf_meas : AEMeasurable f μ) (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
     (fun x ↦ (μ⁻[f | m] x).toReal) =ᵐ[μ] μ[fun x ↦ (f x).toReal | m] := by

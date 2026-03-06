@@ -22,12 +22,16 @@ expectation of the Radon-Nikodym derivative of the original measures.
 
 In all statements, `μ` and `ν` are measures with `μ ≪ ν`.
 
-* `toReal_rnDeriv_map`: the Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of
+* `rnDeriv_map`: the Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of
   measures by a function `g : 𝓧 → 𝓨` evaluated at `g x` is a.e.-equal to the conditional expectation
   of `∂μ/∂ν` with respect to the comap by `g` of the sigma-algebra on `𝓨`.
-* `toReal_rnDeriv_trim`: the Radon-Nikodym derivative `∂(μ.trim hm)/∂(ν.trim hm)` of the trimmed
+* `rnDeriv_trim`: the Radon-Nikodym derivative `∂(μ.trim hm)/∂(ν.trim hm)` of the trimmed
   measures (for `hm : m ≤ m0` stating that `m` is a sub-sigma-algebra of `m0`) is a.e.-equal to the
   conditional expectation of `∂μ/∂ν` with respect to the sigma-algebra `m`.
+
+We have two versions of the above statements, one with a.e. equality to the conditional expectation
+`condLExp` built from the Lebesgue integral, and one with a.e. equality to the
+conditional expectation `condExp` built from the Bochner integral.
 
 -/
 
