@@ -157,7 +157,7 @@ theorem isSubwalk_toWalk_iff_mem_edges {p : G.Walk u v} (h : G.Adj u' v') :
   refine ⟨fun h ↦ by grind [Dart.edge], fun h ↦ ?_⟩
   have ⟨d, hd, h⟩ := h
   rw [Dart.edge, Sym2.eq, Sym2.rel_iff'] at h
-  refine h.elim (fun h ↦ .inl ?_) (fun h ↦ .inr ?_)
+  refine h.imp (fun h ↦ ?_) (fun h ↦ ?_)
     <;> convert hd using 2
     <;> exact h.symm
 
@@ -201,6 +201,11 @@ protected lemma IsSubwalk.map {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk
     (h : p₂.IsSubwalk p₁) (f : G →g G') : (p₂.map f).IsSubwalk (p₁.map f) := by
   simp [isSubwalk_iff_support_isInfix, isSubwalk_iff_support_isInfix.mp h, List.IsInfix.map]
 
+protected lemma IsSubwalk.copy {u v u' v' x y x' y'} {p : G.Walk x y} {q : G.Walk u v}
+    (h : p.IsSubwalk q) (hx : x = x') (hy : y = y') (hu : u = u') (hv : v = v') :
+    (p.copy hx hy).IsSubwalk (q.copy hu hv) := by
+  simp [isSubwalk_iff_support_isInfix, isSubwalk_iff_support_isInfix.mp h]
+
 protected lemma IsSubwalk.dropLast {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
     (hpq : p.IsSubwalk q) : p.dropLast.IsSubwalk q :=
   (isSubwalk_take _ _).trans hpq
@@ -208,6 +213,30 @@ protected lemma IsSubwalk.dropLast {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v
 protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
     (hpq : p.IsSubwalk q) : p.tail.IsSubwalk q :=
   (isSubwalk_drop _ _).trans hpq
+
+set_option backward.isDefEq.respectTransparency false in
+theorem take_isSubwalk_take {u v n k} (p : G.Walk u v) (h : n ≤ k) :
+    (p.take n).IsSubwalk (p.take k) := by
+  induction k, h using Nat.le_induction with
+  | base => rfl
+  | succ k h ih =>
+    apply ih.trans
+    cases p
+    · exact isSubwalk_take _ _
+    · cases k
+      · exact isSubwalk_of_append_left rfl
+      simp [isSubwalk_iff_support_isInfix, take_support_eq_support_take_succ, List.IsPrefix.isInfix]
+
+theorem drop_isSubwalk_drop {u v n k} (p : G.Walk u v) (h : n ≤ k) :
+    (p.drop k).IsSubwalk (p.drop n) := by
+  induction k, h using Nat.le_induction with
+  | base => rfl
+  | succ k h ih =>
+    apply IsSubwalk.trans ?_ ih
+    clear h ih
+    induction k generalizing p u with
+    | zero => exact p.drop_zero ▸ (p.isSubwalk_rfl.copy rfl rfl p.getVert_zero.symm rfl).tail
+    | succ _ ih => cases p <;> simp [drop, ih]
 
 end Walk
 

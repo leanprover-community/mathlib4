@@ -262,8 +262,8 @@ theorem comap_ker {P : Type*} [MulOneClass P] (g : N →* P) (f : G →* N) :
 /-- The kernel of a homomorphism composed with an isomorphism is equal to the kernel of
 the homomorphism mapped by the inverse isomorphism. -/
 @[to_additive (attr := simp)]
-lemma ker_comp_mulEquiv {P : Type*} [MulOneClass P]
-  (g : N →* P) (iso : G ≃* N) : (g.comp iso).ker = map (iso.symm : N →* G) g.ker := by
+lemma ker_comp_mulEquiv {P : Type*} [MulOneClass P] (g : N →* P) (iso : G ≃* N) :
+    (g.comp iso).ker = map (iso.symm : N →* G) g.ker := by
   rw [← comap_ker, comap_equiv_eq_map_symm]
 
 @[to_additive (attr := simp)]
@@ -506,6 +506,11 @@ theorem map_subtype_lt_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
 @[to_additive]
 theorem map_injective {f : G →* N} (h : Function.Injective f) : Function.Injective (map f) :=
   Function.LeftInverse.injective <| comap_map_eq_self_of_injective h
+
+@[to_additive]
+theorem map_subtype_inj {H : Subgroup G} {K L : Subgroup H} :
+    K.map H.subtype = L.map H.subtype ↔ K = L :=
+  (map_injective H.subtype_injective).eq_iff
 
 /-- Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`. -/
 @[to_additive /-- Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`. -/]

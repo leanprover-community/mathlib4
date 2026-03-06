@@ -167,6 +167,7 @@ theorem Polynomial.isIntegral_iff_isIntegral_coeff {f : S[X]} :
   simp only [← C_mul_X_pow_eq_monomial, ← map_X (algebraMap R S)]
   exact .sum _ fun i _ ↦ ((H i).map (CAlgHom (R := R))).tower_top.mul (.pow isIntegral_algebraMap _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsIntegral.of_aeval_monic_of_isIntegral_coeff {R A : Type*} [CommRing R] [CommRing A]
     [Algebra R A] {x : A} {p : A[X]} (monic : p.Monic) (deg : p.natDegree ≠ 0)
     (hx : IsIntegral R (eval x p)) (hp : ∀ i, IsIntegral R (p.coeff i)) : IsIntegral R x := by
@@ -188,6 +189,7 @@ instance {R : Type*} [CommRing R] [IsDomain R] [IsIntegrallyClosed R] :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 attribute [-simp] AlgEquiv.symm_toRingEquiv in
 theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPolynomial σ S} :

@@ -32,6 +32,7 @@ section Embeddings
 
 variable (F : Type*) [Field F]
 
+set_option backward.isDefEq.respectTransparency false in
 open AdjoinRoot in
 /-- If `p` is the minimal polynomial of `a` over `F` then `F[a] ≃ₐ[F] F[x]/(p)` -/
 def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Algebra F R] (x : R) :
@@ -62,6 +63,7 @@ noncomputable def Algebra.adjoin.liftSingleton {S T : Type*}
 
 open Finset
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `K` and `L` are field extensions of `F` and we have `s : Finset K` such that
 the minimal polynomial of each `x ∈ s` splits in `L` then `Algebra.adjoin F s` embeds in `L`. -/
 theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F K]

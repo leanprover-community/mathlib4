@@ -110,6 +110,11 @@ lemma getVert_eq_getD_support {u v : V} (p : G.Walk u v) (n : ℕ) :
   · simp [← getVert_eq_support_getElem? p h]
   grind [getVert_of_length_le, length_support]
 
+@[simp]
+lemma getVert_support_idxOf [DecidableEq V] (p : G.Walk u v) (h : w ∈ p.support) :
+    p.getVert (p.support.idxOf w) = w := by
+  grind [getVert_eq_support_getElem]
+
 theorem getVert_comp_val_eq_get_support {u v : V} (p : G.Walk u v) :
     p.getVert ∘ Fin.val = p.support.get := by
   grind [getVert_eq_support_getElem, length_support]
@@ -122,15 +127,7 @@ theorem range_getVert_eq_range_support_getElem {u v : V} (p : G.Walk u v) :
 theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.length) :
     p.darts[n] = ⟨⟨p.getVert n, p.getVert (n + 1)⟩, p.adj_getVert_succ (p.length_darts ▸ h)⟩ := by
   rw [p.length_darts] at h
-  ext
-  · simp only [p.getVert_eq_support_getElem (le_of_lt h)]
-    by_cases h' : n = 0
-    · cases p
-      · contradiction
-      · simp [h']
-    · have := p.isChain_dartAdj_darts.getElem (n - 1) (by grind)
-      grind [DartAdj, =_ cons_map_snd_darts]
-  · simp [p.getVert_eq_support_getElem h]
+  ext <;> simp [p.getVert_eq_support_getElem (le_of_lt h), p.getVert_eq_support_getElem h]
 
 theorem adj_of_infix_support {u v u' v'} {p : G.Walk u v} (h : [u', v'] <:+: p.support) :
     G.Adj u' v' := by
