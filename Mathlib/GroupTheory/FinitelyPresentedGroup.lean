@@ -341,11 +341,3 @@ instance : IsFinitelyPresented (Multiplicative ℤ) := by
 variable {G H : Type*} [Group G] [Group H]
 
 end IsFinitelyPresented
-
--- TODO This needs to go into a different file classifying groups by their presentations.
-/-- A group is one relator if it admits an isomorphism to a presented group such that the number
-of relations is one. -/
-class IsOneRelator (G : Type*) [Group G] : Prop where
-  out : ∃ (α : Type*) (rels : Set (FreeGroup α)) (hrels : rels.Finite),
-      Nonempty (G ≃* PresentedGroup rels) ∧
-      hrels.toFinset.card = 1
