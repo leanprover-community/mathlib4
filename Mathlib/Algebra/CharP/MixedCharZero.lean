@@ -10,7 +10,7 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.RingTheory.Ideal.Maximal
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.RingTheory.LocalRing.Defs      -- only for `IsLocalRing`
+public import Mathlib.RingTheory.LocalRing.Defs
 import Mathlib.Algebra.CharP.LocalRing
 
 /-!
