@@ -146,6 +146,10 @@ theorem eventually_pure {a : α} {p : α → Prop} : (∀ᶠ x in pure a, p x) �
   Iff.rfl
 
 @[simp]
+theorem frequently_pure {a : α} {p : α → Prop} : (∃ᶠ x in pure a, p x) ↔ p a := by
+  simp [Filter.Frequently]
+
+@[simp]
 theorem principal_singleton (a : α) : 𝓟 {a} = pure a :=
   Filter.ext fun s => by simp only [mem_pure, mem_principal, singleton_subset_iff]
 
