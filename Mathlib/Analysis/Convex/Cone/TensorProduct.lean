@@ -148,14 +148,14 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
     rw [← ProperCone.dual_dual_flip (topDualPairing ℝ F) C₂]
     intro f hf
     simp only [topDualPairing_apply]
-    have hψ : (f : F →ₗ[ℝ] ℝ) ∈ dual (dualPairing ℝ F).flip (C₂ : Set F) := hf
+    have hf_dual : (f : F →ₗ[ℝ] ℝ) ∈ dual (dualPairing ℝ F).flip (C₂ : Set F) := hf
     simp only [mem_maxTensorProduct] at hz
-    have key := hz (b.coord i) (h_coord_dual i) (f : F →ₗ[ℝ] ℝ) hψ
+    have h_nonneg := hz (b.coord i) (h_coord_dual i) (f : F →ₗ[ℝ] ℝ) hf_dual
     have h_eq : dualDistrib ℝ E F ((b.coord i) ⊗ₜ[ℝ] (f : F →ₗ[ℝ] ℝ)) =
         (f : F →ₗ[ℝ] ℝ) ∘ₗ (TensorProduct.lid ℝ F) ∘ₗ (b.coord i).rTensor F := by
       ext; simp [dualDistrib_apply, mul_comm]
-    simp only [h_eq, LinearMap.comp_apply, LinearEquiv.coe_coe] at key
-    exact key
+    simp only [h_eq, LinearMap.comp_apply, LinearEquiv.coe_coe] at h_nonneg
+    exact h_nonneg
 
 /-- If `C₁` is a proper cone and `C₂` is a simplicial and generating cone, then their minimal
 and maximal tensor products are equal. -/
