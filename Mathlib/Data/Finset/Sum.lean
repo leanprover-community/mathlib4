@@ -24,7 +24,6 @@ the `Finset.sum` operation which computes the additive sum.
 
 @[expose] public section
 
-
 open Function Multiset Sum
 
 namespace Finset
@@ -107,18 +106,6 @@ theorem disjSum_strictMono_right (s : Finset α) :
 
 lemma Injective2_disjSum {α β : Type*} : Function.Injective2 (@disjSum α β) :=
   fun _ _ _ _ => by simp [Finset.ext_iff]
-
-theorem _root_.Set.sumEquiv_symm_toFinset {α β : Type*} (s : Set α) (t : Set β)
-    (hs : s.Finite := by toFinite_tac) (ht : t.Finite := by toFinite_tac)
-    (hst : (Set.sumEquiv.symm (s, t)).Finite := by toFinite_tac) :
-    hst.toFinset = hs.toFinset.disjSum ht.toFinset := by
-  ext; aesop (add simp [disjSum, Finset.disjSum])
-
-@[simp]
-theorem coe_disjSum {α β : Type*} (s : Finset α) (t : Finset β) :
-    (s.disjSum t : Set (α ⊕ β)) = s.disjSum t := by
-  ext; aesop (add simp [disjSum, Finset.disjSum])
-
 
 /--
 Given a finset of elements `α ⊕ β`, extract all the elements of the form `α`. This
