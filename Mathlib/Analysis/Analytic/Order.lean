@@ -324,7 +324,7 @@ theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : 
     · contrapose! hf'
       simp_rw [sub_eq_iff_eq_add] at hfF
       rw [EventuallyEq.deriv_eq hfF, deriv_add_const, deriv_fun_smul (by fun_prop) (by fun_prop),
-        deriv_fun_pow (by fun_prop), sub_self, zero_pow (by omega), zero_pow (by omega),
+        deriv_fun_pow (by fun_prop), sub_self, zero_pow (by lia), zero_pow (by lia),
         mul_zero, zero_mul, zero_smul, zero_smul, add_zero]
 
 set_option backward.whnf.reducibleClassField false in
