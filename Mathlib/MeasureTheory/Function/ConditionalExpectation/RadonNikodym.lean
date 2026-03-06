@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Function.ConditionalLExpectation
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner
 
 /-!
 # Radon-Nikodym derivatives and conditional expectations
@@ -73,34 +74,12 @@ lemma toReal_rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
   · refine (Measurable.ennreal_toReal fun s hs ↦ ?_).aestronglyMeasurable
     exact ⟨_, Measure.measurable_rnDeriv _ _ hs, rfl⟩
 
-lemma toReal_condLExp {α : Type*} (m : MeasurableSpace α) {mα : MeasurableSpace α} {μ : Measure α}
-    {f : α → ℝ≥0∞} (hf_meas : AEMeasurable f μ) (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
-    (fun x ↦ (μ⁻[f | m] x).toReal) =ᵐ[μ] μ[fun x ↦ (f x).toReal | m] := by
-  by_cases hm : m ≤ mα
-  swap; · simp [condLExp_of_not_le hm, condExp_of_not_le hm]; rfl
-  by_cases hμ : SigmaFinite (μ.trim hm)
-  swap; · simp [condLExp_of_not_sigmaFinite hm hμ, condExp_of_not_sigmaFinite hm hμ]; rfl
-  refine ae_eq_condExp_of_forall_setIntegral_eq hm (E := ℝ) ?_ ?_ ?_ ?_ (μ := μ)
-  · rwa [integrable_toReal_iff]
-    · fun_prop
-    · suffices ∀ᵐ (x : α) ∂μ, f x < ⊤ by filter_upwards [this] with x hx using hx.ne
-      exact ae_lt_top' (by fun_prop) hf
-  · intro s hs hsμ
-    refine Integrable.integrableOn ?_
-    rw [integrable_toReal_iff]
-    · rwa [lintegral_condLExp]
-    · fun_prop
-    · exact condLExp_ne_top hf
-  · intro s hs hsμ
-    rw [integral_toReal, integral_toReal, setLIntegral_condLExp _ _ _ hs]
-    · fun_prop
-    · refine ae_lt_top' hf_meas.restrict ?_
-      exact ((setLIntegral_le_lintegral _ _).trans_lt hf.lt_top).ne
-    · fun_prop
-    · exact ae_restrict_of_ae (condLExp_lt_top hf)
-  · refine StronglyMeasurable.aestronglyMeasurable ?_
-    fun_prop
+/-- The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
+a function `g : 𝓧 → 𝓨` evaluated at `g x` is a.e.-equal to the conditional expectation of `∂μ/∂ν`
+with respect to the comap by `g` of the sigma-algebra on `𝓨`.
 
+See `rnDeriv_map_ae_eq_trim` for the same statement, but with a.e. equality with respect to
+the trimmed measure `ν.trim hg.comap_le`. -/
 lemma rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     {g : 𝓧 → 𝓨} (hg : Measurable g) [hσ : SigmaFinite (ν.map g)] :
     (fun a ↦ (μ.map g).rnDeriv (ν.map g) (g a)) =ᵐ[ν] ν⁻[μ.rnDeriv ν | m𝓨.comap g] := by
@@ -121,6 +100,11 @@ lemma rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     with x hx h_condExp h_ne_top1 h_ne_top2
   rwa [← h_condExp, ENNReal.toReal_eq_toReal_iff' h_ne_top1 h_ne_top2] at hx
 
+/-- The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
+a function `g : 𝓧 → 𝓨` evaluated at `g x` is a.e.-equal to the conditional expectation of `∂μ/∂ν`
+with respect to the comap by `g` of the sigma-algebra on `𝓨`.
+
+See `rnDeriv_map` for the same statement, but with a.e. equality with respect to the measure `ν`. -/
 lemma rnDeriv_map_ae_eq_trim [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     {g : 𝓧 → 𝓨} (hg : Measurable g) [SigmaFinite (ν.map g)] :
     (fun a ↦ (μ.map g).rnDeriv (ν.map g) (g a)) =ᵐ[ν.trim hg.comap_le]
