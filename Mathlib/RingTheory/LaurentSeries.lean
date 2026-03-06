@@ -955,7 +955,7 @@ noncomputable def LaurentSeriesPkg :
 
 theorem continuous_coe' :
     Continuous (((↑) : K⟮X⟯ → K⸨X⸩) ∘ WithVal.equiv (polynomialValuationX K)) :=
-  continuous_coe.comp (uniformContinuous_withVal_equiv).continuous
+  continuous_coe.comp uniformContinuous_withVal_equiv.continuous
 
 instance : TopologicalSpace (LaurentSeriesPkg K).space :=
   (LaurentSeriesPkg K).uniformStruct.toTopologicalSpace
