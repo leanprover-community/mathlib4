@@ -199,10 +199,10 @@ namespace Subgroup
 `B` contains all `n`th powers in `A`, then `B` has finite index in `A`. -/
 @[to_additive /-- If `B` is a subgroup of the finitely generated commutative
 additive group `A` such that `B` contains `n • A`, then `B` has finite index in `A`. -/]
-lemma index_ne_zero_of_range_powMonoidHom_le {A : Type*} [CommGroup A] [Group.FG A]
+lemma finiteIndex_of_range_powMonoidHom_le {A : Type*} [CommGroup A] [Group.FG A]
     (B : Subgroup A) {n : ℕ} (hn : n ≠ 0) (h : (powMonoidHom (α := A) n).range ≤ B) :
-    B.index ≠ 0 := by
-  refine index_ne_zero_iff_finite.mpr <| CommGroup.finite_of_fg_torsion _ ?_
+    B.FiniteIndex := by
+  refine finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_torsion _ ?_
   simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
   refine fun g ↦ ⟨n, Nat.zero_lt_of_ne_zero hn, ?_⟩
   have H a : a ^ n ∈ B := by
@@ -220,12 +220,14 @@ lemma index_ne_zero_of_range_powMonoidHom_le {A : Type*} [CommGroup A] [Group.FG
 and `C` contains all `n`th powers of elements of `B`, then `C` has finite relative index in `B`. -/
 @[to_additive /-- If `B` and `C` are subgroups of the commutative additive group `A` such that `B`
 is finitely generated and `C` contains `n • B`, then `C` has finite relative index in `B`. -/]
-lemma relIndex_ne_zero_of_range_powMonoidHom_le {A : Type*} [CommGroup A] (B C : Subgroup A)
+lemma isFiniteRelIndex_of_range_powMonoidHom_le {A : Type*} [CommGroup A] (B C : Subgroup A)
     (hB : B.FG) {n : ℕ} (hn : n ≠ 0) (h : B.map (powMonoidHom (α := A) n) ≤ C) :
-    C.relIndex B ≠ 0 := by
+    C.IsFiniteRelIndex B := by
+  refine Subgroup.IsFiniteRelIndex.mk ?_
   simp only [relIndex]
   have : Group.FG B := (Group.fg_iff_subgroup_fg B).mpr hB
-  refine index_ne_zero_of_range_powMonoidHom_le (A := B) (C.subgroupOf B) hn ?_
+  suffices (C.subgroupOf B).FiniteIndex from finiteIndex_iff.mp this
+  refine finiteIndex_of_range_powMonoidHom_le (A := B) (C.subgroupOf B) hn ?_
   rw [SetLike.le_def] at h ⊢
   rintro ⟨b, hbmem⟩ hb
   simp only [mem_map, powMonoidHom_apply, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
@@ -244,9 +246,9 @@ variable {R M : Type*} [CommRing R] [CommRing M] [Algebra R M] [Module.Finite �
 /-- If `A` and `B` are two submodules of the `R`-algebra `M`, where `R` is finitely generated
 as a `ℤ`-module, `A` is finitely generated, and `B` contains `n • A`, then `B` has finite
 relative index in `A`. -/
-lemma relIndex_ne_zero_of_map_linearMapMulLeft_le {A B : Submodule R M} {n : ℕ} (hn : n ≠ 0)
+lemma isFiniteRelIndex_of_map_linearMapMulLeft_le {A B : Submodule R M} {n : ℕ} (hn : n ≠ 0)
     (hfg : A.FG) (h : A.map (LinearMap.mulLeft R (n : M)) ≤ B) :
-    B.toAddSubgroup.relIndex A.toAddSubgroup ≠ 0 := by
+    B.toAddSubgroup.IsFiniteRelIndex A.toAddSubgroup := by
   have hA : A.toAddSubgroup.FG := by
     suffices A.toAddSubgroup.toIntSubmodule.FG by
       rwa [fg_iff_addSubgroup_fg, AddSubgroup.toIntSubmodule_toAddSubgroup] at this
@@ -255,7 +257,7 @@ lemma relIndex_ne_zero_of_map_linearMapMulLeft_le {A B : Submodule R M} {n : ℕ
       rwa [← Module.Finite.iff_fg] at hfg
     nth_rw 1 [← Module.Finite.iff_fg]
     exact Module.Finite.trans R _
-  refine A.toAddSubgroup.relIndex_ne_zero_of_range_nsmulAddMonoidHom_le B.toAddSubgroup hA hn ?_
+  refine A.toAddSubgroup.isFiniteRelIndex_of_range_nsmulAddMonoidHom_le B.toAddSubgroup hA hn ?_
   rw [SetLike.le_def] at h ⊢
   simpa using h
 
