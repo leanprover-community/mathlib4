@@ -53,19 +53,11 @@ Options:
 Valid arguments are:
 
 * Module names like 'Mathlib.Init'
+* Pseudo-module-names like 'Mathlib.Data' (find all Lean files inside `Mathlib/Data/`)
 * File names like 'Mathlib/Init.lean'
 * Folder names like 'Mathlib/Data/' (find all Lean files inside `Mathlib/Data/`)
 * With bash's automatic glob expansion one can also write things like
   'Mathlib/**/Order/*.lean'.
-
-# Environment variables
-
-* MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
-* MATHLIB_CACHE_USE_CLOUDFLARE  Set to '1' to use Cloudflare instead of Azure
-* MATHLIB_CACHE_GET_URL   Override the download URL
-* MATHLIB_CACHE_PUT_URL   Override the upload URL
-
-See Cache/README.md for more details.
 "
 
 /-- Commands which (potentially) call `curl` for downloading files -/
@@ -90,6 +82,10 @@ def parseFlagOpt (opt : String) (args : List String) : Bool :=
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
+  if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
+    println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
+    println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
+    Process.exit 1
   if args.isEmpty then
     println help
     Process.exit 0
@@ -110,17 +106,17 @@ def main (args : List String) : IO Unit := do
     let mod := `Mathlib
     let sp := (← read).srcSearchPath
     let sourceFile ← Lean.findLean sp mod
-    roots := roots.insert mod sourceFile
+    roots := Std.HashMap.empty.insert mod sourceFile
 
   let hashMemo ← getHashMemo roots
-  let hashMap := hashMemo.hashMap
+
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
-  let get (args : List String) (force := false) (decompress := true) := do
+  let get (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
-    getFiles repo? hashMap force force goodCurl decompress skipProofWidgets
+    getFiles repo? hashMemo.hashMap force force goodCurl decompress skipProofWidgets
   let pack (overwrite verbose unpackedOnly := false) := do
-    packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
+    packCache hashMemo.hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     let repo := repo?.getD MATHLIBREPO
     putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
@@ -137,17 +133,15 @@ def main (args : List String) : IO Unit := do
       putFilesAbsolute repo fileSet (tempConfigFilePath := stagingDir / "curl.config") (overwrite := false) (← getToken)
 
   match args with
-  | "get"  :: args => get args
-  | "get!" :: args => get args (force := true)
-  | "get-" :: args => get args (decompress := false)
+  | "get"  :: _ => get
+  | "get!" :: _ => get (force := true)
+  | "get-" :: _ => get (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
-  | ["unpack"] => unpackCache hashMap false
-  | ["unpack!"] => unpackCache hashMap true
-  | ["unstage"] => unstage
-  | ["unstage!"] => unstage (overwrite := true)
+  | ["unpack"] => unpackCache hashMemo.hashMap false
+  | ["unpack!"] => unpackCache hashMemo.hashMap true
   | ["clean"] =>
-    cleanCache <| hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
+    cleanCache <| hashMemo.hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
   -- We allow arguments for `put*` so they can be added to the `roots`.
   | "put" :: _ => put
@@ -161,10 +155,10 @@ def main (args : List String) : IO Unit := do
     putStaged stagingDir?.get!
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap false (← getToken)
+    commit hashMemo.hashMap false (← getToken)
   | ["commit!"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap true (← getToken)
+    commit hashMemo.hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
-  | "lookup" :: _ => lookup hashMap roots.keys
+  | "lookup" :: _ => lookup hashMemo.hashMap roots.keys
   | _ => println help
