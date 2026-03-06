@@ -7,75 +7,54 @@ module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.Geometry.Manifold.Notation
 
-/-!
-# Auxiliary lemmas about mfderiv and scalar multiplication
+/-! # `mfderiv` and scalar multiplication -/
 
--/
-
-open Bundle Filter Module Topology Set
-open scoped Bundle Manifold ContDiff
+open Set
+open scoped Manifold ContDiff
 
 @[expose] public section mfderiv
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {f : M → F} {s : M → 𝕜} {x : M}
 
-set_option backward.isDefEq.respectTransparency false in
--- cleaned up and PRed in #34262
-lemma mfderiv_const_smul (s : M → F) {x : M} (a : 𝕜) (v : TangentSpace I x) :
-    mfderiv% (a • s) x v = a • mfderiv% s x v := by
-  by_cases hs : MDiffAt s x
-  · have hs' := hs.const_smul a
-    suffices
-      (fderivWithin 𝕜 ((a • s) ∘ (chartAt H x).symm ∘ I.symm) (range I) (I ((chartAt H x) x))) v =
-       a • (fderivWithin 𝕜 (s ∘ (chartAt H x).symm ∘ I.symm) (range I)
-       (I ((chartAt H x) x))) v by simpa [mfderiv, hs, hs']
-    change fderivWithin 𝕜 (a • (s ∘ ↑(chartAt H x).symm ∘ ↑I.symm)) _ _ _ = _
-    rw [fderivWithin_const_smul_field _ I.uniqueDiffWithinAt_image ]
-    rfl
-  · by_cases ha : a = 0
-    · have : a • s = 0 := by ext; simp [ha]
-      rw [this, ha]
-      change (mfderiv I 𝓘(𝕜, F) (fun _ ↦ 0) x) v = _
-      simp
-    have hs' : ¬ MDiffAt (a • s) x :=
-      fun h ↦ hs (by simpa [ha] using h.const_smul a⁻¹)
-    rw [mfderiv_zero_of_not_mdifferentiableAt hs, mfderiv_zero_of_not_mdifferentiableAt hs']
-    simp
-    rfl
+theorem MDifferentiableAt.differentiableAt_comp_chartAt_symm
+    (hs : MDiffAt f x) :
+    letI φ := chartAt H x;
+    DifferentiableWithinAt 𝕜 (f ∘ φ.symm ∘ I.symm) (range I) (I (φ x)) := by
+  have hφ := mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x) (I := I)
+  rw [← extChartAt_to_inv x (I := I)] at hs
+  have := hs.comp_mdifferentiableWithinAt (extChartAt I x x) hφ
+  exact mdifferentiableWithinAt_iff_differentiableWithinAt.mp this
 
--- PRed and cleaned up in #34263
-set_option linter.flexible false in -- FIXME
-lemma mfderiv_smul [IsManifold I 1 M] {f : M → F} {s : M → 𝕜} {x : M} (hf : MDiffAt f x)
+lemma mfderiv_smul (hf : MDiffAt f x)
     (hs : MDiffAt s x) (v : TangentSpace I x) :
     letI dsxv := NormedSpace.fromTangentSpace (s x) (mfderiv% s x v)
     letI dfxv := NormedSpace.fromTangentSpace (f x) (mfderiv% f x v)
     mfderiv% (s • f) x v = (s x) • dfxv + dsxv • f x := by
   set φ := chartAt H x
-  -- TODO: the next two have should be special cases of the same lemma
-  have hs' : DifferentiableWithinAt 𝕜 (s ∘ φ.symm ∘ I.symm) (range I) (I (φ x)) := by
-    have hφ := mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x) (I := I)
-    have : (extChartAt I x).symm (extChartAt I x x) = x := extChartAt_to_inv x
-    rw [← this] at hs
-    have := hs.comp_mdifferentiableWithinAt (extChartAt I x x) hφ
-    exact mdifferentiableWithinAt_iff_differentiableWithinAt.mp this
-  have hf' : DifferentiableWithinAt 𝕜 (f ∘ φ.symm ∘ I.symm) (range I) (I (φ x)) := by
-    have hφ := mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x) (I := I)
-    have : (extChartAt I x).symm (extChartAt I x x) = x := extChartAt_to_inv x
-    rw [← this] at hf
-    have := hf.comp_mdifferentiableWithinAt (extChartAt I x x) hφ
-    exact mdifferentiableWithinAt_iff_differentiableWithinAt.mp this
+  -- TODO: inlining hs' or hf' breaks the proof, why?
+  have hs' : DifferentiableWithinAt 𝕜 (s ∘ φ.symm ∘ I.symm) (range I) (I (φ x)) :=
+    hs.differentiableAt_comp_chartAt_symm
+  have aux := hs.differentiableAt_comp_chartAt_symm
+  have hf' : DifferentiableWithinAt 𝕜 (f ∘ φ.symm ∘ I.symm) (range I) (I (φ x)) :=
+    hf.differentiableAt_comp_chartAt_symm
+  -- `have := hs.differentiableAt_comp_chartAt_symm` looks identical apart from unfolding φ
   have hsf : MDiffAt (s • f) x := hs.smul hf
-  simp [mfderiv, hsf, hs, hf]
-  have uniq : UniqueDiffWithinAt 𝕜 (range I) (I (φ x)) :=
-    ModelWithCorners.uniqueDiffWithinAt_image I
-  erw [fderivWithin_smul uniq hs' hf']
+  simp? [mfderiv, hsf, hs, hf] says
+    simp only [Pi.smul_apply', mfderiv, hsf, ↓reduceIte, writtenInExtChartAt, extChartAt,
+      OpenPartialHomeomorph.extend, modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl,
+      PartialEquiv.coe_trans_symm, OpenPartialHomeomorph.coe_coe_symm,
+      ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.coe_trans,
+      ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe, Function.comp_apply,
+      hf, hs]
+  -- Use the defeq that `chartAt (s x)` and `chartAt (f x)` are the identity.
+  erw [fderivWithin_smul I.uniqueDiffWithinAt_image hs' hf']
   simp [φ.left_inv (ChartedSpace.mem_chart_source x)]
   rfl
-
-end mfderiv
