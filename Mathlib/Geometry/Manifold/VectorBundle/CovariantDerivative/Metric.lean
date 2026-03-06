@@ -11,25 +11,37 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 /-! # Metric connections
 
 This file defines connections on a Riemannian manifold which are compatible with the ambient metric.
+A bundled connection `∇` on `(M, g)` is compatible with the metric `g` if and only if the metric
+tensor `∇ g` (defined by `(X, Y, Z) ↦ ∇ₓ g(Y, Z) - g(∇ₓ Y, Z) - g(Y, ∇ₓ Z)`)
+vanishes on all differentiable vector fields.
 
-TODO extend this doc-string!
+## Main definitions and results
 
+* `CovariantDerivative.metricTensor`: the tensor `(X, Y, Z) ↦ ∇ₓ g(Y, Z) - g(∇ₓ Y, Z) - g(Y, ∇ₓ Z)`
+  defining when a connection `∇` on a Riemannian manifold `(M, g)` is compatible with the metric
+  `g`.
+* `CovariantDerivative.metricTensor_apply` and `CovariantDerivative.metricTensor_apply` give
+  formulas for applying the metric tensor at `x` to vector fields which are differentiable at `x`,
+  resp. to extensions of tangent vectors at `x` to differentiable vector fields near `x`.
+* `CovariantDerivative.IsCompatible`: predicate for a connection to be metric
+  `∇` is metric iff its `metricTensor` vanishes
 
-TODO: more generally, define a notion of metric connections (e.g., those whose parallel transport
-is an isometry) and prove the Levi-Civita connection is a metric connection
+## TODO
+* when mathlib has a notion of parallel transport, define metric connections on general
+  Riemannian bundles (characterised by parallel transport being an isometry) and prove the
+  equivalence to this definition
 
 -/
 
 open Bundle Filter Function Module NormedSpace Topology
-
-open scoped Bundle Manifold ContDiff
+open scoped Manifold ContDiff
 
 @[expose] public section -- TODO: think if we want to expose all definitions!
 
 -- TODO: revisit and fix this once the dust has settled
 set_option backward.isDefEq.respectTransparency false
 
--- Let M be a C^k real manifold modeled on (E, H), endowed with a Riemannian metric.
+-- Let `M` be a `C^k` real manifold modeled on `(E, H)`, endowed with a Riemannian metric.
 variable {n : WithTop ℕ∞}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
@@ -141,14 +153,14 @@ lemma product_congr_right₂ {x} (h : Y x = Y' x + Y'' x) :
     product I X Y x = product I X Y' x + product I X Y'' x := by
   rw [product_apply, h, inner_add_right, ← product_apply]
 
-/- XXX: writing `hY.inner_bundle hZ` or writing `by apply MDifferentiable.inner_bundle hY hZ`
+/- TODO: writing `hY.inner_bundle hZ` or writing `by apply MDifferentiable.inner_bundle hY hZ`
 yields an error
 synthesized type class instance is not definitionally equal to expression inferred by typing rules,
 synthesized
   fun x ↦ instNormedAddCommGroupOfRiemannianBundle x
 inferred
-  fun b ↦ inst✝⁷ -/
--- TODO: diagnose and fix this, and replace by `MDifferentiable(At).inner_bundle!
+  fun b ↦ inst✝⁷
+Diagnose and fix this, and then replace the below by `MDifferentiable(At).inner_bundle! -/
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
 lemma MDifferentiable.inner_bundle' (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) : MDiff ⟪Y, Z⟫ :=
@@ -168,8 +180,9 @@ variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 /-- Local notation for a connection. Caution: `∇ Y, X` corresponds to `∇ₓ Y` in textbooks -/
 local notation "∇" Y "," X => fun (x:M) ↦ cov Y x (X x)
 
-/-- The function defining the metric or compatibility tensor `∇ g` -/
-noncomputable def metricTensorFun (Y Z : Π x : M, TangentSpace I x) :
+/-- The function defining the metric or compatibility tensor `∇ g`:
+prefer using `metricTensor` instead -/
+noncomputable def metricTensorAux (Y Z : Π x : M, TangentSpace I x) :
     Π (x : M), TangentSpace I x →L[ℝ] ℝ := fun x ↦
   letI b : TangentSpace I x →L[ℝ] ℝ := mfderiv% ⟪Y, Z⟫ x
   b - ((innerSL ℝ (Z x)) ∘L (cov Y x)) - ((innerSL ℝ (Y x)) ∘L (cov Z x))
@@ -179,8 +192,8 @@ variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 variable {I} in
 private lemma aux1 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x}
     (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
-    metricTensorFun I cov (f • σ) τ x = f x • metricTensorFun I cov σ τ x := by
-  unfold metricTensorFun
+    metricTensorAux I cov (f • σ) τ x = f x • metricTensorAux I cov σ τ x := by
+  unfold metricTensorAux
   rw [product_smul_left, cov.isCovariantDerivativeOn.leibniz hσ hf]
   ext X
   simp only [ContinuousLinearMap.comp_add, ContinuousLinearMap.comp_smulₛₗ,
@@ -210,9 +223,9 @@ private lemma aux1 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x
 variable {I} in
 private lemma aux2 {x : M} (σ σ' τ : (x : M) → TangentSpace I x)
     (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x) (hτ : MDiffAt (T% τ) x) :
-    metricTensorFun I cov (σ + σ') τ x =
-      metricTensorFun I cov σ τ x + metricTensorFun I cov σ' τ x := by
-  simp only [metricTensorFun]
+    metricTensorAux I cov (σ + σ') τ x =
+      metricTensorAux I cov σ τ x + metricTensorAux I cov σ' τ x := by
+  simp only [metricTensorAux]
   ext X
   simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp', coe_innerSL_apply,
     Pi.sub_apply, comp_apply, ContinuousLinearMap.add_apply]
@@ -238,8 +251,8 @@ private lemma aux2 {x : M} (σ σ' τ : (x : M) → TangentSpace I x)
 variable {I} in
 private lemma aux3 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x}
     (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
-    metricTensorFun I cov σ (f • τ) x = f x • metricTensorFun I cov σ τ x := by
-  unfold metricTensorFun
+    metricTensorAux I cov σ (f • τ) x = f x • metricTensorAux I cov σ τ x := by
+  unfold metricTensorAux
   rw [product_smul_right, cov.isCovariantDerivativeOn.leibniz hτ hf]
   ext X
   simp only [smul_eq_mul, Pi.smul_apply', map_smul, ContinuousLinearMap.smul_comp,
@@ -271,9 +284,9 @@ private lemma aux3 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x
 variable {I} in
 private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
     (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) (hτ' : MDiffAt (T% τ') x) :
-    metricTensorFun I cov σ (τ + τ') x =
-      metricTensorFun I cov σ τ x + metricTensorFun I cov σ τ' x := by
-  unfold metricTensorFun
+    metricTensorAux I cov σ (τ + τ') x =
+      metricTensorAux I cov σ τ x + metricTensorAux I cov σ τ' x := by
+  unfold metricTensorAux
   ext X
   simp only [Pi.add_apply, map_add, ContinuousLinearMap.add_comp, ContinuousLinearMap.coe_sub',
     ContinuousLinearMap.coe_comp', coe_innerSL_apply, Pi.sub_apply, comp_apply,
@@ -301,24 +314,24 @@ private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
   -- set D := (cov σ x) X
 
 variable {I} in
-/-- The tensor `∇ g` defined by a connection `∇` on a Riemannian manifold `(M, g)`. -/
-@[no_expose] noncomputable def MetricTensor [FiniteDimensional ℝ E] (x : M) :
+/-- The tensor `(X, Y, Z) ↦ ∇ₓ g(Y, Z) - g(∇ₓ Y, Z) - g(Y, ∇ₓ Z)` defining when a connection
+`∇` on a Riemannian manifold `(M, g)` is compatible with the metric `g`. -/
+@[no_expose] noncomputable def metricTensor [FiniteDimensional ℝ E] (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
-  mk2TensorAt I E E (metricTensorFun I cov)
+  mk2TensorAt I E E (metricTensorAux I cov)
     (fun _f _σ _τ hf hσ hτ ↦ aux1 cov hf hσ hτ)
     (fun σ σ' τ hσ hσ' hτ ↦ aux2 cov σ σ' τ hσ hσ' hτ)
     (fun _f _σ _τ hf hσ hτ ↦ aux3 cov hf hσ hτ)
     (fun σ τ τ' hσ hτ hτ' ↦ aux4 cov σ τ τ' hσ hτ hτ')
 
--- TODO: should we have ∇ X Y and ∇ X Z instead?
 variable {I} in
 theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    MetricTensor cov x (Y x) (Z x) (X x) =
+    metricTensor cov x (Y x) (Z x) (X x) =
     fromTangentSpace _ (mfderiv% ⟪Y, Z⟫ x (X x)) - ⟪∇ Y, X, Z⟫ x - ⟪Y, ∇ Z, X⟫ x := by
-  unfold MetricTensor
+  unfold metricTensor
   rw [mk2TensorAt_apply _ _ _ _ _ _ hY hZ]
-  simp only [metricTensorFun, ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp',
+  simp only [metricTensorAux, ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp',
     coe_innerSL_apply, Pi.sub_apply, comp_apply]
   conv =>
     enter [1, 1]
@@ -330,7 +343,7 @@ theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
 
 variable {I} in
 theorem metricTensor_apply_extend [FiniteDimensional ℝ E] (x : M) (X₀ Y₀ Z₀ : TangentSpace I x) :
-    MetricTensor cov x Y₀ Z₀ X₀ =
+    metricTensor cov x Y₀ Z₀ X₀ =
       fromTangentSpace _ (mfderiv% ⟪(extend E Y₀), (extend E Z₀)⟫ x X₀)
         - ⟪∇ extend E Y₀, (extend E X₀), extend E Z₀⟫ x
         - ⟪extend E Y₀, ∇ extend E Z₀, (extend E X₀)⟫ x := by
@@ -340,7 +353,7 @@ theorem metricTensor_apply_extend [FiniteDimensional ℝ E] (x : M) (X₀ Y₀ Z
 /-- Predicate saying for a connection `∇` on a Riemannian manifold `(M, g)` to be compatible with
 the ambient metric, i.e. for all differentiable` vector fields `X`, `Y` and `Z` on `M`, we have
 `X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩`. -/
-def IsCompatible [FiniteDimensional ℝ E] : Prop := MetricTensor cov = 0
+def IsCompatible [FiniteDimensional ℝ E] : Prop := metricTensor cov = 0
 
 -- Auxiliary computation for `IsCompatible_apply`.
 -- TODO: inlining this lemma does not work
@@ -352,7 +365,7 @@ lemma isCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x 
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x := by
   rw [IsCompatible] at hcov
-  have : MetricTensor cov x (Y x) (Z x) (X x) = 0 := by simp [hcov]
+  have : metricTensor cov x (Y x) (Z x) (X x) = 0 := by simp [hcov]
   rw [metricTensor_apply cov x hY hZ] at this
   change (fromTangentSpace _ ((mfderiv I 𝓘(ℝ, ℝ) ⟪Y, Z⟫ x) (X x))) = _
   exact isCompatible_apply_aux this
