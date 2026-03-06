@@ -37,8 +37,6 @@ Let `C` refer to a category with (when relevant) grothendieck topology `J`.
 
 ## TODOS:
 
-* generalize the `HasClassifier` instances to assuming `EssentiallySmall.{w} C` rather than just
-  being about `Type (max u v)`.
 * generalize `Presheaf.isClosed_χ_app_apply_of` to only assuming `G` is separated
 
 -/
@@ -166,7 +164,7 @@ lemma Presheaf.χ_unique {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G)
     rw [h, ← FunctorToTypes.comp, NatTrans.comp_app]
     simpa using congr($(h₁ (.op Y)) a)
 
--- TODO: weaken `hG` to `Presieve.IsSeparated J G` (or Presheaf.IsSeparated, even)
+-- TODO: weaken `hG` to `Presieve.IsSeparated J G` (or Presheaf.IsSeparated, if possible)
 lemma Presheaf.isClosed_χ_app_apply_of (J : GrothendieckTopology C)
     {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m]
     (hF : IsSheaf J F) (hG : IsSheaf J G) :
@@ -282,7 +280,6 @@ noncomputable def Sheaf.classifier (J : GrothendieckTopology C) :
   .mkOfTerminalΩ₀ (.terminal J Types.isTerminalPUnit) (Sheaf.terminal_isTerminal _ _) Sheaf.Ω
     Sheaf.truth Sheaf.χ Sheaf.classifier_isPullback Sheaf.χ_unique
 
--- TODO: generalize this to `HasClassifier (Sheaf J (Type w))` assuming `EssentiallySmall.{w} C`.
 /-- Sheaf categories have a subobject classifier. -/
 instance HasClassifier.instSheaf [EssentiallySmall.{w} C] (J : GrothendieckTopology C) :
     HasClassifier (Sheaf J (Type w)) where
