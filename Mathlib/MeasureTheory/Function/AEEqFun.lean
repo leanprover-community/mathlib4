@@ -234,21 +234,36 @@ theorem coeFn_compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (hf : QuasiMeasu
   rw [compQuasiMeasurePreserving_eq_mk]
   apply coeFn_mk
 
+theorem compQuasiMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν)
+    {f' : α → β} (hf' : QuasiMeasurePreserving f' μ ν) (h : f = f') :
+    compQuasiMeasurePreserving g f hf = compQuasiMeasurePreserving g f' hf' := by
+  ext
+  grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving, h]
+
+@[simp]
+theorem compQuasiMeasurePreserving_id (g : β →ₘ[ν] γ) :
+    compQuasiMeasurePreserving g id (QuasiMeasurePreserving.id ν) = g := by
+  ext
+  apply coeFn_compQuasiMeasurePreserving
+
+theorem compQuasiMeasurePreserving_compQuasiMeasurePreserving {γ : Type*} [MeasurableSpace γ]
+    {ξ : Measure γ} (g : γ →ₘ[ξ] δ) {f : β → γ} (hf : QuasiMeasurePreserving f ν ξ) {f' : α → β}
+    (hf' : QuasiMeasurePreserving f' μ ν) :
+    compQuasiMeasurePreserving (compQuasiMeasurePreserving g f hf) f' hf' =
+    compQuasiMeasurePreserving g (f ∘ f') (QuasiMeasurePreserving.comp hf hf') := by
+  ext
+  grw [coeFn_compQuasiMeasurePreserving,
+    coeFn_compQuasiMeasurePreserving g (QuasiMeasurePreserving.comp hf hf'), ← comp_assoc]
+  exact QuasiMeasurePreserving.ae_eq hf' <|coeFn_compQuasiMeasurePreserving g hf
+
 theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
     (hf : QuasiMeasurePreserving f μ μ) (n : ℕ) : (compQuasiMeasurePreserving · f hf)^[n] g =
     compQuasiMeasurePreserving g (f^[n]) (QuasiMeasurePreserving.iterate hf n) := by
-  ext
-  grw [coeFn_compQuasiMeasurePreserving g (QuasiMeasurePreserving.iterate hf n)]
   induction n with
   | zero => simp
   | succ n hind =>
-    conv =>
-      left
-      rw [add_comm]
-    grw [iterate_add, iterate_one, comp_apply,
-      (coeFn_compQuasiMeasurePreserving ((compQuasiMeasurePreserving · f hf)^[n] g) hf),
-      iterate_add, iterate_one, ← comp_assoc]
-    exact Measure.QuasiMeasurePreserving.ae_eq hf hind
+    nth_rewrite 1 [add_comm]
+    simp [iterate_add, hind, compQuasiMeasurePreserving_compQuasiMeasurePreserving]
 
 end compQuasiMeasurePreserving
 
