@@ -71,8 +71,6 @@ def _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupEquiv :
     (Equiv.subtypeUnivEquiv (Subgroup.mem_top))
   map_mul' _ _ := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
 
--- noncomputable example : MonoidWithZeroHom.valueGroup (v.valuation K) ≃ Multiplicative ℤ :=
---   (v.valueGroupEquiv K).trans (WithZero.unitsWithZeroEquiv (α := Multiplicative ℤ))
 
 variable (K) in
 @[simps!]
@@ -81,9 +79,23 @@ def _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupOrderIso₀ :
     MonoidWithZeroHom.ValueGroup₀ (v.valuation K) ≃*o ℤᵐ⁰ where
   __ := WithZero.map' ((v.valueGroupEquiv K).trans WithZero.unitsWithZeroEquiv)
   invFun := WithZero.map' ((v.valueGroupEquiv K).trans WithZero.unitsWithZeroEquiv).symm.toMonoidHom
-  left_inv := sorry
-  right_inv := sorry
-  map_le_map_iff' := sorry
+  left_inv x := by
+    match x with
+    | 0 => simp
+    | WithZero.coe a =>
+      erw [WithZero.map'_map']
+      erw [WithZero.map'_coe]
+      simp
+  right_inv y := by
+    match y with
+    | 0 => simp
+    | WithZero.coe a => simp
+  map_le_map_iff' {a b} := by
+    match a, b with
+    | 0, 0 => simp
+    | 0, .coe _ => simp
+    | .coe _, 0 => simp
+    | .coe a, .coe b => simp [Equiv.setCongr, Equiv.subtypeEquivProp]
 
 open MonoidWithZeroHom ValueGroup₀
 
@@ -98,8 +110,8 @@ lemma _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupOrderIso₀_restrict (
 variable (K) in
 lemma _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupOrderIso₀_symm_restrict (b : K) :
     (v.valueGroupOrderIso₀ K).symm (v.valuation K b) = (v.valuation K).restrict b := by
-  simp [(v.valuation K).restrict_def, restrict₀_apply, valueGroupEquiv]
-  by_cases hb : v.valuation K b = 0 <;> simp [hb]; sorry
+  apply_fun (v.valueGroupOrderIso₀ K)
+  rw [v.valueGroupOrderIso₀_restrict K, (v.valueGroupOrderIso₀ K).apply_symm_apply]
 
 lemma _root_.OrderMonoidIso.lt_symm_apply {α β : Type*} [Preorder α] [Preorder β] [Mul α] [Mul β]
     (e : α ≃*o β) {x : α} {y : β} : x < e.symm y ↔ e x < y :=
