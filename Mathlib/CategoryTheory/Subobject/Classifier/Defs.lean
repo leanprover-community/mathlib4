@@ -61,7 +61,7 @@ namespace CategoryTheory
 
 open Category Limits Functor IsPullback
 
-variable (C : Type u) [Category.{v} C]
+variable {C : Type u} [Category.{v} C]
 
 namespace Subobject
 
@@ -78,7 +78,7 @@ namespace Subobject
 ```
 An equivalent formulation replaces `Ω₀` with the terminal object.
 -/
-structure Classifier where
+structure Classifier (C : Type u) [Category.{v} C] where
   /-- The domain of the truth morphism -/
   Ω₀ : C
   /-- The codomain of the truth morphism -/
@@ -96,8 +96,6 @@ structure Classifier where
   /-- `χ m` is the only map `X ⟶ Ω` which forms the appropriate pullback square for any `χ₀'`. -/
   uniq {U X : C} (m : U ⟶ X) [Mono m] {χ₀' : U ⟶ Ω₀} {χ' : X ⟶ Ω}
     (hχ' : IsPullback m χ₀' χ' truth) : χ' = χ m
-
-variable {C}
 
 namespace Classifier
 
@@ -152,6 +150,7 @@ namespace HasSubobjectClassifier
 variable [HasSubobjectClassifier C]
 
 noncomputable section
+variable (C)
 
 /-- Notation for the `Ω₀` in an arbitrary choice of a subobject classifier -/
 abbrev Ω₀ : C := HasSubobjectClassifier.exists_classifier.some.Ω₀
@@ -300,6 +299,7 @@ noncomputable def representableBy :
   homEquiv_comp _ _ := by simp [pullback_comp]
 
 end RepresentableBy
+end Subobject.Classifier
 
 /-! #### From representations to classifiers -/
 
@@ -435,7 +435,6 @@ noncomputable def classifier : Classifier C where
 
 end SubobjectRepresentableBy
 end FromRepresentation
-end Subobject.Classifier
 
 variable [HasTerminal C]
 
@@ -448,35 +447,36 @@ theorem isRepresentable_hasClassifier_iff [HasPullbacks C] :
     exact 𝒞.representableBy
   · obtain ⟨Ω, ⟨h⟩⟩ := h
     constructor; constructor
-    exact Classifier.SubobjectRepresentableBy.classifier h
+    exact SubobjectRepresentableBy.classifier h
 
 end Representability
 
+namespace Subobject.Classifier
 section Iso
 
 /-- The unique morphism between classifiers mapping each others characteristic maps -/
-def Classifier.hom (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ⟶ 𝒞₂.Ω := 𝒞₂.χ 𝒞₁.truth
+def hom (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ⟶ 𝒞₂.Ω := 𝒞₂.χ 𝒞₁.truth
 
 @[reassoc (attr := simp)]
-lemma Classifier.hom_comp_hom (𝒞₁ 𝒞₂ 𝒞₃ : Classifier C) : 𝒞₁.hom 𝒞₂ ≫ 𝒞₂.hom 𝒞₃ = 𝒞₁.hom 𝒞₃ :=
+lemma hom_comp_hom (𝒞₁ 𝒞₂ 𝒞₃ : Classifier C) : 𝒞₁.hom 𝒞₂ ≫ 𝒞₂.hom 𝒞₃ = 𝒞₁.hom 𝒞₃ :=
   𝒞₃.uniq _ <| (𝒞₂.isPullback _).paste_vert (𝒞₃.isPullback _)
 
 @[simp]
-lemma Classifier.hom_refl (𝒞₁ : Classifier C) : 𝒞₁.hom 𝒞₁ = 𝟙 _ :=
+lemma hom_refl (𝒞₁ : Classifier C) : 𝒞₁.hom 𝒞₁ = 𝟙 _ :=
   (𝒞₁.uniq (χ₀' := 𝟙 _) 𝒞₁.truth IsPullback.of_id_snd).symm
 
 @[reassoc (attr := simp)]
-lemma Classifier.χ_comp_hom {𝒞₁ 𝒞₂ : Classifier C} {X Y : C} (m : X ⟶ Y) [Mono m] :
+lemma χ_comp_hom {𝒞₁ 𝒞₂ : Classifier C} {X Y : C} (m : X ⟶ Y) [Mono m] :
     𝒞₁.χ m ≫ 𝒞₁.hom 𝒞₂ = 𝒞₂.χ m :=
   𝒞₂.uniq m ((𝒞₁.isPullback m).paste_vert (𝒞₂.isPullback 𝒞₁.truth))
 
 @[reassoc (attr := simp)]
-lemma Classifier.truth_comp_hom {𝒞₁ 𝒞₂ : Classifier C} :
+lemma truth_comp_hom {𝒞₁ 𝒞₂ : Classifier C} :
   𝒞₁.truth ≫ 𝒞₁.hom 𝒞₂ = 𝒞₂.χ₀ _ ≫ 𝒞₂.truth := (𝒞₂.isPullback _).w
 
 /-- a concrete equivalence of any two subobject classifiers -/
 @[simps]
-def Classifier.uniqueUpToIso (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ≅ 𝒞₂.Ω where
+def uniqueUpToIso (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ≅ 𝒞₂.Ω where
   hom := 𝒞₁.hom 𝒞₂
   inv := 𝒞₂.hom 𝒞₁
 
@@ -484,7 +484,7 @@ instance (𝒞₁ 𝒞₂ : Classifier C) : IsIso (𝒞₁.hom 𝒞₂) := (𝒞
 
 /-- Being a subobject classifier is preserved under isomorphism. -/
 @[simps]
-def Classifier.ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω) (eΩ₀ : 𝒞.Ω₀ ≅ Ω₀)
+def ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω) (eΩ₀ : 𝒞.Ω₀ ≅ Ω₀)
     (from' : ∀ C, C ⟶ Ω₀) (t : Ω₀ ⟶ Ω) (ht : t = eΩ₀.inv ≫ 𝒞.truth ≫ eΩ.hom := by cat_disch) :
     Classifier C where
   Ω₀ := Ω₀
@@ -514,7 +514,7 @@ set_option backward.isDefEq.respectTransparency false in
 The image of a subobject classifier under an equivalence of categories is a subobject classifier.
 -/
 @[simps]
-def Classifier.ofEquivalence (𝒞₁ : Classifier C) (e : C ≌ D) : Classifier D where
+def ofEquivalence (𝒞₁ : Classifier C) (e : C ≌ D) : Classifier D where
   Ω₀ := e.functor.obj 𝒞₁.Ω₀
   Ω := e.functor.obj 𝒞₁.Ω
   truth := e.functor.map 𝒞₁.truth
@@ -532,4 +532,4 @@ def Classifier.ofEquivalence (𝒞₁ : Classifier C) (e : C ≌ D) : Classifier
 
 end Equivalence
 
-end CategoryTheory
+end CategoryTheory.Subobject.Classifier
