@@ -67,6 +67,7 @@ private lemma conditional_jensen_hereditarilyLindelofSpace [IsFiniteMeasure μ]
   rw [show φ (μ[f | m] a) = s.restrict φ ⟨μ[f | m] a, hq⟩ from by simp, ← hLc.2]
   simpa [iSup_congr hp] using ciSup_le hw
 
+set_option backward.isDefEq.respectTransparency false
 /-- Conditional Jensen's inequality for finite measures. -/
 private theorem conditional_jensen_finiteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
