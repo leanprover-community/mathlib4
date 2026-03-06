@@ -16,15 +16,15 @@ jobs:
          github.repository == 'leanprover-community/mathlib4-nightly-testing')
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout workflow action source
+    - name: Checkout local actions
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         ref: ${{ github.workflow_sha }}
         fetch-depth: 1
-        sparse-checkout: .github/actions/get-mathlib-ci
-        path: workflow-actions-src
+        sparse-checkout: .github/actions
+        path: workflow-actions
     - name: Checkout mathlib-ci
-      uses: ./workflow-actions-src/.github/actions/get-mathlib-ci
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Set up CI scripts paths
       uses: ./ci-tools/.github/actions/setup-ci-scripts

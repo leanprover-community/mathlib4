@@ -1,9 +1,13 @@
+# Source of truth for `mathlib-ci` checkout settings in this repository.
+# Workflows should use this action instead of duplicating the checkout block
+# and hardcoded ref in multiple places.
 name: Get mathlib-ci
 description: Checkout leanprover-community/mathlib-ci at a shared ref.
 inputs:
   ref:
     description: Git ref (branch, tag, or SHA) for mathlib-ci.
     required: false
+    # Default pinned commit used by workflows unless they explicitly override.
     default: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
   path:
     description: Checkout destination path.
@@ -27,6 +31,8 @@ outputs:
 runs:
   using: composite
   steps:
+    # Keep two explicit checkout steps so we only pass `token` when non-empty.
+    # Passing an empty token can alter checkout behavior.
     - name: Get mathlib-ci
       if: ${{ inputs.token == '' }}
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
