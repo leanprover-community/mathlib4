@@ -695,6 +695,7 @@ public import Mathlib.Algebra.Lie.Engel
 public import Mathlib.Algebra.Lie.EngelSubalgebra
 public import Mathlib.Algebra.Lie.Extension
 public import Mathlib.Algebra.Lie.Free
+public import Mathlib.Algebra.Lie.Graded
 public import Mathlib.Algebra.Lie.Ideal
 public import Mathlib.Algebra.Lie.IdealOperations
 public import Mathlib.Algebra.Lie.InvariantForm
