@@ -13,8 +13,26 @@ public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 # The Levi-Civita connection on a Riemannian manifold
 
 This file defines the Levi-Civita connection on a (finite-dimensional) Riemannian manifold `(M, g)`.
+connection `∇` on the tangent bundle of a Riemannian manifold `(M, g)` is called a
+*Levi-Civita connection* if and only if it is both compatible with the metric `g` and torsion-free.
+Any two such connections are equal (on differentiable vector fields), which is why one speaks of
+*the* Levi-Civita connection on `TM`.
+We construct a Levi-Civita connection (using a tensoriality argument), and proves that is defines
+a metric and torsion-free connection.
+
 
 ## Main definitions and results
+
+* `CovariantDerivative.IsLeviCivitaConnection`: a covariant derivative `∇` on `(M, g)` is a
+  Levi-Civita connection if and only if it is both torsion-free and compatible with `g`
+
+* `CovariantDerivative.IsLeviCivitaConnection.uniqueness`: a Levi-Civita connection on `(M, g)` is
+  uniquely determined on differentiable vector fields.
+
+To be continued!
+
+We prove the existence and uniqueness of the Levi-Civita connection
+
 
 
 ## Implementation notes
