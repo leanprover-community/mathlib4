@@ -54,6 +54,7 @@ namespace FiniteElement
 noncomputable instance : CommRing (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsDomain (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
@@ -427,7 +428,6 @@ theorem stdPart_nonneg {x : K} (h : 0 ≤ x) : 0 ≤ stdPart x := by
     exact map_nonneg _ h
   · rw [stdPart_of_mk_ne_zero hx]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem stdPart_nonpos {x : K} (h : x ≤ 0) : stdPart x ≤ 0 := by
   simpa using stdPart_nonneg (neg_nonneg.2 h)
 
