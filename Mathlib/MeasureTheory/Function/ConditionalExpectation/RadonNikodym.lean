@@ -136,7 +136,6 @@ lemma toReal_rnDeriv_trim (hm : m ≤ m𝓧) [IsFiniteMeasure μ] [hsf : SigmaFi
     (fun x ↦ ((μ.trim hm).rnDeriv (ν.trim hm) x).toReal) =ᵐ[ν.trim hm]
       ν[fun x ↦ (μ.rnDeriv ν x).toReal | m] := by
   simp_rw [trim_eq_map hm]
-  have : SigmaFinite (ν.trim (measurable_id'' hm).comap_le) := by convert hsf; simp
   have : SigmaFinite (@Measure.map _ _ m𝓧 m id ν) := by rwa [← trim_eq_map hm]
   have h := toReal_rnDeriv_map_ae_eq_trim hμν (measurable_id'' hm)
   simp_rw [MeasurableSpace.comap_id, id_def, trim_eq_map] at h
