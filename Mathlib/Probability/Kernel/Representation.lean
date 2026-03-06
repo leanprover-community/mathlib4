@@ -77,15 +77,6 @@ lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel α I) [IsMarkovKerne
     mem_Iic, Iic_to_Icc, ← ofReal_measureReal (measure_ne_top (κ a) _), ← volume_Iic ⟨_, κ_in_I⟩]
   congr with ξ
   constructor
-  swap
-  · intro (hξ : ξ ≤ (κ a).real (Icc 0 x))
-    simp only [sSup_le_iff, f]
-    intro c hc
-    by_contra! h
-    have h_lt : ¬ (κ a).real (Icc 0 x) ≤ (κ a).real (Icc 0 c) := not_le.mpr (lt_of_le_of_lt' hξ hc)
-    refine h_lt ?_
-    gcongr
-    simp
   · intro (hξ : f a ξ ≤ x)
     change ξ ≤ (κ a).real (Icc 0 x)
     by_cases hx : x = 1
@@ -105,6 +96,14 @@ lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel α I) [IsMarkovKerne
       simp only [sSup_le_iff, f] at hξ
       specialize hξ y h
       grind
+  · intro (hξ : ξ ≤ (κ a).real (Icc 0 x))
+    simp only [sSup_le_iff, f]
+    intro c hc
+    by_contra! h
+    have h_lt : ¬ (κ a).real (Icc 0 x) ≤ (κ a).real (Icc 0 c) := not_le.mpr (lt_of_le_of_lt' hξ hc)
+    refine h_lt ?_
+    gcongr
+    simp
 
 theorem exists_measurable_map_eq_unitInterval (κ : Kernel α β) [IsMarkovKernel κ] :
     ∃ (f : α → I → β), Measurable (uncurry f) ∧ ∀ a, volume.map (f a) = κ a := by
