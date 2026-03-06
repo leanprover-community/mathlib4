@@ -55,19 +55,15 @@ list of term of type `Fin n`. This is meant to be used when `perm` corresponds t
 of `Fin n`, e.g. `perm = Equiv.swap 0 1`, etc. -/
 def arrayOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
     SimpM (Option <| Array Nat) := do
-    try
-      let mut out : Array Nat := #[]
-      guard (vn != 0)
-      for idx in *...vn do
-        let idxQ := mkNatLitQ idx
-        let idxQNew ← mkFin idxQ n
-        let outIdxQ := q(($perm $idxQNew : Nat))
-        let outIdxExpr ← Lean.Meta.Simp.dsimp outIdxQ
-        let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
-        out := out.push outIdx
-      return out
-    catch _ =>
-      return none
+  let mut out : Array Nat := #[]
+  for idx in *...vn do
+    let idxQ := mkNatLitQ idx
+    let idxQNew ← mkFin idxQ n
+    let outIdxQ := q(($perm $idxQNew : Nat))
+    let outIdxExpr ← Lean.Meta.Simp.dsimp outIdxQ
+    let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
+    out := out.push outIdx
+  return out
 
 theorem eq_etaExpand {α : Type*} {m : ℕ} (v : Fin m → α) : v = FinVec.etaExpand v :=
   (FinVec.etaExpand_eq _).symm
