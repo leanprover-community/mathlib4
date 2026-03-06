@@ -38,7 +38,60 @@ noncomputable def simpson_midpoint_error (f : ℝ → ℝ) (N : ℕ) (a b : ℝ)
 changes sign when the endpoints are swapped. -/
 theorem simpson_midpoint_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
     simpson_midpoint_integral f N a b = -(simpson_midpoint_integral f N b a) := by
-  sorry
+  unfold simpson_midpoint_integral
+
+  have h_coeff : (b - a) / N = -((a - b) / N) := by ring
+
+  -- 证明求和部分相等：用变量替换 j = N - 1 - k
+  have h_sum : ∑ k ∈ range N, f (a + (k + (1 / 2 : ℝ)) * (b - a) / N)
+             = ∑ k ∈ range N, f (b + (k + (1 / 2 : ℝ)) * (a - b) / N) := by
+    -- 使用 Finset.sum_range_reflect
+    have h1 : ∑ k ∈ range N, f (b + (k + (1 / 2 : ℝ)) * (a - b) / N)
+            = ∑ k ∈ range N, f (b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N) := by
+      rw [← Finset.sum_range_reflect (fun k => f (b + (k + (1 / 2 : ℝ)) * (a - b) / N)) N]
+    rw [h1]
+
+    -- 现在证明对应项相等
+    apply Finset.sum_congr rfl
+    intro k hk
+    simp only [Finset.mem_range] at hk
+    have hN : (N : ℝ) ≠ 0 := by
+      intro h
+      have : N = 0 := by
+        exact_mod_cast h
+      linarith [N_nonzero]
+
+    -- 证明：a + (k + 1/2)*(b-a)/N = b + ((N-1-k) + 1/2)*(a-b)/N
+    have h3 : k ≤ N - 1 := by omega
+    have h4 : (N - 1 - k : ℕ) = N - 1 - k := by omega
+
+    -- 关键引理：((N - 1 - k : ℕ) : ℝ) = (N : ℝ) - 1 - k
+    have h5 : ((N - 1 - k : ℕ) : ℝ) = (N : ℝ) - 1 - k := by
+      rw [h4]
+      have h6 : (k : ℕ) ≤ N - 1 := h3
+      have h7 : ((N - 1 : ℕ) : ℝ) = (N : ℝ) - 1 := by
+        rw [Nat.cast_sub (by linarith : 1 ≤ N)]
+        simp
+      have h8 : ((N - 1 - k : ℕ) : ℝ) = ((N - 1 : ℕ) : ℝ) - k := by
+        rw [Nat.cast_sub h6]
+      rw [h8, h7]
+
+    have h_eq : a + (k + (1 / 2 : ℝ)) * (b - a) / N
+              = b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N := by
+      calc
+        a + (k + (1 / 2 : ℝ)) * (b - a) / N
+          = a + (k + (1 / 2 : ℝ)) * (b - a) / N := rfl
+        _ = b + ((N : ℝ) - 1 - k + (1 / 2 : ℝ)) * (a - b) / N := by
+          field_simp [hN]
+          ring_nf
+        _ = b + (((N - 1 - k : ℕ) : ℝ) + (1 / 2 : ℝ)) * (a - b) / N := by
+          rw [h5]
+        _ = b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N := by
+          norm_cast
+    rw [h_eq]
+
+  rw [h_coeff, h_sum]
+  ring
 
 /-- The absolute error of Simpson's midpoint rule does not change when the endpoints are swapped. -/
 theorem simpson_midpoint_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
