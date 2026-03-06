@@ -112,6 +112,12 @@ abbrev propQCPrecoverage (P : MorphismProperty Scheme.{u}) : Precoverage Scheme.
 lemma propQCPrecoverage_le_precoverage : propQCPrecoverage P ≤ precoverage P :=
   inf_le_right
 
+lemma propQCPrecoverage_monotone : Monotone propQCPrecoverage := by
+  intro P Q h
+  rw [propQCPrecoverage, propQCPrecoverage]
+  gcongr
+  exact precoverage_mono h
+
 lemma zariskiPrecoverage_le_propQCPrecoverage [P.ContainsIdentities] [IsZariskiLocalAtSource P] :
     zariskiPrecoverage ≤ propQCPrecoverage P := by
   rw [propQCPrecoverage, le_inf_iff]

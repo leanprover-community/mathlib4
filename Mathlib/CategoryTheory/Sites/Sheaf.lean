@@ -424,6 +424,12 @@ lemma Presheaf.IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hP : Presheaf.IsShea
 variable {A} in
 lemma Presheaf.isSheaf_bot (P : Cᵒᵖ ⥤ A) : IsSheaf ⊥ P := fun _ ↦ Presieve.isSheaf_bot
 
+variable {A J} in
+lemma Presheaf.IsSheaf.of_le {K : GrothendieckTopology C} {F : Cᵒᵖ ⥤ A} (hle : J ≤ K)
+    (h : Presheaf.IsSheaf K F) :
+    Presheaf.IsSheaf J F :=
+  fun _ _ _ hS ↦ h _ _ (hle _ hS)
+
 /--
 The category of sheaves on the bottom (trivial) Grothendieck topology is
 equivalent to the category of presheaves.
