@@ -261,7 +261,7 @@ lemma leviCivitaRhs_addX [CompleteSpace E]
   ext x
   simp [leviCivitaRhs_addX_apply _ (hX x) (hX' x) (hY x) (hZ x)]
 
-open VectorField
+open VectorField NormedSpace
 
 variable {I} in
 lemma leviCivitaRhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
@@ -276,24 +276,27 @@ lemma leviCivitaRhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
   -- Combining this line with the previous one fails.
   simp only [← product_apply, neg_smul, inner_neg_right]
   have h1 :
-      letI dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Z x);
-      inner ℝ (Y x) ((mfderiv I 𝓘(ℝ, ℝ) f x) (Z x) • X x) = dfZ * ⟪X, Y⟫ x := by
+      inner ℝ (Y x) ((fromTangentSpace _ (mfderiv% f x (Z x))) • X x) =
+        fromTangentSpace (f x) (mfderiv% f x (Z x)) * ⟪X, Y⟫ x := by
     simp only [product]
     rw [← real_inner_smul_left, real_inner_smul_right, real_inner_smul_left, real_inner_comm]
   have h2 :
-      letI dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x);
-      inner ℝ (Z x) ((mfderiv I 𝓘(ℝ, ℝ) f x) (Y x) • X x) = dfZ * ⟪Z, X⟫ x := by
+      inner ℝ (Z x) (fromTangentSpace (f x) ((mfderiv% f x (Y x))) • X x) =
+        (fromTangentSpace (f x) (mfderiv% f x (Y x))) * ⟪Z, X⟫ x := by
     simp only [product]
     rw [← real_inner_smul_left, real_inner_smul_right, real_inner_smul_left]
-  simp only [h1, h2]
-  set dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
-  set dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Z x)
+  rw [h1, h2]
+  --set dfY := fromTangentSpace (f x) ((mfderiv% f x (Y x)))--(mfderiv% f x) (Y x)
+  --set dfZ : ℝ := (mfderiv% f x) (Z x)
   have h3 : ⟪f • X, mlieBracket I Z Y⟫ x = f x * ⟪X, mlieBracket I Z Y⟫ x := by
     rw [product_apply, Pi.smul_apply', real_inner_smul_left]
   have h4 : inner ℝ (Z x) (f x • mlieBracket I Y X x) = f x * ⟪Z, mlieBracket I Y X⟫ x := by
     rw [product_apply, real_inner_smul_right]
-  rw [real_inner_smul_right (Y x), h3]--, h4]
-  -- set A := ⟪Y, mlieBracket I X Z⟫ with hA
+  rw [real_inner_smul_right (Y x), h3, h4]
+
+  -- Push all applications of `x` inwards, then it's indeed obvious.
+  simp
+  set A := ⟪Y, mlieBracket I X Z⟫ with hA
   -- set B := ⟪Z, mlieBracket I X Y⟫
   -- set C := ⟪X, mlieBracket I Z Y⟫
   -- set R := dfZ * ⟪X, Y⟫ x with hR
@@ -301,11 +304,10 @@ lemma leviCivitaRhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
   -- set E := rhs_aux I X Y Z x
   -- set F := rhs_aux I Y Z X x
   -- set G := rhs_aux I Z X Y x
-  -- Push all applications of `x` inwards, then it's indeed obvious.
-  simp
   ring_nf
   congr
 
+#exit
 variable {I} in
 lemma leviCivitaRhs_smulX_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
