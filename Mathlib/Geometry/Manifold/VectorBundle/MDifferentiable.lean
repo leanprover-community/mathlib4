@@ -690,11 +690,8 @@ lemma exists_contMDiffOn_extend [(x : M) → Module 𝕜 (V x)] [VectorBundle �
     rw [t.contMDiffWithinAt_section _ hx]
     exact this x hx
   let w : F := (t ⟨x₀, σ₀⟩).2
-  have : ContMDiffOn I 𝓘(𝕜, F) k (fun x_1 ↦ w) t.baseSet := contMDiffOn_const
-  refine this.congr ?_
-  intro x hx
-  unfold extend
-  rw [t.mk_symm hx, t.apply_symm_apply' hx]
+  have : ContMDiffOn I 𝓘(𝕜, F) k (fun _x ↦ w) t.baseSet := contMDiffOn_const
+  exact this.congr (fun x hx ↦ by simp [extend, t, w, hx])
 
 lemma contMDiffAt_extend' {x : M} (σ₀ : V x) :
     CMDiffAt k (T% (extend F σ₀)) x := by

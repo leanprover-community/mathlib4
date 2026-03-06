@@ -869,6 +869,7 @@ The details of the extension are mostly unspecified: for covariant derivatives, 
 noncomputable def extend {x : B} (v₀ : E x) (x' : B) : E x' :=
   letI t := trivializationAt F E x
   letI w : F := (t ⟨x, v₀⟩).2
+  -- TODO: use the `funToSec` helper from #36036 once available
   t.symm x' w
 
 @[simp] lemma extend_apply_self {x : B} (v : E x) : extend F v x = v := by
