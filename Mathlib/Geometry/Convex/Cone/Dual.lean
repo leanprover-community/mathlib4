@@ -89,7 +89,7 @@ lemma dual_eq_iInter_dual_singleton (s : Set M) :
 /-- Any set is a subset of its double dual cone. -/
 lemma subset_dual_dual : s ⊆ dual p.flip (dual p s) := fun _x hx _y hy ↦ hy hx
 
-lemma subset_dual_flip_iff_subset_dual {s : Set M} {t : Set N} :
+@[simp] lemma subset_dual_flip_iff_subset_dual {s : Set M} {t : Set N} :
     s ⊆ dual p.flip t ↔ t ⊆ dual p s := by
   constructor <;> exact (le_trans subset_dual_dual <| dual_antitone ·)
 
