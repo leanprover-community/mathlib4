@@ -52,7 +52,6 @@ structure SimplicialHomotopy
   /-- Basic data: `h i : Xₙ ⟶ Yₙ₊₁` for `i : Fin (n + 1)`. -/
   h {n : ℕ} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ Y _⦋n+1⦌
   h_zero_comp_δ_zero (n : ℕ) : h 0 ≫ Y.δ 0 = g.app (op ⦋n⦌)
-  /-- Endpoint `d_{n+1} hₙ = f`. -/
   h_last_comp_δ_last (n : ℕ) : h (Fin.last n) ≫ Y.δ (Fin.last (n + 1)) = f.app (op ⦋n⦌)
   /- nlab: `dᵢ hⱼ = h_{j'-1} dᵢ` if i < j', let j' = j + 1 -/
   /-- `dᵢ h_{j+1} = hⱼ dᵢ` if i < j + 1. -/
