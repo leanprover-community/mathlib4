@@ -95,12 +95,9 @@ def refl (f : X ⟶ Y) : SimplicialHomotopy f f where
   h_comp_σ_succ_of_lt i j hji := by simp [Y.σ_comp_σ hji]
 
 
-variable {D : Type u'} [Category.{v'} D]
-variable (F : C ⥤ D)
-
 /-- Postcompose a simplicial homotopy with a functor `F : C ⥤ D`. -/
 @[simps]
-def whiskerRight (H : SimplicialHomotopy f g) :
+def whiskerRight (H : SimplicialHomotopy f g) {D : Type u'} [Category.{v'} D] (F : C ⥤ D) :
     SimplicialHomotopy
       (((SimplicialObject.whiskering C D).obj F).map f)
       (((SimplicialObject.whiskering C D).obj F).map g) where
