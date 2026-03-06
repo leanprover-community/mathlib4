@@ -132,7 +132,24 @@ theorem sum_simpson_midpoint_integral_adjacent_intervals {f : ℝ → ℝ} {N : 
     (N_nonzero : 0 < N) :
     ∑ i ∈ range N, simpson_midpoint_integral f 1 (a + i * h) (a + (i + 1) * h)
       = simpson_midpoint_integral f N a (a + N * h) := by
-  sorry
+  have h1 : ∀ i ∈ range N, simpson_midpoint_integral f 1 (a + (i : ℝ) * h) (a + ((i : ℝ) + 1) * h)
+              = h * f (a + ((i : ℝ) + 1 / 2) * h) := by
+    intro i hi
+    rw [simpson_midpoint_integral_one]
+    ring_nf
+  rw [Finset.sum_congr rfl h1]
+  rw [← Finset.mul_sum]
+  have h3 : (a + N * h - a) / N = h := by
+    field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
+    ring_nf
+  rw [simpson_midpoint_integral]
+  congr 1
+  · rw [h3]
+  apply Finset.sum_congr rfl
+  intro k hk
+  congr 1
+  field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
+  ring
 
 /-- A simplified version of the previous theorem, for use in proofs by induction and the like. -/
 theorem simpson_midpoint_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N) :
