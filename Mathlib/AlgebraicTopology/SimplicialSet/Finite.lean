@@ -38,7 +38,6 @@ instance [X.Finite] (n : ℕ) : Finite (X.nonDegenerate n) :=
     rw [N.ext_iff, S.ext_iff'] at h
     aesop)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma finite_of_hasDimensionLT (d : ℕ) [X.HasDimensionLT d]
     (h : ∀ (i : ℕ) (_ : i < d), Finite (X.nonDegenerate i)) :
     X.Finite where
@@ -51,7 +50,6 @@ lemma finite_of_hasDimensionLT (d : ℕ) [X.HasDimensionLT d]
     · have := x.nonDegenerate
       simp [X.nonDegenerate_eq_bot_of_hasDimensionLT d x.dim (by simpa using hj)] at this
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasDimensionLT_of_finite [X.Finite] :
     ∃ (d : ℕ), X.HasDimensionLT d := by
   have : Fintype X.N := Fintype.ofFinite _

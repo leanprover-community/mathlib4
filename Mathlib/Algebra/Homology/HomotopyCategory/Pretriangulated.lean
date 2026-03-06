@@ -517,6 +517,7 @@ lemma rotate_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexSh
     exact isomorphic_distinguished _ (invRotate_distinguished_triangle' T.rotate hT) _
       ((triangleRotation _).unitIso.app T)
 
+set_option backward.isDefEq.respectTransparency false in
 open CochainComplex.mappingCone in
 lemma complete_distinguished_triangle_morphism
     (T₁ T₂ : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))
