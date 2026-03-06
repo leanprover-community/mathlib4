@@ -181,6 +181,11 @@ end
 
 end TotalSpace
 
+-- We want to capture the output of the custom *elaborators* specifically: turning off all notation
+-- deactivates some notation for models with corners, but also the delaborators corresponding
+-- to the elaborators.
+set_option pp.notation false
+
 /-! Tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
 section differentiability
 

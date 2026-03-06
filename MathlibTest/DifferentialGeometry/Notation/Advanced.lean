@@ -15,6 +15,9 @@ import Mathlib.Geometry.Manifold.VectorField.LieBracket
 -/
 
 set_option pp.unicode.fun true
+-- We want to capture the output of the custom *elaborators* specifically: turning off all notation
+-- deactivates some notation for models with corners, but also the delaborators corresponding
+-- to the elaborators.
 set_option pp.notation false
 
 open Bundle Filter Function Topology
