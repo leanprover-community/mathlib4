@@ -94,12 +94,8 @@ instance testField_direct : TestField TestNat where
 instance testField_leaky : TestField TestNat := inferInstanceAs (TestField Nat)
 
 -- Fixed: inferInstanceAs% patches lambda domains to use TestNat
--- (warns about leaky sub-instances that could be defined separately)
+-- (warns about leaky direct sub-instances that could be defined separately)
 /--
-warning: inferInstanceAs%: the synthesized instance for TestInv
-  TestNat has carrier type leakage (it uses the source carrier type internally instead of the target). `inferInstanceAs%` will patch the sub-instance inline, but consider defining it separately with `inferInstanceAs%` for cleaner results.
-  To suppress this warning: `set_option inferInstanceAsPercent.leakySubInstWarning false`
----
 warning: inferInstanceAs%: the synthesized instance for TestDivInvMonoid
   TestNat has carrier type leakage (it uses the source carrier type internally instead of the target). `inferInstanceAs%` will patch the sub-instance inline, but consider defining it separately with `inferInstanceAs%` for cleaner results.
   To suppress this warning: `set_option inferInstanceAsPercent.leakySubInstWarning false`

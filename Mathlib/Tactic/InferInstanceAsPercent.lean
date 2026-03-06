@@ -182,13 +182,16 @@ mutual
 
 /-- Process each constructor argument: replace carrier type parameters, recursively
 normalize instance-implicit fields, and patch lambda binder domains in other fields.
-For each instance-implicit field, first tries to find a clean synthesized sub-instance
-for the target carrier type; if found, uses it instead of the patched constructor tree.
-If synthesis finds a leaky sub-instance, records a warning. -/
+
+When `trySynth` is `true` (used only at the top level), for each instance-implicit field
+we first try to find a pre-existing clean sub-instance via `trySynthInstance`. This avoids
+diamonds with canonical instances. Recursive calls use `trySynth := false` to avoid
+expensive synthesis at every level of the class hierarchy. -/
 private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
     (args : Array Expr) (fieldInfo : Array (Bool × Bool))
     (replacements : Array (Expr × Expr))
-    (warnings : IO.Ref (Array MessageData)) : MetaM Expr := do
+    (warnings : IO.Ref (Array MessageData))
+    (trySynth : Bool := true) : MetaM Expr := do
   let mut args := args
   -- Replace carrier type in constructor parameters
   for i in *...ci.numParams do
@@ -200,32 +203,26 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
       if isProof then
         pure ()
       else if isInst then
-        -- Always compute the patched version (needed as fallback and for comparison)
-        let patched ← normalizeInstance args[i]! replacements warnings
-        -- Try to find a synthesized sub-instance for the target carrier type
-        let fieldType ← inferType args[i]!
-        let targetFieldType ← replaceCarriersInType fieldType replacements
-        match ← trySynthInstance targetFieldType with
-        | .some synthInst =>
-          -- Check if the synthesized version is clean (defeq to patched at instances)
-          if ← withReducibleAndInstances <| withNewMCtxDepth <| isDefEq synthInst patched then
-            args := args.set! i synthInst
-          else
-            -- synthInst and patched differ. Check if synthInst is itself clean
-            -- (i.e. normalizing it doesn't change it). This handles the case where
-            -- the sub-instance was already defined with `inferInstanceAs%` — in that case
-            -- it's already clean, and the mismatch with `patched` is just because the
-            -- sub-instance inside the parent hierarchy was constructed differently.
+        if trySynth then
+          -- At the top level: try to find a pre-existing clean sub-instance
+          let fieldType ← inferType args[i]!
+          let targetFieldType ← replaceCarriersInType fieldType replacements
+          match ← trySynthInstance targetFieldType with
+          | .some synthInst =>
+            -- Check if the synthesized version is clean by normalizing it
+            -- (with trySynth := false to keep this cheap) and comparing
             let synthWarnings ← IO.mkRef #[]
             let normalizedSynth ←
-              normalizeInstance synthInst replacements synthWarnings
+              normalizeInstance synthInst replacements synthWarnings (trySynth := false)
             if ← withReducibleAndInstances <| withNewMCtxDepth <|
                 isDefEq normalizedSynth synthInst then
               -- synthInst is already clean (e.g. defined with inferInstanceAs%);
-              -- prefer it over patched to avoid diamonds with the canonical instance
+              -- prefer it to avoid diamonds with the canonical instance
               args := args.set! i synthInst
             else
-              -- synthInst is leaky: warn and use patched version
+              -- synthInst is leaky: warn and use mechanically patched version
+              let patched ←
+                normalizeInstance args[i]! replacements warnings (trySynth := false)
               warnings.modify (·.push
                 m!"inferInstanceAs%: the synthesized instance for \
                   {targetFieldType} has carrier type leakage \
@@ -236,8 +233,13 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
                   "To suppress this warning: \
                   `set_option inferInstanceAsPercent.leakySubInstWarning false`"}")
               args := args.set! i patched
-        | _ =>
-          args := args.set! i patched
+          | _ =>
+            args := args.set! i
+              (← normalizeInstance args[i]! replacements warnings (trySynth := false))
+        else
+          -- Recursive calls: just normalize mechanically (no synthesis)
+          args := args.set! i
+            (← normalizeInstance args[i]! replacements warnings (trySynth := false))
       else
         args := args.set! i (← replaceLamDomains args[i]! replacements)
   return mkAppN (.const ci.name us) args
@@ -245,16 +247,16 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
 /-- Recursively normalize a class instance expression:
 1. WHNF at `default` transparency to expose the constructor.
 2. Replace the carrier type parameter(s) in the constructor.
-3. For each instance-implicit, non-proof field: try synthesis, else recurse.
+3. For each instance-implicit, non-proof field: try synthesis (if `trySynth`), else recurse.
 4. For each non-instance function field: replace lambda binder domains only. -/
 private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × Expr))
-    (warnings : IO.Ref (Array MessageData)) : MetaM Expr := do
+    (warnings : IO.Ref (Array MessageData)) (trySynth : Bool := true) : MetaM Expr := do
   let ty ← inferType e
   let some _className ← isClass? ty | return e
   if ← Meta.isProp ty then return e
   let some (ci, us, args) ← getCtorApp? e | return e
   let fieldInfo ← getFieldInfo ci
-  normalizeCtorArgs ci us args fieldInfo replacements warnings
+  normalizeCtorArgs ci us args fieldInfo replacements warnings (trySynth := trySynth)
 
 end
 
