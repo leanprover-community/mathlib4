@@ -40,11 +40,11 @@ theorem bijOn_sumElim_conjugate :
     | inl hl => simpa [Set.sumEquiv] using .inl ⟨mk ψ, mk_mem_ramifiedPlacesOver h, hl⟩
     | inr hr => simpa [Set.sumEquiv] using .inr ⟨_, mk_mem_ramifiedPlacesOver h, by aesop⟩
 
-theorem _root_.Set.BijOn.ncard_eq {α β : Type*} {f : α → β} {s : Set α} {t : Set β}
-    (h : Set.BijOn f s t) :
-    s.ncard = t.ncard :=
-  Set.ncard_congr _ h.mapsTo (fun _ _ ha hb heq ↦ h.injOn ha hb heq)
-    (fun _ ha ↦ bex_def.2 (h.surjOn ha))
+-- theorem _root_.Set.BijOn.ncard_eq {α β : Type*} {f : α → β} {s : Set α} {t : Set β}
+--     (h : Set.BijOn f s t) :
+--     s.ncard = t.ncard :=
+--   Set.ncard_congr _ h.mapsTo (fun _ _ ha hb heq ↦ h.injOn ha hb heq)
+--     (fun _ ha ↦ bex_def.2 (h.surjOn ha))
 
 theorem _root_.Set.BijOn_toFinset {α β : Type*} {f : α → β} {s : Set α} {t : Set β}
     (hs : s.Finite := by toFinite_tac) (ht : t.Finite := by toFinite_tac) :
