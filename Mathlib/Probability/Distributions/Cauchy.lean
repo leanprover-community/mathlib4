@@ -34,7 +34,7 @@ open scoped Real ENNReal NNReal
 
 open MeasureTheory Measure
 
-namespace Probability
+namespace ProbabilityTheory
 
 section CauchyPDF
 
@@ -137,4 +137,4 @@ instance instIsProbabilityMeasure_cauchyMeasure (x₀ : ℝ) (γ : ℝ≥0) :
 
 end CauchyMeasure
 
-end Probability
+end ProbabilityTheory
