@@ -356,7 +356,7 @@ def Symbol.filterMap {N₀ N : Type*} (f : N → Option N₀) : Symbol T N → O
   | terminal t => some (terminal t)
   | nonterminal n => .map nonterminal (f n)
 
-/-- Map the type of nonterminal symbols of a `ContextFreeRule` . -/
+/-- Map the type of nonterminal symbols of a `ContextFreeRule`. -/
 def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ → N) :
     ContextFreeRule T N :=
   ⟨f r.input, r.output.map (.map f)⟩
@@ -396,8 +396,8 @@ lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) bef
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
-/-- For context-free grammar `g₀` that embeds to `g`, every derivation using `g₀`
-    can be mirrored by a derivation using `g`. -/
+/-- If a context-free grammar `g₀` embeds into another `g`, then every derivation using `g₀`
+gives a derivation using `g`. -/
 lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
     (hG : g₀.Derives w₁ w₂) :
     g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
@@ -406,13 +406,13 @@ lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
   | tail _ orig ih => exact ih.trans_produces (produces_map orig)
 
 /-- A `Symbol` stems from the embedding of context-free grammr `g₀` into `g` or is a terminal
-    iff it is one of those nonterminals that result from projecting or it is any terminal. -/
+iff it is one of those nonterminals that result from projecting or it is any terminal. -/
 inductive FromEmbeddingOrTerminal (G : g₀.Embedding g) : Symbol T g.NT → Prop
   | terminal (t : T) : FromEmbeddingOrTerminal G (.terminal t)
   | nonterminal (n₀ : g₀.NT) : FromEmbeddingOrTerminal G (.nonterminal (G.embedNT n₀))
 
 /-- Production by `g` can be mirrored by `g₀` production if the first word does not contain any
-    nonterminals that `g₀` lacks. -/
+nonterminals that `g₀` lacks. -/
 lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
     (hG : g.Produces w₁ w₂) (hw₁ : List.Forall (FromEmbeddingOrTerminal G) w₁) :
     g₀.Produces
