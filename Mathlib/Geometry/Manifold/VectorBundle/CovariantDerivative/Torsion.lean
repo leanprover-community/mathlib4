@@ -5,6 +5,7 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
+public import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
@@ -26,7 +27,7 @@ bundle `TM` of some manifold `M`.
 
 @[expose] public section
 
-open Bundle Set NormedSpace
+open Bundle Set NormedSpace FiberBundle
 open scoped Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
