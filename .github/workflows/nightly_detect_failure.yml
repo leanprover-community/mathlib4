@@ -346,14 +346,19 @@ jobs:
         fetch-depth: 0 # checkout all branches
         token: ${{ steps.app-token-2.outputs.token }}
 
-    - name: Checkout mathlib-ci
+    - name: Checkout local actions
       if: steps.check_branch.outputs.result == 'false'
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        repository: leanprover-community/mathlib-ci
-        ref: ${{ env.MATHLIB_CI_REF }}
+        ref: ${{ github.workflow_sha }}
         fetch-depth: 1
-        path: ci-tools
+        sparse-checkout: .github/actions
+        path: workflow-actions
+    - name: Get mathlib-ci
+      if: steps.check_branch.outputs.result == 'false'
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
+      with:
+        ref: ${{ env.MATHLIB_CI_REF }}
 
     - name: Set up CI scripts paths
       if: steps.check_branch.outputs.result == 'false'

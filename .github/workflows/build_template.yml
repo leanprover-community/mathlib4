@@ -95,13 +95,17 @@ jobs:
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
           path: tools-branch
 
-      - name: Checkout mathlib-ci
+      - name: Checkout local actions
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          repository: leanprover-community/mathlib-ci
-          ref: ${{ inputs.mathlib_ci_ref }}
+          ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          path: ci-tools
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ inputs.mathlib_ci_ref }}
 
       - name: Set up CI scripts paths
         uses: ./ci-tools/.github/actions/setup-ci-scripts

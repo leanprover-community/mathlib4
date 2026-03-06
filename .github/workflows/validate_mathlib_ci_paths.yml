@@ -31,13 +31,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Checkout mathlib-ci
+      - name: Checkout local actions
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          repository: leanprover-community/mathlib-ci
-          ref: master # Check paths against the latest version of the repo, which should be 'the objective' version for any workflow
+          ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          path: ci-tools
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: master # Check paths against the latest version of the repo, which should be 'the objective' version for any workflow
 
       - name: Set up CI scripts paths
         id: checkout_ci_scripts

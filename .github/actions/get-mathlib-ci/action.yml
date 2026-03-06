@@ -1,0 +1,47 @@
+name: Get mathlib-ci
+description: Checkout leanprover-community/mathlib-ci at a shared ref.
+inputs:
+  ref:
+    description: Git ref (branch, tag, or SHA) for mathlib-ci.
+    required: false
+    default: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+  path:
+    description: Checkout destination path.
+    required: false
+    default: ci-tools
+  fetch-depth:
+    description: Number of commits to fetch.
+    required: false
+    default: '1'
+  token:
+    description: Optional token for checkout.
+    required: false
+    default: ''
+outputs:
+  ref:
+    description: Effective ref used for the checkout.
+    value: ${{ inputs.ref }}
+  path:
+    description: Checkout path used.
+    value: ${{ inputs.path }}
+runs:
+  using: composite
+  steps:
+    - name: Get mathlib-ci
+      if: ${{ inputs.token == '' }}
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: leanprover-community/mathlib-ci
+        ref: ${{ inputs.ref }}
+        fetch-depth: ${{ inputs.fetch-depth }}
+        path: ${{ inputs.path }}
+
+    - name: Get mathlib-ci
+      if: ${{ inputs.token != '' }}
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: leanprover-community/mathlib-ci
+        ref: ${{ inputs.ref }}
+        fetch-depth: ${{ inputs.fetch-depth }}
+        path: ${{ inputs.path }}
+        token: ${{ inputs.token }}
