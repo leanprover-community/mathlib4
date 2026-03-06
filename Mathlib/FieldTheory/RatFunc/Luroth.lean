@@ -219,7 +219,7 @@ open scoped Polynomial.Bivariate
 
 variable {E : IntermediateField K K⟮X⟯}
 
--- The proof of Lüroth's theorem begins here. We follow the approach from 
+-- The proof of Lüroth's theorem begins here. We follow the approach from
 -- P. M. Cohn, *Basic Algebra: Groups, Rings and Fields*, Springer, 2003, Theorem 11.3.4.
 
 set_option backward.isDefEq.respectTransparency false in
