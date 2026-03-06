@@ -356,8 +356,7 @@ instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
         simp only [ComplexShape.spectralSequenceFin_rel_iff, not_and, Prod.forall] at hpq
         exact hpq (p - r) ⟨l - 1 - t, by lia⟩ (by lia) (by lia)
       dsimp
-      rw [add_sub_cancel_right, Fin.clamp_eq_last _ _ (by lia),
-        Fin.clamp_eq_last _ _ (by lia)]
+      rw [add_sub_cancel_right, Fin.clamp_eq_last _ _ (by lia), Fin.clamp_eq_last _ _ (by lia)]
     have := isIso_homOfLE this
     apply E.isZero_H_map_mk₁_of_isIso
 
