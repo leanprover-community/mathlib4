@@ -523,7 +523,8 @@ def iccHomeoI (a b : 𝕜) (h : a < b) : Set.Icc a b ≃ₜ Set.Icc (0 : 𝕜) (
   let e := Homeomorph.image (affineHomeomorph (b - a) a (sub_pos.mpr h).ne.symm) (Set.Icc 0 1)
   refine (e.trans ?_).symm
   apply Homeomorph.setCongr
-  rw [affineHomeomorph_image_I _ _ (sub_pos.2 h), sub_add_cancel]
+  rw [affineHomeomorph_image_I _ _ (sub_pos.2 h)]
+  simp
 
 @[simp]
 theorem iccHomeoI_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc a b) :
