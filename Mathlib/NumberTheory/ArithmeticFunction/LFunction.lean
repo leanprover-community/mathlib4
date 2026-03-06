@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.RingTheory.PowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
@@ -37,18 +38,8 @@ a `tprod`. If `R` is viewed as having the discrete topology, then the resulting 
 
 See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
 local instance uniformSpace : UniformSpace (ArithmeticFunction R) :=
-  .comap ((↑) : ArithmeticFunction R → (ℕ → R)) <| .ofCore <|
-    .mk (⨅ s : Finset ℕ, 𝓟 {(f, g) | Set.EqOn f g s})
-      (by simp [Set.subset_def, Set.eqOn_refl])
-      (tendsto_iInf_iInf fun _ ↦ tendsto_principal_principal.mpr fun _ ↦ Set.EqOn.symm)
-      (le_iInf fun s ↦ lift'_le (le_principal_iff.mp (iInf_le _ s))
-        (by grind [principal_mono, SetRel.comp, Set.EqOn]))
-
-/-- The uniformity on `ArithmeticFunction` required in order to define `eulerProduct` as a `tprod`.
-See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
-private theorem uniformity_eq : uniformity (ArithmeticFunction R) =
-    comap (fun i ↦ (i.1, i.2)) (⨅ s : Finset ℕ, 𝓟 {((f : ℕ → R), g) | Set.EqOn f g s}) :=
-  rfl
+  letI : UniformSpace R := ⊥
+  .comap ((↑) : ArithmeticFunction R → (ℕ → R)) inferInstance
 
 /-- A family `f i : ArithmeticFunction R` tends to `g` if and only if for each `n`, the `n`th
 coefficient of `f i` is eventually equal to the `n`th coefficient of `g`. If `R` is viewed as
@@ -58,32 +49,21 @@ See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API.
 private theorem tendsto_iff
     {f : ι → ArithmeticFunction R} {F : Filter ι} {g : ArithmeticFunction R} :
     Tendsto f F (nhds g) ↔ ∀ n, ∀ᶠ i in F, f i n = g n := by
-  simp_rw [nhds_eq_comap_uniformity,
-    uniformity_eq, tendsto_comap_iff, tendsto_iInf, tendsto_principal, Function.comp_apply,
-    Set.EqOn, Finset.mem_coe, Set.mem_setOf_eq, eventually_all_finset, eq_comm]
-  exact ⟨fun h n ↦ by simpa using h { n }, fun h s k hk ↦ h k⟩
+  let : UniformSpace R := ⊥
+  have : Topology.IsInducing ((↑) : ArithmeticFunction R → (ℕ → R)) := ⟨rfl⟩
+  simp [this.tendsto_nhds_iff, tendsto_pi_nhds]
 
 /-- The uniform space structure on arithmetic functions is complete.
 See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
-local instance : CompleteSpace (ArithmeticFunction R) where
-  complete {f} hf := by
-    simp_rw [Cauchy, nhds_eq_comap_uniformity, uniformity_eq, comap_iInf, comap_principal,
-      le_iInf_iff, le_principal_iff, Set.preimage_setOf_eq] at hf ⊢
-    obtain ⟨hf0, hf⟩ := hf
-    replace hf' : ∀ i, ∃ x : R, {a | x = a i} ∈ f := by
-      intro i
-      specialize hf {i}
-      simp_rw [Finset.coe_singleton, Set.eqOn_singleton, mem_prod_self_iff] at hf
-      obtain ⟨t, htf, ht⟩ := hf
-      obtain ⟨g₁, hg₁⟩ := hf0.nonempty_of_mem htf
-      exact ⟨g₁ i, Filter.mem_of_superset htf fun g₂ hg₂ ↦ @ht (g₁, g₂) ⟨hg₁, hg₂⟩⟩
-    choose g hg using hf'
-    refine ⟨⟨g, ?_⟩, fun s ↦ ?_⟩
-    · specialize hg 0
-      contrapose! hg
-      simp [hg]
-    · simp_rw [coe_mk, Set.EqOn, Finset.mem_coe, Set.setOf_forall, biInter_finset_mem]
-      exact fun i hi ↦ hg i
+local instance : CompleteSpace (ArithmeticFunction R) := by
+  let : UniformSpace R := ⊥
+  apply IsUniformInducing.completeSpace ⟨rfl⟩
+  apply IsClosed.isComplete
+  have : Set.range ((↑) : ArithmeticFunction R → (ℕ → R)) = {f | Function.eval 0 f = 0} := by
+    ext f
+    exact ⟨by rintro ⟨f, rfl⟩; simp, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
+  rw [this]
+  apply isClosed_setOf_map_zero
 
 /-- The Euler product of a family of arithmetic functions. Defined as a `tprod`, but see
 `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
@@ -95,13 +75,15 @@ noncomputable def eulerProduct (f : ι → ArithmeticFunction R) : ArithmeticFun
 theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
     (hf : ∀ n, ∀ᶠ i in cofinite, f i n = (1 : ArithmeticFunction R) n) :
     ∀ n, ∀ᶠ s in atTop, (∏ i ∈ s, f i) n = eulerProduct f n := by
+  let : UniformSpace R := ⊥
+  have : IsUniformInducing ((↑) : ArithmeticFunction R → (ℕ → R)) := ⟨rfl⟩
   classical
   suffices Multipliable f from tendsto_iff.mp this.hasProd
-  simp_rw [multipliable_iff_cauchySeq_finset, CauchySeq, cauchy_map_iff',
-    uniformity_eq, tendsto_comap_iff, tendsto_iInf, tendsto_principal, Function.comp_apply,
-    Set.EqOn, Finset.mem_coe, Set.mem_setOf_eq, eventually_all_finset]
-  intro s n hn
-  rw [prod_atTop_atTop_eq, eventually_atTop_prod_self]
+  simp_rw [multipliable_iff_cauchySeq_finset, CauchySeq, ← this.cauchy_map_iff,
+    Filter.map_map, cauchy_map_iff', Pi.uniformity, DiscreteUniformity.eq_principal_setRelId,
+    tendsto_iInf, tendsto_comap_iff, tendsto_principal, Function.comp_apply, prod_atTop_atTop_eq,
+    eventually_atTop_prod_self, SetRel.mem_id]
+  intro n
   replace hf : ∀ k ∈ Set.Iic n, ∀ᶠ (x : ι) in cofinite, (f x) k = (1 : ArithmeticFunction R) k :=
     fun k hk ↦ hf k
   rw [← eventually_all_finite (Set.finite_Iic n), eventually_iff_exists_mem] at hf
