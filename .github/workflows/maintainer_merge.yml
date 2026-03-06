@@ -31,9 +31,9 @@ jobs:
     name: Ping maintainers on Zulip
     runs-on: ubuntu-latest
     if: >- # crude check to skip running this on most reviews / comments
-      github.repository == 'leanprover-community/mathlib4' && 
+      github.repository == 'leanprover-community/mathlib4' &&
       (
-        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer merge') || 
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer merge') ||
         contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer delegate')
       )
     steps:
@@ -119,20 +119,24 @@ jobs:
           username: ${{ env.AUTHOR }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
-      - name: Checkout
+      - name: Checkout mathlib-ci
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: master
-          sparse-checkout: |
-            scripts/get_tlabel.py
-            scripts/maintainer_merge_message.py
+          repository: leanprover-community/mathlib-ci
+          ref: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
 
       - name: Determine Zulip topic
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         id: determine_topic
         run: |
-          ./scripts/get_tlabel.sh "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+          "${CI_SCRIPTS_DIR}/maintainer/get_tlabel.sh" "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -145,7 +149,7 @@ jobs:
 
           echo ""
           message="$(
-            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${COMMENT_EVENT}${COMMENT_REVIEW}" "${PR_AUTHOR}"
+            "${CI_SCRIPTS_DIR}/maintainer/maintainer_merge_message.sh" "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${COMMENT_EVENT}${COMMENT_REVIEW}" "${PR_AUTHOR}"
           )"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
 

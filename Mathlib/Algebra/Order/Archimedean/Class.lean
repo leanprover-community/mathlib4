@@ -504,7 +504,7 @@ theorem mulArchimedean_of_mk_eq_mk (h : ∀ a ≠ (1 : M), ∀ b ≠ 1, mk a = m
     · use 0
       simpa using hx
     · have hxy : mk x = mk y := h x hx.ne.symm y hy.ne.symm
-      obtain ⟨_, ⟨m, hm⟩⟩ := (mk_eq_mk).mp hxy
+      obtain ⟨_, ⟨m, hm⟩⟩ := mk_eq_mk.mp hxy
       rw [mabs_eq_self.mpr hx.le, mabs_eq_self.mpr hy.le] at hm
       exact ⟨m, hm⟩
 
@@ -644,7 +644,6 @@ theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) :
   apply le_of_eq
   simpa [mk_surjective, subsemigroup] using heq
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
   intro s t hst

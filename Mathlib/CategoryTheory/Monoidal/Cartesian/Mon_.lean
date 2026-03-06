@@ -6,6 +6,7 @@ Authors: Markus Himmel, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon_
 
@@ -33,8 +34,12 @@ instance uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
   default.isMonHom_hom.mul_hom := toUnit_unique _ _
   uniq f := Mon.Hom.ext (toUnit_unique _ _)
 
-instance : HasTerminal (Mon D) :=
-  hasTerminal_of_unique (Mon.trivial D)
+instance : HasZeroObject (Mon D) where
+  zero := ⟨Mon.trivial D,
+    fun A ↦ nonempty_unique (Mon.trivial D ⟶ A),
+    fun A ↦ nonempty_unique (A ⟶ Mon.trivial D)⟩
+
+noncomputable instance : HasZeroMorphisms (Mon D) := HasZeroObject.zeroMorphismsOfZeroObject
 
 end SemiCartesianMonoidalCategory
 

@@ -61,7 +61,6 @@ theorem integral_exp_neg_Ioi (c : ℝ) : (∫ x : ℝ in Ioi c, exp (-x)) = exp 
 theorem integral_exp_neg_Ioi_zero : (∫ x : ℝ in Ioi 0, exp (-x)) = 1 := by
   simpa only [neg_zero, exp_zero] using integral_exp_neg_Ioi 0
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integrableOn_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
     IntegrableOn (fun x : ℝ => Complex.exp (a * x)) (Ioi c) := by
   refine (integrable_norm_iff ?_).mp ?_
