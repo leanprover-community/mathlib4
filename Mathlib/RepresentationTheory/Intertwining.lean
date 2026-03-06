@@ -510,7 +510,7 @@ namespace TensorProduct
 
 noncomputable section
 
-/-- Equiv between representations induced from `TensorProduct.comm` -/
+/-- Equivalence between representations induced from `TensorProduct.comm`. -/
 def comm : (tprod ρ σ).Equiv (tprod σ ρ) :=
   .mk (_root_.TensorProduct.comm A V W) <| fun g ↦ by ext; simp
 
