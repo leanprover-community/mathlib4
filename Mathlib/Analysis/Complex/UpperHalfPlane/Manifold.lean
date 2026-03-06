@@ -83,10 +83,16 @@ lemma mdifferentiable_iff {f : ℍ → ℂ} :
      <| isOpen_upperHalfPlaneSet.mem_nhds hz⟩
 
 lemma contMDiff_num (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ num g τ) :=
-  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
+  by
+    simpa [num, smul_eq_mul] using
+      ((contMDiff_const : CMDiff n fun _ : ℍ ↦ ((g 0 0 : ℝ) : ℂ)).smul contMDiff_coe).add
+        (contMDiff_const : CMDiff n fun _ : ℍ ↦ ((g 0 1 : ℝ) : ℂ))
 
 lemma contMDiff_denom (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ denom g τ) :=
-  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
+  by
+    simpa [denom, smul_eq_mul] using
+      ((contMDiff_const : CMDiff n fun _ : ℍ ↦ ((g 1 0 : ℝ) : ℂ)).smul contMDiff_coe).add
+        (contMDiff_const : CMDiff n fun _ : ℍ ↦ ((g 1 1 : ℝ) : ℂ))
 
 lemma contMDiff_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) : CMDiff n (denom g · ^ k : ℍ → ℂ) := by
   intro τ
