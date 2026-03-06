@@ -287,7 +287,7 @@ lemma isIso_eTruncGE_obj_map_truncGEπ_app (a b : EInt) (h : a ≤ b) (X : C) :
     infer_instance
   | coe b =>
     induction a using WithBotTop.rec with
-    | bot => dsimp; infer_instance
+    | bot => infer_instance
     | coe a => exact t.isIso_truncGE_map_truncGEπ_app b a (by simpa using h) X
     | top => simp at h
   | top => exact ⟨0, IsZero.eq_of_src (by simp) _ _, IsZero.eq_of_src (by simp) _ _⟩
