@@ -303,6 +303,14 @@ lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.tor
   rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, SetLike.le_def]
   simp [not_imp_not, CommGroup.mem_torsion]
 
+@[to_additive]
+lemma isTorsion_quotient_range_powMonoidHom {n : ℕ} (hn : n ≠ 0) :
+    Monoid.IsTorsion (G ⧸ (powMonoidHom (α := G) n).range) := by
+  simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
+  refine fun g ↦ QuotientGroup.induction_on g fun a ↦ ⟨n, hn.pos, ?_⟩
+  rw [← QuotientGroup.mk_pow, QuotientGroup.eq_one_iff]
+  simp
+
 variable (p : ℕ) [hp : Fact p.Prime]
 
 /-- The `p`-primary component is the subgroup of elements with order prime-power of `p`. -/
@@ -356,12 +364,3 @@ theorem neg_one_mem_torsion : -1 ∈ CommMonoid.torsion M :=
   ⟨2, zero_lt_two, (isPeriodicPt_mul_iff_pow_eq_one _).mpr (by simp)⟩
 
 end
-
-@[to_additive]
-lemma CommGroup.isTorsion_quotient_range_powMonoidHom (A : Type*) [CommGroup A] {n : ℕ}
-    (hn : n ≠ 0) :
-    Monoid.IsTorsion (A ⧸ (powMonoidHom (α := A) n).range) := by
-  simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
-  refine fun g ↦ QuotientGroup.induction_on g fun a ↦ ⟨n, hn.pos, ?_⟩
-  rw [← QuotientGroup.mk_pow, QuotientGroup.eq_one_iff]
-  simp

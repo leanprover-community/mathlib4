@@ -675,7 +675,7 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
   index_ne_zero := relIndex_ne_zero
 
 @[to_additive]
-lemma isFiniteRelIndex_iff_relIndex_eq_zero : H.IsFiniteRelIndex K ↔ H.relIndex K ≠ 0 :=
+lemma isFiniteRelIndex_iff_relIndex_ne_zero : H.IsFiniteRelIndex K ↔ H.relIndex K ≠ 0 :=
   ⟨fun _ ↦ relIndex_ne_zero, IsFiniteRelIndex.mk⟩
 
 @[to_additive]
@@ -685,7 +685,7 @@ theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
 @[to_additive]
 lemma isFiniteRelIndex_iff_finiteIndex :
     H.IsFiniteRelIndex K ↔ (H.subgroupOf K).FiniteIndex := by
-  rw [isFiniteRelIndex_iff_relIndex_eq_zero, finiteIndex_iff, relIndex]
+  rw [isFiniteRelIndex_iff_relIndex_ne_zero, finiteIndex_iff, relIndex]
 
 @[to_additive]
 theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 :=
