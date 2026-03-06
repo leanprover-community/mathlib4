@@ -543,7 +543,7 @@ lemma assoc_symm_toLinearMap : (assoc ρ σ τ).symm.toLinearMap =
 lemma assoc_apply (v : V) (w : W) (u : U) : assoc ρ σ τ ((v ⊗ₜ w) ⊗ₜ u) = v ⊗ₜ (w ⊗ₜ u) := rfl
 
 variable (A) in
-/-- Equiv between representations induced from `TensorProduct.rid` -/
+/-- The `Equiv` between representations induced from `TensorProduct.rid` -/
 def rid : (σ.tprod (trivial A G A)).Equiv σ :=
   .mk' (_root_.TensorProduct.rid A W) <| fun g ↦ by ext; simp
 
