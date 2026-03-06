@@ -33,8 +33,6 @@ The names for these concepts are taken from the theory of convex cones.
 
 -/
 
--- TODO : add to_additive cleanups AddPointed -> Pointed, AddSpanning -> Spanning
-
 namespace Submonoid
 
 open scoped Pointwise
