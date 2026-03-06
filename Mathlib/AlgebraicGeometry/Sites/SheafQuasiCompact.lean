@@ -96,7 +96,7 @@ variable {A : Type*} [Category* A]
 for the Zariski topology and satisfies the sheaf property for all single object coverings
 `{ f : Spec S ⟶ Spec R }` where `f` satisifies `P`. -/
 @[stacks 022H]
-nonrec lemma isSheaf_propqcTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ A)
+nonrec lemma isSheaf_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ A)
     [IsZariskiLocalAtSource P] :
     Presheaf.IsSheaf (propQCTopology P) F ↔
       Presheaf.IsSheaf Scheme.zariskiTopology F ∧
