@@ -155,7 +155,7 @@ variable [CompleteSpace X]
 
 /-- The **Fredholm alternative** for compact operators: if `T` is a compact operator and `μ ≠ 0`,
 then either `μ` is an eigenvalue of `T`, or `μ` is in the resolvent set of `T`. -/
-theorem fredholm_alternative (hT : IsCompactOperator T) (hμ : μ ≠ 0) :
+theorem hasEigenvalue_or_mem_resolventSet (hT : IsCompactOperator T) (hμ : μ ≠ 0) :
     HasEigenvalue (T : End 𝕜 X) μ ∨ μ ∈ resolventSet 𝕜 T := by
   -- Suppose not, then `μ` is not an eigenvalue and is in the spectrum.
   by_contra!
