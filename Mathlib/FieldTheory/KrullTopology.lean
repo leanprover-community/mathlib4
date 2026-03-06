@@ -109,7 +109,7 @@ open IntermediateField in
 variable (K L) in
 set_option backward.isDefEq.respectTransparency false in
 /-- For a field extension `L/K`, the Krull topology on `Gal(L/K)` makes it a topological group. -/
-@[stacks 0BMJ "We define Krull topology directly without proving the universal property"]
+@[stacks 0BMJ "We define the Krull topology directly without proving the universal property"]
 instance : IsUniformGroup Gal(L/K) where
   uniformContinuous_div s hs := by
     rw [krullTopology_mem_uniformity_iff] at hs
