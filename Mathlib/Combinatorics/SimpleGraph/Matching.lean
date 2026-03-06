@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
+Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte, John Maar
 -/
 module
 
@@ -10,9 +10,12 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Data.Set.Card.Arithmetic
 public import Mathlib.Data.Set.Functor
-
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Order.Zorn
 /-!
 # Matchings
 
@@ -79,6 +82,20 @@ theorem IsMatching.toEdge_eq_of_adj (h : M.IsMatching) (hv : v ∈ M.verts) (hvw
 theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge := by
   rintro ⟨⟨x, y⟩, he⟩
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
+
+theorem IsMatching.toEdge_preimage (h : M.IsMatching) (huv : M.Adj u v) :
+    h.toEdge⁻¹' {⟨s(u, v), huv⟩} = {⟨u, M.edge_vert huv⟩, ⟨v, M.edge_vert huv.symm⟩} := by
+  ext w; refine ⟨fun hw ↦ ?_, fun hw ↦ ?_⟩
+  · simp only [Set.mem_preimage, toEdge, Set.mem_singleton_iff, Subtype.mk.injEq, Sym2.eq,
+     Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hw
+    obtain h|h := hw
+    · left; ext; simp only [h.1]
+    · right; ext; simp only [h.1]
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hw
+  obtain hw|hw := hw <;> simp only [hw, Set.mem_preimage, toEdge, Set.mem_singleton_iff,
+    Subtype.mk.injEq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, true_and, Prod.swap_prod_mk]
+  · simp only [(ExistsUnique.choose_eq_iff _).2 huv, true_or]
+  simp only [(ExistsUnique.choose_eq_iff _).2 huv.symm, or_true]
 
 theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)
     (hv : v ∈ M.verts) (hw : w ∈ M.verts) (ha : M.Adj v w) :
@@ -160,6 +177,17 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
+example {G' M : Subgraph G} (hMG' : M ≤ G') (u v : V) (huv : M.Adj u v) : G'.Adj u v := hMG'.2 huv
+
+lemma IsMatching.restrict {G' M : Subgraph G} (hM : M.IsMatching) (hMG' : M ≤ G') :
+    (G'.restrict M).IsMatching := by
+  intro v hv
+  obtain ⟨w, hw⟩ := hM hv
+  use ⟨w, hMG'.1 <| M.edge_vert hw.1.symm⟩
+  refine ⟨?_, fun y hy => SetCoe.ext <| hw.2 y hy.2⟩
+  simp only [comap_adj, coe_adj, hom_apply]
+  exact ⟨hMG'.2 hw.1, hw.1⟩
+
 lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s t)
     (f : s ≃ t) (hadj : ∀ v : s, G.Adj v (f v)) :
     ∃ M : Subgraph G, M.verts = s ∪ t ∧ M.IsMatching := by
@@ -224,6 +252,56 @@ theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts
   use M.coe.edgeFinset.card
   rw [← two_mul, ← M.coe.sum_degrees_eq_twice_card_edges]
   simp [h, Finset.card_univ]
+
+
+private lemma helper (f : V → W) (hf : ∀ y : W, (f⁻¹' {y}).Finite) (hW : Finite W) :
+    Finite V := by
+  have : (Set.univ : Set V) = ⋃ y : W, (f⁻¹' {y}) := by
+    ext x; constructor
+    · exact fun _ ↦ Set.mem_iUnion_of_mem (f x) rfl
+    exact fun _ ↦ Set.mem_univ x
+  suffices Finite (Set.univ : Set V) by exact Set.finite_univ_iff.mp this
+  rw [this]
+  simpa using Set.finite_iUnion (fun y => hf y)
+
+theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
+    M.verts.encard = 2 * M.edgeSet.encard := by
+  classical
+  by_cases! hMf : ¬ Finite M.verts
+  · suffices M.edgeSet.Infinite by simp [Set.encard_eq_top_iff.mpr hMf, this]
+    by_contra!
+    refine hMf <| helper h.toEdge (fun y ↦ ?_) this
+    obtain ⟨x, hx⟩ : ∃ x : V × V, s(x.1, x.2) = y.1 := by apply Sym2.mk_surjective
+    have : M.Adj x.1 x.2 := by
+      refine Subgraph.mem_edgeSet.mp ?_
+      rw [hx]
+      exact Subtype.coe_prop y
+    have : y = ⟨s(x.1, x.2), this⟩ := SetCoe.ext hx.symm
+    rw [this, h.toEdge_preimage]
+    simp only [Set.finite_insert, Set.finite_singleton]
+  have : Fintype M.verts := Set.Finite.fintype hMf
+  have : M.coe.edgeSet.encard = M.edgeSet.encard := by
+    refine Set.encard_congr ?_
+    refine Set.BijOn.equiv (Sym2.map fun a ↦ a.1) ?_
+    refine Set.BijOn.mk ?_ ?_ ?_
+    · refine Sym2.ind fun x y hxy ↦ ?_
+      simp at hxy
+      simpa
+    · refine Sym2.ind fun _ _ _ ↦ ?_
+      refine Sym2.ind fun _ _ _ hf ↦ ?_
+      simp [Subtype.val_inj] at hf
+      simpa
+    refine Sym2.ind fun x y hxy ↦ ?_
+    use s(⟨x, M.edge_vert hxy⟩, ⟨y, M.edge_vert hxy.symm⟩)
+    simp [hxy]
+  rw [← this, Set.encard_eq_coe_toFinset_card M.verts,
+   Set.encard_eq_coe_toFinset_card M.coe.edgeSet]
+  rw [isMatching_iff_forall_degree] at h
+  have := M.coe.sum_degrees_eq_twice_card_edges
+  simp only [coe_degree, Subtype.coe_prop, h, Finset.sum_const, Finset.card_univ, smul_eq_mul,
+    mul_one] at this
+  rw [Set.toFinset_card M.verts, this]
+  rfl
 
 theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
   refine ⟨?_, fun hm => ⟨fun v _ => hm v, fun v => ?_⟩⟩
@@ -611,5 +689,274 @@ lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_right
     {M' : Subgraph G'} (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :
     (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M'.spanningCoe := by
   simpa [symmDiff_comm] using isAlternating_symmDiff_left hM' hM
+
+noncomputable def matchingNumber (G : SimpleGraph V) : ℕ∞ :=
+  ⨆ (M : G.Subgraph) (_ : M.IsMatching), M.edgeSet.encard
+
+lemma matchingNumber.ge_of_IsMatching {G : SimpleGraph V} {M : Subgraph G} (hM : M.IsMatching) :
+    M.edgeSet.encard ≤ matchingNumber G := le_iSup₂_of_le M hM (le_refl _)
+
+lemma matchingNumber.le_iff {G : SimpleGraph V} {k : ℕ∞} :
+    matchingNumber G ≤ k ↔ ∀ (M : G.Subgraph) (_ : M.IsMatching), M.edgeSet.encard ≤ k :=
+  ⟨fun h _ hM ↦ le_trans (matchingNumber.ge_of_IsMatching hM) h, fun h ↦ iSup₂_le h⟩
+
+noncomputable def Matchings (G : SimpleGraph V) := {M : G.Subgraph // M.IsMatching}
+
+instance : PartialOrder (Matchings G) := {
+  le M N := M.val ≤ N.val
+  le_refl M := le_refl M.val
+  le_trans := fun _ _ _ h1 h2 ↦ le_trans h1 h2
+  le_antisymm := fun _ _ h1 h2 ↦ Subtype.ext <| le_antisymm h1 h2
+}
+
+lemma exists_max_matching (G : SimpleGraph V) : ∃ M : Matchings G, IsMax M := by
+  apply zorn_le
+  intro c hchain
+  let M := sSup (Subtype.val '' c)
+  have : M.IsMatching := by
+    intro v hv
+    simp only [Subgraph.verts_sSup, Set.mem_image, Subtype.exists, exists_and_right,
+      exists_eq_right, Set.iUnion_exists, Set.mem_iUnion, exists_prop, M] at hv
+    rcases hv with ⟨N, ⟨⟨h_matching, hNc⟩, hv⟩⟩
+    rcases h_matching hv with ⟨w, hw⟩
+    use w
+    constructor
+    · simp only [Subgraph.sSup_adj, Set.mem_image, Subtype.exists, exists_and_right,
+      exists_eq_right, M]
+      exact ⟨ N, ⟨h_matching, hNc⟩, hw.1⟩
+    intro u huv
+    simp only [Subgraph.sSup_adj, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+      M] at huv
+    rcases huv with ⟨N', ⟨⟨h_matching', hN'c⟩, huv⟩⟩
+    by_cases hN'N : N' ≤ N
+    · exact hw.2 u (hN'N.2 huv)
+    specialize hchain hNc hN'c (Ne.symm (ne_of_not_le hN'N))
+    have : N ≤ N' ∨ N' ≤ N := Or.comm.mp (id (Or.symm hchain))
+    simp only [hN'N, or_false] at this
+    obtain ⟨z, hz⟩ := h_matching' (this.1 hv)
+    exact Eq.trans (hz.2 u huv) (Eq.symm (hz.2 w (this.2 hw.1)))
+  use ⟨M, this⟩
+  exact fun _ hN ↦ le_sSup <| Set.mem_image_of_mem Subtype.val hN
+
+lemma matchingNumber.isAttained (G : SimpleGraph V) :
+    ∃ (M : G.Subgraph), M.IsMatching ∧ M.edgeSet.encard = matchingNumber G := by
+  by_cases h_zero : G.matchingNumber = 0
+  · exact ⟨⊥, ⟨fun _ hv ↦ by simp only [Subgraph.verts_bot, Set.mem_empty_iff_false] at hv,
+     by simp only [Subgraph.edgeSet_bot, Set.encard_empty, h_zero]⟩⟩
+  by_cases h_top : G.matchingNumber < ⊤
+  · rcases ENat.exists_eq_iSup_of_lt_top h_top with ⟨M, hM⟩
+    have matching : M.IsMatching := by
+      by_contra
+      apply h_zero
+      simp only [this, not_false_eq_true, iSup_neg, bot_eq_zero'] at hM
+      rw [hM]; rfl
+    simp only [matching, iSup_pos] at hM
+    exact ⟨M, ⟨matching, by rw [hM]; rfl⟩⟩
+  simp only [not_lt, top_le_iff] at h_top
+  rw [h_top]
+  obtain ⟨⟨M, matching⟩, hM⟩ := exists_max_matching G
+  use M, matching
+  by_contra
+  obtain ⟨k, hk⟩ := ENat.ne_top_iff_exists.mp this
+  obtain ⟨N, hN⟩ : ∃ (N : Subgraph G), N.IsMatching ∧ N.edgeSet.encard > 2*k := by
+    by_contra!
+    have : G.matchingNumber ≤ 2*k := matchingNumber.le_iff.mpr this
+    rw [h_top] at this
+    contradiction
+  obtain ⟨u, v, huv⟩ : ∃ u v : V, N.Adj u v ∧ u ∉ M.support ∧ v ∉ M.support := by
+    classical
+    by_cases! M_inhab : M.support = ∅
+    · have h : ∃ e, e ∈ N.edgeSet := by
+        refine Set.nonempty_def.mp ?_
+        exact Set.encard_pos.mp <| lt_of_le_of_lt (by simp) hN.2
+      obtain ⟨e, he⟩ := h
+      obtain ⟨x, rfl⟩ := Sym2.mk_surjective e
+      use x.1, x.2, he
+      simp [M_inhab]
+    replace M_inhab : Inhabited M.support :=
+      Classical.inhabited_of_nonempty <| Set.nonempty_coe_sort.mpr M_inhab
+    by_contra! h
+    let g : ∀ {s : Set M.support}, Nonempty s → s := fun hs ↦ Classical.choice hs
+    let f : Sym2 V → M.support := by
+      refine Sym2.lift.1
+        ⟨fun x y ↦ if h : Nonempty {z | z.1 ∈ ({x, y} : Set V)} then g h else default, ?_⟩
+      intro x y
+      simp only [nonempty_subtype, Subtype.exists, exists_prop, Set.mem_setOf_eq]
+      rw [Set.pair_comm]
+    have hf : Set.InjOn f N.edgeSet := by
+      apply Sym2.ind
+      intro a b hab
+      wlog ha : a ∈ M.support generalizing a b
+      · specialize this b a hab.symm <| h a b hab ha
+        rwa [Sym2.eq_swap]
+      apply Sym2.ind
+      intro c d hcd
+      wlog hc : c ∈ M.support generalizing c d
+      · specialize this d c hcd.symm <| h c d hcd hc
+        rwa [Sym2.eq_swap (a := c)]
+      intro hf
+      have hf1 : (f s(a,b)).1 = c ∨ (f s(a,b)).1 = d := by
+        rw [hf]
+        simp only [Set.coe_setOf, nonempty_subtype, Subtype.exists, exists_prop, Set.mem_setOf_eq,
+         Equiv.toFun_as_coe, Sym2.lift_mk, f]
+        rw [dif_pos ⟨c, hc, by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, true_or]⟩]
+        grind
+      have hf2 : (f s(a,b)).1 = a ∨ (f s(a,b)).1 = b := by
+        simp only [Set.coe_setOf, nonempty_subtype, Subtype.exists, exists_prop, Set.mem_setOf_eq,
+         Equiv.toFun_as_coe, Sym2.lift_mk, f]
+        rw [dif_pos ⟨a, ha, by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, true_or]⟩]
+        grind only [usr Subtype.property, = Set.mem_insert_iff, = Set.mem_singleton_iff]
+      rcases hf1 with rfl|rfl <;> rcases hf2 with hf2|hf2 <;> rw [hf2] <;> rw [hf2] at hcd
+      · exact Sym2.congr_right.mpr <| Subgraph.IsMatching.eq_of_adj_left hN.1 hab hcd
+      · rw [Sym2.eq_swap]
+        exact Sym2.congr_right.mpr <| Subgraph.IsMatching.eq_of_adj_left hN.1 hab.symm hcd
+      · rw [Sym2.eq_swap (a := c)]
+        exact Sym2.congr_right.mpr <| Subgraph.IsMatching.eq_of_adj_left hN.1 hab hcd.symm
+      · rw [Sym2.eq_swap, Sym2.eq_swap (a := c)]
+        exact Sym2.congr_right.mpr <| Subgraph.IsMatching.eq_of_adj_left hN.1 hab.symm hcd.symm
+    have := by calc
+      _ ≤ _ := Embedding.encard_le ⟨N.edgeSet.restrict f, Set.injOn_iff_injective.mp hf⟩
+      _ = 2 * k := by rw [matching.support_eq_verts,
+       Subgraph.isMatching.encard_eq_twice_edgeSet_encard matching, hk]
+      _ < N.edgeSet.encard := hN.2
+    simp at this
+  let M' := M  ⊔ (subgraphOfAdj G (N.adj_sub huv.1))
+  have M'_matching : M'.IsMatching := by
+    refine Subgraph.IsMatching.sup matching ?_ ?_
+    · exact Subgraph.IsMatching.subgraphOfAdj (N.adj_sub huv.left)
+    simp [huv]
+  have h1: (⟨M', M'_matching⟩: Matchings G) ≥ ⟨M, matching⟩ := Subtype.mk_le_mk.mpr le_sup_left
+  have h2: (⟨M', M'_matching⟩: Matchings G) ≤ ⟨M, matching⟩ := hM (Subtype.mk_le_mk.mpr le_sup_left)
+  have : M < M' := by
+    apply left_lt_sup.mpr
+    intro h
+    apply huv.2.1
+    apply Subgraph.support_mono h
+    apply (Subgraph.mem_support (G.subgraphOfAdj (N.adj_sub huv.left))).mpr
+    exact ⟨v, Subgraph.adj_symm (G.subgraphOfAdj (N.adj_sub huv.left)) (Subgraph.Adj.symm rfl)⟩
+  have : M < M := Std.lt_of_lt_of_le this h2
+  exact (and_not_self_iff ((fun G' ↦ (G'.verts, G'.spanningCoe)) M
+    ≤ (fun G' ↦ (G'.verts, G'.spanningCoe)) M)).mp this
+
+lemma matchingNumber.ge_iff {G : SimpleGraph V} {k : ℕ∞} :
+    k ≤ G.matchingNumber ↔ ∃ M : G.Subgraph, M.IsMatching ∧ k ≤ M.edgeSet.encard := by
+  constructor
+  · intro h
+    rcases matchingNumber.isAttained G with ⟨M, ⟨hM, hM2⟩⟩
+    rcases Set.exists_subset_encard_eq (le_of_le_of_eq h (id (Eq.symm hM2))) with ⟨S, hS⟩
+    let M' : Subgraph G := {
+      verts := {v | ∃ u, s(v,u) ∈ S}
+      Adj := fun u v ↦ s(u,v) ∈ S
+      adj_sub := fun h ↦ M.adj_sub (Subgraph.mem_edgeSet.1 (hS.1 h))
+      edge_vert := by intro _ v h; exact ⟨v, h⟩
+      symm := by intro _ _ h; rw [Sym2.eq_swap]; exact h
+    }
+    have : M'.IsMatching := by
+      intro u hu
+      simp only [M', Set.mem_setOf_eq] at hu
+      rcases hu with ⟨w, hw⟩
+      use w, hw
+      exact fun _ h ↦ Subgraph.IsMatching.eq_of_adj_left hM (Subgraph.mem_edgeSet.mp (hS.1 h))
+       (Subgraph.mem_edgeSet.mp (hS.1 hw))
+    use M', this
+    have : M'.edgeSet = S := by
+      apply subset_antisymm
+      · refine Sym2.ind fun _ _ h ↦ ?_
+        simp only [M', Subgraph.mem_edgeSet] at h
+        exact h
+      refine Sym2.ind fun _ _ h ↦ ?_
+      simpa only [Subgraph.mem_edgeSet]
+    rw [this, hS.2]
+  · intro ⟨M, hM, cardM⟩
+    exact le_trans cardM <| matchingNumber.ge_of_IsMatching hM
+
+lemma matchingNumber.le_of_mono {H : SimpleGraph W} (f : H →g G) (hf : Injective f) :
+    matchingNumber H ≤ matchingNumber G := by
+  refine matchingNumber.le_iff.mpr fun M hM ↦ ?_
+  apply matchingNumber.ge_iff.2
+  use Subgraph.map f M, Subgraph.IsMatching.map f hf hM
+  apply Set.encard_le_encard_of_injOn ?_ ?_
+  · exact Sym2.map f.1
+  · simp only [Subgraph.edgeSet_map]
+    exact Set.mapsTo_image (Sym2.map f) M.edgeSet
+  exact fun _ _ _ _ h ↦ Sym2.map.injective hf h
+
+lemma matchingNumber.le_of_subgraph (G : SimpleGraph V) (H : Subgraph G) :
+    matchingNumber H.coe ≤ matchingNumber G :=
+  matchingNumber.le_of_mono H.hom Subgraph.hom_injective
+
+lemma matchingNumber.eq_of_iso {H : SimpleGraph W} (f : H ≃g G) :
+    matchingNumber H = matchingNumber G := by
+  apply le_antisymm
+  · exact matchingNumber.le_of_mono f.toHom <| EquivLike.injective f.toEquiv
+  exact matchingNumber.le_of_mono f.symm.toHom  <| EquivLike.injective f.symm.toEquiv
+
+lemma matchingNumber.of_subgraph {G : SimpleGraph V} (H : Subgraph G) :
+    matchingNumber H.coe = ⨆ (M ≤ H) (_ : M.IsMatching), M.edgeSet.encard := by
+  classical
+  apply le_antisymm
+  · apply matchingNumber.le_iff.2
+    intro M hM
+    refine le_iSup_of_le (Subgraph.coeSubgraph M) ?_
+    refine le_iSup_of_le (Subgraph.coeSubgraph_le M) ?_
+    refine le_iSup_of_le (Subgraph.IsMatching.coeSubgraph hM) ?_
+    let f : Sym2 H.verts → Sym2 V := Sym2.map fun a ↦ ↑a
+    refine Embedding.encard_le ⟨?_, ?_⟩
+    · exact fun a ↦ ⟨f a.1, by
+        simp only [Subgraph.edgeSet_map, Subgraph.hom_apply,
+        Set.mem_image]; use a.1, a.2⟩
+    intro a b hab
+    simp only [Subtype.mk.injEq] at hab
+    exact SetCoe.ext <| Sym2.map.injective Subtype.val_injective hab
+  refine iSup₂_le ?_
+  simp only [iSup_le_iff]
+  intro M hMH hM
+  apply matchingNumber.ge_iff.2
+  use Subgraph.restrict M, Subgraph.IsMatching.restrict hM hMH
+  by_cases! h : H.verts ≠ ∅
+  · have : Inhabited H.verts := Classical.inhabited_of_nonempty <| Set.nonempty_iff_ne_empty'.mpr h
+    let f : V →  H.verts := fun a ↦ if ha : a ∈ H.verts then ⟨a, ha⟩ else default
+    have : Set.MapsTo (Sym2.map f) M.edgeSet (Subgraph.restrict M).edgeSet := by
+      intro y hy
+      obtain ⟨y, rfl⟩ := Sym2.mk_surjective y
+      have hy1 : y.1 ∈ H.verts := hMH.1 <| M.edge_vert hy
+      have hy2 : y.2 ∈ H.verts := hMH.1 <| M.edge_vert hy.symm
+      change s(f y.1, f y.2) ∈ (Subgraph.restrict M).edgeSet
+      simp only [hy1, ↓reduceDIte, hy2, Subgraph.mem_edgeSet, Subgraph.comap_adj, Subgraph.coe_adj,
+        Subgraph.hom_apply, f]
+      exact ⟨hMH.2 hy, hy⟩
+    refine Set.encard_le_encard_of_injOn this ?_
+    intro x hx y hy hxy
+    obtain ⟨y, rfl⟩ := Sym2.mk_surjective y
+    obtain ⟨x, rfl⟩ := Sym2.mk_surjective x
+    have hy1 : y.1 ∈ H.verts := hMH.1 <| M.edge_vert hy
+    have hy2 : y.2 ∈ H.verts := hMH.1 <| M.edge_vert hy.symm
+    have hx1 : x.1 ∈ H.verts := hMH.1 <| M.edge_vert hx
+    have hx2 : x.2 ∈ H.verts := hMH.1 <| M.edge_vert hx.symm
+    replace hxy : s(f x.1, f x.2) = s(f y.1, f y.2) := hxy
+    simp [f, hx1, hx2, hy1, hy2] at hxy
+    grind only [= Sym2.eq, = Sym2.rel_iff', = Prod.snd_swap, = Prod.fst_swap, #bd83, #96e6, #ee90]
+  have : M.edgeSet = ∅ := by
+    by_contra!
+    obtain ⟨x, y, hxy⟩ := Sym2.exists.mp this
+    have := hMH.1 <| M.edge_vert hxy
+    exact (ne_of_mem_of_not_mem' this id) h
+  simp only [this, Set.encard_empty, zero_le]
+
+lemma matchingNumber.of_matching (G : SimpleGraph V) (M : Subgraph G) (hM : M.IsMatching) :
+    matchingNumber M.coe = M.edgeSet.encard := by
+  rw [matchingNumber.of_subgraph]
+  apply le_antisymm
+  · refine iSup₂_le ?_
+    simp only [iSup_le_iff]
+    intro M' hM'M hM'
+    apply Set.encard_le_encard
+    have h1 : M'.edgeSet = M'.spanningCoe.edgeSet := rfl
+    have h2 : M.edgeSet = M.spanningCoe.edgeSet := rfl
+    rw [h1, h2]
+    apply edgeSet_subset_edgeSet.2
+    exact Subgraph.spanningCoe_le_of_le hM'M
+  refine le_iSup₂_of_le M (le_refl M) ?_
+  exact le_iSup_iff.mpr fun _ a ↦ a hM
 
 end SimpleGraph
