@@ -343,3 +343,14 @@ inductive WithTop.LE : WithTop α → WithTop α → Prop where
 instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩
 
 example (a : α) : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+-- Test translation of binder names starting with `h`: `hmax` turns into `hmin`.
+@[to_dual]
+theorem eq_of_min_of_max (hmax : ∀ x, x ≤ a) (hmin : ∀ x, a ≤ x) : a = b :=
+  le_antisymm (hmin b) (hmax b)
+
+/--
+info: eq_of_max_of_min {α : Type} [PartialOrder α] (a b : α) (hmin : ∀ (x : α), a ≤ x) (hmax : ∀ (x : α), x ≤ a) : a = b
+-/
+#guard_msgs in
+#check eq_of_max_of_min
