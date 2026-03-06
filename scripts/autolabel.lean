@@ -281,7 +281,7 @@ def getMatchingLabels (files : Array FilePath) : Array Label :=
   -- return sorted list of labels
   applicable |>.qsort (·.toString < ·.toString)
 
-/-- Helper function: union of all labels an all their dependent labels -/
+/-- Helper function: union of all labels and all their dependent labels -/
 partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label :=
   labels.flatMap fun label ↦
     (collectLabelsAndDependentLabels (mathlibLabelData label).dependencies).push label
@@ -289,8 +289,7 @@ partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label 
 /-- Reduce a list of labels to not include any which are dependencies of other
 labels in the list -/
 def dropDependentLabels (labels: Array Label) : Array Label :=
-  let dependentLabels := labels.flatMap fun label ↦
-    (mathlibLabelData label).dependencies
+  let dependentLabels := collectLabelsAndDependentLabels labels
   labels.filter (!dependentLabels.contains ·)
 
 /-!
