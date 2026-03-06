@@ -50,14 +50,17 @@ private theorem uniformity_eq : uniformity (ArithmeticFunction R) =
     comap (fun i ↦ (i.1, i.2)) (⨅ s : Finset ℕ, 𝓟 {((f : ℕ → R), g) | Set.EqOn f g s}) :=
   rfl
 
-/-- The topology on `ArithmeticFunction` is the topology of pointwise convergence.
+/-- A family `f i : ArithmeticFunction R` tends to `g` if and only if for each `n`, the `n`th
+coefficient of `f i` is eventually equal to the `n`th coefficient of `g`. If `R` is viewed as
+having the discrete topology, then this is the topology of pointwise convergence.
+
 See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
 private theorem tendsto_iff
     {f : ι → ArithmeticFunction R} {F : Filter ι} {g : ArithmeticFunction R} :
-    Tendsto f F (nhds g) ↔ ∀ n, Filter.Tendsto (fun i ↦ f i n) F (pure (g n)) := by
+    Tendsto f F (nhds g) ↔ ∀ n, ∀ᶠ i in F, f i n = g n := by
   simp_rw [nhds_eq_comap_uniformity,
     uniformity_eq, tendsto_comap_iff, tendsto_iInf, tendsto_principal, Function.comp_apply,
-    tendsto_pure, Set.EqOn, Finset.mem_coe, Set.mem_setOf_eq, eventually_all_finset, eq_comm]
+    Set.EqOn, Finset.mem_coe, Set.mem_setOf_eq, eventually_all_finset, eq_comm]
   exact ⟨fun h n ↦ by simpa using h { n }, fun h s k hk ↦ h k⟩
 
 /-- The uniform space structure on arithmetic functions is complete.
@@ -90,8 +93,8 @@ noncomputable def eulerProduct (f : ι → ArithmeticFunction R) : ArithmeticFun
 /-- If arithmetic functions `f i` converges to `1` pointwise, then the partial products
 `∏ i ∈ s, f i` converge to `eulerProduct f` pointwise. -/
 theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
-    (hf : ∀ n, Tendsto (fun i ↦ f i n) cofinite (pure ((1 : ArithmeticFunction R) n))) :
-    ∀ n, Tendsto (fun s : Finset ι ↦ (∏ i ∈ s, f i) n) atTop (pure (eulerProduct f n)) := by
+    (hf : ∀ n, ∀ᶠ i in cofinite, f i n = (1 : ArithmeticFunction R) n) :
+    ∀ n, ∀ᶠ s in atTop, (∏ i ∈ s, f i) n = (eulerProduct f n) := by
   classical
   suffices Multipliable f from tendsto_iff.mp this.hasProd
   simp_rw [multipliable_iff_cauchySeq_finset, CauchySeq, cauchy_map_iff',
@@ -100,7 +103,7 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
   intro s n hn
   rw [prod_atTop_atTop_eq, eventually_atTop_prod_self]
   replace hf : ∀ k ∈ Set.Iic n, ∀ᶠ (x : ι) in cofinite, (f x) k = (1 : ArithmeticFunction R) k :=
-    fun k hk ↦ tendsto_pure.mp (hf k)
+    fun k hk ↦ hf k
   rw [← eventually_all_finite (Set.finite_Iic n), eventually_iff_exists_mem] at hf
   obtain ⟨s, hs, hs'⟩ := hf
   let t := (mem_cofinite.mp hs).toFinset
