@@ -27,8 +27,8 @@ extension is infinite, this holds even when `f` is constant.
 References:
 
 - https://github.com/leanprover-community/mathlib4/pull/7788#issuecomment-1788132019
-- P. M. Cohn, *Basic Algebra: Groups, Rings and Fields*, Springer, 2003, Proposition 11.3.1.
-- N. Jacobson, *Basic Algebra II: Second Edition*, 1989 (Dover edition 2009), Theorem 8.38.
+- [P. M. Cohn, *Basic Algebra: Groups, Rings and Fields*][cohn_2003], Theorem 11.3.4
+- [N. Jacobson, *Basic Algebra II: Second Edition*][jacobson1989], Theorem 8.38
 
 -/
 
@@ -221,7 +221,7 @@ open scoped Polynomial.Bivariate
 variable {E : IntermediateField K K⟮X⟯}
 
 -- The proof of Lüroth's theorem begins here. We follow the approach from
--- P. M. Cohn, *Basic Algebra: Groups, Rings and Fields*, Springer, 2003, Theorem 11.3.4.
+-- [Cohn, Basic Algebra: Groups, Rings and Fields][cohn_2003].
 
 set_option backward.isDefEq.respectTransparency false in
 variable (E) in
