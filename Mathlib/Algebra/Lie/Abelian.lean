@@ -142,6 +142,7 @@ protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅
   simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
     toEnd_apply_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.LieIdeal.isLieAbelian_iff {I : LieIdeal R L} :
     IsLieAbelian I ↔ I ≤ LieModule.ker R L I := by
   refine ⟨fun hI x hx ↦ LieHom.mem_ker.mpr ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩

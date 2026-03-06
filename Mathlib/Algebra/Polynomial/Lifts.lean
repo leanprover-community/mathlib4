@@ -34,7 +34,7 @@ and that a monic polynomial that lifts can be lifted to a monic polynomial (of t
 ## Implementation details
 
 In general `R` and `S` are semirings, so `lifts` is a semiring. In the case of rings, see
-`lifts_iff_lifts_ring`.
+`lifts_iff_liftsRing`.
 
 Since we do not assume `R` to be commutative, we cannot say in general that the set of polynomials
 that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)
@@ -141,9 +141,9 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
   rw [degree_monomial, degree_monomial n h]
   exact mt (fun ha ↦ ha ▸ map_zero f) h
 
-/-- A polynomial lifts if and only if it can be lifted to a polynomial of the same degree. -/
-theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
-    ∃ q : R[X], map f q = p ∧ q.degree = p.degree := by
+/-- A polynomial that lifts can be lifted to a polynomial of the same support. -/
+theorem exists_support_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
+    ∃ q : R[X], map f q = p ∧ q.support = p.support := by
   rw [lifts_iff_coeff_lifts] at hlifts
   let g : ℕ → R := fun k ↦ (hlifts k).choose
   have hg : ∀ k, f (g k) = p.coeff k := fun k ↦ (hlifts k).choose_spec
@@ -153,7 +153,16 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     simp_rw [Finset.ext_iff, mem_support_iff, q, finset_sum_coeff, coeff_monomial,
       Finset.sum_ite_eq', ite_ne_right_iff, mem_support_iff, and_iff_left_iff_imp, not_imp_not]
     exact fun k h ↦ by rw [← hg, h, map_zero]
+  exact ⟨q, hq, hq'⟩
+
+/-- A polynomial lifts if and only if it can be lifted to a polynomial of the same degree. -/
+theorem exists_degree_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
+    ∃ q : R[X], map f q = p ∧ q.degree = p.degree := by
+  obtain ⟨q, hq, hq'⟩ := exists_support_eq_of_mem_lifts hlifts
   exact ⟨q, hq, congrArg Finset.max hq'⟩
+
+@[deprecated (since := "2026-02-11")]
+alias mem_lifts_and_degree_eq := exists_degree_eq_of_mem_lifts
 
 end LiftDeg
 

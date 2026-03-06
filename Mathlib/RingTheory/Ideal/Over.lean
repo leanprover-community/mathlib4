@@ -55,11 +55,7 @@ theorem comap_eq_of_scalar_tower_quotient [Algebra R S] [Algebra (R ⧸ p) (S �
   ext x
   rw [mem_comap, ← Quotient.eq_zero_iff_mem, ← Quotient.eq_zero_iff_mem, Quotient.mk_algebraMap,
     IsScalarTower.algebraMap_apply R (R ⧸ p) (S ⧸ P), Quotient.algebraMap_eq]
-  constructor
-  · intro hx
-    exact (injective_iff_map_eq_zero (algebraMap (R ⧸ p) (S ⧸ P))).mp h _ hx
-  · intro hx
-    rw [hx, map_zero]
+  exact map_eq_zero_iff _ h
 
 variable [Algebra R S]
 
@@ -329,12 +325,12 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
   rfl
 
 lemma ker_stabilizerHom :
-    (stabilizerHom P p G).ker = (P.toAddSubgroup.inertia G).subgroupOf _ := by
+    (stabilizerHom P p G).ker = (P.inertia G).subgroupOf _ := by
   ext σ
   simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq]
 
 theorem map_ker_stabilizer_subtype :
-    (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.toAddSubgroup.inertia G := by
+    (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.inertia G := by
   simp [ker_stabilizerHom, Ideal.inertia_le_stabilizer]
 
 instance (p : Ideal R) (P : Ideal A) [P.IsPrime] [P.LiesOver p] :
