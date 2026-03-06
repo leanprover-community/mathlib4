@@ -259,8 +259,8 @@ theorem eq_app_of_forall_eq {V : Opens X} {G : Sheaf C X} {f : F ⟶ G}
     f.val.app (op (iSup U)) s = G.val.map (homOfLE (by aesop_cat)).op t := by
   apply eq_of_locally_eq G U
   intro i
-  conv => lhs; equals f.1.app (op (U i)) (sf i) => rw[← h i]; simp
-  rw[ht i, ← ConcreteCategory.comp_apply, ← Functor.map_comp]
+  conv => lhs; equals f.1.app (op (U i)) (sf i) => rw [← h i]; simp
+  rw [ht i, ← ConcreteCategory.comp_apply, ← Functor.map_comp]
   congr
 
 end

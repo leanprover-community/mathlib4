@@ -118,18 +118,6 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
 
 end SurjectiveOnStalks
 
-variable [Balanced (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C)]
-  [(Opens.grothendieckTopology X).HasSheafCompose (forget C)]
-  [HasSheafify (Opens.grothendieckTopology X) C]
-  [(Opens.grothendieckTopology X).WEqualsLocallyBijective C]
-  [ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization C]
-
-theorem isLocallySurjective_iff' {F G : Sheaf C X} (φ : F ⟶ G) :
-    IsLocallySurjective φ.val ↔ Epi φ := by
-  change CategoryTheory.Sheaf.IsLocallySurjective φ ↔ Epi φ
-  rw [CategoryTheory.Sheaf.isLocallySurjective_iff_epi']
-  rfl
-
 end LocallySurjective
 
 end TopCat.Presheaf
@@ -142,7 +130,5 @@ theorem TopCat.Sheaf.isLocallySurjective_iff_epi {X : TopCat.{v}} {C : Type u} [
     [(Opens.grothendieckTopology X).WEqualsLocallyBijective C]
     [ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization C]
     {F G : Sheaf C X} (φ : F ⟶ G) :
-    TopCat.Presheaf.IsLocallySurjective φ.val ↔ Epi φ := by
-  change CategoryTheory.Sheaf.IsLocallySurjective φ ↔ Epi φ
-  rw [CategoryTheory.Sheaf.isLocallySurjective_iff_epi']
-  rfl
+    TopCat.Presheaf.IsLocallySurjective φ.val ↔ Epi φ :=
+  CategoryTheory.Sheaf.isLocallySurjective_iff_epi' ..
