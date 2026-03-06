@@ -787,6 +787,11 @@ instance diagonal_isStableUnderComposition [P.IsStableUnderComposition] [Respect
     exact P.comp_mem _ _ h₁
       (by simpa only [cancel_left_of_respectsIso] using P.pullback_snd _ _ h₂)
 
+instance [P.ContainsIdentities] [P.RespectsIso] : P.diagonal.ContainsIdentities where
+  id_mem _ := P.of_isIso _
+
+instance [P.IsMultiplicative] [P.IsStableUnderBaseChange] : P.diagonal.IsMultiplicative where
+
 set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.RespectsIso] :
     P.diagonal.IsStableUnderBaseChange :=

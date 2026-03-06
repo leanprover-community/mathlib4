@@ -92,7 +92,7 @@ lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
   refine ⟨fun H ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · obtain ⟨m, n, e⟩ := mem_lattice.mp H
     have := LinearIndependent.pair_iff.mp L.indep (m - α) (n - β)
-      (by simpa using by linear_combination e)
+      (by simp; linear_combination e)
     simp only [sub_eq_zero] at this
     norm_cast at this
     aesop
@@ -156,7 +156,6 @@ def latticeBasis : Basis (Fin 2) ℤ L.lattice :=
 def latticeEquivProd : L.lattice ≃ₗ[ℤ] ℤ × ℤ :=
   L.latticeBasis.repr ≪≫ₗ Finsupp.linearEquivFunOnFinite _ _ _ ≪≫ₗ .finTwoArrow ℤ ℤ
 
-set_option backward.isDefEq.respectTransparency false in
 lemma latticeEquiv_symm_apply (x : ℤ × ℤ) :
     (L.latticeEquivProd.symm x).1 = x.1 * L.ω₁ + x.2 * L.ω₂ := by
   simp [latticeEquivProd, Finsupp.linearCombination]
@@ -248,7 +247,6 @@ lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
   · simp
   · exact .sub (.div (by fun_prop) (by fun_prop) (by aesop (add simp sub_eq_zero))) (by fun_prop)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma weierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
     ℘[L - l₀] (-z) = ℘[L - -l₀] z := by
   simp only [weierstrassPExcept]
@@ -277,7 +275,7 @@ lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
   rw [weierstrassPExcept, ← Summable.tsum_add]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *]
   · exact ⟨_, L.hasSum_weierstrassPExcept _ _⟩
-  · exact summable_of_finite_support ((Set.finite_singleton l₀).subset (by simp_all))
+  · exact summable_of_hasFiniteSupport ((Set.finite_singleton l₀).subset (by simp_all))
 
 lemma weierstrassPExcept_def (l₀ : L.lattice) (z : ℂ) :
     ℘[L - l₀] z = ℘[L] z + (1 / l₀.1 ^ 2 - 1 / (z - l₀.1) ^ 2) := by
@@ -307,7 +305,6 @@ lemma differentiableOn_weierstrassP :
   convert L.differentiableOn_weierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma weierstrassP_neg (z : ℂ) : ℘[L] (-z) = ℘[L] z := by
   simp only [weierstrassP]
@@ -325,7 +322,7 @@ lemma not_continuousAt_weierstrassP (x : ℂ) (hx : x ∈ L.lattice) : ¬ Contin
     (((H.sub ((L.differentiableOn_weierstrassPExcept x).differentiableAt
       (L.compl_lattice_diff_singleton_mem_nhds x)).continuousAt).add
       (continuous_const (y := 1 / x ^ 2)).continuousAt).comp_of_eq
-      (continuous_add_left x).continuousAt (add_zero _) :)
+      (continuous_const_add x).continuousAt (add_zero _) :)
 
 end weierstrassP
 
@@ -434,7 +431,6 @@ end derivWeierstrassPExcept
 
 section Periodicity
 
-set_option backward.isDefEq.respectTransparency false in
 lemma derivWeierstrassPExcept_add_coe (l₀ : ℂ) (z : ℂ) (l : L.lattice) :
     ℘'[L - l₀] (z + l) = ℘'[L - (l₀ - l)] z := by
   simp only [derivWeierstrassPExcept]
@@ -533,7 +529,7 @@ lemma derivWeierstrassPExcept_sub (l₀ : L.lattice) (z : ℂ) :
   rw [derivWeierstrassP, derivWeierstrassPExcept, ← Summable.tsum_add, ← tsum_neg]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *, neg_div]
   · exact ⟨_, L.hasSum_derivWeierstrassPExcept _ _⟩
-  · exact summable_of_finite_support ((Set.finite_singleton l₀).subset (by simp_all))
+  · exact summable_of_hasFiniteSupport ((Set.finite_singleton l₀).subset (by simp_all))
 
 lemma derivWeierstrassPExcept_def (l₀ : L.lattice) (z : ℂ) :
     ℘'[L - l₀] z = ℘'[L] z + 2 / (z - l₀) ^ 3 := by
@@ -563,7 +559,6 @@ lemma differentiableOn_derivWeierstrassP :
   convert L.differentiableOn_derivWeierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivWeierstrassP_neg (z : ℂ) : ℘'[L] (-z) = - ℘'[L] z := by
   simp only [derivWeierstrassP]
@@ -573,7 +568,6 @@ lemma derivWeierstrassP_neg (z : ℂ) : ℘'[L] (-z) = - ℘'[L] z := by
   congr! with l
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivWeierstrassP_add_coe (z : ℂ) (l : L.lattice) :
     ℘'[L] (z + l) = ℘'[L] z := by
@@ -653,7 +647,7 @@ lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
           split_ifs with e
           · simp only [e, zpow_natCast, sub_self, mul_zero]
           · dsimp; norm_cast; ring
-        · exact summable_of_finite_support ((Set.finite_singleton ⟨l₀, hl₀⟩).subset (by simp_all))
+        · exact summable_of_hasFiniteSupport ((Set.finite_singleton ⟨l₀, hl₀⟩).subset (by simp_all))
     · have h₁ (l : L.lattice) : l.1 ≠ l₀ := fun e ↦ hl₀ (e ▸ l.2)
       simp [h₁, tsum_mul_left, sumInvPow, add_assoc,
         one_add_one_eq_two, ← zpow_natCast, -neg_add_rev]
@@ -675,7 +669,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
   -- We first find a `κ > 1`,
   -- such that the ball centered at `x` with radius `κ * ‖z - x‖` does not touch `L`.
   obtain ⟨κ, hκ, hκ'⟩ : ∃ κ : ℝ, 1 < κ ∧ ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ * κ < ‖l - x‖ := by
-    obtain ⟨κ, hκ, hκ'⟩ := Metric.isOpen_iff.mp ((continuous_mul_right ‖z - x‖).isOpen_preimage _
+    obtain ⟨κ, hκ, hκ'⟩ := Metric.isOpen_iff.mp ((continuous_mul_const ‖z - x‖).isOpen_preimage _
       (isClosedMap_dist x _
       (L.isClosed_of_subset_lattice (Set.diff_subset (t := {l₀})))).upperClosure.isOpen_compl) 1
       (by simpa [Complex.dist_eq, @forall_comm ℝ, norm_sub_rev x] using hx)
@@ -754,13 +748,17 @@ lemma hasFPowerSeriesOnBall_weierstrassPExcept (l₀ x : ℂ) (r : NNReal) (hr0 
     · simp
     · simp
     · intro l hl
-      simpa using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
+      simpa [-Metric.mem_closedBall, mem_closedBall_iff_norm]
+        using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
   · exact ENNReal.coe_pos.mpr hr0
   · intro z hz
     replace hz : ‖z‖ < r := by simpa using hz
     have := L.weierstrassPExceptSeries_hasSum l₀ (x + z) x
     simp only [add_sub_cancel_left] at this
-    convert this (fun l hl ↦ hz.trans (by simpa using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩)) with i
+    have A (l : ↥L.lattice) (hl : ↑l ≠ l₀) : r < ‖↑l - x‖ := by
+      simpa [-Metric.mem_closedBall, mem_closedBall_iff_norm] using
+        Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
+    convert this (fun l hl ↦ hz.trans (A l hl)) with i
     rw [weierstrassPExceptSeries, FormalMultilinearSeries.ofScalars_apply_eq,
       FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul]
 
@@ -951,7 +949,6 @@ def G (n : ℕ) : ℂ := ∑' l : L.lattice, (l ^ n)⁻¹
 lemma sumInvPow_zero : L.sumInvPow 0 = L.G := by
   ext; simp [sumInvPow, G]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma G_eq_zero_of_odd (n : ℕ) (hn : Odd n) : L.G n = 0 := by
   rw [← CharZero.eq_neg_self_iff, G, ← tsum_neg, ← (Equiv.neg _).tsum_eq]
   congr with l
@@ -1013,7 +1010,6 @@ private lemma iteratedDeriv_six_relation_mul_id_pow_six :
     show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local fun_prop] AnalyticAt.contDiffAt in
 private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
   refine .of_meromorphicOrderAt_pos (one_pos.trans_le ?_) (by simp [relation])

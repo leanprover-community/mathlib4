@@ -394,7 +394,6 @@ def toShortNFOfCharThree : VariableChange R :=
   letI : Invertible (2 : R) := ⟨2, h, h⟩
   W.toCharNeTwoNF
 
-set_option backward.whnf.reducibleClassField false in
 lemma toShortNFOfCharThree_a₂ : (W.toShortNFOfCharThree • W).a₂ = W.b₂ := by
   simp_rw [toShortNFOfCharThree, toCharNeTwoNF, variableChange_a₂, inv_one, Units.val_one, b₂]
   linear_combination (-W.a₂ - W.a₁ ^ 2) * CharP.cast_eq_zero R 3

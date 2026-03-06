@@ -117,7 +117,6 @@ theorem center_eq_iInf {s : Set G} (hs : closure s = ⊤) :
     center G = ⨅ g ∈ s, centralizer {g} := by
   rw [← centralizer_univ, ← coe_top, ← hs, centralizer_closure, centralizer_eq_iInf]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem center_eq_infi' {s : Set G} (hs : closure s = ⊤) :
     center G = ⨅ g : s, centralizer {(g : G)} := by
@@ -133,7 +132,6 @@ abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x *
       have := closure_le_centralizer_centralizer k
       Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
-set_option backward.whnf.reducibleClassField false in
 /-- The conjugation action of N(H) on H. -/
 @[simps]
 instance : MulDistribMulAction H.normalizer H where
