@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 
+import Mathlib.Algebra.CharP.Invertible
+
 /-! # Extreme points in strictly convex spaces
 
 This file collects some results of extreme points of sets in strictly convex spaces.
@@ -50,19 +52,19 @@ theorem disjoint_interior_extremePoints {E : Type*} [AddCommGroup E] [Module ℝ
   have h₁ : ∀ᶠ v in 𝓝[≠] 0, x - v ∈ S :=
     (tendsto_inf_left <| (continuous_sub_left _).tendsto' _ _ (sub_zero _)).eventually x_int
   have h₂ : ∀ᶠ v in 𝓝[≠] 0, x + v ∈ S :=
-    (tendsto_inf_left <| (continuous_add_left _).tendsto' _ _ (add_zero _)).eventually x_int
+    (tendsto_inf_left <| (continuous_const_add _).tendsto' _ _ (add_zero _)).eventually x_int
   obtain ⟨v, ⟨hv₁, hv₂⟩, (v_ne : v ≠ 0)⟩ := h₁.and h₂ |>.and eventually_mem_nhdsWithin |>.exists
-  have key : x ∈ openSegment ℝ (x - v) (x + v) := mem_openSegment_sub_add _ _ _
+  have key : x ∈ openSegment ℝ (x - v) (x + v) := mem_openSegment_sub_add _ _
   grind only [x_ext.2 hv₁ hv₂ key]
 
 /-- In a nontrivial normed space, the extreme points of the closed ball is contained in
 the sphere. -/
-theorem extremePoints_closedBall_subset_sphere [Nontrivial A] {r : ℝ} {x : A} :
+theorem extremePoints_closedBall_subset_sphere [Nontrivial A] {x : A} {r : ℝ} :
     extremePoints ℝ (closedBall x r) ⊆ sphere x r := by
   rw [← closedBall_diff_ball, subset_diff, ← interior_closedBall' _]
   exact ⟨extremePoints_subset, disjoint_interior_extremePoints _ |>.symm⟩
 
-theorem StrictConvexSpace.extremePoints_closedBall_eq_sphere [Nontrivial A] {r : ℝ} {x : A}
+theorem StrictConvexSpace.extremePoints_closedBall_eq_sphere [Nontrivial A] {x : A} {r : ℝ}
     [StrictConvexSpace ℝ A] : extremePoints ℝ (closedBall x r) = sphere x r :=
   antisymm extremePoints_closedBall_subset_sphere sphere_subset_extremePoints_closedBall'
 
