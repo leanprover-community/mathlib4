@@ -79,6 +79,7 @@ def eta : G ⟶ GrpCat.of (completion G) := GrpCat.ofHom {
   map_mul' _ _ := rfl
 }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_eta_iff_residuallyFinite : Mono (eta G) ↔ Group.ResiduallyFinite G := by
   rw [GrpCat.mono_iff_injective, injective_iff_map_eq_one,
     Group.residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
