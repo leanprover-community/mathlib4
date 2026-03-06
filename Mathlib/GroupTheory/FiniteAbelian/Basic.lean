@@ -196,24 +196,19 @@ end CommGroup
 namespace Subgroup
 
 @[to_additive]
-lemma finiteIndex_range_powMonoidHom_of_fg (A : Type*) [CommGroup A] [Group.FG A] {n : ℕ}
-    (hn : n ≠ 0) :
-    (powMonoidHom (α := A) n).range.FiniteIndex := by
-  refine finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_torsion _ ?_
+lemma isTorsion_quotient_range_powMonoidHom (A : Type*) [CommGroup A] {n : ℕ} (hn : n ≠ 0) :
+    Monoid.IsTorsion (A ⧸ (powMonoidHom (α := A) n).range) := by
   simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
   refine fun g ↦ QuotientGroup.induction_on g fun a ↦ ⟨n, hn.pos, ?_⟩
   rw [← QuotientGroup.mk_pow, QuotientGroup.eq_one_iff]
   simp
 
-/-- If `B` is a subgroup of the finitely generated commutative group `A` such that
-`B` contains all `n`th powers in `A`, then `B` has finite index in `A`. -/
-@[to_additive /-- If `B` is a subgroup of the finitely generated commutative
-additive group `A` such that `B` contains `n • A`, then `B` has finite index in `A`. -/]
-lemma finiteIndex_of_range_powMonoidHom_le {A : Type*} [CommGroup A] [Group.FG A]
-    (B : Subgroup A) {n : ℕ} (hn : n ≠ 0) (h : (powMonoidHom (α := A) n).range ≤ B) :
-    B.FiniteIndex :=
-  have := finiteIndex_range_powMonoidHom_of_fg A hn
-  finiteIndex_of_le h
+@[to_additive]
+lemma finiteIndex_range_powMonoidHom_of_fg (A : Type*) [CommGroup A] [Group.FG A] {n : ℕ}
+    (hn : n ≠ 0) :
+    (powMonoidHom (α := A) n).range.FiniteIndex :=
+  finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_torsion _ <|
+    isTorsion_quotient_range_powMonoidHom A hn
 
 @[to_additive]
 lemma isFiniteRelIndex_map_powMonoidHom_of_fg {A : Type*} [CommGroup A] {B : Subgroup A}
@@ -226,16 +221,6 @@ lemma isFiniteRelIndex_map_powMonoidHom_of_fg {A : Type*} [CommGroup A] {B : Sub
   rw [this]
   have := (Group.fg_iff_subgroup_fg B).mpr hB
   exact finiteIndex_range_powMonoidHom_of_fg B hn
-
-/-- If `B` and `C` are subgroups of the commutative group `A` such that `B` is finitely generated
-and `C` contains all `n`th powers of elements of `B`, then `C` has finite relative index in `B`. -/
-@[to_additive /-- If `B` and `C` are subgroups of the commutative additive group `A` such that `B`
-is finitely generated and `C` contains `n • B`, then `C` has finite relative index in `B`. -/]
-lemma isFiniteRelIndex_of_range_powMonoidHom_le {A : Type*} [CommGroup A] (B C : Subgroup A)
-    (hB : B.FG) {n : ℕ} (hn : n ≠ 0) (h : B.map (powMonoidHom (α := A) n) ≤ C) :
-    C.IsFiniteRelIndex B :=
-  have := isFiniteRelIndex_map_powMonoidHom_of_fg hB hn
-  isFiniteRelIndex_of_le B h
 
 end Subgroup
 
