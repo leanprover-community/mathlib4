@@ -73,6 +73,11 @@ theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
   obtain ⟨s, hs, rfl⟩ := Polynomial.isUnit_iff.mp H
   simp [hq, Polynomial.natDegree_C_mul hr] at hp'
 
+/-- In a field, the notion of primitive polynomials is degenerate. -/
+@[simp]
+theorem isPrimitive_iff_ne_zero {F : Type*} [Field F] (p : F[X]) : p.IsPrimitive ↔ p ≠ 0 :=
+  ⟨IsPrimitive.ne_zero, fun h _ hrp ↦ .mk0 _ fun hr ↦ ne_zero_of_dvd_ne_zero h hrp <| hr ▸ C_0⟩
+
 end Primitive
 
 variable {R : Type*} [CommRing R]
@@ -122,11 +127,7 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
       rw [← Nat.succ_injective h2]
       apply h1
   rw [h]
-  simp only [Finset.map_val, Function.comp_apply, Function.Embedding.coeFn_mk, Multiset.map_map]
-  refine congr (congr rfl ?_) rfl
-  ext a
-  rw [mul_comm]
-  simp [coeff_mul_X]
+  simp
 
 @[simp]
 theorem content_X_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by

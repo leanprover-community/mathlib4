@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Algebra.Order.BigOperators.Ring.List
-public import Mathlib.Algebra.Order.Group.Opposite
 
 /-!
 # Big operators on a multiset in ordered rings

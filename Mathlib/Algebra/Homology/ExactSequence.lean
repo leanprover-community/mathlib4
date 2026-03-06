@@ -136,6 +136,19 @@ lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
   subst hij hjk
   exact hS.exact i hk
 
+/-- The (exact) short complex consisting of maps `S.map' i j` and `S.map' j k` when we know
+that `S : ComposableArrows C n` is exact. -/
+abbrev Exact.sc' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by lia)
+    (hjk : j + 1 = k := by lia) (hk : k ≤ n := by lia) :
+    ShortComplex C :=
+  S.sc' hS.toIsComplex i j k
+
+/-- The short complex consisting of maps `S.map' i (i + 1)` and `S.map' (i + 1) (i + 2)`
+when we know that `S : ComposableArrows C n` is exact. -/
+abbrev Exact.sc (hS : S.Exact) (i : ℕ) (hi : i + 2 ≤ n := by lia) :
+    ShortComplex C :=
+  S.sc' hS.toIsComplex i (i + 1) (i + 2)
+
 /-- Functoriality maps for `ComposableArrows.sc'`. -/
 @[simps]
 def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
@@ -209,6 +222,7 @@ lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 
     S.IsComplex :=
   S.isComplex₂_iff.2 w
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=
   -- Disable `Fin.reduceFinMk` because otherwise `Precompose.map_one_succ` does not apply. (https://github.com/leanprover-community/mathlib4/issues/27382)

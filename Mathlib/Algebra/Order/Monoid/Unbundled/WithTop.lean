@@ -118,14 +118,30 @@ theorem add_eq_coe :
 lemma add_coe_eq_top_iff : x + b = ⊤ ↔ x = ⊤ := by simp
 lemma coe_add_eq_top_iff : a + y = ⊤ ↔ y = ⊤ := by simp
 
+lemma _root_.IsAddLeftRegular.withTop (ha : IsAddLeftRegular a) :
+    IsAddLeftRegular (a : WithTop α) := by
+  rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
+
+lemma _root_.IsAddRightRegular.withTop (ha : IsAddRightRegular a) :
+    IsAddRightRegular (a : WithTop α) := by
+  rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
+
+lemma _root_.AddLECancellable.withTop [LE α] (ha : AddLECancellable a) :
+    AddLECancellable (a : WithTop α) := by
+  rintro (_ | b) (_ | c)
+  · simp [none_eq_top]
+  · simp [none_eq_top]
+  · simp [some_eq_coe, ← coe_add, none_eq_top]
+  · simpa [none_eq_top, some_eq_coe, ← coe_add] using fun a ↦ ha a
+
 lemma add_right_inj [IsRightCancelAdd α] (hz : z ≠ ⊤) : x + z = y + z ↔ x = y := by
-  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]
+  lift z to α using hz; exact (IsAddRightRegular.all _).withTop.eq_iff
 
 lemma add_right_cancel [IsRightCancelAdd α] (hz : z ≠ ⊤) (h : x + z = y + z) : x = y :=
   (WithTop.add_right_inj hz).1 h
 
 lemma add_left_inj [IsLeftCancelAdd α] (hx : x ≠ ⊤) : x + y = x + z ↔ y = z := by
-  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]
+  lift x to α using hx; exact (IsAddLeftRegular.all _).withTop.eq_iff
 
 lemma add_left_cancel [IsLeftCancelAdd α] (hx : x ≠ ⊤) (h : x + y = x + z) : y = z :=
   (WithTop.add_left_inj hx).1 h
@@ -161,6 +177,14 @@ protected lemma add_lt_add_left [LT α] [AddLeftStrictMono α] (hx : x ≠ ⊤) 
 protected lemma add_lt_add_right [LT α] [AddRightStrictMono α] (hz : z ≠ ⊤) :
     x < y → x + z < y + z := by
   lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
+
+@[gcongr]
+protected theorem add_lt_add [Preorder α] [AddLeftStrictMono α] [AddRightStrictMono α]
+    (xz : x < z) (yw : y < w) : x + y < z + w := by
+  apply (WithTop.add_lt_add_left xz.ne_top yw).trans_le
+  cases w
+  · simp
+  · exact (WithTop.add_lt_add_right coe_ne_top xz).le
 
 protected lemma add_le_add_iff_left [LE α] [AddLeftMono α] [AddLeftReflectLE α] (hx : x ≠ ⊤) :
     x + y ≤ x + z ↔ y ≤ z := ⟨WithTop.le_of_add_le_add_left hx, fun _ ↦ by gcongr⟩
@@ -406,6 +430,9 @@ theorem one_lt_coe [LT α] : 1 < (a : WithBot α) ↔ 1 < a := coe_lt_coe
 theorem coe_lt_one [LT α] : (a : WithBot α) < 1 ↔ a < 1 := coe_lt_coe
 
 @[to_additive (attr := simp)]
+theorem bot_lt_one [LT α] : ⊥ < (1 : WithBot α) := bot_lt_coe _
+
+@[to_additive (attr := simp)]
 protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
   rfl
 
@@ -449,6 +476,22 @@ theorem add_eq_coe :
 
 lemma add_coe_eq_bot_iff : x + b = ⊥ ↔ x = ⊥ := by simp
 lemma coe_add_eq_bot_iff : a + y = ⊥ ↔ y = ⊥ := by simp
+
+lemma _root_.IsAddLeftRegular.withBot (ha : IsAddLeftRegular a) :
+    IsAddLeftRegular (a : WithBot α) := by
+  rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
+
+lemma _root_.IsAddRightRegular.withBot (ha : IsAddRightRegular a) :
+    IsAddRightRegular (a : WithBot α) := by
+  rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
+
+lemma _root_.AddLECancellable.withBot [LE α] (ha : AddLECancellable a) :
+    AddLECancellable (a : WithBot α) := by
+  rintro (_ | b) (_ | c)
+  · simp [none_eq_bot]
+  · simp [none_eq_bot]
+  · simp [some_eq_coe, ← coe_add, none_eq_bot]
+  · simpa [none_eq_bot, some_eq_coe, ← coe_add] using fun a ↦ ha a
 
 lemma add_right_inj [IsRightCancelAdd α] (hz : z ≠ ⊥) : x + z = y + z ↔ x = y := by
   lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]
@@ -659,13 +702,5 @@ protected def _root_.AddHom.withBotMap {M N : Type*} [Add M] [Add N] (f : AddHom
 protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }
-
--- instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
---   { WithBot.partialOrder, WithBot.addCommMonoid with
---     add_le_add_left := fun _ _ h c => add_le_add_left h c }
---
--- instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
---     LinearOrderedAddCommMonoid (WithBot α) :=
---   { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
 
 end WithBot

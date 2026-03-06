@@ -155,6 +155,11 @@ theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y
 theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x = y + n * (2 * π * I) := by
   simp only [exp_eq_exp_iff_exp_sub_eq_one, exp_eq_one_iff, sub_eq_iff_eq_add']
 
+@[grind .] lemma re_eq_re_of_cexp_eq_cexp {x y : ℂ} (h : cexp x = cexp y) :
+    x.re = y.re := by
+  obtain ⟨n, hn⟩ := exp_eq_exp_iff_exists_int.1 h
+  simp [hn]
+
 theorem log_exp_exists (z : ℂ) :
     ∃ n : ℤ, log (exp z) = z + n * (2 * π * I) := by
   rw [← exp_eq_exp_iff_exists_int, exp_log]
@@ -229,7 +234,7 @@ theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x :
   · refine continuous_ofReal.continuousAt.comp ?_
     refine (Real.continuousAt_log ?_).comp continuous_norm.continuousAt
     exact norm_ne_zero_iff.mpr <| slitPlane_ne_zero h
-  · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
+  · have h_cont_mul : Continuous fun x : ℂ => x * I := by fun_prop
     refine h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp ?_)
     exact continuousAt_arg h
 
@@ -261,3 +266,37 @@ theorem _root_.Continuous.clog {f : α → ℂ} (h₁ : Continuous f)
   continuous_iff_continuousAt.2 fun x => h₁.continuousAt.clog (h₂ x)
 
 end LogDeriv
+
+namespace Complex
+
+open Set
+open scoped Real
+
+/-- `Complex.exp` as an `OpenPartialHomeomorph` with `source = {z | -π < im z < π}` and
+`target = {z | 0 < re z} ∪ {z | im z ≠ 0}` (a.k.a. `slitPlane`).
+This definition is used to prove that `Complex.log`
+is complex differentiable at all points but the negative real semi-axis.
+-/
+noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
+  toFun := exp
+  invFun := log
+  source := {z : ℂ | z.im ∈ Ioo (-π) π}
+  target := slitPlane
+  map_source' := by
+    rintro ⟨x, y⟩ ⟨h₁ : -π < y, h₂ : y < π⟩
+    simp [exp_mem_slitPlane, h₂.ne,
+      (toIocMod_eq_self Real.two_pi_pos).mpr ⟨h₁, by simpa [two_mul] using h₂.le⟩]
+  map_target' z h := by
+    simp only [mem_setOf, log_im, mem_Ioo, neg_pi_lt_arg, arg_lt_pi_iff, true_and]
+    exact h.imp_left le_of_lt
+  left_inv' _x hx := log_exp hx.1 (le_of_lt hx.2)
+  right_inv' _x hx := exp_log <| slitPlane_ne_zero hx
+  open_source := isOpen_Ioo.preimage continuous_im
+  open_target := isOpen_slitPlane
+  continuousOn_toFun := by fun_prop
+  continuousOn_invFun := continuousOn_id.clog fun _ ↦ id
+
+@[deprecated (since := "2026-01-13")]
+alias expPartialHomeomorph := expOpenPartialHomeomorph
+
+end Complex

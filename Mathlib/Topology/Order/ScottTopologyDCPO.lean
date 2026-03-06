@@ -449,7 +449,7 @@ theorem scott_is_sober : Sober (TopCat.of D) := by
     use ⟨u, hu⟩
     ext x
     simp only [Set.mem_setOf_eq, Set.image]
-    dsimp only [topCatOpToFrm_obj_coe] at x
+    dsimp only [topToLocale_obj, topCatOpToFrm_obj_coe] at x
     constructor
     · intro he
       choose e he' using (surjectivity x)

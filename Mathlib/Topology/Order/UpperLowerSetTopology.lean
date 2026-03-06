@@ -94,8 +94,9 @@ lemma ofUpperSet_inj {a b : WithUpperSet α} : ofUpperSet a = ofUpperSet b ↔ a
 
 /-- A recursor for `WithUpperSet`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : WithUpperSet α → Sort*} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
-  fun a => h (ofUpperSet a)
+protected def rec {motive : WithUpperSet α → Sort*} (toUpperSet : ∀ a, motive (toUpperSet a)) :
+    ∀ a, motive a :=
+  fun a => toUpperSet (ofUpperSet a)
 
 instance [Nonempty α] : Nonempty (WithUpperSet α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithUpperSet α) := ‹Inhabited α›
@@ -140,8 +141,9 @@ lemma ofLowerSet_inj {a b : WithLowerSet α} : ofLowerSet a = ofLowerSet b ↔ a
 
 /-- A recursor for `WithLowerSet`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : WithLowerSet α → Sort*} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
-  fun a => h (ofLowerSet a)
+protected def rec {motive : WithLowerSet α → Sort*} (toLowerSet : ∀ a, motive (toLowerSet a)) :
+    ∀ a, motive a :=
+  fun a => toLowerSet (ofLowerSet a)
 
 instance [Nonempty α] : Nonempty (WithLowerSet α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithLowerSet α) := ‹Inhabited α›
@@ -218,8 +220,8 @@ lemma topology_eq : ‹_› = upperSet α := topology_eq_upperSetTopology
 
 variable {α}
 
-instance _root_.OrderDual.instIsLowerSet [Preorder α] [TopologicalSpace α] [Topology.IsUpperSet α] :
-    Topology.IsLowerSet αᵒᵈ where
+set_option backward.isDefEq.respectTransparency false in
+instance _root_.OrderDual.instIsLowerSet : Topology.IsLowerSet αᵒᵈ where
   topology_eq_lowerSetTopology := by ext; rw [IsUpperSet.topology_eq α]
 
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
@@ -324,8 +326,8 @@ lemma topology_eq : ‹_› = lowerSet α := topology_eq_lowerSetTopology
 
 variable {α}
 
-instance _root_.OrderDual.instIsUpperSet [Preorder α] [TopologicalSpace α] [Topology.IsLowerSet α] :
-    Topology.IsUpperSet αᵒᵈ where
+set_option backward.isDefEq.respectTransparency false in
+instance _root_.OrderDual.instIsUpperSet : Topology.IsUpperSet αᵒᵈ where
   topology_eq_upperSetTopology := by ext; rw [IsLowerSet.topology_eq α]
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to `WithLowerSet α`. -/

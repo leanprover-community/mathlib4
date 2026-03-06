@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.FieldTheory.IntermediateField.Algebraic
+public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.EssentialFiniteness
 
 /-!
@@ -35,6 +36,15 @@ namespace algebraAdjoinAdjoin
 scoped instance : Algebra (Algebra.adjoin F S) (adjoin F S) :=
   (Subalgebra.inclusion <| algebra_adjoin_le_adjoin F S).toAlgebra
 
+@[simp]
+theorem coe_algebraMap (x : Algebra.adjoin F S) :
+    (algebraMap (Algebra.adjoin F S) (adjoin F S) x : E) = x := rfl
+
+@[simp]
+theorem algebraMap_eq_gen_self {x : E} :
+    algebraMap (Algebra.adjoin F {x}) F⟮x⟯ ⟨x, Algebra.self_mem_adjoin_singleton F x⟩ =
+    AdjoinSimple.gen F x := rfl
+
 scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
     IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
   Subalgebra.inclusion.isScalarTower_left (algebra_adjoin_le_adjoin F S) _
@@ -45,10 +55,12 @@ scoped instance (X) [MulAction E X] : IsScalarTower (Algebra.adjoin F S) (adjoin
 scoped instance : FaithfulSMul (Algebra.adjoin F S) (adjoin F S) :=
   Subalgebra.inclusion.faithfulSMul (algebra_adjoin_le_adjoin F S)
 
+set_option backward.isDefEq.respectTransparency false in
 scoped instance : IsFractionRing (Algebra.adjoin F S) (adjoin F S) :=
   .of_field _ _ fun ⟨_, h⟩ ↦ have ⟨x, hx, y, hy, eq⟩ := mem_adjoin_iff_div.mp h
     ⟨⟨x, hx⟩, ⟨y, hy⟩, Subtype.ext eq⟩
 
+set_option backward.isDefEq.respectTransparency false in
 scoped instance : Algebra.IsAlgebraic (Algebra.adjoin F S) (adjoin F S) :=
   IsLocalization.isAlgebraic _ (nonZeroDivisors (Algebra.adjoin F S))
 
@@ -78,6 +90,7 @@ section FG
 
 variable {F}
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped algebraAdjoinAdjoin in
 lemma fg_top_iff :
     (⊤ : IntermediateField F E).FG ↔ Algebra.EssFiniteType F E := by
@@ -120,6 +133,7 @@ section AdjoinSimple
 
 variable (α : E)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem AdjoinSimple.isIntegral_gen : IsIntegral F (AdjoinSimple.gen F α) ↔ IsIntegral F α := by
   conv_rhs => rw [← AdjoinSimple.algebraMap_gen F α]
@@ -181,6 +195,27 @@ lemma _root_.Algebra.finite_of_essFiniteType_of_isAlgebraic
 @[deprecated (since := "2025-12-08")]
 alias finite_of_fg_of_isAlgebraic := Algebra.finite_of_essFiniteType_of_isAlgebraic
 
+section RingHom
+
+variable {A B C : Type*} [Field A] [CommSemiring B] [Field C] [Algebra A B]
+  [Algebra B C] [Algebra A C] [IsScalarTower A B C] (b : B)
+
+/-- Ring homomorphism between `A[b]` and `A⟮↑b⟯`. -/
+noncomputable def RingHom.adjoinAlgebraMapOfAlgebra :
+    Algebra.adjoin A {b} →+* A⟮((algebraMap B C) b)⟯ :=
+  RingHom.comp (Subalgebra.inclusion <|
+    algebra_adjoin_le_adjoin A {((algebraMap B C) b)}).toRingHom
+    (Algebra.RingHom.adjoinAlgebraMap b)
+
+noncomputable instance : Algebra (Algebra.adjoin A {b}) A⟮(algebraMap B C) b⟯ :=
+  RingHom.toAlgebra (RingHom.adjoinAlgebraMapOfAlgebra _)
+
+set_option backward.isDefEq.respectTransparency false in
+instance : IsScalarTower (Algebra.adjoin A {b}) A⟮(algebraMap B C) b⟯ C :=
+  IsScalarTower.of_algebraMap_eq' rfl
+
+end RingHom
+
 section Supremum
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E1 E2 : IntermediateField K L)
@@ -188,6 +223,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E1 E2 : IntermediateFi
 theorem le_sup_toSubalgebra : E1.toSubalgebra ⊔ E2.toSubalgebra ≤ (E1 ⊔ E2).toSubalgebra :=
   sup_le (show E1 ≤ E1 ⊔ E2 from le_sup_left) (show E2 ≤ E1 ⊔ E2 from le_sup_right)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra := by
   have : (adjoin E1 (E2 : Set L)).toSubalgebra = _ := adjoin_toSubalgebra_of_isAlgebraic fun x h ↦
@@ -213,10 +249,12 @@ theorem sup_toSubalgebra_of_isAlgebraic
   halg.elim (fun _ ↦ sup_toSubalgebra_of_isAlgebraic_left E1 E2)
     (fun _ ↦ sup_toSubalgebra_of_isAlgebraic_right E1 E2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sup_toSubalgebra_of_left [FiniteDimensional K E1] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
   sup_toSubalgebra_of_isAlgebraic_left E1 E2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sup_toSubalgebra_of_right [FiniteDimensional K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
   sup_toSubalgebra_of_isAlgebraic_right E1 E2
@@ -228,6 +266,7 @@ section Tower
 variable (E)
 variable {K : Type*} [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
 either `E / F` or `L / F` is algebraic, then `E(L) = E[L]`. -/
 theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
@@ -278,6 +317,7 @@ theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
   S.fg_of_fg_toSubalgebra S.toSubalgebra.fg_of_noetherian
 
+set_option backward.isDefEq.respectTransparency false in
 theorem induction_on_adjoin [FiniteDimensional F E] (P : IntermediateField F E → Prop)
     (base : P ⊥) (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
     (K : IntermediateField F E) : P K :=

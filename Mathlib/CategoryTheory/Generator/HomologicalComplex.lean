@@ -42,6 +42,7 @@ two (consecutive) degrees. -/
 noncomputable def separatingFamily (j : α × ι) : HomologicalComplex C c :=
   evalCompCoyonedaCorepresentative c (X j.1) j.2
 
+set_option backward.isDefEq.respectTransparency false in
 include hX in
 lemma isSeparating_separatingFamily :
     ObjectProperty.IsSeparating (.ofObj (separatingFamily c X)) := by

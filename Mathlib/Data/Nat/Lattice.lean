@@ -47,6 +47,12 @@ theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sS
     let ⟨k, hks, hk⟩ := h.exists_gt n
     (hn k hks).not_gt hk
 
+theorem sSup_of_not_bddAbove {s : Set ℕ} (h : ¬BddAbove s) : sSup s = 0 :=
+  Set.Infinite.Nat.sSup_eq_zero <| Set.infinite_of_not_bddAbove h
+
+lemma iSup_of_not_bddAbove {ι : Sort*} {f : ι → ℕ} (h : ¬ BddAbove (Set.range f)) :
+    (⨆ i, f i : ℕ) = 0 := Nat.sSup_of_not_bddAbove h
+
 @[simp]
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
   cases eq_empty_or_nonempty s with
