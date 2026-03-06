@@ -189,56 +189,32 @@ noncomputable def compatibilityTensorAux (Y Z : Π x : M, TangentSpace I x) :
   letI b : TangentSpace I x →L[ℝ] ℝ := mfderiv% ⟪Y, Z⟫ x
   b - ((innerSL ℝ (Z x)) ∘L (cov Y x)) - ((innerSL ℝ (Y x)) ∘L (cov Z x))
 
-lemma compatibilityTensorAux_apply (Y Z : Π x : M, TangentSpace I x) {x : M} (X₀ : TangentSpace I x) :
+lemma compatibilityTensorAux_apply (Y Z : Π x : M, TangentSpace I x)
+    {x : M} (X₀ : TangentSpace I x) :
     compatibilityTensorAux I cov Y Z x X₀ =
       NormedSpace.fromTangentSpace _ (mfderiv% ⟪Y, Z⟫ x X₀)
-      + inner ℝ (Z x) (cov Y x X₀) - inner ℝ (Y x) (cov Z x X₀) := by
+      - innerSL ℝ (Z x) (cov Y x X₀) - innerSL ℝ (Y x) (cov Z x X₀) := by
   unfold compatibilityTensorAux
   simp
-  -- change mfderiv% ⟪Y, Z⟫ x X₀ - (innerSL ℝ) (Z x) (cov Y x) X₀ = _
-  --congr
-  --let A := mfderiv% ⟪Y, Z⟫ x
-  --rw [Pi.sub_apply]
-  --rw [ContinuousLinearMap.comp_apply]
-
-  --simp
-
-  sorry
+  congr 1
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {x : M}
 
-set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 private lemma aux1 {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x}
     (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     compatibilityTensorAux I cov (f • σ) τ x = f x • compatibilityTensorAux I cov σ τ x := by
-  unfold compatibilityTensorAux
+  ext X₀
+  rw [compatibilityTensorAux_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
+    compatibilityTensorAux_apply]
   rw [product_smul_left, cov.isCovariantDerivativeOn.leibniz hσ hf]
-  ext X
-  simp
-  -- simp only [ContinuousLinearMap.comp_add, ContinuousLinearMap.comp_smulₛₗ,
-  --   RingHom.id_apply, Pi.smul_apply', map_smul, ContinuousLinearMap.smul_comp,
-  --   ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp',
-  --   coe_innerSL_apply, Pi.sub_apply, Pi.smul_apply, comp_apply]
-  --erw [ContinuousLinearMap.sub_apply, ContinuousLinearMap.sub_apply, ContinuousLinearMap.comp_apply]
-  -- conv =>
-  --   enter [1, 1, 2]
-  --   --erw [ContinuousLinearMap.add_apply]
-  -- conv =>
-  --   enter [1, 1, 2, 1]
-  --   --erw [ContinuousLinearMap.smul_apply]
-  rw [--ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply,
-    --ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply,
-    --innerSL_apply_apply, innerSL_apply_apply, ContinuousLinearMap.toSpanSingleton_apply,
-    inner_smul_right, mfderiv_smul (hσ.inner_bundle' hτ) hf]
-  simp only [smul_eq_mul, Pi.mul_apply, fromTangentSpace, ContinuousLinearEquiv.coe_coe,
-    ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
-  conv =>
-    enter [1, 1, 1, 2, 2]
-    dsimp [product]
-    rw [real_inner_comm]
-  rw [← sub_eq_zero]
-  ring
+  simp only [Pi.smul_apply', ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul',
+    Pi.smul_apply, ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, comp_apply,
+    ContinuousLinearMap.toSpanSingleton_apply, coe_innerSL_apply, map_smul]
+  erw [mfderiv_smul (hσ.inner_bundle' hτ) hf] -- identifying different tangent spaces
+  rw [inner_add_right, inner_smul_right, inner_smul_right, real_inner_comm (σ x) (τ x)]
+  simp only [← smul_eq_mul]
+  module
 
 variable {I} in
 private lemma aux2 (σ σ' τ : (x : M) → TangentSpace I x)
@@ -361,7 +337,6 @@ theorem compatibilityTensor_apply [FiniteDimensional ℝ E] (x : M)
   --rw [compatibilityTensorAux_apply]
   simp only [compatibilityTensorAux, ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp',
     coe_innerSL_apply, Pi.sub_apply, comp_apply]
-
   conv =>
     enter [1, 1]
     erw [ContinuousLinearMap.sub_apply]

@@ -53,8 +53,8 @@ lemma mfderiv_const_smul (s : M → F) {x : M} (a : 𝕜) (v : TangentSpace I x)
 set_option linter.flexible false in -- FIXME
 lemma mfderiv_smul [IsManifold I 1 M] {f : M → F} {s : M → 𝕜} {x : M} (hf : MDiffAt f x)
     (hs : MDiffAt s x) (v : TangentSpace I x) :
-    letI dsxv : 𝕜 := mfderiv% s x v
-    letI dfxv : F := mfderiv% f x v
+    letI dsxv := NormedSpace.fromTangentSpace (s x) (mfderiv% s x v)
+    letI dfxv := NormedSpace.fromTangentSpace (f x) (mfderiv% f x v)
     mfderiv% (s • f) x v = (s x) • dfxv + dsxv • f x := by
   set φ := chartAt H x
   -- TODO: the next two have should be special cases of the same lemma
