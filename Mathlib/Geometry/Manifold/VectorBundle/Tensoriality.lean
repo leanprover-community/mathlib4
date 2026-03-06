@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.Extend
+public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
-public import Mathlib.Geometry.Manifold.VectorBundle.IsBilinearPrelim
 
 /-!
 # The tensoriality criterion
@@ -260,7 +260,7 @@ noncomputable def mkHom₂
       · exact mdifferentiable_const ..
       · exact mdifferentiableAt_extend ..
       · exact mdifferentiableAt_extend .. }
-  H.toContinuousLinearMap
+  H.toLinearMap.toContinuousBilinearMap
 
 theorem mkHom₂_apply
     {φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
