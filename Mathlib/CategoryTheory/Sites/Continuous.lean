@@ -289,7 +289,6 @@ def sheafPushforwardContinuousComp'
 
 end Functor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F ⊣ G` is an adjunction between continuous functors, the associated
 pushforwards on sheaves are adjoint. -/
 @[simps!]
@@ -297,13 +296,13 @@ def Adjunction.sheafPushforwardContinuous {F : C ⥤ D} {G : D ⥤ C} (adj : F �
     (J : GrothendieckTopology C) (K : GrothendieckTopology D) [F.IsContinuous J K]
     [G.IsContinuous K J] :
     F.sheafPushforwardContinuous E J K ⊣ G.sheafPushforwardContinuous E K J where
-  unit.app P := { val := (adj.op.whiskerLeft _).unit.app P.val }
-  counit.app P := { val := (adj.op.whiskerLeft _).counit.app P.val }
+  unit.app P := { hom := (adj.op.whiskerLeft _).unit.app P.obj }
+  counit.app P := { hom := (adj.op.whiskerLeft _).counit.app P.obj }
   left_triangle_components P := by
     ext : 1
-    exact (adj.op.whiskerLeft _).left_triangle_components P.val
+    exact (adj.op.whiskerLeft _).left_triangle_components P.obj
   right_triangle_components P := by
     ext : 1
-    exact (adj.op.whiskerLeft _).right_triangle_components P.val
+    exact (adj.op.whiskerLeft _).right_triangle_components P.obj
 
 end CategoryTheory
