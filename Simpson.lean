@@ -232,7 +232,41 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
     (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b))
     (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc a b) x| ≤ M) :
     |F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a)| ≤ (b - a) ^ 3 * M / 24 := by
-  sorry
+  /-
+  证明思路：使用 Rolle 定理
+
+  1. 记 m = (a+b)/2 为中点，h = b-a
+
+  2. 构造辅助函数 G(t) = F(t) - F(a) - F'(m)(t-a) - K(t-a)²(t-b)
+     其中 K 的选择使得 G(b) = 0
+
+  3. 验证 G(a) = G(m) = G(b) = 0
+
+  4. 应用 Rolle 定理两次，得到存在 ξ₁ ∈ (a,m), ξ₂ ∈ (m,b) 使得 G'(ξ₁) = G'(ξ₂) = 0
+
+  5. 再次应用 Rolle 定理，得到存在 ξ ∈ (ξ₁,ξ₂) ⊂ (a,b) 使得 G''(ξ) = 0
+
+  6. 计算 G'''(t) = F'''(t) - 6K，由 G''(ξ) = 0 和 |F'''(ξ)| ≤ M 得到 |K| ≤ M/6
+
+  7. 代入 K 的定义，得到误差界 |F(b) - F(a) - F'(m)(b-a)| ≤ (b-a)³·M/24
+  -/
+
+  -- 步骤 1: 定义中点 m
+  have h_m_def : (a + b) / 2 ∈ Ioo a b := by sorry
+
+  -- 步骤 2: 定义误差项 E = F(b) - F(a) - F'(m)(b-a)
+  have h_E_def : ∃ (E : ℝ), E = F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a) := by sorry
+
+  -- 步骤 3: 构造辅助函数并应用 Rolle 定理
+  -- 存在 ξ ∈ (a,b) 使得 F(b) - F(a) - F'(m)(b-a) = F'''(ξ)·(b-a)³/24
+  have h_rolle_application : ∃ ξ ∈ Ioo a b,
+      F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a) =
+      (iteratedDerivWithin 3 F (Icc a b) ξ) * (b - a) ^ 3 / 24 := by sorry
+
+  -- 步骤 4: 利用三阶导数的界得到最终误差界
+  have h_final_bound : |F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a)| ≤ (b - a) ^ 3 * M / 24 := by sorry
+
+  exact h_final_bound
 
 /-- The standard error bound for Simpson's midpoint integration on a single interval `[[a, b]]`.
 
