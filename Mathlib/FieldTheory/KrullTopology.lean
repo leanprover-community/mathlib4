@@ -75,7 +75,7 @@ variable (K L) in
 @[no_expose]
 instance : UniformSpace Gal(L/K) := .ofCore
   { uniformity := ⨅ (F : IntermediateField K L) (_ : FiniteDimensional K F),
-    𝓟 {p | Set.EqOn p.1 p.2 F}
+      𝓟 {p | Set.EqOn p.1 p.2 F}
     refl := le_iInf₂ fun _ _ =>
       principal_mono.2 (SetRel.id_subset_iff.2 ⟨fun _ => Set.eqOn_refl _ _⟩)
     symm := tendsto_iInf_iInf fun _ => tendsto_iInf_iInf fun _ =>
