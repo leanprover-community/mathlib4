@@ -263,13 +263,13 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   ext U ⟨s, hx⟩
   apply ((isSheaf_iff_isSheaf_of_type J _).mp G'.2 _ hx).isSeparatedFor.ext
   rintro V i ⟨y, e'⟩
-  change (g₁.val.app _ ≫ G'.val.map _) _ = (g₂.val.app _ ≫ G'.val.map _) _
+  change (g₁.hom.app _ ≫ G'.obj.map _) _ = (g₂.hom.app _ ≫ G'.obj.map _) _
   rw [← NatTrans.naturality, ← NatTrans.naturality]
-  have E : (Sheaf.toImage f).val.app (op V) y = (Sheaf.image f).val.map i.op ⟨s, hx⟩ :=
+  have E : (Sheaf.toImage f).hom.app (op V) y = (Sheaf.image f).obj.map i.op ⟨s, hx⟩ :=
     Subtype.ext e'
-  have := congr_arg (fun f : F ⟶ G' => (Sheaf.Hom.val f).app _ y) e
+  have := congr_arg (fun f : F ⟶ G' => f.hom.app _ y) e
   dsimp at this ⊢
-  convert this <;> exact E.symm
+  cat_disch
 
 /-- The mono factorization given by `image_sheaf` for a morphism. -/
 def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Limits.MonoFactorisation f where
@@ -277,7 +277,6 @@ def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Limits.Mon
   m := Sheaf.imageι f
   e := Sheaf.toImage f
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
 noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F ⟶ F') :
     Limits.ImageFactorisation f where

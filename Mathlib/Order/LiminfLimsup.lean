@@ -308,6 +308,20 @@ theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
 theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
   @liminf_nat_add αᵒᵈ _ f k
 
+variable {f : Filter ι} {u : ι → α} {a : α}
+
+lemma le_limsup_of_frequently_le (hu : ∃ᶠ i in f, a ≤ u i)
+    (hu_le : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) : a ≤ limsup u f := by
+  refine le_limsup_of_le hu_le fun b hb ↦ ?_
+  obtain ⟨n, han, hnb⟩ := (hu.and_eventually hb).exists
+  exact han.trans hnb
+
+lemma liminf_le_of_frequently_le (hu : ∃ᶠ i in f, u i ≤ a)
+    (hu_le : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) : liminf u f ≤ a := by
+  refine liminf_le_of_le hu_le fun b hb ↦ ?_
+  obtain ⟨n, hna, hbn⟩ := (hu.and_eventually hb).exists
+  exact hbn.trans hna
+
 end ConditionallyCompleteLattice
 
 section CompleteLattice
@@ -575,6 +589,7 @@ theorem bliminf_or_le_inf_aux_left : (bliminf u f fun x => p x ∨ q x) ≤ blim
 theorem bliminf_or_le_inf_aux_right : (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f q :=
   bliminf_or_le_inf.trans inf_le_right
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
     e (blimsup u f p) = blimsup (e ∘ u) f p := by
   simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage_symm,
@@ -813,17 +828,6 @@ theorem exists_lt_of_le_liminf [AddZeroClass α] [AddLeftStrictMono α] {x ε : 
 end ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β}
-
-theorem le_limsup_of_frequently_le {b : β} (hu_le : ∃ᶠ x in f, b ≤ u x)
-    (hu : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
-    b ≤ limsup u f := by
-  contrapose! hu_le with h
-  exact eventually_lt_of_limsup_lt h hu
-
-theorem liminf_le_of_frequently_le {b : β} (hu_le : ∃ᶠ x in f, u x ≤ b)
-    (hu : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
-    liminf u f ≤ b :=
-  le_limsup_of_frequently_le (β := βᵒᵈ) hu_le hu
 
 theorem frequently_lt_of_lt_limsup {b : β}
     (hu : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)

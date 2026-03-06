@@ -154,7 +154,7 @@ theorem ofReal_norm_eq_lintegral (f : α →₁[μ] β) : ENNReal.ofReal ‖f‖
   (but only a.e.-equal). -/
 theorem ofReal_norm_sub_eq_lintegral (f g : α →₁[μ] β) :
     ENNReal.ofReal ‖f - g‖ = ∫⁻ x, ‖f x - g x‖ₑ ∂μ := by
-  simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_eq_enorm]
+  simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_right]
   apply lintegral_congr_ae
   filter_upwards [Lp.coeFn_sub f g] with _ ha
   simp only [ha, Pi.sub_apply]

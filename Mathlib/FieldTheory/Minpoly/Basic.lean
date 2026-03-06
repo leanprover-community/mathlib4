@@ -143,7 +143,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   have hx : IsIntegral A x := ⟨p, hm, hp⟩
   obtain h | h := hl _ ((minpoly A x).degree_modByMonic_lt hm)
   swap
-  · exact (h <| (aeval_modByMonic_eq_self_of_root hm hp).trans <| aeval A x).elim
+  · exact (h <| (aeval_modByMonic_eq_self_of_root hp).trans <| aeval A x).elim
   obtain ⟨r, hr⟩ := (modByMonic_eq_zero_iff_dvd hm).1 h
   rw [hr]
   have hlead := congr_arg leadingCoeff hr
@@ -230,6 +230,7 @@ theorem two_le_natDegree_iff (int : IsIntegral A x) :
   rw [iff_not_comm, ← natDegree_eq_one_iff, not_le]
   exact ⟨fun h ↦ h.trans_lt one_lt_two, fun h ↦ by linarith only [minpoly.natDegree_pos int, h]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem two_le_natDegree_subalgebra {B} [CommRing B] [Algebra A B] [Nontrivial B]
     {S : Subalgebra A B} {x : B} (int : IsIntegral S x) : 2 ≤ (minpoly S x).natDegree ↔ x ∉ S := by
   rw [two_le_natDegree_iff int, Iff.not]

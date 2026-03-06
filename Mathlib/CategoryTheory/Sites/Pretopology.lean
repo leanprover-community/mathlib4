@@ -110,7 +110,7 @@ See also [MM92] Chapter III, Section 2, Equation (2).
 -/
 @[stacks 00ZC]
 def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
-  sieves X S := ∃ R ∈ K X, R ≤ (S : Presieve _)
+  sieves X := {S | ∃ R ∈ K X, R ≤ (S : Presieve _)}
   top_mem' _ := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ => ⟨⟩⟩
   pullback_stable' X Y S g := by
     rintro ⟨R, hR, RS⟩
@@ -121,9 +121,9 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   transitive' := by
     rintro X S ⟨R', hR', RS⟩ R t
     choose t₁ t₂ t₃ using t
-    refine ⟨_, K.transitive _ _ hR' fun _ f hf => t₂ (RS _ hf), ?_⟩
+    refine ⟨_, K.transitive _ _ hR' fun _ f hf => t₂ (RS _ _ hf), ?_⟩
     rintro Y _ ⟨Z, g, f, hg, hf, rfl⟩
-    apply t₃ (RS _ hg) _ hf
+    apply t₃ (RS _ _ hg) _ _ hf
 
 theorem mem_toGrothendieck (K : Pretopology C) (X S) :
     S ∈ toGrothendieck K X ↔ ∃ R ∈ K X, R ≤ (S : Presieve X) :=
@@ -176,12 +176,13 @@ alias Pretopology.mem_ofGrothendieck := GrothendieckTopology.mem_toPretopology
 
 namespace Pretopology
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The trivial pretopology, in which the coverings are exactly singleton isomorphisms. This topology is
 also known as the indiscrete, coarse, or chaotic topology. -/
 @[stacks 07GE]
 def trivial : Pretopology C where
-  coverings X S := ∃ (Y : _) (f : Y ⟶ X) (_ : IsIso f), S = Presieve.singleton f
+  coverings X := {S | ∃ (Y : _) (f : Y ⟶ X) (_ : IsIso f), S = Presieve.singleton f}
   has_isos _ _ _ i := ⟨_, _, i, rfl⟩
   pullbacks X Y f S := by
     rintro ⟨Z, g, i, rfl⟩
@@ -199,9 +200,8 @@ def trivial : Pretopology C where
     · infer_instance
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): the next four lines were just "ext (W k)"
     apply funext
-    rintro W
-    apply Set.ext
-    rintro k
+    intro W
+    ext K
     constructor
     · rintro ⟨V, h, k, ⟨_⟩, hh, rfl⟩
       rw [hTi] at hh
@@ -218,9 +218,14 @@ instance orderBot : OrderBot (Pretopology C) where
     rintro ⟨Y, f, hf, rfl⟩
     exact K.has_isos f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The trivial pretopology induces the trivial Grothendieck topology. -/
 theorem toGrothendieck_bot : toGrothendieck (C := C) ⊥ = ⊥ :=
   (gi C).gc.l_bot
+
+@[gcongr]
+lemma toGrothendieck_mono {J K : Pretopology C} (h : J ≤ K) : J.toGrothendieck ≤ K.toGrothendieck :=
+  fun _ _ ⟨R, hR, hle⟩ ↦ ⟨R, h _ hR, hle⟩
 
 instance : InfSet (Pretopology C) where
   sInf T := {

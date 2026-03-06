@@ -244,7 +244,7 @@ Topology:
     order topology: 'OrderTopology'
     intermediate value theorem: 'intermediate_value_Icc'
     extreme value theorem: 'IsCompact.exists_isMinOn'
-    limit infimum and supremum: 'order/liminf_limsup.html'
+    limit infimum and supremum: 'Mathlib/Order/LiminfLimsup.html'
     topological group: 'IsTopologicalGroup'
     completion of an abelian topological group: 'UniformSpace.Completion.instAddCommGroup'
     infinite sum: 'HasSum'
@@ -306,7 +306,7 @@ Analysis:
     derivative of the inverse of a function: 'HasFDerivAt.of_local_left_inverse'
     Rolle's theorem: 'exists_deriv_eq_zero'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'
-    Taylor's theorem: 'analysis/calculus/taylor.html'
+    Taylor's theorem: 'Mathlib/Analysis/Calculus/Taylor.html'
     $C^k$ function: 'ContDiff'
     Leibniz formula: 'fderiv_mul'
     local extrema: 'IsLocalMin.fderiv_eq_zero'
@@ -319,7 +319,7 @@ Analysis:
     characterization of convexity: 'convexOn_of_deriv2_nonneg'
     Jensen's inequality (finite sum version): 'ConvexOn.map_sum_le'
     Jensen's inequality (integral version): 'ConvexOn.map_integral_le'
-    convexity inequalities: 'analysis/mean_inequalities.html'
+    convexity inequalities: 'Mathlib/Analysis/MeanInequalities.html'
     Carathéodory's theorem: 'convexHull_eq_union'
 
   Special functions:
@@ -397,7 +397,7 @@ Probability Theory:
     variance of a real-valued random variable: 'ProbabilityTheory.variance'
     independence of random variables: 'ProbabilityTheory.iIndepFun'
     Kolmogorov's $0$-$1$ law: 'ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atTop'
-    mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_of_integrable'
+    mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_eq_mul_integral'
     moment of a random variable: 'ProbabilityTheory.moment'
     Bernoulli law: 'PMF.bernoulli'
   Convergence of a sequence of random variables:
@@ -591,7 +591,6 @@ Logic and computation:
     Turing machine: 'Turing.TM0.Machine'
     halting problem: 'ComputablePred.halting_problem'
     Rice theorem: 'ComputablePred.rice'
-    combinatorial game: 'SetTheory.Game'
     Turing degrees: 'TuringDegree'
   Complexity:
     polynomial-time computation: 'Turing.TM2ComputableInPolyTime'
