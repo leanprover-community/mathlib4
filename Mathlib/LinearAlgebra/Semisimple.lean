@@ -60,7 +60,6 @@ structure on `M` is semisimple. This is equivalent to saying that every `f`-inva
 of `M` has an `f`-invariant complement: see `Module.End.isSemisimple_iff`. -/
 def IsSemisimple := IsSemisimpleModule R[X] (AEval' f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A weaker version of semisimplicity that only prescribes behaviour on finitely-generated
 submodules. -/
 def IsFinitelySemisimple : Prop :=
@@ -95,7 +94,6 @@ lemma isSemisimple_restrict_iff (p) (hp : p ∈ invtSubmodule f) :
     exists_and_left, exists_and_right, invtSubmodule.mk_eq_bot_iff, exists_prop, and_assoc]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear endomorphism is finitely semisimple if it is semisimple on every finitely-generated
 invariant submodule.
 
@@ -140,7 +138,6 @@ lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisim
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
   exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_isNilpotent_of_isFinitelySemisimple
     (hn : IsNilpotent f) (hs : IsFinitelySemisimple f) : f = 0 := by
   have (p) (hp₁ : p ∈ f.invtSubmodule) (hp₂ : Module.Finite R p) : f.restrict hp₁ = 0 := by
@@ -202,7 +199,6 @@ lemma isFinitelySemisimple_sub_algebraMap_iff {μ : R} :
   refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
   simpa using p.add_mem (h hx) (p.smul_mem μ hx)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsFinitelySemisimple.restrict {p : Submodule R M} (hp : p ∈ f.invtSubmodule)
     (hf : f.IsFinitelySemisimple) :
     IsFinitelySemisimple (f.restrict hp) := by
@@ -304,14 +300,14 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ K[f, g]) :
   have : IsReduced S := by
     simp_rw [S, AdjoinRoot, ← Ideal.isRadical_iff_quotient_reduced, ← isRadical_iff_span_singleton]
     exact (PerfectField.separable_iff_squarefree.mpr hg.minpoly_squarefree).map.squarefree.isRadical
-  let φ : S →ₐ[K] End K M := Ideal.Quotient.liftₐ _ (eval₂AlgHom' (Ideal.Quotient.liftₐ _ (aeval f)
+  let φ : S →ₐ[K] End K M := Ideal.Quotient.liftₐ _ (eval₂AlgHom (Ideal.Quotient.liftₐ _ (aeval f)
     fun a ↦ ?_) g ?_) ((Ideal.span_singleton_le_iff_mem _).mpr ?_ : _ ≤ RingHom.ker _)
   rotate_left 1
   · rw [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly]; exact id
   · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, commute_algebraMap_left])
       (fun p q hp hq ↦ by simpa [R] using hp.add_left hq)
       fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using (·.mul_left comm)
-  · simpa only [RingHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
+  · simpa only [RingHom.mem_ker, eval₂AlgHom_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
       using minpoly.aeval K g
   have : K[f, g] ≤ φ.range := adjoin_le fun x ↦ by
     rintro (hx | hx) <;> rw [hx]

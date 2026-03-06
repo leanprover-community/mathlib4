@@ -116,6 +116,7 @@ theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ 
 theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := by
   simp only [le_antisymm_iff, add_le_add_iff_right]
 
+@[simp]
 theorem add_eq_zero_iff {a b : Ordinal} : a + b = 0 ↔ a = 0 ∧ b = 0 :=
   inductionOn₂ a b fun α r _ β s _ => by
     simp_rw [← type_sum_lex, type_eq_zero_iff_isEmpty]
@@ -155,8 +156,11 @@ theorem one_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) : 1 < o :=
 theorem zero_or_succ_or_isSuccLimit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsSuccLimit o := by
   simpa using isMin_or_mem_range_succ_or_isSuccLimit o
 
-/-- Main induction principle of ordinals: if one can prove a property by
-  induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
+/-- Limit induction on ordinals: if one can prove a property by induction at successor ordinals and
+at limit ordinals, then it holds for all ordinals.
+
+Note that this is just a special (though sometimes convenient) case of the more general
+well-founded recursion `WellFoundedLT.fix`. -/
 @[elab_as_elim]
 def limitRecOn {motive : Ordinal → Sort*} (o : Ordinal)
     (zero : motive 0) (succ : ∀ o, motive o → motive (succ o))
@@ -570,23 +574,16 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
     [IsWellOrder β s] : type (Prod.Lex s r) = type r * type s :=
   rfl
 
-set_option backward.privateInPublic true in
-private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
-  inductionOn a fun α _ _ =>
-    inductionOn b fun β _ _ => by
-      simp_rw [← type_prod_lex, type_eq_zero_iff_isEmpty]
-      rw [or_comm]
-      exact isEmpty_prod
+private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 := by
+  induction a, b using inductionOn₂ with | _ α _ β _
+  simp_rw [← type_prod_lex, type_eq_zero_iff_isEmpty, isEmpty_prod, iff_true_intro or_comm]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance monoidWithZero : MonoidWithZero Ordinal :=
-  { Ordinal.monoid with
-    mul_zero := fun _a => mul_eq_zero'.2 <| Or.inr rfl
-    zero_mul := fun _a => mul_eq_zero'.2 <| Or.inl rfl }
+instance monoidWithZero : MonoidWithZero Ordinal where
+  mul_zero _ := by exact mul_eq_zero'.2 (.inr rfl)
+  zero_mul _ := by exact mul_eq_zero'.2 (.inl rfl)
 
-instance noZeroDivisors : NoZeroDivisors Ordinal :=
-  ⟨fun {_ _} => mul_eq_zero'.1⟩
+instance noZeroDivisors : NoZeroDivisors Ordinal where
+  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_zero'.1
 
 @[simp]
 theorem lift_mul (a b : Ordinal.{v}) : lift.{u} (a * b) = lift.{u} a * lift.{u} b :=

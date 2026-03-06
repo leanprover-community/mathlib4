@@ -684,7 +684,6 @@ end minpoly
 
 namespace IntermediateField
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The separable degree of `F⟮α⟯ / F` is equal to the separable degree of the
 minimal polynomial of `α` over `F`. -/
 theorem finSepDegree_adjoin_simple_eq_natSepDegree {α : E} (halg : IsAlgebraic F α) :

@@ -145,6 +145,7 @@ private lemma circleAverage_re_smul_on_ball_zero_aux {φ θ : ℝ} {r : ℝ} :
 ## Integral Formulas
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 -- Version of `DiffContOnCl.circleAverage_re_smul` in case where the center of the ball is zero.
 private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
     (hf : DiffContOnCl ℂ f (ball 0 R)) (hw : w ∈ ball 0 R) :
