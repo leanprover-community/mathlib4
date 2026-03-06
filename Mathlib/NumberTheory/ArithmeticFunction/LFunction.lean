@@ -94,7 +94,7 @@ noncomputable def eulerProduct (f : ι → ArithmeticFunction R) : ArithmeticFun
 `∏ i ∈ s, f i` converge to `eulerProduct f` pointwise. -/
 theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
     (hf : ∀ n, ∀ᶠ i in cofinite, f i n = (1 : ArithmeticFunction R) n) :
-    ∀ n, ∀ᶠ s in atTop, (∏ i ∈ s, f i) n = (eulerProduct f n) := by
+    ∀ n, ∀ᶠ s in atTop, (∏ i ∈ s, f i) n = eulerProduct f n := by
   classical
   suffices Multipliable f from tendsto_iff.mp this.hasProd
   simp_rw [multipliable_iff_cauchySeq_finset, CauchySeq, cauchy_map_iff',
