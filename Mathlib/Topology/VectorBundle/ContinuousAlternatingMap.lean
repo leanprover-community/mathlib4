@@ -237,23 +237,16 @@ theorem continuousAlternatingMap_trivializationAt (x₀ : B) :
     trivializationAt (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x) x₀ =
     (trivializationAt F₁ E₁ x₀).continuousAlternatingMap 𝕜 ι (trivializationAt F₂ E₂ x₀) := rfl
 
-/-
-{E₁ : B → Type*} [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
-[TopologicalSpace (TotalSpace F₁ E₁)] {F₂ : Type*}
-[NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*} [∀ x, AddCommGroup (E₂ x)]
-[∀ x, Module 𝕜 (E₂ x)]
-[TopologicalSpace (TotalSpace F₂ E₂)] [TopologicalSpace B] {e₁ : Trivialization F₁ (π F₁ E₁)}
-(e₁' : Trivialization F₁ (π F₁ E₁)) {e₂ : Trivialization F₂ (π F₂ E₂)}
-(e₂' : Trivialization F₂ (π F₂ E₂)) [Fintype ι]
-[∀ x : B, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
-[∀ x : B, TopologicalSpace (E₂ x)]
-[FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂] [∀ x, IsTopologicalAddGroup (E₂ x)]
-[∀ x, ContinuousSMul 𝕜 (E₂ x)]
-[he₁ : MemTrivializationAtlas e₁] [he₂ : MemTrivializationAtlas e₂]
--/
 
 variable {𝕜 ι} (F₁ E₁ F₂ E₂) in
-def ContinuousAlternatingMap.inCoordinates := _
+def ContinuousAlternatingMap.inCoordinates (x₀ x : B) (y₀ y : B') (ϕ : E x →L[σ] E' y) : F →SL[σ] F' := :=
+ ((trivializationAt F₂ E₂ y₀).continuousLinearMapAt 𝕜₂ y).comp <|
+    ϕ.comp <| (trivializationAt F E x₀).symmL 𝕜₁ x
+
+/-
+ ((trivializationAt F' E' y₀).continuousLinearMapAt 𝕜₂ y).comp <|
+    ϕ.comp <| (trivializationAt F E x₀).symmL 𝕜₁ x
+-/
 
 /-
 info: ContinuousLinearMap.inCoordinates.{u_2, u_3, u_4, u_5, u_6, u_7, u_8, u_9} {B : Type u_2} (F : Type u_3)
