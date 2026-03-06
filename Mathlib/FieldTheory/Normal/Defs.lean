@@ -71,6 +71,10 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
     exact ⟨hx.tower_top, hhx.of_dvd (map_ne_zero (map_ne_zero (minpoly.ne_zero hx)))
       ((map_dvd_map' _).mpr (minpoly.dvd_map_of_isScalarTower F K x))⟩
 
+set_option backward.isDefEq.respectTransparency false in
+instance IntermediateField.normal (K : IntermediateField F E) [Normal F E] : Normal K E :=
+  Normal.tower_top_of_normal F K E
+
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
   h.toIsAlgebraic.bijective_of_isScalarTower' ϕ
 
