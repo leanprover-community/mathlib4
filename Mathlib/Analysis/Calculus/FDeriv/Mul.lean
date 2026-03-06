@@ -391,6 +391,7 @@ variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing �
   [NormedAlgebra 𝕜 𝔸'] {u : Finset ι} {f : ι → E → 𝔸} {f' : ι → E →L[𝕜] 𝔸} {g : ι → E → 𝔸'}
   {g' : ι → E →L[𝕜] 𝔸'}
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem hasStrictFDerivAt_list_prod' [Finite ι] {l : List ι} {x : ι → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
@@ -434,7 +435,7 @@ theorem hasFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ ((List.finRange n).map x).prod)
       (∑ i : Fin n, (((List.finRange n).take i).map x).prod •
         proj i <• (((List.finRange n).drop (.succ i)).map x).prod) x :=
-  (hasStrictFDerivAt_list_prod_finRange').hasFDerivAt
+  hasStrictFDerivAt_list_prod_finRange'.hasFDerivAt
 
 @[fun_prop]
 theorem hasFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :

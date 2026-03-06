@@ -589,6 +589,7 @@ theorem bliminf_or_le_inf_aux_left : (bliminf u f fun x => p x ∨ q x) ≤ blim
 theorem bliminf_or_le_inf_aux_right : (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f q :=
   bliminf_or_le_inf.trans inf_le_right
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
     e (blimsup u f p) = blimsup (e ∘ u) f p := by
   simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage_symm,

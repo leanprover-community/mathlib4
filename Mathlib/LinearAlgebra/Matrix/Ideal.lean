@@ -322,6 +322,7 @@ end NonAssocRing
 section Ring
 variable [Ring R] [Fintype n]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem asIdeal_matrix [DecidableEq n] (I : TwoSidedIdeal R) :
     asIdeal (I.matrix n) = (asIdeal I).matrix n := by
   ext; simp

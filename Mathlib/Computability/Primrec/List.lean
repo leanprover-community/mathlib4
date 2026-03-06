@@ -427,7 +427,7 @@ theorem listFilter (hf : PrimrecRel R) [DecidableRel R] :
   simp only [← List.filterMap_eq_filter]
   refine listFilterMap fst (Primrec.ite ?_ ?_ (Primrec.const Option.none))
   · exact Primrec.eq.comp (hf.decide.comp snd (snd.comp fst)) (.const true)
-  · exact (option_some).comp snd
+  · exact option_some.comp snd
 
 /-- If `R a b` is decidable, then given `L : List α` and `b : β`, `g L b ↔ ∃ a L, R a b`
 is a primitive recursive relation. -/
@@ -585,6 +585,7 @@ theorem const {n} : ∀ m, @Primrec' n fun _ => m
 theorem head {n : ℕ} : @Primrec' n.succ head :=
   (get 0).of_eq fun v => by simp [get_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tail {n f} (hf : @Primrec' n f) : @Primrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @get _ i.succ).of_eq fun v => by
     rw [← ofFn_get v.tail]; congr; funext i; simp

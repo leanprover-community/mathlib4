@@ -130,6 +130,7 @@ theorem w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ second
   ext
   simp [firstMap, secondMap, forkMap]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
 map it to the same point.
@@ -206,6 +207,7 @@ def secondMap : FirstObj P R ⟶ SecondObj P R :=
     haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
+set_option backward.isDefEq.respectTransparency false in
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   dsimp
   ext fg
@@ -215,6 +217,7 @@ theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   rw [← P.map_comp, ← op_comp, pullback.condition]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
 map it to the same point.

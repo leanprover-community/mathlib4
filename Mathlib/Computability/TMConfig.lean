@@ -258,9 +258,10 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
     obtain ⟨cl, hl⟩ := IH fun i => hg i.succ
     exact
       ⟨cons cg cl, fun v => by
-        simp [Vector.mOfFn, hg₁, map_bind, hl]
+        simp [Vector.mOfFn, hg₁, hl]
         rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (operates on two goals, with long simp sets)
 set_option linter.flexible false in
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
@@ -349,7 +350,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       · simp only [List.headI_cons, exists_false, or_false, Part.mem_some_iff,
           List.tail_cons, false_and, Sum.inl.injEq, reduceCtorEq] at this
         subst this
-        exact ⟨_, ⟨h, @(hm)⟩, rfl⟩
+        exact ⟨_, ⟨h, @hm⟩, rfl⟩
       · refine IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => ?_
         obtain h | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
         exacts [hm _ h, h]

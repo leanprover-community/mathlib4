@@ -315,14 +315,14 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   have hd : IsDiscrete (H : Set G) := isDiscrete_iff_discreteTopology.mpr ‹_›
   obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1} :=
     nhds_inter_eq_singleton_of_mem_discrete hd H.one_mem
-  have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
+  have : (fun p : G × G => p.2 * p.1⁻¹) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
   contrapose!
   simp only [Set.mem_preimage]
-  rintro (hyp : h' / h ∈ V)
-  have : h' / h ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.div_mem h'_in h_in)
-  exact (eq_of_div_eq_one this).symm
+  rintro (hyp : h' * h⁻¹ ∈ V)
+  have : h' * h⁻¹ ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.mul_mem h'_in (H.inv_mem h_in))
+  exact (eq_of_mul_inv_eq_one this).symm
 
 @[to_additive]
 lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G)
@@ -361,10 +361,10 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
   ext : 1
   change comap (fun (x : G × G) ↦ (MulOpposite.op x.1, MulOpposite.op x.2))
       (comap (fun p : Gᵐᵒᵖ × Gᵐᵒᵖ => p.1⁻¹ * p.2) (𝓝 1))
-    = comap (fun p : G × G => p.2 / p.1) (𝓝 1)
+    = comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 1)
   have : 𝓝 (1 : G) = comap (MulOpposite.opHomeomorph) (𝓝 (1 : Gᵐᵒᵖ)) := by
     simp [Homeomorph.comap_nhds_eq]
-  simp_rw [comap_comap, this, comap_comap, div_eq_mul_inv]
+  simp_rw [comap_comap, this, comap_comap]
   rfl
 
 /-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
@@ -407,11 +407,11 @@ lemma comap_inv_leftUniformSpace : (IsTopologicalGroup.leftUniformSpace G).comap
   ext : 1
   change comap (fun (x : G × G) ↦ (Equiv.inv G x.1, Equiv.inv G x.2))
       (comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 1)) =
-    comap (fun p : G × G => p.2 / p.1) (𝓝 1)
+    comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 1)
   have : 𝓝 (1 : G) = comap (Homeomorph.inv G) (𝓝 1) := by rw [Homeomorph.comap_nhds_eq]; simp
   nth_rewrite 1 [this]
   rw [comap_comap, comap_comap]
-  simp [Function.comp_def, div_eq_mul_inv]
+  simp [Function.comp_def]
 
 /-- Inversion on a topological group, as a uniform equivalence between the right uniformity and
 the left uniformity. -/
@@ -447,23 +447,26 @@ variable {ι α G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G]
 @[to_additive]
 theorem tendstoUniformly_iff (F : ι → α → G) (f : α → G) (p : Filter ι)
     (hu : IsTopologicalGroup.rightUniformSpace G = u) :
-    TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u :=
-  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
+    TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
     fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a => hv (hi a)⟩
 
 @[to_additive]
 theorem tendstoUniformlyOn_iff (F : ι → α → G) (f : α → G) (p : Filter ι) (s : Set α)
     (hu : IsTopologicalGroup.rightUniformSpace G = u) :
-    TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u :=
-  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
+    TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
     fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
 
 @[to_additive]
 theorem tendstoLocallyUniformly_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
     (p : Filter ι) (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoLocallyUniformly F f p ↔
-      ∀ u ∈ 𝓝 (1 : G), ∀ (x : α), ∃ t ∈ 𝓝 x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
-  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
+      ∀ u ∈ 𝓝 (1 : G), ∀ (x : α), ∃ t ∈ 𝓝 x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
     Exists.imp (fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩)
       (h u hu x)⟩
 
@@ -471,8 +474,9 @@ theorem tendstoLocallyUniformly_iff [TopologicalSpace α] (F : ι → α → G) 
 theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
     (p : Filter ι) (s : Set α) (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoLocallyUniformlyOn F f p s ↔
-      ∀ u ∈ 𝓝 (1 : G), ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
-  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
+      ∀ u ∈ 𝓝 (1 : G), ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
     (Exists.imp fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩) ∘
       h u hu x⟩
 
@@ -745,16 +749,14 @@ subspaces are complete. In contrast to `QuotientAddGroup.completeSpace_right'`, 
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
 uniform structure, so it is still provided manually via `IsTopologicalAddGroup.rightUniformSpace`.
-In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
-significant care was taken so that the uniform structure inherent in that setting coincides
-(definitionally) with the uniform structure provided here. -/]
+-/]
 instance QuotientGroup.completeSpace_right (G : Type*)
     [Group G] [us : UniformSpace G] [IsRightUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.rightUniformSpace (G ⧸ N)) := by
   have : IsTopologicalGroup.rightUniformSpace G = us := by
     ext : 1
-    simp_rw [@IsRightUniformGroup.uniformity_eq (G := G) us _ _, ← div_eq_mul_inv]
+    rw [@IsRightUniformGroup.uniformity_eq (G := G) us _ _]
     rfl
   rw [← this] at hG
   infer_instance
@@ -796,8 +798,10 @@ subspaces are complete. In contrast to `QuotientAddGroup.completeSpace_left'`, i
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually
-via `IsTopologicalAddGroup.leftUniformSpace`. -/]
+uniform structure, so it is still provided manually via `IsTopologicalAddGroup.leftUniformSpace`.
+In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
+significant care was taken so that the uniform structure inherent in that setting coincides
+(definitionally) with the uniform structure provided here. -/]
 instance QuotientGroup.completeSpace_left (G : Type*)
     [Group G] [us : UniformSpace G] [IsLeftUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
