@@ -293,6 +293,47 @@ theorem ramificationIdx_le_ramificationIdx [IsDomain R] [Algebra R S] [Module.Is
       exact ramificationIdx_eq_zero (by rwa [not_bddAbove_iff] at this)
     exact ramificationIdx_ne_zero_of_liesOver _ hp
 
+theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] [Algebra R S] {v : Ideal R}
+    {w : Ideal S} {p : Ideal R} (hv : Irreducible v) (hp : Prime p) (hvp : v ≠ p) [w.LiesOver v] :
+    emultiplicity w (p.map (algebraMap R S)) = 0 := by
+  refine emultiplicity_eq_zero.2 fun h ↦ hvp.symm ?_
+  rw [Ideal.dvd_iff_le, Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at h
+  exact ((isPrime_of_prime hp).isMaximal hp.ne_zero).eq_of_le (isPrime_of_prime hv.prime).ne_top h
+
+/-- Use the more general result `emultiplicity_map_eq_ramificationIdx_mul`.
+This is a helper lemma. -/
+private theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDomain R] [Algebra R S]
+    [FaithfulSMul R S] {v : Ideal R} {w : Ideal S} {p : Ideal R}
+    (hv : Irreducible v) (hp : Prime p) (hw : Irreducible w) (hw_bot : w ≠ ⊥)
+    [w.LiesOver v] : emultiplicity w (p.map (algebraMap R S)) =
+      v.ramificationIdx (algebraMap R S) w * emultiplicity v p := by
+  have hp_bot : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp.ne_zero
+  by_cases hvp : v = p
+  · simp [hvp, (FiniteMultiplicity.of_prime_left hp hp.ne_zero).emultiplicity_self,
+      ramificationIdx_eq_normalizedFactors_count hp_bot (isPrime_of_prime hw.prime) hw_bot,
+      emultiplicity_eq_count_normalizedFactors hw hp_bot]
+  · rw [emultiplicity_eq_zero_of_irreducible_ne hv hp.irreducible hvp, mul_zero,
+      emultiplicity_map_eq_zero_of_ne hv hp hvp]
+
+/-- If `v` is an irreducible ideal of `R`, `w` is an irreducible ideal of `S` lying over `v`, and
+`I` is an ideal of `R`, then the multiplicity of `w` in `I.map (algebraMap R S)` is given by
+the multiplicity of `v` in `I` multiplied by the ramification index of `w` over `v`. -/
+theorem emultiplicity_map_eq_ramificationIdx_mul [IsDedekindDomain R] [Algebra R S]
+    [FaithfulSMul R S] {v : Ideal R} {w : Ideal S} {I : Ideal R} (h : I ≠ ⊥)
+    (hv : Irreducible v) (hw : Irreducible w) (hw_bot : w ≠ ⊥) [w.LiesOver v] :
+    emultiplicity w (I.map (algebraMap R S)) =
+      v.ramificationIdx (algebraMap R S) w * emultiplicity v I := by
+  induction I using induction_on_prime with
+  | h₁ => aesop
+  | h₂ I hI =>
+    obtain rfl : I = ⊤ := by simpa using hI
+    simp_rw [Ideal.map_top, emultiplicity_eq_count_normalizedFactors hw top_ne_bot,
+      emultiplicity_eq_count_normalizedFactors hv h, ← Ideal.one_eq_top, normalizedFactors_one]
+    simp
+  | h₃ I p hI hp IH =>
+    rw [Ideal.map_mul, emultiplicity_mul hw.prime, emultiplicity_mul hv.prime, IH hI, mul_add,
+      emultiplicity_map_eq_ramificationIdx_mul_of_prime hv hp hw hw_bot]
+
 end IsDedekindDomain
 
 variable (f p P) [Algebra R S]
