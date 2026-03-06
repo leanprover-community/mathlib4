@@ -195,6 +195,16 @@ end CommGroup
 
 namespace Subgroup
 
+@[to_additive]
+lemma finiteIndex_range_powMonoidHom_of_fg (A : Type*) [CommGroup A] [Group.FG A] {n : ℕ}
+    (hn : n ≠ 0) :
+    (powMonoidHom (α := A) n).range.FiniteIndex := by
+  refine finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_torsion _ ?_
+  simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
+  refine fun g ↦ QuotientGroup.induction_on g fun a ↦ ⟨n, hn.pos, ?_⟩
+  rw [← QuotientGroup.mk_pow, QuotientGroup.eq_one_iff]
+  simp
+
 /-- If `B` is a subgroup of the finitely generated commutative group `A` such that
 `B` contains all `n`th powers in `A`, then `B` has finite index in `A`. -/
 @[to_additive /-- If `B` is a subgroup of the finitely generated commutative
@@ -202,19 +212,20 @@ additive group `A` such that `B` contains `n • A`, then `B` has finite index i
 lemma finiteIndex_of_range_powMonoidHom_le {A : Type*} [CommGroup A] [Group.FG A]
     (B : Subgroup A) {n : ℕ} (hn : n ≠ 0) (h : (powMonoidHom (α := A) n).range ≤ B) :
     B.FiniteIndex := by
-  refine finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_torsion _ ?_
-  simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
-  refine fun g ↦ ⟨n, Nat.zero_lt_of_ne_zero hn, ?_⟩
-  have H a : a ^ n ∈ B := by
-    rw [SetLike.le_def] at h
-    have ha : a ^ n ∈ (powMonoidHom n).range := by simp
-    exact h ha
-  suffices Quotient.out g ^ n ∈ B by
-    obtain ⟨b, hb₁, hb₂⟩ : ∃ b ∈ B, b = Quotient.out g ^ n := ⟨_, this, rfl⟩
-    apply_fun QuotientGroup.mk (s := B) at hb₂
-    rw [(QuotientGroup.eq_one_iff b).mpr hb₁] at hb₂
-    rw [hb₂, QuotientGroup.mk_pow, QuotientGroup.out_eq']
-  exact H _
+  have := finiteIndex_range_powMonoidHom_of_fg A hn
+  finiteIndex_of_le h
+
+@[to_additive]
+lemma isFiniteRelIndex_map_powMonoidHom_of_fg {A : Type*} [CommGroup A] {B : Subgroup A}
+    (hB : B.FG) {n : ℕ} (hn : n ≠ 0) :
+    B.map (powMonoidHom (α := A) n) |>.IsFiniteRelIndex B := by
+  rw [isFiniteRelIndex_iff_finiteIndex]
+  have : (map (powMonoidHom (α := A) n) B).subgroupOf B = (powMonoidHom (α := B) n).range := by
+    ext1
+    simp [mem_subgroupOf, Subtype.ext_iff]
+  rw [this]
+  have := (Group.fg_iff_subgroup_fg B).mpr hB
+  exact finiteIndex_range_powMonoidHom_of_fg B hn
 
 /-- If `B` and `C` are subgroups of the commutative group `A` such that `B` is finitely generated
 and `C` contains all `n`th powers of elements of `B`, then `C` has finite relative index in `B`. -/
@@ -222,20 +233,9 @@ and `C` contains all `n`th powers of elements of `B`, then `C` has finite relati
 is finitely generated and `C` contains `n • B`, then `C` has finite relative index in `B`. -/]
 lemma isFiniteRelIndex_of_range_powMonoidHom_le {A : Type*} [CommGroup A] (B C : Subgroup A)
     (hB : B.FG) {n : ℕ} (hn : n ≠ 0) (h : B.map (powMonoidHom (α := A) n) ≤ C) :
-    C.IsFiniteRelIndex B := by
-  refine Subgroup.IsFiniteRelIndex.mk ?_
-  simp only [relIndex]
-  have : Group.FG B := (Group.fg_iff_subgroup_fg B).mpr hB
-  suffices (C.subgroupOf B).FiniteIndex from finiteIndex_iff.mp this
-  refine finiteIndex_of_range_powMonoidHom_le (A := B) (C.subgroupOf B) hn ?_
-  rw [SetLike.le_def] at h ⊢
-  rintro ⟨b, hbmem⟩ hb
-  simp only [mem_map, powMonoidHom_apply, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-    MonoidHom.mem_range, Subtype.exists, SubmonoidClass.mk_pow, Subtype.mk.injEq,
-    exists_prop] at h hb
-  rw [mem_subgroupOf, show Subtype.val ⟨b, hbmem⟩ = b from rfl]
-  obtain ⟨a, hamem, rfl⟩ := hb
-  exact mem_carrier.mp (h a hamem)
+    C.IsFiniteRelIndex B :=
+  have := isFiniteRelIndex_map_powMonoidHom_of_fg hB hn
+  isFiniteRelIndex_of_le B h
 
 end Subgroup
 
