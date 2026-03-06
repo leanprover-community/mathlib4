@@ -49,13 +49,15 @@ theorem simpson_midpoint_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 <
 @[simp]
 theorem simpson_midpoint_integral_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) :
     simpson_midpoint_integral f N a a = 0 := by
-  sorry
+  unfold simpson_midpoint_integral
+  simp
 
 /-- The error of Simpson's midpoint integration from `a` to `a` is zero. -/
 @[simp]
 theorem simpson_midpoint_error_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) :
     simpson_midpoint_error f N a a = 0 := by
-  sorry
+  unfold simpson_midpoint_error
+  simp
 
 /-- An exact formula for integration with a single midpoint evaluation. -/
 @[simp]
