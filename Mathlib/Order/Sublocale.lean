@@ -307,8 +307,7 @@ meets and arbitrary joins.
 def toSublocale : FrameHom (Open X) (Sublocale X) where
   toFun U := U.toNucleus.toSublocale
   map_sSup' s := by
-    simp only [nucleusIsoSublocale.eq_toSublocale, Function.comp_apply, ← image_image]
-    rw [← map_sSup]
+    simp only [nucleusIsoSublocale.eq_toSublocale, Function.comp_apply, ← image_image, ← map_sSup]
     congr
     ext x
     simp only [toNucleus, map_sSup, OrderDual.ofDual_toDual, Nucleus.coe_mk, InfHom.coe_mk,
@@ -318,8 +317,7 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
       exact fun _ h ↦ himp_le_himp (le_sSup (by simp [h])) (le_refl _)
     · simp only [iInf_le_iff, le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk,
       InfHom.coe_mk]
-      intro b h
-      simpa [inf_sSup_eq] using fun a h1 ↦ h a h1
+      simp [inf_sSup_eq]
   map_inf' a b := by
     simp only [nucleusIsoSublocale.eq_toSublocale, Function.comp_apply, ← map_inf]
     congr
