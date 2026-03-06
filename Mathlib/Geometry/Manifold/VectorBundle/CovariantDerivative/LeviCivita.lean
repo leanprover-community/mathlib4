@@ -72,7 +72,7 @@ iff it is torsion-free and compatible with `g`.
 Note that the bundle metric on `TM` is implicitly hidden in this definition. See `TODO` for a
 version depending on a choice of Riemannian metric on `M`.
 -/
-def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
+def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop := cov.IsCompatible ∧ cov.torsion = 0
 
 local notation "⟪" X ", " Y "⟫" => product I X Y
 
@@ -533,7 +533,7 @@ lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
     ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ X, Z⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
   trans ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x
   · exact cov.isCompatible_apply h.1 hY hZ
-  · simp [← cov.isTorsionFree_iff.mp h.2 hX hZ, product, inner_sub_right]
+  · simp [← cov.torsion_eq_zero_iff.mp h.2 hX hZ, product, inner_sub_right]
 
 variable {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
@@ -794,10 +794,10 @@ lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
     rw [leviCivitaConnection_apply I hX hZ hY]
   rw [leviCivitaConnection_apply I hX hZ hY, leviCivitaConnection_isCompatible_aux]
 
-lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
-    (LeviCivitaConnection I M).IsTorsionFree := by
+lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
+    (LeviCivitaConnection I M).torsion = 0 := by
   have a := (LeviCivitaConnection I M).isCovariantDerivativeOnUniv
-  rw [CovariantDerivative.isTorsionFree_iff]
+  rw [CovariantDerivative.torsion_eq_zero_iff]
   intro X Y x hX hY
   apply congr_of_forall_product_apply
   intro Z
@@ -831,6 +831,6 @@ lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
 
 lemma leviCivitaConnection_isLeviCivitaConnection [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).IsLeviCivitaConnection :=
-  ⟨leviCivitaConnection_isCompatible I, leviCivitaConnection_isTorsionFree I⟩
+  ⟨leviCivitaConnection_isCompatible I, leviCivitaConnection_torsion_eq_zero I⟩
 
 end CovariantDerivative
