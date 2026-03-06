@@ -52,6 +52,8 @@ have the finite intersection property, so their intersection is nonempty.
 
 public section
 
+variable {α : Type*} {β : α → Type*} [∀ a, Finite (β a)]
+
 /--
 Given a (dependent) function `g s : (a : α) → β a` for each finset `s` of `α`, provided that
 each `β a` is finite, we can find another function `χ : (a : α) → β a` such that on every `s`,
@@ -59,8 +61,7 @@ there is some larger `t` such that `χ` agrees with `g t` on `s`.
 Informally, we are stitching together the local functions `g s` into a global `χ` such that on
 each `s`, `χ` can be expressed in terms of one of the `g`.
 -/
-theorem Finset.rado_selection {α : Type*} {β : α → Type*} [∀ a, Finite (β a)]
-    (g : Finset α → (a : α) → β a) :
+theorem Finset.rado_selection (g : Finset α → (a : α) → β a) :
     ∃ χ : (a : α) → β a, ∀ s : Finset α, ∃ t : Finset α, s ⊆ t ∧ ∀ x ∈ s, χ x = g t x := by
   classical
   let instTop (a : α) : TopologicalSpace (β a) := ⊥
@@ -84,8 +85,7 @@ there is some larger `t` such that `χ` agrees with `g t` on `s`.
 Informally, we are stitching together the local functions `g s` into a global `χ` such that on
 each `s`, `χ` can be expressed in terms of one of the `g`.
 -/
-theorem Finset.rado_selection_subtype {α : Type*} {β : α → Type*} [∀ a, Finite (β a)]
-    (g : (s : Finset α) → (a : s) → β a) :
+theorem Finset.rado_selection_subtype (g : (s : Finset α) → (a : s) → β a) :
     ∃ χ : (a : α) → β a, ∀ s : Finset α,
       ∃ (t : Finset α) (hst : s ⊆ t), ∀ x : s, χ x = g t (Set.inclusion hst x) := by
   classical
@@ -101,8 +101,7 @@ there is some larger `t` such that `χ` agrees with `g t` on `s`.
 Informally, we are stitching together the local functions `g s` into a global `χ` such that on
 each `s`, `χ` can be expressed in terms of one of the `g`.
 -/
-theorem Set.Finite.rado_selection {α : Type*} {β : α → Type*} [∀ a, Finite (β a)]
-    (g : (s : Set α) → s.Finite → (a : α) → β a) :
+theorem Set.Finite.rado_selection (g : (s : Set α) → s.Finite → (a : α) → β a) :
     ∃ χ : (a : α) → β a, ∀ s : Set α, s.Finite →
       ∃ (t : Set α) (ht : t.Finite), s ⊆ t ∧ ∀ x ∈ s, χ x = g t ht x := by
   obtain ⟨χ, hχ⟩ := Finset.rado_selection (fun s ↦ g s s.finite_toSet)
@@ -117,8 +116,7 @@ there is some larger `t` such that `χ` agrees with `g t` on `s`.
 Informally, we are stitching together the local functions `g s` into a global `χ` such that on
 each `s`, `χ` can be expressed in terms of one of the `g`.
 -/
-theorem Set.Finite.rado_selection_subtype {α : Type*} {β : α → Type*} [∀ a, Finite (β a)]
-    (g : (s : Set α) → s.Finite → (a : s) → β a) :
+theorem Set.Finite.rado_selection_subtype (g : (s : Set α) → s.Finite → (a : s) → β a) :
     ∃ χ : (a : α) → β a, ∀ s : Set α, s.Finite →
       ∃ (t : Set α) (ht : t.Finite) (hst : s ⊆ t), ∀ x : s, χ x = g t ht (Set.inclusion hst x) := by
   obtain ⟨χ, hχ⟩ := Finset.rado_selection_subtype (β := β) (fun s ↦ g s s.finite_toSet)
