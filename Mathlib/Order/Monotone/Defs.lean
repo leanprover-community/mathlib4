@@ -333,8 +333,7 @@ theorem antitoneOn_const [Preorder α] [Preorder β] {c : β} {s : Set α} :
     AntitoneOn (fun _ : α ↦ c) s :=
   fun _ _ _ _ _ ↦ le_rfl
 
--- `to_dual` cannot yet reorder arguments of arguments
-@[to_dual none]
+@[to_dual self]
 theorem strictMono_of_le_iff_le [Preorder α] [Preorder β] {f : α → β}
     (h : ∀ x y, x ≤ y ↔ f x ≤ f y) : StrictMono f :=
   fun _ _ ↦ (lt_iff_lt_of_le_iff_le' (h _ _) (h _ _)).1
