@@ -23,7 +23,7 @@ manifold `M` and derive a criterion for torsion-freeness.
 
 -/
 
-@[expose] public section -- TODO: think if we want to expose all definitions!
+@[expose] public section
 
 open Bundle Filter Module Topology Set NormedSpace
 
@@ -49,7 +49,7 @@ variable
   {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)}
   {X X' Y : Π x : M, TangentSpace I x}
 
-variable (f X) in
+variable (X) in
 lemma torsionAux_self : IsCovariantDerivativeOn.torsionAux cov X X = 0 := by
   ext
   simp [torsionAux]
@@ -99,11 +99,11 @@ lemma torsionAux_smul_left_apply [CompleteSpace E] (hcov : IsCovariantDerivative
   module
 
 lemma torsionAux_smul_right_apply [CompleteSpace E]
-    {F : ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x →L[𝕜] TangentSpace I x}
-    (hF : IsCovariantDerivativeOn E F U)
+    {cov : ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x →L[𝕜] TangentSpace I x}
+    (hcov : IsCovariantDerivativeOn E cov U)
     {f : M → 𝕜} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hx : x ∈ U := by trivial) :
-    torsionAux F Y (f • X) x = f x • torsionAux F Y X x := by
-  rw [torsionAux_antisymm, Pi.neg_apply, hF.torsionAux_smul_left_apply Y hf hX,
+    torsionAux cov Y (f • X) x = f x • torsionAux cov Y X x := by
+  rw [torsionAux_antisymm, Pi.neg_apply, hcov.torsionAux_smul_left_apply Y hf hX,
     torsionAux_antisymm X]
   simp
 
