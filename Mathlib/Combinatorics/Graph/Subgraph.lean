@@ -17,7 +17,7 @@ and components.
 
 ## Main definitions
 
-- `H ≤ G` (`Graph.IsSubgraph`): the subgraph relation as a partial order on graphs.
+- `H ≤ G` : the subgraph relation as a partial order on graphs.
 - `H ≤s G` (`Graph.IsSpanningSubgraph`): `H` has the same vertex set as `G`.
 - `H ≤i G` (`Graph.IsInducedSubgraph`): `H` contains every ambient link between its vertices.
 - `H ≤c G` (`Graph.IsClosedSubgraph`): `H` is a union of components of `G`.
@@ -28,9 +28,17 @@ Following the overall design of `Graph`, subgraphs are terms of the same type `G
 rather than a separate `Subgraph` structure. This allows us to reuse notation and lemmas
 uniformly and to express the subgraph order directly as a partial order on `Graph α β`.
 
+`G ≤ H` is the canonical spelling for "G is a subgraph of H". This is definitionally equal to
+`G.IsSubgraph H` which exists only for implementation reasons.
+The explicit `IsSubgraph` structure is defined so that stronger subgraph notions
+(such as `IsSpanningSubgraph`, `IsInducedSubgraph`, and `IsClosedSubgraph`) can extend it.
+This allows them to inherit fundamental fields and lemmas like `vertexSet_mono` and `edgeSet_mono`
+without lemma duplication. However, in statements and proofs, users use `G ≤ H` instead.
+The relation `≤` is the `simp` normal form, and the API is developed entirely in terms of it.
+
 ## Tags
 
-graphs, subgraph, induced subgraph, spanning subgraph, closed subgraph, component
+graphs, subgraph, induced subgraph, spanning subgraph, closed subgraph
 -/
 
 @[expose] public section
@@ -44,7 +52,8 @@ open scoped Sym2
 
 namespace Graph
 
-/-- `H ≤ G` (`Graph.IsSubgraph`) means `V(H) ⊆ V(G)` and every link of `H` is a link of `G`. -/
+/-- `IsSubgraph H G` is an implementation detail to define the subgraph relation `H ≤ G`.
+`H ≤ G` means `V(H) ⊆ V(G)` and every link of `H` is a link of `G`. -/
 @[mk_iff]
 structure IsSubgraph (H G : Graph α β) : Prop where
   vertexSet_mono : V(H) ⊆ V(G)
@@ -65,6 +74,9 @@ instance : PartialOrder (Graph α β) where
   le_refl _ := ⟨le_rfl, fun _ _ _ h ↦ h⟩
   le_trans _ _ _ h₁ h₂ := h₁.trans h₂
   le_antisymm G H h₁ h₂ := h₁.antisymm h₂
+
+@[simp]
+lemma isSubgraph_iff_le : H.IsSubgraph G ↔ H ≤ G := .rfl
 
 @[gcongr]
 lemma IsLink.mono (hHG : H ≤ G) (h : H.IsLink e x y) : G.IsLink e x y := hHG.2 h
