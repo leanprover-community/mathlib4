@@ -24,6 +24,7 @@ public import Mathlib.NumberTheory.Padics.ProperSpace
 public import Mathlib.NumberTheory.NumberField.AdeleRing
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.RamificationInertia.Valuation
+public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
@@ -67,15 +68,8 @@ instance : IsPrincipalIdealRing (v.valuation K).integer := by
     WithZero.denselyOrdered_set_iff_subsingleton]
   simpa using (v.valuation K).toMonoidWithZeroHom.range_nontrivial
 
--- TODO: make this inferred from `IsRankOneDiscrete`
-instance : IsDiscreteValuationRing (v.valuation K).integer where
-  not_a_field' := by
-    simp only [ne_eq, Ideal.ext_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
-      Valuation.Integer.not_isUnit_iff_valuation_lt_one, Ideal.mem_bot, Subtype.forall, not_forall]
-    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
-    use π
-    simp [Valuation.mem_integer_iff, ← exp_zero, Subtype.ext_iff, -exp_neg,
-      ← (v.valuation K).map_eq_zero_iff, hπ]
+instance : IsDiscreteValuationRing (v.valuation K).integer :=
+  (v.valuation K).valuationSubring_isDiscreteValuationRing
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   unfold HeightOneSpectrum.adicCompletionIntegers
@@ -150,24 +144,24 @@ noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
 
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
-noncomputable instance : (v.valuation K).RankOne where
-  hom := toNNReal (absNorm_ne_zero v)
-  strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
-  exists_val_nontrivial := by
-    rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
-    use x
-    rw [valuation_of_algebraMap]
-    exact ⟨v.intValuation_ne_zero _ hx2, ((intValuation_lt_one_iff_mem _ _).2 hx1).ne⟩
+noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰)).IsRankOneDiscrete where
+  exists_generator_lt_one' := by
+    have h : (v.valuation K).IsRankOneDiscrete := Valuation.IsRankOneDiscrete.mk' (valuation K v)
+    exact ⟨h.generator, by rw [h.generator_zpowers_eq_valueGroup, adicCompletion_valueGroup_eq],
+      h.generator_lt_one⟩
 
-noncomputable instance instRankOneValuedAdicCompletion :
-    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) where
-  hom := toNNReal (absNorm_ne_zero v)
-  strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
-  exists_val_nontrivial := by
-    rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
-    use x
-    rw [valuedAdicCompletion_eq_valuation' v (x : K)]
-    simpa [valuation_of_algebraMap] using ⟨v.intValuation_ne_zero _ hx2, hx1⟩
+open Valuation.IsRankOneDiscrete
+
+noncomputable instance : (v.valuation K).RankOne :=
+  rankOne (v.valuation K) (one_lt_absNorm_nnreal v)
+
+noncomputable instance instRankOneAdicCompletion :
+    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).RankOne :=
+  rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnreal v)
+
+lemma rankOne_hom'_def :
+    (instRankOneAdicCompletion v).hom' = (toNNReal (absNorm_ne_zero v)).comp
+      (valueGroup₀_equiv_withZeroMulInt Valued.v).toMonoidWithZeroHom := rfl
 
 /-- The `v`-adic completion of `K` is a normed field. -/
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
@@ -198,10 +192,12 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
-theorem FinitePlace.norm_embedding (x : K) :
-    ‖embedding v x‖ = adicAbv v x := by
-  simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField,
-    Valued.norm, Valuation.RankOne.hom, embedding_apply, adicAbv_def]
+theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = adicAbv v x := by
+  simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion,
+    Valued.toNormedField, Valued.norm, Valuation.RankOne.hom,
+    embedding_apply, adicAbv_def, rankOne_hom'_def,
+    valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective
+      (valuedAdicCompletion_surjective K v)]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
