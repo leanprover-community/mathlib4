@@ -25,6 +25,7 @@ variable {α β : Type*}
 namespace Set
 
 /-- Sets on sum types are order-equivalent to pairs of sets on each summand. -/
+@[simps apply]
 def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
   toFun s := (Sum.inl ⁻¹' s, Sum.inr ⁻¹' s)
   invFun s := Sum.inl '' s.1 ∪ Sum.inr '' s.2
@@ -32,9 +33,6 @@ def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
   right_inv s := by
     simp [preimage_image_eq _ Sum.inl_injective, preimage_image_eq _ Sum.inr_injective]
   map_rel_iff' := by simp [subset_def]
-
-@[simp]
-theorem sumEquiv_apply (s : Set (α ⊕ β)) : sumEquiv s = (Sum.inl ⁻¹' s, Sum.inr ⁻¹' s) := rfl
 
 @[simp]
 theorem sumEquiv_symm_apply {s : Set α × Set β} :
