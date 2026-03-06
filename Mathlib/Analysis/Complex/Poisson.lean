@@ -33,6 +33,7 @@ various versions of the Poisson Formula.
 /--
 The Herglotz-Riesz kernel of integration.
 -/
+@[expose]
 noncomputable def herglotzRieszKernel (c w z : ℂ) : ℂ :=
   ((z - c) + (w - c)) / ((z - c) - (w - c))
 
