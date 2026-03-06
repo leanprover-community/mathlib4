@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Geometry.Manifold.VectorBundle.Delaborators
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Supporting lemmas for CovariantDerivative.Basic trivialization stuff
