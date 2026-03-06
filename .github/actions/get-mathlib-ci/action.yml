@@ -9,7 +9,7 @@ inputs:
     required: false
     # Default pinned commit used by workflows unless they explicitly override.
     # Update this ref (and the coalescing below) as needed to pick up changes to mathlib-ci scripts
-    default: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+    default: 261ca4c0c6bd3267e4846ef9fdd676afab9fef4e
   path:
     description: Checkout destination path.
     required: false
