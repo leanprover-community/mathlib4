@@ -231,7 +231,6 @@ lemma mk' [HasSheafify J (Type w)]
     JointlyFaithful.jointlyReflectsIsomorphisms
       (JointlyFaithful.of_jointly_reflects_isIso_of_mono (fun _ _ f _ hf ↦ by
         have : Epi f := by
-          have : Mono f.val := inferInstanceAs (Mono ((sheafToPresheaf _ _).map f))
           rw [← Sheaf.isLocallySurjective_iff_epi]
           exact mk'.isLocallySurjective hP _
             (fun Φ ↦ ((isIso_iff_bijective _).1 (hf Φ)).2)
