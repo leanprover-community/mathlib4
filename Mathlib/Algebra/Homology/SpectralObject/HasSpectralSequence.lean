@@ -160,7 +160,8 @@ def coreE₂Cohomological :
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
-assumptions on the spectral object are required for the construction of the spectral sequence from this.) -/
+assumptions on the spectral object are required for the construction of
+the spectral sequence from this.) -/
 @[simps!]
 def coreE₂CohomologicalNat :
     SpectralSequenceDataCore EInt
@@ -236,7 +237,8 @@ def coreE₂CohomologicalFin (l : ℕ) :
 
 /-- The data which allows to construct an `E₂`-homological spectral sequence
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
-assumptions on the spectral object are required for the construction of the spectral sequence from this.) -/
+assumptions on the spectral object are required for the construction of
+the spectral sequence from this.) -/
 @[simps!]
 def coreE₂HomologicalNat :
     SpectralSequenceDataCore EInt
