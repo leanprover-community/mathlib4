@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
@@ -284,6 +284,36 @@ instance : PreservesColimitsOfSize.{w, w} (Φ.presheafFiber (A := A)) where
   preservesColimitsOfShape := by
     dsimp [presheafFiber]
     infer_instance
+
+section
+
+variable [LocallySmall.{w} C]
+
+instance : PreservesFiniteLimits Φ.fiber :=
+  preservesFiniteLimits_of_natIso Φ.shrinkYonedaCompPresheafFiberIso
+
+/-- The fiber of the terminal object is a terminal object in `Type w`. -/
+noncomputable def isTerminalFiberObj (T : C) (hT : IsTerminal T) :
+    IsTerminal (Φ.fiber.obj T) :=
+  IsTerminal.isTerminalObj _ _ hT
+
+/-- The fiber of the terminal object contains a unique element. -/
+noncomputable def uniqueFiberObj (T : C) (hT : IsTerminal T) :
+    Unique (Φ.fiber.obj T) :=
+  Types.isTerminalEquivUnique _ (Φ.isTerminalFiberObj T hT)
+
+lemma fiber_map_injective_of_mono {U T : C} (f : U ⟶ T) [Mono f] :
+    Function.Injective (Φ.fiber.map f) := by
+  rw [← mono_iff_injective]
+  infer_instance
+
+lemma subsingleton_fiber_obj {U T : C} (f : U ⟶ T) [Mono f] (hT : IsTerminal T) :
+    Subsingleton (Φ.fiber.obj U) where
+  allEq _ _ := Φ.fiber_map_injective_of_mono f (by
+    have := Φ.uniqueFiberObj T hT
+    subsingleton)
+
+end
 
 variable (F : A ⥤ B) [LocallySmall.{w} C] [PreservesFilteredColimitsOfSize.{w, w} F]
 
