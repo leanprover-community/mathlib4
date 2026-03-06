@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gaëtan Serré, Rémy Degenne
 -/
 
-module
 
-public import Mathlib.Analysis.SpecialFunctions.Sigmoid
-public import Mathlib.MeasureTheory.Constructions.UnitInterval
-public import Mathlib.Order.CompletePartialOrder
-public import Mathlib.Probability.CDF
+import Mathlib.MeasureTheory.Constructions.Polish.Basic
+import Mathlib.MeasureTheory.Constructions.UnitInterval
+import Mathlib.Probability.Kernel.Defs
+import Mathlib.Analysis.SpecialFunctions.Sigmoid
+import Mathlib.Probability.CDF
 
 /-!
 # Representation of kernels
