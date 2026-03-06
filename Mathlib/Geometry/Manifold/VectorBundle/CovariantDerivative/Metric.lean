@@ -59,15 +59,14 @@ local notation "⟪" X ", " Y "⟫" => product I X Y
 section product
 
 omit [IsManifold I 2 M]
-
 lemma product_apply (x) : ⟪X, Y⟫ x = inner ℝ (X x) (Y x) := rfl
 
-variable (X Y) in
+variable (X X' Y)
+
 lemma product_swap : ⟪Y, X⟫ = ⟪X, Y⟫ := by
   ext x
   apply real_inner_comm
 
-variable (X) in
 @[simp]
 lemma product_zero_left : ⟪0, X⟫ = 0 := by
   ext x
@@ -76,58 +75,46 @@ lemma product_zero_left : ⟪0, X⟫ = 0 := by
 @[simp]
 lemma product_zero_right : ⟪X, 0⟫ = 0 := by rw [product_swap, product_zero_left]
 
-variable (X X' Y) in
 lemma product_add_left : ⟪X + X', Y⟫ = ⟪X, Y⟫ + ⟪X', Y⟫ := by
   ext x
   simp [product, InnerProductSpace.add_left]
 
-variable (X X' Y) in
 @[simp]
 lemma product_add_left_apply (x) : ⟪X + X', Y⟫ x = ⟪X, Y⟫ x + ⟪X', Y⟫ x := by
   simp [product, InnerProductSpace.add_left]
 
-variable (X Y Y') in
 lemma product_add_right : ⟪X, Y + Y'⟫ = ⟪X, Y⟫ + ⟪X, Y'⟫ := by
   rw [product_swap, product_swap _ Y, product_swap _ Y', product_add_left]
 
-variable (X X' Y) in
 @[simp]
 lemma product_add_right_apply (x) : ⟪X, Y + Y'⟫ x = ⟪X, Y⟫ x + ⟪X, Y'⟫ x := by
   rw [product_swap, product_swap _ Y, product_swap _ Y', product_add_left_apply]
 
-variable (X Y) in
 @[simp] lemma product_neg_left : ⟪-X, Y⟫ = -⟪X, Y⟫ := by ext x; simp [product]
 
-variable (X Y) in
 @[simp] lemma product_neg_right : ⟪X, -Y⟫ = -⟪X, Y⟫ := by ext x; simp [product]
 
-variable (X X' Y) in
 lemma product_sub_left : ⟪X - X', Y⟫ = ⟪X, Y⟫ - ⟪X', Y⟫ := by
   ext x
   simp [product, inner_sub_left]
 
-variable (X Y Y') in
 lemma product_sub_right : ⟪X, Y - Y'⟫ = ⟪X, Y⟫ - ⟪X, Y'⟫ := by
   ext x
   simp [product, inner_sub_right]
 
-variable (X Y) in
 lemma product_smul_left (f : M → ℝ) : product I (f • X) Y = f • product I X Y := by
   ext x
   simp [product, real_inner_smul_left]
 
-variable (X Y) in
 @[simp]
 lemma product_smul_const_left (a : ℝ) : product I (a • X) Y = a • product I X Y := by
   ext x
   simp [product, real_inner_smul_left]
 
-variable (X Y) in
 lemma product_smul_right (f : M → ℝ) : product I X (f • Y) = f • product I X Y := by
   ext x
   simp [product, real_inner_smul_right]
 
-variable (X Y) in
 @[simp]
 lemma product_smul_const_right (a : ℝ) : product I X (a • Y) = a • product I X Y := by
   ext x
