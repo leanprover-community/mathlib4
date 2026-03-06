@@ -428,11 +428,6 @@ def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     lineNumber := lineNumber + 1
   return (errors, if (changed == lines) then none else some changed)
 
-namespace UnicodeLinter
-
-
-end UnicodeLinter
-
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
     adaptationNoteLinter,
