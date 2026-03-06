@@ -333,6 +333,71 @@ theorem equivWithVal_symm_apply (v : Valuation R Γ₀) (w : Valuation R Γ'₀)
     (congr v w (.refl R)).symm x = (equiv v).symm (equiv w x) := by simp
 
 end Ring
+section ValueGroup₀
+
+variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
+
+open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+
+theorem valueGroup_eq : valueGroup (instValued v).v = valueGroup v := by
+  simp [valueGroup, valueMonoid, ← (WithVal.ofVal_surjective v).range_comp]
+  rfl
+
+@[simps! apply symm_apply]
+def valueGroupEquiv : valueGroup (instValued v).v ≃* valueGroup v where
+  __ := Equiv.setCongr (by simp [valueGroup_eq v])
+  map_mul' := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
+
+theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv v) :=
+  fun _ _ _ ↦ by simpa
+
+theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
+  fun _ _ _ ↦ by simpa
+
+@[simps!]
+def valueGroupEquiv₀ : ValueGroup₀ (instValued v).v ≃* ValueGroup₀ v where
+  toFun := WithZero.map' (valueGroupEquiv v)
+  invFun := WithZero.map' (valueGroupEquiv v).symm
+  left_inv x := by
+    match x with
+    | 0 => simp
+    | .coe a => simp
+  right_inv y := by
+    match y with
+    | 0 => simp
+    | .coe b => simp
+  map_mul' := by simp
+
+lemma valueGroupEquiv₀_restrict (b : WithVal v) :
+    valueGroupEquiv₀ v (Valued.v.restrict b) = v.restrict b.ofVal := by
+  simp [Valued.v.restrict_def, restrict₀_apply, ← apply_ofVal, v.restrict_def]
+  by_cases hb : v b.ofVal = 0 <;> simp [hb]
+
+lemma valueGroupEquiv₀_symm_restrict (b : R) :
+    (valueGroupEquiv₀ v).symm (Valuation.restrict v b) = Valued.v.restrict (toVal v b) := by
+  simp [Valued.v.restrict_def, restrict₀_apply, ← apply_ofVal, v.restrict_def]
+  by_cases hb : v b = 0 <;> simp [hb]
+
+lemma strictMono_valueGroupEquiv₀ :
+    StrictMono (WithVal.valueGroupEquiv₀ v) := by
+  apply WithZero.map'_strictMono (strictMono_valueGroupEquiv v)
+
+lemma strictMono_valueGroupEquiv₀_symm :
+    StrictMono (WithVal.valueGroupEquiv₀ v).symm := by
+  apply WithZero.map'_strictMono (strictMono_valueGroupEquiv_symm v)
+
+@[simps!]
+def valueGroupOrderIso₀ : ValueGroup₀ (instValued v).v ≃*o ValueGroup₀ v where
+  __ := WithVal.valueGroupEquiv₀ v
+  map_le_map_iff' {a b} := by
+    match a, b with
+    | 0, 0 => simp
+    | 0, .coe _ => simp
+    | .coe _, 0 => simp
+    | .coe a, .coe b => simp
+
+end ValueGroup₀
+
 
 end WithVal
 
@@ -375,85 +440,6 @@ theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
     h.orderRingIso.symm x = toVal v x.ofVal := rfl
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
-
-variable (w) in
- --set_option backward.isDefEq.respectTransparency true in
-@[simps!]
-def WithVal.valueGroup₀_equiv_fun : ValueGroup₀ (instValued w).v ≃* ValueGroup₀ w where
-  toFun γ := if hγ : γ = 0 then 0 else by
-      let ⟨u, hu⟩ := WithZero.unzero hγ
-      rw [mem_valueGroup_iff_of_comm (instValued w).v (y := u)] at hu
-      exact ((⟨u, by
-        rw [mem_valueGroup_iff_of_comm]
-        exact ⟨WithVal.equiv w hu.choose, ⟨hu.choose_spec.1,
-          ⟨WithVal.equiv w hu.choose_spec.2.choose, hu.choose_spec.2.choose_spec⟩⟩⟩⟩ :
-            valueGroup w) : ValueGroup₀ w)
-  invFun γ := if hγ : γ = 0 then 0 else by
-    let ⟨u, hu⟩ := WithZero.unzero hγ
-    rw [mem_valueGroup_iff_of_comm w (y := u)] at hu
-    exact ((⟨u, by
-      rw [mem_valueGroup_iff_of_comm]
-      exact ⟨(WithVal.equiv w).symm hu.choose, ⟨hu.choose_spec.1,
-        ⟨(WithVal.equiv w).symm hu.choose_spec.2.choose, hu.choose_spec.2.choose_spec⟩⟩⟩⟩ :
-         valueGroup (instValued w).v) : ValueGroup₀ (instValued w).v)
-  left_inv x := by
-    simp only [dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
-    split_ifs with h
-    · simp [h]
-    · simp
-  right_inv x := by
-    simp [dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
-    split_ifs with h
-    · simp [h]
-    · simp
-  map_mul' x y := by
-    simp only [mul_eq_zero, mul_dite, mul_zero, dite_mul, zero_mul]
-    split_ifs
-    · rfl
-    · rfl
-    · aesop
-    · aesop
-    · aesop
-    · simp [← WithZero.coe_mul, WithZero.unzero_mul]
-
-variable (w) in
-lemma WithVal.strictMono_valueGroup₀_equiv :
-    StrictMono (WithVal.valueGroup₀_equiv_fun w) := by
-  intro x y h
-  match x, y with
-  | 0, WithZero.coe b => simp
-  | WithZero.coe a, 0 => simp at h
-  | WithZero.coe a, WithZero.coe b => simp_all
-
-variable (w) in
-lemma WithVal.strictMono_valueGroup₀_equiv_symm :
-    StrictMono (WithVal.valueGroup₀_equiv_fun w).symm := by
-  intro x y h
-  match x, y with
-  | 0, WithZero.coe b => simp
-  | WithZero.coe a, 0 => simp at h
-  | WithZero.coe a, WithZero.coe b => simp_all
-
-variable (w) in
-@[simps!]
-def WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃*o ValueGroup₀ w where
-  __ := WithVal.valueGroup₀_equiv_fun w
-  map_le_map_iff' {a b} := by
-    have := (WithVal.strictMono_valueGroup₀_equiv w).monotone
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · have := (WithVal.strictMono_valueGroup₀_equiv_symm w).monotone h
-      simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-        valueGroup₀_equiv_fun_apply, valueGroup₀_equiv_fun_symm_apply, dite_eq_left_iff,
-        WithZero.coe_ne_zero, imp_false, Decidable.not_not] at this
-      split_ifs at this with ha hb
-      · rw [ha, hb]
-      · simp [ha]
-      · simp only [WithZero.unzero_coe, Subtype.coe_eta, WithZero.coe_unzero, dite_eq_ite] at this
-        split_ifs at this with hb
-        · simp only [WithZero.nonpos_iff_eq_zero] at this
-          exact False.elim (ha this)
-        · assumption
-    · exact (WithVal.strictMono_valueGroup₀_equiv w).monotone h
 
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
