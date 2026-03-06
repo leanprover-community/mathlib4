@@ -188,6 +188,23 @@ noncomputable def compatibilityTensorAux (Y Z : Π x : M, TangentSpace I x) :
   letI b : TangentSpace I x →L[ℝ] ℝ := mfderiv% ⟪Y, Z⟫ x
   b - ((innerSL ℝ (Z x)) ∘L (cov Y x)) - ((innerSL ℝ (Y x)) ∘L (cov Z x))
 
+lemma compatibilityTensorAux_apply (Y Z : Π x : M, TangentSpace I x) {x : M} (X₀ : TangentSpace I x) :
+    compatibilityTensorAux I cov Y Z x X₀ =
+      NormedSpace.fromTangentSpace _ (mfderiv% ⟪Y, Z⟫ x X₀)
+      + inner ℝ (Z x) (cov Y x X₀) - inner ℝ (Y x) (cov Z x X₀) := by
+  unfold compatibilityTensorAux
+  simp
+  -- change mfderiv% ⟪Y, Z⟫ x X₀ - (innerSL ℝ) (Z x) (cov Y x) X₀ = _
+  congr
+  --let A := mfderiv% ⟪Y, Z⟫ x
+  rw [Pi.sub_apply]
+  rw [ContinuousLinearMap.comp_apply]
+
+  simp
+
+  sorry
+
+#exit
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {x : M}
 
 variable {I} in
@@ -339,8 +356,10 @@ theorem compatibilityTensor_apply [FiniteDimensional ℝ E] (x : M)
     fromTangentSpace _ (mfderiv% ⟪Y, Z⟫ x (X x)) - ⟪∇ Y, X, Z⟫ x - ⟪Y, ∇ Z, X⟫ x := by
   unfold compatibilityTensor
   rw [TensorialAt.mkHom₂_apply _ _ hY hZ]
+  --rw [compatibilityTensorAux_apply]
   simp only [compatibilityTensorAux, ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp',
     coe_innerSL_apply, Pi.sub_apply, comp_apply]
+
   conv =>
     enter [1, 1]
     erw [ContinuousLinearMap.sub_apply]
@@ -350,7 +369,7 @@ theorem compatibilityTensor_apply [FiniteDimensional ℝ E] (x : M)
   simp [product, real_inner_comm, fromTangentSpace]
 
 variable {I} in
-theorem compatibilityTensor_apply_extend [FiniteDimensional ℝ E] (X₀ Y₀ Z₀ : TangentSpace I x) :
+theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ E] (X₀ Y₀ Z₀ : TangentSpace I x) :
     compatibilityTensor cov x Y₀ Z₀ X₀ =
       fromTangentSpace _ (mfderiv% ⟪(extend E Y₀), (extend E Z₀)⟫ x X₀)
         - ⟪∇ extend E Y₀, (extend E X₀), extend E Z₀⟫ x
@@ -385,10 +404,10 @@ lemma isCompatible_iff [FiniteDimensional ℝ E] :
   refine ⟨fun hcov x X Y Z hX hY hZ ↦ cov.isCompatible_apply hcov hY hZ, fun h ↦ ?_⟩
   unfold IsCompatible
   ext x X₀ Y₀ Z₀
-  rw [compatibilityTensor_apply_extend, sub_sub, sub_eq_iff_eq_add']
+  rw [compatibilityTensor_apply_eq_extend, sub_sub, sub_eq_iff_eq_add']
   simp only [Pi.zero_apply, ContinuousLinearMap.zero_apply, add_zero]
-  convert h (mdifferentiableAt_extend I E Z₀) (mdifferentiableAt_extend I E X₀)
+  have h' := h (mdifferentiableAt_extend I E Z₀) (mdifferentiableAt_extend I E X₀)
     (mdifferentiableAt_extend I E Y₀)
-  simp [fromTangentSpace, extend_apply_self]
+  simpa [fromTangentSpace, extend_apply_self] using h'
 
 end CovariantDerivative
