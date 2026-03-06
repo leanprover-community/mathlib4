@@ -193,7 +193,7 @@ lemma Cover.mem_propQCTopology {S : Scheme.{u}} (𝒰 : Cover.{u} (precoverage P
   refine Precoverage.generate_mem_toGrothendieck ⟨?_, 𝒰.mem₀⟩
   rwa [presieve₀_mem_qcPrecoverage_iff]
 
-lemma zariskiTopology_le_propqcTopology [P.IsMultiplicative] [IsZariskiLocalAtSource P] :
+lemma zariskiTopology_le_propQCTopology [P.IsMultiplicative] [IsZariskiLocalAtSource P] :
     zariskiTopology ≤ propQCTopology P := by
   apply Precoverage.toGrothendieck_mono
   rw [le_inf_iff]
