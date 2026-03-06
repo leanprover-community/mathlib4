@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Algebra.IsPrimePow             -- only for `IsPrimePow`
+public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.RingTheory.Ideal.Maximal
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.LocalRing.Defs      -- only for `IsLocalRing`
