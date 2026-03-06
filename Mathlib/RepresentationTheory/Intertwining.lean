@@ -249,7 +249,7 @@ def refl : Equiv ρ ρ where
 
 @[simp] lemma coe_toIntertwiningMap : ⇑φ.toIntertwiningMap = φ := rfl
 
-@[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = ⇑φ := rfl
+@[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 
 lemma coe_invFun : φ.invFun = φ.symm := rfl
 
