@@ -323,7 +323,6 @@ theorem condLExp_tsum {ι : Type*} [Countable ι] {X : ι → Ω → ℝ≥0∞}
   congr with i
   exact setLIntegral_condLExp hm P (X i) hs
 
-
 theorem condLExp_sum {ι : Type*} [Fintype ι] {X : ι → Ω → ℝ≥0∞}
     (hX : ∀ i, AEMeasurable (X i) P) :
     P⁻[∑ i, X i|mΩ] =ᵐ[P] ∑ i, P⁻[X i|mΩ] := by
