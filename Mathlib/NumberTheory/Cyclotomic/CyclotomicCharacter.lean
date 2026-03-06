@@ -355,11 +355,10 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     refine lt_of_le_of_lt ?_ hk
     dsimp
     rw [dist_eq_norm, PadicInt.norm_le_pow_iff_mem_span_pow, ← PadicInt.ker_toZModPow,
-      RingHom.mem_ker, map_sub, cyclotomicCharacter.toZModPow,
-      sub_eq_zero, eq_comm]
+      RingHom.mem_ker, show ((1 : Gal(L/K)) : L ≃+* L) = 1 from rfl, map_one,
+      map_sub, cyclotomicCharacter.toZModPow, sub_eq_zero, eq_comm, Units.val_one, map_one]
     apply modularCyclotomicCharacter.unique
     intro t ht
     obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit NeZero.out).eq_pow_of_mem_rootsOfUnity ht
-    rw [show ((1 : Gal(L/K)) : L ≃+* L) = 1 from rfl, map_one, Units.val_one, map_one,
-      ZMod.val_one'' (one_lt_pow₀ (Nat.Prime.one_lt Fact.out) hk').ne', pow_one]
+    rw [ZMod.val_one'' (one_lt_pow₀ (Nat.Prime.one_lt Fact.out) hk').ne', pow_one]
     exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
