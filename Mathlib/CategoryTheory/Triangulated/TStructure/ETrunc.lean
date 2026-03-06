@@ -485,47 +485,47 @@ end
 /-- The commutation natural isomorphism
 `t.eTruncGE.obj a ⋙ t.eTruncLT.obj b ≅ t.eTruncLT.obj b ⋙ t.eTruncGE.obj a`
 for all `a` and `b` in `EInt`. -/
-noncomputable def eTruncLTGEIsoLEGT (a b : EInt) :
+noncomputable def eTruncLTGEIsoGELT (a b : EInt) :
     t.eTruncGE.obj a ⋙ t.eTruncLT.obj b ≅ t.eTruncLT.obj b ⋙ t.eTruncGE.obj a :=
   (asIso (t.eTruncLTGELTSelfToLTGE a b)).symm ≪≫ asIso (t.eTruncLTGELTSelfToGELT a b)
 
 @[reassoc (attr := simp)]
-lemma eTruncLTGEIsoLEGT_hom_naturality (a b : EInt) {X Y : C} (f : X ⟶ Y) :
-    (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map f) ≫ (t.eTruncLTGEIsoLEGT a b).hom.app Y =
-      (t.eTruncLTGEIsoLEGT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLT.obj b).map f) :=
-  (t.eTruncLTGEIsoLEGT a b).hom.naturality f
+lemma eTruncLTGEIsoGELT_hom_naturality (a b : EInt) {X Y : C} (f : X ⟶ Y) :
+    (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map f) ≫ (t.eTruncLTGEIsoGELT a b).hom.app Y =
+      (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLT.obj b).map f) :=
+  (t.eTruncLTGEIsoGELT a b).hom.naturality f
 
 @[reassoc]
-lemma eTruncLTGEIsoLEGT_hom_app_fac (a b : EInt) (X : C) :
+lemma eTruncLTGEIsoGELT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map ((t.eTruncLTι b).app X)) ≫
-      (t.eTruncLTGEIsoLEGT a b).hom.app X =
+      (t.eTruncLTGEIsoGELT a b).hom.app X =
     (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj ((t.eTruncLT.obj b).obj X)):= by
-  simp [eTruncLTGEIsoLEGT]
+  simp [eTruncLTGEIsoGELT]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma eTruncLTGEIsoLEGT_hom_app_fac' (a b : EInt) (X : C) :
-    (t.eTruncLTGEIsoLEGT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLTι b).app X) =
+lemma eTruncLTGEIsoGELT_hom_app_fac' (a b : EInt) (X : C) :
+    (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLTι b).app X) =
       (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj X) := by
-  simp [eTruncLTGEIsoLEGT]
+  simp [eTruncLTGEIsoGELT]
 
 set_option backward.isDefEq.respectTransparency false in
 open ComposableArrows in
 @[reassoc]
-lemma eTruncLTGEIsoLEGT_naturality_app (a b : EInt) (hab : a ≤ b)
+lemma eTruncLTGEIsoGELT_naturality_app (a b : EInt) (hab : a ≤ b)
     (a' b' : EInt) (hab' : a' ≤ b') (φ : mk₁ (homOfLE hab) ⟶ mk₁ (homOfLE hab')) (X : C) :
       (t.eTruncLT.map (φ.app 1)).app ((t.eTruncGE.obj a).obj X) ≫
         (t.eTruncLT.obj b').map ((t.eTruncGE.map (φ.app 0)).app X) ≫
-        (t.eTruncLTGEIsoLEGT a' b').hom.app X =
-    (t.eTruncLTGEIsoLEGT a b).hom.app X ≫ (t.eTruncGE.map (φ.app 0)).app _ ≫
+        (t.eTruncLTGEIsoGELT a' b').hom.app X =
+    (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.map (φ.app 0)).app _ ≫
       (t.eTruncGE.obj a').map ((t.eTruncLT.map (φ.app 1)).app X) := by
   rw [← cancel_epi ((t.eTruncLTGELTSelfToLTGE a b).app X)]
   dsimp
-  rw [eTruncLTGELTSelfToLTGE_app, eTruncLTGEIsoLEGT_hom_app_fac_assoc,
+  rw [eTruncLTGELTSelfToLTGE_app, eTruncLTGEIsoGELT_hom_app_fac_assoc,
     NatTrans.naturality_assoc, ← Functor.map_comp_assoc, NatTrans.naturality,
     Functor.map_comp_assoc, ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 1) X,
     Functor.map_comp, Functor.map_comp, Category.assoc,
-    t.eTruncLTGEIsoLEGT_hom_app_fac]
+    t.eTruncLTGEIsoGELT_hom_app_fac]
   simp
 
 end
