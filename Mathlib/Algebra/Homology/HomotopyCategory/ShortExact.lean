@@ -72,15 +72,8 @@ variable (S₁ S₂ : ShortComplex (CochainComplex C ℤ)) (f : S₁ ⟶ S₂)
 lemma map_descShortComplex : map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm ≫ descShortComplex S₂ =
     descShortComplex S₁ ≫ f.τ₃ := by
   ext i
-  rw [mappingCone.ext_from_iff _ _ _ rfl]
-  dsimp [map]
-  simp only [inl_v_desc_f_assoc, HomComplex.Cochain.zero_cochain_comp_v,
-    HomComplex.Cochain.ofHom_v, assoc, inl_v_descShortComplex_f, comp_zero,
-    inl_v_descShortComplex_f_assoc, zero_comp, inr_f_desc_f_assoc, HomologicalComplex.comp_f,
-    inr_f_descShortComplex_f, inr_f_descShortComplex_f_assoc, true_and]
-  have := f.comm₂₃
-  apply_fun (fun x ↦ x.f i) at this
-  exact this
+  simpa [mappingCone.ext_from_iff _ _ _ rfl, map] using
+    congr_fun (congr_arg HomologicalComplex.Hom.f f.comm₂₃) i
 
 end
 
