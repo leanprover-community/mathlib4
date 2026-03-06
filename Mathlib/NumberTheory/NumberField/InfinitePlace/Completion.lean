@@ -131,15 +131,15 @@ theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x 
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
   (v.isometry_embedding_of_isReal hv).extensionHom_coe _
 
+@[deprecated (since := "2025-09-24")]
+alias extensionEmbedding_of_isReal_coe := extensionEmbeddingOfIsReal_coe
+
 open UniformSpace.Completion in
 @[simp]
 theorem extensionEmbeddingOfIsReal_apply {v : InfinitePlace K} (hv : IsReal v) (x : v.Completion) :
     (extensionEmbeddingOfIsReal hv x : ℂ) = extensionEmbedding v x := by
-  refine UniformSpace.Completion.induction_on x ?_ (fun x => by simp)
+  refine UniformSpace.Completion.induction_on x ?_ (by simp)
   exact isClosed_eq (Continuous.comp' (by fun_prop) continuous_extension) continuous_extension
-
-@[deprecated (since := "2025-09-24")]
-alias extensionEmbedding_of_isReal_coe := extensionEmbeddingOfIsReal_coe
 
 /-- The embedding `v.Completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
