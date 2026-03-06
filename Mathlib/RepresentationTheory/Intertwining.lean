@@ -71,9 +71,9 @@ lemma toLinearMap_mk (f : V →ₗ[A] W) (h) :
   (⟨f, h⟩ : IntertwiningMap ρ σ).toLinearMap = f := rfl
 
 lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
-    f (ρ g v) = σ g (f v) := congr($(f.isIntertwining' g) v)
+    f.toLinearMap (ρ g v) = σ g (f v) := congr($(f.isIntertwining' g) v)
 
-@[simp] theorem toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v = f v := rfl
+theorem toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f v = f.toLinearMap v := rfl
 
 instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
@@ -315,7 +315,7 @@ variable {A G V W U : Type*} [CommSemiring A] [Monoid G] [AddCommMonoid V] [AddC
   (σ : Representation A G W) (τ : Representation A G U) (f : V →ₗ[A] W)
 
 theorem Equiv.conj_apply_self (g : G) (φ : Equiv ρ σ) : φ.conj (ρ g) = σ g := by
-  ext w;
+  ext w
   have := (congr($(φ.symm.toIntertwiningMap.2 g) w)).symm
   simp only [LinearMap.coe_comp, coe_toLinearMap, Function.comp_apply, LinearEquiv.conj_apply_apply,
     coe_symm, toLinearEquiv_apply, coe_toIntertwiningMap] at *
@@ -473,7 +473,7 @@ def lTensor (f : IntertwiningMap σ τ) :
 
 @[simp]
 lemma toLinearMap_lTensor (f : IntertwiningMap ρ σ) :
-    (f.lTensor ρ).toLinearMap = f.toLinearMap.lTensor V := rfl
+    (f.lTensor τ).toLinearMap = f.toLinearMap.lTensor U := rfl
 
 @[simp]
 lemma lTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
@@ -483,7 +483,7 @@ lemma lTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
 lemma lTensor_id : lTensor ρ (id σ) = id (tprod ρ σ) := by ext; simp
 
 variable (ρ) in
-/-- the natural intertwining map induced from `f : σ → τ` to `σ.tprod ρ → τ.tprod ρ`. -/
+/-- The natural intertwining map induced from `f : σ → τ` to `σ.tprod ρ → τ.tprod ρ`. -/
 def rTensor (f : IntertwiningMap σ τ) :
     (tprod σ ρ).IntertwiningMap (tprod τ ρ) := tensor f (id ρ)
 
