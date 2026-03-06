@@ -16,12 +16,12 @@ Don't be afraid to ask. TODO!
 
 -/
 
-open Bundle Filter Module Topology Set
-open scoped Bundle Manifold ContDiff
+open Bundle
+open scoped Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-@[expose] public section -- TODO: think if we want to expose all definitions!
+@[expose] public section
 
 open Bundle Filter Module Topology Set
 
@@ -83,7 +83,6 @@ noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial 
       exact mfderiv_smul hσ hf X₀ }
 
 end trivial_bundle
-
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
