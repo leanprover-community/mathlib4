@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
+public import Mathlib.RingTheory.Ideal.Int
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
@@ -29,9 +30,9 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
   `v`-adic completion `v.adicCompletion K` of `K`, where `v` is a non-zero prime ideal of `𝓞 K`
-* `NumberField.FinitePlace.norm_def`: the norm of `embedding v x` is the same as the `v`-adic
+* `NumberField.FinitePlace.norm_embedding`: the norm of `embedding v x` is the same as the `v`-adic
   absolute value of `x`. See also `NumberField.FinitePlace.norm_def'` and
-  `NumberField.FinitePlace.norm_def_int` for versions where the `v`-adic absolute value is
+  `NumberField.FinitePlace.norm_embedding_int` for versions where the `v`-adic absolute value is
   unfolded.
 * `NumberField.FinitePlace.hasFiniteMulSupport`: the `v`-adic absolute value of a non-zero element
   of `K` is different from 1 for at most finitely many `v`.
@@ -99,8 +100,16 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
     exact v.asIdeal.finiteQuotientOfFreeOfNeBot v.ne_bot
   lia
 
+lemma two_le_absNorm : 2 ≤ absNorm v.asIdeal :=
+  have : v.asIdeal.IsPrime := v.isPrime
+  have : NeZero v.asIdeal := ⟨v.ne_bot⟩
+  have h : 2 ≤ (v.asIdeal.under ℤ).absNorm := by simp [(Nat.absNorm_under_prime v.asIdeal).two_le]
+  h.trans (Nat.le_of_dvd (by grind [one_lt_absNorm v]) (Int.absNorm_under_dvd_absNorm v.asIdeal))
+
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
 lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
+
+lemma two_le_absNorm_nnreal : 2 ≤ (absNorm v.asIdeal : ℝ≥0) := mod_cast two_le_absNorm v
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
 lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
@@ -177,26 +186,34 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
     IsFinitePlace v ↔ ∃ w : FinitePlace K, w.val = v :=
   ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isFinitePlace⟩
 
-/-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
-value. -/
-theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = adicAbv v x := by
-  simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion,
-    Valued.toNormedField, Valued.norm, Valuation.RankOne.hom,
-    embedding_apply, adicAbv_def, rankOne_hom'_def,
+/-- The norm of an element in the `v`-adic completion of `K`. See `FinitePlace.norm_embedding`
+for the equality involving `‖embedding v x‖` on the LHS. -/
+theorem FinitePlace.norm_def (x : v.adicCompletion K) :
+    ‖x‖ = toNNReal (absNorm_ne_zero v) (Valued.v x) := by
+  simp [Valued.toNormedField.norm_def, Valuation.RankOne.hom, rankOne_hom'_def,
     valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective
       (valuedAdicCompletion_surjective K v)]
 
+/-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
+value. -/
+theorem FinitePlace.norm_embedding (x : K) : ‖embedding v x‖ = adicAbv v x := by
+  simp [norm_def, embedding_apply, adicAbv_def]
+
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
-theorem FinitePlace.norm_def' (x : K) :
+theorem FinitePlace.norm_embedding' (x : K) :
     ‖embedding v x‖ = toNNReal (absNorm_ne_zero v) (v.valuation K x) := by
-  rw [norm_def, adicAbv_def]
+  rw [norm_embedding, adicAbv_def]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation for integers. -/
-theorem FinitePlace.norm_def_int (x : 𝓞 K) :
+theorem FinitePlace.norm_embedding_int (x : 𝓞 K) :
     ‖embedding v x‖ = toNNReal (absNorm_ne_zero v) (v.intValuation x) := by
-  simp [norm_def, adicAbv_def, valuation_of_algebraMap]
+  simp [norm_embedding, adicAbv_def, valuation_of_algebraMap]
+
+@[deprecated (since := "2026-03-05")] alias FinitePlace.norm_def' := FinitePlace.norm_embedding'
+@[deprecated (since := "2026-03-05")] alias FinitePlace.norm_def_int :=
+  FinitePlace.norm_embedding_int
 
 /-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
 theorem RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max (x y : K) :
@@ -214,20 +231,30 @@ open FinitePlace
 
 /-- The `v`-adic norm of an integer is at most 1. -/
 theorem FinitePlace.norm_le_one (x : 𝓞 K) : ‖embedding v x‖ ≤ 1 := by
-  rw [norm_def]
+  rw [norm_embedding]
   exact v.adicAbv_coe_le_one (one_lt_absNorm_nnreal v) x
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem FinitePlace.norm_eq_one_iff_notMem (x : 𝓞 K) :
     ‖embedding v x‖ = 1 ↔ x ∉ v.asIdeal := by
-  rw [norm_def]
+  rw [norm_embedding]
   exact v.adicAbv_coe_eq_one_iff (one_lt_absNorm_nnreal v) x
 
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 K) :
     ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by
-  rw [norm_def]
+  rw [norm_embedding]
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
+
+lemma FinitePlace.two_le_norm_of_one_lt_norm {v : HeightOneSpectrum (𝓞 K)}
+    (x : v.adicCompletion K) (h : 1 < ‖x‖) :
+    2 ≤ ‖x‖ := by
+  rw [FinitePlace.norm_def, WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero v) (by aesop)]
+  apply (two_le_absNorm_nnreal v).trans
+  conv_lhs => rw [← zpow_one (v.asIdeal.absNorm : NNReal)]
+  apply zpow_le_zpow_right₀ (one_lt_absNorm_nnreal v).le
+  simpa [← Int.sub_one_lt_iff, sub_self, ← toAdd_one, Multiplicative.toAdd_lt,
+    WithZero.lt_unzero_iff] using Valued.toNormedField.one_lt_norm_iff.1 h
 
 end FinitePlace
 
@@ -330,7 +357,7 @@ lemma add_le (v : FinitePlace K) (x y : K) :
   obtain ⟨w, hw⟩ := v.prop
   have H x : v x = RingOfIntegers.HeightOneSpectrum.adicAbv w x := by
     rw [show v x = v.val x from rfl]
-    grind only [place_apply, norm_def]
+    grind only [place_apply, norm_embedding]
   simpa only [H] using RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max w x y
 
 instance : NonarchimedeanHomClass (FinitePlace K) K ℝ where
@@ -355,7 +382,7 @@ set_option backward.isDefEq.respectTransparency false in
 open Ideal in
 lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K}
     (h_x_nezero : x ≠ 0) : ‖embedding v x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
-  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, adicAbv_def,
+  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_embedding, adicAbv_def,
     WithZeroMulInt.toNNReal_neg_apply _
       ((v.valuation K).ne_zero_iff.mpr (coe_ne_zero_iff.mpr h_x_nezero))]
   push_cast
