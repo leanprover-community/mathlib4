@@ -46,10 +46,10 @@ the weighted order of a monomial, of a monomial with nonzero coefficient.
 - `MvPowerSeries.min_weightedOrder_le_add`: the order of the sum of two multivariate power series
 is at least the minimum of their orders.
 
-- `MvPowerSeries.weightedOrder_add_of_weightedOrder_ne`: the weighted_order of the sum of two
+- `MvPowerSeries.weightedOrder_add_of_weightedOrder_ne`: the `weightedOrder` of the sum of two
 formal power series is the minimum of their orders if their orders differ.
 
-- `MvPowerSeries.le_weightedOrder_mul`: the weighted_order of the product of two formal power
+- `MvPowerSeries.le_weightedOrder_mul`: the `weightedOrder` of the product of two formal power
 series is at least the sum of their orders.
 
 - `MvPowerSeries.coeff_mul_left_one_sub_of_lt_weightedOrder`,
@@ -217,7 +217,8 @@ theorem weightedOrder_eq_nat {n : ℕ} :
   · rintro ⟨⟨d, hd', hd⟩, h⟩
     exact le_antisymm (hd.symm ▸ f.weightedOrder_le w hd') (nat_le_weightedOrder w h)
 
-/-- The weighted_order of the monomial `a*X^d` is infinite if `a = 0` and `weight w d` otherwise. -/
+/-- The `weightedOrder` of the monomial `a*X^d` is infinite if `a = 0` and `weight w d` otherwise.
+-/
 theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
     weightedOrder w (monomial d a) = if a = 0 then (⊤ : ℕ∞) else weight w d := by
   classical
@@ -269,7 +270,7 @@ private theorem weightedOrder_add_of_weightedOrder_lt.aux
     rw [← hn, Nat.cast_lt]
     exact hb
 
-/-- The weighted_order of the sum of two formal power series
+/-- The `weightedOrder` of the sum of two formal power series
 is the minimum of their orders if their orders differ. -/
 theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weightedOrder w) :
     weightedOrder w (f + g) = weightedOrder w f ⊓ weightedOrder w g := by
@@ -281,7 +282,7 @@ theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weigh
   exact ⟨le_rfl, le_of_lt H₁⟩
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The weighted_order of the product of two formal power series
+/-- The `weightedOrder` of the product of two formal power series
 is at least the sum of their orders. -/
 theorem le_weightedOrder_mul :
     f.weightedOrder w + g.weightedOrder w ≤ weightedOrder w (f * g) := by
