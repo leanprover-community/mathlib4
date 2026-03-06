@@ -248,6 +248,7 @@ structure CoconeMorphism (A B : Cocone F) where
 
 attribute [reassoc (attr := simp)] ConeMorphism.w CoconeMorphism.w
 run_meta Lean.executeReservedNameAction ``ConeMorphism.mk.congr_simp
+set_option backward.isDefEq.respectTransparency false in
 attribute [to_dual existing (reorder := A B)] CoconeMorphism.mk.congr_simp CoconeMorphism.casesOn
 
 @[to_dual]
@@ -518,6 +519,7 @@ end Cones
 
 namespace Cocones
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering by an equivalence gives an equivalence between categories of cones.
 -/
 @[to_dual existing, simps]
