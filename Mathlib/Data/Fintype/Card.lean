@@ -364,7 +364,7 @@ theorem Fintype.card_prop : Fintype.card Prop = 2 :=
 
 theorem set_fintype_card_le_univ [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s ≤ Fintype.card α :=
-  Fintype.card_le_of_embedding (Function.Embedding.subtype s)
+  Fintype.card_le_of_embedding (Function.Embedding.subtype (· ∈ s))
 
 theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s = Fintype.card α ↔ s = Set.univ := by
@@ -434,11 +434,8 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
   exact Subrelation.wf (this _ _) (measure _).wf
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
-  wellFounded_of_trans_of_irrefl _
-
--- See note [lower instance priority]
-instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
   wellFounded_of_trans_of_irrefl _
 
 end Finite

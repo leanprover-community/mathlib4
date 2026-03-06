@@ -18,6 +18,7 @@ lax functors):
 * lax natural transformations;
 * oplax natural transformations;
 * strong natural transformations.
+
 These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
 condition.
 
@@ -46,7 +47,7 @@ We also provide API for going between lax transformations and strong transformat
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055),
-section 4.2.
+  section 4.2.
 
 -/
 

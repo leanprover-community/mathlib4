@@ -315,7 +315,7 @@ lemma shiftFunctorCompIsoId_op_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 
         (shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op (X.unop⟦m⟧)) ≫
           ((shiftFunctorOpIso C n m hnm).inv.app X)⟦m⟧' := by
   simp [shiftFunctorCompIsoId, shiftFunctorZero_op_inv_app X,
-    shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by omega) (add_zero 0)]
+    shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by lia) (add_zero 0)]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]

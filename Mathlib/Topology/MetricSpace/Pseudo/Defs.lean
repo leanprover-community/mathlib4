@@ -39,7 +39,7 @@ TODO (anyone): Add "Main results" section.
 
 ## Tags
 
-pseudo_metric, dist
+pseudometric space, dist
 -/
 
 @[expose] public section
@@ -574,7 +574,6 @@ theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y �
   rw [← add_sub_cancel ε₁ ε₂]
   exact lt_of_le_of_lt (dist_triangle z x y) (add_lt_add_of_lt_of_le zx h)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_half_subset (y) (h : y ∈ ball x (ε / 2)) : ball y (ε / 2) ⊆ ball x ε :=
   ball_subset <| by rw [sub_self_div_two]; exact le_of_lt h
 
@@ -768,8 +767,8 @@ theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → P
     (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ ⦃x⦄, dist x x₀ < ε → ∀ ⦃i⦄, pa i → p (x, i) := by
   refine (nhds_basis_ball.prod f.basis_sets).eventually_iff.trans ?_
-  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left]
-  rfl
+  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left,
+    Set.mem_surjective.exists, eventually_mem_set]
 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
 in a pseudo-metric space. -/

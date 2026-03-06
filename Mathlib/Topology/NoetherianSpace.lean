@@ -170,7 +170,6 @@ theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace �
       refine ⟨S₁ ∪ S₂, hSf₁.union hSf₂, Set.union_subset_iff.2 ⟨hS₁, hS₂⟩, ?_⟩
       rwa [sSup_union, ← h₁, ← h₂, ← inf_sup_left, left_eq_inf]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finite_set_isClosed_irreducible [NoetherianSpace α]
     {s : Set α} (hs : IsClosed s) : ∃ S : Set (Set α), S.Finite ∧

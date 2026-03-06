@@ -23,6 +23,7 @@ assert_not_exists Field
 
 namespace Nat
 
+set_option backward.isDefEq.respectTransparency false in
 instance instWfDvdMonoid : WfDvdMonoid ℕ := by
   refine RelHomClass.wellFounded
     (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, ?_⟩ : DvdNotUnit →r (· < ·)) wellFounded_lt

@@ -175,7 +175,6 @@ theorem extend_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) :
     F.extend t = F.curry ⟨t, ht⟩ :=
   Set.IccExtend_of_mem (zero_le_one' ℝ) F.curry ht
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extend_zero (F : Homotopy f₀ f₁) : F.extend 0 = f₀ := by simp
 theorem extend_one (F : Homotopy f₀ f₁) : F.extend 1 = f₁ := by simp
 
@@ -632,6 +631,11 @@ variable {S : Set X}
 /-- If two maps are homotopic relative to a set, then they are homotopic. -/
 protected theorem homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) : Homotopic f₀ f₁ :=
   h.map fun F ↦ F.1
+
+/-- If two maps are homotopic relative to a set, then they agree on it. -/
+theorem fst_eq_snd ⦃f₀ f₁ : C(X, Y)⦄ (h : HomotopicRel f₀ f₁ S) {x : X} (hx : x ∈ S) :
+    f₀ x = f₁ x :=
+  Nonempty.elim h (HomotopyRel.fst_eq_snd · hx)
 
 theorem refl (f : C(X, Y)) : HomotopicRel f f S :=
   ⟨HomotopyRel.refl f S⟩

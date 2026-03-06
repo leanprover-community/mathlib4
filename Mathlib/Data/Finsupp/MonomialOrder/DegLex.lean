@@ -126,7 +126,7 @@ instance isStrictOrder : IsStrictOrder (DegLex (α →₀ ℕ)) (· < ·) where
       · right; exact ⟨Eq.trans hab.1 hbc.1, lt_trans hab.2 hbc.2⟩
 
 /-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
-instance : LinearOrder (DegLex (α →₀ ℕ)) :=
+noncomputable instance : LinearOrder (DegLex (α →₀ ℕ)) :=
   LinearOrder.lift'
     (fun (f : DegLex (α →₀ ℕ)) ↦ toLex ((ofDegLex f).degree, toLex (ofDegLex f)))
     (fun f g ↦ by simp)

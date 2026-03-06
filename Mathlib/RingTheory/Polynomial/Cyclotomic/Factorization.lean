@@ -40,6 +40,7 @@ private lemma f_ne_zero : f ≠ 0 := fun h0 ↦ not_subsingleton K <|
 
 variable [hp : Fact p.Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The degree of an irreducible monic factor of the `n`-th cyclotomic polynomial over a finite
   field. This is a special case of `natDegree_of_dvd_cyclotomic_of_irreducible` below. -/
 private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ cyclotomic n K)

@@ -23,13 +23,16 @@ jobs:
         fetch-depth: 0
         path: pr-branch
 
-    # Checkout the master branch into a subdirectory
-    - name: Checkout master branch
+    - name: Checkout mathlib-ci
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        # When testing the scripts, comment out the "ref: master"
-        ref: master
-        path: master-branch
+        repository: leanprover-community/mathlib-ci
+        ref: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+        fetch-depth: 1
+        path: ci-tools
+
+    - name: Set up CI scripts paths
+      uses: ./ci-tools/.github/actions/setup-ci-scripts
 
     - name: Update the merge-conflict label
       run: |
@@ -78,6 +81,10 @@ jobs:
         # Get the list of all changed files.
         echo "Saving the changed files to 'changed_files.txt'..."
         git diff --name-only origin/${{ github.base_ref }}... | tee changed_files.txt
+
+        # Get all newly added files.
+        echo "Checking for added files..."
+        git diff --name-only --diff-filter A origin/${{ github.base_ref }}... | tee added_files.txt
 
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
@@ -152,13 +159,13 @@ jobs:
         printf 'currentHash=%s\n' "${currentHash}"
 
         echo "Compute the counts for the HEAD of the PR"
-        python ../master-branch/scripts/count-trans-deps.py "Mathlib/" > head.json
+        python "${CI_SCRIPTS_DIR}/pr_summary/count-trans-deps.py" "Mathlib/" > head.json
 
         # Checkout the merge base
         git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
 
         echo "Compute the counts for the merge base"
-        python ../master-branch/scripts/count-trans-deps.py "Mathlib/" > base.json
+        python "${CI_SCRIPTS_DIR}/pr_summary/count-trans-deps.py" "Mathlib/" > base.json
 
         # switch back to the current branch: the `declarations_diff` script should be here
         git checkout "${currentHash}" --
@@ -173,12 +180,12 @@ jobs:
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
 
-        graphAndHighPercentReports=$(python ../master-branch/scripts/import-graph-report.py base.json head.json changed_files.txt)
+        graphAndHighPercentReports=$(python "${CI_SCRIPTS_DIR}/pr_summary/import-graph-report.py" base.json head.json changed_files.txt)
 
         echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          ../master-branch/scripts/import_trans_difference.sh
+          "${CI_SCRIPTS_DIR}/pr_summary/import_trans_difference.sh"
         )
 
         echo "Produce high percentage imports"
@@ -202,7 +209,7 @@ jobs:
         fi
 
         echo "Compute Declarations' diff comment"
-        declDiff=$(../master-branch/scripts/declarations_diff.sh)
+        declDiff=$("${CI_SCRIPTS_DIR}/pr_summary/declarations_diff.sh")
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff" "${declDiff}")"
@@ -214,7 +221,7 @@ jobs:
         printf 'hashURL: %s' "${hashURL}"
 
         echo "Compute technical debt changes"
-        techDebtVar="$(../master-branch/scripts/technical-debt-metrics.sh pr_summary)"
+        techDebtVar="$("${CI_SCRIPTS_DIR}/reporting/technical-debt-metrics.sh" pr_summary)"
 
         echo "Compute documentation reminder"
         workflowFilesChanged="$(grep '^\.github/workflows/' changed_files.txt || true)"
@@ -227,11 +234,26 @@ jobs:
           workflowDocsReminder=""
         fi
 
+        echo "Compute scripts-location reminder"
+        scriptsFilesAdded="$(grep '^scripts/' added_files.txt || true)"
+        if [ -n "${scriptsFilesAdded}" ]
+        then
+          # Format each added scripts path as a Markdown bullet: "- `path`"
+          scriptsFilesAddedMarkdown="$(sed "s|^|- \`|; s|\$|\`|" <<< "${scriptsFilesAdded}")"
+          scriptsLocationReminder="$(printf "### Scripts folder reminder\nThis PR adds files under \`scripts/\`.\nPlease consider whether each added script belongs in this repository or in \`leanprover-community/mathlib-ci\`.\n\nAdded scripts files:\n%s\n" "${scriptsFilesAddedMarkdown}")"
+        else
+          scriptsLocationReminder=""
+        fi
+
         # store in a file, to avoid "long arguments" error.
         printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
         if [ -n "${workflowDocsReminder}" ]
         then
           printf '\n\n---\n\n%s\n' "${workflowDocsReminder}" >> please_merge_master.md
+        fi
+        if [ -n "${scriptsLocationReminder}" ]
+        then
+          printf '\n\n---\n\n%s\n' "${scriptsLocationReminder}" >> please_merge_master.md
         fi
 
         echo "Include any errors about removed or renamed files without deprecation,"
@@ -248,7 +270,7 @@ jobs:
         fi
 
         cat please_merge_master.md
-        ../master-branch/scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"
+        "${CI_SCRIPTS_DIR}/pr_summary/update_PR_comment.sh" please_merge_master.md "${title}" "${PR}"
 
     - name: Update the file-removed label
       run: |
