@@ -38,10 +38,8 @@ open scoped Real Topology
 
 namespace ProbabilityTheory
 
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbabilityMeasure P]
-  {X : ℕ → Ω → ℝ}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : ℕ → Ω → ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma charFun_sqrt_inv_mul_sum (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) {n : ℕ} {t : ℝ} :
     charFun (P.map (fun ω ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k ω)) t =
@@ -50,6 +48,8 @@ lemma charFun_sqrt_inv_mul_sum (hindep : iIndepFun X P)
   rw [charFun_map_mul_comp, (hindep.restrict _).charFun_map_fun_finset_sum_eq_prod (fun _  _↦ mX _)]
   · simp [fun i ↦ (hident i).map_eq]
   · exact Finset.aemeasurable_fun_sum _ fun _ _ ↦ mX _
+
+variable [IsProbabilityMeasure P]
 
 lemma tendsto_charFun_sqrt_inv_mul_pow {X : Ω → ℝ}
     (hX : AEMeasurable X P) (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) (t : ℝ) :
