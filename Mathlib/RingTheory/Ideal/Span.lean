@@ -76,23 +76,22 @@ open Lean PrettyPrinter.Delaborator SubExpr
 /-- Supporting function for the `⟪x₁,x₂,...,xₙ⟫` spanning notation. -/
 @[app_delab Ideal.span]
 meta partial def delabSpanNotation : Delab := whenPPOption getPPNotation do
-  let e ← getExpr
-  guard <| e.isAppOfArity ``Ideal.span 3
-  let xs ← withNaryArg 2 delabInsertArray
-  `(⟪$xs.toArray,*⟫)
+  withOverApp 3 do
+    let xs ← withNaryArg 2 delabInsertArray
+    `(⟪$xs.toArray,*⟫)
 where
   delabInsertArray : DelabM (List Term) := do
     let e ← getExpr
     if e.isAppOfArity ``EmptyCollection.emptyCollection 2 then
       return []
-    else if e.isAppOfArity ``Singleton.singleton 4 then
+    if e.isAppOfArity ``Singleton.singleton 4 then
       let x ← withNaryArg 3 delab
       return [x]
-    else if e.isAppOfArity ``Insert.insert 5 then
+    if e.isAppOfArity ``Insert.insert 5 then
       let x ← withNaryArg 3 delab
       let xs ← withNaryArg 4 delabInsertArray
       return x :: xs
-    else failure
+    failure
 
 @[simp]
 theorem submodule_span_eq {s : Set α} : Submodule.span α s = Ideal.span s :=
