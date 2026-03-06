@@ -343,23 +343,23 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
   choose ζ hζ using H
   refine Continuous.of_coeHom_comp ?_
   apply continuous_of_continuousAt_one
-  rw [ContinuousAt, map_one, (galGroupBasis K L).nhds_one_hasBasis.tendsto_iff
-    (Metric.nhds_basis_ball (α := ℤ_[p]) (x := 1))]
+  rw [Metric.continuousAt_iff']
   intro ε hε
+  rw [Filter.eventually_iff, krullTopology_mem_nhds_one_iff]
   obtain ⟨k, hk', hk⟩ : ∃ k : ℕ, k ≠ 0 ∧ p ^ (-k : ℤ) < ε := by
     obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt p hε
     exact ⟨k + 1, by simp, lt_of_le_of_lt (by gcongr <;> simp [‹Fact p.Prime›.1.one_le]) hk⟩
-  refine ⟨_, ⟨_, ⟨(K⟮ζ k⟯), adjoin.finiteDimensional ?_, rfl⟩, rfl⟩, ?_⟩
+  refine ⟨(K⟮ζ k⟯), adjoin.finiteDimensional ?_, ?_⟩
   · exact ((hζ k).isIntegral (Nat.pos_of_neZero _)).tower_top
   · intro σ hσ
     refine lt_of_le_of_lt ?_ hk
     dsimp
     rw [dist_eq_norm, PadicInt.norm_le_pow_iff_mem_span_pow, ← PadicInt.ker_toZModPow,
-      RingHom.mem_ker, map_sub, map_one, cyclotomicCharacter.toZModPow,
+      RingHom.mem_ker, map_sub, cyclotomicCharacter.toZModPow,
       sub_eq_zero, eq_comm]
     apply modularCyclotomicCharacter.unique
     intro t ht
     obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit NeZero.out).eq_pow_of_mem_rootsOfUnity ht
-    rw [ZMod.val_one'', pow_one]
-    · exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
-    · exact (one_lt_pow₀ ‹Fact p.Prime›.1.one_lt hk').ne'
+    rw [show ((1 : Gal(L/K)) : L ≃+* L) = 1 from rfl, map_one, Units.val_one, map_one,
+      ZMod.val_one'' (one_lt_pow₀ (Nat.Prime.one_lt Fact.out) hk').ne', pow_one]
+    exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
