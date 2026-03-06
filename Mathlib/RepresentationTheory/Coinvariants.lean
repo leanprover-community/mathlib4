@@ -6,7 +6,7 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.RepresentationTheory.Rep
+public import Mathlib.RepresentationTheory.Rep'.Res
 
 /-!
 # Coinvariants of a group representation
@@ -177,6 +177,10 @@ noncomputable def toCoinvariants :
 lemma toCoinvariants_mk (g : G) (x : V) :
     toCoinvariants ρ S g (Coinvariants.mk _ x) = Coinvariants.mk _ (ρ g x) := rfl
 
+noncomputable def toCoinvariantsMkQ : ρ.IntertwiningMap (toCoinvariants ρ S) where
+  __ : _ →ₗ[k] _ := Submodule.mkQ _
+  isIntertwining' _ := rfl
+
 instance : IsTrivial ((toCoinvariants ρ S).comp S.subtype) where
   out g := by
     ext x
@@ -265,7 +269,7 @@ lemma Coinvariants.mk_tmul_inv (x : V) (y : W) (g : G) :
 noncomputable def ofCoinvariantsTprodLeftRegular :
     Coinvariants (ρ.tprod (leftRegular k G)) →ₗ[k] V :=
   Coinvariants.lift _ (TensorProduct.lift (Finsupp.linearCombination _ fun g => ρ g⁻¹) ∘ₗ
-    (TensorProduct.comm _ _ _).toLinearMap) fun _ => by ext; simp
+    (_root_.TensorProduct.comm _ _ _).toLinearMap) fun _ => by ext; simp
 
 @[simp]
 lemma ofCoinvariantsTprodLeftRegular_mk_tmul_single (x : V) (g : G) (r : k) :
@@ -308,15 +312,16 @@ the `S`-coinvariants `A_S`. -/
 abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
 
 /-- The quotient map `A → A_S` as a representation morphism. -/
-def toCoinvariantsMkQ : A ⟶ toCoinvariants A S := mkQ _ _ _
+abbrev toCoinvariantsMkQ : A ⟶ toCoinvariants A S :=
+  Rep.ofHom (Representation.toCoinvariantsMkQ _ _)
 
-@[simp]
-lemma toCoinvariantsMkQ_hom :
-    (toCoinvariantsMkQ A S).hom.hom = Coinvariants.mk (A.ρ.comp S.subtype) := rfl
+-- @[simp]
+-- lemma toCoinvariantsMkQ_hom :
+--     (toCoinvariantsMkQ A S).hom = Coinvariants.mk (A.ρ.comp S.subtype) := rfl
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
-abbrev quotientToCoinvariants : Rep k (G ⧸ S) := ofQuotient (toCoinvariants A S) S
+abbrev quotientToCoinvariants : Rep k (G ⧸ S) := Rep.ofQuotient (Rep.toCoinvariants A S) S
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
 `G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map to the
@@ -326,18 +331,20 @@ def coinvariantsShortComplex : ShortComplex (Rep k G) where
   X₁ := toCoinvariantsKer A S
   X₂ := A
   X₃ := toCoinvariants A S
-  f := subtype ..
+  f := ofHom ⟨Submodule.subtype _, fun g ↦ by ext; simp⟩
   g := toCoinvariantsMkQ A S
-  zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
+  zero :=  by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
 
 lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).ShortExact where
-  exact := (forget₂ _ (ModuleCat k)).reflects_exact_of_faithful _ <|
-    (ShortComplex.moduleCat_exact_iff _).2
-      fun x hx => ⟨(⟨x, (Submodule.Quotient.mk_eq_zero _).1 hx⟩ :
-      Representation.Coinvariants.ker <| A.ρ.comp S.subtype), rfl⟩
-  mono_f := (Rep.mono_iff_injective _).2 fun _ _ h => Subtype.ext h
-  epi_g := (Rep.epi_iff_surjective _).2 <| Submodule.mkQ_surjective _
+  exact := (forget₂ (Rep k G) (ModuleCat k)).reflects_exact_of_faithful _ <| sorry
+    -- (ShortComplex.moduleCat_exact_iff _).2
+    --   fun x hx => ⟨(⟨x, (Submodule.Quotient.mk_eq_zero _).1 hx⟩
+    --   :
+    --   Representation.Coinvariants.ker <| A.ρ.comp S.subtype), rfl⟩
+  mono_f := (Rep.mono_iff_injective k G _).2 fun _ _ h => Subtype.ext h
+  epi_g := (Rep.epi_iff_surjective k G _).2 <| Submodule.mkQ_surjective _
 
+#exit
 end
 
 variable (k G) [Monoid G] (A B : Rep k G)

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.FDRep
+public import Mathlib.RepresentationTheory.Rep'.Res
 
 /-!
 # Subspace of invariants a group representation
@@ -159,23 +160,23 @@ variable {k : Type u} [CommRing k] {G : Type u} [Group G]
 theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
   dsimp
-  rw [← LinearMap.comp_assoc, ← ModuleCat.hom_ofHom (Y.ρ g), ← ModuleCat.hom_ofHom f,
-      ← ModuleCat.hom_comp, ← ModuleCat.hom_ofHom (X.ρ g⁻¹), ← ModuleCat.hom_comp,
-      Rep.ofHom_ρ, ← ρAut_apply_inv X g, Rep.ofHom_ρ, ← ρAut_apply_hom Y g,
-      ← ModuleCat.hom_ext_iff, Iso.inv_comp_eq, ρAut_apply_hom, ← ModuleCat.hom_ofHom (X.ρ g),
-      ← ModuleCat.hom_comp, ← ModuleCat.hom_ext_iff]
-  exact comm
+  constructor
+  · intro h
+    nth_rw 1 [← h]
+    rw [LinearMap.comp_assoc, LinearMap.comp_assoc, ← Rep.ρ_mul, inv_mul_cancel, map_one,
+      Module.End.one_eq_id, LinearMap.comp_id]
+  · intro h
+    rw [← LinearMap.comp_assoc, ← h, LinearMap.comp_assoc, ← Rep.ρ_mul, mul_inv_cancel, map_one,
+      Module.End.one_eq_id, LinearMap.comp_id]
 
 /-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
 @[simps]
 def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
-  toFun f := ⟨ModuleCat.ofHom f.val, fun g =>
-    ModuleCat.hom_ext ((mem_invariants_iff_comm _ g).1 (f.property g))⟩
+  toFun f := Rep.ofHom ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 <| f.2 g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨f.hom.hom, fun g =>
-    (mem_invariants_iff_comm _ g).2 (ModuleCat.hom_ext_iff.mp (f.comm g))⟩
+  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.2 g⟩
 
 end Rep
 
@@ -219,7 +220,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.invariants
-  map {A B} f := ModuleCat.ofHom <| (f.hom.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
+  map {A B} f := ModuleCat.ofHom <| (f.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
     B.ρ.invariants fun ⟨c, hc⟩ g => by
       have := (hom_comm_apply f g c).symm
       simp_all [hc g]
@@ -232,16 +233,21 @@ set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 /-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A^S`. -/
-@[simps obj_V map_hom]
+-- @[simps! obj_V map_hom_hom]
 noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
-  map {X Y} f := {
-    hom := (invariantsFunctor k S).map ((Action.res _ S.subtype).map f)
-    comm g := QuotientGroup.induction_on g fun g => by
+  map {X Y} f := Rep.ofHom ⟨((invariantsFunctor k S).map ((Rep.resFunctor S.subtype).map f)).hom,
+    fun g ↦ by
       ext x
-      simp [ModuleCat.endRingEquiv, Representation.quotientToInvariants,
-        Representation.toInvariants, invariants, hom_comm_apply] }
+      simp only [invariantsFunctor_map_hom, hom_ofHom, Representation.quotientToInvariants,
+        LinearMap.comp_codRestrict, LinearMap.codRestrict_apply, LinearMap.coe_comp,
+        LinearMap.coe_coe, IntertwiningMap.coe_mk, Submodule.coe_subtype, Function.comp_apply]
+      -- this change is unnecessary but just for clearness
+      change _ = ((((Y.ρ.toInvariants S).ofQuotient S) g) ((LinearMap.codRestrict _
+          (f.hom.toLinearMap ∘ₗ (invariants (MonoidHom.comp X.ρ S.subtype)).subtype) _) x)).1
+      induction g using QuotientGroup.induction_on with
+      | H g => simp [hom_comm_apply]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and
@@ -249,20 +255,18 @@ the functor sending a representation to its submodule of invariants. -/
 @[simps]
 noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFunctor k G where
   unit := { app _ := ModuleCat.ofHom <| LinearMap.id.codRestrict _ <| by simp [trivialFunctor] }
-  counit := { app X := {
-    hom := ModuleCat.ofHom <| Submodule.subtype _
-    comm g := by ext x; exact (x.2 g).symm } }
+  counit := { app X := Rep.ofHom ⟨Submodule.subtype _, fun g ↦ by ext x; exact (x.2 g).symm⟩ }
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_apply_hom
     {X : ModuleCat k} {Y : Rep k G} (f : (trivialFunctor k G).obj X ⟶ Y) :
     ((invariantsAdjunction k G).homEquiv _ _ f).hom =
-      f.hom.hom.codRestrict _ (by intro _ _; exact (hom_comm_apply f _ _).symm) := rfl
+      f.hom.codRestrict _ (by intro _ _; exact (hom_comm_apply f _ _).symm) := rfl
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_symm_apply_hom
     {X : ModuleCat k} {Y : Rep k G} (f : X ⟶ (invariantsFunctor k G).obj Y) :
-    (((invariantsAdjunction k G).homEquiv _ _).symm f).hom.hom =
+    (((invariantsAdjunction k G).homEquiv _ _).symm f).hom.toLinearMap =
       Submodule.subtype _ ∘ₗ f.hom := rfl
 
 noncomputable instance : (invariantsFunctor k G).IsRightAdjoint :=

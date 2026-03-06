@@ -41,9 +41,13 @@ variable [MonoidalCategory V]
 
 @[simps! tensorUnit_V tensorObj_V tensorHom_hom whiskerLeft_hom whiskerRight_hom
   associator_hom_hom associator_inv_hom leftUnitor_hom_hom leftUnitor_inv_hom
-  rightUnitor_hom_hom rightUnitor_inv_hom]
-instance instMonoidalCategory : MonoidalCategory (Action V G) :=
-  Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
+  rightUnitor_hom_hom rightUnitor_inv_hom, reducible]
+instance instMonoidalCategory : MonoidalCategory (Action V G) where
+  tensorObj X Y := Action.mk (X.V ⊗ Y.V) _
+  tensorUnit := Action.mk (𝟙_ _) _
+  __ := Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
+
+unif_hint (X Y : Action (Type _) G) where ⊢ (X ⊗ Y).V ≟ X.V × Y.V
 
 @[simp]
 theorem tensorUnit_ρ {g : G} :

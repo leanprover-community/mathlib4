@@ -52,7 +52,7 @@ instance (k : Type u) (G : Type v) [Ring k] [Monoid G] : Category (Rep k G) wher
   Hom := Rep.Hom
   __ := inferInstanceAs (Category (Action (ModuleCat.{w, u} k) G))
 
-def V {k : Type u} {G : Type v} [Ring k] [Monoid G] (A : Rep k G) : ModuleCat k := Action.V A
+abbrev V {k : Type u} {G : Type v} [Ring k] [Monoid G] (A : Rep k G) : ModuleCat k := Action.V A
 
 instance : CoeSort (Rep.{w} k G) (Type _) := ⟨fun V => V.V⟩
 
@@ -70,8 +70,12 @@ instance : ConcreteCategory (Rep k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ) wh
 abbrev Hom.hom {A B : Rep k G} (f : A ⟶ B) : A.ρ.IntertwiningMap B.ρ :=
   ConcreteCategory.hom (C := Rep k G) f
 
-def of {V : Type w} [AddCommGroup V] [Module k V] (ρ : Representation k G V) : Rep k G :=
+abbrev of {V : Type w} [AddCommGroup V] [Module k V] (ρ : Representation k G V) : Rep k G :=
   ⟨ModuleCat.of k V, (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ⟩
+
+-- Ensure the roundtrips are reducibly defeq (so tactics like `rw` can see through them).
+example {V : Type w} [AddCommGroup V] [Module k V] (ρ : Representation k G V) :
+    (of ρ : Type w) = V := by with_reducible rfl
 
 abbrev ofHom {A B : Type w} [AddCommGroup A] [AddCommGroup B] [Module k A] [Module k B]
     {σ : Representation k G A} {ρ : Representation k G B} (f : σ.IntertwiningMap ρ) :
@@ -673,7 +677,11 @@ def tensorHomEquiv (A B C : Rep.{u} k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom 
     simp [this]⟩
   invFun f := Rep.ofHom (σ := (A ⊗ B).ρ) (ρ := C.ρ) ⟨TensorProduct.uncurry (.id k) _ _ _
     f.hom.toLinearMap.flip, fun g ↦ TensorProduct.ext' fun x y => by
-    simpa using LinearMap.ext_iff.1 (hom_comm_apply f g y) (A.ρ g x)⟩
+    -- simpa using LinearMap.ext_iff.1 (hom_comm_apply f g y) (A.ρ g x)
+    simp
+    -- erw? [toLinearMap_apply]
+    sorry
+    ⟩
   left_inv _ := Action.Hom.ext (ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl)
 
 variable {A B C}

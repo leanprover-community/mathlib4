@@ -82,11 +82,11 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n â†
   rw [linearizationObjEquiv_single]
   simp only [finsuppTensorFinsupp'_single_tmul_single]
   dsimp [Action.leftRegular, Action.ofMulAction, Action.tensorObj_V]
-  rw [linearizationObjEquiv_symm_single]
+  -- rw [linearizationObjEquiv_symm_single]
   -- simp only [TensorProduct.map_tmul, LinearEquiv.coe_coe, linearizationObjEquiv_single]
   -- conv_lhs => enter [2, 2, 2, 2, 3]; erw [linearizationObjEquiv_single]
   -- simp only [Action.trivial_V, finsuppTensorFinsupp'_single_tmul_single]
-  erw? [linearizationObjEquiv_symm_single, linearization_map_hom_single]
+  erw [linearizationObjEquiv_symm_single, linearization_map_hom_single]
   rw [this]
   rfl
 
