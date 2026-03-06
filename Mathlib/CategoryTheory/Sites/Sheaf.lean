@@ -697,13 +697,13 @@ variable {C : Type*} [Category* C] {A : Type*} [Category* A] (J : GrothendieckTo
 /-- A terminal object in `A` gives rise to a terminal object in `Sheaf J` -/
 @[simps]
 def terminal {X : A} (hX : IsTerminal X) : Sheaf J A where
-  val := (CategoryTheory.Functor.const _).obj X
-  cond := Presheaf.isSheaf_of_isTerminal J hX
+  obj := (CategoryTheory.Functor.const _).obj X
+  property := Presheaf.isSheaf_of_isTerminal J hX
 
 /-- The unique morphism into the terminal sheaf -/
 @[simps]
 def toTerminal {X : A} (hX : IsTerminal X) (F : Sheaf J A) : F ⟶ Sheaf.terminal J hX where
-  val.app X := hX.from (F.val.obj X)
+  hom.app X := hX.from (F.obj.obj X)
 
 /-- The constant sheaf of a terminal object is indeed terminal -/
 @[simps!]

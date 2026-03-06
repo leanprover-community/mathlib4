@@ -5,12 +5,8 @@ Authors: Edward van de Meent
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.Closed
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
-
-
+public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Topos.Classifier
 
 
@@ -167,8 +163,8 @@ lemma Presheaf.χ_unique {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G)
     obtain ⟨z,hz⟩:= h₃ _ _ h
     use z, hz.symm
   · rintro ⟨a,h⟩
-    rw [h, ← FunctorToTypes.comp, NatTrans.comp_app, h₁]
-    simp
+    rw [h, ← FunctorToTypes.comp, NatTrans.comp_app]
+    simpa using congr($(h₁ (.op Y)) a)
 
 -- TODO: weaken `hG` to `Presieve.IsSeparated J G` (or Presheaf.IsSeparated, even)
 lemma Presheaf.isClosed_χ_app_apply_of (J : GrothendieckTopology C)
@@ -209,20 +205,20 @@ def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
     (Presheaf.truth C) (Presheaf.χ ·) Presheaf.classifier_isPullback
       (Presheaf.χ_unique ·)
 
--- TODO: generalize this to `HasClassifier (Cᵒᵖ ⥤ Type w)` assuming `EssentiallySmall.{w} C`.
 /-- Sheaf categories have a subobject classifier. -/
-instance HasClassifier.instPresheaf : HasClassifier (Cᵒᵖ ⥤ Type (max u v)) :=
-  ⟨⟨Presheaf.classifier C⟩⟩
+instance HasClassifier.instPresheaf [EssentiallySmall.{w} C] : HasClassifier (Cᵒᵖ ⥤ Type w) where
+  exists_classifier := ⟨(Presheaf.classifier (SmallModel C)).ofEquivalence
+    (Equivalence.congrLeft (E := Type w) (equivSmallModel C).op).symm⟩
 
 end presheaf
 
 section sheaf
 
 /-- The sheaf of closed sieves w/r/t `J`. See also `Functor.closedSieves` -/
-@[simps val]
+@[simps obj]
 def Sheaf.Ω {J : GrothendieckTopology C} : Sheaf J (Type (max u v)) where
-  val := .closedSieves J
-  cond := by
+  obj := .closedSieves J
+  property := by
     rw [CategoryTheory.isSheaf_iff_isSheaf_of_type]
     exact CategoryTheory.classifier_isSheaf J
 
@@ -230,7 +226,7 @@ def Sheaf.Ω {J : GrothendieckTopology C} : Sheaf J (Type (max u v)) where
 @[simps]
 def Sheaf.truth {J : GrothendieckTopology C} :
     Sheaf.terminal J (Types.isTerminalPUnit) ⟶ Sheaf.Ω where
-  val := closedSievesFactorization J (Presheaf.truth C) (fun {X} x => by cat_disch)
+  hom := closedSievesFactorization J (Presheaf.truth C) (fun {X} x => by cat_disch)
 
 /--
 Given a monomorphism of sheaves `η : F ⟶ G`, an object X of the site, map an element `x : G(X)`
@@ -240,25 +236,25 @@ to the (closed) sieve on X where `f : Y → X` is in the sieve iff
 @[simps]
 def Sheaf.χ {J : GrothendieckTopology C} {F G : Sheaf J (Type (max u v))} (m : F ⟶ G) [Mono m] :
     G ⟶ Sheaf.Ω where
-  val := closedSievesFactorization J (Presheaf.χ m.val)
-    (Presheaf.isClosed_χ_app_apply_of J m.val F.cond G.cond)
+  hom := closedSievesFactorization J (Presheaf.χ m.hom)
+    (Presheaf.isClosed_χ_app_apply_of J m.hom F.property G.property)
 
 lemma Sheaf.classifier_isPullback {J : GrothendieckTopology C} {F G : Sheaf J (Type (max u v))}
     (m : F ⟶ G) [Mono m] : IsPullback m ((Sheaf.terminal_isTerminal J _).from F) (Sheaf.χ m)
       (Sheaf.truth) := by
   apply IsPullback.of_map (sheafToPresheaf J _)
   · ext : 1
-    simp only [Ω_val, comp_val, χ_val, terminal_val, ← cancel_mono (closedSievesInclusion J),
-      Category.assoc]
-    rw [closedSievesFactorization_comp_closedSievesInclusion J (Presheaf.χ m.val)]
-    exact Presheaf.comp_χ_eq m.val
-  · rw [sheafToPresheaf_map J]
-    simp only [sheafToPresheaf_obj, terminal_val, Ω_val, sheafToPresheaf_map, χ_val, truth_val]
+    simp only [Ω_obj, ObjectProperty.FullSubcategory.comp_hom, χ_hom, terminal_obj, truth_hom,
+      ← cancel_mono (closedSievesInclusion J), Category.assoc]
+    rw [closedSievesFactorization_comp_closedSievesInclusion J (Presheaf.χ m.hom)]
+    exact Presheaf.comp_χ_eq m.hom
+  · rw [sheafToPresheaf,ObjectProperty.ι_map]
+    simp only [ObjectProperty.ι_obj, terminal_obj, Ω_obj, ObjectProperty.ι_map, χ_hom, truth_hom]
     apply IsPullback.of_right _
       ((cancel_mono (closedSievesInclusion _)).mp (by simpa using Presheaf.comp_χ_eq _))
-      (.of_horiz_isIso_mono ⟨_⟩ : IsPullback (𝟙 _) _ (Presheaf.χ m.val) (closedSievesInclusion J))
+      (.of_horiz_isIso_mono ⟨_⟩ : IsPullback (𝟙 _) _ (Presheaf.χ m.hom) (closedSievesInclusion J))
     · simp only [Category.comp_id, closedSievesFactorization_comp_closedSievesInclusion]
-      exact Presheaf.classifier_isPullback m.val
+      exact Presheaf.classifier_isPullback m.hom
     · simp_all [closedSievesFactorization_comp_closedSievesInclusion]
 
 lemma Sheaf.χ_unique {J : GrothendieckTopology C} {F G : Sheaf J (Type (max u v))} (m : F ⟶ G)
@@ -266,12 +262,13 @@ lemma Sheaf.χ_unique {J : GrothendieckTopology C} {F G : Sheaf J (Type (max u v
     (hχ' : IsPullback m ((Sheaf.terminal_isTerminal J _).from F) χ' (Sheaf.truth)) :
     χ' = Sheaf.χ m := by
   ext : 1
-  rw [← cancel_mono (closedSievesInclusion J)]
-  simp only [χ_val, closedSievesFactorization_comp_closedSievesInclusion]
+  apply (cancel_mono (closedSievesInclusion J)).mp
+  simp only [χ_hom, closedSievesFactorization_comp_closedSievesInclusion]
   apply Presheaf.χ_unique _
-  · have pb: IsPullback (𝟙 G.val) χ'.val (χ'.val ≫ closedSievesInclusion J)
-      (closedSievesInclusion J) := .of_horiz_isIso_mono (by simp)
-    have : IsPullback m.val ?_ χ'.val (truth.val) := by
+  · have pb: IsPullback (𝟙 G.obj) χ'.hom (χ'.hom ≫ closedSievesInclusion J)
+      (closedSievesInclusion J) := @IsPullback.of_horiz_isIso_mono
+        _ _ _ _ _ _ _ _ _ _ _ (inferInstanceAs (Mono (closedSievesInclusion J))) (by simp)
+    have : IsPullback m.hom ?_ χ'.hom (truth.hom) := by
       simpa using hχ'.map (sheafToPresheaf J _)
     simpa using this.paste_horiz pb
 
@@ -287,10 +284,10 @@ noncomputable def Sheaf.classifier (J : GrothendieckTopology C) :
 
 -- TODO: generalize this to `HasClassifier (Sheaf J (Type w))` assuming `EssentiallySmall.{w} C`.
 /-- Sheaf categories have a subobject classifier. -/
-instance HasClassifier.instSheaf (J : GrothendieckTopology C) :
-    HasClassifier (Sheaf J (Type (max u v))) where
-  exists_classifier := ⟨Sheaf.classifier J⟩
-
+instance HasClassifier.instSheaf [EssentiallySmall.{w} C] (J : GrothendieckTopology C) :
+    HasClassifier (Sheaf J (Type w)) where
+  exists_classifier := ⟨Sheaf.classifier (Functor.inducedTopology (equivSmallModel C).inverse J)
+    |>.ofEquivalence (Equivalence.sheafCongr _ _ (equivSmallModel C) _).symm⟩
 end sheaf
 
 end CategoryTheory
