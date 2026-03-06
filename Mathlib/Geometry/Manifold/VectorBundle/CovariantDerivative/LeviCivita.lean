@@ -810,7 +810,8 @@ lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
   match_scalars <;> simp
   norm_num
 
-lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaConnection :=
+lemma leviCivitaConnection_isLeviCivitaConnection [FiniteDimensional ℝ E] :
+    (LeviCivitaConnection I M).IsLeviCivitaConnection :=
   ⟨leviCivitaConnection_isCompatible I, leviCivitaConnection_isTorsionFree I⟩
 
 #exit
