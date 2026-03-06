@@ -19,6 +19,12 @@ Assume that they jointly reflect isomorphisms. We show that a short complex in `
 is exact (resp. short exact) iff it is so after applying the functor `Fᵢ`.
 Similar results are obtained for the detection of quasi-isomorphisms
 between short complexes or homological complexes in `C`.
+(Corresponding results for a single functor are
+`HomologicalComplex.quasiIsoAt_map_iff_of_preservesHomology` and
+`HomologicalComplex.quasiIso_map_iff_of_preservesHomology` in the files
+`Mathlib/Algebra/Homology/QuasiIso.lean` and
+`ShortComplex.quasiIso_map_iff_of_preservesLeftHomology`
+`Mathlib/Algebra/Homology/ShortComplex/PreservesHomology.lean`.)
 
 -/
 
