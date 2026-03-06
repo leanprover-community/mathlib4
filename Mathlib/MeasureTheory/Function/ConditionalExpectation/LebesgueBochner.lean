@@ -8,9 +8,6 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.Function.ConditionalLExpectation
-public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-
-import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 
 /-!
 # Results about both conditional expectations
@@ -21,8 +18,8 @@ In this file, we gather results that involve both versions.
 
 ## Main statements
 
-*
-
+* `MeasureTheory.toReal_condLExp`: the two definitions of the conditional expectation agree
+  almost everywhere. That is, `(fun x ↦ (μ⁻[f | m] x).toReal) =ᵐ[μ] μ[fun x ↦ (f x).toReal | m]`.
 -/
 
 public section
@@ -33,7 +30,7 @@ namespace MeasureTheory
 
 variable {𝓧 : Type*}
 
-/-- The two definitions of the conditional expectation agree. -/
+/-- The two definitions of the conditional expectation agree almost everywhere. -/
 lemma toReal_condLExp (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} {μ : Measure 𝓧}
     {f : 𝓧 → ℝ≥0∞} (hf_meas : AEMeasurable f μ) (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
     (fun x ↦ (μ⁻[f | m] x).toReal) =ᵐ[μ] μ[fun x ↦ (f x).toReal | m] := by
