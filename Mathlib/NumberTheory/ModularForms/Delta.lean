@@ -48,12 +48,11 @@ namespace ModularForm
 
 local notation "Δ" => delta
 
-local notation "η" => eta
-
 local notation "𝕢" => Periodic.qParam
 
 section auxiliary
 
+set_option backward.isDefEq.respectTransparency false in
 lemma csqrt_pow_24_eq {z : ℂ} (hz : z ≠ 0) : sqrt z ^ 24 = z ^ 12 := by
   rw [sqrt_eq_exp hz, ← exp_nat_mul]
   ring_nf
@@ -89,6 +88,7 @@ lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
     grind [I_sq]
   · rw [div_mul_eq_mul_div₀ _ _ (2 : ℂ), neg_div, cpow_neg, ← mul_inv, ← cpow_add _ _ z.ne_zero]
     norm_num
+    exact (cpow_one _).symm
 
 lemma eta_comp_eqOn_const_mul_csqrt_eta :
     ∃ c : ℂ, c ≠ 0 ∧ upperHalfPlaneSet.EqOn (η ∘ (fun z : ℂ ↦ -1 / z)) (c • (sqrt * η)) := by
