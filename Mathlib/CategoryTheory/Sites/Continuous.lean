@@ -6,6 +6,8 @@ Authors: Joël Riou, Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Adjunction.Whiskering
 
 /-!
 # Continuous functors between sites.
@@ -286,5 +288,21 @@ def sheafPushforwardContinuousComp'
   sheafPushforwardContinuousComp _ _ _ _ _ _ ≪≫ sheafPushforwardContinuousIso eFG _ _ _
 
 end Functor
+
+/-- If `F ⊣ G` is an adjunction between continuous functors, the associated
+pushforwards on sheaves are adjoint. -/
+@[simps!]
+def Adjunction.sheafPushforwardContinuous {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
+    (J : GrothendieckTopology C) (K : GrothendieckTopology D) [F.IsContinuous J K]
+    [G.IsContinuous K J] :
+    F.sheafPushforwardContinuous E J K ⊣ G.sheafPushforwardContinuous E K J where
+  unit.app P := { val := (adj.op.whiskerLeft _).unit.app P.val }
+  counit.app P := { val := (adj.op.whiskerLeft _).counit.app P.val }
+  left_triangle_components P := by
+    ext : 1
+    exact (adj.op.whiskerLeft _).left_triangle_components P.val
+  right_triangle_components P := by
+    ext : 1
+    exact (adj.op.whiskerLeft _).right_triangle_components P.val
 
 end CategoryTheory
