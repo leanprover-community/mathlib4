@@ -772,6 +772,17 @@ meta def ErrorContext.isValid_parse?_error_context (ec : ErrorContext) : Bool :=
   error := .unicodeVariant "\u271d\uFE0F" none,
   lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
 
+set_option linter.unusedTactic false in
+set_option linter.flexible false in
+/-- An error in this proof could mean that `replaceDisallowed` contains a character
+which is not disallowed by `isAllowedCharacter`. -/
+private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallowed c ≠ none) :
+    !isAllowedCharacter c := by
+  contrapose creplaced
+  simp [isAllowedCharacter, Array.contains] at creplaced
+  repeat obtain ⟨_, creplaced⟩ := creplaced
+  simp [replaceDisallowed]
+
 end unicodeLinter
 
 end textBased

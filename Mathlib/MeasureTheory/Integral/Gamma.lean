@@ -40,7 +40,6 @@ theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : -1 < q) :
       simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by ring, ← integral_const_mul,
         ← mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 < q) (hb : 0 < b) :
     ∫ x in Ioi (0 : ℝ), x ^ q * exp (-b * x ^ p) =
       b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by

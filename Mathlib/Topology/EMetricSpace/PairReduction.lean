@@ -464,7 +464,6 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
 
 end PairReduction
 
-set_option backward.isDefEq.respectTransparency false in
 open PairReduction in
 /-- **Pair Reduction**: Given pseudometric spaces `T` and `E`, `c ≥ 0`, and a finite subset `J` of
 `T` such that `|J| ≤ aⁿ` for some `a ≥ 0` and `n : ℕ`, `pair_reduction` states that there exists a
