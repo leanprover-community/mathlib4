@@ -160,7 +160,8 @@ def coreE₂Cohomological :
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
-assumptions on the spectral object are required.) -/
+assumptions on the spectral object are required for the construction of
+the spectral sequence from this.) -/
 @[simps!]
 def coreE₂CohomologicalNat :
     SpectralSequenceDataCore EInt
@@ -213,32 +214,31 @@ def coreE₂CohomologicalFin (l : ℕ) :
   hc₁₃ r := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ hr
     rw [Fin.ext_iff]
-    dsimp at h₁ h₂ ⊢
+    dsimp
     grind
   antitone_i₀ := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ hr hrr'
-    dsimp
     rw [Fin.mk_le_mk]
     lia
   monotone_i₃ := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ hr hrr'
-    dsimp
     rw [Fin.mk_le_mk]
     exact Fin.clamp_monotone (by lia)
   i₀_prev := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hrr' hr
     ext
-    dsimp at h₁ h₂ ⊢
+    dsimp
     lia
   i₃_next := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hrr' hr
     ext
-    dsimp at h₁ h₂ ⊢
+    dsimp
     grind
 
 /-- The data which allows to construct an `E₂`-homological spectral sequence
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
-assumptions on the spectral object are required.) -/
+assumptions on the spectral object are required for the construction of
+the spectral sequence from this.) -/
 @[simps!]
 def coreE₂HomologicalNat :
     SpectralSequenceDataCore EInt
@@ -276,8 +276,7 @@ the property which allows to construct a spectral sequence by using the recipe g
 by `data`. The conditions given allow to show that the homology of a page identifies
 to the next page. -/
 class HasSpectralSequence : Prop where
-  isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (pq : κ)
-    (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
+  isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
     (n : ℤ) (hn : n = data.deg pq + 1 )
     (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
       IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₀_le r r' pq))))
@@ -356,8 +355,7 @@ instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
         simp only [ComplexShape.spectralSequenceFin_rel_iff, not_and, Prod.forall] at hpq
         exact hpq (p - r) ⟨l - 1 - t, by lia⟩ (by lia) (by lia)
       dsimp
-      rw [add_sub_cancel_right, Fin.clamp_eq_last _ _ (by lia),
-        Fin.clamp_eq_last _ _ (by lia)]
+      rw [add_sub_cancel_right, Fin.clamp_eq_last _ _ (by lia), Fin.clamp_eq_last _ _ (by lia)]
     have := isIso_homOfLE this
     apply E.isZero_H_map_mk₁_of_isIso
 
