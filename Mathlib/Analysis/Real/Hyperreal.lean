@@ -388,6 +388,7 @@ theorem tendsto_atBot_iff {x : ℝ*} : x.Tendsto atBot ↔ x < 0 ∧ mk x < 0 wh
 def IsSt (x : ℝ*) (r : ℝ) :=
   ∀ δ : ℝ, 0 < δ → (r - δ : ℝ*) < x ∧ x < r + δ
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated "`IsSt` is deprecated" (since := "2026-01-05")]
 theorem isSt_iff {x r} : IsSt x r ↔ 0 ≤ mk x ∧ stdPart x = r where
@@ -429,6 +430,7 @@ set_option linter.deprecated false in
 def Infinitesimal (x : ℝ*) :=
   IsSt x 0
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_iff {x : ℝ*} : Infinitesimal x ↔ 0 < mk x := by
@@ -440,6 +442,7 @@ theorem infinitesimal_iff {x : ℝ*} : Infinitesimal x ↔ 0 < mk x := by
 def InfinitePos (x : ℝ*) :=
   ∀ r : ℝ, ↑r < x
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated "`InfinitePos` is deprecated" (since := "2026-01-05")]
 theorem infinitePos_iff {x : ℝ*} : InfinitePos x ↔ 0 < x ∧ mk x < 0 := by
@@ -455,6 +458,7 @@ theorem infinitePos_iff {x : ℝ*} : InfinitePos x ↔ 0 < x ∧ mk x < 0 := by
 def InfiniteNeg (x : ℝ*) :=
   ∀ r : ℝ, x < r
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated "`InfiniteNeg` is deprecated" (since := "2026-01-05")]
 theorem infiniteNeg_iff {x : ℝ*} : InfiniteNeg x ↔ x < 0 ∧ mk x < 0 := by
@@ -471,6 +475,7 @@ set_option linter.deprecated false in
 def Infinite (x : ℝ*) :=
   InfinitePos x ∨ InfiniteNeg x
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated "`Infinite` is deprecated" (since := "2026-01-05")]
 theorem infinite_iff {x : ℝ*} : Infinite x ↔ mk x < 0 := by
