@@ -203,23 +203,25 @@ theorem conditional_jensen_norm (hf : AEStronglyMeasurable f μ) :
   exact conditional_jensen_univ hm convexOn_univ_norm continuous_norm.lowerSemicontinuous hf_int
     hf_int.norm
 
+section FiniteDimensional
+
+variable [FiniteDimensional ℝ E]
+
 /-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `X` with a measure
-`μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex and lower-semicontinuous,
-then for any `f : α → X` such that `f` and `φ ∘ f` are integrable, we have
-`φ (𝔼[f | m]) ≤ᵐ[μ.trim hm] 𝔼[φ ∘ f | m]`. -/
-theorem conditional_jensen_univ_trim_finite_dim [FiniteDimensional ℝ E]
-    (hm : m ≤ mα) [SigmaFinite (μ.trim hm)] (hφ_cvx : ConvexOn ℝ univ φ)
-    (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
+`μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex, then for any `f : α → X` such
+that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ᵐ[μ.trim hm] 𝔼[φ ∘ f | m]`. -/
+theorem conditional_jensen_univ_trim_finite_dim (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+    (hφ_cvx : ConvexOn ℝ univ φ) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ.trim hm] μ[φ ∘ f | m] :=
   conditional_jensen_univ_trim hm hφ_cvx
     (continuousOn_univ.1 (hφ_cvx.continuousOn isOpen_univ)).lowerSemicontinuous hf_int hφ_int
 
 /-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `X` with a measure
-`μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex and lower-semicontinuous,
-then for any `f : α → X` such that `f` and `φ ∘ f` are integrable, we have
-`φ (𝔼[f | m]) ≤ᵐ[μ.trim hm] 𝔼[φ ∘ f | m]`. -/
-theorem conditional_jensen_univ_finite_dim [FiniteDimensional ℝ E]
-    (hm : m ≤ mα) [SigmaFinite (μ.trim hm)] (hφ_cvx : ConvexOn ℝ univ φ)
-    (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
+`μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex, then for any `f : α → X` such
+that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ᵐ[μ] 𝔼[φ ∘ f | m]`. -/
+theorem conditional_jensen_univ_finite_dim (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+    (hφ_cvx : ConvexOn ℝ univ φ) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] :=
   ae_of_ae_trim hm (conditional_jensen_univ_trim_finite_dim hm hφ_cvx hf_int hφ_int)
+
+end FiniteDimensional
