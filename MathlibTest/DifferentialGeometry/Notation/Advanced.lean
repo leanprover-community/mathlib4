@@ -15,6 +15,7 @@ import Mathlib.Geometry.Manifold.VectorField.LieBracket
 -/
 
 set_option pp.unicode.fun true
+set_option pp.notation false
 
 open Bundle Filter Function Topology
 open scoped Manifold
@@ -47,7 +48,7 @@ def proj : TangentBundle 𝓘(𝕜, 𝕜) 𝕜 → 𝕜 := fun x ↦ x.2
 open ContDiff
 
 /--
-error: Could not find a model with corners for `TangentBundle 𝓘(?_, ?_) ?_`.
+error: Could not find a model with corners for `TangentBundle (modelWithCornersSelf ?_ ?_) ?_`.
 
 Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
 -/
@@ -82,11 +83,11 @@ variable {k' : Type*} [RCLike k']
   [TopologicalSpace H'] [TopologicalSpace M'] [ChartedSpace H' M']
   (I'' : ModelWithCorners k' E' H') {g' : M' → E''}
 
-/-- info: MDifferentiable I'' 𝓘(k', E'') g' : Prop -/
+/-- info: MDifferentiable I'' (modelWithCornersSelf k' E'') g' : Prop -/
 #guard_msgs in
 #check MDiff g'
 
-/-- info: ContMDiff I'' 𝓘(k', E'') n g' : Prop -/
+/-- info: ContMDiff I'' (modelWithCornersSelf k' E'') n g' : Prop -/
 #guard_msgs in
 #check CMDiff n g'
 
@@ -100,74 +101,83 @@ variable {s : Set M} {m : M}
 
 variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
 
-/-- info: MDiffAt[s] ↑φ : M → Prop -/
+/-- info: MDifferentiableWithinAt I (modelWithCornersSelf 𝕜 E) (↑φ) s : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] φ
 
-/-- info: MDiffAt[s] ↑ψ : M → Prop -/
+/-- info: MDifferentiableWithinAt I (modelWithCornersSelf 𝕜 E) (↑ψ) s : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] ψ
 
-/-- info: MDiffAt ↑φ : M → Prop -/
+/-- info: MDifferentiableAt I (modelWithCornersSelf 𝕜 E) ↑φ : M → Prop -/
 #guard_msgs in
 #check MDiffAt φ
 
-/-- info: MDiffAt ↑ψ : M → Prop -/
+/-- info: MDifferentiableAt I (modelWithCornersSelf 𝕜 E) ↑ψ : M → Prop -/
 #guard_msgs in
 #check MDiffAt ψ
 
-/-- info: MDifferentiableOn I 𝓘(𝕜, E) (↑φ) s : Prop -/
+/-- info: MDifferentiableOn I (modelWithCornersSelf 𝕜 E) (↑φ) s : Prop -/
 #guard_msgs in
 #check MDiff[s] φ
 
-/-- info: MDifferentiableOn I 𝓘(𝕜, E) (↑ψ) s : Prop -/
+/-- info: MDifferentiableOn I (modelWithCornersSelf 𝕜 E) (↑ψ) s : Prop -/
 #guard_msgs in
 #check MDiff[s] ψ
 
-/-- info: MDifferentiable I 𝓘(𝕜, E) ↑φ : Prop -/
+/-- info: MDifferentiable I (modelWithCornersSelf 𝕜 E) ↑φ : Prop -/
 #guard_msgs in
 #check MDiff φ
 
-/-- info: ContMDiffWithinAt I 𝓘(𝕜, E) 2 (↑ψ) s : M → Prop -/
+/-- info: ContMDiffWithinAt I (modelWithCornersSelf 𝕜 E) 2 (↑ψ) s : M → Prop -/
 #guard_msgs in
 #check CMDiffAt[s] 2 ψ
 
-/-- info: ContMDiffOn I 𝓘(𝕜, E) 2 (↑φ) s : Prop -/
+/-- info: ContMDiffOn I (modelWithCornersSelf 𝕜 E) 2 (↑φ) s : Prop -/
 #guard_msgs in
 #check CMDiff[s] 2 φ
 
-/-- info: ContMDiffAt I 𝓘(𝕜, E) 2 ↑φ : M → Prop -/
+/-- info: ContMDiffAt I (modelWithCornersSelf 𝕜 E) 2 ↑φ : M → Prop -/
 #guard_msgs in
 #check CMDiffAt 2 φ
 
-/-- info: ContMDiff I 𝓘(𝕜, E) 2 ↑ψ : Prop -/
+/-- info: ContMDiff I (modelWithCornersSelf 𝕜 E) 2 ↑ψ : Prop -/
 #guard_msgs in
 #check CMDiff 2 ψ
 
-/-- info: mfderiv% ↑φ : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑φ x) -/
+/--
+info: mfderiv I (modelWithCornersSelf 𝕜 E)
+  ↑φ : (x : M) → ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace (modelWithCornersSelf 𝕜 E) (↑φ x))
+-/
 #guard_msgs in
 #check mfderiv% φ
 
 /--
-info: mfderivWithin I 𝓘(𝕜, E) (↑ψ) s : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑ψ x)
+info: mfderivWithin I (modelWithCornersSelf 𝕜 E) (↑ψ)
+  s : (x : M) → ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace (modelWithCornersSelf 𝕜 E) (↑ψ x))
 -/
 #guard_msgs in
 #check mfderiv[s] ψ
 
 /--
-info: mfderivWithin I 𝓘(𝕜, E) (↑ψ) s : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑ψ x)
+info: mfderivWithin I (modelWithCornersSelf 𝕜 E) (↑ψ)
+  s : (x : M) → ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace (modelWithCornersSelf 𝕜 E) (↑ψ x))
 -/
 #guard_msgs in
 variable {f : ContMDiffSection I F n V} in
 #check mfderiv[s] ψ
 
-/-- info: mfderiv% ⇑g : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (g x) -/
+/--
+info: mfderiv I I' ⇑g : (x : M) → ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace I' (g x))
+-/
 #guard_msgs in
 variable {g : ContMDiffMap I I' M M' n} in
 #check mfderiv% g
 
 -- An example of "any type" which coerces to functions.
-/-- info: mfderiv% ⇑g : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (g x) -/
+/--
+info: mfderiv I I' ⇑g : (x : M) → ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace I' (g x))
+-/
 #guard_msgs in
 variable {g : Equiv M M'} in
 #check mfderiv% g
@@ -182,15 +192,22 @@ section interaction
 
 -- Note: these tests might be incomplete; extend as needed!
 
-/-- info: MDiffAt (T% X) : M → Prop -/
+/--
+info: MDifferentiableAt I (I.prod (modelWithCornersSelf 𝕜 E)) fun m ↦ TotalSpace.mk' E m (X m) : M → Prop
+-/
 #guard_msgs in
 #check MDiffAt (T% X)
 
-/-- info: MDiffAt (T% σ) : M → Prop -/
+/--
+info: MDifferentiableAt I (I.prod (modelWithCornersSelf 𝕜 F)) fun x ↦ TotalSpace.mk' F x (σ x) : M → Prop
+-/
 #guard_msgs in
 #check MDiffAt (T% σ)
 
-/-- info: MDiffAt (T% σ') : E → Prop -/
+/--
+info: MDifferentiableAt (modelWithCornersSelf 𝕜 E) ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E')) fun x ↦
+  TotalSpace.mk' E' x (σ' x) : E → Prop
+-/
 #guard_msgs in
 #check MDiffAt (T% σ')
 
@@ -230,7 +247,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `TotalSpace F (Tan
       `F` is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ✅️ NormedSpace
   [Elab.DiffGeo.MDiff] `F` is a normed space over the field `𝕜`
-  [Elab.DiffGeo.MDiff] Found model: `𝓘(𝕜, F)`
+  [Elab.DiffGeo.MDiff] Found model: `modelWithCornersSelf 𝕜 F`
   [Elab.DiffGeo.MDiff] This is the trivial model with corners for the normed space `F` over the base field `𝕜`.
 -/
 #guard_msgs in
@@ -253,15 +270,17 @@ Hint: Type class instance resolution failures can be inspected with the `set_opt
 #guard_msgs in
 #synth IsManifold I.tangent 1 (TangentBundle I M)
 
-/-- info: MDifferentiable I.tangent 𝓘(𝕜, F) h' : Prop -/
+/-- info: MDifferentiable I.tangent (modelWithCornersSelf 𝕜 F) h' : Prop -/
 #guard_msgs in
 #check MDifferentiable I.tangent 𝓘(𝕜, F) h'
 
-/-- info: MDifferentiable (I.prod 𝓘(𝕜, E)) 𝓘(𝕜, F) h' : Prop -/
+/--
+info: MDifferentiable (I.prod (modelWithCornersSelf 𝕜 E)) (modelWithCornersSelf 𝕜 F) h' : Prop
+-/
 #guard_msgs in
 #check MDifferentiable (I.prod (𝓘(𝕜, E))) 𝓘(𝕜, F) h'
 
-/-- info: MDifferentiable I.tangent 𝓘(𝕜, F) h' : Prop -/
+/-- info: MDifferentiable I.tangent (modelWithCornersSelf 𝕜 F) h' : Prop -/
 #guard_msgs in
 #check MDiff h'
 
@@ -271,12 +290,16 @@ end
 section ContinuousLinearMap
 
 variable {f : M → E →L[𝕜] E'} in
-/-- info: MDifferentiable I 𝓘(𝕜, E →L[𝕜] E') f : Prop -/
+/--
+info: MDifferentiable I (modelWithCornersSelf 𝕜 (ContinuousLinearMap (RingHom.id 𝕜) E E')) f : Prop
+-/
 #guard_msgs in
 #check MDiff f
 
 variable {f : M → E →L[𝕜] E'} in
-/-- info: ContMDiff I 𝓘(𝕜, E →L[𝕜] E') 2 f : Prop -/
+/--
+info: ContMDiff I (modelWithCornersSelf 𝕜 (ContinuousLinearMap (RingHom.id 𝕜) E E')) 2 f : Prop
+-/
 #guard_msgs in
 #check CMDiff 2 f
 
@@ -300,7 +323,7 @@ def id' : ℝ →+* RealCopy := RingHom.id ℝ
 set_option trace.Elab.DiffGeo.MDiff true in
 variable {f : M → E'' →SL[id'] E'''} in
 /--
-error: Could not find a model with corners for `E'' →SL[id'] E'''`.
+error: Could not find a model with corners for `ContinuousLinearMap id' E'' E'''`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
@@ -316,61 +339,61 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²²`
   [Elab.DiffGeo.MDiff] Found model: `I`
-[Elab.DiffGeo.MDiff] Finding a model with corners for: `E'' →SL[id'] E'''`
+[Elab.DiffGeo.MDiff] Finding a model with corners for: `ContinuousLinearMap id' E'' E'''`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[id'] E'''` is not a `Bundle.TotalSpace`.
+      `ContinuousLinearMap id' E'' E'''` is not a `Bundle.TotalSpace`.
 [Elab.DiffGeo.MDiff] ❌️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[id'] E'''` is not a `TangentBundle`
+      `ContinuousLinearMap id' E'' E'''` is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ❌️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `NormedSpace` structure on `E'' →SL[id'] E'''` among local instances.
+      Couldn't find a `NormedSpace` structure on `ContinuousLinearMap id' E'' E'''` among local instances.
 [Elab.DiffGeo.MDiff] ❌️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ChartedSpace` structure on `E'' →SL[id']
-        E'''` among local instances, and `E'' →SL[id']
+      Couldn't find a `ChartedSpace` structure on `ContinuousLinearMap id' E''
+        E'''` among local instances, and `ContinuousLinearMap id' E''
         E'''` is not the charted space of some type in the local context either.
 [Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
-  [Elab.DiffGeo.MDiff] `E'' →SL[id'] E'''` is a space of continuous (semi-)linear maps
+  [Elab.DiffGeo.MDiff] `ContinuousLinearMap id' E'' E'''` is a space of continuous (semi-)linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
-      Coefficients `ℝ` and `RealCopy` of `E'' →SL[id'] E'''` are not reducibly definitionally equal
+      Coefficients `Real` and `RealCopy` of `ContinuousLinearMap id' E'' E'''` are not reducibly definitionally equal
 [Elab.DiffGeo.MDiff] ❌️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[id'] E'''` is not a coercion of a set to a type
+      `ContinuousLinearMap id' E'' E'''` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[id'] E'''` is not a Euclidean space, half-space or quadrant
+      `ContinuousLinearMap id' E'' E'''` is not a Euclidean space, half-space or quadrant
 [Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[id'] E'''` is not the complex upper half plane
+      `ContinuousLinearMap id' E'' E'''` is not the complex upper half plane
 [Elab.DiffGeo.MDiff] ❌️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[id'] E'''` is not a set of units, in particular not of a complete normed algebra
+      `ContinuousLinearMap id' E'' E'''` is not a set of units, in particular not of a complete normed algebra
 [Elab.DiffGeo.MDiff] ❌️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[id'] E'''` is not the complex unit circle
+      `ContinuousLinearMap id' E'' E'''` is not the complex unit circle
 [Elab.DiffGeo.MDiff] ❌️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[id'] E'''` is not a coercion of a set to a type
+      `ContinuousLinearMap id' E'' E'''` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize instance of type class
-        NontriviallyNormedField (E'' →SL[id'] E''')
+        NontriviallyNormedField (ContinuousLinearMap id' E'' E''')
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 [Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find an `InnerProductSpace` structure on `E'' →SL[id'] E'''` among local instances.
+      Couldn't find an `InnerProductSpace` structure on `ContinuousLinearMap id' E'' E'''` among local instances.
 -/
 #guard_msgs in
 #check MDiff f
 
 variable {f : (E'' →SL[id'] E''') → E''} in
 /--
-error: Could not find a model with corners for `E'' →SL[id'] E'''`.
+error: Could not find a model with corners for `ContinuousLinearMap id' E'' E'''`.
 
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 -/
@@ -379,7 +402,7 @@ Hint: failures to find a model with corners can be debugged with the command `se
 
 variable {f : M → E'' →SL[id'] E'''} in
 /--
-error: Could not find a model with corners for `E'' →SL[id'] E'''`.
+error: Could not find a model with corners for `ContinuousLinearMap id' E'' E'''`.
 
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 -/
@@ -393,7 +416,7 @@ variable {E'''' : Type*} [NormedAddCommGroup E''''] [NormedSpace ℝ E'''']
 
 variable {f : M → E'' →SL[σ] E''''} in
 /--
-error: Could not find a model with corners for `E'' →SL[σ] E''''`.
+error: Could not find a model with corners for `ContinuousLinearMap σ E'' E''''`.
 
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 -/
@@ -403,7 +426,7 @@ set_option pp.mvars.anonymous false in
 
 variable {f : M → E'' →SL[σ] E''''} in
 /--
-error: Could not find a model with corners for `E'' →SL[σ] E''''`.
+error: Could not find a model with corners for `ContinuousLinearMap σ E'' E''''`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
@@ -419,54 +442,54 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²⁵`
   [Elab.DiffGeo.MDiff] Found model: `I`
-[Elab.DiffGeo.MDiff] Finding a model with corners for: `E'' →SL[σ] E''''`
+[Elab.DiffGeo.MDiff] Finding a model with corners for: `ContinuousLinearMap σ E'' E''''`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[σ] E''''` is not a `Bundle.TotalSpace`.
+      `ContinuousLinearMap σ E'' E''''` is not a `Bundle.TotalSpace`.
 [Elab.DiffGeo.MDiff] ❌️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[σ] E''''` is not a `TangentBundle`
+      `ContinuousLinearMap σ E'' E''''` is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ❌️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `NormedSpace` structure on `E'' →SL[σ] E''''` among local instances.
+      Couldn't find a `NormedSpace` structure on `ContinuousLinearMap σ E'' E''''` among local instances.
 [Elab.DiffGeo.MDiff] ❌️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ChartedSpace` structure on `E'' →SL[σ]
-        E''''` among local instances, and `E'' →SL[σ]
+      Couldn't find a `ChartedSpace` structure on `ContinuousLinearMap σ E''
+        E''''` among local instances, and `ContinuousLinearMap σ E''
         E''''` is not the charted space of some type in the local context either.
 [Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
-  [Elab.DiffGeo.MDiff] `E'' →SL[σ] E''''` is a space of continuous (semi-)linear maps
+  [Elab.DiffGeo.MDiff] `ContinuousLinearMap σ E'' E''''` is a space of continuous (semi-)linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[σ] E''''` is a space of continuous (semi-)linear maps over `σ`, which is not the identity
+      `ContinuousLinearMap σ E'' E''''` is a space of continuous (semi-)linear maps over `σ`, which is not the identity
 [Elab.DiffGeo.MDiff] ❌️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[σ] E''''` is not a coercion of a set to a type
+      `ContinuousLinearMap σ E'' E''''` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[σ] E''''` is not a Euclidean space, half-space or quadrant
+      `ContinuousLinearMap σ E'' E''''` is not a Euclidean space, half-space or quadrant
 [Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[σ] E''''` is not the complex upper half plane
+      `ContinuousLinearMap σ E'' E''''` is not the complex upper half plane
 [Elab.DiffGeo.MDiff] ❌️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[σ] E''''` is not a set of units, in particular not of a complete normed algebra
+      `ContinuousLinearMap σ E'' E''''` is not a set of units, in particular not of a complete normed algebra
 [Elab.DiffGeo.MDiff] ❌️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[σ] E''''` is not the complex unit circle
+      `ContinuousLinearMap σ E'' E''''` is not the complex unit circle
 [Elab.DiffGeo.MDiff] ❌️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[σ] E''''` is not a coercion of a set to a type
+      `ContinuousLinearMap σ E'' E''''` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize instance of type class
-        NontriviallyNormedField (E'' →SL[σ] E'''')
+        NontriviallyNormedField (ContinuousLinearMap σ E'' E'''')
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 [Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find an `InnerProductSpace` structure on `E'' →SL[σ] E''''` among local instances.
+      Couldn't find an `InnerProductSpace` structure on `ContinuousLinearMap σ E'' E''''` among local instances.
 -/
 #guard_msgs in
 set_option trace.Elab.DiffGeo.MDiff true in
@@ -487,17 +510,21 @@ variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : Model
   {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
 
 variable {g : unitInterval → M} in
-/-- info: MDifferentiable (𝓡∂ 1) J g : Prop -/
+/-- info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) J g : Prop -/
 #guard_msgs in
 #check MDiff g
 
 variable {h : E'' → unitInterval} in
-/-- info: MDifferentiable 𝓘(ℝ, E'') (𝓡∂ 1) h : Prop -/
+/--
+info: MDifferentiable (modelWithCornersSelf Real E'') (modelWithCornersEuclideanHalfSpace 1) h : Prop
+-/
 #guard_msgs in
 #check MDiff h
 
 variable {k : unitInterval → ℝ} in
-/-- info: MDifferentiable (𝓡∂ 1) 𝓘(ℝ, ℝ) k : Prop -/
+/--
+info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) (modelWithCornersSelf Real Real) k : Prop
+-/
 #guard_msgs in
 #check MDiff k
 
@@ -574,25 +601,29 @@ variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
 -- Now, with a fact about x < y: these should behave well.
 variable {x y : ℝ} [Fact (x < y)] {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
 
-/-- info: MDifferentiable (𝓡∂ 1) J g : Prop -/
+/-- info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) J g : Prop -/
 #guard_msgs in
 variable [h: Fact ((0 : ℝ) < (2 : ℝ))] {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
 #check MDiff g
 
-/-- info: MDifferentiable (𝓡∂ 1) J g : Prop -/
+/-- info: MDifferentiable (modelWithCornersEuclideanHalfSpace 1) J g : Prop -/
 #guard_msgs in
 #check MDiff g
 
-/-- info: ContMDiff (𝓡∂ 1) J 2 g : Prop -/
+/-- info: ContMDiff (modelWithCornersEuclideanHalfSpace 1) J 2 g : Prop -/
 #guard_msgs in
 #check CMDiff 2 g
 
-/-- info: MDiffAt h : E'' → Prop -/
+/--
+info: MDifferentiableAt (modelWithCornersSelf Real E'') (modelWithCornersEuclideanHalfSpace 1) h : E'' → Prop
+-/
 #guard_msgs in
 #check MDiffAt h
 
 variable (h : x ≤ y) in
-/-- info: MDiffAt k ⟨x, ⋯⟩ : Prop -/
+/--
+info: MDifferentiableAt (modelWithCornersEuclideanHalfSpace 1) (modelWithCornersSelf Real Real) k ⟨x, ⋯⟩ : Prop
+-/
 #guard_msgs in
 #check MDiffAt k ⟨x, by simp; linarith⟩
 
@@ -690,56 +721,87 @@ variable {n m n' m' : ℕ} [NeZero n] [NeZero m] [NeZero n'] [NeZero m']
   {f : EuclideanSpace ℝ (Fin n) → ℝ} {g : EuclideanSpace ℝ (Fin n') → EuclideanSpace ℝ (Fin m')}
   {a b : ℝ} [Fact (a < b)] {h : Set.Icc a b → EuclideanSpace ℝ (Fin m)}
 
-/-- info: MDifferentiable (𝓡 n) 𝓘(ℝ, ℝ) f : Prop -/
+/--
+info: MDifferentiable (modelWithCornersSelf Real (EuclideanSpace Real (Fin n))) (modelWithCornersSelf Real Real) f : Prop
+-/
 #guard_msgs in
 #check MDiff f
 
-/-- info: MDiffAt g : EuclideanSpace ℝ (Fin n') → Prop -/
+/--
+info: MDifferentiableAt (modelWithCornersSelf Real (EuclideanSpace Real (Fin n')))
+  (modelWithCornersSelf Real (EuclideanSpace Real (Fin m'))) g : EuclideanSpace Real (Fin n') → Prop
+-/
 #guard_msgs in
 #check MDiffAt g
 
-/-- info: ContMDiff (𝓡∂ 1) (𝓡 m) 2 h : Prop -/
+/--
+info: ContMDiff (modelWithCornersEuclideanHalfSpace 1) (modelWithCornersSelf Real (EuclideanSpace Real (Fin m))) 2 h : Prop
+-/
 #guard_msgs in
 #check CMDiff 2 h
 
 variable {f' : EuclideanHalfSpace 2 → ℝ} {x : EuclideanHalfSpace 2}
   {g' : EuclideanHalfSpace n → EuclideanHalfSpace m} {y : EuclideanHalfSpace n}
 
-/-- info: ContMDiff (𝓡∂ 2) 𝓘(ℝ, ℝ) 2 f' : Prop -/
+/--
+info: ContMDiff (modelWithCornersEuclideanHalfSpace 2) (modelWithCornersSelf Real Real) 2 f' : Prop
+-/
 #guard_msgs in
 #check CMDiff 2 f'
 
-/-- info: MDiffAt f' x : Prop -/
+/--
+info: MDifferentiableAt (modelWithCornersEuclideanHalfSpace 2) (modelWithCornersSelf Real Real) f' x : Prop
+-/
 #guard_msgs in
 #check MDiffAt f' x
 
-/-- info: MDiffAt g' y : Prop -/
+/--
+info: MDifferentiableAt (modelWithCornersEuclideanHalfSpace n) (modelWithCornersEuclideanHalfSpace m) g' y : Prop
+-/
 #guard_msgs in
 #check MDiffAt g' y
 
-/-- info: ContMDiff (𝓡∂ n) (𝓡∂ m) 37 g' : Prop -/
+/--
+info: ContMDiff (modelWithCornersEuclideanHalfSpace n) (modelWithCornersEuclideanHalfSpace m) 37 g' : Prop
+-/
 #guard_msgs in
 #check CMDiff 37 g'
 
 variable {f : EuclideanHalfSpace 2 → EuclideanSpace ℝ (Fin 37)} in
-/-- info: ContMDiff (𝓡∂ 2) (𝓡 37) 2 f : Prop -/
+/--
+info: ContMDiff (modelWithCornersEuclideanHalfSpace 2) (modelWithCornersSelf Real (EuclideanSpace Real (Fin 37))) 2 f : Prop
+-/
 #guard_msgs in
 #check CMDiff 2 f
 
 variable {f : EuclideanQuadrant 2 → EuclideanSpace ℝ (Fin 37)} in
-/-- info: ContMDiff (modelWithCornersEuclideanQuadrant 2) (𝓡 37) 2 f : Prop -/
+/--
+info: ContMDiff (modelWithCornersEuclideanQuadrant 2) (modelWithCornersSelf Real (EuclideanSpace Real (Fin 37))) 2 f : Prop
+-/
 #guard_msgs in
 #check CMDiff 2 f
 
 variable {f : EuclideanSpace ℝ (Fin 37) → EuclideanQuadrant m'} in
-/-- info: MDifferentiable (𝓡 37) (modelWithCornersEuclideanQuadrant m') f : Prop -/
+/--
+info: MDifferentiable (modelWithCornersSelf Real (EuclideanSpace Real (Fin 37))) (modelWithCornersEuclideanQuadrant m')
+  f : Prop
+-/
 #guard_msgs in
 #check MDiff f
 
-/-- info: ContMDiff ((𝓡 n).prod (𝓡 n')) (𝓘(ℝ, ℝ).prod (𝓡 m')) 37 (Prod.map f g) : Prop -/
+/--
+info: ContMDiff
+  ((modelWithCornersSelf Real (EuclideanSpace Real (Fin n))).prod
+    (modelWithCornersSelf Real (EuclideanSpace Real (Fin n'))))
+  ((modelWithCornersSelf Real Real).prod (modelWithCornersSelf Real (EuclideanSpace Real (Fin m')))) 37
+  (Prod.map f g) : Prop
+-/
 #guard_msgs in
 #check CMDiff 37 (Prod.map f g)
-/-- info: ContMDiff ((𝓡∂ 2).prod (𝓡∂ n)) (𝓘(ℝ, ℝ).prod (𝓡∂ m)) 37 (Prod.map f' g') : Prop -/
+/--
+info: ContMDiff ((modelWithCornersEuclideanHalfSpace 2).prod (modelWithCornersEuclideanHalfSpace n))
+  ((modelWithCornersSelf Real Real).prod (modelWithCornersEuclideanHalfSpace m)) 37 (Prod.map f' g') : Prop
+-/
 #guard_msgs in
 #check CMDiff 37 (Prod.map f' g')
 
@@ -759,20 +821,24 @@ variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℂ E''] {J : Model
 
 variable {g : ℍ → N} {h : E'' → ℍ} {k : ℍ → ℂ} {y : ℍ}
 
-/-- info: ContMDiff 𝓘(ℂ, ℂ) J 2 g : Prop -/
+/-- info: ContMDiff (modelWithCornersSelf Complex Complex) J 2 g : Prop -/
 #guard_msgs in
 variable {g : ℍ → M} in
 #check CMDiff 2 g
 
-/-- info: ContMDiff 𝓘(ℂ, ℂ) J 2 g : Prop -/
+/-- info: ContMDiff (modelWithCornersSelf Complex Complex) J 2 g : Prop -/
 #guard_msgs in
 #check CMDiff 2 g
 
-/-- info: MDiffAt h : E'' → Prop -/
+/--
+info: MDifferentiableAt (modelWithCornersSelf Complex E'') (modelWithCornersSelf Complex Complex) h : E'' → Prop
+-/
 #guard_msgs in
 #check MDiffAt h
 
-/-- info: MDiffAt k y : Prop -/
+/--
+info: MDifferentiableAt (modelWithCornersSelf Complex Complex) (modelWithCornersSelf Complex Complex) k y : Prop
+-/
 #guard_msgs in
 #check MDiffAt k y
 
@@ -783,7 +849,7 @@ section units
 variable {R : Type*} [NormedRing R] [CompleteSpace R] [NormedAlgebra 𝕜 R]
 
 variable {f : Rˣ → 𝕜} in
-/-- info: MDifferentiable 𝓘(𝕜, R) 𝓘(𝕜, 𝕜) f : Prop -/
+/-- info: MDifferentiable (modelWithCornersSelf 𝕜 R) (modelWithCornersSelf 𝕜 𝕜) f : Prop -/
 #guard_msgs in
 #check MDiff f
 
@@ -791,7 +857,9 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace 
 
 -- #check LieGroup 𝓘(𝕜, V →L[𝕜] V) 2 (V →L[𝕜] V)ˣ passes
 
-/-- info: MDifferentiable 𝓘(𝕜, V →L[𝕜] V) 𝓘(𝕜, 𝕜) f : Prop -/
+/--
+info: MDifferentiable (modelWithCornersSelf 𝕜 (ContinuousLinearMap (RingHom.id 𝕜) V V)) (modelWithCornersSelf 𝕜 𝕜) f : Prop
+-/
 #guard_msgs in
 variable {f : (V →L[𝕜] V)ˣ → 𝕜} in
 #check MDiff f
@@ -799,7 +867,7 @@ variable {f : (V →L[𝕜] V)ˣ → 𝕜} in
 variable {α : Type*} [Monoid α] [Ring α]
 
 /--
-error: Could not find a model with corners for `αˣ`.
+error: Could not find a model with corners for `Units α`.
 
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 -/
@@ -820,40 +888,62 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 
 variable {f : M → M'} {s : Set M} {m : M}
 
-/-- info: mfderiv% f : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (f x) -/
+/--
+info: mfderiv I I' f : (x : M) → ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace I' (f x))
+-/
 #guard_msgs in
 #check mfderiv% f
 
-/-- info: mfderiv% f m : TangentSpace I m →L[𝕜] TangentSpace I' (f m) -/
-#guard_msgs in
-#check mfderiv% f m
-
-/-- info: mfderivWithin I I' f s : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (f x) -/
-#guard_msgs in
-#check mfderiv[s] f
-
-/-- info: mfderivWithin I I' f s m : TangentSpace I m →L[𝕜] TangentSpace I' (f m) -/
-#guard_msgs in
-#check mfderiv[s] f m
-
-variable {f : E → EM'} {s : Set E} {m : E}
-
-/-- info: mfderiv% f : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f x) -/
-#guard_msgs in
-#check mfderiv% f
-
-/-- info: mfderiv% f m : TangentSpace 𝓘(𝕜, E) m →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f m) -/
+/--
+info: mfderiv I I' f m : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I m) (TangentSpace I' (f m))
+-/
 #guard_msgs in
 #check mfderiv% f m
 
 /--
-info: mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f x)
+info: mfderivWithin I I' f s : (x : M) → ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace I' (f x))
 -/
 #guard_msgs in
 #check mfderiv[s] f
 
 /--
-info: mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s m : TangentSpace 𝓘(𝕜, E) m →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f m)
+info: mfderivWithin I I' f s m : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I m) (TangentSpace I' (f m))
+-/
+#guard_msgs in
+#check mfderiv[s] f m
+
+variable {f : E → EM'} {s : Set E} {m : E}
+
+/--
+info: mfderiv (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 EM')
+  f : (x : E) →
+  ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace (modelWithCornersSelf 𝕜 E) x)
+    (TangentSpace (modelWithCornersSelf 𝕜 EM') (f x))
+-/
+#guard_msgs in
+#check mfderiv% f
+
+/--
+info: mfderiv (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 EM') f
+  m : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace (modelWithCornersSelf 𝕜 E) m)
+  (TangentSpace (modelWithCornersSelf 𝕜 EM') (f m))
+-/
+#guard_msgs in
+#check mfderiv% f m
+
+/--
+info: mfderivWithin (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 EM') f
+  s : (x : E) →
+  ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace (modelWithCornersSelf 𝕜 E) x)
+    (TangentSpace (modelWithCornersSelf 𝕜 EM') (f x))
+-/
+#guard_msgs in
+#check mfderiv[s] f
+
+/--
+info: mfderivWithin (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 EM') f s
+  m : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace (modelWithCornersSelf 𝕜 E) m)
+  (TangentSpace (modelWithCornersSelf 𝕜 EM') (f m))
 -/
 #guard_msgs in
 #check mfderiv[s] f m
@@ -861,26 +951,39 @@ info: mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s m : TangentSpace 𝓘(𝕜
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M] {x : M}
 
-/-- info: mfderiv% (T% X) x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) ⟨x, X x⟩ -/
+/--
+info: mfderiv I (I.prod (modelWithCornersSelf 𝕜 E)) (fun m ↦ TotalSpace.mk' E m (X m))
+  x : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x)
+  (TangentSpace (I.prod (modelWithCornersSelf 𝕜 E)) (TotalSpace.mk' E x (X x)))
+-/
 #guard_msgs in
 #check mfderiv% (T% X) x
 
-/-- info: mfderiv% (T% σ) x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x, σ x⟩ -/
+/--
+info: mfderiv I (I.prod (modelWithCornersSelf 𝕜 F)) (fun x ↦ TotalSpace.mk' F x (σ x))
+  x : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x)
+  (TangentSpace (I.prod (modelWithCornersSelf 𝕜 F)) (TotalSpace.mk' F x (σ x)))
+-/
 #guard_msgs in
 #check mfderiv% (T% σ) x
 
 variable {t : Set E} {p : E}
 
 /--
-info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩) t
-  p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) ⟨p, σ' p⟩
+info: mfderivWithin (modelWithCornersSelf 𝕜 E) ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E'))
+  (fun x ↦ TotalSpace.mk' E' x (σ' x)) t
+  p : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace (modelWithCornersSelf 𝕜 E) p)
+  (TangentSpace ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E')) (TotalSpace.mk' E' p (σ' p)))
 -/
 #guard_msgs in
 #check mfderiv[t] (T% σ') p
 
 /--
-info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩)
-  t : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) ⟨x, σ' x⟩
+info: mfderivWithin (modelWithCornersSelf 𝕜 E) ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E'))
+  (fun x ↦ TotalSpace.mk' E' x (σ' x))
+  t : (x : E) →
+  ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace (modelWithCornersSelf 𝕜 E) x)
+    (TangentSpace ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E')) (TotalSpace.mk' E' x (σ' x)))
 -/
 #guard_msgs in
 #check mfderiv[t] (T% σ')
@@ -890,6 +993,7 @@ section errors
 -- Test an error message, about mismatched types.
 variable {s' : Set M} {m' : M}
 
+set_option pp.notation true in
 /--
 error: Application type mismatch: The argument
   m'
@@ -977,43 +1081,61 @@ variable {f : E → EM'} {s : Set E} {m : E}
   -- #check mfderiv% f m tells us the type of f :-)
   {f' : TangentSpace 𝓘(𝕜, E) m →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f m)}
 
-/-- info: HasMFDerivAt 𝓘(𝕜, E) 𝓘(𝕜, EM') f m f' : Prop -/
+/-- info: HasMFDerivAt (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 EM') f m f' : Prop -/
 #guard_msgs in
 #check HasMFDerivAt% f m f'
 
-/-- info: HasMFDerivWithinAt 𝓘(𝕜, E) 𝓘(𝕜, EM') f s m f' : Prop -/
+/--
+info: HasMFDerivWithinAt (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 EM') f s m f' : Prop
+-/
 #guard_msgs in
 #check HasMFDerivAt[s] f m f'
 
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M] {x : M}
 
-/-- info: mfderiv% (T% X) x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) ⟨x, X x⟩ -/
+/--
+info: mfderiv I (I.prod (modelWithCornersSelf 𝕜 E)) (fun m ↦ TotalSpace.mk' E m (X m))
+  x : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x)
+  (TangentSpace (I.prod (modelWithCornersSelf 𝕜 E)) (TotalSpace.mk' E x (X x)))
+-/
 #guard_msgs in
 #check mfderiv% (T% X) x
 
 variable {dXm : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) (TotalSpace.mk' E x (X x))}
 
-/-- info: HasMFDerivAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ ⟨m, X m⟩) x dXm : Prop -/
+/--
+info: HasMFDerivAt I (I.prod (modelWithCornersSelf 𝕜 E)) (fun m ↦ TotalSpace.mk' E m (X m)) x dXm : Prop
+-/
 #guard_msgs in
 #check HasMFDerivAt% (T% X) x dXm
 
-/-- info: HasMFDerivWithinAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ ⟨m, X m⟩) t x dXm : Prop -/
+/--
+info: HasMFDerivWithinAt I (I.prod (modelWithCornersSelf 𝕜 E)) (fun m ↦ TotalSpace.mk' E m (X m)) t x dXm : Prop
+-/
 #guard_msgs in
 variable {t : Set M} in
 #check HasMFDerivAt[t] (T% X) x dXm
 
-/-- info: mfderiv% (T% σ) x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x, σ x⟩ -/
+/--
+info: mfderiv I (I.prod (modelWithCornersSelf 𝕜 F)) (fun x ↦ TotalSpace.mk' F x (σ x))
+  x : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace I x)
+  (TangentSpace (I.prod (modelWithCornersSelf 𝕜 F)) (TotalSpace.mk' F x (σ x)))
+-/
 #guard_msgs in
 #check mfderiv% (T% σ) x
 
 variable {dσm : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (TotalSpace.mk' F x (σ x))}
 
-/-- info: HasMFDerivAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ ⟨x, σ x⟩) x dσm : Prop -/
+/--
+info: HasMFDerivAt I (I.prod (modelWithCornersSelf 𝕜 F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x dσm : Prop
+-/
 #guard_msgs in
 #check HasMFDerivAt% (T% σ) x dσm
 
-/-- info: HasMFDerivWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ ⟨x, σ x⟩) t x dσm : Prop -/
+/--
+info: HasMFDerivWithinAt I (I.prod (modelWithCornersSelf 𝕜 F)) (fun x ↦ TotalSpace.mk' F x (σ x)) t x dσm : Prop
+-/
 #guard_msgs in
 variable {t : Set M} in
 #check HasMFDerivAt[t] (T% σ) x dσm
@@ -1021,25 +1143,36 @@ variable {t : Set M} in
 variable {t : Set E} {p : E}
 
 /--
-info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩) t
-  p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) ⟨p, σ' p⟩
+info: mfderivWithin (modelWithCornersSelf 𝕜 E) ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E'))
+  (fun x ↦ TotalSpace.mk' E' x (σ' x)) t
+  p : ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace (modelWithCornersSelf 𝕜 E) p)
+  (TangentSpace ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E')) (TotalSpace.mk' E' p (σ' p)))
 -/
 #guard_msgs in
 #check mfderiv[t] (T% σ') p
 
 variable {dσ'p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' p (σ' p))}
 
-/-- info: HasMFDerivAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩) p dσ'p : Prop -/
+/--
+info: HasMFDerivAt (modelWithCornersSelf 𝕜 E) ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E'))
+  (fun x ↦ TotalSpace.mk' E' x (σ' x)) p dσ'p : Prop
+-/
 #guard_msgs in
 #check HasMFDerivAt% (T% σ') p dσ'p
 
-/-- info: HasMFDerivWithinAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩) t p dσ'p : Prop -/
+/--
+info: HasMFDerivWithinAt (modelWithCornersSelf 𝕜 E) ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E'))
+  (fun x ↦ TotalSpace.mk' E' x (σ' x)) t p dσ'p : Prop
+-/
 #guard_msgs in
 #check HasMFDerivAt[t] (T% σ') p dσ'p
 
 /--
-info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩)
-  t : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) ⟨x, σ' x⟩
+info: mfderivWithin (modelWithCornersSelf 𝕜 E) ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E'))
+  (fun x ↦ TotalSpace.mk' E' x (σ' x))
+  t : (x : E) →
+  ContinuousLinearMap (RingHom.id 𝕜) (TangentSpace (modelWithCornersSelf 𝕜 E) x)
+    (TangentSpace ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E')) (TotalSpace.mk' E' x (σ' x)))
 -/
 #guard_msgs in
 #check mfderiv[t] (T% σ')
@@ -1051,6 +1184,8 @@ end HasMFDeriv
 section delaborators
 open Bundle
 open scoped Bundle Manifold ContDiff
+
+set_option pp.notation true
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]

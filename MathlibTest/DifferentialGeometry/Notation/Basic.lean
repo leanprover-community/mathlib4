@@ -31,26 +31,26 @@ section TotalSpace
 variable {σ : Π x : M, V x}
   {σ' : (x : E) → Trivial E E' x} {σ'' : (y : E) → Trivial E E' y} {s : E → E'}
 
-/-- info: fun x ↦ TotalSpace.mk' F x (σ x) : M → TotalSpace F V -/
+/-- info: fun x ↦ ⟨x, σ x⟩ : M → TotalSpace F V -/
 #guard_msgs in
 #check T% σ
 
 -- Note how the name of the bound variable `x` resp. `y` is preserved.
-/-- info: fun x ↦ TotalSpace.mk' E' x (σ' x) : E → TotalSpace E' (Trivial E E') -/
+/-- info: fun x ↦ ⟨x, σ' x⟩ : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% σ'
 
-/-- info: fun y ↦ TotalSpace.mk' E' y (σ'' y) : E → TotalSpace E' (Trivial E E') -/
+/-- info: fun y ↦ ⟨y, σ'' y⟩ : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% σ''
 
-/-- info: fun a ↦ TotalSpace.mk' E' a (s a) : E → TotalSpace E' (Trivial E E') -/
+/-- info: fun a ↦ ⟨a, s a⟩ : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% s
 
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 
-/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+/-- info: fun m ↦ ⟨m, X m⟩ : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% X
 
@@ -59,10 +59,10 @@ variable {x : M}
 -- Testing precedence.
 section precedence
 
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+/-- info: (fun x ↦ ⟨x, σ x⟩) x : TotalSpace F V -/
 #guard_msgs in
 #check (T% σ) x
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+/-- info: (fun x ↦ ⟨x, σ x⟩) x : TotalSpace F V -/
 #guard_msgs in
 #check T% σ x
 -- Nothing happening, as expected.
@@ -74,16 +74,12 @@ section precedence
 variable {ι j : Type*}
 
 -- Partially applied.
-/--
-info: fun a ↦ TotalSpace.mk' ((x : M) → V x) a (s a) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x))
--/
+/-- info: fun a ↦ ⟨a, s a⟩ : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x)) -/
 #guard_msgs in
 variable {s : ι → (x : M) → V x} in
 #check T% s
 
-/--
-info: (fun a ↦ TotalSpace.mk' (ι → (x : M) → V x) a (s a)) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x))
--/
+/-- info: (fun a ↦ ⟨a, s a⟩) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x)) -/
 #guard_msgs in
 variable {s : ι → ι → (x : M) → V x} {i : ι} in
 #check T% s i
@@ -105,44 +101,44 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 
 -- Applying a section to an argument.
 -- This application is not beta-reduced, because of the parentheses around the T%.
-/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun m ↦ ⟨m, X m⟩) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X) x
 
 -- We apply head-beta reduction of the applied form: there is nothing to do here.
-/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun m ↦ ⟨m, X m⟩) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X x)
 
 -- This variant is beta-reduced.
-/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ ⟨x, X x⟩) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x) x)
 
-/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+/-- info: fun m ↦ ⟨m, X m⟩ : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X)
 
 -- As is this version.
-/-- info: fun x ↦ TotalSpace.mk' E x (X x) : M → TotalSpace E (TangentSpace I) -/
+/-- info: fun x ↦ ⟨x, X x⟩ : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x))
 
 -- The term `x` is outside parentheses: the form `x ↦ X x` is still reduced because
 -- we apply head beta reduction to the application.
-/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ ⟨x, X x⟩) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x)) x
 
 -- Parentheses around the argument are not required right now.
-/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ ⟨x, X x⟩) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% (fun x ↦ X x) x
 
 -- Applying the same elaborator twice errors.
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`fun m ↦ TotalSpace.mk' E m (X m)` is a function into `TotalSpace E`
+`fun m ↦ ⟨m, X m⟩` is a function into `TotalSpace E`
 
 hint: you may be missing suitable typeclass assumptions
 -/
@@ -151,7 +147,7 @@ hint: you may be missing suitable typeclass assumptions
 
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`fun m ↦ TotalSpace.mk' E m (X m)` is a function into `TotalSpace E`
+`fun m ↦ ⟨m, X m⟩` is a function into `TotalSpace E`
 
 hint: you may be missing suitable typeclass assumptions
 -/
@@ -176,7 +172,7 @@ hint: you may be missing suitable typeclass assumptions
 #guard_msgs in
 #check T% σ
 
-/-- info: fun b ↦ TotalSpace.mk' F b (σ b) : B → TotalSpace F E -/
+/-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
 #guard_msgs in
 variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] (σ : (b : B) → E b) in
 #check T% σ
@@ -198,19 +194,19 @@ section basic
 -- General case: a function between two manifolds.
 variable {f : M → M'} {s : Set M} {m : M}
 
-/-- info: MDifferentiableWithinAt I I' f s : M → Prop -/
+/-- info: MDiffAt[s] f : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] f
 
-/-- info: MDifferentiableWithinAt I I' f s m : Prop -/
+/-- info: MDiffAt[s] f m : Prop -/
 #guard_msgs in
 #check MDiffAt[s] f m
 
-/-- info: MDifferentiableAt I I' f : M → Prop -/
+/-- info: MDiffAt f : M → Prop -/
 #guard_msgs in
 #check MDiffAt f
 
-/-- info: MDifferentiableAt I I' f m : Prop -/
+/-- info: MDiffAt f m : Prop -/
 #guard_msgs in
 #check MDiffAt f m
 
@@ -221,11 +217,11 @@ variable {f : M → M'} {s : Set M} {m : M}
 -- A partial homeomorphism or partial equivalence.
 variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
 
-/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑φ) s : M → Prop -/
+/-- info: MDiffAt[s] ↑φ : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] φ
 
-/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑ψ) s : M → Prop -/
+/-- info: MDiffAt[s] ↑ψ : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] ψ
 
@@ -282,7 +278,7 @@ variable {ι : Type} {i : ι} {s : ι → Set M}
 /-- info: MDifferentiableOn I I' f (s i) : Prop -/
 #guard_msgs in
 #check MDiff[s i] f
-/-- info: MDifferentiableWithinAt I I' f (s i) m : Prop -/
+/-- info: MDiffAt[s i] f m : Prop -/
 #guard_msgs in
 #check MDiffAt[s i] f m
 /-- info: ContMDiffOn I I' 2 f (s i) : Prop -/
@@ -300,16 +296,16 @@ end
 -- Function from a manifold into a normed space.
 variable {g : M → E}
 
-/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) g s : M → Prop -/
+/-- info: MDiffAt[s] g : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] g
-/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) g s m : Prop -/
+/-- info: MDiffAt[s] g m : Prop -/
 #guard_msgs in
 #check MDiffAt[s] g m
-/-- info: MDifferentiableAt I 𝓘(𝕜, E) g : M → Prop -/
+/-- info: MDiffAt g : M → Prop -/
 #guard_msgs in
 #check MDiffAt g
-/-- info: MDifferentiableAt I 𝓘(𝕜, E) g m : Prop -/
+/-- info: MDiffAt g m : Prop -/
 #guard_msgs in
 #check MDiffAt g m
 /-- info: MDifferentiableOn I 𝓘(𝕜, E) g s : Prop -/
@@ -324,16 +320,16 @@ variable {g : M → E}
 -- From a manifold into a field.
 variable {h : M → 𝕜}
 
-/-- info: MDifferentiableWithinAt I 𝓘(𝕜, 𝕜) h s : M → Prop -/
+/-- info: MDiffAt[s] h : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] h
-/-- info: MDifferentiableWithinAt I 𝓘(𝕜, 𝕜) h s m : Prop -/
+/-- info: MDiffAt[s] h m : Prop -/
 #guard_msgs in
 #check MDiffAt[s] h m
-/-- info: MDifferentiableAt I 𝓘(𝕜, 𝕜) h : M → Prop -/
+/-- info: MDiffAt h : M → Prop -/
 #guard_msgs in
 #check MDiffAt h
-/-- info: MDifferentiableAt I 𝓘(𝕜, 𝕜) h m : Prop -/
+/-- info: MDiffAt h m : Prop -/
 #guard_msgs in
 #check MDiffAt h m
 /-- info: MDifferentiableOn I 𝓘(𝕜, 𝕜) h s : Prop -/
@@ -350,10 +346,10 @@ variable {h : M → 𝕜}
 
 -- From a normed space into a manifold.
 variable {f : E → M'} {s : Set E} {x : E}
-/-- info: MDifferentiableWithinAt 𝓘(𝕜, E) I' f s : E → Prop -/
+/-- info: MDiffAt[s] f : E → Prop -/
 #guard_msgs in
 #check MDiffAt[s] f
-/-- info: MDifferentiableAt 𝓘(𝕜, E) I' f x : Prop -/
+/-- info: MDiffAt f x : Prop -/
 #guard_msgs in
 #check MDiffAt f x
 -- TODO: fix and enable! #check MDiff[s] f x
@@ -366,14 +362,14 @@ variable {f : E → M'} {s : Set E} {x : E}
 -- Between normed spaces.
 variable {f : E → E'} {s : Set E} {x : E}
 
-/-- info: MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x : Prop -/
+/-- info: MDiffAt f x : Prop -/
 #guard_msgs in
 #check MDiffAt f x
-/-- info: MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') f : E → Prop -/
+/-- info: MDiffAt f : E → Prop -/
 #guard_msgs in
 #check MDiffAt f
 -- should this error or not? #check MDiff[s] f x
-/-- info: MDifferentiableWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s : E → Prop -/
+/-- info: MDiffAt[s] f : E → Prop -/
 #guard_msgs in
 #check MDiffAt[s] f
 /-- info: MDifferentiableOn 𝓘(𝕜, E) 𝓘(𝕜, E') f s : Prop -/
@@ -384,13 +380,13 @@ variable {f : E → E'} {s : Set E} {x : E}
 -- Normed space to a field.
 variable {f : E → 𝕜} {s : Set E} {x : E}
 
-/-- info: MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, 𝕜) f x : Prop -/
+/-- info: MDiffAt f x : Prop -/
 #guard_msgs in
 #check MDiffAt f x
 
 -- Field into a manifold.
 variable {f : 𝕜 → M'} {u : Set 𝕜} {a : 𝕜}
-/-- info: MDifferentiableAt 𝓘(𝕜, 𝕜) I' f a : Prop -/
+/-- info: MDiffAt f a : Prop -/
 #guard_msgs in
 #check MDiffAt f a
 /-- info: MDifferentiableOn 𝓘(𝕜, 𝕜) I' f u : Prop -/
@@ -399,7 +395,7 @@ variable {f : 𝕜 → M'} {u : Set 𝕜} {a : 𝕜}
 
 -- Field into a normed space.
 variable {f : 𝕜 → E'} {u : Set 𝕜} {a : 𝕜}
-/-- info: MDifferentiableAt 𝓘(𝕜, 𝕜) 𝓘(𝕜, E') f a : Prop -/
+/-- info: MDiffAt f a : Prop -/
 #guard_msgs in
 #check MDiffAt f a
 /-- info: MDifferentiableOn 𝓘(𝕜, 𝕜) 𝓘(𝕜, E') f u : Prop -/
@@ -408,7 +404,7 @@ variable {f : 𝕜 → E'} {u : Set 𝕜} {a : 𝕜}
 
 -- On a field.
 variable {f : 𝕜 → 𝕜} {u : Set 𝕜} {a : 𝕜}
-/-- info: MDifferentiableAt 𝓘(𝕜, 𝕜) 𝓘(𝕜, 𝕜) f a : Prop -/
+/-- info: MDiffAt f a : Prop -/
 #guard_msgs in
 #check MDiffAt f a
 /-- info: MDifferentiableOn 𝓘(𝕜, 𝕜) 𝓘(𝕜, 𝕜) f u : Prop -/
@@ -437,11 +433,11 @@ variable {φ : OpenPartialHomeomorph M H} {ψ : PartialEquiv M E} {s : Set M}
 #guard_msgs in
 #check MDiff ψ
 
-/-- info: MDifferentiableWithinAt I I (↑φ) s : M → Prop -/
+/-- info: MDiffAt[s] ↑φ : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] φ
 
-/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑ψ) s : M → Prop -/
+/-- info: MDiffAt[s] ↑ψ : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] ψ
 
@@ -923,11 +919,11 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {f : M → M'} {s : Set M}
 
-/-- info: {x | MDifferentiableAt I I' f x} : Set M -/
+/-- info: {x | MDiffAt f x} : Set M -/
 #guard_msgs in
 #check {x | MDiffAt f x}
 
-/-- info: {x | MDifferentiableWithinAt I I' f s x} : Set M -/
+/-- info: {x | MDiffAt[s] f x} : Set M -/
 #guard_msgs in
 #check {x | MDiffAt[s] f x}
 
@@ -944,7 +940,7 @@ open ContDiff in -- for the ∞ notation
 #guard_msgs in
 #check {x | CMDiffAt ∞ f x}
 
-/-- info: {x | Injective ⇑(mfderiv I I' f x)} : Set M -/
+/-- info: {x | Injective ⇑(mfderiv% f x)} : Set M -/
 #guard_msgs in
 #check {x | Function.Injective (mfderiv% f x) }
 
@@ -1322,7 +1318,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 #check mfderiv% f
 
 /--
-info: fun a ↦ TotalSpace.mk' Unit a (f a) : Unit → TotalSpace Unit (Trivial Unit Unit)
+info: fun a ↦ ⟨a, f a⟩ : Unit → TotalSpace Unit (Trivial Unit Unit)
 ---
 trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
 -/
