@@ -235,37 +235,91 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
   /-
   证明思路：使用 Rolle 定理
 
-  1. 记 m = (a+b)/2 为中点，h = b-a
+  记 m = (a+b)/2 为中点
 
-  2. 构造辅助函数 G(t) = F(t) - F(a) - F'(m)(t-a) - K(t-a)²(t-b)
-     其中 K 的选择使得 G(b) = 0
+  构造辅助函数 G(t) = F(t) - F(a) - F'(m)(t-a) - K(t-a)²(t-b)
+  其中 K 的选择使得 G(b) = 0
 
-  3. 验证 G(a) = G(m) = G(b) = 0
+  验证 G(a) = 0, G(m) = 0, G(b) = 0
 
-  4. 应用 Rolle 定理两次，得到存在 ξ₁ ∈ (a,m), ξ₂ ∈ (m,b) 使得 G'(ξ₁) = G'(ξ₂) = 0
+  应用 Rolle 定理：
+  - 存在 ξ₁ ∈ (a,m) 使得 G'(ξ₁) = 0
+  - 存在 ξ₂ ∈ (m,b) 使得 G'(ξ₂) = 0
 
-  5. 再次应用 Rolle 定理，得到存在 ξ ∈ (ξ₁,ξ₂) ⊂ (a,b) 使得 G''(ξ) = 0
+  再次应用 Rolle 定理：
+  - 存在 ξ ∈ (ξ₁,ξ₂) ⊂ (a,b) 使得 G''(ξ) = 0
 
-  6. 计算 G'''(t) = F'''(t) - 6K，由 G''(ξ) = 0 和 |F'''(ξ)| ≤ M 得到 |K| ≤ M/6
+  计算 G'''(t) = F'''(t) - 6K，由 G''(ξ) = 0 得到 K = F'''(ξ)/6
 
-  7. 代入 K 的定义，得到误差界 |F(b) - F(a) - F'(m)(b-a)| ≤ (b-a)³·M/24
+  代入 K 的定义，利用 |F'''(ξ)| ≤ M 得到误差界
   -/
 
-  -- 步骤 1: 定义中点 m
-  have h_m_def : (a + b) / 2 ∈ Ioo a b := by sorry
+  -- 定义中点
+  set m := (a + b) / 2 with hm_def
+  set h := b - a with hh_def
+
+  -- 步骤 1: 验证中点的位置
+  have h_m_in_Ioo : m ∈ Ioo a b := by sorry
+  have h_a_lt_m : a < m := by sorry
+  have h_m_lt_b : m < b := by sorry
 
   -- 步骤 2: 定义误差项 E = F(b) - F(a) - F'(m)(b-a)
-  have h_E_def : ∃ (E : ℝ), E = F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a) := by sorry
+  set E := F b - F a - (derivWithin F (Icc a b) m) * (b - a) with hE_def
 
-  -- 步骤 3: 构造辅助函数并应用 Rolle 定理
-  -- 存在 ξ ∈ (a,b) 使得 F(b) - F(a) - F'(m)(b-a) = F'''(ξ)·(b-a)³/24
-  have h_rolle_application : ∃ ξ ∈ Ioo a b,
-      F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a) =
-      (iteratedDerivWithin 3 F (Icc a b) ξ) * (b - a) ^ 3 / 24 := by sorry
+  -- 步骤 3: 定义系数 K = E / ((b-a)²(b-m)) = E / ((b-a)³/4)
+  -- 使得辅助函数 G(t) = F(t) - F(a) - F'(m)(t-a) - K(t-a)²(t-b) 满足 G(b) = 0
+  have h_denom_ne_zero : (b - a) ^ 3 / 4 ≠ 0 := by sorry
+  set K := E / ((b - a) ^ 3 / 4) with hK_def
 
-  -- 步骤 4: 利用三阶导数的界得到最终误差界
-  have h_final_bound : |F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a)| ≤ (b - a) ^ 3 * M / 24 := by sorry
+  -- 步骤 4: 定义辅助函数 G(t)
+  set G := fun t : ℝ => F t - F a - (derivWithin F (Icc a b) m) * (t - a) - K * (t - a) ^ 2 * (t - b) with hG_def
 
+  -- 步骤 5: 验证 G(a) = 0, G(m) = 0, G(b) = 0
+  have h_G_a : G a = 0 := by sorry
+  have h_G_m : G m = 0 := by sorry
+  have h_G_b : G b = 0 := by sorry
+
+  -- 步骤 6: G 在 [a,b] 上连续，在 (a,b) 上可导
+  have h_G_cont : ContinuousOn G (Icc a b) := by sorry
+  have h_G_diff : DifferentiableOn ℝ G (Ioo a b) := by sorry
+
+  -- 步骤 7: 第一次应用 Rolle 定理于 [a,m]，得到 ξ₁ ∈ (a,m) 使得 G'(ξ₁) = 0
+  have h_exists_xi1 : ∃ ξ₁ ∈ Ioo a m, deriv G ξ₁ = 0 := by sorry
+  obtain ⟨ξ₁, hξ₁_in, hξ₁_deriv⟩ := h_exists_xi1
+
+  -- 步骤 8: 第二次应用 Rolle 定理于 [m,b]，得到 ξ₂ ∈ (m,b) 使得 G'(ξ₂) = 0
+  have h_exists_xi2 : ∃ ξ₂ ∈ Ioo m b, deriv G ξ₂ = 0 := by sorry
+  obtain ⟨ξ₂, hξ₂_in, hξ₂_deriv⟩ := h_exists_xi2
+
+  -- 步骤 9: 验证 ξ₁ < ξ₂
+  have h_xi1_lt_xi2 : ξ₁ < ξ₂ := by sorry
+
+  -- 步骤 10: G' 在 [ξ₁,ξ₂] 上满足 Rolle 定理条件
+  have h_G_deriv_cont : ContinuousOn (deriv G) (Icc ξ₁ ξ₂) := by sorry
+  have h_G_deriv_diff : DifferentiableOn ℝ (deriv G) (Ioo ξ₁ ξ₂) := by sorry
+
+  -- 步骤 11: 第三次应用 Rolle 定理于 [ξ₁,ξ₂]，得到 ξ ∈ (ξ₁,ξ₂) 使得 G''(ξ) = 0
+  have h_exists_xi : ∃ ξ ∈ Ioo ξ₁ ξ₂, deriv (deriv G) ξ = 0 := by sorry
+  obtain ⟨ξ, hξ_in, hξ_deriv2⟩ := h_exists_xi
+
+  -- 步骤 12: 验证 ξ ∈ (a,b)
+  have hξ_in_Ioo : ξ ∈ Ioo a b := by sorry
+
+  -- 步骤 13: 计算 G'''(t) = F'''(t) - 6K
+  have h_G_deriv3 : deriv (deriv (deriv G)) ξ = iteratedDerivWithin 3 F (Icc a b) ξ - 6 * K := by sorry
+
+  -- 步骤 14: 由 G''(ξ) = 0 和 G'''(ξ) = F'''(ξ) - 6K 得到 K = F'''(ξ)/6
+  -- 注意：这里需要 G'' 在 ξ 的邻域内可导，由 hF_diff 保证
+  have h_K_eq : K = (iteratedDerivWithin 3 F (Icc a b) ξ) / 6 := by sorry
+
+  -- 步骤 15: 代入 K 的定义和 E 的定义
+  have h_E_eq : E = (iteratedDerivWithin 3 F (Icc a b) ξ) * (b - a) ^ 3 / 24 := by sorry
+
+  -- 步骤 16: 利用 |F'''(ξ)| ≤ M 得到最终误差界
+  have h_final_bound : |E| ≤ (b - a) ^ 3 * M / 24 := by sorry
+
+  -- 结论
+  rw [hE_def] at h_final_bound
   exact h_final_bound
 
 /-- The standard error bound for Simpson's midpoint integration on a single interval `[[a, b]]`.
