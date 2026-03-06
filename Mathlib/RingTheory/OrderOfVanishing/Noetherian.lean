@@ -278,16 +278,6 @@ theorem ordFrac_eq_valuation_inv [IsDiscreteValuationRing R] (x : K) :
   simp [ordFrac_eq_inverse_comp_valuation]
 
 /--
-TODO: MOVE THIS SOMEWHERE THAT MAKES SENSE
-
-NOTE THAT MATHLIB.ORDER.LATTICE MIGHT BE GOOD, BUT NOT NECESSARILY
--/
-lemma min_inv_inv_le {G₀ : Type*} [Inv G₀] [LinearOrder G₀] {x y : G₀} :
-    min x⁻¹ y⁻¹ ≤ (max x y)⁻¹ := by
-  cases le_total x y <;> simp_all
-#check mul_inv_lt_inv_mul_iff
-
-/--
 For `x y : R`, if `x + y ≠ 0` then `min (ordFrac R x) (ordFrac R y) ≤ ordFrac R (x + y)`. The
 condition that `x + y ≠ 0` is used to guarantee that all the elements we're taking `ordFrac` of
 are nonzero, meaning none of them will be `0` in `ℤᵐ⁰`. This allows us to use `ord_add` (which
