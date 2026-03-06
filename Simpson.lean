@@ -233,25 +233,21 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
     (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc a b) x| ≤ M) :
     |F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a)| ≤ (b - a) ^ 3 * M / 24 := by
   /-
-  证明思路：使用 Rolle 定理
+  证明思路：使用 Taylor 定理
 
   记 m = (a+b)/2 为中点
 
-  构造辅助函数 G(t) = F(t) - F(a) - F'(m)(t-a) - K(t-a)²(t-b)
-  其中 K 的选择使得 G(b) = 0
+  使用带 Lagrange 余项的 Taylor 定理：
+  F(b) = F(m) + F'(m)(b-m) + F''(m)(b-m)²/2 + F'''(ξ₁)(b-m)³/6  其中 ξ₁ ∈ (m,b)
+  F(a) = F(m) + F'(m)(a-m) + F''(m)(a-m)²/2 + F'''(ξ₂)(a-m)³/6  其中 ξ₂ ∈ (a,m)
 
-  验证 G(a) = 0, G(m) = 0, G(b) = 0
+  相减得：
+  F(b) - F(a) = F'(m)(b-a) + F'''(ξ₁)(b-m)³/6 - F'''(ξ₂)(a-m)³/6
 
-  应用 Rolle 定理：
-  - 存在 ξ₁ ∈ (a,m) 使得 G'(ξ₁) = 0
-  - 存在 ξ₂ ∈ (m,b) 使得 G'(ξ₂) = 0
-
-  再次应用 Rolle 定理：
-  - 存在 ξ ∈ (ξ₁,ξ₂) ⊂ (a,b) 使得 G''(ξ) = 0
-
-  计算 G'''(t) = F'''(t) - 6K，由 G''(ξ) = 0 得到 K = F'''(ξ)/6
-
-  代入 K 的定义，利用 |F'''(ξ)| ≤ M 得到误差界
+  由于 b-m = (b-a)/2, a-m = -(b-a)/2，有：
+  |F(b) - F(a) - F'(m)(b-a)| = |F'''(ξ₁) + F'''(ξ₂)| * (b-a)³/48
+                            ≤ (|F'''(ξ₁)| + |F'''(ξ₂)|) * (b-a)³/48
+                            ≤ 2M * (b-a)³/48 = M(b-a)³/24
   -/
 
   -- 定义中点
@@ -259,63 +255,59 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
   set h := b - a with hh_def
 
   -- 步骤 1: 验证中点的位置
-  have h_m_in_Ioo : m ∈ Ioo a b := by sorry
-  have h_a_lt_m : a < m := by sorry
-  have h_m_lt_b : m < b := by sorry
+  have h_m_in_Ioo : m ∈ Ioo a b := by
+    constructor <;> linarith [a_lt_b]
+  have h_a_lt_m : a < m := by
+    linarith [a_lt_b]
+  have h_m_lt_b : m < b := by
+    linarith [a_lt_b]
 
   -- 步骤 2: 定义误差项 E = F(b) - F(a) - F'(m)(b-a)
   set E := F b - F a - (derivWithin F (Icc a b) m) * (b - a) with hE_def
 
-  -- 步骤 3: 定义系数 K = E / ((b-a)²(b-m)) = E / ((b-a)³/4)
-  -- 使得辅助函数 G(t) = F(t) - F(a) - F'(m)(t-a) - K(t-a)²(t-b) 满足 G(b) = 0
-  have h_denom_ne_zero : (b - a) ^ 3 / 4 ≠ 0 := by sorry
-  set K := E / ((b - a) ^ 3 / 4) with hK_def
+  -- 步骤 3: 证明关键引理 - 存在 ξ₁ ∈ (m,b) 和 ξ₂ ∈ (a,m) 使得
+  -- F(b) - F(m) = F'(m)(b-m) + F''(m)(b-m)²/2 + iteratedDerivWithin 3 F (Icc a b) ξ₁ * (b-m)³/6
+  -- F(a) - F(m) = F'(m)(a-m) + F''(m)(a-m)²/2 + iteratedDerivWithin 3 F (Icc a b) ξ₂ * (a-m)³/6
+  have h_taylor_b : ∃ ξ₁ ∈ Ioo m b,
+      F b = F m + (derivWithin F (Icc a b) m) * (b - m) +
+            (iteratedDerivWithin 2 F (Icc a b) m) * (b - m) ^ 2 / 2 +
+            (iteratedDerivWithin 3 F (Icc a b) ξ₁) * (b - m) ^ 3 / 6 := by sorry
 
-  -- 步骤 4: 定义辅助函数 G(t)
-  set G := fun t : ℝ => F t - F a - (derivWithin F (Icc a b) m) * (t - a) - K * (t - a) ^ 2 * (t - b) with hG_def
+  have h_taylor_a : ∃ ξ₂ ∈ Ioo a m,
+      F a = F m + (derivWithin F (Icc a b) m) * (a - m) +
+            (iteratedDerivWithin 2 F (Icc a b) m) * (a - m) ^ 2 / 2 +
+            (iteratedDerivWithin 3 F (Icc a b) ξ₂) * (a - m) ^ 3 / 6 := by sorry
 
-  -- 步骤 5: 验证 G(a) = 0, G(m) = 0, G(b) = 0
-  have h_G_a : G a = 0 := by sorry
-  have h_G_m : G m = 0 := by sorry
-  have h_G_b : G b = 0 := by sorry
+  -- 步骤 4: 相减得到 E 的表达式
+  obtain ⟨ξ₁, hξ₁_in, hξ₁_eq⟩ := h_taylor_b
+  obtain ⟨ξ₂, hξ₂_in, hξ₂_eq⟩ := h_taylor_a
 
-  -- 步骤 6: G 在 [a,b] 上连续，在 (a,b) 上可导
-  have h_G_cont : ContinuousOn G (Icc a b) := by sorry
-  have h_G_diff : DifferentiableOn ℝ G (Ioo a b) := by sorry
+  have h_E_expr : E = (iteratedDerivWithin 3 F (Icc a b) ξ₁) * (b - m) ^ 3 / 6 -
+                    (iteratedDerivWithin 3 F (Icc a b) ξ₂) * (a - m) ^ 3 / 6 := by sorry
 
-  -- 步骤 7: 第一次应用 Rolle 定理于 [a,m]，得到 ξ₁ ∈ (a,m) 使得 G'(ξ₁) = 0
-  have h_exists_xi1 : ∃ ξ₁ ∈ Ioo a m, deriv G ξ₁ = 0 := by sorry
-  obtain ⟨ξ₁, hξ₁_in, hξ₁_deriv⟩ := h_exists_xi1
+  -- 步骤 5: 利用 (b-m) = (b-a)/2 和 (a-m) = -(b-a)/2 化简
+  have h_bm : b - m = (b - a) / 2 := by
+    rw [hm_def]
+    ring
+  have h_am : a - m = -(b - a) / 2 := by
+    rw [hm_def]
+    ring
 
-  -- 步骤 8: 第二次应用 Rolle 定理于 [m,b]，得到 ξ₂ ∈ (m,b) 使得 G'(ξ₂) = 0
-  have h_exists_xi2 : ∃ ξ₂ ∈ Ioo m b, deriv G ξ₂ = 0 := by sorry
-  obtain ⟨ξ₂, hξ₂_in, hξ₂_deriv⟩ := h_exists_xi2
+  have h_E_simplified : E = ((iteratedDerivWithin 3 F (Icc a b) ξ₁) +
+                             (iteratedDerivWithin 3 F (Icc a b) ξ₂)) * (b - a) ^ 3 / 48 := by
+    rw [h_E_expr, h_bm, h_am]
+    have h1 : (-(b - a) / 2 : ℝ) ^ 3 = -((b - a) ^ 3 / 8) := by
+      ring
+    rw [h1]
+    ring_nf
 
-  -- 步骤 9: 验证 ξ₁ < ξ₂
-  have h_xi1_lt_xi2 : ξ₁ < ξ₂ := by sorry
+  -- 步骤 6: 利用 |F'''(x)| ≤ M 得到最终误差界
+  have h_abs_bound : |E| ≤ (|(iteratedDerivWithin 3 F (Icc a b) ξ₁)| +
+                           |(iteratedDerivWithin 3 F (Icc a b) ξ₂)|) * (b - a) ^ 3 / 48 := by sorry
 
-  -- 步骤 10: G' 在 [ξ₁,ξ₂] 上满足 Rolle 定理条件
-  have h_G_deriv_cont : ContinuousOn (deriv G) (Icc ξ₁ ξ₂) := by sorry
-  have h_G_deriv_diff : DifferentiableOn ℝ (deriv G) (Ioo ξ₁ ξ₂) := by sorry
+  have h_fpp_xi1 : |(iteratedDerivWithin 3 F (Icc a b) ξ₁)| ≤ M := by sorry
+  have h_fpp_xi2 : |(iteratedDerivWithin 3 F (Icc a b) ξ₂)| ≤ M := by sorry
 
-  -- 步骤 11: 第三次应用 Rolle 定理于 [ξ₁,ξ₂]，得到 ξ ∈ (ξ₁,ξ₂) 使得 G''(ξ) = 0
-  have h_exists_xi : ∃ ξ ∈ Ioo ξ₁ ξ₂, deriv (deriv G) ξ = 0 := by sorry
-  obtain ⟨ξ, hξ_in, hξ_deriv2⟩ := h_exists_xi
-
-  -- 步骤 12: 验证 ξ ∈ (a,b)
-  have hξ_in_Ioo : ξ ∈ Ioo a b := by sorry
-
-  -- 步骤 13: 计算 G'''(t) = F'''(t) - 6K
-  have h_G_deriv3 : deriv (deriv (deriv G)) ξ = iteratedDerivWithin 3 F (Icc a b) ξ - 6 * K := by sorry
-
-  -- 步骤 14: 由 G''(ξ) = 0 和 G'''(ξ) = F'''(ξ) - 6K 得到 K = F'''(ξ)/6
-  -- 注意：这里需要 G'' 在 ξ 的邻域内可导，由 hF_diff 保证
-  have h_K_eq : K = (iteratedDerivWithin 3 F (Icc a b) ξ) / 6 := by sorry
-
-  -- 步骤 15: 代入 K 的定义和 E 的定义
-  have h_E_eq : E = (iteratedDerivWithin 3 F (Icc a b) ξ) * (b - a) ^ 3 / 24 := by sorry
-
-  -- 步骤 16: 利用 |F'''(ξ)| ≤ M 得到最终误差界
   have h_final_bound : |E| ≤ (b - a) ^ 3 * M / 24 := by sorry
 
   -- 结论
