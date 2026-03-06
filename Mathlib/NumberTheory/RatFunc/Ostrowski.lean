@@ -37,6 +37,7 @@ section Infinity
 
 open FunctionField Polynomial Valuation
 
+set_option backward.isDefEq.respectTransparency false in
 lemma valuation_eq_valuation_X_zpow_intDegree_of_one_lt_valuation_X {f : RatFunc K}
     [v.IsTrivialOn K] (hlt : 1 < v X) (hf : f ≠ 0) : v f = v RatFunc.X ^ f.intDegree := by
   induction f using RatFunc.induction_on with
@@ -140,6 +141,7 @@ local notation "Pᵥ" => RatFunc.valuationIdeal hle
 
 section Associates
 
+set_option backward.isDefEq.respectTransparency false in
 open EuclideanDomain in
 lemma valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one
     [DecidableEq (Associates (Ideal K[X]))]
@@ -157,7 +159,7 @@ lemma valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one
   suffices v (algebraMap K[X] (RatFunc K) q) = 1 by
     simp only [this, mul_one]
     congr
-    exact (Ideal.count_associates_eq (irreducible_iff_prime.mp hπirr) hnq heq).symm
+    convert (Ideal.count_associates_eq (irreducible_iff_prime.mp hπirr) hnq heq).symm
   rw [← mod_add_div q π, map_add]
   rw [← mod_eq_zero] at hnq
   suffices v (algebraMap K[X] (RatFunc K) (q % π)) = 1 ∧
@@ -174,6 +176,7 @@ lemma valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one
   · simpa only [map_mul, ← coePolynomial_eq_algebraMap]
       using mul_lt_one_of_lt_of_le hπ.1 <| (q / π).valuation_le_one_of_valuation_X_le_one _ hle
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_zpow_uniformizingPolynomial {f : RatFunc K} (hf : f ≠ 0) :
     ∃ (z : ℤ), v f = v πᵥ ^ z:= by
   classical
@@ -187,6 +190,7 @@ lemma exists_zpow_uniformizingPolynomial {f : RatFunc K} (hf : f ≠ 0) :
       valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle
         (p := p) (by aesop)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
     v.IsUniformizer πᵥ := by
   classical
@@ -210,6 +214,7 @@ lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
         h0.isUnit.unit_spec, Units.val_inv_eq_inv_val, ← hab]
       rw [mul_comm (v _ ^ _), mul_assoc, mul_inv_cancel₀ (zpow_ne_zero _ h0), mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDiscrete v] :
     v.IsEquiv ((Pᵥ).valuation (RatFunc K)) := by
   classical
@@ -233,6 +238,7 @@ end Associates
 
 end valuation_X_le_one
 
+set_option backward.isDefEq.respectTransparency false in
 lemma adicValuation_not_isEquiv_infty_valuation [DecidableEq (RatFunc K)]
     (p : IsDedekindDomain.HeightOneSpectrum K[X]) :
     ¬ (p.valuation (RatFunc K)).IsEquiv (inftyValuation K) := by
