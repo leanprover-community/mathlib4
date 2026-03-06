@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Brian Nugent
 -/
 module
 
@@ -99,6 +99,14 @@ lemma skyscraperPresheafHomEquiv_naturality_right
   rw [skyscraperPresheafHomEquiv_app_π]
   dsimp
   rw [Category.assoc, Pi.map_π, skyscraperPresheafHomEquiv_app_π_assoc]
+
+@[reassoc]
+lemma skyscraperPresheafHomEquiv_naturality_left
+    (f : P ⟶ Q) (g : Φ.presheafFiber.obj Q ⟶ M) :
+    Φ.skyscraperPresheafHomEquiv (Φ.presheafFiber.map f ≫ g) =
+      f ≫ Φ.skyscraperPresheafHomEquiv g :=
+  Φ.skyscraperPresheafHomEquiv.symm.injective
+   (by simp [Φ.skyscraperPresheafHomEquiv_naturality_left_symm])
 
 end
 
@@ -232,5 +240,50 @@ lemma skyscraperSheafAdjunction_homEquiv_symm_apply {F : Sheaf J A} {M : A}
     letI e : (Φ.presheafFiber.obj F.obj ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
     e.symm f = Φ.skyscraperPresheafHomEquiv.symm f.hom := by
   simp [skyscraperSheafAdjunction, Functor.FullyFaithful.homEquiv]
+
+lemma W_isInvertedBy_presheafFiber :
+    J.W.IsInvertedBy (Φ.presheafFiber (A := A)) := by
+  intro P₁ P₂ f hf
+  rw [isIso_iff_coyoneda_map_bijective]
+  intro M
+  rw [← Function.Bijective.of_comp_iff' Φ.skyscraperPresheafHomEquiv.bijective]
+  convert (hf _ (Φ.isSheaf_skyscraperPresheaf M)).comp Φ.skyscraperPresheafHomEquiv.bijective
+  ext g : 1
+  simp [skyscraperPresheafHomEquiv_naturality_left]
+
+instance (P : Cᵒᵖ ⥤ A) [HasWeakSheafify J A] :
+    IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J P)) :=
+  W_isInvertedBy_presheafFiber _ _ (W_toSheafify J P)
+
+set_option backward.isDefEq.respectTransparency false in
+variable (A) in
+/-- The fiber functor on sheaves is obtained from the fiber functor on presheaves
+by localization with respect to the class of morphisms `J.W`. -/
+noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A] :
+    presheafToSheaf J A ⋙ Φ.sheafFiber ≅ Φ.presheafFiber :=
+  (NatIso.ofComponents
+    (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
+      (by simp [← Functor.map_comp])).symm
+
+set_option backward.isDefEq.respectTransparency false in
+instance [HasWeakSheafify J A] :
+    PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) where
+  preservesColimitsOfShape {K _} := ⟨fun {F} ↦
+    preservesColimit_of_preserves_colimit_cocone
+      (Sheaf.isColimitSheafifyCocone _ (colimit.isColimit _))
+        (IsColimit.ofIsoColimit (isColimitOfPreserves Φ.presheafFiber
+          (colimit.isColimit (F ⋙ sheafToPresheaf J A))) (by
+            let G := colimit (F ⋙ sheafToPresheaf J A)
+            have : IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)) :=
+              W_isInvertedBy_presheafFiber _ _ (W_toSheafify J _)
+            refine Cocones.ext (asIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)))
+              (fun k ↦ ?_)
+            dsimp
+            rw [← Functor.map_comp, Sheaf.sheafifyCocone_ι_app_val]
+            dsimp))⟩
+
+instance [HasWeakSheafify J A] :
+    PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
+  PreservesColimitsOfSize.preservesFiniteColimits _
 
 end CategoryTheory.GrothendieckTopology.Point
