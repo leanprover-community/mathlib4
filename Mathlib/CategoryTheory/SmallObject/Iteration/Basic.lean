@@ -277,6 +277,7 @@ lemma obj_limit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
     iter.F.obj ⟨i, hij⟩ = colimit (restrictionLT iter.F hij) :=
   congr_arg Comma.right (iter.arrowMap_limit i hi hij ⊥ (Order.IsSuccLimit.bot_lt hi))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The iteration on a limit element identifies to the colimit of the
 value on smaller elements. -/
 noncomputable def isColimit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :

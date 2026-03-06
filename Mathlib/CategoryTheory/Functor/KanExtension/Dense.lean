@@ -99,6 +99,7 @@ instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
     (F.denseAt _).hom_ext' (fun X p ↦ by
       simpa using ULift.up_injective (congr_fun (NatTrans.congr_app h (op X)) (ULift.up p)))
 
+set_option backward.isDefEq.respectTransparency false in
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
   map_surjective {Y Z} f := by
     let c : Cocone (CostructuredArrow.proj F Y ⋙ F) :=

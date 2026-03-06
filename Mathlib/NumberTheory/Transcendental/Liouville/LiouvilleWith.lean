@@ -176,7 +176,7 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
   refine ⟨r.den * m + r.num * n, ?_⟩; rw [this, add_sub_add_right_eq_sub]
   refine ⟨by simpa, hlt.trans_le (le_of_eq ?_)⟩
   have : (r.den ^ p : ℝ) ≠ 0 := by positivity
-  simp [mul_rpow, Nat.cast_nonneg, mul_div_mul_left, this]
+  simp [mul_rpow, mul_div_mul_left, this]
 
 @[simp]
 theorem add_rat_iff : LiouvilleWith p (x + r) ↔ LiouvilleWith p x :=

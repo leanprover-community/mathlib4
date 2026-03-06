@@ -27,7 +27,7 @@ open Pointwise
 
 section OrderedCommMonoid
 
-variable {α : Type*} [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α} {x : α}
+variable {α : Type*} [CommMonoid α] [Preorder α] [IsOrderedMonoid α] {s : Set α} {x : α}
 
 @[to_additive]
 theorem IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
@@ -41,7 +41,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable {α : Type*} [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s t : Set α} {a : α}
+variable {α : Type*} [CommGroup α] [Preorder α] [IsOrderedMonoid α] {s t : Set α} {a : α}
 
 @[to_additive]
 theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := hs.image <| OrderIso.mulLeft _
@@ -64,20 +64,25 @@ theorem IsUpperSet.mul_right (hs : IsUpperSet s) : IsUpperSet (s * t) := by
   rw [mul_comm]
   exact hs.mul_left
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem IsLowerSet.mul_left (ht : IsLowerSet t) : IsLowerSet (s * t) := ht.toDual.mul_left
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) := hs.toDual.mul_right
 
 @[to_additive]
-theorem IsUpperSet.inv (hs : IsUpperSet s) : IsLowerSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
+theorem IsUpperSet.inv {α : Type*} [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+  {s : Set α} (hs : IsUpperSet s) : IsLowerSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
 
 @[to_additive]
-theorem IsLowerSet.inv (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
+theorem IsLowerSet.inv {α : Type*} [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+  {s : Set α} (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
 
 @[to_additive]
-theorem IsUpperSet.div_left (ht : IsUpperSet t) : IsLowerSet (s / t) := by
+theorem IsUpperSet.div_left {α : Type*} [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+    {s t : Set α} (ht : IsUpperSet t) : IsLowerSet (s / t) := by
   rw [div_eq_mul_inv]
   exact ht.inv.mul_left
 
@@ -86,9 +91,12 @@ theorem IsUpperSet.div_right (hs : IsUpperSet s) : IsUpperSet (s / t) := by
   rw [div_eq_mul_inv]
   exact hs.mul_right
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
-theorem IsLowerSet.div_left (ht : IsLowerSet t) : IsUpperSet (s / t) := ht.toDual.div_left
+theorem IsLowerSet.div_left {α : Type*} [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+  {s t : Set α} (ht : IsLowerSet t) : IsUpperSet (s / t) := ht.toDual.div_left
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem IsLowerSet.div_right (hs : IsLowerSet s) : IsLowerSet (s / t) := hs.toDual.div_right
 

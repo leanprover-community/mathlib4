@@ -224,7 +224,7 @@ attribute [local instance] uliftCategory in
 instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
   apply IsConnected.of_induct
   · rintro p hj₀ h ⟨j⟩
-    let p' : Set J := {j : J | p ⟨j⟩}
+    let p' : Set J := {j : J | ⟨j⟩ ∈ p}
     have hj₀' : Classical.choice hc.is_nonempty ∈ p' := by
       simp only [p']
       exact hj₀

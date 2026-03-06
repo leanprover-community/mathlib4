@@ -162,6 +162,14 @@ theorem Countable.image {s : Set α} (hs : s.Countable) (f : α → β) : (f '' 
   have := hs.to_subtype
   apply countable_range
 
+theorem Infinite.exists_subset_countable_infinite {α : Type u} {s : Set α} (hs : s.Infinite) :
+    ∃ t ⊆ s, t.Countable ∧ t.Infinite := by
+  obtain ⟨f, hf⟩ := Infinite.natEmbedding s hs
+  refine ⟨range (Subtype.val ∘ f), ?_, ?_, ?_⟩
+  · exact fun _ ⟨y, hy⟩ ↦ hy ▸ Subtype.coe_prop (f y)
+  · exact countable_range (Subtype.val ∘ f)
+  · exact infinite_range_of_injective <| Injective.comp Subtype.val_injective hf
+
 theorem MapsTo.countable_of_injOn {s : Set α} {t : Set β} {f : α → β} (hf : MapsTo f s t)
     (hf' : InjOn f s) (ht : t.Countable) : s.Countable :=
   have := ht.to_subtype
