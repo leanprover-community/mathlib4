@@ -273,7 +273,7 @@ lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
 variable {τ}
 
 open LinearMap in
-/-- The equiv between representations are transitive. -/
+/-- Composition of two `Equiv`. -/
 @[trans]
 def trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) : Equiv ρ τ where
   __ := φ.toLinearEquiv.trans ψ.toLinearEquiv
