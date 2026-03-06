@@ -211,7 +211,7 @@ lemma finiteIndex_range_powMonoidHom_of_fg (A : Type*) [CommGroup A] [Group.FG A
 additive group `A` such that `B` contains `n • A`, then `B` has finite index in `A`. -/]
 lemma finiteIndex_of_range_powMonoidHom_le {A : Type*} [CommGroup A] [Group.FG A]
     (B : Subgroup A) {n : ℕ} (hn : n ≠ 0) (h : (powMonoidHom (α := A) n).range ≤ B) :
-    B.FiniteIndex := by
+    B.FiniteIndex :=
   have := finiteIndex_range_powMonoidHom_of_fg A hn
   finiteIndex_of_le h
 
