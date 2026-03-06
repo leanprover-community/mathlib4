@@ -55,8 +55,6 @@ structure SimplicialHomotopy
   h_last_comp_δ_last (n : ℕ) : h (Fin.last n) ≫ Y.δ (Fin.last (n + 1)) = f.app (op ⦋n⦌)
   h_succ_comp_δ_castSucc_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (hij : i ≤ j.castSucc) :
     h j.succ ≫ Y.δ i.castSucc = X.δ i ≫ h j
-  /- nlab: `dᵢ hⱼ = dⱼ h_{j'-1}` if i = j' ≠ 0, let j' = j + 1 -/
-  /-- `d_{j+1} h_{j+1} = d_{j+1} hⱼ` if i = j + 1 -/
   h_succ_comp_δ_castSucc_succ {n : ℕ} (j : Fin (n + 1)) :
     h j.succ ≫ Y.δ j.castSucc.succ = h j.castSucc ≫ Y.δ j.castSucc.succ
   /- nlab: `dᵢ hⱼ = hⱼ d_{i'-1}` if i' > j + 1, let i' = i + 1 -/
