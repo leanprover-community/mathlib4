@@ -492,6 +492,12 @@ lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := b
   split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
 
 set_option backward.isDefEq.respectTransparency false in
+theorem isEquiv_restrict : v.IsEquiv v.restrict := by
+  intro x y
+  simp only [restrict_def, restrict₀_apply]
+  split_ifs with hx hy <;> simp_all [← Units.val_le_val]
+
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ v} :
     v.restrict x < g ↔ v x < embedding g := by
   conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]

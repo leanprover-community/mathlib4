@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.RingTheory.Valuation.ValuationSubring
-
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Range
 
 /-!
@@ -29,17 +29,16 @@ should take this into consideration.
 @[expose] public section
 
 open scoped Topology uniformity
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Set Valuation
+open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Set Valuation ValuativeRel
 
 noncomputable section
 
 universe v u
 
-variable {R K : Type u} [Ring R] [DivisionRing K] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
-
 namespace Valuation
 
-variable (v : Valuation R Γ₀)
+variable {R K : Type u} [Ring R] [DivisionRing K] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
+  (v : Valuation R Γ₀)
 
 lemma map_eq_one_of_forall_lt [MulArchimedean Γ₀] {v : Valuation K Γ₀} {r : Γ₀} (hr : r ≠ 0)
     (h : ∀ x : K, v x ≠ 0 → r < v x) (x : K) (hx : v x ≠ 0) : v x = 1 := by
@@ -125,6 +124,13 @@ theorem subgroups_basis :
 
 end Valuation
 
+open Topology ValuativeRel in
+/-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
+are determined by the relation `· ≤ᵥ ·`. -/
+class IsValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] where
+  mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
+    ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s
+
 /-- A valued ring is a ring that comes equipped with a distinguished valuation. The class `Valued`
 is designed for the situation that there is a canonical valuation on the ring.
 
@@ -132,29 +138,63 @@ TODO: show that there always exists an equivalent valuation taking values in a t
 the same universe as the ring.
 
 See Note [forgetful inheritance] for why we extend `UniformSpace`, `IsUniformAddGroup`. -/
+@[deprecated "Use `[ValuativeRel R] [TopologicalSpace R] [IsValuativeTopogy R]
+(v : Valuation R Γ₀) [v.Compatible]` instead." (since := "2026-03-05")]
 class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { x : R | v.restrict x < γ.1 } ⊆ s
 
+namespace Valuation
+
+variable {R : Type u} [Ring R] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
+  (v : Valuation R Γ₀)
+
+variable (v : Valuation R Γ₀)
+
+instance nonarchimedeanRing : @NonarchimedeanRing R _ v.subgroups_basis.topology :=
+  v.subgroups_basis.nonarchimedean
+
+@[instance_reducible]
+def uniformSpace : UniformSpace R :=
+  @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
+
+instance isUniformAddGroup : @IsUniformAddGroup R v.uniformSpace _ :=
+  @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
+
+theorem is_topological_valuation : ∀ s, s ∈ @nhds _ v.subgroups_basis.topology (0 : R) ↔
+    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { x : R | v.restrict x < γ.1 } ⊆ s := by
+  letI := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
+  intro s
+  rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
+  simp_rw [restrict_lt_iff_lt_embedding]
+  exact exists_congr fun γ => by rw [true_and]; rfl
+
+attribute [deprecated Valuation.is_topological_valuation (since := "2026-03-05")]
+_root_.Valued.is_topological_valuation
+
+end Valuation
+
 namespace Valued
 
-set_option backward.isDefEq.respectTransparency false in
-/-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
-def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
-  { v
-    toUniformSpace := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
-    toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
-    is_topological_valuation := by
-      letI := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
-      intro s
-      rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
-      simp_rw [restrict_lt_iff_lt_embedding]
-      exact exists_congr fun γ => by rw [true_and]; rfl }
+-- set_option backward.isDefEq.respectTransparency false in
+-- /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
+-- def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
+--   { v
+--     toUniformSpace := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
+--     toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
+--     is_topological_valuation := by
+--       letI := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
+--       intro s
+--       rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
+--       simp_rw [restrict_lt_iff_lt_embedding]
+--       exact exists_congr fun γ => by rw [true_and]; rfl }
 
-variable (R Γ₀)
-variable [_i : Valued R Γ₀]
+variable (R : Type u) [CommRing R] (Γ₀ : Type v) [LinearOrderedCommGroupWithZero Γ₀]
+-- variable [_i : Valued R Γ₀]
+variable [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
+  (v : Valuation R Γ₀) [v.Compatible]
 
 /- theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True) fun γ : Γ₀ˣ => { x | v x < (γ : Γ₀) } := by
@@ -162,8 +202,17 @@ variable [_i : Valued R Γ₀]
 
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True)
-      fun γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ => { x | v.restrict x < γ.1 } := by
-  simp [Filter.hasBasis_iff, is_topological_valuation]
+      fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ => { x | v.restrict x < γ.1 } := by
+  simp only [Filter.hasBasis_iff, true_and]
+  convert fun s ↦ IsValuativeTopology.mem_nhds_iff (s := s) (x := (0 : R))
+  refine ⟨fun ⟨r, hr⟩ ↦ ?_, fun ⟨r, hr'⟩ ↦ ?_⟩
+  · use r.mapEquiv valueGroupWithZero_equiv_valueGroup₀
+    sorry
+  · use r.mapEquiv valueGroupWithZero_equiv_valueGroup₀
+    sorry
+
+
+  -- ValueGroupWithZero.embed
 
 /- theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True)
