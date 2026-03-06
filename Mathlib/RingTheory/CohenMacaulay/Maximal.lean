@@ -163,9 +163,7 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
         exact Nat.zero_ne_add_one n hn
       let _ := (quotient_span_singleton R xmem xnmem).1
       have dim : ringKrullDim (R ⧸ Ideal.span {x}) = n := by
-        have := (quotient_span_singleton R xmem xnmem).2
-        simp only [hn, Nat.cast_add, Nat.cast_one] at this
-        exact WithBot.add_one_cancel.mp this
+        simpa [hn, ENat.WithBot.add_one_cancel] using (quotient_span_singleton R xmem xnmem).2
       have reg : IsSMulRegular M x := by
         by_contra h
         have := (Set.ext_iff.mp (biUnion_associatedPrimes_eq_compl_regular R M) x).mpr h
@@ -180,7 +178,7 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
         rw [hn, dim, Nat.cast_le] at this
         exact (Nat.not_succ_le_self n) this
       have max : (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)).IsMaximalCohenMacaulay := by
-        rw [isMaximalCohenMacaulay_def, ← WithBot.add_natCast_cancel, Nat.cast_one,
+        rw [isMaximalCohenMacaulay_def, ← ENat.WithBot.add_natCast_cancel, Nat.cast_one,
           (quotient_span_singleton R xmem xnmem).2, ← WithBot.coe_one, ← WithBot.coe_add,
           ← (isMaximalCohenMacaulay_def M).mp ‹_›, WithBot.coe_inj,
           ← depth_quotSMulTop_succ_eq_moduleDepth M x reg xmem]
