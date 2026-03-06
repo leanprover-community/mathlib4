@@ -20,6 +20,8 @@ the field of complex numbers.
 * `NumberField.Embeddings.range_eval_eq_rootSet_minpoly`: let `x ∈ K` with `K` a number field and
   let `A` be an algebraically closed field of char. 0. Then the images of `x` under the
   embeddings of `K` in `A` are exactly the roots in `A` of the minimal polynomial of `x` over `ℚ`.
+* `NumberField.Embeddings.pow_eq_one_of_norm_le_one`: A non-zero algebraic integer whose conjugates
+  are all inside the closed unit disk is a root of unity, this is also known as Kronecker's theorem.
 * `NumberField.Embeddings.pow_eq_one_of_norm_eq_one`: an algebraic integer whose conjugates are
   all of norm one is a root of unity.
 
@@ -117,19 +119,28 @@ theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K �
   refine (Eq.trans_le ?_ <| coeff_bdd_of_norm_le hx.2 i).trans (Nat.le_ceil _)
   rw [h_map_ℚ_minpoly, coeff_map, eq_intCast, Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
 
+/-- **Kronecker's Theorem:** A non-zero algebraic integer whose conjugates are all inside the closed
+unit disk is a root of unity. -/
+theorem pow_eq_one_of_norm_le_one {x : K} (hx₀ : x ≠ 0) (hxi : IsIntegral ℤ x)
+    (hx : ∀ φ : K →+* A, ‖φ x‖ ≤ 1) : ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
+  obtain ⟨a, -, b, -, habne, h⟩ :=
+    Set.Infinite.exists_ne_map_eq_of_mapsTo (f := (x ^ · : ℕ → K)) Set.infinite_univ
+      (fun a _ => mem_setOf.mpr <|
+        ⟨hxi.pow a, fun φ => by simp [pow_le_one₀ (norm_nonneg (φ x)) <| hx φ]⟩)
+      (finite_of_norm_le K A (1 : ℝ))
+  wlog hlt : b < a
+  · exact this K A hx₀ hxi hx b a habne.symm h.symm (habne.lt_or_gt.resolve_right hlt)
+  refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
+  rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
+  refine h.resolve_right fun hp ↦ hx₀ (eq_zero_of_pow_eq_zero hp)
+
 /-- An algebraic integer whose conjugates are all of norm one is a root of unity. -/
 theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ : K →+* A, ‖φ x‖ = 1) :
     ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
-  obtain ⟨a, -, b, -, habne, h⟩ :=
-    @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ (x ^ · : ℕ → K) Set.infinite_univ
-      (by exact fun a _ => ⟨hxi.pow a, fun φ => by simp [hx φ]⟩) (finite_of_norm_le K A (1 : ℝ))
-  wlog hlt : b < a
-  · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_gt.resolve_right hlt)
-  refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
-  rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
-  refine h.resolve_right fun hp => ?_
-  specialize hx (IsAlgClosed.lift (R := ℚ)).toRingHom
-  rw [eq_zero_of_pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
+  apply pow_eq_one_of_norm_le_one K A _ hxi fun φ ↦ le_of_eq <| hx φ
+  intro rfl
+  simp_rw [map_zero, norm_zero, zero_ne_one] at hx
+  exact hx (IsAlgClosed.lift (R := ℚ)).toRingHom
 
 end Bounded
 
@@ -292,17 +303,24 @@ lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
 
 section Extension
 
-variable {K : Type*} (L : Type*) [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+variable {K : Type*} {L : Type*} [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+
+/-- If `L/K`, `ψ : K →+* ℂ`, and `φ : L →+* ℂ`, then `φ` lies over `ψ` if the restriction of
+`φ` to `K` is `ψ`. -/
+protected class LiesOver (φ : L →+* ℂ) (ψ : K →+* ℂ) : Prop where
+  over (ψ φ) : φ.comp (algebraMap K L) = ψ
+
+variable (L)
 
 /-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexEmbedding.Extension L ψ` consists of all
 `φ : L →+* ℂ` such that `φ.comp (algebraMap K L) = ψ`. -/
-protected abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+protected abbrev Extension := { φ : L →+* ℂ // ComplexEmbedding.LiesOver φ ψ }
 
 namespace Extension
 
 variable (φ : ComplexEmbedding.Extension L ψ) {L ψ}
 
-theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2
+theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2.over
 
 theorem conjugate_comp_ne (h : ¬IsReal ψ) : (conjugate φ).comp (algebraMap K L) ≠ ψ := by
   simp_all [ComplexEmbedding.isReal_iff, comp_eq]
@@ -335,6 +353,22 @@ abbrev IsUnmixed (φ : L →+* ℂ) := IsReal (φ.comp (algebraMap K L)) → IsR
 theorem IsUnmixed.isReal_iff_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ) :
     IsReal (φ.comp (algebraMap K L)) ↔ IsReal φ := by
   aesop (add simp [IsReal.comp])
+
+variable {K} (L) (ψ)
+
+/-- The set of all complex embeddings of `L` that lie over `ψ` and are mixed. -/
+def mixedEmbeddingsOver : Set (L →+* ℂ) := { φ | ComplexEmbedding.LiesOver φ ψ ∧ IsMixed K φ }
+/-- The set of all complex embeddings of `L` that lie over `ψ` and are unmixed. -/
+def unmixedEmbeddingsOver : Set (L →+* ℂ) := { φ | ComplexEmbedding.LiesOver φ ψ ∧ IsUnmixed K φ }
+
+theorem disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver :
+    Disjoint (unmixedEmbeddingsOver L ψ) (mixedEmbeddingsOver L ψ) := by
+  grind [mixedEmbeddingsOver, unmixedEmbeddingsOver]
+
+theorem union_unmixedEmbeddingsOver_mixedEmbeddingsOver :
+    (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) =
+      { φ | ComplexEmbedding.LiesOver φ ψ } := by
+  grind [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.setOf_or]
 
 end Extension
 

@@ -221,6 +221,23 @@ lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
   rw [← memLp_norm_rpow_iff (q := p) hf p_zero p_top, ← memLp_one_iff_integrable,
     ENNReal.div_self p_zero p_top]
 
+lemma integrable_norm_rpow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStronglyMeasurable f μ)
+    {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p ≤ q) (hint : Integrable (fun x ↦ ‖f x‖ ^ q) μ) :
+    Integrable (fun x ↦ ‖f x‖ ^ p) μ := by
+  rcases hp.eq_or_lt with (rfl | hp)
+  · simp
+  rcases hq.eq_or_lt with (rfl | hq)
+  · grind
+  rw [← ENNReal.toReal_ofReal hp.le, integrable_norm_rpow_iff hf (by simp [hp]) (by simp)]
+  rw [← ENNReal.toReal_ofReal hq.le, integrable_norm_rpow_iff hf  (by simp [hq]) (by simp)] at hint
+  exact MemLp.mono_exponent hint (ENNReal.ofReal_le_ofReal hpq)
+
+lemma integrable_norm_pow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStronglyMeasurable f μ)
+    {p q : ℕ} (hpq : p ≤ q) (hint : Integrable (fun x ↦ ‖f x‖ ^ q) μ) :
+    Integrable (fun x ↦ ‖f x‖ ^ p) μ := by
+  simp_rw [← Real.rpow_natCast] at *
+  exact integrable_norm_rpow_of_le hf p.cast_nonneg q.cast_nonneg (by simpa) hint
+
 theorem Integrable.mono_measure {f : α → ε} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩
 
@@ -668,36 +685,37 @@ lemma Integrable.measure_norm_gt_lt_top {f : α → β} (hf : Integrable f μ) {
     μ {x | ε < ‖f x‖} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le)) (hf.measure_norm_ge_lt_top hε)
 
--- TODO: try generalising all lemmas below to enorm classes
-
-/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
+/-- If `f` is integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
 measure. -/
-lemma Integrable.measure_ge_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
-    μ {a : α | ε ≤ f a} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top ε_pos)
-  intro x hx
-  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact hx.trans (le_abs_self _)
+lemma Integrable.measure_ge_lt_top {f : α → β} [Lattice β] [HasSolidNorm β] [AddLeftMono β]
+    (hf : Integrable f μ) {ε : β} (ε_pos : 0 < ε) :
+    μ {a : α | ε ≤ f a} < ∞ :=
+  lt_of_le_of_lt (measure_mono fun x hx => norm_le_norm_of_abs_le_abs <|
+    (abs_of_nonneg ε_pos.le).symm ▸ hx.trans (le_abs_self (f x)))
+    (hf.measure_norm_ge_lt_top (by positivity [ε_pos.ne']))
 
-/-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
+/-- If `f` is integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
 measure. -/
-lemma Integrable.measure_le_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+lemma Integrable.measure_le_lt_top {f : α → β} [Lattice β] [HasSolidNorm β] [AddLeftMono β]
+    (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (show 0 < -c by linarith))
-  intro x hx
-  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact (show -c ≤ - f x by linarith).trans (neg_le_abs _)
+  have : 0 < ‖c‖ := by positivity [c_neg.ne]
+  refine lt_of_le_of_lt (measure_mono fun x hx => ?_) (hf.measure_norm_ge_lt_top this)
+  have : -c ≤ -f x := by simp; grind
+  exact norm_le_norm_of_abs_le_abs <| abs_of_nonpos c_neg.le ▸ this.trans (neg_le_abs _)
 
-/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x > c}` has finite
+/-- If `f` is integrable, then for any `c > 0` the set `{x | f x > c}` has finite
 measure. -/
-lemma Integrable.measure_gt_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
+lemma Integrable.measure_gt_lt_top {f : α → β} [Lattice β] [HasSolidNorm β] [AddLeftMono β]
+    (hf : Integrable f μ) {ε : β} (ε_pos : 0 < ε) :
     μ {a : α | ε < f a} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_ge_lt_top hf ε_pos)
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x < c}` has finite
 measure. -/
-lemma Integrable.measure_lt_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+lemma Integrable.measure_lt_lt_top {f : α → β} [Lattice β] [HasSolidNorm β] [AddLeftMono β]
+    (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a < c} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_le_lt_top hf c_neg)
@@ -831,6 +849,7 @@ theorem memL1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable f
 
 variable (μ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `u ↦ f • u` is an isometry between the `L^1` spaces for `μ.withDensity f` and `μ`. -/
 noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f) :
     Lp E 1 (μ.withDensity fun x => f x) →ₗᵢ[ℝ] Lp E 1 μ where
@@ -932,26 +951,16 @@ section IsBoundedSMul
 variable {𝕜 : Type*}
   {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} (hf : Integrable f μ) : Integrable (c • f) μ := by
   constructor <;> fun_prop
 
-@[fun_prop]
-theorem Integrable.fun_smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
-    {f : α → β} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
-  hf.smul c
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem Integrable.smul_enorm
     [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
     {f : α → ε} (hf : Integrable f μ) : Integrable (c • f) μ := by
   constructor <;> fun_prop
-
-theorem Integrable.fun_smul_enorm
-    [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
-    {f : α → ε} (hf : Integrable f μ) : Integrable (fun x ↦ c • f x) μ :=
-  hf.smul_enorm c
 
 theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
     [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : IsUnit c) (f : α → β) :

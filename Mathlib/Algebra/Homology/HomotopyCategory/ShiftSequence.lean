@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 public import Mathlib.CategoryTheory.Shift.Localization
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.QuasiIso
@@ -35,6 +36,7 @@ open HomologicalComplex
 
 attribute [local simp] XIsoOfEq_hom_naturality smul_smul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `(K⟦n⟧).sc' i j k ≅ K.sc' i' j' k'` when `n + i = i'`,
 `n + j = j'` and `n + k = k'`. -/
 @[simps!]
@@ -57,12 +59,14 @@ noncomputable def shiftShortComplexFunctorIso (n i i' : ℤ) (hi : n + i = i') :
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shiftShortComplexFunctorIso_zero_add_hom_app (a : ℤ) (K : CochainComplex C ℤ) :
     (shiftShortComplexFunctorIso C 0 a a (zero_add a)).hom.app K =
       (shortComplexFunctor C (ComplexShape.up ℤ) a).map
         ((shiftFunctorZero (CochainComplex C ℤ) ℤ).hom.app K) := by
   ext <;> simp [one_smul, shiftFunctorZero_hom_app_f]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shiftShortComplexFunctorIso_add'_hom_app
     (n m mn : ℤ) (hmn : m + n = mn) (a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' = a'')
     (K : CochainComplex C ℤ) :
@@ -70,7 +74,7 @@ lemma shiftShortComplexFunctorIso_add'_hom_app
       (shortComplexFunctor C (ComplexShape.up ℤ) a).map
         ((CategoryTheory.shiftFunctorAdd' (CochainComplex C ℤ) m n mn hmn).hom.app K) ≫
         (shiftShortComplexFunctorIso C n a a' ha').hom.app (K⟦m⟧) ≫
-        (shiftShortComplexFunctorIso C m a' a'' ha'' ).hom.app K := by
+        (shiftShortComplexFunctorIso C m a' a'' ha'').hom.app K := by
   ext <;> dsimp <;> simp only [← hmn, Int.negOnePow_add, shiftFunctorAdd'_hom_app_f',
     XIsoOfEq_shift, Linear.comp_units_smul, Linear.units_smul_comp,
     XIsoOfEq_hom_comp_XIsoOfEq_hom, smul_smul]
@@ -102,6 +106,7 @@ lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C �
 
 end ShiftSequence
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     (homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ where
   sequence n := homologyFunctor C (ComplexShape.up ℤ) n
@@ -148,6 +153,7 @@ lemma homologyFunctor_shift (n : ℤ) :
     (homologyFunctor C (ComplexShape.up ℤ) 0).shift n =
       homologyFunctor C (ComplexShape.up ℤ) n := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma liftCycles_shift_homologyπ
     (K : CochainComplex C ℤ) {A : C} {n i : ℤ} (f : A ⟶ (K⟦n⟧).X i) (j : ℤ)
@@ -198,7 +204,7 @@ lemma homologyShiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainCom
 lemma homologyFunctor_shiftMap
     {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧) (a a' : ℤ) (h : n + a = a') :
     (homologyFunctor C (ComplexShape.up ℤ) 0).shiftMap
-      ((quotient _ _).map f ≫ ((quotient _ _).commShiftIso n).hom.app _) a a' h =
+      (ShiftedHom.map f (quotient _ _)) a a' h =
         (homologyFunctorFactors _ _ a).hom.app K ≫
           (HomologicalComplex.homologyFunctor C (ComplexShape.up ℤ) 0).shiftMap f a a' h ≫
             (homologyFunctorFactors _ _ a').inv.app L := by

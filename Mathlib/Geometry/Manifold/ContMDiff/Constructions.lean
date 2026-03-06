@@ -20,7 +20,9 @@ This file contains results about smoothness of standard maps associated to produ
 
 -/
 
-@[expose] public section
+assert_not_exists mfderiv
+
+public section
 
 open Set Function Filter ChartedSpace
 

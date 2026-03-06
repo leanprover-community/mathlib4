@@ -9,6 +9,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Topology.ApproximateUnit
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-! # Nonnegative contractions in a C⋆-algebra form an approximate unit
 
@@ -49,6 +50,7 @@ open Unitization NNReal CStarAlgebra
 
 variable [PartialOrder A] [StarOrderedRing A]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CFC.monotoneOn_one_sub_one_add_inv :
     MonotoneOn (cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a ha b hb hab
@@ -67,6 +69,7 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
   rw [← CFC.rpow_neg_one_eq_cfc_inv, ← CFC.rpow_neg_one_eq_cfc_inv]
   exact rpow_neg_one_le_rpow_neg_one (by gcongr)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CFC.monotoneOn_one_sub_one_add_inv_real :
     MonotoneOn (cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
@@ -85,6 +88,7 @@ lemma CFC.monotoneOn_one_sub_one_add_inv_real :
           have hx' : 0 ≤ x := by grind
           simp [hx']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fun x ↦ x * (1 - x)⁻¹)
     {x : ℝ≥0 | x < 1} {x : ℝ≥0 | x < 1} := by
   have : (fun x : ℝ≥0 ↦ x * (1 + x)⁻¹) = fun x ↦ 1 - (1 + x)⁻¹ := by
@@ -98,12 +102,12 @@ lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fu
     field_simp
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_cfcₙ_one_sub_one_add_inv_lt_one (a : A) :
     ‖cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) a‖ < 1 :=
   nnnorm_cfcₙ_nnreal_lt fun x _ ↦ tsub_lt_self zero_lt_one (by positivity)
 
--- the calls to `fun_prop` with a discharger set off the linter
-set_option linter.style.multiGoal false in
+set_option backward.isDefEq.respectTransparency false in
 lemma CStarAlgebra.directedOn_nonneg_ball :
     DirectedOn (· ≤ ·) ({x : A | 0 ≤ x} ∩ Metric.ball 0 1) := by
   let f : ℝ≥0 → ℝ≥0 := fun x => 1 - (1 + x)⁻¹
@@ -125,7 +129,7 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
     _ = cfcₙ f (cfcₙ g a) := by
       rw [cfcₙ_comp f g a ?_ (by simp [f, tsub_self]) ?_ (by simp [g]) ha₁]
       · fun_prop (disch := intro _ _; positivity)
-      · have (x) (hx : x ∈ σₙ ℝ≥0 a) :  1 - x ≠ 0 := by
+      · have (x) (hx : x ∈ σₙ ℝ≥0 a) : 1 - x ≠ 0 := by
           refine tsub_pos_of_lt ?_ |>.ne'
           exact lt_of_le_of_lt (le_nnnorm_of_mem_quasispectrum hx) ha₂
         fun_prop (disch := assumption)
@@ -238,6 +242,7 @@ lemma norm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOr
     ‖z - y * z‖ ≤ c :=
   nnnorm_sub_mul_self_le z hx₀ hy h (c := ⟨c, hc⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- A variant of `norm_sub_mul_self_le` for non-unital algebras that passes to the unitization. -/
 lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x ≤ y) (hy₁ : ‖y‖ ≤ 1)
@@ -251,6 +256,7 @@ lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x �
       ← norm_le_one_iff_of_nonneg _, norm_inr]
     exact ⟨hxy, hy₁⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- This shows `CStarAlgebra.approximateUnit` is a one-sided approximate unit, but this is marked
 `private` because it is only used to prove `CStarAlgebra.increasingApproximateUnit`. -/
@@ -297,7 +303,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
           exact hm' y hy
         · exact div_le_one (by positivity) |>.mpr le_add_self
       _ = ε ^ 2 := mul_one _
-  rw [cfc_mul _ _ m (continuousOn_id' _ |>.mul hg') (continuousOn_id' _),
+  rw [cfc_mul _ _ m (continuousOn_id' _ |>.fun_mul hg') (continuousOn_id' _),
     cfc_mul _ _ m (continuousOn_id' _) hg', cfc_id' .., hm₁.star_eq]
   congr
   rw [← cfc_one (R := ℝ≥0) m, ← cfc_comp_smul _ _ _ hg.continuousOn hm₁,

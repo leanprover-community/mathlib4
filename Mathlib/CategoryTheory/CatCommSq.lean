@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Equivalence
 /-!
 # 2-commutative squares of functors
 
-Similarly as `CommSq.lean` defines the notion of commutative squares,
+Similarly to `Mathlib/CategoryTheory/CommSq.lean`, which defines the notion of commutative squares,
 this file introduces the notion of 2-commutative squares of functors.
 
 If `T : C₁ ⥤ C₂`, `L : C₁ ⥤ C₃`, `R : C₂ ⥤ C₄`, `B : C₃ ⥤ C₄` are functors,
@@ -44,7 +44,7 @@ variable (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ �
 namespace CatCommSq
 
 /-- The vertical identity `CatCommSq` -/
-@[simps!]
+@[instance_reducible, simps!]
 def vId : CatCommSq T (𝟭 C₁) (𝟭 C₂) T where
   iso := (Functor.leftUnitor _) ≪≫ (Functor.rightUnitor _).symm
 
@@ -107,9 +107,10 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
   iso := isoWhiskerLeft _ (L.rightUnitor.symm ≪≫ isoWhiskerLeft L B.unitIso ≪≫
       (associator _ _ _).symm ≪≫
       isoWhiskerRight (iso T.functor L R B.functor).symm B.inverse ≪≫
-      associator _ _ _  ) ≪≫ (associator _ _ _).symm ≪≫
+      associator _ _ _) ≪≫ (associator _ _ _).symm ≪≫
       isoWhiskerRight T.counitIso _ ≪≫ leftUnitor _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
     hInv T.symm R L B.symm (hInv T L R B h) = h := by
   ext X
@@ -147,9 +148,10 @@ def vInv (_ : CatCommSq T L.functor R.functor B) : CatCommSq B L.inverse R.inver
       associator _ _ _ ≪≫
       isoWhiskerLeft L.inverse (iso T L.functor R.functor B).symm) R.inverse ≪≫
       associator _ _ _ ≪≫ isoWhiskerLeft _ (associator _ _ _) ≪≫
-      (associator _ _ _ ).symm ≪≫ isoWhiskerLeft _ R.unitIso.symm ≪≫
+      (associator _ _ _).symm ≪≫ isoWhiskerLeft _ R.unitIso.symm ≪≫
       rightUnitor _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
     vInv B L.symm R.symm T (vInv T L R B h) = h := by
   ext X
@@ -163,11 +165,6 @@ lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
     Functor.id_obj, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app, comp_id]
   rw [← B.map_comp, L.counit_app_functor, ← L.functor.map_comp, ← NatTrans.comp_app,
     Iso.inv_hom_id, NatTrans.id_app, L.functor.map_id]
-  simp only [Functor.comp_obj]
-  rw [B.map_id]
-  rw [comp_id, R.counit_app_functor,
-    ← R.functor.map_comp_assoc, ← R.functor.map_comp_assoc, assoc, ← NatTrans.comp_app,
-    Iso.hom_inv_id, NatTrans.id_app]
   simp
 
 /-- In a square of categories, when the left and right functors are part

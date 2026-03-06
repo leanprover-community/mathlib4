@@ -114,6 +114,7 @@ theorem roots_of_cyclotomic (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] :
     (cyclotomic' n R).roots = (primitiveRoots n R).val := by
   rw [cyclotomic']; exact roots_prod_X_sub_C (primitiveRoots n R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If there is a primitive `n`th root of unity in `K`, then `X ^ n - 1 = ∏ (X - μ)`, where `μ`
 varies over the `n`-th roots of unity. -/
 theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
@@ -419,6 +420,7 @@ open ArithmeticFunction
 -- access notation `μ`
 open scoped ArithmeticFunction.Moebius
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `cyclotomic n R` can be expressed as a product in a fraction field of `R[X]`
   using Möbius inversion. -/
 theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [CommRing R]
@@ -616,7 +618,7 @@ private theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul_field {K : Ty
   · simp only [hy, zero_pow (Nat.ne_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
     congr
     rw [h.card_nthRootsFinset]
-  convert congr_arg (eval (x/y) · * y ^ card (nthRootsFinset n (1 : K)))
+  convert congr_arg (eval (x / y) · * y ^ card (nthRootsFinset n (1 : K)))
     <| X_pow_sub_one_eq_prod hpos h
     using 1
   · simp [sub_mul, div_pow, hy, h.card_nthRootsFinset]
@@ -638,7 +640,7 @@ theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul (hpos : 0 < n)
   refine (prod_nbij (algebraMap R K) (fun a ha ↦ map_mem_nthRootsFinset_one ha _)
     (fun a _ b _ H ↦ FaithfulSMul.algebraMap_injective R K H) (fun a ha ↦ ?_) (fun _ _ ↦ rfl)).symm
   have := Set.surj_on_of_inj_on_of_ncard_le (s := nthRootsFinset n (1 : R))
-    (t := nthRootsFinset n (1: K)) _ (fun _ hr ↦ map_mem_nthRootsFinset_one hr _)
+    (t := nthRootsFinset n (1 : K)) _ (fun _ hr ↦ map_mem_nthRootsFinset_one hr _)
     (fun a _ b _ H ↦ FaithfulSMul.algebraMap_injective R K H)
     (by simp [h.card_nthRootsFinset, h'.card_nthRootsFinset])
   obtain ⟨x, hx, hx1⟩ := this _ ha

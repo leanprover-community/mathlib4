@@ -15,7 +15,7 @@ We show that the tensor product of two injective linear maps is injective if the
 and the ring is an integral domain.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

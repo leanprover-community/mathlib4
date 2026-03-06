@@ -5,8 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public meta import Mathlib.CategoryTheory.Category.Basic
-public meta import Mathlib.Tactic.Conv
+public import Mathlib.CategoryTheory.Category.Basic  -- shake: keep (tactic output dependency)
 
 /-!
 # The `slice` tactic
@@ -18,6 +17,7 @@ of `Category.comp`.
 
 public meta section
 
+namespace Mathlib.Tactic.Slice
 open CategoryTheory
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
@@ -83,3 +83,4 @@ macro_rules
 --     declNames := [`tactic.interactive.sliceLHS, `tactic.interactive.sliceRHS]
 --     tags := ["category theory"] }
 --
+end Mathlib.Tactic.Slice

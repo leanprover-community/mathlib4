@@ -116,7 +116,7 @@ lemma charmatrix_fromBlocks :
     charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
       fromBlocks (charmatrix M₁₁) (- M₁₂.map C) (- M₂₁.map C) (charmatrix M₂₂) := by
   simp only [charmatrix]
-  ext (i|i) (j|j) : 2 <;> simp [diagonal]
+  ext (i | i) (j | j) : 2 <;> simp [diagonal]
 
 -- TODO: importing block triangular here is somewhat expensive, if more lemmas about it are added
 -- to this file, it may be worth extracting things out to Charpoly/Block.lean
@@ -158,7 +158,7 @@ theorem charpoly_natCast (k : ℕ) :
   simp [charpoly]
 
 theorem charpoly_ofNat (k : ℕ) [k.AtLeastTwo] :
-    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n:=
+    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n :=
   charpoly_natCast _
 
 @[simp]
@@ -230,6 +230,7 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A version of `Matrix.charpoly_mul_comm` for rectangular matrices.
 See also `Matrix.charpoly_mul_comm_of_le` which has just `(A * B).charpoly` as the LHS.
@@ -285,7 +286,7 @@ theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
   charpoly_units_conj M⁻¹ N
 
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
-    (M - scalar n μ).charpoly  = M.charpoly.comp (X + C μ) := by
+    (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
   congr! with σ _ i _
   by_cases hi : σ i = i <;> simp [hi]

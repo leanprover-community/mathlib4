@@ -38,6 +38,8 @@ the associator for the monoidal category structure on homological complexes.
 
 @[expose] public section
 
+set_option backward.isDefEq.respectTransparency false
+
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits
@@ -221,7 +223,7 @@ lemma d₁_eq_zero (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄) (h :
 lemma d₁_eq {i₁ i₁' : ι₁} (h₁ : c₁.Rel i₁ i₁') (i₂ : ι₂) (i₃ : ι₃) (j : ι₄) :
     d₁ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j =
     (ComplexShape.ε₁ c₁₂ c₃ c₄ (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃) *
-      ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂) ) •
+      ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂)) •
     (G.map ((F₁₂.map (K₁.d i₁ i₁')).app (K₂.X i₂))).app (K₃.X i₃) ≫
       ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁' i₂ i₃ j := by
   obtain rfl := c₁.next_eq' h₁
@@ -804,7 +806,7 @@ noncomputable def mapBifunctorAssociator :
       mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄ :=
   Hom.isoOfComponents (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄) (by
     intro j j' _
-    simp only [mapBifunctor₁₂.d_eq, mapBifunctor₂₃.d_eq  _ _ _ _ _ c₁₂,
+    simp only [mapBifunctor₁₂.d_eq, mapBifunctor₂₃.d_eq _ _ _ _ _ c₁₂,
       Preadditive.add_comp, Preadditive.comp_add,
       mapBifunctorAssociatorX_hom_D₁, mapBifunctorAssociatorX_hom_D₂,
       mapBifunctorAssociatorX_hom_D₃])

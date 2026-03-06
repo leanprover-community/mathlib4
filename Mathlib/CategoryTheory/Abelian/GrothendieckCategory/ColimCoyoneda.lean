@@ -18,7 +18,7 @@ that all the objects `X : C` are `κ`-presentable for some regular
 cardinal `κ`. However, we only prove a weaker result (which
 is enough in order to obtain the existence of enough
 injectives (TODO)): let `κ` be a big enough regular
-cardinal `κ` such that if `Y : J ⥤ C` is a functor from
+cardinal such that if `Y : J ⥤ C` is a functor from
 a `κ`-filtered category, and `c : Cocone Y` is a colimit cocone,
 then the map from the colimit of the types `X ⟶ Y j` to
 `X ⟶ c.pt` is injective, and it is bijective under the
@@ -66,6 +66,7 @@ the inclusion `(kernel.ι (g y)).app j` is an isomorphism,
 which implies that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `X ⟶ Y.obj t.right` for `t : Under j₀`
 that is induced by `y : X ⟶ Y.obj j₀`. -/
 @[simps]
@@ -76,7 +77,7 @@ def g : (Functor.const _).obj X ⟶ Under.forget j₀ ⋙ Y where
     simp only [Category.id_comp, Category.assoc, ← Functor.map_comp, Under.w]
 
 /-- The obvious morphism `colimit (kernel (g y)) ⟶ X` (which is an epimorphism
-if `J` is filtered, see `epi_f`.). -/
+if `J` is filtered, see `epi_f`). -/
 noncomputable def f : colimit (kernel (g y)) ⟶ X :=
   IsColimit.map (colimit.isColimit _) (constCocone _ X) (kernel.ι _)
 
@@ -84,6 +85,7 @@ lemma hf (j : Under j₀) :
     colimit.ι (kernel (g y)) j ≫ f y = (kernel.ι (g y)).app j :=
   (IsColimit.ι_map _ _ _ _).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {y} in
 include hc hy in
 lemma epi_f [IsFiltered J] : Epi (f y) := by
@@ -95,11 +97,12 @@ lemma epi_f [IsFiltered J] : Epi (f y) := by
     (fun j ↦ by simpa using hf y j)
     (fun _ ↦ by simpa using hy.symm)).epi_f rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j₀`, and
 we consider it as a functor `Under j₀ ⥤ MonoOver X`. -/
 @[simps]
 noncomputable def F : Under j₀ ⥤ MonoOver X where
-  obj j := MonoOver.mk' ((kernel.ι (g y)).app j)
+  obj j := MonoOver.mk ((kernel.ι (g y)).app j)
   map {j j'} f := MonoOver.homMk ((kernel (g y)).map f)
 
 end injectivity₀
@@ -111,6 +114,7 @@ variable {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]
 
 include hXκ hc
 
+set_option backward.isDefEq.respectTransparency false in
 open injectivity₀ in
 lemma injectivity₀ {j₀ : J} (y : X ⟶ Y.obj j₀) (hy : y ≫ c.ι.app j₀ = 0) :
     ∃ (j : J) (φ : j₀ ⟶ j), y ≫ Y.map φ = 0 := by
@@ -151,15 +155,17 @@ we deduce that `z` factors as `X ⟶ Y.obj j ⟶ c.pt` for some `j`
 (see the lemma `surjectivity`).
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `J ⥤ MonoOver X` which sends `j : J` to the inverse image by `z : X ⟶ c.pt`
 of the subobject `Y.obj j` of `c.pt`; it is defined here as the object in `MonoOver X`
 corresponding to the monomorphism
 `(pullback.snd c.ι ((Functor.const _).map z)).app j`. -/
 @[simps]
 noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
-  obj j := MonoOver.mk' ((pullback.snd c.ι ((Functor.const _).map z)).app j)
+  obj j := MonoOver.mk ((pullback.snd c.ι ((Functor.const _).map z)).app j)
   map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X`,
 which is an isomorphism when `J` is filtered, see `isIso_f`. -/
 noncomputable def f : colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X :=
@@ -173,6 +179,7 @@ lemma hf (j : J) :
 
 include hc
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_f [IsFiltered J] : IsIso (f z) := by
   refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).1
     (MorphismProperty.of_isPullback
@@ -196,6 +203,7 @@ lemma epi_f [IsFiltered J] : Epi (f z) := by
 
 end surjectivity
 
+set_option backward.isDefEq.respectTransparency false in
 include hc in
 open surjectivity in
 lemma surjectivity [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]

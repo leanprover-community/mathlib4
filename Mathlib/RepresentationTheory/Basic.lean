@@ -43,7 +43,7 @@ open scoped MonoidAlgebra
 
 section
 
-variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 /-- A representation of `G` on the `k`-module `V` is a homomorphism `G →* (V →ₗ[k] V)`.
 -/
@@ -56,7 +56,7 @@ namespace Representation
 
 section trivial
 
-variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 /-- The trivial representation of `G` on a `k`-module V.
 -/
@@ -88,7 +88,7 @@ end trivial
 
 section Group
 
-variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [Group G] [AddCommMonoid V] [Module k V]
   (ρ : Representation k G V)
 
 @[simp]
@@ -115,10 +115,9 @@ variable (ρ : Representation k G V)
 /-- A `k`-linear representation of `G` on `V` can be thought of as
 an algebra map from `k[G]` into the `k`-linear endomorphisms of `V`.
 -/
-noncomputable def asAlgebraHom : k[G] →ₐ[k] Module.End k V := lift k G _ ρ
+noncomputable def asAlgebraHom : k[G] →ₐ[k] Module.End k V := lift k _ G ρ
 
-theorem asAlgebraHom_def : asAlgebraHom ρ = (lift k G _) ρ :=
-  rfl
+theorem asAlgebraHom_def : asAlgebraHom ρ = lift k _ G ρ := rfl
 
 @[simp]
 theorem asAlgebraHom_single (g : G) (r : k) :
@@ -130,31 +129,38 @@ theorem asAlgebraHom_single_one (g : G) : asAlgebraHom ρ (MonoidAlgebra.single 
 theorem asAlgebraHom_of (g : G) : asAlgebraHom ρ (of k G g) = ρ g := by
   simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul]
 
+section
+
+variable {k G V : Type*} [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 /-- If `ρ : Representation k G V`, then `ρ.asModule` is a type synonym for `V`,
 which we equip with an instance `Module k[G] ρ.asModule`.
 
 You should use `asModuleEquiv : ρ.asModule ≃+ V` to translate terms.
 -/
 @[nolint unusedArguments]
-def asModule (_ : Representation k G V) :=
-  V
+def asModule (_ : Representation k G V) := V
 deriving AddCommMonoid, Module k
 
-instance : Inhabited ρ.asModule where
+instance (ρ : Representation k G V) : Inhabited ρ.asModule where
   default := 0
-
-/-- A `k`-linear representation of `G` on `V` can be thought of as a module over `k[G]`.
--/
-noncomputable instance : Module k[G] ρ.asModule :=
-  Module.compHom V (asAlgebraHom ρ).toRingHom
 
 /-- The additive equivalence from the `Module k[G]` to the original vector space
 of the representative.
 
 This is just the identity, but it is helpful for typechecking and keeping track of instances.
 -/
-def asModuleEquiv : ρ.asModule ≃ₗ[k] V :=
+def asModuleEquiv (ρ : Representation k G V) : ρ.asModule ≃ₗ[k] V :=
   LinearEquiv.refl _ _
+
+instance [Module.Finite k V] (ρ : Representation k G V) : Module.Finite k ρ.asModule :=
+  .equiv ρ.asModuleEquiv.symm
+
+end
+
+/-- A `k`-linear representation of `G` on `V` can be thought of as a module over `k[G]`.
+-/
+noncomputable instance : Module k[G] ρ.asModule :=
+  Module.compHom V (asAlgebraHom ρ).toRingHom
 
 @[simp]
 theorem asModuleEquiv_map_smul (r : k[G]) (x : ρ.asModule) :
@@ -183,7 +189,7 @@ only on a type synonym of the original module.)
 -/
 noncomputable def ofModule' (M : Type*) [AddCommMonoid M] [Module k M] [Module k[G] M]
     [IsScalarTower k k[G] M] : Representation k G M :=
-  (MonoidAlgebra.lift k G (M →ₗ[k] M)).symm (Algebra.lsmul k k M)
+  (MonoidAlgebra.lift k (M →ₗ[k] M) G).symm (Algebra.lsmul k k M)
 
 section
 
@@ -195,7 +201,7 @@ Note that the representation is built on `restrictScalars k k[G] M`,
 rather than on `M` itself.
 -/
 noncomputable def ofModule : Representation k G (RestrictScalars k k[G] M) :=
-  (MonoidAlgebra.lift k G _).symm (RestrictScalars.lsmul k k[G] M)
+  (MonoidAlgebra.lift k _ G).symm (RestrictScalars.lsmul k k[G] M)
 
 /-!
 ## `ofModule` and `asModule` are inverses.
@@ -235,8 +241,6 @@ theorem ofModule_asModule_act (g : G) (x : RestrictScalars k k[G] ρ.asModule) :
     ofModule ρ.asModule g x =
       (RestrictScalars.addEquiv _ _ _).symm
         (ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv (RestrictScalars.addEquiv _ _ _ x)))) := by
-  apply_fun RestrictScalars.addEquiv _ _ ρ.asModule using
-    (RestrictScalars.addEquiv _ _ ρ.asModule).injective
   dsimp [ofModule, RestrictScalars.lsmul_apply_apply]
   simp
 
@@ -254,6 +258,7 @@ lemma single_smul (t : k) (g : G) (v : ρ.asModule) :
   rw [← LinearMap.smul_apply, ← asAlgebraHom_single, ← asModuleEquiv_map_smul]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower k k[G] ρ.asModule where
   smul_assoc t x v := by
     revert t
@@ -269,7 +274,7 @@ end MonoidAlgebra
 
 section Norm
 
-variable {k G V : Type*} [CommSemiring k] [Group G] [Fintype G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [Group G] [Fintype G] [AddCommMonoid V] [Module k V]
 variable (ρ : Representation k G V)
 
 /-- Given a representation `(V, ρ)` of a finite group `G`, `norm ρ` is the linear map `V →ₗ[k] V`
@@ -298,7 +303,7 @@ end Norm
 
 section Subrepresentation
 
-variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
   (ρ : Representation k G V)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
@@ -314,7 +319,7 @@ end Subrepresentation
 
 section Quotient
 
-variable {k G V : Type*} [CommRing k] [Monoid G] [AddCommGroup V] [Module k V]
+variable {k G V : Type*} [Ring k] [Monoid G] [AddCommGroup V] [Module k V]
   (ρ : Representation k G V)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)` and a `G`-invariant `k`-submodule `W ≤ V`, this
@@ -330,7 +335,7 @@ end Quotient
 
 section OfQuotient
 
-variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [Semiring k] [Group G] [AddCommMonoid V] [Module k V]
 variable (ρ : Representation k G V) (S : Subgroup G)
 
 lemma apply_eq_of_coe_eq [IsTrivial (ρ.comp S.subtype)] (g h : G) (hgh : (g : G ⧸ S) = h) :
@@ -361,7 +366,7 @@ end OfQuotient
 
 section AddCommGroup
 
-variable {k G V : Type*} [CommRing k] [Monoid G] [I : AddCommGroup V] [Module k V]
+variable {k G V : Type*} [Ring k] [Monoid G] [I : AddCommGroup V] [Module k V]
 variable (ρ : Representation k G V)
 
 instance : AddCommGroup ρ.asModule :=
@@ -385,7 +390,7 @@ end AddCommGroup
 
 section MulAction
 
-variable (k : Type*) [CommSemiring k] (G : Type*) [Monoid G] (H : Type*) [MulAction G H]
+variable (k : Type*) [Semiring k] (G : Type*) [Monoid G] (H : Type*) [MulAction G H]
 
 /-- A `G`-action on `H` induces a representation `G →* End(k[H])` in the natural way. -/
 noncomputable def ofMulAction : Representation k G (H →₀ k) where
@@ -416,7 +421,7 @@ theorem ofMulAction_single (g : G) (x : H) (r : k) :
 end MulAction
 section DistribMulAction
 
-variable (k G A : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid A] [Module k A]
+variable (k G A : Type*) [Semiring k] [Monoid G] [AddCommMonoid A] [Module k A]
   [DistribMulAction G A] [SMulCommClass G k A]
 
 /-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
@@ -462,9 +467,10 @@ theorem norm_ofMulDistribMulAction_eq {G M : Type} [Group G] [Fintype G]
 end MulDistribMulAction
 section Group
 
-variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-variable (ρ : Representation k G V)
+section
 
+variable {k G V : Type*} [Semiring k] [Group G] [AddCommMonoid V] [Module k V]
+  (ρ : Representation k G V)
 @[simp]
 theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (h : H) :
     ofMulAction k G H g f h = f (g⁻¹ • h) := by
@@ -480,7 +486,12 @@ theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (
 noncomputable instance :
     HMul k[G] (ofMulAction k G G).asModule k[G] :=
   inferInstanceAs <| HMul k[G] k[G] k[G]
+end
 
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+  (ρ : Representation k G V)
+
+set_option backward.isDefEq.respectTransparency false in
 theorem ofMulAction_self_smul_eq_mul (x : k[G]) (y : (ofMulAction k G G).asModule) :
     x • y = (x * y : k[G]) := by
   induction x using MonoidAlgebra.induction_on with
@@ -561,7 +572,7 @@ end Group
 
 section DirectSum
 
-variable {k G : Type*} [CommSemiring k] [Monoid G]
+variable {k G : Type*} [Semiring k] [Monoid G]
 variable {ι : Type*} {V : ι → Type*}
 variable [(i : ι) → AddCommMonoid (V i)] [(i : ι) → Module k (V i)]
 variable (ρ : (i : ι) → Representation k G (V i))
@@ -581,7 +592,7 @@ end DirectSum
 
 section Prod
 
-variable {k G V W : Type*} [CommSemiring k] [Monoid G]
+variable {k G V W : Type*} [Semiring k] [Monoid G]
 variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
 variable (ρV : Representation k G V) (ρW : Representation k G W)
 
@@ -722,6 +733,7 @@ lemma free_single_single (g h : G) (i : α) (r : k) :
 
 variable (k G) (α : Type*)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`. -/
 noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (free k G α).asModule :=
   { AddEquiv.refl _ with

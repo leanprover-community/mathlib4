@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 # Barycentric coordinates are smooth
 -/
 
-@[expose] public section
+public section
 
 variable {ι 𝕜 E P : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]

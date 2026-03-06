@@ -6,7 +6,6 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.Data.Stream.Init
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Control.Fix
 public import Mathlib.Order.OmegaCompletePartialOrder
 
@@ -161,13 +160,10 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
   · apply ωSup_le_ωSup_of_le _
     intro i
     exists i
-    intro x
     apply le_f_of_mem_approx _ ⟨i, rfl⟩
   · apply ωSup_le_ωSup_of_le _
     intro i
     exists i.succ
-
-variable {f}
 
 end Part
 

@@ -43,6 +43,9 @@ warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the su
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
+info: Try this:
+  [apply] simp only [zero_add]
+---
 info: 'rw [add_comm]' uses '⊢'!
 
 -/
@@ -75,6 +78,9 @@ example (h : False) : False ∧ True := by
 warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [mul_zero, add_zero]
 ---
 info: 'positivity' uses '⊢'!
 -/
@@ -115,6 +121,9 @@ example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
 warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [Function.comp_apply, add_zero]
 ---
 info: 'fun_prop' uses '⊢'!
 -/

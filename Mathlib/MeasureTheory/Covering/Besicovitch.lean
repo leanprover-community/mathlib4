@@ -148,7 +148,7 @@ meta def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα 
 end Mathlib.Meta.Positivity
 
 /-- A metric space has the Besicovitch covering property if there exist `N` and `τ > 1` such that
-there are no satellite configuration of parameter `τ` with `N+1` points. This is the condition that
+there are no satellite configurations of parameter `τ` with `N+1` points. This is the condition that
 guarantees that the measurable Besicovitch covering theorem holds. It is satisfied by
 finite-dimensional real vector spaces. -/
 class HasBesicovitchCovering (α : Type*) [MetricSpace α] : Prop where
@@ -335,7 +335,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     (there is such a ball, otherwise one would have used the color `k` and not `N`).
     Then this family of `N+1` balls forms a satellite configuration, which is forbidden by
     the assumption `hN`. -/
-  induction i using Ordinal.induction with | _ i IH
+  induction i using WellFoundedLT.induction with | ind i IH
   let A : Set ℕ :=
     ⋃ (j : { j // j < i })
       (_ : (closedBall (p.c (p.index j)) (p.r (p.index j)) ∩

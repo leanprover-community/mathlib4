@@ -121,7 +121,7 @@ def _root_.ContinuousLinearMap.toWOT :
   LinearEquiv.refl 𝕜₂ _
 
 instance instFunLike : FunLike (E →SWOT[σ] F) E F where
-  coe f :=  ((ContinuousLinearMap.toWOT σ E F).symm f : E → F)
+  coe f := ((ContinuousLinearMap.toWOT σ E F).symm f : E → F)
   coe_injective' := by intro; simp
 
 instance instContinuousLinearMapClass : ContinuousSemilinearMapClass (E →SWOT[σ] F) σ E F where
@@ -271,7 +271,8 @@ lemma withSeminorms : WithSeminorms (seminormFamily σ E F) :=
   isInducing_inducingFn.withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜₂ 𝕜₂)
     |>.congr_equiv e
 
-lemma hasBasis_seminorms : (𝓝 (0 : E →SWOT[σ] F)).HasBasis (seminormFamily σ E F).basisSets id :=
+lemma hasBasis_seminorms :
+    (𝓝 (0 : E →SWOT[σ] F)).HasBasis (· ∈ (seminormFamily σ E F).basisSets) id :=
   withSeminorms.hasBasis
 
 instance instLocallyConvexSpace [NormedSpace ℝ 𝕜₂] [Module ℝ (E →SWOT[σ] F)]

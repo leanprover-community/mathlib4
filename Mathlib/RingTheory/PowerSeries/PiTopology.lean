@@ -29,15 +29,15 @@ When the type of coefficients has the discrete topology, it corresponds to the t
 It corresponds with the adic topology but this is not proved here.
 
 - `PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent`,
-`PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero`: if the constant
-coefficient of `f` is nilpotent, or vanishes, then `f` is topologically nilpotent.
+  `PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero`: if the constant
+  coefficient of `f` is nilpotent, or vanishes, then `f` is topologically nilpotent.
 
 - `PowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent` :
-assuming the base ring has the discrete topology, `f` is topologically nilpotent iff the constant
-coefficient of `f` is nilpotent.
+  assuming the base ring has the discrete topology, `f` is topologically nilpotent iff the constant
+  coefficient of `f` is nilpotent.
 
 - `PowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
-series converges to itself.
+  series converges to itself.
 
 TODO: add the similar result for the series of homogeneous components.
 
@@ -50,7 +50,7 @@ TODO: add the similar result for the series of homogeneous components.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace PowerSeries
@@ -154,7 +154,7 @@ theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFinite
   intro n
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop] at h
   obtain ⟨i, hi⟩ := h n
-  refine summable_of_finite_support <| (Set.finite_Iic i).subset ?_
+  refine summable_of_hasFiniteSupport <| (Set.finite_Iic i).subset ?_
   simp_rw [Function.support_subset_iff, Set.mem_Iic]
   intro k hk
   contrapose! hk
@@ -193,7 +193,7 @@ theorem summable_prod_of_tendsto_order_atTop_nhds_top
     (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable (∏ i ∈ ·, f i) := by
   rcases isEmpty_or_nonempty ι with hempty | hempty
   · apply Summable.of_finite
-  refine (summable_iff_summable_coeff _).mpr fun n ↦ summable_of_finite_support ?_
+  refine (summable_iff_summable_coeff _).mpr fun n ↦ summable_of_hasFiniteSupport ?_
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, eventually_atTop] at h
   obtain ⟨i, hi⟩ := h n
   apply (Finset.Iio i).powerset.finite_toSet.subset
@@ -216,6 +216,7 @@ end Prod
 section ProdOneSubPow
 variable (R : Type*) [CommRing R] [TopologicalSpace R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem multipliable_one_sub_X_pow : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^ (n + 1) := by
   nontriviality R
   simp_rw [sub_eq_add_neg]

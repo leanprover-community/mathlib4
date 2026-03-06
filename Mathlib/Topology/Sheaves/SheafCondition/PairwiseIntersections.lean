@@ -98,8 +98,8 @@ def pairwiseToOpensLeCoverMap :
     ∀ {V W : Pairwise ι}, (V ⟶ W) → (pairwiseToOpensLeCoverObj U V ⟶ pairwiseToOpensLeCoverObj U W)
   | _, _, id_single _ => 𝟙 _
   | _, _, id_pair _ _ => 𝟙 _
-  | _, _, left _ _ => homOfLE inf_le_left
-  | _, _, right _ _ => homOfLE inf_le_right
+  | _, _, left _ _ => ObjectProperty.homMk (homOfLE inf_le_left)
+  | _, _, right _ _ => ObjectProperty.homMk (homOfLE inf_le_right)
 
 /-- The category of single and double intersections of the `U i` maps into the category
 of open sets below some `U i`.
@@ -110,8 +110,9 @@ def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U where
   map {_ _} i := pairwiseToOpensLeCoverMap U i
 
 instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCover U)) :=
-  ⟨@StructuredArrow.mk _ _ _ _ _ (single V.index) _ V.homToIndex⟩
+  ⟨StructuredArrow.mk (Y := single V.index) (ObjectProperty.homMk V.homToIndex)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is a case bash: for each pair of types of objects in `Pairwise ι`,
 -- we have to explicitly construct a zigzag.
 /-- The diagram consisting of the `U i` and `U i ⊓ U j` is cofinal in the diagram
@@ -122,9 +123,10 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
     isConnected_of_zigzag fun A B => by
       rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩
       · refine
-          ⟨[{   left := ⟨⟨⟩⟩
-                right := pair i i'
-                hom := (le_inf a.le b.le).hom }, _], ?_, rfl⟩
+          ⟨[{ left := ⟨⟨⟩⟩
+              right := pair i i'
+              hom := ObjectProperty.homMk (homOfLE
+                (by simpa using le_inf a.hom.le b.hom.le)) }, _], ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inr
@@ -138,10 +140,11 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i' i
-                hom := (le_inf (b.le.trans inf_le_left) a.le).hom },
+                hom := ObjectProperty.homMk (homOfLE
+                  (le_inf (b.hom.le.trans (by simp)) a.hom.le)) },
               { left := ⟨⟨⟩⟩
                 right := single i'
-                hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
+                hom := ObjectProperty.homMk (homOfLE (b.hom.le.trans (by simp))) }, _], ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inr
@@ -159,10 +162,12 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
-                hom := (a.le.trans inf_le_left).hom },
+                hom := ObjectProperty.homMk (homOfLE (a.hom.le.trans (by simp))) },
               { left := ⟨⟨⟩⟩
                 right := pair i i'
-                hom := (le_inf (a.le.trans inf_le_left) b.le).hom }, _], ?_, rfl⟩
+                hom := ObjectProperty.homMk (homOfLE
+                  (le_inf ((a.hom.le).trans (by simp)) b.hom.le)) }, _],
+                ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inl
@@ -180,13 +185,14 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
-                hom := (a.le.trans inf_le_left).hom },
+                hom := ObjectProperty.homMk (homOfLE (a.hom.le.trans (by simp))) },
               { left := ⟨⟨⟩⟩
                 right := pair i i'
-                hom := (le_inf (a.le.trans inf_le_left) (b.le.trans inf_le_left)).hom },
+                hom := ObjectProperty.homMk (homOfLE
+                  (le_inf (a.hom.le.trans (by simp)) (b.hom.le.trans (by simp)))) },
               { left := ⟨⟨⟩⟩
                 right := single i'
-                hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
+                hom := ObjectProperty.homMk (homOfLE (b.hom.le.trans (by simp))) }, _], ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inl
@@ -281,6 +287,7 @@ theorem IsSheaf.isSheafPreservesLimitPairwiseIntersections (h : F.IsSheaf) :
   preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op
     (h.isSheafPairwiseIntersections U).some
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sheaf condition in terms of an equalizer diagram is equivalent
 to the reformulation in terms of the presheaf preserving the limit of the diagram
 consisting of the `U i` and `U i ⊓ U j`.
@@ -327,6 +334,7 @@ variable
   (s :
     PullbackCone (F.1.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op) (F.1.map (homOfLE inf_le_right).op))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation).
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.
 -/
@@ -363,6 +371,7 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
     Category.assoc, ← F.1.map_comp, ← F.1.map_comp]
   exact s.condition.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem interUnionPullbackConeLift_left :
     interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_left).op = s.fst := by
   erw [Category.assoc]
@@ -371,6 +380,7 @@ theorem interUnionPullbackConeLift_left :
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 _).some.fac _ <|
       op <| Pairwise.single <| ULift.up WalkingPair.left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem interUnionPullbackConeLift_right :
     interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_right).op = s.snd := by
   erw [Category.assoc]
@@ -379,6 +389,7 @@ theorem interUnionPullbackConeLift_right :
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 _).some.fac _ <|
       op <| Pairwise.single <| ULift.up WalkingPair.right
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a sheaf `F`, `F(U ⊔ V)` is the pullback of `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)`. -/
 def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
   let ι : ULift.{w} WalkingPair → Opens X := fun ⟨j⟩ => WalkingPair.casesOn j U V

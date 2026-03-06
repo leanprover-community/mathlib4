@@ -6,9 +6,9 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Order.Antidiag.Pi
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
-public import Mathlib.Tactic.IntervalCases
-import Mathlib.Data.PNat.Basic
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Sets of tuples with a fixed product
@@ -26,7 +26,7 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 @[expose] public section
 
 open Finset
-open scoped BigOperators ArithmeticFunction
+open scoped ArithmeticFunction
 namespace PNat
 
 instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) :=
@@ -68,7 +68,7 @@ theorem mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ} :
   · simp_rw [mem_map, mem_finAntidiagonal, Function.Embedding.arrowCongrRight_apply,
       Function.comp_def, Function.Embedding.trans_apply, Equiv.coe_toEmbedding,
       Function.Embedding.coeFn_mk, ← Additive.ofMul.symm_apply_eq, Additive.ofMul_symm_eq,
-      toMul_sum, (Equiv.piCongrRight fun _=> Additive.ofMul).surjective.exists,
+      toMul_sum, (Equiv.piCongrRight fun _ => Additive.ofMul).surjective.exists,
       Equiv.piCongrRight_apply, Pi.map_apply, toMul_ofMul, ← PNat.coe_inj, PNat.mk_coe,
       PNat.coe_prod]
     constructor
@@ -219,7 +219,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
     grind
-  rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
+  rw [prod_attach (f := fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this
 
@@ -284,7 +284,7 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
     ∃ (a : Fin 3 → ℕ) (ha : a ∈ finMulAntidiag 3 n), f a ha = b := by
   dsimp only at hb
   let g := b.fst.gcd b.snd
-  let a := ![g, b.fst/g, b.snd/g]
+  let a := ![g, b.fst / g, b.snd / g]
   have ha : a ∈ finMulAntidiag 3 n := by
     rw [mem_finMulAntidiag]
     rw [mem_filter, Finset.mem_product] at hb
@@ -306,6 +306,6 @@ open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
     #{p ∈ (n.divisors ×ˢ n.divisors) | p.1.lcm p.2 = n} = 3 ^ ω n := by
   rw [← card_finMulAntidiag_of_squarefree hn, eq_comm]
-  apply Finset.card_bij f (f_img hn) (f_inj) (f_surj hn.ne_zero)
+  apply Finset.card_bij f (f_img hn) f_inj (f_surj hn.ne_zero)
 
 end Nat

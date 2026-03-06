@@ -33,6 +33,8 @@ def tree (A : Type*) : CompleteSublattice (Set (List A)) :=
 
 @[simps!] instance (A : Type*) : SetLike (tree A) (List A) := SetLike.instSubtypeSet
 
+instance (A : Type*) : PartialOrder (tree A) := .ofSetLike (tree A) (List A)
+
 namespace Tree
 variable {A : Type*} {S T : tree A}
 
@@ -69,8 +71,10 @@ lemma take_mem {n : ℕ} (x : T) : x.val.take n ∈ T :=
 -- ### `subAt`
 
 variable (T) (x y : List A)
+
 /-- The residual tree obtained by regarding the node x as new root -/
-def subAt : tree A := ⟨(x ++ ·)⁻¹' T, fun _ _ _ ↦ mem_of_append (by rwa [List.append_assoc])⟩
+def subAt : tree A :=
+  ⟨(x ++ ·)⁻¹' T, fun _ a _ ↦ mem_of_append (y := [a]) (by rwa [List.append_assoc])⟩
 
 @[simp] lemma mem_subAt : y ∈ subAt T x ↔ x ++ y ∈ T := Iff.rfl
 

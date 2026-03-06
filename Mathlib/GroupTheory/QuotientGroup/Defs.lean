@@ -49,7 +49,7 @@ variable {G H I M : Type*} [Group G] [Group H] [Monoid M] {N : Subgroup G}
     using ⟨fun h ↦ by ext; simpa using h _ 1, fun h ↦ by simp [h]⟩
 
 @[to_additive (attr := simp)] protected lemma subsingleton_iff : Subsingleton (G ⧸ N) ↔ N = ⊤ := by
-  simp [HasQuotient.Quotient, instHasQuotientSubgroup]
+  simp [HasQuotient.Quotient]
 
 @[to_additive (attr := simp)] protected lemma nontrivial_iff : Nontrivial (G ⧸ N) ↔ N ≠ ⊤ := by
   simp [← not_subsingleton_iff_nontrivial]
@@ -154,7 +154,7 @@ instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGro
   { toGroup := have := N.normal_of_comm; QuotientGroup.Quotient.group N
     mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
 
-local notation " Q " => G ⧸ N
+local notation " Q" => G ⧸ N
 
 @[to_additive (attr := simp)]
 theorem mk_one : ((1 : G) : Q) = 1 :=
@@ -246,7 +246,7 @@ lemma con_mono {N M : Subgroup G} [hN : N.Normal] [hM : M.Normal] (h : N ≤ M) 
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
 @[to_additive /-- An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
-to a group homomorphism `G/N →* M`. -/]
+to an `AddGroup` homomorphism `G/N →+ M`. -/]
 def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
   (QuotientGroup.con N).lift φ <| con_ker_eq_conKer φ ▸ con_mono HN
 
@@ -279,6 +279,24 @@ theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
     (QuotientGroup.lift N φ HN).ker = Subgroup.map (QuotientGroup.mk' N) φ.ker := by
   rw [← congrArg MonoidHom.ker (lift_comp_mk' N φ HN), ← MonoidHom.comap_ker,
     Subgroup.map_comap_eq_self_of_surjective (mk'_surjective N)]
+
+/-- A surjective group homomorphism `φ : G →* H` with `N = ker(φ)` descends (i.e. `lift`s) to a
+group isomorphism `G/N ≃* H`. -/
+@[to_additive /-- A surjective `AddGroup` homomorphism `φ : G →+ H` with `N = ker(φ)` descends
+(i.e. `lift`s) to an `AddGroup` isomorphism `G/N ≃+ H`. -/]
+noncomputable def liftEquiv {φ : G →* H} (hφ : Function.Surjective φ)
+    (HN : N = φ.ker) : G ⧸ N ≃* H :=
+  MulEquiv.ofBijective (QuotientGroup.lift N φ HN.le)
+    ⟨by rw [← MonoidHom.ker_eq_bot_iff, ker_lift, ← HN, QuotientGroup.map_mk'_self],
+      lift_surjective_of_surjective N φ hφ HN.le⟩
+
+@[to_additive (attr := simp)]
+theorem liftEquiv_coe {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
+    liftEquiv N hφ HN (g : Q) = φ g := rfl
+
+@[to_additive (attr := simp)]
+theorem liftEquiv_mk {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
+    liftEquiv N hφ HN (mk g : Q) = φ g := rfl
 
 /-- A group homomorphism `f : G →* H` induces a map `G/N →* H/M` if `N ⊆ f⁻¹(M)`. -/
 @[to_additive
@@ -382,7 +400,7 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
         MulEquiv.coe_monoidHom_refl, map_id_apply]
     right_inv := fun x => by
       rw [map_map H' G' H' e.symm e (he ▸ (G'.map_equiv_eq_comap_symm e).le)
-        (he ▸ G'.le_comap_map (e : G →* H)) ]
+        (he ▸ G'.le_comap_map (e : G →* H))]
       simp only [← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
         MulEquiv.coe_monoidHom_refl, map_id_apply] }
 

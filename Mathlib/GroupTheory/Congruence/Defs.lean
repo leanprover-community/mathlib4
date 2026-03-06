@@ -111,7 +111,7 @@ variable [Mul M] [Mul N] [Mul P] {c d : Con M}
 
 @[to_additive]
 instance : Inhabited (Con M) :=
-  ⟨conGen EmptyRelation⟩
+  ⟨conGen emptyRelation⟩
 
 @[to_additive] lemma toSetoid_injective : Injective (toSetoid (M := M)) :=
   fun c d ↦ by cases c; congr!
@@ -364,7 +364,7 @@ instance : CompleteLattice (Con M) where
   inf c d := ⟨c.toSetoid ⊓ d.toSetoid, fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩⟩
   inf_le_left _ _ := fun _ _ h => h.1
   inf_le_right _ _ := fun _ _ h => h.2
-  le_inf  _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
+  le_inf _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
   top := { Setoid.completeLattice.top with mul' := by tauto }
   le_top _ := fun _ _ _ => trivial
   bot := { Setoid.completeLattice.bot with mul' := fun h1 h2 => h1 ▸ h2 ▸ rfl }
@@ -505,12 +505,6 @@ theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N}
     comap f H c x y ↔ c (f x) (f y) :=
   Iff.rfl
 
-section
-
-open Quotient
-
-end
-
 end
 
 section MulOneClass
@@ -599,6 +593,7 @@ instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotie
   fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
     (fun _ _ => rfl) fun _ _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Sometimes, a group is defined as a quotient of a monoid by a congruence relation.
 Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
 This lemma allows to avoid code duplication in the definition of the inverse operation:

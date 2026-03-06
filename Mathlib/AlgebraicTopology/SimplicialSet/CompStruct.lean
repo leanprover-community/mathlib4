@@ -12,11 +12,12 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
 
 Given a simplicial set `X`, we introduce two types:
 * Given `0`-simplices `x₀` and `x₁`, we define `Edge x₀ x₁`
-which is the type of `1`-simplices with faces `x₁` and `x₀` respectively;
+  which is the type of `1`-simplices with faces `x₁` and `x₀` respectively;
 * Given `0`-simplices `x₀`, `x₁`, `x₂`, edges `e₀₁ : Edge x₀ x₁`, `e₁₂ : Edge x₁ x₂`,
-`e₀₂ : Edge x₀ x₂`, a structure `CompStruct e₀₁ e₁₂ e₀₂` which records the
-data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively. This data
-will allow to obtain relations in the homotopy category of `X`.
+  `e₀₂ : Edge x₀ x₂`, a structure `CompStruct e₀₁ e₁₂ e₀₂` which records the
+  data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively. This data
+  will allow to obtain relations in the homotopy category of `X`.
+
 (This API parallels similar definitions for `2`-truncated simplicial sets.
 The definitions in this file are definitionally equal to their `2`-truncated
 counterparts.)
@@ -79,9 +80,11 @@ section
 variable (edge : X _⦋1⦌) (src_eq : X.δ 1 edge = x₀ := by cat_disch)
   (tgt_eq : X.δ 0 edge = x₁ := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for edges in a simplicial set. -/
 def mk : Edge x₀ x₁ := ofTruncated { edge := edge }
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mk_edge : (mk edge src_eq tgt_eq).edge = edge := rfl
 
@@ -174,10 +177,12 @@ variable (simplex : X _⦋2⦌)
   (d₀ : X.δ 0 simplex = e₁₂.edge := by cat_disch)
   (d₁ : X.δ 1 simplex = e₀₂.edge := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for `SSet.Edge.CompStruct`. -/
 def mk : CompStruct e₀₁ e₁₂ e₀₂ where
   simplex := simplex
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mk_simplex : (mk simplex).simplex = simplex := rfl
 
