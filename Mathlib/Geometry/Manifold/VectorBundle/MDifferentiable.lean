@@ -712,15 +712,16 @@ lemma contMDiffAt_extend' {x : M} (σ₀ : V x) :
     simp [t, hx, w]
   · exact FiberBundle.mem_baseSet_trivializationAt' x
 
-lemma exists_mdifferentiableOn_extend [IsManifold I 1 M] [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
+lemma exists_mdifferentiableOn_extend [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
     [ContMDiffVectorBundle 1 F V I] {x₀ : M} (σ₀ : V x₀) :
     ∃ s ∈ 𝓝 x₀, MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (T% (extend F σ₀)) s := by
   obtain ⟨s, hs, hsσ⟩ := exists_contMDiffOn_extend (k := 1) I F σ₀
   exact ⟨s, hs, hsσ.mdifferentiableOn one_ne_zero⟩
 
-lemma mdifferentiableAt_extend [IsManifold I 1 M] {x : M} (σ₀ : V x) :
+lemma mdifferentiableAt_extend {x : M} (σ₀ : V x) :
     MDiffAt (T% (extend F σ₀)) x :=
   (contMDiffAt_extend' (k := 1) I F σ₀).mdifferentiableAt one_ne_zero
 
 end FiberBundle
 end extend
+
