@@ -87,6 +87,7 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
       (letI := Quotient.field I; isUnit_iff_ne_zero (G₀ := A ⧸ I))).symm : A ⧸ I →ₐ[ℂ] ℂ).comp <|
     Quotient.mkₐ ℂ I
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace
@@ -152,6 +153,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   simpa only [Function.comp_apply, NNReal.sqrt_sq] using
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine ⟨(gelfandTransform_isometry A).injective, ?_⟩
@@ -264,6 +266,7 @@ theorem gelfandStarTransform_naturality {A B : Type*} [CommCStarAlgebra A] [Comm
       (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Consider the contravariant functors between compact Hausdorff spaces and commutative unital
 C⋆algebras `F : Cpct → CommCStarAlg := X ↦ C(X, ℂ)` and

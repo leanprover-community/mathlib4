@@ -487,6 +487,7 @@ namespace ZMod
 
 open FiniteField Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
   rcases hp.1.eq_two_or_odd with hp2 | hp_odd
   · subst p
@@ -744,7 +745,7 @@ theorem Subfield.splits_bot :
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   have := roots_X_pow_char_sub_X_bot F p ▸
-      (splits_bot F p).map_roots (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
+      (splits_bot F p).roots_map (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
 
 end prime_subfield

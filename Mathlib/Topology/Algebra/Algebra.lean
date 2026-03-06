@@ -47,7 +47,7 @@ variable [TopologicalSpace R] [TopologicalSpace A]
 @[continuity, fun_prop]
 theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) := by
   rw [algebraMap_eq_smul_one']
-  exact continuous_id.smul continuous_const
+  fun_prop
 
 theorem continuous_algebraMap_iff_smul [ContinuousMul A] :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
@@ -590,6 +590,11 @@ theorem Subalgebra.isClosed_topologicalClosure (s : Subalgebra R A) :
 theorem Subalgebra.topologicalClosure_minimal {s t : Subalgebra R A} (h : s ≤ t)
     (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
+
+@[gcongr]
+theorem Subalgebra.topologicalClosure_mono {s t : Subalgebra R A} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  closure_mono h
 
 variable (R) in
 open Algebra in

@@ -163,7 +163,7 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
 /-- The subtypes corresponding to equal sets are equivalent. -/
 @[simps! apply symm_apply]
 def setCongr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=
-  subtypeEquivProp h
+  subtypeEquivProp <| h ▸ rfl
 
 -- We could construct this using `Equiv.Set.image e s e.injective`,
 -- but this definition provides an explicit inverse.
@@ -408,7 +408,7 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
 
 /-- The set product of two sets is equivalent to the type product of their coercions to types. -/
 protected def prod {α β} (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ s × t :=
-  @subtypeProdEquivProd α β s t
+  @subtypeProdEquivProd α β (· ∈ s) (· ∈ t)
 
 /-- The set `Set.pi Set.univ s` is equivalent to `Π a, s a`. -/
 @[simps]
@@ -450,7 +450,7 @@ protected def congr {α β : Type*} (e : α ≃ β) : Set α ≃ Set β :=
 /-- The set `{x ∈ s | t x}` is equivalent to the set of `x : s` such that `t x`. -/
 protected def sep {α : Type u} (s : Set α) (t : α → Prop) :
     ({ x ∈ s | t x } : Set α) ≃ { x : s | t x } :=
-  (Equiv.subtypeSubtypeEquivSubtypeInter s t).symm
+  (Equiv.subtypeSubtypeEquivSubtypeInter (· ∈ s) t).symm
 
 /-- The set `𝒫 S := {x | x ⊆ S}` is equivalent to the type `Set S`. -/
 protected def powerset {α} (S : Set α) :
@@ -626,28 +626,10 @@ section Swap
 variable {α : Type*} [DecidableEq α] {a b : α} {s : Set α}
 
 theorem Equiv.swap_bijOn_self (hs : a ∈ s ↔ b ∈ s) : BijOn (Equiv.swap a b) s s := by
-  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn, fun x hx ↦ ?_⟩
-  · obtain (rfl | hxa) := eq_or_ne x a
-    · rwa [swap_apply_left, ← hs]
-    obtain (rfl | hxb) := eq_or_ne x b
-    · rwa [swap_apply_right, hs]
-    rwa [swap_apply_of_ne_of_ne hxa hxb]
-  obtain (rfl | hxa) := eq_or_ne x a
-  · simp [hs.1 hx]
-  obtain (rfl | hxb) := eq_or_ne x b
-  · simp [hs.2 hx]
-  exact ⟨x, hx, swap_apply_of_ne_of_ne hxa hxb⟩
+  grind [Equiv.bijOn]
 
 theorem Equiv.swap_bijOn_exchange (ha : a ∈ s) (hb : b ∉ s) :
     BijOn (Equiv.swap a b) s (insert b (s \ {a})) := by
-  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn, fun x hx ↦ ?_⟩
-  · obtain (rfl | hxa) := eq_or_ne x a
-    · simp [swap_apply_left]
-    rw [swap_apply_of_ne_of_ne hxa (by rintro rfl; contradiction)]
-    exact .inr ⟨hx, hxa⟩
-  obtain (rfl | hxb) := eq_or_ne x b
-  · exact ⟨a, ha, by simp⟩
-  simp only [mem_insert_iff, mem_diff, mem_singleton_iff, or_iff_right hxb] at hx
-  exact ⟨x, hx.1, swap_apply_of_ne_of_ne hx.2 hxb⟩
+  grind [Equiv.bijOn]
 
 end Swap

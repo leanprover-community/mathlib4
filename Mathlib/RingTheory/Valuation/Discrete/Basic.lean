@@ -87,8 +87,8 @@ variable [IsRankOneDiscrete v]
 lemma exists_generator_lt_one : ∃ (γ : Γˣ), zpowers γ = valueGroup v ∧ γ < 1 :=
   exists_generator_lt_one'
 
-/-- Given a discrete valuation `v`, `Valuation.IsRankOneDiscrete.generator` is a generator of
-the value group that is `< 1`. -/
+/-- Given a discrete valuation `v`, `Valuation.IsRankOneDiscrete.generator` is an element of `Γ`
+which is a generator of the value group that is `< 1`. -/
 noncomputable def generator : Γˣ := (exists_generator_lt_one v).choose
 
 lemma generator_zpowers_eq_valueGroup :
@@ -118,6 +118,21 @@ lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsRankOneD
 
 lemma generator_ne_zero : (generator v : Γ) ≠ 0 := by simp
 
+/-- Given a discrete valuation `v`, `Valuation.IsRankOneDiscrete.generator` is a generator of
+the value group that is `< 1`, as an element of `valueGroup v`. -/
+noncomputable def generator' : valueGroup v := ⟨generator v, generator_mem_valueGroup v⟩
+
+@[simp]
+lemma embedding_generator' : ValueGroup₀.embedding (f := v) (generator' v) = generator v := rfl
+
+lemma generator'_zpowers_eq_top : (zpowers (generator' v)) = ⊤ := by
+  rw [← (Subgroup.map_injective (valueGroup v).subtype_injective).eq_iff, MonoidHom.map_zpowers,
+    subtype_apply, ← MonoidHom.range_eq_map, Subgroup.subtype_range]
+  apply generator_zpowers_eq_valueGroup
+
+lemma generator'_lt_one : generator' v < 1 :=
+  (exists_generator_lt_one v).choose_spec.2
+
 instance : IsCyclic <| valueGroup v := by
   rw [← generator_zpowers_eq_valueGroup]
   exact isCyclic_zpowers (generator v)
@@ -132,7 +147,17 @@ instance : v.IsNontrivial := by
     intro y x
     specialize h1 x
     aesop
+  #adaptation_note
+  /-- Until nightly-2026-01-07, this was:
+  ```
   aesop (add safe forward [generator_lt_one, generator_zpowers_eq_valueGroup])
+  ```
+  This proof works as of 2026-01-30, but is about 4 times slower than the proof below.
+  -/
+  simp_all only [ne_eq]
+  have : generator v < 1 := generator_lt_one v
+  have : zpowers (generator v) = valueGroup v := generator_zpowers_eq_valueGroup v
+  simp_all only [zpowers_eq_bot, lt_self_iff_false]
 
 lemma valueGroup_genLTOne_eq_generator : (valueGroup v).genLTOne = generator v :=
   ((valueGroup v).genLTOne_unique (generator_lt_one v) (generator_zpowers_eq_valueGroup v)).symm
@@ -313,6 +338,7 @@ theorem exists_pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
   rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_natCast,
     mul_inv_cancel₀ (pow_ne_zero _ π.ne_zero), one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Uniformizer.is_generator (π : Uniformizer v) :
     maximalIdeal v.valuationSubring = Ideal.span {π.1} := by
   apply (maximalIdeal.isMaximal _).eq_of_le
@@ -334,6 +360,7 @@ theorem IsUniformizer.is_generator {π : v.valuationSubring} (hπ : IsUniformize
     maximalIdeal v.valuationSubring = Ideal.span {π} :=
   Uniformizer.is_generator ⟨π, hπ⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_Uniformizer_is_pow_generator (π : Uniformizer v) (n : ℕ) :
     maximalIdeal v.valuationSubring ^ n = Ideal.span {π.1 ^ n} := by
   rw [← Ideal.span_singleton_pow, Uniformizer.is_generator]
@@ -352,6 +379,7 @@ theorem valuationSubring_not_isField [Nontrivial ↥(valueGroup v)] [IsCyclic (v
   rw [← isUnit_iff_exists_inv] at h
   exact hπ.not_isUnit h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
     (hr : maximalIdeal v.valuationSubring = Ideal.span {r}) :
     IsUniformizer v r := by
@@ -365,6 +393,7 @@ theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
   rw [Uniformizer.is_generator ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr
   exact hπ.of_associated hr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ideal_isPrincipal [IsCyclic (valueGroup v)] [Nontrivial (valueGroup v)] (I : Ideal K₀) :
     I.IsPrincipal := by
   suffices ∀ P : Ideal K₀, P.IsPrime → Submodule.IsPrincipal P by

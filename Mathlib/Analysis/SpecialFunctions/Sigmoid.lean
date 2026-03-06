@@ -64,6 +64,7 @@ noncomputable def sigmoid (x : ℝ) := (1 + exp (-x))⁻¹
 
 lemma sigmoid_def (x : ℝ) : sigmoid x = (1 + exp (-x))⁻¹ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma sigmoid_zero : sigmoid 0 = 2⁻¹ := by norm_num [sigmoid]
 
@@ -204,7 +205,9 @@ lemma DifferentiableAt.sigmoid {x : E} (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (sigmoid ∘ f) x := differentiableAt_sigmoid.comp x hf
 
 @[fun_prop]
-lemma continuous_sigmoid : Continuous sigmoid := by fun_prop
+lemma continuous_sigmoid : Continuous sigmoid := by
+  apply Differentiable.continuous (𝕜 := ℝ)  -- fun_prop can't choose `𝕜`
+  fun_prop
 
 omit [NormedSpace ℝ E] in
 @[fun_prop]

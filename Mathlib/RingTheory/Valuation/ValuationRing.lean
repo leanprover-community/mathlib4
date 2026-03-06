@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Valuation.Integers
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Valuation Rings
@@ -285,9 +286,12 @@ instance le_total_ideal : @Std.Total (Ideal A) (· ≤ ·) := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
-instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
-  have := decidableEqOfDecidableLE (α := Ideal A)
-  have := decidableLTOfDecidableLE (α := Ideal A)
+open Classical in
+/- Todo: get rid of the `DecidableLE` argument.
+Currently, this argument causes this instance to not be called often,
+which hides a loop in simp-lemmas. See
+https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/conflicting.20simp-normal.20form.3A.20bot.20vs.200/with/566807522 -/
+noncomputable instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
   Lattice.toLinearOrder (Ideal A)
 
 end
@@ -438,20 +442,18 @@ lemma _root_.isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_inje
     (hinj : Function.Injective (algebraMap 𝒪 K)) :
     IsFractionRing 𝒪 K := by
   have : IsDomain 𝒪 := hinj.isDomain
-  constructor; constructor
-  · intro a
-    simpa using hinj.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
-  · intro x
-    obtain ⟨a, ha⟩ := h x
-    by_cases h0 : a = 0
-    · refine ⟨⟨0, 1⟩, by simpa [h0, eq_comm] using ha⟩
-    · have : algebraMap 𝒪 K a ≠ 0 := by simpa using hinj.ne_iff.mpr h0
-      rw [inv_eq_iff_eq_inv, ← one_div, eq_div_iff this] at ha
-      cases ha with
-      | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
-      | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
-  · intro _ _ hab
-    exact ⟨1, by simp only [OneMemClass.coe_one, hinj hab, one_mul]⟩
+  have := (faithfulSMul_iff_algebraMap_injective ..).2 hinj
+  have := IsDomain.of_faithfulSMul 𝒪 K
+  refine ⟨by simp, ?_, fun hab ↦ ⟨1, by simpa using hab⟩⟩
+  intro x
+  obtain ⟨a, ha⟩ := h x
+  by_cases h0 : a = 0
+  · refine ⟨⟨0, 1⟩, by simpa [h0, eq_comm] using ha⟩
+  · have : algebraMap 𝒪 K a ≠ 0 := by simpa using h0
+    rw [inv_eq_iff_eq_inv, ← one_div, eq_div_iff this] at ha
+    cases ha with
+    | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
+    | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
 
 lemma _root_.Valuation.Integers.isFractionRing {v : Valuation K Γ} (hv : v.Integers 𝒪) :
     IsFractionRing 𝒪 K :=

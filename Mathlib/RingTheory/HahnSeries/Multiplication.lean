@@ -281,12 +281,7 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : R⟦Γ⟧}
     rw [coeff_smul_left hwf Set.subset_union_right,
       coeff_smul_left hwf Set.subset_union_left]
     simp only [sum_add_distrib]
-  · intro b
-    simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, HahnSeries.mem_support,
-      HahnSeries.coeff_add, ne_eq, Set.mem_union]
-    contrapose!
-    intro h
-    rw [h.1, h.2, add_zero]
+  · exact support_add_subset _ _
 
 theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : HahnModule Γ' R V}
     {a : Γ'} {b : Γ} :
@@ -552,9 +547,6 @@ theorem orderTop_add_le_mul {x y : R⟦Γ⟧} : x.orderTop + y.orderTop ≤ (x *
   rw [← smul_eq_mul]
   exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
 
-@[deprecated (since := "2025-08-11")] alias orderTop_add_orderTop_le_orderTop_mul :=
-  orderTop_add_le_mul
-
 theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     (h : x.leadingCoeff * y.leadingCoeff ≠ 0) : (x * y).order = x.order + y.order := by
   have hx : x.leadingCoeff ≠ 0 := by aesop
@@ -759,6 +751,7 @@ instance SMulCommClass [CommSemiring R] [Module R V] :
   smul_comm r x y := by
     rw [← single_zero_smul_eq_smul Γ, ← mul_smul', mul_comm, mul_smul', single_zero_smul_eq_smul Γ]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instIsTorsionFree {Γ V : Type*} [Ring R] [IsDomain R] [AddCommGroup V] [AddCommMonoid Γ]
     [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Module R V] [Module.IsTorsionFree R V] :
     Module.IsTorsionFree R⟦Γ⟧ (HahnModule Γ R V) :=
@@ -986,7 +979,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     · simp [hx]
       grind
     · simp +contextual only [mem_union, mem_addAntidiagonal, mul_eq_mul_left_iff, Prod.mk.injEq,
-        ne_eq, ← and_or_left, ← or_and_right, or_false, and_imp, Prod.forall,  mem_support, not_and]
+        ne_eq, ← and_or_left, ← or_and_right, or_false, and_imp, Prod.forall, mem_support, not_and]
       rintro b c hxb - hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq (order_le_of_coeff_ne_zero hxb)
@@ -1008,7 +1001,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     · simp [hx]
       grind
     · simp +contextual only [mem_union, mem_addAntidiagonal, mul_eq_mul_right_iff, Prod.mk.injEq,
-        ne_eq, ← or_and_right, or_false, and_imp, Prod.forall,  mem_support, not_and]
+        ne_eq, ← or_and_right, or_false, and_imp, Prod.forall, mem_support, not_and]
       rintro b c - hxb hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq
