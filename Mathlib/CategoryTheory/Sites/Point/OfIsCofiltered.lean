@@ -10,8 +10,17 @@ public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 /-!
-# ...
+# Alternative constructor for points
 
+Let `J` be a Grothendieck topology on a category `C`. We provide a constructor
+`Point.ofIsCofiltered` for points for `J` which takes as inputs:
+- a functor `p : N ⥤ C` where `N` is cofiltered and initially small
+- the assumption that for any covering sieve `R` of `X`,
+  any morphism `f : p.obj U ⟶ X`, there exists a morphism `g : Y ⟶ X` in `R`,
+  a morphism `q : V ⟶ U` in `N` and a morphism `a : p.obj V ⟶ Y` such
+  that `a ≫ g = p.map q ≫ f`.
+We show that the fiber of a presheaf for the constructed point identifies
+to a colimit indexed by the category `N`.
 
 -/
 
@@ -36,10 +45,13 @@ namespace ofIsCofiltered
 local instance : HasColimitsOfShape Nᵒᵖ (Type w) :=
   hasColimitsOfShape_of_finallySmall _ _
 
+/-- Given a functor `p : N ⥤ C`, this is the functor `C ⥤ Type w` which sends
+`X : C` to the colimit of types of morphisms `p.obj U ⟶ X` for `U : N`. -/
 noncomputable def fiber : C ⥤ Type w :=
   shrinkYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ (Type w)).obj p.op ⋙ colim
 
 variable {p} in
+/-- Constructor for elements in `fiber`. -/
 noncomputable def fiberMk {U : N} {X : C} (f : p.obj U ⟶ X) : (fiber.{w} p).obj X :=
   colimit.ι (p.op ⋙ shrinkYoneda.{w}.obj X) (op U)
     (shrinkYonedaObjObjEquiv.symm f)
@@ -60,17 +72,14 @@ lemma exists_of_fiberMk_eq_fiberMk [IsCofiltered N]
     (Types.FilteredColimit.isColimit_eq_iff'
       (colimit.isColimit (p.op ⋙ shrinkYoneda.{w}.obj X)) _ _).1 hf
   refine ⟨V.unop, g.unop, ?_⟩
-  simp at hg
-  sorry
+  simpa [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}] using hg
 
 @[simp]
 lemma fiberMk_map_comp {U V : N} (g : V ⟶ U) {X : C} (f : p.obj U ⟶ X) :
     fiberMk.{w} (p.map g ≫ f) = fiberMk.{w} (f) := by
   refine Eq.trans ?_ (congr_fun (colimit.w (p.op ⋙ shrinkYoneda.{w}.obj X) g.op)
     (shrinkYonedaObjObjEquiv.symm f))
-  dsimp [fiber, fiberMk]
-  apply congr_arg
-  sorry
+  simp [fiber, fiberMk, shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
 
 @[simp]
 lemma fiberMk_map {U V : N} (g : V ⟶ U) :
@@ -82,10 +91,10 @@ lemma fiber_map_fiberMk {U : N} {X : C} (f : p.obj U ⟶ X) {Y : C} (g : X ⟶ Y
     (fiber p).map g (fiberMk.{w} f) = fiberMk.{w} (f ≫ g) :=
   (congr_fun (ι_colimMap (p.op.whiskerLeft (shrinkYoneda.{w}.map g)) (op U))
     (shrinkYonedaObjObjEquiv.symm f)).trans (by
-      dsimp [fiberMk]
-      apply congr_arg
-      sorry)
+      simp [fiberMk, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}])
 
+/-- A functor `N ⥤ (fiber p).Elements` which is initial when `N`
+is cofiltered and initially small. -/
 @[simps]
 noncomputable def functor : N ⥤ (fiber.{w} p).Elements where
   obj U := (Functor.elementsMk _ (p.obj U) (fiberMk (𝟙 _)))
@@ -119,6 +128,9 @@ variable [IsCofiltered N]
 
 open ofIsCofiltered
 
+/-- Constructor for points of Grothendieck topologies `J : GrothendieckTopology C`
+that are given by a functor `p : N ⥤ C` from a cofiltered and initially small
+category `N`. -/
 @[simps]
 noncomputable def ofIsCofiltered :
     Point.{w} J where
@@ -130,6 +142,8 @@ noncomputable def ofIsCofiltered :
 
 variable {A : Type u''} [Category.{v''} A] [HasColimitsOfSize.{w, w} A]
 
+/-- The canonical maps `P.obj (op (p.obj U)) ⟶ (ofIsCofiltered p hp).presheafFiber.obj P`
+that are part of the colimit cocone `presheafFiberOfIsCofilteredCocone`. -/
 noncomputable def toPresheafFiberOfIsCofiltered (U : N) (P : Cᵒᵖ ⥤ A) :
     P.obj (op (p.obj U)) ⟶ (ofIsCofiltered p hp).presheafFiber.obj P :=
   (ofIsCofiltered p hp).toPresheafFiber _ (fiberMk (𝟙 _)) P
@@ -147,11 +161,16 @@ lemma toPresheafFiberOfIsCofiltered_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ 
     g.app (op (p.obj U)) ≫ toPresheafFiberOfIsCofiltered p hp U Q := by
   simp [toPresheafFiberOfIsCofiltered]
 
+/-- The (colimit) cocone which, for a point constructed using `Point.ofIsCofiltered`
+and a functor `p : N ⥤ C` expresses the fiber of a presheaf as a colimit
+indexed indexed by `N`. -/
 noncomputable def presheafFiberOfIsCofilteredCocone (P : Cᵒᵖ ⥤ A) :
     Cocone (p.op ⋙ P) where
   pt := (ofIsCofiltered p hp).presheafFiber.obj P
   ι.app U := toPresheafFiberOfIsCofiltered _ _ _ _
 
+/-- For a point constructed using `Point.ofIsCofiltered` and a functor `p : N ⥤ C`,
+the fiber of a presheaf can be computed as a colimit indexed by `N`. -/
 noncomputable def isColimitPresheafFiberOfIsCofilteredCocone (P : Cᵒᵖ ⥤ A) :
     IsColimit (presheafFiberOfIsCofilteredCocone p hp P) :=
   (Functor.Final.isColimitWhiskerEquiv (functor.{w} p).op _).2
