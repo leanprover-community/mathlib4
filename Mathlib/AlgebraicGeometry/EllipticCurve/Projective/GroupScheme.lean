@@ -133,6 +133,7 @@ theorem Scheme.Γ_overForget_comp_algebraMap {X Y : (Over Spec(R))ᵒᵖ} (f : X
 
 end AlgebraicGeometry
 
+-- not needed if using glueing approach
 namespace AlgebraicGeometry.Proj
 
 variable {R A : Type u} [CommRing R] [CommRing A] [Algebra R A] (𝒜 : ℕ → Submodule R A)
@@ -242,6 +243,7 @@ def subpresheaf : Subfunctor (presheaf n) where
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
+-- not needed if using glueing approach
 section
 
 variable (R₀ : Type*) [CommRing R₀]
@@ -336,7 +338,7 @@ abbrev CoordinateRing : Type u := MvPolynomial (Fin 3) R ⧸ Ideal.span {W.polyn
 
 /-- The projective scheme associated to a Weierstrass curve. -/
 def scheme : Over Spec(R) := have := W; sorry
-  -- to be defined as Proj W.CoordinateRing, pending #27307
+  -- to be defined by glueing, see #14167
 
 def smoothOpens : W.scheme.1.Opens := sorry
 -- union of three basic opens associated to the three derivatives
@@ -359,6 +361,10 @@ theorem subpresheafToYoneda_comm :
 
 open scoped MonoidalCategory
 
+/- The functor of points of the glued scheme can be obtained by glueing the functors of
+points (simply a quotient of the union) then sheafifying.
+This is essentially a case of `CategoryTheory.GrothendieckTopology.isColimitCofanMkYoneda`
+without the assumption that the intersections (fiber products) are empty. -/
 theorem isSheafification_subpresheafToYoneda :
     IsSheafification (Scheme.zariskiTopology.over _) (subpresheafToYoneda W) := by
   sorry
@@ -575,8 +581,6 @@ theorem mem_obj_prodProdSubsheaf_iff {X} {P : ((PC R ⊗ PC R) ⊗ PC R).obj X} 
     · obtain ⟨P, hP, rfl⟩ := h₂.2; exact hP
   mpr := fun ⟨h1, h2, h3, h12, h23, h₁, h₂⟩ ↦ ⟨⟨⟨⟨h1, h2⟩, h3⟩, ⟨h12, ⟨⟩⟩, (⟨P.1, h12, _⟩, P.2), _⟩, _, _⟩
 
-
-
 def prodProdToYoneda :
     W.prodProdSubsheaf.toFunctor ⟶ (yo W.smoothLocus ⊗ yo W.smoothLocus) ⊗ yo W.scheme :=
   Subfunctor.homOfLe inf_le_left ≫
@@ -587,7 +591,7 @@ theorem isSheafification_prodProdToYoneda :
     IsSheafification (Scheme.zariskiTopology.over _) W.prodProdToYoneda := by
   sorry
 
-theorem yoneda_add_vadd :
+-- theorem yoneda_add_vadd :
 
 
 theorem add_vadd : (W.add ▷ _) ≫ W.vadd = (α_ _ _ _).hom ≫ (_ ◁ W.vadd) ≫ W.vadd := by
