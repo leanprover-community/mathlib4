@@ -3,11 +3,12 @@ Copyright (c) 2025 Gaëtan Serré. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gaëtan Serré, Rémy Degenne
 -/
+module
 
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Constructions.UnitInterval
+public import Mathlib.Probability.Kernel.Defs
 
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Constructions.UnitInterval
-import Mathlib.Probability.Kernel.Defs
 import Mathlib.Analysis.SpecialFunctions.Sigmoid
 import Mathlib.Probability.CDF
 
@@ -31,7 +32,7 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   there exists a measurable function `f : I → β` such that `volume.map f = μ`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory Set ENNReal unitInterval Filter Topology Function
 
