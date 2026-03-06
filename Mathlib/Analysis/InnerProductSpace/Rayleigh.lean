@@ -180,6 +180,7 @@ theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
   simp_rw [rayleighQuotient_neg_apply, norm_neg] at hε'
   grind
 
+-- TODO: Prove this from `IsSelfAdjoint.toReal_spectralRadius_eq_norm` using complexification.
 /-- The spectral radius of a self-adjoint operator on a complete space equals the norm. -/
 theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
     spectralRadius 𝕜 T = ‖T‖₊ := by
