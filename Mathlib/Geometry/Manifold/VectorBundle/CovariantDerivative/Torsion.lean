@@ -8,14 +8,20 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
-/-!
-# Torsion of a covariant derivative
+/-! # Torsion of a covariant derivative
 
-- define torsion of a covariant derivative (and its local version)
-- torsion-free ness (local and global version)
-- prove: torsion-freeness on `s` can be checked using a local frame on `s`
+We define the torsion tensor of a covariant derivative on the tangent bundle `TM` of some
+manifold `M` and derive a criterion for torsion-freeness.
 
-TODO: add a more complete doc-string
+## Main definitions and results
+
+* `Bundle.torsionFun`: the torsion of a covariant derivative on the tangent bundle `TM`,
+  as a bare function. Prefer to use `torsion` instead.
+* `IsCovariantDerivativeOn.torsion`: the torsion tensor of an unbundled covariant derivative
+  on `TM` on some set `s ⊆ M`
+* `CovariantDerivative.torsion`: the torsion tensor of a bundled covariant derivative on `TM`
+* `CovariantDerivative.IsTorsionFree`: predicate for a bundled covariant derivative `∇`
+  to be torsion-free: `∇` is torsion free if and only if its torsion tensor vanishes
 
 -/
 
@@ -32,8 +38,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [TopologicalSpace (TotalSpace F V)] [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
 
--- TODO: where is a good namespace for this?
-/-- The torsion of a covariant derivative on the tangent bundle `TM` -/
+/-- The torsion of a covariant derivative on the tangent bundle `TM`, as a bare function.
+Prefer to use `torsion` (which is a two-tensor) instead. -/
 noncomputable def Bundle.torsionFun
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
@@ -126,37 +132,11 @@ theorem torsion_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
 end
 
 end IsCovariantDerivativeOn
--- /-- `∇` is torsion-free on `U` if its torsion vanishes at each `x ∈ U` -/
--- noncomputable def IsTorsionFreeOn
---     (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x))
---     (U : Set M) : Prop :=
---   ∀ x ∈ U, ∀ X Y : Π x : M, TangentSpace I x, torsionFun cov X Y x = 0
---
--- namespace IsTorsionFreeOn
---
--- section changing_set
---
--- /-! Changing set
--- In this changing we change `s` in `IsTorsionFreeOn F f s`.
--- -/
---
--- lemma mono {s t : Set M} (hf : IsTorsionFreeOn cov t) (hst : s ⊆ t) : IsTorsionFreeOn cov s :=
---   fun _ hx _ _ ↦ hf _ (hst hx) ..
---
--- lemma iUnion {ι : Type*} {s : ι → Set M} (hf : ∀ i, IsTorsionFreeOn cov (s i)) :
---     IsTorsionFreeOn cov (⋃ i, s i) := by
---   rintro x ⟨si, ⟨i, hi⟩, hxsi⟩ X Y
---   exact hf i x (by simp [hi, hxsi]) X Y
---
--- end changing_set
---
--- end IsTorsionFreeOn
 
 namespace CovariantDerivative
 open VectorField
 
-variable [CompleteSpace 𝕜] [CompleteSpace E] [FiniteDimensional 𝕜 E]
-variable [IsManifold I 2 M]
+variable [CompleteSpace 𝕜] [CompleteSpace E] [FiniteDimensional 𝕜 E] [IsManifold I 2 M]
 variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 
 /-- The torsion tensor of a covariant derivative on the tangent bundle of a manifold. -/
