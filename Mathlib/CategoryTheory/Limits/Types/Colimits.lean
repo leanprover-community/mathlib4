@@ -174,19 +174,21 @@ theorem colimitEquivColimitType_apply (j : J) (x : F.obj j) :
   apply (colimitEquivColimitType F).symm.injective
   simp
 
+attribute [elementwise (attr := simp)] colimit.w colimit.ι_desc colimit.ι_map
+
 variable {F} in
-@[simp]
+@[deprecated colimit.w_apply (since := "2026-03-06")]
 theorem Colimit.w_apply {j j' : J} {x : F.obj j} (f : j ⟶ j') :
     colimit.ι F j' (F.map f x) = colimit.ι F j x := by
   rw [← comp_apply]
   exact congr_hom (colimit.w F f) x
 
-@[simp]
+@[deprecated colimit.ι_desc_apply (since := "2026-03-06")]
 theorem Colimit.ι_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
   congr_hom (colimit.ι_desc s j) x
 
-@[simp]
+@[deprecated colimit.ι_map_apply (since := "2026-03-06")]
 theorem Colimit.ι_map_apply {F G : J ⥤ TypeCat.{u}} [HasColimitsOfShape J TypeCat.{u}]
     (α : F ⟶ G) (j : J) (x : F.obj j) :
     colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
@@ -201,13 +203,13 @@ theorem Colimit.ι_map_apply {F G : J ⥤ TypeCat.{u}} [HasColimitsOfShape J Typ
 variable {F} in
 theorem colimit_sound {j j' : J} {x : F.obj j} {x' : F.obj j'} (f : j ⟶ j')
     (w : F.map f x = x') : colimit.ι F j x = colimit.ι F j' x' := by
-  rw [← w, Colimit.w_apply]
+  rw [← w, colimit.w_apply]
 
 variable {F} in
 theorem colimit_sound' {j j' : J} {x : F.obj j} {x' : F.obj j'} {j'' : J}
     (f : j ⟶ j'') (f' : j' ⟶ j'') (w : F.map f x = F.map f' x') :
     colimit.ι F j x = colimit.ι F j' x' := by
-  rw [← Colimit.w_apply f, ← Colimit.w_apply f', w]
+  rw [← colimit.w_apply _ f, ← colimit.w_apply _ f', w]
 
 variable {F} in
 theorem colimit_eq {j j' : J} {x : F.obj j} {x' : F.obj j'}

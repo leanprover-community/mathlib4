@@ -85,9 +85,10 @@ theorem colimitLimitToLimitColimit_injective :
     replace h := fun j => ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`a9
-    simp? [colimit_eq_iff] at h says
-      simp only [comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
-        colimit_eq_iff, curry_obj_obj_obj, curry_obj_obj_map] at h
+    simp only [comp_obj, colim_obj, lim_obj, ι_colimitLimitToLimitColimit_π_apply] at h
+    conv at h =>
+      enter [j]
+      erw [colimit_eq_iff]
     let k j := (h j).choose
     let f : ∀ j, kx ⟶ k j := fun j => (h j).choose_spec.choose
     let g : ∀ j, ky ⟶ k j := fun j => (h j).choose_spec.choose_spec.choose
@@ -135,7 +136,7 @@ theorem colimitLimitToLimitColimit_injective :
     -- Now it's just a calculation using `W` and `w`.
     simp only [Functor.comp_map]
     rw [← W _ _ (fH j), ← W _ _ (gH j)]
-    simp [w]
+    simpa [-curry_obj_obj_obj] using congrArg _ (w j)
 
 end
 
@@ -147,12 +148,13 @@ variable {J : Type u₁} {K : Type u₂} [SmallCategory J] [Category.{v₂} K] [
 
 variable [FinCategory J]
 
-variable (F : J × K ⥤ Type v)
+variable (F : J × K ⥤ TypeCat.{v})
 
 open CategoryTheory.Prod
 
 variable [IsFiltered K]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This follows the proof from `Borceux, Handbook of categorical algebra 1, Theorem 2.13.4`
 although with different names.
 -/
@@ -193,9 +195,9 @@ theorem colimitLimitToLimitColimit_surjective :
           colimit.ι ((curry.obj F).obj j') k' (F.map (f ×ₘ g j) (y j)) := by
       intro j j' f
       nth_rw 2 [← Bifunctor.diagonal']
-      simp only [Colimit.w_apply, ← curry_obj_obj_map]
-      rw [types_comp_apply, Colimit.w_apply, e, ← Limit.w_apply.{u₁, v, u₁} f, ← e]
-      simp [Types.Colimit.ι_map_apply]
+      simp only [← curry_obj_obj_map, ← curry_obj_obj_obj, comp_apply, colimit.w_apply]
+      rw [e, ← limit.w_apply _ f, ← e]
+      simp [-curry_obj_obj_obj]
     -- Because `K` is filtered, we can restate this as saying that
     -- for each such `f`, there is some place to the right of `k'`
     -- where these images of `y j` and `y j'` become equal.
@@ -213,9 +215,9 @@ theorem colimitLimitToLimitColimit_surjective :
         ((curry.obj F).obj j').map (gf f) (F.map (𝟙 j' ×ₘ g j') (y j')) =
           ((curry.obj F).obj j').map (hf f) (F.map (f ×ₘ g j) (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
-      dsimp only [curry_obj_obj_map, curry_obj_obj_map] at q
-      simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
-      convert q <;> simp only [comp_id]
+      convert q
+      · simp [← comp_apply, -types_comp_apply]
+      · simp [← comp_apply, -types_comp_apply, ← F.map_comp]
     clear_value kf gf hf
     -- and clean up some things that are no longer needed.
     clear w
@@ -283,19 +285,19 @@ theorem colimitLimitToLimitColimit_surjective :
       · -- After which it's just a calculation, using `s` and `wf`, to see they are coherent.
         dsimp
         intro j j' f
-        simp only [← FunctorToTypes.map_comp_apply, prod_comp, id_comp, comp_id]
+        simp only [← comp_apply, ← Functor.map_comp, prod_comp, id_comp, comp_id]
         calc
           F.map (f ×ₘ (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j) =
               F.map (f ×ₘ (g j ≫ hf f ≫ i f)) (y j) := by
             rw [s (𝟙 j) f]
           _ =
               F.map (𝟙 j' ×ₘ i f) (F.map (f ×ₘ (g j ≫ hf f)) (y j)) := by
-            rw [← FunctorToTypes.map_comp_apply, prod_comp, comp_id, assoc]
+            rw [← comp_apply, ← Functor.map_comp, prod_comp, comp_id, assoc]
           _ =
               F.map (𝟙 j' ×ₘ i f) (F.map (𝟙 j' ×ₘ (g j' ≫ gf f)) (y j')) := by
             rw [← wf f]
           _ = F.map (𝟙 j' ×ₘ (g j' ≫ gf f ≫ i f)) (y j') := by
-            rw [← FunctorToTypes.map_comp_apply, prod_comp, id_comp, assoc]
+            rw [← comp_apply, ← Functor.map_comp, prod_comp, id_comp, assoc]
           _ = F.map (𝟙 j' ×ₘ (g j' ≫ gf (𝟙 j') ≫ i (𝟙 j'))) (y j') := by
             rw [s f (𝟙 j'), ← s (𝟙 j') (𝟙 j')]
     -- Finally we check that this maps to `x`.
@@ -304,19 +306,22 @@ theorem colimitLimitToLimitColimit_surjective :
       intro j
       -- and as each component is an equation in a colimit, we can verify it by
       -- pointing out the morphism which carries one representative to the other:
-      simp only [id, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
-          colimit_eq_iff, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map,
-          Functor.comp_obj, colim_obj, Limit.π_mk]
+      simp only [comp_obj, colim_obj, lim_obj, Bifunctor.map_id_comp, comp_apply, id_eq,
+        ι_colimitLimitToLimitColimit_π_apply]
+      simp only [← colim_obj, ← comp_obj] at e ⊢
+      rw [← e j]
+      dsimp only [comp_obj, colim_obj, ← curry_obj_obj_obj]
+      rw [colimit_eq_iff]
       refine ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), ?_⟩
-      rw [Bifunctor.map_id_comp, Bifunctor.map_id_comp, types_comp_apply, types_comp_apply,
-        Bifunctor.map_id, types_id_apply]
+      erw [Limit.π_mk]
+      simp
 
 instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F) :=
   (isIso_iff_bijective _).mpr
     ⟨colimitLimitToLimitColimit_injective F, colimitLimitToLimitColimit_surjective F⟩
 
 set_option backward.isDefEq.respectTransparency false in
-instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
+instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ TypeCat.{v}) :
     IsIso (colimitLimitToLimitColimitCone F) := by
   have : IsIso (colimitLimitToLimitColimitCone F).hom := by
     suffices IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
@@ -326,7 +331,7 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
   apply Cones.cone_iso_of_hom_iso
 
 noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
-    PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
+    PreservesFiniteLimits (colim : (K ⥤ TypeCat.{v}) ⥤ _) := by
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{v₂}
   intro J _ _
   refine ⟨fun {F} => ⟨fun {c} hc => ⟨IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩⟩
