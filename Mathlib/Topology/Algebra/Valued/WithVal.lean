@@ -343,6 +343,8 @@ theorem valueGroup_eq : valueGroup (instValued v).v = valueGroup v := by
   simp [valueGroup, valueMonoid, ← (WithVal.ofVal_surjective v).range_comp]
   rfl
 
+/-- The multiplicative equivalence between the `valueGroup` of the valuation on `WithVal v`
+and the valuation `v`. -/
 @[simps! apply symm_apply]
 def valueGroupEquiv : valueGroup (instValued v).v ≃* valueGroup v where
   __ := Equiv.setCongr (by simp [valueGroup_eq v])
@@ -354,6 +356,8 @@ theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv v) :=
 theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
   fun _ _ _ ↦ by simpa
 
+/-- The multiplicative equivalence between the `ValueGroup₀` of the valuation on `WithVal v`
+and the valuation `v`. -/
 @[simps!]
 def valueGroupEquiv₀ : ValueGroup₀ (instValued v).v ≃* ValueGroup₀ v where
   toFun := WithZero.map' (valueGroupEquiv v)
@@ -386,6 +390,8 @@ lemma strictMono_valueGroupEquiv₀_symm :
     StrictMono (WithVal.valueGroupEquiv₀ v).symm := by
   apply WithZero.map'_strictMono (strictMono_valueGroupEquiv_symm v)
 
+/-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
+on `WithVal v` and the valuation `v`. -/
 @[simps!]
 def valueGroupOrderIso₀ : ValueGroup₀ (instValued v).v ≃*o ValueGroup₀ v where
   __ := WithVal.valueGroupEquiv₀ v
