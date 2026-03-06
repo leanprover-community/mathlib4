@@ -112,9 +112,7 @@ lemma rnDeriv_map_ae_eq_trim [IsFiniteMeasure μ] (hμν : μ ≪ ν)
   rw [StronglyMeasurable.ae_eq_trim_iff]
   · exact rnDeriv_map hμν hg
   · refine Measurable.stronglyMeasurable fun s hs ↦ ?_
-    refine ⟨((μ.map g).rnDeriv (ν.map g)) ⁻¹' s, hs.preimage (by fun_prop), ?_⟩
-    rw [← Set.preimage_comp]
-    rfl
+    exact ⟨((μ.map g).rnDeriv (ν.map g)) ⁻¹' s, hs.preimage (by fun_prop), by grind⟩
   · fun_prop
 
 /-- The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
