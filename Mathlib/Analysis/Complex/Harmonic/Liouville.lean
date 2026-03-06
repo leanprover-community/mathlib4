@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Complex.Harmonic.Analytic
 /-!
 # Liouville's Theorem for Harmonic Functions on the Complex Plane
 
-A real-valued, bounded harmonic function on the complex plane is constant.
+A bounded harmonic function on the complex plane is constant.
 -/
 
 public section
@@ -43,8 +43,8 @@ private theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant_
 
 set_option backward.isDefEq.respectTransparency false in
 /--
-**Liouville's theorem for harmonic functions on the complex plane** A real-valued, bounded harmonic
-function on the complex plane is constant.
+**Liouville's theorem for harmonic functions on the complex plane** A bounded harmonic function on
+the complex plane is constant.
 -/
 theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant (f : ℂ → E)
     (h_harm : HarmonicOnNhd f univ) (h_bound : IsBounded (range f)) :
