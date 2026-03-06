@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Constructions
 public import Mathlib.MeasureTheory.PiSystem
+public import Mathlib.Order.SupClosed
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -407,32 +408,47 @@ lemma sInter_memOfUnion_isSubset (L : ℕ → Finset (Set α))
     subset_sUnion_of_subset (L n) (memOfUnion L hL n) (fun ⦃a⦄ a ↦ a)
       ((memOfUnion.spec L hL (n + 1)).1 ⟨n, by grind⟩)
 
-/-- Finite unions of sets in a compact system. -/
-def union (S : Set (Set α)) : Set (Set α) :=
-  sUnion '' { L : Set (Set α) | L.Finite ∧ L ⊆ S}
-
-lemma union.mem_iff (s : Set α) : s ∈ union S ↔ ∃ L : Finset (Set α), s = ⋃₀ L ∧ ↑L ⊆ S := by
+lemma mem_subClosure_set_iff (s : Set α) :
+    s ∈ supClosure S ↔ ∃ L : Finset (Set α), L.Nonempty ∧ s = ⋃₀ L ∧ ↑L ⊆ S := by
   refine ⟨fun ⟨L, hL⟩ ↦ ?_, fun h ↦ ?_⟩
-  · simp only [mem_setOf_eq] at hL
-    use (hL.1.1).toFinset
-    simpa [← hL.2] using hL.1.2
-  · obtain ⟨L, hL⟩ := h
-    use L
-    simp [hL.1, hL.2]
+  · choose hL_nonempty hL_subset hL_sup using hL
+    refine ⟨L, hL_nonempty, ?_, hL_subset⟩
+    rw [← hL_sup, ← Finset.sup_id_set_eq_sUnion, Finset.sup'_eq_sup]
+  · obtain ⟨L, hL_nonempty, hL_eq, hL_subset⟩ := h
+    refine ⟨L, hL_nonempty, hL_subset, ?_⟩
+    rw [hL_eq, ← Finset.sup_id_set_eq_sUnion, Finset.sup'_eq_sup]
+
+lemma mem_subClosure_insert_empty_iff (s : Set α) :
+    s ∈ supClosure (insert ∅ S) ↔
+      ∃ L : Finset (Set α), s = ⋃₀ L ∧ ↑L ⊆ insert ∅ S := by
+  rw [mem_subClosure_set_iff]
+  refine ⟨fun ⟨L, hL_nonempty, hL_eq, hL_subset⟩ ↦ ⟨L, hL_eq, hL_subset⟩,
+    fun ⟨L, hL_eq, hL_subset⟩ ↦ ?_⟩
+  classical
+  refine ⟨if L.Nonempty then L else {∅}, ?_, ?_, ?_⟩
+  · split_ifs
+    · simpa
+    · simp
+  · rcases Finset.eq_empty_or_nonempty L with (rfl | hL_nonempty)
+    · simpa using hL_eq
+    · simpa [hL_nonempty]
+  · intro
+    simp
+    grind
 
 /- If `IsCompactSystem S`, the set of finite unions of sets in `S` is also a compact system. -/
-theorem union.isCompactSystem (S : Set (Set α)) (hS : IsCompactSystem S) :
-    IsCompactSystem (union S) := by
-  simp_rw [isCompactSystem_iff_nonempty_iInter_of_lt, mem_iff]
+theorem isCompactSystem_supClosure_insert_empty (S : Set (Set α)) (hS : IsCompactSystem S) :
+    IsCompactSystem (supClosure (insert ∅ S)) := by
+  simp_rw [isCompactSystem_iff_nonempty_iInter_of_lt, mem_subClosure_insert_empty_iff]
   intro C hi
-  choose L' hL' using hi
-  simp_rw [hL']
-  intro hL
-  refine Nonempty.mono (sInter_memOfUnion_isSubset L' hL) ?_
-  exact (IsCompactSystem.iff_nonempty_iInter_of_lt' S).mp hS
-    (fun k ↦ memOfUnion L' hL k)
-    (fun i ↦ (hL' i).2 <| (memOfUnion.spec L' hL (i + 1)).1 ⟨i, by grind⟩)
-    (fun n ↦ sInter_memOfUnion_nonempty L' hL (n + 1))
+  choose L' hL'_eq hL'_mem using hi
+  simp_rw [hL'_eq]
+  intro hL'_nonempty
+  refine Nonempty.mono (sInter_memOfUnion_isSubset L' hL'_nonempty) ?_
+  exact (IsCompactSystem.iff_nonempty_iInter_of_lt' (insert ∅ S)).mp hS.insert_empty
+    (fun k ↦ memOfUnion L' hL'_nonempty k)
+    (fun i ↦ hL'_mem i <| (memOfUnion.spec L' hL'_nonempty (i + 1)).1 ⟨i, by grind⟩)
+    (fun n ↦ sInter_memOfUnion_nonempty L' hL'_nonempty (n + 1))
 
 end IsCompactSystem
 
