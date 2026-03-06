@@ -183,8 +183,7 @@ theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
 /-- The spectral radius of a self-adjoint operator on a complete space equals the norm. -/
 theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
     spectralRadius 𝕜 T = ‖T‖₊ := by
-  cases subsingleton_or_nontrivial E
-  · simp
+  nontriviality E
   apply le_antisymm (spectrum.spectralRadius_le_nnnorm T)
   suffices h : algebraMap ℝ 𝕜 ‖T‖ ∈ spectrum 𝕜 T ∨ algebraMap ℝ 𝕜 (-‖T‖) ∈ spectrum 𝕜 T by
     rcases h with h | h <;> exact le_trans (by simp) (le_biSup _ h)
