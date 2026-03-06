@@ -182,7 +182,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Ψ_opcyclesMap_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
     (ShortComplex.mk _ _ (X.Ψ_opcyclesMap f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃ n₀ n₁ hn₁)).Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
-  intro A z₀ hz₀
+  intro _ z₀ hz₀
   dsimp at z₀ hz₀
   obtain ⟨A₁, π₁, _, z₁, hz₁⟩ :=
     surjective_up_to_refinements_of_epi (X.pOpcycles f₁ f₂ n₁) z₀
