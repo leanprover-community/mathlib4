@@ -200,19 +200,18 @@ def mk' (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) : ρ
   __ := e
   isIntertwining' := he
 
-lemma mk'_toLinearEquiv {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
+lemma toLinearEquiv_mk' {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
     (mk' e he).toLinearEquiv = e := rfl
 
-lemma mk'_toIntertwiningMap (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
+lemma toIntertwiningMap_mk' (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
     (mk' e he).toIntertwiningMap = ⟨e.toLinearMap, he⟩ := rfl
 
 @[simp]
-lemma mk'_toLinearMap (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
+lemma toLinearMap_mk' (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
     (mk' e he).toLinearMap = e.toLinearMap := rfl
 
-lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ) → _) := fun φ ψ h ↦ by
-  cases φ; cases ψ
-  simpa [IntertwiningMap.ext_iff] using h
+lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ) → _) :=
+  fun φ ψ h ↦ by cases φ; cases ψ; simpa [IntertwiningMap.ext_iff] using h
 
 lemma toLinearEquiv_inj (φ ψ : σ.Equiv ρ) : φ.toLinearEquiv = ψ.toLinearEquiv ↔ φ = ψ :=
   toLinearEquiv_injective.eq_iff
@@ -241,9 +240,9 @@ def refl : Equiv ρ ρ where
   __ := LinearEquiv.refl _ _
   isIntertwining' g := by simp
 
-@[simp] lemma refl_toIntertwiningmap : (refl ρ).toIntertwiningMap = .id ρ := rfl
+@[simp] lemma toIntertwiningMap_refl : (refl ρ).toIntertwiningMap = .id ρ := rfl
 
-@[simp] lemma refl_toLinearMap : (refl ρ).toLinearMap = LinearMap.id := rfl
+@[simp] lemma toLinearMap_refl : (refl ρ).toLinearMap = LinearMap.id := rfl
 
 @[simp] lemma refl_apply (v : V) : refl ρ v = v := rfl
 
@@ -253,13 +252,10 @@ def refl : Equiv ρ ρ where
 
 lemma coe_invFun : φ.invFun = φ.symm := rfl
 
-@[simp]
 theorem toLinearEquiv_toLinearMap :
   LinearEquiv.toLinearMap φ.toLinearEquiv = φ.toIntertwiningMap.toLinearMap := rfl
 
-@[simp]
-theorem toLinearEquiv_apply (v : V) :
-  φ.toLinearEquiv v = φ.toIntertwiningMap v := rfl
+theorem toLinearEquiv_apply (v : V) : φ.toLinearEquiv v = φ.toIntertwiningMap v := rfl
 
 open LinearMap in
 /-- The equiv between representations are symmetric. -/
@@ -270,7 +266,7 @@ def symm (φ : Equiv ρ σ) : Equiv σ ρ where
     rw [← cancel_left φ.toLinearEquiv.injective, ← comp_assoc, ← comp_assoc, φ.1.2 g, φ.comp_symm,
       comp_assoc, φ.comp_symm, id_comp, comp_id]
 
-lemma symm_toLinearMap (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
+lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
 
 lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
 
@@ -285,11 +281,11 @@ def trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) : Equiv ρ τ where
     rw [LinearEquiv.coe_trans, comp_assoc, φ.1.2, ← comp_assoc, ψ.1.2, comp_assoc]
 
 @[simp]
-lemma trans_toIntertwiningMap (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
+lemma toIntertwiningMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
     (φ.trans ψ).toIntertwiningMap = ψ.toIntertwiningMap.comp φ.toIntertwiningMap := rfl
 
 @[simp]
-lemma trans_toLinearMap (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
+lemma toLinearMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
     (trans φ ψ).toLinearMap = ψ.toLinearMap ∘ₗ φ.toLinearMap := rfl
 
 @[simp]
@@ -337,7 +333,7 @@ instance : SMul A (IntertwiningMap ρ σ) :=
     ((a • f : IntertwiningMap ρ σ) : V → W) = a • f := rfl
 
 @[simp]
-lemma smul_toLinearMap (a : A) (f : IntertwiningMap ρ σ) :
+lemma toLinearMap_smul (a : A) (f : IntertwiningMap ρ σ) :
     (a • f).toLinearMap = a • f.toLinearMap := rfl
 
 instance : Module A (IntertwiningMap ρ σ) :=
@@ -463,7 +459,7 @@ def tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
     rw [tprod_apply, ← TensorProduct.map_comp, f.2, g.2, TensorProduct.map_comp, tprod_apply]
 
 @[simp]
-lemma tensor_toLinearMap (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
+lemma toLinearMap_tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
     (f.tensor g).toLinearMap = TensorProduct.map f.toLinearMap g.toLinearMap := rfl
 
 @[simp]
@@ -476,7 +472,7 @@ def lTensor (f : IntertwiningMap σ τ) :
     (tprod ρ σ).IntertwiningMap (tprod ρ τ) := tensor (id ρ) f
 
 @[simp]
-lemma lTensor_toLinearMap (f : IntertwiningMap ρ σ) :
+lemma toLinearMap_lTensor (f : IntertwiningMap ρ σ) :
     (f.lTensor ρ).toLinearMap = f.toLinearMap.lTensor V := rfl
 
 @[simp]
@@ -492,7 +488,7 @@ def rTensor (f : IntertwiningMap σ τ) :
     (tprod σ ρ).IntertwiningMap (tprod τ ρ) := tensor f (id ρ)
 
 @[simp]
-lemma rTensor_toLinearMap (f : IntertwiningMap σ τ) :
+lemma toLinearMap_rTensor (f : IntertwiningMap σ τ) :
     (f.rTensor ρ).toLinearMap = f.toLinearMap.rTensor _ := rfl
 
 @[simp]
@@ -519,7 +515,7 @@ def comm : (tprod ρ σ).Equiv (tprod σ ρ) :=
   .mk' (_root_.TensorProduct.comm A V W) <| fun g ↦ by ext; simp
 
 @[simp]
-lemma comm_toLinearMap : (comm ρ σ).toLinearMap = _root_.TensorProduct.comm A V W := rfl
+lemma toLinearMap_comm : (comm ρ σ).toLinearMap = _root_.TensorProduct.comm A V W := rfl
 
 @[simp]
 lemma comm_apply (v : V) (w : W) : comm ρ σ (v ⊗ₜ w) = w ⊗ₜ v := rfl
@@ -537,7 +533,7 @@ def assoc : (tprod (tprod ρ σ) τ).Equiv (tprod ρ (tprod σ τ)) :=
   .mk' (_root_.TensorProduct.assoc A V W U) <| fun g ↦ by ext; simp
 
 @[simp]
-lemma assoc_toLinearMap : (assoc ρ σ τ).toLinearMap = _root_.TensorProduct.assoc A V W U := rfl
+lemma toLinearMap_assoc : (assoc ρ σ τ).toLinearMap = _root_.TensorProduct.assoc A V W U := rfl
 
 @[simp]
 lemma assoc_symm_toLinearMap : (assoc ρ σ τ).symm.toLinearMap =
@@ -552,7 +548,7 @@ def rid : (σ.tprod (trivial A G A)).Equiv σ :=
   .mk' (_root_.TensorProduct.rid A W) <| fun g ↦ by ext; simp
 
 @[simp]
-lemma rid_toLinearMap : (rid A σ).toLinearMap = _root_.TensorProduct.rid A W := rfl
+lemma toLinearMap_rid : (rid A σ).toLinearMap = _root_.TensorProduct.rid A W := rfl
 
 @[simp]
 lemma rid_apply (w : W) (a : A) : rid A σ (w ⊗ₜ a) = a • w := rfl
@@ -566,7 +562,7 @@ def lid : ((trivial A G A).tprod σ).Equiv σ :=
   .mk' (_root_.TensorProduct.lid A W) <| fun g ↦ by ext; simp
 
 @[simp]
-lemma lid_toLinearMap : (lid A σ).toLinearMap = _root_.TensorProduct.lid A W := rfl
+lemma toLinearMap_lid : (lid A σ).toLinearMap = _root_.TensorProduct.lid A W := rfl
 
 @[simp]
 lemma lid_apply (a : A) (w : W) : lid A σ (a ⊗ₜ w) = a • w := rfl
