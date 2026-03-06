@@ -840,16 +840,17 @@ theorem MDifferentiable.const_smul (s : 𝕜) (hf : MDiff f) : MDiff (s • f) :
 theorem const_smul_mfderiv (hf : MDiffAt f z) (s : 𝕜) : mfderiv% (s • f) z = s • mfderiv% f z :=
   (hf.hasMFDerivAt.const_smul s).mfderiv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mfderiv_const_smul {x : M} (a : 𝕜) (v : TangentSpace I x) :
-    mfderiv I 𝓘(𝕜, E') (a • f) x v = a • mfderiv I 𝓘(𝕜, E') f x v := by
-  by_cases hs : MDifferentiableAt I 𝓘(𝕜, E') f x
+    mfderiv% (a • f) x v = a • mfderiv% f x v := by
+  by_cases hs : MDiffAt f x
   · rw [const_smul_mfderiv hs]; rfl
   · by_cases ha : a = 0
     · have : a • f = 0 := by ext; simp [ha]
       have aux : (fun _ ↦ 0 : M → E') = 0 := by rfl
       rw [this, ha, ← aux]
       simp
-    have hs' : ¬ MDifferentiableAt I 𝓘(𝕜, E') (a • f) x :=
+    have hs' : ¬ MDiffAt (a • f) x :=
       fun h ↦ hs (by simpa [ha] using h.const_smul a⁻¹)
     rw [mfderiv_zero_of_not_mdifferentiableAt hs, mfderiv_zero_of_not_mdifferentiableAt hs']
     simp
