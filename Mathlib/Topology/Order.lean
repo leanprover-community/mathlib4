@@ -200,7 +200,7 @@ theorem generateFrom_setOf_isOpen (t : TopologicalSpace α) :
 
 theorem leftInverse_generateFrom :
     LeftInverse generateFrom fun t : TopologicalSpace α => { s | IsOpen[t] s } :=
-  (gciGenerateFrom α).u_l_leftInverse
+  (gciGenerateFrom α).leftInverse_u_l
 
 theorem generateFrom_surjective : Surjective (generateFrom : Set (Set α) → TopologicalSpace α) :=
   (gciGenerateFrom α).u_surjective

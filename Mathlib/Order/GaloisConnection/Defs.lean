@@ -261,6 +261,9 @@ theorem leftInverse_l_u [Preorder α] [PartialOrder β] (gi : GaloisInsertion l 
     LeftInverse l u :=
   gi.l_u_eq
 
+@[deprecated (since := "2026-03-06")]
+alias _root_.GaloisCoinsertion.u_l_leftInverse := GaloisCoinsertion.leftInverse_u_l
+
 @[to_dual]
 theorem l_top [Preorder α] [PartialOrder β] [OrderTop α] [OrderTop β]
     (gi : GaloisInsertion l u) : l ⊤ = ⊤ :=
