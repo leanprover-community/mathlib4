@@ -41,6 +41,8 @@ probability mass function, total variation distance, statistical distance, data 
 inequality, metric space
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open ENNReal

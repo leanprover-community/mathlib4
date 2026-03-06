@@ -32,6 +32,8 @@ using truncated subtraction, and proves its basic algebraic properties.
 ENNReal, absolute difference, symmetric difference, truncated subtraction
 -/
 
+@[expose] public section
+
 namespace ENNReal
 
 /-- Symmetric absolute difference in `ℝ≥0∞`, defined as `(a - b) + (b - a)`.
