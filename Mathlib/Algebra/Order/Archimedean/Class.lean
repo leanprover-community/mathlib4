@@ -504,7 +504,7 @@ theorem mulArchimedean_of_mk_eq_mk (h : ∀ a ≠ (1 : M), ∀ b ≠ 1, mk a = m
     · use 0
       simpa using hx
     · have hxy : mk x = mk y := h x hx.ne.symm y hy.ne.symm
-      obtain ⟨_, ⟨m, hm⟩⟩ := (mk_eq_mk).mp hxy
+      obtain ⟨_, ⟨m, hm⟩⟩ := mk_eq_mk.mp hxy
       rw [mabs_eq_self.mpr hx.le, mabs_eq_self.mpr hy.le] at hm
       exact ⟨m, hm⟩
 
