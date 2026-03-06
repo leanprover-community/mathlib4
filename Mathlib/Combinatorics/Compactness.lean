@@ -26,8 +26,8 @@ subtypes are easier to prove and often easier to apply, so they are provided too
   there exists a single function `χ : α → β` which is constructed out of `g`.
   More precisely, for each finite set `s`, there exists a larger set `t ⊇ s` such that
   `χ` and `g t` agree on `s`.
-  In fact, we can more generally allow each `g s` to be a dependent function, as `(a : α) → β a`, so 
-  the type of `g` will be `Finset α → (a : α) → β a`. 
+  In fact, we can more generally allow each `g s` to be a dependent function, as `(a : α) → β a`, so
+  the type of `g` will be `Finset α → (a : α) → β a`.
 
 * `Finset.rado_selection_subtype`: A variant where `g` takes elements in the subtype.
 
