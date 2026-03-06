@@ -199,7 +199,7 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Data"] }
   | .«t-differential-geometry» => {
     dirs := #["Mathlib" / "Geometry" / "Manifold"],
-    dependencies := #[.«t-analysis»] }
+    dependencies := #[.«t-analysis», .«t-topology»] }
   | .«t-dynamics» => {}
   | .«t-euclidean-geometry» => {
     dirs := #["Mathlib" / "Geometry" / "Euclidean"] }
@@ -282,11 +282,6 @@ def getMatchingLabels (files : Array FilePath) : Array Label :=
     data.dirs.any (fun dir ↦ notExcludedFiles.any (dir.isPrefixOf ·))
   -- return sorted list of labels
   applicable |>.qsort (·.toString < ·.toString)
-
-/-- Helper function: union of all labels an all their dependent labels -/
-partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label :=
-  labels.flatMap fun label ↦
-    (collectLabelsAndDependentLabels (mathlibLabelData label).dependencies).push label
 
 /-- Reduce a list of labels to not include any which are dependencies of other
 labels in the list -/
