@@ -26,25 +26,40 @@ Properties of Scott topologies over Pointed (Directed) `CompletePartialOrder`, a
 
 ## Main Statements
 - `specialization_iff_ge`: The original order and the specialization order induced by the Scott
-  topology, correspond. Prop 3.5.2 in [reneta2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994]
-- `isTopologicalBasis_of_Ici_compact`: The upward closures of compact elements form a topological
-  basis under the Scott Topology. Prop 3.5.2 in [reneta2024]
-- `open_eq_of_open_basis'`: Explicit construction an Open set from the basis mentioned above.
-  Prop 2.3.6(2) [abramsky_gabbay_maibaum_1994]
+  topology, correspond. Prop 3.5.2 in [reneta2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994].
+- `isTopologicalBasis_Ici_image_compactSet`: The upward closures of compact elements form a
+  topological basis under the Scott Topology. Prop 3.5.2 in [reneta2024].
+- `open_eq_open_of_basis'`: Explicit construction an Open set from the basis mentioned above.
+  Prop 2.3.6(2) in [abramsky_gabbay_maibaum_1994].
 - `scott_is_sober`: Main result: Scott topologies over algebraic DCPOs are Sober.
-  Prop 3.5.3 in [reneta2024]. Prop 2.27 in [abramsky_gabbay_maibaum_1994]
+  Prop 3.5.3 in [reneta2024] and Prop 2.27 in [abramsky_gabbay_maibaum_1994].
+
+## Ideas
+Brief primer to domain theory (please see [reneta2024] or [abramsky_gabbay_maibaum_1994] for more
+detail):
+- The order structures we consider, `CompletePartialOrder` and `AlgebraicDCPO` should be thought
+  of as containing the semantics of imperative programs, more concretely a partial function on
+  some state denoted `Σ ⇀ Σ`. Note that non-terminating computations are modelled by the partiality
+  (lack of an end state).
+- From a computational perspective we would like even the infinite computations to be expressible as
+  the limit of a sequence of finite computations.
+- We take Directed sets to be a generalisation of a such a sequence of computations. The supremum of
+  such a set is a possibly infinite computation (thought of as limit of a sequence).
+- Compact elements model finite computations, since the computation in question is always
+  reached before (is contained in the directed set) before reaching the supremum.
+- An `AlgebraicDCPO` models all finitely generated computations. Every element is the supremum of
+  a set of compact elements.
 
 ## Notation
 * `e` `c` : elements in the a set, usually of an open set, often compact.
-  referred to as a `point` from here onwards
 * `e'` : upwards closures of point.
 
 ## Implementation notes
-The file is laid out simnilar to ScottTopology.lean
+The namespaces of this file aims to match `Mathlib.Topology.Order.ScottTopology`.
 
 ## References
-Statements and proofs match the first reference. Exact or equivalent statements in the 2nd reference
-are provided
+Statements and proofs match the first source. Exact or equivalent statements in the 2nd source are
+stated.
 
 * [Reneta, *Duality in Domain Theory*][reneta2024]
 * [Abramsky and Jung, *Domain Theory*][abramsky_gabbay_maibaum_1994]
@@ -59,9 +74,8 @@ Scott topology, Algebraic DCPO, Stone Duality
 namespace CompletePartialOrder
 variable {α : Type*} [CompletePartialOrder α]
 
-/-- An element `k` is compact if and only if any directed set with `sSup` above
-`k` already got above `k` at some point in the set.
-The same holds instead when `[CompleteLattice α]` though the proof is different. -/
+/-- An element `k` is compact in a complete partial order if and only if
+any directed set with `sSup` above `k` already got above `k` at some point in the set. -/
 theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
     IsCompactElement k ↔
       ∀ s : Set α, s.Nonempty → DirectedOn (· ≤ ·) s → k ≤ sSup s → ∃ x : α, x ∈ s ∧ k ≤ x := by
@@ -73,16 +87,11 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
     rw [u_eq_sSup] at h_le
     exact h s hs hs' h_le
 
-/-- Set of compact points -/
-def CompactSet (α : Type*) [CompletePartialOrder α] := {x : α | IsCompactElement x}
-
-/-- Compact points in the `Iic` -/
-def CompactLowerSet (x : α) := Set.Iic x ∩ CompactSet α
-
-/-- Encodes notion of observable properties in programs (points are program semantics) -/
+/-- An algebraic directed complete partial order is a `CompletePartialOrder` with 1) a least
+element and 2) every element is given by the supremum of a set of compact elements (algebraic). -/
 class AlgebraicDCPO (α : Type*) extends CompletePartialOrder α, OrderBot α where
-  algebraic : ∀ x : α, (CompactLowerSet x).Nonempty ∧ DirectedOn (· ≤ ·) (CompactLowerSet x) ∧
-    x = sSup (CompactLowerSet x)
+  algebraic : ∀ x : α, ({y : α | IsCompactElement y ∧ y ≤ x}).Nonempty ∧ DirectedOn (· ≤ ·)
+    {y : α | IsCompactElement y ∧ y ≤ x} ∧ x = sSup {y : α | IsCompactElement y ∧ y ≤ x}
 
 end CompletePartialOrder
 
@@ -95,8 +104,8 @@ variable {α : Type*} [TopologicalSpace α] [CompletePartialOrder α]
   [IsScott α {d | DirectedOn (· ≤ ·) d}]
 
 /-- The order from `CompletePartialOrder` and the specialization order induced by the Scott
-topology, correspond. Unfortunately Mathlib's specialization order `⤳` is opposite to `≤`
-Prop 3.5.2 in [reneta2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994] -/
+topology, correspond. Unfortunately Mathlib's specialization order `⤳` is opposite to `≤`.
+Prop 3.5.2 in [reneta2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994]. -/
 lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
   rw [specializes_iff_forall_open]
   constructor
@@ -129,18 +138,14 @@ lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
     -- in other words x ≤ y as required
     exact h_specialize
 
-/-- Anticipating the construction of basis proved in `isTopologicalBasis_Ici_image_compactSet`
-We use the name `basis` instead of `Ici_image_compactSet` here -/
-lemma isOpen_of_basis {u : Set α} (hu : u ∈ Ici '' CompactSet α) : IsOpen u := by
+/-- The upward closure of a compact element (`Ici e`) is an open set.
+We refer to the `Ici e` as basis due to `isTopologicalBasis_Ici_image_compactSet`. -/
+lemma isOpen_of_basis (e : α) (he₀ : IsCompactElement e) : IsOpen (Ici e) := by
   rw [isOpen_iff_isUpperSet_and_dirSupInaccOn {d | DirectedOn (· ≤ ·) d }]
   constructor
   · -- u is an upper set
     unfold IsUpperSet
     intro x y x_le_y hx
-    simp_all only [mem_image]
-    obtain ⟨e, he⟩ := hu
-    obtain ⟨left, right⟩ := he
-    subst right
     simp only [Ici, mem_setOf_eq] at hx ⊢
     transitivity x
     · exact hx
@@ -149,33 +154,26 @@ lemma isOpen_of_basis {u : Set α} (hu : u ∈ Ici '' CompactSet α) : IsOpen u 
     -- However the directed sets for our topology are defined precisely as
     -- the directed sets of the our DCPOs
     -- So compact points are precisely those points which have directed innaccessable joins
-    intro d hd nonempty _  x hx hx'
-    simp only [mem_image, CompactSet, mem_setOf_eq] at hu
-    choose y compact_y upper_y using hu
-    rw [isCompactElement_iff_le_of_directed_sSup_le] at compact_y
+    intro d hd nonempty _  x hx hx' -- he₁
+    rw [isCompactElement_iff_le_of_directed_sSup_le] at he₀
     -- rewrite `x`'s LUB propoerty in terms of sSup
     have hx : x = sSup d := IsLUB.unique hx (lubOfDirected d hd)
-    have hy : y ≤ sSup d := by
+    have he₁ : e ≤ sSup d := by
       rw [← hx]
-      subst upper_y
       simp only [Ici, mem_setOf_eq] at hx'
       exact hx'
-    choose a a_in_d ha' using compact_y d nonempty hd hy
-    have a_in_u : a ∈ u := by subst upper_y hx; exact ha'
-    use a
-    constructor
-    · exact a_in_d
-    · exact a_in_u
+    choose a a_in_d ha' using he₀ d nonempty hd he₁
+    exact ⟨a, a_in_d, mem_Ici.mpr ha'⟩
 
-/-- Subtype for compact elements -/
+/-- A Subtype for compact elements in an ambient partial order. -/
 abbrev CompactElement (α : Type*) [PartialOrder α] := {x : α // IsCompactElement x}
 
-/-- The upwards closure of a compact point which we know is open -/
+/-- The upwards closure of a compact element forms an open set. -/
 abbrev Subtype.toOpen (c : CompactElement α) : Opens α :=
-  ⟨Ici c, isOpen_of_basis <| Set.mem_image_of_mem Ici c.prop⟩
+  ⟨Ici c, isOpen_of_basis c.val c.prop⟩
 
-/-- The upwards closure of a compact point which we know is open.
-In this version the data is implicit -/
+/-- The upwards closure of a compact element forms an open set.
+In this version the data is implicit. -/
 abbrev IsCompactElement.toOpen {c : α} (hc : IsCompactElement c) : Opens α :=
   (⟨c, hc⟩ : CompactElement α).toOpen
 
@@ -199,9 +197,9 @@ section AlgebraicDCPO
 variable {D : Type*} [TopologicalSpace D] [AlgebraicDCPO D] [IsScott D {d | DirectedOn (· ≤ ·) d}]
 open Opens
 
-/-- Given any point `x` in `D` in an open set `u`, there exists a basis within `u`
-which contains `x`.
-In anticipation of `isTopologicalBasis_Ici_image_compactSet` we already use the word `basis` -/
+/-- Given any point `x` in `D` in an open set `u`, there exists
+an upward closure of a compact element (`Ici e`), within `u` which contains `x`.
+We refer to the `Ici e` as basis due to `isTopologicalBasis_Ici_image_compactSet`. -/
 lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
     : ∃ c, IsCompactElement c ∧ x ∈ Ici c ∧ Ici c ⊆ u := by
   rw [isOpen_iff_isUpperSet_and_dirSupInaccOn {d | DirectedOn (· ≤ ·) d }] at hu
@@ -210,7 +208,7 @@ lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen
     -- the Algebraicity property
     obtain ⟨nonempty, directed_cls, join⟩ := AlgebraicDCPO.algebraic x
     -- We work with this cls to extract a compact elememt from it satisfying our needs
-    let cls := (CompactLowerSet x)
+    let cls := {y : D | IsCompactElement y ∧ y ≤ x}
     -- by algebraicity, a point, `x`, is the meet of its `cls`
     have x_is_LUB : IsLUB cls x:= by
       rw [join]
@@ -218,19 +216,21 @@ lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen
     -- We use the innacessible joins property to show get a nonempty intersection
     -- The intersection contains exactly what we want, a compact point in u and ≤ x
     have nonempty_inter := hausdorff directed_cls nonempty directed_cls x_is_LUB x_in_u
-    simp only [CompactLowerSet, inter_nonempty, mem_inter_iff] at nonempty_inter
+    simp only [inter_nonempty] at nonempty_inter
     obtain ⟨c, ⟨hc₀, hc₁⟩, hc₂⟩ := nonempty_inter
-    exact ⟨c, hc₀, hc₂, hc₁⟩
+    exact ⟨c, hc₁, hc₂, hc₀⟩
   choose c hc₀ hc₁ hc₂ using compactLowerBounded
   exact ⟨c, hc₂, hc₀, upper.Ici_subset hc₁⟩
 
 /-- The upward closures of compact elements form a topological
 basis under the Scott Topology. Prop 3.5.2 in [reneta2024] -/
-theorem isTopologicalBasis_Ici_image_compactSet : IsTopologicalBasis (Ici '' CompactSet D) := by
+theorem isTopologicalBasis_Ici_image_compactSet
+    : IsTopologicalBasis (Ici '' {x : D | IsCompactElement x}) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · -- every upper set of a compact element in the DCPO is a Scott open set
     -- This is the true by definition direction, as compactness corresponds to Scott-Hausdorrf open,
     -- and upper set corresponds to Upper set open
+    simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     apply isOpen_of_basis
   · -- If a point `x` is in an open set `u`, we can find it in a set in the basis (`Ici c`)
     intro x u x_in_u hu
