@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 public import Mathlib.NumberTheory.ModularForms.QExpansion
+public import Mathlib.NumberTheory.ModularForms.LevelOne
 
 /-!
 # The modular discriminant Δ
@@ -151,6 +152,12 @@ lemma delta_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   simp only [he, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
   field_simp [z.ne_zero]
 
+def delta_SIF : SlashInvariantForm (CongruenceSubgroup.Gamma 1) 12 where
+  toFun := Δ
+  slash_action_eq' A hA := by
+    obtain ⟨A, _, rfl⟩ := hA
+    exact SlashInvariantForm.slash_action_generators_SL2Z delta_S_invariant delta_T_invariant A
+
 lemma Delta_boundedfactor :
     Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - cexp (2 * π * Complex.I * (n + 1) * x)) ^ 24) atImInfty
       (𝓝 1) := by
@@ -178,6 +185,29 @@ lemma Delta_boundedfactor :
       simp only [eta_q, Periodic.qParam, ofReal_one, div_one, ← exp_nat_mul, Nat.cast_add,
         Nat.cast_one, sub_right_inj]
       ring_nf
+
+lemma delta_isZeroAtImInfty : IsZeroAtImInfty Δ := by
+  apply Tendsto.congr (fun z ↦ (delta_eq_q_prod z).symm)
+  rw [show (0 : ℂ) = 0 * 1 by ring]
+  exact (qParam_tendsto_atImInfty zero_lt_one).mul
+    (Delta_boundedfactor.congr fun z ↦ by congr 1; ext n; rw [eta_q_eq_cexp])
+
+/-- The modular discriminant `Δ` as a cusp form of weight 12 and level 1. -/
+def deltaCuspForm : CuspForm (CongruenceSubgroup.Gamma 1) 12 where
+  toSlashInvariantForm := delta_SIF
+  holo' := by
+    rw [UpperHalfPlane.mdifferentiable_iff]
+    refine DifferentiableOn.congr (fun z hz ↦
+      (differentiableAt_eta_of_mem_upperHalfPlaneSet hz).pow 24
+        |>.differentiableWithinAt) fun z hz ↦ ?_
+    simp [delta_SIF, delta, ofComplex_apply_of_im_pos hz]
+  zero_at_cusps' hc := by
+    rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc
+    rw [OnePoint.isZeroAt_iff_forall_SL2Z hc]
+    intro γ _
+    dsimp only [delta_SIF]
+    rw [SlashInvariantForm.slash_action_generators_SL2Z delta_S_invariant delta_T_invariant]
+    exact delta_isZeroAtImInfty
 
 end
 

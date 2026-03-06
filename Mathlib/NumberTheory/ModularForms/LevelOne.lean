@@ -6,6 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.NumberTheory.Modular
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 /-!
@@ -21,7 +22,7 @@ TODO: Add finite-dimensionality of these spaces of modular forms.
 public section
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
-  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic
+  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic MatrixGroups
 
 local notation "𝕢" => qParam
 
@@ -48,6 +49,17 @@ lemma wt_eq_zero_of_eq_const {f : F} {c : ℂ} (hf : ⇑f = Function.const _ c) 
   suffices (2 : ℂ) ^ k = 1 ↔ k = 0 by
     simpa [mul_zpow, zpow_ne_zero, this] using h2I2.symm.trans hI
   simpa using ofReal_inj.trans <| zpow_eq_one_iff_right₀ (two_pos.le : (0 : ℝ) ≤ 2) (by norm_num1)
+
+theorem slash_action_generators_SL2Z {f : ℍ → ℂ} {k : ℤ}
+    (hS : f ∣[k] S = f) (hT : f ∣[k] T = f) :
+    ∀ γ : SL(2, ℤ), f ∣[k] γ = f := by
+  intro γ
+  have hγ : γ ∈ Subgroup.closure {S, T} := by simp [SpecialLinearGroup.SL2Z_generators]
+  refine Subgroup.closure_induction (p := fun γ _ ↦ f ∣[k] γ = f) ?_ ?_ ?_ ?_ hγ
+  · intro x hx; rcases hx with rfl | rfl <;> assumption
+  · exact SlashAction.slash_one k f
+  · intro _ _ _ _ hf₁ hf₂; rw [SlashAction.slash_mul, hf₁, hf₂]
+  · intro x _ hx; rw [← hx, ← SlashAction.slash_mul]; simp [hx]
 
 end SlashInvariantForm
 
