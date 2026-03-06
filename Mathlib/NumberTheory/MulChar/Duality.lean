@@ -86,9 +86,8 @@ theorem restrictHom_surjective (N : Submonoid M) :
   obtain ⟨ψ, hψ⟩ := (χ.toUnitHom.comp N.unitsEquivUnitsType).restrict_surjective R N.units
   refine ⟨MulChar.ofUnitHom ψ, ext fun _ ↦ ?_⟩
   rw [MonoidHom.restrictHom_apply] at hψ
-  simp_rw [restrictHom_apply, restrict_ofUnitHom, hψ, toUnitHom_eq, ofUnitHom_eq,
-    equivToUnitHom_symm_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply,
-    MulEquiv.apply_symm_apply, coe_equivToUnitHom]
+  rw [restrictHom_apply, restrict_ofUnitHom]
+  simp [hψ]
 
 /-- The `MulEquiv` between the double dual `MulChar (MulChar M R) R` of `M` and `Mˣ`.
 The image `m` of `η : MulChar (MulChar M R) R` is such that, for all `R`-valued multiplicative
@@ -125,18 +124,13 @@ noncomputable def subgroupOrderIsoSubgroupMulChar : Subgroup Mˣ ≃o (Subgroup 
 @[simp]
 theorem mem_subgroupOrderIsoSubgroupMulChar_iff {H : Subgroup Mˣ} {χ : MulChar M R} :
     χ ∈ (subgroupOrderIsoSubgroupMulChar M R H).ofDual ↔ ∀ m ∈ H, χ m = 1 := by
-  simp_rw [subgroupOrderIsoSubgroupMulChar, OrderIso.trans_apply, OrderIso.dual_apply,
-    MulEquiv.coe_mapSubgroup, OrderDual.ofDual_toDual, Subgroup.mem_map_equiv, MulEquiv.symm_symm,
-    mulEquivToUnitHom_apply, CommGroup.mem_subgroupOrderIsoSubgroupMonoidHom_iff, Units.ext_iff,
-    coe_equivToUnitHom, Units.val_one]
+  rw [subgroupOrderIsoSubgroupMulChar, OrderIso.trans_apply, OrderIso.dual_apply,
+    MulEquiv.coe_mapSubgroup, OrderDual.ofDual_toDual, Subgroup.mem_map_equiv]
+  simp [← Units.val_eq_one]
 
 @[simp]
 theorem mem_subgroupOrderIsoSubgroupMulChar_symm_iff {X : Subgroup (MulChar M R)} {m : Mˣ} :
     m ∈ (subgroupOrderIsoSubgroupMulChar M R).symm (OrderDual.toDual X) ↔ ∀ χ ∈ X, χ m = 1 := by
-  simp_rw [subgroupOrderIsoSubgroupMulChar, OrderIso.symm_trans_apply, OrderIso.dual_symm_apply,
-    MulEquiv.symm_mapSubgroup, MulEquiv.symm_symm, OrderDual.ofDual_toDual,
-    MulEquiv.mapSubgroup_apply, CommGroup.mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff,
-    Subgroup.mem_map, MonoidHom.coe_coe, mulEquivToUnitHom_apply, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, Units.ext_iff, coe_equivToUnitHom, Units.val_one]
+  simp [subgroupOrderIsoSubgroupMulChar, ← Units.val_eq_one]
 
 end MulChar
