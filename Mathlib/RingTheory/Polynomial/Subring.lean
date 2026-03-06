@@ -34,10 +34,10 @@ variable (p : R[X]) (T : Subring R)
 
 /-! ### `toSubring`-/
 
+-- TODO: a condition like `p.coeffs ⊆ T` might be more versatile, if we had `MonoidAlgebra.coeffs`.
 open MonoidAlgebra in
 /-- Given a monoid algebra `p` and a subring `T` that contains the coefficients of `p`,
 return the corresponding polynomial whose coefficients are in `T`. -/
--- TODO: a condition like `p.coeffs ⊆ T` might be more versatile, if we had `MonoidAlgebra.coeffs`.
 @[to_additive]
 def _root_.MonoidAlgebra.coeffRestrict (p : R[M]) (hp : ∀ n, p n ∈ T) : T[M] where
   support := p.support
