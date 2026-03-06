@@ -49,16 +49,15 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     ← map_sub, Padic.eq_padicNorm, true_and, forall_const]
   constructor
   · intro n
-    have hn :  Valued.v (R := (WithVal (Rat.padicValuation p))) ((p : ℚ) ^ (n : ℤ)) =
+    have hn :  Valued.v (R := (WithVal (Rat.padicValuation p))) (p ^ n) =
       exp (-n : ℤ) := by
-      change Rat.padicValuation p _ = exp _
-      simp only [Rat.cast_natCast, zpow_natCast, map_pow, map_natCast, Rat.padicValuation_self,
+      simp only [← WithVal.val_apply_equiv, map_pow, map_natCast, Rat.padicValuation_self,
         Int.reduceNeg, exp_neg, inv_pow, ← exp_nsmul, nsmul_eq_mul, mul_one]
-    use Units.mk0 (Valued.v.restrict ((p : ℚ)^(n : ℤ))) (by
+    use Units.mk0 (Valued.v.restrict (p ^ n)) (by
       rw [ne_eq, Valuation.restrict_def, restrict₀_eq_zero_iff, hn]; simp)
     intro x y h
-    set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
-    set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
+    set x' := (WithVal.equiv (Rat.padicValuation p)) x with hx
+    set y' := (WithVal.equiv (Rat.padicValuation p)) y with hy
     rw [Valuation.map_sub_swap, Units.val_mk0, Valuation.restrict_lt_iff, hn] at h
     change Rat.padicValuation p (x' - y') < exp _ at h
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le]
@@ -69,13 +68,13 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
       · simp
       · simp only [H, ↓reduceIte, exp_lt_exp, neg_lt_neg_iff] at h
         simpa [hp0', zpow_pos, pow_pos, inv_le_inv₀] using
-          zpow_right_mono₀ (a := (p : ℚ)) (by exact_mod_cast (Nat.Prime.one_le Fact.out)) h.le
+          zpow_right_mono₀ (by exact_mod_cast (Nat.Prime.one_le Fact.out)) h.le
     · simp [Nat.Prime.ne_zero Fact.out]
   · intro γ
     use (log ((embedding γ.val) * exp (-1))).natAbs
     intro x y h
-    set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
-    set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
+    set x' := (WithVal.equiv (Rat.padicValuation p)) x with hx
+    set y' := (WithVal.equiv (Rat.padicValuation p)) y with hy
     rw [Valuation.map_sub_swap, Valuation.restrict_lt_iff_lt_embedding]
     change Rat.padicValuation p (x' - y') < embedding γ.1
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
