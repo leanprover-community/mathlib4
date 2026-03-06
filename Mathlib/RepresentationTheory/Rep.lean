@@ -433,7 +433,6 @@ variable (α : Type u) (A : Rep k G)
 abbrev finsupp : Rep k G :=
   Rep.of (Representation.finsupp A.ρ α)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (k G) in
 /-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
