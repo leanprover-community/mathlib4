@@ -155,7 +155,47 @@ theorem sum_simpson_midpoint_integral_adjacent_intervals {f : ℝ → ℝ} {N : 
 theorem simpson_midpoint_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N) :
     simpson_midpoint_integral f N a (a + N * h) + simpson_midpoint_integral f 1 (a + N * h) (a + (N + 1) * h)
       = simpson_midpoint_integral f (N + 1) a (a + (N + 1) * h) := by
-  sorry
+  have h1 : simpson_midpoint_integral f 1 (a + N * h) (a + (N + 1) * h)
+          = h * f (a + (N + 1 / 2 : ℝ) * h) := by
+    rw [simpson_midpoint_integral_one]
+    ring_nf
+  have h2 : (a + N * h - a) / N = h := by
+    field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
+    ring_nf
+  have h3 : (a + (N + 1 : ℝ) * h - a) / (N + 1) = h := by
+    field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
+    ring_nf
+  rw [simpson_midpoint_integral, h2, h1]
+  have h4 : ∀ k ∈ Finset.range N, f (a + (k + (1 / 2 : ℝ)) * (a + N * h - a) / N)
+                              = f (a + (k + (1 / 2 : ℝ)) * h) := by
+    intro k hk
+    congr 1
+    field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
+    ring
+  have h5 : ∑ k ∈ Finset.range N, f (a + (k + (1 / 2 : ℝ)) * (a + N * h - a) / N)
+          = ∑ k ∈ Finset.range N, f (a + (k + (1 / 2 : ℝ)) * h) := by
+    apply Finset.sum_congr rfl
+    intro k hk
+    rw [h4 k hk]
+  rw [h5]
+  simp only [simpson_midpoint_integral]
+  have h6 : ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * h)
+          = ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * (a + (N + 1) * h - a) / (N + 1)) := by
+    apply Finset.sum_congr rfl
+    intro k hk
+    congr 1
+    field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
+    ring
+  have h7 : (↑N + 1 : ℝ) = ↑(N + 1) := by norm_cast
+  calc
+    h * ∑ k ∈ range N, f (a + (k + (1 / 2 : ℝ)) * h) + h * f (a + (N + 1 / 2 : ℝ) * h)
+      = h * (∑ k ∈ range N, f (a + (k + (1 / 2 : ℝ)) * h) + f (a + (N + 1 / 2 : ℝ) * h)) := by rw [mul_add]
+    _ = h * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * h) := by rw [Finset.sum_range_succ]
+    _ = h * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * (a + (N + 1) * h - a) / (N + 1)) := by rw [h6]
+    _ = (a + (N + 1 : ℝ) * h - a) / (↑N + 1) * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * (a + (N + 1) * h - a) / (↑N + 1)) := by
+        rw [h3]
+    _ = (a + (N + 1 : ℝ) * h - a) / ↑(N + 1) * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * (a + (N + 1) * h - a) / ↑(N + 1)) := by
+        rw [h7]
 
 /-- Since we have `sum_[]_adjacent_intervals` theorems for both exact and Simpson midpoint integration,
 it's natural to combine them into a similar formula for the error. This theorem is in particular
