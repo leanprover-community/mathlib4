@@ -23,12 +23,12 @@ public import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 
 public section
 
+open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
+
 namespace Module
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
   {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
-
-open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 
 omit [IsNoetherianRing R] [Module.Finite R M] in
 lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (support R M)) :
