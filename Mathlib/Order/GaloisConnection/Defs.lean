@@ -221,7 +221,8 @@ structure GaloisCoinsertion [Preorder α] [Preorder β] (l : α → β) (u : β 
   choice_eq : ∀ a h, choice a h = u a
 
 /-- A constructor for a Galois insertion with the trivial `choice` function. -/
-@[to_dual /-- A constructor for a Galois coinsertion with the trivial `choice` function. -/]
+@[to_dual (reorder := hu hl)
+/-- A constructor for a Galois coinsertion with the trivial `choice` function. -/]
 def GaloisInsertion.monotoneIntro {α β : Type*} [Preorder α] [Preorder β] {l : α → β} {u : β → α}
     (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u (l a)) (hlu : ∀ b, l (u b) = b) :
     GaloisInsertion l u where
