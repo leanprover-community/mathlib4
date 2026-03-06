@@ -259,21 +259,12 @@ noncomputable def differenceAux
     (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x) :=
   fun σ ↦ cov σ - cov' σ
 
--- We need more assumptions to use the tensoriality criterion in order to build the difference
--- operation.
-variable [CompleteSpace 𝕜]
-    [IsManifold I 1 M]
-    [FiniteDimensional 𝕜 F]
-    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-
 variable
     {cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     {s : Set M}
     (hcov : IsCovariantDerivativeOn F cov s)
     (hcov' : IsCovariantDerivativeOn F cov' s)
 
-omit [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [VectorBundle 𝕜 F V]
-  [ContMDiffVectorBundle 1 F V I] in
 theorem differenceAux_tensorial (hcov : IsCovariantDerivativeOn F cov s)
     (hcov' : IsCovariantDerivativeOn F cov' s)
     (x : M) (hx : x ∈ s) : TensorialAt I F (differenceAux cov cov' · x) x where
@@ -283,6 +274,13 @@ theorem differenceAux_tensorial (hcov : IsCovariantDerivativeOn F cov s)
   add σ σ' hσ hσ' := by
     simp [differenceAux, hcov.add hσ hσ', hcov'.add hσ hσ']
     abel
+
+-- We need more assumptions to use the tensoriality criterion in order to build the difference
+-- operation.
+variable [CompleteSpace 𝕜]
+    [IsManifold I 1 M]
+    [FiniteDimensional 𝕜 F]
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
 
 open scoped Classical in
 /-- The difference of two covariant derivatives, as a tensorial map. -/
