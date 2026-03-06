@@ -289,7 +289,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
 
 lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
-      ‖mfderiv[range I] (extChartAt I x).symm y‖ₑ < C := by
+    ‖mfderiv[range I] (extChartAt I x).symm y‖ₑ < C := by
   rcases eventually_norm_mfderivWithin_symm_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   lift C to ℝ≥0 using C_pos.le
   simp only [gt_iff_lt, NNReal.coe_pos] at C_pos

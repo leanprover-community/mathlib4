@@ -189,9 +189,9 @@ functions such that `g i` is $C^n$ smooth at every point of the topological supp
 the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
 theorem contMDiff_finsum_smul {g : ι → M → F}
     (hg : ∀ (i), ∀ x ∈ tsupport (f i), CMDiffAt n (g i) x) :
-    CMDiff n fun x => ∑ᶠ i, f i x • g i x :=
-  (contMDiff_finsum fun i => f.contMDiff_smul (hg i)) <|
-    f.locallyFinite.subset fun _ => support_smul_subset_left _ _
+    CMDiff n fun x ↦ ∑ᶠ i, f i x • g i x :=
+(contMDiff_finsum fun i ↦ f.contMDiff_smul (hg i)) <|
+f.locallyFinite.subset fun _ ↦ support_smul_subset_left _ _
 
 theorem contMDiffAt_finsum {x₀ : M} {g : ι → M → F}
     (hφ : ∀ i, x₀ ∈ tsupport (f i) → CMDiffAt n (g i) x₀) :
@@ -285,8 +285,8 @@ alias ⟨_, IsSubordinate.toPartitionOfUnity⟩ := isSubordinate_toPartitionOfUn
 `U i`, then the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is $C^n$ smooth on the whole manifold. -/
 theorem IsSubordinate.contMDiff_finsum_smul {g : ι → M → F} (hf : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (hg : ∀ i, CMDiff[U i] n (g i)) :
-    CMDiff n fun x => ∑ᶠ i, f i x • g i x :=
-  f.contMDiff_finsum_smul fun i _ hx => (hg i).contMDiffAt <| (ho i).mem_nhds (hf i hx)
+    CMDiff n fun x ↦ ∑ᶠ i, f i x • g i x :=
+f.contMDiff_finsum_smul fun i _ hx ↦ (hg i).contMDiffAt <| (ho i).mem_nhds (hf i hx)
 
 end IsSubordinate
 
