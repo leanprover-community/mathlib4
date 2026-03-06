@@ -60,7 +60,10 @@ namespace IsCovariantDerivativeOn
 
 variable [IsManifold I 2 M] {U : Set M}
 
-variable (Y) in
+section
+
+variable (Y)
+
 lemma torsionFun_add_left_apply [CompleteSpace E] (hcov : IsCovariantDerivativeOn E cov U)
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) (hx : x ∈ U := by trivial) :
     torsionFun cov (X + X') Y x = torsionFun cov X Y x + torsionFun cov X' Y x := by
@@ -74,7 +77,6 @@ lemma torsionFun_add_right_apply [CompleteSpace E] (hcov : IsCovariantDerivative
     hcov.torsionFun_add_left_apply _ hX hX', torsionFun_antisymm Y, torsionFun_antisymm Y]
   simp; abel
 
-variable (Y) in
 lemma torsionFun_smul_left_apply [CompleteSpace E] (hcov : IsCovariantDerivativeOn E cov U)
     {f : M → 𝕜} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hx : x ∈ U := by trivial) :
     torsionFun cov (f • X) Y x = f x • torsionFun cov X Y x := by
@@ -95,11 +97,13 @@ lemma torsionFun_smul_left_apply [CompleteSpace E] (hcov : IsCovariantDerivative
 lemma torsionFun_smul_right_apply [CompleteSpace E]
     {F : ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x →L[𝕜] TangentSpace I x}
     (hF : IsCovariantDerivativeOn E F U)
-    {f : M → 𝕜} (hf : MDiffAt f x) (hX : MDiffAt (T% Y) x) (hx : x ∈ U := by trivial) :
-    torsionFun F X (f • Y) x = f x • torsionFun F X Y x := by
-  rw [torsionFun_antisymm, Pi.neg_apply, hF.torsionFun_smul_left_apply X hf hX,
+    {f : M → 𝕜} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hx : x ∈ U := by trivial) :
+    torsionFun F Y (f • X) x = f x • torsionFun F Y X x := by
+  rw [torsionFun_antisymm, Pi.neg_apply, hF.torsionFun_smul_left_apply Y hf hX,
     torsionFun_antisymm X]
   simp
+
+end
 
 section
 
@@ -110,8 +114,8 @@ noncomputable def torsion (hcov : IsCovariantDerivativeOn E cov univ) (x : M) :
   mk2TensorAt I E E (Bundle.torsionFun cov)
     (fun f σ τ hf hσ hτ ↦ hcov.torsionFun_smul_left_apply τ hf hσ)
     (fun σ σ' τ hσ hσ' hτ ↦ hcov.torsionFun_add_left_apply τ hσ hσ')
-    (fun f σ τ hf hσ hτ ↦  hcov.torsionFun_smul_right_apply hf hτ)
-    (fun {_ _ _ _} ↦ hcov.torsionFun_add_right_apply)
+    (fun f σ τ hf hσ hτ ↦  hcov.torsionFun_smul_right_apply σ hf hτ)
+    (fun σ τ τ' hσ hτ hτ' ↦ hcov.torsionFun_add_right_apply σ hτ hτ')
 
 theorem torsion_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)

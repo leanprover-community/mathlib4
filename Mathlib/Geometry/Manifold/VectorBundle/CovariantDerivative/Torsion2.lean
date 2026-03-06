@@ -76,7 +76,7 @@ variable {cov : CovariantDerivative I E (TangentSpace I : M → Type _)}
 --       congr with i
 --       have hsi : MDiffAt (LinearMap.piApply (hs.coeff i) Y) x := sorry
 --       have hsi' : MDiffAt (T% (s i)) x := sorry
---       have := hf.torsion_smul_right_apply (X := X) (f := LinearMap.piApply (hs.coeff i) Y) hsi hsi'
+--       have := hf.torsion_smul_right_apply X (f := LinearMap.piApply (hs.coeff i) Y) hsi hsi'
 --       erw [← this]
 --       congr
 --
