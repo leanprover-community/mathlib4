@@ -62,7 +62,7 @@ This is the weak convergence of the laws of the random variables: `Tendsto` in t
 `ProbabilityMeasure` type. -/
 structure TendstoInDistribution [OpensMeasurableSpace E] (X : (i : ι) → Ω i → E) (l : Filter ι)
     (Z : Ω' → E) (μ : (i : ι) → Measure (Ω i)) [∀ i, IsProbabilityMeasure (μ i)]
-    (μ' : Measure Ω') [IsProbabilityMeasure μ'] : Prop where
+    (μ' : Measure Ω' := by volume_tac) [IsProbabilityMeasure μ'] : Prop where
   forall_aemeasurable : ∀ i, AEMeasurable (X i) (μ i)
   aemeasurable_limit : AEMeasurable Z μ' := by fun_prop
   tendsto : Tendsto (β := ProbabilityMeasure E)
