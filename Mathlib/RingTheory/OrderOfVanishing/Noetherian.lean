@@ -15,10 +15,10 @@ public import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 
 /-!
-# Order of vanishing properties
+# Order of vanishing in Noetherian rings.
 
-In this file we define various properties of the order of vanishing, including some API for
-computing the order of vanishing in a discrete valuation ring.
+In this file we define various properties of the order of vanishing in Noetherian rings, including
+ some API for computing the order of vanishing in discrete valuation rings.
 -/
 
 @[expose] public section
@@ -208,14 +208,36 @@ lemma ordFrac_of_isUnit (x : R) (hx : IsUnit x) : ordFrac R (algebraMap R K x) =
   aesop
 
 /--
+`ordFrac R` is precisely the inverse of the valuation
+`IsDedekindDomain.HeightOneSpectrum.valuation K (IsDiscreteValuationRing.maximalIdeal R)`.
+-/
+theorem ordFrac_eq_inverse_comp_valuation [IsDiscreteValuationRing R] :
+    ordFrac R =
+    MonoidWithZeroHom.comp MonoidWithZero.inverse (IsDedekindDomain.HeightOneSpectrum.valuation K
+    (IsDiscreteValuationRing.maximalIdeal R)).toMonoidWithZeroHom := by
+  ext a
+  by_cases ha : a = 0
+  · simp_all
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) a
+  simp_all [ordFrac_eq_ord, ord_eq_addVal,
+    IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
+    IsDiscreteValuationRing.intValuation_maximalIdeal, WithZero.map'_apply]
+  rfl
+
+theorem ordFrac_eq_valuation_inv [IsDiscreteValuationRing R] (x : K) :
+    ordFrac R x = ((IsDiscreteValuationRing.maximalIdeal R).valuation K x)⁻¹ := by
+  simp [ordFrac_eq_inverse_comp_valuation]
+
+/--
 In a discrete valuation ring, `ordFrac (algebraMap R K ϖ) = WithZero.exp 1`
 for an irreducible element `ϖ`. This is the analogue of `ord_irreducible` for `ordFrac`.
 -/
 lemma ordFrac_irreducible [IsDiscreteValuationRing R]
     (ϖ : R) (hϖ : Irreducible ϖ) : ordFrac R (algebraMap R K ϖ) = WithZero.exp 1 := by
-  have : ϖ ≠ 0 := Irreducible.ne_zero hϖ
-  simp only [ordFrac_eq_ord R ϖ this, mem_nonZeroDivisors_of_ne_zero this,
-      ordMonoidWithZeroHom_eq_ord, ord_of_irreducible ϖ hϖ]
+  simp [ordFrac_eq_valuation_inv, IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
+    IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
+    IsDiscreteValuationRing.intValuation_maximalIdeal,
+    IsDiscreteValuationRing.addVal_uniformizer hϖ]
   rfl
 
 /--
@@ -257,27 +279,6 @@ lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing [IsDiscreteValuationRing
   simp [mker_ordFrac_eq_units, IsUnit.mem_submonoid_iff]
 
 /--
-`ordFrac R` is precisely the inverse of the valuation
-`IsDedekindDomain.HeightOneSpectrum.valuation K (IsDiscreteValuationRing.maximalIdeal R)`.
--/
-theorem ordFrac_eq_inverse_comp_valuation [IsDiscreteValuationRing R] :
-    ordFrac R =
-    MonoidWithZeroHom.comp MonoidWithZero.inverse (IsDedekindDomain.HeightOneSpectrum.valuation K
-    (IsDiscreteValuationRing.maximalIdeal R)).toMonoidWithZeroHom := by
-  ext a
-  by_cases ha : a = 0
-  · simp_all
-  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) a
-  simp_all [ordFrac_eq_ord, ord_eq_addVal,
-    IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap,
-    IsDiscreteValuationRing.intValuation_maximalIdeal, WithZero.map'_apply]
-  rfl
-
-theorem ordFrac_eq_valuation_inv [IsDiscreteValuationRing R] (x : K) :
-    ordFrac R x = ((IsDiscreteValuationRing.maximalIdeal R).valuation K x)⁻¹ := by
-  simp [ordFrac_eq_inverse_comp_valuation]
-
-/--
 For `x y : R`, if `x + y ≠ 0` then `min (ordFrac R x) (ordFrac R y) ≤ ordFrac R (x + y)`. The
 condition that `x + y ≠ 0` is used to guarantee that all the elements we're taking `ordFrac` of
 are nonzero, meaning none of them will be `0` in `ℤᵐ⁰`. This allows us to use `ord_add` (which
@@ -308,6 +309,5 @@ theorem associated_of_ordFrac_eq [IsDiscreteValuationRing R] (x y : K)
   use IsUnit.unit h.1
   simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec, h.2]
   field_simp
-
 
 end ordFrac
