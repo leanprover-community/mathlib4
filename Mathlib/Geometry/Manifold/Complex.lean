@@ -116,7 +116,6 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
     (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const M (f c)) U := fun x hx =>
   have H₁ : ‖f x‖ = ‖f c‖ := hd.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm hx
   have hd' : MDiff[U] (f · + f c) := hd.add mdifferentiableOn_const
-    --⟨(hd x hx).1.add continuousWithinAt_const, (hd x hx).2.add_const _⟩
   have H₂ : ‖f x + f c‖ = ‖f c + f c‖ :=
     hd'.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm.norm_add_self hx
   eq_of_norm_eq_of_norm_add_eq H₁ <| by simp only [H₂, SameRay.rfl.norm_add, H₁, Function.const]
