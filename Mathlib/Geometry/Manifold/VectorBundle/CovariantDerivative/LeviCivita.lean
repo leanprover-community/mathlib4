@@ -8,48 +8,35 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
-public import Mathlib.Util.PrintSorries
 
 /-!
-# The Levi-Civita connection
+# The Levi-Civita connection on a Riemannian manifold
 
-This file will define the Levi-Civita connection on any Riemannian manifold.
-Details to be written!
+This file defines the Levi-Civita connection on a (finite-dimensional) Riemannian manifold `(M, g)`.
 
-TODO: refactor this file, to make Levi-Civita take a Riemannian metric instead!
+## Main definitions and results
 
 
-TODO: more generally, define a notion of metric connections (e.g., those whose parallel transport
-is an isometry) and prove the Levi-Civita connection is a metric connection
+## Implementation notes
+
 
 -/
 
-open Bundle Filter Function Module NormedSpace Topology
-
-open scoped Bundle Manifold ContDiff
+open Bundle Function NormedSpace
+open scoped Manifold ContDiff
 
 @[expose] public section -- TODO: think if we want to expose all definitions!
 
 -- TODO: revisit and fix this once the dust has settled
 set_option backward.isDefEq.respectTransparency false
 
--- Let M be a C^k real manifold modeled on (E, H), endowed with a Riemannian metric.
+-- Let `(M, g)` be a `C^k` real manifold modeled on `(E, H)`, endowed with a Riemannian metric `g`.
 variable {n : WithTop ℕ∞}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
-  -- don't need this assumption (yet?)
-  -- [IsRiemannianManifold I M]
-
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
-
-/-! Compatible connections: a connection on TM is compatible with the metric on M iff
-`∇ X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩` holds for all vector fields X, Y and Z on `M`.
-The left hand side is the pushforward of the function `⟨Y, Z⟩` along the vector field `X`:
-the left hand side at `X` is `df(X x)`, where `f := ⟨Y, Z⟩`. -/
-
-variable {X X' X'' Y Y' Y'' Z Z' : Π x : M, TangentSpace I x}
+  {X X' X'' Y Y' Y'' Z Z' : Π x : M, TangentSpace I x}
 
 namespace CovariantDerivative
 
