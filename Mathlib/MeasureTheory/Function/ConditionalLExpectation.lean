@@ -307,10 +307,10 @@ theorem condLExp_smul' (X : Ω → ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞)
 
 section Sum
 
-variable {ι : Type*}
+variable {ι : Type*} (mΩ : MeasurableSpace Ω)
 
-theorem condLExp_tsum {ι : Type*} [Countable ι] {X : ι → Ω → ℝ≥0∞}
-    (hX : ∀ i, AEMeasurable (X i) P) :
+theorem condLExp_tsum [Countable ι] {X : ι → Ω → ℝ≥0∞}
+    (hX : ∀ i, AEMeasurable[mΩ₀] (X i) P) :
     P⁻[∑' i, X i|mΩ] =ᵐ[P] ∑' i, P⁻[X i|mΩ] := by
   by_cases hm : mΩ ≤ mΩ₀; swap
   · simp_rw [condLExp_of_not_le hm]; filter_upwards; simp
@@ -323,10 +323,10 @@ theorem condLExp_tsum {ι : Type*} [Countable ι] {X : ι → Ω → ℝ≥0∞}
   congr with i
   exact setLIntegral_condLExp hm P (X i) hs
 
-theorem condLExp_finset_sum {ι : Type*} (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
-    (hX : ∀ i, AEMeasurable (X i) P) :
+theorem condLExp_finset_sum (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
+    (hX : ∀ i, AEMeasurable[mΩ₀] (X i) P) :
     P⁻[∑ i ∈ s, X i|mΩ] =ᵐ[P] ∑ i ∈ s, P⁻[X i|mΩ] := by
-  convert condLExp_tsum (fun i : s ↦ hX i)
+  convert condLExp_tsum mΩ (fun i : s ↦ hX i)
   · simp [Finset.sum_attach]
   · simp [Finset.sum_attach _ (f := (P⁻[X ·|mΩ]))]
 
