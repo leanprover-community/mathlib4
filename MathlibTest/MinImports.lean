@@ -26,6 +26,7 @@ namespace X
 /-- info: import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
 #min_imports in
+set_option warn.classDefReducibility false in
 protected def xxx : Semiring Nat := inferInstance
 end X
 

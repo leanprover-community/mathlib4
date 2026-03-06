@@ -267,9 +267,11 @@ def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f 
 instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One ((i : I) → f i) :=
   ⟨fun _ => 1⟩
 
+set_option warn.classDefReducibility false in
 @[to_additive]
 def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_instance
 
+set_option warn.classDefReducibility false in
 @[to_additive]
 def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
