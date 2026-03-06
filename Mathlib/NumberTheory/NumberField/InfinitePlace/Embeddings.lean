@@ -350,10 +350,6 @@ This is the complex embedding analogue of `InfinitePlace.IsUnramified K w`, wher
 unramified infinite places. -/
 abbrev IsUnmixed (φ : L →+* ℂ) := IsReal (φ.comp (algebraMap K L)) → IsReal φ
 
--- theorem isUnmixed_iff_not_isMixed {φ : L →+* ℂ} :
---     IsUnmixed K φ ↔ ¬IsMixed K φ := by
---   simp [IsMixed, IsUnmixed, not_and, not_not]
-
 theorem IsUnmixed.isReal_iff_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ) :
     IsReal (φ.comp (algebraMap K L)) ↔ IsReal φ := by
   aesop (add simp [IsReal.comp])
