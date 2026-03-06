@@ -122,6 +122,19 @@ def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
     @dite (List (tm.Γ k)) (k = tm.k₁) (tm.kDecidableEq k tm.k₁) (fun h => by rw [h]; exact s)
       fun _ => []
 
+@[deprecated (since := "2026-03-06")] protected alias EvalsTo :=
+  StateTransition.EvalsTo
+@[deprecated (since := "2026-03-06")] protected alias EvalsToInTime :=
+  StateTransition.EvalsToInTime
+@[deprecated (since := "2026-03-06")] protected alias EvalsTo.refl :=
+  StateTransition.EvalsTo.refl
+@[deprecated (since := "2026-03-06")] protected alias EvalsTo.trans :=
+  StateTransition.EvalsTo.trans
+@[deprecated (since := "2026-03-06")] protected alias EvalsToInTime.refl :=
+  StateTransition.EvalsToInTime.refl
+@[deprecated (since := "2026-03-06")] protected alias EvalsToInTime.trans :=
+  StateTransition.EvalsToInTime.trans
+
 /-- A proof of tm outputting l' when given l. -/
 def TM2Outputs (tm : FinTM2) (l : List (tm.Γ tm.k₀)) (l' : Option (List (tm.Γ tm.k₁))) :=
   EvalsTo tm.step (initList tm l) ((Option.map (haltList tm)) l')
