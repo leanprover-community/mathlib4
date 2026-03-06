@@ -76,12 +76,17 @@ variable {𝒜}
 abbrev HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
   I.toSubmodule
 
+@[simp] lemma coe_toIdeal (I : HomogeneousIdeal 𝒜) : (I.toIdeal : Set A) = I := rfl
+
 theorem HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.IsHomogeneous 𝒜 := I.is_homogeneous'
 
 theorem HomogeneousIdeal.toIdeal_injective :
     Function.Injective (HomogeneousIdeal.toIdeal : HomogeneousIdeal 𝒜 → Ideal A) :=
   HomogeneousSubmodule.toSubmodule_injective 𝒜 𝒜
+
+@[simp] lemma toIdeal_le_toIdeal_iff {I J : HomogeneousIdeal 𝒜} :
+    I.toIdeal ≤ J.toIdeal ↔ I ≤ J := Iff.rfl
 
 instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A :=
   HomogeneousSubmodule.setLike 𝒜 𝒜
