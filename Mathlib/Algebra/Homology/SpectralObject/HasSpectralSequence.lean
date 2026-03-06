@@ -222,7 +222,6 @@ def coreE₂CohomologicalFin (l : ℕ) :
     lia
   monotone_i₃ := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ hr hrr'
-    dsimp
     rw [Fin.mk_le_mk]
     exact Fin.clamp_monotone (by lia)
   i₀_prev := by
