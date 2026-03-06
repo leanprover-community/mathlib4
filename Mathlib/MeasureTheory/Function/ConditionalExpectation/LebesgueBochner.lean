@@ -39,24 +39,15 @@ lemma toReal_condLExp (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} 
   by_cases hμ : SigmaFinite (μ.trim hm)
   swap; · simp [condLExp_of_not_sigmaFinite hm hμ, condExp_of_not_sigmaFinite hm hμ]; rfl
   refine ae_eq_condExp_of_forall_setIntegral_eq hm (E := ℝ) ?_ ?_ ?_ ?_ (μ := μ)
-  · rwa [integrable_toReal_iff]
-    · fun_prop
-    · suffices ∀ᵐ (x : 𝓧) ∂μ, f x < ⊤ by filter_upwards [this] with x hx using hx.ne
-      exact ae_lt_top' (by fun_prop) hf
+  · rwa [integrable_toReal_iff (by fun_prop)]
+    filter_upwards [ae_lt_top' (by fun_prop) hf] with x hx using hx.ne
+  · refine fun s hs hsμ ↦ Integrable.integrableOn ?_
+    rwa [integrable_toReal_iff (by fun_prop) (condLExp_ne_top hf), lintegral_condLExp]
   · intro s hs hsμ
-    refine Integrable.integrableOn ?_
-    rw [integrable_toReal_iff]
-    · rwa [lintegral_condLExp]
-    · fun_prop
-    · exact condLExp_ne_top hf
-  · intro s hs hsμ
-    rw [integral_toReal, integral_toReal, setLIntegral_condLExp _ _ _ hs]
-    · fun_prop
-    · refine ae_lt_top' hf_meas.restrict ?_
-      exact ((setLIntegral_le_lintegral _ _).trans_lt hf.lt_top).ne
-    · fun_prop
+    rw [integral_toReal (by fun_prop), integral_toReal (by fun_prop),
+      setLIntegral_condLExp _ _ _ hs]
+    · exact ae_lt_top' hf_meas.restrict ((setLIntegral_le_lintegral _ _).trans_lt hf.lt_top).ne
     · exact ae_restrict_of_ae (condLExp_lt_top hf)
-  · refine StronglyMeasurable.aestronglyMeasurable ?_
-    fun_prop
+  · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
 
 end MeasureTheory
