@@ -382,15 +382,6 @@ theorem tendsTo_eulerProduct_ofPowerSeries
   have key := (northcott_iff_tendsto q).mp hq
   sorry
 
-theorem IsMultiplicative.finsetProd (f : ι → ArithmeticFunction R) (s : Finset ι)
-    (hf : ∀ i ∈ s, IsMultiplicative (f i)) : IsMultiplicative (∏ i ∈ s, f i) := by
-  classical
-  induction s using Finset.induction
-  case empty => simp [isMultiplicative_one] -- make simp
-  case insert a s ha ih =>
-    rw [Finset.prod_insert ha]
-    exact (hf a (s.mem_insert_self a)).mul (ih fun i hi ↦ hf i (Finset.mem_insert_of_mem hi))
-
 theorem foo {α β : Type*} {F : Filter α} [F.NeBot] {f : α → β} {b₁ b₂ : β}
     (h₁ : F.Tendsto f (pure b₁)) (h₂ : F.Tendsto f (pure b₂)) : b₁ = b₂ := by
   rw [tendsto_pure, eventually_iff_exists_mem] at h₁ h₂
@@ -403,7 +394,7 @@ theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
     (hf : ∀ i, IsMultiplicative (f i)) : IsMultiplicative (eulerProduct f) := by
   by_cases hf' : Multipliable f
   · have key (s : Finset ι) : (∏ b ∈ s, f b).IsMultiplicative :=
-      .finsetProd f s fun i a ↦ hf i
+      isMultiplicative_finsetProd f s fun i a ↦ hf i
     simp_rw [IsMultiplicative, forall_and] at key
     obtain ⟨key1, key2⟩ := key
     have key3 : ∀ n, Tendsto (fun s ↦ (∏ b ∈ s, f b) n) atTop (pure (eulerProduct f n)) :=
