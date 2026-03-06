@@ -14,10 +14,6 @@ We introduce a definition of convergence in distribution of random variables: th
 weak convergence of the laws of the random variables. In Mathlib terms this is a `Tendsto` in the
 `ProbabilityMeasure` type.
 
-The definition assumes that the random variables are defined on the same probability space, which
-is the most common setting in applications. Convergence in distribution for random variables
-on different probability spaces can be talked about using the `ProbabilityMeasure` type directly.
-
 We also state results relating convergence in probability (`TendstoInMeasure`)
 and convergence in distribution.
 
