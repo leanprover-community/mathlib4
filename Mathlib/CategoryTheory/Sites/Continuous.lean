@@ -289,6 +289,7 @@ def sheafPushforwardContinuousComp'
 
 end Functor
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F ⊣ G` is an adjunction between continuous functors, the associated
 pushforwards on sheaves are adjoint. -/
 @[simps!]
