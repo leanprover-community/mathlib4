@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.Algebra.FiniteSupport.Basic
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.RingTheory.PowerSeries.Substitution
@@ -74,7 +75,38 @@ theorem algebraMap_map_one {R : Type*} [CommSemiring R] (x : R) :
 
 end ArithmeticFunction
 
+-- PRed
+namespace PowerSeries
+
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+
+@[simp]
+theorem coeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) (n : ℕ) :
+    coeff n (subst (X ^ k) f) = ite (k ∣ n) (algebraMap R S (coeff (n / k) f)) 0 := by
+  split_ifs with h
+  · rw [coeff_subst' (.X_pow hk), finsum_eq_single _ (n / k), ← pow_mul, Nat.mul_div_cancel' h,
+      coeff_X_pow_self, Algebra.algebraMap_eq_smul_one]
+    intro j hj
+    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
+    contrapose! hj
+    rw [hj, Nat.mul_div_cancel_left j hk.pos]
+  · rw [coeff_subst' (.X_pow hk), finsum_eq_zero_of_forall_eq_zero]
+    intro j
+    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
+    contrapose! h
+    use j
+
+@[simp]
+theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
+    constantCoeff (subst (X ^ k) f) = algebraMap R S f.constantCoeff := by
+  rw [← coeff_zero_eq_constantCoeff, coeff_subst_X_pow hk, if_pos (dvd_zero k),
+    Nat.zero_div, coeff_zero_eq_constantCoeff]
+
+end PowerSeries
+
 namespace ArithmeticFunction
+
+open Filter
 
 section PowerSeries
 
@@ -159,6 +191,10 @@ theorem ofPowerSeries_apply (q : ℕ) (hq : 1 < q) (f : PowerSeries R) (n : ℕ)
     ofPowerSeries q f n = Function.extend (q ^ ·) (f.coeff ·) 0 n := by
   simp [ofPowerSeries, dif_pos hq]
 
+theorem ofPowerSeries_apply_pow (q : ℕ) (hq : 1 < q) (f : PowerSeries R) (k : ℕ) :
+    ofPowerSeries q f (q ^ k) = f.coeff k := by
+  rw [ofPowerSeries_apply q hq, (Nat.pow_right_injective hq).extend_apply]
+
 @[simp]
 theorem ofPowerSeries_apply_zero (q : ℕ) (f : PowerSeries R) : ofPowerSeries q f 0 = 0 := by
   simp
@@ -167,24 +203,8 @@ theorem ofPowerSeries_apply_zero (q : ℕ) (f : PowerSeries R) : ofPowerSeries q
 theorem ofPowerSeries_apply_one (q : ℕ) (f : PowerSeries R) :
     ofPowerSeries q f 1 = f.constantCoeff := by
   by_cases hq : 1 < q
-  · rw [ofPowerSeries_apply q hq, ← pow_zero q, (Nat.pow_right_injective hq).extend_apply,
-      PowerSeries.coeff_zero_eq_constantCoeff]
+  · rw [← pow_zero q, ofPowerSeries_apply_pow q hq, PowerSeries.coeff_zero_eq_constantCoeff]
   · simp [ofPowerSeries, dif_neg hq]
-
-theorem _root_.PowerSeries.constantCoeff_subst' {R : Type*} [CommRing R] {a : PowerSeries R}
-    (ha : PowerSeries.HasSubst a) (f : PowerSeries R) :
-    PowerSeries.constantCoeff (PowerSeries.subst a f) =
-      finsum (fun d ↦ f.coeff d • (a ^ d).constantCoeff) :=
-  PowerSeries.constantCoeff_subst ha f
-
-@[simp]
-theorem _root_.PowerSeries.constantCoeff_subst_X_pow
-    {R : Type*} [CommRing R] {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
-    PowerSeries.constantCoeff (f.subst (PowerSeries.X (R := R) ^ k)) = f.constantCoeff := by
-  rw [PowerSeries.constantCoeff_subst' (.X_pow hk), finsum_eq_single _ 0]
-  · simp
-  · intro n hn
-    simp [hk, hn]
 
 variable {R : Type*} [CommRing R]
 
@@ -193,30 +213,21 @@ theorem ofPowerSeries_pow (q k : ℕ) (hk : k ≠ 0) (f : PowerSeries R) :
     ofPowerSeries (q ^ k) f = ofPowerSeries q (f.subst (PowerSeries.X ^ k)) := by
   by_cases hq : 1 < q
   · ext n
-    rw [ofPowerSeries_apply (q ^ k) (one_lt_pow' hq hk), ofPowerSeries_apply q hq]
     by_cases hn : ∃ i, q ^ i = n
     · obtain ⟨i, rfl⟩ := hn
-      rw [(Nat.pow_right_injective hq).extend_apply, PowerSeries.coeff_subst' (.X_pow hk)]
-      have : ∀ d, ((PowerSeries.X (R := R) ^ k) ^ d) = PowerSeries.X ^ (k * d) := by simp [pow_mul]
-      simp_rw [this, PowerSeries.coeff_X_pow, smul_eq_mul, mul_ite, mul_one, mul_zero]
-      by_cases hn : k ∣ i
+      rw [ofPowerSeries_apply_pow q hq, PowerSeries.coeff_subst_X_pow hk]
+      split_ifs with hn
       · obtain ⟨j, rfl⟩ := hn
-        rw [pow_mul, (Nat.pow_right_injective (one_lt_pow' hq hk)).extend_apply,
-          finsum_eq_single _ j]
-        · simp
-        · intro i hi
-          simp [hi.symm, hk]
-      · rw [Function.extend_apply', Pi.zero_apply, finsum_eq_zero_of_forall_eq_zero]
-        · intro d
-          apply if_neg
-          contrapose! hn
-          use d
-        · contrapose! hn
-          obtain ⟨d, hd⟩ := hn
-          rw [← pow_mul, Nat.pow_right_inj hq] at hd
-          rw [← hd]
-          use d
-    · rwa [Function.extend_apply', Function.extend_apply']
+        rw [pow_mul, ofPowerSeries_apply_pow (q ^ k) (one_lt_pow' hq hk)]
+        simp [hk]
+      · rw [ofPowerSeries_apply (q ^ k) (one_lt_pow' hq hk), Function.extend_apply', Pi.zero_apply]
+        contrapose! hn
+        obtain ⟨d, hd⟩ := hn
+        rw [← pow_mul, Nat.pow_right_inj hq] at hd
+        rw [← hd]
+        use d
+    · rwa [ofPowerSeries_apply q hq, ofPowerSeries_apply (q ^ k) (one_lt_pow' hq hk),
+        Function.extend_apply', Function.extend_apply']
       contrapose! hn
       obtain ⟨i, rfl⟩ := hn
       exact ⟨k * i, pow_mul q k i⟩
@@ -258,8 +269,6 @@ theorem isMultiplicative_ofPowerSeries
 end PowerSeries
 
 section EulerProduct
-
-open Filter
 
 variable {ι R : Type*} [CommSemiring R]
 
@@ -370,18 +379,6 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
   intro k hk
   rw [key (u \ t) hu k hk, key (v \ t) hv k hk]
 
-/-- Given arithmetic functions `f(q⁻ˢ)` with `q → ∞`, the partial products `∏ i ∈ s, f i` converge
-to the Euler product pointwise. -/
-theorem tendsTo_eulerProduct_ofPowerSeries
-    (f : ι → PowerSeries R) (hf : ∀ i, (f i).constantCoeff = 1)
-    (q : ι → ℕ) [hq : Northcott q] :
-    ∀ n, Tendsto (fun s ↦ (∏ i ∈ s, ArithmeticFunction.ofPowerSeries (q i) (f i)) n) atTop
-      (pure (eulerProduct (fun i ↦ ArithmeticFunction.ofPowerSeries (q i) (f i)) n)) := by
-  apply tendsTo_eulerProduct_of_tendsTo
-  intro n
-  have key := (northcott_iff_tendsto q).mp hq
-  sorry
-
 theorem foo {α β : Type*} {F : Filter α} [F.NeBot] {f : α → β} {b₁ b₂ : β}
     (h₁ : F.Tendsto f (pure b₁)) (h₂ : F.Tendsto f (pure b₂)) : b₁ = b₂ := by
   rw [tendsto_pure, eventually_iff_exists_mem] at h₁ h₂
@@ -412,6 +409,27 @@ theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
         ((tendsto_pure_pure (fun x ↦ x.1 * x.2) (eulerProduct f m, eulerProduct f n)).comp h1)
   · rw [eulerProduct, tprod_eq_one_of_not_multipliable hf']
     exact isMultiplicative_one
+
+/-- Given arithmetic functions `f(q⁻ˢ)` with `q → ∞`, the partial products `∏ i ∈ s, f i` converge
+to the Euler product pointwise. -/
+theorem tendsTo_eulerProduct_ofPowerSeries
+    (f : ι → PowerSeries R) (hf : ∀ i, (f i).constantCoeff = 1)
+    (q : ι → ℕ) [hq : Northcott q] :
+    ∀ n, Tendsto (fun s ↦ (∏ i ∈ s, ArithmeticFunction.ofPowerSeries (q i) (f i)) n) atTop
+      (pure (eulerProduct (fun i ↦ ArithmeticFunction.ofPowerSeries (q i) (f i)) n)) := by
+  refine tendsTo_eulerProduct_of_tendsTo _ fun n ↦ tendsto_pure.mpr ?_
+  refine (tendsto_atTop.mp ((northcott_iff_tendsto q).mp hq) (n + 1)).mono fun i hi ↦ ?_
+  by_cases hn0 : n = 0
+  · rw [hn0, map_zero, map_zero]
+  · by_cases hn1 : n = 1
+    · rw [hn1, ofPowerSeries_apply_one, hf, one_one]
+    · have hqi : 1 < q i := by grind
+      rw [ofPowerSeries_apply (q i) hqi, Function.extend_apply', Pi.zero_apply, one_apply_ne hn1]
+      contrapose! hn1
+      obtain ⟨k, rfl⟩ := hn1
+      conv_rhs at hi => rw [← pow_one (q i)]
+      rw [Nat.add_one_le_iff, Nat.pow_lt_pow_iff_right hqi, Nat.lt_one_iff] at hi
+      rw [hi, pow_zero]
 
 end EulerProduct
 
