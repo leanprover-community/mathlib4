@@ -210,8 +210,7 @@ lemma mk'_toIntertwiningMap (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (
 lemma mk'_toLinearMap (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
     (mk' e he).toLinearMap = e.toLinearMap := rfl
 
-lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ) → _):=
-  fun φ ψ h ↦ by
+lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ) → _) := fun φ ψ h ↦ by
   cases φ; cases ψ
   simpa [IntertwiningMap.ext_iff] using h
 
