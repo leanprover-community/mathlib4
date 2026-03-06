@@ -164,7 +164,7 @@ theorem powerset_le_powerset_iff_le {s t : Multiset α} :
     s.powerset ≤ t.powerset ↔ s ≤ t where
   mp powerset := Multiset.mem_powerset.mp <| Multiset.mem_of_le powerset (self_mem_powerset s)
   mpr le :=
-    Multiset.leInductionOn le fun hsub => by
+    leInductionOn le fun hsub => by
       rw [powerset_coe', powerset_coe', coe_le]
       apply Sublist.subperm
       apply Sublist.map
