@@ -35,9 +35,6 @@ variable {p : ℕ} [Fact p.Prime]
 
 open NNReal WithZero UniformSpace
 
-lemma foo {R Γ₀ : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀)
-    (x : WithVal v) : Valued.v (R := (WithVal v)) x = v ((WithVal.equiv v) x) := rfl
-
 open MonoidWithZeroHom.ValueGroup₀ in
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
     (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
@@ -54,7 +51,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
   · intro n
     have hn :  Valued.v (R := (WithVal (Rat.padicValuation p))) (p ^ n) =
       exp (-n : ℤ) := by
-      simp only [foo, map_pow, map_natCast, Rat.padicValuation_self,
+      simp only [← WithVal.val_apply_equiv, map_pow, map_natCast, Rat.padicValuation_self,
         Int.reduceNeg, exp_neg, inv_pow, ← exp_nsmul, nsmul_eq_mul, mul_one]
     use Units.mk0 (Valued.v.restrict (p ^ n)) (by
       rw [ne_eq, Valuation.restrict_def, restrict₀_eq_zero_iff, hn]; simp)
