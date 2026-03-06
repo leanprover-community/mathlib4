@@ -67,6 +67,7 @@ instance : Inhabited (WithVal v) := ⟨0⟩
 instance : Preorder (WithVal v) := .lift (v ∘ ofVal)
 
 theorem le_def {v : Valuation R Γ₀} {a b : WithVal v} : a ≤ b ↔ v a.ofVal ≤ v b.ofVal := .rfl
+
 theorem lt_def {v : Valuation R Γ₀} {a b : WithVal v} : a < b ↔ v a.ofVal < v b.ofVal := .rfl
 
 lemma ofVal_toVal (x : R) : ofVal (toVal v x) = x := rfl
@@ -91,27 +92,35 @@ lemma toVal_bijective : Function.Bijective (toVal v) :=
   ⟨toVal_injective v, toVal_surjective v⟩
 
 @[simp] lemma toVal_zero : toVal v 0 = 0 := rfl
+
 @[simp] lemma ofVal_zero : ofVal (0 : WithVal v) = 0 := rfl
 
 @[simp] lemma toVal_one : toVal v 1 = 1 := rfl
+
 @[simp] lemma ofVal_one : ofVal (1 : WithVal v) = 1 := rfl
 
 @[simp] lemma toVal_add (x y : R) : toVal v (x + y) = toVal v x + toVal v y := rfl
+
 @[simp] lemma ofVal_add (x y : WithVal v) : ofVal (x + y) = ofVal x + ofVal y := rfl
 
 @[simp] lemma toVal_sub (x y : R) : toVal v (x - y) = toVal v x - toVal v y := rfl
+
 @[simp] lemma ofVal_sub (x y : WithVal v) : ofVal (x - y) = ofVal x - ofVal y := rfl
 
 @[simp] lemma toVal_mul (x y : R) : toVal v (x * y) = toVal v x * toVal v y := rfl
+
 @[simp] lemma ofVal_mul (x y : WithVal v) : ofVal (x * y) = ofVal x * ofVal y := rfl
 
 @[simp] lemma toVal_neg (x : R) : toVal v (-x) = -toVal v x := rfl
+
 @[simp] lemma ofVal_neg (x : WithVal v) : ofVal (-x) = -ofVal x := rfl
 
 @[simp] lemma toVal_pow (x : R) (n : ℕ) : toVal v (x ^ n) = (toVal v x) ^ n := rfl
+
 @[simp] lemma ofVal_pow (x : WithVal v) (n : ℕ) : ofVal (x ^ n) = (ofVal x) ^ n := rfl
 
 @[simp] lemma toVal_eq_zero (x : R) : toVal v x = 0 ↔ x = 0 := (toVal_injective v).eq_iff
+
 @[simp] lemma ofVal_eq_zero (x : WithVal v) : ofVal x = 0 ↔ x = 0 := (ofVal_injective v).eq_iff
 
 /-- The canonical ring equivalence between `WithVal v` and `R`. -/
@@ -128,8 +137,10 @@ variable {S : Type*} [Ring S] {Λ₀ : Type*} [LinearOrderedCommGroupWithZero Λ
 def map (f : R →+* S) : WithVal v →+* WithVal w := (equiv w).symm.toRingHom.comp (f.comp (equiv v))
 
 @[simp] theorem map_id : map v v (.id R) = .id (WithVal v) := rfl
+
 @[simp] theorem map_comp {T : Type*} [Ring T] (u : Valuation T Γ₀) (f : S →+* T) (g : R →+* S) :
     map v u (f.comp g) = (map w u f).comp (map v w g) := rfl
+
 @[simp] theorem map_apply (f : R →+* S) (x : WithVal v) : map v w f x = toVal w (f x.ofVal) := rfl
 
 /-- Lift a `RingEquiv` to `WithVal`. -/
@@ -140,11 +151,15 @@ def congr (f : R ≃+* S) : WithVal v ≃+* WithVal w where
   right_inv _ := by simp
 
 @[simp] theorem congr_refl : congr v v (.refl R) = .refl (WithVal v) := rfl
+
 theorem congr_symm (f : R ≃+* S) : (congr v w f).symm = congr w v f.symm := rfl
+
 theorem congr_trans {T : Type*} [Ring T] (u : Valuation T Γ₀) (f : R ≃+* S) (g : S ≃+* T) :
     congr v u (f.trans g) = (congr v w f).trans (congr w u g) := rfl
+
 @[simp] theorem congr_apply (f : R ≃+* S) (x : WithVal v) :
     congr v w f x = toVal w (f x.ofVal) := rfl
+
 @[simp] theorem congr_symm_apply (f : R ≃+* S) (x : WithVal w) :
     (congr v w f).symm x = toVal v (f.symm x.ofVal) := rfl
 
@@ -156,6 +171,9 @@ def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
 instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
 
 theorem apply_ofVal (r : WithVal v) : v r.ofVal = Valued.v r := rfl
+
+theorem val_apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
+
 @[simp] theorem valued_toVal (r : R) : Valued.v (toVal v r) = v r := rfl
 
 @[deprecated (since := "2026-03-02")] alias apply_equiv := apply_ofVal
@@ -172,7 +190,9 @@ variable [CommRing R] (v : Valuation R Γ₀)
 
 set_option backward.isDefEq.respectTransparency false in
 instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
+
 instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
+
 instance : (valuation v).Compatible := .ofValuation (valuation v)
 
 end CommRing
@@ -221,6 +241,7 @@ instance [Semiring S] [Module S R] : Module S (WithVal v) :=
   fast_instance% (equiv v).module S
 
 @[simp] theorem toVal_smul [SMul S R] (s : S) (r : R) : toVal v (s • r) = s • toVal v r := rfl
+
 @[simp] theorem ofVal_smul [SMul S R] (s : S) (x : WithVal v) : ofVal (s • x) = s • ofVal x := rfl
 
 variable [Ring S] [Module R S] (v : Valuation S Γ₀)
@@ -230,6 +251,7 @@ variable (R) in
 def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).linearEquiv R
 
 @[simp] theorem linearEquiv_apply (x : WithVal v) : linearEquiv R v x = x.ofVal := rfl
+
 @[simp] theorem linearEquiv_symm_apply (x : S) : (linearEquiv R v).symm x = toVal v x := rfl
 
 instance [Module R S] [Module.Finite R S] :
@@ -283,6 +305,7 @@ variable (R) in
 def algEquiv : WithVal v ≃ₐ[R] S := (equiv v).algEquiv R
 
 @[simp] theorem algEquiv_apply (x : WithVal v) : algEquiv R v x = x.ofVal := rfl
+
 @[simp] theorem algEquiv_symm_apply (x : S) : (algEquiv R v).symm x = toVal v x := rfl
 
 instance {S : Type*} [CommRing S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
@@ -297,13 +320,16 @@ variable [Field R] (v : Valuation R Γ₀)
 
 set_option backward.isDefEq.respectTransparency false in
 instance : Field (WithVal v) := fast_instance% (equiv v).field
+
 set_option backward.isDefEq.respectTransparency false in
 instance [NumberField R] : NumberField (WithVal v) where
 
 @[simp] lemma toVal_div (x y : R) : toVal v (x / y) = toVal v x / toVal v y := rfl
+
 @[simp] lemma ofVal_div (x y : WithVal v) : ofVal (x / y) = ofVal x / ofVal y := rfl
 
 @[simp] lemma toVal_inv (x : R) : toVal v x⁻¹ = (toVal v x)⁻¹ := rfl
+
 @[simp] lemma ofVal_inv (x : WithVal v) : ofVal (x⁻¹) = (ofVal x)⁻¹ := rfl
 
 end Field
