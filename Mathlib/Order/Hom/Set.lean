@@ -20,7 +20,7 @@ public import Mathlib.Tactic.MinImports
 
 open OrderDual Set
 
-variable {α β : Type*}
+variable {α β γ : Type*}
 
 namespace Set
 
@@ -38,15 +38,14 @@ def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
 theorem sumEquiv_symm_apply {s : Set α × Set β} :
     sumEquiv.symm s = Sum.inl '' s.1 ∪ Sum.inr '' s.2 := rfl
 
-theorem MapsTo.sumElim {α β γ : Type*} {f : α → γ} {g : β → γ} {r : Set α}
-    {s : Set β} {t : Set γ} (hf : Set.MapsTo f r t) (hg : Set.MapsTo g s t) :
-    Set.MapsTo (Sum.elim f g) (Set.sumEquiv.symm (r, s)) t := by
+theorem MapsTo.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β} {t : Set γ}
+    (hf : Set.MapsTo f s.1 t) (hg : Set.MapsTo g s.2 t) :
+    Set.MapsTo (Sum.elim f g) (Set.sumEquiv.symm s) t := by
   rintro (a | b) <;> aesop
 
-theorem InjOn.sumElim {α β γ : Type*} {f : α → γ} {g : β → γ} {r : Set α}
-    {s : Set β} (hf : Set.InjOn f r) (hg : Set.InjOn g s)
-    (hfg : ∀ᵉ (a ∈ r) (b ∈ s), f a ≠ g b) :
-    Set.InjOn (Sum.elim f g) (Set.sumEquiv.symm (r, s)) := by
+theorem InjOn.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β}
+    (hf : Set.InjOn f s.1) (hg : Set.InjOn g s.2) (hfg : ∀ᵉ (a ∈ s.1) (b ∈ s.2), f a ≠ g b) :
+    Set.InjOn (Sum.elim f g) (Set.sumEquiv.symm s) := by
   rintro (a₁ | b₁) h₁ (a₂ | b₂) h₂ heq <;> aesop
 
 end Set
