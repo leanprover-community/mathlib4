@@ -32,10 +32,8 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 * `AlgebraicGeometry.IsArtinianScheme.finite`: An Artinian scheme is finite.
 
-* `AlgebraicGeometry.Scheme.isArtinianRing_iff_IsArtinianScheme`: A commutative ring R is Artinian
-  if and only if Spec R is Artinian.
-
-TODO(Brian-Nugent): Show that all Artinian schemes are affine.
+* `AlgebraicGeometry.Scheme.isArtinianScheme_Spec`: A commutative ring R is Artinian if and only if
+  Spec R is Artinian.
 
 -/
 
@@ -93,6 +91,7 @@ instance [IsLocallyArtinian X] {U : X.Opens} : IsLocallyArtinian U := .of_isOpen
 instance [IsLocallyArtinian X] {U : X.OpenCover} (i) : IsLocallyArtinian (U.X i) :=
   .of_isOpenImmersion (U.f i)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian X] :
     DiscreteTopology X := by
   apply discreteTopology_iff_isOpen_singleton.mpr
@@ -140,6 +139,26 @@ theorem isLocallyArtinian_iff_of_isOpenCover {ι : Type*} {U : ι → X.Opens}
   have : ∀ i, IsLocallyArtinian (Spec Γ(X, U i)) := by simpa
   exact fun i ↦ .of_isImmersion (hU' _).isoSpec.hom
 
+instance (priority := low) {X : Scheme} [IsEmpty X] : IsLocallyArtinian X where
+
+set_option backward.isDefEq.respectTransparency false in
+instance (priority := low) {X : Scheme} [DiscreteTopology X] [IsReduced X] :
+    IsLocallyArtinian X := by
+  wlog hX : Subsingleton X generalizing X
+  · let 𝒰 : X.OpenCover := X.openCoverOfIsOpenCover
+      (fun x : X ↦ ⟨{x}, isOpen_discrete _⟩) (.mk (by ext; simp))
+    have inst (i : _) : DiscreteTopology (𝒰.X i) := (𝒰.f i).isOpenEmbedding.discreteTopology
+    have inst (i : _) : IsReduced (𝒰.X i) := isReduced_of_isOpenImmersion (𝒰.f i)
+    exact (isLocallyArtinian_iff_openCover 𝒰).mpr
+      fun i ↦ this (inferInstanceAs (Subsingleton ({i} : Set X)))
+  cases isEmpty_or_nonempty X
+  · infer_instance
+  have : IsIntegral X := (isIntegral_iff_irreducibleSpace_and_isReduced _).mpr
+    ⟨⟨inferInstance⟩, inferInstance⟩
+  let := (isField_of_isIntegral_of_subsingleton X).toField
+  have : IsLocallyArtinian (Spec Γ(X, ⊤)) := Scheme.isLocallyArtinianScheme_Spec.mpr inferInstance
+  exact .of_isImmersion X.isoSpec.hom
+
 /-- A scheme is Artinian if it is locally Artinian and quasi-compact -/
 @[mk_iff]
 class IsArtinianScheme (X : Scheme.{u}) : Prop extends IsLocallyArtinian X, CompactSpace X
@@ -161,6 +180,10 @@ instance {R : CommRingCat} [IsArtinianRing R] :
     IsArtinianScheme (Spec R) :=
   IsArtinianScheme.iff_isNoetherian_and_discreteTopology.mpr
     ⟨inferInstance, inferInstanceAs (DiscreteTopology (PrimeSpectrum R))⟩
+
+/-- Spec of a field is artinian. -/
+instance (priority := low) {X : Scheme} [Subsingleton X] [IsReduced X] :
+    IsArtinianScheme X where
 
 /-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
 theorem Scheme.isArtinianScheme_Spec {R : CommRingCat} :

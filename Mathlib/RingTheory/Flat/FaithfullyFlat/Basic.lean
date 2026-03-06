@@ -87,6 +87,7 @@ end proper_ideal
 
 section faithful
 
+set_option backward.isDefEq.respectTransparency false in
 instance rTensor_nontrivial
     [fl : FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
     Nontrivial (N ⊗[R] M) := by
@@ -186,6 +187,7 @@ lemma of_linearEquiv {N : Type*} [AddCommGroup N] [Module R N] [FaithfullyFlat R
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A direct sum of faithfully flat `R`-modules is faithfully flat. -/
 instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
     [∀ i, Module R (M i)] [∀ i, FaithfullyFlat R (M i)] : FaithfullyFlat R (⨁ i, M i) := by
@@ -198,6 +200,7 @@ instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddComm
     ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
   apply (TensorProduct.directSumLeft R R M N).toEquiv.nontrivial
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) := by
   classical exact of_linearEquiv _ _ (finsuppLEquivDirectSum R R ι)

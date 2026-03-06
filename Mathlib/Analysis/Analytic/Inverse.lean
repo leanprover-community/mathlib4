@@ -651,6 +651,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
     exact cauchySeq_finset_of_norm_bounded Z (fun i ↦ le_rfl)
   exact tendsto_nhds_of_cauchySeq_of_subseq C tendsto_finset_range L
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If an open partial homeomorphism `f` is defined at `a` and has a power series expansion there
 with invertible linear term, then `f.symm` has a power series expansion at `f a`, given by the
 inverse of the initial power series. -/

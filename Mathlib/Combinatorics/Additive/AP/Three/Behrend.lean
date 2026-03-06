@@ -53,6 +53,7 @@ open Nat hiding log
 open Finset Metric Real WithLp
 open scoped Pointwise
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The frontier of a closed strictly convex set only contains trivial arithmetic progressions.
 The idea is that an arithmetic progression is contained on a line and the frontier of a strictly
 convex set does not contain lines. -/

@@ -102,7 +102,7 @@ lemma GeometricallyIrreducible.irreducibleSpace_of_subsingleton
 then `X ×ₛ Y` is irreducible.
 
 The universally open assumption in particular holds when it is flat and locally of finite
-presentation, e.g. when `S` is a field and `X` is locally of finite type over `S`. -/
+presentation, or when `S` is a field. -/
 instance [GeometricallyIrreducible f] [UniversallyOpen f] [IrreducibleSpace Y] :
     IrreducibleSpace ↥(pullback f g) :=
   GeometricallyIrreducible.irreducibleSpace (pullback.snd _ _) (pullback.snd f g).isOpenMap

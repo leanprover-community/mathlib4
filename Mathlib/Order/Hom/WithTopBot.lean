@@ -140,6 +140,7 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   inj' := WithBot.coe_injective
   map_rel_iff' := WithBot.coe_le_coe
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any `OrderBot` is equivalent to `WithBot` of the subtype excluding `⊥`.
 
 See also `Equiv.optionSubtypeNe`. -/

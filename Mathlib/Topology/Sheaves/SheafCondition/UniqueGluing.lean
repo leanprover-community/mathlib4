@@ -118,6 +118,7 @@ theorem IsSheaf.isSheafUniqueGluing_types (h : F.IsSheaf) (sf : ∀ i : ι, F.ob
 
 variable (F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For type-valued presheaves, the sheaf condition in terms of unique gluings is equivalent to the
 usual sheaf condition.
 -/
@@ -179,7 +180,7 @@ variable {X : TopCat.{x}} (F : Sheaf C X) {ι : Type*} (U : ι → Opens X)
 theorem existsUnique_gluing (sf : ∀ i : ι, ToType (F.1.obj (op (U i))))
     (h : IsCompatible F.1 U sf) :
     ∃! s : ToType (F.1.obj (op (iSup U))), IsGluing F.1 U sf s :=
-  IsSheaf.isSheafUniqueGluing F.cond U sf h
+  IsSheaf.isSheafUniqueGluing F.property U sf h
 
 /-- In this version of the lemma, the inclusion homs `iUV` can be specified directly by the user,
 which can be more convenient in practice.
@@ -234,6 +235,7 @@ theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : 
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← F.1.map_comp]
   exact h i
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : U₂ ⟶ V) (hcover : V ≤ U₁ ⊔ U₂)
     (s t : ToType (F.1.obj (op V))) (h₁ : F.1.map i₁.op s = F.1.map i₁.op t)
     (h₂ : F.1.map i₂.op s = F.1.map i₂.op t) : s = t := by

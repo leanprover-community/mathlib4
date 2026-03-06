@@ -66,9 +66,10 @@ noncomputable def ω₁δ :
       (t.ω₁.obj (mk₁ (homOfLE (hab.trans hbc)))).whiskerLeft (t.eTruncGEδLT.app b) ≫
       (associator _ _ _).inv ≫
       whiskerRight
-        ((associator _ _ _).hom ≫ whiskerLeft _ (t.eTruncLTGEIsoLEGT a b).hom ≫
+        ((associator _ _ _).hom ≫ whiskerLeft _ (t.eTruncLTGEIsoGELT a b).hom ≫
           (associator _ _ _).inv ≫ whiskerRight (t.eTruncLTLTToLT c b) _) _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
     (φ : mk₂ (homOfLE hab) (homOfLE hbc) ⟶ mk₂ (homOfLE hab') (homOfLE hbc')) :
@@ -81,10 +82,10 @@ lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
     ← Functor.map_comp_assoc, NatTrans.naturality_app_assoc, Functor.whiskeringRight_obj_obj,
     Functor.whiskeringRight_obj_map, Functor.whiskerRight_app, NatTrans.naturality]
   congr 2
-  have h₁ := t.eTruncLTGEIsoLEGT_naturality_app a b hab a' b' hab' (homMk₁ (φ.app 0) (φ.app 1))
+  have h₁ := t.eTruncLTGEIsoGELT_naturality_app a b hab a' b' hab' (homMk₁ (φ.app 0) (φ.app 1))
   dsimp at h₁
   simp only [Functor.map_comp, Category.assoc]
-  rw [← reassoc_of% h₁, ← eTruncLTGEIsoLEGT_hom_naturality, ← eTruncLTGEIsoLEGT_hom_naturality,
+  rw [← reassoc_of% h₁, ← eTruncLTGEIsoGELT_hom_naturality, ← eTruncLTGEIsoGELT_hom_naturality,
     ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 2) X, NatTrans.naturality_assoc,
     ← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
     ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
@@ -99,6 +100,7 @@ noncomputable def triangleω₁δ : C ⥤ Triangle C :=
   Triangle.functorMk (t.ω₁.map (twoδ₂Toδ₁' a b c hab hbc))
     (t.ω₁.map (twoδ₁Toδ₀' a b c hab hbc)) (t.ω₁δ a b c hab hbc)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `(t.triangleω₁δ a b c hab hbc).obj X` is isomorphic to
 the (distinguished) triangle obtained by applying the functor `t.eTriangleLTGE.obj b`
 to the object `(t.eTruncGE.obj a).obj ((t.eTruncLT.obj c).obj X)`. -/
@@ -107,13 +109,13 @@ noncomputable def triangleω₁δObjIso (X : C) :
       (t.eTriangleLTGE.obj b).obj ((t.ω₁.obj (mk₁ (homOfLE (hab.trans hbc)))).obj X) := by
   refine Triangle.isoMk _ _
     ((t.eTruncGE.obj a).mapIso ((t.eTruncLTLTIsoLT c b hbc).symm.app X) ≪≫
-      (t.eTruncLTGEIsoLEGT a b).symm.app _)
+      (t.eTruncLTGEIsoGELT a b).symm.app _)
     (Iso.refl _) ((t.eTruncGEIsoGEGE a b hab).app _) ?_ ?_ ?_
   · dsimp
     simp only [triangleω₁δ_obj_mor₁, homOfLE_leOfHom, Category.comp_id, Category.assoc]
     rw [← cancel_epi ((t.eTruncGE.obj a).map ((t.eTruncLTLTIsoLT c b hbc).hom.app X)),
       ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, Category.id_comp,
-      ← cancel_epi ((t.eTruncLTGEIsoLEGT a b).hom.app ((t.eTruncLT.obj c).obj X)),
+      ← cancel_epi ((t.eTruncLTGEIsoGELT a b).hom.app ((t.eTruncLT.obj c).obj X)),
       Iso.hom_inv_id_app_assoc, eTruncLTLTIsoLT_hom, eTruncLTLTToLT_app,
       ← Functor.map_comp]
     -- this should be cleanup and made a separate lemma
