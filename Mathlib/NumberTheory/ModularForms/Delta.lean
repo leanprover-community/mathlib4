@@ -148,81 +148,37 @@ lemma delta_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
     simpa [denom, ModularGroup.S]
   have he : η (-(↑z)⁻¹) = (sqrt I)⁻¹ * (sqrt z * η z) := by
     simpa [neg_div] using eta_comp_eq_csqrt_I_inv z.2
-  simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
+  simp only [he, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
   field_simp [z.ne_zero]
 
-theorem Delta_boundedfactor_step3 :
-  Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - cexp (2 * π * Complex.I * (n + 1) * x)) ^ 24) atImInfty
-    (𝓝 1) := by
-  nth_rw 3 [show (1 : ℂ) = 1 ^ 24 by simp]
-  conv =>
-    enter [1, x]
-    rw [Multipliable.tprod_pow (by sorry)]
-  apply Tendsto.pow
-  have := tendsto_tprod_one_add_of_dominated_convergence (𝓕 := atImInfty) (g := 0)
-      (f := (fun z : ℍ ↦ fun n : ℕ  => -cexp (2 * π * Complex.I * (n + 1) * z)))
-      (bound := fun n ↦ (1 / 2 : ℝ) ^ (n + 1))
-  simp at this
-  simp_rw [sub_eq_add_neg]
-  apply this
-
-  sorry
-
-theorem continuousOn_tprod_one_add_of_dominated_convergence {ι X R : Type*} [NormedCommRing R]
-    [NormOneClass R] [CompleteSpace R] [UniformSpace X]
-    {f : ι → X → R} {bound : ι → ℝ} (h_sum : Summable bound) {s : Set X} (hs : IsCompact s)
-    (hab : ∀ i, ContinuousOn (f i) s) (h_bound : ∀ᶠ i in cofinite, ∀ x ∈ s, ‖f i x‖ ≤ bound i) :
-    ContinuousOn (fun x ↦ ∏' i, (1 + f i x)) s := by
-  apply TendstoUniformlyOn.continuousOn
-  · exact (Summable.hasProdUniformlyOn_one_add hs h_sum h_bound hab).tendstoUniformlyOn
-  · exact .of_forall fun _ ↦ continuousOn_finset_prod _ fun _ _ ↦ by fun_prop
-
-
-open Metric
-theorem Delta_boundedfactor'_step1 :
-    ContinuousAt (fun q : ℂ ↦ ∏' (n : ℕ), (1 - q ^ (n + 1))) 0 := by
-  refine ContinuousOn.continuousAt ?_ (closedBall_mem_nhds _ one_half_pos)
-  simp only [sub_eq_add_neg]
-  refine continuousOn_tprod_one_add_of_dominated_convergence ?_ (isCompact_closedBall 0 _)
-      (fun i ↦ by fun_prop) ?_ (bound := fun n ↦ (1 / 2 : ℝ) ^ (n + 1))
-  · simp only [pow_succ']
-    exact (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _
-  · filter_upwards with i x hx
-    simpa only [norm_neg, norm_pow] using pow_le_pow_left₀ (norm_nonneg _) (by simpa using hx) _
-
-theorem Delta_boundedfactor_step4 :
-  Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - cexp (2 * π * Complex.I * (n + 1) * x)) ^ 24) atImInfty
-    (𝓝 1) := by
-  have : Tendsto (fun q : ℂ ↦ ∏' (n : ℕ), (1 - q ^ (n + 1))) (𝓝 0) (𝓝 1) := by
-      have := tendsto_tprod_one_add_of_dominated_convergence (𝓕 := (𝓝 0)) (g := 0)
-        (f := (fun q : ℂ => fun n : ℕ  => -q ^ (n + 1)))
-        (bound := fun (n : ℕ) ↦ (1 / 2 : ℝ) ^ (n + 1))
-      simp only [ Pi.zero_apply, norm_neg, norm_pow, add_zero, tprod_one] at this
-      simp_rw [sub_eq_add_neg]
-      apply this
-      · simp only [pow_succ']
-        exact (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _
-      · intro k
-
-        sorry
-      · rw [@Metric.eventually_nhds_iff]
-        use 1/2
-        simp
-        intro y hy
-        sorry
-
-  have := (this.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
+theorem Delta_boundedfactor :
+    Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - cexp (2 * π * Complex.I * (n + 1) * x)) ^ 24) atImInfty
+      (𝓝 1) := by
+  have htprod : Tendsto (fun q : ℂ ↦ ∏' (n : ℕ), (1 - q ^ (n + 1))) (𝓝 0) (𝓝 1) := by
+    have := tendsto_tprod_one_add_of_dominated_convergence (𝓕 := 𝓝 0) (g := 0)
+      (f := fun q : ℂ ↦ fun n : ℕ ↦ -q ^ (n + 1)) (bound := fun n : ℕ ↦ (1 / 2 : ℝ) ^ (n + 1))
+    simp only [Pi.zero_apply, norm_neg, norm_pow, add_zero, tprod_one] at this
+    simp_rw [sub_eq_add_neg]
+    apply this
+    · simp only [pow_succ']
+      exact (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _
+    · exact fun k ↦ by simpa using ((continuous_pow (M := ℂ) (k + 1)).tendsto 0).neg
+    · filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by norm_num : (0 : ℝ) < 1 / 2)] with q hq k
+      exact pow_le_pow_left₀ (norm_nonneg _)
+        (by rw [Metric.mem_ball, dist_zero_right] at hq; exact hq.le) _
+  have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
   simp only [one_pow, comp_def, Periodic.qParam, ofReal_one, div_one] at this
   convert this using 2 with τ
   rw [Multipliable.tprod_pow]
   · congr
     congr 1 with n
-    rw [ ← exp_nat_mul]
-    push_cast
-    ring_nf
-  · apply (ModularForm.multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
-    simp only [eta_q, Periodic.qParam, ofReal_one, div_one, ← exp_nat_mul, Nat.cast_add,
-      Nat.cast_one, sub_right_inj]
-    intro x; ring_nf
+    rw [← exp_nat_mul]
+    push_cast; ring_nf
+  · exact (ModularForm.multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr fun x ↦ by
+      simp only [eta_q, Periodic.qParam, ofReal_one, div_one, ← exp_nat_mul, Nat.cast_add,
+        Nat.cast_one, sub_right_inj]
+      ring_nf
 
 end
+
+end ModularForm
