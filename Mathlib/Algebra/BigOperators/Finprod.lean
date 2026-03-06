@@ -1240,7 +1240,7 @@ theorem finsum_mem_mul {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors
 lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : HasFiniteMulSupport f) (a : α) :
     (∏ᶠ i, f i) a = ∏ᶠ i, f i a := by
   classical
-  have hf' : HasFiniteMulSupport fun i ↦ f i a := hf.subset (by aesop)
+  have hf' : HasFiniteMulSupport fun i ↦ f i a := by fun_prop (disch := simp)
   simp only [finprod_def, dif_pos, hf, hf', Finset.prod_apply]
   symm
   apply Finset.prod_subset <;> aesop
@@ -1363,3 +1363,29 @@ lemma Nat.cast_finsum_mem {s : Set ι} (hs : s.Finite) {M : Type*}
   (Nat.castAddMonoidHom M).map_finsum_mem _ hs
 
 end type
+
+/-!
+### Some API for `fun a ↦ f a ^ count a s` on multisets
+-/
+
+namespace Multiset
+
+variable {α M : Type*} [DecidableEq α] [CommMonoid M]
+
+@[to_additive]
+lemma mulSupport_fun_pow_count_subset (s : Multiset α) (f : α → M) :
+    (fun a ↦ f a ^ count a s).mulSupport ⊆ s.toFinset := by
+  simp +contextual [not_imp_comm]
+
+@[to_additive (attr := fun_prop)]
+lemma hasFiniteMulSupport_fun_pow_count (s : Multiset α) (f : α → M) :
+    (fun a ↦ (f a) ^ s.count a).HasFiniteMulSupport :=
+  s.toFinset.finite_toSet.subset <| mulSupport_fun_pow_count_subset ..
+
+@[to_additive]
+lemma prod_map_eq_finprod (s : Multiset α) (f : α → M) :
+    (s.map f).prod = ∏ᶠ a, f a ^ s.count a := by
+  rw [Finset.prod_multiset_map_count, eq_comm]
+  exact finprod_eq_prod_of_mulSupport_subset _ <| mulSupport_fun_pow_count_subset ..
+
+end Multiset

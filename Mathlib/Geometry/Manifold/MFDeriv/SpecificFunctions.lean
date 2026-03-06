@@ -739,7 +739,7 @@ theorem hasMFDerivAt_inr :
 
 theorem mfderivWithin_sumInl (hU : UniqueMDiffWithinAt I s q) :
     mfderiv[s] (@Sum.inl M M') q = ContinuousLinearMap.id 𝕜 (TangentSpace I p) :=
-  (hasMFDerivWithinAt_inl).mfderivWithin hU
+  hasMFDerivWithinAt_inl.mfderivWithin hU
 
 theorem mfderiv_sumInl :
     mfderiv% (@Sum.inl M M') q = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
@@ -747,7 +747,7 @@ theorem mfderiv_sumInl :
 
 theorem mfderivWithin_sumInr {t : Set M'} (hU : UniqueMDiffWithinAt I t q') :
     mfderiv[t] (@Sum.inr M M') q' = ContinuousLinearMap.id 𝕜 (TangentSpace I q') :=
-  (hasMFDerivWithinAt_inr).mfderivWithin hU
+  hasMFDerivWithinAt_inr.mfderivWithin hU
 
 theorem mfderiv_sumInr :
     mfderiv% (@Sum.inr M M') q' = ContinuousLinearMap.id 𝕜 (TangentSpace I q') := by
