@@ -99,9 +99,6 @@ lemma subset_dual_flip_iff_subset_dual {s : Set M} {t : Set N} :
     s ⊆ dual p.flip t ↔ t ⊆ dual p s :=
   ⟨subset_dual_of_subset_dual_flip, subset_dual_flip_of_subset_dual⟩
 
-lemma dual_dual_mono {s t : Set M} (hSC : s ⊆ t) :
-    dual p.flip (dual p s) ≤ dual p.flip (dual p t) := dual_antitone <| dual_antitone hSC
-
 variable (s) in
 @[simp] lemma dual_dual_flip_dual : dual p (dual p.flip (dual p s)) = dual p s :=
   le_antisymm (dual_anti subset_dual_dual) subset_dual_dual
