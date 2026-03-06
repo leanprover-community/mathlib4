@@ -165,6 +165,10 @@ structure LabelData (label : Label) where
   /-- Array of paths which should be excluded.
   Any modifications to a file in an excluded path are ignored for the purposes of labelling. -/
   exclusions : Array FilePath := #[]
+  /-- Labels which are "lower" in the Mathlib import order. These labels will not be added
+  alongside the label. For example any PR to `t-ring-theory` might modify files from `t-algebra`
+  but should only get the former label -/
+  dependencies : Array Label := #[]
   deriving BEq, Hashable
 
 /-- Mathlib labels and their corresponding folders -/
@@ -275,6 +279,18 @@ def getMatchingLabels (files : Array FilePath) : Array Label :=
     data.dirs.any (fun dir ↦ notExcludedFiles.any (dir.isPrefixOf ·))
   -- return sorted list of labels
   applicable |>.qsort (·.toString < ·.toString)
+
+/-- Helper function: union of all labels an all their dependent labels -/
+partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label :=
+  labels.flatMap fun label ↦
+    (collectLabelsAndDependentLabels (mathlibLabelData label).dependencies).push label
+
+/-- Reduce a list of labels to not include any which are dependencies of other
+labels in the list -/
+def dropDependentLabels (labels: Array Label) : Array Label :=
+  let dependentLabels := labels.flatMap fun label ↦
+    (mathlibLabelData label).dependencies
+  labels.filter (!dependentLabels.contains ·)
 
 /-!
 Testing the functionality of the declarations defined in this script
@@ -406,8 +422,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
   let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
 
   -- find labels covering the modified files
-  let newLabels := getMatchingLabels modifiedFiles
-
+  let newLabels := dropDependentLabels <| getMatchingLabels modifiedFiles
   println s!"::notice::Applicable labels: {newLabels}"
 
   match newLabels with

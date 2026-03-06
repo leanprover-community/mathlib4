@@ -136,6 +136,7 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
 
 end IndizationClosedUnderFilteredColimitsAux
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
     (F : I ⥤ Cᵒᵖ ⥤ Type v) (hF : ∀ i, IsIndObject (F.obj i)) : IsIndObject (colimit F) := by
   have : IsFiltered (CostructuredArrow yoneda (colimit F)) :=

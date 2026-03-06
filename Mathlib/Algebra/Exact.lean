@@ -263,6 +263,7 @@ section Ring
 variable {R M N P : Type*} [Ring R]
   [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N] [Module R P]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exact_subtype_mkQ (Q : Submodule R N) :
     Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
   rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
@@ -497,6 +498,7 @@ variable [Ring R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 
 namespace Function
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A necessary and sufficient condition for an exact sequence to descend to a quotient. -/
 lemma Exact.exact_mapQ_iff
     (hfg : Exact f g) {p q r} (hpq : p ≤ comap f q) (hqr : q ≤ comap g r) :
@@ -538,6 +540,7 @@ lemma surjective_range_liftQ (h : range f ≤ ker g) (hg : Function.Surjective g
   obtain ⟨x₂, rfl⟩ := hg x₃
   exact ⟨Submodule.Quotient.mk x₂, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ker_eq_bot_range_liftQ_iff (h : range f ≤ ker g) :
     ker ((range f).liftQ g h) = ⊥ ↔ ker g = range f := by
   simp only [Submodule.ext_iff, mem_ker, Submodule.mem_bot, mem_range]

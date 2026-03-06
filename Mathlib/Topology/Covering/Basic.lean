@@ -434,7 +434,7 @@ that covers `f⁻¹(V)` such that for every `i`,
  2. `V` is contained in the image `f(Uᵢ)`,
  3. the open sets in `V` are determined by their preimages in `Uᵢ`.
 
-Then `f` admits a `Trivialization` over the base set `V`. -/
+Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
 @[simps source target baseSet] noncomputable def IsOpen.trivializationDiscrete [Nonempty (X → E)]
     {ι} [Nonempty ι] [TopologicalSpace ι] [DiscreteTopology ι] (U : ι → Set E) (V : Set X)
     (open_V : IsOpen V) (open_iff : ∀ i {W}, W ⊆ V → (IsOpen W ↔ IsOpen (f ⁻¹' W ∩ U i)))

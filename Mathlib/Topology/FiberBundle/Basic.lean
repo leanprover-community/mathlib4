@@ -502,7 +502,7 @@ theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
     (Z.localTrivAsPartialEquiv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 
-/-- The composition of two local trivializations is the trivialization change Z.triv_change i j. -/
+/-- The composition of two local trivializations is the trivialization change `Z.trivChange i j`. -/
 theorem localTrivAsPartialEquiv_trans (i j : ι) :
     (Z.localTrivAsPartialEquiv i).symm.trans (Z.localTrivAsPartialEquiv j) ≈
       (Z.trivChange i j).toPartialEquiv := by
@@ -672,6 +672,7 @@ theorem mem_localTrivAt_baseSet (b : B) : b ∈ (Z.localTrivAt b).baseSet := by
 theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
   simp only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A fiber bundle constructed from core is indeed a fiber bundle. -/
 instance fiberBundle : FiberBundle F Z.Fiber where
   totalSpaceMk_isInducing' b := isInducing_iff_nhds.2 fun x ↦ by

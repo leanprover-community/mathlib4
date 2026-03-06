@@ -221,6 +221,7 @@ lemma exists_of_isPullback (h : IsPullback t l r b)
   exact ⟨x₁, congr_arg _root_.Prod.fst hx₁,
     congr_arg _root_.Prod.snd hx₁⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (t l r b) in
 lemma isPullback_iff :
   IsPullback t l r b ↔ t ≫ r = l ≫ b ∧

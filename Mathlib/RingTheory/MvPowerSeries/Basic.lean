@@ -149,12 +149,14 @@ theorem ext {φ ψ : MvPowerSeries σ R} (h : ∀ n : σ →₀ ℕ, coeff n φ 
 if and only if all their coefficients are equal. -/
 add_decl_doc MvPowerSeries.ext_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     monomial n = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
   convert rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff m (monomial n a) = if m = n then a else 0 := by
   dsimp only [coeff, MvPowerSeries]
