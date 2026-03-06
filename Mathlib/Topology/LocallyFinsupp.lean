@@ -298,14 +298,6 @@ def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y)
     (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
-/--
-Deprecated spelling of `mk_of_mem_addSubmonoid`.
--/
-@[deprecated mk_of_mem_addSubmonoid (since := "2026-03-05")]
-def mk_of_mem [AddMonoid Y] (f : X → Y)
-    (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
-    locallyFinsuppWithin U Y := mk_of_mem_addSubmonoid f hf
-
 instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
   zero := mk_of_mem_addSubmonoid 0 <| zero_mem _
 
@@ -321,6 +313,8 @@ Assign a function with locally finite support within `U` to a function in the su
 @[simps]
 def mk_of_mem_addSubgroup [AddGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubgroup U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
+
+@[deprecated] alias mk_of_mem := mk_of_mem_addSubgroup
 
 instance [AddGroup Y] : Neg (locallyFinsuppWithin U Y) where
   neg D := mk_of_mem_addSubgroup (-D) <| neg_mem D.memAddSubgroup
