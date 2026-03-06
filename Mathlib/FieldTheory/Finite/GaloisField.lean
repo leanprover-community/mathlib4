@@ -189,6 +189,23 @@ theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^
   rw [← h, Nat.card_eq_fintype_card]
   exact FiniteField.isSplittingField_sub K (ZMod p)
 
+theorem _root_.FiniteField.exists_root_of_dvd_X_pow_card_sub_X [Fintype K] {f : K[X]}
+    (hd : f.degree ≠ 0) (h : f ∣ X ^ (Fintype.card K) - X) : ∃ a, f.eval a = 0 := by
+  refine Polynomial.Splits.exists_eval_eq_zero ?_ hd
+  refine (Polynomial.Splits.of_dvd ?_
+    (FiniteField.X_pow_card_sub_X_ne_zero K (Fintype.one_lt_card)) h)
+  · have := (Polynomial.IsSplittingField.splits (L := K) (X ^ (Fintype.card K) - X : K[X]))
+    simpa [Algebra.algebraMap_self, Polynomial.map_sub, Polynomial.map_pow, map_X] using this
+
+theorem _root_.FiniteField.exists_root_of_map_dvd_X_pow_card_sub_X [Fintype K] {F : Type*}
+    [Field F] {f : F[X]} (hd : f.degree ≠ 0) (φ : F →+* K)
+    (h : (Polynomial.map φ f : K[X]) ∣ (X ^ (Fintype.card K) - X : Polynomial K)) :
+    ∃ a : K, Polynomial.eval₂ φ a f = 0 := by
+  convert FiniteField.exists_root_of_dvd_X_pow_card_sub_X ?_ h
+  · exact eval₂_eq_eval_map φ
+  · simp only [degree_map, ne_eq]
+    exact hd
+
 instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by
   cases nonempty_fintype K'
@@ -326,6 +343,62 @@ theorem nonempty_algHom_iff_finrank_dvd :
   algebraize [f.toRingHom]
   rw [← Module.finrank_mul_finrank F K L]
   exact dvd_mul_right _ _
+
+end
+
+section
+
+variable {F : Type*} [hf : Field F] [Fintype F]
+
+open Polynomial
+
+lemma natDegree_dvd_of_dvd_X_pow_card_sub_X {n : ℕ} (hn : n ≠ 0) {f : F[X]}
+    (hd : f.degree ≠ 0) (hi : Irreducible f) (h : f ∣ (X ^ ((Fintype.card F) ^ n) - X)) :
+    f.natDegree ∣ n := by
+  choose p hchar m hp hm' using FiniteField.card' F
+  haveI : Fact <| Nat.Prime p := ⟨hp⟩
+  have : ∀ m, Fintype (GaloisField p m) := fun m => Fintype.ofFinite _
+  have hcard' : Fintype.card (GaloisField p (m * n)) = (Fintype.card F) ^ n := by
+    rw [Fintype.card_eq_nat_card, GaloisField.card p (m * n) ?_, hm', pow_mul]
+    simp only [ne_eq, mul_eq_zero, PNat.ne_zero, hn, or_self, not_false_eq_true]
+  -- `K` is the splitting field of `X ^ ((Fintype.card F) ^ n) - X`
+  let K := GaloisField p (m * n)
+  haveI : Algebra (ZMod p) F := ZMod.algebra F p
+  have haux : Nonempty (F →ₐ[ZMod p] K) := by
+    refine FiniteField.nonempty_algHom_of_finrank_dvd ?_
+    have := (Nat.pow_right_inj (Nat.Prime.one_lt hp)).1 (ZMod.card p ▸
+      (hm' ▸ Module.card_eq_pow_finrank (K := ZMod p) (V := F)))
+    rw [← this, GaloisField.finrank]
+    · apply dvd_mul_right
+    · simp only [ne_eq, mul_eq_zero, PNat.ne_zero, hn, or_self, not_false_eq_true]
+  let ψ := (Classical.choice haux).toRingHom
+  replace h := Polynomial.map_dvd ψ h
+  simp only [Polynomial.map_sub, Polynomial.map_pow, map_X] at h
+  rw [← hcard'] at h
+  -- `f` has a root a in `K`. We have maps `F → AdjoinRoot f` and `AdjoinRoot f → K`.
+  choose a ha using (exists_root_of_map_dvd_X_pow_card_sub_X hd ψ h)
+  letI A1 := RingHom.toAlgebra (AdjoinRoot.lift ψ a ha)
+  -- Compatible `F`-algebra structure on `K`
+  letI A2 : Algebra F K := RingHom.toAlgebra
+    (RingHom.comp (algebraMap (AdjoinRoot f) K) (algebraMap F (AdjoinRoot f)))
+  letI M1 : Module F K := Algebra.toModule
+  letI M2 : Module (AdjoinRoot f) K := Algebra.toModule
+  letI M3 : Module F (AdjoinRoot f) := Algebra.toModule
+  haveI hfinite: IsScalarTower F (AdjoinRoot f) K := IsScalarTower.of_algebraMap_eq' rfl
+  haveI hF1: Module.Free F (AdjoinRoot f):= Module.Free.of_divisionRing F _
+  haveI : Fact <| Irreducible f := ⟨hi⟩
+  have hdim1: Module.finrank F (AdjoinRoot f)= f.natDegree := by
+    rw [PowerBasis.finrank (AdjoinRoot.powerBasis (Irreducible.ne_zero hi)),
+      AdjoinRoot.powerBasis_dim (Irreducible.ne_zero hi)]
+  have hqo := Fintype.one_lt_card (α := F)
+  have hdim2: Module.finrank F K = n := by
+    exact (pow_right_inj₀ (by grind) (by grind) ).1
+      (hcard'▸ Module.card_eq_pow_finrank (K := F)  (V := K)).symm
+  rw [← hdim1, ← hdim2]
+  use (Module.finrank (AdjoinRoot f) K)
+  -- The rank of `AdjoinRoot f` over `F` divides the rank of `K` over `F`.
+  refine (@Module.finrank_mul_finrank F (AdjoinRoot f) K _ _ _ M3 M2 M1 hfinite _ _ hF1 ?_ ).symm
+  refine Module.Free.of_divisionRing (AdjoinRoot f) _
 
 end
 
