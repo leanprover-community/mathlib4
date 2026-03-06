@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # The unit interval, as a topological space
@@ -37,8 +36,6 @@ abbrev unitInterval : Set ℝ :=
 scoped[unitInterval] notation "I" => unitInterval
 
 namespace unitInterval
-
-lemma not_countable_unitInterval : ¬ Countable I := by simp
 
 theorem zero_mem : (0 : ℝ) ∈ I :=
   ⟨le_rfl, zero_le_one⟩
