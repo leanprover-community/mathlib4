@@ -177,8 +177,7 @@ attribute [simp]
 abbrev SmallBicategory (B : Type u) : Type (u + 1) := Bicategory.{u, u, u} B
 
 /-- A `LocallySmallBicategory` has `Small` morphism categories. -/
-abbrev LocallySmallBicategory (B : Type u) : Type _ := Bicategory.{v, v, u} B
-
+abbrev LocallySmallBicategory (B : Type u) : Type (max u (v + 1)) := Bicategory.{v, v, u} B
 
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
