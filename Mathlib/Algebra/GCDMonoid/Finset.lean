@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Fold
 public import Mathlib.Algebra.GCDMonoid.Multiset
+public import Mathlib.Algebra.GCDMonoid.Nat
 
 /-!
 # GCD and LCM operations on finsets
@@ -143,6 +144,10 @@ theorem gcd_dvd {b : β} (hb : b ∈ s) : s.gcd f ∣ f b :=
 theorem dvd_gcd {a : α} : (∀ b ∈ s, a ∣ f b) → a ∣ s.gcd f :=
   dvd_gcd_iff.2
 
+theorem gcd_cons {b : β} (h : b ∉ s) :
+    (cons b s h : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) :=
+  fold_cons h
+
 @[simp]
 theorem gcd_insert [DecidableEq β] {b : β} :
     (insert b s : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) := by
@@ -181,17 +186,9 @@ theorem gcd_eq_gcd_image [DecidableEq α] : s.gcd f = (s.image f).gcd id :=
   Eq.symm <| gcd_image _
 
 theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x ∈ s, f x = 0 := by
-  rw [gcd_def, Multiset.gcd_eq_zero_iff]
-  constructor <;> intro h
-  · intro b bs
-    apply h (f b)
-    simp only [Multiset.mem_map]
-    use b
-    simp only [mem_def.1 bs, and_self]
-  · intro a as
-    rw [Multiset.mem_map] at as
-    rcases as with ⟨b, ⟨bs, rfl⟩⟩
-    apply h b (mem_def.1 bs)
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s h ih => grind [gcd_cons, _root_.gcd_eq_zero_iff]
 
 theorem gcd_ne_zero_iff : s.gcd f ≠ 0 ↔ ∃ x ∈ s, f x ≠ 0 := by
   simp [gcd_eq_zero_iff]
@@ -284,20 +281,15 @@ theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
 
 end IsDomain
 
-section Int
+variable {s : Finset ι}
 
-/-- The gcd of a finset of integers is positive if some element in the finset is nonzero. -/
-theorem gcd_pos_of_ne_zero {ι : Type*} {f : ι → ℤ} {s : Finset ι} (hf : ∃ i ∈ s, f i ≠ 0) :
-    0 < s.gcd f := by
+/-- The gcd of a finset of integers is nonnegative. -/
+@[grind .]
+theorem Int.finsetGcd_nonneg {f : ι → ℤ} : 0 ≤ s.gcd f := by
   induction s using Finset.cons_induction_on with
-  | empty => simp at hf
+  | empty => simp
   | cons a s has ih =>
-    classical
-    rw [cons_eq_insert, gcd_insert, ← Int.coe_gcd, Int.natCast_pos]
-    simp only [Int.gcd_pos_iff, ne_eq]
-    simp only [cons_eq_insert, mem_insert, ne_eq, exists_eq_or_imp] at hf
+    rw [gcd_cons, ← Int.coe_gcd]
     grind
-
-end Int
 
 end Finset
