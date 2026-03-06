@@ -67,6 +67,9 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : Flat f] [hg : Flat g] : Flat (f ≫ g) :=
   MorphismProperty.comp_mem _ f g hf hg
 
+instance : MorphismProperty.Respects @Flat @IsOpenImmersion where
+  postcomp _ _ _ _ := inferInstance
+
 instance : MorphismProperty.IsMultiplicative @Flat where
   id_mem _ := inferInstance
 
