@@ -376,7 +376,7 @@ protected lemma biInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace
     [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
     {κ : Type*} {f : Filtration ι m} {τ : κ → Ω → WithTop ι} {s : Set κ} (hs : s.Countable)
     [f.IsRightContinuous] (hτ : ∀ n ∈ s, IsStoppingTime f (τ n)) :
-    IsStoppingTime f (fun ω ↦ ⨅ (n) (_ : n ∈ s), τ n ω) := by
+    IsStoppingTime f (fun ω ↦ ⨅ n ∈ s, τ n ω) := by
   refine isStoppingTime_of_measurableSet_lt_of_isRightContinuous <|
     fun i ↦ MeasurableSet.of_compl ?_
   rw [(_ : {ω | ⨅ n ∈ s, τ n ω < i}ᶜ = ⋂ n ∈ s, {ω | i ≤ τ n ω})]
