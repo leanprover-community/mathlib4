@@ -204,7 +204,20 @@ theorem sum_simpson_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ
     (N_nonzero : 0 < N) (h_f_int : IntervalIntegrable f volume a (a + N * h)) :
     ∑ i ∈ range N, simpson_midpoint_error f 1 (a + i * h) (a + (i + 1) * h)
       = simpson_midpoint_error f N a (a + N * h) := by
-  sorry
+  simp only [simpson_midpoint_error]
+  have h1 : ∑ i ∈ range N, (simpson_midpoint_integral f 1 (a + i * h) (a + (i + 1) * h) - ∫ x in a + i * h..a + (i + 1) * h, f x)
+          = ∑ i ∈ range N, simpson_midpoint_integral f 1 (a + i * h) (a + (i + 1) * h) - ∑ i ∈ range N, ∫ x in a + i * h..a + (i + 1) * h, f x := by
+    rw [Finset.sum_sub_distrib]
+  rw [h1]
+  have h2 : ∑ i ∈ range N, simpson_midpoint_integral f 1 (a + i * h) (a + (i + 1) * h)
+          = simpson_midpoint_integral f N a (a + N * h) := by
+    apply sum_simpson_midpoint_integral_adjacent_intervals
+    exact N_nonzero
+  rw [h2]
+  -- 证明积分部分：相邻区间上的积分之和等于整个区间上的积分
+  have h3 : ∑ i ∈ range N, ∫ x in a + i * h..a + (i + 1) * h, f x = ∫ x in a..a + N * h, f x := by
+    sorry
+  rw [h3]
 
 /-- The most basic case: error bound for the midpoint rule on a single interval with ordered endpoints.
 Given `F` with `F' = f`, we bound `|(b-a) * F'((a+b)/2) - (F(b) - F(a))|`.
