@@ -398,5 +398,3 @@ lemma ContMDiffCovariantDerivative.affineCombination' [IsManifold I 1 M] [Vector
 end operations
 
 end CovariantDerivative
-
-
