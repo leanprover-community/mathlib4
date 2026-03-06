@@ -239,6 +239,14 @@ theorem laplacian_eq_iteratedFDeriv_complexPlane (f : ℂ → F) :
       iteratedFDeriv ℝ 2 f x ![1, 1] + iteratedFDeriv ℝ 2 f x ![Complex.I, Complex.I] := by
   simp [laplacian_eq_iteratedFDeriv_orthonormalBasis f Complex.orthonormalBasisOneI]
 
+/--
+The Laplacian of a constant function is zero.
+-/
+@[simp] theorem laplacian_const {c : F} :
+    Laplacian.laplacian (fun (_ : E) ↦ c) = 0 := by
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_const_of_ne two_ne_zero,
+    Pi.zero_def]
+
 /-!
 ## Congruence Lemmata for Δ
 -/
@@ -292,6 +300,48 @@ theorem _root_.ContDiffAt.laplacian_add_nhds (h₁ : ContDiffAt ℝ 2 f₁ x) (h
     Δ (f₁ + f₂) =ᶠ[𝓝 x] (Δ f₁) + (Δ f₂) := by
   filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp)] with x h₁x h₂x
   exact h₁x.laplacian_add h₂x
+
+/-- The Laplacian commutes with negation. -/
+theorem laplacianWithin_neg (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
+    (Δ[s] (-f)) x = -(Δ[s] f) x := by
+  simp only [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs hx]
+  rw [iteratedFDerivWithin_neg_apply hs hx]
+  aesop
+
+/-- The Laplacian commutes with negation. -/
+theorem laplacian_neg :
+    Δ (-f) = -(Δ f) := by
+  simp only [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_neg]
+  aesop
+
+/-- The Laplacian commutes with subtraction. -/
+theorem _root_.ContDiffWithinAt.laplacianWithin_sub (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
+    (h₂ : ContDiffWithinAt ℝ 2 f₂ s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
+    (Δ[s] (f₁ - f₂)) x = (Δ[s] f₁) x - (Δ[s] f₂) x := by
+  simp [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs hx,
+    ← Finset.sum_sub_distrib, iteratedFDerivWithin_sub_apply h₁ h₂ hs hx]
+
+/-- The Laplacian commutes with subtraction. -/
+theorem _root_.ContDiffAt.laplacian_sub (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
+    Δ (f₁ - f₂) x = Δ f₁ x - Δ f₂ x := by
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis,
+    ← Finset.sum_sub_distrib, iteratedFDeriv_sub_apply h₁ h₂]
+
+/-- The Laplacian commutes with subtraction. -/
+theorem _root_.ContDiffAt.laplacianWithin_sub_nhdsWithin (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
+    (h₂ : ContDiffWithinAt ℝ 2 f₂ s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
+    Δ[s] (f₁ - f₂) =ᶠ[𝓝[s] x] (Δ[s] f₁) - Δ[s] f₂ := by
+  nth_rw 1 [← s.insert_eq_of_mem hx]
+  filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp),
+    eventually_mem_nhdsWithin] with y h₁y h₂y h₃y
+  rw [s.insert_eq_of_mem hx] at h₃y
+  simp [h₁y.laplacianWithin_sub h₂y hs h₃y]
+
+/-- The Laplacian commutes with subtraction. -/
+theorem _root_.ContDiffAt.laplacian_sub_nhds (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
+    Δ (f₁ - f₂) =ᶠ[𝓝 x] (Δ f₁) - (Δ f₂) := by
+  filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp)] with x h₁x h₂x
+  exact h₁x.laplacian_sub h₂x
 
 /-- The Laplacian commutes with scalar multiplication. -/
 theorem laplacianWithin_smul (v : 𝕜) (hf : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s)

@@ -104,7 +104,7 @@ def withValRingEquiv :
     · generalize_proofs _ _ _ H
       refine isClosed_eq ?_ continuous_id
       exact (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
-        (Padic.denseRange_ratCast p) (uniformContinuous_coe _)).continuous.comp
+        Padic.isDenseInducing_cast_withVal.dense (uniformContinuous_coe _)).continuous.comp
         (continuous_extension)
     · rw [extensionHom_coe]
       apply IsDenseInducing.extend_eq
@@ -114,7 +114,7 @@ def withValRingEquiv :
     · refine isClosed_eq ?_ continuous_id
       refine continuous_extension.comp ?_
       exact (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
-        (Padic.denseRange_ratCast p) (uniformContinuous_coe _)).continuous
+        Padic.isDenseInducing_cast_withVal.dense (uniformContinuous_coe _)).continuous
     · have : ∀ q : ℚ, Padic.isDenseInducing_cast_withVal.extend coe' q = coe'
         ((WithVal.equiv (Rat.padicValuation p)).symm q) := by
         intro q
@@ -177,7 +177,7 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
       (Valued.isClopen_closedBall _ one_ne_zero)
     simpa [Metric.closedBall] using IsUltrametricDist.isClopen_closedBall (0 : ℚ_[p]) one_ne_zero
   | ih a =>
-    rw [Valued.valuedCompletion_apply, ← WithVal.apply_equiv, withValUniformEquiv_cast_apply]
+    rw [Valued.valuedCompletion_apply, ← WithVal.apply_ofVal, withValUniformEquiv_cast_apply]
     exact (norm_rat_le_one_iff_padicValuation_le_one p)
 
 end Padic
