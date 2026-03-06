@@ -382,10 +382,10 @@ theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv v) :=
 theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
   fun _ _ _ ↦ by simpa
 
-/-- The multiplicative equivalence between the `ValueGroup₀` of the valuation on `WithVal v`
-and the valuation `v`. -/
+/-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
+on `WithVal v` and the valuation `v`. -/
 @[simps!]
-def valueGroupEquiv₀ : ValueGroup₀ (instValued v).v ≃* ValueGroup₀ v where
+def valueGroupOrderIso₀ : ValueGroup₀ (instValued v).v ≃*o ValueGroup₀ v where
   toFun := WithZero.map' (valueGroupEquiv v)
   invFun := WithZero.map' (valueGroupEquiv v).symm
   left_inv x := by
@@ -397,36 +397,30 @@ def valueGroupEquiv₀ : ValueGroup₀ (instValued v).v ≃* ValueGroup₀ v whe
     | 0 => simp
     | .coe b => simp
   map_mul' := by simp
-
-lemma valueGroupEquiv₀_restrict (b : WithVal v) :
-    valueGroupEquiv₀ v (Valued.v.restrict b) = v.restrict b.ofVal := by
-  simp [Valued.v.restrict_def, restrict₀_apply, ← apply_ofVal, v.restrict_def]
-  by_cases hb : v b.ofVal = 0 <;> simp [hb]
-
-lemma valueGroupEquiv₀_symm_restrict (b : R) :
-    (valueGroupEquiv₀ v).symm (Valuation.restrict v b) = Valued.v.restrict (toVal v b) := by
-  simp [Valued.v.restrict_def, restrict₀_apply, ← apply_ofVal, v.restrict_def]
-  by_cases hb : v b = 0 <;> simp [hb]
-
-lemma strictMono_valueGroupEquiv₀ :
-    StrictMono (WithVal.valueGroupEquiv₀ v) := by
-  apply WithZero.map'_strictMono (strictMono_valueGroupEquiv v)
-
-lemma strictMono_valueGroupEquiv₀_symm :
-    StrictMono (WithVal.valueGroupEquiv₀ v).symm := by
-  apply WithZero.map'_strictMono (strictMono_valueGroupEquiv_symm v)
-
-/-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
-on `WithVal v` and the valuation `v`. -/
-@[simps!]
-def valueGroupOrderIso₀ : ValueGroup₀ (instValued v).v ≃*o ValueGroup₀ v where
-  __ := WithVal.valueGroupEquiv₀ v
   map_le_map_iff' {a b} := by
     match a, b with
     | 0, 0 => simp
     | 0, .coe _ => simp
     | .coe _, 0 => simp
     | .coe a, .coe b => simp
+
+lemma valueGroupOrderIso₀_restrict (b : WithVal v) :
+    valueGroupOrderIso₀ v (Valued.v.restrict b) = v.restrict b.ofVal := by
+  simp [Valued.v.restrict_def, restrict₀_apply, ← apply_ofVal, v.restrict_def]
+  by_cases hb : v b.ofVal = 0 <;> simp [hb]
+
+lemma valueGroupOrderIso₀_symm_restrict (b : R) :
+    (valueGroupOrderIso₀ v).symm (Valuation.restrict v b) = Valued.v.restrict (toVal v b) := by
+  simp [Valued.v.restrict_def, restrict₀_apply, ← apply_ofVal, v.restrict_def]
+  by_cases hb : v b = 0 <;> simp [hb]
+
+lemma strictMono_valueGroupOrderIso₀ :
+    StrictMono (WithVal.valueGroupOrderIso₀ v) :=
+  WithZero.map'_strictMono (strictMono_valueGroupEquiv v)
+
+lemma strictMono_valueGroupOrderIso₀_symm :
+    StrictMono (WithVal.valueGroupOrderIso₀ v).symm :=
+  WithZero.map'_strictMono (strictMono_valueGroupEquiv_symm v)
 
 end ValueGroup₀
 
