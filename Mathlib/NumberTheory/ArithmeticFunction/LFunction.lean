@@ -166,7 +166,6 @@ theorem ofPowerSeries_apply_pow (q : ℕ) (hq : 1 < q) (f : PowerSeries R) (k : 
     ofPowerSeries q f (q ^ k) = f.coeff k := by
   rw [ofPowerSeries_apply q hq, (Nat.pow_right_injective hq).extend_apply]
 
-@[simp]
 theorem ofPowerSeries_apply_zero (q : ℕ) (f : PowerSeries R) : ofPowerSeries q f 0 = 0 := by
   simp
 
