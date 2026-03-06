@@ -12,8 +12,6 @@ public import Mathlib.Analysis.Complex.Harmonic.Analytic
 # Liouville's Theorem for Harmonic Functions on the Complex Plane
 
 A real-valued, bounded harmonic function on the complex plane is constant.
-
-TODO: Prove this result for harmonic functions with values in vector spaces.
 -/
 
 public section
