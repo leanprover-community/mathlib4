@@ -675,8 +675,7 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
   index_ne_zero := relIndex_ne_zero
 
 @[to_additive]
-lemma isFiniteRelIndex_iff_relIndex_eq_zero {G : Type*} [Group G] {H₁ H₂ : Subgroup G} :
-    H₁.IsFiniteRelIndex H₂ ↔ H₁.relIndex H₂ ≠ 0 :=
+lemma isFiniteRelIndex_iff_relIndex_eq_zero : H.IsFiniteRelIndex K ↔ H.relIndex K ≠ 0 :=
   ⟨fun _ ↦ relIndex_ne_zero, IsFiniteRelIndex.mk⟩
 
 @[to_additive]
@@ -684,13 +683,13 @@ theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
 @[to_additive]
-lemma isFiniteRelIndex_iff_finiteIndex {G : Type*} [Group G] {H₁ H₂ : Subgroup G} :
-    H₁.IsFiniteRelIndex H₂ ↔ (H₁.subgroupOf H₂).FiniteIndex := by
+lemma isFiniteRelIndex_iff_finiteIndex :
+    H.IsFiniteRelIndex K ↔ (H.subgroupOf K).FiniteIndex := by
   rw [isFiniteRelIndex_iff_relIndex_eq_zero, finiteIndex_iff, relIndex]
 
 @[to_additive]
-theorem not_finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
-    ¬ H.FiniteIndex ↔ H.index = 0 := by simp [finiteIndex_iff]
+theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 :=
+  by simp [finiteIndex_iff]
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive (attr := instance_reducible) /-- A finite index subgroup has finite quotient -/]
@@ -756,8 +755,8 @@ theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (index_dvd_of_le h)⟩
 
 @[to_additive]
-lemma isFiniteRelIndex_of_le {G : Type*} [Group G] {H₁ H₂ : Subgroup G} (H₃ : Subgroup G)
-    [H₁.IsFiniteRelIndex H₃] (h : H₁ ≤ H₂) :
+lemma isFiniteRelIndex_of_le {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) [H₁.IsFiniteRelIndex H₃]
+    (h : H₁ ≤ H₂) :
     H₂.IsFiniteRelIndex H₃ := by
   rw [isFiniteRelIndex_iff_finiteIndex] at *
   have : H₁.subgroupOf H₃ ≤ H₂.subgroupOf H₃ := comap_mono h
