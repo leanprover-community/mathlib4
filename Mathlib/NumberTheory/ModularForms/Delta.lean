@@ -35,7 +35,7 @@ function, and proves its key properties including invariance under the generator
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open Set Function Complex Filter Topology
+open Set Function Complex Filter Topology MatrixGroups
 
 open UpperHalfPlane hiding I
 
@@ -151,7 +151,7 @@ lemma delta_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   simp only [he, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
   field_simp [z.ne_zero]
 
-theorem Delta_boundedfactor :
+lemma Delta_boundedfactor :
     Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - cexp (2 * π * Complex.I * (n + 1) * x)) ^ 24) atImInfty
       (𝓝 1) := by
   have htprod : Tendsto (fun q : ℂ ↦ ∏' (n : ℕ), (1 - q ^ (n + 1))) (𝓝 0) (𝓝 1) := by
