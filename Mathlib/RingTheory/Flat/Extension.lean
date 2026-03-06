@@ -375,7 +375,6 @@ noncomputable abbrev toAdjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
     let := adjoinTranscendentalIsScalarTower K S.Ring x nint
     (IsScalarTower.algebraMap_eq _ _ K).symm
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) where
   X₀ := trivial R K
