@@ -175,9 +175,7 @@ theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
   obtain ⟨c, hc0, hc⟩ := T.rayleighQuotient_le_of_norm_mem_resolventSet hT'
   obtain ⟨d, hd0, hd⟩ := (-T).rayleighQuotient_le_of_norm_mem_resolventSet hT''
   refine ⟨min c d, lt_min hc0 hd0, fun x ↦ ?_⟩
-  specialize hc x
-  specialize hd x
-  rw [rayleighQuotient_neg_apply, norm_neg] at hd
+  simp_rw [rayleighQuotient_neg_apply, norm_neg] at hd
   grind
 
 theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
