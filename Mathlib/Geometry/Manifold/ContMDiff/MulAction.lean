@@ -111,26 +111,27 @@ variable {R : Type*} [SMul R N] [ContMDiffConstSMul J n R N]
 /-- The scalar multiplication of a constant and a `C^n` function within a set at a point is `C^n`
 within this set at this point. -/
 theorem ContMDiffWithinAt.const_smul {f : M → N} (c : R) (hf : ContMDiffWithinAt I J n f s x) :
-    ContMDiffWithinAt I J n (fun y ↦ c • f y) s x :=
-  (contMDiff_const_smul (J := J) (n := n) (Γ := R) (N := N) c).contMDiffAt.comp_contMDiffWithinAt
-    x hf
+    ContMDiffWithinAt I J n (c • f) s x := by
+  simpa using
+    (contMDiff_const_smul (J := J) (n := n) (Γ := R) (N := N) c).contMDiffAt.comp_contMDiffWithinAt
+      x hf
 
 /-- The scalar multiplication of a constant and a `C^n` function at a point is `C^n` at this
 point. -/
 theorem ContMDiffAt.const_smul {f : M → N} (c : R) (hf : ContMDiffAt I J n f x) :
-    ContMDiffAt I J n (fun y ↦ c • f y) x := by
+    ContMDiffAt I J n (c • f) x := by
   rw [← contMDiffWithinAt_univ] at *
   exact hf.const_smul c
 
 /-- The scalar multiplication of a constant and a `C^n` function on a domain is `C^n` on this
 domain. -/
 theorem ContMDiffOn.const_smul {f : M → N} (hf : ContMDiffOn I J n f s) (c : R) :
-    ContMDiffOn I J n (fun y ↦ c • f y) s := fun y hy =>
+    ContMDiffOn I J n (c • f) s := fun y hy =>
   (hf y hy).const_smul c
 
 /-- The scalar multiplication of a constant and a `C^n` function is `C^n`. -/
 theorem ContMDiff.const_smul {f : M → N} (hf : ContMDiff I J n f) (c : R) :
-    ContMDiff I J n (fun y ↦ c • f y) := fun y =>
+    ContMDiff I J n (c • f) := fun y =>
   (hf y).const_smul c
 
 end ConstSMul
