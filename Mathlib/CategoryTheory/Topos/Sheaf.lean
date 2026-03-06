@@ -283,7 +283,7 @@ noncomputable def Sheaf.classifier (J : GrothendieckTopology C) :
 /-- Sheaf categories have a subobject classifier. -/
 instance HasClassifier.instSheaf [EssentiallySmall.{w} C] (J : GrothendieckTopology C) :
     HasClassifier (Sheaf J (Type w)) where
-  exists_classifier := ⟨Sheaf.classifier (Functor.inducedTopology (equivSmallModel C).inverse J)
+  exists_classifier := ⟨Sheaf.classifier ((equivSmallModel C).inverse.inducedTopology J)
     |>.ofEquivalence (Equivalence.sheafCongr _ _ (equivSmallModel C) _).symm⟩
 end sheaf
 
