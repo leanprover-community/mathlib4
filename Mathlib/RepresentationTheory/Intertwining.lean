@@ -319,9 +319,8 @@ theorem Equiv.conj_apply_self (g : G) (φ : Equiv ρ σ) : φ.conj (ρ g) = σ g
   ext w
   have := (congr($(φ.symm.toIntertwiningMap.2 g) w)).symm
   simp only [LinearMap.coe_comp, coe_toLinearMap, Function.comp_apply, LinearEquiv.conj_apply_apply,
-    coe_symm, toLinearEquiv_apply, coe_toIntertwiningMap] at *
-  rw [this]
-  simp
+    coe_symm, toLinearEquiv_apply, coe_toIntertwiningMap] at this ⊢
+  simp [this]
 
 section Monoid
 
