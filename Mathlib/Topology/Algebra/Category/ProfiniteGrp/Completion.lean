@@ -79,7 +79,7 @@ def eta : G ⟶ GrpCat.of (completion G) := GrpCat.ofHom {
   map_mul' _ _ := rfl
 }
 
-theorem eta_injective_iff_residuallyFinite : Mono (eta G) ↔ Group.ResiduallyFinite G := by
+theorem mono_eta_iff_residuallyFinite : Mono (eta G) ↔ Group.ResiduallyFinite G := by
   rw [GrpCat.mono_iff_injective, injective_iff_map_eq_one,
     Group.residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
   refine forall_congr' fun g ↦ imp_congr_left ?_
@@ -88,7 +88,7 @@ theorem eta_injective_iff_residuallyFinite : Mono (eta G) ↔ Group.ResiduallyFi
 
 theorem etaFn_injective_iff_residuallyFinite :
     Function.Injective (etaFn G) ↔ Group.ResiduallyFinite G :=
-  (GrpCat.mono_iff_injective (eta G)).symm.trans (eta_injective_iff_residuallyFinite G)
+  (GrpCat.mono_iff_injective (eta G)).symm.trans (mono_eta_iff_residuallyFinite G)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma denseRange : DenseRange (etaFn G) := by

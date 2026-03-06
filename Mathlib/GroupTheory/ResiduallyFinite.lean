@@ -24,14 +24,14 @@ In this file we define residually finite groups and prove some basic properties.
 /-- An additive group `G` is residually finite if the intersection of all finite index normal
 additive subgroups is trivial. -/
 class AddGroup.ResiduallyFinite (G : Type*) [AddGroup G] : Prop where
-  inf_eq_bot : ⨅ H : FiniteIndexNormalAddSubgroup G, H.toAddSubgroup = ⊥
+  iInf_eq_bot : ⨅ H : FiniteIndexNormalAddSubgroup G, H.toAddSubgroup = ⊥
 
 namespace Group
 
 /-- A group `G` is residually finite if the intersection of all finite index normal subgroups is
 trivial. -/
 class ResiduallyFinite (G : Type*) [Group G] : Prop where
-  inf_eq_bot : ⨅ H : FiniteIndexNormalSubgroup G, H.toSubgroup = ⊥
+  iInf_eq_bot : ⨅ H : FiniteIndexNormalSubgroup G, H.toSubgroup = ⊥
 
 attribute [to_additive existing] ResiduallyFinite
 
@@ -40,13 +40,18 @@ variable {G : Type*} [Group G]
 @[to_additive]
 theorem residuallyFinite_def :
     ResiduallyFinite G ↔ ⨅ H : FiniteIndexNormalSubgroup G, H.toSubgroup = ⊥ :=
-  ⟨fun h ↦ h.inf_eq_bot, fun h ↦ ⟨h⟩⟩
+  ⟨fun h ↦ h.iInf_eq_bot, fun h ↦ ⟨h⟩⟩
 
 @[to_additive]
 theorem residuallyFinite_iff_forall_finiteIndexNormalSubgroup :
     ResiduallyFinite G ↔ ∀ g : G, (∀ H : FiniteIndexNormalSubgroup G, g ∈ H) → g = 1 := by
   simp_rw [residuallyFinite_def, Subgroup.eq_bot_iff_forall, Subgroup.mem_iInf,
     FiniteIndexNormalSubgroup.mem_toSubgroup_iff]
+
+@[to_additive]
+theorem eq_one_iff_forall_finiteIndexNormalSubroup [ResiduallyFinite G]
+    (g : G) (hg : ∀ H : FiniteIndexNormalSubgroup G, g ∈ H) : g = 1 :=
+  residuallyFinite_iff_forall_finiteIndexNormalSubgroup.mp ‹_› g hg
 
 @[to_additive]
 theorem residuallyFinite_iff_exists_finiteIndexNormalSubgroup :
