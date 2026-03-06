@@ -693,7 +693,6 @@ lemma exists_contMDiffOn_extend [(x : M) → Module 𝕜 (V x)] [VectorBundle �
   have : ContMDiffOn I 𝓘(𝕜, F) k (fun x_1 ↦ w) t.baseSet := contMDiffOn_const
   refine this.congr ?_
   intro x hx
-  dsimp only
   unfold extend
   rw [t.mk_symm hx, t.apply_symm_apply' hx]
 
@@ -707,9 +706,7 @@ lemma contMDiffAt_extend' {x : M} (σ₀ : V x) :
   apply eventually_nhds_iff.mpr
   refine ⟨t.baseSet, ?_, t.open_baseSet, ?_⟩
   · intro x hx
-    dsimp only
-    unfold extend
-    simp [t, hx, w]
+    simp [extend, t, hx, w]
   · exact FiberBundle.mem_baseSet_trivializationAt' x
 
 lemma exists_mdifferentiableOn_extend [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
