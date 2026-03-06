@@ -113,6 +113,7 @@ theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T) (hμ : μ 
   -- which is a contradiction.
   exact hasEigenvalue_of_hasEigenvector this
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given an endomorphism `S` of a normed space that's a closed embedding but not surjective, we can
 find a sequence of vectors `f n`, living inside a shell, such that `f n` is in the
