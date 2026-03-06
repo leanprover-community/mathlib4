@@ -621,7 +621,7 @@ def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
 theorem insert_eq (x y : ZFSet) : insert x y = {x} ∪ y := by
   ext; simp
 
-theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
+instance mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
     propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
 
@@ -629,9 +629,6 @@ theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
 @[elab_as_elim]
 theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → p x) : p x :=
   mem_wf.induction x h
-
-instance : @WellFounded ZFSet (· ∈ ·) :=
-  mem_wf
 
 instance : WellFoundedRelation ZFSet :=
   ⟨_, mem_wf⟩
