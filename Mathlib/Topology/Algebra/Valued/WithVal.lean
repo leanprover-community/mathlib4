@@ -519,40 +519,26 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   · rw [restrict_pos_iff, hv, h.pos_iff]
     exact hs₀
 
-set_option backward.isDefEq.respectTransparency false in
-lemma IsEquiv.uniformContinuous (h : v.IsEquiv w) :
-    @UniformContinuous R R (Valued.mk' w).toUniformSpace (Valued.mk' v).toUniformSpace
-      (RingHom.id R) := by
-  have h_val : ((Valued.mk' v).v).IsEquiv (Valued.mk' w).v := h
-  have h_res : v.restrict.IsEquiv w.restrict := h_val.restrict
-  refine @uniformContinuous_of_continuousAt_zero _ _ (Valued.mk' w).toUniformSpace _ _
-    _ (Valued.mk' v).toUniformSpace _ _ _ _ (RingHom.id R) ?_
-  simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
-    (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
-  intro x
-  let u := WithZero.unzero (Units.ne_zero x)
-  obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
-  simp only [Set.mem_setOf_eq, RingHom.id_apply]
-  set y₀ := ((h_val).orderMonoidIso x) with hy₀_def
-  have hy₀_ne_zero : y₀ ≠ 0 := by simp [hy₀_def]
-  set y := (Units.mk0 y₀ hy₀_ne_zero) with hy_def
-  use y
-  intro b hb
-  rwa [← (h_val).orderMonoidIso_spec, hy_def, Units.val_mk0, hy₀_def,
-    h_val.orderMonoidIso.strictMono.lt_iff_lt] at hb
-
 theorem IsEquiv.uniformContinuous_congr (h : v.IsEquiv w) :
     UniformContinuous (WithVal.congr v w (.refl R)) := by
-  have hcomp : WithVal.congr v w (.refl R) = _ := RingEquiv.ext_iff.mpr (congrFun rfl)
-  have h1 := IsEquiv.uniformContinuous_equiv (hval := Valued.mk' w) rfl h
-  have h2 := IsEquiv.uniformContinuous_equiv_symm (hval := Valued.mk' v) rfl h
-  have hR : @UniformContinuous R R (Valued.mk' w).toUniformSpace (Valued.mk' v).toUniformSpace
-      (RingHom.id R) := h.uniformContinuous
-  apply @UniformContinuous.comp (WithVal v) R (WithVal w) _ (Valued.mk' w).toUniformSpace _
-    ((RingEquiv.refl R).trans (WithVal.equiv w).symm) (WithVal.equiv v) ?_ h1
-  exact @UniformContinuous.comp R R (WithVal w) (Valued.mk' w).toUniformSpace
-       (Valued.mk' v).toUniformSpace _ (WithVal.equiv w).symm (RingEquiv.refl R) h2 hR
+  refine uniformContinuous_of_continuousAt_zero _ ?_
+  simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
+    (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
+  intro γ
+  simp only [Set.mem_setOf_eq]
+  have h_val : ((Valued.mk' v).v).IsEquiv (Valued.mk' w).v := h
+  let e := h.orderMonoidIso
+  let ew := (WithVal.valueGroupOrderIso₀ w)
+  let ev := (WithVal.valueGroupOrderIso₀ v)
+  let y₀ : ValueGroup₀ (instValued v).v := ev.symm <| e.symm (ew γ.1)
+  refine ⟨.mk0 y₀ (by simp [y₀]), fun b hb ↦ ?_⟩
+  erw [ev.lt_symm_apply, e.lt_symm_apply, ← ew.symm_apply_lt] at hb
+  rw [WithVal.valueGroupOrderIso₀_restrict, h.orderMonoidIso_spec,
+    WithVal.valueGroupOrderIso₀_symm_restrict] at hb
+  exact hb
 
+@[deprecated (since := "2026-03-06")]
+  alias IsEquiv.uniformContinuous := IsEquiv.uniformContinuous_congr
 @[deprecated (since := "2026-01-27")]
   alias IsEquiv.uniformContinuous_equivWithVal := IsEquiv.uniformContinuous_congr
 
