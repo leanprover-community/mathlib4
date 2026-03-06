@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 David Kurniadi Angdinata All rights reserved.
+Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata, Michael Stoll, Junyan Xu
 -/
@@ -11,6 +11,8 @@ public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 /-!
 # Affine schemes associated to Weierstrass curves
 -/
+
+public section
 
 universe u
 
