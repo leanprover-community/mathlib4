@@ -236,6 +236,30 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCD
 
 variable [Nonempty (NormalizedGCDMonoid R)]
 
+lemma IsPrimitive.mul_map_mem_lifts_iff {f : R[X]} (hf : IsPrimitive f) {g : K[X]} :
+    g * f.map (algebraMap R K) ∈ lifts (algebraMap R K) ↔ g ∈ lifts (algebraMap R K) := by
+  let : NormalizedGCDMonoid R := Nonempty.some inferInstance
+  refine ⟨?_, fun h ↦ Subsemiring.mul_mem _ h ⟨_, rfl⟩⟩
+  intro ⟨k, (hk : Polynomial.map _ _ = _)⟩
+  let g' := integerNormalization (nonZeroDivisors R) g
+  obtain ⟨b, hb₁, (hb₂ : Polynomial.map _ g' = _)⟩ :=
+    integerNormalization_spec (nonZeroDivisors R) g
+  have g'_mul_f : g' * f = b • k := by
+    apply Polynomial.map_injective (algebraMap R K) (FaithfulSMul.algebraMap_injective R K)
+    rw [Polynomial.map_smul, algebraMap_smul, hk, ← smul_mul_assoc, ← hb₂, Polynomial.map_mul]
+  use C (normUnit b : R) * C k.content * g'.primPart
+  have := congr($(g'_mul_f).content)
+  simp only [content_mul, hf.content_eq_one, mul_one, smul_eq_C_mul, content_C,
+    normalize_apply] at this
+  rw [← smul_right_inj (nonZeroDivisors.ne_zero hb₁), ← hb₂]
+  rw (occs := [2]) [eq_C_content_mul_primPart g']
+  simp [this, Polynomial.map_mul, map_C, Algebra.smul_def, algebraMap_apply,
+    mul_assoc]
+
+lemma IsPrimitive.map_mul_mem_lifts_iff {f : R[X]} (hf : IsPrimitive f) {g : K[X]} :
+    f.map (algebraMap R K) * g ∈ lifts (algebraMap R K) ↔ g ∈ lifts (algebraMap R K) := by
+  rw [mul_comm, hf.mul_map_mem_lifts_iff]
+
 /-- **Gauss's Lemma** for GCD domains states that a primitive polynomial is irreducible iff it is
   irreducible in the fraction field. -/
 theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp : p.IsPrimitive) :
