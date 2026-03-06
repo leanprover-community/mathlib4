@@ -223,7 +223,6 @@ def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
   right_inv S := by ext x; simpa using ⟨by simp +contextual [eq_comm], fun hx ↦ ⟨x, by simp [hx]⟩⟩
   map_rel_iff' := by simp
 
-@[simp]
 lemma nucleusIsoSublocale.eq_toSublocale :
  Nucleus.toSublocale = @nucleusIsoSublocale X _ ∘ OrderDual.toDual := rfl
 
