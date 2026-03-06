@@ -161,18 +161,6 @@ theorem hasBasis_nhds_zero :
       fun γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ => { x | v.restrict x < γ.1 } := by
   simp [Filter.hasBasis_iff, is_topological_valuation]
 
-/- theorem hasBasis_nhds_zero :
-    (𝓝 (0 : R)).HasBasis (fun _ => True)
-      fun γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ =>
-      { x | v x < (ValueGroup₀.embedding (f := _i.v) γ) } := by
-  simp [Filter.hasBasis_iff, is_topological_valuation] -/
-
-/- open Uniformity in
-theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
-    fun γ : Γ₀ˣ => { p : R × R | v (p.2 - p.1) < (γ : Γ₀) } := by
-  rw [uniformity_eq_comap_nhds_zero]
-  exact (hasBasis_nhds_zero R Γ₀).comap _ -/
-
 open Uniformity in
 theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
     fun γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ =>
