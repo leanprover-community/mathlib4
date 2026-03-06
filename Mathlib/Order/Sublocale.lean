@@ -274,7 +274,7 @@ def getElement : Open X ≃o X where
   right_inv x := rfl
   map_rel_iff' := by aesop
 
-instance : Coe (Open X) X where
+instance : CoeOut (Open X) X where
   coe U := U.getElement
 
 lemma le_def : U ≤ V ↔ U.getElement ≤ V.getElement := ge_iff_le
