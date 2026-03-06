@@ -129,10 +129,10 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Inhabited s]
   { subsetSupSet s, subsetInfSet s, DistribLattice.toLattice, (inferInstance : LinearOrder s) with
     isLUB_csSup t ht h_bdd := .of_image Subtype.coe_le_coe <| by
       rw [← subset_sSup_of_within s ht h_bdd (h_Sup ht h_bdd)]
-      exact isLUB_csSup (ht.image _) ((Subtype.mono_coe s).map_bddAbove h_bdd)
+      exact isLUB_csSup (ht.image _) ((Subtype.mono_coe _).map_bddAbove h_bdd)
     isGLB_csInf t ht h_bdd := .of_image Subtype.coe_le_coe <| by
       rw [← subset_sInf_of_within s ht h_bdd (h_Inf ht h_bdd)]
-      exact isGLB_csInf (ht.image _) ((Subtype.mono_coe s).map_bddBelow h_bdd)
+      exact isGLB_csInf (ht.image _) ((Subtype.mono_coe _).map_bddBelow h_bdd)
     csSup_of_not_bddAbove := fun t ht ↦ by simp [ht]
     csInf_of_not_bddBelow := fun t ht ↦ by simp [ht] }
 
@@ -143,8 +143,8 @@ theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ upperBounds t := h_bdd
   refine hs.out c.2 B.2 ⟨?_, ?_⟩
-  · exact (Subtype.mono_coe s).le_csSup_image hct ⟨B, hB⟩
-  · exact (Subtype.mono_coe s).csSup_image_le ⟨c, hct⟩ hB
+  · exact (Subtype.mono_coe (· ∈ s)).le_csSup_image hct ⟨B, hB⟩
+  · exact (Subtype.mono_coe (· ∈ s)).csSup_image_le ⟨c, hct⟩ hB
 
 /-- The `sInf` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-below subsets of `s`. -/
@@ -153,8 +153,8 @@ theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ lowerBounds t := h_bdd
   refine hs.out B.2 c.2 ⟨?_, ?_⟩
-  · exact (Subtype.mono_coe s).le_csInf_image ⟨c, hct⟩ hB
-  · exact (Subtype.mono_coe s).csInf_image_le hct ⟨B, hB⟩
+  · exact (Subtype.mono_coe (· ∈ s)).le_csInf_image ⟨c, hct⟩ hB
+  · exact (Subtype.mono_coe (· ∈ s)).csInf_image_le hct ⟨B, hB⟩
 
 /-- A nonempty `OrdConnected` set in a conditionally complete linear order is naturally a
 conditionally complete linear order. -/

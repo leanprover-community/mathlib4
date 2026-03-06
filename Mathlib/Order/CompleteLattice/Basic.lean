@@ -950,12 +950,12 @@ theorem iInf_le_iInf_of_subset {f : β → α} {s t : Set β} : s ⊆ t → ⨅ 
   biInf_mono
 
 theorem iSup_insert {f : β → α} {s : Set β} {b : β} :
-    ⨆ x ∈ insert b s, f x = f b ⊔ ⨆ x ∈ s, f x :=
-  Eq.trans iSup_union <| congr_arg (fun x => x ⊔ ⨆ x ∈ s, f x) iSup_iSup_eq_left
+    ⨆ x ∈ insert b s, f x = f b ⊔ ⨆ x ∈ s, f x := by
+  simp [iSup_or, iSup_sup_eq]
 
 theorem iInf_insert {f : β → α} {s : Set β} {b : β} :
-    ⨅ x ∈ insert b s, f x = f b ⊓ ⨅ x ∈ s, f x :=
-  Eq.trans iInf_union <| congr_arg (fun x => x ⊓ ⨅ x ∈ s, f x) iInf_iInf_eq_left
+    ⨅ x ∈ insert b s, f x = f b ⊓ ⨅ x ∈ s, f x := by
+  simp [iInf_or, iInf_inf_eq]
 
 theorem iSup_singleton {f : β → α} {b : β} : ⨆ x ∈ (singleton b : Set β), f x = f b := by simp
 
