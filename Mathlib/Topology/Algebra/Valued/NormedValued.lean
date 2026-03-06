@@ -19,7 +19,9 @@ Nontrivial nonarchimedean norms correspond to rank one valuations.
 * `NormedField.toValued` : the valued field structure on a nonarchimedean normed field `K`,
   determined by the norm.
 * `Valued.toNormedField` : the normed field structure determined by a rank one valuation.
-THE ABOVE DOCS MUST BE UPDATED!
+
+## Main Results
+* The valuation of a normed field has rank at most one.
 
 ## Tags
 
@@ -54,7 +56,6 @@ def valuation : Valuation K ℝ≥0 where
 theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
-
 
 /-- The valuation of a normed field has rank at most one -/
 instance : RankLeOne (valuation (K := K)) where
@@ -92,21 +93,11 @@ def toValued : Valued K ℝ≥0 :=
           simp only [Metric.mem_ball, dist_zero_right]
           simp only [Units.val_mk0, mem_setOf_eq, restrict_lt_iff, ← NNReal.coe_lt_coe] at hy
           apply lt_trans hy
-          simp only [← NNReal.coe_lt_coe, NNReal.coe_mk] at hxy
-          convert hxy
-          simp only [valuation_apply, RankLeOne.hom', valuation.restrict_def,
-            embedding_restrict₀]
+          simpa [RankLeOne.hom', valuation.restrict_def] using hxy
       · rintro ⟨ε, hε⟩
-        let r := embedding ε.1
-        use ((embedding ε.1 : ℝ≥0) : ℝ)
-        refine ⟨?_, ?_⟩
-        · refine NNReal.coe_pos.mpr ?_
-          conv_lhs => rw [← map_zero (embedding (f := valuation (K := K)))]
-          exact embedding_strictMono.lt_iff_lt.mpr (Units.zero_lt ε)
-        · intro x hx
-          apply hε
-          simp only [mem_setOf_eq, restrict_lt_iff_lt_embedding]
-          exact (mem_ball_zero_iff.mp hx) }
+        refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
+        · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr ε.zero_lt
+        · simpa [restrict_lt_iff_lt_embedding] using (mem_ball_zero_iff.mp hx) }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where

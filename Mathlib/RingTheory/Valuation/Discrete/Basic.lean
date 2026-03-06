@@ -120,11 +120,12 @@ lemma generator_ne_zero : (generator v : Γ) ≠ 0 := by simp
 
 /-- Given a discrete valuation `v`, `Valuation.IsRankOneDiscrete.generator` is a generator of
 the value group that is `< 1`, as an element of `valueGroup v`. -/
-noncomputable def generator' : valueGroup v :=
-   ⟨generator v, generator_mem_valueGroup v⟩
+noncomputable def generator' : valueGroup v := ⟨generator v, generator_mem_valueGroup v⟩
 
-lemma generator'_zpowers_eq_top :
-    (zpowers (generator' v)) = ⊤ := by
+@[simp]
+lemma embedding_generator' : ValueGroup₀.embedding (f := v) (generator' v) = generator v := rfl
+
+lemma generator'_zpowers_eq_top : (zpowers (generator' v)) = ⊤ := by
   rw [Subgroup.eq_top_iff', Subtype.forall]
   intro a ha
   rw [← generator_zpowers_eq_valueGroup v, Subgroup.mem_zpowers_iff] at ha

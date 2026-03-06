@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Valuation.RankOne
 
 ## Main Definitions and Results
 * `Valuation.IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt` : the order-preserving isomorphism
-between the `ValueGroup₀` of a discrete valution and `ℤᵐ⁰`.
+between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 * `Valuation.IsRankOneDiscrete.rankOne` : a discrete valuation has rank one.
 
 ## Tags
@@ -24,12 +24,13 @@ valuation, discrete, rank one
 
 namespace Valuation.IsRankOneDiscrete
 
-open scoped WithZero
+open WithZero MonoidWithZeroHom NNReal WithZeroMulInt
 
-open MonoidWithZeroHom NNReal WithZeroMulInt
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
-variable {R Γ : Type*} [CommRing R] [LinearOrderedCommGroupWithZero Γ] (v : Valuation R Γ)
-  [hv : v.IsRankOneDiscrete]
+section Ring
+
+variable {R : Type*} [CommRing R] (v : Valuation R Γ) [hv : v.IsRankOneDiscrete]
 
 /-- An order-preserving isomorphism between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`. -/
 @[simps!]
@@ -52,15 +53,17 @@ lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
     StrictMono (valueGroup₀_equiv_withZeroMulInt v) := by
   intro x y hxy
   simp only [valueGroup₀_equiv_withZeroMulInt, MulEquiv.withZero_apply_apply]
-  rw [(WithZero.map'_strictMono (MulEquiv.strictMono_symm (mulintEquivOfZPowersEqTop_strictMono
+  rwa [(WithZero.map'_strictMono (MulEquiv.strictMono_symm (mulintEquivOfZPowersEqTop_strictMono
     (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)
     (Left.one_lt_inv_iff.mpr hv.generator'_lt_one)))).lt_iff_lt]
-  exact hxy
 
-open WithZero
+end Ring
 
-lemma generator_eq_neg_exp_one_of_surjective {K : Type*} [Field K]
-    {v : Valuation K ℤᵐ⁰} [hv : v.IsRankOneDiscrete] (hsurj : Function.Surjective v) :
+section Field
+
+variable {K : Type*} [Field K] {v : Valuation K ℤᵐ⁰} [hv : v.IsRankOneDiscrete]
+
+lemma generator_eq_neg_exp_one_of_surjective (hsurj : Function.Surjective v) :
     hv.generator = Units.mk0 (WithZero.exp (-1 : ℤ) : ℤᵐ⁰) (by simp) := by
   rw [← valueGroup_genLTOne_eq_generator, eq_comm]
   refine LinearOrderedCommGroup.Subgroup.genLTOne_unique (valueGroup v) ?_ ?_
@@ -78,9 +81,8 @@ lemma generator_eq_neg_exp_one_of_surjective {K : Type*} [Field K]
       simp [zpow_neg, Units.val_inv_eq_inv_val, Units.val_zpow_eq_zpow_val, Units.val_mk0,
         inv_zpow', inv_inv]
 
-lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective {K : Type*} [Field K]
-    {v : Valuation K ℤᵐ⁰} [hv : v.IsRankOneDiscrete] (hsurj : Function.Surjective v) (x : K) :
-    (valueGroup₀_equiv_withZeroMulInt v) (v.restrict x) = v x := by
+lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : Function.Surjective v)
+    (x : K) : (valueGroup₀_equiv_withZeroMulInt v) (v.restrict x) = v x := by
   simp only [Valuation.restrict_def, ValueGroup₀.restrict₀_apply,
     valueGroup₀_equiv_withZeroMulInt_apply]
   split_ifs with h0
@@ -103,13 +105,14 @@ lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective {K : Type*
     simp [WithZero.exp]
 
 /-- A discrete valuation has rank one. -/
-noncomputable def rankOne {K Γ : Type*} [Field K]
-    [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) [hv : v.IsRankOneDiscrete]
+noncomputable def rankOne (v : Valuation K Γ) [hv : v.IsRankOneDiscrete]
     {e : ℝ≥0} (he : 1 < e) : v.RankOne where
   hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp (valueGroup₀_equiv_withZeroMulInt v)
   strictMono' := (toNNReal_strictMono he).comp (valueGroup₀_equiv_withZeroMulInt_strictMono v)
   exists_val_nontrivial := by
     obtain ⟨x, hx⟩ := v.exists_isUniformizer_of_isCyclic_of_nontrivial
     exact ⟨x, hx.val_ne_zero, ne_of_lt hx.val_lt_one⟩
+
+end Field
 
 end Valuation.IsRankOneDiscrete

@@ -97,7 +97,6 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
   simp only [IsValuativeTopology.v_eq_valuation, ← map_mul, Valuation.restrict_le_iff]
   simp [hr]
 
-
 instance : CompactSpace 𝒪[K] := isCompact_iff_compactSpace.mp (isCompact_closedBall K 1)
 
 instance (K : Type*) [Field K] [ValuativeRel K] [UniformSpace K] [IsUniformAddGroup K]
@@ -137,11 +136,10 @@ instance : ValuativeRel.IsRankLeOne K :=
 instance : Finite 𝓀[K] :=
   letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
-  letI : (Valued.v (R := K)).RankOne := {
-    hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
+  letI : (Valued.v (R := K)).RankOne :=
+  { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
     strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
-        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono
-  }
+        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).2.2
 
@@ -155,22 +153,20 @@ variable (K : Type*) [Field K] [ValuativeRel K]
   [UniformSpace K] [IsUniformAddGroup K] [IsNonarchimedeanLocalField K]
 
 instance : CompleteSpace K :=
-  letI : (Valued.v (R := K)).RankOne := {
-    hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
+  letI : (Valued.v (R := K)).RankOne :=
+  { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
     strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
-        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono
-  }
+        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
   open scoped Valued in
   have : ProperSpace K := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace K
   (properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_finite_residueField.mp
     inferInstance).1
 
 instance : CompleteSpace 𝒪[K] :=
-  letI : (Valued.v (R := K)).RankOne := {
-    hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
+  letI : (Valued.v (R := K)).RankOne :=
+  { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
     strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
-        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono
-  }
+        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
 

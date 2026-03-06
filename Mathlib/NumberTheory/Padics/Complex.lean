@@ -5,9 +5,8 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Ultra
+public import Mathlib.Analysis.Normed.Field.Dense
 public import Mathlib.Analysis.Normed.Module.Completion
-public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
@@ -29,6 +28,7 @@ structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 * `PadicComplex.norm_extends` : the norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`, and hence
   the norm on `ℚ_[p]`.
 * `PadicComplex.isNonarchimedean` : The norm on `ℂ_[p]` is nonarchimedean.
+* `PadicComplex.isAlgClosed` : `ℂ_[p]` is algebraically closed.
 
 ## Notation
 
@@ -189,9 +189,6 @@ instance : RankOne (PadicComplex.valued p).v where
 @[simp]
 theorem RankOne.hom_eq_embedding : RankOne.hom (PadicComplex.valued p).v = embedding := rfl
 
-/- lemma rankOne_hom_eq :
-    RankOne.hom (PadicComplex.valued p).v = RankOne.hom (PadicAlgCl.valued p).v := rfl  -/
-
 /-- `ℂ_[p]` is a normed field, where the norm extends from `PadicAlgCl` along completion. -/
 instance normedField : NormedField ℂ_[p] := inferInstance
 
@@ -251,6 +248,11 @@ instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where
 /-- `ℂ_[p]` has characteristic zero. -/
 instance charZero : CharZero ℂ_[p] :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] ℂ_[p]).injective).mp inferInstance
+
+set_option backward.isDefEq.respectTransparency false in
+/-- `ℂ_[p]` is algebrically closed. -/
+instance isAlgClosed : IsAlgClosed ℂ_[p] :=
+  IsAlgClosed.of_denseRange UniformSpace.Completion.denseRange_coe
 
 end PadicComplex
 

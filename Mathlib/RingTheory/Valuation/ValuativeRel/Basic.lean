@@ -1110,18 +1110,17 @@ open MonoidWithZeroHom
 the value group. -/
 noncomputable
 def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
-  toFun := by
-    exact ValuativeRel.ValueGroupWithZero.lift
-      (fun r s ↦ (ValueGroup₀.restrict₀ v r / (ValueGroup₀.restrict₀ v (s : R)))) <| by
-      intro x y r s
-      simp only [h.vle_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
-      rw [div_eq_div_iff]
-      · simp only [ValueGroup₀.restrict₀_apply, Valuation.apply_posSubmonoid_ne_zero, ↓reduceDIte,
-        dite_mul, zero_mul]
-        split_ifs
-        all_goals try simp_all [← WithZero.coe_mul, ← Units.val_inj]
-      · simp [ValueGroup₀.restrict₀]
-      · simp [ValueGroup₀.restrict₀]
+  toFun := ValuativeRel.ValueGroupWithZero.lift
+    (fun r s ↦ (ValueGroup₀.restrict₀ v r / (ValueGroup₀.restrict₀ v (s : R)))) <| by
+    intro x y r s
+    simp only [h.vle_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
+    rw [div_eq_div_iff]
+    · simp only [ValueGroup₀.restrict₀_apply, Valuation.apply_posSubmonoid_ne_zero, ↓reduceDIte,
+      dite_mul, zero_mul]
+      split_ifs
+      all_goals try simp_all [← WithZero.coe_mul, ← Units.val_inj]
+    · simp [ValueGroup₀.restrict₀]
+    · simp [ValueGroup₀.restrict₀]
   map_zero' := by simp [ValueGroupWithZero.lift_zero, ValueGroup₀.restrict₀]
   map_one' := by simp [ValueGroup₀.restrict₀]
   map_mul' _ _ := by
@@ -1153,7 +1152,6 @@ lemma ValueGroupWithZero.embedding_embed_valuation (γ : ValueGroupWithZero R) :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
-  classical
   intro a b h
   obtain ⟨a, r, rfl⟩ := exists_valuation_div_valuation_eq a
   obtain ⟨b, s, rfl⟩ := exists_valuation_div_valuation_eq b
@@ -1199,10 +1197,7 @@ end ValuativeRel
 /-- If `B` is an `A` algebra and both `A` and `B` have valuative relations,
 we say that `B|A` is a valuative extension if the valuative relation on `A` is
 induced by the one on `B`. -/
-class ValuativeExtension
-    (A B : Type*)
-    [CommRing A] [CommRing B]
-    [ValuativeRel A] [ValuativeRel B]
+class ValuativeExtension (A B : Type*) [CommRing A] [CommRing B] [ValuativeRel A] [ValuativeRel B]
     [Algebra A B] where
   vle_iff_vle (a b : A) : algebraMap A B a ≤ᵥ algebraMap A B b ↔ a ≤ᵥ b
 
@@ -1210,8 +1205,7 @@ namespace ValuativeExtension
 
 open ValuativeRel
 
-variable {A B : Type*} [CommRing A] [CommRing B]
-  [ValuativeRel A] [ValuativeRel B] [Algebra A B]
+variable {A B : Type*} [CommRing A] [CommRing B] [ValuativeRel A] [ValuativeRel B] [Algebra A B]
   [ValuativeExtension A B]
 
 lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b := by

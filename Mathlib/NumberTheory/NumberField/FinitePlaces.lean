@@ -142,12 +142,12 @@ open Valuation.IsRankOneDiscrete
 noncomputable instance : (v.valuation K).RankOne :=
   rankOne (v.valuation K) (one_lt_absNorm_nnreal v)
 
-noncomputable instance instRankOneValuedAdicCompletion :
-    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) :=
+noncomputable instance instRankOneAdicCompletion :
+    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).RankOne :=
   rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnreal v)
 
 lemma rankOne_hom'_def :
-    (instRankOneValuedAdicCompletion v).hom' = (toNNReal (absNorm_ne_zero v)).comp
+    (instRankOneAdicCompletion v).hom' = (toNNReal (absNorm_ne_zero v)).comp
       (valueGroup₀_equiv_withZeroMulInt Valued.v).toMonoidWithZeroHom := rfl
 
 /-- The `v`-adic completion of `K` is a normed field. -/
@@ -177,19 +177,14 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
     IsFinitePlace v ↔ ∃ w : FinitePlace K, w.val = v :=
   ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isFinitePlace⟩
 
-open MonoidWithZeroHom in
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
-theorem FinitePlace.norm_def (x : K) :
-    ‖embedding v x‖ = adicAbv v x := by
-  simp +instances only [NormedField.toNorm, instNormedFieldValuedAdicCompletion,
+theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = adicAbv v x := by
+  simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion,
     Valued.toNormedField, Valued.norm, Valuation.RankOne.hom,
-    embedding_apply, WithVal.equiv_symm_apply, adicAbv_def, NNReal.coe_inj,
-    rankOne_hom'_def, comp_apply, MulEquiv.toMonoidWithZeroHom_apply,
-    ((toNNReal_strictMono (one_lt_absNorm_nnreal v)).strictMonoOn .univ).eq_iff_eq
-      (by simp) (by simp), valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective
+    embedding_apply, adicAbv_def, rankOne_hom'_def,
+    valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective
       (valuedAdicCompletion_surjective K v)]
-  simp
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/

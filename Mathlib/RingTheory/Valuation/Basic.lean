@@ -43,6 +43,7 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
   is an element in the ring whose valuation is `≠ 0` and `≠ 1`.
 * `Valuation.IsEquiv`, the heterogeneous equivalence relation on valuations
 * `Valuation.supp`, the support of a valuation
+* `orderMonoidIso` is the ordered isomorphism between the value groups of two equivalent valuations.
 
 * `AddValuation R Γ₀`, the type of additive valuations on `R` with values in a
   linearly ordered additive commutative group with a top element, `Γ₀`.
@@ -481,6 +482,7 @@ lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) : v.restrict x = ValueGroup₀.mk 
   grind -/
 
 set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with h
@@ -488,6 +490,7 @@ lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   · simp [zero_lt_iff.mpr h]
 
 set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
@@ -721,12 +724,12 @@ theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f
 theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
 
--- TODO: rename to eq_iff?
-theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
+theorem eq_iff (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
+@[deprecated (since := "2026-03-05")] alias val_eq := eq_iff
 
 theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := by
-  have : v₁ r = v₁ 0 ↔ v₂ r = v₂ 0 := h.val_eq
+  have : v₁ r = v₁ 0 ↔ v₂ r = v₂ 0 := h.eq_iff
   rwa [v₁.map_zero, v₂.map_zero] at this
 
 @[deprecated "use `(eq_zero _).ne` instead." (since := "2026-01-05")]
@@ -737,8 +740,7 @@ lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} : 0 < v₁ x ↔ 0 < v₂ x := by
   rw [zero_lt_iff, zero_lt_iff, h.eq_zero.ne]
 
 lemma le_iff_le (h : v₁.IsEquiv v₂) {x y : R} :
-    v₁ x ≤ v₁ y ↔ v₂ x ≤ v₂ y := by
-  rw [h]
+    v₁ x ≤ v₁ y ↔ v₂ x ≤ v₂ y := h x y
 
 lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
     v₁ x < v₁ y ↔ v₂ x < v₂ y := by
@@ -754,7 +756,7 @@ lemma one_le_iff_one_le (h : v₁.IsEquiv v₂) {x : R} :
 
 lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x = 1 ↔ v₂ x = 1 := by
-  rw [← v₁.map_one, h.val_eq, map_one]
+  rw [← v₁.map_one, h.eq_iff, map_one]
 
 lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x < 1 ↔ v₂ x < 1 := by
@@ -795,7 +797,6 @@ theorem isNontrivial_of_isEquiv (h : v.IsEquiv v') (hv : v.IsNontrivial) : v'.Is
 theorem IsEquiv.isNontrivial_iff (h : v.IsEquiv v') :
     v.IsNontrivial ↔ v'.IsNontrivial :=
   ⟨fun hv ↦ isNontrivial_of_isEquiv h hv, fun hv ↦ isNontrivial_of_isEquiv h.symm hv⟩
-
 
 end LinearOrderedCommMonoidWithZero
 
@@ -1349,7 +1350,7 @@ theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
   Valuation.IsEquiv.comap f h
 
 theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s :=
-  Valuation.IsEquiv.val_eq h
+  Valuation.IsEquiv.eq_iff h
 
 theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) :=
   (Valuation.IsEquiv.eq_zero h).ne

@@ -570,8 +570,7 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
           rw [dif_pos (map_zero _)]
           · simp only [valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
               MulEquiv.ofBijective_apply, coe_mk, ZeroHom.coe_mk]
-            rw [Valuation.restrict_def, restrict₀_apply]
-            rw [dif_neg]
+            rw [Valuation.restrict_def, restrict₀_apply, dif_neg]
             · have hext : hv.extension 0 = 0 := by rw [extension_eq_zero_iff]
               simp [hext]
             · rw [Valuation.zero_iff, Completion.coe_eq_zero_iff, ← v.restrict.zero_iff,

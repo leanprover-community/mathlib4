@@ -24,7 +24,7 @@ elements in `range f` and `MonoidWithZeroHom.ValueGroup₀` adds a `0` to the pr
 
 When `B` is commutative, then both `MonoidWithZeroHom.valueGroup f` and
 `MonoidWithZeroHom.ValueGroup₀ f` are also commutative and the former can be described more
-explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`).
+explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm` and `mem_valueGroup_iff_of_comm'`).
 
 ## Main declarations
 
@@ -224,6 +224,7 @@ section CommGroupWithZero
 --
 variable [MonoidWithZero A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
 
+/- See also `mem_valueGroup_iff_of_comm'` for a version proving that `f x ≠ 0`. -/
 theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
     y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, x, hy⟩ ↦ ?_⟩
