@@ -370,15 +370,15 @@ lemma isCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x 
   exact isCompatible_apply_aux this
 
 lemma isCompatible_iff [FiniteDimensional ℝ E] :
-    cov.IsCompatible ↔ ∀ {x : M} (X : (x : M) → TangentSpace I x) {Y Z : (x : M) → TangentSpace I x}
-      (_hY : MDiffAt (T% Y) x) (_hZ : MDiffAt (T% Z) x),
+    cov.IsCompatible ↔ ∀ {x : M} {X Y Z : (x : M) → TangentSpace I x}
+      (_hX : MDiffAt (T% X) x) (_hY : MDiffAt (T% Y) x) (_hZ : MDiffAt (T% Z) x),
       mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x := by
-  refine ⟨fun hcov x X Y Z hY hZ ↦ cov.isCompatible_apply hcov hY hZ, fun h ↦ ?_⟩
+  refine ⟨fun hcov x X Y Z hX hY hZ ↦ cov.isCompatible_apply hcov hY hZ, fun h ↦ ?_⟩
   unfold IsCompatible
   ext x X₀ Y₀ Z₀
   rw [metricTensor_apply', sub_sub, sub_eq_iff_eq_add']
   simp only [Pi.zero_apply, ContinuousLinearMap.zero_apply, add_zero]
-  convert h (_root_.extend E Z₀) (mdifferentiableAt_extend I E X₀)
+  convert h (mdifferentiableAt_extend I E Z₀) (mdifferentiableAt_extend I E X₀)
     (mdifferentiableAt_extend I E Y₀)
   simp [fromTangentSpace, extend_apply_self]
 
@@ -711,11 +711,12 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
   rw [rhs_aux_smulY_apply I X hf hY hZ, rhs_aux_smulZ_apply I Z hf hX hY]
   -- TODO: is there a better abstraction for this kind of "Lie bracket conv mode"?
   have h1 : ⟪Z, mlieBracket I (f • Y) X⟫ x =
-      - (fromTangentSpace _).toFun (((mfderiv% f x) (X x))) • ⟪Z, Y⟫ x + f x • ⟪Z, mlieBracket I Y X⟫ x := by
+      - (fromTangentSpace _).toFun (((mfderiv% f x) (X x))) • ⟪Z, Y⟫ x
+      + f x • ⟪Z, mlieBracket I Y X⟫ x := by
     simp_rw [product_apply, mlieBracket_smul_left (W := X) hf hY, inner_add_right]
     congr
-    · simp only [neg_smul, inner_neg_right, fromTangentSpace, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul,
-      neg_mul, neg_inj]
+    · simp only [neg_smul, inner_neg_right, fromTangentSpace, AddHom.toFun_eq_coe, AddHom.coe_mk,
+        smul_eq_mul, neg_mul, neg_inj]
       rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
   have h2 : ⟪X, mlieBracket I Z (f • Y)⟫ x =
@@ -1055,27 +1056,43 @@ theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     inner ℝ (LeviCivitaConnection I M Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x :=
   lcAux_apply _ hX hY hZ
 
--- Why is everything SOOOO slow here?
+-- Side computation for `leviCivitaConnection_isCompatible`.
+lemma leviCivitaConnection_isCompatible_aux [FiniteDimensional ℝ E]
+    {x : M} {X Y Z : (x : M) → TangentSpace I x} :
+    leviCivitaRhs I X Y Z x + leviCivitaRhs I X Z Y x =
+    ((mfderiv% fun x ↦ inner ℝ (Y x) (Z x)) x) (X x) := by
+  simp only [leviCivitaRhs, Pi.smul_apply, ← smul_add,  leviCivitaRhs']
+  -- Normalise the expressions by swapping arguments for rhs_aux and mlieBracket,
+  -- until the swappable arguments are in order X < Y < Z.
+  rw [rhs_aux_swap I Z Y, rhs_aux_swap I Z X, rhs_aux_swap I Y X,
+    VectorField.mlieBracket_swap (V := Z) (W := Y),
+    VectorField.mlieBracket_swap (V := Y) (W := X),
+    VectorField.mlieBracket_swap (V := Z) (W := X)]
+  -- Observe that the right hand side is rhx_aux X Y Z; then we just need to simplify and rearrange.
+  trans 1 / 2 * (rhs_aux I X Y Z x + rhs_aux I X Y Z x)
+  · simp
+    abel
+  · rw [← two_mul, ← mul_assoc, one_div, inv_mul_cancel₀ (by simp), one_mul]
+
+-- Why is everything so slow?
 lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).IsCompatible := by
   rw [isCompatible_iff]
-  intro x X Y Z hY hZ
+  intro x X Y Z hX hY hZ
   symm
   unfold product
   dsimp
-  have hX : MDiffAt (T% X) x := sorry -- missing hypothesis, it seems
   rw [leviCivitaConnection_apply I hX hY hZ]
   have : inner ℝ (Y x) (((LeviCivitaConnection I M) Z x) (X x)) =
-      inner ℝ (((LeviCivitaConnection I M) Z x) (X x)) (Y x) := sorry
+      inner ℝ (((LeviCivitaConnection I M) Z x) (X x)) (Y x) := by
+    rw [real_inner_comm]
+  -- TODO: why does the following line not work, but `rw [this]` does?
+  --rw [real_inner_comm]
   rw [this]
   have : inner ℝ (((LeviCivitaConnection I M) Z x) (X x)) (Y x) = leviCivitaRhs I X Z Y x := by
     rw [leviCivitaConnection_apply I hX hZ hY]
-  rw [leviCivitaConnection_apply I hX hZ hY]
-  rw [leviCivitaRhs_apply, leviCivitaRhs_apply]
-  -- to be continued
-  sorry
+  rw [leviCivitaConnection_apply I hX hZ hY, leviCivitaConnection_isCompatible_aux]
 
-#exit
 lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).IsTorsionFree := by
   have a := (LeviCivitaConnection I M).isCovariantDerivativeOn
@@ -1111,11 +1128,10 @@ lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
   match_scalars <;> simp
   norm_num
 
-#exit
-
 lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaConnection :=
   ⟨leviCivitaConnection_isCompatible I, leviCivitaConnection_isTorsionFree I⟩
 
+#exit
 -- TODO: move this section to `Torsion.lean`
 section
 
