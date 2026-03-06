@@ -214,6 +214,42 @@ lemma finite_of_finite [Module.Finite R S] (hfin : Finite (ResidueField R)) :
 
 end FiniteDimensional
 
+section algMap
+
+variable {A : Type*} [CommRing A] [Algebra A R] [Algebra A S] [Algebra A T]
+
+/-- The algebra map version of `IsLocalRing.ResidueField.map`. -/
+noncomputable def mapₐ (f : R →ₐ[A] S) [IsLocalHom f] :
+    ResidueField R →ₐ[A] ResidueField S where
+  __ := map f
+  commutes' r := by
+    rw [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      MonoidHom.coe_coe, IsScalarTower.algebraMap_apply A R (ResidueField R) r, algebraMap_eq,
+      ← RingHom.comp_apply, map_comp_residue, RingHom.coe_comp, RingHom.coe_coe,
+      Function.comp_apply, AlgHom.commutes, IsScalarTower.algebraMap_apply A S (ResidueField S) r,
+      algebraMap_eq]
+
+lemma mapₐ_apply (f : R →ₐ[A] S) [IsLocalHom f] (x : ResidueField R) :
+    mapₐ f x = map f x := rfl
+
+@[simp]
+lemma mapₐ_id : mapₐ (AlgHom.id A R) = AlgHom.id A (ResidueField R) := by ext; simp [mapₐ_apply]
+
+theorem mapₐ_comp (f : R →ₐ[A] S) (g : S →ₐ[A] T) [IsLocalHom f] [IsLocalHom g] :
+    mapₐ (g.comp f) = (mapₐ g).comp (mapₐ f) := by ext; simp [AlgHom.comp_toRingHom, mapₐ_apply]
+
+/-- An algebra isomorphism defines an algebra isomorphism between residue fields. -/
+noncomputable def mapAlgEquiv (f : R ≃ₐ[A] S) : ResidueField R ≃ₐ[A] ResidueField S :=
+  .ofRingEquiv (f := mapEquiv f.toRingEquiv) fun r ↦ by
+    simp_rw [AlgEquiv.toRingEquiv_eq_coe, mapEquiv_apply, ← AlgEquiv.coe_ringHom_commutes,
+      ← mapₐ_apply, AlgHom.commutes]
+
+@[simp]
+lemma mapAlgEquiv_apply (f : R ≃ₐ[A] S) (x : ResidueField R) :
+    mapAlgEquiv f x = mapₐ (f : R →ₐ[A] S) x := rfl
+
+end algMap
+
 end ResidueField
 
 @[deprecated (since := "2025-10-06")]
