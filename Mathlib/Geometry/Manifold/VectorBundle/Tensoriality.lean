@@ -12,6 +12,25 @@ import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 /-!
 # The tensoriality criterion
 
+Given vector bundles `V` and `W` over a manifold `M`, one can construct a section of the hom-bundle
+`Π x, V x →L[𝕜] W x` from a *tensorial* operation sending sections of `V` to sections of `W`.
+This file provides this construction.
+
+In fact, we define tensoriality, and provide the above criterion, in slightly greater generality:
+for operations sending sections of `V` to a vector space `A` (which in the above application is the
+fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] A`.
+
+## Main definitions
+
+* `TensorialAt`: Propositional structure stating that an operation on sections of a vector bundle
+  `V` is tensorial.
+
+* `TensorialAt.mkHom`: An operation on sections of `V` which is tensorial at `x` defines a
+  continuous linear map out of `V x`.
+
+* `TensorialAt.mkHom₂`: An operation on sections of `V` and `V'` which is tensorial at `x` in both
+  arguments defines a continuous bilinear map out of `V x` and `V' x`.
+
 -/
 open Bundle Topology Module
 
