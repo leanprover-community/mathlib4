@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Page
-public import Mathlib.CategoryTheory.ComposableArrows.Three
 
 /-!
 # Differentials of a spectral object
