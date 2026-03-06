@@ -181,7 +181,7 @@ theorem finrank_eq_two_of_isRamified (w : InfinitePlace L)
         erw [(LiesOver.extensionEmbedding_liesOver_of_isReal w <| h.liesOver_isReal_under w v).over]
         simp [RingHom.ext_iff]
         intro
-        erw [ringEquivRealOfIsReal_apply]
+        erw [RingEquiv.ofBijective_apply]
         rw [extensionEmbeddingOfIsReal_apply]),
     Complex.finrank_real_complex]
 
