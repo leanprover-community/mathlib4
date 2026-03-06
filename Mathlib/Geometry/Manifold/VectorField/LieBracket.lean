@@ -360,6 +360,7 @@ Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a 
 lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDiffAt[s] f x)
     (hW : MDiffAt[s] (fun x ↦ (W x : TangentBundle I M)) x)
     (hs : UniqueMDiffWithinAt I s x) :
+    -- TODO: add fromTangentSpace
     mlieBracketWithin I V (f • W) s x =
       (mfderivWithin I 𝓘(𝕜) f s x) (V x) • (W x) + (f x) • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin, mpullbackWithin_smul]
@@ -390,7 +391,9 @@ Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a 
 -/
 lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDiffAt f x)
     (hW : MDiffAt (fun x ↦ (W x : TangentBundle I M)) x) :
-    mlieBracket I V (f • W) x = (mfderiv% f x) (V x) • (W x) + (f x) • mlieBracket I V W x := by
+    mlieBracket I V (f • W) x =
+      NormedSpace.fromTangentSpace (f x) (mfderiv% f x (V x)) • (W x)
+      + (f x) • mlieBracket I V W x := by
   rw [← mdifferentiableWithinAt_univ] at hf hW
   rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_right hf hW (uniqueMDiffWithinAt_univ I)
@@ -404,6 +407,7 @@ lemma mlieBracketWithin_smul_left {f : M → 𝕜} (hf : MDiffAt[s] f x)
     (hV : MDiffAt[s] (fun x ↦ (V x : TangentBundle I M)) x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (f • V) W s x =
+      -- TODO: add fromTangentSpace!
       -(mfderivWithin I 𝓘(𝕜) f s x) (W x) • (V x) + (f x) • mlieBracketWithin I V W s x := by
   rw [mlieBracketWithin_swap, Pi.neg_apply, mlieBracketWithin_smul_right hf hV (V := W) hs,
     mlieBracketWithin_swap]
@@ -417,7 +421,8 @@ Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a 
 lemma mlieBracket_smul_left {f : M → 𝕜} (hf : MDiffAt f x)
     (hV : MDiffAt (fun x ↦ (V x : TangentBundle I M)) x) :
     mlieBracket I (f • V) W x =
-      -(mfderiv% f x) (W x) • (V x) + (f x) • mlieBracket I V W x := by
+      - (NormedSpace.fromTangentSpace (f x) (mfderiv% f x (W x))) • (V x)
+      + (f x) • mlieBracket I V W x := by
   rw [← mdifferentiableWithinAt_univ] at hf hV
   rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_left hf hV (uniqueMDiffWithinAt_univ I)
