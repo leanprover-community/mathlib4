@@ -100,7 +100,7 @@ section pointwiseModule
 
 lemma pointwise_smul_support_finite {ι R M : Type*} [Zero M] [SMulZeroClass R M] (f : ι → R)
     (g : ι →₀ M) : (fun x ↦ f x • g x).support.Finite :=
-  Set.Finite.subset g.hasFiniteSupport (by intro; simp; grind [smul_zero])
+  Set.Finite.subset g.hasFiniteSupport (by simp; grind [smul_zero])
 
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
 -- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an
@@ -116,12 +116,12 @@ instance pointwiseScalarModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [
 
 @[simp]
 theorem coe_pointwise_smul {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    (f : ι → R) (g : ι →₀ M) : ⇑(f • g) = f • ⇑g := by rfl
+    (f : ι → R) (g : ι →₀ M) : ⇑(f • g) = f • ⇑g := rfl
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
 instance pointwiseModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ι → R) (ι →₀ M) :=
-  Function.Injective.module _ coeFnAddHom DFunLike.coe_injective (by intros; rfl)
+  Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
 
 instance {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     IsScalarTower R (ι → R) (ι →₀ M) where
