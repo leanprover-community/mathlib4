@@ -128,7 +128,7 @@ theorem id_mem_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 d 
 
 /-- A subgroupoid seen as a quiver on vertex set `C` -/
 def asWideQuiver : Quiver C :=
-  ⟨fun c d => Subtype <| S.arrows c d⟩
+  ⟨fun c d => S.arrows c d⟩
 
 /-- The coercion of a subgroupoid as a groupoid -/
 @[simps comp_coe, simps -isSimp inv_coe]
@@ -171,6 +171,8 @@ def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c) where
 instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
   coe := toSet
   coe_injective' := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext c d f; apply Set.ext_iff.1 h ⟨c, d, f⟩
+
+instance : PartialOrder (Subgroupoid C) := .ofSetLike (Subgroupoid C) (Σ c d : C, c ⟶ d)
 
 theorem mem_iff (S : Subgroupoid C) (F : Σ c d, c ⟶ d) : F ∈ S ↔ F.2.2 ∈ S.arrows F.1 F.2.1 :=
   Iff.rfl

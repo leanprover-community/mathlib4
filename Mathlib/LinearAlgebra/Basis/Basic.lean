@@ -87,6 +87,9 @@ protected theorem linearIndependent : LinearIndependent R b :=
   fun x y hxy => by
     rw [← b.repr_linearCombination x, hxy, b.repr_linearCombination y]
 
+protected lemma linearIndepOn (s : Set ι) : LinearIndepOn R b s :=
+  b.linearIndependent.linearIndepOn s
+
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
   b.linearIndependent.ne_zero i
 
@@ -255,25 +258,10 @@ section Module.IsTorsionFree
 protected lemma isTorsionFree (b : Basis ι R M) :
     Module.IsTorsionFree R M := b.repr.injective.moduleIsTorsionFree _ (by simp)
 
+protected theorem smul_eq_zero [IsDomain R] (b : Basis ι R M) {c : R} {x : M} :
+    c • x = 0 ↔ c = 0 ∨ x = 0 := by have := b.isTorsionFree; exact smul_eq_zero
+
 end Module.IsTorsionFree
-
-section NoZeroSMulDivisors
-
--- Can't be an instance because the basis can't be inferred.
-protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
-    NoZeroSMulDivisors R M :=
-  ⟨fun {c x} hcx => by
-    exact or_iff_not_imp_right.mpr fun hx => by
-      rw [← b.linearCombination_repr x, ← map_smul, ← map_zero (linearCombination R b)] at hcx
-      have := b.linearIndependent hcx
-      rw [smul_eq_zero] at this
-      exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩
-
-protected theorem smul_eq_zero [NoZeroDivisors R] (b : Basis ι R M) {c : R} {x : M} :
-    c • x = 0 ↔ c = 0 ∨ x = 0 :=
-  @smul_eq_zero _ _ _ _ _ b.noZeroSMulDivisors _ _
-
-end NoZeroSMulDivisors
 
 section Singleton
 
@@ -302,4 +290,15 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M]
       exact (w y).choose_spec
 
 end Singleton
-end Module.Basis
+end Basis
+
+open Fintype in
+lemma card_fintype [Semiring R] [AddCommMonoid M] [Module R M] [Fintype ι] (b : Basis ι R M)
+    [Fintype R] [Fintype M] :
+    card M = card R ^ card ι := by
+  classical
+    calc
+      card M = card (ι → R) := card_congr b.equivFun.toEquiv
+      _ = card R ^ card ι := by simp
+
+end Module

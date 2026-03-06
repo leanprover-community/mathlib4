@@ -73,7 +73,7 @@ instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedRela
 instance instPreorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) where
   le_refl := refl_of <| Prod.Lex _ _
   le_trans _ _ _ := trans_of <| Prod.Lex _ _
-  lt_iff_le_not_ge x₁ x₂ := by aesop (add simp [le_iff, lt_iff, lt_iff_le_not_ge])
+  lt_iff_le_not_ge x₁ x₂ := by grind [le_iff, lt_iff, lt_iff_le_not_ge]
 
 /-- See also `monotone_fst_ofLex` for a version stated in terms of `Monotone`. -/
 theorem monotone_fst [Preorder α] [LE β] (t c : α ×ₗ β) (h : t ≤ c) :
@@ -154,9 +154,11 @@ theorem _root_.lexOrd_eq [Ord α] [Ord β] : @lexOrd α β _ _ = instOrdLexProd 
 
 theorem _root_.Ord.lex_eq [oα : Ord α] [oβ : Ord β] : Ord.lex oα oβ = instOrdLexProd := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Ord α] [Ord β] [Std.OrientedOrd α] [Std.OrientedOrd β] : Std.OrientedOrd (α ×ₗ β) :=
   inferInstanceAs (Std.OrientedCmp (compareLex _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Ord α] [Ord β] [Std.TransOrd α] [Std.TransOrd β] : Std.TransOrd (α ×ₗ β) :=
   inferInstanceAs (Std.TransCmp (compareLex _ _))
 

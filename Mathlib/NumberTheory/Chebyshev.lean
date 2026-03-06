@@ -78,6 +78,11 @@ theorem psi_nonneg (x : ℝ) : 0 ≤ ψ x :=
 theorem theta_nonneg (x : ℝ) : 0 ≤ θ x :=
   sum_nonneg fun n hn ↦ log_nonneg (by aesop)
 
+theorem theta_pos {x : ℝ} (hy : 2 ≤ x) : 0 < θ x := by
+  refine sum_pos (fun n hn ↦ log_pos ?_) ⟨2, ?_⟩
+  · simp only [mem_filter] at hn; exact_mod_cast hn.2.one_lt
+  · simpa using ⟨(le_floor_iff (by grind : 0 ≤ x)).2 hy, Nat.prime_two⟩
+
 theorem psi_eq_sum_Icc (x : ℝ) :
     ψ x = ∑ n ∈ Icc 0 ⌊x⌋₊, Λ n := by
   rw [psi, ← add_sum_Ioc_eq_sum_Icc] <;> simp
@@ -250,6 +255,7 @@ theorem psi_le {x : ℝ} (hx : 1 ≤ x) :
     · exact theta_le_log4_mul_x (by linarith)
   _ = _ := by ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Chebyshev's bound `ψ x ≤ c x` with an explicit constant.
 Note that `Chebyshev.psi_le` gives a sharper bound with a better main term. -/
 theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :

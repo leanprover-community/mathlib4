@@ -18,12 +18,12 @@ In this file, we assume `A` is an integrally closed domain; `K` is the fraction 
 `L` is a finite extension of `K`; `B` is the integral closure of `A` in `L`.
 We call this the AKLB setup.
 
-## Main definition
+## Main definitions
 - `galRestrict`: The restriction `Aut(L/K) → Aut(B/A)` as an `MulEquiv` in an AKLB setup.
 - `Algebra.intTrace`: The trace map of a finite extension of integrally closed domains `B/A` is
-defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
+  defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
 - `Algebra.intNorm`: The norm map of a finite extension of integrally closed domains `B/A` is
-defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
+  defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
 
 -/
 
@@ -49,6 +49,7 @@ section galRestrict'
 variable {K L L₂ L₃}
 omit [IsFractionRing A K]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A generalization of `galRestrictHom` beyond endomorphisms. -/
 noncomputable
 def galRestrict' (f : L →ₐ[K] L₂) : (B →ₐ[A] B₂) :=
@@ -56,6 +57,7 @@ def galRestrict' (f : L →ₐ[K] L₂) : (B →ₐ[A] B₂) :=
       (((f.restrictScalars A).comp (IsScalarTower.toAlgHom A B L)).codRestrict
         (integralClosure A L₂) (fun x ↦ IsIntegral.map _ (IsIntegralClosure.isIntegral A L x)))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algebraMap_galRestrict'_apply (σ : L →ₐ[K] L₂) (x : B) :
     algebraMap B₂ L₂ (galRestrict' A B B₂ σ x) = σ (algebraMap B L x) := by
@@ -67,6 +69,7 @@ theorem galRestrict'_id : galRestrict' A B B (.id K L) = .id A B := by
   apply IsIntegralClosure.algebraMap_injective B A L
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem galRestrict'_comp (σ : L →ₐ[K] L₂) (σ' : L₂ →ₐ[K] L₃) :
     galRestrict' A B B₃ (σ'.comp σ) = (galRestrict' A B₂ B₃ σ').comp (galRestrict' A B B₂ σ) := by
   ext x
@@ -121,6 +124,7 @@ theorem galLift_comp [Algebra.IsAlgebraic K L₂] (σ : B →ₐ[A] B₂) (σ' :
   AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
     <| RingHom.ext fun x ↦ by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem galLift_galRestrict' (σ : L →ₐ[K] L₂) :
     galLift K L L₂ (galRestrict' A B B₂ σ) = σ :=
@@ -129,6 +133,7 @@ theorem galLift_galRestrict' (σ : L →ₐ[K] L₂) :
   AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
     <| RingHom.ext fun x ↦ by simp [galRestrict', Subalgebra.algebraMap_eq, galLift]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem galRestrict'_galLift (σ : B →ₐ[A] B₂) :
     galRestrict' A B B₂ (galLift K L L₂ σ) = σ :=
@@ -218,6 +223,9 @@ instance (priority := 900) [IsDomain A] [IsDomain B] [IsIntegrallyClosed B]
     [Module.Finite A B] [IsTorsionFree A B] : Fintype (B ≃ₐ[A] B) :=
   haveI : IsIntegralClosure B A (FractionRing B) :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
+  -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
+  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
+    isAlgebraic_of_isFractionRing (R := A) (S := B) ..
   haveI : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) (FractionRing B) :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
@@ -230,6 +238,7 @@ variable [IsLocalization (Algebra.algebraMapSubmonoid B M) Bₘ]
 
 section trace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of the trace on `L/K` restricted onto `B/A` in an AKLB setup.
 See `Algebra.intTrace` instead. -/
 noncomputable
@@ -243,6 +252,7 @@ def Algebra.intTraceAux [IsIntegrallyClosed A] :
 
 variable {A K L B}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Algebra.map_intTraceAux [IsIntegrallyClosed A] (x : B) :
     algebraMap A K (Algebra.intTraceAux A K L B x) = Algebra.trace K L (algebraMap B L x) :=
   IsIntegralClosure.algebraMap_equiv A (integralClosure A K) K A _
@@ -257,6 +267,9 @@ noncomputable
 def Algebra.intTrace : B →ₗ[A] A :=
   haveI : IsIntegralClosure B A (FractionRing B) :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
+  -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
+  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
+    isAlgebraic_of_isFractionRing (R := A) (S := B) ..
   haveI : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
@@ -268,6 +281,9 @@ lemma Algebra.algebraMap_intTrace (x : B) :
     algebraMap A K (Algebra.intTrace A B x) = Algebra.trace K L (algebraMap B L x) := by
   haveI : IsIntegralClosure B A (FractionRing B) :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
+  -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
+  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
+    isAlgebraic_of_isFractionRing (R := A) (S := B) ..
   haveI : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
@@ -285,6 +301,9 @@ lemma Algebra.algebraMap_intTrace_fractionRing (x : B) :
       Algebra.trace (FractionRing A) (FractionRing B) (algebraMap B _ x) := by
   haveI : IsIntegralClosure B A (FractionRing B) :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
+  -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
+  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
+    isAlgebraic_of_isFractionRing (R := A) (S := B) ..
   haveI : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
@@ -296,6 +315,9 @@ lemma Algebra.intTrace_eq_trace [Module.Free A B] : Algebra.intTrace A B = Algeb
   ext x
   haveI : IsIntegralClosure B A (FractionRing B) :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
+  -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
+  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
+    isAlgebraic_of_isFractionRing (R := A) (S := B) ..
   haveI : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   apply IsFractionRing.injective A (FractionRing A)
@@ -317,6 +339,9 @@ lemma Algebra.intTrace_eq_of_isLocalization
   let L := FractionRing B
   have : IsIntegralClosure B A L :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
+  -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
+  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
+    isAlgebraic_of_isFractionRing (R := A) (S := B) ..
   have : IsLocalization (algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   let f : Aₘ →+* K := IsLocalization.map _ (T := A⁰) (RingHom.id A) hM
@@ -498,13 +523,16 @@ variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
 
 lemma Algebra.algebraMap_intNorm_of_isGalois [IsGalois (FractionRing A) (FractionRing B)] {x : B} :
     algebraMap A B (Algebra.intNorm A B x) = ∏ σ : B ≃ₐ[A] B, σ x := by
+  haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
   rw [← (galRestrict A (FractionRing A) (FractionRing B) B).toEquiv.prod_comp]
   simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe]
   convert (prod_galRestrict_eq_norm A (FractionRing A) (FractionRing B) B x).symm
 
+set_option backward.isDefEq.respectTransparency false in
 open Polynomial IsScalarTower in
 theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intNorm A B x) := by
   classical
+  haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
   by_cases hx : x = 0
   · exact ⟨1, by simp [hx]⟩
   let K := FractionRing A

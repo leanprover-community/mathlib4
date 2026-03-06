@@ -48,8 +48,11 @@ theorem isPrime_iff {I : Ideal α} : IsPrime I ↔ I ≠ ⊤ ∧ ∀ {x y : α},
 theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
   hI.1
 
+lemma notMem_of_isUnit (I : Ideal α) [I.IsPrime] {x : α} (hx : IsUnit x) : x ∉ I :=
+  fun h ↦ ‹I.IsPrime›.ne_top (eq_top_of_isUnit_mem _ h hx)
+
 theorem IsPrime.one_notMem {I : Ideal α} (hI : I.IsPrime) : 1 ∉ I :=
-  mt (eq_top_iff_one I).2 hI.1
+  notMem_of_isUnit _ isUnit_one
 
 theorem one_notMem (I : Ideal α) [hI : I.IsPrime] : 1 ∉ I :=
   hI.one_notMem
@@ -102,7 +105,7 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
 
 lemma IsPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
     {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
-  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
+  grind [Ideal.IsPrime.mul_mem_iff_mem_or_mem]
 
 lemma IsPrime.mul_mem_right_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
     {x y : α} (hx : y ∉ I) : x * y ∈ I ↔ x ∈ I := by

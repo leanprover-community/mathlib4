@@ -10,7 +10,6 @@ public import Mathlib.Logic.Basic
 public import Mathlib.Logic.Nontrivial.Defs
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Tactic.GCongr.Core
-public import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers
@@ -39,7 +38,7 @@ instance instLinearOrder : LinearOrder ℕ where
   le_antisymm := @Nat.le_antisymm
   le_total := @Nat.le_total
   lt := Nat.lt
-  lt_iff_le_not_ge := @Nat.lt_iff_le_not_le
+  lt_iff_le_not_ge := @Nat.lt_iff_le_and_not_ge
   toDecidableLT := inferInstance
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance

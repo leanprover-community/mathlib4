@@ -40,21 +40,18 @@ section Preorder
 ### Definition of `Preorder` and lemmas about types with a `Preorder`
 -/
 
-/-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
+/--
+A preorder is a reflexive, transitive relation `≤`.
+In a preorder, `a < b` means `a ≤ b ∧ ¬b ≤ a`, and `<` is defined this way by default.
+You can override this definition to set a better def-eq.
+-/
 class Preorder (α : Type*) extends LE α, LT α where
   protected le_refl : ∀ a : α, a ≤ a
   protected le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   protected lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
-/-- A variant of `Preorder.mk` which allows `to_dual` to dualize a `Preorder` instance. -/
-@[to_dual existing mk]
-def Preorder.mk' [LE α] [LT α] (le_refl : ∀ a : α, a ≤ a)
-    (ge_trans : ∀ a b c : α, b ≤ a → c ≤ b → c ≤ a)
-    (lt_iff_le_not_ge : ∀ a b : α, b < a ↔ b ≤ a ∧ ¬a ≤ b) : Preorder α where
-  le_refl := le_refl
-  le_trans a b c h₁ h₂ := ge_trans c b a h₂ h₁
-  lt_iff_le_not_ge a b := lt_iff_le_not_ge b a
+attribute [to_dual self (reorder := le_trans (a c, 4 5), lt_iff_le_not_ge (a b))] Preorder.mk
 
 instance [Preorder α] : Std.LawfulOrderLT α where
   lt_iff := Preorder.lt_iff_le_not_ge
@@ -66,7 +63,7 @@ instance [Preorder α] : Std.IsPreorder α where
 variable [Preorder α] {a b c : α}
 
 /-- The relation `≤` on a preorder is reflexive. -/
-@[refl, simp] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
+@[refl] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
 
 /-- A version of `le_refl` where the argument is implicit -/
 lemma le_rfl : a ≤ a := le_refl a
@@ -91,7 +88,7 @@ lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_no
 @[to_dual self] alias LT.lt.not_ge := not_le_of_gt
 @[to_dual self] alias LE.le.not_gt := not_lt_of_ge
 
-@[to_dual self] lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
+lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
 
 @[to_dual lt_of_lt_of_le']
 lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
@@ -132,11 +129,8 @@ instance instTransGTGE : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'
 instance instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
-@[to_dual decidableLT'OfDecidableLE' /-- `<` is decidable if `≤` is. -/]
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
   fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
-
-@[deprecated (since := "2025-12-09")] alias decidableGTOfDecidableGE := decidableLT'OfDecidableLE'
 
 /-- `WCovBy a b` means that `a = b` or `b` covers `a`.
 This means that `a ≤ b` and there is no element in between. This is denoted `a ⩿ b`.
@@ -144,6 +138,8 @@ This means that `a ≤ b` and there is no element in between. This is denoted `a
 @[to_dual self (reorder := 3 4)]
 def WCovBy (a b : α) : Prop :=
   a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
+
+to_dual_insert_cast WCovBy := by grind
 
 @[inherit_doc]
 infixl:50 " ⩿ " => WCovBy
@@ -153,6 +149,8 @@ between. This is denoted `a ⋖ b`. -/
 @[to_dual self (reorder := 3 4)]
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
+
+to_dual_insert_cast CovBy := by grind
 
 @[inherit_doc]
 infixl:50 " ⋖ " => CovBy
@@ -169,11 +167,7 @@ section PartialOrder
 class PartialOrder (α : Type*) extends Preorder α where
   protected le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
-/-- A variant of `PartialOrder.mk` which allows `to_dual` to dualize a `PartialOrder` instance. -/
-@[to_dual existing mk]
-def PartialOrder.mk' [Preorder α] (le_antisymm : ∀ a b : α, b ≤ a → a ≤ b → a = b) :
-    PartialOrder α where
-  le_antisymm a b h₁ h₂ := (le_antisymm b a h₁ h₂).symm
+attribute [to_dual self (reorder := le_antisymm (3 4))] PartialOrder.mk
 
 instance [PartialOrder α] : Std.IsPartialOrder α where
   le_antisymm := PartialOrder.le_antisymm
@@ -197,15 +191,11 @@ lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_ge h₁ <| mt (le_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
-@[to_dual decidableEqOfDecidableLE' /-- Equality is decidable if `≤` is. -/]
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
   | a, b =>
     if hab : a ≤ b then
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
     else isFalse fun heq => hab (heq ▸ le_refl _)
-
-@[deprecated (since := "2025-12-09")] alias decidableEqofDecidableGE := decidableEqOfDecidableLE'
-@[deprecated (since := "2025-12-09")] alias decidableEqofDecidableLE' := decidableEqOfDecidableLE'
 
 -- See Note [decidable namespace]
 @[to_dual Decidable.lt_or_eq_of_le']

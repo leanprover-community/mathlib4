@@ -110,16 +110,21 @@ theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ �
 theorem arg_cos_add_sin_mul_I {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) : arg (cos θ + sin θ * I) = θ := by
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I zero_lt_one hθ]
 
-lemma arg_exp_mul_I (θ : ℝ) :
-    arg (exp (θ * I)) = toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ := by
-  convert arg_cos_add_sin_mul_I (θ := toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ) _ using 2
-  · rw [← exp_mul_I, eq_sub_of_add_eq <| toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
-      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
-  · convert toIocMod_mem_Ioc _ _ _
+theorem arg_exp (z : ℂ) : arg (exp z) = toIocMod Real.two_pi_pos (-π) z.im := by
+  convert arg_mul_cos_add_sin_mul_I (Real.exp_pos z.re)
+    (θ := toIocMod Real.two_pi_pos (-π) z.im) _ using 1
+  · rw [← exp_mul_I, ofReal_exp, toIocMod]
+    push_cast
+    rw [exp_mul_I_periodic.sub_zsmul_eq, ← exp_add, re_add_im]
+  · convert toIocMod_mem_Ioc ..
     ring
 
+lemma arg_exp_mul_I (θ : ℝ) :
+    arg (exp (θ * I)) = toIocMod Real.two_pi_pos (-π) θ := by
+  simp [arg_exp]
+
 @[simp]
-theorem arg_zero : arg 0 = 0 := by simp [arg, le_refl]
+theorem arg_zero : arg 0 = 0 := by simp [arg]
 
 theorem ext_norm_arg {x y : ℂ} (h₁ : ‖x‖ = ‖y‖) (h₂ : x.arg = y.arg) : x = y := by
   rw [← norm_mul_exp_arg_mul_I x, ← norm_mul_exp_arg_mul_I y, h₁, h₂]
@@ -137,6 +142,10 @@ theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   have := arg_mul_cos_add_sin_mul_I (norm_pos_iff.mpr hz) hN
   push_cast at this
   rwa [this]
+
+@[simp]
+theorem toIocMod_arg (z : ℂ) : toIocMod Real.two_pi_pos (-π) z.arg = z.arg := by
+  simpa [toIocMod_eq_self, two_mul] using z.arg_mem_Ioc
 
 @[simp]
 theorem range_arg : Set.range arg = Set.Ioc (-π) π :=
@@ -189,13 +198,13 @@ theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
   obtain rfl | hx := eq_or_ne x 0 <;> simp [*]
 
 @[simp]
-theorem arg_neg_one : arg (-1) = π := by simp [arg, le_refl, not_le.2 (zero_lt_one' ℝ)]
+theorem arg_neg_one : arg (-1) = π := by simp [arg]
 
 @[simp]
-theorem arg_I : arg I = π / 2 := by simp [arg, le_refl]
+theorem arg_I : arg I = π / 2 := by simp [arg]
 
 @[simp]
-theorem arg_neg_I : arg (-I) = -(π / 2) := by simp [arg, le_refl]
+theorem arg_neg_I : arg (-I) = -(π / 2) := by simp [arg]
 
 @[simp]
 theorem tan_arg (x : ℂ) : Real.tan (arg x) = x.im / x.re := by
@@ -450,6 +459,7 @@ theorem arg_cos_add_sin_mul_I_eq_toIocMod (θ : ℝ) :
     arg (cos θ + sin θ * I) = toIocMod Real.two_pi_pos (-π) θ := by
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I_eq_toIocMod zero_lt_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem arg_mul_cos_add_sin_mul_I_sub {r : ℝ} (hr : 0 < r) (θ : ℝ) :
     arg (r * (cos θ + sin θ * I)) - θ = 2 * π * ⌊(π - θ) / (2 * π)⌋ := by
   rw [arg_mul_cos_add_sin_mul_I_eq_toIocMod hr, toIocMod_sub_self, toIocDiv_eq_neg_floor,
@@ -526,6 +536,9 @@ lemma mem_slitPlane_iff_arg {z : ℂ} : z ∈ slitPlane ↔ z.arg ≠ π ∧ z �
 
 lemma slitPlane_arg_ne_pi {z : ℂ} (hz : z ∈ slitPlane) : z.arg ≠ Real.pi :=
   (mem_slitPlane_iff_arg.mp hz).1
+
+theorem exp_mem_slitPlane {z : ℂ} : exp z ∈ slitPlane ↔ toIocMod Real.two_pi_pos (-π) z.im ≠ π := by
+  simp [mem_slitPlane_iff_arg, arg_exp]
 
 end slitPlane
 

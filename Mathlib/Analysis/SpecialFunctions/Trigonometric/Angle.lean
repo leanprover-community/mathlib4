@@ -95,6 +95,7 @@ theorem natCast_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (�
 theorem intCast_mul_eq_zsmul (x : ℝ) (n : ℤ) : ↑((n : ℝ) * x : ℝ) = n • (↑x : Angle) := by
   simpa only [zsmul_eq_mul] using coeHom.map_zsmul x n
 
+set_option backward.isDefEq.respectTransparency false in
 theorem angle_eq_iff_two_pi_dvd_sub {ψ θ : ℝ} : (θ : Angle) = ψ ↔ ∃ k : ℤ, θ - ψ = 2 * π * k := by
   simp only [eq_comm]
   rw [Angle.coe, Angle.coe, QuotientAddGroup.eq]
@@ -432,6 +433,7 @@ def toReal (θ : Angle) : ℝ :=
 theorem toReal_coe (θ : ℝ) : (θ : Angle).toReal = toIocMod two_pi_pos (-π) θ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toReal_coe_eq_self_iff {θ : ℝ} : (θ : Angle).toReal = θ ↔ -π < θ ∧ θ ≤ π := by
   rw [toReal_coe, toIocMod_eq_self two_pi_pos]
   ring_nf
@@ -578,6 +580,7 @@ theorem toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff {θ : ℝ} {k : ℤ} :
     mul_assoc, mul_comm (k : ℝ), toReal_coe_eq_self_iff, Set.mem_Ioc]
   exact ⟨fun h => ⟨by linarith, by linarith⟩, fun h => ⟨by linarith, by linarith⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toReal_coe_eq_self_sub_two_pi_iff {θ : ℝ} :
     (θ : Angle).toReal = θ - 2 * π ↔ θ ∈ Set.Ioc π (3 * π) := by
   convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ 1 <;> norm_num
@@ -636,7 +639,7 @@ lemma two_nsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two {θ ψ : Angle} (hθ : |θ
   suffices θ ≠ ψ + π by simp [this, two_nsmul_eq_iff]
   rintro rfl
   simp only [← cos_pos_iff_abs_toReal_lt_pi_div_two, cos_add_pi] at hθ hψ
-  lia
+  grind
 
 lemma two_zsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two {θ ψ : Angle} (hθ : |θ.toReal| < π / 2)
     (hψ : |ψ.toReal| < π / 2) : (2 : ℤ) • θ = (2 : ℤ) • ψ ↔ θ = ψ := by
@@ -902,9 +905,7 @@ lemma toReal_add_of_sign_pos_sign_neg {θ ψ : Angle}
 lemma toReal_add_of_sign_eq_neg_sign {θ ψ : Angle} (hψ : θ ≠ π ∨ ψ ≠ π)
     (hs : θ.sign = -ψ.sign) : (θ + ψ).toReal = θ.toReal + ψ.toReal := by
   obtain (h | h | h) := ψ.sign.trichotomy
-  all_goals
-    simp [h] at hs
-    grind [add_comm, toReal_add_of_sign_pos_sign_neg, sign_eq_zero_iff]
+  all_goals grind [neg_neg, add_comm, toReal_add_of_sign_pos_sign_neg]
 
 lemma toReal_add_eq_toReal_add_toReal {θ ψ : Angle} (hθ : θ ≠ π) (hψ : ψ ≠ π)
     (hs : θ.sign ≠ ψ.sign ∨ θ.sign = (θ + ψ).sign) : (θ + ψ).toReal = θ.toReal + ψ.toReal := by

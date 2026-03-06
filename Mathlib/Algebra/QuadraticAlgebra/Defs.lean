@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
-import Mathlib.Algebra.Module.Torsion.Pi
 
 /-!
 
@@ -361,8 +360,8 @@ section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring R]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (QuadraticAlgebra R a b) where
-  left_distrib _ _ _ := by ext <;> simpa using by simp [mul_add]; abel
-  right_distrib _ _ _ := by ext <;> simpa using by simp [mul_add, add_mul]; abel
+  left_distrib _ _ _ := by ext <;> simp [mul_add] <;> abel
+  right_distrib _ _ _ := by ext <;> simp [mul_add, add_mul] <;> abel
   zero_mul _ := by ext <;> simp
   mul_zero _ := by ext <;> simp
 
@@ -450,11 +449,10 @@ section CommSemiring
 variable [CommSemiring R]
 
 instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
-  mul_assoc _ _ _ := by ext <;> simpa using by ring
-  mul_comm _ _ := by ext <;> simpa using by ring
+  mul_assoc _ _ _ := by ext <;> simp <;> ring
+  mul_comm _ _ := by ext <;> simp <;> ring
 
-instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
-    Algebra S (QuadraticAlgebra R a b) where
+instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
   algebraMap.map_mul' x y := by ext <;> simp
@@ -482,10 +480,6 @@ theorem algebraMap_im : (algebraMap R (QuadraticAlgebra R a b) r).im = 0 := rfl
 instance [Semiring S] [Module S R] [Module.IsTorsionFree S R] :
     Module.IsTorsionFree S (QuadraticAlgebra R a b) :=
   (linearEquivTuple ..).injective.moduleIsTorsionFree _ (by simp)
-
-instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] :
-    NoZeroSMulDivisors S (QuadraticAlgebra R a b) :=
-  ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
 
 @[simp]
 theorem C_pow (n : ℕ) (r : R) : (.C (r ^ n : R) : QuadraticAlgebra R a b) = (.C r) ^ n :=
@@ -524,10 +518,7 @@ theorem algebraMap_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
 theorem algebraMap_dvd_iff_dvd {z w : R} :
     algebraMap R (QuadraticAlgebra R a b) z ∣ algebraMap R (QuadraticAlgebra R a b) w ↔ z ∣ w := by
   rw [algebraMap_dvd_iff]
-  constructor
-  · rintro ⟨hx, -⟩
-    simpa using hx
-  · simp [← C_eq_algebraMap]
+  simp
 
 @[deprecated (since := "2025-12-15")] alias coe_dvd_iff_dvd := algebraMap_dvd_iff_dvd
 

@@ -725,6 +725,12 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
 
 end Module
 
+/-- Interpolating between affine maps with `lineMap` commutes with evaluation. -/
+@[simp]
+lemma lineMap_apply' [SMulCommClass k k V2] (f g : P1 →ᵃ[k] P2) (c : k)
+    (p : P1) : lineMap f g c p = lineMap (f p) (g p) c := by
+  simp [AffineMap.lineMap_apply]
+
 section Pi
 
 variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddCommGroup (φv i)]
@@ -858,6 +864,14 @@ theorem homothety_zero (c : P1) : homothety c (0 : k) = const k P1 c := by
 theorem homothety_add (c : P1) (r₁ r₂ : k) :
     homothety c (r₁ + r₂) = r₁ • (id k P1 -ᵥ const k P1 c) +ᵥ homothety c r₂ := by
   simp only [homothety_def, add_smul, vadd_vadd]
+
+theorem homothety_eq_iff_of_mul_eq_one {c p q : P1} {r₁ r₂ : k} (h : r₁ * r₂ = 1) :
+    homothety c r₁ p = q ↔ homothety c r₂ q = p := by
+  obtain h' : r₂ * r₁ = 1 := mul_eq_one_comm.mp h
+  refine ⟨fun h1 ↦ ?_, fun h1 ↦ ?_⟩
+  all_goals
+    rw [← h1, ← homothety_mul_apply]
+    simp [h, h']
 
 /-- `homothety` as a multiplicative monoid homomorphism. -/
 def homothetyHom (c : P1) : k →* P1 →ᵃ[k] P1 where

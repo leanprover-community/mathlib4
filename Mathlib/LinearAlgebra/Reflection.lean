@@ -14,6 +14,7 @@ public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.FiniteSpan
 public import Mathlib.RingTheory.Polynomial.Chebyshev
+public import Mathlib.Tactic.Module
 
 /-!
 # Reflections in linear algebra
@@ -239,6 +240,7 @@ lemma reflection_mul_reflection_pow (m : ℕ)
   ext z
   simpa using reflection_mul_reflection_pow_apply hf hg m z t ht
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A formula for $(r_1 r_2)^m z$, where $m$ is an integer and $z \in M$. -/
 lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
     (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :

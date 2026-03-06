@@ -66,6 +66,7 @@ private def inv : DihedralGroup n → DihedralGroup n
   | r i => r (-i)
   | sr i => sr i
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The group structure on `DihedralGroup n`.
@@ -302,5 +303,14 @@ lemma card_conjClasses_odd (hn : Odd n) :
   rw [← Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
     card_comm_eq_card_conjClasses_mul_card, nat_card, Nat.mul_div_left _ (mul_pos two_pos hn.pos)]
 
+theorem center_eq_bot_of_odd_ne_one (hodd : Odd n) (hne1 : n ≠ 1) :
+    Subgroup.center (DihedralGroup n) = ⊥ := by
+  simp only [Subgroup.eq_bot_iff_forall, Subgroup.mem_center_iff]
+  rintro (i | i) h
+  · have heq := sr.inj (h (sr i))
+    simp_all
+  · have heq := sr.inj (h (r 1))
+    have : Fact (1 < n) := ⟨by grind⟩
+    simp [sub_eq_iff_eq_add, add_assoc, ZMod.add_self_eq_zero_iff_eq_zero hodd] at heq
 
 end DihedralGroup

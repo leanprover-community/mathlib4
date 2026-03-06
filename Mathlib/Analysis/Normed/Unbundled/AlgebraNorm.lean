@@ -66,6 +66,7 @@ instance : FunLike (AlgebraNorm R S) S ℝ where
     erw [h]
     rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S where
   map_zero f        := f.map_zero'
   map_add_le_add f  := f.add_le'
@@ -88,6 +89,8 @@ theorem extends_norm' (hf1 : f 1 = 1) (a : R) : f (a • (1 : S)) = ‖a‖ := b
 theorem extends_norm (hf1 : f 1 = 1) (a : R) : f (algebraMap R S a) = ‖a‖ := by
   rw [Algebra.algebraMap_eq_smul_one]; exact extends_norm' hf1 _
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The restriction of an algebra norm to a subalgebra. -/
 def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A where
   toFun x     := f x.val
@@ -99,6 +102,7 @@ def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A whe
     rw [← ZeroMemClass.coe_eq_zero]; exact eq_zero_of_map_eq_zero f hx
   smul' r x := map_smul_eq_mul _ _ _
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The restriction of an algebra norm in a scalar tower. -/
 def isScalarTower_restriction {A : Type*} [CommRing A] [Algebra R A] [Algebra A S]
     [IsScalarTower R A S] (hinj : Function.Injective (algebraMap A S)) (f : AlgebraNorm R S) :
@@ -151,6 +155,7 @@ instance : FunLike (MulAlgebraNorm R S) S ℝ where
     simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S where
   map_zero f        := f.map_zero'
   map_add_le_add f  := f.add_le'
@@ -174,12 +179,40 @@ theorem extends_norm' (f : MulAlgebraNorm R S) (a : R) : f (a • (1 : S)) = ‖
 theorem extends_norm (f : MulAlgebraNorm R S) (a : R) : f (algebraMap R S a) = ‖a‖ := by
   rw [Algebra.algebraMap_eq_smul_one]; exact extends_norm' _ _
 
+/-- The algebra norm underlying an multiplicative algebra norm. -/
+def toAlgebraNorm (f : MulAlgebraNorm R S) : AlgebraNorm R S where
+  __ := f
+  mul_le' _ _ := (f.map_mul' _ _).le
+
+instance instCoeAlgebraNorm : Coe (MulAlgebraNorm R S) (AlgebraNorm R S) := ⟨toAlgebraNorm⟩
+
+@[simp]
+lemma coe_AlgebraNorm (f : MulAlgebraNorm R S) : ⇑(f : AlgebraNorm R S) = ⇑f := rfl
+
 end MulAlgebraNorm
+
+namespace NormedAlgebra
+
+variable (K L : Type*) [NormedField K] [NormedField L] [NormedAlgebra K L]
+
+/-- Given a normed field extension `L / K`, the norm on `L` is a multiplicative `K`-algebra norm. -/
+def toMulAlgebraNorm : MulAlgebraNorm K L where
+  __ := NormedField.toMulRingNorm L
+  smul' r x := by
+    simp only [Algebra.smul_def, AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe,
+      map_mul, mul_eq_mul_right_iff, map_eq_zero]
+    exact Or.inl <| norm_algebraMap' L r
+
+@[simp]
+lemma toMulAlgebraNorm_apply (x : L) : toMulAlgebraNorm K L x = ‖x‖ := rfl
+
+end NormedAlgebra
 
 namespace MulRingNorm
 
 variable {R : Type*} [NonAssocRing R]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The ring norm underlying a multiplicative ring norm. -/
 def toRingNorm (f : MulRingNorm R) : RingNorm R where
   toFun       := f

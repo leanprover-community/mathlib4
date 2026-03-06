@@ -132,8 +132,7 @@ theorem pairwise_eq_iff_exists_eq [Nonempty ι] (s : Set α) (f : α → ι) :
 theorem pairwise_union :
     (s ∪ t).Pairwise r ↔
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
-  simp only [Set.Pairwise, mem_union, or_imp, forall_and]
-  aesop
+  grind [Set.Pairwise]
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=

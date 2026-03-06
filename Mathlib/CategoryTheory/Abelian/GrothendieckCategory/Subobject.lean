@@ -44,6 +44,7 @@ variable [IsFiltered J] {c : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _)}
 
 include hc hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a filtered category `J`, `c` is a colimit cocone for the corresponding
 functor `J ⥤ C`, and `f : c.pt ⟶ X` is induced by the inclusions,
@@ -54,6 +55,7 @@ lemma mono_of_isColimit_monoOver : Mono f := by
   have := NatTrans.mono_of_mono_app α
   exact colim.map_mono' α hc (isColimitConstCocone J X) f (by simpa using hf)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a filtered category `J`, the colimit of `F` (computed in `C`) gives
 a subobject of `F` which is a supremum of the subobjects corresponding to
@@ -80,6 +82,7 @@ lemma subobjectMk_of_isColimit_eq_iSup :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `X : C` be an object in a Grothendieck abelian category,
 `F : J ⥤ MonoOver X` a functor from a filtered category, `c` a cocone for
 the composition `F ⋙ MonoOver.forget _ : J ⥤ Over X`. We assume
@@ -105,6 +108,7 @@ noncomputable def isColimitMapCoconeOfSubobjectMkEqISup
   rw [Category.assoc, Subobject.ofMkLEMk_comp, Over.w]
   apply colimit.ι_desc
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a `κ`-filtered category `J` with `κ` a regular cardinal such
 that `HasCardinalLT (Subobject X) κ`, and if the colimit of `F` (computed in `C`)

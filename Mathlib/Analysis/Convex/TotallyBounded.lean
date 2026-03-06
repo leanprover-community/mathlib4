@@ -42,7 +42,7 @@ theorem totallyBounded_convexHull (hs : TotallyBounded s) :
   obtain ⟨V, ⟨hV₁, hV₂, hV₃⟩⟩ := (locallyConvexSpace_iff_exists_convex_subset_zero ℝ E).mp lcs W hW₁
   obtain ⟨t, ⟨htf, hts⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hs) _ hV₁
   obtain ⟨t', ⟨htf', hts'⟩⟩ := (totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
-    (IsCompact.totallyBounded (Finite.isCompact_convexHull htf)) _ hV₁)
+    (IsCompact.totallyBounded (Finite.isCompact_convexHull ℝ htf)) _ hV₁)
   use t', htf'
   simp only [iUnion_vadd_set, vadd_eq_add] at hts hts' ⊢
   calc convexHull ℝ s

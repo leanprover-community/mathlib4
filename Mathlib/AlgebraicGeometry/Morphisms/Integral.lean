@@ -127,6 +127,7 @@ instance (priority := 100) (f : X ⟶ Y) [IsIntegralHom f] :
   rw [SpecMap_iff]
   exact PrimeSpectrum.isClosedMap_comap_of_isIntegral _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
     IsIntegralHom f ↔ UniversallyClosed f ∧ IsAffineHom f := by
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
@@ -146,9 +147,7 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
   rw [SpecMap_iff]
   apply PrimeSpectrum.isIntegral_of_isClosedMap_comap_mapRingHom
   algebraize [φ.1, Polynomial.mapRingHom φ.1]
-  haveI : IsScalarTower R (Polynomial R) (Polynomial S) :=
-    .of_algebraMap_eq' (Polynomial.mapRingHom_comp_C _).symm
-  refine H₁.out (Spec.map (CommRingCat.ofHom Polynomial.C))
+  exact H₁.universally_isClosedMap (Spec.map (CommRingCat.ofHom Polynomial.C))
     (Spec.map (CommRingCat.ofHom Polynomial.C)) (Spec.map _)
     (isPullback_SpecMap_of_isPushout _ _ _ _
     (CommRingCat.isPushout_of_isPushout R S (Polynomial R) (Polynomial S))).flip

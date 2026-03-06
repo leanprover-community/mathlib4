@@ -76,6 +76,7 @@ class HasCoeffs (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S]
     [IsScalarTower R₀ R S] where
   coeffs_subset_range : P.coeffs ⊆ Set.range (algebraMap R₀ R)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : P.HasCoeffs P.Core where
   coeffs_subset_range := by
     refine subset_trans P.coeffs_subset_core ?_
@@ -93,6 +94,7 @@ lemma HasCoeffs.of_isScalarTower {R₁ : Type*} [CommRing R₁] [Algebra R₀ R�
   refine ⟨subset_trans (P.coeffs_subset_range R₀) ?_⟩
   simp [IsScalarTower.algebraMap_eq R₀ R₁ R, RingHom.coe_comp, Set.range_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (s : Set R) : P.HasCoeffs (Algebra.adjoin R₀ s) := HasCoeffs.of_isScalarTower R₀
 
 lemma HasCoeffs.coeffs_relation_mem_range (x : σ) :
@@ -118,6 +120,7 @@ lemma aeval_val_relationOfHasCoeffs (r : σ) :
     MvPolynomial.aeval P.val (P.relationOfHasCoeffs R₀ r) = 0 := by
   rw [← MvPolynomial.aeval_map_algebraMap R, map_relationOfHasCoeffs, aeval_val_relation]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algebraTensorAlgEquiv_symm_relation (r : σ) :
     (MvPolynomial.algebraTensorAlgEquiv R₀ R).symm (P.relation r) =
@@ -149,6 +152,7 @@ lemma tensorModelOfHasCoeffsHom_tmul (x : R) (y : MvPolynomial ι R₀) :
     P.tensorModelOfHasCoeffsHom R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (P) in
 /-- (Implementation detail): The inverse of `tensorModelOfHasCoeffsHom`. -/
 noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfHasCoeffs R₀ :=
@@ -164,6 +168,7 @@ noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfH
       Ideal.Quotient.mk_span_range, tmul_zero]).comp
     (P.quotientEquiv.restrictScalars R).symm.toAlgHom
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
     P.tensorModelOfHasCoeffsInv R₀ (MvPolynomial.aeval P.val x) =
@@ -171,6 +176,7 @@ lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
   rw [← MvPolynomial.aeval_map_algebraMap R, ← Generators.algebraMap_apply, ← quotientEquiv_mk]
   simp [tensorModelOfHasCoeffsInv, -quotientEquiv_symm, -quotientEquiv_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private lemma hom_comp_inv :
     (P.tensorModelOfHasCoeffsHom R₀).comp (P.tensorModelOfHasCoeffsInv R₀) = AlgHom.id R S := by
@@ -230,6 +236,7 @@ namespace Algebra.SubmersivePresentation
 
 variable [Finite σ] (P : Algebra.SubmersivePresentation R S ι σ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one
     [DecidableEq σ] [Fintype σ] :
     ∃ v : σ → MvPolynomial ι R, ∑ i, v i * P.relation i =
@@ -337,11 +344,12 @@ lemma map_jacobianRelationsOfHasCoeffs (i : σ) :
 
 lemma sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs [FaithfulSMul R₀ R] [Fintype σ] :
     ∑ i, P.jacobianRelationsOfHasCoeffs R₀ i * P.relationOfHasCoeffs R₀ i =
-        P.jacobianOfHasCoeffs R₀ * P.invJacobianOfHasCoeffs R₀ - 1 := by
+      P.jacobianOfHasCoeffs R₀ * P.invJacobianOfHasCoeffs R₀ - 1 := by
   classical
   apply MvPolynomial.map_injective _ (FaithfulSMul.algebraMap_injective R₀ R)
   simp [P.map_relationOfHasCoeffs, jacobianRelations_spec]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The submersive presentation on `P.ModelOfHasCoeffs R₀` provided `P.HasCoeffs R₀`. -/
 noncomputable
 def ofHasCoeffs [FaithfulSMul R₀ R] :
@@ -356,6 +364,6 @@ def ofHasCoeffs [FaithfulSMul R₀ R] :
       map_sub, map_one, @eq_comm (P.ModelOfHasCoeffs R₀) 0, sub_eq_zero] at this
     convert IsUnit.of_mul_eq_one _ this
     rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
-    rfl
+    simp [jacobianOfHasCoeffs]
 
 end Algebra.SubmersivePresentation

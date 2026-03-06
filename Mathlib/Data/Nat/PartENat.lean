@@ -388,7 +388,7 @@ instance isTotal : IsTotal PartENat (· ≤ ·) where
 
 noncomputable instance linearOrder : LinearOrder PartENat :=
   { PartENat.partialOrder with
-    le_total := IsTotal.total
+    le_total := isTotal.total
     toDecidableLE := Classical.decRel _
     max := (· ⊔ ·)
     max_def a b := congr_fun₂ (@sup_eq_maxDefault PartENat _ (_) _) _ _ }
@@ -551,6 +551,7 @@ theorem toWithTop_natCast' (n : ℕ) {_ : Decidable (n : PartENat).Dom} :
 theorem toWithTop_ofNat (n : ℕ) [n.AtLeastTwo] {_ : Decidable (OfNat.ofNat n : PartENat).Dom} :
     toWithTop (ofNat(n) : PartENat) = OfNat.ofNat n := toWithTop_natCast' n
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toWithTop_le {x y : PartENat} [hx : Decidable x.Dom] [hy : Decidable y.Dom] :
     toWithTop x ≤ toWithTop y ↔ x ≤ y := by
