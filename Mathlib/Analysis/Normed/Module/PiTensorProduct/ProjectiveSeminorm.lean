@@ -106,6 +106,10 @@ of `∑ j, Π i, ‖mⱼ i‖`. -/
 noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := .ofSMulLE
     _ projectiveSeminorm_zero projectiveSeminorm_add_le projectiveSeminorm_smul_le
 
+@[deprecated norm_def (since := "2026-03-06")]
+theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
+    projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1) := rfl
+
 theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
     projectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ := by
   convert ciInf_le (bddBelow_projectiveSemiNormAux _) ⟨FreeAddMonoid.of ((1 : 𝕜), m), ?_⟩
