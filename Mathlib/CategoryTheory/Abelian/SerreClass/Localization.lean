@@ -154,7 +154,7 @@ lemma map_comp_eq_zero_iff_of_epi_mono {X Z Y : C} (f : X ⟶ Z) (g : Z ⟶ Y)
 lemma mono_map_tfae {X Y : C} (f : X ⟶ Y) :
     List.TFAE [Mono (L.map f),
       P.monoModSerre f,
-      ∀ ⦃Z : C⦄ (z : Z ⟶ X) (_ : L.map z ≫ L.map f = 0), L.map z = 0] := by
+      ∀ ⦃Z : C⦄ (z : Z ⟶ X), L.map z ≫ L.map f = 0 → L.map z = 0] := by
   have := Localization.essSurj L P.isoModSerre
   tfae_have 1 → 2 := fun _ ↦ by
     have hf : L.map (kernel.ι f) = 0 := by
@@ -188,7 +188,7 @@ lemma mono_map_iff {X Y : C} (f : X ⟶ Y) :
 lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
     List.TFAE [Epi (L.map f),
       P.epiModSerre f,
-      ∀ ⦃Z : C⦄ (z : Y ⟶ Z) (hz : L.map f ≫ L.map z = 0), L.map z = 0] := by
+      ∀ ⦃Z : C⦄ (z : Y ⟶ Z), L.map f ≫ L.map z = 0 → L.map z = 0] := by
   have := Localization.essSurj L P.isoModSerre
   tfae_have 1 → 2 := fun _ ↦ by
     have hf : L.map (cokernel.π f) = 0 := by
