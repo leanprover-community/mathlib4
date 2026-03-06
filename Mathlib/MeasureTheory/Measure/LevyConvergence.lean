@@ -33,9 +33,9 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDim
   [MeasurableSpace E] [BorelSpace E]
 
 /-- If the characteristic functions of a sequence of measures `μ : ℕ → Measure E` converge pointwise
-to a measurable function which is continuous at 0, then `{μ n | n}` is tight. -/
+to a function which is continuous at 0, then `{μ n | n}` is tight. -/
 lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsProbabilityMeasure (μ i)]
-    {f : E → ℂ} (hf : ContinuousAt f 0) (hf_meas : Measurable f)
+    {f : E → ℂ} (hf : ContinuousAt f 0)
     (h : ∀ t, Tendsto (fun n ↦ charFun (μ n) t) atTop (𝓝 (f t))) :
     IsTightMeasureSet (Set.range μ) := by
   -- it suffices to show that a limsup tends to 0
@@ -127,6 +127,9 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   _ ≤ 2⁻¹ * r * ∫ t in -(2 * r⁻¹)..2 * r⁻¹, ε / 4 := by
     gcongr
     rw [intervalIntegral.integral_of_le hr', intervalIntegral.integral_of_le hr']
+    have hf_meas : Measurable f := by
+      refine measurable_of_tendsto_metrizable (f := fun n t ↦ charFun (μ n) t) (by fun_prop) ?_
+      rwa [tendsto_pi_nhds]
     refine integral_mono_ae ?_ (by fun_prop) ?_
     · refine Integrable.mono' (integrable_const (ε / 4)) ?_ ?_
       · exact Measurable.aestronglyMeasurable <| by fun_prop
