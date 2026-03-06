@@ -9,6 +9,7 @@ public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.Isometry
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # The completion of a metric space
@@ -142,7 +143,7 @@ protected theorem uniformity_dist' :
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
 
-/-- Metric space structure on the completion of a `PseudoMetric` space. -/
+/-- Metric space structure on the completion of a pseudo_metric space. -/
 instance instMetricSpace : MetricSpace (Completion α) :=
   @MetricSpace.ofT0PseudoMetricSpace _
     { dist_self := Completion.dist_self
@@ -211,3 +212,14 @@ theorem Isometry.extensionHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAdd
     [T0Space β] {f : α →+* β} (h : Isometry f) (x : α) :
     h.extensionHom x = f x :=
   UniformSpace.Completion.extensionHom_coe f h.continuous _
+
+/-- The lift of an isometry to completions. -/
+def Isometry.mapRingHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
+    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] {f : α →+* β}
+    (h : Isometry f) : Completion α →+* Completion β :=
+  Completion.mapRingHom f h.continuous
+
+theorem Isometry.mapRingHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
+    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] {f : α →+* β}
+    (h : Isometry f) (x : α) : h.mapRingHom x = f x :=
+  Completion.mapRingHom_coe h.uniformContinuous.continuous _
