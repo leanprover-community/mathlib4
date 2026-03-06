@@ -27,21 +27,13 @@ universe v u
 open CategoryTheory CategoryTheory.SimplicialObject
 open SimplexCategory Simplicial Opposite AlgebraicTopology
 
-namespace CategoryTheory
-namespace SimplicialHomotopy
+namespace CategoryTheory.SimplicialObject.Homotopy
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 variable {X Y : SimplicialObject C} {f g : X ⟶ Y}
-variable (H : SimplicialHomotopy f g)
+variable (H : Homotopy f g)
 
 namespace ToChainHomotopy
-
-/-- The degree-`n` component of the chain homotopy associated to a simplicial homotopy.
-
-This is the alternating sum `H_n = ∑ i : Fin (n+1), (-1)^i • H.h i`.
--/
-def chainHomotopyComponent (H : SimplicialHomotopy f g) (n : ℕ) :
-    X _⦋n⦌ ⟶ Y _⦋n+1⦌ := ∑ i : Fin (n+1), ( (-1 : ℤ) ^ (i : ℕ) : ℤ ) • H.h i
 
 /-- The family of components of the induced chain homotopy -/
 noncomputable def hom (p q : ℕ) :
@@ -278,8 +270,8 @@ end ToChainHomotopy
 
 /-- A simplicial homotopy between `f` and `g` induces a chain homotopy
 between the induced morphisms on the alternating face map complexes. -/
-noncomputable def toChainHomotopy (H : SimplicialHomotopy f g) :
-    Homotopy
+noncomputable def toChainHomotopy (H : Homotopy f g) :
+    _root_.Homotopy
       ((alternatingFaceMapComplex C).map g)
       ((alternatingFaceMapComplex C).map f) := by
   refine
@@ -307,10 +299,9 @@ noncomputable def toChainHomotopy (H : SimplicialHomotopy f g) :
               prevD, id_eq] using
               (ToChainHomotopy.comm_succ (H := H) (C := C) (f := f) (g := g) n) }
 
-theorem map_homology_eq [CategoryWithHomology C] (H : SimplicialHomotopy f g) (n : ℕ) :
+theorem map_homology_eq [CategoryWithHomology C] (H : Homotopy f g) (n : ℕ) :
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map f) =
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map g) := by
   simpa [eq_comm] using (H.toChainHomotopy).homologyMap_eq n
 
-end SimplicialHomotopy
-end CategoryTheory
+end CategoryTheory.SimplicialObject.Homotopy

@@ -39,7 +39,7 @@ noncomputable section
 
 open SimplexCategory Simplicial Opposite
 
-namespace CategoryTheory
+namespace CategoryTheory.SimplicialObject
 
 variable {C : Type u} [Category.{v} C]
 
@@ -47,7 +47,7 @@ variable {C : Type u} [Category.{v} C]
 consists of a family of morphisms `h n i : X _⦋n⦌ ⟶ Y _⦋n+1⦌` for `i : Fin (n + 1)`,
 satisfying compatibility conditions with respect to face and degeneracy maps -/
 @[ext]
-structure SimplicialHomotopy
+structure Homotopy
     {X Y : SimplicialObject C} (f g : X ⟶ Y) where
   /-- Basic data: `h i : Xₙ ⟶ Yₙ₊₁` for `i : Fin (n + 1)`. -/
   h {n : ℕ} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ Y _⦋n+1⦌
@@ -64,7 +64,7 @@ structure SimplicialHomotopy
   h_comp_σ_succ_of_lt {n : ℕ} (i j : Fin (n + 1)) (hji : j ≤ i) :
     h j ≫ Y.σ i.succ = X.σ i ≫ h j.castSucc
 
-namespace SimplicialHomotopy
+namespace Homotopy
 
 variable {X Y : SimplicialObject C} {f g : X ⟶ Y}
 
@@ -74,7 +74,7 @@ attribute [reassoc (attr := simp)]
 
 /-- The constant homotopy from `f` to `f`. -/
 @[simps]
-def refl (f : X ⟶ Y) : SimplicialHomotopy f f where
+def refl (f : X ⟶ Y) : Homotopy f f where
   h i := X.σ i ≫ f.app _
   h_zero_comp_δ_zero n := by
     have := Y.δ_comp_σ_self (n := n) (i := 0)
@@ -97,8 +97,8 @@ def refl (f : X ⟶ Y) : SimplicialHomotopy f f where
 
 /-- Postcompose a simplicial homotopy with a functor `F : C ⥤ D`. -/
 @[simps]
-def whiskerRight (H : SimplicialHomotopy f g) {D : Type u'} [Category.{v'} D] (F : C ⥤ D) :
-    SimplicialHomotopy
+def whiskerRight (H : Homotopy f g) {D : Type u'} [Category.{v'} D] (F : C ⥤ D) :
+    Homotopy
       (((SimplicialObject.whiskering C D).obj F).map f)
       (((SimplicialObject.whiskering C D).obj F).map g) where
   h i := F.map (H.h i)
@@ -126,8 +126,8 @@ def whiskerRight (H : SimplicialHomotopy f g) {D : Type u'} [Category.{v'} D] (F
 
 /-- Postcompose a simplicial homotopy with a morphism of simplicial objects. -/
 @[simps]
-def postcomp (H : SimplicialHomotopy f g) {Y' : SimplicialObject C} (p : Y ⟶ Y') :
-    SimplicialHomotopy (f ≫ p) (g ≫ p) where
+def postcomp (H : Homotopy f g) {Y' : SimplicialObject C} (p : Y ⟶ Y') :
+    Homotopy (f ≫ p) (g ≫ p) where
   h i := H.h i ≫ p.app _
   h_zero_comp_δ_zero n := by
     simpa [-h_zero_comp_δ_zero] using H.h_zero_comp_δ_zero n =≫ p.app _
@@ -146,8 +146,8 @@ def postcomp (H : SimplicialHomotopy f g) {Y' : SimplicialObject C} (p : Y ⟶ Y
 
 /-- Precompose a simplicial homotopy with a morphism of simplicial objects. -/
 @[simps]
-def precomp (H : SimplicialHomotopy f g) {X' : SimplicialObject C} (p : X' ⟶ X) :
-    SimplicialHomotopy (p ≫ f) (p ≫ g) where
+def precomp (H : Homotopy f g) {X' : SimplicialObject C} (p : X' ⟶ X) :
+    Homotopy (p ≫ f) (p ≫ g) where
   h i := p.app _ ≫ H.h i
   h_zero_comp_δ_zero n := by
     simpa [-h_zero_comp_δ_zero] using p.app _ ≫= H.h_zero_comp_δ_zero n
@@ -164,6 +164,4 @@ def precomp (H : SimplicialHomotopy f g) {X' : SimplicialObject C} (p : X' ⟶ X
   h_comp_σ_succ_of_lt i j hji := by
     simpa using p.app _ ≫= H.h_comp_σ_succ_of_lt i j hji
 
-end SimplicialHomotopy
-
-end CategoryTheory
+end CategoryTheory.SimplicialObject.Homotopy
