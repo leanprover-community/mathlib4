@@ -223,7 +223,11 @@ def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
   right_inv S := by ext x; simpa using ⟨by simp +contextual [eq_comm], fun hx ↦ ⟨x, by simp [hx]⟩⟩
   map_rel_iff' := by simp
 
-lemma nucleusIsoSublocale.eq_toSublocale : Nucleus.toSublocale = @nucleusIsoSublocale X _ := rfl
+@[simp]
+lemma nucleusIsoSublocale.eq_toSublocale :
+ Nucleus.toSublocale = @nucleusIsoSublocale X _ ∘ OrderDual.toDual := rfl
+
+@[simp]
 lemma nucleusIsoSublocale.symm_eq_toNucleus :
   Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
 
@@ -303,14 +307,12 @@ meets and arbitrary joins.
 def toSublocale : FrameHom (Open X) (Sublocale X) where
   toFun U := U.toNucleus.toSublocale
   map_sSup' s := by
-    simp_rw [← Set.image_image]
-    change _ = sSup (⇑nucleusIsoSublocale '' (toNucleus '' s))
+    simp only [nucleusIsoSublocale.eq_toSublocale, Function.comp_apply, ← image_image]
     rw [← map_sSup]
     congr
     ext x
-    change _ = (sInf (toNucleus '' s)) x
-    simp only [toNucleus, map_sSup, Nucleus.coe_mk, InfHom.coe_mk, Nucleus.sInf_apply, mem_image,
-      iInf_exists]
+    simp only [toNucleus, map_sSup, OrderDual.ofDual_toDual, Nucleus.coe_mk, InfHom.coe_mk,
+      ofDual_sSup, Equiv.preimage_image, Nucleus.sInf_apply, mem_image, iInf_exists]
     apply le_antisymm
     · simp only [le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk, InfHom.coe_mk]
       exact fun _ h ↦ himp_le_himp (le_sSup (by simp [h])) (le_refl _)
@@ -319,29 +321,29 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
       intro b h
       simpa [inf_sSup_eq] using fun a h1 ↦ h a h1
   map_inf' a b := by
-    change nucleusIsoSublocale _ = nucleusIsoSublocale _ ⊓ nucleusIsoSublocale _
-    rw [← map_inf]
+    simp only [nucleusIsoSublocale.eq_toSublocale, Function.comp_apply, ← map_inf]
     congr
     ext x
-    simp only [map_inf, mem_setOf_eq]
+    simp only [OrderDual.ofDual_toDual, ofDual_inf, ← sSup_pair, ← sInf_upperBounds_eq_sSup,
+      toNucleus, map_inf, Nucleus.coe_mk, InfHom.coe_mk, upperBounds_insert, Nucleus.sInf_apply,
+      mem_inter_iff, mem_Ici,]
     apply le_antisymm
-    · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def, le_iInf_iff,
-      and_imp]
+    · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def,
+        upperBounds_singleton, mem_Ici, le_iInf_iff, and_imp]
       intro i h1 h2
       rw [← himp_himp, ← @i.idempotent _ _ x]
       exact le_trans (h1 (getElement b ⇨ x)) (le_trans Nucleus.map_himp_le (h2 (i x)))
-    · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def, le_himp_iff,
-      iInf_inf, iInf_le_iff, le_inf_iff, le_iInf_iff, and_imp]
-      intro y h1
-      let h2 := h1 (a ⊓ b).toNucleus
-      simp only [toNucleus, map_inf, Nucleus.coe_mk, InfHom.coe_mk, le_himp_iff] at h2
-      rcases h2 with ⟨h2, h3⟩
-      refine le_trans' (h2 ?_ ?_) (le_inf (by rfl) (le_inf_iff.mpr h3))
-      · intro i
-        rw [← inf_assoc]
+    · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def,
+        upperBounds_singleton, mem_Ici, le_himp_iff, iInf_inf, iInf_le_iff, le_inf_iff, le_iInf_iff,
+        and_imp]
+      intro y h
+      specialize h (a ⊓ b).toNucleus
+      simp only [toNucleus, map_inf, Nucleus.coe_mk, InfHom.coe_mk, le_himp_iff] at h
+      refine le_trans' (h.left (fun _ ↦ ?_) ?_) (le_inf (by rfl) (le_inf_iff.mpr h.right))
+      · rw [← inf_assoc]
         exact inf_le_of_left_le himp_inf_le
       · rw [inf_comm]
-        intro i
+        intro _
         rw [← inf_assoc]
         exact inf_le_of_left_le himp_inf_le
   map_top' := by simp [Nucleus.toSublocale, Open.toNucleus, Sublocale.univ_eq_top]
