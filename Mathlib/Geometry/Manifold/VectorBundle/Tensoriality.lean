@@ -5,7 +5,6 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
@@ -281,31 +280,5 @@ theorem mkHom₂_apply_eq_extend
     (σ : V x) (τ : V' x) :
     mkHom₂ φ hφ₁ hφ₂ σ τ = φ (_root_.extend F σ) (_root_.extend F' τ) :=
   rfl
-
-variable
-  -- TODO can probably remove the next two hypotheses, by transport
-  [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
-
-variable
-  -- TODO can probably remove the next two hypotheses, by transport
-  [∀ x, IsTopologicalAddGroup (V' x)] [∀ x, ContinuousSMul 𝕜 (V' x)]
-
-variable
-  (G : Type*) [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {W : M → Type*} [∀ x, AddCommGroup (W x)] [∀ x, Module 𝕜 (W x)]
-  -- TODO can probably remove the next three hypotheses, by transport
-  [∀ x : M, TopologicalSpace (W x)] [∀ x, IsTopologicalAddGroup (W x)] [∀ x, ContinuousSMul 𝕜 (W x)]
-  [TopologicalSpace (TotalSpace G W)] [FiberBundle G W] [VectorBundle 𝕜 G W]
-
-theorem contMDiff_mkHom
-    (φ : (Π x : M, V x) → (Π x, W x))
-    (hφ : ∀ x, TensorialAt I F (φ · x) x)
-    -- hopefully this is the correct smoothness criterion!
-    {k} (φ_contMDiff : ∀ (σ : Π x : M, V x), CMDiff k (T% σ) → CMDiff k (T% (φ σ))) :
-    -- elaborators not working here
-    let T (x : M) : TotalSpace (F →L[𝕜] G) (fun x ↦ V x →L[𝕜] W x) :=
-      ⟨x, mkHom (φ · x) x (hφ x)⟩
-    ContMDiff I (I.prod 𝓘(𝕜, F →L[𝕜] G)) k T := by
-  sorry
 
 end TensorialAt

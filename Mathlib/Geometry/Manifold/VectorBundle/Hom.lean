@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
@@ -306,6 +307,22 @@ lemma ContMDiff.clm_bundle_apply
     (hv : ContMDiff IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
     ContMDiff IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x ↦ (hϕ x).clm_bundle_apply (hv x)
+
+/-- Criterion for a section of a Hom-bundle constructed using the tensoriality criterion to be
+smooth. -/
+theorem TensorialAt.contMDiff_mkHom [CompleteSpace 𝕜] [IsManifold IB 1 B]
+    [FiniteDimensional 𝕜 F₁]
+    [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle 1 F₁ E₁ IB]
+    (φ : (Π x : B, E₁ x) → (Π x, E₂ x))
+    (hφ : ∀ x, TensorialAt IB F₁ (φ · x) x)
+    -- hopefully this is the correct smoothness criterion!
+    {k} (φ_contMDiff : ∀ (σ : Π x : B, E₁ x), CMDiff k (T% σ) → CMDiff k (T% (φ σ))) :
+    -- elaborators not working here
+    let T (x : B) : TotalSpace (F₁ →L[𝕜] F₂) (fun x ↦ E₁ x →L[𝕜] E₂ x) :=
+      ⟨x, TensorialAt.mkHom (φ · x) x (hφ x)⟩
+    ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k T := by
+  sorry
 
 end OneVariable
 
