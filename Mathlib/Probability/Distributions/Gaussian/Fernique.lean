@@ -159,7 +159,6 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
   _ ≤ C' * ((1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2) := by gcongr
   _ = C / ε * ‖y‖ ^ 2 + C * ‖x - y‖ ^ 2 := by grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
 `x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
 theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian μ] :
