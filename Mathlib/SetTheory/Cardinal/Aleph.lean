@@ -467,7 +467,7 @@ theorem mem_range_aleph_iff {c : Cardinal} : c ∈ range aleph ↔ ℵ₀ ≤ c 
 
 @[simp]
 theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
-  rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
+  rw [← aleph_zero, ← aleph_add_one, zero_add]
 
 theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
   rw [← succ_aleph0]
