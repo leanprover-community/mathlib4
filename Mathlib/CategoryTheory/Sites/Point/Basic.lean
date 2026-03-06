@@ -309,7 +309,7 @@ lemma fiber_map_injective_of_mono {U T : C} (f : U ⟶ T) [Mono f] :
 
 lemma subsingleton_fiber_obj {U T : C} (f : U ⟶ T) [Mono f] (hT : IsTerminal T) :
     Subsingleton (Φ.fiber.obj U) where
-  allEq _ _ := Φ.injective_fiber_map_of_mono f (by
+  allEq _ _ := Φ.fiber_map_injective_of_mono f (by
     have := Φ.uniqueFiberObj T hT
     subsingleton)
 
