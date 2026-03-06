@@ -207,7 +207,7 @@ private noncomputable def volumePreservingSymmMeasurableEquivToLpProdAux :
     ((MeasurableEquiv.toLp 2 _).trans (stdOrthonormalBasis ℝ V).repr.symm.toMeasurableEquiv))
 
 /-- The measure equivalence between `WithLp 2 (U × V)` and `U × V` is volume preserving. -/
-theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp_prod :
+theorem WithLp.volume_preserving_symm_measurableEquiv_toLp_prod :
     MeasurePreserving (MeasurableEquiv.toLp 2 (U × V)).symm := by
   suffices MeasurePreserving (volumePreservingSymmMeasurableEquivToLpProdAux U V) by
     convert this
@@ -215,21 +215,21 @@ theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp_prod :
     <;> simp [volumePreservingSymmMeasurableEquivToLpProdAux, MeasurableEquiv.coe_sumPiEquivProdPi,
       LinearEquiv.prodCongr_symm, MeasurableEquiv.prodCongr]
   refine (LinearIsometryEquiv.measurePreserving _).trans ?_
-  refine (volume_preserving_symm_measurableEquiv_toLp _).trans ?_
+  refine (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp _).trans ?_
   refine (measurePreserving_sumPiEquivProdPi _).trans ?_
   refine MeasurePreserving.prod ?_ ?_
   all_goals
   · refine (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp _).symm.trans ?_
     exact (LinearIsometryEquiv.measurePreserving _)
 
-/-- A copy of `EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp_prod`
+/-- A copy of `WithLp.volume_preserving_symm_measurableEquiv_toLp_prod`
 for the canonical spelling of the equivalence. -/
-theorem Prod.volume_preserving_ofLp : MeasurePreserving (@ofLp 2 (U × V)) :=
-  EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp_prod U V
+theorem WithLp.volume_preserving_ofLp : MeasurePreserving (@ofLp 2 (U × V)) :=
+  volume_preserving_symm_measurableEquiv_toLp_prod U V
 
-/-- The reverse direction of `Prod.volume_preserving_ofLp`, since
+/-- The reverse direction of `WithLp.volume_preserving_ofLp`, since
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
-theorem Prod.volume_preserving_toLp :  MeasurePreserving (@toLp 2 (U × V)) :=
-  (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp_prod U V).symm
+theorem WithLp.volume_preserving_toLp : MeasurePreserving (@toLp 2 (U × V)) :=
+  (volume_preserving_symm_measurableEquiv_toLp_prod U V).symm
 
 end Prod
