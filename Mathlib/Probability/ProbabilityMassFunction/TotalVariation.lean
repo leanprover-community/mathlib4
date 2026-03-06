@@ -3,9 +3,11 @@ Copyright (c) 2026 Quang Dao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
-import Mathlib.Data.ENNReal.AbsDiff
-import Mathlib.Probability.ProbabilityMassFunction.Monad
-import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+module
+
+public import Mathlib.Data.ENNReal.AbsDiff
+public import Mathlib.Probability.ProbabilityMassFunction.Monad
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Total variation distance for probability mass functions
