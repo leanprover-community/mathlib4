@@ -519,14 +519,11 @@ lemma eTruncLTGEIsoGELT_naturality_app (a b : EInt) (hab : a ≤ b)
         (t.eTruncLTGEIsoGELT a' b').hom.app X =
     (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.map (φ.app 0)).app _ ≫
       (t.eTruncGE.obj a').map ((t.eTruncLT.map (φ.app 1)).app X) := by
-  rw [← cancel_epi ((t.eTruncLTGELTSelfToLTGE a b).app X)]
   dsimp
-  rw [eTruncLTGELTSelfToLTGE_app, eTruncLTGEIsoGELT_hom_app_fac_assoc,
-    NatTrans.naturality_assoc, ← Functor.map_comp_assoc, NatTrans.naturality,
-    Functor.map_comp_assoc, ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 1) X,
-    Functor.map_comp, Functor.map_comp, Category.assoc,
-    t.eTruncLTGEIsoGELT_hom_app_fac]
-  simp
+  rw [← cancel_epi ((t.eTruncLTGELTSelfToLTGE a b).app X), eTruncLTGELTSelfToLTGE_app,
+    eTruncLTGEIsoGELT_hom_app_fac_assoc, NatTrans.naturality_assoc, ← Functor.map_comp_assoc,
+    NatTrans.naturality, Functor.map_comp_assoc, ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 1) X]
+  simp [↓Functor.map_comp, t.eTruncLTGEIsoGELT_hom_app_fac]
 
 end
 
