@@ -40,7 +40,8 @@ its associated sheaf.
 
 Under suitable assumptions on the target category `A`, we show that
 both `Φ.presheafFiber` and `Φ.sheafFiber` commute with finite limits
-and with arbitrary colimits.
+and with arbitrary colimits. (The commutation of `Φ.sheafFiber` with colimits
+is obtained in the file `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.)
 
 -/
 
@@ -254,7 +255,10 @@ lemma toPresheafFiber_map_bijective
     Function.Bijective (Φ.presheafFiber.map f) :=
   ⟨Φ.toPresheafFiber_map_injective f, Φ.toPresheafFiber_map_surjective f⟩
 
-lemma W_isInvertedBy_presheafFiber
+/-- See also the lemma `W_isInvertedBy_presheafFiber` in the file
+`Mathlib/CategoryTheory/Sites/Point/Basic.lean` which may apply
+in more cases. -/
+lemma W_isInvertedBy_presheafFiber'
     [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
     J.W.IsInvertedBy (Φ.presheafFiber (A := A)) := by
   intro P Q f hf
@@ -267,24 +271,6 @@ end
 /-- The fiber functor on the category of sheaves that is given a by a point of a site. -/
 noncomputable abbrev sheafFiber : Sheaf J A ⥤ A :=
   sheafToPresheaf J A ⋙ Φ.presheafFiber
-
-instance (P : Cᵒᵖ ⥤ A) [HasWeakSheafify J A]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
-    [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
-    IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J P)) :=
-  W_isInvertedBy_presheafFiber _ _ (W_toSheafify J P)
-
-set_option backward.isDefEq.respectTransparency false in
-variable (A) in
-/-- The fiber functor on sheaves is obtained from the fiber functor on presheaves
-by localization with respect to the class of morphisms `J.W`. -/
-noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
-    [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
-    presheafToSheaf J A ⋙ Φ.sheafFiber ≅ Φ.presheafFiber :=
-  (NatIso.ofComponents
-    (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
-      (by simp [← Functor.map_comp])).symm
 
 instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.presheafFiber (A := A)) :=
@@ -311,7 +297,7 @@ instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIso
             let G := colimit (F ⋙ sheafToPresheaf J A)
             let φ := CategoryTheory.toSheafify J G
             have : IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)) :=
-              W_isInvertedBy_presheafFiber _ _ (W_toSheafify J _)
+              W_isInvertedBy_presheafFiber' _ _ (W_toSheafify J _)
             refine Cocones.ext (asIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)))
               (fun k ↦ ?_)
             dsimp
