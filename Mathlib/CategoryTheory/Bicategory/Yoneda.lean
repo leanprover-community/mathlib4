@@ -21,15 +21,13 @@ set_option backward.isDefEq.respectTransparency false
 
 namespace CategoryTheory
 
-open Category Bicategory Bicategory.Opposite Opposite
+open Bicategory Bicategory.Opposite Opposite Pseudofunctor StrongTrans
 
-open Bicategory Pseudofunctor StrongTrans
-
-universe w₁ v₁ u₁ w v u
+universe w v u
 
 namespace Bicategory
 
-variable {B : Type u₁} [Bicategory.{w₁, v₁} B]
+variable {B : Type u} [Bicategory.{w, v} B]
 
 /-- Version of `Bicategory.precomposing` viewed in the bicategory `Cat`. -/
 @[simps]
@@ -82,7 +80,7 @@ the pseudofunctor defined by:
 
 This is only used for defining `yoneda`, after which `Bicategory.yoneda.obj` should be prefered. -/
 @[simps!]
-def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w₁, v₁} where
+def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
   toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of (unop y ⟶ x))
     (fun a b => unopFunctor a b ⋙ precomposingCat (unop b) (unop a) x)
   mapId a := leftUnitorNatIsoCat (unop a) x
@@ -110,7 +108,7 @@ It consists of the following:
   `a ↦ (a ⟶ x)` on objects and on 1- and 2-morphisms given by "precomposing"
 * On 1- and 2-morphisms it is given by "postcomposing" -/
 @[simps!]
-def yoneda : B ⥤ᵖ (Bᵒᵖ ⥤ᵖ Cat.{w₁, v₁}) where
+def yoneda : B ⥤ᵖ (Bᵒᵖ ⥤ᵖ Cat.{w, v}) where
   toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun x ↦ yoneda₀ x) postcomposing₂
   mapId a := isoMk (fun b => rightUnitorNatIsoCat (unop b) a)
   mapComp f g := (isoMk (fun b ↦ associatorNatIsoLeftCat (unop b) f g)).symm
