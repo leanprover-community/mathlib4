@@ -58,6 +58,57 @@ theorem valuation_liesOver (x : K) :
   simp [valuation_of_algebraMap, div_pow, ← IsScalarTower.algebraMap_apply A K L,
     IsScalarTower.algebraMap_apply A B L, intValuation_liesOver v w]
 
+def _root_.IsDedekindDomain.HeightOneSpectrum.valueGroup_eq :
+    MonoidWithZeroHom.valueGroup (v.valuation K) = ⊤ := by
+  ext; simp [MonoidWithZeroHom.valueGroup, MonoidWithZeroHom.valueMonoid,
+    (v.valuation_surjective K).range_eq]
+
+variable (K) in
+@[simps! apply symm_apply]
+def _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupEquiv :
+    MonoidWithZeroHom.valueGroup (v.valuation K) ≃* ℤᵐ⁰ˣ where
+  __ := (Equiv.setCongr (by simp [valueGroup_eq v])).trans
+    (Equiv.subtypeUnivEquiv (Subgroup.mem_top))
+  map_mul' _ _ := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
+
+-- noncomputable example : MonoidWithZeroHom.valueGroup (v.valuation K) ≃ Multiplicative ℤ :=
+--   (v.valueGroupEquiv K).trans (WithZero.unitsWithZeroEquiv (α := Multiplicative ℤ))
+
+variable (K) in
+@[simps!]
+noncomputable
+def _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupOrderIso₀ :
+    MonoidWithZeroHom.ValueGroup₀ (v.valuation K) ≃*o ℤᵐ⁰ where
+  __ := WithZero.map' ((v.valueGroupEquiv K).trans WithZero.unitsWithZeroEquiv)
+  invFun := WithZero.map' ((v.valueGroupEquiv K).trans WithZero.unitsWithZeroEquiv).symm.toMonoidHom
+  left_inv := sorry
+  right_inv := sorry
+  map_le_map_iff' := sorry
+
+open MonoidWithZeroHom ValueGroup₀
+
+variable (K) in
+lemma _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupOrderIso₀_restrict (b : K) :
+    v.valueGroupOrderIso₀ K ((v.valuation K).restrict b) = v.valuation K b := by
+  simp [(v.valuation K).restrict_def, restrict₀_apply]
+  by_cases hb : v.valuation K b = 0;
+  · simp [hb]
+  · simp [hb, Equiv.setCongr, Equiv.subtypeEquivProp]
+
+variable (K) in
+lemma _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupOrderIso₀_symm_restrict (b : K) :
+    (v.valueGroupOrderIso₀ K).symm (v.valuation K b) = (v.valuation K).restrict b := by
+  simp [(v.valuation K).restrict_def, restrict₀_apply, valueGroupEquiv]
+  by_cases hb : v.valuation K b = 0 <;> simp [hb]; sorry
+
+lemma _root_.OrderMonoidIso.lt_symm_apply {α β : Type*} [Preorder α] [Preorder β] [Mul α] [Mul β]
+    (e : α ≃*o β) {x : α} {y : β} : x < e.symm y ↔ e x < y :=
+  e.toOrderIso.lt_symm_apply
+
+lemma _root_.OrderMonoidIso.symm_apply_lt {α β : Type*} [Preorder α] [Preorder β] [Mul α] [Mul β]
+    (e : α ≃*o β) {x : α} {y : β} : e.symm y < x ↔ y < e x :=
+  e.toOrderIso.symm_apply_lt
+
 variable (K) in
 theorem uniformContinuous_algebraMap_liesOver :
     UniformContinuous (algebraMap (WithVal (v.valuation K)) (WithVal (w.valuation L))) := by
@@ -65,17 +116,33 @@ theorem uniformContinuous_algebraMap_liesOver :
   rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _)]
   intro γ _
-  use expEquiv ((WithZero.log γ) / v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal)
-  simp only [coe_expEquiv_apply, Set.mem_setOf_eq, true_and]
+  let eL := WithVal.valueGroupOrderIso₀ (w.valuation L)
+  let ew := w.valueGroupOrderIso₀ L
+  let ev := (v.valueGroupOrderIso₀ K)
+  let eK := (WithVal.valueGroupOrderIso₀ (v.valuation K))
+  let γ' := eK.symm (ev.symm
+    (expEquiv ((WithZero.log (ew (eL γ))) / v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal)))
+  have hγ' : γ' ≠ 0 := by simp [γ']
+  use .mk0 _ hγ'
+  simp only [Units.val_mk0, Set.mem_setOf_eq, true_and]
   intro x hx
-  rw [WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply, WithVal.valued_toVal,
-    ← valuation_liesOver L v w]
   rcases eq_or_ne x 0 with rfl | hx₀
-  · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
-  · rw [← log_lt_iff_lt_exp (by simpa)] at hx
-    rw [← log_lt_log (by simp_all) (by simp), log_pow, Int.nsmul_eq_mul, mul_comm]
-    exact Int.mul_lt_of_lt_ediv
-      (mod_cast Nat.pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
+  · simp
+  simp only [γ'] at hx
+  simp only [coe_expEquiv_apply] at hx
+  erw [← eL.strictMono.lt_iff_lt]
+  rw [WithVal.valueGroupOrderIso₀_restrict]
+  rw [← ew.strictMono.lt_iff_lt]
+  rw [w.valueGroupOrderIso₀_restrict L]
+  simp_rw [WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply,
+    ← valuation_liesOver L v w]
+  rw [← log_lt_log (by simp_all) (by simp), log_pow, Int.nsmul_eq_mul, mul_comm]
+  erw [eK.lt_symm_apply] at hx
+  rw [ev.lt_symm_apply] at hx
+  rw [WithVal.valueGroupOrderIso₀_restrict, v.valueGroupOrderIso₀_restrict K,
+    ← log_lt_log (by simp_all) (by simp)] at hx
+  exact Int.mul_lt_of_lt_ediv
+    (mod_cast Nat.pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
 
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
@@ -88,8 +155,10 @@ theorem valued_liesOver (x : v.adicCompletion K) :
       Valued.v (algebraMap _ (w.adicCompletion L) x) := by
   induction x using induction_on with
   | hp =>
-    exact isClosed_eq (Valued.continuous_valuation.pow _)
-      (Valued.continuous_valuation.comp <| continuous_algebraMap _ _)
+    refine isClosed_eq ?_ ?_
+    · exact Valued.continuous_valuation_of_surjective (v.valuedAdicCompletion_surjective K) |>.pow _
+    · exact (Valued.continuous_valuation_of_surjective (w.valuedAdicCompletion_surjective L)).comp
+        (continuous_algebraMap _ _)
   | ih a =>
     have := IsScalarTower.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) a
     simp only [algebraMap_def, WithVal.algebraMap_right_apply, WithVal.algebraMap_left_apply,
