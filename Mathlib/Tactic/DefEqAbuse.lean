@@ -146,7 +146,7 @@ namespace Mathlib.Tactic.DefEqAbuse
     f td header children
 
 /-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
-Skips `onFailure` retry nodes and ignores ✅ branches (recovered failures aren't root causes).
+Skips `onFailure` retry nodes and ignores ✅️ branches (recovered failures aren't root causes).
 Note: status is currently determined by parsing emoji from the rendered header string.
 Once https://github.com/leanprover/lean4/pull/12698 is available, use `td.result?` instead. -/
 partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
@@ -154,7 +154,7 @@ partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
     unless traceResultOf (← header.toString) matches some .failure do
       return .ascend
     let childFailures ← visitWithM children findLeafFailures
-    -- Leaf failure: deepest `❌` node with no deeper `❌` children
+    -- Leaf failure: deepest `❌️️` node with no deeper `❌️️` children
     return .ascend <| if childFailures.isEmpty then #[header] else childFailures
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.

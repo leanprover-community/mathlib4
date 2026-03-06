@@ -62,9 +62,9 @@ Once that PR is available, callers should prefer `td.result?` over calling this 
 Note: the emoji constants include a variation selector (U+FE0F), but `String.startsWith`
 handles this since we check for the base codepoint which is always the prefix. -/
 def traceResultOf (headerStr : String) : Option TraceResult :=
-  if headerStr.startsWith "✅" then some .success
-  else if headerStr.startsWith "❌" then some .failure
-  else if headerStr.startsWith "💥" then some .error
+  if headerStr.startsWith "✅️" then some .success
+  else if headerStr.startsWith "❌️" then some .failure
+  else if headerStr.startsWith "💥️" then some .error
   else none
 
 /-- Strip the leading status emoji and space from a trace header string,
