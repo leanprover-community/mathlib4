@@ -84,6 +84,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `h₁.singleTriangle h₁ ⟶ h₂.singleTriangle` that is induced by a
 map of short exact sequences of objects of `C`.
 -/
+@[simps!]
 noncomputable def singleTriangle.map : h₁.singleTriangle ⟶ h₂.singleTriangle where
   hom₁ := (singleFunctor C 0).map f.τ₁
   hom₂ := (singleFunctor C 0).map f.τ₂
@@ -93,43 +94,10 @@ noncomputable def singleTriangle.map : h₁.singleTriangle ⟶ h₂.singleTriang
   comm₃ := by
     dsimp [singleδ]
     rw [assoc, assoc, ← Functor.map_comp, ← NatTrans.naturality, Functor.map_comp]
-    erw [reassoc_of% ((triangleOfSES.map
-      (h₁.map_of_exact _) (h₂.map_of_exact _))
+    dsimp [CochainComplex.singleFunctors]
+    rw [reassoc_of% dsimp% ((triangleOfSES.map (h₁.map_of_exact _) (h₂.map_of_exact _))
       ((HomologicalComplex.single C (.up ℤ) 0).mapShortComplex.map f)).comm₃]
     simp
-    rfl
-
-set_option backward.isDefEq.respectTransparency false in
-lemma singleTriangle.map_hom₁ :
-    (eqToHom (C := DerivedCategory C) h₁.singleTriangle_obj₁.symm) ≫
-    (singleTriangle.map h₁ h₂ f).hom₁ ≫ eqToHom (h₂.singleTriangle_obj₁) =
-    (DerivedCategory.singleFunctor C 0).map f.τ₁ := by
-  dsimp [singleTriangle.map]
-  simp only [singleFunctorsPostcompQIso_hom_hom, NatTrans.id_app, triangleOfSES.map_hom₁, map_X₁,
-    Functor.mapShortComplex_map_τ₁, singleFunctorsPostcompQIso_inv_hom,
-    SingleFunctors.postcomp_functor, Functor.comp_obj, id_comp, comp_id]
-  erw [comp_id]
-  rfl
-
-set_option backward.isDefEq.respectTransparency false in
-lemma singleTriangle.map_hom₂ : (singleTriangle.map h₁ h₂ f).hom₂ =
-    (DerivedCategory.singleFunctor C 0).map f.τ₂ := by
-  dsimp [singleTriangle.map]
-  simp only [singleFunctorsPostcompQIso_hom_hom, NatTrans.id_app, triangleOfSES.map_hom₂, map_X₂,
-    Functor.mapShortComplex_map_τ₂, singleFunctorsPostcompQIso_inv_hom,
-    SingleFunctors.postcomp_functor, Functor.comp_obj, id_comp]
-  erw [comp_id]
-  rfl
-
-set_option backward.isDefEq.respectTransparency false in
-lemma singleTriangle.map_hom₃ : (singleTriangle.map h₁ h₂ f).hom₃ =
-    (DerivedCategory.singleFunctor C 0).map f.τ₃:= by
-  dsimp [singleTriangle.map]
-  simp only [singleFunctorsPostcompQIso_hom_hom, NatTrans.id_app, triangleOfSES.map_hom₃, map_X₃,
-    Functor.mapShortComplex_map_τ₃, singleFunctorsPostcompQIso_inv_hom,
-    SingleFunctors.postcomp_functor, Functor.comp_obj, id_comp]
-  erw [comp_id]
-  rfl
 
 end ShortExact
 
