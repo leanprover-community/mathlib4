@@ -44,7 +44,7 @@ variable (I M F) in
 noncomputable def trivial [IsManifold I 1 M] :
     IsCovariantDerivativeOn F (V := Trivial M F)
       (fun s x ↦ mfderiv I 𝓘(𝕜, F) s x) univ where
-  addσ {σ σ' x} hσ hσ' hx := by
+  add {σ σ' x} hσ hσ' hx := by
     rw [mdifferentiableAt_section_trivial_iff] at hσ hσ'
     rw [mfderiv_add hσ hσ']
   leibniz {σ f x} hσ hf hx := by
@@ -73,7 +73,7 @@ variable (I M F) in
 noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial M F) where
   toFun s x := mfderiv I 𝓘(𝕜, F) s x
   isCovariantDerivativeOn := -- TODO use previous work
-  { addσ {σ σ' x} hσ hσ' hx := by
+  { add {σ σ' x} hσ hσ' hx := by
       rw [mdifferentiableAt_section_trivial_iff] at hσ hσ'
       rw [mfderiv_add hσ hσ']
     leibniz {σ f x} hσ hf hx := by

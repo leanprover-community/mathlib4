@@ -143,7 +143,7 @@ lemma pushCovDer_ofSect [FiniteDimensional 𝕜 F]
     (hx : x ∈ e.baseSet := by assumption) :
     (e.pushCovDer cov) (fun x ↦ (e (σ x)).2) x X₀ = (e (cov σ x X₀)).2 := by
   have : cov (fun x' ↦ e.symm x' (e (T% σ x')).2) x = cov σ x := by
-    apply hcov.congr_σ_of_eqOn _ hσ (e.baseSet_mem_nhds hx)
+    apply hcov.congr_of_eqOn _ hσ (e.baseSet_mem_nhds hx)
     · exact fun y hy ↦ symm_apply_apply_mk e hy (σ y) --FIXME extract as lemma?
     · stop
       rw [(e.symm_apply_apply_mk_eventuallyEq hx σ).mdifferentiableAt_iff]
@@ -163,7 +163,7 @@ lemma pushCovDer_isCovariantDerivativeOn
     {u : Set M} (hu : u ⊆ e.baseSet)
     (hcov : IsCovariantDerivativeOn F cov u) :
     IsCovariantDerivativeOn F (e.pushCovDer cov) u where
-  addσ {σ σ' x} hσ hσ' hx := by
+  add {σ σ' x} hσ hσ' hx := by
     set s := (fun x' ↦ e.symm x' (σ x'))
     have hs : MDiffAt (T% s) x := by
       sorry -- e.mdifferentiableAt_section_of_function (hu hx) <|
@@ -174,7 +174,7 @@ lemma pushCovDer_isCovariantDerivativeOn
         --mdifferentiableAt_section_trivial_iff.1 hσ'
     unfold Trivialization.pushCovDer
     stop
-    rw [← ContinuousLinearMap.comp_add, ← hcov.addσ hs hs' hx]
+    rw [← ContinuousLinearMap.comp_add, ← hcov.add hs hs' hx]
     congr
     ext y
     simp [e.symm_map_add 𝕜, s, s']
@@ -235,7 +235,7 @@ lemma coordChangeL_pushCovDer
         (baseSet_mem_nhds e' (mem_of_mem_inter_right hx))
   have hσ : MDiffAt (T% σ) x :=
     mdifferentiableAt_section_of_function e hx.1 hs
-  rw [hcov.congr_σ_of_eqOn hσ ?_ mem this]
+  rw [hcov.congr_of_eqOnhσ ?_ mem this]
   -- TODO have automatation doing the next three lines…
   apply mdifferentiableAt_section_of_function e' hx.2
   have := contMDiffAt_coordChangeL (n := 1) (IB := I) hx.1 hx.2
@@ -449,11 +449,11 @@ end real
 --   isCovariantDerivativeOn :=
 --   { addX X X' σ x _ := by simp
 --     smulX X σ c' x _ := by simp
---     addσ X σ σ' x hσ hσ' hx := by
+--     add X σ σ' x hσ hσ' hx := by
 --       rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
 --       rw [fderiv_add hσ hσ']
 --       rfl
---     smul_const_σ X σ a x hx := by simp [fderiv_const_smul_of_field a]
+--     smul_constX σ a x hx := by simp [fderiv_const_smul_of_field a]
 --     leibniz X σ f x hσ hf hx := by
 --       have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
 --         fderiv_smul (by simp_all) (by simp_all)

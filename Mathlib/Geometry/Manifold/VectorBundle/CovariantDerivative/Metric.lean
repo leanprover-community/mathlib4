@@ -231,7 +231,7 @@ private lemma aux2 {x : M} (σ σ' τ : (x : M) → TangentSpace I x)
     Pi.sub_apply, comp_apply, ContinuousLinearMap.add_apply]
   rw [product_add_left,
     mfderiv_add (hσ.inner_bundle' hτ) (hσ'.inner_bundle' hτ),
-    cov.isCovariantDerivativeOn.addσ hσ hσ',
+    cov.isCovariantDerivativeOn.add hσ hσ',
     ContinuousLinearMap.comp_add]
   erw [ContinuousLinearMap.coe_sub']
   rw [Pi.sub_apply]
@@ -292,7 +292,7 @@ private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
     ContinuousLinearMap.coe_comp', coe_innerSL_apply, Pi.sub_apply, comp_apply,
     ContinuousLinearMap.add_apply]
   rw [product_add_right, mfderiv_add (hσ.inner_bundle' hτ) (hσ.inner_bundle' hτ'),
-    cov.isCovariantDerivativeOn.addσ hτ hτ']
+    cov.isCovariantDerivativeOn.add hτ hτ']
   dsimp
   rw [inner_add_right]
   erw [ContinuousLinearMap.sub_apply, ContinuousLinearMap.sub_apply,

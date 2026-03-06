@@ -24,36 +24,36 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 @[expose] public section -- TODO: think if we want to expose all definitions!
 
-section any_field
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] -- [FiniteDimensional 𝕜 E]
+/-!
+## Local theory over any field
+
+In this section `M` is manifold over any nontrivially normed field `𝕜` and `V` is
+a vector bundle over `M` with model fiber `F`.
+-/
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  -- `F` model fiber
-  (n : WithTop ℕ∞)
+  (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
   [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)]
   [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
-  [FiberBundle F V] --[VectorBundle 𝕜 F V]
-  -- `V` vector bundle
+  [FiberBundle F V]
 
-structure IsCovariantDerivativeOn [IsManifold I 1 M]
+/-- A function from sections of a vector bundle $V$ over a manifold $M$ to sections of $Hom(TM, E)$
+is a covariant derivative over a set $s$ in $M$ if it is additive and satisfies the Leibniz when
+applied to sections that are differentiable at a point of $s$. -/
+structure IsCovariantDerivativeOn
     (f : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))
     (s : Set M := Set.univ) : Prop where
-  -- All the same axioms as CovariantDerivative, but restricted to the set s.
-  addσ {σ σ' : Π x : M, V x} {x}
-    (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x)
-    (hx : x ∈ s := by trivial) :
+  add {σ σ' : Π x : M, V x} {x}
+    (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x) (hx : x ∈ s := by trivial) :
     f (σ + σ') x = f σ x + f σ' x
   leibniz {σ : Π x : M, V x} {g : M → 𝕜} {x}
-    (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial):
+    (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial) :
     f (g • σ) x = g x • f σ x
-      + .toSpanSingleton 𝕜 (σ x) ∘L
-        (((fromTangentSpace (g x)).toContinuousLinearMap ∘L (mfderiv% g x)))
+     + .toSpanSingleton 𝕜 (σ x) ∘L (fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
 
 
 /--
@@ -65,84 +65,52 @@ class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] [VectorBundle 𝕜 F V] 
     (cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))
     (u : Set M) where
   contMDiff : ∀ {σ : Π x : M, V x}, CMDiff[u] (k + 1) (T% σ) →
-    let f (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
+    letI f (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
     ContMDiffOn I (I.prod 𝓘(𝕜, E →L[𝕜] F)) k f u
-    -- elaborators not working here, TODO investigate
-    -- ContMDiffOn I (I.prod 𝓘(𝕜, E →L[𝕜] F)) k (T% (cov σ)) u
-    -- CMDiff[u] k f
+    -- TODO elaborators are not working here. We want to use `T% (cov σ)` and CMDiff[u] k f
 
 variable {F}
 
 namespace IsCovariantDerivativeOn
 
-variable [IsManifold I 1 M]
-
-variable (E) in
-/-- If `E` is the trivial vector space, [HM: i.e. the manifold is zero-dimensional??]
-the axioms of a covariant derivative are vacuous. -/
-lemma of_subsingleton [hE : Subsingleton E] [TopologicalSpace (TotalSpace E V)] [FiberBundle E V]
-    (f : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)) :
-    IsCovariantDerivativeOn E f Set.univ := by
-  have (Y) (x) : f Y x = 0 := by
-    have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
-    exact Subsingleton.eq_zero _
-  exact {
-    addσ {σ σ' x} hσ hσ' hx := by simp [this]
-    leibniz {σ g x} hσ hg hx := by
-      have H : (mfderiv% g x) = 0 :=
-        have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
-        Subsingleton.eq_zero _
-      simp [this, H] }
-
 section changing_set
 /-! Changing set
 
-In this changing we change `s` in `IsCovariantDerivativeOn F f s`.
+In this section changing we change `s` in `IsCovariantDerivativeOn F f s`, proving the condition is
+monotone and local.
 
 -/
 lemma mono
     {f : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)} {s t : Set M}
     (hf : IsCovariantDerivativeOn F f t) (hst : s ⊆ t) : IsCovariantDerivativeOn F f s where
-  addσ {_σ _σ' _x} hσ hσ' hx := hf.addσ hσ hσ' (hst hx)
+  add {_σ _σ' _x} hσ hσ' hx := hf.add hσ hσ' (hst hx)
   leibniz {_σ _f _x} hσ hf' hx := hf.leibniz hσ hf' (hst hx)
 
 lemma iUnion {ι : Type*}
     {f : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)} {s : ι → Set M}
     (hf : ∀ i, IsCovariantDerivativeOn F f (s i)) : IsCovariantDerivativeOn F f (⋃ i, s i) where
-  addσ {_σ _σ' _x} hσ hσ' hx := by
+  add {_σ _σ' _x} hσ hσ' hx := by
     obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
-    exact (hf i).addσ hσ hσ'
+    exact (hf i).add hσ hσ'
   leibniz {σ f x} hσ hf' hx := by
     obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
     exact (hf i).leibniz hσ hf'
 
 end changing_set
 
-/- Congruence properties -/
-section
-
-lemma congr {f g : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)} {s : Set M}
-    (hf : IsCovariantDerivativeOn F f s)
-    -- Is this too strong? Will see!
-    (hfg : ∀ {σ : Π x : M, V x}, ∀ {x}, x ∈ s → f σ x = g σ x) :
-    IsCovariantDerivativeOn F g s where
-  addσ hσ hσ' hx := by simp [← hfg hx, hf.addσ hσ hσ']
-  leibniz hσ hf' hx := by simp [← hfg hx, hf.leibniz hσ hf']
-
-end
 
 section computational_properties
 
 variable {f : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)} {s : Set M}
 
 @[simp]
-lemma zeroσ [VectorBundle 𝕜 F V] (hf : IsCovariantDerivativeOn F f s)
+lemma zero [VectorBundle 𝕜 F V] (hf : IsCovariantDerivativeOn F f s)
     {x} (hx : x ∈ s := by trivial) :
     f 0 x = 0 := by
-  simpa using (hf.addσ (mdifferentiableAt_zeroSection ..)
+  simpa using (hf.add (mdifferentiableAt_zeroSection ..)
     (mdifferentiableAt_zeroSection ..) : f (0 + 0) x = _)
 
-theorem smul_const_σ (hf : IsCovariantDerivativeOn F f s)
+theorem smul_const (hf : IsCovariantDerivativeOn F f s)
     {σ : Π x : M, V x} {x} (a : 𝕜)
     (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     f (a • σ) x = a • f σ x := by
@@ -161,15 +129,15 @@ def affineCombination
     {f' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hf : IsCovariantDerivativeOn F f s) (hf' : IsCovariantDerivativeOn F f' s) (g : M → 𝕜) :
     IsCovariantDerivativeOn F (fun σ ↦ (g • (f σ)) + (1 - g) • (f' σ)) s where
-  addσ {_σ _σ' x} hσ hσ' hx := by
-    simp [hf.addσ hσ hσ', hf'.addσ hσ hσ']
+  add {_σ _σ' x} hσ hσ' hx := by
+    simp [hf.add hσ hσ', hf'.add hσ hσ']
     module
   leibniz {σ φ x} hσ hφ hx := by
     simp [hf.leibniz hσ hφ, hf'.leibniz hσ hφ]
     module
 
 /-- An affine combination of two `C^k` connections is a `C^k` connection. -/
-lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination
+lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination [IsManifold I 1 M]
     [VectorBundle 𝕜 F V]
     {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     {u: Set M} {f : M → 𝕜} {n : ℕ∞} (hf : CMDiff[u] n f)
@@ -186,11 +154,11 @@ def affineCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
     {u : Set M} {cov : ι → (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (h : ∀ i, IsCovariantDerivativeOn F (cov i) u) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
     IsCovariantDerivativeOn F (fun σ x ↦ ∑ i ∈ s, (f i x) • (cov i) σ x) u where
-  addσ {_σ _σ' _x} hσ hσ' hx := by
+  add {_σ _σ' _x} hσ hσ' hx := by
     rw [← Finset.sum_add_distrib]
     congr
     ext i
-    rw [← smul_add, (h i).addσ hσ hσ' hx]
+    rw [← smul_add, (h i).add hσ hσ' hx]
   leibniz {σ g x} hσ hg hx := by
     set B := (ContinuousLinearMap.toSpanSingleton 𝕜 (σ x) ∘L
       ((fromTangentSpace (g x)).toContinuousLinearMap ∘L (mfderiv% g x)))
@@ -204,7 +172,7 @@ def affineCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
       _ = g x • ∑ i ∈ s, f i x • cov i σ x + B := by rw [hf]; simp
 
 /-- An affine combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
-lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination' {n : ℕ∞}
+lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination' [IsManifold I 1 M] {n : ℕ∞}
     [VectorBundle 𝕜 F V] {ι : Type*} {s : Finset ι} {u : Set M}
     {cov : ι → (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivativeOn F n (cov i) u)
@@ -220,8 +188,8 @@ variable {s : Set M}
 lemma add_one_form (hf : IsCovariantDerivativeOn F f s)
     (A : Π x : M, V x →L[𝕜] TangentSpace I x →L[𝕜] V x) :
     IsCovariantDerivativeOn F (fun σ x ↦ f σ x + A x (σ x)) s where
-  addσ {_σ _σ' _x} hσ hσ' hx := by
-    simp [hf.addσ hσ hσ']
+  add {_σ _σ' _x} hσ hσ' hx := by
+    simp [hf.add hσ hσ']
     abel
   leibniz {σ g x} hσ hg hx := by
     simp [hf.leibniz hσ hg]
@@ -236,15 +204,13 @@ end IsCovariantDerivativeOn
 variable (I F V) in
 /-- Caution: `cov Y x (X x)` corresponds to `∇ X Y` in textbooks! -/
 @[ext]
-structure CovariantDerivative [IsManifold I 1 M] where
+structure CovariantDerivative where
   toFun : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)
   isCovariantDerivativeOn : IsCovariantDerivativeOn F toFun Set.univ
 
 namespace CovariantDerivative
 
 attribute [coe] toFun
-
-variable [IsManifold I 1 M]
 
 /-- Coercion of a `CovariantDerivative` to function -/
 instance : CoeFun (CovariantDerivative I F V)
@@ -275,13 +241,13 @@ A covariant derivative ∇ is called of class `C^k` iff,
 whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇ X σ` is a `C^k` section.
 This is a class so typeclass inference can deduce this automatically.
 -/
-class ContMDiffCovariantDerivative [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V)
-    (k : ℕ∞) where
+class ContMDiffCovariantDerivative [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+    (cov : CovariantDerivative I F V) (k : ℕ∞) where
   contMDiff : ContMDiffCovariantDerivativeOn F k cov.toFun Set.univ
 
 @[simp]
-lemma contMDiffCovariantDerivativeOn_univ_iff [VectorBundle 𝕜 F V] {cov : CovariantDerivative I F V}
-    {k : ℕ∞} :
+lemma contMDiffCovariantDerivativeOn_univ_iff [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+    {cov : CovariantDerivative I F V} {k : ℕ∞} :
     ContMDiffCovariantDerivativeOn F k cov.toFun Set.univ ↔ ContMDiffCovariantDerivative cov k :=
   ⟨fun h ↦ ⟨h⟩, fun h ↦ h.contMDiff⟩
 
@@ -291,9 +257,9 @@ lemma contMDiffCovariantDerivativeOn_univ_iff [VectorBundle 𝕜 F V] {cov : Cov
 section computational_properties
 
 @[simp]
-lemma zeroσ [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V) : cov 0 = 0 := by
+lemma zero [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V) : cov 0 = 0 := by
   ext1 x
-  simp [cov.isCovariantDerivativeOn.zeroσ]
+  simp [cov.isCovariantDerivativeOn.zero]
 
 end computational_properties
 
@@ -316,7 +282,7 @@ def affineCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
     (fun i ↦ (cov i).isCovariantDerivativeOn) hf
 
 /-- An affine combination of two `C^k` connections is a `C^k` connection. -/
-lemma ContMDiffCovariantDerivative.affineCombination [VectorBundle 𝕜 F V]
+lemma ContMDiffCovariantDerivative.affineCombination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
   (cov cov' : CovariantDerivative I F V)
     {f : M → 𝕜} {n : ℕ∞} (hf : ContMDiff I 𝓘(𝕜) n f)
     (hcov : ContMDiffCovariantDerivative cov n) (hcov' : ContMDiffCovariantDerivative cov' n) :
@@ -325,7 +291,7 @@ lemma ContMDiffCovariantDerivative.affineCombination [VectorBundle 𝕜 F V]
     ContMDiffCovariantDerivativeOn.affineCombination hf.contMDiffOn hcov.contMDiff hcov'.contMDiff
 
 /-- An affine combination of finitely many `C^k` connections is a `C^k` connection. -/
-lemma ContMDiffCovariantDerivative.affineCombination' [VectorBundle 𝕜 F V]
+lemma ContMDiffCovariantDerivative.affineCombination' [IsManifold I 1 M] [VectorBundle 𝕜 F V]
     {ι : Type*} {s : Finset ι} [Nonempty s]
     (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) {n : ℕ∞}
     (hf' : ∀ i ∈ s, ContMDiff I 𝓘(𝕜) n (f i))
@@ -355,22 +321,7 @@ theorem ext [IsManifold I 1 M]
   rw [← extend_apply_self (F := E) X₀]
   exact H (mdifferentiableAt_extend ..)
 
--- lemma congr_σ_smoothBumpFunction [T2Space M] [IsManifold I ∞ M]
---     [FiniteDimensional 𝕜 E]
---     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
---     {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
---     {u : Set M} (hcov : IsCovariantDerivativeOn F cov u)
---     {σ : Π x : M, V x}
---     (hσ : MDiffAt (T% σ) x)
---     (f : SmoothBumpFunction I x)
---     (hx : x ∈ u) :
---     cov ((f : M → 𝕜) • σ) x = cov σ x := by
---   have hf : MDiffAt f x := f.contMDiffAt.mdifferentiableAt (by simp)
---   rw [hcov.leibniz hσ hf hx, f.eq_one, f.eventuallyEq_one.mfderiv_eq]
---   rw [show mfderiv I 𝓘(𝕜, 𝕜) 1 x = 0 by apply mfderiv_const]
---   simp
-
-lemma congr_σ_of_eqOn [IsManifold I 1 M]
+lemma congr_of_eqOn [IsManifold I 1 M]
     {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
     {σ σ' : Π x : M, V x}
@@ -421,7 +372,6 @@ noncomputable def differenceAux
 variable [CompleteSpace 𝕜]
     [IsManifold I 1 M]
     [FiniteDimensional 𝕜 F]
-    [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
 
 variable
@@ -436,7 +386,7 @@ noncomputable def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜
   if hxs : x ∈ s then
     mkTensorAt I F (differenceAux cov cov') x
       (fun f σ hf hσ ↦ by simp [differenceAux, hcov.leibniz hσ hf, hcov'.leibniz hσ hf]; module)
-      (fun σ σ' hσ hσ' ↦ by simp [differenceAux, hcov.addσ hσ hσ', hcov'.addσ hσ hσ']; abel)
+      (fun σ σ' hσ hσ' ↦ by simp [differenceAux, hcov.add hσ hσ', hcov'.add hσ hσ']; abel)
   else
     0
 

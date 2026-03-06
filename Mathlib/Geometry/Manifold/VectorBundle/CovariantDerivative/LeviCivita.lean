@@ -666,7 +666,7 @@ theorem lcAux_apply [FiniteDimensional ℝ E] {x : M}
 
 lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (lcAux I (M := M)) where
-  addσ {Y Y'} x hY hY' _ := by
+  add {Y Y'} x hY hY' _ := by
     unfold lcAux
     rw [dif_pos hY, dif_pos hY', dif_pos (mdifferentiableAt_add_section hY hY')]
     unfold lcAux₁

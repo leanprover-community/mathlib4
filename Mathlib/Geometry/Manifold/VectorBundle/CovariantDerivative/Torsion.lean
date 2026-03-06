@@ -64,7 +64,7 @@ variable (Y) in
 lemma torsionFun_add_left_apply [CompleteSpace E] (hcov : IsCovariantDerivativeOn E cov U)
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) (hx : x ∈ U := by trivial) :
     torsionFun cov (X + X') Y x = torsionFun cov X Y x + torsionFun cov X' Y x := by
-  simp [torsionFun, hcov.addσ hX hX', VectorField.mlieBracket_add_left hX hX']
+  simp [torsionFun, hcov.add hX hX', VectorField.mlieBracket_add_left hX hX']
   module
 
 lemma torsionFun_add_right_apply [CompleteSpace E] (hcov : IsCovariantDerivativeOn E cov U)

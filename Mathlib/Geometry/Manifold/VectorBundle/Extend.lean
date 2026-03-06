@@ -12,8 +12,8 @@ import Mathlib.Geometry.Manifold.Notation
 /-!
 # Locally extending an element of a vector bundle to a smooth section
 
-Unlike the other `extend`, this construction doesn't use bump functions, just extends naively on a
-trivialization's domain.
+This construction doesn't use bump functions, it just extends naively on a trivialization's domain.
+So it is smooth only locally
 
 -/
 
