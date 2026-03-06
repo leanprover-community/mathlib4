@@ -451,7 +451,7 @@ variable {P : Type*} [AddCommMonoid P] [Module A P] {π : Representation A G P}
 
 variable {ρ σ τ}
 
-/-- The tensor product of intertwining maps induced from tensor product of LinearMaps. -/
+/-- The tensor product of intertwining maps induced from tensor product of linear maps. -/
 def tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
     (tprod ρ τ).IntertwiningMap (tprod σ π) where
   toLinearMap := TensorProduct.map f.toLinearMap g.toLinearMap
