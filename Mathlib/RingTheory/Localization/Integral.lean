@@ -5,12 +5,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.RingTheory.Algebraic.Integral
-public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.RingTheory.Localization.Algebra
 
 /-!
 # Integral and algebraic elements of a fraction field
@@ -40,65 +36,68 @@ open Polynomial
 
 variable [IsLocalization M S]
 
-open scoped Classical in
+attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
+private theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
+    ∃ b ∈ M, ∃ (q : R[X]), q.map (algebraMap R S) = b • p ∧ q.support ⊆ p.support := by
+  obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := exists_integer_multiple (Submonoid.map C M) p
+  rw [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
+  obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts h
+  exact ⟨b, hb, q', h₁, h₂ ▸ support_smul b p⟩
+
+/-- `integerNormalization p` normalizes `p` to have integer coefficients
+by clearing the denominators -/
+@[no_expose] noncomputable def integerNormalization (p : S[X]) : R[X] :=
+  (exists_integer_polynomial_multiple_and_support_subset M p).choose_spec.2.choose
+
+theorem integerNormalization_spec (p : S[X]) :
+    ∃ b ∈ M, (integerNormalization M p).map (algebraMap R S) = b • p :=
+  let e := exists_integer_polynomial_multiple_and_support_subset M p
+  ⟨e.choose, e.choose_spec.1, e.choose_spec.2.choose_spec.1⟩
+
+theorem integerNormalization_support (p : S[X]) :
+    (integerNormalization M p).support ⊆ p.support :=
+  (exists_integer_polynomial_multiple_and_support_subset M p).choose_spec.2.choose_spec.2
+
 /-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
 `integerNormalization p` -/
+@[deprecated integerNormalization (since := "2026-02-05")]
 noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
-  if hi : i ∈ p.support then
-    Classical.choose
-      (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
-        (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
-  else 0
+  (integerNormalization M p).coeff i
 
+set_option linter.deprecated false in
+@[deprecated integerNormalization_support (since := "2026-02-05")]
 theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
-    coeffIntegerNormalization M p i = 0 := by
-  simp only [coeffIntegerNormalization, h, mem_support_iff, not_true, Ne,
-    dif_neg, not_false_iff]
+    coeffIntegerNormalization M p i = 0 :=
+  notMem_support_iff.mp <| Finset.not_mem_subset (integerNormalization_support M p) <|
+    notMem_support_iff.mpr h
 
+set_option linter.deprecated false in
+@[deprecated integerNormalization_support (since := "2026-02-05")]
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
-  rw [coeffIntegerNormalization, dif_neg h]
+  simp only [mem_support_iff, ne_eq, not_not] at h
+  exact coeffIntegerNormalization_of_coeff_zero M p i h
 
-/-- `integerNormalization g` normalizes `g` to have integer coefficients
-by clearing the denominators -/
-noncomputable def integerNormalization (p : S[X]) : R[X] :=
-  ∑ i ∈ p.support, monomial i (coeffIntegerNormalization M p i)
-
-@[simp]
+set_option linter.deprecated false in
+@[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
-    (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
-  simp +contextual [integerNormalization, coeff_monomial,
-    coeffIntegerNormalization_of_coeff_zero]
+    (integerNormalization M p).coeff i = coeffIntegerNormalization M p i :=
+  rfl
 
-theorem integerNormalization_spec (p : S[X]) :
-    ∃ b : M, ∀ i, algebraMap R S ((integerNormalization M p).coeff i) = (b : R) • p.coeff i := by
-  classical
-  use Classical.choose (exist_integer_multiples_of_finset M (p.support.image p.coeff))
-  intro i
-  rw [integerNormalization_coeff, coeffIntegerNormalization]
-  split_ifs with hi
-  · exact
-      Classical.choose_spec
-        (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
-          (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
-  · rw [map_zero, notMem_support_iff.mp hi, smul_zero]
-
+@[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem integerNormalization_map_to_map (p : S[X]) :
-    ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
-  let ⟨b, hb⟩ := integerNormalization_spec M p
-  ⟨b,
-    Polynomial.ext fun i => by
-      rw [coeff_map, coeff_smul]
-      exact hb i⟩
+    ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p := by
+  obtain ⟨b, hb₁, hb₂⟩ := integerNormalization_spec M p
+  exact ⟨⟨b, hb₁⟩, hb₂⟩
 
 variable {R' : Type*} [CommRing R']
 
 theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
-  let ⟨b, hb⟩ := integerNormalization_map_to_map M p
+  let ⟨b, hb₁, hb₂⟩ := integerNormalization_spec M p
   _root_.trans (eval₂_map (algebraMap R S) g x).symm
-    (by rw [hb, ← IsScalarTower.algebraMap_smul S (b : R) p, eval₂_smul, hx, mul_zero])
+    (by rw [hb₂, ← IsScalarTower.algebraMap_smul S b p, eval₂_smul, hx, mul_zero])
 
 theorem integerNormalization_aeval_eq_zero [Algebra R R'] [Algebra S R'] [IsScalarTower R S R']
     (p : S[X]) {x : R'} (hx : aeval x p = 0) : aeval x (integerNormalization M p) = 0 := by
@@ -117,16 +116,10 @@ variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
-  refine Polynomial.ext_iff.trans (Polynomial.ext_iff.trans ?_).symm
-  obtain ⟨⟨b, nonzero⟩, hb⟩ := integerNormalization_spec (nonZeroDivisors A) p
-  constructor <;> intro h i
-  · rw [coeff_zero, ← to_map_eq_zero_iff (K := K), hb i, h i, coeff_zero, smul_zero]
-  · have hi := h i
-    rw [Polynomial.coeff_zero, ← @to_map_eq_zero_iff A _ K, hb i, Algebra.smul_def] at hi
-    apply Or.resolve_left (eq_zero_or_eq_zero_of_mul_eq_zero hi)
-    intro h
-    apply mem_nonZeroDivisors_iff_ne_zero.mp nonzero
-    exact to_map_eq_zero_iff.mp h
+  obtain ⟨b, hb₁, hb₂⟩ := integerNormalization_spec (nonZeroDivisors A) p
+  rw [← _root_.map_eq_zero_iff (mapRingHom _)
+    (map_injective _ (FaithfulSMul.algebraMap_injective A K)), coe_mapRingHom, hb₂]
+  exact smul_eq_zero_iff_right (nonZeroDivisors.ne_zero hb₁)
 
 variable (A K C)
 
@@ -314,7 +307,6 @@ lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_mk'
   convert (hr.pow n).algebraMap.mul hx
   exact (mk'_spec'_mk ..).symm
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `t` is integral over `R[1/t]`, then it is integral over `R`. -/
 lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
@@ -440,6 +432,7 @@ section
 variable {Rf Sf : Type*} [CommRing Rf] [CommRing Sf] [Algebra R Rf] [Algebra S Sf]
     [Algebra Rf Sf] [Algebra R Sf] [IsScalarTower R S Sf] [IsScalarTower R Rf Sf]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking integral closure commutes with localizations. -/
 -- We take in an arbitrary `Algebra (integralClosure R S) (integralClosure Rf Sf)` instance
 -- so that it applies more easily.

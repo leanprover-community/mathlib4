@@ -556,7 +556,6 @@ theorem norm_image_sub_le_of_norm_fderiv_le' (hf : ∀ x ∈ s, DifferentiableAt
   hs.norm_image_sub_le_of_norm_hasFDerivWithin_le'
     (fun x hx => (hf x hx).hasFDerivAt.hasFDerivWithinAt) bound xs ys
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a function has zero Fréchet derivative at every point of a convex set,
 then it is a constant on this set. -/
 theorem is_const_of_fderivWithin_eq_zero (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s)
