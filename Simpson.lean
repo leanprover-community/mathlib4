@@ -122,7 +122,9 @@ theorem simpson_midpoint_error_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) :
 @[simp]
 theorem simpson_midpoint_integral_one (f : ℝ → ℝ) (a b : ℝ) :
     simpson_midpoint_integral f 1 a b = (b - a) * f ((a + b) / 2) := by
-  sorry
+  unfold simpson_midpoint_integral
+  simp only [Nat.cast_one, range_one, sum_singleton]
+  ring_nf
 
 /-- A basic Simpson midpoint equivalent to `IntervalIntegral.sum_integral_adjacent_intervals`. More
 general theorems can be derived from repeated applications of this one. -/
