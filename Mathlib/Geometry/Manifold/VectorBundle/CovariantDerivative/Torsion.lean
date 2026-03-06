@@ -158,6 +158,8 @@ variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 /-- The torsion tensor of a covariant derivative on the tangent bundle of a manifold. -/
 noncomputable def torsion := cov.isCovariantDerivativeOn.torsion
 
+-- TODO: decide on a good naming scheme; `vector_field_apply` and `apply` or perhaps
+-- `apply` and `apply_extend`? And synchronise with the compatibility file.
 lemma torsion_vector_field_apply (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     cov.torsion x (X x) (Y x) = cov Y x (X x) - cov X x (Y x) - mlieBracket I X Y x := by
   unfold torsion IsCovariantDerivativeOn.torsion

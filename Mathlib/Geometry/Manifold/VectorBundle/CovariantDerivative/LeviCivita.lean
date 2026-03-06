@@ -246,6 +246,7 @@ private lemma aux2 {x : M} (σ σ' τ : (x : M) → TangentSpace I x)
   erw [ContinuousLinearMap.add_apply, ContinuousLinearMap.sub_apply,
     ContinuousLinearMap.sub_apply]
   -- bug: abel fails, but module works
+  -- hypothesis: B, B', C, C' are in ℝ, while A and A' are in the tangent space at ℝ instead
   module
 
 variable {I} in
