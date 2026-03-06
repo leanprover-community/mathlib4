@@ -443,7 +443,7 @@ open SubMulAction
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- For a multiply pretransitive action, computes the index
-of the fixing_subgroup of a subset of adequate cardinality -/
+of the `fixingSubgroup` of a subset of adequate cardinality -/
 theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     [Finite α]
     {k : ℕ} (Hk : IsMultiplyPretransitive G α k)
