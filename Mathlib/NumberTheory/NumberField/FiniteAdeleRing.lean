@@ -9,6 +9,7 @@ module
 public import Mathlib.NumberTheory.NumberField.FinitePlaces
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.NumberTheory.NumberField.ProductFormula
 
 /-!
 # The finite adele ring of a number field
@@ -22,13 +23,11 @@ adele ring, number field
 
 namespace NumberField
 
-section norm
-
 variable {K : Type*} [Field K] [NumberField K]
 
 namespace FiniteAdeleRing
 
-open RingOfIntegers.HeightOneSpectrum IsDedekindDomain HeightOneSpectrum
+open RingOfIntegers.HeightOneSpectrum IsDedekindDomain HeightOneSpectrum FiniteAdeleRing
 
 theorem mulSupport_finite (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
     (Function.mulSupport fun v ↦ ‖x.1 v‖).Finite := by
@@ -38,8 +37,7 @@ theorem mulSupport_finite (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
 private theorem hasProd_subset_valued_lt_one (x : FiniteAdeleRing (𝓞 K) K) :
     HasProd (fun v : {v | 1 < Valued.v (x v)} ↦ ‖x v‖)
       (∏ᶠ v : {v | 1 < Valued.v (x v)}, ‖x v‖) := by
-  have : {v | 1 < Valued.v (x v)}.Finite := by
-    simpa [HeightOneSpectrum.mem_adicCompletionIntegers] using x.2
+  have : {v | 1 < Valued.v (x v)}.Finite := by simpa [mem_adicCompletionIntegers] using x.2
   have : Fintype _ := Set.Finite.fintype this
   rw [finprod_eq_prod_of_fintype]
   exact hasProd_fintype _
@@ -47,7 +45,7 @@ private theorem hasProd_subset_valued_lt_one (x : FiniteAdeleRing (𝓞 K) K) :
 open Filter HeightOneSpectrum Valued in
 private theorem hasProd_zero_subset_one_lt_valued {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x)
     (hx₀ : ∀ v, x v ≠ 0) : HasProd (fun v : {v | Valued.v (x v) < 1} ↦ ‖x v‖) 0 :=
-  have hx := FiniteAdeleRing.infinite_valued_ne_one_of_not_isUnit (by simpa using hx₀) hx
+  have hx := infinite_valued_ne_one_of_not_isUnit (by simpa using hx₀) hx
   have hx_prop : {v | 1 < Valued.v (x v)}.Finite := by simpa [mem_adicCompletionIntegers] using x.2
   have hx_inf : {v | Valued.v (x v) < 1}.Infinite := (hx.diff hx_prop).mono (by grind)
   have : atTop.Tendsto (fun s : Finset {v | Valued.v (x v) < 1} ↦ (∏ v ∈ s, ‖x v‖)⁻¹) atTop := by
@@ -86,7 +84,7 @@ theorem tprod_eq_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬ Is
   rw [HasProd.tprod_eq]
   exact hasProd_zero_of_not_isUnit hx
 
-instance : Norm (FiniteAdeleRing (𝓞 K) K) where norm x := ∏' v, ‖x.1 v‖
+noncomputable instance : Norm (FiniteAdeleRing (𝓞 K) K) where norm x := ∏' v, ‖x.1 v‖
 
 theorem norm_def (x : FiniteAdeleRing (𝓞 K) K) : ‖x‖ = ∏' v, ‖x.1 v‖ := rfl
 
@@ -96,17 +94,17 @@ theorem norm_def_unit (x : (FiniteAdeleRing (𝓞 K) K)ˣ) : ‖x.1‖ = ∏ᶠ 
 theorem norm_eq_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x) : ‖x‖ = 0 :=
   tprod_eq_zero_of_not_isUnit hx
 
-theorem coe_norm_apply (x : Kˣ) :
-    ‖(x : (FiniteAdeleRing (𝓞 K) K)ˣ).1‖ = ∏ᶠ v, FinitePlace.mk v x.1 := norm_def_unit _
+theorem unitEmbedding_norm_apply (x : Kˣ) :
+    ‖(unitEmbedding (𝓞 K) K x).1‖ = ∏ᶠ v, FinitePlace.mk v x.1 := norm_def_unit _
 
-theorem coe_norm_apply_eq_finprod_finitePlace (x : Kˣ) :
-    ‖(x : (FiniteAdeleRing (𝓞 K) K)ˣ).1‖ = ∏ᶠ v : FinitePlace K, v x := by
-  rw [coe_norm_apply, ← finprod_comp FinitePlace.equivHeightOneSpectrum.invFun
+theorem unitEmbedding_norm_apply_eq_finprod_finitePlace (x : Kˣ) :
+    ‖(unitEmbedding (𝓞 K) K x).1‖ = ∏ᶠ v : FinitePlace K, v x := by
+  rw [unitEmbedding_norm_apply, ← finprod_comp FinitePlace.equivHeightOneSpectrum.invFun
     FinitePlace.equivHeightOneSpectrum.symm.bijective]
   exact finprod_congr fun _ ↦ rfl
 
-theorem coe_norm_eq_inv_abs_norm (x : Kˣ) :
-    ‖(x : (FiniteAdeleRing (𝓞 K) K)ˣ).1‖ = |Algebra.norm ℚ x.1|⁻¹ := by
-  rw [← FinitePlace.prod_eq_inv_abs_norm x.ne_zero, coe_norm_apply_eq_finprod_finitePlace]
+theorem unitEmbedding_norm_eq_inv_abs_norm (x : Kˣ) :
+    ‖(unitEmbedding (𝓞 K) K x).1‖ = |Algebra.norm ℚ x.1|⁻¹ := by
+  rw [← FinitePlace.prod_eq_inv_abs_norm x.ne_zero, unitEmbedding_norm_apply_eq_finprod_finitePlace]
 
 end NumberField.FiniteAdeleRing
