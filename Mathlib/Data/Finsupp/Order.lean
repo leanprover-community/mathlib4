@@ -91,6 +91,45 @@ lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → �
   exact Finset.sum_le_sum fun i hi ↦ hh _ hi <| hf _
 
 end Preorder
+
+section EmbDomain
+
+variable {ι : Type*} {κ : Type*} {α : Type*} [Zero α]
+
+@[gcongr]
+lemma embDomain_le_embDomain_iff_le [LE α] [@Std.Refl α LE.le]
+    (f : ι ↪ κ) (g₁ g₂ : ι →₀ α) : g₁.embDomain f ≤ g₂.embDomain f ↔ g₁ ≤ g₂ := by
+  constructor
+  · rw [Finsupp.le_def]
+    intro h' x
+    simpa [Finsupp.embDomain_apply] using h' (f x)
+  intro h
+  simp [Finsupp.le_def, embDomain_apply, apply_dite₂, Finsupp.le_def.mp h]
+
+lemma embDomain_mono [Preorder α] (f : ι ↪ κ) : Monotone (embDomain f : (ι →₀ α) → (κ →₀ α)) :=
+  fun _ _↦ (embDomain_le_embDomain_iff_le f _ _).mpr
+
+@[gcongr]
+lemma embDomain_lt_embDomain_iff_lt [Preorder α] (f : ι ↪ κ) (g₁ g₂ : ι →₀ α) :
+    g₁.embDomain f < g₂.embDomain f ↔ g₁ < g₂ := by
+  simp [lt_iff_le_not_ge, embDomain_le_embDomain_iff_le]
+
+end EmbDomain
+
+section MapDomain
+
+variable {ι : Type*} {κ : Type*} {α : Type*} [AddCommMonoid α]
+
+lemma mapDomain_le_mapDomain_iff_le [LE α] [@Std.Refl α LE.le] {f : ι → κ} (h : f.Injective)
+    (g₁ g₂ : ι →₀ α) : g₁.mapDomain f ≤ g₂.mapDomain f ↔ g₁ ≤ g₂ := by
+  simpa [Finsupp.embDomain_eq_mapDomain] using Finsupp.embDomain_le_embDomain_iff_le ⟨f, h⟩ g₁ g₂
+
+lemma mapDomain_lt_mapDomain_iff_lt [Preorder α] {f : ι → κ} (h : f.Injective)
+    (g₁ g₂ : ι →₀ α) : g₁.mapDomain f < g₂.mapDomain f ↔ g₁ < g₂ := by
+  simpa [Finsupp.embDomain_eq_mapDomain] using Finsupp.embDomain_lt_embDomain_iff_lt ⟨f, h⟩ g₁ g₂
+
+end MapDomain
+
 end Zero
 
 /-! ### Algebraic order structures -/
