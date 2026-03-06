@@ -154,7 +154,7 @@ partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
     unless traceResultOf (← header.toString) matches some .failure do
       return .ascend
     let childFailures ← visitWithM children findLeafFailures
-    -- Leaf failure: deepest `❌️️` node with no deeper `❌️️` children
+    -- Leaf failure: deepest `❌️` node with no deeper `❌️` children
     return .ascend <| if childFailures.isEmpty then #[header] else childFailures
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.
