@@ -117,6 +117,7 @@ def botCoeIsoZero {B : C} : ((⊥ : MonoOver B) : C) ≅ 0 :=
 theorem bot_arrow_eq_zero [HasZeroMorphisms C] {B : C} : (⊥ : MonoOver B).arrow = 0 :=
   zero_of_source_iso_zero _ botCoeIsoZero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `simp`-normal form of `bot_arrow_eq_zero`. -/
 @[simp]
 theorem initialTo_b_eq_zero [HasZeroMorphisms C] {B : C} : initial.to B = 0 := by
@@ -128,11 +129,12 @@ section Inf
 
 variable [HasPullbacks C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `[HasPullbacks C]`, `MonoOver A` has "intersections", functorial in both arguments.
 
 As `MonoOver A` is only a preorder, this doesn't satisfy the axioms of `SemilatticeInf`,
 but we reuse all the names from `SemilatticeInf` because they will be used to construct
-`SemilatticeInf (subobject A)` shortly.
+`SemilatticeInf (Subobject A)` shortly.
 -/
 @[simps]
 def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
@@ -153,6 +155,7 @@ def infLELeft {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ f :=
 def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
   homMk _ pullback.condition
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A morphism version of the `le_inf` axiom. -/
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) :=
   fun k₁ k₂ ↦ homMk (pullback.lift k₂.hom.left k₁.hom.left (by simp))
@@ -181,6 +184,7 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
@@ -308,6 +312,7 @@ theorem bot_eq_zero {B : C} : (⊥ : Subobject B) = Subobject.mk (0 : 0 ⟶ B) :
 theorem bot_arrow {B : C} : (⊥ : Subobject B).arrow = 0 :=
   zero_of_source_iso_zero _ botCoeIsoZero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Factors f ↔ f = 0 :=
   ⟨by
     rintro ⟨h, rfl⟩
@@ -362,6 +367,16 @@ instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
   inf_le_right := inf_le_right
   le_inf := le_inf
 
+@[reassoc]
+lemma inf_comp_left {A : C} (f g : Subobject A) :
+   (ofLE (f ⊓ g) f (by simp)) ≫ f.arrow = (f ⊓ g).arrow :=
+  ofLE_arrow (inf_le_left f g)
+
+@[reassoc]
+lemma inf_comp_right {A : C} (f g : Subobject A) :
+   (ofLE (f ⊓ g) g (by simp)) ≫ g.arrow = (f ⊓ g).arrow :=
+  ofLE_arrow (inf_le_right f g)
+
 theorem factors_left_of_inf_factors {A B : C} {X Y : Subobject B} {f : A ⟶ B}
     (h : (X ⊓ Y).Factors f) : X.Factors f :=
   factors_of_le _ (inf_le_left _ _) h
@@ -378,6 +393,17 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     apply Quotient.ind₂'
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
     exact ⟨_, pullback.lift_snd_assoc _ _ hg₂ _⟩⟩
+
+theorem inf_isPullback {A : C} (f g : Subobject A) :
+    IsPullback (ofLE (f ⊓ g) f (by simp)) (ofLE (f ⊓ g) g (by simp)) f.arrow g.arrow := by
+  refine ⟨⟨by simp⟩, ⟨PullbackCone.IsLimit.mk _ (fun s ↦ (f ⊓ g).factorThru (s.fst ≫ f.arrow) ?_)
+    ?_ (fun s ↦ ?_) fun _ _ h _ ↦ ?_⟩⟩
+  · simpa using ⟨factors_comp_arrow s.fst, by simpa [s.condition] using factors_comp_arrow s.snd⟩
+  · cat_disch
+  · ext
+    simp [s.condition]
+  · ext
+    simp [← h]
 
 theorem inf_arrow_factors_left {B : C} (X Y : Subobject B) : X.Factors (X ⊓ Y).arrow :=
   (factors_iff _ _).mpr ⟨ofLE (X ⊓ Y) X (inf_le_left X Y), by simp⟩
@@ -417,9 +443,12 @@ theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
   induction f₂ using Quotient.inductionOn'
   rfl
 
-theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
-    (Quotient.mk'' f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) :=
-  inf_eq_map_pullback' f₁ f₂
+theorem inf_eq_map_pullback {A : C} (f₁ : Subobject A) (f₂ : Subobject A) :
+    (f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) := by
+  convert inf_eq_map_pullback' (representative.obj f₁) f₂
+  ext1
+  nth_rw 1 [← thinSkeleton_mk_representative_eq_self f₁]
+  congr
 
 theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :
     (f₁ ⨯ f₂) = f₁ ⊓ f₂ := by
@@ -526,6 +555,7 @@ theorem wideCospan_map_term {A : C} (s : Set (Subobject A)) (j) :
       ((equivShrink (Subobject A)).symm j).arrow :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction of a cone for `le_inf`. -/
 def leInfCone {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     Cone (wideCospan s) :=
@@ -556,6 +586,7 @@ def widePullback {A : C} (s : Set (Subobject A)) : C :=
 def widePullbackι {A : C} (s : Set (Subobject A)) : widePullback s ⟶ A :=
   Limits.limit.π (wideCospan s) none
 
+set_option backward.isDefEq.respectTransparency false in
 instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbackι s) :=
   ⟨fun u v h =>
     limit.hom_ext fun j => by
@@ -571,6 +602,7 @@ instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbac
 def sInf {A : C} (s : Set (Subobject A)) : Subobject A :=
   Subobject.mk (widePullbackι s)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ f := by
   fapply le_of_comm
   · exact (underlyingIso _).hom ≫
@@ -584,6 +616,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
     convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     f ≤ sInf s := by
   fapply le_of_comm
@@ -615,6 +648,7 @@ variable [HasImages C]
 def sSup {A : C} (s : Set (Subobject A)) : Subobject A :=
   Subobject.mk (image.ι (smallCoproductDesc s))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup s := by
   fapply le_of_comm
   · refine eqToHom ?_ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
@@ -628,6 +662,7 @@ theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α
     rintro ⟨a, m, rfl⟩
     simpa using m⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm

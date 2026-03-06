@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Order.PropInstances
 public import Mathlib.Tactic.Lift
-public import Mathlib.Tactic.Tauto
-public import Mathlib.Util.Delaborators
 
 /-!
 # Basic properties of sets
@@ -71,6 +69,10 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
+protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) := injective_id
+protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) := surjective_id
+protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) := bijective_id
+
 instance instDistribLattice : DistribLattice (Set α) where
   __ : DistribLattice (α → Prop) := inferInstance
   le := (· ≤ ·)
@@ -122,7 +124,7 @@ alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
     CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
-  PiSubtype.canLift ι α s
+  PiSubtype.canLift ι α (· ∈ s)
 
 instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι) :
     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
@@ -175,10 +177,6 @@ end SetCoe
 theorem Subtype.mem {α : Type*} {s : Set α} (p : s) : (p : α) ∈ s :=
   p.prop
 
-/-- Duplicate of `Eq.subset'`, which currently has elaboration problems. -/
-theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
-  fun h₁ _ h₂ => by rw [← h₁]; exact h₂
-
 namespace Set
 
 variable {α : Type u} {β : Type v} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
@@ -221,8 +219,8 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
 /-! ### Subset and strict subset relations -/
 
 
-instance : IsRefl (Set α) (· ⊆ ·) :=
-  show IsRefl (Set α) (· ≤ ·) by infer_instance
+instance : @Std.Refl (Set α) (· ⊆ ·) :=
+  show Std.Refl (· ≤ ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊆ ·) :=
   show IsTrans (Set α) (· ≤ ·) by infer_instance
@@ -230,11 +228,11 @@ instance : IsTrans (Set α) (· ⊆ ·) :=
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
   show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
 
-instance : IsAntisymm (Set α) (· ⊆ ·) :=
-  show IsAntisymm (Set α) (· ≤ ·) by infer_instance
+instance : @Std.Antisymm (Set α) (· ⊆ ·) :=
+  show Std.Antisymm (· ≤ ·) by infer_instance
 
-instance : IsIrrefl (Set α) (· ⊂ ·) :=
-  show IsIrrefl (Set α) (· < ·) by infer_instance
+instance : @Std.Irrefl (Set α) (· ⊂ ·) :=
+  show Std.Irrefl (· < ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊂ ·) :=
   show IsTrans (Set α) (· < ·) by infer_instance
@@ -248,8 +246,8 @@ instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
   show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
 
-instance : IsAsymm (Set α) (· ⊂ ·) :=
-  show IsAsymm (Set α) (· < ·) by infer_instance
+instance : @Std.Asymm (Set α) (· ⊂ ·) :=
+  show Std.Asymm (· < ·) by infer_instance
 
 instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
@@ -291,6 +289,9 @@ theorem eq_of_subset_of_subset {a b : Set α} : a ⊆ b → b ⊆ a → a = b :=
 
 theorem notMem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
+
+theorem subset_iff_notMem : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
+  simp only [subset_def, not_imp_not]
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
@@ -423,7 +424,7 @@ theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.m
 theorem empty_def : (∅ : Set α) = { _x : α | False } :=
   rfl
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_empty_iff_false (x : α) : x ∈ (∅ : Set α) ↔ False :=
   Iff.rfl
 
@@ -589,7 +590,7 @@ theorem MemUnion.elim {x : α} {a b : Set α} {P : Prop} (H₁ : x ∈ a ∪ b) 
     (H₃ : x ∈ b → P) : P :=
   Or.elim H₁ H₂ H₃
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_union (x : α) (a b : Set α) : x ∈ a ∪ b ↔ x ∈ a ∨ x ∈ b :=
   Iff.rfl
 
@@ -702,7 +703,7 @@ theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t :=
 theorem inter_def {s₁ s₂ : Set α} : s₁ ∩ s₂ = { a | a ∈ s₁ ∧ a ∈ s₂ } :=
   rfl
 
-@[simp, mfld_simps, grind =]
+@[simp, mfld_simps, grind =, push]
 theorem mem_inter_iff (x : α) (a b : Set α) : x ∈ a ∩ b ↔ x ∈ a ∧ x ∈ b :=
   Iff.rfl
 
@@ -910,7 +911,7 @@ theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
 
 @[simp]
 theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } ∪ { x ∈ t | p x } :=
-  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } p
+  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } {x | p x}
 
 @[simp]
 theorem sep_inter : { x | (x ∈ s ∧ x ∈ t) ∧ p x } = { x ∈ s | p x } ∩ { x ∈ t | p x } :=
@@ -922,7 +923,7 @@ theorem sep_and : { x ∈ s | p x ∧ q x } = { x ∈ s | p x } ∩ { x ∈ s | 
 
 @[simp]
 theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q x } :=
-  inter_union_distrib_left s p q
+  inter_union_distrib_left s {x | p x} {x | q x}
 
 @[simp]
 theorem sep_setOf : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
@@ -936,7 +937,7 @@ theorem mem_powerset {x s : Set α} (h : x ⊆ s) : x ∈ 𝒫 s := @h
 
 theorem subset_of_mem_powerset {x s : Set α} (h : x ∈ 𝒫 s) : x ⊆ s := @h
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_powerset_iff (x s : Set α) : x ∈ 𝒫 s ↔ x ⊆ s :=
   Iff.rfl
 
@@ -1059,6 +1060,13 @@ instance decidableInsert [Decidable (a = b)] [Decidable (a ∈ s)] : Decidable (
 instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption
 
+/-- `Set α` almost never has decidable equality.
+In fact, for an inhabited type `α`, `Set α` has decidable equality iff
+all propositions are decidable. We add a global instance that `Set α` has decidable equality,
+coming from the choice axiom, so that we don't have to provide `[DecidableEq (Set α)]` arguments
+in lemma statements. -/
+noncomputable instance decidableEq : DecidableEq (Set α) := Classical.typeDecidableEq (Set α)
+
 end Set
 
 variable {α : Type*} {s t u : Set α}
@@ -1069,7 +1077,7 @@ namespace Equiv
   `Set {a : α // p a}` and `{s : Set α // ∀ a ∈ s, p a}`. -/
 protected def setSubtypeComm (p : α → Prop) :
     Set {a : α // p a} ≃ {s : Set α // ∀ a ∈ s, p a} where
-  toFun s := ⟨{a | ∃ h : p a, s ⟨a, h⟩}, fun _ h ↦ h.1⟩
+  toFun s := ⟨{a | ∃ h : p a, ⟨a, h⟩ ∈ s}, fun _ h ↦ h.1⟩
   invFun s := {a | a.val ∈ s.val}
   left_inv s := by ext a; exact ⟨fun h ↦ h.2, fun h ↦ ⟨a.property, h⟩⟩
   right_inv s := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property _ h, h⟩⟩

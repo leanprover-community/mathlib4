@@ -15,7 +15,7 @@ This file shows that non-empty finite sets in a preorder have minimal/maximal el
 contrapositively that non-empty sets without minimal or maximal elements are infinite.
 -/
 
-@[expose] public section
+public section
 
 variable {ι α β : Type*}
 

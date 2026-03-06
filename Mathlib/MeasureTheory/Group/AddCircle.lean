@@ -23,7 +23,7 @@ The file is a place to collect measure-theoretic results about the additive circ
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set Function Filter MeasureTheory MeasureTheory.Measure Metric

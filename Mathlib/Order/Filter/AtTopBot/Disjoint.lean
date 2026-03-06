@@ -12,7 +12,7 @@ public import Mathlib.Order.Interval.Set.Disjoint
 # Disjointness of `Filter.atTop` and `Filter.atBot`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

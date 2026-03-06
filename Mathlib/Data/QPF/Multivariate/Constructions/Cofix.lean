@@ -123,6 +123,7 @@ instance Cofix.mvfunctor : MvFunctor (Cofix F) where map := @Cofix.map _ _ _
 def Cofix.corec {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) : β → Cofix F α := fun x =>
   Quot.mk _ (corecF g x)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Destructor for `Cofix F` -/
 def Cofix.dest {α : TypeVec n} : Cofix F α → F (α.append1 (Cofix F α)) :=
   Quot.lift (fun x => appendFun id (Quot.mk Mcongr) <$$> abs (M.dest q.P x))
@@ -260,6 +261,7 @@ theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop
       rw [h _ _ r'xy]
   right; exact rxy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bisimulation principle using `LiftR` to match and relate children of two trees. -/
 theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
     (h : ∀ x y, r x y → LiftR (RelLast α r) (Cofix.dest x) (Cofix.dest y)) :
@@ -357,6 +359,7 @@ theorem liftR_map {α β : TypeVec n} {F' : TypeVec n → Type u} [MvFunctor F']
 
 open Function
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftR_map_last [lawful : LawfulMvFunctor F]
     {α : TypeVec n} {ι ι'} (R : ι' → ι' → Prop)
     (x : F (α ::: ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
@@ -513,11 +516,12 @@ theorem Cofix.dest_corec₁ {α : TypeVec n} {β : Type u}
     Cofix.dest (Cofix.corec₁ (@g) x) = g id (Cofix.corec₁ @g) x := by
   rw [Cofix.corec₁, Cofix.dest_corec', ← h]; rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance mvqpfCofix : MvQPF (Cofix F) where
-  P         := q.P.mp
-  abs       := Quot.mk Mcongr
-  repr      := Cofix.repr
-  abs_repr  := Cofix.abs_repr
-  abs_map   := by intros; rfl
+  P        := q.P.mp
+  abs      := Quot.mk Mcongr
+  repr     := Cofix.repr
+  abs_repr := Cofix.abs_repr
+  abs_map  := by intros; rfl
 
 end MvQPF

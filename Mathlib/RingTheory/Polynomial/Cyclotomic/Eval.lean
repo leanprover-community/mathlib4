@@ -20,7 +20,7 @@ This file states some results about evaluating cyclotomic polynomials in various
 * `Polynomial.cyclotomic_pos` : `∀ x, 0 < eval x (cyclotomic n R)` if `2 < n`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Polynomial
@@ -167,6 +167,7 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     apply Nat.succ_injective
     exact Nat.pow_right_injective hp.two_le hxy
 
+set_option backward.isDefEq.respectTransparency false in
 -- Fix the non-terminal simp!
 set_option linter.flexible false in
 theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ n) (hq' : 1 < q) :
@@ -222,6 +223,7 @@ theorem sub_one_pow_totient_le_cyclotomic_eval {q : ℝ} (hq' : 1 < q) :
   | 1 => by simp only [totient_one, pow_one, cyclotomic_one, eval_sub, eval_X, eval_one, le_refl]
   | _ + 2 => (sub_one_pow_totient_lt_cyclotomic_eval le_add_self hq').le
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: non-terminal simps followed by positivity
 set_option linter.flexible false in
 theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ n) (hq' : 1 < q) :

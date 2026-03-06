@@ -23,7 +23,7 @@ noncomputable section
 
 open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
 
-open scoped UpperHalfPlane Topology BigOperators Nat
+open scoped UpperHalfPlane Topology Nat
 
 variable (z : ℍ)
 
@@ -94,7 +94,7 @@ lemma r_pos : 0 < r z := by
 lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (hz : z ∈ verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z := by
   apply min_le_min hz.2
-  rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
+  gcongr
   simp only [r1_eq, div_pow, one_div]
   rw [inv_le_inv₀ (by positivity) (by positivity), add_le_add_iff_right, ← even_two.pow_abs]
   gcongr
@@ -165,6 +165,11 @@ lemma linear_isTheta_right_add (c e : ℤ) (z : ℂ) :
   [refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real); skip] <;>
   simpa [-Int.cofinite_eq] using
     .inr <| tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real
+
+@[deprecated linear_isTheta_right_add (since := "2025-12-27")]
+lemma linear_isTheta_right (c : ℤ) (z : ℂ) :
+    (fun (d : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
+  simpa using linear_isTheta_right_add c 0 z
 
 lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
     (fun (c : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
@@ -249,13 +254,13 @@ lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
       (linear_inv_isBigO_right c₁ z).comp_neg_int
 
 lemma summable_linear_right_add_one_mul_linear_right (z : ℂ) (c₁ c₂ : ℤ) :
-    Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹  := by
+    Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simpa [pow_two] using (linear_inv_isBigO_right c₂ z).mul
     (linear_inv_isBigO_right_add c₁ 1 z)
 
 lemma summable_linear_left_mul_linear_left {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :
-    Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹  := by
+    Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
   simpa using (linear_inv_isBigO_left c₂ hz).mul (linear_inv_isBigO_left c₁ hz)
@@ -270,7 +275,6 @@ private lemma aux_isBigO_linear (z : ℍ) (a b : ℤ) :
   apply le_trans (by simpa [Real.rpow_neg_one, add_assoc] using
     summand_bound_of_mem_verticalStrip zero_le_one ![m 0 + a, m 1 + b] z.2 h0)
   simp [abs_of_pos (r_pos _)]
-  aesop
 
 lemma isLittleO_const_left_of_properSpace_of_discreteTopology
     {α : Type*} (a : α) [NormedAddCommGroup α] [DiscreteTopology α]

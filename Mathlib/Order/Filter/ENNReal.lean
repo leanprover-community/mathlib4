@@ -14,7 +14,7 @@ public import Mathlib.Topology.Metrizable.Real
 This file compiles filter-related results about `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter ENNReal
@@ -104,6 +104,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
     · exact hx₀.trans hb₀
     · exact hb _ hx₀ hx
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma limsSup_of_not_isBounded {f : Filter ℝ≥0} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
   rw [limsSup, ← bot_eq_zero]
@@ -122,6 +123,7 @@ lemma limsup_of_not_isBoundedUnder (hf : ¬ f.IsBoundedUnder (· ≤ ·) u) : li
 lemma liminf_of_not_isCoboundedUnder (hf : ¬ f.IsCoboundedUnder (· ≥ ·) u) : liminf u f = 0 :=
   limsInf_of_not_isCobounded hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   by_cases hf : f.IsCoboundedUnder (· ≥ ·) u; swap
@@ -133,6 +135,7 @@ lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   refine forall₂_congr fun r hr ↦ ?_
   simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   obtain rfl | hf := f.eq_or_neBot
@@ -211,5 +214,52 @@ theorem limsup_liminf_le_liminf_limsup {β} [Countable β] {f : Filter α} [Coun
     rw [eventually_countable_forall]
     exact fun b => ENNReal.eventually_le_limsup fun a => u a b
   sInf_le <| h1.mono fun x hx => Filter.liminf_le_liminf (Filter.Eventually.of_forall hx)
+
+lemma ofReal_limsup {u : α → ℝ}
+    (h₁ : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
+    (h₂ : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
+    ENNReal.ofReal (limsup u f) = limsup (fun a ↦ .ofReal (u a)) f := by
+  refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
+  simp only [ofReal_le_coe]
+  rw [limsup_le_iff, limsup_le_iff]
+  constructor
+  · rintro h (_ | x) hx
+    · simp
+    filter_upwards [h x (by simpa using hx)] with a ha
+    obtain ha₀ | ha₀ := le_total (u a) 0
+    · simpa [ofReal_of_nonpos, *] using hx.bot_lt
+    · simp [ofReal_lt_coe_iff, *]
+  · rintro h x hx
+    have : 0 < x := hx.trans_le' (by simp)
+    filter_upwards [h (.ofReal x) (by simpa [this] using hx)] with a ha
+    exact (toReal_lt_of_lt_ofReal ha).trans_le' (by simp [toReal_ofReal'])
+
+lemma toReal_limsup {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
+    (h₂ : IsBoundedUnder (· ≤ ·) f fun a ↦ (u a).toReal := by isBoundedDefault) :
+    (limsup u f).toReal = limsup (fun a ↦ (u a).toReal) f := by
+  obtain rfl | hf := f.eq_or_neBot
+  · simp [limsup, limsSup]
+  have : IsCoboundedUnder (· ≤ ·) f fun a ↦ (u a).toReal := .of_frequently_ge (a := 0) (by simpa)
+  refine eq_of_forall_ge_iff fun r ↦ ?_
+  obtain hr | hr := lt_or_ge r 0
+  · exact iff_of_false (hr.trans_le toReal_nonneg).not_ge
+      (hr.trans_le <| le_limsup_of_frequently_le (by simpa)).not_ge
+  rw [← le_ofReal_iff_toReal_le _ hr, limsup_le_iff, limsup_le_iff]
+  constructor
+  · rintro h x hx
+    have : 0 < x := hx.trans_le' hr
+    filter_upwards [h (.ofReal x) (by simpa [this] using hx)] with i hi
+    exact toReal_lt_of_lt_ofReal hi
+  · rintro h (_ | x) hx
+    · simpa [lt_top_iff_ne_top]
+    filter_upwards [h₁, h x (by simpa [ofReal_lt_coe_iff hr] using hx)] with i hi
+    simp [← lt_ofReal_iff_toReal_lt hi]
+  obtain ⟨x, hx⟩ := h₂
+  rw [eventually_map] at hx
+  have hx₀ : 0 ≤ x := by obtain ⟨i, hi⟩ := hx.exists; exact toReal_nonneg.trans hi
+  simp only [limsup, limsSup, eventually_map, ne_eq, sInf_eq_top, Set.mem_setOf_eq, not_forall]
+  refine ⟨.ofReal x, ?_, by simp⟩
+  filter_upwards [h₁, hx] with i hi
+  simp [le_ofReal_iff_toReal_le, *]
 
 end ENNReal

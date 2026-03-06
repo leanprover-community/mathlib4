@@ -195,7 +195,7 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
   | succ n =>
     rw [restrictNonposSeq_succ]
     have h₁ : ¬s ≤[i \ ⋃ (k : ℕ) (_ : k ≤ n), restrictNonposSeq s i k] 0 := by
-      refine mt (restrict_le_zero_subset _ ?_ (by simp [Nat.lt_succ_iff])) hn
+      refine mt (restrict_le_zero_subset _ ?_ (by simp)) hn
       convert measurable_of_not_restrict_le_zero _ hn using 3
       exact funext fun x => by rw [Nat.lt_succ_iff]
     rcases someExistsOneDivLT_spec h₁ with ⟨_, _, h⟩
@@ -322,11 +322,8 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
       rw [one_div] at this ⊢
       exact inv_lt_of_inv_lt₀ hE₃ this
   obtain ⟨k, hk₁, hk₂⟩ := this
-  have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l := by
-    apply Set.diff_subset_diff_right
-    intro x; simp only [Set.mem_iUnion]
-    rintro ⟨n, _, hn₂⟩
-    exact ⟨n, hn₂⟩
+  have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l :=
+    Set.diff_subset_diff_right (Set.iUnion₂_subset_iUnion _ _)
   refine
     findExistsOneDivLT_min (hn' k) (Nat.sub_lt hk₁ Nat.zero_lt_one)
       ⟨E, Set.Subset.trans hE₂ hA', hE₁, ?_⟩

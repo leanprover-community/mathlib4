@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
-public import Batteries.Tactic.Alias
 
 /-!
 # Extra definitions on `Option`
@@ -48,10 +47,14 @@ lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
   cases a <;> rfl
 
 /-- Inhabited `get` function. Returns `a` if the input is `some a`, otherwise returns `default`. -/
+@[deprecated "Use `Option.get!` (which will panic on `none`) or \
+    `Option.getD` (which takes an explicit default value)." (since := "2026-01-05")]
 abbrev iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
 
+set_option linter.deprecated false in
+@[deprecated "Use `Option.getD`." (since := "2026-01-05")]
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
 

@@ -259,12 +259,13 @@ theorem single_zero (a : G) : (single a 0 : SkewMonoidAlgebra k G) = 0 := by
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := by
   simp [← toFinsupp_inj]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Group isomorphism between `SkewMonoidAlgebra k G` and `G →₀ k`. -/
 @[simps apply symm_apply]
 def toFinsuppAddEquiv : SkewMonoidAlgebra k G ≃+ (G →₀ k) where
-  toFun        := toFinsupp
-  invFun       := ofFinsupp
-  map_add'     := toFinsupp_add
+  toFun    := toFinsupp
+  invFun   := ofFinsupp
+  map_add' := toFinsupp_add
 
 theorem smul_single {S} [SMulZeroClass S k] (s : S) (a : G) (b : k) :
     s • single a b = single a (s • b) :=
@@ -282,7 +283,7 @@ theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [Distr
   inhabit G
   refine ⟨IsSMulRegular.skewMonoidAlgebra, fun ha b₁ b₂ inj ↦ ?_⟩
   rw [← (single_injective _).eq_iff, ← smul_single, ← smul_single] at inj
-  exact single_injective (default) (ha inj)
+  exact single_injective default (ha inj)
 
 end Single
 
@@ -439,6 +440,7 @@ theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoi
     {f : G → k → S} : b * s.sum f = s.sum fun a c ↦ b * f a c := by
   simp only [sum, Finsupp.sum, Finset.mul_sum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Analogue of `Finsupp.sum_ite_eq'` for `SkewMonoidAlgebra`. -/
 @[simp]
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
@@ -481,6 +483,7 @@ section mapDomain
 
 variable {G' G'' : Type*} (f : G → G') {g : G' → G''} (v : SkewMonoidAlgebra k G)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given `f : G → G'` and `v : SkewMonoidAlgebra k G`, `mapDomain f v : SkewMonoidAlgebra k G'`
 is the finitely supported additive homomorphism whose value at `a : G'` is the sum of `v x` over
 all `x` such that `f x = a`.
@@ -716,7 +719,7 @@ def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ {x y}, (f (y • 
     SkewMonoidAlgebra k G →+* R where
   __ := liftNC (f : k →+ R) g
   map_one' := liftNC_one _ _
-  map_mul' _ _ :=  liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm
+  map_mul' _ _ := liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm
 
 end Semiring
 
@@ -810,8 +813,9 @@ variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
 /-- Scalar multiplication acting on the domain.
 
 This is not an instance as it would conflict with the action on the range.
-See the file `test/instance_diamonds.lean` for examples of such conflicts. -/
-def comapSMul [AddCommMonoid M] : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
+See the file `MathlibTest/instance_diamonds.lean` for examples of such conflicts. -/
+@[instance_reducible]
+def comapSMul : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul
 
@@ -822,6 +826,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
   mapDomain_single
 
 /-- `comapSMul` is multiplicative -/
+@[instance_reducible]
 def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
@@ -1087,6 +1092,7 @@ variable (k G)
 
 variable [Monoid G] [MulSemiringAction G k]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The embedding of a monoid into its skew monoid algebra. -/
 def of : G →* SkewMonoidAlgebra k G where
   toFun a      := single a 1

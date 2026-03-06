@@ -20,7 +20,7 @@ public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 -/
 
-@[expose] public section
+public section
 
 section TopologicalSpace
 
@@ -30,7 +30,7 @@ include hI in
 /-- `IsHausdorff I R` is equivalent to being Hausdorff in the adic topology. -/
 protected lemma IsAdic.isHausdorff_iff : IsHausdorff I R ↔ T2Space R := by
   rw [I.ringFilterBasis.t2Space_iff_sInter_subset hI.symm, isHausdorff_iff]
-  simp [SModEq.zero, Ideal.ringFilterBasis, RingSubgroupsBasis.toRingFilterBasis]
+  simp +instances [SModEq.zero, Ideal.ringFilterBasis, RingSubgroupsBasis.toRingFilterBasis]
 
 end TopologicalSpace
 

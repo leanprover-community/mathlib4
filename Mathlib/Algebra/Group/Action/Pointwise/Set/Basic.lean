@@ -168,7 +168,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `Set α`
 on `Set β`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
 /-- An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
 on `Set β` -/]
 protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
@@ -176,7 +176,7 @@ protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction 
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Set β`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
 /-- An additive action of an additive monoid on a type `β` gives an additive action on `Set β`. -/]
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
   mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]
@@ -248,6 +248,10 @@ theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
 @[to_additive (attr := simp)]
 theorem smul_set_univ : a • (univ : Set β) = univ :=
   image_univ_of_surjective <| MulAction.surjective a
+
+@[to_additive (attr := simp)]
+theorem smul_set_eq_univ : a • s = univ ↔ s = univ := by
+  rw [smul_eq_iff_eq_inv_smul, smul_set_univ]
 
 @[to_additive (attr := simp)]
 theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ :=

@@ -43,7 +43,7 @@ Redefine `Hyperreal.st` in terms of `ArchimedeanClass.stdPart`.
 namespace ArchimedeanClass
 variable
   {K : Type*} [LinearOrder K] [Field K] [IsOrderedRing K] {x y : K}
-  {R : Type*} [LinearOrder R] [CommRing R] [IsOrderedRing R] [Archimedean R]
+  {R : Type*} [LinearOrder R] [CommRing R] [IsStrictOrderedRing R] [Archimedean R]
 
 /-! ### Finite residue field -/
 
@@ -55,18 +55,21 @@ noncomputable def FiniteElement : Type _ :=
 
 namespace FiniteElement
 
-instance : CommRing (FiniteElement K) := by
+noncomputable instance : CommRing (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsDomain (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ValuationRing (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
 instance : LinearOrder (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedRing (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
@@ -128,6 +131,13 @@ instance : RatCast (FiniteElement K) where
 
 @[simp] theorem mk_ratCast (q : ℚ) : FiniteElement.mk (q : K) (mk_ratCast_nonneg q) = q := rfl
 
+@[no_expose]
+noncomputable instance : FloorRing (FiniteElement K) :=
+  .ofBounded _ fun x ↦ by
+    obtain ⟨n, hn⟩ := x.2
+    refine ⟨n, (le_abs_self x).trans ?_⟩
+    simpa using hn
+
 end FiniteElement
 
 variable (K) in
@@ -154,7 +164,7 @@ noncomputable instance : LinearOrder (FiniteResidueField K) :=
   @Quotient.instLinearOrder _ _ _ (by exact ordConnected_preimage_mk') (Classical.decRel _)
 
 /-- The quotient map from finite elements on the field to the associated residue field. -/
-def mk : FiniteElement K →+*o FiniteResidueField K where
+noncomputable def mk : FiniteElement K →+*o FiniteResidueField K where
   monotone' _ _ h := Quotient.mk_monotone h
   __ := IsLocalRing.residue (FiniteElement K)
 
@@ -166,6 +176,7 @@ instance ordConnected_preimage_mk :
     ∀ x, Set.OrdConnected (mk ⁻¹' ({x} : Set (FiniteResidueField K))) :=
   ordConnected_preimage_mk'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mk_eq_mk {x y : FiniteElement K} : mk x = mk y ↔ 0 < ArchimedeanClass.mk (x.1 - y.1) := by
   apply Quotient.eq.trans
   rw [Submodule.quotientRel_def, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
@@ -191,6 +202,12 @@ theorem mk_lt_mk {x y : FiniteElement K} : mk x < mk y ↔ x < y ∧ mk x ≠ mk
 theorem lt_of_mk_lt_mk {x y : FiniteElement K} (h : mk x < mk y) : x < y :=
   (mk_lt_mk.1 h).1
 
+#adaptation_note /-- Upon bumping to v4.29.0-rc3, this was previously proved by
+`grind [mul_le_mul_of_nonneg_left]`, but `grind` fails due to `inferInstanceAs` leakage in the
+`Field (FiniteResidueField K)` instance causing a defeq mismatch between
+`DivisionMonoid.toDivInvOneMonoid.toInvOneClass.toInv` and `Field.toGrindField.toInv`.
+See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576520256
+-/
 private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x ≤ y) (hz : 0 ≤ z) :
     z * x ≤ z * y := by
   induction x with | mk x
@@ -199,7 +216,11 @@ private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x
   rw [← map_mul, ← map_mul]
   rw [← map_zero mk] at hz
   rw [mk_le_mk] at h hz ⊢
-  grind [mul_le_mul_of_nonneg_left]
+  rcases h with h | h
+  · rcases hz with hz | hz
+    · simp [mul_le_mul_of_nonneg_left h hz]
+    · simp [← hz]
+  · simp [h]
 
 instance : IsOrderedRing (FiniteResidueField K) where
   zero_le_one := mk.monotone' zero_le_one
@@ -239,7 +260,7 @@ theorem mk_ratCast (q : ℚ) : mk (q : FiniteElement K) = q := by
 
 /-- An embedding from an Archimedean field into `K` induces an embedding into
 `FiniteResidueField K`. -/
-def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
+noncomputable def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
   toFun r := mk <| .mk _ (mk_map_nonneg_of_archimedean f r)
   map_zero' := by simp
   map_one' := by simp
@@ -364,8 +385,7 @@ theorem stdPart_sub_eq_right (hx : 0 < mk x) : stdPart (x - y) = -stdPart y := b
 theorem stdPart_sub_eq_left (hy : 0 < mk y) : stdPart (x - y) = stdPart x := by
   rw [sub_eq_add_neg, stdPart_add_eq_left (by simpa)]
 
-theorem stdPart_mul {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
-    stdPart (x * y) = stdPart x * stdPart y := by
+theorem stdPart_mul (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) : stdPart (x * y) = stdPart x * stdPart y := by
   unfold stdPart
   rw [dif_pos hx, dif_pos hy, dif_pos]
   exact map_mul _ (FiniteElement.mk x hx) (.mk y hy)
@@ -393,9 +413,13 @@ theorem stdPart_ofNat (n : ℕ) [n.AtLeastTwo] : stdPart (ofNat(n) : K) = n :=
   stdPart_natCast n
 
 @[simp]
-theorem stdPart_real (f : ℝ →+*o K) (r : ℝ) : stdPart (f r) = r := by
+theorem stdPart_map_real (f : ℝ →+*o K) (r : ℝ) : stdPart (f r) = r := by
   rw [stdPart, dif_pos]
   exact r.ringHom_apply <| OrderRingHom.comp _ (FiniteResidueField.ofArchimedean f)
+
+@[simp]
+theorem stdPart_real (r : ℝ) : stdPart r = r :=
+  stdPart_map_real (.id ℝ) r
 
 theorem ofArchimedean_stdPart (f : ℝ →+*o K) (hx : 0 ≤ mk x) :
     FiniteResidueField.ofArchimedean f (stdPart x) = .mk (.mk x hx) := by
@@ -421,5 +445,63 @@ theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
 
 theorem mk_sub_stdPart_pos (f : ℝ →+*o K) (hx : 0 ≤ mk x) : 0 < mk (x - f (stdPart x)) :=
   (mk_sub_pos_iff f hx).2 rfl
+
+theorem lt_of_lt_stdPart (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) (h : r < stdPart x) : f r < x := by
+  rw [← sub_lt_sub_iff_right (c := f (stdPart x)), ← map_sub]
+  apply lt_of_mk_lt_mk_of_nonpos
+  · rw [mk_map_of_archimedean', mk_sub_pos_iff f hx]
+    rw [ne_eq, sub_eq_zero]
+    exact h.ne
+  · simpa using f.monotone' h.le
+
+theorem lt_of_stdPart_lt (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) (h : stdPart x < r) : x < f r := by
+  rw [← neg_lt_neg_iff, ← map_neg]
+  apply lt_of_lt_stdPart <;> simpa
+
+theorem stdPart_le_of_le (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) (h : x ≤ f r) : stdPart x ≤ r :=
+  le_imp_le_iff_lt_imp_lt.2 (lt_of_lt_stdPart f hx) h
+
+theorem le_stdPart_of_le (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) (h : f r ≤ x) : r ≤ stdPart x :=
+  le_imp_le_iff_lt_imp_lt.2 (lt_of_stdPart_lt f hx) h
+
+theorem stdPart_eq (f : ℝ →+*o K) {r : ℝ} (hl : ∀ s < r, f s ≤ x) (hr : ∀ s > r, x ≤ f s) :
+    stdPart x = r := by
+  have hx : 0 ≤ mk x := by
+    apply mk_nonneg_of_le_of_le_of_archimedean f (hl (r - 1) _) (hr (r + 1) _) <;> simp
+  obtain h | rfl | h := lt_trichotomy (stdPart x) r
+  · obtain ⟨s, hs, hs'⟩ := exists_between h
+    cases (le_stdPart_of_le f hx (hl _ hs')).not_gt hs
+  · rfl
+  · obtain ⟨s, hs, hs'⟩ := exists_between h
+    cases (stdPart_le_of_le f hx (hr _ hs)).not_gt hs'
+
+theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f r} := by
+  obtain hx | hx := le_or_gt 0 (mk x)
+  · obtain ⟨a, ha⟩ := exists_int_lt_of_mk_nonneg hx
+    obtain ⟨b, hb⟩ := exists_int_gt_of_mk_nonneg hx
+    have hn : {r | x < f r}.Nonempty := ⟨b, by simpa using hb⟩
+    have hb : BddBelow {r | x < f r} := by
+      refine ⟨a, fun r hr ↦ ?_⟩
+      by_contra! hra
+      exact (f.monotone' hra.le).not_gt (by simpa using ha.trans hr)
+    apply stdPart_eq f <;> intro r hr
+    · simpa using notMem_of_lt_csInf hr hb
+    · obtain ⟨s, hs, hs'⟩ := (csInf_lt_iff hb hn).1 hr
+      exact hs.le.trans (f.monotone' hs'.le)
+  · rw [stdPart_of_mk_ne_zero hx.ne]
+    have hr {r} := hx.trans_le (mk_map_nonneg_of_archimedean f r)
+    obtain h | h := le_or_gt 0 x
+    · convert Real.sInf_empty.symm
+      rw [Set.eq_empty_iff_forall_notMem]
+      exact fun r ↦ (lt_of_mk_lt_mk_of_nonneg hr h).not_gt
+    · convert Real.sInf_univ.symm
+      rw [Set.eq_univ_iff_forall]
+      exact fun r ↦ lt_of_mk_lt_mk_of_nonpos hr h.le
+
+theorem stdPart_eq_sSup (f : ℝ →+*o K) (x : K) : stdPart x = sSup {r | f r < x} := by
+  rw [← neg_inj, ← stdPart_neg, stdPart_eq_sInf f, ← Real.sInf_neg]
+  congr 1
+  ext
+  simp [neg_lt]
 
 end ArchimedeanClass

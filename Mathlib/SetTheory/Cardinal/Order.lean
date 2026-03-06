@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.InitialSeg
@@ -120,7 +119,7 @@ theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
   ⟨Embedding.subtype p⟩
 
 theorem mk_set_le (s : Set α) : #s ≤ #α :=
-  mk_subtype_le s
+  mk_subtype_le (· ∈ s)
 
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
   conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
@@ -261,7 +260,8 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by
+  simp [← mk_congr (Equiv.ofBijective _ Set.setOf_bijective), ← one_add_one_eq_two]
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
 @[simp]
@@ -308,13 +308,6 @@ instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
     inductionOn₂ a b fun α β => by
       simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
-
-instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.commSemiring,
-    Cardinal.linearOrder with
-    bot_le _ := bot_le
-    mul_le_mul_left _ _ := mul_le_mul_left
-    zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
@@ -559,7 +552,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
   refine (not_and_or.mp hc).elim (fun e ↦ ⟨hι.some, ?_⟩)
     (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f c · h)
   cases not_not.mp e
-  rw [← le_zero_iff] at h ⊢
+  rw [← nonpos_iff_eq_zero] at h ⊢
   exact (le_ciSup hf _).trans h
 
 /-! ### Indexed cardinal `prod` -/

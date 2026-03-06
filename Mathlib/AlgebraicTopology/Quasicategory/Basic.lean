@@ -58,6 +58,7 @@ lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i 
 instance (S : SSet) [KanComplex S] : Quasicategory S where
   hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasicategory_of_filler (S : SSet)
     (filler : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 3)⦄ (σ₀ : (Λ[n + 2, i] : SSet) ⟶ S)
       (_h0 : 0 < i) (_hn : i < Fin.last (n + 2)),

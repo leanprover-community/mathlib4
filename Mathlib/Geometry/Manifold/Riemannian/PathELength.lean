@@ -133,6 +133,7 @@ open MeasureTheory
 
 variable [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under a monotone reparametrization. -/
 lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : MonotoneOn f (Icc a b))
     (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f a) (f b))) :
@@ -166,6 +167,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
   have : 0 ≤ derivWithin f (Icc a b) t := hf.derivWithin_nonneg
   simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under an antitone reparametrization. -/
 lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : AntitoneOn f (Icc a b))
     (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f b) (f a))) :
@@ -275,7 +277,7 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
   rcases exists_lt_of_riemannianEDist_lt hr with ⟨γ, hγx, hγy, γ_smooth, hγ⟩
   rcases exists_between hab with ⟨a', haa', ha'b⟩
   rcases exists_between ha'b with ⟨b', ha'b', hb'b⟩
-  let η (t : ℝ) : ℝ := Real.smoothTransition ((b' - a') ⁻¹ * (t - a'))
+  let η (t : ℝ) : ℝ := Real.smoothTransition ((b' - a')⁻¹ * (t - a'))
   have A (t) (ht : t < a') : η t = 0 := by
     simp only [η, Real.smoothTransition.zero_iff_nonpos]
     apply mul_nonpos_of_nonneg_of_nonpos
@@ -321,7 +323,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   apply le_of_forall_gt (fun r hr ↦ ?_)
   rcases exists_lt_locally_constant_of_riemannianEDist_lt hr zero_lt_one
     with ⟨γ, γ0, γ1, γ_smooth, hγ, -⟩
-  let η : ℝ → ℝ := fun t ↦ - t
+  let η : ℝ → ℝ := fun t ↦ -t
   have h_smooth : ContMDiff 𝓘(ℝ) I 1 (γ ∘ η) := by
     apply γ_smooth.comp ?_
     simp only [contMDiff_iff_contDiff]
@@ -337,6 +339,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   ext t
   simp [η]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma riemannianEDist_triangle :
     riemannianEDist I x z ≤ riemannianEDist I x y + riemannianEDist I y z := by
   apply le_of_forall_gt (fun r hr ↦ ?_)

@@ -5,7 +5,6 @@ Authors: Josha Dekker, Devon Tuma, Kexing Ying
 -/
 module
 
-public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
@@ -113,7 +112,7 @@ theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞
 
 theorem pdf_eq_zero_of_measure_eq_zero_or_top {X : Ω → E} {s : Set E}
     (hu : IsUniform X s ℙ μ) (hμs : μ s = 0 ∨ μ s = ∞) : pdf X ℙ μ =ᵐ[μ] 0 := by
-  rcases hμs with H|H
+  rcases hμs with H | H
   · simp only [IsUniform, ProbabilityTheory.cond, H, ENNReal.inv_zero, restrict_eq_zero.mpr H,
     smul_zero] at hu
     simp [pdf, hu]
@@ -323,6 +322,7 @@ end UniformOfFintype
 
 section OfMultiset
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Given a non-empty multiset `s` we construct the `PMF` which sends `a` to the fraction of
   elements in `s` that are `a`. -/

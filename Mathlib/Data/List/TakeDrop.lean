@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Common
 This file provides lemmas about `List.take` and `List.drop` and related functions.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists GroupWithZero
 assert_not_exists Lattice

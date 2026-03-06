@@ -153,4 +153,31 @@ instance descendsAlong_isOpenImmersion_surjective_inf_flat_inf_quasicompact' :
   rw [← IsOpenImmersion.lift_fac U.ι g (by simp [U])]
   infer_instance
 
+/-- fpqc descent implies fppf descent -/
+instance (P : MorphismProperty Scheme) [P.DescendsAlong (@Surjective ⊓ @Flat ⊓ @QuasiCompact)]
+    [IsZariskiLocalAtTarget P] :
+    P.DescendsAlong (@Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation) := by
+  apply IsZariskiLocalAtTarget.descendsAlong
+  rintro R X Y f g ⟨⟨h₁, h₂⟩, h₃⟩ H
+  obtain ⟨V : X.Opens, hV, e⟩ := f.isOpenMap.exists_opens_image_eq_of_prespectralSpace
+    f.continuous (by simp) isOpen_univ isCompact_univ
+  refine MorphismProperty.of_isPullback_of_descendsAlong (Q := @Surjective ⊓ @Flat ⊓ @QuasiCompact)
+    (.paste_vert (.of_hasPullback V.ι _) (.of_hasPullback f g)) ⟨⟨?_, inferInstance⟩,
+      (quasiCompact_iff_compactSpace _).mpr (isCompact_iff_compactSpace.mp hV)⟩ ?_
+  · exact ⟨fun x ↦ have ⟨y, hyV, e⟩ := e.ge (Set.mem_univ x); ⟨⟨y, hyV⟩, e⟩⟩
+  · dsimp [MorphismProperty.isomorphisms] at H ⊢
+    exact IsZariskiLocalAtTarget.of_isPullback (.flip <| .of_hasPullback _ _) H
+
+instance {X Y : Scheme} (f : X ⟶ Y) [Surjective f] [Flat f] [QuasiCompact f] :
+    (Over.pullback f).Faithful :=
+  MorphismProperty.faithful_overPullback_of_isomorphisms_descendAlong
+    (P := @Surjective ⊓ @Flat ⊓ @QuasiCompact)
+    ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩
+
+instance {X Y : Scheme} (f : X ⟶ Y) [Surjective f] [Flat f] [LocallyOfFinitePresentation f] :
+    (Over.pullback f).Faithful :=
+  MorphismProperty.faithful_overPullback_of_isomorphisms_descendAlong
+    (P := @Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation)
+    ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩
+
 end AlgebraicGeometry

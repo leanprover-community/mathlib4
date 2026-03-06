@@ -5,10 +5,11 @@ Authors: Simon Hudon
 -/
 module
 
-public meta import Mathlib.Control.Traversable.Lemmas
 public meta import Lean.Elab.Match
 public meta import Lean.Elab.Deriving.Basic
 public meta import Lean.Elab.PreDefinition.Main
+public import Mathlib.Control.Traversable.Lemmas
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Deriving handler for `Traversable` instances
@@ -249,6 +250,9 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
             { isUnsafe
               attrs :=
                 #[{ kind := .global
+                    name := `instance_reducible
+                    stx := ← `(attr| instance_reducible) },
+                  { kind := .global
                     name := `instance
                     stx := ← `(attr| instance) }] }
           declName := instN
@@ -348,7 +352,7 @@ def traverseField (n : Name) (cl f v e : Expr) : TermElabM (Bool × Expr) := do
 /--
 For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`
 ``traverseConstructor `foo1 `Foo applInst f `α `β [`(x : List α), `(y : ℕ)]``
-synthesizes `foo1 <$> traverse f x <*> pure y.` -/
+synthesizes `foo1 <$> traverse f x <*> pure y`. -/
 def traverseConstructor (c n : Name) (applInst f α β : Expr) (args₀ : List Expr)
     (args₁ : List (Bool × Expr)) (m : MVarId) : TermElabM Unit := do
   let ad ← getAuxDefOfDeclName

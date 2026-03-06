@@ -212,6 +212,7 @@ section IsCyclotomicExtension
 
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
     FiniteMultiplicity (hζ.toInteger - 1) S'.c :=
@@ -278,6 +279,7 @@ lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
     _ = S'.u⁻¹ * (S'.u * S'.c ^ 3) := by rw [S'.H]
     _ = S'.c ^ 3 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
 lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   have hm := S'.multiplicity_lambda_c_finite
@@ -305,7 +307,7 @@ lemma Solution.two_le_multiplicity : 2 ≤ S.multiplicity :=
 end IsCyclotomicExtension
 
 -- This is just a computation and the formulas are too long.
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 /-- Given `S' : Solution'`, the key factorization of `S'.a ^ 3 + S'.b ^ 3`. -/
 lemma a_cube_add_b_cube_eq_mul :
     S'.a ^ 3 + S'.b ^ 3 = (S'.a + S'.b) * (S'.a + η * S'.b) * (S'.a + η ^ 2 * S'.b) := by
@@ -318,6 +320,7 @@ lemma a_cube_add_b_cube_eq_mul :
 section IsCyclotomicExtension
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides one amongst `S'.a + S'.b`,
 `S'.a + η * S'.b` and `S'.a + η ^ 2 * S'.b`. -/
 lemma lambda_sq_dvd_or_dvd_or_dvd :
@@ -631,7 +634,7 @@ private lemma isCoprime_Y_Z : IsCoprime S.Y S.Z := by
   exact isCoprime_y_z S
 
 -- This is just a computation and the formulas are too long.
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 private lemma formula1 : S.X^3*S.u₁*λ^(3*S.multiplicity-2)+S.Y^3*S.u₂*λ*η+S.Z^3*S.u₃*λ*η^2 = 0 := by
   rw [X_u₁_spec, Y_u₂_spec, Z_u₃_spec, mul_comm S.x, ← x_spec, mul_comm S.y, ← y_spec, mul_comm S.z,
     ← z_spec, eta_sq]
@@ -651,7 +654,7 @@ example (a b : 𝓞 K) (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 := by
   exact mul_ne_zero ha hb
 
 -- This is just a computation and the formulas are too long.
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 private lemma formula2 :
     S.Y ^ 3 + S.u₄ * S.Z ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   rw [u₅_def, neg_mul, neg_mul, Units.val_neg, neg_mul, eq_neg_iff_add_eq_zero, add_assoc,
@@ -670,7 +673,7 @@ private lemma formula2 :
     ring
 
 -- This is just a computation and the formulas are too long.
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 private lemma lambda_sq_div_u₅_mul : λ ^ 2 ∣ S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   use λ^(3*S.multiplicity-5)*S.u₅*(S.X^3)
   have : 3*(S.multiplicity-1) = 2+(3*S.multiplicity-5) := by have := S.two_le_multiplicity; lia
@@ -766,6 +769,7 @@ end eisenstein
 
 end case2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
 `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
 theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by

@@ -46,6 +46,8 @@ instance : SetLike (Compacts α) α where
   coe := Compacts.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : PartialOrder (Compacts α) := .ofSetLike (Compacts α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Compacts α) : Set α := s
 
@@ -97,10 +99,10 @@ instance : Bot (Compacts α) :=
   ⟨⟨∅, isCompact_empty⟩⟩
 
 instance : SemilatticeSup (Compacts α) :=
-  SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
+  SetLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [T2Space α] : DistribLattice (Compacts α) :=
-  SetLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  SetLike.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance : OrderBot (Compacts α) :=
   OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
@@ -129,6 +131,14 @@ theorem coe_top [CompactSpace α] : (↑(⊤ : Compacts α) : Set α) = univ :=
 @[simp]
 theorem coe_bot : (↑(⊥ : Compacts α) : Set α) = ∅ :=
   rfl
+
+@[simp, norm_cast]
+theorem coe_eq_empty {s : Compacts α} : (s : Set α) = ∅ ↔ s = ⊥ :=
+  SetLike.coe_injective.eq_iff' rfl
+
+@[simp]
+theorem coe_nonempty {s : Compacts α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
+  nonempty_iff_ne_empty.trans coe_eq_empty.not
 
 @[simp]
 theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
@@ -281,6 +291,8 @@ instance : SetLike (NonemptyCompacts α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
+instance : PartialOrder (NonemptyCompacts α) := .ofSetLike (NonemptyCompacts α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
 
@@ -332,6 +344,14 @@ theorem mem_toCompacts {x : α} {s : NonemptyCompacts α} :
 theorem toCompacts_injective : Function.Injective (toCompacts (α := α)) :=
   .of_comp (f := SetLike.coe) SetLike.coe_injective
 
+@[simp]
+theorem range_toCompacts : range (toCompacts (α := α)) = {⊥}ᶜ := by
+  ext K
+  rw [mem_compl_singleton_iff, ← Compacts.coe_nonempty]
+  refine ⟨?_, fun h => ⟨⟨K, h⟩, rfl⟩⟩
+  rintro ⟨K, rfl⟩
+  exact K.nonempty
+
 instance : Max (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono subset_union_left⟩⟩
 
@@ -339,7 +359,7 @@ instance [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
   ⟨⟨⊤, univ_nonempty⟩⟩
 
 instance : SemilatticeSup (NonemptyCompacts α) :=
-  SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
+  SetLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [CompactSpace α] [Nonempty α] : OrderTop (NonemptyCompacts α) :=
   OrderTop.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
@@ -500,6 +520,8 @@ instance : SetLike (PositiveCompacts α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
+instance : PartialOrder (PositiveCompacts α) := .ofSetLike (PositiveCompacts α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
 
@@ -542,7 +564,7 @@ instance [CompactSpace α] [Nonempty α] : Top (PositiveCompacts α) :=
   ⟨⟨⊤, interior_univ.symm.subst univ_nonempty⟩⟩
 
 instance : SemilatticeSup (PositiveCompacts α) :=
-  SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
+  SetLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [CompactSpace α] [Nonempty α] : OrderTop (PositiveCompacts α) :=
   OrderTop.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
@@ -635,6 +657,8 @@ instance : SetLike (CompactOpens α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
+instance : PartialOrder (CompactOpens α) := .ofSetLike (CompactOpens α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s
 
@@ -671,7 +695,9 @@ instance : Bot (CompactOpens α) where bot := ⟨⊥, isOpen_empty⟩
 @[simp, norm_cast] lemma coe_sup (s t : CompactOpens α) : ↑(s ⊔ t) = (s ∪ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_bot : ↑(⊥ : CompactOpens α) = (∅ : Set α) := rfl
 
-instance : SemilatticeSup (CompactOpens α) := SetLike.coe_injective.semilatticeSup _ coe_sup
+instance : SemilatticeSup (CompactOpens α) :=
+  SetLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
+
 instance : OrderBot (CompactOpens α) := OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) coe_bot
 
 @[simp]
@@ -693,7 +719,7 @@ instance instInf : Min (CompactOpens α) where
 @[simp, norm_cast] lemma coe_inf (s t : CompactOpens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
 
 instance instSemilatticeInf : SemilatticeInf (CompactOpens α) :=
-  SetLike.coe_injective.semilatticeInf _ coe_inf
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 end Inf
 
@@ -706,7 +732,7 @@ instance instSDiff : SDiff (CompactOpens α) where
 @[simp, norm_cast] lemma coe_sdiff (s t : CompactOpens α) : ↑(s \ t) = (s \ t : Set α) := rfl
 
 instance instGeneralizedBooleanAlgebra : GeneralizedBooleanAlgebra (CompactOpens α) :=
-  SetLike.coe_injective.generalizedBooleanAlgebra _ coe_sup coe_inf coe_bot coe_sdiff
+  SetLike.coe_injective.generalizedBooleanAlgebra _ .rfl .rfl coe_sup coe_inf coe_bot coe_sdiff
 
 end SDiff
 
@@ -723,7 +749,7 @@ instance instBoundedOrder : BoundedOrder (CompactOpens α) :=
 section Compl
 variable [T2Space α]
 
-instance instHasCompl : HasCompl (CompactOpens α) where
+instance instCompl : Compl (CompactOpens α) where
   compl s := ⟨⟨sᶜ, s.isOpen.isClosed_compl.isCompact⟩, s.isCompact.isClosed.isOpen_compl⟩
 
 instance instHImp : HImp (CompactOpens α) where
@@ -735,8 +761,8 @@ instance instHImp : HImp (CompactOpens α) where
 @[simp, norm_cast] lemma coe_himp (s t : CompactOpens α) : ↑(s ⇨ t) = (s ⇨ t : Set α) := rfl
 
 instance instBooleanAlgebra : BooleanAlgebra (CompactOpens α) :=
-  SetLike.coe_injective.booleanAlgebra _ coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
-    coe_himp
+  SetLike.coe_injective.booleanAlgebra _ .rfl .rfl coe_sup coe_inf coe_top coe_bot coe_compl
+    coe_sdiff coe_himp
 
 end Top.Compl
 

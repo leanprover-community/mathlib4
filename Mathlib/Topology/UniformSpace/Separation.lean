@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.UniformSpace.Basic
 
@@ -315,6 +314,7 @@ theorem map_mk {f : α → β} (h : UniformContinuous f) (a : α) : map f (mk a)
 theorem uniformContinuous_map (f : α → β) : UniformContinuous (map f) :=
   uniformContinuous_lift' _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_unique {f : α → β} (hf : UniformContinuous f)
     {g : SeparationQuotient α → SeparationQuotient β} (comm : mk ∘ f = g ∘ mk) : map f = g := by
   ext ⟨a⟩

@@ -5,7 +5,8 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Products in the over category
@@ -55,6 +56,7 @@ namespace CategoryTheory.Limits
 section Over
 variable {f : Y ⟶ X} {g : Z ⟶ X}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Pullback cones to `X` are the same thing as binary fans in `Over X`. -/
 @[simps]
 def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk g) where
@@ -72,6 +74,7 @@ def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk
     (by intros; ext; simp [BinaryFan.ext])
   functor_unitIso_comp c := by ext; simp [BinaryFan.ext]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A binary fan in `Over X` is a limit if its corresponding pullback cone to `X` is a limit. -/
 -- `IsLimit.ofConeEquiv` isn't used here because the lift it defines is `𝟙 _ ≫ pullback.lift`.
 -- TODO: Define `IsLimit.copy`?
@@ -105,8 +108,8 @@ def IsLimit.pullbackConeEquivBinaryFanInverse {c : BinaryFan (Over.mk f) (.mk g)
       have := hc.uniq (pullbackConeEquivBinaryFan.functor.obj s) (Over.homMk m <| by
         have := c.fst.w
         simp only [pair_obj_left, Over.mk_left, Functor.id_obj, pair_obj_right,
-          Functor.const_obj_obj, Over.mk_hom, Functor.id_map, CostructuredArrow.right_eq_id,
-          Discrete.functor_map_id, Category.comp_id] at hm₁ this
+          Functor.const_obj_obj, Over.mk_hom, Functor.id_map, CostructuredArrow.right_eq_id]
+          at hm₁ this
         simp [← hm₁, this])
         (by rintro (_ | _) <;> ext <;> simpa)
       exact congr(($this).left)
@@ -116,6 +119,7 @@ end Over
 section Under
 variable {f : X ⟶ Y} {g : X ⟶ Z}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Pushout cocones from `X` are the same thing as binary cofans in `Under X`. -/
 @[simps]
 def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk f) (.mk g) where
@@ -133,6 +137,7 @@ def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk 
     (by intros; ext; simp)
   functor_unitIso_comp c := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A binary cofan in `Under X` is a colimit if its corresponding pushout cocone from `X` is a
 colimit. -/
 -- `IsColimit.ofCoconeEquiv` isn't used here because the lift it defines is `pushout.desc ≫ 𝟙 _`.
@@ -167,8 +172,7 @@ def IsColimit.pushoutCoconeEquivBinaryCofanInverse {c : BinaryCofan (Under.mk f)
       have := hc.uniq (pushoutCoconeEquivBinaryCofan.functor.obj s) (Under.homMk m <| by
         have := c.inl.w
         simp only [pair_obj_left, Functor.const_obj_obj, Functor.id_obj, StructuredArrow.left_eq_id,
-          Discrete.functor_map_id, Category.id_comp, Under.mk_right, Under.mk_hom, Functor.id_map,
-          pair_obj_right] at this hm₁
+          Under.mk_right, Under.mk_hom, Functor.id_map, pair_obj_right] at this hm₁
         simp [← hm₁, ← Category.assoc, ← this])
         (by rintro (_ | _) <;> ext <;> simpa)
       exact congr(($this).right)
@@ -182,33 +186,39 @@ variable {X : C} {Y Z : Over X}
 
 open Limits
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
     IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
   ⟨by simp, ⟨hc.pullbackConeEquivBinaryFanInverse⟩⟩
 
 variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of `Y` and `Z` in `Over X` is isomorphic to `Y ×ₓ Z`. -/
 noncomputable
 def prodLeftIsoPullback :
     (Y ⨯ Z).left ≅ pullback Y.hom Z.hom :=
   (Over.isPullback_of_binaryFan_isLimit _ (prodIsProd Y Z)).isoPullback
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prodLeftIsoPullback_hom_fst :
     (prodLeftIsoPullback Y Z).hom ≫ pullback.fst _ _ = (prod.fst (X := Y)).left :=
   IsPullback.isoPullback_hom_fst _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prodLeftIsoPullback_hom_snd :
     (prodLeftIsoPullback Y Z).hom ≫ pullback.snd _ _ = (prod.snd (X := Y)).left :=
   IsPullback.isoPullback_hom_snd _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prodLeftIsoPullback_inv_fst :
     (prodLeftIsoPullback Y Z).inv ≫ (prod.fst (X := Y)).left = pullback.fst _ _ :=
   IsPullback.isoPullback_inv_fst _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prodLeftIsoPullback_inv_snd :
     (prodLeftIsoPullback Y Z).inv ≫ (prod.snd (X := Y)).left = pullback.snd _ _ :=
@@ -233,6 +243,7 @@ abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤
     WidePullbackShape J ⥤ C :=
   WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : Cone F) :
@@ -247,6 +258,7 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
         · rw [Over.w, Category.id_comp]
         · rw [Category.id_comp, Category.comp_id] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
@@ -265,6 +277,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 -- `conesEquivFunctor`, but doesn't.
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Discrete
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :

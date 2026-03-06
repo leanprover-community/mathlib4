@@ -5,10 +5,10 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.NoncommProd
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # support of a permutation
@@ -53,7 +53,7 @@ theorem Disjoint.symm : Disjoint f g → Disjoint g f := by simp only [Disjoint,
 
 theorem Disjoint.symmetric : Symmetric (@Disjoint α) := fun _ _ => Disjoint.symm
 
-instance : IsSymm (Perm α) Disjoint :=
+instance : Std.Symm (α := Perm α) Disjoint :=
   ⟨Disjoint.symmetric⟩
 
 theorem disjoint_comm : Disjoint f g ↔ Disjoint g f :=
@@ -290,11 +290,7 @@ theorem support_refl : support (Equiv.refl α) = ∅ :=
   support_one
 
 theorem support_congr (h : f.support ⊆ g.support) (h' : ∀ x ∈ g.support, f x = g x) : f = g := by
-  ext x
-  by_cases hx : x ∈ g.support
-  · exact h' x hx
-  · rw [notMem_support.mp hx, ← notMem_support]
-    exact fun H => hx (h H)
+  grind [notMem_support]
 
 /-- If g and c commute, then g stabilizes the support of c -/
 theorem mem_support_iff_of_commute {g c : Perm α} (hgc : Commute g c) (x : α) :
@@ -506,6 +502,11 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (
     y ∈ support f ∧ y ≠ x := by
   simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff] at *
   grind
+
+omit [Fintype α] in
+theorem disjoint_swap_swap {x y z t : α} (h : [x, y, z, t].Nodup) :
+    Disjoint (swap x y) (swap z t) := by
+  intro; grind
 
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
   disjoint_left.mp h.disjoint_support hx

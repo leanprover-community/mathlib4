@@ -23,7 +23,7 @@ This the definitition that `x` is integral over `I` in https://stacks.math.colum
 
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 
@@ -44,6 +44,7 @@ lemma coeff_mem_pow_of_mem_adjoin_C_mul_X {R : Type*} [CommRing R]
     obtain rfl : j₁ + j₂ = i := by simpa using hj
     exact pow_add I j₁ j₂ ▸ Ideal.mul_mem_mul (hx _) (hy _)
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Polynomial.algebra in
 lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
     {I : Ideal R} {x : S}
@@ -68,8 +69,9 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
     rw [mul_pow, mul_left_comm, ← map_pow, coeff_C_mul, coeff_mul_X_pow', if_pos hi, mul_comm]
     simp [Subalgebra.algebraMap_def]
   · rw [hq]
-    simp [q, Nat.lt_succ_iff, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
+    simp [q, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R S]
     {I : Ideal R} {x : S} (hx : x ∈ I.map (algebraMap R S)) :
     ∃ p : R[X], p.Monic ∧ aeval x p = 0 ∧ ∀ i, p.coeff i ∈ I ^ (p.natDegree - i) := by

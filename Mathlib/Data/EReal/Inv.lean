@@ -307,7 +307,7 @@ lemma inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 
 
 lemma inv_strictAntiOn : StrictAntiOn (fun (x : EReal) => x⁻¹) (Ioi 0) := by
   intro a a_0 b b_0 a_b
-  simp only [mem_Ioi] at *
+  push _ ∈ _ at *
   lift a to ℝ using ⟨ne_top_of_lt a_b, ne_bot_of_gt a_0⟩
   match b with
   | ⊤ => exact inv_top ▸ inv_pos_of_pos_ne_top a_0 (coe_ne_top a)
@@ -493,6 +493,7 @@ private lemma exists_lt_mul_right_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c
   simp_rw [mul_comm a] at h ⊢
   exact exists_lt_mul_left_of_nonneg hb.le hc h
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma exists_mul_left_lt (h₁ : a ≠ 0 ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 < b) (hc : a * b < c) :
     ∃ a' ∈ Ioo a ⊤, a' * b < c := by
   rcases eq_top_or_lt_top a with rfl | a_top
