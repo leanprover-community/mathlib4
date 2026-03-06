@@ -202,7 +202,7 @@ lemma ProbabilityMeasure.tendsto_of_tendsto_charFun
     (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) atTop (𝓝 (charFun μ₀ t))) :
     Tendsto μ atTop (𝓝 μ₀) := by
   have h_tight : IsTightMeasureSet (𝓧 := E) {μ n | n} :=
-    isTightMeasureSet_of_tendsto_charFun (by fun_prop) (by fun_prop) h
+    isTightMeasureSet_of_tendsto_charFun (by fun_prop) h
   refine tendsto_of_tight_of_separatesPoints h_tight (𝕜 := ℂ)
     (A := charPoly continuous_probChar (L := innerₗ E) continuous_inner) ?_ ?_
   · refine separatesPoints_charPoly continuous_probChar probChar_ne_one _ ?_
