@@ -49,7 +49,7 @@ def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM
     logInfoAt tk m!"{e} : {type}"
 
 /--
-The `#check t` tactic elaborates the term `t` and then pretty prints it with its type as `e : ty`.
+`#check t` elaborates the term `t` and then pretty prints it with its type as `e : ty`.
 
 If `t` is an identifier, then it pretty prints a type declaration form
 for the global constant `t` instead.

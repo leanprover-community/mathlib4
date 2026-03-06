@@ -6,11 +6,8 @@ Authors: Mario Carneiro
 module
 
 public meta import Mathlib.Lean.Expr.Rat
-public meta import Lean.Elab.Tactic.Location
-public meta import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.NormNum.Result
-public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Util.Qq
 
 /-!

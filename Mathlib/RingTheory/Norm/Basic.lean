@@ -147,6 +147,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬Is
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
     (hf : ((minpoly K x).map (algebraMap K F)).Splits) :
     (algebraMap K F) (norm K (AdjoinSimple.gen K x)) =
@@ -203,6 +204,7 @@ lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
     Algebra.norm R (e x) = Algebra.norm R x := by
   simp_rw [Algebra.norm_apply, ← LinearMap.det_conj _ e.toLinearEquiv]; congr; ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
     [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C)
     (x : C) :

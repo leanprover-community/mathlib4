@@ -29,11 +29,11 @@ variable {F α : Type*} [FunLike F α ℝ]
 abbrev GroupSeminormClass.toSeminormedGroup [Group α] [GroupSeminormClass F α ℝ]
     (f : F) : SeminormedGroup α where
   norm := f
-  dist x y := f (x / y)
+  dist x y := f (x⁻¹ * y)
   dist_eq _ _ := rfl
   dist_self _ := by simp
-  dist_comm x y := by simp only [← map_inv_eq_map f (x / y), inv_div]
-  dist_triangle x y z := by simpa using map_mul_le_add f (x / y) (y / z)
+  dist_comm x y := by simp [← map_inv_eq_map f (x⁻¹ * y)]
+  dist_triangle x y z := by convert map_mul_le_add f (x⁻¹ * y) (y⁻¹ * z) using 2; group
 
 @[to_additive]
 lemma GroupSeminormClass.toSeminormedGroup_norm_eq [Group α] [GroupSeminormClass F α ℝ]
@@ -59,7 +59,7 @@ lemma GroupSeminormClass.toSeminormedCommGroup_norm_eq [CommGroup α] [GroupSemi
 abbrev GroupNormClass.toNormedGroup [Group α] [GroupNormClass F α ℝ]
     (f : F) : NormedGroup α where
   __ := GroupSeminormClass.toSeminormedGroup f
-  eq_of_dist_eq_zero h := div_eq_one.mp (eq_one_of_map_eq_zero f h)
+  eq_of_dist_eq_zero h := inv_mul_eq_one.mp (eq_one_of_map_eq_zero f h)
 
 @[to_additive]
 lemma GroupNormClass.toNormedGroup_norm_eq [Group α] [GroupNormClass F α ℝ]

@@ -347,11 +347,7 @@ theorem intCast_dvd (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z �
 @[simp, norm_cast]
 theorem intCast_dvd_intCast (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
   rw [intCast_dvd]
-  constructor
-  · rintro ⟨hre, -⟩
-    rwa [re_intCast] at hre
-  · rw [re_intCast, im_intCast]
-    exact fun hc => ⟨hc, dvd_zero a⟩
+  simp
 
 protected theorem eq_of_smul_eq_smul_left {a : ℤ} {b c : ℤ√d} (ha : a ≠ 0) (h : ↑a * b = a * c) :
     b = c := by

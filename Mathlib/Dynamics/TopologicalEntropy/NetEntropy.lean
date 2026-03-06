@@ -112,6 +112,7 @@ lemma netMaxcard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ netMaxcard T F U n :=
   fun _ _ U_V ↦ biSup_mono fun _ h ↦ h.of_entourage_subset U_V
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynNetIn T F U n s ∧ (s.card : ℕ∞) = netMaxcard T F U n := by
@@ -147,6 +148,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
     rw [← s_card]
     exact WithTop.coe_lt_top s.card
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma netMaxcard_empty : netMaxcard T ∅ U n = 0 := by
   rw [netMaxcard, ← bot_eq_zero, iSup₂_eq_bot]
@@ -171,6 +173,7 @@ lemma one_le_netMaxcard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
   rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty]
   exact not_iff_not.2 (netMaxcard_eq_zero_iff T F U n)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxcard T F U 0 = 1 := by
   apply (iSup₂_le _).antisymm ((one_le_netMaxcard_iff T F U 0).2 h)
   intro s ⟨_, s_net⟩
@@ -179,6 +182,7 @@ lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxca
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : netMaxcard T F univ n = 1 := by
   apply (iSup₂_le _).antisymm ((one_le_netMaxcard_iff T F univ n).2 h)
   intro s ⟨_, s_net⟩
@@ -187,6 +191,7 @@ lemma netMaxcard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : netMaxcard T F 
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n = ⊤ ↔ ∀ k : ℕ, ∃ s : Finset X, IsDynNetIn T F U n s ∧ k ≤ s.card := by
   apply Iff.intro <;> intro h
@@ -203,6 +208,7 @@ lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
     rw [ENat.some_eq_coe, Nat.cast_lt]
     exact (lt_add_one k).trans_le s_card
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) (n : ℕ) :
     netMaxcard T F U n ≤ coverMincard T F U n := by
   rcases eq_top_or_lt_top (coverMincard T F U n) with h | h
@@ -211,6 +217,7 @@ lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) (n : ℕ) :
     rw [← t_mincard]
     exact iSup₂_le fun s s_net ↦ Nat.cast_le.2 (s_net.card_le_card_of_isDynCoverOf t_cover)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an entourage `U` and a time `n`, a minimal dynamical cover by `U ○ U` has a smaller
   cardinality than a maximal dynamical net by `U`. This lemma is the second of two key results to
   compare two versions topological entropy: with cover and with nets. -/
