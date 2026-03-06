@@ -38,8 +38,7 @@ scoped[unitInterval] notation "I" => unitInterval
 
 namespace unitInterval
 
-lemma not_countable_unitInterval : ¬ Countable I := by
-  simp only [countable_coe_iff, Cardinal.Real.Icc_countable_iff, not_le, zero_lt_one]
+lemma not_countable_unitInterval : ¬ Countable I := by simp
 
 theorem zero_mem : (0 : ℝ) ∈ I :=
   ⟨le_rfl, zero_le_one⟩
