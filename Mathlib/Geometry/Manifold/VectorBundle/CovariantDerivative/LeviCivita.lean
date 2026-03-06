@@ -702,8 +702,8 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     ext X₀ Y₀
     simp only [TensorialAt.mkHom₂_apply_eq_extend, ContinuousLinearMap.add_apply, lcAux₀']
     rw [if_pos, if_pos, if_pos, if_pos, if_pos, if_pos]
-    · apply leviCivitaRhs_addY_apply _ (mdifferentiableAt_extend ..) hY hY'
-      exact mdifferentiableAt_extend ..
+    · exact leviCivitaRhs_addY_apply _ (mdifferentiableAt_extend ..)
+        hY hY' (mdifferentiableAt_extend ..)
     · exact mdifferentiableAt_extend ..
     · exact mdifferentiableAt_extend ..
     · exact mdifferentiableAt_extend ..
@@ -731,13 +731,10 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
       simp only [lcAux₀, lcAux₀', TensorialAt.mkHom₂_apply_eq_extend,
         ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
       rw [if_pos, if_pos, if_pos, if_pos]
-      · have key := leviCivitaRhs_smulY_apply I (X := _root_.extend E X₀) (Y := Y)
-          (Z := _root_.extend E Z₀) (x := x) (f := f)
-        convert key hf ?_ hY ?_
+      · convert leviCivitaRhs_smulY_apply I (Z := _root_.extend E Z₀) (x := x)
+          hf (mdifferentiableAt_extend I E X₀) hY (mdifferentiableAt_extend I E Z₀)
         · simp
         · simp [Φ, product]
-        · exact mdifferentiableAt_extend ..
-        · exact mdifferentiableAt_extend ..
       · exact mdifferentiableAt_extend ..
       · exact mdifferentiableAt_extend ..
       · exact mdifferentiableAt_extend ..
