@@ -61,8 +61,6 @@ structure SimplicialHomotopy
     h j.castSucc ≫ Y.δ i.succ = X.δ i ≫ h j
   h_comp_σ_castSucc_of_le {n : ℕ} (i j : Fin (n + 1)) (hij : i ≤ j) :
     h j ≫ Y.σ i.castSucc = X.σ i ≫ h j.succ
-  /- nlab: `sᵢ hⱼ = hⱼ s_{i'-1}` if i' > j, let i' = i + 1 -/
-  /-- `s_{i+1} hⱼ = hⱼ sᵢ` if i + 1 > j -/
   h_comp_σ_succ_of_lt {n : ℕ} (i j : Fin (n + 1)) (hji : j ≤ i) :
     h j ≫ Y.σ i.succ = X.σ i ≫ h j.castSucc
 
