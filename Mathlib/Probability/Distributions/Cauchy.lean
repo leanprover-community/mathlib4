@@ -38,6 +38,7 @@ namespace ProbabilityTheory
 
 section CauchyPDF
 
+/-- The pdf of the cauchy distribution depending on its location `x₀` and scale `γ` parameters. -/
 noncomputable def cauchyPDFReal (x₀ : ℝ) (γ : ℝ≥0) (x : ℝ) : ℝ :=
   π⁻¹ * γ * ((x - x₀) ^ 2 + γ ^ 2)⁻¹
 
