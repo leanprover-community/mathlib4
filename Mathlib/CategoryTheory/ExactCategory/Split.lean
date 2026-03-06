@@ -187,12 +187,14 @@ def splitExactSequences [HasZeroObject C] : ExactCategory C where
   shortExact_cokernel' := by
     rintro S ⟨hS⟩
     exact ⟨hS.gIsCokernel⟩
-  admissibleMono_id X := ⟨0, 0, comp_zero, ⟨ShortComplex.Splitting.ofIsIsoOfIsZero _
-    (by dsimp; infer_instance) (isZero_zero _)⟩⟩
-  admissibleEpi_id X := ⟨0, 0, zero_comp, ⟨ShortComplex.Splitting.ofIsZeroOfIsIso _
-    (isZero_zero _) (by dsimp; infer_instance)⟩⟩
-  admissibleMono_stableUnderComposition := admissibleSplitMono_stableUnderComposition C
-  admissibleEpi_stableUnderComposition := admissibleSplitEpi_stableUnderComposition C
+  isMultiplicative_admissibleMono :=
+    { id_mem X := ⟨0, 0, comp_zero, ⟨ShortComplex.Splitting.ofIsIsoOfIsZero _
+        (by dsimp; infer_instance) (isZero_zero _)⟩⟩
+      toIsStableUnderComposition := admissibleSplitMono_stableUnderComposition C }
+  isMultiplicative_admissibleEpi :=
+    { id_mem X := ⟨0, 0, zero_comp, ⟨ShortComplex.Splitting.ofIsZeroOfIsIso _
+        (isZero_zero _) (by dsimp; infer_instance)⟩⟩
+      toIsStableUnderComposition := admissibleSplitEpi_stableUnderComposition C }
   admissibleMono_coquarrable := fun _ _ _ hf => admissibleSplitMono_coquarrable _ hf
   admissibleEpi_quarrable := fun _ _ _ hf => admissibleSplitEpi_quarrable _ hf
   admissibleMono_stableUnderCobaseChange := admissibleSplitMono_stableUnderCobaseChange C

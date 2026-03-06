@@ -39,7 +39,7 @@ lemma of_hasBinaryBiproduct_fst_snd (X₁ X₂ : C) [HasBinaryBiproduct X₁ X�
 
 end IsPullback
 
-variable (C : Type _) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 namespace ShortComplex
 
@@ -87,12 +87,10 @@ class ExactCategory [HasZeroObject C] [HasBinaryBiproducts C] where
     ∀ S (_ : shortExact' S), Nonempty (IsLimit (KernelFork.ofι _ S.zero))
   shortExact_cokernel' :
     ∀ S (_ : shortExact' S), Nonempty (IsColimit (CokernelCofork.ofπ _ S.zero))
-  admissibleMono_id (X : C) : (ShortComplex.fAdmissible shortExact') (𝟙 X)
-  admissibleEpi_id (X : C) : (ShortComplex.gAdmissible shortExact') (𝟙 X)
-  admissibleMono_stableUnderComposition :
-    (ShortComplex.fAdmissible shortExact').IsStableUnderComposition
-  admissibleEpi_stableUnderComposition :
-    (ShortComplex.gAdmissible shortExact').IsStableUnderComposition
+  isMultiplicative_admissibleMono :
+    (ShortComplex.fAdmissible shortExact').IsMultiplicative
+  isMultiplicative_admissibleEpi:
+    (ShortComplex.gAdmissible shortExact').IsMultiplicative
   admissibleMono_coquarrable :
     ShortComplex.fAdmissible shortExact' ≤ MorphismProperty.coquarrable C
   admissibleEpi_quarrable :
@@ -109,11 +107,11 @@ namespace ExactCategory
 
 def shortExact : ObjectProperty (ShortComplex C) := ExactCategory.shortExact'
 
-instance : (ShortComplex.fAdmissible (shortExact C)).IsStableUnderComposition :=
-  admissibleMono_stableUnderComposition
+instance : (ShortComplex.fAdmissible (shortExact C)).IsMultiplicative :=
+  isMultiplicative_admissibleMono
 
-instance : (ShortComplex.gAdmissible (shortExact C)).IsStableUnderComposition :=
-  admissibleEpi_stableUnderComposition
+instance : (ShortComplex.gAdmissible (shortExact C)).IsMultiplicative :=
+  isMultiplicative_admissibleEpi
 
 instance : (ShortComplex.fAdmissible (shortExact C)).IsStableUnderCobaseChange :=
   admissibleMono_stableUnderCobaseChange
@@ -170,13 +168,13 @@ instance [AdmissibleEpi g] : Epi g := by
 instance [hg : IsIso g] : AdmissibleEpi g where
   mem' := by
     refine (MorphismProperty.arrow_mk_iso_iff
-      (ShortComplex.gAdmissible (shortExact C)) ?_).1 (admissibleEpi_id Y)
+      (ShortComplex.gAdmissible (shortExact C)) ?_).1 (MorphismProperty.id_mem _ Y)
     exact Arrow.isoMk (Iso.refl _) (asIso g) (by aesop_cat)
 
 instance [hg : IsIso f] : AdmissibleMono f where
   mem' := by
     refine (MorphismProperty.arrow_mk_iso_iff
-      (ShortComplex.fAdmissible (shortExact C)) ?_).1 (admissibleMono_id X)
+      (ShortComplex.fAdmissible (shortExact C)) ?_).1 (MorphismProperty.id_mem _ X)
     exact Arrow.isoMk (Iso.refl _) (asIso f) (by aesop_cat)
 
 instance [AdmissibleEpi g] (f : Z' ⟶ Z) : HasPullback g f :=

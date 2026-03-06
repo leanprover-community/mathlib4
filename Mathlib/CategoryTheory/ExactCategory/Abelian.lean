@@ -82,20 +82,20 @@ noncomputable def ofAbelian : ExactCategory C where
   respectsIso_shortExact' := OfAbelian.respectsIso_shortExact
   shortExact_kernel' S hS := ⟨hS.fIsKernel⟩
   shortExact_cokernel' S hS := ⟨hS.gIsCokernel⟩
-  admissibleMono_id X := by
-    rw [OfAbelian.fAdmissible_iff_mono]
-    infer_instance
-  admissibleEpi_id X := by
-    rw [OfAbelian.gAdmissible_iff_epi]
-    infer_instance
-  admissibleMono_stableUnderComposition := ⟨by
-    rintro _ _ _ f g hf hg
-    rw [OfAbelian.fAdmissible_iff_mono] at hf hg ⊢
-    apply mono_comp⟩
-  admissibleEpi_stableUnderComposition := ⟨by
-    rintro _ _ _ f g hf hg
-    rw [OfAbelian.gAdmissible_iff_epi] at hf hg ⊢
-    apply epi_comp⟩
+  isMultiplicative_admissibleMono :=
+    { id_mem _ := by
+        rw [OfAbelian.fAdmissible_iff_mono]
+        infer_instance
+      comp_mem f g hf hg:= by
+        rw [OfAbelian.fAdmissible_iff_mono] at hf hg ⊢
+        infer_instance }
+  isMultiplicative_admissibleEpi :=
+    { id_mem _ := by
+        rw [OfAbelian.gAdmissible_iff_epi]
+        infer_instance
+      comp_mem f g hf hg:= by
+        rw [OfAbelian.gAdmissible_iff_epi] at hf hg ⊢
+        infer_instance }
   admissibleMono_coquarrable X Y f _ X' g := inferInstance
   admissibleEpi_quarrable X Y f _ Y' g := inferInstance
   admissibleMono_stableUnderCobaseChange := by
