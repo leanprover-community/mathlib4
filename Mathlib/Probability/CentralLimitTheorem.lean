@@ -47,7 +47,7 @@ lemma charFun_sqrt_inv_mul_sum (hindep : iIndepFun X P)
     charFun (P.map (fun ω ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k ω)) t =
       charFun (P.map (X 0)) ((√n)⁻¹ * t) ^ n := by
   have mX n := (hident n).aemeasurable_fst
-  rw [charFun_map_mul', hindep.charFun_map_fun_finset_sum_eq_prod mX]
+  rw [charFun_map_mul_comp, (hindep.restrict _).charFun_map_fun_finset_sum_eq_prod (fun _  _↦ mX _)]
   · simp [fun i ↦ (hident i).map_eq]
   · exact Finset.aemeasurable_fun_sum _ fun _ _ ↦ mX _
 
@@ -129,10 +129,10 @@ theorem tendstoInDistribution_sqrt_inv_mul_sum_sub {Y : Ω → ℝ}
     · ext; simp [hX]
   have := tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub this hX hindep hident
   convert this.continuous_comp (g := (√Var[X 0; P] * ·)) (by fun_prop)
-  · simp [field]
+  · simp [field] -- simp [field, hX] triggers the unused simp arguments linter
     field_simp [hX]
   · ext
-    simp [field]
+    simp [field] -- simp [field, hX] triggers the unused simp arguments linter
     field_simp [hX]
 
 end ProbabilityTheory
