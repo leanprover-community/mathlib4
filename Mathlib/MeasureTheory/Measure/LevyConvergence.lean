@@ -150,12 +150,12 @@ and the integrals of elements of `A` with respect to `μ` converge to the integr
 with respect to `μ₀`, then `μ` converges weakly to `μ₀`. -/
 lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCLike 𝕜]
     {E : Type*} [MetricSpace E] [CompleteSpace E] [SecondCountableTopology E]
-    [MeasurableSpace E] [BorelSpace E]
-    {μ : ℕ → ProbabilityMeasure E} (h_tight : IsTightMeasureSet {(μ n : Measure E) | n})
+    [MeasurableSpace E] [BorelSpace E] {ι : Type*} {l : Filter ι} [l.IsCountablyGenerated]
+    {μ : ι → ProbabilityMeasure E} (h_tight : IsTightMeasureSet {(μ n : Measure E) | n})
     {μ₀ : ProbabilityMeasure E}
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
-    (heq : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) atTop (𝓝 (∫ x, g x ∂μ₀))) :
-    Tendsto μ atTop (𝓝 μ₀) := by
+    (heq : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) l (𝓝 (∫ x, g x ∂μ₀))) :
+    Tendsto μ l (𝓝 μ₀) := by
   refine Filter.tendsto_of_subseq_tendsto fun ns hns ↦ ?_
   have h_compact : IsCompact (closure {μ n | n}) :=
     isCompact_closure_of_isTightMeasureSet (S := {μ n | n}) (by simpa using h_tight)
@@ -173,14 +173,14 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜] at hφ_tendsto
   exact hφ_tendsto g
 
-variable {μ : ℕ → ProbabilityMeasure E} {μ₀ : ProbabilityMeasure E}
+variable {ι : Type*} {l : Filter ι} {μ₀ : ProbabilityMeasure E}
 
 set_option backward.isDefEq.respectTransparency false
 omit [FiniteDimensional ℝ E] in
-lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun
-    (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) atTop (𝓝 (charFun μ₀ t)))
+lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → ProbabilityMeasure E}
+    (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) l (𝓝 (charFun μ₀ t)))
     {g : E →ᵇ ℂ} (hg : g ∈ charPoly continuous_probChar (L := innerₗ E) continuous_inner) :
-    Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) atTop (𝓝 (∫ x, g x ∂μ₀)) := by
+    Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) l (𝓝 (∫ x, g x ∂μ₀)) := by
   rw [mem_charPoly] at hg
   obtain ⟨w, hw⟩ := hg
   have h_eq (μ : Measure E) (hμ : IsProbabilityMeasure μ) :
@@ -195,6 +195,8 @@ lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun
   simp_rw [h_eq (μ _), h_eq μ₀]
   refine tendsto_finset_sum _ fun y hy ↦ Tendsto.const_mul _ ?_
   simpa [← charFun_eq_integral_probChar] using h y
+
+variable {μ : ℕ → ProbabilityMeasure E}
 
 /-- If the characteristic functions of a sequence of probability measures converge pointwise to
 the characteristic function of a probability measure, then the measures converge weakly. -/
