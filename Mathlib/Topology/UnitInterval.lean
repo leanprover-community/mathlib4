@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.Order.Closure
 import Mathlib.Analysis.Real.Cardinality
 
 /-!
@@ -39,8 +38,7 @@ scoped[unitInterval] notation "I" => unitInterval
 
 namespace unitInterval
 
-lemma not_countable_unitInterval : ¬ Countable I := by
-  simp only [countable_coe_iff, Cardinal.Real.Icc_countable_iff, not_le, zero_lt_one]
+lemma not_countable_unitInterval : ¬ Countable I := by simp
 
 theorem zero_mem : (0 : ℝ) ∈ I :=
   ⟨le_rfl, zero_le_one⟩
@@ -528,8 +526,7 @@ def iccHomeoI (a b : 𝕜) (h : a < b) : Set.Icc a b ≃ₜ Set.Icc (0 : 𝕜) (
   let e := Homeomorph.image (affineHomeomorph (b - a) a (sub_pos.mpr h).ne.symm) (Set.Icc 0 1)
   refine (e.trans ?_).symm
   apply Homeomorph.setCongr
-  rw [affineHomeomorph_image_I _ _ (sub_pos.2 h)]
-  simp
+  rw [affineHomeomorph_image_I _ _ (sub_pos.2 h), sub_add_cancel]
 
 @[simp]
 theorem iccHomeoI_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc a b) :

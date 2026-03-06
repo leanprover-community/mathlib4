@@ -20,36 +20,36 @@ when the target space is a standard Borel space, any Markov kernel can be repres
 of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemma 4.22 in
 "Foundations of Modern Probability" by Olav Kallenberg, 2021.
 
-## Main theorems
+## Main results
 
 * `ProbabilityTheory.Kernel.exists_measurable_map_eq_unitInterval`:
-  for a Markov kernel `κ : Kernel α β` with `β` a standard Borel space,
-  there exists a jointly measurable function `f : α → I → β` such that for all `a : α`,
+  for a Markov kernel `κ : Kernel X Y` with `Y` a standard Borel space,
+  there exists a jointly measurable function `f : X → I → Y` such that for all `a : X`,
   `volume.map (f a) = κ a`.
 
 * `ProbabilityTheory.Kernel.exists_measurable_map_eq`:
-  for a probability measure `μ` on a standard Borel space `β`,
-  there exists a measurable function `f : I → β` such that `volume.map f = μ`.
+  for a probability measure `μ` on a standard Borel space `Y`,
+  there exists a measurable function `f : I → Y` such that `volume.map f = μ`.
 -/
 
 public section
 
 open MeasureTheory ProbabilityTheory Set ENNReal unitInterval Filter Topology Function
 
+variable {X Y : Type*} {mX : MeasurableSpace X} [Nonempty Y] {mY : MeasurableSpace Y}
+    [StandardBorelSpace Y]
+
 namespace ProbabilityTheory.Kernel
 
-variable {α β : Type*} {mα : MeasurableSpace α} [Nonempty β] {mβ : MeasurableSpace β}
-    [StandardBorelSpace β]
-
-lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel α I) [IsMarkovKernel κ] :
-    ∃ (f : α → I → I), Measurable (uncurry f) ∧ ∀ a, volume.map (f a) = κ a := by
+lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel X I) [IsMarkovKernel κ] :
+    ∃ (f : X → I → I), Measurable (uncurry f) ∧ ∀ a, volume.map (f a) = κ a := by
   let f := fun s (t : I) ↦ sSup {x | (κ s).real (Icc 0 x) < t}
   have measurable_f : Measurable (uncurry f) := by
     refine measurable_of_Ioi fun a ↦ ?_
     simp only [preimage, uncurry, mem_Ioi]
     have h_monotone s : Monotone (fun x ↦ (κ s).real (Icc 0 x)) :=
       fun x y hxy ↦ measureReal_mono (by gcongr)
-    have sSup_eq_iUnion_rat : {x : α × I | a < f x.1 x.2} =
+    have sSup_eq_iUnion_rat : {x : X × I | a < f x.1 x.2} =
         ⋃ (q : ℚ) (hqI : ↑q ∈ I) (_ : a < (q : ℝ)), {e | (κ e.1).real (Icc 0 ⟨q, hqI⟩) < e.2} := by
       ext e
       simp_all only [lt_sSup_iff, mem_setOf_eq, Subtype.exists, mem_Icc, Rat.cast_nonneg,
@@ -78,15 +78,6 @@ lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel α I) [IsMarkovKerne
     mem_Iic, Iic_to_Icc, ← ofReal_measureReal (measure_ne_top (κ a) _), ← volume_Iic ⟨_, κ_in_I⟩]
   congr with ξ
   constructor
-  swap
-  · intro (hξ : ξ ≤ (κ a).real (Icc 0 x))
-    simp only [sSup_le_iff, f]
-    intro c hc
-    by_contra! h
-    have h_lt : ¬ (κ a).real (Icc 0 x) ≤ (κ a).real (Icc 0 c) := not_le.mpr (lt_of_le_of_lt' hξ hc)
-    refine h_lt ?_
-    gcongr
-    simp
   · intro (hξ : f a ξ ≤ x)
     change ξ ≤ (κ a).real (Icc 0 x)
     by_cases hx : x = 1
@@ -106,11 +97,19 @@ lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel α I) [IsMarkovKerne
       simp only [sSup_le_iff, f] at hξ
       specialize hξ y h
       grind
+  · intro (hξ : ξ ≤ (κ a).real (Icc 0 x))
+    simp only [sSup_le_iff, f]
+    intro c hc
+    by_contra! h
+    have h_lt : ¬ (κ a).real (Icc 0 x) ≤ (κ a).real (Icc 0 c) := not_le.mpr (lt_of_le_of_lt' hξ hc)
+    refine h_lt ?_
+    gcongr
+    simp
 
-theorem exists_measurable_map_eq_unitInterval (κ : Kernel α β) [IsMarkovKernel κ] :
-    ∃ (f : α → I → β), Measurable (uncurry f) ∧ ∀ a, volume.map (f a) = κ a := by
-  let g := sigmoid ∘ embeddingReal β
-  have hg := measurableEmbedding_sigmoid_comp_embeddingReal β
+theorem exists_measurable_map_eq_unitInterval (κ : Kernel X Y) [IsMarkovKernel κ] :
+    ∃ (f : X → I → Y), Measurable (uncurry f) ∧ ∀ a, volume.map (f a) = κ a := by
+  let g := sigmoid ∘ embeddingReal Y
+  have hg := measurableEmbedding_sigmoid_comp_embeddingReal Y
   have hκg : IsMarkovKernel (κ.map g) := IsMarkovKernel.map κ hg.measurable
   have hg'κ : κ = (κ.map g).map hg.invFun := by
     rw [← map_comp_right _ hg.measurable (by fun_prop), LeftInverse.id hg.leftInverse_invFun,
@@ -122,9 +121,8 @@ theorem exists_measurable_map_eq_unitInterval (κ : Kernel α β) [IsMarkovKerne
 
 end ProbabilityTheory.Kernel
 
-theorem MeasureTheory.Measure.exists_measurable_map_eq {β : Type*} {mβ : MeasurableSpace β}
-    [Nonempty β] [StandardBorelSpace β] (μ : Measure β) [IsProbabilityMeasure μ] :
-    ∃ (f : I → β), Measurable f ∧ volume.map f = μ := by
+theorem MeasureTheory.Measure.exists_measurable_map_eq (μ : Measure Y) [IsProbabilityMeasure μ] :
+    ∃ (f : I → Y), Measurable f ∧ volume.map f = μ := by
   obtain ⟨f, hf_meas, hf_map⟩ := Kernel.exists_measurable_map_eq_unitInterval (Kernel.const Unit μ)
   specialize hf_map ()
   exact ⟨f (), by fun_prop, by simpa⟩
