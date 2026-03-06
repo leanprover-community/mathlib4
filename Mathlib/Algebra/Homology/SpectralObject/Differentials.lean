@@ -25,7 +25,7 @@ file `Mathlib/Algebra/Homology/SpectralObject/Homology.lean` (TODO).
 
 namespace CategoryTheory
 
-variable {C ι : Type*} [Category C] [Category ι] [Abelian C]
+variable {C ι : Type*} [Category* C] [Category* ι] [Abelian C]
 
 open Category ComposableArrows Limits Preadditive
 
