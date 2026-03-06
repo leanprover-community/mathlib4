@@ -41,7 +41,7 @@ the list whose `i`th entry is `l[perm[i]]`.
 In the case where `perm ~ [0, ..., l.length-1]`, this is just computing the permutation of `l`
 represented by `perm`.
 -/
-private def permList {α : Type*} [Inhabited α] (vec : Array α) (perm : Array Nat) : Array α :=
+private def permArray {α : Type*} [Inhabited α] (vec : Array α) (perm : Array Nat) : Array α :=
   perm.map (vec[·]!)
 
 /-- Helper function to produce a term of type `Fin m` given by `n` (and a proof that `n < m` via
@@ -88,7 +88,7 @@ simproc_decl vecPerm (_ ∘ (_ : Fin _ → Fin _)) := fun e ↦ do
   let (unperm, ⟨m, _⟩) ← Matrix.matchVecConsPrefixQ v
   unless ← isDefEq m q(0) do return .continue
   let some perm ← arrayOfVecFinQ n unperm.size p | return .continue
-  let out := permList unperm perm
+  let out := permArray unperm perm
   let out := PiFin.mkLiteralQ (n := out.size) (out[·]!)
   let pf ← mkAppM ``FinVec.eq_etaExpand #[e]
   return .continue <| some { expr := out, proof? := pf }
