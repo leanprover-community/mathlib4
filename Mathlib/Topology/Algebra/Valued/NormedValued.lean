@@ -221,6 +221,8 @@ namespace toNormedField
 
 variable {x x' : L}
 
+theorem norm_def : ‖x‖ = hv.hom _ (Valued.v.restrict x) := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_le_iff : ‖x‖ ≤ ‖x'‖ ↔ val.v x ≤ val.v x' := by
