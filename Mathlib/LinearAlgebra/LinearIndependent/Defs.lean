@@ -738,6 +738,14 @@ theorem linearIndependent_add_smul_iff {c : ι → R} {i : ι} (h₀ : c i = 0) 
   simp [linearIndependent_iff_injective_finsuppLinearCombination,
     ← Finsupp.linearCombination_comp_addSingleEquiv i c h₀]
 
+theorem not_linearIndependent_iff_linearCombination :
+    ¬LinearIndependent R v ↔ ∃ l, (Finsupp.linearCombination R v) l = 0 ∧ l ≠ 0 := by
+  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot']
+
+theorem not_linearIndependent_iff_finsupp :
+    ¬LinearIndependent R v ↔ ∃ (f : ι →₀ R), ∑ x ∈ f.support, f x • v x = 0 ∧ f ≠ 0 := by
+  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot', Finsupp.linearCombination, Finsupp.sum]
+
 theorem not_linearIndependent_iff :
     ¬LinearIndependent R v ↔
       ∃ s : Finset ι, ∃ g : ι → R, ∑ i ∈ s, g i • v i = 0 ∧ ∃ i ∈ s, g i ≠ 0 := by
