@@ -69,6 +69,7 @@ instance isLocalization_range_mapToFractionRing (B : Type*) [CommRing B] [Algebr
       exact ⟨fun h => congr_arg _ (IsLocalization.injective _ hS h),
         fun h => congr_arg _ (IsFractionRing.injective A K h)⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isFractionRing_range_mapToFractionRing (B : Type*) [CommRing B] [Algebra A B]
     [IsLocalization S B] (hS : S ≤ A⁰) : IsFractionRing (mapToFractionRing K S B hS).range K :=
   IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
@@ -90,10 +91,11 @@ noncomputable def subalgebra (hS : S ≤ A⁰) : Subalgebra A K :=
 namespace subalgebra
 
 instance isLocalization_subalgebra : IsLocalization S (subalgebra K S hS) := by
-  dsimp only [Localization.subalgebra]
+  dsimp +instances only [Localization.subalgebra]
   rw [Subalgebra.copy_eq]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance isFractionRing : IsFractionRing (subalgebra K S hS) K :=
   IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
 
@@ -138,6 +140,7 @@ instance isLocalization_ofField : IsLocalization S (ofField K S hS) := by
   rw [ofField_eq]
   exact isLocalization_subalgebra K S hS
 
+set_option backward.isDefEq.respectTransparency false in
 instance (S : Subalgebra A K) : IsFractionRing S K := by
   refine IsFractionRing.of_field S K fun z ↦ ?_
   rcases IsFractionRing.div_surjective (A := A) z with ⟨x, y, _, eq⟩

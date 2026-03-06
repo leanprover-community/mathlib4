@@ -79,6 +79,40 @@ Often, however, it's not even necessary to include the `.{v}`.
 If it is omitted a "free" universe will be used.
 -/
 
+library_note «universe output parameters and typeclass caching»
+/--
+Many classes in Mathlib have universe parameters that do not appear in their
+input parameter types. For example:
+* `Category.{v} (C : Type u)` — the morphism universe `v` is not determined by `C`
+* `HasLimitsOfSize.{v₁, u₁} (C : Type u) [Category.{v} C]` — the shape universes `v₁, u₁`
+  are not determined by `C`
+* `Small.{w} (α : Type v)` — the target universe `w` is not determined by `α`
+  (but `v` is determined by `α`, so `v` *is* an output)
+* `Functor.IsContinuous.{t} (F) (J) (K)` — the sheaf type universe `t` is not determined
+  by `F`, `J`, `K`
+* `UnivLE.{u, v}` — has no input parameters at all
+
+By default (since https://github.com/leanprover/lean4/pull/12286), Lean treats any universe
+parameter not occurring in input types as an output parameter, and erases it from typeclass
+resolution cache keys. This means that queries differing only in such a universe share a
+cache entry — the first result found is reused.
+
+This is correct when the universe truly is determined by the inputs (e.g., `v` in
+`Small.{w} (α : Type v)`), but incorrect when the universe is part of the *question*
+(e.g., `v` in `Category.{v} C`). Cache collisions cause "stuck at solving universe constraint"
+errors or silent misresolution.
+
+The `@[univ_out_params]` attribute
+(from https://github.com/leanprover/lean4/pull/12423) overrides the default:
+* `@[univ_out_params]` — no universe parameters are output (all kept in cache key)
+* `@[univ_out_params v]` — only `v` is output
+
+**Rule of thumb:** if the class is typically used with explicit universe annotations
+(e.g., `HasLimitsOfSize.{v₁, u₁} C`) or is marked `@[pp_with_univ]`, its "extra" universe
+parameters are likely inputs, not outputs, and the class should be annotated with
+`@[univ_out_params]`.
+-/
+
 universe v u
 
 namespace CategoryTheory
@@ -192,7 +226,11 @@ set_option mathlib.tactic.category.grind true
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
 specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) -/
-@[pp_with_univ, stacks 0014]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the morphism universe `v` would default to
+-- being a universe output parameter.
+-- See Note [universe output parameters and typeclass caching].
+@[univ_out_params, pp_with_univ, stacks 0014]
 class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by cat_disch
@@ -358,6 +396,7 @@ universe u'
 /-- The category structure on `ULift C` that is induced from the category
 structure on `C`. This is not made a global instance because of a diamond
 when `C` is a preordered type. -/
+@[instance_reducible]
 def uliftCategory : Category.{v} (ULift.{u'} C) where
   Hom X Y := X.down ⟶ Y.down
   id X := 𝟙 X.down

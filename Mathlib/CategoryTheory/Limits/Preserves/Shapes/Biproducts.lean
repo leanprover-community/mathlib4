@@ -51,6 +51,7 @@ section Bicone
 
 variable {J : Type w₁}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of a bicone under a functor. -/
 @[simps]
 def mapBicone {f : J → C} (b : Bicone f) : Bicone (F.obj ∘ f) where
@@ -227,6 +228,7 @@ theorem ι_biproductComparison' (j : J) :
 
 variable [PreservesZeroMorphisms F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition in the opposite direction is equal to the identity if and only if `F` preserves
 the biproduct, see `preservesBiproduct_of_monoBiproductComparison`. -/
 @[reassoc (attr := simp)]
@@ -384,6 +386,7 @@ theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
   dsimp only [Function.comp_def]
   simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc, ← F.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem biproduct.mapBiproduct_hom_desc (g : ∀ j, f j ⟶ W) :
     ((F.mapBiproduct f).hom ≫ biproduct.desc fun j => F.map (g j)) = F.map (biproduct.desc g) := by
   rw [← biproduct.mapBiproduct_inv_map_desc, Iso.hom_inv_id_assoc]

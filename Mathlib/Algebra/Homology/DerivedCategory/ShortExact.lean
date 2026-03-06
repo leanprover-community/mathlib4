@@ -48,6 +48,7 @@ exact sequence of cochain complexes. -/
 noncomputable def triangleOfSES : Triangle (DerivedCategory C) :=
   Triangle.mk (Q.map S.f) (Q.map S.g) (triangleOfSESδ hS)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `triangleOfSES` attached to a short exact sequence `S` of cochain
 complexes is isomorphic to the standard distinguished triangle associated to
 the morphism `S.f`. -/

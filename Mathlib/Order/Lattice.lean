@@ -88,8 +88,7 @@ class SemilatticeInf (α : Type u) extends PartialOrder α where
   /-- The infimum is the *greatest* lower bound -/
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ inf b c
 
-attribute [to_dual existing] SemilatticeSup.sup_le SemilatticeSup.mk
-attribute [to_dual existing (reorder := mk (sup_le (a b c)))] SemilatticeSup.casesOn
+attribute [to_dual existing] SemilatticeSup.sup_le SemilatticeSup.mk SemilatticeSup.casesOn
 
 @[to_dual]
 instance SemilatticeSup.toMax [SemilatticeSup α] : Max α where max a b := SemilatticeSup.sup a b
@@ -300,14 +299,6 @@ theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
 @[to_dual inf_le_ite]
 theorem ite_le_sup (a b : α) (P : Prop) [Decidable P] : ite P a b ≤ a ⊔ b :=
   if h : P then (if_pos h).trans_le le_sup_left else (if_neg h).trans_le le_sup_right
-
-/-- If `f` is monotone, `g` is antitone, and `f ≤ g`, then for all `a`, `b` we have `f a ≤ g b`. -/
-theorem Monotone.forall_le_of_antitone {β : Type*} [Preorder β] {f g : α → β} (hf : Monotone f)
-    (hg : Antitone g) (h : f ≤ g) (m n : α) : f m ≤ g n :=
-  calc
-    f m ≤ f (m ⊔ n) := hf le_sup_left
-    _ ≤ g (m ⊔ n) := h _
-    _ ≤ g n := hg le_sup_right
 
 @[to_dual (reorder := H (x y))]
 theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
@@ -1013,45 +1004,46 @@ See note [reducible non-instances]. -/
 @[to_dual /-- A type endowed with `⊓` is a `SemilatticeInf`, if it admits an injective map that
 preserves `⊓` to a `SemilatticeInf`.
 See note [reducible non-instances]. -/]
-protected abbrev Function.Injective.semilatticeSup [Max α] [SemilatticeSup β] (f : α → β)
-    (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
+protected abbrev Function.Injective.semilatticeSup [Max α] [LE α] [LT α] [SemilatticeSup β]
+    (f : α → β) (hf_inj : Function.Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
+    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
     SemilatticeSup α where
-  __ := PartialOrder.lift f hf_inj
+  __ := hf_inj.partialOrder f le lt
   sup a b := max a b
   le_sup_left a b := by
-    change f a ≤ f (a ⊔ b)
-    rw [map_sup]
+    rw [← le, map_sup]
     exact le_sup_left
   le_sup_right a b := by
-    change f b ≤ f (a ⊔ b)
-    rw [map_sup]
+    rw [← le, map_sup]
     exact le_sup_right
   sup_le a b c ha hb := by
-    change f (a ⊔ b) ≤ f c
+    rw [← le] at *
     rw [map_sup]
     exact sup_le ha hb
 
 /-- A type endowed with `⊔` and `⊓` is a `Lattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `Lattice`.
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.lattice [Max α] [Min α] [Lattice β] (f : α → β)
-    (hf_inj : Function.Injective f)
+protected abbrev Function.Injective.lattice [Max α] [Min α] [LE α] [LT α] [Lattice β]
+    (f : α → β) (hf_inj : Function.Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
     Lattice α where
-  __ := hf_inj.semilatticeSup f map_sup
-  __ := hf_inj.semilatticeInf f map_inf
+  __ := hf_inj.semilatticeSup f le lt map_sup
+  __ := hf_inj.semilatticeInf f le lt map_inf
 
 /-- A type endowed with `⊔` and `⊓` is a `DistribLattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `DistribLattice`.
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.distribLattice [Max α] [Min α] [DistribLattice β] (f : α → β)
-    (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
-    (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
+protected abbrev Function.Injective.distribLattice [Max α] [Min α] [LE α] [LT α] [DistribLattice β]
+    (f : α → β) (hf_inj : Function.Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
+    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
     DistribLattice α where
-  __ := hf_inj.lattice f map_sup map_inf
+  __ := hf_inj.lattice f le lt map_sup map_inf
   le_sup_inf a b c := by
-    change f ((a ⊔ b) ⊓ (a ⊔ c)) ≤ f (a ⊔ b ⊓ c)
-    rw [map_inf, map_sup, map_sup, map_sup, map_inf]
+    rw [← le, map_inf, map_sup, map_sup, map_sup, map_inf]
     exact le_sup_inf
 
 end lift
@@ -1060,13 +1052,12 @@ namespace ULift
 
 @[to_dual]
 instance [SemilatticeSup α] : SemilatticeSup (ULift.{v} α) :=
-  ULift.down_injective.semilatticeSup _ down_sup
+  ULift.down_injective.semilatticeSup _ .rfl .rfl down_sup
 
-instance [Lattice α] : Lattice (ULift.{v} α) :=
-  ULift.down_injective.lattice _ down_sup down_inf
+instance [Lattice α] : Lattice (ULift.{v} α) where
 
 instance [DistribLattice α] : DistribLattice (ULift.{v} α) :=
-  ULift.down_injective.distribLattice _ down_sup down_inf
+  ULift.down_injective.distribLattice _ .rfl .rfl down_sup down_inf
 
 instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
   ULift.down_injective.linearOrder _ down_le down_lt down_inf down_sup down_compare
