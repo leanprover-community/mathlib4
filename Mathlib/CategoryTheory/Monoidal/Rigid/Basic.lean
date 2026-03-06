@@ -124,46 +124,26 @@ lemma evaluation_coevaluation'' :
     η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙.hom := by
   convert evaluation_coevaluation X Y <;> simp [monoidalComp]
 
-lemma coevaluation_evaluation_iso [IsIso (ε_ X Y)] [IsIso (η_ X Y)] :
-Y ◁ᵢ (asIso (η_ X Y)) ≪≫ (α_ Y X Y).symm ≪≫
-(asIso (ε_ X Y)) ▷ᵢ Y = ρ_ Y ≪≫ (λ_ Y).symm := by
-    ext
-    simp only [Iso.trans_hom, whiskerLeftIso_hom, asIso_hom, Iso.symm_hom, whiskerRightIso_hom,
-      coevaluation_evaluation]
-
-lemma evaluation_coevaluation_iso [IsIso (ε_ X Y)] [IsIso (η_ X Y)] : (asIso (η_ X Y)) ▷ᵢ X ≪≫
-(α_ X Y X) ≪≫ X ◁ᵢ (asIso (ε_ X Y)) = (λ_ X) ≪≫ (ρ_ X).symm := by
-  ext
-  simp only [Iso.trans_hom, whiskerRightIso_hom, asIso_hom, whiskerLeftIso_hom,
-    evaluation_coevaluation, Iso.symm_hom]
-
-/-- Swapped exact pairing, provided isomorphic evaluation and coevaluation. -/
-def Symm [IsIso (ε_ X Y)] [IsIso (η_ X Y)] :
-ExactPairing Y X where
+/--
+Swap the terms of an exact pairing, provided that the evaluation and coevaluation are isomorphisms.
+-/
+def Symm [IsIso (ε_ X Y)] [IsIso (η_ X Y)] : ExactPairing Y X where
   coevaluation' := inv (ε_ X Y)
   evaluation' := inv (η_ X Y)
-
   coevaluation_evaluation' := by
-    have : X ◁ᵢ (asIso (ε_ X Y)).symm ≪≫
-      (α_ X Y X).symm ≪≫ (asIso (η_ X Y)).symm ▷ᵢ X
-      = (ρ_ X) ≪≫ (λ_ X).symm := by
-        apply Iso.symm_bijective.injective
-        simp only [Iso.trans_symm, whiskerRightIso_symm, Iso.symm_symm_eq, whiskerLeftIso_symm,
-          Iso.trans_assoc]
-        exact evaluation_coevaluation_iso X Y
-    simpa [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom] using
-        congr($(this).hom)
-
-  evaluation_coevaluation' := by
-    have : (asIso (ε_ X Y)).symm ▷ᵢ Y ≪≫
-    (α_ Y X Y) ≪≫ Y ◁ᵢ (asIso (η_ X Y)).symm
-    = (λ_ Y) ≪≫ (ρ_ Y).symm := by
+    have : X ◁ᵢ (asIso (ε_ X Y)).symm ≪≫ (α_ X Y X).symm ≪≫ (asIso (η_ X Y)).symm ▷ᵢ X =
+        (ρ_ X) ≪≫ (λ_ X).symm := by
       apply Iso.symm_bijective.injective
-      simp only [Iso.trans_symm, whiskerLeftIso_symm, Iso.symm_symm_eq, whiskerRightIso_symm,
-        Iso.trans_assoc]
-      exact coevaluation_evaluation_iso X Y
-    simpa [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom] using
-      congr($(this).hom)
+      ext
+      simp [evaluation_coevaluation]
+    simpa [Iso.ext_iff] using this
+  evaluation_coevaluation' := by
+    have : (asIso (ε_ X Y)).symm ▷ᵢ Y ≪≫ (α_ Y X Y) ≪≫ Y ◁ᵢ (asIso (η_ X Y)).symm =
+        (λ_ Y) ≪≫ (ρ_ Y).symm := by
+      apply Iso.symm_bijective.injective
+      ext
+      simp [coevaluation_evaluation]
+    simpa [Iso.ext_iff] using this
 
 end ExactPairing
 
