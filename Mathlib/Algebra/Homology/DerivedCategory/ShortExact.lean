@@ -74,23 +74,27 @@ section map
 variable {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact)
   (f : S₁ ⟶ S₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The morphism `triangleOfSES h₁ ⟶ triangleOfSES h₂` that is induced by a morphism of short
 exact sequences of cochain complexes.
 -/
-noncomputable def triangleOfSES.map : triangleOfSES h₁ ⟶ triangleOfSES h₂ :=
-  (triangleOfSESIso h₁).hom ≫ Q.mapTriangle.map (CochainComplex.mappingCone.triangleMap
-  S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm) ≫ (triangleOfSESIso h₂).inv
-
-lemma triangleOfSES.map_hom₁ : (triangleOfSES.map h₁ h₂ f).hom₁ = Q.map f.τ₁ := by
-  dsimp [triangleOfSES.map, triangleOfSESIso]; simp
-
-lemma triangleOfSES.map_hom₂ : (triangleOfSES.map h₁ h₂ f).hom₂ = Q.map f.τ₂ := by
-  dsimp [triangleOfSES.map, triangleOfSESIso]; simp
-
-lemma triangleOfSES.map_hom₃ : (triangleOfSES.map h₁ h₂ f).hom₃ = Q.map f.τ₃ := by
-  dsimp [triangleOfSES.map, triangleOfSESIso]
-  rw [IsIso.inv_comp_eq, ← Q.map_comp, CochainComplex.mappingCone.map_descShortComplex, Q.map_comp]
+@[simps]
+noncomputable def triangleOfSES.map : triangleOfSES h₁ ⟶ triangleOfSES h₂ where
+  hom₁ := Q.map f.τ₁
+  hom₂ := Q.map f.τ₂
+  hom₃ := Q.map f.τ₃
+  comm₁ := by simp [← Functor.map_comp, f.comm₁₂]
+  comm₂ := by simp [← Functor.map_comp, f.comm₂₃]
+  comm₃ := by
+    dsimp [triangleOfSES, triangleOfSESδ]
+    rw [assoc, assoc, IsIso.inv_comp_eq, ← Functor.map_comp_assoc,
+      ← CochainComplex.mappingCone.map_descShortComplex,
+      Functor.map_comp_assoc, IsIso.hom_inv_id_assoc,
+      ← Functor.commShiftIso_hom_naturality,
+      ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
+    congr 2
+    exact (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm).comm₃
 
 end map
 
