@@ -241,7 +241,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
     rw [join_distrib, this]
     exact ⟨h1 (Or.inl rfl), rfl⟩
   -- C2 is closed under finite intersections (by construction!).
-  have claim4 := finiteInter_finiteInterClosure C1
+  have claim4 := finiteInterClosure_finiteInter C1
   -- C0 is closed under finite intersections by claim1.
   have claim5 : FiniteInter C0 := ⟨⟨_, univ_mem, Set.preimage_univ⟩, claim1⟩
   -- Every element of C2 is nonempty.
@@ -258,7 +258,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   -- Suffices to show that the intersection of the T's is contained in C2.
   suffices ⋂₀ ι T ∈ C2 by exact claim6 _ this
   -- Finish
-  apply claim4.sInter_finset_mem T
+  apply claim4.finiteInter_mem T
   intro t ht
   exact finiteInterClosure.basic (@hT t ht)
 
@@ -335,7 +335,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     simp [← c1, c2]
   -- Finish...
   intro T hT
-  refine claim6 _ (sInter_finset_mem (.finiteInter_finiteInterClosure _) _ ?_)
+  refine claim6 _ (finiteInter_mem (.finiteInterClosure_finiteInter _) _ ?_)
   intro t ht
   exact finiteInterClosure.basic (@hT t ht)
 
