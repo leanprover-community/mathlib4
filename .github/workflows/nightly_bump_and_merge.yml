@@ -334,7 +334,7 @@ jobs:
             MESSAGE+="- [lean-pr-testing-${PR_NUMBER}](${GITHUB_DIFF}) (adaptations for lean#${PR_NUMBER})"$'\n\n'
             MESSAGE+=$'```bash\n'
             MESSAGE+=$'tmp=$(mktemp)\n'
-            MESSAGE+=$'wget -qO "$tmp" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/7355aeb4f32cb2a181d02abd7a9d6ab4fe033286/scripts/nightly/merge-lean-testing-pr.sh\n'
+            MESSAGE+=$'wget -qO "$tmp" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/4af75ac0b0d1aaf38d4546a779bc5c68b4d75069/scripts/nightly/merge-lean-testing-pr.sh\n'
             MESSAGE+=$'chmod +x "$tmp"\n'
             MESSAGE+="\"\$tmp\" ${PR_NUMBER}"$'\n'
             MESSAGE+=$'```\n\n'
