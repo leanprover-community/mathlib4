@@ -515,7 +515,7 @@ lemma Antitone.liminf_nhdsGT_eq_iSup₂_of_exists_gt (hf : Antitone f) (a : α) 
   obtain ⟨b, hb⟩ := exists_between hr
   exact ⟨b, hb.1, iInf₂_le b hb⟩
 
-lemma liminf_nhdsGT_eq_iSup₂ [NoMaxOrder α] (hf : Antitone f) (a : α) :
+lemma Antitone.liminf_nhdsGT_eq_iSup₂ [NoMaxOrder α] (hf : Antitone f) (a : α) :
     (𝓝[>] a).liminf f = ⨆ r > a, f r :=
   hf.liminf_nhdsGT_eq_iSup₂_of_exists_gt a (exists_gt a)
 
