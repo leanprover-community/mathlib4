@@ -364,23 +364,23 @@ namespace RatFunc
 
 open scoped LaurentSeries
 
-variable {F : Type u} [Field F] (p q : F[X]) (f g : F⟮X⟯)
+variable {F : Type u} [Field F] (p q : F[X]) (f g : RatFunc F)
 
 instance : FaithfulSMul F[X] F⸨X⸩ := by
   refine (faithfulSMul_iff_algebraMap_injective F[X] F⸨X⸩).mpr ?_
   exact algebraMap_hahnSeries_injective ℤ
 
-instance coeToLaurentSeries : Coe F⟮X⟯ F⸨X⸩ :=
-  ⟨algebraMap F⟮X⟯ F⸨X⸩⟩
+instance coeToLaurentSeries : Coe (RatFunc F) F⸨X⸩ :=
+  ⟨algebraMap (RatFunc F) F⸨X⸩⟩
 
-theorem coe_coe (P : Polynomial F) : ((P : F⟦X⟧) : F⸨X⸩) = (P : F⟮X⟯) := by
+theorem coe_coe (P : Polynomial F) : ((P : F⟦X⟧) : F⸨X⸩) = (P : RatFunc F) := by
   simp [coePolynomial, coe_def, ← IsScalarTower.algebraMap_apply]
 
 -- Porting note: removed `norm_cast` because "badly shaped lemma, rhs can't start with coe"
 -- even though `single 1 1` is a bundled function application, not a "real" coercion
 @[simp]
-theorem coe_X : ((X : F⟮X⟯) : F⸨X⸩) = single 1 1 := by
-  simp [← algebraMap_X, ← IsScalarTower.algebraMap_apply F[X] F⟮X⟯ F⸨X⸩]
+theorem coe_X : ((X : RatFunc F) : F⸨X⸩) = single 1 1 := by
+  simp [← algebraMap_X, ← IsScalarTower.algebraMap_apply F[X] (RatFunc F) F⸨X⸩]
 
 theorem single_one_eq_pow {R : Type*} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
@@ -402,9 +402,9 @@ theorem single_zpow (n : ℤ) :
       inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 theorem algebraMap_apply_div :
-    algebraMap F⟮X⟯ F⸨X⸩ (algebraMap _ _ p / algebraMap _ _ q) =
+    algebraMap (RatFunc F) F⸨X⸩ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap F[X] F⸨X⸩ p / algebraMap _ _ q := by
-  simp only [map_div₀, IsScalarTower.algebraMap_apply F[X] F⟮X⟯ F⸨X⸩]
+  simp only [map_div₀, IsScalarTower.algebraMap_apply F[X] (RatFunc F) F⸨X⸩]
 
 end RatFunc
 
@@ -422,7 +422,7 @@ def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   isPrime := PowerSeries.span_X_isPrime
   ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
-open IsDedekindDomain.HeightOneSpectrum WithZero RatFunc
+open IsDedekindDomain.HeightOneSpectrum RatFunc WithZero
 
 variable {K}
 
@@ -487,7 +487,7 @@ end RatFunc
 namespace LaurentSeries
 
 
-open IsDedekindDomain.HeightOneSpectrum PowerSeries WithZero RatFunc
+open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc WithZero
 
 set_option backward.isDefEq.respectTransparency false in
 instance valued : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K).valuation _)
@@ -910,7 +910,7 @@ end Dense
 
 section Comparison
 
-open AbstractCompletion RatFunc IsDedekindDomain.HeightOneSpectrum WithZero
+open RatFunc AbstractCompletion IsDedekindDomain.HeightOneSpectrum WithZero
 
 lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : K⟮X⟯, Valued.v f = Valued.v x := by
   by_cases hx : Valued.v x = 0
@@ -1013,14 +1013,14 @@ abbrev RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
 instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
 instance : UniformSpace K⸨X⸩ := inferInstance
 
-/-- The uniform space isomorphism between two abstract completions of `K⟮X⟯` -/
+/-- The uniform space isomorphism between two abstract completions of `ratfunc K` -/
 abbrev comparePkg : RatFuncAdicCompl K ≃ᵤ K⸨X⸩ :=
   compareEquiv ratfuncAdicComplPkg (LaurentSeriesPkg K)
 
 lemma comparePkg_eq_extension (x : RatFuncAdicCompl K) :
     (comparePkg K) x = (extensionAsRingHom K (continuous_coe' _)) x := rfl
 
-/-- The uniform space equivalence between two abstract completions of `K⟮X⟯` as a ring
+/-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: this will be the *inverse* of the fundamental one. -/
 abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
   { comparePkg K with
@@ -1035,7 +1035,7 @@ abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
         (extensionAsRingHom K (continuous_coe' _)).map_add]
       simp [← comparePkg_eq_extension] }
 
-/-- The uniform space equivalence between two abstract completions of `K⟮X⟯` as a ring
+/-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: it goes from `K⸨X⸩` to `RatFuncAdicCompl K` -/
 abbrev LaurentSeriesRingEquiv : K⸨X⸩ ≃+* RatFuncAdicCompl K :=
   (ratfuncAdicComplRingEquiv K).symm
@@ -1061,7 +1061,7 @@ theorem algebraMap_apply (a : K) : algebraMap K K⸨X⸩ a = HahnSeries.C a := b
 instance : Algebra K (RatFuncAdicCompl K) :=
   RingHom.toAlgebra ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C)
 
-/-- The algebra equivalence between `K⸨X⸩` and the `X`-adic completion of `X⟮X⟯` -/
+/-- The algebra equivalence between `K⸨X⸩` and the `X`-adic completion of `RatFunc X` -/
 def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K :=
   AlgEquiv.ofRingEquiv (f := LaurentSeriesRingEquiv K)
     (fun a ↦ by simp [RingHom.algebraMap_toAlgebra])
@@ -1089,7 +1089,7 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
     use {t | Valued.v t < γ}
     constructor
     · rw [ha, this]
-      obtain ⟨x, hx⟩ := valuedAdicCompletion_surjective (RatFunc K) (idealX K) γ
+      obtain ⟨x, hx⟩ := valuedAdicCompletion_surjective K⟮X⟯ (idealX K) γ
       use Units.mk0 (Valued.v.restrict x) (by
         rwa [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff, hx])
       simp  [Units.val_mk0, Valuation.restrict_lt_iff, hx]
@@ -1121,7 +1121,7 @@ theorem valuation_compare (f : K⸨X⸩) :
     exact ⟨.toVal _ y, rfl⟩
   · intro x
     have h_cont := Valued.continuous_valuation_of_surjective
-      (valuedAdicCompletion_surjective (RatFunc K) (idealX K))
+      (valuedAdicCompletion_surjective K⟮X⟯ (idealX K))
     rw [ratfuncAdicComplPkg.isDenseInducing.extend_unique
         Valued.valuedCompletion_apply h_cont]
     exact (h_cont.continuousAt.tendsto.comp tendsto_comap).congr
