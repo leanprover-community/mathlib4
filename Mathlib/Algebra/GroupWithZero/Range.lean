@@ -264,7 +264,10 @@ theorem mem_valueGroup_iff_of_comm' {y : Bˣ} :
 namespace ValueGroup₀
 
 /-- The map sending a pair of nonzero `r s : A` to the element `(v r)⁻¹ * (v s)`
-of `ValueGroup₀ v`. -/
+of `ValueGroup₀ v`.
+TODO: Note that this should be changed to take a `MonoidWithZeroHom` but this entails modifying
+the definition of `valueGroup` and `ValueGroup₀`, which is out of scope of #26872, where this
+definition is introduced: it will be fixed in a later PR. -/
 def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : ValueGroup₀ f :=
     (⟨(.mk0 _ hr)⁻¹ * (.mk0 _ hs), mul_mem (inv_mem (mem_valueGroup _ (by simp)))
     (mem_valueGroup _ (by simp))⟩ : valueGroup f)
