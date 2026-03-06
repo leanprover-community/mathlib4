@@ -60,7 +60,7 @@ The `TraceResult` will be recorded in trace messages directly in [lean4#12698](h
 Once that PR is available, callers should prefer `td.result?` over calling this function.
 
 Note: the emoji constants include a variation selector (U+FE0F), but `String.startsWith`
-handles this since we check for the base codepoint which is always the prefix. -/
+Once that PR is available, callers should prefer `td.result?` over calling this function. -/
 def traceResultOf (headerStr : String) : Option TraceResult :=
   if headerStr.startsWith "✅️" then some .success
   else if headerStr.startsWith "❌️" then some .failure
