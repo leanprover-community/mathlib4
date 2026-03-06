@@ -231,7 +231,7 @@ instance : LinearEquivClass (σ.Equiv ρ) A W V where
   map_smulₛₗ f := f.map_smul
 
 @[ext]
-lemma ext {φ ψ : Equiv ρ σ} (h : (φ : _ → _) = ψ) : φ = ψ := by
+lemma ext {φ ψ : Equiv ρ σ} (h : (φ : V → W) = ψ) : φ = ψ := by
   cases φ; cases ψ
   simpa using h
 
@@ -294,10 +294,10 @@ lemma trans_apply (φ : Equiv ρ σ) (ψ : Equiv σ τ) (v : V) :
     trans φ ψ v = ψ (φ v) := rfl
 
 @[simp]
-lemma trans_symm_apply (φ : Equiv ρ σ) (v : W) : φ (φ.symm v) = v := φ.right_inv v
+lemma apply_symm_apply (φ : Equiv ρ σ) (v : W) : φ (φ.symm v) = v := φ.right_inv v
 
 @[simp]
-lemma symm_trans_apply (φ : Equiv ρ σ) (v : V) : φ.symm (φ v) = v := φ.left_inv v
+lemma symm_apply_apply (φ : Equiv ρ σ) (v : V) : φ.symm (φ v) = v := φ.left_inv v
 
 @[simp]
 lemma trans_symm (φ : Equiv ρ σ) : φ.trans φ.symm = .refl ρ := by ext; simp
@@ -315,6 +315,7 @@ variable {A G V W U : Type*} [CommSemiring A] [Monoid G] [AddCommMonoid V] [AddC
   [AddCommMonoid U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
   (σ : Representation A G W) (τ : Representation A G U) (f : V →ₗ[A] W)
 
+variable {ρ σ} in
 theorem Equiv.conj_apply_self (g : G) (φ : Equiv ρ σ) : φ.conj (ρ g) = σ g := by
   ext w
   have := (congr($(φ.symm.toIntertwiningMap.2 g) w)).symm
@@ -489,7 +490,7 @@ def rTensor (f : IntertwiningMap σ τ) :
 
 @[simp]
 lemma toLinearMap_rTensor (f : IntertwiningMap σ τ) :
-    (f.rTensor ρ).toLinearMap = f.toLinearMap.rTensor _ := rfl
+    (f.rTensor ρ).toLinearMap = f.toLinearMap.rTensor V := rfl
 
 @[simp]
 lemma rTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
