@@ -316,10 +316,7 @@ instance pi.instIsProbabilityMeasure [∀ i, IsProbabilityMeasure (μ i)] :
 
 theorem pi_pi_finset [∀ i, IsProbabilityMeasure (μ i)] (f : ∀ i, Set (α i)) (s : Finset ι) :
     Measure.pi μ ((s : Set ι).pi f) = ∏ i ∈ s, μ i (f i) := by
-  classical
-  have : (s : Set ι).pi f = Set.univ.pi (fun i ↦ if i ∈ s then f i else Set.univ) := by
-    ext x; simp
-  simp [this, pi_pi, apply_ite]
+  classical simp [← Set.univ_pi_ite, pi_pi, apply_ite]
 
 instance {α : ι → Type*} [∀ i, MeasureSpace (α i)]
     [∀ i, IsProbabilityMeasure (volume : Measure (α i))] :
