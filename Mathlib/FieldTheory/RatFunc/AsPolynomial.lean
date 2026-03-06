@@ -395,6 +395,8 @@ open scoped WithZero
 
 open Polynomial
 
+/- We give this instance a name so that it can be locally disabled when defining `FqtInfty`.
+Something similar might be needed after the refactor from `Valued` to `ValuativeRel`. -/
 instance valuedRatFunc : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 
 @[simp]
