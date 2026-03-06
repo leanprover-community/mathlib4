@@ -33,8 +33,7 @@ open IsLocalRing CategoryTheory SmallObject
 
 open scoped Polynomial
 
-variable (R : Type u) [CommRing R] [IsLocalRing R] (K : Type v) [Field K]
-  [Algebra (ResidueField R) K]
+variable (R : Type u) [CommRing R]
 
 section instances
 
@@ -45,17 +44,25 @@ instance {S₁ S₂ S₃ : Type*} [Semiring S₁] [Semiring S₂] [Semiring S₃
     IsLocalHom (g.comp f) :=
   ⟨fun a ha ↦ locf.map_nonunit a (locg.map_nonunit (f a) ha)⟩
 
-omit [IsLocalRing R] in
 private lemma AlgHom.comp_toRingHom' {S₁ S₂ S₃ : Type*} [Semiring S₁] [Semiring S₂] [Semiring S₃]
     [Algebra R S₁] [Algebra R S₂] [Algebra R S₃] (f : S₁ →ₐ[R] S₂) (g : S₂ →ₐ[R] S₃) :
     (g.comp f) = (RingHomClass.toRingHom g).comp (RingHomClass.toRingHom f) := rfl
 
-instance [Small.{w} R] : IsLocalRing (Shrink R) :=
+instance [IsLocalRing R] [Small.{w} R] : IsLocalRing (Shrink R) :=
   let := IsLocalHom.of_surjective (Shrink.ringEquiv R).symm.toRingHom
     (Shrink.ringEquiv R).symm.surjective
   IsLocalRing.of_surjective (Shrink.ringEquiv R).symm.toRingHom (Shrink.ringEquiv R).symm.surjective
 
+lemma IsScalarTower.algebraMap_range_le (S T : Type*) [CommRing S] [Ring T] [Algebra R S]
+    [Algebra R T] [Algebra S T] [IsScalarTower R S T] :
+    (algebraMap R T).range ≤ (algebraMap S T).range := by
+  rintro x ⟨y, hy⟩
+  use algebraMap R S y
+  rw [← hy, IsScalarTower.algebraMap_apply R S T]
+
 end instances
+
+variable [IsLocalRing R] (K : Type v) [Field K] [Algebra (ResidueField R) K]
 
 section monogenic
 
@@ -362,22 +369,53 @@ noncomputable abbrev toAdjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
   isLocalHom := ⟨by simp⟩
   comm :=
     let := ((algebraMap (ResidueField S.Ring) K).comp
-    (algebraMap S.Ring (ResidueField S.Ring))).toAlgebra
+      (algebraMap S.Ring (ResidueField S.Ring))).toAlgebra
     let : IsScalarTower S.Ring (ResidueField S.Ring) K := IsScalarTower.of_algebraMap_eq' rfl
     let := adjoinTranscendentalAlgebraK K S.Ring x nint
     let := adjoinTranscendentalIsScalarTower K S.Ring x nint
     (IsScalarTower.algebraMap_eq _ _ K).symm
 
+set_option backward.isDefEq.respectTransparency false in
+open Classical in
 noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) where
   X₀ := trivial R K
-  succ S := sorry
-  toSucc S := sorry
+  succ S := if surj : Function.Surjective (algebraMap (ResidueField S.Ring) K) then S else
+      if int : IsIntegral (ResidueField S.Ring) (Classical.choose (Decidable.not_forall.mp surj))
+        then adjoinAlgebraic S _ int
+        else adjoinTranscendental S _ int
+  toSucc S := if surj : Function.Surjective (algebraMap (ResidueField S.Ring) K) then by
+        simpa only [surj, ↓reduceDIte] using 𝟙 S else
+      if int : IsIntegral (ResidueField S.Ring) (Classical.choose (Decidable.not_forall.mp surj))
+        then by simpa only [surj, int, ↓reduceDIte] using toAdjoinAlgebraic S _ int
+        else by simpa only [surj, int, ↓reduceDIte] using toAdjoinTranscendental S _ int
 
 lemma algebraMap_range_lt_of_not_surjective [Small.{w} R] (S : FlatExtension R K)
     (nsurj : ¬ Function.Surjective (algebraMap (ResidueField S.Ring) K)) :
     (algebraMap (ResidueField S.Ring) K).range <
     (algebraMap (ResidueField ((FlatExtension.SuccStruct R K).succ S).Ring) K).range := by
-  sorry
+  classical
+  by_cases int : IsIntegral (ResidueField S.Ring) (Classical.choose (Decidable.not_forall.mp nsurj))
+  · have : (FlatExtension.SuccStruct R K).succ S = adjoinAlgebraic S _ int := by
+      simp only [↓reduceDIte, SuccStruct, nsurj, int]
+    rw [this]
+    let := adjoinAlgebraicAlgebraK K S.Ring _ int
+    let := adjoinAlgebraicIsScalarTower K S.Ring _ int
+    exact Set.ssubset_iff_exists.mpr ⟨IsScalarTower.algebraMap_range_le _ _ _,
+      Classical.choose (Decidable.not_forall.mp nsurj),
+      adjoinAlgebraic_mem_range K S.Ring _ int,
+      Classical.choose_spec (Decidable.not_forall.mp nsurj)⟩
+  · have : (FlatExtension.SuccStruct R K).succ S = adjoinTranscendental S _ int := by
+      simp only [↓reduceDIte, SuccStruct, nsurj, int]
+    rw [this]
+    let := ((algebraMap (ResidueField S.Ring) K).comp
+      (algebraMap S.Ring (ResidueField S.Ring))).toAlgebra
+    let : IsScalarTower S.Ring (ResidueField S.Ring) K := IsScalarTower.of_algebraMap_eq' rfl
+    let := adjoinTranscendentalAlgebraK K S.Ring _ int
+    let := adjoinTranscendentalIsScalarTower K S.Ring _ int
+    exact Set.ssubset_iff_exists.mpr ⟨IsScalarTower.algebraMap_range_le _ _ _,
+      Classical.choose (Decidable.not_forall.mp nsurj),
+      adjoinTranscendental_mem_range K S.Ring _ int,
+      Classical.choose_spec (Decidable.not_forall.mp nsurj)⟩
 
 variable (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J] [Small.{w} R]
 
