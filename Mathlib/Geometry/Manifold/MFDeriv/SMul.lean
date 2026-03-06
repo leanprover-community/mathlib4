@@ -3,9 +3,11 @@ Copyright (c) 2025 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.Notation
 
 /-! # `mfderiv` and scalar multiplication -/
@@ -45,13 +47,12 @@ lemma mfderiv_smul (hf : MDiffAt f x)
   have hsf : MDiffAt (s • f) x := hs.smul hf
   simp? [mfderiv, hsf, hs, hf] says
     simp only [Pi.smul_apply', mfderiv, hsf, ↓reduceIte, writtenInExtChartAt, extChartAt,
-      OpenPartialHomeomorph.extend, OpenPartialHomeomorph.refl_partialEquiv,
-      PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
-      modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_coe,
+      OpenPartialHomeomorph.extend, modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl,
       PartialEquiv.coe_trans_symm, OpenPartialHomeomorph.coe_coe_symm,
-      ModelWithCorners.toPartialEquiv_coe_symm, CompTriple.comp_eq, PartialEquiv.coe_trans,
+      ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.coe_trans,
       ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe, Function.comp_apply,
       hf, hs]
+  -- Use that `chartAt (s x)` and `chartAt (f x)` are the identity.
   erw [fderivWithin_smul I.uniqueDiffWithinAt_image hs' hf']
   simp [φ.left_inv (ChartedSpace.mem_chart_source x)]
   rfl
