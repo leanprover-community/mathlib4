@@ -268,7 +268,8 @@ theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
     M.verts.encard = 2 * M.edgeSet.encard := by
   classical
   by_cases! hMf : ¬ Finite M.verts
-  · suffices M.edgeSet.Infinite by simp [Set.encard_eq_top_iff.mpr hMf, this]
+  · suffices M.edgeSet.Infinite by simp only [Set.encard_eq_top_iff.mpr hMf, this,
+     Set.Infinite.encard_eq, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, ENat.mul_top]
     by_contra!
     refine hMf <| helper h.toEdge (fun y ↦ ?_) this
     obtain ⟨x, hx⟩ : ∃ x : V × V, s(x.1, x.2) = y.1 := by apply Sym2.mk_surjective
@@ -293,7 +294,7 @@ theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
       simpa
     refine Sym2.ind fun x y hxy ↦ ?_
     use s(⟨x, M.edge_vert hxy⟩, ⟨y, M.edge_vert hxy.symm⟩)
-    simp [hxy]
+    simp only [edgeSet_coe, Set.mem_preimage, Sym2.map_pair_eq, hxy, and_self]
   rw [← this, Set.encard_eq_coe_toFinset_card M.verts,
    Set.encard_eq_coe_toFinset_card M.coe.edgeSet]
   rw [isMatching_iff_forall_degree] at h
