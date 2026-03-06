@@ -299,37 +299,4 @@ lemma isCommMonObj_iff_commutator_eq_toUnit_η :
 
 end
 
-section Limits
-
-open Functor Grp
-
--- todo: remove the `Small J` assumption by defining `shrinkYonedaMon` and `shrinkYonedaGrp`.
-variable {J : Type*} [Category J] [Small.{v} J] [HasLimitsOfShape J C]
-
-instance : PreservesLimitsOfShape J (yonedaMon (C := C)) :=
-  have : PreservesLimitsOfShape J (yonedaMon ⋙ (whiskeringRight _ _ _).obj (forget MonCat)) :=
-    inferInstanceAs (PreservesLimitsOfShape J (Mon.forget C ⋙ yoneda))
-  preservesLimitsOfShape_of_reflects_of_preserves _ ((whiskeringRight _ _ _).obj (forget MonCat))
-
-/-- An auxillary construction in order to prove that `Grp.forget₂Mon` creates limits. -/
-noncomputable def Grp.limitAux (F : J ⥤ Grp C) : Grp C where
-  X := (limit (F ⋙ forget₂Mon C)).X
-  grp := GrpObj.ofInvertible (limit (F ⋙ forget₂Mon C)).X fun X f ↦
-    let e := preservesLimitIso (yonedaMon ⋙ (evaluation _ _).obj (.op X))
-      (F ⋙ forget₂Mon C) ≪≫ (preservesLimitIso (forget₂ GrpCat MonCat)
-        (F ⋙ yonedaGrp ⋙ (evaluation _ _).obj (Opposite.op X))).symm
-    ((show Invertible (e.hom.hom f) by convert invertibleOfGroup (e.hom.hom f)).map
-      e.symm.hom.hom).copy f (by rw [e.symm_hom, e.hom_inv_id_apply f])
-
-noncomputable instance : CreatesLimitsOfShape J (forget₂Mon C) where
-  CreatesLimit {F} := createsLimitOfFullyFaithfulOfIso (limitAux F) (Iso.refl (limitAux F).toMon)
-
-noncomputable instance : CreatesLimitsOfShape J (Grp.forget C) :=
-  inferInstanceAs (CreatesLimitsOfShape J (forget₂Mon C ⋙ Mon.forget C))
-
-instance : HasLimitsOfShape J (Grp C) :=
-  hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Grp.forget C)
-
-end Limits
-
 end CategoryTheory
