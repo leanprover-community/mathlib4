@@ -1,14 +1,10 @@
-module
 /-
 Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Kim Morrison
 -/
-public import Archive.Examples.IfNormalization.Statement
-public import Mathlib.Data.List.AList
-
-
-@[expose] public section
+import Archive.Examples.IfNormalization.Statement
+import Mathlib.Data.List.AList
 
 /-!
 # A variant of Chris Hughes' solution for the if normalization challenge.
