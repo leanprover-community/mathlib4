@@ -103,8 +103,7 @@ theorem krullTopology_mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
 variable (K L) in
 /-- For a field extension `L/K`, `krullTopology K L` is the topological space structure on
 `Gal(L/K)` induced by the group filter basis `galGroupBasis K L`. -/
-instance krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    TopologicalSpace Gal(L/K) := inferInstance
+instance krullTopology : TopologicalSpace Gal(L/K) := inferInstance
 
 open IntermediateField in
 variable (K L) in
@@ -154,26 +153,37 @@ section KrullT2
 
 open scoped Topology Filter
 
-/-- Let `L/E/K` be a tower of fields with `E/K` finite. Then `Gal(L/E)` is an open subgroup of
-  `Gal(L/K)`. -/
-theorem IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L] [Algebra K L]
-    (E : IntermediateField K L) [FiniteDimensional K E] :
-    IsOpen (E.fixingSubgroup : Set Gal(L/K)) :=
+/-- Let `L/E/K` be a tower of fields with `E/K` finite.
+Then `Gal(L/E)` is an open subgroup of `Gal(L/K)`. -/
+theorem IntermediateField.isOpen_fixingSubgroup (E : IntermediateField K L)
+    [FiniteDimensional K E] : IsOpen (E.fixingSubgroup : Set Gal(L/K)) :=
   Subgroup.isOpen_of_mem_nhds _ (krullTopology_mem_nhds_one_iff.2 ⟨E, ‹_›, subset_rfl⟩)
 
-/-- Given a tower of fields `L/E/K`, with `E/K` finite, the subgroup `Gal(L/E) ≤ Gal(L/K)` is
-  closed. -/
-theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field L] [Algebra K L]
-    (E : IntermediateField K L) [FiniteDimensional K E] :
-    IsClosed (E.fixingSubgroup : Set Gal(L/K)) :=
-  OpenSubgroup.isClosed ⟨E.fixingSubgroup, E.fixingSubgroup_isOpen⟩
+@[deprecated (since := "2026-03-05")]
+alias IntermediateField.fixingSubgroup_isOpen := IntermediateField.isOpen_fixingSubgroup
+
+/-- Given a tower of fields `L/E/K`, with `E/K` finite,
+the subgroup `Gal(L/E) ≤ Gal(L/K)` is closed. -/
+theorem IntermediateField.isClosed_fixingSubgroup (E : IntermediateField K L)
+    [Algebra.IsIntegral K E] : IsClosed (E.fixingSubgroup : Set Gal(L/K)) := by
+  have hx (x : E) : IsClosed ((adjoin K {(x : L)}).fixingSubgroup : Set Gal(L/K)) :=
+    have : FiniteDimensional K (adjoin K {(x : L)}) := IntermediateField.adjoin.finiteDimensional
+      (coe_isIntegral_iff.2 (Algebra.IsIntegral.isIntegral x))
+    Subgroup.isClosed_of_isOpen _ (isOpen_fixingSubgroup _)
+  convert isClosed_iInter hx
+  ext g
+  simp only [SetLike.mem_coe, mem_fixingSubgroup_iff, Set.mem_iInter, Subtype.forall]
+  exact ⟨fun h a ha x hx => h x (adjoin_simple_le_iff.2 ha hx),
+    fun h x hx => h x hx x (mem_adjoin_simple_self K x)⟩
+
+@[deprecated (since := "2026-03-05")]
+alias IntermediateField.fixingSubgroup_isClosed := IntermediateField.isClosed_fixingSubgroup
 
 end KrullT2
 
 section TotallySeparated
 
-instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] :
-    TotallySeparatedSpace Gal(L/K) := by
+instance [Algebra.IsIntegral K L] : TotallySeparatedSpace Gal(L/K) := by
   rw [totallySeparatedSpace_iff_exists_isClopen]
   intro σ τ h_diff
   have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne, inv_mul_eq_one]
@@ -182,7 +192,7 @@ instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L
   haveI := IntermediateField.adjoin.finiteDimensional
     (Algebra.IsIntegral.isIntegral (R := K) x)
   refine ⟨σ • E.fixingSubgroup,
-    ⟨E.fixingSubgroup_isClosed.leftCoset σ, E.fixingSubgroup_isOpen.leftCoset σ⟩,
+    ⟨E.isClosed_fixingSubgroup.leftCoset σ, E.isOpen_fixingSubgroup.leftCoset σ⟩,
     ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, ?_⟩
   simp only [Set.mem_compl_iff, mem_leftCoset_iff, SetLike.mem_coe,
     IntermediateField.mem_fixingSubgroup_iff, not_forall]
@@ -195,18 +205,17 @@ instance krullTopology_t2 [Algebra.IsIntegral K L] : T2Space Gal(L/K) :=
 /-- If `L/K` is an algebraic field extension, then the Krull topology on `Gal(L/K)` is
   totally separated. -/
 @[deprecated TotallySeparatedSpace.isTotallySeparated_univ (since := "2026-03-05")]
-theorem krullTopology_isTotallySeparated {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [Algebra.IsIntegral K L] : IsTotallySeparated (Set.univ : Set Gal(L/K)) :=
+theorem krullTopology_isTotallySeparated [Algebra.IsIntegral K L] :
+    IsTotallySeparated (Set.univ : Set Gal(L/K)) :=
   (totallySeparatedSpace_iff _).mp inferInstance
 
 end TotallySeparated
 
-instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Field K] [Field L]
-    [Algebra K L] [FiniteDimensional K L] : DiscreteTopology Gal(L/K) := inferInstance
+variable (K L) in
+instance krullTopology_discreteTopology_of_finiteDimensional
+    [FiniteDimensional K L] : DiscreteTopology Gal(L/K) := inferInstance
 
 section MulAction
-
-variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 /-- If `L/K` is an algebraic field extension, then the stabilizer
 in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
@@ -215,12 +224,15 @@ theorem stabilizer_isOpen_of_isIntegral [Algebra.IsIntegral K L] (x : L) :
   open IntermediateField in
   let E := adjoin K {x}
   have hL : FiniteDimensional K E := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
-  convert fixingSubgroup_isOpen E
+  convert isOpen_fixingSubgroup E
   ext g
   simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
 
 end MulAction
 
+/- This next section doesn't seem to be about the krull topology,
+and is completely independent from the rest of the file
+(it still compiles if I delete everything else). -/
 namespace IntermediateField
 
 variable {k E : Type*} (K : Type*) [Field k] [Field E] [Field K]
