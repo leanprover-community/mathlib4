@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
@@ -28,9 +29,9 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
   `v`-adic completion `v.adicCompletion K` of `K`, where `v` is a non-zero prime ideal of `𝓞 K`
-* `NumberField.FinitePlace.norm_def`: the norm of `embedding v x` is the same as the `v`-adic
+* `NumberField.FinitePlace.norm_embedding`: the norm of `embedding v x` is the same as the `v`-adic
   absolute value of `x`. See also `NumberField.FinitePlace.norm_def'` and
-  `NumberField.FinitePlace.norm_def_int` for versions where the `v`-adic absolute value is
+  `NumberField.FinitePlace.norm_embedding_int` for versions where the `v`-adic absolute value is
   unfolded.
 * `NumberField.FinitePlace.hasFiniteMulSupport`: the `v`-adic absolute value of a non-zero element
   of `K` is different from 1 for at most finitely many `v`.
@@ -58,15 +59,8 @@ instance : IsPrincipalIdealRing (v.valuation K).integer := by
     WithZero.denselyOrdered_set_iff_subsingleton]
   simpa using (v.valuation K).toMonoidWithZeroHom.range_nontrivial
 
--- TODO: make this inferred from `IsRankOneDiscrete`
-instance : IsDiscreteValuationRing (v.valuation K).integer where
-  not_a_field' := by
-    simp only [ne_eq, Ideal.ext_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
-      Valuation.Integer.not_isUnit_iff_valuation_lt_one, Ideal.mem_bot, Subtype.forall, not_forall]
-    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
-    use π
-    simp [Valuation.mem_integer_iff, ← exp_zero, Subtype.ext_iff, -exp_neg,
-      ← (v.valuation K).map_eq_zero_iff, hπ]
+instance : IsDiscreteValuationRing (v.valuation K).integer :=
+  (v.valuation K).valuationSubring_isDiscreteValuationRing
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   unfold HeightOneSpectrum.adicCompletionIntegers
@@ -137,24 +131,24 @@ noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
 
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
-noncomputable instance : (v.valuation K).RankOne where
-  hom := toNNReal (absNorm_ne_zero v)
-  strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
-  exists_val_nontrivial := by
-    rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
-    use x
-    rw [valuation_of_algebraMap]
-    exact ⟨v.intValuation_ne_zero _ hx2, ((intValuation_lt_one_iff_mem _ _).2 hx1).ne⟩
+noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰)).IsRankOneDiscrete where
+  exists_generator_lt_one' := by
+    have h : (v.valuation K).IsRankOneDiscrete := Valuation.IsRankOneDiscrete.mk' (valuation K v)
+    exact ⟨h.generator, by rw [h.generator_zpowers_eq_valueGroup, adicCompletion_valueGroup_eq],
+      h.generator_lt_one⟩
 
-noncomputable instance instRankOneValuedAdicCompletion :
-    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) where
-  hom := toNNReal (absNorm_ne_zero v)
-  strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
-  exists_val_nontrivial := by
-    rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
-    use x
-    rw [valuedAdicCompletion_eq_valuation' v (x : K)]
-    simpa [valuation_of_algebraMap] using ⟨v.intValuation_ne_zero _ hx2, hx1⟩
+open Valuation.IsRankOneDiscrete
+
+noncomputable instance : (v.valuation K).RankOne :=
+  rankOne (v.valuation K) (one_lt_absNorm_nnreal v)
+
+noncomputable instance instRankOneAdicCompletion :
+    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).RankOne :=
+  rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnreal v)
+
+lemma rankOne_hom'_def :
+    (instRankOneAdicCompletion v).hom' = (toNNReal (absNorm_ne_zero v)).comp
+      (valueGroup₀_equiv_withZeroMulInt Valued.v).toMonoidWithZeroHom := rfl
 
 /-- The `v`-adic completion of `K` is a normed field. -/
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
@@ -183,18 +177,18 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
     IsFinitePlace v ↔ ∃ w : FinitePlace K, w.val = v :=
   ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isFinitePlace⟩
 
-/-- The norm of an element in the `v`-adic completion of `K`. The previously named
-`FinitePlace.norm_def` which relates the norm of an element in `K` to its `v`-adic absolute value
-is now called `FinitePlace.norm_embedding`. -/
+/-- The norm of an element in the `v`-adic completion of `K`. See `FinitePlace.norm_embedding`
+for the equality involving `‖embedding v x‖` on the LHS. -/
 theorem FinitePlace.norm_def (x : v.adicCompletion K) :
-    ‖x‖ = toNNReal (absNorm_ne_zero v) (Valued.v x) := rfl
+    ‖x‖ = toNNReal (absNorm_ne_zero v) (Valued.v x) := by
+  simp [Valued.toNormedField.norm_def, Valuation.RankOne.hom, rankOne_hom'_def,
+    valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective
+      (valuedAdicCompletion_surjective K v)]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
-theorem FinitePlace.norm_embedding (x : K) :
-    ‖embedding v x‖ = adicAbv v x := by
-  simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField,
-    Valued.norm, Valuation.RankOne.hom, embedding_apply, adicAbv_def]
+theorem FinitePlace.norm_embedding (x : K) : ‖embedding v x‖ = adicAbv v x := by
+  simp [norm_def, embedding_apply, adicAbv_def]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/

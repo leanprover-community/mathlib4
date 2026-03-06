@@ -119,6 +119,9 @@ def ofCard {s : Finset α} (s_card : s.card = n) : powersetCard α n := ⟨s, me
 @[simp]
 lemma val_ofCard {s : Finset α} (s_card : s.card = n) : Subtype.val (ofCard s_card) = s := rfl
 
+@[simp]
+lemma ofCard_coe {s : powersetCard α n} (h) : ofCard (s := s.val) h = s := rfl
+
 /-- The equivalence sending `a : α` to the singleton `{a}`. -/
 noncomputable def ofSingleton : α ≃ powersetCard α 1 where
   toFun a := ⟨{a}, Finset.card_singleton a⟩
@@ -297,6 +300,6 @@ def prodEquiv : (n : ℕ) × (powersetCard α n) ≃ Finset α where
 lemma prodEquiv_apply (x : (n : ℕ) × (powersetCard α n)) : prodEquiv x = x.2 := rfl
 
 @[simp]
-lemma prodEquiv_symm_apply (s : Finset α) : prodEquiv.symm s = ⟨s.card, ⟨s, rfl⟩⟩ := rfl
+lemma prodEquiv_symm_apply (s : Finset α) : prodEquiv.symm s = ⟨s.card, ofCard rfl⟩ := rfl
 
 end Set.powersetCard
