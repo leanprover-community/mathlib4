@@ -254,7 +254,7 @@ def refl : Equiv ρ ρ where
 lemma coe_invFun : φ.invFun = φ.symm := rfl
 
 theorem toLinearEquiv_toLinearMap :
-  LinearEquiv.toLinearMap φ.toLinearEquiv = φ.toIntertwiningMap.toLinearMap := rfl
+  φ.toLinearEquiv.toLinearMap  = φ.toIntertwiningMap.toLinearMap := rfl
 
 theorem toLinearEquiv_apply (v : V) : φ.toLinearEquiv v = φ.toIntertwiningMap v := rfl
 
