@@ -213,7 +213,7 @@ def coreE₂CohomologicalFin (l : ℕ) :
   hc₁₃ r := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ hr
     rw [Fin.ext_iff]
-    dsimp at h₁ h₂ ⊢
+    dsimp
     grind
   antitone_i₀ := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ hr hrr'
