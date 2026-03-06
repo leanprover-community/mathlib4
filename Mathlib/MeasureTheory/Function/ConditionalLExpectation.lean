@@ -183,6 +183,18 @@ theorem condLExp_congr_ae {P : Measure[mΩ₀] Ω}
     simp [condLExp_of_not_sigmaFinite hm hσ]
   simp [condLExp_of_not_le hm]
 
+@[simp]
+theorem condLExp_zero (P : Measure[mΩ₀] Ω) : P⁻[0|mΩ] = 0 := by
+  by_cases hm : mΩ ≤ mΩ₀
+  swap; · simp [condLExp_of_not_le hm]
+  by_cases hσ : SigmaFinite (P.trim hm)
+  swap; · simp [condLExp_of_not_sigmaFinite hm hσ]
+  exact condLExp_const hm P 0
+
+@[simp]
+theorem condLExp_one (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)] :
+    P⁻[1|mΩ] = 1 := condLExp_const hm P 1
+
 @[gcongr]
 theorem condLExp_congr_ae_trim {P : Measure[mΩ₀] Ω} {X Y : Ω → ℝ≥0∞} (hXY : X =ᵐ[P] Y) :
     P⁻[X|mΩ] =ᵐ[P.trim hm] P⁻[Y|mΩ] := by
@@ -292,5 +304,31 @@ theorem condLExp_smul' (X : Ω → ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞)
   intro s hs
   simp only [Pi.smul_apply, smul_eq_mul]
   rw [lintegral_const_mul' _ _ hc, lintegral_const_mul' _ _ hc, setLIntegral_condLExp _ _ _ hs]
+
+section Sum
+
+variable {ι : Type*}
+
+theorem condLExp_tsum {ι : Type*} [Countable ι] {X : ι → Ω → ℝ≥0∞}
+    (hX : ∀ i, AEMeasurable (X i) P) :
+    P⁻[∑' i, X i|mΩ] =ᵐ[P] ∑' i, P⁻[X i|mΩ] := by
+  by_cases hm : mΩ ≤ mΩ₀; swap
+  · simp_rw [condLExp_of_not_le hm]; filter_upwards; simp
+  by_cases hσ : SigmaFinite (P.trim hm); swap
+  · simp_rw [condLExp_of_not_sigmaFinite hm hσ]; filter_upwards; simp
+  refine (ae_eq_condLExp _ _ _ (by fun_prop) ?_).symm
+  intro s hs
+  simp only [ENNReal.tsum_apply]
+  repeat rw [lintegral_tsum (by measurability)]
+  congr with i
+  exact setLIntegral_condLExp hm P (X i) hs
+
+
+theorem condLExp_sum {ι : Type*} [Fintype ι] {X : ι → Ω → ℝ≥0∞}
+    (hX : ∀ i, AEMeasurable (X i) P) :
+    P⁻[∑ i, X i|mΩ] =ᵐ[P] ∑ i, P⁻[X i|mΩ] := by
+  convert condLExp_tsum hX <;> simp
+
+end Sum
 
 end MeasureTheory
