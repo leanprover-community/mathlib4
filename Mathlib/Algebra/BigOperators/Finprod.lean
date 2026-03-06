@@ -1362,9 +1362,7 @@ variable {α M : Type*} [DecidableEq α] [CommMonoid M]
 @[to_additive]
 lemma mulSupport_fun_pow_count_subset (s : Multiset α) (f : α → M) :
     (fun a ↦ f a ^ count a s).mulSupport ⊆ s.toFinset := by
-  refine mulSupport_subset_iff'.mpr fun a h ↦ ?_
-  simp only [SetLike.mem_coe, mem_toFinset] at h
-  simp [count_eq_zero_of_notMem h]
+  simp +contextual [not_imp_comm]
 
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_fun_pow_count (s : Multiset α) (f : α → M) :
