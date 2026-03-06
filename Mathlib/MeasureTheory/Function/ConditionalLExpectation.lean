@@ -323,10 +323,12 @@ theorem condLExp_tsum {ι : Type*} [Countable ι] {X : ι → Ω → ℝ≥0∞}
   congr with i
   exact setLIntegral_condLExp hm P (X i) hs
 
-theorem condLExp_sum {ι : Type*} [Fintype ι] {X : ι → Ω → ℝ≥0∞}
+theorem condLExp_finset_sum {ι : Type*} (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
     (hX : ∀ i, AEMeasurable (X i) P) :
-    P⁻[∑ i, X i|mΩ] =ᵐ[P] ∑ i, P⁻[X i|mΩ] := by
-  convert condLExp_tsum hX <;> simp
+    P⁻[∑ i ∈ s, X i|mΩ] =ᵐ[P] ∑ i ∈ s, P⁻[X i|mΩ] := by
+  convert condLExp_tsum (fun i : s ↦ hX i)
+  · simp [Finset.sum_attach]
+  · simp [Finset.sum_attach _ (f := (P⁻[X ·|mΩ]))]
 
 end Sum
 
