@@ -427,7 +427,6 @@ lemma Φ_ne_zero (h : E ≠ ⊥) : Φ E ≠ 0 := by
 set_option backward.isDefEq.respectTransparency false in
 lemma le_Φ_coeff_generatorIndex_natDegree (h : E ≠ ⊥) :
     (f E).natDegree ≤ ((Φ E).coeff (generatorIndex h)).natDegree := by
-  classical
   have := congr($(Φ_coeff_generatorIndex h) * algebraMap K[X] K⟮X⟯ (g E))
   conv at this => enter [2, 1, 2]; rw [← num_div_denom (generator E)]
   rw [mul_assoc, div_mul_cancel₀ _ (algebraMap_ne_zero (generator E).denom_ne_zero),
