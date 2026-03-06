@@ -590,34 +590,19 @@ lemma Spec.preimage_surjective {R S : CommRingCat} :
   homEquiv.surjective
 
 /-- A version of `AlgebraicGeometry.Spec.homEquiv` for concrete `RingHom`. -/
-noncomputable def Spec.homEquivRingHom {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R →+* S) :=
+@[simps! apply symm_apply]
+noncomputable def Spec.homEquivRingHom {R S : Type u} [CommRing R] [CommRing S] :
+    (Spec (.of S) ⟶ Spec (.of R)) ≃ (R →+* S) :=
   homEquiv.trans <| CategoryTheory.ConcreteCategory.homEquiv.trans <| .refl _
 
-@[simp]
-lemma Spec.homEquivRingHom_id {R : CommRingCat} : homEquivRingHom (𝟙 <| Spec R) = RingHom.id R := by
-  simpa [homEquivRingHom] using by rfl
-
-@[simp]
-lemma Spec.homEquivRingHom_comp {R S T : CommRingCat} (f : Spec R ⟶ Spec S) (g : Spec S ⟶ Spec T) :
-    homEquivRingHom (f ≫ g) = (homEquivRingHom f).comp (homEquivRingHom g) := by
-  simpa [homEquivRingHom] using by rfl
-
-/-- The bijection between the set of morphisms `Spec B ⟶ Spec A` in `Scheme` commuting with the
-corresponding scheme morphisms `AlgebraicGeometry.Spec.algebraMap` and the set of morphisms `A ⟶ B`
-in `CommRingCat` commuting with the corresponding algebra maps `R → A` and `R → B`. -/
-noncomputable def Spec.homEquiv' {R : Type u} [CommRing R] {A B : Type u} [CommRing A] [CommRing B]
-    [Algebra R A] [Algebra R B] :
-    {f : Spec (.of B) ⟶ Spec (.of A) // f ≫ Spec.algebraMap R A = Spec.algebraMap R B} ≃
-      {f : CommRingCat.of A ⟶ CommRingCat.of B // f.hom.comp (algebraMap R A) = algebraMap R B} :=
-  homEquiv.subtypeEquiv fun _ ↦ by simp [← preimage_inj, ← ConcreteCategory.hom_injective.eq_iff]
-
-/-- A version of `AlgebraicGeometry.Spec.homEquiv'` over c for concrete `AlgHom`. -/
+open ConcreteCategory renaming hom_injective → hi, homEquiv → hE in
+/-- The bijection between the set of scheme morphisms `Spec B ⟶ Spec A` commuting with their scheme
+morphisms to `Spec R` and the set of concrete algebra homomorphisms `A →ₐ[R] B`. -/
 noncomputable def Spec.homEquivAlgHom {R : Type u} [CommRing R] {A B : Type u} [CommRing A]
-    [CommRing B] [Algebra R A] [Algebra R B] :
-    {f : Spec (.of B) ⟶ Spec (.of A) // f ≫ Spec.algebraMap R A = Spec.algebraMap R B} ≃
-      (A →ₐ[R] B) :=
-  homEquiv'.trans <| (CommAlgCat.homEquivCommRingCat (.of R A) (.of R B)).symm.trans <|
-    ConcreteCategory.homEquiv.trans <| .refl _
+    [CommRing B] [Algebra R A] [Algebra R B] : {f : Spec (.of B) ⟶ Spec (.of A) //
+      f ≫ Spec.algebraMap R A = Spec.algebraMap R B} ≃ (A →ₐ[R] B) :=
+  (homEquiv.subtypeEquiv fun _ ↦ by simp [← preimage_inj, ← hi.eq_iff]).trans <|
+    (CommAlgCat.homEquivCommRingCat (.of R A) (.of R B)).symm.trans <| hE.trans <| .refl _
 
 end
 
