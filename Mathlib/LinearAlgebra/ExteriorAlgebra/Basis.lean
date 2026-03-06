@@ -18,8 +18,8 @@ namespace ExteriorAlgebra
 
 open Module Set Set.powersetCard exteriorPower
 
-variable {R K M E : Type*} {m n : ℕ} {I : Type*} [LinearOrder I] [CommRing R] [Field K]
-  [AddCommGroup M] [Module R M] [AddCommGroup E] [Module K E] (b : Module.Basis I R M)
+variable {R M : Type*} {m n : ℕ} {I : Type*} [LinearOrder I] [CommRing R]
+  [AddCommGroup M] [Module R M] (b : Module.Basis I R M)
 
 /-- The direct sum decomposition of the exterior algebra from the graded algebra structure. -/
 instance : DirectSum.Decomposition (fun n ↦ ⋀[R]^n M) :=
@@ -28,9 +28,9 @@ instance : DirectSum.Decomposition (fun n ↦ ⋀[R]^n M) :=
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), the basis of the exterior
 algebra of `M` formed by the `n`-fold exterior products of elements of `b` for each `n`. -/
 noncomputable def _root_.Module.Basis.ExteriorAlgebra : Basis (Finset I) R (ExteriorAlgebra R M) :=
-  Module.Basis.reindex (DirectSum.IsInternal.collectedBasis
-  (DirectSum.Decomposition.isInternal (fun n => ⋀[R]^n M)) (fun n => b.exteriorPower n))
-  Set.powersetCard.prodEquiv
+  .reindex
+    ((DirectSum.Decomposition.isInternal (fun n => ⋀[R]^n M)).collectedBasis b.exteriorPower)
+    Set.powersetCard.prodEquiv
 
 lemma basis_apply (s : Finset I) :
     b.ExteriorAlgebra s = ιMulti_family R s.card b (prodEquiv.symm s).2 := by
@@ -59,7 +59,7 @@ lemma basis_mul_of_not_disjoint (h : ¬Disjoint s.val t.val) :
 
 lemma basis_mul_of_disjoint (h : Disjoint s.val t.val) :
     b.ExteriorAlgebra s * b.ExteriorAlgebra t =
-    (permOfDisjoint h).sign • b.ExteriorAlgebra (disjUnion h) := by
+      (permOfDisjoint h).sign • b.ExteriorAlgebra (disjUnion h) := by
   simpa only [basis_apply_powersetCard] using ιMulti_family_mul_of_disjoint R b s t h
 
 end ExteriorAlgebra
