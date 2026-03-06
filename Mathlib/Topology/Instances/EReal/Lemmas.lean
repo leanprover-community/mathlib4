@@ -261,24 +261,24 @@ lemma limsup_neg : limsup (-v) f = -liminf v f :=
   EReal.negOrderIso.liminf_apply.symm
 
 lemma le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
-  refine add_le_of_forall_lt fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
+  refine add_le_of_forall_lt fun a a_u b b_v ↦ le_liminf_iff.2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_lt_liminf a_u, eventually_lt_of_lt_liminf b_v] with x a_x b_x
   exact c_ab.trans (add_lt_add a_x b_x)
 
 lemma limsup_add_le (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
     limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
-  refine le_add_of_forall_gt h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
+  refine le_add_of_forall_gt h h' fun a a_u b b_v ↦ limsup_le_iff.2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
   exact (add_lt_add a_x b_x).trans c_ab
 
 lemma le_limsup_add : (limsup u f) + (liminf v f) ≤ limsup (u + v) f :=
-  add_le_of_forall_lt fun _ a_u _ b_v ↦ (le_limsup_iff).2 fun _ c_ab ↦
+  add_le_of_forall_lt fun _ a_u _ b_v ↦ le_limsup_iff.2 fun _ c_ab ↦
     (((frequently_lt_of_lt_limsup) a_u).and_eventually ((eventually_lt_of_lt_liminf) b_v)).mono
     fun _ ab_x ↦ c_ab.trans (add_lt_add ab_x.1 ab_x.2)
 
 lemma liminf_add_le (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ liminf v f ≠ ⊥) :
     liminf (u + v) f ≤ (limsup u f) + (liminf v f) :=
-  le_add_of_forall_gt h h' fun _ a_u _ b_v ↦ (liminf_le_iff).2 fun _ c_ab ↦
+  le_add_of_forall_gt h h' fun _ a_u _ b_v ↦ liminf_le_iff.2 fun _ c_ab ↦
     (((frequently_lt_of_liminf_lt) b_v).and_eventually ((eventually_lt_of_limsup_lt) a_u)).mono
     fun _ ab_x ↦ (add_lt_add ab_x.2 ab_x.1).trans c_ab
 
@@ -313,7 +313,7 @@ lemma le_limsup_mul (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v) :
   have u0 : 0 ≤ limsup u f := le_limsup_of_frequently_le hu
   have uv0 : 0 ≤ limsup (u * v) f :=
     le_limsup_of_frequently_le <| (hu.and_eventually hv).mono fun _ ⟨hu, hv⟩ ↦ mul_nonneg hu hv
-  refine mul_le_of_forall_lt_of_nonneg u0 uv0 fun a ha b hb ↦ (le_limsup_iff).2 fun c c_ab ↦ ?_
+  refine mul_le_of_forall_lt_of_nonneg u0 uv0 fun a ha b hb ↦ le_limsup_iff.2 fun c c_ab ↦ ?_
   refine (((frequently_lt_of_lt_limsup) (mem_Ioo.1 ha).2).and_eventually
     <| (eventually_lt_of_lt_liminf (mem_Ioo.1 hb).2).and
     <| hv).mono fun x ⟨xa, ⟨xb, vx⟩⟩ ↦ ?_
@@ -328,7 +328,7 @@ lemma limsup_mul_le (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v)
   replace h₁ : 0 < limsup u f ∨ limsup v f ≠ ⊤ := h₁.imp_left fun h ↦ lt_of_le_of_ne u_0 h.symm
   replace h₂ : limsup u f ≠ ⊤ ∨ 0 < limsup v f :=
     h₂.imp_right fun h ↦ lt_of_le_of_ne (le_limsup_of_frequently_le hv.frequently) h.symm
-  refine le_mul_of_forall_lt h₁ h₂ fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
+  refine le_mul_of_forall_lt h₁ h₂ fun a a_u b b_v ↦ limsup_le_iff.2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v, hv]
     with x x_a x_b v_0
   apply lt_of_le_of_lt _ c_ab
@@ -341,7 +341,7 @@ lemma le_liminf_mul (hu : 0 ≤ᶠ[f] u) (hv : 0 ≤ᶠ[f] v) :
     liminf u f * liminf v f ≤ liminf (u * v) f := by
   apply mul_le_of_forall_lt_of_nonneg ((le_liminf_of_le) hu)
     <| (le_liminf_of_le) ((hu.and hv).mono fun x ⟨u0, v0⟩ ↦ mul_nonneg u0 v0)
-  refine fun a ha b hb ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
+  refine fun a ha b hb ↦ le_liminf_iff.2 fun c c_ab ↦ ?_
   filter_upwards [eventually_lt_of_lt_liminf (mem_Ioo.1 ha).2,
     eventually_lt_of_lt_liminf (mem_Ioo.1 hb).2] with x xa xb
   exact c_ab.trans_le (mul_le_mul xa.le xb.le (mem_Ioo.1 hb).1.le ((mem_Ioo.1 ha).1.le.trans xa.le))
@@ -355,7 +355,7 @@ lemma liminf_mul_le [NeBot f] (hu : 0 ≤ᶠ[f] u) (hv : 0 ≤ᶠ[f] v)
   replace h₂ : limsup u f ≠ ⊤ ∨ 0 < liminf v f := by
     refine h₂.imp_right fun h ↦ lt_of_le_of_ne ?_ h.symm
     exact le_of_eq_of_le (liminf_const 0).symm (liminf_le_liminf hv)
-  refine le_mul_of_forall_lt h₁ h₂ fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦ ?_
+  refine le_mul_of_forall_lt h₁ h₂ fun a a_u b b_v ↦ liminf_le_iff.2 fun c c_ab ↦ ?_
   refine (((frequently_lt_of_liminf_lt) b_v).and_eventually <| (eventually_lt_of_limsup_lt a_u).and
     <| hu.and hv).mono fun x ⟨x_v, x_u, u_0, v_0⟩ ↦ ?_
   exact (mul_le_mul x_u.le x_v.le v_0 (u_0.trans x_u.le)).trans_lt c_ab
