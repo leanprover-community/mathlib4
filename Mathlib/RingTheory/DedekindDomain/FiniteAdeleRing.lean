@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
+public import Mathlib.Topology.Algebra.RestrictedProduct.Units
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -125,6 +126,10 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
+@[simp]
+theorem algebraMap_apply (k : K) (v : HeightOneSpectrum R) :
+  algebraMap K (FiniteAdeleRing R K) k v = k := rfl
+
 instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (algebraMap R K)
 
 instance : IsScalarTower R K (FiniteAdeleRing R K) :=
@@ -148,6 +153,34 @@ instance : IsTopologicalRing (FiniteAdeleRing R K) :=
   RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
 
 end Topology
+
+section Units
+
+variable {R K}
+
+theorem isUnit_iff {a : FiniteAdeleRing R K} :
+    IsUnit a ↔ (∀ v, a v ≠ 0) ∧ ∀ᶠ v in Filter.cofinite, Valued.v (a v) = 1 := by
+  rw [RestrictedProduct.isUnit_iff]
+  simp only [isUnit_iff_ne_zero, adicCompletionIntegers.isUnit_iff_valued_eq_one, exists_prop,
+    Filter.eventually_cofinite, not_and_or, Set.setOf_or]
+  simpa using fun _ _ ↦ a.2
+
+theorem unitsEquiv_finite_valued_eq_one (a : (FiniteAdeleRing R K)ˣ) :
+    ∀ᶠ v in Filter.cofinite, Valued.v ((RestrictedProduct.unitsEquiv _ a v)).1 = 1 := by
+  filter_upwards [(RestrictedProduct.unitsEquiv _ a).2] using fun v h ↦
+    adicCompletionIntegers.mem_units_iff_valued_eq_one.1 h
+
+variable (R)
+
+variable (K) in
+/-- The global embedding of the units of `K` into the units of `FiniteAdeleRing R K`. -/
+def unitEmbedding : Kˣ →* (FiniteAdeleRing R K)ˣ := Units.map (algebraMap K (FiniteAdeleRing R K))
+
+@[simp]
+theorem unitEmbedding_apply (k : Kˣ) :
+    unitEmbedding R K k = algebraMap K (FiniteAdeleRing R K) k := rfl
+
+end Units
 
 end FiniteAdeleRing
 
