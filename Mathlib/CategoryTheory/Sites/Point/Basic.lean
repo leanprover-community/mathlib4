@@ -302,7 +302,7 @@ noncomputable def uniqueFiberObj (T : C) (hT : IsTerminal T) :
     Unique (Φ.fiber.obj T) :=
   Types.isTerminalEquivUnique _ (Φ.isTerminalFiberObj T hT)
 
-lemma injective_fiber_map_of_mono {U T : C} (f : U ⟶ T) [Mono f] :
+lemma fiber_map_injective_of_mono {U T : C} (f : U ⟶ T) [Mono f] :
     Function.Injective (Φ.fiber.map f) := by
   rw [← mono_iff_injective]
   infer_instance
