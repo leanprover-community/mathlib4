@@ -178,15 +178,13 @@ an (explicit) constant depending only on `p` times the `N`th power of the multip
 height of `x`. A similar statement holds for the logarithmic height.
 -/
 
-namespace Height
-
 open MvPolynomial
 
 variable {K : Type*} [Field K] {ι : Type*}
 
 -- The "local" version of the height bound for (archimedean) absolute values.
-private lemma mvPolynomial_bound [Finite ι] (v : AbsoluteValue K ℝ) {p : MvPolynomial ι K} {N : ℕ}
-    (hp : p.IsHomogeneous N) (x : ι → K) :
+lemma AbsoluteValue.eval_mvPolynomial_le [Finite ι] (v : AbsoluteValue K ℝ)
+    {p : MvPolynomial ι K} {N : ℕ} (hp : p.IsHomogeneous N) (x : ι → K) :
     v (p.eval x) ≤ p.sum (fun _ c ↦ v c) * (⨆ i, v (x i)) ^ N := by
   rw [eval_eq, sum_def, Finset.sum_mul]
   grw [AbsoluteValue.sum_le]
@@ -198,7 +196,7 @@ private lemma mvPolynomial_bound [Finite ι] (v : AbsoluteValue K ℝ) {p : MvPo
   exact Finite.le_ciSup (fun j ↦ v (x j)) i
 
 -- The "local" version of the height bound for nonarchimedean absolute values.
-private lemma mvPolynomial_bound_of_IsNonarchimedean [Finite ι] {v : AbsoluteValue K ℝ}
+lemma IsNonarchimedean.eval_mvPolynomial_le [Finite ι] {v : AbsoluteValue K ℝ}
     (hv : IsNonarchimedean v) {p : MvPolynomial ι K} {N : ℕ} (hp : p.IsHomogeneous N) (x : ι → K) :
     v (p.eval x) ≤ (⨆ s : p.support, v (coeff s p)) * (⨆ i, v (x i)) ^ N := by
   rcases eq_or_ne p 0 with rfl | hp₀
@@ -215,6 +213,8 @@ private lemma mvPolynomial_bound_of_IsNonarchimedean [Finite ι] {v : AbsoluteVa
   · rw [hp.degree_eq_sum_deg_support hs₁, ← Finset.prod_pow_eq_pow_sum]
     gcongr with i
     exact Finite.le_ciSup (fun j ↦ v (x j)) i
+
+namespace Height
 
 variable {ι' : Type*}
 
@@ -316,22 +316,22 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
   grw [← le_max_left]
   rw [mul_pow, mul_mul_mul_comm]
   gcongr
-  · -- archimedean part: reduce to "local" statement `mvPolynomial_bound`
+  · -- archimedean part: reduce to "local" statement `eval_mvPolynomial_le`
     rw [← prod_map_pow, ← prod_map_mul]
     refine prod_map_le_prod_map₀ _ _ (fun _ _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..)
       fun v _ ↦ Real.iSup_le (fun j ↦ ?_) <| mul_nonneg (H₀ v) (HH₁ v)
-    grw [mvPolynomial_bound v (hp j) x]
+    grw [v.eval_mvPolynomial_le (hp j) x]
     gcongr
     · exact HH₁ v
     · exact HH₂ (fun j ↦ Finsupp.sum (p j) fun _ c ↦ v c) j
-  · -- nonarchimedean part: reduce to "local" statement `mvPolynomial_bound_nonarch`
+  · -- nonarchimedean part: reduce to "local" statement `eval_mvPolynomial_le`
     have := (Function.ne_iff.mp h₀).nonempty
     have F := hasFiniteMulSupport_iSup_nonarchAbsVal hx
     rw [finprod_pow F, ← finprod_mul_distrib (by fun_prop) (by fun_prop)]
     refine finprod_le_finprod (by fun_prop (disch := assumption))
       (fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) fun v ↦ Real.iSup_le
       (fun j ↦ ?_) ?_
-    · grw [mvPolynomial_bound_of_IsNonarchimedean (isNonarchimedean _ v.prop) (hp j) x]
+    · grw [(isNonarchimedean _ v.prop).eval_mvPolynomial_le (hp j) x]
       gcongr
       · exact HH₁ v.val
       · grw [le_max_left (iSup ..) 1]
