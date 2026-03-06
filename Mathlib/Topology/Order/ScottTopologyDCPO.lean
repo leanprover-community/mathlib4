@@ -12,14 +12,17 @@ public import Mathlib.Topology.Order.Category.FrameAdjunction
 /-!
 # Scott Complete Partial Order
 
-Properties of Scott topologies over (Directed) `CompletePartialOrder`, and Algebraic DCPOs.
+Properties of Scott topologies over Pointed (Directed) `CompletePartialOrder`, and Algebraic DCPOs.
 
 ## Main Definitions
 - `Compact`: The element x is compact if for any directed subset A ⊆ D, whenever `x ≤ sSup A`,
   there is some a ∈ A s.t. x ≤ a already.
-- `AlgebraicDCPO`: an extension of `CompletePartialOrder` which is additionally "algebraic".
+- `AlgebraicDCPO`: an extension of pointed `CompletePartialOrder` which is additionally "algebraic".
+  Pointed is just `OrderBot`.
   Algebraicity has a correspondence with the 'inaccessibility of directed joins'
   property of Scott topologies, which can be seen in some of the proofs below.
+- `Sober`: An alternative equiavlent definition of a Sober topological space as one where
+  the unit map of the adjunction to Locales, `adjunctionTopToLocalePT`, is a homeomorphism.
 
 ## Main Statements
 - `specialization_iff_ge`: The original order and the specialization order induced by the Scott
@@ -28,6 +31,8 @@ Properties of Scott topologies over (Directed) `CompletePartialOrder`, and Algeb
   basis under the Scott Topology. Prop 3.5.2 in [reneta2024]
 - `open_eq_of_open_basis'`: Explicit construction an Open set from the basis mentioned above.
   Prop 2.3.6(2) [abramsky_gabbay_maibaum_1994]
+- `scott_is_sober`: Main result: Scott topologies over algebraic DCPOs are Sober.
+  Prop 3.5.3 in [reneta2024]. Prop 2.27 in [abramsky_gabbay_maibaum_1994]
 
 ## Notation
 * `e` `c` : elements in the a set, usually of an open set, often compact.
@@ -162,6 +167,7 @@ lemma isOpen_of_basis {u : Set α} (hu : u ∈ Ici '' CompactSet α) : IsOpen u 
     · exact a_in_d
     · exact a_in_u
 
+/-- Subtype for compact elements -/
 abbrev CompactElement (α : Type*) [PartialOrder α] := {x : α // IsCompactElement x}
 
 /-- The upwards closure of a compact point which we know is open -/
@@ -318,6 +324,7 @@ lemma of_completelyPrime {D : Type*} [TopologicalSpace D]
 variable {D : Type*} [tD : TopologicalSpace D] [aD : AlgebraicDCPO D]
   [sD : IsScott D {d | DirectedOn (· ≤ ·) d}]
 
+/-- The set of compact elements generating opens contained in the frame homomorphism `x` -/
 abbrev K (x : PT (Opens D)) := {c | ∃ hc: IsCompactElement c, x hc.toOpen}
 
 /-- The set of compact elements underlying the basic opens is directed -/
@@ -338,6 +345,8 @@ lemma directed_K (x : PT (Opens D)) : DirectedOn (· ≤ ·) (K x) := by
   · exact ⟨e.2.1, he'₂⟩
   · exact e.2.2
 
+/-- The set of compact elements underlying the basic opens is nonempty.  Since `directedOn`
+doesn't include nonemptyness in Mathlib, this is a separate lemma from `directed_K` -/
 lemma nonempty_K (x : PT (Opens D)) : (K x).Nonempty := by
   have h_bot : IsCompactElement (⊥ : D) := by
     rw [isCompactElement_iff_le_of_directed_sSup_le]
@@ -439,6 +448,8 @@ lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := by
             rw [he'₁] at he'₂
             exact ⟨e, he₀, Opens.mem_iff_Ici_subset.1 he'₀, he'₂⟩
 
+/-- Scott topologies over algebraic DCPOs are Sober.
+  Prop 3.5.3 in [reneta2024]. Prop 2.27 in [abramsky_gabbay_maibaum_1994] -/
 theorem scott_is_sober : Sober (TopCat.of D) := by
   dsimp only [Functor.id_obj, Functor.comp_obj, topToLocale_obj, adjunctionTopToLocalePT,
         topCatOpToFrm_obj_coe, hom_ofHom, Sober]
