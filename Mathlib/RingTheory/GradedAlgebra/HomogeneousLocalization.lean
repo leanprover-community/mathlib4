@@ -135,22 +135,23 @@ theorem den_neg (c : NumDenSameDeg 𝒜 x) : ((-c).den : A) = c.den :=
 end Neg
 
 section SMul
+variable {𝒜 : ι → σ} (x : Submonoid A)
+  {α : Type*} [Monoid α] [MulAction α A] [SMulMemClass σ α A]
+  {α₀ : Type*} [SMul α₀ α] [SMul α₀ A] [IsScalarTower α₀ α A]
 
-variable {𝒜 : ι → σ} (x : Submonoid A) {α : Type*} [SMul α A] [SMulMemClass σ α A]
-
-instance : SMul α (NumDenSameDeg 𝒜 x) where
+instance : SMul α₀ (NumDenSameDeg 𝒜 x) where
   smul m c := ⟨c.deg, m • c.num, c.den, c.den_mem⟩
 
 @[simp]
-theorem deg_smul (c : NumDenSameDeg 𝒜 x) (m : α) : (m • c).deg = c.deg :=
+theorem deg_smul (c : NumDenSameDeg 𝒜 x) (m : α₀) : (m • c).deg = c.deg :=
   rfl
 
 @[simp]
-theorem num_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).num : A) = m • c.num :=
+theorem num_smul (c : NumDenSameDeg 𝒜 x) (m : α₀) : ((m • c).num : A) = m • c.num :=
   rfl
 
 @[simp]
-theorem den_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).den : A) = c.den :=
+theorem den_smul (c : NumDenSameDeg 𝒜 x) (m : α₀) : ((m • c).den : A) = c.den :=
   rfl
 
 end SMul
@@ -321,18 +322,19 @@ end
 
 section SMul
 variable {𝒜 : ι → σ} (x : Submonoid A)
-variable {α : Type*} [SMul α A] [IsScalarTower α A A] [SMulMemClass σ α A]
+  {α : Type*} [Monoid α] [MulAction α A] [SMulMemClass σ α A]
+  {α₀ : Type*} [SMul α₀ α] [SMul α₀ A] [IsScalarTower α₀ α A] [IsScalarTower α₀ A A]
 
-instance : SMul α (HomogeneousLocalization 𝒜 x) where
+instance : SMul α₀ (HomogeneousLocalization 𝒜 x) where
   smul m := Quotient.map' (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_smul, den_smul]
     convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk]
 
-@[simp] lemma mk_smul (i : NumDenSameDeg 𝒜 x) (m : α) : mk (m • i) = m • mk i := rfl
+@[simp] lemma mk_smul (i : NumDenSameDeg 𝒜 x) (m : α₀) : mk (m • i) = m • mk i := rfl
 
 @[simp]
-theorem val_smul (n : α) : ∀ y : HomogeneousLocalization 𝒜 x, (n • y).val = n • y.val :=
+theorem val_smul (n : α₀) : ∀ y : HomogeneousLocalization 𝒜 x, (n • y).val = n • y.val :=
   Quotient.ind' fun _ ↦ by rw [← mk_smul, val_mk, val_mk, Localization.smul_mk, num_smul]; rfl
 
 end SMul
@@ -500,7 +502,7 @@ lemma mk_eq_zero_of_den (f : NumDenSameDeg 𝒜 x) (h : f.den = 0) : mk f = 0 :=
 set_option backward.isDefEq.respectTransparency false in
 variable (𝒜 x) in
 /-- The map from `𝒜 0` to the degree `0` part of `𝒜ₓ` sending `f ↦ f/1`. -/
-def fromZeroRingHom : 𝒜 0 →+* HomogeneousLocalization 𝒜 x where
+@[simps!] def fromZeroRingHom : 𝒜 0 →+* HomogeneousLocalization 𝒜 x where
   toFun f := .mk ⟨0, f, 1, one_mem _⟩
   map_one' := rfl
   map_mul' f g := by ext; simp [Localization.mk_mul]
@@ -514,6 +516,32 @@ lemma algebraMap_eq : algebraMap (𝒜 0) (HomogeneousLocalization 𝒜 x) = fro
 
 instance : IsScalarTower (𝒜 0) (HomogeneousLocalization 𝒜 x) (Localization x) :=
   .of_algebraMap_eq' rfl
+
+variable (R : Type*) [CommSemiring R] [Algebra R A] [SMulMemClass σ R A]
+  (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R] [Algebra R₀ A] [IsScalarTower R₀ R A]
+
+-- MOVE
+variable (𝒜) in
+@[simps!] def ringHomToGradeZero : R₀ →+* (𝒜 0) where
+  toFun x := ⟨algebraMap R₀ A x, by
+    rw [IsScalarTower.algebraMap_apply _ R, Algebra.algebraMap_eq_smul_one]
+    exact SMulMemClass.smul_mem _ <| one_mem_graded _⟩
+  map_one' := by ext; simp; rfl
+  map_mul' _ _ := by ext; simp; rfl
+  map_zero' := by ext; simp; rfl
+  map_add' _ _ := by ext; simp; rfl
+
+instance algebra' : Algebra R₀ (HomogeneousLocalization 𝒜 x) where
+  algebraMap := (fromZeroRingHom 𝒜 x).comp (ringHomToGradeZero 𝒜 R R₀)
+  commutes' _ _ := mul_comm ..
+  smul_def' r f := by
+    ext
+    simp [Algebra.smul_def, IsScalarTower.algebraMap_apply R₀ A (at x),
+      ← Localization.mk_one_eq_algebraMap]
+    rfl
+
+@[simp] theorem val_algebraMap (r : R₀) :
+  (algebraMap R₀ (HomogeneousLocalization 𝒜 x) r).val = algebraMap R₀ (at x) r := rfl
 
 end HomogeneousLocalization
 
@@ -701,6 +729,24 @@ protected def Away.map (g : 𝒜 →+*ᵍ ℬ) (f : A) : Away 𝒜 f →+* Away 
   simp [Away.map, Away.mk, HomogeneousLocalization.map_mk]
 
 end
+
+section restrict_scalars
+
+variable {R A ι : Type*} [CommRing R] [CommRing A] [Algebra R A]
+  [DecidableEq ι] [AddCommMonoid ι] (𝒜 : ι → Submodule R A) (x : Submonoid A)
+  (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ A] [IsScalarTower R₀ R A]
+
+-- TODO:
+-- 1. GradedRingEquiv
+-- 2. HomogeneousLocalization maps GradedRingEquiv to RingEquiv
+-- 3. GradedRingEquiv for restrictScalars
+
+def equivRestrictScalars (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] :
+    HomogeneousLocalization 𝒜 x ≃ₐ[R₀] HomogeneousLocalization (𝒜 · |>.restrictScalars R₀) x where
+  __ := RingEquiv.ofRingHom (map _ _ _ _) _ _ _
+
+end restrict_scalars
+#exit
 
 section mapAway
 
