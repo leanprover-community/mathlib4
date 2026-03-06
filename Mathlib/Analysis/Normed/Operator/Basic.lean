@@ -262,6 +262,24 @@ theorem ratio_le_opNorm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
 theorem unit_le_opNorm : ‖x‖ ≤ 1 → ‖f x‖ ≤ ‖f‖ :=
   mul_one ‖f‖ ▸ f.le_opNorm_of_le
 
+/--
+Continuous linear maps are locally bounded. In other words, they map bounded sets to bounded sets.
+-/
+instance : LocallyBoundedMapClass (E →SL[σ₁₂] F) E F where
+  comap_cobounded_le := by
+    intro ℓ
+    rw [Bornology.comap_cobounded_le_iff]
+    intro s hs
+    obtain ⟨M, hM⟩ := hs.exists_norm_le
+    rw [isBounded_iff_forall_norm_le]
+    use ‖ℓ‖ * M
+    intro y hy
+    obtain ⟨σ, hσ⟩ := (mem_image _ _ _).1 hy
+    calc ‖y‖
+      _ ≤ ‖ℓ σ‖ := by rw [hσ.2]
+      _ ≤ ‖ℓ‖ * ‖σ‖ := ContinuousLinearMap.le_opNorm ℓ σ
+      _ ≤ ‖ℓ‖ * M := mul_le_mul (by rfl) (hM σ hσ.1) (norm_nonneg σ) (opNorm_nonneg ℓ)
+
 theorem opNorm_le_of_shell {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C) {c : 𝕜}
     (hc : 1 < ‖c‖) (hf : ∀ x, ε / ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C :=
   f.opNorm_le_bound' hC fun _ hx => SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc hf hx

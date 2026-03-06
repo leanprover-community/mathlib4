@@ -51,13 +51,13 @@ The `S`-valued points of the internal hom `A ⟶[LightCondMod R] B` are in bijec
 morpisms `A ⊗ R[S] ⟶ B`.
 -/
 noncomputable def ihomPoints (A B : LightCondMod.{u} R) (S : LightProfinite) :
-    (A ⟶[LightCondMod R] B).val.obj ⟨S⟩ ≃ ((A ⊗ ((free R).obj S.toCondensed)) ⟶ B) :=
+    (A ⟶[LightCondMod R] B).obj.obj ⟨S⟩ ≃ ((A ⊗ ((free R).obj S.toCondensed)) ⟶ B) :=
   (((freeForgetAdjunction R).homEquiv _ _).trans
     (coherentTopology _).yonedaEquiv).symm.trans
       ((ihom.adjunction A).homEquiv _ _).symm
 
 lemma ihomPoints_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
-    (x : (A ⟶[LightCondMod R] B).val.obj ⟨S⟩) :
+    (x : (A ⟶[LightCondMod R] B).obj.obj ⟨S⟩) :
     ihomPoints R A B S x = (MonoidalClosed.uncurry (((freeForgetAdjunction R).homEquiv _ _).symm
       ((coherentTopology LightProfinite.{u}).yonedaEquiv.symm x))) :=
   rfl
@@ -70,8 +70,8 @@ lemma ihomPoints_symm_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A ⟶ B)
-    (x : (P ⟶[LightCondMod R] A).val.obj ⟨S⟩) :
-    (((ihom P).map e).val.app ⟨S⟩) x = (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
+    (x : (P ⟶[LightCondMod R] A).obj.obj ⟨S⟩) :
+    (((ihom P).map e).hom.app ⟨S⟩) x = (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
   apply (ihomPoints R P B S).injective
   simp only [ihomPoints_apply, Equiv.apply_symm_apply, ← MonoidalClosed.uncurry_natural_right,
     ← Adjunction.homEquiv_naturality_right_symm]
@@ -82,9 +82,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')
     (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
     (ihomPoints R P B S).symm (P ◁ (free R).map (lightProfiniteToLightCondSet.map π) ≫ f) =
-      ((P ⟶[LightCondMod R] B).val.map π.op) ((ihomPoints R P B S').symm f) := by
-  have : (lightProfiniteToLightCondSet.map π).val.app (Opposite.op S) (𝟙 S) =
-      S'.toCondensed.val.map π.op (𝟙 S') := rfl
+      ((P ⟶[LightCondMod R] B).obj.map π.op) ((ihomPoints R P B S').symm f) := by
+  have : (lightProfiniteToLightCondSet.map π).hom.app (Opposite.op S) (𝟙 S) =
+      S'.toCondensed.obj.map π.op (𝟙 S') := rfl
   simp [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
     GrothendieckTopology.yonedaEquiv_apply, this]
   rfl
