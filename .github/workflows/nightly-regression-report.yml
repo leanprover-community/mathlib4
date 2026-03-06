@@ -30,6 +30,17 @@ jobs:
       with:
         ref: nightly-testing-green
 
+    - name: Checkout mathlib-ci
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: leanprover-community/mathlib-ci
+        ref: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+        fetch-depth: 1
+        path: ci-tools
+
+    - name: Set up CI scripts paths
+      uses: ./ci-tools/.github/actions/setup-ci-scripts
+
     - name: Configure Lean
       uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
       with:
@@ -74,7 +85,7 @@ jobs:
         SHA=${{ github.sha }} \
         REPO=${{ github.repository }} \
         RUN_ID=${{ github.run_id }} \
-          ./scripts/zulip_build_report.sh "${lean_outfile}" > "${GITHUB_OUTPUT}"
+          "${CI_SCRIPTS_DIR}/reporting/zulip_build_report.sh" "${lean_outfile}" > "${GITHUB_OUTPUT}"
 
     - name: Remove GitHub problem matcher wrapper
       uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23

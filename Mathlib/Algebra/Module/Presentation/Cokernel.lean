@@ -79,6 +79,7 @@ def cokernelRelations : Relations A where
     | .inl r => pres₂.relation r
     | .inr i => data.lift i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The obvious solution in `M₂ ⧸ LinearMap.range f` to the equations in
 `pres₂.cokernelRelations data`. -/
 @[simps]

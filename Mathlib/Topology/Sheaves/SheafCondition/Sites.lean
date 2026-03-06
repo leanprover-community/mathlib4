@@ -146,7 +146,7 @@ variable {C : Type u} [Category.{v} C]
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
 theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
-    CompatiblePreserving (Opens.grothendieckTopology Y) hf.isOpenMap.functor := by
+    CompatiblePreserving (Opens.grothendieckTopology Y) hf.functor := by
   haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
@@ -163,19 +163,20 @@ theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
 
 
 lemma Topology.IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
-    h.isOpenMap.functor.IsContinuous (Opens.grothendieckTopology X)
+    h.functor.IsContinuous (Opens.grothendieckTopology X)
       (Opens.grothendieckTopology Y) := by
   apply Functor.isContinuous_of_coverPreserving
   · exact h.compatiblePreserving
   · exact h.isOpenMap.coverPreserving
 
 theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF : F.IsSheaf) :
-    IsSheaf (h.isOpenMap.functor.op ⋙ F) := by
+    IsSheaf (h.functor.op ⋙ F) := by
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
 
 variable (f)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : RepresentablyFlat (Opens.map f) := by
   constructor
   intro U

@@ -39,6 +39,7 @@ Commands:
 Options:
   --repo=OWNER/REPO  Override the repository to fetch/push cache from
   --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage' and 'put-staged': staging directory.
+  --skip-proofwidgets  Skip fetching/building ProofWidgets release assets during 'get'
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
@@ -75,6 +76,10 @@ def parseNamedOpt (opt : String) (args : List String) : IO (Option String) := do
     return some val.toString
   return none
 
+/-- Parses a boolean `--foo` flag. -/
+def parseFlagOpt (opt : String) (args : List String) : Bool :=
+  args.elem s!"--{opt}"
+
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
@@ -85,6 +90,14 @@ def main (args : List String) : IO Unit := do
     println help
     Process.exit 0
   CacheM.run do
+
+  -- split args and named options
+  let (options, args) := args.partition (·.startsWith "--")
+
+  -- parse relevant options, ignore the rest
+  let repo? ← parseNamedOpt "repo" options
+  let stagingDir? ← parseNamedOpt "staging-dir" options
+  let skipProofWidgets := parseFlagOpt "skip-proofwidgets" options
 
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
@@ -100,7 +113,8 @@ def main (args : List String) : IO Unit := do
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (force := false) (decompress := true) := do
-    getFiles hashMemo.hashMap force force goodCurl decompress
+    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
+    getFiles repo? hashMemo.hashMap force force goodCurl decompress skipProofWidgets
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMemo.hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do

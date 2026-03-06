@@ -65,6 +65,7 @@ theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup
   · exact hf.integrable_stoppedValue hπ hbdd
   · exact hf.integrable_stoppedValue hτ fun ω => le_trans (hle ω) (hbdd ω)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The converse direction of the optional stopping theorem, i.e. a strongly adapted integrable
 process `f` is a submartingale if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`. -/
@@ -97,6 +98,7 @@ theorem submartingale_iff_expected_stoppedValue_mono [SigmaFiniteFiltration μ �
   ⟨fun hf _ _ hτ hπ hle ⟨_, hN⟩ => hf.expected_stoppedValue_mono hτ hπ hle hN,
     submartingale_of_expected_stoppedValue_mono hadp hint⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The stopped process of a submartingale with respect to a stopping time is a submartingale. -/
 protected theorem Submartingale.stoppedProcess [SigmaFiniteFiltration μ 𝒢]
     (h : Submartingale f 𝒢 μ) (hτ : IsStoppingTime 𝒢 τ) :
@@ -118,6 +120,7 @@ section Maximal
 
 open Finset
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) {ε : ℝ≥0}
     (n : ℕ) : ε • μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω} ≤
     ENNReal.ofReal
@@ -146,6 +149,7 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
 @[deprecated (since := "2025-10-25")] alias smul_le_stoppedValue_hitting :=
   smul_le_stoppedValue_hittingBtwn
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Doob's maximal inequality**: Given a non-negative submartingale `f`, for all `ε : ℝ≥0`,
 we have `ε • μ {ε ≤ f* n} ≤ ∫ ω in {ε ≤ f* n}, f n` where `f* n ω = max_{k ≤ n}, f k ω`.
 

@@ -308,6 +308,7 @@ section LinearOrder
 
 variable [LinearOrder α] {l : List α} {a m : α}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximum l) a := by
   simp only [maximum, argmax_concat, id]
   cases argmax id l
@@ -364,6 +365,7 @@ theorem maximum_mono {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₁.maximum �
 theorem minimum_anti {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₂.minimum ≤ l₁.minimum :=
   @maximum_mono αᵒᵈ _ _ _ h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
   rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
   simp only [id_eq, and_congr_right_iff, and_iff_left_iff_imp]

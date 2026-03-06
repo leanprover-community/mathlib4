@@ -30,6 +30,7 @@ local notation "√" => Real.sqrt
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Heron's formula**: The area of a triangle with side lengths `a`, `b`, and `c` is
   `√(s * (s - a) * (s - b) * (s - c))` where `s = (a + b + c) / 2` is the semiperimeter.
   We show this by equating this formula to `a * b * sin γ`, where `γ` is the angle opposite
