@@ -92,11 +92,9 @@ theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
   unfold transReflReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
   norm_num [transReflReparamAux]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
 
@@ -138,11 +136,9 @@ theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
   unfold transAssocReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
   norm_num [transAssocReparamAux]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
   norm_num [transAssocReparamAux]
 
