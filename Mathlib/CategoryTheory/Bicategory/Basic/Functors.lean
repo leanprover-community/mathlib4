@@ -32,7 +32,7 @@ category of functors `(b ⟶ c) ⥤ (a ⟶ c)`. -/
 def precomposing (a b c : B) : (a ⟶ b) ⥤ (b ⟶ c) ⥤ (a ⟶ c) where
   obj f := precomp c f
   map η := { app := (η ▷ ·) }
-  
+
 /-- Version of `Bicategory.precomposing` viewed in the bicategory `Cat`. -/
 @[simps]
 def precomposingCat (a b c : B) :
