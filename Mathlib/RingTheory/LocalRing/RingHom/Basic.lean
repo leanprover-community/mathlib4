@@ -53,8 +53,6 @@ theorem RingHom.domain_isLocalRing {R S : Type*} [Semiring R] [CommSemiring S] [
   simp_rw [← map_mem_nonunits_iff f, f.map_add]
   exact IsLocalRing.nonunits_add
 
-end
-
 section AlgHom
 
 variable {A : Type*} [CommSemiring A] [Algebra A R] [Algebra A S] [Algebra A T]
@@ -75,6 +73,8 @@ theorem isLocalHom_toAlgHom {F : Type*} [FunLike F R S]
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
 end AlgHom
+
+end
 
 section
 
