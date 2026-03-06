@@ -322,7 +322,6 @@ section Algebra
 
 variable (L : Type*) [Field L] [Algebra K L] {v : Valuation L Γ} [hv : v.IsTrivialOn K]
 
-
 lemma valuation_aeval_monomial_eq_valuation_pow (w : L) (n : ℕ) {a : K} (ha : a ≠ 0) :
     v ((monomial n a).aeval w) = (v w) ^ n := by
   simp [← C_mul_X_pow_eq_monomial, map_mul, map_pow, one_mul, hv.eq_one a ha]
@@ -344,25 +343,23 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
 
 end Algebra
 
-variable {v : Valuation K⟮X⟯ Γ} (hv : ∀ a : K, a ≠ 0 → v (C a) = 1)
+variable {v : Valuation K⟮X⟯ Γ} [hv : v.IsTrivialOn K]
 
 open Valuation
-
-include hv
 
 /-- If a valuation `v` is trivial on constants then for every `n : ℕ` the valuation of
 `(monomial n a)` is equal to `(v RatFunc.X) ^ n`. -/
 lemma valuation_monomial_eq_valuation_X_pow (n : ℕ) {a : K} (ha : a ≠ 0) :
     v (monomial n a) = v RatFunc.X ^ n := by
-  simp_all [← RatFunc.algebraMap_eq_C, hv.eq_one a ha]
+  simp_all [← RatFunc.algebraMap_eq_C, hv.eq_one]
 
 /-- If a valuation `v` is trivial on constants and `1 < v RatFunc.X` then for every polynomial `p`,
 `v p = v RatFunc.X ^ p.natDegree`.
 
 Note: The condition `1 < v RatFunc.X` is typically satisfied by the valuation at infinity. -/
-theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (hlt : 1 < v RatFunc.X)
-    {p : K[X]} (hp : p ≠ 0) : v p = v RatFunc.X ^ p.natDegree := by
-  convert valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X K K⟮X⟯ hv
+theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
+     (hlt : 1 < v RatFunc.X) {p : K[X]} (hp : p ≠ 0) : v p = v RatFunc.X ^ p.natDegree := by
+  convert valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X K K⟮X⟯
     RatFunc.X hlt hp
   ext p
   nth_rw 1 [RatFunc.X, ← aeval_X_left_apply p (R := K)]
