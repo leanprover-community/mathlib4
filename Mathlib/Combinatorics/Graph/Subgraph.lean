@@ -56,8 +56,8 @@ namespace Graph
 `H ≤ G` means `V(H) ⊆ V(G)` and every link of `H` is a link of `G`. -/
 @[mk_iff]
 structure IsSubgraph (H G : Graph α β) : Prop where
-  vertexSet_mono : V(H) ⊆ V(G)
-  isLink_mono : ∀ ⦃e x y⦄, H.IsLink e x y → G.IsLink e x y
+  vertexSet_mono : V(H) ⊆ V(G) := by aesop
+  isLink_mono : ∀ ⦃e x y⦄, H.IsLink e x y → G.IsLink e x y := by aesop
 
 attribute [gcongr, grind →] IsSubgraph.vertexSet_mono
 
@@ -106,9 +106,9 @@ lemma IsSubgraph.isLink_eqOn (hHG : H ≤ G) : EqOn H.IsLink G.IsLink E(H) := by
 lemma Compatible.of_le_le (hH₁G : H₁ ≤ G) (hH₂G : H₂ ≤ G) : H₁.Compatible H₂ :=
   fun _ he₁ he₂ _ _ ↦ hH₁G.isLink_iff he₁ |>.trans <| (hH₂G.isLink_iff he₂).symm
 
-lemma Compatible.of_le (hHG : H ≤ G) : H.Compatible G := Compatible.of_le_le hHG le_rfl
+lemma Compatible.of_le (hHG : H ≤ G) : H.Compatible G := .of_le_le hHG le_rfl
 
-lemma Compatible.of_ge (hHG : G ≤ H) : H.Compatible G := Compatible.of_le_le hHG le_rfl |>.symm
+lemma Compatible.of_ge (hHG : G ≤ H) : H.Compatible G := .of_le_le le_rfl hHG
 
 lemma Compatible.anti_left (hG₁G : G₁ ≤ G) (h : Compatible G H) : Compatible G₁ H :=
   fun _ he₁ he₂ _ _ ↦ hG₁G.isLink_iff he₁ |>.trans <| h (hG₁G.edgeSet_mono he₁) he₂ ..
@@ -199,9 +199,7 @@ instance : IsPartialOrder (Graph α β) (· ≤s ·) where
   trans _ _ _ h₁ h₂ := h₁.trans h₂
   antisymm _ _ h₁ h₂ := h₁.1.antisymm h₂.1
 
-lemma rfl : G ≤s G where
-  toIsSubgraph := le_refl G
-  vertexSet_eq := _root_.rfl
+@[simp] protected lemma rfl : G ≤s G := refl G
 
 lemma anti_right (hHK : H ≤ K) (hKG : K ≤ G) (h : H ≤s G) : H ≤s K where
   toIsSubgraph := hHK
@@ -240,9 +238,7 @@ instance : IsPartialOrder (Graph α β) (· ≤i ·) where
   trans _ _ _ h₁ h₂ := h₁.trans h₂
   antisymm _ _ h₁ h₂ := h₁.1.antisymm h₂.1
 
-lemma rfl : G ≤i G where
-  toIsSubgraph := le_refl G
-  isLink_of_mem_mem _ _ _ h _ _ := h
+@[simp] protected lemma rfl : G ≤i G := refl G
 
 lemma isLink_congr (hx : x ∈ V(H)) (hy : y ∈ V(H)) (h : H ≤i G) :
     H.IsLink e x y ↔ G.IsLink e x y :=
@@ -293,8 +289,7 @@ instance : IsPartialOrder (Graph α β) (· ≤c ·) where
   trans _ _ _ h₁ h₂ := h₁.trans h₂
   antisymm _ _ h₁ h₂ := h₁.le.antisymm h₂.le
 
-@[simp]
-protected lemma rfl : G ≤c G := mk' le_rfl fun _ _ h _ ↦ h.edge_mem
+@[simp] protected lemma rfl : G ≤c G := refl G
 
 lemma inc_congr (hx : x ∈ V(H)) (hHG : H ≤c G) : H.Inc e x ↔ G.Inc e x :=
   ⟨(·.mono hHG.le), fun he ↦ he.of_compatible (Compatible.of_ge hHG.le) (hHG.closed he hx)⟩
