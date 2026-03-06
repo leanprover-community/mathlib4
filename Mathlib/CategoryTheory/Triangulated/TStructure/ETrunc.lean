@@ -338,7 +338,7 @@ noncomputable def eTruncGEToGEGE (a b : EInt) :
 lemma isIso_eTruncGEIsoGEGE (a b : EInt) (hab : a ≤ b) :
     IsIso (t.eTruncGEToGEGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
-  intro X
+  intro
   simp only [Functor.comp_obj, eTruncGEToGEGE_app]
   exact t.isIso_eTruncGE_obj_map_truncGEπ_app _ _ hab _
 
