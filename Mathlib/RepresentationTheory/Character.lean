@@ -92,7 +92,6 @@ theorem char_linHom (V W : FDRep k G) (g : G) :
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
     ⅟(Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
   rw [← (isProj_averageMap V.ρ).trace]

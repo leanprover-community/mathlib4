@@ -283,7 +283,7 @@ theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [Distr
   inhabit G
   refine ⟨IsSMulRegular.skewMonoidAlgebra, fun ha b₁ b₂ inj ↦ ?_⟩
   rw [← (single_injective _).eq_iff, ← smul_single, ← smul_single] at inj
-  exact single_injective (default) (ha inj)
+  exact single_injective default (ha inj)
 
 end Single
 
@@ -880,7 +880,6 @@ theorem coeff_mul_antidiagonal_of_finset (f g : SkewMonoidAlgebra k G) (x : G)
         simp only [Finset.mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
         by_cases h1 : f.coeff p.1 = 0 <;> simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_mul_antidiagonal_finsum (f g : SkewMonoidAlgebra k G) (x : G) :
     (f * g).coeff x = ∑ᶠ p ∈ {p : G × G | p.1 * p.2 = x}, f.coeff p.1 * p.1 • g.coeff p.2 := by
   have : ({p : G × G | p.1 * p.2 = x}

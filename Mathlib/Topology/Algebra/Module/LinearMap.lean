@@ -232,6 +232,15 @@ theorem _root_.Submodule.topologicalClosure_map [RingHomSurjective σ₁₂] [To
       (s.map (f : M₁ →ₛₗ[σ₁₂] M₂)).topologicalClosure :=
   image_closure_subset_closure_image f.continuous
 
+/-- If a continuous linear map stabilizes a submodule, then it stabilizes its topological
+closure. -/
+theorem _root_.Submodule.topologicalClosure_mem_invtSubmodule [TopologicalSpace R₁]
+    [ContinuousSMul R₁ M₁] [ContinuousAdd M₁] {f : M₁ →L[R₁] M₁} {s : Submodule R₁ M₁}
+    (hs : s ∈ Module.End.invtSubmodule f) :
+    s.topologicalClosure ∈ Module.End.invtSubmodule f := by
+  rw [Module.End.mem_invtSubmodule_iff_map_le] at hs ⊢
+  exact (s.topologicalClosure_map f).trans (Submodule.topologicalClosure_mono hs)
+
 /-- Under a dense continuous linear map, a submodule whose `TopologicalClosure` is `⊤` is sent to
 another such submodule.  That is, the image of a dense set under a map with dense range is dense.
 -/
@@ -349,6 +358,10 @@ theorem coe_id : (ContinuousLinearMap.id R₁ M₁ : M₁ →ₗ[R₁] M₁) = L
 
 @[simp, norm_cast]
 theorem coe_id' : ⇑(ContinuousLinearMap.id R₁ M₁) = id :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) = 1 :=
   rfl
 
 @[simp, norm_cast]
@@ -531,8 +544,12 @@ instance instMul : Mul (M₁ →L[R₁] M₁) :=
 theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f.comp g :=
   rfl
 
-@[simp]
-theorem coe_mul (f g : M₁ →L[R₁] M₁) : ⇑(f * g) = f ∘ g :=
+@[simp, norm_cast]
+theorem coe_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ[R₁] M₁) = f * g :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_mul' (f g : M₁ →L[R₁] M₁) : ⇑(f * g) = f ∘ g :=
   rfl
 
 theorem mul_apply (f g : M₁ →L[R₁] M₁) (x : M₁) : (f * g) x = f (g x) :=
@@ -545,8 +562,13 @@ instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
   one_mul _ := ext fun _ => rfl
   mul_assoc _ _ _ := ext fun _ => rfl
 
-theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+@[simp, norm_cast]
+theorem coe_pow' (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+
+@[simp, norm_cast]
+theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ[R₁] M₁) = f ^ n :=
+  DFunLike.ext' <| (coe_pow' f n).trans <| .symm <| hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
 instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
   natCast n := n • (1 : M₁ →L[R₁] M₁)
@@ -577,6 +599,18 @@ theorem natCast_apply [ContinuousAdd M₁] (n : ℕ) (m : M₁) : (↑n : M₁ �
 theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
     (ofNat(n) : M₁ →L[R₁] M₁) m = OfNat.ofNat n • m :=
   rfl
+
+/-- Construct a homeomorphism from an invertible continuous linear map. -/
+@[simps]
+def homeomorphOfUnit (T : (M₁ →L[R₁] M₁)ˣ) : M₁ ≃ₜ M₁ where
+  toFun := T.1
+  invFun := T⁻¹.1
+  left_inv x := by rw [← mul_apply, Units.inv_mul, one_apply]
+  right_inv x := by rw [← mul_apply, Units.mul_inv, one_apply]
+
+theorem isHomeomorph_of_isUnit {T : M₁ →L[R₁] M₁} (hT : IsUnit T) : IsHomeomorph T := by
+  obtain ⟨T, rfl⟩ := hT
+  exact (homeomorphOfUnit T).isHomeomorph
 
 section ApplyAction
 

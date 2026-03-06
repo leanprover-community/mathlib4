@@ -172,7 +172,14 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
               some <$> mkLambdaFVars #[x] body
             else return none
           | _ => return none
-        return f?.getD e.headBeta
+        match f? with
+        | some e => return e.headBeta
+        | none =>
+          -- future: special-case `Bundle.TotalSpace` for V;
+          -- if so, say "there is no need to apply T% twice"
+          throwError "could not find a `FiberBundle` instance on `{V}`:\n\
+          `{e}` is a function into `{V}`\n\n\
+          hint: you may be missing suitable typeclass assumptions"
       | tgt =>
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
         -- TODO: can `tgt` depend on `x` in a way that is not a function application?
@@ -659,8 +666,8 @@ where
 set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance.
-TODO not yet: This supports all `ModelWithCorners`
-instances that are currently defined in mathlib. Further cases can be added as necessary.
+This supports all `ModelWithCorners` instances that are currently defined in mathlib.
+Further cases can be added as necessary.
 
 Return an expression describing the found model with corners.
 
