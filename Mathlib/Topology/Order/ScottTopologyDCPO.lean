@@ -75,7 +75,7 @@ def CompactSet (α : Type*) [CompletePartialOrder α] := {x : α | IsCompactElem
 def CompactLowerSet (x : α) := Set.Iic x ∩ CompactSet α
 
 /-- Encodes notion of observable properties in programs (points are program semantics) -/
-class AlgebraicDCPO (α : Type*) extends CompletePartialOrder α where
+class AlgebraicDCPO (α : Type*) extends CompletePartialOrder α, OrderBot α where
   algebraic : ∀ x : α, (CompactLowerSet x).Nonempty ∧ DirectedOn (· ≤ ·) (CompactLowerSet x) ∧
     x = sSup (CompactLowerSet x)
 
@@ -162,9 +162,16 @@ lemma isOpen_of_basis {u : Set α} (hu : u ∈ Ici '' CompactSet α) : IsOpen u 
     · exact a_in_d
     · exact a_in_u
 
+abbrev CompactElement (α : Type*) [PartialOrder α] := {x : α // IsCompactElement x}
+
 /-- The upwards closure of a compact point which we know is open -/
-def IsCompactElement.toOpen {c : α} (hc : IsCompactElement c) : Opens α :=
-  ⟨Ici c, isOpen_of_basis <| Set.mem_image_of_mem Ici hc⟩
+abbrev Subtype.toOpen (c : CompactElement α) : Opens α :=
+  ⟨Ici c, isOpen_of_basis <| Set.mem_image_of_mem Ici c.prop⟩
+
+/-- The upwards closure of a compact point which we know is open.
+In this version the data is implicit -/
+abbrev IsCompactElement.toOpen {c : α} (hc : IsCompactElement c) : Opens α :=
+  (⟨c, hc⟩ : CompactElement α).toOpen
 
 /-- A helper. This can be made more straightforward by replacing `{u : Opens α}` with
 `{u : UpperSet}` and applying the additional lemma `Topology.IsScott.isUpperSet_of_isOpen`
@@ -245,10 +252,7 @@ lemma open_eq_open_of_basis (u : Set D) (hu : IsOpen u) :
     The weaker version is still useful as it is easier to use when sufficient.
     We don't reuse the previous result to prove this, since the proof turns out just as long -/
 lemma open_eq_open_of_basis' (u : Opens D) :
-    -- u = sSup ({ o | ∃ (c : D) (hc : IsCompactElement c), c ∈ u ∧ o = hc.toOpen }) := by
-    -- u = iSup (fun (c : {c : D // Compact c ∧ c ∈ u}) ↦  ⟨c.1, c.2.1⟩ᵘᵒ ) := by
     u = ⨆ c : {c | IsCompactElement c ∧ c ∈ u}, IsCompactElement.toOpen c.2.1 := by
-    -- u = ⨆ (c : D) (hc : IsCompactElement c) (_ : c ∈ u), hc.toOpen := by
   ext e
   simp only [SetLike.mem_coe]
   constructor
@@ -263,6 +267,22 @@ lemma open_eq_open_of_basis' (u : Opens D) :
     obtain ⟨c, ⟨hc₀, c_in_u⟩, he⟩ := he
     rw [mem_iff_Ici_subset] at c_in_u
     apply Set.mem_of_mem_of_subset he c_in_u
+
+-- TODO: note to reviewers. the sSup formulation is the only result used later on
+-- The `iSup` version above can be deleted and the below proof restructured (which was
+-- indeed the original structure). Is it helpful to leave multiple versions of this statement here?
+
+/-- Version `of open_eq_open_of_basis'_sSup` using `sSup` rather than `iSup` -/
+lemma open_eq_open_of_basis'_sSup (u : Opens D) :
+    u = sSup ({ o | ∃ (c : D) (hc : IsCompactElement c), c ∈ u ∧ o = hc.toOpen }) := by
+  ext e
+  simp only [SetLike.mem_coe, Opens.mem_sSup, Set.mem_setOf_eq]
+  constructor
+  · intro e_in_u
+    choose c hc₀ e_in_c' hc'₁ using exists_basis_mem_basis e u e_in_u u.isOpen
+    exact ⟨hc₀.toOpen, ⟨c, hc₀, hc'₁ (Set.mem_Ici.2 le_rfl), rfl⟩, e_in_c'⟩
+  · rintro ⟨_, ⟨c, hc, c_in_u, rfl⟩, e_in_o⟩
+    exact (mem_iff_Ici_subset.mp c_in_u) e_in_o
 
 end AlgebraicDCPO
 
@@ -281,13 +301,13 @@ def Sober (X : TopCat) := IsHomeomorph (adjunctionTopToLocalePT.unit.app X)
     But using this lemma improves readability, especially as it's used multiple times -/
 lemma of_completelyPrime {D : Type*} [TopologicalSpace D]
 {P : Opens D → Prop} {x : PT (Opens D)} :
-  (x (sSup {u | P u})) ↔ ∃ u, P u ∧ x u := by
+  (x (sSup {u : Opens D | P u})) ↔ ∃ u, P u ∧ x u := by
   simp only [map_sSup, sSup_Prop_eq]
   constructor
-  · rintro ⟨h, ⟨h2, h3, h4⟩, h5⟩
-    use h2
-    subst h4
-    exact ⟨h3, h5⟩
+  · rintro ⟨p, ⟨u, hu, heq⟩, hxu⟩
+    use u
+    subst heq
+    exact ⟨hu, hxu⟩
   · rintro ⟨u, hu, hxu⟩
     use x u
     simp only [Set.mem_image, Set.mem_setOf_eq, eq_iff_iff]
@@ -298,46 +318,58 @@ lemma of_completelyPrime {D : Type*} [TopologicalSpace D]
 variable {D : Type*} [tD : TopologicalSpace D] [aD : AlgebraicDCPO D]
   [sD : IsScott D {d | DirectedOn (· ≤ ·) d}]
 
-/-- We claim that x is entirely determined by its set of compact elements generating
-    the basic opens.
-    Proving this correspondence establishes the homeomorphism we want.
-    We define the set `K x` the upwards closure of whose elements are the basic opens. -/
-abbrev K (x : PT (Opens D)) := { c | ∃ hc: IsCompactElement c, x hc.toOpen }
+abbrev K (x : PT (Opens D)) := {c | ∃ hc: IsCompactElement c, x hc.toOpen}
 
 /-- The set of compact elements underlying the basic opens is directed -/
-lemma directed_Kₓ (x : PT (Opens D)) : DirectedOn (· ≤ ·) (K x) := by
+lemma directed_K (x : PT (Opens D)) : DirectedOn (· ≤ ·) (K x) := by
   rintro c ⟨hc₀, hc₁⟩ d ⟨hd₀, hd₁⟩
   simp only [mem_setOf_eq]
   let inf := hc₀.toOpen ⊓ hd₀.toOpen
   have inf_in_x : x inf := by
     simp only [map_inf, inf]
     exact ⟨hc₁, hd₁⟩
-  obtain ⟨e', ⟨e, he'₁⟩, he'₂⟩ := of_completelyPrime.1 ((open_eq_open_of_basis' inf) ▸ inf_in_x)
+  have basis := by
+    rw [open_eq_open_of_basis' inf] at inf_in_x
+    exact of_completelyPrime.1 inf_in_x
+  obtain ⟨e', ⟨e, he'₁⟩, he'₂⟩ := basis
   rw [← he'₁] at he'₂
   use e
   constructor
-  · simp only [Set.mem_setOf_eq]
-    exact ⟨e.2.1, he'₂⟩
+  · exact ⟨e.2.1, he'₂⟩
   · exact e.2.2
+
+lemma nonempty_K (x : PT (Opens D)) : (K x).Nonempty := by
+  have h_bot : IsCompactElement (⊥ : D) := by
+    rw [isCompactElement_iff_le_of_directed_sSup_le]
+    intro s ⟨e, he⟩ _ _
+    use e, he
+    exact OrderBot.bot_le e
+  have top_eq_bot_toOpen : ⊤ = IsCompactElement.toOpen h_bot := by
+    ext e
+    simp_all only [Opens.coe_top, mem_univ, Opens.coe_mk, Ici_bot]
+  have h_top : x ⊤ := by
+    simp only [map_top, «Prop».top_eq_true]
+  rw [Set.Nonempty]
+  use ⊥
+  use h_bot
+  rw [← top_eq_bot_toOpen]
+  exact h_top
 
 /-- Large calc proof extracted here. Showing surjectivity of the homeomorphism. -/
 lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := by
       intro x
       dsimp [pt, PT] at x
-      let Kₓ := K x
-      let inp := sSup Kₓ
-      use inp
+      use sSup (K x)
       apply FrameHom.ext
       intro u
       simp only [eq_iff_iff]
-      change sSup Kₓ ∈ u ↔ x u
-
+      change sSup (K x) ∈ u ↔ x u
       calc
-        _ ↔ sSup Kₓ ∈ u.carrier := by rfl
-        _ ↔ sSup Kₓ ∈ ⋃₀ (Ici '' { e : D | IsCompactElement e ∧ Ici e ⊆ u}) := by
+        _ ↔ sSup (K x) ∈ u.carrier := by rfl
+        _ ↔ sSup (K x) ∈ ⋃₀ (Ici '' { e : D | IsCompactElement e ∧ Ici e ⊆ u}) := by
           nth_rewrite 1 [open_eq_open_of_basis u.carrier u.isOpen]
           rfl
-        _ ↔ ∃ e : D, IsCompactElement e ∧ Ici e ⊆ u ∧ e ≤ sSup Kₓ := by
+        _ ↔ ∃ e : D, IsCompactElement e ∧ Ici e ⊆ u ∧ e ≤ sSup (K x) := by
           constructor
           · rintro ⟨e', he'₀, he'₁⟩
             simp only [Set.mem_image, Set.mem_setOf_eq] at he'₀
@@ -350,29 +382,29 @@ lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := by
               simp only [Set.mem_image, Set.mem_setOf_eq]
               use e
             apply Set.subset_sUnion_of_mem at he'₀
-            have he₂ : sSup Kₓ ∈ Ici e := by aesop
+            have he₂ : sSup (K x) ∈ Ici e := by aesop
             exact Set.mem_of_mem_of_subset he₂ he'₀
-        _ ↔ ∃ (e c : D), c ∈ Kₓ ∧ IsCompactElement e ∧ Ici e ⊆ u ∧ e ≤ c := by
+        _ ↔ ∃ (e c : D), c ∈ (K x) ∧ IsCompactElement e ∧ Ici e ⊆ u ∧ e ≤ c := by
             constructor
             · rintro ⟨e, he₀, he'₀, he₁⟩
               use e
               have he₀' := (isCompactElement_iff_le_of_directed_sSup_le e).1 he₀
-              choose c hc₁ hc₂ using he₀' Kₓ sorry (directed_Kₓ x) he₁
+              choose c hc₁ hc₂ using he₀' (K x) (nonempty_K x) (directed_K x) he₁
               use c
             · rintro ⟨e, c, hc₀, he₀, he'₀, e_le_c⟩
               use e
-              have he₁ : e ≤ sSup Kₓ := by
+              have he₁ : e ≤ sSup (K x) := by
                 trans c
                 · assumption
-                · have sSup_is_LUB := CompletePartialOrder.lubOfDirected Kₓ (directed_Kₓ x)
+                · have sSup_is_LUB := CompletePartialOrder.lubOfDirected (K x) (directed_K x)
                   exact sSup_is_LUB.1 hc₀
               exact ⟨he₀, he'₀, he₁⟩
-        _ ↔ ∃ (e c : D) (hc: IsCompactElement c), IsCompactElement e ∧ Ici e ⊆ u ∧ Ici c ⊆ Ici e ∧ x hc.toOpen := by
+        _ ↔ ∃ (e c : D) (hc: IsCompactElement c),
+            IsCompactElement e ∧ Ici e ⊆ u ∧ Ici c ⊆ Ici e ∧ x hc.toOpen := by
           constructor
           · rintro ⟨e, c, ⟨hc₀, hc₁⟩, he₀, he₁, e_le_c⟩
             use e; use c; use hc₀
             exact ⟨he₀, he₁, Ici_subset_Ici.2 e_le_c, hc₁⟩
-
           · rintro ⟨e, c, hc₀, he₀, he'₀, c'_le_e', hc'₀⟩
             use e; use c;
             exact ⟨⟨hc₀, hc'₀⟩, he₀, he'₀, Ici_subset_Ici.1 c'_le_e'⟩
@@ -397,14 +429,12 @@ lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := by
             have he': ∃ u, P u ∧ x u := by
               use he₀.toOpen
               exact ⟨⟨e, he₀, Opens.mem_iff_Ici_subset.2 he'₀, rfl⟩, he'₁⟩
-
             rw [← of_completelyPrime] at he'
-            rw [← open_eq_open_of_basis' u] at he'
+            rw [← open_eq_open_of_basis'_sSup u] at he'
             exact he'
           · intro hu
-            rw [open_eq_open_of_basis' u] at hu
+            rw [open_eq_open_of_basis'_sSup u] at hu
             rw [of_completelyPrime] at hu
-
             obtain ⟨e', ⟨e, he₀, he'₀, he'₁⟩ , he'₂⟩ := hu
             rw [he'₁] at he'₂
             exact ⟨e, he₀, Opens.mem_iff_Ici_subset.1 he'₀, he'₂⟩
