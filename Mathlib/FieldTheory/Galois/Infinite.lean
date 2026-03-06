@@ -76,7 +76,7 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
       have : g y = y := (mem_fixingSubgroup_iff Gal(K/k)).mp hg y <|
         adjoin_simple_le_iff.mp le_rfl
       simpa only [this, ne_eq, AlgEquiv.smul_def] using ne
-    · simp only [(IntermediateField.fixingSubgroup_isOpen (adjoin k {y}).1).smul σ, true_and]
+    · simp only [(IntermediateField.isOpen_fixingSubgroup (adjoin k {y}).1).smul σ, true_and]
       use 1
       simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true, Subgroup.one_mem]
 
@@ -151,21 +151,17 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
   intro σ hσ
   by_contra h
   have nhds : H.carrierᶜ ∈ nhds σ := H.isClosed'.isOpen_compl.mem_nhds h
-  rw [GroupFilterBasis.nhds_eq (x₀ := σ) (galGroupBasis k K)] at nhds
-  rcases nhds with ⟨b, ⟨gp, ⟨L, hL, eq'⟩, eq⟩, sub⟩
-  rw [← eq'] at eq
-  have := hL.out
+  rw [← map_mul_left_nhds_one, Filter.mem_map, krullTopology_mem_nhds_one_iff] at nhds
+  rcases nhds with ⟨L, hL, sub⟩
   let L' : FiniteGaloisIntermediateField k K := {
     normalClosure k L K with
     finiteDimensional := normalClosure.is_finiteDimensional k L K
     isGalois := IsGalois.normalClosure k L K }
-  have compl : σ • L'.1.fixingSubgroup.carrier ⊆ H.carrierᶜ := by
-    rintro φ ⟨τ, hτ, muleq⟩
-    have sub' : σ • b ⊆ H.carrierᶜ := Set.smul_set_subset_iff.mpr sub
-    apply sub'
-    simp only [← muleq, ← eq]
-    apply Set.smul_mem_smul_set
-    exact (L.fixingSubgroup_le (IntermediateField.le_normalClosure L) hτ)
+  have compl : σ • L'.1.fixingSubgroup.carrier ⊆ H.carrierᶜ :=
+    calc σ • (SetLike.coe L'.1.fixingSubgroup)
+      _ ⊆ σ • (SetLike.coe L.fixingSubgroup) :=
+        Set.smul_set_mono (fixingSubgroup_antitone (L.le_normalClosure))
+      _ ⊆ H.carrierᶜ := Set.smul_set_subset_iff.mpr sub
   have fix : ∀ x ∈ IntermediateField.fixedField H.toSubgroup ⊓ ↑L', σ x = x :=
     fun x hx ↦ ((mem_fixingSubgroup_iff Gal(K/k)).mp hσ) x hx.1
   rw [restrict_fixedField H.1 L'.1] at fix
@@ -243,13 +239,11 @@ set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     IsOpen L.fixingSubgroup.carrier ↔ FiniteDimensional k L := by
-  refine ⟨fun h ↦ ?_, fun h ↦ IntermediateField.fixingSubgroup_isOpen L⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ IntermediateField.isOpen_fixingSubgroup L⟩
   have : (IntermediateFieldEquivClosedSubgroup.toFun L).carrier ∈ nhds 1 :=
     IsOpen.mem_nhds h (congrFun rfl)
-  rw [GroupFilterBasis.nhds_one_eq] at this
-  rcases this with ⟨S, ⟨gp, ⟨M, hM, eq'⟩, eq⟩, sub⟩
-  rw [← eq, ← eq'] at sub
-  have := hM.out
+  rw [krullTopology_mem_nhds_one_iff] at this
+  rcases this with ⟨M, hM, sub⟩
   let L' : FiniteGaloisIntermediateField k K := {
     normalClosure k M K with
     finiteDimensional := normalClosure.is_finiteDimensional k M K
