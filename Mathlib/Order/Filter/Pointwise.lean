@@ -130,6 +130,10 @@ theorem eventually_one {p : α → Prop} : (∀ᶠ x in 1, p x) ↔ p 1 :=
   eventually_pure
 
 @[to_additive (attr := simp)]
+theorem frequently_one {p : α → Prop} : (∃ᶠ x in 1, p x) ↔ p 1 :=
+  frequently_pure
+
+@[to_additive (attr := simp)]
 theorem tendsto_one {a : Filter β} {f : β → α} : Tendsto f a 1 ↔ ∀ᶠ x in a, f x = 1 :=
   tendsto_pure
 
@@ -204,6 +208,14 @@ protected theorem NeBot.inv : f.NeBot → f⁻¹.NeBot := fun h => h.map _
 lemma inv.instNeBot [NeBot f] : NeBot f⁻¹ := .inv ‹_›
 
 scoped[Pointwise] attribute [instance] inv.instNeBot neg.instNeBot
+
+@[to_additive (attr := simp)]
+lemma eventually_inv {p : α → Prop} : (∀ᶠ x in f⁻¹, p x) ↔ (∀ᶠ x in f, p x⁻¹) :=
+  eventually_map
+
+@[to_additive (attr := simp)]
+lemma frequently_inv {p : α → Prop} : (∃ᶠ x in f⁻¹, p x) ↔ (∃ᶠ x in f, p x⁻¹) :=
+  frequently_map
 
 end Inv
 
@@ -1008,6 +1020,14 @@ theorem NeBot.of_smul_filter : (a • f).NeBot → f.NeBot :=
 lemma smul_filter.instNeBot [NeBot f] : NeBot (a • f) := .smul_filter ‹_›
 
 scoped[Pointwise] attribute [instance] smul_filter.instNeBot vadd_filter.instNeBot
+
+@[to_additive (attr := simp)]
+lemma eventually_smul_filter {p : β → Prop} : (∀ᶠ y in a • f, p y) ↔ (∀ᶠ x in f, p (a • x)) :=
+  eventually_map
+
+@[to_additive (attr := simp)]
+lemma frequently_inv_filter {p : β → Prop} : (∃ᶠ y in a • f, p y) ↔ (∃ᶠ x in f, p (a • x)) :=
+  frequently_map
 
 @[to_additive (attr := gcongr)]
 theorem smul_filter_le_smul_filter (hf : f₁ ≤ f₂) : a • f₁ ≤ a • f₂ :=

@@ -62,6 +62,10 @@ theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafTo
     exact fun _ _ _ ↦ preservesLimitsOfShape_of_natIso
       (adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint (sheafToPresheaf J A)))⟩
 
+instance : HasSheafify (⊥ : GrothendieckTopology C) A :=
+  HasSheafify.mk' _ _
+    (sheafBotEquivalence A).symm.toAdjunction
+
 /-- The sheafification functor, left adjoint to the inclusion. -/
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   (sheafToPresheaf J A).leftAdjoint
