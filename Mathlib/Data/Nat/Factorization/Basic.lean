@@ -244,6 +244,20 @@ theorem ordCompl_eq_self_iff_zero_or_not_dvd (n : ℕ) {p : ℕ} (hp : Prime p) 
     · simp [n_eq_zero]
     · simp [Nat.factorization_eq_zero_of_not_dvd not_dvd]
 
+theorem ordCompl_pow_mul_of_not_dvd {m : ℕ} (k : ℕ) {p : ℕ} (hp : p.Prime) (hm : ¬p ∣ m) :
+    ordCompl[p] (p ^ k * m) = m := by
+  rw [ordCompl_self_pow_mul m k hp]
+  exact (ordCompl_eq_self_iff_zero_or_not_dvd m hp).mpr (Or.inr hm)
+
+theorem ordCompl_pow_mul_eq_self_iff (k m : ℕ) {p : ℕ} (hp : p.Prime) :
+    ordCompl[p] (p ^ k * m) = m ↔ m = 0 ∨ ¬p ∣ m := by
+  rw [ordCompl_self_pow_mul m k hp, ordCompl_eq_self_iff_zero_or_not_dvd m hp]
+
+theorem ordCompl_div_of_dvd {x : ℕ} {p : ℕ} (hp : p.Prime) (hx : p ∣ x) :
+    ordCompl[p] (x / p) = ordCompl[p] x := by
+  rcases hx with ⟨k, rfl⟩
+  rw [mul_comm p k, Nat.mul_div_left k hp.pos, ← ordCompl_self_pow_mul k 1 hp, pow_one, mul_comm]
+
 -- `ordCompl[p] n` is the largest divisor of `n` not divisible by `p`.
 theorem dvd_ordCompl_of_dvd_not_dvd {p d n : ℕ} (hdn : d ∣ n) (hpd : ¬p ∣ d) :
     d ∣ ordCompl[p] n := by
