@@ -269,10 +269,10 @@ variable
 theorem differenceAux_tensorial (hcov : IsCovariantDerivativeOn F cov s)
     (hcov' : IsCovariantDerivativeOn F cov' s)
     (x : M) (hx : x ∈ s) : TensorialAt I F (differenceAux cov cov' · x) x where
-  smul f σ hf hσ := by
+  smul hf hσ := by
     simp [differenceAux, hcov.leibniz hσ hf, hcov'.leibniz hσ hf]
     module
-  add σ σ' hσ hσ' := by
+  add hσ hσ' := by
     simp [differenceAux, hcov.add hσ hσ', hcov'.add hσ hσ']
     abel
 

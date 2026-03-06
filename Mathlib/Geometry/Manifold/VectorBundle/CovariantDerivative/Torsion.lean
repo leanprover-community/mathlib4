@@ -117,21 +117,21 @@ variable [CompleteSpace E]
 theorem torsionAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (x : M)
     (Y : Π x, TangentSpace I x) :
     TensorialAt I E (torsionAux cov · Y x) x where
-  smul f X hf hX := hcov.torsionAux_smul_left_apply Y hf hX
-  add X X' hX hX' := hcov.torsionAux_add_left_apply Y hX hX'
+  smul hf hX := hcov.torsionAux_smul_left_apply Y hf hX
+  add hX hX' := hcov.torsionAux_add_left_apply Y hX hX'
 
 -- TODO inline the lemmas that go into this
 theorem torsionAux_tensorial₂ (hcov : IsCovariantDerivativeOn E cov) (x : M)
     (X : Π x, TangentSpace I x) :
     TensorialAt I E (torsionAux cov X · x) x where
-  smul f Y hf hY := hcov.torsionAux_smul_right_apply X hf hY
-  add Y Y' hY hY' := hcov.torsionAux_add_right_apply X hY hY'
+  smul hf hY := hcov.torsionAux_smul_right_apply X hf hY
+  add hY hY' := hcov.torsionAux_add_right_apply X hY hY'
 
 variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
 
 noncomputable def torsion (hcov : IsCovariantDerivativeOn E cov univ) (x : M) :
     TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] TangentSpace I x :=
-  TensorialAt.mkHom₂ (torsionAux cov · · x)
+  TensorialAt.mkHom₂ (torsionAux cov · · x) _
     (fun τ _ ↦ hcov.torsionAux_tensorial₁ x τ)
     (fun σ _ ↦ hcov.torsionAux_tensorial₂ x σ)
 

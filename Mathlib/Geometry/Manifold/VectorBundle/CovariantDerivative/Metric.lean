@@ -315,20 +315,20 @@ private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
 
 theorem metricTensorAux_tensorial₁ (x : M) (τ : Π x, TangentSpace I x) (hτ : MDiffAt (T% τ) x) :
     TensorialAt I E (metricTensorAux I cov · τ x) x where
-  smul _ _ hf hσ := aux1 cov hf hσ hτ
-  add σ σ' hσ hσ' := aux2 cov σ σ' τ hσ hσ' hτ
+  smul hf hσ := aux1 cov hf hσ hτ
+  add hσ hσ' := aux2 cov _ _ _ hσ hσ' hτ
 
 theorem metricTensorAux_tensorial₂ (x : M) (σ : Π x, TangentSpace I x) (hσ : MDiffAt (T% σ) x) :
     TensorialAt I E (metricTensorAux I cov σ · x) x where
-  smul _ _ hf hτ := aux3 cov hf hσ hτ
-  add τ τ' hτ hτ' := aux4 cov σ τ τ' hσ hτ hτ'
+  smul hf hτ := aux3 cov hf hσ hτ
+  add hτ hτ' := aux4 cov _ _ _ hσ hτ hτ'
 
 variable {I} in
 /-- The tensor `(X, Y, Z) ↦ ∇ₓ g(Y, Z) - g(∇ₓ Y, Z) - g(Y, ∇ₓ Z)` defining when a connection
 `∇` on a Riemannian manifold `(M, g)` is compatible with the metric `g`. -/
 @[no_expose] noncomputable def metricTensor [FiniteDimensional ℝ E] (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
-  TensorialAt.mkHom₂ (metricTensorAux I cov · · x)
+  TensorialAt.mkHom₂ (metricTensorAux I cov · · x) _
     (metricTensorAux_tensorial₁ I cov x) (metricTensorAux_tensorial₂ I cov x)
 
 variable {I} in

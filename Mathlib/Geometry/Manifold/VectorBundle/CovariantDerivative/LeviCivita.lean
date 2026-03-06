@@ -587,14 +587,14 @@ noncomputable def lcAux₀' (Y : Π x : M, TangentSpace I x) (x : M)
 theorem leviCivitaRhs_tensorial₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) (Z : Π x, TangentSpace I x) :
     TensorialAt I E (lcAux₀' I Y x · Z x) x where
-  smul f X hf hX := by
+  smul hf hX := by
     dsimp [lcAux₀']
     rw [if_pos hX, if_pos]
     · split_ifs with hZ
       · exact leviCivitaRhs_smulX_apply hf hX hY hZ
       · simp
     · exact hf.smul_section hX
-  add X₁ X₂ hX₁ hX₂ := by
+  add hX₁ hX₂ := by
     dsimp [lcAux₀']
     rw [if_pos hX₁, if_pos hX₂, if_pos]
     · split_ifs with hZ
@@ -606,12 +606,12 @@ theorem leviCivitaRhs_tensorial₂ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) (X : Π x, TangentSpace I x)
     (hX : MDiffAt (T% X) x) :
     TensorialAt I E (lcAux₀' I Y x X · x) x where
-  smul f Z hf hZ := by
+  smul hf hZ := by
     dsimp [lcAux₀']
     rw [if_pos hX, if_pos hZ, if_pos, if_pos hX]
     · exact leviCivitaRhs_smulZ_apply I hf hX hY hZ
     · exact hf.smul_section hZ
-  add Z₁ Z₂ hZ₁ hZ₂ := by
+  add hZ₁ hZ₂ := by
     dsimp [lcAux₀']
     rw [if_pos hZ₁, if_pos hZ₂, if_pos hX, if_pos, if_pos hX, if_pos hX]
     · exact leviCivitaRhs_addZ_apply I hX hY hZ₁ hZ₂
