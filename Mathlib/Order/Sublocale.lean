@@ -238,8 +238,8 @@ instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublo
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms Sublocale.instCoframeMinimalAxioms
 
-lemma Sublocale.univ_eq_top : (⟨univ, fun _ _ ↦ trivial, fun _ _ a ↦ a⟩ : Sublocale X) = ⊤ :=
-  le_antisymm le_top (fun _ _ ↦ trivial)
+lemma Sublocale.univ_eq_top : (⟨univ, fun _ _ ↦ mem_univ _, fun _ _ a ↦ a⟩ : Sublocale X) = ⊤ :=
+  le_antisymm le_top (fun _ _ ↦ mem_univ _)
 
 lemma Sublocale.singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ :=
   le_antisymm (fun i h ↦ by simp_all [Sublocale.top_mem]) bot_le
@@ -249,7 +249,7 @@ An open sublocale is defined by an element of the locale.
 -/
 @[ext]
 structure Open (X : Type*) [Order.Frame X] where
-  /-- The element of an open sublocale. Do not use this directly, use `Open.get_element` instead. -/
+  /-- The element of an open sublocale. Do not use this directly, use `Open.getElement` instead. -/
   element : X
 
 namespace Open
@@ -265,7 +265,7 @@ variable {U V : Open X}
 /--
 The order of open sublocales is determined by their element.
 -/
-def get_element : Open X ≃o X where
+def getElement : Open X ≃o X where
   toFun x := x.element
   invFun x := ⟨x⟩
   left_inv x := rfl
@@ -273,9 +273,9 @@ def get_element : Open X ≃o X where
   map_rel_iff' := by aesop
 
 instance : Coe (Open X) X where
-  coe U := U.get_element
+  coe U := U.getElement
 
-lemma le_def : U ≤ V ↔ U.get_element ≤ V.get_element := ge_iff_le
+lemma le_def : U ≤ V ↔ U.getElement ≤ V.getElement := ge_iff_le
 
 /--
 The nucleus corresponding to an open Sublocale with the Element `U` has the function
@@ -290,7 +290,7 @@ def toNucleus (U : Open X) : Nucleus X where
 instance : Coe (Open X) (Nucleus X) where
   coe U := U.toNucleus
 
-instance : CompleteLattice (Open X) := get_element.symm.toGaloisInsertion.liftCompleteLattice
+instance : CompleteLattice (Open X) := getElement.symm.toGaloisInsertion.liftCompleteLattice
 
 instance : Order.Frame (Open X) := .ofMinimalAxioms ⟨fun a s  ↦ by
   simp [Open.le_def, OrderIso.map_inf, OrderIso.map_sSup, OrderIso.map_iSup, inf_iSup_eq]⟩
@@ -329,7 +329,7 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
       and_imp]
       intro i h1 h2
       rw [← himp_himp, ← @i.idempotent _ _ x]
-      exact le_trans (h1 (get_element b ⇨ x)) (le_trans Nucleus.map_himp_le (h2 (i x)))
+      exact le_trans (h1 (getElement b ⇨ x)) (le_trans Nucleus.map_himp_le (h2 (i x)))
     · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def, le_himp_iff,
       iInf_inf, iInf_le_iff, le_inf_iff, le_iInf_iff, and_imp]
       intro y h1
