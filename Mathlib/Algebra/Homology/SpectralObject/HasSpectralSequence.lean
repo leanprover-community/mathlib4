@@ -227,7 +227,7 @@ def coreE₂CohomologicalFin (l : ℕ) :
   i₀_prev := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hrr' hr
     ext
-    dsimp at h₁ h₂ ⊢
+    dsimp
     lia
   i₃_next := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hrr' hr
