@@ -48,7 +48,7 @@ lemma condExp_mem_convex [IsFiniteMeasure μ] [HereditarilyLindelofSpace E] (hm 
   exact hb
 
 /-- Conditional Jensen's inequality for hereditarily Lindelof Spaces. -/
-private lemma conditional_jensen_of_hereditarilyLindelofSpace [IsFiniteMeasure μ]
+private lemma conditional_jensen_hereditarilyLindelofSpace [IsFiniteMeasure μ]
     [HereditarilyLindelofSpace E] (hm : m ≤ mα) (hφ_cvx : ConvexOn ℝ s φ)
     (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) (hs : IsClosed s)
     (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
@@ -68,7 +68,7 @@ private lemma conditional_jensen_of_hereditarilyLindelofSpace [IsFiniteMeasure �
   simpa [iSup_congr hp] using ciSup_le hw
 
 /-- Conditional Jensen's inequality for finite measures. -/
-private theorem conditional_jensen_of_finiteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
+private theorem conditional_jensen_finiteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
     (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
@@ -105,7 +105,7 @@ private theorem conditional_jensen_of_finiteMeasure [IsFiniteMeasure μ] (hm : m
     φ ∘ μ[f | m]
       =ᵐ[μ] φY ∘ μ[fY | m] := by filter_upwards [lem2] with a ha; simp [φY, ha]
     _ ≤ᵐ[μ] μ[φY ∘ fY | m] := by
-      refine conditional_jensen_of_hereditarilyLindelofSpace
+      refine conditional_jensen_hereditarilyLindelofSpace
         (s := Y.subtypeL ⁻¹' s) hm ?_ ?_ ?_ ?_ hfY_int (Integrable.congr hφ_int lem3)
       · exact hφ_cvx.comp_linearMap Y.subtype
       · exact hφ_cont.comp (by fun_prop) fun x => by grind
@@ -129,7 +129,7 @@ theorem conditional_jensen (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   have h1 := condExp_restrict_ae_eq_restrict hm ht hf_int
   have h2 := condExp_restrict_ae_eq_restrict hm ht hφ_int
   have : Fact (μ (spanningSets (μ.trim hm) n) < ⊤) := fact_iff.2 <| (le_trim hm).trans_lt ht'
-  have h3 := conditional_jensen_of_finiteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n)) hm
+  have h3 := conditional_jensen_finiteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n)) hm
     hφ_cvx hφ_cont (ae_restrict_of_ae hf) hs hf_int.restrict hφ_int.restrict
   borelize E
   filter_upwards [h1, h2, h3] with a ha hb hc
