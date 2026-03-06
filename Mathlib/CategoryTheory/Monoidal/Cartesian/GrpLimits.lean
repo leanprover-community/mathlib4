@@ -5,8 +5,10 @@ Authors: Thomas Browning, Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
+public import Mathlib.Algebra.Group.Invertible.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.ShrinkYoneda
+public import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 
 /-!
 # Limits in `Grp C`
