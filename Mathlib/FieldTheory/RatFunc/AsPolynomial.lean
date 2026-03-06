@@ -348,9 +348,8 @@ open Valuation
 @[grind =, simp]
 lemma valuation_monomial_eq_valuation_X_pow (n : ℕ) {a : K} (ha : a ≠ 0) :
     v (monomial n a) = v RatFunc.X ^ n := by
-  grind =>
-    have : monomial n a = C a * X ^ n
-    finish
+  simp [RatFunc.coePolynomial, ← C_mul_X_pow_eq_monomial, ← algebraMap_eq_C,
+    IsTrivialOn.eq_one _ ha]
 
 /-- If a valuation `v` is trivial on constants and `1 < v RatFunc.X` then for every polynomial `p`,
 `v p = v RatFunc.X ^ p.natDegree`.
