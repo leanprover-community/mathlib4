@@ -102,10 +102,6 @@ scoped[Manifold] notation M " ≃ₘ^" n:1000 "⟮" I ", " J "⟯ " N => Diffeom
 /-- Infinitely differentiable diffeomorphism between `M` and `M'` with respect to `I` and `I'`. -/
 scoped[Manifold] notation M " ≃ₘ⟮" I ", " J "⟯ " N => Diffeomorph I J M N ∞
 
-/-- Infinitely differentiable diffeomorphism between `M` and `M'` with respect to `I` and `I'`:
-try to infer the models with corners on `M` and `M'` automatically. -/
-scoped[Manifold] notation M " ≃ₘ" N => Diffeomorph% M N ∞
-
 -- Porting note: this notation is broken because `n[𝕜]` gets parsed as `getElem`
 /-- `n`-times continuously differentiable diffeomorphism between `E` and `E'`. -/
 scoped[Manifold] notation E " ≃ₘ^" n:1000 "[" 𝕜 "] " E' => Diffeomorph 𝓘(𝕜, E) 𝓘(𝕜, E') E E' n
