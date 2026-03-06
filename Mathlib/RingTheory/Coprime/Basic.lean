@@ -507,4 +507,3 @@ theorem neg_neg_iff (x y : R) : IsRelPrime (-x) (-y) ↔ IsRelPrime x y :=
   (neg_left_iff _ _).trans (neg_right_iff _ _)
 
 end IsRelPrime
-
