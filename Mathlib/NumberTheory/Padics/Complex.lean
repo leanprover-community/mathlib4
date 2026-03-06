@@ -102,12 +102,14 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
   rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
+open MonoidWithZeroHom.ValueGroup₀
+
 set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `PadicAlgCl p` has rank one. -/
 instance : RankOne (PadicAlgCl.valued p).v where
-  hom         := MonoidWithZeroHom.id ℝ≥0
-  strictMono' := strictMono_id
+  hom'        := embedding
+  strictMono' := embedding_strictMono
   exists_val_nontrivial := by
     use p
     have hp : Nat.Prime p := hp.1
@@ -148,7 +150,7 @@ instance valued : Valued ℂ_[p] ℝ≥0 := Valued.valuedCompletion
 set_option backward.isDefEq.respectTransparency false in
 /-- The valuation on `ℂ_[p]` extends the valuation on `PadicAlgCl p`. -/
 theorem valuation_extends (x : PadicAlgCl p) : Valued.v (x : ℂ_[p]) = Valued.v x :=
-  Valued.extension_extends _
+  Valued.extensionValuation_apply_coe _
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coe_eq (x : PadicAlgCl p) : (x : ℂ_[p]) = algebraMap (PadicAlgCl p) ℂ_[p] x := rfl
@@ -169,12 +171,14 @@ theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]), ← coe_eq, valuation_extends,
     PadicAlgCl.valuation_p]
 
+open MonoidWithZeroHom.ValueGroup₀
+
 set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `ℂ_[p]` has rank one. -/
 instance : RankOne (PadicComplex.valued p).v where
-  hom         := MonoidWithZeroHom.id ℝ≥0
-  strictMono' := strictMono_id
+  hom'        := embedding
+  strictMono' := embedding_strictMono
   exists_val_nontrivial := by
     use p
     have hp : Nat.Prime p := hp.1
@@ -182,8 +186,8 @@ instance : RankOne (PadicComplex.valued p).v where
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩
 
-lemma rankOne_hom_eq :
-    RankOne.hom (PadicComplex.valued p).v = RankOne.hom (PadicAlgCl.valued p).v := rfl
+@[simp]
+theorem RankOne.hom_eq_embedding : RankOne.hom (PadicComplex.valued p).v = embedding := rfl
 
 /-- `ℂ_[p]` is a normed field, where the norm extends from `PadicAlgCl` along completion. -/
 instance normedField : NormedField ℂ_[p] := inferInstance
@@ -215,7 +219,8 @@ theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.norm := by
     letI := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup
     exact @uniformContinuous_norm ℂ_[p] this
   · intro x
-    simp only [Valued.norm_def, valuation_extends]
+    simp only [Valued.norm_def, RankOne.hom_eq_embedding]
+    erw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends]
     exact (PadicAlgCl.valuation_coe p x).symm
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
