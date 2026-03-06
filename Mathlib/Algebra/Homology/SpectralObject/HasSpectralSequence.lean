@@ -274,8 +274,7 @@ the property which allows to construct a spectral sequence by using the recipe g
 by `data`. The conditions given allow to show that the homology of a page identifies
 to the next page. -/
 class HasSpectralSequence : Prop where
-  isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (pq : κ)
-    (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
+  isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
     (n : ℤ) (hn : n = data.deg pq + 1 )
     (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
       IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₀_le r r' pq))))
