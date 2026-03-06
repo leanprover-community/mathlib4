@@ -57,6 +57,8 @@ lemma tendsto_charFun_sqrt_inv_mul_pow {X : Ω → ℝ}
   apply tendsto_pow_exp_of_isLittleO_sub_add_div
   suffices (fun (n : ℕ) ↦ charFun (Measure.map X P) ((√n)⁻¹ * t) -
       (1 + (-(((√n)⁻¹ * t) ^ 2 / 2) : ℂ))) =o[atTop] fun n ↦ ((√n)⁻¹ * t) ^ 2 by
+    have aux : (fun (n : ℕ) ↦ ‖(1 / n : ℂ)‖) = fun (n : ℕ) ↦ ‖(1 / n : ℝ)‖ := by simp
+    rw [← Asymptotics.isLittleO_norm_right, aux, Asymptotics.isLittleO_norm_right]
     refine .of_const_mul_right (c := t ^ 2) ?_
     convert this using 4 with n <;> norm_cast <;> simp [field]
   have : Tendsto (fun (n : ℕ) ↦ (√n)⁻¹ * t) atTop (𝓝 0) := by

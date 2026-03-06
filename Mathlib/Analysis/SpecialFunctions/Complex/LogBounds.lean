@@ -367,7 +367,7 @@ lemma tendsto_one_add_div_pow_exp (t : ℂ) :
 set_option backward.isDefEq.respectTransparency false
 /-- `(1 + t/n + o(1/n)) ^ n → exp t` for `t ∈ ℂ`. -/
 lemma tendsto_pow_exp_of_isLittleO_sub_add_div {f : ℕ → ℂ} (t : ℂ)
-    (hf : (fun n ↦ f n - (1 + t / n)) =o[atTop] fun n ↦ 1 / (n : ℝ)) :
+    (hf : (fun n ↦ f n - (1 + t / n)) =o[atTop] fun n ↦ 1 / (n : ℂ)) :
     Tendsto (fun n ↦ f n ^ n) atTop (𝓝 (exp t)) := by
   rw [show (fun n ↦ f n ^ n) = (fun n ↦ (1 + (f n - 1)) ^ n) by ext; simp]
   refine tendsto_one_add_pow_exp_of_tendsto (tendsto_sub_nhds_zero_iff.1 ?_)
