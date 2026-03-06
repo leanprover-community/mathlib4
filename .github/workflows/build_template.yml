@@ -23,7 +23,7 @@ on:
       mathlib_ci_ref:
         type: string
         required: false
-        default: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+        default: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
