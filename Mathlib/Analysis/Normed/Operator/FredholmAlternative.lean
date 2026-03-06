@@ -52,14 +52,14 @@ This is a useful step in the proof of the Fredholm alternative for compact opera
 theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T) (hμ : μ ≠ 0)
     (h : ¬ HasEigenvalue (T : End 𝕜 X) μ) :
     ∃ K, AntilipschitzWith K (T - μ • 1 : X →L[𝕜] X) := by
-  -- Suppose not, and attempt to find an eigenvector with eigenvalue μ.
+  -- Suppose not, and attempt to find an eigenvector with eigenvalue `μ`.
   rw [antilipschitzWith_iff_exists_mul_le_norm]
   contrapose! h
-  -- then for every K > 0, there is some x such that ‖(T - μ • 1) x‖ < K * ‖x‖.
+  -- then for every `K > 0`, there is some `x` such that `‖(T - μ • 1) x‖ < K * ‖x‖`.
   replace hK : ∀ K > 0, ∃ x, ‖(T - μ • 1) x‖ < K * ‖x‖ := h
-  -- In fact, there is a lower bound `c` such that for every ε > 0, there is an `x` with norm
+  -- In fact, there is a lower bound `c` such that for every `ε > 0`, there is an `x` with norm
   -- in the interval `[c, 1]` such that `‖(T - μ • 1) x‖ < ε`.
-  -- (In the case of an RCLike field, where we can rescale, we could even get `‖x‖ = 1`, but we
+  -- (In the case of an `RCLike` field, where we can rescale, we could even get `‖x‖ = 1`, but we
   -- don't need that.)
   replace hK : ∃ c > 0, ∀ ε > 0, ∃ x, ‖x‖ ≤ 1 ∧ c ≤ ‖x‖ ∧ ‖(T - μ • 1) x‖ < ε := by
     obtain ⟨C, hC⟩ := NormedField.exists_one_lt_norm 𝕜
@@ -77,7 +77,7 @@ theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T) (hμ : μ 
   have (n : ℕ) : ∃ x, ‖x‖ ≤ 1 ∧ c ≤ ‖x‖ ∧ ‖(T - μ • 1) x‖ < φ n := hc (φ n) (hφ_pos n)
   choose x hx_norm_upper hx_norm_lower hx_bound using this
   have hx_lim : Tendsto (fun n ↦ (T - μ • 1) (x n)) atTop (𝓝 0) := squeeze_zero_norm (by grind) hφ
-  -- Define the sequence of vectors yₙ := T xₙ
+  -- Define the sequence of vectors `yₙ := T xₙ`
   let y_ (n : ℕ) : X := T (x n)
   -- which are bounded away from zero.
   have hy_lower : ∃ d > 0, ∀ᶠ n in atTop, d ≤ ‖y_ n‖ := by
@@ -87,27 +87,27 @@ theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T) (hμ : μ 
     have h₂ : ‖μ‖ * ‖x n‖ ≤ ‖T (x n)‖ + ‖T (x n) - μ • x n‖ := by
       simpa [norm_smul] using norm_le_norm_add_norm_sub (T (x n)) (μ • x n)
     linear_combination h₂ + h₁ + hn + ‖μ‖ * hx_norm_lower n
-  -- The sequence yₙ is contained in the image of the closed unit ball under T, which is compact,
-  -- since T is, so we can extract a convergent subsequence, and say y_ (ψ n) → y.
+  -- The sequence `yₙ` is contained in the image of the closed unit ball under `T`,
+  -- which is compact, since `T` is,
+  -- so we can extract a convergent subsequence, and say `y_ (ψ n) → y`.
   obtain ⟨K, hK, hK'⟩ := hT.image_closedBall_subset_compact 1
   obtain ⟨y, hyK, ψ, hψ, hψy⟩ := hK.tendsto_subseq (x := y_) (fun n ↦ hK' ⟨x n, by simp [*], rfl⟩)
-  -- However (T - μ • 1) yₙ = T ((T - μ • 1) xₙ) → 0
+  -- However `(T - μ • 1) yₙ = T ((T - μ • 1) xₙ) → 0`
   have hy_lim : Tendsto (fun n ↦ (T - μ • 1) (y_ n)) atTop (𝓝 0) := by
-    have : Tendsto (fun n ↦ _) _ _ := T.continuous.continuousAt.tendsto.comp hx_lim
-    simpa using this
-  -- so (T - μ • 1) y = 0.
+    simpa [Function.comp_def] using T.continuous.continuousAt.tendsto.comp hx_lim
+  -- so `(T - μ • 1) y = 0`.
   have hy_eigen' : (T - μ • 1) y = 0 := by
     apply tendsto_nhds_unique _ (hy_lim.comp hψ.tendsto_atTop)
     have : Continuous (T - μ • 1 : X →L[𝕜] X) := by fun_prop
     exact this.continuousAt.tendsto.comp hψy
-  -- Since yₙ are bounded away from 0, we must have y ≠ 0.
+  -- Since `yₙ` are bounded away from `0`, we must have `y ≠ 0`.
   have hy_ne : y ≠ 0 := by
     obtain ⟨d, hd₀, hd⟩ := hy_lower
     rintro rfl
     suffices ∀ᶠ n : ℕ in atTop, False by rwa [eventually_const] at this
     rw [NormedAddGroup.tendsto_nhds_zero] at hψy
     filter_upwards [hψ.tendsto_atTop.eventually hd, hψy d (by positivity)] using by grind
-  -- So y is an eigenvector of T with eigenvalue μ,
+  -- So `y` is an eigenvector of `T` with eigenvalue `μ`,
   have : HasEigenvector (T : End 𝕜 X) μ y := by
     simpa [hasEigenvector_iff, mem_genEigenspace_one, hy_ne, sub_eq_zero] using hy_eigen'
   -- which is a contradiction.
@@ -161,7 +161,7 @@ theorem hasEigenvalue_or_mem_resolventSet (hT : IsCompactOperator T) (hμ : μ �
   -- Suppose not, then `μ` is not an eigenvalue and is in the spectrum.
   by_contra!
   obtain ⟨h₁, h₂⟩ := this
-  -- Defining S := T - μ • 1, we deduce that S is antilipschitz and not surjective.
+  -- Defining S := `T - μ • 1`, we deduce that S is antilipschitz and not surjective.
   let S := T - μ • 1
   obtain ⟨K, hK : AntilipschitzWith K S⟩ := antilipschitz_of_not_hasEigenvalue hT hμ h₁
   replace h₂ : ¬ (S : X → X).Bijective := by
