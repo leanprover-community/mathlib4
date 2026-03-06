@@ -32,14 +32,14 @@ set_option backward.isDefEq.respectTransparency false in
 for the Zariski topology and satisfies the sheaf property for all single object coverings
 `{ f : Spec S ⟶ Spec R }` where `f` satisifies `P`. -/
 @[stacks 022H]
-nonrec lemma isSheaf_type_propqcTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ Type*)
+nonrec lemma isSheaf_type_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ Type*)
     [IsZariskiLocalAtSource P] :
     Presieve.IsSheaf (propQCTopology P) F ↔
       Presieve.IsSheaf Scheme.zariskiTopology F ∧
         ∀ {R S : CommRingCat.{u}} (f : R ⟶ S), P (Spec.map f) → Surjective (Spec.map f) →
           Presieve.IsSheafFor F (.singleton (Spec.map f)) := by
   refine ⟨fun hF ↦ ⟨?_, fun {R S} f hf hs ↦ ?_⟩, fun ⟨hzar, hff⟩ ↦ ?_⟩
-  · exact Presieve.isSheaf_of_le _ zariskiTopology_le_propqcTopology hF
+  · exact Presieve.isSheaf_of_le _ zariskiTopology_le_propQCTopology hF
   · apply hF.isSheafFor
     rw [← Hom.presieve₀_cover _ hf]
     exact Cover.mem_propQCTopology _
@@ -96,13 +96,13 @@ variable {A : Type*} [Category* A]
 for the Zariski topology and satisfies the sheaf property for all single object coverings
 `{ f : Spec S ⟶ Spec R }` where `f` satisifies `P`. -/
 @[stacks 022H]
-nonrec lemma isSheaf_propqcTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ A)
+nonrec lemma isSheaf_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ A)
     [IsZariskiLocalAtSource P] :
     Presheaf.IsSheaf (propQCTopology P) F ↔
       Presheaf.IsSheaf Scheme.zariskiTopology F ∧
         ∀ {R S : CommRingCat.{u}} (f : R ⟶ S), P (Spec.map f) → Surjective (Spec.map f) →
           ∀ (M : A),
           Presieve.IsSheafFor (F ⋙ coyoneda.obj (.op M)) (.singleton (Spec.map f)) := by
-  grind [Presheaf.IsSheaf, isSheaf_type_propqcTopology_iff]
+  grind [Presheaf.IsSheaf, isSheaf_type_propQCTopology_iff]
 
 end AlgebraicGeometry

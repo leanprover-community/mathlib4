@@ -188,6 +188,9 @@ abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[
 
 variable [GradedAlgebra 𝒜]
 
+instance (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R] [Algebra R₀ A] [IsScalarTower R₀ R A]
+    [i : GradedAlgebra 𝒜] : GradedAlgebra (𝒜 · |>.restrictScalars R₀) := { i with }
+
 namespace DirectSum
 
 /-- If `A` is graded by `ι` with degree `i` component `𝒜 i`, then it is isomorphic as

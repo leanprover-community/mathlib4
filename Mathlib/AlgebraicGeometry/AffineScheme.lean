@@ -649,7 +649,7 @@ lemma algebraMap_Spec_obj {R : CommRingCat} {U} : algebraMap R Γ(Spec R, U) =
 instance {R : CommRingCat} {f : R} :
     IsLocalization.Away f Γ(Spec R, PrimeSpectrum.basicOpen f) :=
   inferInstanceAs (IsLocalization.Away f
-    ((Spec.structureSheaf R).val.obj (op <| PrimeSpectrum.basicOpen f)))
+    ((Spec.structureSheaf R).obj.obj (op <| PrimeSpectrum.basicOpen f)))
 
 /-- Given an affine open U and some `f : U`,
 this is the canonical map `Γ(𝒪ₓ, D(f)) ⟶ Γ(Spec 𝒪ₓ(U), D(f))`
