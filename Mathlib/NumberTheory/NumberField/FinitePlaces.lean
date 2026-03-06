@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
+public import Mathlib.RingTheory.Ideal.Int
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
