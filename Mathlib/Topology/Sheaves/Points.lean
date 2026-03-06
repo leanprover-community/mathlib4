@@ -59,7 +59,7 @@ def pointsGrothendieckTopology : ObjectProperty (Point.{u} (grothendieckTopology
   deriving ObjectProperty.Small.{u}
 
 variable (X) in
-lemma isConservative_pointsGrothendieckTopology :
+lemma isConservativeFamilyOfPoints_pointsGrothendieckTopology :
     (pointsGrothendieckTopology X).IsConservativeFamilyOfPoints :=
   .mk' (fun U S hS x hx ↦ by
     obtain ⟨V, f, hf, ⟨⟨hV⟩⟩, _⟩ := hS ⟨_, ⟨x⟩⟩ ⟨⟨hx⟩⟩
