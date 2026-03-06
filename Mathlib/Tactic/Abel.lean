@@ -8,6 +8,7 @@ module
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Tactic.TryThis
+public meta import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic

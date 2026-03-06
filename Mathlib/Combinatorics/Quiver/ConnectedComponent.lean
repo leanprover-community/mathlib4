@@ -20,7 +20,7 @@ We define:
 * `Quiver.IsStronglyConnected V`: every pair of vertices is connected by a (possibly empty) path.
 * `Quiver.IsSStronglyConnected V`: every pair of vertices is connected by a path of positive length.
 * `Quiver.StronglyConnectedComponent V`: the quotient by the equivalence relation “paths in both
-directions”.
+  directions”.
 
 These concepts relate strong and weak connectivity and let us reason about strongly connected
 components in directed graphs.
@@ -71,7 +71,7 @@ variable {V}
 /-- A wide subquiver `H` of `Symmetrify V` determines a wide subquiver of `V`, containing an
 arrow `e` if either `e` or its reversal is in `H`. -/
 def wideSubquiverSymmetrify (H : WideSubquiver (Symmetrify V)) : WideSubquiver V :=
-  fun _ _ ↦ { e | H _ _ (Sum.inl e) ∨ H _ _ (Sum.inr e) }
+  fun a b ↦ {e | .inl e ∈ H a b ∨ .inr e ∈ H b a}
 
 /-!
 ## Strongly connected components (directed connectivity)
