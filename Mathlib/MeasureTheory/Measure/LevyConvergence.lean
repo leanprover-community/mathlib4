@@ -5,12 +5,13 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.IntegralCharFun
-public import Mathlib.MeasureTheory.Measure.TightNormed
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+public import Mathlib.MeasureTheory.Measure.Tight
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
-import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+import Mathlib.MeasureTheory.Measure.IntegralCharFun
 import Mathlib.MeasureTheory.Measure.Prokhorov
+import Mathlib.MeasureTheory.Measure.TightNormed
 
 /-!
 # Lévy's convergence theorem
@@ -150,51 +151,33 @@ and the integrals of elements of `A` with respect to `μ` converge to the integr
 with respect to `μ₀`, then `μ` converges weakly to `μ₀`. -/
 lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCLike 𝕜]
     {E : Type*} [MetricSpace E] [CompleteSpace E] [SecondCountableTopology E]
-    [MeasurableSpace E] [BorelSpace E] {ι : Type*} {l : Filter ι}
-    [l.NeBot]
+    [MeasurableSpace E] [BorelSpace E] {ι : Type*} {𝓕 : Filter ι}
     {μ : ι → ProbabilityMeasure E} (h_tight : IsTightMeasureSet {(μ n : Measure E) | n})
     {μ₀ : ProbabilityMeasure E}
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
-    (heq : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) l (𝓝 (∫ x, g x ∂μ₀))) :
-    Tendsto μ l (𝓝 μ₀) := by
-  rw [Filter.tendsto_iff_ultrafilter]
-  intro g hg
-  -- refine Filter.tendsto_of_subseq_tendsto fun ns hns ↦ ?_
+    (hμ : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) 𝓕 (𝓝 (∫ x, g x ∂μ₀))) :
+    Tendsto μ 𝓕 (𝓝 μ₀) := by
+  obtain rfl | _ := 𝓕.eq_or_neBot
+  · simp
+  refine (Filter.tendsto_iff_ultrafilter _ _ _).2 fun U hU ↦ ?_
   have h_compact : IsCompact (closure {μ n | n}) :=
-    isCompact_closure_of_isTightMeasureSet (S := {μ n | n}) (by simpa using h_tight)
-  have : g.map μ ≤ 𝓟 (closure {μ n | n}) := by
-    simp
-    apply hg
-    convert univ_mem
-    ext n
-    simp
-    refine subset_closure ?_
-    simp
-  obtain ⟨μ', h1, h2 : Filter.Tendsto μ g (𝓝 μ')⟩ := h_compact.ultrafilter_le_nhds (g.map μ) this
-
-  -- obtain ⟨μ', hμ'_mem, φ, hφ_mono, hφ_tendsto⟩ : ∃ μ' ∈ closure {μ n | n},
-  --     ∃ φ, StrictMono φ ∧ Tendsto ((fun n ↦ μ (ns n)) ∘ φ) atTop (𝓝 μ') :=
-  --   h_compact.tendsto_subseq fun n ↦ subset_closure ⟨ns n, rfl⟩
-  -- refine ⟨φ, ?_⟩
-
-  suffices μ' = μ₀ from this ▸ h2
-  suffices (μ' : Measure E) = μ₀ by ext; rw [this]
+    isCompact_closure_of_isTightMeasureSet (by simpa using h_tight)
+  obtain ⟨μ', -, hμ' : Tendsto _ _ _⟩ := h_compact.ultrafilter_le_nhds (U.map μ)
+    (.trans (by simp) (monotone_principal subset_closure))
+  suffices (μ' : Measure E) = μ₀ by convert hμ'; ext; rw [this]
   refine ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA
-    fun a ha ↦ ?_
-  specialize heq a ha
-  suffices Tendsto (fun n ↦ ∫ x, a x ∂(μ n)) g (𝓝 (∫ x, a x ∂μ')) from
-    tendsto_nhds_unique this (heq.comp hg)
-  rw [ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜] at h2
-  exact h2 a
+    fun g hg ↦ tendsto_nhds_unique ?_ ((hμ g hg).comp hU)
+  rw [ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜] at hμ'
+  exact hμ' g
 
-variable {ι : Type*} {l : Filter ι} {μ₀ : ProbabilityMeasure E}
+variable {ι : Type*} {𝓕 : Filter ι} {μ₀ : ProbabilityMeasure E}
 
 set_option backward.isDefEq.respectTransparency false
 omit [FiniteDimensional ℝ E] in
 lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → ProbabilityMeasure E}
-    (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) l (𝓝 (charFun μ₀ t)))
+    (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) 𝓕 (𝓝 (charFun μ₀ t)))
     {g : E →ᵇ ℂ} (hg : g ∈ charPoly continuous_probChar (L := innerₗ E) continuous_inner) :
-    Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) l (𝓝 (∫ x, g x ∂μ₀)) := by
+    Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) 𝓕 (𝓝 (∫ x, g x ∂μ₀)) := by
   rw [mem_charPoly] at hg
   obtain ⟨w, hw⟩ := hg
   have h_eq (μ : Measure E) (hμ : IsProbabilityMeasure μ) :
