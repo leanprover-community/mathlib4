@@ -26,7 +26,7 @@ ideal, filter, prime, distributive lattice
 (1938)][Sto1938]
 -/
 
-@[expose] public section
+public section
 
 
 universe u
@@ -45,6 +45,8 @@ lemma mem_ideal_sup_principal (a b : α) (J : Ideal α) : b ∈ J ⊔ principal 
   ⟨fun ⟨j, ⟨jJ, _, ha', bja'⟩⟩ => ⟨j, jJ, le_trans bja' (sup_le_sup_left ha' j)⟩,
     fun ⟨j, hj, hbja⟩ => ⟨j, hj, a, le_refl a, hbja⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
     ∃ J : Ideal α, (IsPrime J) ∧ I ≤ J ∧ Disjoint (F : Set α) J := by
   -- Let S be the set of ideals containing I and disjoint from F.
@@ -112,7 +114,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   have ineq : c₁ ⊓ c₂ ≤ b ⊔ (a₁ ⊓ a₂) :=
   calc
     c₁ ⊓ c₂ ≤ (b₁ ⊔ a₁) ⊓ (b₂ ⊔ a₂) := inf_le_inf cba₁ cba₂
-    _       ≤ (b  ⊔ a₁) ⊓ (b  ⊔ a₂) := by gcongr; exacts [le_sup_left, le_sup_right]
+    _       ≤ (b ⊔ a₁) ⊓ (b ⊔ a₂) := by gcongr; exacts [le_sup_left, le_sup_right]
     _       = b ⊔ (a₁ ⊓ a₂) := (sup_inf_left b a₁ a₂).symm
   -- Note that c₁ ⊓ c₂ ∈ F, since c₁ and c₂ are both in F and F is a filter.
   -- Since F is an upper set, it now follows that b ⊔ (a₁ ⊓ a₂) ∈ F.

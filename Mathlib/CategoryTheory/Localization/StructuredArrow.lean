@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Opposite
 
-variable {C D D' : Type*} [Category C] [Category D] [Category D']
+variable {C D D' : Type*} [Category* C] [Category* D] [Category* D']
 
 namespace Localization
 
@@ -39,6 +39,7 @@ section
 variable (W : MorphismProperty C) (L : C ⥤ D) (L' : C ⥤ D')
   [L.IsLocalization W] [L'.IsLocalization W] {X : C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `StructuredArrow (L.obj X) L ≃ StructuredArrow (L'.obj X) L'`
 when `L` and `L'` are two localization functors for the same class of morphisms. -/
 @[simps]
@@ -80,7 +81,7 @@ private lemma induction_structuredArrow'
   induction f with
   | nil => exact hP₀
   | cons f g hf =>
-      obtain (g|⟨w, hw⟩) := g
+      obtain (g | ⟨w, hw⟩) := g
       · exact hP₁ g _ hf
       · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using hP₂ w hw _ hf
 
@@ -92,6 +93,7 @@ variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {X : C}
   (P : StructuredArrow (L.obj X) L → Prop)
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 lemma induction_structuredArrow
     (hP₀ : P (StructuredArrow.mk (𝟙 (L.obj X))))

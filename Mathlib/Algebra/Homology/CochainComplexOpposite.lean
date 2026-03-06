@@ -24,7 +24,7 @@ noncomputable section
 
 open Opposite CategoryTheory Limits
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 namespace ComplexShape
 
@@ -85,6 +85,7 @@ section
 
 variable {K L : CochainComplex C ℤ} {f g : K ⟶ L}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an homotopy between morphisms of cochain complexes indexed by `ℤ`,
 this is the corresponding homotopy between morphisms of cochain complexes
 in the opposite category. -/
@@ -117,6 +118,7 @@ lemma homotopyOp_hom_eq (h : Homotopy f g)
   obtain rfl : q' = -q := by lia
   simp [homotopyOp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between two morphisms of cochain complexes indexed by `ℤ`
 which correspond to an homotopy between morphisms of cochain complexes
 in the opposite category. -/
@@ -177,5 +179,18 @@ def homotopyOpEquiv {K L : CochainComplex C ℤ} {f g : K ⟶ L} :
     ext p q
     simp [homotopyOp_hom_eq _ p q (-p) (-q),
       homotopyUnop_hom_eq _ (-q) (-p) q p]
+
+lemma exactAt_op {K : CochainComplex C ℤ} {n : ℤ} (hK : K.ExactAt n)
+    (m : ℤ) (hm : n + m = 0 := by lia) :
+    ((opEquivalence C).functor.obj (op K)).ExactAt m := by
+  obtain rfl : n = -m := by lia
+  rw [HomologicalComplex.exactAt_iff' _ (m - 1) m (m + 1) (by simp) (by simp),
+    ← ShortComplex.exact_unop_iff]
+  rwa [HomologicalComplex.exactAt_iff' _ (-(m + 1)) (-m) (-(m - 1)) (by grind [prev])
+    (by grind [next])] at hK
+
+lemma acyclic_op {K : CochainComplex C ℤ} (hK : K.Acyclic) :
+   ((opEquivalence C).functor.obj (op K)).Acyclic :=
+  fun n ↦ exactAt_op (hK (-n)) n
 
 end CochainComplex

@@ -46,12 +46,11 @@ class GrothendieckTopology.HasSheafCompose : Prop where
 variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 
 /-- Composing a functor which `HasSheafCompose`, yields a functor between sheaf categories. -/
-@[simps]
-def sheafCompose : Sheaf J A ⥤ Sheaf J B where
-  obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
-  map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext <| whiskerRight_comp _ _ _
+@[simps! obj_obj map_hom]
+def sheafCompose : Sheaf J A ⥤ Sheaf J B :=
+  ObjectProperty.lift _
+    (sheafToPresheaf _ _ ⋙ (Functor.whiskeringRight _ _ _).obj F)
+      (fun P ↦ GrothendieckTopology.HasSheafCompose.isSheaf _ P.property)
 
 instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance
@@ -59,11 +58,24 @@ instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
 instance [F.Faithful] [F.Full] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Full :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Full from inferInstance
 
+variable {F} in
+/-- If `F : A ⥤ B` is fully faithful, then `sheafCompose J F ⋙ sheafToPresheaf J B` is fully
+faithful. -/
+def fullyFaithfulSheafComposeCompSheafToPresheaf (hF : F.FullyFaithful) :
+    (sheafCompose J F ⋙ sheafToPresheaf J B).FullyFaithful :=
+  (fullyFaithfulSheafToPresheaf J A).comp (hF.whiskeringRight Cᵒᵖ)
+
 instance [F.Faithful] : (sheafCompose J F).Faithful :=
   Functor.Faithful.of_comp (sheafCompose J F) (sheafToPresheaf _ _)
 
 instance [F.Full] [F.Faithful] : (sheafCompose J F).Full :=
   Functor.Full.of_comp_faithful (sheafCompose J F) (sheafToPresheaf _ _)
+
+variable {F} in
+/-- If `F : A ⥤ B` is fully faithful, then `sheafCompose J F` is fully faithful. -/
+def fullyFaithfulSheafCompose (hF : F.FullyFaithful) :
+    (sheafCompose J F).FullyFaithful :=
+  (fullyFaithfulSheafComposeCompSheafToPresheaf J hF).ofCompFaithful
 
 instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms where
   reflects {G₁ G₂} f _ := by
@@ -147,7 +159,7 @@ variable {J}
 
 lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] [J.HasSheafCompose (forget A)]
-    (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
+    (F : Sheaf J A) : Presheaf.IsSeparated J F.obj := by
   rintro X S hS x y h
   exact (((isSheaf_iff_isSheaf_of_type _ _).1
     ((sheafCompose J (forget A)).obj F).2).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)

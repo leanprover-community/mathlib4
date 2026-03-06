@@ -60,13 +60,13 @@ def ConnectedComponents.functorToDiscrete (X : Type*)
   map g := Discrete.eqToHom (congrArg f (Quotient.sound (Zigzag.of_hom g)))
 
 /-- Every functor to a discrete category gives a function from connected components -/
-def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F : J ⥤ Discrete X) :
+def ConnectedComponents.liftFunctor (J) [Category* J] {X : Type*} (F : J ⥤ Discrete X) :
     (ConnectedComponents J → X) :=
   Quotient.lift (fun c => (F.obj c).as)
     (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag F h))
 
 /-- Functions from connected components and functors to discrete category are in bijection -/
-def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :
+def ConnectedComponents.typeToCatHomEquiv (J) [Category* J] (X : Type*) :
     (ConnectedComponents J → X) ≃ (J ⥤ Discrete X) where
   toFun := ConnectedComponents.functorToDiscrete _
   invFun := ConnectedComponents.liftFunctor _
@@ -153,6 +153,7 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
     inclusion j ⋙ decomposedTo J = ConnectedComponents.ι j :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (decomposedTo J).Full where
   map_surjective := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
@@ -161,11 +162,11 @@ instance : (decomposedTo J).Full where
       rw [← hX, ← hY, Quotient.eq'']
       exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
     subst this
-    exact ⟨Sigma.SigmaHom.mk f, rfl⟩
+    exact ⟨Sigma.SigmaHom.mk (ObjectProperty.homMk f), rfl⟩
 
 instance : (decomposedTo J).Faithful where
   map_injective := by
-    rintro ⟨_, j, rfl⟩ ⟨_, k, hY⟩ ⟨f⟩ ⟨_⟩ rfl
+    rintro ⟨_, j, rfl⟩ ⟨_, k, hY⟩ ⟨⟨f⟩⟩ ⟨⟨_⟩⟩ rfl
     rfl
 
 instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩

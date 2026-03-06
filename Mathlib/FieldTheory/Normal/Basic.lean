@@ -59,6 +59,7 @@ variable {E F}
 
 open IntermediateField
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 09HU "Normal part"]
 theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
@@ -136,6 +137,7 @@ instance normal_sup
     Normal F (E ⊔ E' : IntermediateField F K) :=
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_ | _) <;> infer_instance)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An intersection of normal extensions is normal. -/
 @[stacks 09HP]
 instance normal_iInf {ι : Type*} [hι : Nonempty ι]
@@ -148,7 +150,7 @@ instance normal_iInf {ι : Type*} [hι : Nonempty ι]
       intro i
       rw [← minpoly.algHom_eq (inclusion (iInf_le t i)) (inclusion (iInf_le t i)).injective]
       exact (h i).splits' (inclusion (iInf_le t i) x)
-    simp only [splits_iff_mem (splits_of_isScalarTower K (hx hι.some))] at hx ⊢
+    simp only [splits_iff_mem (Splits.of_isScalarTower K (hx hι.some))] at hx ⊢
     rintro y hy - ⟨-, ⟨i, rfl⟩, rfl⟩
     exact hx i y hy
 
@@ -170,6 +172,7 @@ section Restrict
 variable (E : Type*) [Field E] [Algebra F E] [Algebra E K₁] [Algebra E K₂] [Algebra E K₃]
   [IsScalarTower F E K₁] [IsScalarTower F E K₂] [IsScalarTower F E K₃]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AlgHom.fieldRange_of_normal {E : IntermediateField F K} [Normal F E]
     (f : E →ₐ[F] K) : f.fieldRange = E := by
   let g := f.restrictNormal' E
@@ -264,6 +267,7 @@ variable {K L : Type _} [Field K] [Field L] [Algebra K L]
 
 open AlgEquiv IntermediateField
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : Gal(L/K))` with `σ x = y`.
   That is, `x` and `y` are Galois conjugates. -/
 theorem exists_algEquiv_of_root [Normal K L] {x y : L} (hy : IsAlgebraic K y)
@@ -294,4 +298,5 @@ instance Algebra.IsQuadraticExtension.normal (F K : Type*) [Field F] [Field K] [
     intro x
     obtain h | h := le_iff_lt_or_eq.mp (finrank_eq_two F K ▸ minpoly.natDegree_le x)
     · exact Splits.of_natDegree_le_one <| natDegree_map_le.trans (by rwa [Nat.le_iff_lt_add_one])
-    · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
+    · exact Splits.of_natDegree_eq_two ((natDegree_map _).trans h)
+        ((eval_map_algebraMap _ _).trans (minpoly.aeval F x))

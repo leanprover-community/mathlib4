@@ -33,7 +33,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] {X : SimplicialObject C}
+variable {C : Type*} [Category* C] [Preadditive C] {X : SimplicialObject C}
 
 theorem P_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
     ((P (q + 1)).f n : X _⦋n⦌ ⟶ _) = (P q).f n := by
@@ -65,6 +65,7 @@ theorem PInfty_f_0 : (PInfty.f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 𝟙 _ :=
 theorem PInfty_f (n : ℕ) : (PInfty.f n : X _⦋n⦌ ⟶ X _⦋n⦌) = (P n).f n :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem QInfty_f_0 : (QInfty.f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 0 := by
   dsimp [QInfty]
@@ -150,12 +151,13 @@ noncomputable def natTransPInfty_f (n : ℕ) :=
 variable {C}
 
 @[simp]
-theorem map_PInfty_f {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_PInfty_f {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (n : ℕ) :
     (PInfty : K[((whiskering C D).obj G).obj X] ⟶ _).f n =
       G.map ((PInfty : AlternatingFaceMapComplex.obj X ⟶ _).f n) := by
   simp only [PInfty_f, map_P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `Y : Karoubi (SimplicialObject C)`, this lemma
 computes `PInfty` for the associated object in `SimplicialObject (Karoubi C)`
 in terms of `PInfty` for `Y.X : SimplicialObject C` and `Y.p`. -/

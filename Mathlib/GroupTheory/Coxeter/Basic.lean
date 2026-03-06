@@ -235,6 +235,7 @@ theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
 @[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
   M.symmetric i' i ▸ cs.simple_mul_simple_pow i' i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The simple reflections of `W` generate `W` as a group. -/
 theorem subgroup_closure_range_simple : Subgroup.closure (range cs.simple) = ⊤ := by
   have : cs.simple = cs.mulEquiv.symm ∘ PresentedGroup.of := rfl
@@ -302,9 +303,11 @@ private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsL
   rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift_apply_of, FreeGroup.lift_apply_of]
   exact hf i i'
 
+set_option backward.privateInPublic true in
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
   (PresentedGroup.toGroup (relations_liftable hf)).comp cs.mulEquiv.toMonoidHom
 
+set_option backward.privateInPublic true in
 private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
     Gˣ where
   val := f i
@@ -318,6 +321,9 @@ private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
   _ = _ := by rw [MulEquiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The universal mapping property of Coxeter systems. For any monoid `G`,
 functions `f : B → G` whose values satisfy the Coxeter relations are equivalent to
 monoid homomorphisms `f' : W → G`. -/
@@ -352,7 +358,6 @@ theorem simple_determines_coxeterSystem :
   apply CoxeterSystem.ext
   apply MulEquiv.toMonoidHom_injective
   apply cs1.ext_simple
-  intro i
   nth_rw 2 [h]
   simp [simple]
 
@@ -449,13 +454,13 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
         simp only [Nat.not_even_iff_odd.mpr (Even.add_one h_even), ↓reduceIte]
         rw [← List.take_concat_get (by simp; lia), alternatingWord_succ, ← hk]
         apply congr_arg
-        rw [getElem_alternatingWord i j (2*p) k (by lia)]
+        rw [getElem_alternatingWord i j (2 * p) k (by lia)]
         simp [(by apply Nat.even_add.mpr; simp [h_even] : Even (2 * p + k))]
       · simp only [h_even, ↓reduceIte] at hk
-        simp only [(by rwa [Nat.even_add_one] : Even (k + 1)), ↓reduceIte]
+        simp only [Odd.add_one (by simpa using h_even), ↓reduceIte]
         rw [← List.take_concat_get (by simp; lia), alternatingWord_succ, hk]
         apply congr_arg
-        rw [getElem_alternatingWord i j (2*p) k (by lia)]
+        rw [getElem_alternatingWord i j (2 * p) k (by lia)]
         simp [(by apply Nat.odd_add.mpr; simp [h_even] : Odd (2 * p + k))]
 
 lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2 * p) :

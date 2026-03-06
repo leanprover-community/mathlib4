@@ -225,7 +225,10 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  all_goals grind [mem_antidiagonal, mul_zero]
+  · rintro ⟨i, j⟩ h1 h2
+    rw [coeff_X_pow, if_neg, mul_zero]
+    grind [mem_antidiagonal]
+  · grind [mem_antidiagonal]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :
@@ -274,9 +277,9 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 
 theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
-  suffices IsLeftRegular (X^n : R[X]) from
+  suffices IsLeftRegular (X ^ n : R[X]) from
     ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
-  intro P Q (hPQ : X^n * P = X^n * Q)
+  intro P Q (hPQ : X ^ n * P = X ^ n * Q)
   ext i
   rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
 

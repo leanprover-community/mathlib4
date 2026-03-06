@@ -24,11 +24,11 @@ instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*�
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
   bot := ⟨⊥, by simp [bot_eq_zero'']⟩
   bot_le a := by simp [bot_eq_zero'', ← Subtype.coe_le_coe]
-  zero_le_one := Subtype.coe_le_coe.mp zero_le_one
-  mul_le_mul_left := by
-    simp only [Subtype.forall, MonoidHom.mem_mrange, forall_exists_index, Submonoid.mk_mul_mk,
-      Subtype.mk_le_mk, forall_apply_eq_imp_iff]
-    intro a b hab c
+  zero_le a := by simp [← Subtype.coe_le_coe]
+  mul_lt_mul_of_pos_left := by
+    simp only [← Subtype.coe_lt_coe, val_mrange_zero, Submonoid.coe_mul, Subtype.forall,
+      MonoidHom.mem_mrange, forall_exists_index, forall_apply_eq_imp_iff]
+    rintro a ha b c hbc
     gcongr
 
 instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
@@ -43,6 +43,7 @@ lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
   refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ ⟨h.mono ?_⟩⟩ <;>
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function WithZero in
 lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ]
     (hv : Integers v O) :
@@ -66,16 +67,16 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
     simp [← Subtype.coe_le_coe, hv.map_le_one]
   · simp [Function.onFun]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mrange v)]
     (hv : Integers v O) :
     IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by
   refine ⟨fun _ ↦ not_denselyOrdered_of_isPrincipalIdealRing hv, fun H ↦ ?_⟩
-  rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs|_
+  rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs | _
   · have := bijective_algebraMap_of_subsingleton_units_mrange hv
     exact .of_surjective _ (RingEquiv.ofBijective _ this).symm.surjective
   have : IsDomain O := hv.hom_inj.isDomain
   have : ValuationRing O := ValuationRing.of_integers v hv
-  have : IsBezout O := ValuationRing.instIsBezout
   have := ((IsBezout.TFAE (R := O)).out 1 3)
   rw [this, hv.wfDvdMonoid_iff_wellFounded_gt_on_v, hv.wellFounded_gt_on_v_iff_discrete_mrange,
     LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered]

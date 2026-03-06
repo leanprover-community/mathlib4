@@ -143,7 +143,7 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
   map_prod (M := Multiplicative ℂ) expMonoidHom f s
 
 lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
-  @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _  expMonoidHom _ _
+  @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _ expMonoidHom _ _
 
 /-- This is a useful version of `exp_nsmul` for q-expansions of modular forms. -/
 lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p) ^ n := by
@@ -224,7 +224,7 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   map_prod (M := Multiplicative ℝ) expMonoidHom f s
 
 lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
-  @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _  expMonoidHom _ _
+  @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _ expMonoidHom _ _
 
 nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
@@ -257,6 +257,7 @@ lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x 
         single_le_sum (f := fun k ↦ x ^ k / k !) (fun k _ ↦ by positivity) (self_mem_range_succ n)
     _ ≤ exp x := sum_le_exp_of_nonneg hx _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
     1 + x + x ^ 2 / 2 = ∑ i ∈ range 3, x ^ i / i ! := by

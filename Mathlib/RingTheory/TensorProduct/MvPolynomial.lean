@@ -67,7 +67,7 @@ variable [AddCommMonoid N] [Module R N]
   linearly equivalent to a Finsupp of a tensor product -/
 noncomputable def rTensor :
     MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
-  TensorProduct.finsuppLeft' _ _ _ _ _
+  TensorProduct.finsuppLeft _ _ _ _ _
 
 lemma rTensor_apply_tmul (p : MvPolynomial σ S) (n : N) :
     rTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
@@ -127,6 +127,7 @@ section Algebra
 
 variable [CommSemiring N] [Algebra R N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The algebra morphism from a tensor product of a polynomial algebra
   by an algebra to a polynomial algebra -/
 noncomputable def rTensorAlgHom :
@@ -136,6 +137,7 @@ noncomputable def rTensorAlgHom :
     ((IsScalarTower.toAlgHom R (S ⊗[R] N) _).comp Algebra.TensorProduct.includeRight)
     (fun p n => by simp [commute_iff_eq, algebraMap_eq, mul_comm])
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coeff_rTensorAlgHom_tmul
     (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
@@ -155,6 +157,7 @@ lemma coeff_rTensorAlgHom_monomial_tmul
       if e = d then s ⊗ₜ[R] n else 0 := by
   simp [ite_tmul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rTensorAlgHom_toLinearMap :
     (rTensorAlgHom :
       MvPolynomial σ S ⊗[R] N →ₐ[S] MvPolynomial σ (S ⊗[R] N)).toLinearMap =
@@ -168,11 +171,13 @@ lemma rTensorAlgHom_toLinearMap :
   simp only [coeff]
   exact (finsuppLeft_apply_tmul_apply _ _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rTensorAlgHom_apply_eq (p : MvPolynomial σ S ⊗[R] N) :
     rTensorAlgHom (S := S) p = rTensor p := by
   rw [← AlgHom.toLinearMap_apply, rTensorAlgHom_toLinearMap]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of a polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra -/
 noncomputable def rTensorAlgEquiv :
@@ -187,6 +192,7 @@ noncomputable def rTensorAlgEquiv :
     simp only [map_mul, rTensorAlgHom_apply_eq]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rTensorAlgEquiv_apply (x : (MvPolynomial σ S) ⊗[R] N) :
     rTensorAlgEquiv x = rTensorAlgHom x := by
@@ -194,6 +200,7 @@ lemma rTensorAlgEquiv_apply (x : (MvPolynomial σ S) ⊗[R] N) :
   congr 1
   ext _ d <;> simpa [rTensorAlgEquiv] using rTensor_apply_tmul_apply _ _ d
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of the polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra with
   coefficients in that algebra -/
@@ -206,6 +213,7 @@ end DecidableEq
 variable (R)
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
 equivalent to `MvPolynomial σ A`. -/
 noncomputable def algebraTensorAlgEquiv :
@@ -223,11 +231,13 @@ lemma algebraTensorAlgEquiv_tmul (a : A) (p : MvPolynomial σ R) :
   simp [algebraTensorAlgEquiv, Algebra.smul_def]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algebraTensorAlgEquiv_symm_X (s : σ) :
     (algebraTensorAlgEquiv R A).symm (X s) = 1 ⊗ₜ X s := by
   simp [algebraTensorAlgEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
     (algebraTensorAlgEquiv R A).symm (monomial m a) = a ⊗ₜ monomial m 1 := by
@@ -240,6 +250,7 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
     nth_rw 2 [← mul_one a]
     rw [Algebra.TensorProduct.tmul_mul_tmul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algebraTensorAlgEquiv_symm_comp_aeval :
     (((algebraTensorAlgEquiv (σ := σ) R A).symm.restrictScalars R) :
@@ -249,6 +260,7 @@ lemma algebraTensorAlgEquiv_symm_comp_aeval :
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algebraTensorAlgEquiv_symm_map (x : MvPolynomial σ R) :
     (algebraTensorAlgEquiv R A).symm (map (algebraMap R A) x) = 1 ⊗ₜ x :=
@@ -263,32 +275,39 @@ lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
   | add p q hp hq => simp [hp, hq, tmul_add]
   | mul_X p i h => simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (S σ ι) in
 /-- `S[X] ⊗[R] R[Y] ≃ S[X, Y]` -/
 def tensorEquivSum :
     MvPolynomial σ S ⊗[R] MvPolynomial ι R ≃ₐ[S] MvPolynomial (σ ⊕ ι) S :=
   ((algebraTensorAlgEquiv _ _).restrictScalars _).trans
-    ((sumAlgEquiv _ _ _).symm.trans  (renameEquiv _ (.sumComm ι σ)))
+    ((sumAlgEquiv _ _ _).symm.trans (renameEquiv _ (.sumComm ι σ)))
 
 variable {R}
 
 attribute [local simp] Algebra.smul_def
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma tensorEquivSum_X_tmul_one (i) :
     tensorEquivSum R σ ι S (.X i ⊗ₜ 1) = .X (.inl i) := by simp [tensorEquivSum]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma tensorEquivSum_C_tmul_one (r) :
     tensorEquivSum R σ ι S (.C r ⊗ₜ 1) = .C r := by simp [tensorEquivSum]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma tensorEquivSum_one_tmul_X (i) :
     tensorEquivSum R σ ι S (1 ⊗ₜ .X i) = .X (.inr i) := by simp [tensorEquivSum]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma tensorEquivSum_one_tmul_C (r) :
     tensorEquivSum R σ ι S (1 ⊗ₜ .C r) = .C (algebraMap R S r) := by simp [tensorEquivSum]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma tensorEquivSum_C_tmul_C (r : R) (s : S) :
     tensorEquivSum R σ ι S (.C s ⊗ₜ .C r) = .C (r • s) := by simp [tensorEquivSum, mul_comm (C s)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma tensorEquivSum_X_tmul_X (i j) :
     tensorEquivSum R σ ι S (.X i ⊗ₜ .X j) = .X (.inl i) * .X (.inr j) := by simp [tensorEquivSum]
 
@@ -296,6 +315,7 @@ section Pushout
 
 attribute [local instance] algebraMvPolynomial
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Algebra.IsPushout R S (MvPolynomial σ R) (MvPolynomial σ S) where
   out := .of_equiv (algebraTensorAlgEquiv R S).toLinearEquiv fun _ ↦ by simp
 

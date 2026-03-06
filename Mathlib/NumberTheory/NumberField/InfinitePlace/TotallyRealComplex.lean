@@ -78,8 +78,7 @@ theorem isTotallyReal_iff_ofRingEquiv (f : F ≃+* K) : IsTotallyReal F ↔ IsTo
 theorem isTotallyReal_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyReal K :=
   isTotallyReal_iff_ofRingEquiv Subfield.topEquiv
 
-@[deprecated (since := "2025-05-19")] alias IsTotally.of_algebra := IsTotallyReal.of_algebra
-
+set_option backward.isDefEq.respectTransparency false in
 instance [IsTotallyReal K] [CharZero K] (F : IntermediateField ℚ K) [Algebra.IsAlgebraic F K] :
     IsTotallyReal F :=
   IsTotallyReal.of_algebra F K
@@ -152,6 +151,7 @@ theorem IsTotallyReal.maximalRealSubfield_eq_top [IsTotallyReal K] :
 
 variable [CharZero K] [Algebra.IsAlgebraic ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 local instance (k : Subfield K) : Algebra.IsAlgebraic k K :=
   Algebra.IsAlgebraic.tower_top k (K := ℚ) (A := K)
 
@@ -163,6 +163,7 @@ instance isTotallyReal_maximalRealSubfield :
     rw [RingHom.star_apply, ← lift_algebraMap_apply K w.embedding]
     exact x.prop _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
     IsTotallyReal E ↔ E ≤ maximalRealSubfield K := by
   refine ⟨fun h ↦ h.le_maximalRealSubfield, fun h ↦ ?_⟩
@@ -186,6 +187,7 @@ instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotal
   · rw [isTotallyReal_iff_le_maximalRealSubfield, iSup_le_iff]
     exact fun i ↦ IsTotallyReal.le_maximalRealSubfield (k i)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem maximalRealSubfield_eq_top_iff_isTotallyReal :
     maximalRealSubfield K = ⊤ ↔ IsTotallyReal K where
   mp h := by

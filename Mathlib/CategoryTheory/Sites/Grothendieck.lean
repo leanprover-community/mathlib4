@@ -110,12 +110,12 @@ theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
   Iff.rfl
 
 /-- Also known as the maximality axiom. -/
-@[simp]
+@[simp, grind .]
 theorem top_mem (X : C) : ⊤ ∈ J X :=
   J.top_mem' X
 
 /-- Also known as the stability axiom. -/
-@[simp]
+@[simp, grind .]
 theorem pullback_stable (f : Y ⟶ X) (hS : S ∈ J X) : S.pullback f ∈ J Y :=
   J.pullback_stable' f hS
 
@@ -127,6 +127,7 @@ lemma pullback_mem_iff_of_isIso {i : X ⟶ Y} [IsIso i] {S : Sieve Y} :
   convert J.pullback_stable (inv i) H
   rw [← Sieve.pullback_comp, IsIso.inv_hom_id, Sieve.pullback_id]
 
+@[grind .]
 theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ J Y) :
     R ∈ J X :=
   J.transitive' hS R h
@@ -351,7 +352,7 @@ theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).
 See https://ncatlab.org/nlab/show/dense+topology, or [MM92] Chapter III, Section 2, example (e).
 -/
 def dense : GrothendieckTopology C where
-  sieves X S := ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)
+  sieves X := {S | ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)}
   top_mem' _ Y _ := ⟨Y, 𝟙 Y, ⟨⟩⟩
   pullback_stable' := by
     intro X Y S h H Z f
@@ -383,7 +384,7 @@ For the pullback stability condition, we need the right Ore condition to hold.
 See https://ncatlab.org/nlab/show/atomic+site, or [MM92] Chapter III, Section 2, example (f).
 -/
 def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
-  sieves X S := ∃ (Y : _) (f : Y ⟶ X), S f
+  sieves X := {S | ∃ (Y : _) (f : Y ⟶ X), S f}
   top_mem' _ := ⟨_, 𝟙 _, ⟨⟩⟩
   pullback_stable' := by
     rintro X Y S h ⟨Z, f, hf⟩

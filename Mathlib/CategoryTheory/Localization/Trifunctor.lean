@@ -27,9 +27,9 @@ namespace CategoryTheory
 open Functor
 
 variable {C₁ C₂ C₃ C₁₂ C₂₃ D₁ D₂ D₃ D₁₂ D₂₃ C D E : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category D₁] [Category D₂] [Category D₃]
-  [Category C₁₂] [Category C₂₃] [Category D₁₂] [Category D₂₃]
-  [Category C] [Category D] [Category E]
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* D₁] [Category* D₂] [Category* D₃]
+  [Category* C₁₂] [Category* C₂₃] [Category* D₁₂] [Category* D₂₃]
+  [Category* C] [Category* D] [Category* E]
 
 namespace MorphismProperty
 
@@ -117,6 +117,7 @@ noncomputable def lift₃NatTrans : F₁' ⟶ F₂' :=
     (liftNatTrans (L₁.prod (L₂.prod L₃)) (W₁.prod (W₂.prod W₃)) (uncurry₃.obj F₁)
       (uncurry₃.obj F₂) (uncurry₃.obj F₁') (uncurry₃.obj F₂') (uncurry₃.map τ))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift₃NatTrans_app_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
     (((lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₂ F₁' F₂' τ).app
@@ -138,6 +139,7 @@ theorem natTrans₃_ext {τ τ' : F₁' ⟶ F₂'}
   uncurry₃.map_injective (natTrans_ext (L₁.prod (L₂.prod L₃)) (W₁.prod (W₂.prod W₃))
     (fun _ ↦ h _ _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `F₁' ≅ F₂'` of trifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₁'`
 and `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₂'` hold. -/
@@ -217,7 +219,7 @@ lemma associator_hom_app_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
               (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃').inv.app X₂).app X₃) := by
   dsimp [associator]
   rw [lift₃NatTrans_app_app_app]
-  dsimp [Lifting₃.iso, Lifting₃.bifunctorComp₁₂, Lifting₃.bifunctorComp₂₃]
+  dsimp +instances [Lifting₃.iso, Lifting₃.bifunctorComp₁₂, Lifting₃.bifunctorComp₂₃]
   simp only [Category.assoc]
 
 end

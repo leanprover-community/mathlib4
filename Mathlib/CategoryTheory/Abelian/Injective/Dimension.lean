@@ -22,7 +22,7 @@ if all `Ext Y X i` vanish when `n ≤ i`. This defines a type class
 `HasInjectiveDimensionLE`.)
 
 We also define the Injective dimension in `WithBot ℕ∞` as `injectiveDimension`,
-`injectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
+`injectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
 
 -/
 
@@ -251,6 +251,7 @@ lemma Retract.injectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasInjectiveDimensionLT i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_lt_iff {X : C} {n : ℕ} :
     injectiveDimension X < n ↔ HasInjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
@@ -260,11 +261,11 @@ lemma injectiveDimension_lt_iff {X : C} {n : ℕ} :
   · obtain _ | n := n
     · exact ⟨⊥, fun _ _ ↦ hasInjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
     · exact ⟨n, fun i hi ↦ hasInjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
-        by simp [WithBot.lt_add_one_iff]⟩
+        by simp [ENat.WithBot.lt_add_one_iff]⟩
 
 lemma injectiveDimension_le_iff (X : C) (n : ℕ) :
     injectiveDimension X ≤ n ↔ HasInjectiveDimensionLE X n := by
-  simp [← injectiveDimension_lt_iff, ← WithBot.lt_add_one_iff]
+  simp [← injectiveDimension_lt_iff, ← ENat.WithBot.lt_add_one_iff]
 
 lemma injectiveDimension_ge_iff (X : C) (n : ℕ) :
     n ≤ injectiveDimension X ↔ ¬ HasInjectiveDimensionLT X n := by

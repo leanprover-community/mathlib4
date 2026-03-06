@@ -29,7 +29,7 @@ open CategoryTheory MonoidalCategory Functor Monoidal LaxMonoidal OplaxMonoidal
 
 namespace Localization.Monoidal
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   [MonoidalCategory C] [MonoidalCategory D] [MonoidalCategory E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [L.Monoidal]
   (F : D ⥤ E) (G : C ⥤ E) [G.Monoidal] [W.ContainsIdentities] [Lifting L W G F]
@@ -61,13 +61,14 @@ lemma curriedTensorPreIsoPost_hom_app_app (X₁ X₂ : C) :
         F.map (OplaxMonoidal.δ L _ _) := by
   simp [curriedTensorPreIsoPost]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     (e₁ : Y₁ ≅ L.obj X₁) (e₂ : Y₂ ≅ L.obj X₂) :
     letI e := Lifting.iso L W G F
     ((curriedTensorPreIsoPost L W F G).hom.app Y₁).app Y₂ =
       ((F.map e₁.hom ≫ e.hom.app _) ⊗ₘ (F.map e₂.hom ≫ e.hom.app _)) ≫
         LaxMonoidal.μ G X₁ X₂ ≫ e.inv.app _ ≫
-        F.map (OplaxMonoidal.δ L _ _≫ (e₁.inv ⊗ₘ e₂.inv)) := by
+        F.map (OplaxMonoidal.δ L _ _ ≫ (e₁.inv ⊗ₘ e₂.inv)) := by
   have h₁ := ((curriedTensorPreIsoPost L W F G).hom.app Y₁).naturality e₂.hom
   have h₂ := congr_app ((curriedTensorPreIsoPost L W F G).hom.naturality e₁.hom)
   dsimp at h₁ h₂ ⊢
@@ -78,6 +79,7 @@ lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     tensorHom_comp_tensorHom, Iso.inv_hom_id, Iso.inv_hom_id, tensorHom_id, id_whiskerRight,
     Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
@@ -133,6 +135,7 @@ lemma functorMonoidalOfComp_ε : letI := functorMonoidalOfComp L W F G
     ε F = ε G ≫ e.inv.app _ ≫ F.map (η L) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
     letI e := Lifting.iso L W G F
@@ -140,6 +143,7 @@ lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
         F.map (δ L _ _) := by
   simp [Functor.CoreMonoidal.toLaxMonoidal_μ, curriedTensorPreIsoPost_hom_app_app]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When `F` is given the monoidal structure `functorMonoidalOfComp` that is obtained by lifting along
 a monoidal localization functor `L`, then the lifting isomorphism is a monoidal natural

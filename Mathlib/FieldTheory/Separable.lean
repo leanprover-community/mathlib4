@@ -281,6 +281,7 @@ theorem separable_C_mul_X_pow_add_C_mul_X_add_C'
     (C a * X ^ n + C b * X + C c).Separable :=
   separable_C_mul_X_pow_add_C_mul_X_add_C a b c ((CharP.cast_eq_zero_iff R p n).2 hn) hb
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : Separable p)
     (x : R) : rootMultiplicity x p ≤ 1 := by
   classical
@@ -435,16 +436,22 @@ theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) 
     Separable (X ^ n - C a) :=
   separable_X_pow_sub_C a (by rwa [← CharP.cast_eq_zero_iff F p n] at hn) ha
 
+/-- In a field `F`, for any `t ∈ F` and `n > 0`, the polynomial `X ^ n - t` is separable
+iff `↑n ≠ 0`. The assumption `n > 0` is needed, since for `n = 0` the polynomial `X ^ n - t`
+is separable iff `t ≠ 1`. -/
+theorem X_pow_sub_C_separable_iff {n : ℕ} {x : F} (hn : 0 < n) (hx : x ≠ 0) :
+    (X ^ n - C x : F[X]).Separable ↔ (n : F) ≠ 0 := by
+  refine ⟨fun h hn' ↦ ?_, fun h => separable_X_pow_sub_C x h hx⟩
+  exact not_isUnit_of_natDegree_pos (X ^ n - C x) (by simp [hn]) <| by
+    simpa [separable_def, derivative_X_pow, hn', isCoprime_zero_right] using h
+
 -- this can possibly be strengthened to making `separable_X_pow_sub_C_unit` a
 -- bi-implication, but it is nontrivial!
 /-- In a field `F`, `X ^ n - 1` is separable iff `↑n ≠ 0`. -/
 theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔ (n : F) ≠ 0 := by
-  refine ⟨?_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 _ h)⟩
-  rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
-  -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
-  rintro (h : IsCoprime _ _) hn'
-  rw [hn', C_0, zero_mul, isCoprime_zero_right] at h
-  exact not_isUnit_X_pow_sub_one F n h
+  rcases (Nat.eq_zero_or_pos n) with (hz | hpos)
+  · simp_all [not_separable_zero]
+  · exact X_pow_sub_C_separable_iff hpos one_ne_zero
 
 section Splits
 
@@ -462,7 +469,7 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits) :
   classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
   rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
-  obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (Splits.splits_of_dvd h hf (gcd_dvd_left f _)) hnsep
+  obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (Splits.of_dvd h hf (gcd_dvd_left f _)) hnsep
   simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
   exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
 
@@ -597,11 +604,11 @@ lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : F
     (H : IsSeparable F x) : IsSeparable F (f x) :=
   (isSeparable_map_iff f hf).mpr H
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Subalgebra.isSeparable_iff [Ring L] [Algebra F L] {S : Subalgebra F L} :
     Algebra.IsSeparable F S ↔ ∀ x ∈ S, IsSeparable F x := by
   simp_rw [Algebra.isSeparable_def, Subtype.forall,
-    ← isSeparable_map_iff S.val Subtype.val_injective]
-  rfl
+    ← isSeparable_map_iff S.val Subtype.val_injective, coe_val]
 
 variable (L) {E : Type*}
 
@@ -720,9 +727,11 @@ namespace IntermediateField
 
 variable [Field K] [Algebra F K] (M : IntermediateField F K)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isSeparable_tower_bot [Algebra.IsSeparable F K] : Algebra.IsSeparable F M :=
   Algebra.isSeparable_tower_bot_of_isSeparable F M K
 
+set_option backward.isDefEq.respectTransparency false in
 instance isSeparable_tower_top [Algebra.IsSeparable F K] : Algebra.IsSeparable M K :=
   Algebra.isSeparable_tower_top_of_isSeparable F M K
 

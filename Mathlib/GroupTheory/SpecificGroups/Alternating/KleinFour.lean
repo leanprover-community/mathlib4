@@ -224,10 +224,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
         Subgroup.map fc.toMonoidHom (⊤ : Subgroup (alternatingGroup α)) by
         rw [this, ← Subgroup.map_commutator]
         refine Subgroup.mem_map_of_mem _ hk
-      apply symm
-      rw [← MonoidHom.range_eq_map]
-      rw [MonoidHom.range_eq_top]
-      exact MulEquiv.surjective _
+      simp
   have hk2 := comm_le hk
   rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4,
     Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq] at hk2

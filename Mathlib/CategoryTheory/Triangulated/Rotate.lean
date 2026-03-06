@@ -71,7 +71,7 @@ not necessarily equal to `Z`, but it is isomorphic, by the `counitIso` of `shift
 @[simps!]
 def Triangle.invRotate (T : Triangle C) : Triangle C :=
   Triangle.mk (-T.mor₃⟦(-1 : ℤ)⟧' ≫ (shiftEquiv C (1 : ℤ)).unitIso.inv.app _) (T.mor₁)
-    (T.mor₂ ≫ (shiftEquiv C (1 : ℤ)).counitIso.inv.app _ )
+    (T.mor₂ ≫ (shiftEquiv C (1 : ℤ)).counitIso.inv.app _)
 
 end
 
@@ -94,6 +94,7 @@ def rotate : Triangle C ⥤ Triangle C where
       dsimp
       simp only [comp_neg, neg_comp, ← Functor.map_comp, f.comm₁] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse rotation of triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]
@@ -112,6 +113,7 @@ def invRotate : Triangle C ⥤ Triangle C where
 variable {C}
 variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unit isomorphism of the auto-equivalence of categories `triangleRotation C` of
 `Triangle C` given by the rotation of triangles. -/
 @[simps!]
@@ -119,6 +121,7 @@ def rotCompInvRot : 𝟭 (Triangle C) ≅ rotate C ⋙ invRotate C :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _
     ((shiftEquiv C (1 : ℤ)).unitIso.app T.obj₁) (Iso.refl _) (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the auto-equivalence of categories `triangleRotation C` of
 `Triangle C` given by the rotation of triangles. -/
 @[simps!]
@@ -126,6 +129,7 @@ def invRotCompRot : invRotate C ⋙ rotate C ≅ 𝟭 (Triangle C) :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     ((shiftEquiv C (1 : ℤ)).counitIso.app T.obj₃)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 /-- Rotating triangles gives an auto-equivalence on the category of triangles in `C`.
 -/

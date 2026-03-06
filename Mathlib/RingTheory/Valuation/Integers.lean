@@ -56,7 +56,7 @@ structure Integers : Prop where
 
 -- typeclass shortcut
 instance : Algebra v.integer R :=
-  Algebra.ofSubring v.integer
+  inferInstance
 
 theorem integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective
@@ -108,6 +108,10 @@ lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
     simp [ho1] at ho0
 
 end Integers
+
+theorem IsTrivialOn.of_le_one {k : Type*} [Field k] [Algebra k R] (v : Valuation R Γ₀)
+    (hle : ∀ (x : k), v (algebraMap k R x) ≤ 1) : v.IsTrivialOn k where
+  eq_one a ha := Valuation.Integers.one_of_isUnit' (IsUnit.mk0 a ha) hle
 
 lemma integers_nontrivial (v : Valuation R Γ₀) :
     Nontrivial v.integer ↔ Nontrivial R :=

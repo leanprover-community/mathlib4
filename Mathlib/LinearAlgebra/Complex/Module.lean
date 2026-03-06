@@ -198,6 +198,7 @@ instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ 
 -- check that the following instance is implied by the one above.
 example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E] [Star E]
     [Module ℂ E] [StarModule ℂ E] : StarModule ℝ E :=
   ⟨fun r a => by rw [← smul_one_smul ℂ r a, star_smul, star_smul, star_one, smul_one_smul]⟩
@@ -206,6 +207,7 @@ namespace Complex
 
 open ComplexConjugate
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Linear map version of the real part function, from `ℂ` to `ℝ`. -/
 def reLm : ℂ →ₗ[ℝ] ℝ where
   toFun x := x.re
@@ -216,6 +218,7 @@ def reLm : ℂ →ₗ[ℝ] ℝ where
 theorem reLm_coe : ⇑reLm = re :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Linear map version of the imaginary part function, from `ℂ` to `ℝ`. -/
 def imLm : ℂ →ₗ[ℝ] ℝ where
   toFun x := x.im
@@ -246,6 +249,7 @@ def conjAe : ℂ ≃ₐ[ℝ] ℂ :=
 theorem conjAe_coe : ⇑conjAe = conj :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The matrix representation of `conjAe`. -/
 @[simp]
 theorem toMatrix_conjAe :
@@ -260,6 +264,7 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
     refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
@@ -272,7 +277,7 @@ section lift
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
 
-/-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
+/-- There is an `AlgHom` from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
 See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
@@ -476,6 +481,7 @@ lemma span_selfAdjoint : span ℂ (selfAdjoint A : Set A) = ⊤ := by
   exact add_mem (subset_span (ℜ x).property) <|
     SMulMemClass.smul_mem _ <| subset_span (ℑ x).property
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural `ℝ`-linear equivalence between `selfAdjoint ℂ` and `ℝ`. -/
 @[simps apply symm_apply]
 def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
@@ -499,6 +505,7 @@ lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
 lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
   ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   (ℜ z : ℂ) = (↑(ℜ (↑z.re + ↑z.im * I))) := by congrm (ℜ $((re_add_im z).symm))
   _         = z.re                       := by
@@ -513,7 +520,7 @@ lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalNonAssocRing A] [Sta
     star a * a + a * star a = _ :=
       congr((star $(a_eq)) * $(a_eq) + $(a_eq) * (star $(a_eq)))
     _ = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) := by
-      simp [mul_add, add_mul, smul_smul, two_smul, mul_smul_comm,
+      simp [mul_add, add_mul, smul_smul, mul_smul_comm,
         smul_mul_assoc]
       abel
 

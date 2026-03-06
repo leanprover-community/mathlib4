@@ -27,7 +27,7 @@ open CategoryTheory Limits Abelian
 
 namespace CochainComplex
 
-variable {C : Type*} [Category C] [Abelian C] [EnoughInjectives C]
+variable {C : Type*} [Category* C] [Abelian C] [EnoughInjectives C]
   {K L : CochainComplex C ℤ} (f : K ⟶ L)
 
 namespace cm5b
@@ -63,6 +63,7 @@ variable (K L) in
 /-- The second projection `mappingCone (𝟙 (I K)) ⊞ L ⟶ L`. -/
 noncomputable abbrev p : mappingCone (𝟙 (I K)) ⊞ L ⟶ L := biprod.snd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A lift of a morphism `f : K ⟶ L` between bounded below cochain complexes
 as a monomorphism `K ⟶ mappingCone (𝟙 (I K)) ⊞ L`. -/
 noncomputable def i : K ⟶ mappingCone (𝟙 (I K)) ⊞ L :=
@@ -73,12 +74,14 @@ noncomputable def i : K ⟶ mappingCone (𝟙 (I K)) ⊞ L :=
         simp [HomComplex.δ_v 1 2 (by lia) _ p q hpq (p + 1) (p + 1) (by lia) rfl]))
     (HomComplex.Cochain.ofHoms (fun n => Injective.ι _)) (by cat_disch)) f
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma i_f_comp (n : ℤ) : (i f).f n ≫
     (biprod.fst : mappingCone (𝟙 (I K)) ⊞ L ⟶ _).f n ≫
       (mappingCone.snd (𝟙 (I K))).v n n (add_zero n) = Injective.ι (K.X n) := by
   simp [i]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : Mono ((i f).f n) := mono_of_mono_fac (i_f_comp f n)
 
 instance : Mono (i f) := HomologicalComplex.mono_of_mono_f (i f) inferInstance

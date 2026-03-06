@@ -11,6 +11,7 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Finset
 public import Mathlib.Order.Fin.SuccAboveOrderIso
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # The standard simplex
@@ -128,7 +129,7 @@ lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
-  objMk (OrderHom.const _ k )
+  objMk (OrderHom.const _ k)
 
 @[simp]
 lemma const_down_toOrderHom (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) :
@@ -153,6 +154,7 @@ lemma coe_edge_down_toOrderHom (n : ℕ) (a b : Fin (n + 1)) (hab : a ≤ b) :
     ↑(edge n a b hab).down.toOrderHom = ![a, b] :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The triangle in the standard simplex with vertices `a`, `b`, and `c`. -/
 def triangle {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ b) (hbc : b ≤ c) : Δ[n] _⦋2⦌ := by
   refine objMk ⟨![a, b, c], ?_⟩
@@ -167,6 +169,7 @@ lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ 
 
 attribute [local simp] image_subset_iff
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `S : Finset (Fin (n + 1))`, this is the corresponding face of `Δ[n]`,
 as a subcomplex. -/
 @[simps -isSimp obj]
@@ -176,11 +179,13 @@ def face {n : ℕ} (S : Finset (Fin (n + 1))) : (Δ[n] : SSet.{u}).Subcomplex wh
 
 attribute [local simp] face_obj
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mem_face_iff {n : ℕ} (S : Finset (Fin (n + 1))) {d : ℕ} (x : (Δ[n] : SSet.{u}) _⦋d⦌) :
     x ∈ (face S).obj _ ↔ ∀ (i : Fin (d + 1)), x i ∈ S := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma face_inter_face {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
     face S₁ ⊓ face S₂ = face (S₁ ⊓ S₂) := by
   aesop
@@ -196,12 +201,12 @@ namespace Subcomplex
 variable {X : SSet.{u}}
 
 lemma range_eq_ofSimplex {n : ℕ} (f : Δ[n] ⟶ X) :
-    Subpresheaf.range f = ofSimplex (yonedaEquiv f) :=
-  Subpresheaf.range_eq_ofSection' _
+    range f = ofSimplex (yonedaEquiv f) :=
+  Subfunctor.range_eq_ofSection' _
 
 lemma yonedaEquiv_coe {A : X.Subcomplex} {n : SimplexCategory}
     (f : stdSimplex.obj n ⟶ A) :
-    (DFunLike.coe (F := ((stdSimplex.obj n ⟶ Subpresheaf.toPresheaf A) ≃ A.obj (op n)))
+    (DFunLike.coe (F := ((stdSimplex.obj n ⟶ Subfunctor.toFunctor A) ≃ A.obj (op n)))
       yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := by
   rfl
 
@@ -220,6 +225,7 @@ lemma face_le_face_iff {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
   simp only [← obj₀Equiv_symm_mem_face_iff.{u}] at hi ⊢
   exact h _ hi
 
+set_option backward.isDefEq.respectTransparency false in
 lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin (m + 1) ≃o S) :
     face.{u} S =
       Subcomplex.ofSimplex (X := Δ[n])
@@ -234,11 +240,11 @@ lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin 
         monotone' := (objEquiv x).toOrderHom.monotone }
     refine ⟨Quiver.Hom.op
       (SimplexCategory.Hom.mk ((e.symm.toOrderEmbedding.toOrderHom.comp φ))), ?_⟩
-    obtain ⟨f, rfl⟩ := objEquiv.symm.surjective x
     ext j : 1
     simpa only [Subtype.ext_iff] using e.apply_symm_apply ⟨_, hx j⟩
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S : Finset (Fin (n + 1))` is order isomorphic to `Fin (m + 1)`,
 then the face `face S` of `Δ[n]` is representable by `m`,
 i.e. `face S` is isomorphic to `Δ[m]`, see `stdSimplex.isoOfRepresentableBy`. -/
@@ -246,7 +252,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
     (m : ℕ) (e : Fin (m + 1) ≃o S) :
     (face S : SSet.{u}).RepresentableBy ⦋m⦌ where
   homEquiv {j} :=
-    { toFun f := ⟨objMk ((OrderHom.Subtype.val (SetLike.coe S)).comp
+    { toFun f := ⟨objMk ((OrderHom.Subtype.val (· ∈ S)).comp
           (e.toOrderEmbedding.toOrderHom.comp f.toOrderHom)), fun _ ↦ by aesop⟩
       invFun := fun ⟨x, hx⟩ ↦ SimplexCategory.Hom.mk
         { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by aesop)⟩
@@ -277,7 +283,7 @@ lemma ofSimplex_yonedaEquiv_δ {n : ℕ} (i : Fin (n + 2)) :
 
 @[simp]
 lemma range_δ {n : ℕ} (i : Fin (n + 2)) :
-    Subpresheaf.range (stdSimplex.δ i) = face.{u} {i}ᶜ := by
+    Subcomplex.range (stdSimplex.δ i) = face.{u} {i}ᶜ := by
   rw [Subcomplex.range_eq_ofSimplex]
   exact ofSimplex_yonedaEquiv_δ i
 

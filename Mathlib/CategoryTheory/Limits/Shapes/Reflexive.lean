@@ -28,7 +28,7 @@ reflexive.
 * `IsReflexivePair` is the predicate that f and g have a common section.
 * `WalkingReflexivePair` is the diagram indexing pairs with a common section.
 * A `reflexiveCofork` is a cocone on a diagram indexed by `WalkingReflexivePair`.
-* `WalkingReflexivePair.inclusionWalkingReflexivePair` is the inclustion functor from
+* `WalkingReflexivePair.inclusionWalkingReflexivePair` is the inclusion functor from
   `WalkingParallelPair` to `WalkingReflexivePair`. It acts on reflexive pairs as forgetting
   the common section.
 * `HasReflexiveCoequalizers` is the predicate that a category has all colimits of reflexive pairs.
@@ -39,7 +39,7 @@ reflexive.
 
 * `IsKernelPair.isReflexivePair`: A kernel pair is a reflexive pair
 * `WalkingParallelPair.inclusionWalkingReflexivePair_final`: The inclusion functor is final.
-* `hasReflexiveCoequalizers_iff`: A category has coequalizers of reflexive pairs if and only iff it
+* `hasReflexiveCoequalizers_iff`: A category has coequalizers of reflexive pairs if and only if it
   has all colimits of shape `WalkingReflexivePair`.
 
 ## TODO
@@ -131,6 +131,7 @@ theorem IsCoreflexivePair.swap [IsCoreflexivePair f g] : IsCoreflexivePair g f :
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For an adjunction `F ⊣ G` with counit `ε`, the pair `(FGε_B, ε_FGB)` is reflexive. -/
 instance (B : D) :
     IsReflexivePair (F.map (G.map (adj.counit.app B))) (adj.counit.app (F.obj (G.obj B))) :=
@@ -208,7 +209,7 @@ inductive Hom : (WalkingReflexivePair → WalkingReflexivePair → Type)
 
 /-- Composition of morphisms in the diagram indexing reflexive (co)equalizers -/
 def Hom.comp :
-    ∀ { X Y Z : WalkingReflexivePair } (_ : Hom X Y)
+    ∀ {X Y Z : WalkingReflexivePair} (_ : Hom X Y)
       (_ : Hom Y Z), Hom X Z
   | _, _, _, id _, h => h
   | _, _, _, h, id _ => h
@@ -299,12 +300,12 @@ instance (X : WalkingReflexivePair) :
     IsConnected (StructuredArrow X inclusionWalkingReflexivePair) := by
   cases X with
   | zero =>
-      refine IsConnected.of_induct  (j₀ := StructuredArrow.mk (Y := one) (𝟙 _)) ?_
+      refine IsConnected.of_induct (j₀ := StructuredArrow.mk (Y := one) (𝟙 _)) ?_
       rintro p h₁ h₂ ⟨⟨⟨⟩⟩, (_ | _), ⟨_⟩⟩
       · exact (h₂ (StructuredArrow.homMk .left)).2 h₁
       · exact h₁
   | one =>
-      refine IsConnected.of_induct  (j₀ := StructuredArrow.mk (Y := zero) (𝟙 _))
+      refine IsConnected.of_induct (j₀ := StructuredArrow.mk (Y := zero) (𝟙 _))
         (fun p h₁ h₂ ↦ ?_)
       have hₗ : StructuredArrow.mk left ∈ p := (h₂ (StructuredArrow.homMk .left)).1 h₁
       have hᵣ : StructuredArrow.mk right ∈ p := (h₂ (StructuredArrow.homMk .right)).1 h₁
@@ -408,6 +409,7 @@ variable {F G : WalkingReflexivePair ⥤ C}
   (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right := by cat_disch)
   (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- A constructor for natural transformations between functors from `WalkingReflexivePair`. -/
 def mkNatTrans : F ⟶ G where
   app := fun x ↦ match x with
@@ -420,9 +422,11 @@ def mkNatTrans : F ⟶ G where
       simp only [Functor.map_id, Category.id_comp, Category.comp_id, Functor.map_comp, h₁, h₂, h₃,
         reassoc_of% h₁, reassoc_of% h₂, Category.assoc]
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_zero : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_one : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app one = e₁ := rfl
 
@@ -514,12 +518,14 @@ def mk {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right ≫ 
 lemma mk_π {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right ≫ π) :
     (mk π h).π = π := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ G.π := by
   rw [Cocone.w G left, Cocone.w G right]
 
 @[simp]
 lemma app_one_eq_π (G : ReflexiveCofork F) : G.ι.app zero = G.π := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The underlying `Cofork` of a `ReflexiveCofork`. -/
 abbrev toCofork (G : ReflexiveCofork F) : Cofork (F.map left) (F.map right) :=
   Cofork.ofπ G.π (by simp)
@@ -570,12 +576,12 @@ lemma hasReflexiveCoequalizer_iff_hasCoequalizer :
 
 instance reflexivePair_hasColimit_of_hasCoequalizer
     [h : HasCoequalizer (F.map left) (F.map right)] : HasColimit F :=
-  hasReflexiveCoequalizer_iff_hasCoequalizer _|>.mpr h
+  hasReflexiveCoequalizer_iff_hasCoequalizer _ |>.mpr h
 
 /-- A reflexive cofork is a colimit cocone if and only if the underlying cofork is. -/
 def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
     IsColimit (G.toCofork) ≃ IsColimit G :=
-  IsColimit.equivIsoColimit (reflexiveCoforkEquivCoforkObjIso F G).symm|>.trans <|
+  IsColimit.equivIsoColimit (reflexiveCoforkEquivCoforkObjIso F G).symm |>.trans <|
     (IsColimit.precomposeHomEquiv (diagramIsoParallelPair _).symm (G.whisker _)).trans <|
       Functor.Final.isColimitWhiskerEquiv _ _
 
@@ -597,6 +603,7 @@ lemma ι_reflexiveCoequalizerIsoCoequalizer_hom :
   IsColimit.comp_coconePointUniqueUpToIso_hom
     ((ReflexiveCofork.isColimitEquiv F _).symm _) _ WalkingParallelPair.one
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
     coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by
@@ -610,7 +617,7 @@ variable {A B : C} {f g : A ⟶ B} [IsReflexivePair f g] [h : HasCoequalizer f g
 
 instance ofIsReflexivePair_hasColimit_of_hasCoequalizer :
     HasColimit (ofIsReflexivePair f g) :=
-  hasReflexiveCoequalizer_iff_hasCoequalizer _|>.mpr h
+  hasReflexiveCoequalizer_iff_hasCoequalizer _ |>.mpr h
 
 /-- The coequalizer of a reflexive pair can be promoted to the colimit of a diagram out of the
 walking reflexive pair -/

@@ -16,7 +16,7 @@ We prove that the topology of pointwise convergence is induced by a family of se
 that it is locally convex in the topological sense
 
 * `PointwiseConvergenceCLM.seminorm`: the seminorms on `E →SLₚₜ[σ] F` given by `A ↦ ‖A x‖` for fixed
-`x : E`.
+  `x : E`.
 * `PointwiseConvergenceCLM.withSeminorm`: the topology is induced by the seminorms.
 * `PointwiseConvergenceCLM.instLocallyConvexSpace`: `E →SLₚₜ[σ] F` is locally convex.
 
@@ -73,13 +73,13 @@ open Filter
 open scoped Topology
 
 theorem tendsto_nhds {f : Filter α} (u : α → E →SLₚₜ[σ] F) (y₀ : E →SLₚₜ[σ] F) :
-    Tendsto u f (𝓝 y₀) ↔ ∀ (x : E) (ε : ℝ), 0 < ε → ∀ᶠ (k : α) in f, ‖u k x  - y₀ x‖ < ε :=
+    Tendsto u f (𝓝 y₀) ↔ ∀ (x : E) (ε : ℝ), 0 < ε → ∀ᶠ (k : α) in f, ‖u k x - y₀ x‖ < ε :=
   PointwiseConvergenceCLM.withSeminorms.tendsto_nhds _ _
 
 theorem tendsto_nhds_atTop [SemilatticeSup α] [Nonempty α] (u : α → E →SLₚₜ[σ] F)
     (y₀ : E →SLₚₜ[σ] F) :
-    Tendsto u atTop (𝓝 y₀) ↔ ∀ (x : E) (ε : ℝ), 0 < ε → ∃ (k₀ : α), ∀ (k : α), k₀ ≤ k →
-    ‖u k x  - y₀ x‖ < ε :=
+    Tendsto u atTop (𝓝 y₀) ↔
+      ∀ (x : E) (ε : ℝ), 0 < ε → ∃ (k₀ : α), ∀ (k : α), k₀ ≤ k → ‖u k x - y₀ x‖ < ε :=
   PointwiseConvergenceCLM.withSeminorms.tendsto_nhds_atTop _ _
 
 end Tendsto
@@ -87,7 +87,7 @@ end Tendsto
 section ContinuousLinearMap
 
 variable [AddCommGroup D] [TopologicalSpace D] [Module 𝕜₃ D]
-  [NormedAddCommGroup F] [NormedSpace 𝕜₂ F] [NormedAddCommGroup G] [NormedSpace 𝕜₂ G]
+  [NormedAddCommGroup G] [NormedSpace 𝕜₂ G]
 
 open NNReal ContinuousLinearMap
 

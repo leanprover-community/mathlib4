@@ -21,7 +21,7 @@ We also provide `Faithful` and `EssSurj` instances on this functor.
 
 namespace CategoryTheory.Join
 
-variable (C D : Type*) [Category C] [Category D]
+variable (C D : Type*) [Category* C] [Category* D]
 
 /-- The canonical functor from the sum to the join.
 It sends `inl c` to `left c` and `inr d` to `right d`. -/
@@ -53,6 +53,7 @@ instance : (fromSum C D).EssSurj where
     | left c => Functor.obj_mem_essImage _ (Sum.inl c)
     | right d => Functor.obj_mem_essImage _ (Sum.inr d)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (fromSum C D).Faithful where
   map_injective {x y} h h' heq := by
     cases h <;> cases h'

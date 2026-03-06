@@ -74,9 +74,6 @@ theorem _root_.Module.End.isUnit_iff [Module R M] (f : Module.End R M) :
     let e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
     ⟨⟨_, e.symm, LinearMap.ext e.right_inv, LinearMap.ext e.left_inv⟩, rfl⟩⟩
 
-@[deprecated (since := "2025-04-28")]
-alias _root_.Module.End_isUnit_iff := _root_.Module.End.isUnit_iff
-
 section Automorphisms
 
 variable [Module R M]
@@ -196,7 +193,7 @@ variable [Group S] [DistribMulAction S M] [SMulCommClass S R M]
 This is a stronger version of `DistribMulAction.toAddEquiv`. -/
 @[simps!]
 def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
-  { toAddEquiv M s, toLinearMap R M s with }
+  { toAddEquiv M s, DistribSMul.toLinearMap R M s with }
 
 /-- Each element of the group defines a module automorphism.
 
@@ -208,6 +205,11 @@ def toModuleAut : S →* M ≃ₗ[R] M where
   map_mul' _ _ := LinearEquiv.ext <| mul_smul _ _
 
 end DistribMulAction
+
+theorem LinearEquiv.smul_refl [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
+    [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M] (α : Sˣ) :
+    letI := SMulCommClass.symm R Sˣ M
+    α • refl R M = DistribMulAction.toLinearEquiv R M α := rfl
 
 namespace AddEquiv
 
@@ -270,19 +272,23 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-variable (e : M ≃+ M₂)
+-- See note [implicit instance arguments]
+variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} {modM₃ : Module ℤ M₃} (e : M ≃+ M₂)
 
 /-- An additive equivalence between commutative additive groups is a linear
 equivalence between ℤ-modules -/
-def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ :=
-  e.toLinearEquiv fun c a ↦ e.toAddMonoidHom.map_zsmul a c
+def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ := by
+  refine e.toLinearEquiv fun c a ↦ ?_
+  convert e.toAddMonoidHom.map_zsmul a c using 1
+  · exact congr(e $(int_smul_eq_zsmul ..))
+  · exact int_smul_eq_zsmul ..
 
 @[simp]
-theorem coe_toIntLinearEquiv : ⇑e.toIntLinearEquiv = e :=
-  rfl
+theorem coe_toIntLinearEquiv : ⇑(e.toIntLinearEquiv (modM := modM) (modM₂ := modM₂)) = e := rfl
 
 @[simp]
-theorem coe_symm_toIntLinearEquiv : ⇑e.toIntLinearEquiv.symm = e.symm :=
+theorem coe_symm_toIntLinearEquiv :
+    ⇑(e.toIntLinearEquiv (modM := modM) (modM₂ := modM₂)).symm = e.symm :=
   rfl
 
 @[simp]
@@ -296,8 +302,8 @@ theorem _root_.LinearEquiv.toAddEquiv_toIntLinearEquiv (e : M ≃ₗ[ℤ] M₂) 
   DFunLike.coe_injective rfl
 
 @[simp]
-theorem toIntLinearEquiv_symm : e.symm.toIntLinearEquiv = e.toIntLinearEquiv.symm :=
-  rfl
+theorem toIntLinearEquiv_symm :
+    e.symm.toIntLinearEquiv (modM := modM₂) (modM₂ := modM) = e.toIntLinearEquiv.symm := rfl
 
 @[simp]
 theorem toIntLinearEquiv_refl : (AddEquiv.refl M).toIntLinearEquiv = LinearEquiv.refl ℤ M :=
@@ -305,7 +311,8 @@ theorem toIntLinearEquiv_refl : (AddEquiv.refl M).toIntLinearEquiv = LinearEquiv
 
 @[simp]
 theorem toIntLinearEquiv_trans (e₂ : M₂ ≃+ M₃) :
-    (e.trans e₂).toIntLinearEquiv = e.toIntLinearEquiv.trans e₂.toIntLinearEquiv :=
+    (e.trans e₂).toIntLinearEquiv (modM := modM) (modM₂ := modM₃) =
+      (e.toIntLinearEquiv (modM₂ := modM₂)).trans e₂.toIntLinearEquiv :=
   rfl
 
 end AddCommGroup
@@ -313,6 +320,30 @@ end AddCommGroup
 end AddEquiv
 
 namespace LinearMap
+
+/-- Pointwise application of a family of linear forms to a family of vectors -/
+def piApply {V : M → Type*} [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)] :
+    (Π x : M, V x →ₗ[R] R) →ₗ[R] (Π x : M, V x) →ₗ[R] M → R where
+  toFun e :=
+    { toFun s x := e x (s x)
+      map_add' := by intros; ext; simp
+      map_smul' := by intros; ext; simp }
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+
+@[simp]
+theorem piApply_apply {V : M → Type*}
+    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)]
+    (e : Π x : M, V x →ₗ[R] R) (s : Π x : M, V x) :
+    piApply e s = fun x ↦ e x (s x) :=
+  rfl
+
+@[simp]
+theorem piApply_apply_apply {V : M → Type*}
+    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)]
+    (e : Π x : M, V x →ₗ[R] R) (s : Π x : M, V x) (x : M) :
+    piApply e s x = e x (s x) :=
+  rfl
 
 variable (R S M)
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
@@ -541,6 +572,7 @@ See `LinearEquiv.conj` for the linear version of this isomorphism. -/
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism with respect to an action on the domains. -/
 @[simps] def domMulActCongrRight [Semiring S] [Module S M₁]
@@ -681,6 +713,10 @@ theorem conj_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁'
     e.conj f = ((↑e : M₁' →ₛₗ[σ₁'₂'] M₂').comp f).comp (e.symm : M₂' →ₛₗ[σ₂'₁'] M₁') :=
   rfl
 
+-- Note this has lower `simp` priority for performance reasons, so that we rewrite as
+-- `e.conj LinearMap.id x => LinearMap.id x` => `x` rather than
+-- `e.conj LinearMap.id x => e (LinearMap.id (e.symm x)) => e (e.symm x) => x`.
+@[simp 900]
 theorem conj_apply_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁' M₁') (x : M₂') :
     e.conj f x = e (f (e.symm x)) :=
   rfl
@@ -698,14 +734,13 @@ theorem conj_trans (e₁ : M₁' ≃ₛₗ[σ₁'₂'] M₂') (e₂ : M₂' ≃�
   rfl
 
 @[simp] lemma conj_conj_symm (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₂' M₂') :
-    e.conj (e.symm.conj f) = f := by ext; simp [conj_apply]
+    e.conj (e.symm.conj f) = f := by ext; simp
 
 @[simp] lemma conj_symm_conj (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁' M₁') :
-    e.symm.conj (e.conj f) = f := by ext; simp [conj_apply]
+    e.symm.conj (e.conj f) = f := by ext; simp
 
 @[simp]
-theorem conj_id (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : e.conj LinearMap.id = LinearMap.id := by
-  simp [conj_apply]
+theorem conj_id (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : e.conj LinearMap.id = LinearMap.id := by ext; simp
 
 @[simp]
 theorem conj_refl (f : Module.End R M) : (refl R M).conj f = f := rfl

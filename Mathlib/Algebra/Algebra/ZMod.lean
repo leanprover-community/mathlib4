@@ -47,10 +47,11 @@ See note [reducible non-instances]. -/
 abbrev algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
   algebra' R p dvd_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any ring with a `ZMod p`-module structure can be upgraded to a `ZMod p`-algebra. Not an
 instance because this is usually not the default way, and this will cause typeclass search loop. -/
 def algebraOfModule (n : ℕ) (R : Type*) [Ring R] [Module (ZMod n) R] : Algebra (ZMod n) R :=
-  Algebra.ofModule' (proof · ·|>.1) (proof · ·|>.2) where
+  Algebra.ofModule' (proof · · |>.1) (proof · · |>.2) where
   proof (r : ZMod n) (x : R) : r • 1 * x = r • x ∧ x * r • 1 = r • x := by
     obtain _ | n := n
     · obtain rfl : (inferInstanceAs (Module ℤ R)) = ‹_› := Subsingleton.elim _ _
@@ -58,6 +59,7 @@ def algebraOfModule (n : ℕ) (R : Type*) [Ring R] [Module (ZMod n) R] : Algebra
     · obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
       simp [Nat.cast_smul_eq_nsmul, Nat.cast_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instIsScalarTower (n : ℕ) (R M : Type*) [Ring R] [AddCommGroup M]
     [Module (ZMod n) R] [m₁ : Module (ZMod n) M] [Module R M] :
     IsScalarTower (ZMod n) R M := by

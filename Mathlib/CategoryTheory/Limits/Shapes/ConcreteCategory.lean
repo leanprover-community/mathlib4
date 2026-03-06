@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Limits in concrete categories
@@ -78,6 +79,7 @@ variable [ConcreteCategory.{max w r} D FD] (F : C ⥤ D)
   [PreservesLimitsOfShape WalkingCospan (forget D)]
   [PreservesLimit (Discrete.functor fun b ↦ F.obj (f b)) (forget D)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Pi.map_ext (x y : ToType (F.obj (∏ᶜ f : C)))
     (h : ∀ i, F.map (Pi.π f i) x = F.map (Pi.π f i) y) : x = y := by
   apply ConcreteCategory.injective_of_mono_of_preservesPullback (PreservesProduct.iso F f).hom
@@ -196,7 +198,7 @@ variable {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S)
     [HasPullback f₁ f₂] [PreservesLimit (cospan f₁ f₂) (forget C)]
 
 /-- In a concrete category `C`, given two morphisms `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S`,
-the elements in `pullback f₁ f₁` can be identified to compatible tuples of
+the elements in `pullback f₁ f₂` can be identified to compatible tuples of
 elements in `X₁` and `X₂`. -/
 noncomputable def pullbackEquiv :
     ToType (pullback f₁ f₂) ≃ { p : ToType X₁ × ToType X₂ // f₁ p.1 = f₂ p.2 } :=
@@ -262,6 +264,7 @@ section Multiequalizer
 variable {FC : C → C → Type*} {CC : C → Type s} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 variable [ConcreteCategory.{s} C FC]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
     {I : MulticospanIndex J C} [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] (x y : ToType (multiequalizer I))
@@ -360,7 +363,7 @@ end WidePushout
 
 attribute [local ext] ConcreteCategory.hom_ext in
 -- We don't mark this as an `@[ext]` lemma as we don't always want to work elementwise.
-theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] {FC : C → C → Type*}
+theorem cokernel_funext {C : Type*} [Category* C] [HasZeroMorphisms C] {FC : C → C → Type*}
     {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
     {M N K : C} {f : M ⟶ N} [HasCokernel f] {g h : cokernel f ⟶ K}
     (w : ∀ n : ToType N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by

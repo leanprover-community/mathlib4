@@ -634,6 +634,7 @@ theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
   dsimp [of]
   rw [if_pos rfl, Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_d_ne {i j : α} (h : i ≠ j + 1) : (of X d sq).d i j = 0 := by
   dsimp [of]
   rw [dif_neg h]
@@ -646,6 +647,7 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n + 1) ≫ d_X n = 0) (Y : α → V)
   (d_Y : ∀ n, Y (n + 1) ⟶ Y n) (sq_Y : ∀ n, d_Y (n + 1) ≫ d_Y n = 0)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A constructor for chain maps between `α`-indexed chain complexes built using `ChainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
@@ -722,9 +724,7 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
   change ShortComplex.mk _ _ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero = _
   dsimp [mk, of, mkAux]
-  congr
-  · rw [if_pos (by rfl), id_comp]
-  · simp
+  simp
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/
@@ -736,6 +736,7 @@ def mkXIso (n : ℕ) :
       (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ n)]
     rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk_d (n : ℕ) :
     (mk X₀ X₁ X₂ d₀ d₁ s succ).d (n + 3) (n + 2) =
       (mkXIso X₀ X₁ X₂ d₀ d₁ s succ n).hom ≫ (succ
@@ -779,7 +780,7 @@ theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
 the inductive construction. -/
 def mk'XIso (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').X (n + 2) ≅ (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).1 := by
-  obtain _|n := n
+  obtain _ | n := n
   · apply eqToIso
     dsimp [mk', mk, of, mkAux]
     rw [id_comp]
@@ -793,7 +794,7 @@ lemma mk'_congr_succ'_d {X Y : V} (f g : X ⟶ Y) (h : f = g) :
 lemma mk'_d (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').d (n + 2) (n + 1) = (mk'XIso X₀ X₁ d₀ succ' n).hom ≫
       (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).2.1 := by
-  obtain _|n := n
+  obtain _ | n := n
   · dsimp [mk'XIso, mk']
     rw [mk_d_2_1]
     apply mk'_congr_succ'_d
@@ -897,6 +898,7 @@ theorem of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
   dsimp [of]
   rw [if_pos rfl, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : (of X d sq).d i j = 0 := by
   dsimp [of]
   rw [dif_neg h]
@@ -909,6 +911,7 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n ≫ d_X (n + 1) = 0) (Y : α → V)
   (d_Y : ∀ n, Y n ⟶ Y (n + 1)) (sq_Y : ∀ n, d_Y n ≫ d_Y (n + 1) = 0)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A constructor for chain maps between `α`-indexed cochain complexes built using `CochainComplex.of`,
 from a dependently typed collection of morphisms.

@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Functor.EpiMono
 
 # Adjunctions involving evaluation
 
-We show that evaluation of functors have adjoints, given the existence of (co)products.
+We show that evaluation of functors has adjoints, given the existence of (co)products.
 
 -/
 
@@ -33,12 +33,13 @@ section
 
 variable [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of evaluation. -/
 @[simps]
 def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
     { obj := fun t => ∐ fun _ : c ⟶ t => d
-      map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f}
+      map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f }
   map {_ d₂} f :=
     { app := fun _ => Sigma.desc fun h => f ≫ Sigma.ι (fun _ => d₂) h
       naturality := by
@@ -47,6 +48,7 @@ def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
         ext
         simp }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction showing that evaluation is a right adjoint. -/
 @[simps! unit_app counit_app_app]
 def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluation _ _).obj c :=
@@ -64,7 +66,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
               Discrete.functor_obj, Cofan.mk_pt, Category.id_comp]
           right_inv := fun f => by simp } }
 
-instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=
+instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint :=
   ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
 
 /-- See also the file `Mathlib/CategoryTheory/Limits/FunctorCategory/EpiMono.lean`
@@ -82,6 +84,7 @@ section
 
 variable [∀ a b : C, HasProductsOfShape (a ⟶ b) D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of evaluation. -/
 @[simps]
 def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
@@ -90,6 +93,7 @@ def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
       map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
   map f := { app := fun _ => Pi.lift fun g => Pi.π _ g ≫ f }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction showing that evaluation is a left adjoint. -/
 @[simps! unit_app_app counit_app]
 def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRightAdjoint D c :=

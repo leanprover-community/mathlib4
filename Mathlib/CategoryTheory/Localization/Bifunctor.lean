@@ -35,8 +35,8 @@ namespace CategoryTheory
 
 open Category Functor
 
-variable {C₁ C₂ D₁ D₂ E E' : Type*} [Category C₁] [Category C₂]
-  [Category D₁] [Category D₂] [Category E] [Category E']
+variable {C₁ C₂ D₁ D₂ E E' : Type*} [Category* C₁] [Category* C₂]
+  [Category* D₁] [Category* D₂] [Category* E] [Category* E']
 
 namespace MorphismProperty
 
@@ -84,7 +84,7 @@ noncomputable def Lifting₂.snd (X₂ : C₂) :
     Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂)) :=
   Lifting₂.fst L₂ L₁ W₂ W₁ F.flip F'.flip X₂
 
-noncomputable instance Lifting₂.uncurry [Lifting₂ L₁ L₂ W₁ W₂ F F'] :
+noncomputable instance Lifting₂.uncurry :
     Lifting (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F) (uncurry.obj F') where
   iso := Functor.uncurry.mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
 
@@ -139,7 +139,7 @@ variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   (F : C₁ ⥤ C₂ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ E)
   [Lifting₂ L₁ L₂ W₁ W₂ F F']
 
-noncomputable instance Lifting₂.compRight {E' : Type*} [Category E'] (G : E ⥤ E') :
+noncomputable instance Lifting₂.compRight {E' : Type*} [Category* E'] (G : E ⥤ E') :
     Lifting₂ L₁ L₂ W₁ W₂
       (F ⋙ (whiskeringRight _ _ _).obj G)
       (F' ⋙ (whiskeringRight _ _ _).obj G) :=
@@ -180,6 +180,7 @@ theorem natTrans₂_ext {τ τ' : F₁' ⟶ F₂'}
       (τ'.app (L₁.obj X₁)).app (L₂.obj X₂)) : τ = τ' :=
   uncurry.map_injective (natTrans_ext (L₁.prod L₂) (W₁.prod W₂) (fun _ ↦ h _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `F₁' ≅ F₂'` of bifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'`
 and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/

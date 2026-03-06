@@ -58,13 +58,14 @@ protected def trace : SlashInvariantForm ℋ k where
     simpa [SlashAction.sum_slash, quotientFunc_smul f hh]
       using Equiv.sum_comp (MulAction.toPerm (_ : ℋ)) _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm of a slash-invariant form, as a slash-invariant form. -/
 @[simps! -fullyApplied]
 protected def norm [ℋ.HasDetPlusMinusOne] : SlashInvariantForm ℋ (k * Nat.card 𝒬) where
   toFun := let := Fintype.ofFinite 𝒬; ∏ q : 𝒬, quotientFunc f q
   slash_action_eq' h hh := by
     let := Fintype.ofFinite 𝒬
-    simpa [← Finset.card_univ, ModularForm.prod_slash Finset.univ_nonempty,
+    simpa [← Finset.card_univ, ModularForm.prod_slash,
       quotientFunc_smul f hh, Subgroup.HasDetPlusMinusOne.abs_det hh,
       -Matrix.GeneralLinearGroup.val_det_apply] using Equiv.prod_comp (MulAction.toPerm (_ : ℋ)) _
 
@@ -112,7 +113,7 @@ protected def ModularForm.norm [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢
     rintro rfl
     simp_rw [SlashInvariantForm.norm, IsBoundedAtImInfty, Filter.BoundedAtFilter]
     let := Fintype.ofFinite 𝒬
-    rw [Nat.card_eq_fintype_card, ModularForm.prod_fintype_slash]
+    rw [Nat.card_eq_fintype_card, ← Finset.card_univ, ModularForm.prod_slash]
     apply Asymptotics.IsBigO.const_smul_left
     rw [show (1 : ℍ → ℝ) = (fun x ↦ ∏ (i : 𝒬), 1) by ext; simp, Finset.prod_fn]
     refine .finsetProd (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f _).bdd_at_cusps' ?_ γ rfl)
@@ -142,8 +143,8 @@ lemma ModularForm.isZero_of_neg_weight [𝒢.IsArithmetic]
   suffices ModularForm.norm 𝒮ℒ f = 0 by simpa [ModularForm.norm_eq_zero_iff]
   ext
   -- some friction here because `levelOne_neg_weight_eq_zero` uses `Γ(1)` for the level
-  rw [@ModularFormClass.levelOne_neg_weight_eq_zero (f := ModularForm.norm 𝒮ℒ f) _ _ _]
-  · rfl
+  rw [@ModularFormClass.levelOne_neg_weight_eq_zero (f := ModularForm.norm 𝒮ℒ f) _ _ _,
+    Pi.zero_apply, zero_apply]
   · rw [CongruenceSubgroup.Gamma_one_top, ← MonoidHom.range_eq_map]
     infer_instance
   · exact mul_neg_of_neg_of_pos hk <| mod_cast Nat.pos_of_ne_zero 𝒢.relIndex_ne_zero

@@ -56,7 +56,7 @@ namespace AlternatingFaceMapComplex
 -/
 
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 variable (X : SimplicialObject C)
 variable (Y : SimplicialObject C)
 
@@ -151,7 +151,7 @@ theorem map_f (f : X ⟶ Y) (n : ℕ) : (map f).f n = f.app (op ⦋n⦌) :=
 
 end AlternatingFaceMapComplex
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 /-- The alternating face map complex, as a functor -/
 def alternatingFaceMapComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
@@ -176,7 +176,8 @@ theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y)
     ((alternatingFaceMapComplex C).map f).f n = f.app (op ⦋n⦌) :=
   rfl
 
-theorem map_alternatingFaceMapComplex {D : Type*} [Category D] [Preadditive D] (F : C ⥤ D)
+set_option backward.isDefEq.respectTransparency false in
+theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] (F : C ⥤ D)
     [F.Additive] :
     alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ =
       (SimplicialObject.whiskering C D).obj F ⋙ alternatingFaceMapComplex D := by
@@ -207,6 +208,7 @@ theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (
 
 namespace AlternatingFaceMapComplex
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation which gives the augmentation of the alternating face map
 complex attached to an augmented simplicial object. -/
 def ε [Limits.HasZeroObject C] :
@@ -243,7 +245,7 @@ end AlternatingFaceMapComplex
 ## Construction of the natural inclusion of the normalized Moore complex
 -/
 
-variable {A : Type*} [Category A] [Abelian A]
+variable {A : Type*} [Category* A] [Abelian A]
 
 /-- The inclusion map of the Moore complex in the alternating face map complex -/
 def inclusionOfMooreComplexMap (X : SimplicialObject A) :
@@ -299,6 +301,7 @@ theorem d_eq_unop_d (n : ℕ) :
   simp only [objD, AlternatingFaceMapComplex.objD, unop_sum, unop_zsmul]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem d_squared (n : ℕ) : objD X n ≫ objD X (n + 1) = 0 := by
   simp only [d_eq_unop_d, ← unop_comp, AlternatingFaceMapComplex.d_squared, unop_zero]
 

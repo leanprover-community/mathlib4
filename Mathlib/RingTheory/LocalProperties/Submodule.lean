@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Localization.Away.Basic
 In this file, we show that several conditions on submodules can be checked on stalks.
 -/
 
-@[expose] public section
+public section
 
 open scoped nonZeroDivisors
 

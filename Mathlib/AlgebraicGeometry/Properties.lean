@@ -6,6 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
@@ -21,7 +23,6 @@ We provide some basic properties of schemes
 -/
 
 @[expose] public section
-
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -39,7 +40,7 @@ instance : T0Space X :=
     (isAffineOpen_opensRange (X.affineCover.f _)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
 instance : QuasiSober X := by
-  apply (config := { allowSynthFailures := true })
+  apply +allowSynthFailures
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.f x))
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.f i).isOpenEmbedding.isOpen_range
   · rintro ⟨_, i, rfl⟩
@@ -56,6 +57,9 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
   have (i : _) : PrespectralSpace (X.affineCover.f i).opensRange.1 :=
     this (X.affineCover.f i).opensRange (isAffineOpen_opensRange (X.affineCover.f i))
   .of_isOpenCover X.affineCover.isOpenCover_opensRange
+
+instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IrreducibleSpace ·) :=
+  ⟨fun e ↦ e.hom.homeomorph.irreducibleSpace_iff.mp⟩
 
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
 class IsReduced : Prop where
@@ -93,13 +97,16 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersi
   exact isReduced_of_injective (inv <| f.app (f ''ᵁ U)).hom
     (asIso <| f.app (f ''ᵁ U) : Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.injective
 
+instance {X : Scheme} {U : X.Opens} [IsReduced X] : IsReduced U :=
+    isReduced_of_isOpenImmersion U.ι
+
 instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
-  apply (config := { allowSynthFailures := true }) isReduced_of_isReduced_stalk
+  apply +allowSynthFailures isReduced_of_isReduced_stalk
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
-  exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom.hom
-    (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
+  exact isReduced_of_injective (Spec.stalkIso R x).hom.hom
+    (Spec.stalkIso R x).commRingCatIsoToRingEquiv.injective
 
 theorem affine_isReduced_iff (R : CommRingCat) :
     IsReduced (Spec R) ↔ _root_.IsReduced R := by
@@ -111,6 +118,13 @@ theorem affine_isReduced_iff (R : CommRingCat) :
 theorem isReduced_of_isAffine_isReduced [IsAffine X] [_root_.IsReduced Γ(X, ⊤)] :
     IsReduced X :=
   isReduced_of_isOpenImmersion X.isoSpec.hom
+
+theorem IsReduced.of_openCover (𝒰 : X.OpenCover) [∀ i, IsReduced (𝒰.X i)] : IsReduced X := by
+  have (x : X) : _root_.IsReduced (X.presheaf.stalk x) := by
+    obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
+    exact isReduced_of_injective _
+      (asIso <| (𝒰.f i).stalkMap x).commRingCatIsoToRingEquiv.injective
+  exact isReduced_of_isReduced_stalk _
 
 /-- To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
 1. In any scheme `X`, if `P` holds for an open cover of `U`, then `P` holds for `U`.
@@ -147,6 +161,7 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
   · rw [e]
   apply h₁
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens}
     (s : Γ(X, U)) (hs : X.basicOpen s = ⊥) : s = 0 := by
   apply TopCat.Presheaf.section_ext X.sheaf U
@@ -185,6 +200,26 @@ theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : X.Opens}
   rintro rfl
   simp
 
+/-- If `X` is reduced and has finitely many irreducible components, then the stalks at the generic
+points of the irreducible components are fields. -/
+lemma isField_stalk_of_closure_mem_irreducibleComponents
+    (x : X) (hx : closure {x} ∈ irreducibleComponents X) [IsReduced X] :
+    IsField (X.presheaf.stalk x) := by
+  wlog hX : ∃ R, X = Spec R
+  · obtain ⟨i, x, rfl⟩ := X.affineCover.exists_eq x
+    have inst : IsReduced (X.affineCover.X i) := isReduced_of_isOpenImmersion (X.affineCover.f i)
+    refine (asIso <| (X.affineCover.f i).stalkMap x).commRingCatIsoToRingEquiv.isField
+      (this _ x ?_ ⟨_, rfl⟩)
+    rw [(X.affineCover.f i).isOpenEmbedding.closure_eq_preimage_closure_image, Set.image_singleton]
+    exact preimage_mem_irreducibleComponents hx (X.affineCover.f i).isOpenEmbedding
+      ⟨X.affineCover.f i x, subset_closure rfl, _, rfl⟩
+  obtain ⟨R, rfl⟩ := hX
+  replace hx : x.asIdeal ∈ minimalPrimes R := by
+    rwa [← PrimeSpectrum.vanishingIdeal_singleton, PrimeSpectrum.vanishingIdeal_mem_minimalPrimes]
+  rw [← PrimeSpectrum.subsingleton_iff_isField_of_isReduced]
+  exact IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes _ hx
+    ((Spec.structureSheaf R).presheaf.stalk x)
+
 /-- A scheme `X` is integral if its is nonempty,
 and `𝒪ₓ(U)` is an integral domain for each `U ≠ ∅`. -/
 class IsIntegral : Prop where
@@ -211,6 +246,7 @@ instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U]
     Nontrivial Γ(X, U) :=
   LocallyRingedSpace.component_nontrivial (hU := ‹_›)
 
+set_option backward.isDefEq.respectTransparency false in
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := by
   by_contra H
   replace H : ¬IsPreirreducible (⊤ : Set X) := fun h =>
@@ -265,10 +301,15 @@ theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmers
   intro U hU
   rw [← f.preimage_image_eq U]
   have : IsDomain Γ(Y, f ''ᵁ U) := by
-    apply (config := { allowSynthFailures := true }) IsIntegral.component_integral
+    apply +allowSynthFailures IsIntegral.component_integral
     exact ⟨⟨_, _, hU.some.prop, rfl⟩⟩
   exact (asIso <| f.app (f ''ᵁ U) :
     Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
+
+lemma IsIntegral.of_isIso {X Y : Scheme.{u}} [h : IsIntegral X] (f : X ⟶ Y) [IsIso f] :
+    IsIntegral Y := by
+  suffices Nonempty Y from isIntegral_of_isOpenImmersion (inv f)
+  exact Nonempty.map f inferInstance
 
 instance {R : CommRingCat} [IsDomain R] : IrreducibleSpace (Spec R) := by
   convert PrimeSpectrum.irreducibleSpace (R := R)
@@ -301,5 +342,10 @@ noncomputable
 instance [IsIntegral X] : OrderTop X where
   top := genericPoint X
   le_top a := genericPoint_specializes a
+
+lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
+    IsField Γ(X, ⊤) := by
+  rw [← PrimeSpectrum.t1Space_iff_isField]
+  apply X.isoSpec.hom.homeomorph.t1Space
 
 end AlgebraicGeometry

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
 
 /-!
 
@@ -27,7 +28,7 @@ statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -37,7 +38,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌}
     (v : HigherFacesVanish q φ) (hnbq : n + 1 = b + q) :
@@ -55,6 +56,7 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
     rw [Fin.lt_def, Fin.val_succ]
     linarith
 
+set_option backward.isDefEq.respectTransparency false in
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :
     X.σ i ≫ (P q).f (n + 1) = 0 := by
   induction q generalizing i with

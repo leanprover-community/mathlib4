@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Category.Grp.Biproducts
 public import Mathlib.Algebra.Category.Grp.FilteredColimits
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+
 /-!
 # AB axioms for the category of abelian groups
 
@@ -23,11 +24,13 @@ universe u
 
 open CategoryTheory Limits
 
-instance {J C : Type*} [Category J] [Category C] [HasColimitsOfShape J C] [Preadditive C] :
+set_option backward.isDefEq.respectTransparency false in
+instance {J C : Type*} [Category* J] [Category* C] [HasColimitsOfShape J C] [Preadditive C] :
     (colim (J := J) (C := C)).Additive where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     (colim (J := J) (C := AddCommGrpCat.{u})).PreservesHomology :=
   Functor.preservesHomology_of_map_exact _ (fun S hS ↦ by
@@ -60,8 +63,9 @@ attribute [local instance] Abelian.hasFiniteBiproducts
 
 instance : AB4 AddCommGrpCat.{u} := AB4.of_AB5 _
 
+set_option backward.isDefEq.respectTransparency false in
 instance : HasExactLimitsOfShape (Discrete J) (AddCommGrpCat.{u}) := by
-  apply (config := { allowSynthFailures := true }) hasExactLimitsOfShape_of_preservesEpi
+  apply +allowSynthFailures hasExactLimitsOfShape_of_preservesEpi
   exact {
     preserves {X Y} f hf := by
       let iX : limit X ≅ AddCommGrpCat.of ((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
@@ -92,3 +96,13 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrpCat.{u}) := by
 
 instance : AB4Star AddCommGrpCat.{u} where
   ofShape _ := inferInstance
+
+instance : HasSeparator AddCommGrpCat.{u} where
+  hasSeparator := by
+    use AddCommGrpCat.of (ULift ℤ)
+    intro A B f g h; simp_all only [ObjectProperty.singleton_iff, AddCommGrpCat.ext_iff,
+      AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply, forall_eq', ULift.forall]
+    (intro x; specialize h (AddCommGrpCat.ofHom
+    (AddMonoidHom.mk' (fun y => y • x) fun y z => by simp only [add_smul])) 1; aesop)
+
+instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCofiber
+public import Mathlib.Tactic.Linarith
 
 /-! # The mapping cone of a morphism of cochain complexes
 
@@ -73,6 +74,7 @@ noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
 /-- The right inclusion in the mapping cone. -/
 noncomputable def inr : G ⟶ mappingCone φ := homotopyCofiber.inr φ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The first projection from the mapping cone, as a cocycle of degree `1`. -/
 noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
   Cocycle.mk (Cochain.mk (fun p q hpq => homotopyCofiber.fstX φ p q hpq)) 2 (by lia) (by
@@ -85,22 +87,26 @@ noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
 noncomputable def snd : Cochain (mappingCone φ) G 0 :=
   Cochain.ofHoms (homotopyCofiber.sndX φ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_v_fst_v (p q : ℤ) (hpq : q + 1 = p) :
     (inl φ).v p q (by rw [← hpq, add_neg_cancel_right]) ≫
       (fst φ : Cochain (mappingCone φ) F 1).v q p hpq = 𝟙 _ := by
   simp [inl, fst]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_v_snd_v (p q : ℤ) (hpq : p + (-1) = q) :
     (inl φ).v p q hpq ≫ (snd φ).v q q (add_zero q) = 0 := by
   simp [inl, snd]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_f_fst_v (p q : ℤ) (hpq : p + 1 = q) :
     (inr φ).f p ≫ (fst φ).1.v p q hpq = 0 := by
   simp [inr, fst]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_f_snd_v (p : ℤ) :
     (inr φ).f p ≫ (snd φ).v p p (add_zero p) = 𝟙 _ := by
@@ -110,7 +116,7 @@ lemma inr_f_snd_v (p : ℤ) :
 lemma inl_fst :
     (inl φ).comp (fst φ).1 (neg_add_cancel 1) = Cochain.ofHom (𝟙 F) := by
   ext p
-  simp [Cochain.comp_v _ _ (neg_add_cancel 1) p (p-1) p rfl (by lia)]
+  simp [Cochain.comp_v _ _ (neg_add_cancel 1) p (p - 1) p rfl (by lia)]
 
 @[simp]
 lemma inl_snd :
@@ -337,6 +343,7 @@ lemma inr_f_descCochain_v (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
   simpa only [Cochain.comp_v _ _ (zero_add n) p₁ p₁ p₂ (add_zero p₁) h₁₂, Cochain.ofHom_v]
     using Cochain.congr_v (inr_descCochain φ α β h) p₁ p₂ (by lia)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
     δ n n' (descCochain φ α β h) =
       (fst φ).1.comp (δ m n α +
@@ -475,7 +482,7 @@ noncomputable def liftCocycle {K : CochainComplex C ℤ} {n m : ℤ}
     (eq : δ n m β + α.1.comp (Cochain.ofHom φ) (add_zero m) = 0) :
     Cocycle K (mappingCone φ) n :=
   Cocycle.mk (liftCochain φ α β h) m h (by
-    simp only [δ_liftCochain φ α β h (m+1) rfl, eq,
+    simp only [δ_liftCochain φ α β h (m + 1) rfl, eq,
       Cocycle.δ_eq_zero, Cochain.zero_comp, neg_zero, add_zero])
 
 section
@@ -547,7 +554,7 @@ lemma liftCochain_descCochain :
 lemma liftCochain_v_descCochain_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h₂₃ : p₂ + n' = p₃)
     (q : ℤ) (hq : p₁ + m = q) :
     (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (descCochain φ α' β' h').v p₂ p₃ h₂₃ =
-      α.v p₁ q hq ≫ α'.v q p₃ (by lia) + β.v p₁ p₂ h₁₂ ≫ β'.v p₂ p₃ h₂₃ := by
+      α.v p₁ q hq ≫ α'.v q p₃ (by omega) + β.v p₁ p₂ h₁₂ ≫ β'.v p₂ p₃ h₂₃ := by
   have eq := Cochain.congr_v (liftCochain_descCochain φ α β α' β' h h' p hp) p₁ p₃ (by lia)
   simpa only [Cochain.comp_v _ _ hp p₁ p₂ p₃ h₁₂ h₂₃, Cochain.add_v,
     Cochain.comp_v _ _ _ _ _ _ hq (show q + m' = p₃ by lia)] using eq
@@ -572,6 +579,7 @@ open Preadditive Category
 variable (H : C ⥤ D) [H.Additive]
   [HasHomotopyCofiber ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
 in `C`, this is the comparison isomorphism (in each degree `n`) between the image
 by `H` of `mappingCone φ` and the mapping cone of the image by `H` of `φ`.
@@ -597,7 +605,7 @@ noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
       inl_v_snd_v_assoc, inr_f_snd_v_assoc, zero_add, ← Functor.map_comp, ← Functor.map_add]
     rw [← H.map_id]
     congr 1
-    simp [ext_from_iff  _ _ _ hnm]
+    simp [ext_from_iff _ _ _ hnm]
   inv_hom_id := by
     simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc,
       ← H.map_comp_assoc, inl_v_fst_v, CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v,
@@ -617,6 +625,7 @@ lemma mapHomologicalComplexXIso_eq (n m : ℤ) (hnm : n + 1 = m) :
   subst hnm
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
 in `C`, this is the comparison isomorphism between the image by `H`
 of `mappingCone φ` and the mapping cone of the image by `H` of `φ`. -/
@@ -641,6 +650,7 @@ noncomputable def mapHomologicalComplexIso :
         inr_f_snd_v_assoc, zero_add, inl_v_snd_v, inr_f_snd_v, comp_id, ← H.map_comp,
         d_snd_v φ n (n + 1) rfl, Functor.map_add])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_inr :
     (H.mapHomologicalComplex (ComplexShape.up ℤ)).map (inr φ) ≫
       (mapHomologicalComplexIso φ H).hom =

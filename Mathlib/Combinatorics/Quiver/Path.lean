@@ -25,7 +25,7 @@ universe v v₁ v₂ v₃ u u₁ u₂ u₃
 namespace Quiver
 
 /-- `Path a b` is the type of paths from `a` to `b` through the arrows of `G`. -/
-inductive Path {V : Type u} [Quiver.{v} V] (a : V) : V → Sort max (u + 1) v
+inductive Path {V : Type u} [Quiver.{v} V] (a : V) : V → Type max u v
   | nil : Path a a
   | cons : ∀ {b c : V}, Path a b → (b ⟶ c) → Path a c
 
@@ -260,6 +260,7 @@ instance instSubsingletonBddPaths (v w : V) : Subsingleton (BoundedPaths v w 0) 
 def decidableEqBddPathsZero (v w : V) : DecidableEq (BoundedPaths v w 0) :=
   fun _ _ => isTrue <| Subsingleton.elim _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given decidable equality on paths of length up to `n`, we can construct
 decidable equality on paths of length up to `n + 1`. -/
 def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
@@ -268,8 +269,9 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
   fun ⟨p, hp⟩ ⟨q, hq⟩ =>
     match v, w, p, q with
     | _, _, .nil, .nil => isTrue rfl
-    | _, _, .nil, .cons _ _ => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
-    | _, _, .cons _ _, .nil => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
+    | _, _, .nil, .cons _ _
+    | _, _, .cons _ _, .nil =>
+      isFalse fun h => Quiver.Path.noConfusion rfl .rfl .rfl .rfl (heq_of_eq (Subtype.mk.inj h))
     | _, _, .cons (b := v') p' α, .cons (b := v'') q' β =>
       match v', v'', h₁ v' v'' with
       | _, _, isTrue (Eq.refl _) =>

@@ -16,7 +16,7 @@ which contain `Set.univ` and are closed under intersections, the induced *naive*
 of sets in the limit is, in fact, a topological basis.
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Topology
@@ -35,6 +35,7 @@ section CofilteredLimit
 
 variable {J : Type v} [Category.{w} J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
@@ -87,7 +88,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       exact compat j e (g e he) (U e) (h1 e he)
     · -- conclude...
       rw [h2]
-      change _ = (C.π.app j)⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
+      change _ = (C.π.app j) ⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 e

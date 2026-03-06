@@ -32,7 +32,7 @@ namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)
 
-variable [Category C] [MonoidalCategory C] [Category D]
+variable [Category* C] [MonoidalCategory C] [Category* D]
 
 namespace MonoidalLeftAction
 open scoped MonoidalLeftAction MonoidalRightAction
@@ -62,11 +62,11 @@ def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
       MonoidalRightAction.actionHomRight_inv_hom_assoc] using
       (d ⊴ᵣ (α_ (mop c₃) (mop c₂) (mop c₁)).inv) ≫=
         MonoidalRightAction.actionHom_associator
-          (mop c₃) (mop c₂) (mop c₁) d|>.symm
+          (mop c₃) (mop c₂) (mop c₁) d |>.symm
 
 /-- Define a left action of `Cᴹᵒᵖ` on `D` from a right action of `C` on `D` via
 the formula `mop c ⊙ₗ d = d ⊙ᵣ c`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def monoidalOppositeLeftAction [MonoidalRightAction C D] :
     MonoidalLeftAction Cᴹᵒᵖ D where
   actionObj c d := d ⊙ᵣ unmop c
@@ -87,7 +87,7 @@ def monoidalOppositeLeftAction [MonoidalRightAction C D] :
       MonoidalRightAction.actionHomRight_inv_hom_assoc] using
       (d ⊴ᵣ (α_ (unmop c₃) (unmop c₂) (unmop c₁)).inv) ≫=
         MonoidalRightAction.actionHom_associator
-          (unmop c₃) (unmop c₂) (unmop c₁) d|>.symm
+          (unmop c₃) (unmop c₂) (unmop c₁) d |>.symm
 
 section
 
@@ -118,7 +118,7 @@ open Opposite
 
 /-- Define a left action of `Cᵒᵖ` on `Dᵒᵖ` from a left action of `C` on `D` via
 the formula `(op c) ⊙ₗ (op d) = op (c ⊙ₗ d)`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def oppositeLeftAction [MonoidalLeftAction C D] :
     MonoidalLeftAction Cᵒᵖ Dᵒᵖ where
   actionObj c d := op <| c.unop ⊙ₗ d.unop
@@ -160,7 +160,7 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
 
 /-- Define a left action of `C` on `D` from a left action of `Cᵒᵖ` on `Dᵒᵖ` via
 the formula `c ⊙ₗ d = unop ((op c) ⊙ₗ (op d))`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def leftActionOfOppositeLeftAction [MonoidalLeftAction Cᵒᵖ Dᵒᵖ] :
     MonoidalLeftAction C D where
   actionObj c d := unop <| op c ⊙ₗ op d
@@ -276,11 +276,11 @@ def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
       MonoidalLeftAction.inv_hom_actionHomLeft_assoc] using
       (α_ (mop c₃) (mop c₂) (mop c₁)).inv ⊵ₗ d ≫=
         MonoidalLeftAction.associator_actionHom
-          (mop c₃) (mop c₂) (mop c₁) d|>.symm
+          (mop c₃) (mop c₂) (mop c₁) d |>.symm
 
 /-- Define a right action of `Cᴹᵒᵖ` on `D` from a left action of `C` on `D` via
 the formula `d ⊙ᵣ mop c = c ⊙ₗ d`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def monoidalOppositeRightAction [MonoidalLeftAction C D] :
     MonoidalRightAction Cᴹᵒᵖ D where
   actionObj d c := unmop c ⊙ₗ d
@@ -299,7 +299,7 @@ def monoidalOppositeRightAction [MonoidalLeftAction C D] :
       MonoidalLeftAction.inv_hom_actionHomLeft_assoc] using
       (α_ (unmop c₃) (unmop c₂) (unmop c₁)).inv ⊵ₗ d ≫=
         MonoidalLeftAction.associator_actionHom
-          (unmop c₃) (unmop c₂) (unmop c₁) d|>.symm
+          (unmop c₃) (unmop c₂) (unmop c₁) d |>.symm
 
 section
 
@@ -330,7 +330,7 @@ open Opposite
 
 /-- Define a right action of `Cᵒᵖ` on `Dᵒᵖ` from a right action of `C` on `D` via
 the formula `(op d) ⊙ᵣ (op c) = op (d ⊙ᵣ c)`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def oppositeRightAction [MonoidalRightAction C D] :
     MonoidalRightAction Cᵒᵖ Dᵒᵖ where
   actionObj c d := op <| c.unop ⊙ᵣ d.unop
@@ -372,7 +372,7 @@ def oppositeRightAction [MonoidalRightAction C D] :
 
 /-- Define a right action of `C` on `D` from a right action of `Cᵒᵖ` on `Dᵒᵖ` via
 the formula `d ⊙ᵣ c = unop ((op d) ⊙ᵣ (op c))`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def rightActionOfOppositeRightAction [MonoidalRightAction Cᵒᵖ Dᵒᵖ] :
     MonoidalRightAction C D where
   actionObj c d := unop <| op c ⊙ᵣ op d

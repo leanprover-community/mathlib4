@@ -52,9 +52,6 @@ def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) :
 theorem coe_natGT {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(natGT f H) = f :=
   rfl
 
-@[deprecated (since := "2025-08-08")]
-alias exists_not_acc_lt_of_not_acc := exists_not_acc_lt_of_not_acc
-
 /-- A value is accessible iff it isn't contained in any infinite decreasing sequence. -/
 theorem acc_iff_isEmpty_subtype_mem_range {x} :
     Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } where
@@ -80,16 +77,6 @@ theorem not_wellFounded (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬Well
   rw [wellFounded_iff_isEmpty, not_isEmpty_iff]
   exact ⟨f⟩
 
-@[deprecated (since := "2025-08-10")]
-alias acc_iff_no_decreasing_seq := acc_iff_isEmpty_subtype_mem_range
-
-@[deprecated (since := "2025-08-10")] alias not_acc_of_decreasing_seq := not_acc
-
-@[deprecated (since := "2025-08-10")]
-alias wellFounded_iff_no_descending_seq := wellFounded_iff_isEmpty
-
-@[deprecated (since := "2025-08-10")] alias not_wellFounded_of_decreasing_seq := not_wellFounded
-
 end RelEmbedding
 
 theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
@@ -108,7 +95,7 @@ variable (s : Set ℕ) [Infinite s]
 def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
   (RelEmbedding.orderEmbeddingOfLTEmbedding
     (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
-    (OrderEmbedding.subtype s)
+    (OrderEmbedding.subtype (· ∈ s))
 
 /-- `Nat.Subtype.ofNat` as an order isomorphism between `ℕ` and an infinite subset. See also
 `Nat.nth` for a version where the subset may be finite. -/

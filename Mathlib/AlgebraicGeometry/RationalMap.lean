@@ -52,7 +52,7 @@ structure PartialMap (X Y : Scheme.{u}) where
   hom : ↑domain ⟶ Y
 
 variable (S) in
-/-- A partial map is a `S`-map if the underlying morphism is. -/
+/-- A partial map is an `S`-map if the underlying morphism is. -/
 abbrev PartialMap.IsOver [X.Over S] [Y.Over S] (f : X.PartialMap Y) :=
   f.hom.IsOver S
 
@@ -147,6 +147,7 @@ abbrev fromFunctionField [IrreducibleSpace X] (f : X.PartialMap Y) :
   f.fromSpecStalkOfMem
     ((genericPoint_specializes _).mem_open f.domain.2 f.dense_domain.nonempty.choose_spec)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
     {U : X.Opens} (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) {x} (hx : x ∈ U) :
     (f.restrict U hU hU').fromSpecStalkOfMem hx = f.fromSpecStalkOfMem (hU' hx) := by
@@ -235,6 +236,7 @@ lemma restrict_equiv (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : (f.restrict U hU hU').equiv f :=
   ⟨U, hU, le_rfl, hU', by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
     {x : X} [X.IsGermInjectiveAt x] (f g : X.PartialMap Y)
     (hxf : x ∈ f.domain) (hxg : x ∈ g.domain)
@@ -268,6 +270,7 @@ lemma Opens.isDominant_homOfLE {U V : X.Opens} (hU : Dense (X := X) U) (hU' : U 
   have : IsDominant (X.homOfLE hU' ≫ Opens.ι _) := by simpa using Opens.isDominant_ι hU
   IsDominant.of_comp_of_isOpenImmersion (g := Opens.ι _) _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two partial maps from reduced schemes to separated schemes are equivalent if and only if
 they are equal on **any** open dense subset. -/
 lemma equiv_iff_of_isSeparated_of_le [X.Over S] [Y.Over S] [IsReduced X]
@@ -327,7 +330,7 @@ def PartialMap.toRationalMap (f : X.PartialMap Y) : X ⤏ Y := Quotient.mk _ f
 abbrev Hom.toRationalMap (f : X.Hom Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
 variable (S) in
-/-- A rational map is a `S`-map if some partial map in the equivalence class is a `S`-map. -/
+/-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
   exists_partialMap_over : ∃ g : X.PartialMap Y, g.IsOver S ∧ g.toRationalMap = f
 
@@ -374,6 +377,7 @@ instance [X.Over S] [Y.Over S] [Z.Over S] (f : X ⤏ Y) (g : Y ⟶ Z)
     obtain ⟨f, hf, rfl⟩ := f.exists_partialMap_over S
     exact ⟨f.compHom g, inferInstance, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 lemma PartialMap.exists_restrict_isOver [X.Over S] [Y.Over S] (f : X.PartialMap Y)
     [f.toRationalMap.IsOver S] : ∃ U hU hU', (f.restrict U hU hU').IsOver S := by
@@ -393,6 +397,7 @@ lemma RationalMap.isOver_iff [X.Over S] [Y.Over S] {f : X ⤏ Y} :
     obtain ⟨U, hU, hUl, hUr, e⟩ := PartialMap.toRationalMap_eq_iff.mp e
     exact ⟨⟨f.restrict U hU hUl, by simpa using e, by simp⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma PartialMap.isOver_toRationalMap_iff_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
     [S.IsSeparated] {f : X.PartialMap Y} :
     f.toRationalMap.IsOver S ↔ f.IsOver S := by
@@ -441,6 +446,7 @@ lemma RationalMap.eq_of_fromFunctionField_eq [IsIntegral X] (f g : X.RationalMap
   refine PartialMap.toRationalMap_eq_iff.mpr ?_
   exact PartialMap.equiv_of_fromSpecStalkOfMem_eq _ _ _ _ H
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,
 `S`-morphisms `Spec K(X) ⟶ Y` correspond bijectively to `S`-rational maps from `X` to `Y`.
@@ -491,6 +497,7 @@ lemma RationalMap.mem_domain {f : X ⤏ Y} {x} :
 lemma RationalMap.dense_domain (f : X ⤏ Y) : Dense (X := X) f.domain :=
   f.inductionOn (fun g ↦ g.dense_domain.mono g.le_domain_toRationalMap)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The open cover of the domain of `f : X ⤏ Y`,
 consisting of all the domains of the partial maps in the equivalence class. -/
 noncomputable
@@ -504,6 +511,7 @@ def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover wher
     use ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
     exact ⟨⟨x.1, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.2⟩, Subtype.ext (by simp)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
 then `f` can be represented as a partial map on its domain of definition. -/
 noncomputable

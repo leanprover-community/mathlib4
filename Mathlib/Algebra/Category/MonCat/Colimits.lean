@@ -89,18 +89,18 @@ open Prequotient
 because of the monoid laws, or
 because one element is mapped to another by a morphism in the diagram.
 -/
-inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equivalence relation:
+inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equivalence relation:
   | refl : ∀ x, Relation x x
   | symm : ∀ (x y) (_ : Relation x y), Relation y x
   | trans : ∀ (x y z) (_ : Relation x y) (_ : Relation y z),
-      Relation x z-- There's always a `map` relation
+      Relation x z -- There's always a `map` relation
   | map :
     ∀ (j j' : J) (f : j ⟶ j') (x : F.obj j),
-      Relation (Prequotient.of j' ((F.map f) x))
-        (Prequotient.of j x)-- Then one relation per operation, describing the interaction with `of`
+      -- Then one relation per operation, describing the interaction with `of`
+      Relation (Prequotient.of j' ((F.map f) x)) (Prequotient.of j x)
   | mul : ∀ (j) (x y : F.obj j), Relation (Prequotient.of j (x * y))
       (mul (Prequotient.of j x) (Prequotient.of j y))
-  | one : ∀ j, Relation (Prequotient.of j 1) one-- Then one relation per argument of each operation
+  | one : ∀ j, Relation (Prequotient.of j 1) one -- Then one relation per argument of each operation
   | mul_1 : ∀ (x x' y) (_ : Relation x x'), Relation (mul x y) (mul x' y)
   | mul_2 : ∀ (x y y') (_ : Relation y y'), Relation (mul x y) (mul x y')
     -- And one relation per axiom
@@ -110,11 +110,9 @@ inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equiv
 
 /-- The setoid corresponding to monoid expressions modulo monoid relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F) where
+instance colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-
-attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `MonCat`.
 -/
@@ -212,6 +210,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt :=
       induction y using Quot.inductionOn
       solve_by_elim }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s

@@ -11,7 +11,7 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 /-!
 # Spectrum mapping theorem
 
-This file develops proves the spectral mapping theorem for polynomials over algebraically closed
+This file develops and proves the spectral mapping theorem for polynomials over algebraically closed
 fields. In particular, if `a` is an element of a `𝕜`-algebra `A` where `𝕜` is a field, and
 `p : 𝕜[X]` is a polynomial, then the spectrum of `Polynomial.aeval a p` contains the image of the
 spectrum of `a` under `(fun k ↦ Polynomial.eval k p)`. When `𝕜` is algebraically closed,
@@ -35,7 +35,7 @@ eigenvalue.
 * `σ a` : `spectrum R a` of `a : A`
 -/
 
-@[expose] public section
+public section
 
 namespace spectrum
 
@@ -167,6 +167,7 @@ theorem IsIdempotentElem.spectrum_subset (𝕜 : Type*) {A : Type*} [Field 𝕜]
   refine fun a ha => eq_zero_or_one_of_sq_eq_self ?_
   simpa [pow_two p, hp.eq, sub_eq_zero] using ha
 
+set_option backward.isDefEq.respectTransparency false in
 open Unitization in
 theorem IsIdempotentElem.quasispectrum_subset {𝕜 A : Type*} [Field 𝕜] [NonUnitalRing A] [Module 𝕜 A]
     [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :

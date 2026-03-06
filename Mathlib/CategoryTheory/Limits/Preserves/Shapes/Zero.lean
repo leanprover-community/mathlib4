@@ -69,6 +69,7 @@ theorem map_eq_zero_iff (F : C ⥤ D) [PreservesZeroMorphisms F] [Faithful F] {X
     rintro rfl
     exact F.map_zero _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] :
     PreservesZeroMorphisms F where
   map_zero X Y := by
@@ -82,6 +83,7 @@ instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D)
     · simp only [← Category.assoc, ← F.map_comp, zero_comp]
     · simp only [Adjunction.counit_naturality, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D) [IsRightAdjoint G] :
     PreservesZeroMorphisms G where
   map_zero X Y := by
@@ -101,6 +103,7 @@ instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F]
       F.map (0 : X ⟶ Y) = F.map (0 ≫ F.preimage (0 : F.obj Y ⟶ F.obj Y)) := by rw [zero_comp]
       _ = 0 := by rw [F.map_comp, F.map_preimage, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 instance preservesZeroMorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] :
     (F ⋙ G).PreservesZeroMorphisms := ⟨by simp⟩
@@ -182,7 +185,7 @@ end ZeroObject
 section
 
 variable [HasZeroObject D] [HasZeroMorphisms D]
-  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category J]
+  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category* J]
 
 include hG
 

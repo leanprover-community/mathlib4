@@ -90,6 +90,7 @@ instance [X.Finite] (A : X.Subcomplex) : SSet.Finite A := by
 
 variable {X}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finite_of_mono {Y : SSet.{u}} [Y.Finite] (f : X ⟶ Y) [hf : Mono f] : X.Finite := by
   obtain ⟨d, _⟩ := Y.hasDimensionLT_of_finite
   have := hasDimensionLT_of_mono f d
@@ -97,6 +98,7 @@ lemma finite_of_mono {Y : SSet.{u}} [Y.Finite] (f : X ⟶ Y) [hf : Mono f] : X.F
     (fun _ _ ↦ Finite.of_injective _
       ((injective_of_mono (f.app _)).comp Subtype.val_injective))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finite_of_epi {Y : SSet.{u}} [X.Finite] (f : X ⟶ Y) [hf : Epi f] : Y.Finite := by
   obtain ⟨d, _⟩ := X.hasDimensionLT_of_finite
   have := hasDimensionLT_of_epi f d
@@ -121,5 +123,20 @@ lemma finite_subcomplex_top_iff :
 instance finite_range {Y : SSet.{u}} (f : Y ⟶ X) [Y.Finite] :
     SSet.Finite (Subcomplex.range f) :=
   finite_of_epi (Subcomplex.toRange f)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma finite_iSup_iff {X : SSet.{u}} {ι : Type*} [Finite ι]
+    (A : ι → X.Subcomplex) :
+    SSet.Finite (⨆ i, A i :) ↔ ∀ i, SSet.Finite (A i) := by
+  refine ⟨fun h i ↦ finite_of_mono (Subcomplex.homOfLE (le_iSup A i)), fun h ↦ ⟨?_⟩⟩
+  refine Finite.of_surjective (f := fun (⟨i, s⟩ : Σ (i : ι), (A i).toSSet.N) ↦
+    N.mk ((Subcomplex.homOfLE (le_iSup A i)).app _ s.simplex)
+      (by simpa only [nonDegenerate_iff_of_mono] using s.nonDegenerate)) ?_
+  intro s
+  obtain ⟨d, ⟨⟨s, h₁⟩, h₂⟩, rfl⟩ := s.mk_surjective
+  simp only [Subfunctor.iSup_obj, Set.mem_iUnion] at h₁
+  obtain ⟨i, hi⟩ := h₁
+  rw [Subcomplex.mem_nonDegenerate_iff] at h₂
+  exact ⟨⟨i, N.mk ⟨s, hi⟩ (by rwa [Subcomplex.mem_nonDegenerate_iff])⟩, rfl⟩
 
 end SSet

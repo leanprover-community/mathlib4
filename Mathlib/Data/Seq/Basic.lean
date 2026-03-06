@@ -17,9 +17,6 @@ This file provides some basic lemmas about possibly infinite lists represented b
 type `Stream'.Seq`.
 -/
 
--- TODO: fix the errors in this file!
-set_option linter.flexible false
-
 @[expose] public section
 
 universe u v w
@@ -40,6 +37,7 @@ theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
     s.length' = ⊤ := by
   simp [length', h]
 
+set_option linter.flexible false in -- simp followed by exact rfl
 @[simp]
 theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length]; exact rfl
 
@@ -90,6 +88,7 @@ theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     s.length h ≤ n ↔ s.TerminatedAt n := by
   rw [← length_le_iff']; simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem length'_le_iff {s : Seq α} {n : ℕ} :
     s.length' ≤ n ↔ s.TerminatedAt n := by
   by_cases h : s.Terminates
@@ -114,6 +113,7 @@ theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     n < s.length h ↔ ∃ a, a ∈ s.get? n := by
   rw [← lt_length_iff']; simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lt_length'_iff {s : Seq α} {n : ℕ} :
     n < s.length' ↔ ∃ a, a ∈ s.get? n := by
   by_cases h : s.Terminates
@@ -159,11 +159,11 @@ theorem take_succ_cons {n : ℕ} {x : α} {s : Seq α} :
     (cons x s).take (n + 1) = x :: s.take n := by
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
     (s.take k)[n]? = if n < k then s.get? n else none
   | n, 0, s => by simp [take]
-  | n, k+1, s => by
+  | n, k + 1, s => by
     rw [take]
     cases h : destruct s with
     | none =>
@@ -174,7 +174,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         rw [destruct_eq_cons h]
         match n with
         | 0 => simp
-        | n+1 => simp [List.getElem?_cons_succ, getElem?_take]
+        | n + 1 => simp [List.getElem?_cons_succ, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     (h_get : s.get? m = some x) : x ∈ s.take n := by
@@ -191,7 +191,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
       simp
     obtain ⟨y, hy⟩ := this
     rw [take, head_eq_some hy]
-    simp
+    simp only [destruct_cons, List.mem_cons]
     right
     apply ih (by lia)
     rwa [get?_tail]
@@ -214,7 +214,8 @@ theorem length_take_of_le_length {s : Seq α} {n : ℕ}
   | succ n ih =>
       rw [take, destruct]
       let ⟨a, ha⟩ := lt_length_iff'.1 (fun ht => lt_of_lt_of_le (Nat.succ_pos _) (hle ht))
-      simp [Option.mem_def.1 ha]
+      simp only [Option.mem_def.1 ha, Option.map_eq_map, Option.map_some, List.length_cons,
+        Nat.add_right_cancel_iff]
       rw [ih]
       intro h
       simp only [length, tail, Nat.le_find_iff, TerminatedAt, get?_mk, Stream'.tail]
@@ -289,6 +290,7 @@ theorem append_nil (s : Seq α) : append s nil = s := by
     dsimp
     exact ⟨rfl, _, rfl, rfl⟩
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append t u) := by
   apply eq_of_bisim fun s1 s2 => ∃ s t u, s1 = append (append s t) u ∧ s2 = append s (append t u)
@@ -306,6 +308,7 @@ theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append
         case cons _ s => exact ⟨s, t, u, rfl, rfl⟩
   · exact ⟨s, t, u, rfl, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
   have := h; revert this
   generalize e : append s₁ s₂ = ss; intro h; revert s₁
@@ -407,6 +410,7 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃
     · injection oe
     · injection oe with h'; exact ⟨a, om, h'⟩
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) := by
   apply
@@ -456,8 +460,10 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
     | _, _, Or.inr ⟨a, s, S, rfl, rfl⟩ => by
       cases s
       · simp [join_cons_nil]
-      · simpa [join_cons_cons, join_cons_nil] using Or.inr ⟨_, _, S, rfl, rfl⟩
+      · simpa only [BisimO, join_cons_cons, destruct_cons, cons_append, true_and] using
+          Or.inr ⟨_, _, S, rfl, rfl⟩
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) (join T) := by
   apply
@@ -486,12 +492,12 @@ end Join
 
 section Drop
 
-@[simp]
+@[simp, grind =]
 theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) := by
   induction n generalizing m with
   | zero => simp [drop]
   | succ k ih =>
-    simp [Seq.get?_tail, drop]
+    simp only [drop, get?_tail]
     convert ih using 2
     lia
 
@@ -539,18 +545,8 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
 
 theorem take_drop {s : Seq α} {n m : ℕ} :
     (s.take n).drop m = (s.drop m).take (n - m) := by
-  induction m generalizing n s with
-  | zero => simp [drop]
-  | succ k ih =>
-    cases s
-    · simp
-    cases n with
-    | zero => simp
-    | succ l =>
-      simp only [take, destruct_cons, List.drop_succ_cons, Nat.reduceSubDiff]
-      rw [ih]
-      congr 1
-      rw [drop_succ_cons]
+  ext
+  grind
 
 end Drop
 
@@ -750,7 +746,7 @@ theorem all_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some
   simp only [mem_iff_exists_get?]
   grind
 
-private lemma all_coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
+lemma all_coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
     (step : ∀ hd tl, motive (.cons hd tl) → motive tl) (n : ℕ) :
     motive (s.drop n) := by
   induction n with
@@ -872,7 +868,7 @@ theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}
   cases s' with
   | nil => simp at hx
   | cons hd tl =>
-    simp at hx hy
+    simp only [head_cons, Option.mem_def, Option.some.injEq, get?_cons_succ] at hx hy
     exact hx ▸ all_get (step hd tl this).left hy
 
 /-- Coinductive principle for `Pairwise` that assumes that `R` is transitive. Compared to
@@ -930,8 +926,8 @@ theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
         simpa [ha]
   by_cases ha : a.Terminates; swap
   · simp [length'_of_not_terminates ha]
-  simp [length'_of_terminates ha, length'_le_iff]
-  by_contra! hb
+  simp only [length'_of_terminates ha, length'_le_iff]
+  by_contra hb
   have hb_cons : b.drop (a.length ha) ≠ .nil := by
     intro hb'
     simp only [← length'_eq_zero_iff_nil, drop_length', tsub_eq_zero_iff_le, length'_le_iff] at hb'
@@ -1025,6 +1021,7 @@ theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   obtain ⟨a, s⟩ := f a
   cases s <;> simp
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
   apply
@@ -1048,6 +1045,7 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
 theorem map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
   | ((a, s), S) => by cases s <;> simp [map]
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
     Seq.join (Seq.join SS) = Seq.join (Seq.map join SS) := by

@@ -163,7 +163,7 @@ lemma IsComplement.nonempty_right (hst : IsComplement S T) : T.Nonempty := by
 @[to_additive] lemma IsComplement.pairwiseDisjoint_smul (hst : IsComplement S T) :
     S.PairwiseDisjoint (· • T) := fun a ha b hb hab ↦ disjoint_iff_forall_ne.2 <| by
   rintro _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩
-  exact hst.1.ne (a₁ := (⟨a, ha⟩, ⟨c, hc⟩)) (a₂:= (⟨b, hb⟩, ⟨d, hd⟩)) (by simp [hab])
+  exact hst.1.ne (a₁ := (⟨a, ha⟩, ⟨c, hc⟩)) (a₂ := (⟨b, hb⟩, ⟨d, hd⟩)) (by simp [hab])
 
 @[to_additive AddSubgroup.IsComplement.card_mul_card]
 lemma IsComplement.card_mul_card (h : IsComplement S T) : Nat.card S * Nat.card T = Nat.card G :=
@@ -276,8 +276,7 @@ lemma exists_isComplement_left (H : Subgroup G) (g : G) : ∃ S, IsComplement S 
     QuotientGroup.mk g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
   by_cases hq : q = Quotient.mk'' g
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
-  · refine Function.update_of_ne ?_ g Quotient.out ▸ q.out_eq'
-    exact hq
+  · simp [Function.update, dif_neg hq, q.out_eq']
 
 @[to_additive]
 lemma exists_isComplement_right (H : Subgroup G) (g : G) :
@@ -287,8 +286,7 @@ lemma exists_isComplement_right (H : Subgroup G) (g : G) :
     Quotient.mk'' g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
   by_cases hq : q = Quotient.mk'' g
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
-  · refine Function.update_of_ne ?_ g Quotient.out ▸ q.out_eq'
-    exact hq
+  · simp [Function.update, dif_neg hq, q.out_eq']
 
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
 @[to_additive /-- Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H` -/]
@@ -598,7 +596,7 @@ theorem smul_toLeftFun (f : F) (S : H.LeftTransversal) (g : G) :
 
 @[to_additive]
 theorem smul_leftQuotientEquiv (f : F) (S : H.LeftTransversal) (q : G ⧸ H) :
-    f • (S.2.leftQuotientEquiv  q : G) = (f • S).2.leftQuotientEquiv (f • q) :=
+    f • (S.2.leftQuotientEquiv q : G) = (f • S).2.leftQuotientEquiv (f • q) :=
   Quotient.inductionOn' q fun g => smul_toLeftFun f S g
 
 @[to_additive]

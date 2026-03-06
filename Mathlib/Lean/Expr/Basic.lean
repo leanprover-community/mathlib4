@@ -6,12 +6,13 @@ Floris van Doorn, Edward Ayers, Arthur Paulino, Thomas R. Murrills
 -/
 module
 
-public import Lean.Meta.Tactic.Rewrite
-public import Batteries.Tactic.Alias
-public import Lean.Elab.Binders
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Lean.Meta.AppBuilder
+public import Lean.Meta.Match.MatcherInfo
+public import Lean.Meta.Transform
+public import Lean.Structure
 
 /-!
 # Additional operations on Expr and related types
@@ -142,6 +143,18 @@ def updateLevelParams (c : ConstantInfo) (levelParams : List Name) :
     ConstantInfo :=
   c.updateConstantVal {c.toConstantVal with levelParams}
 
+/--
+Update the mutual-block `all` field of a `ConstantInfo`.
+
+This applies to declaration kinds where `ConstantInfo.all` is stored directly.
+-/
+def updateAll : ConstantInfo → List Name → ConstantInfo
+  | .defnInfo info, all => .defnInfo {info with all}
+  | .thmInfo info, all => .thmInfo {info with all}
+  | .opaqueInfo info, all => .opaqueInfo {info with all}
+  | .inductInfo info, all => .inductInfo {info with all}
+  | ci, _ => ci
+
 /-- Update the value of a `ConstantInfo`, if it has one. -/
 def updateValue : ConstantInfo → Expr → ConstantInfo
   | defnInfo   info, v => defnInfo   {info with value := v}
@@ -215,6 +228,7 @@ def type? : Expr → Option Level
 /-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
 `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
 it does a syntactic check that the expression does not depend on `yₙ`. -/
+@[deprecated "This function was implemented incorrectly" (since := "2026-02-13")]
 def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
 where
@@ -233,10 +247,10 @@ forall with return type of the same form (i.e. of the form `∀ (x₀ : X₀) (x
 Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata in applications.
 -/
 @[inline] partial def isAppOrForallOfConstP (p : Name → Bool) (type : Expr) : Bool :=
-    match type.cleanupAnnotations.getAppFn' with
-    | .const n _ => p n
-    | .forallE _ _ body _ => isAppOrForallOfConstP p body
-    | _ => false
+  match type.cleanupAnnotations.getAppFn' with
+  | .const n _ => p n
+  | .forallE _ _ body _ => isAppOrForallOfConstP p body
+  | _ => false
 
 /--
 Returns `true` if `type` is an application of a constant `declName`, or a
@@ -280,6 +294,17 @@ where
     `forallBoundedTelescope`, do not increment the number of binders we've counted. -/
     | .letE _ _ _ body _ => go body current acc
     | _ => acc
+
+/--
+Returns `true` if `e` includes a `forallE` instance binder that satisfies `p`.
+
+Cleans up annotations before traversing nested `forallE`s, and sees through `let`s.
+-/
+partial def hasInstanceBinderOf (p : Expr → Bool) (e : Expr) : Bool :=
+  match e.cleanupAnnotations with
+  | .forallE _ type body bi => (bi.isInstImplicit && p type) || hasInstanceBinderOf p body
+  | .letE _ _ _ body _ => hasInstanceBinderOf p body
+  | _ => false
 
 /-- Counts the immediate depth of a nested `let` expression. -/
 def letDepth : Expr → Nat
@@ -364,6 +389,15 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
     some (ty, lhs, ty, rhs)
   else
     ty.heq?
+
+/-- Returns `true` if the provided `Expr` is exactly of the form `sorryAx _ _`.
+This is the form produced by the `sorry` term/tactic.
+
+Contrast with `Lean.Expr.isSorry`, which additionally returns `true` for any function application of
+`sorry`/`sorryAx` (including e.g. `sorryAx α true x y z`). -/
+def isSorryAx : Expr → Bool
+  | .app (.app f _ ) _ => f.isConstOf ``sorryAx
+  | _ => false
 
 end recognizers
 

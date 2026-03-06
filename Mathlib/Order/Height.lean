@@ -43,7 +43,7 @@ variable {α β : Type*} (s : Set α) (r : α → α → Prop)
 noncomputable def chainHeight : ℕ∞ := ⨆ t : {t : Set α // t ⊆ s ∧ IsChain r t}, t.val.encard
 
 theorem chainHeight_eq_iSup :
-  s.chainHeight r = ⨆ t : {t : Set α // t ⊆ s ∧ IsChain r t}, t.val.encard := rfl
+    s.chainHeight r = ⨆ t : {t : Set α // t ⊆ s ∧ IsChain r t}, t.val.encard := rfl
 
 theorem chainHeight_le_encard : s.chainHeight r ≤ s.encard := by
   simp_all [chainHeight, encard_le_encard]
@@ -52,6 +52,7 @@ theorem chainHeight_ne_top_of_finite (h : s.Finite) : s.chainHeight r ≠ ⊤ :=
   LT.lt.ne_top <| lt_of_le_of_lt (chainHeight_le_encard s r) <| lt_top_iff_ne_top.mpr <|
     encard_ne_top_iff.mpr h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_isChain_of_le_chainHeight {r} {s : Set α} (n : ℕ) (h : n ≤ s.chainHeight r) :
     ∃ t ⊆ s, t.encard = n ∧ IsChain r t := by
   by_cases h' : n = 0
@@ -92,6 +93,7 @@ theorem not_isChain_of_chainHeight_lt_encard (s t : Set α) (ht : t ⊆ s)
   grw [encard_le_chainHeight_of_isChain _ _ ht hh] at he
   exact (lt_self_iff_false _).mp he
 
+set_option backward.isDefEq.respectTransparency false in
 theorem chainHeight_eq_top_iff :
     s.chainHeight r = ⊤ ↔ ∀ n : ℕ, ∃ t ⊆ s, t.encard = n ∧ IsChain r t := by
   refine ⟨fun h _ ↦ exists_isChain_of_le_chainHeight _ (le_top.trans_eq h.symm), fun h ↦ ?_⟩

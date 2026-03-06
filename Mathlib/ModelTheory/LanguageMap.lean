@@ -51,7 +51,7 @@ structure LHom where
   onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
     exact fun {n} => isEmptyElim
   /-- The mapping of relations -/
-  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
+  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n := by
     exact fun {n} => isEmptyElim
 
 @[inherit_doc FirstOrder.Language.LHom]
@@ -382,7 +382,7 @@ def withConstants : Language.{max u w', v} :=
   L.sum (constantsOn α)
 
 @[inherit_doc FirstOrder.Language.withConstants]
-scoped[FirstOrder] notation:95 L "[[" α "]]" => Language.withConstants L α
+scoped[FirstOrder] notation:max L "[[" α "]]" => Language.withConstants L α
 
 @[simp]
 theorem card_withConstants :
@@ -414,6 +414,7 @@ instance paramsStructure (A : Set α) : (constantsOn A).Structure α :=
 
 variable (L)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The language map removing an empty constant set. -/
 @[simps]
 def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
@@ -428,12 +429,12 @@ variable {α} {β : Type*}
 
 @[simp]
 theorem withConstants_funMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {f : L.Functions n} {x : Fin n → M} : @funMap (L[[α]]) M _ n (Sum.inl f) x = funMap f x :=
+    {n} {f : L.Functions n} {x : Fin n → M} : @funMap L[[α]] M _ n (Sum.inl f) x = funMap f x :=
   (lhomWithConstants L α).map_onFunction f x
 
 @[simp]
 theorem withConstants_relMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
+    {n} {R : L.Relations n} {x : Fin n → M} : @RelMap L[[α]] M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 
 /-- The language map extending the constant set. -/
@@ -479,7 +480,7 @@ instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ 
 
 @[simp]
 theorem withConstants_funMap_sumInr {a : α} {x : Fin 0 → M} :
-    @funMap (L[[α]]) M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
+    @funMap L[[α]] M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
   rw [Unique.eq_default x]
   exact (LHom.sumInr : constantsOn α →ᴸ L.sum _).map_onFunction _ _
 

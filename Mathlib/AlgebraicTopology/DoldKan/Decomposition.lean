@@ -43,8 +43,9 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] {X X' : SimplicialObject C}
+variable {C : Type*} [Category* C] [Preadditive C] {X X' : SimplicialObject C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In each positive degree, this lemma decomposes the idempotent endomorphism
 `Q q` as a sum of morphisms which are postcompositions with suitable degeneracies.
 As `Q q` is the complement projection to `P q`, this implies that in the case of
@@ -109,6 +110,7 @@ def id : MorphComponents X n (X _⦋n + 1⦌) where
   a := PInfty.f (n + 1)
   b i := X.σ i
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id_φ : (id X n).φ = 𝟙 _ := by
   simp only [← P_add_Q_f (n + 1) (n + 1), φ]
@@ -124,6 +126,7 @@ def postComp : MorphComponents X n Z' where
   a := f.a ≫ h
   b i := f.b i ≫ h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
   unfold φ postComp
@@ -135,6 +138,7 @@ def preComp : MorphComponents X' n Z where
   a := g.app (op ⦋n + 1⦌) ≫ f.a
   b i := g.app (op ⦋n⦌) ≫ f.b i
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem preComp_φ : (f.preComp g).φ = g.app (op ⦋n + 1⦌) ≫ f.φ := by
   unfold φ preComp

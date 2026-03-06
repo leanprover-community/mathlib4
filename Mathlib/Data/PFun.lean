@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 module
 
-public import Batteries.WF
 public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.Part
 public import Mathlib.Data.Rel
@@ -33,7 +32,7 @@ This file defines partial functions. Partial functions are like functions, excep
 * `PFun.restrict`: Restriction of a partial function to a smaller `Dom`.
 * `PFun.res`: Turns a function into a partial function with a prescribed domain.
 * `PFun.fix` : First return map of a partial function `f : α →. β ⊕ α`.
-* `PFun.fix_induction`: A recursion principle for `PFun.fix`.
+* `PFun.fixInduction`: A recursion principle for `PFun.fix`.
 
 ### Partial functions as relations
 
@@ -74,7 +73,7 @@ instance inhabited : Inhabited (α →. β) :=
 
 /-- The domain of a partial function -/
 def Dom (f : α →. β) : Set α :=
-  { a | (f a).Dom }
+  {a | (f a).Dom}
 
 @[simp]
 theorem mem_dom (f : α →. β) (x : α) : x ∈ Dom f ↔ ∃ y, y ∈ f x := by simp [Dom, Part.dom_iff_mem]
@@ -87,7 +86,7 @@ theorem dom_eq (f : α →. β) : Dom f = { x | ∃ y, y ∈ f x } :=
   Set.ext (mem_dom f)
 
 /-- Evaluate a partial function -/
-def fn (f : α →. β) (a : α) : Dom f a → β :=
+def fn (f : α →. β) (a : α) : a ∈ Dom f → β :=
   (f a).get
 
 @[simp]
@@ -206,7 +205,7 @@ theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
 
 theorem bind_defined {α β γ} (p : Set α) {f : α →. β} {g : β → α →. γ} (H1 : p ⊆ f.Dom)
     (H2 : ∀ x, p ⊆ (g x).Dom) : p ⊆ (f >>= g).Dom := fun a ha =>
-  (⟨H1 ha, H2 _ ha⟩ : (f >>= g).Dom a)
+  (⟨H1 ha, H2 _ ha⟩ : a ∈ (f >>= g).Dom)
 
 /-- First return map. Transforms a partial function `f : α →. β ⊕ α` into the partial function
 `α →. β` which sends `a : α` to the first value in `β` it hits by iterating `f`, if such a value
@@ -284,7 +283,7 @@ def fixInduction {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h
   have h₂ := (Part.mem_assert_iff.1 h).snd
   generalize_proofs at h₂
   clear h
-  induction ‹Acc _ _› with | intro a ha IH => _
+  induction ‹Acc (Sum.inr · ∈ f ·) a› with | intro a ha IH => _
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 

@@ -42,6 +42,7 @@ open Polynomial Finset
 
 open scoped Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
   splits' := by
@@ -64,6 +65,7 @@ theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (
 
 variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A finite field with `p ^ n` elements.
 Every field with the same cardinality is (non-canonically)
 isomorphic to this field. -/
@@ -77,6 +79,7 @@ namespace GaloisField
 
 variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
@@ -127,6 +130,7 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     intro x y _ _ hx hy
     rw [hx, hy]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
@@ -270,9 +274,7 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
   choose n' hp' hK' using FiniteField.card K' p'
   have hpp' : p = p' := by
     by_contra hne
-    have h2 := Nat.coprime_pow_primes n n' hp hp' hne
-    rw [(Eq.congr hK hK').mp hKK', Nat.coprime_self, pow_eq_one_iff (PNat.ne_zero n')] at h2
-    exact Nat.Prime.ne_one hp' h2
+    simpa [← hK, hK', hKK', hp'.ne_one] using Nat.coprime_pow_primes n n' hp hp' hne
   rw [← hpp'] at _char_p'_K'
   haveI := fact_iff.2 hp
   letI : Algebra (ZMod p) K := ZMod.algebra _ _
@@ -301,7 +303,7 @@ theorem nonempty_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finran
   have := Fintype.ofFinite K
   have := Fintype.ofFinite L
   refine ⟨Polynomial.IsSplittingField.lift _ (X ^ Fintype.card K - X) ?_⟩
-  refine (FiniteField.isSplittingField_sub L F).splits.splits_of_dvd ?_ ?_
+  refine (FiniteField.isSplittingField_sub L F).splits.of_dvd ?_ ?_
   · exact map_ne_zero (FiniteField.X_pow_card_sub_X_ne_zero _ Fintype.one_lt_card)
   · rw [Module.card_eq_pow_finrank (K := F), Module.card_eq_pow_finrank (K := F) (V := L)]
     exact (map_dvd_map' _).mpr (dvd_pow_pow_sub_self_of_dvd h)

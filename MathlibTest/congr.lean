@@ -71,6 +71,7 @@ theorem ex15 (p q : Nat → Prop) :
   guard_target = p ε ↔ q ε
   exact test_sorry
 
+set_option backward.isDefEq.respectTransparency false in
 /- Generating type equalities is OK if it's possible they're the same type. -/
 example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   congr! 1
@@ -79,6 +80,7 @@ example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   guard_target = s = t
   exact test_sorry
 
+set_option backward.isDefEq.respectTransparency false in
 /- `Subtype s = Subtype t` is plausible -/
 example (s t : Set α) (f : Subtype s → α) (g : Subtype t → α) :
     Set.image f Set.univ = Set.image g Set.univ := by

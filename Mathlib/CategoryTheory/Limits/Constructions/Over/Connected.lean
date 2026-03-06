@@ -30,13 +30,14 @@ noncomputable section
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type u'} [Category.{v'} J]
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D] {K : C ⥤ D}
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D] {K : C ⥤ D}
 variable {X : C}
 
 namespace CategoryTheory.CostructuredArrow
 
 namespace CreatesConnected
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Given a diagram in `CostructuredArrow K B`, produce a natural transformation
 from the diagram legs to the specific object.
 -/
@@ -68,6 +69,7 @@ theorem mapCone_raiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K
     (c : Cone (F ⋙ CostructuredArrow.proj K B)) :
     (CostructuredArrow.proj K B).mapCone (raiseCone c) = c := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Show that the raised cone is a limit. -/
 def isLimitRaiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
     {c : Cone (F ⋙ CostructuredArrow.proj K B)}
@@ -91,6 +93,7 @@ instance [IsConnected J] {B : D} : CreatesLimitsOfShape J (CostructuredArrow.pro
         validLift := eqToIso (CreatesConnected.mapCone_raiseCone c)
         makesLimit := CreatesConnected.isLimitRaiseCone t }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `CostructuredArrow K B` preserves any connected limit. -/
 instance [IsConnected J] {B : D} : PreservesLimitsOfShape J (CostructuredArrow.proj K B) where
   preservesLimit.preserves hc := ⟨{
@@ -135,6 +138,7 @@ instance hasLimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasLimitsOfSha
     HasLimitsOfShape J (Over B) where
   has_limit F := hasLimit_of_created F (forget B)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor taking a cone over `F` to a cone over `Over.post F : Over i ⥤ Over (F.obj i)`.
 This takes limit cones to limit cones when `J` is cofiltered. See `isLimitConePost` -/
 @[simps]

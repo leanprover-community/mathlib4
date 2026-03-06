@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 
@@ -15,7 +16,7 @@ In this file we provide the usual (algebraic) version of Chevalley's theorem.
 For the proof see `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
@@ -47,7 +48,7 @@ lemma isConstructible_comap_image
     rw [range_comap_of_surjective _ f hf]
     exact isRetrocompact_zeroLocus_compl_of_fg hf'
   · intro R _ S _ T _ f g H₁ H₂ s hs
-    simp only [comap_comp, ContinuousMap.coe_comp, Set.image_comp]
+    simp only [comap_comp, Set.image_comp]
     exact H₁ _ (H₂ _ hs)
 
 lemma isConstructible_range_comap {f : R →+* S} (hf : f.FinitePresentation) :
@@ -65,5 +66,39 @@ lemma isOpenMap_comap_of_hasGoingDown_of_finitePresentation
       (Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap.mp ‹_›))
     (isConstructible_comap_image (RingHom.finitePresentation_algebraMap.mpr ‹_›)
       isConstructible_basicOpen)
+
+set_option backward.isDefEq.respectTransparency false in
+open TensorProduct in
+@[stacks 037G]
+theorem isOpenMap_comap_algebraMap_tensorProduct_of_field
+    {K A B : Type*} [Field K] [CommRing A] [CommRing B] [Algebra K A] [Algebra K B] :
+    IsOpenMap (PrimeSpectrum.comap (algebraMap A (A ⊗[K] B))) := by
+  intro U hU
+  wlog hU' : ∃ f, U = SetLike.coe (basicOpen f) generalizing U
+  · rw [eq_biUnion_of_isOpen hU, Set.image_iUnion₂]
+    exact isOpen_iUnion fun _ ↦ isOpen_iUnion fun _ ↦ this _ (basicOpen _).isOpen ⟨_, rfl⟩
+  obtain ⟨f, rfl⟩ := hU'
+  obtain ⟨B', hB, f, rfl⟩ := exists_fg_and_mem_baseChange f
+  have : Algebra.FinitePresentation K B' :=
+    Algebra.FinitePresentation.of_finiteType.mp ⟨B'.fg_top.mpr hB⟩
+  convert isOpenMap_comap_of_hasGoingDown_of_finitePresentation (R := A) (S := A ⊗[K] B') _
+    (basicOpen f).isOpen using 1
+  ext x
+  rw [PrimeSpectrum.mem_image_comap_basicOpen, PrimeSpectrum.mem_image_comap_basicOpen,
+    not_iff_not]
+  let ψ := Algebra.TensorProduct.map
+    (Algebra.TensorProduct.map (.id A A) B'.val) (.id A x.asIdeal.ResidueField)
+  have hψeq : ψ = (Algebra.TensorProduct.comm _ _ _ |>.toAlgHom.comp <|
+    Algebra.TensorProduct.cancelBaseChange K A A _ B |>.symm.toAlgHom.comp <|
+    Algebra.TensorProduct.map (.id _ _) B'.val |>.comp <|
+    Algebra.TensorProduct.cancelBaseChange K A A _ B' |>.toAlgHom.comp <|
+    (Algebra.TensorProduct.comm _ _ _).toAlgHom) := by ext; simp [ψ]
+  have hψ : Function.Injective ψ := by
+    rw [hψeq]
+    dsimp
+    simp_rw [EmbeddingLike.comp_injective, ← Function.comp_assoc, EquivLike.injective_comp]
+    exact Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective
+  rw [← IsNilpotent.map_iff hψ]
+  rfl
 
 end PrimeSpectrum

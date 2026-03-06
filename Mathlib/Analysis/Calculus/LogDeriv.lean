@@ -68,7 +68,7 @@ theorem logDeriv_const_mul {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a �
   simp only [logDeriv_apply, deriv_const_mul_field, mul_div_mul_left _ _ ha]
 
 /-- The logarithmic derivative of a finite product is the sum of the logarithmic derivatives. -/
-theorem logDeriv_prod {ι : Type*} (s : Finset ι) (f : ι → 𝕜 → 𝕜') (x : 𝕜) (hf : ∀ i ∈ s, f i x ≠ 0)
+theorem logDeriv_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜'} {x : 𝕜} (hf : ∀ i ∈ s, f i x ≠ 0)
     (hd : ∀ i ∈ s, DifferentiableAt 𝕜 (f i) x) :
     logDeriv (∏ i ∈ s, f i ·) x = ∑ i ∈ s, logDeriv (f i) x := by
   induction s using Finset.cons_induction with
@@ -87,7 +87,7 @@ lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 
   rcases eq_or_ne n 0 with rfl | hn; · simp
   rcases eq_or_ne (f x) 0 with hf | hf
   · simp [logDeriv_apply, zero_zpow, *]
-  · rw [logDeriv_apply, ← comp_def (·^n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
+  · rw [logDeriv_apply, ← comp_def (· ^ n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
       deriv_zpow, logDeriv_apply]
     simp [field, zpow_sub_one₀ hf]
 
@@ -111,6 +111,7 @@ theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf 
   simp only [logDeriv, Pi.div_apply, deriv_comp _ hf hg, comp_apply]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 lemma logDeriv_eqOn_iff [IsRCLikeNormedField 𝕜] {f g : 𝕜 → 𝕜'} {s : Set 𝕜}
     (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
     (hs2 : IsOpen s) (hsc : IsPreconnected s) (hgn : ∀ x ∈ s, g x ≠ 0) (hfn : ∀ x ∈ s, f x ≠ 0) :

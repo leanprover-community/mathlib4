@@ -5,12 +5,13 @@ Authors: Markus Himmel, Jakob von Raumer
 -/
 module
 
+public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Action.Units
-public import Mathlib.Algebra.Module.End
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Preadditive categories
@@ -68,7 +69,7 @@ class Preadditive where
 
 attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.add_comp Preadditive.comp_add
 
-attribute [instance] Preadditive.homGroup
+attribute [instance_reducible, instance] Preadditive.homGroup
 
 -- simp can already prove reassoc version
 attribute [reassoc, simp] Preadditive.add_comp
@@ -98,16 +99,24 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
-  homGroup P Q := @Preadditive.homGroup C _ _ (F P) (F Q)
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+  homGroup P Q := InducedCategory.homEquiv.addCommGroup
+  add_comp _ _ _ _ _ _ := by ext; apply add_comp
+  comp_add _ _ _ _ _ _ := by ext; apply comp_add
+
+variable {F} in
+/-- The additive equivalence `(X ⟶ Y) ≃+ (F X ⟶ F Y)` when `F : D → C` and
+`C` is a preadditive category. -/
+@[simps!]
+def _root_.CategoryTheory.InducedCategory.homAddEquiv
+    {X Y : InducedCategory C F} :
+    (X ⟶ Y) ≃+ (F X ⟶ F Y) where
+  toEquiv := InducedCategory.homEquiv
+  map_add' := by aesop_cat
 
 end InducedCategory
 
-instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
-  homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory :=
+  inferInstanceAs (Preadditive (InducedCategory _ ObjectProperty.FullSubcategory.obj))
 
 instance (X : C) : AddCommGroup (End X) := by
   dsimp [End]
@@ -222,6 +231,7 @@ theorem mono_of_kernel_zero {X Y : C} {f : X ⟶ Y} [HasLimit (parallelPair f 0)
     (w : kernel.ι f = 0) : Mono f :=
   mono_of_cancel_zero f fun g h => by rw [← kernel.lift_ι f g h, w, Limits.comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c)
     (h : IsZero c.pt) : Mono f := mono_of_cancel_zero _ (fun g hg => by
   obtain ⟨a, ha⟩ := KernelFork.IsLimit.lift' hc _ hg
@@ -252,6 +262,7 @@ theorem epi_of_cokernel_zero {X Y : C} {f : X ⟶ Y} [HasColimit (parallelPair f
     (w : cokernel.π f = 0) : Epi f :=
   epi_of_cancel_zero f fun g h => by rw [← cokernel.π_desc f g h, w, Limits.zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c)
     (h : IsZero c.pt) : Epi f := epi_of_cancel_zero _ (fun g hg => by
   obtain ⟨a, ha⟩ := CokernelCofork.IsColimit.desc' hc _ hg
@@ -303,6 +314,7 @@ section
 
 variable {X Y : C} {f : X ⟶ Y} {g : X ⟶ Y}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Map a kernel cone on the difference of two morphisms to the equalizer fork. -/
 @[simps! pt]
 def forkOfKernelFork (c : KernelFork (f - g)) : Fork f g :=
@@ -312,6 +324,7 @@ def forkOfKernelFork (c : KernelFork (f - g)) : Fork f g :=
 theorem forkOfKernelFork_ι (c : KernelFork (f - g)) : (forkOfKernelFork c).ι = c.ι :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Map any equalizer fork to a cone on the difference of the two morphisms. -/
 def kernelForkOfFork (c : Fork f g) : KernelFork (f - g) :=
   Fork.ofι c.ι <| by rw [comp_sub, comp_zero, sub_eq_zero, c.condition]
@@ -325,6 +338,7 @@ theorem kernelForkOfFork_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) :
     kernelForkOfFork (Fork.ofι ι w) = KernelFork.ofι ι (by simp [w]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A kernel of `f - g` is an equalizer of `f` and `g`. -/
 def isLimitForkOfKernelFork {c : KernelFork (f - g)} (i : IsLimit c) :
     IsLimit (forkOfKernelFork c) :=
@@ -336,6 +350,7 @@ theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s
     (isLimitForkOfKernelFork i).lift s = i.lift (kernelForkOfFork s) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equalizer of `f` and `g` is a kernel of `f - g`. -/
 def isLimitKernelForkOfFork {c : Fork f g} (i : IsLimit c) : IsLimit (kernelForkOfFork c) :=
   Fork.IsLimit.mk' _ fun s =>
@@ -380,6 +395,7 @@ theorem cokernelCoforkOfCofork_ofπ {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫
     cokernelCoforkOfCofork (Cofork.ofπ π w) = CokernelCofork.ofπ π (by simp [w]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cokernel of `f - g` is a coequalizer of `f` and `g`. -/
 def isColimitCoforkOfCokernelCofork {c : CokernelCofork (f - g)} (i : IsColimit c) :
     IsColimit (coforkOfCokernelCofork c) :=
@@ -393,6 +409,7 @@ theorem isColimitCoforkOfCokernelCofork_desc {c : CokernelCofork (f - g)} (i : I
     (isColimitCoforkOfCokernelCofork i).desc s = i.desc (cokernelCoforkOfCofork s) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A coequalizer of `f` and `g` is a cokernel of `f - g`. -/
 def isColimitCokernelCoforkOfCofork {c : Cofork f g} (i : IsColimit c) :
     IsColimit (cokernelCoforkOfCofork c) :=
@@ -429,7 +446,7 @@ end Equalizers
 
 section
 
-variable {C : Type*} [Category C] [Preadditive C] {X Y : C}
+variable {C : Type*} [Category* C] [Preadditive C] {X Y : C}
 
 instance : SMul (Units ℤ) (X ≅ Y) where
   smul a e :=

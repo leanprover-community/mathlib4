@@ -156,7 +156,7 @@ lemma mapComp'₀₁₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
 lemma mapComp'₀₂₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₂ f₂₃ f).hom =
     (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
-      (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃:= by
+      (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ := by
   simp [← mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_assoc _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
 @[to_app (attr := reassoc)]
@@ -185,7 +185,7 @@ section
 variable {t : X₁ ⟶ Y₁} {l : X₁ ⟶ X₂} {r : Y₁ ⟶ Y₂} {b : X₂ ⟶ Y₂} (sq : CommSq t l r b)
 
 /-- Given a commutative square `CommSq t l r b` in a strict bicategory `B` and
-a pseudofunctor from `B`, this is the natural isomorphism
+a pseudofunctor from `B`, this is the isomorphism
 `F.map t ≫ F.map r ≅ F.map l ≫ F.map b`. -/
 def isoMapOfCommSq : F.map t ≫ F.map r ≅ F.map l ≫ F.map b :=
   (F.mapComp t r).symm ≪≫ F.mapComp' _ _ _ (by rw [sq.w])

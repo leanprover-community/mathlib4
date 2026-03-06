@@ -30,7 +30,7 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 
 @[expose] public section
 
-open Polynomial Set Function minpoly
+open Polynomial Set Function minpoly Module
 
 namespace minpoly
 
@@ -63,8 +63,7 @@ theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsSca
 
 end
 
-variable [IsDomain S] [NoZeroSMulDivisors R S]
-variable [IsIntegrallyClosed R]
+variable [IsIntegrallyClosed R] [IsDomain S] [IsTorsionFree R S]
 
 /-- For integrally closed rings, the minimal polynomial divides any polynomial that has the
   integral element as root. See also `minpoly.dvd` which relaxes the assumptions on `S`
@@ -76,12 +75,11 @@ theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
   let _ : Algebra K L := FractionRing.liftAlgebra R L
   have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_modByMonic _ (minpoly.monic hs), modByMonic_eq_sub_mul_div]
-    · refine dvd_sub (minpoly.dvd K (algebraMap S L s) ?_) ?_
-      · rw [← map_aeval_eq_aeval_map, hp, map_zero]
-        rw [← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
-      apply dvd_mul_of_dvd_left
-      rw [isIntegrallyClosed_eq_field_fractions K L hs]
-    exact Monic.map _ (minpoly.monic hs)
+    refine dvd_sub (minpoly.dvd K (algebraMap S L s) ?_) ?_
+    · rw [← map_aeval_eq_aeval_map, hp, map_zero]
+      rw [← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
+    apply dvd_mul_of_dvd_left
+    rw [isIntegrallyClosed_eq_field_fractions K L hs]
   rw [isIntegrallyClosed_eq_field_fractions _ _ hs,
     map_dvd_map (algebraMap R K) (IsFractionRing.injective R K) (minpoly.monic hs)] at this
   rw [← modByMonic_eq_zero_iff_dvd (minpoly.monic hs)]
@@ -176,12 +174,37 @@ theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpo
   rw [aeval_mul] at h
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero h' h
 
+lemma _root_.IsIntegrallyClosed.minpoly_smul {r : R} (hr : r ≠ 0) {s : S} (hs : IsIntegral R s) :
+    minpoly R (r • s) = (minpoly R s).scaleRoots r := by
+  let K := FractionRing R
+  let L := FractionRing S
+  let : Algebra K L := FractionRing.liftAlgebra _ _
+  apply map_injective _ (FaithfulSMul.algebraMap_injective R K)
+  rw [← minpoly.isIntegrallyClosed_eq_field_fractions K L (hs.smul r),
+    map_scaleRoots _ _ _ (by simpa [minpoly.ne_zero_iff]),
+    ← minpoly.isIntegrallyClosed_eq_field_fractions K L hs]
+  simp_rw [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply R K L]
+  refine eq_of_monic_of_associated (minpoly.monic ?_) ?_
+    (associated_of_dvd_dvd (minpoly.dvd _ _ ?_) ?_)
+  · refine isIntegral_algebraMap.mul (hs.map (IsScalarTower.toAlgHom R S L)).tower_top
+  · simpa [monic_scaleRoots_iff] using minpoly.monic
+      (hs.map (IsScalarTower.toAlgHom R S L)).tower_top
+  · exact scaleRoots_aeval_eq_zero (minpoly.aeval _ _)
+  · rw [← Polynomial.scaleRoots_dvd_iff _ _ (r := (algebraMap R K r)⁻¹) (IsUnit.mk0 _ (by simpa)),
+      ← scaleRoots_mul, mul_inv_cancel₀ (by simpa), scaleRoots_one]
+    refine minpoly.dvd _ _ ?_
+    nth_rw 1 [← inv_mul_cancel_left₀ (b := algebraMap S L s)
+      (a := algebraMap K L (algebraMap R K r)) (by simpa), ← map_inv₀]
+    exact scaleRoots_aeval_eq_zero (minpoly.aeval _ _)
+
 noncomputable section AdjoinRoot
 
 open Algebra Polynomial AdjoinRoot
 
 variable {x : S}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
   refine (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => ?_
   obtain ⟨P, rfl⟩ := mk_surjective P₁
@@ -198,24 +221,26 @@ theorem equivAdjoin_toAlgHom (hx : IsIntegral R x) : equivAdjoin hx = Minpoly.to
 @[simp]
 theorem coe_equivAdjoin (hx : IsIntegral R x) : ⇑(equivAdjoin hx) = Minpoly.toAdjoin R x := rfl
 
-@[deprecated (since := "2025-07-21")] alias equivAdjoin_apply := coe_equivAdjoin
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The `PowerBasis` of `adjoin R {x}` given by `x`. See `Algebra.adjoin.powerBasis` for a version
 over a field. -/
 def _root_.Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
     PowerBasis R (Algebra.adjoin R ({x} : Set S)) :=
   PowerBasis.map (AdjoinRoot.powerBasis' (minpoly.monic hx)) (minpoly.equivAdjoin hx)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
     (Algebra.adjoin.powerBasis' hx).dim = (minpoly R x).natDegree := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
     (adjoin.powerBasis' hx).gen = ⟨x, SetLike.mem_coe.1 <| subset_adjoin <| mem_singleton x⟩ := by
   rw [Algebra.adjoin.powerBasis', PowerBasis.map_gen, AdjoinRoot.powerBasis'_gen, equivAdjoin,
     AlgEquiv.ofBijective_apply, Minpoly.toAdjoin, liftAlgHom_root]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `x` generates `S` over `R` and is integral over `R`, then it defines a power basis.
 See `PowerBasis.ofAdjoinEqTop` for a version over a field.
@@ -240,6 +265,7 @@ theorem _root_.PowerBasis.ofAdjoinEqTop'_dim {x : S} (hx : IsIntegral R x)
     (hx' : adjoin R {x} = ⊤) :
     (PowerBasis.ofAdjoinEqTop' hx hx').dim = (minpoly R x).natDegree := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop'_gen {x : S} (hx : IsIntegral R x)
     (hx' : adjoin R {x} = ⊤) : (PowerBasis.ofAdjoinEqTop' hx hx').gen = x := by
@@ -267,6 +293,7 @@ instance : SMul A (integralClosure A L) := Algebra.toSMul
 instance : IsScalarTower A ((integralClosure A L)) L :=
   IsScalarTower.subalgebra' A L L (integralClosure A L)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The minimal polynomial of `x : L` over `K` agrees with its minimal polynomial over the
 integrally closed subring `A`. -/
 theorem ofSubring (x : integralClosure A L) :

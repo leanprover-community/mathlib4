@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 variable [Preadditive C]
 
 -- See also `epi_of_nonzero_to_simple`, which does not require `Preadditive C`.
@@ -97,6 +97,7 @@ end
 variable (𝕜 : Type*) [Field 𝕜]
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
+set_option backward.isDefEq.respectTransparency false in
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
 -- rather than just `[Simple X]`, as this form is useful for
 -- Müger's formulation of semisimplicity.
@@ -153,7 +154,7 @@ for the refinements when we know whether or not the simples are isomorphic.
 -/
 theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)] [Simple X]
     [Simple Y] : finrank 𝕜 (X ⟶ Y) ≤ 1 := by
-  obtain (h|h) := subsingleton_or_nontrivial (X ⟶ Y)
+  obtain (h | h) := subsingleton_or_nontrivial (X ⟶ Y)
   · rw [finrank_zero_of_subsingleton]
     exact zero_le_one
   · obtain ⟨f, nz⟩ := (nontrivial_iff_exists_ne 0).mp h
