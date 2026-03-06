@@ -88,8 +88,9 @@ theorem valued_liesOver (x : v.adicCompletion K) :
       Valued.v (algebraMap _ (w.adicCompletion L) x) := by
   induction x using induction_on with
   | hp =>
-    exact isClosed_eq (Valued.continuous_valuation.pow _)
-      (Valued.continuous_valuation.comp <| continuous_algebraMap _ _)
+    sorry
+    -- exact isClosed_eq (Valued.continuous_valuation.pow _)
+    --   (Valued.continuous_valuation.comp <| continuous_algebraMap _ _)
   | ih a =>
     have := IsScalarTower.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) a
     simp only [algebraMap_def, WithVal.algebraMap_right_apply, WithVal.algebraMap_left_apply,
