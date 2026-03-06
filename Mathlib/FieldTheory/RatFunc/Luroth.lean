@@ -435,10 +435,7 @@ lemma le_Φ_coeff_generatorIndex_natDegree (h : E ≠ ⊥) :
   replace this := congr($(algebraMap_injective K this).natDegree)
   rw [natDegree_mul (Φ_coeff_generatorIndex_ne_zero h) (generator E).denom_ne_zero,
     natDegree_mul (num_ne_zero (c_ne_zero h)) (num_ne_zero (generator_ne_zero h))] at this
-  rw [Nat.eq_sub_of_add_eq this, add_comm, Nat.add_sub_assoc <|
-    natDegree_le_of_dvd (generator_denom_dvd_c_num h) (num_ne_zero (c_ne_zero h)),
-    le_add_iff_nonneg_right]
-  exact zero_le _
+  grind [natDegree_le_of_dvd (generator_denom_dvd_c_num h) (num_ne_zero (c_ne_zero h))]
 
 lemma le_Φ_coeff_natDegree_natDegree (h : E ≠ ⊥) :
     (g E).natDegree ≤ ((Φ E).coeff (φ E).natDegree).natDegree := by
@@ -446,6 +443,7 @@ lemma le_Φ_coeff_natDegree_natDegree (h : E ≠ ⊥) :
   exact natDegree_le_of_dvd (generator_denom_dvd_c_num h) (num_ne_zero (c_ne_zero h))
 
 variable (E) in
+/-- The height of `generator E`. -/
 abbrev m : ℕ := max (f E).natDegree (g E).natDegree
 
 lemma m_le_swap_Φ_natDegree (h : E ≠ ⊥) :
