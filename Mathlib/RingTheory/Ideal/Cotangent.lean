@@ -337,7 +337,8 @@ lemma spanFinrank_eq_finrank_quotient {M : Type*} [AddCommGroup M] [Module R M]
   let : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
   let fin : Module.Finite R N := Module.Finite.iff_fg.mpr fg
   let mN := (maximalIdeal R) • (⊤ : Submodule R N)
-  rw [Module.finrank_eq_spanFinrank_of_free, ← Submodule.spanFinrank_top]
+  have : (⊤ : Submodule R N).spanFinrank = N.spanFinrank := by simp [Submodule.spanFinrank]
+  rw [Module.finrank_eq_spanFinrank_of_free, ← this]
   apply le_antisymm
   · let s : Set (N ⧸ mN) := (⊤ : Submodule (R ⧸ maximalIdeal R) (N ⧸ mN)).generators
     have fins : s.Finite := Module.Finite.fg_top.finite_generators
