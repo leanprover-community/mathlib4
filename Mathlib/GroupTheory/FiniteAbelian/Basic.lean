@@ -196,19 +196,11 @@ end CommGroup
 namespace Subgroup
 
 @[to_additive]
-lemma isTorsion_quotient_range_powMonoidHom (A : Type*) [CommGroup A] {n : ℕ} (hn : n ≠ 0) :
-    Monoid.IsTorsion (A ⧸ (powMonoidHom (α := A) n).range) := by
-  simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
-  refine fun g ↦ QuotientGroup.induction_on g fun a ↦ ⟨n, hn.pos, ?_⟩
-  rw [← QuotientGroup.mk_pow, QuotientGroup.eq_one_iff]
-  simp
-
-@[to_additive]
 lemma finiteIndex_range_powMonoidHom_of_fg (A : Type*) [CommGroup A] [Group.FG A] {n : ℕ}
     (hn : n ≠ 0) :
     (powMonoidHom (α := A) n).range.FiniteIndex :=
   finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_torsion _ <|
-    isTorsion_quotient_range_powMonoidHom A hn
+    CommGroup.isTorsion_quotient_range_powMonoidHom A hn
 
 @[to_additive]
 lemma isFiniteRelIndex_map_powMonoidHom_of_fg {A : Type*} [CommGroup A] {B : Subgroup A}
@@ -230,8 +222,7 @@ variable {R K M : Type*} [CommRing R] [CommRing K] [Algebra R K] [Module.Finite 
   [AddCommGroup M] [Module R M]
 
 lemma fg_toAddSubgroup {A : Submodule R M} (hfg : A.FG) : A.toAddSubgroup.FG := by
-  suffices A.toAddSubgroup.toIntSubmodule.FG by
-    rwa [fg_iff_addSubgroup_fg, AddSubgroup.toIntSubmodule_toAddSubgroup] at this
+  rw [← AddSubgroup.toIntSubmodule_toAddSubgroup A.toAddSubgroup, ← fg_iff_addSubgroup_fg]
   exact FG.restrictScalars hfg
 
 open AddSubgroup in

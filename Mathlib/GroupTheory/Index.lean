@@ -759,8 +759,7 @@ lemma isFiniteRelIndex_of_le {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) [H₁.
     (h : H₁ ≤ H₂) :
     H₂.IsFiniteRelIndex H₃ := by
   rw [isFiniteRelIndex_iff_finiteIndex] at *
-  have := subgroupOf_mono H₃ h
-  exact finiteIndex_of_le this
+  exact finiteIndex_of_le <| subgroupOf_mono H₃ h
 
 @[to_additive (attr := gcongr)]
 lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index :=

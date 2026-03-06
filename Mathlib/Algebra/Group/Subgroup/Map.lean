@@ -298,7 +298,7 @@ def subgroupOfEquivOfLe {G : Type*} [Group G] {H K : Subgroup G} (h : H ≤ K) :
   map_mul' _g _h := rfl
 
 @[to_additive]
-lemma subgroupOf_mono {G : Type*} [Group G] {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) (h : H₁ ≤ H₂) :
+lemma subgroupOf_mono {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) (h : H₁ ≤ H₂) :
     H₁.subgroupOf H₃ ≤ H₂.subgroupOf H₃ :=
   comap_mono h
 

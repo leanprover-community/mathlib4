@@ -356,3 +356,12 @@ theorem neg_one_mem_torsion : -1 ∈ CommMonoid.torsion M :=
   ⟨2, zero_lt_two, (isPeriodicPt_mul_iff_pow_eq_one _).mpr (by simp)⟩
 
 end
+
+@[to_additive]
+lemma CommGroup.isTorsion_quotient_range_powMonoidHom (A : Type*) [CommGroup A] {n : ℕ}
+    (hn : n ≠ 0) :
+    Monoid.IsTorsion (A ⧸ (powMonoidHom (α := A) n).range) := by
+  simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
+  refine fun g ↦ QuotientGroup.induction_on g fun a ↦ ⟨n, hn.pos, ?_⟩
+  rw [← QuotientGroup.mk_pow, QuotientGroup.eq_one_iff]
+  simp
