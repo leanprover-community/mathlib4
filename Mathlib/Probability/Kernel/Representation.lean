@@ -41,7 +41,7 @@ variable {X Y : Type*} {mX : MeasurableSpace X} [Nonempty Y] {mY : MeasurableSpa
 
 namespace ProbabilityTheory.Kernel
 
-lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel X I) [IsMarkovKernel κ] :
+private lemma exists_measurable_map_eq_unitInterval_aux (κ : Kernel X I) [IsMarkovKernel κ] :
     ∃ (f : X → I → I), Measurable (uncurry f) ∧ ∀ a, volume.map (f a) = κ a := by
   let f := fun s (t : I) ↦ sSup {x | (κ s).real (Icc 0 x) < t}
   have measurable_f : Measurable (uncurry f) := by
