@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 
 import Mathlib.Analysis.Convex.Approximation
 import Mathlib.Analysis.Convex.Continuous
-import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 # Conditional Jensen's Inequality
@@ -115,17 +114,6 @@ private theorem conditional_jensen_of_finiteMeasure [IsFiniteMeasure μ] (hm : m
       · exact hs.preimage Y.subtypeL.continuous
     _ =ᵐ[μ] μ[φ ∘ f | m] := condExp_congr_ae lem3.symm
 
-theorem forall_measure_inter_spanningSets_trim_eq_zero (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
-    {s : Set α} (hn : ∀ n, μ (s ∩ spanningSets (μ.trim hm) n) = 0) : μ s = 0 := by
-  rw [show s = ⋃ n, s ∩ spanningSets (μ.trim hm) n by
-      rw [← inter_iUnion, iUnion_spanningSets, inter_univ]]
-  simpa [measure_iUnion_null_iff]
-
-theorem forall_measure_restrict_spanningSets_trim_eq_zero (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
-    {s : Set α} (hn : ∀ n, μ.restrict (spanningSets (μ.trim hm) n) s = 0) : μ s = 0 := by
-  refine forall_measure_inter_spanningSets_trim_eq_zero hm fun n => ?_
-  simpa [← μ.restrict_apply' (hm _ (measurableSet_spanningSets (μ.trim hm) n))] using hn n
-
 /-- **Conditional Jensen's inequality**: in a Banach space `X` with a measure `μ` that is σ-finite
 on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex and lower-semicontinuous on a closed set `s`, then
 for any `f : α → X` such that `f` and `φ ∘ f` are integrable, and `f` lies in `s` a.e., we have
@@ -146,11 +134,6 @@ theorem conditional_jensen (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   borelize E
   filter_upwards [h1, h2, h3] with a ha hb hc
   simpa [← ha, ← hb]
-
-theorem forall_measure_restrict_spanningSets_eq_zero [SigmaFinite μ] (s : Set α) :
-    (∀ n, μ.restrict (spanningSets μ n) s = 0) ↔ μ s = 0 := by
-  rw [← Measure.forall_measure_inter_spanningSets_eq_zero]
-  simp [fun n => μ.restrict_apply' (t := s) (measurableSet_spanningSets μ n)]
 
 /-- **Conditional Jensen's inequality**: in a Banach space `X` with a measure `μ` that is σ-finite
 on a sub-σ-algebra `m`, if `φ : X → ℝ` is convex and lower-semicontinuous, then for any `f : α → X`

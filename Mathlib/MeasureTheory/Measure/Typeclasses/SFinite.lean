@@ -204,6 +204,11 @@ theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Mea
       rw [← inter_iUnion, iUnion_spanningSets, inter_univ]]
   rw [measure_iUnion_null_iff]
 
+theorem forall_measure_restrict_spanningSets_eq_zero [SigmaFinite μ] (s : Set α) :
+    (∀ n, μ.restrict (spanningSets μ n) s = 0) ↔ μ s = 0 := by
+  rw [← Measure.forall_measure_inter_spanningSets_eq_zero]
+  simp [fun n => μ.restrict_apply' (t := s) (measurableSet_spanningSets μ n)]
+
 /-- A set in a σ-finite space has positive measure if and only if its intersection with
 some member of the countable family of finite measure spanning sets has positive measure. -/
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
