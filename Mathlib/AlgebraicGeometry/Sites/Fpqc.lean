@@ -82,7 +82,7 @@ lemma fppfTopology_le_fpqcTopology : fppfTopology ≤ fpqcTopology :=
 
 instance : fpqcTopology.Subcanonical := by
   refine GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ fun X ↦ ?_
-  rw [fpqcTopology_eq_propQCTopology, isSheaf_type_propqcTopology_iff]
+  rw [fpqcTopology_eq_propQCTopology, isSheaf_type_propQCTopology_iff]
   refine ⟨?_, ?_⟩
   · exact GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable _
   · intro R S f hf₁ hf₂
