@@ -25,8 +25,8 @@ The formalization follows Erdős's proof by upper and lower estimates.
     * `U x k`, the subset of those `e` for which there is a prime `p > k` that divides `e + 1`.
 4. Then `|U x k|` is bounded by the sum over the primes `p > k` of the number of multiples of `p`
    in `(k, x]`, which is at most `x / p`. It follows that `|U x k|` is at most `x` times the sum of
-  the reciprocals of the primes between `k` and `x + 1`, which is less than 1/2 as noted in (2), so
-  `|U x k| < x / 2` (`card_le_mul_sum`).
+   the reciprocals of the primes between `k` and `x + 1`, which is less than 1/2 as noted in (2), so
+   `|U x k| < x / 2` (`card_le_mul_sum`).
 5. By factoring `e + 1 = (m + 1)² * (r + 1)`, `r + 1` squarefree and `m + 1 ≤ √x`, and noting that
    squarefree numbers correspond to subsets of `[1, k]`, we find that `|M x k| ≤ 2 ^ k * √x`
    (`card_le_two_pow_mul_sqrt`).
