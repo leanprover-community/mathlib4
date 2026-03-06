@@ -823,17 +823,21 @@ theorem valueGroup₀Fun_spec' (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs 
     valueGroup₀Fun (.mk v r s) = .mk w r s := by
   simp only [valueGroup₀Fun, ne_eq]
   split_ifs with h0
-  · sorry
-  · have h0' : ¬ (w r = 0 ∨ w s = 0) := sorry
-    simp only [ValueGroup₀.mk]
+  · simp only [ValueGroup₀.mk, dite_eq_left_iff, not_or, WithZero.coe_ne_zero, imp_false,
+      not_and_or, Decidable.not_not, left_eq_dite_iff, WithZero.zero_ne_coe] at h0 ⊢
+    simpa [← h.eq_zero] using h0
+  · simp only [ValueGroup₀.mk, dite_eq_left_iff, not_or, WithZero.coe_ne_zero, imp_false,
+      not_and_or, Decidable.not_not] at h0 ⊢
+    have h0' : ¬ (w r = 0 ∨ w s = 0) := by simpa [← h.eq_zero] using h0
     generalize_proofs _ _ _ _ _ _ H
     have c_spec := H.choose_spec
     simp only [hr, hs, or_self, ↓reduceDIte, WithZero.coe_inj, valueGroup.mk_inj, map_mul] at c_spec
     rw [dif_neg, dif_neg h0']
-
-    · sorry
-
-    · sorry
+    · simp only [WithZero.coe_inj, valueGroup.mk_inj] at c_spec ⊢
+      rw [← h.eq_iff, eq_comm]
+      aesop
+    · simp?
+      sorry
 
 theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0) :
     valueGroup₀Fun (.mk v r s) = .mk w r s := by
