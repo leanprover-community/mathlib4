@@ -1214,7 +1214,6 @@ section repr
 
 variable [Semiring R]
 
-set_option backward.isDefEq.respectTransparency false in
 protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
   ⟨fun p prec =>
     let termPrecAndReprs : List (WithTop ℕ × Lean.Format) :=
