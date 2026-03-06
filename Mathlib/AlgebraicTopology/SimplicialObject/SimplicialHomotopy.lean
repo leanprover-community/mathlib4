@@ -24,7 +24,7 @@ of simplicial objects.
 The definition follows the combinatorial description of simplicial homotopies.
 Given simplicial objects `X Y : SimplicialObject C` and morphisms `f g : X ⟶ Y`,
 a simplicial homotopy consists of a family of morphisms `h n i : X _⦋n⦌ ⟶ Y _⦋n+1⦌`
-satisfying the simplicial identities involving the faces and degeneracies.
+satisfying compatibilities involving the faces and degeneracies.
 
 ## References
 
