@@ -356,6 +356,20 @@ lemma contMDiffCovariantDerivativeOn_univ_iff [IsManifold I 1 M] [VectorBundle �
 
 section operations
 
+/-! ### Operations
+
+In this section we prove that:
+
+* affine combinations of covariant derivatives are covariant derivatives
+* adding a one form taking values into endomorphisms of the vector bundle to a covariant
+  derivative gives a covariant derivative. See `add_on_form`.
+* subtracting two covariant derivatives on some set gives a one form taking values into
+  endomorphisms of the vector bundle. See `difference`.
+
+Note: morally this means covariant derivatives form an affine space over the vector space of
+one-forms taking values in endomorphisms of the bundle, but we don’t package it that way yet.
+-/
+
 /-- An affine combination of covariant derivatives is a covariant derivative. -/
 @[simps]
 def affineCombination (cov cov' : CovariantDerivative I F V) (g : M → 𝕜) :
@@ -395,6 +409,27 @@ lemma ContMDiffCovariantDerivative.affineCombination' [IsManifold I 1 M] [Vector
 -- TODO: prove a version with a locally finite sum, and deduce that C^k connections always
 -- exist (using a partition of unity argument)
 
+/-- Adding a one form taking values into endomorphisms of the vector bundle to a covariant
+  derivative gives a covariant derivative. -/
+def add_one_form (cov : CovariantDerivative I F V)
+    (A : Π (x : M), V x →L[𝕜] TangentSpace I x →L[𝕜] V x) : CovariantDerivative I F V where
+  toFun := fun σ x ↦ cov σ x + (A x) (σ x)
+  isCovariantDerivativeOnUniv := cov.isCovariantDerivativeOnUniv.add_one_form A
+
+section difference
+
+-- We need more assumptions to use the tensoriality criterion in order to build the difference
+-- operation.
+variable [CompleteSpace 𝕜]
+    [IsManifold I 1 M]
+    [FiniteDimensional 𝕜 F]
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+
+noncomputable def difference (cov cov' : CovariantDerivative I F V) :
+    Π (x : M), V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
+  cov.isCovariantDerivativeOnUniv.difference cov'.isCovariantDerivativeOnUniv
+
+end difference
 end operations
 
 end CovariantDerivative
