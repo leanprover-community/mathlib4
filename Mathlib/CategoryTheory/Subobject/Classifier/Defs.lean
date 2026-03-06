@@ -40,8 +40,8 @@ Let `C` refer to a category with a terminal object.
   represents the subobjects functor `CategoryTheory.Subobject.presheaf C`, assuming `C` has
   pullbacks.
 
-* `CategoryTheory.SubobjectRepresentableBy.classifier`: any representation `Ω`
-  of `CategoryTheory.Subobject.presheaf C` is a subobject classifier in `C`.
+* `CategoryTheory.SubobjectRepresentableBy.classifier`: any representation `Ω` of
+  `CategoryTheory.Subobject.presheaf C` is a subobject classifier in `C`.
 
 * `CategoryTheory.hasClassifier_isRepresentable_iff`: from the two above mappings, we get that a
   category `C` with pullbacks has a subobject classifier if and only if the subobjects presheaf
