@@ -12,6 +12,8 @@ import Mathlib.CategoryTheory.Bicategory.Opposites
 
 -/
 
+set_option backward.isDefEq.respectTransparency false
+
 namespace CategoryTheory
 
 open Category Bicategory Bicategory.Opposite Opposite
@@ -31,14 +33,47 @@ attribute [local simp] Cat.associator_hom_app Cat.associator_inv_app
 /-- Version of `Bicategory.precomposing` viewed in the bicategory `Cat`. -/
 @[simps]
 def precomposingCat (a b c : B) :
-    (a ⟶ b) ⥤ Cat.of ((Cat.of (b ⟶ c)) ⟶ (Cat.of (a ⟶ c))) where
+    (a ⟶ b) ⥤ Cat.of (Cat.of (b ⟶ c) ⟶ Cat.of (a ⟶ c)) where
   obj f := (precomp c f).toCatHom
-  map η := NatTrans.toCatHom₂ {
-    app := (η ▷ ·)
-    naturality := by simp [whisker_exchange] }
+  map η := NatTrans.toCatHom₂ ((precomposing a b c).map η)
 
+/-- Postcomposition of a 1-morphism as a functor from the category of 1-morphisms `b ⟶ c` into the
+category of functors `(a ⟶ b) ⥤ (a ⟶ c)`. -/
+@[simps]
+def postcomposingCat (a b c : B) : (b ⟶ c) ⥤ Cat.of (Cat.of (a ⟶ b) ⟶ Cat.of (a ⟶ c)) where
+  obj f := (postcomp a f).toCatHom
+  map η := NatTrans.toCatHom₂ ((postcomposing a b c).map η)
 
-  --{ app := (η ▷ ·) }
+/-- Left unitor as a natural isomorphism. -/
+@[simps!]
+def leftUnitorNatIsoCat (a b : B) : (precomposingCat _ _ b).obj (𝟙 a) ≅ 𝟙 (Cat.of (a ⟶ b)) :=
+  Cat.Hom.isoMk <| NatIso.ofComponents (λ_ ·)
+
+/-- Right component of the associator as a natural isomorphism. -/
+@[simps!]
+def associatorNatIsoRightCat {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (d : B) :
+    (precomposingCat _ _ d).obj (f ≫ g) ≅
+      (precomposingCat ..).obj g ≫ (precomposingCat ..).obj f :=
+  Cat.Hom.isoMk <| NatIso.ofComponents (α_ f g ·)
+
+/-- Middle component of the associator as a natural isomorphism. -/
+@[simps!]
+def associatorNatIsoMiddleCat {a b c d : B} (f : a ⟶ b) (h : c ⟶ d) :
+    (precomposingCat ..).obj f ≫ (postcomposingCat ..).obj h ≅
+      (postcomposingCat ..).obj h ≫ (precomposingCat ..).obj f :=
+  Cat.Hom.isoMk <| NatIso.ofComponents (α_ f · h)
+
+/-- Right unitor as a natural isomorphism. -/
+@[simps!]
+def rightUnitorNatIsoCat (a b : B) : (postcomposingCat a _ _).obj (𝟙 b) ≅ 𝟙 (Cat.of (a ⟶ b)) :=
+  Cat.Hom.isoMk <| NatIso.ofComponents (ρ_ ·)
+
+/-- Left component of the associator as a natural isomorphism. -/
+@[simps!]
+def associatorNatIsoLeftCat (a : B) {b c d : B} (g : b ⟶ c) (h : c ⟶ d) :
+    (postcomposingCat a ..).obj g ≫ (postcomposingCat ..).obj h ≅ (postcomposingCat ..).obj (g ≫ h) :=
+  Cat.Hom.isoMk <| NatIso.ofComponents (α_ · g h)
+
 
 /-- The map on objects underlying the Yoneda embedding. It sends an object `x` to
 the pseudofunctor defined by:
@@ -48,24 +83,21 @@ the pseudofunctor defined by:
 def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w₁, v₁} where
   toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of (unop y ⟶ x))
     (fun a b => unopFunctor a b ⋙ precomposingCat (unop b) (unop a) x)
-
-
-    --((unopFunctor a b) ≫ precomposing (unop b) (unop a) x).toCatHom)
-  mapId a := leftUnitorNatIso (unop a) x
-  mapComp f g := associatorNatIsoRight g.unop f.unop x
+  mapId a := leftUnitorNatIsoCat (unop a) x
+  mapComp f g := associatorNatIsoRightCat g.unop f.unop x
 
 /-- Postcomposing of a 1-morhisms seen as a strong transformation between pseudofunctors. -/
 @[simps!]
 def postcomp₂ {a b : B} (f : a ⟶ b) : yoneda₀ a ⟶ yoneda₀ b where
-  app x := ((postcomposing (unop x) a b).obj f).toCatHom
-  naturality g := (associatorNatIsoMiddle g.unop f)
+  app x := ((postcomposingCat (unop x) a b).obj f)
+  naturality g := (associatorNatIsoMiddleCat g.unop f)
 
 /-- Postcomposing of `1`-morphisms seen as a functor from `a ⟶ b` to the hom-category of the
 corresponding pseudofunctors. -/
 @[simps!]
 def postcomposing₂ (a b : B) : (a ⟶ b) ⥤ (yoneda₀ a ⟶ yoneda₀ b) where
   obj := postcomp₂
-  map η := { app x := (postcomposing (unop x) a b).map η }
+  map η := { as := { app x := (postcomposingCat (unop x) a b).map η }}
 
 /-- The yoneda pseudofunctor from `B` to `Pseudofunctor Bᵒᵖ Cat`.
 
@@ -76,8 +108,8 @@ It consists of the following:
 @[simps!]
 def yoneda : Pseudofunctor B (Pseudofunctor Bᵒᵖ Cat.{w₁, v₁}) where
   toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun x ↦ yoneda₀ x) postcomposing₂
-  mapId a := isoMk (fun b => rightUnitorNatIso (unop b) a)
-  mapComp f g := (isoMk (fun b ↦ associatorNatIsoLeft (unop b) f g)).symm
+  mapId a := isoMk (fun b => rightUnitorNatIsoCat (unop b) a)
+  mapComp f g := (isoMk (fun b ↦ associatorNatIsoLeftCat (unop b) f g)).symm
 
 end Bicategory
 
