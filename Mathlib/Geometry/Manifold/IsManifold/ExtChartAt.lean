@@ -410,7 +410,7 @@ lemma isInvertible_fderivWithin_extendCoordChange (hn : n ≠ 0)
   · rw [← φ.left_inv hx, φ.right_inv (φ.map_source hx), ← fderivWithin_comp,
       fderivWithin_congr' φ.rightInvOn.eqOn (φ.map_source hx), fderivWithin_id]
     · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
-    · exact (φ.left_inv hx ▸ ((hφ _ hx).differentiableWithinAt hn):)
+    · exact (φ.left_inv hx ▸ ((hφ _ hx).differentiableWithinAt hn) :)
     · exact (hφ' _ (φ.map_source hx)).differentiableWithinAt hn
     · exact φ.symm_mapsTo
     · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
