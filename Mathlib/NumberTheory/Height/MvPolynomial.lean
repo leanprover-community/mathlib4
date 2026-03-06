@@ -316,7 +316,7 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
   grw [← le_max_left]
   rw [mul_pow, mul_mul_mul_comm]
   gcongr
-  · -- archimedean part: reduce to "local" statement `mvPolynomial_bound`
+  · -- archimedean part: reduce to "local" statement `eval_mvPolynomial_le`
     rw [← prod_map_pow, ← prod_map_mul]
     refine prod_map_le_prod_map₀ _ _ (fun _ _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..)
       fun v _ ↦ Real.iSup_le (fun j ↦ ?_) <| mul_nonneg (H₀ v) (HH₁ v)
@@ -324,7 +324,7 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     gcongr
     · exact HH₁ v
     · exact HH₂ (fun j ↦ Finsupp.sum (p j) fun _ c ↦ v c) j
-  · -- nonarchimedean part: reduce to "local" statement `mvPolynomial_bound_nonarch`
+  · -- nonarchimedean part: reduce to "local" statement `eval_mvPolynomial_le`
     have := (Function.ne_iff.mp h₀).nonempty
     have F := hasFiniteMulSupport_iSup_nonarchAbsVal hx
     rw [finprod_pow F, ← finprod_mul_distrib (by fun_prop) (by fun_prop)]
