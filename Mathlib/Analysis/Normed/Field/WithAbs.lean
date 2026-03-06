@@ -12,8 +12,6 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.MetricSpace.Completion
-public import Mathlib.Topology.Algebra.GroupCompletion
-public import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # WithAbs for fields
@@ -131,8 +129,6 @@ theorem isUniformInducing_of_comp (h : ∀ x, ‖f x‖ = v x.ofAbs) : IsUniform
   (AddMonoidHomClass.isometry_of_norm _ h).isUniformInducing
 
 end WithAbs
-
-section Completion
 
 namespace AbsoluteValue
 

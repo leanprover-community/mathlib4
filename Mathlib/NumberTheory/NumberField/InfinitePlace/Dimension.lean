@@ -19,7 +19,7 @@ noncomputable section
 
 namespace NumberField.InfinitePlace
 
-open NumberField.ComplexEmbedding unramifiedPlacesOver Finset
+open NumberField.ComplexEmbedding Finset
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
@@ -93,15 +93,15 @@ theorem ramifiedPlacesOver_ncard [NumberField L] :
 open scoped Classical in
 def embeddingConjugateIte (v : InfinitePlace K) :
     InfinitePlace L → L →+* ℂ :=
-  fun w ↦ if LiesOver v.embedding w.embedding then w.embedding else conjugate w.embedding
+  fun w ↦ if ComplexEmbedding.LiesOver w.embedding v.embedding then w.embedding else conjugate w.embedding
 
 theorem embeddingConjugateIte_pos {v : InfinitePlace K} {w : InfinitePlace L}
-    (h : LiesOver v.embedding w.embedding) :
+    (h : ComplexEmbedding.LiesOver w.embedding v.embedding) :
     embeddingConjugateIte L v w = w.embedding := by
   simp [embeddingConjugateIte, h]
 
 theorem embeddingConjugateIte_neg {v : InfinitePlace K} {w : InfinitePlace L}
-    (h : ¬LiesOver v.embedding w.embedding) :
+    (h : ¬ComplexEmbedding.LiesOver w.embedding v.embedding) :
     embeddingConjugateIte L v w = conjugate w.embedding := by
   simp [embeddingConjugateIte, h]
 
@@ -118,7 +118,7 @@ theorem _root_.Function.Involutive.injective_ite {α β : Type*} {p : α → Pro
   · exact hf <| hg.injective h
 
 theorem not_liesOver {φ : L →+* ℂ} {ψ : K →+* ℂ} :
-    ¬LiesOver ψ φ ↔ ¬φ.comp (algebraMap K L) = ψ := by
+    ¬ComplexEmbedding.LiesOver φ ψ ↔ ¬φ.comp (algebraMap K L) = ψ := by
   apply Iff.not
   exact ⟨fun h ↦ h.over, fun h ↦ ⟨h⟩⟩
 
@@ -127,7 +127,7 @@ theorem mapsTo_embeddingConjugateIte (v : InfinitePlace K) :
       (unmixedEmbeddingsOver L v.embedding) := by
   intro w hw
   obtain ⟨_, hw⟩ := hw
-  by_cases h : LiesOver v.embedding w.embedding
+  by_cases h : ComplexEmbedding.LiesOver w.embedding v.embedding
   · simpa [embeddingConjugateIte_pos L h] using ⟨h, hw.isUnmixed⟩
   · simpa [embeddingConjugateIte_neg L h] using
       ⟨⟨(LiesOver.embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_left (by
@@ -142,8 +142,8 @@ theorem surjOn_embeddingConjugateIte (v : InfinitePlace K) :
   refine ⟨mk ψ, mk_mem_unramifiedPlacesOver h, ?_⟩
   rcases embedding_mk_eq ψ with (_ | _)
   · aesop (add simp [embeddingConjugateIte, unmixedEmbeddingsOver])
-  · aesop (add simp [embeddingConjugateIte, unmixedEmbeddingsOver, conjugate_comp, LiesOver,
-      IsUnmixed, IsMixed])
+  · aesop (add simp [embeddingConjugateIte, unmixedEmbeddingsOver, conjugate_comp,
+      ComplexEmbedding.LiesOver, IsUnmixed, IsMixed])
     rw [← h_1]
     have := a.over
     have := left.over
@@ -209,7 +209,7 @@ theorem finrank_eq_one_of_isUnramified (w : InfinitePlace L)
         (ringEquivComplexOfIsComplex (LiesOver.isComplex_of_isComplex_under _ hv))
         (RingHom.ext fun _ ↦ by
           simp
-          letI : LiesOver v.embedding w.embedding := ⟨hl⟩
+          letI : ComplexEmbedding.LiesOver w.embedding v.embedding := ⟨hl⟩
           have := (liesOver_extensionEmbedding (v := v) w).over
           simp [RingHom.ext_iff] at this
           erw [this]
@@ -220,7 +220,7 @@ theorem finrank_eq_one_of_isUnramified (w : InfinitePlace L)
           (starRingAut (R := ℂ)))
         (RingHom.ext fun _ ↦ by
           simp
-          letI : LiesOver (v.embedding) (conjugate w.embedding) := ⟨hr⟩
+          letI : ComplexEmbedding.LiesOver (conjugate w.embedding) (v.embedding) := ⟨hr⟩
           have := (liesOver_conjugate_extensionEmbedding (v := v) (w)).over
           simp [RingHom.ext_iff] at this
           erw [this]
