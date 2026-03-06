@@ -28,6 +28,18 @@ attribute [local simp] Cat.associator_hom_app Cat.associator_inv_app
   Cat.leftUnitor_hom_app Cat.rightUnitor_hom_app
   Cat.leftUnitor_inv_app Cat.rightUnitor_inv_app
 
+/-- Version of `Bicategory.precomposing` viewed in the bicategory `Cat`. -/
+@[simps]
+def precomposingCat (a b c : B) :
+    (a ⟶ b) ⥤ Cat.of ((Cat.of (b ⟶ c)) ⟶ (Cat.of (a ⟶ c))) where
+  obj f := (precomp c f).toCatHom
+  map η := NatTrans.toCatHom₂ {
+    app := (η ▷ ·)
+    naturality := by simp [whisker_exchange] }
+
+
+  --{ app := (η ▷ ·) }
+
 /-- The map on objects underlying the Yoneda embedding. It sends an object `x` to
 the pseudofunctor defined by:
 * Objects: `a ↦ (a ⟶ x)`
@@ -35,14 +47,17 @@ the pseudofunctor defined by:
 @[simps!]
 def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w₁, v₁} where
   toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of (unop y ⟶ x))
-    (fun a b => unopFunctor a b ⋙ precomposing (unop b) (unop a) x)
+    (fun a b => unopFunctor a b ⋙ precomposingCat (unop b) (unop a) x)
+
+
+    --((unopFunctor a b) ≫ precomposing (unop b) (unop a) x).toCatHom)
   mapId a := leftUnitorNatIso (unop a) x
   mapComp f g := associatorNatIsoRight g.unop f.unop x
 
 /-- Postcomposing of a 1-morhisms seen as a strong transformation between pseudofunctors. -/
 @[simps!]
 def postcomp₂ {a b : B} (f : a ⟶ b) : yoneda₀ a ⟶ yoneda₀ b where
-  app x := (postcomposing (unop x) a b).obj f
+  app x := ((postcomposing (unop x) a b).obj f).toCatHom
   naturality g := (associatorNatIsoMiddle g.unop f)
 
 /-- Postcomposing of `1`-morphisms seen as a functor from `a ⟶ b` to the hom-category of the
