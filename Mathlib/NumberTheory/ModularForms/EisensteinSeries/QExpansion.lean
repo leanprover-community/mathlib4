@@ -203,6 +203,7 @@ theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : 
   · apply (summable_pow_mul_cexp k 1 z).congr
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma summable_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
     Summable (eisSummand k · z) :=
   summable_norm_iff.mp <| summable_norm_eisSummand (Int.toNat_le.mp hk) z

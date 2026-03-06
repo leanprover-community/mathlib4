@@ -33,6 +33,17 @@ jobs:
         fetch-depth: 0  # Fetch all branches and history
         token: ${{ steps.app-token.outputs.token }}
 
+    - name: Checkout mathlib-ci
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: leanprover-community/mathlib-ci
+        ref: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+        fetch-depth: 1
+        path: ci-tools
+
+    - name: Set up CI scripts paths
+      uses: ./ci-tools/.github/actions/setup-ci-scripts
+
     - name: Set up Git
       run: |
         git config --global user.name "mathlib-nightly-testing[bot]"
@@ -59,8 +70,15 @@ jobs:
 
     - name: Get latest release tag from leanprover/lean4-nightly
       id: get-latest-release
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
       run: |
-        RELEASE_TAG="$(curl -s "https://api.github.com/repos/leanprover/lean4-nightly/releases" | jq -r '.[0].tag_name')"
+        RELEASE_TAG=$(gh api -X GET repos/leanprover/lean4-nightly/releases \
+          -f per_page=1 --jq '.[0].tag_name')
+        if [ -z "$RELEASE_TAG" ] || [ "$RELEASE_TAG" = "null" ]; then
+          echo "::error::Could not determine latest lean4-nightly release"
+          exit 1
+        fi
         echo "RELEASE_TAG=$RELEASE_TAG"
         echo "RELEASE_TAG=$RELEASE_TAG" >> "${GITHUB_ENV}"
         echo "new=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
@@ -88,6 +106,8 @@ jobs:
     - name: Clone lean4-nightly and get PRs
       id: get-prs
       if: steps.commit-bump.outputs.bumped == 'true'
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
       run: |
         OLD="${{ steps.old-toolchain.outputs.old }}"
         NEW="${{ steps.get-latest-release.outputs.new }}"
@@ -121,9 +141,11 @@ jobs:
           echo "Checking commit $commit_sha for associated PRs..."
 
           # Query GitHub API for PRs associated with this commit
-          pr_numbers=$(curl -s -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/leanprover/lean4/commits/$commit_sha/pulls" | \
-            jq -r '.[] | select(.merged_at != null) | .number | tostring' 2>/dev/null || echo "")
+          pr_numbers=$(gh api "repos/leanprover/lean4/commits/$commit_sha/pulls" \
+            --jq '[.[] | select(.merged_at != null) | .number] | .[] | tostring' 2>/dev/null) || {
+            echo "::warning::Failed to fetch PRs for commit $commit_sha, skipping"
+            continue
+          }
 
           # Add each PR number to our list (duplicates will be handled later)
           for pr_num in $pr_numbers; do
@@ -207,7 +229,7 @@ jobs:
         FAILED_MERGES=""
 
         # Ensure the merge script is executable
-        chmod +x scripts/merge-lean-testing-pr.sh
+        chmod +x "${CI_SCRIPTS_DIR}/nightly/merge-lean-testing-pr.sh"
 
         # Process each branch
         for BRANCH in $BRANCHES; do
@@ -253,7 +275,7 @@ jobs:
 
           # Run the merge script and capture exit code
           # Note: The merge script does its own commit but NOT push
-          if ./scripts/merge-lean-testing-pr.sh "$PR_NUMBER"; then
+          if "${CI_SCRIPTS_DIR}/nightly/merge-lean-testing-pr.sh" "$PR_NUMBER"; then
             echo "Successfully merged $BRANCH"
             SUCCESSFUL_MERGES="$SUCCESSFUL_MERGES$PR_NUMBER|$GITHUB_DIFF|$BRANCH "
           else
@@ -295,7 +317,7 @@ jobs:
           MESSAGE+=$'### Successfully merged branches into \'nightly-testing\':\n\n'
           for MERGE_INFO in $SUCCESSFUL_MERGES; do
             IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
-            MESSAGE+=$(printf -- '- [lean-pr-testing-%s](%s) (adaptations for lean#%s)' "$PR_NUMBER" "$GITHUB_DIFF" "$PR_NUMBER")$'\n\n'
+            MESSAGE+="- [lean-pr-testing-${PR_NUMBER}](${GITHUB_DIFF}) (adaptations for lean#${PR_NUMBER})"$'\n\n'
           done
           MESSAGE+=$'\n'
         else
@@ -307,9 +329,12 @@ jobs:
           MESSAGE+=$'### Failed merges:\n\nThe following branches need to be merged manually into \'nightly-testing\':\n\n'
           for MERGE_INFO in $FAILED_MERGES; do
             IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
-            MESSAGE+=$(printf '- [lean-pr-testing-%s](%s) (adaptations for lean#%s)' "$PR_NUMBER" "$GITHUB_DIFF" "$PR_NUMBER")$'\n\n'
+            MESSAGE+="- [lean-pr-testing-${PR_NUMBER}](${GITHUB_DIFF}) (adaptations for lean#${PR_NUMBER})"$'\n\n'
             MESSAGE+=$'```bash\n'
-            MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s' "$PR_NUMBER")$'\n'
+            MESSAGE+=$'tmp=$(mktemp)\n'
+            MESSAGE+=$'wget -qO "$tmp" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/4af75ac0b0d1aaf38d4546a779bc5c68b4d75069/scripts/nightly/merge-lean-testing-pr.sh\n'
+            MESSAGE+=$'chmod +x "$tmp"\n'
+            MESSAGE+="\"\$tmp\" ${PR_NUMBER}"$'\n'
             MESSAGE+=$'```\n\n'
           done
         else

@@ -51,6 +51,7 @@ theorem sum_derivRootWeight_pos (hP : 0 < degree P) (z : ℂ) :
       apply Splits.roots_ne_zero (IsAlgClosed.splits _)
       rwa [← pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- *Gauss-Lucas Theorem*: if $P$ is a nonconstant polynomial with complex coefficients,
 then all zeros of $P'$ belong to the convex hull of the set of zeros of $P$.
 

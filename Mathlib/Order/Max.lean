@@ -40,34 +40,35 @@ universe u v
 variable {α β : Type*}
 
 /-- Order without bottom elements. -/
+@[mk_iff noBotOrder_iff']
 class NoBotOrder (α : Type*) [LE α] : Prop where
   /-- For each term `a`, there is some `b` which is either incomparable or strictly smaller. -/
   exists_not_ge (a : α) : ∃ b, ¬a ≤ b
 
 /-- Order without top elements. -/
-@[to_dual]
+@[to_dual, mk_iff noTopOrder_iff']
 class NoTopOrder (α : Type*) [LE α] : Prop where
   /-- For each term `a`, there is some `b` which is either incomparable or strictly larger. -/
   exists_not_le (a : α) : ∃ b, ¬b ≤ a
 
 /-- Order without minimal elements. Sometimes called coinitial or dense. -/
+@[mk_iff noMinOrder_iff']
 class NoMinOrder (α : Type*) [LT α] : Prop where
   /-- For each term `a`, there is some strictly smaller `b`. -/
   exists_lt (a : α) : ∃ b, b < a
 
 /-- Order without maximal elements. Sometimes called cofinal. -/
-@[to_dual]
+@[to_dual, mk_iff noMaxOrder_iff']
 class NoMaxOrder (α : Type*) [LT α] : Prop where
   /-- For each term `a`, there is some strictly greater `b`. -/
   exists_gt (a : α) : ∃ b, a < b
 
 export NoBotOrder (exists_not_ge)
-
 export NoTopOrder (exists_not_le)
-
 export NoMinOrder (exists_lt)
-
 export NoMaxOrder (exists_gt)
+
+attribute [to_dual existing] noBotOrder_iff' noMinOrder_iff'
 
 @[to_dual nonempty_gt]
 instance nonempty_lt [LT α] [NoMinOrder α] (a : α) : Nonempty { x // x < a } :=
@@ -147,6 +148,10 @@ conversion. -/]
 def IsMin (a : α) : Prop :=
   ∀ ⦃b⦄, b ≤ a → a ≤ b
 
+@[to_dual]
+theorem noBotOrder_iff : NoBotOrder α ↔ ∀ x : α, ¬ IsBot x := by
+  simp_rw [noBotOrder_iff', IsBot, not_forall]
+
 @[to_dual (attr := simp)]
 theorem not_isBot [NoBotOrder α] (a : α) : ¬IsBot a := fun h =>
   let ⟨_, hb⟩ := exists_not_ge a
@@ -193,6 +198,10 @@ end LE
 section Preorder
 
 variable [Preorder α] {a b : α}
+
+@[to_dual]
+theorem noMinOrder_iff : NoMinOrder α ↔ ∀ x : α, ¬ IsMin x := by
+  simp [noMinOrder_iff', IsMin, lt_iff_le_not_ge]
 
 @[to_dual]
 theorem IsBot.mono (ha : IsBot a) (h : b ≤ a) : IsBot b := fun _ => h.trans <| ha _
