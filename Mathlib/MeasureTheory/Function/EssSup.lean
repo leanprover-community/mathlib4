@@ -275,6 +275,7 @@ lemma essSup_piecewise {s : Set α} [DecidablePred (· ∈ s)] {g} (hs : Measura
     essSup (s.piecewise f g) μ = max (essSup f (μ.restrict s)) (essSup g (μ.restrict sᶜ)) := by
   simp only [essSup, limsup_piecewise, blimsup_eq_limsup, ae_restrict_eq, hs, hs.compl]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem essSup_indicator_eq_essSup_restrict {s : Set α} {f : α → ℝ≥0∞} (hs : MeasurableSet s) :
     essSup (s.indicator f) μ = essSup f (μ.restrict s) := by
   classical

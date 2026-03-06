@@ -8,6 +8,7 @@ module
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Util.AtomM.Recurse
+public meta import Mathlib.Util.AtomM.Recurse
 
 /-!
 # `ring_nf` tactic

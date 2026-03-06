@@ -283,10 +283,6 @@ lemma MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt (hf : MeromorphicAt f
     Set.EqOn f (toMeromorphicNFAt f x) {x}ᶜ :=
   fun _ _ ↦ by simp_all [toMeromorphicNFAt]
 
-@[deprecated (since := "2025-07-27")]
-alias MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt :=
-  MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt
-
 /-- If `f` is not meromorphic, conversion to normal form at `x` maps the function to `0`. -/
 @[simp] lemma toMeromorphicNFAt_of_not_meromorphicAt (hf : ¬MeromorphicAt f x) :
     toMeromorphicNFAt f x = 0 := by
@@ -561,8 +557,7 @@ of `U`.
 -/
 theorem toMeromorphicNFOn_eqOn_codiscrete (hf : MeromorphicOn f U) :
     f =ᶠ[Filter.codiscreteWithin U] toMeromorphicNFOn f U := by
-  have : U ∈ Filter.codiscreteWithin U := by
-    simp [mem_codiscreteWithin.2]
+  have : U ∈ Filter.codiscreteWithin U := by simp
   filter_upwards [hf.analyticAt_mem_codiscreteWithin, this] with a h₁a h₂a
   simp [toMeromorphicNFOn, hf, ← (toMeromorphicNFAt_eq_self.2 h₁a.meromorphicNFAt).symm]
 

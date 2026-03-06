@@ -29,6 +29,7 @@ section LexOrder
 open Finsupp
 variable [LinearOrder σ] [WellFoundedGT σ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The lex order on multivariate power series. -/
 noncomputable def lexOrder (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ ℕ))) := by
   classical
@@ -40,6 +41,7 @@ noncomputable def lexOrder (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ 
     · exact Finsupp.instLTLex.lt
     · exact wellFounded_lt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lexOrder_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     ∃ (ne : Set.Nonempty (toLex '' φ.support)),
       lexOrder φ = WithTop.some ((@wellFounded_lt (Lex (σ →₀ ℕ))

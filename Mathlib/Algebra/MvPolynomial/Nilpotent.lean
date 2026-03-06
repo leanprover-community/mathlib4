@@ -25,6 +25,7 @@ namespace MvPolynomial
 
 variable {σ R : Type*} [CommRing R] {P : MvPolynomial σ R}
 
+set_option backward.isDefEq.respectTransparency false in
 -- Subsumed by `isNilpotent_iff` below.
 private theorem isNilpotent_iff_of_fintype [Finite σ] :
     IsNilpotent P ↔ ∀ i, IsNilpotent (P.coeff i) := by

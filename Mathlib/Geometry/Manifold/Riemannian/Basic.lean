@@ -96,6 +96,7 @@ two points is the infimum of the length of paths between these points.
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The standard Riemannian metric on a vector space with an inner product, given by this inner
 product on each tangent space. -/
@@ -126,6 +127,7 @@ noncomputable def riemannianMetricVectorSpace :
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
     ‖v‖ = ‖letI V : F := v; V‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
@@ -152,6 +154,7 @@ lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
   exact fderivWithin_eq_fderiv (uniqueDiffOn_Icc zero_lt_one _ hz)
     (ContinuousAffineMap.differentiableAt _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An inner product vector space is a Riemannian manifold, i.e., the distance between two points
 is the infimum of the lengths of paths between these points. -/
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
@@ -209,6 +212,8 @@ the image of the neighborhood in the extended chart.
 open Manifold Metric
 open scoped NNReal
 
+set_option backward.isDefEq.respectTransparency false
+
 variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
   [IsManifold I 1 M] [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
 
@@ -217,6 +222,7 @@ as in the vector space.
 
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
+@[instance_reducible]
 def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
     NormedAddCommGroup (TangentSpace 𝓘(ℝ, E) x) :=
   inferInstanceAs (NormedAddCommGroup E)
@@ -228,6 +234,7 @@ as in the vector space.
 
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
+@[instance_reducible]
 def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace 𝓘(ℝ, E) x) :=
   inferInstanceAs (NormedSpace ℝ E)
 

@@ -482,6 +482,7 @@ variable (M N : ModuleCat.{v} R)
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrpCat).obj M) where
@@ -508,10 +509,26 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrpCat) where
   toFun r :=
     { app := fun M => M.smul r
       naturality := fun _ _ _ => smul_naturality _ r }
-  map_one' := NatTrans.ext (by cat_disch)
-  map_zero' := NatTrans.ext (by cat_disch)
-  map_mul' _ _ := NatTrans.ext (by cat_disch)
-  map_add' _ _ := NatTrans.ext (by cat_disch)
+  map_one' := NatTrans.ext (by
+    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+    this was just `cat_disch`. -/
+    simp +instances only [forget₂_obj, map_one, End.one_def]
+    cat_disch)
+  map_zero' := NatTrans.ext (by
+    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+    this was just `cat_disch`. -/
+    simp +instances only [forget₂_obj, map_zero]
+    cat_disch)
+  map_mul' _ _ := NatTrans.ext (by
+    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+    this was just `cat_disch`. -/
+    simp +instances only [forget₂_obj, map_mul, End.mul_def]
+    cat_disch)
+  map_add' _ _ := NatTrans.ext (by
+    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+    this was just `cat_disch`. -/
+    simp +instances only [forget₂_obj, map_add]
+    cat_disch)
 
 /-- Given `A : AddCommGrpCat` and a ring morphism `R →+* End A`, this is a type synonym
 for `A`, on which we shall define a structure of `R`-module. -/
@@ -534,6 +551,7 @@ instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r)
 lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :
     r • x = (show A ⟶ A from φ r) x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module R (mkOfSMul' φ) where
   smul_zero _ := map_zero (N := A) _
   smul_add _ _ _ := map_add (N := A) _ _ _

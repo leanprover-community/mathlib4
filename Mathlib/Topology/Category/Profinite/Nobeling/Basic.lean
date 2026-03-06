@@ -311,6 +311,7 @@ namespace Products
 instance : LinearOrder (Products I) :=
   inferInstanceAs (LinearOrder {l : List I // l.IsChain (· > ·)})
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (· < ·) l.val m.val := by
   simp

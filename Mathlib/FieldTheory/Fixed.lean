@@ -335,6 +335,7 @@ namespace FixedPoints
 
 variable (G F : Type*) [Group G] [Field F] [MulSemiringAction G F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let $F$ be a field. Let $G$ be a finite group acting faithfully on $F$.
 Then $[F : F^G] = |G|$. -/
 @[stacks 09I3 "second part"]
@@ -347,6 +348,7 @@ theorem finrank_eq_card [Fintype G] [FaithfulSMul G F] :
       _ ≤ finrank F (F →ₗ[FixedPoints.subfield G F] F) := finrank_algHom (subfield G F) F
       _ = finrank (FixedPoints.subfield G F) F := finrank_linearMap_self _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MulSemiringAction.toAlgHom` is bijective. -/
 theorem toAlgHom_bijective [Finite G] [FaithfulSMul G F] :
     Function.Bijective (MulSemiringAction.toAlgHom _ _ : G → F →ₐ[subfield G F] F) := by
@@ -363,6 +365,7 @@ theorem toAlgHom_bijective [Finite G] [FaithfulSMul G F] :
 def toAlgHomEquiv [Finite G] [FaithfulSMul G F] : G ≃ (F →ₐ[FixedPoints.subfield G F] F) :=
   Equiv.ofBijective _ (toAlgHom_bijective G F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MulSemiringAction.toAlgAut` is bijective. -/
 theorem toAlgAut_bijective [Finite G] [FaithfulSMul G F] :
     Function.Bijective (MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F) := by
@@ -374,6 +377,7 @@ theorem toAlgAut_bijective [Finite G] [FaithfulSMul G F] :
 def toAlgAutMulEquiv [Finite G] [FaithfulSMul G F] : G ≃* (F ≃ₐ[FixedPoints.subfield G F] F) :=
   MulEquiv.ofBijective _ (toAlgAut_bijective G F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MulSemiringAction.toAlgAut` is surjective. -/
 theorem toAlgAut_surjective [Finite G] :
     Function.Surjective (MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F) := by
