@@ -180,7 +180,7 @@ variable {X : TopCat.{x}} (F : Sheaf C X) {ι : Type*} (U : ι → Opens X)
 theorem existsUnique_gluing (sf : ∀ i : ι, ToType (F.1.obj (op (U i))))
     (h : IsCompatible F.1 U sf) :
     ∃! s : ToType (F.1.obj (op (iSup U))), IsGluing F.1 U sf s :=
-  IsSheaf.isSheafUniqueGluing F.cond U sf h
+  IsSheaf.isSheafUniqueGluing F.property U sf h
 
 /-- In this version of the lemma, the inclusion homs `iUV` can be specified directly by the user,
 which can be more convenient in practice.

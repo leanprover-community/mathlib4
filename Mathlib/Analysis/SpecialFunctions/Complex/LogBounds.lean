@@ -364,6 +364,19 @@ lemma tendsto_one_add_div_pow_exp (t : ℂ) :
     Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
   tendsto_one_add_div_cpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
 
+set_option backward.isDefEq.respectTransparency false
+/-- `(1 + t/n + o(1/n)) ^ n → exp t` for `t ∈ ℂ`. -/
+lemma tendsto_pow_exp_of_isLittleO_sub_add_div {f : ℕ → ℂ} (t : ℂ)
+    (hf : (fun n ↦ f n - (1 + t / n)) =o[atTop] fun n ↦ 1 / (n : ℂ)) :
+    Tendsto (fun n ↦ f n ^ n) atTop (𝓝 (exp t)) := by
+  rw [show (fun n ↦ f n ^ n) = (fun n ↦ (1 + (f n - 1)) ^ n) by ext; simp]
+  refine tendsto_one_add_pow_exp_of_tendsto (tendsto_sub_nhds_zero_iff.1 ?_)
+  convert hf.tendsto_inv_smul_nhds_zero.congr' ?_
+  filter_upwards [eventually_ne_atTop 0] with n h0
+  simp
+  field_simp [n.cast_ne_zero.2 h0]
+  ring
+
 end Complex
 
 namespace Real

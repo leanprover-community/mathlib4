@@ -151,7 +151,14 @@ lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) := by
   simp [h, restrict₀_apply]
 
+@[simp]
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp [restrict₀_apply]
+
+@[simp]
+lemma restrict₀_eq_one_iff {a : A} : restrict₀ f a = 1 ↔ f a = 1 := by
+  simp only [restrict₀_apply]
+  split_ifs with H <;>
+  simp [H, ← WithZero.coe_one, ← Units.mk0_one]
 
 @[simp]
 lemma embedding_restrict₀ (a : A) : ValueGroup₀.embedding (restrict₀ f a) = f a := by
@@ -176,7 +183,8 @@ lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid :
     simp [hy]
   · simp [Submonoid.closure_union]
 
-variable (f) in
+variable (f)
+
 lemma valueMonoid_eq_valueGroup' : (valueMonoid f : Set Bˣ) = valueGroup f := by
   rw [valueMonoid_eq_valueGroup, coe_toSubmonoid]
 
@@ -190,6 +198,26 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
   · rintro ⟨⟨y, hy⟩, hx₀⟩
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [Units.val_mk0, mem_range] using ⟨y, hy⟩
+
+@[simp]
+lemma ValueGroup₀.restrict₀_range_eq_top : range (ValueGroup₀.restrict₀ f) = ⊤ := by
+  rw [top_eq_univ, range_eq_univ]
+  intro x
+  match x with
+  | 0 => use 0; simp
+  | some ⟨u, hu⟩ =>
+    change u ∈ (valueGroup f : Set Bˣ) at hu
+    rw [← valueMonoid_eq_valueGroup'] at hu
+    obtain ⟨v, hv⟩ := hu
+    use v
+    simp [restrict₀_apply, hv, Units.ne_zero, WithZero.coe]
+
+open Function
+
+lemma ValueGroup₀.restrict₀_surjective : Surjective (ValueGroup₀.restrict₀ f) :=
+  fun _ ↦ mem_range.mp (by simp [ValueGroup₀.restrict₀_range_eq_top])
+
+open Function
 
 end GroupWithZero
 section CommGroupWithZero

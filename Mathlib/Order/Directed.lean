@@ -184,9 +184,9 @@ theorem exists_ge_ge [LE α] [IsDirectedOrder α] (a b : α) : ∃ c, a ≤ c �
 instance OrderDual.isDirected_ge [LE α] [IsDirectedOrder α] : IsCodirectedOrder αᵒᵈ := by
   assumption
 
--- `to_dual` cannot yet reorder arguments of arguments
 /-- A monotone function on an upwards-directed type is directed. -/
-@[to_dual none] -- @[to_dual directed_of_isDirected_ge]
+@[to_dual (reorder := H (i j)) directed_of_isDirected_ge
+/-- An antitone function on a downwards-directed type is directed. -/]
 theorem directed_of_isDirected_le [LE α] [IsDirectedOrder α] {f : α → β} {r : β → β → Prop}
     (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
   directed_id.mono_comp _ H
@@ -195,12 +195,6 @@ theorem directed_of_isDirected_le [LE α] [IsDirectedOrder α] {f : α → β} {
 theorem Monotone.directed_le [Preorder α] [IsDirectedOrder α] [Preorder β] {f : α → β} :
     Monotone f → Directed (· ≤ ·) f :=
   directed_of_isDirected_le
-
-/-- An antitone function on a downwards-directed type is directed. -/
-@[to_dual none]
-theorem directed_of_isDirected_ge [LE α] [IsCodirectedOrder α] {r : β → β → Prop} {f : α → β}
-    (hf : ∀ a₁ a₂, a₁ ≤ a₂ → r (f a₂) (f a₁)) : Directed r f :=
-  directed_of_isDirected_le (α := αᵒᵈ) fun _ _ ↦ hf _ _
 
 @[to_dual directed_ge]
 theorem Antitone.directed_le [Preorder α] [IsCodirectedOrder α] [Preorder β] {f : α → β}

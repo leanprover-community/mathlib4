@@ -42,7 +42,7 @@ theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
   intro s li
   apply Cardinal.card_le_of
   intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
+  rw [← Finset.card_map (Embedding.subtype (· ∈ s))]
   apply H
   apply linearIndependent_finset_map_embedding_subtype _ li
 

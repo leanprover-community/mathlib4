@@ -333,7 +333,7 @@ lemma OrderEmbedding.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
-  ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder <| by
+  ⟨(Subtype.strictMono_coe (· ∈ t)).induced_topology_eq_preorder <| by
     rwa [← @Subtype.range_val _ t] at ht⟩
 
 theorem nhdsGE_eq_iInf_inf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :

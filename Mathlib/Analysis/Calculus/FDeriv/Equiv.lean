@@ -551,7 +551,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
   {f' : E →L[𝕜] F} {x : E}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasFDerivWithinAt_comp_smul_smul_iff {c : 𝕜} :
     HasFDerivWithinAt (f <| c • ·) (c • f') s x ↔ HasFDerivWithinAt f f' (c • s) (c • x) := by
   rcases eq_or_ne c 0 with rfl | hc

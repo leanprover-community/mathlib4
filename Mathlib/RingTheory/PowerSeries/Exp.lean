@@ -118,7 +118,6 @@ open Finset Nat
 
 variable {A : Type*} [CommRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) := by

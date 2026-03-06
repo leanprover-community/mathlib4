@@ -180,7 +180,7 @@ graph. -/
 theorem Colorable.map (f : V ↪ β) [NeZero n] (hc : G.Colorable n) : (G.map f).Colorable n := by
   obtain ⟨C⟩ := hc
   use extend f C (const β default)
-  intro a b ⟨_, _, hadj, ha, hb⟩
+  intro a b ⟨_, _, _, hadj, ha, hb⟩
   rw [← ha, f.injective.extend_apply, ← hb, f.injective.extend_apply]
   exact C.valid hadj
 

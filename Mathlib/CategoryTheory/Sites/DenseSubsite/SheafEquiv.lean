@@ -41,7 +41,7 @@ variable [G.IsDenseSubsite J K]
 set_option backward.isDefEq.respectTransparency false in
 include K in
 lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
-    IsIso ((yoneda.map ((G.op.ranCounit.app Y.val).app (op U))).app (op X)) := by
+    IsIso ((yoneda.map ((G.op.ranCounit.app Y.obj).app (op U))).app (op X)) := by
   rw [isIso_iff_bijective]
   constructor
   · intro f₁ f₂ e
@@ -59,7 +59,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
   · intro f
     have (X Y Z) (f : X ⟶ Y) (g : G.obj Y ⟶ G.obj Z) (hf : G.imageSieve g f) : Exists _ := hf
     choose l hl using this
-    let c : Limits.Cone (StructuredArrow.proj (op (G.obj U)) G.op ⋙ Y.val) := by
+    let c : Limits.Cone (StructuredArrow.proj (op (G.obj U)) G.op ⋙ Y.obj) := by
       refine ⟨X, ⟨fun g ↦ ?_, ?_⟩⟩
       · refine Y.2.amalgamate ⟨_, IsDenseSubsite.imageSieve_mem J K G g.hom.unop⟩
           (fun I ↦ f ≫ Y.1.map (l _ _ _ _ _ I.hf).op) fun I₁ I₂ r ↦ ?_
@@ -108,9 +108,8 @@ instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.a
   apply +allowSynthFailures ReflectsIsomorphisms.reflects yoneda
   rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨X⟩
-  simp only [comp_obj, sheafToPresheaf_obj, sheafPushforwardContinuous_obj_val_obj, yoneda_obj_obj,
-    id_obj, sheafToPresheaf_map, sheafAdjunctionCocontinuous_counit_app_val, ranAdjunction_counit]
-  exact isIso_ranCounit_app_of_isDenseSubsite G J K Y U X
+  simpa [sheafAdjunctionCocontinuous_counit_app_hom]
+    using isIso_ranCounit_app_of_isDenseSubsite G J K Y U X
 
 instance : (G.sheafPushforwardContinuous A J K).IsEquivalence :=
   (G.sheafAdjunctionCocontinuous A J K).toEquivalence.isEquivalence_functor

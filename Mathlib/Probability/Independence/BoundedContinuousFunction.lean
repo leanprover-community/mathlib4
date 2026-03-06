@@ -320,11 +320,11 @@ section IndepFun
 variable [IsZeroOrProbabilityMeasure P]
 
 lemma process_indepFun_process_of_prod_bcf
-    (mX : ∀ s, Measurable (X s)) (mY : ∀ t, Measurable (Y t))
+    (mX : ∀ s, AEMeasurable (X s) P) (mY : ∀ t, AEMeasurable (Y t) P)
     (h : ∀ (I : Finset S) (J : Finset T) (f : (s : I) → E s →ᵇ ℝ) (g : (t : J) → F t →ᵇ ℝ),
       P[(∏ s, f s ∘ (X s)) * (∏ t, g t ∘ (Y t))] = P[∏ s, f s ∘ (X s)] * P[∏ t, g t ∘ (Y t)]) :
     IndepFun (fun ω s ↦ X s ω) (fun ω t ↦ Y t ω) P :=
-  IndepFun.process_indepFun_process mX mY
+  IndepFun.process_indepFun_process₀ mX mY
     fun I J ↦ pi_indepFun_pi_of_prod_bcf (by fun_prop) (by fun_prop) (h I J)
 
 /-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
@@ -333,41 +333,41 @@ for all real bounded continuous functions $f$ and $g$,
 $$P[f(X_{s_1}, ..., X_{s_p}) g(Y_{t_1}, ..., Y_{t_q})] =
 P[f(X_{s_1}, ..., X_{s_p})] * P[g(Y_{t_1}, ..., Y_{t_q})].$$ -/
 lemma process_indepFun_process_of_bcf
-    (mX : ∀ s, Measurable (X s)) (mY : ∀ t, Measurable (Y t))
+    (mX : ∀ s, AEMeasurable (X s) P) (mY : ∀ t, AEMeasurable (Y t) P)
     (h : ∀ (I : Finset S) (J : Finset T) (f : (Π s : I, E s) →ᵇ ℝ) (g : (Π t : J, F t) →ᵇ ℝ),
       P[fun ω ↦ f (X · ω) * g (Y · ω)] = P[fun ω ↦ f (X · ω)] * P[fun ω ↦ g (Y · ω)]) :
     IndepFun (fun ω s ↦ X s ω) (fun ω t ↦ Y t ω) P :=
-  IndepFun.process_indepFun_process mX mY
+  IndepFun.process_indepFun_process₀ mX mY
     fun I J ↦ pi_indepFun_pi_of_bcf (by fun_prop) (by fun_prop) (h I J)
 
 lemma indepFun_process_of_prod_bcf
-    (mZ : AEMeasurable Z P) (mY : ∀ t, Measurable (Y t))
+    (mZ : AEMeasurable Z P) (mY : ∀ t, AEMeasurable (Y t) P)
     (h : ∀ (f : G →ᵇ ℝ) (J : Finset T) (g : (t : J) → F t →ᵇ ℝ),
       P[f ∘ Z * (∏ t, g t ∘ (Y t))] = P[f ∘ Z] * P[∏ t, g t ∘ (Y t)]) :
     IndepFun Z (fun ω t ↦ Y t ω) P :=
-  IndepFun.indepFun_process mZ mY fun J ↦
+  IndepFun.indepFun_process₀ mZ mY fun J ↦
     indepFun_pi_of_prod_bcf (by fun_prop) (by fun_prop) (h · J)
 
 lemma indepFun_process_of_bcf
-    (mZ : AEMeasurable Z P) (mY : ∀ t, Measurable (Y t))
+    (mZ : AEMeasurable Z P) (mY : ∀ t, AEMeasurable (Y t) P)
     (h : ∀ (f : G →ᵇ ℝ) (J : Finset T) (g : (Π t : J, F t) →ᵇ ℝ),
       P[fun ω ↦ f (Z ω) * g (Y · ω)] = P[f ∘ Z] * P[fun ω ↦ g (Y · ω)]) :
     IndepFun Z (fun ω t ↦ Y t ω) P :=
-  IndepFun.indepFun_process mZ mY fun J ↦ indepFun_pi_of_bcf (by fun_prop) (by fun_prop) (h · J)
+  IndepFun.indepFun_process₀ mZ mY fun J ↦ indepFun_pi_of_bcf (by fun_prop) (by fun_prop) (h · J)
 
 lemma process_indepFun_of_prod_bcf
-    (mX : ∀ s, Measurable (X s)) (mU : AEMeasurable U P)
+    (mX : ∀ s, AEMeasurable (X s) P) (mU : AEMeasurable U P)
     (h : ∀ (I : Finset S) (f : (s : I) → E s →ᵇ ℝ) (g : H →ᵇ ℝ),
       P[(∏ s, f s ∘ (X s)) * g ∘ U] = P[∏ s, f s ∘ (X s)] * P[g ∘ U]) :
     IndepFun (fun ω s ↦ X s ω) U P :=
-  IndepFun.process_indepFun mX mU fun I ↦ pi_indepFun_of_prod_bcf (by fun_prop) (by fun_prop) (h I)
+  IndepFun.process_indepFun₀ mX mU fun I ↦ pi_indepFun_of_prod_bcf (by fun_prop) (by fun_prop) (h I)
 
 lemma process_indepFun_of_bcf
-    (mX : ∀ s, Measurable (X s)) (mU : AEMeasurable U P)
+    (mX : ∀ s, AEMeasurable (X s) P) (mU : AEMeasurable U P)
     (h : ∀ (I : Finset S) (f : (Π s : I, E s) →ᵇ ℝ) (g : H →ᵇ ℝ),
       P[fun ω ↦ f (X · ω) * g (U ω)] = P[fun ω ↦ f (X · ω)] * P[g ∘ U]) :
     IndepFun (fun ω s ↦ X s ω) U P :=
-  IndepFun.process_indepFun mX mU fun I ↦ pi_indepFun_of_bcf (by fun_prop) (by fun_prop) (h I)
+  IndepFun.process_indepFun₀ mX mU fun I ↦ pi_indepFun_of_bcf (by fun_prop) (by fun_prop) (h I)
 
 end IndepFun
 
@@ -376,11 +376,11 @@ variable [IsProbabilityMeasure P]
 section Indicator
 
 lemma indicator_indepFun_process_of_prod_bcf
-    {A : Set Ω} (mA : NullMeasurableSet A P) (mX : ∀ s, Measurable (X s))
+    {A : Set Ω} (mA : NullMeasurableSet A P) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ (I : Finset S) (f : (s : I) → E s →ᵇ ℝ),
       ∫ ω in A, ∏ s, f s (X s ω) ∂P = P.real A * ∫ ω, ∏ s, f s (X s ω) ∂P) :
     IndepFun (A.indicator (1 : Ω → ℝ)) (fun ω s ↦ X s ω) P :=
-  IndepFun.indepFun_process ((aemeasurable_indicator_const_iff 1).2 mA) mX
+  IndepFun.indepFun_process₀ ((aemeasurable_indicator_const_iff 1).2 mA) mX
     fun I ↦ indicator_indepFun_pi_of_prod_bcf mA (by fun_prop) (h I)
 
 /-- The indicator of a set $A$ and a stochastic process $(X_s)_{s \in S}$ are independent if
@@ -388,11 +388,11 @@ for all $s_1, ..., s_p \in S$ and for all real bounded continuous function $f$,
 $$P[\mathbb{I}_A f(X_{s_1}, ..., X_{s_p})] =
 P(A) P[f(X_{s_1}, ..., X_{s_p})].$$ -/
 lemma indicator_indepFun_process_of_bcf
-    {A : Set Ω} (mA : NullMeasurableSet A P) (mX : ∀ s, Measurable (X s))
+    {A : Set Ω} (mA : NullMeasurableSet A P) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ (I : Finset S) (f : (Π s : I, E s) →ᵇ ℝ),
       ∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P) :
     IndepFun (A.indicator (1 : Ω → ℝ)) (fun ω s ↦ X s ω) P :=
-  IndepFun.indepFun_process ((aemeasurable_indicator_const_iff 1).2 mA) mX
+  IndepFun.indepFun_process₀ ((aemeasurable_indicator_const_iff 1).2 mA) mX
     fun I ↦ indicator_indepFun_pi_of_bcf mA (by fun_prop) (h I)
 
 end Indicator
@@ -400,7 +400,7 @@ end Indicator
 section IndepSets
 
 lemma indepSets_comap_process_of_prod_bcf
-    {𝒜 : Set (Set Ω)} (m𝒜 : ∀ A ∈ 𝒜, NullMeasurableSet A P) (mX : ∀ s, Measurable (X s))
+    {𝒜 : Set (Set Ω)} (m𝒜 : ∀ A ∈ 𝒜, NullMeasurableSet A P) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ A ∈ 𝒜, ∀ (I : Finset S) (f : (s : I) → E s →ᵇ ℝ),
       ∫ ω in A, ∏ s, f s (X s ω) ∂P = P.real A * ∫ ω, ∏ s, f s (X s ω) ∂P) :
     IndepSets 𝒜 {A | MeasurableSet[MeasurableSpace.pi.comap (fun ω s ↦ X s ω)] A} P :=
@@ -408,7 +408,7 @@ lemma indepSets_comap_process_of_prod_bcf
     (indicator_indepFun_process_of_prod_bcf (m𝒜 A hA) mX (h A hA))
 
 lemma indepSets_comap_process_of_bcf
-    {𝒜 : Set (Set Ω)} (m𝒜 : ∀ A ∈ 𝒜, NullMeasurableSet A P) (mX : ∀ s, Measurable (X s))
+    {𝒜 : Set (Set Ω)} (m𝒜 : ∀ A ∈ 𝒜, NullMeasurableSet A P) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ A ∈ 𝒜, ∀ (I : Finset S) (f : (Π s : I, E s) →ᵇ ℝ),
       ∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P) :
     IndepSets 𝒜 {A | MeasurableSet[MeasurableSpace.pi.comap (fun ω s ↦ X s ω)] A} P :=
@@ -420,7 +420,7 @@ end IndepSets
 section Indep
 
 lemma indep_comap_process_of_prod_bcf
-    (hm : m ≤ mΩ) (mX : ∀ s, Measurable (X s))
+    (hm : m ≤ mΩ) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ A, MeasurableSet[m] A → ∀ (I : Finset S) (f : (s : I) → E s →ᵇ ℝ),
       ∫ ω in A, ∏ s, f s (X s ω) ∂P = P.real A * ∫ ω, ∏ s, f s (X s ω) ∂P) :
     Indep m (MeasurableSpace.pi.comap (fun ω s ↦ X s ω)) P :=
@@ -433,7 +433,7 @@ for all real bounded continuous function $f$,
 $$P[\mathbb{I}_A f(X_{s_1}, ..., X_{s_p})] =
 P(A) P[f(X_{s_1}, ..., X_{s_p})].$$ -/
 lemma indep_comap_process_of_bcf
-    (hm : m ≤ mΩ) (mX : ∀ s, Measurable (X s))
+    (hm : m ≤ mΩ) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ A, MeasurableSet[m] A → ∀ (I : Finset S) (f : (Π s : I, E s) →ᵇ ℝ),
       ∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P) :
     Indep m (MeasurableSpace.pi.comap (fun ω s ↦ X s ω)) P :=

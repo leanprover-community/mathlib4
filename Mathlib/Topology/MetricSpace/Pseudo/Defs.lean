@@ -39,7 +39,7 @@ TODO (anyone): Add "Main results" section.
 
 ## Tags
 
-pseudo_metric, dist
+pseudometric space, dist
 -/
 
 @[expose] public section
@@ -767,8 +767,8 @@ theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → P
     (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ ⦃x⦄, dist x x₀ < ε → ∀ ⦃i⦄, pa i → p (x, i) := by
   refine (nhds_basis_ball.prod f.basis_sets).eventually_iff.trans ?_
-  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left]
-  rfl
+  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left,
+    Set.mem_surjective.exists, eventually_mem_set]
 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
 in a pseudo-metric space. -/

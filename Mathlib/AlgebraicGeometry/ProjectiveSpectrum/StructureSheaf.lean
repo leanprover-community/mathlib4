@@ -200,7 +200,7 @@ def Proj.structureSheaf : Sheaf CommRingCat (ProjectiveSpectrum.top 𝒜) :=
     (-- We check the sheaf condition under `forget CommRing`.
           isSheaf_iff_isSheaf_comp
           _ _).mpr
-      (isSheaf_of_iso (structurePresheafCompForget 𝒜).symm (structureSheafInType 𝒜).cond)⟩
+      (isSheaf_of_iso (structurePresheafCompForget 𝒜).symm (structureSheafInType 𝒜).property)⟩
 
 end ProjectiveSpectrum
 

@@ -235,7 +235,7 @@ lemma to prove that fact later: `no_infinite_antichain`.
 -/
 lemma no_infinite_antichain_level {n : ℕ} {A : Set Hollom} (hA : A ⊆ level n)
     (hA' : IsAntichain (· ≤ ·) A) : A.Finite :=
-  hA'.finite_of_partiallyWellOrderedOn ((level_isPWO).mono hA)
+  hA'.finite_of_partiallyWellOrderedOn (level_isPWO.mono hA)
 
 /--
 Each level is order-connected, i.e. for any `x ∈ level n` and `y ∈ level n` we have

@@ -510,7 +510,8 @@ noncomputable def homeomorph : X ≃ₜ Y where
   continuous_toFun := hf.1
   continuous_invFun := by
     rw [← continuousOn_univ, ← hf.bijective.2.range_eq]
-    exact hf.isOpenMap.continuousOn_range_of_leftInverse (leftInverse_surjInv hf.bijective)
+    exact hf.isOpenMap.continuousOn_range_of_leftInverse
+      (Equiv.ofBijective f hf.bijective).left_inv
   toEquiv := Equiv.ofBijective f hf.bijective
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap

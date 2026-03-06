@@ -122,7 +122,7 @@ def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
   i.1 ⟨x, U.2⟩
 
 @[simp, reassoc, elementwise] lemma smoothSheaf.ι_evalHom (x : TopCat.of M) (U) :
-    colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M N).val) U ≫
+    colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M N).obj) U ≫
     smoothSheaf.evalHom IM I N x =
     smoothSheaf.evalAt _ _ _ _ _ :=
   colimit.ι_desc _ _
@@ -175,10 +175,10 @@ groups. -/
 @[to_additive /-- The sheaf of smooth functions from `M` to `G`, for `G` an additive Lie group, as a
 sheaf of additive groups. -/]
 noncomputable def smoothSheafGroup : TopCat.Sheaf GrpCat.{u} (TopCat.of M) :=
-  { val := smoothPresheafGroup IM I M G
-    cond := by
+  { obj := smoothPresheafGroup IM I M G
+    property := by
       rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget GrpCat)]
-      exact CategoryTheory.Sheaf.cond (smoothSheaf IM I M G) }
+      exact (smoothSheaf IM I M G).property }
 
 end LieGroup
 
@@ -206,11 +206,11 @@ sheaf of abelian groups. -/
 @[to_additive /-- The sheaf of smooth functions from `M` to
 `A`, for `A` an abelian additive Lie group, as a sheaf of abelian additive groups. -/]
 noncomputable def smoothSheafCommGroup : TopCat.Sheaf CommGrpCat.{u} (TopCat.of M) :=
-  { val := smoothPresheafCommGroup IM I M A
-    cond := by
+  { obj := smoothPresheafCommGroup IM I M A
+    property := by
       rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _
         (CategoryTheory.forget CommGrpCat)]
-      exact CategoryTheory.Sheaf.cond (smoothSheaf IM I M A) }
+      exact (smoothSheaf IM I M A).property }
 
 /-- For a manifold `M` and a smooth homomorphism `φ` between abelian Lie groups `A`, `A'`, the
 'left-composition-by-`φ`' morphism of sheaves from `smoothSheafCommGroup IM I M A` to
@@ -220,7 +220,7 @@ groups `A`, `A'`, the 'left-composition-by-`φ`' morphism of sheaves from
 `smoothSheafAddCommGroup IM I M A` to `smoothSheafAddCommGroup IM I' M A'`. -/]
 noncomputable def smoothSheafCommGroup.compLeft (φ : A →* A') (hφ : ContMDiff I I' ∞ φ) :
     smoothSheafCommGroup IM I M A ⟶ smoothSheafCommGroup IM I' M A' :=
-  CategoryTheory.Sheaf.Hom.mk <|
+  CategoryTheory.ObjectProperty.homMk <|
   { app := fun _ ↦ CommGrpCat.ofHom <| ContMDiffMap.compLeftMonoidHom _ _ φ hφ
     naturality := fun _ _ _ ↦ rfl }
 
@@ -244,11 +244,11 @@ def smoothPresheafRing : TopCat.Presheaf RingCat.{u} (TopCat.of M) :=
 
 /-- The sheaf of smooth functions from `M` to `R`, for `R` a smooth ring, as a sheaf of
 rings. -/
-def smoothSheafRing : TopCat.Sheaf RingCat.{u} (TopCat.of M) :=
-  { val := smoothPresheafRing IM I M R
-    cond := by
-      rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget RingCat)]
-      exact CategoryTheory.Sheaf.cond (smoothSheaf IM I M R) }
+def smoothSheafRing : TopCat.Sheaf RingCat.{u} (TopCat.of M) where
+  obj := smoothPresheafRing IM I M R
+  property := by
+    rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget RingCat)]
+    exact (smoothSheaf IM I M R).property
 
 end ContMDiffRing
 
@@ -270,12 +270,12 @@ def smoothPresheafCommRing : TopCat.Presheaf CommRingCat.{u} (TopCat.of M) :=
 
 /-- The sheaf of smooth functions from `M` to `R`, for `R` a smooth commutative ring, as a sheaf of
 commutative rings. -/
-def smoothSheafCommRing : TopCat.Sheaf CommRingCat.{u} (TopCat.of M) :=
-  { val := smoothPresheafCommRing IM I M R
-    cond := by
-      rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _
-        (CategoryTheory.forget CommRingCat)]
-      exact CategoryTheory.Sheaf.cond (smoothSheaf IM I M R) }
+def smoothSheafCommRing : TopCat.Sheaf CommRingCat.{u} (TopCat.of M) where
+  obj := smoothPresheafCommRing IM I M R
+  property := by
+    rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _
+      (CategoryTheory.forget CommRingCat)]
+    exact (smoothSheaf IM I M R).property
 
 -- sanity check: applying the `CommRingCat`-to-`TypeCat` forgetful functor to the sheaf-of-rings of
 -- smooth functions gives the sheaf-of-types of smooth functions.

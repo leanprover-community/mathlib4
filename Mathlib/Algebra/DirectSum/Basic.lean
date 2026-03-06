@@ -276,6 +276,15 @@ protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι
         (fun x y ihx ihy => by grind)
     right_inv _ := toAddMonoid_of _ _ _ }
 
+@[simp] lemma id_symm_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Unique ι] (x : M) :
+    (DirectSum.id M ι).symm x = of _ default x :=
+  rfl
+
+@[simp] lemma id_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Unique ι] (x : ⨁ _ : ι, M) :
+    DirectSum.id M ι x = x default := by
+  rw [← AddEquiv.eq_symm_apply, id_symm_apply, eq_comm]
+  induction x using DirectSum.induction_on <;> simp [Unique.eq_default, *]
+
 section CongrLeft
 
 variable {κ : Type*}

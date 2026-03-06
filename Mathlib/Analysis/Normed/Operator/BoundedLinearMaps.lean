@@ -336,7 +336,7 @@ continuous multilinear map `f (g m₁, ..., g mₙ)` is a bounded linear operati
 theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜] E) :
     IsBoundedLinearMap 𝕜 fun f : ContinuousMultilinearMap 𝕜 (fun _ : ι => E) F =>
       f.compContinuousLinearMap fun _ => g :=
-  (ContinuousMultilinearMap.compContinuousLinearMapL (ι := ι) (G := F) (fun _ ↦ g))
+  (ContinuousMultilinearMap.compContinuousLinearMapL (ι := ι) (F := F) (fun _ ↦ g))
     |>.isBoundedLinearMap
 
 end

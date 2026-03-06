@@ -126,6 +126,16 @@ theorem coeffMonoidHom_pow_p_pow (f : Perfection M p) (m n : ℕ) :
     coeffMonoidHom M p (m + n) (f ^ p ^ n) = coeffMonoidHom M p m f :=
   n.recOn (by simp) fun n ih ↦ by rw [pow_succ, pow_mul, Nat.add_succ, coeffMonoidHom_pow_p, ih]
 
+@[simp]
+theorem coeffMonoidHom_pow_p_pow' (f : Perfection M p) (m n : ℕ) :
+    coeffMonoidHom M p (m + n) f ^ p ^ n = coeffMonoidHom M p m f := by
+  rw [← map_pow, coeffMonoidHom_pow_p_pow]
+
+@[simp]
+theorem coeffMonoidHom_pow_p_pow_self (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom M p n f ^ p ^ n = coeffMonoidHom M p 0 f := by
+  rw [← coeffMonoidHom_pow_p_pow' _ 0 n, zero_add]
+
 theorem coeffMonoidHom_powMonoidHom (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p (n + 1) (powMonoidHom p f) = coeffMonoidHom M p n f :=
   coeffMonoidHom_pow_p f n
@@ -141,7 +151,7 @@ theorem coeffMonoidHom_iterate_powMonoidHom' (f : Perfection M p) (n m : ℕ) (h
 
 /-- Given monoids `M` and `N`, with `M` being perfect,
 any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
-@[simps]
+@[simps! symm_apply]
 noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRing M p]
     (N : Type*) [CommMonoid N] : (M →* N) ≃* (M →* Perfection N p) where
   toFun f :=
@@ -159,8 +169,11 @@ noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRin
     rw [← coeffMonoidHom_pow_p_pow _ 0 n, ← map_pow, powMulEquiv_symm_pow_p, zero_add]
   map_mul' _ _ := by ext; simp
 
+@[simp] lemma coeffMonoidHom_zero_liftMonoidHom
+    (p : ℕ) {M N : Type*} [CommMonoid M] [PerfectRing M p] [CommMonoid N] (e : M →* N) (x : M) :
+    coeffMonoidHom N p 0 (liftMonoidHom p M N e x) = e x := by simp [liftMonoidHom]
+
 /-- A monoid homomorphism `M →* N` induces `Perfection M p →* Perfection N p`. -/
-@[simps!]
 def mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N] (φ : M →* N) :
     Perfection M p →* Perfection N p where
   toFun f := ⟨fun n ↦ φ (f.coeffMonoidHom M p n), fun n ↦ by rw [← map_pow, coeffMonoidHom_pow_p']⟩
@@ -339,13 +352,12 @@ theorem hom_ext {R : Type u₁} [CommSemiring R] [CharP R p] [PerfectRing R p] {
 variable {R} {S : Type u₂} [CommSemiring S] [CharP S p]
 
 /-- A ring homomorphism `R →+* S` induces `Perfection R p →+* Perfection S p`. -/
-@[simps!]
 def map (φ : R →+* S) : Perfection R p →+* Perfection S p where
   __ := mapMonoidHom p (φ : R →* S)
   map_zero' := Subtype.ext <| funext fun _ => φ.map_zero
   map_add' _ _ := Subtype.ext <| funext fun _ => φ.map_add _ _
 
-theorem coeff_map (φ : R →+* S) (f : Perfection R p) (n : ℕ) :
+@[simp] theorem coeff_map (φ : R →+* S) (f : Perfection R p) (n : ℕ) :
     coeff S p n (map p φ f) = φ (coeff R p n f) := rfl
 
 end CommSemiring
@@ -370,6 +382,14 @@ instance : CommRing (Perfection R p) :=
   (subring R p).toCommRing
 
 end CommRing
+
+section CommMonoid_CommRing
+
+@[simp] theorem coeff_mapMonoidHom {p : ℕ} [Fact p.Prime] {M N : Type*} [CommMonoid M] [CommRing N]
+    [CharP N p] (e : M →* N) (n : ℕ) (x : Perfection M p) :
+    coeff N p n (mapMonoidHom p e x) = e (coeffMonoidHom M p n x) := rfl
+
+end CommMonoid_CommRing
 
 end Perfection
 

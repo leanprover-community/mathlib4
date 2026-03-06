@@ -114,6 +114,12 @@ instance. -/
 def homMk {A B : Grp C} (f : A.X ⟶ B.X) [IsMonHom f] : A ⟶ B :=
   homMk' (.mk f)
 
+/-- Construct a morphism `Grp.mk G ⟶ Grp.mk H` from a  map `f : G ⟶ H` and a `IsMonHom f`
+instance. -/
+@[simps!]
+def ofHom {A B : C} [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] : Grp.mk A ⟶ Grp.mk B :=
+  Grp.homMk f
+
 /-- Constructor for morphisms in `Grp_ C`. -/
 @[simps!]
 def homMk'' {A B : Grp C} (f : A.X ⟶ B.X)

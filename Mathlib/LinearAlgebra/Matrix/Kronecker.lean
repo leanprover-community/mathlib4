@@ -5,7 +5,6 @@ Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.RingTheory.TensorProduct.Basic

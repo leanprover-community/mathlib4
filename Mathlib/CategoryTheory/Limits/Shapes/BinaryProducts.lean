@@ -1194,7 +1194,7 @@ theorem coprodComparison_inl : coprod.inl ≫ coprodComparison F A B = F.map cop
 theorem coprodComparison_inr : coprod.inr ≫ coprodComparison F A B = F.map coprod.inr :=
   coprod.inr_desc _ _
 
-/-- Naturality of the coprod_comparison morphism in both arguments. -/
+/-- Naturality of the `coprodComparison` morphism in both arguments. -/
 @[reassoc]
 theorem coprodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
     coprodComparison F A B ≫ F.map (coprod.map f g) =

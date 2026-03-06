@@ -160,6 +160,13 @@ theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃
   unfold map
   simp only [mem_mk, Subring.mem_map, mem_toSubring]
 
+-- Higher priority to apply before `mem_map`.
+@[simp 1100]
+theorem map_mem_map (f : K →+* L) {s : Subfield K} {x : K} : f x ∈ s.map f ↔ x ∈ s :=
+  calc
+    _ ↔ f x ∈ (s.map f : Set L) := Iff.rfl
+    _ ↔ _ := by simp [Function.Injective.mem_set_image (f := f) f.injective]
+
 theorem map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.ext' <| Set.image_image _ _ _
 

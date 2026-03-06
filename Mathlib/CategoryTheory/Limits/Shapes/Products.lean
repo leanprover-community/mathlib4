@@ -864,6 +864,12 @@ theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = 
 theorem Pi.reindex_inv_π (b : β) : (Pi.reindex ε f).inv ≫ Pi.π (f ∘ ε) b = Pi.π f (ε b) := by
   simp [Iso.inv_comp_eq]
 
+variable {f} in
+/-- Being a limiting fan is stable under equivalences in the index type. -/
+def Fan.isLimitEquivOfEquiv (c : Fan f) :
+    IsLimit c ≃ IsLimit (Fan.mk _ fun i : β ↦ c.proj (ε i)) :=
+  IsLimit.whiskerEquivalenceEquiv (Discrete.equivalence ε)
+
 end
 
 section
@@ -891,6 +897,12 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem Sigma.ι_reindex_inv (b : β) :
     Sigma.ι f (ε b) ≫ (Sigma.reindex ε f).inv = Sigma.ι (f ∘ ε) b := by simp [Iso.comp_inv_eq]
+
+variable {f} in
+/-- Being a colimiting cofan is stable under equivalences in the index type. -/
+def Cofan.isColimitEquivOfEquiv (c : Cofan f) :
+    IsColimit c ≃ IsColimit (Cofan.mk _ fun i : β ↦ c.inj (ε i)) :=
+  IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence ε)
 
 end
 

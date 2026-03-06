@@ -69,6 +69,7 @@ public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.DeclarationNames
 public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
@@ -302,6 +303,7 @@ public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
 public import Mathlib.Tactic.Translate.Core
 public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 public import Mathlib.Tactic.Translate.ToAdditive
 public import Mathlib.Tactic.Translate.ToDual

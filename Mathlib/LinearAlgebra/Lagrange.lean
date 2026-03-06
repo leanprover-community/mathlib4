@@ -507,7 +507,7 @@ theorem leadingCoeff_eq_sum
   replace hP : #s = deg + 1 := WithBot.coe_eq_coe.mp hP
   have hdegree : P.degree = ↑(#s - 1) := hdeg.symm.trans (WithBot.coe_eq_coe.mpr (by grind))
   rw [leadingCoeff, natDegree_eq_of_degree_eq_some hdegree]
-  exact coeff_eq_sum hvs (by rw [hdegree]; norm_cast; omega)
+  exact coeff_eq_sum hvs (by rw [hdegree]; norm_cast; lia)
 
 end Interpolate
 

@@ -118,6 +118,22 @@ lemma toEuclideanCLM_toLp (A : Matrix n n 𝕜) (x : n → 𝕜) :
 lemma ofLp_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ofLp (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ ofLp x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
+open scoped RealInnerProductSpace in
+lemma inner_toEuclideanCLM (A : Matrix n n ℝ) (x y : EuclideanSpace ℝ n) :
+    ⟪x, toEuclideanCLM (𝕜 := ℝ) A y⟫ = x ⬝ᵥ A *ᵥ y := by
+  simp only [toEuclideanCLM, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
+    LinearEquiv.invFun_eq_symm, LinearMap.coe_toContinuousLinearMap_symm, StarAlgEquiv.trans_apply,
+    LinearMap.toMatrixOrthonormal_symm_apply, LinearMap.toMatrix_symm, StarAlgEquiv.coe_mk,
+    StarRingEquiv.coe_mk, RingEquiv.coe_mk, Equiv.coe_fn_mk, LinearMap.coe_toContinuousLinearMap',
+    toLin_apply, mulVec_eq_sum, OrthonormalBasis.coe_toBasis_repr_apply,
+    EuclideanSpace.basisFun_repr, op_smul_eq_smul, Finset.sum_apply, Pi.smul_apply, transpose_apply,
+    smul_eq_mul, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply, PiLp.inner_apply,
+    ofLp_sum, ofLp_smul, EuclideanSpace.ofLp_single, RCLike.inner_apply, conj_trivial, dotProduct]
+  congr with i
+  rw [mul_comm (x.ofLp i)]
+  simp [Pi.single_apply]
+
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
 structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`. -/
 def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=

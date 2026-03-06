@@ -278,7 +278,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     compactness of `t`, there is some `0 < c` such that `c ≤ g' x` for all `x ∈ t`. Then by
     `exists_mul_le_one_eqOn_ge` there is some `g` for which `g * g'` is the desired function. -/
   obtain ⟨g', hI', hgt'⟩ := this
-  obtain ⟨c, hc, hgc'⟩ : ∃ c > 0, ∀ y : X, y ∈ t → c ≤ g' y :=
+  obtain ⟨c, hc, hgc'⟩ : ∃ c > 0, t ⊆ {y | c ≤ g' y} :=
     t.eq_empty_or_nonempty.elim
       (fun ht' => ⟨1, zero_lt_one, fun y hy => False.elim (by rwa [ht'] at hy)⟩) fun ht' =>
       let ⟨x, hx, hx'⟩ := ht.isCompact.exists_isMinOn ht' (map_continuous g').continuousOn

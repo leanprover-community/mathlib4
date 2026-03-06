@@ -200,7 +200,7 @@ theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField
 
 variable (F E)
 
-/-- The bottom intermediate_field is isomorphic to the field. -/
+/-- The bottom `IntermediateField` is isomorphic to the field. -/
 noncomputable def botEquiv : (⊥ : IntermediateField F E) ≃ₐ[F] F :=
   (Subalgebra.equivOfEq _ _ bot_toSubalgebra).trans (Algebra.botEquiv F E)
 
@@ -568,6 +568,13 @@ theorem AdjoinSimple.coe_gen : (AdjoinSimple.gen F α : E) = α :=
 
 theorem AdjoinSimple.algebraMap_gen : algebraMap F⟮α⟯ E (AdjoinSimple.gen F α) = α :=
   rfl
+
+-- Note: After unfolding `AdjoinSimple.gen`, the simp lemma `coe_aeval_mk_apply`
+-- does not fire, so we have to add this.
+@[simp]
+theorem AdjoinSimple.coe_aeval_gen_apply (f : F[X]) :
+    aeval (AdjoinSimple.gen F α) f = aeval α f :=
+  Polynomial.coe_aeval_mk_apply ..
 
 set_option backward.isDefEq.respectTransparency false in
 theorem adjoin_simple_adjoin_simple (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮α, β⟯ :=

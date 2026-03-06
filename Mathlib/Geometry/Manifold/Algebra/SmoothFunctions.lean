@@ -110,7 +110,7 @@ variable (I N)
 `C^n⟮I, N; I'', G''⟯`. -/]
 def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G']
     [ContMDiffMul I' n G'] {G'' : Type*} [Monoid G''] [TopologicalSpace G''] [ChartedSpace H'' G'']
-    [ContMDiffMul I'' n G''] (φ : G' →* G'') (hφ : ContMDiff I' I'' n φ) :
+    [ContMDiffMul I'' n G''] (φ : G' →* G'') (hφ : CMDiff n φ) :
     C^n⟮I, N; I', G'⟯ →* C^n⟮I, N; I'', G''⟯ where
   toFun f := ⟨φ ∘ f, hφ.comp f.contMDiff⟩
   map_one' := by ext; change φ 1 = 1; simp
@@ -195,7 +195,7 @@ variable (I N)
 'left-composition-by-`φ`' ring homomorphism from `C^n⟮I, N; I', R'⟯` to `C^n⟮I, N; I'', R''⟯`. -/
 def compLeftRingHom {R' : Type*} [Ring R'] [TopologicalSpace R'] [ChartedSpace H' R']
     [ContMDiffRing I' n R'] {R'' : Type*} [Ring R''] [TopologicalSpace R''] [ChartedSpace H'' R'']
-    [ContMDiffRing I'' n R''] (φ : R' →+* R'') (hφ : ContMDiff I' I'' n φ) :
+    [ContMDiffRing I'' n R''] (φ : R' →+* R'') (hφ : CMDiff n φ) :
     C^n⟮I, N; I', R'⟯ →+* C^n⟮I, N; I'', R''⟯ :=
   { ContMDiffMap.compLeftMonoidHom I N φ.toMonoidHom hφ,
     ContMDiffMap.compLeftAddMonoidHom I N φ.toAddMonoidHom hφ with

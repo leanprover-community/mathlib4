@@ -37,6 +37,38 @@ open Limits Opposite
 
 variable {C : Type*} [Category* C]
 
+namespace PreZeroHypercover
+
+variable {S : C}
+
+/-- If the pre-`0`-hypercover `E` has pairwise pullbacks, the sections over the multifork
+associated to a presheaf of types are equivalent to the compatible families on `E`. -/
+@[simps]
+def sectionsEquivOfHasPullbacks (E : PreZeroHypercover S)
+    [E.HasPullbacks] (F : Cᵒᵖ ⥤ Type*) :
+    (E.toPreOneHypercover.multicospanIndex F).sections ≃
+      Subtype (Presieve.Arrows.Compatible F E.f) where
+  toFun s :=
+    ⟨s.val, fun i j W gi gj hgij ↦ by
+      have heq := s.property ⟨(i, j), ⟨⟩⟩
+      dsimp at heq
+      rw [← pullback.lift_fst _ _ hgij]
+      conv_rhs => rw [← pullback.lift_snd _ _ hgij]
+      rw [op_comp, Functor.map_comp, op_comp, Functor.map_comp]
+      simp [heq]⟩
+  invFun s := ⟨s.val, fun r ↦ s.property _ _ _ _ _ pullback.condition⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+lemma isLimit_toPreOneHypercover_type_iff (E : PreZeroHypercover.{w} S) [E.HasPullbacks]
+    (F : Cᵒᵖ ⥤ Type*) :
+    Nonempty (IsLimit <| E.toPreOneHypercover.multifork F) ↔ E.presieve₀.IsSheafFor F := by
+  rw [Multifork.isLimit_types_iff, Presieve.isSheafFor_ofArrows_iff_bijective_toCompabible,
+    ← Function.Bijective.of_comp_iff' (E.sectionsEquivOfHasPullbacks F).symm.bijective]
+  rfl
+
+end PreZeroHypercover
+
 namespace PreOneHypercover
 
 variable {X : C} {E : PreOneHypercover.{w} X} {F : Cᵒᵖ ⥤ Type*}

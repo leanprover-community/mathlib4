@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
-public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 /-!

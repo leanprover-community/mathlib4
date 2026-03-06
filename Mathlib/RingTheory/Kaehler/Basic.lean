@@ -175,6 +175,9 @@ instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) Ω[S�
 def KaehlerDifferential.fromIdeal : KaehlerDifferential.ideal R S →ₗ[S ⊗[R] S] Ω[S⁄R] :=
   (KaehlerDifferential.ideal R S).toCotangent
 
+theorem KaehlerDifferential.fromIdeal_surjective : Function.Surjective (fromIdeal R S) :=
+  Ideal.toCotangent_surjective _
+
 /-- (Implementation) The underlying linear map of the derivation into `Ω[S⁄R]`. -/
 def KaehlerDifferential.DLinearMap : S →ₗ[R] Ω[S⁄R] :=
   ((KaehlerDifferential.fromIdeal R S).restrictScalars R).comp
@@ -219,13 +222,14 @@ theorem KaehlerDifferential.span_range_derivation :
     Submodule.span S (Set.range <| KaehlerDifferential.D R S) = ⊤ := by
   rw [_root_.eq_top_iff]
   rintro x -
-  obtain ⟨⟨x, hx⟩, rfl⟩ := Ideal.toCotangent_surjective _ x
-  have : x ∈ (KaehlerDifferential.ideal R S).restrictScalars S := hx
-  rw [← KaehlerDifferential.submodule_span_range_eq_ideal] at this
-  suffices ∃ hx, (KaehlerDifferential.ideal R S).toCotangent ⟨x, hx⟩ ∈
-      Submodule.span S (Set.range <| KaehlerDifferential.D R S) by
-    exact this.choose_spec
-  refine Submodule.span_induction ?_ ?_ ?_ ?_ this
+  obtain ⟨⟨x, hx⟩, rfl⟩ := fromIdeal_surjective R S x
+  rw [← Submodule.restrictScalars_mem S, ← KaehlerDifferential.submodule_span_range_eq_ideal] at hx
+  suffices ∃ hx,
+      fromIdeal R S ⟨x, hx⟩ ∈ Submodule.span S (Set.range <| KaehlerDifferential.D R S) from
+    this.snd
+  -- TODO: this proof looks like we're reinventing `Submodule.span_le`.
+  -- I'm not sure what's the RHS here though.
+  refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
   · rintro _ ⟨x, rfl⟩
     refine ⟨KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R x, ?_⟩
     apply Submodule.subset_span

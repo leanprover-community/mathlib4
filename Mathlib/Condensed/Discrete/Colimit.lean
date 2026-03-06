@@ -160,12 +160,12 @@ lemma lanPresheafNatIso_hom_app (hF : ∀ S : Profinite, IsColimit <| F.mapCocon
 -/
 def lanSheafProfinite (X : Type (u + 1)) :
     Sheaf (coherentTopology Profinite.{u}) (Type (u + 1)) where
-  val := lanPresheaf (locallyConstantPresheaf X)
-  cond := by
+  obj := lanPresheaf (locallyConstantPresheaf X)
+  property := by
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
       fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
     exact ((CompHausLike.LocallyConstant.functor.{u, u + 1}
-      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).cond
+      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).property
 
 /-- `lanPresheaf (locallyConstantPresheaf X)` as a condensed set. -/
 def lanCondensedSet (X : Type (u + 1)) : CondensedSet.{u} :=
@@ -437,12 +437,12 @@ lemma lanPresheafNatIso_hom_app
 `lanPresheaf (locallyConstantPresheaf X)` as a light condensed set.
 -/
 def lanLightCondSet (X : Type u) : LightCondSet.{u} where
-  val := lanPresheaf (locallyConstantPresheaf X)
-  cond := by
+  obj := lanPresheaf (locallyConstantPresheaf X)
+  property := by
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
       fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
     exact (CompHausLike.LocallyConstant.functor.{u, u}
-      (hs := fun _ _ _ ↦ ((LightProfinite.effectiveEpi_iff_surjective _).mp)).obj X).cond
+      (hs := fun _ _ _ ↦ ((LightProfinite.effectiveEpi_iff_surjective _).mp)).obj X).property
 
 variable (F : LightProfinite.{u}ᵒᵖ ⥤ Type u)
 

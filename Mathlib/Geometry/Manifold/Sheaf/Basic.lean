@@ -81,9 +81,9 @@ def StructureGroupoid.LocalInvariantProp.sheaf (hG : LocalInvariantProp G G' P) 
   TopCat.subsheafToTypes (hG.localPredicate M M')
 
 instance StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun (hG : LocalInvariantProp G G' P)
-    (U : (Opens (TopCat.of M))ᵒᵖ) : CoeFun ((hG.sheaf M M').val.obj U) fun _ => ↑(unop U) → M' where
+    (U : (Opens (TopCat.of M))ᵒᵖ) : CoeFun ((hG.sheaf M M').obj.obj U) fun _ => ↑(unop U) → M' where
   coe a := a.1
 
 theorem StructureGroupoid.LocalInvariantProp.section_spec (hG : LocalInvariantProp G G' P)
-    (U : (Opens (TopCat.of M))ᵒᵖ) (f : (hG.sheaf M M').val.obj U) : ChartedSpace.LiftProp P f :=
+    (U : (Opens (TopCat.of M))ᵒᵖ) (f : (hG.sheaf M M').obj.obj U) : ChartedSpace.LiftProp P f :=
   f.2

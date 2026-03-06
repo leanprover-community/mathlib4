@@ -35,6 +35,17 @@ structure TopCommRingCat where
   [isTopologicalSpace : TopologicalSpace α]
   [isTopologicalRing : IsTopologicalRing α]
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `TopCommRingCat.of R` being printed as `{ α := R, ... }` by
+`delabStructureInstance`. -/
+@[app_delab TopCommRingCat.of]
+meta def TopCommRingCat.delabOf : Delab := delabApp
+
+end Notation
+
 namespace TopCommRingCat
 
 instance : Inhabited TopCommRingCat :=

@@ -482,7 +482,7 @@ theorem ArzelaAscoli.isCompact_closure_of_isClosedEmbedding [TopologicalSpace ι
   have cls_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn (F ∘ ((↑) : closure s → ι)) K :=
     fun K hK ↦ (s_eqcont K hK).closure' <| show Continuous (K.restrict ∘ F) from
       continuous_pi fun ⟨x, hx⟩ ↦ this K hK x hx
-  have cls_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i ∈ closure s, F i x ∈ Q :=
+  have cls_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ closure s ⊆ {i | F i x ∈ Q} :=
     fun K hK x hx ↦ (s_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, closure_minimal hQ.2 <|
       hQ.1.isClosed.preimage (this K hK x hx)⟩
   exact ArzelaAscoli.compactSpace_of_isClosedEmbedding 𝔖_compact

@@ -43,7 +43,6 @@ variable
 
 section definition
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform on a real inner product space, as a continuous linear map on the
 Schwartz space.
 

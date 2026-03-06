@@ -179,12 +179,12 @@ theorem iterateFrobeniusEquiv_symm :
 @[simp]
 theorem frobeniusEquiv_symm_apply_frobenius (x : R) :
     (frobeniusEquiv R p).symm (frobenius R p x) = x :=
-  leftInverse_surjInv PerfectRing.bijective_frobenius x
+  (frobeniusEquiv R p).symm_apply_apply x
 
 @[simp]
 theorem frobenius_apply_frobeniusEquiv_symm (x : R) :
     frobenius R p ((frobeniusEquiv R p).symm x) = x :=
-  surjInv_eq _ _
+  (frobeniusEquiv R p).apply_symm_apply x
 
 @[simp]
 theorem frobenius_comp_frobeniusEquiv_symm :

@@ -86,7 +86,7 @@ private theorem apply_eq_dlookup (m : List (Σ _ : α, β)) (y : β) (x : α) :
 
 variable [Zero β] [DecidableEq β]
 
-/-- Map a total_function to one whose default value is zero so that it represents a finsupp. -/
+/-- Map a `TotalFunction` to one whose default value is zero so that it represents a `Finsupp`. -/
 @[simp]
 def zeroDefault : TotalFunction α β → TotalFunction α β
   | .withDefault A _ => .withDefault A 0

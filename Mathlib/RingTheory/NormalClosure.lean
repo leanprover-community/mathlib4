@@ -88,13 +88,10 @@ local instance : IsIntegralClosure T S E := integralClosure.isIntegralClosure S 
 
 instance : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq' rfl
 
-set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower R L E := IsScalarTower.to₁₃₄ R K L E
 
-set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower R S E := IsScalarTower.to₁₂₄ R S L E
 
-set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower R T E := IsScalarTower.to₁₃₄ R S T E
 
 local instance : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|

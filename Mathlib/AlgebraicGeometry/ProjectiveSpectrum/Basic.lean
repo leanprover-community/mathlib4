@@ -238,7 +238,7 @@ lemma awayMap_awayToSection :
   refine Localization.mk_eq_mk_iff.mpr ?_
   rw [Localization.r_iff_exists]
   use 1
-  simp only [OneMemClass.coe_one, RingHom.id_apply, one_mul, hx]
+  simp [hx]
   ring
 
 @[reassoc]

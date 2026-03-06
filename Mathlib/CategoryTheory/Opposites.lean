@@ -294,11 +294,11 @@ instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
 protected def FullyFaithful.op {F : C ⥤ D} (hF : F.FullyFaithful) : F.op.FullyFaithful where
   preimage {X Y} f := .op <| hF.preimage f.unop
 
-/-- If F is faithful then the right_op of F is also faithful. -/
+/-- If F is faithful then the `rightOp` of F is also faithful. -/
 instance rightOp_faithful {F : Cᵒᵖ ⥤ D} [Faithful F] : Faithful F.rightOp where
   map_injective h := Quiver.Hom.op_inj (map_injective F (Quiver.Hom.op_inj h))
 
-/-- If F is faithful then the left_op of F is also faithful. -/
+/-- If F is faithful then the `leftOp` of F is also faithful. -/
 instance leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp where
   map_injective h := Quiver.Hom.unop_inj (map_injective F (Quiver.Hom.unop_inj h))
 

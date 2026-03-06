@@ -206,20 +206,13 @@ theorem not_isMin_top : ¬IsMin (⊤ : α) := fun h =>
 
 end OrderTop
 
--- `to_dual` cannot yet reorder arguments of arguments
+@[to_dual (reorder := H (x y))]
 theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : PartialOrder α}
     (B : OrderTop α) (H : ∀ x y : α, (haveI := hA; x ≤ y) ↔ x ≤ y) :
     (@Top.top α (@OrderTop.toTop α hA.toLE A)) = (@Top.top α (@OrderTop.toTop α hB.toLE B)) := by
   cases PartialOrder.ext H
   apply top_unique
   exact @le_top _ _ A _
-
-theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : PartialOrder α}
-    (B : OrderBot α) (H : ∀ x y : α, (haveI := hA; x ≤ y) ↔ x ≤ y) :
-    (@Bot.bot α (@OrderBot.toBot α hA.toLE A)) = (@Bot.bot α (@OrderBot.toBot α hB.toLE B)) := by
-  cases PartialOrder.ext H
-  apply bot_unique
-  exact @bot_le _ _ A _
 
 namespace OrderDual
 
@@ -340,9 +333,9 @@ end Subsingleton
 
 section lift
 
--- `to_dual` cannot yet reorder arguments of arguments
 -- See note [reducible non-instances]
 /-- Pullback an `OrderTop`. -/
+@[to_dual (reorder := map_le (a b)) /-- Pullback an `OrderBot`. -/]
 abbrev OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) : OrderTop α :=
   ⟨fun a =>
@@ -351,16 +344,8 @@ abbrev OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
       exact le_top _⟩
 
 -- See note [reducible non-instances]
-/-- Pullback an `OrderBot`. -/
-abbrev OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
-    (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_bot : f ⊥ = ⊥) : OrderBot α :=
-  ⟨fun a =>
-    map_le _ _ <| by
-      rw [map_bot]
-      exact bot_le _⟩
-
--- See note [reducible non-instances]
 /-- Pullback a `BoundedOrder`. -/
+@[to_dual self (reorder := 4 5, map_le (a b), map_top map_bot)]
 abbrev BoundedOrder.lift [LE α] [Top α] [Bot α] [LE β] [BoundedOrder β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) :
     BoundedOrder α where
@@ -444,13 +429,9 @@ instance [Top α] : Top (ULift.{v} α) where top := up ⊤
 @[to_dual (attr := simp)] theorem up_top [Top α] : up (⊤ : α) = ⊤ := rfl
 @[to_dual (attr := simp)] theorem down_top [Top α] : down (⊤ : ULift α) = ⊤ := rfl
 
--- `to_dual` cannot yet reorder arguments of arguments
+@[to_dual]
 instance [LE α] [OrderBot α] : OrderBot (ULift.{v} α) :=
   OrderBot.lift ULift.down (fun _ _ => down_le.mp) down_bot
-
-@[to_dual existing]
-instance [LE α] [OrderTop α] : OrderTop (ULift.{v} α) :=
-  OrderTop.lift ULift.down (fun _ _ => down_le.mp) down_top
 
 instance [LE α] [BoundedOrder α] : BoundedOrder (ULift.{v} α) where
 

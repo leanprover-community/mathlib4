@@ -53,6 +53,7 @@ public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
 public import Mathlib.Tactic.DeprecateTo
 public import Mathlib.Tactic.DepRewrite
+public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ExistsI

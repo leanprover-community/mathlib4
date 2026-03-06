@@ -36,7 +36,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CommMonoidWithZero M]
   -- We'll show `fun (u : Mˣ) (f ⊆ factors y) ↦ u * Π f` is injective
   -- and has image exactly the divisors of `y`.
   refine
-    Fintype.ofFinset
+    Fintype.subtype
       (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s =>
         (s.snd : M) * s.fst.prod)
       fun x => ?_
@@ -44,7 +44,6 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CommMonoidWithZero M]
     Multiset.mem_toFinset, Multiset.mem_powerset]
   constructor
   · rintro ⟨s, hs, rfl⟩
-    change (s.snd : M) * s.fst.prod ∣ y
     rw [(unit_associated_one.mul_right s.fst.prod).dvd_iff_dvd_left, one_mul,
       ← (prod_normalizedFactors hy).dvd_iff_dvd_right]
     exact Multiset.prod_dvd_prod_of_le hs

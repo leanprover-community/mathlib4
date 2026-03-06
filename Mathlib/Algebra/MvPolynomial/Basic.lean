@@ -380,7 +380,7 @@ theorem induction_on_monomial {motive : MvPolynomial σ R → Prop}
     simp [add_comm, monomial_add_single, this]
 
 /-- Analog of `Polynomial.induction_on'`.
-To prove something about mv_polynomials,
+To prove something about `MVPolynomials`,
 it suffices to show the condition is closed under taking sums,
 and it holds for monomials. -/
 @[elab_as_elim]
