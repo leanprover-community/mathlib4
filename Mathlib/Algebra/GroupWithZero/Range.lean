@@ -292,6 +292,10 @@ def mk [DecidablePred fun b : B ↦ b = 0] (r s : A) : ValueGroup₀ f :=
     if h : f r = 0 ∨ f s = 0 then 0 else
     valueGroup.mk f r s ((not_or.mp h).1) ((not_or.mp h).2)
 
+lemma mk_eq_of_ne_zero [DecidablePred fun b : B ↦ b = 0] (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) :
+    ValueGroup₀.mk f r s = valueGroup.mk f r s hr hs := by
+  simp [ValueGroup₀.mk, hr, hs]
+
 theorem zero_or_exists_mk (x : ValueGroup₀ f) :
     x = 0 ∨ ∃ r s hr hs, x = valueGroup.mk f r s hr hs := by
   obtain _ | ⟨x, hx⟩ := x
@@ -308,11 +312,6 @@ theorem zero_or_exists_mk' (x : ValueGroup₀ f) :
       valueGroup.mk f d.1.1 d.1.2 d.2.1 d.2.2 :=
   x.zero_or_exists_mk.imp _root_.id fun ⟨r, s, hr, hs, hx⟩ ↦ ⟨⟨(r, s), ⟨hr, hs⟩⟩, hx⟩
 
-/- variable {r s r₁ s₁ r₂ s₂ : A}
-
-@[simp] theorem mk_ne_zero {hr : f r ≠ 0} {hs : f s ≠ 0} :
-  (valueGroup.mk f r s hr hs : ValueGroup₀ f) ≠ 0 := by simp
- -/
 end ValueGroup₀
 
 instance : CommGroupWithZero (ValueGroup₀ f) where
