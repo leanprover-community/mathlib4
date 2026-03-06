@@ -271,25 +271,8 @@ noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A] :
     (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
       (by simp [← Functor.map_comp])).symm
 
-set_option backward.isDefEq.respectTransparency false in
-instance [HasWeakSheafify J A] :
-    PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) where
-  preservesColimitsOfShape {K _} := ⟨fun {F} ↦
-    preservesColimit_of_preserves_colimit_cocone
-      (Sheaf.isColimitSheafifyCocone _ (colimit.isColimit _))
-        (IsColimit.ofIsoColimit (isColimitOfPreserves Φ.presheafFiber
-          (colimit.isColimit (F ⋙ sheafToPresheaf J A))) (by
-            let G := colimit (F ⋙ sheafToPresheaf J A)
-            have : IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)) :=
-              W_isInvertedBy_presheafFiber _ _ (W_toSheafify J _)
-            refine Cocones.ext (asIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)))
-              (fun k ↦ ?_)
-            dsimp
-            rw [← Functor.map_comp, Sheaf.sheafifyCocone_ι_app_val]
-            dsimp))⟩
-
-instance [HasWeakSheafify J A] :
-    PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
+instance : PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
+  have : PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) := inferInstance
   PreservesColimitsOfSize.preservesFiniteColimits _
 
 end CategoryTheory.GrothendieckTopology.Point

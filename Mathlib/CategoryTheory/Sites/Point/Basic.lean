@@ -285,30 +285,6 @@ instance : PreservesColimitsOfSize.{w, w} (Φ.presheafFiber (A := A)) where
     dsimp [presheafFiber]
     infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
-instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C] :
-    PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) where
-  preservesColimitsOfShape {K _} := ⟨fun {F} ↦
-    preservesColimit_of_preserves_colimit_cocone
-      (Sheaf.isColimitSheafifyCocone _ (colimit.isColimit _))
-        (IsColimit.ofIsoColimit (isColimitOfPreserves Φ.presheafFiber
-          (colimit.isColimit (F ⋙ sheafToPresheaf J A))) (by
-            let G := colimit (F ⋙ sheafToPresheaf J A)
-            let φ := CategoryTheory.toSheafify J G
-            have : IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)) :=
-              W_isInvertedBy_presheafFiber' _ _ (W_toSheafify J _)
-            refine Cocones.ext (asIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)))
-              (fun k ↦ ?_)
-            dsimp
-            rw [← Functor.map_comp, Sheaf.sheafifyCocone_ι_app_val]
-            dsimp))⟩
-
-instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C] :
-    PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
-  PreservesColimitsOfSize.preservesFiniteColimits _
-
 section
 
 variable [LocallySmall.{w} C]
