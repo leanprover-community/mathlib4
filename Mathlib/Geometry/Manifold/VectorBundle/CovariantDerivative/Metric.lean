@@ -282,32 +282,16 @@ private lemma aux4 (σ τ τ' : (x : M) → TangentSpace I x)
     (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) (hτ' : MDiffAt (T% τ') x) :
     compatibilityTensorAux I cov σ (τ + τ') x =
       compatibilityTensorAux I cov σ τ x + compatibilityTensorAux I cov σ τ' x := by
-  unfold compatibilityTensorAux
-  ext X
-  simp only [Pi.add_apply, map_add, ContinuousLinearMap.add_comp, ContinuousLinearMap.coe_sub',
-    ContinuousLinearMap.coe_comp', coe_innerSL_apply, Pi.sub_apply, comp_apply,
-    ContinuousLinearMap.add_apply]
+  ext X₀
+  rw [compatibilityTensorAux_apply]; dsimp
+  rw [compatibilityTensorAux_apply, compatibilityTensorAux_apply]; dsimp
   rw [product_add_right, mfderiv_add (hσ.inner_bundle' hτ) (hσ.inner_bundle' hτ'),
     cov.isCovariantDerivativeOn.add hτ hτ']
-  dsimp
-  rw [inner_add_right]
-  erw [ContinuousLinearMap.sub_apply, ContinuousLinearMap.sub_apply,
-    ContinuousLinearMap.add_apply, ContinuousLinearMap.comp_apply]
-  /- TODO: proof used to be done before merging rc4; was:
-  conv =>
-    enter [2, 2, 1, 2]
-    erw [ContinuousLinearMap.comp_apply]
-  rw [innerSL_apply_apply]
-  conv =>
-    enter [2, 2, 1, 2]
-    erw [innerSL_apply_apply]
-  module -/
-  sorry
-  -- set A := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x
-  -- set A' := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ'⟫ x
-  -- set C := inner ℝ (σ x) ((cov τ x) X)
-  -- set C' := inner ℝ (σ x) ((cov τ' x) X)
-  -- set D := (cov σ x) X
+  simp only [Pi.add_apply, ContinuousLinearMap.add_apply, inner_add_left, inner_add_right,
+    fromTangentSpace, -- this line is slightly fishy
+    ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
+  erw [ContinuousLinearMap.add_apply]
+  module
 
 theorem compatibilityTensorAux_tensorial₁ (τ : Π x, TangentSpace I x) (hτ : MDiffAt (T% τ) x) :
     TensorialAt I E (compatibilityTensorAux I cov · τ x) x where
