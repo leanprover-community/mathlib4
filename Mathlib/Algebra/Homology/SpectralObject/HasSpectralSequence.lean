@@ -231,7 +231,7 @@ def coreE₂CohomologicalFin (l : ℕ) :
   i₃_next := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hrr' hr
     ext
-    dsimp at h₁ h₂ ⊢
+    dsimp
     grind
 
 /-- The data which allows to construct an `E₂`-homological spectral sequence
