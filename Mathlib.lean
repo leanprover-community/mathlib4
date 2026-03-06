@@ -5928,7 +5928,8 @@ public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Indep
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Distributions.Geometric
 public import Mathlib.Probability.Distributions.Pareto
-public import Mathlib.Probability.Distributions.Poisson
+public import Mathlib.Probability.Distributions.Poisson.Basic
+public import Mathlib.Probability.Distributions.Poisson.PoissonLimitThm
 public import Mathlib.Probability.Distributions.SetBernoulli
 public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.Probability.HasLaw
