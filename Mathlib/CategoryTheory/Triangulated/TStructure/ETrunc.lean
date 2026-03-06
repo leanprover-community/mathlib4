@@ -378,7 +378,7 @@ noncomputable def eTruncLTLTToLT (a b : EInt) :
 lemma isIso_eTruncLTLTIsoLT (a b : EInt) (hab : b ≤ a) :
     IsIso (t.eTruncLTLTToLT a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
-  intro X
+  intro
   simp only [Functor.comp_obj, eTruncLTLTToLT_app]
   exact t.isIso_eTruncLT_obj_map_truncLTπ_app _ _ hab _
 
