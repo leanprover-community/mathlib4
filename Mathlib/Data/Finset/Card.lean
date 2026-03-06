@@ -696,8 +696,7 @@ theorem card_le_one_iff_subsingleton_coe : #s ≤ 1 ↔ Subsingleton (s : Type _
 
 /-- A finset has cardinality at most 1 iff its underlying set is subsingleton. -/
 theorem card_le_one_iff_subsingleton : #s ≤ 1 ↔ (s : Set α).Subsingleton := by
-  rw [card_le_one_iff_subsingleton_coe, ← Set.subsingleton_coe]
-  rfl
+  rw [card_le_one_iff_subsingleton_coe, ← Set.subsingleton_coe, SetLike.coe_sort_coe]
 
 theorem card_le_one_iff_subset_singleton [Nonempty α] : #s ≤ 1 ↔ ∃ x : α, s ⊆ {x} := by
   refine ⟨fun H => ?_, ?_⟩
