@@ -453,8 +453,7 @@ lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : 
   have hlt : ∀ i, i < ⊤ → ∃ u, u ∈ φobj (Order.succ i) ∧ ¬ u ∈ φobj i := by
     rintro i h
     have := FlatExtension.algebraMap_range_lt_of_not_surjective R K (φ.F.obj (fi i)) <|
-      fun h' ↦ hne <| eq_top_iff.mpr <| le_trans (le_of_eq (RingHom.range_eq_top.mpr h').symm)
-        <| mono le_top
+      fun H ↦ hne (eq_top_iff.mpr (le_of_eq_of_le (RingHom.range_eq_top.mpr H).symm (mono le_top)))
     obtain ⟨x, hx⟩ := Set.exists_of_ssubset this
     have : φ.F.obj (fi (Order.succ i)) = (FlatExtension.SuccStruct R K).succ (φ.F.obj (fi i)) := by
       rw [← φ.obj_succ]
