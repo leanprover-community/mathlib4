@@ -215,6 +215,69 @@ variable (K L) in
 instance krullTopology_discreteTopology_of_finiteDimensional
     [FiniteDimensional K L] : DiscreteTopology Gal(L/K) := inferInstance
 
+variable (K L) in
+set_option backward.isDefEq.respectTransparency false in
+theorem AlgEquiv.totallyBounded_univ : TotallyBounded (Set.univ : Set Gal(L/K)) := by
+  intro U hU
+  rw [krullTopology_mem_uniformity_iff] at hU
+  obtain ⟨F, _, hF⟩ := hU
+  let f (σ : Gal(L/K)) : F →ₐ[K] L := σ.toAlgHom.comp (IsScalarTower.toAlgHom K F L)
+  refine ⟨Set.range (Function.invFun f), Set.finite_range _, fun σ _ => ?_⟩
+  rw [Set.biUnion_range]
+  refine Set.mem_iUnion_of_mem (f σ) (hF σ _ fun x hx => ?_)
+  have hf : f (Function.invFun f (f σ)) ⟨x, hx⟩ = f σ ⟨x, hx⟩ :=
+    DFunLike.congr_fun (Function.invFun_eq ⟨σ, rfl⟩) _
+  simpa [f] using hf.symm
+
+variable (K L) in
+open IntermediateField in
+set_option backward.isDefEq.respectTransparency false in
+instance [Algebra.IsIntegral K L] : CompactSpace Gal(L/K) where
+  isCompact_univ := by
+    apply (AlgEquiv.totallyBounded_univ K L).isCompact_of_isComplete
+    intro f hf _
+    rw [cauchy_iff] at hf
+    obtain ⟨_, hf⟩ := hf
+    replace hf (F : IntermediateField K L) (_ : FiniteDimensional K F) :
+        ∃ σ : Gal(L/K), ∀ᶠ τ : Gal(L/K) in f, Set.EqOn σ τ F := by
+      obtain ⟨t, hf, ht⟩ := hf {p | Set.EqOn p.1 p.2 F}
+        (krullTopology_mem_uniformity_iff.2 ⟨F, ‹_›, fun _ _ h => h⟩)
+      obtain ⟨σ, hσ⟩ := Filter.nonempty_of_mem hf
+      exact ⟨σ, Filter.eventually_of_mem hf fun τ hτ => @ht (σ, τ) ⟨hσ, hτ⟩⟩
+    have h (x : L) : ∃ y, ∀ᶠ τ in f, y = τ x :=
+      (hf (adjoin K {x}) (adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x))).elim
+        fun σ hσ => ⟨σ x, hσ.mono fun τ hτ => hτ (mem_adjoin_simple_self K x)⟩
+    choose s hs using h
+    let σ : Gal(L/K) := .ofBijective
+      { toFun := s
+        map_zero' := (hs 0).exists.elim fun _ h => by simp [h]
+        map_one' := (hs 1).exists.elim fun _ h => by simp [h]
+        commutes' x := (hs (algebraMap K L x)).exists.elim fun _ h => by simp [h]
+        map_add' x y := by
+          obtain ⟨τ, hτ⟩ := ((hs x).and ((hs y).and (hs (x + y)))).exists
+          simp [hτ.1, hτ.2.1, hτ.2.2]
+        map_mul' x y := by
+          obtain ⟨τ, hτ⟩ := ((hs x).and ((hs y).and (hs (x * y)))).exists
+          simp [hτ.1, hτ.2.1, hτ.2.2] } <| by
+      refine ⟨RingHom.injective _, fun x => ?_⟩
+      obtain ⟨τ, hτ⟩ :=
+        ((Filter.eventually_all_finite ((minpoly K x).rootSet_finite L)).2
+          fun y hy => hs y).exists
+      suffices h : τ.symm x ∈ (minpoly K x).rootSet L from ⟨τ.symm x, by simp [hτ (τ.symm x) h]⟩
+      rw [Polynomial.mem_rootSet_of_ne (minpoly.ne_zero (Algebra.IsIntegral.isIntegral x)),
+        Polynomial.aeval_algEquiv, AlgHom.comp_apply, minpoly.aeval, map_zero]
+    refine ⟨σ, Set.mem_univ σ, fun U hU => ?_⟩
+    rw [← map_mul_left_nhds_one, Filter.mem_map, krullTopology_mem_nhds_one_iff] at hU
+    obtain ⟨F, _, hF⟩ := hU
+    rw [← Set.image_subset_iff] at hF
+    refine Filter.mem_of_superset ?_ hF
+    obtain ⟨σ', hσ'⟩ := hf F ‹_›
+    have eq : Set.EqOn σ σ' F := fun x hx =>
+      ((hs x).and hσ').exists.elim fun _ h => h.1.trans (h.2 hx).symm
+    filter_upwards [hσ'] with τ hτ using
+      ⟨_, (F.mem_fixingSubgroup_iff _).2 fun x hx =>
+        by simp [AlgEquiv.symm_apply_eq, eq hx, hτ hx], mul_inv_cancel_left σ τ⟩
+
 section MulAction
 
 /-- If `L/K` is an algebraic field extension, then the stabilizer
