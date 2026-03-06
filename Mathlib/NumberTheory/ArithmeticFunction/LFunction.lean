@@ -59,10 +59,10 @@ local instance : CompleteSpace (ArithmeticFunction R) := by
   let : UniformSpace R := ⊥
   apply IsUniformInducing.completeSpace ⟨rfl⟩
   apply IsClosed.isComplete
-  have : Set.range ((↑) : ArithmeticFunction R → (ℕ → R)) = {f | Function.eval 0 f = 0} := by
+  have : Set.range ((↑) : ArithmeticFunction R → (ℕ → R)) = {f | f 0 = 0} := by
     ext f
     exact ⟨by rintro ⟨f, rfl⟩; simp, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
-  rw [this]
+  rw [ArithmeticFunction.range_coe]
   apply isClosed_setOf_map_zero
 
 /-- The Euler product of a family of arithmetic functions. Defined as a `tprod`, but see

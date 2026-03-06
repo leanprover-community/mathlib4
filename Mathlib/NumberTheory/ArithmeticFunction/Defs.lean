@@ -78,6 +78,10 @@ theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
 theorem coe_inj {f g : ArithmeticFunction R} : (f : ℕ → R) = g ↔ f = g :=
   DFunLike.coe_fn_eq
 
+theorem range_coe : Set.range ((↑) : ArithmeticFunction R → (ℕ → R)) = {f | f 0 = 0} := by
+  ext f
+  exact ⟨by rintro ⟨f, rfl⟩; simp, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
+
 @[simp]
 theorem zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
   rfl
