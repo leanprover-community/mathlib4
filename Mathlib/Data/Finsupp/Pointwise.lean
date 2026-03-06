@@ -96,37 +96,30 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-section pointwiseModule
-
-lemma pointwise_smul_support_finite {ι R M : Type*} [Zero M] [SMulZeroClass R M] (f : ι → R)
-    (g : ι →₀ M) : (fun x ↦ f x • g x).support.Finite :=
-  Set.Finite.subset g.hasFiniteSupport (by simp; grind [smul_zero])
+lemma pointwise_smul_support_finite [Zero γ] [SMulZeroClass β γ] (f : α → β)
+    (g : α →₀ γ) : (fun x ↦ f x • g x).support.Finite :=
+  Set.Finite.subset g.finite_support (by simp; grind [smul_zero])
 
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
 -- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an
 -- def rather than an instance.
 /-- Pointwise scalar multiplication given by `(f • g) x = f x • g x`. -/
 -- see Note [reducible non-instances]
-abbrev pointwiseScalar {ι R M : Type*} [Zero M] [SMulZeroClass R M] :
-    SMul (ι → R) (ι →₀ M) where
+abbrev pointwiseScalar [Zero γ] [SMulZeroClass β γ] : SMul (α → β) (α →₀ γ) where
   smul f g := Finsupp.ofSupportFinite (fun a ↦ f a • g a) (pointwise_smul_support_finite ..)
 
-instance pointwiseScalarModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
-    SMul (ι → R) (ι →₀ M) := pointwiseScalar
+instance pointwiseScalarModule [Semiring β] [AddCommMonoid γ] [Module β γ] :
+    SMul (α → β) (α →₀ γ) := pointwiseScalar
 
 @[simp]
-theorem coe_pointwise_smul {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    (f : ι → R) (g : ι →₀ M) : ⇑(f • g) = f • ⇑g := rfl
+theorem coe_pointwise_smul [Semiring β] [AddCommMonoid γ] [Module β γ] (f : α → β) (g : α →₀ γ) :
+    ⇑(f • g) = f • ⇑g := rfl
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
-instance pointwiseModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
-    Module (ι → R) (ι →₀ M) :=
+instance pointwiseModule [Semiring β] [AddCommMonoid γ] [Module β γ] : Module (α → β) (α →₀ γ) :=
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
 
-instance {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
-    IsScalarTower R (ι → R) (ι →₀ M) where
+instance [Semiring β] [AddCommMonoid γ] [Module β γ] : IsScalarTower β (α → β) (α →₀ γ) where
   smul_assoc r f m := by ext; simp [smul_smul]
-
-end pointwiseModule
 
 end Finsupp
