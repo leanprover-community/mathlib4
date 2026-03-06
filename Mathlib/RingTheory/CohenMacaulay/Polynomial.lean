@@ -200,12 +200,17 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
   exact isCohenMacaulayLocalRing_of_ringEquiv (IsLocalization.algEquiv p.primeCompl
     (Localization.AtPrime pS) (Localization.AtPrime p)).toRingEquiv
 
-theorem MvPolynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] (n : ℕ) :
+lemma MvPolynomial.fin_isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] (n : ℕ) :
     IsCohenMacaulayRing (MvPolynomial (Fin n) R) := by
   induction n
   · exact isCohenMacaulayRing_of_ringEquiv (isEmptyRingEquiv R (Fin 0)).symm
   · rename_i n ih
     let _ := Polynomial.isCM_of_isCM (MvPolynomial (Fin n) R)
     exact isCohenMacaulayRing_of_ringEquiv (MvPolynomial.finSuccEquiv R n).toRingEquiv.symm
+
+theorem MvPolynomial.isCM_of_isCM_of_finite [IsNoetherianRing R] [IsCohenMacaulayRing R]
+    (ι : Type*) [Finite ι] : IsCohenMacaulayRing (MvPolynomial ι R) := by
+  let := MvPolynomial.fin_isCM_of_isCM R (Nat.card ι)
+  exact isCohenMacaulayRing_of_ringEquiv (renameEquiv _ (Finite.equivFin ι)).toRingEquiv.symm
 
 end Polynomial
