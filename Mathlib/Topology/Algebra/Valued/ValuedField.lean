@@ -376,7 +376,7 @@ lemma extensionValuation_apply_coe (x : K) :
 @[simp]
 lemma extension_eq_zero_iff {x : hat K} : extension x = 0 ↔ x = 0 := by
   suffices extensionValuation x = 0 ↔ x = 0 by
-    simpa only [extensionValuation_toFun, map_eq_zero] using this
+    simpa only [extensionValuation_toFun, map_eq_zero]
   rw [Valuation.zero_iff]
 
 /- lemma continuous_extensionValuation : Continuous (Valued.extensionValuation : hat K → Γ₀) :=
