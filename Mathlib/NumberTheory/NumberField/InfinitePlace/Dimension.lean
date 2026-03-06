@@ -30,11 +30,13 @@ variable (L v)
 -- def _root_.Set.disjSum {α β : Type*} (s : Set α) (t : Set β) : Set (α ⊕ β) :=
 --   Sum.inl '' s ∪ Sum.inr '' t
 
+-- theorem _root_.Set.sumEquic_symm_apply {α β : Type*} (s : Set α) (t : Set β) :
+--     Set.sumEquiv.symm (s, t) = Sum.inl '' s ∪ Sum.inr '' t := rfl
 theorem _root_.Set.sumEquiv_symm_toFinset {α β : Type*} (s : Set α) (t : Set β)
     (hs : s.Finite := by toFinite_tac) (ht : t.Finite := by toFinite_tac)
     (hst : (Set.sumEquiv.symm (s, t)).Finite := by toFinite_tac) :
     hst.toFinset = hs.toFinset.disjSum ht.toFinset := by
-  ext; aesop (add simp [disjSum, Finset.disjSum, Set.sumEquiv])
+  ext; aesop (add simp [disjSum, Finset.disjSum])
 
 @[simp]
 theorem _root_.Finset.coe_disjSum {α β : Type*} (s : Finset α) (t : Finset β) :
@@ -45,8 +47,8 @@ theorem _root_.Set.MapsTo.sumElim {α β γ : Type*} {f : α → γ} {g : β →
     {s : Set β} {t : Set γ} (hf : Set.MapsTo f r t) (hg : Set.MapsTo g s t) :
     Set.MapsTo (Sum.elim f g) (Set.sumEquiv.symm (r, s)) t := by
   rintro (a | b)
-  · simpa [Set.sumEquiv] using fun ha ↦ hf ha
-  · simpa [Set.sumEquiv] using fun hb ↦ hg hb
+  · simpa using fun ha ↦ hf ha
+  · simpa using fun hb ↦ hg hb
 
 theorem _root_.Set.InjOn.sumElim {α β γ : Type*} {f : α → γ} {g : β → γ} {r : Set α}
     {s : Set β} (hf : Set.InjOn f r) (hg : Set.InjOn g s)
