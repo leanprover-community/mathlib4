@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Independence.Kernel.IndepFun
+public import Mathlib.Probability.Independence.Conditional.CondIndepFun
 public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.MeasureTheory.Group.Convolution
 
@@ -77,8 +78,6 @@ when defining `μ` in the example above, the measurable space used is the last o
 
 @[expose] public section
 
-assert_not_exists MeasureTheory.Integrable
-
 open MeasureTheory MeasurableSpace Set
 
 open scoped MeasureTheory ENNReal
@@ -89,53 +88,51 @@ variable {Ω ι β γ : Type*} {κ : ι → Type*}
 
 section Definitions
 
+variable {mΩ : MeasurableSpace Ω}
+
 /-- A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a measure `μ` if
 for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `μ (⋂ i in s, f i) = ∏ i ∈ s, μ (f i) `.
 It will be used for families of pi_systems. -/
-def iIndepSets {_mΩ : MeasurableSpace Ω}
-    (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac) : Prop :=
-  Kernel.iIndepSets π (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
+def iIndepSets (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac) :
+  Prop := iCondIndepSets μ ⊥ π
 
 /-- Two sets of sets `s₁, s₂` are independent with respect to a measure `μ` if for any sets
 `t₁ ∈ p₁, t₂ ∈ s₂`, then `μ (t₁ ∩ t₂) = μ (t₁) * μ (t₂)` -/
-def IndepSets {_mΩ : MeasurableSpace Ω}
-    (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by volume_tac) : Prop :=
-  Kernel.IndepSets s1 s2 (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
+def IndepSets (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by volume_tac) :
+  Prop := CondIndepSets μ ⊥ s1 s2
 
 /-- A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
 measure `μ` (typically defined on a finer σ-algebra) if the family of sets of measurable sets they
 define is independent. `m : ι → MeasurableSpace Ω` is independent with respect to measure `μ` if
 for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then `μ (⋂ i in s, f i) = ∏ i ∈ s, μ (f i)`. -/
-def iIndep (m : ι → MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (μ : Measure Ω := by volume_tac) :
-    Prop :=
-  Kernel.iIndep m (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
+def iIndep (m : ι → MeasurableSpace Ω) (μ : Measure Ω := by volume_tac) : Prop :=
+iCondIndep μ ⊥ m
 
 /-- Two measurable space structures (or σ-algebras) `m₁, m₂` are independent with respect to a
 measure `μ` (defined on a third σ-algebra) if for any sets `t₁ ∈ m₁, t₂ ∈ m₂`,
 `μ (t₁ ∩ t₂) = μ (t₁) * μ (t₂)` -/
-def Indep (m₁ m₂ : MeasurableSpace Ω)
-    {_mΩ : MeasurableSpace Ω} (μ : Measure Ω := by volume_tac) : Prop :=
-  Kernel.Indep m₁ m₂ (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
+def Indep (m₁ m₂ : MeasurableSpace Ω) (μ : Measure Ω := by volume_tac) : Prop :=
+  CondIndep μ ⊥ m₁ m₂
 
 /-- A family of sets is independent if the family of measurable space structures they generate is
 independent. For a set `s`, the generated measurable space has measurable sets `∅, s, sᶜ, univ`. -/
-def iIndepSet {_mΩ : MeasurableSpace Ω} (s : ι → Set Ω) (μ : Measure Ω := by volume_tac) : Prop :=
-  Kernel.iIndepSet s (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
+def iIndepSet (s : ι → Set Ω) (μ : Measure Ω := by volume_tac) : Prop :=
+  iCondIndepSet μ ⊥ s
 
 /-- Two sets are independent if the two measurable space structures they generate are independent.
 For a set `s`, the generated measurable space structure has measurable sets `∅, s, sᶜ, univ`. -/
-def IndepSet {_mΩ : MeasurableSpace Ω} (s t : Set Ω) (μ : Measure Ω := by volume_tac) : Prop :=
-  Kernel.IndepSet s t (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
+def IndepSet (s t : Set Ω) (μ : Measure Ω := by volume_tac) : Prop :=
+  CondIndepSet μ ⊥ s t
 
 /-- A family of functions defined on the same space `Ω` and taking values in possibly different
 spaces, each with a measurable space structure, is independent if the family of measurable space
 structures they generate on `Ω` is independent. For a function `g` with codomain having measurable
 space structure `m`, the generated measurable space structure is `MeasurableSpace.comap g m`. -/
-def iIndepFun {_mΩ : MeasurableSpace Ω} {β : ι → Type*} [m : ∀ x : ι, MeasurableSpace (β x)]
-    (f : ∀ x : ι, Ω → β x) (μ : Measure Ω := by volume_tac) : Prop :=
-  Kernel.iIndepFun f (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
+def iIndepFun {β : ι → Type*} [m : ∀ x : ι, MeasurableSpace (β x)] (f : ∀ x : ι, Ω → β x)
+    (μ : Measure Ω := by volume_tac) : Prop :=
+  iCondIndepFun μ ⊥ f
 
 /-- Two functions are independent if the two measurable space structures they generate are
 independent. For a function `f` with codomain having measurable space structure `m`, the generated
@@ -143,7 +140,7 @@ measurable space structure is `MeasurableSpace.comap f m`.
 We use the notation `f ⟂ᵢ[μ] g` for `IndepFun f g μ` (scoped in `ProbabilityTheory`). -/
 def IndepFun {β γ} {_mΩ : MeasurableSpace Ω} [MeasurableSpace β] [MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (μ : Measure Ω := by volume_tac) : Prop :=
-  Kernel.IndepFun f g (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
+  CondIndepFun μ ⊥ f g
 
 end Definitions
 
@@ -157,20 +154,27 @@ section Definition_lemmas
 variable {π : ι → Set (Set Ω)} {m : ι → MeasurableSpace Ω} {_ : MeasurableSpace Ω} {μ : Measure Ω}
   {S : Finset ι} {s : ι → Set Ω} {ι' : Type*} {g : ι' → ι}
 
-lemma iIndepSets_iff (π : ι → Set (Set Ω)) (μ : Measure Ω) :
-    iIndepSets π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
-      μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) := by
-  simp only [iIndepSets, Kernel.iIndepSets, ae_dirac_eq, Filter.eventually_pure, Kernel.const_apply]
+lemma iIndepSets_iff (π : ι → Set (Set Ω)) (μ : Measure Ω) [IsProbabilityMeasure μ]
+    (hπ : ∀ i s, s ∈ π i → NullMeasurableSet s μ) :
+    iIndepSets π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_hf : ∀ i, i ∈ s → f i ∈ π i),
+    μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) := by
+  simp only [iIndepSets, iCondIndepSets]
+  congr! with s f hf
+  rw [condLProb_bot (s.nullMeasurableSet_biInter (fun _ hi ↦ hπ _ _ (hf _ hi))),
+    Finset.prod_congr rfl (fun i hi ↦ condLProb_bot (hπ _ _ (hf _ hi))), Filter.EventuallyEq]
+  convert Filter.eventually_const
+  · simp
+  exact Measure.ae.neBot
 
-lemma iIndepSets.meas_biInter (h : iIndepSets π μ) (s : Finset ι) {f : ι → Set Ω}
-    (hf : ∀ i, i ∈ s → f i ∈ π i) : μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) :=
-  (iIndepSets_iff _ _).1 h s hf
+lemma iIndepSets.meas_biInter [IsProbabilityMeasure μ] (h : iIndepSets π μ) (s : Finset ι)
+    {f : ι → Set Ω} (hπ : ∀ i s, s ∈ π i → NullMeasurableSet s μ) (hf : ∀ i, i ∈ s → f i ∈ π i) :
+    μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) :=
+  (iIndepSets_iff _ _ hπ).1 h s hf
 
-lemma iIndepSets.isProbabilityMeasure (h : iIndepSets π μ) : IsProbabilityMeasure μ :=
-  ⟨by simpa using h ∅ (f := fun _ ↦ univ)⟩
-
-lemma iIndepSets.meas_iInter [Fintype ι] (h : iIndepSets π μ) (hs : ∀ i, s i ∈ π i) :
-    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [← h.meas_biInter _ fun _i _ ↦ hs _]
+lemma iIndepSets.meas_iInter [IsProbabilityMeasure μ] [Fintype ι] (h : iIndepSets π μ)
+    (hπ : ∀ i, NullMeasurableSet (s i) μ) (hs : ∀ i, s i ∈ π i) :
+    μ (⋂ i, s i) = ∏ i, μ (s i) := by
+  simp [← h.meas_biInter _ (by sorry) _ fun _i _ ↦ hs _]
 
 lemma IndepSets_iff (s1 s2 : Set (Set Ω)) (μ : Measure Ω) :
     IndepSets s1 s2 μ ↔ ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → (μ (t1 ∩ t2) = μ t1 * μ t2) := by

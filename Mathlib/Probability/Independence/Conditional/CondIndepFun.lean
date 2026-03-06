@@ -31,7 +31,7 @@ measure is the Dirac measure on `Unit`.
 
 open Set MeasureTheory MeasurableSpace
 
-namespace ProbabilityTheory.Kernel
+namespace ProbabilityTheory
 
 
 variable {ι ι' Ω γ γ' β β' : Type*} {mΩ₀ : MeasurableSpace Ω}
@@ -691,5 +691,3 @@ theorem iCondIndepSet.iCondIndepFun_indicator [Zero β] [One β] {m : Measurable
 --       · simp only [hi, ↓reduceIte, g, cond_apply (hY i (ht i))]
 --       · simp only [hi, ↓reduceIte, g, ENNReal.inv_mul_cancel (hy i hi) (measure_ne_top _ _)]
 --     _ = _ := by simp
-
-end ProbabilityTheory.Kernel

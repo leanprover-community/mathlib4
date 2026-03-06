@@ -312,6 +312,19 @@ open Set
 
 notation P "⁻⸨ " s "|" mΩ "⸩" => condLExp mΩ P (Set.indicator s 1)
 
+theorem condLProb_bot' [NeZero P] {s : Set Ω}
+    (hs : NullMeasurableSet[mΩ₀] s P) :
+    P⁻⸨s | ⊥⸩ = fun _ => (P .univ)⁻¹ * P s := by
+  grw [condLExp_bot', lintegral_indicator_one₀ hs, smul_eq_mul]
+
+theorem condLProb_bot_ae_eq {s : Set Ω} (hs : NullMeasurableSet[mΩ₀] s P) :
+    P⁻⸨s | ⊥⸩ =ᵐ[P] fun _ => (P .univ)⁻¹ * P s := by
+  grw [condLExp_bot_ae_eq, lintegral_indicator_one₀ hs, smul_eq_mul]
+
+theorem condLProb_bot [IsProbabilityMeasure P] {s : Set Ω} (hs : NullMeasurableSet[mΩ₀] s P) :
+    P⁻⸨s | ⊥⸩ = fun _ => P s := by
+  grw [condLExp_bot, lintegral_indicator_one₀ hs]
+
 variable {s s₁ s₂ t : Set Ω}
 
 theorem condLProb_le_union (hd : Disjoint s₁ s₂) :
