@@ -66,17 +66,15 @@ theorem Finset.rado_selection {α : Type*} {β : α → Type*} [∀ a, Finite (�
   let instTop (a : α) : TopologicalSpace (β a) := ⊥
   have instDiscr (a : α) : DiscreteTopology (β a) := discreteTopology_bot _
   let e (s : Finset α) : Set ((a : α) → β a) := {f | ∃ t, s ⊆ t ∧ ∀ x ∈ s, f x = g t x}
-  let restr (s : Finset α) : ((a : α) → β a) → (a : s) → β a := fun f a ↦ f a
-  have hrestr (s : Finset α) : Continuous (restr s) := by fun_prop
-  have (s : Finset α) : restr s ⁻¹' {f | ∃ t, s ⊆ t ∧ ∀ x, f x = g t x} = e s := by simp [e, restr]
+  have (s : Finset α) : s.restrict ⁻¹' {f | ∃ t, s ⊆ t ∧ ∀ x, f x = g t x} = e s := by simp [e]
   have he' (s : Finset α) : IsClosed (e s) := by
     rw [← this]
-    exact (isClosed_discrete _).preimage (hrestr _)
+    exact (isClosed_discrete _).preimage (by fun_prop)
   have he'' (B : Finset (Finset α)) : (⋂ i ∈ B, e i).Nonempty := by
     refine ⟨g (B.biUnion id), ?_⟩
     simp only [Set.mem_iInter, Set.mem_setOf_eq, e]
     intro i hi
-    exact ⟨_, Finset.subset_biUnion_of_mem id hi, by simp⟩
+    exact ⟨_, subset_biUnion_of_mem id hi, by simp⟩
   simpa using CompactSpace.iInter_nonempty he' he''
 
 /--
@@ -123,7 +121,6 @@ theorem Set.Finite.rado_selection_subtype {α : Type*} {β : α → Type*} [∀ 
     (g : (s : Set α) → s.Finite → (a : s) → β a) :
     ∃ χ : (a : α) → β a, ∀ s : Set α, s.Finite →
       ∃ (t : Set α) (ht : t.Finite) (hst : s ⊆ t), ∀ x : s, χ x = g t ht (Set.inclusion hst x) := by
-  classical
   obtain ⟨χ, hχ⟩ := Finset.rado_selection_subtype (β := β) (fun s ↦ g s s.finite_toSet)
   refine ⟨χ, fun s hs ↦ ?_⟩
   obtain ⟨t, ht, hst⟩ := hχ hs.toFinset
