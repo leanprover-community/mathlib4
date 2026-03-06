@@ -813,6 +813,20 @@ lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
     IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit _) _ (op u)
   simpa using congr_fun this (shrinkYonedaObjObjEquiv.symm (𝟙 _))
 
+/-- The object of the category of elements `shrinkYoneda.{w}.flip.obj (op X)`
+corresponding to the identity of `X` is initial. -/
+noncomputable def isInitialElementsMkShrinkYonedaObjObjEquivId (X : C) :
+    IsInitial (Functor.elementsMk (shrinkYoneda.{w}.flip.obj (op X)) X
+      (shrinkYonedaObjObjEquiv.symm (𝟙 X))) :=
+  IsInitial.ofUniqueHom (fun u ↦ ⟨shrinkYonedaObjObjEquiv.{w} u.2, by
+    simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}]⟩) (by
+    rintro u ⟨m, hm⟩
+    ext
+    simp [← hm, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}])
+
+instance (X : C) : HasInitial (shrinkYoneda.{w}.flip.obj (op X)).Elements :=
+  (isInitialElementsMkShrinkYonedaObjObjEquivId X).hasInitial
+
 end Functor.Elements
 
 end CategoryTheory
