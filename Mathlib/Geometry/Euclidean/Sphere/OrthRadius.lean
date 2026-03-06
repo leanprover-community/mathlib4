@@ -143,7 +143,6 @@ lemma orthRadius_parallel_orthRadius_iff {s : Sphere P} {p q : P} :
     ← Set.not_nonempty_iff_eq_empty, mk'_nonempty, and_true, ← Units.exists_iff_ne_zero, eq_comm,
     Units.smul_def]
 
-<<<<<<< HEAD
 lemma dist_sq_eq_iff_mem_orthRadius {s : Sphere P} {p q : P} :
     (dist q s.center) ^ 2 = (dist p s.center) ^ 2 + (dist q p) ^ 2 ↔ q ∈ s.orthRadius p := by
   simp_rw [dist_eq_norm_vsub, pow_two]
@@ -384,7 +383,6 @@ lemma ncard_inter_orthRadius_le_two [hf2 : Fact (Module.finrank ℝ V = 2)]
   · exact (ncard_inter_orthRadius_eq_two_of_dist_lt_radius h hpc).le
   · simp [inter_orthRadius_eq_singleton_of_dist_eq_radius h]
   · simp [inter_orthRadius_eq_empty_of_radius_lt_dist h]
-=======
 open Classical in
 /-- The line through two points on a sphere, or the orthogonal radius (tangent) at that point
 when they coincide. -/
@@ -409,7 +407,6 @@ lemma right_mem_lineOrOrthRadius : q ∈ s.lineOrOrthRadius p q := by
 
 lemma lineOrOrthRadius_comm : s.lineOrOrthRadius p q = s.lineOrOrthRadius q p := by
   by_cases h : p = q <;> simp [lineOrOrthRadius, h, Ne.symm, affineSpan_pair_comm]
->>>>>>> 57f8e4b14c (refactor(Geometry/Euclidean/Sphere): redesign Arc structure and add lineOrOrthRadius)
 
 /-- A point on the sphere, distinct from both endpoints,
     cannot lie on the lineOrOrthRadius between them. -/

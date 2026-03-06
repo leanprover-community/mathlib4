@@ -434,7 +434,7 @@ lemma throughMidpoint_eq_antipodal_of_eq {A B : P}
     have : s.radius = 0 := by rw [← mem_sphere.mp hA, hAc, dist_self]
     exact hBA ((dist_eq_zero.mp (by linarith [mem_sphere.mp hB])).trans hAc.symm)
   have ht_neg : t < 0 := div_neg_of_neg_of_pos
-    (Sphere.inner_vsub_vsub_center_lt_zero hA hB hBA) (real_inner_self_pos.mpr hrv_ne)
+    (inner_vsub_vsub_center_lt_zero hA hB hBA) (real_inner_self_pos.mpr hrv_ne)
   have hrn : ‖rv‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hA
   have hr_ne : s.radius ≠ 0 := hrn ▸ norm_ne_zero_iff.mpr hrv_ne
   have ht_ne : t ≠ 0 := ne_of_lt ht_neg
@@ -464,7 +464,7 @@ lemma mem_interior_through [Fact (Module.finrank ℝ V = 2)] {A B C : P}
       exact hBA (dist_eq_zero.mp (by linarith [mem_sphere.mp hB]) |>.trans hAc.symm)
     set t := ⟪B -ᵥ A, rv⟫ / ⟪rv, rv⟫ with ht_def
     have ht_neg : t < 0 := div_neg_of_neg_of_pos
-      (Sphere.inner_vsub_vsub_center_lt_zero hA hB hBA) (real_inner_self_pos.mpr hrv_ne)
+      (inner_vsub_vsub_center_lt_zero hA hB hBA) (real_inner_self_pos.mpr hrv_ne)
     have hcA : s.center -ᵥ A = -rv := by rw [hrv_def, neg_vsub_eq_vsub_rev]
     set foot := ((B -ᵥ A) - t • rv) +ᵥ A
     have hfoot_mem : foot ∈ s.orthRadius A := by
