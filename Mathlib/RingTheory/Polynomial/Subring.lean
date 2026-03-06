@@ -26,31 +26,7 @@ in `R` to `R[X]`. We provide several lemmas to deal with coefficients, degree, a
 
 @[expose] public section
 
-variable {R S : Type*} [Ring R]
-
-namespace MonoidAlgebra
-
-/-- Given a monoid algebra `p` and a subring `S` that contains the coefficients of `p`,
-return the corresponding polynomial whose coefficients are in `S`. -/
--- TODO: a condition like `p.coeffs ⊆ S` might be more versatile, if we had `MonoidAlgebra.coeffs`.
-@[simps]
-def coeffRestrict (p : R[M]) (hp : ∀ n, p n ∈ S) : S[M] where
-  support := p.support
-  toFun n := ⟨p n, hp n⟩
-  mem_support_toFun n := by simp
-
-variable (hp : ∀ n, p n ∈ S)
-
-@[simp] theorem coeffRestrict_apply {n : M} : p.coeffRestrict S hp n = p n := rfl
-@[simp] theorem support_coeffRestrict : (p.coeffRestrict S hp).support = p.support := rfl
-
-@[simp]
-theorem map_coeffRestrict : (p.coeffRestrict T hp).map (Subring.subtype T) = p := by
-  ext; simp
-
-end MonoidAlgebra
-
-#exit
+variable {R S M : Type*} [Ring R]
 
 namespace Polynomial
 
@@ -58,13 +34,20 @@ variable (p : R[X]) (T : Subring R)
 
 /-! ### `toSubring`-/
 
+open MonoidAlgebra in
+/-- Given a monoid algebra `p` and a subring `T` that contains the coefficients of `p`,
+return the corresponding polynomial whose coefficients are in `T`. -/
+-- TODO: a condition like `p.coeffs ⊆ T` might be more versatile, if we had `MonoidAlgebra.coeffs`.
+@[to_additive]
+def _root_.MonoidAlgebra.coeffRestrict (p : R[M]) (hp : ∀ n, p n ∈ T) : T[M] where
+  support := p.support
+  toFun n := ⟨p n, hp n⟩
+  mem_support_toFun n := by simp
+
 /-- Given a polynomial `p` and a subring `T` that contains the coefficients of `p`,
 return the corresponding polynomial whose coefficients are in `T`. -/
-def toSubring (p : R[X]) (T : Subring R) (hp : (p.coeffs : Set R) ⊆ T) : T[X] where
-  toFinsupp :=
-  { support := p.support
-    toFun n := ⟨p.coeff n, coeffs_subset_iff.1 hp n⟩
-    mem_support_toFun n := by rw [ne_eq, ← Subring.coe_eq_zero_iff, mem_support_iff] }
+def toSubring (p : R[X]) (hp : (p.coeffs : Set R) ⊆ T) : T[X] where
+  toFinsupp := p.toFinsupp.coeffRestrict T (coeffs_subset_iff.1 hp)
 
 variable (hp : (p.coeffs : Set R) ⊆ T)
 
@@ -82,8 +65,8 @@ variable (hp : (p.coeffs : Set R) ⊆ T)
 theorem monic_toSubring : Monic (p.toSubring T hp) ↔ Monic p := by
   simp [Monic, ← OneMemClass.coe_eq_one]
 
-@[simp] theorem toSubring_zero : toSubring 0 T (by simp) = 0 := rfl
-@[simp] theorem toSubring_one : toSubring 1 T (coeffs_subset_iff.2 <| by aesop) = 1 := by aesop
+@[simp] theorem toSubring_zero : toSubring T 0 (by simp) = 0 := rfl
+@[simp] theorem toSubring_one : toSubring T 1 (coeffs_subset_iff.2 <| by aesop) = 1 := by aesop
 
 @[simp]
 theorem map_toSubring : (p.toSubring T hp).map (Subring.subtype T) = p := by

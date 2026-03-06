@@ -40,21 +40,26 @@ namespace Polynomial
 
 variable (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R)
 
+set_option linter.deprecated false in
 @[deprecated coeff_toSubring (since := "2026-02-10")]
 theorem int_coeff_eq (n : ℕ) : ↑((P.int R hP).coeff n) = P.coeff n := rfl
 
+set_option linter.deprecated false in
 @[deprecated leadingCoeff_toSubring (since := "2026-02-10")]
 theorem int_leadingCoeff_eq : ↑(P.int R hP).leadingCoeff = P.leadingCoeff := rfl
 
+set_option linter.deprecated false in
 @[deprecated monic_toSubring (since := "2026-02-10")]
 theorem int_monic_iff : (P.int R hP).Monic ↔ P.Monic := by
   rw [Monic, Monic, ← int_leadingCoeff_eq, OneMemClass.coe_eq_one]
 
+set_option linter.deprecated false in
 @[deprecated natDegree_toSubring (since := "2026-02-10")]
 theorem int_natDegree : (P.int R hP).natDegree = P.natDegree := rfl
 
 variable {L : Type*} [Field L] [Algebra K L]
 
+set_option linter.deprecated false in
 @[deprecated leadingCoeff_toSubring (since := "2026-02-10")]
 theorem int_eval₂_eq (x : L) :
     eval₂ (algebraMap R L) x (P.int R hP) = aeval x P := by
