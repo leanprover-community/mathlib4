@@ -9,7 +9,6 @@ public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.Isometry
-public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # The completion of a metric space
@@ -143,7 +142,7 @@ protected theorem uniformity_dist' :
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
 
-/-- Metric space structure on the completion of a pseudo_metric space. -/
+/-- Metric space structure on the completion of a `PseudoMetric` space. -/
 instance instMetricSpace : MetricSpace (Completion α) :=
   @MetricSpace.ofT0PseudoMetricSpace _
     { dist_self := Completion.dist_self
