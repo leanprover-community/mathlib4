@@ -261,26 +261,47 @@ theorem mem_valueGroup_iff_of_comm' {y : Bˣ} :
   rw [mem_valueGroup_iff_of_comm]
   exact ⟨fun ⟨a, ha, x, hax⟩ ↦ ⟨a, ha, x, by aesop, hax⟩, fun ⟨a, ha, x, hx, hax⟩ ↦ ⟨a, ha, x, hax⟩⟩
 
-namespace valueGroup
-
-variable {r₁ s₁ r₂ s₂ : A}
+namespace ValueGroup₀
 
 /-- The map sending a pair of nonzero `r s : A` to the element `(v r)⁻¹ * (v s)`
 of `ValueGroup₀ v`. -/
-def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : valueGroup f :=
+def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : ValueGroup₀ f :=
     (⟨(.mk0 _ hr)⁻¹ * (.mk0 _ hs), mul_mem (inv_mem (mem_valueGroup _ (by simp)))
     (mem_valueGroup _ (by simp))⟩ : valueGroup f)
 
+lemma mk_def (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) :
+    ValueGroup₀.mk f r s hr hs =
+      (⟨(.mk0 _ hr)⁻¹ * (.mk0 _ hs), mul_mem (inv_mem (mem_valueGroup _ (by simp)))
+      (mem_valueGroup _ (by simp))⟩ : valueGroup f) := rfl
+
+theorem zero_or_exists_mk (x : ValueGroup₀ f) : x = 0 ∨ ∃ r s hr hs, x = .mk f r s hr hs := by
+  obtain _ | ⟨x, hx⟩ := x
+  · left; rfl
+  · rw [mem_valueGroup_iff_of_comm'] at hx
+    obtain ⟨r, hr, s, hs, hrs⟩ := hx
+    right
+    refine ⟨r, s, hr, hs, Option.some_inj.mpr ?_⟩
+    simp [← hrs, mul_comm]
+
+theorem zero_or_exists_mk' (x : ValueGroup₀ f) :
+    x = 0 ∨ ∃ d : {xy : A × A // f xy.1 ≠ 0 ∧ f xy.2 ≠ 0}, x = .mk f d.1.1 d.1.2 d.2.1 d.2.2 :=
+  x.zero_or_exists_mk.imp _root_.id fun ⟨r, s, hr, hs, hx⟩ ↦ ⟨⟨(r, s), ⟨hr, hs⟩⟩, hx⟩
+
+variable {r s r₁ s₁ r₂ s₂ : A}
+
+@[simp] theorem mk_ne_zero {hr : f r ≠ 0} {hs : f s ≠ 0} : mk f r s hr hs ≠ 0 := by simp [mk]
+
 @[simp] theorem mk_inj {hr₁ : f r₁ ≠ 0} {hs₁ : f s₁ ≠ 0} {hr₂ : f r₂ ≠ 0} {hs₂ : f s₂ ≠ 0} :
     mk f r₁ s₁ hr₁ hs₁ = mk f r₂ s₂ hr₂ hs₂ ↔ f (r₁ * s₂) = f (r₂ * s₁) := by
-  simp only [mk, Subtype.mk.injEq, map_mul]
-  rw [inv_mul_eq_inv_mul_iff_mul_eq_mul, eq_comm]
+  refine Option.some_inj.trans ?_
+  rw [Subtype.mk.injEq, inv_mul_eq_inv_mul_iff_mul_eq_mul, eq_comm]
   simp [Units.ext_iff, mul_comm (f r₂), mul_comm (f s₂)]
 
 @[simp] theorem mk_mul {hr₁ : f r₁ ≠ 0} {hs₁ : f s₁ ≠ 0} {hr₂ : f r₂ ≠ 0} {hs₂ : f s₂ ≠ 0} :
     mk f r₁ s₁ hr₁ hs₁ * mk f r₂ s₂ hr₂ hs₂ =
       mk f (r₁ * r₂) (s₁ * s₂) (by simp_all) (by simp_all) := by
-  simp only [mk, map_mul, MulMemClass.mk_mul_mk, Units.mk0_mul, Subtype.mk.injEq]
+  apply Option.some_inj.mpr
+  simp only [MulMemClass.mk_mul_mk, map_mul, Units.mk0_mul, Subtype.mk.injEq]
   rw [mul_mul_mul_comm, mul_inv]
 
 end valueGroup

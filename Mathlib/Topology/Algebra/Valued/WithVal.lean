@@ -398,7 +398,6 @@ def valueGroupOrderIso₀ : ValueGroup₀ (instValued v).v ≃*o ValueGroup₀ v
 
 end ValueGroup₀
 
-
 end WithVal
 
 /-! The completion of a field with respect to a valuation. -/
