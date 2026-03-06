@@ -5,6 +5,7 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 module
 
+public import Mathlib.Geometry.Manifold.MfDerivSMul
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.TrivPrelim
 
