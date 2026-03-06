@@ -729,7 +729,7 @@ If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnect
 noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
     CovariantDerivative I E (TangentSpace I : M → Type _) where
   toFun := lcAux I
-  isCovariantDerivativeOn := isCovariantDerivativeOn_lcAux I
+  isCovariantDerivativeOnUniv := isCovariantDerivativeOn_lcAux I
 
 theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
@@ -777,7 +777,7 @@ lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
 
 lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).IsTorsionFree := by
-  have a := (LeviCivitaConnection I M).isCovariantDerivativeOn
+  have a := (LeviCivitaConnection I M).isCovariantDerivativeOnUniv
   rw [CovariantDerivative.isTorsionFree_iff]
   intro X Y x hX hY
   apply congr_of_forall_product_apply

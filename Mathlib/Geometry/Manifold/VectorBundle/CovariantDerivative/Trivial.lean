@@ -72,7 +72,7 @@ variable (I M F) in
 @[simps]
 noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial M F) where
   toFun s x := mfderiv I 𝓘(𝕜, F) s x
-  isCovariantDerivativeOn := -- TODO use previous work
+  isCovariantDerivativeOnUniv := -- TODO use previous work
   { add {σ σ' x} hσ hσ' hx := by
       rw [mdifferentiableAt_section_trivial_iff] at hσ hσ'
       rw [mfderiv_add hσ hσ']
@@ -118,7 +118,7 @@ lemma trivial_isSmooth :
 noncomputable def of_endomorphism (A : E → E' →L[𝕜] E →L[𝕜] E') :
     CovariantDerivative 𝓘(𝕜, E) E' (Trivial E E') where
   toFun σ := fun x ↦ fderiv 𝕜 σ x + A x (σ x)
-  isCovariantDerivativeOn := by
+  isCovariantDerivativeOnUniv := by
     convert IsCovariantDerivativeOn.of_endomorphism (I := 𝓘(𝕜, E)) A
     ext f x v
     rw [mfderiv_eq_fderiv]
@@ -180,7 +180,7 @@ lemma _root_.CovariantDerivative.exists_one_form
     ∀ σ : M → F, ∀ x, MDiffAt (T% σ) x →
     letI d : TangentSpace I x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
     cov σ x = d + A x (σ x) := by
-  simpa using cov.isCovariantDerivativeOn.exists_one_form
+  simpa using cov.isCovariantDerivativeOnUniv.exists_one_form
 
 end classification
 
