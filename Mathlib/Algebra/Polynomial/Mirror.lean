@@ -152,13 +152,11 @@ theorem coeff_mul_mirror :
 
 variable [NoZeroDivisors R]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natDegree_mul_mirror : (p * p.mirror).natDegree = 2 * p.natDegree := by
   by_cases hp : p = 0
   · rw [hp, zero_mul, natDegree_zero, mul_zero]
   rw [natDegree_mul hp (mt mirror_eq_zero.mp hp), mirror_natDegree, two_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natTrailingDegree_mul_mirror :
     (p * p.mirror).natTrailingDegree = 2 * p.natTrailingDegree := by
   by_cases hp : p = 0

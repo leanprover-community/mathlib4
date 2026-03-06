@@ -126,7 +126,6 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥
       _ ≤ ∑ p ∈ P.parts, f p + ε := by gcongr
   · simp [*]
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The sup of measurable set subtypes over a finset equals the biUnion of the underlying sets. -/
 lemma Finset.sup_measurableSetSubtype_eq_biUnion {ι : Type*}

@@ -302,7 +302,6 @@ theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := b
 theorem mapL_apply (x : ⨂[𝕜] i, E i) : mapL f x = map (fun i ↦ (f i).toLinearMap) x := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given submodules `pᵢ ⊆ Eᵢ`, this is the natural map: `⨂[𝕜] i, pᵢ → ⨂[𝕜] i, Eᵢ`.
 This is the continuous version of `PiTensorProduct.mapIncl`. -/
 @[simp]

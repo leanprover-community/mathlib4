@@ -575,7 +575,6 @@ end PartialProd
 
 end Fin
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `Fin n → Fin m` and `Fin (m ^ n)`. -/
 @[simps!]
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=

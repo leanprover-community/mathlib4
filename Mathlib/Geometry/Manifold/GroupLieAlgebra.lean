@@ -99,7 +99,6 @@ lemma GroupLieAlgebra.bracket_def (v w : GroupLieAlgebra I G) :
 
 variable [LieGroup I (minSmoothness 𝕜 3) G]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma inverse_mfderiv_mul_left {g h : G} :
     (mfderiv I I (fun b ↦ g * b) h).inverse = mfderiv I I (fun b ↦ g⁻¹ * b) (g * h) := by
@@ -118,7 +117,6 @@ lemma inverse_mfderiv_mul_left {g h : G} :
     (contMDiff_mul_left.contMDiffAt.mdifferentiableAt M), inv_mul_cancel_left g h] at A'
   exact ContinuousLinearMap.inverse_eq A' A
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Invariant vector fields are invariant under pullbacks. -/
 @[to_additive /-- Invariant vector fields are invariant under pullbacks. -/]
 lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
@@ -143,7 +141,6 @@ lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace
   congr
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     ContMDiff I I.tangent (minSmoothness 𝕜 2)
@@ -193,7 +190,6 @@ theorem contMDiffAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) g :=
   (contMDiff_mulInvariantVectorField v).contMDiffAt
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mdifferentiable_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     MDifferentiable I I.tangent
@@ -201,7 +197,6 @@ theorem mdifferentiable_mulInvariantVectorField (v : GroupLieAlgebra I G) :
   (contMDiff_mulInvariantVectorField v).mdifferentiable
     (lt_of_lt_of_le (by simp) le_minSmoothness).ne'
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mdifferentiableAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
     MDifferentiableAt I I.tangent
@@ -213,7 +208,6 @@ open VectorField
 
 variable [CompleteSpace E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The invariant vector field associated to the value at the identity of the Lie bracket of
 two invariant vector fields, is everywhere the Lie bracket of the invariant vector fields. -/
 @[to_additive /-- The invariant vector field associated to the value at zero of the Lie
