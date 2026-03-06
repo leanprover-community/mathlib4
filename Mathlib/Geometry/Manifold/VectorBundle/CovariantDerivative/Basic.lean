@@ -272,13 +272,23 @@ variable
     (hcov : IsCovariantDerivativeOn F cov s)
     (hcov' : IsCovariantDerivativeOn F cov' s)
 
+omit [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [VectorBundle 𝕜 F V]
+  [ContMDiffVectorBundle 1 F V I] in
+theorem differenceAux_tensorial (hcov : IsCovariantDerivativeOn F cov s)
+    (hcov' : IsCovariantDerivativeOn F cov' s)
+    (x : M) (hx : x ∈ s) : TensorialAt I F (differenceAux cov cov' · x) x where
+  smul f σ hf hσ := by
+    simp [differenceAux, hcov.leibniz hσ hf, hcov'.leibniz hσ hf]
+    module
+  add σ σ' hσ hσ' := by
+    simp [differenceAux, hcov.add hσ hσ', hcov'.add hσ hσ']
+    abel
+
 open scoped Classical in
 /-- The difference of two covariant derivatives, as a tensorial map. -/
 noncomputable def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
   if hxs : x ∈ s then
-    mkTensorAt I F (differenceAux cov cov') x
-      (fun f σ hf hσ ↦ by simp [differenceAux, hcov.leibniz hσ hf, hcov'.leibniz hσ hf]; module)
-      (fun σ σ' hσ hσ' ↦ by simp [differenceAux, hcov.add hσ hσ', hcov'.add hσ hσ']; abel)
+    TensorialAt.mkTensorAt _ x (differenceAux_tensorial hcov hcov' _ hxs)
   else
     0
 
@@ -286,7 +296,7 @@ noncomputable def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜
 lemma difference_apply {x : M} (hx : x ∈ s := by trivial) {σ : Π x, V x} (hσ : MDiffAt (T% σ) x) :
     difference hcov hcov' x (σ x) = cov σ x - cov' σ x := by
   simp only [difference, hx, reduceDIte]
-  rw [mkTensorAt_apply _ _ _ hσ]
+  rw [TensorialAt.mkTensorAt_apply _ hσ]
   rfl
 
 end difference

@@ -113,19 +113,31 @@ section
 
 variable [CompleteSpace 𝕜] [CompleteSpace E] [FiniteDimensional 𝕜 E]
 
+-- TODO inline the lemmas that go into this
+theorem torsionAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (x : M)
+    (Y : Π x, TangentSpace I x) :
+    TensorialAt I E (torsionAux cov · Y x) x where
+  smul f X hf hX := hcov.torsionAux_smul_left_apply Y hf hX
+  add X X' hX hX' := hcov.torsionAux_add_left_apply Y hX hX'
+
+-- TODO inline the lemmas that go into this
+theorem torsionAux_tensorial₂ (hcov : IsCovariantDerivativeOn E cov) (x : M)
+    (X : Π x, TangentSpace I x) :
+    TensorialAt I E (torsionAux cov X · x) x where
+  smul f Y hf hY := hcov.torsionAux_smul_right_apply X hf hY
+  add Y Y' hY hY' := hcov.torsionAux_add_right_apply X hY hY'
+
 noncomputable def torsion (hcov : IsCovariantDerivativeOn E cov univ) (x : M) :
     TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] TangentSpace I x :=
-  mk2TensorAt I E E (torsionAux cov)
-    (fun f σ τ hf hσ hτ ↦ hcov.torsionAux_smul_left_apply τ hf hσ)
-    (fun σ σ' τ hσ hσ' hτ ↦ hcov.torsionAux_add_left_apply τ hσ hσ')
-    (fun f σ τ hf hσ hτ ↦  hcov.torsionAux_smul_right_apply σ hf hτ)
-    (fun σ τ τ' hσ hτ hτ' ↦ hcov.torsionAux_add_right_apply σ hτ hτ')
+  TensorialAt.mk2TensorAt (torsionAux cov · · x)
+    (fun τ _ ↦ hcov.torsionAux_tensorial₁ x τ)
+    (fun σ _ ↦ hcov.torsionAux_tensorial₂ x σ)
 
 theorem torsion_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x) :
     torsion hcov x (X x) (Y x) = torsionAux cov X Y x :=
-  mk2TensorAt_apply _ _ _ _ _ _ hX hY
+  TensorialAt.mk2TensorAt_apply _ _ hX hY
 
 end
 
@@ -147,7 +159,7 @@ noncomputable def torsion := cov.isCovariantDerivativeOn.torsion
 lemma torsion_apply (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     cov.torsion x (X x) (Y x) = cov Y x (X x) - cov X x (Y x) - mlieBracket I X Y x := by
   unfold torsion IsCovariantDerivativeOn.torsion
-  apply mk2TensorAt_apply
+  apply TensorialAt.mk2TensorAt_apply
   exacts [hX, hY]
 
 lemma torsion_apply_extend (u v : TangentSpace I x) :
@@ -155,7 +167,7 @@ lemma torsion_apply_extend (u v : TangentSpace I x) :
       cov (extend E v) x (extend E u x) - cov (extend E u) x (extend E v x)
         - mlieBracket I (extend E u) (extend E v) x := by
   unfold torsion IsCovariantDerivativeOn.torsion
-  apply mk2TensorAt_apply_eq_extend
+  apply TensorialAt.mk2TensorAt_apply_eq_extend
 
 /-- A covariant derivation is called **torsion-free** iff its torsion tensor vanishes. -/
 def IsTorsionFree : Prop := torsion cov = 0

@@ -313,16 +313,23 @@ private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
   -- set C' := inner ℝ (σ x) ((cov τ' x) X)
   -- set D := (cov σ x) X
 
+theorem metricTensorAux_tensorial₁ (x : M) (τ : Π x, TangentSpace I x) (hτ : MDiffAt (T% τ) x) :
+    TensorialAt I E (metricTensorAux I cov · τ x) x where
+  smul _ _ hf hσ := aux1 cov hf hσ hτ
+  add σ σ' hσ hσ' := aux2 cov σ σ' τ hσ hσ' hτ
+
+theorem metricTensorAux_tensorial₂ (x : M) (σ : Π x, TangentSpace I x) (hσ : MDiffAt (T% σ) x) :
+    TensorialAt I E (metricTensorAux I cov σ · x) x where
+  smul _ _ hf hτ := aux3 cov hf hσ hτ
+  add τ τ' hτ hτ' := aux4 cov σ τ τ' hσ hτ hτ'
+
 variable {I} in
 /-- The tensor `(X, Y, Z) ↦ ∇ₓ g(Y, Z) - g(∇ₓ Y, Z) - g(Y, ∇ₓ Z)` defining when a connection
 `∇` on a Riemannian manifold `(M, g)` is compatible with the metric `g`. -/
 @[no_expose] noncomputable def metricTensor [FiniteDimensional ℝ E] (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
-  mk2TensorAt I E E (metricTensorAux I cov)
-    (fun _f _σ _τ hf hσ hτ ↦ aux1 cov hf hσ hτ)
-    (fun σ σ' τ hσ hσ' hτ ↦ aux2 cov σ σ' τ hσ hσ' hτ)
-    (fun _f _σ _τ hf hσ hτ ↦ aux3 cov hf hσ hτ)
-    (fun σ τ τ' hσ hτ hτ' ↦ aux4 cov σ τ τ' hσ hτ hτ')
+  TensorialAt.mk2TensorAt (metricTensorAux I cov · · x)
+    (metricTensorAux_tensorial₁ I cov x) (metricTensorAux_tensorial₂ I cov x)
 
 variable {I} in
 theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
@@ -330,7 +337,7 @@ theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
     metricTensor cov x (Y x) (Z x) (X x) =
     fromTangentSpace _ (mfderiv% ⟪Y, Z⟫ x (X x)) - ⟪∇ Y, X, Z⟫ x - ⟪Y, ∇ Z, X⟫ x := by
   unfold metricTensor
-  rw [mk2TensorAt_apply _ _ _ _ _ _ hY hZ]
+  rw [TensorialAt.mk2TensorAt_apply _ _ hY hZ]
   simp only [metricTensorAux, ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp',
     coe_innerSL_apply, Pi.sub_apply, comp_apply]
   conv =>

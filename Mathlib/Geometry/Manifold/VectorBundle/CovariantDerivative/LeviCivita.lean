@@ -578,38 +578,52 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
   · rw [← hcov'.eq_leviCivitaRhs I hX hY hZ]
 
 open Classical in
+noncomputable def lcAux₀' (Y : Π x : M, TangentSpace I x) (x : M)
+    (X Z : Π x : M, TangentSpace I x) :=
+  if MDiffAt (T% X) x then if MDiffAt (T% Z) x then
+    leviCivitaRhs I X Y Z
+  else 0 else 0
+
+theorem leviCivitaRhs_tensorial₁ [FiniteDimensional ℝ E]
+    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) (Z : Π x, TangentSpace I x) :
+    TensorialAt I E (lcAux₀' I Y x · Z x) x where
+  smul f X hf hX := by
+    dsimp [lcAux₀']
+    rw [if_pos hX, if_pos]
+    · split_ifs with hZ
+      · exact leviCivitaRhs_smulX_apply hf hX hY hZ
+      · simp
+    · exact hf.smul_section hX
+  add X₁ X₂ hX₁ hX₂ := by
+    dsimp [lcAux₀']
+    rw [if_pos hX₁, if_pos hX₂, if_pos]
+    · split_ifs with hZ
+      · exact leviCivitaRhs_addX_apply I hX₁ hX₂ hY hZ
+      · simp
+    · exact mdifferentiableAt_add_section hX₁ hX₂
+
+theorem leviCivitaRhs_tensorial₂ [FiniteDimensional ℝ E]
+    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) (X : Π x, TangentSpace I x)
+    (hX : MDiffAt (T% X) x) :
+    TensorialAt I E (lcAux₀' I Y x X · x) x where
+  smul f Z hf hZ := by
+    dsimp [lcAux₀']
+    rw [if_pos hX, if_pos hZ, if_pos, if_pos hX]
+    · exact leviCivitaRhs_smulZ_apply I hf hX hY hZ
+    · exact hf.smul_section hZ
+  add Z₁ Z₂ hZ₁ hZ₂ := by
+    dsimp [lcAux₀']
+    rw [if_pos hZ₁, if_pos hZ₂, if_pos hX, if_pos, if_pos hX, if_pos hX]
+    · exact leviCivitaRhs_addZ_apply I hX hY hZ₁ hZ₂
+    · exact mdifferentiableAt_add_section hZ₁ hZ₂
+
+open Classical in
 noncomputable def lcAux₀ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] ℝ :=
-  mk2TensorAt I E E (fun (X Z : Π x : M, TangentSpace I x) ↦
-      if hX : MDiffAt (T% X) x then if hZ : MDiffAt (T% Z) x then
-        leviCivitaRhs I X Y Z
-      else 0 else 0) (x := x)
-    (fun {f X Z} hf hX ↦ by
-      dsimp
-      rw [if_pos hX, if_pos]
-      · split_ifs with hZ
-        · exact leviCivitaRhs_smulX_apply hf hX hY
-        · simp
-      · exact hf.smul_section hX)
-    (fun {X₁ X₂ Z} hX₁ hX₂ ↦ by
-      dsimp
-      rw [if_pos hX₁, if_pos hX₂, if_pos]
-      · split_ifs with hZ
-        · exact leviCivitaRhs_addX_apply I hX₁ hX₂ hY
-        · simp
-      · exact mdifferentiableAt_add_section hX₁ hX₂)
-    (fun {f X Z} hf hX hZ ↦ by
-      dsimp
-      rw [if_pos hX, if_pos hZ, if_pos, if_pos hX]
-      · exact leviCivitaRhs_smulZ_apply I hf hX hY hZ
-      · exact hf.smul_section hZ)
-    (fun {X Z₁ Z₂} hX hZ₁ hZ₂ ↦ by
-      dsimp
-      rw [if_pos hZ₁, if_pos hZ₂, if_pos hX, if_pos, if_pos hX, if_pos hX]
-      · exact leviCivitaRhs_addZ_apply I hX hY hZ₁ hZ₂
-      · exact mdifferentiableAt_add_section hZ₁ hZ₂
-      )
+  TensorialAt.mk2TensorAt _ (x := x)
+    (fun Z _ ↦ leviCivitaRhs_tensorial₁ _ _ hY Z)
+    (fun X hX ↦ leviCivitaRhs_tensorial₂ _ _ hY X hX)
 
 theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
@@ -617,7 +631,7 @@ theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
     lcAux₀ I x hY (X x) (Z x) = leviCivitaRhs I X Y Z x := by
   unfold lcAux₀
-  rw [mk2TensorAt_apply _ _ _ _ _ _ hX hZ, dif_pos hX, dif_pos hZ]
+  rw [TensorialAt.mk2TensorAt_apply _ _ hX hZ, lcAux₀', if_pos hX, if_pos hZ]
 
 noncomputable def lcAux₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
@@ -662,7 +676,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     congr! 1
     simp only [lcAux₀]
     ext X₀ Y₀
-    simp only [mk2TensorAt_apply_eq_extend, dite_eq_ite, ContinuousLinearMap.add_apply]
+    simp only [TensorialAt.mk2TensorAt_apply_eq_extend, ContinuousLinearMap.add_apply, lcAux₀']
     rw [if_pos, if_pos, if_pos, if_pos, if_pos, if_pos]
     · apply leviCivitaRhs_addY_apply _ (mdifferentiableAt_extend ..) hY hY'
       exact mdifferentiableAt_extend ..
@@ -690,8 +704,8 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
         ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         ContinuousLinearMap.toSpanSingleton_apply, map_add, map_smul]
       ext Z₀
-      simp only [lcAux₀, mk2TensorAt_apply_eq_extend, dite_eq_ite, ContinuousLinearMap.add_apply,
-        ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
+      simp only [lcAux₀, lcAux₀', TensorialAt.mk2TensorAt_apply_eq_extend,
+        ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
       rw [if_pos, if_pos, if_pos, if_pos]
       · have key := leviCivitaRhs_smulY_apply I (X := _root_.extend E X₀) (Y := Y)
           (Z := _root_.extend E Z₀) (x := x) (f := f)
