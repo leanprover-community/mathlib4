@@ -416,10 +416,10 @@ theorem prod_eq_generateFrom :
       generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
   le_antisymm (le_generateFrom fun _ ⟨_, _, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
     (le_inf
-      (forall_mem_image.2 fun t ht =>
-        GenerateOpen.basic _ ⟨t, univ, by simpa [Set.prod_eq] using ht⟩)
-      (forall_mem_image.2 fun t ht =>
-        GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
+      (coinduced_le_iff_le_induced.mp fun U hU ↦
+        .basic _ ⟨U, univ, hU, isOpen_univ, prod_univ.symm⟩)
+      (coinduced_le_iff_le_induced.mp fun U hU ↦
+        .basic _ ⟨univ, U, isOpen_univ, hU, univ_prod.symm⟩))
 
 -- TODO: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
