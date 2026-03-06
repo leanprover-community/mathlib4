@@ -234,14 +234,16 @@ lemma fg_toAddSubgroup {A : Submodule R M} (hfg : A.FG) : A.toAddSubgroup.FG := 
     rwa [fg_iff_addSubgroup_fg, AddSubgroup.toIntSubmodule_toAddSubgroup] at this
   exact FG.restrictScalars hfg
 
+open AddSubgroup in
 /-- If `A` and `B` are two submodules of the `R`-algebra `M`, where `R` is finitely generated
 as a `ℤ`-module, `A` is finitely generated, and `B` contains `n • A`, then `B` has finite
 relative index in `A`. -/
 lemma isFiniteRelIndex_of_map_linearMapMulLeft_le {A B : Submodule R K} {n : ℕ} (hn : n ≠ 0)
     (hfg : A.FG) (h : A.map (LinearMap.mulLeft R (n : K)) ≤ B) :
     B.toAddSubgroup.IsFiniteRelIndex A.toAddSubgroup := by
-  refine A.toAddSubgroup.isFiniteRelIndex_of_range_nsmulAddMonoidHom_le B.toAddSubgroup
-    (fg_toAddSubgroup hfg) hn ?_
+  have := fg_toAddSubgroup hfg
+  have := isFiniteRelIndex_map_nsmulAddMonoidHom_of_fg this hn
+  refine isFiniteRelIndex_of_le (H₁ := A.toAddSubgroup.map (nsmulAddMonoidHom n)) A.toAddSubgroup ?_
   rw [SetLike.le_def] at h ⊢
   simpa using h
 
