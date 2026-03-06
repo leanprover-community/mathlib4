@@ -12,7 +12,7 @@ public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 # Affine schemes associated to Weierstrass curves
 -/
 
-public section
+@[expose] public section
 
 universe u
 
