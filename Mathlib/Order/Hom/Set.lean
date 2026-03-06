@@ -35,18 +35,11 @@ def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
   map_rel_iff' := by simp [subset_def]
 
 @[simp]
-theorem sumEquiv_symm_apply_mk {s : Set α} {t : Set β} :
-    sumEquiv.symm (s, t) = Sum.inl '' s ∪ Sum.inr '' t := rfl
--- theorem _root_.Set.sumEquiv_symm_toFinset {α β : Type*} (s : Set α) (t : Set β)
---     (hs : s.Finite := by toFinite_tac) (ht : t.Finite := by toFinite_tac)
---     (hst : (Set.sumEquiv.symm (s, t)).Finite := by toFinite_tac) :
---     hst.toFinset = hs.toFinset.disjSum ht.toFinset := by
---   ext; aesop (add simp [disjSum, Finset.disjSum])
+theorem sumEquiv_apply (s : Set (α ⊕ β)) : sumEquiv s = (Sum.inl ⁻¹' s, Sum.inr ⁻¹' s) := rfl
 
--- @[simp]
--- theorem _root_.Finset.coe_disjSum {α β : Type*} (s : Finset α) (t : Finset β) :
---     (s.disjSum t : Set (α ⊕ β)) = s.disjSum t := by
---   ext ; aesop (add simp [disjSum, Set.sumEquiv, Finset.disjSum])
+@[simp]
+theorem sumEquiv_symm_apply {s : Set α × Set β} :
+    sumEquiv.symm s = Sum.inl '' s.1 ∪ Sum.inr '' s.2 := rfl
 
 theorem MapsTo.sumElim {α β γ : Type*} {f : α → γ} {g : β → γ} {r : Set α}
     {s : Set β} {t : Set γ} (hf : Set.MapsTo f r t) (hg : Set.MapsTo g s t) :
