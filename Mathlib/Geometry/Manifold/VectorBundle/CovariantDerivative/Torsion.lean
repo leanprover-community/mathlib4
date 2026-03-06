@@ -15,8 +15,6 @@ manifold `M` and derive a criterion for torsion-freeness.
 
 ## Main definitions and results
 
-* `Bundle.torsionFun`: the torsion of a covariant derivative on the tangent bundle `TM`,
-  as a bare function. Prefer to use `torsion` instead.
 * `IsCovariantDerivativeOn.torsion`: the torsion tensor of an unbundled covariant derivative
   on `TM` on some set `s ⊆ M`
 * `CovariantDerivative.torsion`: the torsion tensor of a bundled covariant derivative on `TM`
@@ -38,9 +36,11 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [TopologicalSpace (TotalSpace F V)] [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
 
+namespace IsCovariantDerivativeOn
+
 /-- The torsion of a covariant derivative on the tangent bundle `TM`, as a bare function.
 Prefer to use `torsion` (which is a two-tensor) instead. -/
-noncomputable def Bundle.torsionFun
+noncomputable def torsionAux
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
   fun X Y x ↦ cov Y x (X x) - cov X x (Y x) - VectorField.mlieBracket I X Y x
@@ -50,19 +50,17 @@ variable
   {X X' Y : Π x : M, TangentSpace I x}
 
 variable (f X) in
-lemma torsionFun_self : torsionFun cov X X = 0 := by
+lemma torsionAux_self : IsCovariantDerivativeOn.torsionAux cov X X = 0 := by
   ext
-  simp [torsionFun]
+  simp [torsionAux]
 
 variable (X Y) in
-lemma torsionFun_antisymm : torsionFun cov X Y = - torsionFun cov Y X := by
+lemma torsionAux_antisymm : torsionAux cov X Y = - torsionAux cov Y X := by
   ext x
-  unfold torsionFun
+  unfold torsionAux
   rw [VectorField.mlieBracket_swap]
   dsimp
   module
-
-namespace IsCovariantDerivativeOn
 
 variable [IsManifold I 2 M] {U : Set M}
 
@@ -70,23 +68,23 @@ section
 
 variable (Y)
 
-lemma torsionFun_add_left_apply [CompleteSpace E] (hcov : IsCovariantDerivativeOn E cov U)
+lemma torsionAux_add_left_apply [CompleteSpace E] (hcov : IsCovariantDerivativeOn E cov U)
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) (hx : x ∈ U := by trivial) :
-    torsionFun cov (X + X') Y x = torsionFun cov X Y x + torsionFun cov X' Y x := by
-  simp [torsionFun, hcov.add hX hX', VectorField.mlieBracket_add_left hX hX']
+    torsionAux cov (X + X') Y x = torsionAux cov X Y x + torsionAux cov X' Y x := by
+  simp [torsionAux, hcov.add hX hX', VectorField.mlieBracket_add_left hX hX']
   module
 
-lemma torsionFun_add_right_apply [CompleteSpace E] (hcov : IsCovariantDerivativeOn E cov U)
+lemma torsionAux_add_right_apply [CompleteSpace E] (hcov : IsCovariantDerivativeOn E cov U)
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) (hx : x ∈ U := by trivial) :
-    torsionFun cov Y (X + X') x = torsionFun cov Y X x + torsionFun cov Y X' x := by
-  rw [torsionFun_antisymm, Pi.neg_apply,
-    hcov.torsionFun_add_left_apply _ hX hX', torsionFun_antisymm Y, torsionFun_antisymm Y]
+    torsionAux cov Y (X + X') x = torsionAux cov Y X x + torsionAux cov Y X' x := by
+  rw [torsionAux_antisymm, Pi.neg_apply,
+    hcov.torsionAux_add_left_apply _ hX hX', torsionAux_antisymm Y, torsionAux_antisymm Y]
   simp; abel
 
-lemma torsionFun_smul_left_apply [CompleteSpace E] (hcov : IsCovariantDerivativeOn E cov U)
+lemma torsionAux_smul_left_apply [CompleteSpace E] (hcov : IsCovariantDerivativeOn E cov U)
     {f : M → 𝕜} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hx : x ∈ U := by trivial) :
-    torsionFun cov (f • X) Y x = f x • torsionFun cov X Y x := by
-  simp only [torsionFun]
+    torsionAux cov (f • X) Y x = f x • torsionAux cov X Y x := by
+  simp only [torsionAux]
   rw [hcov.leibniz hX hf, VectorField.mlieBracket_smul_left hf hX]
   simp? [smul_sub] says
     simp only [Pi.smul_apply', map_smul, ContinuousLinearMap.add_apply,
@@ -100,13 +98,13 @@ lemma torsionFun_smul_left_apply [CompleteSpace E] (hcov : IsCovariantDerivative
   change B - (A + (fromTangentSpace _ D) • X x) - (-(fromTangentSpace _ D) • X x + C) = B - A - C
   module
 
-lemma torsionFun_smul_right_apply [CompleteSpace E]
+lemma torsionAux_smul_right_apply [CompleteSpace E]
     {F : ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x →L[𝕜] TangentSpace I x}
     (hF : IsCovariantDerivativeOn E F U)
     {f : M → 𝕜} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hx : x ∈ U := by trivial) :
-    torsionFun F Y (f • X) x = f x • torsionFun F Y X x := by
-  rw [torsionFun_antisymm, Pi.neg_apply, hF.torsionFun_smul_left_apply Y hf hX,
-    torsionFun_antisymm X]
+    torsionAux F Y (f • X) x = f x • torsionAux F Y X x := by
+  rw [torsionAux_antisymm, Pi.neg_apply, hF.torsionAux_smul_left_apply Y hf hX,
+    torsionAux_antisymm X]
   simp
 
 end
@@ -117,16 +115,16 @@ variable [CompleteSpace 𝕜] [CompleteSpace E] [FiniteDimensional 𝕜 E]
 
 noncomputable def torsion (hcov : IsCovariantDerivativeOn E cov univ) (x : M) :
     TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] TangentSpace I x :=
-  mk2TensorAt I E E (Bundle.torsionFun cov)
-    (fun f σ τ hf hσ hτ ↦ hcov.torsionFun_smul_left_apply τ hf hσ)
-    (fun σ σ' τ hσ hσ' hτ ↦ hcov.torsionFun_add_left_apply τ hσ hσ')
-    (fun f σ τ hf hσ hτ ↦  hcov.torsionFun_smul_right_apply σ hf hτ)
-    (fun σ τ τ' hσ hτ hτ' ↦ hcov.torsionFun_add_right_apply σ hτ hτ')
+  mk2TensorAt I E E (torsionAux cov)
+    (fun f σ τ hf hσ hτ ↦ hcov.torsionAux_smul_left_apply τ hf hσ)
+    (fun σ σ' τ hσ hσ' hτ ↦ hcov.torsionAux_add_left_apply τ hσ hσ')
+    (fun f σ τ hf hσ hτ ↦  hcov.torsionAux_smul_right_apply σ hf hτ)
+    (fun σ τ τ' hσ hτ hτ' ↦ hcov.torsionAux_add_right_apply σ hτ hτ')
 
 theorem torsion_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x) :
-    torsion hcov x (X x) (Y x) = Bundle.torsionFun cov X Y x :=
+    torsion hcov x (X x) (Y x) = torsionAux cov X Y x :=
   mk2TensorAt_apply _ _ _ _ _ _ hX hY
 
 end
@@ -135,6 +133,10 @@ end IsCovariantDerivativeOn
 
 namespace CovariantDerivative
 open VectorField
+
+variable
+  {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)}
+  {X X' Y : Π x : M, TangentSpace I x}
 
 variable [CompleteSpace 𝕜] [CompleteSpace E] [FiniteDimensional 𝕜 E] [IsManifold I 2 M]
 variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
