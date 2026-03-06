@@ -14,10 +14,54 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Delaborators
 /-!
 # Covariant derivatives
 
-TODO: add a more complete doc-string
+This file defines covariant derivatives (aka Koszul connections) on vector bundles over manifolds.
+
+There are versions of the story: a local unbundled one and a global bundled one.
+The local version is used by the global version but also (in other files) when
+seeing a global objetct in a local trivialization.
 
 In the whole file `M` is manifold over any nontrivially normed field `𝕜` and `V` is
 a vector bundle over `M` with model fiber `F`.
+
+## Main definitions and constructions
+
+* `IsCovariantDerivativeOn`: A function from sections of a vector bundle $V$ over a manifold $M$ to
+  sections of $Hom(TM, E)$ is a covariant derivative over a set $s$ in $M$ if it is additive and
+  satisfies the Leibniz rule when applied to sections that are differentiable at a point of $s$.
+* `ContMDiffCovariantDerivativeOn`: A covariant derivative ∇ on some set is called of class `C^k`
+  iff, whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇ X σ` is a `C^k`
+  section. This is a class so typeclass inference can deduce this automatically.
+* `IsCovariantDerivativeOn.add_one_form`: Adding a one form taking values into endomorphisms of the
+  vector bundle to a covariant derivative on a set gives a covariant derivative on that set.
+* `IsCovariantDerivativeOn.difference`: The difference of two covariant derivatives on a set,
+  as a one-form taking values in the endomorphism bundle.
+* `CovariantDerivative`: a globally defined covariant derivative on a vector bundled, as a bundled
+  object.
+* `ContMDiffCovariantDerivative`: A covariant derivative ∇ is called of class `C^k`
+  iff, whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇ X σ` is a `C^k`
+  section. This is a class so typeclass inference can deduce this automatically.
+* `CovariantDerivative.add_one_form`: Adding a one form taking values into endomorphisms of the
+  vector bundle to a covariant derivative gives a covariant derivative.
+* `CovariantDerivative.difference`: The difference of two covariant derivatives, as a one-form
+  taking values in the endomorphism bundle.
+
+## Implementation notes
+
+On paper there are several equivalent ways to define covariant derivatives on a vector bundle
+`V → M`. The most common one starts with a function `∇` taking as input a global smooth vector field
+`X` and a global smooth section `σ` and giving as output a global smooth section `∇_X σ`, before
+proving the result `(∇_X σ) x` at a point `x` only depends on the value of the vector field at that
+point and the first jet of the section at that point.
+
+Here we ask for a map sending end global section `σ` to a section `∇ σ` of `Hom(TM, End(V))`.
+So the fact that `(∇_X σ) x` depends only on `X x` is baked into the definition.
+Note also that we don’t put any differentiability restriction on `σ` and `X`, the type of
+the covariant derivative map is simply `(Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))`.
+But the conditions on this map involve differentiability, see the definition of
+`IsCovariantDerivativeOn`.
+
+This file proves that `(∇_X σ) x` depends only on the germ of `σ` at `x`, but not the stronger
+statement that it depends only the 1-jet of `σ` at `x`. This will be proved in a later file.
 -/
 
 open Bundle Filter Module Topology Set NormedSpace
@@ -43,8 +87,8 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [FiberBundle F V]
 
 /-- A function from sections of a vector bundle $V$ over a manifold $M$ to sections of $Hom(TM, E)$
-is a covariant derivative over a set $s$ in $M$ if it is additive and satisfies the Leibniz when
-applied to sections that are differentiable at a point of $s$. -/
+is a covariant derivative over a set $s$ in $M$ if it is additive and satisfies the Leibniz rule
+when applied to sections that are differentiable at a point of $s$. -/
 structure IsCovariantDerivativeOn
     (cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))
     (s : Set M := Set.univ) : Prop where
@@ -118,6 +162,7 @@ lemma congr_of_eqOn
           simp
 
 section changing_set
+
 /-! ### Changing set
 
 In this section, we change `s` in `IsCovariantDerivativeOn F cov s`, proving the condition is
