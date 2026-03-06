@@ -57,12 +57,11 @@ end aux
 ### Upper bound for the height of the image under a linear map
 -/
 
-namespace Height
-
 variable {K : Type*} [Field K] {ι ι' : Type*} [Fintype ι] [Finite ι']
 
 -- The "local" version of the bound for (archimedean) absolute values.
-lemma linearMap_apply_bound (v : AbsoluteValue K ℝ) (A : ι' × ι → K) (x : ι → K) :
+lemma AbsoluteValue.iSup_abv_linearMap_apply_le (v : AbsoluteValue K ℝ) (A : ι' × ι → K)
+    (x : ι → K) :
     ⨆ j, v (∑ i, A (j, i) * x i) ≤ Nat.card ι * (⨆ ji, v (A ji)) * ⨆ i, v (x i) := by
   rcases isEmpty_or_nonempty ι'
   · simp
@@ -79,7 +78,7 @@ lemma linearMap_apply_bound (v : AbsoluteValue K ℝ) (A : ι' × ι → K) (x :
   rw [Finset.sum_const, nsmul_eq_mul, mul_assoc, Finset.card_univ, Nat.card_eq_fintype_card]
 
 -- The "local" version of the bound for nonarchimedean absolute values.
-lemma linearMap_apply_bound_of_isNonarchimedean {v : AbsoluteValue K ℝ} (hv : IsNonarchimedean v)
+lemma IsNonarchimedean.iSup_abv_linearMap_apply_le {v : AbsoluteValue K ℝ} (hv : IsNonarchimedean v)
     (A : ι' × ι → K) (x : ι → K) :
     ⨆ j, v (∑ i, A (j, i) * x i) ≤ (⨆ ji, v (A ji)) * ⨆ i, v (x i) := by
   rcases isEmpty_or_nonempty ι
@@ -97,6 +96,8 @@ lemma linearMap_apply_bound_of_isNonarchimedean {v : AbsoluteValue K ℝ} (hv : 
   · exact Real.iSup_nonneg_of_nonnegHomClass v _
   · exact Finite.le_ciSup_of_le (j, i) le_rfl
   · exact Finite.le_ciSup_of_le i le_rfl
+
+namespace Height
 
 variable [AdmissibleAbsValues K]
 
@@ -135,14 +136,14 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
     rw [mul_assoc, ← prod_map_mul, ← prod_replicate, totalWeight, ← map_const', ← prod_map_mul]
     refine prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass v _) fun v _ ↦ ?_
     rw [mul_comm (iSup _), ← mul_assoc]
-    exact linearMap_apply_bound v A x
+    exact v.iSup_abv_linearMap_apply_le A x
   · -- nonarchimedean part: reduce to "local" statement `linearMap_apply_bound_of_isNonarchimedean`
     rw [← finprod_mul_distrib (by fun_prop (disch := assumption))
       (by fun_prop (disch := assumption))]
     refine finprod_le_finprod (by fun_prop (disch := assumption))
       (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) ?_ fun v ↦ ?_
     · fun_prop (disch := assumption)
-    · exact linearMap_apply_bound_of_isNonarchimedean (isNonarchimedean _ v.prop) A x
+    · exact (isNonarchimedean _ v.prop).iSup_abv_linearMap_apply_le A x
 
 open Real in
 /-- Let `A : ι' × ι → K`, which we can interpret as a linear map from `ι → K` to `ι' → K`.
