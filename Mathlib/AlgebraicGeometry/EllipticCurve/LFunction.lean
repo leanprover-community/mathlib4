@@ -37,12 +37,7 @@ open NumberField
 variable {K : Type*} [Field K] [NumberField K]
 
 open Classical Polynomial in
-/-- The L-function of an elliptic curve is the product over places of `1 / fₚ(‖p‖⁻ˢ)` where:
-* `fₚ = 1 - aₚ T + ‖p‖ T ^ 2` if `E` has good reduction at `p`,
-* `fₚ = 1 - T` if `E` has split multiplicative reduction at `p`,
-* `fₚ = 1 + T` if `E` has nonsplit multiplicative reduction at `p`,
-* `fₚ = 1` if `E` has additive reduction at `p`.
--/
+/-- The polynomial associated to an elliptic curve at a finite place `p`. -/
 noncomputable def localPolynomial (W : WeierstrassCurve K)
     (p : IsDedekindDomain.HeightOneSpectrum (𝓞 K)) : ℤ[X] :=
   letI R := p.adicCompletionIntegers K
@@ -54,10 +49,12 @@ noncomputable def localPolynomial (W : WeierstrassCurve K)
   else if W'.IsSplitMultiplicativeReduction R then 1 - X
   else 1 + X
 
+/-- The power series associated to an elliptic curve at a finite place `p`. -/
 noncomputable def localPowerSeries (W : WeierstrassCurve K)
     (p : IsDedekindDomain.HeightOneSpectrum (𝓞 K)) : PowerSeries ℤ :=
   PowerSeries.invOfUnit (W.localPolynomial p) 1
 
+/-- The local Euler factor associated to an elliptic curve at a finite place `p`. -/
 noncomputable def localEulerFactor (W : WeierstrassCurve K)
     (p : IsDedekindDomain.HeightOneSpectrum (𝓞 K)) : ArithmeticFunction ℤ :=
   .ofPowerSeries (Ideal.absNorm p.asIdeal) (W.localPowerSeries p)
@@ -73,15 +70,16 @@ instance {S : Type u_1} [CommRing S] [Nontrivial S] [IsDedekindDomain S] [Module
   · exact fun _ _ ↦ IsDedekindDomain.HeightOneSpectrum.ext
   · grind
 
-noncomputable def LFunction (W : WeierstrassCurve K) : ArithmeticFunction ℤ :=
-  ArithmeticFunction.eulerProduct W.localEulerFactor
-
 /-- The L-function of an elliptic curve is the product over places of `1 / fₚ(‖p‖⁻ˢ)` where:
 * `fₚ = 1 - aₚ T + ‖p‖ T ^ 2` if `E` has good reduction at `p`,
 * `fₚ = 1 - T` if `E` has split multiplicative reduction at `p`,
 * `fₚ = 1 + T` if `E` has nonsplit multiplicative reduction at `p`,
 * `fₚ = 1` if `E` has additive reduction at `p`.
 -/
+noncomputable def LFunction (W : WeierstrassCurve K) : ArithmeticFunction ℤ :=
+  ArithmeticFunction.eulerProduct W.localEulerFactor
+
+/-- The L-series of an elliptic curve. -/
 noncomputable def LSeries (W : WeierstrassCurve K) (s : ℂ) :=
   _root_.LSeries (fun n ↦ W.LFunction n) s
 
