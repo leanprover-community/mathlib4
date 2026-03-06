@@ -599,17 +599,9 @@ instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ]
     AbsoluteValue.LiesOver (mk ψ).1 (mk φ).1 where
   comp_eq := by simp [← LiesOver.over ψ φ, ← coe_mk_comp]
 
-variable [w.1.LiesOver v.1]
-
 theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
   simpa only [coe_apply] using AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
-
-omit [w.1.LiesOver v.1] in
-@[simp]
-theorem iff_comap_eq :
-    w.1.LiesOver v.1 ↔ w.comap (algebraMap K L) = v :=
-  ⟨fun _ ↦ comap_eq _ _, fun h ↦ ⟨by rw [← h]; rfl⟩⟩
 
 theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]
@@ -647,24 +639,6 @@ theorem IsUnramified.liesOver_isReal_over
     (hw : w.IsUnramified K) (hv : v.IsReal) : w.IsReal :=
   (InfinitePlace.isUnramified_iff.1 hw).resolve_right
     (by simpa [LiesOver.comap_eq w v] using not_isComplex_iff_isReal.2 hv)
-
-theorem IsUnramified.liesOver_isComplex_under
-    (h : w.IsUnramified K) (hw : w.IsComplex) : v.IsComplex :=
-  not_isReal_iff_isComplex.1 <| mt (h.liesOver_isReal_over w v) <| not_isReal_iff_isComplex.2 hw
-
-open LiesOver in
-theorem IsUnramified.not_comp_iff_conjugate_of_liesOver
-    (hw₀ : w.IsUnramified K) (hw : w.IsComplex) :
-    w.embedding.comp (algebraMap K L) ≠ v.embedding ↔
-      (conjugate w.embedding).comp (algebraMap K L) = v.embedding := by
-  refine ⟨(embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_left, ?_⟩
-  intro hc h
-  have hv_isComplex : v.IsComplex := hw₀.liesOver_isComplex_under w v hw
-  rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv_isComplex
-  let ⟨x, hx⟩ := hv_isComplex
-  exact hx <| RingHom.congr_fun hc x ▸ ComplexEmbedding.conjugate_comp _ (algebraMap K L) ▸
-    RingHom.congr_fun (congrArg conjugate h) x |>.symm
-
 
 variable (L)
 
