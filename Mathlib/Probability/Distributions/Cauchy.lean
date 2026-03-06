@@ -144,7 +144,7 @@ lemma integrable_cauchyPDFReal (x₀ : ℝ) {γ : ℝ≥0} :
   · simp only [h, cauchyPDFReal_scale_zero]
     exact integrable_zero _ _ _
   apply Integrable.of_integral_ne_zero
-  simp [h, integral_cauchyPDFReal]
+  simp [h, integral_cauchyPDFReal_eq_one]
 
 @[deprecated (since := "2026-03-06")]
 alias _root_Probability.integrable_cauchyPDFReal := integrable_cauchyPDFReal
