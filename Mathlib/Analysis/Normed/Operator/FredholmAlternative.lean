@@ -211,8 +211,7 @@ theorem hasEigenvalue_or_mem_resolventSet (hT : IsCompactOperator T) (hμ : μ �
 theorem ContinuousLinearMap.spectrum_eq :
     spectrum 𝕜 (T : X →L[𝕜] X) = spectrum 𝕜 (T : End 𝕜 X) := by
   ext μ
-  rw [spectrum, resolventSet, Set.mem_compl_iff, Set.mem_setOf,
-    ContinuousLinearMap.isUnit_iff_isUnit_toLinearMap]
+  rw [spectrum.mem_iff, spectrum.mem_iff, isUnit_iff_isUnit_toLinearMap]
   rfl
 
 /--
