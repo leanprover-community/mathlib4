@@ -557,7 +557,7 @@ lemma rid_apply (w : W) (a : A) : rid A σ (w ⊗ₜ a) = a • w := rfl
 lemma rid_symm_apply (w : W) : (rid A σ).symm w = w ⊗ₜ 1 := rfl
 
 variable (A) in
-/-- The `Equiv` between representations induced from `TensorProduct.lid` -/
+/-- The `Equiv` between representations induced from `TensorProduct.lid`. -/
 def lid : ((trivial A G A).tprod σ).Equiv σ :=
   .mk (_root_.TensorProduct.lid A W) <| fun g ↦ by ext; simp
 
