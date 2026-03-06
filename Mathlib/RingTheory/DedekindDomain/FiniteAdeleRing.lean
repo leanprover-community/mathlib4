@@ -172,8 +172,7 @@ theorem unitsEquiv_finite_valued_eq_one (a : (FiniteAdeleRing R K)ˣ) :
     adicCompletionIntegers.mem_units_iff_valued_eq_one.1 h
 
 theorem infinite_valued_ne_one_of_not_isUnit {a : FiniteAdeleRing R K} (ha₀ : ∀ v, a v ≠ 0)
-    (ha : ¬IsUnit a) :
-    {v | Valued.v (a v) ≠ 1}.Infinite := by
+    (ha : ¬IsUnit a) : {v | Valued.v (a v) ≠ 1}.Infinite := by
   contrapose! ha
   rw [isUnit_iff]
   exact ⟨ha₀ , ha⟩

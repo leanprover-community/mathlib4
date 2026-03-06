@@ -21,6 +21,8 @@ fractions under the assumption that `K` is a number field.
 adele ring, number field
 -/
 
+@[expose] public section
+
 namespace NumberField
 
 variable {K : Type*} [Field K] [NumberField K]
