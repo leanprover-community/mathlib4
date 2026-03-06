@@ -96,7 +96,13 @@ theorem simpson_midpoint_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 
 /-- The absolute error of Simpson's midpoint rule does not change when the endpoints are swapped. -/
 theorem simpson_midpoint_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
     simpson_midpoint_error f N a b = -simpson_midpoint_error f N b a := by
-  sorry
+  unfold simpson_midpoint_error
+  have h_integral : simpson_midpoint_integral f N a b = -(simpson_midpoint_integral f N b a) :=
+    simpson_midpoint_integral_symm f N_nonzero a b
+  have h_exact : (∫ x in a..b, f x) = -(∫ x in b..a, f x) := by
+    rw [intervalIntegral.integral_symm]
+  rw [h_integral, h_exact]
+  ring
 
 /-- Just like exact integration, the Simpson midpoint integration from `a` to `a` is zero. -/
 @[simp]
