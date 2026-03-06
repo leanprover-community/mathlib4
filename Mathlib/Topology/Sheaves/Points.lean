@@ -67,7 +67,7 @@ lemma isConservativeFamilyOfPoints_pointsGrothendieckTopology :
 
 instance : HasEnoughPoints.{u} (grothendieckTopology X) where
   exists_objectProperty :=
-    ⟨_, inferInstance, isConservative_pointsGrothendieckTopology X⟩
+    ⟨_, inferInstance, isConservativeFamilyOfPoints_pointsGrothendieckTopology X⟩
 
 set_option backward.isDefEq.respectTransparency false in
 instance (U : Opens X) (Φ : Point.{u} (grothendieckTopology X)) :
