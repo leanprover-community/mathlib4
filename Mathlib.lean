@@ -1773,6 +1773,7 @@ public import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.Complex.RemovableSingularity
 public import Mathlib.Analysis.Complex.Schwarz
 public import Mathlib.Analysis.Complex.Spectrum
+public import Mathlib.Analysis.Complex.SqrtDeriv
 public import Mathlib.Analysis.Complex.SummableUniformlyOn
 public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.Tietze
@@ -5490,6 +5491,7 @@ public import Mathlib.NumberTheory.ModularForms.Bounds
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 public import Mathlib.NumberTheory.ModularForms.Cusps
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
+public import Mathlib.NumberTheory.ModularForms.Delta
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
