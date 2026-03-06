@@ -721,4 +721,3 @@ lemma mdifferentiableAt_extend {x : M} (σ₀ : V x) :
 
 end FiberBundle
 end extend
-
