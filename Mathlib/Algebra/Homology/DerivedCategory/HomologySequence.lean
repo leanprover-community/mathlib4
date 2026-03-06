@@ -204,7 +204,8 @@ lemma homologyFunctorFactors_hom_app_homologyδOfTriangle (n₀ n₁ : ℤ) (h :
   simp only [dsimp% [ShiftedHom.map]
       DerivedCategory.shiftMap_homologyFunctor_map_Q T.mor₃ n₀ n₁ (by lia),
     Category.assoc, Iso.inv_hom_id_app, NatIso.cancel_natIso_hom_left]
-  exact (Category.comp_id _).symm
+  erw [Category.comp_id]
+  rfl
 
 variable (hT : DerivedCategory.Q.mapTriangle.obj T ∈ distTriang _)
 
