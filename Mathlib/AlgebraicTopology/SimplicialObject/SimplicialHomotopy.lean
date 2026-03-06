@@ -49,8 +49,8 @@ satisfying compatibility conditions with respect to face and degeneracy maps -/
 @[ext]
 structure SimplicialHomotopy
     {X Y : SimplicialObject C} (f g : X ⟶ Y) where
-  /-- Basic data: `h i : Xₙ ⟶ Yₙ₊₁` for `i = 0..n`. -/
-  h {n : ℕ} (i : Fin (n + 1)) : (X _⦋n⦌ ⟶ Y _⦋n+1⦌)
+  /-- Basic data: `h i : Xₙ ⟶ Yₙ₊₁` for `i : Fin (n + 1)`. -/
+  h {n : ℕ} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ Y _⦋n+1⦌
   /-- Endpoint `d₀ h₀ = g`. -/
   h_zero_comp_δ_zero (n : ℕ) : h 0 ≫ Y.δ 0 = g.app (op ⦋n⦌)
   /-- Endpoint `d_{n+1} hₙ = f`. -/
