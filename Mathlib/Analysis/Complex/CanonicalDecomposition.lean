@@ -148,7 +148,6 @@ theorem canonicalFactor_eval_center (R : ℝ) (w : ℂ) : CanonicalFactor R w w 
 /--
 The canonical factor `CanonicalFactor R w` takes values of norm one on `sphere 0 R`.
 -/
-@[simp]
 theorem norm_canonicalFactor_eval_circle_eq_one {z : ℂ} (hw : w ∈ ball 0 R) (hz : z ∈ sphere 0 R) :
     ‖CanonicalFactor R w z‖ = 1 := by
   rw [CanonicalFactor, norm_div, div_eq_iff, one_mul]
