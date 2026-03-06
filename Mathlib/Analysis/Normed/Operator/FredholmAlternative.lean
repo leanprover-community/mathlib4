@@ -225,4 +225,4 @@ theorem hasEigenvalue_iff_mem_spectrum (hT : IsCompactOperator T) (hμ : μ ≠ 
   · intro hμ'
     rw [ContinuousLinearMap.spectrum_eq]
     exact hμ'.mem_spectrum
-  · exact (fredholm_alternative hT hμ).resolve_right
+  · exact (hasEigenvalue_or_mem_resolventSet hT hμ).resolve_right
