@@ -214,6 +214,7 @@ theorem IntermediateField.isAlgebraic_X (E : IntermediateField K K⟮X⟯) (hE :
 end
 
 namespace Luroth
+noncomputable section
 
 open scoped Polynomial.Bivariate
 
@@ -225,7 +226,7 @@ variable {E : IntermediateField K K⟮X⟯}
 set_option backward.isDefEq.respectTransparency false in
 variable (E) in
 /-- The minimal polynomial of `X` with coefficients in `E`. -/
-noncomputable abbrev φ : E[X] := minpoly E (X : K⟮X⟯)
+abbrev φ : E[X] := minpoly E (X : K⟮X⟯)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma φ_ne_zero (h : E ≠ ⊥) : φ E ≠ 0 :=
@@ -253,13 +254,13 @@ lemma exists_φ_coeff_not_mem (h : E ≠ ⊥) :
   · simpa using congr(aeval (X : K⟮X⟯) $(hf))
 
 /-- A choice of coefficient index `i` such that `φ.coeff i` is not in `K`. -/
-noncomputable def generatorIndex (h : E ≠ ⊥) : ℕ :=
+def generatorIndex (h : E ≠ ⊥) : ℕ :=
   (exists_φ_coeff_not_mem h).choose
 
 variable (E) in
 open Classical in
 /-- A choice of a generator for Lüroth's theorem, see `Luroth.eq_adjoin_generator`. -/
-public noncomputable def generator : K⟮X⟯ :=
+public def generator : K⟮X⟯ :=
   if h : E = ⊥ then 0 else (φ E).coeff (generatorIndex h)
 
 public lemma generator_eq_zero (h : E = ⊥) : generator E = 0 :=
@@ -292,6 +293,14 @@ public lemma generator_ne_zero (h : E ≠ ⊥) : generator E ≠ 0 :=
 public lemma adjoin_generator_le : K⟮generator E⟯ ≤ E :=
   adjoin_simple_le_iff.mpr generator_mem
 
+variable (E) in
+/-- The numerator of the generator. -/
+abbrev f : K[X] := generator E |>.num
+
+variable (E) in
+/-- The denominator of the generator. -/
+abbrev g : K[X] := generator E |>.denom
+
 -- The next step is to define a bivariate polynomial `Φ`, which is a multiple of `φ`.
 -- Cohn does this my "multiplying with the lowest common denominator". In this formalisation,
 -- we first define `Φ'` as any integer multiple of `φ`, and then set `Φ` to be its
@@ -299,7 +308,7 @@ public lemma adjoin_generator_le : K⟮generator E⟯ ≤ E :=
 
 variable (E) in
 /-- The integer normalization of `φ` as a bivariate polynomial. -/
-noncomputable abbrev Φ' : K[X][Y] :=
+abbrev Φ' : K[X][Y] :=
   IsLocalization.integerNormalization (nonZeroDivisors K[X]) ((φ E).map (algebraMap E K⟮X⟯))
 
 lemma Φ'_ne_zero (h : E ≠ ⊥) : Φ' E ≠ 0 :=
@@ -307,7 +316,7 @@ lemma Φ'_ne_zero (h : E ≠ ⊥) : Φ' E ≠ 0 :=
 
 variable (E) in
 /-- A polynomial `b` that satisfies `b * φ = Φ'`. -/
-noncomputable def b : K[X] :=
+def b : K[X] :=
   (IsLocalization.integerNormalization_spec (nonZeroDivisors K[X])
     ((φ E).map (algebraMap E K⟮X⟯))).choose
 
@@ -322,7 +331,7 @@ lemma Φ'_map :
 variable (E) in
 open Classical in
 /-- A rational function `c` that satisfies `c * φ = Φ`. This is `ν₀(x)` in Cohn's notation. -/
-noncomputable abbrev c : K⟮X⟯ :=
+abbrev c : K⟮X⟯ :=
   (algebraMap K[X] K⟮X⟯ (Φ' E).content)⁻¹ * (algebraMap K[X] K⟮X⟯ (b E))
 
 open Classical in
@@ -334,7 +343,7 @@ lemma c_ne_zero (h : E ≠ ⊥) : c E ≠ 0 :=
 variable (E) in
 open Classical in
 /-- The primitive part of `Φ'`. -/
-noncomputable abbrev Φ : K[X][Y] := (Φ' E).primPart
+abbrev Φ : K[X][Y] := (Φ' E).primPart
 
 set_option backward.isDefEq.respectTransparency false in
 /-- We have `c * φ = Φ` as polynomials with coefficients in `Ratfunc K`. See Equation
@@ -396,7 +405,7 @@ lemma Φ_coeff_generatorIndex_ne_zero (h : E ≠ ⊥) :
   exact mul_ne_zero_iff.mpr ⟨algebraMap_ne_zero (num_ne_zero (c_ne_zero h)), generator_ne_zero h⟩
 
 set_option backward.isDefEq.respectTransparency false in
-lemma generator_denom_dvd_c_num (h : E ≠ ⊥) : (generator E).denom ∣ (c E).num := by
+lemma generator_denom_dvd_c_num (h : E ≠ ⊥) : (g E) ∣ (c E).num := by
   rw [denom_dvd (num_ne_zero (c_ne_zero h))]
   use (Φ E).coeff (generatorIndex h)
   rw [Φ_coeff_generatorIndex h,
@@ -417,9 +426,9 @@ lemma Φ_ne_zero (h : E ≠ ⊥) : Φ E ≠ 0 := by
 
 set_option backward.isDefEq.respectTransparency false in
 lemma le_Φ_coeff_generatorIndex_natDegree (h : E ≠ ⊥) :
-    (generator E).num.natDegree ≤ ((Φ E).coeff (generatorIndex h)).natDegree := by
+    (f E).natDegree ≤ ((Φ E).coeff (generatorIndex h)).natDegree := by
   classical
-  have := congr($(Φ_coeff_generatorIndex h) * algebraMap K[X] K⟮X⟯ (generator E).denom)
+  have := congr($(Φ_coeff_generatorIndex h) * algebraMap K[X] K⟮X⟯ (g E))
   conv at this => enter [2, 1, 2]; rw [← num_div_denom (generator E)]
   rw [mul_assoc, div_mul_cancel₀ _ (algebraMap_ne_zero (generator E).denom_ne_zero),
     ← map_mul, ← map_mul] at this
@@ -432,13 +441,15 @@ lemma le_Φ_coeff_generatorIndex_natDegree (h : E ≠ ⊥) :
   exact zero_le _
 
 lemma le_Φ_coeff_natDegree_natDegree (h : E ≠ ⊥) :
-    (generator E).denom.natDegree ≤ ((Φ E).coeff (φ E).natDegree).natDegree := by
+    (g E).natDegree ≤ ((Φ E).coeff (φ E).natDegree).natDegree := by
   rw [Φ_coeff_φ_natDegree' h]
   exact natDegree_le_of_dvd (generator_denom_dvd_c_num h) (num_ne_zero (c_ne_zero h))
 
-lemma le_swap_Φ_natDegree (h : E ≠ ⊥) :
-    max (generator E).num.natDegree (generator E).denom.natDegree ≤
-      (Bivariate.swap (Φ E)).natDegree := by
+variable (E) in
+abbrev m : ℕ := max (f E).natDegree (g E).natDegree
+
+lemma m_le_swap_Φ_natDegree (h : E ≠ ⊥) :
+    m E ≤ (Bivariate.swap (Φ E)).natDegree := by
   rw [← sum_monomial_eq (Φ E), sum_def, map_sum]
   conv in (fun _ ↦ _) =>
     ext
@@ -454,7 +465,7 @@ lemma le_swap_Φ_natDegree (h : E ≠ ⊥) :
       Finset.le_sup (f := fun i ↦ ((Φ E).coeff i).natDegree) <|
       mem_support_iff.mpr (Φ_coeff_φ_natDegree_ne_zero h)
 
-noncomputable instance : Algebra K⟮generator E⟯ E :=
+instance : Algebra K⟮generator E⟯ E :=
   (IntermediateField.inclusion adjoin_generator_le).toAlgebra
 
 set_option backward.isDefEq.respectTransparency false in
@@ -468,7 +479,7 @@ lemma φ_dvd_generator_minpolyX :
 
 variable (E) in
 /-- A polynomial `q` that satisfies `φ * q = (generator E).minpolyX`. -/
-noncomputable abbrev q : E[X] := (φ_dvd_generator_minpolyX (E := E)).choose
+abbrev q : E[X] := (φ_dvd_generator_minpolyX (E := E)).choose
 
 lemma φ_mul_q :
     φ E * q E = ((generator E).minpolyX K⟮generator E⟯).map (algebraMap _ E) :=
@@ -487,8 +498,8 @@ lemma q_ne_zero (h : E ≠ ⊥) : q E ≠ 0 := right_ne_zero_of_mul <|
 
 variable (E) in
 /-- A polynomial `Q₀` with coefficients in `K⟮X⟯` that satisfies `Q₀ * Φ = θ`. -/
-noncomputable abbrev Q₀ : K⟮X⟯[X] :=
-  Polynomial.C ((algebraMap K[X] K⟮X⟯ (generator E).denom) / c E) *
+abbrev Q₀ : K⟮X⟯[X] :=
+  Polynomial.C ((algebraMap K[X] K⟮X⟯ (g E)) / c E) *
     (q E).map (algebraMap E K⟮X⟯)
 
 lemma Q₀_ne_zero (h : E ≠ ⊥) : Q₀ E ≠ 0 := by
@@ -500,17 +511,15 @@ variable (E) in
 /-- The bivariate polynomial `g(X) * f(Y) - f(X) * g(Y)`, where `f` and `g` are
 the numerator and denominator of `generator`. This is an auxiliary definition
 for the proof of Lüroth's theorem. -/
-noncomputable abbrev θ : K[X][Y] :=
-  Polynomial.C (generator E).denom * (generator E).num.map Polynomial.C -
-  Polynomial.C (generator E).num * (generator E).denom.map Polynomial.C
+abbrev θ : K[X][Y] :=
+  Polynomial.C (g E) * (f E).map Polynomial.C - Polynomial.C (f E) * (g E).map Polynomial.C
 
 lemma swap_θ : Bivariate.swap (θ E) = -(θ E) := by
   rw [map_sub, map_mul, map_mul, Bivariate.swap_C, Bivariate.swap_map_C, Bivariate.swap_C,
     Bivariate.swap_map_C]
   ring
 
-lemma θ_natDegree_le (h : E ≠ ⊥) :
-    (θ E).natDegree ≤ max (generator E).num.natDegree (generator E).denom.natDegree := by
+lemma θ_natDegree_le (h : E ≠ ⊥) : (θ E).natDegree ≤ m E := by
   convert natDegree_sub_le _ _ using 3
   · rw [natDegree_mul (C_ne_zero.mpr (generator E).denom_ne_zero)
       (Polynomial.map_ne_zero (num_ne_zero (generator_ne_zero h))), natDegree_C, zero_add,
@@ -523,15 +532,14 @@ set_option backward.isDefEq.respectTransparency false in
 in `K⟮X⟯`. -/
 lemma Q₀_mul_Φ (h : E ≠ ⊥) :
     Q₀ E * (Φ E).map (algebraMap K[X] K⟮X⟯) = (θ E).map (algebraMap K[X] K⟮X⟯) := by
-  rw [← C_c_mul_φ h, mul_assoc]
-  conv =>
-    lhs; rhs
-    rw [← mul_assoc]
-    lhs
-    rw [mul_comm]
-  rw [← mul_assoc, ← mul_assoc, ← C_mul, div_mul_cancel₀ _ (c_ne_zero h), mul_assoc,
-    ← Polynomial.map_mul, mul_comm (q E) (φ E), φ_mul_q, Polynomial.map_map, Polynomial.map_sub,
-    Polynomial.map_mul, map_C, RingHom.coe_comp, Function.comp_apply,
+  suffices
+    Polynomial.C ((algebraMap K[X] K⟮X⟯) (g E)) * (q E).map (algebraMap (↥E) K⟮X⟯) *
+       (φ E).map (algebraMap (↥E) K⟮X⟯) = (θ E).map (algebraMap K[X] K⟮X⟯) by
+    rw [← C_c_mul_φ h, mul_assoc, ← mul_assoc _ (Polynomial.C (c E)) _,
+      mul_comm _ (Polynomial.C (c E))]
+    simpa only [← mul_assoc, ← C_mul, div_mul_cancel₀ _ (c_ne_zero h)] using this
+  rw [mul_assoc, ← Polynomial.map_mul, mul_comm (q E) (φ E), φ_mul_q, Polynomial.map_map,
+    Polynomial.map_sub, Polynomial.map_mul, map_C, RingHom.coe_comp, Function.comp_apply,
     IntermediateField.algebraMap_apply, Polynomial.map_map, Polynomial.map_map, mul_sub,
     ← mul_assoc, ← map_mul, (inclusion adjoin_generator_le).algebraMap_toAlgebra,
     AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_inclusion, coe_algebraMap]
@@ -547,7 +555,7 @@ lemma Q₀_mem_lifts (h : E ≠ ⊥) : Q₀ E ∈ lifts (algebraMap K[X] K⟮X�
   exact ⟨_, rfl⟩
 
 /-- A bivariate polynomial `Q₁` that satisfies `Q₁ * Φ = θ`. -/
-noncomputable abbrev Q₁ (h : E ≠ ⊥) : K[X][Y] := (Q₀_mem_lifts h).choose
+abbrev Q₁ (h : E ≠ ⊥) : K[X][Y] := (Q₀_mem_lifts h).choose
 
 lemma map_Q₁ (h : E ≠ ⊥) : (Q₁ h).map (algebraMap K[X] K⟮X⟯) = Q₀ E :=
   (Q₀_mem_lifts h).choose_spec
@@ -571,15 +579,13 @@ lemma swap_Q₁_natDegree (h : E ≠ ⊥) : (Bivariate.swap (Q₁ h)).natDegree 
   rw [natDegree_mul
     ((map_ne_zero_iff _ Bivariate.swap.injective).mpr (Q₁_ne_zero h))
     ((map_ne_zero_iff _ Bivariate.swap.injective).mpr (Φ_ne_zero h))] at this
-  let m := max (generator E).num.natDegree (generator E).denom.natDegree
-  have h₁ : (Bivariate.swap (θ E)).natDegree ≤ m := by
+  have h₁ : (Bivariate.swap (θ E)).natDegree ≤ m E := by
     rw [swap_θ, natDegree_neg]
     exact θ_natDegree_le h
-  have h₂ : m ≤ (Bivariate.swap (Φ E)).natDegree := le_swap_Φ_natDegree h
-  linarith
+  grind [m_le_swap_Φ_natDegree h]
 
 /-- A univariate polynomial `Q₂` that satisfies `Q₂ * Φ = θ`. -/
-noncomputable abbrev Q₂ (h : E ≠ ⊥) : K[X] := (Bivariate.swap (Q₁ h)).coeff 0
+abbrev Q₂ (h : E ≠ ⊥) : K[X] := (Bivariate.swap (Q₁ h)).coeff 0
 
 lemma Q₂_map (h : E ≠ ⊥) : (Q₂ h).map Polynomial.C = Q₁ h := by
   have := eq_C_of_natDegree_eq_zero (swap_Q₁_natDegree h)
@@ -598,48 +604,48 @@ lemma Q₂_mul_Φ (h : E ≠ ⊥) : (Q₂ h).map Polynomial.C * Φ E = θ E := b
 
 attribute [local instance] Polynomial.algebra in
 lemma Q₂_natDegree (h : E ≠ ⊥) : (Q₂ h).natDegree = 0 := by
+  -- We have f(X)*g(Y) - g(X)*f(Y) = Q₂(X) * Φ
+  -- Assume Q₂ has positive degree, take a root in an algebraic extension
   by_contra H
   apply (generator E).eq_C_iff.not.mp (generator_ne_C h)
   let F := AlgebraicClosure K
   rw [natDegree_eq_zero_iff_degree_le_zero.not, ← degree_map _ (algebraMap K F)] at H
   obtain ⟨α, hα⟩ := IsAlgClosed.exists_root ((Q₂ h).map (algebraMap K F)) (ne_of_not_ge H).symm
+  -- Evaluate at the root, get that f(α)*g(Y) = g(α)*f(Y)
   rw [IsRoot.def, eval_map_algebraMap] at hα
-  have eq := (Q₂_mul_Φ h).symm
-  apply_fun aeval (Polynomial.C α) at eq
-  rw [aeval_mul, ← map_aeval_eq_aeval_map (by ext; simp), hα, map_zero, zero_mul, aeval_sub,
-    aeval_mul, aeval_mul, aeval_C, aeval_C, ← map_aeval_eq_aeval_map (by ext; simp),
-    ← map_aeval_eq_aeval_map (by ext; simp), algebraMap_def, coe_mapRingHom, sub_eq_zero,
-    ← Polynomial.coe_mapRingHom] at eq
-  obtain ⟨aeval_num_ne_zero, aeval_denom_ne_zero⟩ :
-      aeval α (generator E).num ≠ 0 ∧ aeval α (generator E).denom ≠ 0 := by
+  have eq :
+      (Polynomial.mapRingHom (algebraMap K F)) (g E) * Polynomial.C ((aeval α) (f E)) =
+      (Polynomial.mapRingHom (algebraMap K F)) (f E) * Polynomial.C ((aeval α) (g E)) := by
+    have := congr(aeval (Polynomial.C α) $(Q₂_mul_Φ h)).symm
+    rwa [aeval_mul, ← map_aeval_eq_aeval_map (by ext; simp), hα, map_zero, zero_mul, aeval_sub,
+      aeval_mul, aeval_mul, aeval_C, aeval_C, ← map_aeval_eq_aeval_map (by ext; simp),
+      ← map_aeval_eq_aeval_map (by ext; simp), algebraMap_def, coe_mapRingHom, sub_eq_zero,
+      ← Polynomial.coe_mapRingHom] at this
+  obtain ⟨isUnit₁, isUnit₂⟩ :
+      IsUnit (Polynomial.C <| aeval α (f E)) ∧ IsUnit (Polynomial.C <| aeval α (g E)) := by
+    rw [Polynomial.isUnit_C, isUnit_iff_ne_zero, Polynomial.isUnit_C, isUnit_iff_ne_zero]
     obtain (H | H) := aeval_ne_zero_of_isCoprime (generator E).isCoprime_num_denom α
-    · refine ⟨H, ?_⟩
-      apply_fun Polynomial.C
+    · refine ⟨H, Polynomial.C_injective.ne_iff.mp ?_⟩
       rw [map_zero, ← mul_ne_zero_iff_left <| Polynomial.map_ne_zero <|
         num_ne_zero (generator_ne_zero h)]
       exact eq ▸ mul_ne_zero (Polynomial.map_ne_zero (generator E).denom_ne_zero) <|
         Polynomial.C_ne_zero.mpr H
-    · refine ⟨?_, H⟩
-      apply_fun Polynomial.C
-      rw [map_zero, ← mul_ne_zero_iff_left (Polynomial.map_ne_zero (generator E).denom_ne_zero)]
+    · refine ⟨Polynomial.C_injective.ne_iff.mp ?_, H⟩
+      rw [map_zero, ← mul_ne_zero_iff_left <| Polynomial.map_ne_zero (generator E).denom_ne_zero]
       exact eq ▸ mul_ne_zero (Polynomial.map_ne_zero (num_ne_zero (generator_ne_zero h))) <|
         Polynomial.C_ne_zero.mpr H
+  -- obtain contradiction because f and g are coprime
   have isCoprime := IsCoprime.map (generator E).isCoprime_num_denom <|
     Polynomial.mapRingHom (algebraMap K F)
-  constructor
-  · rw [← natDegree_map_eq_of_injective (FaithfulSMul.algebraMap_injective K F) (generator E).num]
-    apply natDegree_eq_zero_of_isUnit
-    apply isCoprime.isUnit_of_dvd
-    rw [← IsUnit.dvd_mul_right (isUnit_C.mpr (isUnit_iff_ne_zero.mpr aeval_num_ne_zero))]
-    exact ⟨Polynomial.C ((aeval α) (generator E).denom), eq⟩
-  · rw [← natDegree_map_eq_of_injective (FaithfulSMul.algebraMap_injective K F) (generator E).denom]
-    apply natDegree_eq_zero_of_isUnit
-    apply isCoprime.symm.isUnit_of_dvd
-    rw [← IsUnit.dvd_mul_right (isUnit_C.mpr (isUnit_iff_ne_zero.mpr aeval_denom_ne_zero))]
-    exact ⟨Polynomial.C ((aeval α) (generator E).num), eq.symm⟩
+  have : Associated ((f E).mapRingHom (algebraMap K F)) ((g E).mapRingHom (algebraMap K F)) := by
+    rw [← associated_mul_isUnit_left_iff isUnit₂, Associated.comm]
+    exact ⟨isUnit₁.unit, by simpa⟩
+  have := isCoprime.isUnit_of_associated this
+  exact ⟨by simpa using (natDegree_eq_zero_of_isUnit this.1),
+    by simpa using (natDegree_eq_zero_of_isUnit this.2)⟩
 
 /-- A constant `Q₃` that satisfies `Q₃ * Φ = θ`. -/
-noncomputable abbrev Q₃ (h : E ≠ ⊥) : K := (Q₂ h).coeff 0
+abbrev Q₃ (h : E ≠ ⊥) : K := (Q₂ h).coeff 0
 
 lemma Q₃_map (h : E ≠ ⊥) : Polynomial.C (Q₃ h) = Q₂ h :=
   (eq_C_of_natDegree_eq_zero (Q₂_natDegree h)).symm
@@ -671,17 +677,17 @@ public theorem eq_adjoin_generator : E = K⟮(generator E : K⟮X⟯)⟯ := by
   by_cases h : E = ⊥
   · rwa [generator_eq_zero h, adjoin_zero]
   refine le_antisymm (relfinrank_eq_one_iff.mp ?_) adjoin_generator_le
-  suffices (φ E).natDegree = max (generator E).num.natDegree (generator E).denom.natDegree by
+  suffices (φ E).natDegree = m E by
     refine (mul_eq_right₀ ?_).mp <| this ▸ (generator E).finrank_eq_max_natDegree ▸
       φ_natDegree h ▸ relfinrank_mul_finrank_top (adjoin_generator_le (E := E))
     intro H
     exact generator_ne_C h ((eq_C_iff _).mpr (Nat.max_eq_zero_iff.mp H))
   rw [← Φ_natDegree_eq_φ_natDegree h, Φ_natDegree_eq_θ_natDegree h]
-  exact le_antisymm (θ_natDegree_le h) (swap_Φ_natDegree_eq_θ_natDegree h ▸ le_swap_Φ_natDegree h)
+  exact le_antisymm (θ_natDegree_le h) (swap_Φ_natDegree_eq_θ_natDegree h ▸ m_le_swap_Φ_natDegree h)
 
 /-- The `K`-algebra equivalence between `K⟮X⟯` and an intermediate field `E` given
 by sending `X` to `generator E`. See also `Luroth.eq_adjoin_generator`. -/
-public noncomputable def algEquiv (h : E ≠ ⊥) : K⟮X⟯ ≃ₐ[K] E :=
+public def algEquiv (h : E ≠ ⊥) : K⟮X⟯ ≃ₐ[K] E :=
   (algEquivOfTranscendental (generator E) (transcendental_of_ne_C _ (generator_ne_C h))).trans <|
     IntermediateField.equivOfEq eq_adjoin_generator.symm
 
@@ -698,6 +704,7 @@ public lemma algEquiv_apply (h : E ≠ ⊥) (u : K⟮X⟯) :
     algEquiv h u = aeval (generator E) u.num / aeval (generator E) u.denom := by
   simp [algEquiv, algEquivOfTranscendental_apply]
 
+end
 end Luroth
 
 end RatFunc
