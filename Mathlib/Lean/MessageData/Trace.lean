@@ -57,9 +57,6 @@ Lean's `withTraceNodeBefore` prepends `checkEmoji`/`crossEmoji`/`bombEmoji`
 (defined in `Lean.Util.Trace`) to trace headers to indicate outcomes.
 
 The `TraceResult` will be recorded in trace messages directly in [lean4#12698](https://github.com/leanprover/lean4/pull/12698).
-Once that PR is available, callers should prefer `td.result?` over calling this function.
-
-Note: the emoji constants include a variation selector (U+FE0F), but `String.startsWith`
 Once that PR is available, callers should prefer `td.result?` over calling this function. -/
 def traceResultOf (headerStr : String) : Option TraceResult :=
   if headerStr.startsWith "✅️" then some .success
