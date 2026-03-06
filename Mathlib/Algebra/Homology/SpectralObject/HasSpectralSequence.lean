@@ -217,7 +217,6 @@ def coreE₂CohomologicalFin (l : ℕ) :
     grind
   antitone_i₀ := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ hr hrr'
-    dsimp
     rw [Fin.mk_le_mk]
     lia
   monotone_i₃ := by
