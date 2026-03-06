@@ -27,39 +27,6 @@ variable {v : InfinitePlace K} (w : InfinitePlace L)
 
 variable (L v)
 
--- def _root_.Set.disjSum {α β : Type*} (s : Set α) (t : Set β) : Set (α ⊕ β) :=
---   Sum.inl '' s ∪ Sum.inr '' t
-
--- theorem _root_.Set.sumEquic_symm_apply {α β : Type*} (s : Set α) (t : Set β) :
---     Set.sumEquiv.symm (s, t) = Sum.inl '' s ∪ Sum.inr '' t := rfl
-theorem _root_.Set.sumEquiv_symm_toFinset {α β : Type*} (s : Set α) (t : Set β)
-    (hs : s.Finite := by toFinite_tac) (ht : t.Finite := by toFinite_tac)
-    (hst : (Set.sumEquiv.symm (s, t)).Finite := by toFinite_tac) :
-    hst.toFinset = hs.toFinset.disjSum ht.toFinset := by
-  ext; aesop (add simp [disjSum, Finset.disjSum])
-
-@[simp]
-theorem _root_.Finset.coe_disjSum {α β : Type*} (s : Finset α) (t : Finset β) :
-    (s.disjSum t : Set (α ⊕ β)) = s.disjSum t := by
-  ext ; aesop (add simp [disjSum, Set.sumEquiv, Finset.disjSum])
-
-theorem _root_.Set.MapsTo.sumElim {α β γ : Type*} {f : α → γ} {g : β → γ} {r : Set α}
-    {s : Set β} {t : Set γ} (hf : Set.MapsTo f r t) (hg : Set.MapsTo g s t) :
-    Set.MapsTo (Sum.elim f g) (Set.sumEquiv.symm (r, s)) t := by
-  rintro (a | b)
-  · simpa using fun ha ↦ hf ha
-  · simpa using fun hb ↦ hg hb
-
-theorem _root_.Set.InjOn.sumElim {α β γ : Type*} {f : α → γ} {g : β → γ} {r : Set α}
-    {s : Set β} (hf : Set.InjOn f r) (hg : Set.InjOn g s)
-    (hfg : ∀ᵉ (a ∈ r) (b ∈ s), f a ≠ g b) :
-    Set.InjOn (Sum.elim f g) (Set.sumEquiv.symm (r, s)) := by
-  rintro (a₁ | b₁) h₁ (a₂ | b₂) h₂ heq <;> simp [Set.sumEquiv] at h₁ h₂
-  · aesop
-  · exact (hfg _ (by simpa using h₁) _ (by simpa using h₂) heq).elim
-  · exact (hfg _ (by simpa using h₂) _ (by simpa using h₁) heq.symm).elim
-  · aesop
-
 theorem bijOn_sumElim_conjugate :
     Set.BijOn (Sum.elim embedding (conjugate ∘ embedding))
       (Set.sumEquiv.symm ((ramifiedPlacesOver L v), (ramifiedPlacesOver L v)))
@@ -89,8 +56,10 @@ alias ⟨_root_.Set.BijOn.toFinset, _⟩ := Set.BijOn_toFinset
 theorem ramifiedPlacesOver_ncard [NumberField L] :
     2 * (ramifiedPlacesOver L v).ncard = (mixedEmbeddingsOver L v.embedding).ncard := by
   rw [Set.ncard_eq_toFinset_card, Set.ncard_eq_toFinset_card,
-    ← (bijOn_sumElim_conjugate L v).toFinset.finsetCard_eq, Set.sumEquiv_symm_toFinset,
-    card_disjSum, two_mul]
+    ← (bijOn_sumElim_conjugate L v).toFinset.finsetCard_eq]
+  rw [two_mul]
+  convert (card_disjSum _ _).symm
+  ext; aesop (add simp [Set.sumEquiv])
 
 open scoped Classical in
 def embeddingConjugateIte (v : InfinitePlace K) :
