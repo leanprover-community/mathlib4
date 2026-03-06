@@ -601,11 +601,6 @@ lemma logHeight_x_y_zero (x y : K) : logHeight ![x, y, 0] = logHeight ![x, y] :=
     fin_cases j <;> simp [e]
   rw [← logHeight_comp_equiv e, he, logHeight_sumElim_zero_eq]
 
-omit [AdmissibleAbsValues K] in
-private lemma ne_zero_of_tuple_ne_zero {a : K} (ha : ![a, 0] ≠ 0) : a ≠ 0 := by
-  contrapose! ha
-  simp [ha]
-
 variable (K) in
 /-- A homogeneous version of `Height.abs_logHeight_sym2_sub_le`. -/
 lemma abs_logHeight_sym2_sub_le' :
@@ -615,13 +610,13 @@ lemma abs_logHeight_sym2_sub_le' :
   refine ⟨C, fun a b c d hab hcd ↦ ?_⟩
   have hC₀ : 0 ≤ C := by simpa using hC 0 0
   rcases eq_or_ne b 0 with rfl | hb
-  · have ha : a ≠ 0 := ne_zero_of_tuple_ne_zero hab
+  · have ha : a ≠ 0 := by contrapose! hab; simp [hab]
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, zero_mul, add_zero, logHeight_x_y_zero,
       logHeight_zero_right, zero_add]
     rw [← logHeight_smul_eq_logHeight (c := 1 / a) _ (by simp [ha])]
     simpa [field, ha] using hC₀
   rcases eq_or_ne d 0 with rfl | hd
-  · have hc : c ≠ 0 := ne_zero_of_tuple_ne_zero hcd
+  · have hc : c ≠ 0 := by contrapose! hcd; simp [hcd]
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, mul_zero, zero_add, logHeight_x_y_zero,
       logHeight_zero_right, add_zero, mul_comm _  c]
     rw [← logHeight_smul_eq_logHeight (c := 1 / c) _ (by simp [hc])]
