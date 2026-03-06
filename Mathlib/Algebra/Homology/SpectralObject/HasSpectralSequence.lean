@@ -385,8 +385,7 @@ instance : Y.HasSpectralSequence coreE₂CohomologicalNat where
   isZero_H_obj_mk₁_i₀_le := by
     rintro r _ ⟨p, q⟩ hpq n rfl rfl hr
     apply isZero₁_of_isFirstQuadrant
-    dsimp
-    simp only [WithBotTop.coe_le_coe]
+    simp only [coreE₂CohomologicalNat_i₀, WithBotTop.coe_le_coe]
     by_contra!
     obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by lia)
     obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by lia)
