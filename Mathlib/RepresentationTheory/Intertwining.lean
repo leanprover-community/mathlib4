@@ -467,7 +467,7 @@ lemma tensor_apply (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) (v : 
     f.tensor g (v ⊗ₜ w) = f v ⊗ₜ g w := rfl
 
 variable (ρ) in
-/-- the natural intertwining map induced from `f : σ → τ` to `ρ.tprod σ → ρ.tprod τ`. -/
+/-- The natural intertwining map induced from `f : σ → τ` to `ρ.tprod σ → ρ.tprod τ`. -/
 def lTensor (f : IntertwiningMap σ τ) :
     (tprod ρ σ).IntertwiningMap (tprod ρ τ) := tensor (id ρ) f
 
