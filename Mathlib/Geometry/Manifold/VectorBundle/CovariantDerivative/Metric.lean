@@ -329,8 +329,7 @@ theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
   simp [product, real_inner_comm, fromTangentSpace]
 
 variable {I} in
--- TODO: make naming consistent with `torsion` (which uses `vector_field_apply` and `apply` instead)
-theorem metricTensor_apply' [FiniteDimensional ℝ E] (x : M) (X₀ Y₀ Z₀ : TangentSpace I x) :
+theorem metricTensor_apply_extend [FiniteDimensional ℝ E] (x : M) (X₀ Y₀ Z₀ : TangentSpace I x) :
     MetricTensor cov x Y₀ Z₀ X₀ =
       fromTangentSpace _ (mfderiv% ⟪(extend E Y₀), (extend E Z₀)⟫ x X₀)
         - ⟪∇ extend E Y₀, (extend E X₀), extend E Z₀⟫ x
@@ -365,7 +364,7 @@ lemma isCompatible_iff [FiniteDimensional ℝ E] :
   refine ⟨fun hcov x X Y Z hX hY hZ ↦ cov.isCompatible_apply hcov hY hZ, fun h ↦ ?_⟩
   unfold IsCompatible
   ext x X₀ Y₀ Z₀
-  rw [metricTensor_apply', sub_sub, sub_eq_iff_eq_add']
+  rw [metricTensor_apply_extend, sub_sub, sub_eq_iff_eq_add']
   simp only [Pi.zero_apply, ContinuousLinearMap.zero_apply, add_zero]
   convert h (mdifferentiableAt_extend I E Z₀) (mdifferentiableAt_extend I E X₀)
     (mdifferentiableAt_extend I E Y₀)

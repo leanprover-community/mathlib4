@@ -162,18 +162,16 @@ variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 /-- The torsion tensor of a covariant derivative on the tangent bundle of a manifold. -/
 noncomputable def torsion := cov.isCovariantDerivativeOn.torsion
 
--- TODO: decide on a good naming scheme; `vector_field_apply` and `apply` or perhaps
--- `apply` and `apply_extend`? And synchronise with the compatibility file.
-lemma torsion_vector_field_apply (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
+lemma torsion_apply (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     cov.torsion x (X x) (Y x) = cov Y x (X x) - cov X x (Y x) - mlieBracket I X Y x := by
   unfold torsion IsCovariantDerivativeOn.torsion
   apply mk2TensorAt_apply
   exacts [hX, hY]
 
-lemma torsion_apply (u v : TangentSpace I x) :
-    cov.torsion x u v = cov (extend E v) x (extend E u x)
-                        - cov (extend E u) x (extend E v x)
-                        - mlieBracket I (extend E u) (extend E v) x := by
+lemma torsion_apply_extend (u v : TangentSpace I x) :
+    cov.torsion x u v =
+      cov (extend E v) x (extend E u x) - cov (extend E u) x (extend E v x)
+        - mlieBracket I (extend E u) (extend E v) x := by
   unfold torsion IsCovariantDerivativeOn.torsion
   apply mk2TensorAt_apply_eq_extend
 
@@ -187,11 +185,11 @@ lemma isTorsionFree_iff : IsTorsionFree cov ↔
   constructor
   · intro h X Y x hX hY
     replace h := congr($h x (X x) (Y x))
-    rw [cov.torsion_vector_field_apply hX hY] at h
+    rw [cov.torsion_apply hX hY] at h
     simpa [sub_eq_iff_eq_add'] using h
   · intro h
     ext x u v
-    rw [torsion_apply, h]
+    rw [torsion_apply_extend, h]
     · simp
     · apply mdifferentiableAt_extend
     · apply mdifferentiableAt_extend
