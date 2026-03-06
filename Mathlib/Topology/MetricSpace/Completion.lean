@@ -222,3 +222,12 @@ theorem Isometry.mapRingHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAddGr
     [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] {f : α →+* β}
     (h : Isometry f) (x : α) : h.mapRingHom x = f x :=
   Completion.mapRingHom_coe h.uniformContinuous.continuous _
+
+theorem Isometry.isometry_mapRingHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
+    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] {f : α →+* β}
+    (h : Isometry f) : Isometry h.mapRingHom :=
+  Isometry.of_dist_eq fun x y => by
+    induction x, y using induction_on₂ with
+    | hp => exact isClosed_eq (continuous_dist.comp₂ (continuous_map.comp continuous_fst)
+        (continuous_map.comp continuous_snd)) (by fun_prop)
+    | ih x y => simp only [Completion.dist_eq, mapRingHom_coe, h.dist_eq]
