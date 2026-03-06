@@ -150,7 +150,7 @@ def id : IntertwiningMap ρ ρ where
   isIntertwining' := by simp
 
 @[simp]
-lemma id_toLinearMap : (id ρ).toLinearMap = LinearMap.id := rfl
+lemma toLinearMap_id : (id ρ).toLinearMap = LinearMap.id := rfl
 
 @[simp]
 lemma id_apply (v : V) : id ρ v = v := rfl
