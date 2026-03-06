@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors:
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Analysis.Calculus.Taylor
 import Mathlib.Tactic.Field
 
 /-!
@@ -266,19 +267,22 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
   set E := F b - F a - (derivWithin F (Icc a b) m) * (b - a) with hE_def
 
   -- 步骤 3.1: 验证 F 在 Icc a b 上是 2 阶连续可微的（从假设直接得到）
-  have hF_Icc : ContDiffOn ℝ 2 F (Icc a b) := by sorry
+  have hF_Icc : ContDiffOn ℝ 2 F (Icc a b) := hF
 
   -- 步骤 3.2: 验证 iteratedDerivWithin 2 F 在 Ioo a b 上可微（从假设直接得到）
-  have hF_diff_Ioo : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b) := by sorry
+  have hF_diff_Ioo : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b) := hF_diff
 
   -- 步骤 3.3: 验证 m ∈ Icc a b（中点在闭区间内）
-  have h_m_in_Icc : m ∈ Icc a b := by sorry
+  have h_m_in_Icc : m ∈ Icc a b := by
+    constructor <;> linarith [a_lt_b]
 
   -- 步骤 3.4: 验证 b ∈ Icc a b（右端点在闭区间内）
-  have h_b_in_Icc : b ∈ Icc a b := by sorry
+  have h_b_in_Icc : b ∈ Icc a b := by
+    constructor <;> linarith [a_lt_b]
 
   -- 步骤 3.5: 验证 a ∈ Icc a b（左端点在闭区间内）
-  have h_a_in_Icc : a ∈ Icc a b := by sorry
+  have h_a_in_Icc : a ∈ Icc a b := by
+    constructor <;> linarith [a_lt_b]
 
   -- 步骤 3.6: 对 F 在 m 处进行带 Lagrange 余项的 Taylor 展开到 2 阶，展开到 b
   -- 需要验证：m ∈ Ioo a b, b ∈ Icc a b, 以及可微性条件
