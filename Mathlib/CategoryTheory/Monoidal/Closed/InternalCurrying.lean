@@ -76,7 +76,7 @@ theorem ihomCurry_ihomUncurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y
 
 /-- The internal currying-uncurrying isomorphism `C(x ⊗ y, z) ≅ C(y, C(x, z))`. -/
 @[simps]
-def internalHomCurryIso (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
+def ihomCurryIso (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     (ihom (x ⊗ y)).obj z ≅ (ihom y).obj ((ihom x).obj z) where
   hom := ihomCurry x y z
   inv := ihomUncurry x y z
