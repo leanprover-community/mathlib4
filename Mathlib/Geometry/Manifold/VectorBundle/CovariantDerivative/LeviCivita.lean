@@ -147,14 +147,14 @@ lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I 
 variable (X) in
 lemma rhs_aux_smulY_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    letI A (x) : ℝ := fromTangentSpace _ ((mfderiv% f x) (X x))
+    letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
     rhs_aux I X (f • Y) Z x = f x • rhs_aux I X Y Z x + A x • ⟪Y, Z⟫ x := by
   rw [rhs_aux, product_smul_left, mfderiv_smul (hY.inner_bundle' hZ) hf]
   rfl
 
 variable (X) in
 lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
-    letI A (x) : ℝ := fromTangentSpace _ ((mfderiv% f x) (X x))
+    letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
     rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
   ext x
   simp [rhs_aux_smulY_apply I X (hf x) (hY x) (hZ x)]
@@ -176,14 +176,14 @@ lemma rhs_aux_smulY_const {a : ℝ} (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
 variable (X) in
 lemma rhs_aux_smulZ_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    letI A (x) : ℝ := fromTangentSpace _ ((mfderiv% f x) (X x))
+    letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
     rhs_aux I X Y (f • Z) x = f x • rhs_aux I X Y Z x + A x • ⟪Y, Z⟫ x := by
   rw [rhs_aux_swap, rhs_aux_smulY_apply, rhs_aux_swap, product_swap]
   exacts [hf, hZ, hY]
 
 variable (X) in
 lemma rhs_aux_smulZ {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
-    letI A (x) : ℝ := fromTangentSpace _ ((mfderiv% f x) (X x))
+    letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
     rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
   rw [rhs_aux_swap, rhs_aux_smulY, rhs_aux_swap, product_swap]
   exacts [hf, hZ, hY]
@@ -294,7 +294,6 @@ lemma leviCivitaRhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
   have h4 : inner ℝ (Z x) (f x • mlieBracket I Y X x) = f x * ⟪Z, mlieBracket I Y X⟫ x := by
     rw [product_apply, real_inner_smul_right]
   rw [real_inner_smul_right (Y x), h3, h4]
-
   -- Push all applications of `x` inwards, then it's indeed obvious.
   simp
   -- set A := ⟪Y, mlieBracket I X Z⟫ with hA
@@ -490,7 +489,7 @@ lemma leviCivitaRhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
     rw [product_apply, VectorField.mlieBracket_smul_right hf hZ, inner_add_right, add_comm,
       inner_smul_right]
     congr
-  have h2 : letI dfY : ℝ := fromTangentSpace _ ((mfderiv% f x) (Y x));
+  have h2 : letI dfY := fromTangentSpace _ ((mfderiv% f x) (Y x));
       ⟪X, mlieBracket I (f • Z) Y⟫ x = - dfY • ⟪X, Z⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
     rw [product_apply, VectorField.mlieBracket_smul_left hf hZ, inner_add_right, inner_smul_right,
       inner_smul_right]
