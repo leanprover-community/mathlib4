@@ -199,11 +199,6 @@ def isometryEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
   toEquiv := ringEquivComplexOfIsComplex hv
   isometry_toFun := isometry_extensionEmbedding v
 
-@[simp]
-theorem ringEquivComplexOfIsComplex_apply {v : InfinitePlace K} (hv : IsComplex v)
-    (x : v.Completion) : ringEquivComplexOfIsComplex hv x = extensionEmbedding v x :=
-  RingEquiv.ofBijective_apply _ _ _
-
 /-- If `v` is a real infinite place, then the embedding `v.Completion →+* ℝ` is surjective. -/
 theorem surjective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Function.Surjective (extensionEmbeddingOfIsReal hv) := by
@@ -225,11 +220,6 @@ alias bijective_extensionEmbedding_of_isReal := bijective_extensionEmbeddingOfIs
 `v.Completion →+* ℝ`. -/
 def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃+* ℝ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbeddingOfIsReal hv)
-
-@[simp]
-theorem ringEquivRealOfIsReal_apply {v : InfinitePlace K} (hv : IsReal v) (x : v.Completion) :
-    ringEquivRealOfIsReal hv x = extensionEmbeddingOfIsReal hv x :=
-  RingEquiv.ofBijective_apply _ _ _
 
 /-- If the infinite place `v` is real, then `v.Completion` is isometric to `ℝ`. -/
 def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃ᵢ ℝ where
