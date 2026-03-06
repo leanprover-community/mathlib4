@@ -66,12 +66,12 @@ lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
 /-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
 for use in porting files from `Valued` to `ValuativeRel`. -/
 instance (priority := low) {R : Type*} [CommRing R] [vr : ValuativeRel R] [UniformSpace R]
-    [IsUniformAddGroup R] [vt : IsValuativeTopology R] :
+    [IsUniformAddGroup R] [IsValuativeTopology R] :
     Valued R (ValueGroupWithZero R) where
   «v» := valuation R
   is_topological_valuation := by
     simp_rw [Valuation.restrict_lt_iff_lt_embedding]
-    convert @mem_nhds_zero_iff _ _ vr _ vt
+    convert @mem_nhds_zero_iff _ _ vr _ _
     refine ⟨fun ⟨γ, hγ⟩ ↦ ⟨ Units.map valueGroupWithZero_equiv_valueGroup₀.symm.toMonoidHom γ,
       hγ⟩, fun ⟨γ, hγ⟩ ↦ ⟨Units.map valueGroupWithZero_equiv_valueGroup₀.toMonoidHom γ, ?_⟩⟩
     convert hγ
