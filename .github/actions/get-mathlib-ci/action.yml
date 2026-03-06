@@ -8,6 +8,7 @@ inputs:
     description: Git ref (branch, tag, or SHA) for mathlib-ci.
     required: false
     # Default pinned commit used by workflows unless they explicitly override.
+    # Update this ref (and the coalescing below) as needed to pick up changes to mathlib-ci scripts
     default: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
   path:
     description: Checkout destination path.
@@ -20,7 +21,7 @@ inputs:
 outputs:
   ref:
     description: Effective ref used for the checkout.
-    value: ${{ inputs.ref != '' && inputs.ref || '7355aeb4f32cb2a181d02abd7a9d6ab4fe033286' }}
+    value: ${{ inputs.ref }}
   path:
     description: Checkout path used.
     value: ${{ inputs.path }}
@@ -34,7 +35,7 @@ runs:
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         repository: leanprover-community/mathlib-ci
-        ref: ${{ inputs.ref != '' && inputs.ref || '7355aeb4f32cb2a181d02abd7a9d6ab4fe033286' }}
+        ref: ${{ inputs.ref }}
         fetch-depth: ${{ inputs.fetch-depth }}
         path: ${{ inputs.path }}
 

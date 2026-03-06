@@ -102,7 +102,13 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+
       - name: Get mathlib-ci
+        if: ${{ inputs.mathlib_ci_ref == '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Get mathlib-ci
+        if: ${{ inputs.mathlib_ci_ref != '' }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
         with:
           ref: ${{ inputs.mathlib_ci_ref }}
