@@ -955,13 +955,7 @@ section delaborators
 In this section we make sure the info view also uses those notations. Not all notations are
 supported so far.
 -/
-open Bundle Filter Module Topology Set
-
-open scoped Bundle Manifold ContDiff
-
-open Lean PrettyPrinter Delaborator SubExpr
-
-open scoped Bundle Manifold ContDiff
+open Bundle PrettyPrinter Delaborator SubExpr
 
 /-- Delaborator for `Bundle.TotalSpace.mk` using anonymous constructor notation. -/
 @[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
@@ -979,7 +973,7 @@ open scoped Bundle Manifold ContDiff
   let vd ← withNaryArg 4 <| delab
   `(⟨$bd, $vd⟩)
 
-/-- Delaborator for mfderiv using the custom elaborator, and special-casing
+/-- Delaborator for `mfderiv` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
 @[app_delab mfderiv] meta def delab_mfderiv : Delab := do
   whenPPOption getPPNotation do
@@ -998,7 +992,7 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withAppArg delab
     `(mfderiv% $fs) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for MDifferentiableAt using the custom elaborator, and special-casing
+/-- Delaborator for `MDifferentiableAt` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
   whenPPOption getPPNotation do
@@ -1017,7 +1011,7 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withAppArg delab
     `(MDiffAt $fs) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for MDifferentiableWithinAt using the custom elaborator, and special-casing
+/-- Delaborator for `MDifferentiableWithinAt` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableWithinAt] meta def delabMDifferentiableWithinAt : Delab := do
   whenPPOption getPPNotation do
