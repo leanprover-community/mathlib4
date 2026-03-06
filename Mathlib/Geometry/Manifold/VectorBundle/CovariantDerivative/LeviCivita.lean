@@ -12,13 +12,15 @@ public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 /-!
 # The Levi-Civita connection on a Riemannian manifold
 
+To be continued and polished!
+
 This file defines the Levi-Civita connection on a (finite-dimensional) Riemannian manifold `(M, g)`.
 connection `∇` on the tangent bundle of a Riemannian manifold `(M, g)` is called a
 *Levi-Civita connection* if and only if it is both compatible with the metric `g` and torsion-free.
 Any two such connections are equal (on differentiable vector fields), which is why one speaks of
 *the* Levi-Civita connection on `TM`.
-We construct a Levi-Civita connection (using a tensoriality argument), and proves that is defines
-a metric and torsion-free connection.
+We construct a Levi-Civita connection and prove that is defines a compatible torsion-free
+connection.
 
 
 ## Main definitions and results
@@ -29,14 +31,16 @@ a metric and torsion-free connection.
 * `CovariantDerivative.IsLeviCivitaConnection.uniqueness`: a Levi-Civita connection on `(M, g)` is
   uniquely determined on differentiable vector fields.
 
-To be continued!
-
-We prove the existence and uniqueness of the Levi-Civita connection
-
-
+* `CovariantDerivative.LeviCivitaConnection`: a choice of Levi-Civita connection on the tangent
+  bundle `TM` of a Riemannian manifold `(M, g)`: this is unique up to the value on
+  non-differentiable vector fields.
+  If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead.
+* `CovariantDerivative.leviCivitaConnection_isLeviCivitaConnection`:
+  `LeviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free)
 
 ## Implementation notes
-
+* construction of LC using a tensoriality argument, and the musical isomorphism
+  (avoids the use of local frames and trivialisations)
 
 -/
 
@@ -760,7 +764,8 @@ theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
   lcAux_apply _ hX hY hZ
 
 -- Side computation for `leviCivitaConnection_isCompatible`.
-lemma leviCivitaConnection_isCompatible_aux [FiniteDimensional ℝ E]
+omit [IsManifold I 2 M] in
+lemma leviCivitaConnection_isCompatible_aux
     {x : M} {X Y Z : (x : M) → TangentSpace I x} :
     leviCivitaRhs I X Y Z x + leviCivitaRhs I X Z Y x =
     ((mfderiv% fun x ↦ inner ℝ (Y x) (Z x)) x) (X x) := by
@@ -831,6 +836,7 @@ lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   match_scalars <;> simp
   norm_num
 
+/-- `LeviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free) -/
 lemma leviCivitaConnection_isLeviCivitaConnection [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).IsLeviCivitaConnection :=
   ⟨leviCivitaConnection_isCompatible I, leviCivitaConnection_torsion_eq_zero I⟩
