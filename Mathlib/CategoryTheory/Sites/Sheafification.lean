@@ -62,6 +62,10 @@ theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafTo
     exact fun _ _ _ ↦ preservesLimitsOfShape_of_natIso
       (adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint (sheafToPresheaf J A)))⟩
 
+instance : HasSheafify (⊥ : GrothendieckTopology C) A :=
+  HasSheafify.mk' _ _
+    (sheafBotEquivalence A).symm.toAdjunction
+
 /-- The sheafification functor, left adjoint to the inclusion. -/
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   (sheafToPresheaf J A).leftAdjoint
@@ -183,7 +187,6 @@ theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presh
   rw [sheafificationAdjunction J D |>.right_triangle_components (Y := ⟨Q, hQ⟩)]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sheafifyLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
     (γ : sheafify J P ⟶ Q) : toSheafify J P ≫ γ = η → γ = sheafifyLift J η hQ := by
   intro h
@@ -211,6 +214,11 @@ theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q 
     sheafifyMap J η ≫ sheafifyLift J γ hR = sheafifyLift J (η ≫ γ) hR := by
   apply sheafifyLift_unique
   rw [← Category.assoc, ← toSheafify_naturality, Category.assoc, toSheafify_sheafifyLift]
+
+lemma sheafifyLift_comp {F P Q : Cᵒᵖ ⥤ D} (a : F ⟶ P) (hP : Presheaf.IsSheaf J P)
+    (η : P ⟶ Q) (hQ : CategoryTheory.Presheaf.IsSheaf J Q) :
+    sheafifyLift J (a ≫ η) hQ = sheafifyLift _ a hP ≫ η :=
+  (sheafifyLift_unique _ _ _ _ (by simp)).symm
 
 variable {J}
 

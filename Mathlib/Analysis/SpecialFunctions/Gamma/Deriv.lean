@@ -113,7 +113,7 @@ theorem continuousAt_Gamma_one : ContinuousAt Gamma 1 :=
 theorem tendsto_self_mul_Gamma_nhds_zero : Tendsto (fun z : ℂ => z * Gamma z) (𝓝[≠] 0) (𝓝 1) := by
   rw [show 𝓝 (1 : ℂ) = 𝓝 (Gamma (0 + 1)) by simp only [zero_add, Complex.Gamma_one]]
   refine tendsto_nhdsWithin_congr Gamma_add_one (continuousAt_iff_punctured_nhds.mp ?_)
-  exact ContinuousAt.comp' (by simp [continuousAt_Gamma_one]) (continuous_add_right 1).continuousAt
+  exact ContinuousAt.comp' (by simp [continuousAt_Gamma_one]) (continuous_add_const 1).continuousAt
 
 theorem not_continuousAt_Gamma_zero : ¬ ContinuousAt Gamma 0 :=
   tendsto_self_mul_Gamma_nhds_zero.not_tendsto (by simp) ∘

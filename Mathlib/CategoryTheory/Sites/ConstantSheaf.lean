@@ -141,8 +141,8 @@ The constant sheaf functor commutes up to isomorphism the equivalence of sheaf c
 by a dense subsite.
 -/
 noncomputable def equivCommuteConstant :
-    constantSheaf J D ⋙ (sheafEquiv G J K D).functor ≅ constantSheaf K D :=
-  ((constantSheafAdj J D hT).comp (sheafEquiv G J K D).toAdjunction).leftAdjointUniq
+    constantSheaf J D ⋙ (sheafEquiv J K G D).functor ≅ constantSheaf K D :=
+  ((constantSheafAdj J D hT).comp (sheafEquiv J K G D).toAdjunction).leftAdjointUniq
     (constantSheafAdj K D hT')
 
 variable (D) in
@@ -151,9 +151,9 @@ The constant sheaf functor commutes up to isomorphism the inverse equivalence of
 induced by a dense subsite.
 -/
 noncomputable def equivCommuteConstant' :
-    constantSheaf J D ≅ constantSheaf K D ⋙ (sheafEquiv G J K D).inverse :=
-  isoWhiskerLeft (constantSheaf J D) (sheafEquiv G J K D).unitIso ≪≫
-    isoWhiskerRight (equivCommuteConstant J D K G hT hT') (sheafEquiv G J K D).inverse
+    constantSheaf J D ≅ constantSheaf K D ⋙ (sheafEquiv J K G D).inverse :=
+  isoWhiskerLeft (constantSheaf J D) (sheafEquiv J K G D).unitIso ≪≫
+    isoWhiskerRight (equivCommuteConstant J D K G hT hT') (sheafEquiv J K G D).inverse
 
 /- TODO: find suitable assumptions for proving generalizations of `equivCommuteConstant` and
 `equivCommuteConstant'` above, to commute `constantSheaf` with pullback/pushforward of sheaves. -/
@@ -164,12 +164,12 @@ The property of a sheaf of being constant is invariant under equivalence of shea
 categories.
 -/
 lemma Sheaf.isConstant_iff_of_equivalence (F : Sheaf K D) :
-    ((sheafEquiv G J K D).inverse.obj F).IsConstant J ↔ IsConstant K F := by
+    ((sheafEquiv J K G D).inverse.obj F).IsConstant J ↔ IsConstant K F := by
   constructor
   · exact fun ⟨Y, ⟨i⟩⟩ ↦ ⟨_, ⟨(equivCommuteConstant J D K G hT hT').symm.app _ ≪≫
-      (sheafEquiv G J K D).functor.mapIso i ≪≫ (sheafEquiv G J K D).counitIso.app _⟩⟩
+      (sheafEquiv J K G D).functor.mapIso i ≪≫ (sheafEquiv J K G D).counitIso.app _⟩⟩
   · exact fun ⟨Y, ⟨i⟩⟩ ↦ ⟨_, ⟨(equivCommuteConstant' J D K G hT hT').app _ ≪≫
-      (sheafEquiv G J K D).inverse.mapIso i⟩⟩
+      (sheafEquiv J K G D).inverse.mapIso i⟩⟩
 
 end Equivalence
 

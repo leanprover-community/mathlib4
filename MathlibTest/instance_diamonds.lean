@@ -114,6 +114,10 @@ example {α : Type*} [CommMonoid α] :
 
 end Units
 
+example {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Algebra S A] (f : R →+* S) :
+    (Algebra.compHom A f).toModule = Module.compHom A f := by
+  with_reducible_and_instances rfl
+
 end SMul
 
 /-! ## `Multiplicative` instances -/

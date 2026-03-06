@@ -118,7 +118,6 @@ theorem rank_eq_one_iff [Module.Free K V] :
     haveI := b.repr.toEquiv.subsingleton
     exact h (Subsingleton.elim _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A submodule has dimension at most `1` if and only if there is a
 single vector in the submodule such that the submodule is contained in
 its span. -/
@@ -127,7 +126,6 @@ theorem rank_submodule_le_one_iff (s : Submodule K V) [Module.Free K s] :
   simp_rw [rank_le_one_iff, le_span_singleton_iff]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A submodule has dimension `1` if and only if there is a
 single non-zero vector in the submodule such that the submodule is contained in
 its span. -/
@@ -143,7 +141,6 @@ theorem rank_submodule_eq_one_iff (s : Submodule K V) [Module.Free K s] :
   · obtain ⟨r, hr⟩ := h v hv
     exact ⟨r, by rwa [Subtype.ext_iff, coe_smul]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A submodule has dimension at most `1` if and only if there is a
 single vector, not necessarily in the submodule, such that the
 submodule is contained in its span. -/
@@ -159,7 +156,6 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) [Module.Free K s] :
     simpa [b.mk_eq_rank''] using b.linearIndependent.map' _ (ker_inclusion _ _ h)
       |>.cardinal_le_rank.trans (rank_span_le {v₀})
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) [Module.Free K W] :
     Module.rank K W ≤ 1 ↔ W.IsPrincipal := by
   simp only [rank_le_one_iff, Submodule.isPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,

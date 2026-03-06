@@ -135,11 +135,10 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isClosedMap_restrict_of_compactSpace [∀ i, CompactSpace (α i)] :
     IsClosedMap (S.restrict : (Π i, α i) → _) := fun s hs ↦ by
   classical
-  have : S.restrict (π := α) = Prod.fst ∘ (Homeomorph.piEquivPiSubtypeProd S α) := rfl
+  have : S.restrict (π := α) = Prod.fst ∘ (Homeomorph.piEquivPiSubtypeProd (· ∈ S) α) := rfl
   rw [this, image_comp]
   exact isClosedMap_fst_of_compactSpace _ <| (Homeomorph.isClosed_image _).mpr hs
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsClosed.isClosed_image_eval (i : ι)
     (hs_compact : IsCompact s) (hs_closed : IsClosed s) :
     IsClosed ((fun x ↦ x i) '' s) := by
