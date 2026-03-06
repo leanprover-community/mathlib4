@@ -38,9 +38,9 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
   `v`-adic completion `v.adicCompletion K` of `K`, where `v` is a non-zero prime ideal of `𝓞 K`
-* `NumberField.FinitePlace.norm_def`: the norm of `embedding v x` is the same as the `v`-adic
+* `NumberField.FinitePlace.norm_embedding`: the norm of `embedding v x` is the same as the `v`-adic
   absolute value of `x`. See also `NumberField.FinitePlace.norm_def'` and
-  `NumberField.FinitePlace.norm_def_int` for versions where the `v`-adic absolute value is
+  `NumberField.FinitePlace.norm_embedding_int` for versions where the `v`-adic absolute value is
   unfolded.
 * `NumberField.FinitePlace.hasFiniteMulSupport`: the `v`-adic absolute value of a non-zero element
   of `K` is different from 1 for at most finitely many `v`.
@@ -190,14 +190,18 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
     IsFinitePlace v ↔ ∃ w : FinitePlace K, w.val = v :=
   ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isFinitePlace⟩
 
-/-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
-value. -/
-theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = adicAbv v x := by
-  simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion,
-    Valued.toNormedField, Valued.norm, Valuation.RankOne.hom,
-    embedding_apply, adicAbv_def, rankOne_hom'_def,
+/-- The norm of an element in the `v`-adic completion of `K`. See `FinitePlace.norm_embedding`
+for the equality involving `‖embedding v x‖` on the LHS. -/
+theorem FinitePlace.norm_def (x : v.adicCompletion K) :
+    ‖x‖ = toNNReal (absNorm_ne_zero v) (Valued.v x) := by
+  simp [Valued.toNormedField.norm_def, Valuation.RankOne.hom, rankOne_hom'_def,
     valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective
       (valuedAdicCompletion_surjective K v)]
+
+/-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
+value. -/
+theorem FinitePlace.norm_embedding (x : K) : ‖embedding v x‖ = adicAbv v x := by
+  simp [norm_def, embedding_apply, adicAbv_def]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
@@ -211,8 +215,9 @@ theorem FinitePlace.norm_embedding_int (x : 𝓞 K) :
     ‖embedding v x‖ = toNNReal (absNorm_ne_zero v) (v.intValuation x) := by
   simp [norm_embedding, adicAbv_def, valuation_of_algebraMap]
 
-theorem FinitePlace.norm_def {x : v.adicCompletion K} :
-    ‖x‖ = toNNReal (absNorm_ne_zero v) (Valued.v x) := rfl
+@[deprecated (since := "2026-03-05")] alias FinitePlace.norm_def' := FinitePlace.norm_embedding'
+@[deprecated (since := "2026-03-05")] alias FinitePlace.norm_def_int :=
+  FinitePlace.norm_embedding_int
 
 /-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
 theorem RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max (x y : K) :
