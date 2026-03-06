@@ -168,7 +168,7 @@ theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
     dsimp at this
     rw [hx y.1 ((IntermediateField.mem_lift y).mpr hy)] at this
     exact SetLike.coe_eq_coe.mp this
-  · exact ⟨IntermediateField.fixingSubgroup_isOpen (IntermediateField.lift L'), congrFun rfl⟩
+  · exact ⟨IntermediateField.isOpen_fixingSubgroup (IntermediateField.lift L'), one_mem _⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma algEquivToLimit_continuous : Continuous (algEquivToLimit k K) := by
