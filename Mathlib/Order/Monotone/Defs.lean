@@ -490,11 +490,11 @@ end Preorder
 
 end LinearOrder
 
-theorem Subtype.mono_coe [Preorder α] (t : Set α) : Monotone ((↑) : Subtype t → α) :=
+theorem Subtype.mono_coe [Preorder α] (p : α → Prop) : Monotone ((↑) : Subtype p → α) :=
   fun _ _ ↦ id
 
-theorem Subtype.strictMono_coe [Preorder α] (t : Set α) :
-    StrictMono ((↑) : Subtype t → α) :=
+theorem Subtype.strictMono_coe [Preorder α] (p : α → Prop) :
+    StrictMono ((↑) : Subtype p → α) :=
   fun _ _ ↦ id
 
 section Preorder

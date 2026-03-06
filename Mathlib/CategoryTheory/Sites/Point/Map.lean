@@ -113,6 +113,7 @@ lemma toPresheafFiberMap_presheafFiberMapObjIso_hom (P : Dᵒᵖ ⥤ A) (X : C) 
   IsColimit.comp_coconePointUniqueUpToIso_hom
     (Φ.isColimitPresheafFiberMapCocone F K P) _ ⟨X, x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Relation between the fiber functors on presheaves for the points `Φ.map F K`
 and `Φ` when `F : C ⥤ D` is a cocontinuous functor between sites `(C, J)` and `(D, K)`. -/

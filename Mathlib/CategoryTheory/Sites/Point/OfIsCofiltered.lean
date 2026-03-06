@@ -64,6 +64,7 @@ lemma fiberMk_jointly_surjective {X : C} (x : (fiber.{w} p).obj X) :
   obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
   exact ⟨U.unop, f, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable {p} in
 lemma exists_of_fiberMk_eq_fiberMk [IsCofiltered N]
     {U : N} {X : C} {f₁ f₂ : p.obj U ⟶ X} (hf : fiberMk f₁ = fiberMk f₂) :
@@ -74,6 +75,7 @@ lemma exists_of_fiberMk_eq_fiberMk [IsCofiltered N]
   refine ⟨V.unop, g.unop, ?_⟩
   simpa [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}] using hg
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fiberMk_map_comp {U V : N} (g : V ⟶ U) {X : C} (f : p.obj U ⟶ X) :
     fiberMk.{w} (p.map g ≫ f) = fiberMk.{w} (f) := by
@@ -86,6 +88,7 @@ lemma fiberMk_map {U V : N} (g : V ⟶ U) :
     fiberMk.{w} (p.map g) = fiberMk.{w} (𝟙 (p.obj U)) := by
   simpa using fiberMk_map_comp (p := p) g (𝟙 (p.obj U))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fiber_map_fiberMk {U : N} {X : C} (f : p.obj U ⟶ X) {Y : C} (g : X ⟶ Y) :
     (fiber p).map g (fiberMk.{w} f) = fiberMk.{w} (f ≫ g) :=
