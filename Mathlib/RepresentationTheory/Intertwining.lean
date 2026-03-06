@@ -483,7 +483,7 @@ lemma lTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
 lemma lTensor_id : lTensor ρ (id σ) = id (tprod ρ σ) := by ext; simp
 
 variable (ρ) in
-/-- The natural intertwining map induced from `f : σ → τ` to `σ.tprod ρ → τ.tprod ρ`. -/
+/-- The natural intertwining map `σ.tprod ρ → τ.tprod ρ` induced by `f : σ → τ`. -/
 def rTensor (f : IntertwiningMap σ τ) :
     (tprod σ ρ).IntertwiningMap (tprod τ ρ) := tensor f (id ρ)
 
