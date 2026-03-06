@@ -3465,7 +3465,7 @@ public import Mathlib.Computability.TuringDegree
 public import Mathlib.Computability.TuringMachine.Computable
 public import Mathlib.Computability.TuringMachine.Config
 public import Mathlib.Computability.TuringMachine.PostTuringMachine
-public import Mathlib.Computability.TuringMachine.StackMachine
+public import Mathlib.Computability.TuringMachine.StackTuringMachine
 public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Computability.TuringMachine.ToPartrec
 public import Mathlib.Condensed.AB

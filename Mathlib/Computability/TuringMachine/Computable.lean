@@ -7,13 +7,13 @@ module
 
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Computability.Encoding
-public import Mathlib.Computability.TuringMachine.StackMachine
+public import Mathlib.Computability.TuringMachine.StackTuringMachine
 
 /-!
 # Computable functions
 
 This file contains the definition of a Turing machine with some finiteness conditions
-(bundling the definition of TM2 in `StackMachine.lean`), a definition of when a TM gives a certain
+(bundling the definition of TM2 in `StackTuringMachine.lean`), a definition of when a TM gives a certain
 output (in a certain time), and the definition of computability (in polynomial time or
 any time function) of a function between two types that have an encoding (as in `Encoding.lean`).
 
@@ -41,7 +41,7 @@ open Computability StateTransition
 namespace Turing
 
 /-- A bundled TM2 (an equivalent of the classical Turing machine, defined starting from
-the namespace `Turing.TM2` in `StackMachine.lean`), with an input and output stack,
+the namespace `Turing.TM2` in `StackTuringMachine.lean`), with an input and output stack,
 a main function, an initial state and some finiteness guarantees. -/
 structure FinTM2 where
   /-- index type of stacks -/

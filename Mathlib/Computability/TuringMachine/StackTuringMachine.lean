@@ -15,12 +15,12 @@ public import Mathlib.Computability.TuringMachine.PostTuringMachine
 /-!
 # Turing machines
 
-The files `PostTuringMachine.lean` and `StackMachine.lean` define
+The files `PostTuringMachine.lean` and `StackTuringMachine.lean` define
 a sequence of simple machine languages, starting with Turing machines and working
 up to more complex languages based on Wang B-machines.
 
 `PostTuringMachine.lean` covers the TM0 model and TM1 model;
-`StackMachine.lean` adds the TM2 model.
+`StackTuringMachine.lean` adds the TM2 model.
 
 ## Naming conventions
 
