@@ -169,7 +169,7 @@ theorem order_expand (φ : MvPowerSeries σ R) :
       exact order_le <| (coeff_expand_smul p hp φ _) ▸ hd₁
     · refine MvPowerSeries.le_order fun d hd => ?_
       by_cases! h : ∀ i, p ∣ d i
-      · obtain ⟨m, hm⟩ : ∃ m, d = p • m := ⟨Finsupp.divConst h, Finsupp.smul_div_cancel' h⟩
+      · obtain ⟨m, hm⟩ : ∃ m, d = p • m := ⟨Finsupp.divConst h, Finsupp.smul_divConst_cancel' h⟩
         rw [hm, coeff_expand_smul, coeff_of_lt_order]
         simp only [hm, map_nsmul, smul_eq_mul, Nat.cast_mul, nsmul_eq_mul] at hd
         exact lt_of_mul_lt_mul_left' hd
@@ -186,7 +186,7 @@ theorem expand_eq_expand {φ : MvPolynomial σ R} :
   ext n
   simp only [MvPolynomial.coeff_coe]
   by_cases! h : ∀ i, p ∣ n i
-  · obtain ⟨m, hm⟩ : ∃ m, n = p • m := ⟨Finsupp.divConst h, Finsupp.smul_div_cancel' h⟩
+  · obtain ⟨m, hm⟩ : ∃ m, n = p • m := ⟨Finsupp.divConst h, Finsupp.smul_divConst_cancel' h⟩
     rw [hm, coeff_expand_smul p hp _ _, φ.coeff_expand_smul _ hp, φ.coeff_coe]
   · obtain ⟨i, hi⟩ := h
     rw [coeff_expand_of_not_dvd p hp _ hi, MvPolynomial.coeff_expand_of_not_dvd _ hi]
@@ -195,7 +195,7 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
     trunc' R (p • n) (expand p hp φ) = (trunc' R n φ).expand p := by
   ext d
   by_cases! h : ∀ i, p ∣ d i
-  · obtain ⟨m, hm⟩ : ∃ m, d = p • m := ⟨Finsupp.divConst h, Finsupp.smul_div_cancel' h⟩
+  · obtain ⟨m, hm⟩ : ∃ m, d = p • m := ⟨Finsupp.divConst h, Finsupp.smul_divConst_cancel' h⟩
     by_cases! h_le : m ≤ n
     · rw [hm, coeff_trunc', if_pos (nsmul_le_nsmul_right h_le p), coeff_expand_smul,
         MvPolynomial.coeff_expand_smul _ hp, coeff_trunc', if_pos h_le]
