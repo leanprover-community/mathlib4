@@ -524,4 +524,87 @@ lemma liminf_nhdsGT_eq_iSup₂ [NoMaxOrder α] (hf : Antitone f) (a : α) :
     (𝓝[>] a).liminf f = ⨆ r > a, f r :=
   hf.liminf_nhdsGT_eq_iSup₂_of_exists_gt a (exists_gt a)
 
+lemma Antitone.limsup_nhdsGT_eq_iInf₂_of_exists_gt (hf : Antitone f) (a : α) (hb : ∃ b, a < b) :
+    (𝓝[>] a).limsup f = ⨅ r > a, f r := by
+  rw [(nhdsGT_basis_of_exists_gt hb).limsup_eq_iInf_iSup]
+  refine le_antisymm (iInf₂_mono' fun r hr ↦ ?_) (iInf₂_mono' fun r hr ↦ ?_)
+  · use r, hr
+    apply iSup_le
+    simp only [Set.mem_Ioo, iSup_le_iff, and_imp]
+    intro i hi0 hir
+    exact hf hi0.le
+  · obtain ⟨b, hb⟩ := exists_between hr
+    use b, hb.1
+    exact iSup₂_le_iSup₂ b hb
+
+lemma Antitone.limsup_nhdsGT_eq_iInf₂ [NoMaxOrder α] (hf : Antitone f) (a : α) :
+    (𝓝[>] a).limsup f = ⨅ r > a, f r :=
+  hf.limsup_nhdsGT_eq_iInf₂_of_exists_gt a (exists_gt a)
+
+lemma Monotone.limsup_nhdsGT_eq_iSup₂_of_exists_gt (hf : Monotone f) (a : α) (hb : ∃ b, a < b) :
+    (𝓝[>] a).limsup f = ⨆ r > a, f r :=
+  hf.dual.liminf_nhdsGT_eq_iSup₂_of_exists_gt a hb
+
+lemma Monotone.limsup_nhdsGT_eq_iSup₂ [NoMaxOrder α] (hf : Monotone f) (a : α) :
+    (𝓝[>] a).limsup f = ⨆ r > a, f r :=
+  hf.limsup_nhdsGT_eq_iSup₂_of_exists_gt a (exists_gt a)
+
+lemma Monotone.liminf_nhdsGT_eq_iInf₂_of_exists_gt (hf : Monotone f) (a : α) (hb : ∃ b, a < b) :
+    (𝓝[>] a).liminf f = ⨅ r > a, f r :=
+  hf.dual.limsup_nhdsGT_eq_iInf₂_of_exists_gt a hb
+
+lemma Monotone.liminf_nhdsGT_eq_iInf₂ [NoMaxOrder α] (hf : Monotone f) (a : α) :
+    (𝓝[>] a).liminf f = ⨅ r > a, f r :=
+  hf.liminf_nhdsGT_eq_iInf₂_of_exists_gt a (exists_gt a)
+
+lemma Antitone.liminf_nhdsLT_eq_iSup₂_of_exists_lt (hf : Antitone f) (a : α) (hb : ∃ b, b < a) :
+    (𝓝[<] a).liminf f = ⨆ r < a, f r := by
+  rw [(nhdsLT_basis_of_exists_lt hb).liminf_eq_iSup_iInf]
+  refine le_antisymm (iSup₂_mono' fun r hr ↦ ?_) (iSup₂_mono' fun r hr ↦ ?_)
+  · obtain ⟨b, hb⟩ := exists_between hr
+    use b, hb.2
+    exact iInf₂_le b hb
+  · use r, hr
+    apply le_iInf
+    simp only [Set.mem_Ioo, le_iInf_iff, and_imp]
+    intro i hir _
+    exact hf hir.le
+
+lemma Antitone.liminf_nhdsLT_eq_iSup₂ [NoMinOrder α] (hf : Antitone f) (a : α) :
+    (𝓝[<] a).liminf f = ⨆ r < a, f r :=
+  hf.liminf_nhdsLT_eq_iSup₂_of_exists_lt a (exists_lt a)
+
+lemma Antitone.limsup_nhdsLT_eq_iInf₂_of_exists_lt (hf : Antitone f) (a : α) (hb : ∃ b, b < a) :
+    (𝓝[<] a).limsup f = ⨅ r < a, f r := by
+  rw [(nhdsLT_basis_of_exists_lt hb).limsup_eq_iInf_iSup]
+  refine le_antisymm (iInf₂_mono' fun r hr ↦ ?_) (iInf₂_mono' fun r hr ↦ ?_)
+  · use r, hr
+    apply iSup_le
+    simp only [Set.mem_Ioo, iSup_le_iff, and_imp]
+    intro i _ hia
+    exact hf hia.le
+  · obtain ⟨b, hb⟩ := exists_between hr
+    use b, hb.2
+    exact iSup₂_le_iSup₂ b hb
+
+lemma Antitone.limsup_nhdsLT_eq_iInf₂ [NoMinOrder α] (hf : Antitone f) (a : α) :
+    (𝓝[<] a).limsup f = ⨅ r < a, f r :=
+  hf.limsup_nhdsLT_eq_iInf₂_of_exists_lt a (exists_lt a)
+
+lemma Monotone.limsup_nhdsLT_eq_iSup₂_of_exists_lt (hf : Monotone f) (a : α) (hb : ∃ b, b < a) :
+    (𝓝[<] a).limsup f = ⨆ r < a, f r :=
+  hf.dual.liminf_nhdsLT_eq_iSup₂_of_exists_lt a hb
+
+lemma Monotone.limsup_nhdsLT_eq_iSup₂ [NoMinOrder α] (hf : Monotone f) (a : α) :
+    (𝓝[<] a).limsup f = ⨆ r < a, f r :=
+  hf.limsup_nhdsLT_eq_iSup₂_of_exists_lt a (exists_lt a)
+
+lemma Monotone.liminf_nhdsLT_eq_iInf₂_of_exists_lt (hf : Monotone f) (a : α) (hb : ∃ b, b < a) :
+    (𝓝[<] a).liminf f = ⨅ r < a, f r :=
+  hf.dual.limsup_nhdsLT_eq_iInf₂_of_exists_lt a hb
+
+lemma Monotone.liminf_nhdsLT_eq_iInf₂ [NoMinOrder α] (hf : Monotone f) (a : α) :
+    (𝓝[<] a).liminf f = ⨅ r < a, f r :=
+  hf.liminf_nhdsLT_eq_iInf₂_of_exists_lt a (exists_lt a)
+
 end
