@@ -28,6 +28,8 @@ The names for these concepts are taken from the theory of convex cones.
 
 -/
 
+@[expose] public section
+
 namespace Submonoid
 
 open scoped Pointwise
