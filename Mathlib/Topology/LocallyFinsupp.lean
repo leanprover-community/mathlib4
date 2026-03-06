@@ -314,7 +314,7 @@ Assign a function with locally finite support within `U` to a function in the su
 def mk_of_mem_addSubgroup [AddGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubgroup U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
-@[deprecated] alias mk_of_mem := mk_of_mem_addSubgroup
+@[deprecated (since := "2026-03-06")] alias mk_of_mem := mk_of_mem_addSubgroup
 
 instance [AddGroup Y] : Neg (locallyFinsuppWithin U Y) where
   neg D := mk_of_mem_addSubgroup (-D) <| neg_mem D.memAddSubgroup
