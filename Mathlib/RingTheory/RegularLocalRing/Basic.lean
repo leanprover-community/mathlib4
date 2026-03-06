@@ -147,8 +147,6 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
         e (ResidueField.map_bijective_of_surjective _ Ideal.Quotient.mk_surjective) (fun r m ↦ by
           induction m using Submodule.Quotient.induction_on
           induction r using Submodule.Quotient.induction_on
-          rw [← Submodule.Quotient.mk_smul]
-          simp only [Finset.coe_sort_coe, AddEquiv.ofBijective_apply, e, f']
           rename_i m r
           change f (r • m) = (ResidueField.map (Ideal.Quotient.mk (Ideal.span (S : Set R))))
             (IsLocalRing.residue R r) • (f m)
@@ -164,7 +162,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     have : ringKrullDim (R ⧸ Ideal.span (S : Set R)) + S.card ≤
       (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span (S : Set R)))) + S.card :=
       add_le_add_left (ringKrullDim_le_spanFinrank_maximalIdeal _) _
-    exact ⟨WithBot.add_natCast_cancel.mp (le_antisymm (ge.trans le) this),
+    exact ⟨ENat.WithBot.add_natCast_cancel.mp (le_antisymm (ge.trans le) this),
       le_antisymm (this.trans ge) le⟩
   tfae_have 3 → 1 := by
     classical
@@ -248,7 +246,7 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
       SetLike.mem_coe, Set.mem_iUnion, exists_prop, not_or, not_exists, not_and] at xnmem
     obtain ⟨reg, dim⟩ := quotient_span_singleton R xmem xnmem.1
     simp only [hn, Nat.cast_add, Nat.cast_one] at dim
-    have ih' := ih (R ⧸ Ideal.span {x}) (WithBot.add_one_cancel.mp dim)
+    have ih' := ih (R ⧸ Ideal.span {x}) (ENat.WithBot.add_one_cancel.mp dim)
     have : (Ideal.span {x}).IsPrime := (Ideal.Quotient.isDomain_iff_prime _).mp ih'
     obtain ⟨p, min, hp⟩ := Ideal.exists_minimalPrimes_le (bot_le (a := Ideal.span {x}))
     let _ : p.IsPrime := Ideal.minimalPrimes_isPrime min
@@ -263,7 +261,7 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
       simpa [xnmem.2 p min] using this
     have pfg : p.FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
     have := Submodule.eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator pfg eq_smul
-        (le_trans ((Ideal.span_singleton_le_iff_mem _).mpr xmem) (maximalIdeal_le_jacobson _))
+        (((Ideal.span_singleton_le_iff_mem _).mpr xmem).trans (maximalIdeal_le_jacobson _))
     have : (⊥ : Ideal R).IsPrime := by simpa [← this]
     exact IsDomain.of_bot_isPrime R
 
