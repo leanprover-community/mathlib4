@@ -131,11 +131,9 @@ lemma topIso_inv_ι : (topIso X).inv ≫ Subfunctor.ι _ = 𝟙 _ := rfl
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Subsingleton (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
   allEq _ _ := by ext _ ⟨_, h⟩; exfalso; aesop
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Unique (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
   default :=
     { app _ := TypeCat.ofHom ⟨fun ⟨_, h⟩ ↦ by exfalso; aesop⟩
@@ -262,7 +260,6 @@ lemma image_le_iff (Z : Y.Subcomplex) :
     A.image f ≤ Z ↔ A ≤ Z.preimage f := by
   simp [Subfunctor.le_def]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma image_top : (⊤ : X.Subcomplex).image f = range f := by aesop
 
 @[simp]

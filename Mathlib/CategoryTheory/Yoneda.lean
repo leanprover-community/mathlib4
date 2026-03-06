@@ -511,8 +511,11 @@ lemma IsRepresentable.mk' {F : Cᵒᵖ ⥤ TypeCat.{v₁}} {X : C} (e : yoneda.o
 instance {X : C} : IsRepresentable (yoneda.obj X) :=
   IsRepresentable.mk' (Iso.refl _)
 
-/-- A functor `F : C ⥤ TypeCat.{v₁}` is corepresentable if there is object `X` so
-`F ≅ coyoneda.obj X`. -/
+instance {X : C} : IsRepresentable (uliftYoneda.{w}.obj X) :=
+  RepresentableBy.isRepresentable (representableByUliftFunctorEquiv.symm (RepresentableBy.yoneda X))
+
+/-- A functor `F : C ⥤ TypeCat.{v₁}` is corepresentable if there is object `X` so `F ≅ coyoneda.obj X`.
+-/
 @[stacks 001Q]
 class IsCorepresentable (F : C ⥤ TypeCat.{v}) : Prop where
   has_corepresentation : ∃ (X : C), Nonempty (F.CorepresentableBy X)
@@ -529,6 +532,10 @@ lemma IsCorepresentable.mk' {F : C ⥤ TypeCat.{v₁}} {X : C} (e : coyoneda.obj
 
 instance {X : Cᵒᵖ} : IsCorepresentable (coyoneda.obj X) :=
   IsCorepresentable.mk' (Iso.refl _)
+
+instance {X : Cᵒᵖ} : IsCorepresentable (uliftCoyoneda.{w}.obj X) :=
+  CorepresentableBy.isCorepresentable
+    (corepresentableByUliftFunctorEquiv.symm (CorepresentableBy.coyoneda X))
 
 -- instance : corepresentable (𝟭 (Type v₁)) :=
 -- corepresentable_of_nat_iso (op punit) coyoneda.punit_iso

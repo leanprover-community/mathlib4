@@ -111,6 +111,12 @@ abbrev propQCPrecoverage (P : MorphismProperty Scheme.{u}) : Precoverage Scheme.
 lemma propQCPrecoverage_le_precoverage : propQCPrecoverage P ≤ precoverage P :=
   inf_le_right
 
+lemma zariskiPrecoverage_le_propQCPrecoverage [P.ContainsIdentities] [IsZariskiLocalAtSource P] :
+    zariskiPrecoverage ≤ propQCPrecoverage P := by
+  rw [propQCPrecoverage, le_inf_iff]
+  refine ⟨zariskiPrecoverage_le_qcPrecoverage, precoverage_mono fun X Y f hf ↦ ?_⟩
+  apply IsZariskiLocalAtSource.of_isOpenImmersion
+
 instance {S : Scheme.{u}} (𝒰 : Scheme.Cover (propQCPrecoverage P) S) :
     QuasiCompactCover 𝒰.toPreZeroHypercover := by
   rw [← Scheme.presieve₀_mem_qcPrecoverage_iff]

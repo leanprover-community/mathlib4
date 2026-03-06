@@ -37,6 +37,17 @@ structure FintypeCat where
   carrier : TypeCat.{u}
   [str : Fintype carrier]
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `FintypeCat.of X` being printed as `{ carrier := X, str := ... }` by
+`delabStructureInstance`. -/
+@[app_delab FintypeCat.of]
+meta def FintypeCat.delabOf : Delab := delabApp
+
+end Notation
+
 attribute [instance] FintypeCat.str
 
 namespace FintypeCat

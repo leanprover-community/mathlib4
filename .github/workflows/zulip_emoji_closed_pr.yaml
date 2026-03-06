@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: leanprover-community/mathlib-ci
-          ref: 7c2dcf950607e48029aec2a614e840f2a14ae7e1
+          ref: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
           fetch-depth: 1
           path: ci-tools
 

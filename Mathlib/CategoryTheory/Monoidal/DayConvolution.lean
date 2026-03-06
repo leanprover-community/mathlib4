@@ -410,7 +410,7 @@ class DayConvolutionUnit (F : C ⥤ V) where
   /-- A "canonical" structure map `𝟙_ V ⟶ F.obj (𝟙_ C)` that defines a natural transformation
   `fromPUnit (𝟙_ V) ⟶ fromPUnit (𝟙_ C) ⋙ F`. -/
   can : 𝟙_ V ⟶ F.obj (𝟙_ C)
-  /-- The canonical map `𝟙_ V ⟶ F.obj (𝟙_ C)` exhibits `F` as a pointwise left kan extension
+  /-- The canonical map `𝟙_ V ⟶ F.obj (𝟙_ C)` exhibits `F` as a pointwise left Kan extension
   of `fromPUnit.{0} 𝟙_ V` along `fromPUnit.{0} 𝟙_ C`. -/
   isPointwiseLeftKanExtensionCan : Functor.LeftExtension.mk F
     ({ app _ := can } : Functor.fromPUnit.{0} (𝟙_ V) ⟶

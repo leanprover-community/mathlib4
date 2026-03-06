@@ -261,11 +261,11 @@ instance {F F' : Sheaf J TypeCat.{w}} (f : F ⟶ F') : Epi (Sheaf.toImage f) := 
   ext U ⟨s, hx⟩
   apply ((isSheaf_iff_isSheaf_of_type J _).mp G'.2 _ hx).isSeparatedFor.ext
   rintro V i ⟨y, e'⟩
-  change (g₁.val.app _ ≫ G'.val.map _) _ = (g₂.val.app _ ≫ G'.val.map _) _
+  change (g₁.hom.app _ ≫ G'.obj.map _) _ = (g₂.hom.app _ ≫ G'.obj.map _) _
   rw [← NatTrans.naturality, ← NatTrans.naturality]
-  have E : (Sheaf.toImage f).val.app (op V) y = (Sheaf.image f).val.map i.op ⟨s, hx⟩ :=
+  have E : (Sheaf.toImage f).hom.app (op V) y = (Sheaf.image f).obj.map i.op ⟨s, hx⟩ :=
     Subtype.ext e'
-  have := congr_arg (fun f : F ⟶ G' => (Sheaf.Hom.val f).app _ y) e
+  have := congr_arg (fun f : F ⟶ G' => f.hom.app _ y) e
   simp only [Sheaf.comp_val, Sheaf.image_val, Sheaf.toImage_val, NatTrans.comp_app,
     Subfunctor.toFunctor_obj, comp_apply, op_unop, Subfunctor.toFunctor_map,
     ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Subtype.ext_iff] at this E ⊢

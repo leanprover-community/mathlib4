@@ -15,6 +15,9 @@ public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+public import Mathlib.RingTheory.Valuation.Discrete.RankOne
+
+import Mathlib.Algebra.FiniteSupport.Basic
 
 /-!
 # Finite places of number fields
@@ -30,8 +33,8 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
   absolute value of `x`. See also `NumberField.FinitePlace.norm_def'` and
   `NumberField.FinitePlace.norm_def_int` for versions where the `v`-adic absolute value is
   unfolded.
-* `NumberField.FinitePlace.mulSupport_finite`: the `v`-adic absolute value of a non-zero element of
-  `K` is different from 1 for at most finitely many `v`.
+* `NumberField.FinitePlace.hasFiniteMulSupport`: the `v`-adic absolute value of a non-zero element
+  of `K` is different from 1 for at most finitely many `v`.
 *  The valuation subrings of the field at the `v`-valuation and it's adic completion are
    discrete valuation rings.
 
@@ -56,15 +59,8 @@ instance : IsPrincipalIdealRing (v.valuation K).integer := by
     WithZero.denselyOrdered_set_iff_subsingleton]
   simpa using (v.valuation K).toMonoidWithZeroHom.range_nontrivial
 
--- TODO: make this inferred from `IsRankOneDiscrete`
-instance : IsDiscreteValuationRing (v.valuation K).integer where
-  not_a_field' := by
-    simp only [ne_eq, Ideal.ext_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
-      Valuation.Integer.not_isUnit_iff_valuation_lt_one, Ideal.mem_bot, Subtype.forall, not_forall]
-    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
-    use π
-    simp [Valuation.mem_integer_iff, ← exp_zero, Subtype.ext_iff, -exp_neg,
-      ← (v.valuation K).map_eq_zero_iff, hπ]
+instance : IsDiscreteValuationRing (v.valuation K).integer :=
+  (v.valuation K).valuationSubring_isDiscreteValuationRing
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   unfold HeightOneSpectrum.adicCompletionIntegers
@@ -72,7 +68,6 @@ instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
     WithZero.denselyOrdered_set_iff_subsingleton]
   simpa using Valued.v.range_nontrivial
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: make this inferred from `IsRankOneDiscrete`, or
 -- develop the API for a completion of a base `IsDVR` ring
 instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
@@ -136,24 +131,24 @@ noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
 
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
-noncomputable instance : (v.valuation K).RankOne where
-  hom := toNNReal (absNorm_ne_zero v)
-  strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
-  exists_val_nontrivial := by
-    rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
-    use x
-    rw [valuation_of_algebraMap]
-    exact ⟨v.intValuation_ne_zero _ hx2, ((intValuation_lt_one_iff_mem _ _).2 hx1).ne⟩
+noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰)).IsRankOneDiscrete where
+  exists_generator_lt_one' := by
+    have h : (v.valuation K).IsRankOneDiscrete := Valuation.IsRankOneDiscrete.mk' (valuation K v)
+    exact ⟨h.generator, by rw [h.generator_zpowers_eq_valueGroup, adicCompletion_valueGroup_eq],
+      h.generator_lt_one⟩
 
-noncomputable instance instRankOneValuedAdicCompletion :
-    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) where
-  hom := toNNReal (absNorm_ne_zero v)
-  strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
-  exists_val_nontrivial := by
-    rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
-    use x
-    rw [valuedAdicCompletion_eq_valuation' v (x : K)]
-    simpa [valuation_of_algebraMap] using ⟨v.intValuation_ne_zero _ hx2, hx1⟩
+open Valuation.IsRankOneDiscrete
+
+noncomputable instance : (v.valuation K).RankOne :=
+  rankOne (v.valuation K) (one_lt_absNorm_nnreal v)
+
+noncomputable instance instRankOneAdicCompletion :
+    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).RankOne :=
+  rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnreal v)
+
+lemma rankOne_hom'_def :
+    (instRankOneAdicCompletion v).hom' = (toNNReal (absNorm_ne_zero v)).comp
+      (valueGroup₀_equiv_withZeroMulInt Valued.v).toMonoidWithZeroHom := rfl
 
 /-- The `v`-adic completion of `K` is a normed field. -/
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
@@ -184,10 +179,12 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
-theorem FinitePlace.norm_def (x : K) :
-    ‖embedding v x‖ = adicAbv v x := by
-  simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField,
-    Valued.norm, Valuation.RankOne.hom, embedding_apply, adicAbv_def]
+theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = adicAbv v x := by
+  simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion,
+    Valued.toNormedField, Valued.norm, Valuation.RankOne.hom,
+    embedding_apply, adicAbv_def, rankOne_hom'_def,
+    valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective
+      (valuedAdicCompletion_surjective K v)]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
@@ -267,7 +264,6 @@ theorem norm_embedding_eq (w : FinitePlace K) (x : K) :
 
 theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := w.1.pos_iff
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ ↔ v₁ = v₂ := by
   refine ⟨?_, fun a ↦ by rw [a]⟩
@@ -300,13 +296,13 @@ lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Inject
 lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximalIdeal w₂ ↔ w₁ = w₂ :=
   equivHeightOneSpectrum.injective.eq_iff
 
-set_option backward.isDefEq.respectTransparency false in
-theorem mulSupport_finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
-    (Function.mulSupport fun w : FinitePlace K ↦ w x).Finite := by
+@[fun_prop]
+theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
+    (fun w : FinitePlace K ↦ w x).HasFiniteMulSupport := by
   have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 :=
     ne_iff_lt_iff_le.mpr <| norm_embedding_eq w x ▸ norm_le_one w.maximalIdeal x
-  simp_rw [Function.mulSupport, this, ← norm_embedding_eq, norm_lt_one_iff_mem,
-    ← Ideal.dvd_span_singleton]
+  simp_rw [Function.HasFiniteMulSupport, Function.mulSupport, this, ← norm_embedding_eq,
+    norm_lt_one_iff_mem, ← Ideal.dvd_span_singleton]
   have h : {v : HeightOneSpectrum (𝓞 K) | v.asIdeal ∣ span {x}}.Finite := by
     apply Ideal.finite_factors
     simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, h_x_nezero, not_false_eq_true]
@@ -315,17 +311,18 @@ theorem mulSupport_finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
   refine (h.subset ?_).of_finite_image h_inj
   simp only [dvd_span_singleton, Set.image_subset_iff, Set.preimage_setOf_eq, subset_refl]
 
-theorem mulSupport_finite {x : K} (h_x_nezero : x ≠ 0) :
-    (Function.mulSupport fun w : FinitePlace K ↦ w x).Finite := by
+@[deprecated (since := "2026-03-03")] alias mulSupport_finite_int := hasFiniteMulSupport_int
+
+@[fun_prop]
+theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
+    (fun w : FinitePlace K ↦ w x).HasFiniteMulSupport := by
   rcases IsFractionRing.div_surjective (A := 𝓞 K) x with ⟨a, b, hb, rfl⟩
   simp_all only [ne_eq, div_eq_zero_iff, FaithfulSMul.algebraMap_eq_zero_iff, not_or, map_div₀]
   obtain ⟨ha, hb⟩ := h_x_nezero
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
-  apply ((mulSupport_finite_int ha).union (mulSupport_finite_int hb)).subset
-  intro w
-  simp only [Function.mem_mulSupport, ne_eq, Set.mem_union]
-  contrapose!
-  simp +contextual only [ne_eq, one_ne_zero, not_false_eq_true, div_self, implies_true]
+  fun_prop (disch := assumption)
+
+@[deprecated (since := "2026-03-03")] alias mulSupport_finite := hasFiniteMulSupport
 
 protected
 lemma add_le (v : FinitePlace K) (x y : K) :
