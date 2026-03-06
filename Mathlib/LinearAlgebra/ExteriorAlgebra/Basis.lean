@@ -38,16 +38,14 @@ lemma basis_apply (s : Finset I) :
 
 lemma basis_apply_ofCard {s : Finset I} (s_card : s.card = n) :
     b.ExteriorAlgebra s = ιMulti_family R n b (ofCard s_card) := by
-  rw [basis_apply]
   subst s_card
-  rfl
+  simp [basis_apply]
 
 variable (s : powersetCard I m) (t : powersetCard I n)
 
 lemma basis_apply_powersetCard :
     b.ExteriorAlgebra s = ιMulti_family R m b s := by
-  simp only [card_eq, basis_apply_ofCard]
-  rfl
+  simp [basis_apply_ofCard]
 
 lemma basis_eq_coe_basis :
     b.ExteriorAlgebra s = (b.exteriorPower m s : ExteriorAlgebra R M) := by
