@@ -40,8 +40,7 @@ variable
 
 variable {A : Type*} [AddCommGroup A] [Module 𝕜 A]
 
-structure TensorialAt (Φ : (Π x : M, V x) → A) (x : M) :
-    Prop where
+structure TensorialAt (Φ : (Π x : M, V x) → A) (x : M) : Prop where
   smul : ∀ f : M → 𝕜, ∀ σ : Π x : M, V x, MDiffAt f x → MDiffAt (T% σ) x → Φ (f • σ) = f x • Φ σ
   add : ∀ σ σ', MDiffAt (T% σ) x → MDiffAt (T% σ') x → Φ (σ + σ') = Φ σ + Φ σ'
 
@@ -133,12 +132,10 @@ lemma pointwise₂
     {Φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
     (hΦ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (Φ · τ) x)
     (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ ·) x)
-    {σ σ' : Π x : M, V x}
-    {τ τ' : Π x : M, V' x}
+    {σ σ' : Π x : M, V x} {τ τ' : Π x : M, V' x}
     (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x)
     (hτ : MDiffAt (T% τ) x) (hτ' : MDiffAt (T% τ') x)
-    (hσσ' : σ x = σ' x)
-    (hττ' : τ x = τ' x) :
+    (hσσ' : σ x = σ' x) (hττ' : τ x = τ' x) :
     Φ σ τ = Φ σ' τ' := by
   trans Φ σ' τ
   · exact (hΦ₁ _ hτ).pointwise hσ hσ' hσσ'
@@ -150,7 +147,7 @@ variable [IsManifold I 1 M]
   [∀ x, IsTopologicalAddGroup (V' x)] [∀ x, ContinuousSMul 𝕜 (V' x)]
   [TopologicalSpace A] [IsTopologicalAddGroup A] [ContinuousSMul 𝕜 A]
 
-noncomputable def mkTensorAt
+noncomputable def mkHom
     -- `Φ` explicit to make it easier to generate the side conditions at point of use
     (Φ : (Π x : M, V x) → A) (x) (hΦ : TensorialAt I F (Φ) x) :
     V x →L[𝕜] A :=
@@ -182,19 +179,18 @@ noncomputable def mkTensorAt
       · exact mdifferentiable_const ..
       · exact mdifferentiableAt_extend .. }
 
-theorem mkTensorAt_apply {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialAt I F (Φ ·) x)
+theorem mkHom_apply {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialAt I F (Φ ·) x)
     {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) :
-    mkTensorAt Φ x hΦ (σ x) = Φ σ := by
+    mkHom Φ x hΦ (σ x) = Φ σ := by
   apply hΦ.pointwise _ hσ
   · simp
   · exact mdifferentiableAt_extend ..
 
-theorem mkTensorAt_apply_eq_extend {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialAt I F Φ x)
-    (σ : V x) :
-    mkTensorAt Φ x hΦ σ = Φ (_root_.extend F σ) :=
+theorem mkHom_apply_eq_extend {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialAt I F Φ x) (σ : V x) :
+    mkHom Φ x hΦ σ = Φ (_root_.extend F σ) :=
   rfl
 
-noncomputable def mk2TensorAt
+noncomputable def mkHom₂
     -- `φ` explicit to make it easier to generate the side conditions at point of use
     (φ : (Π x : M, V x) → (Π x : M, V' x) → A) {x}
     (hφ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (φ · τ) x)
@@ -266,25 +262,24 @@ noncomputable def mk2TensorAt
       · exact mdifferentiableAt_extend .. }
   H.toContinuousLinearMap
 
-theorem mk2TensorAt_apply
+theorem mkHom₂_apply
     {φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
     (hφ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (φ · τ) x)
     (hφ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (φ σ) x)
     {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) {τ : Π x : M, V' x} (hτ : MDiffAt (T% τ) x) :
-    mk2TensorAt φ hφ₁ hφ₂ (σ x) (τ x) = φ σ τ := by
+    mkHom₂ φ hφ₁ hφ₂ (σ x) (τ x) = φ σ τ := by
   apply TensorialAt.pointwise₂ hφ₁ hφ₂ _ hσ _ hτ
   · simp
   · simp
   · exact mdifferentiableAt_extend ..
   · exact mdifferentiableAt_extend ..
 
-theorem mk2TensorAt_apply_eq_extend
+theorem mkHom₂_apply_eq_extend
     {φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
     (hφ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (φ · τ) x)
     (hφ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (φ σ) x)
     (σ : V x) (τ : V' x) :
-    mk2TensorAt φ hφ₁ hφ₂ σ τ
-    = φ (_root_.extend F σ) (_root_.extend F' τ) :=
+    mkHom₂ φ hφ₁ hφ₂ σ τ = φ (_root_.extend F σ) (_root_.extend F' τ) :=
   rfl
 
 variable
@@ -302,14 +297,14 @@ variable
   [∀ x : M, TopologicalSpace (W x)] [∀ x, IsTopologicalAddGroup (W x)] [∀ x, ContinuousSMul 𝕜 (W x)]
   [TopologicalSpace (TotalSpace G W)] [FiberBundle G W] [VectorBundle 𝕜 G W]
 
-theorem contMDiff_mkTensorAt
+theorem contMDiff_mkHom
     (φ : (Π x : M, V x) → (Π x, W x))
     (hφ : ∀ x, TensorialAt I F (φ · x) x)
     -- hopefully this is the correct smoothness criterion!
     {k} (φ_contMDiff : ∀ (σ : Π x : M, V x), CMDiff k (T% σ) → CMDiff k (T% (φ σ))) :
     -- elaborators not working here
     let T (x : M) : TotalSpace (F →L[𝕜] G) (fun x ↦ V x →L[𝕜] W x) :=
-      ⟨x, mkTensorAt (φ · x) x (hφ x)⟩
+      ⟨x, mkHom (φ · x) x (hφ x)⟩
     ContMDiff I (I.prod 𝓘(𝕜, F →L[𝕜] G)) k T := by
   sorry
 

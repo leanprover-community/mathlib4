@@ -111,7 +111,7 @@ end
 
 section
 
-variable [CompleteSpace 𝕜] [CompleteSpace E] [FiniteDimensional 𝕜 E]
+variable [CompleteSpace E]
 
 -- TODO inline the lemmas that go into this
 theorem torsionAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (x : M)
@@ -127,9 +127,11 @@ theorem torsionAux_tensorial₂ (hcov : IsCovariantDerivativeOn E cov) (x : M)
   smul f Y hf hY := hcov.torsionAux_smul_right_apply X hf hY
   add Y Y' hY hY' := hcov.torsionAux_add_right_apply X hY hY'
 
+variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
+
 noncomputable def torsion (hcov : IsCovariantDerivativeOn E cov univ) (x : M) :
     TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] TangentSpace I x :=
-  TensorialAt.mk2TensorAt (torsionAux cov · · x)
+  TensorialAt.mkHom₂ (torsionAux cov · · x)
     (fun τ _ ↦ hcov.torsionAux_tensorial₁ x τ)
     (fun σ _ ↦ hcov.torsionAux_tensorial₂ x σ)
 
@@ -137,7 +139,7 @@ theorem torsion_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x) :
     torsion hcov x (X x) (Y x) = torsionAux cov X Y x :=
-  TensorialAt.mk2TensorAt_apply _ _ hX hY
+  TensorialAt.mkHom₂_apply _ _ hX hY
 
 end
 
@@ -159,7 +161,7 @@ noncomputable def torsion := cov.isCovariantDerivativeOn.torsion
 lemma torsion_apply (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     cov.torsion x (X x) (Y x) = cov Y x (X x) - cov X x (Y x) - mlieBracket I X Y x := by
   unfold torsion IsCovariantDerivativeOn.torsion
-  apply TensorialAt.mk2TensorAt_apply
+  apply TensorialAt.mkHom₂_apply
   exacts [hX, hY]
 
 lemma torsion_apply_extend (u v : TangentSpace I x) :
@@ -167,7 +169,7 @@ lemma torsion_apply_extend (u v : TangentSpace I x) :
       cov (extend E v) x (extend E u x) - cov (extend E u) x (extend E v x)
         - mlieBracket I (extend E u) (extend E v) x := by
   unfold torsion IsCovariantDerivativeOn.torsion
-  apply TensorialAt.mk2TensorAt_apply_eq_extend
+  apply TensorialAt.mkHom₂_apply_eq_extend
 
 /-- A covariant derivation is called **torsion-free** iff its torsion tensor vanishes. -/
 def IsTorsionFree : Prop := torsion cov = 0

@@ -621,7 +621,7 @@ open Classical in
 noncomputable def lcAux₀ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] ℝ :=
-  TensorialAt.mk2TensorAt _ (x := x)
+  TensorialAt.mkHom₂ _ (x := x)
     (fun Z _ ↦ leviCivitaRhs_tensorial₁ _ _ hY Z)
     (fun X hX ↦ leviCivitaRhs_tensorial₂ _ _ hY X hX)
 
@@ -631,7 +631,7 @@ theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
     lcAux₀ I x hY (X x) (Z x) = leviCivitaRhs I X Y Z x := by
   unfold lcAux₀
-  rw [TensorialAt.mk2TensorAt_apply _ _ hX hZ, lcAux₀', if_pos hX, if_pos hZ]
+  rw [TensorialAt.mkHom₂_apply _ _ hX hZ, lcAux₀', if_pos hX, if_pos hZ]
 
 noncomputable def lcAux₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
@@ -676,7 +676,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     congr! 1
     simp only [lcAux₀]
     ext X₀ Y₀
-    simp only [TensorialAt.mk2TensorAt_apply_eq_extend, ContinuousLinearMap.add_apply, lcAux₀']
+    simp only [TensorialAt.mkHom₂_apply_eq_extend, ContinuousLinearMap.add_apply, lcAux₀']
     rw [if_pos, if_pos, if_pos, if_pos, if_pos, if_pos]
     · apply leviCivitaRhs_addY_apply _ (mdifferentiableAt_extend ..) hY hY'
       exact mdifferentiableAt_extend ..
@@ -704,7 +704,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
         ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         ContinuousLinearMap.toSpanSingleton_apply, map_add, map_smul]
       ext Z₀
-      simp only [lcAux₀, lcAux₀', TensorialAt.mk2TensorAt_apply_eq_extend,
+      simp only [lcAux₀, lcAux₀', TensorialAt.mkHom₂_apply_eq_extend,
         ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
       rw [if_pos, if_pos, if_pos, if_pos]
       · have key := leviCivitaRhs_smulY_apply I (X := _root_.extend E X₀) (Y := Y)

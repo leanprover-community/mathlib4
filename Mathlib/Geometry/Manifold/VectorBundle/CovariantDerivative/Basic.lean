@@ -286,7 +286,7 @@ open scoped Classical in
 /-- The difference of two covariant derivatives, as a tensorial map. -/
 noncomputable def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
   if hxs : x ∈ s then
-    TensorialAt.mkTensorAt _ x (differenceAux_tensorial hcov hcov' _ hxs)
+    TensorialAt.mkHom _ x (differenceAux_tensorial hcov hcov' _ hxs)
   else
     0
 
@@ -294,7 +294,7 @@ noncomputable def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜
 lemma difference_apply {x : M} (hx : x ∈ s := by trivial) {σ : Π x, V x} (hσ : MDiffAt (T% σ) x) :
     difference hcov hcov' x (σ x) = cov σ x - cov' σ x := by
   simp only [difference, hx, reduceDIte]
-  rw [TensorialAt.mkTensorAt_apply _ hσ]
+  rw [TensorialAt.mkHom_apply _ hσ]
   rfl
 
 end difference

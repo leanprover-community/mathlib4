@@ -328,7 +328,7 @@ variable {I} in
 `∇` on a Riemannian manifold `(M, g)` is compatible with the metric `g`. -/
 @[no_expose] noncomputable def metricTensor [FiniteDimensional ℝ E] (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
-  TensorialAt.mk2TensorAt (metricTensorAux I cov · · x)
+  TensorialAt.mkHom₂ (metricTensorAux I cov · · x)
     (metricTensorAux_tensorial₁ I cov x) (metricTensorAux_tensorial₂ I cov x)
 
 variable {I} in
@@ -337,7 +337,7 @@ theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
     metricTensor cov x (Y x) (Z x) (X x) =
     fromTangentSpace _ (mfderiv% ⟪Y, Z⟫ x (X x)) - ⟪∇ Y, X, Z⟫ x - ⟪Y, ∇ Z, X⟫ x := by
   unfold metricTensor
-  rw [TensorialAt.mk2TensorAt_apply _ _ hY hZ]
+  rw [TensorialAt.mkHom₂_apply _ _ hY hZ]
   simp only [metricTensorAux, ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp',
     coe_innerSL_apply, Pi.sub_apply, comp_apply]
   conv =>
