@@ -75,35 +75,6 @@ theorem algebraMap_map_one {R : Type*} [CommSemiring R] (x : R) :
 
 end ArithmeticFunction
 
--- PRed
-namespace PowerSeries
-
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-
-@[simp]
-theorem coeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) (n : ℕ) :
-    coeff n (subst (X ^ k) f) = ite (k ∣ n) (algebraMap R S (coeff (n / k) f)) 0 := by
-  split_ifs with h
-  · rw [coeff_subst' (.X_pow hk), finsum_eq_single _ (n / k), ← pow_mul, Nat.mul_div_cancel' h,
-      coeff_X_pow_self, Algebra.algebraMap_eq_smul_one]
-    intro j hj
-    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
-    contrapose! hj
-    rw [hj, Nat.mul_div_cancel_left j hk.pos]
-  · rw [coeff_subst' (.X_pow hk), finsum_eq_zero_of_forall_eq_zero]
-    intro j
-    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
-    contrapose! h
-    use j
-
-@[simp]
-theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
-    constantCoeff (subst (X ^ k) f) = algebraMap R S f.constantCoeff := by
-  rw [← coeff_zero_eq_constantCoeff, coeff_subst_X_pow hk, if_pos (dvd_zero k),
-    Nat.zero_div, coeff_zero_eq_constantCoeff]
-
-end PowerSeries
-
 namespace ArithmeticFunction
 
 open Filter
