@@ -678,6 +678,11 @@ theorem Subgroup.topologicalClosure_minimal (s : Subgroup G) {t : Subgroup G} (h
     (ht : IsClosed (t : Set G)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[to_additive (attr := gcongr)]
+theorem Subgroup.topologicalClosure_mono {s t : Subgroup G} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 @[to_additive]
 theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H]
     [IsTopologicalGroup H] {f : G →* H} (hf : Continuous f) (hf' : DenseRange f) {s : Subgroup G}
@@ -785,6 +790,29 @@ theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
   rw [mem_closure_iff_nhds_basis ((𝓝 1 : Filter G).basis_sets.nhds_of_one x)]
   simp_rw [Set.mem_setOf, id]
 
+/-- A monoid homomorphism (a bundled morphism of a type that implements `MonoidHomClass`)
+from a topological group to a topological monoid is continuous
+provided that it is continuous at one.
+
+This version assumes that `f x → 1` as `x → 1`,
+saving a rewrite of `f 1 = 1` compared to `continuous_of_continuousAt_one` in some cases.
+See also `uniformContinuous_of_continuousAt_one`. -/
+@[to_additive
+  /-- An additive monoid homomorphism (a bundled morphism of a type that implements
+  `AddMonoidHomClass`) from an additive topological group to an additive topological monoid is
+  continuous provided that it is continuous at zero.
+
+  This version assumes that `f x → 0` as `x → 0`,
+  saving a rewrite of `f 0 = 0` compared to `continuous_of_continuousAt_zero` in some cases.
+  See also `uniformContinuous_of_continuousAt_zero`. -/]
+theorem continuous_of_tendsto_nhds_one {M hom : Type*} [MulOneClass M] [TopologicalSpace M]
+    [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
+    (hf : Tendsto f (𝓝 1) (𝓝 1)) :
+    Continuous f :=
+  continuous_iff_continuousAt.2 fun x ↦ by
+    simpa only [ContinuousAt, ← map_mul_left_nhds_one x, tendsto_map'_iff, Function.comp_def,
+      map_mul, mul_one] using hf.const_mul (f x)
+
 /-- A monoid homomorphism (a bundled morphism of a type that implements `MonoidHomClass`) from a
 topological group to a topological monoid is continuous provided that it is continuous at one. See
 also `uniformContinuous_of_continuousAt_one`. -/
@@ -797,9 +825,7 @@ theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [Topologi
     [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
     (hf : ContinuousAt f 1) :
     Continuous f :=
-  continuous_iff_continuousAt.2 fun x => by
-    simpa only [ContinuousAt, ← map_mul_left_nhds_one x, tendsto_map'_iff, Function.comp_def,
-      map_mul, map_one, mul_one] using hf.tendsto.const_mul (f x)
+  continuous_of_tendsto_nhds_one f <| by simpa using hf.tendsto
 
 @[to_additive continuous_of_continuousAt_zero₂]
 theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [TopologicalSpace M]
