@@ -171,9 +171,6 @@ theorem valued_liesOver (x : v.adicCompletion K) :
     · exact Valued.continuous_valuation_of_surjective (v.valuedAdicCompletion_surjective K) |>.pow _
     · exact (Valued.continuous_valuation_of_surjective (w.valuedAdicCompletion_surjective L)).comp
         (continuous_algebraMap _ _)
-    sorry
-    -- exact isClosed_eq (Valued.continuous_valuation.pow _)
-    --   (Valued.continuous_valuation.comp <| continuous_algebraMap _ _)
   | ih a =>
     have := IsScalarTower.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) a
     simp only [algebraMap_def, WithVal.algebraMap_right_apply, WithVal.algebraMap_left_apply,
