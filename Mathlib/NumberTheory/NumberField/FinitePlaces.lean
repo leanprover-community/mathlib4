@@ -6,25 +6,16 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Submonoid
-public import Mathlib.Algebra.GroupWithZero.Range
-public import Mathlib.Data.Int.WithZero
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.DedekindDomain.Factorization
-public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-public import Mathlib.RingTheory.Valuation.Archimedean
-public import Mathlib.Topology.Algebra.Valued.NormedValued
-public import Mathlib.Topology.Algebra.Valued.LocallyCompact
-public import Mathlib.RingTheory.Valuation.Extension
-public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.Algebra.Ring.Subring.IntPolynomial
-public import Mathlib.Analysis.AbsoluteValue.Equivalence
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.NumberTheory.Padics.ProperSpace
-public import Mathlib.NumberTheory.NumberField.AdeleRing
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.RamificationInertia.Valuation
+public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
+public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
@@ -89,10 +80,6 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
     use (WithVal.equiv (v.valuation K)).symm π
     simp [hπ, ← exp_zero, -exp_neg,
       ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
-
-open scoped Valued in
-instance : IsDiscreteValuationRing 𝒪[v.adicCompletion K] :=
-  inferInstanceAs (IsDiscreteValuationRing (v.adicCompletionIntegers K))
 
 end DVR
 
@@ -523,6 +510,10 @@ scoped instance : IsScalarTower K (v.adicCompletion K) (w.adicCompletion L) :=
 
 end LiesOver
 
+open scoped Valued in
+instance : IsDiscreteValuationRing 𝒪[v.adicCompletion K] :=
+  inferInstanceAs (IsDiscreteValuationRing (v.adicCompletionIntegers K))
+
 set_option backward.isDefEq.respectTransparency false in
 open scoped LiesOver in
 open Valued integer Rat.HeightOneSpectrum IsLocalRing in
@@ -541,3 +532,5 @@ instance compact_adicCompletionIntegers : CompactSpace (v.adicCompletionIntegers
 end NumberField.HeightOneSpectrum
 
 end LiesOver
+
+#min_imports
