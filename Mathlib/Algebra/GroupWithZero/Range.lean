@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
 public import Mathlib.Algebra.GroupWithZero.WithZero
+public import Mathlib.Algebra.Order.Hom.MonoidWithZero
 
 /-! # The range of a MonoidWithZeroHom
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `MonoidWithZero`, we define the
@@ -119,6 +120,30 @@ lemma mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueGroup f := by
 
 lemma inv_mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b⁻¹ ∈ valueGroup f :=
   Subgroup.inv_mem _ (mem_valueGroup f hb)
+
+lemma valueGroup_eq_top_of_surjective (hf : Function.Surjective f) : valueGroup f = ⊤ := by
+  simp [valueGroup_def, valueMonoid_eq_closure, hf.range_eq]
+
+/-- The multiplicative isomorphism between `valueGroup f` and `Bˣ` when `f` is surjective -/
+def valueGroupEquivOfSurjective (hf : Function.Surjective f) : valueGroup f ≃* Bˣ :=
+  (MulEquiv.subgroupCongr (valueGroup_eq_top_of_surjective f hf)).trans Subgroup.topEquiv
+
+/-- The multiplicative order isomorphism between `valueGroup f` and `Bˣ` when `f` is surjective -/
+def valueGroupOrderIsoOfSurjective [Preorder Bˣ] (hf : Function.Surjective f) :
+    valueGroup f ≃*o Bˣ where
+  __ := (MulEquiv.subgroupCongr (valueGroup_eq_top_of_surjective f hf)).trans Subgroup.topEquiv
+  map_le_map_iff' {a b} := by simp
+
+section LinearOrderedCommGroupWithZero
+
+variable {B : Type*} [LinearOrderedCommGroupWithZero B] [FunLike F A B]
+  [MonoidWithZeroHomClass F A B] (f : F)
+
+@[simps!]
+def valueGroupOrderIsoOfSurjective₀ (hf : Function.Surjective f) : ValueGroup₀ f ≃*o B :=
+  (OrderMonoidIso.withZero (valueGroupOrderIsoOfSurjective _ hf)).trans OrderMonoidIso.withZeroUnits
+
+end LinearOrderedCommGroupWithZero
 
 end MonoidWithZeroHom
 
