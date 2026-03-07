@@ -297,6 +297,7 @@ public import Mathlib.Tactic.Tauto
 public import Mathlib.Tactic.TautoSet
 public import Mathlib.Tactic.TermCongr
 public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Tactic.ToSubgroupOf
 public import Mathlib.Tactic.ToDual
 public import Mathlib.Tactic.ToExpr
 public import Mathlib.Tactic.ToFun
