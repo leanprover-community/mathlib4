@@ -90,6 +90,10 @@ noncomputable section
 
 open Filter Function Bornology Metric Set Topology Filter
 
+/-!
+### Equivalences between `StrongDual` and `WeakDual`
+-/
+
 namespace StrongDual
 
 section
@@ -103,19 +107,21 @@ mapping). It is a linear equivalence. -/
 def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
   LinearEquiv.refl R (StrongDual R M)
 
-@[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
+@[deprecated (since := "2025-08-03")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
 
 @[simp]
 theorem coe_toWeakDual (x' : StrongDual R M) : toWeakDual x' = x' :=
   rfl
 
-@[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.coe_toWeakDual := coe_toWeakDual
+@[deprecated (since := "2025-08-03")]
+alias _root_.NormedSpace.Dual.coe_toWeakDual := coe_toWeakDual
 
 @[simp]
 theorem toWeakDual_inj (x' y' : StrongDual R M) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
   (LinearEquiv.injective toWeakDual).eq_iff
 
-@[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual_inj := toWeakDual_inj
+@[deprecated (since := "2025-08-03")]
+alias _root_.NormedSpace.Dual.toWeakDual_inj := toWeakDual_inj
 
 end
 
@@ -162,23 +168,6 @@ theorem isBounded_toWeakDual_preimage {s : Set (WeakDual 𝕜 F)} :
 
 end Bornology
 
-
-variable (𝕜)
-
-/-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
-weak-star topology is `WeakDual.polar 𝕜 s`. -/
-def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
-  toStrongDual ⁻¹' (StrongDual.polar 𝕜) s
-
-theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } :=
-  rfl
-
-/-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
-is used. -/
-theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
-  simp only [polar_def, setOf_forall]
-  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
-
 end WeakDual
 
 /-!
@@ -221,6 +210,10 @@ namespace WeakDual
 
 open NormedSpace
 
+/-!
+### Bornology and pointwise bounds
+-/
+
 theorem isVonNBounded_iff_pointwise_bounded {s : Set (WeakDual 𝕜 E)} :
     Bornology.IsVonNBounded 𝕜 s ↔ ∀ x : E, ∃ r : ℝ, ∀ f ∈ s, ‖f x‖ ≤ r := by
   constructor
@@ -236,24 +229,18 @@ theorem isVonNBounded_iff_pointwise_bounded {s : Set (WeakDual 𝕜 E)} :
     rw [norm_mul]
     exact mul_le_of_le_one_right (norm_nonneg _) hg.le
   · intro h V hV
-    have hpi : Bornology.IsVonNBounded 𝕜
-        ((fun (f : WeakDual 𝕜 E) (x : E) => f x) '' s) := by
-      rw [isVonNBounded_pi_iff]
-      intro x
-      obtain ⟨C, hC⟩ := h x
-      refine (NormedSpace.isVonNBounded_iff' 𝕜).mpr ⟨C, fun z hz => ?_⟩
-      obtain ⟨_, ⟨f, hf, rfl⟩, rfl⟩ := hz
-      exact hC f hf
-    rw [show (𝓝 (0 : WeakDual 𝕜 E)) = Filter.comap
-        (fun (f : WeakDual 𝕜 E) (x : E) => f x) (𝓝 0) from nhds_induced _ _] at hV
+    rw [show 𝓝 (0 : WeakDual 𝕜 E) = Filter.comap (fun f x ↦ f x) (𝓝 0) from
+      nhds_induced _ _] at hV
     obtain ⟨W, hW, hWV⟩ := hV
+    have hpi : Bornology.IsVonNBounded 𝕜 ((fun f x ↦ f x : WeakDual 𝕜 E → E → 𝕜) '' s) :=
+      isVonNBounded_pi_iff.mpr fun x ↦ let ⟨C, hC⟩ := h x
+        (NormedSpace.isVonNBounded_iff' 𝕜).mpr
+          ⟨C, by rintro _ ⟨_, ⟨f, hf, rfl⟩, rfl⟩; exact hC f hf⟩
     obtain ⟨r, hr, hab⟩ := (hpi hW).exists_pos
-    refine (Absorbs.mono_left ?_ hWV)
-    refine .of_norm ⟨r, fun c hc => fun f hf => ?_⟩
-    have hc0 : c ≠ 0 := norm_pos_iff.mp (lt_of_lt_of_le hr hc)
-    have hmem := hab c hc ⟨f, hf, rfl⟩
-    rw [Set.mem_smul_set_iff_inv_smul_mem₀ hc0] at hmem ⊢
-    exact hmem
+    refine Absorbs.mono_left (.of_norm ⟨r, fun c hc f hf ↦ ?_⟩) hWV
+    have hc0 : c ≠ 0 := norm_pos_iff.mp (hr.trans_le hc)
+    have hmem := hab c hc (Set.mem_image_of_mem (fun f x ↦ f x) hf)
+    rwa [Set.mem_smul_set_iff_inv_smul_mem₀ hc0] at hmem ⊢
 
 /-- By the Uniform Boundedness Principle, norm-boundedness (the default bornology)
 and pointwise-boundedness (`IsVonNBounded`) coincide on the weak dual of a Banach space. -/
@@ -274,19 +261,15 @@ theorem isBounded_iff_isVonNBounded [CompleteSpace E] {s : Set (WeakDual 𝕜 E)
 is norm-bounded if and only if it is pointwise bounded. -/
 theorem isBounded_iff_pointwise_bounded [CompleteSpace E] {s : Set (WeakDual 𝕜 E)} :
     IsBounded s ↔ ∀ x : E, ∃ C : ℝ, ∀ f ∈ s, ‖f x‖ ≤ C := by
-  -- If you updated `isVonNBounded` to an `iff`, this proof is trivial!
   rw [isBounded_iff_isVonNBounded, isVonNBounded_iff_pointwise_bounded]
 
-theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
-    IsClosed (toStrongDual ⁻¹' closedBall x' r) :=
-  isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
-
 /-!
-### Polar sets in the weak dual space
+### Compactness of bounded closed sets
+
+While the coercion `↑ : WeakDual 𝕜 E → (E → 𝕜)` is not a closed map, it sends *bounded*
+closed sets to closed sets.
 -/
 
-/-- While the coercion `↑ : WeakDual 𝕜 E → (E → 𝕜)` is not a closed map, it sends *bounded*
-closed sets to closed sets. -/
 theorem isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
     (hb : IsBounded s) (hc : IsClosed s) :
     IsClosed (((↑) : WeakDual 𝕜 E → E → 𝕜) '' s) :=
@@ -298,7 +281,40 @@ theorem isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual �
     ContinuousLinearMap.isCompact_image_coe_of_bounded_of_closed_image hb <|
       isClosed_image_coe_of_bounded_of_closed hb hc
 
+/-!
+### Closed balls
+-/
+
+theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
+    IsClosed (toStrongDual ⁻¹' closedBall x' r) :=
+  isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
+
+/-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
+the weak-star topology. -/
+theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : ℝ) :
+    IsCompact (toStrongDual ⁻¹' closedBall x' r) :=
+  isCompact_of_bounded_of_closed (isBounded_toStrongDual_preimage.mpr isBounded_closedBall)
+    (isClosed_closedBall x' r)
+
+/-!
+### Polar sets in the weak dual space
+-/
+
 variable (𝕜)
+
+/-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
+weak-star topology is `WeakDual.polar 𝕜 s`. -/
+def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
+  toStrongDual ⁻¹' (StrongDual.polar 𝕜) s
+
+theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } :=
+  rfl
+
+/-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
+is used. -/
+theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
+  simp only [polar_def, setOf_forall]
+  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
 /-- The image under `↑ : WeakDual 𝕜 E → (E → 𝕜)` of a polar `WeakDual.polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
@@ -320,12 +336,9 @@ theorem isCompact_polar [ProperSpace 𝕜] {s : Set E} (s_nhds : s ∈ 𝓝 (0 :
     IsCompact (polar 𝕜 s) :=
   isCompact_of_bounded_of_closed (isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds) (isClosed_polar _ _)
 
-/-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
-the weak-star topology. -/
-theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : ℝ) :
-    IsCompact (toStrongDual ⁻¹' closedBall x' r) :=
-  isCompact_of_bounded_of_closed (isBounded_toStrongDual_preimage.mpr isBounded_closedBall)
-    (isClosed_closedBall x' r)
+/-!
+### Sequential compactness
+-/
 
 open TopologicalSpace
 
