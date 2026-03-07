@@ -156,7 +156,7 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
 theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
   simp [isSheafFor_top]
 
-/-- A presheaf is a sheaf after composiing with a universe lift if and only if it is a sheaf. -/
+/-- A presheaf is a sheaf after composing with a universe lift if and only if it is a sheaf. -/
 @[simp]
 theorem isSheafFor_comp_uliftFunctor_iff {R : Presieve X} :
     R.IsSheafFor (P ⋙ uliftFunctor.{w'}) ↔ R.IsSheafFor P :=
