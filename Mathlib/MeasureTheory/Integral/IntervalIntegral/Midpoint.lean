@@ -312,4 +312,3 @@ theorem midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
 --   sorry
 
 end
-
