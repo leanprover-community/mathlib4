@@ -522,8 +522,8 @@ lemma Measurable.const_smul (hg : Measurable g) (c : M) : Measurable (c • g) :
   (measurable_const_smul c).comp hg
 
 @[to_additive (attr := to_fun (attr := fun_prop))]
-lemma AEMeasurable.const_smul (hf : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=
-  hf.fun_const_smul c
+lemma AEMeasurable.const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=
+  (measurable_const_smul c).comp_aemeasurable hg
 
 @[to_additive]
 instance Pi.instMeasurableConstSMul {ι : Type*} {α : ι → Type*} [∀ i, SMul M (α i)]
