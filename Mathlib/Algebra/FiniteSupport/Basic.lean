@@ -171,6 +171,19 @@ lemma HasFiniteMulSupport.inf' [SemilatticeInf M] {ι : Type*} {f : ι → α �
   contrapose! ha
   exact Finset.inf'_eq_of_forall hs (fun x ↦ f x a) ha
 
+variable {β : Type*} {f : β → M} {g : α → β}
+
+@[to_additive (attr := fun_prop)]
+lemma HasFiniteMulSupport.comp_of_injective (hg : Injective g) (hf : f.HasFiniteMulSupport) :
+    (f ∘ g).HasFiniteMulSupport := by
+  refine Set.Finite.of_injOn ?_ (Set.injOn_of_injective hg) hf
+  grind [Set.mapsTo_iff_subset_preimage]
+
+@[to_additive (attr := fun_prop)]
+lemma HasFiniteMulSupport.fun_comp_of_injective (hg : Injective g) (hf : f.HasFiniteMulSupport) :
+    (fun a ↦ f (g a)).HasFiniteMulSupport :=
+  hf.comp_of_injective hg
+
 end Function
 
 end
