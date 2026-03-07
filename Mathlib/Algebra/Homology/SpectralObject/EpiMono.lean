@@ -46,7 +46,7 @@ lemma epi_map (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃') (n₀ n₁ n
     (hα₂ : α.app 2 = 𝟙 _ := by cat_disch)
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     Epi (X.map f₁ f₂ f₃ f₁ f₂ f₃' α n₀ n₁ n₂ hn₁ hn₂) := by
-  have := X.πE_map  _ _ _ _ _ _ α (𝟙 _) n₀ n₁ n₂
+  have := X.πE_map _ _ _ _ _ _ α (𝟙 _) n₀ n₁ n₂
   rw [cyclesMap_id, id_comp] at this
   exact epi_of_epi_fac this
 
@@ -78,7 +78,7 @@ lemma d_map_fourδ₄Toδ₃ (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ +
     ← cancel_epi (X.toCycles f₃ f₄ f₃₄ h₃₄ n₁), comp_zero, comp_zero,
     X.toCycles_πE_d_assoc f₁ f₂ f₃ f₄ f₅ _ rfl f₃₄ h₃₄ n₀ n₁ n₂ n₃,
     X.πE_map f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) (𝟙 _) n₁ n₂ n₃,
-    cyclesMap_id, Category.id_comp, δ_toCycles_assoc _ _ _ _ _ _ _ _, δToCycles_πE _ _ _ _ _ _ _]
+    cyclesMap_id, Category.id_comp, δ_toCycles_assoc .., δToCycles_πE ..]
 
 instance (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) :
     Epi (X.map f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) n₁ n₂ n₃ hn₂ hn₃) :=
@@ -86,7 +86,7 @@ instance (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) :
 
 lemma isIso_map_fourδ₄Toδ₃ (h : (X.H n₁).map (twoδ₁Toδ₀ f₃ f₄ f₃₄ h₃₄) = 0 := by cat_disch)
     (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
-    IsIso (X.map f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) n₁ n₂ n₃ hn₂ hn₃ ) := by
+    IsIso (X.map f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) n₁ n₂ n₃ hn₂ hn₃) := by
   apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono'
   · exact (X.exact₂ f₃ f₄ f₃₄ h₃₄ _).epi_f h
   · dsimp
@@ -107,11 +107,11 @@ lemma map_fourδ₁Toδ₀_d (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ +
     X.map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) n₀ n₁ n₂ hn₁ hn₂ ≫
       X.d f₁ f₂ f₃ f₄ f₅ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ = 0 := by
   rw [← cancel_mono (X.ιE f₁ f₂ f₃ n₁ n₂ n₃ hn₂ hn₃),
-    ← cancel_mono (X.fromOpcycles f₂ f₃ f₂₃ h₂₃ n₂ ), zero_comp, zero_comp, assoc,
+    ← cancel_mono (X.fromOpcycles f₂ f₃ f₂₃ h₂₃ n₂), zero_comp, zero_comp, assoc,
     assoc, X.d_ιE_fromOpcycles f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ _ rfl _ rfl n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃]
   rw [X.map_ιE_assoc f₂₃ f₄ f₅ f₃ f₄ f₅
     (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) (𝟙 _) n₀ n₁ n₂ (by ext <;> simp <;> rfl) hn₁ hn₂ ,
-    opcyclesMap_id, fromOpcyles_δ _ _ _ _ _ _ _ _, id_comp, ιE_δFromOpcycles _ _ _ _ _ _ _]
+    opcyclesMap_id, fromOpcyles_δ .., id_comp, ιE_δFromOpcycles ..]
 
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Mono (X.map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) n₀ n₁ n₂ hn₁ hn₂) :=
@@ -132,7 +132,7 @@ lemma isIso_map_fourδ₁Toδ₀ (h : (X.H n₂).map (twoδ₂Toδ₁ f₂ f₃ 
 lemma isIso_map_fourδ₁Toδ₀_of_isZero (h : IsZero ((X.H n₂).obj (mk₁ f₂)))
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     IsIso (X.map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) n₀ n₁ n₂ hn₁ hn₂) :=
-  X.isIso_map_fourδ₁Toδ₀ _ _ _ _ _ _ _ _ _ (h.eq_of_src _ _) _ _
+  X.isIso_map_fourδ₁Toδ₀ _ _ _ _ _ _ _ _ _ (h.eq_of_src _ _)
 
 end
 
@@ -179,8 +179,7 @@ lemma mapFourδ₁Toδ₀'_mapFourδ₃Toδ₃' (n₀ n₁ n₂ : ℤ)
       X'.mapFourδ₄Toδ₃' i₀ i₂ i₃ i₄ i₅ _ _ _ hi₄₅ n₀ n₁ n₂ hn₁ hn₂ ≫
         X'.mapFourδ₁Toδ₀' i₀ i₁ i₂ i₃ i₅ hi₀₁ _ _ _ n₀ n₁ n₂ hn₁ hn₂ := by
   dsimp [mapFourδ₁Toδ₀', mapFourδ₄Toδ₃']
-  rw [← map_comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _,
-    ← map_comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _]
+  rw [← map_comp .., ← map_comp ..]
   rfl
 
 section
