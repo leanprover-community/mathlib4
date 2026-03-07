@@ -297,11 +297,11 @@ public import Mathlib.Tactic.Tauto
 public import Mathlib.Tactic.TautoSet
 public import Mathlib.Tactic.TermCongr
 public import Mathlib.Tactic.ToAdditive
-public import Mathlib.Tactic.ToSubgroupOf
 public import Mathlib.Tactic.ToDual
 public import Mathlib.Tactic.ToExpr
 public import Mathlib.Tactic.ToFun
 public import Mathlib.Tactic.ToLevel
+public import Mathlib.Tactic.ToSubgroupOf
 public import Mathlib.Tactic.Trace
 public import Mathlib.Tactic.Translate.Core
 public import Mathlib.Tactic.Translate.GuessName
@@ -309,6 +309,7 @@ public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 public import Mathlib.Tactic.Translate.ToAdditive
 public import Mathlib.Tactic.Translate.ToDual
+public import Mathlib.Tactic.Translate.ToSubgroupOf
 public import Mathlib.Tactic.Translate.UnfoldBoundary
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Tactic.TypeCheck
