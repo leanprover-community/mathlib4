@@ -39,7 +39,7 @@ TODO (anyone): Add "Main results" section.
 
 ## Tags
 
-pseudo_metric, dist
+pseudometric space, dist
 -/
 
 @[expose] public section
@@ -574,7 +574,6 @@ theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y �
   rw [← add_sub_cancel ε₁ ε₂]
   exact lt_of_le_of_lt (dist_triangle z x y) (add_lt_add_of_lt_of_le zx h)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_half_subset (y) (h : y ∈ ball x (ε / 2)) : ball y (ε / 2) ⊆ ball x ε :=
   ball_subset <| by rw [sub_self_div_two]; exact le_of_lt h
 
@@ -705,6 +704,17 @@ theorem uniformity_basis_dist_le :
     (𝓤 α).HasBasis ((0 : ℝ) < ·) fun ε => { p : α × α | dist p.1 p.2 ≤ ε } :=
   Metric.mk_uniformity_basis_le (fun _ => id) fun ε ε₀ => ⟨ε, ε₀, le_refl ε⟩
 
+theorem uniformity_basis_dist_le_inv_nat_succ :
+    (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ 1 / (↑n + 1) } :=
+  Metric.mk_uniformity_basis_le (fun n _ => div_pos zero_lt_one <| Nat.cast_add_one_pos n)
+    fun _ε ε0 => (exists_nat_one_div_lt ε0).imp fun _n hn => ⟨trivial, hn.le⟩
+
+theorem uniformity_basis_dist_le_inv_nat_pos :
+    (𝓤 α).HasBasis (fun n : ℕ => 0 < n) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ 1 / ↑n } :=
+  Metric.mk_uniformity_basis_le (fun n hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun _ε ε0 =>
+    let ⟨n, hn⟩ := exists_nat_one_div_lt ε0
+    ⟨n + 1, n.succ_pos, by simpa using hn.le⟩
+
 theorem uniformity_basis_dist_le_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     (𝓤 α).HasBasis (fun _ : ℕ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ r ^ n } :=
   Metric.mk_uniformity_basis_le (fun _ _ => pow_pos h0 _) fun _ε ε0 =>
@@ -757,8 +767,8 @@ theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → P
     (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ ⦃x⦄, dist x x₀ < ε → ∀ ⦃i⦄, pa i → p (x, i) := by
   refine (nhds_basis_ball.prod f.basis_sets).eventually_iff.trans ?_
-  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left]
-  rfl
+  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left,
+    Set.mem_surjective.exists, eventually_mem_set]
 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
 in a pseudo-metric space. -/
@@ -780,6 +790,14 @@ theorem nhds_basis_ball_inv_nat_succ :
 theorem nhds_basis_ball_inv_nat_pos :
     (𝓝 x).HasBasis (fun n => 0 < n) fun n : ℕ => ball x (1 / ↑n) :=
   nhds_basis_uniformity uniformity_basis_dist_inv_nat_pos
+
+theorem nhds_basis_closedBall_inv_nat_succ :
+    (𝓝 x).HasBasis (fun _ => True) fun n : ℕ => closedBall x (1 / (↑n + 1)) :=
+  nhds_basis_uniformity uniformity_basis_dist_le_inv_nat_succ
+
+theorem nhds_basis_closedBall_inv_nat_pos :
+    (𝓝 x).HasBasis (fun n => 0 < n) fun n : ℕ => closedBall x (1 / ↑n) :=
+  nhds_basis_uniformity uniformity_basis_dist_le_inv_nat_pos
 
 theorem nhds_basis_ball_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     (𝓝 x).HasBasis (fun _ => True) fun n : ℕ => ball x (r ^ n) :=

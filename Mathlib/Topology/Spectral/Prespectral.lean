@@ -174,3 +174,25 @@ lemma PrespectralSpace.exists_isCompact_and_isOpen_between [PrespectralSpace X] 
     obtain ⟨V, h, hxV, hVU⟩ :=
       PrespectralSpace.isTopologicalBasis.exists_subset_of_mem_open (hKU hx) hU
     exact ⟨V, mem_nhdsWithin.mpr ⟨V, h.1, hxV, Set.inter_subset_left⟩, V, h.2, h.1, subset_rfl, hVU⟩
+
+lemma PrespectralSpace.exists_isClosed_of_not_isPreirreducible [PrespectralSpace X] (Z : Set X)
+    (hZ : ¬ IsPreirreducible Z) :
+    ∃ (A B : Set X), IsClosed A ∧ IsClosed B ∧ IsCompact Aᶜ ∧ IsCompact Bᶜ ∧
+      Z ⊆ A ∪ B ∧ (Z ∩ Aᶜ).Nonempty ∧ (Z ∩ Bᶜ).Nonempty := by
+  simp only [IsPreirreducible, not_forall] at hZ
+  rcases hZ with ⟨U₁, U₂, hU₁, hU₂, hU₁Z, hU₂Z, hU₁₂⟩
+  rw [Set.not_nonempty_iff_eq_empty, ← Set.subset_empty_iff] at hU₁₂
+  obtain ⟨x₁, hx₁⟩ : ∃ x₁ ∈ U₁, x₁ ∈ Z ∧ x₁ ∉ U₂ := by
+    obtain ⟨x, hx⟩ := hU₁Z
+    use x, hx.2, hx.1, fun h₂ ↦ hU₁₂ ⟨hx.1, hx.2, h₂⟩
+  obtain ⟨x₂, hx₂⟩ : ∃ x₂ ∈ U₂, x₂ ∈ Z ∧ x₂ ∉ U₁ := by
+    obtain ⟨x, hx⟩ := hU₂Z
+    use x, hx.2, hx.1, fun h₁ ↦ hU₁₂ ⟨hx.1, h₁, hx.2⟩
+  rw [PrespectralSpace.isTopologicalBasis.isOpen_iff] at hU₁ hU₂
+  obtain ⟨W₁, hW₁⟩ := hU₁ x₁ hx₁.1
+  obtain ⟨W₂, hW₂⟩ := hU₂ x₂ hx₂.1
+  refine ⟨W₁ᶜ, W₂ᶜ, by simpa using hW₁.1.1, by simpa using hW₂.1.1, by simp [hW₁.1.2],
+    by simp [hW₂.1.2], fun z hz ↦ ?_, ⟨x₁, by grind⟩, ⟨x₂, by grind⟩⟩
+  · by_contra! hc
+    simp only [Set.mem_union, Set.mem_compl_iff, not_or, not_not] at hc
+    exact hU₁₂ ⟨hz, hW₁.2.2 hc.1, hW₂.2.2 hc.2⟩

@@ -144,6 +144,7 @@ theorem trace_eq_neg_charpoly_nextCoeff (M : Matrix n n R) : M.trace = -M.charpo
   nontriviality
   simp [trace_eq_neg_charpoly_coeff, nextCoeff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
     M.det = (-1) ^ Fintype.card n * M.charpoly.coeff 0 := by
   rw [coeff_zero_eq_eval_zero, charpoly, eval_det, matPolyEquiv_charmatrix, ← det_smul]
@@ -247,7 +248,7 @@ namespace Matrix
 is equivalent to a polynomial with degree less than the dimension of the matrix. -/
 theorem aeval_eq_aeval_mod_charpoly (M : Matrix n n R) (p : R[X]) :
     aeval M p = aeval M (p %ₘ M.charpoly) :=
-  (aeval_modByMonic_eq_self_of_root M.charpoly_monic M.aeval_self_charpoly).symm
+  (aeval_modByMonic_eq_self_of_root M.aeval_self_charpoly).symm
 
 /-- Any matrix power can be computed as the sum of matrix powers less than `Fintype.card n`.
 
@@ -257,7 +258,6 @@ theorem pow_eq_aeval_mod_charpoly (M : Matrix n n R) (k : ℕ) :
 
 section Ideal
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k : ℕ) :
     M.charpoly.coeff k ∈ I ^ (Fintype.card n - k) := by
   delta charpoly
@@ -361,7 +361,7 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
   nontriviality R
   let p : R[X] := M.charpolyRev
   have hp : p - 1 = X * (p /ₘ X) := by
-    conv_lhs => rw [← modByMonic_add_div p monic_X]
+    conv_lhs => rw [← modByMonic_add_div p X]
     simp [p, modByMonic_X]
   have : IsNilpotent (p /ₘ X) :=
     (Polynomial.isUnit_iff'.mp (isUnit_charpolyRev_of_isNilpotent hM)).2

@@ -284,7 +284,6 @@ theorem dilatransvections_pow_mono :
     Monotone (fun n : ℕ ↦ (dilatransvections R V) ^ n) :=
   Set.pow_right_monotone one_mem_dilatransvections
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Over a division ring, `dilatransvections` correspond to linear
 equivalences `e` such that the linear map `e - id` has rank at most 1.
 

@@ -75,7 +75,7 @@ lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
 
 lemma LocallyLinear.map (f : α ↪ β) (hG : G.LocallyLinear) : (G.map f).LocallyLinear := by
   refine ⟨hG.1.map _, ?_⟩
-  rintro _ _ ⟨a, b, h, rfl, rfl⟩
+  rintro _ _ ⟨-, a, b, h, rfl, rfl⟩
   obtain ⟨s, hs, ha, hb⟩ := hG.2 h
   exact ⟨s.map f, hs.map, mem_map_of_mem _ ha, mem_map_of_mem _ hb⟩
 
