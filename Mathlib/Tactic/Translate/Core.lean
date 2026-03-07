@@ -7,15 +7,16 @@ Jovan Gerbscheid
 module
 
 public meta import Lean.Compiler.NoncomputableAttr
+public meta import Lean.Elab.App
 public meta import Lean.Meta.Tactic.Ext
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
-public meta import Mathlib.Lean.Meta.Simp
 public meta import Lean.Meta.CoeAttr
+public meta import Mathlib.Lean.Meta.Simp
 public import Batteries.Lean.NameMapAttribute
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
@@ -1074,8 +1075,6 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
     warnAttr cfg.ref Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
     warnAttr cfg.ref Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
     warnParametricAttr cfg.ref Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
-    -- the next line also warns for `@[to_additive, simps]`, because of the application times
-    warnParametricAttr cfg.ref simpsAttr t.attrName `simps src tgt
     warnAttrCore cfg.ref Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
