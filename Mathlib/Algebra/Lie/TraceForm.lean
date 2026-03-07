@@ -217,7 +217,6 @@ open TensorProduct
 
 variable [LieRing.IsNilpotent L] [IsDomain R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
     [Module.IsTorsionFree R M] [IsNoetherian R M] [IsTriangularizable R L M] (z : L) :
     traceForm R L M =
@@ -408,7 +407,6 @@ namespace LieModule
 variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 variable [LieRing.IsNilpotent L] [LinearWeights K L M] [IsTriangularizable K L M]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     traceForm K L M x y = ∑ χ : Weight K L M, finrank K (genWeightSpace M χ) • (χ x * χ y) := by
   have hxy : ∀ χ : Weight K L M, MapsTo (toEnd K L M x ∘ₗ toEnd K L M y)
