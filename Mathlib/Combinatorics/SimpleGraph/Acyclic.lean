@@ -643,7 +643,7 @@ lemma exists_isCycle_of_isEdgeReachable_two {u v : V} (huv : u ≠ v)
     (h : G.IsEdgeReachable 2 u v) : ∃ w : G.Walk u u, w.IsCycle := by
   classical
   obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv h
-  have := @h {s(u, w)} (by simp)
+  have := @h {s(u, w)} (by simp; norm_cast)
   obtain ⟨w, p, hp₁, hp₂⟩ := adj_and_reachable_delete_edges_iff_exists_cycle.mp ⟨hw, this⟩
   exact ⟨p.rotate (p.fst_mem_support_of_mem_edges hp₂), IsCycle.rotate hp₁ _⟩
 
