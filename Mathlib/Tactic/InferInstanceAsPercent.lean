@@ -65,17 +65,6 @@ private def unfoldChain (e : Expr) (skipHead : Bool := false) :
     cur := nxt
   return out
 
-/-- Add all unfoldings of `e` to `acc` as replacement sources mapping to `target`.
-If `skipHead` is true, the first element (i.e. `e` itself) is not added. -/
-private def addUnfoldings (acc : Array (Expr × Expr)) (e target : Expr)
-    (skipHead : Bool := false) : MetaM (Array (Expr × Expr)) := do
-  let chain ← unfoldChain e (skipHead := skipHead)
-  let mut acc := acc
-  for form in chain do
-    if !acc.any (·.1 == form) then
-      acc := acc.push (form, target)
-  return acc
-
 /-- Check whether two expressions have the same head constant name (ignoring universe levels). -/
 private def sameHeadConstName (a b : Expr) : Bool :=
   match a.getAppFn, b.getAppFn with
@@ -115,19 +104,17 @@ private def alignHeads (sourceType expectedType : Expr) :
     does not match expected type head{indentExpr expectedType.getAppFn}"
 
 /-- Build the replacement table for differing arguments between `sourceType` and
-`expectedType`. For each differing argument position, all unfoldings of both the
-source and expected arguments are mapped to the expected argument. -/
+`expectedType`. For each differing argument position, the source argument is mapped
+to the expected argument. Since `matchesAnyDefeq` uses `isDefEq` at `default`
+transparency, intermediate unfoldings are handled automatically. -/
 private def buildReplacements (sourceType expectedType : Expr) :
-    MetaM (Array (Expr × Expr)) := do
+    Array (Expr × Expr) := Id.run do
   let sourceArgs := sourceType.getAppArgs
   let expectedArgs := expectedType.getAppArgs
   let mut replacements : Array (Expr × Expr) := #[]
   for sArg in sourceArgs, eArg in expectedArgs do
     if sArg != eArg then
-      -- Unfoldings of the expected (target) carrier, skipping the target itself
-      replacements ← addUnfoldings replacements eArg eArg (skipHead := true)
-      -- Unfoldings of the source carrier (including itself)
-      replacements ← addUnfoldings replacements sArg eArg
+      replacements := replacements.push (sArg, eArg)
   return replacements
 
 /-- Check whether `e` is defeq (at `default` transparency) to any source expression
@@ -160,9 +147,9 @@ private partial def replaceLamDomains (e : Expr) (replacements : Array (Expr × 
     return .lam name ty' (← replaceLamDomains body replacements) bi
   | _ => return e
 
-/-- WHNF `e` at default transparency and return the constructor info, universe levels,
-and arguments, or `none` if `e` doesn't reduce to a constructor application. -/
-private def getCtorApp? (e : Expr) :
+/-- Like `Lean.Meta.constructorApp?`, but also returns the universe levels
+(needed to reconstruct the constructor application after patching arguments). -/
+private def constructorAppWithUniverses? (e : Expr) :
     MetaM (Option (ConstructorVal × List Level × Array Expr)) := do
   let e' ← withDefault <| whnf e
   let .const c us := e'.getAppFn | return none
@@ -179,6 +166,37 @@ private def getFieldInfo (ci : ConstructorVal) : MetaM (Array (Bool × Bool)) :=
       return (isInst, isProof)
 
 mutual
+
+/-- At the top level, try to find a pre-existing clean sub-instance via `trySynthInstance`.
+If synthesis succeeds and the result is already clean (e.g. defined with `inferInstanceAs%`),
+use it to avoid diamonds with canonical instances.
+If the synthesized instance is leaky, warn and use the mechanically patched version instead. -/
+private partial def processInstFieldWithSynth (arg : Expr)
+    (replacements : Array (Expr × Expr))
+    (warnings : IO.Ref (Array MessageData)) : MetaM Expr := do
+  let fieldType ← inferType arg
+  let targetFieldType ← replaceCarriersInType fieldType replacements
+  let .some synthInst ← trySynthInstance targetFieldType
+    | normalizeInstance arg replacements warnings (trySynth := false)
+  -- Check if the synthesized version is already clean
+  let synthWarnings ← IO.mkRef #[]
+  let normalizedSynth ←
+    normalizeInstance synthInst replacements synthWarnings (trySynth := false)
+  if ← withReducibleAndInstances <| withNewMCtxDepth <|
+      isDefEq normalizedSynth synthInst then
+    -- synthInst is already clean; prefer it to avoid diamonds
+    return synthInst
+  -- synthInst is leaky: warn and use mechanically patched version
+  warnings.modify (·.push
+    m!"inferInstanceAs%: the synthesized instance for \
+      {targetFieldType} has carrier type leakage \
+      (it uses the source carrier type internally instead of the \
+      target). `inferInstanceAs%` will patch the sub-instance \
+      inline, but consider defining it separately with \
+      `inferInstanceAs%` for cleaner results.{indentD
+      "To suppress this warning: \
+      `set_option inferInstanceAsPercent.leakySubInstWarning false`"}")
+  normalizeInstance arg replacements warnings (trySynth := false)
 
 /-- Process each constructor argument: replace carrier type parameters, recursively
 normalize instance-implicit fields, and patch lambda binder domains in other fields.
@@ -199,49 +217,16 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
       args := args.set! i r
   -- Process each field
   for i in ci.numParams...args.size do
-    if let some (isInst, isProof) := fieldInfo[i]? then
-      if isProof then
-        pure ()
-      else if isInst then
+    let some (isInst, isProof) := fieldInfo[i]? | continue
+    if isProof then continue
+    if isInst then
+      args := args.set! i (←
         if trySynth then
-          -- At the top level: try to find a pre-existing clean sub-instance
-          let fieldType ← inferType args[i]!
-          let targetFieldType ← replaceCarriersInType fieldType replacements
-          match ← trySynthInstance targetFieldType with
-          | .some synthInst =>
-            -- Check if the synthesized version is clean by normalizing it
-            -- (with trySynth := false to keep this cheap) and comparing
-            let synthWarnings ← IO.mkRef #[]
-            let normalizedSynth ←
-              normalizeInstance synthInst replacements synthWarnings (trySynth := false)
-            if ← withReducibleAndInstances <| withNewMCtxDepth <|
-                isDefEq normalizedSynth synthInst then
-              -- synthInst is already clean (e.g. defined with inferInstanceAs%);
-              -- prefer it to avoid diamonds with the canonical instance
-              args := args.set! i synthInst
-            else
-              -- synthInst is leaky: warn and use mechanically patched version
-              let patched ←
-                normalizeInstance args[i]! replacements warnings (trySynth := false)
-              warnings.modify (·.push
-                m!"inferInstanceAs%: the synthesized instance for \
-                  {targetFieldType} has carrier type leakage \
-                  (it uses the source carrier type internally instead of the \
-                  target). `inferInstanceAs%` will patch the sub-instance \
-                  inline, but consider defining it separately with \
-                  `inferInstanceAs%` for cleaner results.{indentD
-                  "To suppress this warning: \
-                  `set_option inferInstanceAsPercent.leakySubInstWarning false`"}")
-              args := args.set! i patched
-          | _ =>
-            args := args.set! i
-              (← normalizeInstance args[i]! replacements warnings (trySynth := false))
+          processInstFieldWithSynth args[i]! replacements warnings
         else
-          -- Recursive calls: just normalize mechanically (no synthesis)
-          args := args.set! i
-            (← normalizeInstance args[i]! replacements warnings (trySynth := false))
-      else
-        args := args.set! i (← replaceLamDomains args[i]! replacements)
+          normalizeInstance args[i]! replacements warnings (trySynth := false))
+    else
+      args := args.set! i (← replaceLamDomains args[i]! replacements)
   return mkAppN (.const ci.name us) args
 
 /-- Recursively normalize a class instance expression:
@@ -254,7 +239,7 @@ private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × 
   let ty ← inferType e
   let some _className ← isClass? ty | return e
   if ← Meta.isProp ty then return e
-  let some (ci, us, args) ← getCtorApp? e | return e
+  let some (ci, us, args) ← constructorAppWithUniverses? e | return e
   let fieldInfo ← getFieldInfo ci
   normalizeCtorArgs ci us args fieldInfo replacements warnings (trySynth := trySynth)
 
@@ -291,7 +276,7 @@ elab "inferInstanceAs% " source:term : term <= expectedType => do
   -- This handles universe mismatches and type abbreviations like DecidableLT vs DecidableRel.
   let (sourceType, expectedType) ← alignHeads sourceType expectedType
   -- Build replacement table from differing carrier type arguments
-  let replacements ← buildReplacements sourceType expectedType
+  let replacements := buildReplacements sourceType expectedType
   if replacements.isEmpty then return inst
   let warnLeaky := inferInstanceAsPercent.leakySubInstWarning.get (← getOptions)
   let warnings ← IO.mkRef #[]
