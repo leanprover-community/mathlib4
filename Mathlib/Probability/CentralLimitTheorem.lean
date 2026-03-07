@@ -76,7 +76,8 @@ independent, identically distributed, centered and with variance `1` and a rando
 theorem tendstoInDistribution_sqrt_inv_mul_sum {Y : Ω → ℝ} (hY : HasLaw Y (gaussianReal 0 1) P)
     (h0 : P[X 0] = 0) (h1 : P[X 0 ^ 2] = 1) (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
-    TendstoInDistribution (fun (n : ℕ) ω ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k ω) atTop Y P where
+    TendstoInDistribution (fun (n : ℕ) ω ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k ω) atTop Y
+      (fun _ ↦ P) P where
   forall_aemeasurable n :=
     .const_mul (Finset.aemeasurable_fun_sum _ fun _ _ ↦ (hident _).aemeasurable_fst) _
   tendsto := by
@@ -95,7 +96,7 @@ private theorem tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub {Y : Ω → �
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
     TendstoInDistribution
       (fun (n : ℕ) ω ↦ (√(n * Var[X 0; P]))⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]))
-      atTop Y P := by
+      atTop Y (fun _ ↦ P) P := by
   have mX0 := (hident 0).aemeasurable_fst
   have intX0 : Integrable (X 0) P := memLp_one_iff_integrable.1 <|
     (memLp_two_of_variance_ne_zero mX0.aestronglyMeasurable hX).mono_exponent (by simp)
@@ -122,7 +123,7 @@ theorem tendstoInDistribution_sqrt_inv_mul_sum_sub {Y : Ω → ℝ}
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
     TendstoInDistribution
       (fun (n : ℕ) ω ↦ (√n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]))
-      atTop Y P := by
+      atTop Y (fun _ ↦ P) P := by
   have : HasLaw (fun ω ↦ Y ω / √Var[X 0; P]) (gaussianReal 0 1) P := by
     convert gaussianReal_div_const hY _
     · simp
