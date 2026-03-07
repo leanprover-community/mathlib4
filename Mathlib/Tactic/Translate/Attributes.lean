@@ -18,7 +18,7 @@ public meta section
 
 namespace Mathlib.Tactic
 
-open Lean Elab
+open Lean
 
 /-- Attributes that generate new declarations when applied. -/
 initialize generatingAttrs : IO.Ref (NameMap (Name → Syntax → AttributeKind → AttrM (Array Name))) ←
