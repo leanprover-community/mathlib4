@@ -43,6 +43,8 @@ one edge, and the edges of the subgraph represent the paired vertices.
 * `SimpleGraph.IsAlternating` means that edges in a graph `G` are alternatingly
   included and not included in some other graph `G'`
 
+* `SimpleGraph.matchingNumber` is the cardinality of a largest matching of `G`.
+
 ## TODO
 
 * Define an `other` function and prove useful results about it (https://leanprover.zulipchat.com/#narrow/stream/252551-graph-theory/topic/matchings/near/266205863)
@@ -691,6 +693,8 @@ lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_right
     (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M'.spanningCoe := by
   simpa [symmDiff_comm] using isAlternating_symmDiff_left hM' hM
 
+/-- The matchingNumber of a graph `G` is defined as the supremum  of the cardinalities
+of the matchings of `G` -/
 noncomputable def matchingNumber (G : SimpleGraph V) : ℕ∞ :=
   ⨆ (M : G.Subgraph) (_ : M.IsMatching), M.edgeSet.encard
 
@@ -701,6 +705,7 @@ lemma matchingNumber.le_iff {G : SimpleGraph V} {k : ℕ∞} :
     matchingNumber G ≤ k ↔ ∀ (M : G.Subgraph) (_ : M.IsMatching), M.edgeSet.encard ≤ k :=
   ⟨fun h _ hM ↦ le_trans (matchingNumber.ge_of_IsMatching hM) h, fun h ↦ iSup₂_le h⟩
 
+/-- Matchings `G` is the subtype of Matchings of `G` -/
 noncomputable def Matchings (G : SimpleGraph V) := {M : G.Subgraph // M.IsMatching}
 
 instance : PartialOrder (Matchings G) := {
