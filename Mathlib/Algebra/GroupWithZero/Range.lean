@@ -129,6 +129,7 @@ def valueGroupEquivOfSurjective (hf : Function.Surjective f) : valueGroup f ≃*
   (MulEquiv.subgroupCongr (valueGroup_eq_top_of_surjective f hf)).trans Subgroup.topEquiv
 
 /-- The multiplicative order isomorphism between `valueGroup f` and `Bˣ` when `f` is surjective -/
+@[simps!]
 def valueGroupOrderIsoOfSurjective [Preorder Bˣ] (hf : Function.Surjective f) :
     valueGroup f ≃*o Bˣ where
   __ := (MulEquiv.subgroupCongr (valueGroup_eq_top_of_surjective f hf)).trans Subgroup.topEquiv
