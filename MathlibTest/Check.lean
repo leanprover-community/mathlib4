@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Check
+
 /- Override metavariable delaborator for natural metavariables to print `?m` instead
 of including a unique number, for `#guard_msgs`. -/
 open Lean PrettyPrinter Delaborator in @[delab mvar] def delabMVar : Delab := do
@@ -23,11 +24,7 @@ theorem bar {a b c : Nat} (h : a = b + c) (hc : c = 0) : a = b := by rwa [hc] at
 
 -- #check does show implicit arguments (and also typeclass arguments) when present
 set_option linter.unusedTactic false in
-/--
-info: bar {a b c : Nat} (h : a = b + c) (hc : c = 0) : a = b
----
-info: bar : ?m✝ = ?m✝ + ?m✝ → ?m✝ = 0 → ?m✝ = ?m✝
--/
+/-- info: bar {a b c : Nat} (h : a = b + c) (hc : c = 0) : a = b -/
 #guard_msgs in
 example : True := by
   #check bar
@@ -162,11 +159,7 @@ example (x : Nat) : True := by
 
 -- #check' only shows explicit arguments, no implicit or typeclass arguments
 set_option linter.unusedTactic false in
-/--
-info: bar (h : a = b + c) (hc : c = 0) : a = b
----
-info: bar : ?m✝ = ?m✝ + ?m✝ → ?m✝ = 0 → ?m✝ = ?m✝
--/
+/-- info: bar (h : a = b + c) (hc : c = 0) : a = b -/
 #guard_msgs in
 example : True := by
   #check' bar
