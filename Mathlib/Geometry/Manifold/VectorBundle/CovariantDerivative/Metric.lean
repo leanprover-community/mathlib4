@@ -42,7 +42,7 @@ metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
   tensor.
 
 -/
-open Bundle Function NormedSpace
+open Bundle NormedSpace
 open scoped Manifold ContDiff
 
 @[expose] public section
