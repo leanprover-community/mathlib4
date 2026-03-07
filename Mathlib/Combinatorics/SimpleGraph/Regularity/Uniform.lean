@@ -285,8 +285,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     _ ≤ ∑ UV ∈ P.parts.offDiag, ε * (#UV.1 * #UV.2) := by gcongr; apply filter_subset
     _ = ε * ∑ UV ∈ P.parts.offDiag, (#UV.1 * #UV.2 : 𝕜) := (mul_sum _ _ _).symm
     _ ≤ _ := ?_
-  · gcongr with UV hUV
-    obtain ⟨U, V⟩ := UV
+  · gcongr with ⟨U, V⟩ hUV
     simp only [mk_mem_sparsePairs, ne_eq, ← card_interedges_div_card, Rat.cast_div,
       Rat.cast_natCast, Rat.cast_mul] at hUV
     refine ((div_lt_iff₀ ?_).1 hUV.2.2.2).le
