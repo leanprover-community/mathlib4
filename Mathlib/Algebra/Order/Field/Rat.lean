@@ -25,5 +25,4 @@ rat, rationals, field, ℚ, numerator, denominator, num, denom
 
 public section
 
-set_option backward.isDefEq.respectTransparency false in
 deriving instance LinearOrderedCommGroupWithZero for NNRat

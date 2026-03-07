@@ -306,7 +306,6 @@ end FiberBundle
 variable (F)
 variable (E)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a fiber bundle over a conditionally complete linear order,
 then it is trivial over any closed interval. -/
 theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinearOrder B]
@@ -503,7 +502,7 @@ theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
     (Z.localTrivAsPartialEquiv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 
-/-- The composition of two local trivializations is the trivialization change Z.triv_change i j. -/
+/-- The composition of two local trivializations is the trivialization change `Z.trivChange i j`. -/
 theorem localTrivAsPartialEquiv_trans (i j : ι) :
     (Z.localTrivAsPartialEquiv i).symm.trans (Z.localTrivAsPartialEquiv j) ≈
       (Z.trivChange i j).toPartialEquiv := by
@@ -857,3 +856,24 @@ theorem continuousOn_of_comp_right {X : Type*} [TopologicalSpace X] {f : TotalSp
     exact a.mem_base_pretrivializationAt z.proj
 
 end FiberPrebundle
+
+namespace FiberBundle
+section extend
+
+variable {E} [(x : B) → Zero (E x)] [TopologicalSpace (TotalSpace F E)] [FiberBundle F E]
+
+/-- Extend a vector `v ∈ V x` to a section of the bundle `V`, whose value at `x` is `v`.
+The details of the extension are mostly unspecified: for covariant derivatives, the value of
+`s` at points other than `x` will not matter (except for shorter proofs).
+-/
+noncomputable def extend {x : B} (v₀ : E x) (x' : B) : E x' :=
+  letI t := trivializationAt F E x
+  letI w : F := (t ⟨x, v₀⟩).2
+  -- TODO: use the `funToSec` helper from #36036 once available
+  t.symm x' w
+
+@[simp] lemma extend_apply_self {x : B} (v : E x) : extend F v x = v := by
+  simp [extend, FiberBundle.mem_baseSet_trivializationAt' x]
+
+end extend
+end FiberBundle
