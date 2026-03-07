@@ -3,9 +3,11 @@ Copyright (c) 2026 Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi Yuan
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.Calculus.Taylor
-import Mathlib.Tactic.Field
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.Calculus.Taylor
+public import Mathlib.Tactic.Field
 
 /-!
 # Simpson's Midpoint Rule
@@ -269,7 +271,10 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
       simp only [smul_eq_mul, Nat.factorial_zero, Nat.factorial_one, Nat.cast_one]
       ring
     rw [h_taylEval, h_deriv_m_eq, h_iDW2_m_eq, h_iDW3_eq] at hξ₁_eq
-    linarith
+    rw [eq_add_of_sub_eq' hξ₁_eq]
+    congr 1
+    rw [mul_comm (_root_.derivWithin F (Set.Icc a b) m) (b - m)]
+    ring
   have h_taylor_a : ∃ ξ₂ ∈ Ioo a m,
       F a = F m + (derivWithin F (Icc a b) m) * (a - m) +
             (iteratedDerivWithin 2 F (Icc a b) m) * (a - m) ^ 2 / 2 +
