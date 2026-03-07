@@ -332,6 +332,7 @@ theorem isAlgebraic_iff_isAlgebraic_val {S : Subalgebra R A} {x : S} :
     IsAlgebraic R x ↔ IsAlgebraic R x.1 :=
   (isAlgebraic_algHom_iff S.val Subtype.val_injective).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_iff_transcendental_val {S : Subalgebra R A} {x : S} :
     Transcendental R x ↔ Transcendental R x.1 :=
   isAlgebraic_iff_isAlgebraic_val.not
@@ -585,6 +586,7 @@ theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlg
 
 namespace Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a transcendental element `s : S` over `R`, the `R`-algebra equivalence
 between `R[X]` and `Algebra.adjoin R {s}` given by sending `X` to `s`. -/
 noncomputable def algEquivOfTranscendental (s : S) (h : Transcendental R s) :

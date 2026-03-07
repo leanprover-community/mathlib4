@@ -449,6 +449,7 @@ def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
   w := pullback.condition
   isColimit := hc
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsRegularEpi.of_epi_of_exists {X B : C} {f : X ⟶ B} [HasPullback f f] [Epi f]
     (h : ∀ ⦃Z : C⦄ ⦃g : X ⟶ Z⦄, pullback.fst f f ≫ g = pullback.snd f f ≫ g →
       ∃ (u : B ⟶ Z), f ≫ u = g) :

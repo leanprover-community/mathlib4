@@ -275,6 +275,7 @@ instance [R.IsEquivalence] : IsIso h.counit := by
   have := h.isEquivalence_left_of_isEquivalence_right
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIso_map_unit_of_isLeftAdjoint_comp {E : Type*} [Category* E]
     {T : C ⥤ E} {S : E ⥤ D} {X : C} (adj2 : T ⊣ S ⋙ R) [R.Faithful] [R.Full] :
     IsIso (T.map (h.unit.app X)) := by
