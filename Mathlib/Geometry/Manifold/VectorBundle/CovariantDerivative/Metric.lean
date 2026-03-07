@@ -32,9 +32,14 @@ and differentiable sections `σ`, `τ`.
 
 ## TODO
 
-* when mathlib has a notion of parallel transport, prove the equivalence of
-  `CovariantDerivative.IsCompatible` with the characterisation that parallel transport be an
+* When Mathlib has a notion of parallel transport, prove the equivalence of
+ `CovariantDerivative.IsCompatible` with the characterisation that parallel transport be an
   isometry.
+
+* Given connections on bundles `V` and `W`, there is an induced connnection on bundle Hom(V, W).
+  When this induced connection has been defined in Mathlib, rephrase the definition of
+  `CovariantDerivative.compatibilityTensor`, to be simply the covariant derivative of the metric
+  tensor.
 
 -/
 
