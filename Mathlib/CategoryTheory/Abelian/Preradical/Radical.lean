@@ -65,7 +65,6 @@ open Functor
 /-- A preradical `Φ` is radical if and only if it `Φ` vanishes on the quotient `Φ.quotient`. -/
 theorem isRadical_iff {Φ : Preradical C} :
     IsRadical Φ ↔ IsZero (Φ.quotient ⋙ Φ.r) := by
-  let g := Φ.quotient.whiskerLeft Φ.ι ≫ (rightUnitor _).hom
   constructor
   · intro h
     obtain ⟨μ⟩ := h.iso_self_colon
@@ -75,8 +74,8 @@ theorem isRadical_iff {Φ : Preradical C} :
     calc
         _ = (colon Φ Φ).ι ≫ Φ.π :=
           (isPullback_colon Φ Φ).w.symm
-        _ = μ.hom.hom.left ≫ Φ.ι ≫ Φ.π := by
-          rw [← Category.assoc, MonoOver.w μ.hom]
+        _ = μ.hom.hom.left ≫ Φ.ι ≫ Φ.π :=
+          (MonoOver.w_assoc μ.hom Φ.π).symm
         _ = 0 := by
           simp
   · intro h
