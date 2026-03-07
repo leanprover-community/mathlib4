@@ -71,6 +71,20 @@ theorem sign_discr :
   · rw [Int.sign_eq_neg_one_of_neg h, Odd.neg_one_pow]
     rwa [← Nat.not_even_iff_odd, ← this, Int.cast_nonneg_iff, not_le]
 
+section rootDiscr
+
+/-- The root discriminant of a number field `K`. -/
+noncomputable def rootDiscr : ℝ :=
+  |discr K| ^ (finrank ℚ K : ℝ)⁻¹
+
+theorem rootDiscr_def : rootDiscr K = |discr K| ^ (finrank ℚ K : ℝ)⁻¹ := by
+  rw [rootDiscr]
+
+theorem rootDiscr_rat : rootDiscr ℚ = 1 := by
+  simp [rootDiscr_def]
+
+end rootDiscr
+
 set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
