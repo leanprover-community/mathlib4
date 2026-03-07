@@ -11,27 +11,30 @@ public import Mathlib.Geometry.Manifold.MfDerivSMul
 
 /-! # Metric connections
 
-This file defines connections on a Riemannian manifold which are compatible with the ambient metric.
-A bundled connection `∇` on `(M, g)` is compatible with the metric `g` if and only if the metric
-tensor `∇ g` (defined by `(X, Y, Z) ↦ ∇ₓ g(Y, Z) - g(∇ₓ Y, Z) - g(Y, ∇ₓ Z)`)
-vanishes on all differentiable vector fields.
+This file defines connections on a Riemannian vector bundle which are compatible with the ambient
+metric. A bundled connection `∇` on a Riemannian vector bundle `(V, g)` is compatible with the
+metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
+`(X, Y, Z) ↦ ∇ₓ g(Y, Z) - g(∇ₓ Y, Z) - g(Y, ∇ₓ Z)`) vanishes on all differentiable vector fields `X`
+and differentiable sections `Y`, `Z`.
 
 ## Main definitions and results
 
 * `CovariantDerivative.compatibilityTensor`: the tensor
   `(X, Y, Z) ↦ ∇ₓ g(Y, Z) - g(∇ₓ Y, Z) - g(Y, ∇ₓ Z)` defining when a connection `∇` on a Riemannian
-  manifold `(M, g)` is compatible with the metric `g`.
+  vector bundle `(V, g)` is compatible with the metric `g`.
 * `CovariantDerivative.compatibilityTensor_apply` and
   `CovariantDerivative.compatibilityTensor_apply` give formulas for applying the compatibility
-  tensor at `x` to vector fields which are differentiable at `x`,
-  resp. to extensions of tangent vectors at `x` to differentiable vector fields near `x`.
-* `CovariantDerivative.IsCompatible`: predicate for a connection to be metric
+  tensor at `x` to vector fields and sections which are differentiable at `x`,
+  resp. to extensions of tangent vectors and sections at `x` to differentiable vector fields and
+  sections near `x`.
+* `CovariantDerivative.IsCompatible`: predicate for a connection to be metric, namely that
   `∇` is metric iff its `compatibilityTensor` vanishes
 
 ## TODO
-* when mathlib has a notion of parallel transport, define metric connections on general
-  Riemannian bundles (characterised by parallel transport being an isometry) and prove the
-  equivalence to this definition
+
+* when mathlib has a notion of parallel transport, prove the equivalence of
+  `CovariantDerivative.IsCompatible` with the characterisation that parallel transport be an
+  isometry.
 
 -/
 
@@ -43,36 +46,43 @@ open scoped Manifold ContDiff
 -- TODO: revisit and fix this once the dust has settled
 set_option backward.isDefEq.respectTransparency false
 
--- Let `M` be a `C^k` real manifold modeled on `(E, H)`, endowed with a Riemannian metric.
-variable {n : WithTop ℕ∞}
+variable
+  -- Let `M` be a `C^k` real manifold modeled on `(E, H)`
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
-  {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
-  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 2 M]
+  -- Let `V` be a bundle over `M`, endowed with a Riemannian metric.
+  (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
+  [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+  [∀ x : M, TopologicalSpace (V x)]
+  [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
+  [FiberBundle F V] [RiemannianBundle V]
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 
-/-! Compatible connections: a connection on `TM` is compatible with the metric on `M` iff
-`∇ X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩` holds for all sufficiently nice vector fields `X`, `Y` and
-`Z` on `M`. In our definition, we ask for this identity to at each `x : M`, whenever `X`, `Y` and
-`Z` are differentiable at `x`.
+/-! Compatible connections: a connection on `V` is compatible with the metric on `M` iff
+`∇ X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩` holds for all sufficiently nice vector fields `X` on `M` and
+sections `Y`, `Z` of `V`. In our definition, we ask for this identity to at each `x : M`, whenever
+`X`, `Y` and `Z` are differentiable at `x`.
 The left hand side is the pushforward of the function `⟨Y, Z⟩` along the vector field `X`:
 the left hand side at `x` is `df(X x)`, where `f := ⟨Y, Z⟩`. -/
 
-variable {X X' X'' Y Y' Y'' Z Z' : Π x : M, TangentSpace I x}
+variable {X X' X'' Y Y' Y'' Z Z' : Π x : M, V x}
 
 /-- The scalar product of two vector fields -/
-noncomputable abbrev product (X Y : Π x : M, TangentSpace I x) : M → ℝ :=
+noncomputable abbrev product (X Y : Π x : M, V x) : M → ℝ :=
   fun x ↦ inner ℝ (X x) (Y x)
 
 -- `product` is C^k if X and Y are: this is shown in `Riemannian.lean`
 
-local notation "⟪" X ", " Y "⟫" => product I X Y
+local notation "⟪" X ", " Y "⟫" => product X Y
 
 -- Basic API for the product of two vector fields.
 section product
 
-omit [IsManifold I 2 M]
+omit [TopologicalSpace M] [IsManifold I 2 M]
+
 lemma product_apply (x) : ⟪X, Y⟫ x = inner ℝ (X x) (Y x) := rfl
 
 variable (X X' Y)
@@ -98,11 +108,11 @@ lemma product_add_left_apply (x) : ⟪X + X', Y⟫ x = ⟪X, Y⟫ x + ⟪X', Y�
   simp [product, InnerProductSpace.add_left]
 
 lemma product_add_right : ⟪X, Y + Y'⟫ = ⟪X, Y⟫ + ⟪X, Y'⟫ := by
-  rw [product_swap, product_swap _ Y, product_swap _ Y', product_add_left]
+  rw [product_swap, product_swap Y, product_swap Y', product_add_left]
 
 @[simp]
 lemma product_add_right_apply (x) : ⟪X, Y + Y'⟫ x = ⟪X, Y⟫ x + ⟪X, Y'⟫ x := by
-  rw [product_swap, product_swap _ Y, product_swap _ Y', product_add_left_apply]
+  rw [product_swap, product_swap Y, product_swap Y', product_add_left_apply]
 
 @[simp] lemma product_neg_left : ⟪-X, Y⟫ = -⟪X, Y⟫ := by ext x; simp [product]
 
@@ -116,21 +126,21 @@ lemma product_sub_right : ⟪X, Y - Y'⟫ = ⟪X, Y⟫ - ⟪X, Y'⟫ := by
   ext x
   simp [product, inner_sub_right]
 
-lemma product_smul_left (f : M → ℝ) : product I (f • X) Y = f • product I X Y := by
+lemma product_smul_left (f : M → ℝ) : product (f • X) Y = f • product X Y := by
   ext x
   simp [product, real_inner_smul_left]
 
 @[simp]
-lemma product_smul_const_left (a : ℝ) : product I (a • X) Y = a • product I X Y := by
+lemma product_smul_const_left (a : ℝ) : product (a • X) Y = a • product X Y := by
   ext x
   simp [product, real_inner_smul_left]
 
-lemma product_smul_right (f : M → ℝ) : product I X (f • Y) = f • product I X Y := by
+lemma product_smul_right (f : M → ℝ) : product X (f • Y) = f • product X Y := by
   ext x
   simp [product, real_inner_smul_right]
 
 @[simp]
-lemma product_smul_const_right (a : ℝ) : product I X (a • Y) = a • product I X Y := by
+lemma product_smul_const_right (a : ℝ) : product X (a • Y) = a • product X Y := by
   ext x
   simp [product, real_inner_smul_right]
 
@@ -138,21 +148,21 @@ end product
 
 -- These lemmas are necessary as my Lie bracket identities (assuming minimal differentiability)
 -- only hold point-wise. They abstract the expanding and unexpanding of `product`.
-omit [IsManifold I 2 M] in
-lemma product_congr_left {x} (h : X x = X' x) : product I X Y x = product I X' Y x := by
+omit [TopologicalSpace M] [IsManifold I 2 M] in
+lemma product_congr_left {x} (h : X x = X' x) : product X Y x = product X' Y x := by
   rw [product_apply, h, ← product_apply]
 
-omit [IsManifold I 2 M] in
+omit [TopologicalSpace M] [IsManifold I 2 M] in
 lemma product_congr_left₂ {x} (h : X x = X' x + X'' x) :
-    product I X Y x = product I X' Y x + product I X'' Y x := by
+    product X Y x = product X' Y x + product X'' Y x := by
   rw [product_apply, h, inner_add_left, ← product_apply]
-omit [IsManifold I 2 M] in
-lemma product_congr_right {x} (h : Y x = Y' x) : product I X Y x = product I X Y' x := by
+omit [TopologicalSpace M] [IsManifold I 2 M] in
+lemma product_congr_right {x} (h : Y x = Y' x) : product X Y x = product X Y' x := by
   rw [product_apply, h, ← product_apply]
 
-omit [IsManifold I 2 M] in
+omit [TopologicalSpace M] [IsManifold I 2 M] in
 lemma product_congr_right₂ {x} (h : Y x = Y' x + Y'' x) :
-    product I X Y x = product I X Y' x + product I X Y'' x := by
+    product X Y x = product X Y' x + product X Y'' x := by
   rw [product_apply, h, inner_add_right, ← product_apply]
 
 /- TODO: writing `hY.inner_bundle hZ` or writing `by apply MDifferentiable.inner_bundle hY hZ`
@@ -164,32 +174,34 @@ inferred
   fun b ↦ inst✝⁷
 Diagnose and fix this, and then replace the below by `MDifferentiable(At).inner_bundle! -/
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
+variable {F} [VectorBundle ℝ F V] [IsContMDiffRiemannianBundle I 1 F V] {I} in
 lemma MDifferentiable.inner_bundle' (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) : MDiff ⟪Y, Z⟫ :=
   MDifferentiable.inner_bundle hY hZ
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
+variable {F} [VectorBundle ℝ F V] [IsContMDiffRiemannianBundle I 1 F V] {I} in
 lemma MDifferentiableAt.inner_bundle' {x} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     MDiffAt ⟪Y, Z⟫ x :=
   MDifferentiableAt.inner_bundle hY hZ
 
 namespace CovariantDerivative
 
--- Let `cov` be a covariant derivative on `TM`.
+-- Let `cov` be a covariant derivative on `V`.
 -- TODO: include in cheat sheet!
-variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
+variable (cov : CovariantDerivative I F V)
 
 /-- Local notation for a connection. Caution: `∇ Y, X` corresponds to `∇ₓ Y` in textbooks -/
 local notation "∇" Y "," X => fun (x:M) ↦ cov Y x (X x)
 
+variable {F}
+
 /-- The function defining the compatibility tensor for `∇` w.r.t. `g`:
 prefer using `compatibilityTensor` instead -/
-noncomputable def compatibilityTensorAux (Y Z : Π x : M, TangentSpace I x) :
+noncomputable def compatibilityTensorAux (Y Z : Π x : M, V x) :
     Π (x : M), TangentSpace I x →L[ℝ] ℝ := fun x ↦
   letI b : TangentSpace I x →L[ℝ] ℝ := mfderiv% ⟪Y, Z⟫ x
   b - ((innerSL ℝ (Z x)) ∘L (cov Y x)) - ((innerSL ℝ (Y x)) ∘L (cov Z x))
 
-lemma compatibilityTensorAux_apply (Y Z : Π x : M, TangentSpace I x)
+lemma compatibilityTensorAux_apply (Y Z : Π x : M, V x)
     {x : M} (X₀ : TangentSpace I x) :
     compatibilityTensorAux I cov Y Z x X₀ =
       NormedSpace.fromTangentSpace _ (mfderiv% ⟪Y, Z⟫ x X₀)
@@ -198,10 +210,10 @@ lemma compatibilityTensorAux_apply (Y Z : Π x : M, TangentSpace I x)
   simp
   congr 1
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {x : M}
+variable [VectorBundle ℝ F V] [IsContMDiffRiemannianBundle I 1 F V] {x : M}
 
 variable {I} in
-private lemma aux1 {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x}
+private lemma aux1 {f : M → ℝ} {σ τ : (x : M) → V x}
     (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     compatibilityTensorAux I cov (f • σ) τ x = f x • compatibilityTensorAux I cov σ τ x := by
   ext X₀
@@ -217,7 +229,7 @@ private lemma aux1 {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x}
   module
 
 variable {I} in
-private lemma aux2 (σ σ' τ : (x : M) → TangentSpace I x)
+private lemma aux2 (σ σ' τ : (x : M) → V x)
     (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x) (hτ : MDiffAt (T% τ) x) :
     compatibilityTensorAux I cov (σ + σ') τ x =
       compatibilityTensorAux I cov σ τ x + compatibilityTensorAux I cov σ' τ x := by
@@ -245,7 +257,7 @@ private lemma aux2 (σ σ' τ : (x : M) → TangentSpace I x)
   module
 
 variable {I} in
-private lemma aux3 {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x}
+private lemma aux3 {f : M → ℝ} {σ τ : (x : M) → V x}
     (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     compatibilityTensorAux I cov σ (f • τ) x = f x • compatibilityTensorAux I cov σ τ x := by
   unfold compatibilityTensorAux
@@ -278,7 +290,7 @@ private lemma aux3 {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x}
   match_scalars <;> all_goals simp
 
 variable {I} in
-private lemma aux4 (σ τ τ' : (x : M) → TangentSpace I x)
+private lemma aux4 (σ τ τ' : (x : M) → V x)
     (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) (hτ' : MDiffAt (T% τ') x) :
     compatibilityTensorAux I cov σ (τ + τ') x =
       compatibilityTensorAux I cov σ τ x + compatibilityTensorAux I cov σ τ' x := by
@@ -293,26 +305,28 @@ private lemma aux4 (σ τ τ' : (x : M) → TangentSpace I x)
   erw [ContinuousLinearMap.add_apply]
   module
 
-theorem compatibilityTensorAux_tensorial₁ (τ : Π x, TangentSpace I x) (hτ : MDiffAt (T% τ) x) :
-    TensorialAt I E (compatibilityTensorAux I cov · τ x) x where
+theorem compatibilityTensorAux_tensorial₁ (τ : Π x, V x) (hτ : MDiffAt (T% τ) x) :
+    TensorialAt I F (compatibilityTensorAux I cov · τ x) x where
   smul hf hσ := aux1 cov hf hσ hτ
   add hσ hσ' := aux2 cov _ _ _ hσ hσ' hτ
 
-theorem compatibilityTensorAux_tensorial₂ (σ : Π x, TangentSpace I x) (hσ : MDiffAt (T% σ) x) :
-    TensorialAt I E (compatibilityTensorAux I cov σ · x) x where
+theorem compatibilityTensorAux_tensorial₂ (σ : Π x, V x) (hσ : MDiffAt (T% σ) x) :
+    TensorialAt I F (compatibilityTensorAux I cov σ · x) x where
   smul hf hτ := aux3 cov hf hσ hτ
   add hτ hτ' := aux4 cov _ _ _ hσ hτ hτ'
 
-variable {I} in
+variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- The tensor `(X, Y, Z) ↦ ∇ₓ g(Y, Z) - g(∇ₓ Y, Z) - g(Y, ∇ₓ Z)` defining when a connection
-`∇` on a Riemannian manifold `(M, g)` is compatible with the metric `g`. -/
-@[no_expose] noncomputable def compatibilityTensor [FiniteDimensional ℝ E] (x : M) :
-    TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
+`∇` on a Riemannian bundle `(M, V)` is compatible with the metric `g`. -/
+@[no_expose] noncomputable def compatibilityTensor [FiniteDimensional ℝ F] (x : M) :
+    V x →L[ℝ] V x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
   TensorialAt.mkHom₂ (compatibilityTensorAux I cov · · x) _
     (compatibilityTensorAux_tensorial₁ I cov) (compatibilityTensorAux_tensorial₂ I cov)
 
-variable {I} in
-theorem compatibilityTensor_apply [FiniteDimensional ℝ E] (x : M)
+variable {X : Π x : M, TangentSpace I x}
+
+variable {I} [ContMDiffVectorBundle 1 F V I] in
+theorem compatibilityTensor_apply [FiniteDimensional ℝ F] (x : M)
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     compatibilityTensor cov x (Y x) (Z x) (X x) =
     fromTangentSpace _ (mfderiv% ⟪Y, Z⟫ x (X x)) - ⟪∇ Y, X, Z⟫ x - ⟪Y, ∇ Z, X⟫ x := by
@@ -329,27 +343,32 @@ theorem compatibilityTensor_apply [FiniteDimensional ℝ E] (x : M)
     erw [ContinuousLinearMap.comp_apply]
   simp [product, real_inner_comm, fromTangentSpace]
 
-variable {I} in
-theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ E] (X₀ Y₀ Z₀ : TangentSpace I x) :
+open FiberBundle in
+variable {I} [ContMDiffVectorBundle 1 F V I] in
+theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F] (X₀ : TangentSpace I x)
+    (Y₀ Z₀ : V x) :
     compatibilityTensor cov x Y₀ Z₀ X₀ =
-      fromTangentSpace _ (mfderiv% ⟪(extend E Y₀), (extend E Z₀)⟫ x X₀)
-        - ⟪∇ extend E Y₀, (extend E X₀), extend E Z₀⟫ x
-        - ⟪extend E Y₀, ∇ extend E Z₀, (extend E X₀)⟫ x := by
+      fromTangentSpace _ (mfderiv% ⟪(extend F Y₀), (extend F Z₀)⟫ x X₀)
+        - ⟪∇ extend F Y₀, (extend E X₀), extend F Z₀⟫ x
+        - ⟪extend F Y₀, ∇ extend F Z₀, (extend E X₀)⟫ x := by
   simpa [extend_apply_self] using compatibilityTensor_apply cov x
-    (X := extend E X₀) (mdifferentiableAt_extend I E Y₀) (mdifferentiableAt_extend I E Z₀)
+    (X := extend E X₀) (mdifferentiableAt_extend I F Y₀) (mdifferentiableAt_extend I F Z₀)
 
-/-- Predicate saying for a connection `∇` on a Riemannian manifold `(M, g)` to be compatible with
-the ambient metric, i.e. for all differentiable` vector fields `X`, `Y` and `Z` on `M`, we have
+variable {I} [ContMDiffVectorBundle 1 F V I] in
+/-- Predicate saying for a connection `∇` on a Riemannian bundle `(V, g)` to be compatible with
+the ambient metric, i.e. for all differentiable vector fields `X` on `M` and sections `Y` and `Z`
+of `V`, we have
 `X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩`. -/
-def IsCompatible [FiniteDimensional ℝ E] : Prop := compatibilityTensor cov = 0
+def IsCompatible [FiniteDimensional ℝ F] : Prop := compatibilityTensor cov = 0
 
 -- Auxiliary computation for `IsCompatible_apply`.
 -- TODO: inlining this lemma does not work
 private lemma isCompatible_apply_aux {A B C : ℝ} (h : A - B - C = 0) : A = B + C := by grind
 
+variable {I} [ContMDiffVectorBundle 1 F V I] in
 -- TODO: give a better name; maybe inline?
-variable {I} in
-lemma isCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible)
+-- variable {I} in
+lemma isCompatible_apply [FiniteDimensional ℝ F] (hcov : cov.IsCompatible)
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x := by
   rw [IsCompatible] at hcov
@@ -358,17 +377,19 @@ lemma isCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible)
   change (fromTangentSpace _ ((mfderiv I 𝓘(ℝ, ℝ) ⟪Y, Z⟫ x) (X x))) = _
   exact isCompatible_apply_aux this
 
-lemma isCompatible_iff [FiniteDimensional ℝ E] :
-    cov.IsCompatible ↔ ∀ {x : M} {X Y Z : (x : M) → TangentSpace I x}
+open FiberBundle in
+variable {I} [ContMDiffVectorBundle 1 F V I] in
+lemma isCompatible_iff [FiniteDimensional ℝ F] :
+    cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {Y Z : (x : M) → V x}
       (_hX : MDiffAt (T% X) x) (_hY : MDiffAt (T% Y) x) (_hZ : MDiffAt (T% Z) x),
       mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x := by
   refine ⟨fun hcov x X Y Z hX hY hZ ↦ cov.isCompatible_apply hcov hY hZ, fun h ↦ ?_⟩
   unfold IsCompatible
-  ext x X₀ Y₀ Z₀
+  ext x Y₀ Z₀ X₀
   rw [compatibilityTensor_apply_eq_extend, sub_sub, sub_eq_iff_eq_add']
   simp only [Pi.zero_apply, ContinuousLinearMap.zero_apply, add_zero]
-  have h' := h (mdifferentiableAt_extend I E Z₀) (mdifferentiableAt_extend I E X₀)
-    (mdifferentiableAt_extend I E Y₀)
+  have h' := h (mdifferentiableAt_extend I E X₀) (mdifferentiableAt_extend I F Y₀)
+    (mdifferentiableAt_extend I F Z₀)
   simpa [fromTangentSpace, extend_apply_self] using h'
 
 end CovariantDerivative
