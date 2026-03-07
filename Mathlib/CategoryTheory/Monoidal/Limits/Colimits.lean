@@ -77,7 +77,7 @@ noncomputable def IsColimit.tensor [PreservesColimit₂ F₁ F₂ (curriedTensor
   refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
     ((Functor.Final.isColimitWhiskerEquiv (Functor.diag J) _).2 (hc₁.tensor₂ hc₂))
   · exact NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ by simp)
-  · exact Cocones.ext (Iso.refl _)
+  · exact Cocone.ext (Iso.refl _)
 
 end
 

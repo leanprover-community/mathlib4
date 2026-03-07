@@ -386,13 +386,13 @@ lemma isIso_pushoutSection_of_iSup_eq
         dsimp [D, G]; rw [Scheme.Hom.preimage_inf, inf_inf_distrib_right]))
     haveI HX := ((TopCat.Presheaf.isSheaf_iff_isSheafPreservesLimitPairwiseIntersections _).mp
       Y.IsSheaf (fun i ↦ g ⁻¹ᵁ VX i ⊓ iY ⁻¹ᵁ UT)).preserves
-        (c := ((Cocones.precompose e.inv).obj c'₀).op)
+        (c := ((Cocone.precompose e.inv).obj c'₀).op)
     exact (IsLimit.postcomposeHomEquiv (Functor.isoWhiskerRight (NatIso.op e.symm) Y.presheaf) _)
       ((HX ((IsColimit.precomposeInvEquiv e _).symm
-        (IsColimit.extendIso _ (colimit.isColimit _))).op).some.ofIsoLimit (Cones.ext (.refl _)))
+        (IsColimit.extendIso _ (colimit.isColimit _))).op).some.ofIsoLimit (Cone.ext (.refl _)))
   have HαF₂ (i j : _) : Mono (αF.app (.op <| .pair i j)) := by infer_instance
   -- We construct the morphisms between the cone points,
-  let f₁ : c.pt ⟶ c'.pt := hc'.lift ((Cones.postcompose αF).obj c)
+  let f₁ : c.pt ⟶ c'.pt := hc'.lift ((Cone.postcompose αF).obj c)
   let f₂ : c'.pt ⟶ c.pt := hc.lift ⟨c'.pt, ⟨fun
     | .op (.single i) => c'.π.app _ ≫ inv (αF.app (.op <| .single i))
     | .op (.pair i j) => c'.π.app (.op (.single i)) ≫ inv (αF.app (.op <| .single i)) ≫

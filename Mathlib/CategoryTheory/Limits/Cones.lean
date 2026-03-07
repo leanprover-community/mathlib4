@@ -299,7 +299,7 @@ lemma ConeMorphism.map_w {c c' : Cone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
     G.map f.hom ≫ G.map (c'.π.app j) = G.map (c.π.app j) := by
   simp only [← map_comp, ConeMorphism.w]
 
-namespace Cones
+namespace Cone
 
 /-- To give an isomorphism between cones, it suffices to give an
   isomorphism between their vertices which commutes with the cone
@@ -315,7 +315,7 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
 /-- Eta rule for cones. -/
 @[simps!]
 def eta (c : Cone F) : c ≅ ⟨c.pt, c.π⟩ :=
-  Cones.ext (Iso.refl _)
+  ext (Iso.refl _)
 
 /-- Given a cone morphism whose object part is an isomorphism, produce an
 isomorphism of cones.
@@ -326,19 +326,19 @@ theorem cone_iso_of_hom_iso {K : J ⥤ C} {c d : Cone K} (f : c ⟶ d) [i : IsIs
 
 /-- There is a morphism from an extended cone to the original cone. -/
 @[simps]
-def extend (s : Cone F) {X : C} (f : X ⟶ s.pt) : s.extend f ⟶ s where
+def extendHom (s : Cone F) {X : C} (f : X ⟶ s.pt) : s.extend f ⟶ s where
   hom := f
 
 /-- Extending a cone by the identity does nothing. -/
 @[simps!]
 def extendId (s : Cone F) : s.extend (𝟙 s.pt) ≅ s :=
-  Cones.ext (Iso.refl _)
+  ext (Iso.refl _)
 
 /-- Extending a cone by a composition is the same as extending the cone twice. -/
 @[simps!]
 def extendComp (s : Cone F) {X Y : C} (f : X ⟶ Y) (g : Y ⟶ s.pt) :
     s.extend (f ≫ g) ≅ (s.extend g).extend f :=
-  Cones.ext (Iso.refl _)
+  ext (Iso.refl _)
 
 /-- A cone extended by an isomorphism is isomorphic to the original cone. -/
 @[simps]
@@ -346,7 +346,7 @@ def extendIso (s : Cone F) {X : C} (f : X ≅ s.pt) : s.extend f.hom ≅ s where
   hom := { hom := f.hom }
   inv := { hom := f.inv }
 
-instance {s : Cone F} {X : C} (f : X ⟶ s.pt) [IsIso f] : IsIso (Cones.extend s f) :=
+instance {s : Cone F} {X : C} (f : X ⟶ s.pt) [IsIso f] : IsIso (s.extendHom f) :=
   ⟨(extendIso s (asIso f)).inv, by cat_disch⟩
 
 /--
@@ -364,12 +364,12 @@ postcomposing by `α` and then by `β`. -/
 @[simps!]
 def postcomposeComp {G H : J ⥤ C} (α : F ⟶ G) (β : G ⟶ H) :
     postcompose (α ≫ β) ≅ postcompose α ⋙ postcompose β :=
-  NatIso.ofComponents fun s => Cones.ext (Iso.refl _)
+  NatIso.ofComponents fun s => ext (Iso.refl _)
 
 /-- Postcomposing by the identity does not change the cone up to isomorphism. -/
 @[simps!]
 def postcomposeId : postcompose (𝟙 F) ≅ 𝟭 (Cone F) :=
-  NatIso.ofComponents fun s => Cones.ext (Iso.refl _)
+  NatIso.ofComponents fun s => ext (Iso.refl _)
 
 /-- If `F` and `G` are naturally isomorphic functors, then they have equivalent categories of
 cones.
@@ -378,8 +378,8 @@ cones.
 def postcomposeEquivalence {G : J ⥤ C} (α : F ≅ G) : Cone F ≌ Cone G where
   functor := postcompose α.hom
   inverse := postcompose α.inv
-  unitIso := NatIso.ofComponents fun s => Cones.ext (Iso.refl _)
-  counitIso := NatIso.ofComponents fun s => Cones.ext (Iso.refl _)
+  unitIso := NatIso.ofComponents fun s => ext (Iso.refl _)
+  counitIso := NatIso.ofComponents fun s => ext (Iso.refl _)
 
 /-- Whiskering on the left by `E : K ⥤ J` gives a functor from `Cone F` to `Cone (E ⋙ F)`.
 -/
@@ -395,11 +395,11 @@ set_option backward.isDefEq.respectTransparency false in
 def whiskeringEquivalence (e : K ≌ J) : Cone F ≌ Cone (e.functor ⋙ F) where
   functor := whiskering e.functor
   inverse := whiskering e.inverse ⋙ postcompose (e.invFunIdAssoc F).hom
-  unitIso := NatIso.ofComponents fun s => Cones.ext (Iso.refl _)
+  unitIso := NatIso.ofComponents fun s => ext (Iso.refl _)
   counitIso :=
     NatIso.ofComponents
       fun s =>
-        Cones.ext (Iso.refl _)
+        ext (Iso.refl _)
           (by
             intro k
             simpa [e.counit_app_functor] using s.w (e.unitInv.app k))
@@ -447,7 +447,7 @@ instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full whe
     ⟨{ hom := G.preimage t.hom
        w := fun j => G.map_injective (by simpa using t.w j) }, by cat_disch⟩
 
-instance functoriality_faithful [G.Faithful] : (Cones.functoriality F G).Faithful where
+instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
     ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
 
@@ -461,24 +461,24 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (postcomposeEquivalence f).functor
-    unitIso := NatIso.ofComponents fun c => Cones.ext (e.unitIso.app _)
-    counitIso := NatIso.ofComponents fun c => Cones.ext (e.counitIso.app _) }
+    unitIso := NatIso.ofComponents fun c => ext (e.unitIso.app _)
+    counitIso := NatIso.ofComponents fun c => ext (e.counitIso.app _) }
 
-/-- If `F` reflects isomorphisms, then `Cones.functoriality F` reflects isomorphisms
+/-- If `F` reflects isomorphisms, then `functoriality F` reflects isomorphisms
 as well.
 -/
 instance reflects_cone_isomorphism (F : C ⥤ D) [F.ReflectsIsomorphisms] (K : J ⥤ C) :
-    (Cones.functoriality K F).ReflectsIsomorphisms := by
+    (functoriality K F).ReflectsIsomorphisms := by
   constructor
   intro A B f _
   haveI : IsIso (F.map f.hom) :=
-    (Cones.forget (K ⋙ F)).map_isIso ((Cones.functoriality K F).map f)
+    (forget (K ⋙ F)).map_isIso ((functoriality K F).map f)
   haveI := ReflectsIsomorphisms.reflects F f.hom
   apply cone_iso_of_hom_iso
 
 end
 
-end Cones
+end Cone
 
 /-- A cocone morphism between two cocones for the same diagram is a morphism of the cocone points
 which commutes with the cocone legs. -/
@@ -527,7 +527,7 @@ lemma CoconeMorphism.map_w {c c' : Cocone F} (f : c ⟶ c') (G : C ⥤ D) (j : J
     G.map (c.ι.app j) ≫ G.map f.hom = G.map (c'.ι.app j) := by
   simp only [← map_comp, CoconeMorphism.w]
 
-namespace Cocones
+namespace Cocone
 
 /-- To give an isomorphism between cocones, it suffices to give an
   isomorphism between their vertices which commutes with the cocone
@@ -543,7 +543,7 @@ def ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
 /-- Eta rule for cocones. -/
 @[simps!]
 def eta (c : Cocone F) : c ≅ ⟨c.pt, c.ι⟩ :=
-  Cocones.ext (Iso.refl _)
+  ext (Iso.refl _)
 
 /-- Given a cocone morphism whose object part is an isomorphism, produce an
 isomorphism of cocones.
@@ -555,19 +555,19 @@ theorem cocone_iso_of_hom_iso {K : J ⥤ C} {c d : Cocone K} (f : c ⟶ d) [i : 
 
 /-- There is a morphism from a cocone to its extension. -/
 @[simps]
-def extend (s : Cocone F) {X : C} (f : s.pt ⟶ X) : s ⟶ s.extend f where
+def extendHom (s : Cocone F) {X : C} (f : s.pt ⟶ X) : s ⟶ s.extend f where
   hom := f
 
 /-- Extending a cocone by the identity does nothing. -/
 @[simps!]
 def extendId (s : Cocone F) : s ≅ s.extend (𝟙 s.pt) :=
-  Cocones.ext (Iso.refl _)
+  ext (Iso.refl _)
 
 /-- Extending a cocone by a composition is the same as extending the cone twice. -/
 @[simps!]
 def extendComp (s : Cocone F) {X Y : C} (f : s.pt ⟶ X) (g : X ⟶ Y) :
     s.extend (f ≫ g) ≅ (s.extend f).extend g :=
-  Cocones.ext (Iso.refl _)
+  ext (Iso.refl _)
 
 /-- A cocone extended by an isomorphism is isomorphic to the original cone. -/
 @[simps]
@@ -575,7 +575,7 @@ def extendIso (s : Cocone F) {X : C} (f : s.pt ≅ X) : s ≅ s.extend f.hom whe
   hom := { hom := f.hom }
   inv := { hom := f.inv }
 
-instance {s : Cocone F} {X : C} (f : s.pt ⟶ X) [IsIso f] : IsIso (Cocones.extend s f) :=
+instance {s : Cocone F} {X : C} (f : s.pt ⟶ X) [IsIso f] : IsIso (s.extendHom f) :=
   ⟨(extendIso s (asIso f)).inv, by cat_disch⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -592,11 +592,11 @@ def precompose {G : J ⥤ C} (α : G ⟶ F) : Cocone F ⥤ Cocone G where
 precomposing by `β` and then by `α`. -/
 def precomposeComp {G H : J ⥤ C} (α : F ⟶ G) (β : G ⟶ H) :
     precompose (α ≫ β) ≅ precompose β ⋙ precompose α :=
-  NatIso.ofComponents fun s => Cocones.ext (Iso.refl _)
+  NatIso.ofComponents fun s => ext (Iso.refl _)
 
 /-- Precomposing by the identity does not change the cocone up to isomorphism. -/
 def precomposeId : precompose (𝟙 F) ≅ 𝟭 (Cocone F) :=
-  NatIso.ofComponents fun s => Cocones.ext (Iso.refl _)
+  NatIso.ofComponents fun s => ext (Iso.refl _)
 
 /-- If `F` and `G` are naturally isomorphic functors, then they have equivalent categories of
 cocones.
@@ -605,8 +605,8 @@ cocones.
 def precomposeEquivalence {G : J ⥤ C} (α : G ≅ F) : Cocone F ≌ Cocone G where
   functor := precompose α.hom
   inverse := precompose α.inv
-  unitIso := NatIso.ofComponents fun s => Cocones.ext (Iso.refl _)
-  counitIso := NatIso.ofComponents fun s => Cocones.ext (Iso.refl _)
+  unitIso := NatIso.ofComponents fun s => ext (Iso.refl _)
+  counitIso := NatIso.ofComponents fun s => ext (Iso.refl _)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering on the left by `E : K ⥤ J` gives a functor from `Cocone F` to `Cocone (E ⋙ F)`.
@@ -627,9 +627,9 @@ def whiskeringEquivalence (e : K ≌ J) : Cocone F ≌ Cocone (e.functor ⋙ F) 
       precompose
         ((Functor.leftUnitor F).inv ≫
           whiskerRight e.counitIso.inv F ≫ (Functor.associator _ _ _).inv)
-  unitIso := NatIso.ofComponents fun s => Cocones.ext (Iso.refl _)
+  unitIso := NatIso.ofComponents fun s => ext (Iso.refl _)
   counitIso := NatIso.ofComponents fun s =>
-    Cocones.ext (Iso.refl _) fun k => by simpa [e.counitInv_app_functor k] using s.w (e.unit.app k)
+    ext (Iso.refl _) fun k => by simpa [e.counitInv_app_functor k] using s.w (e.unit.app k)
 
 /--
 The categories of cocones over `F` and `G` are equivalent if `F` and `G` are naturally isomorphic
@@ -689,22 +689,81 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (precomposeEquivalence f.symm).functor
-    unitIso := NatIso.ofComponents fun c => Cocones.ext (e.unitIso.app _)
-    counitIso := NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _) }
+    unitIso := NatIso.ofComponents fun c => ext (e.unitIso.app _)
+    counitIso := NatIso.ofComponents fun c => ext (e.counitIso.app _) }
 
-/-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms
+/-- If `F` reflects isomorphisms, then `functoriality F` reflects isomorphisms
 as well.
 -/
 instance reflects_cocone_isomorphism (F : C ⥤ D) [F.ReflectsIsomorphisms] (K : J ⥤ C) :
-    (Cocones.functoriality K F).ReflectsIsomorphisms := by
+    (functoriality K F).ReflectsIsomorphisms := by
   constructor
   intro A B f _
   haveI : IsIso (F.map f.hom) :=
-    (Cocones.forget (K ⋙ F)).map_isIso ((Cocones.functoriality K F).map f)
+    (forget (K ⋙ F)).map_isIso ((functoriality K F).map f)
   haveI := ReflectsIsomorphisms.reflects F f.hom
   apply cocone_iso_of_hom_iso
 
 end
+
+end Cocone
+
+namespace Cones
+
+@[deprecated (since := "2026-03-06")] alias ext := Cone.ext
+@[deprecated (since := "2026-03-06")] alias eta := Cone.eta
+@[deprecated (since := "2026-03-06")] alias cone_iso_of_hom_iso := Cone.cone_iso_of_hom_iso
+@[deprecated (since := "2026-03-06")] alias extend := Cone.extendHom
+@[deprecated (since := "2026-03-06")] alias extendId := Cone.extendId
+@[deprecated (since := "2026-03-06")] alias extendComp := Cone.extendComp
+@[deprecated (since := "2026-03-06")] alias extendIso := Cone.extendIso
+@[deprecated (since := "2026-03-06")] alias postcompose := Cone.postcompose
+@[deprecated (since := "2026-03-06")] alias postcomposeComp := Cone.postcomposeComp
+@[deprecated (since := "2026-03-06")] alias postcomposeId := Cone.postcomposeId
+@[deprecated (since := "2026-03-06")] alias postcomposeEquivalence := Cone.postcomposeEquivalence
+@[deprecated (since := "2026-03-06")] alias whiskering := Cone.whiskering
+@[deprecated (since := "2026-03-06")] alias whiskeringEquivalence := Cone.whiskeringEquivalence
+@[deprecated (since := "2026-03-06")] alias equivalenceOfReindexing := Cone.equivalenceOfReindexing
+@[deprecated (since := "2026-03-06")] alias forget := Cone.forget
+@[deprecated (since := "2026-03-06")] alias functoriality := Cone.functoriality
+@[deprecated (since := "2026-03-06")]
+alias functorialityCompFunctoriality := Cone.functorialityCompFunctoriality
+@[deprecated (since := "2026-03-06")] alias functoriality_full := Cone.functoriality_full
+@[deprecated (since := "2026-03-06")] alias functoriality_faithful := Cone.functoriality_faithful
+@[deprecated (since := "2026-03-06")]
+alias functorialityEquivalence := Cone.functorialityEquivalence
+@[deprecated (since := "2026-03-06")]
+alias reflects_cone_isomorphism := Cone.reflects_cone_isomorphism
+
+end Cones
+
+namespace Cocones
+
+@[deprecated (since := "2026-03-06")] alias ext := Cocone.ext
+@[deprecated (since := "2026-03-06")] alias eta := Cocone.eta
+@[deprecated (since := "2026-03-06")] alias cone_iso_of_hom_iso := Cocone.cocone_iso_of_hom_iso
+@[deprecated (since := "2026-03-06")] alias extend := Cocone.extendHom
+@[deprecated (since := "2026-03-06")] alias extendId := Cocone.extendId
+@[deprecated (since := "2026-03-06")] alias extendComp := Cocone.extendComp
+@[deprecated (since := "2026-03-06")] alias extendIso := Cocone.extendIso
+@[deprecated (since := "2026-03-06")] alias postcompose := Cocone.precompose
+@[deprecated (since := "2026-03-06")] alias postcomposeComp := Cocone.precomposeComp
+@[deprecated (since := "2026-03-06")] alias postcomposeId := Cocone.precomposeId
+@[deprecated (since := "2026-03-06")] alias postcomposeEquivalence := Cocone.precomposeEquivalence
+@[deprecated (since := "2026-03-06")] alias whiskering := Cocone.whiskering
+@[deprecated (since := "2026-03-06")] alias whiskeringEquivalence := Cocone.whiskeringEquivalence
+@[deprecated (since := "2026-03-06")]
+alias equivalenceOfReindexing := Cocone.equivalenceOfReindexing
+@[deprecated (since := "2026-03-06")] alias forget := Cocone.forget
+@[deprecated (since := "2026-03-06")] alias functoriality := Cocone.functoriality
+@[deprecated (since := "2026-03-06")]
+alias functorialityCompFunctoriality := Cocone.functorialityCompFunctoriality
+@[deprecated (since := "2026-03-06")] alias functoriality_full := Cocone.functoriality_full
+@[deprecated (since := "2026-03-06")] alias functoriality_faithful := Cocone.functoriality_faithful
+@[deprecated (since := "2026-03-06")]
+alias functorialityEquivalence := Cocone.functorialityEquivalence
+@[deprecated (since := "2026-03-06")]
+alias reflects_cone_isomorphism := Cocone.reflects_cocone_isomorphism
 
 end Cocones
 
@@ -719,69 +778,69 @@ open CategoryTheory.Limits
 /-- The image of a cone in C under a functor G : C ⥤ D is a cone in D. -/
 @[simps!]
 def mapCone (c : Cone F) : Cone (F ⋙ H) :=
-  (Cones.functoriality F H).obj c
+  (Cone.functoriality F H).obj c
 
 /-- The construction `mapCone` respects functor composition. -/
 @[simps!]
 noncomputable def mapConeMapCone {F : J ⥤ C} {H : C ⥤ D} {H' : D ⥤ E} (c : Cone F) :
-    H'.mapCone (H.mapCone c) ≅ (H ⋙ H').mapCone c := Cones.ext (Iso.refl _)
+    H'.mapCone (H.mapCone c) ≅ (H ⋙ H').mapCone c := Cone.ext (Iso.refl _)
 
 /-- The image of a cocone in C under a functor G : C ⥤ D is a cocone in D. -/
 @[simps!]
 def mapCocone (c : Cocone F) : Cocone (F ⋙ H) :=
-  (Cocones.functoriality F H).obj c
+  (Cocone.functoriality F H).obj c
 
 /-- The construction `mapCocone` respects functor composition. -/
 @[simps!]
 noncomputable def mapCoconeMapCocone {F : J ⥤ C} {H : C ⥤ D} {H' : D ⥤ E} (c : Cocone F) :
-    H'.mapCocone (H.mapCocone c) ≅ (H ⋙ H').mapCocone c := Cocones.ext (Iso.refl _)
+    H'.mapCocone (H.mapCocone c) ≅ (H ⋙ H').mapCocone c := Cocone.ext (Iso.refl _)
 
 /-- Given a cone morphism `c ⟶ c'`, construct a cone morphism on the mapped cones functorially. -/
 def mapConeMorphism {c c' : Cone F} (f : c ⟶ c') : H.mapCone c ⟶ H.mapCone c' :=
-  (Cones.functoriality F H).map f
+  (Cone.functoriality F H).map f
 
 /-- Given a cocone morphism `c ⟶ c'`, construct a cocone morphism on the mapped cocones
 functorially. -/
 def mapCoconeMorphism {c c' : Cocone F} (f : c ⟶ c') : H.mapCocone c ⟶ H.mapCocone c' :=
-  (Cocones.functoriality F H).map f
+  (Cocone.functoriality F H).map f
 
 /-- If `H` is an equivalence, we invert `H.mapCone` and get a cone for `F` from a cone
 for `F ⋙ H`. -/
 noncomputable def mapConeInv [IsEquivalence H] (c : Cone (F ⋙ H)) : Cone F :=
-  (Limits.Cones.functorialityEquivalence F (asEquivalence H)).inverse.obj c
+  (Limits.Cone.functorialityEquivalence F (asEquivalence H)).inverse.obj c
 
 /-- `mapCone` is the left inverse to `mapConeInv`. -/
 noncomputable def mapConeMapConeInv {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H]
     (c : Cone (F ⋙ H)) :
     mapCone H (mapConeInv H c) ≅ c :=
-  (Limits.Cones.functorialityEquivalence F (asEquivalence H)).counitIso.app c
+  (Limits.Cone.functorialityEquivalence F (asEquivalence H)).counitIso.app c
 
 /-- `MapCone` is the right inverse to `mapConeInv`. -/
 noncomputable def mapConeInvMapCone {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H] (c : Cone F) :
     mapConeInv H (mapCone H c) ≅ c :=
-  (Limits.Cones.functorialityEquivalence F (asEquivalence H)).unitIso.symm.app c
+  (Limits.Cone.functorialityEquivalence F (asEquivalence H)).unitIso.symm.app c
 
 /-- If `H` is an equivalence, we invert `H.mapCone` and get a cone for `F` from a cone
 for `F ⋙ H`. -/
 noncomputable def mapCoconeInv [IsEquivalence H] (c : Cocone (F ⋙ H)) : Cocone F :=
-  (Limits.Cocones.functorialityEquivalence F (asEquivalence H)).inverse.obj c
+  (Limits.Cocone.functorialityEquivalence F (asEquivalence H)).inverse.obj c
 
 /-- `mapCocone` is the left inverse to `mapCoconeInv`. -/
 noncomputable def mapCoconeMapCoconeInv {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H]
     (c : Cocone (F ⋙ H)) :
     mapCocone H (mapCoconeInv H c) ≅ c :=
-  (Limits.Cocones.functorialityEquivalence F (asEquivalence H)).counitIso.app c
+  (Limits.Cocone.functorialityEquivalence F (asEquivalence H)).counitIso.app c
 
 /-- `mapCocone` is the right inverse to `mapCoconeInv`. -/
 noncomputable def mapCoconeInvMapCocone {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H] (c : Cocone F) :
     mapCoconeInv H (mapCocone H c) ≅ c :=
-  (Limits.Cocones.functorialityEquivalence F (asEquivalence H)).unitIso.symm.app c
+  (Limits.Cocone.functorialityEquivalence F (asEquivalence H)).unitIso.symm.app c
 
 /-- `functoriality F _ ⋙ postcompose (whisker_left F _)` simplifies to `functoriality F _`. -/
 @[simps!]
 def functorialityCompPostcompose {H H' : C ⥤ D} (α : H ≅ H') :
-    Cones.functoriality F H ⋙ Cones.postcompose (whiskerLeft F α.hom) ≅ Cones.functoriality F H' :=
-  NatIso.ofComponents fun c => Cones.ext (α.app _)
+    Cone.functoriality F H ⋙ Cone.postcompose (whiskerLeft F α.hom) ≅ Cone.functoriality F H' :=
+  NatIso.ofComponents fun c => Cone.ext (α.app _)
 
 /-- For `F : J ⥤ C`, given a cone `c : Cone F`, and a natural isomorphism `α : H ≅ H'` for functors
 `H H' : C ⥤ D`, the postcomposition of the cone `H.mapCone` using the isomorphism `α` is
@@ -789,7 +848,7 @@ isomorphic to the cone `H'.mapCone`.
 -/
 @[simps!]
 def postcomposeWhiskerLeftMapCone {H H' : C ⥤ D} (α : H ≅ H') (c : Cone F) :
-    (Cones.postcompose (whiskerLeft F α.hom :)).obj (mapCone H c) ≅ mapCone H' c :=
+    (Cone.postcompose (whiskerLeft F α.hom :)).obj (mapCone H c) ≅ mapCone H' c :=
   (functorialityCompPostcompose α).app c
 
 /--
@@ -799,24 +858,24 @@ a cone over `G ⋙ H`, and they are both isomorphic.
 -/
 @[simps!]
 def mapConePostcompose {α : F ⟶ G} {c} :
-    mapCone H ((Cones.postcompose α).obj c) ≅
-      (Cones.postcompose (whiskerRight α H :)).obj (mapCone H c) :=
-  Cones.ext (Iso.refl _)
+    mapCone H ((Cone.postcompose α).obj c) ≅
+      (Cone.postcompose (whiskerRight α H :)).obj (mapCone H c) :=
+  Cone.ext (Iso.refl _)
 
 /-- `mapCone` commutes with `postcomposeEquivalence`
 -/
 @[simps!]
 def mapConePostcomposeEquivalenceFunctor {α : F ≅ G} {c} :
-    mapCone H ((Cones.postcomposeEquivalence α).functor.obj c) ≅
-      (Cones.postcomposeEquivalence (isoWhiskerRight α H :)).functor.obj (mapCone H c) :=
-  Cones.ext (Iso.refl _)
+    mapCone H ((Cone.postcomposeEquivalence α).functor.obj c) ≅
+      (Cone.postcomposeEquivalence (isoWhiskerRight α H :)).functor.obj (mapCone H c) :=
+  Cone.ext (Iso.refl _)
 
 /-- `functoriality F _ ⋙ precompose (whiskerLeft F _)` simplifies to `functoriality F _`. -/
 @[simps!]
 def functorialityCompPrecompose {H H' : C ⥤ D} (α : H ≅ H') :
-    Cocones.functoriality F H ⋙ Cocones.precompose (whiskerLeft F α.inv) ≅
-      Cocones.functoriality F H' :=
-  NatIso.ofComponents fun c => Cocones.ext (α.app _)
+    Cocone.functoriality F H ⋙ Cocone.precompose (whiskerLeft F α.inv) ≅
+      Cocone.functoriality F H' :=
+  NatIso.ofComponents fun c => Cocone.ext (α.app _)
 
 /--
 For `F : J ⥤ C`, given a cocone `c : Cocone F`, and a natural isomorphism `α : H ≅ H'` for functors
@@ -825,7 +884,7 @@ isomorphic to the cocone `H'.mapCocone`.
 -/
 @[simps!]
 def precomposeWhiskerLeftMapCocone {H H' : C ⥤ D} (α : H ≅ H') (c : Cocone F) :
-    (Cocones.precompose (whiskerLeft F α.inv :)).obj (mapCocone H c) ≅ mapCocone H' c :=
+    (Cocone.precompose (whiskerLeft F α.inv :)).obj (mapCocone H c) ≅ mapCocone H' c :=
   (functorialityCompPrecompose α).app c
 
 /-- `map_cocone` commutes with `precompose`. In particular, for `F : J ⥤ C`, given a cocone
@@ -834,30 +893,30 @@ ways of producing a cocone over `G ⋙ H`, and they are both isomorphic.
 -/
 @[simps!]
 def mapCoconePrecompose {α : F ⟶ G} {c} :
-    mapCocone H ((Cocones.precompose α).obj c) ≅
-      (Cocones.precompose (whiskerRight α H :)).obj (mapCocone H c) :=
-  Cocones.ext (Iso.refl _)
+    mapCocone H ((Cocone.precompose α).obj c) ≅
+      (Cocone.precompose (whiskerRight α H :)).obj (mapCocone H c) :=
+  Cocone.ext (Iso.refl _)
 
 /-- `mapCocone` commutes with `precomposeEquivalence`
 -/
 @[simps!]
 def mapCoconePrecomposeEquivalenceFunctor {α : F ≅ G} {c} :
-    mapCocone H ((Cocones.precomposeEquivalence α).functor.obj c) ≅
-      (Cocones.precomposeEquivalence (isoWhiskerRight α H :)).functor.obj (mapCocone H c) :=
-  Cocones.ext (Iso.refl _)
+    mapCocone H ((Cocone.precomposeEquivalence α).functor.obj c) ≅
+      (Cocone.precomposeEquivalence (isoWhiskerRight α H :)).functor.obj (mapCocone H c) :=
+  Cocone.ext (Iso.refl _)
 
 /-- `mapCone` commutes with `whisker`
 -/
 @[simps!]
 def mapConeWhisker {E : K ⥤ J} {c : Cone F} : mapCone H (c.whisker E) ≅ (mapCone H c).whisker E :=
-  Cones.ext (Iso.refl _)
+  Cone.ext (Iso.refl _)
 
 /-- `mapCocone` commutes with `whisker`
 -/
 @[simps!]
 def mapCoconeWhisker {E : K ⥤ J} {c : Cocone F} :
     mapCocone H (c.whisker E) ≅ (mapCocone H c).whisker E :=
-  Cocones.ext (Iso.refl _)
+  Cocone.ext (Iso.refl _)
 
 end Functor
 
@@ -918,10 +977,10 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
             apply Quiver.Hom.op_inj
             dsimp
             apply ConeMorphism.w } }
-  unitIso := NatIso.ofComponents (fun c => Cocones.ext (Iso.refl _))
+  unitIso := NatIso.ofComponents (fun c => Cocone.ext (Iso.refl _))
   counitIso :=
     NatIso.ofComponents
-      (fun c => (Cones.ext (Iso.refl c.unop.pt)).op)
+      (fun c => (Cone.ext (Iso.refl c.unop.pt)).op)
       fun {X} {Y} f =>
       Quiver.Hom.unop_inj (ConeMorphism.ext _ _ (by simp))
   functor_unitIso_comp c := by
@@ -1048,12 +1107,12 @@ variable (G : C ⥤ D)
 /-- The opposite cocone of the image of a cone is the image of the opposite cocone. -/
 @[simps!]
 def mapConeOp (t : Cone F) : (mapCone G t).op ≅ mapCocone G.op t.op :=
-  Cocones.ext (Iso.refl _)
+  Cocone.ext (Iso.refl _)
 
 /-- The opposite cone of the image of a cocone is the image of the opposite cone. -/
 @[simps!]
 def mapCoconeOp {t : Cocone F} : (mapCocone G t).op ≅ mapCone G.op t.op :=
-  Cones.ext (Iso.refl _)
+  Cone.ext (Iso.refl _)
 
 end
 
