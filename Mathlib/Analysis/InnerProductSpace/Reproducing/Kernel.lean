@@ -482,6 +482,7 @@ theorem toMatrix_posSemiDef (K : Kernel X) (L : List X) : Matrix.PosSemidef (K.t
       _ ≥ 0 := by
         exact K'.posSemiDef c_pre
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Schur's product: The hadamard product of two PSD matrices is PSD. -/
 theorem hadamard_mul {m : Type*} [Finite m] {A : Matrix m m ℝ} {B : Matrix m m ℝ}
   (hA : A.PosSemidef) (hB : B.PosSemidef) : (A.hadamard B).PosSemidef := by
@@ -781,6 +782,7 @@ theorem polyOfKernel_apply (f : ℕ →₀ ℝ) (hf : ∀ (n : ℕ), f n ≥ 0) 
     (polyOfKernel f hf K) x y = ∑ n ∈ f.support, f n * (natPowKernel K n) x y :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any kernel `K` satisfies the Cauchy-Schwartz type inequality
   `K(x₁,x₂)^2 ≤ K(x₁,x₁) * K(x₂,x₂)`. -/
 theorem sq_le_ker_mul_ker (K : Kernel X) (x y : X) : (K x y)^2 ≤ K x x * K y y := by
@@ -788,10 +790,9 @@ theorem sq_le_ker_mul_ker (K : Kernel X) (x y : X) : (K x y)^2 ≤ K x x * K y y
   have hΓ := toMatrix_posSemiDef K [x, y]
   have h_nonneg := Matrix.PosSemidef.det_nonneg hΓ
   set A : Matrix (Fin 2) (Fin 2) ℝ := K.toMatrix [x, y]
+  rw [Matrix.det_fin_two] at h_nonneg
   rw [pow_two]
   nth_rw 2 [K.symmetric]
-  replace h_nonneg : 0 ≤ A 0 0 * A 1 1 - A 0 1 * A 1 0 :=
-    le_of_le_of_eq h_nonneg (Matrix.det_fin_two A)
   rw [sub_nonneg] at h_nonneg
   exact h_nonneg
 
@@ -1154,17 +1155,14 @@ noncomputable def gaussianKernel [NormedAddCommGroup X] [InnerProductSpace ℝ X
     simp_all
   ))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem gaussianKernel_apply [NormedAddCommGroup X] [InnerProductSpace ℝ X] (γ : ℝ) (hγ : γ > 0)
                              (x y : X) : (gaussianKernel γ hγ) x y = exp (-γ * ‖x-y‖^2 ) := by
   rw [show (gaussianKernel γ hγ).kernel =
     fun x y ↦ rexp (2 * γ * inner ℝ x y) * (featureKernel fun x ↦ rexp (-γ * ‖x‖ ^ 2)) x y from rfl]
-  simp only [neg_mul, featureKernel_apply]
-  rw [show
-      inner ℝ (rexp (-(γ * ‖x‖ ^ 2))) (rexp (-(γ * ‖y‖ ^ 2))) =
-        rexp (-(γ * ‖y‖ ^ 2)) * (starRingEnd ℝ) (rexp (-(γ * ‖x‖ ^ 2)))
-      from rfl]
-  rw [ringHom_apply, <- exp_add, <-exp_add]
+  simp only [neg_mul, featureKernel_apply, RCLike.inner_apply, ringHom_apply]
+  rw [<- exp_add, <-exp_add]
   simp only [exp_eq_exp]
   rw [norm_sub_sq_real x y]
   ring
