@@ -321,6 +321,8 @@ lemma commute_iff_mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   fun h => ha.isSelfAdjoint.commute_iff hb.isSelfAdjoint |>.mpr h.isSelfAdjoint⟩
 
 open NNReal in
+@[deprecated "Use `ContinuousFunctionalCalculus.spectrum_nonempty a ha` instead"
+  (since := "2026-03-07")]
 lemma NNReal.spectrum_nonempty {A : Type*} [Ring A] [StarRing A] [LE A]
     [TopologicalSpace A] [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
     [Nontrivial A] {a : A} (ha : 0 ≤ a) : (spectrum ℝ≥0 a).Nonempty :=
