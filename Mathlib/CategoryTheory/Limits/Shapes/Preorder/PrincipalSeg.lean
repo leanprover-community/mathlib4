@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Limits.Cones
 
 /-!
-# Cocone associated to principal segments
+# Cocones associated to principal segments
 
 If `f : α <i β` is a principal segment and `F : β ⥤ C`,
 there is a cocone for `f.monotone.functor ⋙ F : α ⥤ C`
