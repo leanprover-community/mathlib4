@@ -34,13 +34,62 @@ left-hand side.
   theorem for summing over natural numbers by grouping terms in pairs
   `$\sum_{k=0}^{\infty} (-1)^k (x^{a_{-k}} - x^{a_{k+1}})$.
   * `PowerSeries.WithPiTopology.summable_pow_pentagonal_sub`: summability of the right-hand side.
+* `PowerSeries.coeff_prod_one_sub_X_eventually_eq_negOnePow` and
+  `PowerSeries.coeff_prod_one_sub_X_eventually_eq_zero`: coefficients of finite product
+  $\prod_{n\in s} (1 - x^{n + 1})$ are eventually constants, either $(-1)^k$ or 0 depending whether
+  the exponent on `X` is a pentagonal number or not, respectively. These theorems doesn't assume
+  topology on the ring.
 -/
+
+public section PublicPentagonalNumber
+theorem two_pentagonal (k : ℤ) : 2 * (k * (3 * k - 1) / 2) = k * (3 * k - 1) := by
+  refine Int.two_mul_ediv_two_of_even ?_
+  obtain h | h := Int.even_or_odd k
+  · exact Even.mul_right h (3 * k - 1)
+  · refine Even.mul_left (Int.even_sub_one.mpr (Int.not_even_iff_odd.mpr (Odd.mul ?_ h))) _
+    decide
+
+theorem pentagonal_nonneg (k : ℤ) : 0 ≤ k * (3 * k - 1) / 2 := by
+  suffices 0 ≤ 2 * (k * (3 * k - 1) / 2) by simpa
+  rw [two_pentagonal]
+  obtain h | h := lt_or_ge 0 k
+  · exact mul_nonneg h.le (by linarith)
+  · exact mul_nonneg_of_nonpos_of_nonpos h (by linarith)
+
+theorem two_pentagonal_inj {x y : ℤ} (h : x * (3 * x - 1) = y * (3 * y - 1)) : x = y := by
+  simp_rw [mul_sub_one] at h
+  rw [sub_eq_sub_iff_sub_eq_sub, mul_left_comm x, mul_left_comm y, ← mul_sub] at h
+  rw [mul_self_sub_mul_self, ← mul_assoc, ← sub_eq_zero, ← sub_one_mul, mul_eq_zero] at h
+  obtain h | h := h
+  · simp [← Int.eq_of_mul_eq_one <| eq_of_sub_eq_zero h] at h
+  · exact eq_of_sub_eq_zero h
+
+theorem pentagonal_injective : Function.Injective (fun (k : ℤ) ↦ k * (3 * k - 1) / 2) := by
+  intro a b h
+  have : a * (3 * a - 1) = b * (3 * b - 1) := by
+    rw [← two_pentagonal a, ← two_pentagonal b]
+    simp [h]
+  exact two_pentagonal_inj this
+
+theorem toNat_pentagonal_injective :
+    Function.Injective (fun (k : ℤ) ↦ (k * (3 * k - 1) / 2).toNat) := by
+  intro a b h
+  apply pentagonal_injective
+  zify at h
+  simpa [pentagonal_nonneg] using h
+
+theorem toNat_pentagonal_inj {x y : ℤ}
+    (h : (x * (3 * x - 1) / 2).toNat = (y * (3 * y - 1) / 2).toNat) : x = y := by
+  apply toNat_pentagonal_injective.eq_iff.mp h
+
+end PublicPentagonalNumber
 
 open Filter PowerSeries WithPiTopology
 variable (R : Type*) [CommRing R]
 
 namespace Pentagonal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_order_powMulProdOneSubPow_X (k : ℕ) :
     Tendsto (fun i ↦ (powMulProdOneSubPow k i (X : R⟦X⟧)).order) atTop (nhds ⊤) := by
   nontriviality R using Subsingleton.eq_zero
@@ -51,6 +100,7 @@ theorem tendsto_order_powMulProdOneSubPow_X (k : ℕ) :
   norm_cast
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_order_neg_X_pow (k : ℕ) :
     Tendsto (fun i ↦ (-(X : R⟦X⟧) ^ (i + k + 1)).order) atTop (nhds ⊤) := by
   nontriviality R using Subsingleton.eq_zero
@@ -60,6 +110,7 @@ theorem tendsto_order_neg_X_pow (k : ℕ) :
   norm_cast
   linarith
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_order_pow_pentagonal_sub :
     Tendsto (fun i ↦ ((-1) ^ i * ((X : R⟦X⟧) ^ (i * (3 * i + 1) / 2) -
       X ^ ((i + 1) * (3 * i + 2) / 2))).order) atTop (nhds ⊤) := by
@@ -75,9 +126,9 @@ theorem tendsto_order_pow_pentagonal_sub :
 
 end Pentagonal
 
-variable [TopologicalSpace R]
 
 namespace Pentagonal
+variable [TopologicalSpace R]
 
 theorem summable_powMulProdOneSubPow_X (k : ℕ) : Summable (powMulProdOneSubPow k · (X : R⟦X⟧)) :=
   summable_of_tendsto_order_atTop_nhds_top R (tendsto_order_powMulProdOneSubPow_X R k)
@@ -89,12 +140,15 @@ theorem multipliable_one_sub_X_pow (k : ℕ) : Multipliable fun n ↦ (1 : R⟦X
 end Pentagonal
 
 public section Public
-namespace PowerSeries.WithPiTopology
+namespace PowerSeries
+namespace WithPiTopology
+variable [TopologicalSpace R]
 
 theorem summable_pow_pentagonal_sub : Summable fun (k : ℕ) ↦
     ((-1) ^ k * (X ^ (k * (3 * k + 1) / 2) - X ^ ((k + 1) * (3 * k + 2) / 2)) : R⟦X⟧) :=
   summable_of_tendsto_order_atTop_nhds_top R (Pentagonal.tendsto_order_pow_pentagonal_sub R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Pentagonal number theorem** for power series, summing over natural numbers:
 
 $$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
@@ -119,6 +173,7 @@ theorem tprod_one_sub_X_pow_eq_tsum_nat [IsTopologicalRing R] [T2Space R] :
     rw [order_X_pow, Nat.cast_lt, ← Nat.add_one_le_iff, Nat.le_div_iff_mul_le (by simp)]
     apply Nat.mul_le_mul <;> linarith
 
+set_option backward.isDefEq.respectTransparency false in
 theorem summable_pow_pentagonal' [IsTopologicalRing R] :
     Summable fun k ↦ (Int.negOnePow k : R⟦X⟧) * X ^ (k * (3 * k + 1) / 2).toNat := by
   nontriviality R
@@ -132,6 +187,7 @@ theorem summable_pow_pentagonal' [IsTopologicalRing R] :
   norm_cast
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Pentagonal number theorem** for power series, summing over integers written using the
 exponent $a_{-k}$ where $a_k = k(3k - 1)/2$ are the generalized pentagonal numbers.
 Note that $a_{-k} = (-k)(3(-k) - 1)/2 = k(3k + 1)/2$, which explains the exponent in the
@@ -148,6 +204,7 @@ theorem tprod_one_sub_X_pow' [IsTopologicalRing R] [T2Space R] :
   · ring
   · norm_cast
 
+set_option backward.isDefEq.respectTransparency false in
 theorem summable_pow_pentagonal [IsTopologicalRing R] :
     Summable fun k ↦ (Int.negOnePow k : R⟦X⟧) * X ^ (k * (3 * k - 1) / 2).toNat := by
   rw [← neg_injective.summable_iff (fun x hx ↦ by absurd hx; use -x; simp)]
@@ -155,6 +212,7 @@ theorem summable_pow_pentagonal [IsTopologicalRing R] :
   rw [Function.comp_apply]
   exact congr($(by simp) * X ^ (Int.toNat ($(by ring_nf) / 2)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Pentagonal number theorem** for power series, summing over integers written using the
 exponent $a_k$ where $a_k = k(3k - 1)/2$ are the generalized pentagonal numbers:
 
@@ -164,5 +222,40 @@ theorem tprod_one_sub_X_pow [IsTopologicalRing R] [T2Space R] :
   rw [tprod_one_sub_X_pow', ← neg_injective.tsum_eq (by simp)]
   exact tsum_congr fun k ↦ congr($(by simp) * X ^ (Int.toNat ($(by ring_nf) / 2)))
 
-end PowerSeries.WithPiTopology
+end WithPiTopology
+
+open WithPiTopology
+
+set_option backward.isDefEq.respectTransparency false in
+theorem coeff_prod_one_sub_X_eventually_eq_negOnePow (k : ℤ) :
+    ∀ᶠ s in atTop, (∏ n ∈ s, (1 - X ^ (n + 1) : R⟦X⟧)).coeff (k * (3 * k - 1) / 2).toNat =
+    Int.negOnePow k := by
+  let _ : TopologicalSpace R := ⊥
+  have _ : DiscreteTopology R := ⟨rfl⟩
+  obtain h := (multipliable_one_sub_X_pow R).hasProd
+  rw [tprod_one_sub_X_pow R, HasProd, tendsto_iff_coeff_tendsto] at h
+  specialize h (k * (3 * k - 1) / 2).toNat
+  rw [(summable_pow_pentagonal R).map_tsum _ (WithPiTopology.continuous_coeff _ _),
+    SummationFilter.unconditional_filter, nhds_discrete, tendsto_pure] at h
+  have hpow (i : ℤ) : (i.negOnePow : R⟦X⟧) = C (i.negOnePow : R) := by simp
+  simp_rw [hpow, coeff_C_mul, coeff_X_pow] at h
+  rw [tsum_eq_single k fun i hi ↦ by simp [toNat_pentagonal_injective.eq_iff.ne.mpr hi.symm]] at h
+  simpa using h
+
+set_option backward.isDefEq.respectTransparency false in
+theorem coeff_prod_one_sub_X_eventually_eq_zero {n : ℕ}
+    (hn : ∀ k : ℤ, n ≠ (k * (3 * k - 1) / 2).toNat) :
+    ∀ᶠ s in atTop, (∏ n ∈ s, (1 - X ^ (n + 1) : R⟦X⟧)).coeff n = 0 := by
+  let _ : TopologicalSpace R := ⊥
+  have _ : DiscreteTopology R := ⟨rfl⟩
+  obtain h := (multipliable_one_sub_X_pow R).hasProd
+  rw [tprod_one_sub_X_pow R, HasProd, tendsto_iff_coeff_tendsto] at h
+  specialize h n
+  rw [(summable_pow_pentagonal R).map_tsum _ (WithPiTopology.continuous_coeff _ _),
+    SummationFilter.unconditional_filter, nhds_discrete, tendsto_pure] at h
+  have hpow (i : ℤ) : (i.negOnePow : R⟦X⟧) = C (i.negOnePow : R) := by simp
+  simp_rw [hpow, coeff_C_mul, coeff_X_pow] at h
+  simpa [hn] using h
+
+end PowerSeries
 end Public

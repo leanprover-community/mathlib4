@@ -49,6 +49,7 @@ $$ b_{k, n} = x^{(k+1)n} (x^{2k + n + 3} - 1) \prod_{i=0}^{n-1} (1 - x^{k + i + 
 def aux (k n : ℕ) (x : R) : R :=
   x ^ ((k + 1) * n) * (x ^ (2 * k + n + 3) - 1) * ∏ i ∈ Finset.range n, (1 - x ^ (k + i + 2))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `powMulProdOneSubPow` and `aux` have relation
 
 $$ a_{k,n} + x^{3k + 5}a_{k + 1, n} = b_{k, n+1} - b_{k, n} $$ -/
@@ -107,6 +108,7 @@ theorem tprod_one_sub_pow_eq_powMulProdOneSubPow_zero {x : R}
       ← pow_add x 1 1, one_add_one_eq_two, mul_assoc (x ^ 2)]
   simp [hsum.tsum_mul_left, powMulProdOneSubPow]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Applying the recurrence formula repeatedly, we get
 
 $$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
