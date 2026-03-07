@@ -83,11 +83,13 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
 
 end DVR
 
+variable {K : Type*} [Field K] [NumberField K]
+
 namespace NumberField.RingOfIntegers.HeightOneSpectrum
 
 section AbsoluteValue
 
-variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
+variable (v : HeightOneSpectrum (𝓞 K))
 
 /-- The norm of a maximal ideal is `> 1` -/
 lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
@@ -351,8 +353,6 @@ end NumberField
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
-variable {K : Type*} [Field K] [NumberField K]
-
 open NumberField.FinitePlace NumberField.RingOfIntegers
   NumberField.RingOfIntegers.HeightOneSpectrum
 open scoped NumberField
@@ -382,7 +382,7 @@ namespace NumberField.HeightOneSpectrum
 open FinitePlace RingOfIntegers HeightOneSpectrum
 open scoped Valued
 
-variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
+variable {L : Type*} [Field L] [NumberField L] [Algebra K L]
 variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
 
 local notation "Kv" => v.adicCompletion K
@@ -532,5 +532,3 @@ instance compact_adicCompletionIntegers : CompactSpace (v.adicCompletionIntegers
 end NumberField.HeightOneSpectrum
 
 end LiesOver
-
-#min_imports
