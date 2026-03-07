@@ -677,11 +677,44 @@ For a function `F` with `F' = f`, if `F` is twice continuously differentiable on
 the second derivative is differentiable on `(a, b)`, and the third derivative is bounded by `M`,
 then the midpoint rule error is bounded by `|b - a|^3 * M / 24`. -/
 theorem simpson_midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
-    (hF : ContDiffOn ℝ 2 F (Icc a b))
-    (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b))
-    {M : ℝ} (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc a b) x| ≤ M) :
-    |F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a)| ≤ |b - a| ^ 3 * M / 24 := by
-  sorry
+    (hF : ContDiffOn ℝ 2 F (uIcc a b))
+    (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 2 F (uIcc a b)) (uIoo a b))
+    {M : ℝ} (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (uIcc a b) x| ≤ M) :
+    |F b - F a - (derivWithin F (uIcc a b) ((a + b) / 2)) * (b - a)| ≤ |b - a| ^ 3 * M / 24 := by
+  rcases lt_trichotomy a b with h_lt | h_eq | h_gt
+  · -- 标准情况：a < b
+    rw [uIcc_of_lt h_lt, uIoo_of_lt h_lt] at *
+    rw [abs_of_pos (sub_pos.mpr h_lt)]
+    exact simpson_midpoint_error_le_of_lt' h_lt hF hF_diff fpp_bound
+  · -- 平凡情况：a = b
+    rw [h_eq]
+    simp
+  · -- a > b 的情况
+    rw [uIcc_of_gt h_gt, uIoo_of_gt h_gt] at *
+    rw [abs_of_neg (sub_neg.mpr h_gt)]
+    -- 目标：|F b - F a - derivWithin F (Icc b a) ((a + b) / 2) * (b - a)| ≤ (a - b)^3 * M / 24
+    -- 注意 (b - a) = -(a - b)
+    have h_neg : b - a = -(a - b) := by ring
+    rw [h_neg]
+    -- |F b - F a - deriv * (-(a - b))| = |F b - F a + deriv * (a - b)|
+    have h_sum : F b - F a - derivWithin F (Icc b a) ((a + b) / 2) * (-(a - b))
+               = F b - F a + derivWithin F (Icc b a) ((a + b) / 2) * (a - b) := by ring
+    rw [h_sum]
+    -- |F b - F a + deriv * (a - b)| = |-(F a - F b - deriv * (a - b))| = |F a - F b - deriv * (a - b)|
+    have h_abs : |F b - F a + derivWithin F (Icc b a) ((a + b) / 2) * (a - b)|
+               = |F a - F b - derivWithin F (Icc b a) ((a + b) / 2) * (a - b)| := by
+      have : F b - F a + derivWithin F (Icc b a) ((a + b) / 2) * (a - b)
+           = -(F a - F b - derivWithin F (Icc b a) ((a + b) / 2) * (a - b)) := by ring
+      rw [this, abs_neg]
+    rw [h_abs]
+    -- 现在 ((a + b) / 2) = ((b + a) / 2)
+    have h_mid : (a + b) / 2 = (b + a) / 2 := by ring
+    rw [h_mid]
+    -- 应用 simpson_midpoint_error_le_of_lt'
+    have h_le : |F a - F b - derivWithin F (Icc b a) ((b + a) / 2) * (a - b)| ≤ (a - b) ^ 3 * M / 24 :=
+      simpson_midpoint_error_le_of_lt' h_gt hF hF_diff fpp_bound
+    convert h_le using 1
+    ring_nf
 
 /-- The error bound for Simpson's midpoint integration in the case where `F` is `C^3`.
 
