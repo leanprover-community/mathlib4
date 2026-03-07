@@ -15,13 +15,6 @@ Given a simplicial set `X`, this file defines the type `X.Subcomplex`
 of subcomplexes of `X` as an abbreviation for `Subfunctor X`.
 It also introduces a coercion from `X.Subcomplex` to `SSet`.
 
-## Implementation note
-
-`SSet.{u}` is defined as `Cᵒᵖ ⥤ Type u`, but it is not an abbreviation.
-This is the reason why `Subfunctor.ι` is redefined here as `Subcomplex.ι`
-so that this morphism appears as a morphism in `SSet` instead of a morphism
-in the category of presheaves.
-
 -/
 
 @[expose] public section
