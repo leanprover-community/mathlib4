@@ -20,7 +20,7 @@ see `IsPrimitiveRoot.prod_one_sub_pow_eq_order` and its variant
 We use this to deduce that `n` is divisible by `(μ - 1)^k` in `ℤ[μ] ⊆ R` when `k < n`.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsDomain R]
 

@@ -34,6 +34,7 @@ open Finset
 
 namespace Imo2019Q4
 
+set_option backward.isDefEq.respectTransparency false in
 theorem upper_bound {k n : ℕ} (hk : k > 0)
     (h : (k ! : ℤ) = ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i)) : n < 6 := by
   have h2 : ∑ i ∈ range n, i < k := by
@@ -47,12 +48,12 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
       emultiplicity_pow_self_of_prime Int.prime_two, Nat.cast_lt, ← mem_range]
   rw [← not_le]; intro hn
   apply _root_.ne_of_gt _ h
-  calc ∏ i ∈ range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ __ ∈ range n, (2:ℤ) ^ n := ?_
-    _ < ↑ k ! := ?_
+  calc ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i) ≤ ∏ __ ∈ range n, (2 : ℤ) ^ n := ?_
+    _ < k ! := ?_
   · gcongr
     · intro i hi
       simp only [mem_range] at hi
-      have : (2:ℤ) ^ i ≤ (2:ℤ) ^ n := by gcongr; norm_num
+      have : (2 : ℤ) ^ i ≤ (2 : ℤ) ^ n := by gcongr; norm_num
       linarith
     · apply sub_le_self
       positivity
@@ -80,8 +81,8 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
 end Imo2019Q4
 
 set_option linter.flexible false in
-theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
-    (k ! : ℤ) = ∏ i ∈ range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
+theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
+    (k ! : ℤ) = ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
   -- The implication `←` holds.
   constructor
   swap

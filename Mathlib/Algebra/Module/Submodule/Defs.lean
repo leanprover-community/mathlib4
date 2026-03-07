@@ -55,6 +55,8 @@ instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M) M
+
 initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
 @[simp] lemma carrier_eq_coe (s : Submodule R M) : s.carrier = s := rfl
@@ -111,7 +113,7 @@ theorem mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule 
 theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
   rfl
 
-@[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
+@[simp] theorem eta (h) : ({ p with smul_mem' := h } : Submodule R M) = p :=
   rfl
 
 @[simp]
@@ -155,6 +157,13 @@ theorem toSubMulAction_inj : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
 @[simp]
 theorem coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p :=
   rfl
+
+/-- `Submodule R M` almost never has decidable equality.
+Given an element `m ≠ 0` in `M`, `Submodule R M` has decidable equality iff
+all propositions are decidable. We add a global instance that `Submodule R M` has decidable
+equality, coming from the choice axiom, so that we don't have to provide
+`[DecidableEq (Submodule R M)]` arguments in lemma statements. -/
+noncomputable instance decidableEq : DecidableEq (Submodule R M) := Classical.typeDecidableEq _
 
 end Submodule
 
@@ -313,6 +322,7 @@ protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
   neg_mem hx
 
 /-- Reinterpret a submodule as an additive subgroup. -/
+@[reducible]
 def toAddSubgroup : AddSubgroup M :=
   { p.toAddSubmonoid with neg_mem' := fun {_} => p.neg_mem }
 
@@ -320,14 +330,12 @@ def toAddSubgroup : AddSubgroup M :=
 theorem coe_toAddSubgroup : (p.toAddSubgroup : Set M) = p :=
   rfl
 
-@[simp]
 theorem mem_toAddSubgroup : x ∈ p.toAddSubgroup ↔ x ∈ p :=
   Iff.rfl
 
 theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → AddSubgroup M)
   | _, _, h => SetLike.ext (SetLike.ext_iff.1 h :)
 
-@[simp]
 theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
 

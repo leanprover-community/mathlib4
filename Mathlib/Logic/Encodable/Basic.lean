@@ -77,12 +77,18 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 instance (priority := 400) countable [Encodable α] : Countable α where
   exists_injective_nat' := ⟨_,encode_injective⟩
 
+theorem surjective_decode_getD (α : Type*) [Encodable α] (d : α) :
+    Surjective fun n => (Encodable.decode n).getD d := fun x =>
+  ⟨Encodable.encode x, by simp_rw [Encodable.encodek]; rfl⟩
+
+@[deprecated surjective_decode_getD (since := "2026-01-05")]
 theorem surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
-    Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
-  ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
+    Surjective fun n => ((Encodable.decode n).getD default : α) :=
+  surjective_decode_getD α default
 
 /-- An encodable type has decidable equality. Not set as an instance because this is usually not the
 best way to infer decidability. -/
+@[instance_reducible]
 def decidableEqOfEncodable (α) [Encodable α] : DecidableEq α
   | _, _ => decidable_of_iff _ encode_inj
 
@@ -198,6 +204,7 @@ theorem encodek₂ [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
   mem_decode₂.2 rfl
 
 /-- The encoding function has decidable range. -/
+@[instance_reducible]
 def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set.range (@encode α _)) :=
   fun x =>
   decidable_of_iff (Option.isSome (decode₂ α x))
@@ -384,6 +391,7 @@ noncomputable def ofInj [Encodable β] (f : α → β) (hf : Injective f) : Enco
   ofLeftInjection f (partialInv f) fun _ => (partialInv_of_injective hf _ _).2 rfl
 
 /-- If `α` is countable, then it has a (non-canonical) `Encodable` structure. -/
+@[no_expose]
 noncomputable def ofCountable (α : Type*) [Countable α] : Encodable α :=
   Nonempty.some <|
     let ⟨f, hf⟩ := exists_injective_nat α
@@ -481,13 +489,9 @@ private def good : Option α → Prop
   | none => False
 
 set_option backward.privateInPublic true in
-private def decidable_good : DecidablePred (good p) :=
+private local instance decidable_good : DecidablePred (good p) :=
   fun n => by
     cases n <;> unfold good <;> dsimp <;> infer_instance
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-attribute [local instance] decidable_good
 
 open Encodable
 
@@ -529,11 +533,11 @@ There is a total ordering on the elements of an encodable type, induced by the m
 def encode' (α) [Encodable α] : α ↪ ℕ :=
   ⟨Encodable.encode, Encodable.encode_injective⟩
 
-instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isAntisymm
+instance {α} [Encodable α] : Std.Antisymm (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+  (RelEmbedding.preimage _ _).antisymm
 
-instance {α} [Encodable α] : IsTotal _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isTotal
+instance {α} [Encodable α] : Std.Total (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+  (RelEmbedding.preimage _ _).total
 
 end Encodable
 

@@ -102,7 +102,6 @@ theorem lt_finRotate_iff_ne_neg_one [NeZero n] (i : Fin n) :
 
 lemma coe_finRotate_symm_of_ne_zero [NeZero n] {i : Fin n} (hi : i ≠ 0) :
     ((finRotate _).symm i : ℕ) = i - 1 := by
-  obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero (NeZero.ne n)
   rwa [finRotate_succ_symm_apply, Fin.val_sub_one_of_ne_zero]
 
 theorem finRotate_symm_lt_iff_ne_zero [NeZero n] (i : Fin n) :

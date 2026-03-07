@@ -15,7 +15,7 @@ Operator norm as an `NNNorm`, i.e. taking values in non-negative reals.
 
 -/
 
-@[expose] public section
+public section
 
 suppress_compilation
 
@@ -129,6 +129,7 @@ variable [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* �
 
 namespace ContinuousLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0}
     (hr : r < ‖f‖₊) : ∃ x : E, ‖x‖₊ < 1 ∧ r < ‖f x‖₊ := by
   obtain ⟨y, hy⟩ := f.exists_mul_lt_apply_of_lt_opNNNorm hr
@@ -163,6 +164,7 @@ theorem sSup_unit_ball_eq_norm (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖) '' ball 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using NNReal.coe_inj.2 f.sSup_unit_ball_eq_nnnorm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSup_unitClosedBall_eq_nnnorm (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖₊) '' closedBall 0 1) = ‖f‖₊ := by
   have hbdd : ∀ y ∈ (fun x => ‖f x‖₊) '' closedBall 0 1, y ≤ ‖f‖₊ := by
@@ -178,6 +180,7 @@ theorem sSup_unitClosedBall_eq_norm (f : E →SL[σ₁₂] F) :
   simpa only [NNReal.coe_sSup, Set.image_image] using
     NNReal.coe_inj.2 f.sSup_unitClosedBall_eq_nnnorm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm [NormedAlgebra ℝ 𝕜]
     (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x : E, ‖x‖₊ = 1 ∧ r < ‖f x‖₊ := by

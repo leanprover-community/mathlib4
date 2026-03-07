@@ -47,7 +47,7 @@ To properly use theorems using `fixedBy (Set α) g`, you should `open Pointwise`
 all points in `s` are fixed by `g`, whereas the former only requires that `g • x ∈ s`.
 -/
 
-@[expose] public section
+public section
 
 namespace MulAction
 open Pointwise

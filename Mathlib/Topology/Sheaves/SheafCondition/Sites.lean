@@ -60,7 +60,7 @@ theorem iSup_eq_of_mem_grothendieck (hR : Sieve.generate R ∈ Opens.grothendiec
     intro f
     exact f.2.1.le
   intro x hxU
-  rw [Opens.coe_iSup, Set.mem_iUnion]
+  rw [Opens.mem_iSup]
   obtain ⟨V, iVU, ⟨W, iVW, iWU, hiWU, -⟩, hxV⟩ := hR x hxU
   exact ⟨⟨W, ⟨iWU, hiWU⟩⟩, iVW.le hxV⟩
 
@@ -146,7 +146,7 @@ variable {C : Type u} [Category.{v} C]
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
 theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
-    CompatiblePreserving (Opens.grothendieckTopology Y) hf.isOpenMap.functor := by
+    CompatiblePreserving (Opens.grothendieckTopology Y) hf.functor := by
   haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
@@ -163,19 +163,20 @@ theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
 
 
 lemma Topology.IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
-    h.isOpenMap.functor.IsContinuous (Opens.grothendieckTopology X)
+    h.functor.IsContinuous (Opens.grothendieckTopology X)
       (Opens.grothendieckTopology Y) := by
   apply Functor.isContinuous_of_coverPreserving
   · exact h.compatiblePreserving
   · exact h.isOpenMap.coverPreserving
 
 theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF : F.IsSheaf) :
-    IsSheaf (h.isOpenMap.functor.op ⋙ F) := by
+    IsSheaf (h.functor.op ⋙ F) := by
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
 
 variable (f)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : RepresentablyFlat (Opens.map f) := by
   constructor
   intro U
@@ -216,12 +217,12 @@ variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
 variable (F : X.Presheaf C) (F' : Sheaf C X)
 
 /-- The empty component of a sheaf is terminal. -/
-def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.val.obj (op ⊥)) :=
+def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.obj.obj (op ⊥)) :=
   F.isTerminalOfBotCover ⊥ (fun _ h => h.elim)
 
 /-- A variant of `isTerminalOfEmpty` that is easier to `apply`. -/
 def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
-    Limits.IsTerminal (F.val.obj (op U)) := by
+    Limits.IsTerminal (F.obj.obj (op U)) := by
   convert F.isTerminalOfEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
@@ -247,3 +248,15 @@ theorem hom_ext (h : Opens.IsBasis (Set.range B))
   exact he i.unop
 
 end TopCat.Sheaf
+
+namespace TopologicalSpace.Opens
+
+instance {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    (F : Opens X ⥤ Opens Y) (G : Opens Y ⥤ Opens Z)
+    [Functor.IsContinuous.{w} F (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)]
+    [Functor.IsContinuous.{w} G (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)] :
+    Functor.IsContinuous.{w} (F ⋙ G) (Opens.grothendieckTopology _)
+      (Opens.grothendieckTopology _) :=
+  Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
+
+end TopologicalSpace.Opens

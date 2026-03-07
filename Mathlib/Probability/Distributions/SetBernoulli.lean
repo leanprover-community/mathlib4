@@ -63,9 +63,11 @@ lemma setBernoulli_apply' (S : Set (Set ι)) :
     setBer(u, p) S = (infinitePi fun i ↦ toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False)
       ((fun p ↦ {i | p i}) ⁻¹' S) := MeasurableEquiv.setOf.symm.comap_apply ..
 
+set_option backward.isDefEq.respectTransparency false in
 variable (u) in
 @[simp] lemma setBernoulli_zero : setBer(u, 0) = dirac ∅ := by simp [setBernoulli_eq_map]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (u) in
 @[simp] lemma setBernoulli_one : setBer(u, 1) = dirac u := by simp [setBernoulli_eq_map]
 
@@ -74,9 +76,8 @@ variable [Countable ι]
 
 lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
   classical
-  change _ = _
-  simp only [Set.compl_setOf, Set.not_subset_iff_exists_mem_notMem, Set.setOf_exists, Set.setOf_and,
-    measure_iUnion_null_iff]
+  simp only [Filter.Eventually, mem_ae_iff, Set.compl_setOf, Set.not_subset_iff_exists_mem_notMem,
+    Set.setOf_exists, Set.setOf_and, measure_iUnion_null_iff]
   rintro i
   by_cases hi : i ∈ u
   · simp [*]

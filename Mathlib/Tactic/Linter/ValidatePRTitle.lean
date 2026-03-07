@@ -75,14 +75,16 @@ public def validateTitle (title : String) : Array String := Id.run do
   -- but give some custom errors in some easily detectable cases.
   if !title.contains ':' then
     return #["error: the PR title does not contain a colon"]
+  let mut errors : Array String := #[]
+  if title.startsWith " " then
+    errors := #["error: the PR title starts with a space"]
 
-  match Parser.run prTitle title with
+  match Parser.run prTitle title.trimAsciiStart.copy with
   | Except.error _ =>
-    return #[s!"error: the PR title should be of the form\n  abbrev: main title\nor\n  \
-      abbrev(scope): main title"]
+    return errors.push s!"error: the PR title should be of the form\n  abbrev: main title\n\
+      or\n  abbrev(scope): main title"
   | Except.ok (kind, _scope?) =>
     -- Future: also check scope (and the main PR title)
-    let mut errors := #[]
     let knownKinds := ["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"]
     let mut isFine := false
     for k in knownKinds do
@@ -91,4 +93,9 @@ public def validateTitle (title : String) : Array String := Id.run do
       errors := errors.push s!"error: the PR title should be of the form \
         \"kind: main title\" or \"kind(scope): main title\"\n
         Known PR title kinds are {knownKinds}"
+    if title.contains "  " then
+      errors := errors.push
+        "error: the PR title contains multiple consecutive spaces; please add just one"
+    if title.endsWith "." then
+      errors := errors.push "error: the PR title should not end with a full stop"
     return errors

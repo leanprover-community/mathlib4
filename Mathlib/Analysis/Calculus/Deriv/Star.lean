@@ -20,7 +20,7 @@ trivial star operation; which as should be expected rules out `𝕜 = ℂ`. The 
 differentiable when `f` is (and giving a formula for its derivative).
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -32,22 +32,23 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] [StarRing 𝕜]
 
 section TrivialStar
 
-variable [TrivialStar 𝕜] {s : Set 𝕜} {L : Filter 𝕜}
+variable [TrivialStar 𝕜] {s : Set 𝕜} {L : Filter (𝕜 × 𝕜)}
 
-protected nonrec theorem HasDerivAtFilter.star (h : HasDerivAtFilter f f' x L) :
-    HasDerivAtFilter (fun x => star (f x)) (star f') x L := by
-  simpa using h.star.hasDerivAtFilter
+protected theorem HasDerivAtFilter.star (h : HasDerivAtFilter f f' L) :
+    HasDerivAtFilter (fun x => star (f x)) (star f') L := by
+  simpa using h.hasFDerivAtFilter.star.hasDerivAtFilter
 
-protected nonrec theorem HasDerivWithinAt.star (h : HasDerivWithinAt f f' s x) :
+protected theorem HasDerivWithinAt.star (h : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => star (f x)) (star f') s x :=
-  h.star
+  HasDerivAtFilter.star h
 
-protected nonrec theorem HasDerivAt.star (h : HasDerivAt f f' x) :
+protected theorem HasDerivAt.star (h : HasDerivAt f f' x) :
     HasDerivAt (fun x => star (f x)) (star f') x :=
-  h.star
+  HasDerivAtFilter.star h
 
 protected nonrec theorem HasStrictDerivAt.star (h : HasStrictDerivAt f f' x) :
-    HasStrictDerivAt (fun x => star (f x)) (star f') x := by simpa using h.star.hasStrictDerivAt
+    HasStrictDerivAt (fun x => star (f x)) (star f') x :=
+  HasDerivAtFilter.star h
 
 protected theorem derivWithin.star :
     derivWithin (fun y => star (f y)) s x = star (derivWithin f s x) := by

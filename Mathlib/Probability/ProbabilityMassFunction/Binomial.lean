@@ -61,4 +61,14 @@ theorem binomial_one_eq_bernoulli (p : ℝ≥0) (h : p ≤ 1) :
     binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
   ext i; fin_cases i <;> simp [binomial_apply]
 
+theorem binomial_apply_of_le {k b : ℕ} (hb : k ≤ b) {x : ℝ≥0} (h : x ≤ 1) :
+    ENNReal.ofReal ((b.choose k) * x ^ k * (1 - x) ^ (b - k))
+    = PMF.binomial x h b (Fin.ofNat (b + 1) k) := by
+  have eq0 : k % (b + 1) = k := by simpa using Order.lt_add_one_iff.mpr hb
+  have eq1 : 1 - (x : ℝ≥0∞) = ENNReal.ofReal (1 - x : ℝ) := by norm_cast
+  have : (1 - (x : ℝ)) ≥ 0 := by simpa
+  rwa [Fin.ofNat_eq_cast, PMF.binomial_apply, Fin.val_natCast, Fin.val_last, eq0, eq1,
+    coe_nnreal_eq x, mul_rotate, ofReal_mul, ofReal_mul, ofReal_pow, ofReal_pow, ofReal_natCast]
+  all_goals positivity
+
 end PMF

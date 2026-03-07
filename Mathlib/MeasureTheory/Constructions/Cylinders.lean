@@ -44,7 +44,7 @@ a product set.
 
 @[expose] public section
 
-open Function Set
+open Function Set MeasurableSpace
 
 namespace MeasureTheory
 
@@ -55,7 +55,7 @@ section squareCylinders
 /-- Given a finite set `s` of indices, a square cylinder is the product of a set `S` of
 `∀ i : s, α i` and of `univ` on the other indices. The set `S` is a product of sets `t i` such that
 for all `i : s`, `t i ∈ C i`.
-`squareCylinders` is the set of all such `squareCylinders`. -/
+`squareCylinders` is the set of all such square cylinders. -/
 def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = (s : Set ι).pi t}
 
@@ -454,4 +454,27 @@ lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
   rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.2
 
 end cylinderEvents
+
+/-- A measurable set from the product sigma-algebra only depends on countably many coordinates. -/
+lemma MeasurableSet.eq_preimage_restrict_countable
+    [∀ i, MeasurableSpace (α i)] {s : Set (Π i, α i)} (hs : MeasurableSet s) :
+    ∃ I : Set ι, ∃ t, I.Countable ∧ s = I.restrict ⁻¹' t := by
+  refine induction_on_inter generateFrom_squareCylinders.symm
+    (isPiSystem_squareCylinders (fun _ ↦ isPiSystem_measurableSet) (by simp))
+    ⟨∅, ∅, by simp⟩ ?_ ?_ ?_ s hs
+  · rintro - ⟨I, t, -, rfl⟩
+    exact ⟨I, univ.pi (fun i ↦ t i), I.countable_toSet, by ext; simp⟩
+  · rintro - - ⟨I, t, hI, rfl⟩
+    exact ⟨I, tᶜ, hI, by simp⟩
+  intro f df mf hf
+  choose! I t hI hf using hf
+  refine ⟨⋃ n, I n, ⋃ n, (⋃ k, I k).restrict '' (f n), countable_iUnion hI, ?_⟩
+  ext x
+  simp only [hf, mem_iUnion, mem_preimage, preimage_iUnion, mem_image]
+  refine ⟨fun ⟨i, hi⟩ ↦ ⟨i, x, hi, rfl⟩, fun ⟨n, x', hn, hx⟩ ↦ ⟨n, ?_⟩⟩
+  have (x : Π i, α i) : (I n).restrict x =
+      (fun (x : Π (i : ⋃ k, I k), α i) (i : I n) ↦ x ⟨i.1, subset_iUnion I n i.2⟩)
+      ((⋃ k, I k).restrict x) := rfl
+  rwa [this, ← hx, ← this]
+
 end MeasureTheory

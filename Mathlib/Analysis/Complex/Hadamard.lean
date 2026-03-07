@@ -16,17 +16,17 @@ In this file we present a proof of Hadamard's three-lines Theorem.
 ## Main result
 
 - `norm_le_interp_of_mem_verticalClosedStrip` :
-Hadamard three-line theorem: If `f` is a bounded function, continuous on
-`re ⁻¹' [l, u]` and differentiable on `re ⁻¹' (l, u)`, then for
-`M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value of
-`f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [l, u]` the inequality
-`‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))` holds.
-This can be seen to be equivalent to the statement
-that `log M(re z)` is a convex function on `[0, 1]`.
+  Hadamard three-line theorem: If `f` is a bounded function, continuous on
+  `re ⁻¹' [l, u]` and differentiable on `re ⁻¹' (l, u)`, then for
+  `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value
+  of `f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [l, u]` the inequality
+  `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))` holds.
+  This can be seen to be equivalent to the statement
+  that `log M(re z)` is a convex function on `[0, 1]`.
 
 - `norm_le_interp_of_mem_verticalClosedStrip'` :
-Variant of the above lemma in simpler terms. In particular, it makes no mention of the helper
-functions defined in this file.
+  Variant of the above lemma in simpler terms. In particular, it makes no mention of the helper
+  functions defined in this file.
 
 ## Main definitions
 
@@ -419,7 +419,7 @@ variable [NormedSpace ℂ E]
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
-    ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1 - z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
+    ‖f z‖ ≤ ‖((ε + sSupNormIm f 0) ^ (1 - z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
   simp only [norm_mul, ← ofReal_add, norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _,
     sub_re, one_re]
   rw [← mul_inv_le_iff₀', ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff₀,

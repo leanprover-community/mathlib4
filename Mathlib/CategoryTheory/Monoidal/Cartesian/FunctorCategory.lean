@@ -64,7 +64,7 @@ def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
     (IsLimit.postcomposeHomEquiv (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
       (IsLimit.ofIsoLimit
         (tensorProductIsBinaryProduct (X := F₁.obj j) (Y := F₂.obj j))
-        (Cones.ext (Iso.refl _) (by rintro ⟨_ | _⟩; all_goals cat_disch))))
+        (Cone.ext (Iso.refl _) (by rintro ⟨_ | _⟩; all_goals cat_disch))))
 
 end chosenProd
 
@@ -95,6 +95,7 @@ lemma snd_app (F₁ F₂ : J ⥤ C) (j : J) : (snd F₁ F₂).app j = snd (F₁.
 lemma leftUnitor_hom_app (F : J ⥤ C) (j : J) :
     (λ_ F).hom.app j = (λ_ (F.obj j)).hom := (leftUnitor_hom _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
     (λ_ F).inv.app j = (λ_ (F.obj j)).inv := by
@@ -105,6 +106,7 @@ lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
 lemma rightUnitor_hom_app (F : J ⥤ C) (j : J) :
     (ρ_ F).hom.app j = (ρ_ (F.obj j)).hom := (rightUnitor_hom _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rightUnitor_inv_app (F : J ⥤ C) (j : J) :
     (ρ_ F).inv.app j = (ρ_ (F.obj j)).inv := by
@@ -145,6 +147,7 @@ lemma whiskerRight_app_snd {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J
     (f ▷ F₂).app j ≫ snd _ _ = snd _ _ :=
   (tensorHom_app_snd f (𝟙 F₂) j).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).hom.app j = (α_ _ _ _).hom := by
@@ -159,11 +162,13 @@ lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
         associator_hom_snd_snd]
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := by
   rw [← cancel_mono ((α_ _ _ _).hom), Iso.inv_hom_id, ← associator_hom_app, Iso.inv_hom_id_app]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {K : Type*} [Category* K] [HasColimitsOfShape K C]
     [∀ X : C, PreservesColimitsOfShape K (tensorLeft X)] {F : J ⥤ C} :
     PreservesColimitsOfShape K (tensorLeft F) := by

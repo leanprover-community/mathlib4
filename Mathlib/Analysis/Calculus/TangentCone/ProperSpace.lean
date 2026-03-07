@@ -15,7 +15,7 @@ In this file we prove that the tangent cone of a set in a proper normed space
 at an accumulation point of this set is nontrivial.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Metric NormedField
 open scoped Topology
@@ -35,7 +35,7 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
       ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
   have A n : ∃ y ∈ closedBall x (u n) ∩ s, y ≠ x :=
-    (accPt_iff_nhds).mp hx _ (closedBall_mem_nhds _ (u_pos n))
+    accPt_iff_nhds.mp hx _ (closedBall_mem_nhds _ (u_pos n))
   choose v hv hvx using A
   choose hvu hvs using hv
   let d := fun n ↦ v n - x
@@ -43,17 +43,6 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
   let ⟨r, hr⟩ := exists_one_lt_norm 𝕜
   have W n := rescale_to_shell hr zero_lt_one (x := d n) (by simpa using (M n).2)
   choose c c_ne c_le le_c hc using W
-  have c_lim : Tendsto (fun n ↦ ‖c n‖) atTop atTop := by
-    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹ ) atTop atTop by simpa
-    apply tendsto_inv_nhdsGT_zero.comp
-    simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, eventually_atTop, ge_iff_le]
-    have B (n : ℕ) : ‖c n‖⁻¹ ≤ 1⁻¹ * ‖r‖ * u n := by
-      apply (hc n).trans
-      gcongr
-      simpa [d, dist_eq_norm] using hvu n
-    refine ⟨?_, 0, fun n hn ↦ by simpa using c_ne n⟩
-    apply squeeze_zero (fun n ↦ by positivity) B
-    simpa using u_lim.const_mul _
   obtain ⟨l, l_mem, φ, φ_strict, hφ⟩ :
       ∃ l ∈ Metric.closedBall (0 : E) 1 \ Metric.ball (0 : E) (1 / ‖r‖),
       ∃ (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto ((fun n ↦ c n • d n) ∘ φ) atTop (𝓝 l) := by
@@ -62,12 +51,14 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
     simp only [mem_diff, Metric.mem_closedBall, dist_zero_right, (c_le n).le,
       Metric.mem_ball, not_lt, true_and, le_c n]
   refine ⟨l, ?_, ?_⟩; swap
-  · simp only [mem_compl_iff, mem_singleton_iff]
+  · push _ ∈ _
     contrapose! l_mem
     simp only [one_div, l_mem, mem_diff, Metric.mem_closedBall, dist_self, zero_le_one,
       Metric.mem_ball, inv_pos, norm_pos_iff, ne_eq, not_not, true_and]
     contrapose! hr
     simp [hr]
-  refine ⟨c ∘ φ, d ∘ φ, .of_forall fun n ↦ ?_, ?_, hφ⟩
-  · simpa [d] using hvs (φ n)
-  · exact c_lim.comp φ_strict.tendsto_atTop
+  apply mem_tangentConeAt_of_seq atTop (c ∘ φ) (d ∘ φ)
+  · refine Tendsto.comp ?_ φ_strict.tendsto_atTop
+    exact squeeze_zero_norm (by simpa [dist_eq_norm] using hvu) u_lim
+  · exact .of_forall fun n ↦ (M _).1
+  · exact hφ

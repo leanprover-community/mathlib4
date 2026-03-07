@@ -1,3 +1,4 @@
+module
 import Mathlib
 
 variable {K : Type*} [Field K] {x : K}
@@ -25,3 +26,15 @@ Hint: Additional diagnostic information may be available using the `set_option d
 -/
 #guard_msgs in
 #synth NoZeroSMulDivisors ℕ K
+
+variable {d : Type*} in
+set_option maxHeartbeats 3500 in -- uses about 2400 as of 2026-02-20,
+                                 -- and then about 3200 as of 2026-03-04
+/--
+error: failed to synthesize
+  Lean.Grind.OrderedAdd (Submodule ℂ (WithLp 2 (d → ℂ)))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#synth Lean.Grind.OrderedAdd (Submodule ℂ (WithLp 2 (d → ℂ)))

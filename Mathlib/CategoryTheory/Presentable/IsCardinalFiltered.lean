@@ -66,7 +66,7 @@ noncomputable def cocone {A : Type v'} [Category.{u'} A]
   have := small_of_small_arrow.{w} A
   have := locallySmall_of_small_arrow.{w} A
   let e := (Shrink.equivalence.{w} A).trans (ShrinkHoms.equivalence.{w} (Shrink.{w} A))
-  exact (Cocones.equivalenceOfReindexing e.symm (Iso.refl _)).inverse.obj
+  exact (Cocone.equivalenceOfReindexing e.symm (Iso.refl _)).inverse.obj
     (nonempty_cocone (κ := κ) (e.inverse ⋙ F) (by simpa)).some
 
 variable (J) in
@@ -153,6 +153,11 @@ lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
 
 @[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalDirected :=
   isFiltered_of_isCardinalFiltered
+
+lemma IsCardinalFiltered.nonempty (J : Type u) [Category.{v} J]
+    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] : Nonempty J :=
+  have := isFiltered_of_isCardinalFiltered J κ
+  IsFiltered.nonempty
 
 attribute [local instance] Cardinal.fact_isRegular_aleph0
 
@@ -274,7 +279,8 @@ variable (J κ) in
 /-- A category is `κ`-filtered iff
 1) any family of objects of cardinality `< κ` admits a map towards a common object, and
 2) any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
-`j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`. -/
+   `j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`.
+-/
 lemma isCardinalFiltered_iff :
     IsCardinalFiltered J κ ↔
       (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),
