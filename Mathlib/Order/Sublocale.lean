@@ -216,7 +216,7 @@ end Nucleus
 
 /-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
 The sublocales are ordered dually to the nuclei. -/
-def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
+@[simps] def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
   toFun n := n.ofDual.toSublocale
   invFun s := .toDual s.toNucleus
   left_inv := by simp [Function.LeftInverse, Nucleus.ext_iff]
@@ -229,8 +229,17 @@ lemma nucleusIsoSublocale.eq_toSublocale :
 lemma nucleusIsoSublocale.symm_eq_toNucleus :
   Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
 
-instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
-  nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
+instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) where
+  top := ⟨univ, fun _ _ ↦ mem_univ _, fun _ _ a ↦ a⟩
+  le_top x := (mk_le_mk _ _ _ _ _ _).mpr <| subset_univ x.carrier
+  bot := ⟨{⊤}, by simp , by simp⟩
+  bot_le x := (mk_le_mk _ _ _ _ _ _).mpr <| singleton_subset_iff.mpr <| mem_carrier.mpr top_mem
+  __ := nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
+
+lemma Sublocale.univ_eq_top :
+  (⟨univ, fun _ _ ↦ mem_univ _, fun _ _ a ↦ a⟩ : Sublocale X) = ⊤ := rfl
+
+lemma Sublocale.singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ := rfl
 
 instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
   iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
@@ -239,12 +248,6 @@ instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublo
 
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms Sublocale.instCoframeMinimalAxioms
-
-lemma Sublocale.univ_eq_top : (⟨univ, fun _ _ ↦ mem_univ _, fun _ _ a ↦ a⟩ : Sublocale X) = ⊤ :=
-  le_antisymm le_top (fun _ _ ↦ mem_univ _)
-
-lemma Sublocale.singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ :=
-  le_antisymm (fun i h ↦ by simp_all [Sublocale.top_mem]) bot_le
 
 /--
 An open sublocale is defined by an element of the locale.
