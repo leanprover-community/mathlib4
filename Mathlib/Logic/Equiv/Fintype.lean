@@ -145,7 +145,8 @@ theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
   dsimp only [extendSubtype]
   simp only [subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
-  simp [sumCompl_symm_apply_of_neg hx, Sum.map_inr, sumCompl_apply_inr]
+  simp only [sumCompl_symm_apply_of_neg hx, Sum.map_inr, sumCompl_apply_inr]
+  rfl
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) := by
@@ -154,7 +155,7 @@ theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p 
 
 /-- Given two injective functions `f` and `g` from a finite type `α` to any type `β`,
 there exists a permutation of `β` that maps `f` to `g`. -/
-theorem Perm.exists_extending_pair {α β : Type*} [Finite α]
+theorem Perm.exists_extending_pair [Finite α]
     (f g : α → β) (hf : Function.Injective f) (hg : Function.Injective g) :
     ∃ σ : Perm β, ∀ a, σ (f a) = g a := by
   classical
