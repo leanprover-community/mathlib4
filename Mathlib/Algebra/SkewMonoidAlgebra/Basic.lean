@@ -283,7 +283,7 @@ theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [Distr
   inhabit G
   refine ⟨IsSMulRegular.skewMonoidAlgebra, fun ha b₁ b₂ inj ↦ ?_⟩
   rw [← (single_injective _).eq_iff, ← smul_single, ← smul_single] at inj
-  exact single_injective (default) (ha inj)
+  exact single_injective default (ha inj)
 
 end Single
 
@@ -440,6 +440,7 @@ theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoi
     {f : G → k → S} : b * s.sum f = s.sum fun a c ↦ b * f a c := by
   simp only [sum, Finsupp.sum, Finset.mul_sum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Analogue of `Finsupp.sum_ite_eq'` for `SkewMonoidAlgebra`. -/
 @[simp]
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
@@ -813,7 +814,8 @@ variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
 
 This is not an instance as it would conflict with the action on the range.
 See the file `MathlibTest/instance_diamonds.lean` for examples of such conflicts. -/
-def comapSMul [AddCommMonoid M] : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
+@[instance_reducible]
+def comapSMul : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul
 
@@ -824,6 +826,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
   mapDomain_single
 
 /-- `comapSMul` is multiplicative -/
+@[instance_reducible]
 def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by

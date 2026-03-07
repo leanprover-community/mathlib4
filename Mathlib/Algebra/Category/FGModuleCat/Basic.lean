@@ -144,6 +144,7 @@ def _root_.LinearEquiv.toFGModuleCatIso
   hom_inv_id := by ext x; exact e.left_inv x
   inv_hom_id := by ext x; exact e.right_inv x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Universe lifting as a functor on `FGModuleCat`. -/
 def ulift : FGModuleCat.{v} R ⥤ FGModuleCat.{max v w} R where
   obj M := .of R <| ULift M
@@ -193,6 +194,7 @@ section Field
 
 variable (K : Type u) [Field K]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (V W : FGModuleCat.{v} K) : Module.Finite K (V.obj ⟶ W.obj) :=
   (inferInstanceAs <| Module.Finite K (V →ₗ[K] W)).equiv ModuleCat.homLinearEquiv.symm
 
@@ -238,6 +240,7 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
     (FGModuleCatEvaluation K V).hom (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `@[simp]`-normal form of `FGModuleCatEvaluation_apply`, where the carriers have been unfolded.
 -/
 @[simp]
@@ -284,12 +287,16 @@ end FGModuleCat
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
 
-@[simp] theorem LinearMap.comp_id_fgModuleCat
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
+theorem LinearMap.comp_id_fgModuleCat
     {R} [Ring R] {G : FGModuleCat.{v} R} {H : Type v} [AddCommGroup H] [Module R H]
     (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f :=
   ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.ofHom f)
 
-@[simp] theorem LinearMap.id_fgModuleCat_comp
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
+theorem LinearMap.id_fgModuleCat_comp
     {R} [Ring R] {G : Type v} [AddCommGroup G] [Module R G] {H : FGModuleCat.{v} R}
     (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f :=
   ModuleCat.hom_ext_iff.mp <| Category.comp_id (ModuleCat.ofHom f)

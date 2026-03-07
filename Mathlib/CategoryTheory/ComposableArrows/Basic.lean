@@ -283,6 +283,7 @@ lemma isIso_iff₁ {F G : ComposableArrows C 1} (f : F ⟶ G) :
   rw [NatTrans.isIso_iff_isIso_app]
   exact ⟨fun h ↦ ⟨h 0, h 1⟩, fun _ i ↦ by fin_cases i <;> tauto⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext₁ {F G : ComposableArrows C 1}
     (left : F.left = G.left) (right : F.right = G.right)
     (w : F.hom = eqToHom left ≫ G.hom ≫ eqToHom right.symm) : F = G :=
@@ -290,6 +291,7 @@ lemma ext₁ {F G : ComposableArrows C 1}
     (fun i => by fin_cases i <;> assumption)
     (fun i => by fin_cases i <;> rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk₁_surjective (X : ComposableArrows C 1) : ∃ (X₀ X₁ : C) (f : X₀ ⟶ X₁), X = mk₁ f :=
   ⟨_, _, X.map' 0 1, ext₁ rfl rfl (by simp)⟩
 
@@ -372,6 +374,7 @@ lemma map_one_succ (j : ℕ) (hj : j + 1 < n + 1 + 1) :
 lemma map_id (i : Fin (n + 1 + 1)) : map F f i i (by simp) = 𝟙 _ := by
   obtain ⟨_ | _, hi⟩ := i <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
     map F f i k (hij.trans hjk) = map F f i j hij ≫ map F f j k hjk := by
   obtain ⟨i, hi⟩ := i
@@ -536,6 +539,7 @@ lemma hom_ext_succ {F G : ComposableArrows C (n + 1)} {f g : F ⟶ G}
   · exact h₀
   · exact congr_app h₁ ⟨i, by valid⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Inductive construction of isomorphisms in `ComposableArrows C (n + 1)`: in order to
 construct an isomorphism `F ≅ G`, it suffices to provide `α : F.obj' 0 ≅ G.obj' 0` and
 `β : F.δ₀ ≅ G.δ₀` such that `F.map' 0 1 ≫ app' β.hom 0 = α.hom ≫ G.map' 0 1`. -/
@@ -558,6 +562,7 @@ def isoMkSucc {F G : ComposableArrows C (n + 1)} (α : F.obj' 0 ≅ G.obj' 0)
     · ext ⟨i, hi⟩
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
     (h : F.δ₀ = G.δ₀) (w : F.map' 0 1 = eqToHom h₀ ≫ G.map' 0 1 ≫
       eqToHom (Functor.congr_obj h.symm 0)) : F = G := by
@@ -883,6 +888,7 @@ section mkOfObjOfMapSucc
 
 variable (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj i ≅ obj i),
     ∀ (i : ℕ) (hi : i < n), mapSucc ⟨i, hi⟩ =
       (e ⟨i, _⟩).inv ≫ F.map' i (i + 1) ≫ (e ⟨i + 1, _⟩).hom := by
@@ -912,6 +918,7 @@ lemma mkOfObjOfMapSucc_map_succ (i : ℕ) (hi : i < n := by valid) :
     (mkOfObjOfMapSucc obj mapSucc).map' i (i + 1) = mapSucc ⟨i, hi⟩ :=
   ((mkOfObjOfMapSucc_exists obj mapSucc).choose_spec.choose_spec i hi).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by valid) :
     (mkOfObjOfMapSucc obj mapSucc).arrow i = mk₁ (mapSucc ⟨i, hi⟩) :=
   ext₁ rfl rfl (by simpa using mkOfObjOfMapSucc_map_succ obj mapSucc i hi)

@@ -120,6 +120,7 @@ end SemilatInfCat
 
 namespace SemilatSupCat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : SemilatSupCat.{u}} (e : α ≃o β) : α ≅ β where
@@ -138,6 +139,7 @@ end SemilatSupCat
 
 namespace SemilatInfCat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : SemilatInfCat.{u}} (e : α ≃o β) : α ≅ β where
