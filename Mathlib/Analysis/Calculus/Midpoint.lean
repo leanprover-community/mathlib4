@@ -113,35 +113,22 @@ theorem sum_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h :
         ⟨mul_le_mul_of_nonpos_right hk h_neg, mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg⟩
     · exact Set.mem_uIcc_of_le (le_add_of_nonneg_right (by positivity)) (by grw [hk])
 
-
-
-/-- The most basic case: error bound for the midpoint rule on a single interval with ordered
-endpoints. Given `F` with `F' = f`, we bound `|(b-a) * F'((a+b)/2) - (F(b) - F(a))|`.
-
-This is the key lemma: for `F` satisfying
-`(hf : ContDiffOn ℝ 2 F (Icc 0 h))`
-`(hf' : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc 0 h)) (Ioo 0 h))`
-and `(fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc 0 h) x| ≤ M)`,
-we have `|F h - F 0 - (derivWithin F (Icc 0 h) (h/2)) * h| ≤ (h^3 / 24) * M`. -/
 private lemma midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (a_lt_b : a < b)
     (hF : ContDiffOn ℝ 2 F (Icc a b))
     (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b))
     (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc a b) x| ≤ M) :
     |F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a)| ≤ (b - a) ^ 3 * M / 24 := by
   set m := (a + b) / 2 with hm_def
-  have h_m_lt_b : m < b := by
-    linarith [a_lt_b]
+  have h_m_lt_b : m < b := by linarith [a_lt_b]
   set E := F b - F a - (derivWithin F (Icc a b) m) * (b - a) with hE_def
   have hF_diff_Ioo : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b) := hF_diff
   have h_m_in_Icc : m ∈ Icc a b := by grind
-  obtain ⟨ξ₁, hξ₁_in, hξ₁_eq⟩ : ∃ ξ₁ ∈ Ioo m b,
-      F b = F m + (derivWithin F (Icc a b) m) * (b - m) +
+  obtain ⟨ξ₁, hξ₁_in, hξ₁_eq⟩ : ∃ ξ₁ ∈ Ioo m b, F b = F m + (derivWithin F (Icc a b) m) * (b - m) +
             (iteratedDerivWithin 2 F (Icc a b) m) * (b - m) ^ 2 / 2 +
             (iteratedDerivWithin 3 F (Icc a b) ξ₁) * (b - m) ^ 3 / 6 := by
     have hF_mb : ContDiffOn ℝ 2 F (Icc m b) := hF.mono (by grind)
     have hF_cdAt_m : ContDiffAt ℝ 2 F m := hF.contDiffAt (by grind [Icc_mem_nhds_iff])
-    have hF_diffAt_m : DifferentiableAt ℝ F m :=
-      hF_cdAt_m.differentiableAt (Ne.symm (NeZero.ne' 2))
+    have hF_diffAt_m : DifferentiableAt ℝ F m := hF_cdAt_m.differentiableAt (Ne.symm (NeZero.ne' 2))
     have h_set_eq_at : ∀ x ∈ Ioo m b, Icc m b =ᶠ[nhds x] Icc a b := by
       intro x hx
       filter_upwards [Ioo_mem_nhds hx.1 hx.2] with y hy
@@ -192,13 +179,10 @@ private lemma midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (
     have hcm : c - m = m := by linarith [hm_def, hc_def]
     have hGb : F (c - b) = F a := by grind
     have hGm : F (c - m) = F m := by rw [hcm]
-    have hφ_maps : Set.MapsTo (fun t => c - t) (Icc m b) (Icc a b) := by
-      intro t ht
-      grind
+    have hφ_maps : Set.MapsTo (fun t => c - t) (Icc m b) (Icc a b) := fun t ht ↦ by grind
     have hG_mb : ContDiffOn ℝ 2 (fun t => F (c - t)) (Icc m b) :=
       hF.comp (contDiffOn_const.sub contDiffOn_id) hφ_maps
-    have hF_cdAt_m : ContDiffAt ℝ 2 F m :=
-      hF.contDiffAt (by grind [Icc_mem_nhds])
+    have hF_cdAt_m : ContDiffAt ℝ 2 F m := hF.contDiffAt (by grind [Icc_mem_nhds])
     have hF_diffAt_m : DifferentiableAt ℝ F m := hF_cdAt_m.differentiableAt (Ne.symm (NeZero.ne' 2))
     have hG_cdAt_m : ContDiffAt ℝ 2 (fun t => F (c - t)) m := by
       apply ContDiffAt.comp m _ (contDiffAt_const.sub contDiffAt_id)
@@ -210,27 +194,23 @@ private lemma midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (
       apply ContDiffAt.comp x _ (contDiffAt_const.sub contDiffAt_id)
       apply hF.contDiffAt
       grind [Icc_mem_nhds]
-    have h_iDW2_G_eq : ∀ x ∈ Ioo m b,
-        iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b) x
+    have h_iDW2_G_eq : ∀ x ∈ Ioo m b, iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b) x
           = iteratedDerivWithin 2 F (Icc a b) (c - x) := by
       intro x hx
-      have hcx_ab : c - x ∈ Ioo a b := by grind
       rw [iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h_m_lt_b) (hG_cdAt_of_mem x hx)
         ⟨hx.1.le, hx.2.le⟩, iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc a_lt_b)
-        (hF.contDiffAt (Icc_mem_nhds hcx_ab.1 hcx_ab.2)) ⟨hcx_ab.1.le, hcx_ab.2.le⟩]
+        (hF.contDiffAt (by grind[Icc_mem_nhds])) (by grind)]
       have h := iteratedDeriv_comp_const_sub 2 F c
       simp only [neg_one_sq, one_smul] at h
       exact congr_fun h x
     have hG_diff_mb : DifferentiableOn ℝ (iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b))
         (Ioo m b) := by
       intro x hx
-      have hcx_ab : c - x ∈ Ioo a b := by
-        grind
+      have hcx_ab : c - x ∈ Ioo a b := by grind
       apply DifferentiableWithinAt.congr
-      · apply DifferentiableWithinAt.comp x (hF_diff_Ioo (c - x) hcx_ab)
-        · exact ((differentiableAt_const c).sub differentiableAt_id).differentiableWithinAt
-        · intro t ht
-          grind
+      · exact DifferentiableWithinAt.comp x (hF_diff_Ioo (c - x) hcx_ab)
+          ((differentiableAt_const c).sub differentiableAt_id).differentiableWithinAt
+          (fun t th ↦ by grind)
       · intro y hy; exact h_iDW2_G_eq y hy
       · exact h_iDW2_G_eq x hx
     obtain ⟨ξ, hξ_in, hξ_eq⟩ := taylor_mean_remainder_lagrange h_m_lt_b hG_mb hG_diff_mb
@@ -244,9 +224,8 @@ private lemma midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (
       ring
     have h_deriv_G_m : derivWithin (fun t => F (c - t)) (Icc m b) m
         = -(derivWithin F (Icc a b) m) := by
-      rw [hG_diffAt_m.derivWithin
-            (uniqueDiffOn_Icc h_m_lt_b m (left_mem_Icc.mpr h_m_lt_b.le))]
-      rw [hF_diffAt_m.derivWithin (uniqueDiffOn_Icc a_lt_b m h_m_in_Icc)]
+      rw [hG_diffAt_m.derivWithin (uniqueDiffOn_Icc h_m_lt_b m (left_mem_Icc.mpr h_m_lt_b.le)),
+        hF_diffAt_m.derivWithin (uniqueDiffOn_Icc a_lt_b m h_m_in_Icc)]
       have hg : HasDerivAt F (deriv F m) (c - m) := by
         rw [hcm]; exact hF_diffAt_m.hasDerivAt
       have h1 : HasDerivAt (fun t => F (c - t)) (deriv F m * (-1)) m :=
@@ -255,13 +234,13 @@ private lemma midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (
     have h_iDW2_G_m : iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b) m
         = iteratedDerivWithin 2 F (Icc a b) m := by
       rw [iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h_m_lt_b) hG_cdAt_m
-            (left_mem_Icc.mpr h_m_lt_b.le)]
-      rw [iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc a_lt_b) hF_cdAt_m h_m_in_Icc]
+        (left_mem_Icc.mpr h_m_lt_b.le), iteratedDerivWithin_eq_iteratedDeriv
+        (uniqueDiffOn_Icc a_lt_b) hF_cdAt_m h_m_in_Icc]
       have h := iteratedDeriv_comp_const_sub 2 F c
       simp only [neg_one_sq, one_smul] at h
       have := congr_fun h m
       simpa only [hcm] using this
-    have h_iDW3_G_ξ : iteratedDerivWithin 3 (fun t => F (c - t)) (Icc m b) ξ
+    have : iteratedDerivWithin 3 (fun t => F (c - t)) (Icc m b) ξ
         = -(iteratedDerivWithin 3 F (Icc a b) (c - ξ)) := by
       have hcξ_ab : c - ξ ∈ Ioo a b := by grind
       rw [iteratedDerivWithin_succ]
@@ -272,23 +251,19 @@ private lemma midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (
         rw [iteratedDerivWithin_succ]
         exact ((hF_diff_Ioo (c - ξ) hcξ_ab).differentiableAt
           (Ioo_mem_nhds hcξ_ab.1 hcξ_ab.2)).differentiableWithinAt.hasDerivWithinAt
-      have h_hdw_comp : HasDerivWithinAt
-          (fun t => iteratedDerivWithin 2 F (Icc a b) (c - t))
+      have h_hdw_comp : HasDerivWithinAt (fun t => iteratedDerivWithin 2 F (Icc a b) (c - t))
           (iteratedDerivWithin 3 F (Icc a b) (c - ξ) * (-1)) (Icc m b) ξ :=
         h_hdw_g.comp ξ h_hdw_phi hφ_maps
       have h_ev_eq : (fun t => iteratedDerivWithin 2 (fun s => F (c - s)) (Icc m b) t)
-          =ᶠ[nhdsWithin ξ (Icc m b)]
-          (fun t => iteratedDerivWithin 2 F (Icc a b) (c - t)) := by
+          =ᶠ[nhdsWithin ξ (Icc m b)] (fun t => iteratedDerivWithin 2 F (Icc a b) (c - t)) := by
         apply Filter.Eventually.filter_mono nhdsWithin_le_nhds
         filter_upwards [IsOpen.mem_nhds isOpen_Ioo hξ_in] with y hy
         exact h_iDW2_G_eq y hy
-      have h_hdw_iDW2 : HasDerivWithinAt
-          (iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b))
+      have h_hdw_iDW2 : HasDerivWithinAt (iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b))
           (iteratedDerivWithin 3 F (Icc a b) (c - ξ) * (-1)) (Icc m b) ξ :=
         h_hdw_comp.congr_of_eventuallyEq h_ev_eq (h_iDW2_G_eq ξ hξ_in)
       rw [h_hdw_iDW2.derivWithin (uniqueDiffOn_Icc h_m_lt_b ξ ⟨hξ_in.1.le, hξ_in.2.le⟩)]
       ring
-    rw [h_taylEval_G, hGm, hGb, h_deriv_G_m, h_iDW2_G_m, h_iDW3_G_ξ] at hξ_eq
     norm_num [Nat.factorial] at hξ_eq
     grind
   have h_pos : 0 < b - a := by linarith [a_lt_b]
@@ -309,8 +284,7 @@ private lemma midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (
       have := fpp_bound ξ₂
       gcongr
     _ = (b - a) ^ 3 * M / 24 := by ring
-  rw [hE_def] at h_final_bound
-  exact h_final_bound
+  rwa [hE_def] at h_final_bound
 
 /-- The standard error bound for Simpson's midpoint integration on a single interval `[[a, b]]`.
 
