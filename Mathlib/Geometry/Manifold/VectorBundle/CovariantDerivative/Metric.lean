@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-public import Mathlib.Geometry.Manifold.MfDerivSMul
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 /-! # Metric connections
 
@@ -215,16 +215,11 @@ private lemma aux1 {f : M → ℝ} {σ τ : (x : M) → V x}
     (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     compatibilityTensorAux I cov (f • σ) τ x = f x • compatibilityTensorAux I cov σ τ x := by
   ext X₀
-  rw [compatibilityTensorAux_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-    compatibilityTensorAux_apply]
-  rw [product_smul_left, cov.isCovariantDerivativeOn.leibniz hσ hf]
-  simp only [Pi.smul_apply', ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul',
-    Pi.smul_apply, ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, comp_apply,
-    ContinuousLinearMap.toSpanSingleton_apply, coe_innerSL_apply, map_smul]
-  erw [mfderiv_smul (hσ.inner_bundle' hτ) hf] -- identifying different tangent spaces
-  rw [inner_add_right, inner_smul_right, inner_smul_right, real_inner_comm (σ x) (τ x)]
-  simp only [← smul_eq_mul]
-  module
+  rw [compatibilityTensorAux_apply, product_smul_left,
+    fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle' hτ)]
+  simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_right,
+    inner_smul_right, real_inner_comm]
+  ring
 
 variable {I} in
 private lemma aux2 (σ σ' τ : (x : M) → V x)
@@ -258,34 +253,12 @@ variable {I} in
 private lemma aux3 {f : M → ℝ} {σ τ : (x : M) → V x}
     (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     compatibilityTensorAux I cov σ (f • τ) x = f x • compatibilityTensorAux I cov σ τ x := by
-  unfold compatibilityTensorAux
-  rw [product_smul_right, cov.isCovariantDerivativeOn.leibniz hτ hf]
-  ext X
-  simp only [smul_eq_mul, Pi.smul_apply', map_smul, ContinuousLinearMap.smul_comp,
-    ContinuousLinearMap.comp_add, ContinuousLinearMap.comp_smulₛₗ, RingHom.id_apply,
-    ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.add_apply,
-    ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', coe_innerSL_apply, Pi.smul_apply,
-    comp_apply, ContinuousLinearEquiv.coe_coe, ContinuousLinearMap.toSpanSingleton_apply]
-  erw [ContinuousLinearMap.sub_apply, ContinuousLinearMap.sub_apply, ContinuousLinearMap.comp_apply]
-  --set A := inner ℝ (σ x) ((cov τ x) X)
-  conv =>
-    enter [1, 1, 2]
-    erw [ContinuousLinearMap.smul_apply]
-  conv =>
-    enter [1, 1, 2, 2]
-    erw [ContinuousLinearMap.comp_apply]
-  dsimp
-  --set B := inner ℝ (τ x) ((cov σ x) X)
-  erw [mfderiv_smul (hσ.inner_bundle' hτ) hf]
-  --set C := (mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x) X
-  --set D := (mfderiv I 𝓘(ℝ, ℝ) f x) X
-  simp only [smul_eq_mul, fromTangentSpace, ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk,
-    LinearMap.coe_mk, AddHom.coe_mk, inner_smul_right]
-  -- would be nice to finish by a tactic now!
-  erw [mul_add, mul_add]
-  rw [Pi.mul_apply, mul_neg, mul_neg,
-    ← sub_eq_add_neg, ← sub_eq_add_neg, sub_add_eq_sub_sub]
-  match_scalars <;> all_goals simp
+  ext X₀
+  rw [compatibilityTensorAux_apply, product_smul_right,
+    fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle' hτ)]
+  simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right,
+    inner_smul_right, real_inner_comm]
+  ring
 
 variable {I} in
 private lemma aux4 (σ τ τ' : (x : M) → V x)
