@@ -152,6 +152,7 @@ namespace S
 
 variable {X}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
   existsUnique_of_exists_of_unique (by
     obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
@@ -164,7 +165,7 @@ lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
         infer_instance
       refine ⟨(section_ f).op, this ?_⟩
       dsimp
-      rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply,
+      rw [← comp_apply, ← Functor.map_comp, ← comp_apply, ← Functor.map_comp,
         ← op_comp, ← op_comp, Category.assoc, IsSplitEpi.id, Category.comp_id]
     · simp only [Subcomplex.ofSimplex_le_iff]
       exact ⟨f.op, rfl⟩)

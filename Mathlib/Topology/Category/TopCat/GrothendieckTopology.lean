@@ -83,6 +83,7 @@ lemma isOpenEmbedding_f_zeroHypercover {X : TopCat} (E : precoverage.ZeroHyperco
 instance : Precoverage.Small.{u} precoverage.{u} :=
   .inf fun _ _ _ hRS hS _ _ hf ↦ hS (hRS _ _ hf)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck topology on `TopCat` is subcanonical. -/
 instance subcanonical_grothendieckTopology : grothendieckTopology.Subcanonical := by
   refine .of_isSheaf_yoneda_obj _ fun X ↦ ?_
@@ -106,9 +107,10 @@ instance subcanonical_grothendieckTopology : grothendieckTopology.Subcanonical :
     · intro x
       obtain ⟨i, hi⟩ := exists_mem_zeroHypercover_range 𝒰 x
       exact ⟨i, (isOpenEmbedding_f_zeroHypercover 𝒰 i).isOpen_range.mem_nhds hi⟩
-  · dsimp
-    ext
-    simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply]
+  · apply ConcreteCategory.hom_ext
+    intro
+    simp only [yoneda_obj_map, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
+      hom_comp, ContinuousMap.comp_apply]
     rw [heq, ContinuousMap.liftCover_coe]
     simp
   · dsimp
@@ -124,8 +126,8 @@ lemma precoverage_le_comap_uliftFunctor :
   refine Precoverage.le_of_zeroHypercover fun X E ↦ ?_
   refine ⟨?_, ?_⟩
   · simp only [Presieve.map_ofArrows, Precoverage.mem_comap_iff,
-      ConcreteCategory.forget_map_eq_coe, Types.ofArrows_mem_jointlySurjectivePrecoverage_iff,
-      Set.mem_range]
+    Types.ofArrows_mem_jointlySurjectivePrecoverage_iff, ConcreteCategory.hom_ofHom, Set.mem_range,
+    TypeCat.Fun.mk_apply]
     intro ⟨x⟩
     obtain ⟨i, y, rfl⟩ := exists_mem_zeroHypercover_range E x
     use i, ⟨y⟩

@@ -53,7 +53,7 @@ A finite-product-preserving presheaf is a sheaf for the extensive topology on a 
 `FinitaryPreExtensive`.
 -/
 theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.Extensive]
-    (F : Cᵒᵖ ⥤ Type w) [PreservesFiniteProducts F] : S.IsSheafFor F := by
+    (F : Cᵒᵖ ⥤ TypeCat.{w}) [PreservesFiniteProducts F] : S.IsSheafFor F := by
   obtain ⟨α, _, Z, π, rfl, ⟨hc⟩⟩ := Extensive.arrows_nonempty_isColimit (R := S)
   have : (ofArrows Z (Cofan.mk X π).inj).HasPairwisePullbacks :=
     (inferInstance : (ofArrows Z π).HasPairwisePullbacks)
@@ -82,7 +82,7 @@ variable [FinitaryExtensive C]
 A presheaf of sets on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite
 products.
 -/
-theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
+theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ TypeCat.{w}) :
     Presieve.IsSheaf (extensiveTopology C) F ↔ PreservesFiniteProducts F := by
   refine ⟨fun hF ↦ ⟨fun n ↦ ⟨fun {K} ↦ ?_⟩⟩, fun hF ↦ ?_⟩
   · rw [extensiveTopology, isSheaf_coverage] at hF

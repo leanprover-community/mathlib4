@@ -132,12 +132,12 @@ lemma topIso_inv_ι : (topIso X).inv ≫ Subfunctor.ι _ = 𝟙 _ := rfl
 end
 
 instance : Subsingleton (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
-  allEq _ _ := by ext _ ⟨_, h⟩; exfalso; aesop
+  allEq _ _ := by ext _ ⟨_, h⟩; tauto
 
 instance : Unique (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
   default :=
-    { app _ := TypeCat.ofHom ⟨fun ⟨_, h⟩ ↦ by exfalso; aesop⟩
-      naturality _ _ _ := by ext ⟨_, h⟩; exfalso; aesop }
+    { app _ := TypeCat.ofHom ⟨fun ⟨_, h⟩ ↦ by tauto⟩
+      naturality _ _ _ := by ext ⟨_, h⟩; tauto }
   uniq := by subsingleton
 
 /-- If `X` is a simplicial set, then the empty subcomplex of `X` is an initial

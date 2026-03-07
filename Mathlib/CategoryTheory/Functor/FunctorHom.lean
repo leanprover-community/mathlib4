@@ -111,6 +111,7 @@ lemma functorHom_ext {X : C} {x y : (F.functorHom G).obj X}
     (h : ∀ (Y : C) (f : X ⟶ Y), x.app Y f = y.app Y f) : x = y :=
   HomObj.ext (by ext; apply h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `(A ⟶ F.functorHom G) ≃ HomObj F G A`. -/
 @[simps]
 def functorHomEquiv (A : C ⥤ TypeCat.{max u v v'}) : (A ⟶ F.functorHom G) ≃ HomObj F G A where
@@ -131,6 +132,7 @@ def functorHomEquiv (A : C ⥤ TypeCat.{max u v v'}) : (A ⟶ F.functorHom G) �
       (congr_arg ((φ.app X a).app Y) (by simp))
   right_inv x := by simp [functorHom, homObjFunctor]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {F G} in
 /-- Morphisms `(𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G)` are in bijection with
 morphisms `F ⟶ G`. -/
@@ -197,6 +199,7 @@ lemma associator_hom_apply (K L M N : C ⥤ D) {X : C}
     (α_ ((K.functorHom L).obj X) ((L.functorHom M).obj X) ((M.functorHom N).obj X)).hom x =
     ⟨x.1.1, x.1.2, x.2⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] functorHom in
 instance : EnrichedCategory (C ⥤ TypeCat.{max v' v u}) (C ⥤ D) where
   Hom := functorHom

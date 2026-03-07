@@ -42,6 +42,7 @@ instance moduleObj (j) :
     Module.{u, w} R ((F ⋙ forget (ModuleCat R)).obj j) :=
   inferInstanceAs <| Module R (F.obj j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
 def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=

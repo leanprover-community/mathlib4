@@ -39,7 +39,7 @@ namespace Limits
 
 section
 
-variable {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
+variable {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ TypeCat.{w'}}
   (c : Cone F) (hc : ∀ (Y : C), IsLimit (((evaluation _ _).obj Y).mapCone c))
   (κ : Cardinal.{w}) [Fact κ.IsRegular]
   (hK : HasCardinalLT (Arrow K) κ)
@@ -65,15 +65,15 @@ lemma surjective (x : c.pt.obj cX.pt) :
       (H k).choose_spec.choose_spec
     exact ⟨IsCardinalFiltered.max j (hasCardinalLT_of_hasCardinalLT_arrow hK),
       fun k ↦ (F.obj k).map (X.map (IsCardinalFiltered.toMax j _ k)) (z k),
-        fun k ↦ by rw [← hz, ← FunctorToTypes.map_comp_apply, cX.w]⟩
+        fun k ↦ by rw [← hz, ← comp_apply, ← Functor.map_comp, cX.w]; rfl⟩
   obtain ⟨j₁, α, hα⟩ : ∃ (j₁ : J) (α : j₀ ⟶ j₁), ∀ ⦃k k' : K⦄ (φ : k ⟶ k'),
       (F.obj k').map (X.map α) ((F.map φ).app _ (z k)) =
         (F.obj k').map (X.map α) (z k') := by
     have H {k k' : K} (φ : k ⟶ k') :=
       (Types.FilteredColimit.isColimit_eq_iff' (ht := hF k')
         (x := (F.map φ).app _ (z k)) (y := z k')).1 (by
-          dsimp
-          simpa only [← FunctorToTypes.naturality, ← hz] using y.2 φ)
+          dsimp at hz ⊢
+          simpa only [← NatTrans.naturality_apply, ← hz] using y.2 φ)
     let j {k k' : K} (φ : k ⟶ k') : J := (H φ).choose
     let g {k k' : K} (φ : k ⟶ k') : j₀ ⟶ j φ := (H φ).choose_spec.choose
     have hg {k k' : K} (φ : k ⟶ k') :
@@ -90,11 +90,11 @@ lemma surjective (x : c.pt.obj cX.pt) :
         fun k k' φ ↦ ?_⟩
       simpa [ψ] using (IsCardinalFiltered.coeq_condition ψ hK (Arrow.mk φ)).symm
     exact ⟨j₁, α, fun k k' φ ↦ by simp [hα φ, hg]⟩
-  let s : (F ⋙ (evaluation C (Type w')).obj (X.obj j₁)).sections :=
+  let s : (F ⋙ (evaluation C TypeCat.{w'}).obj (X.obj j₁)).sections :=
     { val k := (F.obj k).map (X.map α) (z k)
       property {k k'} φ := by
         dsimp
-        rw [FunctorToTypes.naturality, ← hα φ] }
+        rw [NatTrans.naturality_apply, ← hα φ] }
   refine ⟨j₁, (Types.isLimitEquivSections (hc (X.obj j₁))).symm s, ?_⟩
   apply (Types.isLimitEquivSections (hc cX.pt)).injective
   rw [← hy, Equiv.apply_symm_apply]
@@ -103,7 +103,8 @@ lemma surjective (x : c.pt.obj cX.pt) :
     (c.pt.map (cX.ι.app j₁) ((Types.isLimitEquivSections (hc (X.obj j₁))).symm s))
   have h₂ := Types.isLimitEquivSections_symm_apply (hc (X.obj j₁)) s k
   dsimp at h₁ h₂ ⊢
-  rw [h₁, hz, FunctorToTypes.naturality, h₂, ← FunctorToTypes.map_comp_apply, cX.w]
+  rw [h₁, hz, NatTrans.naturality_apply, h₂, ← comp_apply, ← Functor.map_comp, cX.w]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
@@ -118,8 +119,8 @@ lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
   have H (k : K) := (Types.FilteredColimit.isColimit_eq_iff' (ht := hF k)
     (x := y₁.1 k) (y := y₂.1 k)).1 (by
       simp only [y₁, y₂, Types.isLimitEquivSections_apply]
-      dsimp
-      simp only [← FunctorToTypes.naturality, h])
+      dsimp at h ⊢
+      simp only [← NatTrans.naturality_apply, h])
   let j₁ (k : K) : J := (H k).choose
   let f (k : K) : j ⟶ j₁ k := (H k).choose_spec.choose
   have hf (k : K) : (F.obj k).map (X.map (f k)) (y₁.1 k) =
@@ -135,9 +136,7 @@ lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
   have h₁ := Types.isLimitEquivSections_symm_apply (hc (X.obj j)) y₁ k
   have h₂ := Types.isLimitEquivSections_symm_apply (hc (X.obj j)) y₂ k
   dsimp at h₁ h₂ ⊢
-  simp only [FunctorToTypes.naturality, h₁, h₂,
-    ← IsCardinalFiltered.coeq_condition ψ hK' k,
-    map_comp, FunctorToTypes.map_comp_apply, ψ, hf]
+  simp [h₁, h₂, ← IsCardinalFiltered.coeq_condition ψ hK' k, ψ, hf]
 
 end isColimitMapCocone
 
@@ -154,15 +153,15 @@ end Limits
 
 end Accessible
 
-lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
+lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ TypeCat.{w'}}
     (c : Cone F) (hc : IsLimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [HasLimitsOfShape K (Type w')] (hK : HasCardinalLT (Arrow K) κ)
+    [HasLimitsOfShape K TypeCat.{w'}] (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, (F.obj k).IsCardinalAccessible κ] :
     c.pt.IsCardinalAccessible κ where
   preservesColimitOfShape {J _ _} := ⟨fun {X} ↦ ⟨fun {cX} hcX ↦ by
     have := fun k ↦ preservesColimitsOfShape_of_isCardinalAccessible (F.obj k) κ J
     exact ⟨Accessible.Limits.isColimitMapCocone c
-      (fun Y ↦ isLimitOfPreserves ((evaluation C (Type w')).obj Y) hc) κ hK cX
+      (fun Y ↦ isLimitOfPreserves ((evaluation C TypeCat.{w'}).obj Y) hc) κ hK cX
       (fun k ↦ isColimitOfPreserves (F.obj k) hcX)⟩⟩⟩
 
 end Functor
@@ -171,7 +170,7 @@ end Functor
 lemma isCardinalPresentable_of_isColimit'
     {K : Type u'} [Category.{v'} K] {Y : K ⥤ C}
     (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [HasLimitsOfShape Kᵒᵖ (Type v)] (hK : HasCardinalLT (Arrow K) κ)
+    [HasLimitsOfShape Kᵒᵖ TypeCat.{v}] (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
     IsCardinalPresentable c.pt κ := by
   have (k : Kᵒᵖ) : ((Y.op ⋙ coyoneda).obj k).IsCardinalAccessible κ := by
@@ -180,7 +179,7 @@ lemma isCardinalPresentable_of_isColimit'
     (coyoneda.mapCone c.op) (isLimitOfPreserves _ hc.op) κ (by simpa)
 
 lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
-    {K : Type u'} [Category.{v'} K] [HasLimitsOfShape Kᵒᵖ (Type w)] {Y : K ⥤ C}
+    {K : Type u'} [Category.{v'} K] [HasLimitsOfShape Kᵒᵖ TypeCat.{w}] {Y : K ⥤ C}
     (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
@@ -195,7 +194,7 @@ lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
 variable (C) in
 lemma isClosedUnderColimitsOfShape_isCardinalPresentable [LocallySmall.{w} C]
     {κ : Cardinal.{w}} [Fact κ.IsRegular]
-    {J : Type u'} [Category.{v'} J] [HasLimitsOfShape Jᵒᵖ (Type w)]
+    {J : Type u'} [Category.{v'} J] [HasLimitsOfShape Jᵒᵖ TypeCat.{w}]
     (hJ : HasCardinalLT (Arrow J) κ) :
     (isCardinalPresentable C κ).IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := by

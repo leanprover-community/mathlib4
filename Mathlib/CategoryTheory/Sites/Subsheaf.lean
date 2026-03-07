@@ -166,6 +166,7 @@ noncomputable def Subfunctor.sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve
     refine Eq.trans ?_ (Presieve.IsSheafFor.valid_glue (h _ s.2)
       ((G.family_of_elements_compatible s.1).map f) (j ≫ i.unop) ?_).symm
     · simp [Presieve.FamilyOfElements.map, Subfunctor.familyOfElementsOfSection]
+      rfl
     · dsimp [Presieve.FamilyOfElements.map] at hj ⊢
       rwa [Functor.map_comp, comp_apply]
 
@@ -256,6 +257,7 @@ instance {F F' : Sheaf J TypeCat.{w}} (f : F ⟶ F') : Mono (Sheaf.imageι f) :=
       dsimp
       infer_instance)
 
+set_option backward.isDefEq.respectTransparency false in
 instance {F F' : Sheaf J TypeCat.{w}} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   refine ⟨@fun G' g₁ g₂ e => ?_⟩
   ext U ⟨s, hx⟩
@@ -266,8 +268,8 @@ instance {F F' : Sheaf J TypeCat.{w}} (f : F ⟶ F') : Epi (Sheaf.toImage f) := 
   have E : (Sheaf.toImage f).hom.app (op V) y = (Sheaf.image f).obj.map i.op ⟨s, hx⟩ :=
     Subtype.ext e'
   have := congr_arg (fun f : F ⟶ G' => f.hom.app _ y) e
-  simp only [Sheaf.comp_val, Sheaf.image_val, Sheaf.toImage_val, NatTrans.comp_app,
-    Subfunctor.toFunctor_obj, comp_apply, op_unop, Subfunctor.toFunctor_map,
+  simp only [ObjectProperty.FullSubcategory.comp_hom, Sheaf.image_obj, Sheaf.toImage_hom,
+    NatTrans.comp_app, Subfunctor.toFunctor_obj, comp_apply, op_unop, Subfunctor.toFunctor_map,
     ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Subtype.ext_iff] at this E ⊢
   convert this <;> exact E.symm
 
