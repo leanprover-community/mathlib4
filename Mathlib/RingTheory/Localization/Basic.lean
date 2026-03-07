@@ -620,7 +620,7 @@ theorem Localization.mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
 
 theorem Localization.r_iff_of_le_nonZeroDivisors (hM : M ≤ nonZeroDivisors R) (a c : R) (b d : M) :
-    Localization.r _ (a, b) (c, d) ↔ a * d = b * c  := by
+    Localization.r _ (a, b) (c, d) ↔ a * d = b * c := by
   simp only [Localization.r_eq_r', Localization.r', Subtype.exists, exists_prop, Con.rel_mk]
   refine ⟨fun ⟨u, hu, h⟩ ↦ ?_,
     fun h ↦ ⟨1, Submonoid.one_mem M, by simpa only [one_mul, mul_comm a] using h⟩⟩

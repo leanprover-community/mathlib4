@@ -193,7 +193,7 @@ theorem RankOne.hom_eq_embedding : RankOne.hom (PadicComplex.valued p).v = embed
 instance normedField : NormedField ℂ_[p] := inferInstance
 
 -- Ensure that the norm instance on `ℂ_[p]` is extended from `PadicAlgCl p`.
-example : (‖·‖ : ℂ_[p] → ℝ)  = (UniformSpace.Completion.instNorm (PadicAlgCl p)).norm := by
+example : (‖·‖ : ℂ_[p] → ℝ) = (UniformSpace.Completion.instNorm (PadicAlgCl p)).norm := by
   with_reducible_and_instances rfl
 
 /-- The norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`. -/

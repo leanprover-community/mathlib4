@@ -75,7 +75,7 @@ instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpa
     refine ⟨fun ⟨γ, hγ⟩ ↦ ⟨ Units.map valueGroupWithZero_equiv_valueGroup₀.symm.toMonoidHom γ,
       hγ⟩, fun ⟨γ, hγ⟩ ↦ ⟨Units.map valueGroupWithZero_equiv_valueGroup₀.toMonoidHom γ, ?_⟩⟩
     convert hγ
-    simp [valueGroupWithZero_equiv_valueGroup₀ ]
+    simp [valueGroupWithZero_equiv_valueGroup₀]
 
 lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
     [IsUniformAddGroup R] [IsValuativeTopology R] :

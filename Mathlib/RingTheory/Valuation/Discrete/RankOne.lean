@@ -67,7 +67,7 @@ lemma generator_eq_neg_exp_one_of_surjective (hsurj : Function.Surjective v) :
     hv.generator = Units.mk0 (WithZero.exp (-1 : ℤ) : ℤᵐ⁰) (by simp) := by
   rw [← valueGroup_genLTOne_eq_generator, eq_comm]
   refine LinearOrderedCommGroup.Subgroup.genLTOne_unique (valueGroup v) ?_ ?_
-  · rw [← Units.val_lt_val, Units.val_one,← WithZero.exp_zero, Units.val_mk0]
+  · rw [← Units.val_lt_val, Units.val_one, ← WithZero.exp_zero, Units.val_mk0]
     exact compareOfLessAndEq_eq_lt.mp rfl
   · ext n
     simp only [Int.reduceNeg, exp_neg, Subgroup.mem_zpowers_iff, mem_valueGroup_iff_of_comm,

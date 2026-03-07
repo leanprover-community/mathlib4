@@ -93,7 +93,7 @@ theorem projectiveSeminorm_zero : projectiveSeminormFun (0 : ⨂[𝕜] i, E i) =
     (le_ciInf (fun p ↦ projectiveSeminormAux_nonneg p.val))
 
 theorem projectiveSeminorm_add_le (x y : ⨂[𝕜] i, E i) :
-  projectiveSeminormFun (x+y) ≤ projectiveSeminormFun x + projectiveSeminormFun y :=
+  projectiveSeminormFun (x + y) ≤ projectiveSeminormFun x + projectiveSeminormFun y :=
   le_ciInf_add_ciInf (fun p q ↦ ciInf_le_of_le (bddBelow_projectiveSemiNormAux _)
     ⟨p.1 + q.1, lifts_add p.2 q.2⟩ (projectiveSeminormAux_add_le p.1 q.1))
 

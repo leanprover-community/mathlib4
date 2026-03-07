@@ -243,7 +243,7 @@ lemma isGE_eTruncGE_obj_obj (n : ℤ) (i : EInt) (h : n ≤ i) (X : C) :
   | bot => simp at h
   | coe i =>
     dsimp
-    exact t.isGE_of_ge  _ _ _ (by simpa using h)
+    exact t.isGE_of_ge _ _ _ (by simpa using h)
   | top => exact t.isGE_of_isZero (Functor.zero_obj _) _
 
 lemma isLE_eTruncLT_obj_obj (n : ℤ) (i : EInt) (h : i ≤ (n + 1 :)) (X : C) :

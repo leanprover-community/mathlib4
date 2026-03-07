@@ -277,7 +277,7 @@ by `data`. The conditions given allow to show that the homology of a page identi
 to the next page. -/
 class HasSpectralSequence : Prop where
   isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
-    (n : ℤ) (hn : n = data.deg pq + 1 )
+    (n : ℤ) (hn : n = data.deg pq + 1)
     (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
       IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₀_le r r' pq))))
   isZero_H_obj_mk₁_i₃_le (r r' : ℤ) (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq' pq))
@@ -325,7 +325,7 @@ instance (E : SpectralObject C EInt) : E.HasSpectralSequence coreE₂Cohomologic
     exact hpq _ rfl
   isZero_H_obj_mk₁_i₃_le r r' pq hpq n hn hrr' hr := by
     exfalso
-    exact hpq (pq - (r, 1-r)) (by simp)
+    exact hpq (pq - (r, 1 - r)) (by simp)
 
 instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
     E.HasSpectralSequence (coreE₂CohomologicalFin l) where

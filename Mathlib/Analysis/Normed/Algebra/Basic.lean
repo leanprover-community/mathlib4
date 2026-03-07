@@ -38,7 +38,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance (F : IntermediateField K L) : NontriviallyNormedField F where
   __ := SubfieldClass.toNormedField F
   non_trivial := by
-    obtain ⟨k, hk⟩ :=  @NontriviallyNormedField.non_trivial K _
+    obtain ⟨k, hk⟩ := @NontriviallyNormedField.non_trivial K _
     use algebraMap K F k
     simp [hk]
 

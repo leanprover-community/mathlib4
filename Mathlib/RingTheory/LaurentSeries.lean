@@ -1092,7 +1092,7 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
       obtain ⟨x, hx⟩ := valuedAdicCompletion_surjective K⟮X⟯ (idealX K) γ
       use Units.mk0 (Valued.v.restrict x) (by
         rwa [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff, hx])
-      simp  [Units.val_mk0, Valuation.restrict_lt_iff, hx]
+      simp [Units.val_mk0, Valuation.restrict_lt_iff, hx]
     · refine Set.Subset.trans (fun a _ ↦ ?_) (Set.preimage_mono γ_le)
       rw [Set.mem_preimage, Set.mem_Iio, ← Valued.valuedCompletion_apply a]
       simp_all

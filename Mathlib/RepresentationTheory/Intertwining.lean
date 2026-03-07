@@ -254,7 +254,7 @@ def refl : Equiv ρ ρ where
 lemma coe_invFun : φ.invFun = φ.symm := rfl
 
 theorem toLinearEquiv_toLinearMap :
-  φ.toLinearEquiv.toLinearMap  = φ.toIntertwiningMap.toLinearMap := rfl
+  φ.toLinearEquiv.toLinearMap = φ.toIntertwiningMap.toLinearMap := rfl
 
 theorem toLinearEquiv_apply (v : V) : φ.toLinearEquiv v = φ.toIntertwiningMap v := rfl
 
@@ -367,7 +367,7 @@ def llcomp : IntertwiningMap σ τ →ₗ[A] IntertwiningMap ρ σ →ₗ[A] Int
   toFun f :=
     { toFun g :=
       { toLinearMap := f.toLinearMap.comp g.toLinearMap
-        isIntertwining' := by simp [LinearMap.comp_assoc, g.2, f.isIntertwining_assoc]}
+        isIntertwining' := by simp [LinearMap.comp_assoc, g.2, f.isIntertwining_assoc] }
       map_add' _ _ := by ext; simp [map_add]
       map_smul' _ _ := by ext; simp }
   map_add' _ _ := by ext; simp
