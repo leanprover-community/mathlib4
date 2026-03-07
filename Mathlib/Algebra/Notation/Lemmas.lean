@@ -8,7 +8,6 @@ module
 public import Batteries.Tactic.Init
 public import Mathlib.Tactic.ToAdditive
 public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
 
 /-! # Lemmas about inequalities with `1`. -/
 

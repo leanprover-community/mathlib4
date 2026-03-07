@@ -7,7 +7,6 @@ module
 
 public import Batteries.Tactic.Alias
 public import Batteries.Data.List.Basic
-public import Mathlib.Tactic.TypeStar
 
 /-!
 # The Following Are Equivalent

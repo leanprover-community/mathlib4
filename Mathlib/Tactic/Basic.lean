@@ -9,7 +9,6 @@ public meta import Lean
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.Linter.OldObtain
 public import Batteries.Util.LibraryNote -- For `library_note` command.
 

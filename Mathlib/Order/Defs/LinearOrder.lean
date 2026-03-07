@@ -12,7 +12,6 @@ public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.SplitIfs
-public import Mathlib.Tactic.TypeStar
 public import Mathlib.Order.Defs.PartialOrder
 
 /-!

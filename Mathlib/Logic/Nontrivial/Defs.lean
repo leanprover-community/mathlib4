@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Push.Attr
 
