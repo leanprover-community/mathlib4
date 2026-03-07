@@ -96,10 +96,9 @@ lemma mem_invariants_iff_of_forall_mem_zpowers
 
 variable {ρ σ} in
 @[simp] lemma mem_linHom_invariants_iff_isIntertwining (f : V →ₗ[k] W) :
-    f ∈ (linHom ρ σ).invariants ↔ IsIntertwiningMap ρ σ f := by
+    (∀ (g : G), σ g ∘ₗ f ∘ₗ ρ g⁻¹ = f) ↔ ρ.IsIntertwiningMap σ f := by
   refine ⟨fun hf ↦ ⟨fun γ v ↦ ?_⟩, fun hf γ ↦ ?_⟩
   · specialize hf γ
-    rw [linHom_apply] at hf
     nth_rewrite 1 [← hf]
     simp
   · ext v
