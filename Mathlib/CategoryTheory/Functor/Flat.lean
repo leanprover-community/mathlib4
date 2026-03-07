@@ -188,7 +188,7 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
   s'.pt.hom ≫
     (F.map <|
       hc.lift <|
-        (Cones.postcompose
+        (Cone.postcompose
               ({ app := fun _ => 𝟙 _ } :
                 (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
@@ -207,10 +207,10 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
     { app := fun X => eqToHom (by simp [← h₂]) }
   let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
-    (Cones.postcompose (Functor.whiskerRight α₁ (pre s.pt K F) :)).obj
+    (Cone.postcompose (Functor.whiskerRight α₁ (pre s.pt K F) :)).obj
       (c.toStructuredArrowCone F f₁)
   let c₂ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
-    (Cones.postcompose (Functor.whiskerRight α₂ (pre s.pt K F) :)).obj
+    (Cone.postcompose (Functor.whiskerRight α₂ (pre s.pt K F) :)).obj
       (c.toStructuredArrowCone F f₂)
   -- The two cones can then be combined and we may obtain a cone over the two cones since
   -- `StructuredArrow s.pt F` is cofiltered.
@@ -238,7 +238,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     _ = g₂.right := by
       symm
       apply hc.uniq (c.extend _)
-      aesop
+      simp
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
     f₁ = 𝟙 _ ≫ f₁ := by simp

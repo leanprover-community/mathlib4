@@ -20,6 +20,10 @@ on:
       runs_on:
         type: string
         required: true
+      mathlib_ci_ref:
+        type: string
+        required: false
+        default: ''
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -90,6 +94,28 @@ jobs:
           # so that even when `nightly-testing` is broken, we can still build tools from a known good state.
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
           path: tools-branch
+
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      # We need to 'duplicate' this step below because GitHub Actions does not let a `uses:` step
+      # conditionally omit a single `with:` key, and passing `ref: ''` would override
+      # the composite action's default to the empty string instead of falling back to it
+      # Note only one of the two below will actually run in any given run
+      - name: Get mathlib-ci
+        if: ${{ inputs.mathlib_ci_ref == '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Get mathlib-ci
+        if: ${{ inputs.mathlib_ci_ref != '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ inputs.mathlib_ci_ref }}
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
@@ -266,7 +292,7 @@ jobs:
             exit 1
           fi
 
-          echo "✅ ProofWidgets source URL is trusted: $proofwidgets_url"
+          echo "✅ ProofWidgets source URL is allowed: $proofwidgets_url"
 
       - name: verify ProofWidgets lean-toolchain matches on versioned releases
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
@@ -609,7 +635,7 @@ jobs:
       # Generate a fresh token just before posting comments.
       # GitHub App tokens expire after 1 hour, and the build can take longer than that.
       - name: Generate lean-pr-testing app token
-        if: always()
+        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && (startsWith(github.ref_name, 'lean-pr-testing-') || startsWith(github.ref_name, 'batteries-pr-testing-')) }}
         id: lean-pr-testing-token
         uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
         with:
@@ -619,7 +645,7 @@ jobs:
           repositories: lean4
       # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
-        if: always()
+        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && (startsWith(github.ref_name, 'lean-pr-testing-') || startsWith(github.ref_name, 'batteries-pr-testing-')) }}
         shell: bash
         env:
           TOKEN: ${{ steps.lean-pr-testing-token.outputs.token }}
@@ -633,8 +659,8 @@ jobs:
           TEST_OUTCOME: ${{ steps.test.outcome }}
           NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
-          tools-branch/scripts/lean-pr-testing-comments.sh lean
-          tools-branch/scripts/lean-pr-testing-comments.sh batteries
+          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" lean
+          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" batteries
 
   upload_cache:
     name: Upload to cache

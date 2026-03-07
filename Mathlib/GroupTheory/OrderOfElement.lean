@@ -1026,7 +1026,6 @@ theorem zpow_eq_one_iff_modEq {n : ℤ} : x ^ n = 1 ↔ n ≡ 0 [ZMOD orderOf x]
   rw [Int.modEq_zero_iff_dvd, orderOf_dvd_iff_zpow_eq_one]
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem zpow_eq_zpow_iff_modEq {m n : ℤ} : x ^ m = x ^ n ↔ m ≡ n [ZMOD orderOf x] := by
   rw [← mul_inv_eq_one, ← zpow_sub, zpow_eq_one_iff_modEq, Int.modEq_iff_dvd, Int.modEq_iff_dvd,
@@ -1136,7 +1135,6 @@ theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
   rw [← card_zpowers, mul_comm, ← Fintype.card_prod,
     ← Fintype.card_congr groupEquivQuotientProdSubgroup]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.card G := by
   obtain h | h := fintypeOrInfinite G
@@ -1175,6 +1173,10 @@ theorem pow_gcd_card_eq_one_iff : x ^ n.gcd (Fintype.card G) = 1 ↔ x ^ n = 1 :
 theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H] (g : G) :
     g ^ index H ∈ H := by rw [← eq_one_iff, QuotientGroup.mk_pow H, index, pow_card_eq_one']
 
+@[to_additive]
+lemma Subgroup.pow_relIndex_mem {G : Type*} [Group G] (H : Subgroup G) [H.Normal] {K : Subgroup G}
+    {g : G} (hg : g ∈ K) : g ^ H.relIndex K ∈ H :=
+  pow_index_mem (H.subgroupOf K) ⟨g, hg⟩
 
 @[to_additive (attr := simp) mod_card_nsmul]
 lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n := by

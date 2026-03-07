@@ -28,7 +28,7 @@ We provide the natural inclusion from multivariate polynomials to multivariate f
 - `MvPowerSeries.X`: the indeterminates
 
 - `MvPowerSeries.coeff`, `MvPowerSeries.constantCoeff`:
-the coefficients of a `MvPowerSeries`, its constant coefficient
+  the coefficients of a `MvPowerSeries`, its constant coefficient
 
 - `MvPowerSeries.monomial`: the monomials
 
@@ -39,12 +39,12 @@ the coefficients of a `MvPowerSeries`, its constant coefficient
 - `MvPowerSeries.coeff_pow` : computes the coefficients of powers of a `MvPowerSeries`
 
 - `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
-of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
+  of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
 
 - `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom`).
 
 - `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
-conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
+  conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
 
 - `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
 
@@ -228,7 +228,6 @@ protected theorem zero_mul : (0 : MvPowerSeries σ R) * φ = 0 :=
 protected theorem mul_zero : φ * 0 = 0 :=
   ext fun n => by classical simp [coeff_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial_mul (a : R) :
     coeff m (monomial n a * φ) = if n ≤ m then a * coeff (m - n) φ else 0 := by
   classical
@@ -240,7 +239,6 @@ theorem coeff_monomial_mul (a : R) :
     Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_mul_monomial (a : R) :
     coeff m (φ * monomial n a) = if n ≤ m then coeff (m - n) φ * a else 0 := by
   classical

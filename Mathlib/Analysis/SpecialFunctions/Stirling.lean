@@ -186,7 +186,6 @@ https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sequence `n / (2 * n + 1)` tends to `1/2` -/
 theorem tendsto_self_div_two_mul_self_add_one :
     Tendsto (fun n : ℕ => (n : ℝ) / (2 * n + 1)) atTop (𝓝 (1 / 2)) := by

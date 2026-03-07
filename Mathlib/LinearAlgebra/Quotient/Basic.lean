@@ -238,6 +238,9 @@ theorem map_liftQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) 
 theorem ker_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : ker (p.liftQ f h) = (ker f).map (mkQ p) :=
   comap_liftQ _ _ _ _
 
+lemma ker_mapQ (f : M →ₛₗ[τ₁₂] M₂) (h) : ker (p.mapQ q f h) = (comap f q).map p.mkQ := by
+  simp [Submodule.mapQ, Submodule.ker_liftQ, LinearMap.ker_comp]
+
 theorem range_liftQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h) :
     range (p.liftQ f h) = range f := by simpa only [range_eq_map] using map_liftQ _ _ _ _
 
