@@ -289,4 +289,3 @@ lemma isCompatible_iff [FiniteDimensional ℝ F] :
   ring_nf
 
 end CovariantDerivative
-#lint
