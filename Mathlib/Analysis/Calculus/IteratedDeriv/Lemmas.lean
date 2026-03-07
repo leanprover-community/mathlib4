@@ -249,18 +249,19 @@ theorem iteratedDerivWithin_comp_sub_const (hf : ContDiffOn 𝕜 n f s) (c : �
     fun x ↦ iteratedDerivWithin n f (-c +ᵥ s) (x - c) := by
   simpa only [sub_eq_add_neg] using iteratedDerivWithin_comp_add_const hf (-c)
 
--- theorem iteratedDerivWithin_comp_const_sub (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
---     iteratedDerivWithin n (fun z => f (c - z)) s =
---     fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (x +ᵥ -s) (c - x) := by
---   ext x
---   have : (fun z ↦ f (c - z)) = fun z ↦ f (- (z - c)) := by simp
---   rw [this]
---   have : ContDiffOn 𝕜 (↑n) (fun z ↦ f (z + c)) (-c +ᵥ s) := by
-
---     sorry
---   sorry
-  --  using
-  --   iteratedDeriv_comp_neg n (fun z => f (z + s))
+omit hx h in
+theorem iteratedDerivWithin_comp_const_sub (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (c - z)) s =
+      fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (c +ᵥ -s) (c - x) := by
+  induction n with
+  | zero =>
+      ext x
+      simp
+  | succ n ih =>
+      ext x
+      rw [iteratedDerivWithin_succ,ih hf.of_succ, derivWithin_fun_const_smul_field,
+        derivWithin_comp_const_sub]
+      simpa [pow_succ] using Eq.symm iteratedDerivWithin_succ
 
 lemma iteratedDerivWithin_id :
     iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by

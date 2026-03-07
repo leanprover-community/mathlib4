@@ -21,7 +21,7 @@ an error bound in terms of a bound on the third derivative of the antiderivative
 We follow the standard proof for the error bound of the midpoint rule.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
 
@@ -40,7 +40,6 @@ changes sign when the endpoints are swapped. -/
 theorem simpson_midpoint_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
     simpson_midpoint_integral f N a b = -(simpson_midpoint_integral f N b a) := by
   unfold simpson_midpoint_integral
-  have h_coeff : (b - a) / N = -((a - b) / N) := by ring
   have h_sum : ∑ k ∈ range N, f (a + (k + (1 / 2 : ℝ)) * (b - a) / N)
              = ∑ k ∈ range N, f (b + (k + (1 / 2 : ℝ)) * (a - b) / N) := by
     rw [← Finset.sum_range_reflect (fun k => f (b + (k + (1 / 2 : ℝ)) * (a - b) / N)) N]
@@ -50,20 +49,13 @@ theorem simpson_midpoint_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 
     have h_eq : a + (k + (1 / 2 : ℝ)) * (b - a) / N
               = b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N := by
       calc
-        _ = a + (k + (1 / 2 : ℝ)) * (b - a) / N := rfl
         _ = b + ((N : ℝ) - 1 - k + (1 / 2 : ℝ)) * (a - b) / N := by field
         _ = b + (((N - 1 - k : ℕ) : ℝ) + (1 / 2 : ℝ)) * (a - b) / N := by
           have h6 : (k : ℕ) ≤ N - 1 := by omega
-          have h7 : ((N - 1 : ℕ) : ℝ) = (N : ℝ) - 1 := by
-            rw [Nat.cast_sub (by linarith : 1 ≤ N)]
-            simp
-          have h8 : ((N - 1 - k : ℕ) : ℝ) = ((N - 1 : ℕ) : ℝ) - k := by
-            rw [Nat.cast_sub h6]
-          rw [h8, h7]
-        _ = b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N := by
-          norm_cast
+          rw [Nat.cast_sub h6, Nat.cast_sub (by linarith : 1 ≤ N), Nat.cast_one]
+        _ = b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N := by norm_cast
     rw [h_eq]
-  rw [h_coeff, h_sum]
+  rw [h_sum]
   ring
 
 /-- The absolute error of Simpson's midpoint rule does not change when the endpoints are swapped. -/
@@ -83,15 +75,13 @@ theorem simpson_midpoint_integral_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) :
 @[simp]
 theorem simpson_midpoint_error_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) :
     simpson_midpoint_error f N a a = 0 := by
-  unfold simpson_midpoint_error
-  simp
+  simp [simpson_midpoint_error]
 
 /-- An exact formula for integration with a single midpoint evaluation. -/
 @[simp]
 theorem simpson_midpoint_integral_one (f : ℝ → ℝ) (a b : ℝ) :
     simpson_midpoint_integral f 1 a b = (b - a) * f ((a + b) / 2) := by
-  unfold simpson_midpoint_integral
-  simp only [Nat.cast_one, range_one, sum_singleton]
+  simp only [simpson_midpoint_integral, Nat.cast_one, range_one, sum_singleton]
   ring_nf
 
 /-- A basic Simpson midpoint equivalent to `IntervalIntegral.sum_integral_adjacent_intervals`. More
@@ -155,12 +145,9 @@ theorem simpson_midpoint_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N
     apply Finset.sum_congr rfl
     intro k hk
     congr 1
-    field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
-    ring
-  have h7 : (↑N + 1 : ℝ) = ↑(N + 1) := by norm_cast
+    field
   calc
-    h * ∑ k ∈ range N, f (a + (k + (1 / 2 : ℝ)) * h) + h * f (a + (N + 1 / 2 : ℝ) * h)
-      = h * (∑ k ∈ range N, f (a + (k + (1 / 2 : ℝ)) * h) + f (a + (N + 1 / 2 : ℝ) * h)) := by
+    _ = h * (∑ k ∈ range N, f (a + (k + (1 / 2 : ℝ)) * h) + f (a + (N + 1 / 2 : ℝ) * h)) := by
       rw [mul_add]
     _ = h * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * h) := by rw [Finset.sum_range_succ]
     _ = h * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * (a + (N + 1) * h - a) / (N + 1)) := by
@@ -170,12 +157,12 @@ theorem simpson_midpoint_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N
       rw [h3]
     _ = (a + (N + 1 : ℝ) * h - a) / ↑(N + 1) * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) *
       (a + (N + 1) * h - a) / ↑(N + 1)) := by
-      rw [h7]
+      norm_cast
 
 /-- Since we have `sum_[]_adjacent_intervals` theorems for both exact and Simpson midpoint
 integration, it's natural to combine them into a similar formula for the error. This theorem is in
 particular used in the proof of the general error bound. -/
-theorem sum_simpson_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ}
+theorem sum_simpson_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (hpos : 0 < h)
     (N_nonzero : 0 < N) (h_f_int : IntervalIntegrable f volume a (a + N * h)) :
     ∑ i ∈ range N, simpson_midpoint_error f 1 (a + i * h) (a + (i + 1) * h)
       = simpson_midpoint_error f N a (a + N * h) := by
@@ -192,47 +179,12 @@ theorem sum_simpson_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ
       intro k hk
       apply h_f_int.mono_set
       apply Set.uIcc_subset_uIcc
-      · simp only [Set.mem_uIcc, a']
-        rcases lt_trichotomy 0 h with hh | hh | hh
-        · left
-          constructor
-          · nlinarith
-          · have : (k : ℝ) ≤ N := Nat.cast_le.2 hk.le
-            nlinarith
-        · left
-          constructor <;> nlinarith
-        · right
-          constructor
-          · have : (k : ℝ) ≤ N := Nat.cast_le.2 hk.le
-            nlinarith
-          · nlinarith
-      · simp only [Set.mem_uIcc, a']
-        rcases lt_trichotomy 0 h with hh | hh | hh
-        · left
-          constructor
-          · nlinarith
-          · have : (k + 1 : ℝ) ≤ N := by
-              norm_cast
-            have : (1 + ↑k) * h ≤ ↑N * h := by
-              convert mul_le_mul_of_nonneg_right this hh.le using 1
-              ring_nf
-            grind
-        · left
-          constructor <;> nlinarith
-        · right
-          constructor
-          · have : (k + 1 : ℝ) ≤ N := by
-              norm_cast
-            have : ↑N * h ≤ (1 + ↑k) * h := by
-              convert mul_le_mul_of_nonpos_left this hh.le using 1
-              <;> ring_nf
-            have : a + ↑N * h ≤ a + (1 + ↑k) * h := by linarith
-            have h_eq : a + ↑(k + 1) * h = a + (1 + ↑k) * h := by
-              norm_cast
-              ring_nf
-            rw [h_eq]
-            exact this
-          · nlinarith
+      · simpa [a', hpos] using Nat.le_of_succ_le hk
+      · simp [a', hpos]
+        constructor
+        · norm_cast
+          omega
+        · norm_cast
     have h_sum : ∑ k ∈ range N, ∫ x in a' k..a' (k + 1), f x = ∫ x in a' 0..a' N, f x :=
       sum_integral_adjacent_intervals h_int
     convert h_sum using 1
@@ -266,12 +218,7 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
   set E := F b - F a - (derivWithin F (Icc a b) m) * (b - a) with hE_def
   have hF_Icc : ContDiffOn ℝ 2 F (Icc a b) := hF
   have hF_diff_Ioo : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b) := hF_diff
-  have h_m_in_Icc : m ∈ Icc a b := by
-    constructor <;> linarith [a_lt_b]
-  have h_b_in_Icc : b ∈ Icc a b := by
-    constructor <;> linarith [a_lt_b]
-  have h_a_in_Icc : a ∈ Icc a b := by
-    constructor <;> linarith [a_lt_b]
+  have h_m_in_Icc : m ∈ Icc a b := by grind
   have h_taylor_b : ∃ ξ₁ ∈ Ioo m b,
       F b = F m + (derivWithin F (Icc a b) m) * (b - m) +
             (iteratedDerivWithin 2 F (Icc a b) m) * (b - m) ^ 2 / 2 +
@@ -457,45 +404,18 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
             (uniqueDiffOn_Icc h_m_lt_b ξ ⟨hξ_in.1.le, hξ_in.2.le⟩)]
       ring
     rw [h_taylEval_G, hGm, hGb, h_deriv_G_m, h_iDW2_G_m, h_iDW3_G_ξ] at hξ_eq
-    have h_bm_rel : b - m = -(a - m) := by linarith [hm_def, hc_def]
-    have h_bm_sq : (b - m) ^ 2 = (a - m) ^ 2 := by nlinarith [h_bm_rel]
-    have h_bm_cu : (b - m) ^ 3 = -((a - m) ^ 3) := by nlinarith [h_bm_rel, h_bm_sq]
     have h_fact : (Nat.factorial 3 : ℝ) = 6 := by norm_num [Nat.factorial]
     rw [show (2 : ℕ) + 1 = 3 from rfl, h_fact] at hξ_eq
-    linear_combination hξ_eq
-      - (derivWithin F (Icc a b) m) * h_bm_rel
-      + (iteratedDerivWithin 2 F (Icc a b) m / 2) * h_bm_sq
-      - (iteratedDerivWithin 3 F (Icc a b) (c - ξ) / 6) * h_bm_cu
+    grind
   obtain ⟨ξ₁, hξ₁_in, hξ₁_eq⟩ := h_taylor_b
   obtain ⟨ξ₂, hξ₂_in, hξ₂_eq⟩ := h_taylor_a
   have h_bm_sq : (b - m) ^ 2 = (a - m) ^ 2 := by
     rw [hm_def]
     ring
-  have h_E_expr : E = (iteratedDerivWithin 3 F (Icc a b) ξ₁) * (b - m) ^ 3 / 6 -
-                    (iteratedDerivWithin 3 F (Icc a b) ξ₂) * (a - m) ^ 3 / 6 := by
-    rw [hE_def]
-    have h1 : F b = F m + (derivWithin F (Icc a b) m) * (b - m) +
-              (iteratedDerivWithin 2 F (Icc a b) m) * (b - m) ^ 2 / 2 +
-              (iteratedDerivWithin 3 F (Icc a b) ξ₁) * (b - m) ^ 3 / 6 := hξ₁_eq
-    have h2 : F a = F m + (derivWithin F (Icc a b) m) * (a - m) +
-              (iteratedDerivWithin 2 F (Icc a b) m) * (a - m) ^ 2 / 2 +
-              (iteratedDerivWithin 3 F (Icc a b) ξ₂) * (a - m) ^ 3 / 6 := hξ₂_eq
-    rw [h1, h2]
-    rw [h_bm_sq]
-    ring
-  have h_bm : b - m = (b - a) / 2 := by
-    rw [hm_def]
-    ring
-  have h_am : a - m = -(b - a) / 2 := by
-    rw [hm_def]
-    ring
   have h_E_simplified : E = ((iteratedDerivWithin 3 F (Icc a b) ξ₁) +
                              (iteratedDerivWithin 3 F (Icc a b) ξ₂)) * (b - a) ^ 3 / 48 := by
-    rw [h_E_expr, h_bm, h_am]
-    have h1 : (-(b - a) / 2 : ℝ) ^ 3 = -((b - a) ^ 3 / 8) := by
-      ring
-    rw [h1]
-    ring_nf
+    rw [hE_def, hξ₁_eq, hξ₂_eq, h_bm_sq]
+    ring
   have h_pos : 0 < b - a := by linarith [a_lt_b]
   have h_abs_bound : |E| ≤ (|(iteratedDerivWithin 3 F (Icc a b) ξ₁)| +
                            |(iteratedDerivWithin 3 F (Icc a b) ξ₂)|) * (b - a) ^ 3 / 48 := by
