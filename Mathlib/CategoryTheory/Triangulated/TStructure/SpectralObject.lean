@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 
 /-!
-# Spectral objects attached t-structures
+# Spectral objects attached to t-structures
 
 Let `C` be a triangulated category equipped with a t-structure `t`.
 We define a functor `t.ω₁ : ComposableArrows EInt 1 ⥤ C ⥤ C` which sends
