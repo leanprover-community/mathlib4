@@ -668,7 +668,6 @@ theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     refine ⟨tail m, ?_⟩
     rwa [← coeff, zero_apply, ← mem_support_iff, mem_support_coeff_finSuccEquiv, cons_tail]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {x} :
     x ∈ (finSuccEquiv R n f).support ↔ x ∈ (fun m : Fin (n + 1) →₀ _ ↦ m 0) '' f.support := by
   simpa using congr(x ∈ $(support_finSuccEquiv f))
@@ -688,7 +687,6 @@ theorem image_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} 
     rw [← h.2, cons_tail]
     simp [h.1]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_image_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {x} :
     x ∈ Finsupp.cons i '' ((finSuccEquiv R n f).coeff i).support ↔
       x ∈ f.support ∧ x 0 = i := by

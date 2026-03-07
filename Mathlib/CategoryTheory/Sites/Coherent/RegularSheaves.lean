@@ -200,7 +200,7 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     have hi := Over.w i.hom
     have hj := Over.w j.hom
     dsimp at hi hj
-    let ij := PullbackCone.IsLimit.lift hc i.hom.left j.hom.left (by aesop)
+    let ij := PullbackCone.IsLimit.lift hc i.hom.left j.hom.left (by lia)
     refine ⟨Quiver.Hom.op (ObjectProperty.homMk (Over.homMk ij)), ?_, ?_⟩
     all_goals congr; aesop
 
