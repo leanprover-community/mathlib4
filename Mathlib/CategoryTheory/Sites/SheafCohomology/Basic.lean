@@ -106,7 +106,7 @@ variable (F : Sheaf J AddCommGrpCat.{w}) {T : C} (hT : Limits.IsTerminal T)
 open AddCommGrpCat Opposite
 
 /-- The additive equivalence between `H F 0` and the evaluation of `F` at the terminal object -/
-noncomputable def H.equiv₀ : H F 0 ≃+ F.val.obj (op T) :=
+noncomputable def H.equiv₀ : H F 0 ≃+ F.obj.obj (op T) :=
     AddEquiv.trans Ext.addEquiv₀ <|
       AddEquiv.trans ((constantSheafAdj J AddCommGrpCat hT).homAddEquiv _ F)
         (uliftZMultiplesAddEquiv _)
@@ -126,13 +126,13 @@ lemma H.addEquiv₀_comp (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEq
 
 /-- `H.equiv₀` is natural -/
 theorem H.equiv₀_naturality (x : H F 0) :
-    f.val.app (op T) (H.equiv₀ F hT x) = H.equiv₀ G hT (H.map f 0 x) := by
+    f.hom.app (op T) (H.equiv₀ F hT x) = H.equiv₀ G hT (H.map f 0 x) := by
   simp only [equiv₀, AddEquiv.trans_apply]
   erw[addEquiv₀_comp f x]
   rfl
 
-theorem H.equiv₀_symm_naturality (x : F.val.obj (op T)) :
-    H.map f 0 ((H.equiv₀ F hT).symm x) = (H.equiv₀ G hT).symm (f.val.app (op T) x) := by
+theorem H.equiv₀_symm_naturality (x : F.obj.obj (op T)) :
+    H.map f 0 ((H.equiv₀ F hT).symm x) = (H.equiv₀ G hT).symm (f.hom.app (op T) x) := by
   apply (H.equiv₀ G hT).injective
   simp [← H.equiv₀_naturality]
 
