@@ -429,9 +429,9 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
         (Localization (q 0).1.1.primeCompl)).nontrivial_congr,
         (Shrink.linearEquiv.{v} _ _).congrRight.nontrivial_congr]
       have ass := minimalPrimes_annihilator_subset_associatedPrimes R M head_min
-      simp only [AssociatePrimes.mem_iff] at ass
+      simp only [AssociatedPrimes.mem_iff] at ass
       have := mem_associatedPrimes_atPrime_of_mem_associatedPrimes ass
-      simp only [AssociatePrimes.mem_iff, isAssociatedPrime_iff_exists_injective_linearMap] at this
+      simp only [AssociatedPrimes.mem_iff, isAssociatedPrime_iff_exists_injective_linearMap] at this
       rcases this with ⟨_, f, hf⟩
       exact nontrivial_of_ne f 0  (LinearMap.ne_zero_of_injective hf)
     · rename_i i ih
@@ -486,6 +486,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 open Limits in
 lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Module.Finite R M] [Nontrivial M] :
