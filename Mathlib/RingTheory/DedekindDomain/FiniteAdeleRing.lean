@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 public import Mathlib.Topology.Algebra.RestrictedProduct.Units
-public import Mathlib.RingTheory.Valuation.Integers
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -130,6 +129,10 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
+@[simp]
+theorem algebraMap_apply (k : K) (v : HeightOneSpectrum R) :
+  algebraMap K (FiniteAdeleRing R K) k v = k := rfl
+
 instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (algebraMap R K)
 
 instance : IsScalarTower R K (FiniteAdeleRing R K) :=
@@ -154,6 +157,8 @@ instance : IsTopologicalRing (FiniteAdeleRing R K) :=
 
 end Topology
 
+section Units
+
 variable {R K}
 
 set_option backward.isDefEq.respectTransparency false in
@@ -170,20 +175,22 @@ theorem unitsEquiv_finite_valued_eq_one (a : (FiniteAdeleRing R K)ˣ) :
     adicCompletionIntegers.mem_units_iff_valued_eq_one.1 h
 
 theorem infinite_valued_ne_one_of_not_isUnit {a : FiniteAdeleRing R K} (ha₀ : ∀ v, a v ≠ 0)
-    (ha : ¬IsUnit a) :
-    {v | Valued.v (a v) ≠ 1}.Infinite := by
+    (ha : ¬IsUnit a) : {v | Valued.v (a v) ≠ 1}.Infinite := by
   contrapose! ha
   rw [isUnit_iff]
   exact ⟨ha₀ , ha⟩
 
-variable (R K) in
+variable (R)
+
+variable (K) in
+/-- The global embedding of the units of `K` into the units of `FiniteAdeleRing R K`. -/
 def unitEmbedding : Kˣ →* (FiniteAdeleRing R K)ˣ := Units.map (algebraMap K (FiniteAdeleRing R K))
 
-@[simp] theorem unitEmbedding_apply (k : Kˣ) :
+@[simp]
+theorem unitEmbedding_apply (k : Kˣ) :
     unitEmbedding R K k = algebraMap K (FiniteAdeleRing R K) k := rfl
 
-instance : Coe Kˣ (FiniteAdeleRing R K)ˣ where
-  coe x := Units.map (algebraMap K (FiniteAdeleRing R K)) x
+end Units
 
 end FiniteAdeleRing
 
