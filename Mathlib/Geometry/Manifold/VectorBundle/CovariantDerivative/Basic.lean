@@ -49,10 +49,10 @@ a vector bundle over `M` with model fiber `F`.
 On paper there are several equivalent ways to define covariant derivatives on a vector bundle
 `V → M`. The most common one starts with a function `∇` taking as input a global smooth vector field
 `X` and a global smooth section `σ` and giving as output a global smooth section `∇_X σ`, before
-proving the result `(∇_X σ) x` at a point `x` only depends on the value of the vector field at that
-point and the 1-jet of the section at that point.
+proving the result that `(∇_X σ) x` at a point `x` only depends on the value of the vector field at
+that point and the 1-jet of the section at that point.
 
-Here we ask for a map sending a global section `σ` to a section `∇ σ` of `Hom(TM, End(V))`.
+Here we ask for a map sending a global section `σ` of `V` to a global section `∇ σ` of `Hom(TM, V)`.
 So the fact that `(∇_X σ) x` depends only on `X x` is baked into the definition.
 Note also that we don’t put any differentiability restriction on `σ` and `X`, the type of
 the covariant derivative map is simply `(Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))`.
