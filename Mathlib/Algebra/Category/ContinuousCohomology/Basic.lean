@@ -136,7 +136,6 @@ def complex : CochainComplex (Action (TopModuleCat R) G ⥤ Action (TopModuleCat
 
 end MultiInd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor taking an `R`-linear `G`-representation to its `G`-invariant submodule. -/
 def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
   obj M := .of R
@@ -152,7 +151,6 @@ def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
 instance : (invariants R G).Linear R where
 instance : (invariants R G).Additive where
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `homogeneousCochains R G` is the functor taking
 an `R`-linear `G`-representation to the complex of homogeneous cochains. -/
 def homogeneousCochains : Action (TopModuleCat R) G ⥤ CochainComplex (TopModuleCat R) ℕ :=
@@ -201,6 +199,7 @@ def kerHomogeneousCochainsZeroEquiv
   continuous_invFun := continuous_induced_rng.mpr
     (continuous_induced_rng.mpr ((ContinuousLinearMap.const R G).cont.comp continuous_subtype_val))
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 set_option backward.isDefEq.respectTransparency false in
 open ShortComplex HomologyData in
 /-- `H⁰_cont(G, X) ≅ Xᴳ`. -/

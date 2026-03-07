@@ -557,12 +557,10 @@ theorem LinearMap.toMatrixAlgEquiv'_mul (f g : (n → R) →ₗ[R] n → R) :
       LinearMap.toMatrixAlgEquiv' f * LinearMap.toMatrixAlgEquiv' g :=
   LinearMap.toMatrixAlgEquiv'_comp f g
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem LinearMap.isUnit_toMatrix'_iff {f : (n → R) →ₗ[R] n → R} : IsUnit f.toMatrix' ↔ IsUnit f :=
   isUnit_map_iff LinearMap.toMatrixAlgEquiv' f
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Matrix.isUnit_toLin'_iff {M : Matrix n n R} : IsUnit M.toLin' ↔ IsUnit M :=
   isUnit_map_iff LinearMap.toMatrixAlgEquiv'.symm M
@@ -879,12 +877,10 @@ theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
       (Matrix.toLinAlgEquiv v₁ A).comp (Matrix.toLinAlgEquiv v₁ B) := by
   convert Matrix.toLin_mul v₁ v₁ v₁ A B
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem LinearMap.isUnit_toMatrix_iff {f : M₁ →ₗ[R] M₁} : IsUnit (f.toMatrix v₁ v₁) ↔ IsUnit f :=
   isUnit_map_iff (LinearMap.toMatrixAlgEquiv _) f
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Matrix.isUnit_toLin_iff {M : Matrix n n R} : IsUnit (M.toLin v₁ v₁) ↔ IsUnit M :=
   isUnit_map_iff (LinearMap.toMatrixAlgEquiv _).symm M

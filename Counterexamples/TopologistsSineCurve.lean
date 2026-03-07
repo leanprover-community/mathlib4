@@ -56,7 +56,6 @@ lemma xSeq_tendsto (y : ℝ) : Tendsto (xSeq y) atTop (𝓝 0) := by
 ## `T` is closed
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The closure of the topologist's sine curve `S` is the set `T`. -/
 lemma closure_S : closure S = T := by
   ext ⟨x, y⟩
@@ -103,7 +102,6 @@ lemma isClosed_T : IsClosed T := by simpa only [← closure_S] using isClosed_cl
 ## `T` is connected
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `T` is connected, being the closure of the set `S` (which is obviously connected since it
 is a continuous image of the positive real line). -/
 theorem isConnected_T : IsConnected T := by
