@@ -86,8 +86,8 @@ theorem torsion_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
 theorem torsion_apply_eq_extend (hcov : IsCovariantDerivativeOn E cov univ) {x}
     (X₀ Y₀ : TangentSpace I x) :
     torsion hcov x X₀ Y₀ =
-      cov (extend E Y₀) x X₀ - cov (extend E X₀) x Y₀
-      - VectorField.mlieBracket I (extend E X₀) (extend E Y₀) x := by
+      cov (FiberBundle.extend E Y₀) x X₀ - cov (FiberBundle.extend E X₀) x Y₀
+      - VectorField.mlieBracket I (FiberBundle.extend E X₀) (FiberBundle.extend E Y₀) x := by
   simp [torsion, torsionAux, TensorialAt.mkHom₂_apply_eq_extend]
 
 variable (X) in
@@ -129,8 +129,9 @@ lemma torsion_apply (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
 
 lemma torsion_apply_eq_extend (X₀ Y₀ : TangentSpace I x) :
     cov.torsion x X₀ Y₀ =
-      cov (extend E Y₀) x (extend E X₀ x) - cov (extend E X₀) x (extend E Y₀ x)
-        - mlieBracket I (extend E X₀) (extend E Y₀) x := by
+      cov (FiberBundle.extend E Y₀) x (FiberBundle.extend E X₀ x)
+        - cov (FiberBundle.extend E X₀) x (FiberBundle.extend E Y₀ x)
+        - mlieBracket I (FiberBundle.extend E X₀) (FiberBundle.extend E Y₀) x := by
   unfold torsion IsCovariantDerivativeOn.torsion
   apply TensorialAt.mkHom₂_apply_eq_extend
 
@@ -153,7 +154,7 @@ lemma torsion_eq_zero_iff : cov.torsion = 0 ↔
     ext x u v
     rw [torsion_apply_eq_extend, h]
     · simp
-    · apply mdifferentiableAt_extend
-    · apply mdifferentiableAt_extend
+    · apply FiberBundle.mdifferentiableAt_extend
+    · apply FiberBundle.mdifferentiableAt_extend
 
 end CovariantDerivative

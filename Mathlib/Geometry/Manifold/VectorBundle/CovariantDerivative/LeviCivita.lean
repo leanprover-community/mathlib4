@@ -538,7 +538,7 @@ lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) : rhs_aux I X Y Z x =
     ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ X, Z⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
   trans ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x
-  · exact cov.isCompatible_apply h.1 hY hZ
+  · exact cov.isCompatible_iff.mp h.1 hX hY hZ
   · simp [← cov.torsion_eq_zero_iff.mp h.2 hX hZ, product, inner_sub_right]
 
 variable {cov} in
@@ -702,14 +702,14 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     ext X₀ Y₀
     simp only [TensorialAt.mkHom₂_apply_eq_extend, ContinuousLinearMap.add_apply, lcAux₀']
     rw [if_pos, if_pos, if_pos, if_pos, if_pos, if_pos]
-    · exact leviCivitaRhs_addY_apply _ (mdifferentiableAt_extend ..)
-        hY hY' (mdifferentiableAt_extend ..)
-    · exact mdifferentiableAt_extend ..
-    · exact mdifferentiableAt_extend ..
-    · exact mdifferentiableAt_extend ..
-    · exact mdifferentiableAt_extend ..
-    · exact mdifferentiableAt_extend ..
-    · exact mdifferentiableAt_extend ..
+    · exact leviCivitaRhs_addY_apply _ (FiberBundle.mdifferentiableAt_extend ..)
+        hY hY' (FiberBundle.mdifferentiableAt_extend ..)
+    · exact FiberBundle.mdifferentiableAt_extend ..
+    · exact FiberBundle.mdifferentiableAt_extend ..
+    · exact FiberBundle.mdifferentiableAt_extend ..
+    · exact FiberBundle.mdifferentiableAt_extend ..
+    · exact FiberBundle.mdifferentiableAt_extend ..
+    · exact FiberBundle.mdifferentiableAt_extend ..
   leibniz {Y f x} hY hf _ := by
     unfold lcAux
     dsimp
@@ -731,14 +731,15 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
       simp only [lcAux₀, lcAux₀', TensorialAt.mkHom₂_apply_eq_extend,
         ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
       rw [if_pos, if_pos, if_pos, if_pos]
-      · convert leviCivitaRhs_smulY_apply I (Z := _root_.extend E Z₀) (x := x)
-          hf (mdifferentiableAt_extend I E X₀) hY (mdifferentiableAt_extend I E Z₀)
+      · convert leviCivitaRhs_smulY_apply I (Z := FiberBundle.extend E Z₀) (x := x)
+          hf (FiberBundle.mdifferentiableAt_extend I E X₀) hY
+          (FiberBundle.mdifferentiableAt_extend I E Z₀)
         · simp
         · simp [Φ, product]
-      · exact mdifferentiableAt_extend ..
-      · exact mdifferentiableAt_extend ..
-      · exact mdifferentiableAt_extend ..
-      · exact mdifferentiableAt_extend ..
+      · exact FiberBundle.mdifferentiableAt_extend ..
+      · exact FiberBundle.mdifferentiableAt_extend ..
+      · exact FiberBundle.mdifferentiableAt_extend ..
+      · exact FiberBundle.mdifferentiableAt_extend ..
     exact MDifferentiableAt.smul_section hf hY
 
 end
@@ -765,7 +766,7 @@ omit [IsManifold I 2 M] in
 lemma leviCivitaConnection_isCompatible_aux
     {x : M} {X Y Z : (x : M) → TangentSpace I x} :
     leviCivitaRhs I X Y Z x + leviCivitaRhs I X Z Y x =
-    ((mfderiv% fun x ↦ inner ℝ (Y x) (Z x)) x) (X x) := by
+    fromTangentSpace _ ((mfderiv% fun x ↦ inner ℝ (Y x) (Z x)) x (X x)) := by
   simp only [leviCivitaRhs, Pi.smul_apply, ← smul_add,  leviCivitaRhs']
   -- Normalise the expressions by swapping arguments for rhs_aux and mlieBracket,
   -- until the swappable arguments are in order X < Y < Z.
@@ -778,6 +779,7 @@ lemma leviCivitaConnection_isCompatible_aux
   · simp
     abel
   · rw [← two_mul, ← mul_assoc, one_div, inv_mul_cancel₀ (by simp), one_mul]
+    rfl
 
 -- Why is everything so slow?
 lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :

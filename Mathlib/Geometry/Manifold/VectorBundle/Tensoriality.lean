@@ -174,7 +174,7 @@ lemma pointwise₂
   · exact (hΦ₁ _ hτ).pointwise hσ hσ' hσσ'
   · exact (hΦ₂ _ hσ').pointwise hτ hτ' hττ'
 
-variable [IsManifold I 1 M]
+variable
   -- TODO prove transport lemmas `ContinuousLinearEquiv.IsTopologicalAddGroup` and
   -- `ContinuousLinearEquiv.continuousSMul`, then the next four hypotheses can be removed
   -- (and the appropriate instances constructed in the proof of `TensorialAt.mkHom` by transport
@@ -194,26 +194,29 @@ noncomputable def mkHom
   have : T2Space (V x) := Ψ.symm.toHomeomorph.t2Space
   have : FiniteDimensional 𝕜 (V x) := Ψ.symm.toLinearEquiv.finiteDimensional
   LinearMap.toContinuousLinearMap {
-    toFun v := Φ (_root_.extend F v)
+    toFun v := Φ (FiberBundle.extend F v)
     map_add' v₁ v₂ := by
-      rw [← hΦ.add (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..)]
-      apply hΦ.pointwise (mdifferentiableAt_extend ..) <|
-        mdifferentiableAt_add_section (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..)
+      rw [← hΦ.add (FiberBundle.mdifferentiableAt_extend ..)
+        (FiberBundle.mdifferentiableAt_extend ..)]
+      apply hΦ.pointwise (FiberBundle.mdifferentiableAt_extend ..) <|
+        mdifferentiableAt_add_section (FiberBundle.mdifferentiableAt_extend ..)
+        (FiberBundle.mdifferentiableAt_extend ..)
       simp
     map_smul' c v := by
       dsimp
-      rw [← hΦ.smul (f := fun _ ↦ c) (mdifferentiable_const ..) (mdifferentiableAt_extend ..)]
-      apply hΦ.pointwise (mdifferentiableAt_extend ..) <|
-        mdifferentiableAt_const.smul_section (mdifferentiableAt_extend ..)
+      rw [← hΦ.smul (f := fun _ ↦ c) (mdifferentiable_const ..)
+        (FiberBundle.mdifferentiableAt_extend ..)]
+      apply hΦ.pointwise (FiberBundle.mdifferentiableAt_extend ..) <|
+        mdifferentiableAt_const.smul_section (FiberBundle.mdifferentiableAt_extend ..)
       simp }
 
 theorem mkHom_apply {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialAt I F (Φ ·) x)
     {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) :
     mkHom Φ x hΦ (σ x) = Φ σ :=
-  hΦ.pointwise (mdifferentiableAt_extend ..) hσ (by simp)
+  hΦ.pointwise (FiberBundle.mdifferentiableAt_extend ..) hσ (by simp)
 
 theorem mkHom_apply_eq_extend {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialAt I F Φ x) (σ : V x) :
-    mkHom Φ x hΦ σ = Φ (_root_.extend F σ) :=
+    mkHom Φ x hΦ σ = Φ (FiberBundle.extend F σ) :=
   rfl
 
 /-- Given an `A`-valued operation `Φ` on sections of vector bundles `V` and `V'` which is tensorial
@@ -234,37 +237,38 @@ noncomputable def mkHom₂
   have : T2Space (V' x) := Ψ'.symm.toHomeomorph.t2Space
   have : FiniteDimensional 𝕜 (V' x) := Ψ'.symm.toLinearEquiv.finiteDimensional
   have H : IsBilinearMap 𝕜
-    (fun (v : V x) (w : V' x) ↦ Φ (_root_.extend F v) (_root_.extend F' w)) :=
+    (fun (v : V x) (w : V' x) ↦ Φ (FiberBundle.extend F v) (FiberBundle.extend F' w)) :=
   { add_left v₁ v₂ w := by
-      rw [← (hΦ₁ _ (mdifferentiableAt_extend ..)).add (mdifferentiableAt_extend ..)
-        (mdifferentiableAt_extend ..)]
-      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..) _
-        (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..) _ rfl
-      · exact mdifferentiableAt_add_section (mdifferentiableAt_extend ..)
-          (mdifferentiableAt_extend ..)
+      rw [← (hΦ₁ _ (FiberBundle.mdifferentiableAt_extend ..)).add
+        (FiberBundle.mdifferentiableAt_extend ..) (FiberBundle.mdifferentiableAt_extend ..)]
+      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (FiberBundle.mdifferentiableAt_extend ..) _
+        (FiberBundle.mdifferentiableAt_extend ..) (FiberBundle.mdifferentiableAt_extend ..) _ rfl
+      · exact mdifferentiableAt_add_section (FiberBundle.mdifferentiableAt_extend ..)
+          (FiberBundle.mdifferentiableAt_extend ..)
       · simp
     smul_left c v w := by
-      rw [← (hΦ₁ _ (mdifferentiableAt_extend ..)).smul (f := fun _ ↦ c) (mdifferentiable_const ..)
-        (mdifferentiableAt_extend ..)]
-      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..)
-        (mdifferentiableAt_const.smul_section (mdifferentiableAt_extend ..))
-        (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..)
+      rw [← (hΦ₁ _ (FiberBundle.mdifferentiableAt_extend ..)).smul (f := fun _ ↦ c)
+        (mdifferentiable_const ..) (FiberBundle.mdifferentiableAt_extend ..)]
+      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (FiberBundle.mdifferentiableAt_extend ..)
+        (mdifferentiableAt_const.smul_section (FiberBundle.mdifferentiableAt_extend ..))
+        (FiberBundle.mdifferentiableAt_extend ..) (FiberBundle.mdifferentiableAt_extend ..)
       · simp
       · rfl
     add_right v w₁ w₂ := by
-      rw [← (hΦ₂ _ (mdifferentiableAt_extend ..)).add (mdifferentiableAt_extend ..)
-        (mdifferentiableAt_extend ..)]
-      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..)
-        (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..) <|
-        mdifferentiableAt_add_section (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..)
+      rw [← (hΦ₂ _ (FiberBundle.mdifferentiableAt_extend ..)).add
+        (FiberBundle.mdifferentiableAt_extend ..) (FiberBundle.mdifferentiableAt_extend ..)]
+      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (FiberBundle.mdifferentiableAt_extend ..)
+        (FiberBundle.mdifferentiableAt_extend ..) (FiberBundle.mdifferentiableAt_extend ..) <|
+        mdifferentiableAt_add_section (FiberBundle.mdifferentiableAt_extend ..)
+          (FiberBundle.mdifferentiableAt_extend ..)
       · rfl
       · simp
     smul_right c v w := by
-      rw [← (hΦ₂ _ (mdifferentiableAt_extend ..)).smul (f := fun _ ↦ c) (mdifferentiable_const ..)
-        (mdifferentiableAt_extend ..)]
-      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..)
-        (mdifferentiableAt_extend ..) (mdifferentiableAt_extend ..) <|
-        mdifferentiableAt_const.smul_section (mdifferentiableAt_extend ..)
+      rw [← (hΦ₂ _ (FiberBundle.mdifferentiableAt_extend ..)).smul (f := fun _ ↦ c)
+        (mdifferentiable_const ..) (FiberBundle.mdifferentiableAt_extend ..)]
+      apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (FiberBundle.mdifferentiableAt_extend ..)
+        (FiberBundle.mdifferentiableAt_extend ..) (FiberBundle.mdifferentiableAt_extend ..) <|
+        mdifferentiableAt_const.smul_section (FiberBundle.mdifferentiableAt_extend ..)
       · rfl
       · simp }
   H.toLinearMap.toContinuousBilinearMap
@@ -275,15 +279,15 @@ theorem mkHom₂_apply
     (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x)
     {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) {τ : Π x : M, V' x} (hτ : MDiffAt (T% τ) x) :
     mkHom₂ Φ x hΦ₁ hΦ₂ (σ x) (τ x) = Φ σ τ :=
-  TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..) hσ (mdifferentiableAt_extend ..) hτ
-    (by simp) (by simp)
+  TensorialAt.pointwise₂ hΦ₁ hΦ₂ (FiberBundle.mdifferentiableAt_extend ..) hσ
+    (FiberBundle.mdifferentiableAt_extend ..) hτ (by simp) (by simp)
 
 theorem mkHom₂_apply_eq_extend
     {Φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
     (hΦ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (Φ · τ) x)
     (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x)
     (σ : V x) (τ : V' x) :
-    mkHom₂ Φ x hΦ₁ hΦ₂ σ τ = Φ (_root_.extend F σ) (_root_.extend F' τ) :=
+    mkHom₂ Φ x hΦ₁ hΦ₂ σ τ = Φ (FiberBundle.extend F σ) (FiberBundle.extend F' τ) :=
   rfl
 
 end TensorialAt
