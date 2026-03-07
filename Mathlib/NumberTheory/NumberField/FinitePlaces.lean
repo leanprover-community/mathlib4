@@ -434,6 +434,9 @@ theorem norm_liesOver [w.asIdeal.LiesOver v.asIdeal] (x : Kv) :
   ← NNReal.coe_pow, ← valued_liesOver, pow_mul', toNNReal_liesOver]
 
 open Real in
+/-- The algebra norm of `w.adicCompletion L` over `v.adicCompletion K` when `w` lies over `v`.
+This is given by exponentiating the norm of `w.adicCompletion L` by the local degree, given by
+the product of the ramification index and the inertia degree. -/
 noncomputable def algebraNorm_of_liesOver [w.asIdeal.LiesOver v.asIdeal] :
     AlgebraNorm (v.adicCompletion K) (w.adicCompletion L) where
   toFun x := ‖x‖ ^ (e * f : ℝ)⁻¹
