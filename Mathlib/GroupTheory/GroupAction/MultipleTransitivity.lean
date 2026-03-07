@@ -113,7 +113,7 @@ end Functoriality
 
 namespace MulAction
 
-open scoped BigOperators Pointwise Cardinal
+open scoped Pointwise Cardinal
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
@@ -443,7 +443,7 @@ open SubMulAction
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- For a multiply pretransitive action, computes the index
-of the fixing_subgroup of a subset of adequate cardinality -/
+of the `fixingSubgroup` of a subset of adequate cardinality -/
 theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     [Finite α]
     {k : ℕ} (Hk : IsMultiplyPretransitive G α k)
@@ -583,19 +583,9 @@ theorem isMultiplyPretransitive (n : ℕ) :
       · obtain ⟨i, rfl⟩ := hb
         use x i
         simp only [ψ, x.injective.extend_apply]
-      · rw [← Set.mem_compl_iff] at hb
-        use φ.invFun ⟨b, hb⟩
-        simp only [ψ]
-        rw [Function.extend_apply' _ _ _ ?_]
-        · simp only [φ']
-          set a : α := (φ.invFun ⟨b, hb⟩ : α)
-          have ha : a ∈ (range x)ᶜ := Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← Subtype.coe_mk a ha]
-          simp [a]
-        · rintro ⟨i, hi⟩
-          apply Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← hi]
-          exact mem_range_self i
+      · use φ.invFun ⟨b, hb⟩
+        simp only [invFun_as_coe]
+        grind [Function.extend_apply', Function.extend_val_apply]
   use Equiv.ofBijective ψ this
   ext i
   simp [ψ, x.injective.extend_apply]

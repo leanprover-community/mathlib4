@@ -284,7 +284,7 @@ lemma AddContent.supClosure_apply_finpartition (hC : IsSetSemiring C)
     m.supClosure hC s = ∑ s ∈ J.parts, m s := by
   rw [m.supClosure_apply _ hJ J.disjoint]
   nth_rewrite 1 [← J.sup_parts, Finset.sup_set_eq_biUnion, sUnion_eq_biUnion]
-  rfl
+  simp
 
 lemma AddContent.supClosure_apply_of_mem (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} (hs : s ∈ C) :

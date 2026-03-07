@@ -68,7 +68,7 @@ if `r : f.codomain` is a root of a polynomial over the ufd `A`,
 then the numerator of `r` divides the constant coefficient -/
 theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣ p.coeff 0 := by
   suffices num A r ∣ (scaleRoots p (den A r)).coeff 0 by
-    simp only [coeff_scaleRoots, tsub_zero] at this
+    simp only [coeff_scaleRoots] at this
     haveI inst := Classical.propDecidable
     by_cases hr : num A r = 0
     · simp_all [nonZeroDivisors.coe_ne_zero]

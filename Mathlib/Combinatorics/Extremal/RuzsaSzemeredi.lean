@@ -262,7 +262,7 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
     · rw [isBigO_exp_comp_exp_comp]
       refine ⟨0, ?_⟩
       simp only [neg_mul, eventually_map, Pi.sub_apply, sub_neg_eq_add, neg_add_le_iff_le_add,
-        add_zero, ofNat_pos, mul_le_mul_iff_right₀, eventually_atTop]
+        add_zero, eventually_atTop]
       refine ⟨9, fun x hx ↦ ?_⟩
       gcongr
       · simp
