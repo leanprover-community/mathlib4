@@ -790,13 +790,13 @@ elab "gcongr" template:(ppSpace colGt term)?
     throwError "gcongr did not make progress"
 
 /-- `rel [h₁, ..., hₙ]` uses "generalized congruence" rules to solve a goal of form
-`⊢ R (f a₁ ... aₙ) (f b₁ ... bₙ)` by substituting with the terms `hᵢ : R aᵢ bᵢ`. `R` can be any
-two-argument relation, including `· → ·`.
+`⊢ R (f a₁ ... aₙ) (f b₁ ... bₙ)` by substituting with the terms `hᵢ : Rᵢ aᵢ bᵢ`. The relations
+`R`, `Rᵢ` can be any two-argument relation, including `· → ·`.
 
 This tactic is extensible: to add a "generalized congruence" rule, tag a theorem with the attribute
 `@[gcongr]`.
 
-If a "generalized congruence" lemma has a side goal, `gcongr` will try to discharge it using
+If a "generalized congruence" lemma has a side goal, `rel` will try to discharge it using
 `gcongr_discharger`, which is an extensible tactic based on `positivity`. If side goals cannot be
 discharged, or the terms `h₁`, ..., `hₙ` cannot solve the goals, the tactic fails.
 
