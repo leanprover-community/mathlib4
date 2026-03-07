@@ -1051,6 +1051,14 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
 instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
   isCompact_univ := finite_univ.isCompact
 
+/-- The indiscrete topology is compact -/
+instance instCompactSpace [IndiscreteTopology X] : CompactSpace X := by
+  by_cases! ha : IsEmpty X
+  · exact Finite.compactSpace
+  refine CompactSpace.mk ?_
+  intro f hf
+  simp [clusterPt_of_indiscreteTopology]
+
 instance ULift.compactSpace [CompactSpace X] : CompactSpace (ULift.{v} X) :=
   IsClosedEmbedding.uliftDown.compactSpace
 
