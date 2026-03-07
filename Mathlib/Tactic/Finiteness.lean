@@ -58,6 +58,7 @@ lemma or rule added to the `finiteness` ruleset, except that all `simp` rules ar
 This tactic is extensible. By adding more rules, `finiteness` can prove more goals. For example:
 * `@[aesop (rule_sets := [finiteness]) safe 50] lemma ...`
 * `add_aesop_rules safe tactic (rule_sets := [finiteness]) (by ...)`
+(Note that a `simp` rule cannot be added this way, since all `simp` rules are disabled.)
 
 * `finiteness (clause)` customizes the `aesop` call using the given clause. See `aesop` documentation
   for detailed explanation. Note that `finiteness` disables `simp`, so
