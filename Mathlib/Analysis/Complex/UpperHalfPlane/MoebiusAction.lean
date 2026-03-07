@@ -239,6 +239,70 @@ theorem neg_smul : -g • z = g • z := by
 lemma denom_one : denom 1 z = 1 := by
   simp [denom]
 
+section SLAction
+/-!
+## Action of the special linear group
+-/
+
+noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+  MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
+
+theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
+    ↑(g • z) =
+      (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
+      ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ))) := by
+  rw [MulAction.compHom_smul_def, coe_smul_of_det_pos (by simp)]
+  rfl
+
+theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
+    g • z = mk
+      (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
+      ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ)))
+      (coe_specialLinearGroup_apply g z ▸ (g • z).im_pos) := by
+  ext; simp [coe_specialLinearGroup_apply]
+
+/- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
+instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
+theorem modular_S_smul (z : ℍ) :
+    ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
+  rw [specialLinearGroup_apply]
+  simp [ModularGroup.S, neg_div, inv_neg]
+
+theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
+  rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, coe_specialLinearGroup_apply]
+  simp [ModularGroup.coe_T_zpow,
+    of_apply, cons_val_zero, Complex.ofReal_one, one_mul, cons_val_one,
+    zero_mul, zero_add, div_one]
+
+theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
+  simpa only [zpow_one, Int.cast_one] using modular_T_zpow_smul z 1
+
+theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 0 = 0) :
+    ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
+  obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
+  refine ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, ?_⟩
+  ext1 ⟨z, hz⟩; ext1
+  suffices ↑a * z * a + b * a = b * a + a * a * z by simpa [specialLinearGroup_apply, add_mul]
+  ring
+
+theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 0 ≠ 0) :
+    ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
+      (g • · : ℍ → ℍ) =
+        (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
+  have h_denom (z : ℍ) := denom_ne_zero g z
+  induction g using Matrix.SpecialLinearGroup.fin_two_induction with | _ a b c d h => ?_
+  replace hc : c ≠ 0 := by simpa using hc
+  refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
+  ext1 ⟨z, hz⟩; ext1
+  suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
+    simpa [modular_S_smul, coe_specialLinearGroup_apply]
+  replace hc : (c : ℂ) ≠ 0 := by norm_cast
+  replace h_denom : ↑c * z + d ≠ 0 := by simpa using h_denom ⟨z, hz⟩
+  replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
+  grind
+
+end SLAction
+
 section J
 /-!
 ## The anti-holomorphic involution `J`
@@ -255,22 +319,22 @@ lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
 
 @[simp] lemma J_sq : J ^ 2 = 1 := by ext; simp [J, sq, Matrix.one_fin_two]
 
-@[simp] lemma inv_J : J⁻¹ = J := by rw [inv_eq_iff_mul_eq_one, ← sq, J_sq]
-
 @[simp] lemma det_J : J.det = -1 := by ext; simp [J]
 
 @[simp] lemma sigma_J : σ J = Complex.conjCAE := by simp [σ, J]
 
-@[simp] lemma denom_J (τ : ℍ) : denom J τ = 1 := by simp [J, denom]
+@[simp] lemma denom_J (τ : ℂ) : denom J τ = 1 := by simp [J, denom]
+
+@[simp]
+lemma denom_J_mul (g : GL (Fin 2) ℝ) (τ : ℂ) : denom (J * g) τ = denom g τ := by
+  simp [denom, vecMul, vecHead, vecTail]
+
+@[simp] lemma inv_J : J⁻¹ = J := by rw [inv_eq_iff_mul_eq_one, ← sq, J_sq]
 
 @[simp] lemma J_smul_pos_smul_I {t : ℝ} (ht : 0 < t) :
     J • Subtype.mk t ht • I = Subtype.mk t ht • I := by
   ext
   simp [coe_J_smul]
-
-@[simp]
-lemma denom_J_mul (g : GL (Fin 2) ℝ) (τ : ℂ) : denom (J * g) τ = denom g τ := by
-  simp [denom, vecMul, vecHead, vecTail]
 
 end J
 
@@ -356,70 +420,6 @@ lemma forall_smul_eq_iff_of_det_eq_one {g : GL (Fin 2) ℝ} (hg : g.det = 1) :
     · exact ⟨-1, by ext; simp⟩
 
 end Stabilizer
-
-section SLAction
-/-!
-## Action of the special linear group
--/
-
-noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
-  MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
-
-theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
-    ↑(g • z) =
-      (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
-      ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ))) := by
-  rw [MulAction.compHom_smul_def, coe_smul_of_det_pos (by simp)]
-  rfl
-
-theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
-    g • z = mk
-      (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
-      ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ)))
-      (coe_specialLinearGroup_apply g z ▸ (g • z).im_pos) := by
-  ext; simp [coe_specialLinearGroup_apply]
-
-/- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
-instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
-theorem modular_S_smul (z : ℍ) :
-    ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
-  rw [specialLinearGroup_apply]
-  simp [ModularGroup.S, neg_div, inv_neg]
-
-theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
-  rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, coe_specialLinearGroup_apply]
-  simp [ModularGroup.coe_T_zpow,
-    of_apply, cons_val_zero, Complex.ofReal_one, one_mul, cons_val_one,
-    zero_mul, zero_add, div_one]
-
-theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
-  simpa only [zpow_one, Int.cast_one] using modular_T_zpow_smul z 1
-
-theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 0 = 0) :
-    ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
-  obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
-  refine ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, ?_⟩
-  ext1 ⟨z, hz⟩; ext1
-  suffices ↑a * z * a + b * a = b * a + a * a * z by simpa [specialLinearGroup_apply, add_mul]
-  ring
-
-theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 0 ≠ 0) :
-    ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
-      (g • · : ℍ → ℍ) =
-        (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
-  have h_denom (z : ℍ) := denom_ne_zero g z
-  induction g using Matrix.SpecialLinearGroup.fin_two_induction with | _ a b c d h => ?_
-  replace hc : c ≠ 0 := by simpa using hc
-  refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
-  ext1 ⟨z, hz⟩; ext1
-  suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
-    simpa [modular_S_smul, coe_specialLinearGroup_apply]
-  replace hc : (c : ℂ) ≠ 0 := by norm_cast
-  replace h_denom : ↑c * z + d ≠ 0 := by simpa using h_denom ⟨z, hz⟩
-  replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
-  grind
-
-end SLAction
 
 end UpperHalfPlane
 
