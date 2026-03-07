@@ -12,6 +12,8 @@ import Mathlib.Geometry.Manifold.Notation
 
 /-! # `mfderiv` and scalar multiplication -/
 
+@[expose] public section
+
 open Set
 open scoped Manifold ContDiff
 
