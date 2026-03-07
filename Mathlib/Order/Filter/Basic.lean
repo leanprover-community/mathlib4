@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.Filter.Defs
+public import Mathlib.Tactic.ToFun
 
 /-!
 # Theory of filters on sets
