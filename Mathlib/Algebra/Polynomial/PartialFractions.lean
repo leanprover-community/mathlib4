@@ -21,7 +21,7 @@ decomposes as `q + ∑ i j, rᵢⱼ / gᵢ ^ (j + 1)`.
 
 Since polynomials do not have a division, the main theorem
 `mul_prod_pow_inverse_eq_quo_add_sum_rem_mul_pow_inverse` is stated in an `R[X]`-algebra `K`
-containing inverses `giᵢ` for each polynomial `gᵢ` occuring in the denominator.
+containing inverses `giᵢ` for each polynomial `gᵢ` occurring in the denominator.
 
 
 These results were formalised by the Xena Project, at the suggestion
@@ -31,15 +31,15 @@ of Patrick Massot.
 ## Main results
 
 * `mul_prod_pow_inverse_eq_quo_add_sum_rem_mul_pow_inverse`: Partial fraction decomposition for
-  polynomials over a commutative ring `R`, the denomiator is a product of powers of
+  polynomials over a commutative ring `R`, the denominator is a product of powers of
   monic pairwise coprime polynomials. Division is done in an `R[X]`-algebra `K`
-  containing inverses `gi i` for each `g i` occuring in the denomiator.
+  containing inverses `gi i` for each `g i` occurring in the denominator.
 * `eq_quo_mul_prod_pow_add_sum_rem_mul_prod_pow`: Partial fraction decomposition for
-  polynomials over a commutative ring `R`, the denomiator is a product of powers of
+  polynomials over a commutative ring `R`, the denominator is a product of powers of
   monic pairwise coprime polynomials. The denominators are multiplied out on both sides
   and formally cancelled.
 * `eq_quo_mul_prod_add_sum_rem_mul_prod`: Partial fraction decomposition for
-  polynomials over a commutative ring `R`, the denomiator is a product of monic
+  polynomials over a commutative ring `R`, the denominator is a product of monic
   pairwise coprime polynomials. The denominators are multiplied out on both sides
   and formally cancelled.
 * `div_prod_eq_quo_add_sum_rem_div`: Partial fraction decomposition for polynomials over an

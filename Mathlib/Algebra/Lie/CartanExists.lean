@@ -201,7 +201,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- We separately consider the case `i = 0`.
   obtain rfl | hi0 := eq_or_ne i 0
   · -- `The polynomial `coeff χ 0` is zero if it evaluates to zero on all elements of `K`,
-    -- provided that its degree is stictly less than `#K`.
+    -- provided that its degree is strictly less than `#K`.
     apply eq_zero_of_forall_eval_zero_of_natDegree_lt_card _ _ ?deg
     case deg =>
       -- We need to show `(natDegree (coeff χ 0)) < #K` and know that `finrank K L ≤ #K`
