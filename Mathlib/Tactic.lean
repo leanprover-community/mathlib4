@@ -311,6 +311,7 @@ public import Mathlib.Tactic.Translate.ToDual
 public import Mathlib.Tactic.Translate.UnfoldBoundary
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Tactic.TypeCheck
+public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.UnsetOption
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.Variable
