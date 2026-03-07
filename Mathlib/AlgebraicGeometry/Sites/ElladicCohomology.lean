@@ -43,17 +43,6 @@ universe u
 
 open CategoryTheory Limits
 
-namespace CategoryTheory
-
-noncomputable def Sheaf.isTerminalOfEqTop {C A : Type*} [Category* C] [Category* A]
-    (J : GrothendieckTopology C) (H : J = ⊤) (F : Sheaf J A) :
-    IsTerminal F := by
-  refine IsTerminal.isTerminalOfObj (sheafToPresheaf _ _) _ ?_
-  refine Functor.isTerminal fun X ↦ Sheaf.isTerminalOfBotCover _ _ ?_
-  simp [H]
-
-end CategoryTheory
-
 namespace AlgebraicGeometry.Scheme
 
 variable (X : Scheme.{u})

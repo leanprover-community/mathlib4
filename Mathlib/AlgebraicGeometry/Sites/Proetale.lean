@@ -10,6 +10,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
+public import Mathlib.CategoryTheory.Comma.Over.StrictInitial
 public import Mathlib.CategoryTheory.MorphismProperty.CommaSites
 public import Mathlib.CategoryTheory.Sites.Subcanonical
 public import Mathlib.CategoryTheory.Sites.SubcanonicalOver
@@ -39,35 +40,6 @@ over `S` and equip it with the induced topology.
 universe v u
 
 open CategoryTheory MorphismProperty Limits
-
-namespace CategoryTheory
-
-set_option backward.isDefEq.respectTransparency false in
-noncomputable
-def overEquivOfIsInitial {C : Type*} [Category* C] [HasStrictInitialObjects C] (X : C)
-    (h : IsInitial X) :
-    Over X ≌ PUnit where
-  functor := (Functor.const _).obj ⟨⟩
-  inverse := (Functor.const _).obj (.mk (𝟙 X))
-  unitIso := NatIso.ofComponents fun A ↦
-    haveI := h.isIso_to A.hom
-    Over.isoMk (asIso A.hom)
-  counitIso := Iso.refl _
-
-set_option backward.isDefEq.respectTransparency false in
-noncomputable
-def MorphismProperty.overEquivOfIsInitial {C : Type*} [Category* C] [HasStrictInitialObjects C]
-    (P Q : MorphismProperty C) [P.ContainsIdentities] [Q.IsMultiplicative] [Q.RespectsIso]
-    (X : C) (h : IsInitial X) :
-    P.Over Q X ≌ PUnit where
-  functor := (Functor.const _).obj ⟨⟩
-  inverse := (Functor.const _).obj (.mk _ (𝟙 X) (P.id_mem _))
-  unitIso := NatIso.ofComponents fun A ↦
-    haveI := h.isIso_to A.hom
-    Over.isoMk (asIso A.hom)
-  counitIso := Iso.refl _
-
-end CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 
