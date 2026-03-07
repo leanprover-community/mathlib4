@@ -565,7 +565,12 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
   -- 步骤 6: 利用 |F'''(x)| ≤ M 得到最终误差界
   have h_pos : 0 < b - a := by linarith [a_lt_b]
   have h_abs_bound : |E| ≤ (|(iteratedDerivWithin 3 F (Icc a b) ξ₁)| +
-                           |(iteratedDerivWithin 3 F (Icc a b) ξ₂)|) * (b - a) ^ 3 / 48 := by sorry
+                           |(iteratedDerivWithin 3 F (Icc a b) ξ₂)|) * (b - a) ^ 3 / 48 := by
+    rw [h_E_simplified]
+    have h_ba3_nn : (0 : ℝ) ≤ (b - a) ^ 3 := by positivity
+    rw [abs_div, abs_mul, abs_of_nonneg h_ba3_nn, abs_of_pos (by norm_num : (0:ℝ) < 48)]
+    gcongr
+    exact abs_add_le _ _
 
   have h_fpp_xi1 : |(iteratedDerivWithin 3 F (Icc a b) ξ₁)| ≤ M := by
     apply fpp_bound
@@ -573,7 +578,11 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
   have h_fpp_xi2 : |(iteratedDerivWithin 3 F (Icc a b) ξ₂)| ≤ M := by
     apply fpp_bound
 
-  have h_final_bound : |E| ≤ (b - a) ^ 3 * M / 24 := by sorry
+  have h_final_bound : |E| ≤ (b - a) ^ 3 * M / 24 := by
+    calc |E| ≤ (|(iteratedDerivWithin 3 F (Icc a b) ξ₁)| +
+               |(iteratedDerivWithin 3 F (Icc a b) ξ₂)|) * (b - a) ^ 3 / 48 := h_abs_bound
+      _ ≤ (M + M) * (b - a) ^ 3 / 48 := by gcongr
+      _ = (b - a) ^ 3 * M / 24 := by ring
 
   -- 结论
   rw [hE_def] at h_final_bound
