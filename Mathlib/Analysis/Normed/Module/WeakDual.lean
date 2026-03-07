@@ -19,96 +19,56 @@ topology on the dual of `E`. By the dual, we mean either of the type synonyms
 `StrongDual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with its usual
 operator norm topology or the weak-* topology.
 
-It is shown that the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous, and
-as a consequence the weak-* topology is coarser than the topology obtained from the operator norm
-(dual norm).
-
 The file also equips `WeakDual 𝕜 E` with the norm bornology inherited from `StrongDual 𝕜 E`, so
-that `IsBounded` refers to operator-norm boundedness. This is the natural choice: by the Uniform
-Boundedness Principle, norm-boundedness and pointwise-boundedness coincide when `E` is a Banach
-space (`isBounded_iff_pointwise_bounded`).
+that `IsBounded` refers to operator-norm boundedness. This is a pragmatic choice discussed
+further in the implementation notes.
 
-We establish the Banach-Alaoglu theorem about the compactness of closed balls in the dual of `E`
-(as well as sets of somewhat more general form) with respect to the weak-* topology.
+Main results include:
+* The canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous.
+* The weak-* topology is coarser than the operator norm topology.
+* The Banach-Alaoglu theorem: closed balls and polar sets are compact in the weak-* topology.
+* Sequential Banach-Alaoglu: for separable `E`, the dual unit ball is sequentially compact.
 
 ## Main definitions
 
-The main definitions concern the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E`.
-
-* `StrongDual.toWeakDual` and `WeakDual.toStrongDual`: Linear equivalences from `StrongDual 𝕜 E` to
-  `WeakDual 𝕜 E` and in the converse direction.
-* `NormedSpace.Dual.continuousLinearMapToWeakDual`: A continuous linear mapping from
-  `StrongDual 𝕜 E` to `WeakDual 𝕜 E` (same as `StrongDual.toWeakDual` but different bundled data).
-* `WeakDual.instBornology`: The `Bornology` instance on `WeakDual 𝕜 E` is the **norm bornology**,
-  i.e. a set is bounded iff it is bounded in the operator norm. Note that this is *not* the von
-  Neumann bornology induced by the weak-* topology; that notion of boundedness (pointwise
-  boundedness on `E`) is instead captured by `Bornology.IsVonNBounded`.
+* `StrongDual.toWeakDual` and `WeakDual.toStrongDual`: Linear equivalences between the dual types.
+* `WeakDual.instBornology`: The norm bornology on `WeakDual 𝕜 E`.
 * `WeakDual.polar`: The polar set of `s : Set E` viewed as a subset of `WeakDual 𝕜 E`.
 
 ## Main results
 
-The first main result concerns the comparison of the operator norm topology on `StrongDual 𝕜 E` and
-the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
-* `dual_norm_topology_le_weak_dual_topology`: The weak-* topology on the dual of a normed space is
-  coarser (not necessarily strictly) than the operator norm topology.
+### Topology comparison
+* `dual_norm_topology_le_weak_dual_topology`: The weak-* topology is coarser than the norm topology.
 
-Bornology and pointwise bounds:
-* `WeakDual.isVonNBounded_iff_pointwise_bounded`: A set in `WeakDual 𝕜 E` is von Neumann bounded
-  iff it is pointwise bounded.
-* `WeakDual.isBounded_iff_isVonNBounded`: When `E` is complete, norm-boundedness and weak-star
-  boundedness coincide on `WeakDual 𝕜 E`, by Banach-Steinhaus.
-* `WeakDual.isBounded_iff_pointwise_bounded`: In the weak dual of a Banach space, norm-boundedness
-  and pointwise-boundedness coincide (by the Uniform Boundedness Principle).
+### Bornology and pointwise bounds
+* `WeakDual.isVonNBounded_iff_pointwise_bounded`: Characterization of weak-* boundedness.
+* `WeakDual.isBounded_iff_isVonNBounded`: Equivalence of norm and weak-* boundedness for
+  Banach spaces.
+* `WeakDual.isBounded_iff_pointwise_bounded`: Equivalence of norm and pointwise boundedness.
 
-Compactness:
-* `WeakDual.isCompact_of_bounded_of_closed`: Bounded closed sets in `WeakDual 𝕜 E` are compact
-  when `𝕜` is a proper space.
-* `WeakDual.isCompact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
-  neighborhood of the origin in a normed space `E` over `𝕜` is compact in `WeakDual _ E`, if the
-  nontrivially normed field `𝕜` is proper as a topological space.
-* `WeakDual.isCompact_closedBall` (the most common special case of the Banach-Alaoglu theorem):
-  Closed balls in the dual of a normed space `E` over `ℝ` or `ℂ` are compact in the weak-star
-  topology.
-
-Metrizability and sequential compactness (for separable `E`):
-* `WeakDual.metrizable_of_isCompact`: Compact subsets of the weak dual of a separable normed space
-  are metrizable.
-* `WeakDual.isSeqCompact_polar` (sequential Banach-Alaoglu): The polar set of a neighborhood of
-  the origin is sequentially compact.
-* `WeakDual.isSeqCompact_closedBall` (sequential Banach-Alaoglu): Closed balls are sequentially
-  compact.
-
-## TODO
-* Add that in finite dimensions, the weak-* topology and the dual norm topology coincide.
-* Add that in infinite dimensions, the weak-* topology is strictly coarser than the dual norm
-  topology.
+### Compactness and Banach-Alaoglu
+* `WeakDual.isCompact_polar`: Polars of neighborhoods of the origin are weak-* compact.
+* `WeakDual.isCompact_closedBall`: Closed balls are weak-* compact.
+* `WeakDual.isSeqCompact_closedBall`: Sequential version for separable spaces.
 
 ## Implementation notes
 
-Weak-* topology is defined generally in the file `Mathlib/Topology/Algebra/Module/WeakDual.lean`.
-
-When `M` is a vector space, the duals `StrongDual 𝕜 M` and `WeakDual 𝕜 M` are type synonyms with
-different topology instances.
-
-For the proof of Banach-Alaoglu theorem, the weak dual of `E` is embedded in the space of
-functions `E → 𝕜` with the topology of pointwise convergence.
-
-The polar set `polar 𝕜 s` of a subset `s` of `E` is originally defined as a subset of the dual
-`StrongDual 𝕜 E`. We care about properties of these w.r.t. weak-* topology, and for this purpose
-give the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a subset of `WeakDual 𝕜 E`
-(a type synonym of the dual but with a different topology instance).
-
-The `Bornology` instance on `WeakDual 𝕜 E` is inherited from `StrongDual 𝕜 E` via
-`inferInstanceAs` and corresponds to the operator-norm bornology. This is a deliberate but
-non-obvious choice: morally, the natural bornology on a weak-* space is the one induced by the
-weak-* topology (pointwise boundedness). We use the norm bornology instead because it is the
-more useful notion in practice — for instance, it allows `Bornology.IsBounded` to be used
-directly in statements like Banach-Alaoglu — and because pointwise boundedness is always
-accessible via `Bornology.IsVonNBounded`. The two notions coincide when `E` is complete, by
-Banach-Steinhaus (`isBounded_iff_isVonNBounded`).
+* **Topology synonym:** When `M` is a vector space, the duals `StrongDual 𝕜 M` and `WeakDual 𝕜 M`
+  are type synonyms with different topology instances.
+* **Bornology choice:** The `Bornology` instance on `WeakDual 𝕜 E` is inherited from
+  `StrongDual 𝕜 E` via `inferInstanceAs` and corresponds to the operator-norm bornology.
+  While the natural bornology for a weak topology is technically the von Neumann bornology
+  (pointwise boundedness), we use the norm bornology for several pragmatic reasons:
+  1. **Practicality:** In the normed setting, "bounded" is almost universally synonymous with
+     "norm-bounded". This allows `IsBounded` to be used directly in statements like Banach-Alaoglu.
+  2. **Clarity:** It preserves a clear distinction between norm-boundedness (`IsBounded`) and
+     topological weak-* boundedness (`IsVonNBounded`).
+  3. **Consistency:** By the Uniform Boundedness Principle, these notions coincide whenever
+     `E` is a Banach space (`isBounded_iff_isVonNBounded`).
+* **Banach-Alaoglu Proof:** The weak dual of `E` is embedded in the space of functions `E → 𝕜`
+  with the topology of pointwise convergence.
 
 ## References
-
 * https://en.wikipedia.org/wiki/Weak_topology#Weak-*_topology
 * https://en.wikipedia.org/wiki/Banach%E2%80%93Alaoglu_theorem
 
@@ -185,25 +145,28 @@ theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongD
 
 section Bornology
 
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-/-- The bornology on `WeakDual 𝕜 F` is the norm bornology, i.e. the one coming from the operator
-norm on `StrongDual 𝕜 F`. This is *not* the von Neumann bornology induced by the weak-* topology
-(which would declare a set bounded iff it is pointwise bounded on `F`). The norm bornology is
-chosen here for practical reasons: it allows `Bornology.IsBounded` to be used conveniently in
-norm-based statements such as Banach-Alaoglu. Pointwise (weak-star) boundedness is still
-accessible via `Bornology.IsVonNBounded`. When `F` is complete, the two notions agree by
-Banach-Steinhaus. See the module docstring for further discussion. -/
-instance instBornology : Bornology (WeakDual 𝕜 F) := inferInstanceAs (Bornology (StrongDual 𝕜 F))
+/-- The bornology on `WeakDual 𝕜 F` is the norm bornology inherited from `StrongDual 𝕜 F`.
 
-/-- A set in `WeakDual 𝕜 F` is bounded iff its image in `StrongDual 𝕜 F` is bounded. -/
+Note: This is a pragmatic choice. Morally, the bornology of a weak topology should be
+the von Neumann bornology (pointwise boundedness). However, in the normed setting,
+`IsBounded` is most useful when referring to the operator norm (e.g., to state
+Banach-Alaoglu concisely).
+
+Pointwise boundedness is instead captured by `Bornology.IsVonNBounded`.
+For Banach spaces, these notions coincide via `isBounded_iff_isVonNBounded`.
+See the module docstring for a detailed discussion. -/
+instance instBornology : Bornology (WeakDual 𝕜 E) := inferInstanceAs (Bornology (StrongDual 𝕜 E))
+
+/-- A set in `WeakDual 𝕜 E` is bounded iff its image in `StrongDual 𝕜 E` is bounded. -/
 @[simp]
-theorem isBounded_toStrongDual_preimage {s : Set (StrongDual 𝕜 F)} :
+theorem isBounded_toStrongDual_preimage {s : Set (StrongDual 𝕜 E)} :
     IsBounded (WeakDual.toStrongDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
 
-/-- A set in `StrongDual 𝕜 F` is bounded iff its image in `WeakDual 𝕜 F` is bounded. -/
+/-- A set in `StrongDual 𝕜 E` is bounded iff its image in `WeakDual 𝕜 E` is bounded. -/
 @[simp]
-theorem isBounded_toWeakDual_preimage {s : Set (WeakDual 𝕜 F)} :
+theorem isBounded_toWeakDual_preimage {s : Set (WeakDual 𝕜 E)} :
     IsBounded (StrongDual.toWeakDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
 
 end Bornology
@@ -253,10 +216,13 @@ open NormedSpace
 /-!
 ### Bornology and pointwise bounds
 
-The default bornology on `WeakDual 𝕜 E` is the operator-norm bornology (see `instBornology`).
-A weaker notion is von Neumann boundedness (`IsVonNBounded`), which for the weak-* topology
-amounts to pointwise boundedness (`isVonNBounded_iff_pointwise_bounded`). When `E` is a Banach
-space, the two coincide by the Uniform Boundedness Principle (`isBounded_iff_isVonNBounded`).
+This section relates the inherited norm bornology (`IsBounded`) to the intrinsic
+von Neumann bornology of the weak-* topology (`IsVonNBounded`).
+
+We characterize the von Neumann bornology as pointwise boundedness
+(`isVonNBounded_iff_pointwise_bounded`). The following results justify using the norm
+bornology as the default instance: by the Uniform Boundedness Principle, it coincides
+with the von Neumann bornology whenever $E$ is a Banach space.
 -/
 
 /-- A set in the weak dual is von Neumann bounded iff it is pointwise bounded. -/
@@ -409,7 +375,7 @@ lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → 𝕜
   · intro w y w_ne_y
     contrapose! w_ne_y
     exact DFunLike.ext'_iff.mpr <| (map_continuous w).ext_on
-      (denseRange_denseSeq V) (map_continuous y) (by grind [Set.eqOn_range])
+      (denseRange_denseSeq V) (map_continuous y) (Set.eqOn_range.mpr (funext w_ne_y))
 
 /-- A compact subset of the weak dual of a separable normed space is metrizable. -/
 lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableSpace K := by
