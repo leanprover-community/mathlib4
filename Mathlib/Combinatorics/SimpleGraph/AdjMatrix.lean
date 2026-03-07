@@ -76,7 +76,8 @@ theorem apply_ne_one_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A
 theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
     ¬A i j = 0 ↔ A i j = 1 := by rw [← apply_ne_one_iff h, Classical.not_not]
 
-theorem isHermitian [NonAssocSemiring α] [StarRing α] (h : A.IsAdjMatrix) : A.IsHermitian := by
+@[simp]
+protected theorem isHermitian [NonAssocSemiring α] [StarRing α] (h : A.IsAdjMatrix) : A.IsHermitian := by
   ext i j
   rcases h.zero_or_one i j with heq | heq
     <;> simp [heq, h.symm.apply]
