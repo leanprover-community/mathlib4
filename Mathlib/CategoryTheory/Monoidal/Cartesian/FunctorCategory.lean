@@ -30,8 +30,8 @@ variable {J C D E : Type*} [Category* J] [Category* C] [Category* D] [Category* 
 namespace Functor
 
 instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
-  fst X Y := {app _ := CartesianMonoidalCategory.fst _ _}
-  snd X Y := {app _ := CartesianMonoidalCategory.snd _ _}
+  fst X Y := { app _ := CartesianMonoidalCategory.fst _ _ }
+  snd X Y := { app _ := CartesianMonoidalCategory.snd _ _ }
   tensorProductIsBinaryProduct X Y :=
     evaluationJointlyReflectsLimits _ (fun j =>
       (IsLimit.postcomposeHomEquiv
@@ -58,13 +58,13 @@ instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
     subsingleton
 
 @[deprecated (since := "2026-03-07")] alias chosenTerminal := MonoidalCategory.tensorUnit
-@[deprecated (since := "2026-03-07")] alias chosenTerminal.chosenTerminalIsTerminal :=
+@[deprecated (since := "2026-03-07")] alias chosenTerminalIsTerminal :=
   CartesianMonoidalCategory.isTerminalTensorUnit
 
 @[deprecated (since := "2026-03-07")] alias chosenProd := MonoidalCategory.tensorObj
 @[deprecated (since := "2026-03-07")] alias chosenProd.fst := CartesianMonoidalCategory.fst
 @[deprecated (since := "2026-03-07")] alias chosenProd.snd := CartesianMonoidalCategory.snd
-@[deprecated (since := "2026-03-07")] alias chosenProd.isLimit := CartesianMonoidalCategory.snd
+@[deprecated (since := "2026-03-07")] alias chosenProd.isLimit := CartesianMonoidalCategory.tensorProductIsBinaryProduct
 
 namespace Monoidal
 
