@@ -5,6 +5,8 @@ Authors: Etienne Marion
 -/
 module
 
+public import Mathlib.MeasureTheory.Constructions.Projective
+public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 public import Mathlib.Probability.Distributions.Gaussian.Fernique
 public import Mathlib.Probability.Distributions.Gaussian.Multivariate
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
@@ -103,18 +105,20 @@ lemma integral_id_gaussianProjectiveFamily (I : Finset ℝ≥0) :
 lemma integral_id_gaussianProjectiveFamily' (I : Finset ℝ≥0) :
     ∫ x, id x ∂(gaussianProjectiveFamily I) = 0 := integral_id_gaussianProjectiveFamily I
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped RealInnerProductSpace in
 lemma covariance_eval_gaussianProjectiveFamily (I : Finset ℝ≥0) (s t : I) :
     cov[fun x ↦ x s, fun x ↦ x t; gaussianProjectiveFamily I] = min s.1 t.1 := by
   rw [gaussianProjectiveFamily, covariance_map_equiv]
   change cov[fun x : EuclideanSpace ℝ I ↦ x s, fun x ↦ x t; _] = _
   have (u : I) : (fun x : EuclideanSpace ℝ I ↦ x u) =
-      fun x ↦ ⟪EuclideanSpace.basisFun I ℝ u, x⟫ := by ext; simp [PiLp.inner_apply]
+      fun x ↦ ⟪EuclideanSpace.basisFun I ℝ u, x⟫ := by ext x; simp [PiLp.inner_apply]
   rw [this, this, ← covarianceBilin_apply_eq_cov,
-    covarianceBilin_multivariateGaussian (posSemidef_brownianCovMatrix I),
-    ContinuousBilinForm.ofMatrix_orthonormalBasis, brownianCovMatrix_apply]
-  exact IsGaussian.memLp_two_id
+    covarianceBilin_multivariateGaussian (posSemidef_brownianCovMatrix I)]
+  · simp [brownianCovMatrix]
+  · exact IsGaussian.memLp_two_id
 
+set_option backward.isDefEq.respectTransparency false in
 lemma variance_eval_gaussianProjectiveFamily {I : Finset ℝ≥0} (s : I) :
     Var[fun x ↦ x s; gaussianProjectiveFamily I] = s := by
   rw [← covariance_self, covariance_eval_gaussianProjectiveFamily, min_self]
@@ -124,14 +128,13 @@ lemma hasLaw_eval_gaussianProjectiveFamily {I : Finset ℝ≥0} (s : I) :
     HasLaw (fun x ↦ x s) (gaussianReal 0 s) (gaussianProjectiveFamily I) where
   aemeasurable := Measurable.aemeasurable <| by fun_prop
   map_eq := by
-    rw [HasGaussianLaw.map_eq_gaussianReal, variance_eval_gaussianProjectiveFamily,
-      Real.toNNReal_coe]
-    swap
-    · exact IsGaussian.hasGaussianLaw_id.eval s
+    rw [(IsGaussian.hasGaussianLaw_id.eval s).map_eq_gaussianReal,
+      variance_eval_gaussianProjectiveFamily, Real.toNNReal_coe]
     conv => enter [1, 1, 2]; change fun x ↦ ContinuousLinearMap.proj (R := ℝ) s x
     rw [ContinuousLinearMap.integral_comp_id_comm, integral_id_gaussianProjectiveFamily, map_zero]
     exact IsGaussian.integrable_id
 
+set_option backward.isDefEq.respectTransparency false in
 open ContinuousLinearMap in
 lemma hasLaw_eval_sub_eval_gaussianProjectiveFamily (I : Finset ℝ≥0) (s t : I) :
     HasLaw ((fun x ↦ x s - x t)) (gaussianReal 0 (max (s - t) (t - s)))
@@ -146,8 +149,12 @@ lemma hasLaw_eval_sub_eval_gaussianProjectiveFamily (I : Finset ℝ≥0) (s t : 
           proj (R := ℝ) (φ := fun i : I ↦ ℝ) t) x
       rw [integral_comp_id_comm, integral_id_gaussianProjectiveFamily, map_zero]
       · norm_cast
-        rw [sub_add_eq_add_sub, ← NNReal.coe_add, ← NNReal.coe_sub, Real.toNNReal_coe,
-          NNReal.add_sub_two_mul_min_eq_max]
+        rw [sub_add_eq_add_sub, ← NNReal.coe_add, ← NNReal.coe_sub, Real.toNNReal_coe]
+        · wlog hst : (s : ℝ≥0) ≤ t generalizing s t
+          · convert this t s (le_of_not_ge hst) using 1
+            · rw [add_comm, min_comm]
+            · rw [max_comm]
+          grw [min_eq_left hst, max_eq_right (by grw [hst]), two_mul, add_tsub_add_eq_tsub_left]
         nth_grw 1 [two_mul, min_le_left, min_le_right]
       · exact IsGaussian.integrable_id
     · exact (IsGaussian.hasGaussianLaw_id.eval s).memLp_two
@@ -163,7 +170,7 @@ lemma isProjectiveMeasureFamily_gaussianProjectiveFamily :
         (MeasurableEquiv.toLp 2 (J → ℝ)).symm ∘ (EuclideanSpace.restrict₂ hJI) := by
       ext; simp
     rw [this, ((measurePreserving_equiv_multivariateGaussian J).comp
-      (measurePreserving_restrict_multivariateGaussian
+      (measurePreserving_restrict₂_multivariateGaussian
         (posSemidef_brownianCovMatrix I) hJI)).map_eq]
   · exact Finset.measurable_restrict₂ _ -- fun_prop fails
   · fun_prop
@@ -173,3 +180,5 @@ lemma measurePreserving_restrict_gaussianProjectiveFamily {I J : Finset ℝ≥0}
       (gaussianProjectiveFamily I) where
   measurable := Finset.measurable_restrict₂ _
   map_eq := isProjectiveMeasureFamily_gaussianProjectiveFamily J I hIJ |>.symm
+
+end ProbabilityTheory

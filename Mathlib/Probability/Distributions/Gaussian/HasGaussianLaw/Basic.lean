@@ -77,6 +77,12 @@ lemma HasGaussianLaw.map_of_measurable {F : Type*} [TopologicalSpace F] [AddComm
     · exact isGaussian_map_of_measurable hL
     all_goals fun_prop
 
+lemma HasGaussianLaw.map_eq_gaussianReal {X : Ω → ℝ} (h : HasGaussianLaw X P) :
+    P.map X = gaussianReal P[X] Var[X; P].toNNReal := by
+  rw [h.isGaussian_map.eq_gaussianReal (.map _ _), integral_map, variance_map]
+  · rfl
+  all_goals fun_prop
+
 end Basic
 
 namespace HasGaussianLaw
