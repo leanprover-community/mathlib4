@@ -86,8 +86,8 @@ protected theorem Splits.map {f : R[X]} (hf : Splits f) {S : Type*} [Semiring S]
   induction hf using Submonoid.closure_induction <;> aesop
 
 theorem splits_of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
-    Splits f :=
-  (natDegree_eq_zero.mp hf).choose_spec ▸ by aesop
+    Splits f := by
+  rw [← (natDegree_eq_zero.mp hf).choose_spec]; aesop
 
 theorem splits_of_degree_le_zero {f : R[X]} (hf : degree f ≤ 0) :
     Splits f :=
@@ -266,7 +266,7 @@ theorem Splits.exists_eval_eq_zero (hf : Splits f) (hf0 : degree f ≠ 0) :
   · rw [hm, Multiset.map_zero, Multiset.prod_zero, mul_one, degree_C hf₀] at hf0
     contradiction
   obtain ⟨m, rfl⟩ := Multiset.exists_cons_of_mem ha
-  exact ⟨a, hm ▸ by simp⟩
+  exact ⟨a, by rw [hm]; simp⟩
 
 /-- Pick a root of a polynomial that splits. -/
 noncomputable def rootOfSplits (hf : f.Splits) (hfd : f.degree ≠ 0) : R :=
@@ -484,7 +484,7 @@ theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
 
 theorem Splits.of_dvd (hg : Splits g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Splits f := by
   obtain ⟨g, rfl⟩ := hfg
-  exact ((splits_mul_iff (by aesop) (by aesop)).mp hg).1
+  exact ((splits_mul_iff (by simp_all) (by simp_all)).mp hg).1
 
 @[deprecated (since := "2025-11-27")]
 alias Splits.splits_of_dvd := Splits.of_dvd
@@ -527,7 +527,7 @@ variable [DivisionSemiring R]
 theorem Splits.of_natDegree_le_one {f : R[X]} (hf : natDegree f ≤ 1) : Splits f := by
   obtain ⟨a, b, rfl⟩ := exists_eq_X_add_C_of_natDegree_le_one hf
   by_cases ha : a = 0
-  · aesop
+  · simp_all
   · rw [← mul_inv_cancel_left₀ ha b, C_mul, ← mul_add]
     exact (X_add_C (a⁻¹ * b)).C_mul a
 

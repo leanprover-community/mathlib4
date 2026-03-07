@@ -137,7 +137,6 @@ lemma one_le_norm_A_of_ne_zero (hA : A ≠ 0) : 1 ≤ ‖A‖ := by
 
 open Real Nat
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
     (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α) :
     #S < #T := by

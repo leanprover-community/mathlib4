@@ -22,13 +22,13 @@ is an isomorphism iff `Z` belongs to `W.isLocal` (see the lemma `isIso_toSucc_if
 The morphism `toSucc W Z : Z ⟶ succ W Z` is defined as a composition
 of two morphisms that are roughly described as follows:
 * `toStep W Z : Z ⟶ step W Z`: for any morphism `f : X ⟶ Y` satisfying `W`
-and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
-coproducts and a pushout in essentially the same way as it is done in
-the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` for the small object
-argument);
+  and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
+  coproducts and a pushout in essentially the same way as it is done in
+  the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` for the small object
+  argument);
 * `fromStep W Z : step W Z ⟶ succ W Z`: this morphism coequalizes all pairs
-of morphisms `g₁ g₂ : Y ⟶ step W Z` such that there is a `f : X ⟶ Y`
-satisfying `W` such that `f ≫ g₁ = f ≫ g₂`.
+  of morphisms `g₁ g₂ : Y ⟶ step W Z` such that there is a `f : X ⟶ Y`
+  satisfying `W` such that `f ≫ g₁ = f ≫ g₂`.
 
 The morphism `toSucc W Z : Z ⟶ succ W Z` is a variant of the (wrong) definition
 p. 32 in the book by Adámek and Rosický. In this book, a slightly different object
@@ -48,9 +48,9 @@ of morphisms in a locally `κ`-presentable category `C` (with `κ : Cardinal.{w}
 a regular cardinal) such that the domains and codomains of the morphisms
 satisfying `W` are `κ`-presentable:
 * `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
-of the inclusion `W.isLocal ⥤ C`;
+  of the inclusion `W.isLocal ⥤ C`;
 * `MorphismProperty.isLocallyPresentable_isLocal`: the full subcategory
-`W.isLocal` is locally presentable.
+  `W.isLocal` is locally presentable.
 
 This is essentially the implication (i) → (ii) in Theorem 1.39 (and the corollary 1.40)
 in the book by Adámek and Rosický (note that according to the
