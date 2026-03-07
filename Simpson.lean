@@ -217,7 +217,90 @@ theorem sum_simpson_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ
   rw [h2]
   -- 证明积分部分：相邻区间上的积分之和等于整个区间上的积分
   have h3 : ∑ i ∈ range N, ∫ x in a + i * h..a + (i + 1) * h, f x = ∫ x in a..a + N * h, f x := by
-    sorry
+    -- 定义序列 a' : ℕ → ℝ 为 a' k = a + k * h
+    let a' : ℕ → ℝ := fun k => a + k * h
+    -- 证明每个小区间上的可积性
+    have h_int : ∀ k < N, IntervalIntegrable f volume (a' k) (a' (k + 1)) := by
+      intro k hk
+      -- 从大区间的可积性推出小区间的可积性
+      apply h_f_int.mono_set
+      -- 使用 Set.uIcc_subset_uIcc：需要证明 a' k 和 a' (k+1) 都在 [[a' 0, a' N]] 中
+      apply Set.uIcc_subset_uIcc
+      · -- 证明 a' k ∈ [[a' 0, a' N]]
+        simp only [Set.mem_uIcc, a']
+        -- 即证明：a ≤ a + k*h ≤ a + N*h 或 a + N*h ≤ a + k*h ≤ a
+        rcases lt_trichotomy 0 h with hh | hh | hh
+        · -- h > 0 时，a' 单调递增
+          left
+          constructor
+          · nlinarith
+          · -- 证明 k*h ≤ N*h
+            have : (k : ℝ) ≤ N := Nat.cast_le.2 hk.le
+            nlinarith
+        · -- h = 0 时
+          left
+          constructor <;> nlinarith
+        · -- h < 0 时，a' 单调递减
+          right
+          constructor
+          · -- 证明 N*h ≤ k*h
+            have : (k : ℝ) ≤ N := Nat.cast_le.2 hk.le
+            nlinarith
+          · nlinarith
+      · -- 证明 a' (k + 1) ∈ [[a' 0, a' N]]
+        simp only [Set.mem_uIcc, a']
+        -- 即证明：a ≤ a + (k+1)*h ≤ a + N*h 或 a + N*h ≤ a + (k+1)*h ≤ a
+        rcases lt_trichotomy 0 h with hh | hh | hh
+        · -- h > 0 时，a' 单调递增
+          left
+          constructor
+          · nlinarith
+          · -- 证明 (k+1)*h ≤ N*h
+            have : (k + 1 : ℝ) ≤ N := by
+              norm_cast
+            -- 使用 mul_le_mul_of_nonneg_right
+            have : (1 + ↑k) * h ≤ ↑N * h := by
+              convert mul_le_mul_of_nonneg_right this hh.le using 1
+              ring_nf
+            -- 两边同时加上 a
+            have : a + (1 + ↑k) * h ≤ a + ↑N * h := by linarith
+            -- 规范化表达式：a + ↑(k + 1) * h = a + (1 + ↑k) * h
+            have h_eq : a + ↑(k + 1) * h = a + (1 + ↑k) * h := by
+              norm_cast
+              ring_nf
+            rw [h_eq]
+            exact this
+        · -- h = 0 时
+          left
+          constructor <;> nlinarith
+        · -- h < 0 时，a' 单调递减
+          right
+          constructor
+          · -- 证明 N*h ≤ (k+1)*h
+            have : (k + 1 : ℝ) ≤ N := by
+              norm_cast
+            -- 使用 mul_le_mul_of_nonpos_left
+            have : ↑N * h ≤ (1 + ↑k) * h := by
+              convert mul_le_mul_of_nonpos_left this hh.le using 1
+              <;> ring_nf
+            -- 两边同时加上 a
+            have : a + ↑N * h ≤ a + (1 + ↑k) * h := by linarith
+            -- 规范化表达式
+            have h_eq : a + ↑(k + 1) * h = a + (1 + ↑k) * h := by
+              norm_cast
+              ring_nf
+            rw [h_eq]
+            exact this
+          · nlinarith
+    -- 应用 sum_integral_adjacent_intervals
+    have h_sum : ∑ k ∈ range N, ∫ x in a' k..a' (k + 1), f x = ∫ x in a' 0..a' N, f x :=
+      sum_integral_adjacent_intervals h_int
+    -- 化简
+    convert h_sum using 1
+    · apply Finset.sum_congr rfl
+      intro k _
+      simp [a']
+    · simp [a']
   rw [h3]
 
 /-- The most basic case: error bound for the midpoint rule on a single interval with ordered endpoints.
