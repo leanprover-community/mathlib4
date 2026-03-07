@@ -81,7 +81,7 @@ theorem EventuallySubset.countable_iUnion [Countable ι] {s t : ι → Set α}
   (eventually_countable_forall.2 h).mono fun _ hst hs => mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_iUnion :=
-  EventuallyLE.countable_iUnion
+  EventuallySubset.countable_iUnion
 
 theorem EventuallyEqSet.countable_iUnion [Countable ι] {s t : ι → Set α}
     (h : ∀ i, s i =ᶠˢ[l] t i) :
@@ -90,7 +90,7 @@ theorem EventuallyEqSet.countable_iUnion [Countable ι] {s t : ι → Set α}
     (.countable_iUnion fun i => (h i).symm.le)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_iUnion :=
-  EventuallyEq.countable_iUnion
+  EventuallyEqSet.countable_iUnion
 
 theorem EventuallySubset.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ⊆ᶠ[l] t i hi) :
@@ -100,7 +100,7 @@ theorem EventuallySubset.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Coun
   exact EventuallySubset.countable_iUnion fun i => h i i.2
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_bUnion :=
-  EventuallyLE.countable_bUnion
+  EventuallySubset.countable_bUnion
 
 theorem EventuallyEqSet.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠˢ[l] t i hi) :
@@ -109,7 +109,7 @@ theorem EventuallyEqSet.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Count
     (.countable_bUnion hS fun i hi => (h i hi).superset)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_bUnion :=
-  EventuallyEq.countable_bUnion
+  EventuallyEqSet.countable_bUnion
 
 theorem EventuallySubset.countable_iInter [Countable ι] {s t : ι → Set α}
     (h : ∀ i, s i ⊆ᶠ[l] t i) :
@@ -118,7 +118,7 @@ theorem EventuallySubset.countable_iInter [Countable ι] {s t : ι → Set α}
     mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_iInter :=
-  EventuallyLE.countable_iInter
+  EventuallySubset.countable_iInter
 
 theorem EventuallyEqSet.countable_iInter [Countable ι] {s t : ι → Set α}
     (h : ∀ i, s i =ᶠˢ[l] t i) :
@@ -127,7 +127,7 @@ theorem EventuallyEqSet.countable_iInter [Countable ι] {s t : ι → Set α}
     (.countable_iInter fun i => (h i).superset)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_iInter :=
-  EventuallyEq.countable_iInter
+  EventuallyEqSet.countable_iInter
 
 theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ⊆ᶠ[l] t i hi) :
@@ -137,7 +137,7 @@ theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countabl
   exact .countable_iInter fun i => h i i.2
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_bInter :=
-  EventuallyLE.countable_bInter
+  EventuallySubset.countable_bInter
 
 theorem EventuallyEqSet.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠˢ[l] t i hi) :
@@ -146,7 +146,7 @@ theorem EventuallyEqSet.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Count
     (.countable_bInter hS fun i hi => (h i hi).superset)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_bInter :=
-  EventuallyEq.countable_bInter
+  EventuallyEqSet.countable_bInter
 
 /-- Construct a filter with countable intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the countable intersection property. -/
