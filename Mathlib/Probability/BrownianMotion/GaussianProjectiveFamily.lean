@@ -22,20 +22,16 @@ public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 open MeasureTheory NormedSpace Set
 open scoped ENNReal NNReal
 
-namespace L2
-
 variable {ι : Type*} [Finite ι]
 variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α}
 
-/- In an `L2` space, the matrix of intersections of pairs of sets is positive semi-definite. -/
-theorem posSemidef_interMatrix {μ : Measure α} {v : ι → (Set α)}
+lemma posSemidef_matrix_measure_inter {ι : Type*} [Finite ι]
+     {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {v : ι → (Set α)}
     (hv₁ : ∀ j, MeasurableSet (v j)) (hv₂ : ∀ j, μ (v j) ≠ ∞ := by finiteness) :
     Matrix.PosSemidef (Matrix.of fun i j : ι ↦ μ.real (v i ∩ v j)) := by
   simp only [hv₁, ne_eq, hv₂, not_false_eq_true,
     ← L2.real_inner_indicatorConstLp_one_indicatorConstLp_one]
   exact Matrix.posSemidef_gram ℝ _
-
-end L2
 
 namespace ProbabilityTheory
 
@@ -57,7 +53,7 @@ lemma posSemidef_brownianCovMatrix (I : Finset ℝ≥0) :
     simp [Icc_inter_Icc, max_self, Real.volume_real_Icc, sub_zero, le_inf_iff,
       NNReal.zero_le_coe, and_self, sup_of_le_left]
     rfl
-  exact h ▸ L2.posSemidef_interMatrix (fun j ↦ measurableSet_Icc)
+  exact h ▸ posSemidef_matrix_measure_inter (fun j ↦ measurableSet_Icc)
     (fun j ↦ isCompact_Icc.measure_ne_top)
 
 variable [DecidableEq ι]
