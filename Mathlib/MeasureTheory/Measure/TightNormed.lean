@@ -36,7 +36,7 @@ public section
 
 open Filter
 
-open scoped Topology ENNReal InnerProductSpace
+open scoped Topology ENNReal NNReal InnerProductSpace
 
 namespace MeasureTheory
 
@@ -259,22 +259,17 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one
   positivity
 
 lemma isTightMeasureSet_range_of_tendsto_limsup_measureReal_inner_of_norm_eq_one
-    (h : ∀ y, ‖y‖ = 1
-      → Tendsto (fun r : ℝ ↦ limsup (fun n ↦ (μ n).real {x | r < ‖⟪y, x⟫_𝕜‖}) atTop) atTop (𝓝 0))
-    {C : ℝ≥0∞} (hC : C ≠ ∞) (hμ : ∀ n, μ n .univ ≤ C) :
+    (h : ∀ y, ‖y‖ = 1 →
+      Tendsto (fun r : ℝ ↦ limsup (fun n ↦ (μ n).real {x | r < ‖⟪y, x⟫_𝕜‖}) atTop) atTop (𝓝 0))
+    (C : ℝ≥0) (hμ : ∀ᶠ n in atTop, μ n .univ ≤ C) :
     IsTightMeasureSet (Set.range μ) := by
   refine isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one 𝕜 fun z hz ↦ ?_
   have h_ofReal (r : ℝ) : limsup (fun n ↦ μ n {x | r < ‖⟪z, x⟫_𝕜‖}) atTop
       = ENNReal.ofReal (limsup (fun n ↦ (μ n).real {x | r < ‖⟪z, x⟫_𝕜‖}) atTop) := by
-    simp_rw [measureReal_def, ENNReal.limsup_toReal_eq hC
-      (.of_forall fun n ↦ (measure_mono (Set.subset_univ _)).trans (hμ n))]
-    rw [ENNReal.ofReal_toReal]
-    refine ne_top_of_le_ne_top hC ?_
-    refine limsup_le_of_le ?_ (.of_forall fun n ↦ (measure_mono (Set.subset_univ _)).trans (hμ n))
-    exact IsCoboundedUnder.of_frequently_ge <| .of_forall fun _ ↦ zero_le _
-  simp only [h_ofReal]
-  rw [← ENNReal.ofReal_zero]
-  exact ENNReal.tendsto_ofReal (h z hz)
+    simp_rw [measureReal_def]
+    rw [ENNReal.ofReal_limsup_toReal (C := C)]
+    filter_upwards [hμ] with n hμn using (measure_mono (Set.subset_univ _)).trans hμn
+  simpa only [h_ofReal, ← ENNReal.ofReal_zero] using ENNReal.tendsto_ofReal (h z hz)
 
 end InnerProductSpace
 
