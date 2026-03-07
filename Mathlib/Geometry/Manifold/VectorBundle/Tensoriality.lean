@@ -224,14 +224,10 @@ noncomputable def mkHom₂
     (hΦ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (Φ · τ) x)
     (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x) :
     V x →L[𝕜] V' x →L[𝕜] A :=
-  let Ψ : V x ≃L[𝕜] F := (trivializationAt F V x).continuousLinearEquivAt 𝕜 x
-    (FiberBundle.mem_baseSet_trivializationAt' x)
-  have : T2Space (V x) := Ψ.symm.toHomeomorph.t2Space
-  have : FiniteDimensional 𝕜 (V x) := Ψ.symm.toLinearEquiv.finiteDimensional
-  let Ψ' : V' x ≃L[𝕜] F' := (trivializationAt F' V' x).continuousLinearEquivAt 𝕜 x
-    (FiberBundle.mem_baseSet_trivializationAt' x)
-  have : T2Space (V' x) := Ψ'.symm.toHomeomorph.t2Space
-  have : FiniteDimensional 𝕜 (V' x) := Ψ'.symm.toLinearEquiv.finiteDimensional
+  have : T2Space (V x) := FiberBundle.t2Space F V x
+  have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
+  have : T2Space (V' x) := FiberBundle.t2Space F' V' x
+  have : FiniteDimensional 𝕜 (V' x) := VectorBundle.finiteDimensional 𝕜 F' V' x
   have H : IsBilinearMap 𝕜
     (fun (v : V x) (w : V' x) ↦ Φ (extend F v) (extend F' w)) :=
   { add_left v₁ v₂ w := by
