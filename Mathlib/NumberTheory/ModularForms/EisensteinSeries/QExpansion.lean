@@ -68,7 +68,6 @@ private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
   convert hf.mul h0
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 open BoundedContinuousFunction in
 /-- The infinite sum of `k`-th iterated derivative of the complex exponential multiplied by a
 function that grows polynomially is absolutely and uniformly convergent. -/
@@ -214,7 +213,6 @@ lemma summable_prod_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
   refine (finTwoArrowEquiv ℤ).summable_iff.mp <| (summable_eisSummand hk z).congr (fun v ↦ ?_)
   simp [show ![v 0, v 1] = v from List.ofFn_inj.mp rfl]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     ∑' v, eisSummand k v z = 2 * riemannZeta k + 2 * ((-2 * π * I) ^ k / (k - 1)!) *
     ∑' (n : ℕ+), σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℕ) := by
@@ -244,7 +242,6 @@ lemma eisSummand_of_gammaSet_eq_divIntMap (k : ℤ) (z : ℍ) {n : ℕ} (v : gam
   nth_rw 1 2 [gammaSet_eq_gcd_mul_divIntMap v.2]
   simp [← mul_inv, ← mul_zpow, mul_add, mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
     ∑' v : Fin 2 → ℤ, eisSummand k v z = riemannZeta k * eisensteinSeries (N := 1) 0 k z := by
   have hk1 : 1 < k := by grind

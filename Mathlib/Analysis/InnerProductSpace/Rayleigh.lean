@@ -5,12 +5,10 @@ Authors: Heather Macbeth, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.Calculus.LagrangeMultipliers
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # The Rayleigh quotient
@@ -39,7 +37,6 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 
 public section
 
-
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -47,7 +44,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped NNReal
 
-open Module.End Metric RCLike
+open Module.End Metric RCLike InnerProductSpace
 
 namespace ContinuousLinearMap
 
@@ -66,6 +63,22 @@ theorem rayleigh_smul (x : E) {c : 𝕜} (hc : c ≠ 0) :
 theorem rayleighQuotient_add (S : E →L[𝕜] E) {x : E} :
     (T + S).rayleighQuotient x = T.rayleighQuotient x + S.rayleighQuotient x := by
   simp [rayleighQuotient, reApplyInnerSelf_apply, inner_add_left, add_div]
+
+@[simp]
+theorem rayleighQuotient_zero_apply (x : E) : rayleighQuotient (0 : E →L[𝕜] E) x = 0 := by
+  simp [reApplyInnerSelf_apply]
+
+@[simp]
+theorem rayleighQuotient_apply_zero : rayleighQuotient T 0 = 0 := by
+  simp [reApplyInnerSelf_apply]
+
+@[simp]
+theorem rayleighQuotient_neg_apply (x : E) : rayleighQuotient (-T) x = -rayleighQuotient T x := by
+  simp [rayleighQuotient, reApplyInnerSelf_apply, neg_div]
+
+@[simp]
+theorem rayleighQuotient_apply_neg (x : E) : rayleighQuotient T (-x) = rayleighQuotient T x := by
+  simp [rayleighQuotient, reApplyInnerSelf_apply]
 
 theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     rayleighQuotient T '' {0}ᶜ = rayleighQuotient T '' sphere 0 r := by
@@ -100,9 +113,26 @@ theorem rayleighQuotient_le_norm (x : E) : |T.rayleighQuotient x| ≤ ‖T‖ :=
     norm_inner_le_norm, le_opNorm, mul_assoc, ← sq, mul_div_assoc]
   exact mul_le_of_le_one_right T.opNorm_nonneg (div_self_le_one (‖x‖ ^ 2))
 
--- TODO: Prove `⨆ x, |T.rayleighQuotient x| = ‖T‖` when `T` is symmetric.
 theorem bddAbove_rayleighQuotient : BddAbove (Set.range fun x ↦ |T.rayleighQuotient x|) :=
   ⟨‖T‖, fun _ ⟨y, h⟩ ↦ h ▸ T.rayleighQuotient_le_norm y⟩
+
+theorem norm_eq_iSup_rayleighQuotient (hT : T.IsSymmetric) :
+    ‖T‖ = ⨆ x, |T.rayleighQuotient x| := by
+  set M := ⨆ x, |T.rayleighQuotient x|
+  have nonneg : 0 ≤ M := le_ciSup_of_le T.bddAbove_rayleighQuotient 0 (abs_nonneg _)
+  have hM x : |re ⟪T x, x⟫| ≤ M * ‖x‖ ^ 2 := by
+    have hM : |T.rayleighQuotient x| ≤ M := le_ciSup T.bddAbove_rayleighQuotient x
+    by_cases hx : 0 < ‖x‖ ^ 2
+    · rwa [rayleighQuotient, abs_div, abs_sq, reApplyInnerSelf, div_le_iff₀ hx] at hM
+    · simp_all
+  refine le_antisymm ?_ (ciSup_le T.rayleighQuotient_le_norm)
+  refine opNorm_le_of_re_inner_le nonneg fun x y hx hy ↦ ?_
+  transitivity M * (‖x + y‖ ^ 2 + ‖x - y‖ ^ 2) / 4
+  · have key := congrArg re (add_conj ⟪T x, y⟫)
+    rw [map_add, conj_inner_symm, ← coe_coe, ← hT, coe_coe, re_mul_ofReal, ofNat_re] at key
+    grind [inner_add_left, inner_add_right, inner_sub_left, inner_sub_right]
+  · rw [parallelogram_law_with_norm 𝕜 x y, hx, hy]
+    grind
 
 end ContinuousLinearMap
 
@@ -112,7 +142,6 @@ section Real
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F →L[ℝ] F}
     (hT : (T : F →ₗ[ℝ] F).IsSymmetric) (x₀ : F) :
     HasStrictFDerivAt T.reApplyInnerSelf (2 • (innerSL ℝ (T x₀))) x₀ := by
@@ -124,7 +153,6 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
 
 variable [CompleteSpace F] {T : F →L[ℝ] F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • x₀ + b • T x₀ = 0 := by

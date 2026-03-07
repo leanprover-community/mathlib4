@@ -227,7 +227,6 @@ example : ¬AddLeftMono (Lex (F →₀ F)) := by
   · exact Or.inr ⟨0, by simp [(by boom : ∀ j : F, j < 0 ↔ False)]⟩
   · simp [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, f010, f1, f110, f011, f111]
 
-set_option backward.isDefEq.respectTransparency false in
 example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
   zero_divisors_of_periodic (1 : F) le_rfl (by simp [two_smul]) z01.ne'
 

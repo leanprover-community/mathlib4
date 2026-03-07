@@ -5,8 +5,7 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Notation.Support
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Algebra.FiniteSupport.Defs
 
 /-!
 # Type of functions with finite support
@@ -187,8 +186,12 @@ theorem card_support_eq_zero {f : α →₀ M} : #f.support = 0 ↔ f = 0 := by 
 instance instDecidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
 
-theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
-  f.fun_support_eq.symm ▸ f.support.finite_toSet
+@[fun_prop]
+theorem hasFiniteSupport (f : α →₀ M) : HasFiniteSupport f := by
+  rw [HasFiniteSupport]
+  exact f.fun_support_eq.symm ▸ f.support.finite_toSet
+
+@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
 
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
