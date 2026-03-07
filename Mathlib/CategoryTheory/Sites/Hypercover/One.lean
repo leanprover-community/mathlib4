@@ -790,7 +790,7 @@ def isLimitEquivOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) (G : Cᵒᵖ 
       exact G.mapIso (asIso (f.hom.h₁ i.2)).symm.op
     · simp [← Functor.map_comp_assoc, ← Functor.map_comp, ← op_comp, f.hom.w₁₁]
     · simp [← Functor.map_comp_assoc, ← Functor.map_comp, ← op_comp, f.hom.w₁₂]
-  · refine Cones.ext (Iso.refl _) fun i ↦ ?_
+  · refine Cone.ext (Iso.refl _) fun i ↦ ?_
     induction i with
     | left _ => simp [← Functor.map_comp, ← op_comp]
     | right _ => simp [← Functor.map_comp, ← op_comp, f.hom.w₁₁_assoc]
