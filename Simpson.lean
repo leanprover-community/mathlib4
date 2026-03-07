@@ -349,11 +349,180 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
     linarith
 
   -- 步骤 3.7: 对 F 在 m 处进行带 Lagrange 余项的 Taylor 展开到 2 阶，展开到 a
-  -- 需要验证：m ∈ Ioo a b, a ∈ Icc a b, 以及可微性条件
+  -- 使用反射函数 G(t) = F(a + b - t)，对 G 在 [m, b] 上应用 Taylor 定理
   have h_taylor_a : ∃ ξ₂ ∈ Ioo a m,
       F a = F m + (derivWithin F (Icc a b) m) * (a - m) +
             (iteratedDerivWithin 2 F (Icc a b) m) * (a - m) ^ 2 / 2 +
-            (iteratedDerivWithin 3 F (Icc a b) ξ₂) * (a - m) ^ 3 / 6 := by sorry
+            (iteratedDerivWithin 3 F (Icc a b) ξ₂) * (a - m) ^ 3 / 6 := by
+    -- 定义反射函数 G(t) = F(c - t)，其中 c = a + b
+    set c := a + b with hc_def
+    -- 关键事实：c - m = m（因为 m = (a+b)/2）
+    have hcm : c - m = m := by linarith [hm_def, hc_def]
+    -- G(b) = F(a), G(m) = F(m)
+    have hGb : F (c - b) = F a := by
+      have : c - b = a := by linarith [hc_def]
+      rw [this]
+    have hGm : F (c - m) = F m := by rw [hcm]
+    -- 映射 φ(t) = c - t 将 Icc m b 映射到 Icc a b
+    have hφ_maps : Set.MapsTo (fun t => c - t) (Icc m b) (Icc a b) := by
+      intro t ht
+      simp only [Set.mem_Icc] at ht ⊢
+      constructor
+      · linarith [ht.2]
+      · linarith [ht.1, h_a_lt_m]
+    -- G(t) = F(c - t) 在 [m, b] 上 2 阶连续可微
+    have hG_mb : ContDiffOn ℝ 2 (fun t => F (c - t)) (Icc m b) :=
+      hF.comp (contDiffOn_const.sub contDiffOn_id) hφ_maps
+    -- F 在 m 处是 ContDiffAt
+    have hF_cdAt_m : ContDiffAt ℝ 2 F m :=
+      hF.contDiffAt (Icc_mem_nhds h_a_lt_m h_m_lt_b)
+    have hF_diffAt_m : DifferentiableAt ℝ F m := hF_cdAt_m.differentiableAt (by norm_num)
+    -- G 在 m 处是 ContDiffAt（因为 G = F ∘ (c - ·) 且 F 在 c - m = m 处 ContDiffAt）
+    have hG_cdAt_m : ContDiffAt ℝ 2 (fun t => F (c - t)) m := by
+      apply ContDiffAt.comp m _ (contDiffAt_const.sub contDiffAt_id)
+      simp only [id, hcm]; exact hF_cdAt_m
+    have hG_diffAt_m : DifferentiableAt ℝ (fun t => F (c - t)) m :=
+      hG_cdAt_m.differentiableAt (by norm_num)
+    -- G 在 x ∈ Ioo m b 处是 ContDiffAt（因为 c - x ∈ Ioo a b）
+    have hG_cdAt_of_mem : ∀ x ∈ Ioo m b, ContDiffAt ℝ 2 (fun t => F (c - t)) x := by
+      intro x hx
+      apply ContDiffAt.comp x _ (contDiffAt_const.sub contDiffAt_id)
+      apply hF.contDiffAt
+      apply Icc_mem_nhds
+      · simp only [id]; linarith [hx.2, hc_def]
+      · simp only [id]; linarith [hx.1, h_a_lt_m, hc_def]
+    -- 对 x ∈ Ioo m b，iteratedDerivWithin 2 G (Icc m b) x = iteratedDerivWithin 2 F (Icc a b) (c - x)
+    have h_iDW2_G_eq : ∀ x ∈ Ioo m b,
+        iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b) x
+          = iteratedDerivWithin 2 F (Icc a b) (c - x) := by
+      intro x hx
+      have hcx_ab : c - x ∈ Ioo a b := by
+        simp only [Set.mem_Ioo, hc_def]
+        constructor <;> linarith [hx.1, hx.2, h_a_lt_m]
+      have hF_cdAt_cx : ContDiffAt ℝ 2 F (c - x) :=
+        hF.contDiffAt (Icc_mem_nhds hcx_ab.1 hcx_ab.2)
+      rw [iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h_m_lt_b)
+            (hG_cdAt_of_mem x hx) ⟨hx.1.le, hx.2.le⟩]
+      rw [iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc a_lt_b)
+            hF_cdAt_cx ⟨hcx_ab.1.le, hcx_ab.2.le⟩]
+      -- iteratedDeriv 2 (fun t => F (c - t)) x = iteratedDeriv 2 F (c - x)
+      have h := iteratedDeriv_comp_const_sub 2 F c
+      simp only [neg_one_sq, one_smul] at h
+      exact congr_fun h x
+    -- iteratedDerivWithin 2 G (Icc m b) 在 Ioo m b 上可微
+    have hG_diff_mb : DifferentiableOn ℝ (iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b))
+        (Ioo m b) := by
+      intro x hx
+      have hcx_ab : c - x ∈ Ioo a b := by
+        simp only [Set.mem_Ioo, hc_def]
+        constructor <;> linarith [hx.1, hx.2, h_a_lt_m]
+      apply DifferentiableWithinAt.congr
+      · -- x ↦ iteratedDerivWithin 2 F (Icc a b) (c - x) 在 x 处可微
+        have h_comp : DifferentiableWithinAt ℝ
+            (iteratedDerivWithin 2 F (Icc a b) ∘ (fun t => c - t)) (Ioo m b) x := by
+          apply DifferentiableWithinAt.comp x (hF_diff_Ioo (c - x) hcx_ab)
+          · exact ((differentiableAt_const c).sub differentiableAt_id).differentiableWithinAt
+          · intro t ht
+            simp only [Set.mem_Ioo] at ht ⊢
+            constructor <;> linarith [ht.1, ht.2, h_a_lt_m]
+        exact h_comp
+      · intro y hy; exact h_iDW2_G_eq y hy
+      · exact h_iDW2_G_eq x hx
+    -- 在 [m, b] 上应用 Taylor 定理到 G
+    obtain ⟨ξ, hξ_in, hξ_eq⟩ :=
+      taylor_mean_remainder_lagrange h_m_lt_b hG_mb hG_diff_mb
+    -- ξ₂ = c - ξ ∈ Ioo a m
+    have hξ₂_in : c - ξ ∈ Ioo a m := by
+      simp only [Set.mem_Ioo, hc_def]
+      constructor <;> linarith [hξ_in.1, hξ_in.2]
+    refine ⟨c - ξ, hξ₂_in, ?_⟩
+    -- 展开 taylorWithinEval G 2 (Icc m b) m b
+    have h_taylEval_G : taylorWithinEval (fun t => F (c - t)) 2 (Icc m b) m b =
+        F (c - m) + (b - m) * derivWithin (fun t => F (c - t)) (Icc m b) m +
+        (b - m) ^ 2 / 2 * iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b) m := by
+      rw [taylorWithinEval_succ, taylorWithinEval_succ, taylor_within_zero_eval,
+          iteratedDerivWithin_one]
+      simp only [smul_eq_mul, Nat.factorial_zero, Nat.factorial_one, Nat.cast_one]
+      ring
+    -- G' within Icc m b at m = -(F' within Icc a b at m)
+    have h_deriv_G_m : derivWithin (fun t => F (c - t)) (Icc m b) m
+        = -(derivWithin F (Icc a b) m) := by
+      rw [hG_diffAt_m.derivWithin
+            (uniqueDiffOn_Icc h_m_lt_b m (left_mem_Icc.mpr h_m_lt_b.le))]
+      rw [hF_diffAt_m.derivWithin (uniqueDiffOn_Icc a_lt_b m h_m_in_Icc)]
+      -- deriv (fun t => F (c - t)) m = -(deriv F m)
+      have h_neg : deriv (fun t => F (c - t)) m = -(deriv F m) := by
+        have hg : HasDerivAt F (deriv F m) (c - m) := by
+          rw [hcm]; exact hF_diffAt_m.hasDerivAt
+        have h1 : HasDerivAt (fun t => F (c - t)) (deriv F m * (-1)) m :=
+          hg.comp m ((hasDerivAt_id m).const_sub c)
+        have h2 : deriv (fun t => F (c - t)) m = deriv F m * (-1) := h1.deriv
+        linarith [h2]
+      linarith [h_neg]
+    -- iDW2 G within Icc m b at m = iDW2 F within Icc a b at m
+    have h_iDW2_G_m : iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b) m
+        = iteratedDerivWithin 2 F (Icc a b) m := by
+      rw [iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h_m_lt_b) hG_cdAt_m
+            (left_mem_Icc.mpr h_m_lt_b.le)]
+      rw [iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc a_lt_b) hF_cdAt_m h_m_in_Icc]
+      have h := iteratedDeriv_comp_const_sub 2 F c
+      simp only [neg_one_sq, one_smul] at h
+      have := congr_fun h m
+      simp only [hcm] at this
+      exact this
+    -- iDW3 G within Icc m b at ξ = -(iDW3 F within Icc a b at c - ξ)
+    have h_iDW3_G_ξ : iteratedDerivWithin 3 (fun t => F (c - t)) (Icc m b) ξ
+        = -(iteratedDerivWithin 3 F (Icc a b) (c - ξ)) := by
+      have hcξ_ab : c - ξ ∈ Ioo a b := by
+        simp only [Set.mem_Ioo]
+        constructor
+        · linarith [hξ_in.2, hc_def]
+        · linarith [hξ_in.1, hcm, h_m_lt_b]
+      -- 用 iteratedDerivWithin_succ：iDW3 G (Icc m b) ξ = derivWithin (iDW2 G (Icc m b)) (Icc m b) ξ
+      rw [iteratedDerivWithin_succ]
+      -- HasDerivWithinAt for φ(t) = c - t at ξ
+      have h_hdw_phi : HasDerivWithinAt (fun t => c - t) (-1) (Icc m b) ξ :=
+        ((hasDerivAt_id ξ).const_sub c).hasDerivWithinAt
+      -- HasDerivWithinAt for iDW2 F (Icc a b) at c - ξ (with derivative = iDW3 F)
+      have h_hdw_g : HasDerivWithinAt (iteratedDerivWithin 2 F (Icc a b))
+          (iteratedDerivWithin 3 F (Icc a b) (c - ξ)) (Icc a b) (c - ξ) := by
+        rw [iteratedDerivWithin_succ]
+        exact ((hF_diff_Ioo (c - ξ) hcξ_ab).differentiableAt
+          (Ioo_mem_nhds hcξ_ab.1 hcξ_ab.2)).differentiableWithinAt.hasDerivWithinAt
+      -- HasDerivWithinAt for the composition (iDW2 F (Icc a b)) ∘ (c - ·) at ξ
+      have h_hdw_comp : HasDerivWithinAt
+          (fun t => iteratedDerivWithin 2 F (Icc a b) (c - t))
+          (iteratedDerivWithin 3 F (Icc a b) (c - ξ) * (-1)) (Icc m b) ξ :=
+        h_hdw_g.comp ξ h_hdw_phi hφ_maps
+      -- EventuallyEq: iDW2 G (Icc m b) =ᶠ[nhdsWithin ξ (Icc m b)] t ↦ iDW2 F (Icc a b) (c - t)
+      have h_ev_eq : (fun t => iteratedDerivWithin 2 (fun s => F (c - s)) (Icc m b) t)
+          =ᶠ[nhdsWithin ξ (Icc m b)]
+          (fun t => iteratedDerivWithin 2 F (Icc a b) (c - t)) := by
+        apply Filter.Eventually.filter_mono nhdsWithin_le_nhds
+        filter_upwards [IsOpen.mem_nhds isOpen_Ioo hξ_in] with y hy
+        exact h_iDW2_G_eq y hy
+      -- 由 congr 得到 HasDerivWithinAt for iDW2 G (Icc m b)
+      have h_hdw_iDW2 : HasDerivWithinAt
+          (iteratedDerivWithin 2 (fun t => F (c - t)) (Icc m b))
+          (iteratedDerivWithin 3 F (Icc a b) (c - ξ) * (-1)) (Icc m b) ξ :=
+        h_hdw_comp.congr_of_eventuallyEq h_ev_eq (h_iDW2_G_eq ξ hξ_in)
+      rw [h_hdw_iDW2.derivWithin
+            (uniqueDiffOn_Icc h_m_lt_b ξ ⟨hξ_in.1.le, hξ_in.2.le⟩)]
+      ring
+    -- 将所有关系代入 hξ_eq
+    rw [h_taylEval_G, hGm, hGb, h_deriv_G_m, h_iDW2_G_m, h_iDW3_G_ξ] at hξ_eq
+    -- hξ_eq：F a - (F m + (b-m)*(-(F'(m))) + (b-m)^2/2*(F''(m)))
+    --      = -(F'''(c-ξ)) * (b-m)^3 / 6
+    -- 目标：F a = F m + F'(m)*(a-m) + F''(m)*(a-m)^2/2 + F'''(c-ξ)*(a-m)^3/6
+    have h_bm_rel : b - m = -(a - m) := by linarith [hm_def, hc_def]
+    have h_bm_sq : (b - m) ^ 2 = (a - m) ^ 2 := by nlinarith [h_bm_rel]
+    have h_bm_cu : (b - m) ^ 3 = -((a - m) ^ 3) := by nlinarith [h_bm_rel, h_bm_sq]
+    have h_fact : (Nat.factorial 3 : ℝ) = 6 := by norm_num [Nat.factorial]
+    rw [show (2 : ℕ) + 1 = 3 from rfl, h_fact] at hξ_eq
+    linear_combination hξ_eq
+      - (derivWithin F (Icc a b) m) * h_bm_rel
+      + (iteratedDerivWithin 2 F (Icc a b) m / 2) * h_bm_sq
+      - (iteratedDerivWithin 3 F (Icc a b) (c - ξ) / 6) * h_bm_cu
 
   -- 步骤 4: 相减得到 E 的表达式
   obtain ⟨ξ₁, hξ₁_in, hξ₁_eq⟩ := h_taylor_b
