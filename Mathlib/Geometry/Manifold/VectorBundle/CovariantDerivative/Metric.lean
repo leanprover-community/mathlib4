@@ -14,13 +14,13 @@ public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 This file defines connections on a Riemannian vector bundle which are compatible with the ambient
 metric. A bundled connection `∇` on a Riemannian vector bundle `(V, g)` is compatible with the
 metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
-`(X, σ, τ) ↦ ∇ₓ g(σ, τ) - g(∇ₓ σ, τ) - g(σ, ∇ₓ τ)`) vanishes on all differentiable vector fields `X`
-and differentiable sections `σ`, `τ`.
+`(X, σ, τ) ↦ ∇_X g(σ, τ) - g(∇_X σ, τ) - g(σ, ∇_X τ)`) vanishes on all differentiable vector fields
+`X` and differentiable sections `σ`, `τ`.
 
 ## Main definitions and results
 
 * `CovariantDerivative.compatibilityTensor`: the tensor
-  `(X, σ, τ) ↦ ∇ₓ g(σ, τ) - g(∇ₓ σ, τ) - g(σ, ∇ₓ τ)` defining when a connection `∇` on a Riemannian
+  `(X, σ, τ) ↦ X g(σ, τ) - g(∇_X σ, τ) - g(σ, ∇_X τ)` defining when a connection `∇` on a Riemannian
   vector bundle `(V, g)` is compatible with the metric `g`.
 * `CovariantDerivative.compatibilityTensor_apply` and
   `CovariantDerivative.compatibilityTensor_apply` give formulas for applying the compatibility
@@ -42,7 +42,6 @@ and differentiable sections `σ`, `τ`.
   tensor.
 
 -/
-
 open Bundle Function NormedSpace
 open scoped Manifold ContDiff
 
@@ -64,14 +63,21 @@ variable
   [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
   [FiberBundle F V] [RiemannianBundle V]
 
-/-! Compatible connections: a connection on `V` is compatible with the metric on `V` iff
-`∇ X ⟨σ, τ⟩ = ⟨∇ X σ, τ⟩ + ⟨σ, ∇ X τ⟩` holds for all sufficiently nice vector fields `X` on `M` and
-sections `σ`, `τ` of `V`. In our definition, we ask for this identity to at each `x : M`, whenever
-`X`, `σ` and `τ` are differentiable at `x`.
+/-! # Compatible connections
+
+A connection on `V` is compatible with the metric on `V` iff `X ⟨σ, τ⟩ = ⟨∇_X σ, τ⟩ + ⟨σ, ∇_X τ⟩`
+holds for all sufficiently nice vector fields `X` on `M` and sections `σ`, `τ` of `V`.
 The left hand side is the pushforward of the function `⟨σ, τ⟩` along the vector field `X`:
-the left hand side at `x` is `df(X x)`, where `f := ⟨σ, τ⟩`. -/
+the left hand side at `x` is `df(X x)`, where `f := ⟨σ, τ⟩` (ie. `X` is seen a derivation on
+the algebra of function on the base manifold acting on the function `⟨σ, τ⟩`).
+In our definition, we ask for this identity to at each `x : M`, whenever `X`, `σ` and `τ` are
+differentiable at `x`.
+-/
 
 variable {σ σ' σ'' τ τ' τ'' : Π x : M, V x}
+
+-- set_option trace.profiler true
+-- set_option profiler.threshold 500
 
 /-- The scalar product of two sections. -/
 noncomputable abbrev product (σ τ : Π x : M, V x) : M → ℝ :=
@@ -97,7 +103,7 @@ lemma product_swap : ⟪τ, σ⟫ = ⟪σ, τ⟫ := by
 @[simp]
 lemma product_zero_left : ⟪0, σ⟫ = 0 := by
   ext x
-  simp [product]
+  simp only [product, Pi.zero_apply, inner_zero_left]
 
 @[simp]
 lemma product_zero_right : ⟪σ, 0⟫ = 0 := by rw [product_swap, product_zero_left]
@@ -174,8 +180,11 @@ namespace CovariantDerivative
 -- TODO: include in cheat sheet!
 variable (cov : CovariantDerivative I F V)
 
-/-- Local notation for a connection. Caution: `∇ σ, X` corresponds to `∇ₓ σ` in textbooks -/
-local notation "∇" σ "," X => fun (x:M) ↦ cov σ x (X x)
+
+/-- Local notation for a covariant derivative on a vector bundle acting on a vector field and a
+section. -/
+local syntax "∇" term:arg term : term
+local macro_rules | `(∇ $X $σ) => `(fun (x : M) ↦ cov $σ x ($X x))
 
 variable {F}
 
@@ -229,7 +238,7 @@ theorem compatibilityTensorAux_tensorial₂ (σ : Π x, V x) (hσ : MDiffAt (T% 
     abel
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
-/-- The tensor `(X, σ, τ) ↦ ∇ₓ g(σ, τ) - g(∇ₓ σ, τ) - g(σ, ∇ₓ τ)` defining when a connection
+/-- The tensor `(X, σ, τ) ↦ X g(σ, τ) - g(∇_X σ, τ) - g(σ, ∇_X τ)` defining when a connection
 `∇` on a Riemannian bundle `(M, V)` is compatible with the metric `g`. -/
 @[no_expose] noncomputable def compatibilityTensor [FiniteDimensional ℝ F] (x : M) :
     V x →L[ℝ] V x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
@@ -242,7 +251,7 @@ variable {I} [ContMDiffVectorBundle 1 F V I] in
 theorem compatibilityTensor_apply [FiniteDimensional ℝ F] (x : M)
     (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     cov.compatibilityTensor x (σ x) (τ x) (X x) =
-    fromTangentSpace _ (mfderiv% ⟪σ, τ⟫ x (X x)) - ⟪∇ σ, X, τ⟫ x - ⟪σ, ∇ τ, X⟫ x := by
+    fromTangentSpace _ (mfderiv% ⟪σ, τ⟫ x (X x)) - ⟪∇ X σ, τ⟫ x - ⟪σ, ∇ X τ⟫ x := by
   unfold compatibilityTensor
   rw [TensorialAt.mkHom₂_apply _ _ hσ hτ, compatibilityTensorAux_apply]
 
@@ -259,16 +268,16 @@ theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F] (X₀ : Ta
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- Predicate saying that a connection `∇` on a Riemannian bundle `(V, g)` is compatible with the
 ambient metric, i.e. for all differentiable vector fields `X` on `M` and sections `σ` and `τ` of
-`V`, we have `X ⟨σ, τ⟩ = ⟨∇ X σ, τ⟩ + ⟨σ, ∇ X τ⟩`. -/
+`V`, we have `X ⟨σ, τ⟩ = ⟨∇_X σ, τ⟩ + ⟨σ, ∇_X τ⟩`. -/
 def IsCompatible [FiniteDimensional ℝ F] : Prop := compatibilityTensor cov = 0
 
 variable {I} [IsManifold I 1 M] [ContMDiffVectorBundle 1 F V I]
 
 open FiberBundle in
 lemma isCompatible_iff [FiniteDimensional ℝ F] :
-    cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x}
-      (_hX : MDiffAt (T% X) x) (_hσ : MDiffAt (T% σ) x) (_hτ : MDiffAt (T% τ) x),
-      fromTangentSpace _ (mfderiv% ⟪σ, τ⟫ x (X x)) = ⟪∇ σ, X, τ⟫ x + ⟪σ, ∇ τ, X⟫ x := by
+    cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x},
+      MDiffAt (T% X) x → MDiffAt (T% σ) x → MDiffAt (T% τ) x →
+      fromTangentSpace _ (mfderiv% ⟪σ, τ⟫ x (X x)) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
   refine ⟨fun hcov x X σ τ hX hσ hτ ↦ ?_, fun h ↦ ?_⟩
   · have H := congr($hcov x (σ x) (τ x) (X x))
     simp [compatibilityTensor_apply _ _ hσ hτ] at H
@@ -281,3 +290,4 @@ lemma isCompatible_iff [FiniteDimensional ℝ F] :
   linear_combination h'
 
 end CovariantDerivative
+#lint
