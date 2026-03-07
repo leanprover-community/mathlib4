@@ -71,18 +71,19 @@ This does all the set-up; the actual behaviour is governed by the function `inne
 def elabCheckTacticAux (tk : Syntax) (ignoreStuckTC : Bool) (term : Term)
     (inner : Syntax → Term → TacticM Unit) : TacticM Unit :=
   withoutModifyingStateWithInfoAndMessages <| withMainContext do
-    if let `($_:ident) := term then
+    try
       -- show signature for `#check ident`
-      try
-        inner tk term
-      catch _ => pure ()  -- identifier might not be a constant but constant + projection
-    let e ← Term.elabTerm term none
-    Term.synthesizeSyntheticMVarsNoPostponing (ignoreStuckTC := ignoreStuckTC)
-    let e ← Term.levelMVarToParam (← instantiateMVars e)
-    let type ← inferType e
-    if e.isSyntheticSorry then
-      return
-    logInfoAt tk m!"{e} : {type}"
+      guard term.raw.isIdent
+      inner tk term
+    catch _ =>
+      -- identifier might not be a constant but constant + projection
+      let e ← Term.elabTerm term none
+      Term.synthesizeSyntheticMVarsNoPostponing (ignoreStuckTC := ignoreStuckTC)
+      let e ← Term.levelMVarToParam (← instantiateMVars e)
+      let type ← inferType e
+      if e.isSyntheticSorry then
+        return
+      logInfoAt tk m!"{e} : {type}"
 
 /--
 Tactic version of `Lean.Elab.Command.elabCheck`.
