@@ -289,7 +289,64 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
   have h_taylor_b : ∃ ξ₁ ∈ Ioo m b,
       F b = F m + (derivWithin F (Icc a b) m) * (b - m) +
             (iteratedDerivWithin 2 F (Icc a b) m) * (b - m) ^ 2 / 2 +
-            (iteratedDerivWithin 3 F (Icc a b) ξ₁) * (b - m) ^ 3 / 6 := by sorry
+            (iteratedDerivWithin 3 F (Icc a b) ξ₁) * (b - m) ^ 3 / 6 := by
+    -- F 在 [m, b] 上是 2 阶连续可微的
+    have hF_mb : ContDiffOn ℝ 2 F (Icc m b) :=
+      hF.mono (Icc_subset_Icc_left (le_of_lt h_a_lt_m))
+    -- F 在 m 处是 ContDiffAt（因为 m ∈ Ioo a b 是 Icc a b 的内点）
+    have hF_cdAt_m : ContDiffAt ℝ 2 F m :=
+      hF.contDiffAt (Icc_mem_nhds h_a_lt_m h_m_lt_b)
+    -- F 在 m 处可微
+    have hF_diffAt_m : DifferentiableAt ℝ F m :=
+      hF_cdAt_m.differentiableAt (by norm_num)
+    -- Icc m b 和 Icc a b 在 Ioo m b 的点附近一致
+    have h_set_eq_at : ∀ x ∈ Ioo m b, Icc m b =ᶠ[nhds x] Icc a b := by
+      intro x hx
+      filter_upwards [Ioo_mem_nhds hx.1 hx.2] with y hy
+      exact propext ⟨fun _ => ⟨(h_a_lt_m.trans hy.1).le, hy.2.le⟩,
+                     fun _ => ⟨hy.1.le, hy.2.le⟩⟩
+    -- 在 Ioo m b 上，iteratedDerivWithin 2 F (Icc m b) = iteratedDerivWithin 2 F (Icc a b)
+    have h_iDW2_eq : ∀ x ∈ Ioo m b,
+        iteratedDerivWithin 2 F (Icc m b) x = iteratedDerivWithin 2 F (Icc a b) x := by
+      intro x hx
+      simp only [iteratedDerivWithin]
+      congr 1
+      exact iteratedFDerivWithin_congr_set (h_set_eq_at x hx) 2
+    -- iteratedDerivWithin 2 F (Icc m b) 在 Ioo m b 上可微
+    have hF_diff_mb : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc m b)) (Ioo m b) := by
+      intro x hx
+      have h_diff_ab : DifferentiableWithinAt ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo m b) x :=
+        (hF_diff_Ioo x ⟨h_a_lt_m.trans hx.1, hx.2⟩).mono
+          (Ioo_subset_Ioo_left h_a_lt_m.le)
+      exact h_diff_ab.congr (fun y hy => h_iDW2_eq y hy) (h_iDW2_eq x hx)
+    -- 在 [m, b] 上应用 Taylor 定理
+    obtain ⟨ξ₁, hξ₁_in, hξ₁_eq⟩ := taylor_mean_remainder_lagrange h_m_lt_b hF_mb hF_diff_mb
+    refine ⟨ξ₁, hξ₁_in, ?_⟩
+    -- 将 m 处的 derivWithin 从 Icc m b 转换到 Icc a b
+    have h_deriv_m_eq : derivWithin F (Icc m b) m = derivWithin F (Icc a b) m := by
+      rw [hF_diffAt_m.derivWithin (uniqueDiffOn_Icc h_m_lt_b m (left_mem_Icc.mpr h_m_lt_b.le))]
+      rw [hF_diffAt_m.derivWithin (uniqueDiffOn_Icc a_lt_b m h_m_in_Icc)]
+    -- 将 m 处的 iteratedDerivWithin 2 从 Icc m b 转换到 Icc a b
+    have h_iDW2_m_eq : iteratedDerivWithin 2 F (Icc m b) m = iteratedDerivWithin 2 F (Icc a b) m := by
+      rw [iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h_m_lt_b) hF_cdAt_m
+            (left_mem_Icc.mpr h_m_lt_b.le)]
+      rw [iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc a_lt_b) hF_cdAt_m h_m_in_Icc]
+    -- 将 ξ₁ 处的 iteratedDerivWithin 3 从 Icc m b 转换到 Icc a b
+    have h_iDW3_eq : iteratedDerivWithin 3 F (Icc m b) ξ₁ = iteratedDerivWithin 3 F (Icc a b) ξ₁ := by
+      simp only [iteratedDerivWithin]
+      congr 1
+      exact iteratedFDerivWithin_congr_set (h_set_eq_at ξ₁ hξ₁_in) 3
+    -- 展开 taylorWithinEval F 2 (Icc m b) m b
+    have h_taylEval : taylorWithinEval F 2 (Icc m b) m b =
+        F m + (b - m) * derivWithin F (Icc m b) m +
+        (b - m) ^ 2 / 2 * iteratedDerivWithin 2 F (Icc m b) m := by
+      rw [taylorWithinEval_succ, taylorWithinEval_succ, taylor_within_zero_eval,
+          iteratedDerivWithin_one]
+      simp only [smul_eq_mul, Nat.factorial_zero, Nat.factorial_one, Nat.cast_one]
+      ring
+    -- 利用各等式得到结论
+    rw [h_taylEval, h_deriv_m_eq, h_iDW2_m_eq, h_iDW3_eq] at hξ₁_eq
+    linarith
 
   -- 步骤 3.7: 对 F 在 m 处进行带 Lagrange 余项的 Taylor 展开到 2 阶，展开到 a
   -- 需要验证：m ∈ Ioo a b, a ∈ Icc a b, 以及可微性条件
@@ -302,8 +359,23 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
   obtain ⟨ξ₁, hξ₁_in, hξ₁_eq⟩ := h_taylor_b
   obtain ⟨ξ₂, hξ₂_in, hξ₂_eq⟩ := h_taylor_a
 
+  -- 先证明 (b-m)^2 = (a-m)^2
+  have h_bm_sq : (b - m) ^ 2 = (a - m) ^ 2 := by
+    rw [hm_def]
+    ring
+
   have h_E_expr : E = (iteratedDerivWithin 3 F (Icc a b) ξ₁) * (b - m) ^ 3 / 6 -
-                    (iteratedDerivWithin 3 F (Icc a b) ξ₂) * (a - m) ^ 3 / 6 := by sorry
+                    (iteratedDerivWithin 3 F (Icc a b) ξ₂) * (a - m) ^ 3 / 6 := by
+    rw [hE_def]
+    have h1 : F b = F m + (derivWithin F (Icc a b) m) * (b - m) +
+              (iteratedDerivWithin 2 F (Icc a b) m) * (b - m) ^ 2 / 2 +
+              (iteratedDerivWithin 3 F (Icc a b) ξ₁) * (b - m) ^ 3 / 6 := hξ₁_eq
+    have h2 : F a = F m + (derivWithin F (Icc a b) m) * (a - m) +
+              (iteratedDerivWithin 2 F (Icc a b) m) * (a - m) ^ 2 / 2 +
+              (iteratedDerivWithin 3 F (Icc a b) ξ₂) * (a - m) ^ 3 / 6 := hξ₂_eq
+    rw [h1, h2]
+    rw [h_bm_sq]
+    ring
 
   -- 步骤 5: 利用 (b-m) = (b-a)/2 和 (a-m) = -(b-a)/2 化简
   have h_bm : b - m = (b - a) / 2 := by
@@ -322,11 +394,15 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
     ring_nf
 
   -- 步骤 6: 利用 |F'''(x)| ≤ M 得到最终误差界
+  have h_pos : 0 < b - a := by linarith [a_lt_b]
   have h_abs_bound : |E| ≤ (|(iteratedDerivWithin 3 F (Icc a b) ξ₁)| +
                            |(iteratedDerivWithin 3 F (Icc a b) ξ₂)|) * (b - a) ^ 3 / 48 := by sorry
 
-  have h_fpp_xi1 : |(iteratedDerivWithin 3 F (Icc a b) ξ₁)| ≤ M := by sorry
-  have h_fpp_xi2 : |(iteratedDerivWithin 3 F (Icc a b) ξ₂)| ≤ M := by sorry
+  have h_fpp_xi1 : |(iteratedDerivWithin 3 F (Icc a b) ξ₁)| ≤ M := by
+    apply fpp_bound
+
+  have h_fpp_xi2 : |(iteratedDerivWithin 3 F (Icc a b) ξ₂)| ≤ M := by
+    apply fpp_bound
 
   have h_final_bound : |E| ≤ (b - a) ^ 3 * M / 24 := by sorry
 
