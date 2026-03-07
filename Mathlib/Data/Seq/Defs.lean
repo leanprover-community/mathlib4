@@ -208,9 +208,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
   rcases f0 : get? s 0 <;> intro h
-  · apply Subtype.ext
-    funext n
-    induction n with | zero => exact f0 | succ n IH => exact s.2 IH
+  · exact get?_zero_eq_none.mp f0
   · contradiction
 
 theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s = cons a s' := by

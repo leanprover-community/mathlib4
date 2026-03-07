@@ -299,6 +299,11 @@ lemma sSup_nonneg (hs : ∀ x ∈ s, 0 ≤ x) : 0 ≤ sSup s := by
 it suffices to show that all values of `f` are nonnegative to show that `0 ≤ ⨆ i, f i`. -/
 lemma iSup_nonneg (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i := sSup_nonneg <| Set.forall_mem_range.2 hf
 
+lemma iSup_nonneg_of_nonnegHomClass {ι F α : Type*} [FunLike F α ℝ] [NonnegHomClass F α ℝ] (f : F)
+    (g : ι → α) :
+    0 ≤ ⨆ i, f (g i) :=
+  iSup_nonneg (fun i ↦ apply_nonneg f (g i))
+
 /-- As `sInf s = 0` when `s` is a set of reals that's either empty or unbounded below,
 it suffices to show that all elements of `s` are nonpositive to show that `sInf s ≤ 0`. -/
 lemma sInf_nonpos (hs : ∀ x ∈ s, x ≤ 0) : sInf s ≤ 0 := by
@@ -379,7 +384,6 @@ theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
 theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
   exact iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Exponentiation is eventually larger than linear growth. -/
 lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1 : ℝ) < a ^ m := by
   obtain ⟨k, posk, hk⟩ : ∃ k : ℕ, 0 < k ∧ 1 / k + 1 < a := by

@@ -504,7 +504,6 @@ theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n])
     _ ≡ 0 * b [MOD a.gcd n] := (Nat.modEq_zero_iff_dvd.mpr (Nat.gcd_dvd_left _ _)).mul_right b
     _ = 0 := by rw [zero_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem add_mod_add_ite (a b c : ℕ) :
     ((a + b) % c + if c ≤ a % c + b % c then c else 0) = a % c + b % c :=
   have : (a + b) % c = (a % c + b % c) % c := ((mod_modEq _ _).add <| mod_modEq _ _).symm

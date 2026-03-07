@@ -314,7 +314,6 @@ theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
     ⌊a + ofNat(n)⌋₊ = ⌊a⌋₊ + ofNat(n) :=
   floor_add_natCast ha n
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem floor_sub_natCast [Sub R] [OrderedSub R] [ExistsAddOfLE R] (a : R) (n : ℕ) :
     ⌊a - n⌋₊ = ⌊a⌋₊ - n := by
@@ -363,7 +362,6 @@ theorem ceil_add_le (a b : R) : ⌈a + b⌉₊ ≤ ⌈a⌉₊ + ⌈b⌉₊ := by
 
 variable [Sub R] [OrderedSub R] [ExistsAddOfLE R]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ceil_sub_natCast (a : R) (n : ℕ) : ⌈a - n⌉₊ = ⌈a⌉₊ - n := by
   obtain han | hna := le_total a n
   · rwa [ceil_eq_zero.2 (tsub_nonpos_of_le han), eq_comm, tsub_eq_zero_iff_le, Nat.ceil_le]

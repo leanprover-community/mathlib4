@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
+Authors: Kevin Buzzard, Johan Commelin, Patrick Massot, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Algebra.Order.GroupWithZero.Range
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Ring.Torsion
@@ -315,7 +315,7 @@ theorem map_sum_eq_of_lt {ι : Type*} [DecidableEq ι] {s : Finset ι} {f : ι �
     v (∑ i ∈ s, f i) = v (f j) := by
   rcases eq_or_ne (v (f j)) 0 with h0 | h0
   · aesop
-  rw [Finset.sum_eq_add_sum_diff_singleton hj]
+  rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hj]
   exact map_add_eq_of_lt_left _ (map_sum_lt _ h0 hf)
 
 theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
@@ -452,6 +452,108 @@ lemma mem_leAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀} {x : R} :
 
 lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup :=
   fun _ _ h _ ↦ h.trans'
+
+open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
+def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀)) where
+  __ := restrict₀ v
+  map_add_le_max' x y := by
+    by_cases H : v x ≠ 0 ∨ v y ≠ 0
+    · rcases H with h | h <;>
+      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, h, ↓reduceDIte] <;>
+      · split_ifs with H _ hy
+        all_goals simp [← Units.val_le_val]
+        simpa using map_add_le _ (by simp_all) (by simp_all)
+    · simp only [ne_eq, not_or, Decidable.not_not] at H
+      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, H, ↓reduceDIte, max_self,
+        le_zero_iff, dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
+      simpa using map_add_le _ (le_of_eq H.1) (le_of_eq H.2)
+
+lemma restrict_def (x : R) : v.restrict x = restrict₀ v x := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
+  simp only [restrict_def, restrict₀_apply]
+  split_ifs with h <;>
+  simp_all [zero_lt_iff.mpr]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
+  simp only [restrict_def, restrict₀_apply]
+  split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ v} :
+    v.restrict x < g ↔ v x < embedding g := by
+  conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
+  rw [embedding_strictMono.lt_iff_lt, restrict_def]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ v} :
+    v.restrict x ≤ g ↔ v x ≤ embedding g := by
+  conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
+  rw [embedding_strictMono.le_iff_le, restrict_def]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_lt_one_iff {x : R} : v.restrict x < 1 ↔ v x < 1 := by
+  rw [restrict_lt_iff_lt_embedding, map_one]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
+  rw [restrict_le_iff_le_embedding, map_one]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
+  rw [restrict_def,restrict₀_eq_zero_iff]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
+  rw [restrict_def,restrict₀_eq_one_iff]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
+  simp only [restrict_def, restrict₀_apply]
+  split_ifs with hx hy <;> simp_all [← Units.val_le_val]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
+  simp only [restrict_def, restrict₀_apply]
+  aesop
+
+@[simp]
+lemma embedding_restrict (x : R) : ValueGroup₀.embedding (v.restrict x) = v x :=
+  embedding_restrict₀ x
+
+set_option backward.isDefEq.respectTransparency false in
+lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
+    ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
+  set u := WithZero.unzero (Units.ne_zero γ) with hu_def
+  obtain ⟨a, ⟨ha, x, hax⟩⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
+  have hx : 0 < v x := by
+    rw [← restrict_pos_iff, restrict_def, WithZero.pos_iff_ne_zero, ne_eq, restrict₀_eq_zero_iff]
+    aesop
+  use x, a, hx, zero_lt_iff.mpr ha
+  have ha0 : v.restrict a ≠ 0 := by simp [ha]
+  rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff, map_mul,
+    embedding_restrict, embedding_restrict, ← hax]
+  congr
+  rw [← WithZero.coe_unzero (Units.ne_zero γ)]
+  exact Eq.refl ..
+
+lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
+    {w : Valuation R Γ₀'} (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
+  simp only [IsEquiv] at h ⊢
+  simp [restrict_le_iff, h]
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 @[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
@@ -651,19 +753,26 @@ lemma one_lt_iff_one_lt (h : v₁.IsEquiv v₂) {x : R} :
     1 < v₁ x ↔ 1 < v₂ x := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
 
+theorem isTrivialOn {A : Type*} [CommSemiring A] [Algebra A R] (h : v₁.IsEquiv v₂)
+    (h₁ : IsTrivialOn A v₁) : IsTrivialOn A v₂ where
+  eq_one _ ha := h.eq_one_iff_eq_one.mp (IsTrivialOn.eq_one _ ha)
+
+theorem isTrivialOn_iff {A : Type*} [CommSemiring A] [Algebra A R] (h : v₁.IsEquiv v₂) :
+    IsTrivialOn A v₁ ↔ IsTrivialOn A v₂ :=
+  ⟨fun h₁ ↦ h.isTrivialOn h₁, fun h₂ ↦ h.symm.isTrivialOn h₂⟩
+
 end IsEquiv
 
 section LinearOrderedCommMonoidWithZero
 
-variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
+variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
+  {v : Valuation R Γ₀} {v' : Valuation R Γ'₀}
 
-theorem isEquiv_map_self_of_strictMono [Ring R] {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
-    (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
+theorem isEquiv_map_self_of_strictMono (f : Γ₀ →*₀ Γ'₀) (H : StrictMono f) :
+    IsEquiv (v.map f H.monotone) v := fun _x _y =>
   ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
 
-variable {v : Valuation K Γ₀} {v' : Valuation K Γ'₀}
-
-theorem isEquiv_iff_val_lt_val : v.IsEquiv v' ↔ ∀ {x y : K}, v x < v y ↔ v' x < v' y := by
+theorem isEquiv_iff_val_lt_val : v.IsEquiv v' ↔ ∀ {x y : R}, v x < v y ↔ v' x < v' y := by
   simp only [IsEquiv, le_iff_le_iff_lt_iff_lt]
   exact forall_comm
 
