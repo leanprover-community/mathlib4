@@ -494,8 +494,7 @@ theorem algebraMap_adicCompletion : â‡‘(algebraMap S <| v.adicCompletion K) = (â
   rfl
 
 variable {R} in
-theorem denseRange_algebraMap :
-    DenseRange (algebraMap K (v.adicCompletion K)) :=
+theorem denseRange_algebraMap : DenseRange (algebraMap K (v.adicCompletion K)) :=
   UniformSpace.Completion.denseRange_coe.comp (WithVal.equiv _).symm.surjective.denseRange
     (UniformSpace.Completion.continuous_coe _)
 
