@@ -55,7 +55,7 @@ variable
   -- Let `M` be a `C^k` real manifold modeled on `(E, H)`
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 2 M]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- Let `V` be a bundle over `M`, endowed with a Riemannian metric.
   (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
@@ -84,7 +84,7 @@ local notation "⟪" σ ", " τ "⟫" => product σ τ
 -- Basic API for the product of two sections.
 section product
 
-omit [TopologicalSpace M] [IsManifold I 2 M]
+omit [TopologicalSpace M]
 
 lemma product_apply (x) : ⟪σ, τ⟫ x = inner ℝ (σ x) (τ x) := rfl
 
@@ -151,40 +151,22 @@ end product
 
 -- These lemmas are necessary as my Lie bracket identities (assuming minimal differentiability)
 -- only hold point-wise. They abstract the expanding and unexpanding of `product`.
-omit [TopologicalSpace M] [IsManifold I 2 M] in
+omit [TopologicalSpace M] in
 lemma product_congr_left {x} (h : σ x = σ' x) : product σ τ x = product σ' τ x := by
   rw [product_apply, h, ← product_apply]
 
-omit [TopologicalSpace M] [IsManifold I 2 M] in
+omit [TopologicalSpace M] in
 lemma product_congr_left₂ {x} (h : σ x = σ' x + σ'' x) :
     product σ τ x = product σ' τ x + product σ'' τ x := by
   rw [product_apply, h, inner_add_left, ← product_apply]
-omit [TopologicalSpace M] [IsManifold I 2 M] in
+omit [TopologicalSpace M] in
 lemma product_congr_right {x} (h : τ x = τ' x) : product σ τ x = product σ τ' x := by
   rw [product_apply, h, ← product_apply]
 
-omit [TopologicalSpace M] [IsManifold I 2 M] in
+omit [TopologicalSpace M] in
 lemma product_congr_right₂ {x} (h : τ x = τ' x + τ'' x) :
     product σ τ x = product σ τ' x + product σ τ'' x := by
   rw [product_apply, h, inner_add_right, ← product_apply]
-
-/- TODO: writing `hσ.inner_bundle hτ` or writing `by apply MDifferentiable.inner_bundle hσ hτ`
-yields an error
-synthesized type class instance is not definitionally equal to expression inferred by typing rules,
-synthesized
-  fun x ↦ instNormedAddCommGroupOfRiemannianBundle x
-inferred
-  fun b ↦ inst✝⁷
-Diagnose and fix this, and then replace the below by `MDifferentiable(At).inner_bundle! -/
-
-variable {F} [VectorBundle ℝ F V] [IsContMDiffRiemannianBundle I 1 F V] {I} in
-lemma MDifferentiable.inner_bundle' (hσ : MDiff (T% σ)) (hτ : MDiff (T% τ)) : MDiff ⟪σ, τ⟫ :=
-  MDifferentiable.inner_bundle hσ hτ
-
-variable {F} [VectorBundle ℝ F V] [IsContMDiffRiemannianBundle I 1 F V] {I} in
-lemma MDifferentiableAt.inner_bundle' {x} (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
-    MDiffAt ⟪σ, τ⟫ x :=
-  MDifferentiableAt.inner_bundle hσ hτ
 
 namespace CovariantDerivative
 
@@ -204,7 +186,6 @@ noncomputable def compatibilityTensorAux (σ τ : Π x : M, V x) :
   (NormedSpace.fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% ⟪σ, τ⟫ x
   - ((innerSL ℝ (τ x)) ∘L (cov σ x)) - ((innerSL ℝ (σ x)) ∘L (cov τ x))
 
-omit [IsManifold I 2 M] in
 lemma compatibilityTensorAux_apply (σ τ : Π x : M, V x)
     {x : M} (X₀ : TangentSpace I x) :
     compatibilityTensorAux I cov σ τ x X₀ =
@@ -220,14 +201,14 @@ theorem compatibilityTensorAux_tensorial₁ (τ : Π x, V x) (hτ : MDiffAt (T% 
   smul hf hσ := by
     ext X₀
     rw [compatibilityTensorAux_apply, product_smul_left,
-      fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle' hτ)]
+      fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle hτ)]
     simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_left,
       inner_smul_left]
     ring
   add hσ hσ' := by
     ext X₀
     rw [compatibilityTensorAux_apply, product_add_left,
-      fromTangentSpace_mfderiv_add_apply (hσ.inner_bundle' hτ) (hσ'.inner_bundle' hτ)]
+      fromTangentSpace_mfderiv_add_apply (hσ.inner_bundle hτ) (hσ'.inner_bundle hτ)]
     simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.add hσ hσ', inner_add_left]
     abel
 
@@ -236,14 +217,14 @@ theorem compatibilityTensorAux_tensorial₂ (σ : Π x, V x) (hσ : MDiffAt (T% 
   smul hf hτ := by
     ext X₀
     rw [compatibilityTensorAux_apply, product_smul_right,
-      fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle' hτ)]
+      fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle hτ)]
     simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right,
       inner_smul_right]
     ring
   add hτ hτ' := by
     ext X₀
     rw [compatibilityTensorAux_apply, product_add_right,
-      fromTangentSpace_mfderiv_add_apply (hσ.inner_bundle' hτ) (hσ.inner_bundle' hτ')]
+      fromTangentSpace_mfderiv_add_apply (hσ.inner_bundle hτ) (hσ.inner_bundle hτ')]
     simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.add hτ hτ', inner_add_right]
     abel
 
@@ -281,8 +262,9 @@ ambient metric, i.e. for all differentiable vector fields `X` on `M` and section
 `V`, we have `X ⟨σ, τ⟩ = ⟨∇ X σ, τ⟩ + ⟨σ, ∇ X τ⟩`. -/
 def IsCompatible [FiniteDimensional ℝ F] : Prop := compatibilityTensor cov = 0
 
+variable {I} [IsManifold I 1 M] [ContMDiffVectorBundle 1 F V I]
+
 open FiberBundle in
-variable {I} [ContMDiffVectorBundle 1 F V I] in
 lemma isCompatible_iff [FiniteDimensional ℝ F] :
     cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x}
       (_hX : MDiffAt (T% X) x) (_hσ : MDiffAt (T% σ) x) (_hτ : MDiffAt (T% τ) x),
