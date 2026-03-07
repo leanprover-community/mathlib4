@@ -34,10 +34,10 @@ variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA]
 variable {X Y : LightCondensed.{u} A} (f : X ⟶ Y)
 
 lemma isLocallySurjective_iff_locallySurjective_on_lightProfinite : IsLocallySurjective f ↔
-    ∀ (S : LightProfinite) (y : ToType (Y.val.obj ⟨S⟩)),
+    ∀ (S : LightProfinite) (y : ToType (Y.obj.obj ⟨S⟩)),
       (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ)
-        (x : ToType (X.val.obj ⟨S'⟩)),
-        f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) := by
+        (x : ToType (X.obj.obj ⟨S'⟩)),
+        f.hom.app ⟨S'⟩ x = Y.obj.map ⟨φ⟩ y) := by
   rw [coherentTopology.isLocallySurjective_iff,
     regularTopology.isLocallySurjective_iff]
   simp_rw [LightProfinite.effectiveEpi_iff_surjective]
@@ -50,9 +50,9 @@ variable {X Y : LightCondSet.{u}} (f : X ⟶ Y)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
-    ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
-      (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
-        f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) := by
+    ∀ (S : LightProfinite) (y : Y.obj.obj ⟨S⟩),
+      (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.obj.obj ⟨S'⟩),
+        f.hom.app ⟨S'⟩ x = Y.obj.map ⟨φ⟩ y) := by
   rw [← isLocallySurjective_iff_epi']
   exact LightCondensed.isLocallySurjective_iff_locallySurjective_on_lightProfinite _ f
 
@@ -64,9 +64,9 @@ variable (R : Type u) [Ring R] {X Y : LightCondMod.{u} R} (f : X ⟶ Y)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
-    ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
-      (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
-        f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) := by
+    ∀ (S : LightProfinite) (y : Y.obj.obj ⟨S⟩),
+      (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.obj.obj ⟨S'⟩),
+        f.hom.app ⟨S'⟩ x = Y.obj.map ⟨φ⟩ y) := by
   rw [← isLocallySurjective_iff_epi']
   exact LightCondensed.isLocallySurjective_iff_locallySurjective_on_lightProfinite _ f
 
@@ -74,13 +74,13 @@ set_option backward.isDefEq.respectTransparency false in
 instance : (LightCondensed.forget R).ReflectsEpimorphisms where
   reflects f hf := by
     rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
-    exact (Presheaf.isLocallySurjective_iff_whisker_forget _ f.val).mpr hf
+    exact (Presheaf.isLocallySurjective_iff_whisker_forget _ f.hom).mpr hf
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (LightCondensed.forget R).PreservesEpimorphisms where
   preserves f hf := by
     rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
-    exact (Presheaf.isLocallySurjective_iff_whisker_forget _ f.val).mp hf
+    exact (Presheaf.isLocallySurjective_iff_whisker_forget _ f.hom).mp hf
 
 end LightCondMod
 

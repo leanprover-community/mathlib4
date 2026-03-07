@@ -152,7 +152,6 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
       rw [integrableOn_Icc_iff_integrableOn_Ioc]
       exact (exp_neg_integrableOn_Ioc hr).const_mul _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The CDF of the exponential distribution equals ``1 - exp (-(r * x))`` -/
 lemma cdf_expMeasure_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
     cdf (expMeasure r) x = if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
