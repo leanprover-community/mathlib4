@@ -49,17 +49,17 @@ set_option linter.unusedTactic false in
 add_aesop_rules safe tactic (rule_sets := [finiteness]) (by positivity)
 
 /-- `finiteness` proves goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
-nonnegative reals (`ℝ≥0∞`). If the goal cannot be proved, `finiteness` prints a warning and shows
+nonnegative reals (`ℝ≥0∞`). If the goal cannot be proven, `finiteness` prints a warning and shows
 its intermediate progress.
 
-This tactic is based on Aesop. It calls `assumption`, `intros`, `positivity`, and any
-lemma or rule added to the `finiteness` ruleset, except all `simp` rules are disabled.
+This tactic is based on `aesop`. It calls `assumption`, `intros`, `positivity`, and any
+lemma or rule added to the `finiteness` ruleset, except that all `simp` rules are disabled.
 
 This tactic is extensible. By adding more rules, `finiteness` can prove more goals. For example:
 * `@[aesop (rule_sets := [finiteness]) safe 50] lemma ...`
 * `add_aesop_rules safe tactic (rule_sets := [finiteness]) (by ...)`
 
-* `finiteness (clause)` customizes the Aesop call using the given clause. See `aesop` documentation
+* `finiteness (clause)` customizes the `aesop` call using the given clause. See `aesop` documentation
   for detailed explanation. Note that `finiteness` disables `simp`, so
   `finiteness (add simp [lemma1, lemma2])` does not do anything more than a bare `finiteness`.
 * `finiteness [t₁, ..., tₙ]` adds the terms `t₁`, ..., `tₙ` as local hypotheses before applying
