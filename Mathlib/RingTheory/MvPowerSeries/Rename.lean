@@ -251,7 +251,7 @@ private theorem killComplFun_mul (p q : MvPowerSeries τ R) :
     killComplFun e (p * q) = killComplFun e p * killComplFun e q := by
   classical
   ext
-  simp [coeff_killComplFun, coeff_mul, ← antidiagonal_image_prodMap_embDomain, Finset.sum_image
+  simp [coeff_killComplFun, coeff_mul, ← image_prodMap_embDomain_antidiagonal, Finset.sum_image
     ((Function.Injective.injOn (Prod.map_injective.mpr ⟨embDomain_injective e,
       embDomain_injective e⟩)))]
 
