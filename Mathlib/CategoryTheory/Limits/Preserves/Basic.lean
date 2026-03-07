@@ -568,7 +568,9 @@ lemma reflectsSmallestLimits_of_reflectsLimits (F : C ⥤ D) [ReflectsLimitsOfSi
   reflectsLimitsOfSize_shrink F
 
 /-- If the limit of `F` exists and `G` preserves it, then if `G` reflects isomorphisms then it
-reflects the limit of `F`.
+reflects the limit of `F` (see also `JointlyReflectIsomorphisms.jointlyReflectsColimit` in
+the file `CategoryTheory/Functor/ReflectsIso/Limits.lean` for the corresponding result
+for a family of functors which joinly reflect isomorphisms).
 -/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this errors
 lemma reflectsLimit_of_reflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [HasLimit F] [PreservesLimit F G] : ReflectsLimit F G where
@@ -671,7 +673,9 @@ lemma reflectsSmallestColimits_of_reflectsColimits (F : C ⥤ D) [ReflectsColimi
   reflectsColimitsOfSize_shrink F
 
 /-- If the colimit of `F` exists and `G` preserves it, then if `G` reflects isomorphisms then it
-reflects the colimit of `F`.
+reflects the colimit of `F` (see also `JointlyReflectIsomorphisms.jointlyReflectsLimit` in
+the file `CategoryTheory/Functor/ReflectsIso/Limits.lean` for the corresponding result
+for a family of functors which joinly reflect isomorphisms).
 -/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this errors
 lemma reflectsColimit_of_reflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [HasColimit F] [PreservesColimit F G] : ReflectsColimit F G where

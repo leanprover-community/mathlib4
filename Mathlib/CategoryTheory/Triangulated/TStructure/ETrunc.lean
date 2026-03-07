@@ -287,7 +287,7 @@ lemma isIso_eTruncGE_obj_map_truncGEπ_app (a b : EInt) (h : a ≤ b) (X : C) :
     infer_instance
   | coe b =>
     induction a using WithBotTop.rec with
-    | bot => dsimp; infer_instance
+    | bot => infer_instance
     | coe a => exact t.isIso_truncGE_map_truncGEπ_app b a (by simpa using h) X
     | top => simp at h
   | top => exact ⟨0, IsZero.eq_of_src (by simp) _ _, IsZero.eq_of_src (by simp) _ _⟩
@@ -338,7 +338,7 @@ noncomputable def eTruncGEToGEGE (a b : EInt) :
 lemma isIso_eTruncGEIsoGEGE (a b : EInt) (hab : a ≤ b) :
     IsIso (t.eTruncGEToGEGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
-  intro X
+  intro
   simp only [Functor.comp_obj, eTruncGEToGEGE_app]
   exact t.isIso_eTruncGE_obj_map_truncGEπ_app _ _ hab _
 
@@ -378,7 +378,7 @@ noncomputable def eTruncLTLTToLT (a b : EInt) :
 lemma isIso_eTruncLTLTIsoLT (a b : EInt) (hab : b ≤ a) :
     IsIso (t.eTruncLTLTToLT a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
-  intro X
+  intro
   simp only [Functor.comp_obj, eTruncLTLTToLT_app]
   exact t.isIso_eTruncLT_obj_map_truncLTπ_app _ _ hab _
 
@@ -519,14 +519,11 @@ lemma eTruncLTGEIsoGELT_naturality_app (a b : EInt) (hab : a ≤ b)
         (t.eTruncLTGEIsoGELT a' b').hom.app X =
     (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.map (φ.app 0)).app _ ≫
       (t.eTruncGE.obj a').map ((t.eTruncLT.map (φ.app 1)).app X) := by
-  rw [← cancel_epi ((t.eTruncLTGELTSelfToLTGE a b).app X)]
   dsimp
-  rw [eTruncLTGELTSelfToLTGE_app, eTruncLTGEIsoGELT_hom_app_fac_assoc,
-    NatTrans.naturality_assoc, ← Functor.map_comp_assoc, NatTrans.naturality,
-    Functor.map_comp_assoc, ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 1) X,
-    Functor.map_comp, Functor.map_comp, Category.assoc,
-    t.eTruncLTGEIsoGELT_hom_app_fac]
-  simp
+  rw [← cancel_epi ((t.eTruncLTGELTSelfToLTGE a b).app X), eTruncLTGELTSelfToLTGE_app,
+    eTruncLTGEIsoGELT_hom_app_fac_assoc, NatTrans.naturality_assoc, ← Functor.map_comp_assoc,
+    NatTrans.naturality, Functor.map_comp_assoc, ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 1) X]
+  simp [↓Functor.map_comp, t.eTruncLTGEIsoGELT_hom_app_fac]
 
 end
 
