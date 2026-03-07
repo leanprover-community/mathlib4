@@ -996,6 +996,25 @@ arguments that can use the `T%` elaborator. -/
 
 -- TODO: add a delaborator for `MDifferentiable` (with a test)
 
+/-- Delaborator for `MDifferentiable` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab MDifferentiable] meta def delabMDifferentiable : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 21 do
+  try
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    `(MDiff $fs) >>= annotateGoToSyntaxDef
+
 /-- Delaborator for `MDifferentiableAt` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
@@ -1042,6 +1061,10 @@ variable
   [ChartedSpace H M] [IsManifold I ∞ M]
   (f : M → M) (x : M) (s : Set M)
   (v : (x : M) → TangentSpace I x)
+
+/-- info: MDiff f : Prop -/
+#guard_msgs in
+#check MDifferentiable I I f
 
 -- The partially applied form omitting `s` is not delaborated.
 /-- info: MDifferentiableOn I I f : Set M → Prop -/
