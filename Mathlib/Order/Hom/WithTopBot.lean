@@ -90,7 +90,7 @@ theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderTop α] [DecidablePred
 
 theorem subtypeOrderIso_symm_apply [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))]
     {a : α} (h : a ≠ ⊤) :
-    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊤}) := by
+    subtypeOrderIso.symm a = (⟨a, h⟩ : {a : α // a ≠ ⊤}) := by
   rw [OrderIso.symm_apply_eq]
   rfl
 
@@ -140,6 +140,7 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   inj' := WithBot.coe_injective
   map_rel_iff' := WithBot.coe_le_coe
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any `OrderBot` is equivalent to `WithBot` of the subtype excluding `⊥`.
 
 See also `Equiv.optionSubtypeNe`. -/
@@ -153,7 +154,7 @@ theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderBot α] [DecidablePred
 
 theorem subtypeOrderIso_symm_apply [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))]
     {a : α} (h : a ≠ ⊥) :
-    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊥}) := by
+    subtypeOrderIso.symm a = (⟨a, h⟩ : {a : α // a ≠ ⊥}) := by
   rw [OrderIso.symm_apply_eq]
   rfl
 
@@ -425,7 +426,7 @@ theorem withBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
   DFunLike.coe_injective <| Eq.symm <| WithBot.map_comp_map _ _
 
 /-- Adjoins a `⊤` and `⊥` to the domain and codomain of a `LatticeHom`. -/
-@[simps]
+@[simps!]
 def withTopWithBot (f : LatticeHom α β) :
     BoundedLatticeHom (WithTop <| WithBot α) (WithTop <| WithBot β) :=
   ⟨f.withBot.withTop, rfl, rfl⟩
@@ -460,7 +461,7 @@ def withBot' [OrderBot β] (f : LatticeHom α β) : LatticeHom (WithBot α) β :
   { f.toSupHom.withBot', f.toInfHom.withBot' with }
 
 /-- Adjoins a `⊤` and `⊥` to the codomain of a `LatticeHom`. -/
-@[simps]
+@[simps!]
 def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :
     BoundedLatticeHom (WithTop <| WithBot α) β where
   toLatticeHom := f.withBot'.withTop'

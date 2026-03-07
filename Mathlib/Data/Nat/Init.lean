@@ -72,8 +72,6 @@ alias ⟨of_le_succ, _⟩ := le_succ_iff
 
 @[deprecated (since := "2025-08-21")] alias forall_lt_succ := forall_lt_succ_right
 
-@[deprecated (since := "2025-08-15")] alias exists_lt_succ := exists_lt_succ_right
-
 lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
   | 1, _, h, _ => (h rfl).elim
@@ -433,6 +431,9 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
+
+instance (n : ℤ) [NeZero n] : NeZero n.natAbs where
+  out := n.natAbs_ne_zero.mpr (NeZero.ne n)
 
 /-! ### `Nat.AtLeastTwo` -/
 

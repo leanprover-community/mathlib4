@@ -133,21 +133,25 @@ def PreservesPullback.iso : G.obj (pullback f g) ≅ pullback (G.map f) (G.map g
 theorem PreservesPullback.iso_hom : (PreservesPullback.iso G f g).hom = pullbackComparison G f g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem PreservesPullback.iso_hom_fst :
     (PreservesPullback.iso G f g).hom ≫ pullback.fst _ _ = G.map (pullback.fst f g) := by
   simp [PreservesPullback.iso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem PreservesPullback.iso_hom_snd :
     (PreservesPullback.iso G f g).hom ≫ pullback.snd _ _ = G.map (pullback.snd f g) := by
   simp [PreservesPullback.iso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPullback.iso_inv_fst :
     (PreservesPullback.iso G f g).inv ≫ G.map (pullback.fst f g) = pullback.fst _ _ := by
   simp [PreservesPullback.iso, Iso.inv_comp_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPullback.iso_inv_snd :
     (PreservesPullback.iso G f g).inv ≫ G.map (pullback.snd f g) = pullback.snd _ _ := by
@@ -229,6 +233,7 @@ def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
       simp only [← G.map_comp, pushout.condition])) :=
   isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout f g)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the pushout of `f, g`, it also preserves the pushout of `g, f`. -/
 lemma preservesPushout_symmetry : PreservesColimit (span g f) G where
   preserves {c} hc := ⟨by
@@ -265,11 +270,13 @@ theorem PreservesPushout.inr_iso_hom :
     pushout.inr _ _ ≫ (PreservesPushout.iso G f g).hom = G.map (pushout.inr _ _) := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPushout.inl_iso_inv :
     G.map (pushout.inl _ _) ≫ (PreservesPushout.iso G f g).inv = pushout.inl _ _ := by
   simp [PreservesPushout.iso, Iso.comp_inv_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPushout.inr_iso_inv :
     G.map (pushout.inr _ _) ≫ (PreservesPushout.iso G f g).inv = pushout.inr _ _ := by

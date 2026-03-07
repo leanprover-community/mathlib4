@@ -77,7 +77,7 @@ theorem IsChain.mono_rel {r' : α → α → Prop} (h : IsChain r s) (h_imp : �
 theorem IsChain.symm (h : IsChain r s) : IsChain (flip r) s :=
   h.mono' fun _ _ => Or.symm
 
-theorem isChain_of_trichotomous [IsTrichotomous α r] (s : Set α) : IsChain r s :=
+theorem isChain_of_trichotomous [Std.Trichotomous r] (s : Set α) : IsChain r s :=
   fun a _ b _ hab => (trichotomous_of r a b).imp_right fun h => h.resolve_left hab
 
 protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b ∨ b ≺ a) :
@@ -87,10 +87,10 @@ protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b �
 lemma IsChain.pair (h : r a b) : IsChain r {a, b} :=
   IsChain.singleton.insert fun _ hb _ ↦ .inl <| (eq_of_mem_singleton hb).symm.recOn ‹_›
 
-theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
+theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ Std.Trichotomous r := by
   refine ⟨fun h => ⟨fun a b => ?_⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
-  rw [or_left_comm, or_iff_not_imp_left]
-  exact h trivial trivial
+  have : a ≠ b → (r a b ∨ r b a) := h trivial trivial
+  grind
 
 theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α → β)
     (h : ∀ x y, r x y → s (f x) (f y)) {c : Set α} (hrc : IsChain r c) : IsChain s (f '' c) :=
@@ -325,6 +325,8 @@ instance : SetLike (Flag α) α where
     cases s
     cases t
     congr
+
+instance : PartialOrder (Flag α) := .ofSetLike (Flag α) α
 
 @[ext]
 theorem ext : (s : Set α) = t → s = t :=

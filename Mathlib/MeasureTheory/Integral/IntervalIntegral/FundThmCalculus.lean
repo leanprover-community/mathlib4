@@ -794,11 +794,11 @@ theorem integral_hasFDerivWithinAt_of_tendsto_ae (hf : IntervalIntegrable f volu
     (ha : Tendsto f (la ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (lb ⊓ ae volume) (𝓝 cb)) :
     HasFDerivWithinAt (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x)
       ((snd ℝ ℝ ℝ).smulRight cb - (fst ℝ ℝ ℝ).smulRight ca) (s ×ˢ t) (a, b) := by
-  rw [HasFDerivWithinAt, nhdsWithin_prod_eq]
   have :=
     integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae hf hmeas_a hmeas_b ha hb
       (tendsto_const_pure.mono_right FTCFilter.pure_le : Tendsto _ _ (𝓝[s] a)) tendsto_fst
       (tendsto_const_pure.mono_right FTCFilter.pure_le : Tendsto _ _ (𝓝[t] b)) tendsto_snd
+  rw [← nhdsWithin_prod_eq] at this
   refine .of_isLittleO <| (this.congr_left ?_).trans_isBigO ?_
   · simp [sub_smul]
   · exact isBigO_fst_prod.norm_left.add isBigO_snd_prod.norm_left
@@ -1184,6 +1184,18 @@ theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
   rw [← hderiv, integral_deriv_eq_sub hdiff]
   rw [hderiv]
   exact hcont.intervalIntegrable
+
+/-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `(a, b)` and
+its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`. -/
+theorem integral_deriv_eq_sub_uIoo
+    (hcont : ContinuousOn f [[a, b]]) (hderiv : ∀ x ∈ uIoo a b, DifferentiableAt ℝ f x)
+    (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a := by
+  rcases le_total a b with hab | hab
+  · simp only [uIcc_of_le, hab, uIoo_of_le] at hcont hderiv
+    rw [integral_eq_sub_of_hasDerivAt_of_le hab hcont (fun x hx => (hderiv x hx).hasDerivAt) hint]
+  · simp only [uIcc_of_ge, hab, uIoo_of_ge] at hcont hderiv
+    rw [integral_symm, integral_eq_sub_of_hasDerivAt_of_le hab hcont
+        (fun x hx => (hderiv x hx).hasDerivAt) hint.symm, neg_sub]
 
 /-- A variant of `intervalIntegral.integral_deriv_eq_sub`, the Fundamental theorem
 of calculus, involving integrating over the unit interval. -/

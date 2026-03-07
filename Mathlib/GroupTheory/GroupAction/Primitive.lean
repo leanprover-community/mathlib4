@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Setoid.Partition.Card
 public import Mathlib.GroupTheory.GroupAction.Blocks
 public import Mathlib.GroupTheory.GroupAction.Transitive
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Primitive actions
@@ -137,7 +138,7 @@ theorem isTrivialBlock_of_card_le_two
 
 variable [Group G] [MulAction G X]
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 /-- If the action is pretransitive, then the trivial blocks condition implies preprimitivity
 (based condition) -/
@@ -228,7 +229,7 @@ section Stabilizer
 
 variable (G : Type*) [Group G] {X : Type*} [MulAction G X]
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 /-- A pretransitive action on a nontrivial type is preprimitive iff
 the set of blocks containing a given element is a simple order -/

@@ -72,6 +72,7 @@ def Quotient := (relations.G →₀ A) ⧸ Submodule.span A (Set.range relations
 noncomputable instance : AddCommGroup relations.Quotient := by
   dsimp only [Quotient]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : Module A relations.Quotient := by
   dsimp only [Quotient]; infer_instance
 
@@ -94,6 +95,7 @@ lemma ker_toQuotient :
     LinearMap.ker relations.toQuotient = Submodule.span A (Set.range relations.relation) :=
   Submodule.ker_mkQ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toQuotient_relation (r : relations.R) :
     relations.toQuotient (relations.relation r) = 0 := by

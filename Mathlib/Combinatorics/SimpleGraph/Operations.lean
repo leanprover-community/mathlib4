@@ -174,12 +174,14 @@ lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
   rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edge_edgeSet_of_ne h.ne, Set.singleton_subset_iff,
     mem_edgeSet]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_edge {u v : V} : Disjoint G (edge u v) ↔ ¬G.Adj u v := by
   by_cases h : u = v
   · subst h
     simp [edge_self_eq_bot]
   simp [← disjoint_edgeSet, edge_edgeSet_of_ne h]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sdiff_edge {u v : V} (h : ¬G.Adj u v) : G \ edge u v = G := by
   simp [disjoint_edge, h]
 

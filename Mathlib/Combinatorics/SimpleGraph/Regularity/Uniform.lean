@@ -399,7 +399,7 @@ that have edge density at least `δ`. -/
     rintro ⟨ab, U, UP, V, VP, xU, yV, UV, GUV, εUV⟩
     refine ⟨G.symm ab, V, VP, U, UP, yV, xU, UV.symm, GUV.symm, ?_⟩
     rwa [edgeDensity_comm]
-  loopless a h := G.loopless a h.1
+  loopless := ⟨fun a h ↦ G.loopless.irrefl a h.1⟩
 
 instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj := by
   unfold regularityReduced; infer_instance

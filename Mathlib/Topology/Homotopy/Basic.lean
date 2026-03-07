@@ -218,19 +218,17 @@ theorem symm_bijective {f₀ f₁ : C(X, Y)} :
     Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂ where
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
-  continuous_toFun := by
-    refine
-      continuous_if_le (by fun_prop) continuous_const
-        (F.continuous.comp (by continuity)).continuousOn
-        (G.continuous.comp (by continuity)).continuousOn ?_
-    rintro x hx
-    norm_num [hx]
+  continuous_toFun :=
+    continuous_if_le (by fun_prop) continuous_const
+      (F.continuous.comp (by fun_prop)).continuousOn
+      (G.continuous.comp (by fun_prop)).continuousOn (fun x hx ↦ by norm_num [hx])
   map_zero_left x := by norm_num
   map_one_left x := by norm_num
 
@@ -245,6 +243,7 @@ theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Hom
       · rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
         rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
   ext ⟨t, _⟩
@@ -382,8 +381,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
   -- TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
-  prop' : ∀ t, P ⟨fun x => toFun (t, x),
-    Continuous.comp continuous_toFun (continuous_const.prodMk continuous_id')⟩
+  prop' : ∀ t, P ⟨fun x ↦ toFun (t, x), continuous_toFun.comp (by fun_prop)⟩
 
 namespace HomotopyWith
 
@@ -633,6 +631,11 @@ variable {S : Set X}
 /-- If two maps are homotopic relative to a set, then they are homotopic. -/
 protected theorem homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) : Homotopic f₀ f₁ :=
   h.map fun F ↦ F.1
+
+/-- If two maps are homotopic relative to a set, then they agree on it. -/
+theorem fst_eq_snd ⦃f₀ f₁ : C(X, Y)⦄ (h : HomotopicRel f₀ f₁ S) {x : X} (hx : x ∈ S) :
+    f₀ x = f₁ x :=
+  Nonempty.elim h (HomotopyRel.fst_eq_snd · hx)
 
 theorem refl (f : C(X, Y)) : HomotopicRel f f S :=
   ⟨HomotopyRel.refl f S⟩
