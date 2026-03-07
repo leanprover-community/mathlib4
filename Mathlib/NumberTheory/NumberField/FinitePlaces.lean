@@ -83,9 +83,13 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
 
 end DVR
 
-variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
+variable {K : Type*} [Field K] [NumberField K]
 
-namespace NumberField.RingOfIntegers.HeightOneSpectrum
+namespace NumberField
+
+variable (v : HeightOneSpectrum (𝓞 K))
+
+namespace RingOfIntegers.HeightOneSpectrum
 
 section AbsoluteValue
 
@@ -374,7 +378,8 @@ section LiesOver
 
 namespace NumberField.HeightOneSpectrum
 
-variable {L : Type*} [Field L] [NumberField L] [Algebra K L] (w : HeightOneSpectrum (𝓞 L))
+variable {L : Type*} [Field L] [NumberField L] [Algebra K L]
+variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
     [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
