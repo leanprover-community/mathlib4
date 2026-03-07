@@ -23,7 +23,7 @@ on:
       mathlib_ci_ref:
         type: string
         required: false
-        default: 7c2dcf950607e48029aec2a614e840f2a14ae7e1
+        default: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -624,7 +624,7 @@ jobs:
       # Generate a fresh token just before posting comments.
       # GitHub App tokens expire after 1 hour, and the build can take longer than that.
       - name: Generate lean-pr-testing app token
-        if: always()
+        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && (startsWith(github.ref_name, 'lean-pr-testing-') || startsWith(github.ref_name, 'batteries-pr-testing-')) }}
         id: lean-pr-testing-token
         uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
         with:
@@ -634,7 +634,7 @@ jobs:
           repositories: lean4
       # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
-        if: always()
+        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && (startsWith(github.ref_name, 'lean-pr-testing-') || startsWith(github.ref_name, 'batteries-pr-testing-')) }}
         shell: bash
         env:
           TOKEN: ${{ steps.lean-pr-testing-token.outputs.token }}
