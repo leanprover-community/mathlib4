@@ -5,12 +5,15 @@ Authors: Jiedong Jiang, Christian Merten
 -/
 module
 
+public import Mathlib.Algebra.Category.Grp.AB
 public import Mathlib.Algebra.Category.Grp.Ulift
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.AlgebraicGeometry.Sites.ConstantSheaf
 public import Mathlib.AlgebraicGeometry.Sites.Proetale
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 
 /-!
 
@@ -27,7 +30,7 @@ Its cohomology groups are the `ℓ`-adic cohomology groups of `X`.
 
 ## Notes
 
-The `ℓ`-adic cohomology groups of `X : Scheme.{u}` are in `Type (u + 2)`, because
+The `ℓ`-adic cohomology groups of `X : Scheme.{u}` are in `Type (u + 1)`, because
 the pro-étale site of `X` has no essentially small subcategory with the same category of sheaves.
 Eventually, we will be able to compare the `ℓ`-adic cohomology defined here with the classical
 definition using étale cohomology. This will show that the groups defined here are indeed `u`-small.
@@ -55,6 +58,14 @@ namespace AlgebraicGeometry.Scheme
 
 variable (X : Scheme.{u})
 
+instance : IsGrothendieckAbelian.{u + 1} (Sheaf (ProEt.topology X) Ab.{u + 1}) := by
+  -- Without this, lean starts searching for `EssentiallySmall.{max (u + 1) ?v}` and fails.
+  have : EssentiallySmall.{u + 1} X.ProEt := inferInstance
+  exact Sheaf.isGrothendieckAbelian_of_essentiallySmall (ProEt.topology X) Ab.{u + 1}
+
+instance : HasExt.{u + 1} (Sheaf (ProEt.topology X) Ab.{u + 1}) :=
+  hasExt_of_enoughInjectives _
+
 /--
 The sheaf of continuous maps `U ↦ C(U, ℤ_[ℓ])` on the pro-étale site. This the coefficient
 sheaf for `ℓ`-adic cohomology.
@@ -71,11 +82,8 @@ variable (ℓ : ℕ) [Fact ℓ.Prime]
 lemma isZero_ellAdicSheaf_of_isEmpty [IsEmpty X] : IsZero (X.ellAdicSheaf ℓ) :=
   (Sheaf.isTerminalOfEqTop _ (ProEt.topology_eq_top_of_isEmpty _) _).isZero
 
-instance : HasExt.{u + 2} (Sheaf (ProEt.topology X) Ab.{u + 1}) :=
-  HasExt.standard _
-
 /-- `ℓ`-adic cohomology of a scheme in degree `n`. -/
-def EllAdicCohomology (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : Type (u + 2) :=
+def EllAdicCohomology (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : Type (u + 1) :=
   ((sheafCompose _ AddCommGrpCat.uliftFunctor.{u + 1}).obj <| X.ellAdicSheaf ℓ).H n
 
 noncomputable instance (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : AddCommGroup (X.EllAdicCohomology ℓ n) :=
