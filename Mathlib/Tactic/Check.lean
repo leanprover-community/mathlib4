@@ -44,7 +44,7 @@ namespace Mathlib.Tactic
 
 /-- Core routine for the `#check` tactic: show a signature for `#check term`, assuming `term`
 is an identifier. Info messages are placed at `tk`.
-In case there are several resolved names for `term`, show information for all of them. -/
+In case there are several resolved names for `term`, show information for the first of them. -/
 def checkInner (tk : Syntax) (term : Term) : TacticM Unit := do
   for c in (← realizeGlobalConstWithInfos term) do
     addCompletionInfo <| .id term c (danglingDot := false) {} none
@@ -54,7 +54,7 @@ def checkInner (tk : Syntax) (term : Term) : TacticM Unit := do
 open PrettyPrinter Delaborator in
 /-- Core routine for the `#check'` tactic: show a signature for `#check' term`, assuming `term`
 is an identifier. Info messages are placed at `tk`.
-In case there are several resolved names for `term`, show information for all of them. -/
+In case there are several resolved names for `term`, show information for the first of them. -/
 def checkPrimeInner (tk : Syntax) (term : Term) : TacticM Unit := do
   for c in (← realizeGlobalConstWithInfos term) do
     addCompletionInfo <| .id term c (danglingDot := false) {} none
