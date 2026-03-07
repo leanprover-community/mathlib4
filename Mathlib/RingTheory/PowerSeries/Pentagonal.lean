@@ -37,7 +37,7 @@ left-hand side.
 * `PowerSeries.coeff_prod_one_sub_X_eventually_eq_negOnePow` and
   `PowerSeries.coeff_prod_one_sub_X_eventually_eq_zero`: coefficients of finite product
   $\prod_{n\in s} (1 - x^{n + 1})$ are eventually constants, either $(-1)^k$ or 0 depending whether
-  the exponent on `X` is a pentagonal number or not, respectively. These theorems doesn't assume
+  the exponent on $x$ is a pentagonal number or not, respectively. These theorems don't assume any
   topology on the ring.
 -/
 
