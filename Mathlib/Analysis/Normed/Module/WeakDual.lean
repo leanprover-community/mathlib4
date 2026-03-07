@@ -316,6 +316,8 @@ theorem isBounded_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsBounded (toStrongDual ⁻¹' closedBall x' r) :=
   isBounded_toStrongDual_preimage_iff_isBounded.mpr Metric.isBounded_closedBall
 
+variable (𝕜)
+
 /-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
 the weak-star topology. -/
 theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : ℝ) :
@@ -325,8 +327,6 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : �
 /-!
 ### Polar sets in the weak dual space
 -/
-
-variable (𝕜)
 
 /-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
 weak-star topology is `WeakDual.polar 𝕜 s`. -/
