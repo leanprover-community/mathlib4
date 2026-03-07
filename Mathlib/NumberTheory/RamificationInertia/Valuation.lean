@@ -58,54 +58,84 @@ theorem valuation_liesOver (x : K) :
   simp [valuation_of_algebraMap, div_pow, ← IsScalarTower.algebraMap_apply A K L,
     IsScalarTower.algebraMap_apply A B L, intValuation_liesOver v w]
 
-def _root_.IsDedekindDomain.HeightOneSpectrum.valueGroup_eq :
-    MonoidWithZeroHom.valueGroup (v.valuation K) = ⊤ := by
-  ext; simp [MonoidWithZeroHom.valueGroup, MonoidWithZeroHom.valueMonoid,
-    (v.valuation_surjective K).range_eq]
+open MonoidWithZeroHom
+
+def _root_.MonoidWithZeroHom.valueGroup_eq_top_of_surjective {A : Type*} {B : Type*} {F : Type*}
+    [FunLike F A B] (f : F) [MonoidWithZero A] [MonoidWithZero B] [MonoidWithZeroHomClass F A B]
+    (hf : Function.Surjective f) : valueGroup f = ⊤ := by
+  simp [valueGroup_def, valueMonoid_eq_closure, hf.range_eq]
+
+def _root_.MonoidWithZeroHom.valueGroupEquivOfSurjective {A : Type*} {B : Type*} {F : Type*}
+    [FunLike F A B] {f : F} [MonoidWithZero A] [MonoidWithZero B] [MonoidWithZeroHomClass F A B]
+    (hf : Function.Surjective f) : valueGroup f ≃* Bˣ :=
+  (MulEquiv.subgroupCongr (valueGroup_eq_top_of_surjective f hf)).trans Subgroup.topEquiv
+
+@[simps!]
+def _root_.WithZero.mapRingEquiv {A : Type*} {B : Type*} [MulOneClass A] [MulOneClass B]
+    (e : A ≃* B) : WithZero A ≃* WithZero B where
+  toFun := WithZero.map' e
+  invFun := WithZero.map' e.symm
+  left_inv x := by match x with
+    | 0 => simp
+    | .coe a => simp
+  right_inv y := by match y with
+    | 0 => simp
+    | .coe a => simp
+  map_mul' x y := by match x, y with
+    | 0, _ => simp
+    | _, 0 => simp
+    | .coe a, .coe b => simp
+
+@[simps!]
+def _root_.MonoidWithZeroHom.valueGroupEquivOfSurjective₀ {A : Type*} {B : Type*} {F : Type*}
+    [FunLike F A B] {f : F} [MonoidWithZero A] [MonoidWithZero B] [MonoidWithZeroHomClass F A B]
+    [Preorder B] (hf : Function.Surjective f) : ValueGroup₀ f ≃*o WithZero Bˣ where
+  __ := WithZero.mapRingEquiv (valueGroupEquivOfSurjective hf)
+  map_le_map_iff' {a b} := by match a, b with
+    | 0, 0 => simp
+    | 0, .coe _ => simp
+    | .coe _, 0 => simp
+    | .coe a, .coe b => simp [valueGroupEquivOfSurjective]
+
+@[simps!]
+def _root_.WithZero.unitsWithZeroOrderMonoidIso {α : Type*} [Group α] [Preorder α] :
+    (WithZero α)ˣ ≃*o α where
+  __ := WithZero.unitsWithZeroEquiv
+  map_le_map_iff' {a b} := by simp
+
+@[simps!]
+def _root_.WithZero.mapMonoidOrderIso {A : Type*} {B : Type*} [MulOneClass A] [MulOneClass B]
+    [Preorder A] [Preorder B] (e : A ≃*o B) : WithZero A ≃*o WithZero B where
+  __ := WithZero.mapRingEquiv e
+  map_le_map_iff' {a b} := by match a, b with
+    | 0, 0 => simp
+    | 0, .coe _ => simp
+    | .coe _, 0 => simp
+    | .coe a, .coe b => simp
 
 variable (K) in
-@[simps! apply symm_apply]
-def _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupEquiv :
-    MonoidWithZeroHom.valueGroup (v.valuation K) ≃* ℤᵐ⁰ˣ where
-  __ := (Equiv.setCongr (by simp [valueGroup_eq v])).trans
-    (Equiv.subtypeUnivEquiv (Subgroup.mem_top))
-  map_mul' _ _ := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
-
+noncomputable def _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupEquiv :
+    MonoidWithZeroHom.valueGroup (v.valuation K) ≃* ℤᵐ⁰ˣ :=
+  MonoidWithZeroHom.valueGroupEquivOfSurjective (v.valuation_surjective K)
 
 variable (K) in
 @[simps!]
 noncomputable
 def _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupOrderIso₀ :
-    MonoidWithZeroHom.ValueGroup₀ (v.valuation K) ≃*o ℤᵐ⁰ where
-  __ := WithZero.map' ((v.valueGroupEquiv K).trans WithZero.unitsWithZeroEquiv)
-  invFun := WithZero.map' ((v.valueGroupEquiv K).trans WithZero.unitsWithZeroEquiv).symm.toMonoidHom
-  left_inv x := by
-    match x with
-    | 0 => simp
-    | WithZero.coe a =>
-      erw [WithZero.map'_map']
-      erw [WithZero.map'_coe]
-      simp
-  right_inv y := by
-    match y with
-    | 0 => simp
-    | WithZero.coe a => simp
-  map_le_map_iff' {a b} := by
-    match a, b with
-    | 0, 0 => simp
-    | 0, .coe _ => simp
-    | .coe _, 0 => simp
-    | .coe a, .coe b => simp [Equiv.setCongr, Equiv.subtypeEquivProp]
+    ValueGroup₀ (v.valuation K) ≃*o ℤᵐ⁰ :=
+  (valueGroupEquivOfSurjective₀ (v.valuation_surjective K)).trans
+    (mapMonoidOrderIso unitsWithZeroOrderMonoidIso)
+
 
 open MonoidWithZeroHom ValueGroup₀
 
 variable (K) in
 lemma _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupOrderIso₀_restrict (b : K) :
     v.valueGroupOrderIso₀ K ((v.valuation K).restrict b) = v.valuation K b := by
-  simp [(v.valuation K).restrict_def, restrict₀_apply]
+  rw [(v.valuation K).restrict_def, restrict₀_apply]
   by_cases hb : v.valuation K b = 0;
   · simp [hb]
-  · simp [hb, Equiv.setCongr, Equiv.subtypeEquivProp]
+  · simp [hb, valueGroupEquivOfSurjective]
 
 variable (K) in
 lemma _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupOrderIso₀_symm_restrict (b : K) :
@@ -121,40 +151,43 @@ lemma _root_.OrderMonoidIso.symm_apply_lt {α β : Type*} [Preorder α] [Preorde
     (e : α ≃*o β) {x : α} {y : β} : e.symm y < x ↔ y < e x :=
   e.toOrderIso.symm_apply_lt
 
+set_option backward.isDefEq.respectTransparency false in
 variable (K) in
 theorem uniformContinuous_algebraMap_liesOver :
     UniformContinuous (algebraMap (WithVal (v.valuation K)) (WithVal (w.valuation L))) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _)]
-  intro γ _
-  let eL := WithVal.valueGroupOrderIso₀ (w.valuation L)
-  let ew := w.valueGroupOrderIso₀ L
-  let ev := (v.valueGroupOrderIso₀ K)
-  let eK := (WithVal.valueGroupOrderIso₀ (v.valuation K))
-  let γ' := eK.symm (ev.symm
-    (expEquiv ((WithZero.log (ew (eL γ))) / v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal)))
-  have hγ' : γ' ≠ 0 := by simp [γ']
-  use .mk0 _ hγ'
+  intro γL _
+  /-
+  `ValueGroup₀ (w.valuation L)` <---> `ℤᵐ⁰` <---> `ValueGroup₀ (v.valuation K)`
+            ^                                            ^
+            |                                            |
+            |                                            |
+            v                                            v
+  `γL : ValueGroup₀ Valued.v`                     `γK : ValueGroup₀ Valued.v`
+  -/
+  let e := v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal
+  -- push `γL` to `ℤᵐ⁰`
+  let σL := WithVal.valueGroupOrderIso₀ (w.valuation L)
+  let σw := w.valueGroupOrderIso₀ L
+  let m : ℤᵐ⁰ := σw (σL γL)
+  -- `ℤᵐ⁰` values in `K` exponentiate by `e` in `L` so take the `e`th root and pull back to `γK`
+  let σv := (v.valueGroupOrderIso₀ K)
+  let σK := (WithVal.valueGroupOrderIso₀ (v.valuation K))
+  let γK := σK.symm (σv.symm (exp (m.log / e)))
+  have hγK : γK ≠ 0 := by simp [γK]
+  use .mk0 _ hγK
   simp only [Units.val_mk0, Set.mem_setOf_eq, true_and]
   intro x hx
-  rcases eq_or_ne x 0 with rfl | hx₀
-  · simp
-  simp only [γ'] at hx
-  simp only [coe_expEquiv_apply] at hx
-  erw [← eL.strictMono.lt_iff_lt]
-  rw [WithVal.valueGroupOrderIso₀_restrict]
-  rw [← ew.strictMono.lt_iff_lt]
-  rw [w.valueGroupOrderIso₀_restrict L]
-  simp_rw [WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply,
-    ← valuation_liesOver L v w]
-  rw [← log_lt_log (by simp_all) (by simp), log_pow, Int.nsmul_eq_mul, mul_comm]
-  erw [eK.lt_symm_apply] at hx
-  rw [ev.lt_symm_apply] at hx
-  rw [WithVal.valueGroupOrderIso₀_restrict, v.valueGroupOrderIso₀_restrict K,
-    ← log_lt_log (by simp_all) (by simp)] at hx
+  rcases eq_or_ne x 0 with rfl | hx₀; · simp
+  rw [σK.lt_symm_apply, σv.lt_symm_apply, WithVal.valueGroupOrderIso₀_restrict,
+    v.valueGroupOrderIso₀_restrict K, ← log_lt_log (by simp_all) (by simp)] at hx
+  rw [← σL.strictMono.lt_iff_lt, WithVal.valueGroupOrderIso₀_restrict, ← σw.strictMono.lt_iff_lt,
+    w.valueGroupOrderIso₀_restrict L, WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply,
+    ← valuation_liesOver L v, ← log_lt_log (by simp_all) (by simp), log_pow, nsmul_eq_mul, mul_comm]
   exact Int.mul_lt_of_lt_ediv
-    (mod_cast Nat.pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
+    (mod_cast pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
 
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
@@ -165,19 +198,16 @@ open WithZeroTopology UniformSpace.Completion in
 theorem valued_liesOver (x : v.adicCompletion K) :
     Valued.v x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
       Valued.v (algebraMap _ (w.adicCompletion L) x) := by
-  induction x using induction_on with
-  | hp =>
-    refine isClosed_eq ?_ ?_
-    · exact Valued.continuous_valuation_of_surjective (v.valuedAdicCompletion_surjective K) |>.pow _
+  induction x using induction_on
+  · refine isClosed_eq ?_ ?_
+    · exact (Valued.continuous_valuation_of_surjective (v.valuedAdicCompletion_surjective K)).pow _
     · exact (Valued.continuous_valuation_of_surjective (w.valuedAdicCompletion_surjective L)).comp
         (continuous_algebraMap _ _)
-  | ih a =>
-    have := IsScalarTower.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) a
+  · have := IsScalarTower.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) ‹_›
     simp only [algebraMap_def, WithVal.algebraMap_right_apply, WithVal.algebraMap_left_apply,
       Algebra.algebraMap_self, RingHom.id_apply] at this
-    simp only [Valued.valuedCompletion_apply, ← this, WithVal.valued_toVal,
-      ← valuation_liesOver L v]
-    rw [WithVal.valued_toVal]
+    simp only [Valued.valuedCompletion_apply, ← this, WithVal.valued_toVal]
+    rw [← valuation_liesOver L v, WithVal.valued_toVal]
 
 instance : (Valued.v : Valuation (v.adicCompletion K) _).HasExtension
       (Valued.v : Valuation (w.adicCompletion L) _) where
