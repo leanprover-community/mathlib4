@@ -283,6 +283,9 @@ theorem pglMk_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
     ProjGenLinGroup.mk g • z = g • z :=
   ProjGenLinGroup.mk_smul ..
 
+instance : MulAction.IsPretransitive PGL(2, ℝ) ℍ :=
+  .of_smul_eq .mk <| pglMk_smul _ _
+
 end PGLAction
 
 section SLAction
