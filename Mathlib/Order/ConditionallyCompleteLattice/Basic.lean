@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.ConditionallyCompleteLattice.Defs
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
 
 /-!
 # Theory of conditionally complete lattices
@@ -224,22 +225,13 @@ theorem isGLB_csInf (ne : s.Nonempty) (H : BddBelow s) : IsGLB s (sInf s) :=
 theorem IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=
   (isLUB_csSup ne ⟨a, H.1⟩).unique H
 
-/-- A greatest element of a set is the supremum of this set. -/
-theorem IsGreatest.csSup_eq (H : IsGreatest s a) : sSup s = a :=
-  H.isLUB.csSup_eq H.nonempty
-
-theorem IsGreatest.csSup_mem (H : IsGreatest s a) : sSup s ∈ s :=
-  H.csSup_eq.symm ▸ H.1
-
 theorem IsGLB.csInf_eq (H : IsGLB s a) (ne : s.Nonempty) : sInf s = a :=
   (isGLB_csInf ne ⟨a, H.1⟩).unique H
 
-/-- A least element of a set is the infimum of this set. -/
-theorem IsLeast.csInf_eq (H : IsLeast s a) : sInf s = a :=
-  H.isGLB.csInf_eq H.nonempty
-
-theorem IsLeast.csInf_mem (H : IsLeast s a) : sInf s ∈ s :=
-  H.csInf_eq.symm ▸ H.1
+instance (priority := 100) ConditionallyCompleteLattice.toConditionallyCompletePartialOrder :
+    ConditionallyCompletePartialOrder α where
+  isGLB_csInf_of_directed _ _ non bdd := isGLB_csInf non bdd
+  isLUB_csSup_of_directed _ _ non bdd := isLUB_csSup non bdd
 
 theorem subset_Icc_csInf_csSup (hb : BddBelow s) (ha : BddAbove s) : s ⊆ Icc (sInf s) (sSup s) :=
   fun _ hx => ⟨csInf_le hb hx, le_csSup ha hx⟩
@@ -310,16 +302,6 @@ theorem exists_between_of_forall_le (sne : s.Nonempty) (tne : t.Nonempty)
     (hst : ∀ x ∈ s, ∀ y ∈ t, x ≤ y) : (upperBounds s ∩ lowerBounds t).Nonempty :=
   ⟨sInf t, fun x hx => le_csInf tne <| hst x hx, fun _ hy => csInf_le (sne.mono hst) hy⟩
 
-/-- The supremum of a singleton is the element of the singleton -/
-@[simp]
-theorem csSup_singleton (a : α) : sSup {a} = a :=
-  isGreatest_singleton.csSup_eq
-
-/-- The infimum of a singleton is the element of the singleton -/
-@[simp]
-theorem csInf_singleton (a : α) : sInf {a} = a :=
-  isLeast_singleton.csInf_eq
-
 theorem csSup_pair (a b : α) : sSup {a, b} = a ⊔ b :=
   (@isLUB_pair _ _ a b).csSup_eq (insert_nonempty _ _)
 
@@ -368,18 +350,6 @@ theorem csInf_insert (hs : BddBelow s) (sne : s.Nonempty) : sInf (insert a s) = 
   csSup_insert (α := αᵒᵈ) hs sne
 
 @[simp]
-theorem csInf_Icc (h : a ≤ b) : sInf (Icc a b) = a :=
-  (isGLB_Icc h).csInf_eq (nonempty_Icc.2 h)
-
-@[simp]
-theorem csInf_Ici : sInf (Ici a) = a :=
-  isLeast_Ici.csInf_eq
-
-@[simp]
-theorem csInf_Ico (h : a < b) : sInf (Ico a b) = a :=
-  (isGLB_Ico h).csInf_eq (nonempty_Ico.2 h)
-
-@[simp]
 theorem csInf_Ioc [DenselyOrdered α] (h : a < b) : sInf (Ioc a b) = a :=
   (isGLB_Ioc h).csInf_eq (nonempty_Ioc.2 h)
 
@@ -393,25 +363,13 @@ theorem csInf_Ioo [DenselyOrdered α] (h : a < b) : sInf (Ioo a b) = a :=
   (isGLB_Ioo h).csInf_eq (nonempty_Ioo.2 h)
 
 @[simp]
-theorem csSup_Icc (h : a ≤ b) : sSup (Icc a b) = b :=
-  (isLUB_Icc h).csSup_eq (nonempty_Icc.2 h)
-
-@[simp]
 theorem csSup_Ico [DenselyOrdered α] (h : a < b) : sSup (Ico a b) = b :=
   (isLUB_Ico h).csSup_eq (nonempty_Ico.2 h)
-
-@[simp]
-theorem csSup_Iic : sSup (Iic a) = a :=
-  isGreatest_Iic.csSup_eq
 
 @[simp]
 theorem csSup_Iio [NoMinOrder α] [DenselyOrdered α] : sSup (Iio a) = a :=
   csSup_eq_of_forall_le_of_forall_lt_exists_gt nonempty_Iio (fun _ => le_of_lt) fun w hw => by
     simpa [and_comm] using exists_between hw
-
-@[simp]
-theorem csSup_Ioc (h : a < b) : sSup (Ioc a b) = b :=
-  (isLUB_Ioc h).csSup_eq (nonempty_Ioc.2 h)
 
 @[simp]
 theorem csSup_Ioo [DenselyOrdered α] (h : a < b) : sSup (Ioo a b) = b :=
@@ -423,12 +381,6 @@ theorem csSup_Ioo [DenselyOrdered α] (h : a < b) : sSup (Ioo a b) = b :=
 theorem csSup_eq_of_is_forall_le_of_forall_le_imp_ge (hs : s.Nonempty) (h_is_ub : ∀ a ∈ s, a ≤ b)
     (h_b_le_ub : ∀ ub, (∀ a ∈ s, a ≤ ub) → b ≤ ub) : sSup s = b :=
   (csSup_le hs h_is_ub).antisymm ((h_b_le_ub _) fun _ => le_csSup ⟨b, h_is_ub⟩)
-
-lemma sup_eq_top_of_top_mem [OrderTop α] (h : ⊤ ∈ s) : sSup s = ⊤ :=
-  top_unique <| le_csSup (OrderTop.bddAbove s) h
-
-lemma inf_eq_bot_of_bot_mem [OrderBot α] (h : ⊥ ∈ s) : sInf s = ⊥ :=
-  bot_unique <| csInf_le (OrderBot.bddBelow s) h
 
 end ConditionallyCompleteLattice
 
@@ -859,12 +811,9 @@ variable {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α
 
 theorem csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) (hs₀ : s.Nonempty) (hs₁ : BddAbove s)
-    (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup (image2 l s t) = l (sSup s) (sSup t) := by
-  refine eq_of_forall_ge_iff fun c => ?_
-  rw [csSup_le_iff (hs₁.image2 (fun _ => (h₁ _).monotone_l) (fun _ => (h₂ _).monotone_l) ht₁)
-      (hs₀.image2 ht₀),
-    forall_mem_image2, forall₂_swap, (h₂ _).le_iff_le, csSup_le_iff ht₁ ht₀]
-  simp_rw [← (h₂ _).le_iff_le, (h₁ _).le_iff_le, csSup_le_iff hs₁ hs₀]
+    (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup (image2 l s t) = l (sSup s) (sSup t) :=
+  isLUB_image2_of_isLUB_isLUB h₁ h₂ (isLUB_csSup hs₀ hs₁) (isLUB_csSup ht₀ ht₁)
+    |>.csSup_eq (hs₀.image2 ht₀)
 
 theorem csSup_image2_eq_csSup_csInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
@@ -882,10 +831,10 @@ theorem csSup_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (swap l b �
   csSup_image2_eq_csSup_csSup (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂
 
 theorem csInf_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
-    (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) :
-    s.Nonempty → BddBelow s → t.Nonempty → BddBelow t → sInf (image2 u s t) = u (sInf s) (sInf t) :=
-  csSup_image2_eq_csSup_csSup (α := αᵒᵈ) (β := βᵒᵈ) (γ := γᵒᵈ) (u₁ := l₁) (u₂ := l₂)
-    (fun _ => (h₁ _).dual) fun _ => (h₂ _).dual
+    (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) (hs₀ : s.Nonempty) (hs₁ : BddBelow s)
+    (ht₀ : t.Nonempty) (ht₁ : BddBelow t) : sInf (image2 u s t) = u (sInf s) (sInf t) :=
+  isGLB_image2_of_isGLB_isGLB h₁ h₂ (isGLB_csInf hs₀ hs₁) (isGLB_csInf ht₀ ht₁)
+    |>.csInf_eq (hs₀.image2 ht₀)
 
 theorem csInf_image2_eq_csInf_csSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :

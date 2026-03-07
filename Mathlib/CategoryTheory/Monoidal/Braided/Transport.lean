@@ -26,17 +26,19 @@ namespace CategoryTheory.Monoidal
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
+set_option backward.isDefEq.respectTransparency false in
 instance Transported.instBraidedCategory (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     BraidedCategory (Transported e) :=
   .ofFaithful e.inverse (fun _ _ ↦ e.functor.mapIso (β_ _ _)) fun _ _ ↦ by
-    simp [fromInducedCoreMonoidal, Functor.CoreMonoidal.toLaxMonoidal]
+    simp +instances [fromInducedCoreMonoidal, Functor.CoreMonoidal.toLaxMonoidal]
 
 local notation "e'" e => equivalenceTransported e
 
+set_option backward.isDefEq.respectTransparency false in
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).inverse.Braided where
   braided X Y := by
-    simp [Transported.instBraidedCategory, BraidedCategory.ofFaithful,
+    simp +instances [Transported.instBraidedCategory, BraidedCategory.ofFaithful,
       fromInducedCoreMonoidal, Functor.CoreMonoidal.toLaxMonoidal]
 
 noncomputable section
@@ -45,6 +47,7 @@ noncomputable section
 This is a def because once we have that both `(e' e).inverse` and `(e' e).functor` are
 braided, this causes a diamond.
 -/
+@[instance_reducible]
 def transportedFunctorCompInverseLaxBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).LaxBraided :=
   Functor.LaxBraided.ofNatIso (e' e).unitIso
@@ -54,6 +57,7 @@ attribute [local instance] transportedFunctorCompInverseLaxBraided in
 This is a def because once we have that both `(e' e).inverse` and `(e' e).functor` are
 braided, this causes a diamond.
 -/
+@[instance_reducible]
 def transportedFunctorCompInverseBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).Braided where
 
@@ -68,12 +72,9 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
             (β_ (((e' e).functor ⋙ (e' e).inverse).obj X)
               (((e' e).functor ⋙ (e' e).inverse).obj Y)).hom := by
       simp only [((e' e).functor ⋙ (e' e).inverse).map_braiding X Y,
-        Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, assoc,
-        Functor.Monoidal.μ_δ, comp_id, Functor.Monoidal.μ_δ_assoc]
-    simp? [-Adjunction.rightAdjointLaxMonoidal_μ]  at this says
-      simp only [Functor.comp_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
-        Equivalence.symm_inverse, Equivalence.symm_functor,
-        Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, comp_μ, Functor.comp_map,
+        assoc, Functor.Monoidal.μ_δ, comp_id, Functor.Monoidal.μ_δ_assoc]
+    simp? [-Adjunction.rightAdjointLaxMonoidal_μ] at this says
+      simp only [Functor.comp_obj, comp_μ, Functor.comp_map,
         Equivalence.inv_fun_map, Functor.id_obj, comp_δ, assoc] at this
     simp [-Adjunction.rightAdjointLaxMonoidal_μ, ← this]
 

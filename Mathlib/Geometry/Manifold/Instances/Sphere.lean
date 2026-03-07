@@ -100,7 +100,7 @@ theorem stereoToFun_apply (x : E) :
 
 theorem contDiffOn_stereoToFun {n : WithTop ℕ∞} :
     ContDiffOn ℝ n (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
-  refine ContDiffOn.smul ?_ (ℝ ∙ v)ᗮ.orthogonalProjection.contDiff.contDiffOn
+  refine ContDiffOn.fun_smul ?_ (ℝ ∙ v)ᗮ.orthogonalProjection.contDiff.contDiffOn
   refine contDiff_const.contDiffOn.div ?_ ?_
   · exact (contDiff_const.sub (innerSL ℝ v).contDiff).contDiffOn
   · intro x h h'
@@ -224,7 +224,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     have : a < 1 := (inner_lt_one_iff_real_of_norm_eq_one hv (by simp)).mpr hx.symm
     linarith
   rw [split, Submodule.coe_smul_of_tower]
-  simp only [norm_smul, norm_div, RCLike.norm_ofNat, Real.norm_eq_abs, abs_of_nonneg ha.le]
+  simp only [norm_smul, norm_div, Real.norm_eq_abs, abs_of_nonneg ha.le]
   match_scalars
   · field_simp
     linear_combination 4 * pythag
@@ -370,6 +370,7 @@ open scoped InnerProductSpace
 theorem sphere_ext_iff (u v : sphere (0 : E) 1) : u = v ↔ ⟪(u : E), v⟫_ℝ = 1 := by
   simp [Subtype.ext_iff, inner_eq_one_iff_of_norm_eq_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1)
     (x : EuclideanSpace ℝ (Fin n)) :
     ((stereographic' n v).symm x : E) =
@@ -408,7 +409,7 @@ instance EuclideanSpace.instIsManifoldSphere
         PartialEquiv.symm_source, stereographic'_target, stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
-      simp only [id, comp_apply, Submodule.subtypeL_apply, OpenPartialHomeomorph.coe_coe_symm,
+      simp only [id, comp_apply, OpenPartialHomeomorph.coe_coe_symm,
         innerSL_apply_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
 
@@ -438,8 +439,8 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I m M]
 /-- If a `C^m` function `f : M → E`, where `M` is some manifold, takes values in the
 sphere, then it restricts to a `C^m` function from `M` to the sphere. -/
 theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f : M → E}
-    (hf : ContMDiff I 𝓘(ℝ, E) m f) (hf' : ∀ x, f x ∈ sphere (0 : E) 1) :
-    ContMDiff I (𝓡 n) m (Set.codRestrict _ _ hf' : M → sphere (0 : E) 1) := by
+    (hf : CMDiff m f) (hf' : ∀ x, f x ∈ sphere (0 : E) 1) :
+    CMDiff m (Set.codRestrict _ _ hf' : M → sphere (0 : E) 1) := by
   rw [contMDiff_iff_target]
   refine ⟨continuous_induced_rng.2 hf.continuous, ?_⟩
   intro v
@@ -449,7 +450,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f
         n (ne_zero_of_mem_unit_sphere (-v))).repr
   have h : ContDiffOn ℝ ω _ Set.univ := U.contDiff.contDiffOn
   have H₁ := (h.comp_inter contDiffOn_stereoToFun).contMDiffOn
-  have H₂ : ContMDiffOn _ _ _ _ Set.univ := hf.contMDiffOn
+  have H₂ : CMDiff[Set.univ] m f := hf.contMDiffOn
   convert (H₁.of_le le_top).comp' H₂ using 1
   ext x
   have hfxv : f x = -↑v ↔ ⟪f x, -↑v⟫_ℝ = 1 := by
@@ -460,18 +461,20 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f
 
 /-- The antipodal map is analytic. -/
 theorem contMDiff_neg_sphere {m : WithTop ℕ∞} {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
-    ContMDiff (𝓡 n) (𝓡 n) m fun x : sphere (0 : E) 1 => -x := by
+    CMDiff m fun x : sphere (0 : E) 1 => -x := by
   -- this doesn't elaborate well in term mode
   apply ContMDiff.codRestrict_sphere
   apply contDiff_neg.contMDiff.comp _
   exact contMDiff_coe_sphere
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     stereographic' n (-v) v = 0 := by
   dsimp [stereographic']
   simp only [EmbeddingLike.map_eq_zero_iff]
   apply stereographic_neg_apply
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
 of `v` in `E`.
@@ -487,7 +490,6 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   simp only [fderivWithin_univ, mfld_simps]
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ) n
     (ne_zero_of_mem_unit_sphere (-v))).repr
-  -- Porting note: this `suffices` was a `change`
   suffices
       (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0).range = (ℝ ∙ (v : E))ᗮ by
     convert this using 4
@@ -513,6 +515,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     rw [Submodule.neg_mem_iff]
     exact Submodule.mem_span_singleton_self (v : E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  This map is injective. -/
 theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
@@ -561,6 +564,7 @@ instance : LieGroup (𝓡 1) ω Circle where
     have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ω fun z : ℂ × ℂ => z.fst * z.snd := by
       rw [contMDiff_iff]
       exact ⟨continuous_mul, fun x y => contDiff_mul.contDiffOn⟩
+    -- TODO bug: filling in ω yields an error; expected type has metavariables...
     suffices h₁ : ContMDiff _ _ _ (Prod.map c c) from
       h₂.comp h₁
     apply ContMDiff.prodMap <;> exact contMDiff_coe_sphere
@@ -569,8 +573,9 @@ instance : LieGroup (𝓡 1) ω Circle where
     simp only [← Circle.coe_inv, Circle.coe_inv_eq_conj]
     exact Complex.conjCLE.contDiff.contMDiff.comp contMDiff_coe_sphere
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is analytic. -/
-theorem contMDiff_circleExp {m : WithTop ℕ∞} : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) m Circle.exp :=
+theorem contMDiff_circleExp {m : WithTop ℕ∞} : CMDiff m Circle.exp :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
 
 end Circle

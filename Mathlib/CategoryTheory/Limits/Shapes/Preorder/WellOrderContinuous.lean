@@ -20,7 +20,7 @@ public import Mathlib.Order.SuccPred.LinearLocallyFinite
 /-!
 # Continuity of functors from well-ordered types
 
-Let `F : J ⥤ C` be functor from a well-ordered type `J`.
+Let `F : J ⥤ C` be a functor from a well-ordered type `J`.
 We introduce the typeclass `F.IsWellOrderContinuous`
 to say that if `m` is a limit element, then `F.obj m`
 is the colimit of the `F.obj j` for `j < m`.
@@ -86,14 +86,14 @@ instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (e : J' ≃o J)
 instance IsWellOrderContinuous.restriction_setIci
     {J : Type w} [LinearOrder J]
     {F : J ⥤ C} [F.IsWellOrderContinuous] (j : J) :
-    ((Subtype.mono_coe (Set.Ici j)).functor ⋙ F).IsWellOrderContinuous where
+    ((Subtype.mono_coe (· ∈ Set.Ici j)).functor ⋙ F).IsWellOrderContinuous where
   nonempty_isColimit m hm := ⟨by
     let f : Set.Iio m → Set.Iio m.1 := fun ⟨⟨a, ha⟩, ha'⟩ ↦ ⟨a, ha'⟩
     have hf : Monotone f := fun _ _ h ↦ h
     have : hf.functor.Final := by
       rw [Monotone.final_functor_iff]
       rintro ⟨j', hj'⟩
-      simp only [Set.mem_Iio] at hj'
+      push _ ∈ _ at hj'
       dsimp only [f]
       by_cases! h : j' ≤ j
       · refine ⟨⟨⟨j, le_refl j⟩, ?_⟩, h⟩

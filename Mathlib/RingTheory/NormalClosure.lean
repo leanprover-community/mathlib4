@@ -20,12 +20,12 @@ of `Frac S`. In particular, if `S` is a Dedekind domain, then `T` is also a Dede
 ## Technical notes
 
 * Many instances are proved about the `IntermediateField.normalClosure` of the extension
-`Frac S / Frac R` inside the `AlgebraicClosure` of `Frac S`. However these are only needed for the
-construction of `T` and to prove some results about it. Therefore, these instances are local.
+  `Frac S / Frac R` inside the `AlgebraicClosure` of `Frac S`. However these are only needed for the
+  construction of `T` and to prove some results about it. Therefore, these instances are local.
 * `Ring.NormalClosure` is defined as a type rather than a `Subalgebra` for performance reasons
-(and thus we need to provide explicit instances for it). Although defining it as a `Subalgebra`
-does not cause timeouts in this file, it does slow down considerably its compilation and
-does trigger timeouts in applications.
+  (and thus we need to provide explicit instances for it). Although defining it as a `Subalgebra`
+  does not cause timeouts in this file, it does slow down considerably its compilation and
+  does trigger timeouts in applications.
 -/
 
 @[expose] public section
@@ -35,7 +35,7 @@ namespace Ring
 noncomputable section NormalClosure
 
 variable (R S : Type*) [CommRing R] [CommRing S] [IsDomain R] [IsDomain S]
-  [Algebra R S] [NoZeroSMulDivisors R S]
+  [Algebra R S] [Module.IsTorsionFree R S]
 
 /--
 We register this specific instance as a local instance rather than making
@@ -72,6 +72,7 @@ instance : Nontrivial T := inferInstanceAs (Nontrivial (integralClosure S E))
 
 instance : Algebra S T := inferInstanceAs (Algebra S (integralClosure S E))
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 This is a local instance since it is only used in this file to construct `Ring.NormalClosure`.
 -/
@@ -79,6 +80,7 @@ local instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E
 
 instance : Algebra R T := ((algebraMap S T).comp (algebraMap R S)).toAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower S T E :=
   inferInstanceAs (IsScalarTower S (integralClosure S E) E)
 
@@ -95,7 +97,8 @@ local instance : IsScalarTower R T E := IsScalarTower.to₁₃₄ R S T E
 local instance : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
       (FaithfulSMul.algebraMap_injective L E).comp (FaithfulSMul.algebraMap_injective S L)
 
-instance : NoZeroSMulDivisors S T := Subalgebra.noZeroSMulDivisors_bot (integralClosure S E)
+set_option backward.isDefEq.respectTransparency false in
+instance : Module.IsTorsionFree S T := Subalgebra.instIsTorsionFree (integralClosure S E)
 
 instance : FaithfulSMul R T :=
   (faithfulSMul_iff_algebraMap_injective R T).mpr <|
@@ -103,8 +106,10 @@ instance : FaithfulSMul R T :=
 
 variable [Module.Finite R S]
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : FiniteDimensional L E := Module.Finite.right K L E
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : IsFractionRing T E :=
   integralClosure.isFractionRing_of_finite_extension L E
 
@@ -116,18 +121,22 @@ variable [PerfectField (FractionRing R)]
 local instance : Algebra.IsSeparable L E :=
   Algebra.isSeparable_tower_top_of_isSeparable K L E
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsGalois K (FractionRing T) := by
-  refine IsGalois.of_equiv_equiv (F := K) («E» := E) (f := (FractionRing.algEquiv R K).symm)
-      (g := (FractionRing.algEquiv T E).symm) ?_
+  refine IsGalois.of_equiv_equiv (F := K) («E» := E)
+    (f := (FractionRing.algEquiv R K).symm.toRingEquiv)
+    (g := (FractionRing.algEquiv T E).symm.toRingEquiv) ?_
   ext
   simpa using IsFractionRing.algEquiv_commutes (FractionRing.algEquiv R K).symm
     (FractionRing.algEquiv T E).symm _
 
 variable [IsDedekindDomain S]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module.Finite S T :=
   IsIntegralClosure.finite S L E T
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module.Finite R T :=
   Module.Finite.trans S T
 

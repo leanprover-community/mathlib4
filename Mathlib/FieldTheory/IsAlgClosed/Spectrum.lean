@@ -167,6 +167,7 @@ theorem IsIdempotentElem.spectrum_subset (𝕜 : Type*) {A : Type*} [Field 𝕜]
   refine fun a ha => eq_zero_or_one_of_sq_eq_self ?_
   simpa [pow_two p, hp.eq, sub_eq_zero] using ha
 
+set_option backward.isDefEq.respectTransparency false in
 open Unitization in
 theorem IsIdempotentElem.quasispectrum_subset {𝕜 A : Type*} [Field 𝕜] [NonUnitalRing A] [Module 𝕜 A]
     [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :

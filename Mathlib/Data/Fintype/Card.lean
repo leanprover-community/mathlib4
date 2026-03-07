@@ -229,6 +229,10 @@ variable [Fintype α] [Fintype β]
 theorem card_le_of_injective (f : α → β) (hf : Function.Injective f) : card α ≤ card β :=
   Finset.card_le_card_of_injOn f (fun _ _ => Finset.mem_univ _) fun _ _ _ _ h => hf h
 
+theorem not_injective_of_card_lt (f : α → β) (h : card β < card α) :
+    ¬Function.Injective f :=
+  Nat.not_le_of_lt h ∘ card_le_of_injective f
+
 theorem card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
   card_le_of_injective f f.2
 
@@ -360,7 +364,7 @@ theorem Fintype.card_prop : Fintype.card Prop = 2 :=
 
 theorem set_fintype_card_le_univ [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s ≤ Fintype.card α :=
-  Fintype.card_le_of_embedding (Function.Embedding.subtype s)
+  Fintype.card_le_of_embedding (Function.Embedding.subtype (· ∈ s))
 
 theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s = Fintype.card α ↔ s = Set.univ := by
@@ -410,8 +414,7 @@ theorem univ_eq_singleton_of_card_one {α} [Fintype α] (x : α) (h : Fintype.ca
     (univ : Finset α) = {x} := by
   symm
   apply eq_of_subset_of_card_le (subset_univ {x})
-  apply le_of_eq
-  simp [h, Finset.card_univ]
+  simp [h]
 
 namespace Finite
 
@@ -431,11 +434,8 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
   exact Subrelation.wf (this _ _) (measure _).wf
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
-  ⟨wellFounded_of_trans_of_irrefl _⟩
-
--- See note [lower instance priority]
-instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
   ⟨wellFounded_of_trans_of_irrefl _⟩
 
 end Finite

@@ -7,8 +7,7 @@ Mario Carneiro
 module
 
 public import Mathlib.Data.List.Defs
-public import Mathlib.Data.Option.Basic
-public import Mathlib.Util.AssertExists
+public import Mathlib.Logic.Basic
 
 /-! # getD and getI
 

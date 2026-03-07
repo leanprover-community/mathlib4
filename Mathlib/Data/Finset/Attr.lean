@@ -6,8 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Init
-public import Aesop
-public import Qq
+public import Aesop.Frontend
 
 /-!
 # Aesop rule set for finsets
@@ -20,5 +19,3 @@ public section
 -- `finsetNonempty` rules try to prove that a given finset is nonempty,
 -- for use in positivity extensions.
 declare_aesop_rule_sets [finsetNonempty] (default := true)
-
-open Qq Lean Meta

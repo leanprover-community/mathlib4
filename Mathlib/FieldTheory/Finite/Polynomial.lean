@@ -199,16 +199,14 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
 
 instance [Finite σ] : FiniteDimensional K (R σ K) := by
   cases nonempty_fintype σ
-  classical
-  exact
-    IsNoetherian.iff_fg.1
-      (IsNoetherian.iff_rank_lt_aleph0.mpr <| by
-        simpa only [rank_R] using Cardinal.nat_lt_aleph0 (Fintype.card (σ → K)))
+  rw [FiniteDimensional, ← IsNoetherian.iff_fg, IsNoetherian.iff_rank_lt_aleph0]
+  simpa only [rank_R] using Cardinal.natCast_lt_aleph0
 
 open Classical in
 theorem finrank_R [Fintype σ] : Module.finrank K (R σ K) = Fintype.card (σ → K) :=
   Module.finrank_eq_of_rank_eq (rank_R σ K)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
   rw [evalᵢ, LinearMap.range_comp, range_subtype]
   exact map_restrict_dom_evalₗ K σ

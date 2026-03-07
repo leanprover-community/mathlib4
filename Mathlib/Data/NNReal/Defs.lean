@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Nonnegative real numbers
@@ -98,6 +99,7 @@ noncomputable instance : SMul ℚ≥0 ℝ≥0 where
 noncomputable instance zpow : Pow ℝ≥0 ℤ where
   pow x n := ⟨(x : ℝ) ^ n, zpow_nonneg x.2 _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,
 and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
 it needs to be reducible(-with-instances).
@@ -313,14 +315,12 @@ lemma algebraMap_eq_coe : (algebraMap ℝ≥0 ℝ : ℝ≥0 → ℝ) = (↑) := 
 
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
-@[simp, norm_cast] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
+@[simp, norm_cast, gcongr] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
 
-@[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
+@[simp, norm_cast, gcongr] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
 set_option backward.privateInPublic true in
-@[gcongr] private alias ⟨_, GCongr.coe_le_coe_of_le⟩ := coe_le_coe
-set_option backward.privateInPublic true in
-@[gcongr, bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
+@[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
 
@@ -333,9 +333,6 @@ set_option backward.privateInPublic true in
 @[simp, norm_cast] lemma coe_lt_one : (r : ℝ) < 1 ↔ r < 1 := by rw [← coe_lt_coe, coe_one]
 
 @[mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
-
-/-- Alias for the use of `gcongr` -/
-@[gcongr] alias ⟨_, GCongr.toReal_le_toReal⟩ := coe_le_coe
 
 protected theorem _root_.Real.toNNReal_monotone : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max_right _ h
@@ -837,6 +834,7 @@ theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_o
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [_root_.iInf_of_isEmpty, sInf_empty]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma iSup_eq_zero (hf : BddAbove (range f)) : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := by
   cases isEmpty_or_nonempty ι
   · simp
@@ -883,6 +881,7 @@ end Set
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
 @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
@@ -1001,7 +1000,7 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
   | _, _, _ => throwError "not NNReal.toReal"
 
-/-- Extension for the `positivity` tactic: `Real.toNNReal. -/
+/-- Extension for the `positivity` tactic: `Real.toNNReal` -/
 @[positivity Real.toNNReal _]
 meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
@@ -1014,7 +1013,7 @@ meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
 
 alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
 
-/-- Extension for the `positivity` tactic: `Real.nnabs. -/
+/-- Extension for the `positivity` tactic: `Real.nnabs` -/
 @[positivity Real.nnabs _]
 meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
