@@ -344,6 +344,9 @@ lemma norm_quasispectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σₙ 𝕜 a) (ha
     ‖x‖ ≤ ‖a‖ := by
   simpa only [cfcₙ_id 𝕜 a] using norm_apply_le_norm_cfcₙ (id : 𝕜 → 𝕜) a hx
 
+alias _root_.quasispectrum.norm_le_norm_of_mem :=
+  NonUnitalIsometricContinuousFunctionalCalculus.norm_quasispectrum_le
+
 lemma isGreatest_nnnorm_quasispectrum (a : A) (ha : p a := by cfc_tac) :
     IsGreatest ((‖·‖₊) '' σₙ 𝕜 a) ‖a‖₊ := by
   simpa only [cfcₙ_id 𝕜 a] using IsGreatest.nnnorm_cfcₙ (id : 𝕜 → 𝕜) a
