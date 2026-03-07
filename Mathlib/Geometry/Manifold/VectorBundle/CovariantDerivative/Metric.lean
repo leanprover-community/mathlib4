@@ -341,16 +341,15 @@ theorem compatibilityTensor_apply [FiniteDimensional ℝ F] (x : M)
     erw [ContinuousLinearMap.comp_apply]
   simp [product, real_inner_comm, fromTangentSpace]
 
-open FiberBundle in
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F] (X₀ : TangentSpace I x)
     (σ₀ τ₀ : V x) :
     compatibilityTensor cov x σ₀ τ₀ X₀ =
-      fromTangentSpace _ (mfderiv% ⟪(extend F σ₀), (extend F τ₀)⟫ x X₀)
-        - ⟪∇ extend F σ₀, (extend E X₀), extend F τ₀⟫ x
-        - ⟪extend F σ₀, ∇ extend F τ₀, (extend E X₀)⟫ x := by
-  simpa [extend_apply_self] using compatibilityTensor_apply cov x
-    (X := extend E X₀) (mdifferentiableAt_extend I F σ₀) (mdifferentiableAt_extend I F τ₀)
+      fromTangentSpace _ (mfderiv% ⟪(FiberBundle.extend F σ₀), (FiberBundle.extend F τ₀)⟫ x X₀)
+        - ⟪∇ FiberBundle.extend F σ₀, (FiberBundle.extend E X₀), FiberBundle.extend F τ₀⟫ x
+        - ⟪FiberBundle.extend F σ₀, ∇ FiberBundle.extend F τ₀, (FiberBundle.extend E X₀)⟫ x := by
+  simpa [extend_apply_self] using compatibilityTensor_apply cov x (X := FiberBundle.extend E X₀)
+    (FiberBundle.mdifferentiableAt_extend I F σ₀) (FiberBundle.mdifferentiableAt_extend I F τ₀)
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- Predicate saying that a connection `∇` on a Riemannian bundle `(V, g)` is compatible with the
@@ -385,8 +384,8 @@ lemma isCompatible_iff [FiniteDimensional ℝ F] :
   ext x σ₀ τ₀ X₀
   rw [compatibilityTensor_apply_eq_extend, sub_sub, sub_eq_iff_eq_add']
   simp only [Pi.zero_apply, ContinuousLinearMap.zero_apply, add_zero]
-  have h' := h (mdifferentiableAt_extend I E X₀) (mdifferentiableAt_extend I F σ₀)
-    (mdifferentiableAt_extend I F τ₀)
+  have h' := h (FiberBundle.mdifferentiableAt_extend I E X₀)
+    (FiberBundle.mdifferentiableAt_extend I F σ₀) (FiberBundle.mdifferentiableAt_extend I F τ₀)
   simpa [fromTangentSpace, extend_apply_self] using h'
 
 end CovariantDerivative

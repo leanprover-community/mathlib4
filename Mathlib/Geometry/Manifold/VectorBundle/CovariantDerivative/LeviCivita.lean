@@ -78,7 +78,7 @@ version depending on a choice of Riemannian metric on `M`.
 -/
 def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop := cov.IsCompatible ∧ cov.torsion = 0
 
-local notation "⟪" X ", " Y "⟫" => product I X Y
+local notation "⟪" X ", " Y "⟫" => product X Y
 
 variable (X Y Z) in
 /-- The first term in the definition of the candidate Levi-Civita connection:
@@ -100,7 +100,7 @@ lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   ext x
   simp only [rhs_aux]
   congr 2
-  exact product_swap I Z Y
+  exact product_swap Z Y
 
 omit [IsManifold I 2 M] in
 variable (X X' Y Z) in
@@ -242,8 +242,8 @@ lemma leviCivitaRhs'_addX_apply [CompleteSpace E]
   -- We have to rewrite back and forth: the Lie bracket is only additive at x,
   -- as we are only asking for differentiability at x.
   -- Fortunately, the `product_congr_right₂` lemma abstracts this very well.
-  rw [product_congr_right₂ I (VectorField.mlieBracket_add_right (V := Y) hX hX'),
-    product_congr_right₂ I (VectorField.mlieBracket_add_left (W := Z) hX hX'),
+  rw [product_congr_right₂ (VectorField.mlieBracket_add_right (V := Y) hX hX'),
+    product_congr_right₂ (VectorField.mlieBracket_add_left (W := Z) hX hX'),
     product_add_left_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
   abel
 
@@ -334,8 +334,8 @@ lemma leviCivitaRhs'_addY_apply [CompleteSpace E]
   rw [rhs_aux_addX, rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
   -- We have to rewrite back and forth: the Lie bracket is only additive at x,
   -- as we are only asking for differentiability at x.
-  rw [product_congr_right₂ I (mlieBracket_add_left (W := X) hY hY')]
-  rw [product_congr_right₂ I (VectorField.mlieBracket_add_right (V := Z) hY hY')]
+  rw [product_congr_right₂ (mlieBracket_add_left (W := X) hY hY')]
+  rw [product_congr_right₂ (VectorField.mlieBracket_add_right (V := Z) hY hY')]
   simp only [Pi.add_apply]
   abel
 
@@ -420,7 +420,7 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
       rw [real_inner_smul_right]
       rfl
     · rw [inner_smul_right_eq_smul]
-  rw [h1, h2, product_swap I Y Z]
+  rw [h1, h2, product_swap Y Z]
   set A := rhs_aux I X Y Z x
   set B := rhs_aux I Y Z X x
   set C := rhs_aux I Z X Y x
@@ -457,8 +457,8 @@ lemma leviCivitaRhs'_addZ_apply [CompleteSpace E]
     leviCivitaRhs' I X Y (Z + Z') x =
       leviCivitaRhs' I X Y Z x + leviCivitaRhs' I X Y Z' x := by
   simp only [leviCivitaRhs', rhs_aux_addX, Pi.add_apply, Pi.sub_apply, product_add_left_apply]
-  rw [product_congr_right₂ I (VectorField.mlieBracket_add_right (V := X) hZ hZ'),
-    product_congr_right₂ I (VectorField.mlieBracket_add_left (W := Y) hZ hZ'),
+  rw [product_congr_right₂ (VectorField.mlieBracket_add_right (V := X) hZ hZ'),
+    product_congr_right₂ (VectorField.mlieBracket_add_left (W := Y) hZ hZ'),
     rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
   abel
 
@@ -498,7 +498,7 @@ lemma leviCivitaRhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
     rw [product_apply, VectorField.mlieBracket_smul_left hf hZ, inner_add_right, inner_smul_right,
       inner_smul_right]
     congr
-  rw [h1, h2, product_smul_left, product_swap I X Z]
+  rw [h1, h2, product_smul_left, product_swap X Z]
   erw [product_smul_right]
   simp
   -- set A := rhs_aux I X Y Z x
