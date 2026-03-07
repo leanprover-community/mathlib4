@@ -108,18 +108,17 @@ lemma pointwise_smul_support_finite [Zero γ] [SMulZeroClass β γ] (f : α → 
 abbrev pointwiseScalar [Zero γ] [SMulZeroClass β γ] : SMul (α → β) (α →₀ γ) where
   smul f g := Finsupp.ofSupportFinite (fun a ↦ f a • g a) (pointwise_smul_support_finite ..)
 
-instance pointwiseScalarModule [Semiring β] [AddCommMonoid γ] [Module β γ] :
-    SMul (α → β) (α →₀ γ) := pointwiseScalar
+instance pointwiseScalarSemiring [Semiring β] : SMul (α → β) (α →₀ β) := pointwiseScalar
 
 @[simp]
-theorem coe_pointwise_smul [Semiring β] [AddCommMonoid γ] [Module β γ] (f : α → β) (g : α →₀ γ) :
-    ⇑(f • g) = f • ⇑g := rfl
+theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : ⇑(f • g) = f • ⇑g :=
+  rfl
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
-instance pointwiseModule [Semiring β] [AddCommMonoid γ] [Module β γ] : Module (α → β) (α →₀ γ) :=
+instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
 
-instance [Semiring β] [AddCommMonoid γ] [Module β γ] : IsScalarTower β (α → β) (α →₀ γ) where
-  smul_assoc r f m := by ext; simp [smul_smul]
+instance [Semiring β] : IsScalarTower β (α → β) (α →₀ β) where
+  smul_assoc r f m := by ext; simp [mul_assoc]
 
 end Finsupp
