@@ -155,7 +155,6 @@ section preΨ'
 private def expDegree (n : ℕ) : ℕ :=
   (n ^ 2 - if Even n then 4 else 1) / 2
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma expDegree_cast {n : ℕ} (hn : n ≠ 0) :
     2 * (expDegree n : ℤ) = n ^ 2 - if Even n then 4 else 1 := by
   rcases n.even_or_odd' with ⟨n, rfl | rfl⟩
@@ -168,7 +167,6 @@ private lemma expDegree_cast {n : ℕ} (hn : n ≠ 0) :
       n.not_even_two_mul_add_one, Nat.add_sub_cancel, Nat.mul_div_cancel_left _ two_pos]
     ring1
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma expDegree_rec (m : ℕ) :
     (expDegree (2 * (m + 3)) = 2 * expDegree (m + 2) + expDegree (m + 3) + expDegree (m + 5) ∧
     expDegree (2 * (m + 3)) = expDegree (m + 1) + expDegree (m + 3) + 2 * expDegree (m + 4)) ∧
@@ -188,7 +186,6 @@ private def expCoeff (n : ℕ) : ℤ :=
 private lemma expCoeff_cast (n : ℕ) : (expCoeff n : ℚ) = if Even n then (n / 2 : ℚ) else n := by
   rcases n.even_or_odd' with ⟨n, rfl | rfl⟩ <;> simp [expCoeff, n.not_even_two_mul_add_one]
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma expCoeff_rec (m : ℕ) :
     (expCoeff (2 * (m + 3)) =
       expCoeff (m + 2) ^ 2 * expCoeff (m + 3) * expCoeff (m + 5) -
@@ -254,7 +251,6 @@ lemma natDegree_preΨ' {n : ℕ} (h : (n : R) ≠ 0) :
     (W.preΨ' n).natDegree = (n ^ 2 - if Even n then 4 else 1) / 2 :=
   natDegree_eq_of_le_of_coeff_ne_zero (W.natDegree_preΨ'_le n) <| W.coeff_preΨ'_ne_zero h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma natDegree_preΨ'_pos {n : ℕ} (hn : 2 < n) (h : (n : R) ≠ 0) : 0 < (W.preΨ' n).natDegree := by
   simp_rw [W.natDegree_preΨ' h, Nat.div_pos_iff, zero_lt_two, true_and]
   split_ifs <;> exact Nat.AtLeastTwo.prop.trans <| Nat.sub_le_sub_right (Nat.pow_le_pow_left hn 2) _
@@ -366,7 +362,6 @@ lemma natDegree_ΨSq [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) :
     (W.ΨSq n).natDegree = n.natAbs ^ 2 - 1 :=
   natDegree_eq_of_le_of_coeff_ne_zero (W.natDegree_ΨSq_le n) <| W.coeff_ΨSq_ne_zero h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma natDegree_ΨSq_pos [NoZeroDivisors R] {n : ℤ} (hn : 1 < n.natAbs) (h : (n : R) ≠ 0) :
     0 < (W.ΨSq n).natDegree := by
   simpa [W.natDegree_ΨSq h]
@@ -440,7 +435,6 @@ lemma coeff_Φ_ne_zero [Nontrivial R] (n : ℤ) : (W.Φ n).coeff (n.natAbs ^ 2) 
 lemma natDegree_Φ [Nontrivial R] (n : ℤ) : (W.Φ n).natDegree = n.natAbs ^ 2 :=
   natDegree_eq_of_le_of_coeff_ne_zero (W.natDegree_Φ_le n) <| W.coeff_Φ_ne_zero n
 
-set_option backward.isDefEq.respectTransparency false in
 lemma natDegree_Φ_pos [Nontrivial R] {n : ℤ} (hn : n ≠ 0) : 0 < (W.Φ n).natDegree := by
   simpa [sq_pos_iff]
 
