@@ -473,16 +473,17 @@ point at infinity `WeierstrassCurve.Affine.Point.zero` or a nonsingular affine p
 `WeierstrassCurve.Affine.Point.some (x, y)` satisfying the Weierstrass equation of `W`. -/
 inductive Point
   | zero
-  | some {x y : R} (h : W'.Nonsingular x y)
+  | some (x y : R) (h : W'.Nonsingular x y)
+deriving DecidableEq
 
 /-- The equivalence between the nonsingular points on a Weierstrass curve `W` in affine coordinates
 satisfying a predicate and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y` with zero. -/
 def nonsingularPointEquivSubtype {p : W'.Point → Prop} (p0 : p .zero) : {P : W'.Point // p P} ≃
-    WithZero {xy : R × R // ∃ h : W'.Nonsingular xy.fst xy.snd, p <| .some h} where
+    WithZero {xy : R × R // ∃ h : W'.Nonsingular xy.fst xy.snd, p <| .some _ _ h} where
   toFun
     | ⟨.zero, _⟩ => none
-    | ⟨.some h, ph⟩ => .some ⟨⟨_, _⟩, h, ph⟩
-  invFun P := P.casesOn ⟨.zero, p0⟩ fun xy => ⟨.some xy.prop.choose, xy.prop.choose_spec⟩
+    | ⟨.some _ _ h, ph⟩ => .some ⟨⟨_, _⟩, h, ph⟩
+  invFun P := P.casesOn ⟨.zero, p0⟩ fun xy => ⟨.some _ _ xy.prop.choose, xy.prop.choose_spec⟩
   left_inv := by rintro (_ | _) <;> rfl
   right_inv := by rintro (_ | _) <;> rfl
 
@@ -493,8 +494,8 @@ lemma nonsingularPointEquivSubtype_zero {p : W'.Point → Prop} (p0 : p .zero) :
 
 @[simp]
 lemma nonsingularPointEquivSubtype_some {x y : R} {h : W'.Nonsingular x y} {p : W'.Point → Prop}
-    (p0 : p .zero) (ph : p <| .some h) :
-    nonsingularPointEquivSubtype p0 ⟨.some h, ph⟩ = .some ⟨⟨x, y⟩, h, ph⟩ :=
+    (p0 : p .zero) (ph : p <| .some _ _ h) :
+    nonsingularPointEquivSubtype p0 ⟨.some _ _ h, ph⟩ = .some ⟨⟨x, y⟩, h, ph⟩ :=
   rfl
 
 @[simp]
@@ -504,8 +505,8 @@ lemma nonsingularPointEquivSubtype_symm_none {p : W'.Point → Prop} (p0 : p .ze
 
 @[simp]
 lemma nonsingularPointEquivSubtype_symm_some {x y : R} {h : W'.Nonsingular x y}
-    {p : W'.Point → Prop} (p0 : p .zero) (ph : p <| .some h) :
-    (nonsingularPointEquivSubtype p0).symm (.some ⟨⟨x, y⟩, h, ph⟩) = ⟨.some h, ph⟩ :=
+    {p : W'.Point → Prop} (p0 : p .zero) (ph : p <| .some _ _ h) :
+    (nonsingularPointEquivSubtype p0).symm (.some ⟨⟨x, y⟩, h, ph⟩) = ⟨.some _ _ h, ph⟩ :=
   rfl
 
 variable (W') in
@@ -521,7 +522,7 @@ lemma nonsingularPointEquiv_zero : nonsingularPointEquiv W' .zero = none :=
 
 @[simp]
 lemma nonsingularPointEquiv_some {x y : R} (h : W'.Nonsingular x y) :
-    W'.nonsingularPointEquiv (.some h) = .some ⟨⟨x, y⟩, h⟩ := by
+    W'.nonsingularPointEquiv (.some _ _ h) = .some ⟨⟨x, y⟩, h⟩ := by
   rfl
 
 @[simp]
@@ -530,7 +531,7 @@ lemma nonsingularPointEquiv_symm_none : W'.nonsingularPointEquiv.symm none = .ze
 
 @[simp]
 lemma nonsingularPointEquiv_symm_some {x y : R} (h : W'.Nonsingular x y) :
-    W'.nonsingularPointEquiv.symm (.some ⟨⟨x, y⟩, h⟩) = .some h :=
+    W'.nonsingularPointEquiv.symm (.some ⟨⟨x, y⟩, h⟩) = .some _ _ h :=
   rfl
 
 section IsElliptic
@@ -539,7 +540,7 @@ variable [Nontrivial R] [W'.IsElliptic]
 
 /-- A point on an elliptic curve `W` over `R`. -/
 def Point.mk {x y : R} (h : W'.Equation x y) : W'.Point :=
-  .some <| equation_iff_nonsingular.mp h
+  .some _ _ <| equation_iff_nonsingular.mp h
 
 /-- The equivalence between the points on an elliptic curve `W` in affine coordinates satisfying a
 predicate and the set of pairs `⟨x, y⟩` satisfying `W.Equation x y` with zero. -/
@@ -609,7 +610,7 @@ instance : Zero W'.Point :=
 lemma zero_def : 0 = (zero : W'.Point) :=
   rfl
 
-lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : some h ≠ 0 := by
+lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : some _ _ h ≠ 0 := by
   rintro (_ | _)
 
 /-- The negation of a nonsingular point on a Weierstrass curve in affine coordinates.
@@ -617,7 +618,7 @@ lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : some h ≠ 0 := by
 Given a nonsingular point `P` in affine coordinates, use `-P` instead of `neg P`. -/
 def neg : W'.Point → W'.Point
   | 0 => 0
-  | some h => some <| (nonsingular_neg ..).mpr h
+  | some _ _ h => some _ _ <| (nonsingular_neg ..).mpr h
 
 instance : Neg W'.Point :=
   ⟨neg⟩
@@ -630,7 +631,8 @@ lemma neg_zero : (-0 : W'.Point) = 0 :=
   rfl
 
 @[simp]
-lemma neg_some {x y : R} (h : W'.Nonsingular x y) : -some h = some ((nonsingular_neg ..).mpr h) :=
+lemma neg_some {x y : R} (h : W'.Nonsingular x y) :
+    -some _ _ h = some _ _ ((nonsingular_neg ..).mpr h) :=
   rfl
 
 instance : InvolutiveNeg W'.Point where
@@ -647,8 +649,8 @@ Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` inst
 def add [DecidableEq F] : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
-  | @some _ _ _ x₁ y₁ h₁, @some _ _ _ x₂ y₂ h₂ =>
-    if hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂ then 0 else some <| nonsingular_add h₁ h₂ hxy
+  | some x₁ y₁ h₁, some x₂ y₂ h₂ =>
+    if hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂ then 0 else some _ _ <| nonsingular_add h₁ h₂ hxy
 
 instance : Add W.Point :=
   ⟨add⟩
@@ -661,46 +663,49 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
   rfl
 
 lemma add_some {x₁ x₂ y₁ y₂ : F} (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) {h₁ : W.Nonsingular x₁ y₁}
-    {h₂ : W.Nonsingular x₂ y₂} : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ hxy) := by
+    {h₂ : W.Nonsingular x₂ y₂} :
+    some _ _ h₁ + some _ _ h₂ = some _ _ (nonsingular_add h₁ h₂ hxy) := by
   simp only [add_def, add, dif_neg hxy]
 
 @[simp]
 lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some h₁ + some h₂ = 0 := by
+    (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some _ _ h₁ + some _ _ h₂ = 0 := by
   simpa only [add_def, add] using dif_pos ⟨hx, hy⟩
 
 -- Removing `@[simp]`, because `hy` causes a maximum recursion depth error in the simpNF linter.
 lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ = W.negY x₁ y₁) :
-    some h₁ + some h₁ = 0 :=
+    some _ _ h₁ + some _ _ h₁ = 0 :=
   add_of_Y_eq rfl hy
 
 -- @[simp] -- Not a good simp lemma, since `hy` is not in simp normal form.
 lemma add_of_Y_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hy : y₁ ≠ W.negY x₂ y₂) :
-    some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun hxy => hy hxy.right) :=
+    some _ _ h₁ + some _ _ h₂ = some _ _ (nonsingular_add h₁ h₂ fun hxy => hy hxy.right) :=
   add_some fun hxy => hy hxy.right
 
 lemma add_of_Y_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hy : y₁ ≠ W.negY x₂ y₂) :
-    some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy => hy hxy.right) :=
+    some _ _ h₁ + some _ _ h₂ = -some _ _ (nonsingular_negAdd h₁ h₂ fun hxy => hy hxy.right) :=
   add_of_Y_ne hy
 
 -- @[simp] -- Not a good simp lemma, since `hy` is not in simp normal form.
 lemma add_self_of_Y_ne {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ ≠ W.negY x₁ y₁) :
-    some h₁ + some h₁ = some (nonsingular_add h₁ h₁ fun hxy => hy hxy.right) :=
+    some _ _ h₁ + some _ _ h₁ = some _ _ (nonsingular_add h₁ h₁ fun hxy => hy hxy.right) :=
   add_of_Y_ne hy
 
 lemma add_self_of_Y_ne' {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ ≠ W.negY x₁ y₁) :
-    some h₁ + some h₁ = -some (nonsingular_negAdd h₁ h₁ fun hxy => hy hxy.right) :=
+    some _ _ h₁ + some _ _ h₁ = -some _ _ (nonsingular_negAdd h₁ h₁ fun hxy => hy hxy.right) :=
   add_of_Y_ne hy
 
 @[simp]
 lemma add_of_X_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun hxy => hx hxy.left) :=
+    (hx : x₁ ≠ x₂) :
+    some _ _ h₁ + some _ _ h₂ = some _ _ (nonsingular_add h₁ h₂ fun hxy => hx hxy.left) :=
   add_some fun hxy => hx hxy.left
 
 lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy => hx hxy.left) :=
+    (hx : x₁ ≠ x₂) :
+    some _ _ h₁ + some _ _ h₂ = -some _ _ (nonsingular_negAdd h₁ h₂ fun hxy => hx hxy.left) :=
   add_of_X_ne hx
 
 /-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to
@@ -709,10 +714,10 @@ the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal cla
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
   toFun P := match P with
     | 0 => 0
-    | some h => Additive.ofMul <| ClassGroup.mk <| CoordinateRing.XYIdeal' h
+    | some _ _ h => ClassGroup.mk <| CoordinateRing.XYIdeal' h
   map_zero' := rfl
   map_add' := by
-    rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
+    rintro (_ | ⟨x₁, y₁, h₁⟩) (_ | ⟨x₂, y₂, h₂⟩)
     any_goals simp only [← zero_def, zero_add, add_zero]
     by_cases hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂
     · simp only [hxy.left, hxy.right, add_of_Y_eq rfl rfl]
@@ -724,11 +729,11 @@ lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
 
 lemma toClass_some {x y : F} (h : W.Nonsingular x y) :
-    toClass (some h) = ClassGroup.mk (CoordinateRing.XYIdeal' h) :=
+    toClass (some _ _ h) = ClassGroup.mk (CoordinateRing.XYIdeal' h) :=
   rfl
 
 private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
-  rcases P, Q with ⟨_ | @⟨x₁, y₁, _⟩, _ | @⟨x₂, y₂, _⟩⟩
+  rcases P, Q with ⟨_ | ⟨x₁, y₁, _⟩, _ | ⟨x₂, y₂, _⟩⟩
   any_goals rfl
   · rw [← zero_def, zero_add, eq_comm (a := 0), neg_eq_iff_eq_neg, neg_zero]
   · rw [neg_some, some.injEq]
@@ -740,7 +745,7 @@ private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
   · intro hP
-    rcases P with (_ | ⟨h, _⟩)
+    rcases P with (_ | ⟨_, _, h, _⟩)
     · rfl
     · rcases (ClassGroup.mk_eq_one_of_coe_ideal <| by rfl).mp hP with ⟨p, h0, hp⟩
       apply (p.natDegree_norm_ne_one _).elim
@@ -750,7 +755,7 @@ lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   · exact congr_arg toClass
 
 lemma toClass_injective : Function.Injective <| toClass (W := W) := by
-  rintro (_ | h) _ hP
+  rintro (_ | ⟨_, _, h⟩) _ hP
   all_goals rw [← neg_inj, ← add_eq_zero, ← toClass_eq_zero, map_add, ← hP]
   · exact zero_add 0
   · exact CoordinateRing.mk_XYIdeal'_neg_mul h
@@ -779,22 +784,22 @@ where `W` is defined over a subring of a ring `S`, and `F` and `K` are field ext
 noncomputable def map : (W'⁄F).Point →+ (W'⁄K).Point where
   toFun P := match P with
     | 0 => 0
-    | some h => some <| (W'.baseChange_nonsingular f.injective ..).mpr h
+    | some _ _ h => some _ _ <| (W'.baseChange_nonsingular f.injective ..).mpr h
   map_zero' := rfl
   map_add' := by
-    rintro (_ | @⟨x₁, y₁, _⟩) (_ | @⟨x₂, y₂, _⟩)
+    rintro (_ | ⟨x₁, y₁, h₁⟩) (_ | ⟨x₂, y₂, h₂⟩)
     any_goals rfl
     by_cases hxy : x₁ = x₂ ∧ y₁ = (W'⁄F).negY x₂ y₂
     · rw [add_of_Y_eq hxy.left hxy.right,
         add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
-    · simp only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
-      rw [add_some fun h => hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩]
+    · simpa only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope] using
+        (add_some fun h ↦ hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩).symm
 
 lemma map_zero : map f (0 : (W'⁄F).Point) = 0 :=
   rfl
 
-lemma map_some {x y : F} (h : (W'⁄F).Nonsingular x y) :
-    map f (some h) = some ((W'.baseChange_nonsingular f.injective ..).mpr h) :=
+lemma map_some {x y : F} (h : (W'.baseChange F).toAffine.Nonsingular x y) :
+    map f (some _ _ h) = some _ _ ((W'.baseChange_nonsingular f.injective ..).mpr h) :=
   rfl
 
 lemma map_id (P : (W'⁄F).Point) : map (Algebra.ofId F F) P = P := by

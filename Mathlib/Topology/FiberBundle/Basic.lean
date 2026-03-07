@@ -856,3 +856,24 @@ theorem continuousOn_of_comp_right {X : Type*} [TopologicalSpace X] {f : TotalSp
     exact a.mem_base_pretrivializationAt z.proj
 
 end FiberPrebundle
+
+namespace FiberBundle
+section extend
+
+variable {E} [(x : B) → Zero (E x)] [TopologicalSpace (TotalSpace F E)] [FiberBundle F E]
+
+/-- Extend a vector `v ∈ V x` to a section of the bundle `V`, whose value at `x` is `v`.
+The details of the extension are mostly unspecified: for covariant derivatives, the value of
+`s` at points other than `x` will not matter (except for shorter proofs).
+-/
+noncomputable def extend {x : B} (v₀ : E x) (x' : B) : E x' :=
+  letI t := trivializationAt F E x
+  letI w : F := (t ⟨x, v₀⟩).2
+  -- TODO: use the `funToSec` helper from #36036 once available
+  t.symm x' w
+
+@[simp] lemma extend_apply_self {x : B} (v : E x) : extend F v x = v := by
+  simp [extend, FiberBundle.mem_baseSet_trivializationAt' x]
+
+end extend
+end FiberBundle
