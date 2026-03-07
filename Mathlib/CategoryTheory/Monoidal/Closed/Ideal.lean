@@ -154,9 +154,9 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
             refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit (pair (i.obj X) (i.obj Y)))
               (tensorProductIsBinaryProduct _ _)
           exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) |>.symm
-        · simp only [BinaryFan.fst, Cones.postcompose, pairComp]
+        · simp only [BinaryFan.fst, Cone.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc]
-        · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
+        · simp only [BinaryFan.snd, Cone.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc] }
 
 variable [CartesianMonoidalCategory C] [Reflective i] [MonoidalClosed C]
