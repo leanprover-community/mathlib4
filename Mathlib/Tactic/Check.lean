@@ -18,6 +18,9 @@ This module defines a tactic version of the `#check` command.
 While `#check t` is similar to `have := t`, it is a little more convenient
 since it elaborates `t` in a more tolerant way and so it can be possible to get a result.
 For example, `#check` allows metavariables.
+
+This module also defines the `#check'` tactic and command, which behaves like `#check` but only
+shows explicit arguments in the signature.
 -/
 
 public meta section
@@ -65,8 +68,8 @@ def checkPrimeInner (tk : Syntax) (term : Term) : TacticM Unit := do
 
 /-- Workhorse method for the `#check` and `#check'` tactic.
 This does all the set-up; the actual behaviour is governed by the function `inner` passed in. -/
-def elabCheckTacticInner (tk : Syntax) (ignoreStuckTC : Bool) (term : Term)
-    (inner : Syntax → Term → TacticM Unit): TacticM Unit :=
+def elabCheckTacticAux (tk : Syntax) (ignoreStuckTC : Bool) (term : Term)
+    (inner : Syntax → Term → TacticM Unit) : TacticM Unit :=
   withoutModifyingStateWithInfoAndMessages <| withMainContext do
     if let `($_:ident) := term then
       -- show signature for `#check ident`
@@ -87,7 +90,7 @@ Elaborates `term` without modifying tactic/elab/meta state.
 Info messages are placed at `tk`.
 -/
 def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM Unit :=
-  elabCheckTacticInner tk ignoreStuckTC term checkInner
+  elabCheckTacticAux tk ignoreStuckTC term checkInner
 
 /--
 Tactic version of the `#check'` command:
@@ -96,7 +99,7 @@ Elaborates `term` without modifying tactic/elab/meta state.
 Info messages are placed at `tk`.
 -/
 def elabCheckPrimeTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM Unit :=
-  elabCheckTacticInner tk ignoreStuckTC term checkPrimeInner
+  elabCheckTacticAux tk ignoreStuckTC term checkPrimeInner
 
 /--
 `#check t` elaborates the term `t` and then pretty prints it with its type as `e : ty`.
