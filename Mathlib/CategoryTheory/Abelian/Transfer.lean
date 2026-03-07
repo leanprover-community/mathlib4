@@ -3,10 +3,12 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
-import Mathlib.CategoryTheory.Preadditive.Transfer
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
+public import Mathlib.CategoryTheory.Preadditive.Transfer
 
 /-!
 # Transferring "abelian-ness" across a functor
@@ -34,6 +36,8 @@ Someone may like to formalize that lemma, and restate this theorem in terms of `
 (That lemma has a nice string diagrammatic proof that holds in any bicategory.)
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -50,6 +54,7 @@ variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
 variable (F : C ⥤ D)
 variable (G : D ⥤ C) [Functor.PreservesZeroMorphisms G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- No point making this an instance, as it requires `i`. -/
 theorem hasKernels [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C) : HasKernels C :=
   { has_limit {X Y} f := by
@@ -59,6 +64,7 @@ theorem hasKernels [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C) : HasKerne
       haveI : HasKernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasKernel_comp_mono _ _
       apply Limits.hasKernel_iso_comp }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- No point making this an instance, as it requires `i` and `adj`. -/
 theorem hasCokernels (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) : HasCokernels C :=
   { has_colimit {X Y} f := by
@@ -111,7 +117,7 @@ namespace ShrinkHoms
 
 universe w
 
-variable {C : Type*} [Category C] [LocallySmall.{w} C]
+variable {C : Type*} [Category* C] [LocallySmall.{w} C]
 
 section Preadditive
 
@@ -128,7 +134,7 @@ instance : (inverse C).Additive :=
 instance : (functor C).Additive :=
   (equivalence C).symm.additive_inverse_of_FullyFaithful
 
-instance hasLimitsOfShape (J : Type*) [Category J]
+instance hasLimitsOfShape (J : Type*) [Category* J]
     [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, w} J (ShrinkHoms C) :=
   Adjunction.hasLimitsOfShape_of_equivalence (inverse C)
 
@@ -165,7 +171,7 @@ instance : (down (C := C)).Additive :=
 instance : (up (C := C)).Additive :=
   equiv.symm.additive_inverse_of_FullyFaithful
 
-instance hasLimitsOfShape (J : Type*) [Category J]
+instance hasLimitsOfShape (J : Type*) [Category* J]
     [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, max u v w} J (AsSmall.{w} C) :=
   Adjunction.hasLimitsOfShape_of_equivalence equiv.inverse
 

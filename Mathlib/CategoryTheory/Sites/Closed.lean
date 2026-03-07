@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
-import Mathlib.Order.Closure
+module
+
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
+public import Mathlib.Order.Closure
 
 /-!
 # Closed sieves
@@ -43,6 +45,8 @@ closed sieve, closure, Grothendieck topology
 
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -205,27 +209,35 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
     rw [← J₁.pullback_close, this _ hf]
     apply le_antisymm (J₁.le_close_of_isClosed le_rfl (x f hf).2) (J₁.le_close _)
 
+/-- A sieve `S` is covering for `J` if and only if the subobject classifier
+is a sheaf for `S`. -/
+lemma GrothendieckTopology.mem_iff_isSheafFor_closedSieves
+    (J : GrothendieckTopology C) {X : C} (S : Sieve X) :
+    S ∈ J X ↔ Presieve.IsSheafFor (Functor.closedSieves J) S.arrows := by
+  refine ⟨fun hS ↦ classifier_isSheaf _ _ hS, fun H ↦ ?_⟩
+  rw [← J.close_eq_top_iff_mem]
+  have : J.IsClosed (⊤ : Sieve X) := by
+    intro Y f _
+    trivial
+  suffices (⟨J.close S, J.close_isClosed S⟩ : Subtype _) = ⟨⊤, this⟩ by
+    rw [Subtype.ext_iff] at this
+    exact this
+  refine H.isSeparatedFor.ext fun Y f hf ↦ ?_
+  simp only [Functor.closedSieves_obj]
+  ext1
+  dsimp
+  rw [Sieve.pullback_top, ← J.pullback_close, S.pullback_eq_top_of_mem hf,
+    J.close_eq_top_iff_mem]
+  apply J.top_mem
+
 /-- If presheaf of `J₁`-closed sieves is a `J₂`-sheaf then `J₁ ≤ J₂`. Note the converse is true by
 `classifier_isSheaf` and `isSheaf_of_le`.
 -/
 theorem le_topology_of_closedSieves_isSheaf {J₁ J₂ : GrothendieckTopology C}
     (h : Presieve.IsSheaf J₁ (Functor.closedSieves J₂)) : J₁ ≤ J₂ := by
   intro X S hS
-  rw [← J₂.close_eq_top_iff_mem]
-  have : J₂.IsClosed (⊤ : Sieve X) := by
-    intro Y f _
-    trivial
-  suffices (⟨J₂.close S, J₂.close_isClosed S⟩ : Subtype _) = ⟨⊤, this⟩ by
-    rw [Subtype.ext_iff] at this
-    exact this
-  apply (h S hS).isSeparatedFor.ext
-  intro Y f hf
-  simp only [Functor.closedSieves_obj]
-  ext1
-  dsimp
-  rw [Sieve.pullback_top, ← J₂.pullback_close, S.pullback_eq_top_of_mem hf,
-    J₂.close_eq_top_iff_mem]
-  apply J₂.top_mem
+  rw [GrothendieckTopology.mem_iff_isSheafFor_closedSieves]
+  exact h _ hS
 
 /-- If being a sheaf for `J₁` is equivalent to being a sheaf for `J₂`, then `J₁ = J₂`. -/
 theorem topology_eq_iff_same_sheaves {J₁ J₂ : GrothendieckTopology C} :

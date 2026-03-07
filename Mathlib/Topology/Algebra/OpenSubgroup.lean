@@ -3,11 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.RingTheory.Ideal.Defs
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Open subgroups of a topological group
@@ -31,6 +32,8 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 * Prove that the identity component of a locally path connected group is an open subgroup.
   Up to now this file is really geared towards non-archimedean algebra, not Lie groups.
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Topology Function
@@ -69,6 +72,8 @@ theorem toSubgroup_injective : Injective ((↑) : OpenSubgroup G → Subgroup G)
 instance : SetLike (OpenSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+
+@[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G) G
 
 @[to_additive]
 instance : SubgroupClass (OpenSubgroup G) G where
@@ -191,12 +196,10 @@ instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferIn
 -- We override `toPartialorder` to get better `le`
 @[to_additive]
 instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
-  { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ ↦ rfl with
-    toPartialOrder := instPartialOrderOpenSubgroup }
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance : OrderTop (OpenSubgroup G) where
-  top := ⊤
   le_top _ := Set.subset_univ _
 
 @[to_additive (attr := simp, norm_cast)]
@@ -321,12 +324,10 @@ instance : Max (OpenSubgroup G) :=
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl
 
--- We override `toPartialorder` to get better `le`
 @[to_additive]
-instance : Lattice (OpenSubgroup G) :=
-  { instSemilatticeInfOpenSubgroup,
-    toSubgroup_injective.semilatticeSup ((↑) : OpenSubgroup G → Subgroup G) fun _ _ ↦ rfl with
-    toPartialOrder := instPartialOrderOpenSubgroup }
+instance : Lattice (OpenSubgroup G) where
+  __ := toSubgroup_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
+  __ := instSemilatticeInfOpenSubgroup
 
 end OpenSubgroup
 
@@ -355,7 +356,7 @@ theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U 
 end Ideal
 
 /-!
-# Open normal subgroups of a topological group
+### Open normal subgroups of a topological group
 
 This section builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenNormalAddSubgroup`.
@@ -400,6 +401,8 @@ instance : SetLike (OpenNormalSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
 
+@[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G) G
+
 @[to_additive]
 instance : SubgroupClass (OpenNormalSubgroup G) G where
   mul_mem := Subsemigroup.mul_mem' _
@@ -420,7 +423,7 @@ instance instInfOpenNormalSubgroup : Min (OpenNormalSubgroup G) :=
 
 @[to_additive]
 instance instSemilatticeInfOpenNormalSubgroup : SemilatticeInf (OpenNormalSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf ((↑) : OpenNormalSubgroup G → Set G) fun _ _ ↦ rfl
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance [ContinuousMul G] : Max (OpenNormalSubgroup G) :=
@@ -430,20 +433,17 @@ instance [ContinuousMul G] : Max (OpenNormalSubgroup G) :=
 @[to_additive]
 instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
     SemilatticeSup (OpenNormalSubgroup G) :=
-  toSubgroup_injective.semilatticeSup _ (fun _ _ ↦ rfl)
+  toSubgroup_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
-instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
-  { instSemilatticeInfOpenNormalSubgroup,
-    instSemilatticeSupOpenNormalSubgroup with
-    toPartialOrder := instPartialOrderOpenNormalSubgroup}
+instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) where
 
 end OpenNormalSubgroup
 
 end
 
 /-!
-# Existence of an open subgroup in any clopen neighborhood of the neutral element
+### Existence of an open subgroup in any clopen neighborhood of the neutral element
 
 This section proves the lemma `IsTopologicalGroup.exist_openSubgroup_sub_clopen_nhds_of_one`, which
 states that in a compact topological group, for any clopen neighborhood of 1,
@@ -493,10 +493,6 @@ lemma exist_mul_closure_nhds {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝
   have h6 : U * V ⊆ W := mul_subset_iff.mpr (fun _ hx _ hy ↦ prodsub (mk_mem_prod hx hy))
   exact ⟨U ∩ W, ⟨U, Uopen.mem_nhds xmemU, W, fun _ a ↦ a, rfl⟩,
     V, IsOpen.mem_nhds Vopen onememV, fun _ a ↦ h6 ((mul_subset_mul_right inter_subset_left) a)⟩
-
-@[deprecated (since := "2025-05-22")] alias exist_mul_closure_nhd := exist_mul_closure_nhds
-@[deprecated (since := "2025-05-22")] alias _root_.IsTopologicalAddGroup.exist_add_closure_nhd :=
-  IsTopologicalAddGroup.exist_add_closure_nhds
 
 @[to_additive]
 lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
@@ -551,12 +547,5 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
     use 1, einW, x, xin
     rw [one_mul]
   apply iUnion_subset fun i _ a ↦ mulVpow i (this i a)
-
-@[deprecated (since := "2025-05-22")]
-alias exist_openSubgroup_sub_clopen_nhd_of_one := exist_openSubgroup_sub_clopen_nhds_of_one
-
-@[deprecated (since := "2025-05-22")]
-alias _root_.IsTopologicalAddGroup.exist_openAddSubgroup_sub_clopen_nhd_of_zero :=
-  IsTopologicalAddGroup.exist_openAddSubgroup_sub_clopen_nhds_of_zero
 
 end IsTopologicalGroup

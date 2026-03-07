@@ -3,9 +3,11 @@ Copyright (c) 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 -/
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Real.Pi.Wallis
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Real.Pi.Wallis
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Stirling's formula
@@ -31,6 +33,8 @@ ingredients are
 and prove that $a = \sqrt{\pi}$. Here the main ingredient is the convergence of Wallis' product
 formula for `π`.
 -/
+
+@[expose] public section
 
 
 open scoped Topology Real Nat Asymptotics
@@ -80,8 +84,8 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     dsimp only [f]
     rw [← pow_mul, pow_add]
     push_cast
-    field_simp
-  · have h (x) (hx : x ≠ (0 : ℝ)) : 1 + x⁻¹ = (x + 1) / x := by field_simp
+    field
+  · have h (x) (hx : x ≠ (0 : ℝ)) : 1 + x⁻¹ = (x + 1) / x := by field
     simp (disch := positivity) only [log_stirlingSeq_formula, log_div, log_mul, log_exp,
       factorial_succ, cast_mul, cast_succ, range_one, sum_singleton, h]
     ring
@@ -111,6 +115,7 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     exact inv_le_one_of_one_le₀ (le_add_of_nonneg_left <| by positivity)
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1))` ≤ 1/(4 n^2)
 -/
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
@@ -124,7 +129,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   field_simp
   ring_nf
   norm_cast
-  cutsat
+  lia
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2` -/
 theorem log_stirlingSeq_bounded_aux :
@@ -134,7 +139,7 @@ theorem log_stirlingSeq_bounded_aux :
   let log_stirlingSeq' : ℕ → ℝ := fun k => log (stirlingSeq (k + 1))
   intro n
   have h₁ k : log_stirlingSeq' k - log_stirlingSeq' (k + 1) ≤ 1 / 4 * (1 / (↑(k + 1) : ℝ) ^ 2) := by
-    convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field_simp
+    convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field
   have h₂ : (∑ k ∈ range n, 1 / (↑(k + 1) : ℝ) ^ 2) ≤ d := by
     have := (summable_nat_add_iff 1).mpr <| Real.summable_one_div_nat_pow.mpr one_lt_two
     exact this.sum_le_tsum (range n) (fun k _ => by positivity)
@@ -230,14 +235,12 @@ theorem tendsto_stirlingSeq_sqrt_pi : Tendsto stirlingSeq atTop (𝓝 (√π)) :
 /-- **Stirling's Formula**, formulated in terms of `Asymptotics.IsEquivalent`. -/
 lemma factorial_isEquivalent_stirling :
     (fun n ↦ n ! : ℕ → ℝ) ~[atTop] fun n ↦ Real.sqrt (2 * n * π) * (n / exp 1) ^ n := by
-  refine Asymptotics.isEquivalent_of_tendsto_one ?_ ?_
-  · filter_upwards [eventually_ne_atTop 0] with n hn h
-    exact absurd h (by positivity)
-  · have : sqrt π ≠ 0 := by positivity
-    nth_rewrite 2 [← div_self this]
-    convert tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
-    ext n
-    simp [field, stirlingSeq, mul_right_comm]
+  apply Asymptotics.isEquivalent_of_tendsto_one
+  have : sqrt π ≠ 0 := by positivity
+  nth_rewrite 2 [← div_self this]
+  convert tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
+  ext n
+  simp [field, stirlingSeq, mul_right_comm]
 
 /-! ### Global bounds -/
 
@@ -253,7 +256,7 @@ theorem sqrt_pi_le_stirlingSeq {n : ℕ} (hn : n ≠ 0) : √π ≤ stirlingSeq 
 
 /--
 Stirling's approximation gives a lower bound for `n!` for all `n`.
-The left hand side is formulated to mimic the usual informal description of the approxmation.
+The left-hand side is formulated to mimic the usual informal description of the approximation.
 See also `factorial_isEquivalent_stirling` which says these are asymptotically equivalent. That
 statement gives an upper bound also, but requires sufficiently large `n`. In contrast, this one is
 only a lower bound, but holds for all `n`.
@@ -269,12 +272,12 @@ theorem le_factorial_stirling (n : ℕ) : √(2 * π * n) * (n / exp 1) ^ n ≤ 
 
 /--
 Stirling's approximation gives a lower bound for `log n!` for all positive `n`.
-The left hand side is formulated in decreasing order in `n`: the higher order terms are first.
+The left-hand side is formulated in decreasing order in `n`: the higher order terms are first.
 This is a consequence of `le_factorial_stirling`, but is stated separately since the logarithmic
 version is sometimes more practical, and having this version eases algebraic calculations for
 applications.
 Sharper bounds due to Robbins are available, but are not yet formalised. These would add
-lower order terms (beginning with `(12 * n)⁻¹`) to the left hand side.
+lower order terms (beginning with `(12 * n)⁻¹`) to the left-hand side.
 -/
 theorem le_log_factorial_stirling {n : ℕ} (hn : n ≠ 0) :
     n * log n - n + log n / 2 + log (2 * π) / 2 ≤ log n ! := by

@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 /-!
 # Integrals of characteristic functions
@@ -29,6 +31,8 @@ relating the measure of some sets to integrals of characteristic functions.
 
 -/
 
+public section
+
 open RealInnerProductSpace Real Complex NormedSpace
 
 namespace MeasureTheory
@@ -37,6 +41,7 @@ section Real
 
 variable {μ : Measure ℝ} {r : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     ∫ t in -r..r, charFun μ t = 2 * r * ∫ x, sinc (r * x) ∂μ := by
   have h_int : Integrable (Function.uncurry fun (x y : ℝ) ↦ cexp (x * y * I))
@@ -83,8 +88,9 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     field_simp
   _ = 2 * r * ∫ x, sinc (r * x) ∂μ := by
     norm_cast
-    rw [integral_complex_ofReal, ← integral_const_mul]
+    rw [← integral_const_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bound on the measure of the set `{x | r < |x|}` in terms of the integral of
 the characteristic function, for a probability measure on `ℝ`. -/
 lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 < r) :
@@ -155,6 +161,7 @@ lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddComm
     · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
   · rw [charFun_map_eq_charFunDual_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bound on the measure of the set `{x | r < |⟪a, x⟫|}` in terms of the integral of
 the characteristic function, for a probability measure on an inner product space. -/
 lemma measureReal_abs_inner_gt_le_integral_charFun {E : Type*} [SeminormedAddCommGroup E]

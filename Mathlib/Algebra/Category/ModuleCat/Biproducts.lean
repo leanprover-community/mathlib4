@@ -3,14 +3,18 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+module
+
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
 # The category of `R`-modules has finite biproducts
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -141,14 +145,16 @@ variable {R : Type u} {A M B : Type v} [Ring R] [AddCommGroup A] [Module R A] [A
 variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}
 
 
+set_option backward.privateInPublic true in
 private noncomputable def lequivProdOfRightSplitExact' {f : B →ₗ[R] M} (hj : Function.Injective j)
     (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfSection _
     (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
     (ModuleCat.ofHom g) exac) (ofHom f) (hom_ext h)
     (by simpa only [ModuleCat.mono_iff_injective])).isoBinaryBiproduct ≪≫
-    biprodIsoProd _ _ ).symm.toLinearEquiv
+    biprodIsoProd _ _).symm.toLinearEquiv
 
+set_option backward.privateInPublic true in
 private noncomputable def lequivProdOfLeftSplitExact' {f : M →ₗ[R] A} (hg : Function.Surjective g)
     (exac : LinearMap.range j = LinearMap.ker g) (h : f.comp j = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfRetraction _
@@ -168,6 +174,8 @@ variable [Module R A] [Module R B] [Module R M]
 
 variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The isomorphism `A × B ≃ₗ[R] M` coming from a right split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
 of modules. -/
 noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function.Injective j)
@@ -182,6 +190,8 @@ noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function
     (by ext x; simpa using congr($h x.down))
   ULift.moduleEquiv.symm.prodCongr ULift.moduleEquiv.symm ≪≫ₗ this ≪≫ₗ ULift.moduleEquiv
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The isomorphism `A × B ≃ₗ[R] M` coming from a left split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
 of modules. -/
 noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.Surjective g)

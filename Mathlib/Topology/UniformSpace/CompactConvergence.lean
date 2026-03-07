@@ -3,11 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Compactness.CompactlyCoherentSpace
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Compact convergence (uniform convergence on compact sets)
@@ -83,6 +85,8 @@ so that the resulting instance uses the compact-open topology.
 * Results about uniformly continuous functions `γ → C(α, β)`
   and uniform limits of sequences `ι → γ → C(α, β)`.
 -/
+
+@[expose] public section
 
 open Filter Set Topology UniformSpace
 open scoped Uniformity UniformConvergence
@@ -424,9 +428,6 @@ instance instCompleteSpaceOfCompactlyCoherentSpace [CompactlyCoherentSpace α] :
     range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
   exact (UniformOnFun.isClosed_setOf_continuous
     CompactlyCoherentSpace.isCoherentWith).completeSpace_coe
-
-@[deprecated (since := "2025-06-03")]
-alias completeSpace_of_isCoherentWith := instCompleteSpaceOfCompactlyCoherentSpace
 
 end CompleteSpace
 

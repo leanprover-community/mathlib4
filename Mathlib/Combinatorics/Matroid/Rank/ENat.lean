@@ -3,10 +3,12 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Rank.Finite
-import Mathlib.Combinatorics.Matroid.Loop
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Tactic.TautoSet
+module
+
+public import Mathlib.Combinatorics.Matroid.Rank.Finite
+public import Mathlib.Combinatorics.Matroid.Loop
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Tactic.TautoSet
 
 /-!
 # `ℕ∞`-valued rank
@@ -32,22 +34,22 @@ the rank function is often the preferred perspective on matroids in the literatu
 (The above doesn't work as well for infinite matroids,
 which is why mathlib defines matroids using bases/independence. )
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.eRank M` is the `ℕ∞`-valued cardinality of each base of `M`.
 * `Matroid.eRk M X` is the `ℕ∞`-valued cardinality of each `M`-basis of `X`.
 * `Matroid.eRk_inter_add_eRk_union_le` : the function `M.eRk` is submodular.
 * `Matroid.dual_eRk_add_eRank` : a subtraction-free formula for the dual rank of a set.
 
-# Notes
+## Notes
 
 It is natural to ask if equicardinality of bases holds if 'cardinality' refers to
 a term in `Cardinal` instead of `ℕ∞`, but the answer is that it doesn't.
 The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk` are defined in
-`Mathlib/Data/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
+`Mathlib/Combinatorics/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
 See the module docstring of that file for a discussion.
 
-# Implementation Details
+## Implementation Details
 
 It would be equivalent to define `Matroid.eRank (M : Matroid α) := (Matroid.cRank M).toENat`
 and similar for `Matroid.eRk`, and some of the API for `cRank`/`cRk` would carry over
@@ -56,6 +58,8 @@ Although this file transitively imports `Cardinal` via `Set.encard`,
 there are plans to refactor the latter to be independent of the former,
 which would carry over to the current version of this file.
 -/
+
+@[expose] public section
 
 open Set ENat
 
@@ -135,9 +139,6 @@ lemma eRk_ground_union (M : Matroid α) (X : Set α) : M.eRk (M.E ∪ X) = M.eRa
 
 lemma eRk_insert_of_notMem_ground (X : Set α) (he : e ∉ M.E) : M.eRk (insert e X) = M.eRk X := by
   rw [← eRk_inter_ground, insert_inter_of_notMem he, eRk_inter_ground]
-
-@[deprecated (since := "2025-05-23")]
-alias eRk_insert_of_not_mem_ground := eRk_insert_of_notMem_ground
 
 lemma eRk_eq_eRank (hX : M.E ⊆ X) : M.eRk X = M.eRank := by
   rw [← eRk_inter_ground, inter_eq_self_of_subset_right hX, eRank_def]
@@ -232,7 +233,7 @@ lemma le_eRk_iff : n ≤ M.eRk X ↔ ∃ I, I ⊆ X ∧ M.Indep I ∧ I.encard =
   refine ⟨fun h ↦ ?_, fun ⟨I, hIX, hI, hIc⟩ ↦ ?_⟩
   · obtain ⟨J, hJ⟩ := M.exists_isBasis' X
     rw [← hJ.encard_eq_eRk] at h
-    obtain ⟨I, hIJ, rfl⟩ :=  exists_subset_encard_eq h
+    obtain ⟨I, hIJ, rfl⟩ := exists_subset_encard_eq h
     exact ⟨_, hIJ.trans hJ.subset, hJ.indep.subset hIJ, rfl⟩
   rw [← hIc, ← hI.eRk_eq_encard]
   exact M.eRk_mono hIX
@@ -257,15 +258,9 @@ lemma eRk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
   refine ⟨fun h ↦ by simpa [h] using hI, fun h ↦ eq_empty_iff_forall_notMem.2 fun e heI ↦ ?_⟩
   exact (hI.indep.isNonloop_of_mem heI).not_isLoop (h (hI.subset heI))
 
-@[deprecated (since := "2025-05-14")]
-alias erk_eq_zero_iff' := eRk_eq_zero_iff'
-
 @[simp]
 lemma eRk_eq_zero_iff (hX : X ⊆ M.E := by aesop_mat) : M.eRk X = 0 ↔ X ⊆ M.loops := by
   rw [eRk_eq_zero_iff', inter_eq_self_of_subset_left hX]
-
-@[deprecated (since := "2025-05-14")]
-alias erk_eq_zero_iff := eRk_eq_zero_iff
 
 @[simp]
 lemma eRk_loops : M.eRk M.loops = 0 := by

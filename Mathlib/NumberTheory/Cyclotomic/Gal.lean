@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.FieldTheory.PolynomialGaloisGroup
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.FieldTheory.PolynomialGaloisGroup
 
 /-!
 # Galois group of cyclotomic extensions
@@ -35,6 +37,8 @@ it is always a subgroup, and if the `n`th cyclotomic polynomial is irreducible, 
   ideal of both elements is equal. This may not hold in an ID, and definitely holds in an ICD.)
 
 -/
+
+@[expose] public section
 
 
 variable {n : ℕ} [NeZero n] (K : Type*) [Field K] {L : Type*} {μ : L}
@@ -74,9 +78,6 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
 end IsPrimitiveRoot
 
 namespace IsCyclotomicExtension
-
-@[deprecated (since := "2025-06-26")]
-alias Aut.commGroup := isMulCommutative
 
 variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
   [IsCyclotomicExtension {n} K L]

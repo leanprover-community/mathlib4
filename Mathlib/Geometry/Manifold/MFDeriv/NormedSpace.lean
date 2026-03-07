@@ -3,8 +3,10 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-! ## Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
@@ -14,6 +16,8 @@ providing the same statements for higher smoothness. In this file, we do the sam
 differentiability.
 
 -/
+
+public section
 
 open Set ChartedSpace IsManifold
 open scoped Topology Manifold
@@ -78,6 +82,27 @@ theorem Differentiable.comp_mdifferentiable {g : F → F'} {f : M → F} (hg : D
   hg.differentiableAt.comp_mdifferentiableAt (hf x)
 
 end Module
+
+section ExtChartAt
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
+
+-- TODO: add pre-composition version also
+theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm
+    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F) f s x) :
+    letI φ := extChartAt I x
+    DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x) := by
+  simpa [extChartAt_self_eq] using (mdifferentiableWithinAt_iff.1 hf).2
+
+-- TODO: the `IsManifold I 1 M` assumption can probably be removed
+theorem DifferentiableWithinAt.mdifferentiableWithinAt_of_comp_extChartAt_symm [IsManifold I 1 M]
+    (hf : letI φ := extChartAt I x
+      DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x)) :
+    MDifferentiableWithinAt I 𝓘(𝕜, F) f s x := by
+  refine (mdifferentiableWithinAt_iff_source_of_mem_source (mem_chart_source H x)).2 ?_
+  simpa [extChartAt_self_eq] using hf.mdifferentiableWithinAt
+
+end ExtChartAt
 
 /-! ### Linear maps between normed spaces are differentiable -/
 
@@ -263,12 +288,12 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 theorem MDifferentiableWithinAt.smul {f : M → 𝕜} {g : M → V}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) (hg : MDifferentiableWithinAt I 𝓘(𝕜, V) g s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, V) (fun p => f p • g p) s x :=
-  ((contMDiff_smul.of_le le_top).mdifferentiable le_rfl _).comp_mdifferentiableWithinAt x
+  ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp_mdifferentiableWithinAt x
     (hf.prodMk hg)
 
 theorem MDifferentiableAt.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
     (hg : MDifferentiableAt I 𝓘(𝕜, V) g x) : MDifferentiableAt I 𝓘(𝕜, V) (fun p => f p • g p) x :=
-  ((contMDiff_smul.of_le le_top).mdifferentiable le_rfl _).comp x (hf.prodMk hg)
+  ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp x (hf.prodMk hg)
 
 theorem MDifferentiableOn.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableOn I 𝓘(𝕜) f s)
     (hg : MDifferentiableOn I 𝓘(𝕜, V) g s) : MDifferentiableOn I 𝓘(𝕜, V) (fun p => f p • g p) s :=

@@ -3,7 +3,9 @@ Copyright (c) 2021 Alex Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Zhao, Daniel Buth, Sebastian Meier, Junyan Xu
 -/
-import Mathlib.RingTheory.Ideal.NatInt
+module
+
+public import Mathlib.RingTheory.Ideal.NatInt
 
 /-!
 # Frobenius Number
@@ -34,6 +36,8 @@ is a multiple of n, and we're done.
 
 frobenius number, chicken mcnugget, chinese remainder theorem, AddSubmonoid.closure
 -/
+
+@[expose] public section
 
 
 open Nat
@@ -74,7 +78,7 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
       obtain ⟨a, ha⟩ := modEq_zero_iff_dvd.mp x.2.1
       obtain ⟨b, hb⟩ := (modEq_iff_dvd' key).mp x.2.2
       exact ⟨a, b, by rw [mul_comm, ← ha, mul_comm, ← hb, Nat.add_sub_of_le key]⟩
-    refine ModEq.le_of_lt_add x.2.2 (lt_of_le_of_lt ?_ (add_lt_add_right hk n))
+    refine x.2.2.le_of_lt_add (lt_of_le_of_lt ?_ (add_lt_add_left hk n))
     rw [Nat.sub_add_cancel (le_tsub_of_add_le_left hmn)]
     exact
       ModEq.le_of_lt_add
@@ -164,10 +168,10 @@ theorem exists_mem_span_nat_finset_of_ge :
     ← eq, Finset.mul_sum, smul_eq_mul, ← mul_assoc, ← Finset.sum_add_distrib, ← add_mul]
   congr! 2 with i
   split_ifs with hai
-  · rw [Int.toNat_eq_zero.mpr (by cutsat), cast_zero, mul_zero, add_zero,
+  · rw [Int.toNat_eq_zero.mpr (by lia), cast_zero, mul_zero, add_zero,
       Int.natCast_natAbs, abs_eq_self.mpr hai]
-  · rw [cast_sub, Int.natCast_natAbs, abs_eq_neg_self.mpr (by cutsat), sub_mul,
-      ← Int.eq_natCast_toNat.mpr (by cutsat), mul_neg (rx : ℤ), sub_neg_eq_add, add_comm]
+  · rw [cast_sub, Int.natCast_natAbs, abs_eq_neg_self.mpr (by lia), sub_mul,
+      ← Int.eq_natCast_toNat.mpr (by lia), mul_neg (rx : ℤ), sub_neg_eq_add, add_comm]
     rw [← Nat.mul_le_mul_left_iff (pos_of_ne_zero h0), ← hrx,
       Nat.mul_div_cancel' (setGcd_dvd_of_mem hxs)]
     exact (c.mod_lt (pos_of_ne_zero hx)).le
@@ -211,7 +215,7 @@ theorem exists_frobeniusNumber_iff {s : Set ℕ} :
   mp := fun ⟨n, hn⟩ ↦ by
     rw [frobeniusNumber_iff] at hn
     exact ⟨dvd_one.mp <| Nat.dvd_add_iff_right (setGcd_dvd_of_mem_closure (hn.2 (n + 1)
-      (by omega))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by omega))),
+      (by lia))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by lia))),
       fun h ↦ hn.1 <| AddSubmonoid.closure_mono (Set.singleton_subset_iff.mpr h)
         (addSubmonoidClosure_one.ge ⟨⟩)⟩
   mpr h := by

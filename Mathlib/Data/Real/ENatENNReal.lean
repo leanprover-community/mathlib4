@@ -3,14 +3,18 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.ENat.Basic
-import Mathlib.Data.ENNReal.Basic
+module
+
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENNReal.Basic
 
 /-!
 # Coercion from `ℕ∞` to `ℝ≥0∞`
 
 In this file we define a coercion from `ℕ∞` to `ℝ≥0∞` and prove some basic lemmas about this map.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -60,11 +64,11 @@ theorem toENNReal_inj : (m : ℝ≥0∞) = (n : ℝ≥0∞) ↔ m = n :=
 @[simp, norm_cast] lemma toENNReal_eq_top : (n : ℝ≥0∞) = ∞ ↔ n = ⊤ := by simp [← toENNReal_inj]
 @[norm_cast] lemma toENNReal_ne_top : (n : ℝ≥0∞) ≠ ∞ ↔ n ≠ ⊤ := by simp
 
-@[simp, norm_cast]
+@[simp, norm_cast, gcongr]
 theorem toENNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
   toENNRealOrderEmbedding.le_iff_le
 
-@[simp, norm_cast]
+@[simp, norm_cast, gcongr]
 theorem toENNReal_lt : (m : ℝ≥0∞) < n ↔ m < n :=
   toENNRealOrderEmbedding.lt_iff_lt
 
@@ -97,7 +101,7 @@ theorem toENNReal_mul (m n : ℕ∞) : ↑(m * n) = (m * n : ℝ≥0∞) :=
 
 @[simp, norm_cast]
 theorem toENNReal_pow (x : ℕ∞) (n : ℕ) : (x ^ n : ℕ∞) = (x : ℝ≥0∞) ^ n :=
-  RingHom.map_pow toENNRealRingHom x n
+  map_pow toENNRealRingHom x n
 
 @[simp, norm_cast]
 theorem toENNReal_min (m n : ℕ∞) : ↑(min m n) = (min m n : ℝ≥0∞) :=

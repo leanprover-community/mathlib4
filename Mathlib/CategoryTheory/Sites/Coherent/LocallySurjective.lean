@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 /-!
 
 # Locally surjective morphisms of coherent sheaves
@@ -27,13 +29,15 @@ and extensive topologies.
   finitary extensive category is locally surjective iff it is objectwise surjective.
 -/
 
+public section
+
 universe w
 
 open CategoryTheory Sheaf Limits Opposite
 
 namespace CategoryTheory
 
-variable {C : Type*} (D : Type*) [Category C] [Category D] {FD : D → D → Type*} {CD : D → Type w}
+variable {C : Type*} (D : Type*) [Category* C] [Category* D] {FD : D → D → Type*} {CD : D → Type w}
   [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD]
 
 lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G) :
@@ -53,7 +57,7 @@ lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ 
     rw [regularTopology.mem_sieves_iff_hasEffectiveEpi]
     exact ⟨X', π, h, h'⟩
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+set_option backward.isDefEq.respectTransparency false in
 lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (extensiveTopology C) f) {X : C} :
@@ -101,10 +105,10 @@ lemma extensiveTopology.presheafIsLocallySurjective_iff [FinitaryPreExtensive C]
 lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
     {F G : Sheaf (extensiveTopology C) D} (f : F ⟶ G)
       [PreservesFiniteProducts (forget D)] : IsLocallySurjective f ↔
-        ∀ (X : C), Function.Surjective (f.val.app (op X)) :=
-  extensiveTopology.presheafIsLocallySurjective_iff _ f.val
+        ∀ (X : C), Function.Surjective (f.hom.app (op X)) :=
+  extensiveTopology.presheafIsLocallySurjective_iff _ f.hom
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+set_option backward.isDefEq.respectTransparency false in
 lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (coherentTopology C) f) :
@@ -152,7 +156,7 @@ lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f 
 
 lemma coherentTopology.isLocallySurjective_iff [Preregular C] [FinitaryExtensive C]
     {F G : Sheaf (coherentTopology C) D} (f : F ⟶ G) [PreservesFiniteProducts (forget D)] :
-      IsLocallySurjective f ↔ Presheaf.IsLocallySurjective (regularTopology C) f.val :=
-  presheafIsLocallySurjective_iff _ f.val
+      IsLocallySurjective f ↔ Presheaf.IsLocallySurjective (regularTopology C) f.hom :=
+  presheafIsLocallySurjective_iff _ f.hom
 
 end CategoryTheory

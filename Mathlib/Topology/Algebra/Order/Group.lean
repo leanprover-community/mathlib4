@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Topology on a linear ordered commutative group
@@ -14,6 +16,8 @@ In this file we prove that a linear ordered commutative group with order topolog
 is a topological group.
 We also prove continuity of `abs : G → G` and provide convenience lemmas like `ContinuousAt.abs`.
 -/
+
+@[expose] public section
 
 
 open Set Filter Function
@@ -103,9 +107,9 @@ dense iff they are the whole group. -/]
 theorem denseRange_zpow_iff_surjective {a : G} :
     DenseRange (a ^ · : ℤ → G) ↔ Surjective (a ^ · : ℤ → G) := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.denseRange⟩
-  wlog ha₀ : 1 < a generalizing a
+  wlog! ha₀ : 1 < a generalizing a
   · simp only [← range_eq_univ, DenseRange] at *
-    rcases (not_lt.1 ha₀).eq_or_lt with rfl | hlt
+    rcases ha₀.eq_or_lt with rfl | hlt
     · simpa only [one_zpow, range_const, dense_iff_closure_eq, closure_singleton] using h
     · have H : range (a⁻¹ ^ · : ℤ → G) = range (a ^ · : ℤ → G) := by
         simpa only [← inv_zpow, zpow_neg, comp_def] using neg_surjective.range_comp (a ^ · : ℤ → G)
@@ -119,7 +123,7 @@ theorem denseRange_zpow_iff_surjective {a : G} :
   suffices (Ioo (a ^ m) (a ^ (m + 1))).Nonempty by
     rcases h.exists_mem_open isOpen_Ioo this with ⟨l, hl⟩
     have : m < l ∧ l < m + 1 := by simpa [zpow_lt_zpow_iff_right ha₀] using hl
-    cutsat
+    lia
   rcases hne.lt_or_gt with hlt | hlt
   · refine ⟨b * a * a, hm', ?_⟩
     simpa only [zpow_add, zpow_sub, zpow_one, ← div_eq_mul_inv, lt_div_iff_mul_lt,

@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Insert
-import Mathlib.Data.Finset.Lattice.Basic
+module
+
+public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Finset.Lattice.Basic
 
 /-!
 # Difference of finite sets
@@ -19,6 +21,8 @@ import Mathlib.Data.Finset.Lattice.Basic
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -63,12 +67,7 @@ instance : GeneralizedBooleanAlgebra (Finset α) where
 
 theorem notMem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by grind
 
-@[deprecated (since := "2025-05-23")] alias not_mem_sdiff_of_mem_right := notMem_sdiff_of_mem_right
-
 theorem notMem_sdiff_of_notMem_left (h : a ∉ s) : a ∉ s \ t := by simp [h]
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_sdiff_of_not_mem_left := notMem_sdiff_of_notMem_left
 
 theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t := by grind
 
@@ -161,8 +160,6 @@ theorem empty_sdiff (s : Finset α) : ∅ \ s = ∅ :=
 theorem insert_sdiff_of_notMem (s : Finset α) {t : Finset α} {x : α} (h : x ∉ t) :
     insert x s \ t = insert x (s \ t) := by grind
 
-@[deprecated (since := "2025-05-23")] alias insert_sdiff_of_not_mem := insert_sdiff_of_notMem
-
 theorem insert_sdiff_of_mem (s : Finset α) {x : α} (h : x ∈ t) : insert x s \ t = s \ t := by grind
 
 @[simp] lemma insert_sdiff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by grind
@@ -180,8 +177,6 @@ lemma cons_sdiff_cons (hab : a ≠ b) (ha hb) : s.cons a ha \ s.cons b hb = {a} 
 
 theorem sdiff_insert_of_notMem {x : α} (h : x ∉ s) (t : Finset α) : s \ insert x t = s \ t := by
   grind
-
-@[deprecated (since := "2025-05-23")] alias sdiff_insert_of_not_mem := sdiff_insert_of_notMem
 
 @[simp] theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := le_iff_subset.mp sdiff_le
 

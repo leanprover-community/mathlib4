@@ -3,11 +3,15 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 ## `funProp` environment extension that stores all registered function properties
 -/
+
+public meta section
 
 
 namespace Mathlib
@@ -47,7 +51,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
     name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
-      {d with decls := d.decls.insertCore e.path e}
+      {d with decls := d.decls.insertKeyValue e.path e}
   }
 
 /-- Register new function property. -/
@@ -107,7 +111,7 @@ def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
 /-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
 
-/-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x => f x y z` -/
+/-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x ↦ f x y z` -/
 def isFunPropGoal (e : Expr) : MetaM Bool := do
   forallTelescope e fun _ b =>
   return (← getFunProp? b).isSome
@@ -134,18 +138,17 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
       try
-        withoutModifyingStateWithInfoAndMessages do
-          instantiateMVarDeclMVars mvar.mvarId!
+        instantiateMVarDeclMVars mvar.mvarId!
 
-          let _ ←
-            withSynthesize (postpone := .no) do
-              Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
+        let _ ←
+          withSynthesize (postpone := .no) do
+            Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
 
-          let result ← instantiateMVars mvar
-          if result.hasExprMVar then
-            return none
-          else
-            return some result
+        let result ← instantiateMVars mvar
+        if result.hasExprMVar then
+          return none
+        else
+          return some result
       catch _ =>
         return none
     let (result?, _) ← runTac?.run {} {}

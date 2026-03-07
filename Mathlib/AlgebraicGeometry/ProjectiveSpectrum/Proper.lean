@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Michael Schlößer,
   Justus Springer, Andrew Yang, Jujian Zhang
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
-import Mathlib.AlgebraicGeometry.ValuativeCriterion
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
+public import Mathlib.AlgebraicGeometry.ValuativeCriterion
 
 /-!
 # Properness of `Proj A`
@@ -17,6 +19,8 @@ We show that `Proj 𝒜` is proper over `Spec 𝒜₀`.
 This contribution was created as part of the Durham Computational Algebraic Geometry Workshop
 
 -/
+
+@[expose] public section
 
 namespace AlgebraicGeometry.Proj
 
@@ -29,6 +33,7 @@ open Scheme CategoryTheory Limits pullback HomogeneousLocalization
 
 section IsSeparated
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜 d)
     {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g) (hd : 0 < d) :
     Function.Surjective
@@ -73,6 +78,7 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
   · simp only [hx, add_tsub_cancel_right]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   refine ⟨IsZariskiLocalAtTarget.of_openCover (Pullback.openCoverOfLeftRight

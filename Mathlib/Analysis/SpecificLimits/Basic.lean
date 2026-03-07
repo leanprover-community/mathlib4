@@ -3,13 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.Field.GeomSum
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Order.Iterate
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Topology.Instances.EReal.Lemmas
+module
+
+public import Mathlib.Algebra.Field.GeomSum
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Order.Iterate
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.InfiniteSum.Real
+public import Mathlib.Topology.Instances.EReal.Lemmas
+public import Mathlib.Topology.Instances.Rat
 
 /-!
 # A collection of specific limit computations
@@ -19,6 +22,8 @@ important specific limit computations in metric spaces, in ordered rings/fields,
 instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
 
+@[expose] public section
+
 assert_not_exists Module.Basis NormedSpace
 
 noncomputable section
@@ -27,24 +32,32 @@ open Set Function Filter Finset Metric Topology Nat uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
-theorem tendsto_inverse_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹) atTop (𝓝 0) :=
+theorem NNRat.tendsto_inv_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : ℚ≥0)⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
 
-theorem tendsto_const_div_atTop_nhds_zero_nat (C : ℝ) :
+theorem NNRat.tendsto_algebraMap_inv_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜]
+    [Algebra ℚ≥0 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
+    Tendsto (algebraMap ℚ≥0 𝕜 ∘ fun n : ℕ ↦ (n : ℚ≥0)⁻¹) atTop (𝓝 0) := by
+  convert (continuous_algebraMap ℚ≥0 𝕜).continuousAt.tendsto.comp
+    tendsto_inv_atTop_nhds_zero_nat
+  rw [map_zero]
+
+theorem tendsto_inv_atTop_nhds_zero_nat {𝕜 : Type*} [DivisionSemiring 𝕜] [CharZero 𝕜]
+    [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
+    Tendsto (fun n : ℕ ↦ (n : 𝕜)⁻¹) atTop (𝓝 0) := by
+  convert NNRat.tendsto_algebraMap_inv_atTop_nhds_zero_nat 𝕜
+  simp
+
+theorem tendsto_const_div_atTop_nhds_zero_nat {𝕜 : Type*} [DivisionSemiring 𝕜] [CharZero 𝕜]
+    [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] [ContinuousMul 𝕜] (C : 𝕜) :
     Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
-  simpa only [mul_zero] using tendsto_const_nhds.mul tendsto_inverse_atTop_nhds_zero_nat
+  simpa only [mul_zero, div_eq_mul_inv] using
+    (tendsto_const_nhds (x := C)).mul tendsto_inv_atTop_nhds_zero_nat
 
-theorem tendsto_one_div_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ 1 / (n : ℝ)) atTop (𝓝 0) :=
-  tendsto_const_div_atTop_nhds_zero_nat 1
-
-theorem NNReal.tendsto_inverse_atTop_nhds_zero_nat :
-    Tendsto (fun n : ℕ ↦ (n : ℝ≥0)⁻¹) atTop (𝓝 0) := by
-  rw [← NNReal.tendsto_coe]
-  exact _root_.tendsto_inverse_atTop_nhds_zero_nat
-
-theorem NNReal.tendsto_const_div_atTop_nhds_zero_nat (C : ℝ≥0) :
-    Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
-  simpa using tendsto_const_nhds.mul NNReal.tendsto_inverse_atTop_nhds_zero_nat
+theorem tendsto_one_div_atTop_nhds_zero_nat {𝕜 : Type*} [DivisionSemiring 𝕜] [CharZero 𝕜]
+    [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
+    Tendsto (fun n : ℕ ↦ 1 / (n : 𝕜)) atTop (𝓝 0) := by
+  simp [tendsto_inv_atTop_nhds_zero_nat]
 
 theorem EReal.tendsto_const_div_atTop_nhds_zero_nat {C : EReal} (h : C ≠ ⊥) (h' : C ≠ ⊤) :
     Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
@@ -54,30 +67,23 @@ theorem EReal.tendsto_const_div_atTop_nhds_zero_nat {C : EReal} (h : C ≠ ⊥) 
   rw [this, ← coe_zero, tendsto_coe]
   exact _root_.tendsto_const_div_atTop_nhds_zero_nat C.toReal
 
-theorem tendsto_one_div_add_atTop_nhds_zero_nat :
-    Tendsto (fun n : ℕ ↦ 1 / ((n : ℝ) + 1)) atTop (𝓝 0) :=
-  suffices Tendsto (fun n : ℕ ↦ 1 / (↑(n + 1) : ℝ)) atTop (𝓝 0) by simpa
-  (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_zero_nat 1)
+theorem tendsto_one_div_add_atTop_nhds_zero_nat {𝕜 : Type*} [DivisionSemiring 𝕜] [CharZero 𝕜]
+    [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
+    Tendsto (fun n : ℕ ↦ 1 / ((n : 𝕜) + 1)) atTop (𝓝 0) :=
+  suffices Tendsto (fun n : ℕ ↦ 1 / (↑(n + 1) : 𝕜)) atTop (𝓝 0) by simpa
+  (tendsto_add_atTop_iff_nat 1).2 tendsto_one_div_atTop_nhds_zero_nat
 
-theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜]
-    [Algebra ℝ≥0 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
-    Tendsto (algebraMap ℝ≥0 𝕜 ∘ fun n : ℕ ↦ (n : ℝ≥0)⁻¹) atTop (𝓝 0) := by
-  convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp
-    tendsto_inverse_atTop_nhds_zero_nat
+theorem tendsto_algebraMap_inv_atTop_nhds_zero_nat {𝕜 : Type*} (A : Type*)
+    [Semifield 𝕜] [CharZero 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜]
+    [Semiring A] [Algebra 𝕜 A] [TopologicalSpace A] [ContinuousSMul 𝕜 A] :
+    Tendsto (algebraMap 𝕜 A ∘ fun n : ℕ ↦ (n : 𝕜)⁻¹) atTop (𝓝 0) := by
+  convert (continuous_algebraMap 𝕜 A).continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
   rw [map_zero]
 
-theorem tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ 𝕜]
-    [TopologicalSpace 𝕜] [ContinuousSMul ℝ 𝕜] :
-    Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ ↦ (n : ℝ)⁻¹) atTop (𝓝 0) :=
-  NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat 𝕜
-
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
-algebra over `ℝ`, e.g., `ℂ`).
-
-TODO: introduce a typeclass saying that `1 / n` tends to 0 at top, making it possible to get this
-statement simultaneously on `ℚ`, `ℝ` and `ℂ`. -/
-theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
-    [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [IsTopologicalDivisionRing 𝕜] (x : 𝕜) :
+algebra over `ℚ≥0`, e.g., `ℂ`). -/
+theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionSemiring 𝕜] [TopologicalSpace 𝕜]
+    [CharZero 𝕜] [ContinuousSMul ℚ≥0 𝕜] [IsTopologicalSemiring 𝕜] [ContinuousInv₀ 𝕜] (x : 𝕜) :
     Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
   convert Tendsto.congr' ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn ↦ _)) _
   · exact fun n : ℕ ↦ 1 / (1 + x / n)
@@ -87,12 +93,23 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
     rw [this]
     refine tendsto_const_nhds.div (tendsto_const_nhds.add ?_) (by simp)
     simp_rw [div_eq_mul_inv]
-    refine tendsto_const_nhds.mul ?_
-    have := ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_zero_nat
-    rw [map_zero, Filter.tendsto_atTop'] at this
-    refine Iff.mpr tendsto_atTop' ?_
-    intros
-    simp_all only [comp_apply, map_inv₀, map_natCast]
+    exact tendsto_const_nhds.mul tendsto_inv_atTop_nhds_zero_nat
+
+theorem tendsto_add_mul_div_add_mul_atTop_nhds {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
+    [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] [IsTopologicalSemiring 𝕜] [ContinuousInv₀ 𝕜]
+    (a b c : 𝕜) {d : 𝕜} (hd : d ≠ 0) :
+    Tendsto (fun k : ℕ ↦ (a + c * k) / (b + d * k)) atTop (𝓝 (c / d)) := by
+  apply Filter.Tendsto.congr'
+  case f₁ => exact fun k ↦ (a * (↑k)⁻¹ + c) / (b * (↑k)⁻¹ + d)
+  · refine (eventually_ne_atTop 0).mp (Eventually.of_forall ?_)
+    intro h hx
+    dsimp
+    field (discharger := norm_cast)
+  · apply Filter.Tendsto.div _ _ hd
+    all_goals
+      apply zero_add (_ : 𝕜) ▸ Filter.Tendsto.add_const _ _
+      apply mul_zero (_ : 𝕜) ▸ Filter.Tendsto.const_mul _ _
+      exact tendsto_inv_atTop_nhds_zero_nat
 
 /-- For any positive `m : ℕ`, `((n % m : ℕ) : ℝ) / (n : ℝ)` tends to `0` as `n` tends to `∞`. -/
 theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
@@ -117,7 +134,7 @@ theorem Filter.EventuallyEq.div_mul_cancel {α G : Type*} [GroupWithZero G] {f g
 
 /-- If `g` tends to `∞`, then eventually for all `x` we have `(f x / g x) * g x = f x`. -/
 theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*}
-    [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
+    [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K]
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) :
     (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x :=
   div_mul_cancel <| hg.mono_right <| le_principal_iff.mpr <|
@@ -163,16 +180,14 @@ theorem tendsto_add_one_pow_atTop_atTop_of_pos
     not_bddAbove_iff.2 fun _ ↦ Set.exists_range_iff.2 <| add_one_pow_unbounded_of_pos _ h
 
 theorem tendsto_pow_atTop_atTop_of_one_lt
-    [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Archimedean α] {r : α}
-    (h : 1 < r) : Tendsto (fun n : ℕ ↦ r ^ n) atTop atTop :=
-  sub_add_cancel r 1 ▸ tendsto_add_one_pow_atTop_atTop_of_pos (sub_pos.2 h)
-
-theorem Nat.tendsto_pow_atTop_atTop_of_one_lt {m : ℕ} (h : 1 < m) :
-    Tendsto (fun n : ℕ ↦ m ^ n) atTop atTop :=
-  tsub_add_cancel_of_le (le_of_lt h) ▸ tendsto_add_one_pow_atTop_atTop_of_pos (tsub_pos_of_lt h)
+    [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α] [Archimedean α] {r : α}
+    (h : 1 < r) : Tendsto (fun n : ℕ ↦ r ^ n) atTop atTop := by
+  obtain ⟨r, r0, rfl⟩ := exists_pos_add_of_lt' h
+  rw [add_comm]
+  exact tendsto_add_one_pow_atTop_atTop_of_pos r0
 
 theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*}
-    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Archimedean 𝕜]
+    [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [ExistsAddOfLE 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) :=
   h₁.eq_or_lt.elim
@@ -201,7 +216,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*}
   · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg r)) h
 
 theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*}
-    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [ExistsAddOfLE 𝕜]
     [Archimedean 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 < r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝[>] 0) :=
   tendsto_inf.2
@@ -218,23 +233,23 @@ theorem geom_lt {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n
     (h : ∀ k < n, c * u k < u (k + 1)) : c ^ n * u 0 < u n := by
   apply (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_le_of_lt hn _ _ h
   · simp
-  · simp [_root_.pow_succ', mul_assoc, le_refl]
+  · simp [_root_.pow_succ', mul_assoc]
 
 theorem geom_le {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, c * u k ≤ u (k + 1)) :
     c ^ n * u 0 ≤ u n := by
   apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ _ h <;>
-    simp [_root_.pow_succ', mul_assoc, le_refl]
+    simp [_root_.pow_succ', mul_assoc]
 
 theorem lt_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n)
     (h : ∀ k < n, u (k + 1) < c * u k) : u n < c ^ n * u 0 := by
   apply (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_lt_of_le hn _ h _
   · simp
-  · simp [_root_.pow_succ', mul_assoc, le_refl]
+  · simp [_root_.pow_succ', mul_assoc]
 
 theorem le_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, u (k + 1) ≤ c * u k) :
     u n ≤ c ^ n * u 0 := by
   apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ h _ <;>
-    simp [_root_.pow_succ', mul_assoc, le_refl]
+    simp [_root_.pow_succ', mul_assoc]
 
 /-- If a sequence `v` of real numbers satisfies `k * v n ≤ v (n+1)` with `1 < k`,
 then it goes to +∞. -/
@@ -351,6 +366,7 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
   simp only [← Summable.sum_add_tsum_nat_add n A, B, if_true, zero_add, zero_le',
     le_add_iff_nonneg_left, pow_add, _root_.tsum_mul_right, tsum_geometric_inv_two]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ ↦ a / 2 / 2 ^ n) a := by
   convert HasSum.mul_left (a / 2)
       (hasSum_geometric_of_lt_one (le_of_lt one_half_pos) one_half_lt_one) using 1
@@ -429,7 +445,7 @@ decaying terms.
 -/
 
 
-section EdistLeGeometric
+section EDistLeGeometric
 
 variable [PseudoEMetricSpace α] (r C : ℝ≥0∞) (hr : r < 1) (hC : C ≠ ⊤) {f : ℕ → α}
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C * r ^ n)
@@ -440,8 +456,7 @@ then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   refine cauchySeq_of_edist_le_of_tsum_ne_top _ hu ?_
   rw [ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
-  have := (tsub_pos_iff_lt.2 hr).ne'
-  finiteness
+  finiteness [(tsub_pos_iff_lt.2 hr).ne']
 
 include hu in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
@@ -458,9 +473,9 @@ theorem edist_le_of_edist_le_geometric_of_tendsto₀ {a : α} (ha : Tendsto f at
     edist (f 0) a ≤ C / (1 - r) := by
   simpa only [_root_.pow_zero, mul_one] using edist_le_of_edist_le_geometric_of_tendsto r C hu ha 0
 
-end EdistLeGeometric
+end EDistLeGeometric
 
-section EdistLeGeometricTwo
+section EDistLeGeometricTwo
 
 variable [PseudoEMetricSpace α] (C : ℝ≥0∞) (hC : C ≠ ⊤) {f : ℕ → α}
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C / 2 ^ n) {a : α} (ha : Tendsto f atTop (𝓝 a))
@@ -488,7 +503,7 @@ theorem edist_le_of_edist_le_geometric_two_of_tendsto₀ : edist (f 0) a ≤ 2 *
   simpa only [_root_.pow_zero, div_eq_mul_inv, inv_one, mul_one] using
     edist_le_of_edist_le_geometric_two_of_tendsto C hu ha 0
 
-end EdistLeGeometricTwo
+end EDistLeGeometricTwo
 
 section LeGeometric
 
@@ -634,6 +649,7 @@ theorem exists_pos_sum_of_countable' {ε : ℝ≥0∞} (hε : ε ≠ 0) (ι) [Co
   let ⟨δ, δpos, hδ⟩ := exists_pos_sum_of_countable hε ι
   ⟨fun i ↦ δ i, fun i ↦ ENNReal.coe_pos.2 (δpos i), hδ⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_pos_tsum_mul_lt_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) {ι} [Countable ι] (w : ι → ℝ≥0∞)
     (hw : ∀ i, w i ≠ ∞) : ∃ δ : ι → ℝ≥0, (∀ i, 0 < δ i) ∧ (∑' i, (w i * δ i : ℝ≥0∞)) < ε := by
   lift w to ι → ℝ≥0 using hw
@@ -676,7 +692,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       · positivity
       · refine (div_le_one <| mod_cast hn).mpr ?_
         norm_cast
-        cutsat)
+        lia)
 
 /-!
 ### Ceil and floor
@@ -743,3 +759,23 @@ lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (· / n) at
   rw [Tendsto, map_div_atTop_eq_nat n hn.bot_lt]
 
 end
+
+@[deprecated (since := "2025-10-27")]
+alias tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
+
+@[deprecated (since := "2025-10-27")]
+alias NNReal.tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
+
+@[deprecated (since := "2025-10-27")]
+alias NNReal.tendsto_const_div_atTop_nhds_zero_nat := tendsto_const_div_atTop_nhds_zero_nat
+
+@[deprecated (since := "2025-10-27")]
+alias NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat :=
+  tendsto_algebraMap_inv_atTop_nhds_zero_nat
+
+@[deprecated (since := "2025-10-27")]
+alias tendsto_algebraMap_inverse_atTop_nhds_zero_nat :=
+  tendsto_algebraMap_inv_atTop_nhds_zero_nat
+
+@[deprecated (since := "2025-10-27")]
+protected alias Nat.tendsto_pow_atTop_atTop_of_one_lt := tendsto_pow_atTop_atTop_of_one_lt

@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton, Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Preservation and reflection of (co)limits.
@@ -31,6 +33,8 @@ diagram K if F sends every limit cone on K to a limit cone. This is
 vacuously satisfied when K does not admit a limit, which is consistent
 with the above definition of "preserves limits".
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -71,7 +75,12 @@ class PreservesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) : Pr
 -- This should be used with explicit universe variables.
 /-- `PreservesLimitsOfSize.{v u} F` means that `F` sends all limit cones over any
 diagram `J ⥤ C` to limit cones, where `J : Type u` with `[Category.{v} J]`. -/
-@[nolint checkUnivs, pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the shape universes `w, w'` in
+-- `PreservesLimitsOfSize`, `PreservesColimitsOfSize`, `ReflectsLimitsOfSize`, and
+-- `ReflectsColimitsOfSize` would default to universe output parameters.
+-- See Note [universe output parameters and typeclass caching].
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class PreservesLimitsOfSize (F : C ⥤ D) : Prop where
   preservesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesLimitsOfShape J F := by
     infer_instance
@@ -84,7 +93,7 @@ abbrev PreservesLimits (F : C ⥤ D) :=
 -- This should be used with explicit universe variables.
 /-- `PreservesColimitsOfSize.{v u} F` means that `F` sends all colimit cocones over any
 diagram `J ⥤ C` to colimit cocones, where `J : Type u` with `[Category.{v} J]`. -/
-@[nolint checkUnivs, pp_with_univ]
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class PreservesColimitsOfSize (F : C ⥤ D) : Prop where
   preservesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesColimitsOfShape J F := by
     infer_instance
@@ -223,6 +232,7 @@ lemma preservesLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOf
     PreservesLimitsOfSize.{w, w'} G where
   preservesLimitsOfShape := preservesLimitsOfShape_of_natIso h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transfer preservation of limits along an equivalence in the shape. -/
 lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J' F where
@@ -282,6 +292,7 @@ lemma preservesColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimi
     PreservesColimitsOfSize.{w, w'} G where
   preservesColimitsOfShape {_J} _𝒥₁ := preservesColimitsOfShape_of_natIso h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transfer preservation of colimits along an equivalence in the shape. -/
 lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J' F where
@@ -351,7 +362,7 @@ whenever the image of a cone over some `K : J ⥤ C` under `F` is a limit cone i
 the cone was already a limit cone in `C`.
 Note that we do not assume a priori that `D` actually has any limits.
 -/
-@[nolint checkUnivs, pp_with_univ]
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class ReflectsLimitsOfSize (F : C ⥤ D) : Prop where
   reflectsLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsLimitsOfShape J F := by
     infer_instance
@@ -370,7 +381,7 @@ whenever the image of a cocone over some `K : J ⥤ C` under `F` is a colimit co
 the cocone was already a colimit cocone in `C`.
 Note that we do not assume a priori that `D` actually has any colimits.
 -/
-@[nolint checkUnivs, pp_with_univ]
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class ReflectsColimitsOfSize (F : C ⥤ D) : Prop where
   reflectsColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsColimitsOfShape J F := by
     infer_instance
@@ -557,7 +568,9 @@ lemma reflectsSmallestLimits_of_reflectsLimits (F : C ⥤ D) [ReflectsLimitsOfSi
   reflectsLimitsOfSize_shrink F
 
 /-- If the limit of `F` exists and `G` preserves it, then if `G` reflects isomorphisms then it
-reflects the limit of `F`.
+reflects the limit of `F` (see also `JointlyReflectIsomorphisms.jointlyReflectsColimit` in
+the file `CategoryTheory/Functor/ReflectsIso/Limits.lean` for the corresponding result
+for a family of functors which joinly reflect isomorphisms).
 -/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this errors
 lemma reflectsLimit_of_reflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [HasLimit F] [PreservesLimit F G] : ReflectsLimit F G where
@@ -660,7 +673,9 @@ lemma reflectsSmallestColimits_of_reflectsColimits (F : C ⥤ D) [ReflectsColimi
   reflectsColimitsOfSize_shrink F
 
 /-- If the colimit of `F` exists and `G` preserves it, then if `G` reflects isomorphisms then it
-reflects the colimit of `F`.
+reflects the colimit of `F` (see also `JointlyReflectIsomorphisms.jointlyReflectsLimit` in
+the file `CategoryTheory/Functor/ReflectsIso/Limits.lean` for the corresponding result
+for a family of functors which joinly reflect isomorphisms).
 -/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this errors
 lemma reflectsColimit_of_reflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [HasColimit F] [PreservesColimit F G] : ReflectsColimit F G where
@@ -699,7 +714,7 @@ section
 open Functor
 
 lemma isIso_app_coconePt_of_preservesColimit
-    {C D J : Type*} [Category C] [Category D] [Category J] (K : J ⥤ C) {L L' : C ⥤ D}
+    {C D J : Type*} [Category* C] [Category* D] [Category* J] (K : J ⥤ C) {L L' : C ⥤ D}
     (α : L ⟶ L') [IsIso (whiskerLeft K α)] (c : Cocone K) (hc : IsColimit c)
     [PreservesColimit K L] [PreservesColimit K L'] :
     IsIso (α.app c.pt) := by
@@ -738,6 +753,6 @@ instance fullyFaithful_reflectsColimits [F.Full] [F.Faithful] :
               apply fun s m => (Cocones.functoriality K F).map_injective _
               intro s m
               rw [Functor.map_preimage]
-              apply t.uniq_cocone_morphism⟩ }}
+              apply t.uniq_cocone_morphism⟩ } }
 
 end CategoryTheory.Limits

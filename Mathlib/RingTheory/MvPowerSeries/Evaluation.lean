@@ -3,15 +3,16 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.RingTheory.Ideal.BigOperators
-import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.RingTheory.MvPowerSeries.Trunc
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.TopologicallyNilpotent
-import Mathlib.Topology.Algebra.LinearTopology
-import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.MvPowerSeries.PiTopology
+public import Mathlib.RingTheory.MvPowerSeries.Trunc
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.TopologicallyNilpotent
+public import Mathlib.Topology.Algebra.LinearTopology
+public import Mathlib.Topology.Algebra.UniformRing
 
 /-! # Evaluation of multivariate power series
 
@@ -40,6 +41,8 @@ Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properti
 * `MvPowerSeries.eval₂_eq_tsum`: the evaluation is given by the sum of its monomials, evaluated.
 
 -/
+
+@[expose] public section
 
 namespace MvPowerSeries
 
@@ -114,6 +117,10 @@ theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
 
+theorem HasEval.pow (x : σ → S) (ha : HasEval x) {p : ℕ} (hp : 0 < p) :
+    HasEval (x ^ p) :=
+  mem_hasEvalIdeal_iff.mp <| Ideal.pow_mem_of_mem hasEvalIdeal ha p hp
+
 end
 
 /- ## Construction of an evaluation morphism for power series -/
@@ -128,9 +135,11 @@ variable {S : Type*} [CommRing S] [UniformSpace S]
 variable {φ : R →+* S}
 
 -- We endow MvPowerSeries σ R with the product uniform structure
+set_option backward.privateInPublic true in
 private instance : UniformSpace (MvPolynomial σ R) :=
   comap toMvPowerSeries (Pi.uniformSpace _)
 
+set_option backward.privateInPublic true in
 /-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
 private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
   IsUniformAddGroup.comap coeToMvPowerSeries.ringHom

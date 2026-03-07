@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+module
+
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 /-!
 
@@ -18,6 +20,8 @@ import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 -/
 
+public section
+
 section TopologicalSpace
 
 variable {R : Type*} [CommRing R] [TopologicalSpace R] {I : Ideal R} (hI : IsAdic I)
@@ -26,7 +30,7 @@ include hI in
 /-- `IsHausdorff I R` is equivalent to being Hausdorff in the adic topology. -/
 protected lemma IsAdic.isHausdorff_iff : IsHausdorff I R ↔ T2Space R := by
   rw [I.ringFilterBasis.t2Space_iff_sInter_subset hI.symm, isHausdorff_iff]
-  simp [SModEq.zero, Ideal.ringFilterBasis, RingSubgroupsBasis.toRingFilterBasis]
+  simp +instances [SModEq.zero, Ideal.ringFilterBasis, RingSubgroupsBasis.toRingFilterBasis]
 
 end TopologicalSpace
 

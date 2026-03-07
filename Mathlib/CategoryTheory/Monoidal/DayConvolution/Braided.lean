@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.DayConvolution
+module
+
+public import Mathlib.CategoryTheory.Monoidal.DayConvolution
 
 /-!
 # Braidings for Day convolution
@@ -17,6 +19,8 @@ prove that it satisfies the forward and reverse hexagon identities.
 Furthermore, we show that when both `C` and `V` are symmetric monoidal
 categories, then the Day convolution monoidal structure is symmetric as well.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -35,6 +39,7 @@ section
 
 variable [DayConvolution F G] [DayConvolution G F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `F ⊠ G ⟶ (tensor C) ⋙ (G ⊛ F)` that corepresents
 the braiding morphism `F ⊛ G ⟶ G ⊛ F`. -/
 @[simps]
@@ -42,6 +47,7 @@ def braidingHomCorepresenting : F ⊠ G ⟶ tensor C ⋙ G ⊛ F where
   app _ := (β_ _ _).hom ≫ (unit G F).app (_, _) ≫ (G ⊛ F).map (β_ _ _).hom
   naturality {x y} f := by simp [tensorHom_def, ← Functor.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `F ⊠ G ⟶ (tensor C) ⋙ (G ⊛ F)` that corepresents
 the braiding morphism `F ⊛ G ⟶ G ⊛ F`. -/
 @[simps]
@@ -49,10 +55,11 @@ def braidingInvCorepresenting : G ⊠ F ⟶ tensor C ⋙ F ⊛ G where
   app _ := (β_ _ _).inv ≫ (unit F G).app (_, _) ≫ (F ⊛ G).map (β_ _ _).inv
   naturality {x y} f := by simp [tensorHom_def, ← Functor.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The braiding isomorphism for Day convolution. -/
 def braiding : F ⊛ G ≅ G ⊛ F where
-  hom := corepresentableBy F G|>.homEquiv.symm <| braidingHomCorepresenting F G
-  inv := corepresentableBy G F|>.homEquiv.symm <| braidingInvCorepresenting F G
+  hom := corepresentableBy F G |>.homEquiv.symm <| braidingHomCorepresenting F G
+  inv := corepresentableBy G F |>.homEquiv.symm <| braidingInvCorepresenting F G
   hom_inv_id := by
     apply Functor.hom_ext_of_isLeftKanExtension (F ⊛ G) (unit F G)
     ext
@@ -62,6 +69,7 @@ def braiding : F ⊛ G ≅ G ⊛ F where
     ext
     simp [-tensor_obj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma unit_app_braiding_hom_app (x y : C) :
     (unit F G).app (x, y) ≫ (braiding F G).hom.app (x ⊗ y) =
@@ -70,6 +78,7 @@ lemma unit_app_braiding_hom_app (x y : C) :
     (unit F G).app (x, y) ≫ (braiding F G).hom.app ((tensor C).obj (x, y)) = _
   simp [braiding, braidingHomCorepresenting, -tensor_obj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma unit_app_braiding_inv_app (x y : C) :
     (unit G F).app (x, y) ≫ (braiding F G).inv.app (x ⊗ y) =
@@ -82,6 +91,7 @@ end
 
 variable {F G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma braiding_naturality_right (H : C ⥤ V) (η : F ⟶ G)
     [DayConvolution F H] [DayConvolution H F]
@@ -92,6 +102,7 @@ lemma braiding_naturality_right (H : C ⥤ V) (η : F ⟶ G)
   ext ⟨_, _⟩
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma braiding_naturality_left (η : F ⟶ G) (H : C ⥤ V)
     [DayConvolution F H] [DayConvolution H F]
@@ -108,6 +119,7 @@ variable
   [∀ (v : V) (d : C),
     Limits.PreservesColimitsOfShape (CostructuredArrow (tensor C) d) (tensorRight v)]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F G) in
 lemma hexagon_forward (H : C ⥤ V)
     [DayConvolution F G] [DayConvolution G H] [DayConvolution F (G ⊛ H)]
@@ -145,6 +157,7 @@ lemma hexagon_forward (H : C ⥤ V)
   rw [← this, whiskerLeft_comp_assoc]
   simp [← Functor.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F G) in
 lemma hexagon_reverse (H : C ⥤ V)
     [DayConvolution F G] [DayConvolution G H] [DayConvolution F (G ⊛ H)]
@@ -171,7 +184,10 @@ lemma hexagon_reverse (H : C ⥤ V)
     NatTrans.id_app, id_tensorHom]
   simp only [← comp_whiskerRight_assoc, ← whiskerLeft_comp_assoc,
     unit_app_braiding_hom_app]
-  simp [← Functor.map_comp]
+  simp only [comp_whiskerRight, ← Functor.map_comp, Category.assoc, Functor.comp_obj, tensor_obj,
+    whiskerLeft_comp, whiskerLeft_comp_unit_app_assoc, NatTrans.naturality_assoc,
+    NatTrans.naturality, associator_inv_unit_unit_assoc, externalProductBifunctor_obj_obj,
+    unit_app_map_app_assoc, NatTrans.id_app, tensorHom_id]
   congr 2
   rw [← BraidedCategory.hexagon_forward, ← comp_whiskerRight_assoc]
   haveI := unit_app_braiding_hom_app F H x z =≫ (H ⊛ F).map (β_ z x).inv
@@ -189,6 +205,7 @@ variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
   [MonoidalCategory V] [SymmetricCategory V]
   (F G : C ⥤ V)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma symmetry [DayConvolution F G] [DayConvolution G F] :
     (braiding F G).hom ≫ (braiding G F).hom = 𝟙 _ := by
   apply Functor.hom_ext_of_isLeftKanExtension (F ⊛ G) (unit F G)

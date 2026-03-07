@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.CountableSeparatingOn
-import Mathlib.Topology.Separation.Basic
+module
+
+public import Mathlib.Order.Filter.CountableSeparatingOn
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Countable separating families of sets in topological spaces
@@ -12,6 +14,8 @@ import Mathlib.Topology.Separation.Basic
 In this file we show that a T₀ topological space with second countable
 topology has a countable family of open (or closed) sets separating the points.
 -/
+
+@[expose] public section
 
 variable {X : Type*}
 

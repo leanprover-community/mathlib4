@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.Over
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-! Internal hom of sheaves
 
@@ -19,11 +20,13 @@ presheaves `Cᵒᵖ ⥤ A` and show that it is a sheaf when `G` is a sheaf.
 TODO:
 - turn both `presheafHom` and `sheafHom` into bifunctors
 - for a sheaf of types `F`, the `sheafHom` functor from `F` is right-adjoint to
-the product functor with `F`, i.e. for all `X` and `Y`, there is a
-natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
+  the product functor with `F`, i.e. for all `X` and `Y`, there is a
+  natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
 - use these results in order to show that the category of sheaves of types is Cartesian closed
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -95,6 +98,7 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
 
 variable {F G}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
     (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows)
     (hx : x.Compatible) (y : (presheafHom F G).obj (op X)) :
@@ -122,6 +126,7 @@ namespace PresheafHom.IsSheafFor
 
 variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) {Y : C}
 
+set_option backward.isDefEq.respectTransparency false in
 include hG in
 lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
     ∃ (φ : F.obj (op Y) ⟶ G.obj (op Y)),
@@ -132,7 +137,7 @@ lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
       π :=
         { app := fun ⟨Z, hZ⟩ => F.map Z.hom.op ≫ (x _ hZ).app (op (Over.mk (𝟙 _)))
           naturality := by
-            rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ ⟨f : Z₂ ⟶ Z₁⟩
+            rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ ⟨⟨f : Z₂ ⟶ Z₁⟩⟩
             dsimp
             rw [id_comp, assoc]
             have H := hx f.left (𝟙 _) hZ₁ hZ₂ (by simp)
@@ -159,6 +164,7 @@ end PresheafHom.IsSheafFor
 
 variable (F G S)
 
+set_option backward.isDefEq.respectTransparency false in
 include hG in
 open PresheafHom.IsSheafFor in
 lemma presheafHom_isSheafFor :
@@ -228,8 +234,8 @@ def sheafHom'Iso (F G : Sheaf J A) :
 this `sheafHom F G` is the sheaf of types which sends an object `X : C`
 to the type of morphisms between the "restrictions" of `F` and `G` to the category `Over X`. -/
 def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
-  val := sheafHom' F G
-  cond := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2 (G.2.hom F.1)
+  obj := sheafHom' F G
+  property := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2 (G.2.hom F.1)
 
 /-- The sections of the sheaf `sheafHom F G` identify to morphisms `F ⟶ G`. -/
 def sheafHomSectionsEquiv (F G : Sheaf J A) :

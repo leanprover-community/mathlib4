@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Data.Finsupp.ToDFinsupp
+module
+
+public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
 # Presentation of a direct sum
@@ -16,6 +18,8 @@ In particular, from a presentation of an `A`-module `M`, we get
 a presentation of `ι →₀ M`.
 
 -/
+
+@[expose] public section
 
 universe w' w₀ w₁ w v u
 
@@ -64,12 +68,14 @@ noncomputable def directSumEquiv :
         rw [← (t i).linearCombination_var_relation r]
         apply Finsupp.linearCombination_embDomain }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `solution : ∀ (i : ι), (relations i).Solution (M i)`, this is the
 canonical solution of `Relations.directSum relations` in `⨁ i, M i`. -/
 noncomputable def directSum (solution : ∀ (i : ι), (relations i).Solution (M i)) :
     (Relations.directSum relations).Solution (⨁ i, M i) :=
   directSumEquiv.symm (fun i ↦ (solution i).postcomp (lof A ι M i))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma directSum_var (solution : ∀ (i : ι), (relations i).Solution (M i))
     (i : ι) (g : (relations i).G) :
@@ -80,6 +86,7 @@ namespace IsPresentation
 variable {solution : ∀ (i : ι), (relations i).Solution (M i)}
   (h : ∀ i, (solution i).IsPresentation)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The direct sum admits a presentation by generators and relations. -/
 noncomputable def directSum.isRepresentationCore :
     Solution.IsPresentationCore.{w'} (directSum solution) where
@@ -91,6 +98,7 @@ noncomputable def directSum.isRepresentationCore :
     ext g
     exact Solution.congr_var h' ⟨i, g⟩
 
+set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma directSum : (directSum solution).IsPresentation :=
   (directSum.isRepresentationCore h).isPresentation
@@ -103,6 +111,7 @@ end Relations
 
 namespace Presentation
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The obvious presentation of the module `⨁ i, M i` that is obtained from
 the data of presentations of the module `M i` for each `i`. -/
 @[simps! G R relation]
@@ -111,6 +120,7 @@ noncomputable def directSum (pres : ∀ (i : ι), Presentation A (M i)) :
   ofIsPresentation
     (Relations.Solution.IsPresentation.directSum (fun i ↦ (pres i).toIsPresentation))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma directSum_var (pres : ∀ (i : ι), Presentation A (M i)) (i : ι) (g : (pres i).G) :
     (directSum pres).var ⟨i, g⟩ = lof A ι M i ((pres i).var g) := rfl
@@ -120,6 +130,7 @@ section
 variable {N : Type v} [AddCommGroup N] [Module A N]
   (pres : Presentation A N) (ι : Type w) [DecidableEq ι] [DecidableEq N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The obvious presentation of the module `ι →₀ N` that is deduced from a presentation
 of the module `N`. -/
 @[simps! G R relation]

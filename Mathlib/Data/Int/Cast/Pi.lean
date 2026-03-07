@@ -3,11 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Tactic.Alias
-import Mathlib.Data.Int.Notation
-import Mathlib.Tactic.TypeStar
-import Mathlib.Util.AssertExists
-import Mathlib.Tactic.Push.Attr
+module
+
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Cast of integers to function types
@@ -18,6 +18,8 @@ This file provides a (pointwise) cast from `ℤ` to function types.
 
 * `Pi.instIntCast`: map `n : ℤ` to the constant function `n : ∀ i, π i`
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid RingHom
 
