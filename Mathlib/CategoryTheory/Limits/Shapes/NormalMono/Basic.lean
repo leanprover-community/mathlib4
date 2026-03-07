@@ -64,7 +64,7 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
       rw [← Category.assoc, eq_whisker hf.w]
     simp [reassoc']
   isLimit := isLimitOfReflects F <|
-    IsLimit.ofConeEquiv (Cones.postcomposeEquivalence (compNatIso F)) <|
+    IsLimit.ofConeEquiv (Cone.postcomposeEquivalence (compNatIso F)) <|
       (IsLimit.ofIsoLimit (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
         simp only [Functor.map_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
         hf.isLimit)) (Fork.ext (Iso.refl _) (by simp [compNatIso, Fork.ι]))
@@ -178,7 +178,7 @@ def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMor
   g := F.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
   w := F.map_injective <| by simp [hf.w]
   isColimit := isColimitOfReflects F <|
-    IsColimit.ofCoconeEquiv (Cocones.precomposeEquivalence (compNatIso F).symm) <|
+    IsColimit.ofCoconeEquiv (Cocone.precomposeEquivalence (compNatIso F).symm) <|
       (IsColimit.ofIsoColimit
         (IsCokernel.ofIsoComp _ _ (F.objObjPreimageIso hf.W).symm (by simp) hf.isColimit)
           (Cofork.ext (Iso.refl _) (by simp [compNatIso, Cofork.π])))

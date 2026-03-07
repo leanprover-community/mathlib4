@@ -880,6 +880,8 @@ theorem ncard_range_of_injective (hf : Function.Injective f) :
     (range f).ncard = Nat.card α := by
   rw [← image_univ, ncard_image_of_injective univ hf, ncard_univ]
 
+theorem BijOn.ncard_eq {t : Set β} (h : Set.BijOn f s t) : s.ncard = t.ncard := ncard_congr' h.equiv
+
 /-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
 
 See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
