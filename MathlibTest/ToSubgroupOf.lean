@@ -29,12 +29,12 @@ theorem subgroupElemTrivial (H : Subgroup G) (x : H) : True := by
 #check subgroupElemTrivial_subgroupOf
 
 @[to_subgroupOf]
-theorem subgroupCarrierWitness (x : G) (H : Subgroup G) : x ∈ H → True := by
-  intro _
-  trivial
+theorem subgroupCarrierWitness (x : G) (H : Subgroup G) (hx : x ∈ H) :
+    ((⟨x, hx⟩ : H) : G) = x := by
+  rfl
 
-/-- info: subgroupCarrierWitness_subgroupOf.{u_1} {G : Type u_1} [Group G] (K : Subgroup G) (x : ↥K) (H : Subgroup G) :
-  x ∈ H.subgroupOf K → True -/
+/-- info: subgroupCarrierWitness_subgroupOf.{u_1} {G : Type u_1} [Group G] (K : Subgroup G) (x : ↥K) (H : Subgroup G)
+  (hx : x ∈ H.subgroupOf K) : ↑⟨x, hx⟩ = x -/
 #guard_msgs in
 #check subgroupCarrierWitness_subgroupOf
 
