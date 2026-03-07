@@ -206,7 +206,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma eTruncLT_obj_map_eTruncLTι_app_eTruncLT_map_app
     {i j : EInt} (f : i ⟶ j) (X : C) :
-    ((t.eTruncLT.obj i).map ((t.eTruncLTι j).app X) ≫ (t.eTruncLT.map f).app X) =
+    (t.eTruncLT.obj i).map ((t.eTruncLTι j).app X) ≫ (t.eTruncLT.map f).app X =
       (t.eTruncLTι i).app ((t.eTruncLT.obj j).obj X) := by
   dsimp [eTruncLTι]
   rw [show homOfLE le_top = f ≫ homOfLE le_top by rfl]
