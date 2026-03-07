@@ -29,15 +29,15 @@ When the type of coefficients has the discrete topology, it corresponds to the t
 It corresponds with the adic topology but this is not proved here.
 
 - `PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent`,
-`PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero`: if the constant
-coefficient of `f` is nilpotent, or vanishes, then `f` is topologically nilpotent.
+  `PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero`: if the constant
+  coefficient of `f` is nilpotent, or vanishes, then `f` is topologically nilpotent.
 
 - `PowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent` :
-assuming the base ring has the discrete topology, `f` is topologically nilpotent iff the constant
-coefficient of `f` is nilpotent.
+  assuming the base ring has the discrete topology, `f` is topologically nilpotent iff the constant
+  coefficient of `f` is nilpotent.
 
 - `PowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
-series converges to itself.
+  series converges to itself.
 
 TODO: add the similar result for the series of homogeneous components.
 

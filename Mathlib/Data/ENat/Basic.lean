@@ -628,3 +628,41 @@ lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n 
   · simp
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
+
+@[simp]
+lemma add_natCast_cancel {a b : WithBot ℕ∞} {c : ℕ} : a + c = b + c ↔ a = b :=
+  (IsAddRightRegular.all c).withTop.withBot.eq_iff
+
+@[simp]
+lemma add_one_cancel {a b : WithBot ℕ∞} : a + 1 = b + 1 ↔ a = b :=
+  (IsAddRightRegular.all 1).withTop.withBot.eq_iff
+
+lemma add_ofNat_cancel {a b : WithBot ℕ∞} {c : ℕ} [c.AtLeastTwo] :
+    a + ofNat(c) = b + ofNat(c) ↔ a = b :=
+  WithBot.add_natCast_cancel
+
+@[simp]
+lemma natCast_add_cancel {a b : WithBot ℕ∞} {c : ℕ} : c + a = c + b ↔ a = b :=
+  (IsAddLeftRegular.all c).withTop.withBot.eq_iff
+
+@[simp]
+lemma one_add_cancel {a b : WithBot ℕ∞} : 1 + a = 1 + b ↔ a = b :=
+  (IsAddLeftRegular.all 1).withTop.withBot.eq_iff
+
+lemma ofNat_add_cancel {a b : WithBot ℕ∞} {c : ℕ} [c.AtLeastTwo] :
+    ofNat(c) + a = ofNat(c) + b ↔ a = b :=
+  WithBot.natCast_add_cancel
+
+lemma add_le_add_natCast_right_iff {a b : WithBot ℕ∞} {c : ℕ} : a + c ≤ b + c ↔ a ≤ b :=
+  (Contravariant.AddLECancellable (a := c)).withTop.withBot.add_le_add_iff_right
+
+lemma add_le_add_one_right_iff {a b : WithBot ℕ∞} : a + 1 ≤ b + 1 ↔ a ≤ b :=
+  WithBot.add_le_add_natCast_right_iff
+
+lemma add_le_add_natCast_left_iff {a b : WithBot ℕ∞} {c : ℕ} : c + a ≤ c + b ↔ a ≤ b := by
+  rw [add_comm _ a, add_comm _ b, WithBot.add_le_add_natCast_right_iff]
+
+lemma add_le_add_one_left_iff {a b : WithBot ℕ∞} : 1 + a ≤ 1 + b ↔ a ≤ b :=
+  WithBot.add_le_add_natCast_left_iff
+
+end ENat.WithBot
