@@ -624,7 +624,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
 @[default_instance high, to_additive]
-instance Monoid.instPow {M : Type*} [Monoid M] : Pow M ℕ :=
+instance Monoid.toPow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
 
 section Monoid
