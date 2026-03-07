@@ -52,7 +52,6 @@ theorem contDiff_charFun {n : ℕ} (hint : MemLp id n μ) :
   simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, mul_one]
   refine MemLp.integrable_norm_pow' (hint.mono_exponent (by simp_all))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The characteristic function of a measure with all moments is `C^∞`. See `contDiff_charFun`
 for the version proving only `C^n` by only assuming that the moment of order `n` exists. -/
 @[fun_prop]
@@ -128,7 +127,6 @@ lemma taylorWithinEval_charFun_zero {n : ℕ} (hint : MemLp id n μ) (t : ℝ) :
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbabilityMeasure P]
   {X : Ω → ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
     (hint : MemLp id 2 (P.map X)) (t : ℝ) :
     taylorWithinEval (charFun (P.map X)) 2 univ 0 t =
@@ -144,7 +142,6 @@ lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
   simp [field]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma taylorWithinEval_charFun_two_zero' (hX : AEMeasurable X P)
     (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) (t : ℝ) :
     taylorWithinEval (charFun (P.map X)) 2 univ 0 t = 1 - t ^ 2 / 2 := by

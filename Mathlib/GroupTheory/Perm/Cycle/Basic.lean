@@ -212,7 +212,7 @@ theorem SameCycle.exists_nat_pow_eq [Finite α] (h : SameCycle f x y) :
 
 instance (f : Perm α) [DecidableRel (SameCycle f)] :
     DecidableRel (SameCycle f⁻¹) := fun x y =>
-  decidable_of_iff (f.SameCycle x y) (sameCycle_inv).symm
+  decidable_of_iff (f.SameCycle x y) sameCycle_inv.symm
 
 instance (priority := 100) [DecidableEq α] : DecidableRel (SameCycle (1 : Perm α)) := fun x y =>
   decidable_of_iff (x = y) sameCycle_one.symm

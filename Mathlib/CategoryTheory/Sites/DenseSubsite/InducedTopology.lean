@@ -146,4 +146,56 @@ noncomputable def sheafInducedTopologyEquivOfIsCoverDense
 
 end Functor
 
+namespace Precoverage
+
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (K : Precoverage D)
+
+lemma toGrothendieck_comap_le_inducedTopology [F.IsLocallyFull K.toGrothendieck]
+    [F.IsLocallyFaithful K.toGrothendieck] [F.LocallyCoverDense K.toGrothendieck] :
+    (K.comap F).toGrothendieck ≤ F.inducedTopology K.toGrothendieck := by
+  rw [Precoverage.toGrothendieck_le_iff_le_toPrecoverage]
+  intro X R hR
+  rw [Precoverage.mem_comap_iff] at hR
+  rw [GrothendieckTopology.mem_toPrecoverage_iff, Functor.mem_inducedTopology_sieves_iff,
+    ← Sieve.generate_map_eq_functorPushforward]
+  exact Precoverage.generate_mem_toGrothendieck hR
+
+variable [K.HasIsos] [K.IsStableUnderBaseChange] [K.IsStableUnderComposition]
+  [K.HasPullbacks]
+
+lemma locallyCoverDense_of_map_functorPullback_mem
+    (H : ∀ {S : C} {R : Presieve (F.obj S)}, R ∈ K (F.obj S) →
+      Presieve.map F (Presieve.functorPullback F R) ∈ K (F.obj S)) :
+    F.LocallyCoverDense K.toGrothendieck where
+  functorPushforward_functorPullback_mem U := fun ⟨T, hT⟩ ↦ by
+    rw [Precoverage.mem_toGrothendieck_iff_of_isStableUnderComposition] at hT ⊢
+    obtain ⟨R, hR, hle⟩ := hT
+    refine ⟨_, H hR, ?_⟩
+    refine le_trans ?_
+      (Presieve.functorPushforward_monotone (Presieve.functorPullback_monotone hle))
+    rw [← Sieve.arrows_generate_map_eq_functorPushforward]
+    exact Sieve.le_generate _
+
+lemma toGrothendieck_comap_eq_inducedTopology [F.Faithful] [F.Full]
+    (H : ∀ {S : C} {R : Presieve (F.obj S)}, R ∈ K (F.obj S) →
+      Presieve.map F (Presieve.functorPullback F R) ∈ K (F.obj S)) :
+    haveI : F.LocallyCoverDense K.toGrothendieck :=
+      K.locallyCoverDense_of_map_functorPullback_mem F H
+    (K.comap F).toGrothendieck = F.inducedTopology K.toGrothendieck := by
+  haveI : F.LocallyCoverDense K.toGrothendieck :=
+    K.locallyCoverDense_of_map_functorPullback_mem F H
+  refine le_antisymm ?_ fun X T hT ↦ ?_
+  · apply toGrothendieck_comap_le_inducedTopology
+  · rw [Functor.mem_inducedTopology_sieves_iff] at hT
+    rw [Precoverage.mem_toGrothendieck_iff_of_isStableUnderComposition] at hT
+    obtain ⟨R, hR, hle⟩ := hT
+    refine GrothendieckTopology.superset_covering
+        (S := Sieve.generate (Presieve.functorPullback F R)) _ ?_ ?_
+    · refine le_trans (le_trans (Sieve.generate_functorPullback_le F R)
+        (Sieve.functorPullback_monotone _ _ (Sieve.generate_mono hle))) ?_
+      rw [Sieve.generate_sieve, Sieve.functorPullback_functorPushforward_eq]
+    · exact Precoverage.generate_mem_toGrothendieck (H hR)
+
+end Precoverage
+
 end CategoryTheory

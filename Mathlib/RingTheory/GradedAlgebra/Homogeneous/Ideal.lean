@@ -76,12 +76,17 @@ variable {𝒜}
 abbrev HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
   I.toSubmodule
 
+@[simp] lemma coe_toIdeal (I : HomogeneousIdeal 𝒜) : (I.toIdeal : Set A) = I := rfl
+
 theorem HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.IsHomogeneous 𝒜 := I.is_homogeneous'
 
 theorem HomogeneousIdeal.toIdeal_injective :
     Function.Injective (HomogeneousIdeal.toIdeal : HomogeneousIdeal 𝒜 → Ideal A) :=
   HomogeneousSubmodule.toSubmodule_injective 𝒜 𝒜
+
+@[simp] lemma toIdeal_le_toIdeal_iff {I J : HomogeneousIdeal 𝒜} :
+    I.toIdeal ≤ J.toIdeal ↔ I ≤ J := Iff.rfl
 
 instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A :=
   HomogeneousSubmodule.setLike 𝒜 𝒜
@@ -564,10 +569,10 @@ variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 
 
 open GradedRing SetLike.GradedMonoid DirectSum
 
-/-- For a graded ring `⨁ᵢ 𝒜ᵢ` graded by a `CanonicallyOrderedAddCommMonoid ι`, the irrelevant ideal
-refers to `⨁_{i>0} 𝒜ᵢ`, or equivalently `{a | a₀ = 0}`. This definition is used in `Proj`
-construction where `ι` is always `ℕ` so the irrelevant ideal is simply elements with `0` as
-0-th coordinate.
+/-- For a graded ring `⨁ᵢ 𝒜ᵢ` graded by
+`[AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]`, the irrelevant ideal refers to
+`⨁_{i>0} 𝒜ᵢ`, or equivalently `{a | a₀ = 0}`. This definition is used in `Proj` construction where
+`ι` is always `ℕ` so the irrelevant ideal is simply elements with `0` as 0-th coordinate.
 -/
 def irrelevant : HomogeneousIdeal 𝒜 :=
   ⟨RingHom.ker (GradedRing.projZeroRingHom 𝒜), fun i r (hr : (decompose 𝒜 r 0 : A) = 0) => by
@@ -576,7 +581,7 @@ def irrelevant : HomogeneousIdeal 𝒜 :=
     · rw [h, hr, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rw [decompose_of_mem_ne 𝒜 (SetLike.coe_mem _) h]⟩
 
-local notation 𝒜 "₊" => irrelevant 𝒜
+@[inherit_doc] scoped notation 𝒜 "₊" => irrelevant 𝒜
 
 @[simp]
 theorem mem_irrelevant_iff (a : A) :
