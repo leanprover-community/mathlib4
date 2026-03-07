@@ -207,6 +207,9 @@ variable [HasPullbacks T] [P.IsStableUnderComposition] [P.ContainsIdentities]
 noncomputable instance : CreatesFiniteLimits (Over.forget P ⊤ X) :=
   createsFiniteLimitsOfCreatesTerminalAndPullbacks _
 
+instance [HasFiniteWidePullbacks T] : HasFiniteLimits (P.Over ⊤ X) :=
+  hasFiniteLimits_of_hasLimitsLimits_of_createsFiniteLimits (Over.forget P ⊤ X)
+
 instance : PreservesFiniteLimits (Over.forget P ⊤ X) :=
   preservesFiniteLimits_of_preservesTerminal_and_pullbacks (Over.forget P ⊤ X)
 

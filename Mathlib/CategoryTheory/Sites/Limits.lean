@@ -185,7 +185,7 @@ over a functor which factors through sheaves.
 In `isColimitSheafifyCocone`, we show that this is a colimit cocone when `E` is a colimit. -/
 noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
     (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F :=
-  (Cocones.precompose
+  (Cocone.precompose
     (Functor.isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
     ((presheafToSheaf J D).mapCocone E)
 
@@ -238,7 +238,7 @@ def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
   createsColimitOfReflectsIso fun E hE =>
     { liftedCocone := ⟨⟨E.pt, h _ hE⟩,
         ⟨fun _ => ⟨E.ι.app _⟩, fun _ _ _ => Sheaf.hom_ext <| E.ι.naturality _⟩⟩
-      validLift := Cocones.ext (eqToIso rfl) fun j => by simp
+      validLift := Cocone.ext (eqToIso rfl) fun j => by simp
       makesColimit :=
         { desc := fun S => ⟨hE.desc ((sheafToPresheaf J D).mapCocone S)⟩
           fac := fun S j => by ext1; dsimp; rw [hE.fac]; rfl
