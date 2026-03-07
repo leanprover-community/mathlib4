@@ -102,9 +102,10 @@ structure IsCovariantDerivativeOn
 /--
 A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k` section and `σ` a
 `C^{k+1}` section, the result `∇_X σ` is a `C^k` section. This is a class so typeclass inference can
-deduce this automatically.
+deduce this automatically. We will prove in a later file that any `C^(k+1)` covariant derivative
+is `C^k`.
 -/
-class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] [VectorBundle 𝕜 F V] (k : ℕ∞)
+class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] [VectorBundle 𝕜 F V] (k : WithTop ℕ∞)
     (cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))
     (u : Set M) where
   contMDiff : ∀ {σ : Π x : M, V x}, CMDiff[u] (k + 1) (T% σ) →
@@ -235,7 +236,7 @@ lemma affine_combination (hcov : IsCovariantDerivativeOn F cov s)
 lemma _root_.ContMDiffCovariantDerivativeOn.affine_combination [IsManifold I 1 M]
     [VectorBundle 𝕜 F V]
     {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
-    {u: Set M} {f : M → 𝕜} {n : ℕ∞} (hf : CMDiff[u] n f)
+    {u: Set M} {f : M → 𝕜} {n : WithTop ℕ∞} (hf : CMDiff[u] n f)
     (Hcov : ContMDiffCovariantDerivativeOn (F := F) n cov u)
     (Hcov' : ContMDiffCovariantDerivativeOn (F := F) n cov' u) :
     ContMDiffCovariantDerivativeOn F n (fun σ ↦ (f • (cov σ)) + (1 - f) • (cov' σ)) u where
@@ -267,8 +268,8 @@ lemma finite_affine_combination {ι : Type*} {s : Finset ι}
       _ = g x • ∑ i ∈ s, f i x • cov i σ x + B := by rw [hf]; simp
 
 /-- An affine combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
-lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifold I 1 M] {n : ℕ∞}
-    [VectorBundle 𝕜 F V] {ι : Type*} {s : Finset ι} {u : Set M}
+lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifold I 1 M]
+    {n : WithTop ℕ∞} [VectorBundle 𝕜 F V] {ι : Type*} {s : Finset ι} {u : Set M}
     {cov : ι → (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivativeOn F n (cov i) u)
     {f : ι → M → 𝕜} (hf : ∀ i ∈ s, CMDiff[u] n (f i)) :
@@ -390,14 +391,15 @@ lemma of_isCovariantDerivativeOn_of_open_cover_coe {ι : Type*} {s : ι → Set 
 A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k` section and `σ` a
 `C^{k+1}` section, the result `∇_X σ` is a `C^k` section.
 This is a class so typeclass inference can deduce this automatically.
+We will prove in a later file that any `C^(k+1)` covariant derivative is `C^k`.
 -/
 class ContMDiffCovariantDerivative [IsManifold I 1 M] [VectorBundle 𝕜 F V]
-    (cov : CovariantDerivative I F V) (k : ℕ∞) where
+    (cov : CovariantDerivative I F V) (k : WithTop ℕ∞) where
   contMDiff : ContMDiffCovariantDerivativeOn F k cov.toFun Set.univ
 
 @[simp]
 lemma contMDiffCovariantDerivativeOn_univ_iff [IsManifold I 1 M] [VectorBundle 𝕜 F V]
-    {cov : CovariantDerivative I F V} {k : ℕ∞} :
+    {cov : CovariantDerivative I F V} {k : WithTop ℕ∞} :
     ContMDiffCovariantDerivativeOn F k cov.toFun Set.univ ↔ ContMDiffCovariantDerivative cov k :=
   ⟨fun h ↦ ⟨h⟩, fun h ↦ h.contMDiff⟩
 
@@ -436,7 +438,7 @@ def finite_affine_combination {ι : Type*} {s : Finset ι}
 /-- An affine combination of two `C^k` connections is a `C^k` connection. -/
 lemma ContMDiffCovariantDerivative.affine_combination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
   (cov cov' : CovariantDerivative I F V)
-    {f : M → 𝕜} {n : ℕ∞} (hf : ContMDiff I 𝓘(𝕜) n f)
+    {f : M → 𝕜} {n : WithTop ℕ∞} (hf : ContMDiff I 𝓘(𝕜) n f)
     (hcov : ContMDiffCovariantDerivative cov n) (hcov' : ContMDiffCovariantDerivative cov' n) :
     ContMDiffCovariantDerivative (affine_combination cov cov' f) n where
   contMDiff :=
@@ -444,8 +446,8 @@ lemma ContMDiffCovariantDerivative.affine_combination [IsManifold I 1 M] [Vector
 
 /-- An affine combination of finitely many `C^k` connections is a `C^k` connection. -/
 lemma ContMDiffCovariantDerivative.finite_affine_combination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
-    {ι : Type*} {s : Finset ι} (cov : ι → CovariantDerivative I F V)
-    {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) {n : ℕ∞} (hf' : ∀ i ∈ s, ContMDiff I 𝓘(𝕜) n (f i))
+    {ι : Type*} {s : Finset ι} (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜}
+    (hf : ∑ i ∈ s, f i = 1) {n : WithTop ℕ∞} (hf' : ∀ i ∈ s, ContMDiff I 𝓘(𝕜) n (f i))
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivative (cov i) n) :
     ContMDiffCovariantDerivative (finite_affine_combination cov hf) n where
   contMDiff :=
