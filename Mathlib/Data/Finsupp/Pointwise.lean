@@ -98,7 +98,7 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
 
 lemma pointwise_smul_support_finite [Zero γ] [SMulZeroClass β γ] (f : α → β)
     (g : α →₀ γ) : (fun x ↦ f x • g x).support.Finite :=
-  Set.Finite.subset g.finite_support (by simp; grind [smul_zero])
+  Set.Finite.subset g.hasFiniteSupport (by simp; grind [smul_zero])
 
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
 -- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an
