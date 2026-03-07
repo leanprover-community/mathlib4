@@ -206,7 +206,8 @@ Bilinear and Quadratic Forms Over a Vector Space:
   Orthogonality:
     orthogonal elements: 'LinearMap.BilinForm.IsOrtho'
     adjoint endomorphism: 'LinearMap.BilinForm.leftAdjointOfNondegenerate'
-    Sylvester's law of inertia: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
+    Sylvester's law of inertia (existence): 'QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared'
+    Sylvester's law of inertia (uniqueness): 'QuadraticForm.sigPos_of_equiv_weightedSumOfSquares'
     real classification: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     complex classification: 'QuadraticForm.equivalent_weightedSumSquares_of_isAlgClosed'
     Gram-Schmidt orthogonalisation: 'InnerProductSpace.gramSchmidt_orthogonal'
