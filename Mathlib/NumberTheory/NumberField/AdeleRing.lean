@@ -125,7 +125,7 @@ def unitEmbedding : Kˣ →* (AdeleRing (𝓞 K) K)ˣ := Units.map (algebraMap K
     unitEmbedding K k = algebraMap K (AdeleRing (𝓞 K) K) k := rfl
 
 theorem unitEmbedding_prodUnits_apply (k : Kˣ) :
-    (MulEquiv.prodUnits (unitEmbedding K k)).2 = k := rfl
+    (MulEquiv.prodUnits (unitEmbedding K k)).2 = FiniteAdeleRing.unitEmbedding _ _ k := rfl
 
 theorem unitEmbedding_norm_eq_one {x : Kˣ} :
     ‖(unitEmbedding K x).1‖ = 1 := by
