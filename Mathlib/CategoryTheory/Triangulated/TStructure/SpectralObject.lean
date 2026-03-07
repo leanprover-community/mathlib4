@@ -87,9 +87,7 @@ lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
   rw [← reassoc_of% dsimp% h₁, ← eTruncLTGEIsoGELT_hom_naturality,
     ← eTruncLTGEIsoGELT_hom_naturality, ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 2)]
   simp only [↓NatTrans.naturality_assoc, ↓← Functor.map_comp_assoc]
-  simp only [homOfLE_leOfHom, Fin.isValue, Category.assoc, eTruncGEπ_naturality,
-    eTruncLT_map_app_eTruncLTι_app_assoc, Functor.map_comp, eTruncGEπ_app_eTruncGE_map_app,
-    eTruncLT_map_app_eTruncLTι_app]
+  simp
 
 /-- The functorial (distinguished) triangles that are part of the spectral
 object attached to objects in a triangulated category equipped with a t-structure. -/
