@@ -11,10 +11,27 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 
 /-!
-# Map Between Ext Induced by Exact Functor
+# Map between Ext groups induced by an exact functor
 
-In this file, we develope the map `Ext^k (M, N) → Ext^k (F(M), F(N))`,
+In this file, we define the map `Ext^k (M, N) → Ext^k (F(M), F(N))`,
 where `F` is an exact functor between abelian categories.
+
+# Main Definition and results
+
+* `CategoryTheory.Abelian.Ext.mapExactFunctor` : The map between `Ext` induced by
+  `CategoryTheory.LocalizerMorphism.smallShiftedHomMap`.
+
+* `CategoryTheory.Functor.mapExtAddHom` : Upgraded of `CategoryTheory.Abelian.Ext.mapExactFunctor`
+  into an additive homomorphism.
+
+* `CategoryTheory.Functor.mapExtLinearMap` : Upgrade of `F.mapExtAddHom` assuming `F` is linear.
+
+* `Ext.mapExt_mk₀_eq_mk₀_map` : `Ext.mapExactFunctor` commutes with `Ext.mk₀`
+
+* `Ext.mapExt_comp_eq_comp_mapExt` : `Ext.mapExactFunctor` preserves `Ext.comp`
+
+* `Ext.mapExt_extClass_eq_extClass_map` :
+  `Ext.mapExactFunctor` commutes with `ShortComplex.ShortExact.extClass`
 
 -/
 
@@ -133,7 +150,7 @@ instance [h : HasExt.{w'} D] (X Y : C) : HasSmallLocalizedShiftedHom.{w'}
     ((F ⋙ CochainComplex.singleFunctor D 0).obj Y) :=
   h (F.obj X) (F.obj Y)
 
-/-- The map between `Ext` induced by `F.mapShiftedHomAddHom`. -/
+/-- The map between `Ext` induced by `LocalizerMorphism.smallShiftedHomMap`. -/
 noncomputable def Abelian.Ext.mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ}
     (f : Ext.{w} X Y n) : Ext.{w'} (F.obj X) (F.obj Y) n :=
   (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
@@ -181,7 +198,7 @@ lemma Abelian.Ext.mapExactFunctor_add (f g : Ext.{w} X Y n) :
     (f + g).mapExactFunctor F = f.mapExactFunctor F + g.mapExactFunctor F := by
   aesop
 
-/-- The additive homomorphism between `Ext` induced by `F.mapShiftedHomAddHom`. -/
+/-- Upgraded of `CategoryTheory.Abelian.Ext.mapExactFunctor` into an additive homomorphism. -/
 noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     Ext.{w} X Y n →+ Ext.{w'} (F.obj X) (F.obj Y) n where
   toFun e := e.mapExactFunctor F
