@@ -633,8 +633,6 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.SpectralObject
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
-public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
-public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Algebra.Homology.ImageToKernel
 public import Mathlib.Algebra.Homology.LeftResolution.Basic
@@ -6761,8 +6759,6 @@ public import Mathlib.SetTheory.ZFC.PSet
 public import Mathlib.SetTheory.ZFC.Rank
 public import Mathlib.SetTheory.ZFC.VonNeumann
 public import Mathlib.Tactic
-public import Mathlib.Tactic
-public import Mathlib.Tactic
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Algebraize
@@ -6916,8 +6912,6 @@ public import Mathlib.Tactic.Linarith.Verification
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.LinearCombination'
 public import Mathlib.Tactic.LinearCombination.Lemmas
-public import Mathlib.Tactic.Linter
-public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.CommandRanges
 public import Mathlib.Tactic.Linter.CommandStart
