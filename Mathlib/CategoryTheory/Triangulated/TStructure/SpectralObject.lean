@@ -42,7 +42,7 @@ namespace Triangulated
 
 namespace TStructure
 
-variable (t : TStructure C) [IsTriangulated C]
+variable (t : TStructure C)
 
 /-- Given a t-structure `t` on a triangulated category `C`, this is the functor
 `ComposableArrows EInt 1 ⥤ C ⥤ C` which sends an arrows `a ⟶ b` in `EInt`
@@ -51,6 +51,8 @@ to the functor `t.eTruncLT.obj b ⋙ t.eTruncGE.obj a`. -/
 noncomputable def ω₁ : ComposableArrows EInt 1 ⥤ C ⥤ C where
   obj D := t.eTruncLT.obj (D.obj 1) ⋙ t.eTruncGE.obj (D.obj 0)
   map φ := t.eTruncLT.map (φ.app 1) ◫ t.eTruncGE.map (φ.app 0)
+
+variable [IsTriangulated C]
 
 section
 
@@ -112,19 +114,8 @@ noncomputable def triangleω₁δObjIso (X : C) :
       ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, Category.id_comp,
       ← cancel_epi ((t.eTruncLTGEIsoGELT a b).hom.app ((t.eTruncLT.obj c).obj X)),
       Iso.hom_inv_id_app_assoc, eTruncLTLTIsoLT_hom, eTruncLTLTToLT_app,
-      ← Functor.map_comp]
-    -- this should be cleanup and made a separate lemma
-    have : ((t.eTruncLT.obj b).map ((t.eTruncLTι c).app X) ≫
-        (t.eTruncLT.map (homOfLE hbc)).app X) = (t.eTruncLTι _).app _ := by
-      dsimp [eTruncLTι]
-      rw [← homOfLE_comp hbc le_top, Functor.map_comp, NatTrans.comp_app,
-        NatTrans.naturality]
-      congr 1
-      induction c using WithBotTop.rec with
-      | bot => simp
-      | coe c => simp [truncLT_map_truncLTι_app]
-      | top => simp
-    simp [this]
+      ← Functor.map_comp, eTruncLT_obj_map_eTruncLTι_app_eTruncLT_map_app]
+    simp
   · dsimp
     simp only [triangleω₁δ_obj_mor₂, eTruncGEToGEGE_app, Category.id_comp,
       ← t.eTruncGEπ_app_eTruncGE_map_app (homOfLE hab), ← NatTrans.naturality,
