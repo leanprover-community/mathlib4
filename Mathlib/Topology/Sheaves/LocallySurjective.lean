@@ -130,5 +130,5 @@ theorem TopCat.Sheaf.isLocallySurjective_iff_epi {X : TopCat.{v}} {C : Type u} [
     [(Opens.grothendieckTopology X).WEqualsLocallyBijective C]
     [ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization C]
     {F G : Sheaf C X} (φ : F ⟶ G) :
-    TopCat.Presheaf.IsLocallySurjective φ.val ↔ Epi φ :=
+    TopCat.Presheaf.IsLocallySurjective φ.hom ↔ Epi φ :=
   CategoryTheory.Sheaf.isLocallySurjective_iff_epi' ..
