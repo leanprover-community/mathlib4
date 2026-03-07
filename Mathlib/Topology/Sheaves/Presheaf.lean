@@ -27,7 +27,7 @@ and for `ℱ : X.Presheaf C` provide the natural isomorphisms
 
 We also define the functors `pullback C f : Y.Presheaf C ⥤ X.Presheaf c`,
 and provide their adjunction at
-`TopCat.Presheaf.pushforwardPullbackAdjunction`.
+`TopCat.Presheaf.pullbackPushforwardAdjunction`.
 -/
 
 @[expose] public section
@@ -273,20 +273,23 @@ def pullback {X Y : TopCat.{v}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
   (Opens.map f).op.lan
 
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
-def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
+def pullbackPushforwardAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
     pullback C f ⊣ pushforward C f :=
   Functor.lanAdjunction _ _
+
+@[deprecated (since := "2026-03-03")]
+alias pushforwardPullbackAdjunction := pullbackPushforwardAdjunction
 
 /-- Pulling back along a homeomorphism is the same as pushing forward along its inverse. -/
 def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.hom ≅ pushforward C H.inv :=
-  Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.hom)
+  Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction C H.hom)
     (presheafEquivOfIso C H.symm).toAdjunction
 
 /-- Pulling back along the inverse of a homeomorphism is the same as pushing forward along it. -/
 def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.inv ≅ pushforward C H.hom :=
-  Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.inv)
+  Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction C H.inv)
     (presheafEquivOfIso C H).toAdjunction
 
 variable {C}

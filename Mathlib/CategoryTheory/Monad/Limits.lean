@@ -113,7 +113,7 @@ noncomputable instance forgetCreatesLimits : CreatesLimitsOfSize (forget T) wher
     CreatesLimit := fun {D} =>
       createsLimitOfReflectsIso fun c t =>
         { liftedCone := ForgetCreatesLimits.liftedCone D c t
-          validLift := Cones.ext (Iso.refl _) fun _ => (id_comp _).symm
+          validLift := Cone.ext (Iso.refl _) fun _ => (id_comp _).symm
           makesLimit := ForgetCreatesLimits.liftedConeIsLimit _ _ _ } }
 
 /-- `D ⋙ forget T` has a limit, then `D` has a limit. -/
@@ -243,7 +243,7 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
               naturality := fun A B f => by
                 ext1
                 simpa using (c.w f) } }
-      validLift := Cocones.ext (Iso.refl _)
+      validLift := Cocone.ext (Iso.refl _)
       makesColimit := liftedCoconeIsColimit _ _ }
 
 noncomputable instance forgetCreatesColimitsOfShape [PreservesColimitsOfShape J (T : C ⥤ C)] :
@@ -453,7 +453,7 @@ noncomputable instance forgetCreatesColimit : CreatesColimitsOfSize (forget T) w
     CreatesColimit := fun {D} =>
       createsColimitOfReflectsIso fun c t =>
         { liftedCocone := ForgetCreatesColimits'.liftedCocone D c t
-          validLift := Cocones.ext (Iso.refl _) fun _ => (comp_id _)
+          validLift := Cocone.ext (Iso.refl _) fun _ => (comp_id _)
           makesColimit := ForgetCreatesColimits'.liftedCoconeIsColimit _ _ _ } }
 
 /-- If `D ⋙ forget T` has a colimit, then `D` has a colimit. -/
@@ -573,7 +573,7 @@ noncomputable instance forgetCreatesLimit (D : J ⥤ Coalgebra T)
               naturality := fun A B f => by
                 ext1
                 simpa using (c.w f).symm } }
-      validLift := Cones.ext (Iso.refl _)
+      validLift := Cone.ext (Iso.refl _)
       makesLimit := liftedConeIsLimit _ _ }
 
 noncomputable instance forgetCreatesLimitsOfShape [PreservesLimitsOfShape J (T : C ⥤ C)] :
