@@ -96,9 +96,6 @@ lemma quotientSMulShortComplex_shortExact_of_isSMulRegular (I : Ideal R) {x : R}
 lemma Polynomial.localization_at_comap_maximal_isGorensteinLocalRing_of_isGorensteinLocalRing
     [IsNoetherianRing R] [IsGorensteinLocalRing R] (p : Ideal R[X]) [p.IsPrime]
     (max : p.comap C = maximalIdeal R) : IsGorensteinLocalRing (Localization.AtPrime p) := by
-  let _ : Module.Free R R[X] :=
-    let _ : Module.Free R (AddMonoidAlgebra R ℕ) := Module.Free.finsupp R R ℕ
-    Module.Free.of_equiv (Polynomial.toFinsuppIsoLinear R).symm
   let _ : Module.Flat R (Localization.AtPrime p) := Module.Flat.trans R R[X] _
   let f : ModuleCat.of R (R ⧸ maximalIdeal R) →ₗ[R] ModuleCat.of (Localization.AtPrime p)
     ((Localization.AtPrime p) ⧸ (maximalIdeal R).map (algebraMap R (Localization.AtPrime p))) :=
