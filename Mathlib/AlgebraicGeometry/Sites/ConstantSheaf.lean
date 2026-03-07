@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 
 /-!
 # Sheaf of continuous maps associated to topological space
@@ -28,6 +29,13 @@ When `T` is discrete, this is the constant sheaf associated to `T` (TODO).
 @[expose] public section
 
 open CategoryTheory Limits
+
+noncomputable def Sheaf.isTerminalOfEqTop {C A : Type*} [Category* C] [Category* A]
+    (J : GrothendieckTopology C) (H : J = ⊤) (F : Sheaf J A) :
+    IsTerminal F := by
+  refine IsTerminal.isTerminalOfObj (sheafToPresheaf _ _) _ ?_
+  refine Functor.isTerminal fun X ↦ Sheaf.isTerminalOfBotCover _ _ ?_
+  simp [H]
 
 universe w' w v₂ u₂ v u
 

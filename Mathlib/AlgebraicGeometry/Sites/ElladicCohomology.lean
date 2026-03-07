@@ -10,6 +10,7 @@ public import Mathlib.AlgebraicGeometry.Sites.ConstantSheaf
 public import Mathlib.AlgebraicGeometry.Sites.Proetale
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 
 /-!
 
@@ -37,7 +38,18 @@ definition using étale cohomology. This will show that the groups defined here 
 
 universe u
 
-open CategoryTheory
+open CategoryTheory Limits
+
+namespace CategoryTheory
+
+noncomputable def Sheaf.isTerminalOfEqTop {C A : Type*} [Category* C] [Category* A]
+    (J : GrothendieckTopology C) (H : J = ⊤) (F : Sheaf J A) :
+    IsTerminal F := by
+  refine IsTerminal.isTerminalOfObj (sheafToPresheaf _ _) _ ?_
+  refine Functor.isTerminal fun X ↦ Sheaf.isTerminalOfBotCover _ _ ?_
+  simp [H]
+
+end CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 
@@ -54,6 +66,11 @@ noncomputable def ellAdicSheaf (ℓ : ℕ) [Fact ℓ.Prime] :
     ⟨continuousMapPresheafAb (ℤ_[ℓ]), .of_le proetaleTopology_le_fpqcTopology <|
       isSheaf_fpqcTopology_continuousMapPresheafAb _⟩
 
+variable (ℓ : ℕ) [Fact ℓ.Prime]
+
+lemma isZero_ellAdicSheaf_of_isEmpty [IsEmpty X] : IsZero (X.ellAdicSheaf ℓ) :=
+  (Sheaf.isTerminalOfEqTop _ (ProEt.topology_eq_top_of_isEmpty _) _).isZero
+
 instance : HasExt.{u + 2} (Sheaf (ProEt.topology X) Ab.{u + 1}) :=
   HasExt.standard _
 
@@ -64,5 +81,10 @@ def EllAdicCohomology (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : Type (u + 2) :=
 noncomputable instance (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : AddCommGroup (X.EllAdicCohomology ℓ n) :=
   inferInstanceAs <| AddCommGroup <|
     ((sheafCompose _ AddCommGrpCat.uliftFunctor.{u + 1}).obj <| X.ellAdicSheaf ℓ).H n
+
+/-- `ℓ`-adic cohomology is trivial for the empty scheme. -/
+instance [IsEmpty X] (n : ℕ) : Subsingleton (X.EllAdicCohomology ℓ n) := by
+  apply Sheaf.subsingleton_H_of_isZero
+  exact Functor.map_isZero _ (isZero_ellAdicSheaf_of_isEmpty _ _)
 
 end AlgebraicGeometry.Scheme
