@@ -177,7 +177,7 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
     (h : ∀ i ≥ n, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)) :
     ∀ i ≥ n, ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M i) := by
   intro i hi N
-  apply ext_subsingleton_of_quotients
+  apply ModuleCat.ext_subsingleton_of_quotients
   intro I
   let _ := Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm
   apply ext_subsingleton_of_support_subset
@@ -203,7 +203,7 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
         intro q hqp hq
         let q : PrimeSpectrum R := ⟨q, hq⟩
         have : ringKrullDim (R ⧸ q.1) ≤ n := by
-          rw [← WithBot.add_le_add_natCast_right_iff]
+          rw [← ENat.WithBot.add_le_add_natCast_right_iff]
           apply le_trans _ hp
           obtain ⟨r, hrq, hrp⟩ := Set.exists_of_ssubset hqp
           apply ringKrullDim_succ_le_of_surjective (r := Ideal.Quotient.mk p.1 r)
@@ -215,6 +215,7 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
   apply this n
   simpa [← hn] using ringKrullDim_quotient_le p.1
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_eq_sInf_of_finite (M : ModuleCat.{v} R) [Module.Finite R M] :
     injectiveDimension M = sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i →
       Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)} := by
@@ -243,7 +244,7 @@ lemma injectiveDimension_lt_iff_of_finite (M : ModuleCat.{v} R) [Module.Finite R
     exact this i (lt_of_lt_of_le h (Nat.cast_le.mpr hi))
   · obtain _ | n := n
     · exact ⟨⊥, fun i hi ↦ h i (Nat.zero_le i) , by decide⟩
-    · exact ⟨n, fun i hi ↦ h i (Nat.cast_lt.mp hi), by simp [WithBot.lt_add_one_iff]⟩
+    · exact ⟨n, fun i hi ↦ h i (Nat.cast_lt.mp hi), by simp [ENat.WithBot.lt_add_one_iff]⟩
 
 end
 
@@ -506,7 +507,7 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
         injectiveDimension_eq_bot_iff, ModuleCat.isZero_of_iff_subsingleton, ← sub]
       rw [← ModuleCat.isZero_of_iff_subsingleton (R := R), ← injectiveDimension_eq_bot_iff]
       refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
-      rw [← Nat.cast_zero, ← WithBot.lt_add_one_iff, Nat.cast_zero, zero_add, ← Nat.cast_one,
+      rw [← Nat.cast_zero, ← ENat.WithBot.lt_add_one_iff, Nat.cast_zero, zero_add, ← Nat.cast_one,
         injectiveDimension_lt_iff_of_finite.{v} M 1] at h
       apply WithBot.lt_coe_bot.mp
       simp only [ModuleCat.of_coe, bot_eq_zero', WithBot.coe_zero]
@@ -521,9 +522,9 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
         rw [← map_smul, Module.mem_annihilator.mp this, map_zero]
       · exact h i (Nat.one_le_iff_ne_zero.mpr eq0)
     | n + 1 =>
-      rw [← Nat.cast_one, Nat.cast_add, WithBot.add_le_add_natCast_right_iff, ← Nat.cast_add,
-        ← WithBot.lt_add_one_iff, ← WithBot.lt_add_one_iff, ← Nat.cast_one, ← Nat.cast_add,
-        ← Nat.cast_add, injectiveDimension_lt_iff_of_finite.{v},
+      rw [← Nat.cast_one, Nat.cast_add, ENat.WithBot.add_le_add_natCast_right_iff, ← Nat.cast_add,
+        ← ENat.WithBot.lt_add_one_iff, ← ENat.WithBot.lt_add_one_iff, ← Nat.cast_one,
+        ← Nat.cast_add, ← Nat.cast_add, injectiveDimension_lt_iff_of_finite.{v},
         injectiveDimension_lt_iff_of_finite.{v}]
       refine ⟨fun h i hi ↦ ?_, fun h i hi ↦ ?_⟩
       · have : i - 1 + 1 = i := by omega

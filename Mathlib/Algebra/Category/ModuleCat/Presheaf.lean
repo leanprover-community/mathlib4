@@ -59,6 +59,11 @@ namespace PresheafOfModules
 attribute [simp] map_id map_comp
 attribute [reassoc] map_comp
 
+#adaptation_note /-- lean-pr-testing-12564
+This is required for `Algebra.Category.ModuleCat.Differentials.Presheaf` -/
+instance {R : Cᵒᵖ ⥤ CommRingCat.{u}} (X : Cᵒᵖ) (M : PresheafOfModules.{v} (R ⋙ forget₂ _ _)) :
+    Module (R.obj X) (M.obj X) := (M.obj X).isModule
+
 variable (M M₁ M₂ : PresheafOfModules.{v} R)
 
 set_option backward.isDefEq.respectTransparency false in

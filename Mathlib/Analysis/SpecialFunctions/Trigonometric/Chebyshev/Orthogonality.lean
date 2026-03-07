@@ -48,7 +48,6 @@ noncomputable def measureT : Measure ℝ :=
   (volume.withDensity
     fun x ↦ ENNReal.ofNNReal ⟨√(1 - x ^ 2)⁻¹, by positivity⟩).restrict (Set.Ioc (-1) 1)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_measureT (f : ℝ → ℝ) :
     ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by
   rw [integral_of_le (by norm_num), measureT,
@@ -63,7 +62,6 @@ theorem intervalIntegrable_sqrt_one_sub_sq_inv :
   refine integrableOn_deriv_of_nonneg continuous_arccos.neg.continuousOn (fun x hx ↦ ?_) (by simp)
   simpa using (hasDerivAt_arccos (by aesop) (by aesop)).neg
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integrable_measureT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1) 1)) :
     Integrable f measureT := by
   replace hf : ContinuousOn f (Set.uIcc (-1) 1) := by rwa [Set.uIcc_of_lt (by norm_num)]

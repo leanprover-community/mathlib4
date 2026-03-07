@@ -29,11 +29,7 @@ use depending on the context.
 
 ## TODO
 
-
-* define functors `t.truncLE n : C ⥤ C`, `t.truncGE n : C ⥤ C` and the
-  associated distinguished triangles
 * promote these truncations to a (functorial) spectral object
-* define the heart of `t` and show it is an abelian category
 * define triangulated subcategories `t.plus`, `t.minus`, `t.bounded` and show
   that there are induced t-structures on these full subcategories
 
@@ -187,6 +183,24 @@ lemma isGE_of_ge (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsGE X q] : t.
 
 @[deprecated (since := "2026-01-30")] alias isLE_of_LE := isLE_of_le
 @[deprecated (since := "2026-01-30")] alias isGE_of_GE := isGE_of_ge
+
+@[simp]
+lemma le_iff_isLE (X : C) (n : ℤ) : t.le n X ↔ t.IsLE X n :=
+  ⟨fun h ↦ ⟨h⟩, fun _ ↦ t.le_of_isLE X n⟩
+
+@[simp]
+lemma ge_iff_isGE (X : C) (n : ℤ) : t.ge n X ↔ t.IsGE X n :=
+  ⟨fun h ↦ ⟨h⟩, fun _ ↦ t.ge_of_isGE X n⟩
+
+instance (n : ℤ) : (t.le n).IsClosedUnderIsomorphisms where
+  of_iso e h := by
+    simp only [le_iff_isLE] at h ⊢
+    exact t.isLE_of_iso e _
+
+instance (n : ℤ) : (t.ge n).IsClosedUnderIsomorphisms where
+  of_iso e h := by
+    simp only [ge_iff_isGE] at h ⊢
+    exact t.isGE_of_iso e _
 
 lemma isLE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n := by lia) [t.IsLE X n] :
     t.IsLE (X⟦a⟧) n' :=
