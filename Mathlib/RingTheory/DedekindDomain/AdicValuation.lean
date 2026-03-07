@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.Valued.WithVal
+import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Adic valuations on Dedekind domains
@@ -226,6 +227,11 @@ theorem intValuation_lt_one_iff_mem (r : R) :
     v.intValuation r < 1 ↔ r ∈ v.asIdeal := by
   rw [intValuation_lt_one_iff_dvd, Ideal.dvd_span_singleton]
 
+/-- The `v`-adic valuation of `r ∈ R` is equal to 1 if and only if `r ∈ vᶜ`. -/
+theorem intValuation_eq_one_iff_mem_primeCompl (r : R) :
+    v.intValuation r = 1 ↔ r ∈ v.asIdeal.primeCompl := by
+  simp [Ideal.primeCompl, ← intValuation_lt_one_iff_mem, LE.le.ge_iff_eq (intValuation_le_one v r)]
+
 /-- The `v`-adic valuation of `r ∈ R` is less than `WithZero.exp (-n)` if and only if
 `vⁿ` divides the ideal `(r)`. -/
 theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
@@ -283,6 +289,13 @@ theorem intValuation_eq_one_iff {v : HeightOneSpectrum R} {x : R} :
   refine ⟨fun h ↦ by simp [← (intValuation_lt_one_iff_mem _ _).not, h], fun h ↦ ?_⟩
   exact le_antisymm (v.intValuation_le_one x) <| by
     simp [← not_lt, (v.intValuation_lt_one_iff_mem _).not, h]
+
+theorem intValuation_eq_coe_neg_multiplicity (v : HeightOneSpectrum R) {x : R} (hnz : x ≠ 0) :
+    v.intValuation x = WithZero.exp (-(multiplicity v.asIdeal (Ideal.span {x}) : ℤ)) := by
+  rw [intValuation_def, if_neg hnz, exp_inj, neg_inj, Nat.cast_inj]
+  refine (multiplicity_eq_of_emultiplicity_eq_some ?_).symm
+  rw [UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors v.irreducible (by simpa),
+    count_associates_factors_eq (by simpa) v.isPrime v.ne_bot, normalize_eq v.asIdeal]
 
 /-! ### Adic valuations on the field of fractions `K` -/
 
@@ -404,6 +417,37 @@ theorem eq_of_valuation_isEquiv_valuation {p q : HeightOneSpectrum R}
     (hpq : (valuation K p).IsEquiv (valuation K q)) : p = q := by
   simp_all [Valuation.isEquiv_iff_val_lt_one, HeightOneSpectrum.ext_iff, Ideal.ext_iff,
     ← valuation_lt_one_iff_mem (K := K)]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- All `x ∈ K` can be written as `n / d` or `d / n` with `n ∈ R` and `d ∈ v.asIdealᶜ`. -/
+lemma exists_primeCompl_mul_eq_or_mul_eq (x : K) :
+    ∃ (n : R) (d : v.asIdeal.primeCompl), x * (algebraMap R K d) = (algebraMap R K n) ∨
+        x * (algebraMap R K n) = (algebraMap R K d) := by
+  -- `K` is an algebra over the localization of `R` at `v`.
+  letI : Algebra (Localization v.asIdeal.primeCompl) K :=
+    RingHom.toAlgebra <| Localization.mapToFractionRing K v.asIdeal.primeCompl
+      (Localization v.asIdeal.primeCompl) (Ideal.primeCompl_le_nonZeroDivisors v.asIdeal)
+  have : IsFractionRing (Localization v.asIdeal.primeCompl) K := by
+    apply IsFractionRing.isFractionRing_of_isDomain_of_isLocalization v.asIdeal.primeCompl
+  -- It's already known that the localization of `R` at `v` is a (discrete) valuation ring, so
+  -- write `x` or `x⁻¹` as `n / d` with `d ∈ vᶜ`.
+  obtain (⟨r, hr⟩ | ⟨r, hr⟩) :=
+    ValuationRing.isInteger_or_isInteger (Localization v.asIdeal.primeCompl) x
+  <;> obtain ⟨⟨n, d⟩, hnd⟩ := IsLocalization.surj v.asIdeal.primeCompl r
+  <;> use n, d
+  <;> apply_fun algebraMap _ K at hnd
+  <;> grind [=_ IsScalarTower.algebraMap_apply]
+
+/-- All `x ∈ 𝓞[K]` can be written as `n / d` with `n ∈ R` and `d ∈ v.asIdealᶜ`. -/
+theorem exists_primeCompl_mul_eq_of_integer (x : K) (hv : v.valuation K x ≤ 1) :
+    ∃ (n : R) (d : v.asIdeal.primeCompl), x * (algebraMap R K d) = algebraMap R K n := by
+  obtain ⟨n, d, (hnd | hnd)⟩ := exists_primeCompl_mul_eq_or_mul_eq v x
+  · use n, d
+  · refine ⟨d, ⟨n, ?_⟩, hnd⟩
+    rw [← v.intValuation_eq_one_iff_mem_primeCompl]
+    apply eq_one_of_one_le_mul_right hv (intValuation_le_one v n)
+    rw [← (v.intValuation_eq_one_iff_mem_primeCompl d).mpr d.prop,
+      ← valuation_of_algebraMap (K := K), ← valuation_of_algebraMap (K := K), ← map_mul, hnd]
 
 variable (K)
 
