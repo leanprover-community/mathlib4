@@ -30,13 +30,6 @@ When `T` is discrete, this is the constant sheaf associated to `T` (TODO).
 
 open CategoryTheory Limits
 
-noncomputable def Sheaf.isTerminalOfEqTop {C A : Type*} [Category* C] [Category* A]
-    (J : GrothendieckTopology C) (H : J = ⊤) (F : Sheaf J A) :
-    IsTerminal F := by
-  refine IsTerminal.isTerminalOfObj (sheafToPresheaf _ _) _ ?_
-  refine Functor.isTerminal fun X ↦ Sheaf.isTerminalOfBotCover _ _ ?_
-  simp [H]
-
 universe w' w v₂ u₂ v u
 
 namespace AlgebraicGeometry
