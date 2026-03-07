@@ -124,9 +124,6 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
   map_add' x y := Subtype.ext <| funext (fun v ↦
     UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) _)
 
-@[simp] theorem algebraMap_apply (k : K) (v : HeightOneSpectrum R) :
-    FiniteAdeleRing.algebraMap R K k v = k := rfl
-
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
 @[simp]
