@@ -194,8 +194,7 @@ open scoped Classical in
 /-- Alternative way of writing the uniformPDF. -/
 lemma uniformPDF_ite {s : Set E} {x : E} :
     uniformPDF s x μ = if x ∈ s then (μ s)⁻¹ else 0 := by
-  unfold uniformPDF Set.indicator
-  rw [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
+  simp [uniformPDF, Set.indicator]
 
 end pdf
 
