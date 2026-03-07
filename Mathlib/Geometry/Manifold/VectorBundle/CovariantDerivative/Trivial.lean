@@ -5,7 +5,6 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.MfDerivSMul
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.TrivPrelim
 
@@ -51,7 +50,7 @@ noncomputable def trivial [IsManifold I 1 M] :
   leibniz {σ f x} hσ hf hx := by
     rw [mdifferentiableAt_section] at hσ
     ext1 X₀
-    exact mfderiv_smul hσ hf X₀
+    exact fromTangentSpace_mfderiv_smul_apply hf hσ X₀
 
 lemma of_endomorphism (A : (x : M) → F →L[𝕜] TangentSpace I x →L[𝕜] F) :
     IsCovariantDerivativeOn F
@@ -80,7 +79,7 @@ noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial 
     leibniz {σ f x} hσ hf hx := by
       rw [mdifferentiableAt_section] at hσ
       ext1 X₀
-      exact mfderiv_smul hσ hf X₀ }
+      exact fromTangentSpace_mfderiv_smul_apply hf hσ X₀ }
 
 end trivial_bundle
 

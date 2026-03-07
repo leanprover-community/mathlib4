@@ -283,22 +283,151 @@ theorem MDifferentiable.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → 
 
 /-! ### Differentiability of scalar multiplication -/
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+section smul
 
-theorem MDifferentiableWithinAt.smul {f : M → 𝕜} {g : M → V}
+open NormedSpace ContinuousLinearMap
+
+variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable {f : M → 𝕜} {g : M → V}
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, if
+at some point `x`, `f` has differential `f' : TangentSpace I x →L[𝕜] 𝕜` and `g` has differential
+`g' : TangentSpace I x →L[𝕜] V` (both phrased using the predicate `HasMFDerivAt`), it follows that
+their scalar multiplication `f • g` has differential `f x • g' + toSpanSingleton 𝕜 (g x) ∘L f'`.
+
+In fact, the statement above is not literally true, because, for example, the differential of `g`
+really takes values in the tangent space to `V` at `g x`, rather than in `V` itself. Of course, this
+tangent space can be canonically identified with `V`.
+
+This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, which provides this
+canonical identification. (It would also be possible to phrase the formula without this equiv,
+instead using casting and definitional abuse.) -/
+lemma HasMFDerivAt.smul
+    {f' : TangentSpace I x →L[𝕜] 𝕜}
+    (hs : HasMFDerivAt I 𝓘(𝕜, 𝕜) f x ((fromTangentSpace _).symm.toContinuousLinearMap ∘L f'))
+    {g' : TangentSpace I x →L[𝕜] V}
+    (hg : HasMFDerivAt I 𝓘(𝕜, V) g x ((fromTangentSpace _).symm.toContinuousLinearMap ∘L g')) :
+    -- canonically identify `g'` with a linear map into the tangent space at `(f • g) x`
+    letI g'_ : TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+      (fromTangentSpace _).symm.toContinuousLinearMap ∘L g'
+    -- canonically identify `g x` with a linear map into a tangent space at `(f • g) x`
+    letI gx :  𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+      toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x))
+    -- now the main statement typechecks
+    HasMFDerivAt I 𝓘(𝕜, V) (f • g) x (f x • g'_ + gx ∘L f') := by
+  constructor
+  · exact hs.1.smul hg.1
+  · simpa using hs.2.smul hg.2
+
+theorem MDifferentiableWithinAt.smul
     (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) (hg : MDifferentiableWithinAt I 𝓘(𝕜, V) g s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, V) (fun p => f p • g p) s x :=
   ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp_mdifferentiableWithinAt x
     (hf.prodMk hg)
 
-theorem MDifferentiableAt.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
+theorem MDifferentiableAt.smul (hf : MDifferentiableAt I 𝓘(𝕜) f x)
     (hg : MDifferentiableAt I 𝓘(𝕜, V) g x) : MDifferentiableAt I 𝓘(𝕜, V) (fun p => f p • g p) x :=
   ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp x (hf.prodMk hg)
 
-theorem MDifferentiableOn.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableOn I 𝓘(𝕜) f s)
+theorem MDifferentiableOn.smul (hf : MDifferentiableOn I 𝓘(𝕜) f s)
     (hg : MDifferentiableOn I 𝓘(𝕜, V) g s) : MDifferentiableOn I 𝓘(𝕜, V) (fun p => f p • g p) s :=
   fun x hx => (hf x hx).smul (hg x hx)
 
-theorem MDifferentiable.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiable I 𝓘(𝕜) f)
+theorem MDifferentiable.smul (hf : MDifferentiable I 𝓘(𝕜) f)
     (hg : MDifferentiable I 𝓘(𝕜, V) g) : MDifferentiable I 𝓘(𝕜, V) fun p => f p • g p := fun x =>
   (hf x).smul (hg x)
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
+formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
+
+Mathematically speaking the formula is `d(f • g) = f • dg + df ⊗ g`, i.e.
+`mfderiv% (f • g) x = f x • mfderiv% g x + toSpanSingleton 𝕜 (g x) ∘L mfderiv% f x`,
+but this doesn't typecheck because `mfderiv% (f • g) x` and `mfderiv% g x` take values in different
+tangent spaces -- respectively the tangent spaces to `V` at `(f • g) x` and `g x`. Of course, both
+these tangent spaces can be canonically identified with `V`.
+
+This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, which provides this
+canonical identification. (It would also be possible to phrase the formula without this equiv,
+instead using casting and definitional abuse.)
+
+It is good practice to use the equiv `NormedSpace.fromTangentSpace` throughout a computation. If
+this is done, typically `mfderiv% (f • g) x` will only turn up paired with this equiv (i.e., in an
+expression `(fromTangentSpace _) ∘L mfderiv% (f • g) x`), and the more convenient lemma
+`fromTangentSpace_mfderiv_smul` (see below) can be used instead. -/
+lemma mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
+    mfderiv% (f • g) x
+    = f x • (fromTangentSpace _).symm.toContinuousLinearMap ∘L
+      ((fromTangentSpace (g x)).toContinuousLinearMap ∘L mfderiv% g x)
+    + toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x)) ∘L
+      ((fromTangentSpace (f x)).toContinuousLinearMap ∘L mfderiv% f x) :=
+  (hf.hasMFDerivAt.smul hg.hasMFDerivAt).mfderiv
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
+formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
+
+Mathematically speaking the formula is `d(f • g) = f • dg + df ⊗ g`, i.e.
+`mfderiv% (f • g) x = f x • mfderiv% g x + toSpanSingleton 𝕜 (g x) ∘L mfderiv% f x`,
+but this doesn't typecheck because `mfderiv% (f • g) x` and `mfderiv% g x` take values in different
+tangent spaces -- respectively the tangent spaces to `V` at `(f • g) x` and `g x`. Of course, both
+these tangent spaces can be canonically identified with `V`.
+
+This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, which provides this
+canonical identification. (It would also be possible to phrase the formula without this equiv,
+instead using casting and definitional abuse.) -/
+lemma fromTangentSpace_mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
+    (fromTangentSpace ((f • g) x)).toContinuousLinearMap ∘L mfderiv% (f • g) x
+    = f x • (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% g x
+    + toSpanSingleton 𝕜 (g x) ∘L (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% f x := by
+  rw [mfderiv_smul hf hg]
+  rfl
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
+formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
+
+Mathematically speaking the formula is `d(f • g) = f • dg + df ⊗ g`, but to get it to typecheck
+we need a phrasing involving the canonical identification `NormedSpace.fromTangentSpace` between
+the vector space `V` and the tangent space to this vector space at any point. This is because two
+different tangent spaces (at `(f • g) x` and `g x`) appear in the equation.
+
+This is a defeq variant of the main lemma `fromTangentSpace_mfderiv_smul`, in which we work in the
+tangent space at `f x • g x` (the simp-normal form) rather than at `(f • g) x`. -/
+lemma fromTangentSpace_mfderiv_smul' (hf : MDiffAt f x) (hg : MDiffAt g x) :
+    (fromTangentSpace (f x • g x)).toContinuousLinearMap ∘L mfderiv% (f • g) x
+    = f x • (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% g x
+    + toSpanSingleton 𝕜 (g x) ∘L (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% f x :=
+  fromTangentSpace_mfderiv_smul hf hg
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
+formula for the `mfderiv` (differential) of their scalar multiplication `f • g` in the direction of
+the tangent vector `v`.
+
+Mathematically speaking the formula is `d(f • g)(v) = f • dg(v) + df(v) • g`, but to get it to
+typecheck we need a phrasing involving the canonical identification `NormedSpace.fromTangentSpace`
+between the vector space `V` and the tangent space to this vector space at any point. This is
+because two different tangent spaces (at `(f • g) x` and `g x`) appear in the equation. -/
+lemma fromTangentSpace_mfderiv_smul_apply (hf : MDiffAt f x) (hg : MDiffAt g x)
+    (v : TangentSpace I x)  :
+    fromTangentSpace _ (mfderiv% (f • g) x v)
+    = f x • fromTangentSpace _ (mfderiv% g x v)
+    + fromTangentSpace _ (mfderiv% f x v) • g x := by
+  simpa using congr($(fromTangentSpace_mfderiv_smul hf hg) v)
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
+formula for the `mfderiv` (differential) of their scalar multiplication `f • g` in the direction of
+the tangent vector `v`.
+
+Mathematically speaking the formula is `d(f • g)(v) = f • dg(v) + df(v) • g`, but to get it to
+typecheck we need a phrasing involving the canonical identification `NormedSpace.fromTangentSpace`
+between the vector space `V` and the tangent space to this vector space at any point. This is
+because two different tangent spaces (at `(f • g) x` and `g x`) appear in the equation.
+
+This is a defeq variant of the main lemma `fromTangentSpace_mfderiv_smul_apply`, in which we work in
+the tangent space at `f x • g x` (the simp-normal form) rather than at `(f • g) x`. -/
+lemma fromTangentSpace_mfderiv_smul_apply' (hf : MDiffAt f x) (hg : MDiffAt g x)
+    (v : TangentSpace I x) :
+    fromTangentSpace (f x • g x) (mfderiv% (f • g) x v)
+    = f x • fromTangentSpace _ (mfderiv% g x v)
+    + fromTangentSpace _ (mfderiv% f x v) • g x :=
+  fromTangentSpace_mfderiv_smul_apply hf hg v
+
+end smul
