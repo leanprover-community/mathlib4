@@ -35,6 +35,8 @@ The main definitions concern the canonical mapping `StrongDual 𝕜 E → WeakDu
   `WeakDual 𝕜 E` and in the converse direction.
 * `NormedSpace.Dual.continuousLinearMapToWeakDual`: A continuous linear mapping from
   `StrongDual 𝕜 E` to `WeakDual 𝕜 E` (same as `StrongDual.toWeakDual` but different bundled data).
+* `WeakDual.instBornology`: The norm bornology on `WeakDual 𝕜 E`, inherited from `StrongDual 𝕜 E`.
+* `WeakDual.polar`: The polar set of `s : Set E` viewed as a subset of `WeakDual 𝕜 E`.
 
 ## Main results
 
@@ -42,6 +44,16 @@ The first main result concerns the comparison of the operator norm topology on `
 the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 * `dual_norm_topology_le_weak_dual_topology`: The weak-* topology on the dual of a normed space is
   coarser (not necessarily strictly) than the operator norm topology.
+
+Bornology and pointwise bounds:
+* `WeakDual.isVonNBounded_iff_pointwise_bounded`: A set in `WeakDual 𝕜 E` is von Neumann bounded
+  iff it is pointwise bounded.
+* `WeakDual.isBounded_iff_pointwise_bounded`: In the weak dual of a Banach space, norm-boundedness
+  and pointwise-boundedness coincide (by the Uniform Boundedness Principle).
+
+Compactness:
+* `WeakDual.isCompact_of_bounded_of_closed`: Bounded closed sets in `WeakDual 𝕜 E` are compact
+  when `𝕜` is a proper space.
 * `WeakDual.isCompact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
   neighborhood of the origin in a normed space `E` over `𝕜` is compact in `WeakDual _ E`, if the
   nontrivially normed field `𝕜` is proper as a topological space.
@@ -49,14 +61,18 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
   Closed balls in the dual of a normed space `E` over `ℝ` or `ℂ` are compact in the weak-star
   topology.
 
+Metrizability and sequential compactness (for separable `E`):
+* `WeakDual.metrizable_of_isCompact`: Compact subsets of the weak dual of a separable normed space
+  are metrizable.
+* `WeakDual.isSeqCompact_polar` (sequential Banach-Alaoglu): The polar set of a neighborhood of
+  the origin is sequentially compact.
+* `WeakDual.isSeqCompact_closedBall` (sequential Banach-Alaoglu): Closed balls are sequentially
+  compact.
+
 ## TODO
 * Add that in finite dimensions, the weak-* topology and the dual norm topology coincide.
 * Add that in infinite dimensions, the weak-* topology is strictly coarser than the dual norm
   topology.
-* Add metrizability of the dual unit ball (more generally weak-star compact subsets) of
-  `WeakDual 𝕜 E` under the assumption of separability of `E`.
-* Add the sequential Banach-Alaoglu theorem: the dual unit ball of a separable normed space `E`
-  is sequentially compact in the weak-star topology. This would follow from the metrizability above.
 
 ## Implementation notes
 
@@ -214,6 +230,7 @@ open NormedSpace
 ### Bornology and pointwise bounds
 -/
 
+/-- A set in the weak dual is von Neumann bounded iff it is pointwise bounded. -/
 theorem isVonNBounded_iff_pointwise_bounded {s : Set (WeakDual 𝕜 E)} :
     Bornology.IsVonNBounded 𝕜 s ↔ ∀ x : E, ∃ r : ℝ, ∀ f ∈ s, ‖f x‖ ≤ r := by
   constructor
@@ -229,8 +246,8 @@ theorem isVonNBounded_iff_pointwise_bounded {s : Set (WeakDual 𝕜 E)} :
     rw [norm_mul]
     exact mul_le_of_le_one_right (norm_nonneg _) hg.le
   · intro h V hV
-    rw [show 𝓝 (0 : WeakDual 𝕜 E) = Filter.comap (fun f x ↦ f x) (𝓝 0) from
-      nhds_induced _ _] at hV
+    have h_nhds : 𝓝 (0 : WeakDual 𝕜 E) = Filter.comap (fun f x ↦ f x) (𝓝 0) := nhds_induced _ _
+    rw [h_nhds] at hV
     obtain ⟨W, hW, hWV⟩ := hV
     have hpi : Bornology.IsVonNBounded 𝕜 ((fun f x ↦ f x : WeakDual 𝕜 E → E → 𝕜) '' s) :=
       isVonNBounded_pi_iff.mpr fun x ↦ let ⟨C, hC⟩ := h x
@@ -270,11 +287,13 @@ While the coercion `↑ : WeakDual 𝕜 E → (E → 𝕜)` is not a closed map,
 closed sets to closed sets.
 -/
 
+/-- The coercion `↑ : WeakDual 𝕜 E → (E → 𝕜)` sends bounded closed sets to closed sets. -/
 theorem isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
     (hb : IsBounded s) (hc : IsClosed s) :
     IsClosed (((↑) : WeakDual 𝕜 E → E → 𝕜) '' s) :=
   ContinuousLinearMap.isClosed_image_coe_of_bounded_of_weak_closed hb (isClosed_induced_iff'.1 hc)
 
+/-- Bounded closed sets in `WeakDual 𝕜 E` are compact when `𝕜` is a proper space. -/
 theorem isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual 𝕜 E)}
     (hb : IsBounded s) (hc : IsClosed s) : IsCompact s :=
   DFunLike.coe_injective.isEmbedding_induced.isCompact_iff.mpr <|
@@ -285,6 +304,7 @@ theorem isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual �
 ### Closed balls
 -/
 
+/-- Closed balls in `StrongDual 𝕜 E` pull back to closed sets in `WeakDual 𝕜 E`. -/
 theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsClosed (toStrongDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
@@ -308,11 +328,9 @@ variable (𝕜)
 
 /-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
 weak-star topology is `WeakDual.polar 𝕜 s`. -/
-def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
-  toStrongDual ⁻¹' (StrongDual.polar 𝕜) s
+def polar (s : Set E) : Set (WeakDual 𝕜 E) := toStrongDual ⁻¹' (StrongDual.polar 𝕜) s
 
-theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } :=
-  rfl
+theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } := rfl
 
 /-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
 is used. -/
@@ -321,8 +339,7 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
 /-- Polar sets of neighborhoods of the origin are bounded in the weak dual. -/
-theorem isBounded_polar {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) :
-    IsBounded (polar 𝕜 s) :=
+theorem isBounded_polar {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) : IsBounded (polar 𝕜 s) :=
   isBounded_toStrongDual_preimage.mpr (NormedSpace.isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds)
 
 /-- The image under `↑ : WeakDual 𝕜 E → (E → 𝕜)` of a polar `WeakDual.polar 𝕜 s` of a
@@ -365,7 +382,7 @@ lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → 𝕜
     exact DFunLike.ext'_iff.mpr <| (map_continuous w).ext_on
       (denseRange_denseSeq V) (map_continuous y) (by grind [Set.eqOn_range])
 
-/-- A compact subset of the dual space of a separable space is metrizable. -/
+/-- A compact subset of the weak dual of a separable normed space is metrizable. -/
 lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableSpace K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp K_cpt
   obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 V
@@ -375,6 +392,7 @@ lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.Metrizabl
 
 variable [ProperSpace 𝕜] (K_cpt : IsCompact K)
 
+/-- Bounded closed sets in the weak dual of a separable normed space are sequentially compact. -/
 theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 V)}
     (hb : IsBounded s) (hc : IsClosed s) :
     IsSeqCompact s := by
