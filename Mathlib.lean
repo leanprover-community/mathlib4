@@ -1374,6 +1374,7 @@ public import Mathlib.AlgebraicGeometry.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Over
 public import Mathlib.AlgebraicGeometry.PointsPi
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Functor
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
@@ -1395,6 +1396,7 @@ public import Mathlib.AlgebraicGeometry.Sites.Pretopology
 public import Mathlib.AlgebraicGeometry.Sites.Proetale
 public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Sites.Representability
+public import Mathlib.AlgebraicGeometry.Sites.SheafQuasiCompact
 public import Mathlib.AlgebraicGeometry.Sites.Small
 public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
 public import Mathlib.AlgebraicGeometry.Spec
@@ -1771,6 +1773,7 @@ public import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.Complex.RemovableSingularity
 public import Mathlib.Analysis.Complex.Schwarz
 public import Mathlib.Analysis.Complex.Spectrum
+public import Mathlib.Analysis.Complex.SqrtDeriv
 public import Mathlib.Analysis.Complex.SummableUniformlyOn
 public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.Tietze
@@ -1780,6 +1783,7 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Measure
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
@@ -2330,6 +2334,7 @@ public import Mathlib.CategoryTheory.Abelian.Monomorphisms
 public import Mathlib.CategoryTheory.Abelian.NonPreadditive
 public import Mathlib.CategoryTheory.Abelian.Opposite
 public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
+public import Mathlib.CategoryTheory.Abelian.Preradical.Colon
 public import Mathlib.CategoryTheory.Abelian.Projective.Basic
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Projective.Ext
@@ -3335,6 +3340,7 @@ public import Mathlib.Combinatorics.Additive.SmallTripling
 public import Mathlib.Combinatorics.Additive.SubsetSum
 public import Mathlib.Combinatorics.Additive.VerySmallDoubling
 public import Mathlib.Combinatorics.Colex
+public import Mathlib.Combinatorics.Compactness
 public import Mathlib.Combinatorics.Configuration
 public import Mathlib.Combinatorics.Derangements.Basic
 public import Mathlib.Combinatorics.Derangements.Exponential
@@ -5089,7 +5095,9 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.RadonNikodym
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
 public import Mathlib.MeasureTheory.Function.ConditionalLExpectation
@@ -5279,6 +5287,7 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import Mathlib.MeasureTheory.Measure.LevyConvergence
 public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 public import Mathlib.MeasureTheory.Measure.Map
@@ -5482,6 +5491,7 @@ public import Mathlib.NumberTheory.ModularForms.Bounds
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 public import Mathlib.NumberTheory.ModularForms.Cusps
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
+public import Mathlib.NumberTheory.ModularForms.Delta
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
@@ -5924,7 +5934,8 @@ public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Indep
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Distributions.Geometric
 public import Mathlib.Probability.Distributions.Pareto
-public import Mathlib.Probability.Distributions.Poisson
+public import Mathlib.Probability.Distributions.Poisson.Basic
+public import Mathlib.Probability.Distributions.Poisson.PoissonLimitThm
 public import Mathlib.Probability.Distributions.SetBernoulli
 public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.Probability.HasLaw
@@ -7028,6 +7039,7 @@ public import Mathlib.Tactic.Simproc.Divisors
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
 public import Mathlib.Tactic.Simproc.FinsetInterval
+public import Mathlib.Tactic.Simproc.VecPerm
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
@@ -7639,6 +7651,7 @@ public import Mathlib.Topology.Sheaves.LocallySurjective
 public import Mathlib.Topology.Sheaves.MayerVietoris
 public import Mathlib.Topology.Sheaves.Over
 public import Mathlib.Topology.Sheaves.PUnit
+public import Mathlib.Topology.Sheaves.Points
 public import Mathlib.Topology.Sheaves.Presheaf
 public import Mathlib.Topology.Sheaves.PresheafOfFunctions
 public import Mathlib.Topology.Sheaves.Sheaf
