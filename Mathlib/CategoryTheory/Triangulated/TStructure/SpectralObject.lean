@@ -107,10 +107,8 @@ to the object `(t.eTruncGE.obj a).obj ((t.eTruncLT.obj c).obj X)`. -/
 noncomputable def triangleω₁δObjIso (X : C) :
     (t.triangleω₁δ a b c hab hbc).obj X ≅
       (t.eTriangleLTGE.obj b).obj ((t.ω₁.obj (mk₁ (homOfLE (hab.trans hbc)))).obj X) := by
-  refine Triangle.isoMk _ _
-    ((t.eTruncGE.obj a).mapIso ((t.eTruncLTLTIsoLT c b hbc).symm.app X) ≪≫
-      (t.eTruncLTGEIsoGELT a b).symm.app _)
-    (Iso.refl _) ((t.eTruncGEIsoGEGE a b hab).app _) ?_ ?_ ?_
+  refine Triangle.isoMk _ _ ((t.eTruncGE.obj a).mapIso ((t.eTruncLTLTIsoLT c b hbc).symm.app X) ≪≫
+    (t.eTruncLTGEIsoGELT a b).symm.app _) (Iso.refl _) ((t.eTruncGEIsoGEGE a b hab).app _) ?_ ?_ ?_
   · dsimp
     simp only [triangleω₁δ_obj_mor₁, homOfLE_leOfHom, Category.comp_id, Category.assoc]
     rw [← cancel_epi ((t.eTruncGE.obj a).map ((t.eTruncLTLTIsoLT c b hbc).hom.app X)),
