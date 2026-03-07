@@ -1028,6 +1028,7 @@ lemma linearMap_isPrincipal_iff (J : Ideal R) (hJ : J ≠ ⊤) :
     change ((Ideal.Quotient.mk J) r' • f) (e x) = _
     simp [hr', hr]
 
+--set_option backward.isDefEq.respectTransparency false in
 lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R] (n : ℕ)
     (h1 : injectiveDimension (ModuleCat.of R R) = n) (h2 : ringKrullDim R = n) :
     (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R))
@@ -1046,9 +1047,10 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R]
   let _ := (quotient_regular_isGorenstein_iff_isGorenstein R rs reg).mp ‹_›
   have netop : Ideal.ofList rs ≠ ⊤ :=
     (ne_top_of_le_ne_top (Ideal.IsPrime.ne_top') (Ideal.span_le.mpr mem))
+  let _ : CharZero ℕ∞ := instCharZeroENat
   rw [← Nat.cast_inj.mp len, ext_isPrincipal_iff rs reg mem, linearMap_isPrincipal_iff _ netop]
   have h2' : ringKrullDim (R ⧸ Ideal.ofList rs) = 0 := by
-    rw [← WithBot.add_natCast_cancel (c := rs.length), zero_add,
+    rw [← ENat.WithBot.add_natCast_cancel (c := rs.length), zero_add,
       ringKrullDim_add_length_eq_ringKrullDim_of_isRegular rs reg, Nat.cast_inj.mp len, h2]
   exact hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero
     ((injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing _).trans h2') h2'
@@ -1137,7 +1139,7 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
     rw [LinearMap.lcomp_apply'] at hf'
     use Ext.mk₀ (ModuleCat.ofHom f')
     simp [← he', ← ModuleCat.ofHom_comp, hf']
-  apply injective_of_subsingleton_ext_quotient_one _ (fun I ↦ ?_)
+  apply ModuleCat.injective_of_subsingleton_ext_quotient_one _ (fun I ↦ ?_)
   apply ext_subsingleton_of_support_subset
   intro p _
   rw [Set.mem_setOf_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
@@ -1147,6 +1149,7 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
     HasProjectiveDimensionLT.subsingleton (ModuleCat.of R R) 1 1 (le_refl 1) (ModuleCat.of R R)
   exact inj.subsingleton
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_iff_exists [IsNoetherianRing R] :
     IsGorensteinLocalRing R ↔ ∃ n, ∀ i ≥ n, Subsingleton
     (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i) := by
@@ -1164,6 +1167,7 @@ lemma isGorensteinLocalRing_iff_exists [IsNoetherianRing R] :
   exact (((extFunctor _).mapIso (Shrink.linearEquiv.{u} R (R ⧸ maximalIdeal R)).toModuleIso.op).app
     (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrullDim R = n) :
     [IsGorensteinLocalRing R, injectiveDimension (ModuleCat.of R R) = n,
      (∀ i ≠ n, Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i)) ∧
