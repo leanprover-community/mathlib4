@@ -147,7 +147,6 @@ noncomputable abbrev mapFourδ₁Toδ₀' (n₀ n₁ n₂ : ℤ)
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :=
   X'.map _ _ _ _ _ _ (fourδ₁Toδ₀' i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) n₀ n₁ n₂ hn₁ hn₂
 
-
 /-- For a spectral object indexed by a preorder, this is the map
 `E^{n₁}(i₀ ≤ i₁ ≤ i₂ ≤ i₃) ⟶ E^{n₁}(i₀ ≤ i₁ ≤ i₂ ≤ i₄)`. -/
 noncomputable abbrev mapFourδ₄Toδ₃' (n₀ n₁ n₂ : ℤ)
