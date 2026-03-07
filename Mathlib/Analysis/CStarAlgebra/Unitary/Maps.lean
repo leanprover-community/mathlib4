@@ -14,8 +14,10 @@ This file defines some basic maps by unitaries in C⋆-algebras. -/
 @[expose] public section
 
 namespace Unitary
-variable {R A : Type*} [NormedRing A] [StarRing A] [CStarRing A]
-  [Ring R] [Module R A] [SMulCommClass R A A]
+variable {R A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [Ring R] [Module R A]
+
+section mulLeft
+variable [SMulCommClass R A A]
 
 variable (R A) in
 /-- Left multiplication by a unitary as a linear isometric equivalence. -/
@@ -50,5 +52,47 @@ lemma mulLeftLinearIsometryEquiv_mul_apply (u v : unitary A) (x : A) :
 
 @[simp] lemma toLinearMap_mulLeftLinearIsometryEquiv (u : unitary A) :
     (mulLeftLinearIsometryEquiv R A u).toLinearMap = LinearMap.mulLeft R (u : A) := rfl
+
+end mulLeft
+
+section mulRight
+variable [IsScalarTower R A A]
+
+variable (R A) in
+/-- Right multiplication by a unitary as a linear isometric equivalence. -/
+noncomputable def mulRightLinearIsometryEquiv (u : unitary A) : A ≃ₗᵢ[R] A where
+  toLinearMap := LinearMap.mulRight R (u : A)
+  invFun := LinearMap.mulRight R (star u : A)
+  left_inv _ := by simp [mul_assoc]
+  right_inv _ := by simp [mul_assoc]
+  norm_map' _ := CStarRing.norm_mul_coe_unitary _ _
+
+variable (R) in
+@[simp] lemma mulRightLinearIsometryEquiv_apply (u : unitary A) (x : A) :
+    mulRightLinearIsometryEquiv R A u x = x * u := rfl
+
+variable (R) in
+lemma symm_mulRightLinearIsometryEquiv_apply (u : unitary A) (x : A) :
+    (mulRightLinearIsometryEquiv R A u).symm x = x * star u := rfl
+
+@[simp] lemma symm_mulRightLinearIsometryEquiv (u : unitary A) :
+    (mulRightLinearIsometryEquiv R A u).symm = mulRightLinearIsometryEquiv R A (star u) := by
+  ext; rfl
+
+lemma mulRightLinearIsometryEquiv_trans_mulRightLinearIsometryEquiv (u v : unitary A) :
+    (mulRightLinearIsometryEquiv R A u).trans (mulRightLinearIsometryEquiv R A v) =
+      mulRightLinearIsometryEquiv R A (u * v) := by ext; simp [mul_assoc]
+
+lemma mulRightLinearIsometryEquiv_mul_apply (u v : unitary A) (x : A) :
+    mulRightLinearIsometryEquiv R A (u * v) x =
+      mulRightLinearIsometryEquiv R A v (mulRightLinearIsometryEquiv R A u x) := by simp [mul_assoc]
+
+@[simp] lemma toLinearMap_mulRightLinearIsometryEquiv (u : unitary A) :
+    (mulRightLinearIsometryEquiv R A u).toLinearMap = LinearMap.mulRight R (u : A) := rfl
+
+@[simp] lemma mulRightLinearIsometryEquiv_one : mulRightLinearIsometryEquiv R A 1 = .refl R A := by
+  ext; simp
+
+end mulRight
 
 end Unitary
