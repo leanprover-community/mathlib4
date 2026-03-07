@@ -16,8 +16,8 @@ This file contains a definition of integration via Simpson's midpoint rule, alon
 an error bound in terms of a bound on the third derivative of the antiderivative.
 
 ## Main results
-- `simpson_midpoint_error_le`: the convergence theorem for Simpson's midpoint rule.
-- `simpson_midpoint_composite_error_le`: the composite midpoint rule error bound.
+- `midpoint_error_le`: the convergence theorem for Simpson's midpoint rule.
+- `midpoint_composite_error_le`: the composite midpoint rule error bound.
 
 ## References
 We follow the standard proof for the error bound of the midpoint rule.
@@ -30,151 +30,83 @@ open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
 /-- Integration of `f` from `a` to `b` using Simpson's midpoint rule with `N` subintervals.
 This uses the midpoint of each subinterval: `∫_a^b f(x) dx ≈ h * ∑_{i=0}^{n-1} f(x_{i+1/2})`
 where `h = (b - a) / n` and `x_{i+1/2} = a + (i + 1/2) * h`. -/
-noncomputable def simpson_midpoint_integral (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
+noncomputable def midpoint_integral (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
   ((b - a) / N) * ∑ k ∈ range N, f (a + (k + 1 / 2 : ℝ) * (b - a) / N)
 
 /-- The absolute error of Simpson's midpoint integration. -/
-noncomputable def simpson_midpoint_error (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
-  (simpson_midpoint_integral f N a b) - (∫ x in a..b, f x)
+noncomputable def midpoint_error (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
+  (midpoint_integral f N a b) - (∫ x in a..b, f x)
 
 /-- Just like exact integration, the Simpson midpoint approximation retains the same magnitude but
 changes sign when the endpoints are swapped. -/
-theorem simpson_midpoint_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
-    simpson_midpoint_integral f N a b = -(simpson_midpoint_integral f N b a) := by
-  unfold simpson_midpoint_integral
-  have h_sum : ∑ k ∈ range N, f (a + (k + (1 / 2 : ℝ)) * (b - a) / N)
-             = ∑ k ∈ range N, f (b + (k + (1 / 2 : ℝ)) * (a - b) / N) := by
-    rw [← Finset.sum_range_reflect (fun k => f (b + (k + (1 / 2 : ℝ)) * (a - b) / N)) N]
-    apply Finset.sum_congr rfl
-    intro k hk
-    simp only [Finset.mem_range] at hk
-    have h_eq : a + (k + (1 / 2 : ℝ)) * (b - a) / N
-              = b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N := by
-      calc
-        _ = b + ((N : ℝ) - 1 - k + (1 / 2 : ℝ)) * (a - b) / N := by field
-        _ = b + (((N - 1 - k : ℕ) : ℝ) + (1 / 2 : ℝ)) * (a - b) / N := by
-          have h6 : (k : ℕ) ≤ N - 1 := by omega
-          rw [Nat.cast_sub h6, Nat.cast_sub (by linarith : 1 ≤ N), Nat.cast_one]
-        _ = b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N := by norm_cast
-    rw [h_eq]
-  rw [h_sum]
-  ring
+theorem midpoint_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
+    midpoint_integral f N a b = -(midpoint_integral f N b a) := by
+  unfold midpoint_integral
+  rw [neg_mul_eq_neg_mul, neg_div', neg_sub, ← sum_range_reflect]
+  congr 1
+  apply sum_congr rfl
+  intro k hk
+  congr 1
+  rw [tsub_tsub, add_comm 1, Nat.cast_sub (mem_range.mp hk)]
+  simpa [field] using by ring
 
 /-- The absolute error of Simpson's midpoint rule does not change when the endpoints are swapped. -/
-theorem simpson_midpoint_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
-    simpson_midpoint_error f N a b = -simpson_midpoint_error f N b a := by
-  unfold simpson_midpoint_error
-  rw [simpson_midpoint_integral_symm f N_nonzero a b, intervalIntegral.integral_symm]
+theorem midpoint_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
+    midpoint_error f N a b = -midpoint_error f N b a := by
+  unfold midpoint_error
+  rw [midpoint_integral_symm f N_nonzero a b, intervalIntegral.integral_symm]
   ring
 
 /-- Just like exact integration, the Simpson midpoint integration from `a` to `a` is zero. -/
 @[simp]
-theorem simpson_midpoint_integral_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) :
-    simpson_midpoint_integral f N a a = 0 := by
-  simp [simpson_midpoint_integral]
+theorem midpoint_integral_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) :
+    midpoint_integral f N a a = 0 := by
+  simp [midpoint_integral]
 
 /-- The error of Simpson's midpoint integration from `a` to `a` is zero. -/
 @[simp]
-theorem simpson_midpoint_error_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) :
-    simpson_midpoint_error f N a a = 0 := by
-  simp [simpson_midpoint_error]
+theorem midpoint_error_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) :
+    midpoint_error f N a a = 0 := by
+  simp [midpoint_error]
 
 /-- An exact formula for integration with a single midpoint evaluation. -/
 @[simp]
-theorem simpson_midpoint_integral_one (f : ℝ → ℝ) (a b : ℝ) :
-    simpson_midpoint_integral f 1 a b = (b - a) * f ((a + b) / 2) := by
-  simp only [simpson_midpoint_integral, Nat.cast_one, range_one, sum_singleton]
+theorem midpoint_integral_one (f : ℝ → ℝ) (a b : ℝ) :
+    midpoint_integral f 1 a b = (b - a) * f ((a + b) / 2) := by
+  simp only [midpoint_integral, Nat.cast_one, range_one, sum_singleton]
   ring_nf
 
 /-- A basic Simpson midpoint equivalent to `IntervalIntegral.sum_integral_adjacent_intervals`. More
 general theorems can be derived from repeated applications of this one. -/
-theorem sum_simpson_midpoint_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ}
-    (N_nonzero : 0 < N) :
-    ∑ i ∈ range N, simpson_midpoint_integral f 1 (a + i * h) (a + (i + 1) * h)
-      = simpson_midpoint_integral f N a (a + N * h) := by
-  have h1 : ∀ i ∈ range N, simpson_midpoint_integral f 1 (a + (i : ℝ) * h) (a + ((i : ℝ) + 1) * h)
-              = h * f (a + ((i : ℝ) + 1 / 2) * h) := by
-    intro i hi
-    rw [simpson_midpoint_integral_one]
-    congr
-    · ring
-    · field
-  rw [Finset.sum_congr rfl h1, ← Finset.mul_sum]
-  have h3 : (a + N * h - a) / N = h := by
-    field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
-    ring_nf
-  rw [simpson_midpoint_integral]
-  congr 1
-  · rw [h3]
-  apply Finset.sum_congr rfl
-  intro k hk
-  congr 1
-  field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
-  ring
+theorem sum_midpoint_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ}
+    (N_nonzero : 0 < N) : ∑ i ∈ range N, midpoint_integral f 1 (a + i * h) (a + (i + 1) * h)
+      = midpoint_integral f N a (a + N * h) := by
+  simp_rw [midpoint_integral_one, add_sub_add_left_eq_sub, ← sub_mul, midpoint_integral,
+    add_sub_cancel_left, one_mul, ← mul_sum, ← mul_div, show N * (h / N) = h by field]
+  congr; ext; congr; field
 
 /-- A simplified version of the previous theorem, for use in proofs by induction and the like. -/
-theorem simpson_midpoint_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N) :
-    simpson_midpoint_integral f N a (a + N * h) + simpson_midpoint_integral f 1 (a + N * h)
-    (a + (N + 1) * h) = simpson_midpoint_integral f (N + 1) a (a + (N + 1) * h) := by
-  have h1 : simpson_midpoint_integral f 1 (a + N * h) (a + (N + 1) * h)
-          = h * f (a + (N + 1 / 2 : ℝ) * h) := by
-    rw [simpson_midpoint_integral_one]
-    congr
-    · ring
-    · field
-  have h2 : (a + N * h - a) / N = h := by
-    field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
-    ring_nf
-  have h3 : (a + (N + 1 : ℝ) * h - a) / (N + 1) = h := by
-    field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
-    ring_nf
-  rw [simpson_midpoint_integral, h2, h1]
-  have h4 : ∀ k ∈ Finset.range N, f (a + (k + (1 / 2 : ℝ)) * (a + N * h - a) / N)
-                              = f (a + (k + (1 / 2 : ℝ)) * h) := by
-    intro k hk
-    congr 1
-    field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
-    ring
-  have h5 : ∑ k ∈ Finset.range N, f (a + (k + (1 / 2 : ℝ)) * (a + N * h - a) / N)
-          = ∑ k ∈ Finset.range N, f (a + (k + (1 / 2 : ℝ)) * h) := by
-    apply Finset.sum_congr rfl
-    intro k hk
-    rw [h4 k hk]
-  rw [h5]
-  simp only [simpson_midpoint_integral]
-  have h6 : ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * h)
-          = ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * (a + (N + 1) * h - a) / (N + 1)) := by
-    apply Finset.sum_congr rfl
-    intro k hk
-    congr 1
-    field
-  calc
-    _ = h * (∑ k ∈ range N, f (a + (k + (1 / 2 : ℝ)) * h) + f (a + (N + 1 / 2 : ℝ) * h)) := by
-      rw [mul_add]
-    _ = h * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * h) := by rw [Finset.sum_range_succ]
-    _ = h * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) * (a + (N + 1) * h - a) / (N + 1)) := by
-      rw [h6]
-    _ = (a + (N + 1 : ℝ) * h - a) / (↑N + 1) * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) *
-      (a + (N + 1) * h - a) / (↑N + 1)) := by
-      rw [h3]
-    _ = (a + (N + 1 : ℝ) * h - a) / ↑(N + 1) * ∑ k ∈ range (N + 1), f (a + (k + (1 / 2 : ℝ)) *
-      (a + (N + 1) * h - a) / ↑(N + 1)) := by
-      norm_cast
+theorem midpoint_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N) :
+    midpoint_integral f N a (a + N * h) + midpoint_integral f 1 (a + N * h) (a + (N + 1) * h)
+      = midpoint_integral f (N + 1) a (a + (N + 1) * h) := by
+  rw [← Nat.cast_add_one, ← sum_midpoint_integral_adjacent_intervals N_nonzero,
+      ← sum_midpoint_integral_adjacent_intervals (Nat.add_pos_left N_nonzero 1),
+      sum_range_succ, Nat.cast_add_one]
 
 /-- Since we have `sum_[]_adjacent_intervals` theorems for both exact and Simpson midpoint
 integration, it's natural to combine them into a similar formula for the error. This theorem is in
 particular used in the proof of the general error bound. -/
-theorem sum_simpson_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (hpos : 0 < h)
+theorem sum_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (hpos : 0 < h)
     (N_nonzero : 0 < N) (h_f_int : IntervalIntegrable f volume a (a + N * h)) :
-    ∑ i ∈ range N, simpson_midpoint_error f 1 (a + i * h) (a + (i + 1) * h)
-      = simpson_midpoint_error f N a (a + N * h) := by
-  simp only [simpson_midpoint_error]
-  have h1 : ∑ i ∈ range N, (simpson_midpoint_integral f 1 (a + i * h) (a + (i + 1) * h) -
+    ∑ i ∈ range N, midpoint_error f 1 (a + i * h) (a + (i + 1) * h)
+      = midpoint_error f N a (a + N * h) := by
+  simp only [midpoint_error]
+  have h1 : ∑ i ∈ range N, (midpoint_integral f 1 (a + i * h) (a + (i + 1) * h) -
       ∫ x in a + i * h..a + (i + 1) * h, f x)
-      = ∑ i ∈ range N, simpson_midpoint_integral f 1 (a + i * h) (a + (i + 1) * h) -
+      = ∑ i ∈ range N, midpoint_integral f 1 (a + i * h) (a + (i + 1) * h) -
       ∑ i ∈ range N, ∫ x in a + i * h..a + (i + 1) * h, f x := by
     rw [Finset.sum_sub_distrib]
-  rw [h1, sum_simpson_midpoint_integral_adjacent_intervals N_nonzero]
+  rw [h1, sum_midpoint_integral_adjacent_intervals N_nonzero]
   have h3 : ∑ i ∈ range N, ∫ x in a + i * h..a + (i + 1) * h, f x = ∫ x in a..a + N * h, f x := by
     let a' : ℕ → ℝ := fun k => a + k * h
     have h_int : ∀ k < N, IntervalIntegrable f volume (a' k) (a' (k + 1)) := by
@@ -204,7 +136,7 @@ This is the key lemma: for `F` satisfying
 `(hf' : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc 0 h)) (Ioo 0 h))`
 and `(fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc 0 h) x| ≤ M)`,
 we have `|F h - F 0 - (derivWithin F (Icc 0 h) (h/2)) * h| ≤ (h^3 / 24) * M`. -/
-private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (a_lt_b : a < b)
+private lemma midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (a_lt_b : a < b)
     (hF : ContDiffOn ℝ 2 F (Icc a b))
     (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b))
     (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc a b) x| ≤ M) :
@@ -446,7 +378,7 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
 For a function `F` with `F' = f`, if `F` is twice continuously differentiable on `[[a, b]]`,
 the second derivative is differentiable on `(a, b)`, and the third derivative is bounded by `M`,
 then the midpoint rule error is bounded by `|b - a|^3 * M / 24`. -/
-theorem simpson_midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
+theorem midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
     (hF : ContDiffOn ℝ 2 F (uIcc a b))
     (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 2 F (uIcc a b)) (uIoo a b))
     {M : ℝ} (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (uIcc a b) x| ≤ M) :
@@ -454,7 +386,7 @@ theorem simpson_midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
   rcases lt_trichotomy a b with h_lt | h_eq | h_gt
   · rw [uIcc_of_lt h_lt, uIoo_of_lt h_lt] at *
     rw [abs_of_pos (sub_pos.mpr h_lt)]
-    exact simpson_midpoint_error_le_of_lt' h_lt hF hF_diff fpp_bound
+    exact midpoint_error_le_of_lt' h_lt hF hF_diff fpp_bound
   · rw [h_eq]
     simp
   · rw [uIcc_of_gt h_gt, uIoo_of_gt h_gt] at *
@@ -471,7 +403,7 @@ theorem simpson_midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
     have h_mid : (a + b) / 2 = (b + a) / 2 := by ring
     rw [h_mid]
     have h_le : |F a - F b - derivWithin F (Icc b a) ((b + a) / 2) * (a - b)| ≤
-      (a - b) ^ 3 * M / 24 := simpson_midpoint_error_le_of_lt' h_gt hF hF_diff fpp_bound
+      (a - b) ^ 3 * M / 24 := midpoint_error_le_of_lt' h_gt hF hF_diff fpp_bound
     convert h_le using 1
     ring_nf
 
@@ -479,7 +411,7 @@ theorem simpson_midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
 
 -- If `F` is three times continuously differentiable on `[[a, b]]` and the third derivative
 -- is bounded by `M`, then the midpoint rule error is bounded by `|b - a|^3 * M / 24`. -/
--- theorem simpson_midpoint_error_le_of_c3 {F : ℝ → ℝ} {a b : ℝ}
+-- theorem midpoint_error_le_of_c3 {F : ℝ → ℝ} {a b : ℝ}
 --     (hF_c3 : ContDiffOn ℝ 3 F (Icc a b)) {M : ℝ}
 --     (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc a b) x| ≤ M) :
 --     |F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a)| ≤ |b - a| ^ 3 * M / 24 := by
@@ -492,11 +424,11 @@ theorem simpson_midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
 -- where `h = (b-a)/n` and `M` bounds `|F'''|`.
 
 -- Equivalently, since `|b - a| = n * h`, the bound can be written as `(h^2 / 24) * M * (b - a)`. -/
--- theorem simpson_midpoint_composite_error_le {F : ℝ → ℝ} {a b : ℝ} {N : ℕ} (N_nonzero : 0 < N)
+-- theorem midpoint_composite_error_le {F : ℝ → ℝ} {a b : ℝ} {N : ℕ} (N_nonzero : 0 < N)
 --     (hF_c3 : ContDiffOn ℝ 3 F (Icc a b)) {M : ℝ}
 --     (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc a b) x| ≤ M) :
 --     let h := (b - a) / N
---     |simpson_midpoint_error F N a b| ≤ (h ^ 2 / 24) * M * |b - a| := by
+--     |midpoint_error F N a b| ≤ (h ^ 2 / 24) * M * |b - a| := by
 --   sorry
 
 end
