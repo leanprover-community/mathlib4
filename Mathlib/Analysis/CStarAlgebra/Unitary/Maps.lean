@@ -37,7 +37,7 @@ variable (R) in
 
 variable (R) in
 lemma symm_mulLeftLinearIsometryEquiv_apply (u : unitary A) (x : A) :
-    (mulLeftLinearIsometryEquiv R A u).symm x = star u * x := rfl
+    (mulLeftLinearIsometryEquiv R A u).symm x = (star u : A) * x := rfl
 
 @[simp] lemma symm_mulLeftLinearIsometryEquiv (u : unitary A) :
     (mulLeftLinearIsometryEquiv R A u).symm = mulLeftLinearIsometryEquiv R A (star u) := by ext; rfl
@@ -73,7 +73,7 @@ variable (R) in
 
 variable (R) in
 lemma symm_mulRightLinearIsometryEquiv_apply (u : unitary A) (x : A) :
-    (mulRightLinearIsometryEquiv R A u).symm x = x * star u := rfl
+    (mulRightLinearIsometryEquiv R A u).symm x = x * (star u : A) := rfl
 
 @[simp] lemma symm_mulRightLinearIsometryEquiv (u : unitary A) :
     (mulRightLinearIsometryEquiv R A u).symm = mulRightLinearIsometryEquiv R A (star u) := by
