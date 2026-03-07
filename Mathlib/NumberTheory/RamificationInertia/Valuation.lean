@@ -143,14 +143,6 @@ lemma _root_.IsDedekindDomain.HeightOneSpectrum.valueGroupOrderIso₀_symm_restr
   apply_fun (v.valueGroupOrderIso₀ K)
   rw [v.valueGroupOrderIso₀_restrict K, (v.valueGroupOrderIso₀ K).apply_symm_apply]
 
-lemma _root_.OrderMonoidIso.lt_symm_apply {α β : Type*} [Preorder α] [Preorder β] [Mul α] [Mul β]
-    (e : α ≃*o β) {x : α} {y : β} : x < e.symm y ↔ e x < y :=
-  e.toOrderIso.lt_symm_apply
-
-lemma _root_.OrderMonoidIso.symm_apply_lt {α β : Type*} [Preorder α] [Preorder β] [Mul α] [Mul β]
-    (e : α ≃*o β) {x : α} {y : β} : e.symm y < x ↔ y < e x :=
-  e.toOrderIso.symm_apply_lt
-
 set_option backward.isDefEq.respectTransparency false in
 variable (K) in
 theorem uniformContinuous_algebraMap_liesOver :
