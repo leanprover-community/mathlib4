@@ -32,8 +32,7 @@ lemma hasInjectiveDimensionLT_of_linearEquiv [Small.{v} R] [Small.{v'} R]
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
     (e' : M ≃ₗ[R] N) (n : ℕ) [HasInjectiveDimensionLT M n] :
     HasInjectiveDimensionLT N n := by
-  apply (hasInjectiveDimensionLT_iff.{v'} _ n).mpr (fun i hi L x ↦ ?_)
-  apply @Subsingleton.eq_zero _ _ ?_ x
+  apply (hasInjectiveDimensionLT_iff.{v'} _ n).mpr (fun i hi L x ↦ @Subsingleton.eq_zero _ _ ?_ x)
   apply ext_subsingleton_of_quotients N i (fun I ↦ ?_)
   let e'' : (ModuleCat.of R (Shrink.{v} (R ⧸ I))) ≃ₗ[R] (ModuleCat.of R (Shrink.{v'} (R ⧸ I))) :=
     (Shrink.linearEquiv.{v} R (R ⧸ I)).trans (Shrink.linearEquiv.{v'} R (R ⧸ I)).symm
@@ -68,8 +67,7 @@ lemma hasInjectiveDimensionLT_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
     (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N) (n : ℕ) [HasInjectiveDimensionLT M n] :
     HasInjectiveDimensionLT N n := by
-  apply (hasInjectiveDimensionLT_iff.{v'} _ n).mpr (fun i hi L x ↦ ?_)
-  apply @Subsingleton.eq_zero _ _ ?_ x
+  apply (hasInjectiveDimensionLT_iff.{v'} _ n).mpr (fun i hi L x ↦ @Subsingleton.eq_zero _ _ ?_ x)
   apply ext_subsingleton_of_quotients N i (fun I ↦ ?_)
   let e''' : (R ⧸ (I.comap e)) ≃ₛₗ[RingHomClass.toRingHom e] (R' ⧸ I) := {
     __ := Ideal.quotientEquiv (I.comap e) I e (I.map_comap_eq_self_of_equiv e).symm
