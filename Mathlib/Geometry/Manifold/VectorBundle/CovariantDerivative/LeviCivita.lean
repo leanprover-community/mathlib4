@@ -80,6 +80,26 @@ def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop := cov.IsCompatible 
 
 local notation "⟪" X ", " Y "⟫" => product X Y
 
+/- TODO: writing `hσ.inner_bundle hτ` or writing `by apply MDifferentiable.inner_bundle hσ hτ`
+yields an error
+synthesized type class instance is not definitionally equal to expression inferred by typing rules,
+synthesized
+  fun x ↦ instNormedAddCommGroupOfRiemannianBundle x
+inferred
+  fun b ↦ inst✝⁷
+Diagnose and fix this, and then replace the below by `MDifferentiable(At).inner_bundle! -/
+
+variable {I} in
+lemma _root_.MDifferentiable.inner_bundle' {X Y : Π x : M, TangentSpace I x}
+    (hX : MDiff (T% X)) (hY : MDiff (T% Y)) : MDiff ⟪X, Y⟫ :=
+  MDifferentiable.inner_bundle hX hY
+
+variable {I} in
+lemma _root_.MDifferentiableAt.inner_bundle' {x : M} {X Y : Π x : M, TangentSpace I x}
+    (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
+    MDiffAt ⟪X, Y⟫ x :=
+  MDifferentiableAt.inner_bundle hX hY
+
 variable (X Y Z) in
 /-- The first term in the definition of the candidate Levi-Civita connection:
 `rhs_aux I X Y Z = X ⟨Y, Z⟩ = x ↦ d(⟨Y, Z⟩)_x (X x)`.
