@@ -256,7 +256,7 @@ theorem iteratedDerivWithin_comp_const_sub (hf : ContDiffOn 𝕜 n f s) (c : �
   have : (fun z ↦ f (c - z)) = fun z ↦ f (- (z - c)) := by simp
   rw [this]
   have : ContDiffOn 𝕜 (↑n) (fun z ↦ f (z + c)) (-c +ᵥ s) := by
-    
+
     sorry
   sorry
   --  using
