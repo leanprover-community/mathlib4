@@ -209,8 +209,7 @@ lemma eTruncLT_obj_map_eTruncLTι_app_eTruncLT_map_app
     ((t.eTruncLT.obj i).map ((t.eTruncLTι j).app X) ≫ (t.eTruncLT.map f).app X) =
       (t.eTruncLTι i).app ((t.eTruncLT.obj j).obj X) := by
   dsimp [eTruncLTι]
-  rw [show homOfLE le_top = f ≫ homOfLE le_top by rfl, Functor.map_comp,
-    NatTrans.comp_app, NatTrans.naturality]
+  rw [show homOfLE le_top = f ≫ homOfLE le_top by rfl]
   induction j using WithBotTop.rec with simp [truncLT_map_truncLTι_app]
 
 set_option backward.isDefEq.respectTransparency false in
