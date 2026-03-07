@@ -290,4 +290,3 @@ lemma isCompatible_iff [FiniteDimensional ℝ F] :
   linear_combination h'
 
 end CovariantDerivative
-#lint
