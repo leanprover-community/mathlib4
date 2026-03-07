@@ -36,7 +36,7 @@ open Polynomial
 
 open scoped nonZeroDivisors
 
-variable {R : Type u} [CommRing R] (r s : R) (p q : R[X]) (f : RatFunc R)
+variable {R : Type u} [CommRing R] (r s : R) (p q : R[X]) (f : R⟮X⟯)
 
 theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
   rw [mem_nonZeroDivisors_iff_right]
@@ -49,7 +49,7 @@ theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰
 set_option linter.style.whitespace false in -- right style not clear
 /-- The Laurent expansion of rational functions about a value.
 Auxiliary definition, usage when over integral domains should prefer `RatFunc.laurent`. -/
-def laurentAux : RatFunc R →+* RatFunc R :=
+def laurentAux : R⟮X⟯ →+* R⟮X⟯ :=
   RatFunc.mapRingHom
     ( { toFun := taylor r
         map_add' := map_add (taylor r)
@@ -76,7 +76,7 @@ theorem laurentAux_algebraMap : laurentAux r (algebraMap _ _ p) = algebraMap _ _
   rw [← mk_one, ← mk_one, mk_eq_div, laurentAux_div, mk_eq_div, taylor_one, map_one, map_one]
 
 /-- The Laurent expansion of rational functions about a value. -/
-def laurent : RatFunc R →ₐ[R] RatFunc R :=
+def laurent : R⟮X⟯ →ₐ[R] R⟮X⟯ :=
   RatFunc.mapAlgHom (.ofLinearMap (taylor r) (taylor_one _) (taylor_mul _))
     (taylor_mem_nonZeroDivisors _)
 

@@ -465,8 +465,8 @@ namespace Pretriangulated
 the triangle `CochainComplex.mappingCone.triangleh φ` for some morphism of cochain
 complexes `φ`. -/
 def distinguishedTriangles : Set (Triangle (HomotopyCategory C (ComplexShape.up ℤ))) :=
-  fun T => ∃ (X Y : CochainComplex C ℤ) (φ : X ⟶ Y),
-    Nonempty (T ≅ CochainComplex.mappingCone.triangleh φ)
+  {T | ∃ (X Y : CochainComplex C ℤ) (φ : X ⟶ Y),
+    Nonempty (T ≅ CochainComplex.mappingCone.triangleh φ)}
 
 variable {C}
 

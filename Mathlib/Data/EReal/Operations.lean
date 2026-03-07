@@ -498,13 +498,11 @@ lemma sub_lt_of_lt_add' {a b c : EReal} (h : a < b + c) : a - b < c :=
 
 /-! ### Addition and order -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_of_forall_lt_iff_le {x y : EReal} : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
   refine ⟨fun h ↦ WithBot.le_of_forall_lt_iff_le.1 ?_, fun h _ x_z ↦ h.trans x_z.le⟩
   rw [WithTop.forall]
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ge_of_forall_gt_iff_ge {x y : EReal} : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
   refine ⟨fun h ↦ WithBot.ge_of_forall_gt_iff_ge.1 ?_, fun h _ x_z ↦ x_z.le.trans h⟩
   rw [WithTop.forall]

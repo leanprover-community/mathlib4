@@ -127,7 +127,6 @@ lemma injOn_udMap_sextet : Set.InjOn udMap ({0, 7, 10, 5, 2, 9} : Finset (Fin 14
   simp [Fin.forall_fin_succ, f, udMap]
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `udMap` is injective and thus can be used in a unit-distance embedding. -/
 theorem injective_udMap : udMap.Injective := by
   let s : Finset (Fin 14) := {1, 0, 7, 10, 5, 2, 9}

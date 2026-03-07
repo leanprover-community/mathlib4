@@ -296,8 +296,6 @@ lemma one_associator {M N P : C} [MonObj M] [MonObj N] [MonObj P] :
   slice_lhs 2 3 => rw [associator_naturality]
   slice_rhs 1 2 => rw [← Category.id_comp η, ← tensorHom_comp_tensorHom]
   slice_lhs 1 2 => rw [tensorHom_id, ← leftUnitor_tensor_inv]
-  rw [← cancel_epi (λ_ (𝟙_ C)).inv]
-  slice_lhs 1 2 => rw [leftUnitor_inv_naturality]
   simp
 
 lemma one_leftUnitor {M : C} [MonObj M] :

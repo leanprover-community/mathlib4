@@ -183,7 +183,7 @@ lemma exists_isIntegral_sub_of_isIntegralElem_of_mul_mem_range
   · exact ⟨r, by simp_all [isIntegral_zero]⟩
   exact ⟨_, isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt φ (t - φ (r /ₘ p)) p (r %ₘ p)
     (ht.sub _ φ.isIntegralElem_map) hpm (natDegree_modByMonic_lt _ hpm hp1)
-    (by simp [mul_sub, ← hr, sub_eq_iff_eq_add, ← map_mul, ← map_add, r.modByMonic_add_div hpm])⟩
+    (by simp [mul_sub, ← hr, sub_eq_iff_eq_add, ← map_mul, ← map_add, r.modByMonic_add_div])⟩
 
 open IsScalarTower in
 attribute [local simp] IsLocalization.map_eq aeval_algebraMap_apply aeval_algHom_apply in
@@ -212,7 +212,7 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
       obtain ⟨r, hr : φ r = _⟩ := hp
       use C ha.unit⁻¹.1 * mapRingHom (algebraMap R R') r
       simp [aeval_algebraMap_apply, aeval_algHom_apply, hr, mul_assoc])
-  obtain ⟨⟨_, n, rfl⟩, e⟩ := IsLocalization.integerNormalization_map_to_map (.powers a) q
+  obtain ⟨_, ⟨n, rfl⟩, e⟩ := IsLocalization.integerNormalization_spec (.powers a) q
   generalize IsLocalization.integerNormalization (.powers a) q = q' at e
   have : IsIntegral R' ((algebraMap S S') (a ^ n • t - φ q')) := by
     have : algebraMap S S' (φ q') = (algebraMap R S' a) ^ n * aeval (algebraMap S S' (φ X)) q := by
@@ -270,7 +270,7 @@ lemma exists_leadingCoeff_pow_smul_mem_radical_conductor
     | zero =>
       obtain hi' | hi' := lt_or_ge p.natDegree i
       · simp [coeff_eq_zero_of_natDegree_lt hi']
-      · simpa [← coeff_natDegree, hpn, show i = 0 by aesop] using this _ hp
+      · simpa [← coeff_natDegree, hpn, show i = 0 by lia] using this _ hp
     | succ n =>
       obtain hi' | hi' := eq_or_ne i p.natDegree
       · simpa [hi'] using this _ hp
@@ -279,7 +279,7 @@ lemma exists_leadingCoeff_pow_smul_mem_radical_conductor
           map_pow, sub_mul, mul_right_comm _ _ t, ← Algebra.smul_def _ t]
         exact sub_mem hp (Ideal.mul_mem_right _ _ (this _ hp))
       simpa [eraseLead_coeff, hi'] using
-        IH _ ((eraseLead_natDegree_le _).trans_lt (by aesop)) _ this rfl
+        IH _ ((eraseLead_natDegree_le _).trans_lt (by lia)) _ this rfl
   obtain ⟨n, hn⟩ := hp
   obtain ⟨k, hk⟩ := exists_leadingCoeff_pow_smul_mem_conductor φ (t ^ n) (p ^ n) hRS hφ
     (by simpa [mul_pow] using hn)

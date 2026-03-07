@@ -140,7 +140,6 @@ noncomputable def subOnePowerBasis : PowerBasis K L := by
 
 variable {K} (C)
 
-set_option backward.isDefEq.respectTransparency false in
 -- We are not using @[simps] to avoid a timeout.
 /-- The equivalence between `L →ₐ[K] C` and `primitiveRoots n C` given by a primitive root `ζ`. -/
 noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]

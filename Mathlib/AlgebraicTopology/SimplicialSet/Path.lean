@@ -384,7 +384,6 @@ lemma Subcomplex.map_ι_liftPath {X : SSet.{u}} (A : X.Subcomplex) {n : ℕ} (p 
     (hp₁ : ∀ j, p.arrow j ∈ A.obj _) :
     (A.liftPath p hp₀ hp₁).map A.ι = p := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
 in `Δ[n]`. -/
 @[simps! vertex_coe arrow_coe]

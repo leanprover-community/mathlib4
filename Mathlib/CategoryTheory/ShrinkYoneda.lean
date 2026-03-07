@@ -71,6 +71,7 @@ noncomputable def shrinkYonedaObjObjEquiv {X : C} {Y : Cᵒᵖ} :
     ((shrinkYoneda.{w}.obj X).obj Y) ≃ (Y.unop ⟶ X) :=
   (equivShrink _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm
     {X : C} {Y Y' : Cᵒᵖ} (g : Y ⟶ Y') (f : Y.unop ⟶ X) :
     (shrinkYoneda.obj _).map g (shrinkYonedaObjObjEquiv.symm f) =
@@ -82,6 +83,7 @@ lemma shrinkYonedaObjObjEquiv_symm_comp {X Y Y' : C} (g : Y' ⟶ Y) (f : Y ⟶ X
     (shrinkYoneda.obj _).map g.op (shrinkYonedaObjObjEquiv.symm f) :=
   (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm g.op f).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm
     {X X' : C} {Y : Cᵒᵖ} (f : Y.unop ⟶ X) (g : X ⟶ X') :
     (shrinkYoneda.map g).app _ (shrinkYonedaObjObjEquiv.symm f) =
@@ -167,5 +169,17 @@ noncomputable def uliftYonedaIsoShrinkYoneda :
       exact (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm _ _).symm)) (fun g ↦ by
       ext
       exact (shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm _ _).symm)
+
+/-- The functor `shrinkYoneda.{w}` followed by the evaluation
+at `Y : Cᵒᵖ` and `uliftFunctor.{v}` identifies to `coyoneda.obj Y` followed
+by `uliftFunctor.{w}`. -/
+noncomputable def shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor (Y : Cᵒᵖ) :
+    shrinkYoneda.{w} ⋙ (evaluation Cᵒᵖ _).obj Y ⋙ uliftFunctor.{v} ≅
+      coyoneda.obj Y ⋙ uliftFunctor.{w} :=
+  NatIso.ofComponents (fun X ↦ (Equiv.ulift.trans
+    (shrinkYonedaObjObjEquiv.trans Equiv.ulift.symm)).toIso) (fun f ↦ by
+      ext ⟨g⟩
+      obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
+      simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])
 
 end CategoryTheory

@@ -253,7 +253,6 @@ instance : InverseSystem (embFunctor F E) where
 set_option backward.privateInPublic true in
 private local instance (i : ι) : Decidable (succ i = i) := .isFalse (lt_succ i).ne'
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Extend `succEquiv` from `ι` to `WithTop ι`. -/
 def equivSucc (i : WithTop ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē) × factor i :=
   i.recTopCoe (((equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <| .symm <| .prodPUnit _)
@@ -266,14 +265,12 @@ section Lim
 
 variable {i : WithTop (Module.rank F E).ord.ToType} -- WithTop ι doesn't work
 
-set_option backward.isDefEq.respectTransparency false in
 theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.1 :=
   (filtration.monotone.comp <| Subtype.mono_coe _).directed_le
 
 variable (hi : IsSuccPrelimit i)
 include hi
 
-set_option backward.isDefEq.respectTransparency false in
 open WithTop in
 theorem iSup_filtration : ⨆ j : Iio i, filtration j = filtration i := by
   cases i
@@ -320,7 +317,6 @@ theorem equivLim_coherence (x l) : (equivLim hi x).1 l = embFunctor F E (mem_Iio
 
 end Lim
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A bijection between `E →ₐ[F] Ē` and the product of `E⟮<i⁺⟯ →ₐ[E⟮<i⟯] Ē` over all `i : ι`. -/
 def embEquivPi : Field.Emb F E ≃ ∀ i : ι, factor (F := F) (E := E) i :=
   let e := globalEquiv

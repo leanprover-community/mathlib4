@@ -129,7 +129,6 @@ lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
     ENNReal.ofReal_mul hd.le]
   ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
   refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?_ ?_)) <;>
@@ -290,7 +289,6 @@ lemma integral_min_eq_two_mul :
       (by ring : -(π / 2) + π = π / 2), two_mul]
   all_goals exact intervalIntegrable_min_const_sin_mul d l _ _
 
-set_option backward.isDefEq.respectTransparency false in
 include hd hl in
 /--
 The first of two adjacent integrals in the long case. In the range `0..(d / l).arcsin`, we
