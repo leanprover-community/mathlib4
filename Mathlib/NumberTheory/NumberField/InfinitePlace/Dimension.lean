@@ -43,7 +43,7 @@ theorem bijOn_sumElim_conjugate :
 open Set in
 theorem ramifiedPlacesOver_ncard [NumberField L] :
     2 * (ramifiedPlacesOver L v).ncard = (mixedEmbeddingsOver L v.embedding).ncard := by
-  rw [← (bijOn_sumElim_conjugate L v).ncard_eq, two_mul,
+  rw [← Set.ncard_congr' (bijOn_sumElim_conjugate L v).equiv, two_mul,
     ncard_eq_toFinset_card, ncard_eq_toFinset_card]
   convert (card_disjSum _ _).symm
   ext; aesop (add simp [Set.sumEquiv])
@@ -105,7 +105,7 @@ theorem bijOn_extensionIte :
 
 theorem unramifiedPlacesOver_ncard [NumberField L] :
     (unramifiedPlacesOver L v).ncard = (unmixedEmbeddingsOver L v.embedding).ncard := by
-  rw [(bijOn_extensionIte L v).ncard_eq]
+  rw [Set.ncard_congr' (bijOn_extensionIte L v).equiv]
 
 namespace Completion
 
