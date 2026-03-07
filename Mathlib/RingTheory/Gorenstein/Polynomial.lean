@@ -44,6 +44,7 @@ lemma quotientIsBaseChangeMap_isBaseChange (S : Type*) [CommRing S] [Algebra R S
   simp only [quotientIsBaseChangeMap, Submodule.liftQ_apply]
   simp [qoutMapEquivTensorQout, Algebra.smul_def]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_iff_exists [IsLocalRing R] [IsNoetherianRing R] :
     IsGorensteinLocalRing R ↔ ∃ n, ∀ i ≥ n, Subsingleton
     (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i) := by
