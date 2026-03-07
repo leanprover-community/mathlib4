@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
+
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
+import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 
 /-! # Extreme points of the closed unit ball in C⋆-algebras
 
 This file contains results on the extreme points of the closed unit ball in (unital) C⋆-algebras. -/
 
-public section
+@[expose] public section
 
 set_option backward.isDefEq.respectTransparency false
 
