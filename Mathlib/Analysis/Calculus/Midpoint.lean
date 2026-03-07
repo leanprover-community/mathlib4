@@ -43,38 +43,23 @@ theorem simpson_midpoint_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 
   have h_coeff : (b - a) / N = -((a - b) / N) := by ring
   have h_sum : ∑ k ∈ range N, f (a + (k + (1 / 2 : ℝ)) * (b - a) / N)
              = ∑ k ∈ range N, f (b + (k + (1 / 2 : ℝ)) * (a - b) / N) := by
-    have h1 : ∑ k ∈ range N, f (b + (k + (1 / 2 : ℝ)) * (a - b) / N)
-            = ∑ k ∈ range N, f (b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N) := by
-      rw [← Finset.sum_range_reflect (fun k => f (b + (k + (1 / 2 : ℝ)) * (a - b) / N)) N]
-    rw [h1]
+    rw [← Finset.sum_range_reflect (fun k => f (b + (k + (1 / 2 : ℝ)) * (a - b) / N)) N]
     apply Finset.sum_congr rfl
     intro k hk
     simp only [Finset.mem_range] at hk
-    have hN : (N : ℝ) ≠ 0 := by
-      intro h
-      have : N = 0 := by
-        exact_mod_cast h
-      linarith [N_nonzero]
-    have h3 : k ≤ N - 1 := by omega
-    have h4 : (N - 1 - k : ℕ) = N - 1 - k := by omega
-    have h5 : ((N - 1 - k : ℕ) : ℝ) = (N : ℝ) - 1 - k := by
-      rw [h4]
-      have h6 : (k : ℕ) ≤ N - 1 := h3
-      have h7 : ((N - 1 : ℕ) : ℝ) = (N : ℝ) - 1 := by
-        rw [Nat.cast_sub (by linarith : 1 ≤ N)]
-        simp
-      have h8 : ((N - 1 - k : ℕ) : ℝ) = ((N - 1 : ℕ) : ℝ) - k := by
-        rw [Nat.cast_sub h6]
-      rw [h8, h7]
     have h_eq : a + (k + (1 / 2 : ℝ)) * (b - a) / N
               = b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N := by
       calc
-        a + (k + (1 / 2 : ℝ)) * (b - a) / N
-          = a + (k + (1 / 2 : ℝ)) * (b - a) / N := rfl
-        _ = b + ((N : ℝ) - 1 - k + (1 / 2 : ℝ)) * (a - b) / N := by
-          field
+        _ = a + (k + (1 / 2 : ℝ)) * (b - a) / N := rfl
+        _ = b + ((N : ℝ) - 1 - k + (1 / 2 : ℝ)) * (a - b) / N := by field
         _ = b + (((N - 1 - k : ℕ) : ℝ) + (1 / 2 : ℝ)) * (a - b) / N := by
-          rw [h5]
+          have h6 : (k : ℕ) ≤ N - 1 := by omega
+          have h7 : ((N - 1 : ℕ) : ℝ) = (N : ℝ) - 1 := by
+            rw [Nat.cast_sub (by linarith : 1 ≤ N)]
+            simp
+          have h8 : ((N - 1 - k : ℕ) : ℝ) = ((N - 1 : ℕ) : ℝ) - k := by
+            rw [Nat.cast_sub h6]
+          rw [h8, h7]
         _ = b + ((N - 1 - k : ℕ) + (1 / 2 : ℝ)) * (a - b) / N := by
           norm_cast
     rw [h_eq]
@@ -85,19 +70,14 @@ theorem simpson_midpoint_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 
 theorem simpson_midpoint_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
     simpson_midpoint_error f N a b = -simpson_midpoint_error f N b a := by
   unfold simpson_midpoint_error
-  have h_integral : simpson_midpoint_integral f N a b = -(simpson_midpoint_integral f N b a) :=
-    simpson_midpoint_integral_symm f N_nonzero a b
-  have h_exact : (∫ x in a..b, f x) = -(∫ x in b..a, f x) := by
-    rw [intervalIntegral.integral_symm]
-  rw [h_integral, h_exact]
+  rw [simpson_midpoint_integral_symm f N_nonzero a b, intervalIntegral.integral_symm]
   ring
 
 /-- Just like exact integration, the Simpson midpoint integration from `a` to `a` is zero. -/
 @[simp]
 theorem simpson_midpoint_integral_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) :
     simpson_midpoint_integral f N a a = 0 := by
-  unfold simpson_midpoint_integral
-  simp
+  simp [simpson_midpoint_integral]
 
 /-- The error of Simpson's midpoint integration from `a` to `a` is zero. -/
 @[simp]
@@ -127,8 +107,7 @@ theorem sum_simpson_midpoint_integral_adjacent_intervals {f : ℝ → ℝ} {N : 
     congr
     · ring
     · field
-  rw [Finset.sum_congr rfl h1]
-  rw [← Finset.mul_sum]
+  rw [Finset.sum_congr rfl h1, ← Finset.mul_sum]
   have h3 : (a + N * h - a) / N = h := by
     field_simp [Nat.cast_ne_zero.mpr N_nonzero.ne']
     ring_nf
@@ -206,12 +185,7 @@ theorem sum_simpson_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ
       = ∑ i ∈ range N, simpson_midpoint_integral f 1 (a + i * h) (a + (i + 1) * h) -
       ∑ i ∈ range N, ∫ x in a + i * h..a + (i + 1) * h, f x := by
     rw [Finset.sum_sub_distrib]
-  rw [h1]
-  have h2 : ∑ i ∈ range N, simpson_midpoint_integral f 1 (a + i * h) (a + (i + 1) * h)
-          = simpson_midpoint_integral f N a (a + N * h) := by
-    apply sum_simpson_midpoint_integral_adjacent_intervals
-    exact N_nonzero
-  rw [h2]
+  rw [h1, sum_simpson_midpoint_integral_adjacent_intervals N_nonzero]
   have h3 : ∑ i ∈ range N, ∫ x in a + i * h..a + (i + 1) * h, f x = ∫ x in a..a + N * h, f x := by
     let a' : ℕ → ℝ := fun k => a + k * h
     have h_int : ∀ k < N, IntervalIntegrable f volume (a' k) (a' (k + 1)) := by
@@ -242,12 +216,7 @@ theorem sum_simpson_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ
             have : (1 + ↑k) * h ≤ ↑N * h := by
               convert mul_le_mul_of_nonneg_right this hh.le using 1
               ring_nf
-            have : a + (1 + ↑k) * h ≤ a + ↑N * h := by linarith
-            have h_eq : a + ↑(k + 1) * h = a + (1 + ↑k) * h := by
-              norm_cast
-              ring_nf
-            rw [h_eq]
-            exact this
+            grind
         · left
           constructor <;> nlinarith
         · right
@@ -420,8 +389,7 @@ private lemma simpson_midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b 
         exact h_comp
       · intro y hy; exact h_iDW2_G_eq y hy
       · exact h_iDW2_G_eq x hx
-    obtain ⟨ξ, hξ_in, hξ_eq⟩ :=
-      taylor_mean_remainder_lagrange h_m_lt_b hG_mb hG_diff_mb
+    obtain ⟨ξ, hξ_in, hξ_eq⟩ := taylor_mean_remainder_lagrange h_m_lt_b hG_mb hG_diff_mb
     have hξ₂_in : c - ξ ∈ Ioo a m := by
       simp only [Set.mem_Ioo, hc_def]
       constructor <;> linarith [hξ_in.1, hξ_in.2]
@@ -559,18 +527,13 @@ theorem simpson_midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
     {M : ℝ} (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (uIcc a b) x| ≤ M) :
     |F b - F a - (derivWithin F (uIcc a b) ((a + b) / 2)) * (b - a)| ≤ |b - a| ^ 3 * M / 24 := by
   rcases lt_trichotomy a b with h_lt | h_eq | h_gt
-  · -- 标准情况：a < b
-    rw [uIcc_of_lt h_lt, uIoo_of_lt h_lt] at *
+  · rw [uIcc_of_lt h_lt, uIoo_of_lt h_lt] at *
     rw [abs_of_pos (sub_pos.mpr h_lt)]
     exact simpson_midpoint_error_le_of_lt' h_lt hF hF_diff fpp_bound
-  · -- 平凡情况：a = b
-    rw [h_eq]
+  · rw [h_eq]
     simp
-  · -- a > b 的情况
-    rw [uIcc_of_gt h_gt, uIoo_of_gt h_gt] at *
-    rw [abs_of_neg (sub_neg.mpr h_gt)]
-    have h_neg : b - a = -(a - b) := by ring
-    rw [h_neg]
+  · rw [uIcc_of_gt h_gt, uIoo_of_gt h_gt] at *
+    rw [abs_of_neg (sub_neg.mpr h_gt), ← neg_sub a b]
     have h_sum : F b - F a - derivWithin F (Icc b a) ((a + b) / 2) * (-(a - b))
                = F b - F a + derivWithin F (Icc b a) ((a + b) / 2) * (a - b) := by ring
     rw [h_sum]
