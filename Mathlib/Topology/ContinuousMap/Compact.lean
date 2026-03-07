@@ -460,4 +460,9 @@ instance [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α,
 
 end CStarRing
 
+lemma norm_add_eq_max {X R : Type*} [TopologicalSpace X] [NormedRing R] [IsDomain R]
+    [CompactSpace X] {f g : C(X, R)} (h : f * g = 0) : ‖f + g‖ = max ‖f‖ ‖g‖ := by
+  replace h : mkOfCompact f * mkOfCompact g = 0 := by ext x; simpa using congr($h x)
+  simpa using BoundedContinuousFunction.norm_add_eq_max h
+
 end ContinuousMap
