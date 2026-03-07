@@ -992,6 +992,10 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withAppArg delab
     `(mfderiv% $fs) >>= annotateGoToSyntaxDef
 
+-- TODO: add a delaborator for mfderivWithin (with a test)
+
+-- TODO: add a delaborator for `MDifferentiable` (with a test)
+
 /-- Delaborator for `MDifferentiableAt` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
@@ -1031,6 +1035,7 @@ arguments that can use the `T%` elaborator. -/
     -- TODO: omitting the second $fs is a parse error!
     `(MDiff[$fs] $fs) >>= annotateGoToSyntaxDef
 
+-- TODO: move this test to `.../Delaborators.lean`
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
@@ -1067,5 +1072,11 @@ arguments that can use the `T%` elaborator. -/
   catch _ =>
     let fs ← withNaryArg 20 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
+
+-- TODO: add more delaborators (and tests) for
+-- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
+
+-- TODO: when adding more elaborators (for e.g. UniqueDiffOn, TangentSpace, tangentMap(Within),
+-- mlieBracket(Within), mpullback(Within))
 
 end delaborators
