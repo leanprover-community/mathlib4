@@ -149,7 +149,7 @@ theorem le_nhds_iff_adhp_of_cauchy {f : Filter α} {x : α} (hf : Cauchy f) :
     f ≤ 𝓝 x ↔ ClusterPt x f :=
   ⟨fun h => ClusterPt.of_le_nhds' h hf.1, le_nhds_of_cauchy_adhp hf⟩
 
-nonrec theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f)
+protected theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f)
     (hm : UniformContinuous m) : Cauchy (map m f) :=
   ⟨hf.1.map _,
     calc
@@ -157,7 +157,7 @@ nonrec theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf 
       _ ≤ Filter.map (Prod.map m m) (𝓤 α) := map_mono hf.right
       _ ≤ 𝓤 β := hm⟩
 
-nonrec theorem Cauchy.comap [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cauchy f)
+protected theorem Cauchy.comap [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cauchy f)
     (hm : comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α) [NeBot (comap m f)] :
     Cauchy (comap m f) :=
   ⟨‹_›,
@@ -170,6 +170,14 @@ theorem Cauchy.comap' [UniformSpace β] {f : Filter β} {m : α → β} (hf : Ca
     (hm : Filter.comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α)
     (_ : NeBot (Filter.comap m f)) : Cauchy (Filter.comap m f) :=
   hf.comap hm
+
+lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f) {s : Set α}
+    (hm : UniformContinuousOn m s) (hfs : f ≤ 𝓟 s) :
+    Cauchy (map m f) := by
+  suffices Cauchy (comap (Subtype.val : s → α) f) by
+    simpa [Set.restrict_def, ← Function.comp_def, ← map_map,
+      subtype_coe_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
+  exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
 /-- Cauchy sequences. Usually defined on ℕ, but often it is also useful to say that a function
 defined on ℝ is Cauchy at +∞ to deduce convergence. Therefore, we define it in a type class that

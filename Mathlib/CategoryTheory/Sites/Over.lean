@@ -140,7 +140,7 @@ lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
     ext
     exact hpq
   · rw [generate_le_iff]
-    exact fun Z g hg ↦ le_generate _ _ hg
+    exact fun Z g hg ↦ le_generate _ _ _ hg
 
 @[simp]
 lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Sieve Z.left) :
@@ -163,18 +163,14 @@ namespace GrothendieckTopology
 /-- The Grothendieck topology on the category `Over X` for any `X : C` that is
 induced by a Grothendieck topology on `C`. -/
 def over (X : C) : GrothendieckTopology (Over X) where
-  sieves Y S := Sieve.overEquiv Y S ∈ J Y.left
-  top_mem' Y := by
-    change _ ∈ J Y.left
-    simp
+  sieves Y := Sieve.overEquiv Y ⁻¹' J Y.left
+  top_mem' Y := by simp
   pullback_stable' Y₁ Y₂ S₁ f h₁ := by
-    change _ ∈ J _ at h₁ ⊢
-    rw [Sieve.overEquiv_pullback]
+    rw [Set.mem_preimage, Sieve.overEquiv_pullback]
     exact J.pullback_stable _ h₁
-  transitive' Y S (hS : _ ∈ J _) R hR := J.transitive hS _ (fun Z f hf => by
-    have hf' : _ ∈ J _ := hR ((Sieve.overEquiv_iff _ _).1 hf)
-    rw [Sieve.overEquiv_pullback] at hf'
-    exact hf')
+  transitive' Y S hS R hR := J.transitive hS _ fun Z f hf => by
+    specialize hR ((Sieve.overEquiv_iff _ _).1 hf)
+    rwa [Set.mem_preimage, Sieve.overEquiv_pullback] at hR
 
 lemma mem_over_iff {X : C} {Y : Over X} (S : Sieve Y) :
     S ∈ (J.over X) Y ↔ Sieve.overEquiv _ S ∈ J Y.left := by

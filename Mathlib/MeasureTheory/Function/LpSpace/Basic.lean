@@ -208,9 +208,9 @@ instance instNorm : Norm (Lp E p μ) where norm f := ENNReal.toReal (eLpNorm f p
 -- can't use `ENNReal.toNNReal (eLpNorm f p μ)`
 instance instNNNorm : NNNorm (Lp E p μ) where nnnorm f := ⟨‖f‖, ENNReal.toReal_nonneg⟩
 
-instance instDist : Dist (Lp E p μ) where dist f g := ‖f - g‖
+instance instDist : Dist (Lp E p μ) where dist f g := ‖-f + g‖
 
-instance instEDist : EDist (Lp E p μ) where edist f g := eLpNorm (⇑f - ⇑g) p μ
+instance instEDist : EDist (Lp E p μ) where edist f g := eLpNorm (-⇑f + ⇑g) p μ
 
 theorem norm_def (f : Lp E p μ) : ‖f‖ = ENNReal.toReal (eLpNorm f p μ) :=
   rfl
@@ -238,22 +238,28 @@ theorem nnnorm_toLp (f : α → E) (hf : MemLp f p μ) :
 lemma enorm_toLp {f : α → E} (hf : MemLp f p μ) : ‖hf.toLp f‖ₑ = eLpNorm f p μ := by
   simp [enorm, nnnorm_toLp f hf, ENNReal.coe_toNNReal hf.2.ne]
 
-theorem dist_def (f g : Lp E p μ) : dist f g = (eLpNorm (⇑f - ⇑g) p μ).toReal := by
+theorem dist_eq_eLpNorm_neg_add (f g : Lp E p μ) : dist f g = (eLpNorm (-⇑f + ⇑g) p μ).toReal := by
   simp_rw [dist, norm_def]
   refine congr_arg _ ?_
-  apply eLpNorm_congr_ae (coeFn_sub _ _)
+  apply eLpNorm_congr_ae
+  exact (coeFn_add _ _).trans ((coeFn_neg f).add ae_eq_rfl)
 
-theorem edist_def (f g : Lp E p μ) : edist f g = eLpNorm (⇑f - ⇑g) p μ :=
-  rfl
+theorem dist_def (f g : Lp E p μ) : dist f g = (eLpNorm (⇑f - ⇑g) p μ).toReal := by
+  rw [dist_eq_eLpNorm_neg_add, ← eLpNorm_neg, neg_add, neg_neg, sub_eq_add_neg]
+
+theorem edist_eq_eLpNorm_neg_add (f g : Lp E p μ) : edist f g = eLpNorm (-⇑f + ⇑g) p μ := rfl
+
+theorem edist_def (f g : Lp E p μ) : edist f g = eLpNorm (⇑f - ⇑g) p μ := by
+  rw [edist_eq_eLpNorm_neg_add, ← eLpNorm_neg, neg_add, neg_neg, sub_eq_add_neg]
 
 protected theorem edist_dist (f g : Lp E p μ) : edist f g = .ofReal (dist f g) := by
   rw [edist_def, dist_def, ← eLpNorm_congr_ae (coeFn_sub _ _),
     ENNReal.ofReal_toReal (eLpNorm_ne_top (f - g))]
 
 protected theorem dist_edist (f g : Lp E p μ) : dist f g = (edist f g).toReal :=
-  MeasureTheory.Lp.dist_def ..
+  MeasureTheory.Lp.dist_eq_eLpNorm_neg_add ..
 
-theorem dist_eq_norm (f g : Lp E p μ) : dist f g = ‖f - g‖ := rfl
+theorem dist_eq_norm (f g : Lp E p μ) : dist f g = ‖-f + g‖ := rfl
 
 @[simp]
 theorem edist_toLp_toLp (f g : α → E) (hf : MemLp f p μ) (hg : MemLp g p μ) :

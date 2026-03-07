@@ -36,6 +36,7 @@ documentation for `Mathlib/Tactic/FunProp.lean` for a detailed explanation.
 * `fun_prop [c, ...]` will unfold the constant(s) `c`, ... before decomposing `f`.
 * `fun_prop (config := cfg)` sets advanced configuration options using `cfg : FunProp.Config`
   (see `FunProp.Config` for details).
+  These options can be combined: `fun_prop (config := cfg) (disch := tac) [c]`
 
 Examples:
 
@@ -122,7 +123,7 @@ def funPropTac : Tactic
 
 
 
-/-- Command that printins all function properties attached to a function.
+/-- Command that prints all function properties attached to a function.
 
 For example
 ```
@@ -132,8 +133,8 @@ might print out
 ```
 Continuous
   continuous_add, args: [4,5], priority: 1000
-  continuous_add_left, args: [5], priority: 1000
-  continuous_add_right, args [4], priority: 1000
+  continuous_const_add, args: [5], priority: 1000
+  continuous_add_const, args [4], priority: 1000
   ...
 Differentiable
   Differentiable.add, args: [4,5], priority: 1000

@@ -478,7 +478,6 @@ theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
     !![a₁₁, a₁₂;
        a₂₁, a₂₂] * !![b₁₁, b₁₂;
@@ -487,7 +486,6 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- Preserve the formatting of the matrices.
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :

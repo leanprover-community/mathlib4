@@ -434,7 +434,6 @@ section Bind
 
 variable {P : Finpartition a} {Q : ∀ i ∈ P.parts, Finpartition i}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a finpartition `P` of `a` and finpartitions of each part of `P`, this yields the
 finpartition of `a` obtained by juxtaposing all the subpartitions. -/
 @[simps! parts]
@@ -611,7 +610,6 @@ lemma mem_part_self : a ∈ P.part a ↔ a ∈ s := by
 
 alias ⟨_, mem_part⟩ := mem_part_self
 
-set_option backward.isDefEq.respectTransparency false in
 lemma part_eq_iff_mem (ht : t ∈ P.parts) : P.part a = t ↔ a ∈ t := by
   constructor
   · rintro rfl
@@ -760,7 +758,6 @@ end Setoid
 
 section Atomise
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Cuts `s` along the finsets in `F`: Two elements of `s` will be in the same part if they are
 in the same finsets of `F`. -/
 def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
