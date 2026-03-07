@@ -222,7 +222,7 @@ def add (E : PreZeroHypercover.{w} S) {T : C} (f : T ⟶ S) : PreZeroHypercover.
   simp [add, presieve₀_reindex, presieve₀_sum]
 
 /-- The single object pre-`0`-hypercover obtained from taking the coproduct of the components. -/
-@[simps I₀ X]
+@[simps I₀ X, simps -isSimp f]
 def sigmaOfIsColimit (E : PreZeroHypercover.{w} S) {c : Cofan E.X} (hc : IsColimit c) :
     PreZeroHypercover.{w} S where
   I₀ := PUnit
@@ -234,6 +234,11 @@ lemma inj_sigmaOfIsColimit_f (E : PreZeroHypercover.{w} S) {c : Cofan E.X} (hc :
     (i : E.I₀) (r : PUnit) :
     c.inj i ≫ (E.sigmaOfIsColimit hc).f r = E.f i := by
   simp [PreZeroHypercover.sigmaOfIsColimit]
+
+@[simp]
+lemma presieve₀_sigmaOfIsColimit (E : PreZeroHypercover.{w} S) {c : Cofan E.X} (hc : IsColimit c) :
+    (E.sigmaOfIsColimit hc).presieve₀ = Presieve.singleton (Cofan.IsColimit.desc hc E.f) :=
+  Presieve.ofArrows_pUnit _
 
 section Category
 
@@ -349,7 +354,7 @@ lemma Hom.sieve₀_le_sieve₀ {E F : PreZeroHypercover S} (f : E.Hom F) : E.sie
   intro i
   rw [← f.w₀ i]
   apply Sieve.downward_closed
-  exact Sieve.le_generate _ _ ⟨f.s₀ i⟩
+  exact Sieve.le_generate _ _ _ ⟨f.s₀ i⟩
 
 lemma sieve₀_eq_of_iso {E F : PreZeroHypercover S} (e : E ≅ F) : E.sieve₀ = F.sieve₀ :=
   le_antisymm e.hom.sieve₀_le_sieve₀ e.inv.sieve₀_le_sieve₀

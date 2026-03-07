@@ -45,7 +45,7 @@ This is equal to `Sieve.generate (Presieve.singleton f)`, but has
 more convenient definitional properties.
 -/
 def Sieve.generateSingleton {X Y : C} (f : Y ⟶ X) : Sieve X where
-  arrows Z := { g | ∃ (e : Z ⟶ Y), e ≫ f = g }
+  arrows Z g := ∃ (e : Z ⟶ Y), e ≫ f = g
   downward_closed := by
     rintro W Z g ⟨e, rfl⟩ q
     exact ⟨q ≫ e, by simp⟩
@@ -156,7 +156,7 @@ more convenient definitional properties.
 -/
 def Sieve.generateFamily {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     Sieve B where
-  arrows Y := { f | ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f }
+  arrows Y f := ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f
   downward_closed := by
     rintro Y₁ Y₂ g₁ ⟨a, q, rfl⟩ e
     exact ⟨a, e ≫ q, by simp⟩

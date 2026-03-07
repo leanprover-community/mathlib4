@@ -306,7 +306,6 @@ end FiberBundle
 variable (F)
 variable (E)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a fiber bundle over a conditionally complete linear order,
 then it is trivial over any closed interval. -/
 theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinearOrder B]
@@ -503,7 +502,7 @@ theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
     (Z.localTrivAsPartialEquiv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 
-/-- The composition of two local trivializations is the trivialization change Z.triv_change i j. -/
+/-- The composition of two local trivializations is the trivialization change `Z.trivChange i j`. -/
 theorem localTrivAsPartialEquiv_trans (i j : ι) :
     (Z.localTrivAsPartialEquiv i).symm.trans (Z.localTrivAsPartialEquiv j) ≈
       (Z.trivChange i j).toPartialEquiv := by
