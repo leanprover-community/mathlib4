@@ -987,16 +987,10 @@ theorem EventuallyEq.comp₂ {δ} {f f' : α → β} {g g' : α → γ} {l} (Hf 
     (Hg : g =ᶠ[l] g') : (fun x => h (f x) (g x)) =ᶠ[l] fun x => h (f' x) (g' x) :=
   (Hf.prodMk Hg).fun_comp (uncurry h)
 
--- TODO: can't use `to_additive` and `to_fun` simultaneously?
-@[to_additive (attr := gcongr)]
+@[to_additive (attr := gcongr, to_fun)]
 theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
     (h' : f' =ᶠ[l] g') : f * f' =ᶠ[l] g * g' :=
   h.comp₂ (· * ·) h'
-
-@[to_additive]
-theorem EventuallyEq.fun_mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
-    (h' : f' =ᶠ[l] g') : (fun x => f x * f' x) =ᶠ[l] fun x => g x * g' x :=
-  h.mul h'
 
 @[to_additive]
 lemma EventuallyEq.mul_left [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
@@ -1006,46 +1000,26 @@ lemma EventuallyEq.mul_left [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ
 lemma EventuallyEq.mul_right [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
     f₁ * f₃ =ᶠ[l] f₂ * f₃ := EventuallyEq.mul h (by rfl)
 
--- TODO: can't use `to_additive` and `to_fun` simultaneously?
-@[to_additive (attr := gcongr, to_additive) const_smul]
+@[to_additive (attr := gcongr, to_fun, to_additive) const_smul]
 theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ) :
     f ^ c =ᶠ[l] g ^ c :=
   h.fun_comp (· ^ c)
 
-@[to_additive (attr := to_additive) fun_const_smul]
-theorem EventuallyEq.fun_pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g)
-    (c : γ) : (fun x => f x ^ c) =ᶠ[l] fun x => g x ^ c :=
-  h.pow_const c
-
-@[to_additive (attr := gcongr)]
+@[to_additive (attr := gcongr, to_fun)]
 theorem EventuallyEq.inv [Inv β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) : f⁻¹ =ᶠ[l] g⁻¹ :=
   h.fun_comp Inv.inv
 
-@[to_additive]
-theorem EventuallyEq.fun_inv [Inv β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) :
-    (fun x => (f x)⁻¹) =ᶠ[l] fun x => (g x)⁻¹ :=
-  h.inv
-
-@[to_additive (attr := gcongr)]
+@[to_additive (attr := gcongr, to_fun)]
 theorem EventuallyEq.div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
     (h' : f' =ᶠ[l] g') : f / f' =ᶠ[l] g / g' :=
   h.comp₂ (· / ·) h'
-
-@[to_additive]
-theorem EventuallyEq.fun_div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
-    (h' : f' =ᶠ[l] g') : (fun x => f x / f' x) =ᶠ[l] fun x => g x / g' x :=
-  h.div h'
 
 @[to_additive]
 theorem EventuallyEq.smul {𝕜} [SMul 𝕜 β] {l : Filter α} {f f' : α → 𝕜} {g g' : α → β}
     (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') : (fun x => f x • g x) =ᶠ[l] fun x => f' x • g' x :=
   hf.comp₂ (· • ·) hg
 
-protected theorem EventuallyEq.fun_star {R : Type*} [Star R] {f g : α → R}
-    {l : Filter α} (h : f =ᶠ[l] g) : (fun x ↦ star (f x)) =ᶠ[l] fun x ↦ star (g x) :=
-  h.fun_comp Star.star
-
-@[gcongr]
+@[gcongr, to_fun]
 protected theorem EventuallyEq.star {R : Type*} [Star R]
     {f g : α → R} {l : Filter α} (h : f =ᶠ[l] g) : star f =ᶠ[l] star g := h.fun_comp Star.star
 
