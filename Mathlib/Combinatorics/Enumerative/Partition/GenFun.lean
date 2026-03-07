@@ -53,7 +53,7 @@ multiplied within one `n.Partition`, and summed among all `n.Partition` for a fi
 each `n` is assigned a value, which we use as the coefficients of the power series.
 
 See the module docstring of `Combinatorics.Enumerative.Partition.GenFun` for more details. -/
-def genFun (f : ℕ → ℕ → R) : R⟦X⟧ :=
+noncomputable def genFun (f : ℕ → ℕ → R) : R⟦X⟧ :=
   PowerSeries.mk fun n ↦ ∑ p : n.Partition, p.parts.toFinsupp.prod f
 
 @[simp]

@@ -986,7 +986,6 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define an algebra homomorphism on a directed supremum of non-unital subalgebras by defining
 it on each non-unital subalgebra, and proving that it agrees on the intersection of
 non-unital subalgebras. -/

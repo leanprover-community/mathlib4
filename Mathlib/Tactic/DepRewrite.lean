@@ -509,7 +509,7 @@ The result is expected to be defeq to the original expression. -/
 def cleanupCasts (e : Expr) : MetaM Expr :=
   transform (input := e) (skipConstInApp := true) (pre := fun e =>
     -- since the `pre` method returns a result instead of calling itself recursively,
-    -- the tracing creates many parallel nodes insetad of nesting them
+    -- the tracing creates many parallel nodes instead of nesting them
     -- unfortunately, there does not seem to be a way to nest the trace nodes
     -- within the bounds of the `Lean.Meta.transform` API
     withTraceNode traceClsClean (fun
