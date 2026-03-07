@@ -749,7 +749,7 @@ example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
 ```
 
 ```
--- Descending into binders (here: ⊔).
+-- Descending into binders (here: ⨆).
 example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆ n, g n := by
   gcongr with i
   exact h i
