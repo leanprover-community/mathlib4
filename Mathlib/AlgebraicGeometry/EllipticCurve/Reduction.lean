@@ -57,15 +57,17 @@ variable {K : Type*} [Field K] [Algebra R K]
 it has coefficients in the ring `R`. -/
 @[mk_iff]
 class IsIntegral (W : WeierstrassCurve K) : Prop where
-  integral : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K
+  integral : ∃ W_int : WeierstrassCurve R, W = W_int⁄K
 
 /-- An integral model of an integral Weierstrass curve. -/
 noncomputable def integralModel (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     WeierstrassCurve R :=
   hW.integral.choose
 
+variable (W : WeierstrassCurve K) [hW : IsIntegral R W]
+
 lemma baseChange_integralModel_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
-    (integralModel R W).baseChange K = W :=
+    (integralModel R W)⁄K = W :=
   hW.integral.choose_spec.symm
 
 lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
@@ -77,7 +79,7 @@ lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
     IsIntegral R W := by
   use ⟨h₁.choose, h₂.choose, h₃.choose, h₄.choose, h₆.choose⟩
   ext
-  all_goals simp only [map_a₁, map_a₂, map_a₃, map_a₄, map_a₆]
+  all_goals simp only [baseChange, map_a₁, map_a₂, map_a₃, map_a₄, map_a₆]
   · apply h₁.choose_spec.symm
   · apply h₂.choose_spec.symm
   · apply h₃.choose_spec.symm
@@ -86,15 +88,15 @@ lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
 
 lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
     ∃ r : R, algebraMap R K r = W.Δ := by
-  obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
+  obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int⁄K :=
     IsIntegral.integral
   use W_int.Δ
-  rw [hW_int, map_Δ]
+  rw [hW_int, baseChange, map_Δ]
 
 lemma integralModel_Δ_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).Δ = W.Δ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange, integralModel]
 
 variable [IsDomain R] [ValuationRing R] [IsFractionRing R K]
 

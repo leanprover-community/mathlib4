@@ -518,7 +518,7 @@ abbrev baseChange [Algebra R S] : Jacobian S :=
   WeierstrassCurve.baseChange W' S
 
 /-- The notation `\textf` for `WeierstrassCurve.Jacobian.baseChange W S`. -/
-scoped notation:max W' "⁄" S => baseChange W' S
+scoped notation:max W:max "⁄" S:max => baseChange W S
 
 @[simp]
 lemma map_polynomial : (W'.map f).polynomial = .map f W'.polynomial := by

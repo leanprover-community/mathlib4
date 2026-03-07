@@ -266,7 +266,7 @@ abbrev baseChange [Algebra R S] : Affine S :=
   WeierstrassCurve.baseChange W S
 
 /-- The notation `\textf` for `WeierstrassCurve.Affine.baseChange W S`. -/
-scoped notation:max W "⁄" S => baseChange W S
+scoped notation:max W:max "⁄" S:max => baseChange W S
 
 lemma map_polynomial : (W.map f).polynomial = W.polynomial.map (mapRingHom f) := by
   simp only [polynomial]

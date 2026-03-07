@@ -798,7 +798,7 @@ noncomputable def map : (W'⁄F).Point →+ (W'⁄K).Point where
 lemma map_zero : map f (0 : (W'⁄F).Point) = 0 :=
   rfl
 
-lemma map_some {x y : F} (h : (W'.baseChange F).toAffine.Nonsingular x y) :
+lemma map_some {x y : F} (h : (W'⁄F).Nonsingular x y) :
     map f (some _ _ h) = some _ _ ((W'.baseChange_nonsingular f.injective ..).mpr h) :=
   rfl
 
