@@ -289,12 +289,16 @@ theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsClosed (toStrongDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
 
+/-- Closed balls are bounded in the weak dual. -/
+theorem isBounded_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
+    IsBounded (toStrongDual ⁻¹' closedBall x' r) :=
+  isBounded_toStrongDual_preimage.mpr Metric.isBounded_closedBall
+
 /-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
 the weak-star topology. -/
 theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsCompact (toStrongDual ⁻¹' closedBall x' r) :=
-  isCompact_of_bounded_of_closed (isBounded_toStrongDual_preimage.mpr isBounded_closedBall)
-    (isClosed_closedBall x' r)
+  isCompact_of_bounded_of_closed (isBounded_closedBall x' r) (isClosed_closedBall x' r)
 
 /-!
 ### Polar sets in the weak dual space
@@ -316,12 +320,16 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
+/-- Polar sets of neighborhoods of the origin are bounded in the weak dual. -/
+theorem isBounded_polar {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) :
+    IsBounded (polar 𝕜 s) :=
+  isBounded_toStrongDual_preimage.mpr (NormedSpace.isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds)
+
 /-- The image under `↑ : WeakDual 𝕜 E → (E → 𝕜)` of a polar `WeakDual.polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
 theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) :
     IsClosed (((↑) : WeakDual 𝕜 E → E → 𝕜) '' polar 𝕜 s) :=
-  isClosed_image_coe_of_bounded_of_closed (isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds)
-    (isClosed_polar _ _)
+  isClosed_image_coe_of_bounded_of_closed (isBounded_polar 𝕜 s_nhds) (isClosed_polar _ _)
 
 /-- The image under `↑ : StrongDual 𝕜 E → (E → 𝕜)` of a polar `polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
@@ -334,7 +342,7 @@ theorem _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
 normed space `E` is a compact subset of `WeakDual 𝕜 E`. -/
 theorem isCompact_polar [ProperSpace 𝕜] {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) :
     IsCompact (polar 𝕜 s) :=
-  isCompact_of_bounded_of_closed (isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds) (isClosed_polar _ _)
+  isCompact_of_bounded_of_closed (isBounded_polar 𝕜 s_nhds) (isClosed_polar _ _)
 
 /-!
 ### Sequential compactness
@@ -383,13 +391,13 @@ a separable normed space `V` is a sequentially compact subset of `WeakDual 𝕜 
 theorem isSeqCompact_polar {s : Set V} (s_nhd : s ∈ 𝓝 (0 : V)) :
     IsSeqCompact (polar 𝕜 s) :=
   isSeqCompact_of_isBounded_of_isClosed (s := polar 𝕜 s) _ _
-    (NormedSpace.isBounded_polar_of_mem_nhds_zero 𝕜 s_nhd) (isClosed_polar _ _)
+    (isBounded_polar 𝕜 s_nhd) (isClosed_polar _ _)
 
 /-- The **Sequential Banach-Alaoglu theorem**: closed balls of the dual of a separable
 normed space `V` are sequentially compact in the weak-* topology. -/
 theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
     IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) :=
   isSeqCompact_of_isBounded_of_isClosed 𝕜 V
-    (isBounded_toStrongDual_preimage.mpr Metric.isBounded_closedBall) (isClosed_closedBall x' r)
+    (isBounded_closedBall x' r) (isClosed_closedBall x' r)
 
 end WeakDual
