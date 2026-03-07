@@ -64,7 +64,8 @@ instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
 @[deprecated (since := "2026-03-07")] alias chosenProd := MonoidalCategory.tensorObj
 @[deprecated (since := "2026-03-07")] alias chosenProd.fst := CartesianMonoidalCategory.fst
 @[deprecated (since := "2026-03-07")] alias chosenProd.snd := CartesianMonoidalCategory.snd
-@[deprecated (since := "2026-03-07")] alias chosenProd.isLimit := CartesianMonoidalCategory.tensorProductIsBinaryProduct
+@[deprecated (since := "2026-03-07")] alias chosenProd.isLimit :=
+  CartesianMonoidalCategory.tensorProductIsBinaryProduct
 
 namespace Monoidal
 
