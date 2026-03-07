@@ -162,6 +162,57 @@ instance {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
     smul_smul, ← mul_assoc, inv_mul_cancel_left, mul_smul, Subgroup.inv_mem _ hs]
   exact hg (s⁻¹ • x)
 
+variable {N : Type*} [Group N] [MulSemiringAction N R]
+
+/--
+Assume that `M` and `N` are isomorphic and act in a compatible way on `R`, then for any
+ideal `I` of `R`, the stabilizer of `I` in `M` is isomorphic to the stabilizer of `I` in `N`.
+-/
+def stabilizerEquiv (I : Ideal R) (e : M ≃* N) (he : ∀ (m : M) (x : R), (e m) • x = m • x) :
+    MulAction.stabilizer M I ≃* MulAction.stabilizer N I where
+  toEquiv := Equiv.subtypeEquiv e fun _ ↦ by
+    simp [Ideal.ext_iff, Ideal.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv, he]
+  map_mul' _ _ := by simp
+
+@[simp]
+theorem stabilizerEquiv_apply_smul (I : Ideal R) (e : M ≃* N)
+    (he : ∀ (m : M) (x : R), (e m) • x = m • x) (m : MulAction.stabilizer M I) (x : R) :
+    stabilizerEquiv I e he m • x = m • x := by
+  simp [stabilizerEquiv, MulAction.subgroup_smul_def, ← he m x]
+
+@[simp]
+theorem stabilizerEquiv_symm_apply_smul (I : Ideal R) (e : M ≃* N)
+    (he : ∀ (m : M) (x : R), (e m) • x = m • x) (n : MulAction.stabilizer N I) (x : R) :
+    (stabilizerEquiv I e he).symm n • x = n • x := by
+  rw [← (stabilizerEquiv I e he).apply_symm_apply n, stabilizerEquiv_apply_smul,
+    (stabilizerEquiv I e he).apply_symm_apply]
+
+/--
+Assume that `M` and `N` are isomorphic and act in a compatible way on `R`, then for any
+ideal `I` of `R`, the inertia subgroup of `I` in `M` is isomorphic to the inertia subgroup
+of `I` in `N`.
+-/
+def inertiaEquiv {R : Type*} [Ring R] [MulSemiringAction M R] [MulSemiringAction N R] (I : Ideal R)
+    (e : M ≃* N) (he : ∀ (m : M) (x : R), (e m) • x = m • x) :
+    inertia M I ≃* inertia N I where
+  toEquiv := Equiv.subtypeEquiv e fun _ ↦ by simp [he]
+  map_mul' := by simp
+
+@[simp]
+theorem inertiaEquiv_apply_smul {R : Type*} [Ring R] [MulSemiringAction M R] [MulSemiringAction N R]
+    (I : Ideal R) (e : M ≃* N) (he : ∀ (m : M) (x : R), (e m) • x = m • x) (m : inertia M I)
+    (x : R) :
+    inertiaEquiv I e he m • x = m • x := by
+  simp [inertiaEquiv, MulAction.subgroup_smul_def, ← he m x]
+
+@[simp]
+theorem inertiaEquiv_symm_apply_smul {R : Type*} [Ring R] [MulSemiringAction M R]
+    [MulSemiringAction N R] (I : Ideal R) (e : M ≃* N) (he : ∀ (m : M) (x : R), (e m) • x = m • x)
+    (n : inertia N I) (x : R) :
+    (inertiaEquiv I e he).symm n • x = n • x := by
+  rw [← (inertiaEquiv I e he).apply_symm_apply n, inertiaEquiv_apply_smul,
+    (inertiaEquiv I e he).apply_symm_apply]
+
 /-! TODO: add `equivSMul` like we have for subgroup. -/
 
 end Group

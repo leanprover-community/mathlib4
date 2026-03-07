@@ -472,7 +472,6 @@ def mkInductiveAux₁ :
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary construction for `mkInductive`.
 -/
 def mkInductiveAux₂ :
@@ -488,7 +487,6 @@ def mkInductiveAux₂ :
       ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem mkInductiveAux₂_add_one (n) :
     mkInductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
       letI I := mkInductiveAux₁ e zero one comm_one succ n

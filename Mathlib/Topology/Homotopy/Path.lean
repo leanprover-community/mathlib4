@@ -69,7 +69,6 @@ theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
   calc F (t, 1) = p₀ 1 := ContinuousMap.HomotopyRel.eq_fst _ _ (.inr rfl)
   _ = x₁ := p₀.target
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Evaluating a path homotopy at an intermediate point, giving us a `Path`.
 -/
 @[simps]
@@ -186,7 +185,6 @@ theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Suppose `p` is a path, then we have a homotopy from `p` to `p.reparam f` by the convexity of `I`.
 -/
