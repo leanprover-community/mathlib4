@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kalle Kytölä, Yury Kudryashov
+Authors: Kalle Kytölä, Yury Kudryashov, Michał Świętek
 -/
 module
 
@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Operator.Completeness
 public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Topology.MetricSpace.PiNat
+import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 
 /-!
 # Weak dual of normed space
@@ -144,6 +145,26 @@ theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : toStrongDual x' = x' :=
 @[simp]
 theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
   (LinearEquiv.injective toStrongDual).eq_iff
+
+section Bornology
+
+variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+/-- The norm bornology on `WeakDual 𝕜 F`, inherited from `StrongDual 𝕜 F`. -/
+instance instBornology : Bornology (WeakDual 𝕜 F) := inferInstanceAs (Bornology (StrongDual 𝕜 F))
+
+/-- A set in `WeakDual 𝕜 F` is bounded iff its image in `StrongDual 𝕜 F` is bounded. -/
+@[simp]
+theorem isBounded_toStrongDual_preimage {s : Set (StrongDual 𝕜 F)} :
+    IsBounded (WeakDual.toStrongDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
+
+/-- A set in `StrongDual 𝕜 F` is bounded iff its image in `WeakDual 𝕜 F` is bounded. -/
+@[simp]
+theorem isBounded_toWeakDual_preimage {s : Set (WeakDual 𝕜 F)} :
+    IsBounded (StrongDual.toWeakDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
+
+end Bornology
+
 
 variable (𝕜)
 
