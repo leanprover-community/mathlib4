@@ -30,11 +30,16 @@ further in the implementation notes.
 We establish the Banach-Alaoglu theorem about the compactness of closed balls in the dual of `E`
 (as well as sets of somewhat more general form) with respect to the weak-* topology.
 
-Main results include:
-* The canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous.
-* The weak-* topology is coarser than the operator norm topology.
-* The Banach-Alaoglu theorem: closed balls and polar sets are compact in the weak-* topology.
-* Sequential Banach-Alaoglu: for separable `E`, the dual unit ball is sequentially compact.
+The first main result concerns the comparison of the operator norm topology on `StrongDual 𝕜 E` and
+the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
+* `dual_norm_topology_le_weak_dual_topology`: The weak-* topology on the dual of a normed space is
+  coarser (not necessarily strictly) than the operator norm topology.
+* `WeakDual.isCompact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
+  neighborhood of the origin in a normed space `E` over `𝕜` is compact in `WeakDual _ E`, if the
+  nontrivially normed field `𝕜` is proper as a topological space.
+* `WeakDual.isCompact_closedBall` (the most common special case of the Banach-Alaoglu theorem):
+  Closed balls in the dual of a normed space `E` over `ℝ` or `ℂ` are compact in the weak-star
+  topology.
 
 ## Main definitions
 
@@ -72,8 +77,21 @@ Main results include:
      topological weak-* boundedness (`IsVonNBounded`).
   3. **Consistency:** By the Uniform Boundedness Principle, these notions coincide whenever
      `E` is a Banach space (`isBounded_iff_isVonNBounded`).
+* **Polar sets:** The polar set `polar 𝕜 s` of a subset `s` of `E` is originally defined as a
+  subset of the dual `StrongDual 𝕜 E`. We care about properties of these w.r.t. weak-* topology,
+  and for this purpose give the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a
+  subset of `WeakDual 𝕜 E` (a type synonym of the dual but with a different topology instance).
 * **Banach-Alaoglu Proof:** The weak dual of `E` is embedded in the space of functions `E → 𝕜`
   with the topology of pointwise convergence.
+
+## TODO
+* Add that in finite dimensions, the weak-* topology and the dual norm topology coincide.
+* Add that in infinite dimensions, the weak-* topology is strictly coarser than the dual norm
+  topology.
+* Add metrizability of the dual unit ball (more generally weak-star compact subsets) of
+  `WeakDual 𝕜 E` under the assumption of separability of `E`.
+* Add the sequential Banach-Alaoglu theorem: the dual unit ball of a separable normed space `E`
+  is sequentially compact in the weak-star topology. This would follow from the metrizability above.
 
 ## References
 * https://en.wikipedia.org/wiki/Weak_topology#Weak-*_topology
