@@ -75,20 +75,17 @@ lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
     (φ : mk₂ (homOfLE hab) (homOfLE hbc) ⟶ mk₂ (homOfLE hab') (homOfLE hbc')) :
     t.ω₁.map (homMk₁ (φ.app 1) (φ.app 2)) ≫ t.ω₁δ a' b' c' hab' hbc' =
       t.ω₁δ a b c hab hbc ≫ Functor.whiskerRight (t.ω₁.map (homMk₁ (φ.app 0) (φ.app 1))) _ := by
-  ext X
-  simp only [ω₁_obj, mk₁_obj, Mk₁.obj, Functor.comp_obj, ω₁_map, homMk₁_app,
-    NatTrans.comp_app, NatTrans.hcomp_app, ω₁δ_app,
-    ← Functor.map_comp, Category.assoc, NatTrans.naturality_assoc, Functor.comp_map,
-    ← Functor.map_comp_assoc, NatTrans.naturality_app_assoc, Functor.whiskeringRight_obj_obj,
+  ext
+  dsimp
+  simp only [ω₁δ_app, ← Functor.map_comp, NatTrans.naturality_assoc, Functor.comp_map,
+    Category.assoc, ← Functor.map_comp_assoc, NatTrans.naturality_app_assoc,
     Functor.whiskeringRight_obj_map, Functor.whiskerRight_app, NatTrans.naturality]
   congr 2
-  have h₁ := t.eTruncLTGEIsoGELT_naturality_app a b hab a' b' hab' (homMk₁ (φ.app 0) (φ.app 1))
-  dsimp at h₁
   simp only [Functor.map_comp, Category.assoc]
-  rw [← reassoc_of% h₁, ← eTruncLTGEIsoGELT_hom_naturality, ← eTruncLTGEIsoGELT_hom_naturality,
-    ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 2) X, NatTrans.naturality_assoc,
-    ← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
-    ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
+  have h₁ := t.eTruncLTGEIsoGELT_naturality_app a b hab a' b' hab' (homMk₁ (φ.app 0) (φ.app 1))
+  rw [← reassoc_of% dsimp% h₁, ← eTruncLTGEIsoGELT_hom_naturality,
+    ← eTruncLTGEIsoGELT_hom_naturality, ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 2)]
+  simp only [↓NatTrans.naturality_assoc, ↓← Functor.map_comp_assoc]
   simp only [homOfLE_leOfHom, Fin.isValue, Category.assoc, eTruncGEπ_naturality,
     eTruncLT_map_app_eTruncLTι_app_assoc, Functor.map_comp, eTruncGEπ_app_eTruncGE_map_app,
     eTruncLT_map_app_eTruncLTι_app]
