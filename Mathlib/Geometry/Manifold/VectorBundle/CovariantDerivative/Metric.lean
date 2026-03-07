@@ -204,68 +204,48 @@ noncomputable def compatibilityTensorAux (σ τ : Π x : M, V x) :
   (NormedSpace.fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% ⟪σ, τ⟫ x
   - ((innerSL ℝ (τ x)) ∘L (cov σ x)) - ((innerSL ℝ (σ x)) ∘L (cov τ x))
 
+omit [IsManifold I 2 M] in
 lemma compatibilityTensorAux_apply (σ τ : Π x : M, V x)
     {x : M} (X₀ : TangentSpace I x) :
     compatibilityTensorAux I cov σ τ x X₀ =
       NormedSpace.fromTangentSpace _ (mfderiv% ⟪σ, τ⟫ x X₀)
-      - innerSL ℝ (τ x) (cov σ x X₀) - innerSL ℝ (σ x) (cov τ x X₀) :=
+      - inner ℝ (cov σ x X₀) (τ x) - inner ℝ (σ x) (cov τ x X₀) := by
+  rw [real_inner_comm]
   rfl
 
 variable [VectorBundle ℝ F V] [IsContMDiffRiemannianBundle I 1 F V] {x : M}
 
-variable {I} in
-private lemma aux1 {f : M → ℝ} {σ τ : (x : M) → V x}
-    (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
-    compatibilityTensorAux I cov (f • σ) τ x = f x • compatibilityTensorAux I cov σ τ x := by
-  ext X₀
-  rw [compatibilityTensorAux_apply, product_smul_left,
-    fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle' hτ)]
-  simp [compatibilityTensorAux, cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_right,
-    inner_smul_right, real_inner_comm]
-  ring
-
-variable {I} in
-private lemma aux2 (σ σ' τ : (x : M) → V x)
-    (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x) (hτ : MDiffAt (T% τ) x) :
-    compatibilityTensorAux I cov (σ + σ') τ x =
-      compatibilityTensorAux I cov σ τ x + compatibilityTensorAux I cov σ' τ x := by
-  ext X₀
-  rw [compatibilityTensorAux_apply, product_add_left,
-    fromTangentSpace_mfderiv_add_apply (hσ.inner_bundle' hτ) (hσ'.inner_bundle' hτ)]
-  simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.add hσ hσ', inner_add_right]
-  abel
-
-variable {I} in
-private lemma aux3 {f : M → ℝ} {σ τ : (x : M) → V x}
-    (hf : MDiffAt f x) (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
-    compatibilityTensorAux I cov σ (f • τ) x = f x • compatibilityTensorAux I cov σ τ x := by
-  ext X₀
-  rw [compatibilityTensorAux_apply, product_smul_right,
-    fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle' hτ)]
-  simp [compatibilityTensorAux, cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right,
-    inner_smul_right, real_inner_comm]
-  ring
-
-variable {I} in
-private lemma aux4 (σ τ τ' : (x : M) → V x)
-    (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) (hτ' : MDiffAt (T% τ') x) :
-    compatibilityTensorAux I cov σ (τ + τ') x =
-      compatibilityTensorAux I cov σ τ x + compatibilityTensorAux I cov σ τ' x := by
-  ext X₀
-  rw [compatibilityTensorAux_apply, product_add_right,
-    fromTangentSpace_mfderiv_add_apply (hσ.inner_bundle' hτ) (hσ.inner_bundle' hτ')]
-  simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.add hτ hτ', inner_add_right]
-  abel
-
 theorem compatibilityTensorAux_tensorial₁ (τ : Π x, V x) (hτ : MDiffAt (T% τ) x) :
     TensorialAt I F (compatibilityTensorAux I cov · τ x) x where
-  smul hf hσ := aux1 cov hf hσ hτ
-  add hσ hσ' := aux2 cov _ _ _ hσ hσ' hτ
+  smul hf hσ := by
+    ext X₀
+    rw [compatibilityTensorAux_apply, product_smul_left,
+      fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle' hτ)]
+    simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_left,
+      inner_smul_left]
+    ring
+  add hσ hσ' := by
+    ext X₀
+    rw [compatibilityTensorAux_apply, product_add_left,
+      fromTangentSpace_mfderiv_add_apply (hσ.inner_bundle' hτ) (hσ'.inner_bundle' hτ)]
+    simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.add hσ hσ', inner_add_left]
+    abel
 
 theorem compatibilityTensorAux_tensorial₂ (σ : Π x, V x) (hσ : MDiffAt (T% σ) x) :
     TensorialAt I F (compatibilityTensorAux I cov σ · x) x where
-  smul hf hτ := aux3 cov hf hσ hτ
-  add hτ hτ' := aux4 cov _ _ _ hσ hτ hτ'
+  smul hf hτ := by
+    ext X₀
+    rw [compatibilityTensorAux_apply, product_smul_right,
+      fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle' hτ)]
+    simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right,
+      inner_smul_right]
+    ring
+  add hτ hτ' := by
+    ext X₀
+    rw [compatibilityTensorAux_apply, product_add_right,
+      fromTangentSpace_mfderiv_add_apply (hσ.inner_bundle' hτ) (hσ.inner_bundle' hτ')]
+    simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.add hτ hτ', inner_add_right]
+    abel
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- The tensor `(X, σ, τ) ↦ ∇ₓ g(σ, τ) - g(∇ₓ σ, τ) - g(σ, ∇ₓ τ)` defining when a connection
@@ -280,31 +260,20 @@ variable {X : Π x : M, TangentSpace I x}
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 theorem compatibilityTensor_apply [FiniteDimensional ℝ F] (x : M)
     (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
-    compatibilityTensor cov x (σ x) (τ x) (X x) =
+    cov.compatibilityTensor x (σ x) (τ x) (X x) =
     fromTangentSpace _ (mfderiv% ⟪σ, τ⟫ x (X x)) - ⟪∇ σ, X, τ⟫ x - ⟪σ, ∇ τ, X⟫ x := by
   unfold compatibilityTensor
-  rw [TensorialAt.mkHom₂_apply _ _ hσ hτ]
-  --rw [compatibilityTensorAux]
-  simp only [compatibilityTensorAux, ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp',
-    coe_innerSL_apply, Pi.sub_apply, comp_apply]
-  conv =>
-    enter [1, 1]
-    erw [ContinuousLinearMap.sub_apply]
-  conv =>
-    enter [1, 1, 2]
-    erw [ContinuousLinearMap.comp_apply]
-  simp [product, real_inner_comm, fromTangentSpace]
+  rw [TensorialAt.mkHom₂_apply _ _ hσ hτ, compatibilityTensorAux_apply]
 
 open FiberBundle in
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F] (X₀ : TangentSpace I x)
     (σ₀ τ₀ : V x) :
-    compatibilityTensor cov x σ₀ τ₀ X₀ =
+    cov.compatibilityTensor x σ₀ τ₀ X₀ =
       fromTangentSpace _ (mfderiv% ⟪(extend F σ₀), (extend F τ₀)⟫ x X₀)
-        - ⟪∇ extend F σ₀, (extend E X₀), extend F τ₀⟫ x
-        - ⟪extend F σ₀, ∇ extend F τ₀, (extend E X₀)⟫ x := by
-  simpa [extend_apply_self] using compatibilityTensor_apply cov x
-    (X := extend E X₀) (mdifferentiableAt_extend I F σ₀) (mdifferentiableAt_extend I F τ₀)
+        - inner ℝ (cov (extend F σ₀) x X₀) τ₀
+        - inner ℝ σ₀ (cov (extend F τ₀) x X₀) := by
+  simp [compatibilityTensor, TensorialAt.mkHom₂_apply_eq_extend, compatibilityTensorAux_apply]
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- Predicate saying that a connection `∇` on a Riemannian bundle `(V, g)` is compatible with the
@@ -312,35 +281,21 @@ ambient metric, i.e. for all differentiable vector fields `X` on `M` and section
 `V`, we have `X ⟨σ, τ⟩ = ⟨∇ X σ, τ⟩ + ⟨σ, ∇ X τ⟩`. -/
 def IsCompatible [FiniteDimensional ℝ F] : Prop := compatibilityTensor cov = 0
 
--- Auxiliary computation for `IsCompatible_apply`.
--- TODO: inlining this lemma does not work
-private lemma isCompatible_apply_aux {A B C : ℝ} (h : A - B - C = 0) : A = B + C := by grind
-
-variable {I} [ContMDiffVectorBundle 1 F V I] in
--- TODO: give a better name; maybe inline?
--- variable {I} in
-lemma isCompatible_apply [FiniteDimensional ℝ F] (hcov : cov.IsCompatible)
-    (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
-    mfderiv% ⟪σ, τ⟫ x (X x) = ⟪∇ σ, X, τ⟫ x + ⟪σ, ∇ τ, X⟫ x := by
-  rw [IsCompatible] at hcov
-  have : compatibilityTensor cov x (σ x) (τ x) (X x) = 0 := by simp [hcov]
-  rw [compatibilityTensor_apply cov x hσ hτ] at this
-  change (fromTangentSpace _ ((mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x) (X x))) = _
-  exact isCompatible_apply_aux this
-
 open FiberBundle in
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 lemma isCompatible_iff [FiniteDimensional ℝ F] :
     cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x}
       (_hX : MDiffAt (T% X) x) (_hσ : MDiffAt (T% σ) x) (_hτ : MDiffAt (T% τ) x),
-      mfderiv% ⟪σ, τ⟫ x (X x) = ⟪∇ σ, X, τ⟫ x + ⟪σ, ∇ τ, X⟫ x := by
-  refine ⟨fun hcov x X σ τ hX hσ hτ ↦ cov.isCompatible_apply hcov hσ hτ, fun h ↦ ?_⟩
-  unfold IsCompatible
+      fromTangentSpace _ (mfderiv% ⟪σ, τ⟫ x (X x)) = ⟪∇ σ, X, τ⟫ x + ⟪σ, ∇ τ, X⟫ x := by
+  refine ⟨fun hcov x X σ τ hX hσ hτ ↦ ?_, fun h ↦ ?_⟩
+  · have H := congr($hcov x (σ x) (τ x) (X x))
+    simp [compatibilityTensor_apply _ _ hσ hτ] at H
+    linear_combination H
   ext x σ₀ τ₀ X₀
-  rw [compatibilityTensor_apply_eq_extend, sub_sub, sub_eq_iff_eq_add']
-  simp only [Pi.zero_apply, ContinuousLinearMap.zero_apply, add_zero]
+  rw [compatibilityTensor_apply_eq_extend]
   have h' := h (mdifferentiableAt_extend I E X₀) (mdifferentiableAt_extend I F σ₀)
     (mdifferentiableAt_extend I F τ₀)
-  simpa [fromTangentSpace, extend_apply_self] using h'
+  simp [product] at h' ⊢
+  linear_combination h'
 
 end CovariantDerivative
