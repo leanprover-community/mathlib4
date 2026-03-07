@@ -720,8 +720,8 @@ in this way are left for the user.
   sums or suprema).
 * `gcongr n`, where `n` is a natural number literal, limits the depth of the recursive applications.
   This is useful if `gcongr` is too aggressive in breaking down the goal.
-* `gcongr t`, where `t` is a term with holes, performs congruence up to the holes in `t`. In other
-  words, `congr (f ?_)` turns a goal `⊢ R (f x) (f y)` into `⊢ R x y` (but no further).
+* `gcongr t`, where `t` is a term with `?_` holes, performs congruence up to the holes in `t`.
+  In other words, `congr (f ?_)` turns a goal `⊢ R (f x) (f y)` into `⊢ R x y` (but no further).
   This is useful if `gcongr` is too aggressive in breaking down the goal.
 
 Examples:
