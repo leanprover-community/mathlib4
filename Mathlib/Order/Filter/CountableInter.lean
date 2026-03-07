@@ -129,7 +129,7 @@ theorem EventuallyEqSet.countable_iInter [Countable ι] {s t : ι → Set α}
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_iInter :=
   EventuallyEqSet.countable_iInter
 
-theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
+theorem EventuallySubset.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ⊆ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› ⊆ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
@@ -142,7 +142,7 @@ theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countabl
 theorem EventuallyEqSet.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠˢ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› =ᶠˢ[l] ⋂ i ∈ S, t i ‹_› :=
-  (EventuallyLE.countable_bInter hS fun i hi => (h i hi).subset).antisymm
+  (EventuallySubset.countable_bInter hS fun i hi => (h i hi).subset).antisymm
     (.countable_bInter hS fun i hi => (h i hi).superset)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_bInter :=
