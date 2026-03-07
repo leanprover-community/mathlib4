@@ -188,7 +188,6 @@ end Imo1988Q6
 
 open Imo1988Q6
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Question 6 of IMO1988. If a and b are two natural numbers
 such that a*b+1 divides a^2 + b^2, show that their quotient is a perfect square. -/
 theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
@@ -226,7 +225,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
   · -- Show the descent step.
     intro x y hx x_lt_y _ _ z h_root _ hV₀
     constructor
-    · have hpos : z * z + x * x > 0 := by
+    · have hpos : 0 < z * z + x * x := by
         apply add_pos_of_nonneg_of_pos
         · apply mul_self_nonneg
         · apply mul_pos <;> exact mod_cast hx
@@ -234,8 +233,8 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
         rw [← sub_eq_zero, ← h_root]
         ring
       rw [hzx] at hpos
-      replace hpos : z * x + 1 > 0 := pos_of_mul_pos_left hpos (Int.natCast_nonneg k)
-      replace hpos : z * x ≥ 0 := Int.le_of_lt_add_one hpos
+      replace hpos : 0 < z * x + 1 := pos_of_mul_pos_left hpos (Int.natCast_nonneg k)
+      replace hpos : 0 ≤ z * x := Int.le_of_lt_add_one hpos
       apply nonneg_of_mul_nonneg_left hpos (mod_cast hx)
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
@@ -245,7 +244,6 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
   · -- There is no base case in this application of Vieta jumping.
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-
 The following example illustrates the use of constant descent Vieta jumping
 in the presence of a non-trivial base case.

@@ -21,10 +21,10 @@ of the complex `R.complex` and to make computations in the `Ext`-group.
 
 ## TODO
 * Functoriality in `X`: this would involve a morphism `X ⟶ X'`, projective
-resolutions `R` and `R'` of `X` and `X'`, a lift of `X ⟶ X'` as a morphism
-of cochain complexes `R.complex ⟶ R'.complex`; in this context,
-we should be able to compute the precomposition of an element
-`R.extMk f m hm hf : Ext X' Y n` by `X ⟶ X'`.
+  resolutions `R` and `R'` of `X` and `X'`, a lift of `X ⟶ X'` as a morphism
+  of cochain complexes `R.complex ⟶ R'.complex`; in this context,
+  we should be able to compute the precomposition of an element
+  `R.extMk f m hm hf : Ext X' Y n` by `X ⟶ X'`.
 
 -/
 

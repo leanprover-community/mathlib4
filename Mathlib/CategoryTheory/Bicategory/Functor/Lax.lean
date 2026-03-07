@@ -13,7 +13,7 @@ public import Mathlib.Tactic.CategoryTheory.ToApp
 # Lax functors
 
 A lax functor `F` between bicategories `B` and `C` consists of
-* a function between objects `F.obj : B ⟶ C`,
+* a function between objects `F.obj : B → C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
 * a family of 2-morphisms `F.mapId a : 𝟙 (F.obj a) ⟶ F.map (𝟙 a)`,
@@ -25,8 +25,8 @@ A lax functor `F` between bicategories `B` and `C` consists of
 * `CategoryTheory.LaxFunctor B C` : a lax functor between bicategories `B` and `C`, which we
   denote by `B ⥤ᴸ C`.
 * `CategoryTheory.LaxFunctor.comp F G` : the composition of lax functors
-* `CategoryTheory.LaxFunctor.Pseudocore` : a structure on a Lax functor that promotes a
-  Lax functor to a pseudofunctor
+* `CategoryTheory.LaxFunctor.PseudoCore` : a structure on a lax functor that promotes a
+  lax functor to a pseudofunctor
 
 ## Future work
 
@@ -49,11 +49,11 @@ universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 /-- A lax functor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
-Unlike functors between categories, `F.map` do not need to strictly commute with the composition,
-and do not need to strictly preserve the identity. Instead, there are specified 2-morphisms
+Unlike functors between categories, `F.map` does not need to strictly commute with composition,
+and does not need to strictly preserve the identity. Instead, there are specified 2-morphisms
 `𝟙 (F.obj a) ⟶ F.map (𝟙 a)` and `F.map f ≫ F.map g ⟶ F.map (f ≫ g)`.
 
-`F.map₂` strictly commutes with composition and preserves the identity. They also preserve the
+`F.map₂` strictly commutes with composition and preserves the identity. It also preserves the
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
@@ -194,7 +194,7 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : B ⥤ᴸ C) (G : C ⥤
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, assoc, mapComp_naturality_right_assoc,
       Bicategory.whiskerLeft_comp]
 
-/-- A structure on a Lax functor that promotes a Lax functor to a pseudofunctor.
+/-- A structure on a lax functor that promotes a lax functor to a pseudofunctor.
 
 See `Pseudofunctor.mkOfLax`. -/
 structure PseudoCore (F : B ⥤ᴸ C) where

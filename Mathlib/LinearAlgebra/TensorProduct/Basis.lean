@@ -100,7 +100,6 @@ lemma TensorProduct.equivFinsuppOfBasisRight_apply_tmul_apply
     𝒞.repr n i • m := by
   simp only [equivFinsuppOfBasisRight_apply_tmul, Finsupp.mapRange_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma TensorProduct.equivFinsuppOfBasisRight_symm :
     (TensorProduct.equivFinsuppOfBasisRight 𝒞).symm.toLinearMap =
     Finsupp.lsum R fun i ↦ (TensorProduct.mk R M N).flip (𝒞 i) := by

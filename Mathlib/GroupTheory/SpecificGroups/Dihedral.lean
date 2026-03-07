@@ -155,7 +155,6 @@ instance : Infinite (DihedralGroup 0) :=
 instance : Nontrivial (DihedralGroup n) :=
   ⟨⟨r 0, sr 0, by simp_rw [ne_eq, reduceCtorEq, not_false_eq_true]⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `0 < n`, then `DihedralGroup n` has `2n` elements.
 -/
 theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
