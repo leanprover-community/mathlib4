@@ -977,7 +977,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 arguments that can use the `T%` elaborator. -/
 @[app_delab mfderiv] meta def delab_mfderiv : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 21 do
+  withOverApp 21 do -- counting the number of arguments until f: the x can be omitted
   try
     let fe := (← getExpr).appArg!
     let .lam n _ b _ := fe | failure
@@ -1010,6 +1010,43 @@ arguments that can use the `T%` elaborator. -/
   catch _ =>
     let fs ← withAppArg delab
     `(MDiffAt $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `MDifferentiableOn` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab MDifferentiableOn] meta def delabMDifferentiableOn : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do -- count arguments until the set s
+  try
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn -- why this magic number?
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    -- TODO: omitting the second $fs is a parse error!
+    `(MDiff[$fs] $fs) >>= annotateGoToSyntaxDef
+
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
+  [ChartedSpace H M] [IsManifold I ∞ M]
+  (f : M → M) (x : M) (s : Set M)
+  (v : (x : M) → TangentSpace I x)
+
+-- The partially applied form omitting `s` is not delaborated.
+/-- info: MDifferentiableOn I I f : Set M → Prop -/
+#guard_msgs in
+#check MDifferentiableOn I I f
+
+-- TODO: almost what I want, except for the repeated s
+/-- info: MDiff[s] s : Prop -/
+#guard_msgs in
+#check MDifferentiableOn I I f s
 
 /-- Delaborator for `MDifferentiableWithinAt` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
