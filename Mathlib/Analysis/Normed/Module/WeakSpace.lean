@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.Normed.Module.WeakDual
+import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 
 /-!
 # Normed space instances for `WeakSpace`
@@ -122,7 +123,37 @@ theorem isVonNBounded_iff_forall_eval_bounded {s : Set (WeakSpace 𝕜 F)} :
       rw [this]
       exact hc (Set.mem_image_of_mem _ hx)
 
-
+/-- The norm bornology and the weak von Neumann bornology coincide.
+This is a consequence of the Uniform Boundedness Principle applied to the
+image of F in its double dual. -/
+theorem isBounded_iff_isVonNBounded {s : Set (WeakSpace 𝕜 F)} :
+    IsBounded s ↔ Bornology.IsVonNBounded 𝕜 s := by
+  constructor
+  · -- Forward: norm bounded → vonN bounded in weak topology
+    intro h
+    rw [isVonNBounded_iff_forall_eval_bounded]
+    intro f
+    -- Extract a norm bound from IsBounded (the bornology on WeakSpace is the norm bornology)
+    obtain ⟨C, hC⟩ := (isBounded_iff_forall_norm_le (E := F)).mp h
+    exact ⟨‖f‖ * C, fun x hx => (f.le_opNorm x).trans (by gcongr; exact hC x hx)⟩
+  · -- Backward: vonN bounded in weak → norm bounded (via Banach-Steinhaus)
+    intro h_vN
+    rw [isVonNBounded_iff_forall_eval_bounded] at h_vN
+    -- View elements of s as functionals on the dual via inclusionInDoubleDual
+    -- Pointwise boundedness: for each f : StrongDual 𝕜 F, ‖(inclusionInDoubleDual x) f‖ ≤ r
+    have h_ptwise : ∀ f : StrongDual 𝕜 F, ∃ C, ∀ x : (toWeakSpace 𝕜 F ⁻¹' s),
+        ‖NormedSpace.inclusionInDoubleDual 𝕜 F x f‖ ≤ C := by
+      intro f
+      obtain ⟨r, hr⟩ := h_vN f
+      exact ⟨r, fun ⟨x, hx⟩ => by simp only [NormedSpace.dual_def]; exact hr x hx⟩
+    -- Banach-Steinhaus: uniform bound on operator norms
+    obtain ⟨C, hC⟩ := banach_steinhaus h_ptwise
+    -- Since inclusionInDoubleDualLi is an isometry, ‖x‖ = ‖inclusionInDoubleDual x‖ ≤ C
+    suffices @IsBounded F _ s from this
+    rw [isBounded_iff_forall_norm_le]
+    exact ⟨C, fun x hx => by
+      rw [← (NormedSpace.inclusionInDoubleDualLi 𝕜).norm_map x]
+      exact hC ⟨x, hx⟩⟩
 
 end RCLike
 
