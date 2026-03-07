@@ -175,19 +175,13 @@ there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`
   apply Derivation.leibniz_of_mul_eq_one
   exact PowerSeries.inv_mul_cancel (h := h)
 
-variable (A : Type*) [CommRing A]
-
 set_option backward.isDefEq.respectTransparency false in
 /-- The derivative of g^n equals n * g^(n-1) * g'. -/
-theorem derivative_pow (g : A⟦X⟧) (n : ℕ) :
+theorem derivative_pow (A : Type*) [CommSemiring A] (g : A⟦X⟧) (n : ℕ) :
     d⁄dX A (g ^ n) = n * g ^ (n - 1) * d⁄dX A g := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    simp only [pow_succ, (derivative A).leibniz, ih, smul_eq_mul, add_tsub_cancel_right]
-    rcases n with _ | m
-    · simp
-    · simp only [add_tsub_cancel_right, pow_succ]; push_cast; ring
+  rw [Derivation.leibniz_pow, smul_eq_mul, nsmul_eq_mul, mul_assoc]
+
+variable (A : Type*) [CommRing A]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Chain rule for polynomials viewed as power series.  Use `derivative_subst` instead. -/
