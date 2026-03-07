@@ -64,15 +64,15 @@ variable {C : Type u} [Category.{v} C]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
-    [HasWeakSheafify J (Type v)]
-    (F : Sheaf J (Type v)) (sq : Square C) :
+    [HasWeakSheafify J TypeCat.{v}]
+    (F : Sheaf J TypeCat.{v}) (sq : Square C) :
     (sq.op.map ((yoneda ⋙ presheafToSheaf J _).op ⋙ yoneda.obj F)).IsPullback ↔
       (sq.op.map F.obj).IsPullback := by
   refine Square.IsPullback.iff_of_equiv _ _
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
-    (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv) ?_ ?_ ?_ ?_
+    (((sheafificationAdjunction J TypeCat.{v}).homEquiv _ _).trans yonedaEquiv)
+    (((sheafificationAdjunction J TypeCat.{v}).homEquiv _ _).trans yonedaEquiv)
+    (((sheafificationAdjunction J TypeCat.{v}).homEquiv _ _).trans yonedaEquiv)
+    (((sheafificationAdjunction J TypeCat.{v}).homEquiv _ _).trans yonedaEquiv) ?_ ?_ ?_ ?_
   all_goals
     ext x
     dsimp
@@ -88,7 +88,7 @@ variable (J)
 topology consists of a commutative square `f₁₂ ≫ f₂₄ = f₁₃ ≫ f₃₄` in `C`
 such that `f₁₃` is a monomorphism and that the square becomes a
 pushout square in the category of sheaves of sets. -/
-structure MayerVietorisSquare [HasWeakSheafify J (Type v)] extends Square C where
+structure MayerVietorisSquare [HasWeakSheafify J TypeCat.{v}] extends Square C where
   mono_f₁₃ : Mono toSquare.f₁₃ := by infer_instance
   /-- the square becomes a pushout square in the category of sheaves of types -/
   isPushout : (toSquare.map (yoneda ⋙ presheafToSheaf J _)).IsPushout
@@ -101,14 +101,14 @@ variable {J}
 
 section
 
-variable [HasWeakSheafify J (Type v)]
+variable [HasWeakSheafify J TypeCat.{v}]
 
 /-- Constructor for Mayer-Vietoris squares taking as an input
 a square `sq` such that `sq.f₁₃` is a mono and that for every
 sheaf of types `F`, the square `sq.op.map F.val` is a pullback square. -/
 @[simps toSquare]
 noncomputable def mk' (sq : Square C) [Mono sq.f₁₃]
-    (H : ∀ (F : Sheaf J (Type v)), (sq.op.map F.obj).IsPullback) :
+    (H : ∀ (F : Sheaf J TypeCat.{v}), (sq.op.map F.obj).IsPullback) :
     J.MayerVietorisSquare where
   toSquare := sq
   isPushout := by
@@ -171,11 +171,11 @@ lemma sheafCondition_iff_comp_coyoneda {A : Type u'} [Category.{v'} A] (P : Cᵒ
 /-- Given a Mayer-Vietoris square `S` and a presheaf of types, this is the
 map from `P.obj (op S.X₄)` to the explicit fibre product of
 `P.map S.f₁₂.op` and `P.map S.f₁₃.op`. -/
-abbrev toPullbackObj (P : Cᵒᵖ ⥤ Type v') :
+abbrev toPullbackObj (P : Cᵒᵖ ⥤ TypeCat.{v'}) :
     P.obj (op S.X₄) → Types.PullbackObj (P.map S.f₁₂.op) (P.map S.f₁₃.op) :=
   (S.toSquare.op.map P).pullbackCone.toPullbackObj
 
-lemma sheafCondition_iff_bijective_toPullbackObj (P : Cᵒᵖ ⥤ Type v') :
+lemma sheafCondition_iff_bijective_toPullbackObj (P : Cᵒᵖ ⥤ TypeCat.{v'}) :
     S.SheafCondition P ↔ Function.Bijective (S.toPullbackObj P) := by
   have := (S.toSquare.op.map P).pullbackCone.isLimitEquivBijective
   exact ⟨fun h ↦ this h.isLimit, fun h ↦ Square.IsPullback.mk _ (this.symm h)⟩
@@ -183,7 +183,7 @@ lemma sheafCondition_iff_bijective_toPullbackObj (P : Cᵒᵖ ⥤ Type v') :
 namespace SheafCondition
 
 variable {S}
-variable {P : Cᵒᵖ ⥤ Type v'} (h : S.SheafCondition P)
+variable {P : Cᵒᵖ ⥤ TypeCat.{v'}} (h : S.SheafCondition P)
 include h
 
 lemma bijective_toPullbackObj : Function.Bijective (S.toPullbackObj P) := by
@@ -224,7 +224,7 @@ lemma sheafCondition_of_sheaf {A : Type u'} [Category.{v} A]
 
 end
 
-variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrpCat.{v}]
+variable [HasWeakSheafify J TypeCat.{v}] [HasSheafify J AddCommGrpCat.{v}]
   (S : J.MayerVietorisSquare)
 
 set_option backward.isDefEq.respectTransparency false in

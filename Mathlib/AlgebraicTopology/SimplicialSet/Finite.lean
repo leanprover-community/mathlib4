@@ -134,7 +134,9 @@ lemma finite_iSup_iff {X : SSet.{u}} {ι : Type*} [Finite ι]
       (by simpa only [nonDegenerate_iff_of_mono] using s.nonDegenerate)) ?_
   intro s
   obtain ⟨d, ⟨⟨s, h₁⟩, h₂⟩, rfl⟩ := s.mk_surjective
-  simp only [Subfunctor.iSup_obj, Set.mem_iUnion] at h₁
+  simp only [Subfunctor.iSup_obj] at h₁
+  change s ∈ (⋃ (i : ι), (A i).obj (Opposite.op ⦋d⦌)) at h₁
+  rw [Set.mem_iUnion] at h₁
   obtain ⟨i, hi⟩ := h₁
   rw [Subcomplex.mem_nonDegenerate_iff] at h₂
   exact ⟨⟨i, N.mk ⟨s, hi⟩ (by rwa [Subcomplex.mem_nonDegenerate_iff])⟩, rfl⟩

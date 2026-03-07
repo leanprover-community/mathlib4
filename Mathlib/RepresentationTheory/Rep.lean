@@ -239,7 +239,7 @@ variable (k G)
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-def linearization : (Action (Type u) G) ⥤ (Rep k G) :=
+def linearization : (Action TypeCat.{u} G) ⥤ (Rep k G) :=
   (ModuleCat.free k).mapAction G
 
 instance : (linearization k G).Monoidal := by
@@ -249,26 +249,26 @@ instance : (linearization k G).Monoidal := by
 variable {k G}
 
 @[simp]
-theorem coe_linearization_obj (X : Action (Type u) G) :
+theorem coe_linearization_obj (X : Action TypeCat.{u} G) :
     (linearization k G).obj X = (X.V →₀ k) := rfl
 
-theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) :
+theorem linearization_obj_ρ (X : Action TypeCat.{u} G) (g : G) :
     ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) :=
   rfl
 
 @[simp]
-theorem coe_linearization_obj_ρ (X : Action (Type u) G) (g : G) :
+theorem coe_linearization_obj_ρ (X : Action TypeCat.{u} G) (g : G) :
     @DFunLike.coe (no_index G →* ((X.V →₀ k) →ₗ[k] (X.V →₀ k))) _
       (fun _ => (X.V →₀ k) →ₗ[k] (X.V →₀ k)) _
       ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
-theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
+theorem linearization_single (X : Action TypeCat.{u} G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
   simp
 
-variable {X Y : Action (Type u) G} (f : X ⟶ Y)
+variable {X Y : Action TypeCat.{u} G} (f : X ⟶ Y)
 
 @[simp]
 theorem linearization_map_hom : ((linearization k G).map f).hom =
@@ -282,13 +282,13 @@ theorem linearization_map_hom_single (x : X.V) (r : k) :
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
 @[simp]
-theorem linearization_μ_hom (X Y : Action (Type u) G) :
+theorem linearization_μ_hom (X Y : Action TypeCat.{u} G) :
     (μ (linearization k G) X Y).hom =
       ModuleCat.ofHom (finsuppTensorFinsupp' k X.V Y.V).toLinearMap :=
   rfl
 
 @[simp]
-theorem linearization_δ_hom (X Y : Action (Type u) G) :
+theorem linearization_δ_hom (X Y : Action TypeCat.{u} G) :
     (δ (linearization k G) X Y).hom =
       ModuleCat.ofHom (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap :=
   rfl
@@ -307,7 +307,7 @@ variable (k G)
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
 on `k[X]`. -/
 @[simps! hom_hom inv_hom]
-def linearizationTrivialIso (X : Type u) :
+def linearizationTrivialIso (X : TypeCat.{u}) :
     (linearization k G).obj (Action.mk X 1) ≅ trivial k G (X →₀ k) :=
   Action.mkIso (Iso.refl _) fun _ => ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext
     fun _ => linearization_single ..
@@ -347,7 +347,7 @@ def ofMulActionSubsingletonIsoTrivial
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
 def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
-    (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
+    (linearization k G).obj (Action.ofMulAction G (TypeCat.of H)) ≅ ofMulAction k G H :=
   Iso.refl _
 
 section
@@ -567,7 +567,7 @@ def diagonalSuccIsoTensorTrivial :
     diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G ((Fin n → G) →₀ k) :=
   (linearization k G).mapIso (Action.diagonalSuccIsoTensorTrivial G n) ≪≫
     (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
-      tensorIso (Iso.refl _) (linearizationTrivialIso k G (Fin n → G))
+      tensorIso (Iso.refl _) (linearizationTrivialIso k G (TypeCat.of (Fin n → G)))
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -576,7 +576,8 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a :
       ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k ((Fin n → G) →₀ k)))
     (diagonalSuccIsoTensorTrivial k G n).hom.hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
-  simp [diagonalSuccIsoTensorTrivial, whiskerLeft_def, tensorObj_carrier,
+  have := Action.diagonalSuccIsoTensorTrivial_hom_hom_apply (G := G) (n := n)
+  simp_all [diagonalSuccIsoTensorTrivial, whiskerLeft_def, tensorObj_carrier,
     types_tensorObj_def, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
     ModuleCat.hom_id (M := .of _ _), Action.ofMulAction_V]
 

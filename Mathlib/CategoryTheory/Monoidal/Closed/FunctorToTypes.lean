@@ -30,17 +30,18 @@ namespace CategoryTheory.FunctorToTypes
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-variable (F : C ⥤ Type max w v u)
+variable (F : C ⥤ TypeCat.{max w v u})
 
 /-- When `F G H : C ⥤ Type max w v u`, we have `(G ⟶ F.functorHom H) ≃ (F ⊗ G ⟶ H)`. -/
-@[simps!]
-def functorHomEquiv (G H : C ⥤ Type max w v u) : (G ⟶ F.functorHom H) ≃ (F ⊗ G ⟶ H) :=
+@[simps! apply_app symm_apply_app]
+def functorHomEquiv (G H : C ⥤ TypeCat.{max w v u}) : (G ⟶ F.functorHom H) ≃ (F ⊗ G ⟶ H) :=
   (Functor.functorHomEquiv F H G).trans (homObjEquiv F H G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a morphism `f : G ⟶ H`, an object `c : C`, and an element of `(F.functorHom G).obj c`,
 construct an element of `(F.functorHom H).obj c`. -/
 @[simps]
-def rightAdj_map {F G H : C ⥤ Type max w v u} (f : G ⟶ H) (c : C) (a : (F.functorHom G).obj c) :
+def rightAdj_map {F G H : C ⥤ TypeCat.{max w v u}} (f : G ⟶ H) (c : C) (a : (F.functorHom G).obj c) :
     (F.functorHom H).obj c where
   app d b := a.app d b ≫ f.app d
   naturality g h := by
@@ -50,9 +51,9 @@ def rightAdj_map {F G H : C ⥤ Type max w v u} (f : G ⟶ H) (c : C) (a : (F.fu
 
 /-- A right adjoint of `tensorLeft F`. -/
 @[simps!]
-def rightAdj : (C ⥤ Type max w v u) ⥤ C ⥤ Type max w v u where
+def rightAdj : (C ⥤ TypeCat.{max w v u}) ⥤ C ⥤ TypeCat.{max w v u} where
   obj G := F.functorHom G
-  map f := { app := rightAdj_map f }
+  map f := { app X := TypeCat.ofHom ⟨rightAdj_map f X⟩ }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
@@ -61,14 +62,17 @@ def adj : tensorLeft F ⊣ rightAdj F where
     app := fun G ↦ (functorHomEquiv F G _).2 (𝟙 _)
     naturality := fun G H f ↦ by
       dsimp [rightAdj]
-      ext _
-      simp [FunctorToTypes.naturality] }
+      ext
+      simp
+      sorry }
   counit := { app := fun G ↦ functorHomEquiv F _ G (𝟙 _) }
+  left_triangle_components := sorry
+  right_triangle_components := sorry
 
 instance closed : Closed F where
   rightAdj := rightAdj F
   adj := adj F
 
-instance monoidalClosed : MonoidalClosed (C ⥤ Type max w v u) where
+instance monoidalClosed : MonoidalClosed (C ⥤ TypeCat.{max w v u}) where
 
 end CategoryTheory.FunctorToTypes

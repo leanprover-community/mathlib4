@@ -51,7 +51,7 @@ namespace CategoryTheory.Limits
 
 section LargeCategory
 
-variable {C : Type u} [Category.{v} C] [HasFiniteColimits C] (A : Cᵒᵖ ⥤ Type v)
+variable {C : Type u} [Category.{v} C] [HasFiniteColimits C] (A : Cᵒᵖ ⥤ TypeCat.{v})
 
 /-- If `C` is a finitely cocomplete category and `A : Cᵒᵖ ⥤ Type u` is a presheaf that preserves
 finite limits, then `CostructuredArrow yoneda A` is filtered.
@@ -69,7 +69,7 @@ end LargeCategory
 
 variable {C : Type u} [SmallCategory C] [HasFiniteColimits C]
 
-variable (A : Cᵒᵖ ⥤ Type u)
+variable (A : Cᵒᵖ ⥤ TypeCat.{u})
 
 namespace PreservesFiniteLimitsOfIsFilteredCostructuredArrowYonedaAux
 
@@ -77,7 +77,7 @@ variable {J : Type} [SmallCategory J] [FinCategory J] (K : J ⥤ Cᵒᵖ)
 
 /-- (Implementation) This is the bifunctor we will apply "filtered colimits commute with finite
 limits" to. -/
-def functorToInterchange : J ⥤ CostructuredArrow yoneda A ⥤ Type u :=
+def functorToInterchange : J ⥤ CostructuredArrow yoneda A ⥤ TypeCat.{u} :=
   K ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj _ _)
 
 /-- (Implementation) The definition of `functorToInterchange`. -/
@@ -92,14 +92,14 @@ association because the type of `Presheaf.tautologicalCocone` is
 proof. -/
 @[simps!]
 def flipFunctorToInterchange : (functorToInterchange A K).flip ≅
-    ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (Type u)).obj K) :=
+    ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (TypeCat.{u})).obj K) :=
   Iso.refl _
 
 /-- (Implementation) A natural isomorphism we will need to construct `iso`. -/
 @[simps! -fullyApplied hom_app]
 noncomputable def isoAux :
-    (CostructuredArrow.proj yoneda A ⋙ yoneda ⋙ (evaluation Cᵒᵖ (Type u)).obj (limit K)) ≅
-      ((coyoneda ⋙ (whiskeringLeft (CostructuredArrow yoneda A) C (Type u)).obj
+    (CostructuredArrow.proj yoneda A ⋙ yoneda ⋙ (evaluation Cᵒᵖ (TypeCat.{u})).obj (limit K)) ≅
+      ((coyoneda ⋙ (whiskeringLeft (CostructuredArrow yoneda A) C (TypeCat.{u})).obj
         (CostructuredArrow.proj yoneda A)).obj (limit K)) :=
   Iso.refl _
 
@@ -162,6 +162,7 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
   rw [← this]
   ext
   simp
+  rfl
 
 theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post K A) :=
   iso_hom A K ▸ inferInstance
