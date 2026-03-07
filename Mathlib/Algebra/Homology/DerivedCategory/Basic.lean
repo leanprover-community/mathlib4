@@ -218,6 +218,10 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
     Qh.obj (((HomotopyCategory.singleFunctors C).functor n).obj X) = (singleFunctor C n).obj X := by
   rfl
 
+@[simp] theorem Q_obj_single_obj (n : ℤ) (X : C) :
+    Q.obj ((HomologicalComplex.single C _ n).obj X) = (singleFunctor C n).obj X := by
+  rfl
+
 /-- The isomorphism
 `DerivedCategory.singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh` given
 by the definition of `DerivedCategory.singleFunctors`. -/

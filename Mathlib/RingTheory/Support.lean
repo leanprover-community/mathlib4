@@ -5,11 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
@@ -194,7 +196,6 @@ variable [Module.Finite R M]
 
 open PrimeSpectrum
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.mem_support_iff_of_finite :
     p ∈ Module.support R M ↔ Module.annihilator R M ≤ p.asIdeal := by
   classical

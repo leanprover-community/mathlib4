@@ -269,11 +269,11 @@ lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
   · obtain _ | n := n
     · exact ⟨⊥, fun _ _ ↦ hasProjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
     · exact ⟨n, fun i hi ↦ hasProjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
-        by simp [WithBot.lt_add_one_iff]⟩
+        by simp [ENat.WithBot.lt_add_one_iff]⟩
 
 lemma projectiveDimension_le_iff (X : C) (n : ℕ) :
     projectiveDimension X ≤ n ↔ HasProjectiveDimensionLE X n := by
-  simp [← projectiveDimension_lt_iff, ← WithBot.lt_add_one_iff]
+  simp [← projectiveDimension_lt_iff, ← ENat.WithBot.lt_add_one_iff]
 
 lemma projectiveDimension_ge_iff (X : C) (n : ℕ) :
     n ≤ projectiveDimension X ↔ ¬ HasProjectiveDimensionLT X n := by
