@@ -8,7 +8,7 @@ inputs:
     description: Git ref (branch, tag, or SHA) for mathlib-ci.
     required: false
     # Default pinned commit used by workflows unless they explicitly override.
-    # Update this ref (and the coalescing below) as needed to pick up changes to mathlib-ci scripts
+    # Update this ref as needed to pick up changes to mathlib-ci scripts
     default: 261ca4c0c6bd3267e4846ef9fdd676afab9fef4e
   path:
     description: Checkout destination path.

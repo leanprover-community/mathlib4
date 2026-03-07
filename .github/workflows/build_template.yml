@@ -103,6 +103,10 @@ jobs:
           sparse-checkout: .github/actions
           path: workflow-actions
 
+      # We need to 'duplicate' this step below because GitHub Actions does not let a `uses:` step
+      # conditionally omit a single `with:` key, and passing `ref: ''` would override
+      # the composite action's default to the empty string instead of falling back to it
+      # Note only one of the two below will actually run in any given run
       - name: Get mathlib-ci
         if: ${{ inputs.mathlib_ci_ref == '' }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
