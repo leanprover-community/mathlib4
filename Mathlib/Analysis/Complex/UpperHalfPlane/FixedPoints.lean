@@ -140,7 +140,7 @@ theorem gl_smul_eq_self_iff_eq_fixedPt (hpos : 0 < g.val.det) (hell : g.IsEllipt
     g • z = z ↔ z = fixedPt g hell := by
   wlog hc : 0 < g 1 0 generalizing g
   · replace hc := hell.c_ne_zero.lt_or_gt.resolve_right hc
-    simpa using @this (-g) (by simpa [Matrix.det_neg]) (isElliptic_neg.mpr hell) (by simpa)
+    simpa using @this (-g) (by simpa [Matrix.det_neg]) hell.neg (by simpa)
   have hd : discrim (g 1 0 : ℂ) (g 1 1 - g 0 0) (-g 0 1) = (.I * √(-g.val.discr)) ^ 2 := by
     rw [mul_pow, ← Complex.ofReal_pow, Real.sq_sqrt]
     · simp [discrim, Matrix.discr_fin_two, Matrix.trace_fin_two, Matrix.det_fin_two]
@@ -190,8 +190,7 @@ end GLAction
 instance : FaithfulSMul PGL(2, ℝ) ℍ := by
   rw [faithfulSMul_iff]
   intro g
-  cases g with | mk g => ?_
-  simpa only [pglMk_smul, forall_smul_eq_self_iff_mem_center, ← MonoidHom.mem_ker,
-    ProjGenLinGroup.ker_mk] using id
+  cases g
+  simp [forall_smul_eq_self_iff_mem_center]
 
 end UpperHalfPlane

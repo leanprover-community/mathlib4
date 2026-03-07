@@ -49,6 +49,10 @@ theorem mk_surjective : Function.Surjective (mk : GL n R → PGL(n, R)) :=
 theorem ker_mk : mk.ker = Subgroup.center (GL n R) := QuotientGroup.ker_mk' _
 
 @[simp]
+theorem mk_eq_one {g : GL n R} : mk g = 1 ↔ g ∈ Subgroup.center (GL n R) := by
+  rw [← MonoidHom.mem_ker, ker_mk]
+
+@[simp]
 theorem mk_scalar (u : Rˣ) : mk (.scalar n u) = 1 := by
   rw [← MonoidHom.mem_ker, ker_mk, GeneralLinearGroup.center_eq_range_scalar]
   simp

@@ -156,9 +156,13 @@ lemma isElliptic_conj'_iff : (g.val⁻¹ * m * g.val).IsElliptic ↔ m.IsEllipti
 theorem isHyperbolic_neg_iff : (-m).IsHyperbolic ↔ m.IsHyperbolic := by
   simp [IsHyperbolic, discr_fin_two, det_neg]
 
+protected alias ⟨_, IsHyperbolic.neg⟩ := isHyperbolic_neg_iff
+
 @[simp]
 theorem isElliptic_neg_iff : (-m).IsElliptic ↔ m.IsElliptic := by
   simp [IsElliptic, discr_fin_two, det_neg]
+
+protected alias ⟨_, IsElliptic.neg⟩ := isElliptic_neg_iff
 
 end Preorder
 
@@ -178,7 +182,7 @@ theorem IsElliptic.b_ne_zero (hm : m.IsElliptic) : m 0 1 ≠ 0 :=
 theorem IsElliptic.c_ne_zero (hm : m.IsElliptic) : m 1 0 ≠ 0 :=
   right_ne_zero_of_mul hm.bc_ne_zero
 
-end Preorder
+end LinearOrder
 
 namespace GeneralLinearGroup
 
