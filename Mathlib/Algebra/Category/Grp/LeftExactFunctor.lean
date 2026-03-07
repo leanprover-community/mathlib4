@@ -94,7 +94,12 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimit
   erw [Functor.comp_map, F.map_add, Functor.Monoidal.μ_comp F (forget AddCommGrpCat) X X,
     Category.assoc, ← Functor.map_comp, Preadditive.comp_add, Functor.Monoidal.μ_fst,
     Functor.Monoidal.μ_snd]
-  cat_disch
+  ext
+  simp only [TypeCat.hom_as_apply, CategoryTheory.comp_apply, ConcreteCategory.hom_ofHom,
+    Preadditive.commGrpEquivalence_functor_obj_X, Functor.comp_obj, hom_add, tensor_apply,
+    TypeCat.Fun.mk_apply, AddMonoidHom.add_apply]
+  rw [μ_forget_apply]
+  rfl
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def unitIso : 𝟭 (C ⥤ₗ AddCommGrpCat) ≅
@@ -111,7 +116,8 @@ end leftExactFunctorForgetEquivalence
 variable (C) in
 /-- If `C` is an additive category, the forgetful functor `(C ⥤ₗ AddCommGroup) ⥤ (C ⥤ₗ Type v)` is
 an equivalence. -/
-noncomputable def leftExactFunctorForgetEquivalence : (C ⥤ₗ AddCommGrpCat.{v}) ≌ (C ⥤ₗ Type v) where
+noncomputable def leftExactFunctorForgetEquivalence :
+    (C ⥤ₗ AddCommGrpCat.{v}) ≌ (C ⥤ₗ TypeCat.{v}) where
   functor := (LeftExactFunctor.whiskeringRight _ _ _).obj (LeftExactFunctor.of (forget _))
   inverse := leftExactFunctorForgetEquivalence.inverse
   unitIso := leftExactFunctorForgetEquivalence.unitIso
