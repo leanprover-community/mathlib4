@@ -199,8 +199,8 @@ theorem char_linHom (g : G) :
 
 variable [Fintype G] [Invertible (Nat.card G : k)]
 
-theorem average_char_eq_finrank_invariants :
-    (Nat.card G : k)⁻¹ • ∑ g : G, ρ.character g = finrank k (invariants ρ) := by
+theorem card_inv_mul_sum_char_eq_finrank :
+    (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g = finrank k (invariants ρ) := by
   have : Invertible (Fintype.card G : k) := by rw [Fintype.card_eq_nat_card]; assumption
   rw [← (isProj_averageMap ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
@@ -210,12 +210,11 @@ If `V` are `W` are finite-dimensional representations of a finite group, then th
 scalar product of their characters is equal to the dimension of the space of
 equivariant maps from `V` to `W`.
 -/
-theorem scalar_product_char_eq_finrank_equivariant :
-    (Nat.card G : k)⁻¹ • ∑ g : G, σ.character g * ρ.character g⁻¹ =
-    Module.finrank k (IntertwiningMap ρ σ) := by
-  conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← char_linHom]
-  rw [average_char_eq_finrank_invariants,
-    ← LinearEquiv.finrank_eq (invariantsEquivIntertwiningMap ρ σ)]
+theorem card_inv_mul_sum_char_mul_char_eq_finrank :
+    (Nat.card G : k)⁻¹ * ∑ g : G, σ.character g * ρ.character g⁻¹ =
+      finrank k (IntertwiningMap ρ σ) := by
+  simp_rw [mul_comm, ← char_linHom, card_inv_mul_sum_char_eq_finrank,
+    (invariantsEquivIntertwiningMap ρ σ).finrank_eq]
 
 end Group
 
@@ -231,13 +230,13 @@ open scoped Classical in
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
 theorem char_orthonormal [IsIrreducible ρ] [IsIrreducible σ] :
-    (Nat.card G : k)⁻¹ • ∑ g : G, ρ.character g * σ.character g⁻¹ =
+    (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g * σ.character g⁻¹ =
       if Nonempty (Equiv σ ρ) then ↑1 else ↑0 := by
   cases isEmpty_or_nonempty (Equiv σ ρ)
-  · rw [scalar_product_char_eq_finrank_equivariant]
+  · rw [card_inv_mul_sum_char_mul_char_eq_finrank]
     simpa
   · obtain φ : σ.Equiv ρ := Classical.choice inferInstance
-    rw [char_iso φ, scalar_product_char_eq_finrank_equivariant]
+    rw [char_iso φ, card_inv_mul_sum_char_mul_char_eq_finrank]
     simp
 
 end Orthogonality

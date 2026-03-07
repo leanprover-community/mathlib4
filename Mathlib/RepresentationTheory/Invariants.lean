@@ -95,7 +95,7 @@ lemma mem_invariants_iff_of_forall_mem_zpowers
     simpa [neg_sub_comm _ (1 : ℤ), zpow_sub] using congr(ρ g⁻¹ $(h.trans hx.symm))⟩
 
 variable {ρ σ} in
-lemma mem_linHom_invariants_iff_isIntertwining (f : V →ₗ[k] W) :
+@[simp] lemma mem_linHom_invariants_iff_isIntertwining (f : V →ₗ[k] W) :
     f ∈ (linHom ρ σ).invariants ↔ IsIntertwiningMap ρ σ f := by
   refine ⟨fun hf ↦ ⟨fun γ v ↦ ?_⟩, fun hf γ ↦ ?_⟩
   · specialize hf γ

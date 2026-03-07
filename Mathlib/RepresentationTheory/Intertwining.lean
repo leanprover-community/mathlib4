@@ -78,9 +78,10 @@ lemma toLinearMap_mk (f : V →ₗ[A] W) (h) :
 lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
     f.toLinearMap (ρ g v) = σ g (f v) := congr($(f.isIntertwining' g) v)
 
-theorem toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f v = f.toLinearMap v := rfl
+@[simp]
+theorem toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v = f v := rfl
 
-@[simp] lemma _root_.LinearMap.intertwiningMap_of_isIntertwiningMap_apply
+@[simp] lemma _root_.LinearMap.toIntertwiningMap
   (hf : ∀ (g : G), ∀ (v : V), f (ρ g v) = σ g (f v)) (v : V) :
   f.intertwiningMap_of_isIntertwiningMap ρ σ hf v = f v := rfl
 
@@ -97,22 +98,27 @@ instance : Add (IntertwiningMap ρ σ) :=
 @[simp] lemma coe_add (f g : IntertwiningMap ρ σ) :
     ((f + g : IntertwiningMap ρ σ) : V → W) = f + g := rfl
 
+@[simp]
+lemma add_toLinearMap (f g : IntertwiningMap ρ σ) :
+    (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := rfl
+
 instance : Neg (IntertwiningMap ρ σ) :=
-  ⟨fun f ↦ (-f.toLinearMap).intertwiningMap_of_isIntertwiningMap ρ σ (by simp [f.isIntertwining]) ⟩
+  ⟨fun f ↦ (-f.toLinearMap).intertwiningMap_of_isIntertwiningMap ρ σ
+  (by intro _ _; simp [f.isIntertwining]) ⟩
 
 @[simp] lemma coe_neg (f : IntertwiningMap ρ σ) :
   (( -f : IntertwiningMap ρ σ) : V → W) = -f := rfl
 
 instance : Sub (IntertwiningMap ρ σ) :=
   ⟨fun f g ↦ (f.toLinearMap - g.toLinearMap).intertwiningMap_of_isIntertwiningMap ρ σ
-    (by simp [f.isIntertwining, g.isIntertwining])⟩
+    (by intro _ _; simp [f.isIntertwining, g.isIntertwining])⟩
 
 @[simp] lemma coe_sub (f g : IntertwiningMap ρ σ) :
     ((f - g : IntertwiningMap ρ σ) : V → W) = f - g := rfl
 
 instance : SMul A (IntertwiningMap ρ σ) :=
   ⟨fun a f ↦ (a • f.toLinearMap).intertwiningMap_of_isIntertwiningMap ρ σ
-    (by simp [f.isIntertwining])⟩
+    (by intro _ _; simp [f.isIntertwining])⟩
 
 @[simp] lemma coe_smul (a : A) (f : IntertwiningMap ρ σ) :
     ((a • f : IntertwiningMap ρ σ) : V → W) = a • f := rfl
@@ -339,9 +345,6 @@ namespace IntertwiningMap
 instance : SMul A (IntertwiningMap ρ σ) :=
   ⟨fun a f ↦ ⟨a • f.toLinearMap, by simp [LinearMap.smul_comp, LinearMap.comp_smul, f.2]⟩⟩
 
-@[simp] lemma coe_smul (a : A) (f : IntertwiningMap ρ σ) :
-    ((a • f : IntertwiningMap ρ σ) : V → W) = a • f := rfl
-
 @[simp]
 lemma toLinearMap_smul (a : A) (f : IntertwiningMap ρ σ) :
     (a • f).toLinearMap = a • f.toLinearMap := rfl
@@ -360,8 +363,8 @@ def equivLinearMapAsModule :
       map_smul' m v := by
         induction m using MonoidAlgebra.induction_linear with
           | zero => simp [f.toLinearMap.map_zero]
-          | add x y hx hy => simp at hx hy; simp [add_smul, map_add, hx, hy];
-          | single g a => simp [f.isIntertwining]; rfl}
+          | add x y hx hy => simp [add_smul, map_add, hx, hy]
+          | single g a => simp [f.isIntertwining]; rfl }
   invFun f :=
     { toLinearMap := { f with
         map_smul' a v := by simp }
@@ -466,6 +469,74 @@ instance [Module.Finite A V] [IsNoetherian A W] :
     Module.Finite A (IntertwiningMap ρ σ) :=
   .of_injective (toLinearMapl (ρ := ρ) (σ := σ)) (toLinearMap_injective ρ σ)
 
+variable {ρ σ} in
+/-- A bijective intertwining map is an equivalence of representations. -/
+noncomputable
+def ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
+    Equiv ρ σ where
+  isIntertwining' := f.isIntertwining'
+  toLinearEquiv :=  LinearEquiv.ofBijective f.toLinearMap hf
+
+@[simp]
+theorem coe_ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
+    ⇑(f.ofBijective hf) = ⇑f := rfl
+variable {P : Type*} [AddCommGroup P] [Module A P] {π : Representation A G P}
+
+variable {ρ σ τ}
+
+/-- The tensor product of intertwining maps induced from tensor product of linear maps. -/
+def tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
+    (tprod ρ τ).IntertwiningMap (tprod σ π) where
+  toLinearMap := TensorProduct.map f.toLinearMap g.toLinearMap
+  isIntertwining' x := by
+    rw [tprod_apply, ← TensorProduct.map_comp, f.2, g.2, TensorProduct.map_comp, tprod_apply]
+
+@[simp]
+lemma toLinearMap_tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
+    (f.tensor g).toLinearMap = TensorProduct.map f.toLinearMap g.toLinearMap := rfl
+
+@[simp]
+lemma tensor_apply (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) (v : V) (w : U) :
+    f.tensor g (v ⊗ₜ w) = f v ⊗ₜ g w := rfl
+
+variable (ρ) in
+/-- The intertwining map induced from `f : σ → τ` to `ρ.tprod σ → ρ.tprod τ`. -/
+def lTensor (f : IntertwiningMap σ τ) :
+    (tprod ρ σ).IntertwiningMap (tprod ρ τ) := tensor (id ρ) f
+
+@[simp]
+lemma toLinearMap_lTensor (f : IntertwiningMap ρ σ) :
+    (f.lTensor τ).toLinearMap = f.toLinearMap.lTensor U := rfl
+
+@[simp]
+lemma lTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
+    f.lTensor ρ (v ⊗ₜ w) = v ⊗ₜ f w := rfl
+
+@[simp]
+lemma lTensor_id : lTensor ρ (id σ) = id (tprod ρ σ) := by ext; simp
+
+variable (ρ) in
+/-- The natural intertwining map `σ.tprod ρ → τ.tprod ρ` induced by `f : σ → τ`. -/
+def rTensor (f : IntertwiningMap σ τ) :
+    (tprod σ ρ).IntertwiningMap (tprod τ ρ) := tensor f (id ρ)
+
+@[simp]
+lemma toLinearMap_rTensor (f : IntertwiningMap σ τ) :
+    (f.rTensor ρ).toLinearMap = f.toLinearMap.rTensor V := rfl
+
+@[simp]
+lemma rTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
+    f.rTensor ρ (w ⊗ₜ v) = f w ⊗ₜ v := rfl
+
+@[simp]
+lemma rTensor_id : rTensor ρ (id σ) = id (tprod σ ρ) := by ext; simp
+
+lemma rTensor_comp_lTensor (f : IntertwiningMap σ ρ) (g : IntertwiningMap ρ τ) :
+    (f.rTensor τ).comp (g.lTensor σ) = f.tensor g := by ext; simp
+
+lemma lTensor_comp_rTensor (f : IntertwiningMap σ ρ) (g : IntertwiningMap ρ τ) :
+    (f.lTensor τ).comp (g.rTensor σ) = g.tensor f := by ext; simp
+
 end IntertwiningMap
 
 namespace TensorProduct
@@ -479,15 +550,8 @@ def comm : (tprod ρ σ).Equiv (tprod σ ρ) :=
 @[simp]
 lemma toLinearMap_comm : (comm ρ σ).toLinearMap = _root_.TensorProduct.comm A V W := rfl
 
-variable {ρ σ} in
-/-- A bijective intertwining map is an equivalence of representations. -/
-noncomputable
-def IntertwiningMap.ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
-    Equiv ρ σ where
-  isIntertwining' := f.isIntertwining'
-  toLinearEquiv :=  LinearEquiv.ofBijective f.toLinearMap hf
-
-namespace Equiv
+@[simp]
+lemma comm_apply (v : V) (w : W) : comm ρ σ (v ⊗ₜ w) = w ⊗ₜ v := rfl
 
 lemma comm_comp_lTensor (f : IntertwiningMap σ τ) :
     (comm ρ τ).comp (f.lTensor ρ) = (f.rTensor ρ).comp (comm ρ σ).toIntertwiningMap := by ext; simp
@@ -505,20 +569,8 @@ def assoc : (tprod (tprod ρ σ) τ).Equiv (tprod ρ (tprod σ τ)) :=
 lemma toLinearMap_assoc : (assoc ρ σ τ).toLinearMap = _root_.TensorProduct.assoc A V W U := rfl
 
 @[simp]
-theorem coe_ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
-    ⇑(f.ofBijective hf) = ⇑f := rfl
-
-/-- An inverse to an equivalence of representations. -/
-def symm : Equiv σ ρ where
-  toLinearEquiv := φ.toLinearEquiv.symm
-  isIntertwining' g := by
-    ext _
-    apply φ.toEquiv.injective
-    simp [φ.isIntertwining]
-
-@[simp]
-theorem toLinearEquiv_toLinearMap :
-  LinearEquiv.toLinearMap φ.toLinearEquiv = φ.toIntertwiningMap.toLinearMap := rfl
+lemma assoc_symm_toLinearMap : (assoc ρ σ τ).symm.toLinearMap =
+  (_root_.TensorProduct.assoc A V W U).symm := rfl
 
 @[simp]
 lemma assoc_apply (v : V) (w : W) (u : U) : assoc ρ σ τ ((v ⊗ₜ w) ⊗ₜ u) = v ⊗ₜ (w ⊗ₜ u) := rfl
@@ -554,6 +606,7 @@ lemma lid_symm_apply (w : W) : (lid A σ).symm w = 1 ⊗ₜ w := rfl
 end
 
 end TensorProduct
+
 
 end Monoid
 
