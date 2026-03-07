@@ -6,7 +6,7 @@ Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 module
 
 public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
-public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.RingTheory.Ideal.Int
