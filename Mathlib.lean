@@ -4617,7 +4617,6 @@ public import Mathlib.Lean.Elab.InfoTree
 public import Mathlib.Lean.Elab.Tactic.Basic
 public import Mathlib.Lean.Elab.Tactic.Meta
 public import Mathlib.Lean.Elab.Term
-public import Mathlib.Lean.Elab.TypeStar
 public import Mathlib.Lean.EnvExtension
 public import Mathlib.Lean.Environment
 public import Mathlib.Lean.Exception
@@ -7070,6 +7069,7 @@ public import Mathlib.Tactic.Translate.ToDual
 public import Mathlib.Tactic.Translate.UnfoldBoundary
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Tactic.TypeCheck
+public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.UnsetOption
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.Variable
