@@ -159,12 +159,12 @@ lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z'))
 
 omit [IsManifold I 2 M] in
 variable (X Y Z) in
-lemma rhs_aux_smulX_apply (f : M → ℝ) (x) : rhs_aux I (f • X) Y Z x = f x • rhs_aux I X Y Z x := by
+lemma rhs_aux_smulX_apply (f : M → ℝ) (x) : rhs_aux I (f • X) Y Z x = f x * rhs_aux I X Y Z x := by
   simp [rhs_aux]
 
 omit [IsManifold I 2 M] in
 variable (X Y Z) in
-lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I X Y Z := by
+lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f * rhs_aux I X Y Z := by
   ext x
   exact rhs_aux_smulX_apply ..
 
@@ -172,20 +172,20 @@ variable (X) in
 lemma rhs_aux_smulY_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
-    rhs_aux I X (f • Y) Z x = f x • rhs_aux I X Y Z x + A x • ⟪Y, Z⟫ x := by
+    rhs_aux I X (f • Y) Z x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
   rw [rhs_aux, product_smul_left, mfderiv_smul hf (hY.inner_bundle' hZ)]
   rfl
 
 variable (X) in
 lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
     letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
-    rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
+    rhs_aux I X (f • Y) Z = f * rhs_aux I X Y Z + A * ⟪Y, Z⟫ := by
   ext x
   simp [rhs_aux_smulY_apply I X (hf x) (hY x) (hZ x)]
 
 variable (X) in
 lemma rhs_aux_smulY_const_apply {a : ℝ} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    rhs_aux I X (a • Y) Z x = a • rhs_aux I X Y Z x := by
+    rhs_aux I X (a • Y) Z x = a * rhs_aux I X Y Z x := by
   let f : M → ℝ := fun _ ↦ a
   have h1 : rhs_aux I X (a • Y) Z x = rhs_aux I X (f • Y) Z x := by simp only [f]; congr
   rw [h1, rhs_aux_smulY_apply I X mdifferentiableAt_const hY hZ]
@@ -201,20 +201,20 @@ variable (X) in
 lemma rhs_aux_smulZ_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
-    rhs_aux I X Y (f • Z) x = f x • rhs_aux I X Y Z x + A x • ⟪Y, Z⟫ x := by
+    rhs_aux I X Y (f • Z) x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
   rw [rhs_aux_swap, rhs_aux_smulY_apply, rhs_aux_swap, product_swap]
   exacts [hf, hZ, hY]
 
 variable (X) in
 lemma rhs_aux_smulZ {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
     letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
-    rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
+    rhs_aux I X Y (f • Z) = f * rhs_aux I X Y Z + A * ⟪Y, Z⟫ := by
   rw [rhs_aux_swap, rhs_aux_smulY, rhs_aux_swap, product_swap]
   exacts [hf, hZ, hY]
 
 variable (X) in
 lemma rhs_aux_smulZ_const_apply {a : ℝ} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    rhs_aux I X Y (a • Z) x = a • rhs_aux I X Y Z x := by
+    rhs_aux I X Y (a • Z) x = a * rhs_aux I X Y Z x := by
   let f : M → ℝ := fun _ ↦ a
   have h1 : rhs_aux I X Y (a • Z) x = rhs_aux I X Y (f • Z) x := by simp only [f]; congr
   rw [h1, rhs_aux_smulZ_apply I X mdifferentiableAt_const hY hZ]
