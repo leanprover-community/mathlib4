@@ -19,9 +19,16 @@ topology on the dual of `E`. By the dual, we mean either of the type synonyms
 `StrongDual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with its usual
 operator norm topology or the weak-* topology.
 
+It is shown that the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous, and
+as a consequence the weak-* topology is coarser than the topology obtained from the operator norm
+(dual norm).
+
 The file also equips `WeakDual 𝕜 E` with the norm bornology inherited from `StrongDual 𝕜 E`, so
 that `IsBounded` refers to operator-norm boundedness. This is a pragmatic choice discussed
 further in the implementation notes.
+
+We establish the Banach-Alaoglu theorem about the compactness of closed balls in the dual of `E`
+(as well as sets of somewhat more general form) with respect to the weak-* topology.
 
 Main results include:
 * The canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous.
@@ -149,24 +156,24 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The bornology on `WeakDual 𝕜 F` is the norm bornology inherited from `StrongDual 𝕜 F`.
 
-Note: This is a pragmatic choice. Morally, the bornology of a weak topology should be
+Note: This is a pragmatic choice. To be precise, the bornology of a weak topology should be
 the von Neumann bornology (pointwise boundedness). However, in the normed setting,
 `IsBounded` is most useful when referring to the operator norm (e.g., to state
 Banach-Alaoglu concisely).
 
 Pointwise boundedness is instead captured by `Bornology.IsVonNBounded`.
 For Banach spaces, these notions coincide via `isBounded_iff_isVonNBounded`.
-See the module docstring for a detailed discussion. -/
+See the module docstring for more details. -/
 instance instBornology : Bornology (WeakDual 𝕜 E) := inferInstanceAs (Bornology (StrongDual 𝕜 E))
 
 /-- A set in `WeakDual 𝕜 E` is bounded iff its image in `StrongDual 𝕜 E` is bounded. -/
 @[simp]
-theorem isBounded_toStrongDual_preimage {s : Set (StrongDual 𝕜 E)} :
+theorem isBounded_toStrongDual_preimage_iff_isBounded {s : Set (StrongDual 𝕜 E)} :
     IsBounded (WeakDual.toStrongDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
 
 /-- A set in `StrongDual 𝕜 E` is bounded iff its image in `WeakDual 𝕜 E` is bounded. -/
 @[simp]
-theorem isBounded_toWeakDual_preimage {s : Set (WeakDual 𝕜 E)} :
+theorem isBounded_toWeakDual_preimage_iff_isBounded {s : Set (WeakDual 𝕜 E)} :
     IsBounded (StrongDual.toWeakDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
 
 end Bornology
@@ -230,7 +237,7 @@ theorem isVonNBounded_iff_pointwise_bounded {s : Set (WeakDual 𝕜 E)} :
     Bornology.IsVonNBounded 𝕜 s ↔ ∀ x : E, ∃ r : ℝ, ∀ f ∈ s, ‖f x‖ ≤ r := by
   constructor
   · intro h_vN x
-    have hU : (fun f : WeakDual 𝕜 E => f x) ⁻¹' Metric.ball 0 1 ∈ 𝓝 (0 : WeakDual 𝕜 E) :=
+    have hU : (· x) ⁻¹' Metric.ball 0 1 ∈ 𝓝 (0 : WeakDual 𝕜 E) :=
       (eval_continuous x).continuousAt.preimage_mem_nhds (Metric.ball_mem_nhds 0 one_pos)
     obtain ⟨r, _, hab⟩ := (h_vN hU).exists_pos
     obtain ⟨a, ha⟩ := NormedField.exists_lt_norm 𝕜 r
@@ -244,12 +251,12 @@ theorem isVonNBounded_iff_pointwise_bounded {s : Set (WeakDual 𝕜 E)} :
     have h_nhds : 𝓝 (0 : WeakDual 𝕜 E) = Filter.comap (fun f x ↦ f x) (𝓝 0) := nhds_induced _ _
     rw [h_nhds] at hV
     obtain ⟨W, hW, hWV⟩ := hV
-    have hpi : Bornology.IsVonNBounded 𝕜 ((fun f x ↦ f x : WeakDual 𝕜 E → E → 𝕜) '' s) :=
+    have hpi : Bornology.IsVonNBounded 𝕜 ((fun f x ↦ f x) '' s) :=
       isVonNBounded_pi_iff.mpr fun x ↦ let ⟨C, hC⟩ := h x
         (NormedSpace.isVonNBounded_iff' 𝕜).mpr
           ⟨C, by rintro _ ⟨_, ⟨f, hf, rfl⟩, rfl⟩; exact hC f hf⟩
     obtain ⟨r, hr, hab⟩ := (hpi hW).exists_pos
-    refine Absorbs.mono_left (.of_norm ⟨r, fun c hc f hf ↦ ?_⟩) hWV
+    refine Absorbs.mono_left (Absorbs.of_norm ⟨r, fun c hc f hf ↦ ?_⟩) hWV
     have hc0 : c ≠ 0 := norm_pos_iff.mp (hr.trans_le hc)
     have hmem := hab c hc (Set.mem_image_of_mem (fun f x ↦ f x) hf)
     rwa [Set.mem_smul_set_iff_inv_smul_mem₀ hc0] at hmem ⊢
@@ -266,7 +273,7 @@ theorem isBounded_iff_isVonNBounded [CompleteSpace E] {s : Set (WeakDual 𝕜 E)
     obtain ⟨C, hC⟩ := banach_steinhaus (g := fun i : s ↦ WeakDual.toStrongDual i.val) fun x ↦
       let ⟨M, hM⟩ := h_ptwise x
       ⟨M, fun i ↦ hM i.val i.property⟩
-    rw [← isBounded_toWeakDual_preimage, isBounded_iff_forall_norm_le]
+    rw [← isBounded_toWeakDual_preimage_iff_isBounded, isBounded_iff_forall_norm_le]
     exact ⟨C, fun f hf ↦ hC ⟨StrongDual.toWeakDual f, hf⟩⟩
 
 /-- By the Uniform Boundedness Principle, a set in the weak dual of a Banach space
@@ -307,7 +314,7 @@ theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
 /-- Closed balls are bounded in the weak dual. -/
 theorem isBounded_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsBounded (toStrongDual ⁻¹' closedBall x' r) :=
-  isBounded_toStrongDual_preimage.mpr Metric.isBounded_closedBall
+  isBounded_toStrongDual_preimage_iff_isBounded.mpr Metric.isBounded_closedBall
 
 /-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
 the weak-star topology. -/
@@ -335,7 +342,8 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
 
 /-- Polar sets of neighborhoods of the origin are bounded in the weak dual. -/
 theorem isBounded_polar {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) : IsBounded (polar 𝕜 s) :=
-  isBounded_toStrongDual_preimage.mpr (NormedSpace.isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds)
+  isBounded_toStrongDual_preimage_iff_isBounded.mpr
+  (NormedSpace.isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds)
 
 /-- The image under `↑ : WeakDual 𝕜 E → (E → 𝕜)` of a polar `WeakDual.polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
