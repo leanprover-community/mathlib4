@@ -92,7 +92,7 @@ namespace StrictPseudofunctor
 
 variable {B C}
 
-/-- An alternate constructor for strictly unitary lax functors that does not
+/-- An alternate constructor for strict pseudofunctors that does not
 require the `mapId` or `mapComp` fields, and that adapts the compatibility conditions
 to the fact that the pseudofunctor is strict -/
 @[simps]

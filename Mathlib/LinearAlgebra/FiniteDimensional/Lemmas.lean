@@ -49,7 +49,6 @@ theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s ≠ ⊤) :
   rw [← Quotient.nontrivial_iff] at h
   exact Nat.lt_add_of_pos_right finrank_pos
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sum of the dimensions of s + t and s ∩ t is the sum of the dimensions of s and t -/
 theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional K s]
     [FiniteDimensional K t] :
@@ -59,7 +58,6 @@ theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional 
   repeat rw [← finrank_eq_rank] at key
   norm_cast at key
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finrank_add_le_finrank_add_finrank (s t : Submodule K V) [FiniteDimensional K s]
     [FiniteDimensional K t] : finrank K (s ⊔ t : Submodule K V) ≤ finrank K s + finrank K t := by
   rw [← finrank_sup_add_finrank_inf_eq]
@@ -81,7 +79,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
   rw [hdim]
   convert s.finrank_sup_add_finrank_inf_eq t
-  rw [h_finrank_inf]
+  rw [h_finrank_inf, add_zero]
 
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     (hdim : finrank K V ≤ finrank K s + finrank K t) :
@@ -111,7 +109,6 @@ noncomputable def LinearEquiv.quotEquivOfEquiv {p : Subspace K V} {q : Subspace 
         LinearEquiv.finrank_eq f₁, Submodule.finrank_quotient_add_finrank,
         LinearEquiv.finrank_eq f₂])
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to the case where one of `p` and `q` is finite-dimensional.
 /-- Given the subspaces `p q`, if `p.quotient ≃ₗ[K] q`, then `q.quotient ≃ₗ[K] p` -/
 noncomputable def LinearEquiv.quotEquivOfQuotEquiv {p q : Subspace K V} (f : (V ⧸ p) ≃ₗ[K] q) :
@@ -197,7 +194,6 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
     finrank K s < finrank K t :=
   (comapSubtypeEquivOfLe hst.le).finrank_eq.symm.trans_lt <|

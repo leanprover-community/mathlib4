@@ -162,9 +162,9 @@ protected def mkOfClosure (s : Set (Set α)) (hs : { u | GenerateOpen s u } = s)
   isOpen_inter := hs ▸ TopologicalSpace.GenerateOpen.inter
   isOpen_sUnion := hs ▸ TopologicalSpace.GenerateOpen.sUnion
 
-theorem mkOfClosure_sets {s : Set (Set α)} {hs : { u | GenerateOpen s u } = s} :
+theorem mkOfClosure_sets {s : Set (Set α)} {hs : {u | GenerateOpen s u} = s} :
     TopologicalSpace.mkOfClosure s hs = generateFrom s :=
-  TopologicalSpace.ext hs.symm
+  TopologicalSpace.ext (by ext U; exact Set.ext_iff.mp hs.symm U)
 
 theorem gc_generateFrom (α) :
     GaloisConnection (fun t : TopologicalSpace α => OrderDual.toDual { s | IsOpen[t] s })
@@ -744,7 +744,7 @@ theorem continuous_iff_le_induced {t₁ : TopologicalSpace α} {t₂ : Topologic
 lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
     Continuous[t, generateFrom b] f ↔ ∀ s ∈ b, IsOpen (f ⁻¹' s) := by
   rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]
-  simp only [isOpen_coinduced, subset_def, mem_setOf]
+  simp only [isOpen_coinduced, subset_def, mem_setOf_eq]
 
 @[continuity, fun_prop]
 theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f t, t] f :=
