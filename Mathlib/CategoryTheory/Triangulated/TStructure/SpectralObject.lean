@@ -131,8 +131,7 @@ noncomputable def triangleω₁δObjIso (X : C) :
       eTruncGE_obj_map_eTruncGEπ_app]
   · simp [← Functor.map_comp_assoc, ← Functor.map_comp]
 
-lemma triangleω₁δ_distinguished (X : C) :
-    (t.triangleω₁δ a b c hab hbc).obj X ∈ distTriang _ :=
+lemma triangleω₁δ_distinguished (X : C) : (t.triangleω₁δ a b c hab hbc).obj X ∈ distTriang _ :=
   isomorphic_distinguished _ (t.eTriangleLTGE_distinguished b _) _
     (t.triangleω₁δObjIso a b c hab hbc X)
 
