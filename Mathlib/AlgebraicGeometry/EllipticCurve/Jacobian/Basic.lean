@@ -557,7 +557,6 @@ lemma map_nonsingular (hf : Function.Injective f) (P : Fin 3 → R) :
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B)
 
-@[simp]
 lemma map_baseChange : (W'⁄A).map f = W'⁄B :=
   WeierstrassCurve.map_baseChange W' f
 
