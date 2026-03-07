@@ -635,7 +635,6 @@ private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallo
   repeat obtain ⟨_, creplaced⟩ := creplaced
   simp [replaceDisallowed]
 
-
 /-!
 Ensure parsing back error messages in `parse?_errorContext` works.
 -/
@@ -752,7 +751,6 @@ meta def ErrorContext.isValid_parse?_error_context (ec : ErrorContext) : Bool :=
 #guard ErrorContext.isValid_parse?_error_context {
   error := .unicodeVariant "\u271d" UnicodeVariant.text,
   lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
-
 
 -- "wrong" variant selector
 #guard ErrorContext.isValid_parse?_error_context {
