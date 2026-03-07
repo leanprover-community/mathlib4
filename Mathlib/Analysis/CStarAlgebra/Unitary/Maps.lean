@@ -29,9 +29,11 @@ noncomputable def mulLeftLinearIsometryEquiv : unitary A →* A ≃ₗᵢ[R] A w
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
 
+variable (R) in
 @[simp] lemma mulLeftLinearIsometryEquiv_apply (u : unitary A) (x : A) :
     mulLeftLinearIsometryEquiv R A u x = u * x := rfl
 
+variable (R) in
 lemma symm_mulLeftLinearIsometryEquiv_apply (u : unitary A) (x : A) :
     (mulLeftLinearIsometryEquiv R A u).symm x = star u * x := rfl
 
