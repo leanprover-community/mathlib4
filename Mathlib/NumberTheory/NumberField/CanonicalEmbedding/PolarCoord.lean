@@ -79,6 +79,7 @@ theorem mixedSpaceToRealMixedSpace_apply (x : mixedSpace K) :
 
 variable [NumberField K]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_preserving_mixedSpaceToRealMixedSpace_symm :
     MeasurePreserving (mixedSpaceToRealMixedSpace K).symm :=
@@ -201,6 +202,7 @@ theorem normAtPlace_polarCoord_symm_of_isComplex (x : realMixedSpace K)
     normAtPlace w ((mixedEmbedding.polarCoord K).symm x) = ‖(x.2 ⟨w, hw⟩).1‖ := by
   simp [normAtPlace_apply_of_isComplex hw]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : mixedSpace K → E) :
@@ -211,6 +213,7 @@ protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup 
     (mixedSpaceToRealMixedSpace K).symm.measurableEmbedding, ← integral_comp_polarCoordReal_symm,
     polarCoord_target_eq_polarCoordReal_target, polarCoord_symm_eq, Function.comp_def]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 protected theorem lintegral_comp_polarCoord_symm (f : mixedSpace K → ℝ≥0∞) :
     ∫⁻ x in (mixedEmbedding.polarCoord K).target, (∏ w : {w // IsComplex w}, .ofReal (x.2 w).1) *
@@ -321,6 +324,7 @@ theorem polarSpaceCoord_target' [NumberField K] :
     Set.mem_prod, Set.mem_univ, true_and, Set.mem_univ_pi, Set.mem_ite_univ_left,
     not_isReal_iff_isComplex, Subtype.forall, Complex.polarCoord_target, Set.mem_prod, forall_and]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem integral_comp_polarSpaceCoord_symm [NumberField K] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : mixedSpace K → E) :
@@ -335,6 +339,7 @@ theorem integral_comp_polarSpaceCoord_symm [NumberField K] {E : Type*} [NormedAd
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsReal,
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsComplex, homeoRealMixedSpacePolarSpace_apply_snd]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem lintegral_comp_polarSpaceCoord_symm [NumberField K] (f : mixedSpace K → ℝ≥0∞) :
     ∫⁻ x in (polarSpaceCoord K).target,
@@ -381,6 +386,7 @@ private theorem volume_eq_two_pi_pow_mul_integral_aux
     intro w hw
     simpa [if_neg (not_isReal_iff_isComplex.mpr hw)] using hx₂ w (Set.mem_univ w)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 If the measurable set `A` is norm-stable at complex places in the sense that
@@ -432,6 +438,7 @@ private theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux
           normAtComplexPlaces_apply_isComplex ⟨w, hw⟩]
     · simpa [Set.mem_setOf_eq, normAtComplexPlaces_apply_isReal] using (ha₂ w).ne'
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 If the measurable set `A` is norm-stable in the sense that

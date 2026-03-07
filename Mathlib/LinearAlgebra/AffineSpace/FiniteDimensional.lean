@@ -267,6 +267,7 @@ lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
   erw [hs.finrank_vectorSpan_add_one] at finrank_le
   simpa using finrank_le.trans <| finrank_vectorSpan_range_add_one_le _ _
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- If the affine span of an affine independent finset is strictly contained in the affine span of
 another finset, then its cardinality is strictly less than the cardinality of that finset. -/
@@ -334,6 +335,7 @@ theorem AffineIndependent.affineSpan_eq_of_le_of_card_eq_finrank_add_one [Fintyp
   rw [← Set.image_univ, ← Finset.coe_univ, ← Finset.coe_image] at hle ⊢
   exact hi.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one hle hc
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `affineSpan` of a finite affinely independent family is `⊤` iff the
 family's cardinality is one more than that of the finite-dimensional space. -/
 theorem AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one [FiniteDimensional k V]

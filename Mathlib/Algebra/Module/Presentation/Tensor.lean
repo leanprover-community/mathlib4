@@ -47,6 +47,7 @@ namespace Solution
 variable {relations₁ relations₂} (solution₁ : relations₁.Solution M₁)
   (solution₂ : relations₂.Solution M₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given solutions in `M₁` and `M₂` to systems of linear equations, this is the obvious
 solution to the tensor product of these systems in `M₁ ⊗[A] M₂`. -/
 @[simps]
@@ -64,6 +65,7 @@ noncomputable def tensor : (relations₁.tensor relations₂).Solution (M₁ ⊗
 
 variable {solution₁ solution₂} (h₁ : solution₁.IsPresentation) (h₂ : solution₂.IsPresentation)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two modules admits a presentation by generators and relations. -/
 noncomputable def isPresentationCoreTensor :
     Solution.IsPresentationCore.{w} (solution₁.tensor solution₂) where

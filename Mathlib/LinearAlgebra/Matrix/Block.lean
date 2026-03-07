@@ -262,7 +262,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
     refine Finset.prod_congr rfl fun l hl => ?_
     let he : { a // b' a = l } ≃ { a // b a = l } :=
       haveI hc : ∀ i, b i = l → b i ≠ k := fun i hi => ne_of_eq_of_ne hi (ne_of_mem_erase hl)
-      Equiv.subtypeSubtypeEquivSubtype @(hc)
+      Equiv.subtypeSubtypeEquivSubtype @hc
     simp only [toSquareBlock_def]
     erw [← Matrix.det_reindex_self he.symm fun i j : { a // b a = l } => M ↑i ↑j]
     rfl
