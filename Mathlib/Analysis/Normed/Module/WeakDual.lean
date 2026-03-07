@@ -86,12 +86,9 @@ weak-star, weak dual
 
 @[expose] public section
 
-
 noncomputable section
 
-open Filter Function Bornology Metric Set
-
-open Topology Filter
+open Filter Function Bornology Metric Set Topology Filter
 
 namespace StrongDual
 
@@ -224,6 +221,62 @@ namespace WeakDual
 
 open NormedSpace
 
+theorem isVonNBounded_iff_pointwise_bounded {s : Set (WeakDual 𝕜 E)} :
+    Bornology.IsVonNBounded 𝕜 s ↔ ∀ x : E, ∃ r : ℝ, ∀ f ∈ s, ‖f x‖ ≤ r := by
+  constructor
+  · intro h_vN x
+    have hU : (fun f : WeakDual 𝕜 E => f x) ⁻¹' Metric.ball 0 1 ∈ 𝓝 (0 : WeakDual 𝕜 E) :=
+      (eval_continuous x).continuousAt.preimage_mem_nhds (Metric.ball_mem_nhds 0 one_pos)
+    obtain ⟨r, _, hab⟩ := (h_vN hU).exists_pos
+    obtain ⟨a, ha⟩ := NormedField.exists_lt_norm 𝕜 r
+    refine ⟨‖a‖, fun f hf => ?_⟩
+    obtain ⟨g, hg, rfl⟩ := (hab a ha.le) hf
+    simp only [Set.mem_preimage, Metric.mem_ball, dist_zero_right] at hg
+    change ‖a * g x‖ ≤ ‖a‖
+    rw [norm_mul]
+    exact mul_le_of_le_one_right (norm_nonneg _) hg.le
+  · intro h V hV
+    have hpi : Bornology.IsVonNBounded 𝕜
+        ((fun (f : WeakDual 𝕜 E) (x : E) => f x) '' s) := by
+      rw [isVonNBounded_pi_iff]
+      intro x
+      obtain ⟨C, hC⟩ := h x
+      refine (NormedSpace.isVonNBounded_iff' 𝕜).mpr ⟨C, fun z hz => ?_⟩
+      obtain ⟨_, ⟨f, hf, rfl⟩, rfl⟩ := hz
+      exact hC f hf
+    rw [show (𝓝 (0 : WeakDual 𝕜 E)) = Filter.comap
+        (fun (f : WeakDual 𝕜 E) (x : E) => f x) (𝓝 0) from nhds_induced _ _] at hV
+    obtain ⟨W, hW, hWV⟩ := hV
+    obtain ⟨r, hr, hab⟩ := (hpi hW).exists_pos
+    refine (Absorbs.mono_left ?_ hWV)
+    refine .of_norm ⟨r, fun c hc => fun f hf => ?_⟩
+    have hc0 : c ≠ 0 := norm_pos_iff.mp (lt_of_lt_of_le hr hc)
+    have hmem := hab c hc ⟨f, hf, rfl⟩
+    rw [Set.mem_smul_set_iff_inv_smul_mem₀ hc0] at hmem ⊢
+    exact hmem
+
+/-- By the Uniform Boundedness Principle, norm-boundedness (the default bornology)
+and pointwise-boundedness (`IsVonNBounded`) coincide on the weak dual of a Banach space. -/
+theorem isBounded_iff_isVonNBounded [CompleteSpace E] {s : Set (WeakDual 𝕜 E)} :
+    IsBounded s ↔ Bornology.IsVonNBounded 𝕜 s := by
+  constructor
+  · exact fun h => ((NormedSpace.isVonNBounded_iff 𝕜).mpr h).of_topologicalSpace_le
+      Dual.dual_norm_topology_le_weak_dual_topology
+  · intro h_vN
+    have h_ptwise := isVonNBounded_iff_pointwise_bounded.mp h_vN
+    obtain ⟨C, hC⟩ := banach_steinhaus (g := fun i : s ↦ WeakDual.toStrongDual i.val) fun x ↦
+      let ⟨M, hM⟩ := h_ptwise x
+      ⟨M, fun i ↦ hM i.val i.property⟩
+    rw [← isBounded_toWeakDual_preimage, isBounded_iff_forall_norm_le]
+    exact ⟨C, fun f hf ↦ hC ⟨StrongDual.toWeakDual f, hf⟩⟩
+
+/-- By the Uniform Boundedness Principle, a set in the weak dual of a Banach space
+is norm-bounded if and only if it is pointwise bounded. -/
+theorem isBounded_iff_pointwise_bounded [CompleteSpace E] {s : Set (WeakDual 𝕜 E)} :
+    IsBounded s ↔ ∀ x : E, ∃ C : ℝ, ∀ f ∈ s, ‖f x‖ ≤ C := by
+  -- If you updated `isVonNBounded` to an `iff`, this proof is trivial!
+  rw [isBounded_iff_isVonNBounded, isVonNBounded_iff_pointwise_bounded]
+
 theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsClosed (toStrongDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
@@ -235,12 +288,12 @@ theorem isClosed_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
 /-- While the coercion `↑ : WeakDual 𝕜 E → (E → 𝕜)` is not a closed map, it sends *bounded*
 closed sets to closed sets. -/
 theorem isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
-    (hb : IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
+    (hb : IsBounded s) (hc : IsClosed s) :
     IsClosed (((↑) : WeakDual 𝕜 E → E → 𝕜) '' s) :=
   ContinuousLinearMap.isClosed_image_coe_of_bounded_of_weak_closed hb (isClosed_induced_iff'.1 hc)
 
 theorem isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual 𝕜 E)}
-    (hb : IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) : IsCompact s :=
+    (hb : IsBounded s) (hc : IsClosed s) : IsCompact s :=
   DFunLike.coe_injective.isEmbedding_induced.isCompact_iff.mpr <|
     ContinuousLinearMap.isCompact_image_coe_of_bounded_of_closed_image hb <|
       isClosed_image_coe_of_bounded_of_closed hb hc
@@ -271,7 +324,8 @@ theorem isCompact_polar [ProperSpace 𝕜] {s : Set E} (s_nhds : s ∈ 𝓝 (0 :
 the weak-star topology. -/
 theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsCompact (toStrongDual ⁻¹' closedBall x' r) :=
-  isCompact_of_bounded_of_closed isBounded_closedBall (isClosed_closedBall x' r)
+  isCompact_of_bounded_of_closed (isBounded_toStrongDual_preimage.mpr isBounded_closedBall)
+    (isClosed_closedBall x' r)
 
 open TopologicalSpace
 
@@ -301,7 +355,7 @@ lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.Metrizabl
 variable [ProperSpace 𝕜] (K_cpt : IsCompact K)
 
 theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 V)}
-    (hb : Bornology.IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
+    (hb : IsBounded s) (hc : IsClosed s) :
     IsSeqCompact s := by
   have b_isCompact' : CompactSpace s :=
     isCompact_iff_compactSpace.mp <| isCompact_of_bounded_of_closed hb hc
@@ -322,7 +376,7 @@ theorem isSeqCompact_polar {s : Set V} (s_nhd : s ∈ 𝓝 (0 : V)) :
 normed space `V` are sequentially compact in the weak-* topology. -/
 theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
     IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) :=
-  isSeqCompact_of_isBounded_of_isClosed 𝕜 V Metric.isBounded_closedBall
-    (isClosed_closedBall x' r)
+  isSeqCompact_of_isBounded_of_isClosed 𝕜 V
+    (isBounded_toStrongDual_preimage.mpr Metric.isBounded_closedBall) (isClosed_closedBall x' r)
 
 end WeakDual
