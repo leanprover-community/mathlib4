@@ -133,7 +133,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
       infer_instance
     | n + 1 =>
       nth_rw 2 [← Nat.cast_one, Nat.cast_add]
-      rw [WithBot.add_le_add_natCast_right_iff, projectiveDimension_le_iff,
+      rw [ENat.WithBot.add_le_add_natCast_right_iff, projectiveDimension_le_iff,
         projectiveDimension_le_iff]
       let S := M.smulShortComplex x
       have S_exact : S.ShortExact := reg.smulShortComplex_shortExact
