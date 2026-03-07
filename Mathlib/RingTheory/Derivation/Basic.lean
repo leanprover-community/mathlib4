@@ -134,7 +134,6 @@ theorem map_algebraMap : D (algebraMap R A r) = 0 := by
 theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
   rw [← nsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   induction n with

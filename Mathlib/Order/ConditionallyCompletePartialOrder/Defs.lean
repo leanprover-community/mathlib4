@@ -90,7 +90,7 @@ protected lemma DirectedOn.csSup_le (hd : DirectedOn (· ≤ ·) s) (h_non : s.N
 @[to_dual ciInf_le]
 protected lemma Directed.le_ciSup (hf : Directed (· ≤ ·) f)
     (hf_bdd : BddAbove (Set.range f)) (i : ι) : f i ≤ ⨆ j, f j :=
-  hf.directedOn_range.le_csSup  hf_bdd <| Set.mem_range_self _
+  hf.directedOn_range.le_csSup hf_bdd <| Set.mem_range_self _
 
 @[to_dual le_ciInf]
 protected lemma Directed.ciSup_le [Nonempty ι] (hf : Directed (· ≤ ·) f)

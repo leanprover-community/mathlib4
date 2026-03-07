@@ -25,8 +25,8 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 ## Main results
 
 - `CategoryTheory.isContinuous_of_coverPreserving`: If `G : C ⥤ D` is
-cover-preserving and compatible-preserving, then `G` is a continuous functor,
-i.e. `G.op ⋙ -` as a functor `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
+  cover-preserving and compatible-preserving, then `G` is a continuous functor,
+  i.e. `G.op ⋙ -` as a functor `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
 
 ## References
 
