@@ -454,14 +454,6 @@ theorem dFrom_eq {i j : ι} (r : c.Rel i j) : C.dFrom i = C.d i j ≫ (C.xNextIs
 theorem dFrom_eq_zero {i : ι} (h : ¬c.Rel i (c.next i)) : C.dFrom i = 0 := by
   simp [h]
 
-/-- If `xNext i` is zero, then `dFrom i` is the zero map. -/
-theorem dFrom_eq_zero_of_isZero_xNext (i : ι) (h : IsZero (C.xNext i)) : C.dFrom i = 0 :=
-  h.eq_zero_of_tgt _
-
-/-- If `xPrev j` is zero, then `dTo j` is the zero map. -/
-theorem dTo_eq_zero_of_isZero_xPrev (j : ι) (h : IsZero (C.xPrev j)) : C.dTo j = 0 :=
-  h.eq_zero_of_src _
-
 @[reassoc (attr := simp)]
 theorem xPrevIso_comp_dTo {i j : ι} (r : c.Rel i j) : (C.xPrevIso r).inv ≫ C.dTo j = C.d i j := by
   simp [C.dTo_eq r]

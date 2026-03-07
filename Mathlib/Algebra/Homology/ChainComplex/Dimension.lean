@@ -46,13 +46,13 @@ namespace HomologicalComplex
 lemma dFrom_zero_range (C : HomologicalComplex (ModuleCat k) c) (i : ι)
     (h : IsZero (C.xNext i)) :
     LinearMap.range (C.dFrom i).hom = ⊥ := by
-  rw [dFrom_eq_zero_of_isZero_xNext C i h, ModuleCat.hom_zero, LinearMap.range_zero]
+  rw [h.eq_zero_of_tgt (C.dFrom i), ModuleCat.hom_zero, LinearMap.range_zero]
 
 /-- If `xPrev j` is zero, then `dTo j` has zero range. -/
 lemma dTo_zero_range (C : HomologicalComplex (ModuleCat k) c) (j : ι)
     (h : IsZero (C.xPrev j)) :
     LinearMap.range (C.dTo j).hom = ⊥ := by
-  rw [dTo_eq_zero_of_isZero_xPrev C j h, ModuleCat.hom_zero, LinearMap.range_zero]
+  rw [h.eq_zero_of_src (C.dTo j), ModuleCat.hom_zero, LinearMap.range_zero]
 
 /-- The range of `dFrom i` has the same dimension as the range of the underlying
 differential `C.d i j`. -/
