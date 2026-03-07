@@ -47,13 +47,13 @@ lemma mfderiv_smul (hf : MDiffAt f x)
     hf.differentiableAt_comp_chartAt_symm
   -- `have := hs.differentiableAt_comp_chartAt_symm` looks identical apart from unfolding φ
   have hsf : MDiffAt (s • f) x := hs.smul hf
-  simp? [mfderiv, hsf, hs, hf] says
-    simp only [Pi.smul_apply', mfderiv, hsf, ↓reduceIte, writtenInExtChartAt, extChartAt,
-      OpenPartialHomeomorph.extend, modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl,
-      PartialEquiv.coe_trans_symm, OpenPartialHomeomorph.coe_coe_symm,
-      ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.coe_trans,
-      ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe, Function.comp_apply,
-      hf, hs]
+  suffices fderivWithin 𝕜 (chartAt F (s x • f x) ∘ (s • f) ∘ (chartAt H x).symm ∘ I.symm)
+             (range I) (I (chartAt H x x)) v =
+           s x • (fderivWithin 𝕜 ((chartAt F (f x)) ∘ f ∘ (chartAt H x).symm ∘ I.symm)
+             (range I) (I <| chartAt H x x)) v +
+           fderivWithin 𝕜 (chartAt 𝕜 (s x) ∘ s ∘ (chartAt H x).symm ∘ I.symm)
+             (range I) (I <| chartAt H x x) v • f x by
+    simpa [mfderiv, hsf, hs, hf]
   -- Use that `chartAt (s x)` and `chartAt (f x)` are the identity.
   erw [fderivWithin_smul I.uniqueDiffWithinAt_image hs' hf']
   simp [φ.left_inv (ChartedSpace.mem_chart_source x)]
