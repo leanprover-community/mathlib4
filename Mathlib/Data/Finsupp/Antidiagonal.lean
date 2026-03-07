@@ -74,7 +74,7 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
   · rintro ⟨a, b, rfl, rfl, rfl⟩
     exact (single_add _ _ _).symm
 
-theorem antidiagonal_image_prodMap_embDomain {β : Type*} [DecidableEq β] (f : α ↪ β)
+theorem image_prodMap_embDomain_antidiagonal {β : Type*} [DecidableEq β] (f : α ↪ β)
     (y : α →₀ ℕ) : image (Prod.map (embDomain f) (embDomain f)) (antidiagonal y) =
       antidiagonal (embDomain f y) := by
   ext ⟨u, v⟩
