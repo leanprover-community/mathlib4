@@ -9,8 +9,11 @@ public import Mathlib.Algebra.Homology.SpectralObject.Differentials
 public import Mathlib.CategoryTheory.ComposableArrows.Four
 
 /-!
-# Spectral objects in abelian categories
+# Induced morphisms that are epi or mono
 
+Given a spectral object in an abelian category, we show that certain
+morphisms `E^n(f₁, f₂, f₃) ⟶ E^n(f₁', f₂', f₃')` are monomorphisms,
+epimorphisms or isomorphisms.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
