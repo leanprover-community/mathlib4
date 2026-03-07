@@ -53,7 +53,7 @@ def dual (s : Set M) : PointedCone R N where
 
 @[simp] lemma dual_empty : dual p ∅ = ⊤ := by ext; simp
 @[simp] lemma dual_zero : dual p 0 = ⊤ := by ext; simp
-@[simp] lemma dual_bot : dual p {0} = ⊤ := dual_zero
+@[simp] lemma dual_singleton_zero : dual p {0} = ⊤ := dual_zero
 @[simp] lemma dual_ker : dual p (ker p) = ⊤ := by ext; simp +contextual
 
 lemma dual_univ (hp : Injective p.flip) : dual p univ = 0 := by
