@@ -136,7 +136,7 @@ theorem IntegrableOn.mono_measure' (h : IntegrableOn f s ν) (hμ : μ.restrict 
   Integrable.mono_measure h hμ
 
 theorem IntegrableOn.mono_set_ae (h : IntegrableOn f t μ) (hst : s ⊆ᵐ[μ] t) : IntegrableOn f s μ :=
-  h.mono_measure' <| Measure.restrict_mono_ae hst
+  h.integrable.mono_measure <| Measure.restrict_mono_ae hst
 
 theorem IntegrableOn.congr_set_ae (h : IntegrableOn f t μ) (hst : s =ᵐˢ[μ] t) :
     IntegrableOn f s μ :=

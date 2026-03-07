@@ -176,7 +176,7 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
     ‖Padic.withValUniformEquiv x‖ ≤ 1 ↔ Valued.v x ≤ 1 := by
   induction x using UniformSpace.Completion.induction_on with
   | hp =>
-    simp only [@iff_comm _ (Valued.v _ ≤ _)]
+    simp_rw [@iff_comm _ (Valued.v _ ≤ _), ← Valuation.restrict_le_one_iff Valued.v]
     apply withValUniformEquiv.toHomeomorph.isClosed_setOf_iff (q := fun x ↦ ‖x‖ ≤ 1)
       (Valued.isClopen_closedBall _ one_ne_zero)
     simpa [Metric.closedBall] using IsUltrametricDist.isClopen_closedBall (0 : ℚ_[p]) one_ne_zero
