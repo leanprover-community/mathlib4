@@ -83,11 +83,11 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
 
 end DVR
 
+variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
+
 namespace NumberField.RingOfIntegers.HeightOneSpectrum
 
 section AbsoluteValue
-
-variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
 /-- The norm of a maximal ideal is `> 1` -/
 lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
@@ -121,7 +121,6 @@ end AbsoluteValue
 end RingOfIntegers.HeightOneSpectrum
 
 section FinitePlace
-variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
 open RingOfIntegers.HeightOneSpectrum
 
@@ -240,7 +239,6 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 K) :
 end FinitePlace
 
 namespace FinitePlace
-variable {K : Type*} [Field K] [NumberField K]
 
 instance : FunLike (FinitePlace K) K ℝ where
   coe w x := w.1 x
@@ -350,8 +348,6 @@ end NumberField
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
-variable {K : Type*} [Field K] [NumberField K]
-
 open NumberField.FinitePlace NumberField.RingOfIntegers
   NumberField.RingOfIntegers.HeightOneSpectrum
 open scoped NumberField
@@ -378,8 +374,7 @@ section LiesOver
 
 namespace NumberField.HeightOneSpectrum
 
-variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
-variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
+variable {L : Type*} [Field L] [NumberField L] [Algebra K L] (w : HeightOneSpectrum (𝓞 L))
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
     [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
