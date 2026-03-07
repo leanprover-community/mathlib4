@@ -30,9 +30,11 @@ lemma Ideal.ofList_spanFinrank_le_length (rs : List R) :
   rw [Set.ncard_coe_finset]
   apply List.toFinset_card_le
 
+--set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.ofList_height_le_length (rs : List R) (h : Ideal.ofList rs ≠ ⊤) :
     (Ideal.ofList rs).height ≤ rs.length := by
   apply le_trans (Ideal.height_le_spanFinrank _ h)
+  let : CharZero ℕ∞ := instCharZeroENat
   exact (Nat.cast_le.mpr (ofList_spanFinrank_le_length rs))
 
 lemma IsLocalRing.Ideal.ofList_height_le_length' [IsLocalRing R] (rs : List R)
@@ -91,6 +93,7 @@ lemma IsLocalRing.height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrime
     · simpa [Set.mem_singleton_iff.mp h] using mem
   simp [Ideal.height, this]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [IsLocalRing R]
     (rs : List R) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (ht : (Ideal.ofList rs).height = rs.length) :
     ∃ rs' : List R, maximalIdeal R ∈ (Ideal.ofList (rs ++ rs')).minimalPrimes ∧
@@ -273,7 +276,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
         rw [← Module.supportDim_quotient_eq_ringKrullDim, ← Module.supportDim_self_eq_ringKrullDim]
         exact Module.supportDim_quotSMulTop_succ_eq_supportDim xreg xmem
       simp only [List.length_cons, Nat.cast_add, Nat.cast_one, ← this] at dim
-      simpa [List.length_map] using WithBot.add_one_cancel.mp dim
+      simpa [List.length_map] using ENat.WithBot.add_one_cancel.mp dim
 
 lemma isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing [IsCohenMacaulayLocalRing R]
     (rs : List R) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (ht : (Ideal.ofList rs).height = rs.length) :
