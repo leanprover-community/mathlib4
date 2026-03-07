@@ -104,7 +104,7 @@ syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? : tactic
 /--
 `grw [e₁, ..., eₙ]` uses the expressions `e₁`, ..., `eₙ` as generalized rewrite rules on the
 main goal, then tries to close the goal by "cheap" (reducible) `rfl`. In addition to equalities,
-`grw` supports any two-argument relation for the types of `e₁`, ..., `eₙ` and the main goal.
+`grw` supports any two-argument relation for the types of `e₁`, ..., `eₙ`.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`. If `e` has parameters, the tactic will try to
