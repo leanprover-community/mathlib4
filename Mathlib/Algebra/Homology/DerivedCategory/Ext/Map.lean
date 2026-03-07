@@ -98,8 +98,7 @@ lemma Functor.mapShiftedHom_singleδ [HasDerivedCategory.{t} C] [HasDerivedCateg
     Iso.inv_hom_id_app_assoc]
   simp only [singleFunctorsPostcompQIso_hom_hom, NatTrans.id_app, map_id,
     singleFunctorsPostcompQIso_inv_hom, SingleFunctors.postcomp_functor, comp_obj, Category.id_comp]
-  erw [map_id, map_id, map_id]
-  simp only [Category.id_comp, Category.comp_id]
+  simp only [CochainComplex.singleFunctors, map_id, Category.id_comp, Category.comp_id]
   have eq1 : (F.mapDerivedCategorySingleFunctor 0).inv.app S.X₃ ≫
     F.mapDerivedCategoryFactors.hom.app ((HomologicalComplex.single C (ComplexShape.up ℤ) 0).obj
     S.X₃) = Q.map ((F.mapCochainComplexSingleFunctor 0).inv.app S.X₃) := by
@@ -119,6 +118,7 @@ lemma Functor.mapShiftedHom_singleδ [HasDerivedCategory.{t} C] [HasDerivedCateg
       isoWhiskerLeft_hom, Iso.symm_hom, isoWhiskerRight_hom, Iso.refl_hom, NatTrans.comp_app,
       associator_hom_app, whiskerLeft_app, associator_inv_app, whiskerRight_app, NatTrans.id_app,
       Category.id_comp]
+    --should be able to using `DerivedCategory.Q_obj_single_obj` ?
     erw [Category.id_comp]
     simp only [Iso.inv_hom_id_app_assoc]
     exact Category.comp_id _
@@ -131,12 +131,10 @@ lemma Functor.mapShiftedHom_singleδ [HasDerivedCategory.{t} C] [HasDerivedCateg
     τ₃ := (F.mapCochainComplexSingleFunctor 0).hom.app S.X₃
     comm₁₂ := (NatTrans.naturality _ S.f).symm
     comm₂₃ := (NatTrans.naturality _ S.g).symm }
-  change _ ≫ triangleOfSESδ h1 ≫ (shiftFunctor (DerivedCategory D) 1).map (Q.map f.τ₁) = _
   rw [triangleOfSESδ_naturality h1 h2 f]
-  change Q.map ((F.mapCochainComplexSingleFunctor 0).app S.X₃).inv ≫
-    Q.map ((F.mapCochainComplexSingleFunctor 0).app S.X₃).hom ≫ _ = _
-  rw [← Category.assoc, ← Q.map_comp]
-  simp
+  simp only [comp_obj, ShortComplex.map_X₃, ShortComplex.map_X₁, f, ← Iso.app_hom, ← Iso.app_inv]
+  rw [← Category.assoc, ← Q.map_comp, Iso.inv_hom_id, Q.map_id]
+  exact Category.id_comp _
 
 end
 
@@ -167,7 +165,7 @@ lemma Abelian.Ext.mapExactFunctor_hom
     ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦(n : ℤ)⟧' := by
   have : (e.mapExactFunctor F).hom = _ :=
     ((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-      (.up ℤ)).equiv_smallShiftedHomMap DerivedCategory.Q DerivedCategory.Q
+      (ComplexShape.up ℤ)).equiv_smallShiftedHomMap DerivedCategory.Q DerivedCategory.Q
         ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y)
           F.mapDerivedCategory F.mapDerivedCategoryFactors.symm e)
   rw [this, ← ShiftedHom.comp_mk₀ _ 0 rfl, ← ShiftedHom.mk₀_comp 0 rfl]
@@ -175,8 +173,7 @@ lemma Abelian.Ext.mapExactFunctor_hom
   · dsimp [mapDerivedCategorySingleFunctor, DerivedCategory.singleFunctorIsoCompQ]
     simp only [Category.comp_id, Category.id_comp, Category.assoc]
     congr 1
-    change _ = _ ≫ F.mapDerivedCategory.map (𝟙 _)
-    simp
+    exact (Category.comp_id _).symm.trans (congr_arg _ (F.mapDerivedCategory.map_id _).symm)
   · congr 1
     dsimp [mapDerivedCategorySingleFunctor, DerivedCategory.singleFunctorIsoCompQ]
     simp only [map_id, Category.id_comp, NatIso.cancel_natIso_hom_left, comp_obj]
