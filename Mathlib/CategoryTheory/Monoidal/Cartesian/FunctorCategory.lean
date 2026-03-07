@@ -105,36 +105,26 @@ lemma rightUnitor_inv_app (F : J ⥤ C) (j : J) :
   rw [← cancel_mono ((ρ_ (F.obj j)).hom), Iso.inv_hom_id, ← rightUnitor_hom_app,
     Iso.inv_hom_id_app]
 
-@[reassoc (attr := simp)]
 lemma tensorHom_app_fst {F₁ F₁' F₂ F₂' : J ⥤ C} (f : F₁ ⟶ F₁') (g : F₂ ⟶ F₂') (j : J) :
     (f ⊗ₘ g).app j ≫ fst _ _ = fst _ _ ≫ f.app j := by
-  change (f ⊗ₘ g).app j ≫ (fst F₁' F₂').app j = _
-  rw [← NatTrans.comp_app, tensorHom_fst, NatTrans.comp_app]
-  rfl
+  simp
 
-@[reassoc (attr := simp)]
 lemma tensorHom_app_snd {F₁ F₁' F₂ F₂' : J ⥤ C} (f : F₁ ⟶ F₁') (g : F₂ ⟶ F₂') (j : J) :
     (f ⊗ₘ g).app j ≫ snd _ _ = snd _ _ ≫ g.app j := by
-  change (f ⊗ₘ g).app j ≫ (snd F₁' F₂').app j = _
-  rw [← NatTrans.comp_app, tensorHom_snd, NatTrans.comp_app]
-  rfl
+  simp
 
-@[reassoc (attr := simp)]
 lemma whiskerLeft_app_fst (F₁ : J ⥤ C) {F₂ F₂' : J ⥤ C} (g : F₂ ⟶ F₂') (j : J) :
     (F₁ ◁ g).app j ≫ fst _ _ = fst _ _ := by
   simp
 
-@[reassoc (attr := simp)]
 lemma whiskerLeft_app_snd (F₁ : J ⥤ C) {F₂ F₂' : J ⥤ C} (g : F₂ ⟶ F₂') (j : J) :
     (F₁ ◁ g).app j ≫ snd _ _ = snd _ _ ≫ g.app j := by
   simp
 
-@[reassoc (attr := simp)]
 lemma whiskerRight_app_fst {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J ⥤ C) (j : J) :
     (f ▷ F₂).app j ≫ fst _ _ = fst _ _ ≫ f.app j := by
   simp
 
-@[reassoc (attr := simp)]
 lemma whiskerRight_app_snd {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J ⥤ C) (j : J) :
     (f ▷ F₂).app j ≫ snd _ _ = snd _ _ := by
   simp
