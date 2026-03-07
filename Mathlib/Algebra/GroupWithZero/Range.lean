@@ -140,6 +140,7 @@ section LinearOrderedCommGroupWithZero
 variable {B : Type*} [LinearOrderedCommGroupWithZero B] [FunLike F A B]
   [MonoidWithZeroHomClass F A B] (f : F)
 
+/-- The multiplicative order isomorphism between `ValueGroup₀ f` and `B` when `f` is surjective. -/
 @[simps!]
 def valueGroupOrderIsoOfSurjective₀ (hf : Function.Surjective f) : ValueGroup₀ f ≃*o B :=
   (OrderMonoidIso.withZero (valueGroupOrderIsoOfSurjective _ hf)).trans OrderMonoidIso.withZeroUnits
