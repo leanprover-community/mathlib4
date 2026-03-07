@@ -396,6 +396,16 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
   simp_rw [support_append, ← Multiset.coe_add, coe_support, add_comm ({v} : Multiset V),
     ← add_assoc, add_tsub_cancel_right]
 
+theorem ofSupport_support {u v : V} (p : G.Walk u v) :
+    ofSupport p.support_ne_nil p.isChain_adj_support = p.copy (by simp) (by simp) := by
+  match p with
+  | nil => rfl
+  | cons (v := w) h .nil => rfl
+  | cons (v := u') h₁ (.cons (v := v') h₂ p) =>
+    have := p.cons h₂ |>.ofSupport_support
+    simp at this
+    simp [this]
+
 @[simp]
 theorem darts_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
     (p.concat h).darts = p.darts.concat ⟨(v, w), h⟩ := by
@@ -419,6 +429,17 @@ theorem darts_reverse {u v : V} (p : G.Walk u v) :
 
 theorem mem_darts_reverse {u v : V} {d : G.Dart} {p : G.Walk u v} :
     d ∈ p.reverse.darts ↔ d.symm ∈ p.darts := by simp
+
+@[simp]
+theorem ofDarts_darts {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
+    ofDarts (darts_eq_nil.not.mpr hp) p.isChain_dartAdj_darts = p.copy (by simp) (by simp) := by
+  match p, hp with
+  | nil, hp => simp at hp
+  | cons (v := w) h .nil, _ => rfl
+  | cons (v := u') h₁ (.cons (v := v') h₂ p), _ =>
+    have := p.cons h₂ |>.ofDarts_darts not_nil_cons
+    simp at this
+    simp [this]
 
 @[simp]
 theorem edges_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
