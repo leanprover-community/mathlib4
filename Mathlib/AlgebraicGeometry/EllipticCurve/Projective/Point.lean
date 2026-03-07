@@ -359,6 +359,19 @@ structure Point where
   /-- The nonsingular condition underlying a nonsingular projective point on `W`. -/
   (nonsingular : W'.NonsingularLift point)
 
+set_option quotPrecheck false in
+/-- The notation for a nonsingular projective point `[X : Y : Z]` on a Weierstrass curve `W` over a
+ring whose numerical expressions can be normalised with `norm_num`. -/
+scoped notation:max W "⟮" X ":" Y ":" Z "⟯" =>
+  Point.mk (W' := W) (point := ⟦![X, Y, Z]⟧) <|
+    by simp only [nonsingularLift_iff, nonsingular_iff, equation_iff, Matrix.cons_val]; norm_num
+
+open Lean.PrettyPrinter.Delaborator in
+/-- The pretty printer for a nonsingular projective point on a Weierstrass curve. -/
+@[app_delab Point.mk]
+meta def Point.mkDelab : Delab := do
+  SubExpr.withNaryArg 3 delab >>= fun P ↦ `($P)
+
 namespace Point
 
 lemma mk_point {P : PointClass R} (h : W'.NonsingularLift P) : (mk h).point = P :=
