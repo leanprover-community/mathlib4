@@ -14,6 +14,7 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Tactic.Basic
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
