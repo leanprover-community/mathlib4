@@ -40,37 +40,6 @@ theorem bijOn_sumElim_conjugate :
     | inl hl => simpa [Set.sumEquiv] using .inl ⟨mk ψ, mk_mem_ramifiedPlacesOver h, hl⟩
     | inr hr => simpa [Set.sumEquiv] using .inr ⟨_, mk_mem_ramifiedPlacesOver h, by aesop⟩
 
--- theorem _root_.Set.BijOn.ncard_eq {α β : Type*} {f : α → β} {s : Set α} {t : Set β}
---     (h : Set.BijOn f s t) :
---     s.ncard = t.ncard :=
---   Set.ncard_congr _ h.mapsTo (fun _ _ ha hb heq ↦ h.injOn ha hb heq)
---     (fun _ ha ↦ bex_def.2 (h.surjOn ha))
-
--- theorem _root_.Set.bijOn_toFinset {α β : Type*} {f : α → β} {s : Set α} {t : Set β}
---     (hs : s.Finite := by toFinite_tac) (ht : t.Finite := by toFinite_tac) :
---     Set.BijOn f s t ↔ Set.BijOn f ↑(hs.toFinset) ↑(ht.toFinset) := by
---   simp only [Set.Finite.coe_toFinset]
-
--- alias ⟨_root_.Set.BijOn.toFinset, _⟩ := Set.bijOn_toFinset
-
-theorem _root_.Set.BijOn.ncard_eq {α β : Type*} {f : α → β} {s : Set α} {t : Set β}
-    (h : Set.BijOn f s t) :
-    s.ncard = t.ncard := by
-  apply Set.ncard_congr _ h.mapsTo (fun _ _ ha hb heq ↦ h.injOn ha hb heq)
-    (fun _ ha ↦ bex_def.2 (h.surjOn ha))
-
-theorem _root_.Function.Involutive.injective_ite {α β : Type*} {p : α → Prop} [DecidablePred p]
-    {f : α → β} {g : β → β} (hf : Function.Injective f) (hg : Function.Involutive g)
-    (hfg : ∀ x y, f x = g (f y) → x = y) :
-    Function.Injective (fun x ↦ if p x then f x else g (f x)) := by
-  intro x y h
-  dsimp at h
-  split_ifs at h
-  · exact hf h
-  · exact hfg _ _ h
-  · exact hfg _ _ <| hg.eq_iff.1 h
-  · exact hf <| hg.injective h
-
 open Set in
 theorem ramifiedPlacesOver_ncard [NumberField L] :
     2 * (ramifiedPlacesOver L v).ncard = (mixedEmbeddingsOver L v.embedding).ncard := by
