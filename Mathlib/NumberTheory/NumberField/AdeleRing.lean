@@ -203,6 +203,7 @@ theorem norm_eq_zero_of_not_isUnit {x : AdeleRing (𝓞 K) K} (hx : ¬IsUnit x) 
   · simp [norm_def, FiniteAdeleRing.norm_eq_zero_of_not_isUnit hf]
 
 variable (K) in
+/-- The global embedding of the units of `K` into the units of `AdeleRing (𝓞 K) K`. -/
 def unitEmbedding : Kˣ →* (AdeleRing (𝓞 K) K)ˣ := Units.map (algebraMap K (AdeleRing (𝓞 K) K))
 
 @[simp] theorem unitEmbedding_apply (k : Kˣ) :
@@ -211,11 +212,8 @@ def unitEmbedding : Kˣ →* (AdeleRing (𝓞 K) K)ˣ := Units.map (algebraMap K
 theorem unitEmbedding_prodUnits_apply (k : Kˣ) :
     (MulEquiv.prodUnits (unitEmbedding K k)).2 = k := rfl
 
-instance : Coe Kˣ (AdeleRing (𝓞 K) K)ˣ where
-  coe x := unitEmbedding K x
-
 theorem coe_norm_eq_one {x : Kˣ} :
-    ‖(x : (AdeleRing (𝓞 K) K)ˣ).1‖ = 1 := by
+    ‖(unitEmbedding K x).1‖ = 1 := by
   rw [norm_def_unit, unitEmbedding_apply, algebraMap_fst_def, unitEmbedding_prodUnits_apply,
     InfiniteAdeleRing.coe_norm_eq_abs_norm, FiniteAdeleRing.coe_norm_eq_inv_abs_norm]
   simp
