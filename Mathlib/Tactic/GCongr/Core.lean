@@ -705,8 +705,9 @@ partial def _root_.Lean.MVarId.gcongr
       \n  attempted lemmas: {lemmas.map (·.declName)}"
 
 /-- `gcongr` applies "generalized congruence" rules to recusrively reduce a goal of form
-`⊢ R (f a₁ ... aₙ) (f b₁ ... bₙ)` to (possibly multiple) goal(s) `⊢ R aᵢ bᵢ`, keeping only the
-distinct pairs `aᵢ ≠ bᵢ`. `R` can be any two-argument relation, including `· → ·`.
+`⊢ R (f a₁ ... aₙ) (f b₁ ... bₙ)` to (possibly multiple) goal(s) `⊢ Rᵢ aᵢ bᵢ`, keeping only the
+distinct pairs `aᵢ ≠ bᵢ`, where `Rᵢ` is a possibly different relation (depending on the precise rule).
+The relations `R`, `Rᵢ` can be any two-argument relation, including `· → ·`.
 
 This tactic is extensible: to add a "generalized congruence" rule, tag a theorem with the attribute
 `@[gcongr]`.
