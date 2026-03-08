@@ -17,13 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - name: Generate app token
-        id: app-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
-        with:
-          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_TRIAGE_PRIVATE_KEY }}
-
       - name: Consume bridge artifact
         id: bridge
         uses: leanprover-community/privilege-escalation-bridge/consume@d3bd99c50a4cf8c5350a211e8e3ba07ac19067d8 # v1.1.0
@@ -32,6 +25,7 @@ jobs:
           source_workflow: Add "ready-to-merge" and "delegated" label
           require_event: issue_comment,pull_request_review,pull_request_review_comment
           fail_on_missing: false
+          token: ${{ github.token }}
           extract: |
             author=event.comment.user.login|event.review.user.login
             pr_number=meta.pr_number
@@ -46,6 +40,14 @@ jobs:
         with:
           username: ${{ steps.bridge.outputs.author }}
           require: 'admin'
+
+      - name: Generate app token
+        id: app-token
+        if: ${{ ! steps.bridge.outputs.mOrD == '' || ! steps.bridge.outputs.removeLabels == '' }}
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_TRIAGE_PRIVATE_KEY }}
 
       - name: Add ready-to-merge or delegated label
         id: add_label
