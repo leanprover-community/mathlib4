@@ -667,10 +667,10 @@ theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
         _ = x ^ (m + k) := by simp [Nat.add_comm]
         _ = x ^ m := h
         _ = 1 * x ^ m := by simp
-    exact by simpa using Nat.ModEq.add_left m ((pow_eq_one_iff_modEq).1 hk)
+    exact by simpa using Nat.ModEq.add_left m (pow_eq_one_iff_modEq.1 hk)
   · intro h
     have hk : x ^ k = 1 := by
-      apply (pow_eq_one_iff_modEq).2
+      apply pow_eq_one_iff_modEq.2
       exact Nat.ModEq.add_left_cancel' m (by simpa using h)
     calc
       x ^ (m + k) = x ^ m * x ^ k := by rw [pow_add]
