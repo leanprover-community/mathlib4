@@ -194,6 +194,20 @@ lemma zero [VectorBundle 𝕜 F V] (hcov : IsCovariantDerivativeOn F cov s)
   simpa using (hcov.add (mdifferentiableAt_zeroSection ..)
     (mdifferentiableAt_zeroSection ..) : cov (0 + 0) x = _)
 
+lemma neg [VectorBundle 𝕜 F V] (hcov : IsCovariantDerivativeOn F cov s)
+    {σ : Π x : M, V x} {x}
+    (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
+    cov (-σ) x = - cov σ x := by
+  rw [eq_neg_iff_add_eq_zero, ← hcov.add (mdifferentiableAt_neg_section hσ) hσ]
+  simp (disch := assumption)
+
+lemma sub [VectorBundle 𝕜 F V] (hcov : IsCovariantDerivativeOn F cov s)
+    {σ σ' : Π x : M, V x} {x}
+    (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x) (hx : x ∈ s := by trivial) :
+    cov (σ - σ') x = cov σ x - cov σ' x := by
+  rw [sub_eq_neg_add, hcov.add (mdifferentiableAt_neg_section hσ') hσ, hcov.neg hσ']
+  abel
+
 theorem smul_const (hcov : IsCovariantDerivativeOn F cov s)
     {σ : Π x : M, V x} {x} (a : 𝕜)
     (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
@@ -371,6 +385,22 @@ lemma isCovariantDerivativeOn (cov : CovariantDerivative I F V) {s : Set M} :
 lemma zero [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V) : cov 0 = 0 := by
   ext1 x
   simp [cov.isCovariantDerivativeOnUniv.zero]
+
+-- XXX: do we prefer this statement, or point-wise versions instead?
+-- if both, which one should be simp?
+@[simp]
+lemma neg [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V)
+    {σ : Π x : M, V x} (hσ : MDiff (T% σ)) :
+    cov (-σ) = - cov σ := by
+  ext1 x
+  exact cov.isCovariantDerivativeOnUniv.neg (hσ x)
+
+@[simp]
+lemma sub [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V)
+    {σ σ' : Π x : M, V x} (hσ : MDiff (T% σ)) (hσ' : MDiff (T% σ')) :
+    cov (σ - σ') = cov σ - cov σ' := by
+  ext1 x
+  exact cov.isCovariantDerivativeOnUniv.sub (hσ x) (hσ' x)
 
 /-- If `cov` is a covariant derivative on each set in an open cover, it is a covariant derivative.
 -/
