@@ -47,8 +47,8 @@ theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup
     {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) : μ[stoppedValue f τ] ≤ μ[stoppedValue f π] := by
   rw [← sub_nonneg, ← integral_sub', stoppedValue_sub_eq_sum' hle hbdd]
   · simp only [Finset.sum_apply]
-    have : ∀ i, MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
-      intro i
+    have (i : ℕ) : MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
+      rw [Set.setOf_and]
       refine (hτ i).inter ?_
       convert (hπ i).compl using 1
       ext x
@@ -131,6 +131,7 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
       (ε : ℝ) ≤ stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ↑ε ≤ y} 0 n ω : ℕ)) ω := by
     intro x hx
     simp_rw [le_sup'_iff, mem_range, Nat.lt_succ_iff] at hx
+    rw [← Set.mem_Ici]
     refine stoppedValue_hittingBtwn_mem ?_
     simp only [Set.mem_setOf_eq, hn]
     exact

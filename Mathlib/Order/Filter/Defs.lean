@@ -320,6 +320,9 @@ def EventuallySubset (l : Filter α) (s t : Set α) : Prop :=
 @[inherit_doc]
 notation:50 s " ⊆ᶠ[" l:50 "] " t:50 => EventuallySubset l s t
 
+theorem sep_mem {p : α → Prop} (hs : s ∈ f) (hp : ∀ᶠ a in f, p a) : {x ∈ s | p x} ∈ f :=
+  inter_mem hs hp
+
 /-- The forward map of a filter -/
 def map (m : α → β) (f : Filter α) : Filter β where
   sets := preimage m ⁻¹' f.sets

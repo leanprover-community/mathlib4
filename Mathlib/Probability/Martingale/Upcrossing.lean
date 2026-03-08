@@ -371,8 +371,8 @@ theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
     StronglyAdapted ℱ (upcrossingStrat a b f N) := by
   intro n
   change StronglyMeasurable[ℱ n] fun ω =>
-    ∑ k ∈ Finset.range N, ({n | lowerCrossingTime a b f N k ω ≤ n} ∩
-      {n | n < upperCrossingTime a b f N (k + 1) ω}).indicator 1 n
+    ∑ k ∈ Finset.range N, ({ω | lowerCrossingTime a b f N k ω ≤ n} ∩
+      {ω | n < upperCrossingTime a b f N (k + 1) ω}).indicator 1 ω
   refine Finset.stronglyMeasurable_fun_sum _ fun i _ => ?_
   refine stronglyMeasurable_const.indicator ?_
   have hl := hf.isStoppingTime_lowerCrossingTime (a := a) (b := b) (N := N) (n := i) n
@@ -748,7 +748,7 @@ theorem upcrossingsBefore_eq_sum (hab : a < b) : upcrossingsBefore a b f N ω =
 theorem StronglyAdapted.measurable_upcrossingsBefore (hf : StronglyAdapted ℱ f) (hab : a < b) :
     Measurable (upcrossingsBefore a b f N) := by
   have : upcrossingsBefore a b f N = fun ω =>
-      ∑ i ∈ Finset.Ico 1 (N + 1), {n | upperCrossingTime a b f N n ω < N}.indicator 1 i := by
+      ∑ i ∈ Finset.Ico 1 (N + 1), {ω | upperCrossingTime a b f N i ω < N}.indicator 1 ω := by
     ext ω
     exact upcrossingsBefore_eq_sum hab
   rw [this]

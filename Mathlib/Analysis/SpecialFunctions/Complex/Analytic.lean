@@ -162,6 +162,6 @@ lemma AnalyticOnNhd.log (fs : AnalyticOnNhd ℝ f s) (m : ∀ x ∈ s, 0 < f x) 
 
 lemma AnalyticOn.log (fs : AnalyticOn ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
     AnalyticOn ℝ (fun z ↦ Real.log (f z)) s :=
-  fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) m
+  analyticOn_log.comp fs m
 
 end Real

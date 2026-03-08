@@ -674,7 +674,7 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi [CompleteSpace E]
       · apply IntegrableOn.mono_set f'int.norm (Ici_subset_Ioi.2 h'N)
       · filter_upwards with x using norm_nonneg _
       · have : Ioc (↑N) x ⊆ Ici ↑N := Ioc_subset_Ioi_self.trans Ioi_subset_Ici_self
-        exact this.eventuallyLE
+        exact this.eventually
   _ < ε := hN
 
 open UniformSpace in

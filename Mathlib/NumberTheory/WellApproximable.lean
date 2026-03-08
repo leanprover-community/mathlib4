@@ -189,7 +189,7 @@ local notation "𝕊" => AddCircle T
 
 /-- **Gallagher's ergodic theorem** on Diophantine approximation. -/
 theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto δ atTop (𝓝 0)) :
-    (∀ᵐ x, ¬addWellApproximable 𝕊 δ x) ∨ ∀ᵐ x, addWellApproximable 𝕊 δ x := by
+    (∀ᵐ x, x ∉ addWellApproximable 𝕊 δ) ∨ ∀ᵐ x, x ∈ addWellApproximable 𝕊 δ := by
   /- Sketch of proof:
 
     Let `E := addWellApproximable 𝕊 δ`. For each prime `p : ℕ`, we can partition `E` into three
@@ -212,7 +212,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     `E` is almost equal to `C p` for every prime. Combining this with 3 we find that `E` is almost
     invariant under the map `y ↦ y + 1/p` for every prime `p`. The required result then follows from
     `AddCircle.ae_empty_or_univ_of_forall_vadd_ae_eq_self`. -/
-  letI : SemilatticeSup Nat.Primes := Nat.Subtype.semilatticeSup _
+  letI : SemilatticeSup Nat.Primes := Nat.Subtype.semilatticeSup (0 < ·)
   set μ : Measure 𝕊 := volume
   set u : Nat.Primes → 𝕊 := fun p => ↑((↑(1 : ℕ) : ℝ) / ((p : ℕ) : ℝ) * T)
   have hu₀ : ∀ p : Nat.Primes, addOrderOf (u p) = (p : ℕ) := by

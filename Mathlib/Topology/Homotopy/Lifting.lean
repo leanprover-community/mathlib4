@@ -412,7 +412,7 @@ lemma injective_path_homotopic_map (e₀ e₁ : E) :
   simp only [Path.Homotopic.Quotient.mk''_eq_mk]
   simp_rw [← Path.Homotopic.Quotient.mk_map]
   iterate 2 rw [Path.Homotopic.Quotient.eq]
-  exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
+  exact (cov.homotopicRel_iff_comp ⟨0, Or.inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
 @[deprecated (since := "2025-11-20")]
 alias injective_path_homotopic_mapFn := injective_path_homotopic_map

@@ -93,12 +93,12 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
     exact two_ne_zero
 
 theorem volume_of_add_preimage_eq (s I : Set <| AddCircle T) (u x : AddCircle T)
-    (hu : IsOfFinAddOrder u) (hs : (u +ᵥ s : Set <| AddCircle T) =ᵐ[volume] s)
+    (hu : IsOfFinAddOrder u) (hs : u +ᵥ s =ᵐˢ[volume] s)
     (hI : I =ᵐˢ[volume] ball x (T / (2 * addOrderOf u))) :
     volume s = addOrderOf u • volume (s ∩ I) := by
   let G := AddSubgroup.zmultiples u
   haveI : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples.to_subtype
-  have hsG : ∀ g : G, (g +ᵥ s : Set <| AddCircle T) =ᵐ[volume] s := by
+  have hsG : ∀ g : G, g +ᵥ s =ᵐˢ[volume] s := by
     rintro ⟨y, hy⟩; exact (vadd_ae_eq_self_of_mem_zmultiples hs hy :)
   rw [(isAddFundamentalDomain_of_ae_ball I u x hu hI).measure_eq_card_smul_of_vadd_ae_eq_self s hsG,
     ← Nat.card_zmultiples u]
