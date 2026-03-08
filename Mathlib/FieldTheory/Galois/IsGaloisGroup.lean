@@ -288,6 +288,28 @@ instance subgroup [hGKL : IsGaloisGroup G K L] :
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
+open IntermediateField in
+theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGaloisGroup H F L] :
+    FixedPoints.intermediateField H = F := by
+  refine IntermediateField.ext_iff.mpr fun x ↦ ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · obtain ⟨a, rfl⟩ := hHFL.isInvariant.isInvariant x hx
+    exact a.prop
+  · have := congr_arg (restrictScalars K) <| IsGaloisGroup.fixedPoints_eq_bot H F L
+    rw [restrictScalars_bot_eq_self] at this
+    rwa [← this] at hx
+
+set_option backward.isDefEq.respectTransparency false in
+theorem of_fixedPoints_eq [hGKL : IsGaloisGroup G K L] (hF : FixedPoints.intermediateField H = F) :
+    IsGaloisGroup H F L := by
+  rw [eq_comm] at hF
+  convert IsGaloisGroup.subgroup G K L H
+
+variable {G K L H F} in
+theorem subgroup_iff [hGKL : IsGaloisGroup G K L] :
+    IsGaloisGroup H F L ↔ FixedPoints.intermediateField H = F :=
+  ⟨fun _ ↦ fixedPoints_of_isGaloisGroup G K L H F, fun h ↦ of_fixedPoints_eq G K L H F h⟩
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
     Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L = Nat.card H :=
