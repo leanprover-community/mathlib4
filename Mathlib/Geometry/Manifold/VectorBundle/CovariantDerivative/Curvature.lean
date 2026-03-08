@@ -83,10 +83,21 @@ lemma temp' -- I suspect this one will also work!
 - we can only prove tensoriality for C² sections (at a point, I hope! to be confirmed),
   so need new tensoriality lemmas
 - `mdifferentiableAt` lemmas for C^k covariant derivatives would be nice API addition
-- want more `have`s, and perhaps even more API, around cov applied to the various sections
 -/
 
 variable [IsManifold I (2 + 1) M] [IsManifold I (minSmoothness 𝕜 2) M]
+
+lemma aux
+    (hcov : IsCovariantDerivativeOn E cov) [hcov' : ContMDiffCovariantDerivativeOn E 1 cov univ]
+    {x : M} {Y Z σ : (x : M) → TangentSpace I x}
+    -- XXX: after rephrasing hcov', does CMDiffAt 2 (T% Z) x suffice?
+    (hσ : CMDiffAt 2 (T% σ) x) (hY : CMDiffAt 2 (T% Y) x) (hZ : CMDiff 2 (T% Z)) :
+    (MDiffAt fun x ↦ TotalSpace.mk' E x ((cov Z x) (VectorField.mlieBracket I σ Y x))) x := by
+  apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
+  apply temp' hcov ?_ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
+  apply ContMDiffAt.mlieBracket_vectorField hσ hY _
+  simp; sorry -- want sth with minSmoothness instead; otherwise too weak for general 𝕜
+
 theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (x : M)
     [hcov' : ContMDiffCovariantDerivativeOn E 1 cov univ]
     (Y Z : (Π x : M, TangentSpace I x)) :
@@ -118,20 +129,6 @@ theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (
     have hZσ' : MDiffAt (fun x ↦ TotalSpace.mk' E x (cov Z x (σ' x))) x := by
       apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
       exact temp hcov hσ' hZ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
-    -- just extracted for readability; could be one common lemma
-    have hZσY :
-        MDiffAt (fun x ↦ TotalSpace.mk' E x (cov Z x (VectorField.mlieBracket I σ Y x))) x := by
-      apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
-      apply temp' hcov ?_ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
-      apply ContMDiffAt.mlieBracket_vectorField (hσ x) hY _
-      simp; sorry -- want sth with minSmoothness instead; otherwise too weak for general 𝕜
-    have hZσ'Y :
-        MDiffAt (fun x ↦ TotalSpace.mk' E x (cov Z x (VectorField.mlieBracket I σ' Y x))) x := by
-      apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
-      apply temp' hcov ?_ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
-      apply ContMDiffAt.mlieBracket_vectorField (hσ' x) hY _
-      simp; sorry -- want sth with minSmoothness instead; otherwise too weak for general 𝕜
-
     have missing :
       (cov (fun x ↦ (cov Z x) (VectorField.mlieBracket I (σ + σ') Y x)) x) (Y x) =
         (cov (fun x ↦ (cov Z x) (VectorField.mlieBracket I σ Y x)) x) (Y x)
@@ -141,7 +138,7 @@ theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (
           ) x) (Y x)
       · congr 1
         sorry -- missing tensoriality lemma; first arguments are equal at x
-      · erw [hcov.add hZσY hZσ'Y]
+      · erw [hcov.add (aux hcov (hσ x) hY hZ) (aux hcov (hσ' x) hY hZ)]
         simp
     rw [hcov.sub]
     rotate_left
@@ -150,13 +147,13 @@ theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (
       apply temp' hcov ?_ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
       apply ContMDiffAt.mlieBracket_vectorField (ContMDiff.add_section hσ hσ' ..) hY
       simp; sorry -- want sth with minSmoothness instead; otherwise too weak for general k
-    rw [hcov.sub hZσ hZσY]
+    rw [hcov.sub hZσ (aux hcov (hσ x) hY hZ)]
     dsimp
     erw [hcov.add hZσ hZσ']
     simp only [ContinuousLinearMap.add_apply]
     --set C := cov (fun x ↦ (cov Z x) (σ x)) x
     --set D := cov (fun x ↦ (cov Z x) (σ' x)) x
-    rw [hcov.sub hZσ' hZσ'Y]
+    rw [hcov.sub hZσ' ((aux hcov (hσ' x) hY hZ))]
     rw [missing]
     --set E := (cov (fun x ↦ (cov Z x) (VectorField.mlieBracket I σ Y x)) x) (Y x)
     dsimp
@@ -164,7 +161,6 @@ theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (
     abel
 
 -- update hypotheses to match lemma above, once proven!
-variable [IsManifold I (2 + 1) M] [IsManifold I (minSmoothness 𝕜 2) M]
 theorem curvatureTensorAux_tensorial₂ (hcov : IsCovariantDerivativeOn E cov) (x : M)
     [hcov' : ContMDiffCovariantDerivativeOn E 1 cov univ]
     (X Z : (Π x : M, TangentSpace I x)) :
@@ -173,7 +169,6 @@ theorem curvatureTensorAux_tensorial₂ (hcov : IsCovariantDerivativeOn E cov) (
   sorry
 
 -- update hypotheses to match lemma above, once proven!
-variable [IsManifold I (2 + 1) M] [IsManifold I (minSmoothness 𝕜 2) M]
 theorem curvatureTensorAux_tensorial₃ (hcov : IsCovariantDerivativeOn E cov) (x : M)
     [hcov' : ContMDiffCovariantDerivativeOn E 1 cov univ]
     (X Y : (Π x : M, TangentSpace I x)) :
