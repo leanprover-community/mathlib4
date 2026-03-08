@@ -128,7 +128,7 @@ noncomputable instance : (Φ.sheafFiber (A := A)).Monoidal :=
   Localization.Monoidal.functorMonoidalOfComp (presheafToSheaf J A) J.W
     Φ.sheafFiber Φ.presheafFiber
 
-instance : NatTrans.IsMonoidal (Φ.presheafToSheafCompSheafFiber A).hom :=
+instance : NatTrans.IsMonoidal (Φ.presheafToSheafCompSheafFiberIso A).hom :=
   Localization.Monoidal.lifting_isMonoidal (presheafToSheaf J A) J.W
     Φ.sheafFiber Φ.presheafFiber
 
