@@ -103,6 +103,10 @@ theorem comp_map_transpose (M : Matrix I J (Matrix K L R)) :
 theorem comp_symm_transpose (M : Matrix (I × K) (J × L) R) :
     (comp J I L K R).symm Mᵀ = (((comp I J K L R).symm M).map (·ᵀ))ᵀ := rfl
 
+theorem transpose_comp (M : Matrix I J (Matrix K L R)) :
+    (comp I J K L R M)ᵀ = comp J I L K R (Mᵀ.map (·ᵀ)) :=
+  rfl
+
 end Basic
 
 section AddCommMonoid

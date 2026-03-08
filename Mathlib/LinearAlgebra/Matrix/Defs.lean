@@ -169,6 +169,9 @@ instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) :=
 instance neg [Neg α] : Neg (Matrix m n α) :=
   Pi.instNeg
 
+instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg (Matrix m n α) :=
+  Pi.involutiveNeg
+
 instance sub [Sub α] : Sub (Matrix m n α) :=
   Pi.instSub
 
@@ -351,6 +354,10 @@ theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
   ext
   rfl
 
+variable (n α) in
+theorem transpose_involutive : (transpose : Matrix n n α → Matrix n n α).Involutive :=
+  transpose_transpose
+
 theorem transpose_injective : Function.Injective (transpose : Matrix m n α → Matrix n m α) :=
   fun _ _ h => ext fun i j => ext_iff.2 h j i
 
@@ -373,17 +380,14 @@ theorem transpose_sub [Sub α] (M : Matrix m n α) (N : Matrix m n α) : (M - N)
   simp
 
 @[simp]
-theorem transpose_smul {R : Type*} [SMul R α] (c : R) (M : Matrix m n α) : (c • M)ᵀ = c • Mᵀ := by
-  ext
+theorem transpose_smul {R : Type*} [SMul R α] (c : R) (M : Matrix m n α) : (c • M)ᵀ = c • Mᵀ :=
   rfl
 
 @[simp]
-theorem transpose_neg [Neg α] (M : Matrix m n α) : (-M)ᵀ = -Mᵀ := by
-  ext
+theorem transpose_neg [Neg α] (M : Matrix m n α) : (-M)ᵀ = -Mᵀ :=
   rfl
 
-theorem transpose_map {f : α → β} {M : Matrix m n α} : Mᵀ.map f = (M.map f)ᵀ := by
-  ext
+theorem transpose_map {f : α → β} {M : Matrix m n α} : Mᵀ.map f = (M.map f)ᵀ :=
   rfl
 
 end Transpose
