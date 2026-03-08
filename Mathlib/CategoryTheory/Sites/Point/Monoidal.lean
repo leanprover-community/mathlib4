@@ -107,7 +107,7 @@ noncomputable instance : (Φ.presheafFiber (A := A)).Monoidal :=
 
 set_option backward.isDefEq.respectTransparency false in
 lemma toPresheafFiber_ε (X : C) (x : Φ.fiber.obj X) :
-    LaxMonoidal.ε (Φ.presheafFiber (A := A)) = Φ.toPresheafFiber X x (𝟙_ (Cᵒᵖ ⥤ A)) := by
+    LaxMonoidal.ε Φ.presheafFiber = Φ.toPresheafFiber X x (𝟙_ (Cᵒᵖ ⥤ A)) := by
   simp [← cancel_mono (OplaxMonoidal.η Φ.presheafFiber)]
 
 set_option backward.isDefEq.respectTransparency false in
