@@ -201,11 +201,9 @@ lemma homologyFunctorFactors_hom_app_homologyδOfTriangle (n₀ n₁ : ℤ) (h :
       (DerivedCategory.Q.mapTriangle.obj T) n₀ n₁ h ≫
         (DerivedCategory.homologyFunctorFactors C n₁).hom.app T.obj₁ := by
   dsimp [DerivedCategory.HomologySequence.δ]
-  simp only [dsimp% [ShiftedHom.map]
-      DerivedCategory.shiftMap_homologyFunctor_map_Q T.mor₃ n₀ n₁ (by lia),
-    Category.assoc, Iso.inv_hom_id_app, NatIso.cancel_natIso_hom_left]
-  erw [Category.comp_id]
-  rfl
+  rw [dsimp% [ShiftedHom.map]
+      DerivedCategory.shiftMap_homologyFunctor_map_Q T.mor₃ n₀ n₁ (by lia)]
+  simp [Functor.shiftMap, homologyFunctor_shift, homologyδOfTriangle]
 
 variable (hT : DerivedCategory.Q.mapTriangle.obj T ∈ distTriang _)
 
