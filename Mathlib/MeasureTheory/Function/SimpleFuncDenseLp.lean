@@ -95,7 +95,7 @@ theorem tendsto_approxOn_Lp_eLpNorm [OpensMeasurableSpace E] {f : β → E} (hf 
   · simpa only [hp_zero, eLpNorm_exponent_zero] using tendsto_const_nhds
   have hp : 0 < p.toReal := toReal_pos hp_zero hp_ne_top
   suffices Tendsto (fun n => ∫⁻ x, ‖approxOn f hf s y₀ h₀ n x - f x‖ₑ ^ p.toReal ∂μ) atTop (𝓝 0) by
-    simp only [eLpNorm_eq_lintegral_rpow_enorm hp_zero hp_ne_top]
+    simp only [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp_ne_top]
     convert continuous_rpow_const.continuousAt.tendsto.comp this
     simp [zero_rpow_of_pos (_root_.inv_pos.mpr hp)]
   -- We simply check the conditions of the Dominated Convergence Theorem:
@@ -419,6 +419,7 @@ variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a `SMul`. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
+@[instance_reducible]
 protected def smul : SMul 𝕜 (Lp.simpleFunc E p μ) :=
   ⟨fun k f =>
     ⟨k • (f : Lp E p μ), by
@@ -437,6 +438,7 @@ theorem coe_smul (c : 𝕜) (f : Lp.simpleFunc E p μ) :
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a module. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
+@[instance_reducible]
 protected def module : Module 𝕜 (Lp.simpleFunc E p μ) where
   one_smul f := by ext1; exact one_smul _ _
   mul_smul x y f := by ext1; exact mul_smul _ _ _
@@ -454,8 +456,10 @@ protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simple
 
 attribute [local instance] simpleFunc.isBoundedSMul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
+@[instance_reducible]
 protected def normedSpace {𝕜} [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
     NormedSpace 𝕜 (Lp.simpleFunc E p μ) :=
   ⟨norm_smul_le (α := 𝕜) (β := Lp.simpleFunc E p μ)⟩

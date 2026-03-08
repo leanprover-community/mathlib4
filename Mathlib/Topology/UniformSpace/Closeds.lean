@@ -313,6 +313,20 @@ theorem IsCompact.nhds_hausdorff_eq_nhds_vietoris {s : Set α} (hs : IsCompact s
     exact ht.trans fun x ⟨y, hy, hxy⟩ => hV₂ <| Set.mem_biUnion hy hxy
   · exact (UniformSpace.hausdorff.isOpen_inter_nonempty_of_isOpen hU).mem_nhds hs'
 
+namespace UniformSpace.hausdorff
+
+instance [CompactSpace α] : CompactSpace (Set α) where
+  isCompact_univ := by
+    rw [isCompact_iff_ultrafilter_le_nhds]
+    rintro f -
+    let := TopologicalSpace.vietoris α
+    -- `f.lim` is the limit of `f` in the Vietoris topology
+    refine ⟨closure f.lim, Set.mem_univ _, ?_⟩
+    grw [isClosed_closure.isCompact.nhds_hausdorff_eq_nhds_vietoris,
+      ← TopologicalSpace.vietoris.specializes_closure.nhds_le_nhds, f.le_nhds_lim]
+
+end UniformSpace.hausdorff
+
 namespace TopologicalSpace.Closeds
 
 instance uniformSpace : UniformSpace (Closeds α) :=
@@ -341,6 +355,11 @@ theorem isOpen_inter_nonempty_of_isOpen {s : Set α} (hs : IsOpen s) :
 theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
     IsClosed {t : Closeds α | (t : Set α) ⊆ s} :=
   isClosed_induced hs.powerset_hausdorff
+
+theorem isClopen_singleton_bot : IsClopen {(⊥ : Closeds α)} := by
+  convert UniformSpace.hausdorff.isClopen_singleton_empty.preimage
+    uniformContinuous_coe.continuous
+  ext; simp
 
 theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
     TotallyBounded {F : Closeds α | ↑F ⊆ t} :=
@@ -415,6 +434,31 @@ theorem uniformContinuous_closure : UniformContinuous (Closeds.closure (α := α
 @[fun_prop]
 theorem continuous_closure : Continuous (Closeds.closure (α := α)) :=
   uniformContinuous_closure.continuous
+
+instance [CompactSpace α] : CompactSpace (Closeds α) where
+  isCompact_univ := by simpa [gi.l_surjective.range_eq]
+    using isCompact_univ.image continuous_closure
+
+@[simp]
+theorem compactSpace_iff : CompactSpace (Closeds α) ↔ CompactSpace α := by
+  refine ⟨fun _ => compactSpace_of_finite_subfamily_closed fun {ι} F hF₁ hF₂ => ?_,
+    fun _ => inferInstance⟩
+  have := isClopen_singleton_bot.compl.isClosed.isCompact.elim_finite_subfamily_closed
+    (fun i => {C : Closeds α | ↑C ⊆ F i})
+    (fun i => isClosed_subsets_of_isClosed (hF₁ i))
+  simp_rw [← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset,
+    ← Set.setOf_forall, ← Set.subset_iInter_iff, hF₂, Set.subset_empty_iff, coe_eq_empty,
+    Set.setOf_eq_eq_singleton] at this
+  obtain ⟨s, hs⟩ := this .rfl
+  specialize @hs ⟨⋂ i ∈ s, F i, isClosed_biInter fun i _ => hF₁ i⟩ .rfl
+  exact ⟨s, congr($hs)⟩
+
+@[simp]
+theorem noncompactSpace_iff : NoncompactSpace (Closeds α) ↔ NoncompactSpace α := by
+  simp_rw [← not_compactSpace_iff, compactSpace_iff]
+
+instance [NoncompactSpace α] : NoncompactSpace (Closeds α) :=
+  noncompactSpace_iff.mpr ‹_›
 
 end TopologicalSpace.Closeds
 
