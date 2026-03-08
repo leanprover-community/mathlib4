@@ -16,7 +16,7 @@ We define the `Hyperreal` numbers as quotients of sequences `ℕ → ℝ` by an 
 a field, and we prove some of their basic properties.
 
 Note that most of the machinery that is usually defined for the specific purpose of non-standard
-analysis (infinitesimal and infinite elements, standard parts) has been generealized to other
+analysis (infinitesimal and infinite elements, standard parts) has been generalized to other
 non-archimedean fields. In particular:
 
 - `ArchimedeanClass` can be used to measure whether an element is infinitesimal (`0 < mk x`) or
