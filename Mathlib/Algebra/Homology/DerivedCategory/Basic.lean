@@ -215,10 +215,9 @@ lemma mappingCone_triangle_distinguished :
 lemma mappingCocone_triangle_distinguished :
     DerivedCategory.Q.mapTriangle.obj (mappingCocone.triangle φ) ∈ distTriang _ := by
   rw [rotate_distinguished_triangle]
-  refine isomorphic_distinguished _ ?_ _
-    ((DerivedCategory.Q (C := C)).mapTriangleRotateIso.app _ ≪≫
+  exact isomorphic_distinguished _ (mappingCone_triangle_distinguished φ) _
+    (DerivedCategory.Q.mapTriangleRotateIso.app _ ≪≫
     DerivedCategory.Q.mapTriangle.mapIso (mappingCocone.rotateTriangleIso φ))
-  exact mappingCone_triangle_distinguished φ
 
 end
 
