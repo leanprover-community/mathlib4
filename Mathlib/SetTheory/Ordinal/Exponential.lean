@@ -15,9 +15,7 @@ related by the lemma `Ordinal.opow_le_iff_le_log : b ^ c ≤ x ↔ c ≤ log b x
 `b`, `c`.
 -/
 
-public section
-
-noncomputable section
+public noncomputable section
 
 open Function Set Equiv Order
 open scoped Cardinal Ordinal
