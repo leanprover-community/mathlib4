@@ -24,12 +24,12 @@ Properties of Scott topologies over Pointed (Directed) `CompletePartialOrder`, a
 
 ## Main Statements
 - `specialization_iff_ge`: The original order and the specialization order induced by the Scott
-  topology, correspond. Prop 3.5.2 in [reneta2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994].
+  topology, correspond. Prop 3.5.2 in [renata2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994].
 - `isTopologicalBasis_Ici_image_compactSet`: The upward closures of compact elements form a
-  topological basis under the Scott Topology. Prop 3.5.2 in [reneta2024].
+  topological basis under the Scott Topology. Prop 3.5.2 in [renata2024].
 
 ## Ideas
-Brief primer to domain theory (please see [reneta2024] or [abramsky_gabbay_maibaum_1994] for more
+Brief primer to domain theory (please see [renata2024] or [abramsky_gabbay_maibaum_1994] for more
 detail):
 - The order structures we consider, `CompletePartialOrder` and `AlgebraicDCPO` should be thought
   of as containing the semantics of imperative programs, more concretely a partial function on
@@ -55,7 +55,7 @@ The namespaces of this file aims to match `Mathlib.Topology.Order.ScottTopology`
 Statements and proofs match the first source. Exact or equivalent statements in the 2nd source are
 stated.
 
-* [Reneta, *Duality in Domain Theory*][reneta2024]
+* [Renata, *Duality in Domain Theory*][renata2024]
 * [Abramsky and Jung, *Domain Theory*][abramsky_gabbay_maibaum_1994]
 
 ## Tags
@@ -99,7 +99,7 @@ variable {α : Type*} [TopologicalSpace α] [CompletePartialOrder α]
 
 /-- The order from `CompletePartialOrder` and the specialization order induced by the Scott
 topology, correspond. Unfortunately Mathlib's specialization order `⤳` is opposite to `≤`.
-Prop 3.5.2 in [reneta2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994]. -/
+Prop 3.5.2 in [renata2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994]. -/
 lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
   rw [specializes_iff_forall_open]
   constructor
@@ -217,7 +217,7 @@ lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen
   exact ⟨c, hc₂, hc₀, upper.Ici_subset hc₁⟩
 
 /-- The upward closures of compact elements form a topological
-basis under the Scott Topology. Prop 3.5.2 in [reneta2024] -/
+basis under the Scott Topology. Prop 3.5.2 in [renata2024] -/
 theorem isTopologicalBasis_Ici_image_compactSet
     : IsTopologicalBasis (Ici '' {x : D | IsCompactElement x}) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
