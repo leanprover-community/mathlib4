@@ -69,7 +69,7 @@ noncomputable def ellAdicSheaf (ℓ : ℕ) [Fact ℓ.Prime] :
 variable (ℓ : ℕ) [Fact ℓ.Prime]
 
 lemma isZero_ellAdicSheaf_of_isEmpty [IsEmpty X] : IsZero (X.ellAdicSheaf ℓ) :=
-  (Sheaf.isTerminalOfEqTop _ (ProEt.topology_eq_top_of_isEmpty _) _).isZero
+  (Sheaf.isTerminalOfEqTop (ProEt.topology_eq_top_of_isEmpty _) _).isZero
 
 /-- `ℓ`-adic cohomology of a scheme in degree `n`. -/
 def EllAdicCohomology (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : Type (u + 1) :=
