@@ -55,8 +55,8 @@ lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V 
   cat_disch
 
 lemma Sheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)}
-    (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.val.obj (op U)) (h : S.g.val.app (op U) s = 0) :
-    ∃(t : S.X₁.val.obj (op U)), S.f.val.app (op U) t = s := by
+    (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.obj.obj (op U)) (h : S.g.hom.app (op U) s = 0) :
+    ∃(t : S.X₁.obj.obj (op U)), S.f.hom.app (op U) t = s := by
   have := ((Functor.preservesFiniteLimits_tfae (forget AddCommGrpCat X)).out 1 3).mpr
     (inferInstanceAs (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
   exact Presheaf.addCommGrpCat_shortExact_app_zero (this S ⟨hS, hf⟩).left h
@@ -86,19 +86,19 @@ instance (F : Sheaf AddCommGrpCat X) {n : ℕ} [Injective F] : Subsingleton (H F
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `H F 0` is equivalent to taking global sections. -/
-def H.equiv₀ (F : (Sheaf AddCommGrpCat X)) : H F 0 ≃+ F.val.obj (op ⊤) :=
+def H.equiv₀ (F : (Sheaf AddCommGrpCat X)) : H F 0 ≃+ F.obj.obj (op ⊤) :=
     CategoryTheory.Sheaf.H.equiv₀ F Limits.isTerminalTop
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `H.equiv₀` is natural. -/
-theorem H.equiv₀_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : H F 0) :
-    f.val.app (op ⊤) ((H.equiv₀ F) x) = H.equiv₀ G (H.map f 0 x) :=
-  CategoryTheory.Sheaf.H.equiv₀_comp Limits.isTerminalTop f x
+theorem H.equiv₀_naturality {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : H F 0) :
+    f.hom.app (op ⊤) ((H.equiv₀ F) x) = H.equiv₀ G (H.map f 0 x) :=
+  CategoryTheory.Sheaf.H.equiv₀_naturality Limits.isTerminalTop f x
 
 set_option backward.isDefEq.respectTransparency false in
-theorem H.equiv₀_symm_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : F.val.obj (op ⊤)) :
-    H.map f 0 ((H.equiv₀ F).symm x) = (H.equiv₀ G).symm (f.val.app (op ⊤) x)
-  := CategoryTheory.Sheaf.H.equiv₀_symm_comp Limits.isTerminalTop f x
+theorem H.equiv₀_symm_naturality {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : F.obj.obj (op ⊤)) :
+    H.map f 0 ((H.equiv₀ F).symm x) = (H.equiv₀ G).symm (f.hom.app (op ⊤) x)
+  := CategoryTheory.Sheaf.H.equiv₀_symm_naturality Limits.isTerminalTop f x
 
 end
 
