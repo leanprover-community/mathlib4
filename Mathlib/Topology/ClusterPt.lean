@@ -183,7 +183,7 @@ of every tail `x '' {n | i ≤ n}`. -/
 theorem mapClusterPt_atTop_iff_forall_mem_closure {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
     [Nonempty ι] {x : ι → X} {a : X} :
     MapClusterPt a atTop x ↔ ∀ i, a ∈ closure (x '' Ici i) := by
-  simp only [MapClusterPt, (atTop_basis.map x).clusterPt_iff_forall_mem_closure, true_implies]
+  simp [MapClusterPt, (atTop_basis.map x).clusterPt_iff_forall_mem_closure]
 
 end MapClusterPt
 
