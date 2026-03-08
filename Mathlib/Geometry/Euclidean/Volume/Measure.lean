@@ -173,16 +173,16 @@ instance (d : ℕ) : VAddInvariantMeasure V P μHE[d] where
   measure_preimage_vadd c s hs := by
     simp_rw [euclideanHausdorffMeasure_def, smul_apply, nnreal_smul_coe_apply]
     have h : (0 : ℝ) ≤ d ∨ Function.Surjective fun (x : P) => -c +ᵥ x := by simp
-    convert congr((volume.addHaarScalarFactor μH[d]) * $(hausdorffMeasure_vadd (-c) h s))
+    convert congr(volume.addHaarScalarFactor μH[d] * $(hausdorffMeasure_vadd (-c) h s))
     ext y
     simp [Set.mem_neg_vadd_set_iff]
 
 instance [AddGroup X] [IsIsometricVAdd X X] (d : ℕ) :
     (μHE[d] : Measure X).IsAddLeftInvariant := by
   rw [euclideanHausdorffMeasure_def]
-  apply isAddLeftInvariant_smul
+  infer_instance
 
 instance [AddGroup X] [IsIsometricVAdd Xᵃᵒᵖ X] (d : ℕ) :
     (μHE[d] : Measure X).IsAddRightInvariant := by
   rw [euclideanHausdorffMeasure_def]
-  apply isAddRightInvariant_smul
+  infer_instance
