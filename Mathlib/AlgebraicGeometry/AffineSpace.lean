@@ -237,7 +237,6 @@ lemma SpecIso_hom_appTop (R : CommRingCat.{max u v}) :
   ext i
   simp [SpecIso]
 
-
 @[simp]
 lemma SpecIso_inv_appTop_coord (R : CommRingCat.{max u v}) (i) :
     (SpecIso n R).inv.appTop (coord _ i) = (Scheme.ΓSpecIso (.of _)).inv (.X i) := by

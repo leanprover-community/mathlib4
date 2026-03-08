@@ -150,8 +150,7 @@ theorem content_monomial {r : R} {k : ℕ} : content (monomial k r) = normalize 
 theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
   rw [content, Finset.gcd_eq_zero_iff]
   constructor <;> intro h
-  · simp only [mem_support_iff] at h
-    ext n
+  · ext n
     simp_all
   · intro x
     simp [h]
