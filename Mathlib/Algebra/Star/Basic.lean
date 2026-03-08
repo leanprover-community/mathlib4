@@ -406,10 +406,10 @@ attribute [simp] star_smul
 instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
   ⟨star_mul'⟩
 
-instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] :
-    StarModule ℕ α where star_smul := star_nsmul
+instance StarAddMonoid.toStarModuleNat {α} [AddMonoid α] [StarAddMonoid α] : StarModule ℕ α where
+  star_smul := star_nsmul
 
-instance StarAddMonoid.toStarModuleInt {α} [AddCommGroup α] [StarAddMonoid α] : StarModule ℤ α where
+instance StarAddMonoid.toStarModuleInt {α} [AddGroup α] [StarAddMonoid α] : StarModule ℤ α where
   star_smul := star_zsmul
 
 namespace RingHomInvPair
