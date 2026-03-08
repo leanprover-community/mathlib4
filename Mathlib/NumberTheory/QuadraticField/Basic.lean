@@ -3,11 +3,13 @@ Copyright (c) 2026 Frankie Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frankie Wang
 -/
-import Mathlib.Algebra.QuadraticAlgebra.Basic
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.Rat.Lemmas
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Int.Basic
+module
+
+public import Mathlib.Algebra.QuadraticAlgebra.Basic
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.Data.Rat.Lemmas
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Int.Basic
 
 /-!
 # Quadratic Number Fields
@@ -43,6 +45,8 @@ Common instances are provided for `-1`, `-3`, and any `d` with `|d|` prime.
 
 quadratic field, number field, quadratic extension
 -/
+
+@[expose] public section
 
 /-- The quadratic field `ℚ(√d)` as a type alias for `QuadraticAlgebra ℚ d 0`. -/
 abbrev Qsqrtd (d : ℚ) : Type := QuadraticAlgebra ℚ d 0
