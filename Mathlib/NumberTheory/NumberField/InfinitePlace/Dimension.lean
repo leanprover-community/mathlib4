@@ -45,47 +45,43 @@ theorem ramifiedPlacesOver_ncard [NumberField L] :
   convert (card_disjSum _ _).symm
   ext; aesop
 
+variable {L}
+
 open scoped Classical in
-private def embeddingConjugateIte (v : InfinitePlace K) (w : InfinitePlace L) : L →+* ℂ :=
+private def embeddingConjugateIte : L →+* ℂ :=
   if ComplexEmbedding.LiesOver w.embedding v.embedding then w.embedding else conjugate w.embedding
 
-private theorem embeddingConjugateIte_pos {v : InfinitePlace K} {w : InfinitePlace L}
-    (h : ComplexEmbedding.LiesOver w.embedding v.embedding) :
-    embeddingConjugateIte L v w = w.embedding := by simp [embeddingConjugateIte, h]
+variable {v w}
+private theorem embeddingConjugateIte_pos (h : ComplexEmbedding.LiesOver w.embedding v.embedding) :
+    embeddingConjugateIte v w = w.embedding := by simp [embeddingConjugateIte, h]
 
-private theorem embeddingConjugateIte_neg {v : InfinitePlace K} {w : InfinitePlace L}
-    (h : ¬ComplexEmbedding.LiesOver w.embedding v.embedding) :
-    embeddingConjugateIte L v w = conjugate w.embedding := by simp [embeddingConjugateIte, h]
+private theorem embeddingConjugateIte_neg (h : ¬ComplexEmbedding.LiesOver w.embedding v.embedding) :
+    embeddingConjugateIte v w = conjugate w.embedding := by simp [embeddingConjugateIte, h]
 
-private theorem mapsTo_embeddingConjugateIte (v : InfinitePlace K) :
-    Set.MapsTo (embeddingConjugateIte L v) (unramifiedPlacesOver L v)
-      (unmixedEmbeddingsOver L v.embedding) := by
-  intro w hw
-  obtain ⟨_, hw⟩ := hw
+variable (L v)
+
+private theorem mapsTo_embeddingConjugateIte : Set.MapsTo (embeddingConjugateIte v)
+    (unramifiedPlacesOver L v) (unmixedEmbeddingsOver L v.embedding) := by
+  rintro w ⟨_, hw⟩
   by_cases h : ComplexEmbedding.LiesOver w.embedding v.embedding
-  · simpa [embeddingConjugateIte_pos L h] using ⟨h, hw.isUnmixed⟩
-  · simpa [embeddingConjugateIte_neg L h] using
+  · simpa [embeddingConjugateIte_pos h] using ⟨h, hw.isUnmixed⟩
+  · simpa [embeddingConjugateIte_neg h] using
       ⟨⟨(LiesOver.embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_left
         (liesOver_iff.not.1 h)⟩, hw.isUnmixed_conjugate⟩
 
-private theorem surjOn_embeddingConjugateIte (v : InfinitePlace K) :
-    Set.SurjOn (embeddingConjugateIte L v) (unramifiedPlacesOver L v)
-      (unmixedEmbeddingsOver L v.embedding) := by
+private theorem surjOn_embeddingConjugateIte : (unramifiedPlacesOver L v).SurjOn
+    (embeddingConjugateIte v) (unmixedEmbeddingsOver L v.embedding) := by
+  classical
   intro ψ h
   refine ⟨mk ψ, mk_mem_unramifiedPlacesOver h, ?_⟩
   rcases embedding_mk_eq ψ with (_ | hψ)
   · aesop (add simp [embeddingConjugateIte, unmixedEmbeddingsOver])
-  · simp_all only [unmixedEmbeddingsOver, IsUnmixed, Set.mem_setOf_eq, embeddingConjugateIte,
-      star_star, ite_eq_right_iff]
-    intro hψ
-    have := hψ.over
-    have := h.1.over
-    aesop
+  · simpa [embeddingConjugateIte, hψ] using fun ⟨_⟩ ↦
+      h.2.isReal_iff_isReal.1 <| by have := h.1.over; aesop
 
 open scoped Classical in
-private theorem bijOn_extensionIte :
-    Set.BijOn (embeddingConjugateIte L v) (unramifiedPlacesOver L v)
-      (unmixedEmbeddingsOver L v.embedding) :=
+private theorem bijOn_extensionIte : (unramifiedPlacesOver L v).BijOn (embeddingConjugateIte v)
+    (unmixedEmbeddingsOver L v.embedding) :=
   ⟨mapsTo_embeddingConjugateIte L v, star_involutive.injective_ite (embedding_injective _)
     (fun _ _ ↦ eq_of_embedding_eq_conjugate L) |>.injOn, surjOn_embeddingConjugateIte L v⟩
 
@@ -183,17 +179,17 @@ theorem add_placesOver_ncard_eq_finrank [NumberField K] [NumberField L] :
   simp only [Set.Finite.toFinset_setOf, coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hψ
   exact ⟨⟨ψ, fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, ← hψ.over]⟩, by simp⟩
 
-variable {L}
+variable {L} (w)
 
 open scoped Classical in
-protected def inertiaDeg (w : InfinitePlace L) : ℕ :=
+protected def inertiaDeg : ℕ :=
   if _ : w.1.LiesOver v.1 then (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.Completion) else 0
 
-theorem inertiaDeg_of_liesOver (w : InfinitePlace L) [w.1.LiesOver v.1] :
+theorem inertiaDeg_of_liesOver [w.1.LiesOver v.1] :
     v.inertiaDeg w = (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.Completion) := by
   simp [InfinitePlace.inertiaDeg, dif_pos]
 
-theorem inertiaDeg_eq_finrank (v : InfinitePlace K) (w : InfinitePlace L) [w.1.LiesOver v.1] :
+theorem inertiaDeg_eq_finrank [w.1.LiesOver v.1] :
     v.inertiaDeg w = Module.finrank v.Completion w.Completion := by
   simp only [inertiaDeg_of_liesOver, Ideal.inertiaDeg, Ideal.comap_bot_of_injective _ <|
     FaithfulSMul.algebraMap_injective v.Completion w.Completion]
