@@ -378,8 +378,8 @@ lemma hasEqualizers : HasEqualizers D :=
 
 lemma hasCoequalizers : HasCoequalizers D :=
   have := hasCokernels L P
-  have {X Y : D} (f g : X ⟶ Y) : HasCoequalizer f g := by
-    exact Preadditive.hasCoequalizer_of_hasCokernel _ _
+  have {X Y : D} (f g : X ⟶ Y) : HasCoequalizer f g :=
+    Preadditive.hasCoequalizer_of_hasCokernel _ _
   hasCoequalizers_of_hasColimit_parallelPair _
 
 lemma hasBinaryProducts : HasBinaryProducts D := by
