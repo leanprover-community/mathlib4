@@ -55,9 +55,6 @@ namespace Qsqrtd
 
 variable {d : ℚ}
 
-/-- The trace of `x : ℚ(√d)`, defined as `Tr(x) = x + x̄ = 2 · x.re`. -/
-abbrev trace (x : Qsqrtd d) : ℚ := x.re + (star x).re
-
 /-- The norm of `x : ℚ(√d)`, defined as `N(x) = x · x̄ = x.re² - d · x.im²`. -/
 abbrev norm (x : Qsqrtd d) : ℚ := QuadraticAlgebra.norm x
 
@@ -104,8 +101,7 @@ class QuadFieldParam (d : ℤ) : Prop where
 
 namespace QuadFieldParam
 
-/-- A squarefree integer that is a perfect square must equal `1`. -/
-theorem eq_one_of_squarefree_isSquare {d : ℤ} (hd : Squarefree d)
+private lemma eq_one_of_squarefree_isSquare {d : ℤ} (hd : Squarefree d)
     (hsq : IsSquare d) : d = 1 := by
   rcases hsq with ⟨z, hz⟩
   by_cases huz : IsUnit z
