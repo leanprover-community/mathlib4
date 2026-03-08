@@ -655,7 +655,7 @@ noncomputable def mapConeMapConeInv {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H
     mapCone H (mapConeInv H c) ≅ c :=
   (Limits.Cone.functorialityEquivalence F (asEquivalence H)).counitIso.app c
 
-/-- `MapCone` is the right inverse to `mapConeInv`. -/
+/-- `mapCone` is the right inverse to `mapConeInv`. -/
 @[to_dual /-- `mapCocone` is the right inverse to `mapCoconeInv`. -/]
 noncomputable def mapConeInvMapCone {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H] (c : Cone F) :
     mapConeInv H (mapCone H c) ≅ c :=

@@ -245,7 +245,8 @@ attribute [simp, grind _=_] Category.assoc
 
 initialize_simps_projections Category (-Hom)
 
-/-- `Category.mk'` is the dual of `Category.mk`, which we need for `to_dual`. -/
+/-- `Category.mk'` is the dual of `Category.mk`, which we need for `to_dual`.
+Please avoid using this directly. -/
 @[to_dual existing mk]
 abbrev Category.mk' {obj : Type u} [CategoryStruct.{v} obj]
     (id_comp : ∀ {X Y : obj} (f : Y ⟶ X), f ≫ 𝟙 X = f)
