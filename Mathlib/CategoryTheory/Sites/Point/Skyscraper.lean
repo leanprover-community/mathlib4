@@ -273,7 +273,7 @@ noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A] :
 
 noncomputable instance [HasWeakSheafify J A] :
     Localization.Lifting (presheafToSheaf J A) J.W
-        Φ.presheafFiber Φ.sheafFiber where
+      Φ.presheafFiber Φ.sheafFiber where
   iso := Φ.presheafToSheafCompSheafFiber A
 
 instance : PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
