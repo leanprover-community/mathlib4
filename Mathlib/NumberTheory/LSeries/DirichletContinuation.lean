@@ -139,7 +139,7 @@ private lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN :
     refine .fun_finset_prod fun i h ↦ ?_
     have : NeZero i := ⟨(Nat.pos_of_mem_primeFactors h).ne'⟩
     fun_prop
-  · refine eventually_of_mem ?_ (fun t (ht : 1 < t.re) ↦ ?_)
+  · refine Eventually.mono ?_ (fun t (ht : 1 < t.re) ↦ ?_)
     · exact (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by simp : 1 < (2 : ℂ).re)
     · simpa [LFunction_eq_LSeries _ ht] using LSeries_changeLevel hMN χ ht
 

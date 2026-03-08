@@ -71,7 +71,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
         rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
         exact ⟨Ioo (-α) α, by grind, isOpen_Ioo, by grind⟩
       have evn_pos : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, 0 < ε :=
-        eventually_mem_of_tendsto_nhdsWithin (fun _ a ↦ a)
+        eventually_mem_nhdsWithin
       filter_upwards [evn_pos, evn_bound hη, evn_bound hδ₁,
                       evn_bound (α := (b - x) / 2) (by simp [hx.left.right])]
         with ε hε₁ hε₂ hε₃ hε₄
@@ -128,7 +128,10 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   have hT₄ (s : Finset u) := (u_coe s).intervalGapsWithin_pairwiseDisjoint_Ioc rfl (hu₁ s)
   have hT : univ.MapsTo T (disjWithin d b) := by
     intro s _
-    grind [disjWithin, uIcc_of_le]
+    #adaptation_note /-- The next few lines were grind [disjWithin, uIcc_of_le] -/
+    simp only [disjWithin, Finset.mem_range, uIcc_of_le, mem_Icc, Finset.coe_range, mem_setOf_eq,
+      Order.lt_add_one_iff, true_and, and_true, uIoc_of_le, hdb, T, hT₁, hT₃, hT₂, hT₄]
+    grind
   have u_coe_sum (s : Finset u) (g : ℝ → ℝ → ℝ) :
       ∑ b ∈ s, (g b.val.1 b.val.2) = ∑ z ∈ u_coe s, (g z.1 z.2) :=
     Finset.sum_nbij Subtype.val (by simp [u_coe]) (by simp)

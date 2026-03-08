@@ -93,7 +93,7 @@ theorem Nat.Primes.summable_rpow {r : ℝ} :
   by_cases h : r < -1
   · -- case `r < -1`
     simp only [h, iff_true]
-    exact (Real.summable_nat_rpow.mpr h).subtype (setOf _)
+    exact (Real.summable_nat_rpow.mpr h).subtype _
   · -- case `-1 ≤ r`
     simp only [h, iff_false]
     refine fun H ↦ Nat.Primes.not_summable_one_div <| H.of_nonneg_of_le (fun _ ↦ by positivity) ?_

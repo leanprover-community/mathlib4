@@ -262,7 +262,7 @@ NB: The `: Set α` type ascription is present because of
 https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M) (r : ℕ → ℝ)
     (hr : Tendsto r atTop (𝓝 0)) :
-    (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐˢ1[μ]
+    (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐˢ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
   let q : ℕ → Prop := fun i => p i ∧ 0 < r i
   have h₁ : blimsup (fun i => thickening (r i) (s i)) atTop p =

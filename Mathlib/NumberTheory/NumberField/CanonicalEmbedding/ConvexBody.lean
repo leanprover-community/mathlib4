@@ -55,7 +55,7 @@ variable (f : InfinitePlace K → ℝ≥0)
 
 /-- The convex body defined by `f`: the set of points `x : E` such that `‖x w‖ < f w` for all
 infinite places `w`. -/
-abbrev convexBodyLT : Set (mixedSpace K) :=
+noncomputable abbrev convexBodyLT : Set (mixedSpace K) :=
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsReal w } => ball 0 (f w))) ×ˢ
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsComplex w } => ball 0 (f w)))
 
@@ -147,7 +147,7 @@ open scoped Classical in
 needed to ensure the element constructed is not real, see for example
 `exists_primitive_element_lt_of_isComplex`.
 -/
-abbrev convexBodyLT' : Set (mixedSpace K) :=
+noncomputable abbrev convexBodyLT' : Set (mixedSpace K) :=
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsReal w } ↦ ball 0 (f w))) ×ˢ
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsComplex w } ↦
     if w = w₀ then {x | |x.re| < 1 ∧ |x.im| < (f w : ℝ) ^ 2} else ball 0 (f w)))
@@ -217,9 +217,7 @@ theorem convexBodyLT'_volume :
       simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
         ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
         ofReal_coe_nnreal, ← mul_assoc, show (2 : ℝ≥0∞) * 2 = 4 by norm_num]
-    · refine (MeasurableSet.inter ?_ ?_).nullMeasurableSet
-      · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const
-      · exact measurableSet_lt (measurable_norm.comp Complex.measurable_im) measurable_const
+    · measurability
   calc
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
           ((∏ x ∈ Finset.univ.erase w₀, ENNReal.ofReal (f x.val) ^ 2 * pi) *

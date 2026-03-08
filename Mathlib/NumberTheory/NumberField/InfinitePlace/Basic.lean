@@ -432,9 +432,8 @@ theorem card_real_embeddings :
 theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
     Fintype.card (InfinitePlace K) = nrRealPlaces K + nrComplexPlaces K := by
   classical
-  convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
-    (disjoint_isReal_isComplex K) using 1
-  exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
+  simp only [nrRealPlaces, nrComplexPlaces, ← not_isReal_iff_isComplex, Fintype.card_subtype_compl,
+    Nat.add_sub_of_le, Fintype.card_subtype_le]
 
 open scoped Classical in
 theorem card_complex_embeddings :

@@ -130,12 +130,13 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
   rw [MeasureTheory.ae_iff]
   apply Set.Finite.measure_zero _ MeasureTheory.volume
   simp only [Classical.not_imp]
-  apply Set.Finite.of_finite_image (f := circleMap 0 1) _ <|
-    (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [le_of_eq, pi_nonneg])).mono (fun _ h ↦ h.1)
-  apply (p * q).roots.finite_toSet.subset
-  rintro _ ⟨_, ⟨_, h⟩, _⟩
-  contrapose h
-  simp_all [log_mul]
+  refine Set.Finite.of_finite_image (f := circleMap 0 1) ?_ ?_
+  · apply (p * q).roots.finite_toSet.subset
+    rintro _ ⟨_, ⟨_, h⟩, _⟩
+    contrapose h
+    simp_all [log_mul]
+  · exact (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [le_of_eq, pi_nonneg])).mono
+      (fun _ h ↦ h.1)
 
 @[simp]
 theorem prod_mahlerMeasure_eq_mahlerMeasure_prod (s : Multiset ℂ[X]) :
@@ -268,8 +269,8 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     apply (Finite.of_diff _ <| finite_singleton (2 * π)).measure_zero
     simp only [ne_eq, mem_setOf_eq, Decidable.not_not, inter_diff_assoc, Icc_diff_right]
     rw [setOf_inter_eq_sep]
-    apply Finite.of_finite_image (f := circleMap 0 1) ((Multiset.finite_toSet p.roots).subset _)
-      <| fun _ h _ k l ↦ injOn_circleMap_of_abs_sub_le' one_ne_zero (by linarith) h.1 k.1 l
+    apply Finite.of_finite_image (f := circleMap 0 1) ((Multiset.finite_toSet p.roots).subset _) <|
+      (injOn_circleMap_Ico_zero_two_pi _ one_ne_zero).mono (Set.sep_subset _ _)
     simp [hp]
   · intro _ _
     gcongr

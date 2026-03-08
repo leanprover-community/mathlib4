@@ -1064,7 +1064,7 @@ set_option backward.isDefEq.respectTransparency false in
 include hA in
 open Classical in
 theorem iUnion_negAt_plusPart_ae :
-    ⋃ s, negAt s '' (plusPart A) =ᵐ[volume] A := by
+    ⋃ s, negAt s '' (plusPart A) =ᵐˢ[volume] A := by
   nth_rewrite 2 [← iUnion_negAt_plusPart_union A hA]
   refine (MeasureTheory.union_ae_eq_left_of_ae_eq_empty (ae_eq_empty.mpr ?_)).symm
   exact measure_mono_null Set.inter_subset_right

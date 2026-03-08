@@ -161,7 +161,8 @@ variable [NumberField K]
 /--
 The set of elements of the `fundamentalCone` of `norm ≤ 1`.
 -/
-abbrev normLeOne : Set (mixedSpace K) := fundamentalCone K ∩ {x | mixedEmbedding.norm x ≤ 1}
+noncomputable abbrev normLeOne : Set (mixedSpace K) :=
+  fundamentalCone K ∩ {x | mixedEmbedding.norm x ≤ 1}
 
 variable {K} in
 theorem mem_normLeOne {x : mixedSpace K} :
@@ -632,7 +633,7 @@ open scoped Classical in
 The set that parametrizes `normAtAllPlaces '' (normLeOne K)`, see
 `normAtAllPlaces_normLeOne_eq_image`.
 -/
-abbrev paramSet : Set (realSpace K) :=
+noncomputable abbrev paramSet : Set (realSpace K) :=
   Set.univ.pi fun w ↦ if w = w₀ then Set.Iic 0 else Set.Ico 0 1
 
 theorem measurableSet_paramSet :
@@ -689,7 +690,7 @@ theorem subset_interior_normLeOne :
 
 open ENNReal MeasureTheory
 
-theorem closure_paramSet_ae_interior : closure (paramSet K) =ᵐ[volume] interior (paramSet K) := by
+theorem closure_paramSet_ae_interior : closure (paramSet K) =ᵐˢ[volume] interior (paramSet K) := by
   rw [closure_paramSet, interior_paramSet, volume_pi]
   refine Measure.ae_eq_set_pi fun w _ ↦ ?_
   split_ifs
@@ -722,7 +723,7 @@ open scoped Classical in
 A compact set that contains `expMapBasis '' closure (paramSet K)` and furthermore is almost
 equal to it, see `compactSet_ae`.
 -/
-abbrev compactSet : Set (realSpace K) :=
+noncomputable abbrev compactSet : Set (realSpace K) :=
   (Set.Icc (0 : ℝ) 1) • (expMapBasis '' Set.univ.pi fun w ↦ if w = w₀ then {0} else Set.Icc 0 1)
 
 theorem isCompact_compactSet :
@@ -804,7 +805,7 @@ theorem closure_normLeOne_subset :
 open MeasureTheory
 
 theorem compactSet_ae :
-    compactSet K =ᵐ[volume] expMapBasis '' closure (paramSet K) := by
+    compactSet K =ᵐˢ[volume] expMapBasis '' closure (paramSet K) := by
   rw [compactSet_eq_union]
   exact union_ae_eq_left_of_ae_eq_empty (by simp)
 

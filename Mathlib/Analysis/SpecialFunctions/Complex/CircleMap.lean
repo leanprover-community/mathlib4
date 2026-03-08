@@ -143,4 +143,8 @@ theorem injOn_circleMap_of_abs_sub_le' {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (
   rw [abs_lt]
   constructor <;> linarith
 
+theorem injOn_circleMap_Ico_zero_two_pi {R : ℝ} (c : ℂ) (hR : R ≠ 0) :
+    (Set.Ico 0 (2 * π)).InjOn (circleMap c R) :=
+  injOn_circleMap_of_abs_sub_le' hR (by simp)
+
 end circleMap

@@ -133,7 +133,7 @@ theorem det_fderivPolarCoordRealSymm (x : realMixedSpace K) :
 
 open scoped Classical in
 theorem polarCoordReal_symm_target_ae_eq_univ :
-    (polarCoordReal K).symm '' (polarCoordReal K).target =ᵐ[volume] Set.univ := by
+    (polarCoordReal K).symm '' (polarCoordReal K).target =ᵐˢ[volume] Set.univ := by
   rw [← Set.univ_prod_univ, volume_eq_prod, (polarCoordReal K).symm_image_target_eq_source,
     polarCoordReal_source, ← polarCoord.symm_image_target_eq_source, ← Set.piMap_image_univ_pi]
   exact set_prod_ae_eq .rfl pi_polarCoord_symm_target_ae_eq_univ

@@ -241,7 +241,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
     _ ≤ ε * ((s - 1) * ∫ (t : ℝ) in Set.Ioi 1, t ^ (-s)) := by
       rw [integral_const_mul, ← mul_assoc, ← mul_assoc, mul_comm ε]
       refine mul_le_mul_of_nonneg_left (setIntegral_mono_set ?_ ?_
-        (Set.Ioi_subset_Ioi hT₁).eventuallyLE) (mul_nonneg (sub_pos_of_lt hs).le hε.le)
+        (Set.Ioi_subset_Ioi hT₁).eventually) (mul_nonneg (sub_pos_of_lt hs).le hε.le)
       · exact integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) zero_lt_one
       · exact (ae_restrict_iff' measurableSet_Ioi).mpr <| univ_mem' fun t ht ↦
         Real.rpow_nonneg (zero_le_one.trans ht.le) _

@@ -58,7 +58,7 @@ private def tendsto_norm_le_and_mk_eq_div_atTop_aux₂ :
       (ZLattice.comap ℝ (idealLattice K ((FractionalIdeal.mk0 K) J)) (toMixed K).toLinearMap))
         ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
   rw [ZLattice.coe_comap]
-  refine (((toMixed K).toEquiv.image _).trans (Equiv.setCongr ?_)).trans
+  refine (((toMixed K).toEquiv.image _).trans (Equiv.subtypeEquivProp ?_)).trans
     (Equiv.subtypeSubtypeEquivSubtypeInter _ (mixedEmbedding.norm · ≤ s)).symm
   ext
   simp_rw [mem_idealSet, Set.mem_image, Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe,
