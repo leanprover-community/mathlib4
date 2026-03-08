@@ -9,6 +9,7 @@ public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Trace.Basic
 public import Mathlib.RingTheory.Int.Basic
 
 /-!
@@ -20,12 +21,15 @@ This file defines quadratic number fields `ℚ(√d)` as specializations of the
 ## Main Definitions
 
 * `Qsqrtd d` : The quadratic algebra `QuadraticAlgebra ℚ d 0`, representing `ℚ(√d)`.
+* `Qsqrtd.trace` : The trace on `ℚ(√d)`, defined via `Algebra.trace`.
 * `QuadFieldParam d` : Class asserting that `d : ℤ` is a valid parameter for a quadratic
   number field (squarefree and `d ≠ 1`).
 * `QuadraticNumberField d` : The quadratic number field `ℚ(√d)` for a valid parameter `d`.
 
 ## Main Results
 
+* `Qsqrtd.trace_eq_re_add_re_star` : The trace in `ℚ(√d)` is `x + x̄`.
+* `Qsqrtd.trace_eq_two_re` : In the model `QuadraticAlgebra ℚ d 0`, the trace is `2 * x.re`.
 * `Qsqrtd.zero_not_isReduced` : `ℚ(√0)` is not reduced (has nilpotents).
 * `Qsqrtd.one_not_isField` : `ℚ(√1) ≅ ℚ × ℚ` is not a field (has zero divisors).
 * `QuadFieldParam.not_isSquare` : A valid parameter is not a perfect square in `ℤ`.
@@ -55,8 +59,38 @@ namespace Qsqrtd
 
 variable {d : ℚ}
 
+/-- The trace of an element of `ℚ(√d)`, defined via `Algebra.trace`. -/
+noncomputable abbrev trace (x : Qsqrtd d) : ℚ := Algebra.trace ℚ (Qsqrtd d) x
+
+/-- `Qsqrtd.trace` is definitionally mathlib's algebra trace. -/
+theorem trace_eq_algebra_trace (x : Qsqrtd d) :
+    Qsqrtd.trace x = Algebra.trace ℚ (Qsqrtd d) x := rfl
+
 /-- The norm of `x : ℚ(√d)`, defined as `N(x) = x · x̄ = x.re² - d · x.im²`. -/
 abbrev norm (x : Qsqrtd d) : ℚ := QuadraticAlgebra.norm x
+
+private theorem leftMulMatrix_eq (x : Qsqrtd d) :
+    Algebra.leftMulMatrix (QuadraticAlgebra.basis d 0) x = !![x.re, d * x.im; x.im, x.re] := by
+  ext i j
+  fin_cases i <;> fin_cases j
+  all_goals
+    rw [Algebra.leftMulMatrix_apply, LinearMap.toMatrix_apply]
+    simp [QuadraticAlgebra.basis]
+
+/-- The trace in `ℚ(√d)` is `x + x̄`. -/
+@[simp] theorem trace_eq_re_add_re_star (x : Qsqrtd d) :
+    Qsqrtd.trace x = x.re + (star x).re := by
+  change Algebra.trace ℚ (Qsqrtd d) x = x.re + (star x).re
+  rw [Algebra.trace_eq_matrix_trace (QuadraticAlgebra.basis d 0), leftMulMatrix_eq,
+    Matrix.trace_fin_two_of]
+  simp
+
+/-- In the model `QuadraticAlgebra ℚ d 0`, the trace is `2 * x.re`. -/
+@[simp] theorem trace_eq_two_re (x : Qsqrtd d) :
+    Qsqrtd.trace x = 2 * x.re := by
+  rw [trace_eq_re_add_re_star]
+  simp
+  ring
 
 /-! ### Degeneracies -/
 
