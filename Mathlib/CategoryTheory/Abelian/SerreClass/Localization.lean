@@ -339,8 +339,8 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by rw [← hφ, reassoc_of% hw, zero_comp]) ⟨_, rfl, by simp⟩
     exact ⟨l ≫ inv (L.map φ.s) ≫ (L.objObjPreimageIso W).hom, by simp [reassoc_of% hl, ← hφ]⟩
   obtain ⟨Z, rfl, z, rfl⟩ := hw'
-  simp only [eqToHom_refl, Category.comp_id, ← L.map_comp] at hw
-  rw [map_eq_zero_iff L P, ← exists_comp_isoModSerre_eq_zero_iff P] at hw
+  simp only [eqToHom_refl, Category.comp_id, ← L.map_comp,
+    map_eq_zero_iff L P, ← exists_comp_isoModSerre_eq_zero_iff P] at hw
   obtain ⟨Z', t, ht, fac⟩ := hw
   rw [Category.assoc] at fac
   have := Localization.inverts L P.isoModSerre t ht
