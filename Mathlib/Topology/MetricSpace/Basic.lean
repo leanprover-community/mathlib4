@@ -134,6 +134,9 @@ theorem NNReal.isUniformEmbedding_coe : IsUniformEmbedding NNReal.toReal :=
 theorem NNReal.isEmbedding_coe : Topology.IsEmbedding NNReal.toReal :=
   isUniformEmbedding_coe.isEmbedding
 
+theorem NNReal.isClosedEmbedding_coe : Topology.IsClosedEmbedding NNReal.toReal :=
+  isClosed_Ici.isClosedEmbedding_subtypeVal
+
 end NNReal
 
 instance [MetricSpace β] : MetricSpace (ULift β) :=

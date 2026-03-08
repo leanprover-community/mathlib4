@@ -730,7 +730,7 @@ lemma upperHemicontinuous_spectrum [NormedField 𝕜] [ProperSpace 𝕜]
 /-- The map `a ↦ spectrum ℝ≥0 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] :
     UpperHemicontinuous (spectrum ℝ≥0 : A → Set ℝ≥0) := by
-  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
+  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := NNReal.isClosedEmbedding_coe
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
 
 set_option backward.isDefEq.respectTransparency false in
@@ -752,7 +752,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem upperHemicontinuous_quasispectrum_nnreal [NonUnitalNormedRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum ℝ≥0 : A → Set ℝ≥0) := by
-  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
+  obtain ⟨⟨h₁, -⟩, h₂⟩ := NNReal.isClosedEmbedding_coe
   simpa [← NNReal.algebraMap_eq_coe] using
     upperHemicontinuous_quasispectrum ℝ A |>.isInducing_comp h₁ h₂
 
