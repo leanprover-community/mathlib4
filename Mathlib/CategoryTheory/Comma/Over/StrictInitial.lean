@@ -29,7 +29,7 @@ variable {C : Type*} [Category* C]
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has strict initial objects and `X` is an initial object, the category
 `Over X` is equivalent to a point. -/
-@[pp_with_univ]
+@[simps, pp_with_univ]
 noncomputable
 def overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
     Over X ≌ Discrete PUnit.{w + 1} where
@@ -43,7 +43,7 @@ def overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has strict terminal objects and `X` is a terminal object, the category
 `Under X` is equivalent to a point. -/
-@[pp_with_univ]
+@[simps, pp_with_univ]
 noncomputable
 def underEquivOfIsInitial [HasStrictTerminalObjects C] (X : C) (h : IsTerminal X) :
     Under X ≌ Discrete PUnit.{w + 1} where
@@ -59,7 +59,7 @@ variable (P Q : MorphismProperty C) [P.ContainsIdentities] [Q.IsMultiplicative] 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has strict initial objects and `X` is an initial object, the category
 `P.Over Q X` is equivalent to a point. -/
-@[pp_with_univ]
+@[simps, pp_with_univ]
 noncomputable
 def MorphismProperty.overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
     P.Over Q X ≌ Discrete PUnit.{w + 1} where
@@ -73,7 +73,7 @@ def MorphismProperty.overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has strict terminal objects and `X` is a terminal object, the category
 `P.Under Q X` is equivalent to a point. -/
-@[pp_with_univ]
+@[simps, pp_with_univ]
 noncomputable
 def MorphismProperty.underEquivOfIsInitial [HasStrictTerminalObjects C] (X : C) (h : IsTerminal X) :
     P.Under Q X ≌ Discrete PUnit.{w + 1} where
