@@ -136,12 +136,14 @@ theorem InnerProductSpace.euclideanHausdorffMeasure_eq_volume :
     ← (stdOrthonormalBasis ℝ V).repr.toIsometryEquiv
       |>.symm.measurePreserving_euclideanHausdorffMeasure _ |>.map_eq,
     EuclideanSpace.euclideanHausdorffMeasure_eq_volume]
-  rfl
+  simp
 
 /-!
 ### `μHE[d]` on an affine space matches the volume measure on the associated inner product space.
 -/
-
+/- We may want to endow an affine space with a `MeasureSpace` that transfers `volume` from its
+associated inner product space. If it is implemented, we can unify this lemma with the previous one.
+-/
 theorem EuclideanGeometry.euclideanHausdorffMeasure_eq (p : P) :
     μHE[Module.finrank ℝ V] = volume.map (IsometryEquiv.vaddConst p) := by
   have h := (IsometryEquiv.vaddConst p)
@@ -162,3 +164,25 @@ omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V] in
 theorem AffineSubspace.euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
     (t : Set s) : μHE[d] (Subtype.val '' t) = μHE[d] t :=
   isometry_subtype_coe.euclideanHausdorffMeasure_image _
+
+/-!
+### `μHE[d]` is translation invariant
+-/
+
+instance (d : ℕ) : VAddInvariantMeasure V P μHE[d] where
+  measure_preimage_vadd c s hs := by
+    simp_rw [euclideanHausdorffMeasure_def, smul_apply, nnreal_smul_coe_apply]
+    have h : (0 : ℝ) ≤ d ∨ Function.Surjective fun (x : P) => -c +ᵥ x := by simp
+    convert congr((volume.addHaarScalarFactor μH[d]) * $(hausdorffMeasure_vadd (-c) h s))
+    ext y
+    simp [Set.mem_neg_vadd_set_iff]
+
+instance [AddGroup X] [IsIsometricVAdd X X] (d : ℕ) :
+    (μHE[d] : Measure X).IsAddLeftInvariant := by
+  rw [euclideanHausdorffMeasure_def]
+  apply isAddLeftInvariant_smul
+
+instance [AddGroup X] [IsIsometricVAdd Xᵃᵒᵖ X] (d : ℕ) :
+    (μHE[d] : Measure X).IsAddRightInvariant := by
+  rw [euclideanHausdorffMeasure_def]
+  apply isAddRightInvariant_smul
