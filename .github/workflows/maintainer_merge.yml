@@ -119,18 +119,17 @@ jobs:
           username: ${{ env.AUTHOR }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
-      - name: Checkout mathlib-ci
+      - name: Checkout local actions
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          repository: leanprover-community/mathlib-ci
-          ref: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+          ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          path: ci-tools
-
-      - name: Set up CI scripts paths
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       - name: Determine Zulip topic
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}

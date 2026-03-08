@@ -203,6 +203,16 @@ lemma eTruncGE_obj_map_eTruncGEπ_app (i : EInt) (X : C) :
   induction i using WithBotTop.rec with simp [truncGE_map_truncGEπ_app]
 
 set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma eTruncLT_obj_map_eTruncLTι_app_eTruncLT_map_app
+    {i j : EInt} (f : i ⟶ j) (X : C) :
+    (t.eTruncLT.obj i).map ((t.eTruncLTι j).app X) ≫ (t.eTruncLT.map f).app X =
+      (t.eTruncLTι i).app ((t.eTruncLT.obj j).obj X) := by
+  dsimp [eTruncLTι]
+  rw [show homOfLE le_top = f ≫ homOfLE le_top by rfl]
+  induction j using WithBotTop.rec with simp [truncLT_map_truncLTι_app]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The (distinguished) triangles given by the natural transformations
 `t.eTruncLT.obj i ⟶ 𝟭 C ⟶ t.eTruncGE.obj i ⟶ ...` for all `i : EInt`. -/
 @[simps!]
