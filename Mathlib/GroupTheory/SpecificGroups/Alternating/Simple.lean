@@ -166,14 +166,13 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
     ext1 s
     exact hg_ne s
   convert hg_ne
-  exact (Set.powersetCard.mulAction_faithful (n := 3)
-    (G := alternatingGroup α) (α := α) (g := g)
-    (by norm_num)
-    (by
-      have : CharZero ℕ∞ := instCharZeroENat
-      rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
+  symm
+  apply Set.powersetCard.mulAction_faithful
+  · norm_num
+  · have : CharZero ℕ∞ := instCharZeroENat
+    rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
           Nat.ofNat_lt_cast, ← Nat.card_eq_fintype_card]
-      apply le_trans (by norm_num) hα)).symm
+    apply le_trans (by norm_num) hα
 
 theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
@@ -267,16 +266,15 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
   replace hg_ne : (toPerm g : Perm (Set.powersetCard α 4)) = 1 := by
     ext1 s
     exact hg_ne s
-  rw [← Subtype.coe_inj]
   convert hg_ne
-  exact (Set.powersetCard.mulAction_faithful (n := 4)
-    (G := alternatingGroup α) (α := α) (g := g)
-    (by norm_num)
-    (by
-      have : CharZero ℕ∞ := instCharZeroENat
-      rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
+  rw [← Subtype.coe_inj]
+  symm
+  apply Set.powersetCard.mulAction_faithful
+  · norm_num
+  · have : CharZero ℕ∞ := instCharZeroENat
+    rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
           Nat.ofNat_lt_cast]
-      simpa using hα)).symm
+    simpa using hα
 
 /-- If `α` has at least 5 elements,
 then the only nontrivial normal subgroup of `alternatingGroup α`
@@ -298,11 +296,6 @@ public theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
     rw [← nontrivial_iff]
     refine nontrivial_of_three_le_card ?_
     simpa using le_trans (by norm_num) hα
-  eq_bot_or_eq_top_of_normal H hH := by
-    by_cases hα' : Nat.card α = 6
-    · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight hα _ hH
-      rw [hα']
-      simp
-    · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_six hα hα' hH
+  eq_bot_or_eq_top_of_normal H := normal_subgroup_eq_bot_or_eq_top hα
 
 end alternatingGroup
