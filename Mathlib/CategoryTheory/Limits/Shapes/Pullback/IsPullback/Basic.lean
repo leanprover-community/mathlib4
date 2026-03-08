@@ -132,9 +132,7 @@ lemma mono_fst_of_mono (h : IsPullback fst snd f g) (inst : Mono g := by infer_i
     Mono fst := by
   constructor
   intro W fst' snd' heq
-  apply h.hom_ext heq
-  rw [← cancel_mono g]
-  simp [← h.w, reassoc_of% heq]
+  exact h.hom_ext heq (by simp [← cancel_mono g, ← h.w, reassoc_of% heq])
 
 lemma mono_snd_of_mono (h : IsPullback fst snd f g) (inst : Mono f := by infer_instance) :
     Mono snd :=
@@ -473,9 +471,7 @@ lemma epi_inl_of_epi (h : IsPushout f g inl inr) (inst : Epi g := by infer_insta
     Epi inl := by
   constructor
   intro W fst' snd' heq
-  apply h.hom_ext heq
-  rw [← cancel_epi g]
-  simp [← h.w_assoc,heq]
+  exact h.hom_ext heq (by simp [← cancel_epi g, ← h.w_assoc,heq])
 
 lemma epi_inr_of_epi (h : IsPushout f g inl inr) (inst : Epi f := by infer_instance) :
     Epi inr := h.flip.epi_inl_of_epi
