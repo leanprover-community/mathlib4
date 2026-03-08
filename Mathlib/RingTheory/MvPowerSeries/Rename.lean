@@ -116,7 +116,7 @@ private theorem renameFunAux' [DecidableEq τ] (x : τ →₀ ℕ) :
 private theorem renameFunAuxImage [DecidableEq σ] [DecidableEq τ] (x : τ →₀ ℕ) :
       (renameFunAux' f x).toFinset.image (fun (_, b) ↦ (b.1 + b.2, b)) =
     (renameFunAux f x).toFinset := by
-  ext ⟨_,_,_⟩
+  ext ⟨_, _, _⟩
   simp; grind [Finsupp.mapDomain_add]
 
 open Finset in
@@ -227,7 +227,7 @@ def killComplFun (e : σ ↪ τ) (p : MvPowerSeries τ R) : MvPowerSeries σ R :
   fun x ↦ coeff (embDomain e x) p
 
 private theorem coeff_killComplFun (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
-  coeff x (killComplFun e p) = coeff (embDomain e x) p := rfl
+    coeff x (killComplFun e p) = coeff (embDomain e x) p := rfl
 
 private theorem killComplFun_monomial_embDomain (x : σ →₀ ℕ) (r : R) :
     killComplFun e (monomial (embDomain e x) r) = monomial x r := by
