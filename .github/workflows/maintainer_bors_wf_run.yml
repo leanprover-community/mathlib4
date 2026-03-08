@@ -115,22 +115,21 @@ jobs:
               --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
-      - name: Checkout mathlib-ci
+      - name: Checkout local actions
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.extract-data.outputs.bot == 'true' ) }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          repository: leanprover-community/mathlib-ci
-          ref: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+          ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          path: ci-tools
-
-      - name: Set up CI scripts paths
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.extract-data.outputs.bot == 'true' ) }}
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       - name: Set up Python
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
