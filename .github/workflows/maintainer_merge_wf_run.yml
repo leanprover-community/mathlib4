@@ -39,8 +39,8 @@ jobs:
 
       - name: Download legacy artifact (fallback)
         id: download-legacy-artifact
-        if: ${{ steps.bridge.outputs.mOrD == '' }}
-        uses: dawidd6/action-download-artifact@5c98f0b039f36ef966fdb7dfa9779262785ecb05 # v14
+        if: ${{ steps.bridge.outputs.pr_number == '' }}
+        uses: dawidd6/action-download-artifact@2536c51d3d126276eb39f74d6bc9c72ac6ef30d3 # v16
         with:
           workflow: maintainer_merge.yml
           name: workflow-data
@@ -50,7 +50,7 @@ jobs:
 
       - name: Extract legacy artifact data (fallback)
         id: legacy
-        if: ${{ steps.bridge.outputs.mOrD == '' && steps.download-legacy-artifact.outputs.found_artifact == 'true' }}
+        if: ${{ steps.bridge.outputs.pr_number == '' && steps.download-legacy-artifact.outputs.found_artifact == 'true' }}
         run: |
           data_file="./artifacts/artifact-data.json"
           if [ ! -f "${data_file}" ]
@@ -66,12 +66,13 @@ jobs:
             echo "pr_url=$(jq -r '.pr_url // empty' "${data_file}")"
             echo "event_name=$(jq -r '.event_name // empty' "${data_file}")"
             echo "mOrD=$(jq -r '.mOrD // .m_or_d // empty' "${data_file}")"
-          } >> "$GITHUB_OUTPUT"
+          } | tee -a "$GITHUB_OUTPUT"
           comment="$(jq -r '.comment // empty' "${data_file}")"
-          printf 'comment<<EOF\n%s\nEOF\n' "${comment}" >> "$GITHUB_OUTPUT"
+          printf 'comment<<EOF\n%s\nEOF\n' "${comment}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Select bridge or legacy inputs
         id: inputs
+        if: ${{ steps.bridge.outputs.pr_number != '' || steps.legacy.outputs.pr_number != '' }}
         run: |
           {
             echo "author=${{ steps.bridge.outputs.author }}${{ steps.legacy.outputs.author }}"
@@ -81,8 +82,9 @@ jobs:
             echo "pr_url=${{ steps.bridge.outputs.pr_url }}${{ steps.legacy.outputs.pr_url }}"
             echo "event_name=${{ steps.bridge.outputs.event_name }}${{ steps.legacy.outputs.event_name }}"
             echo "mOrD=${{ steps.bridge.outputs.mOrD }}${{ steps.legacy.outputs.mOrD }}"
-          } >> "$GITHUB_OUTPUT"
-          printf 'comment<<EOF\n%s\nEOF\n' "${{ steps.bridge.outputs.comment }}${{ steps.legacy.outputs.comment }}" >> "$GITHUB_OUTPUT"
+            echo "input_source=${{ steps.bridge.outputs.pr_number != '' && 'bridge' || (steps.legacy.outputs.pr_number != '' && 'legacy' || 'none') }}"
+          } | tee -a "$GITHUB_OUTPUT"
+          printf 'comment<<EOF\n%s\nEOF\n' "${{ steps.bridge.outputs.comment }}${{ steps.legacy.outputs.comment }}" | tee -a "$GITHUB_OUTPUT"
 
       - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
         name: Check whether user is part of mathlib-reviewers team
