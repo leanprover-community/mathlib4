@@ -477,10 +477,12 @@ namespace Functor
 open Limits
 variable (C : Type*) [Category* C] {D : Type*} [Category* D]
 
-@[simps!]
+/-- The constant functor returning a specific terminal object -/
+@[simps!, nolint unusedArguments]
 def terminal {X : D} (_hX : IsTerminal X) : C ⥤ D :=
   (Functor.const C).obj X
 
+/-- The constant functor returning a specific terminal object is indeed terminal. -/
 def isTerminalTerminal {D : Type*} [Category* D] {X : D} (hX : IsTerminal X) :
     IsTerminal (Functor.terminal C hX) :=
   IsTerminal.ofUniqueHom (fun Y => {app Z := hX.from (Y.obj Z)}) (by intros; ext; apply hX.hom_ext)
@@ -489,10 +491,12 @@ def isTerminalTerminal {D : Type*} [Category* D] {X : D} (hX : IsTerminal X) :
 lemma isTerminalTerminal_from_app {D : Type*} [Category* D] {X : D} (hX : IsTerminal X)
     (F : C ⥤ D) (Y : C) : ((isTerminalTerminal C hX).from F).app Y = hX.from (F.obj Y) := rfl
 
-@[simps!]
+/-- The constant functor returning a specific initial object -/
+@[simps!, nolint unusedArguments]
 def initial {X : D} (_hX : IsInitial X) : C ⥤ D :=
   (Functor.const C).obj X
 
+/-- The constant functor returning a specific initial object is indeed initial. -/
 def isInitialInitial {D : Type*} [Category* D] {X : D} (hX : IsInitial X) :
     IsInitial (Functor.initial C hX) :=
   IsInitial.ofUniqueHom (fun Y => {app Z := hX.to (Y.obj Z)}) (by intros; ext; apply hX.hom_ext)
