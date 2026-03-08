@@ -295,13 +295,15 @@ lemma TendstoCofinite.finite_preimage_singleton [TendstoCofinite f] (b : β) :
     Set.Finite (f ⁻¹' {b}) := by simpa using TendstoCofinite.finite_preimage f (by simp)
 
 theorem tendstoCofinite_iff_finite_preimage_singleton : TendstoCofinite f ↔
-    ∀ b : β, Set.Finite (f ⁻¹' {b}) := ⟨fun _ ↦ TendstoCofinite.finite_preimage_singleton f,
-  fun h ↦ ⟨Tendsto.cofinite_of_finite_preimage_singleton h⟩⟩
+    ∀ b : β, Set.Finite (f ⁻¹' {b}) :=
+  ⟨fun _ ↦ TendstoCofinite.finite_preimage_singleton f,
+    fun h ↦ ⟨Tendsto.cofinite_of_finite_preimage_singleton h⟩⟩
 
 @[instance]
 lemma TendstoCofinite.comp [TendstoCofinite g] [TendstoCofinite f] :
-    TendstoCofinite (g ∘ f) := (tendstoCofinite_iff_finite_preimage_singleton _).mpr (fun r ↦ by
-  simpa using TendstoCofinite.finite_preimage f (TendstoCofinite.finite_preimage g (by simp)))
+    TendstoCofinite (g ∘ f) :=
+  (tendstoCofinite_iff_finite_preimage_singleton _).mpr (fun r ↦ by
+    simpa using TendstoCofinite.finite_preimage f (TendstoCofinite.finite_preimage g (by simp)))
 
 @[instance]
 lemma TendstoCofinite.id : TendstoCofinite (id : α → α) := by
