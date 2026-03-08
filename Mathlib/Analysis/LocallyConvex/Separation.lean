@@ -143,12 +143,12 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
 
 theorem geometric_hahn_banach_of_nonempty_interior
-    {A B : Set E} (hA : Convex ℝ A) (hB : Convex ℝ B) (hAB : Disjoint A B)
+    {A B : Set E} (hA : Convex ℝ A) (hB : Convex ℝ B) (hAB : Disjoint (interior A) B)
     (hAint : (interior A).Nonempty) (hBne : B.Nonempty) :
     ∃ (f : StrongDual ℝ E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ A, f a ≤ u) ∧ ∀ b ∈ B, u ≤ f b := by
   obtain ⟨f, u, hfA, hfB⟩ :=
     geometric_hahn_banach_open hA.interior isOpen_interior hB (hAB.mono_left interior_subset)
-  refine ⟨f, u, ?_, ?_, hfB⟩
+  refine ⟨f, u, ?_, fun a ha => ?_, hfB⟩
   · rcases hAint with ⟨a, ha⟩
     rcases hBne with ⟨b, hb⟩
     intro hzero
@@ -275,10 +275,8 @@ theorem geometric_hahn_banach_of_nonempty_interior
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, hfne, hA', hB'⟩ :=
     _root_.geometric_hahn_banach_of_nonempty_interior hA hB hAB hAint hBne
-  refine ⟨f.extendRCLikeₗ, u, ?_, ?_, ?_⟩
-  · intro hzero
-    apply hfne
-    exact (StrongDual.extendRCLikeₗ (𝕜 := 𝕜) (F := E)).injective (by simpa using hzero)
+refine ⟨f.extendRCLikeₗ, u, fun hzero => ?_, ?_, ?_⟩
+  · exact hfne <| (StrongDual.extendRCLikeₗ (𝕜 := 𝕜)).injective (by simpa using hzero)
   · simpa [f.extendRCLikeₗ_apply] using hA'
   · simpa [f.extendRCLikeₗ_apply] using hB'
 
