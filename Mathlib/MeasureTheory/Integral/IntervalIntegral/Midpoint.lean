@@ -113,7 +113,7 @@ theorem sum_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h :
         ⟨mul_le_mul_of_nonpos_right hk h_neg, mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg⟩
     · exact Set.mem_uIcc_of_le (le_add_of_nonneg_right (by positivity)) (by grw [hk])
 
-private lemma midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (a_lt_b : a < b)
+private lemma deriv_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (a_lt_b : a < b)
     (hF : ContDiffOn ℝ 2 F (Icc a b))
     (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b))
     (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc a b) x| ≤ M) :
@@ -271,7 +271,7 @@ private lemma midpoint_error_le_of_lt' {F : ℝ → ℝ} {M : ℝ} {a b : ℝ} (
 For a function `F` with `F' = f`, if `F` is twice continuously differentiable on `[[a, b]]`,
 the second derivative is differentiable on `(a, b)`, and the third derivative is bounded by `M`,
 then the midpoint rule error is bounded by `|b - a|^3 * M / 24`. -/
-theorem midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
+theorem deriv_error_le {F : ℝ → ℝ} {a b : ℝ}
     (hF : ContDiffOn ℝ 2 F (uIcc a b))
     (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 2 F (uIcc a b)) (uIoo a b))
     {M : ℝ} (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (uIcc a b) x| ≤ M) :
@@ -279,37 +279,164 @@ theorem midpoint_error_le {F : ℝ → ℝ} {a b : ℝ}
   rcases lt_trichotomy a b with h_lt | h_eq | h_gt
   · rw [uIcc_of_lt h_lt, uIoo_of_lt h_lt] at *
     rw [abs_of_pos (sub_pos.mpr h_lt)]
-    exact midpoint_error_le_of_lt' h_lt hF hF_diff fpp_bound
+    exact deriv_error_le_of_lt' h_lt hF hF_diff fpp_bound
   · simp [h_eq]
   · rw [uIcc_of_gt h_gt, uIoo_of_gt h_gt] at *
     rw [abs_of_neg (sub_neg.mpr h_gt), neg_sub]
     calc
       _ = |F a - F b - _root_.derivWithin F (Set.Icc b a) ((b + a) / 2) * (a - b)| := by grind
-      _ ≤ _ := midpoint_error_le_of_lt' h_gt hF hF_diff fpp_bound
+      _ ≤ _ := deriv_error_le_of_lt' h_gt hF hF_diff fpp_bound
 
--- /-- The error bound for Simpson's midpoint integration in the case where `F` is `C^3`.
+lemma interior_uIcc {a b : ℝ} (hab : a ≠ b) : interior [[a, b]] = uIoo a b := by
+  rcases lt_or_gt_of_ne hab with h | h
+  · simp [uIcc_of_lt h, uIoo_of_lt h]
+  · simp [uIcc_of_gt h, uIoo_of_gt h]
 
--- If `F` is three times continuously differentiable on `[[a, b]]` and the third derivative
--- is bounded by `M`, then the midpoint rule error is bounded by `|b - a|^3 * M / 24`. -/
--- theorem midpoint_error_le_of_c3 {F : ℝ → ℝ} {a b : ℝ}
---     (hF_c3 : ContDiffOn ℝ 3 F (Icc a b)) {M : ℝ}
---     (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc a b) x| ≤ M) :
---     |F b - F a - (derivWithin F (Icc a b) ((a + b) / 2)) * (b - a)| ≤ |b - a| ^ 3 * M / 24 := by
+lemma uniqueDiffOn_uIcc {a b : ℝ} (hab : a ≠ b) : UniqueDiffOn ℝ [[a, b]] :=
+  uniqueDiffOn_convex (convex_uIcc a b) <| by simpa [interior_uIcc hab] using nonempty_uIoo.mpr hab
+
+lemma IsClosed_uIcc {a b : ℝ} (hab : a ≠ b) : IsClosed [[a, b]] := by
+  rcases lt_or_gt_of_ne hab with h | h
+  · simp [uIcc_of_lt h, isClosed_Icc]
+  · simp [uIcc_of_gt h, isClosed_Icc]
+
+-- lemma mid_mem_uIcc {a b : ℝ} : (a + b) / 2 ∈ [[a, b]] := by
+
+
+
+theorem midpoint_error_le_1 {f : ℝ → ℝ} {a b : ℝ}
+    (hF : ContDiffOn ℝ 1 f (uIcc a b))
+    (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 1 f (uIcc a b)) (uIoo a b))
+    {M : ℝ} (fpp_bound : ∀ x, |iteratedDerivWithin 2 f (uIcc a b) x| ≤ M) :
+    |midpoint_error f 1 a b| ≤ |b - a| ^ 3 * M / 24 := by
+  by_cases eq : a = b
+  · simp [eq]
+  · let F : ℝ → ℝ := fun x => ∫ y in a..x, f y
+    let s : Set ℝ := [[a, b]]
+    have hs : UniqueDiffOn ℝ s := uniqueDiffOn_uIcc eq
+    have hcont : ContinuousOn f s := hF.continuousOn
+    have hF_int : IntervalIntegrable f volume a b := by
+      simpa [s] using hcont.intervalIntegrable
+    have hdiff : DifferentiableOn ℝ F s := by
+      intro x hx
+      letI : Fact (x ∈ s) := ⟨hx⟩
+      have hFx_int : IntervalIntegrable f volume a x := by
+        refine hF_int.mono_set ?_
+        intro y hy
+        simp only [s, Set.mem_uIcc] at hx hy ⊢
+        grind
+      have hmeas : StronglyMeasurableAtFilter f (nhdsWithin x s) volume :=
+        hcont.stronglyMeasurableAtFilter_nhdsWithin (by simpa [s] using measurableSet_uIcc) x
+      have hcontx : ContinuousWithinAt f s x := hcont x hx
+      have hderiv :
+          HasDerivWithinAt (fun u : ℝ => ∫ y : ℝ in a..u, f y) (f x) s x :=
+        intervalIntegral.integral_hasDerivWithinAt_right hFx_int hmeas hcontx
+      simpa [F] using hderiv.differentiableWithinAt
+    have hderiv_eq : ∀ x ∈ s, derivWithin F s x = f x := by
+      intro x hx
+      letI : Fact (x ∈ s) := ⟨hx⟩
+      have hFx_int : IntervalIntegrable f volume a x := by
+        refine hF_int.mono_set ?_
+        intro y hy
+        simp only [s, Set.mem_uIcc] at hx hy ⊢
+        grind
+      have hmeas : StronglyMeasurableAtFilter f (nhdsWithin x s) volume :=
+        hcont.stronglyMeasurableAtFilter_nhdsWithin (by simpa [s] using measurableSet_uIcc) x
+      have hcontx : ContinuousWithinAt f s x := hcont x hx
+      simpa [F] using
+        (intervalIntegral.derivWithin_integral_right
+          hFx_int hmeas hcontx (hs x hx))
+    have hderiv_cont : ContDiffOn ℝ 1 (derivWithin F s) s := by
+      refine hF.congr ?_
+      intro x hx
+      exact Real.ext_cauchy (congrArg Real.cauchy (hderiv_eq x hx))
+    have h_main : |F b - F a - derivWithin F (uIcc a b) ((a + b) / 2) * (b - a)| ≤
+      |b - a| ^ 3 * M / 24 := by
+      refine deriv_error_le ?_ ?_ ?_
+      · simp only [F]
+        rw [show (2 : WithTop ℕ∞) = 1 + 1 by norm_num]
+        rw [contDiffOn_succ_iff_derivWithin hs]
+        refine ⟨hdiff, ?_, hderiv_cont⟩
+        intro htop
+        cases htop
+      · have hF_diff' : DifferentiableOn ℝ (iteratedDerivWithin 1 f s) (uIoo a b) := by
+          simpa [s] using hF_diff
+        refine hF_diff'.congr ?_
+        intro x hx
+        have hxs : x ∈ s := (Set.uIoo_subset_uIcc_self hx)
+        calc
+          iteratedDerivWithin 2 F s x
+              = derivWithin (derivWithin F s) s x := by
+                  simp [iteratedDerivWithin_succ]
+          _   = derivWithin f s x := by
+                  apply derivWithin_congr
+                  · intro y hy
+                    exact hderiv_eq y hy
+                  · exact hderiv_eq x hxs
+          _   = iteratedDerivWithin 1 f s x := by
+                  simp
+      · intro x
+        change |iteratedDerivWithin 3 F s x| ≤ M
+        have hEq2 : Set.EqOn (iteratedDerivWithin 2 F s) (iteratedDerivWithin 1 f s) s := by
+          intro y hy
+          calc
+            iteratedDerivWithin 2 F s y
+                = derivWithin (derivWithin F s) s y := by
+                    simp [iteratedDerivWithin_succ]
+            _   = derivWithin f s y := by
+                    apply derivWithin_congr
+                    · intro z hz
+                      exact hderiv_eq z hz
+                    · exact hderiv_eq y hy
+            _   = iteratedDerivWithin 1 f s y := by
+                    simp
+        by_cases hx : x ∈ s
+        · have hEq3 :
+              iteratedDerivWithin 3 F s x = iteratedDerivWithin 2 f s x := by
+            calc
+              iteratedDerivWithin 3 F s x
+                  = derivWithin (iteratedDerivWithin 2 F s) s x := by
+                      simp [iteratedDerivWithin_succ]
+              _   = derivWithin (iteratedDerivWithin 1 f s) s x := by
+                      apply derivWithin_congr hEq2
+                      exact hEq2 hx
+              _   = iteratedDerivWithin 2 f s x := by
+                      simp [iteratedDerivWithin_succ]
+          simpa [hEq3] using fpp_bound x
+        · have hs_closed : IsClosed s := IsClosed_uIcc eq
+          have hx_closure : x ∉ closure s := by
+            simpa [hs_closed.closure_eq] using hx
+          have h3zero : iteratedDerivWithin 3 F s x = 0 := by
+            simpa [iteratedDerivWithin_succ] using
+              (derivWithin_zero_of_notMem_closure
+                (f := iteratedDerivWithin 2 F s) (x := x) (s := s) hx_closure)
+          have h2zero : iteratedDerivWithin 2 f s x = 0 := by
+            simpa [iteratedDerivWithin_succ] using
+              (derivWithin_zero_of_notMem_closure
+                (f := iteratedDerivWithin 1 f s) (x := x) (s := s) hx_closure)
+          grind
+    have h_midpoint : |midpoint_error f 1 a b|
+        = |F b - F a - derivWithin F (uIcc a b) ((a + b) / 2) * (b - a)| := by
+      unfold F midpoint_error midpoint_integral
+      rw [Nat.cast_one, div_one, Finset.range_one, one_div, sum_singleton, CharP.cast_eq_zero,
+        zero_add, integral_same, sub_zero, hderiv_eq ((a + b) / 2)]
+      · grind
+      · grind [Set.mem_uIcc]
+    rw [h_midpoint]
+    exact h_main
+
+
+-- theorem midpoint_error_le {f : ℝ → ℝ} {a b : ℝ} {N : ℕ}
+--     (hF : ContDiffOn ℝ 1 f (uIcc a b))
+--     (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 1 f (uIcc a b)) (uIoo a b))
+--     {M : ℝ} (fpp_bound : ∀ x, |iteratedDerivWithin 2 f (uIcc a b) x| ≤ M) :
+--     |midpoint_error f N a b| ≤ |b - a| ^ 3 * M / (24 * N ^ 2) := by
 --   sorry
 
--- /-- The composite Simpson's midpoint rule error bound.
-
--- For `F` with `F' = f`, the error in approximating `∫_a^b f(x) dx` by the midpoint sum
--- `h * ∑_{i=0}^{n-1} f(x_{i+1/2})` is bounded by `(h^2 / 24) * M * |b - a|`
--- where `h = (b-a)/n` and `M` bounds `|F'''|`.
-
--- Equivalently, since `|b - a| = n * h`, the bound can be written as `(h^2 / 24) * M * (b - a)`. -/
--- theorem midpoint_composite_error_le {F : ℝ → ℝ} {a b : ℝ} {N : ℕ} (N_nonzero : 0 < N)
---     (hF_c3 : ContDiffOn ℝ 3 F (Icc a b)) {M : ℝ}
---     (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc a b) x| ≤ M) :
---     let h := (b - a) / N
---     |midpoint_error F N a b| ≤ (h ^ 2 / 24) * M * |b - a| := by
+-- theorem midpoint_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} {N : ℕ} (N_nonzero : 0 < N)
+--     (hF_c3 : ContDiffOn ℝ 2 f (Icc a b)) {M : ℝ}
+--     (fpp_bound : ∀ x, |iteratedDerivWithin 2 f (uIcc a b) x| ≤ M) :
+--     |midpoint_error f N a b| ≤ |b - a| ^ 3 * M / (24 * N ^ 2) := by
 --   sorry
 
 end
-
