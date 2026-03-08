@@ -74,7 +74,7 @@ lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
 lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp
-  | succ n ih => simp [ih, BitVec.pow_succ, pow_succ]
+  | succ n ih => simp [ih, BitVec.pow_succ]
 
 /-!
 ## Ring

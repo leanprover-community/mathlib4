@@ -59,6 +59,7 @@ noncomputable def freeYonedaEquiv {M : PresheafOfModules.{v} R} {X : C} :
     ((free R).obj (yoneda.obj X) ⟶ M) ≃ M.obj (Opposite.op X) :=
   freeHomEquiv.trans yonedaEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma freeYonedaEquiv_symm_app (M : PresheafOfModules.{v} R) (X : C)
     (x : M.obj (Opposite.op X)) :
     (freeYonedaEquiv.symm x).app (Opposite.op X) (ModuleCat.freeMk (𝟙 _)) = x := by
@@ -167,6 +168,7 @@ lemma ι_fromFreeYonedaCoproduct_apply (m : M.Elements) (X : Cᵒᵖ) (x : m.fre
       m.fromFreeYoneda.app X x :=
   congr_fun ((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fromFreeYonedaCoproduct_app_mk (m : M.Elements) :
     M.fromFreeYonedaCoproduct.app _ (M.freeYonedaCoproductMk m) = m.2 := by

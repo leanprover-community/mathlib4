@@ -53,6 +53,7 @@ end Cardinal
 
 namespace Ordinal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordinal.{v}) :
     Cardinal.lift.{u} (⨆ i, f i).card ≤ Cardinal.sum fun i ↦ (f i).card := by
   simp_rw [← mk_toType]
@@ -118,7 +119,7 @@ theorem card_opow_le_of_omega0_le_right (a : Ordinal) {b : Ordinal} (hb : ω ≤
 theorem card_opow_le (a b : Ordinal) : (a ^ b).card ≤ max ℵ₀ (max a.card b.card) := by
   obtain ⟨n, rfl⟩ | ha := eq_nat_or_omega0_le a
   · obtain ⟨m, rfl⟩ | hb := eq_nat_or_omega0_le b
-    · rw [← natCast_opow, card_nat]
+    · rw [opow_natCast, ← natCast_pow, card_nat]
       exact le_max_of_le_left natCast_le_aleph0
     · exact (card_opow_le_of_omega0_le_right _ hb).trans (le_max_right _ _)
   · exact (card_opow_le_of_omega0_le_left ha _).trans (le_max_right _ _)

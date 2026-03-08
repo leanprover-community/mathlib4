@@ -13,6 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_TRIAGE_PRIVATE_KEY }}
+
       - name: Download artifact
         id: download-artifact
         uses: dawidd6/action-download-artifact@5c98f0b039f36ef966fdb7dfa9779262785ecb05 # v14
@@ -80,7 +87,8 @@ jobs:
           issue_number: ${{ steps.extract-data.outputs.pr_number }}
           labels: '["${{ steps.extract-data.outputs.mOrD }}"]'
         env:
-          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
+          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
@@ -93,7 +101,7 @@ jobs:
           for label in awaiting-author maintainer-merge; do
             curl --request DELETE \
               --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.extract-data.outputs.pr_number }}/labels/${label}" \
-              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+              --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
       - name: On bors r/d-, remove ready-to-merge or delegated label
@@ -104,8 +112,25 @@ jobs:
           for label in ready-to-merge delegated; do
             curl --request DELETE \
               --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.extract-data.outputs.pr_number }}/labels/${label}" \
-              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+              --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
+
+      - name: Checkout mathlib-ci
+        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.extract-data.outputs.bot == 'true' ) }}
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.extract-data.outputs.bot == 'true' ) }}
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
 
       - name: Set up Python
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
@@ -121,16 +146,7 @@ jobs:
             steps.extract-data.outputs.bot == 'true' ) }}
         run: |
           python -m pip install --upgrade pip
-          pip install zulip
-
-      - if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: master
-          sparse-checkout: |
-            scripts/zulip_emoji_reactions.py
+          pip install -r "$CI_SCRIPTS_DIR/zulip/requirements.txt"
 
       - name: update zulip emoji reactions
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
@@ -141,4 +157,4 @@ jobs:
           ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
           ZULIP_SITE: https://leanprover.zulipchat.com
         run: |
-          python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.pr_number }}"
+          python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.pr_number }}"
