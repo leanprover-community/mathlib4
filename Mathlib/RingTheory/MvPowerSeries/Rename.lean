@@ -129,7 +129,7 @@ private theorem renameFun_mul (p q : MvPowerSeries σ R) :
     ← sum_finset_product' (renameFunAux' f x).toFinset _ _ (by simp),
     ← renameFunAuxImage f x, sum_image fun _ ↦ by simp; grind]
 
-/-- Rename all the variables in a multivariable power series by a function with finite fibers. -/
+/-- Rename all the variables in a multivariable power series by a map with finite fibers. -/
 @[no_expose]
 def rename [TendstoCofinite f] : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
   toFun := renameFun f
@@ -151,7 +151,7 @@ theorem coeff_embDomain_rename (e : σ ↪ τ) (p : MvPowerSeries σ R) (x : σ 
   rw [coeff_rename, Finset.sum_eq_single x _ (by simp [← embDomain_eq_mapDomain])]
   simpa using fun _ h h' ↦ by simp [← embDomain_eq_mapDomain, embDomain_inj, h'] at h
 
-theorem coeff_rename_eq_zero (p : MvPowerSeries σ R) (x : τ →₀ ℕ)
+theorem coeff_rename_eq_zero (p : MvPowerSeries σ R) {x : τ →₀ ℕ}
     (h' : x ∉ Set.range (Finsupp.mapDomain f)) : (rename f p).coeff x = 0 := by
   simp [coeff_rename, Set.Finite.toFinset, Set.preimage_singleton_eq_empty.mpr h']
 
