@@ -1025,6 +1025,7 @@ protected abbrev Function.Injective.semilatticeSup [Max α] [LE α] [LT α] [Sem
 /-- A type endowed with `⊔` and `⊓` is a `Lattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `Lattice`.
 See note [reducible non-instances]. -/
+@[to_dual self (reorder := 3 4, le (x y), lt (x y), map_inf map_sup)]
 protected abbrev Function.Injective.lattice [Max α] [Min α] [LE α] [LT α] [Lattice β]
     (f : α → β) (hf_inj : Function.Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
@@ -1036,6 +1037,7 @@ protected abbrev Function.Injective.lattice [Max α] [Min α] [LE α] [LT α] [L
 /-- A type endowed with `⊔` and `⊓` is a `DistribLattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `DistribLattice`.
 See note [reducible non-instances]. -/
+@[to_dual self (reorder := 3 4, le (x y), lt (x y), map_inf map_sup)]
 protected abbrev Function.Injective.distribLattice [Max α] [Min α] [LE α] [LT α] [DistribLattice β]
     (f : α → β) (hf_inj : Function.Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
