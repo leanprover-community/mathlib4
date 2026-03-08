@@ -1175,9 +1175,9 @@ variable (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ A] [IsSca
 /-- A graded algebra and its restriction to a subring have isomorphic homogeneous localization. -/
 def equivRestrictScalars :
     HomogeneousLocalization 𝒜 x ≃ₐ[R₀] HomogeneousLocalization (𝒜 · |>.restrictScalars R₀) x where
-  __ := map 𝒜 (𝒜 · |>.restrictScalars R₀) { RingHom.id _ with map_mem := id }
+  __ := map (𝒜 := 𝒜) (ℬ := (𝒜 · |>.restrictScalars R₀)) { RingHom.id _ with map_mem := id }
     (P := x) (Q := x) fun _ ↦ id
-  invFun := map (𝒜 · |>.restrictScalars R₀) 𝒜 { RingHom.id _ with map_mem := id }
+  invFun := map (𝒜 := (𝒜 · |>.restrictScalars R₀)) (ℬ := 𝒜) { RingHom.id _ with map_mem := id }
     (P := x) (Q := x) fun _ ↦ id
   commutes' _ := rfl
   left_inv s := by obtain ⟨c, rfl⟩ := s.mk_surjective; rfl
@@ -1232,7 +1232,7 @@ graded algebra homomorphism. Let `P ≤ A` be a submonoid and `Q ≤ B` be a sub
 `P ≤ g⁻¹ Q`, then `f` induces a map from the homogeneous localization `A⁰_P` to the homogeneous
 localization `B⁰_Q`. -/
 def mapₐ : HomogeneousLocalization 𝒜 P →ₐ[R] HomogeneousLocalization ℬ Q where
-  __ := map _ _ f.toGradedRingHom hpq
+  __ := map f.toGradedRingHom hpq
   commutes' r := mk_congr rfl (by simp) <| map_one f
 
 @[simp] lemma mapₐ_mk (x) : mapₐ f P Q hpq (.mk x) =
