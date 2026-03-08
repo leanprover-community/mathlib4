@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 This file establishes the `rename` operation on multivariate power series
 under a map with finite fibers, which modifies the set of variables.
 
-This file is patterned after `MvPolynomials/Rename.lean`
+This file is patterned after `Mathlib/Algebra/MvPolynomial/Rename.lean`.
 
 ## Main declarations
 
