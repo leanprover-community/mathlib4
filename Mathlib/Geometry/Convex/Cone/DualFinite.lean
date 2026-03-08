@@ -30,12 +30,12 @@ def FGDual (C : PointedCone R N) : Prop := ∃ s : Finset M, dual p s = C
 /-- The top cone is FGDual. -/
 lemma FGDual.top : FGDual p ⊤ := ⟨∅, by simp⟩
 
-/-- A FGDual cone is the dual of an FG cone. -/
+/-- An FGDual cone is the dual of an FG cone. -/
 lemma FGDual.exists_fg_dual {C : PointedCone R N} (hC : C.FGDual p) :
     ∃ D : PointedCone R M, D.FG ∧ dual p D = C := by
   obtain ⟨s, hs⟩ := hC; exact ⟨_, Submodule.fg_span s.finite_toSet, by simp [hs]⟩
 
-/-- A FGDual cone is FGDual w.r.t. the standard pairing. -/
+/-- An FGDual cone is FGDual w.r.t. the standard pairing. -/
 lemma FGDual.to_id {C : PointedCone R N} (hC : C.FGDual p) : C.FGDual .id
     := by classical
   obtain ⟨s, hs⟩ := hC
@@ -60,14 +60,14 @@ lemma FGDual.inf {C D : PointedCone R N} (hC : C.FGDual p) (hD : D.FGDual p) :
   obtain ⟨S, rfl⟩ := hC; obtain ⟨T, rfl⟩ := hD
   use S ∪ T; rw [Finset.coe_union, dual_union]
 
-/-- The double dual of a FGDual cone is the cone itself. -/
+/-- The double dual of an FGDual cone is the cone itself. -/
 @[simp]
 lemma FGDual.dual_dual_flip {C : PointedCone R N} (hC : C.FGDual p) :
     dual p (dual p.flip C) = C := by
   obtain ⟨D, hfgdual, rfl⟩ := exists_fg_dual hC
   exact dual_dual_flip_dual (p := p) D
 
-/-- The double dual of a FGDual cone is the cone itself. -/
+/-- The double dual of an FGDual cone is the cone itself. -/
 @[simp]
 lemma FGDual.dual_flip_dual {C : PointedCone R M} (hC : C.FGDual p.flip) :
     dual p.flip (dual p C) = C := hC.dual_dual_flip
