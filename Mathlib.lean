@@ -4430,6 +4430,7 @@ public import Mathlib.Geometry.Manifold.StructureGroupoid
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.ChristoffelSymbols
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Curvature
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Ehresmann
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.LeviCivita
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Lift
