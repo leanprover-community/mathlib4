@@ -144,9 +144,9 @@ noncomputable def coindFunctor : Rep.{t} k G ⥤ Rep k H where
 set_option backward.isDefEq.respectTransparency false in
 instance {G : Type v'} [Group G] (S : Subgroup G) :
     (coindFunctor k S.subtype).PreservesEpimorphisms where
-  preserves {X Y} f := (epi_iff_surjective _).2 fun y => by
+  preserves {X Y} f := (epi_iff_surjective k G _).2 fun y => by
     letI := QuotientGroup.rightRel S
-    choose! s hs using (Rep.epi_iff_surjective f).1 ‹_›
+    choose! s hs using (Rep.epi_iff_surjective _ _ f).1 ‹_›
     choose! i hi using Quotient.mk'_surjective (α := G)
     let γ (g : G) : S := ⟨g * (i (Quotient.mk' g))⁻¹,
       (QuotientGroup.rightRel_apply.1 (Quotient.eq'.1 (hi (Quotient.mk' g))))⟩
@@ -246,7 +246,7 @@ set_option backward.isDefEq.respectTransparency false in
 `k`-linear equivalence given by `coindVEquiv`. -/
 -- @[simps! hom_hom_hom inv_hom_hom]
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
-  Rep.mkIso <| .mk' (coindVEquiv φ A) fun h => by ext; simp [homEquiv]
+  Rep.mkIso <| .mk (coindVEquiv φ A) fun h => by ext; simp [homEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functors `Rep k G ⥤ Rep k H` given by
@@ -258,10 +258,10 @@ noncomputable def coindFunctorIso : coindFunctor k φ ≅ coindFunctor' k φ :=
     simp only [coindFunctor_obj, coindFunctor'_obj, coindFunctor_map, coindFunctor'_map]
     ext : 2
     simp only [coindMap, coindIso, hom_comp, mkIso_hom_hom, hom_ofHom,
-      Representation.IntertwiningMap.comp_toLinearMap, Representation.Equiv.mk'_toLinearMap,
+      Representation.IntertwiningMap.comp_toLinearMap, Representation.Equiv.toLinearMap_mk',
       coindMap']
     ext ⟨l, hl⟩ : 3
-    simp
+    simp [Representation.coindMap]
 
 end CoindIso
 
@@ -275,7 +275,7 @@ def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coin
 
 @[simp]
 lemma resCoindToHom_hom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
-    (i : H) : ((resCoindToHom φ B A f).hom c).1 i = (Hom.hom f) ((B.ρ i) c) := rfl
+    (i : H) : ((resCoindToHom φ B A f).hom.toLinearMap c).1 i = (Hom.hom f) ((B.ρ i) c) := rfl
 
 -- unif_hint (G H : Type*) [Monoid G] [Monoid H] (φ : G →* H) (A : Rep k G) where ⊢
 --   A.ρ.coind φ ≟ (coind φ A).ρ
@@ -298,8 +298,9 @@ def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
       ext x
       have := ((f.hom x).2 g 1).symm
       have := hom_comm_apply f (φ g) x
-      simp_all⟩
-  left_inv x := by ext; simp [resCoindToHom_hom_hom_apply_coe _]
+      simp_all [Representation.IntertwiningMap.apply_toLinearMap]⟩
+  left_inv x := by
+    ext; simp [resCoindToHom_hom_hom_apply_coe _, Representation.IntertwiningMap.apply_toLinearMap]
   right_inv z := by
     ext (b : B.V)
     have := hom_comm_apply z

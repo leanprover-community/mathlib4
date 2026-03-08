@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.RepresentationTheory.Rep'.Res
+public import Mathlib.RepresentationTheory.Rep'.Iso
 
 /-!
 # Coinvariants of a group representation
@@ -39,7 +40,7 @@ left adjoint to the functor equipping a module with the trivial representation.
 
 @[expose] public section
 
-universe u v
+universe w w' u u' v v'
 
 namespace Representation
 
@@ -297,7 +298,7 @@ namespace Rep
 
 open CategoryTheory Representation
 
-variable {k G : Type u} [CommRing k]
+variable {k : Type u} {G : Type v} [CommRing k]
 
 noncomputable section
 
@@ -327,7 +328,7 @@ abbrev quotientToCoinvariants : Rep k (G ⧸ S) := Rep.ofQuotient (Rep.toCoinvar
 `G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map to the
 `S`-coinvariants `A_S`. -/
 @[simps X₁ X₂ X₃ f g]
-def coinvariantsShortComplex : ShortComplex (Rep k G) where
+def coinvariantsShortComplex : ShortComplex (Rep.{w} k G) where
   X₁ := toCoinvariantsKer A S
   X₂ := A
   X₃ := toCoinvariants A S
@@ -335,18 +336,17 @@ def coinvariantsShortComplex : ShortComplex (Rep k G) where
   g := toCoinvariantsMkQ A S
   zero :=  by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
 
-lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).ShortExact where
-  exact := (forget₂ (Rep k G) (ModuleCat k)).reflects_exact_of_faithful _ <| sorry
-    -- (ShortComplex.moduleCat_exact_iff _).2
-    --   fun x hx => ⟨(⟨x, (Submodule.Quotient.mk_eq_zero _).1 hx⟩
-    --   :
-    --   Representation.Coinvariants.ker <| A.ρ.comp S.subtype), rfl⟩
+lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex.{w} A S).ShortExact where
+  exact := (forget₂ (Rep.{w} k G) (ModuleCat k)).reflects_exact_of_faithful _ <|
+    (ShortComplex.moduleCat_exact_iff _).2
+    fun x hx => ⟨(⟨x, (Submodule.Quotient.mk_eq_zero _).1 hx⟩ : Representation.Coinvariants.ker <|
+      A.ρ.comp S.subtype), rfl⟩
   mono_f := (Rep.mono_iff_injective k G _).2 fun _ _ h => Subtype.ext h
   epi_g := (Rep.epi_iff_surjective k G _).2 <| Submodule.mkQ_surjective _
 
-#exit
 end
 
+#exit
 variable (k G) [Monoid G] (A B : Rep k G)
 
 set_option backward.isDefEq.respectTransparency false in

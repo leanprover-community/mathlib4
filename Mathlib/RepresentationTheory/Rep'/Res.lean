@@ -71,8 +71,8 @@ instance : (resFunctor (k := k) f).Additive where
 instance : (resFunctor (k := k) f).Linear k where
   map_smul {X Y} l r := by
     ext : 2;
-    rw [smul_hom, Representation.IntertwiningMap.smul_toLinearMap,
-      res_map_hom_toLinearMap, smul_hom, Representation.IntertwiningMap.smul_toLinearMap,
+    rw [smul_hom, Representation.IntertwiningMap.toLinearMap_smul,
+      res_map_hom_toLinearMap, smul_hom, Representation.IntertwiningMap.toLinearMap_smul,
       res_map_hom_toLinearMap]
 
 noncomputable section
