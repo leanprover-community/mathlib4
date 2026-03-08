@@ -102,7 +102,7 @@ variable {C}
 @[reassoc]
 lemma shiftMap_homologyFunctor_map_Qh
     {K L : HomotopyCategory C (.up ℤ)} {n : ℤ} (f : K ⟶ L⟦n⟧)
-    (a a' : ℤ) (h : n + a = a') :
+    (a a' : ℤ) (h : n + a = a' := by lia) :
     (homologyFunctor C 0).shiftMap (ShiftedHom.map f Qh) a a' h =
     (homologyFunctorFactorsh C a).hom.app _ ≫
       (HomotopyCategory.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
@@ -113,7 +113,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftMap_homologyFunctor_map_Q
     {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧)
-    (a a' : ℤ) (h : n + a = a') :
+    (a a' : ℤ) (h : n + a = a' := by lia) :
     (homologyFunctor C 0).shiftMap (ShiftedHom.map f Q) a a' h =
     (homologyFunctorFactors C a).hom.app _ ≫
       (HomologicalComplex.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
@@ -121,7 +121,7 @@ lemma shiftMap_homologyFunctor_map_Q
   rw [← ShiftedHom.map_naturality_1 f (quotientCompQhIso C),
     ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
     Functor.shiftMap_comp', Functor.shiftMap_comp,
-    ShiftedHom.comp_map, shiftMap_homologyFunctor_map_Qh,
+    ShiftedHom.comp_map, shiftMap_homologyFunctor_map_Qh ..,
     homologyFunctorFactorsh_hom_app_quotient_obj,
     homologyFunctorFactorsh_inv_app_quotient_obj,
     HomotopyCategory.homologyFunctor_shiftMap]
@@ -132,19 +132,22 @@ namespace HomologySequence
 /-- The connecting homomorphism on the homology sequence attached to a distinguished
 triangle in the derived category. -/
 noncomputable def δ (T : Triangle (DerivedCategory C))
-    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
     (homologyFunctor C n₀).obj T.obj₃ ⟶ (homologyFunctor C n₁).obj T.obj₁ :=
   (homologyFunctor C 0).shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
 
-variable (T : Triangle (DerivedCategory C)) (hT : T ∈ distTriang _) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+variable (T : Triangle (DerivedCategory C)) (hT : T ∈ distTriang _) (n₀ n₁ : ℤ)
+
 include hT
 
 @[reassoc (attr := simp)]
-lemma comp_δ : (homologyFunctor C n₀).map T.mor₂ ≫ δ T n₀ n₁ h = 0 :=
+lemma comp_δ (h : n₀ + 1 = n₁ := by lia) :
+    (homologyFunctor C n₀).map T.mor₂ ≫ δ T n₀ n₁ h = 0 :=
   (homologyFunctor C 0).comp_homologySequenceδ _ hT _ _ h
 
 @[reassoc (attr := simp)]
-lemma δ_comp : δ T n₀ n₁ h ≫ (homologyFunctor C n₁).map T.mor₁ = 0 :=
+lemma δ_comp (h : n₀ + 1 = n₁ := by lia) :
+    δ T n₀ n₁ h ≫ (homologyFunctor C n₁).map T.mor₁ = 0 :=
   (homologyFunctor C 0).homologySequenceδ_comp _ hT _ _ h
 
 lemma exact₂ :
@@ -153,21 +156,23 @@ lemma exact₂ :
         Functor.map_zero])).Exact :=
   (homologyFunctor C 0).homologySequence_exact₂ _ hT _
 
-lemma exact₃ : (ShortComplex.mk _ _ (comp_δ T hT n₀ n₁ h)).Exact :=
+lemma exact₃ (h : n₀ + 1 = n₁ := by lia) :
+    (ShortComplex.mk _ _ (comp_δ T hT n₀ n₁ h)).Exact :=
   (homologyFunctor C 0).homologySequence_exact₃ _ hT _ _ h
 
-lemma exact₁ : (ShortComplex.mk _ _ (δ_comp T hT n₀ n₁ h)).Exact :=
+lemma exact₁ (h : n₀ + 1 = n₁ := by lia) :
+    (ShortComplex.mk _ _ (δ_comp T hT n₀ n₁ h)).Exact :=
   (homologyFunctor C 0).homologySequence_exact₁ _ hT _ _ h
 
 lemma epi_homologyMap_mor₁_iff :
     Epi ((homologyFunctor C n₀).map T.mor₁) ↔ (homologyFunctor C n₀).map T.mor₂ = 0 :=
   (homologyFunctor C 0).homologySequence_epi_shift_map_mor₁_iff _ hT _
 
-lemma mono_homologyMap_mor₁_iff :
+lemma mono_homologyMap_mor₁_iff (h : n₀ + 1 = n₁ := by lia) :
     Mono ((homologyFunctor C n₁).map T.mor₁) ↔ δ T n₀ n₁ h = 0 :=
   (homologyFunctor C 0).homologySequence_mono_shift_map_mor₁_iff _ hT _ _ h
 
-lemma epi_homologyMap_mor₂_iff :
+lemma epi_homologyMap_mor₂_iff (h : n₀ + 1 = n₁ := by lia) :
     Epi ((homologyFunctor C n₀).map T.mor₂) ↔ δ T n₀ n₁ h = 0 :=
   (homologyFunctor C 0).homologySequence_epi_shift_map_mor₂_iff _ hT _ _ h
 
@@ -187,14 +192,15 @@ variable {C} (T : Triangle (CochainComplex C ℤ))
 
 /-- If `T` is a triangle in `CochainComplex C ℤ`, this is the connecting homomorphism
 `T.obj₃.homology n₀ ⟶ T.obj₁.homology n₁` in homology when `n₀ + 1 = n₁`. -/
-noncomputable def homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+noncomputable def homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
     T.obj₃.homology n₀ ⟶ T.obj₁.homology n₁ :=
   homologyMap T.mor₃ n₀ ≫
     ((homologyFunctor C (.up ℤ) 0).shiftIso 1 n₀ n₁ (by lia)).hom.app _
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma homologyFunctorFactors_hom_app_homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+lemma homologyFunctorFactors_hom_app_homologyδOfTriangle
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
     (DerivedCategory.homologyFunctorFactors C n₀).hom.app T.obj₃ ≫
       homologyδOfTriangle T n₀ n₁ h =
     DerivedCategory.HomologySequence.δ
@@ -221,10 +227,10 @@ lemma homologyMap_comp_eq_zero_of_distTriang (n : ℤ) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
-lemma homologyδOfTriangle_homologyMap (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+lemma homologyδOfTriangle_homologyMap (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
     homologyδOfTriangle T n₀ n₁ h ≫ homologyMap T.mor₁ n₁ = 0 := by
   rw [← cancel_epi ((DerivedCategory.homologyFunctorFactors _ _).hom.app _),
-    homologyFunctorFactors_hom_app_homologyδOfTriangle_assoc,
+    homologyFunctorFactors_hom_app_homologyδOfTriangle_assoc ..,
     ← DerivedCategory.homologyFunctorFactors_hom_naturality]
   dsimp
   rw [reassoc_of% dsimp% DerivedCategory.HomologySequence.δ_comp _ hT n₀ n₁ h]
@@ -232,14 +238,14 @@ lemma homologyδOfTriangle_homologyMap (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
-lemma homologyMap_homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+lemma homologyMap_homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
     homologyMap T.mor₂ n₀ ≫ homologyδOfTriangle T n₀ n₁ h = 0 := by
   simp [← cancel_epi ((DerivedCategory.homologyFunctorFactors _ _).hom.app _),
     ← DerivedCategory.homologyFunctorFactors_hom_naturality_assoc,
     reassoc_of% dsimp% DerivedCategory.HomologySequence.comp_δ _ hT n₀ n₁ h]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma homologyMap_exact₁_of_distTriang (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+lemma homologyMap_exact₁_of_distTriang (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
     (ShortComplex.mk _ _ (homologyδOfTriangle_homologyMap T hT n₀ n₁ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (DerivedCategory.HomologySequence.exact₁ _ hT n₀ n₁ h)
   exact ShortComplex.isoMk
@@ -257,7 +263,7 @@ lemma homologyMap_exact₂_of_distTriang (n : ℤ) :
     ((DerivedCategory.homologyFunctorFactors _ _).app _)
 
 set_option backward.isDefEq.respectTransparency false in
-lemma homologyMap_exact₃_of_distTriang (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+lemma homologyMap_exact₃_of_distTriang (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
     (ShortComplex.mk _ _ (homologyMap_homologyδOfTriangle T hT n₀ n₁ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (DerivedCategory.HomologySequence.exact₃ _ hT n₀ n₁ h)
   exact ShortComplex.isoMk
