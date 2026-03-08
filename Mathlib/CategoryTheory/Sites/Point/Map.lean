@@ -17,7 +17,7 @@ Let `Φ` be a point of `(C, J)`. In this file, we define a point `Φ.map F K`
 of `(D, K)` and show that there are natural isomorphisms
 `(Φ.map F K).presheafFiber ≅ (Functor.whiskeringLeft _ _ A).obj F.op ⋙ Φ.presheafFiber`
 and `(Φ.map F K).sheafFiber ≅ F.sheafPushforwardContinuous A J K ⋙ Φ.sheafFiber`
-(the latter is defined only that `F` is also continuous).
+(the latter is defined only if `F` is also continuous).
 
 -/
 
