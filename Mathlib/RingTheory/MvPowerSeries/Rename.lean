@@ -184,7 +184,6 @@ theorem rename_id : rename id = AlgHom.id R (MvPowerSeries σ R) := by
   ext _ y
   simpa [coeff_rename] using Finset.sum_eq_single y (by simp) (by simp)
 
-@[simp]
 lemma rename_id_apply (p : MvPowerSeries σ R) : rename id p = p := by simp
 
 @[simp]
