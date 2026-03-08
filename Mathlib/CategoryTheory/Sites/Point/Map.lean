@@ -79,6 +79,7 @@ lemma toPresheafFiberMap_naturality {P Q : Dᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) 
 `P` a presheaf on `D`, this is the (colimit) cocone which expresses
 `(Φ.map F K).presheafFiber.obj P` as a colimit of `P.obj (op (F.obj X))`
 for `X : C`, `x : Φ.fiber.obj X`. -/
+@[simps]
 noncomputable def presheafFiberMapCocone (P : Dᵒᵖ ⥤ A) :
     Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ F.op ⋙ P) where
   pt := (Φ.map F K).presheafFiber.obj P
