@@ -702,12 +702,9 @@ theorem bijOn_sumElim_conjugate :
 
 /-- The number of mixed embeddings over an infinite place is twice the number of ramified places
 over the place. -/
-theorem ramifiedPlacesOver_ncard [NumberField L] :
+theorem ramifiedPlacesOver_ncard :
     2 * (ramifiedPlacesOver L v).ncard = (mixedEmbeddingsOver L v.embedding).ncard := by
-  rw [← (bijOn_sumElim_conjugate L v).ncard_eq, two_mul, Set.ncard_eq_toFinset_card,
-    Set.ncard_eq_toFinset_card]
-  convert (Finset.card_disjSum _ _).symm
-  ext; aesop
+  rw [← (bijOn_sumElim_conjugate L v).ncard_eq, two_mul, Set.ncard_sumEquiv_symm_apply]
 
 variable {L}
 
@@ -753,7 +750,7 @@ private theorem bijOn_extensionIte : (unramifiedPlacesOver L v).BijOn (embedding
 
 /-- The number of unramified places over an infinite place is equal to the number of unmixed
 embeddings over the place. -/
-theorem unramifiedPlacesOver_ncard [NumberField L] :
+theorem unramifiedPlacesOver_ncard :
     (unramifiedPlacesOver L v).ncard = (unmixedEmbeddingsOver L v.embedding).ncard := by
   rw [(bijOn_extensionIte L v).ncard_eq]
 
