@@ -454,8 +454,8 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (postcomposeEquivalence f).functor
-    unitIso := NatIso.ofComponents (fun c => ext (e.unitIso.app _))
-    counitIso := NatIso.ofComponents (fun c => ext (e.counitIso.app _)) }
+    unitIso := NatIso.ofComponents fun c => ext (e.unitIso.app _)
+    counitIso := NatIso.ofComponents fun c => ext (e.counitIso.app _) }
 
 /-- If `F` reflects isomorphisms, then `functoriality F` reflects isomorphisms
 as well.
