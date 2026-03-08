@@ -277,30 +277,45 @@ lemma Function.update_eventuallyEq_cofinite [DecidableEq α] (f : α → β) (a 
 
 section TendstoCofinite
 
-variable {f : α → β} {g : β → ι}
+variable (f : α → β) (g : β → ι)
 
-/-- The class of functions `f` such that `Tendsto f cofinite cofinite`. -/
+namespace Filter
+
+/-- The class of functions `f` such that `Tendsto f cofinite cofinite`, it is equivalent to
+`f` having finite fibers, see `Filter.tendstoCofinite_iff_finite_preimage_singleton`. -/
 @[mk_iff] class TendstoCofinite (f : α → β) : Prop where
-  tendsto_cofinite : Tendsto f cofinite cofinite
+  tendsto_cofinite (f) : Tendsto f cofinite cofinite
 
-lemma TendstoCofinite.finite_preimage (h : TendstoCofinite f) {s : Set β} (hs : s.Finite) :
+lemma TendstoCofinite.finite_preimage [TendstoCofinite f] {s : Set β} (hs : s.Finite) :
     Set.Finite (f ⁻¹' s) := by
-  simpa [compl_eq_univ_diff] using h.tendsto_cofinite (show univ \ s ∈ cofinite by
-    simpa [compl_eq_univ_diff])
+  simpa [compl_eq_univ_diff] using TendstoCofinite.tendsto_cofinite f
+    (show univ \ s ∈ cofinite by simpa [compl_eq_univ_diff])
 
-lemma TendstoCofinite.finite_preimage_singleton (h : TendstoCofinite f) (b : β) :
-    Set.Finite (f ⁻¹' {b}) := by simpa using h.finite_preimage (by simp)
+lemma TendstoCofinite.finite_preimage_singleton [TendstoCofinite f] (b : β) :
+    Set.Finite (f ⁻¹' {b}) := by simpa using TendstoCofinite.finite_preimage f (by simp)
 
 theorem tendstoCofinite_iff_finite_preimage_singleton : TendstoCofinite f ↔
-    ∀ b : β, Set.Finite (f ⁻¹' {b}) := ⟨fun h ↦ TendstoCofinite.finite_preimage_singleton h,
-  fun h ↦ ⟨Filter.Tendsto.cofinite_of_finite_preimage_singleton h⟩⟩
+    ∀ b : β, Set.Finite (f ⁻¹' {b}) := ⟨fun _ ↦ TendstoCofinite.finite_preimage_singleton f,
+  fun h ↦ ⟨Tendsto.cofinite_of_finite_preimage_singleton h⟩⟩
 
-lemma Function.Injective.tendstoCofinite (h : f.Injective) : TendstoCofinite f :=
-  ⟨h.tendsto_cofinite⟩
+@[instance]
+lemma TendstoCofinite.comp [TendstoCofinite g] [TendstoCofinite f] :
+    TendstoCofinite (g ∘ f) := (tendstoCofinite_iff_finite_preimage_singleton _).mpr (fun r ↦ by
+  simpa using TendstoCofinite.finite_preimage f (TendstoCofinite.finite_preimage g (by simp)))
 
-lemma TendstoCofinite.comp (h' : TendstoCofinite g) (h : TendstoCofinite f) :
-    TendstoCofinite (g ∘ f) :=
-  tendstoCofinite_iff_finite_preimage_singleton.mpr (fun r ↦ by
-    simpa using h.finite_preimage (h'.finite_preimage (by simp)))
+@[instance]
+lemma TendstoCofinite.id : TendstoCofinite (id : α → α) := by
+  simp [tendstoCofinite_iff_finite_preimage_singleton]
+
+@[instance]
+lemma tendstoCofinite_of_injective (h : f.Injective) : TendstoCofinite f := ⟨h.tendsto_cofinite⟩
+
+@[instance]
+lemma TendstoCofinite.embedding (e : α ↪ β) : TendstoCofinite e := ⟨e.injective.tendsto_cofinite⟩
+
+@[instance]
+lemma TendstoCofinite.equiv (e : α ≃ β) : TendstoCofinite e := ⟨e.injective.tendsto_cofinite⟩
+
+end Filter
 
 end TendstoCofinite
