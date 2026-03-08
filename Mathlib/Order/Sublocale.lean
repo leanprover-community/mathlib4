@@ -166,13 +166,48 @@ def giRestrict (S : Sublocale X) : GaloisInsertion S.restrict Subtype.val := S.g
 
 @[simp] lemma restrict_of_mem (ha : a ∈ S) : S.restrict a = ⟨a, ha⟩ := S.giRestrict.l_u_eq ⟨a, ha⟩
 
-/-- The restriction from the locale X into a sublocale is a nucleus. -/
-@[simps]
-def toNucleus (S : Sublocale X) : Nucleus X where
-  toFun x := S.restrict x
-  map_inf' _ _ := by simp [S.giRestrict.gc.u_inf]
-  idempotent' _ := by rw [S.giRestrict.gc.l_u_l_eq_l]
-  le_apply' _ := S.giRestrict.gc.le_u_l _
+end Sublocale
+
+/-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
+The sublocales are ordered dually to the nuclei. -/
+@[simps] def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
+  --- The range of a nucleus is a sublocale.
+  toFun n := {
+    carrier := range n.ofDual,
+    sInf_mem' a h := (by
+    rw [Nucleus.mem_range]
+    refine le_antisymm (le_sInf_iff.mpr (fun b h1 ↦ ?_)) Nucleus.le_apply
+    simp_rw [subset_def, Nucleus.mem_range] at h
+    rw [← h b h1]
+    exact n.monotone (sInf_le h1)),
+    himp_mem' a b h := by rw [Nucleus.mem_range, ← h, Nucleus.map_himp_apply] at *
+  }
+  --- The restriction from the locale X into a sublocale is a nucleus.
+  invFun s := .toDual {
+    toFun x := s.restrict x
+    map_inf' _ _ := by simp [s.giRestrict.gc.u_inf]
+    idempotent' _ := by rw [s.giRestrict.gc.l_u_l_eq_l]
+    le_apply' _ := s.giRestrict.gc.le_u_l _
+  }
+  left_inv n := by
+    simp only [OrderDual.ext_iff, OrderDual.ofDual_toDual, Nucleus.ext_iff, Nucleus.coe_mk,
+      InfHom.coe_mk]
+    intro x
+    simpa [Sublocale.restrict, sInf_image, le_antisymm_iff (a := iInf _)] using
+      ⟨iInf₂_le_of_le ⟨n.ofDual x, x, rfl⟩ n.ofDual.le_apply le_rfl,
+        fun y hxy ↦ by simpa using n.ofDual.monotone hxy⟩
+  right_inv S := by ext x; simpa using ⟨by simp +contextual [eq_comm], fun hx ↦ ⟨x, by simp [hx]⟩⟩
+  map_rel_iff' := by simp
+
+
+namespace Sublocale
+
+abbrev toNucleus (S : Sublocale X) : Nucleus X := (nucleusIsoSublocale.symm S).ofDual
+
+variable {S T : Sublocale X}
+
+@[simp] lemma coe_nucleusIsoSublocale_apply {i : X} :
+  (nucleusIsoSublocale.symm S).ofDual i = S.restrict i := rfl
 
 @[simp] lemma range_toNucleus : range S.toNucleus = S := by
   ext x
@@ -181,24 +216,14 @@ def toNucleus (S : Sublocale X) : Nucleus X where
   · intro hx
     exact ⟨x, by simp_all⟩
 
-@[simp] lemma toNucleus_le_toNucleus : S.toNucleus ≤ T.toNucleus ↔ T ≤ S := by
-  simp [← Nucleus.range_subset_range]
+@[simp↓] lemma toNucleus_le_toNucleus : S.toNucleus ≤ T.toNucleus ↔ T ≤ S := by
+  simp [↓← Nucleus.range_subset_range]
 
 end Sublocale
 
 namespace Nucleus
 
-/-- The range of a nucleus is a sublocale. -/
-@[simps]
-def toSublocale (n : Nucleus X) : Sublocale X where
-  carrier := range n
-  sInf_mem' a h := by
-    rw [mem_range]
-    refine le_antisymm (le_sInf_iff.mpr (fun b h1 ↦ ?_)) le_apply
-    simp_rw [subset_def, mem_range] at h
-    rw [← h b h1]
-    exact n.monotone (sInf_le h1)
-  himp_mem' a b h := by rw [mem_range, ← h, map_himp_apply] at *
+abbrev toSublocale (n : Nucleus X) : Sublocale X := nucleusIsoSublocale (OrderDual.toDual n)
 
 @[simp]
 lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n y = x := .rfl
@@ -214,25 +239,11 @@ lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n
 
 end Nucleus
 
-/-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
-The sublocales are ordered dually to the nuclei. -/
-def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
-  toFun n := n.ofDual.toSublocale
-  invFun s := .toDual s.toNucleus
-  left_inv := by simp [Function.LeftInverse, Nucleus.ext_iff]
-  right_inv S := by ext x; simpa using ⟨by simp +contextual [eq_comm], fun hx ↦ ⟨x, by simp [hx]⟩⟩
-  map_rel_iff' := by simp
-
-lemma nucleusIsoSublocale.eq_toSublocale : Nucleus.toSublocale = @nucleusIsoSublocale X _ := rfl
-lemma nucleusIsoSublocale.symm_eq_toNucleus :
-  Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
-
 instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
   nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
 instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
-  iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
-    nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,
+  iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus, nucleusIsoSublocale.symm.map_sup,
     nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]
 
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
