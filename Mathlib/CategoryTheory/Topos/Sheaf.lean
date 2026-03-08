@@ -217,7 +217,7 @@ def Sheaf.χ {J : GrothendieckTopology C} {F G : Sheaf J (Type max u v)} (m : F 
     (Presheaf.isClosed_χ_app_apply_of_isSheaf_of_isSeparated J m.hom F.property
       ((isSheaf_iff_isSheaf_of_type _ _).mp G.property).isSeparated)
 
-lemma Sheaf.classifier_isPullback {J : GrothendieckTopology C} {F G : Sheaf J (Type max u v)}
+lemma Sheaf.isPullback_χ_truth {J : GrothendieckTopology C} {F G : Sheaf J (Type max u v)}
     (m : F ⟶ G) [Mono m] : IsPullback m ((isTerminalTerminal J _).from F) (Sheaf.χ m)
       (Sheaf.truth) := by
   apply IsPullback.of_map (sheafToPresheaf J _)
@@ -259,7 +259,7 @@ always closed.
 def Sheaf.classifier (J : GrothendieckTopology C) :
     Classifier (Sheaf J (Type max u v)) :=
   .mkOfTerminalΩ₀ (.terminal J Types.isTerminalPUnit) (isTerminalTerminal _ _) Sheaf.Ω
-    Sheaf.truth Sheaf.χ Sheaf.classifier_isPullback Sheaf.χ_unique
+    Sheaf.truth Sheaf.χ Sheaf.isPullback_χ_truth Sheaf.χ_unique
 
 /-- Sheaf categories on essentially small sites have a subobject classifier. -/
 instance [EssentiallySmall.{w} C] (J : GrothendieckTopology C) :
