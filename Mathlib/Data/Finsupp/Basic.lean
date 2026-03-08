@@ -1311,17 +1311,13 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 
 end Sigma
 
-lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) {x : β →₀ M} :
+lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M) :
     x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
   convert mem_range_mapDomain_iff _ f.injective _
   · ext; rw [embDomain_eq_mapDomain]
   · grind
 
-@[simp]
-lemma embDomain_refl [Zero M] : embDomain (M := M) (Function.Embedding.refl α) = id := by
-  ext; simp [embDomain_apply]
-
-theorem embDomain_comp [AddCommMonoid M] {v : α →₀ M} {f : α ↪ β} {g : β ↪ γ} :
+theorem embDomain_trans [AddCommMonoid M] (v : α →₀ M) (f : α ↪ β) (g : β ↪ γ) :
     embDomain (f.trans g) v = embDomain g (embDomain f v) := by
   simp only [embDomain_eq_mapDomain, ← mapDomain_comp, Embedding.coe_trans]
 
