@@ -202,6 +202,7 @@ The sublocales are ordered dually to the nuclei. -/
 
 namespace Sublocale
 
+/-- The restriction from the locale X into a sublocale is a nucleus. -/
 abbrev toNucleus (S : Sublocale X) : Nucleus X := (nucleusIsoSublocale.symm S).ofDual
 
 variable {S T : Sublocale X}
@@ -223,6 +224,7 @@ end Sublocale
 
 namespace Nucleus
 
+/-- The -/
 abbrev toSublocale (n : Nucleus X) : Sublocale X := nucleusIsoSublocale (OrderDual.toDual n)
 
 @[simp]
