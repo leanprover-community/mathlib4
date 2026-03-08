@@ -212,19 +212,19 @@ theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) :=
   IsUltrametricDist.norm_add_le_max
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
-theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.norm := by
-  apply UniformSpace.Completion.extension_unique (f := @norm (PadicAlgCl p) _) (g := Valued.norm)
+theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
+  apply UniformSpace.Completion.extension_unique (f := @norm (PadicAlgCl p) _) (g := Valued.v.norm)
   · exact uniformContinuous_norm
   · letI S := (Valued.toNormedField ℂ_[p] NNReal).toNormedCommRing.toNormedRing.toSeminormedRing
     letI := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup
     exact @uniformContinuous_norm ℂ_[p] this
   · intro x
-    simp only [Valued.norm_def, RankOne.hom_eq_embedding]
+    simp only [Valued.v.norm_def, RankOne.hom_eq_embedding]
     erw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends]
     exact (PadicAlgCl.valuation_coe p x).symm
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
-theorem norm_eq_norm (x : ℂ_[p]) : ‖x‖ = Valued.norm x := by
+theorem norm_eq_norm (x : ℂ_[p]) : ‖x‖ = Valued.v.norm x := by
   congr!
   exact norm_eq_norm' p
 
