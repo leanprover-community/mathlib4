@@ -15,7 +15,7 @@ related by the lemma `Ordinal.opow_le_iff_le_log : b ^ c ≤ x ↔ c ≤ log b x
 `b`, `c`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -29,6 +29,7 @@ namespace Ordinal
 /-- The ordinal exponential, defined by transfinite recursion.
 
 We call this `opow` in theorems in order to disambiguate from other exponentials. -/
+@[no_expose]
 instance instPow : Pow Ordinal Ordinal :=
   ⟨fun a b ↦ if a = 0 then 1 - b else
     limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2⟩
@@ -263,7 +264,7 @@ theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < b 
 `w < b ^ u`.
 
 We special case `log 0 x = log 1 x = 0`, as well as `log b 0 = 0`. -/
-@[pp_nodot, no_expose]
+@[pp_nodot]
 def log (b x : Ordinal) : Ordinal :=
   sSup ((b ^ ·) ⁻¹' Iic x)
 
