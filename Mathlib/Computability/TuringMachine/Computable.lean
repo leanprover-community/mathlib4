@@ -126,14 +126,6 @@ def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
   StateTransition.EvalsTo
 @[deprecated (since := "2026-03-06")] protected alias EvalsToInTime :=
   StateTransition.EvalsToInTime
-@[deprecated (since := "2026-03-06")] protected alias EvalsTo.refl :=
-  StateTransition.EvalsTo.refl
-@[deprecated (since := "2026-03-06")] protected alias EvalsTo.trans :=
-  StateTransition.EvalsTo.trans
-@[deprecated (since := "2026-03-06")] protected alias EvalsToInTime.refl :=
-  StateTransition.EvalsToInTime.refl
-@[deprecated (since := "2026-03-06")] protected alias EvalsToInTime.trans :=
-  StateTransition.EvalsToInTime.trans
 
 /-- A proof of tm outputting l' when given l. -/
 def TM2Outputs (tm : FinTM2) (l : List (tm.Γ tm.k₀)) (l' : Option (List (tm.Γ tm.k₁))) :=
