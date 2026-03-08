@@ -45,7 +45,7 @@ set_option backward.isDefEq.respectTransparency false in
 `Under X` is equivalent to a point. -/
 @[simps, pp_with_univ]
 noncomputable
-def underEquivOfIsInitial [HasStrictTerminalObjects C] (X : C) (h : IsTerminal X) :
+def underEquivOfIsTerminal [HasStrictTerminalObjects C] (X : C) (h : IsTerminal X) :
     Under X ≌ Discrete PUnit.{w + 1} where
   functor := Functor.star _
   inverse := Functor.fromPUnit (.mk (𝟙 X))
