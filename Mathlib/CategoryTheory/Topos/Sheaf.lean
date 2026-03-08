@@ -150,10 +150,10 @@ lemma Presheaf.χ_unique {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) (χ' :
 -- note: the argument `hG` uses `Presieve.IsSeparated` rather than `Presheaf.IsSeparated`,
 -- for lack of API relating them
 lemma Presheaf.isClosed_χ_app_apply_of_isSheaf_of_isSeparated (J : GrothendieckTopology C)
-    {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m]
-    (hF : IsSheaf J F) (hG : Presieve.IsSeparated J G) :
-    ∀ ⦃X : Cᵒᵖ⦄ (x : G.obj X), J.IsClosed ((Presheaf.χ m).app X x) := by
-  intro X x Y f hf
+    {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] (hF : IsSheaf J F)
+    (hG : Presieve.IsSeparated J G) (X : Cᵒᵖ) (x : G.obj X) :
+    J.IsClosed ((Presheaf.χ m).app X x) := by
+  intro Y f hf
   simp only [χ_app, Opposite.op_unop]
   refine ⟨(hF.isSheafFor _ hf).amalgamate (fun Z g hg => hg.choose) ?_, ?_⟩
   · introv Y₁ h
