@@ -29,9 +29,9 @@ set_option backward.isDefEq.respectTransparency false in
 `Over X` is equivalent to a point. -/
 noncomputable
 def overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
-    Over X ≌ PUnit where
-  functor := (Functor.const _).obj ⟨⟩
-  inverse := (Functor.const _).obj (.mk (𝟙 X))
+    Over X ≌ Discrete PUnit where
+  functor := Functor.star _
+  inverse := Functor.fromPUnit (.mk (𝟙 X))
   unitIso := NatIso.ofComponents fun A ↦
     haveI := h.isIso_to A.hom
     Over.isoMk (asIso A.hom)
