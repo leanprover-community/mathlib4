@@ -297,7 +297,7 @@ theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
       simpa
     refine Sym2.ind fun x y hxy ↦ ?_
     use s(⟨x, M.edge_vert hxy⟩, ⟨y, M.edge_vert hxy.symm⟩)
-    simp only [edgeSet_coe, Set.mem_preimage, Sym2.map_pair_eq, hxy, and_self]
+    simp only [edgeSet_coe, Set.mem_preimage, Sym2.map_pair_eq, and_true, hxy]
   rw [← this, Set.encard_eq_coe_toFinset_card M.verts,
    Set.encard_eq_coe_toFinset_card M.coe.edgeSet]
   rw [isMatching_iff_forall_degree] at h
@@ -811,7 +811,7 @@ lemma matchingNumber.isAttained (G : SimpleGraph V) :
         simp only [Set.coe_setOf, nonempty_subtype, Subtype.exists, exists_prop, Set.mem_setOf_eq,
          Equiv.toFun_as_coe, Sym2.lift_mk, f]
         rw [dif_pos ⟨c, hc, by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, true_or]⟩]
-        grind
+        grind only [usr Subtype.property, = Set.mem_insert_iff, = Set.mem_singleton_iff]
       have hf2 : (f s(a,b)).1 = a ∨ (f s(a,b)).1 = b := by
         simp only [Set.coe_setOf, nonempty_subtype, Subtype.exists, exists_prop, Set.mem_setOf_eq,
          Equiv.toFun_as_coe, Sym2.lift_mk, f]
