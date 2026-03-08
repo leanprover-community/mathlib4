@@ -205,6 +205,64 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
       smul_smul, mul_one, pow_succ]
 
+open Pointwise
+
+omit hx h in
+lemma iteratedDerivWithin_comp_neg (hf : ContDiffOn 𝕜 n f s) (a : 𝕜) :
+    iteratedDerivWithin n (fun x ↦ f (-x)) s a = (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) (-a)
+    := by
+  induction n generalizing a with
+  | zero => simp
+  | succ n ih =>
+    have ih' : iteratedDerivWithin n (fun x ↦ f (-x)) s =
+        fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) (-x) :=
+      funext fun x ↦ ih hf.of_succ x
+    rw [iteratedDerivWithin_succ, ih', pow_succ', neg_mul, one_mul,
+      derivWithin_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) x),
+      derivWithin_fun_const_smul_field, neg_smul, ← iteratedDerivWithin_succ]
+
+omit hx h in
+theorem iteratedDerivWithin_comp_const_add (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (c + z)) s =
+    fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (c + x) := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    ext y
+    rw [iteratedDerivWithin_succ (f := fun z => f (c + z)), IH hf.of_succ,
+      derivWithin_comp_const_add, ← iteratedDerivWithin_succ]
+
+omit hx h in
+theorem iteratedDerivWithin_comp_add_const (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (z + c)) s =
+    fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (x + c) := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    ext y
+    rw [iteratedDerivWithin_succ (f := fun z => f (z + c)), IH hf.of_succ,
+      derivWithin_comp_add_const, ← iteratedDerivWithin_succ]
+
+omit hx h in
+theorem iteratedDerivWithin_comp_sub_const (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (z - c)) s =
+    fun x ↦ iteratedDerivWithin n f (-c +ᵥ s) (x - c) := by
+  simpa only [sub_eq_add_neg] using iteratedDerivWithin_comp_add_const hf (-c)
+
+omit hx h in
+theorem iteratedDerivWithin_comp_const_sub (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (c - z)) s =
+      fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (c +ᵥ -s) (c - x) := by
+  induction n with
+  | zero =>
+      ext x
+      simp
+  | succ n ih =>
+      ext x
+      rw [iteratedDerivWithin_succ,ih hf.of_succ, derivWithin_fun_const_smul_field,
+        derivWithin_comp_const_sub]
+      simpa [pow_succ] using Eq.symm iteratedDerivWithin_succ
+
 lemma iteratedDerivWithin_id :
     iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by
   obtain (_ | n) := n
