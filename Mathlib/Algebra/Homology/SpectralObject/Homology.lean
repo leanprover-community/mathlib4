@@ -45,7 +45,6 @@ variable {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (
   (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
   (n₀ n₁ n₂ n₃ : ℤ)
 
-
 /-- The (exact) sequence expressing `E^n(f₁, f₂, f₃ ≫ f₄)` as the cokernel
 of the differential `E^{n-1}(f₃, f₄, f₅) ⟶ E^n(f₁, f₂, f₃)` -/
 @[simps!]
@@ -111,7 +110,7 @@ lemma dKernelSequence_exact
   refine ⟨A₂, π₂ ≫ π₁, inferInstance, y₁ ≫ X.πE f₂₃ f₄ f₅ n₀ n₁ n₂, ?_⟩
   rw [assoc, assoc, hy₂, reassoc_of% hy₁,
     X.πE_map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)
-    (threeδ₁Toδ₀ f₂ f₃ f₄ f₂₃ h₂₃) n₀ n₁ n₂]
+      (threeδ₁Toδ₀ f₂ f₃ f₄ f₂₃ h₂₃) n₀ n₁ n₂]
 
 end
 
