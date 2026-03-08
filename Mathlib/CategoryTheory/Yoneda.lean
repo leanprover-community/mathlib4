@@ -640,8 +640,13 @@ theorem corepresentable_of_natIso (F : C ⥤ Type v) {G} (i : F ≅ G) [F.IsCore
     G.IsCorepresentable :=
   (F.corepresentableBy.ofIso i).isCorepresentable
 
+/-- The identity functor on `Type v` is corepresented by `PUnit`. -/
+@[simps!]
+def Functor.CorepresentableBy.id : (𝟭 (Type v)).CorepresentableBy PUnit :=
+  corepresentableByEquiv.symm Coyoneda.punitIso
+
 instance : Functor.IsCorepresentable (𝟭 (Type v)) :=
-  corepresentable_of_natIso (coyoneda.obj (op PUnit)) Coyoneda.punitIso
+  Functor.CorepresentableBy.id.isCorepresentable
 
 open Opposite
 
