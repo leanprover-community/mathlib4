@@ -808,10 +808,9 @@ theorem IsPushout.map_iff {D : Type*} [Category* D] (F : C ⥤ D) [PreservesColi
   ⟨fun h => h.of_map F e, fun h => h.map F⟩
 
 lemma IsPullback.app [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
-    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPullback f₁ f₂ f₃ f₄) :
-    ∀ (X : C), IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) := by
-  intro X
-  convert h.map ((evaluation _ _).obj X)
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPullback f₁ f₂ f₃ f₄)
+    (X : C) : IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) := by
+  exact h.map ((evaluation _ _).obj X)
 
 lemma IsPullback.of_forall_isPullback_app {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄}
@@ -820,11 +819,8 @@ lemma IsPullback.of_forall_isPullback_app {F₁ F₂ F₃ F₄ : C ⥤ D}
   w := by
     ext X
     simpa using (h X).w
-  isLimit' := ⟨by
-    apply evaluationJointlyReflectsLimits
-    intro X
-    apply ⇑(PullbackCone.isLimitMapConeEquiv _ _).symm
-    simpa [PullbackCone.map] using (h X).isLimit⟩
+  isLimit' := ⟨evaluationJointlyReflectsLimits _ fun X =>
+    (PullbackCone.isLimitMapConeEquiv _ _).symm (h X).isLimit⟩
 
 lemma IsPullback.iff_app [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} :
@@ -832,10 +828,9 @@ lemma IsPullback.iff_app [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
   ⟨.app, .of_forall_isPullback_app⟩
 
 lemma IsPushout.app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
-    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPushout f₁ f₂ f₃ f₄) :
-    ∀ (X : C), IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) := by
-  intro X
-  convert h.map ((evaluation _ _).obj X)
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPushout f₁ f₂ f₃ f₄)
+    (X : C) : IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) := by
+  exact h.map ((evaluation _ _).obj X)
 
 lemma IsPushout.of_forall_isPushout_app {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄}
@@ -844,11 +839,8 @@ lemma IsPushout.of_forall_isPushout_app {F₁ F₂ F₃ F₄ : C ⥤ D}
   w := by
     ext X
     simpa using (h X).w
-  isColimit' := ⟨by
-    apply evaluationJointlyReflectsColimits
-    intro X
-    apply ⇑(PushoutCocone.isColimitMapCoconeEquiv _ _).symm
-    simpa [PullbackCone.map] using (h X).isColimit⟩
+  isColimit' := ⟨evaluationJointlyReflectsColimits _ fun X =>
+    (PushoutCocone.isColimitMapCoconeEquiv _ _).symm (h X).isColimit⟩
 
 lemma IsPushout.iff_app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} :
