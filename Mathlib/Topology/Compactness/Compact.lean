@@ -1053,10 +1053,8 @@ instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
 
 /-- The indiscrete topology is compact -/
 -- see note [lower instance priority]
-instance (priority := 100) instCompactSpace [IndiscreteTopology X] : CompactSpace X := by
-  refine CompactSpace.mk ?_
-  intro f hf
-  simp [clusterPt_of_indiscreteTopology, nonempty_of_neBot f]
+instance (priority := 100) instCompactSpace [IndiscreteTopology X] : CompactSpace X where
+  isCompact_univ f hf := by simp [clusterPt_of_indiscreteTopology, nonempty_of_neBot f]
 
 instance ULift.compactSpace [CompactSpace X] : CompactSpace (ULift.{v} X) :=
   IsClosedEmbedding.uliftDown.compactSpace
