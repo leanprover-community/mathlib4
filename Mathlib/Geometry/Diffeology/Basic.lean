@@ -22,6 +22,7 @@ Concretely, this means that for our purposes a diffeological space is a type `X`
 * For every plot p : ℝⁿ → X and smooth map f : ℝᵐ → ℝⁿ, p ∘ f is a plot.
 * Every map p : ℝⁿ → X that is locally smooth is a plot, where by locally smooth we mean that ℝⁿ can
   be covered by open sets U such that p ∘ f is a plot for every smooth f : ℝᵐ → U.
+
 Every normed space, smooth manifold etc. is then naturally a diffeological space by simply taking
 the plots to be those maps ℝⁿ → X that are smooth in the traditional sense. A map `f : X → Y`
 between diffeological spaces is furthermore called smooth if postcomposition with it sends plots of
