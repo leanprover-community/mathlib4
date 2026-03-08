@@ -189,7 +189,7 @@ instance instNontrivial [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) 
 lemma nontrivial_iff : Nontrivial (α →₀ M) ↔ Nonempty α ∧ Nontrivial M where
   mp := by
     rintro ⟨f, g, hfg⟩
-    obtain ⟨a, ha⟩ : ∃ a, f a ≠ g a := by simpa [Finsupp.ext_iff] using hfg
+    obtain ⟨a, ha⟩ := ne_iff.mp hfg
     exact ⟨⟨a⟩, _, _, ha⟩
   mpr | ⟨_, _⟩ => inferInstance
 
