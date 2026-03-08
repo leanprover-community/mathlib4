@@ -316,8 +316,7 @@ meets and arbitrary joins.
 def toSublocale : FrameHom (Open X) (Sublocale X) where
   toFun U := U.toNucleus.toSublocale
   map_sSup' s := by
-    simp only [nucleusIsoSublocale.eq_toSublocale, Function.comp_apply, ← image_image, ← map_sSup]
-    congr
+    simp only [Nucleus.toSublocale, ← image_image, ← map_sSup, EmbeddingLike.apply_eq_iff_eq]
     ext x
     simp only [toNucleus, map_sSup, OrderDual.ofDual_toDual, Nucleus.coe_mk, InfHom.coe_mk,
       ofDual_sSup, Equiv.preimage_image, Nucleus.sInf_apply, mem_image, iInf_exists]
@@ -326,15 +325,14 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
       exact fun _ h ↦ himp_le_himp (le_sSup (by simp [h])) (le_refl _)
     · simp [↓iInf_le_iff, inf_sSup_eq]
   map_inf' a b := by
-    simp only [nucleusIsoSublocale.eq_toSublocale, Function.comp_apply, ← map_inf]
+    rw [Nucleus.toSublocale, ← map_inf]
     congr
     ext x
     simp only [OrderDual.ofDual_toDual, ofDual_inf, ← sSup_pair, ← sInf_upperBounds_eq_sSup,
       toNucleus, map_inf, Nucleus.coe_mk, InfHom.coe_mk, upperBounds_insert, Nucleus.sInf_apply,
-      mem_inter_iff, mem_Ici,]
+      mem_inter_iff, mem_Ici]
     apply le_antisymm
-    · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def,
-        upperBounds_singleton, mem_Ici, le_iInf_iff, and_imp]
+    · simp only [upperBounds_singleton, mem_Ici, le_iInf_iff, and_imp]
       intro i h1 h2
       rw [← himp_himp, ← @i.idempotent _ _ x]
       exact le_trans (h1 (getElement b ⇨ x)) (le_trans Nucleus.map_himp_le (h2 (i x)))
@@ -351,6 +349,6 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
         intro _
         rw [← inf_assoc]
         exact inf_le_of_left_le himp_inf_le
-  map_top' := by simp [Nucleus.toSublocale, Open.toNucleus, Sublocale.univ_eq_top]
+  map_top' := by simpa [Open.toNucleus] using by rfl
 
 end Open
