@@ -114,8 +114,8 @@ private theorem renameFunAux' [DecidableEq τ] (x : τ →₀ ℕ) :
     grind
 
 private theorem renameFunAuxImage [DecidableEq σ] [DecidableEq τ] (x : τ →₀ ℕ) :
-      (renameFunAux' f x).toFinset.image (fun (_, b) ↦ (b.1 + b.2, b)) =
-    (renameFunAux f x).toFinset := by
+    (renameFunAux' f x).toFinset.image (fun (_, b) ↦ (b.1 + b.2, b)) =
+      (renameFunAux f x).toFinset := by
   ext ⟨_, _, _⟩
   simp; grind [Finsupp.mapDomain_add]
 
