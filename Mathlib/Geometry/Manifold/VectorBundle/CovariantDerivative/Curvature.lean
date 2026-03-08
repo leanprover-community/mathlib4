@@ -111,45 +111,57 @@ theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (
     have hY : CMDiffAt 2 (T% Y) x := sorry
     have hZ : CMDiff 2 (T% Z) := sorry
     have hZ' : CMDiffAt 2 (T% Z) x := sorry
+    -- corollaries, which occur as side goals several times
+    have hZσ : MDiffAt (fun x ↦ TotalSpace.mk' E x (cov Z x (σ x))) x := by
+      apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
+      exact temp hcov hσ hZ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
+    have hZσ' : MDiffAt (fun x ↦ TotalSpace.mk' E x (cov Z x (σ' x))) x := by
+      apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
+      exact temp hcov hσ' hZ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
+    -- just extracted for readability; could be one common lemma
+    have hZσY :
+        MDiffAt (fun x ↦ TotalSpace.mk' E x (cov Z x (VectorField.mlieBracket I σ Y x))) x := by
+      apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
+      apply temp' hcov ?_ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
+      apply ContMDiffAt.mlieBracket_vectorField (hσ x) hY _
+      simp; sorry -- want sth with minSmoothness instead; otherwise too weak for general 𝕜
+    have hZσ'Y :
+        MDiffAt (fun x ↦ TotalSpace.mk' E x (cov Z x (VectorField.mlieBracket I σ' Y x))) x := by
+      apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
+      apply temp' hcov ?_ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
+      apply ContMDiffAt.mlieBracket_vectorField (hσ' x) hY _
+      simp; sorry -- want sth with minSmoothness instead; otherwise too weak for general 𝕜
+
+    have missing :
+      (cov (fun x ↦ (cov Z x) (VectorField.mlieBracket I (σ + σ') Y x)) x) (Y x) =
+        (cov (fun x ↦ (cov Z x) (VectorField.mlieBracket I σ Y x)) x) (Y x)
+        + (cov (fun x ↦ (cov Z x) (VectorField.mlieBracket I σ' Y x)) x) (Y x) := by
+      trans (cov (fun x ↦ (
+          cov Z x (VectorField.mlieBracket I σ Y x)) + cov Z x (VectorField.mlieBracket I σ' Y x)
+          ) x) (Y x)
+      · congr 1
+        sorry -- missing tensoriality lemma; first arguments are equal at x
+      · erw [hcov.add hZσY hZσ'Y]
+        simp
     rw [hcov.sub]
     rotate_left
-    · apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
-      apply ContMDiffAt.add_section
-      · exact temp hcov hσ hZ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
-      · exact temp hcov hσ' hZ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
+    · exact mdifferentiableAt_add_section hZσ hZσ'
     · apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
       apply temp' hcov ?_ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
       apply ContMDiffAt.mlieBracket_vectorField (ContMDiff.add_section hσ hσ' ..) hY
       simp; sorry -- want sth with minSmoothness instead; otherwise too weak for general k
-    rw [hcov.sub]; rotate_left
-    · apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
-      exact temp hcov hσ hZ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
-    · apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
-      apply temp' hcov ?_ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
-      apply ContMDiffAt.mlieBracket_vectorField (hσ x) hY _
-      simp; sorry -- same as above
+    rw [hcov.sub hZσ hZσY]
     dsimp
-    erw [hcov.add]; rotate_left
-    · -- TODO: centralise, same as above!
-      apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
-      exact temp hcov hσ hZ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
-    · -- TODO: centralise, same as above!
-      apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
-      exact temp hcov hσ' hZ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
+    erw [hcov.add hZσ hZσ']
     simp only [ContinuousLinearMap.add_apply]
-    set C := cov (fun x ↦ (cov Z x) (σ x)) x
-    set D := cov (fun x ↦ (cov Z x) (σ' x)) x
-    rw [hcov.sub]; rotate_left
-    · -- TODO: centralise, same as above!
-      apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
-      exact temp hcov hσ' hZ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
-    · --- TODO: centralise, same as above!
-      apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
-      apply temp' hcov ?_ ((hcov'.contMDiff hZ.contMDiffOn).contMDiffAt (by simp))
-      apply ContMDiffAt.mlieBracket_vectorField (hσ' x) hY _
-      simp; sorry -- same as above
-    simp
-    sorry
+    --set C := cov (fun x ↦ (cov Z x) (σ x)) x
+    --set D := cov (fun x ↦ (cov Z x) (σ' x)) x
+    rw [hcov.sub hZσ' hZσ'Y]
+    rw [missing]
+    --set E := (cov (fun x ↦ (cov Z x) (VectorField.mlieBracket I σ Y x)) x) (Y x)
+    dsimp
+    --set F := (cov (fun x ↦ (cov Z x) (VectorField.mlieBracket I σ' Y x)) x) (Y x)
+    abel
 
 -- update hypotheses to match lemma above, once proven!
 variable [IsManifold I (2 + 1) M] [IsManifold I (minSmoothness 𝕜 2) M]
