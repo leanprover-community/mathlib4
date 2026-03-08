@@ -30,7 +30,7 @@ namespace Abelian
 
 namespace SpectralObject
 
-variable {C ι ι' κ : Type*} [Category C] [Abelian C] [Category ι] [Preorder ι']
+variable {C ι ι' κ : Type*} [Category* C] [Abelian C] [Category* ι] [Preorder ι']
   (X : SpectralObject C ι) (X' : SpectralObject C ι')
 
 section
