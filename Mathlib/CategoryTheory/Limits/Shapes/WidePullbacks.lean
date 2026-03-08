@@ -459,7 +459,7 @@ def ext {ι : Type*}
     (base : e.hom ≫ t.base = s.base := by cat_disch)
     (π : ∀ i, e.hom ≫ t.π i = s.π i := by cat_disch) :
     s ≅ t :=
-  Cones.ext e <| by
+  Cone.ext e <| by
     rintro (_ | _)
     · exact base.symm
     · exact (π _).symm
