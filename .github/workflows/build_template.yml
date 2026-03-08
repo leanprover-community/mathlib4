@@ -23,7 +23,7 @@ on:
       mathlib_ci_ref:
         type: string
         required: false
-        default: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+        default: ''
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -95,16 +95,27 @@ jobs:
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
           path: tools-branch
 
-      - name: Checkout mathlib-ci
+      - name: Checkout local actions
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          repository: leanprover-community/mathlib-ci
-          ref: ${{ inputs.mathlib_ci_ref }}
+          ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          path: ci-tools
+          sparse-checkout: .github/actions
+          path: workflow-actions
 
-      - name: Set up CI scripts paths
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
+      # We need to 'duplicate' this step below because GitHub Actions does not let a `uses:` step
+      # conditionally omit a single `with:` key, and passing `ref: ''` would override
+      # the composite action's default to the empty string instead of falling back to it
+      # Note only one of the two below will actually run in any given run
+      - name: Get mathlib-ci
+        if: ${{ inputs.mathlib_ci_ref == '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Get mathlib-ci
+        if: ${{ inputs.mathlib_ci_ref != '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ inputs.mathlib_ci_ref }}
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
