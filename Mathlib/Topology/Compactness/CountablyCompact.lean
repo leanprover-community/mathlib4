@@ -5,10 +5,10 @@ Authors: Michał Świętek, Yongxi Lin
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.Inseparable
 
 import Mathlib.Data.Fintype.Pigeonhole
 
@@ -179,7 +179,8 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
   obtain ⟨x, hx⟩ := this
   simp only [true_and, not_exists, not_and, exists_const] at hx
   let A := ⋃ i, closure {x i}
-  have hc : IsClosed (⋃ i, closure {x i}) := by
+  have hc {x : ℕ → E} (hx : ∀ (l : E) (φ : ℕ → ℕ), StrictMono φ → ¬Tendsto (x ∘ φ) atTop (𝓝 l)) :
+    IsClosed (⋃ i, closure {x i}) := by
     refine IsSeqClosed.isClosed fun y l hy hy' => ?_
     by_cases! hm : ∃ m, ∃ᶠ n in atTop, y n ∈ closure {x m}
     · obtain ⟨m, pm⟩ := hm
@@ -188,9 +189,9 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
         sorry
       have := hy'.comp hφ1.tendsto_atTop
       refine (hx l φ hφ1 (Tendsto.specializes (hy'.comp hφ1.tendsto_atTop) (fun n => ?_))).elim
-      sorry
+      exact specializes_iff_mem_closure.2 (hφ2 n)
   have : IsCountablyCompact A :=
-    ((countablyCompactSpace_iff E).1 inferInstance).of_isClosed_subset hc (by simp)
+    ((countablyCompactSpace_iff E).1 inferInstance).of_isClosed_subset (hc hx) (by simp)
   obtain ⟨a, ha⟩ : ∃ a ∈ A, MapClusterPt a atTop x := by
     refine isCountablyCompact_iff_seq_clusterPt.1 this x (fun n => ?_)
     exact mem_iUnion_of_mem n <| subset_closure <| mem_singleton (x n)
@@ -205,9 +206,12 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
   have : a ∈ ⋃ i, closure {x (i + (k + 1))} := by
     have := mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
     suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from h this
-    refine (IsClosed.closure_subset_iff (hc _)).2 ?_
-    simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
-    exact iUnion_mono fun i => subset_closure
+    refine (IsClosed.closure_subset_iff (hc fun l φ hφ => ?_)).2 ?_
+    · suffices (fun i => x (i + (k + 1))) ∘ φ = x ∘ (fun i => i + (k + 1)) ∘ φ from by
+        refine this.symm ▸ hx l _ (StrictMono.comp (strictMono_id.add_const _) hφ)
+      grind
+    · simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
+      exact iUnion_mono fun i => subset_closure
   grind
 
 /-- In a first-countable space, a countably compact set is sequentially compact. -/
