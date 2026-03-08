@@ -15,9 +15,7 @@ related by the lemma `Ordinal.opow_le_iff_le_log : b ^ c ≤ x ↔ c ≤ log b x
 `b`, `c`.
 -/
 
-public section
-
-noncomputable section
+public noncomputable section
 
 open Function Set Equiv Order
 open scoped Cardinal Ordinal
@@ -29,6 +27,7 @@ namespace Ordinal
 /-- The ordinal exponential, defined by transfinite recursion.
 
 We call this `opow` in theorems in order to disambiguate from other exponentials. -/
+@[no_expose]
 instance instPow : Pow Ordinal Ordinal :=
   ⟨fun a b ↦ if a = 0 then 1 - b else
     limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2⟩
