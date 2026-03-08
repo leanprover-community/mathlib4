@@ -147,14 +147,14 @@ variable [MeasurableSingletonClass X] {x : ι → X} {c : ι → ℝ≥0∞}
 
 lemma integral_sum_dirac [FiniteDimensional ℝ E] (hc : ∀ i, c i ≠ ∞) :
     ∫ x, f x ∂Measure.sum (fun i ↦ (c i) • .dirac (x i)) = ∑' i, (c i).toReal • f (x i) := by
-  by_cases! hf : ¬ Integrable f (.sum (fun i ↦ (c i) • .dirac (x i)))
+  by_cases hf : Integrable f (.sum (fun i ↦ (c i) • .dirac (x i)))
+  · rw [integral_sum_measure hf]
+    congr with i
+    rw [integral_smul_measure, integral_dirac]
   · rw [integral_undef hf, tsum_eq_zero_of_not_summable]
     apply mt Summable.norm
     convert mt (integrable_sum_dirac hc) hf
     simp [norm_smul]
-  rw [integral_sum_measure hf]
-  congr with i
-  rw [integral_smul_measure, integral_dirac]
 
 lemma hasSum_integral_sum_dirac [CompleteSpace E] (hc : ∀ i, c i ≠ ∞)
     (hf : Summable (fun i ↦ (c i).toReal * ‖f (x i)‖)) :
