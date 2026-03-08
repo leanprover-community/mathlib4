@@ -89,7 +89,7 @@ noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
 /-- A type is terminal if and only if it contains exactly one element. -/
 def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
   equivOfSubsingletonOfSubsingleton
-    (fun h => (IsTerminal.uniqueUpToIso h (isTerminalPUnit)).toEquiv.unique)
+    (fun h => (IsTerminal.uniqueUpToIso h isTerminalPUnit).toEquiv.unique)
     (fun _ => IsTerminal.ofIso isTerminalPUnit (Equiv.toIso (Equiv.ofUnique _ _)))
 
 /-- A type is terminal if and only if it is isomorphic to `PUnit`. -/
@@ -99,7 +99,7 @@ def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅ PUnit) := by
     _ ≃ (X ≃ PUnit.{u + 1}) := uniqueEquivEquivUnique _ _
     _ ≃ (X ≅ PUnit) := equivEquivIso
 
-noncomputable instance : Unique (⊤_ (Type u)) := isTerminalEquivUnique _ (terminalIsTerminal)
+noncomputable instance : Unique (⊤_ (Type u)) := isTerminalEquivUnique _ terminalIsTerminal
 
 open CategoryTheory.Limits.WalkingPair
 
