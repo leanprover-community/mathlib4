@@ -108,6 +108,7 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F ≤ E` are two intermediate fields of a finite extension `L / K`,
 then `F = E` iff [F : K] = [E : K]`. -/
 theorem eq_of_le_iff_finrank_eq [FiniteDimensional K L] (h_le : F ≤ E) :
@@ -116,6 +117,7 @@ theorem eq_of_le_iff_finrank_eq [FiniteDimensional K L] (h_le : F ≤ E) :
   have := (finrank_mul_finrank K F L).trans (finrank_mul_finrank K E L).symm
   rwa [show finrank F L = finrank E L by rw [h], mul_left_inj' finrank_pos.ne'] at this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F ≤ E` are two intermediate fields of a finite extension `L / K`,
 then `F = E` iff [L : F] = [L : E]`. -/
 theorem eq_of_le_iff_finrank_eq' [FiniteDimensional K L] (h_le : F ≤ E) :

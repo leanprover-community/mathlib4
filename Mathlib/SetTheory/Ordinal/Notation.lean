@@ -849,7 +849,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   congr 1
   · have αd : ω ∣ α' :=
       dvd_add (dvd_mul_of_dvd_left (by simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 e0)) _) d
-    have α0: ¬IsMin α' := by
+    have α0 : ¬IsMin α' := by
       rw [isMin_iff_eq_bot]
       exact α0.ne'
     rw [mul_add (ω0 ^ (k : Ordinal)), add_assoc, ← mul_assoc, ← opow_succ,

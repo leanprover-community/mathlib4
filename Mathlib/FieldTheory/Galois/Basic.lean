@@ -263,7 +263,6 @@ lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
   ext
   simp [mem_bot]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fixingSubgroup_sup {K L : IntermediateField F E} :
     (K ⊔ L).fixingSubgroup = K.fixingSubgroup ⊓ L.fixingSubgroup := by
   ext φ
@@ -375,6 +374,11 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
   map_rel_iff' {K L} := by
     rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
     rfl
+
+theorem _root_.IntermediateField.fixingSubgroup_inf [FiniteDimensional F E] [IsGalois F E]
+    {K L : IntermediateField F E} :
+    (K ⊓ L).fixingSubgroup = K.fixingSubgroup ⊔ L.fixingSubgroup :=
+  intermediateFieldEquivSubgroup.map_inf K L
 
 section
 variable [FiniteDimensional F E] [IsGalois F E]
@@ -588,7 +592,6 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   refine LinearEquiv.finrank_eq ?_
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalent characterizations of a Galois extension of finite degree. -/
 theorem tfae [FiniteDimensional F E] : List.TFAE [
     IsGalois F E,

@@ -42,7 +42,7 @@ open Module
 
 section CommRing
 
-variable (G A B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
+variable (G A A' B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
   [MulSemiringAction G B]
 
 /-- `G` is a Galois group for `L/K` if the action of `G` on `L` is faithful with fixed field `K`.
@@ -66,6 +66,46 @@ theorem IsGaloisGroup.of_mulEquiv [hG : IsGaloisGroup G A B] {H : Type*} [Group 
     hG.isInvariant.isInvariant b (fun g ↦ by simpa [he'] using h (e.symm g))⟩
 
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
+
+variable [FaithfulSMul A B] [hA : IsGaloisGroup G A B]
+
+/--
+If `B/A` is Galois with Galois group `G`, then `A` is isomorphic to the subring of elements of `B`
+fixed by `G`.
+-/
+@[simps apply_coe]
+noncomputable def IsGaloisGroup.ringEquivFixedPoints :
+    A ≃+* FixedPoints.subsemiring B G where
+  toFun x := ⟨algebraMap A B x, fun _ ↦ by rw [smul_algebraMap]⟩
+  invFun x := (hA.isInvariant.isInvariant x x.prop).choose
+  map_mul' _ _ := by simp [Subtype.ext_iff]
+  map_add' _ _ := by simp [Subtype.ext_iff]
+  left_inv _ := by simp
+  right_inv x := by simpa [Subtype.ext_iff] using (hA.isInvariant.isInvariant x x.prop).choose_spec
+
+@[simp]
+theorem IsGaloisGroup.algebraMap_ringEquivFixedPoints_symm_apply (x : FixedPoints.subsemiring B G) :
+    algebraMap A B ((ringEquivFixedPoints G A B).symm x) = x :=
+ (hA.isInvariant.isInvariant x x.prop).choose_spec
+
+variable [CommSemiring A'] [Algebra A' B] [FaithfulSMul A' B] [hA' : IsGaloisGroup G A' B]
+
+/--
+If `B/A` and `B/A'` are Galois with the same Galois group, then `A ≃+* A'`.
+-/
+noncomputable def IsGaloisGroup.ringEquiv :
+    A ≃+* A' :=
+  (ringEquivFixedPoints G A B).trans (ringEquivFixedPoints G A' B).symm
+
+@[simp]
+theorem IsGaloisGroup.algebraMap_ringEquiv_apply (x : A) :
+    algebraMap A' B (IsGaloisGroup.ringEquiv G A A' B x) = algebraMap A B x := by
+  simp [ringEquiv]
+
+@[simp]
+theorem IsGaloisGroup.algebraMap_ringEquiv_symm_apply (x : A') :
+    algebraMap A B ((IsGaloisGroup.ringEquiv G A A' B).symm x) = algebraMap A' B x := by
+  simp [ringEquiv]
 
 end CommRing
 
@@ -276,6 +316,7 @@ theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
   card_eq_finrank ..
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 theorem fixedPoints_of_isGaloisGroup (F : IntermediateField K L) [hGKL : IsGaloisGroup G K L]
     (H : Subgroup G) [hHFL : IsGaloisGroup H F L] :

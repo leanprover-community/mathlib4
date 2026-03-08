@@ -308,12 +308,10 @@ theorem characteristic_iff_le_map : H.Characteristic ↔ ∀ ϕ : G ≃* G, H �
   simp_rw [map_equiv_eq_comap_symm']
   exact characteristic_iff_le_comap.trans ⟨fun h ϕ => h ϕ.symm, fun h ϕ => h ϕ.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance botCharacteristic : Characteristic (⊥ : Subgroup G) :=
   characteristic_iff_le_map.mpr fun _ϕ => bot_le
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
   characteristic_iff_map_le.mpr fun _ϕ => le_top
@@ -325,7 +323,6 @@ section Normalizer
 
 variable {H}
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem normalizer_eq_top_iff : H.normalizer = ⊤ ↔ H.Normal :=
   eq_top_iff.trans
@@ -606,7 +603,6 @@ namespace Subgroup
 
 variable {N : Type*} [Group N] (H : Subgroup G)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Normal.map {H : Subgroup G} (h : H.Normal) (f : G →* N) (hf : Function.Surjective f) :
     (H.map f).Normal := by
@@ -834,14 +830,14 @@ theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G)
     [hN : (B'.subgroupOf B).Normal] : ((A ⊓ B').subgroupOf (A ⊓ B)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
   rw [inf_inf_inf_comm, inf_idem]
-  exact le_trans (inf_le_inf A.le_normalizer hN) (inf_normalizer_le_normalizer_inf)
+  exact le_trans (inf_le_inf A.le_normalizer hN) inf_normalizer_le_normalizer_inf
 
 @[to_additive]
 theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G)
     [hN : (A'.subgroupOf A).Normal] : ((A' ⊓ B).subgroupOf (A ⊓ B)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
   rw [inf_inf_inf_comm, inf_idem]
-  exact le_trans (inf_le_inf hN B.le_normalizer) (inf_normalizer_le_normalizer_inf)
+  exact le_trans (inf_le_inf hN B.le_normalizer) inf_normalizer_le_normalizer_inf
 
 @[to_additive]
 instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊓ K).Normal :=
@@ -862,7 +858,6 @@ theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgr
   have := (normal_subgroupOf_iff hK).mp hN (a * b) b h hb
   rwa [mul_assoc, mul_assoc, mul_inv_cancel, mul_one] at this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Elements of disjoint, normal subgroups commute. -/
 @[to_additive /-- Elements of disjoint, normal subgroups commute. -/]
 theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Normal) (hH₂ : H₂.Normal)
@@ -899,7 +894,6 @@ namespace IsConj
 
 open Subgroup
 
-set_option backward.isDefEq.respectTransparency false in
 theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg : g ∈ N}
     {hg' : g' ∈ N} (hc : IsConj g g') (ht : normalClosure ({⟨g, hg⟩} : Set N) = ⊤) :
     normalClosure ({⟨g', hg'⟩} : Set N) = ⊤ := by
