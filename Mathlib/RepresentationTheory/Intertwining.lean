@@ -2,6 +2,7 @@
 Copyright (c) 2025 Stepan Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stepan Nesterov, Edison Xie
+Authors: Stepan Nesterov, Edison Xie
 -/
 module
 
@@ -21,6 +22,7 @@ open scoped MonoidAlgebra
 namespace Representation
 
 section non_comm
+section non_comm
 section Monoid
 
 variable {A G V W U : Type*} [Semiring A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
@@ -33,6 +35,7 @@ variable {A G V W U : Type*} [Semiring A] [Monoid G] [AddCommMonoid V] [AddCommM
 
 /-- An intertwining map between two representations `ρ` and `σ` of the same monoid `G` is a map
   between underlying modules which commutes with the `G`-actions. -/
+structure IntertwiningMap extends V →ₗ[A] W where
 structure IntertwiningMap extends V →ₗ[A] W where
   /-- An underlying `A`-linear map of the underlying `A`-modules. -/
   isIntertwining' (g : G) : toLinearMap ∘ₗ ρ g = σ g ∘ₗ toLinearMap
@@ -65,6 +68,10 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
   map_add f := f.map_add
   map_smulₛₗ f := f.map_smul
 
+instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
+  map_add f := f.map_add
+  map_smulₛₗ f := f.map_smul
+
 @[simp] theorem coe_mk (f : V →ₗ[A] W) (h) : ⇑(⟨f, h⟩ : IntertwiningMap ρ σ) = f := rfl
 
 @[simp] lemma toLinearMap_mk (f : V →ₗ[A] W) (h) :
@@ -73,7 +80,9 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
 lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
     f (ρ g v) = σ g (f v) := congr($(f.isIntertwining' g) v)
 
-@[simp] theorem toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v = f v := rfl
+@[simp] lemma _root_.LinearMap.toIntertwiningMap
+  (hf : ∀ (g : G), ∀ (v : V), f (ρ g v) = σ g (f v)) (v : V) :
+  f.intertwiningMap_of_isIntertwiningMap ρ σ hf v = f v := rfl
 
 instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
@@ -81,7 +90,11 @@ instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
 @[simp] lemma zero_toLinearMap : (0 : IntertwiningMap ρ σ).toLinearMap = 0 := rfl
 
+@[simp] lemma zero_toLinearMap : (0 : IntertwiningMap ρ σ).toLinearMap = 0 := rfl
+
 instance : Add (IntertwiningMap ρ σ) :=
+  ⟨fun f g ↦ ⟨f.toLinearMap + g.toLinearMap, by
+    simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2,]⟩⟩
   ⟨fun f g ↦ ⟨f.toLinearMap + g.toLinearMap, by
     simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2,]⟩⟩
 
@@ -100,7 +113,10 @@ instance : SMul ℕ (IntertwiningMap ρ σ) :=
 
 instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   fast_instance%
-  DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
+  DFunLike.coe_injective.addCommGroup _ (coe_zero ρ σ) (coe_add ρ σ) (coe_neg ρ σ) (coe_sub ρ σ)
+    (coe_nsmul ρ σ) (coe_zsmul ρ σ)
+
+end group
 
 section group
 
@@ -371,6 +387,7 @@ def equivLinearMapAsModule :
     { toLinearMap := { f with
         map_smul' a v := by simp }
       isIntertwining' g := by ext v; simpa using f.map_smul' (MonoidAlgebra.single g 1) v }
+      isIntertwining' g := by ext v; simpa using f.map_smul' (MonoidAlgebra.single g 1) v }
   map_add' g₁ g₂ := by ext; simp
   map_smul' t g := by ext; simp
   left_inv f := rfl
@@ -387,6 +404,14 @@ def llcomp : IntertwiningMap σ τ →ₗ[A] IntertwiningMap ρ σ →ₗ[A] Int
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
+lemma comp_def (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
+    comp f g = llcomp _ _ _ f g := rfl
+
+lemma smul_comp (a : A) (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
+    (a • f).comp g = a • comp f g := by simp [comp_def]
+
+lemma comp_smul (a : A) (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
+    comp f (a • g) = a • comp f g := by simp [comp_def]
 lemma comp_def (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
     comp f g = llcomp _ _ _ f g := rfl
 
@@ -564,6 +589,8 @@ lemma rid_toLinearMap : (rid A σ).toLinearMap = _root_.TensorProduct.rid A W :=
 
 @[simp]
 lemma rid_apply (w : W) (a : A) : rid A σ (w ⊗ₜ a) = a • w := rfl
+@[simp]
+lemma rid_apply (w : W) (a : A) : rid A σ (w ⊗ₜ a) = a • w := rfl
 
 @[simp]
 lemma rid_symm_apply (w : W) : (rid A σ).symm w = w ⊗ₜ 1 := rfl
@@ -576,6 +603,7 @@ def lid : ((trivial A G A).tprod σ).Equiv σ :=
 lemma lid_toLinearMap : (lid A σ).toLinearMap = _root_.TensorProduct.lid A W := rfl
 
 @[simp]
+lemma lid_apply (a : A) (w : W) : lid A σ (a ⊗ₜ w) = a • w := rfl
 lemma lid_apply (a : A) (w : W) : lid A σ (a ⊗ₜ w) = a • w := rfl
 
 @[simp]
@@ -598,6 +626,8 @@ variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V] [Ad
 /-- dualTensorHom as an equivalence of representations. -/
 @[simps!] noncomputable def dualTensorHom : Equiv (tprod ρ.dual σ) (linHom ρ σ) where
   toLinearEquiv := dualTensorHomEquiv (R := k) (M := V) (N := W)
+  isIntertwining' g := by
+    ext v' w v; simp [Module.Dual.transpose_apply]
   isIntertwining' g := by
     ext v' w v; simp [Module.Dual.transpose_apply]
 

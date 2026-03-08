@@ -470,7 +470,7 @@ theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     rw [← hp, natDegree_mul hf₀ hg₀, Nat.add_eq_zero_iff] at hn
     exact ⟨splits_of_natDegree_eq_zero hn.1, splits_of_natDegree_eq_zero hn.2⟩
   | succ n ih =>
-    obtain ⟨a, ha⟩ := Splits.exists_eval_eq_zero h (degree_ne_of_natDegree_ne <| hn ▸ by aesop)
+    obtain ⟨a, ha⟩ := Splits.exists_eval_eq_zero h (degree_ne_of_natDegree_ne <| hn ▸ by simp)
     have := dvd_iff_isRoot.mpr ha
     rw [← hp, (prime_X_sub_C a).dvd_mul] at this
     wlog hf : X - C a ∣ f with hf2
