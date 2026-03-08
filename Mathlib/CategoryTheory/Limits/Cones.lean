@@ -247,7 +247,6 @@ structure CoconeMorphism (A B : Cocone F) where
   w : ∀ j : J, A.ι.app j ≫ hom = B.ι.app j := by cat_disch
 
 attribute [reassoc (attr := simp)] ConeMorphism.w CoconeMorphism.w
-run_meta Lean.executeReservedNameAction ``ConeMorphism.mk.congr_simp
 set_option backward.isDefEq.respectTransparency false in
 attribute [to_dual existing (reorder := A B)] CoconeMorphism.mk.congr_simp CoconeMorphism.casesOn
 
