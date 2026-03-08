@@ -12,6 +12,8 @@ public import Mathlib.RingTheory.Valuation.ValuationSubring
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Range
 
+public import Mathlib.Algebra.Order.GroupWithZero.Range
+
 /-!
 # The topology on a valued ring
 

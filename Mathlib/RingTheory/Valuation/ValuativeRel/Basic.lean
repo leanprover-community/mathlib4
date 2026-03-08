@@ -1281,12 +1281,16 @@ variable (A B) in
 def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
   have := compatible_comap A (valuation B)
   MonoidWithZeroHom.ValueGroup₀.embedding.comp
-    (ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B))).toMonoidWithZeroHom
+    (ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B)))
 
 @[simp]
 lemma mapValueGroupWithZero_mk (r : A) (s : posSubmonoid A) :
     mapValueGroupWithZero A B (.mk r s) = .mk (algebraMap A B r) (mapPosSubmonoid A B s) := by
-  simp [mapValueGroupWithZero, ValueGroupWithZero.mk_eq_div (R := B)]
+  simp only [mapValueGroupWithZero, MonoidWithZeroHom.coe_comp, Function.comp_apply,
+    ValueGroupWithZero.embed_mk, map_div₀,
+    ValueGroupWithZero.mk_eq_div (R := B), mapPosSubmonoid_apply_coe,
+    MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
+  rfl
 
 @[simp]
 lemma mapValueGroupWithZero_valuation (a : A) :
