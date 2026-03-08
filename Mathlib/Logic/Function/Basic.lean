@@ -917,6 +917,16 @@ protected theorem ite_not (P : Prop) [Decidable P] (x : α) :
 protected theorem eq_iff {x y : α} : f x = y ↔ x = f y :=
   h.injective.eq_iff' (h y)
 
+theorem injective_ite {β : Type*} {p : β → Prop} [DecidablePred p] {g : β → α}
+    (hg : Function.Injective g) (hgf : ∀ x y, g x = f (g y) → x = y) :
+    Function.Injective (fun x ↦ if p x then g x else f (g x)) := by
+  intro x y hxy
+  rcases em (p x) with (hx | hx) <;> rcases em (p y) with (hy | hy)
+  · exact hg (by simpa [hx, hy] using hxy)
+  · exact hgf _ _ (by simpa [hx, hy] using hxy)
+  · exact hgf _ _ <| h.eq_iff.1 (by simpa [hx, hy] using hxy)
+  · exact hg <| h.injective (by simpa [hx, hy] using hxy)
+
 end Involutive
 
 lemma not_involutive : Involutive Not := fun _ ↦ propext not_not
