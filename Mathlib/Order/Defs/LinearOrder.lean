@@ -94,24 +94,21 @@ instance : Std.IsLinearOrder α where
 @[to_dual self] lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
 @[to_dual self] lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
-@[to_dual gt_trichotomy]
-lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by
-  cases le_total a b with
-  | _ h =>
-    cases Decidable.lt_or_eq_of_le h with | _ h => simp [h]
-
-@[to_dual self]
-lemma le_of_not_gt (h : ¬b < a) : a ≤ b := by
-  obtain hlt | heq | hgt := lt_trichotomy a b
-  exacts [le_of_lt hlt, heq ▸ le_refl a, absurd hgt h]
-
 @[to_dual self] lemma lt_or_ge (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
 
 @[to_dual self] lemma le_or_gt (a b : α) : a ≤ b ∨ b < a := (lt_or_ge b a).symm
 
+@[to_dual gt_trichotomy]
+lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
+  (lt_or_ge a b).imp_right (fun h ↦ (Decidable.lt_or_eq_of_le' h).symm)
+
+@[to_dual self]
+lemma le_of_not_gt (h : ¬b < a) : a ≤ b := (le_or_gt a b).resolve_right h
+
 @[to_dual gt_or_lt_of_ne]
-lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a := by simpa [h] using lt_trichotomy a b
+lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a :=
+  (lt_trichotomy a b).imp_right (fun h' ↦ h'.resolve_left h)
 
 @[to_dual ne_iff_gt_or_lt]
 lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
@@ -181,7 +178,7 @@ lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
 lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
   rw [← min_assoc, min_comm a, min_assoc]
 
-@[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := by simp [min_def]
+@[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := by rw [min_def, ite_id]
 
 @[to_dual]
 lemma min_eq_left (h : a ≤ b) : min a b = a := (eq_min le_rfl h (fun h _ ↦ h)).symm
