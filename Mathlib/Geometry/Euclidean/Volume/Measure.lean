@@ -169,14 +169,10 @@ theorem AffineSubspace.euclideanHausdorffMeasure_coe_image (d : ℕ) (s : Affine
 ### `μHE[d]` is translation invariant
 -/
 
-instance {α : Type*} [AddGroup α] [AddTorsor α X] [IsIsometricVAdd α X] (d : ℕ) :
-    VAddInvariantMeasure α X μHE[d] where
-  measure_preimage_vadd c s hs := by
-    simp_rw [euclideanHausdorffMeasure_def, smul_apply, nnreal_smul_coe_apply]
-    have h : (0 : ℝ) ≤ d ∨ Function.Surjective fun (x : X) => -c +ᵥ x := by simp
-    convert congr(volume.addHaarScalarFactor μH[d] * $(hausdorffMeasure_vadd (-c) h s))
-    ext y
-    simp [Set.mem_neg_vadd_set_iff]
+instance {α : Type*} [AddGroup α] [AddAction α X] [IsIsometricVAdd α X] (d : ℕ) :
+    VAddInvariantMeasure α X μHE[d] := by
+  rw [euclideanHausdorffMeasure_def]
+  infer_instance
 
 instance [AddGroup X] [IsIsometricVAdd X X] (d : ℕ) :
     (μHE[d] : Measure X).IsAddLeftInvariant := by
