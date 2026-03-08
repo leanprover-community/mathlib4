@@ -35,8 +35,6 @@ number field, infinite places, ramification
 
 @[expose] public section
 
-@[expose] public section
-
 open NumberField Fintype Module ComplexEmbedding
 
 namespace NumberField.InfinitePlace
