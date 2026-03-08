@@ -6,8 +6,8 @@ Authors: Josha Dekker
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-! # Poisson distributions over ℕ
 
@@ -81,9 +81,45 @@ end PoissonPMF
 
 /-- Measure defined by the Poisson distribution -/
 noncomputable
-def poissonMeasure (r : ℝ≥0) : Measure ℕ := (poissonPMF r).toMeasure
+def poissonMeasure (r : ℝ≥0) : Measure ℕ :=
+  Measure.sum (fun n ↦ ENNReal.ofReal (exp (-r) * r ^ n / n !) • (.dirac n))
+
+lemma poissonMeasure_real_apply_singleton (r : ℝ≥0) (n : ℕ) :
+    (poissonMeasure r).real {n} = exp (-r) * r ^ n / n ! := by
+  rw [poissonMeasure, measureReal_def, Measure.sum_smul_dirac_singleton,
+    ENNReal.toReal_ofReal (by positivity)]
+
+lemma hasSum_poissonMeasure (r : ℝ≥0) : HasSum (fun n ↦ exp (-r) * r ^ n / n !) 1 := by
+  let r := r.toReal
+  apply (hasSum_mul_left_iff (exp_ne_zero r)).mp
+  simp only [mul_one]
+  have : (fun i ↦ rexp r * (rexp (-r) * r ^ i / i.factorial)) =
+      fun i ↦ r ^ i / i.factorial := by
+    ext n
+    rw [mul_div_assoc, exp_neg, ← mul_assoc, ← div_eq_mul_inv, div_self (exp_ne_zero r), one_mul]
+  rw [this, exp_eq_exp_ℝ]
+  exact NormedSpace.expSeries_div_hasSum_exp r
 
 instance isProbabilityMeasurePoisson (r : ℝ≥0) :
-    IsProbabilityMeasure (poissonMeasure r) := PMF.toMeasure.isProbabilityMeasure (poissonPMF r)
+    IsProbabilityMeasure (poissonMeasure r) where
+  measure_univ := by
+    simp only [poissonMeasure, MeasurableSpace.measurableSet_top, Measure.sum_apply,
+      Measure.smul_apply, measure_univ, smul_eq_mul, mul_one]
+    rw [← ENNReal.ofReal_tsum_of_nonneg ?_ (hasSum_poissonMeasure r).summable,
+      (hasSum_poissonMeasure r).tsum_eq, ENNReal.ofReal_one]
+    exact fun _ ↦ by positivity
+
+lemma integrable_poissonMeasure_iff {E : Type*} [NormedAddCommGroup E] {r : ℝ≥0} {f : ℕ → E} :
+    Integrable f (poissonMeasure r) ↔ Summable (fun n ↦ exp (-r) * r ^ n / n ! * ‖f n‖) := by
+  convert integrable_sum_dirac_iff ?_ with n
+  rotate_right
+  · simp
+  · rw [ENNReal.toReal_ofReal (by positivity)]
+  all_goals infer_instance
+
+lemma integral_poissonMeasure {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    (r : ℝ≥0) {f : ℕ → E} (hf : Integrable f (poissonMeasure r)) :
+    ∫ n, f n ∂poissonMeasure r = ∑' n,( exp (-r) * r ^ n / n !) • f n :=
+
 
 end ProbabilityTheory
