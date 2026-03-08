@@ -103,12 +103,10 @@ lemma map_fourδ₁Toδ₀_d (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ +
     (hn₃ : n₂ + 1 = n₃ := by lia) :
     X.map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) n₀ n₁ n₂ hn₁ hn₂ ≫
       X.d f₁ f₂ f₃ f₄ f₅ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ = 0 := by
-  rw [← cancel_mono (X.ιE f₁ f₂ f₃ n₁ n₂ n₃ hn₂ hn₃),
-    ← cancel_mono (X.fromOpcycles f₂ f₃ f₂₃ h₂₃ n₂), zero_comp, zero_comp, assoc,
-    assoc, X.d_ιE_fromOpcycles f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ _ rfl _ rfl n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃]
-  rw [X.map_ιE_assoc f₂₃ f₄ f₅ f₃ f₄ f₅
-    (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) (𝟙 _) n₀ n₁ n₂ (by ext <;> simp <;> rfl) hn₁ hn₂ ,
-    opcyclesMap_id, fromOpcyles_δ .., id_comp, ιE_δFromOpcycles ..]
+  simp [← cancel_mono (X.ιE f₁ f₂ f₃ n₁ n₂ n₃ hn₂ hn₃),
+    ← cancel_mono (X.fromOpcycles f₂ f₃ f₂₃ h₂₃ n₂),
+    X.d_ιE_fromOpcycles f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ _ rfl _ rfl n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃, X.map_ιE_assoc
+    f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) (𝟙 _) n₀ n₁ n₂ (by cat_disch) hn₁ hn₂]
 
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Mono (X.map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) n₀ n₁ n₂ hn₁ hn₂) :=
