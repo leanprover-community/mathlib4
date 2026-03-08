@@ -18,6 +18,8 @@ and the dual versions.
 
 @[expose] public section
 
+universe w
+
 namespace CategoryTheory
 
 open Limits
@@ -30,7 +32,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[pp_with_univ]
 noncomputable
 def overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
-    Over X ≌ Discrete PUnit where
+    Over X ≌ Discrete PUnit.{w + 1} where
   functor := Functor.star _
   inverse := Functor.fromPUnit (.mk (𝟙 X))
   unitIso := NatIso.ofComponents fun A ↦
@@ -44,7 +46,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[pp_with_univ]
 noncomputable
 def underEquivOfIsInitial [HasStrictTerminalObjects C] (X : C) (h : IsTerminal X) :
-    Under X ≌ Discrete PUnit where
+    Under X ≌ Discrete PUnit.{w + 1} where
   functor := Functor.star _
   inverse := Functor.fromPUnit (.mk (𝟙 X))
   counitIso := Iso.refl _
@@ -60,7 +62,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[pp_with_univ]
 noncomputable
 def MorphismProperty.overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
-    P.Over Q X ≌ Discrete PUnit where
+    P.Over Q X ≌ Discrete PUnit.{w + 1} where
   functor := Functor.star _
   inverse := Functor.fromPUnit (.mk _ (𝟙 X) (P.id_mem _))
   unitIso := NatIso.ofComponents fun A ↦
@@ -74,7 +76,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[pp_with_univ]
 noncomputable
 def MorphismProperty.underEquivOfIsInitial [HasStrictTerminalObjects C] (X : C) (h : IsTerminal X) :
-    P.Under Q X ≌ Discrete PUnit where
+    P.Under Q X ≌ Discrete PUnit.{w + 1} where
   functor := Functor.star _
   inverse := Functor.fromPUnit (.mk _ (𝟙 X) (P.id_mem _))
   counitIso := Iso.refl _
