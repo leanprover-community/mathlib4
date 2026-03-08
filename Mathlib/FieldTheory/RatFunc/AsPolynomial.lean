@@ -326,7 +326,7 @@ lemma valuation_aeval_monomial_eq_valuation_pow (w : L) (n : ℕ) {a : K} (ha : 
 
 theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : L) (hpos : 1 < v w)
     {p : Polynomial K} (hp : p ≠ 0) : v (p.aeval w) = v w ^ p.natDegree := by
-  rw [← valuation_aeval_monomial_eq_valuation_pow _ _ _ _ ((leadingCoeff_ne_zero).mpr hp)]
+  rw [← valuation_aeval_monomial_eq_valuation_pow _ _ _ _ (leadingCoeff_ne_zero.mpr hp)]
   nth_rw 1 [as_sum_range p, map_sum]
   apply Valuation.map_sum_eq_of_lt _ (by simp)
   intro i hi
@@ -393,6 +393,13 @@ instance : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 @[simp]
 theorem v_def {x : K⟮X⟯} :
     Valued.v x = (idealX K).valuation _ x := rfl
+
+lemma valuation_surjective : Function.Surjective (Valued.v (R := RatFunc K)) := by
+  intro n
+  by_cases hn0 : n = 0
+  · use 0; simp [hn0]
+  · use (RatFunc.X ^ (-WithZero.log n))
+    simp [WithZero.exp_log hn0]
 
 end RatFunc
 

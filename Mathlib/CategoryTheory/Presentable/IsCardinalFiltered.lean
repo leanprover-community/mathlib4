@@ -66,7 +66,7 @@ noncomputable def cocone {A : Type v'} [Category.{u'} A]
   have := small_of_small_arrow.{w} A
   have := locallySmall_of_small_arrow.{w} A
   let e := (Shrink.equivalence.{w} A).trans (ShrinkHoms.equivalence.{w} (Shrink.{w} A))
-  exact (Cocones.equivalenceOfReindexing e.symm (Iso.refl _)).inverse.obj
+  exact (Cocone.equivalenceOfReindexing e.symm (Iso.refl _)).inverse.obj
     (nonempty_cocone (κ := κ) (e.inverse ⋙ F) (by simpa)).some
 
 variable (J) in
