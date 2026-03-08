@@ -309,7 +309,7 @@ lemma TendstoCofinite.comp [TendstoCofinite g] [TendstoCofinite f] :
 lemma TendstoCofinite.id : TendstoCofinite (id : α → α) := by
   simp [tendstoCofinite_iff_finite_preimage_singleton]
 
-@[instance]
+variable {f} in
 lemma tendstoCofinite_of_injective (h : f.Injective) : TendstoCofinite f := ⟨h.tendsto_cofinite⟩
 
 @[instance]
