@@ -23,7 +23,7 @@ locally totally split (TODO, @chrisflav).
 
 open TensorProduct
 
-/-- `S` is a finite, totally split `R`-algebra `S` is isomorphic to `Fin n → R` for some `n`.
+/-- `S` is a finite, totally split `R`-algebra if `S` is isomorphic to `Fin n → R` for some `n`.
 Geometrically, this is a trivial cover of degree `n`. -/
 class Algebra.IsFiniteSplit (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] : Prop where
   nonempty_algEquiv_fun (R S) : ∃ n : ℕ, Nonempty (S ≃ₐ[R] Fin n → R)
