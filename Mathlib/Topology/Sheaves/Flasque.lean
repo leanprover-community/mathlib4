@@ -72,7 +72,7 @@ end Presheaf
 
 namespace Sheaf
 
-/-- A sheaf is flasque if it is flasque as a presheaf -/
+/-- A sheaf is flasque if it is flasque as a presheaf. -/
 abbrev IsFlasque {C : Type v} [Category.{w} C] (F : Sheaf C X) := Presheaf.IsFlasque F.val
 
 namespace IsFlasque
