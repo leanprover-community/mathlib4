@@ -870,4 +870,22 @@ theorem exists_eventually_eq_hasDerivAt
     exact ⟨closedBall_mem_nhds x₀ hr, Ioo_mem_nhds (by linarith) (by linarith)⟩
   · grind
 
+theorem exists_eventually_eq_hasDerivAt_continuousAt
+    (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
+    ∃ α : E × ℝ → E, ∀ᶠ xt in 𝓝 ⟨x₀, t₀⟩,
+      α ⟨xt.1, t₀⟩ = xt.1 ∧ HasDerivAt (α ⟨xt.1, ·⟩) (f (α xt)) xt.2 ∧ ContinuousAt α xt := by
+  have ⟨ε, hε, a, r, _, _, hr, hpl⟩ := IsPicardLindelof.of_contDiffAt_one hf
+  have ⟨α, hα1, hα2⟩ := (hpl t₀).exists_forall_mem_closedBall_eq_hasDerivWithinAt_continuousOn
+  refine ⟨α, ?_⟩
+  rw [Filter.eventually_iff_exists_mem]
+  refine ⟨ball x₀ r ×ˢ Ioo (t₀ - ε) (t₀ + ε), ?_, ?_⟩
+  · rw [nhds_prod_eq, Filter.prod_mem_prod_iff]
+    exact ⟨ball_mem_nhds x₀ hr, Ioo_mem_nhds (by linarith) (by linarith)⟩
+  · intro ⟨x, t⟩ ⟨hx, ht⟩
+    have ⟨h1, h2⟩ := hα1 x (ball_subset_closedBall hx)
+    refine ⟨h1, h2 t (Ioo_subset_Icc_self ht) |>.hasDerivAt (Icc_mem_nhds ht.1 ht.2), ?_⟩
+    apply hα2.continuousAt (x := ⟨x, t⟩)
+    rw [nhds_prod_eq, Filter.prod_mem_prod_iff]
+    exact ⟨closedBall_mem_nhds_of_mem hx, Icc_mem_nhds ht.1 ht.2⟩
+
 end ContDiffAt
