@@ -68,7 +68,7 @@ theorem IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
   rw [IsHermitian, ← conjTranspose_map f hf, h.eq]
 
 @[simp]
-theorem IsHermitian.map_iff (A : Matrix n n α) {f : α → β} (hf : Function.Semiconj f star star)
+theorem isHermitian_map_iff {A : Matrix n n α} {f : α → β} (hf : Function.Semiconj f star star)
     (hinj : f.Injective) : (A.map f).IsHermitian ↔ A.IsHermitian := by
   rw [IsHermitian, IsHermitian, ← conjTranspose_map f hf, map_injective hinj |>.eq_iff]
 
@@ -81,7 +81,7 @@ theorem IsHermitian.transpose {A : Matrix n n α} (h : A.IsHermitian) : Aᵀ.IsH
   exact congr_arg Matrix.transpose h
 
 @[simp]
-theorem isHermitian_transpose_iff (A : Matrix n n α) : Aᵀ.IsHermitian ↔ A.IsHermitian :=
+theorem isHermitian_transpose_iff {A : Matrix n n α} : Aᵀ.IsHermitian ↔ A.IsHermitian :=
   ⟨by intro h; rw [← transpose_transpose A]; exact IsHermitian.transpose h, IsHermitian.transpose⟩
 
 theorem IsHermitian.conjTranspose {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ.IsHermitian :=
@@ -101,7 +101,7 @@ theorem IsHermitian.reindex {A : Matrix n n α} (h : A.IsHermitian) (f : n ≃ m
   rw [reindex_apply]
   apply submatrix h
 
-theorem IsHermitian.reindex_iff (A : Matrix n n α) (f : n ≃ m) :
+theorem isHermitian_reindex_iff {A : Matrix n n α} (f : n ≃ m) :
     (A.reindex f f).IsHermitian ↔ A.IsHermitian := by
   refine ⟨fun h ↦ ?_, (·.reindex f)⟩
   simpa using h.reindex f.symm
@@ -115,11 +115,11 @@ theorem conjTranspose_comp' {I J K : Type*} (M : Matrix I J (Matrix K K α)) :
     (comp I J K K α M)ᴴ = comp J I K K α Mᴴ :=
   rfl
 
-theorem IsHermitian.comp_iff (A : Matrix m m (Matrix n n α)) :
+theorem isHermitian_comp_iff {A : Matrix m m (Matrix n n α)} :
     (A.comp m m n n α).IsHermitian ↔ A.IsHermitian := by
   rw [IsHermitian, IsHermitian, conjTranspose_comp', comp .. |>.injective.eq_iff]
 
-theorem IsHermitian.comp_iff_forall (A : Matrix m m (Matrix n n α)) :
+theorem isHermitian_comp_iff_forall {A : Matrix m m (Matrix n n α)} :
     (A.comp m m n n α).IsHermitian ↔ ∀ i j i' j', star (A j i j' i') = A i j i' j' := by
   simp [IsHermitian.ext_iff]
   grind
@@ -131,7 +131,7 @@ section InvolutiveStar
 variable [InvolutiveStar α]
 
 @[simp]
-theorem isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔ A.IsHermitian :=
+theorem isHermitian_conjTranspose_iff {A : Matrix n n α} : Aᴴ.IsHermitian ↔ A.IsHermitian :=
   IsSelfAdjoint.star_iff
 
 /-- A block matrix `A.from_blocks B C D` is Hermitian,
@@ -208,7 +208,7 @@ theorem IsHermitian.neg {A : Matrix n n α} (h : A.IsHermitian) : (-A).IsHermiti
   IsSelfAdjoint.neg h
 
 @[simp]
-theorem IsHermitian.neg_iff (A : Matrix n n α) : (-A).IsHermitian ↔ A.IsHermitian := by
+theorem isHermitian_neg_iff {A : Matrix n n α} : (-A).IsHermitian ↔ A.IsHermitian := by
   refine ⟨fun h ↦ ?_, (·.neg)⟩
   rw [← neg_neg A]
   exact h.neg
@@ -248,7 +248,7 @@ theorem IsHermitian.of_smul' {A : Matrix n n α} {k : R} [Invertible k] (h : (k 
   exact h.smul hk
 
 @[simp]
-theorem IsHermitian.smul_iff (A : Matrix n n α) {k : R} [Invertible k] (hk : IsSelfAdjoint k) :
+theorem isHermitian_smul_iff {A : Matrix n n α} {k : R} [Invertible k] (hk : IsSelfAdjoint k) :
     (k • A).IsHermitian ↔ A.IsHermitian :=
   ⟨(·.of_smul hk), (·.smul hk)⟩
 

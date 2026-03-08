@@ -82,7 +82,7 @@ theorem IsSymm.map {A : Matrix n n α} (h : A.IsSymm) (f : α → β) : (A.map f
   rw [IsSymm, ← transpose_map, h.eq]
 
 @[simp]
-theorem IsSymm.map_iff (A : Matrix n n α) {f : α → β} (hf : f.Injective) :
+theorem isSymm_map_iff {A : Matrix n n α} {f : α → β} (hf : f.Injective) :
     (A.map f).IsSymm ↔ A.IsSymm := by
   rw [IsSymm, IsSymm, ← transpose_map, map_injective hf |>.eq_iff]
 
@@ -90,7 +90,7 @@ theorem IsSymm.transpose {A : Matrix n n α} (h : A.IsSymm) : Aᵀ.IsSymm :=
   congr_arg _ h
 
 @[simp]
-theorem IsSymm.transpose_iff (A : Matrix n n α) : Aᵀ.IsSymm ↔ A.IsSymm := by
+theorem isSymm_transpose_iff {A : Matrix n n α} : Aᵀ.IsSymm ↔ A.IsSymm := by
   refine ⟨fun h ↦ ?_, (·.transpose)⟩
   rw [← A.transpose_transpose]
   exact h.transpose
@@ -100,7 +100,7 @@ theorem IsSymm.conjTranspose [Star α] {A : Matrix n n α} (h : A.IsSymm) : Aᴴ
   h.transpose.map _
 
 @[simp]
-theorem IsSymm.conjTranspose_iff [InvolutiveStar α] (A : Matrix n n α) : Aᴴ.IsSymm ↔ A.IsSymm := by
+theorem isSymm_conjTranspose_iff [InvolutiveStar α] {A : Matrix n n α} : Aᴴ.IsSymm ↔ A.IsSymm := by
   refine ⟨fun h ↦ ?_, (·.conjTranspose)⟩
   rw [← A.conjTranspose_conjTranspose]
   exact h.conjTranspose
@@ -110,7 +110,7 @@ theorem IsSymm.neg [Neg α] {A : Matrix n n α} (h : A.IsSymm) : (-A).IsSymm :=
   (transpose_neg _).trans (congr_arg _ h)
 
 @[simp]
-theorem IsSymm.neg_iff [InvolutiveNeg α] (A : Matrix n n α) : (-A).IsSymm ↔ A.IsSymm := by
+theorem isSymm_neg_iff [InvolutiveNeg α] {A : Matrix n n α} : (-A).IsSymm ↔ A.IsSymm := by
   refine ⟨fun h ↦ ?_, (·.neg)⟩
   rw [← neg_neg A]
   exact h.neg
@@ -128,7 +128,7 @@ theorem IsSymm.smul [SMul R α] {A : Matrix n n α} (h : A.IsSymm) (k : R) : (k 
   (transpose_smul _ _).trans (congr_arg _ h)
 
 @[simp]
-theorem IsSymm.smul_iff [Monoid R] [MulAction R α] (A : Matrix n n α) (k : R) [Invertible k] :
+theorem isSymm_smul_iff [Monoid R] [MulAction R α] {A : Matrix n n α} (k : R) [Invertible k] :
     (k • A).IsSymm ↔ A.IsSymm := by
   refine ⟨fun h ↦ ?_, (·.smul k)⟩
   rw [← invOf_smul_smul k A]
@@ -142,7 +142,7 @@ theorem IsSymm.reindex {A : Matrix n n α} (h : A.IsSymm) (f : n ≃ m) : (A.rei
   rw [reindex_apply]
   apply submatrix h
 
-theorem IsSymm.reindex_iff (A : Matrix n n α) (f : n ≃ m) : (A.reindex f f).IsSymm ↔ A.IsSymm := by
+theorem isSymm_reindex_iff {A : Matrix n n α} (f : n ≃ m) : (A.reindex f f).IsSymm ↔ A.IsSymm := by
   refine ⟨fun h ↦ ?_, (·.reindex f)⟩
   simpa using h.reindex f.symm
 
@@ -170,12 +170,12 @@ theorem isSymm_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : Matri
       (congr_arg toBlocks₂₂ h :)⟩,
     fun ⟨hA, hBC, _, hD⟩ => IsSymm.fromBlocks hA hBC hD⟩
 
-theorem IsSymm.comp_iff (A : Matrix m m (Matrix n n α)) :
+theorem isSymm_comp_iff {A : Matrix m m (Matrix n n α)} :
     (A.comp m m n n α).IsSymm ↔ Aᵀ = A.map (·ᵀ) := by
   rw [IsSymm, transpose_comp, transpose_map, comp .. |>.injective.eq_iff, eq_comm,
     transpose_involutive _ _ |>.eq_iff]
 
-theorem IsSymm.comp_iff_forall (A : Matrix m m (Matrix n n α)) :
+theorem isSymm_comp_iff_forall {A : Matrix m m (Matrix n n α)} :
     (A.comp m m n n α).IsSymm ↔ ∀ i j i' j', A j i j' i' = A i j i' j' := by
   simp [IsSymm.ext_iff]
   grind
