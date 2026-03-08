@@ -55,7 +55,7 @@ lemma FGDual.of_dual_fg {C : PointedCone R M} (hC : C.FG) : (dual p C).FGDual p 
 alias FG.dual_fgdual := FGDual.of_dual_fg
 
 /-- The intersection of two FGDual cones is FGDual. -/
-lemma inf_fgdual {C D : PointedCone R N} (hC : C.FGDual p) (hD : D.FGDual p) :
+lemma FGDual.inf {C D : PointedCone R N} (hC : C.FGDual p) (hD : D.FGDual p) :
     (C ⊓ D).FGDual p := by classical
   obtain ⟨S, rfl⟩ := hC; obtain ⟨T, rfl⟩ := hD
   use S ∪ T; rw [Finset.coe_union, dual_union]
