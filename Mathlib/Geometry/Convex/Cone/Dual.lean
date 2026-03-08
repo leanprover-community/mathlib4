@@ -112,9 +112,14 @@ lemma dual_span (s : Set M) : dual p (span R s) = dual p s := by
 @[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
   := by simp [← dual_span]
 
-lemma dual_id (s : Set M) : dual p s = dual .id (p '' s) := by ext; simp
+variable {M' : Type*} [AddCommGroup M'] [Module R M']
 
-lemma dual_id_map (C : PointedCone R M) : dual p C = dual .id (map p C) := by ext; simp
+lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s :=
+  by ext; simp
+
+lemma dual_id (s : Set M) : dual p s = dual .id (p '' s) := by simp [dual_image]
+
+lemma dual_id_map (C : PointedCone R M) : dual p C = dual .id (map p C) := by simp [dual_image]
 
 lemma dual_eval (s : Set M) : dual p s = comap p.flip (dual (Module.Dual.eval R M) s) := by
   ext; simp
