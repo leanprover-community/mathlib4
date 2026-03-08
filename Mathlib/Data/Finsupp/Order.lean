@@ -293,7 +293,7 @@ theorem isLowerSet_range_embDomain (f : α ↪ β) :
   rw [mem_range_embDomain_iff]
   trans ↑(y + w).support
   · exact fun _ ↦ by simp; grind
-  simp [← hw]
+  · simp [← hw]
 
 end Nat
 
