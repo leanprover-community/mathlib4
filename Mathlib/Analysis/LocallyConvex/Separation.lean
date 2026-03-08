@@ -147,7 +147,7 @@ theorem geometric_hahn_banach_of_nonempty_interior
     (hAint : (interior A).Nonempty) (hBne : B.Nonempty) :
     ∃ (f : StrongDual ℝ E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ A, f a ≤ u) ∧ ∀ b ∈ B, u ≤ f b := by
   obtain ⟨f, u, hfA, hfB⟩ :=
-    geometric_hahn_banach_open hA.interior isOpen_interior hB (hAB.mono_left interior_subset)
+    geometric_hahn_banach_open hA.interior isOpen_interior hB hAB
   refine ⟨f, u, ?_, fun a ha => ?_, hfB⟩
   · rcases hAint with ⟨a, ha⟩
     rcases hBne with ⟨b, hb⟩
@@ -157,8 +157,7 @@ theorem geometric_hahn_banach_of_nonempty_interior
     have hb' : u ≤ (0 : ℝ) := by
       simpa [hzero] using hfB b hb
     linarith
-  · intro a ha
-    have hmem : a ∈ closure (interior A) := by
+  · have hmem : a ∈ closure (interior A) := by
       rw [hA.closure_interior_eq_closure_of_nonempty_interior hAint]
       exact subset_closure ha
     have hclosed : IsClosed {x : E | f x ≤ u} := isClosed_Iic.preimage f.continuous
@@ -269,13 +268,13 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
 
 theorem geometric_hahn_banach_of_nonempty_interior
-    {A B : Set E} (hA : Convex ℝ A) (hB : Convex ℝ B) (hAB : Disjoint A B)
+    {A B : Set E} (hA : Convex ℝ A) (hB : Convex ℝ B) (hAB : Disjoint (interior A) B)
     (hAint : (interior A).Nonempty) (hBne : B.Nonempty) :
     ∃ (f : StrongDual 𝕜 E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ A, re (f a) ≤ u) ∧ ∀ b ∈ B, u ≤ re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, hfne, hA', hB'⟩ :=
     _root_.geometric_hahn_banach_of_nonempty_interior hA hB hAB hAint hBne
-refine ⟨f.extendRCLikeₗ, u, fun hzero => ?_, ?_, ?_⟩
+  refine ⟨f.extendRCLikeₗ, u, fun hzero => ?_, ?_, ?_⟩
   · exact hfne <| (StrongDual.extendRCLikeₗ (𝕜 := 𝕜)).injective (by simpa using hzero)
   · simpa [f.extendRCLikeₗ_apply] using hA'
   · simpa [f.extendRCLikeₗ_apply] using hB'
