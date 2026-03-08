@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 /-!
 # `Over X` when `C` has strict initial objects
 
-In this file we define the canonical equivalence of `Over X` with `PUnit` when
+In this file we define the canonical equivalence of `Over X` with `Discrete PUnit` when
 `C` has strict initial objects. We also provide the variants for `P.Over Q X`
 and the dual versions.
 -/
@@ -42,9 +42,9 @@ set_option backward.isDefEq.respectTransparency false in
 `Under X` is equivalent to a point. -/
 noncomputable
 def underEquivOfIsInitial [HasStrictTerminalObjects C] (X : C) (h : IsTerminal X) :
-    Under X ≌ PUnit where
-  functor := (Functor.const _).obj ⟨⟩
-  inverse := (Functor.const _).obj (.mk (𝟙 X))
+    Under X ≌ Discrete PUnit where
+  functor := Functor.star _
+  inverse := Functor.fromPUnit (.mk (𝟙 X))
   counitIso := Iso.refl _
   unitIso := NatIso.ofComponents fun A ↦
     haveI := h.isIso_from A.hom
@@ -57,9 +57,9 @@ set_option backward.isDefEq.respectTransparency false in
 `P.Over Q X` is equivalent to a point. -/
 noncomputable
 def MorphismProperty.overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
-    P.Over Q X ≌ PUnit where
-  functor := (Functor.const _).obj ⟨⟩
-  inverse := (Functor.const _).obj (.mk _ (𝟙 X) (P.id_mem _))
+    P.Over Q X ≌ Discrete PUnit where
+  functor := Functor.star _
+  inverse := Functor.fromPUnit (.mk _ (𝟙 X) (P.id_mem _))
   unitIso := NatIso.ofComponents fun A ↦
     haveI := h.isIso_to A.hom
     Over.isoMk (asIso A.hom)
@@ -70,9 +70,9 @@ set_option backward.isDefEq.respectTransparency false in
 `P.Under Q X` is equivalent to a point. -/
 noncomputable
 def MorphismProperty.underEquivOfIsInitial [HasStrictTerminalObjects C] (X : C) (h : IsTerminal X) :
-    P.Under Q X ≌ PUnit where
-  functor := (Functor.const _).obj ⟨⟩
-  inverse := (Functor.const _).obj (.mk _ (𝟙 X) (P.id_mem _))
+    P.Under Q X ≌ Discrete PUnit where
+  functor := Functor.star _
+  inverse := Functor.fromPUnit (.mk _ (𝟙 X) (P.id_mem _))
   counitIso := Iso.refl _
   unitIso := NatIso.ofComponents fun A ↦
     haveI := h.isIso_from A.hom
