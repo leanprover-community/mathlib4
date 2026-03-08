@@ -75,7 +75,8 @@ set_option backward.isDefEq.respectTransparency false in
 `P.Under Q X` is equivalent to a point. -/
 @[simps, pp_with_univ]
 noncomputable
-def MorphismProperty.underEquivOfIsTerminal [HasStrictTerminalObjects C] (X : C) (h : IsTerminal X) :
+def MorphismProperty.underEquivOfIsTerminal [HasStrictTerminalObjects C] (X : C)
+    (h : IsTerminal X) :
     P.Under Q X ≌ Discrete PUnit.{w + 1} where
   functor := Functor.star _
   inverse := Functor.fromPUnit (.mk _ (𝟙 X) (P.id_mem _))
