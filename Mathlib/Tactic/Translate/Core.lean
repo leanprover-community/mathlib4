@@ -250,7 +250,7 @@ def findPrefixTranslation? (n : Name) (t : TranslateData) : CoreM (Option Transl
     return info
   let .str n postFix := n | return none
   let some info := go env n [postFix] | return none
-  unless ← realizeGlobalConst n do return none
+  unless ← realizeGlobalConst info.translation do return none
   return info
 where
   /-- Loop through the prefixes of `n` to try to find a translation.
