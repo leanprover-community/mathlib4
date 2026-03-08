@@ -167,6 +167,7 @@ lemma toPresheafFiberOfIsCofiltered_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ 
 /-- The (colimit) cocone which, for a point constructed using `Point.ofIsCofiltered`
 and a functor `p : N ⥤ C` expresses the fiber of a presheaf as a colimit
 indexed indexed by `N`. -/
+@[simps]
 noncomputable def presheafFiberOfIsCofilteredCocone (P : Cᵒᵖ ⥤ A) :
     Cocone (p.op ⋙ P) where
   pt := (ofIsCofiltered p hp).presheafFiber.obj P
