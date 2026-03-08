@@ -382,12 +382,12 @@ lemma hasCoequalizers : HasCoequalizers D :=
     Preadditive.hasCoequalizer_of_hasCokernel _ _
   hasCoequalizers_of_hasColimit_parallelPair _
 
-lemma hasBinaryProducts : HasBinaryProducts D := by
+lemma hasBinaryProducts : HasBinaryProducts D :=
   have := Localization.essSurj L P.isoModSerre
   have (X Y : D) : HasBinaryProduct X Y :=
     hasLimit_of_iso (show Limits.pair _ _ ≅ _ from
       mapPairIso (L.objObjPreimageIso X) (L.objObjPreimageIso Y))
-  exact hasBinaryProducts_of_hasLimit_pair D
+  hasBinaryProducts_of_hasLimit_pair D
 
 lemma hasFiniteProducts : HasFiniteProducts D :=
   have := hasZeroObject L P
