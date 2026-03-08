@@ -88,11 +88,11 @@ lemma hasSum_integral_poissonMeasure [CompleteSpace E] {r : ℝ≥0} {f : ℕ �
 
 lemma integral_poissonMeasure' [CompleteSpace E] {r : ℝ≥0} {f : ℕ → E}
     (hf : Integrable f (poissonMeasure r)) :
-    ∫ n, f n ∂poissonMeasure r = ∑' n,( exp (-r) * r ^ n / (n)!) • f n :=
+    ∫ n, f n ∂poissonMeasure r = ∑' n, (exp (-r) * r ^ n / (n)!) • f n :=
   (hasSum_integral_poissonMeasure hf).tsum_eq.symm
 
 lemma integral_poissonMeasure [FiniteDimensional ℝ E] (r : ℝ≥0) (f : ℕ → E) :
-    ∫ n, f n ∂poissonMeasure r = ∑' n,( exp (-r) * r ^ n / (n)!) • f n := by
+    ∫ n, f n ∂poissonMeasure r = ∑' n, (exp (-r) * r ^ n / (n)!) • f n := by
   rw [poissonMeasure, integral_sum_dirac (by simp)]
   congr with n
   rw [ENNReal.toReal_ofReal (by positivity)]
@@ -101,6 +101,7 @@ end Integral
 
 section PoissonPMF
 
+/-- The pmf of the Poisson distribution depending on its rate, as a function to ℝ -/
 @[deprecated poissonMeasure (since := "2026-03-08")]
 noncomputable
 def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (-r) * r ^ n / (n)!
@@ -132,6 +133,7 @@ lemma poissonPMFReal_nonneg {r : ℝ≥0} {n : ℕ} : 0 ≤ poissonPMFReal r n :
   positivity
 
 set_option linter.deprecated false in
+/-- The pmf of the Poisson distribution depending on its rate, as a PMF. -/
 @[deprecated poissonMeasure (since := "2026-03-08")]
 noncomputable
 def poissonPMF (r : ℝ≥0) : PMF ℕ := by
