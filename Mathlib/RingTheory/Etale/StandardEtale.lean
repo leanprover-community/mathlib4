@@ -208,7 +208,7 @@ def equivAwayAdjoinRoot :
     exact IsLocalization.Away.algebraMap_isUnit ..
   · change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
     simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using P.hasMap_X.2
-  · ext; simp [Algebra.algHom]
+  · ext; simp
   · ext; simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -230,7 +230,7 @@ def equivAwayQuotient :
     simpa [Ideal.span_le] using P.hasMap_X.1
   · apply Ideal.Quotient.algHom_ext
     ext
-    simp [Algebra.algHom, IsScalarTower.algebraMap_apply R[X] (Localization.Away P.g) (_ ⧸ _),
+    simp [IsScalarTower.algebraMap_apply R[X] (Localization.Away P.g) (_ ⧸ _),
       -Ideal.Quotient.mk_algebraMap]
   · ext; simp [IsScalarTower.algebraMap_apply R[X] (Localization.Away P.g) (_ ⧸ _),
       -Ideal.Quotient.mk_algebraMap]

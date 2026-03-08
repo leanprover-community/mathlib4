@@ -117,6 +117,10 @@ def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
 
 initialize_simps_projections AlgHom (toFun → apply)
 
+@[simp] lemma _root_.Algebra.coe_algHom (R A B : Type*)
+    [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [Algebra A B] [IsScalarTower R A B] : ⇑(Algebra.algHom R A B) = algebraMap A B := rfl
+
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     ⇑(f : A →ₐ[R] B) = f :=
