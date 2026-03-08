@@ -286,7 +286,7 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V :=
-  mkIso <| .mk'
+  mkIso <| .mk
   { unitIsoAddEquiv (k := k) (G := G) with
     map_smul' r x := show (RestrictScalars.addEquiv _ _ _).symm
       (V.ρ.asModuleEquiv.symm (r • x)) = _ by
@@ -306,10 +306,27 @@ instance : (toModuleMonoidAlgebra (k := k) (G := G)).IsEquivalence :=
 instance : (ofModuleMonoidAlgebra (k := k) (G := G)).IsEquivalence :=
   (equivalenceModuleMonoidAlgebra (k := k) (G := G)).isEquivalence_inverse
 
-instance : Limits.HasFiniteProducts (Rep k G) := sorry
+#check Limits.Bicone
+open MonoidalCategory in
+instance : Limits.HasBinaryBiproducts (Rep k G) where
+  has_binary_biproduct A B := Limits.hasBinaryBiproduct_of_total
+    ⟨Rep.of (X := A.V × B.V) (Representation.prod A.ρ B.ρ), Rep.ofHom ⟨LinearMap.fst k _ _, by
+      simp [LinearMap.ext_iff]⟩, Rep.ofHom ⟨LinearMap.snd k _ _, by simp [LinearMap.ext_iff]⟩,
+      Rep.ofHom ⟨LinearMap.inl _ _ _, by simp [LinearMap.ext_iff]⟩, Rep.ofHom ⟨LinearMap.inr _ _ _,
+      by simp [LinearMap.ext_iff]⟩, by ext : 2; simp, by ext : 2; simp [zero_hom], by
+      ext : 2; simp [zero_hom], by ext : 2; simp⟩ <| by
+    ext : 2; simp [← ofHom_comp, ← ofHom_add, LinearMap.ext_iff]
 
-instance : Abelian (Rep k G) :=
-  abelianOfEquivalence (toModuleMonoidAlgebra (k := k) (G := G))
+instance : Limits.HasZeroObject (Rep k G) where
+  zero := ⟨Rep.trivial k G PUnit, {
+    unique_to X := Nonempty.intro ⟨⟨0⟩, fun f ↦ by
+      ext x; have : x = 0 := Subsingleton.elim _ _; subst this; simp⟩
+    unique_from X := Nonempty.intro ⟨⟨0⟩, fun f ↦ by ext⟩
+  }⟩
+
+instance : Limits.HasFiniteProducts (Rep k G) := hasFiniteProducts_of_has_binary_and_terminal
+
+instance : Abelian (Rep k G) := abelianOfEquivalence (toModuleMonoidAlgebra (k := k) (G := G))
 
 -- TODO Verify that the equivalence with `ModuleCat k[G]` is a monoidal functor.
 

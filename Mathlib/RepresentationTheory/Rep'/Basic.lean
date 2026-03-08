@@ -312,7 +312,7 @@ lemma applyAsHom_apply {A : Rep k G} (g : G) (x : A) : (A.applyAsHom g).hom x = 
 @[reassoc, elementwise]
 lemma applyAsHom_comm {A B : Rep k G} (f : A ⟶ B) (g : G) :
     A.applyAsHom g ≫ f = f ≫ B.applyAsHom g := by
-  ext; simp [hom_comm_apply]
+  ext; simp [hom_comm_apply, Representation.IntertwiningMap.toLinearMap_apply]
 
 end Commutative
 
@@ -634,7 +634,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
   map_smul {X Y} f r := by
     ext1;
-    simp [smul_hom, Representation.IntertwiningMap.smul_toLinearMap];
+    simp [smul_hom]
 
 abbrev homLinearEquiv (X Y : Rep k G) : (X ⟶ Y) ≃ₗ[k] (X.ρ.IntertwiningMap Y.ρ) where
   __ := homEquiv
@@ -740,13 +740,14 @@ instance : BraidedCategory (Rep.{u} k G) where
   hexagon_forward _ _ _ := by
     ext : 2
     simp only [tensor_V, tensor_ρ, hom_comp, hom_hom_associator, mkIso_hom_hom, comp_toLinearMap,
-      assoc_toLinearMap, comm_toLinearMap, hom_whiskerLeft, hom_whiskerRight, rTensor_toLinearMap]
+      toLinearMap_assoc, toLinearMap_comm, LinearEquiv.comp_coe, hom_whiskerLeft, hom_whiskerRight,
+      toLinearMap_lTensor, toLinearMap_rTensor]
     ext; simp
   hexagon_reverse X Y Z := by
     ext : 2
     simp only [tensor_V, tensor_ρ, hom_comp, hom_inv_associator, mkIso_hom_hom, comp_toLinearMap,
-      assoc_symm_toLinearMap, comm_toLinearMap, LinearMap.comp_assoc, hom_whiskerRight,
-      hom_whiskerLeft, rTensor_toLinearMap]
+      assoc_symm_toLinearMap, toLinearMap_comm, LinearEquiv.comp_coe, hom_whiskerRight,
+      hom_whiskerLeft, toLinearMap_rTensor, toLinearMap_lTensor, LinearMap.comp_assoc]
       -- why doesn't lTensor_toLinearMap work here?
     ext
     simp
@@ -755,11 +756,12 @@ instance : BraidedCategory (Rep.{u} k G) where
 lemma hom_braiding {X Y : Rep k G} : (β_ X Y).hom.hom =
     (Representation.TensorProduct.comm X.ρ Y.ρ).toIntertwiningMap := rfl
 
+open Representation.Equiv in
 instance : SymmetricCategory (Rep.{u} k G) where
-  symmetry X Y := by
-    ext1;
-    simp [← comm_symm Y.ρ X.ρ, ← Representation.Equiv.trans_toIntertwiningMap,
-       Representation.Equiv.trans_symm]
+  symmetry X Y := by ext1; simp [← comm_symm Y.ρ X.ρ, ← toIntertwiningMap_trans,
+    trans_symm, toIntertwiningMap_refl]
+
+
 
 end monoidal
 
@@ -776,7 +778,7 @@ set_option backward.isDefEq.respectTransparency false in
 protected noncomputable def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map {X} {Y} f := Rep.ofHom ⟨LinearMap.llcomp k _ _ _ f.hom.toLinearMap, fun g ↦ by
-    ext; simp [← hom_comm_apply]⟩
+    ext; simp [Representation.IntertwiningMap.toLinearMap_apply, ← hom_comm_apply]⟩
   map_id := fun _ => by ext; rfl
   map_comp := fun _ _ => by ext; rfl
 
@@ -893,7 +895,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
   ext
-  simp [Representation.norm, hom_comm_apply]
+  simp [Representation.IntertwiningMap.toLinearMap_apply, Representation.norm, hom_comm_apply]
 
 /-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
 `x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/

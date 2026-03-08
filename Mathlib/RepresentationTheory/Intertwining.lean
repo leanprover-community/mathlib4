@@ -2,7 +2,6 @@
 Copyright (c) 2025 Stepan Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stepan Nesterov, Edison Xie
-Authors: Stepan Nesterov, Edison Xie
 -/
 module
 
@@ -22,7 +21,6 @@ open scoped MonoidAlgebra
 namespace Representation
 
 section non_comm
-section non_comm
 section Monoid
 
 variable {A G V W U : Type*} [Semiring A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
@@ -36,9 +34,13 @@ variable {A G V W U : Type*} [Semiring A] [Monoid G] [AddCommMonoid V] [AddCommM
 /-- An intertwining map between two representations `ρ` and `σ` of the same monoid `G` is a map
   between underlying modules which commutes with the `G`-actions. -/
 structure IntertwiningMap extends V →ₗ[A] W where
-structure IntertwiningMap extends V →ₗ[A] W where
   /-- An underlying `A`-linear map of the underlying `A`-modules. -/
   isIntertwining' (g : G) : toLinearMap ∘ₗ ρ g = σ g ∘ₗ toLinearMap
+
+/-- An intertwining map constructed form the linear map and the fact that it is intertwining. -/
+def _root_.LinearMap.intertwiningMap_of_isIntertwiningMap
+    (hf : ∀ (g : G), ∀ (v : V), f (ρ g v) = σ g (f v)) : IntertwiningMap ρ σ :=
+  { f with isIntertwining' g := by ext v; exact hf g v}
 
 lemma IntertwiningMap.isIntertwining_assoc {f : IntertwiningMap ρ σ} (g : G) (l : U →ₗ[A] V) :
     f.toLinearMap ∘ₗ ρ g ∘ₗ l = σ g ∘ₗ f.toLinearMap ∘ₗ l := by
@@ -53,7 +55,7 @@ lemma ext {f g : IntertwiningMap ρ σ} (h : f.toLinearMap = g.toLinearMap) : f 
   simpa using h
 
 lemma toLinearMap_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.toLinearMap :=
-  fun {_ _} ↦ ext
+  fun _ _ ↦ ext
 
 lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.toLinearMap.toFun := by
   intro f g h
@@ -68,17 +70,17 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
   map_add f := f.map_add
   map_smulₛₗ f := f.map_smul
 
-instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
-  map_add f := f.map_add
-  map_smulₛₗ f := f.map_smul
-
 @[simp] theorem coe_mk (f : V →ₗ[A] W) (h) : ⇑(⟨f, h⟩ : IntertwiningMap ρ σ) = f := rfl
 
-@[simp] lemma toLinearMap_mk (f : V →ₗ[A] W) (h) :
+lemma toLinearMap_mk (f : V →ₗ[A] W) (h) :
   (⟨f, h⟩ : IntertwiningMap ρ σ).toLinearMap = f := rfl
 
 lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
-    f (ρ g v) = σ g (f v) := congr($(f.isIntertwining' g) v)
+    f.toLinearMap (ρ g v) = σ g (f.toLinearMap v) := congr($(f.isIntertwining' g) v)
+
+lemma toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v = f v := rfl
+
+lemma apply_toLinearMap (f : IntertwiningMap ρ σ) (v : V) : f v = f.toLinearMap v := rfl
 
 @[simp] lemma _root_.LinearMap.toIntertwiningMap
   (hf : ∀ (g : G), ∀ (v : V), f (ρ g v) = σ g (f v)) (v : V) :
@@ -90,11 +92,7 @@ instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
 @[simp] lemma zero_toLinearMap : (0 : IntertwiningMap ρ σ).toLinearMap = 0 := rfl
 
-@[simp] lemma zero_toLinearMap : (0 : IntertwiningMap ρ σ).toLinearMap = 0 := rfl
-
 instance : Add (IntertwiningMap ρ σ) :=
-  ⟨fun f g ↦ ⟨f.toLinearMap + g.toLinearMap, by
-    simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2,]⟩⟩
   ⟨fun f g ↦ ⟨f.toLinearMap + g.toLinearMap, by
     simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2,]⟩⟩
 
@@ -113,10 +111,7 @@ instance : SMul ℕ (IntertwiningMap ρ σ) :=
 
 instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   fast_instance%
-  DFunLike.coe_injective.addCommGroup _ (coe_zero ρ σ) (coe_add ρ σ) (coe_neg ρ σ) (coe_sub ρ σ)
-    (coe_nsmul ρ σ) (coe_zsmul ρ σ)
-
-end group
+  DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
 
 section group
 
@@ -166,7 +161,7 @@ def id : IntertwiningMap ρ ρ where
   isIntertwining' := by simp
 
 @[simp]
-lemma id_toLinearMap : (id ρ).toLinearMap = LinearMap.id := rfl
+lemma toLinearMap_id : (id ρ).toLinearMap = LinearMap.id := rfl
 
 @[simp]
 lemma id_apply (v : V) : id ρ v = v := rfl
@@ -196,7 +191,8 @@ lemma add_comp (f : IntertwiningMap σ τ) (g₁ g₂ : IntertwiningMap ρ σ) :
 end IntertwiningMap
 
 /-- Equivalence between representations is a bijective intertwining map. -/
-structure Equiv extends IntertwiningMap ρ σ, V ≃ₗ[A] W
+structure Equiv extends IntertwiningMap ρ σ, V ≃ₗ[A] W where
+  mk' ::
 
 attribute [coe] Equiv.toIntertwiningMap
 
@@ -210,26 +206,25 @@ namespace Equiv
 
 variable {ρ σ} (φ : Equiv ρ σ)
 
-def mk' (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) : ρ.Equiv σ where
+/-- An `Equiv` between representations could be built from a `LinearEquiv` and an assumption
+  proving the `G`-equivariance. -/
+def mk (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) : ρ.Equiv σ where
   __ := e
   isIntertwining' := he
 
-lemma mk'_toLinearEquiv {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
-    (mk' e he).toLinearEquiv = e := rfl
+lemma toLinearEquiv_mk' {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
+    (mk e he).toLinearEquiv = e := rfl
 
-lemma mk'_toIntertwiningMap (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
-    (mk' e he).toIntertwiningMap = ⟨e.toLinearMap, he⟩ := rfl
-
-@[simp]
-lemma mk'_toLinearMap (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
-    (mk' e he).toLinearMap = e.toLinearMap := rfl
-
-lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ) → _):=
-  fun φ ψ h ↦ by
-  cases φ; cases ψ
-  simpa [IntertwiningMap.ext_iff] using h
+lemma toIntertwiningMap_mk' (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
+    (mk e he).toIntertwiningMap = ⟨e.toLinearMap, he⟩ := rfl
 
 @[simp]
+lemma toLinearMap_mk' (e : V ≃ₗ[A] W) (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
+    (mk e he).toLinearMap = e.toLinearMap := rfl
+
+lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ) → _) :=
+  fun φ ψ h ↦ by cases φ; cases ψ; simpa [IntertwiningMap.ext_iff] using h
+
 lemma toLinearEquiv_inj (φ ψ : σ.Equiv ρ) : φ.toLinearEquiv = ψ.toLinearEquiv ↔ φ = ψ :=
   toLinearEquiv_injective.eq_iff
 
@@ -240,51 +235,42 @@ instance : EquivLike (Equiv ρ σ) V W where
   right_inv e := e.right_inv
   coe_injective' φ ψ h1 h2 := by
     cases φ; cases ψ
-    simp only [LinearEquiv.coe_mk, DFunLike.coe_fn_eq, mk.injEq, IntertwiningMap.ext_iff] at h1 h2 ⊢
-    simp [h1, h2]
+    simp_all [IntertwiningMap.ext_iff]
 
 instance : LinearEquivClass (σ.Equiv ρ) A W V where
   map_add f := f.map_add
   map_smulₛₗ f := f.map_smul
 
 @[ext]
-lemma ext {φ ψ : Equiv ρ σ} (h : (φ : _ → _) = ψ) : φ = ψ := by
+lemma ext {φ ψ : Equiv ρ σ} (h : (φ : V → W) = ψ) : φ = ψ := by
   cases φ; cases ψ
   simpa using h
 
 variable (ρ) in
+/-- Any representation is equivalent to itself. -/
 def refl : Equiv ρ ρ where
   __ := LinearEquiv.refl _ _
   isIntertwining' g := by simp
 
-@[simp] lemma refl_toIntertwiningmap : (refl ρ).toIntertwiningMap = .id ρ := rfl
+@[simp] lemma toIntertwiningMap_refl : (refl ρ).toIntertwiningMap = .id ρ := rfl
 
-@[simp] lemma refl_toLinearMap : (refl ρ).toLinearMap = LinearMap.id := rfl
+@[simp] lemma toLinearMap_refl : (refl ρ).toLinearMap = LinearMap.id := rfl
 
 @[simp] lemma refl_apply (v : V) : refl ρ v = v := rfl
 
-@[simp] lemma coe_toIntertwiningMap : ⇑φ.toIntertwiningMap = ⇑φ := rfl
+@[simp] lemma coe_toIntertwiningMap : ⇑φ.toIntertwiningMap = φ := rfl
 
-@[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = ⇑φ := rfl
+@[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 
-@[simp] lemma coe_invFun : φ.invFun = φ.symm := rfl
+lemma coe_invFun : φ.invFun = φ.symm := rfl
 
-@[simp]
 theorem toLinearEquiv_toLinearMap :
-  LinearEquiv.toLinearMap φ.toLinearEquiv = φ.toIntertwiningMap.toLinearMap := rfl
+  φ.toLinearEquiv.toLinearMap  = φ.toIntertwiningMap.toLinearMap := rfl
 
-@[simp]
-theorem toLinearEquiv_apply (v : V) :
-  φ.toLinearEquiv v = φ.toIntertwiningMap v := rfl
-
-def ofLinearEquiv (e : V ≃ₗ[A] W) (h : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) : Equiv ρ σ where
-  __ := e.toLinearMap
-  isIntertwining' := h
-  invFun := e.symm.toLinearMap
-  left_inv x := by simp
-  right_inv x := by simp
+theorem toLinearEquiv_apply (v : V) : φ.toLinearEquiv v = φ.toIntertwiningMap v := rfl
 
 open LinearMap in
+/-- The equiv between representations are symmetric. -/
 @[symm]
 def symm (φ : Equiv ρ σ) : Equiv σ ρ where
   __ := φ.toLinearEquiv.symm
@@ -292,18 +278,14 @@ def symm (φ : Equiv ρ σ) : Equiv σ ρ where
     rw [← cancel_left φ.toLinearEquiv.injective, ← comp_assoc, ← comp_assoc, φ.1.2 g, φ.comp_symm,
       comp_assoc, φ.comp_symm, id_comp, comp_id]
 
-lemma symm_toLinearMap (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
+lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
 
-@[simp]
 lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
-
--- @[simp]
--- lemma
-
 
 variable {τ}
 
 open LinearMap in
+/-- Composition of two `Equiv`. -/
 @[trans]
 def trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) : Equiv ρ τ where
   __ := φ.toLinearEquiv.trans ψ.toLinearEquiv
@@ -311,11 +293,11 @@ def trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) : Equiv ρ τ where
     rw [LinearEquiv.coe_trans, comp_assoc, φ.1.2, ← comp_assoc, ψ.1.2, comp_assoc]
 
 @[simp]
-lemma trans_toIntertwiningMap (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
+lemma toIntertwiningMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
     (φ.trans ψ).toIntertwiningMap = ψ.toIntertwiningMap.comp φ.toIntertwiningMap := rfl
 
 @[simp]
-lemma trans_toLinearMap (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
+lemma toLinearMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
     (trans φ ψ).toLinearMap = ψ.toLinearMap ∘ₗ φ.toLinearMap := rfl
 
 @[simp]
@@ -323,10 +305,10 @@ lemma trans_apply (φ : Equiv ρ σ) (ψ : Equiv σ τ) (v : V) :
     trans φ ψ v = ψ (φ v) := rfl
 
 @[simp]
-lemma trans_symm_apply (φ : Equiv ρ σ) (v : W) : φ (φ.symm v) = v := φ.right_inv v
+lemma apply_symm_apply (φ : Equiv ρ σ) (v : W) : φ (φ.symm v) = v := φ.right_inv v
 
 @[simp]
-lemma symm_trans_apply (φ : Equiv ρ σ) (v : V) : φ.symm (φ v) = v := φ.left_inv v
+lemma symm_apply_apply (φ : Equiv ρ σ) (v : V) : φ.symm (φ v) = v := φ.left_inv v
 
 @[simp]
 lemma trans_symm (φ : Equiv ρ σ) : φ.trans φ.symm = .refl ρ := by ext; simp
@@ -344,14 +326,13 @@ variable {A G V W U : Type*} [CommSemiring A] [Monoid G] [AddCommMonoid V] [AddC
   [AddCommMonoid U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
   (σ : Representation A G W) (τ : Representation A G U) (f : V →ₗ[A] W)
 
-attribute [-simp] LinearEquiv.coe_symm_mk'
+variable {ρ σ} in
 theorem Equiv.conj_apply_self (g : G) (φ : Equiv ρ σ) : φ.conj (ρ g) = σ g := by
-  ext w;
+  ext w
   have := (congr($(φ.symm.toIntertwiningMap.2 g) w)).symm
   simp only [LinearMap.coe_comp, coe_toLinearMap, Function.comp_apply, LinearEquiv.conj_apply_apply,
-    coe_symm, toLinearEquiv_apply, coe_toIntertwiningMap] at *
-  rw [this]
-  simp
+    coe_symm, toLinearEquiv_apply, coe_toIntertwiningMap] at this ⊢
+  simp [this]
 
 section Monoid
 
@@ -364,7 +345,7 @@ instance : SMul A (IntertwiningMap ρ σ) :=
     ((a • f : IntertwiningMap ρ σ) : V → W) = a • f := rfl
 
 @[simp]
-lemma smul_toLinearMap (a : A) (f : IntertwiningMap ρ σ) :
+lemma toLinearMap_smul (a : A) (f : IntertwiningMap ρ σ) :
     (a • f).toLinearMap = a • f.toLinearMap := rfl
 
 instance : Module A (IntertwiningMap ρ σ) :=
@@ -387,7 +368,6 @@ def equivLinearMapAsModule :
     { toLinearMap := { f with
         map_smul' a v := by simp }
       isIntertwining' g := by ext v; simpa using f.map_smul' (MonoidAlgebra.single g 1) v }
-      isIntertwining' g := by ext v; simpa using f.map_smul' (MonoidAlgebra.single g 1) v }
   map_add' g₁ g₂ := by ext; simp
   map_smul' t g := by ext; simp
   left_inv f := rfl
@@ -396,22 +376,13 @@ def equivLinearMapAsModule :
 /-- Composition of intertwining maps. -/
 def llcomp : IntertwiningMap σ τ →ₗ[A] IntertwiningMap ρ σ →ₗ[A] IntertwiningMap ρ τ where
   toFun f :=
-    { toFun g :=
-      { toLinearMap := f.toLinearMap.comp g.toLinearMap
-        isIntertwining' := by simp [LinearMap.comp_assoc, g.2, f.isIntertwining_assoc]}
-      map_add' _ _ := by ext; simp [map_add]
-      map_smul' _ _ := by ext; simp }
-  map_add' _ _ := by ext; simp
-  map_smul' _ _ := by ext; simp
+    { toFun g := ((f.toLinearMap.comp g.toLinearMap).intertwiningMap_of_isIntertwiningMap ρ τ
+      (by intro γ v; simp [f.isIntertwining, g.isIntertwining, toLinearMap_apply]))
+      map_add' _ _ := by ext; simp [map_add, toLinearMap_apply]
+      map_smul' _ _ := by ext; simp [toLinearMap_apply] }
+  map_add' _ _ := by ext; simp [toLinearMap_apply]
+  map_smul' _ _ := by ext; simp [toLinearMap_apply]
 
-lemma comp_def (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
-    comp f g = llcomp _ _ _ f g := rfl
-
-lemma smul_comp (a : A) (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
-    (a • f).comp g = a • comp f g := by simp [comp_def]
-
-lemma comp_smul (a : A) (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
-    comp f (a • g) = a • comp f g := by simp [comp_def]
 lemma comp_def (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
     comp f g = llcomp _ _ _ f g := rfl
 
@@ -487,11 +458,35 @@ def centralMul (g : G) (hg : g ∈ Submonoid.center G) : IntertwiningMap ρ ρ w
   toLinearMap := ρ g
   isIntertwining' x := LinearMap.ext <| (isIntertwiningMap_of_mem_center ρ g hg).isIntertwining x
 
+/-- `IntertwiningMap.toLinearMap` as a linear map. -/
+@[simps] def toLinearMapl : IntertwiningMap ρ σ →ₗ[A] V →ₗ[A] W where
+  toFun := toLinearMap
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommGroup V] [AddCommGroup W]
+  [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W) in
+instance [Module.Finite A V] [IsNoetherian A W] :
+    Module.Finite A (IntertwiningMap ρ σ) :=
+  .of_injective (toLinearMapl (ρ := ρ) (σ := σ)) (toLinearMap_injective ρ σ)
+
+variable {ρ σ} in
+/-- A bijective intertwining map is an equivalence of representations. -/
+noncomputable
+def ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
+    Equiv ρ σ where
+  isIntertwining' := f.isIntertwining'
+  toLinearEquiv :=  LinearEquiv.ofBijective f.toLinearMap hf
+
+@[simp]
+theorem coe_ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
+    ⇑(f.ofBijective hf) = ⇑f := rfl
+
 variable {P : Type*} [AddCommMonoid P] [Module A P] {π : Representation A G P}
 
 variable {ρ σ τ}
 
-/-- The tensor product of intertwining maps induced from tensor product of LinearMaps. -/
+/-- The tensor product of intertwining maps induced from tensor product of linear maps. -/
 def tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
     (tprod ρ τ).IntertwiningMap (tprod σ π) where
   toLinearMap := TensorProduct.map f.toLinearMap g.toLinearMap
@@ -499,7 +494,7 @@ def tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
     rw [tprod_apply, ← TensorProduct.map_comp, f.2, g.2, TensorProduct.map_comp, tprod_apply]
 
 @[simp]
-lemma tensor_toLinearMap (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
+lemma toLinearMap_tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
     (f.tensor g).toLinearMap = TensorProduct.map f.toLinearMap g.toLinearMap := rfl
 
 @[simp]
@@ -507,13 +502,13 @@ lemma tensor_apply (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) (v : 
     f.tensor g (v ⊗ₜ w) = f v ⊗ₜ g w := rfl
 
 variable (ρ) in
-/-- the natural intertwining map induced from `f : σ → τ` to `ρ.tprod σ → ρ.tprod τ`. -/
+/-- The intertwining map induced from `f : σ → τ` to `ρ.tprod σ → ρ.tprod τ`. -/
 def lTensor (f : IntertwiningMap σ τ) :
     (tprod ρ σ).IntertwiningMap (tprod ρ τ) := tensor (id ρ) f
 
 @[simp]
-lemma lTensor_toLinearMap (f : IntertwiningMap ρ σ) :
-    (f.lTensor ρ).toLinearMap = f.toLinearMap.lTensor V := rfl
+lemma toLinearMap_lTensor (f : IntertwiningMap ρ σ) :
+    (f.lTensor τ).toLinearMap = f.toLinearMap.lTensor U := rfl
 
 @[simp]
 lemma lTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
@@ -523,13 +518,13 @@ lemma lTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
 lemma lTensor_id : lTensor ρ (id σ) = id (tprod ρ σ) := by ext; simp
 
 variable (ρ) in
-/-- the natural intertwining map induced from `f : σ → τ` to `σ.tprod ρ → τ.tprod ρ`. -/
+/-- The natural intertwining map `σ.tprod ρ → τ.tprod ρ` induced by `f : σ → τ`. -/
 def rTensor (f : IntertwiningMap σ τ) :
     (tprod σ ρ).IntertwiningMap (tprod τ ρ) := tensor f (id ρ)
 
 @[simp]
-lemma rTensor_toLinearMap (f : IntertwiningMap σ τ) :
-    (f.rTensor ρ).toLinearMap = f.toLinearMap.rTensor _ := rfl
+lemma toLinearMap_rTensor (f : IntertwiningMap σ τ) :
+    (f.rTensor ρ).toLinearMap = f.toLinearMap.rTensor V := rfl
 
 @[simp]
 lemma rTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
@@ -550,11 +545,12 @@ namespace TensorProduct
 
 noncomputable section
 
+/-- Equivalence between representations induced from `TensorProduct.comm`. -/
 def comm : (tprod ρ σ).Equiv (tprod σ ρ) :=
-  .ofLinearEquiv (_root_.TensorProduct.comm A V W) <| fun g ↦ by ext; simp
+  .mk (_root_.TensorProduct.comm A V W) <| fun g ↦ by ext; simp
 
 @[simp]
-lemma comm_toLinearMap : (comm ρ σ).toLinearMap = _root_.TensorProduct.comm A V W := rfl
+lemma toLinearMap_comm : (comm ρ σ).toLinearMap = _root_.TensorProduct.comm A V W := rfl
 
 @[simp]
 lemma comm_apply (v : V) (w : W) : comm ρ σ (v ⊗ₜ w) = w ⊗ₜ v := rfl
@@ -567,11 +563,12 @@ lemma comm_comp_rTensor (f : IntertwiningMap σ τ) :
 
 lemma comm_symm : (comm σ ρ).symm = comm ρ σ := by rfl
 
+/-- The `Equiv` between representations induced from `TensorProduct.assoc`. -/
 def assoc : (tprod (tprod ρ σ) τ).Equiv (tprod ρ (tprod σ τ)) :=
-  .ofLinearEquiv (_root_.TensorProduct.assoc A V W U) <| fun g ↦ by ext; simp
+  .mk (_root_.TensorProduct.assoc A V W U) <| fun g ↦ by ext; simp
 
 @[simp]
-lemma assoc_toLinearMap : (assoc ρ σ τ).toLinearMap = _root_.TensorProduct.assoc A V W U := rfl
+lemma toLinearMap_assoc : (assoc ρ σ τ).toLinearMap = _root_.TensorProduct.assoc A V W U := rfl
 
 @[simp]
 lemma assoc_symm_toLinearMap : (assoc ρ σ τ).symm.toLinearMap =
@@ -581,14 +578,13 @@ lemma assoc_symm_toLinearMap : (assoc ρ σ τ).symm.toLinearMap =
 lemma assoc_apply (v : V) (w : W) (u : U) : assoc ρ σ τ ((v ⊗ₜ w) ⊗ₜ u) = v ⊗ₜ (w ⊗ₜ u) := rfl
 
 variable (A) in
+/-- The `Equiv` between representations induced from `TensorProduct.rid`. -/
 def rid : (σ.tprod (trivial A G A)).Equiv σ :=
-  .ofLinearEquiv (_root_.TensorProduct.rid A W) <| fun g ↦ by ext; simp
+  .mk (_root_.TensorProduct.rid A W) <| fun g ↦ by ext; simp
 
 @[simp]
-lemma rid_toLinearMap : (rid A σ).toLinearMap = _root_.TensorProduct.rid A W := rfl
+lemma toLinearMap_rid : (rid A σ).toLinearMap = _root_.TensorProduct.rid A W := rfl
 
-@[simp]
-lemma rid_apply (w : W) (a : A) : rid A σ (w ⊗ₜ a) = a • w := rfl
 @[simp]
 lemma rid_apply (w : W) (a : A) : rid A σ (w ⊗ₜ a) = a • w := rfl
 
@@ -596,14 +592,14 @@ lemma rid_apply (w : W) (a : A) : rid A σ (w ⊗ₜ a) = a • w := rfl
 lemma rid_symm_apply (w : W) : (rid A σ).symm w = w ⊗ₜ 1 := rfl
 
 variable (A) in
+/-- The `Equiv` between representations induced from `TensorProduct.lid`. -/
 def lid : ((trivial A G A).tprod σ).Equiv σ :=
-  .ofLinearEquiv (_root_.TensorProduct.lid A W) <| fun g ↦ by ext; simp
+  .mk (_root_.TensorProduct.lid A W) <| fun g ↦ by ext; simp
 
 @[simp]
-lemma lid_toLinearMap : (lid A σ).toLinearMap = _root_.TensorProduct.lid A W := rfl
+lemma toLinearMap_lid : (lid A σ).toLinearMap = _root_.TensorProduct.lid A W := rfl
 
 @[simp]
-lemma lid_apply (a : A) (w : W) : lid A σ (a ⊗ₜ w) = a • w := rfl
 lemma lid_apply (a : A) (w : W) : lid A σ (a ⊗ₜ w) = a • w := rfl
 
 @[simp]
@@ -626,8 +622,6 @@ variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V] [Ad
 /-- dualTensorHom as an equivalence of representations. -/
 @[simps!] noncomputable def dualTensorHom : Equiv (tprod ρ.dual σ) (linHom ρ σ) where
   toLinearEquiv := dualTensorHomEquiv (R := k) (M := V) (N := W)
-  isIntertwining' g := by
-    ext v' w v; simp [Module.Dual.transpose_apply]
   isIntertwining' g := by
     ext v' w v; simp [Module.Dual.transpose_apply]
 
