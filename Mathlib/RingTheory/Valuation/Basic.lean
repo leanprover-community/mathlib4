@@ -106,7 +106,7 @@ namespace Valuation
 
 variable {Γ₀ : Type*}
 variable {Γ'₀ : Type*}
-variable {Γ''₀ : Type*} [LinearOrderedCommMonoidWithZero Γ''₀]
+variable {Γ''₀ : Type*}
 
 section Basic
 
@@ -115,6 +115,7 @@ variable [Ring R]
 section Monoid
 
 variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
+  [LinearOrderedCommMonoidWithZero Γ''₀]
 
 instance : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toFun
@@ -701,6 +702,7 @@ end IsTrivialOn
 namespace IsEquiv
 
 variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
+  [LinearOrderedCommMonoidWithZero Γ''₀]
   {v : Valuation R Γ₀} {v₁ : Valuation R Γ₀} {v₂ : Valuation R Γ'₀} {v₃ : Valuation R Γ''₀}
 
 @[refl]
@@ -807,9 +809,10 @@ end LinearOrderedCommMonoidWithZero
 section LinearOrderedCommGroupWithZero
 
 variable [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
+  [LinearOrderedCommGroupWithZero Γ''₀]
 section Ring
 
-variable [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ'₀}
+variable [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ'₀} {u : Valuation R Γ''₀}
 
 namespace IsEquiv
 
@@ -880,6 +883,7 @@ noncomputable def orderMonoidIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o Value
         exact mul_ne_zero hx20 hy10
 
 set_option backward.isDefEq.respectTransparency false in
+@[simp]
 theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
     h.orderMonoidIso (v.restrict a) = w.restrict a := by
   have h_res := h.restrict
@@ -889,6 +893,26 @@ theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
   · rw [(v.restrict_eq_mk ha)]
     convert valueGroup₀Fun_spec (h := h) (hs := ha) (r := 1) (by simp)
     exact w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)
+
+theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
+    h.orderMonoidIso.symm = h'.orderMonoidIso := by
+  rfl
+
+@[simp]
+theorem orderMonoidIso_eq_refl (h : v.IsEquiv v) :
+    h.orderMonoidIso = .refl _ := by
+  ext x
+  obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
+  · simp
+  · simp [orderMonoidIso, valueGroup₀Fun_spec]
+
+@[simp]
+theorem orderMonoidIso_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
+    h.orderMonoidIso.trans h'.orderMonoidIso = (h.trans h').orderMonoidIso := by
+  ext x
+  obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
+  · simp
+  · simp [orderMonoidIso, valueGroup₀Fun_spec]
 
 end IsEquiv
 
