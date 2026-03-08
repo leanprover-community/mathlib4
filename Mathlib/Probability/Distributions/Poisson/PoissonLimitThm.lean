@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Probability.ProbabilityMassFunction.Binomial
+
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.SpecialFunctions.Choose
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
@@ -85,10 +86,12 @@ theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * 
   refine Tendsto.inv₀ (.pow ?_ k) (by simp)
   · simpa using tendsto_const_nhds.sub (tendsto_zero_of_tendsto_mul_atTop hr)
 
+set_option linter.deprecated false in
 /--
 Another version of Poisson Limit Theorem: convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞`
 under the natural hypotheses (`∀ n, p n ≤ 1` and `r ≥ 0`).
 -/
+@[deprecated tendsto_choose_mul_pow_of_tendsto_mul_atTop (since := "2026-03-08")]
 lemma binomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥0} (h : ∀ n, p n ≤ 1)
     (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     Tendsto (fun n ↦ PMF.binomial (p n) (h n) n (Fin.ofNat (n + 1) k))
