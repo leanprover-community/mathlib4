@@ -132,34 +132,32 @@ lemma min_def (a b : α) : min a b = if a ≤ b then a else b := LinearOrder.min
 @[grind =]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max_def a b
 
-@[to_dual existing max_def]
-theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
-  obtain h | h | h := lt_trichotomy a b <;> simp [le_of_lt, not_le_of_gt, h, min_def]
-
-@[to_dual existing min_def]
-theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
-  obtain h | h | h := lt_trichotomy a b <;> simp [le_of_lt, not_le_of_gt, h, max_def]
-
-@[to_dual (attr := elab_as_elim)]
 theorem min_ind {motive : α → Prop} (ha : a ≤ b → motive a) (hb : b ≤ a → motive b) :
     motive (min a b) := by
-  obtain h | h | h := lt_trichotomy a b <;> simp [le_of_lt, not_le_of_gt, min_def, *]
+  rw [min_def]; split_ifs with h
+  exacts [ha h, hb (le_of_not_ge h)]
+
+@[to_dual existing (attr := elab_as_elim)]
+theorem max_ind {motive : α → Prop} (ha : b ≤ a → motive a) (hb : a ≤ b → motive b) :
+    motive (max a b) := by
+  rw [max_def]; split_ifs with h
+  exacts [hb h, ha (le_of_not_ge h)]
 
 @[to_dual le_min_iff]
-theorem max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c := by
-  refine max_ind ?_ ?_ <;> simpa using le_trans
+theorem max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c :=
+  max_ind (iff_self_and.mpr <| le_trans ·) (iff_and_self.mpr <| le_trans ·)
 
 @[to_dual (attr := simp) le_max_iff]
-theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c := by
-  refine min_ind ?_ ?_ <;> simpa using le_trans
+theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c :=
+  min_ind (iff_self_or.mpr <| le_trans ·) (iff_or_self.mpr <| le_trans ·)
 
 @[to_dual (attr := simp) lt_min_iff]
-theorem max_lt_iff : max a b < c ↔ a < c ∧ b < c := by
-  refine max_ind ?_ ?_ <;> simpa using lt_of_le_of_lt
+theorem max_lt_iff : max a b < c ↔ a < c ∧ b < c :=
+  max_ind (iff_self_and.mpr <| lt_of_le_of_lt ·) (iff_and_self.mpr <| lt_of_le_of_lt ·)
 
 @[to_dual (attr := simp) lt_max_iff]
-theorem min_lt_iff : min a b < c ↔ a < c ∨ b < c := by
-  refine min_ind ?_ ?_ <;> simpa using lt_of_le_of_lt
+theorem min_lt_iff : min a b < c ↔ a < c ∨ b < c :=
+  min_ind (iff_self_or.mpr <| lt_of_le_of_lt ·) (iff_or_self.mpr <| lt_of_le_of_lt ·)
 
 @[to_dual le_max_left]
 lemma min_le_left (a b : α) : min a b ≤ a := min_le_iff.mpr (.inl le_rfl)
@@ -177,6 +175,12 @@ lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d �
 @[to_dual]
 lemma min_comm (a b : α) : min a b = min b a :=
   eq_min (min_le_right a b) (min_le_left a b) fun h₁ h₂ => le_min h₂ h₁
+
+@[to_dual existing max_def]
+theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by rw [min_comm, min_def]
+
+@[to_dual existing min_def]
+theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by rw [max_comm, max_def]
 
 @[to_dual]
 lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
