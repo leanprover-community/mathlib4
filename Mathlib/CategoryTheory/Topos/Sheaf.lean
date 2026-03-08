@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Topos.Classifier
 
-
 /-!
 
 # (Elementary) Sheaf Topos
@@ -18,7 +17,7 @@ We define a subobject classifier for categories of sheaves of (large enough) typ
 
 ## Main definitions
 
-Let `C` refer to a category with (when relevant) grothendieck topology `J`.
+Let `C` refer to a category with (when relevant) Grothendieck topology `J`.
 
 * `Presheaf.classifier C` is a construction of a subobject classifier in `Cᵒᵖ ⥤ Type (max u v)`.
 * `Sheaf.classifier J` is a construction of a subobject classifier in `Sheaf J (Type (max u v))`.
@@ -43,7 +42,6 @@ Let `C` refer to a category with (when relevant) grothendieck topology `J`.
 
 universe w v u
 
-
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
@@ -60,37 +58,33 @@ def Functor.sieves : Cᵒᵖ ⥤ Type (max u v) where
   obj X := Sieve X.unop
   map f := fun s => s.pullback f.unop
 
-/-- The natural inclusion of the `closedSieves` presheaf in the `sieves` presheaf -/
+/-- The natural inclusion of the `Functor.closedSieves` presheaf in the `Functor.sieves` presheaf -/
 @[simps]
-def closedSievesInclusion (J : GrothendieckTopology C) :
+def Functor.closedSievesInclusion (J : GrothendieckTopology C) :
     Functor.closedSieves J ⟶ Functor.sieves C where
   app X := Subtype.val
 
-instance {J : GrothendieckTopology C} : Mono (closedSievesInclusion J) := by
-  refine @NatTrans.mono_of_mono_app _ _ _ _ _ _ _ (fun X => ?_)
-  rw [mono_iff_injective]
-  exact Subtype.val_injective
+instance {J : GrothendieckTopology C} : Mono (Functor.closedSievesInclusion J) := by
+  simp [NatTrans.mono_iff_mono_app, mono_iff_injective, Functor.closedSievesInclusion]
 
 /-- Given a natural transformation into `Functor.sieves`, it factors through `Functor.closedSieves`
 when at each component `X : C`, the range is contained in `{s : Sieve X | J.IsClosed s}`. -/
 @[simps app]
-def closedSievesFactorization (J : GrothendieckTopology C) {F : Cᵒᵖ ⥤ Type (max u v)}
+def Functor.closedSievesFactorization (J : GrothendieckTopology C) {F : Cᵒᵖ ⥤ Type (max u v)}
     (f : F ⟶ Functor.sieves C)
     (hf : ∀ ⦃X : Cᵒᵖ⦄ (x : F.obj X), J.IsClosed (f.app X x)) : F ⟶ Functor.closedSieves J where
-  app X := fun x => ⟨f.app X x, hf x⟩
-  naturality := by
-    intro X Y g
-    ext x
-    simp only [Functor.closedSieves_obj, types_comp_apply]
-    ext : 1
-    simpa using (FunctorToTypes.naturality _ _ f g x)
+  app X x := ⟨f.app X x, hf x⟩
+  naturality {X Y} g := by
+    dsimp
+    ext
+    simp [FunctorToTypes.naturality]
 
 @[reassoc (attr := simp)]
-lemma closedSievesFactorization_comp_closedSievesInclusion (J : GrothendieckTopology C)
+lemma Functor.closedSievesFactorization_comp_closedSievesInclusion (J : GrothendieckTopology C)
     {F : Cᵒᵖ ⥤ Type (max u v)} (f : F ⟶ Functor.sieves C)
     (hf : ∀ (X : Cᵒᵖ) (x : F.obj X), J.IsClosed (f.app X x)) :
     closedSievesFactorization J f hf ≫ closedSievesInclusion J = f := by
-  ext X x
+  ext
   simp
 
 variable (C) in
@@ -98,7 +92,7 @@ variable (C) in
 map returning `⊤ : Sieve X`. -/
 @[simps]
 def Presheaf.truth : (CategoryTheory.Functor.const _).obj PUnit ⟶ Functor.sieves C where
-  app X := fun _ => (⊤ : Sieve X.unop)
+  app X _ := (⊤ : Sieve X.unop)
 
 /--
 The characteristic map of an inclusion of presheaves.
@@ -109,22 +103,19 @@ to the (closed) sieve on X where `f : Y → X` is in the sieve iff
 @[simps app]
 def Presheaf.χ {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) :
     G ⟶ Functor.sieves C where
-  app X := fun x => ⟨fun Y f => ∃ a, G.map f.op x = m.app (.op Y) a, by
+  app X x := ⟨fun Y f => ∃ a, G.map f.op x = m.app (.op Y) a, by
     intro Y Z f ⟨a, ha⟩ g
-    simp only [Opposite.op_unop, op_comp, FunctorToTypes.map_comp_apply]
-    rw [ha]
     use F.map g.op a
-    rw [FunctorToTypes.naturality]⟩
+    simp [ha, FunctorToTypes.naturality]⟩
 
 lemma Presheaf.comp_χ_eq {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) :
-    m ≫ Presheaf.χ m = ({app X := fun _ => PUnit.unit} : F ⟶ _) ≫ Presheaf.truth C := by
-  ext X x
-  simp only [Functor.sieves_obj, FunctorToTypes.comp]
+    m ≫ Presheaf.χ m = ({app X _ := PUnit.unit} : F ⟶ _) ≫ Presheaf.truth C := by
+  ext
   apply Sieve.ext
   simp [← FunctorToTypes.naturality F G m]
 
 lemma Presheaf.classifier_isPullback {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] :
-    IsPullback m ({app X := fun _ => PUnit.unit}) (χ m) (truth C) := by
+    IsPullback m ({app X _ := PUnit.unit}) (χ m) (truth C) := by
   refine IsPullback.of_forall_isPullback_app (fun X => ?_)
   rw [Types.isPullback_iff]
   constructorm* _ ∧ _
@@ -191,7 +182,7 @@ variable (C) in
 @[simps! Ω truth Ω₀ χ χ₀]
 def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
   .mkOfTerminalΩ₀ ((Functor.const _).obj PUnit)
-    (.ofUniqueHom (fun _ => {app _ := fun _ => .unit}) (by aesop)) (Functor.sieves C)
+    (.ofUniqueHom (fun _ => {app _ _ := .unit}) (by aesop)) (Functor.sieves C)
     (Presheaf.truth C) (Presheaf.χ ·) Presheaf.classifier_isPullback
       (Presheaf.χ_unique ·)
 
@@ -203,8 +194,9 @@ instance [EssentiallySmall.{w} C] : HasClassifier (Cᵒᵖ ⥤ Type w) where
 end presheaf
 
 section sheaf
+open Functor
 
-/-- The sheaf of closed sieves w/r/t `J`. See also `Functor.closedSieves` -/
+/-- The sheaf of closed sieves w/r/t `J`. See also `Functor.closedSieves` and `Sheaf.classifier` -/
 @[simps]
 def Sheaf.Ω {J : GrothendieckTopology C} : Sheaf J (Type max u v) where
   obj := .closedSieves J
