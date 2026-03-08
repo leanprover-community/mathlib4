@@ -308,8 +308,8 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
       rw [← hφ, Category.assoc, Category.assoc, hw, comp_zero, comp_zero]) ⟨_, rfl, by simp⟩
     exact ⟨(L.objObjPreimageIso W).inv ≫ inv (L.map φ.s) ≫ l, by simp [hl, ← hφ]⟩
   obtain ⟨Z, rfl, z, rfl⟩ := hw'
-  simp only [eqToHom_refl, Category.id_comp, ← L.map_comp] at hw
-  rw [map_eq_zero_iff L P, ← exists_isoModSerre_comp_eq_zero_iff P] at hw
+  simp only [eqToHom_refl, Category.id_comp, ← L.map_comp, map_eq_zero_iff L P,
+    ← exists_isoModSerre_comp_eq_zero_iff P] at hw
   obtain ⟨Z', t, ht, fac⟩ := hw
   have := Localization.inverts L P.isoModSerre t ht
   rw [← Category.assoc] at fac
