@@ -164,15 +164,12 @@ lemma min_comm (a b : α) : min a b = min b a :=
   eq_min (min_le_right a b) (min_le_left a b) fun h₁ h₂ => le_min h₂ h₁
 
 @[to_dual]
-lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
-  apply eq_min
-  · apply le_trans (min_le_left ..) (min_le_left ..)
-  · apply le_min
-    · apply le_trans (min_le_left ..) (min_le_right ..)
-    · apply min_le_right
-  · intro d h₁ h₂; apply le_min
-    · apply le_min h₁; apply le_trans h₂; apply min_le_left
-    · apply le_trans h₂; apply min_le_right
+lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) :=
+  eq_min
+    (le_trans (min_le_left ..) (min_le_left ..))
+    (le_min (le_trans (min_le_left ..) (min_le_right ..)) (min_le_right ..))
+    (fun h₁ h₂ ↦
+      le_min (le_min h₁ (le_trans h₂ (min_le_left ..))) (le_trans h₂ (min_le_right ..)))
 
 @[to_dual]
 lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
