@@ -36,3 +36,5 @@ proof_wanted please_prove_this : True
 /-- info: [public import Init, import Mathlib.Init] -/
 #guard_msgs in
 run_elab Lean.logInfo m!"{(← Lean.MonadEnv.getEnv).imports}"
+
+theorem test_type_star (α : Type*) : α = α := rfl
