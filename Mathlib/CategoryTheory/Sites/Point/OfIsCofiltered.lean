@@ -160,7 +160,7 @@ lemma toPresheafFiberOfIsCofiltered_w {V U : N} (f : V ⟶ U) (P : Cᵒᵖ ⥤ A
 @[reassoc (attr := simp)]
 lemma toPresheafFiberOfIsCofiltered_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (U : N) :
     toPresheafFiberOfIsCofiltered p hp U P ≫
-        (ofIsCofiltered p hp).presheafFiber.map g =
+      (ofIsCofiltered p hp).presheafFiber.map g =
     g.app (op (p.obj U)) ≫ toPresheafFiberOfIsCofiltered p hp U Q := by
   simp [toPresheafFiberOfIsCofiltered]
 
