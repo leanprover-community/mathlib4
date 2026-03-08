@@ -541,6 +541,11 @@ theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
 theorem algebraMap_adicCompletion : ⇑(algebraMap S <| v.adicCompletion K) = (↑) ∘ algebraMap S K :=
   rfl
 
+variable {R} in
+theorem denseRange_algebraMap : DenseRange (algebraMap K (v.adicCompletion K)) :=
+  UniformSpace.Completion.denseRange_coe.comp (WithVal.equiv _).symm.surjective.denseRange
+    (UniformSpace.Completion.continuous_coe _)
+
 end Algebra
 
 theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionIntegers K v := by
