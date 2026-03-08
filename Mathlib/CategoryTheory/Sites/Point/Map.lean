@@ -129,7 +129,10 @@ sites `(C, J)` and `(D, K)`. -/
 noncomputable def sheafFiberMapIso [Functor.IsContinuous.{v''} F J K] :
     (Φ.map F K).sheafFiber ≅
       F.sheafPushforwardContinuous A J K ⋙ Φ.sheafFiber :=
-  Functor.isoWhiskerLeft (sheafToPresheaf K A) (Φ.presheafFiberMapIso F K A)
+  Functor.isoWhiskerLeft (sheafToPresheaf K A) (Φ.presheafFiberMapIso F K A) ≪≫
+    (Functor.associator ..).symm ≪≫
+    Functor.isoWhiskerRight (F.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm _ ≪≫
+    Functor.associator ..
 
 end GrothendieckTopology.Point
 
