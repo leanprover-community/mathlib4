@@ -13,8 +13,8 @@ public import Mathlib.Computability.TuringMachine.StackTuringMachine
 # Computable functions
 
 This file contains the definition of a Turing machine with some finiteness conditions
-(bundling the definition of TM2 in `StackTuringMachine.lean`), a definition of when a TM gives a certain
-output (in a certain time), and the definition of computability (in polynomial time or
+(bundling the definition of TM2 in `StackTuringMachine.lean`), a definition of when a TM gives
+a certain output (in a certain time), and the definition of computability (in polynomial time or
 any time function) of a function between two types that have an encoding (as in `Encoding.lean`).
 
 ## Main theorems
