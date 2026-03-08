@@ -810,14 +810,7 @@ jobs:
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
-      - name: Generate auto merge app token
-        id: auto-merge-app-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
-        with:
-          app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_AUTO_MERGE_PRIVATE_KEY }}
-
-      - id: PR_from_push
+      - id: PR
         uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
@@ -825,16 +818,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Only return if PR is still open
           filterOutClosed: true
-
-      # TODO: delete this step and rename `PR_from_push` to `PR` if the above step seems to work properly
-      # Combine the output from the previous action with the metadata supplied by GitHub itself.
-      # Note that if we fall back to github.event.pull_request data, the list of labels is generated when this workflow is triggered
-      # and not updated afterwards!
-      - id: PR
-        shell: bash
-        run: |
-          echo "number=${{ steps.PR_from_push.outputs.number || github.event.pull_request.number }}" | tee -a "$GITHUB_OUTPUT"
-          echo "pr_labels=${{ steps.PR_from_push.outputs.pr_labels || join(github.event.pull_request.labels.*.name, ',') }}" | tee -a "$GITHUB_OUTPUT"
 
       - id: remove_labels
         name: Remove "awaiting-CI"
@@ -844,6 +827,14 @@ jobs:
           curl --request DELETE \
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.PR.outputs.number }}/labels/awaiting-CI \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+
+      - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
+        name: Generate auto merge app token
+        id: auto-merge-app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_AUTO_MERGE_PRIVATE_KEY }}
 
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: Get PR label timeline data
