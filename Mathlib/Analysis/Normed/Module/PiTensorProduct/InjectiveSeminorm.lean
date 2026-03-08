@@ -62,7 +62,7 @@ space.
   `E = Πᵢ Eᵢ` to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x `.
 * `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
   `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
-* `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
+* `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vector space, then
   `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
 
 ## TODO
