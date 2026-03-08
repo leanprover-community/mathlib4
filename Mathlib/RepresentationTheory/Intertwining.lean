@@ -71,7 +71,7 @@ lemma toLinearMap_mk (f : V →ₗ[A] W) (h) :
   (⟨f, h⟩ : IntertwiningMap ρ σ).toLinearMap = f := rfl
 
 lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
-    f.toLinearMap (ρ g v) = σ g (f v) := congr($(f.isIntertwining' g) v)
+    f.toLinearMap (ρ g v) = σ g (f.toLinearMap v) := congr($(f.isIntertwining' g) v)
 
 theorem toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f v = f.toLinearMap v := rfl
 
