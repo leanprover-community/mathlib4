@@ -79,9 +79,9 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fiberMk_map_comp {U V : N} (g : V ⟶ U) {X : C} (f : p.obj U ⟶ X) :
     fiberMk.{w} (p.map g ≫ f) = fiberMk.{w} (f) := by
-  refine Eq.trans ?_ (congr_fun (colimit.w (p.op ⋙ shrinkYoneda.{w}.obj X) g.op)
-    (shrinkYonedaObjObjEquiv.symm f))
-  simp [fiber, fiberMk, shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
+  simp [fiberMk, ← dsimp% congr_fun (colimit.w (p.op ⋙ shrinkYoneda.{w}.obj X) g.op)
+        (shrinkYonedaObjObjEquiv.symm f),
+    fiber, shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
 
 @[simp]
 lemma fiberMk_map {U V : N} (g : V ⟶ U) :
