@@ -12,11 +12,6 @@ on:
     types:
       - completed
 
-# Cancel in-progress runs for the same PR
-concurrency:
-  group: commit-verification-${{ github.event.workflow_run.pull_requests[0].number }}
-  cancel-in-progress: true
-
 permissions:
   actions: read
   contents: read
@@ -30,7 +25,7 @@ jobs:
     steps:
       - name: Consume bridge artifact
         id: bridge
-        uses: leanprover-community/privilege-escalation-bridge/consume@v1
+        uses: leanprover-community/privilege-escalation-bridge/consume@d3bd99c50a4cf8c5350a211e8e3ba07ac19067d8 # v1.1.0
         with:
           artifact: workflow-data
           source_workflow: Commit Verification
