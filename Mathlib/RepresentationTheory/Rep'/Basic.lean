@@ -229,10 +229,12 @@ lemma comp_add {M N O : Rep k G} (f : M ⟶ N) (g₁ g₂ : N ⟶ O) :
 instance {M N : Rep k G} : Zero (M ⟶ N) where
   zero := ofHom (0 : M.ρ.IntertwiningMap N.ρ)
 
+@[simp]
 lemma ofHom_zero {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
     {σ : Representation k G M} {ρ : Representation k G N} :
     ofHom (0 : σ.IntertwiningMap ρ) = 0 := rfl
 
+@[simp]
 lemma zero_hom {M N : Rep k G} : (0 : M ⟶ N).hom = 0 := rfl
 
 instance {M N : Rep k G} : SMul ℕ (M ⟶ N) where
@@ -720,7 +722,15 @@ lemma hom_hom_rightUnitor {X : Rep k G} : (ρ_ X).hom.hom =
 lemma hom_inv_rightUnitor {X : Rep k G} : (ρ_ X).inv.hom =
     (Representation.TensorProduct.rid k X.ρ).symm.toIntertwiningMap := rfl
 
+instance : MonoidalPreadditive (Rep.{u} k G) where
+  whiskerLeft_zero {_ _ _} := by ext1; simp
+  zero_whiskerRight {_ _ _} := by ext1; simp
+  whiskerLeft_add _ _ := by ext1; simp [add_hom]
+  add_whiskerRight _ _ := by ext1; simp [add_hom]
 
+instance : MonoidalLinear k (Rep.{u} k G) where
+  whiskerLeft_smul _ _ _ _ _ := by ext1; simp [smul_hom]
+  smul_whiskerRight _ _ _ _ _ := by ext1; simp [smul_hom]
 
 -- instance : (repIsoAction k G).functor.Monoidal :=
 --   Monoidal.instMonoidalTransportedInverseEquivalenceTransported (e := (repIsoAction k G).symm) ..

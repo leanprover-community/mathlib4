@@ -278,6 +278,16 @@ def symm (φ : Equiv ρ σ) : Equiv σ ρ where
     rw [← cancel_left φ.toLinearEquiv.injective, ← comp_assoc, ← comp_assoc, φ.1.2 g, φ.comp_symm,
       comp_assoc, φ.comp_symm, id_comp, comp_id]
 
+open LinearMap in
+lemma _root_.LinearEquiv.isIntertwining_symm_isIntertwining {e : V ≃ₗ[A] W}
+    (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) (g : G) :
+    e.symm ∘ₗ (σ g) = (ρ g) ∘ₗ e.symm := by
+  apply e.comp_toLinearMap_eq_iff _ _|>.1
+  rw [← comp_assoc, ← comp_assoc, he g, e.comp_symm, id_comp, comp_assoc, e.comp_symm, comp_id]
+
+lemma mk_symm {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
+    (mk e he).symm = mk e.symm (e.isIntertwining_symm_isIntertwining he) := rfl
+
 lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
 
 lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
@@ -498,6 +508,22 @@ lemma toLinearMap_tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π)
     (f.tensor g).toLinearMap = TensorProduct.map f.toLinearMap g.toLinearMap := rfl
 
 @[simp]
+lemma tensor_add_left (f₁ f₂ : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
+    (f₁ + f₂).tensor g = f₁.tensor g + f₂.tensor g := by ext; simp [TensorProduct.add_tmul]
+
+@[simp]
+lemma tensor_add_right (f : IntertwiningMap ρ σ) (g₁ g₂ : IntertwiningMap τ π) :
+    f.tensor (g₁ + g₂) = f.tensor g₁ + f.tensor g₂ := by ext; simp [TensorProduct.tmul_add]
+
+@[simp]
+lemma tensor_smul_left (a : A) (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
+    (a • f).tensor g = a • (f.tensor g) := by ext; simp [TensorProduct.smul_tmul]
+
+@[simp]
+lemma tensor_smul_right (f : IntertwiningMap ρ σ) (a : A) (g : IntertwiningMap τ π) :
+    f.tensor (a • g) = a • (f.tensor g) := by ext; simp [TensorProduct.tmul_smul]
+
+@[simp]
 lemma tensor_apply (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) (v : V) (w : U) :
     f.tensor g (v ⊗ₜ w) = f v ⊗ₜ g w := rfl
 
@@ -517,6 +543,17 @@ lemma lTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
 @[simp]
 lemma lTensor_id : lTensor ρ (id σ) = id (tprod ρ σ) := by ext; simp
 
+@[simp]
+lemma lTensor_zero : lTensor ρ (0 : IntertwiningMap σ τ) = 0 := by ext; simp
+
+@[simp]
+lemma lTensor_add (f₁ f₂ : IntertwiningMap σ τ) :
+    lTensor ρ (f₁ + f₂) = lTensor ρ f₁ + lTensor ρ f₂ := tensor_add_right _ _ _
+
+@[simp]
+lemma lTensor_smul (a : A) (f : IntertwiningMap σ τ) :
+    lTensor ρ (a • f) = a • lTensor ρ f := tensor_smul_right _ _ _
+
 variable (ρ) in
 /-- The natural intertwining map `σ.tprod ρ → τ.tprod ρ` induced by `f : σ → τ`. -/
 def rTensor (f : IntertwiningMap σ τ) :
@@ -532,6 +569,17 @@ lemma rTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
 
 @[simp]
 lemma rTensor_id : rTensor ρ (id σ) = id (tprod σ ρ) := by ext; simp
+
+@[simp]
+lemma rTensor_zero : rTensor ρ (0 : IntertwiningMap σ τ) = 0 := by ext; simp
+
+@[simp]
+lemma rTensor_add (f₁ f₂ : IntertwiningMap σ τ) :
+    rTensor ρ (f₁ + f₂) = rTensor ρ f₁ + rTensor ρ f₂ := tensor_add_left _ _ _
+
+@[simp]
+lemma rTensor_smul (a : A) (f : IntertwiningMap σ τ) :
+    rTensor ρ (a • f) = a • rTensor ρ f := tensor_smul_left _ _ _
 
 lemma rTensor_comp_lTensor (f : IntertwiningMap σ ρ) (g : IntertwiningMap ρ τ) :
     (f.rTensor τ).comp (g.lTensor σ) = f.tensor g := by ext; simp
