@@ -235,7 +235,6 @@ section MulAction_StarModule
 
 variable {R : Type*} [Monoid R] [Star R] [Star α] [MulAction R α] [StarModule R α]
 
-@[simp]
 theorem IsHermitian.of_smul {A : Matrix n n α} {k : R} [Invertible k] (h : (k • A).IsHermitian)
     (hk : IsSelfAdjoint k) : A.IsHermitian := by
   rw [IsHermitian, conjTranspose_smul, hk.star_eq] at h
@@ -243,7 +242,6 @@ theorem IsHermitian.of_smul {A : Matrix n n α} {k : R} [Invertible k] (h : (k �
 
 /-- Assumes `IsSelfAdjoint ⅟k` instead of `IsSelfAdjoint k`.
 These are equivalent given `StarMul R` -/
-@[simp]
 theorem IsHermitian.of_smul' {A : Matrix n n α} {k : R} [Invertible k] (h : (k • A).IsHermitian)
     (hk : IsSelfAdjoint ⅟k) : A.IsHermitian := by
   rw [← invOf_smul_smul k A]
