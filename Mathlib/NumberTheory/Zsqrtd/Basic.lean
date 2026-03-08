@@ -337,8 +337,7 @@ theorem mul_star {x y : ℤ} : (⟨x, y⟩ * star ⟨x, y⟩ : ℤ√d) = x * x 
 theorem intCast_dvd (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp only [add_zero, re_intCast, zero_mul, im_mul, dvd_mul_right, and_self_iff,
-      re_mul, mul_zero, im_intCast]
+    simp
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
     rw [smul_val, Zsqrtd.ext_iff]
