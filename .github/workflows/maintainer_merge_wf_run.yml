@@ -86,6 +86,12 @@ jobs:
           } | tee -a "$GITHUB_OUTPUT"
           printf 'comment<<EOF\n%s\nEOF\n' "${{ steps.bridge.outputs.comment }}${{ steps.legacy.outputs.comment }}" | tee -a "$GITHUB_OUTPUT"
 
+      - name: Note legacy artifact fallback
+        if: ${{ steps.inputs.outputs.input_source == 'legacy' }}
+        run: |
+          echo "::notice::Using legacy workflow-data artifact fallback from maintainer_merge.yml"
+          echo "Using legacy workflow-data artifact fallback from maintainer_merge.yml" >> "$GITHUB_STEP_SUMMARY"
+
       - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
         name: Check whether user is part of mathlib-reviewers team
         uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
@@ -125,6 +131,16 @@ jobs:
           message="$(
             "${CI_SCRIPTS_DIR}/maintainer/maintainer_merge_message.sh" "${AUTHOR}" "${{ steps.inputs.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE}" "${COMMENT}" "${PR_AUTHOR}"
           )"
+          trigger_name="${{ steps.inputs.outputs.event_name }}"
+          trigger_run_url="${{ github.event.workflow_run.html_url }}"
+          wf_run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          legacy_suffix=""
+          if [ "${{ steps.inputs.outputs.input_source }}" = "legacy" ]
+          then
+            legacy_suffix=" (legacy)"
+          fi
+          metadata=$'trigger_name: ['"${trigger_name}"$']('"${trigger_run_url}"$')\nwf_run: [workflow_run]('"${wf_run_url}"$')'"${legacy_suffix}"
+          message="${message}"$'\n\n---\n'"${metadata}"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
         env:
           AUTHOR: ${{ steps.inputs.outputs.author }}
@@ -147,6 +163,23 @@ jobs:
           topic: ${{ steps.determine_topic.outputs.topic }}
           content: ${{ steps.form_the_message.outputs.title }}
 
+      - name: Compose PR comment body
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        id: pr_comment
+        run: |
+          body="🚀 Pull request has been placed on the maintainer queue by ${{ steps.inputs.outputs.author }}."
+          trigger_name="${{ steps.inputs.outputs.event_name }}"
+          trigger_run_url="${{ github.event.workflow_run.html_url }}"
+          wf_run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          legacy_suffix=""
+          if [ "${{ steps.inputs.outputs.input_source }}" = "legacy" ]
+          then
+            legacy_suffix=" (legacy)"
+          fi
+          metadata=$'trigger_name: ['"${trigger_name}"$']('"${trigger_run_url}"$')\nwf_run: [workflow_run]('"${wf_run_url}"$')'"${legacy_suffix}"
+          body="${body}"$'\n\n---\n'"${metadata}"
+          printf 'body<<EOF\n%s\nEOF\n' "${body}" | tee -a "$GITHUB_OUTPUT"
+
       - name: Add comment to PR
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
@@ -154,8 +187,7 @@ jobs:
           # if a comment triggers the action, then `issue.number` is set
           # if a review or review comment triggers the action, then `pull_request.number` is set
           issue-number: ${{ steps.inputs.outputs.pr_number }}
-          body: |
-            🚀 Pull request has been placed on the maintainer queue by ${{ steps.inputs.outputs.author }}.
+          body: ${{ steps.pr_comment.outputs.body }}
 
       - if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         name: Generate app token

@@ -75,6 +75,12 @@ jobs:
             echo "input_source=${{ steps.bridge.outputs.pr_number != '' && 'bridge' || (steps.legacy.outputs.pr_number != '' && 'legacy' || 'none') }}"
           } | tee -a "$GITHUB_OUTPUT"
 
+      - name: Note legacy artifact fallback
+        if: ${{ steps.inputs.outputs.input_source == 'legacy' }}
+        run: |
+          echo "::notice::Using legacy workflow-data artifact fallback from maintainer_bors.yml"
+          echo "Using legacy workflow-data artifact fallback from maintainer_bors.yml" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Check whether user is a mathlib admin
         id: user_permission
         if: ${{ ! steps.inputs.outputs.mOrD == '' || ! steps.inputs.outputs.removeLabels == '' }}
