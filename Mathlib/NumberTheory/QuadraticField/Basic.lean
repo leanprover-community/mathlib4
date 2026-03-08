@@ -24,7 +24,6 @@ This file defines quadratic number fields `ℚ(√d)` as specializations of the
 * `Qsqrtd.trace` : The trace on `ℚ(√d)`, defined via `Algebra.trace`.
 * `QuadFieldParam d` : Class asserting that `d : ℤ` is a valid parameter for a quadratic
   number field (squarefree and `d ≠ 1`).
-* `QuadraticNumberField d` : The quadratic number field `ℚ(√d)` for a valid parameter `d`.
 
 ## Main Results
 
@@ -33,15 +32,13 @@ This file defines quadratic number fields `ℚ(√d)` as specializations of the
 * `Qsqrtd.zero_not_isReduced` : `ℚ(√0)` is not reduced (has nilpotents).
 * `Qsqrtd.one_not_isField` : `ℚ(√1) ≅ ℚ × ℚ` is not a field (has zero divisors).
 * `QuadFieldParam.not_isSquare` : A valid parameter is not a perfect square in `ℤ`.
-* `QuadraticNumberField.instField` : `ℚ(√d)` is a field for valid parameters.
-* `QuadraticNumberField.instNumberField` : `ℚ(√d)` is a number field.
-* `QuadraticNumberField.instIsQuadraticExtension` : `ℚ(√d)/ℚ` is a degree-2 extension.
+* For valid integer parameters, `Qsqrtd (d : ℚ)` is a field, a number field, and a quadratic
+  extension of `ℚ`.
 
 ## Implementation Notes
 
-The type `Qsqrtd d` is defined for any `d : ℚ`, while `QuadraticNumberField d` requires
-`d : ℤ` with a `QuadFieldParam d` instance (squarefree, `d ≠ 1`). The `QuadFieldParam`
-class packages exactly the conditions needed to ensure `ℚ(√d)` is a field.
+The type `Qsqrtd d` is defined for any `d : ℚ`. The `QuadFieldParam` class packages the
+conditions on an integer parameter `d : ℤ` needed to ensure `Qsqrtd (d : ℚ)` is a field.
 
 Common instances are provided for `-1`, `-3`, and any `d` with `|d|` prime.
 
@@ -83,7 +80,7 @@ private theorem leftMulMatrix_eq (x : Qsqrtd d) :
   simp
 
 /-- In the model `QuadraticAlgebra ℚ d 0`, the trace is `2 * x.re`. -/
-@[simp] theorem trace_eq_two_re (x : Qsqrtd d) :
+theorem trace_eq_two_re (x : Qsqrtd d) :
     Qsqrtd.trace x = 2 * x.re := by
   rw [trace_eq_re_add_re_star]
   simp
@@ -190,15 +187,10 @@ instance : QuadFieldParam (-3 : ℤ) := by
   letI : Fact (Nat.Prime ((-3 : ℤ).natAbs)) := ⟨by decide⟩
   exact inferInstance
 
-/-! ## Quadratic Number Field -/
-
-/-- The quadratic number field `ℚ(√d)` as a type, for valid parameter `d`. -/
-abbrev QuadraticNumberField (d : ℤ) [QuadFieldParam d] : Type := Qsqrtd (d : ℚ)
-
-namespace QuadraticNumberField
+/-! ## Valid Integer Parameters -/
 
 /-- `ℚ(√d)` is a field for any valid parameter `d`. -/
-instance instField {d : ℤ} [QuadFieldParam d] : Field (QuadraticNumberField d) := by
+instance instField {d : ℤ} [QuadFieldParam d] : Field (Qsqrtd (d : ℚ)) := by
   letI : Fact (∀ r : ℚ, r ^ 2 ≠ (d : ℚ) + 0 * r) := ⟨by
     intro r hr
     have hsqQ : IsSquare ((d : ℤ) : ℚ) := ⟨r, by nlinarith [hr]⟩
@@ -209,26 +201,24 @@ instance instField {d : ℤ} [QuadFieldParam d] : Field (QuadraticNumberField d)
 /-- The `Module ℚ` instance from the `Field` algebra structure on `ℚ(√d)` coincides with
 the `QuadraticAlgebra` module structure. This resolves the diamond between the two paths. -/
 private theorem module_eq (d : ℤ) [QuadFieldParam d] :
-    (Algebra.toModule : Module ℚ (QuadraticNumberField d)) =
+    (Algebra.toModule : Module ℚ (Qsqrtd (d : ℚ))) =
       QuadraticAlgebra.instModule := by
   refine Module.ext' _ _ ?_
   intro r x
   rw [Algebra.smul_def]
-  rw [show (algebraMap ℚ (QuadraticNumberField d) r) = QuadraticAlgebra.C r by
-        ext <;> simp [QuadraticNumberField]]
+  rw [show (algebraMap ℚ (Qsqrtd (d : ℚ)) r) = QuadraticAlgebra.C r by
+        ext <;> simp]
   rw [QuadraticAlgebra.C_mul_eq_smul]
 
 /-- `ℚ(√d)` is a number field: characteristic zero and finite-dimensional over `ℚ`. -/
 instance instNumberField {d : ℤ} [QuadFieldParam d] :
-    NumberField (QuadraticNumberField d) where
+    NumberField (Qsqrtd (d : ℚ)) where
   to_charZero := by infer_instance
   to_finiteDimensional := by
-    letI : Module ℚ (QuadraticNumberField d) := QuadraticAlgebra.instModule
-    exact module_eq d ▸ (inferInstance : Module.Finite ℚ (QuadraticNumberField d))
+    letI : Module ℚ (Qsqrtd (d : ℚ)) := QuadraticAlgebra.instModule
+    exact module_eq d ▸ (inferInstance : Module.Finite ℚ (Qsqrtd (d : ℚ)))
 
 /-- `ℚ(√d)/ℚ` is a quadratic extension: free of rank 2 over `ℚ`. -/
 instance instIsQuadraticExtension {d : ℤ} [QuadFieldParam d] :
-    Algebra.IsQuadraticExtension ℚ (QuadraticNumberField d) where
+    Algebra.IsQuadraticExtension ℚ (Qsqrtd (d : ℚ)) where
   finrank_eq_two' := module_eq d ▸ QuadraticAlgebra.finrank_eq_two (d : ℚ) 0
-
-end QuadraticNumberField
