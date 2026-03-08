@@ -714,6 +714,8 @@ theorem ramifiedPlacesOver_ncard [NumberField L] :
 variable {L}
 
 open scoped Classical in
+/-- Function sending `w : InfinitePlace L` to `w.embedding` if `w.embedding` lies over
+`v.embedding`, otherwise to its conjugate. -/
 private noncomputable def embeddingConjugateIte : L →+* ℂ :=
   if ComplexEmbedding.LiesOver w.embedding v.embedding then w.embedding else conjugate w.embedding
 
