@@ -454,7 +454,7 @@ theorem derivative_pow_succ (p : R[X]) (n : ℕ) :
 
 theorem derivative_pow (p : R[X]) (n : ℕ) :
     derivative (p ^ n) = C (n : R) * p ^ (n - 1) * derivative p :=
-  Nat.casesOn n (by rw [pow_zero, derivative_one, Nat.cast_zero, C_0, zero_mul, zero_mul]) fun n =>
+  Nat.casesOn n (by simp) fun n =>
     by rw [p.derivative_pow_succ n, Nat.add_one_sub_one, n.cast_succ]
 
 theorem derivative_sq (p : R[X]) : derivative (p ^ 2) = C 2 * p * derivative p := by
