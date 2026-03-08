@@ -271,8 +271,9 @@ theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
     M.verts.encard = 2 * M.edgeSet.encard := by
   classical
   by_cases! hMf : ¬ Finite M.verts
-  · suffices M.edgeSet.Infinite by simp only [Set.encard_eq_top_iff.mpr hMf, this,
-     Set.Infinite.encard_eq, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, ENat.mul_top]
+  · suffices M.edgeSet.Infinite by
+      simp [Set.encard_eq_top_iff.mpr hMf, this, Set.Infinite.encard_eq]
+      rfl
     by_contra!
     refine hMf <| helper h.toEdge (fun y ↦ ?_) this
     obtain ⟨x, hx⟩ : ∃ x : V × V, s(x.1, x.2) = y.1 := by apply Sym2.mk_surjective
@@ -297,7 +298,7 @@ theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
       simpa
     refine Sym2.ind fun x y hxy ↦ ?_
     use s(⟨x, M.edge_vert hxy⟩, ⟨y, M.edge_vert hxy.symm⟩)
-    simp only [edgeSet_coe, Set.mem_preimage, Sym2.map_pair_eq, and_true, hxy]
+    simp only [edgeSet_coe, Set.mem_preimage, Sym2.map_mk, and_true, hxy]
   rw [← this, Set.encard_eq_coe_toFinset_card M.verts,
    Set.encard_eq_coe_toFinset_card M.coe.edgeSet]
   rw [isMatching_iff_forall_degree] at h
@@ -946,7 +947,8 @@ lemma matchingNumber.of_subgraph {G : SimpleGraph V} (H : Subgraph G) :
     have hx2 : x.2 ∈ H.verts := hMH.1 <| M.edge_vert hx.symm
     replace hxy : s(f x.1, f x.2) = s(f y.1, f y.2) := hxy
     simp [f, hx1, hx2, hy1, hy2] at hxy
-    grind only [= Sym2.eq, = Sym2.rel_iff', = Prod.snd_swap, = Prod.fst_swap, #bd83, #96e6, #ee90]
+    grind only [= uncurry_apply_pair, = Sym2.eq, = Sym2.rel_iff', = Prod.snd_swap, = Prod.fst_swap,
+      #bd83, #96e6, #0ad0]
   have : M.edgeSet = ∅ := by
     by_contra!
     obtain ⟨x, y, hxy⟩ := Sym2.exists.mp this
