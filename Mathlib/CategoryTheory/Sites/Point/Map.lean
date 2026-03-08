@@ -113,6 +113,14 @@ lemma toPresheafFiberMap_presheafFiberMapObjIso_hom (P : Dᵒᵖ ⥤ A) (X : C) 
   IsColimit.comp_coconePointUniqueUpToIso_hom
     (Φ.isColimitPresheafFiberMapCocone F K P) _ ⟨X, x⟩
 
+@[reassoc (attr := simp)]
+lemma toPresheafFiber_presheafFiberMapObjIso_inv (P : Dᵒᵖ ⥤ A) (X : C) (x : Φ.fiber.obj X) :
+    Φ.toPresheafFiber X x (F.op ⋙ P) ≫ (Φ.presheafFiberMapObjIso F K P).inv =
+      Φ.toPresheafFiberMap F K P X x := by
+  simpa [-toPresheafFiberMap_presheafFiberMapObjIso_hom] using
+    (Φ.toPresheafFiberMap_presheafFiberMapObjIso_hom F K ..).symm =≫
+      (Φ.presheafFiberMapObjIso F K P).inv
+
 set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Relation between the fiber functors on presheaves for the points `Φ.map F K`
