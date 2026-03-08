@@ -87,25 +87,6 @@ lemma Functor.closedSievesFactorization_comp_closedSievesInclusion (J : Grothend
   ext
   simp
 
-section
-
-variable (C) in
-@[simps!]
-def Functor.terminal {D : Type*} [Category* D] {X : D} (_hX : IsTerminal X) : C ⥤ D :=
-  (Functor.const C).obj X
-
-variable (C) in
-@[simps!]
-def Functor.isTerminalTerminal {D : Type*} [Category* D] {X : D} (hX : IsTerminal X) :
-    IsTerminal (Functor.terminal C hX) :=
-  IsTerminal.ofUniqueHom (fun Y => {app Z := hX.from (Y.obj Z)}) (by intros; ext; apply hX.hom_ext)
-
-@[simp]
-lemma Functor.isTerminalTerminal_from_app {D : Type*} [Category* D] {X : D} (hX : IsTerminal X)
-    (F : C ⥤ D) (Y : C) : ((isTerminalTerminal C hX).from F).app Y = hX.from (F.obj Y) := rfl
-
-end
-
 variable (C) in
 /-- The truth morphism in the category of presheaves. At each component `X : C`, it is the constant
 map returning `⊤ : Sieve X`. -/
@@ -149,12 +130,10 @@ lemma Presheaf.isPullback_χ_truth {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶
 lemma Presheaf.χ_unique {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) (χ' : G ⟶ Functor.sieves C)
     (hχ' : IsPullback m ((Functor.isTerminalTerminal _ _).from _) χ' (truth C)) : χ' = χ m := by
   ext X x
-  simp [IsPullback.iff_app, Types.isPullback_iff] at hχ'
-  have h' (Y : Cᵒᵖ) : IsPullback (m.app Y) (fun _ => PUnit.unit) (χ'.app Y) ((truth C).app Y) := by
-    simpa using hχ'.app Y
-  simp_rw [Types.isPullback_iff] at h'
-  simp only [Functor.sieves_obj, and_true, truth_app, forall_const, forall_and] at h'
-  obtain ⟨h₁, h₂, h₃⟩ := h'
+  simp only [IsPullback.iff_app, Functor.terminal_obj, Functor.sieves_obj,
+    Functor.isTerminalTerminal_from_app, Types.isPullback_iff, Types.isTerminalPUnit_from_apply,
+    and_true, truth_app, forall_const, forall_and] at hχ'
+  obtain ⟨h₁, h₂, h₃⟩ := hχ'
   refine Sieve.ext fun Y f => ?_
   simp only [χ_app, Opposite.op_unop]
   rw [Sieve.mem_iff_pullback_eq_top,← Quiver.Hom.unop_op f,
