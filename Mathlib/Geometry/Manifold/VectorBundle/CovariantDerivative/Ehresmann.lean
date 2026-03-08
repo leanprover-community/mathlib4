@@ -260,7 +260,7 @@ lemma coordChangeL_mem_horiz [FiniteDimensional 𝕜 E]
   rw [hcove.mem_horiz_iff_exists, hcove'.mem_horiz_iff_exists]
   rintro ⟨s, sdiff, sxv, sxuw, covs⟩
   use fun x ↦ e.coordChangeL 𝕜 e' x (s x), ?_, ?_, ?_
-  · let X := extend E u
+  · let X := FiberBundle.extend E u
     -- have hX : MDiffAt (T% X) x := mdifferentiableAt_extend I E u
     -- TODO: investigate whether the following line comes from inconsistent ways to
     -- state assumptions

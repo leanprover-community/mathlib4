@@ -44,7 +44,7 @@ connection.
 
 -/
 
-open Bundle Function NormedSpace
+open Bundle FiberBundle Function NormedSpace
 open scoped Manifold ContDiff
 
 @[expose] public section -- TODO: think if we want to expose all definitions!
@@ -598,7 +598,7 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
   ext1 x
   apply congr_of_forall_product_apply
   intro Z₀
-  simpa [product] using congr($(h (_root_.extend E Z₀)) x)
+  simpa [product] using congr($(h (extend E Z₀)) x)
 
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined,
 at least on differentiable vector fields. -/
@@ -614,7 +614,7 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
   set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
   apply Φ.injective
   ext Z₀
-  let Z := _root_.extend E Z₀
+  let Z := extend E Z₀
   have hZ := mdifferentiableAt_extend I E Z₀
   suffices inner ℝ (cov Y x (X x)) (Z x) = inner ℝ (cov' Y x (X x)) (Z x) by simpa [Φ, Z]
   trans leviCivitaRhs I X Y Z x
@@ -830,7 +830,7 @@ lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   trans (inner ℝ (((LeviCivitaConnection I M) Y x) (X x)) Z) -
     (inner ℝ (((LeviCivitaConnection I M) X x) (Y x)) Z)
   · apply inner_sub_left
-  have hZ' : _root_.extend E Z x = Z := extend_apply_self Z
+  have hZ' : extend E Z x = Z := extend_apply_self E Z
   rw [← hZ']
   rw [leviCivitaConnection_apply I hY hX (mdifferentiableAt_extend ..)]
   rw [leviCivitaConnection_apply I hX hY (mdifferentiableAt_extend ..)]
@@ -840,7 +840,7 @@ lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   simp only [VectorField.mlieBracket_swap (V := Y) (W := X)]
   simp only [Pi.neg_apply, inner_neg_right, sub_neg_eq_add]
   set C := inner ℝ Z (VectorField.mlieBracket I X Y x)
-  set Z' := _root_.extend E Z
+  set Z' := extend E Z
   simp only [VectorField.mlieBracket_swap (V := Z') (W := X)]
   simp only [VectorField.mlieBracket_swap (V := Z') (W := Y)]
   simp only [Pi.neg_apply, inner_neg_right]

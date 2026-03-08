@@ -5,7 +5,8 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Extend
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 
