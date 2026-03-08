@@ -171,6 +171,7 @@ end Sublocale
 /-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
 The sublocales are ordered dually to the nuclei. -/
 @[simps] def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
+  --- The range of a nucleus is a sublocale.
   toFun n := {
     carrier := range n.ofDual,
     sInf_mem' a h := (by
@@ -181,6 +182,7 @@ The sublocales are ordered dually to the nuclei. -/
     exact n.monotone (sInf_le h1)),
     himp_mem' a b h := by rw [Nucleus.mem_range, ← h, Nucleus.map_himp_apply] at *
   }
+  --- The restriction from the locale X into a sublocale is a nucleus.
   invFun s := .toDual {
     toFun x := s.restrict x
     map_inf' _ _ := by simp [s.giRestrict.gc.u_inf]
@@ -200,6 +202,7 @@ The sublocales are ordered dually to the nuclei. -/
 
 namespace Sublocale
 
+/-- The restriction from the locale X into a sublocale is a nucleus. -/
 abbrev toNucleus (S : Sublocale X) : Nucleus X := (nucleusIsoSublocale.symm S).ofDual
 
 variable {S T : Sublocale X}
@@ -221,6 +224,7 @@ end Sublocale
 
 namespace Nucleus
 
+/-- The range of a nucleus is a sublocale. -/
 abbrev toSublocale (n : Nucleus X) : Sublocale X := nucleusIsoSublocale (OrderDual.toDual n)
 
 @[simp]
