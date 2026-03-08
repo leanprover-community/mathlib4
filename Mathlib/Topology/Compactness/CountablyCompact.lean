@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.Compactness.Lindelof
+public import Mathlib.Topology.Inseparable
 
 import Mathlib.Data.Fintype.Pigeonhole
 
@@ -61,6 +62,7 @@ def IsCountablyCompact (A : Set E) : Prop :=
 
 /-- A topological space is countably compact if every countably generated proper filter has a
 cluster point. -/
+@[mk_iff]
 class CountablyCompactSpace (E : Type*) [TopologicalSpace E] : Prop where
   isCountablyCompact_univ : IsCountablyCompact (Set.univ : Set E)
 
@@ -169,6 +171,44 @@ theorem IsSeqCompact.IsCountablyCompact (hA : IsSeqCompact A) :
     IsCountablyCompact A := isCountablyCompact_iff_seq_clusterPt.mpr fun _ h =>
     let ⟨a, ha, _, h_mono, h_tendsto⟩ := hA h
     ⟨a, ha, h_tendsto.mapClusterPt.of_comp h_mono.tendsto_atTop⟩
+
+instance [SequentialSpace E] [CountablyCompactSpace E] :
+    SeqCompactSpace E := by
+  by_contra!
+  simp_all only [seqCompactSpace_iff, IsSeqCompact, mem_univ, not_forall]
+  obtain ⟨x, hx⟩ := this
+  simp only [true_and, not_exists, not_and, exists_const] at hx
+  let A := ⋃ i, closure {x i}
+  have hc : IsClosed (⋃ i, closure {x i}) := by
+    refine IsSeqClosed.isClosed fun y l hy hy' => ?_
+    by_cases! hm : ∃ m, ∃ᶠ n in atTop, y n ∈ closure {x m}
+    · obtain ⟨m, pm⟩ := hm
+      exact subset_iUnion _ m (isClosed_closure.mem_of_frequently_of_tendsto pm hy')
+    · obtain ⟨φ, hφ1, hφ2⟩ : ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, y (φ n) ∈ closure {x (φ n)} := by
+        sorry
+      have := hy'.comp hφ1.tendsto_atTop
+      refine (hx l φ hφ1 (Tendsto.specializes (hy'.comp hφ1.tendsto_atTop) (fun n => ?_))).elim
+      sorry
+  have : IsCountablyCompact A :=
+    ((countablyCompactSpace_iff E).1 inferInstance).of_isClosed_subset hc (by simp)
+  obtain ⟨a, ha⟩ : ∃ a ∈ A, MapClusterPt a atTop x := by
+    refine isCountablyCompact_iff_seq_clusterPt.1 this x (fun n => ?_)
+    exact mem_iUnion_of_mem n <| subset_closure <| mem_singleton (x n)
+  obtain ⟨k, hk⟩ : ∃ k, ∀ n > k, a ∉ closure {x n} := by
+    by_contra!
+    obtain ⟨φ, hφ1, hφ2⟩ := Nat.exists_strictMono_subsequence this
+    refine hx a φ hφ1 (tendsto_atTop_nhds.2 fun U ha hUo => ⟨0, fun n _ => ?_⟩)
+    simpa using mem_closure_iff.1 (hφ2 n) U hUo ha
+  have : a ∉ ⋃ i, closure {x (i + (k + 1))} := by
+    simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using
+      fun i hi => hk i (by grind)
+  have : a ∈ ⋃ i, closure {x (i + (k + 1))} := by
+    have := mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
+    suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from h this
+    refine (IsClosed.closure_subset_iff (hc _)).2 ?_
+    simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
+    exact iUnion_mono fun i => subset_closure
+  grind
 
 /-- In a first-countable space, a countably compact set is sequentially compact. -/
 theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E]
