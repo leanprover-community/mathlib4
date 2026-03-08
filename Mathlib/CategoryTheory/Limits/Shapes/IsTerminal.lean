@@ -471,4 +471,36 @@ def IsTerminal.unop {X : Cᵒᵖ} (hX : IsTerminal X) : IsInitial X.unop :=
   IsInitial.ofUniqueHom (fun _ ↦ (hX.from _).unop)
     (fun _ _ ↦ Quiver.Hom.op_inj (hX.hom_ext _ _))
 
-end CategoryTheory.Limits
+end Limits
+
+namespace Functor
+open Limits
+variable (C : Type*) [Category* C] {D : Type*} [Category* D]
+
+@[simps!]
+def terminal {X : D} (_hX : IsTerminal X) : C ⥤ D :=
+  (Functor.const C).obj X
+
+def isTerminalTerminal {D : Type*} [Category* D] {X : D} (hX : IsTerminal X) :
+    IsTerminal (Functor.terminal C hX) :=
+  IsTerminal.ofUniqueHom (fun Y => {app Z := hX.from (Y.obj Z)}) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isTerminalTerminal_from_app {D : Type*} [Category* D] {X : D} (hX : IsTerminal X)
+    (F : C ⥤ D) (Y : C) : ((isTerminalTerminal C hX).from F).app Y = hX.from (F.obj Y) := rfl
+
+@[simps!]
+def initial {X : D} (_hX : IsInitial X) : C ⥤ D :=
+  (Functor.const C).obj X
+
+def isInitialInitial {D : Type*} [Category* D] {X : D} (hX : IsInitial X) :
+    IsInitial (Functor.initial C hX) :=
+  IsInitial.ofUniqueHom (fun Y => {app Z := hX.to (Y.obj Z)}) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isInitialInitial_to_app {D : Type*} [Category* D] {X : D} (hX : IsInitial X)
+    (F : C ⥤ D) (Y : C) : ((isInitialInitial C hX).to F).app Y = hX.to (F.obj Y) := rfl
+
+end Functor
+
+end CategoryTheory

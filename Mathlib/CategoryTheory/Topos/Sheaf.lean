@@ -87,11 +87,30 @@ lemma Functor.closedSievesFactorization_comp_closedSievesInclusion (J : Grothend
   ext
   simp
 
+section
+
+variable (C) in
+@[simps!]
+def Functor.terminal {D : Type*} [Category* D] {X : D} (_hX : IsTerminal X) : C ⥤ D :=
+  (Functor.const C).obj X
+
+variable (C) in
+@[simps!]
+def Functor.isTerminalTerminal {D : Type*} [Category* D] {X : D} (hX : IsTerminal X) :
+    IsTerminal (Functor.terminal C hX) :=
+  IsTerminal.ofUniqueHom (fun Y => {app Z := hX.from (Y.obj Z)}) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma Functor.isTerminalTerminal_from_app {D : Type*} [Category* D] {X : D} (hX : IsTerminal X)
+    (F : C ⥤ D) (Y : C) : ((isTerminalTerminal C hX).from F).app Y = hX.from (F.obj Y) := rfl
+
+end
+
 variable (C) in
 /-- The truth morphism in the category of presheaves. At each component `X : C`, it is the constant
 map returning `⊤ : Sieve X`. -/
 @[simps]
-def Presheaf.truth : (CategoryTheory.Functor.const _).obj PUnit ⟶ Functor.sieves C where
+def Presheaf.truth : Functor.terminal _ (Types.isTerminalPUnit) ⟶ Functor.sieves C where
   app X _ := (⊤ : Sieve X.unop)
 
 /--
@@ -109,34 +128,34 @@ def Presheaf.χ {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) :
     simp [ha, FunctorToTypes.naturality]⟩
 
 lemma Presheaf.comp_χ_eq {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) :
-    m ≫ Presheaf.χ m = ({app X _ := PUnit.unit} : F ⟶ _) ≫ Presheaf.truth C := by
+    m ≫ Presheaf.χ m = (Functor.isTerminalTerminal _ Types.isTerminalPUnit).from F ≫
+      Presheaf.truth C := by
   ext
   apply Sieve.ext
   simp [← FunctorToTypes.naturality F G m]
 
-lemma Presheaf.classifier_isPullback {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] :
-    IsPullback m ({app X _ := PUnit.unit}) (χ m) (truth C) := by
-  refine IsPullback.of_forall_isPullback_app (fun X => ?_)
+lemma Presheaf.isPullback_χ_truth {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] :
+    IsPullback m ((Functor.isTerminalTerminal _ Types.isTerminalPUnit).from F)
+      (χ m) (truth C) := by
+  refine IsPullback.of_forall_isPullback_app fun X => ?_
   rw [Types.isPullback_iff]
-  constructorm* _ ∧ _
-  · simpa using congr(($(comp_χ_eq m)).app X)
-  · simp only [and_true]
-    exact (mono_iff_injective _).mp inferInstance
-  · simp only [Functor.const_obj_obj, Functor.sieves_obj, truth_app, and_true, forall_const]
+  refine ⟨congr(($(comp_χ_eq m)).app X), ?_, ?_⟩
+  · simpa using (mono_iff_injective (m.app X)).mp (inferInstance)
+  · simp only [Functor.terminal_obj, Functor.sieves_obj, χ_app, Opposite.op_unop, truth_app,
+      Functor.isTerminalTerminal_from_app, and_true, forall_const]
     intro p hp
-    simp_rw [eq_comm]
-    simpa using congr($(hp).arrows (𝟙 _))
+    simpa [eq_comm] using congr($(hp).arrows (𝟙 _))
 
-lemma Presheaf.χ_unique {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G)
-    {χ₀' : F ⟶ ((Functor.const _).obj PUnit)} (χ' : G ⟶ Functor.sieves C)
-    (hχ' : IsPullback m χ₀' χ' (truth C)) : χ' = χ m := by
+lemma Presheaf.χ_unique {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) (χ' : G ⟶ Functor.sieves C)
+    (hχ' : IsPullback m ((Functor.isTerminalTerminal _ _).from _) χ' (truth C)) : χ' = χ m := by
   ext X x
+  simp [IsPullback.iff_app, Types.isPullback_iff] at hχ'
   have h' (Y : Cᵒᵖ) : IsPullback (m.app Y) (fun _ => PUnit.unit) (χ'.app Y) ((truth C).app Y) := by
     simpa using hχ'.app Y
   simp_rw [Types.isPullback_iff] at h'
   simp only [Functor.sieves_obj, and_true, truth_app, forall_const, forall_and] at h'
   obtain ⟨h₁, h₂, h₃⟩ := h'
-  refine Sieve.ext (fun Y f => ?_)
+  refine Sieve.ext fun Y f => ?_
   simp only [χ_app, Opposite.op_unop]
   rw [Sieve.mem_iff_pullback_eq_top,← Quiver.Hom.unop_op f,
     ← Functor.sieves_map C (f.op) (χ'.app X x),
@@ -146,21 +165,18 @@ lemma Presheaf.χ_unique {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G)
     obtain ⟨z, hz⟩ := h₃ _ _ h
     use z, hz.symm
   · rintro ⟨a, h⟩
-    rw [h, ← FunctorToTypes.comp, NatTrans.comp_app]
+    rw [h,← FunctorToTypes.comp, NatTrans.comp_app]
     simpa using congr($(h₁ (.op Y)) a)
 
--- TODO: weaken `hG` to `Presieve.IsSeparated J G` (or Presheaf.IsSeparated, if possible)
-lemma Presheaf.isClosed_χ_app_apply_of (J : GrothendieckTopology C)
+-- note: the argument `hG` uses `Presieve.IsSeparated` rather than `Presheaf.IsSeparated`,
+-- for lack of API relating them
+lemma Presheaf.isClosed_χ_app_apply_of_isSheaf_of_isSeparated (J : GrothendieckTopology C)
     {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m]
-    (hF : IsSheaf J F) (hG : IsSheaf J G) :
+    (hF : IsSheaf J F) (hG : Presieve.IsSeparated J G) :
     ∀ ⦃X : Cᵒᵖ⦄ (x : G.obj X), J.IsClosed ((Presheaf.χ m).app X x) := by
   intro X x Y f hf
   simp only [χ_app, Opposite.op_unop]
-  have foo : Presieve.IsSheafFor F (((χ m).app X x).pullback f).arrows := by
-    exact hF.isSheafFor _ hf
-  have foo₂ : Presieve.IsSheafFor G (((χ m).app X x).pullback f).arrows := by
-    exact hG.isSheafFor _ hf
-  refine ⟨foo.amalgamate (fun Z g hg => hg.choose) ?_, ?_⟩
+  refine ⟨(hF.isSheafFor _ hf).amalgamate (fun Z g hg => hg.choose) ?_, ?_⟩
   · introv Y₁ h
     simp only [Opposite.op_unop, op_comp, FunctorToTypes.map_comp_apply]
     have : (m.app (.op Z)).Injective := by
@@ -169,22 +185,22 @@ lemma Presheaf.isClosed_χ_app_apply_of (J : GrothendieckTopology C)
     apply this
     simp_rw [FunctorToTypes.naturality]
     generalize_proofs h1 h2
-    rw [← h1.choose_spec, ← h2.choose_spec]
-    simp_rw [← FunctorToTypes.map_comp_apply, ← op_comp, reassoc_of% h]
-  · simp only [Sieve.pullback_apply, Opposite.op_unop, op_comp, FunctorToTypes.map_comp_apply]
+    rw [← h1.choose_spec,← h2.choose_spec]
+    simp_rw [← FunctorToTypes.map_comp_apply,← op_comp, reassoc_of% h]
+  · simp only [χ_app, Opposite.op_unop, Sieve.pullback_apply, op_comp,
+      FunctorToTypes.map_comp_apply]
+    refine (hG _ hf).ext (fun Z f' hf' => ?_)
     generalize_proofs h1 h2 h3
-    refine (foo₂.isSeparatedFor).ext (fun Z f' hf' => ?_)
-    rw [← FunctorToTypes.naturality, foo.valid_glue _ _ hf', ← (h1 _ _ _).choose_spec]
+    rw [← FunctorToTypes.naturality, h2.valid_glue _ _ hf',← (h3 _ _ _).choose_spec]
     exact hf'
 
 variable (C) in
 /-- A construction of a subject classifier in a category of presheaves. -/
 @[simps! Ω truth Ω₀ χ χ₀]
 def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
-  .mkOfTerminalΩ₀ ((Functor.const _).obj PUnit)
-    (.ofUniqueHom (fun _ => {app _ _ := .unit}) (by aesop)) (Functor.sieves C)
-    (Presheaf.truth C) (Presheaf.χ ·) Presheaf.classifier_isPullback
-      (Presheaf.χ_unique ·)
+  .mkOfTerminalΩ₀ (Functor.terminal _ (Types.isTerminalPUnit))
+    (Functor.isTerminalTerminal _ (Types.isTerminalPUnit)) (Functor.sieves C) (Presheaf.truth C)
+    (Presheaf.χ ·) Presheaf.isPullback_χ_truth (Presheaf.χ_unique ·)
 
 /-- Presheaf categories on an essentially small domain have a subobject classifier. -/
 instance [EssentiallySmall.{w} C] : HasClassifier (Cᵒᵖ ⥤ Type w) where
@@ -219,7 +235,8 @@ to the (closed) sieve on X where `f : Y → X` is in the sieve iff
 def Sheaf.χ {J : GrothendieckTopology C} {F G : Sheaf J (Type max u v)} (m : F ⟶ G) [Mono m] :
     G ⟶ Sheaf.Ω where
   hom := closedSievesFactorization J (Presheaf.χ m.hom)
-    (Presheaf.isClosed_χ_app_apply_of J m.hom F.property G.property)
+    (Presheaf.isClosed_χ_app_apply_of_isSheaf_of_isSeparated J m.hom F.property
+      ((isSheaf_iff_isSheaf_of_type _ _).mp G.property).isSeparated)
 
 lemma Sheaf.classifier_isPullback {J : GrothendieckTopology C} {F G : Sheaf J (Type max u v)}
     (m : F ⟶ G) [Mono m] : IsPullback m ((isTerminalTerminal J _).from F) (Sheaf.χ m)
@@ -236,7 +253,7 @@ lemma Sheaf.classifier_isPullback {J : GrothendieckTopology C} {F G : Sheaf J (T
       ((cancel_mono (closedSievesInclusion _)).mp (by simpa using Presheaf.comp_χ_eq _))
       (.of_horiz_isIso_mono ⟨_⟩ : IsPullback (𝟙 _) _ (Presheaf.χ m.hom) (closedSievesInclusion J))
     · simp only [Category.comp_id, closedSievesFactorization_comp_closedSievesInclusion]
-      exact Presheaf.classifier_isPullback m.hom
+      exact Presheaf.isPullback_χ_truth m.hom
     · simp_all [closedSievesFactorization_comp_closedSievesInclusion]
 
 lemma Sheaf.χ_unique {J : GrothendieckTopology C} {F G : Sheaf J (Type max u v)} (m : F ⟶ G)
@@ -260,7 +277,7 @@ and `truth` maps for each object `X : C`, an element of `PUnit` to the maximal `
 always closed.
 -/
 @[simps! Ω truth Ω₀ χ χ₀]
-noncomputable def Sheaf.classifier (J : GrothendieckTopology C) :
+def Sheaf.classifier (J : GrothendieckTopology C) :
     Classifier (Sheaf J (Type max u v)) :=
   .mkOfTerminalΩ₀ (.terminal J Types.isTerminalPUnit) (isTerminalTerminal _ _) Sheaf.Ω
     Sheaf.truth Sheaf.χ Sheaf.classifier_isPullback Sheaf.χ_unique
