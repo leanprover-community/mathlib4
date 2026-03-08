@@ -404,7 +404,6 @@ def Submodule.inductionOnRank {R M} [Ring R] [StrongRankCondition R] [AddCommGro
   Submodule.inductionOnRankAux b P ih (Fintype.card ι) N fun hs hli => by
     simpa using b.card_le_card_of_linearIndependent hli
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S` a module-finite free `R`-algebra, then the `R`-rank of a nonzero `R`-free
 ideal `I` of `S` is the same as the rank of `S`. -/
 theorem Ideal.rank_eq {R S : Type*} [CommRing R] [StrongRankCondition R] [Ring S] [IsDomain S]
@@ -511,6 +510,11 @@ theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
   have := Module.rank_lt_aleph0 R M
   rw [← not_le] at this
   simp [Module.finrank, this, Module.rank_zero_iff_of_free]
+
+@[simp]
+theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Module.Finite R M] [Subsingleton M] :
+    Module.finrank R M = 0 :=
+  (finrank_eq_zero_iff_of_free R M).mpr inferInstance
 
 theorem finrank_pos_iff_of_free [Module.Free R M] [Module.Finite R M] :
     0 < Module.finrank R M ↔ Nontrivial M := by

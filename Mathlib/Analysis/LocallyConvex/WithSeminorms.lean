@@ -587,7 +587,7 @@ theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
   ext s
   refine ⟨fun hs ↦ ?_, fun hs ↦ ?_⟩
   · /- Show that a neighborhood `s` of zero for the topology is a neighborhood for `p`, by using the
-    boundedess of `p.ball 0 1`: this ensures that, for some nonzero `c`, we have
+    boundedness of `p.ball 0 1`: this ensures that, for some nonzero `c`, we have
     `p.ball 0 1 ⊆ c • s`, and therefore `p.ball 0 (‖c‖⁻¹) ⊆ s`. -/
     obtain ⟨c, hc, c_ne⟩ : ∃ (c : 𝕜), p.ball 0 1 ⊆ c • s ∧ c ≠ 0 :=
       ((h' hs).and (eventually_ne_cobounded 0)).exists
@@ -663,7 +663,7 @@ theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   refine continuous_of_continuous_comp hq _ fun i => ?_
   rcases hf i with ⟨s, C, hC⟩
   rw [← Seminorm.finset_sup_smul] at hC
-  -- Note: we deduce continuouty of `s.sup (C • p)` from that of `∑ i ∈ s, C • p i`.
+  -- Note: we deduce continuity of `s.sup (C • p)` from that of `∑ i ∈ s, C • p i`.
   -- The reason is that there is no `continuous_finset_sup`, and even if it were we couldn't
   -- really use it since `ℝ` is not an `OrderBot`.
   refine Seminorm.continuous_of_le ?_ (hC.trans <| Seminorm.finset_sup_le_sum _ _)
@@ -983,7 +983,6 @@ theorem Topology.IsInducing.polynormableSpace [PolynormableSpace 𝕜₂ F]
     PolynormableSpace 𝕜 E :=
   hf.withSeminorms (PolynormableSpace.withSeminorms 𝕜₂ F) |>.toPolynormableSpace
 
-set_option backward.isDefEq.respectTransparency false in
 instance [PolynormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
     PolynormableSpace 𝕜₂ S :=
   IsInducing.polynormableSpace (f := S.subtype) .subtypeVal
