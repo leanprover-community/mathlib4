@@ -61,9 +61,6 @@ abbrev trace (x : Qsqrtd d) : ℚ := x.re + (star x).re
 /-- The norm of `x : ℚ(√d)`, defined as `N(x) = x · x̄ = x.re² - d · x.im²`. -/
 abbrev norm (x : Qsqrtd d) : ℚ := QuadraticAlgebra.norm x
 
-/-- The canonical embedding of `ℚ` into `ℚ(√d)`, mapping `r ↦ r + 0·√d`. -/
-abbrev embed (r : ℚ) : Qsqrtd d := algebraMap ℚ (Qsqrtd d) r
-
 /-! ### Degeneracies -/
 
 /-- `ℚ(√0)` is not reduced because `√0² = 0` but `√0 ≠ 0`. -/
