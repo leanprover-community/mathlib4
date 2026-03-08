@@ -10,6 +10,7 @@ on:
 permissions:
   actions: read
   contents: read
+  pull-requests: write
 
 jobs:
   ping_zulip:
@@ -36,7 +37,54 @@ jobs:
             event_name=meta.event_name
             mOrD=outputs.mOrD
 
-      - if: ${{ ! steps.bridge.outputs.mOrD == '' }}
+      - name: Download legacy artifact (fallback)
+        id: download-legacy-artifact
+        if: ${{ steps.bridge.outputs.mOrD == '' }}
+        uses: dawidd6/action-download-artifact@5c98f0b039f36ef966fdb7dfa9779262785ecb05 # v14
+        with:
+          workflow: maintainer_merge.yml
+          name: workflow-data
+          path: ./artifacts
+          if_no_artifact_found: ignore
+          run_id: ${{ github.event.workflow_run.id }}
+
+      - name: Extract legacy artifact data (fallback)
+        id: legacy
+        if: ${{ steps.bridge.outputs.mOrD == '' && steps.download-legacy-artifact.outputs.found_artifact == 'true' }}
+        run: |
+          data_file="./artifacts/artifact-data.json"
+          if [ ! -f "${data_file}" ]
+          then
+            echo "Legacy artifact not found at ${data_file}."
+            exit 0
+          fi
+          {
+            echo "author=$(jq -r '.author // empty' "${data_file}")"
+            echo "pr_author=$(jq -r '.pr_author // empty' "${data_file}")"
+            echo "pr_number=$(jq -r '.pr_number // empty' "${data_file}")"
+            echo "pr_title=$(jq -r '.pr_title // empty' "${data_file}")"
+            echo "pr_url=$(jq -r '.pr_url // empty' "${data_file}")"
+            echo "event_name=$(jq -r '.event_name // empty' "${data_file}")"
+            echo "mOrD=$(jq -r '.mOrD // .m_or_d // empty' "${data_file}")"
+          } >> "$GITHUB_OUTPUT"
+          comment="$(jq -r '.comment // empty' "${data_file}")"
+          printf 'comment<<EOF\n%s\nEOF\n' "${comment}" >> "$GITHUB_OUTPUT"
+
+      - name: Select bridge or legacy inputs
+        id: inputs
+        run: |
+          {
+            echo "author=${{ steps.bridge.outputs.author }}${{ steps.legacy.outputs.author }}"
+            echo "pr_author=${{ steps.bridge.outputs.pr_author }}${{ steps.legacy.outputs.pr_author }}"
+            echo "pr_number=${{ steps.bridge.outputs.pr_number }}${{ steps.legacy.outputs.pr_number }}"
+            echo "pr_title=${{ steps.bridge.outputs.pr_title }}${{ steps.legacy.outputs.pr_title }}"
+            echo "pr_url=${{ steps.bridge.outputs.pr_url }}${{ steps.legacy.outputs.pr_url }}"
+            echo "event_name=${{ steps.bridge.outputs.event_name }}${{ steps.legacy.outputs.event_name }}"
+            echo "mOrD=${{ steps.bridge.outputs.mOrD }}${{ steps.legacy.outputs.mOrD }}"
+          } >> "$GITHUB_OUTPUT"
+          printf 'comment<<EOF\n%s\nEOF\n' "${{ steps.bridge.outputs.comment }}${{ steps.legacy.outputs.comment }}" >> "$GITHUB_OUTPUT"
+
+      - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
         name: Check whether user is part of mathlib-reviewers team
         uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
         id: actorTeams
@@ -44,7 +92,7 @@ jobs:
           organization: leanprover-community # optional. Default value ${{ github.repository_owner }}
                   # Organization to get membership from.
           team: 'mathlib-reviewers'
-          username: ${{ steps.bridge.outputs.author }}
+          username: ${{ steps.inputs.outputs.author }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
       - name: Checkout local actions
@@ -66,24 +114,24 @@ jobs:
           "${CI_SCRIPTS_DIR}/maintainer/get_tlabel.sh" "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}
+          PR_NUMBER: ${{ steps.inputs.outputs.pr_number }}
 
       - name: Form the message
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         id: form_the_message
         run: |
           message="$(
-            "${CI_SCRIPTS_DIR}/maintainer/maintainer_merge_message.sh" "${AUTHOR}" "${{ steps.bridge.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE}" "${COMMENT}" "${PR_AUTHOR}"
+            "${CI_SCRIPTS_DIR}/maintainer/maintainer_merge_message.sh" "${AUTHOR}" "${{ steps.inputs.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE}" "${COMMENT}" "${PR_AUTHOR}"
           )"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
         env:
-          AUTHOR: ${{ steps.bridge.outputs.author }}
-          EVENT_NAME: ${{ steps.bridge.outputs.event_name }}
-          PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}
-          PR_URL: ${{ steps.bridge.outputs.pr_url }}
-          PR_TITLE: ${{ steps.bridge.outputs.pr_title }}
-          COMMENT: ${{ steps.bridge.outputs.comment }}
-          PR_AUTHOR: ${{ steps.bridge.outputs.pr_author }}
+          AUTHOR: ${{ steps.inputs.outputs.author }}
+          EVENT_NAME: ${{ steps.inputs.outputs.event_name }}
+          PR_NUMBER: ${{ steps.inputs.outputs.pr_number }}
+          PR_URL: ${{ steps.inputs.outputs.pr_url }}
+          PR_TITLE: ${{ steps.inputs.outputs.pr_title }}
+          COMMENT: ${{ steps.inputs.outputs.comment }}
+          PR_AUTHOR: ${{ steps.inputs.outputs.pr_author }}
 
       - name: Send message on Zulip
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
@@ -103,9 +151,9 @@ jobs:
         with:
           # if a comment triggers the action, then `issue.number` is set
           # if a review or review comment triggers the action, then `pull_request.number` is set
-          issue-number: ${{ steps.bridge.outputs.pr_number }}
+          issue-number: ${{ steps.inputs.outputs.pr_number }}
           body: |
-            🚀 Pull request has been placed on the maintainer queue by ${{ steps.bridge.outputs.author }}.
+            🚀 Pull request has been placed on the maintainer queue by ${{ steps.inputs.outputs.author }}.
 
       - if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         name: Generate app token
@@ -124,5 +172,5 @@ jobs:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const { owner, repo } = context.repo;
-            const issue_number = ${{ steps.bridge.outputs.pr_number }};
+            const issue_number = ${{ steps.inputs.outputs.pr_number }};
             await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['maintainer-merge'] });
