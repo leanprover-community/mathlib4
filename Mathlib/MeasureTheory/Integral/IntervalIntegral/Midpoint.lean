@@ -300,10 +300,6 @@ lemma IsClosed_uIcc {a b : ℝ} (hab : a ≠ b) : IsClosed [[a, b]] := by
   · simp [uIcc_of_lt h, isClosed_Icc]
   · simp [uIcc_of_gt h, isClosed_Icc]
 
--- lemma mid_mem_uIcc {a b : ℝ} : (a + b) / 2 ∈ [[a, b]] := by
-
-
-
 theorem midpoint_error_le_1 {f : ℝ → ℝ} {a b : ℝ}
     (hF : ContDiffOn ℝ 1 f (uIcc a b))
     (hF_diff : DifferentiableOn ℝ (iteratedDerivWithin 1 f (uIcc a b)) (uIoo a b))
@@ -311,119 +307,98 @@ theorem midpoint_error_le_1 {f : ℝ → ℝ} {a b : ℝ}
     |midpoint_error f 1 a b| ≤ |b - a| ^ 3 * M / 24 := by
   by_cases eq : a = b
   · simp [eq]
-  · let F : ℝ → ℝ := fun x => ∫ y in a..x, f y
-    let s : Set ℝ := [[a, b]]
-    have hs : UniqueDiffOn ℝ s := uniqueDiffOn_uIcc eq
-    have hcont : ContinuousOn f s := hF.continuousOn
-    have hF_int : IntervalIntegrable f volume a b := by
-      simpa [s] using hcont.intervalIntegrable
-    have hdiff : DifferentiableOn ℝ F s := by
-      intro x hx
-      letI : Fact (x ∈ s) := ⟨hx⟩
-      have hFx_int : IntervalIntegrable f volume a x := by
-        refine hF_int.mono_set ?_
-        intro y hy
-        simp only [s, Set.mem_uIcc] at hx hy ⊢
-        grind
-      have hmeas : StronglyMeasurableAtFilter f (nhdsWithin x s) volume :=
-        hcont.stronglyMeasurableAtFilter_nhdsWithin (by simpa [s] using measurableSet_uIcc) x
-      have hcontx : ContinuousWithinAt f s x := hcont x hx
-      have hderiv :
-          HasDerivWithinAt (fun u : ℝ => ∫ y : ℝ in a..u, f y) (f x) s x :=
-        intervalIntegral.integral_hasDerivWithinAt_right hFx_int hmeas hcontx
-      simpa [F] using hderiv.differentiableWithinAt
-    have hderiv_eq : ∀ x ∈ s, derivWithin F s x = f x := by
-      intro x hx
-      letI : Fact (x ∈ s) := ⟨hx⟩
-      have hFx_int : IntervalIntegrable f volume a x := by
-        refine hF_int.mono_set ?_
-        intro y hy
-        simp only [s, Set.mem_uIcc] at hx hy ⊢
-        grind
-      have hmeas : StronglyMeasurableAtFilter f (nhdsWithin x s) volume :=
-        hcont.stronglyMeasurableAtFilter_nhdsWithin (by simpa [s] using measurableSet_uIcc) x
-      have hcontx : ContinuousWithinAt f s x := hcont x hx
-      simpa [F] using
-        (intervalIntegral.derivWithin_integral_right
-          hFx_int hmeas hcontx (hs x hx))
-    have hderiv_cont : ContDiffOn ℝ 1 (derivWithin F s) s := by
-      refine hF.congr ?_
-      intro x hx
-      exact Real.ext_cauchy (congrArg Real.cauchy (hderiv_eq x hx))
-    have h_main : |F b - F a - derivWithin F (uIcc a b) ((a + b) / 2) * (b - a)| ≤
-      |b - a| ^ 3 * M / 24 := by
-      refine deriv_error_le ?_ ?_ ?_
-      · simp only [F]
-        rw [show (2 : WithTop ℕ∞) = 1 + 1 by norm_num]
-        rw [contDiffOn_succ_iff_derivWithin hs]
-        refine ⟨hdiff, ?_, hderiv_cont⟩
-        intro htop
-        cases htop
-      · have hF_diff' : DifferentiableOn ℝ (iteratedDerivWithin 1 f s) (uIoo a b) := by
-          simpa [s] using hF_diff
-        refine hF_diff'.congr ?_
-        intro x hx
-        have hxs : x ∈ s := (Set.uIoo_subset_uIcc_self hx)
+  let F : ℝ → ℝ := fun x => ∫ y in a..x, f y
+  have hcont : ContinuousOn f [[a, b]] := hF.continuousOn
+  have hF_int : IntervalIntegrable f volume a b := by
+    simpa using hcont.intervalIntegrable
+  have hdiff : DifferentiableOn ℝ F [[a, b]] := by
+    intro x hx
+    letI : Fact (x ∈ [[a, b]]) := ⟨hx⟩
+    have hFx_int : IntervalIntegrable f volume a x := by
+      refine hF_int.mono_set ?_
+      intro y hy
+      grind [Set.mem_uIcc]
+    have hmeas : StronglyMeasurableAtFilter f (nhdsWithin x [[a, b]]) volume :=
+      hcont.stronglyMeasurableAtFilter_nhdsWithin (by simpa using measurableSet_uIcc) x
+    have hderiv : HasDerivWithinAt (fun u : ℝ => ∫ y : ℝ in a..u, f y) (f x) [[a, b]] x :=
+      intervalIntegral.integral_hasDerivWithinAt_right hFx_int hmeas (hcont x hx)
+    simpa [F] using hderiv.differentiableWithinAt
+  have hderiv_eq : ∀ x ∈ [[a, b]], derivWithin F [[a, b]] x = f x := by
+    intro x hx
+    letI : Fact (x ∈ [[a, b]]) := ⟨hx⟩
+    have hFx_int : IntervalIntegrable f volume a x := by
+      refine hF_int.mono_set ?_
+      intro y hy
+      simp only [Set.mem_uIcc] at hx hy ⊢
+      grind
+    have hmeas : StronglyMeasurableAtFilter f (nhdsWithin x [[a, b]]) volume :=
+      hcont.stronglyMeasurableAtFilter_nhdsWithin (by simpa using measurableSet_uIcc) x
+    have hcontx : ContinuousWithinAt f [[a, b]] x := hcont x hx
+    simpa [F] using (intervalIntegral.derivWithin_integral_right
+        hFx_int hmeas hcontx (uniqueDiffOn_uIcc eq x hx))
+  have hderiv_cont : ContDiffOn ℝ 1 (derivWithin F [[a, b]]) [[a, b]] := by
+    refine hF.congr ?_
+    intro x hx
+    exact Real.ext_cauchy (congrArg Real.cauchy (hderiv_eq x hx))
+  have h_midpoint : |midpoint_error f 1 a b|
+      = |F b - F a - derivWithin F (uIcc a b) ((a + b) / 2) * (b - a)| := by
+    unfold F midpoint_error midpoint_integral
+    rw [Nat.cast_one, div_one, Finset.range_one, one_div, sum_singleton, CharP.cast_eq_zero,
+      zero_add, integral_same, sub_zero, hderiv_eq ((a + b) / 2)]
+    · grind
+    · grind [Set.mem_uIcc]
+  rw [h_midpoint]
+  refine deriv_error_le ?_ ?_ ?_
+  · rw [show (2 : WithTop ℕ∞) = 1 + 1 by norm_num,
+      contDiffOn_succ_iff_derivWithin (uniqueDiffOn_uIcc eq)]
+    exact ⟨hdiff, by simp, hderiv_cont⟩
+  · have hF_diff' : DifferentiableOn ℝ (iteratedDerivWithin 1 f [[a, b]]) (uIoo a b) :=
+      DifferentiableOn.mono hF_diff fun ⦃a_1⦄ a ↦ a
+    refine hF_diff'.congr ?_
+    intro x hx
+    calc
+      _ = derivWithin (derivWithin F [[a, b]]) [[a, b]] x := by
+        simp [iteratedDerivWithin_succ]
+      _ = derivWithin f [[a, b]] x :=
+        derivWithin_congr (EqOn.trans hderiv_eq fun ⦃x⦄ ↦ congrFun rfl)
+          (hderiv_eq x (Set.uIoo_subset_uIcc_self hx))
+      _ = iteratedDerivWithin 1 f [[a, b]] x := by
+        simp
+  · intro x
+    have hEq2 : Set.EqOn (iteratedDerivWithin 2 F [[a, b]])
+        (iteratedDerivWithin 1 f [[a, b]]) [[a, b]] := by
+      intro y hy
+      calc
+        _ = derivWithin (derivWithin F [[a, b]]) [[a, b]] y := by
+          simp [iteratedDerivWithin_succ]
+        _   = derivWithin f [[a, b]] y := by
+          apply derivWithin_congr
+          · intro z hz
+            exact hderiv_eq z hz
+          · exact hderiv_eq y hy
+        _ = iteratedDerivWithin 1 f [[a, b]] y := by
+          simp
+    by_cases hx : x ∈ [[a, b]]
+    · have hEq3 : iteratedDerivWithin 3 F [[a, b]] x = iteratedDerivWithin 2 f [[a, b]] x := by
         calc
-          iteratedDerivWithin 2 F s x
-              = derivWithin (derivWithin F s) s x := by
-                  simp [iteratedDerivWithin_succ]
-          _   = derivWithin f s x := by
-                  apply derivWithin_congr
-                  · intro y hy
-                    exact hderiv_eq y hy
-                  · exact hderiv_eq x hxs
-          _   = iteratedDerivWithin 1 f s x := by
-                  simp
-      · intro x
-        change |iteratedDerivWithin 3 F s x| ≤ M
-        have hEq2 : Set.EqOn (iteratedDerivWithin 2 F s) (iteratedDerivWithin 1 f s) s := by
-          intro y hy
-          calc
-            iteratedDerivWithin 2 F s y
-                = derivWithin (derivWithin F s) s y := by
-                    simp [iteratedDerivWithin_succ]
-            _   = derivWithin f s y := by
-                    apply derivWithin_congr
-                    · intro z hz
-                      exact hderiv_eq z hz
-                    · exact hderiv_eq y hy
-            _   = iteratedDerivWithin 1 f s y := by
-                    simp
-        by_cases hx : x ∈ s
-        · have hEq3 :
-              iteratedDerivWithin 3 F s x = iteratedDerivWithin 2 f s x := by
-            calc
-              iteratedDerivWithin 3 F s x
-                  = derivWithin (iteratedDerivWithin 2 F s) s x := by
-                      simp [iteratedDerivWithin_succ]
-              _   = derivWithin (iteratedDerivWithin 1 f s) s x := by
-                      apply derivWithin_congr hEq2
-                      exact hEq2 hx
-              _   = iteratedDerivWithin 2 f s x := by
-                      simp [iteratedDerivWithin_succ]
-          simpa [hEq3] using fpp_bound x
-        · have hs_closed : IsClosed s := IsClosed_uIcc eq
-          have hx_closure : x ∉ closure s := by
-            simpa [hs_closed.closure_eq] using hx
-          have h3zero : iteratedDerivWithin 3 F s x = 0 := by
-            simpa [iteratedDerivWithin_succ] using
-              (derivWithin_zero_of_notMem_closure
-                (f := iteratedDerivWithin 2 F s) (x := x) (s := s) hx_closure)
-          have h2zero : iteratedDerivWithin 2 f s x = 0 := by
-            simpa [iteratedDerivWithin_succ] using
-              (derivWithin_zero_of_notMem_closure
-                (f := iteratedDerivWithin 1 f s) (x := x) (s := s) hx_closure)
-          grind
-    have h_midpoint : |midpoint_error f 1 a b|
-        = |F b - F a - derivWithin F (uIcc a b) ((a + b) / 2) * (b - a)| := by
-      unfold F midpoint_error midpoint_integral
-      rw [Nat.cast_one, div_one, Finset.range_one, one_div, sum_singleton, CharP.cast_eq_zero,
-        zero_add, integral_same, sub_zero, hderiv_eq ((a + b) / 2)]
-      · grind
-      · grind [Set.mem_uIcc]
-    rw [h_midpoint]
-    exact h_main
+          _ = derivWithin (iteratedDerivWithin 2 F [[a, b]]) [[a, b]] x := by
+            simp [iteratedDerivWithin_succ]
+          _ = derivWithin (iteratedDerivWithin 1 f [[a, b]]) [[a, b]] x := by
+            apply derivWithin_congr hEq2
+            exact hEq2 hx
+          _ = iteratedDerivWithin 2 f [[a, b]] x := by
+            simp [iteratedDerivWithin_succ]
+      simpa [hEq3] using fpp_bound x
+    · have hs_closed : IsClosed [[a, b]] := IsClosed_uIcc eq
+      have hx_closure : x ∉ closure [[a, b]] := by
+        simpa [hs_closed.closure_eq] using hx
+      have h3zero : iteratedDerivWithin 3 F [[a, b]] x = 0 := by
+        simpa [iteratedDerivWithin_succ] using (derivWithin_zero_of_notMem_closure
+            (f := iteratedDerivWithin 2 F [[a, b]]) (x := x) (s := [[a, b]]) hx_closure)
+      have h2zero : iteratedDerivWithin 2 f [[a, b]] x = 0 := by
+        simpa [iteratedDerivWithin_succ] using (derivWithin_zero_of_notMem_closure
+            (f := iteratedDerivWithin 1 f [[a, b]]) (x := x) (s := [[a, b]]) hx_closure)
+      grind
 
 
 -- theorem midpoint_error_le {f : ℝ → ℝ} {a b : ℝ} {N : ℕ}
