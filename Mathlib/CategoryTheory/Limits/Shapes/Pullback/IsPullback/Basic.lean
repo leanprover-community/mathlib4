@@ -43,7 +43,7 @@ theorem of_is_product {c : BinaryFan X Y} (h : Limits.IsLimit c) (t : IsTerminal
   of_isLimit
     (isPullbackOfIsTerminalIsProduct _ _ _ _ t
       (IsLimit.ofIsoLimit h
-        (Limits.Cones.ext (Iso.refl c.pt)
+        (Limits.Cone.ext (Iso.refl c.pt)
           (by
             rintro ⟨⟨⟩⟩ <;> simp))))
 
@@ -389,7 +389,7 @@ theorem of_is_coproduct {c : BinaryCofan X Y} (h : Limits.IsColimit c) (t : IsIn
   of_isColimit
     (isPushoutOfIsInitialIsCoproduct _ _ _ _ t
       (IsColimit.ofIsoColimit h
-        (Limits.Cocones.ext (Iso.refl c.pt)
+        (Limits.Cocone.ext (Iso.refl c.pt)
           (by
             rintro ⟨⟨⟩⟩ <;> simp))))
 
@@ -809,8 +809,8 @@ theorem IsPushout.map_iff {D : Type*} [Category* D] (F : C ⥤ D) [PreservesColi
 
 lemma IsPullback.app [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPullback f₁ f₂ f₃ f₄)
-    (X : C) : IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) := by
-  exact h.map ((evaluation _ _).obj X)
+    (X : C) : IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
+  h.map ((evaluation _ _).obj X)
 
 lemma IsPullback.of_forall_isPullback_app {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄}
@@ -829,8 +829,8 @@ lemma IsPullback.iff_app [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
 
 lemma IsPushout.app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPushout f₁ f₂ f₃ f₄)
-    (X : C) : IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) := by
-  exact h.map ((evaluation _ _).obj X)
+    (X : C) : IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
+  h.map ((evaluation _ _).obj X)
 
 lemma IsPushout.of_forall_isPushout_app {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄}
