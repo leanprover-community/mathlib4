@@ -450,6 +450,19 @@ def Sheaf.isTerminalOfBotCover (F : Sheaf J A) (X : C) (H : ⊥ ∈ J X) :
   choose t h using F.2 Y _ H (by tauto) (by tauto)
   exact ⟨⟨t⟩, fun a => h.2 a (by tauto)⟩
 
+variable (J) in
+/-- A terminal object in `A` gives rise to a terminal object in `Sheaf J` -/
+@[simps]
+def Sheaf.terminal {X : A} (hX : IsTerminal X) : Sheaf J A where
+  obj := (CategoryTheory.Functor.const _).obj X
+  property := Presheaf.isSheaf_of_isTerminal J hX
+
+variable (J) in
+/-- The constant sheaf of a terminal object is indeed terminal -/
+@[simps!]
+def Sheaf.isTerminalTerminal {X : A} (hX : IsTerminal X) : IsTerminal (Sheaf.terminal J hX) :=
+  .ofUniqueHom (⟨{app X := hX.from <| ·.obj.obj X}⟩) (by intros; ext; simpa using hX.hom_ext _ _)
+
 @[simp]
 theorem Sheaf.Hom.add_app [Preadditive A] {P Q : Sheaf J A} (f g : P ⟶ Q) (U : Cᵒᵖ) :
     (f + g).1.app U = f.1.app U + g.1.app U :=
@@ -689,23 +702,5 @@ theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'
 end Concrete
 
 end Presheaf
-
-namespace Sheaf
-section terminal
-variable {C : Type*} [Category* C] {A : Type*} [Category* A] (J : GrothendieckTopology C)
-
-/-- A terminal object in `A` gives rise to a terminal object in `Sheaf J` -/
-@[simps]
-def terminal {X : A} (hX : IsTerminal X) : Sheaf J A where
-  obj := (CategoryTheory.Functor.const _).obj X
-  property := Presheaf.isSheaf_of_isTerminal J hX
-
-/-- The constant sheaf of a terminal object is indeed terminal -/
-@[simps!]
-def isTerminalTerminal {X : A} (hX : IsTerminal X) : IsTerminal (Sheaf.terminal J hX) :=
-  .ofUniqueHom (⟨{app X := hX.from <| ·.obj.obj X}⟩) (by intros; ext; simpa using hX.hom_ext _ _)
-
-end terminal
-end Sheaf
 
 end CategoryTheory
