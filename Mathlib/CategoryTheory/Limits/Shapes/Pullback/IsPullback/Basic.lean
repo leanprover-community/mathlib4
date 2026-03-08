@@ -829,8 +829,8 @@ lemma IsPullback.iff_app [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
 
 lemma IsPushout.app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPushout f₁ f₂ f₃ f₄)
-    (X : C) : IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) := by
-  exact h.map ((evaluation _ _).obj X)
+    (X : C) : IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
+  h.map ((evaluation _ _).obj X)
 
 lemma IsPushout.of_forall_isPushout_app {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄}
