@@ -93,10 +93,7 @@ variable {α : Type*} [Nontrivial α] [LinearOrder α] [OrderTop α] [PredOrder 
 
 @[simp]
 theorem pred_eq_top (a : WithTop α) : WithTop.pred a = ⊤ ↔ a = ⊤ := by
-  cases a
-  · simp
-  · simp only [WithTop.pred_coe, WithTop.coe_ne_top, iff_false]
-    simpa [WithTop.pred_coe, WithTop.coe_ne_top, iff_false] using Order.pred_ne_top _
+  cases a <;> simp [Order.pred_ne_top]
 
 end LinearOrder
 end WithTop
