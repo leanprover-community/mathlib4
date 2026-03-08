@@ -89,7 +89,7 @@ noncomputable def presheafFiberMapCocone (P : Dᵒᵖ ⥤ A) :
 of `P.obj (op (F.obj X))` for `X : C`, `x : Φ.fiber.obj X`. -/
 noncomputable def isColimitPresheafFiberMapCocone (P : Dᵒᵖ ⥤ A) :
     IsColimit (Φ.presheafFiberMapCocone F K P) :=
-  (isColimitPresheafFiberOfIsCofilteredCocone.{w} _ (Φ.map_aux F K) P)
+  isColimitPresheafFiberOfIsCofilteredCocone.{w} _ (Φ.map_aux F K) P
 
 @[ext]
 lemma presheafFiberMap_hom_ext {P : Dᵒᵖ ⥤ A} {T : A}
