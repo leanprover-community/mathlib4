@@ -809,8 +809,8 @@ theorem IsPushout.map_iff {D : Type*} [Category* D] (F : C ⥤ D) [PreservesColi
 
 lemma IsPullback.app [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPullback f₁ f₂ f₃ f₄)
-    (X : C) : IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) := by
-  exact h.map ((evaluation _ _).obj X)
+    (X : C) : IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
+  h.map ((evaluation _ _).obj X)
 
 lemma IsPullback.of_forall_isPullback_app {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄}
