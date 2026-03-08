@@ -44,15 +44,9 @@ lemma poissonMeasure_real_singleton_pos {r : ℝ≥0} (n : ℕ) (hr : 0 < r) :
   positivity
 
 lemma hasSum_one_poissonMeasure (r : ℝ≥0) : HasSum (fun n ↦ exp (-r) * r ^ n / (n)!) 1 := by
-  let r := r.toReal
-  apply (hasSum_mul_left_iff (exp_ne_zero r)).mp
-  simp only [mul_one]
-  have : (fun i ↦ rexp r * (rexp (-r) * r ^ i / i.factorial)) =
-      fun i ↦ r ^ i / i.factorial := by
-    ext n
-    rw [mul_div_assoc, exp_neg, ← mul_assoc, ← div_eq_mul_inv, div_self (exp_ne_zero r), one_mul]
-  rw [this, exp_eq_exp_ℝ]
-  exact NormedSpace.expSeries_div_hasSum_exp r
+  convert (NormedSpace.expSeries_div_hasSum_exp (r : ℝ)).mul_left (exp (-r)) using 1
+  · simp_rw [mul_div_assoc]
+  · simp [← exp_eq_exp_ℝ, ← exp_add]
 
 instance isProbabilityMeasure_poissonMeasure (r : ℝ≥0) :
     IsProbabilityMeasure (poissonMeasure r) where
