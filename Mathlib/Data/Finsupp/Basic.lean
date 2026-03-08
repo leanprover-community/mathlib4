@@ -1317,7 +1317,7 @@ lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M
   · ext; rw [embDomain_eq_mapDomain]
   · grind
 
-theorem embDomain_trans [AddCommMonoid M] (v : α →₀ M) (f : α ↪ β) (g : β ↪ γ) :
+theorem embDomain_trans_apply [AddCommMonoid M] (v : α →₀ M) (f : α ↪ β) (g : β ↪ γ) :
     embDomain (f.trans g) v = embDomain g (embDomain f v) := by
   simp only [embDomain_eq_mapDomain, ← mapDomain_comp, Embedding.coe_trans]
 
