@@ -100,7 +100,7 @@ lemma fiber_map_fiberMk {U : N} {X : C} (f : p.obj U ⟶ X) {Y : C} (g : X ⟶ Y
 is cofiltered and initially small. -/
 @[simps]
 noncomputable def functor : N ⥤ (fiber.{w} p).Elements where
-  obj U := (Functor.elementsMk _ (p.obj U) (fiberMk (𝟙 _)))
+  obj U := Functor.elementsMk _ (p.obj U) (fiberMk (𝟙 _))
   map {U V} f := CategoryOfElements.homMk _ _ (p.map f) (by simp)
 
 instance [IsCofiltered N] : (functor.{w} p).Initial := by
