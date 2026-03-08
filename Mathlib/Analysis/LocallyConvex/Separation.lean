@@ -149,13 +149,11 @@ theorem geometric_hahn_banach_of_nonempty_interior
   obtain ⟨f, u, hfA, hfB⟩ :=
     geometric_hahn_banach_open hA.interior isOpen_interior hB hAB
   refine ⟨f, u, ?_, fun a ha => ?_, hfB⟩
-  · rcases hAint with ⟨a, ha⟩
-    rcases hBne with ⟨b, hb⟩
+  · obtain ⟨a, ha⟩ := hAint
+    obtain ⟨b, hb⟩ := hBne
     intro hzero
-    have ha' : (0 : ℝ) < u := by
-      simpa [hzero] using hfA a ha
-    have hb' : u ≤ (0 : ℝ) := by
-      simpa [hzero] using hfB b hb
+    have ha' : (0 : ℝ) < u := by simpa [hzero] using hfA a ha
+    have hb' : u ≤ (0 : ℝ) := by simpa [hzero] using hfB b hb
     linarith
   · have hmem : a ∈ closure (interior A) := by
       rw [hA.closure_interior_eq_closure_of_nonempty_interior hAint]
