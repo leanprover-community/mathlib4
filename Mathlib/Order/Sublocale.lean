@@ -224,7 +224,7 @@ end Sublocale
 
 namespace Nucleus
 
-/-- The -/
+/-- The range of a nucleus is a sublocale. -/
 abbrev toSublocale (n : Nucleus X) : Sublocale X := nucleusIsoSublocale (OrderDual.toDual n)
 
 @[simp]
