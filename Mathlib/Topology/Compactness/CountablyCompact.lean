@@ -80,12 +80,9 @@ theorem IsCountablyCompact.of_isClosed_subset (hA : IsCountablyCompact A) (hB : 
 
 /-- A set is countably compact if and only if every sequence in it has a cluster point in it. -/
 theorem isCountablyCompact_iff_seq_clusterPt :
-    IsCountablyCompact A ↔
-      ∀ x : ℕ → E, (∀ n, x n ∈ A) → ∃ a ∈ A, MapClusterPt a atTop x := by
-  constructor
-  · intro h x hx
-    exact h (tendsto_principal.mpr (Eventually.of_forall hx))
-  · intro hA f _ _ hle
+    IsCountablyCompact A ↔ ∀ x : ℕ → E, (∀ n, x n ∈ A) → ∃ a ∈ A, MapClusterPt a atTop x where
+  mp h x hx := h (tendsto_principal.mpr (Eventually.of_forall hx))
+  mpr hA f _ _ hle := by
     obtain ⟨s, hs⟩ := f.exists_antitone_basis
     have hmem (n : ℕ) : (s n ∩ A).Nonempty :=
       Filter.nonempty_of_mem (Filter.inter_mem (hs.mem n) (le_principal_iff.mp hle))
@@ -105,9 +102,8 @@ theorem IsCountablyCompact.elim_finite_subcover (hA : IsCountablyCompact A) [Cou
       obtain ⟨s, hs⟩ := this
       exact ⟨s.image e, hs.trans (iUnion₂_subset fun _ hn =>
         subset_biUnion_of_mem (Finset.mem_image_of_mem e hn))⟩
-    by_contra h
-    push_neg at h
-    choose x hxA hxU using fun n => Set.not_subset.mp (h (Finset.range (n + 1)))
+    by_contra! h
+    choose x hxA hxU using fun n => not_subset.mp (h (Finset.range (n + 1)))
     obtain ⟨a, haA, hac⟩ := isCountablyCompact_iff_seq_clusterPt.mp hA x hxA
     obtain ⟨k, hk⟩ := mem_iUnion.mp ((he.iUnion_comp U ▸ hAU) haA)
     have : ∀ᶠ n in atTop, x n ∉ U (e k) :=
@@ -118,14 +114,11 @@ theorem IsCountablyCompact.elim_finite_subcover (hA : IsCountablyCompact A) [Cou
 /-- A set is countably compact if and only if every countable open cover has a finite subcover. -/
 theorem isCountablyCompact_iff_countable_open_cover :
     IsCountablyCompact A ↔ ∀ (U : ℕ → Set E), (∀ i, IsOpen (U i)) → A ⊆ ⋃ i, U i →
-        ∃ t : Finset ℕ, A ⊆ ⋃ i ∈ t, U i := by
-  constructor
-  · exact fun hA _ hUo hAU => hA.elim_finite_subcover hUo hAU
-  · intro h
-    rw [isCountablyCompact_iff_seq_clusterPt]
-    intro x hx
-    by_contra hac
-    push_neg at hac
+        ∃ t : Finset ℕ, A ⊆ ⋃ i ∈ t, U i where
+  mp hA _ hUo hAU := hA.elim_finite_subcover hUo hAU
+  mpr h := by
+    refine isCountablyCompact_iff_seq_clusterPt.2 fun x hx => ?_
+    by_contra! hac
     let V : ℕ → Set E := fun n => (closure (x '' Ici n))ᶜ
     have hVmono : Monotone V := fun _ _ hmn =>
       compl_subset_compl.2 <| closure_mono <| image_mono <| Ici_subset_Ici.2 hmn
@@ -161,12 +154,10 @@ theorem isCountablyCompact_iff_countable_open_cover' :
     IsCountablyCompact A ↔ ∀ (U : ℕ → Set E), (∀ i, IsOpen (U i)) → A ⊆ ⋃ i, U i →
         ∃ t : Set ℕ, t.Finite ∧ A ⊆ ⋃ i ∈ t, U i := by
   rw [isCountablyCompact_iff_countable_open_cover]
-  constructor
-  · intro h U hUo hAU
-    obtain ⟨t, ht⟩ := h U hUo hAU
+  refine ⟨fun h U hUo hAU => ?_, fun h U hUo hAU => ?_⟩
+  · obtain ⟨t, ht⟩ := h U hUo hAU
     exact ⟨(t : Set ℕ), Finset.finite_toSet t, ht⟩
-  · intro h U hUo hAU
-    obtain ⟨t, htfin, ht⟩ := h U hUo hAU
+  · obtain ⟨t, htfin, ht⟩ := h U hUo hAU
     exact ⟨htfin.toFinset, by simpa [htfin.coe_toFinset] using ht⟩
 
 /-- A compact set is countably compact. -/
@@ -201,12 +192,10 @@ theorem IsCountablyCompact.exists_accPt_of_infinite
 /-- In a `T₁` space, a set is countably compact if and only if every infinite subset has an
 accumulation point in the set. -/
 theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E} :
-    IsCountablyCompact A ↔ ∀ B ⊆ A, B.Infinite → ∃ a ∈ A, AccPt a (𝓟 B) := by
-  constructor
-  · exact fun hA _ hBA hB => hA.exists_accPt_of_infinite hBA hB
-  · intro h
-    rw [isCountablyCompact_iff_seq_clusterPt]
-    intro x hx
+    IsCountablyCompact A ↔ ∀ B ⊆ A, B.Infinite → ∃ a ∈ A, AccPt a (𝓟 B) where
+  mp hA _ hBA hB := hA.exists_accPt_of_infinite hBA hB
+  mpr h := by
+    refine isCountablyCompact_iff_seq_clusterPt.2 fun x hx => ?_
     by_cases hfin : (Set.range x).Finite
     · -- Case 1: Finite range (Pigeonhole principle)
       haveI := hfin.to_subtype
