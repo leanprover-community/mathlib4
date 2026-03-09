@@ -589,14 +589,14 @@ namespace NumberField.InfinitePlace
 open ComplexEmbedding AbsoluteValue
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
-
+  [w.1.LiesOver v.1]
 namespace LiesOver
 
 instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ] :
     AbsoluteValue.LiesOver (mk ψ).1 (mk φ).1 where
   comp_eq := by simp [← LiesOver.over ψ φ, ← coe_mk_comp]
 
-theorem comap_eq [w.1.LiesOver v.1] : w.comap (algebraMap K L) = v := by
+theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
   simpa only [coe_apply] using AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
 
@@ -630,11 +630,10 @@ theorem isReal_of_isReal_over [w.1.LiesOver v.1] (hw : w.IsReal) : v.IsReal := b
 
 end LiesOver
 
-theorem IsRamified.liesOver_isReal_under [w.1.LiesOver v.1] (hw : w.IsRamified K) :
+theorem IsRamified.liesOver_isReal_under (hw : w.IsRamified K) :
     v.IsReal := LiesOver.comap_eq w v ▸ (isRamified_iff.1 hw).2
 
-theorem IsUnramified.liesOver_isReal_over [w.1.LiesOver v.1]
-    (hw : w.IsUnramified K) (hv : v.IsReal) : w.IsReal :=
+theorem IsUnramified.liesOver_isReal_over (hw : w.IsUnramified K) (hv : v.IsReal) : w.IsReal :=
   (InfinitePlace.isUnramified_iff.1 hw).resolve_right
     (by simpa [LiesOver.comap_eq w v] using not_isComplex_iff_isReal.2 hv)
 
@@ -702,20 +701,20 @@ theorem bijOn_sumElim_conjugate :
 
 /-- The number of mixed embeddings over an infinite place is twice the number of ramified places
 over the place. -/
-theorem ramifiedPlacesOver_ncard [NumberField L] :
+theorem ramifiedPlacesOver_ncard :
     2 * (ramifiedPlacesOver L v).ncard = (mixedEmbeddingsOver L v.embedding).ncard := by
-  rw [← (bijOn_sumElim_conjugate L v).ncard_eq, two_mul, Set.ncard_eq_toFinset_card,
-    Set.ncard_eq_toFinset_card]
-  convert (Finset.card_disjSum _ _).symm
-  ext; aesop
+  rw [← (bijOn_sumElim_conjugate L v).ncard_eq, two_mul, Set.ncard_sumEquiv_symm_apply]
 
 variable {L}
 
 open scoped Classical in
+/-- Function sending `w : InfinitePlace L` to `w.embedding` if `w.embedding` lies over
+`v.embedding`, otherwise to its conjugate. -/
 private noncomputable def embeddingConjugateIte : L →+* ℂ :=
   if ComplexEmbedding.LiesOver w.embedding v.embedding then w.embedding else conjugate w.embedding
 
 variable {v w}
+
 private theorem embeddingConjugateIte_pos (h : ComplexEmbedding.LiesOver w.embedding v.embedding) :
     embeddingConjugateIte v w = w.embedding := by simp [embeddingConjugateIte, h]
 
@@ -736,8 +735,7 @@ private theorem mapsTo_embeddingConjugateIte : Set.MapsTo (embeddingConjugateIte
 private theorem surjOn_embeddingConjugateIte : (unramifiedPlacesOver L v).SurjOn
     (embeddingConjugateIte v) (unmixedEmbeddingsOver L v.embedding) := by
   classical
-  intro ψ h
-  refine ⟨mk ψ, mk_mem_unramifiedPlacesOver h, ?_⟩
+  refine fun ψ h ↦ ⟨mk ψ, mk_mem_unramifiedPlacesOver h, ?_⟩
   rcases embedding_mk_eq ψ with (_ | hψ)
   · aesop (add simp [embeddingConjugateIte, unmixedEmbeddingsOver])
   · simpa [embeddingConjugateIte, hψ] using fun ⟨_⟩ ↦
@@ -751,7 +749,7 @@ private theorem bijOn_extensionIte : (unramifiedPlacesOver L v).BijOn (embedding
 
 /-- The number of unramified places over an infinite place is equal to the number of unmixed
 embeddings over the place. -/
-theorem unramifiedPlacesOver_ncard [NumberField L] :
+theorem unramifiedPlacesOver_ncard :
     (unramifiedPlacesOver L v).ncard = (unmixedEmbeddingsOver L v.embedding).ncard := by
   rw [(bijOn_extensionIte L v).ncard_eq]
 

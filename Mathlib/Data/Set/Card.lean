@@ -1289,6 +1289,13 @@ theorem ncard_eq_four : s.ncard = 4 ↔
   rw [← encard_eq_four, ncard_def]
   simp
 
+theorem ncard_sumEquiv_symm_apply {α : Type*} (s : Set α) :
+    (Set.sumEquiv.symm (s, s)).ncard = s.ncard + s.ncard := by
+  by_cases hs : s.Finite
+  · simp [(ncard_union_eq_iff (.image _ hs) (.image _ hs)).2 disjoint_image_inl_image_inr,
+      ncard_image_of_injective _ Sum.inl_injective, ncard_image_of_injective _ Sum.inr_injective]
+  · simp [(infinite_union.2 <| .inl <| .image Sum.inl_injective.injOn hs).ncard, Infinite.ncard hs]
+
 end ncard
 end Set
 
