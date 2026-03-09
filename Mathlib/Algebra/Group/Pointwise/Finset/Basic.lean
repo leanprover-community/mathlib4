@@ -695,30 +695,19 @@ section Instances
 
 variable [DecidableEq α] [DecidableEq β]
 
-/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
-note [pointwise nat action]. -/
-@[instance_reducible]
-protected def nsmul [Zero α] [Add α] : SMul ℕ (Finset α) :=
-  ⟨nsmulRec⟩
-
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Finset`. See note [pointwise nat action]. -/
-@[instance_reducible]
+@[to_additive (attr := instance_reducible)
+/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
+note [pointwise nat action]. -/]
 protected def npow [One α] [Mul α] : Pow (Finset α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
-attribute [to_additive existing] Finset.npow
-
-
-/-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
-addition/subtraction!) of a `Finset`. See note [pointwise nat action]. -/
-@[instance_reducible]
-protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
-  ⟨zsmulRec⟩
-
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
-@[instance_reducible, to_additive existing]
+@[to_additive (attr := instance_reducible)
+/-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
+addition/subtraction!) of a `Finset`. See note [pointwise nat action]. -/]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩
 
