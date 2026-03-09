@@ -113,35 +113,30 @@ Serre derivative of weight $k$.
 lemma SerreD_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
     SerreD k F z = D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
-@[simp]
 lemma SerreD_eq (k : ℂ) (F : ℍ → ℂ) :
     SerreD k F = fun z => D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
 /--
 Basic properties of Serre derivative.
 -/
-@[simp]
 theorem SerreD_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
     SerreD k (F + G) = SerreD k F + SerreD k G := by
   ext z
   simp [SerreD, D_add F G hF hG]
   ring_nf
 
-@[simp]
 theorem SerreD_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
     SerreD k (F - G) = SerreD k F - SerreD k G := by
   ext z
   simp [SerreD, D_sub F G hF hG]
   ring_nf
 
-@[simp]
 theorem SerreD_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) :
     SerreD k (c • F) = c • (SerreD k F) := by
   ext z
   simp [SerreD, D_smul c F hF, smul_eq_mul]
   ring_nf
 
-@[simp]
 theorem SerreD_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
     SerreD (k₁ + k₂) (F * G) = (SerreD k₁ F) * G + F * (SerreD k₂ G) := by
   ext z
