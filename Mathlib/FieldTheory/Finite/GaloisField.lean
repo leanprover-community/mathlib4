@@ -197,14 +197,6 @@ theorem _root_.FiniteField.exists_eval_eq_zero_of_dvd_X_pow_card_sub_X [Fintype 
   · have := (Polynomial.IsSplittingField.splits (L := K) (X ^ (Fintype.card K) - X : K[X]))
     simpa [Algebra.algebraMap_self, Polynomial.map_sub, Polynomial.map_pow, map_X] using this
 
-theorem _root_.FiniteField.exists_eval₂_eq_zero_of_map_dvd_X_pow_card_sub_X [Fintype K] {F : Type*}
-    [Field F] {f : F[X]} (hd : f.degree ≠ 0) (φ : F →+* K)
-    (h : Polynomial.map φ f ∣ X ^ (Fintype.card K) - X) :
-    ∃ a : K, Polynomial.eval₂ φ a f = 0 := by
-  convert FiniteField.exists_eval_eq_zero_of_dvd_X_pow_card_sub_X ?_ h
-  · exact eval₂_eq_eval_map φ
-  · simp only [degree_map, ne_eq, hd, not_false_eq_true]
-
 instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by
   cases nonempty_fintype K'

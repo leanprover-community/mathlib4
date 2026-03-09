@@ -144,9 +144,8 @@ variable {K : Type*} [hf : Field K] [Fintype K]
 open Polynomial FiniteField
 
 theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} [NeZero n] {f : K[X]}
-    (hi : Irreducible f) (h : f ∣ X ^ (Fintype.card K) ^ n - X) :
-    f.natDegree ∣ n := by
-  obtain ⟨p, _, m, hp, hm⟩ := FiniteField.card' K
+    (hi : Irreducible f) (h : f ∣ X ^ (Fintype.card K) ^ n - X) : f.natDegree ∣ n := by
+  obtain ⟨p, _, m, hp, hm⟩ := card' K
   haveI : Fact <| Nat.Prime p := ⟨hp⟩
   haveI : Fact <| Irreducible f := ⟨hi⟩
   -- `F` is the splitting field of `X ^ ((Fintype.card K) ^ n) - X`
@@ -156,11 +155,14 @@ theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} [NeZero 
   have haux : Nonempty (K →ₐ[ZMod p] F) := nonempty_algHom_extension K p n
   let ψ := (Classical.choice haux).toRingHom
   replace h := Polynomial.map_dvd ψ h
-  simp only [Polynomial.map_sub, Polynomial.map_pow, map_X, Fintype.card_eq_nat_card] at h
-  rw [← natCard_extension, ← Fintype.card_eq_nat_card] at h
+  rw [Polynomial.map_sub, Polynomial.map_pow, map_X, Fintype.card_eq_nat_card, ← natCard_extension,
+    ← Fintype.card_eq_nat_card] at h
   -- `f` has a root a in `F`. We have extensions `AdjoinRoot f / K` and `F / AdjoinRoot f`.
-  choose a ha using exists_eval₂_eq_zero_of_map_dvd_X_pow_card_sub_X
-    (Ne.symm (Std.ne_of_lt (Irreducible.degree_pos hi ))) ψ h
+  obtain ⟨a, ha⟩ : ∃ a, eval₂ ψ a f = 0 := by
+    convert exists_eval_eq_zero_of_dvd_X_pow_card_sub_X ?_ h
+    · exact eval₂_eq_eval_map ψ
+    · simp only [degree_map, ne_eq, (Ne.symm (Std.ne_of_lt (Irreducible.degree_pos hi ))),
+        not_false_eq_true]
   letI := RingHom.toAlgebra (AdjoinRoot.lift ψ a ha)
   -- Compatible `K`-algebra structure on `F`
   letI : Algebra K F := RingHom.toAlgebra
