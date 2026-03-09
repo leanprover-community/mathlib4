@@ -116,7 +116,6 @@ def finsetWalkLengthLT (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
       have hl' : p.length = l' := mem_finsetWalkLength_iff.mp (hsl' hp)
       False.elim <| hne <| hl.symm.trans hl')
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by

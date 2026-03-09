@@ -99,7 +99,7 @@ lemma eRank_le_card_width [StrongRankCondition R] (A : Matrix m n R) : A.eRank �
   wlog hfin : Finite n
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite n
-  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_nat]
+  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_natCast]
   exact A.cRank_le_card_width
 
 lemma eRank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card m := by
@@ -107,7 +107,7 @@ lemma eRank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.eRank 
   wlog hfin : Finite m
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite m
-  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_nat]
+  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_natCast]
   exact A.cRank_le_card_height
 
 end Infinite

@@ -109,7 +109,6 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
   invOf_mul_self := by rw [← transpose_mul, mul_invOf_self, transpose_one]
   mul_invOf_self := by rw [← transpose_mul, invOf_mul_self, transpose_one]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
   letI := invertibleTranspose A
   convert (rfl : _ = ⅟(Aᵀ))
@@ -191,7 +190,6 @@ def invertibleAddMulMul : Invertible (A + U * C * V) where
   invOf_mul_self := add_mul_mul_invOf_mul_eq_one' _ _ _ _
   mul_invOf_self := add_mul_mul_invOf_mul_eq_one _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Woodbury Identity** (`⅟` version).
 
 See `Matrix.invOf_add_mul_mul'` for the Binomial Inverse Theorem. -/
@@ -235,7 +233,6 @@ def invertibleAddMulMul' : Invertible (A + U * C * V) where
   invOf_mul_self := add_mul_mul_mul_invOf_eq_one' A U C V
   mul_invOf_self := add_mul_mul_mul_invOf_eq_one A U C V
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Binomial Inverse Theorem** (`⅟` version).
 
 See `Matrix.invOf_add_mul_mul` for the Woodbury identity. -/
