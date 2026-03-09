@@ -70,9 +70,10 @@ open scoped MonoidalCategory
 
 attribute [local simp] types_tensorObj_def types_tensorUnit_def
 
+-- These two unification hints are to help lean understand the underlying types of these actions
+-- which it fails without them because `types` abuses defeq.
 unif_hint (X Y : Action (Type w) G) where ⊢ (X ⊗ Y).V ≟ X.V × Y.V
 unif_hint where ⊢ (𝟙_ (Action (Type w) G)).V ≟ PUnit
-unif_hint (X Y Z : Action (Type w) G) where ⊢ (X ⊗ (Y ⊗ Z)).V ≟ X.V × Y.V × Z.V
 
 lemma _root_.Action.tensor_ρ_apply {X Y : Action (Type w) G} (g : G) (xy : (X ⊗ Y).V) :
     (X ⊗ Y).ρ g xy = (X.ρ g xy.1, Y.ρ g xy.2) := by
@@ -155,13 +156,12 @@ lemma μ_comp_assoc (X Y Z : Action (Type w) G) : ((linearizeMap (α_ X Y Z).hom
     TensorProduct.curry_apply, LinearEquiv.coe_coe, LinearMap.rTensor_tmul,
     finsuppTensorFinsupp'_single_tmul_single, mul_one, toLinearMap_lTensor, toLinearMap_assoc,
     TensorProduct.assoc_tmul, LinearMap.lTensor_tmul]
-  with_reducible convert linearizeMap_single (α_ X Y Z).hom ((x, y), z) using 5
-  · with_reducible simp only [Action.associator_hom_hom, types_tensorObj_def, Action.tensorObj_V,
-    associator_hom_apply_1]
-  · with_reducible simp only [Action.associator_hom_hom, types_tensorObj_def, Action.tensorObj_V]
-    with_reducible apply Prod.ext
-    · with_reducible rw [associator_hom_apply_2_1]
-    · with_reducible rw [associator_hom_apply_2_2]
+  -- after fixing the defeq problems in `Action` and in the monoidal category structure of `types`
+  -- this line should close the goal so this is left as an indicator.
+  with_reducible convert linearizeMap_single (α_ X Y Z).hom ((x, y), z)
+  with_reducible simp only [Action.tensorObj_V, types_tensorObj_def, Action.associator_hom_hom]
+  with_reducible refine Prod.ext ?_ (Prod.ext ?_ ?_)
+  <;>  with_reducible simp
 
 lemma μ_leftUnitor (X : Action (Type w) G) : (lid k (linearize k G X)).toIntertwiningMap =
     ((linearizeMap (λ_ X).hom).comp (μ (𝟙_ (Action (Type w) G)) X)).comp (rTensor
