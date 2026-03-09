@@ -10,7 +10,7 @@ public import Mathlib.RepresentationTheory.Intertwining
 /-!
 ## Main purpose
 
-This file is again a preliminary file for the `Iso`s in `Rep`, we build all the isomorphisms from
+This file is a preliminary file for the `Iso`s in `Rep`, we build all the isomorphisms from
 representation level to avoid abusing defeq.
 
 TODO (Edison) : refactor `Rep` into a two-field structure (bundled `Representation`) and rebuild
