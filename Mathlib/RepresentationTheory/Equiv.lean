@@ -22,8 +22,9 @@ all the `Iso`s in `Rep` using the equivs in this file.
 
 universe u u' v v' w w'
 
-variable {k : Type u} [Semiring k] {G : Type v} [Monoid G] {V : Type w} [AddCommMonoid V]
-  [Module k V] {W : Type w'} [AddCommMonoid W] [Module k W]
+variable {k : Type u} [Semiring k] {G : Type v} [Monoid G] {V : Type v'} [AddCommMonoid V]
+  [Module k V] {W : Type w'} [AddCommMonoid W] [Module k W] (H : Type w) [Subsingleton H]
+  [MulOneClass H] [MulAction G H]
 
 namespace Representation
 
@@ -32,21 +33,19 @@ noncomputable section
 variable (k G) in
 /-- If there exists `G`-action on a trivial monoid `H` then the induced representation
   on `k[H]` is equivalent to the trivial representation. -/
-def ofMulActionSubsingletonEquivTrivial (H : Type w) [Subsingleton H] [MulOneClass H]
-    [MulAction G H] : (ofMulAction k G H).Equiv (trivial k G k) :=
+def ofMulActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
   letI : Unique H := uniqueOfSubsingleton 1
   .mk (Finsupp.LinearEquiv.finsuppUnique _ _ _) fun g ↦ by
     ext a; simp [Subsingleton.elim (g • a) a]
 
 @[simp]
-lemma ofMulActionSubsingletonEquivTrivial_apply (H : Type w) [Subsingleton H]
-    [MulOneClass H] [MulAction G H] (f : H →₀ k) :
+lemma ofMulActionSubsingletonEquivTrivial_apply (f : H →₀ k) :
     (ofMulActionSubsingletonEquivTrivial k G H).toIntertwiningMap.toLinearMap f = f 1 := rfl
 
 @[simp]
-lemma ofMulActionSubsingletonEquivTrivial_symm_apply (H : Type w) [Subsingleton H] [MulOneClass H]
-    [MulAction G H] (r : k) : (ofMulActionSubsingletonEquivTrivial k G
-      H).symm.toIntertwiningMap.toLinearMap r = Finsupp.single 1 r := by
+lemma ofMulActionSubsingletonEquivTrivial_symm_apply (r : k) :
+    (ofMulActionSubsingletonEquivTrivial k G H).symm.toIntertwiningMap.toLinearMap r =
+      Finsupp.single 1 r := by
   letI : Unique H := uniqueOfSubsingleton 1
   simp [ofMulActionSubsingletonEquivTrivial, Subsingleton.elim (1 : H) (default : H)]
 
