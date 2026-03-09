@@ -23,7 +23,7 @@ on:
       mathlib_ci_ref:
         type: string
         required: false
-        default: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+        default: ''
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -95,16 +95,27 @@ jobs:
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
           path: tools-branch
 
-      - name: Checkout mathlib-ci
+      - name: Checkout local actions
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          repository: leanprover-community/mathlib-ci
-          ref: ${{ inputs.mathlib_ci_ref }}
+          ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          path: ci-tools
+          sparse-checkout: .github/actions
+          path: workflow-actions
 
-      - name: Set up CI scripts paths
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
+      # We need to 'duplicate' this step below because GitHub Actions does not let a `uses:` step
+      # conditionally omit a single `with:` key, and passing `ref: ''` would override
+      # the composite action's default to the empty string instead of falling back to it
+      # Note only one of the two below will actually run in any given run
+      - name: Get mathlib-ci
+        if: ${{ inputs.mathlib_ci_ref == '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Get mathlib-ci
+        if: ${{ inputs.mathlib_ci_ref != '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ inputs.mathlib_ci_ref }}
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
@@ -489,7 +500,7 @@ jobs:
 
       - name: upload cache staging artifact
         if: ${{ always() && steps.cache_staging_check.outputs.has_files == 'true' }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: cache-staging
           path: cache-staging/
@@ -685,7 +696,7 @@ jobs:
           echo "CACHE_BIN=$CACHE_BIN" >> "$GITHUB_ENV"
 
       - name: Download cache staging artifact
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           name: cache-staging
           path: cache-staging
@@ -756,7 +767,7 @@ jobs:
           lake exe graph
 
       - name: upload the import graph
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: import-graph
           path: import_graph.dot

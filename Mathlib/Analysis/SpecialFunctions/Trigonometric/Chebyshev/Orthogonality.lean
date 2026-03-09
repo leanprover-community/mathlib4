@@ -52,7 +52,7 @@ theorem integral_measureT (f : ℝ → ℝ) :
     ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by
   rw [integral_of_le (by norm_num), measureT,
     restrict_withDensity (by measurability),
-    integral_withDensity_eq_integral_smul (by measurability)]
+    integral_withDensity_eq_integral_smul (by fun_prop)]
   congr! 2 with x hx
   simp [NNReal.smul_def, mul_comm]
 
@@ -68,7 +68,7 @@ theorem integrable_measureT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1)
   have := intervalIntegrable_sqrt_one_sub_sq_inv.continuousOn_mul hf
   rw [intervalIntegrable_iff, Set.uIoc_of_le (by norm_num)] at this
   rw [measureT, restrict_withDensity (by measurability),
-    integrable_withDensity_iff (by measurability) (by simp)]
+    integrable_withDensity_iff (by fun_prop) (by simp)]
   unfold IntegrableOn at this
   convert this
 
