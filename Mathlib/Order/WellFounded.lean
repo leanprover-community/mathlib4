@@ -116,7 +116,7 @@ theorem notMem_of_lt_min {wf : WellFounded r} {s : Set α} {hs : s.Nonempty} {x 
 
 theorem mem_of_lt_min_compl {wf : WellFounded r} {s : Set α} {hs : sᶜ.Nonempty} {x : α}
     (hx : r x (wf.min sᶜ hs)) : x ∈ s :=
-  Set.not_notMem.mp <| notMem_of_lt_min hx
+  Set.notMem_compl_iff.mp <| notMem_of_lt_min hx
 
 theorem wellFounded_iff_has_min {r : α → α → Prop} :
     WellFounded r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m := by
