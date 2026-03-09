@@ -31,8 +31,7 @@ section toAdicCompletion
 
 open Finsupp
 
-variable {σ R : Type*} {n : ℕ}
-variable [CommRing R] [Finite σ]
+variable {σ R : Type*} {n : ℕ} [CommRing R] [Finite σ]
 
 lemma truncTotal_sub_truncTotal_mem_pow_idealOfVars {l m n : ℕ} (h : l ≤ m) (h' : l ≤ n)
     (p : MvPowerSeries σ R) : (truncTotal R m) p - (truncTotal R n) p ∈
