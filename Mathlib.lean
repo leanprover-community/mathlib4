@@ -5532,6 +5532,10 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 public import Mathlib.NumberTheory.NumberField.ClassNumber
 public import Mathlib.NumberTheory.NumberField.Completion
+public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
+public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
+public import Mathlib.NumberTheory.NumberField.Completion.LiesOverInstances
+public import Mathlib.NumberTheory.NumberField.Completion.Ramification
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Galois
@@ -5552,7 +5556,6 @@ public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Dimension
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex

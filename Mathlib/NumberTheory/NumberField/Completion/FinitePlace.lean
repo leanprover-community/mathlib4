@@ -5,8 +5,6 @@ Authors: Fabrizio Barroero
 -/
 module
 
--- TODO : deprecate module
-
 public import Mathlib.Algebra.Order.Archimedean.Submonoid
 public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Data.Int.WithZero

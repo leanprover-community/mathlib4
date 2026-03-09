@@ -1,66 +1,50 @@
 /-
-Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
+Copyright (c) 2026 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
-import Mathlib.NumberTheory.RamificationInertia.Basic
+module
+
+public import Mathlib.NumberTheory.NumberField.Completion.LiesOverInstances
+public import Mathlib.NumberTheory.RamificationInertia.Basic
 
 /-!
-# Dimensions of completions at infinite places
+# Ramification theory of completions of number fields
 
-Let `L/K` and `w` be an infinite place of `L` lying above the infinite place `v` of `K`.
-In this file, we prove:
-- the sum of the ramification indices of all such places `w` is the same as `[L : K]`;
-- the `v.Completion` dimension of `w.Completion` is equal to the ramification index.
+This file studies the ramification of completions of number fields.
+
+## Main definitions
+
+- `NumberField.InfinitePlace.inertiaDeg` : the inertia degree of a place `w` of `L` over a
+  place `v` of `K`, defined as the local degree of the extension of completions at `w` and
+  `v` if `w` lies over `v` and zero otherwise.
+
+## Main results
+
+- `NumberField.InfinitePlace.sum_inertiaDeg_eq_finrank` : the degree of `L` over `K` is equal to
+the sum of the inertia degrees of the places of `L` over `v`.
+
+## Tags
+
+number field, infinite places, ramification
 -/
 
-noncomputable section
+@[expose] public section
+
+section infinite_place
 
 namespace NumberField.InfinitePlace
 
-open NumberField.ComplexEmbedding Finset
+open NumberField.ComplexEmbedding Finset AbsoluteValue.Completion
 
-variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+-- to enable `w.1.LiesOver v.1 → Algebra v.Completion w.Completion` instance
+open scoped NumberField.LiesOver
 
-variable {v : InfinitePlace K} (w : InfinitePlace L)
-
-variable (L v)
-
-namespace LiesOver
-
-variable [w.1.LiesOver v.1]
-
-set_option backward.isDefEq.respectTransparency false in
-scoped instance : Algebra v.Completion w.Completion :=
-  (LiesOver.isometry_algebraMap w v).mapRingHom.toAlgebra
-
-set_option backward.isDefEq.respectTransparency false in
-scoped instance : IsScalarTower K v.Completion w.Completion :=
-  .of_algebraMap_eq fun x ↦ by
-    simp_rw [RingHom.algebraMap_toAlgebra, UniformSpace.Completion.algebraMap_def,
-      Isometry.mapRingHom_coe]
-    simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply]
-
-set_option backward.isDefEq.respectTransparency false in
-scoped instance : ContinuousSMul v.Completion w.Completion where
-  continuous_smul := (UniformSpace.Completion.continuous_map.comp continuous_fst).mul
-    (Continuous.comp continuous_id continuous_snd)
-
-end LiesOver
-
-open scoped LiesOver
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : InfinitePlace K) (w : InfinitePlace L)
 
 namespace Completion
 
-open AbsoluteValue.Completion NumberField.ComplexEmbedding
-
-variable {K : Type*} [Field K] {v : InfinitePlace K}
-variable {L : Type*} [Field L] [Algebra K L]
-variable [Algebra v.Completion w.Completion]
-
 set_option backward.isDefEq.respectTransparency false in
-variable (v) in
 /-- If `w` is a ramified place over `v` then `w.Completion` has `v.Completion` dimension two. -/
 theorem finrank_eq_two_of_isRamified (w : InfinitePlace L) [w.1.LiesOver v.1]
     (h : w.IsRamified K) : Module.finrank v.Completion w.Completion = 2 := by
@@ -69,13 +53,10 @@ theorem finrank_eq_two_of_isRamified (w : InfinitePlace L) [w.1.LiesOver v.1]
       (ringEquivComplexOfIsComplex h.isComplex) (by ext; simp [this.over_apply]),
     Complex.finrank_real_complex]
 
-variable {L : Type*} [Field L] [Algebra K L]
-
 set_option backward.isDefEq.respectTransparency false in
-variable (v) in
 /-- If `w` is an unramified place over `v` then `w.Completion` has `v.Completion` dimension one. -/
-theorem finrank_eq_one_of_isUnramified (w : InfinitePlace L) [w.1.LiesOver v.1]
-    (h : w.IsUnramified K) : Module.finrank v.Completion w.Completion = 1 := by
+theorem finrank_eq_one_of_isUnramified [w.1.LiesOver v.1] (h : w.IsUnramified K) :
+    Module.finrank v.Completion w.Completion = 1 := by
   by_cases hv : v.IsReal
   · letI := LiesOver.extensionEmbedding_liesOver_of_isReal w hv
     rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivRealOfIsReal hv) (ringEquivRealOfIsReal
@@ -101,24 +82,8 @@ end Completion
 
 open Completion
 
-/-- The degree of `L` over `K` is equal to the number of unramified places over `v` plus twice the
-number of ramified places over `v`. -/
-theorem add_placesOver_ncard_eq_finrank [NumberField K] [NumberField L] :
-    (unramifiedPlacesOver L v).ncard + 2 * (ramifiedPlacesOver L v).ncard = Module.finrank K L := by
-  classical
-  letI : Algebra K ℂ := v.embedding.toAlgebra
-  rw [← AlgHom.card K L ℂ, ramifiedPlacesOver_ncard, unramifiedPlacesOver_ncard,
-    ← Set.ncard_union_eq (disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver L v.embedding),
-    union_unmixedEmbeddingsOver_mixedEmbeddingsOver, Set.ncard_eq_toFinset_card]
-  apply (card_nbij AlgHom.toRingHom (fun σ _ ↦ by simpa using ⟨by aesop⟩)
-    AlgHom.coe_ringHom_injective.injOn (fun ψ hψ ↦ ?_)).symm
-  simp only [Set.Finite.toFinset_setOf, coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hψ
-  exact ⟨⟨ψ, fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, ← hψ.over]⟩, by simp⟩
-
-variable {L}
-
 open scoped Classical in
-protected def inertiaDeg : ℕ :=
+protected noncomputable def inertiaDeg : ℕ :=
   if _ : w.1.LiesOver v.1 then (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.Completion) else 0
 
 theorem inertiaDeg_of_liesOver [w.1.LiesOver v.1] :
@@ -129,9 +94,8 @@ theorem inertiaDeg_eq_finrank [w.1.LiesOver v.1] :
     v.inertiaDeg w = Module.finrank v.Completion w.Completion := by
   simp only [inertiaDeg_of_liesOver, Ideal.inertiaDeg, Ideal.comap_bot_of_injective _ <|
     FaithfulSMul.algebraMap_injective v.Completion w.Completion]
-  apply Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
-    (RingEquiv.quotientBot w.Completion)
-  ext; simp [RingHom.algebraMap_toAlgebra]
+  exact Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
+    (RingEquiv.quotientBot w.Completion) (by ext; simp [RingHom.algebraMap_toAlgebra])
 
 variable {v w} in
 open Completion in
@@ -153,6 +117,8 @@ theorem sum_inertiaDeg_eq_finrank [NumberField K] [NumberField L] :
     sum_union (Set.disjoint_toFinset.2 <| disjoint_ramifiedPlacesOver_unramifiedPlacesOver L v),
     sum_congr rfl (fun _ h ↦ inertiaDeg_eq_two (by simpa using h)),
     sum_congr rfl (fun _ h ↦ inertiaDeg_eq_one (by simpa using h)), sum_const, add_comm]
-  simp [← add_placesOver_ncard_eq_finrank L v, mul_comm, ncard_eq_toFinset_card']
+  simp [←  unramifedPlacesOver_ncard_add_eq_finrank L v, mul_comm, ncard_eq_toFinset_card']
 
 end NumberField.InfinitePlace
+
+end infinite_place
