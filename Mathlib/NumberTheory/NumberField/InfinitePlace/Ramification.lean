@@ -590,6 +590,7 @@ open ComplexEmbedding AbsoluteValue
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
   [w.1.LiesOver v.1]
+
 namespace LiesOver
 
 instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ] :
