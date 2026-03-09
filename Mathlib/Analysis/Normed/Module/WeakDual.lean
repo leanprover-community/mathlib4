@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Operator.Completeness
+public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Topology.MetricSpace.PiNat
 
@@ -189,6 +190,7 @@ theorem continuous_of_continuous_eval_re {α 𝕜 F : Type*} [RCLike 𝕜] [Topo
 variable {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace F] [AddCommGroup F]
   [Module 𝕜 F] [ContinuousConstSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 open StrongDual in
 /-- The extension `StrongDual.extendRCLike` as a continuous linear equivalence between
 the weak duals. -/

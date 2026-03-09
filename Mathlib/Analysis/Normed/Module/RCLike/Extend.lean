@@ -6,7 +6,7 @@ Authors: Ruben Van de Velde
 module
 
 public import Mathlib.Analysis.RCLike.Extend
-public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Norm properties of the extension of continuous `ℝ`-linear functionals to `𝕜`-linear functionals
@@ -21,6 +21,24 @@ open scoped ComplexConjugate
 
 namespace StrongDual
 
+open RCLike in
+/-- The extension `StrongDual.extendRCLike` as a continuous linear equivalence between
+the strong duals when `F` is a topological vector space. -/
+@[expose, simps! -isSimp toLinearEquiv apply symm_apply]
+noncomputable def extendRCLikeL {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace F]
+    [AddCommGroup F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [IsTopologicalAddGroup F] [Module ℝ F]
+    [IsScalarTower ℝ 𝕜 F] : StrongDual ℝ F ≃L[ℝ] StrongDual 𝕜 F where
+  toLinearEquiv := extendRCLikeₗ
+  continuous_toFun := by
+    rw [(ContinuousLinearMap.isEmbedding_restrictScalars ℝ).continuous_iff]
+    let smulI : F →L[ℝ] F := (I : 𝕜) • ContinuousLinearMap.id 𝕜 F |>.restrictScalars ℝ
+    let mulI : 𝕜 →L[ℝ] 𝕜 := ContinuousLinearMap.mul ℝ 𝕜 (I : 𝕜)
+    exact ofRealCLM.postcomp F - mulI.postcomp F ∘L smulI.precomp 𝕜 ∘L ofRealCLM.postcomp F
+      |>.continuous
+  continuous_invFun := reCLM.postcomp F |>.continuous.comp <|
+    (ContinuousLinearMap.isEmbedding_restrictScalars ℝ).continuous
+
+attribute [simp] extendRCLikeL_toLinearEquiv
 
 variable {𝕜 F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
@@ -49,10 +67,17 @@ theorem norm_extendRCLike (fr : StrongDual ℝ F) : ‖(fr.extendRCLike : Strong
         _ ≤ ‖(fr.extendRCLike : StrongDual 𝕜 F)‖ * ‖x‖ := le_opNorm _ _
 
 /-- `StrongDual.extendRCLike` bundled into a linear isometry equivalence. -/
-@[expose, simps! -isSimp apply symm_apply]
+@[expose, simps! -isSimp toLinearEquiv apply symm_apply]
 noncomputable def extendRCLikeₗᵢ : StrongDual ℝ F ≃ₗᵢ[ℝ] StrongDual 𝕜 F where
   toLinearEquiv := StrongDual.extendRCLikeₗ
   norm_map' := norm_extendRCLike
+
+attribute [simp] extendRCLikeₗᵢ_toLinearEquiv
+
+@[simp]
+lemma toContinuousLinearEquiv_extendRCLikeₗᵢ :
+    (extendRCLikeₗᵢ (F := F) (𝕜 := 𝕜)).toContinuousLinearEquiv = extendRCLikeL :=
+  rfl
 
 end StrongDual
 
