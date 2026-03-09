@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.UniversalEnveloping
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.UniversalEnveloping
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Free Lie algebras
@@ -48,6 +50,8 @@ lie algebra, free algebra, non-unital, non-associative, universal property, forg
 adjoint functor
 -/
 
+@[expose] public section
+
 
 universe u v w
 
@@ -84,6 +88,7 @@ variable {R X}
 theorem Rel.addLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a + b) (a + c) := by
   rw [add_comm _ b, add_comm _ c]; exact h.add_right _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
   simpa only [neg_one_smul] using h.smul (-1)
 
@@ -109,9 +114,9 @@ and `f : α → L` is any function, then this function is the composite of
 `FreeLieAlgebra.of R` and a unique Lie algebra homomorphism
 `FreeLieAlgebra.lift R f : FreeLieAlgebra R α →ₗ⁅R⁆ L`.
 
-A typical element of `FreeLieAlgebra R α` is a `R`-linear combination of
+A typical element of `FreeLieAlgebra R α` is an `R`-linear combination of
 formal brackets of elements of `α`. For example if `x` and `y` are terms of type `α`
-and `a` and `b` are term of type `R` then
+and `a` and `b` are terms of type `R` then
 `(3 * a * a) • ⁅⁅x, y⁆, x⁆ - (2 * b - 1) • ⁅y, x⁆` is a "typical" element of `FreeLieAlgebra R α`.
 -/
 def FreeLieAlgebra :=
@@ -147,7 +152,7 @@ instance : AddCommSemigroup (FreeLieAlgebra R X) :=
 
 instance : AddCommGroup (FreeLieAlgebra R X) :=
   { (inferInstance : AddGroup (FreeLieAlgebra R X)),
-    (inferInstance :  AddCommSemigroup (FreeLieAlgebra R X)) with }
+    (inferInstance : AddCommSemigroup (FreeLieAlgebra R X)) with }
 
 instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] :
     Module S (FreeLieAlgebra R X) :=
@@ -177,26 +182,28 @@ def of : X → FreeLieAlgebra R X := fun x => Quot.mk _ (lib.of R x)
 
 variable {L : Type w} [LieRing L] [LieAlgebra R L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition used to construct the equivalence `lift` below. -/
 def liftAux (f : X → CommutatorRing L) :=
   lib.lift R f
 
 theorem liftAux_map_smul (f : X → L) (t : R) (a : lib R X) :
     liftAux R f (t • a) = t • liftAux R f a :=
-  NonUnitalAlgHom.map_smul _ t a
+  map_smul _ t a
 
 theorem liftAux_map_add (f : X → L) (a b : lib R X) :
     liftAux R f (a + b) = liftAux R f a + liftAux R f b :=
-  NonUnitalAlgHom.map_add _ a b
+  map_add _ a b
 
 theorem liftAux_map_mul (f : X → L) (a b : lib R X) :
     liftAux R f (a * b) = ⁅liftAux R f a, liftAux R f b⁆ :=
-  NonUnitalAlgHom.map_mul _ a b
+  map_mul _ a b
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a b) :
     liftAux R f a = liftAux R f b := by
   induction h with
-  | lie_self a' => simp only [liftAux_map_mul, NonUnitalAlgHom.map_zero, lie_self]
+  | lie_self a' => simp only [liftAux_map_mul, map_zero, lie_self]
   | leibniz_lie a' b' c' =>
     simp only [liftAux_map_mul, liftAux_map_add, sub_add_cancel, lie_lie]
   | smul b' _ h₂ => simp only [liftAux_map_smul, h₂]
@@ -204,6 +211,7 @@ theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a
   | mul_left c' _ h₂ => simp only [liftAux_map_mul, h₂]
   | mul_right c' _ h₂ => simp only [liftAux_map_mul, h₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The quotient map as a `NonUnitalAlgHom`. -/
 def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X) where
   toFun := Quot.mk (Rel R X)
@@ -212,6 +220,7 @@ def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X) where
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `X ↦ FreeLieAlgebra R X` from the category of types to the category of Lie
 algebras over `R` is adjoint to the forgetful functor in the other direction. -/
 def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where

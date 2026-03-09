@@ -3,17 +3,18 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.RingTheory.MvPowerSeries.Order
-import Mathlib.RingTheory.MvPowerSeries.Trunc
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Instances.ENat
-import Mathlib.Topology.UniformSpace.Pi
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
-import Mathlib.Topology.Algebra.TopologicallyNilpotent
-import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+module
+
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Order
+public import Mathlib.RingTheory.MvPowerSeries.Trunc
+public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Instances.ENat
+public import Mathlib.Topology.UniformSpace.Pi
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
+public import Mathlib.Topology.Algebra.TopologicallyNilpotent
+public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-! # Product topology on multivariate power series
 
@@ -77,6 +78,8 @@ But future contributors wishing to clean this up should feel free to give it a t
 
 -/
 
+@[expose] public section
+
 namespace MvPowerSeries
 
 open Function Filter
@@ -96,6 +99,7 @@ variable (R) in
 scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
   Pi.topologicalSpace
 
+set_option backward.isDefEq.respectTransparency false in
 theorem instTopologicalSpace_mono (σ : Type*) {R : Type*} {t u : TopologicalSpace R} (htu : t ≤ u) :
     @instTopologicalSpace σ R t ≤ @instTopologicalSpace σ R u := by
   simp only [instTopologicalSpace, Pi.topologicalSpace, le_iInf_iff]
@@ -122,6 +126,7 @@ variable (R) in
 theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff (σ := σ) (R := R)) :=
   continuous_coeff (R := R) 0
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A family of power series converges iff it converges coefficientwise -/
 theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (u : Filter ι) (g : MvPowerSeries σ R) :
@@ -153,8 +158,6 @@ theorem denseRange_toMvPowerSeries [CommSemiring R] :
     DenseRange (MvPolynomial.toMvPowerSeries (R := R) (σ := σ)) := fun f ↦ by
   classical
   exact mem_closure_of_tendsto (tendsto_trunc'_atTop f) <| .of_forall fun _ ↦ Set.mem_range_self _
-
-@[deprecated (since := "2025-05-21")] alias toMvPowerSeries_denseRange := denseRange_toMvPowerSeries
 
 variable (σ R)
 
@@ -200,12 +203,12 @@ theorem variables_tendsto_zero [Semiring R] :
   classical
   simp only [tendsto_iff_coeff_tendsto, ← coeff_apply, coeff_X, coeff_zero]
   refine fun d ↦ tendsto_nhds_of_eventually_eq ?_
-  by_cases h : ∃ i, d = Finsupp.single i 1
+  by_cases! h : ∃ i, d = Finsupp.single i 1
   · obtain ⟨i, hi⟩ := h
     filter_upwards [eventually_cofinite_ne i] with j hj
     simp [hi, Finsupp.single_eq_single_iff, hj.symm]
   · simpa only [ite_eq_right_iff] using
-      Eventually.of_forall fun x h' ↦ (not_exists.mp h x h').elim
+      Eventually.of_forall fun x h' ↦ (h x h').elim
 
 theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
@@ -238,6 +241,7 @@ theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
 
 variable [Semiring R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A multivariate power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
     HasSum (fun d : σ →₀ ℕ => monomial d (coeff d f)) f := by
@@ -279,7 +283,7 @@ theorem summable_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop] at h
   intro d
   obtain ⟨i, hi⟩ := h (Finsupp.weight w d)
-  refine summable_of_finite_support <| (Set.finite_Iic i).subset ?_
+  refine summable_of_hasFiniteSupport <| (Set.finite_Iic i).subset ?_
   simp_rw [Function.support_subset_iff, Set.mem_Iic]
   intro k hk
   contrapose! hk
@@ -289,6 +293,31 @@ theorem summable_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
 theorem summable_of_tendsto_order_atTop_nhds_top
     (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable f :=
   summable_of_tendsto_weightedOrder_atTop_nhds_top h
+
+/-- The geometric series converges if the constant term is zero. -/
+theorem summable_pow_of_constantCoeff_eq_zero {f : MvPowerSeries σ R}
+    (h : f.constantCoeff = 0) : Summable (f ^ ·) := by
+  apply summable_of_tendsto_order_atTop_nhds_top
+  simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop]
+  refine fun n ↦ ⟨n + 1, fun m hm ↦ lt_of_lt_of_le ?_ (le_order_pow _)⟩
+  refine (ENat.coe_lt_coe.mpr (Nat.add_one_le_iff.mp hm.le)).trans_le ?_
+  simpa [nsmul_eq_mul] using ENat.self_le_mul_right m (order_ne_zero_iff_constCoeff_eq_zero.mpr h)
+
+section GeomSeries
+variable {R : Type*} [TopologicalSpace R] [Ring R] [IsTopologicalRing R] [T2Space R]
+variable {f : MvPowerSeries σ R}
+
+/-- Formula for geometric series. -/
+theorem tsum_pow_mul_one_sub_of_constantCoeff_eq_zero (h : f.constantCoeff = 0) :
+    (∑' (i : ℕ), f ^ i) * (1 - f) = 1 :=
+  (summable_pow_of_constantCoeff_eq_zero h).tsum_pow_mul_one_sub
+
+/-- Formula for geometric series. -/
+theorem one_sub_mul_tsum_pow_of_constantCoeff_eq_zero (h : f.constantCoeff = 0) :
+    (1 - f) * ∑' (i : ℕ), f ^ i = 1 :=
+  (summable_pow_of_constantCoeff_eq_zero h).one_sub_mul_tsum_pow
+
+end GeomSeries
 
 end Sum
 
@@ -302,7 +331,7 @@ theorem summable_prod_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
     (h : Tendsto (fun i ↦ weightedOrder w (f i)) atTop (𝓝 ⊤)) : Summable (∏ i ∈ ·, f i) := by
   rcases isEmpty_or_nonempty ι with hempty | hempty
   · apply Summable.of_finite
-  refine summable_iff_summable_coeff.mpr fun d ↦ summable_of_finite_support ?_
+  refine summable_iff_summable_coeff.mpr fun d ↦ summable_of_hasFiniteSupport ?_
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, eventually_atTop] at h
   obtain ⟨i, hi⟩ := h (Finsupp.weight w d)
   apply (Finset.Iio i).powerset.finite_toSet.subset
@@ -359,8 +388,6 @@ theorem instCompleteSpace [CompleteSpace R] :
 @[scoped instance]
 theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
     IsUniformAddGroup (MvPowerSeries σ R) := Pi.instIsUniformAddGroup
-
-@[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
 
 end Uniformity
 

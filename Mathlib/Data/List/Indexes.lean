@@ -3,8 +3,9 @@ Copyright (c) 2020 Jannis Limperg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
-import Mathlib.Util.AssertExists
-import Mathlib.Data.List.Defs
+module
+
+public import Mathlib.Data.List.Defs
 
 /-!
 # Lemmas about List.*Idx functions.
@@ -19,6 +20,8 @@ Anyone wanting to restore this material is welcome to do so, but will need to up
 `List.enum` and `List.enumFrom` to use `List.zipIdx` instead.
 However, note that this material will later be implemented in the Lean standard library.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -53,7 +56,7 @@ theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α
   induction as generalizing arr with
   | nil => simp only [mapIdxMAux', mapIdxM.go, seqRight_eq, map_pure, seq_pure]
   | cons head tail ih =>
-    simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind, bind_pure_unit,
+    simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind_map, bind_pure_unit,
       LawfulMonad.bind_assoc, pure_bind, mapIdxM.go]
     generalize (f (Array.size arr) head) = head
     have : (arr.push ⟨⟩).size = arr.size + 1 := Array.size_push _

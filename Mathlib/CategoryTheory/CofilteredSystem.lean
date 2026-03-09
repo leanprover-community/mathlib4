@@ -3,7 +3,9 @@ Copyright (c) 2022 Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Konig
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
 # Cofiltered systems
@@ -48,6 +50,8 @@ Given a functor `F : J ⥤ Type v`:
 Mittag-Leffler, surjective, eventual range, inverse system,
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -103,7 +107,7 @@ This may be regarded as a generalization of Kőnig's lemma.
 To specialize: given a locally finite connected graph, take `Jᵒᵖ` to be `ℕ` and
 `F j` to be length-`j` paths that start from an arbitrary fixed vertex.
 Elements of `F.sections` can be read off as infinite rays in the graph. -/
-theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirected J (· ≤ ·)]
+theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirectedOrder J]
     (F : Jᵒᵖ ⥤ Type v) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
     F.sections.Nonempty := nonempty_sections_of_finite_cofiltered_system F
 
@@ -113,7 +117,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {J : Type u} [Category J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
+variable {J : Type u} [Category* J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
 
 /-- The eventual range of the functor `F : J ⥤ Type v` at index `j : J` is the intersection
 of the ranges of all maps `F.map f` with `i : J` and `f : i ⟶ j`. -/
@@ -163,15 +167,15 @@ def toPreimages : J ⥤ Type v where
   map g := MapsTo.restrict (F.map g) _ _ fun x h => by
     rw [mem_iInter] at h ⊢
     intro f
-    rw [← mem_preimage, preimage_preimage, mem_preimage]
-    convert h (g ≫ f); rw [F.map_comp]; rfl
+    simpa using h (g ≫ f)
   map_id j := by
     simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
-    rfl
+    simp
   map_comp f g := by
     simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_comp]
-    rfl
+    ext
+    simp
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
   fun _ => Subtype.finite

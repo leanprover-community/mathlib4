@@ -3,16 +3,20 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
 /-!
 # Monoids as discrete monoidal categories
 
 The discrete category on a monoid is a monoidal category.
-Multiplicative morphisms induced monoidal functors.
+Multiplicative morphisms induce monoidal functors.
 -/
+
+@[expose] public section
 
 
 universe u u'
@@ -42,7 +46,9 @@ variable {M} {N : Type u'} [Monoid N]
 /-- A multiplicative morphism between monoids gives a monoidal functor between the corresponding
 discrete monoidal categories.
 -/
-@[to_additive Discrete.addMonoidalFunctor]
+@[to_additive Discrete.addMonoidalFunctor /--
+An additive morphism between `AddMonoid`s gives a
+monoidal functor between the corresponding discrete monoidal categories. -/]
 def Discrete.monoidalFunctor (F : M →* N) : Discrete M ⥤ Discrete N :=
   Discrete.functor (fun X ↦ Discrete.mk (F X))
 
@@ -75,10 +81,6 @@ lemma Discrete.monoidalFunctor_μ (F : M →* N) (m₁ m₂ : Discrete M) :
 lemma Discrete.monoidalFunctor_δ (F : M →* N) (m₁ m₂ : Discrete M) :
     δ (monoidalFunctor F) m₁ m₂ = Discrete.eqToHom (F.map_mul _ _) := rfl
 
-/-- An additive morphism between add_monoids gives a
-monoidal functor between the corresponding discrete monoidal categories. -/
-add_decl_doc Discrete.addMonoidalFunctor
-
 variable {K : Type u} [Monoid K]
 
 /-- The monoidal natural isomorphism corresponding to composing two multiplicative morphisms.
@@ -90,6 +92,7 @@ def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
     Discrete.monoidalFunctor F ⋙ Discrete.monoidalFunctor G ≅
       Discrete.monoidalFunctor (G.comp F) := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive Discrete.addMonoidalFunctorComp_isMonoidal]
 instance Discrete.monoidalFunctorComp_isMonoidal (F : M →* N) (G : N →* K) :
     NatTrans.IsMonoidal (Discrete.monoidalFunctorComp F G).hom where

@@ -3,10 +3,12 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Ultraproducts
-import Mathlib.ModelTheory.Bundled
-import Mathlib.ModelTheory.Skolem
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.ModelTheory.Ultraproducts
+public import Mathlib.ModelTheory.Bundled
+public import Mathlib.ModelTheory.Skolem
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # First-Order Satisfiability
@@ -40,6 +42,8 @@ This file deals with the satisfiability of first-order theories, as well as equi
 - Satisfiability of an `L.Theory` `T` is defined in the minimal universe containing all the symbols
   of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any universe.
 -/
+
+@[expose] public section
 
 
 
@@ -217,7 +221,7 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
   obtain ⟨N0, hN0⟩ := (L.elementaryDiagram M).exists_large_model_of_infinite_model κ M
   rw [← lift_le.{max u v}, lift_lift, lift_lift] at h2
   obtain ⟨N, ⟨NN0⟩, hN⟩ :=
-    exists_elementaryEmbedding_card_eq_of_le (L[[M]]) N0 κ
+    exists_elementaryEmbedding_card_eq_of_le L[[M]] N0 κ
       (aleph0_le_lift.1 ((aleph0_le_lift.2 (aleph0_le_mk M)).trans h2))
       (by
         simp only [card_withConstants, lift_add, lift_lift]
@@ -369,8 +373,8 @@ theory iff there is a finite subset `T0` of the theory such that `φ` is modeled
 theorem models_iff_finset_models {φ : L.Sentence} :
     T ⊨ᵇ φ ↔ ∃ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T ∧ (T0 : L.Theory) ⊨ᵇ φ := by
   simp only [models_iff_not_satisfiable]
-  rw [← not_iff_not, not_not, isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
-  push_neg
+  rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
+  contrapose!
   letI := Classical.decEq (Sentence L)
   constructor
   · intro h T0 hT0
@@ -407,6 +411,47 @@ theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L
   · exact
       iff_of_false ((Sentence.realize_not M).1 (hφn.realize_sentence M))
         ((h.models_not_iff φ).1 hφn)
+
+/-- A complete theory is the `completeTheory` Th(M) of one of its models. -/
+theorem eq_complete_theory (h : T.IsComplete) (M : Type*) [L.Structure M] [M ⊨ T] [Nonempty M] :
+    {φ | T ⊨ᵇ φ} = L.completeTheory M := by
+  ext φ
+  simp only [Set.mem_setOf_eq, L.mem_completeTheory]
+  refine ⟨fun h_models => h_models.realize_sentence M, fun h_realize => ?_⟩
+  cases h.2 φ with
+  | inl hT => exact hT
+  | inr hT =>
+      have : M ⊨ φ.not := hT.realize_sentence M
+      rw [Sentence.realize_not] at this
+      contradiction
+
+/-- A theory is complete iff it is satisfiable and all its models are elementarily equivalent. -/
+theorem isComplete_iff_models_elementarily_equivalent :
+    T.IsComplete ↔
+    T.IsSatisfiable ∧ ∀ (M N : ModelType.{u, v, max u v} T), ElementarilyEquivalent L M N := by
+  constructor
+  · intro hcomp
+    refine ⟨hcomp.1, ?_⟩
+    intro M N
+    rw [ElementarilyEquivalent, ← hcomp.eq_complete_theory, ← hcomp.eq_complete_theory]
+  · rintro ⟨hsat, h⟩
+    refine ⟨hsat, ?_⟩
+    intro φ
+    obtain ⟨M⟩ := hsat
+    by_cases hφ : M ⊨ φ
+    · left
+      exact models_sentence_iff.2 fun N => (elementarilyEquivalent_iff.1 (h M N) φ).1 hφ
+    · right
+      exact models_sentence_iff.2 fun N => (Sentence.realize_not N).2
+        (mt (elementarilyEquivalent_iff.1 (h M N) φ).2 hφ)
+
+/-- If a theory is complete all its models are elementarily equivalent. -/
+theorem models_elementarily_equivalent
+    (h : T.IsComplete)
+    (M N : Type*) [L.Structure M] [L.Structure N]
+    [M ⊨ T] [N ⊨ T] [Nonempty M] [Nonempty N] :
+    ElementarilyEquivalent L M N := by
+  rw [ElementarilyEquivalent, ← h.eq_complete_theory, ← h.eq_complete_theory]
 
 end IsComplete
 
@@ -471,8 +516,7 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
   ⟨hS, fun φ => by
     obtain ⟨_, _⟩ := Theory.exists_model_card_eq ⟨hS.some, hT hS.some⟩ κ h1 h2
     rw [Theory.models_sentence_iff, Theory.models_sentence_iff]
-    by_contra! con
-    obtain ⟨⟨MF, hMF⟩, MT, hMT⟩ := con
+    by_contra! ⟨⟨MF, hMF⟩, MT, hMT⟩
     rw [Sentence.realize_not, Classical.not_not] at hMT
     refine hMF ?_
     haveI := hT MT

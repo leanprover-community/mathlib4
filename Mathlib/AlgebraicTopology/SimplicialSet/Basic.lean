@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Yoneda
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Yoneda
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Simplicial sets
@@ -20,6 +22,8 @@ homotopy type theory.)
 
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
@@ -29,22 +33,10 @@ open Simplicial
 /-- The category of simplicial sets.
 This is the category of contravariant functors from
 `SimplexCategory` to `Type u`. -/
-def SSet : Type (u + 1) :=
+abbrev SSet : Type (u + 1) :=
   SimplicialObject (Type u)
 
 namespace SSet
-
-instance largeCategory : LargeCategory SSet := by
-  dsimp only [SSet]
-  infer_instance
-
-instance hasLimits : HasLimits SSet := by
-  dsimp only [SSet]
-  infer_instance
-
-instance hasColimits : HasColimits SSet := by
-  dsimp only [SSet]
-  infer_instance
 
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
@@ -83,22 +75,9 @@ def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
   (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}
 
 /-- Truncated simplicial sets. -/
-def Truncated (n : ℕ) :=
-  SimplicialObject.Truncated (Type u) n
+abbrev Truncated (n : ℕ) := SimplicialObject.Truncated (Type u) n
 
 namespace Truncated
-
-instance largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
-  dsimp only [Truncated]
-  infer_instance
-
-instance hasLimits {n : ℕ} : HasLimits (Truncated n) := by
-  dsimp only [Truncated]
-  infer_instance
-
-instance hasColimits {n : ℕ} : HasColimits (Truncated n) := by
-  dsimp only [Truncated]
-  infer_instance
 
 /-- The ulift functor `SSet.Truncated.{u} ⥤ SSet.Truncated.{max u v}` on truncated
 simplicial sets. -/
@@ -111,9 +90,20 @@ lemma hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n 
   NatTrans.ext (funext w)
 
 /-- Further truncation of truncated simplicial sets. -/
-abbrev trunc (n m : ℕ) (h : m ≤ n := by omega) :
+abbrev trunc (n m : ℕ) (h : m ≤ n := by lia) :
     SSet.Truncated n ⥤ SSet.Truncated m :=
   SimplicialObject.Truncated.trunc (Type u) n m
+
+@[simp]
+lemma id_app {n : ℕ} (X : Truncated n) (d : (SimplexCategory.Truncated n)ᵒᵖ) :
+    NatTrans.app (𝟙 X) d = 𝟙 _ :=
+  rfl
+
+@[simp, reassoc]
+lemma comp_app {n : ℕ} {X Y Z : Truncated n} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (d : (SimplexCategory.Truncated n)ᵒᵖ) :
+    (f ≫ g).app d = f.app d ≫ g.app d :=
+  rfl
 
 end Truncated
 

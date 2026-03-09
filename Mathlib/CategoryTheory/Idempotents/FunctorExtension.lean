@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Extension of functors to the idempotent completion
@@ -20,13 +22,15 @@ and `karoubiUniversal C D : C ⥤ D ≌ Karoubi C ⥤ D`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace Idempotents
 
 open Category Karoubi Functor
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
 /-- A natural transformation between functors `Karoubi C ⥤ D` is determined
 by its value on objects coming from `C`. -/
@@ -47,9 +51,10 @@ def obj (F : C ⥤ Karoubi D) : Karoubi C ⥤ Karoubi D where
     ⟨(F.obj P.X).X, (F.map P.p).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map P.idem⟩
   map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map f.comm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Extension of a natural transformation `φ` between functors
-`C ⥤ karoubi D` to a natural transformation between the
-extension of these functors to `karoubi C ⥤ karoubi D` -/
+`C ⥤ Karoubi D` to a natural transformation between the
+extension of these functors to `Karoubi C ⥤ Karoubi D` -/
 @[simps]
 def map {F G : C ⥤ Karoubi D} (φ : F ⟶ G) : obj F ⟶ obj G where
   app P :=
@@ -75,6 +80,7 @@ end FunctorExtension₁
 
 variable (C D E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical functor `(C ⥤ Karoubi D) ⥤ (Karoubi C ⥤ Karoubi D)` -/
 @[simps]
 def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
@@ -94,7 +100,7 @@ def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
     simp only [assoc]
 
 /-- The natural isomorphism expressing that functors `Karoubi C ⥤ Karoubi D` obtained
-using `functorExtension₁` actually extends the original functors `C ⥤ Karoubi D`. -/
+using `functorExtension₁` actually extend the original functors `C ⥤ Karoubi D`. -/
 @[simps!]
 def functorExtension₁CompWhiskeringLeftToKaroubiIso :
     functorExtension₁ C D ⋙ (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ≅ 𝟭 _ :=
@@ -106,6 +112,7 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
       (fun {X Y} f => by simp))
     (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 def KaroubiUniversal₁.counitIso :
     (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ⋙ functorExtension₁ C D ≅ 𝟭 _ :=
@@ -170,7 +177,7 @@ def functorExtension₂ : (C ⥤ D) ⥤ Karoubi C ⥤ Karoubi D :=
   (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) ⋙ functorExtension₁ C D
 
 /-- The natural isomorphism expressing that functors `Karoubi C ⥤ Karoubi D` obtained
-using `functorExtension₂` actually extends the original functors `C ⥤ D`. -/
+using `functorExtension₂` actually extend the original functors `C ⥤ D`. -/
 @[simps!]
 def functorExtension₂CompWhiskeringLeftToKaroubiIso :
     functorExtension₂ C D ⋙ (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ≅
@@ -242,6 +249,30 @@ theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
   congr
 
 end IsIdempotentComplete
+
+set_option backward.isDefEq.respectTransparency false in
+variable {C D} in
+/-- The precomposition of functors with `toKaroubi C` is fully faithful. -/
+def whiskeringLeftObjToKaroubiFullyFaithful :
+    ((Functor.whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)).FullyFaithful where
+  preimage {F G} τ :=
+    { app P := F.map P.decompId_i ≫ τ.app P.X ≫ G.map P.decompId_p
+      naturality X Y f := by
+        dsimp at τ ⊢
+        have h₁ : f ≫ Y.decompId_i = X.decompId_i ≫ (toKaroubi C).map f.f := by simp
+        have h₂ := τ.naturality f.f
+        have h₃ : X.decompId_p ≫ f = (toKaroubi C).map f.f ≫ Y.decompId_p := by simp
+        dsimp at h₂
+        rw [Category.assoc, Category.assoc, ← F.map_comp_assoc,
+          h₁, F.map_comp_assoc, reassoc_of% h₂, ← G.map_comp, ← h₃, G.map_comp] }
+  preimage_map {F G} τ := by ext X; exact (natTrans_eq _ _).symm
+  map_preimage {F G} τ := by
+    ext X
+    dsimp
+    rw [Karoubi.decompId_i_toKaroubi, Karoubi.decompId_p_toKaroubi,
+      Functor.map_id, Category.id_comp]
+    change _ ≫ G.map (𝟙 _) = _
+    simp
 
 end Idempotents
 

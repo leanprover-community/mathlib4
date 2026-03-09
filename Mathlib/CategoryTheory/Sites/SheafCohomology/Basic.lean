@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.Algebra.Category.Grp.Adjunctions
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-import Mathlib.CategoryTheory.Sites.Abelian
-import Mathlib.CategoryTheory.Sites.ConstantSheaf
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Category.Grp.Adjunctions
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+public import Mathlib.CategoryTheory.Sites.Abelian
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
 /-!
 # Sheaf cohomology
@@ -30,6 +32,8 @@ of sets `yoneda.obj U` to `F`.
   `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H (F.over U) n`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -78,6 +82,12 @@ presheaf of sets `yoneda.obj U` to `F`. -/
 noncomputable abbrev cohomologyPresheaf (F : Sheaf J AddCommGrpCat.{v}) (n : ℕ) :
     Cᵒᵖ ⥤ AddCommGrpCat.{w'} :=
   (cohomologyPresheafFunctor J n).obj F
+
+/-- Given an abelian sheaf `F` on `(C, J)`, `n : ℕ` and `X : C`, this is
+the degree-`n` sheaf cohomology of `X` with values in `F`. -/
+noncomputable abbrev H' (F : Sheaf J AddCommGrpCat.{v}) (n : ℕ) (X : C) :
+    AddCommGrpCat.{w'} :=
+  (F.cohomologyPresheaf n).obj (Opposite.op X)
 
 end
 

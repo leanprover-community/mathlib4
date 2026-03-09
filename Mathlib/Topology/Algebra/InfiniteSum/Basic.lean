@@ -3,11 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mitchell Lee
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.Topology.Algebra.Monoid.Defs
-import Mathlib.Order.Filter.AtTopBot.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+public import Mathlib.Algebra.FiniteSupport.Defs
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Order.Filter.AtTopBot.BigOperators
 
 /-!
 # Lemmas on infinite sums and products in topological monoids
@@ -18,6 +21,8 @@ keep the basic file of definitions as short as possible.
 Results requiring a group (rather than monoid) structure on the target should go in `Group.lean`.
 
 -/
+
+public section
 
 noncomputable section
 
@@ -31,20 +36,28 @@ variable [CommMonoid α] [TopologicalSpace α]
 variable {f g : β → α} {a b : α} {L : SummationFilter β}
 
 /-- Constant one function has product `1` -/
-@[to_additive /-- Constant zero function has sum `0` -/]
+@[to_additive (attr := simp) /-- Constant zero function has sum `0` -/]
 theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd, tendsto_const_nhds]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
   convert hasProd_one
 
-@[to_additive]
+@[to_additive (attr := nontriviality)]
+theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
+  convert hasProd_one
+
+@[to_additive (attr := simp)]
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
   hasProd_one.multipliable
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem multipliable_empty [IsEmpty β] : Multipliable f L :=
   hasProd_empty.multipliable
+
+@[to_additive (attr := nontriviality)]
+theorem Multipliable.of_subsingleton_cod [Subsingleton α] : Multipliable f L :=
+  HasProd.of_subsingleton_cod.multipliable
 
 /-- See `multipliable_congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/
@@ -121,13 +134,19 @@ protected theorem Set.Finite.multipliable {s : Set β} (hs : s.Finite) (f : β �
   rwa [hs.coe_toFinset] at this
 
 @[to_additive]
-theorem multipliable_of_finite_mulSupport [L.HasSupport] (h : (mulSupport f).Finite) :
+theorem multipliable_of_hasFiniteMulSupport [L.HasSupport] (h : HasFiniteMulSupport f) :
     Multipliable f L := by
   apply multipliable_of_ne_finset_one (s := h.toFinset); simp
 
+@[deprecated (since := "2026-03-03")] alias
+  multipliable_of_finite_mulSupport := multipliable_of_hasFiniteMulSupport
+
+@[deprecated (since := "2026-03-03")] alias
+  summable_of_finite_support := summable_of_hasFiniteSupport
+
 @[to_additive]
 lemma Multipliable.of_finite [Finite β] [L.HasSupport] {f : β → α} : Multipliable f L :=
-  multipliable_of_finite_mulSupport <| Set.finite_univ.subset (Set.subset_univ _)
+  multipliable_of_hasFiniteMulSupport <| Set.finite_univ.subset (Set.subset_univ _)
 
 @[to_additive]
 theorem hasProd_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 1)
@@ -266,7 +285,7 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] 
     · by_cases hL : L.NeBot
       · exact ⟨_, hf.map_tprod g hg.continuous⟩
       · by_cases hfs : (mulSupport fun x ↦ g (f x)).Finite
-        · simp [tprod_bot hL, finprod_eq_prod, hfs, ← map_prod]
+        · simp [tprod_bot hL, finprod_eq_prod _ hfs, ← map_prod]
         · exact ⟨1, by simp [tprod_bot hL, finprod_of_infinite_mulSupport hfs]⟩
   · rintro ⟨hgf, a, ha⟩
     use a
@@ -301,6 +320,16 @@ theorem HasProd.mul (hf : HasProd f a L) (hg : HasProd g b L) :
 theorem Multipliable.mul (hf : Multipliable f L) (hg : Multipliable g L) :
     Multipliable (fun b ↦ f b * g b) L :=
   (hf.hasProd.mul hg.hasProd).multipliable
+
+@[to_additive]
+lemma HasProd.pow (hf : HasProd f a L) (n : ℕ) : HasProd (f · ^ n) (a ^ n) L := by
+  induction n with
+  | zero => simp
+  | succ n hn => simpa [pow_succ] using hn.mul hf
+
+@[to_additive]
+lemma Multipliable.pow (hf : Multipliable f L) (n : ℕ) : Multipliable (f · ^ n) L :=
+  (hf.hasProd.pow n).multipliable
 
 @[to_additive]
 theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
@@ -405,9 +434,10 @@ theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x 
   tprod_congr_set_coe f <| Set.ext h
 
 @[to_additive]
-theorem tprod_eq_finprod [L.LeAtTop] (hf : (mulSupport f).Finite) :
+theorem tprod_eq_finprod [L.LeAtTop] (hf : HasFiniteMulSupport f) :
     ∏'[L] b, f b = ∏ᶠ b, f b := by
-  simp [tprod_def, multipliable_of_finite_mulSupport hf, hf, show L.HasSupport by infer_instance]
+  simp [tprod_def, multipliable_of_hasFiniteMulSupport hf, show Set.Finite _ from hf,
+    show L.HasSupport by infer_instance]
 
 @[to_additive]
 theorem tprod_eq_prod' [L.LeAtTop] {s : Finset β} (hf : mulSupport f ⊆ s) :
@@ -438,7 +468,7 @@ theorem tprod_congr₂ {f g : β → γ → α} {M : SummationFilter γ}
     (hfg : ∀ b c, f b c = g b c) : ∏'[L] b, ∏'[M] c, f b c = ∏'[L] b, ∏'[M] c, g b c :=
   tprod_congr fun b ↦ tprod_congr fun c ↦ hfg b c
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem tprod_fintype [L.LeAtTop] [Fintype β] (f : β → α) : ∏'[L] b, f b = ∏ b, f b := by
   apply tprod_eq_prod; simp
 
@@ -467,25 +497,27 @@ theorem tprod_tprod_eq_mulSingle
     _ = f b c := tprod_eq_mulSingle _ hfb
 
 @[to_additive (attr := simp)]
-theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : α) (L := unconditional β) [L.LeAtTop] :
-    ∏'[L] b', (if b' = b then a else 1) = a := by
+theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : β → α)
+    (L := unconditional β) [L.LeAtTop] :
+    ∏'[L] b', (if b' = b then a b' else 1) = a b := by
   rw [tprod_eq_mulSingle b]
   · simp
   · intro b' hb'; simp [hb']
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
     ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
 
 @[to_additive]
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
-    ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by simp
+    ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by
+  simp [prod_attach]
 
-@[to_additive (attr := simp)]
-theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by
-  rw [← coe_singleton, Finset.tprod_subtype', prod_singleton]
+@[to_additive]
+theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β → α}
     (hf : mulSupport f ⊆ Set.range g) : ∏' c, f (g c) = ∏' b, f b := by
@@ -619,18 +651,17 @@ protected theorem Multipliable.tprod_mul [L.NeBot]
     ∏'[L] b, (f b * g b) = (∏'[L] b, f b) * ∏'[L] b, g b :=
   (hf.hasProd.mul hg.hasProd).tprod_eq
 
-@[deprecated (since := "2025-04-12")] alias tsum_add := Summable.tsum_add
-@[to_additive existing, deprecated (since := "2025-04-12")] alias
-  tprod_mul := Multipliable.tprod_mul
+@[to_additive]
+lemma Multipliable.tprod_pow [L.NeBot] (hf : Multipliable f L) (n : ℕ) :
+    ∏'[L] b, (f b) ^ n = (∏'[L] b, f b) ^ n := by
+  induction n with
+  | zero => simp
+  | succ n hn => simp [pow_succ, (hf.pow n).tprod_mul hf, hn]
 
 @[to_additive]
 protected theorem Multipliable.tprod_finsetProd [L.NeBot] {f : γ → β → α} {s : Finset γ}
     (hf : ∀ i ∈ s, Multipliable (f i) L) : ∏'[L] b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏'[L] b, f i b :=
   (hasProd_prod fun i hi ↦ (hf i hi).hasProd).tprod_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_finsetSum := Summable.tsum_finsetSum
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_finsetProd :=
-  Multipliable.tprod_finsetProd
 
 /-- Version of `tprod_eq_mul_tprod_ite` for `CommMonoid` rather than `CommGroup`.
 Requires a different convergence assumption involving `Function.update`. -/
@@ -650,20 +681,11 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] [L.LeAtT
     _ = f b * ∏'[L] x, ite (x = b) 1 (f x) := by
       simp only [update, if_true, eq_rec_constant, dite_eq_ite]
 
-@[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite' :=
-  Summable.tsum_eq_add_tsum_ite'
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_mul_tprod_ite' :=
-  Multipliable.tprod_eq_mul_tprod_ite'
-
 @[to_additive]
 protected theorem Multipliable.tprod_mul_tprod_compl {s : Set β}
     (hs : Multipliable (f ∘ (↑) : s → α)) (hsc : Multipliable (f ∘ (↑) : ↑sᶜ → α)) :
     (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
   (hs.hasProd.mul_compl hsc.hasProd).tprod_eq.symm
-
-@[deprecated (since := "2025-04-12")] alias tsum_add_tsum_compl := Summable.tsum_add_tsum_compl
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_mul_tprod_compl :=
-    Multipliable.tprod_mul_tprod_compl
 
 @[to_additive]
 protected theorem Multipliable.tprod_union_disjoint {s t : Set β} (hd : Disjoint s t)
@@ -671,20 +693,11 @@ protected theorem Multipliable.tprod_union_disjoint {s t : Set β} (hd : Disjoin
     ∏' x : ↑(s ∪ t), f x = (∏' x : s, f x) * ∏' x : t, f x :=
   (hs.hasProd.mul_disjoint hd ht.hasProd).tprod_eq
 
-@[deprecated (since := "2025-04-12")] alias tsum_union_disjoint := Summable.tsum_union_disjoint
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_union_disjoint :=
-    Multipliable.tprod_union_disjoint
-
 @[to_additive]
 protected theorem Multipliable.tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
     (hd : (s : Set ι).Pairwise (Disjoint on t)) (hf : ∀ i ∈ s, Multipliable (f ∘ (↑) : t i → α)) :
     ∏' x : ⋃ i ∈ s, t i, f x = ∏ i ∈ s, ∏' x : t i, f x :=
   (hasProd_prod_disjoint _ hd fun i hi ↦ (hf i hi).hasProd).tprod_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_finset_bUnion_disjoint :=
-    Summable.tsum_finset_bUnion_disjoint
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_finset_bUnion_disjoint :=
-    Multipliable.tprod_finset_bUnion_disjoint
 
 end ContinuousMul
 

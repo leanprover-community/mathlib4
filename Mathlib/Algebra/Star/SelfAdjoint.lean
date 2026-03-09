@@ -3,9 +3,11 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Star.Rat
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Star.Rat
 
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group
@@ -37,6 +39,8 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
   invariant under it.
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -182,6 +186,12 @@ variable [Monoid R] [StarMul R]
 theorem pow {x : R} (hx : IsSelfAdjoint x) (n : ℕ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_pow, hx.star_eq]
 
+@[simp]
+theorem invOf_iff (x : R) [Invertible x] : IsSelfAdjoint ⅟x ↔ IsSelfAdjoint x := by
+  rw [isSelfAdjoint_iff, isSelfAdjoint_iff, star_invOf, invOf_inj]
+
+alias ⟨_, invOf⟩ := invOf_iff
+
 @[grind =]
 lemma _root_.IsUnit.isSelfAdjoint_conjugate_iff {a u : R} (hu : IsUnit u) :
     IsSelfAdjoint (u * a * star u) ↔ IsSelfAdjoint a := by
@@ -249,6 +259,10 @@ variable [Group R] [StarMul R]
 theorem inv {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
   simp only [isSelfAdjoint_iff, star_inv, hx.star_eq]
 
+@[simp]
+theorem inv_iff (x : R) : IsSelfAdjoint x⁻¹ ↔ IsSelfAdjoint x := by
+  simp [isSelfAdjoint_iff]
+
 @[aesop safe apply]
 theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_zpow, hx.star_eq]
@@ -262,6 +276,10 @@ variable [GroupWithZero R] [StarMul R]
 @[aesop safe apply]
 theorem inv₀ {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
   simp only [isSelfAdjoint_iff, star_inv₀, hx.star_eq]
+
+@[simp]
+theorem inv₀_iff (x : R) : IsSelfAdjoint x⁻¹ ↔ IsSelfAdjoint x := by
+  simp [isSelfAdjoint_iff]
 
 @[aesop safe apply]
 theorem zpow₀ {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by

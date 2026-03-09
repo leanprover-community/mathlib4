@@ -3,11 +3,13 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.MeasureTheory.Constructions.HaarToSphere
-import Mathlib.MeasureTheory.Integral.Gamma
-import Mathlib.MeasureTheory.Integral.Pi
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.MeasureTheory.Constructions.HaarToSphere
+public import Mathlib.MeasureTheory.Integral.Gamma
+public import Mathlib.MeasureTheory.Integral.Pi
 
 /-!
 # Volume of balls
@@ -39,6 +41,8 @@ Using these formulas, we compute the volume of the unit balls in several cases.
 * `Complex.volume_ball` / `Complex.volume_closedBall`: volume of open and closed balls in `ℂ`.
 -/
 
+public section
+
 section general_case
 
 open MeasureTheory MeasureTheory.Measure Module ENNReal
@@ -60,7 +64,7 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
         Nat.cast_one]
       rw [integral_rpow_mul_exp_neg_rpow hp (by linarith), sub_add_cancel,
         Real.Gamma_add_one (ne_of_gt (by positivity))]
-      field_simp
+      field
     rw [integral_fun_norm_addHaar μ (fun x => Real.exp (-x ^ p)), nsmul_eq_mul, smul_eq_mul,
       mul_div_assoc, mul_div_assoc, mul_comm, mul_assoc, this, mul_one, ofReal_measureReal _]
     exact ne_of_lt measure_ball_lt_top
@@ -77,17 +81,9 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
       .ofReal ((∫ (x : E), Real.exp (-(g x) ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
-  letI : NormedAddCommGroup F :=
-  { norm := g
-    dist := fun x y => g (x - y)
-    dist_self := by simp only [_root_.sub_self, h1, forall_const]
-    dist_comm := fun _ _ => by rw [← h2, neg_sub]
-    dist_triangle := fun x y z => by convert h3 (x - y) (y - z) using 1; simp [F]
-    edist := fun x y => .ofReal (g (x - y))
-    edist_dist := fun _ _ => rfl
-    eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
-  letI : NormedSpace ℝ F :=
-  { norm_smul_le := fun _ _ ↦ h5 _ _ }
+  let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
+  letI : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
+  letI : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
   letI : MeasurableSpace F := borel F
@@ -118,17 +114,9 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     μ {x : E | g x ≤ r} = μ {x : E | g x < r} := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
-  letI : NormedAddCommGroup F :=
-  { norm := g
-    dist := fun x y => g (x - y)
-    dist_self := by simp only [_root_.sub_self, h1, forall_const]
-    dist_comm := fun _ _ => by rw [← h2, neg_sub]
-    dist_triangle := fun x y z => by convert h3 (x - y) (y - z) using 1; simp [F]
-    edist := fun x y => .ofReal (g (x - y))
-    edist_dist := fun _ _ => rfl
-    eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
-  letI : NormedSpace ℝ F :=
-  { norm_smul_le := fun _ _ ↦ h5 _ _ }
+  let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
+  letI : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
+  letI : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
   letI : MeasurableSpace F := borel F
@@ -157,7 +145,7 @@ end general_case
 
 section LpSpace
 
-open Real Fintype ENNReal Module MeasureTheory MeasureTheory.Measure
+open Real Fintype ENNReal Module MeasureTheory MeasureTheory.Measure WithLp
 
 variable (ι : Type*) [Fintype ι] {p : ℝ}
 
@@ -165,22 +153,23 @@ theorem MeasureTheory.volume_sum_rpow_lt_one (hp : 1 ≤ p) :
     volume {x : ι → ℝ | ∑ i, |x i| ^ p < 1} =
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
+  have : (ENNReal.ofReal p).toReal = p := toReal_ofReal (le_of_lt h₁)
   have h₂ : ∀ x : ι → ℝ, 0 ≤ ∑ i, |x i| ^ p := by
     refine fun _ => Finset.sum_nonneg' ?_
     exact fun i => (fun _ => rpow_nonneg (abs_nonneg _) _) _
   -- We collect facts about `Lp` norms that will be used in `measure_lt_one_eq_integral_div_gamma`
-  have eq_norm := fun x : ι → ℝ => (PiLp.norm_eq_sum (p := .ofReal p) (f := x)
-    ((toReal_ofReal (le_of_lt h₁)).symm ▸ h₁))
-  simp_rw [toReal_ofReal (le_of_lt h₁), Real.norm_eq_abs] at eq_norm
+  have eq_norm (x : ι → ℝ) : ‖toLp (.ofReal p) x‖ = (∑ i, |x i| ^ p) ^ (1 / p) := by
+    simp [PiLp.norm_eq_sum (f := toLp (.ofReal p) x) (this.symm ▸ h₁), this]
   have : Fact (1 ≤ ENNReal.ofReal p) := fact_iff.mpr (ofReal_one ▸ (ofReal_le_ofReal hp))
-  have nm_zero := norm_zero (E := PiLp (.ofReal p) (fun _ : ι => ℝ))
-  have eq_zero := fun x : ι → ℝ => norm_eq_zero (E := PiLp (.ofReal p) (fun _ : ι => ℝ)) (a := x)
-  have nm_neg := fun x : ι → ℝ => norm_neg (E := PiLp (.ofReal p) (fun _ : ι => ℝ)) x
-  have nm_add := fun x y : ι → ℝ => norm_add_le (E := PiLp (.ofReal p) (fun _ : ι => ℝ)) x y
-  simp_rw [eq_norm] at eq_zero nm_zero nm_neg nm_add
+  have nm_zero : ‖toLp (.ofReal p) (0 : ι → ℝ)‖ = 0 := norm_zero
+  have eq_zero (x : ι → ℝ) : ‖toLp (.ofReal p) x‖ = 0 ↔ x = 0 :=
+    norm_eq_zero.trans (toLp_eq_zero _)
+  have nm_neg := fun x : ι → ℝ => norm_neg (toLp (.ofReal p) x)
+  have nm_add := fun x y : ι → ℝ => norm_add_le (toLp (.ofReal p) x) (toLp (.ofReal p) y)
   have nm_smul := fun (r : ℝ) (x : ι → ℝ) =>
-    norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℝ)) r x
-  simp_rw [eq_norm, norm_eq_abs] at nm_smul
+    norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℝ)) r (toLp (.ofReal p) x)
+  simp_rw [← toLp_neg, ← toLp_add, ← toLp_smul, eq_norm,
+    norm_eq_abs] at eq_zero nm_zero nm_neg nm_add nm_smul
   -- We use `measure_lt_one_eq_integral_div_gamma` with `g` equals to the norm `L_p`
   convert (measure_lt_one_eq_integral_div_gamma (volume : Measure (ι → ℝ))
     (g := fun x => (∑ i, |x i| ^ p) ^ (1 / p)) nm_zero nm_neg nm_add (eq_zero _).mp
@@ -217,42 +206,44 @@ theorem MeasureTheory.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) 
     volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) ≤ r} = (.ofReal r) ^ card ι *
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
+  have : (ENNReal.ofReal p).toReal = p := toReal_ofReal (le_of_lt h₁)
   -- We collect facts about `Lp` norms that will be used in `measure_le_one_eq_lt_one`
-  have eq_norm := fun x : ι → ℝ => (PiLp.norm_eq_sum (p := .ofReal p) (f := x)
-    ((toReal_ofReal (le_of_lt h₁)).symm ▸ h₁))
-  simp_rw [toReal_ofReal (le_of_lt h₁), Real.norm_eq_abs] at eq_norm
+  have eq_norm (x : ι → ℝ) : ‖toLp (.ofReal p) x‖ = (∑ i, |x i| ^ p) ^ (1 / p) := by
+    simp [PiLp.norm_eq_sum (f := toLp (.ofReal p) x) (this.symm ▸ h₁), this]
   have : Fact (1 ≤ ENNReal.ofReal p) := fact_iff.mpr (ofReal_one ▸ (ofReal_le_ofReal hp))
-  have nm_zero := norm_zero (E := PiLp (.ofReal p) (fun _ : ι => ℝ))
-  have eq_zero := fun x : ι → ℝ => norm_eq_zero (E := PiLp (.ofReal p) (fun _ : ι => ℝ)) (a := x)
-  have nm_neg := fun x : ι → ℝ => norm_neg (E := PiLp (.ofReal p) (fun _ : ι => ℝ)) x
-  have nm_add := fun x y : ι → ℝ => norm_add_le (E := PiLp (.ofReal p) (fun _ : ι => ℝ)) x y
-  simp_rw [eq_norm] at eq_zero nm_zero nm_neg nm_add
+  have nm_zero : ‖toLp (.ofReal p) (0 : ι → ℝ)‖ = 0 := norm_zero
+  have eq_zero (x : ι → ℝ) : ‖toLp (.ofReal p) x‖ = 0 ↔ x = 0 :=
+    norm_eq_zero.trans (toLp_eq_zero _)
+  have nm_neg := fun x : ι → ℝ => norm_neg (toLp (.ofReal p) x)
+  have nm_add := fun x y : ι → ℝ => norm_add_le (toLp (.ofReal p) x) (toLp (.ofReal p) y)
   have nm_smul := fun (r : ℝ) (x : ι → ℝ) =>
-    norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℝ)) r x
-  simp_rw [eq_norm, norm_eq_abs] at nm_smul
+    norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℝ)) r (toLp (.ofReal p) x)
+  simp_rw [← toLp_neg, ← toLp_add, ← toLp_smul, eq_norm,
+    norm_eq_abs] at eq_zero nm_zero nm_neg nm_add nm_smul
   rw [measure_le_eq_lt _ nm_zero (fun x ↦ nm_neg x) (fun x y ↦ nm_add x y) (eq_zero _).mp
     (fun r x => nm_smul r x), volume_sum_rpow_lt _ hp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
     volume {x : ι → ℂ | ∑ i, ‖x i‖ ^ p < 1} =
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
+  have : (ENNReal.ofReal p).toReal = p := toReal_ofReal (le_of_lt h₁)
   have h₂ : ∀ x : ι → ℂ, 0 ≤ ∑ i, ‖x i‖ ^ p := by
     refine fun _ => Finset.sum_nonneg' ?_
     exact fun i => (fun _ => rpow_nonneg (norm_nonneg _) _) _
   -- We collect facts about `Lp` norms that will be used in `measure_lt_one_eq_integral_div_gamma`
-  have eq_norm := fun x : ι → ℂ => (PiLp.norm_eq_sum (p := .ofReal p) (f := x)
-    ((toReal_ofReal (le_of_lt h₁)).symm ▸ h₁))
-  simp_rw [toReal_ofReal (le_of_lt h₁)] at eq_norm
+  have eq_norm (x : ι → ℂ) : ‖toLp (.ofReal p) x‖ = (∑ i, ‖x i‖ ^ p) ^ (1 / p) := by
+    simp [PiLp.norm_eq_sum (f := toLp (.ofReal p) x) (this.symm ▸ h₁), this]
   have : Fact (1 ≤ ENNReal.ofReal p) := fact_iff.mpr (ENNReal.ofReal_one ▸ (ofReal_le_ofReal hp))
-  have nm_zero := norm_zero (E := PiLp (.ofReal p) (fun _ : ι => ℂ))
-  have eq_zero := fun x : ι → ℂ => norm_eq_zero (E := PiLp (.ofReal p) (fun _ : ι => ℂ)) (a := x)
-  have nm_neg := fun x : ι → ℂ => norm_neg (E := PiLp (.ofReal p) (fun _ : ι => ℂ)) x
-  have nm_add := fun x y : ι → ℂ => norm_add_le (E := PiLp (.ofReal p) (fun _ : ι => ℂ)) x y
-  simp_rw [eq_norm] at eq_zero nm_zero nm_neg nm_add
+  have nm_zero : ‖toLp (.ofReal p) (0 : ι → ℂ)‖ = 0 := norm_zero
+  have eq_zero (x : ι → ℂ) : ‖toLp (.ofReal p) x‖ = 0 ↔ x = 0 :=
+    norm_eq_zero.trans (toLp_eq_zero _)
+  have nm_neg := fun x : ι → ℂ => norm_neg (toLp (.ofReal p) x)
+  have nm_add := fun x y : ι → ℂ => norm_add_le (toLp (.ofReal p) x) (toLp (.ofReal p) y)
   have nm_smul := fun (r : ℝ) (x : ι → ℂ) =>
-    norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℂ)) r x
-  simp_rw [eq_norm] at nm_smul
+    norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℂ)) r (toLp (.ofReal p) x)
+  simp_rw [← toLp_neg, ← toLp_add, ← toLp_smul, eq_norm] at eq_zero nm_zero nm_neg nm_add nm_smul
   -- We use `measure_lt_one_eq_integral_div_gamma` with `g` equals to the norm `L_p`
   convert measure_lt_one_eq_integral_div_gamma (volume : Measure (ι → ℂ))
     (g := fun x => (∑ i, ‖x i‖ ^ p) ^ (1 / p)) nm_zero nm_neg nm_add (eq_zero _).mp
@@ -266,6 +257,7 @@ theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
   · rw [finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const, smul_eq_mul,
       Nat.cast_mul, Nat.cast_ofNat, Fintype.card, mul_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
     volume {x : ι → ℂ | (∑ i, ‖x i‖ ^ p) ^ (1 / p) < r} = (.ofReal r) ^ (2 * card ι) *
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
@@ -288,23 +280,24 @@ theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
     · simp_rw [finrank_pi_fintype ℝ, Complex.finrank_real_complex, Finset.sum_const, smul_eq_mul,
         mul_comm, Fintype.card]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Complex.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
     volume {x : ι → ℂ | (∑ i, ‖x i‖ ^ p) ^ (1 / p) ≤ r} = (.ofReal r) ^ (2 * card ι) *
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
+  have : (ENNReal.ofReal p).toReal = p := toReal_ofReal (le_of_lt h₁)
   -- We collect facts about `Lp` norms that will be used in `measure_lt_one_eq_integral_div_gamma`
-  have eq_norm := fun x : ι → ℂ => (PiLp.norm_eq_sum (p := .ofReal p) (f := x)
-    ((toReal_ofReal (le_of_lt h₁)).symm ▸ h₁))
-  simp_rw [toReal_ofReal (le_of_lt h₁)] at eq_norm
+  have eq_norm (x : ι → ℂ) : ‖toLp (.ofReal p) x‖ = (∑ i, ‖x i‖ ^ p) ^ (1 / p) := by
+    simp [PiLp.norm_eq_sum (f := toLp (.ofReal p) x) (this.symm ▸ h₁), this]
   have : Fact (1 ≤ ENNReal.ofReal p) := fact_iff.mpr (ENNReal.ofReal_one ▸ (ofReal_le_ofReal hp))
-  have nm_zero := norm_zero (E := PiLp (.ofReal p) (fun _ : ι => ℂ))
-  have eq_zero := fun x : ι → ℂ => norm_eq_zero (E := PiLp (.ofReal p) (fun _ : ι => ℂ)) (a := x)
-  have nm_neg := fun x : ι → ℂ => norm_neg (E := PiLp (.ofReal p) (fun _ : ι => ℂ)) x
-  have nm_add := fun x y : ι → ℂ => norm_add_le (E := PiLp (.ofReal p) (fun _ : ι => ℂ)) x y
-  simp_rw [eq_norm] at eq_zero nm_zero nm_neg nm_add
+  have nm_zero : ‖toLp (.ofReal p) (0 : ι → ℂ)‖ = 0 := norm_zero
+  have eq_zero (x : ι → ℂ) : ‖toLp (.ofReal p) x‖ = 0 ↔ x = 0 :=
+    norm_eq_zero.trans (toLp_eq_zero _)
+  have nm_neg := fun x : ι → ℂ => norm_neg (toLp (.ofReal p) x)
+  have nm_add := fun x y : ι → ℂ => norm_add_le (toLp (.ofReal p) x) (toLp (.ofReal p) y)
   have nm_smul := fun (r : ℝ) (x : ι → ℂ) =>
-    norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℂ)) r x
-  simp_rw [eq_norm] at nm_smul
+    norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℂ)) r (toLp (.ofReal p) x)
+  simp_rw [← toLp_neg, ← toLp_add, ← toLp_smul, eq_norm] at eq_zero nm_zero nm_neg nm_add nm_smul
   rw [measure_le_eq_lt _ nm_zero (fun x ↦ nm_neg x) (fun x y ↦ nm_add x y) (eq_zero _).mp
     (fun r x => nm_smul r x), Complex.volume_sum_rpow_lt _ hp]
 
@@ -325,11 +318,11 @@ theorem volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
   · suffices volume (Metric.ball (0 : EuclideanSpace ℝ ι) 1) =
         .ofReal (√π ^ card ι / Gamma (card ι / 2 + 1)) by
       rw [Measure.addHaar_ball _ _ hr, this, ofReal_pow hr, finrank_euclideanSpace]
-    rw [← ((volume_preserving_measurableEquiv _).symm).measure_preimage
+    rw [← (PiLp.volume_preserving_toLp ι).measure_preimage
       measurableSet_ball.nullMeasurableSet]
     simp only [Set.preimage, ball_zero_eq _ zero_le_one, one_pow, Set.mem_setOf_eq]
     convert volume_sum_rpow_lt_one ι one_le_two using 4
-    · simp [sq_abs, EuclideanSpace.measurableEquiv]
+    · simp [sq_abs]
     · rw [Gamma_add_one (by simp), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 
@@ -388,7 +381,7 @@ lemma volume_ball_of_dim_odd {k : ℕ} (hk : finrank ℝ E = 2 * k + 1) (x : E) 
   congr 3
   suffices √π / (↑(2 * k + 1)‼ * √π / 2 ^ (k + 1)) = 2 ^ (k + 1) / ↑(2 * k + 1)‼ by
     simpa [add_div, add_right_comm, -one_div, Gamma_nat_add_one_add_half]
-  field_simp
+  field
 
 lemma volume_closedBall_of_dim_odd {k : ℕ} (hk : finrank ℝ E = 2 * k + 1) (x : E) (r : ℝ) :
     volume (closedBall x r) =
@@ -428,12 +421,14 @@ section Complex
 
 open MeasureTheory MeasureTheory.Measure ENNReal
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Complex.volume_ball (a : ℂ) (r : ℝ) :
     volume (Metric.ball a r) = .ofReal r ^ 2 * NNReal.pi := by
   simp [InnerProductSpace.volume_ball_of_dim_even (k := 1) (by simp) a,
     ← NNReal.coe_real_pi, ofReal_coe_nnreal]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Complex.volume_closedBall (a : ℂ) (r : ℝ) :
     volume (Metric.closedBall a r) = .ofReal r ^ 2 * NNReal.pi := by

@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Topology.FiberBundle.Trivialization
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Topology.FiberBundle.Trivialization
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Fiber bundles
@@ -162,6 +164,8 @@ for the initial bundle.
 ## Tags
 Fiber bundle, topological bundle, structure group
 -/
+
+@[expose] public section
 
 
 variable {ι B F X : Type*} [TopologicalSpace X]
@@ -498,7 +502,7 @@ theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
     (Z.localTrivAsPartialEquiv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 
-/-- The composition of two local trivializations is the trivialization change Z.triv_change i j. -/
+/-- The composition of two local trivializations is the trivialization change `Z.trivChange i j`. -/
 theorem localTrivAsPartialEquiv_trans (i j : ι) :
     (Z.localTrivAsPartialEquiv i).symm.trans (Z.localTrivAsPartialEquiv j) ≈
       (Z.trivChange i j).toPartialEquiv := by
@@ -668,6 +672,7 @@ theorem mem_localTrivAt_baseSet (b : B) : b ∈ (Z.localTrivAt b).baseSet := by
 theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
   simp only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A fiber bundle constructed from core is indeed a fiber bundle. -/
 instance fiberBundle : FiberBundle F Z.Fiber where
   totalSpaceMk_isInducing' b := isInducing_iff_nhds.2 fun x ↦ by
@@ -851,3 +856,24 @@ theorem continuousOn_of_comp_right {X : Type*} [TopologicalSpace X] {f : TotalSp
     exact a.mem_base_pretrivializationAt z.proj
 
 end FiberPrebundle
+
+namespace FiberBundle
+section extend
+
+variable {E} [(x : B) → Zero (E x)] [TopologicalSpace (TotalSpace F E)] [FiberBundle F E]
+
+/-- Extend a vector `v ∈ V x` to a section of the bundle `V`, whose value at `x` is `v`.
+The details of the extension are mostly unspecified: for covariant derivatives, the value of
+`s` at points other than `x` will not matter (except for shorter proofs).
+-/
+noncomputable def extend {x : B} (v₀ : E x) (x' : B) : E x' :=
+  letI t := trivializationAt F E x
+  letI w : F := (t ⟨x, v₀⟩).2
+  -- TODO: use the `funToSec` helper from #36036 once available
+  t.symm x' w
+
+@[simp] lemma extend_apply_self {x : B} (v : E x) : extend F v x = v := by
+  simp [extend, FiberBundle.mem_baseSet_trivializationAt' x]
+
+end extend
+end FiberBundle

@@ -51,7 +51,7 @@ example : n = n := by
 info: theorem _example.extracted_1 {z : Int} :
   @Exists.{1} Nat fun (n : Nat) ↦ @Eq.{1} Int (@Nat.cast.{0} Int instNatCastInt n) z := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example {z : Int} : ∃ n : Nat, ↑n = z := by
@@ -62,7 +62,7 @@ example {z : Int} : ∃ n : Nat, ↑n = z := by
 /--
 info: theorem foo : True := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example (n : ℕ) : True := by
@@ -72,7 +72,7 @@ example (n : ℕ) : True := by
 /--
 info: theorem foo (n : ℕ) : True := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example (n : ℕ) : True := by
@@ -87,7 +87,7 @@ example (n : ℕ) : True := by
 /--
 info: theorem _example.extracted_1 (n : ℕ) : True := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example (n : ℕ) : True := by
@@ -98,7 +98,7 @@ example (n : ℕ) : True := by
 /--
 info: theorem _example.extracted_1 (n : ℕ) : True := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example (n : ℕ) (i : Fin n) : True := by
@@ -108,7 +108,7 @@ example (n : ℕ) (i : Fin n) : True := by
 /--
 info: theorem _example.extracted_1 (n : ℕ) (i : Fin n) : True := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example (n : ℕ) (i : Fin n) : True := by
@@ -119,7 +119,7 @@ example (n : ℕ) (i : Fin n) : True := by
 /--
 info: theorem _example.extracted_1 (h : 1 = 2) : False := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example (h : 1 = 2) : False := by
@@ -130,7 +130,7 @@ example (h : 1 = 2) : False := by
 /--
 info: theorem _example.extracted_1 (h : 1 = 2) : False := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example : False := by
@@ -142,7 +142,7 @@ example : False := by
 /--
 info: theorem _example.extracted_1 (h : 1 = 2) : False := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example : 1 = 2 → False := by
@@ -154,7 +154,7 @@ example : 1 = 2 → False := by
 /--
 info: theorem _example.extracted_1 (m : ℕ) : m < m + 1 := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example : ∀ n, n < n + 1 := by
@@ -164,14 +164,30 @@ example : ∀ n, n < n + 1 := by
 
 -- Throwing metavariables into the terms
 /--
-info: theorem _example.extracted_1 (m : ℕ) (this : m < m.succ.succ) : m < m + 1 := sorry
+info: theorem _example.extracted_1 (m : ℕ) (this : m < (m + 1).succ) : m < m + 1 := sorry
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example : ∀ n, n < n + 1 := by
   intro m
   show _
-  have : m < _ := Nat.lt.step (Nat.lt.base m)
+  have : m < _ := Nat.lt_succ_of_lt (Nat.lt_add_one m)
   extract_goal
   sorry
+
+/--
+info: theorem foralls_variants.extracted_1_1 : ∀ (n : ℕ), n + 0 = n → n + 1 + 0 = n + 1 := sorry
+---
+info: theorem foralls_variants.extracted_1_3 (n : ℕ) : n + 0 = n → n + 1 + 0 = n + 1 := sorry
+-/
+#guard_msgs in
+theorem foralls_variants : ∀ (n : Nat), n + 0 = n := by
+  intro n
+  have step1 : ∀ n, n + 0 = n → (n + 1) + 0 = n + 1 := by
+    extract_goal
+    simp
+  have step2 : n + 0 = n → (n + 1) + 0 = n + 1 := by
+    extract_goal
+    simp
+  simp

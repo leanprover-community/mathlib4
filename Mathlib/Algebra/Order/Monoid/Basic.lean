@@ -3,8 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Ordered monoids
@@ -12,17 +14,19 @@ import Mathlib.Order.Hom.Basic
 This file develops some additional material on ordered monoids.
 -/
 
+@[expose] public section
+
 
 open Function
 
 universe u
 
-variable {α : Type u} {β : Type*} [CommMonoid α] [PartialOrder α]
+variable {α : Type u} {β : Type*} [CommMonoid α] [Preorder α]
 
 /-- Pullback an `IsOrderedMonoid` under an injective map. -/
 @[to_additive /-- Pullback an `IsOrderedAddMonoid` under an injective map. -/]
 lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β]
-    [PartialOrder β] (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
+    [Preorder β] (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
     IsOrderedMonoid β where
   mul_le_mul_left a b ab c := le.1 <| by rw [mul, mul]; grw [le.2 ab]
@@ -38,7 +42,7 @@ lemma StrictMono.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β] [LinearOrd
 @[to_additive Function.Injective.isOrderedCancelAddMonoid
     /-- Pullback an `IsOrderedCancelAddMonoid` under an injective map. -/]
 lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β]
-    [PartialOrder β]
+    [Preorder β]
     (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
     IsOrderedCancelMonoid β where
@@ -53,32 +57,6 @@ lemma StrictMono.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β
     IsOrderedCancelMonoid β where
   __ := hf.isOrderedMonoid f mul
   le_of_mul_le_mul_left a b c h := by simpa [← hf.le_iff_le, mul] using h
-
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCommMonoid := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedAddCommMonoid := Function.Injective.isOrderedAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCancelCommMonoid := Function.Injective.isOrderedCancelMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCancelAddCommMonoid := Function.Injective.isOrderedCancelAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCommMonoid := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedAddCommMonoid := Function.Injective.isOrderedAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCancelCommMonoid := Function.Injective.isOrderedCancelMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCancelAddCommMonoid :=
-  Function.Injective.isOrderedCancelAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCommGroup := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedAddCommGroup := Function.Injective.isOrderedAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCommGroup := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedAddCommGroup := Function.Injective.isOrderedAddMonoid
 
 -- TODO find a better home for the next two constructions.
 /-- The order embedding sending `b` to `a * b`, for some fixed `a`.

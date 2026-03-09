@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Category.AlgCat.Monoidal
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+module
+
+public import Mathlib.Algebra.Category.AlgCat.Monoidal
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 
 /-!
 # The monoidal structure on `AlgCat` is symmetric.
@@ -13,6 +15,8 @@ In this file we show:
 
 * `AlgCat.instSymmetricCategory : SymmetricCategory (AlgCat.{u} R)`
 -/
+
+@[expose] public section
 open CategoryTheory
 
 
@@ -30,7 +34,8 @@ instance : BraidedCategory (AlgCat.{u} R) :=
 
 instance : (forget₂ (AlgCat R) (ModuleCat R)).Braided where
 
+set_option backward.isDefEq.respectTransparency false in
 instance instSymmetricCategory : SymmetricCategory (AlgCat.{u} R) :=
-  symmetricCategoryOfFaithful (forget₂ (AlgCat R) (ModuleCat R))
+  .ofFaithful (forget₂ (AlgCat R) (ModuleCat R))
 
 end AlgCat

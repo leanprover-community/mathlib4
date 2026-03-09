@@ -61,10 +61,10 @@ end
 
 section
 /--
-error: failed to synthesize
+error: failed to synthesize instance of type class
   Semiring R
 
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 -/
 #guard_msgs in
 variable? [Module R M] => [Module R M]

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
-import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
+public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 
 /-!
 # The partially ordered type of non degenerate simplices of a simplicial set
@@ -18,6 +20,8 @@ Given an arbitrary simplex `x : X.S`, we show that there is a unique
 non degenerate `x.toN : X.N` such that `x.toN.subcomplex = x.subcomplex`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -60,7 +64,7 @@ lemma le_iff {x y : X.N} : x ≤ y ↔ x.subcomplex ≤ y.subcomplex :=
 
 lemma le_iff_exists_mono {x y : X.N} :
     x ≤ y ↔ ∃ (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) (_ : Mono f), X.map f.op y.simplex = x.simplex := by
-  simp only [le_iff, CategoryTheory.Subpresheaf.ofSection_le_iff,
+  simp only [le_iff, CategoryTheory.Subfunctor.ofSection_le_iff,
     Subcomplex.mem_ofSimplex_obj_iff]
   exact ⟨fun ⟨f, hf⟩ ↦ ⟨f, X.mono_of_nonDegenerate ⟨_, x.nonDegenerate⟩ f _ hf, hf⟩, by tauto⟩
 
@@ -69,6 +73,7 @@ lemma dim_le_of_le {x y : X.N} (h : x ≤ y) : x.dim ≤ y.dim := by
   obtain ⟨f, hf, _⟩ := h
   exact SimplexCategory.len_le_of_mono f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
   obtain h' | h' := (dim_le_of_le h.le).lt_or_eq
   · exact h'
@@ -80,6 +85,7 @@ lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
     obtain rfl : y = x := by simpa using hf
     simp at h
 
+set_option backward.isDefEq.respectTransparency false in
 instance : PartialOrder X.N where
   le_antisymm x₁ x₂ h h' := by
     obtain ⟨n₁, ⟨x₁, hx₁⟩, rfl⟩ := x₁.mk_surjective
@@ -102,10 +108,7 @@ lemma subcomplex_injective_iff {x y : X.N} :
 
 lemma eq_iff {x y : X.N} :
     x = y ↔ x.subcomplex = y.subcomplex :=
-  ⟨by rintro rfl; rfl, fun h ↦ by
-    apply le_antisymm
-    all_goals
-    · rw [le_iff, h]⟩
+  ⟨by rintro rfl; rfl, fun h ↦ by simp [le_antisymm_iff, le_iff, h]⟩
 
 section
 
@@ -124,6 +127,14 @@ lemma cast_eq_self : s.cast hd = s := by
   rfl
 
 end
+
+variable (X) in
+lemma iSup_subcomplex_eq_top :
+    ⨆ (s : X.N), s.subcomplex = ⊤ :=
+  le_antisymm (by simp) (by
+    rw [← Subcomplex.iSup_ofSimplex_nonDegenerate_eq_top X, iSup_le_iff]
+    rintro ⟨d, s, hs⟩
+    exact le_trans (by rfl) (le_iSup _ (N.mk _ hs)))
 
 end N
 

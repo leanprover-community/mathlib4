@@ -3,8 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.GroupTheory.Congruence.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.GroupTheory.Congruence.Defs
 
 /-!
 # Congruence relations and homomorphisms
@@ -23,6 +25,8 @@ This file contains elementary definitions involving congruence relations and mor
 congruence, congruence relation, quotient, quotient by congruence relation, monoid,
 quotient monoid
 -/
+
+@[expose] public section
 
 
 variable (M : Type*) {N : Type*} {P : Type*}
@@ -43,12 +47,13 @@ an additive congruence relation. -/]
 def mkMulHom (c : Con M) : MulHom M c.Quotient where
   toFun := (↑)
   map_mul' _ _ := rfl
+
 /-- The kernel of a multiplicative homomorphism as a congruence relation. -/
 @[to_additive /-- The kernel of an additive homomorphism as an additive congruence relation. -/]
 def ker (f : F) : Con M where
   toSetoid := Setoid.ker f
   mul' h1 h2 := by
-    dsimp [Setoid.ker, onFun] at *
+    dsimp +instances [Setoid.ker, onFun] at *
     rw [map_mul, h1, h2, map_mul]
 
 @[to_additive (attr := norm_cast)]
@@ -64,26 +69,6 @@ theorem ker_rel (f : F) {x y} : ker f x y ↔ f x = f y :=
 relation `c` equals `c`. -/]
 theorem ker_mkMulHom_eq (c : Con M) : ker (mkMulHom c) = c :=
   ext fun _ _ => Quotient.eq''
-
-/-- The kernel of a multiplication-preserving function as a congruence relation. -/
-@[to_additive
-/-- The kernel of an addition-preserving function as an additive congruence relation. -/]
-abbrev mulKer (f : M → P) (h : ∀ x y, f (x * y) = f x * f y) : Con M :=
-  ker <| MulHom.mk f h
-
-attribute [deprecated Con.ker (since := "2025-03-23")] mulKer
-attribute [deprecated AddCon.ker (since := "2025-03-23")] AddCon.addKer
-
-set_option linter.deprecated false in
-/-- The kernel of the quotient map induced by a congruence relation `c` equals `c`. -/
-@[to_additive (attr := simp) /-- The kernel of the quotient map induced by an additive congruence
-relation `c` equals `c`. -/]
-theorem mul_ker_mk_eq {c : Con M} :
-    (mulKer ((↑) : M → c.Quotient) fun _ _ => rfl) = c :=
-  ext fun _ _ => Quotient.eq''
-
-attribute [deprecated Con.ker_mkMulHom_eq (since := "2025-03-23")] mul_ker_mk_eq
-attribute [deprecated AddCon.ker_mkAddHom_eq (since := "2025-03-23")] AddCon.add_ker_mk_eq
 
 /-- Given a function `f`, the smallest congruence relation containing the binary relation on `f`'s
 image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)`
@@ -115,6 +100,7 @@ theorem mapOfSurjective_eq_mapGen {c : Con M} {f : F} (h : ker f ≤ c) (hf : Su
     c.mapGen f = c.mapOfSurjective f h hf := by
   rw [← conGen_of_con (c.mapOfSurjective f h hf)]; rfl
 
+set_option backward.proofsInPublic true in
 /-- Given a congruence relation `c` on a type `M` with a multiplication, the order-preserving
 bijection between the set of congruence relations containing `c` and the congruence relations
 on the quotient of `M` by `c`. -/
@@ -274,7 +260,7 @@ relation on `M` whose induced map from the quotient of `M` to `P` is injective. 
 is the unique additive congruence relation on `M` whose induced map from the quotient of `M`
 to `P` is injective. -/]
 theorem ker_eq_lift_of_injective (H : c ≤ ker f) (h : Injective (c.lift f H)) : ker f = c :=
-  toSetoid_inj <| Setoid.ker_eq_lift_of_injective f H h
+  toSetoid_injective <| Setoid.ker_eq_lift_of_injective f H h
 
 variable {c}
 
