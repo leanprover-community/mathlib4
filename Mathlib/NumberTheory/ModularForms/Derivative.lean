@@ -49,6 +49,7 @@ theorem D_differentiable {F : ℍ → ℂ} (hF : MDifferentiable 𝓘(ℂ) 𝓘(
 /--
 Basic properties of derivatives: linearity, Leibniz rule, etc.
 -/
+@[simp]
 theorem D_add (F G : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) (hG : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) G) :
     D (F + G) = D F + D G := by
   ext z
@@ -57,6 +58,7 @@ theorem D_add (F G : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) (
     deriv_add (MDifferentiableAt_DifferentiableAt (hF z))
       (MDifferentiableAt_DifferentiableAt (hG z)), mul_add]
 
+@[simp]
 theorem D_sub (F G : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) (hG : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) G)
     : D (F - G) = D F - D G := by
   ext z
@@ -65,6 +67,7 @@ theorem D_sub (F G : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) (
     deriv_sub (MDifferentiableAt_DifferentiableAt (hF z))
       (MDifferentiableAt_DifferentiableAt (hG z)), mul_sub]
 
+@[simp]
 theorem D_smul (c : ℂ) (F : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F)
     : D (c • F) = c • D F := by
   ext z
@@ -73,6 +76,15 @@ theorem D_smul (c : ℂ) (F : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(
     deriv_const_smul c (MDifferentiableAt_DifferentiableAt (hF z)), smul_eq_mul]
   ring
 
+@[simp]
+theorem D_neg (F : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) :
+    D (-F) = -D F := by
+  have : -F = (-1 : ℂ) • F := by ext; simp
+  rw [this, D_smul _ _ hF]
+  ext
+  simp
+
+@[simp]
 theorem D_mul (F G : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) (hG : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) G)
     : D (F * G) = D F * G + F * D G := by
   ext z
@@ -83,6 +95,7 @@ theorem D_mul (F G : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) (
   simp [Function.comp_apply, ofComplex_apply]
   ring
 
+@[simp]
 theorem D_sq (F : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) :
     D (F ^ 2) = 2 * F * D F := by
   rw [sq, D_mul F F hF hF]
@@ -90,7 +103,9 @@ theorem D_sq (F : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) :
   simp only [Pi.add_apply, Pi.mul_apply, Pi.ofNat_apply]
   ring
 
-theorem D_const (c : ℂ) (z : ℍ) : D (Function.const _ c) z = 0 := by
+@[simp]
+theorem D_const (c : ℂ) : D (Function.const _ c) = 0 := by
+  ext z
   change (2 * π * I)⁻¹ * deriv (fun _ : ℂ => c) (z : ℂ) = 0
   simp [deriv_const]
 
@@ -105,30 +120,35 @@ noncomputable def SerreD (k : ℂ) (F : ℍ → ℂ) : ℍ → ℂ :=
 lemma SerreD_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
     SerreD k F z = D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
+@[simp]
 lemma SerreD_eq (k : ℂ) (F : ℍ → ℂ) :
     SerreD k F = fun z => D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
 /--
 Basic properties of Serre derivative.
 -/
+@[simp]
 theorem SerreD_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F)
     (hG : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) G) : SerreD k (F + G) = SerreD k F + SerreD k G := by
   ext z
   simp [SerreD, D_add F G hF hG]
   ring_nf
 
+@[simp]
 theorem SerreD_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F)
     (hG : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) G) : SerreD k (F - G) = SerreD k F - SerreD k G := by
   ext z
   simp [SerreD, D_sub F G hF hG]
   ring_nf
 
+@[simp]
 theorem SerreD_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) :
     SerreD k (c • F) = c • (SerreD k F) := by
   ext z
   simp [SerreD, D_smul c F hF, smul_eq_mul]
   ring_nf
 
+@[simp]
 theorem SerreD_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F)
     (hG : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) G) :
     SerreD (k₁ + k₂) (F * G) = (SerreD k₁ F) * G + F * (SerreD k₂ G) := by
