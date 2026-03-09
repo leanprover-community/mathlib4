@@ -449,9 +449,6 @@ theorem isInertiaField_iff_fixingSubgroup :
 variable (D E : IntermediateField K L) (𝓞D 𝓞E : Type*) [Algebra B L]
   [hSD : SMulDistribClass Gal(L/K) B L]
 
--- set_option backward.isDefEq.respectTransparency false in
--- variable [hD : IsDecompositionField K L P D] [IsInertiaField K L P E]
-
 variable (F)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -480,7 +477,7 @@ Let `E` be the inertia field of `P` in `L/K` and let `F` be a subextension of `L
 Then, the inertia field of `P` in `L/F` is the compositum `EF`.
 -/
 instance isInertiaField_sup [FaithfulSMul B L] [MulSemiringAction Gal(L/F) B]
-    [SMulDistribClass Gal(L/F) B L] [hE : IsInertiaField K L P E]  :
+    [SMulDistribClass Gal(L/F) B L] [hE : IsInertiaField K L P E] :
     IsInertiaField F L P (E ⊔ F : IntermediateField K L) := by
   let H : Subgroup Gal(L/K) := inertia Gal(L/K) P ⊓ F.fixingSubgroup
   have : IsGaloisGroup H ↥(E ⊔ F) L := by
@@ -497,48 +494,6 @@ instance isInertiaField_sup [FaithfulSMul B L] [MulSemiringAction Gal(L/F) B]
 variable [IsFractionRing B L] (𝓞F : Type*) [CommRing 𝓞F] [IsIntegrallyClosed 𝓞F] [Algebra 𝓞F F]
   [Algebra 𝓞F B] [Algebra.IsIntegral 𝓞F B] [Algebra 𝓞F L]
   [IsScalarTower 𝓞F F L] [IsScalarTower 𝓞F B L] (𝓟F : Ideal 𝓞F) [P.LiesOver 𝓟F]
-
-set_option backward.isDefEq.respectTransparency false in
-theorem isDecompositionField_inf [FaithfulSMul B L] [MulSemiringAction Gal(L/F) B]
-    [MulSemiringAction Gal(F/K) 𝓞F] [SMulDistribClass Gal(L/F) B L]
-    [hD : IsDecompositionField K L P D] [IsGalois K F] :
-    IsDecompositionField K F 𝓟F (D ⊓ F : IntermediateField K L) := by
-  let f : Gal(fixedField F.fixingSubgroup/K) ≃* Gal(F/K) := by
-    have := IsGalois.fixedField_fixingSubgroup F
-    refine AlgEquiv.autCongr <| equivOfEq <| IsGalois.fixedField_fixingSubgroup F
-  let e := (IsGalois.normalAutEquivQuotient F.fixingSubgroup).trans f
-  let g := e.symm.subgroupMap (stabilizer Gal(F/K) 𝓟F)
-  have := IsGaloisGroup.of_mulEquiv g ?_
-
-  refine (isDecompositionField_iff K (↥F) 𝓟F ↥(D ⊓ F)).mpr ?_
-  refine IsGaloisGroup.of_mulEquiv (e.symm.subgroupMap _) ?_
-
-
-#exit
-  have : fixedField F.fixingSubgroup = F := by
-    exact IsGalois.fixedField_fixingSubgroup F
-
-
-  let H : Subgroup Gal(L/K) := stabilizer Gal(L/K) P ⊔ F.fixingSubgroup
-  have : IsGaloisGroup H ↥(D ⊓ F) L := by
-    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
-      fixingSubgroup_inf, (isDecompositionField_iff_fixingSubgroup K L P).mp hD]
-  let e := IsGalois.normalAutEquivQuotient F.fixingSubgroup
-  let A := e.mapSubgroup H
-  rw [isDecompositionField_iff]
-
-  let e : H ≃* stabilizer Gal(F/K) 𝓟F := sorry
-  have := IsGaloisGroup.of_mulEquiv (A := ↥(D ⊓ F)) (B := L) (G := H)
-    (H := (stabilizer Gal(↥F/K) 𝓟F))
-
-  let e : stabilizer Gal(L/F) P ≃* H := by
-    refine (MulEquiv.trans ?_ ((stabilizer F.fixingSubgroup P).equivMapOfInjective _
-      F.fixingSubgroup.subtype_injective)).trans <| MulEquiv.subgroupCongr <| by ext; simp [H]
-    refine stabilizerEquiv P F.fixingSubgroupEquiv.symm fun σ x ↦ ?_
-    apply FaithfulSMul.algebraMap_injective B L
-    simp [algebraMap.smul', fixingSubgroupEquiv_symm_apply_apply]
-  exact (isDecompositionField_iff _ _ P _).mpr <| IsGaloisGroup.of_mulEquiv e fun g x ↦ rfl
-  sorry
 
 set_option backward.isDefEq.respectTransparency false in
 /--
