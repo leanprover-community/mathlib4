@@ -35,6 +35,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 open NNReal WithZero UniformSpace
 
+open MonoidWithZeroHom.ValueGroup₀ in
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
     (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
   have hp0' : 0 < (p : ℚ) := by simp [Nat.Prime.pos Fact.out]
@@ -48,11 +49,16 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     ← map_sub, Padic.eq_padicNorm, true_and, forall_const]
   constructor
   · intro n
-    use Units.mk0 (exp (-n : ℤ)) (by simp)
+    have hn :  Valued.v (R := (WithVal (Rat.padicValuation p))) (p ^ n) =
+      exp (-n : ℤ) := by
+      simp only [← WithVal.val_apply_equiv, map_pow, map_natCast, Rat.padicValuation_self,
+        Int.reduceNeg, exp_neg, inv_pow, ← exp_nsmul, nsmul_eq_mul, mul_one]
+    use Units.mk0 (Valued.v.restrict (p ^ n)) (by
+      rw [ne_eq, Valuation.restrict_def, restrict₀_eq_zero_iff, hn]; simp)
     intro x y h
-    set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
-    set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
-    rw [Valuation.map_sub_swap, Units.val_mk0] at h
+    set x' := (WithVal.equiv (Rat.padicValuation p)) x with hx
+    set y' := (WithVal.equiv (Rat.padicValuation p)) y with hy
+    rw [Valuation.map_sub_swap, Units.val_mk0, Valuation.restrict_lt_iff, hn] at h
     change Rat.padicValuation p (x' - y') < exp _ at h
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le]
     · rw [map_sub, ← hx, ← hy]
@@ -62,22 +68,23 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
       · simp
       · simp only [H, ↓reduceIte, exp_lt_exp, neg_lt_neg_iff] at h
         simpa [hp0', zpow_pos, pow_pos, inv_le_inv₀] using
-          zpow_right_mono₀ (a := (p : ℚ)) (by exact_mod_cast (Nat.Prime.one_le Fact.out)) h.le
+          zpow_right_mono₀ (by exact_mod_cast (Nat.Prime.one_le Fact.out)) h.le
     · simp [Nat.Prime.ne_zero Fact.out]
   · intro γ
-    use (log (γ.val * exp (-1))).natAbs
+    use (log ((embedding γ.val) * exp (-1))).natAbs
     intro x y h
-    set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
-    set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
-    rw [Valuation.map_sub_swap]
-    change Rat.padicValuation p (x' - y') < γ
+    set x' := (WithVal.equiv (Rat.padicValuation p)) x with hx
+    set y' := (WithVal.equiv (Rat.padicValuation p)) y with hy
+    rw [Valuation.map_sub_swap, Valuation.restrict_lt_iff_lt_embedding]
+    change Rat.padicValuation p (x' - y') < embedding γ.1
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
     · change padicNorm p (x' - y') ≤ _ at h
       simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
         padicNorm, zpow_neg, Nat.cast_pow] at h ⊢
       split_ifs with H
-      · simp
-      · rw [← lt_log_iff_exp_lt (by simp)]
+      · simp only [exp_neg]
+        exact embedding_unit_pos _
+      · rw [← lt_log_iff_exp_lt (embedding_unit_ne_zero _)]
         simp_all [← zpow_natCast, zpow_pos, inv_le_inv₀, zpow_le_zpow_iff_right₀ hp1', abs_le,
           Int.lt_iff_add_one_le]
     · simp [Nat.Prime.ne_zero Fact.out]
@@ -129,14 +136,12 @@ def withValRingEquiv :
 @[simp]
 lemma coe_withValRingEquiv :
     ⇑(Padic.withValRingEquiv (p := p)) = Completion.extension
-      ((↑) ∘ (WithVal.equiv (Rat.padicValuation p))) :=
-  rfl
+      ((↑) ∘ (WithVal.equiv (Rat.padicValuation p))) := rfl
 
 @[simp]
 lemma coe_withValRingEquiv_symm :
     ⇑(Padic.withValRingEquiv (p := p)).symm =
-      Padic.isDenseInducing_cast_withVal.extend Completion.coe' := by
-  rfl
+      Padic.isDenseInducing_cast_withVal.extend Completion.coe' := rfl
 
 /-- The `p`-adic numbers are isomorphic as uniform spaces to the completion of the rationals at
 the `p`-adic valuation. -/
@@ -150,8 +155,7 @@ def withValUniformEquiv :
 @[simp]
 lemma toEquiv_withValUniformEquiv_eq_toEquiv_withValRingEquiv :
     (withValUniformEquiv (p := p) : (Rat.padicValuation p).Completion ≃ ℚ_[p]) =
-      (withValRingEquiv (p := p) :) :=
-  rfl
+      (withValRingEquiv (p := p) :) := rfl
 
 open UniformSpace.Completion in
 @[simp]
@@ -173,6 +177,7 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
   induction x using UniformSpace.Completion.induction_on with
   | hp =>
     rw [Set.ext fun _ ↦ Iff.comm]
+    simp_rw [← Valuation.restrict_le_one_iff Valued.v]
     apply withValUniformEquiv.toHomeomorph.isClosed_setOf_iff (q := fun x ↦ ‖x‖ ≤ 1)
       (Valued.isClopen_closedBall _ one_ne_zero)
     simpa [Metric.closedBall] using IsUltrametricDist.isClopen_closedBall (0 : ℚ_[p]) one_ne_zero
