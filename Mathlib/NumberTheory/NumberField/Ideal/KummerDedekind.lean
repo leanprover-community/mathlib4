@@ -80,7 +80,6 @@ theorem exponent_eq_sInf : exponent θ = sInf {d : ℕ | 0 < d ∧ (d : 𝓞 K) 
 
 variable [NumberField K] {θ : 𝓞 K} {p : ℕ} [Fact p.Prime]
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /--
 If `p` doesn't divide the exponent of `θ`, then `(ℤ / pℤ)[X] / (minpoly θ) ≃+* 𝓞 K / p(𝓞 K)`.
@@ -94,7 +93,6 @@ def ZModXQuotSpanEquivQuotSpan (hp : ¬ p ∣ exponent θ) :
         (quotientEquivAlgOfEq ℤ (by simp [map_span])).toRingEquiv))
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.whnf.reducibleClassField false in
 theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ[X]) :
     (ZModXQuotSpanEquivQuotSpan hp)
       (Ideal.Quotient.mk (span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)})
@@ -147,7 +145,6 @@ variable {θ : 𝓞 K} {p : ℕ} [Fact (Nat.Prime p)]
 
 attribute [local instance] Int.ideal_span_isMaximal_of_prime Ideal.Quotient.field
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 open scoped Classical in
 private def primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :

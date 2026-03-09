@@ -277,7 +277,7 @@ section lift
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
 
-/-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
+/-- There is an `AlgHom` from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
 See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
