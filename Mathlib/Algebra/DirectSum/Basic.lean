@@ -84,6 +84,10 @@ variable {β}
 theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
   rfl
 
+@[simp]
+theorem neg_apply (g : ⨁ i, β i) (i : ι) : (- g) i = - (g i) :=
+  rfl
+
 end AddCommGroup
 
 variable [∀ i, AddCommMonoid (β i)]
@@ -177,6 +181,10 @@ protected theorem induction_on {motive : (⨁ i, β i) → Prop} (x : ⨁ i, β 
   apply DFinsupp.induction x zero
   intro i b f h1 h2 ih
   solve_by_elim
+
+protected theorem induction_of {motive : (⨁ i, β i) → Prop} (f : ⨁ i, β i) (h0 : motive 0)
+    (ha : ∀ (i b) (f : ⨁ i, β i), f i = 0 → b ≠ 0 → motive f → motive (of β i b + f)) : motive f :=
+    DFinsupp.induction f h0 ha
 
 /-- If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
 then they are equal. -/

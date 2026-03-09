@@ -71,7 +71,7 @@ class GLieRing [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] extends GBracket A
       (y : A j) (z : A k),
     bracket hi x (bracket hjk y z) = bracket hk (bracket hij x y) z + bracket hj y (bracket hik x z)
 
-/-- The piecewise multiplication from the `Mul` instance, as a bundled homomorphism. -/
+/-- The piecewise multiplication from the `GBracket` instance, as a bundled homomorphism. -/
 @[simps]
 def gBracketHom [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A] {i j k} (h : i + j = k) :
     A i →+ A j →+ A k where
@@ -91,7 +91,7 @@ def gBracketHom [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A] {i j
     ext b
     simp [GLieRing.add_lie]
 
-/-- The multiplication from the `Mul` instance, as a bundled homomorphism. -/
+/-- The multiplication from the `GBracket` instance, as a bundled homomorphism. -/
 -- See note [non-reducible instance]
 @[reducible]
 def bracketHom [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A] :
@@ -105,32 +105,21 @@ instance [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRi
     Bracket (⨁ i, A i)  (⨁ i, A i) where
   bracket a b := bracketHom A a b
 
+@[simp]
 lemma bracketHom_apply [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
     (a b : ⨁ i, A i) :
     bracketHom A a b = ⁅a, b⁆ := rfl
 
---omit?
-lemma bracketHom_of_of [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
+@[simp]
+lemma bracket_of_of [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
     {i j} (a : A i) (b : A j) :
-    bracketHom A (of A i a) (of A j b) = of A (i + j) (GBracket.bracket rfl a b) := by
-  simp
-
-lemma of_bracket_of [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
-    {i j} (a : A i) (b : A j) :
-    ⁅of A i a, of A j b⁆ = of _ (i + j) (GBracket.bracket rfl a b) :=
-  bracketHom_of_of A a b
+    ⁅of A i a, of A j b⁆ = of A (i + j) (GBracket.bracket rfl a b) := by
+  simp [← bracketHom_apply]
 
 lemma rec_bracket [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
     {i j k l} (a : A i) (b : A j) (hk : i + j = k) (hl : i + j = l) (hkl : k = l) :
     Eq.rec (GBracket.bracket hk a b) hkl = GBracket.bracket hl a b := by
   grind
-
-lemma bracketHom_single_apply [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)]
-    [GLieRing A] (i j : ι) (a : A i) (b : A j) :
-    bracketHom A (DFinsupp.single i a) (DFinsupp.single j b) =
-      DirectSum.of A (i + j) (GBracket.bracket rfl a b) := by
-    have (k : ι) (c : A k) : DFinsupp.single k c = of A k c := DFinsupp.ext (congrFun rfl)
-    simp [this]
 
 instance instBracket [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A] :
     Bracket (⨁ i, A i) (⨁ i, A i) where
@@ -141,59 +130,61 @@ instance GLieRing.toLieRing [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommG
     [GLieRing A] :
     LieRing (⨁ i, A i) :=
   { (inferInstance : AddCommGroup _) with
-    bracket x y := bracketHom A x y
-    add_lie _ _ _ := by simp
-    lie_add _ _ _ := by simp
+    bracket x y := ⁅x, y⁆
+    add_lie _ _ _ := by simp [← bracketHom_apply]
+    lie_add _ _ _ := by simp [← bracketHom_apply]
     lie_self x := by
-      have hof (k : ι) (c : A k) : DFinsupp.single k c = of A k c := DFinsupp.ext (congrFun rfl)
       have hsum (i : ι) (a : A i) (f : (⨁ i, A i)) :
-          bracketHom A (of A i a) f + bracketHom A f (of A i a) = 0 := by
-        induction f using DFinsupp.induction with
-        | h0 => simp
+          ⁅(of A i a), f⁆ + ⁅f, (of A i a)⁆ = 0 := by
+        induction f using DirectSum.induction_of with
+        | h0 => simp [← bracketHom_apply]
         | ha j b f hj _ h =>
-          simp only [hof, map_add, AddMonoidHom.add_apply]
+          simp only [← bracketHom_apply, map_add, AddMonoidHom.add_apply] at h ⊢
           rw [add_rotate, add_left_comm, h, add_zero]
           ext k
           by_cases h : i + j = k
           · simp [of_apply, h, add_comm i j ▸ h, rec_bracket, GLieRing.lie_antisymm]
           · simp [of_apply, h, add_comm i j ▸ h]
-      induction x using DFinsupp.induction with
-      | h0 => simp
+      induction x using DirectSum.induction_of with
+      | h0 => simp [← bracketHom_apply]
       | ha j b f hj _ h =>
-        simp only [hof, map_add, AddMonoidHom.add_apply, h, add_zero]
-        rw [bracketHom_of_of, GLieRing.lie_self, map_zero, zero_add, add_comm]
-        exact hsum j b f
+        simp only [← bracketHom_apply] at h hsum
+        rw [← bracketHom_apply, map_add, map_add, AddMonoidHom.add_apply, AddMonoidHom.add_apply, h,
+          add_zero, add_assoc, add_comm (((bracketHom A) f) ((of A j) b)), hsum]
+        simp [GLieRing.lie_self]
     leibniz_lie x y z := by
-      have hof (k : ι) (c : A k) : DFinsupp.single k c = of A k c := DFinsupp.ext (congrFun rfl)
       have hbss (i j : ι) (a : A i) (b : A j) :
-          ((bracketHom A) (of A i a)) (((bracketHom A) (of A j b)) z) =
-          ((bracketHom A) (of A j b)) (((bracketHom A) (of A i a)) z) +
-          ((bracketHom A) (((bracketHom A) (of A i a)) (of A j b))) z := by
-        induction z using DFinsupp.induction with
-        | h0 => simp
+          ⁅of A i a, ⁅of A j b, z⁆⁆ =
+          ⁅of A j b, ⁅of A i a, z⁆⁆ +
+          ⁅⁅of A i a, of A j b⁆, z⁆ := by
+        induction z using DirectSum.induction_of with
+        | h0 => simp [← bracketHom_apply]
         | ha k c f _ _ ih =>
-          simp only [map_add, ih, ← add_assoc, add_left_inj]
-          rw [add_right_comm, add_right_cancel_iff]
-          simp only [hof, toAddMonoid_of, AddMonoidHom.flip_apply, AddMonoidHom.coe_comp,
-            Function.comp_apply, AddMonoidHom.compHom_apply_apply, gBracketHom_apply_apply]
+          simp only [← bracketHom_apply, map_add] at ih ⊢
+          rw [ih]
+          simp only [bracketHom_apply, ← add_assoc]
+          rw [add_right_cancel_iff, add_right_comm, add_right_cancel_iff]
           ext l
           by_cases h : i + j + k = l
           · simp [of_apply, h, add_assoc i j k ▸ h, add_assoc j i k ▸ add_comm i j ▸ h, rec_bracket,
             GLieRing.leibniz_lie, add_comm (GBracket.bracket _ (GBracket.bracket _ a b) c)]
           · simp [of_apply, h, add_assoc i j k ▸ h, add_assoc j i k ▸ add_comm i j ▸ h]
-      have hbs (i : ι) (a : A i) : ((bracketHom A) (of A i a)) (((bracketHom A) y) z) =
-          ((bracketHom A) y) (((bracketHom A) (of A i a)) z) +
-          ((bracketHom A) (((bracketHom A) (of A i a)) y)) z := by
-        induction y using DFinsupp.induction with
-        | h0 => simp
+      have hbs (i : ι) (a : A i) :
+          ⁅of A i a, ⁅y, z⁆⁆ = ⁅y, ⁅of A i a, z⁆⁆ + ⁅⁅of A i a, y⁆, z⁆ := by
+        induction y using DirectSum.induction_of with
+        | h0 => simp [← bracketHom_apply]
         | ha j b f _ _ ih =>
-          simp only [map_add, AddMonoidHom.add_apply, ih, ← add_assoc]
+          simp only [← bracketHom_apply, map_add, AddMonoidHom.add_apply] at ih ⊢
+          rw [ih]
+          simp only [bracketHom_apply, ← add_assoc]
           rw [add_right_cancel_iff, add_right_comm, add_right_cancel_iff]
           exact hbss i j a b
-      induction x using DFinsupp.induction with
-      | h0 => simp
+      induction x using DirectSum.induction_of with
+      | h0 => simp [← bracketHom_apply]
       | ha i a f _ _ ih =>
-        simp only [hof, map_add, AddMonoidHom.add_apply, ih, ← add_assoc]
+        simp only [← bracketHom_apply, map_add, AddMonoidHom.add_apply] at ih ⊢
+        rw [ih]
+        simp only [bracketHom_apply, ← add_assoc]
         rw [add_right_cancel_iff, ← add_rotate, add_right_cancel_iff]
         exact hbs i a }
 
@@ -211,16 +202,20 @@ identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring.
 /-- `GLieAlgebra` implies a Lie algebra structure. -/
 instance GLieAlgebra.toLieAlgebra [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)]
     [∀ i, Module R (A i)] [GLieAlgebra R A] : LieAlgebra R (⨁ i, A i) where
+  add_smul := Module.add_smul
+  zero_smul := MulActionWithZero.zero_smul
   lie_smul r x y := by
     have (i : ι) (a : A i) : ⁅of A i a, r • y⁆ = r • ⁅of A i a, y⁆ := by
-      induction y using DFinsupp.induction with
+      induction y using DirectSum.induction_of with
         | h0 => simp
         | ha j b f _ _ ih =>
-          have (k : ι) (c : A k) : DFinsupp.single k c = of A k c := DFinsupp.ext (congrFun rfl)
-          simp only [this, smul_add, lie_add, ih, add_left_inj]
-          rw [of_bracket_of, ← of_smul, of_bracket_of, ← of_smul]
-          refine DFunLike.congr rfl <| GLieAlgebra.lie_smul r rfl a b
-    induction x using DFinsupp.induction with
+          simp only [smul_add, lie_add, ih, add_left_inj, ← bracketHom_apply, ]
+          rw [← of_smul]
+          simp only [toAddMonoid_of, AddMonoidHom.flip_apply, AddMonoidHom.coe_comp,
+            Function.comp_apply, AddMonoidHom.compHom_apply_apply, gBracketHom_apply_apply,
+            GLieAlgebra.lie_smul]
+          rw [of_smul]
+    induction x using DirectSum.induction_of with
     | h0 => simp
     | ha i b f _ _ ih =>
       simp only [add_lie, ih, smul_add, add_left_inj]
@@ -264,61 +259,87 @@ end DirectSum
 namespace LieDerivation
 
 @[simp]
-lemma lof_comp_DistribSMul_apply [DecidableEq ι] [CommSemiring ι] [∀ i, AddCommGroup (A i)]
-    [∀ i, Module ι (A i)] [∀ i, Module R (A i)] [∀ i, SMulCommClass ι R (A i)] (i : ι) (x : A i) :
-    (lof R ι A i ∘ₗ DistribSMul.toLinearMap R (A i) i) x = of A i (i • x) := by
-  rfl
+lemma toModule_lof_smul_of [DecidableEq ι] [AddCommMonoid ι]
+    (φ : ι →+ R) [∀ i, AddCommGroup (A i)] [∀ i, Module R (A i)] (k : ι) (b : A k) :
+    (toModule R ι (⨁ (i : ι), A i) fun i ↦ lof R ι A i ∘ₗ (φ i • LinearMap.id))
+      (of A k b) = (φ k) • (of A k b) := by
+  simp [← lof_eq_of R]
 
-@[simp]
-lemma toModule_lof_smul_of [DecidableEq ι] [CommSemiring ι] [∀ i, AddCommGroup (A i)]
-    [∀ i, Module ι (A i)] [∀ i, Module R (A i)] [∀ i, SMulCommClass ι R (A i)] (k : ι) (b : A k) :
-    (toModule R ι (⨁ (i : ι), A i)
-      fun i ↦ lof R ι A i ∘ₗ DistribSMul.toLinearMap R (A i) i) (of A k b) = k • (of A k b) := by
-  rw [coe_toModule_eq_coe_toAddMonoid, toAddMonoid_of, LinearMap.toAddMonoidHom_coe,
-      lof_comp_DistribSMul_apply, of_smul]
-
-/-- The Lie derivation on a graded Lie algebra that scalar multiplies by the degree. -/
-def ofGrading [DecidableEq ι] [CommSemiring ι] [Algebra ι R] [∀ i, AddCommGroup (A i)]
-    [∀ i, Module ι (A i)] [∀ i, Module R (A i)] [GLieAlgebra R A] [∀ i, SMulCommClass ι R (A i)]
-    [IsScalarTower ι R (⨁ i, A i)] :
+/-- The Lie derivation on a graded Lie algebra that scalar multiplies by an additive function of
+the degree. -/
+def ofGrading (R : Type*) [CommRing R] (A : ι → Type*) [DecidableEq ι] [AddCommMonoid ι]
+    (φ : ι →+ R) [∀ i, AddCommGroup (A i)] [∀ i, Module R (A i)] [GLieAlgebra R A] :
     LieDerivation R (⨁ i, A i) (⨁ i, A i) :=
-  { __ := (DirectSum.toModule R ι (⨁ i, A i)
-      fun i ↦ (DirectSum.lof R ι A i).comp (DistribSMul.toLinearMap R _ i))
+  { __ := DirectSum.toModule R ι (⨁ i, A i)
+      fun i ↦ (lof R ι A i).comp (Module.End.smulLeft (φ i) (by simp))
     leibniz' x y := by
-      have hof (k : ι) (c : A k) : DFinsupp.single k c = of A k c := DFinsupp.ext (congrFun rfl)
       have (i j : ι) (a : A i) (f : (⨁ i, A i)) :
           ((toModule R ι (⨁ (i : ι), A i) fun i ↦
-            lof R ι A i ∘ₗ DistribSMul.toLinearMap R (A i) i) ⁅of A i a, y⁆) j =
+            lof R ι A i ∘ₗ Module.End.smulLeft (φ i) (by simp)) ⁅of A i a, y⁆) j =
           (⁅of A i a, (toModule R ι (⨁ (i : ι), A i) fun i ↦
-            lof R ι A i ∘ₗ DistribSMul.toLinearMap R (A i) i) y⁆ -
+            lof R ι A i ∘ₗ Module.End.smulLeft (φ i) (by simp)) y⁆ -
           ⁅y, (toModule R ι (⨁ (i : ι), A i) fun i ↦
-            lof R ι A i ∘ₗ DistribSMul.toLinearMap R (A i) i) (of A i a)⁆) j := by
-        induction y using DFinsupp.induction with
+            lof R ι A i ∘ₗ Module.End.smulLeft (φ i) (by simp)) (of A i a)⁆) j := by
+        induction y using DirectSum.induction_of with
         | h0 => simp
         | ha k b f _ _ ih =>
-          simp only [DirectSum.sub_apply] at ih
-          simp only [hof, lie_add, map_add, DirectSum.add_apply, ih, add_lie, DirectSum.sub_apply]
-          rw [add_sub_add_comm, add_right_cancel_iff]
-          simp only [of_bracket_of, toModule_lof_smul_of A k b (R := R), toModule_lof_smul_of A i a,
-            toModule_lof_smul_of A (i + k)]
-          rw [← smul_one_smul R i, lie_smul, smul_one_smul, ← lie_skew (of A k b), smul_neg,
-            DFinsupp.neg_apply, sub_neg_eq_add, ← smul_one_smul R k, lie_smul, smul_one_smul,
-            of_bracket_of, add_smul, add_comm, DirectSum.add_apply]
+          simp only [Module.End.smulLeft_eq, ← lof_eq_of R, toModule_lof, LinearMap.coe_comp,
+            Function.comp_apply, LinearMap.smul_apply, LinearMap.id_coe, id_eq, map_smul, lie_smul,
+            DirectSum.sub_apply] at ih
+          simp only [Module.End.smulLeft_eq, ← lof_eq_of R, lie_add, map_add, DirectSum.add_apply,
+            toModule_lof, LinearMap.coe_comp, Function.comp_apply, LinearMap.smul_apply,
+            LinearMap.id_coe, id_eq, map_smul, lie_smul, add_lie, smul_add, DirectSum.sub_apply]
+          rw [ih, add_sub_add_comm, add_right_cancel_iff, lof_eq_of R, lof_eq_of R,
+            ← lie_skew (of A k b)]
+          simp only [← bracketHom_apply, toAddMonoid_of, AddMonoidHom.flip_apply,
+            AddMonoidHom.coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply,
+            gBracketHom_apply_apply]
+          simp [← lof_eq_of R, add_smul, add_comm]
       ext j
-      induction x using DFinsupp.induction with
-      | h0 => simp
+      induction x using DirectSum.induction_of with
+      | h0 => simp; rfl -- something is wrong here?
       | ha i a f _ _ ih =>
         simp only [DirectSum.sub_apply] at ih
-        simp only [add_lie, map_add, DirectSum.add_apply, ih, lie_add, DirectSum.sub_apply, hof]
+        simp only [add_lie, map_add, DirectSum.add_apply, ih, lie_add, DirectSum.sub_apply]
         rw [add_sub_add_comm, add_right_cancel_iff, ← DirectSum.sub_apply]
         exact this i j a f }
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The Lie derivation on a graded Lie algebra that scalar multiplies by an additive function of
+the degree. -/
+def ofGrading' (R : Type*) [CommRing R] (A : ι → Type*) [DecidableEq ι] [AddCommMonoid ι]
+    (φ : ι →+ R) [∀ i, AddCommGroup (A i)] [∀ i, Module R (A i)] [GLieAlgebra R A] :
+    LieDerivation R (⨁ i, A i) (⨁ i, A i) :=
+  { __ := toModule R ι (⨁ i, A i) fun i ↦ (lof R ι A i).comp (Module.End.smulLeft (φ i) (by simp))
+    leibniz' x y := by
+      ext j
+      induction x using DirectSum.induction_of with
+      | h0 => simp
+      | ha i a f _ _ ih =>
+        simp only [DirectSum.sub_apply] at ih
+        simp only [add_lie, map_add, DirectSum.add_apply, ih, lie_add, DirectSum.sub_apply]
+        rw [add_sub_add_comm, add_right_cancel_iff, ← DirectSum.sub_apply]
+        clear ih
+        induction y using DirectSum.induction_of with
+        | h0 => simp
+        | ha k b g _ _ ih =>
+          simp only [Module.End.smulLeft_eq, DirectSum.sub_apply] at ih
+          simp only [Module.End.smulLeft_eq, lie_add, map_add, DirectSum.add_apply, add_lie,
+            DirectSum.sub_apply]
+          rw [ih, add_sub_add_comm, add_right_cancel_iff, bracket_of_of, ← lie_skew (of A k b)]
+          simp only [← bracketHom_apply, ← lof_eq_of R, toModule_lof]
+          rw [DirectSum.neg_apply, sub_neg_eq_add]
+          have (k : ι) (b : A k) : (lof R ι A k ∘ₗ (φ k • LinearMap.id)) b = φ k • (of A k b) := by
+            simp [lof_eq_of R, of_smul]
+          simp only [this, lof_eq_of, bracketHom_apply, lie_smul, smul_lie, bracket_of_of]
+          rw [map_add, add_smul, DirectSum.add_apply, add_comm] }
+
+--set_option backward.isDefEq.respectTransparency false
 @[simp]
-lemma ofGrading_of [DecidableEq ι] [CommSemiring ι] [Algebra ι R] [∀ i, AddCommGroup (A i)]
-    [∀ i, Module ι (A i)] [∀ i, Module R (A i)] [GLieAlgebra R A] [∀ i, SMulCommClass ι R (A i)]
-    [IsScalarTower ι R (⨁ i, A i)] (i : ι) (a : A i) :
-    ofGrading A (of A i a) (R := R) = i • (of A i a) := by
-  ext j
-  simp [ofGrading]
+lemma ofGrading_of [DecidableEq ι] [AddCommMonoid ι] (φ : ι →+ R) [∀ i, AddCommGroup (A i)]
+    [∀ i, Module R (A i)] [GLieAlgebra R A] (i : ι) (a : A i) :
+    ofGrading R A φ (of A i a) = φ i • (of A i a) := by
+  rw [← toModule_lof_smul_of]
+  exact DFunLike.congr_arg (ofGrading R A φ) rfl
 
 end LieDerivation
