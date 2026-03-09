@@ -952,8 +952,8 @@ section delaborators
 /-!
 ### Delaborators
 
-In this section we make sure the info view also uses those notations. Not all notations are
-supported so far.
+In this section we make sure the infoview also uses those notations.
+Not all notations are supported yet.
 -/
 open Bundle PrettyPrinter Delaborator SubExpr
 
@@ -977,7 +977,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 arguments that can use the `T%` elaborator. -/
 @[app_delab mfderiv] meta def delab_mfderiv : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 21 do -- counting the number of arguments until f: the x can be omitted
+  withOverApp 21 do -- counting the number of arguments until f (inclusive): the x can be omitted
   try
     let fe := (← getExpr).appArg!
     let .lam n _ b _ := fe | failure
@@ -993,8 +993,6 @@ arguments that can use the `T%` elaborator. -/
     `(mfderiv% $fs) >>= annotateGoToSyntaxDef
 
 -- TODO: add a delaborator for mfderivWithin (with a test)
-
--- TODO: add a delaborator for `MDifferentiable` (with a test)
 
 /-- Delaborator for `MDifferentiable` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
@@ -1066,10 +1064,10 @@ arguments that can use the `T%` elaborator. -/
     guard <| b.isAppOf ``Bundle.TotalSpace.mk'
     let s := b.getAppArgs[4]!.getAppFn
     guard <| s.isFVar
-    let fs ← withNaryArg 20 do
-      let fs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
-      `((T% $fs)) >>= annotateGoToSyntaxDef
-    `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt[$ss] $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
     let fs ← withNaryArg 20 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
@@ -1077,7 +1075,6 @@ arguments that can use the `T%` elaborator. -/
 -- TODO: add more delaborators (and tests) for
 -- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
 
--- TODO: when adding more elaborators (for e.g. UniqueDiffOn, TangentSpace, tangentMap(Within),
--- mlieBracket(Within), mpullback(Within))
+-- TODO: when adding more elaborators, also add the corresponding delaborators
 
 end delaborators
