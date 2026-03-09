@@ -135,3 +135,51 @@ noncomputable def algEquivExtension (l : Type*) [Field l] [Algebra k l]
   exact (IsSplittingField.algEquiv _ (X ^ (Nat.card k ^ n) - X)).symm
 
 end FiniteField
+
+section Polynomial
+
+variable {K : Type*} [hf : Field K] [Fintype K]
+
+
+open Polynomial FiniteField
+
+theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} [NeZero n] {f : K[X]}
+    (hi : Irreducible f) (hd : f.degree ≠ 0) (h : f ∣ (X ^ ((Fintype.card K) ^ n) - X)) :
+    f.natDegree ∣ n := by
+  obtain ⟨p, _, m, hp, hm⟩ := FiniteField.card' K
+  haveI : Fact <| Nat.Prime p := ⟨hp⟩
+  haveI : Fact <| Irreducible f := ⟨hi⟩
+  -- `F` is the splitting field of `X ^ ((Fintype.card K) ^ n) - X`
+  let F := Extension K p n
+  haveI : Fintype F := Fintype.ofFinite _
+  haveI : Algebra (ZMod p) K := ZMod.algebra K p
+  have haux : Nonempty (K →ₐ[ZMod p] F) := nonempty_algHom_extension K p n
+  let ψ := (Classical.choice haux).toRingHom
+  replace h := Polynomial.map_dvd ψ h
+  simp only [Polynomial.map_sub, Polynomial.map_pow, map_X, Fintype.card_eq_nat_card] at h
+  rw [← natCard_extension, ← Fintype.card_eq_nat_card] at h
+  -- `f` has a root a in `F`. We have extensions `AdjoinRoot f / K` and `F / AdjoinRoot f`.
+  choose a ha using exists_root_of_map_dvd_X_pow_card_sub_X hd ψ h
+  letI := RingHom.toAlgebra (AdjoinRoot.lift ψ a ha)
+  -- Compatible `K`-algebra structure on `F`
+  letI : Algebra K F := RingHom.toAlgebra
+    (RingHom.comp (algebraMap (AdjoinRoot f) F) (algebraMap K (AdjoinRoot f)))
+  letI M1 : Module K F := Algebra.toModule
+  letI M2 : Module (AdjoinRoot f) F := Algebra.toModule
+  letI M3 : Module K (AdjoinRoot f) := Algebra.toModule
+  haveI hfinite : IsScalarTower K (AdjoinRoot f) F := IsScalarTower.of_algebraMap_eq' rfl
+  haveI hF1 : Module.Free K (AdjoinRoot f) := Module.Free.of_divisionRing K _
+  have hdim1 : Module.finrank K (AdjoinRoot f) = f.natDegree := by
+    rw [PowerBasis.finrank (AdjoinRoot.powerBasis (Irreducible.ne_zero hi)),
+      AdjoinRoot.powerBasis_dim (Irreducible.ne_zero hi)]
+  have hdim2 : Module.finrank K F = n := (pow_right_inj₀ (Nat.card_pos)
+    (Ne.symm (Nat.ne_of_lt Finite.one_lt_card))).1 ((natCard_extension K p n) ▸
+    (Module.natCard_eq_pow_finrank (K := K) (V := F))).symm
+  rw [← hdim1, ← hdim2]
+  use (Module.finrank (AdjoinRoot f) F)
+  -- The rank of `AdjoinRoot f` over `K` divides the rank of `F` over `K`.
+  refine (@Module.finrank_mul_finrank K (AdjoinRoot f) F _ _ _ M3 M2 M1 hfinite _ _ hF1 ?_ ).symm
+  refine Module.Free.of_divisionRing (AdjoinRoot f) _
+
+
+end Polynomial
