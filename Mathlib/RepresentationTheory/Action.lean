@@ -89,7 +89,7 @@ def ε : (trivial k G k).IntertwiningMap (linearize k G (MonoidalCategoryStruct.
   isIntertwining' g := by ext1; simp [linearize_single _]
 
 lemma ε_one : ε k G 1 = Finsupp.single PUnit.unit 1 := by
-  simp [apply_toLinearMap, types_tensorUnit_def]
+  simp [← toLinearMap_apply, types_tensorUnit_def]
 
 open scoped MonoidalCategory
 
@@ -101,7 +101,7 @@ def η : (linearize k G (𝟙_ (Action (Type u) G))).IntertwiningMap (trivial k 
   isIntertwining' g := by ext; simp [linearize_single _]
 
 lemma η_single (x : PUnit) : η k G (Finsupp.single x 1) = 1 := by
-  simp [apply_toLinearMap, types_tensorUnit_def]
+  simp [← toLinearMap_apply, types_tensorUnit_def]
 
 variable (k G) in
 lemma ε_η : (ε k G).comp (η k G) = .id _ := by ext; simp
@@ -125,12 +125,12 @@ def μ (X Y : Action (Type w) G) : ((linearize k G X).tprod (linearize k G Y)).I
 
 lemma μ_apply_single_single {X Y : Action (Type w) G} (x : X.V) (y : Y.V) :
     μ (k := k) X Y (Finsupp.single x 1 ⊗ₜ Finsupp.single y 1) = Finsupp.single (x, y) 1 := by
-  ext; simp [apply_toLinearMap]
+  ext; simp [← toLinearMap_apply]
 
 open TensorProduct in
 lemma μ_apply_apply {X Y : Action (Type w) G} (l1 : X.V →₀ k) (l2 : Y.V →₀ k)
     (xy : (X ⊗ Y).V) : μ X Y (l1 ⊗ₜ l2) xy = l1 xy.1 * l2 xy.2 := by
-  simp [apply_toLinearMap, types_tensorObj_def, finsuppTensorFinsupp'_apply_apply _]
+  simp [← toLinearMap_apply, types_tensorObj_def, finsuppTensorFinsupp'_apply_apply _]
 
 lemma μ_comp_rTensor {X Y : Action (Type w) G} (f : X ⟶ Y)
     (Z : Action (Type w) G) : (μ Y Z).comp (rTensor (linearize k G Z) (linearizeMap f)) =
@@ -306,8 +306,8 @@ def freeLiftLEquiv (α : Type w') : ((free k G α).IntertwiningMap σ) ≃ₗ[k]
   left_inv f := by
     have := f.2
     simp only [LinearMap.ext_iff, LinearMap.coe_comp, Function.comp_apply] at this
-    ext; simp [apply_toLinearMap, ← this]
-  right_inv f := by simp [apply_toLinearMap]
+    ext; simp [← toLinearMap_apply, ← this]
+  right_inv f := by simp [← toLinearMap_apply]
 
 /-- Equiv between representations induced by linear equiv between `(α →₀ V) ⊗[k] W` and
   `α →₀ (V ⊗[k] W)`. -/
