@@ -169,6 +169,13 @@ example : 0 ≤ max (-3 : ℤ) 5 := by positivity
 
 end MinMax
 
+example {a b : ℚ} (ha : a ≤ b) : 0 ≤ b - a := by positivity
+example {a b : ℚ} (ha : a ≠ b) : 0 ≠ b - a := by positivity
+example {a b : ℚ} (ha : a ≠ b) : 0 ≠ a - b := by positivity
+example {a b : ℚ} (ha : a < b) : 0 < b - a := by positivity
+example {a b : ℚ} (ha : a < b) : 0 ≤ b - a := by positivity
+example {a b : ℚ} (ha : a < b) : 0 ≠ b - a := by positivity
+
 example {a b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
 example {a b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
 example {a b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b := by positivity
