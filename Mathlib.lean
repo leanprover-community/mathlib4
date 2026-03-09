@@ -701,6 +701,7 @@ public import Mathlib.Algebra.Lie.EngelSubalgebra
 public import Mathlib.Algebra.Lie.Extension
 public import Mathlib.Algebra.Lie.Extension.CentralExtension
 public import Mathlib.Algebra.Lie.Free
+public import Mathlib.Algebra.Lie.Graded
 public import Mathlib.Algebra.Lie.Ideal
 public import Mathlib.Algebra.Lie.IdealOperations
 public import Mathlib.Algebra.Lie.InvariantForm
@@ -831,6 +832,7 @@ public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 public import Mathlib.Algebra.MonoidAlgebra.Opposite
+public import Mathlib.Algebra.MonoidAlgebra.PointwiseSMul
 public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.MonoidAlgebra.ToDirectSum
 public import Mathlib.Algebra.MvPolynomial.Basic
@@ -6533,7 +6535,6 @@ public import Mathlib.RingTheory.PowerSeries.Binomial
 public import Mathlib.RingTheory.PowerSeries.Catalan
 public import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 public import Mathlib.RingTheory.PowerSeries.Derivative
-public import Mathlib.RingTheory.PowerSeries.Eval
 public import Mathlib.RingTheory.PowerSeries.Evaluation
 public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.RingTheory.PowerSeries.Expand
