@@ -359,10 +359,10 @@ lemma fderivLM_apply_of_le (f : 𝓓^{n}_{K}(E, F)) (hk : k + 1 ≤ n) :
     fderivLM 𝕜 n k f = fderiv ℝ f := by
   simp [hk]
 
-lemma fderivLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : ¬ (k + 1 ≤ n)) :
+lemma fderivLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : n < k + 1) :
     fderivLM 𝕜 n k f = 0 := by
   ext : 1
-  simp [hk]
+  simp [not_le_of_gt hk]
 
 lemma fderivLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
@@ -415,10 +415,10 @@ lemma iteratedFDerivLM_apply_of_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : k +
     iteratedFDerivLM 𝕜 n k i f = iteratedFDeriv ℝ i f := by
   simp [hin]
 
-lemma iteratedFDerivLM_apply_of_gt {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : ¬ (k + i ≤ n)) :
+lemma iteratedFDerivLM_apply_of_gt {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : n < k + i) :
     iteratedFDerivLM 𝕜 n k i f = 0 := by
   ext : 1
-  simp [hin]
+  simp [not_le_of_gt hin]
 
 lemma iteratedFDerivLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
@@ -668,7 +668,7 @@ functions as a continuous `𝕜`-linear map. -/
 noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F where
   toLinearMap := toBoundedContinuousFunctionLM 𝕜
   cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms ..)
       (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
     simp [norm_toBoundedContinuousFunction 𝕜 f]
 
@@ -713,8 +713,8 @@ noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F �
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}_{K}(E, F') where
   toLinearMap := postcompLM T
   cont := show Continuous (postcompLM T) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
-      (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, ‖T‖₊, fun f ↦ ?_⟩)
+    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms ..)
+      (ContDiffMapSupportedIn.withSeminorms ..) _ (fun i ↦ ⟨{i}, ‖T‖₊, fun f ↦ ?_⟩)
     simpa [NNReal.smul_def] using seminorm_postcompLM_le 𝕜 T f
 
 @[simp]
@@ -725,8 +725,8 @@ lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[�
 
 theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     N[𝕜]_{K, k, i} (fderivLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i+1} f := by
-  by_cases hk : k + 1 ≤ n
-  · rw [ContDiffMapSupportedIn.seminorm_le_iff 𝕜 (apply_nonneg _ _)]
+  by_cases! hk : k + 1 ≤ n
+  · rw [ContDiffMapSupportedIn.seminorm_le_iff 𝕜 (apply_nonneg ..)]
     intro hi x hx
     have hi' : i + 1 ≤ n := (add_le_add_left hi 1).trans hk
     simpa [hk, norm_iteratedFDeriv_fderiv] using
@@ -746,8 +746,8 @@ noncomputable def fderivCLM :
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{k}_{K}(E, E →L[ℝ] F) where
   toLinearMap := fderivLM 𝕜 n k
   cont := show Continuous (fderivLM 𝕜 n k) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
-      (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩)
+    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms ..)
+      (ContDiffMapSupportedIn.withSeminorms ..) _ (fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩)
     simpa using seminorm_fderivLM_le 𝕜 f
 
 @[simp]
@@ -759,7 +759,7 @@ lemma fderivCLM_apply_of_le (f : 𝓓^{n}_{K}(E, F)) (hk : k + 1 ≤ n) :
     fderivCLM 𝕜 n k f = fderiv ℝ f :=
   fderivLM_apply_of_le 𝕜 f hk
 
-lemma fderivCLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : ¬ (k + 1 ≤ n)) :
+lemma fderivCLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : n < k + 1) :
     fderivCLM 𝕜 n k f = 0 :=
   fderivLM_apply_of_gt 𝕜 f hk
 
