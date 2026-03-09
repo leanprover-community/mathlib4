@@ -30,6 +30,6 @@ jobs:
       # bors runs should build the tools from their commit-under-test: after all, we are trying to
       # test 'what would happen if this was merged', so we need to use the 'would-be-post-merge' tools
       tools_branch_ref: ${{ github.sha }}
-      # We don't wan't 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
+      # We don't want 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
       runs_on: ${{ github.ref_name == 'trying' && 'pr' || 'bors' }}
     secrets: inherit

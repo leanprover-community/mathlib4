@@ -88,17 +88,18 @@ nonrec def tan (x : ℝ) : ℝ :=
 nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
-/-- The real hypebolic sine function, defined as the real part of the complex hyperbolic sine -/
+/-- The real hyperbolic sine function, defined as the real part of the complex hyperbolic sine -/
 @[pp_nodot]
 nonrec def sinh (x : ℝ) : ℝ :=
   (sinh x).re
 
-/-- The real hypebolic cosine function, defined as the real part of the complex hyperbolic cosine -/
+/-- The real hyperbolic cosine function, defined as the real part of the complex hyperbolic cosine
+-/
 @[pp_nodot]
 nonrec def cosh (x : ℝ) : ℝ :=
   (cosh x).re
 
-/-- The real hypebolic tangent function, defined as the real part of
+/-- The real hyperbolic tangent function, defined as the real part of
 the complex hyperbolic tangent -/
 @[pp_nodot]
 nonrec def tanh (x : ℝ) : ℝ :=
