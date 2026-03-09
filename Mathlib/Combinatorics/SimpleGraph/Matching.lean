@@ -66,6 +66,14 @@ We say that the vertices in `M.support` are *matched* or *saturated*.
 -/
 def IsMatching (M : Subgraph G) : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w, M.Adj v w
 
+/-- An equivalence between the vertices of a matching and its darts -/
+@[simps]
+noncomputable def IsMatching.toDart (h : M.IsMatching) : M.verts ≃ M.coe.Dart where
+  toFun v := ⟨⟨v, _⟩, h v.property |>.choose_spec.left.coe⟩
+  invFun d := d.fst
+  left_inv v := by simp
+  right_inv d := by ext <;> simp [h d.fst.property |>.choose_spec.right d.snd d.adj]
+
 /-- Given a vertex, returns the unique edge of the matching it is incident to. -/
 noncomputable def IsMatching.toEdge (h : M.IsMatching) (v : M.verts) : M.edgeSet :=
   ⟨s(v, (h v.property).choose), (h v.property).choose_spec.1⟩
