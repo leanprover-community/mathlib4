@@ -80,7 +80,7 @@ lemma isDiscrete_trivialRel [ValuativeRel R] [Valuation.Compatible (1 : Valuatio
   refine ⟨⟨0, zero_lt_one, fun x ↦ ?_⟩⟩
   have := subsingleton_units_valueGroupWithZero_of_trivialRel R Γ
   rcases GroupWithZero.eq_zero_or_unit x with rfl | ⟨u, rfl⟩
-  · simp_all
+  · simp
   · rw [← Units.val_one, Units.val_lt_val]
     simp
 

@@ -144,7 +144,7 @@ def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
   | 1 => exact f₁
   | 2 => exact f₂ f₀ f₁ hδ₁ hδ₀ hY
 
-/-- The property of morphims in `SimplexCategory.Truncated 2` for
+/-- The property of morphisms in `SimplexCategory.Truncated 2` for
 which `liftOfStrictSegal.app` is natural. -/
 abbrev naturalityProperty : MorphismProperty (SimplexCategory.Truncated 2) :=
   (MorphismProperty.naturalityProperty (app f₀ f₁ hδ₁ hδ₀ hY)).unop
