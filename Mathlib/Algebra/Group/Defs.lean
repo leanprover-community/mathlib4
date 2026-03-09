@@ -1284,14 +1284,50 @@ class IsMulCommutative (M : Type*) [Mul M] : Prop where
   is_comm : Std.Commutative (α := M) (· * ·)
 
 @[to_additive]
-instance (priority := 100) CommMonoid.ofIsMulCommutative {M : Type*} [Monoid M]
-    [IsMulCommutative M] :
+lemma isMulCommutative_iff {M : Type*} [Mul M] :
+    IsMulCommutative M ↔ ∀ a b : M, a * b = b * a := by
+  grind [IsMulCommutative, Std.Commutative]
+
+@[to_additive]
+alias ⟨_, IsMulCommutative.of_comm⟩ := isMulCommutative_iff
+
+/-- An alternative to `mul_comm` which uses the mixin `IsMulCommutative` instead of bundled
+commutative algebraic structures. In general, you should prefer `mul_comm` unless you are working
+with commutative subobjects in a noncommutative algebraic structure. -/
+@[to_additive
+/-- An alternative to `add_comm` which uses the mixin `IsAddCommutative` instead of bundled
+commutative algebraic structures. In general, you should prefer `add_comm` unless you are working
+with commutative subobjects in a noncommutative algebraic structure. -/ ]
+lemma mul_comm' {M : Type*} [Mul M] [IsMulCommutative M] (a b : M) : a * b = b * a :=
+  IsMulCommutative.is_comm.comm ..
+
+namespace IsMulCommutative
+
+@[to_additive]
+scoped instance (priority := 50) {M : Type*} [Mul M] [IsMulCommutative M] :
+    CommMagma M where
+  mul_comm := IsMulCommutative.is_comm.comm
+
+@[to_additive]
+scoped instance (priority := 50) {M : Type*} [Semigroup M] [IsMulCommutative M] :
+    CommSemigroup M where
+  mul_comm := IsMulCommutative.is_comm.comm
+
+@[to_additive]
+scoped instance (priority := 50) {M : Type*} [Monoid M] [IsMulCommutative M] :
     CommMonoid M where
   mul_comm := IsMulCommutative.is_comm.comm
 
 @[to_additive]
-instance (priority := 100) CommGroup.ofIsMulCommutative {G : Type*} [Group G] [IsMulCommutative G] :
+scoped instance (priority := 50) {M : Type*} [DivisionMonoid M] [IsMulCommutative M] :
+    DivisionCommMonoid M where
+  mul_comm := IsMulCommutative.is_comm.comm
+
+@[to_additive]
+scoped instance (priority := 50) {G : Type*} [Group G] [IsMulCommutative G] :
     CommGroup G where
+
+end IsMulCommutative
 
 end IsCommutative
 

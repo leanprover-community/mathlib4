@@ -87,6 +87,25 @@ theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ 
     ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, S i :=
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
 
+/-- The supremum of a directed family of commutative subsemigroups is commutative. -/
+@[to_additive]
+theorem isMulCommutative_iSup {S : ι → Subsemigroup M}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : Subsemigroup M) := by
+  refine .of_setLike_mul_comm ?_
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+    SetLike.mem_coe, forall_exists_index]
+  intro a i ha b j hb
+  obtain ⟨k, hik, hjk⟩ := dir i j
+  exact setLike_mul_comm (hik ha) (hjk hb)
+
+/-- The supremum of a directed family of commutative subsemigroups is commutative. -/
+@[to_additive]
+instance instIsMulCommutative_iSup {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
+    (S : ι →o Subsemigroup M) [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subsemigroup M) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 @[to_additive]
 theorem mem_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) {x : M} :
     x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
