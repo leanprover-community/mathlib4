@@ -179,9 +179,10 @@ theorem isAdicComplete (h : I.FG) : IsAdicComplete I (AdicCompletion I M) where
 
 end AdicCompletion
 
+@[instance]
 /-- Multivariate power series is adic complete with respect to the ideal spanned by
 all variables when the index is finite. -/
-instance MvPowerSeries.isAdicComplete [Finite σ] :
+theorem MvPowerSeries.isAdicComplete [Finite σ] :
     IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) := by
   have : Ideal.map (toAdicCompletionAlgEquiv σ R).toRingEquiv (Ideal.span (Set.range X)) =
     (MvPolynomial.idealOfVars σ R).map (algebraMap ..):= by
@@ -192,7 +193,8 @@ instance MvPowerSeries.isAdicComplete [Finite σ] :
     IsAdicComplete.map_algebraMap_iff]
   exact AdicCompletion.isAdicComplete (MvPolynomial σ R) (MvPolynomial.idealOfVars_fg σ R)
 
+@[instance]
 /-- Power series is adic complete with respect to the ideal spanned by `X`. -/
-instance PowerSeries.isAdicComplete :
+theorem PowerSeries.isAdicComplete :
     IsAdicComplete (.span {X} : Ideal (PowerSeries R)) (PowerSeries R) := by
   simpa [Set.range_unique] using MvPowerSeries.isAdicComplete (R := R) (σ := Unit)
