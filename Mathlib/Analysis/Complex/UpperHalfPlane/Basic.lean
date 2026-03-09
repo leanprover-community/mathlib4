@@ -120,6 +120,9 @@ theorem im_ne_zero (z : ℍ) : z.im ≠ 0 :=
 theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 
+lemma mem_slitPlane (z : ℍ) : (z : ℂ) ∈ Complex.slitPlane := by
+  simp [Complex.slitPlane, im_ne_zero z]
+
 end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity

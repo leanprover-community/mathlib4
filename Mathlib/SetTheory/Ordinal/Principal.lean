@@ -319,13 +319,13 @@ theorem principal_mul_omega0 : Principal (· * ·) ω := fun a b ha hb =>
   match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     dsimp only; rw [← natCast_mul]
-    apply nat_lt_omega0
+    apply natCast_lt_omega0
 
 theorem mul_omega0 (a0 : 0 < a) (ha : a < ω) : a * ω = ω :=
   principal_mul_iff_mul_left_eq.1 principal_mul_omega0 a a0 ha
 
 theorem natCast_mul_omega0 {n : ℕ} (hn : 0 < n) : n * ω = ω :=
-  mul_omega0 (mod_cast hn) (nat_lt_omega0 n)
+  mul_omega0 (mod_cast hn) (natCast_lt_omega0 n)
 
 theorem mul_lt_omega0_opow (c0 : 0 < c) (ha : a < ω ^ c) (hb : b < ω) : a * b < ω ^ c := by
   rcases zero_or_succ_or_isSuccLimit c with (rfl | ⟨c, rfl⟩ | l)
@@ -411,6 +411,6 @@ theorem opow_omega0 (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
   (right_le_opow _ a1)
 
 theorem natCast_opow_omega0 {n : ℕ} (hn : 1 < n) : n ^ ω = ω :=
-  opow_omega0 (mod_cast hn) (nat_lt_omega0 n)
+  opow_omega0 (mod_cast hn) (natCast_lt_omega0 n)
 
 end Ordinal
