@@ -217,4 +217,26 @@ theorem forall_finite_image_eval_iff {δ : Type*} [Finite δ] {κ : δ → Type*
     (∀ d, (eval d '' s).Finite) ↔ s.Finite :=
   ⟨fun h => (Finite.pi h).subset <| subset_pi_eval_image _ _, fun h _ => h.image _⟩
 
+@[simp]
+lemma iUnion_cons {n : ℕ} (f : Fin n → Set α) (s : Set α) :
+    iUnion (Fin.cons s f) = s ∪ ⋃ i, f i := by
+  ext
+  simp [Fin.exists_iff_succ]
+
+@[simp]
+lemma iUnion_snoc {n : ℕ} (f : Fin n → Set α) (s : Set α) :
+    iUnion (Fin.snoc f s) = (⋃ i, f i) ∪ s := by
+  ext
+  simp [Fin.exists_iff_castSucc, or_comm]
+
+lemma iUnion_fin_add_one_eq_iUnion_succ {n : ℕ} (f : Fin (n + 1) → Set α) :
+    ⋃ i, f i = f 0 ∪ Set.iUnion (f ∘ Fin.succ) := by
+  cases f using Fin.consCases
+  simp [Function.comp_def]
+
+lemma iUnion_fin_add_one_eq_iUnion_castSucc {n : ℕ} (f : Fin (n + 1) → Set α) :
+    ⋃ i, f i = Set.iUnion (f ∘ Fin.castSucc) ∪ f (.last n) := by
+  cases f using Fin.snocCases
+  simp [Function.comp_def]
+
 end Set
