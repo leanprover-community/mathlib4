@@ -590,6 +590,7 @@ open ComplexEmbedding AbsoluteValue
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
   [w.1.LiesOver v.1]
+
 namespace LiesOver
 
 instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ] :
@@ -600,13 +601,12 @@ theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
   simpa only [coe_apply] using AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
 
-theorem mk_embedding_comp [w.1.LiesOver v.1] :
-    InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
+theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]
 
 /-- If `w : InfinitePlace L` lies above `v : InfinitePlace K`, then either `w.embedding`
 extends `v.embedding` as complex embeddings, or `conjugate w.embedding` extends `v.embedding`. -/
-theorem embedding_comp_eq_or_conjugate_embedding_comp_eq [w.1.LiesOver v.1] :
+theorem embedding_comp_eq_or_conjugate_embedding_comp_eq :
     w.embedding.comp (algebraMap K L) = v.embedding ∨
       (conjugate w.embedding).comp (algebraMap K L) = v.embedding := by
   cases embedding_mk_eq (w.embedding.comp (algebraMap K L)) with
@@ -616,7 +616,7 @@ theorem embedding_comp_eq_or_conjugate_embedding_comp_eq [w.1.LiesOver v.1] :
 variable {v}
 
 /-- If `w : InfinitePlace L` lies above `v : InfinitePlace K` and `v` is complex, then so is `w`. -/
-theorem isComplex_of_isComplex_under [w.1.LiesOver v.1] (hv : v.IsComplex) : w.IsComplex := by
+theorem isComplex_of_isComplex_under (hv : v.IsComplex) : w.IsComplex := by
   rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv ⊢
   obtain ⟨x, hx⟩ := hv
   use algebraMap K L x
@@ -624,7 +624,7 @@ theorem isComplex_of_isComplex_under [w.1.LiesOver v.1] (hv : v.IsComplex) : w.I
   rcases embedding_mk_eq (w.embedding.comp (algebraMap K L)) with (_ | _) <;> aesop
 
 /-- If `w : InfinitePlace L` lies above `v : InfinitePlace K` and `w` is real, then so is `v`. -/
-theorem isReal_of_isReal_over [w.1.LiesOver v.1] (hw : w.IsReal) : v.IsReal := by
+theorem isReal_of_isReal_over (hw : w.IsReal) : v.IsReal := by
   rw [← not_isComplex_iff_isReal] at hw ⊢
   exact mt (isComplex_of_isComplex_under w) hw
 
