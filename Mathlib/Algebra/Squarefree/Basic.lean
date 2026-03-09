@@ -92,7 +92,7 @@ theorem Squarefree.isUnit_of_isSquare [CommMonoid R] {a : R}
 /-- A squarefree non-unit element is not a perfect square. -/
 theorem Squarefree.not_isSquare [CommMonoid R] {a : R}
     (hsf : Squarefree a) (ha : ¬ IsUnit a) : ¬ IsSquare a :=
-  fun hsq ↦ ha hsf.isUnit_of_isSquare hsq
+  fun hsq ↦ ha (hsf.isUnit_of_isSquare hsq)
 
 theorem Associated.squarefree_iff [Monoid R] {x y : R} (h : Associated x y) :
     Squarefree x ↔ Squarefree y :=
