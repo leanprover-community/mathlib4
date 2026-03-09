@@ -921,7 +921,7 @@ def normedAlgebra :
   { normedSpace K L, (inferInstance : Algebra K L) with }
 
 set_option backward.isDefEq.respectTransparency false in
-/-- `L` with the spectral norm is a `NormedAlgebra` over any intermedate `E`
+/-- `L` with the spectral norm is a `NormedAlgebra` over any intermediate `E`
 that is a normed algebra over `K`. -/
 def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormedField E]
     [NormedAlgebra K E] [Algebra E L] [IsScalarTower K E L] :

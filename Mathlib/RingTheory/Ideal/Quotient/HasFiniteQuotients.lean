@@ -26,8 +26,6 @@ has finite quotients.
 
 @[expose] public section
 
-variable {R : Type*} [CommRing R]
-
 /--
 A ring `R` has finite quotients if the quotient `R ⧸ I` is finite for all nonzero ideals of `R`.
 -/
@@ -36,29 +34,23 @@ class Ring.HasFiniteQuotients (R : Type*) [CommRing R] : Prop where
 
 namespace Ring.HasFiniteQuotients
 
-/--
-A finite ring has finite quotients.
--/
-instance (R : Type*) [CommRing R] [Finite R] : Ring.HasFiniteQuotients R :=
-  ⟨fun _ ↦ Quotient.finite _⟩
+variable {R : Type*} [CommRing R]
 
-/--
-A prime ideal of a ring with finite quotients is maximal.
--/
+/-- A finite ring has finite quotients. -/
+instance [Finite R] : Ring.HasFiniteQuotients R where
+  finiteQuotient := fun _ ↦ Quotient.finite _
+
+/-- A nonzero prime ideal of a ring with finite quotients is maximal. -/
 theorem maximalOfPrime [HasFiniteQuotients R] {P : Ideal R} [P.IsPrime] (hp : P ≠ ⊥) :
     P.IsMaximal :=
   have : Finite (R ⧸ P) := finiteQuotient hp
   Ideal.Quotient.maximal_of_isField P <| Finite.isField_of_domain (R ⧸ P)
 
-/--
-A ring with finite quotients has dimension `≤ 1`.
--/
-instance [HasFiniteQuotients R] : DimensionLEOne R :=
-  ⟨fun h _ ↦ maximalOfPrime h⟩
+/-- A ring with finite quotients has dimension `≤ 1`. -/
+instance [HasFiniteQuotients R] : DimensionLEOne R where
+  maximalOfPrime := fun h _ ↦ maximalOfPrime h
 
-/--
-A ring with finite quotients is noetherian.
--/
+/-- A ring with finite quotients is noetherian. -/
 instance [HasFiniteQuotients R] : IsNoetherianRing R := by
   refine (isNoetherianRing_iff_ideal_fg R).mpr fun I ↦ ?_
   by_cases hI : I = 0
@@ -68,7 +60,7 @@ instance [HasFiniteQuotients R] : IsNoetherianRing R := by
   · have := finiteQuotient (I := Ideal.span {x}) (by simp [hx₂])
     exact Submodule.FG.of_finite
   · rw [Submodule.ker_mkQ, inf_eq_right.mpr ((Ideal.span_singleton_le_iff_mem I).mpr hx₁)]
-    exact Ideal.fg_span {x}
+    exact Submodule.fg_span_singleton x
 
 variable (R) in
 /--
@@ -77,27 +69,25 @@ Assume that `R` a finite quotients and that `S` is a domain and a finite `R`-mod
 -/
 theorem of_module_finite [h : HasFiniteQuotients R] (S : Type*) [CommRing S] [IsDomain S]
     [Algebra R S] [Module.Finite R S] :
-    HasFiniteQuotients S := ⟨fun {I} hI ↦ by
-  classical
-  obtain hR | hR := subsingleton_or_nontrivial R
-  · have : Finite S := Module.finite_of_finite R
-    exact Quotient.finite _
-  let J : Ideal R := Ideal.under R I
-  have : Finite (R ⧸ J) := h.finiteQuotient <| Ideal.under_ne_bot R hI
-  exact Module.finite_of_finite (R ⧸ J)⟩
+    HasFiniteQuotients S where
+  finiteQuotient {I} hI := by
+    obtain hR | hR := subsingleton_or_nontrivial R
+    · have : Finite S := Module.finite_of_finite R
+      exact Quotient.finite _
+    let J : Ideal R := Ideal.under R I
+    have : Finite (R ⧸ J) := h.finiteQuotient <| Ideal.under_ne_bot R hI
+    have : Module.Finite (R ⧸ J) (S ⧸ I) := Module.Finite.of_restrictScalars_finite R _ _
+    exact Module.finite_of_finite (R ⧸ J)
 
-/--
-The ring `ℤ` has finite quotients.
--/
-instance : HasFiniteQuotients ℤ := ⟨fun {I} hI ↦ by
-  obtain ⟨n, rfl⟩ := Submodule.IsPrincipal.principal I
-  have : NeZero n := ⟨by simpa using hI⟩
-  exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})⟩
+/-- The ring `ℤ` has finite quotients. -/
+instance : HasFiniteQuotients ℤ where
+  finiteQuotient {I} hI := by
+    obtain ⟨n, rfl⟩ := Submodule.IsPrincipal.principal I
+    have : NeZero n := ⟨by simpa using hI⟩
+    exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})
 
-/--
-A domain that is also a finite `ℤ`-module has finite quotients.
--/
-instance [IsDomain R] [Module.Finite ℤ R] :
-    HasFiniteQuotients R := of_module_finite ℤ R
+/-- A domain that is also a finite `ℤ`-module has finite quotients. -/
+instance [IsDomain R] [Module.Finite ℤ R] : HasFiniteQuotients R :=
+  of_module_finite ℤ R
 
 end Ring.HasFiniteQuotients
