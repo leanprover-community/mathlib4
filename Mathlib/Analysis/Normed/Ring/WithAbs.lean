@@ -180,7 +180,7 @@ instance (v : AbsoluteValue R S) : Ring (WithAbs v) := fast_instance% (equiv v).
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
   letI := v.toNormedRing
-  fast_instance% (equiv v).normedRing
+  (equiv v).normedRing
 
 lemma norm_eq_apply_ofAbs (v : AbsoluteValue R ℝ) (x : WithAbs v) : ‖x‖ = v x.ofAbs := rfl
 lemma norm_toAbs_eq (v : AbsoluteValue R ℝ) (x : R) : ‖toAbs v x‖ = v x := rfl
@@ -322,15 +322,11 @@ end WithAbs
 namespace AbsoluteValue
 
 variable {K L S : Type*} [CommRing K] [IsSimpleRing K] [CommRing L] [Algebra K L] [PartialOrder S]
-  [Nontrivial L] [Semiring S] (w : AbsoluteValue L S) (v : AbsoluteValue K S)
+  [Nontrivial L] [Semiring S]
 
 /-- An absolute value `w` of `L / K` lies over the absolute value `v` of `K` if `v` is the
 restriction of `w` to `K`. -/
-class LiesOver : Prop where
-  comp_eq' : w.comp (algebraMap K L).injective = v
-
-variable [w.LiesOver v]
-
-theorem LiesOver.comp_eq : w.comp (algebraMap K L).injective = v := LiesOver.comp_eq'
+class LiesOver (w : AbsoluteValue L S) (v : AbsoluteValue K S) : Prop where
+  comp_eq (w) (v) : w.comp (algebraMap K L).injective = v
 
 end AbsoluteValue
