@@ -51,7 +51,7 @@ instance IsQuadraticField.instNumberField (K : Type*) [Field K] [Algebra ℚ K]
       rw [Algebra.IsQuadraticExtension.finrank_eq_two (R := ℚ) (S := K)]; omega) using 1
     congr 1
     exact Subsingleton.elim _ _
-    
+
 /-- The quadratic field `ℚ(√d)` as a type alias for `QuadraticAlgebra ℚ d 0`. -/
 abbrev Qsqrtd (d : ℚ) : Type := QuadraticAlgebra ℚ d 0
 
