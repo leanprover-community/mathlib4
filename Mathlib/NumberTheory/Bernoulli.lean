@@ -404,6 +404,8 @@ end Faulhaber
 section vonStaudtClausen
 
 /-!
+### The von Staudt-Clausen Theorem
+
 Here we formalize Rado's proof of von Staudt-Clausen's theorem, which states that for any $k \ge 0$,
 $$B_{2k} + \sum_{p \text{ prime}, (p - 1) \mid 2k} \frac{1}{p} \in \mathbb{Z}.$$
 Rado's proof is based on Faulhaber's theorem and induction on $k$.
@@ -421,21 +423,21 @@ lemma power_sum_add_indicator_eq_zero (p l : ℕ) (hp : p.Prime) :
   have cast_ne : ∀ v, v ∈ (Finset.range p).filter (· ≠ 0) → (v : ZMod p) ≠ 0 := by
     intro v hv h
     simp only [Finset.mem_filter, Finset.mem_range] at hv
-    have h1 : (p : ℕ) ∣ v := by simpa [ZMod.natCast_eq_zero_iff] using h
-    exact absurd (Nat.le_of_dvd (by omega) h1) (by omega)
+    have h1 : p ∣ v := (ZMod.natCast_eq_zero_iff v p).mp h
+    exact absurd (Nat.le_of_dvd (by lia) h1) (by lia)
   have hbij : (∑ v ∈ Finset.range p with v ≠ 0, (v : ZMod p) ^ l) =
       ∑ u : (ZMod p)ˣ, (u : ZMod p) ^ l :=
     Finset.sum_bij'
       (fun v hv => Units.mk0 (v : ZMod p) (cast_ne v hv))
       (fun u _ => (u : ZMod p).val)
       (fun _ _ => Finset.mem_univ _)
-      (fun u _ => by simp [Finset.mem_filter, ZMod.val_lt, ZMod.val_eq_zero, u.ne_zero])
+      (fun u _ => by simp [ZMod.val_lt, u.ne_zero])
       (fun v hv => by
         simp [ZMod.val_cast_of_lt (Finset.mem_range.mp (Finset.mem_filter.mp hv).1)])
       (fun u _ => Units.ext (ZMod.natCast_zmod_val _))
       (fun _ _ => rfl)
   rw [hbij, FiniteField.sum_pow_units, ZMod.card]
-  split_ifs <;> ring
+  grind
 
 /-- If a rational number is $p$-integral for all primes $p$, then it is an integer. -/
 lemma is_integer_of_coprime_all_primes (q : ℚ) (h : ∀ p : ℕ, p.Prime → q.den.Coprime p) :
@@ -515,7 +517,7 @@ lemma sum_primes_eq_indicator_add_rest (k p : ℕ) (hk : k > 0) (hp : p.Prime) :
     simp only [vonStaudtIndicator, if_pos hdvd]
     congr 1
     apply Finset.sum_congr _ (fun _ _ => rfl)
-    ext q; simp only [Finset.mem_erase, Finset.mem_filter, Finset.mem_range]; tauto
+    grind
   · -- p is not in the filtered set; indicator is 0, filter sets are equal
     simp only [vonStaudtIndicator, if_neg hdvd, zero_div, zero_add]
     exact Finset.sum_congr (Finset.filter_congr fun q _ =>
@@ -556,7 +558,7 @@ lemma valuation_bound (p n : ℕ) (hp : p.Prime) : (n + 1).factorization p ≤ n
 /-- The `i = 0` Faulhaber term is `p`-integral. -/
 lemma pIntegral_i0_term (k p : ℕ) (hk : k > 0) (hp : p.Prime) :
     pIntegral p ((p : ℚ) ^ (2 * k) / (2 * k + 1)) := by
-  have h : (2 * k + 1 : ℚ) = ↑(2 * k + 1) := by push_cast; ring
+  have h : (2 * k + 1 : ℚ) = ↑(2 * k + 1) := by norm_cast
   rw [h]
   apply pIntegral_pow_div p (2 * k + 1) (2 * k) hp
   · omega
@@ -566,18 +568,16 @@ lemma pIntegral_i0_term (k p : ℕ) (hk : k > 0) (hp : p.Prime) :
 lemma pIntegral_i1_term (k p : ℕ) (hk : k > 0) (hp : p.Prime) :
     pIntegral p (bernoulli 1 * (2 * k) * (p : ℚ) ^ (2 * k - 1) / (2 * k)) := by
   obtain rfl | hp2 := eq_or_ne p 2
-  · rw [show bernoulli 1 = -1 / 2 from by norm_num [bernoulli_one]]
+  · rw [bernoulli_one]
     have h : ((-1 / 2 : ℚ) * (2 * k) * (2 : ℚ) ^ (2 * k - 1) / (2 * k)) =
         (-(2 : ℤ) ^ (2 * k - 2) : ℤ) := by
-      have hpow : (2 : ℚ) ^ (2 * k - 1) = (2 : ℚ) ^ (2 * k - 2) * 2 := by
-        rw [show 2 * k - 1 = (2 * k - 2) + 1 from by omega, pow_succ]
-      rw [hpow]; push_cast; field_simp [show (2 * k : ℚ) ≠ 0 from by positivity]
+      have hpow : (2 : ℚ) ^ (2 * k - 1) = (2 : ℚ) ^ (2 * k - 2) * 2 := by rw [← pow_succ]; lia
+      rw [hpow]; push_cast; field_simp
     simp only [Nat.cast_ofNat, h]; norm_num [pIntegral]
   · rw [show bernoulli 1 = (-1 : ℚ) / 2 from by norm_num [bernoulli]]
     have h2 : ((2 * k : ℕ) : ℚ) ≠ 0 := by norm_cast; omega
     field_simp [h2]
-    rw [show -(↑↑p ^ (2 * k - 1) / (2 : ℚ)) = -↑↑p ^ (2 * k - 1) / 2 from by ring]
-    unfold pIntegral
+    rw [neg_div', pIntegral]
     have hdvd : (-(p : ℚ) ^ (2 * k - 1) / 2).den ∣ 2 := by
       rw [neg_div, Rat.den_neg_eq_den, ← Nat.cast_pow]
       conv_lhs => rw [show (2 : ℚ) = (2 : ℕ) from rfl, Rat.natCast_div_eq_divInt]
@@ -638,18 +638,11 @@ lemma valuation_bound_d_plus_1 (p d : ℕ) (hp : p.Prime) (hd : d ≥ 2) :
 lemma choose_div_core (k m : ℕ) (hm_lt : m < k) :
     ((2 * k + 1).choose (2 * m) : ℚ) / (2 * k + 1) =
     ((2 * k).choose (2 * m) : ℚ) / (2 * k - 2 * m + 1) := by
-  have h_denom : (2 * (k : ℚ) - 2 * m + 1) = ((2 * k - 2 * m + 1 : ℕ) : ℚ) := by
-    simp only [Nat.cast_sub (by omega : 2 * m ≤ 2 * k), Nat.cast_add, Nat.cast_mul,
-      Nat.cast_ofNat, Nat.cast_one]
-  conv_rhs => rw [h_denom]
-  have h_nat : 2 * k + 1 - 2 * m = 2 * k - 2 * m + 1 := by grind
-  simp only [h_nat.symm]
-  have h_lhs_denom : (2 * (k : ℚ) + 1) = ((2 * k + 1 : ℕ) : ℚ) := by push_cast; ring
-  conv_lhs => rw [h_lhs_denom]
-  have hk_pos : ((2 * k + 1 : ℕ) : ℚ) ≠ 0 := by positivity
-  have hd_pos : ((2 * k + 1 - 2 * m : ℕ) : ℚ) ≠ 0 := by simp only [Nat.cast_ne_zero]; omega
-  rw [div_eq_div_iff hk_pos hd_pos]
-  exact_mod_cast (Nat.choose_mul_succ_eq (2 * k) (2 * m)).symm
+  rw [div_eq_div_iff (by norm_cast) (by norm_cast; lia)]
+  conv_rhs => norm_cast; rw [Nat.choose_mul_succ_eq]
+  rw [show 2 * (k : ℚ) - 2 * (m : ℚ) = 2 * (k - m : ℕ) by rw [cast_sub hm_lt.le]; ring]
+  norm_cast
+  grind
 
 /-- Multiplicative form of `choose_div_core`, used to move factors around in the even case. -/
 lemma choose_div_simplify (k m : ℕ) (x : ℚ) (hm_lt : m < k) :
