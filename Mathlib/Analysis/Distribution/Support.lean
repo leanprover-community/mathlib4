@@ -155,16 +155,7 @@ variable {f : F → V}
 theorem compl_dsupport_eq_sUnion_isBounded :
     (dsupport f)ᶜ = ⋃₀ { a | IsVanishingOn f a ∧ IsOpen a ∧ Bornology.IsBounded a } := by
   ext x
-  rw [Set.mem_compl_iff]
-  have : (𝓝 x).HasBasis (fun a ↦ x ∈ a ∧ IsOpen a ∧ Bornology.IsBounded a) id := by
-    apply Metric.nhds_basis_ball.to_hasBasis
-    · intro r hr
-      use Metric.ball x r
-      simpa [hr] using Metric.isBounded_ball
-    · intro a ⟨hx, h₁, h₂⟩
-      rw [Metric.isOpen_iff] at h₁
-      exact h₁ x hx
-  rw [this.notMem_dsupport, Set.mem_sUnion]
+  rw [Set.mem_compl_iff, (Metric.hasBasis_nhds_isOpen_isBounded x).notMem_dsupport, Set.mem_sUnion]
   constructor
   · intro ⟨i, ⟨hx, h₁, h₂⟩, h₃⟩
     use i, ⟨h₃, ⟨h₁, h₂⟩⟩, hx
