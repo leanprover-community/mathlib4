@@ -110,7 +110,7 @@ class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
   distinct_col_entries : distinct_col_entries M
   m_le_n : Fintype.card m ≤ Fintype.card n := by simp
 
--- Pretty printing of rectangles
+/-- Pretty printing of Latin rectangles. -/
 instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
   Repr (LatinRectangle (Fin m) (Fin n) α) where
     reprPrec L _ :=
@@ -122,6 +122,8 @@ abbrev once_per_column (M : Matrix m n α) : Prop :=
   -- ∀ j : n, ∀ x : α, ∃! i : m, M i j = x
   ∀ j, Function.Bijective (M.col j)
 
+/-- If a matrix has each symbol appearing exactly once in every column,
+    then the entries in each column are distinct. -/
 lemma latin_square_col_implies_latin_rectangle_col
   {n : Type*} {α : Type*}
   (M : Matrix n n α)
@@ -144,6 +146,7 @@ class LatinSquare (n : Type*) (α : Type*) [Fintype n] [Fintype α] [DecidableEq
 
   m_le_n := by rfl
 
+/-- An example of a 5 × 5 Latin rectangle with entries in Fin 5. -/
 example : LatinRectangle (Fin 5) (Fin 5) (Fin 5) := LatinRectangle.mk (fun x y ↦ ((x + y) : Fin 5))
   (by decide) (by decide) (by decide)
 
@@ -164,6 +167,7 @@ instance {n : Type*} {α : Type*}
 abbrev col (A : LatinRectangle m n α) : n → m → α := Matrix.col A
 abbrev row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
 
+/-- An n × n Latin rectangle is a Latin square. -/
 @[coe]
 def lr_to_ls : (LatinRectangle n n α) → (LatinSquare n α)
   | A => {
@@ -213,13 +217,12 @@ def group_to_cayley_table (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
 
 
 -- For example, addGroup_to_cayley_table (ZMod.finEquiv 5).toEquiv
-
-
 -- #check Matrix.transpose (addGroup_to_cayley_table (ZMod 5) : Matrix (ZMod 5) (ZMod 5) (ZMod 5))
 
 section Equivalence
 
-/-- Given relabeling maps for the rows, columns, and symbols, produce the relabeled Latin rectangle.-/
+/-- Given relabeling maps for the rows, columns, and symbols,
+    produce the relabeled Latin rectangle. -/
 def relabel_latin_rectangle
   (f : m ≃ m')
   (g : n ≃ n')
@@ -305,6 +308,7 @@ section Nonvacuous
 instance Zn_nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
   addGroup_to_cayley_table (ZMod n)
 
+/-- For any positive natural number n, there exists an n × n Latin square. -/
 noncomputable instance n_nonempty
   (nezero_n : NeZero (Fintype.card n))
   (h : Fintype.card n = Fintype.card α) :
@@ -329,6 +333,7 @@ def is_subrect
   (B : LatinRectangle m' n' α) :=
   ∃ (ι : m ↪ m') (ι' : n ↪ n') (h : α ≃ α), ∀ (i : m), ∀ (j : n), B.M (ι i) (ι' j) = h (A.M i j)
 
+/-- A map returning the set of symbols in α not in column j. -/
 def symbols_not_in
  (A : LatinRectangle k n α) (j : n) :=
   let D := Finset.image (col A j) Finset.univ
@@ -478,6 +483,9 @@ lemma count_by_group_or_element_indicator
     rw[← hfin]
     exact h₂
 
+/-- Given a finite collection of finite subsets $B_1, \ldots, B_r$,
+    each with cardinality k, if the cardinality of their union is less than r,
+    then there exists an element x appearing in strictly more than k of the $B_j$'s. -/
 lemma exists_larger_subset
   {n : Type*} [DecidableEq n] [Fintype n]
   {α : Type*} [DecidableEq α]
@@ -550,6 +558,7 @@ lemma latin_rect_hall_property
     specialize h₃ x s
     omega
 
+/-- For a k × n Latin rectangle, the set of entries in each column has cardinality k. -/
 lemma col_card
     {k : Type*} [Fintype k]
     {n : Type*} [Fintype n]
@@ -586,6 +595,8 @@ lemma row_entry_to_column_entry
       rw [forall_existsUnique_iff] at hrow
       exact hrow
 
+/-- Given an injective map f : k → k' such that k' has cardinality one mroe than k,
+    there is a unique element of k' not in the image of f. -/
 lemma unique_missed_element
     {k : Type*} [Fintype k]
     {k' : Type*} [Fintype k'] [DecidableEq k']
@@ -844,6 +855,7 @@ theorem latin_rectangle_extends_one_row
   simp
   rfl
 
+/-- Being a subrectangle of a `LatinRectangle` is a transitive property. -/
 lemma subrect_transitive {m'' : Type*} [Fintype m'']
   {n : Type*} [Fintype n]
   {A : LatinRectangle m n α}
@@ -859,6 +871,7 @@ lemma subrect_transitive {m'' : Type*} [Fintype m'']
     use f'', g'', h''
     simp [h'', f'', g'',h₂,h₁]
 
+/-- Any two equivalent `LatinRectangles` are subrectangles of each other. -/
 lemma subrect_refl
   {n : Type*} [Fintype n]
   {A : LatinRectangle m n α}
