@@ -27,6 +27,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] {v : InfinitePlace K} {
 variable [w.1.LiesOver v.1]
 
 set_option backward.isDefEq.respectTransparency false in
+/-- If `w` lies over `v`, then `w.Completion` is a `v.Completion`-algebra. -/
 noncomputable scoped instance : Algebra v.Completion w.Completion :=
   (LiesOver.isometry_algebraMap w v).mapRingHom.toAlgebra
 
