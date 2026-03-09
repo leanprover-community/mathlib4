@@ -687,7 +687,7 @@ theorem continuous_normedSpace_rng (F) [SeminormedAddCommGroup F] [NormedSpace �
   exact continuous_of_isBounded hp (norm_withSeminorms 𝕝₂ F) f hf
 
 @[deprecated (since := "2026-03-09")]
-alias _root_.cont_withSeminorms_normedSpace := continuous_normedSpace_rng
+alias _root_.Seminorm.cont_withSeminorms_normedSpace := continuous_normedSpace_rng
 
 theorem continuous_normedSpace_dom (E) [SeminormedAddCommGroup E] [NormedSpace 𝕝 E]
     [TopologicalSpace F] {q : ι → Seminorm 𝕝₂ F} (hq : WithSeminorms q)

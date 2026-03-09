@@ -82,7 +82,7 @@ distributions
 
 @[expose] public section
 
-open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
+open TopologicalSpace Set Function UniformSpace WithSeminorms
 open scoped BoundedContinuousFunction Topology NNReal ContDiff
 
 variable (𝕜 E F F' : Type*) [NontriviallyNormedField 𝕜]
@@ -622,7 +622,7 @@ functions as a continuous `𝕜`-linear map. -/
 noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F where
   toLinearMap := toBoundedContinuousFunctionLM 𝕜
   cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
       (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
     simp [norm_toBoundedContinuousFunction 𝕜 f]
 
@@ -667,7 +667,7 @@ noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F �
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}_{K}(E, F') where
   toLinearMap := postcompLM T
   cont := show Continuous (postcompLM T) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
       (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, ‖T‖₊, fun f ↦ ?_⟩)
     simpa [NNReal.smul_def] using seminorm_postcompLM_le 𝕜 T f
 
