@@ -7660,6 +7660,7 @@ public import Mathlib.Topology.Sheaves.PUnit
 public import Mathlib.Topology.Sheaves.Points
 public import Mathlib.Topology.Sheaves.Presheaf
 public import Mathlib.Topology.Sheaves.PresheafOfFunctions
+public import Mathlib.Topology.Sheaves.Restrict
 public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.Topology.Sheaves.SheafCondition.EqualizerProducts
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover

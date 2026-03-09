@@ -71,34 +71,56 @@ instance : HasExt.{u} (CategoryTheory.Sheaf (Opens.grothendieckTopology X) AddCo
   hasExt_of_enoughInjectives _
 
 /-- The cohomology of a sheaf of abelian groups in degree `n`. -/
-def H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : Type u := CategoryTheory.Sheaf.H F n
+abbrev H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : Type u := CategoryTheory.Sheaf.H F n
+
+variable {F G : Sheaf AddCommGrpCat.{u} X} (f : F ⟶ G)
 
 /-- Given a morphism `𝓕 ⟶ 𝓖`, we get an induced morphism on cohomology `H 𝓕 n ⟶ H 𝓖 n` -/
-def H.map {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (n : ℕ) : H F n → H G n :=
+abbrev H.map (n : ℕ) : H F n →+ H G n :=
     CategoryTheory.Sheaf.H.map f n
 
-instance {F : (Sheaf AddCommGrpCat X)} {n : ℕ} : AddCommGroup (H F n) :=
+instance {n : ℕ} : AddCommGroup (H F n) :=
   inferInstanceAs <| AddCommGroup <| CategoryTheory.Sheaf.H _ _
 
+variable (F) in
 set_option backward.isDefEq.respectTransparency false in
-instance (F : Sheaf AddCommGrpCat X) {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
+instance {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
   inferInstanceAs <| Subsingleton (CategoryTheory.Sheaf.H F (n + 1))
 
+variable (F) in
 set_option backward.isDefEq.respectTransparency false in
 /-- `H F 0` is equivalent to taking global sections. -/
-def H.equiv₀ (F : (Sheaf AddCommGrpCat X)) : H F 0 ≃+ F.obj.obj (op ⊤) :=
+def H.equiv₀ : H F 0 ≃+ F.obj.obj (op ⊤) :=
     CategoryTheory.Sheaf.H.equiv₀ F Limits.isTerminalTop
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `H.equiv₀` is natural. -/
-theorem H.equiv₀_naturality {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : H F 0) :
+theorem H.equiv₀_naturality (x : H F 0) :
     f.hom.app (op ⊤) ((H.equiv₀ F) x) = H.equiv₀ G (H.map f 0 x) :=
   CategoryTheory.Sheaf.H.equiv₀_naturality Limits.isTerminalTop f x
 
 set_option backward.isDefEq.respectTransparency false in
-theorem H.equiv₀_symm_naturality {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : F.obj.obj (op ⊤)) :
+theorem H.equiv₀_symm_naturality (x : F.obj.obj (op ⊤)) :
     H.map f 0 ((H.equiv₀ F).symm x) = (H.equiv₀ G).symm (f.hom.app (op ⊤) x)
   := CategoryTheory.Sheaf.H.equiv₀_symm_naturality Limits.isTerminalTop f x
+
+@[simp]
+lemma H.map_id_apply {n : ℕ} (x : H F n) : H.map (𝟙 F) n x = x :=
+  CategoryTheory.Sheaf.H.map_id_apply x
+
+lemma H.map_comp_apply {n : ℕ} {G' : Sheaf AddCommGrpCat.{u} X} (g : G ⟶ G') (x : H F n) :
+    H.map (f ≫ g) n x = H.map g n (H.map f n x) :=
+  CategoryTheory.Sheaf.H.map_comp_apply f g x
+
+attribute [local simp] H.map_comp_apply in
+variable (X) in
+/-- `H` as a functor. -/
+@[simps!]
+noncomputable abbrev functorH (n : ℕ) : Sheaf AddCommGrpCat.{u} X ⥤ AddCommGrpCat.{u} :=
+  CategoryTheory.Sheaf.functorH _ n
+
+instance (n : ℕ) : (functorH X n).Additive :=
+  inferInstanceAs (CategoryTheory.Sheaf.functorH _ n).Additive
 
 end
 

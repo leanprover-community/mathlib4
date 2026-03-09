@@ -1,6 +1,18 @@
+/-
+Copyright (c) 2026 Brian Nugent. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Brian Nugent
+-/
+
 module
 
-public import Mathlib.AlgebraicGeometry.Modules.Sheaf
+public import Mathlib.Topology.Sheaves.Functors
+
+/-!
+# Restriction to open functor
+
+Restrict to open.
+-/
 
 @[expose] public section
 
@@ -31,30 +43,9 @@ lemma toRestrict_obj_obj_obj :
     ((restrict C U.isOpenEmbedding ⋙ pushforward C U.inclusion').obj F).obj.obj (op V) =
     F.obj.obj (op (U.isOpenEmbedding.functor.obj ((Opens.map U.inclusion').obj V))) := rfl
 
-example : U.isOpenEmbedding.functor.obj ((Opens.map U.inclusion').obj V) = U ⊓ V := by aesop
+lemma func_inc : U.isOpenEmbedding.functor.obj ((Opens.map U.inclusion').obj V) = U ⊓ V := by aesop
 
 lemma toRestrict_app_hom_app : ((toRestrict C U).app F).hom.app (op V) =
     F.obj.map (U.isOpenEmbedding.isOpenMap.adjunction.counit.app V).op := by simp
 
 end TopCat.Sheaf
-
-namespace AlgebraicGeometry.Scheme.Modules
-
-variable (U X : Scheme.{u}) (f : U ⟶ X) [hf : IsOpenImmersion f] (M : X.Modules)
-
-noncomputable def sheaf : TopCat.Sheaf AddCommGrpCat X := (SheafOfModules.toSheaf _).obj M
-
-#check ((restrictAdjunction f).unit.app M)
-#check M.sheaf
-#check (SheafOfModules.toSheaf _).obj ((restrictFunctor f ⋙ pushforward f).obj M)
-#check hf.base_open
-#check M.presheaf
-#check (TopCat.Sheaf.restrict _ hf.base_open ⋙ TopCat.Sheaf.pushforward _ f.base).obj M.sheaf
-
-example : ((restrictFunctor f ⋙ pushforward f).obj M).sheaf =
-  (TopCat.Sheaf.restrict _ hf.base_open ⋙ TopCat.Sheaf.pushforward _ f.base).obj M.sheaf := rfl
-
-example : (SheafOfModules.toSheaf _).map ((restrictAdjunction f).unit.app M) =
-    (TopCat.Sheaf.restrictPushforwardAdjunction _ hf.base_open).unit.app M.sheaf := rfl
-
-end AlgebraicGeometry.Scheme.Modules
