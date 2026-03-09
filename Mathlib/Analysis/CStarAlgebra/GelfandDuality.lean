@@ -130,6 +130,8 @@ end ComplexBanachAlgebra
 
 section ComplexCStarAlgebra
 
+section Commutative
+
 variable {A : Type*} [CommCStarAlgebra A]
 
 theorem gelfandTransform_map_star (a : A) :
@@ -193,6 +195,83 @@ noncomputable def gelfandStarTransform : A ≃⋆ₐ[ℂ] C(characterSpace ℂ A
     (show A →⋆ₐ[ℂ] C(characterSpace ℂ A, ℂ) from
       { gelfandTransform ℂ A with map_star' := fun x => gelfandTransform_map_star x })
     (gelfandTransform_bijective A)
+
+end Commutative
+
+section NonUnitalComm
+
+variable {A : Type*} [NonUnitalCommCStarAlgebra A]
+
+open scoped CStarAlgebra in
+open Unitization in
+lemma CommCStarAlgebra.norm_add_eq_max {a b : A} (h : a * b = 0) :
+    ‖a + b‖ = max ‖a‖ ‖b‖ := by
+  let f := gelfandStarTransform A⁺¹ ∘ inrNonUnitalAlgHom ℂ A
+  have hf : Isometry f := gelfandTransform_isometry _ |>.comp isometry_inr
+  simp_rw [← hf.norm_map_of_map_zero (by simp [f]), show f (a + b) = f a + f b by simp [f]]
+  exact ContinuousMap.norm_add_eq_max <| by simpa [f] using congr(f $h)
+
+lemma CommCStarAlgebra.nnnorm_add_eq_max {a b : A} (h : a * b = 0) :
+    ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+  NNReal.eq <| CommCStarAlgebra.norm_add_eq_max h
+
+end NonUnitalComm
+
+section NonUnital
+
+variable {A : Type*} [NonUnitalCStarAlgebra A]
+
+open NonUnitalStarAlgebra in
+lemma IsSelfAdjoint.norm_add_eq_max {a b : A} (hab : a * b = 0)
+    (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) :
+    ‖a + b‖ = max ‖a‖ ‖b‖ := by
+  let S : NonUnitalStarSubalgebra ℂ A := (adjoin ℂ {a, b}).topologicalClosure
+  have hS : IsClosed (S : Set A) := (adjoin ℂ {a, b}).isClosed_topologicalClosure
+  have hab' : a * b = b * a := by
+    rw [hab, eq_comm]; simpa [ha.star_eq, hb.star_eq] using congr(star $hab)
+  let _ : NonUnitalCommRing (adjoin ℂ {a, b}) :=
+    adjoinNonUnitalCommRingOfComm ℂ (by grind) (by grind [IsSelfAdjoint.star_eq])
+  let _ : NonUnitalCommRing S := (adjoin ℂ {a, b}).nonUnitalCommRingTopologicalClosure mul_comm
+  let _ : NonUnitalCommCStarAlgebra S := { }
+  let c : S := ⟨a, subset_closure <| subset_adjoin _ _ <| by grind⟩
+  let d : S := ⟨b, subset_closure <| subset_adjoin _ _ <| by grind⟩
+  exact CommCStarAlgebra.norm_add_eq_max (a := c) (b := d) (by ext; simpa)
+
+lemma IsSelfAdjoint.nnnorm_add_eq_max {a b : A} (hab : a * b = 0)
+    (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) :
+    ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+  NNReal.eq <| IsSelfAdjoint.norm_add_eq_max hab ha hb
+
+lemma IsSelfAdjoint.norm_sub_eq_max {a b : A} (hab : a * b = 0)
+    (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) :
+    ‖a - b‖ = max ‖a‖ ‖b‖ := by
+  rw [← sq_eq_sq₀ (by positivity) (by positivity)]
+  simp only [sq, ← ha.norm_add_eq_max hab hb, ← CStarRing.norm_star_mul_self]
+  have : b * a = 0 := by simpa [ha.star_eq, hb.star_eq] using congr(star $hab)
+  simp [sub_mul, mul_sub, hb.star_eq, ha.star_eq, hab, this, add_mul, mul_add]
+
+lemma IsSelfAdjoint.nnnorm_sub_eq_max {a b : A} (hab : a * b = 0)
+    (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) :
+    ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+  NNReal.eq <| IsSelfAdjoint.norm_sub_eq_max hab ha hb
+
+attribute [aesop safe apply (rule_sets := [CStarAlgebra])] isSelfAdjoint_sum
+
+open scoped Function in
+lemma IsSelfAdjoint.nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
+    (h0 : Pairwise ((· * · = 0) on f)) (h : ∀ i ∈ s, IsSelfAdjoint (f i)) :
+    ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert j s hj ih =>
+    suffices f j * ∑ i ∈ s, f i = 0 by
+      simp_all only [Finset.mem_insert, or_true, implies_true, forall_const, forall_eq_or_imp,
+        not_false_eq_true, Finset.sum_insert, Finset.sup_insert]
+      simpa [← ih] using h.1.nnnorm_add_eq_max this (by cfc_tac)
+    simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h0 (by grind)
+
+end NonUnital
 
 end ComplexCStarAlgebra
 
