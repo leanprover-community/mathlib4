@@ -42,6 +42,8 @@ This is notably useful in local martingales.
 localizing sequence, local property, stable property
 -/
 
+@[expose] public section
+
 open MeasureTheory Filter Filtration
 open scoped ENNReal Topology
 
