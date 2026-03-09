@@ -7,47 +7,39 @@ module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.Algebra.Squarefree.Basic
-public import Mathlib.Data.Rat.Lemmas
-public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.RingTheory.Trace.Basic
+public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.RingTheory.Trace.Basic
+public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
-# Quadratic Number Fields
+# Basic Definitions for Quadratic Number Fields
 
-This file defines quadratic number fields `ℚ(√d)` as specializations of the
-`QuadraticAlgebra` construction, and establishes that they are number fields.
+field `ℚ(√d)` for a rational parameter `d`, along with basic operations
+(trace, norm, embedding), field and number field instances, and the
+`IsQuadraticField` predicate.
 
 ## Main Definitions
 
-* `Qsqrtd d` : The quadratic algebra `QuadraticAlgebra ℚ d 0`, representing `ℚ(√d)`.
-* `Qsqrtd.trace` : The trace on `ℚ(√d)`, defined via `Algebra.trace`.
-* `QuadFieldParam d` : Class asserting that `d : ℤ` is a valid parameter for a quadratic
-  number field (squarefree and `d ≠ 1`).
+* `IsQuadraticField K`: A predicate asserting that `K` is a quadratic extension of ℚ.
+* `Qsqrtd d`: The quadratic algebra `QuadraticAlgebra ℚ d 0`, representing `ℚ(√d)`.
+* `Qsqrtd.trace`: The trace `Tr(x)`, defined via mathlib's `Algebra.trace`.
+* `Qsqrtd.norm`: The norm `N(x) = x · x̄ = x.re² - d · x.im²`.
+* `Qsqrtd.embed`: The canonical embedding `ℚ → Q(√d)`.
 
 ## Main Results
 
-* `Qsqrtd.trace_eq_re_add_re_star` : The trace in `ℚ(√d)` is `x + x̄`.
-* `Qsqrtd.trace_eq_two_re` : In the model `QuadraticAlgebra ℚ d 0`, the trace is `2 * x.re`.
-* `Qsqrtd.zero_not_isReduced` : `ℚ(√0)` is not reduced (has nilpotents).
-* `Qsqrtd.one_not_isField` : `ℚ(√1) ≅ ℚ × ℚ` is not a field (has zero divisors).
-* `QuadFieldParam.not_isSquare` : A valid parameter is not a perfect square in `ℤ`.
-* For valid integer parameters, `Qsqrtd (d : ℚ)` is a field, a number field, and a quadratic
-  extension of `ℚ`.
-
-## Implementation Notes
-
-The type `Qsqrtd d` is defined for any `d : ℚ`. The `QuadFieldParam` class packages the
-conditions on an integer parameter `d : ℤ` needed to ensure `Qsqrtd (d : ℚ)` is a field.
-
-Common instances are provided for `-1`, `-3`, and any `d` with `|d|` prime.
-
-## Tags
-
-quadratic field, number field, quadratic extension
+* `Qsqrtd.instNumberField`: `Q(√d)` is a number field when `d` is not a perfect square.
+* `Qsqrtd.instIsQuadraticExtension`: `Q(√d)/ℚ` is a degree-2 extension.
+* `not_isSquare_ratCast_of_squarefree_ne_one`: squarefree integer parameters
+  with `d ≠ 1` give genuine quadratic fields.
 -/
 
 @[expose] public section
+
+/-- A field `K` is a quadratic field if it is a quadratic extension of `ℚ`. -/
+abbrev IsQuadraticField (K : Type*) [Field K] [Algebra ℚ K] : Prop :=
+  Algebra.IsQuadraticExtension ℚ K
 
 /-- The quadratic field `ℚ(√d)` as a type alias for `QuadraticAlgebra ℚ d 0`. -/
 abbrev Qsqrtd (d : ℚ) : Type := QuadraticAlgebra ℚ d 0
@@ -56,7 +48,7 @@ namespace Qsqrtd
 
 variable {d : ℚ}
 
-/-- The trace of an element of `ℚ(√d)`, defined via `Algebra.trace`. -/
+/-- The trace of an element `x : Q(√d)`, defined via `Algebra.trace`. -/
 noncomputable abbrev trace (x : Qsqrtd d) : ℚ := Algebra.trace ℚ (Qsqrtd d) x
 
 /-- `Qsqrtd.trace` is definitionally mathlib's algebra trace. -/
@@ -71,7 +63,7 @@ private theorem leftMulMatrix_eq (x : Qsqrtd d) :
     rw [Algebra.leftMulMatrix_apply, LinearMap.toMatrix_apply]
     simp [QuadraticAlgebra.basis]
 
-/-- The trace in `ℚ(√d)` is `x + x̄`. -/
+/-- The trace in `Q(√d)` is `x + x̄`. -/
 @[simp] theorem trace_eq_re_add_re_star (x : Qsqrtd d) :
     Qsqrtd.trace x = x.re + (star x).re := by
   change Algebra.trace ℚ (Qsqrtd d) x = x.re + (star x).re
@@ -79,146 +71,115 @@ private theorem leftMulMatrix_eq (x : Qsqrtd d) :
     Matrix.trace_fin_two_of]
   simp
 
-/-- In the model `QuadraticAlgebra ℚ d 0`, the trace is `2 * x.re`. -/
-theorem trace_eq_two_re (x : Qsqrtd d) :
+/-- In the model `Q(√d) = QuadraticAlgebra ℚ d 0`, the trace is `2 * re`. -/
+@[simp] theorem trace_eq_two_re (x : Qsqrtd d) :
     Qsqrtd.trace x = 2 * x.re := by
   rw [trace_eq_re_add_re_star]
   simp
   ring
 
-/-! ### Degeneracies -/
+/-- The norm of an element `x : Q(√d)`, defined as `N(x) = x · x̄ = x.re² - d · x.im²`. -/
+abbrev norm {d : ℚ} (x : Qsqrtd d) : ℚ := QuadraticAlgebra.norm x
 
-/-- `ℚ(√0)` is not reduced because `√0² = 0` but `√0 ≠ 0`. -/
-theorem zero_not_isReduced : ¬IsReduced (Qsqrtd (0 : ℚ)) := by
+/-- The canonical embedding of ℚ into `Q(√d)`, mapping `r ↦ r + 0·√d`. -/
+abbrev embed (r : ℚ) : Qsqrtd d := algebraMap ℚ (Qsqrtd d) r
+
+end Qsqrtd
+
+/-! ## Parameter Lemmas -/
+
+/-- `Q(√0)` is not reduced because `√0² = 0` but `√0 ≠ 0`. -/
+lemma Qsqrtd.zero_not_isReduced : ¬ IsReduced (Qsqrtd (0 : ℚ)) := by
   intro ⟨h⟩
   have hnil : IsNilpotent (⟨0, 1⟩ : Qsqrtd 0) :=
     ⟨2, by ext <;> simp [pow_succ, pow_zero, QuadraticAlgebra.mk_mul_mk]⟩
   have hne : (⟨0, 1⟩ : Qsqrtd 0) ≠ 0 := by
-    intro heq; exact one_ne_zero (congr_arg QuadraticAlgebra.im heq)
+    intro heq
+    exact one_ne_zero (congr_arg QuadraticAlgebra.im heq)
   exact hne (h _ hnil)
 
-/-- `ℚ(√0)` is not a field (it has nilpotents). -/
-theorem zero_not_isField : ¬IsField (Qsqrtd (0 : ℚ)) := by
+/-- `Q(√0)` is not a field (it has nilpotents). -/
+lemma Qsqrtd.zero_not_isField : ¬ IsField (Qsqrtd (0 : ℚ)) := by
   intro hF
   haveI := hF.isDomain
-  exact zero_not_isReduced (inferInstance : IsReduced (Qsqrtd (0 : ℚ)))
+  exact Qsqrtd.zero_not_isReduced (inferInstance : IsReduced (Qsqrtd (0 : ℚ)))
 
-/-- `ℚ(√1) ≅ ℚ × ℚ` is not a field (it has zero divisors). -/
-theorem one_not_isField : ¬IsField (Qsqrtd (1 : ℚ)) := by
+/-- `Q(√1) ≅ ℚ × ℚ` is not a field (it has zero divisors). -/
+lemma Qsqrtd.one_not_isField : ¬ IsField (Qsqrtd (1 : ℚ)) := by
   intro hF
   haveI := hF.isDomain
   have hprod : (⟨1, 1⟩ : Qsqrtd 1) * ⟨1, -1⟩ = 0 := by
     ext <;> simp
   have hne : (⟨1, 1⟩ : Qsqrtd 1) ≠ 0 := by
-    intro h; exact one_ne_zero (congr_arg QuadraticAlgebra.re h)
+    intro h
+    exact one_ne_zero (congr_arg QuadraticAlgebra.re h)
   have hne' : (⟨1, -1⟩ : Qsqrtd 1) ≠ 0 := by
-    intro h; exact one_ne_zero (congr_arg QuadraticAlgebra.re h)
+    intro h
+    exact one_ne_zero (congr_arg QuadraticAlgebra.re h)
   rcases mul_eq_zero.mp hprod with h | h <;> contradiction
 
-end Qsqrtd
-
-/-! ## Quadratic Field Parameters -/
-
-/-- Parameters for quadratic number fields `ℚ(√d)`.
-
-A valid parameter is a squarefree integer `d ≠ 1`. The condition `d ≠ 0`
-is not stored as a field since it follows from `Squarefree.ne_zero`. -/
-class QuadFieldParam (d : ℤ) : Prop where
-  squarefree : Squarefree d
-  ne_one : d ≠ 1
-
-namespace QuadFieldParam
-
-private lemma eq_one_of_squarefree_isSquare {d : ℤ} (hd : Squarefree d)
-    (hsq : IsSquare d) : d = 1 := by
+/-- A squarefree integer that is a perfect square must equal `1`. -/
+lemma eq_one_of_squarefree_isSquare {d : ℤ} (hd : Squarefree d) (hsq : IsSquare d) : d = 1 := by
   rcases hsq with ⟨z, hz⟩
   by_cases huz : IsUnit z
-  · rcases Int.isUnit_iff.mp huz with hz1 | hz1 <;> simpa [hz1] using hz
-  · have hsqz2 : Squarefree (z ^ 2) := by simpa [hz, pow_two] using hd
+  · rcases Int.isUnit_iff.mp huz with hz1 | hz1
+    · simpa [hz1] using hz
+    · simpa [hz1] using hz
+  · have hsqz2 : Squarefree (z ^ 2) := by
+      simpa [hz, pow_two] using hd
     have h01 : (2 : ℕ) = 0 ∨ (2 : ℕ) = 1 :=
       Squarefree.eq_zero_or_one_of_pow_of_not_isUnit (x := z) (n := 2) hsqz2 huz
     norm_num at h01
 
-/-- For a quadratic parameter, nonzero follows from squarefreeness. -/
-theorem ne_zero (d : ℤ) [QuadFieldParam d] : d ≠ 0 :=
-  (QuadFieldParam.squarefree (d := d)).ne_zero
-
-/-- For a valid parameter `d`, the integer `d` is not a perfect square. -/
-theorem not_isSquare (d : ℤ) [QuadFieldParam d] : ¬IsSquare d := by
+/-- For a squarefree integer `d ≠ 1`, `d` is not a perfect square in `ℤ`. -/
+lemma not_isSquare_int_of_squarefree_ne_one {d : ℤ}
+    (hd : Squarefree d) (h1 : d ≠ 1) : ¬ IsSquare d := by
   intro hdSq
-  exact (QuadFieldParam.ne_one (d := d))
-    (eq_one_of_squarefree_isSquare (QuadFieldParam.squarefree (d := d)) hdSq)
+  exact h1 (eq_one_of_squarefree_isSquare hd hdSq)
 
-/-- Any squarefree `d ≠ 1` is a valid quadratic-field parameter. -/
-theorem of_squarefree_ne_one (d : ℤ) (hd : Squarefree d) (h1 : d ≠ 1) :
-    QuadFieldParam d :=
-  { squarefree := hd, ne_one := h1 }
+/-- For a squarefree integer `d ≠ 1`, `(d : ℚ)` is not a perfect square in `ℚ`. -/
+lemma not_isSquare_ratCast_of_squarefree_ne_one {d : ℤ}
+    (hd : Squarefree d) (h1 : d ≠ 1) : ¬ IsSquare ((d : ℤ) : ℚ) := by
+  intro hsqQ
+  exact not_isSquare_int_of_squarefree_ne_one hd h1 (Rat.isSquare_intCast_iff.mp hsqQ)
 
-/-- A prime integer gives a valid quadratic-field parameter. -/
-theorem of_prime (d : ℤ) (hd : Prime d) : QuadFieldParam d := by
-  refine of_squarefree_ne_one d hd.squarefree ?_
-  intro h1
-  exact hd.not_unit (h1 ▸ isUnit_one)
+/-- Bridge squarefree integer parameters to the field-level non-square condition. -/
+instance instFact_not_isSquare_ratCast_of_squarefree_ne_one
+    (d : ℤ) [Fact (Squarefree d)] [Fact (d ≠ 1)] :
+    Fact (¬ IsSquare ((d : ℤ) : ℚ)) :=
+  ⟨not_isSquare_ratCast_of_squarefree_ne_one
+    (d := d) (Fact.out : Squarefree d) (Fact.out : d ≠ 1)⟩
 
-/-- If `|d|` is prime, then `d` is a valid quadratic-field parameter. -/
-theorem of_natAbs_prime (d : ℤ) (hd : Nat.Prime d.natAbs) :
-    QuadFieldParam d :=
-  of_prime d (Int.prime_iff_natAbs_prime.2 hd)
+/-! ## Field and Number Field Instances -/
 
-end QuadFieldParam
+namespace Qsqrtd
 
-/-! ### Common Parameter Instances -/
+/-- Bridge: `¬ IsSquare d` implies the technical `Fact` needed by
+`QuadraticAlgebra.instField`. -/
+instance instFact_of_not_isSquare (d : ℚ) [Fact (¬ IsSquare d)] :
+    Fact (∀ r : ℚ, r ^ 2 ≠ d + 0 * r) :=
+  ⟨by intro r hr; exact (Fact.out : ¬ IsSquare d) ⟨r, by nlinarith [hr]⟩⟩
 
-/-- Instance for any `d` where `|d|` is prime (via `Fact`). -/
-instance (d : ℤ) [Fact (Nat.Prime d.natAbs)] : QuadFieldParam d :=
-  QuadFieldParam.of_natAbs_prime d (Fact.out)
-
-/-- Instance for any squarefree `d ≠ 1` (via `Fact`). -/
-instance (d : ℤ) [Fact (Squarefree d)] [Fact (d ≠ 1)] : QuadFieldParam d :=
-  QuadFieldParam.of_squarefree_ne_one d (Fact.out) (Fact.out)
-
-/-- The Gaussian field `ℚ(√(-1)) = ℚ(i)` has valid parameter `-1`. -/
-instance : QuadFieldParam (-1) where
-  squarefree := by simp
-  ne_one := by decide
-
-/-- The Eisenstein field `ℚ(√(-3))` has valid parameter `-3`. -/
-instance : QuadFieldParam (-3 : ℤ) := by
-  letI : Fact (Nat.Prime ((-3 : ℤ).natAbs)) := ⟨by decide⟩
-  exact inferInstance
-
-/-! ## Valid Integer Parameters -/
-
-/-- `ℚ(√d)` is a field for any valid parameter `d`. -/
-instance instField {d : ℤ} [QuadFieldParam d] : Field (Qsqrtd (d : ℚ)) := by
-  letI : Fact (∀ r : ℚ, r ^ 2 ≠ (d : ℚ) + 0 * r) := ⟨by
-    intro r hr
-    have hsqQ : IsSquare ((d : ℤ) : ℚ) := ⟨r, by nlinarith [hr]⟩
-    exact (QuadFieldParam.not_isSquare d) (Rat.isSquare_intCast_iff.mp hsqQ)
-  ⟩
-  infer_instance
-
-/-- The `Module ℚ` instance from the `Field` algebra structure on `ℚ(√d)` coincides with
-the `QuadraticAlgebra` module structure. This resolves the diamond between the two paths. -/
-private theorem module_eq (d : ℤ) [QuadFieldParam d] :
-    (Algebra.toModule : Module ℚ (Qsqrtd (d : ℚ))) =
+/-- The `Module ℚ` instance from the `Field` algebra structure on `Qsqrtd d` coincides
+with the `QuadraticAlgebra` module structure. This resolves the diamond. -/
+private theorem module_eq (d : ℚ) [Fact (¬ IsSquare d)] :
+    (Algebra.toModule : Module ℚ (Qsqrtd d)) =
       QuadraticAlgebra.instModule := by
   refine Module.ext' _ _ ?_
   intro r x
-  rw [Algebra.smul_def]
-  rw [show (algebraMap ℚ (Qsqrtd (d : ℚ)) r) = QuadraticAlgebra.C r by
-        ext <;> simp]
-  rw [QuadraticAlgebra.C_mul_eq_smul]
+  simpa [Algebra.smul_def, QuadraticAlgebra.algebraMap_eq] using
+    (QuadraticAlgebra.C_mul_eq_smul (R := ℚ) (a := d) (b := (0 : ℚ)) r x)
 
-/-- `ℚ(√d)` is a number field: characteristic zero and finite-dimensional over `ℚ`. -/
-instance instNumberField {d : ℤ} [QuadFieldParam d] :
-    NumberField (Qsqrtd (d : ℚ)) where
+/-- `Q(√d)` is a number field: characteristic zero and finite-dimensional over ℚ. -/
+instance instNumberField (d : ℚ) [Fact (¬ IsSquare d)] : NumberField (Qsqrtd d) where
   to_charZero := by infer_instance
   to_finiteDimensional := by
-    letI : Module ℚ (Qsqrtd (d : ℚ)) := QuadraticAlgebra.instModule
-    exact module_eq d ▸ (inferInstance : Module.Finite ℚ (Qsqrtd (d : ℚ)))
+    letI : Module ℚ (Qsqrtd d) := QuadraticAlgebra.instModule
+    exact module_eq d ▸ (inferInstance : Module.Finite ℚ (Qsqrtd d))
 
-/-- `ℚ(√d)/ℚ` is a quadratic extension: free of rank 2 over `ℚ`. -/
-instance instIsQuadraticExtension {d : ℤ} [QuadFieldParam d] :
-    Algebra.IsQuadraticExtension ℚ (Qsqrtd (d : ℚ)) where
-  finrank_eq_two' := module_eq d ▸ QuadraticAlgebra.finrank_eq_two (d : ℚ) 0
+/-- `Q(√d)/ℚ` is a quadratic extension: free of rank 2 over `ℚ`. -/
+instance instIsQuadraticExtension (d : ℚ) [Fact (¬ IsSquare d)] :
+    Algebra.IsQuadraticExtension ℚ (Qsqrtd d) where
+  finrank_eq_two' := module_eq d ▸ QuadraticAlgebra.finrank_eq_two d 0
+
+end Qsqrtd
