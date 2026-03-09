@@ -5,8 +5,7 @@ Authors: Edison Xie
 -/
 module
 
-public import Mathlib.RepresentationTheory.Action
-public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.Intertwining
 
 /-!
 ## Main purpose
