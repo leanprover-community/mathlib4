@@ -470,7 +470,7 @@ instance forget_preservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :
     (by
       apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).toFun
       refine (IsLimit.equivIsoLimit ?_).toFun (limit.isLimit (cospan f.base g.base))
-      fapply Cones.ext
+      fapply Cone.ext
       · exact Iso.refl _
       change ∀ j, _ = 𝟙 _ ≫ _ ≫ _
       simp_rw [Category.id_comp]

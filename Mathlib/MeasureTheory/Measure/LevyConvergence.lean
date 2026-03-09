@@ -145,18 +145,20 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   _ = ε / 2 := by simp; field
   _ < ε := by simp [hε]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `μ` be a tight sequence of probability measures and `μ₀` a probability measure.
 If `A` is a star sub-algebra of bounded continuous scalar functions that separates points
 and the integrals of elements of `A` with respect to `μ` converge to the integrals
 with respect to `μ₀`, then `μ` converges weakly to `μ₀`. -/
 lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCLike 𝕜]
-    {E : Type*} [MetricSpace E] [CompleteSpace E] [SecondCountableTopology E]
-    [MeasurableSpace E] [BorelSpace E] {ι : Type*} {𝓕 : Filter ι}
+    {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [PolishSpace E] [BorelSpace E]
+    {ι : Type*} {𝓕 : Filter ι}
     {μ : ι → ProbabilityMeasure E} (h_tight : IsTightMeasureSet {(μ n : Measure E) | n})
     {μ₀ : ProbabilityMeasure E}
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
     (hμ : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) 𝓕 (𝓝 (∫ x, g x ∂μ₀))) :
     Tendsto μ 𝓕 (𝓝 μ₀) := by
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable E
   obtain rfl | _ := 𝓕.eq_or_neBot
   · simp
   refine (Filter.tendsto_iff_ultrafilter _ _ _).2 fun U hU ↦ ?_
