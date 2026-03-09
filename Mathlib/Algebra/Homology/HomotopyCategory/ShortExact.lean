@@ -161,9 +161,7 @@ lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C �
   · have : (S₁.g ≫ f.τ₃).f n = (f.τ₂ ≫ S₂.g).f n := by rw [f.comm₂₃]
     simpa [CochainComplex.mappingCone.map, CochainComplex.mappingCone.descShortComplex]
 
-universe u' v'
-
-variable {D : Type u'} [Category.{v'} D] [Abelian D]
+variable {D : Type*} [Category* D] [Abelian D]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma descShortComplex_mapHomologicalComplex (F : C ⥤ D) [F.Additive]
