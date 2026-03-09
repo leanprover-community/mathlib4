@@ -344,17 +344,14 @@ theorem exists_neighbor_ne_of_one_lt_degree {V : Type*} [Fintype V] {G : SimpleG
   have h_card : 2 ≤ (G.neighborFinset u).card := by
     rw [SimpleGraph.card_neighborFinset_eq_degree G u]
     exact h_ge_2
-  by_contra h_all_v
-  push_neg at h_all_v
+  by_contra! h_all_v
   have h_subset : G.neighborFinset u ⊆ {v} := by
     intro x hx
-    simp only [mem_neighborFinset] at hx
-    simp [h_all_v x hx]
+    simpa using h_all_v x hx
   have h_card_le_1 := Finset.card_le_card h_subset
-  rw [Finset.card_singleton] at h_card_le_1
-  rw [← Nat.lt_add_one_iff] at h_card_le_1
+  rw [Finset.card_singleton, ← Nat.lt_add_one_iff] at h_card_le_1
   simp only [card_neighborFinset_eq_degree, Nat.reduceAdd] at h_card_le_1
-  exact (Nat.not_le_of_gt h_card_le_1) h_card
+  exact Nat.not_le_of_gt h_card_le_1 h_ge_2
 
 @[simp]
 theorem complete_graph_degree [DecidableEq V] (v : V) :
