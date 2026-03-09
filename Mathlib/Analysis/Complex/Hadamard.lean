@@ -549,8 +549,6 @@ lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) 
   rw [add_comm, ← sub_lt_sub_iff_right l, add_sub_assoc, sub_self, add_zero]
   nth_rewrite 2 [← one_mul (u - l)]
   gcongr
-  simp only [sub_pos]
-  exact hul
 
 /-- If z is on the closed strip `re ⁻¹' [l, u]`, then `(z - l) / (u - l)` is on the closed strip
   `re ⁻¹' [0, 1]`. -/
@@ -565,8 +563,7 @@ lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u
     div_self (by linarith : u - l ≠ 0), ← div_eq_mul_one_div]
   constructor
   · gcongr
-    · apply le_of_lt; simp [hul]
-    · exact hz.1
+    exact hz.1
   · rw [← sub_le_sub_iff_right (l / (u - l)), add_sub_assoc, sub_self, add_zero, div_sub_div_same,
       div_le_one (by simp [hul]), sub_le_sub_iff_right l]
     exact hz.2

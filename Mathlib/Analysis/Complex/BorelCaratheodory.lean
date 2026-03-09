@@ -51,7 +51,7 @@ lemma eq_mul_div_one_add_of_eq_div_sub (_ : M ≠ 0) (_ : 2 * M - z ≠ 0)
 lemma norm_two_mul_div_one_add_le (hM : 0 < M) (hw : ‖w‖ < 1) :
     ‖2 * ↑M * w / (1 + w)‖ ≤ 2 * M * ‖w‖ / (1 - ‖w‖) := by
   simp only [norm_div, norm_mul, norm_ofNat, norm_real, Real.norm_eq_abs, abs_of_pos hM]
-  gcongr; · linarith
+  gcongr
   rw [← norm_one (α := ℂ)]; exact norm_sub_le_norm_add 1 w
 
 /-- If `z.re ≤ M`, then `‖z‖ ≤ ‖2M - z‖`. This shows that the Schwarz transform
