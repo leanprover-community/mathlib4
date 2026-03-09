@@ -1045,8 +1045,8 @@ theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
 
 /-- The cardinality of a set is an upper-bound for the amount of elements before the set's mex
 (minimum excluded value) -/
-theorem _root_.WellFounded.mk_subtype_lt_min_compl_le_mk {r : α → α → Prop} (wf : WellFounded r)
-    {s : Set α} (hs : sᶜ.Nonempty) : #{ x // r x (wf.min sᶜ hs) } ≤ #s :=
-  Cardinal.mk_le_mk_of_subset <| fun _ ↦ wf.mem_of_lt_min_compl
+theorem _root_.WellFounded.cardinalMk_subtype_lt_min_compl_le {r : α → α → Prop}
+    (wf : WellFounded r) {s : Set α} (hs : sᶜ.Nonempty) : #{ x // r x (wf.min sᶜ hs) } ≤ #s :=
+  Cardinal.mk_le_mk_of_subset fun _ ↦ wf.mem_of_lt_min_compl
 
 end Cardinal

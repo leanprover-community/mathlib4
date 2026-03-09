@@ -626,7 +626,7 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 variable (r) in
 theorem card_typein_min_le_mk [IsWellOrder α r] {s : Set α} (hs : sᶜ.Nonempty) :
     (Ordinal.typein r <| IsWellFounded.wf.min (r := r) sᶜ hs).card ≤ #s :=
-  IsWellFounded.wf.mk_subtype_lt_min_compl_le_mk hs
+  IsWellFounded.wf.cardinalMk_subtype_lt_min_compl_le hs
 
 /-! ### Lifting ordinals to a higher universe -/
 
