@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Spread
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Lifting algebraic data classes along injective/surjective maps
