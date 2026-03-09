@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Bicategory.Opposites
 /-!
 # 2-Yoneda embedding
 
-In this file we define the bicategorical yoneda embedding.
+In this file we define the bicategorical Yoneda embedding.
 
 -/
 
@@ -105,7 +105,7 @@ def postcomposing₂ (a b : B) : (a ⟶ b) ⥤ (yoneda₀ a ⟶ yoneda₀ b) whe
   map η := { as := { app x := (postcomposingCat (unop x) a b).map η }}
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The yoneda pseudofunctor from `B` to `Bᵒᵖ ⥤ᵖ Cat`.
+/-- The Yoneda pseudofunctor from `B` to `Bᵒᵖ ⥤ᵖ Cat`.
 
 It consists of the following:
 * On objects: sends `x : B` to the pseudofunctor `Bᵒᵖ ⥤ᵖ Cat` given by
