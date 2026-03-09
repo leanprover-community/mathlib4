@@ -141,7 +141,7 @@ theorem close_eq_top_iff_mem {X : C} (S : Sieve X) : J₁.close S = ⊤ ↔ S �
     change J₁.close S f
     rwa [h]
   · intro hS
-    rw [eq_top_iff]
+    rw [_root_.eq_top_iff]
     intro Y f _
     apply J₁.pullback_stable _ hS
 

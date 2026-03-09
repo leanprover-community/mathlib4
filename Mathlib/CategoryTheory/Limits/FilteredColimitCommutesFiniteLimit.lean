@@ -328,7 +328,7 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ TypeCat.{v}) :
         lim.map (whiskerRight (currying.unitIso.app F).inv colim)) by
       apply IsIso.comp_isIso
     infer_instance
-  apply Cones.cone_iso_of_hom_iso
+  apply Cone.cone_iso_of_hom_iso
 
 noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
     PreservesFiniteLimits (colim : (K ⥤ TypeCat.{v}) ⥤ _) := by

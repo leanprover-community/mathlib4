@@ -147,6 +147,10 @@ theorem isSheaf_of_isRepresentable {J : GrothendieckTopology C} [Subcanonical J]
     (P : Cᵒᵖ ⥤ TypeCat.{w}) [P.IsRepresentable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ J.le_canonical (Sheaf.isSheaf_of_isRepresentable P)
 
+lemma of_le {J K : GrothendieckTopology C} (h : J ≤ K) [K.Subcanonical] : J.Subcanonical :=
+  of_isSheaf_yoneda_obj _ fun _ _ _ _ ↦ (isSheaf_of_isRepresentable (J := K) _).isSheafFor _
+    (h _ (by simpa))
+
 end Subcanonical
 
 variable (J : GrothendieckTopology C)

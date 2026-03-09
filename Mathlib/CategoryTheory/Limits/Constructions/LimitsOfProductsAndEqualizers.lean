@@ -188,7 +188,7 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
     · apply isLimitOfHasProductOfPreservesLimit
     · apply isLimitForkMapOfIsLimit
       apply equalizerIsEqualizer
-    · refine Cones.ext (Iso.refl _) ?_
+    · refine Cone.ext (Iso.refl _) ?_
       intro j; dsimp [P, Q, I, i]; simp
 
 end
@@ -456,7 +456,7 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     · apply isColimitOfHasCoproductOfPreservesColimit
     · apply isColimitCoforkMapOfIsColimit
       apply coequalizerIsCoequalizer
-    refine Cocones.ext (Iso.refl _) ?_
+    refine Cocone.ext (Iso.refl _) ?_
     dsimp [i]
     simp
 

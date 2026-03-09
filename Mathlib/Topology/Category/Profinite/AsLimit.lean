@@ -87,7 +87,7 @@ def isoAsLimitConeLift : X ≅ (limitCone.{u, u} X.diagram).pt :=
 The underlying isomorphism is defeq to `X.isoAsLimitConeLift`.
 -/
 def asLimitConeIso : X.asLimitCone ≅ limitCone.{u, u} _ :=
-  Limits.Cones.ext (isoAsLimitConeLift _) fun _ => rfl
+  Limits.Cone.ext (isoAsLimitConeLift _) fun _ => rfl
 
 /-- `X.asLimitCone` is indeed a limit cone. -/
 def asLimit : CategoryTheory.Limits.IsLimit X.asLimitCone :=

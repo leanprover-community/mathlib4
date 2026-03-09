@@ -170,7 +170,7 @@ instance : PreservesLimits Cat.objects.{v, v} where
     { preservesLimit := fun {F} =>
         preservesLimit_of_preserves_limit_cone (HasLimits.limitConeIsLimit F)
           (Limits.IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Cat.objects))
-            (Cones.ext (by rfl) (by cat_disch))) }
+            (Cone.ext (by rfl) (by cat_disch))) }
 
 end Cat
 

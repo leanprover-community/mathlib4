@@ -281,7 +281,7 @@ theorem IsQF.induction_on_sup_not {P : L.BoundedFormula α n → Prop} {φ : L.B
     (hse :
       ∀ {φ₁ φ₂ : L.BoundedFormula α n}, (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
-  IsQF.recOn h hf @(ha) fun {φ₁ φ₂} _ _ h1 h2 =>
+  IsQF.recOn h hf @ha fun {φ₁ φ₂} _ _ h1 h2 =>
     (hse (φ₁.imp_iff_not_sup φ₂)).2 (hsup (hnot h1) h2)
 
 theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.BoundedFormula α n}

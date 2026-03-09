@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
 We define an exponentiable morphism `f : I ⟶ J` to be a morphism with a functorial choice of
 pullbacks, given by `ChosenPullbacksAlong f`, together with a right adjoint to
-the pullback functor `ChosenPullbacksAlong.pulback f : Over J ⥤ Over I`. We call this right adjoint
+the pullback functor `ChosenPullbacksAlong.pullback f : Over J ⥤ Over I`. We call this right adjoint
 the pushforward functor along `f`.
 
 ## Main results

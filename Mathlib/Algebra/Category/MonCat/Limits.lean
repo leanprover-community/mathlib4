@@ -162,7 +162,7 @@ noncomputable instance forget_createsLimit :
       π := NatTrans.mk
         (fun j => ofHom (limitπMonoidHom F j))
         (MonCat.HasLimits.limitCone F).π.naturality }
-    (Cones.ext
+    (Cone.ext
       ((Types.isLimitEquivSections t).trans (equivShrink _)).symm.toIso
       (fun _ ↦ ?_))) ?_
   · ext
