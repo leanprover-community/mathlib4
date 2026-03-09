@@ -150,7 +150,7 @@ instance instFact_not_isSquare_ratCast_of_squarefree_ne_one
   ⟨not_isSquare_ratCast_of_squarefree_ne_one
     (d := d) (Fact.out : Squarefree d) (Fact.out : d ≠ 1)⟩
 
-/-! ## Field and Number Field Instances -/
+/-! ## Field and Quadratic Extension Instances -/
 
 namespace Qsqrtd
 
@@ -170,14 +170,8 @@ private theorem module_eq (d : ℚ) [Fact (¬ IsSquare d)] :
   simpa [Algebra.smul_def, QuadraticAlgebra.algebraMap_eq] using
     (QuadraticAlgebra.C_mul_eq_smul (R := ℚ) (a := d) (b := (0 : ℚ)) r x)
 
-/-- `Q(√d)` is a number field: characteristic zero and finite-dimensional over ℚ. -/
-instance instNumberField (d : ℚ) [Fact (¬ IsSquare d)] : NumberField (Qsqrtd d) where
-  to_charZero := by infer_instance
-  to_finiteDimensional := by
-    letI : Module ℚ (Qsqrtd d) := QuadraticAlgebra.instModule
-    exact module_eq d ▸ (inferInstance : Module.Finite ℚ (Qsqrtd d))
-
-/-- `Q(√d)/ℚ` is a quadratic extension: free of rank 2 over `ℚ`. -/
+/-- `Q(√d)/ℚ` is a quadratic extension: free of rank 2 over `ℚ`.
+The `NumberField` instance then follows from `IsQuadraticField.instNumberField`. -/
 instance instIsQuadraticExtension (d : ℚ) [Fact (¬ IsSquare d)] :
     Algebra.IsQuadraticExtension ℚ (Qsqrtd d) where
   finrank_eq_two' := module_eq d ▸ QuadraticAlgebra.finrank_eq_two d 0
