@@ -89,7 +89,7 @@ variable [HasBinaryProducts C] [HasTerminal C]
 
 /-- If `C` has a terminal object and binary products, then it has a product for objects indexed by
 `Fin n`.
-This is a helper lemma for `hasFiniteProductsOfHasBinaryAndTerminal`, which is more general
+This is a helper lemma for `hasFiniteProducts_of_has_binary_and_terminal`, which is more general
 than this.
 -/
 private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
@@ -138,7 +138,7 @@ lemma preservesFinOfPreservesBinaryAndTerminal :
       extendFanIsLimit (fun i => F.obj (f i)) (isLimitOfHasProductOfPreservesLimit F _)
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
     refine IsLimit.ofIsoLimit this ?_
-    apply Cones.ext _ _
+    apply Cone.ext _ _
     · apply Iso.refl _
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_
@@ -213,7 +213,7 @@ variable [HasBinaryCoproducts C] [HasInitial C]
 /--
 If `C` has an initial object and binary coproducts, then it has a coproduct for objects indexed by
 `Fin n`.
-This is a helper lemma for `hasCofiniteProductsOfHasBinaryAndTerminal`, which is more general
+This is a helper lemma for `hasFiniteCoproducts_of_has_binary_and_initial`, which is more general
 than this.
 -/
 private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
@@ -262,7 +262,7 @@ lemma preserves_fin_of_preserves_binary_and_initial :
         (isColimitOfHasCoproductOfPreservesColimit F _)
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)
     refine IsColimit.ofIsoColimit this ?_
-    apply Cocones.ext _ _
+    apply Cocone.ext _ _
     · apply Iso.refl _
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_

@@ -74,7 +74,7 @@ class PresheafedSpace.IsOpenImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : 
   target. -/
   base_open : IsOpenEmbedding f.base
   /-- the underlying sheaf morphism is an isomorphism on each open subset -/
-  c_iso : ∀ U : Opens X, IsIso (f.c.app (op (base_open.isOpenMap.functor.obj U)))
+  c_iso : ∀ U : Opens X, IsIso (f.c.app (op (base_open.functor.obj U)))
 
 /-- A morphism of SheafedSpaces is an open immersion if it is an open immersion as a morphism
 of PresheafedSpaces
@@ -108,7 +108,7 @@ variable {X Y : PresheafedSpace C} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor :=
-  H.base_open.isOpenMap.functor
+  H.base_open.functor
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An open immersion `f : X ⟶ Y` induces an isomorphism `X ≅ Y|_{f(X)}`. -/
@@ -248,7 +248,7 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
   base_open := hf
   c_iso U := by
     dsimp
-    have : (Opens.map f).obj (hf.isOpenMap.functor.obj U) = U := by
+    have : (Opens.map f).obj (hf.functor.obj U) = U := by
       ext1
       exact Set.preimage_image_eq _ hf.injective
     convert_to IsIso (Y.presheaf.map (𝟙 _))
@@ -311,7 +311,7 @@ def pullbackConeOfLeftFst :
   c :=
     { app := fun U =>
         hf.invApp _ (unop U) ≫
-          g.c.app (op (hf.base_open.isOpenMap.functor.obj (unop U))) ≫
+          g.c.app (op (hf.base_open.functor.obj (unop U))) ≫
             Y.presheaf.map
               (eqToHom
                 (by
@@ -470,7 +470,7 @@ instance forget_preservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :
     (by
       apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).toFun
       refine (IsLimit.equivIsoLimit ?_).toFun (limit.isLimit (cospan f.base g.base))
-      fapply Cones.ext
+      fapply Cone.ext
       · exact Iso.refl _
       change ∀ j, _ = 𝟙 _ ≫ _ ≫ _
       simp_rw [Category.id_comp]
@@ -614,7 +614,7 @@ end ToLocallyRingedSpace
 theorem isIso_of_subset {X Y : PresheafedSpace C} (f : X ⟶ Y)
     [H : PresheafedSpace.IsOpenImmersion f] (U : Opens Y.carrier)
     (hU : (U : Set Y.carrier) ⊆ Set.range f.base) : IsIso (f.c.app <| op U) := by
-  have : U = H.base_open.isOpenMap.functor.obj ((Opens.map f.base).obj U) := by
+  have : U = H.base_open.functor.obj ((Opens.map f.base).obj U) := by
     ext1
     exact (Set.inter_eq_left.mpr hU).symm.trans Set.image_preimage_eq_inter_range.symm
   convert H.c_iso ((Opens.map f.base).obj U)
@@ -776,7 +776,7 @@ variable {X Y : SheafedSpace C} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor : Opens X ⥤ Opens Y :=
-  H.base_open.isOpenMap.functor
+  H.base_open.functor
 
 /-- An open immersion `f : X ⟶ Y` induces an isomorphism `X ≅ Y|_{f(X)}`. -/
 @[simps! hom_hom_c_app]
@@ -886,7 +886,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.obj i)) :
     (Opens.map (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) j).base).obj
         ((Opens.map (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv.base).obj
-          ((sigma_ι_isOpenEmbedding F i).isOpenMap.functor.obj U)) =
+          ((sigma_ι_isOpenEmbedding F i).functor.obj U)) =
       ⊥ := by
   ext x
   apply iff_false_intro
@@ -926,7 +926,7 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
       convert sigma_ι_isOpenEmbedding F i
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
-      op (H.isOpenMap.functor.obj U) by
+      op (H.functor.obj U) by
       convert this
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
@@ -935,7 +935,7 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     suffices IsIso (limit.π (PresheafedSpace.componentwiseDiagram
       (F ⋙ SheafedSpace.forgetToPresheafedSpace) ((Opens.map
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv.base).obj
-          (H.isOpenMap.functor.obj U))) (op i)) from inferInstance
+          (H.functor.obj U))) (op i)) from inferInstance
     apply limit_π_isIso_of_is_strict_terminal
     rintro ⟨j⟩ hj
     dsimp
@@ -984,6 +984,9 @@ instance mono : Mono f :=
 instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace.map f) :=
   H
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/12564
+`infer_instance` needs more heartbeats after this change. -/
+set_option synthInstance.maxHeartbeats 40000 in -- see adaptation note
 set_option backward.isDefEq.respectTransparency false in
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
 def pullbackConeOfLeft : PullbackCone f g := by
@@ -1177,7 +1180,7 @@ noncomputable def isoRestrict {X Y : LocallyRingedSpace} (f : X ⟶ Y)
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor {X Y : LocallyRingedSpace} (f : X ⟶ Y)
     [H : LocallyRingedSpace.IsOpenImmersion f] : Opens X ⥤ Opens Y :=
-  H.base_open.isOpenMap.functor
+  H.base_open.functor
 
 section OfStalkIso
 
