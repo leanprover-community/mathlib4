@@ -15,20 +15,21 @@ public import Mathlib.NumberTheory.NumberField.Basic
 /-!
 # Basic Definitions for Quadratic Number Fields
 
-field `ℚ(√d)` for a rational parameter `d`, along with basic operations
-(norm), field and number field instances, and the
-`IsQuadraticField` predicate.
+This file defines the concept of a quadratic number field as a degree-2 extension of `ℚ`,
+builds the concrete model `ℚ(√d)` as `QuadraticAlgebra ℚ d 0`, and proves basic properties
+including norm, trace, and field/number field instances.
 
 ## Main Definitions
 
-* `IsQuadraticField K`: A predicate asserting that `K` is a quadratic extension of ℚ.
+* `IsQuadraticField K`: A predicate asserting that `K` is a quadratic extension of `ℚ`.
+  This is defined as `Algebra.IsQuadraticExtension ℚ K`.
 * `Qsqrtd d`: The quadratic algebra `QuadraticAlgebra ℚ d 0`, representing `ℚ(√d)`.
 * `Qsqrtd.norm`: The norm `N(x) = x · x̄ = x.re² - d · x.im²`.
 
 ## Main Results
 
-* `Qsqrtd.instNumberField`: `Q(√d)` is a number field when `d` is not a perfect square.
-* `Qsqrtd.instIsQuadraticExtension`: `Q(√d)/ℚ` is a degree-2 extension.
+* `IsQuadraticField.instNumberField`: Any quadratic field is a number field.
+* `Qsqrtd.instIsQuadraticExtension`: `ℚ(√d)/ℚ` is a degree-2 extension.
 * `not_isSquare_ratCast_of_squarefree_ne_one`: squarefree integer parameters
   with `d ≠ 1` give genuine quadratic fields.
 -/
@@ -39,6 +40,18 @@ field `ℚ(√d)` for a rational parameter `d`, along with basic operations
 abbrev IsQuadraticField (K : Type*) [Field K] [Algebra ℚ K] : Prop :=
   Algebra.IsQuadraticExtension ℚ K
 
+/-- A quadratic field is a number field: it has characteristic zero
+and is finite-dimensional over `ℚ`. -/
+instance IsQuadraticField.instNumberField (K : Type*) [Field K] [Algebra ℚ K]
+    [IsQuadraticField K] : NumberField K where
+  to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ K).injective
+  to_finiteDimensional := by
+    haveI : CharZero K := charZero_of_injective_algebraMap (algebraMap ℚ K).injective
+    convert FiniteDimensional.of_finrank_pos (K := ℚ) (V := K) (by
+      rw [Algebra.IsQuadraticExtension.finrank_eq_two (R := ℚ) (S := K)]; omega) using 1
+    congr 1
+    exact Subsingleton.elim _ _
+    
 /-- The quadratic field `ℚ(√d)` as a type alias for `QuadraticAlgebra ℚ d 0`. -/
 abbrev Qsqrtd (d : ℚ) : Type := QuadraticAlgebra ℚ d 0
 
