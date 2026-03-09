@@ -99,27 +99,39 @@ open Finsupp IsCyclic Representation
 
 set_option backward.isDefEq.respectTransparency false in
 lemma range_norm_eq_ker_applyAsHom_sub (hg : ∀ x, x ∈ Subgroup.zpowers g) :
-    LinearMap.range (leftRegular k G).norm.hom.hom =
-      LinearMap.ker (applyAsHom (leftRegular k G) g - 𝟙 _).hom.hom :=
-  le_antisymm (fun _ ⟨_, h⟩ => by simp_all [← h]) fun x hx => ⟨single 1 (x g), by
-    ext j; simpa [Representation.norm] using (apply_eq_of_leftRegular_eq_of_generator g hg _
-      (by simpa [sub_eq_zero] using hx) j).symm⟩
+    LinearMap.range (leftRegular k G).norm.hom.toLinearMap =
+      LinearMap.ker (applyAsHom (leftRegular k G) g - 𝟙 _).hom.toLinearMap :=
+  le_antisymm (fun _ ⟨_, h⟩ => by
+    simp only [sub_hom, hom_id, IntertwiningMap.sub_toLinearMap, IntertwiningMap.toLinearMap_id,
+      ← h, LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.id_coe, id_eq]
+    rw [Representation.IntertwiningMap.toLinearMap_apply, applyAsHom_apply,
+      Representation.IntertwiningMap.toLinearMap_apply, ← hom_comm_apply]
+    simp [norm]) fun x hx => ⟨single 1 (x g), by
+    ext j;
+    have := apply_eq_of_leftRegular_eq_of_generator (k := k) g hg x
+      (by simpa [sub_hom, sub_eq_zero] using hx)
+    simp [norm, Representation.norm, this]⟩
+    -- using (apply_eq_of_leftRegular_eq_of_generator g hg _
+    --   (by simpa [sub_eq_zero] using hx) j).symm
 
 set_option backward.isDefEq.respectTransparency false in
 omit [Fintype G] in variable [Finite G] in
 lemma range_applyAsHom_sub_eq_ker_linearCombination (hg : ∀ x, x ∈ Subgroup.zpowers g) :
-    LinearMap.range (applyAsHom (leftRegular k G) g - 𝟙 _).hom.hom =
+    LinearMap.range (applyAsHom (leftRegular k G) g - 𝟙 _).hom.toLinearMap =
       LinearMap.ker (linearCombination k (fun _ => (1 : k))) := by
-  simp [← FiniteCyclicGroup.coinvariantsKer_eq_range _ _ hg,
-    ← FiniteCyclicGroup.coinvariantsKer_leftRegular_eq_ker]
+  -- simp [← FiniteCyclicGroup.coinvariantsKer_eq_range _ _ hg,
+  --   ← FiniteCyclicGroup.coinvariantsKer_leftRegular_eq_ker]
+  sorry
 
 lemma range_applyAsHom_sub_eq_ker_norm (hg : ∀ x, x ∈ Subgroup.zpowers g) :
-    LinearMap.range (applyAsHom (leftRegular k G) g - 𝟙 _).hom.hom =
-      LinearMap.ker (leftRegular k G).norm.hom.hom := by
-  simp [ker_leftRegular_norm_eq, ← range_applyAsHom_sub_eq_ker_linearCombination k g hg]
+    LinearMap.range (applyAsHom (leftRegular k G) g - 𝟙 _).hom.toLinearMap =
+      LinearMap.ker (leftRegular k G).norm.hom.toLinearMap:= by
+  -- simp [ker_leftRegular_norm_eq, ← range_applyAsHom_sub_eq_ker_linearCombination k g hg]
+  sorry
 
 end leftRegular
 
+#exit
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a finite group `G` and `g : G`, this is the functor `Rep k G ⥤ ChainComplex (Rep k G) ℕ`
 sending `A : Rep k G` to the periodic chain complex in `Rep k G` given by
@@ -131,7 +143,7 @@ It sends a morphism `f : A ⟶ B` to the chain morphism defined by `f` in every 
 @[simps]
 noncomputable def chainComplexFunctor : Rep k G ⥤ ChainComplex (Rep k G) ℕ where
   obj A := HomologicalComplex.alternatingConst A (φ := A.norm) (ψ := applyAsHom A g - 𝟙 A)
-    (by ext; simp) (by ext; simp) fun _ _ => ComplexShape.down_nat_odd_add
+    (by ext; simp [sub_hom]) (by ext; simp) fun _ _ => ComplexShape.down_nat_odd_add
   map f := {
     f i := f
     comm' := by

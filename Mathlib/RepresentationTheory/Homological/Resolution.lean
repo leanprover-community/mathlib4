@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.CategoryTheory.Abelian.Ext
-public import Mathlib.RepresentationTheory.Rep
+public import Mathlib.RepresentationTheory.Rep'.Iso
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
@@ -202,11 +202,23 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
 set_option backward.isDefEq.respectTransparency false in
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom =
-    ModuleCat.ofHom (d k G (n + 1)) := by
-  refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp [Action.ofMulAction_V, standardComplex, SimplicialObject.δ,
-    ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
+theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom.toLinearMap =
+    d k G (n + 1) := by
+  refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
+  simp only [standardComplex, alternatingFaceMapComplex_obj_X, Functor.comp_obj,
+    classifyingSpaceUniversalCover_obj, SimplexCategory.len_mk, Action.ofMulAction_V,
+    alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, Int.reduceNeg,
+    SimplicialObject.δ, SimplexCategory.δ, SimplexCategory.mkHom, Fin.succAboveOrderEmb,
+    Functor.comp_map, classifyingSpaceUniversalCover_map, Quiver.Hom.unop_op,
+    SimplexCategory.Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_coe,
+    OrderEmbedding.coe_ofStrictMono, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), Int.cast_pow,
+    Int.cast_neg, Int.cast_one, LinearMap.coe_comp, Function.comp_apply, lsingle_apply, d_of,
+    ← ofHom_smul, ← ofHom_sum, hom_ofHom, Representation.IntertwiningMap.toLinearMap_sum,
+    Representation.IntertwiningMap.toLinearMap_smul, LinearMap.coe_sum, Finset.sum_apply,
+    LinearMap.smul_apply]
+  -- TODO: merge this into `simp`
+  conv_lhs => enter [2, y, 2]; tactic => convert Representation.linearizeMap_single _ _
+  simp
 
 section Exactness
 
@@ -240,10 +252,9 @@ def forget₂ToModuleCatHomotopyEquiv :
               Types.terminalIso.toEquiv.unique).toModuleIso)
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
-def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
-  hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
-  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring
-    (by simp [ModuleCat.endRingEquiv])
+def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k := ofHom
+  ⟨Finsupp.linearCombination _ fun _ ↦ (1 : k), fun _ ↦ Finsupp.lhom_ext'
+    fun _ => LinearMap.ext_ring <| by simp⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
@@ -327,7 +338,7 @@ variable (n)
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ..., n - 1`. -/
 def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
-  freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
+  freeLift k G _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
     Finset.univ.sum fun j : Fin (n + 1) =>
       single (Fin.contractNth j (· * ·) g) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1)))
 
@@ -336,20 +347,27 @@ lemma d_single (x : Gⁿ⁺¹) :
     (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
       Finset.univ.sum fun j : Fin (n + 1) =>
         single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
-  simp [d]
+  simp [d, ← Representation.IntertwiningMap.toLinearMap_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
-  free_ext _ _ fun i => by
-    simpa [diagonalSuccIsoFree_inv_hom_single_single (k := k), d_single (k := k),
-      standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i), Fin.sum_univ_succ,
-      Fin.partialProd_contractNth] using
-      congr(single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
+  free_ext k G _ _ _ fun i ↦ by
+    simp
+    sorry
+  -- ext : 2
+  -- dsimp
+  -- sorry
+  -- free_ext _ _ fun i => by
+  --   simpa [diagonalSuccIsoFree_inv_hom_single_single (k := k), d_single (k := k),
+  --     standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i), Fin.sum_univ_succ,
+  --     Fin.partialProd_contractNth] using
+  --     congr(single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
 
 end barComplex
 
+-- #exit
 open barComplex
 
 set_option backward.isDefEq.respectTransparency false in
@@ -361,6 +379,7 @@ noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
   ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun _ => by
     ext x
     simp [(diagonalSuccIsoFree k G _).comp_inv_eq.1 (d_comp_diagonalSuccIsoFree_inv_eq k G _)]
+    sorry
 
 namespace barComplex
 

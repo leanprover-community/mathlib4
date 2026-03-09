@@ -113,6 +113,13 @@ instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   fast_instance%
   DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
 
+@[simp]
+lemma toLinearMap_sum {ι : Type*} (s : Finset ι) (f : ι → σ.IntertwiningMap ρ) :
+    (∑ i ∈ s, f i).toLinearMap = ∑ i ∈ s, (f i).toLinearMap := by
+  classical induction s using Finset.induction with
+    | empty => simp
+    | insert i s hi ih => simp [Finset.sum_insert hi, ih]
+
 section group
 
 variable {V W P : Type*} [AddCommMonoid V] [AddCommGroup W]

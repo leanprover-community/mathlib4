@@ -282,6 +282,20 @@ instance : Preadditive (Rep k G) where
   add_comp _ _ _ := add_comp
   comp_add _ _ _ := comp_add
 
+lemma sum_hom {ι : Type u'} {M N : Rep.{w} k G} (f : ι → (M ⟶ N)) (s : Finset ι) :
+    (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom := by
+  classical induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha h => simp [Finset.sum_insert ha, add_hom, h]
+
+lemma ofHom_sum {ι : Type u'} {M N : Type v'} [AddCommGroup M] [AddCommGroup N] [Module k M]
+    [Module k N] {σ : Representation k G M} {ρ : Representation k G N} (f : ι → σ.IntertwiningMap ρ)
+    (s : Finset ι) :
+    ofHom (∑ i ∈ s, f i) = ∑ i ∈ s, ofHom (f i) := by
+  classical induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha h => simp [Finset.sum_insert ha, ofHom_add, h]
+
 variable (k G) in
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
 abbrev trivial (V : Type w) [AddCommGroup V] [Module k V] : Rep k G :=
@@ -991,6 +1005,10 @@ abbrev freeLiftLEquiv :
     (free k G α ⟶ A) ≃ₗ[k] (α → A) :=
   homLinearEquiv _ _ ≪≫ₗ Representation.freeLiftLEquiv A.ρ α
 
+lemma free_ext (f g : free k G α ⟶ A)
+    (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g := by
+  classical exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
+
 variable {A}
 section
 
@@ -1008,10 +1026,6 @@ open TensorProduct in
 `(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
 abbrev finsuppTensorLeft : A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
   mkIso (Representation.finsuppTensorLeft A.ρ B.ρ α)
-  -- Rep.mkIso _ _ (TensorProduct.finsuppLeft k _ A B α) fun g ↦ by
-  --   dsimp [tensorObj_carrier]
-  --   ext
-  --   simp [finsuppLeft_apply_tmul]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism

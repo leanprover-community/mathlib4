@@ -270,7 +270,7 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
       change _ = ((((Y.ρ.toInvariants S).ofQuotient S) g) ((LinearMap.codRestrict _
           (f.hom.toLinearMap ∘ₗ (invariants (MonoidHom.comp X.ρ S.subtype)).subtype) _) x)).1
       induction g using QuotientGroup.induction_on with
-      | H g => simp [hom_comm_apply]⟩
+      | H g => simp [hom_comm_apply, IntertwiningMap.toLinearMap_apply]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and

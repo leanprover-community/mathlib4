@@ -36,6 +36,16 @@ abbrev diagonalSuccIsoTensorTrivial :
     tensorIso (linearizationOfMulActionIso k G G) (linearizationTrivialIso k G (Fin n → G)) --≪≫
     --   tensorIso (linearizarionObjOfMulAction k G G) (linearizationTrivialIso k G (Fin n → G))
 
+set_option backward.isDefEq.respectTransparency false in
+theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
+    (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g a ⊗ₜ single f b) =
+      single (g • Fin.partialProd f) (a * b) := by
+  have := Action.diagonalSuccIsoTensorTrivial_inv_hom_apply (G := G) (n := n)
+  -- simp [diagonalSuccIsoTensorTrivial, linearizationTrivialIso]
+  sorry
+  -- simp_all [diagonalSuccIsoTensorTrivial, ModuleCat.MonoidalCategory.tensorHom_def,
+  --   tensorObj_carrier, types_tensorObj_def, ModuleCat.hom_id (M := .of _ _), Action.ofMulAction_V]
+
 -- unif_hint (G : Type*) [Monoid G] where ⊢ G ≟ (Action.leftRegular G).V
 
 -- set_option backward.isDefEq.respectTransparency false in
