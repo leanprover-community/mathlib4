@@ -24,6 +24,10 @@ TODO:
 - Use above, prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
   for `sorry`-free proofs.
 -/
+
+/--
+Normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$.
+-/
 @[expose] public noncomputable def D (F : ℍ → ℂ) : ℍ → ℂ :=
   fun (z : ℍ) => (2 * π * I)⁻¹ * ((deriv (F ∘ ofComplex)) z)
 
