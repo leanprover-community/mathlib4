@@ -175,6 +175,7 @@ theorem nil_ne_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {tl : Multiseries basis_hd basis_tl} :
     .nil ≠ cons exp coef tl := cons_ne_nil.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cons_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp1 exp2 : ℝ}
     {coef1 coef2 : MultiseriesExpansion basis_tl} {tl1 tl2 : Multiseries basis_hd basis_tl} :
@@ -203,6 +204,7 @@ theorem destruct_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     destruct (nil : Multiseries basis_hd basis_tl) = none := by
   simp [destruct, nil]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem destruct_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : MultiseriesExpansion basis_tl}
@@ -342,6 +344,7 @@ instance (basis : Basis) : Inhabited (MultiseriesExpansion basis) :=
 theorem eq_mk {basis_hd basis_tl} (ms : MultiseriesExpansion (basis_hd :: basis_tl)) :
     ms = mk ms.seq ms.toFun := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mk_eq_mk_iff {basis_hd basis_tl} (s t : Multiseries basis_hd basis_tl) (f g : ℝ → ℝ) :
     mk (basis_hd := basis_hd) s f = mk (basis_hd := basis_hd) t g ↔ s = t ∧ f = g where
   mp h := by rwa [mk, mk, Prod.mk_inj] at h
