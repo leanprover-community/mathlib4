@@ -95,4 +95,16 @@ theorem IsInertiaField.of_isGaloisGroup [h : IsGaloisGroup (inertia G P) D L] :
     simp_rw [smul_div₀', subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
       inertiaEquiv_symm_apply_smul]
 
+/-- Two decomposition fields are isomorphic. -/
+noncomputable abbrev IsDecompositionField.ringEquiv (D' : Type*) [Field D'] [Algebra D' L]
+    [IsDecompositionField K L P D] [IsDecompositionField K L P D'] :
+    D ≃+* D' :=
+  IsGaloisGroup.ringEquiv (stabilizer Gal(L/K) P) D D' L
+
+/-- Two inertia fields are isomorphic. -/
+noncomputable abbrev IsInertiaField.ringEquiv (E' : Type*) [Field E'] [Algebra E' L]
+    [h : IsInertiaField K L P E] [IsInertiaField K L P E'] :
+    E ≃+* E' :=
+  IsGaloisGroup.ringEquiv (inertia Gal(L/K) P) E E' L
+
 end basic
