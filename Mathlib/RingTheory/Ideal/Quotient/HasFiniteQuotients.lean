@@ -36,29 +36,21 @@ class Ring.HasFiniteQuotients (R : Type*) [CommRing R] : Prop where
 
 namespace Ring.HasFiniteQuotients
 
-/--
-A finite ring has finite quotients.
--/
+/-- A finite ring has finite quotients. -/
 instance (R : Type*) [CommRing R] [Finite R] : Ring.HasFiniteQuotients R :=
   ⟨fun _ ↦ Quotient.finite _⟩
 
-/--
-A nonzero prime ideal of a ring with finite quotients is maximal.
--/
+/-- A nonzero prime ideal of a ring with finite quotients is maximal. -/
 theorem maximalOfPrime [HasFiniteQuotients R] {P : Ideal R} [P.IsPrime] (hp : P ≠ ⊥) :
     P.IsMaximal :=
   have : Finite (R ⧸ P) := finiteQuotient hp
   Ideal.Quotient.maximal_of_isField P <| Finite.isField_of_domain (R ⧸ P)
 
-/--
-A ring with finite quotients has dimension `≤ 1`.
--/
+/-- A ring with finite quotients has dimension `≤ 1`. -/
 instance [HasFiniteQuotients R] : DimensionLEOne R :=
   ⟨fun h _ ↦ maximalOfPrime h⟩
 
-/--
-A ring with finite quotients is noetherian.
--/
+/-- A ring with finite quotients is noetherian. -/
 instance [HasFiniteQuotients R] : IsNoetherianRing R := by
   refine (isNoetherianRing_iff_ideal_fg R).mpr fun I ↦ ?_
   by_cases hI : I = 0
@@ -87,17 +79,13 @@ theorem of_module_finite [h : HasFiniteQuotients R] (S : Type*) [CommRing S] [Is
   have : Module.Finite (R ⧸ J) (S ⧸ I) := Module.Finite.of_restrictScalars_finite R (R ⧸ J) (S ⧸ I)
   exact Module.finite_of_finite (R ⧸ J)⟩
 
-/--
-The ring `ℤ` has finite quotients.
--/
+/-- The ring `ℤ` has finite quotients. -/
 instance : HasFiniteQuotients ℤ := ⟨fun {I} hI ↦ by
   obtain ⟨n, rfl⟩ := Submodule.IsPrincipal.principal I
   have : NeZero n := ⟨by simpa using hI⟩
   exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})⟩
 
-/--
-A domain that is also a finite `ℤ`-module has finite quotients.
--/
+/-- A domain that is also a finite `ℤ`-module has finite quotients. -/
 instance [IsDomain R] [Module.Finite ℤ R] :
     HasFiniteQuotients R := of_module_finite ℤ R
 
