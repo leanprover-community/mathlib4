@@ -144,7 +144,7 @@ variable {K : Type*} [hf : Field K] [Fintype K]
 open Polynomial FiniteField
 
 theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} [NeZero n] {f : K[X]}
-    (hi : Irreducible f) (h : f ∣ (X ^ (Fintype.card K) ^ n - X)) :
+    (hi : Irreducible f) (h : f ∣ X ^ (Fintype.card K) ^ n - X) :
     f.natDegree ∣ n := by
   obtain ⟨p, _, m, hp, hm⟩ := FiniteField.card' K
   haveI : Fact <| Nat.Prime p := ⟨hp⟩

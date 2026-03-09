@@ -199,7 +199,7 @@ theorem _root_.FiniteField.exists_eval_eq_zero_of_dvd_X_pow_card_sub_X [Fintype 
 
 theorem _root_.FiniteField.exists_eval₂_eq_zero_of_map_dvd_X_pow_card_sub_X [Fintype K] {F : Type*}
     [Field F] {f : F[X]} (hd : f.degree ≠ 0) (φ : F →+* K)
-    (h : (Polynomial.map φ f : K[X]) ∣ (X ^ (Fintype.card K) - X : Polynomial K)) :
+    (h : Polynomial.map φ f ∣ X ^ (Fintype.card K) - X) :
     ∃ a : K, Polynomial.eval₂ φ a f = 0 := by
   convert FiniteField.exists_eval_eq_zero_of_dvd_X_pow_card_sub_X ?_ h
   · exact eval₂_eq_eval_map φ
