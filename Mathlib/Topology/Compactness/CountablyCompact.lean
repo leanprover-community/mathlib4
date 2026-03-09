@@ -43,6 +43,7 @@ cluster point in `A`, and every countable open cover of `A` admits a finite subc
 ## References
 
 * [Engelking, *General Topology*][engelking1989]
+* [Kremsater, *Sequential Space Methods*][kremsater1972sequential]
 -/
 
 @[expose] public section
