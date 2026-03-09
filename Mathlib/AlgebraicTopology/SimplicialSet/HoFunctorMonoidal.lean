@@ -417,7 +417,7 @@ def hoFunctor.unitHomEquiv (X : SSet.{u}) :
 
 theorem hoFunctor.unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
     hoFunctor.unitHomEquiv X x =
-      (Functor.LaxMonoidal.ε hoFunctor).toFunctor ⋙ (hoFunctor.map x).toFunctor :=
+      (Functor.LaxMonoidal.ε hoFunctor.{u}).toFunctor ⋙ (hoFunctor.map x).toFunctor :=
   rfl
 
 end SSet
