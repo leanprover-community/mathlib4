@@ -21,6 +21,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [h𝕜 : IsRCLikeNormedFi
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E]
   {s : Set E} {x : E}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tangentConeAt_real_subset_isRCLikeNormedField :
     tangentConeAt ℝ s x ⊆ tangentConeAt 𝕜 s x := by
   letI := h𝕜.rclike

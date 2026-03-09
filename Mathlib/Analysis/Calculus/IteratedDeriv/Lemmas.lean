@@ -178,6 +178,7 @@ theorem iteratedDerivWithin_sub
   rw [sub_eq_add_neg, sub_eq_add_neg, Pi.neg_def, iteratedDerivWithin_add hx h hf hg.neg,
     iteratedDerivWithin_fun_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : 𝕜)
     (hs : Set.MapsTo (c * ·) s s) :
     iteratedDerivWithin n (fun x => f (c * x)) s x = c ^ n • iteratedDerivWithin n f s (c * x) := by
@@ -216,6 +217,7 @@ lemma iteratedDerivWithin_fun_id :
     iteratedDerivWithin n (·) s x = if n = 0 then x else if n = 1 then 1 else 0 :=
   iteratedDerivWithin_id hx h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iteratedDerivWithin_smul {f : 𝕜 → 𝔸} {g : 𝕜 → F}
     (hf : ContDiffWithinAt 𝕜 (↑n) f s x) (hg : ContDiffWithinAt 𝕜 (↑n) g s x) :
     iteratedDerivWithin n (f • g) s x = ∑ i ∈ .range (n + 1),

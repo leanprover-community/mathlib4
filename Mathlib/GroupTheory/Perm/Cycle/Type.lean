@@ -156,6 +156,7 @@ theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = #σ.support := by
 theorem sum_cycleType_le (σ : Perm α) : σ.cycleType.sum ≤ Fintype.card α :=
   σ.sum_cycleType ▸ Finset.card_le_univ σ.support
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_fixedPoints (σ : Equiv.Perm α) :
     Fintype.card (Function.fixedPoints σ) = Fintype.card α - σ.cycleType.sum := by
   rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl, Fintype.card_ofFinset]
@@ -490,6 +491,7 @@ theorem rotate_length : rotate v n = v :=
 
 end VectorsProdEqOne
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
@@ -546,6 +548,7 @@ theorem _root_.exists_prime_orderOf_dvd_card' {G : Type*} [Group G] [Finite G] (
 
 end Cauchy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subgroup_eq_top_of_swap_mem [DecidableEq α] {H : Subgroup (Perm α)}
     [d : DecidablePred (· ∈ H)] {τ : Perm α} (h0 : (Fintype.card α).Prime)
     (h1 : Fintype.card α ∣ Fintype.card H) (h2 : τ ∈ H) (h3 : IsSwap τ) : H = ⊤ := by

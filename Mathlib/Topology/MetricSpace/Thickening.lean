@@ -112,6 +112,7 @@ theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
     frontier (thickening δ E) ⊆ { x : α | infEDist x E = ENNReal.ofReal δ } :=
   frontier_lt_subset_eq continuous_infEDist continuous_const
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 theorem frontier_thickening_disjoint (A : Set α) :
     Pairwise (Disjoint on fun r : ℝ => frontier (thickening r A)) := by
@@ -336,11 +337,13 @@ theorem thickening_mem_nhdsSet (E : Set α) {δ : ℝ} (hδ : 0 < δ) : thickeni
 theorem cthickening_mem_nhdsSet (E : Set α) {δ : ℝ} (hδ : 0 < δ) : cthickening δ E ∈ 𝓝ˢ E :=
   mem_of_superset (thickening_mem_nhdsSet E hδ) (thickening_subset_cthickening _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem thickening_union (δ : ℝ) (s t : Set α) :
     thickening δ (s ∪ t) = thickening δ s ∪ thickening δ t := by
   simp_rw [thickening, infEDist_union, min_lt_iff, setOf_or]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cthickening_union (δ : ℝ) (s t : Set α) :
     cthickening δ (s ∪ t) = cthickening δ s ∪ cthickening δ t := by

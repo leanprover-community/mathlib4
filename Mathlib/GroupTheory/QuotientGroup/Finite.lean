@@ -41,6 +41,7 @@ noncomputable def fintypeOfKerLeRange (h : g.ker ≤ f.range) : Fintype G :=
 noncomputable def fintypeOfKerEqRange (h : g.ker = f.range) : Fintype G :=
   fintypeOfKerLeRange _ _ h.le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `ker(G →* H)` and `H` are finite, then `G` is finite. -/
 @[to_additive /-- If `ker(G →+ H)` and `H` are finite, then `G` is finite. -/]
 noncomputable def fintypeOfKerOfCodom [Fintype g.ker] : Fintype G :=

@@ -210,6 +210,7 @@ theorem d_pos_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : 0 < d := by
   rw [a.prop_y, sub_pos]
   exact one_lt_pow₀ ha two_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a solution has `x > 1`, then `d` is not a square. -/
 theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare d := by
   have hp := a.prop
@@ -293,6 +294,7 @@ theorem sign_y_zpow_eq_sign_of_x_pos_of_y_pos {a : Solution₁ d} (hax : 0 < a.x
   · rw [zpow_negSucc]
     exact Int.sign_eq_neg_one_of_neg (neg_neg_of_pos (y_pow_succ_pos hax hay n))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `a` is any solution, then one of `a`, `a⁻¹`, `-a`, `-a⁻¹` has
 positive `x` and nonnegative `y`. -/
 theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
@@ -383,6 +385,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     refine div_ne_zero_iff.mpr ⟨?_, hm₀⟩
     exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `d` is a positive integer, then there is a nontrivial solution
 to the Pell equation `x^2 - d*y^2 = 1` if and only if `d` is not a square. -/
 theorem exists_iff_not_isSquare (h₀ : 0 < d) :

@@ -265,7 +265,7 @@ theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : x ∈ ⨅ i, S i
 theorem sInf_toSubring (s : Set (Subfield K)) :
     (sInf s).toSubring = ⨅ t ∈ s, Subfield.toSubring t := by
   ext x
-  simp [mem_sInf, ← sInf_image, Subring.mem_sInf]
+  simp [mem_sInf]
 
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
@@ -353,6 +353,7 @@ protected def gi : GaloisInsertion (@closure K _) (↑) where
 theorem closure_eq (s : Subfield K) : closure (s : Set K) = s :=
   (Subfield.gi K).l_u_eq s
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_empty : closure (∅ : Set K) = ⊥ :=
   (Subfield.gi K).gc.l_bot
@@ -392,10 +393,12 @@ theorem comap_iInf {ι : Sort*} (f : K →+* L) (s : ι → Subfield L) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_bot (f : K →+* L) : (⊥ : Subfield K).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
   (gc_map_comap f).u_top

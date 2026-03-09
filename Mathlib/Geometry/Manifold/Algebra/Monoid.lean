@@ -81,6 +81,7 @@ protected theorem ContMDiffMul.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
 instance {a : WithTop ℕ∞} [ContMDiffMul I ∞ G] [h : ENat.LEInfty a] : ContMDiffMul I a G :=
   ContMDiffMul.of_le h.out
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance {a : WithTop ℕ∞} [ContMDiffMul I ω G] : ContMDiffMul I a G :=
   ContMDiffMul.of_le le_top

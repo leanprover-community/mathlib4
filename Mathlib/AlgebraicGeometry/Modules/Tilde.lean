@@ -38,6 +38,7 @@ namespace AlgebraicGeometry
 
 open _root_.PrimeSpectrum
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `𝒪_{Spec R}` modules to sheaves of `R`-modules. -/
 def modulesSpecToSheaf :
     (Spec R).Modules ⥤ TopCat.Sheaf (ModuleCat R) (Spec R) :=
@@ -50,6 +51,7 @@ noncomputable
 def moduleSpecΓFunctor : (Spec (.of R)).Modules ⥤ ModuleCat R :=
   modulesSpecToSheaf ⋙ TopCat.Sheaf.forget _ _ ⋙ (evaluation _ _).obj (.op ⊤)
 
+set_option backward.isDefEq.respectTransparency false in
 open PrimeSpectrum in
 /-- The forgetful functor from `𝒪_{Spec R}` modules to sheaves of `R`-modules is fully faithful. -/
 def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithful where
@@ -90,6 +92,7 @@ def tilde : (Spec R).Modules where
 
 namespace tilde
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The image of `tilde` under `modulesSpecToSheaf` is isomorphic to
 `structurePresheafInModuleCat`. They are defeq as types but the `Smul` instance are not defeq. -/
 noncomputable
@@ -188,6 +191,7 @@ lemma isUnit_algebraMap_end_basicOpen (M : (Spec (.of R)).Modules) (f : R) :
 
 end tilde
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is the counit of the tilde-Gamma adjunction. -/
 noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
     tilde ((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)) ⟶ M :=
@@ -222,6 +226,7 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
           simp only [IsLocalizedModule.lift_apply, ← ModuleCat.comp_apply, ← Functor.map_comp]
           rfl }⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec (.of R)).Modules) (U) :
     tilde.toOpen ((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)) U ≫
@@ -239,6 +244,7 @@ lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec (.of R)).Modules) (U) :
     (tilde.toOpen _ (PrimeSpectrum.basicOpen (R := R) 1)).hom
     ((modulesSpecToSheaf.obj M).val.map (homOfLE le_top).op).hom (by simp) x)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is the counit of the tilde-Gamma adjunction. -/
 noncomputable def Scheme.Modules.fromTildeΓNatTrans :
     moduleSpecΓFunctor (R := R) ⋙ tilde.functor (R := R) ⟶ 𝟭 _ where
@@ -270,6 +276,7 @@ This is the unit of the tilde-Gamma adjunction. -/
 def tilde.toTildeΓNatIso : 𝟭 _ ≅ tilde.functor R ⋙ moduleSpecΓFunctor :=
   NatIso.ofComponents tilde.isoTop fun f ↦ (tilde.toOpen_map_app f _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 open Scheme.Modules in
 /-- The tilde-Gamma adjuntion. -/
 def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
@@ -363,6 +370,7 @@ instance (ι : Type u) :
     IsIso (Scheme.Modules.fromTildeΓ (R := R) (SheafOfModules.free.{u} ι)) :=
   isIso_fromTildeΓ_iff.mpr ⟨_, ⟨tildeFinsupp _⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a presentation of a module `M`, we may construct an associated presentation of `M^~`. -/
 noncomputable
 def presentationTilde (s : Set M) (hs : Submodule.span R s = ⊤)
@@ -386,6 +394,7 @@ def presentationTilde (s : Set M) (hs : Submodule.span R s = ⊤)
   refine IsCokernel.ofIso _ (CokernelCofork.mapIsColimit _ h₁ (tilde.functor R)) _ (tildeFinsupp t)
     (tildeFinsupp s) (.refl _) (by simp) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (tilde M).IsQuasicoherent :=
   (presentationTilde.{u} _ .univ (by simp) _ (Submodule.span_eq _)).isQuasicoherent
 

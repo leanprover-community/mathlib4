@@ -46,6 +46,7 @@ lemma exists_isClosed_singleton_of_isJacobsonRing [IsJacobsonRing R]
   rintro x ⟨-, hx⟩
   exact sInf_le ⟨this ⟨x, hx.isPrime⟩ hx, hx⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsJacobsonRing R] : JacobsonSpace (PrimeSpectrum R) := by
   rw [jacobsonSpace_iff_locallyClosed]
   rintro S hS ⟨U, Z, hU, hZ, rfl⟩

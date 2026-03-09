@@ -124,6 +124,7 @@ section group
 
 open Subgroup
 
+set_option backward.isDefEq.respectTransparency false in
 lemma noncommCoprod_injective {M N P : Type*} [Group M] [Group N] [Group P]
     (f : M →* P) (g : N →* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) :
     Function.Injective (noncommCoprod f g comm) ↔
@@ -139,6 +140,7 @@ lemma noncommCoprod_injective {M N P : Type*} [Group M] [Group N] [Group P]
     have key := hp ⟨⟨a⁻¹, by rwa [map_inv, inv_eq_iff_mul_eq_one]⟩, b, rfl⟩
     exact ⟨hf a (by rwa [key, mul_one] at h), hg b key⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma noncommCoprod_range {M N P : Type*} [Group M] [Group N] [Group P]
     (f : M →* P) (g : N →* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) :
     (noncommCoprod f g comm).range = f.range ⊔ g.range := by

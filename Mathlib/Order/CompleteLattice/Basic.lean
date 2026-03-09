@@ -225,7 +225,7 @@ protected theorem Equiv.iSup_congr {g : ι' → α} (e : ι ≃ ι') (h : ∀ x,
     ⨆ x, f x = ⨆ y, g y :=
   e.surjective.iSup_congr _ h
 
-@[congr]
+@[to_dual (attr := congr)]
 theorem iSup_congr_Prop {p q : Prop} {f₁ : p → α} {f₂ : q → α} (pq : p ↔ q)
     (f : ∀ x, f₁ (pq.mpr x) = f₂ x) : iSup f₁ = iSup f₂ := by
   obtain rfl := propext pq
@@ -241,6 +241,7 @@ theorem iSup_plift_down (f : ι → α) : ⨆ i, f (PLift.down i) = ⨆ i, f i :
 theorem iSup_range' (g : β → α) (f : ι → β) : ⨆ b : range f, g b = ⨆ i, g (f i) := by
   rw [iSup, iSup, ← image_eq_range, ← range_comp']
 
+@[to_dual]
 theorem sSup_image' {s : Set β} {f : β → α} : sSup (f '' s) = ⨆ a : s, f a := by
   rw [iSup, image_eq_range]
 
@@ -283,11 +284,6 @@ protected theorem Equiv.iInf_congr {g : ι' → α} (e : ι ≃ ι') (h : ∀ x,
     ⨅ x, f x = ⨅ y, g y :=
   @Equiv.iSup_congr αᵒᵈ _ _ _ _ _ e h
 
-@[congr]
-theorem iInf_congr_Prop {p q : Prop} {f₁ : p → α} {f₂ : q → α} (pq : p ↔ q)
-    (f : ∀ x, f₁ (pq.mpr x) = f₂ x) : iInf f₁ = iInf f₂ :=
-  @iSup_congr_Prop αᵒᵈ _ p q f₁ f₂ pq f
-
 theorem iInf_plift_up (f : PLift ι → α) : ⨅ i, f (PLift.up i) = ⨅ i, f i :=
   (PLift.up_surjective.iInf_congr _) fun _ => rfl
 
@@ -296,9 +292,6 @@ theorem iInf_plift_down (f : ι → α) : ⨅ i, f (PLift.down i) = ⨅ i, f i :
 
 theorem iInf_range' (g : β → α) (f : ι → β) : ⨅ b : range f, g b = ⨅ i, g (f i) :=
   @iSup_range' αᵒᵈ _ _ _ _ _
-
-theorem sInf_image' {s : Set β} {f : β → α} : sInf (f '' s) = ⨅ a : s, f a :=
-  @sSup_image' αᵒᵈ _ _ _ _
 
 end InfSet
 
@@ -957,12 +950,12 @@ theorem iInf_le_iInf_of_subset {f : β → α} {s t : Set β} : s ⊆ t → ⨅ 
   biInf_mono
 
 theorem iSup_insert {f : β → α} {s : Set β} {b : β} :
-    ⨆ x ∈ insert b s, f x = f b ⊔ ⨆ x ∈ s, f x :=
-  Eq.trans iSup_union <| congr_arg (fun x => x ⊔ ⨆ x ∈ s, f x) iSup_iSup_eq_left
+    ⨆ x ∈ insert b s, f x = f b ⊔ ⨆ x ∈ s, f x := by
+  simp [iSup_or, iSup_sup_eq]
 
 theorem iInf_insert {f : β → α} {s : Set β} {b : β} :
-    ⨅ x ∈ insert b s, f x = f b ⊓ ⨅ x ∈ s, f x :=
-  Eq.trans iInf_union <| congr_arg (fun x => x ⊓ ⨅ x ∈ s, f x) iInf_iInf_eq_left
+    ⨅ x ∈ insert b s, f x = f b ⊓ ⨅ x ∈ s, f x := by
+  simp [iInf_or, iInf_inf_eq]
 
 theorem iSup_singleton {f : β → α} {b : β} : ⨆ x ∈ (singleton b : Set β), f x = f b := by simp
 
@@ -1034,12 +1027,9 @@ end le
 ### `iSup` and `iInf` under `Type`
 -/
 
-
+@[to_dual iInf_of_isEmpty]
 theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
   congr_arg sSup (range_eq_empty f)
-
-theorem iInf_of_isEmpty {α ι} [InfSet α] [IsEmpty ι] (f : ι → α) : iInf f = sInf (∅ : Set α) :=
-  congr_arg sInf (range_eq_empty f)
 
 theorem iSup_of_empty [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
   (iSup_of_empty' f).trans sSup_empty

@@ -93,6 +93,7 @@ theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
   rcases f.decay' k n with ⟨C, hC⟩
   exact ⟨max C 1, by positivity, fun x => (hC x).trans (le_max_left _ _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every Schwartz function is smooth. -/
 @[fun_prop]
 theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
@@ -513,6 +514,7 @@ variable (𝕜 E F)
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).moduleFilterBasis.topology'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
   have A : WithSeminorms (schwartzSeminormFamily ℝ E F) := ⟨rfl⟩
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf] at A ⊢
@@ -550,6 +552,7 @@ theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := b
 
 section HasCompactSupport
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A smooth compactly supported function is a Schwartz function. -/
 @[simps]
 def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSupport f)
@@ -677,6 +680,8 @@ section bilin
 
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid a PANIC. -/
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
@@ -854,6 +859,7 @@ end pairing
 
 open ContinuousLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 F) in
 /-- Scalar multiplication with a continuous linear map as a continuous linear map on Schwartz
 functions. -/
@@ -913,6 +919,7 @@ variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/
 def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
@@ -1021,6 +1028,44 @@ theorem smulLeftCLM_compCLMOfContinuousLinearEquiv {u : D → 𝕜'} (hu : u.Has
 
 end Comp
 
+section Postcomp
+
+variable [RCLike 𝕜]
+  [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G]
+  [NormedAddCommGroup H] [NormedSpace ℝ H] [NormedSpace 𝕜 H]
+
+/-- Postcomposition with a continuous linear map is a continuous linear map on Schwartz
+functions. -/
+def postcompCLM (L : F →L[𝕜] G) : 𝓢(E, F) →L[𝕜] 𝓢(E, G) :=
+  mkCLM (fun f ↦ L ∘ f) (fun _ _ _ ↦ by simp) (fun _ _ _ ↦ by simp)
+    (fun f ↦ (L.restrictScalars ℝ).contDiff.comp (f.smooth ⊤)) <| by
+  intro ⟨k, n⟩
+  use {⟨k, n⟩}, ‖L‖, by positivity
+  intro f x
+  simp only [Finset.sup_singleton, schwartzSeminormFamily_apply]
+  calc
+    _ = ‖x‖ ^ k * ‖(L.restrictScalars ℝ).compContinuousMultilinearMap
+        (iteratedFDeriv ℝ n f x)‖ := by
+      congr
+      exact (L.restrictScalars ℝ).iteratedFDeriv_comp_left f.smooth'.contDiffAt (mod_cast le_top)
+    _ ≤ ‖x‖ ^ k * (‖L‖ * ‖iteratedFDeriv ℝ n f x‖) := by
+      gcongr
+      apply (L.restrictScalars ℝ).norm_compContinuousMultilinearMap_le
+    _ = ‖L‖ * (‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖) := by ring
+    _ ≤ ‖L‖ * (SchwartzMap.seminorm 𝕜 k n) f := by
+      grw [le_seminorm 𝕜 k n f x]
+
+@[simp]
+theorem postcompCLM_apply (L : F →L[𝕜] G) (f : 𝓢(E, F)) (x : E) : f.postcompCLM L x = L (f x) :=
+  rfl
+
+@[simp]
+theorem postcompCLM_postcompCLM (L₁ : F →L[𝕜] G) (L₂ : G →L[𝕜] H) (f : 𝓢(E, F)) :
+  (f.postcompCLM L₁).postcompCLM L₂ = f.postcompCLM (L₂ ∘L L₁) := rfl
+
+end Postcomp
+
 section Integration
 
 /-! ### Integration -/
@@ -1047,6 +1092,7 @@ lemma integral_pow_mul_iteratedFDeriv_le (f : 𝓢(D, V)) (k n : ℕ) :
 
 variable [BorelSpace D] [SecondCountableTopology D]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (μ) in
 lemma integrable_pow_mul_iteratedFDeriv
     (f : 𝓢(D, V))

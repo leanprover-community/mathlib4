@@ -173,6 +173,7 @@ theorem span_singleton_lt_span_singleton [IsDomain α] {x y : α} :
   rw [lt_iff_le_not_ge, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
     dvd_and_not_dvd_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPrime_of_maximally_disjoint (I : Ideal α)
     (S : Submonoid α)
     (disjoint : Disjoint (I : Set α) S)

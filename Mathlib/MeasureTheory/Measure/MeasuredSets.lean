@@ -44,6 +44,7 @@ instance : SetLike (MeasuredSets μ) α where
   coe s := s.1
   coe_injective' := Subtype.coe_injective
 
+set_option backward.isDefEq.respectTransparency false in
 instance : PseudoEMetricSpace (MeasuredSets μ) where
   edist s t := μ ((s : Set α) ∆ t)
   edist_self := by simp
@@ -80,6 +81,7 @@ lemma MeasuredSets.lipschitzWith_measureReal [IsFiniteMeasure μ] :
     LipschitzWith 1 (fun s : MeasuredSets μ ↦ μ.real s) :=
   .of_le_add fun s t ↦ sub_le_iff_le_add'.mp <| real_sub_real_le_dist s t
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a ring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, any measurable set can be approximated by elements of `C`. -/
 lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]

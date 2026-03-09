@@ -77,6 +77,7 @@ lemma degrees_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
 
 end Degrees
 
+set_option backward.isDefEq.respectTransparency false in
 theorem totalDegree_mul_of_isDomain {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     totalDegree (f * g) = totalDegree f + totalDegree g := by

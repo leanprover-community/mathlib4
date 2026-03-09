@@ -50,7 +50,7 @@ inductive PreZeroHypercoverFamily.presieve (P : PreZeroHypercoverFamily C) {X : 
 /-- The associated precoverage to a pre-`0`-hypercover family. -/
 def PreZeroHypercoverFamily.precoverage (P : PreZeroHypercoverFamily C) :
     Precoverage C where
-  coverings _ R := P.presieve R
+  coverings _ := {R | P.presieve R}
 
 lemma PreZeroHypercoverFamily.mem_precoverage_iff {P : PreZeroHypercoverFamily C} {X : C}
     {R : Presieve X} :
@@ -94,6 +94,7 @@ lemma Precoverage.HasIsos.of_preZeroHypercoverFamily {P : PreZeroHypercoverFamil
     rw [← PreZeroHypercover.presieve₀_singleton.{_, _, max u v}]
     refine .mk _ (h _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Precoverage.IsStableUnderBaseChange.of_preZeroHypercoverFamily_of_isClosedUnderIsomorphisms
     {P : PreZeroHypercoverFamily C}
     (h₁ : ∀ {X : C}, (P (X := X)).IsClosedUnderIsomorphisms)
