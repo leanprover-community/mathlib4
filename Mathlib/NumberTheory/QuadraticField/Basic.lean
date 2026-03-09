@@ -16,15 +16,13 @@ public import Mathlib.NumberTheory.NumberField.Basic
 # Basic Definitions for Quadratic Number Fields
 
 field `ℚ(√d)` for a rational parameter `d`, along with basic operations
-(trace, norm), field and number field instances, and the
+(norm), field and number field instances, and the
 `IsQuadraticField` predicate.
 
 ## Main Definitions
 
 * `IsQuadraticField K`: A predicate asserting that `K` is a quadratic extension of ℚ.
 * `Qsqrtd d`: The quadratic algebra `QuadraticAlgebra ℚ d 0`, representing `ℚ(√d)`.
-* `Qsqrtd.trace`: The trace `Tr(x)`, defined via mathlib's `Algebra.trace`.
-* `Qsqrtd.norm`: The norm `N(x) = x · x̄ = x.re² - d · x.im²`.
 * `Qsqrtd.norm`: The norm `N(x) = x · x̄ = x.re² - d · x.im²`.
 
 ## Main Results
@@ -48,13 +46,6 @@ namespace Qsqrtd
 
 variable {d : ℚ}
 
-/-- The trace of an element `x : Q(√d)`, defined via `Algebra.trace`. -/
-noncomputable abbrev trace (x : Qsqrtd d) : ℚ := Algebra.trace ℚ (Qsqrtd d) x
-
-/-- `Qsqrtd.trace` is definitionally mathlib's algebra trace. -/
-theorem trace_eq_algebra_trace (x : Qsqrtd d) :
-    Qsqrtd.trace x = Algebra.trace ℚ (Qsqrtd d) x := rfl
-
 private theorem leftMulMatrix_eq (x : Qsqrtd d) :
     Algebra.leftMulMatrix (QuadraticAlgebra.basis d 0) x = !![x.re, d * x.im; x.im, x.re] := by
   ext i j
@@ -63,17 +54,16 @@ private theorem leftMulMatrix_eq (x : Qsqrtd d) :
     rw [Algebra.leftMulMatrix_apply, LinearMap.toMatrix_apply]
     simp [QuadraticAlgebra.basis]
 
-/-- The trace in `Q(√d)` is `x + x̄`. -/
+/-- The trace in `Q(√d)` is `x.re + x̄.re`. -/
 @[simp] theorem trace_eq_re_add_re_star (x : Qsqrtd d) :
-    Qsqrtd.trace x = x.re + (star x).re := by
-  change Algebra.trace ℚ (Qsqrtd d) x = x.re + (star x).re
+    Algebra.trace ℚ (Qsqrtd d) x = x.re + (star x).re := by
   rw [Algebra.trace_eq_matrix_trace (QuadraticAlgebra.basis d 0), leftMulMatrix_eq,
     Matrix.trace_fin_two_of]
   simp
 
 /-- In the model `Q(√d) = QuadraticAlgebra ℚ d 0`, the trace is `2 * re`. -/
-@[simp] theorem trace_eq_two_re (x : Qsqrtd d) :
-    Qsqrtd.trace x = 2 * x.re := by
+theorem trace_eq_two_re (x : Qsqrtd d) :
+    Algebra.trace ℚ (Qsqrtd d) x = 2 * x.re := by
   rw [trace_eq_re_add_re_star]
   simp
   ring
