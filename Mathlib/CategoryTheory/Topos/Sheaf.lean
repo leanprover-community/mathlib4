@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Topos.Classifier
+public import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
 
@@ -49,43 +50,36 @@ open Limits
 
 section presheaf
 
-variable (C) in
-/--
-The presheaf sending each object to the set of sieves on it.
-This presheaf will turn out to be a subobject classifier for the category of presheaves -/
-@[simps]
-def Functor.sieves : Cᵒᵖ ⥤ Type (max u v) where
-  obj X := Sieve X.unop
-  map f := fun s => s.pullback f.unop
+-- variable (C) in
 
-/-- The natural inclusion of the `Functor.closedSieves` presheaf in the `Functor.sieves` presheaf -/
-@[simps]
-def Functor.closedSievesInclusion (J : GrothendieckTopology C) :
-    Functor.closedSieves J ⟶ Functor.sieves C where
-  app X := Subtype.val
+-- /-- The natural inclusion of the `Functor.closedSieves` presheaf in the `Functor.sieves` presheaf -/
+-- @[simps]
+-- def Functor.closedSievesInclusion (J : GrothendieckTopology C) :
+--     Functor.closedSieves J ⟶ Functor.sieves C where
+--   app X := Subtype.val
 
-instance {J : GrothendieckTopology C} : Mono (Functor.closedSievesInclusion J) := by
-  simp [NatTrans.mono_iff_mono_app, mono_iff_injective, Functor.closedSievesInclusion]
+-- instance {J : GrothendieckTopology C} : Mono (Functor.closedSievesInclusion J) := by
+--   simp [NatTrans.mono_iff_mono_app, mono_iff_injective, Functor.closedSievesInclusion]
 
-/-- Given a natural transformation into `Functor.sieves`, it factors through `Functor.closedSieves`
-when at each component `X : C`, the range is contained in `{s : Sieve X | J.IsClosed s}`. -/
-@[simps app]
-def Functor.closedSievesFactorization (J : GrothendieckTopology C) {F : Cᵒᵖ ⥤ Type (max u v)}
-    (f : F ⟶ Functor.sieves C)
-    (hf : ∀ ⦃X : Cᵒᵖ⦄ (x : F.obj X), J.IsClosed (f.app X x)) : F ⟶ Functor.closedSieves J where
-  app X x := ⟨f.app X x, hf x⟩
-  naturality {X Y} g := by
-    dsimp
-    ext
-    simp [FunctorToTypes.naturality]
+-- /-- Given a natural transformation into `Functor.sieves`, it factors through `Functor.closedSieves`
+-- when at each component `X : C`, the range is contained in `{s : Sieve X | J.IsClosed s}`. -/
+-- @[simps app]
+-- def Functor.closedSievesFactorization (J : GrothendieckTopology C) {F : Cᵒᵖ ⥤ Type (max u v)}
+--     (f : F ⟶ Functor.sieves C)
+--     (hf : ∀ ⦃X : Cᵒᵖ⦄ (x : F.obj X), J.IsClosed (f.app X x)) : F ⟶ Functor.closedSieves J where
+--   app X x := ⟨f.app X x, hf x⟩
+--   naturality {X Y} g := by
+--     dsimp
+--     ext
+--     simp [FunctorToTypes.naturality]
 
-@[reassoc (attr := simp)]
-lemma Functor.closedSievesFactorization_comp_closedSievesInclusion (J : GrothendieckTopology C)
-    {F : Cᵒᵖ ⥤ Type (max u v)} (f : F ⟶ Functor.sieves C)
-    (hf : ∀ (X : Cᵒᵖ) (x : F.obj X), J.IsClosed (f.app X x)) :
-    closedSievesFactorization J f hf ≫ closedSievesInclusion J = f := by
-  ext
-  simp
+-- @[reassoc (attr := simp)]
+-- lemma Functor.closedSievesFactorization_comp_closedSievesInclusion (J : GrothendieckTopology C)
+--     {F : Cᵒᵖ ⥤ Type (max u v)} (f : F ⟶ Functor.sieves C)
+--     (hf : ∀ (X : Cᵒᵖ) (x : F.obj X), J.IsClosed (f.app X x)) :
+--     closedSievesFactorization J f hf ≫ closedSievesInclusion J = f := by
+--   ext
+--   simp
 
 variable (C) in
 /-- The truth morphism in the category of presheaves. At each component `X : C`, it is the constant
@@ -194,17 +188,19 @@ open Functor
 /-- The sheaf of closed sieves w/r/t `J`. See also `Functor.closedSieves` and `Sheaf.classifier` -/
 @[simps]
 def Sheaf.Ω {J : GrothendieckTopology C} : Sheaf J (Type max u v) where
-  obj := .closedSieves J
+  obj := (Functor.closedSieves J).toFunctor
   property := by
     rw [CategoryTheory.isSheaf_iff_isSheaf_of_type]
     exact CategoryTheory.classifier_isSheaf J
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `t : 1 ⟶ Ω` which picks out the maximal sieve -/
 @[simps]
 def Sheaf.truth {J : GrothendieckTopology C} :
     Sheaf.terminal J (Types.isTerminalPUnit) ⟶ Sheaf.Ω where
-  hom := closedSievesFactorization J (Presheaf.truth C) (fun {X} x => by cat_disch)
+  hom := (Functor.closedSieves J).lift (Presheaf.truth C) (fun {X} x => by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a monomorphism of sheaves `η : F ⟶ G`, an object X of the site, map an element `x : G(X)`
 to the (closed) sieve on X where `f : Y → X` is in the sieve iff
@@ -213,9 +209,12 @@ to the (closed) sieve on X where `f : Y → X` is in the sieve iff
 @[simps]
 def Sheaf.χ {J : GrothendieckTopology C} {F G : Sheaf J (Type max u v)} (m : F ⟶ G) [Mono m] :
     G ⟶ Sheaf.Ω where
-  hom := closedSievesFactorization J (Presheaf.χ m.hom)
-    (Presheaf.isClosed_χ_app_apply_of_isSheaf_of_isSeparated J m.hom F.property
-      ((isSheaf_iff_isSheaf_of_type _ _).mp G.property).isSeparated)
+  hom := (closedSieves J).lift (Presheaf.χ m.hom) (by
+    intro X
+    simp only [sieves_obj, Subfunctor.range_obj, closedSieves_obj, Set.le_iff_subset,
+      Set.range_subset_iff, Set.mem_setOf_eq]
+    exact Presheaf.isClosed_χ_app_apply_of_isSheaf_of_isSeparated J m.hom
+      F.property ((isSheaf_iff_isSheaf_of_type _ _).mp G.property).isSeparated _)
 
 lemma Sheaf.isPullback_χ_truth {J : GrothendieckTopology C} {F G : Sheaf J (Type max u v)}
     (m : F ⟶ G) [Mono m] : IsPullback m ((isTerminalTerminal J _).from F) (Sheaf.χ m)
@@ -223,29 +222,27 @@ lemma Sheaf.isPullback_χ_truth {J : GrothendieckTopology C} {F G : Sheaf J (Typ
   apply IsPullback.of_map (sheafToPresheaf J _)
   · ext : 1
     simp only [Ω_obj, ObjectProperty.FullSubcategory.comp_hom, χ_hom, terminal_obj, truth_hom,
-      ← cancel_mono (closedSievesInclusion J), Category.assoc]
-    rw [closedSievesFactorization_comp_closedSievesInclusion J (Presheaf.χ m.hom)]
+      ← cancel_mono (closedSieves J).ι, Category.assoc, Subfunctor.lift_ι]
     exact Presheaf.comp_χ_eq m.hom
-  · rw [sheafToPresheaf, ObjectProperty.ι_map]
-    simp only [ObjectProperty.ι_obj, terminal_obj, Ω_obj, ObjectProperty.ι_map, χ_hom, truth_hom]
+  · simp only [ObjectProperty.ι_obj, terminal_obj, Ω_obj, ObjectProperty.ι_map, χ_hom, truth_hom]
     apply IsPullback.of_right _
-      ((cancel_mono (closedSievesInclusion _)).mp (by simpa using Presheaf.comp_χ_eq _))
-      (.of_horiz_isIso_mono ⟨_⟩ : IsPullback (𝟙 _) _ (Presheaf.χ m.hom) (closedSievesInclusion J))
-    · simp only [Category.comp_id, closedSievesFactorization_comp_closedSievesInclusion]
+      ((cancel_mono ((closedSieves J).ι)).mp (by simpa using Presheaf.comp_χ_eq _))
+      (.of_horiz_isIso_mono ⟨_⟩ : IsPullback (𝟙 _) _ (Presheaf.χ m.hom) (closedSieves J).ι)
+    · simp only [Category.comp_id]
       exact Presheaf.isPullback_χ_truth m.hom
-    · simp_all [closedSievesFactorization_comp_closedSievesInclusion]
+    · simp_all
 
 lemma Sheaf.χ_unique {J : GrothendieckTopology C} {F G : Sheaf J (Type max u v)} (m : F ⟶ G)
     [Mono m] (χ' : G ⟶ Sheaf.Ω)
     (hχ' : IsPullback m ((isTerminalTerminal J _).from F) χ' (Sheaf.truth)) :
     χ' = Sheaf.χ m := by
   ext : 1
-  apply (cancel_mono (closedSievesInclusion J)).mp
-  simp only [χ_hom, closedSievesFactorization_comp_closedSievesInclusion]
+  apply (cancel_mono (closedSieves J).ι).mp
+  simp only [χ_hom, Subfunctor.lift_ι]
   apply Presheaf.χ_unique _
-  · have pb : IsPullback (𝟙 G.obj) χ'.hom (χ'.hom ≫ closedSievesInclusion J)
-      (closedSievesInclusion J) := @IsPullback.of_horiz_isIso_mono
-        _ _ _ _ _ _ _ _ _ _ _ (inferInstanceAs (Mono (closedSievesInclusion J))) (by simp)
+  · have pb : IsPullback (𝟙 G.obj) χ'.hom (χ'.hom ≫ (closedSieves J).ι)
+      (closedSieves J).ι := @IsPullback.of_horiz_isIso_mono
+        _ _ _ _ _ _ _ _ _ _ _ (inferInstanceAs (Mono (closedSieves J).ι)) (by simp)
     have : IsPullback m.hom ?_ χ'.hom (truth.hom) := by
       simpa using hχ'.map (sheafToPresheaf J _)
     simpa using this.paste_horiz pb
