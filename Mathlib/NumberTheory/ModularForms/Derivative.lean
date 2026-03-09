@@ -7,12 +7,6 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentiable
 
-open UpperHalfPlane hiding I
-open Real Complex
-open scoped Manifold
-
-@[expose] public noncomputable section
-
 /-!
 # Derivatives of modular forms
 
@@ -24,6 +18,12 @@ TODO:
 - Use above, prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
   for `sorry`-free proofs.
 -/
+
+open UpperHalfPlane hiding I
+open Real Complex
+open scoped Manifold
+
+@[expose] public noncomputable section
 
 /--
 Normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$.
