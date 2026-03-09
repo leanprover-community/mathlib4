@@ -47,7 +47,7 @@ open Matrix
 
 open Finset SimpleGraph
 
-variable {α V : Type*}
+variable {α V W : Type*}
 
 namespace Matrix
 
@@ -78,6 +78,28 @@ theorem apply_ne_one_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A
 theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
     ¬A i j = 0 ↔ A i j = 1 := by rw [← apply_ne_one_iff h, Classical.not_not]
 
+@[simp]
+theorem diag_eq [Zero α] [One α] (h : IsAdjMatrix A) : A.diag = 0 := by
+  ext
+  simp [h.apply_diag]
+
+theorem submatrix [Zero α] [One α] (h : IsAdjMatrix A) (f : W → V) :
+    A.submatrix f f |>.IsAdjMatrix where
+  zero_or_one i j := by simp [h.zero_or_one]
+  symm := h.symm.submatrix f
+  apply_diag i := by simp [h.apply_diag]
+
+theorem reindex [Zero α] [One α] (h : IsAdjMatrix A) (f : V ≃ W) :
+    A.reindex f f |>.IsAdjMatrix := by
+  rw [reindex_apply]
+  apply h.submatrix
+
+@[simp]
+theorem reindex_iff [Zero α] [One α] (f : V ≃ W) : (A.reindex f f).IsAdjMatrix ↔ A.IsAdjMatrix := by
+  refine ⟨fun h ↦ ?_, (·.reindex f)⟩
+  rw [← Matrix.reindex f f |>.symm_apply_apply A, Matrix.reindex_symm]
+  apply h.reindex
+
 /-- For `A : Matrix V V α` and `h : IsAdjMatrix A`,
 `h.toGraph` is the simple graph whose adjacency matrix is `A`. -/
 @[simps]
@@ -90,6 +112,21 @@ instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix 
     DecidableRel h.toGraph.Adj := by
   simp only [toGraph]
   infer_instance
+
+def toGraphSubmatrixHom [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : W → V) :
+    (h.submatrix f).toGraph →g h.toGraph where
+  toFun := f
+  map_rel' := by simp
+
+def toGraphSubmatrixEmbedding [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : W ↪ V) :
+    (h.submatrix f).toGraph ↪g h.toGraph where
+  __ := f
+  map_rel_iff' := by simp
+
+def toGraphReindexIso [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : V ≃ W) :
+    (h.reindex f).toGraph ≃g h.toGraph where
+  __ := f.symm
+  map_rel_iff' := by simp
 
 @[simp] theorem hadamard_self [MulZeroOneClass α] {A : Matrix V V α} (hA : A.IsAdjMatrix) :
     A ⊙ A = A := by ext i j; have := hA.zero_or_one i j; aesop
@@ -189,6 +226,7 @@ theorem isAdjMatrix_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsAdjMatrix 
   zero_or_one := by grind [adjMatrix_apply]
 
 /-- The graph induced by the adjacency matrix of `G` is `G` itself. -/
+@[simp]
 theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
     (G.isAdjMatrix_adjMatrix α).toGraph = G := by
   ext
@@ -197,6 +235,20 @@ theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
 
 theorem compl_adjMatrix_eq_adjMatrix_compl [DecidableEq V] [DecidableEq α] [Zero α] [One α] :
     (G.adjMatrix α).compl = Gᶜ.adjMatrix α := by aesop (add simp [Matrix.compl])
+
+variable {G} in
+@[simp]
+theorem Embedding.submatrix_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [DecidableRel H.Adj]
+    (f : G ↪g H) : (H.adjMatrix α).submatrix f f = G.adjMatrix α := by
+  ext
+  simp
+
+variable {G} in
+@[simp]
+theorem Iso.reindex_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [DecidableRel H.Adj]
+    (f : G ≃g H) : (G.adjMatrix α).reindex f f = H.adjMatrix α := by
+  rw [reindex_apply]
+  exact f.symm.toEmbedding.submatrix_adjMatrix α
 
 set_option backward.isDefEq.respectTransparency false in
 variable {G} in
