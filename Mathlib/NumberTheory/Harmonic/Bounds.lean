@@ -30,7 +30,6 @@ theorem log_add_one_le_harmonic (n : ℕ) :
   · exact (inv_antitoneOn_Icc_right <| by simp).integral_le_sum_Ico (Nat.le_add_left 1 n)
   · simp only [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem harmonic_le_one_add_log (n : ℕ) :
     harmonic n ≤ 1 + Real.log n := by
   by_cases hn0 : n = 0

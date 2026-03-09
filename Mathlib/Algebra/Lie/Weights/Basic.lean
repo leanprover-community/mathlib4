@@ -328,7 +328,6 @@ theorem exists_genWeightSpace_zero_le_ker_of_isNoetherian
     ∃ k : ℕ, genWeightSpace M (0 : L → R) ≤ LinearMap.ker (toEnd R L M x ^ k) := by
   simpa using exists_genWeightSpace_le_ker_of_isNoetherian M (0 : L → R) x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_toEnd_sub_algebraMap [IsNoetherian R M] (χ : L → R) (x : L) :
     _root_.IsNilpotent <| toEnd R L (genWeightSpace M χ) x - algebraMap R _ (χ x) := by
   have : toEnd R L (genWeightSpace M χ) x - algebraMap R _ (χ x) =
@@ -764,6 +763,17 @@ lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
   have := iSup_genWeightSpace_eq_top K L M
   erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
   exact this
+
+lemma eq_iSup_inf_genWeightSpace [IsTriangularizable K L M] (N : LieSubmodule K L M) :
+    N = ⨆ χ : Weight K L M, N ⊓ genWeightSpace M χ := by
+  refine le_antisymm ?_ (iSup_le fun χ ↦ inf_le_left)
+  conv_lhs => rw [← N.map_incl_top, ← iSup_genWeightSpace_eq_top' K L N, LieSubmodule.map_iSup]
+  refine iSup_le fun χ_N ↦ ?_
+  have hN := (LieSubmodule.map_mono (le_top : genWeightSpace N χ_N ≤ ⊤)).trans N.map_incl_top.le
+  exact (le_inf hN (map_genWeightSpace_le _)).trans <| by
+    by_cases h : genWeightSpace M (χ_N : L → K) = ⊥
+    · simp [h]
+    · exact le_iSup_of_le ⟨_, h⟩ le_rfl
 
 end field
 

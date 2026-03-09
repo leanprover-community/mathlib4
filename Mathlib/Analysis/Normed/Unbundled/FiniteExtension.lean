@@ -115,7 +115,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     rw [sum_mul, map_finset_sum]
     simp_rw [smul_mul_assoc, map_smul, mul_sum, map_finset_sum, mul_smul_comm, map_smul]
     have hna' : IsNonarchimedean (NormedField.toMulRingNorm K) := hna
-    /- Since the norm is nonarchimidean, the norm of a finite sum is bounded by the maximum of the
+    /- Since the norm is nonarchimedean, the norm of a finite sum is bounded by the maximum of the
           norms of the summands. -/
     obtain ⟨k, -, (hk : ‖∑ i : ι, (B.repr x i • ∑ i_1 : ι,
       B.repr y i_1 • B.repr (B i * B i_1)) ixy‖ ≤
@@ -148,7 +148,6 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     exact lt_of_lt_of_le h_pos
       (hc ▸ Finset.le_sup' (fun i : ι × ι ↦ B.norm (B i.1 * B i.2)) (mem_univ (i, i)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any `k : K`, `y : L`, we have
   `B.norm ((algebra_map K L) k * y) = B.norm ((algebra_map K L) k) * B.norm y`. -/
 theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i : ι}
