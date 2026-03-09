@@ -171,7 +171,8 @@ theorem IsSeqCompact.IsCountablyCompact (hA : IsSeqCompact A) :
     let ⟨a, ha, _, h_mono, h_tendsto⟩ := hA h
     ⟨a, ha, h_tendsto.mapClusterPt.of_comp h_mono.tendsto_atTop⟩
 
-/-- If a sequential space is countably compact, then it is sequentially compact. -/
+/-- If a sequential space is countably compact, then it is sequentially compact. We follow the
+proof in [kremsater1972sequential]. -/
 instance [SequentialSpace E] [CountablyCompactSpace E] :
     SeqCompactSpace E := by
   by_contra!
