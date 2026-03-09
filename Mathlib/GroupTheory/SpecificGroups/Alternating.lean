@@ -252,9 +252,9 @@ theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ 
     rw [this, closure_cycleType_eq_two_two_eq_alternatingGroup h5]
     aesop
   ext g
-  refine ⟨fun ⟨k, _⟩ ↦ by simp_all, fun hg ↦ ⟨⟨g, by
-    simp only [Set.mem_setOf_eq] at hg
-    simp [sign_of_cycleType, hg, ← Units.val_inj]⟩, by simpa⟩⟩
+  refine ⟨fun ⟨k, _⟩ ↦ by simp_all, fun hg ↦ ⟨⟨g, ?_⟩, by simpa⟩⟩
+  simp only [Set.mem_setOf_eq] at hg
+  simp [sign_of_cycleType, hg, ← Units.val_inj]
 
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/

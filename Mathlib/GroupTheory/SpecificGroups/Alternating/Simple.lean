@@ -100,14 +100,14 @@ theorem alternatingGroup_of_le_of_normal
   replace hg_ne : (toPerm g : Perm (Set.powersetCard α 2)) = 1 := by
     ext1 s
     exact hg_ne s
-  rw [Set.powersetCard.mulAction_faithful (n := 2) (G := Perm α) (α := α) (g := g)
-    (by norm_num)
-    (by
-      have : CharZero ℕ∞ := instCharZeroENat
-      rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
+  convert hg_ne
+  symm
+  apply Set.powersetCard.mulAction_faithful
+  · norm_num
+  · have : CharZero ℕ∞ := instCharZeroENat
+    rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
           Nat.ofNat_lt_cast, ← Nat.card_eq_fintype_card]
-      exact le_trans (by norm_num) hα)] at hg_ne
-  exact hg_ne
+    exact le_trans (by norm_num) hα
 
 end Equiv.Perm
 
