@@ -49,13 +49,8 @@ variable (C : Type u) [Category.{v} C]
 
 /-- The category of simplicial objects valued in a category `C`.
 This is the category of contravariant functors from `SimplexCategory` to `C`. -/
-def SimplicialObject :=
+abbrev SimplicialObject :=
   SimplexCategoryᵒᵖ ⥤ C
-
-@[simps!]
-instance : Category (SimplicialObject C) := by
-  dsimp only [SimplicialObject]
-  infer_instance
 
 namespace SimplicialObject
 
@@ -224,34 +219,11 @@ def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ 
   whiskeringRight _ _ _
 
 /-- Truncated simplicial objects. -/
-def Truncated (n : ℕ) :=
-  (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
-
-instance {n : ℕ} : Category (Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
+abbrev Truncated (n : ℕ) := (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
 
 variable {C}
 
 namespace Truncated
-
-set_option backward.isDefEq.respectTransparency false in
-instance {n} {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
-    HasLimitsOfShape J (SimplicialObject.Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
-
-instance {n} [HasLimits C] : HasLimits (SimplicialObject.Truncated C n) :=
-  ⟨inferInstance⟩
-
-set_option backward.isDefEq.respectTransparency false in
-instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
-    HasColimitsOfShape J (SimplicialObject.Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
-
-instance {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) :=
-  ⟨inferInstance⟩
 
 variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
