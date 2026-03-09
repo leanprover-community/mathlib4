@@ -498,7 +498,7 @@ theorem isLittleO_iff_exists_eq_mul :
   · exact fun h => ⟨fun x => u x / v x, h.tendsto_div_nhds_zero, h.eventually_mul_div_cancel.symm⟩
   · simp only [IsLittleO_def]
     rintro ⟨φ, hφ, huvφ⟩ c hpos
-    rw [NormedAddCommGroup.tendsto_nhds_zero] at hφ
+    rw [NormedAddGroup.tendsto_nhds_zero] at hφ
     exact isBigOWith_of_eq_mul _ ((hφ c hpos).mono fun x => le_of_lt) huvφ
 
 alias ⟨IsLittleO.exists_eq_mul, _⟩ := isLittleO_iff_exists_eq_mul

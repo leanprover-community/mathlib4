@@ -47,7 +47,6 @@ lemma sfiniteSeq_le (μ : Measure α) [SFinite μ] (n : ℕ) : sfiniteSeq μ n �
 
 instance : SFinite (0 : Measure α) := ⟨fun _ ↦ 0, inferInstance, by rw [Measure.sum_zero]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma sfiniteSeq_zero (n : ℕ) : sfiniteSeq (0 : Measure α) n = 0 :=
   bot_unique <| sfiniteSeq_le _ _
@@ -232,7 +231,6 @@ theorem finite_const_le_meas_of_disjoint_iUnion {ι : Type*} [MeasurableSpace α
   finite_const_le_meas_of_disjoint_iUnion₀ μ ε_pos (fun i ↦ (As_mble i).nullMeasurableSet)
     (fun _ _ h ↦ Disjoint.aedisjoint (As_disj h)) Union_As_finite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If all elements of an infinite set have measure uniformly separated from zero,
 then the set has infinite measure. -/
 theorem _root_.Set.Infinite.meas_eq_top [MeasurableSingletonClass α]

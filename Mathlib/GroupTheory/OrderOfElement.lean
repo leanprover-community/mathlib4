@@ -667,10 +667,10 @@ theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
         _ = x ^ (m + k) := by simp [Nat.add_comm]
         _ = x ^ m := h
         _ = 1 * x ^ m := by simp
-    exact by simpa using Nat.ModEq.add_left m ((pow_eq_one_iff_modEq).1 hk)
+    exact by simpa using Nat.ModEq.add_left m (pow_eq_one_iff_modEq.1 hk)
   · intro h
     have hk : x ^ k = 1 := by
-      apply (pow_eq_one_iff_modEq).2
+      apply pow_eq_one_iff_modEq.2
       exact Nat.ModEq.add_left_cancel' m (by simpa using h)
     calc
       x ^ (m + k) = x ^ m * x ^ k := by rw [pow_add]
@@ -1173,6 +1173,10 @@ theorem pow_gcd_card_eq_one_iff : x ^ n.gcd (Fintype.card G) = 1 ↔ x ^ n = 1 :
 theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H] (g : G) :
     g ^ index H ∈ H := by rw [← eq_one_iff, QuotientGroup.mk_pow H, index, pow_card_eq_one']
 
+@[to_additive]
+lemma Subgroup.pow_relIndex_mem {G : Type*} [Group G] (H : Subgroup G) [H.Normal] {K : Subgroup G}
+    {g : G} (hg : g ∈ K) : g ^ H.relIndex K ∈ H :=
+  pow_index_mem (H.subgroupOf K) ⟨g, hg⟩
 
 @[to_additive (attr := simp) mod_card_nsmul]
 lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n := by
