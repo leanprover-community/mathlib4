@@ -36,7 +36,7 @@ def IsRestricted (c : σ → ℝ) (f : MvPowerSeries σ R) :=
 @[simp]
 lemma isRestricted_abs_iff (c : σ → ℝ) (f : MvPowerSeries σ R) :
     IsRestricted |c| f ↔ IsRestricted c f := by
-  simp [IsRestricted, NormedAddCommGroup.tendsto_nhds_zero, Finsupp.prod]
+  simp [IsRestricted, NormedAddGroup.tendsto_nhds_zero, Finsupp.prod]
 
 lemma isRestricted_zero (c : σ → ℝ) : IsRestricted c (0 : MvPowerSeries σ R) := by
   simpa [IsRestricted] using tendsto_const_nhds

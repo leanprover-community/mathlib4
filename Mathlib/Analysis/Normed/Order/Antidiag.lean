@@ -37,7 +37,7 @@ lemma tendsto_antidiagonal {M S : Type*} [AddMonoid M] [Finset.HasAntidiagonal M
     (Tendsto.bddAbove_range_of_cofinite (Filter.Tendsto.norm hg))
   simp only [norm_mul, Real.norm_eq_abs, Set.mem_range, forall_exists_index,
     forall_apply_eq_imp_iff] at hF hG
-  simp only [NormedAddCommGroup.tendsto_nhds_zero, gt_iff_lt, Real.norm_eq_abs, eventually_cofinite,
+  simp only [NormedAddGroup.tendsto_nhds_zero, gt_iff_lt, Real.norm_eq_abs, eventually_cofinite,
     not_lt] at *
   intro ε hε
   let I := {x | ε / G ≤ |‖f x‖ * C x|}
