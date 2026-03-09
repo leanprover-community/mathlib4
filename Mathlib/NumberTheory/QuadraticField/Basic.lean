@@ -120,22 +120,17 @@ lemma Qsqrtd.one_not_isField : ¬ IsField (Qsqrtd (1 : ℚ)) := by
 
 /-- A squarefree integer that is a perfect square must equal `1`. -/
 lemma eq_one_of_squarefree_isSquare {d : ℤ} (hd : Squarefree d) (hsq : IsSquare d) : d = 1 := by
-  rcases hsq with ⟨z, hz⟩
-  by_cases huz : IsUnit z
-  · rcases Int.isUnit_iff.mp huz with hz1 | hz1
-    · simpa [hz1] using hz
-    · simpa [hz1] using hz
-  · have hsqz2 : Squarefree (z ^ 2) := by
-      simpa [hz, pow_two] using hd
-    have h01 : (2 : ℕ) = 0 ∨ (2 : ℕ) = 1 :=
-      Squarefree.eq_zero_or_one_of_pow_of_not_isUnit (x := z) (n := 2) hsqz2 huz
-    norm_num at h01
+  rcases Int.isUnit_iff.mp (hd.isUnit_of_isSquare hsq) with h | h
+  · exact h
+  · obtain ⟨z, hz⟩ := hsq
+    have : z * z ≥ 0 := mul_self_nonneg z
+    omega
 
 /-- For a squarefree integer `d ≠ 1`, `d` is not a perfect square in `ℤ`. -/
 lemma not_isSquare_int_of_squarefree_ne_one {d : ℤ}
     (hd : Squarefree d) (h1 : d ≠ 1) : ¬ IsSquare d := by
-  intro hdSq
-  exact h1 (eq_one_of_squarefree_isSquare hd hdSq)
+  intro hsq
+  exact h1 (eq_one_of_squarefree_isSquare hd hsq)
 
 /-- For a squarefree integer `d ≠ 1`, `(d : ℚ)` is not a perfect square in `ℚ`. -/
 lemma not_isSquare_ratCast_of_squarefree_ne_one {d : ℤ}
@@ -150,7 +145,26 @@ instance instFact_not_isSquare_ratCast_of_squarefree_ne_one
   ⟨not_isSquare_ratCast_of_squarefree_ne_one
     (d := d) (Fact.out : Squarefree d) (Fact.out : d ≠ 1)⟩
 
-/-! ## Field and Quadratic Extension Instances -/
+/-! ## Quadratic Extension Instances -/
+
+/-- The `Module ℚ` instance from the `Field` algebra structure on `QuadraticAlgebra ℚ a b`
+coincides with the `QuadraticAlgebra` module structure. This resolves the diamond between
+the two `Algebra ℚ` instances (`DivisionRing.toRatAlgebra` vs `QuadraticAlgebra.instAlgebra`). -/
+private theorem QuadraticAlgebra.module_eq (a b : ℚ) [Fact (∀ r : ℚ, r ^ 2 ≠ a + b * r)] :
+    (Algebra.toModule : Module ℚ (QuadraticAlgebra ℚ a b)) =
+      QuadraticAlgebra.instModule := by
+  refine Module.ext' _ _ ?_
+  intro r x
+  simpa [Algebra.smul_def, QuadraticAlgebra.algebraMap_eq] using
+    (QuadraticAlgebra.C_mul_eq_smul (R := ℚ) (a := a) (b := b) r x)
+
+/-- Any `QuadraticAlgebra ℚ a b` that is a field is automatically a quadratic extension
+of `ℚ`, i.e., a degree-2 extension. Combined with `IsQuadraticField.instNumberField`,
+this gives `NumberField (QuadraticAlgebra ℚ a b)` for free. -/
+instance QuadraticAlgebra.instIsQuadraticExtension (a b : ℚ)
+    [Fact (∀ r : ℚ, r ^ 2 ≠ a + b * r)] :
+    Algebra.IsQuadraticExtension ℚ (QuadraticAlgebra ℚ a b) where
+  finrank_eq_two' := QuadraticAlgebra.module_eq a b ▸ QuadraticAlgebra.finrank_eq_two a b
 
 namespace Qsqrtd
 
@@ -159,21 +173,5 @@ namespace Qsqrtd
 instance instFact_of_not_isSquare (d : ℚ) [Fact (¬ IsSquare d)] :
     Fact (∀ r : ℚ, r ^ 2 ≠ d + 0 * r) :=
   ⟨by intro r hr; exact (Fact.out : ¬ IsSquare d) ⟨r, by nlinarith [hr]⟩⟩
-
-/-- The `Module ℚ` instance from the `Field` algebra structure on `Qsqrtd d` coincides
-with the `QuadraticAlgebra` module structure. This resolves the diamond. -/
-private theorem module_eq (d : ℚ) [Fact (¬ IsSquare d)] :
-    (Algebra.toModule : Module ℚ (Qsqrtd d)) =
-      QuadraticAlgebra.instModule := by
-  refine Module.ext' _ _ ?_
-  intro r x
-  simpa [Algebra.smul_def, QuadraticAlgebra.algebraMap_eq] using
-    (QuadraticAlgebra.C_mul_eq_smul (R := ℚ) (a := d) (b := (0 : ℚ)) r x)
-
-/-- `Q(√d)/ℚ` is a quadratic extension: free of rank 2 over `ℚ`.
-The `NumberField` instance then follows from `IsQuadraticField.instNumberField`. -/
-instance instIsQuadraticExtension (d : ℚ) [Fact (¬ IsSquare d)] :
-    Algebra.IsQuadraticExtension ℚ (Qsqrtd d) where
-  finrank_eq_two' := module_eq d ▸ QuadraticAlgebra.finrank_eq_two d 0
 
 end Qsqrtd
