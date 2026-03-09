@@ -83,6 +83,7 @@ end Completion
 open Completion
 
 open scoped Classical in
+/-- The inertia degree of `w` over `v`. -/
 protected noncomputable def inertiaDeg : ℕ :=
   if _ : w.1.LiesOver v.1 then (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.Completion) else 0
 
@@ -98,18 +99,16 @@ theorem inertiaDeg_eq_finrank [w.1.LiesOver v.1] :
     (RingEquiv.quotientBot w.Completion) (by ext; simp [RingHom.algebraMap_toAlgebra])
 
 variable {v w} in
-open Completion in
 theorem inertiaDeg_eq_one (hw : w ∈ unramifiedPlacesOver L v) : v.inertiaDeg w = 1 :=
   have := hw.1; finrank_eq_one_of_isUnramified v w hw.2 ▸ inertiaDeg_eq_finrank v w
 
 variable {v w} in
-open Completion in
 theorem inertiaDeg_eq_two (hw : w ∈ ramifiedPlacesOver L v) : v.inertiaDeg w = 2 :=
   have := hw.1; finrank_eq_two_of_isRamified v w hw.2 ▸ inertiaDeg_eq_finrank v w
 
 variable (K L) in
 open scoped Classical in
-open Completion Finset Set in
+open Finset Set in
 /-- The degree of `L` over `K` is equal to the sum of the inertia degrees of the places over `v`. -/
 theorem sum_inertiaDeg_eq_finrank [NumberField K] [NumberField L] :
     ∑ w ∈ v.placesOver L, v.inertiaDeg w = Module.finrank K L := by

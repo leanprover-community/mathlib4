@@ -192,8 +192,6 @@ theorem bijective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : Is
 def ringEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.Completion ≃+* ℂ := RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isComplex hv)
 
-@[simp] theorem ringEquivComplexOfIsComplex_toRingHom {v : InfinitePlace K} (hv : IsComplex v) :
-    (ringEquivComplexOfIsComplex hv).toRingHom = extensionEmbedding v := rfl
 @[simp] theorem ringEquivComplexOfIsComplex_apply {v : InfinitePlace K} (hv : IsComplex v)
     (x : v.Completion) : ringEquivComplexOfIsComplex hv x = extensionEmbedding v x := rfl
 
@@ -225,8 +223,6 @@ alias bijective_extensionEmbedding_of_isReal := bijective_extensionEmbeddingOfIs
 def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃+* ℝ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbeddingOfIsReal hv)
 
-@[simp] theorem ringEquivRealOfIsReal_toRingHom {v : InfinitePlace K} (hv : IsReal v) :
-    (ringEquivRealOfIsReal hv).toRingHom = extensionEmbeddingOfIsReal hv := rfl
 @[simp] theorem ringEquivRealOfIsReal_apply {v : InfinitePlace K} (hv : IsReal v)
     (x : v.Completion) : ringEquivRealOfIsReal hv x = extensionEmbeddingOfIsReal hv x := rfl
 
