@@ -878,6 +878,10 @@ def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
 theorem coe_inclusion {S T : Subring R} (h : S ≤ T) (x : S) :
     (Subring.inclusion h x : R) = x := by simp [Subring.inclusion]
 
+theorem inclusion_injective {S T : Subring R} (h : S ≤ T) :
+    Function.Injective (Subring.inclusion h) :=
+  RingHom.injective_codRestrict.mpr (S.subtype_injective)
+
 @[simp]
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe

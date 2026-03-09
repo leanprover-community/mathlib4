@@ -288,12 +288,8 @@ theorem idealOfLE_self : A.idealOfLE A (refl _) = IsLocalRing.maximalIdeal A := 
 
 @[simp]
 theorem idealOfLE_top : A.idealOfLE ⊤ (fun _ _ => trivial) = ⊥ := by
-  rw [Submodule.eq_bot_iff, ValuationSubring.idealOfLE]
-  intro x hx
-  simp only [IsLocalRing.maximalIdeal_eq_bot, Ideal.mem_comap, Submodule.mem_bot, Subtype.ext_iff,
-    ZeroMemClass.coe_zero] at hx ⊢
-  rw [← hx]
-  rfl
+  rw [ValuationSubring.idealOfLE, IsLocalRing.maximalIdeal_eq_bot, Ideal.comap_bot_of_injective]
+  exact Subring.inclusion_injective _
 
 instance prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R S h).IsPrime :=
   (IsLocalRing.maximalIdeal S).comap_isPrime _
