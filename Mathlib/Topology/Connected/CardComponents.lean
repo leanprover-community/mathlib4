@@ -66,7 +66,7 @@ lemma IsOpenMap.enatCard_connectedComponents_le_encard_preimage_singleton [Conne
 lemma IsOpenMap.finite_connectedComponents_of_finite_preimage_singleton_of_connectedSpace
     [ConnectedSpace Y] {y : Y} (hy : (f ⁻¹' {y}).Finite) :
     Finite (ConnectedComponents X) := by
-  rw [← ENat.card_lt_top_iff_finite]
+  rw [← ENat.card_lt_top]
   exact lt_of_le_of_lt (hf₁.enatCard_connectedComponents_le_encard_preimage_singleton hf₂ y)
     hy.encard_lt_top
 
