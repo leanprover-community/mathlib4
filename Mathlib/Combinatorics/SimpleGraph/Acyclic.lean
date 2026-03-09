@@ -63,10 +63,6 @@ structure IsTree : Prop where
 
 variable {G G'}
 
-/-- A vertex in a simple graph is a tree leaf if the graph is a tree and the vertex has degree 1. -/
-def IsTree.IsLeaf [Fintype V] [DecidableRel G.Adj] (h : G.IsTree) (v : V) : Prop :=
-  let _ := h; G.degree v = 1
-
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
 /-- A graph that has an injective homomorphism to an acyclic graph is acyclic. -/
@@ -515,22 +511,12 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
 theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (hTree : G.IsTree) :
     ∃ (v1 v2: V), v1 ≠ v2 ∧ G.degree v1 = 1 ∧ G.degree v2 = 1 := by
-  have : Nonempty V := Nontrivial.to_nonempty
   have ⟨u, v, p, hp_isPath, hp_max⟩ := exists_isPath_forall_isPath_length_le_length G
   obtain ⟨x, y, hxy⟩ := exists_pair_ne V
   have ⟨walk_xy, h_walk_is_path⟩ := hTree.isConnected.exists_isPath x y
   have h_len_ge_1 : 1 ≤ p.length := by
     refine (Nat.succ_le_of_lt ?_).trans (hp_max _ _ _ h_walk_is_path)
     cases walk_xy with | nil => exact (hxy rfl).elim | cons _ _ => exact Nat.succ_pos _
-  refine ⟨u, v, ?_, ?_, ?_⟩
-  · rintro rfl
-    cases p with
-    | nil =>
-        simp only [SimpleGraph.Walk.length_nil] at h_len_ge_1
-        exact (Nat.not_succ_le_zero 0 h_len_ge_1).elim
-    | cons h_adj p_tail =>
-        rw [isPath_def, support_cons, List.nodup_cons] at hp_isPath
-        exact hp_isPath.left <| end_mem_support _
   classical
   let h_is_leaf (v1 v2 : V) (path : G.Walk v1 v2) (h_p : path.IsPath)
       (h_m : ∀ (x y : V) (w : G.Walk x y), w.IsPath → w.length ≤ path.length)
@@ -553,6 +539,8 @@ theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRe
         simp [SimpleGraph.Walk.IsPath.of_adj hw_adj, p1]
       set p2 := path.takeUntil w hw_in_p with h_p2_def
       have hp2_path : p2.IsPath := h_p.takeUntil hw_in_p
+      let path1 : G.Path v1 w := ⟨p1, hp1_path⟩
+      let path2 : G.Path v1 w := ⟨p2, hp2_path⟩
       have h_ne : p1 ≠ p2 := by
         intro h_eq
         have h_len : p1.length = p2.length := by rw [h_eq]
@@ -561,12 +549,19 @@ theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRe
           rw [h_len, h_p2_def, path.getVert_length_takeUntil]
         exact hw_not_next h1
       apply h_ne
-      congr
-      exact h_acyclic ⟨p1, hp1_path⟩ ⟨p2, hp2_path⟩
+      exact Subtype.val_inj.mpr (h_acyclic path1 path2)
     let p_ext := (SimpleGraph.Walk.cons' w v1 v2 hw_adj.symm path)
     have h_ext_path : p_ext.IsPath := (SimpleGraph.Walk.cons_isPath_iff _ _).mpr ⟨h_p, hw_not_in_p⟩
     exact (Nat.not_succ_le_self path.length (h_m w v2 p_ext h_ext_path)).elim
-  constructor
+  refine ⟨u, v, ?_, ?_, ?_⟩
+  · rintro rfl
+    cases p with
+    | nil =>
+        simp only [SimpleGraph.Walk.length_nil] at h_len_ge_1
+        exact (Nat.not_succ_le_zero 0 h_len_ge_1).elim
+    | cons h_adj p_tail =>
+        rw [isPath_def, support_cons, List.nodup_cons] at hp_isPath
+        exact hp_isPath.left <| end_mem_support _
   · exact h_is_leaf u v p hp_isPath hp_max h_len_ge_1
   · exact h_is_leaf v u p.reverse hp_isPath.reverse
       (fun _ _ w hw => p.length_reverse ▸ hp_max _ _ w hw) (p.length_reverse ▸ h_len_ge_1)
