@@ -451,6 +451,7 @@ open MonoidWithZeroHom ValueGroup₀
 def valueGroupOrderIso₀ : ValueGroup₀ (v.valuation K) ≃*o ℤᵐ⁰ :=
   valueGroupOrderIsoOfSurjective₀ (v.valuation_surjective K)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem valueGroupOrderIso₀_restrict (b : K) :
     v.valueGroupOrderIso₀ K ((v.valuation K).restrict b) = v.valuation K b := by
   rw [(v.valuation K).restrict_def, restrict₀_apply]
