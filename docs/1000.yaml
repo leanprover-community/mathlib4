@@ -1920,6 +1920,9 @@ Q1964537:
 
 Q1966978:
   title: Lévy continuity theorem
+  decl: MeasureTheory.ProbabilityMeasure.tendsto_iff_tendsto_charFun
+  authors: Rémy Degenne
+  date: 2026
 
 Q1974087:
   title: Riemann's theorem on removable singularities
