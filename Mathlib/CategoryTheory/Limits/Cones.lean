@@ -256,7 +256,7 @@ structure ConeMorphism (A B : Cone F) where
   /-- A morphism between the two vertex objects of the cones -/
   hom : A.pt ⟶ B.pt
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  w : dsimp% ∀ j : J, hom ≫ B.π.app j = A.π.app j := by cat_disch
+  w : ∀ j : J, hom ≫ B.π.app j = A.π.app j := by cat_disch
 
 attribute [reassoc (attr := simp)] ConeMorphism.w
 
