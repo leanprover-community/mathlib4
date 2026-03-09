@@ -449,7 +449,7 @@ open MonoidWithZeroHom ValueGroup₀
 /-- The order isomorphism between the value group of the `v`-adic valuation on `K` and `ℤᵐ⁰`. -/
 @[simps!]
 def valueGroupOrderIso₀ : ValueGroup₀ (v.valuation K) ≃*o ℤᵐ⁰ :=
-  valueGroupOrderIsoOfSurjective₀ _ (v.valuation_surjective K)
+  valueGroupOrderIsoOfSurjective₀ (v.valuation_surjective K)
 
 theorem valueGroupOrderIso₀_restrict (b : K) :
     v.valueGroupOrderIso₀ K ((v.valuation K).restrict b) = v.valuation K b := by

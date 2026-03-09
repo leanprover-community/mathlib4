@@ -121,18 +121,19 @@ lemma mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueGroup f := by
 lemma inv_mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b⁻¹ ∈ valueGroup f :=
   Subgroup.inv_mem _ (mem_valueGroup f hb)
 
-lemma valueGroup_eq_top_of_surjective (hf : Function.Surjective f) : valueGroup f = ⊤ := by
-  simp [valueGroup_def, valueMonoid_eq_closure, hf.range_eq]
+lemma valueGroup_eq_top_of_surjective {f : A →*₀ B} (hf : Function.Surjective f) :
+    valueGroup f = ⊤ := by simp [valueGroup_def, valueMonoid_eq_closure, hf.range_eq]
 
 /-- The multiplicative isomorphism between `valueGroup f` and `Bˣ` when `f` is surjective -/
-def valueGroupEquivOfSurjective (hf : Function.Surjective f) : valueGroup f ≃* Bˣ :=
-  (MulEquiv.subgroupCongr (valueGroup_eq_top_of_surjective f hf)).trans Subgroup.topEquiv
+def valueGroupMulEquivOfSurjective {f : A →*₀ B} (hf : Function.Surjective f) :
+    valueGroup f ≃* Bˣ :=
+  (MulEquiv.subgroupCongr (valueGroup_eq_top_of_surjective hf)).trans Subgroup.topEquiv
 
 /-- The multiplicative order isomorphism between `valueGroup f` and `Bˣ` when `f` is surjective -/
 @[simps!]
-def valueGroupOrderIsoOfSurjective [Preorder Bˣ] (hf : Function.Surjective f) :
+def valueGroupOrderIsoOfSurjective [Preorder Bˣ] {f : A →*₀ B} (hf : Function.Surjective f) :
     valueGroup f ≃*o Bˣ where
-  __ := (MulEquiv.subgroupCongr (valueGroup_eq_top_of_surjective f hf)).trans Subgroup.topEquiv
+  __ := (MulEquiv.subgroupCongr (valueGroup_eq_top_of_surjective hf)).trans Subgroup.topEquiv
   map_le_map_iff' {a b} := by simp
 
 section LinearOrderedCommGroupWithZero
@@ -142,8 +143,9 @@ variable {B : Type*} [LinearOrderedCommGroupWithZero B] [FunLike F A B]
 
 /-- The multiplicative order isomorphism between `ValueGroup₀ f` and `B` when `f` is surjective. -/
 @[simps!]
-def valueGroupOrderIsoOfSurjective₀ (hf : Function.Surjective f) : ValueGroup₀ f ≃*o B :=
-  (OrderMonoidIso.withZero (valueGroupOrderIsoOfSurjective _ hf)).trans OrderMonoidIso.withZeroUnits
+def valueGroupOrderIsoOfSurjective₀ {f : A →*₀ B} (hf : Function.Surjective f) :
+    ValueGroup₀ f ≃*o B :=
+  (OrderMonoidIso.withZero (valueGroupOrderIsoOfSurjective hf)).trans OrderMonoidIso.withZeroUnits
 
 end LinearOrderedCommGroupWithZero
 
