@@ -50,37 +50,6 @@ open Limits
 
 section presheaf
 
--- variable (C) in
-
--- /-- The natural inclusion of the `Functor.closedSieves` presheaf in the `Functor.sieves` presheaf -/
--- @[simps]
--- def Functor.closedSievesInclusion (J : GrothendieckTopology C) :
---     Functor.closedSieves J ⟶ Functor.sieves C where
---   app X := Subtype.val
-
--- instance {J : GrothendieckTopology C} : Mono (Functor.closedSievesInclusion J) := by
---   simp [NatTrans.mono_iff_mono_app, mono_iff_injective, Functor.closedSievesInclusion]
-
--- /-- Given a natural transformation into `Functor.sieves`, it factors through `Functor.closedSieves`
--- when at each component `X : C`, the range is contained in `{s : Sieve X | J.IsClosed s}`. -/
--- @[simps app]
--- def Functor.closedSievesFactorization (J : GrothendieckTopology C) {F : Cᵒᵖ ⥤ Type (max u v)}
---     (f : F ⟶ Functor.sieves C)
---     (hf : ∀ ⦃X : Cᵒᵖ⦄ (x : F.obj X), J.IsClosed (f.app X x)) : F ⟶ Functor.closedSieves J where
---   app X x := ⟨f.app X x, hf x⟩
---   naturality {X Y} g := by
---     dsimp
---     ext
---     simp [FunctorToTypes.naturality]
-
--- @[reassoc (attr := simp)]
--- lemma Functor.closedSievesFactorization_comp_closedSievesInclusion (J : GrothendieckTopology C)
---     {F : Cᵒᵖ ⥤ Type (max u v)} (f : F ⟶ Functor.sieves C)
---     (hf : ∀ (X : Cᵒᵖ) (x : F.obj X), J.IsClosed (f.app X x)) :
---     closedSievesFactorization J f hf ≫ closedSievesInclusion J = f := by
---   ext
---   simp
-
 variable (C) in
 /-- The truth morphism in the category of presheaves. At each component `X : C`, it is the constant
 map returning `⊤ : Sieve X`. -/
