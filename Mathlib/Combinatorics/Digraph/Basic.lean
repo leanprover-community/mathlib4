@@ -386,7 +386,6 @@ lemma sup_le {G : Digraph V} : ∀ H₁ H₂ H₃ : G.SpanningSubgraph,
   simpa only [sup_of_val] using
     (show H₁.val ⊔ H₂.val ≤ H₃.val from _root_.sup_le h₁' h₂')
 
-
 lemma inf_le_left {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph,
   inf H₁ H₂ ≤ H₁ := by
   intro H₁ H₂
