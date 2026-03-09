@@ -256,6 +256,7 @@ It has the given basis as a basis of neighborhoods of zero. -/
 def topology : TopologicalSpace R :=
   B.toAddGroupFilterBasis.topology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a ring is endowed with a topological structure coming from
 a ring filter basis then it's a topological ring. -/
 instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilterBasis R) :
@@ -375,6 +376,7 @@ theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [IsTopologicalRing R] [
     rcases hsmul_left x₀ hi with ⟨j, hj, hji⟩
     exact mem_of_superset (h.mem_of_mem hj) hji
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a module is endowed with a topological structure coming from
 a module filter basis then it's a topological module. -/
 instance (priority := 100) continuousSMul [IsTopologicalRing R] :

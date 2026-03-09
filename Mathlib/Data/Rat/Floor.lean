@@ -405,7 +405,8 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
       suffices ((q.den : ℤ) - q.num * ⌊q_inv⌋).natAbs.Coprime q.num.natAbs from
         mod_cast Rat.num_div_eq_of_coprime q_num_pos this
       have tmp := Nat.coprime_sub_mul_floor_rat_div_of_coprime q.reduced.symm
-      simpa only [Nat.cast_natAbs, abs_of_nonneg q_num_pos.le] using tmp
+      #adaptation_note /-- We can remove `_root_.` after https://github.com/leanprover/lean4/pull/12504 -/
+      simpa only [Nat.cast_natAbs, _root_.abs_of_nonneg q_num_pos.le] using tmp
     rwa [this]
   -- to show the claim, start with the following inequality
   have q_inv_num_denom_ineq : q⁻¹.num - ⌊q⁻¹⌋ * q⁻¹.den < q⁻¹.den := by

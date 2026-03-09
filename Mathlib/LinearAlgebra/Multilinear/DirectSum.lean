@@ -51,6 +51,7 @@ noncomputable def fromDirectSumEquiv [Finite ι] :
   haveI : (i : ι) → DecidableEq (κ i) := fun i ↦ Classical.typeDecidableEq (κ i)
   fromDFinsuppEquiv _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fromDirectSumEquiv_lof [Finite ι] [(i : ι) → DecidableEq (κ i)]
     (f : (p : (i : ι) → κ i) → MultilinearMap R (fun i ↦ M i (p i)) M')
@@ -60,6 +61,7 @@ theorem fromDirectSumEquiv_lof [Finite ι] [(i : ι) → DecidableEq (κ i)]
   rw [fromDirectSumEquiv, ← fromDFinsuppEquiv_single]
   convert rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Prefer using `fromDirectSumEquiv_lof` where possible. -/
 theorem fromDirectSumEquiv_apply [Fintype ι] [(i : ι) → DecidableEq (κ i)]
     [Π i (j : κ i) (x : M i j), Decidable (x ≠ 0)]
@@ -70,6 +72,7 @@ theorem fromDirectSumEquiv_apply [Fintype ι] [(i : ι) → DecidableEq (κ i)]
   rw [fromDirectSumEquiv, ← fromDFinsuppEquiv_apply]
   convert rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fromDirectSumEquiv_symm_apply [Finite ι] [(i : ι) → DecidableEq (κ i)]
     (f : MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M')

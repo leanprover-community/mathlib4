@@ -56,6 +56,10 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
 def LieIdeal.toLieSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
 
+@[simp] lemma LieIdeal.mem_toLieSubalgebra (I : LieIdeal R L) (x : L) :
+    x ∈ I.toLieSubalgebra ↔ x ∈ I :=
+  Iff.rfl
+
 instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
   ⟨LieIdeal.toLieSubalgebra R L⟩
 
@@ -446,6 +450,7 @@ lemma incl_injective (I : LieIdeal R L) : Function.Injective I.incl :=
 @[simp]
 theorem comap_incl_self : comap I.incl I = ⊤ := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ker_incl : I.incl.ker = ⊥ := by ext; simp
 
@@ -462,12 +467,14 @@ theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
 
 variable {I}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem comap_incl_eq_top : I₂.comap I.incl = ⊤ ↔ I ≤ I₂ := by
   rw [← LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule, LieSubmodule.top_toSubmodule,
     incl_coe]
   simp_rw [toLieSubalgebra_toSubmodule]
   rw [Submodule.comap_subtype_eq_top, LieSubmodule.toSubmodule_le_toSubmodule]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem comap_incl_eq_bot : I₂.comap I.incl = ⊥ ↔ Disjoint I I₂ := by
   rw [disjoint_iff, ← LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule,
     LieSubmodule.bot_toSubmodule, ← LieSubmodule.toSubmodule_inj, LieSubmodule.inf_toSubmodule,

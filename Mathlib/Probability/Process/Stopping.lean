@@ -271,6 +271,79 @@ theorem isStoppingTime_of_measurableSet_eq [Preorder ι] [Countable ι] {f : Fil
 
 end Countable
 
+section IsRightContinuous
+
+open Filtration
+
+variable [ConditionallyCompleteLinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
+    [FirstCountableTopology ι] {f : Filtration ι m} {τ : Ω → WithTop ι}
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous' [hf : f.IsRightContinuous]
+    (hτ1 : ∀ i, MeasurableSet[f i] {ω | τ ω < i})
+    (hτ2 : ∀ i, 𝓝[>] i = ⊥ → MeasurableSet[f i] {ω | τ ω = i}) :
+    IsStoppingTime f τ := by
+  intro t
+  by_cases ht : 𝓝[>] t = ⊥
+  · have h_eq : {ω | τ ω ≤ t} = {ω | τ ω < t} ∪ {ω | τ ω = t} := by ext; simp; grind
+    rw [h_eq]
+    exact (hτ1 t).union (hτ2 t ht)
+  have : (𝓝[>] t).NeBot := ⟨ht⟩
+  -- now `t` is a limit point on the right
+  obtain ⟨s, hs_gt, hs_tendsto⟩ : ∃ s : ℕ → ι, (∀ n, t < s n) ∧ Tendsto s atTop (𝓝 t) := by
+    have h_freq : ∃ᶠ x in 𝓝[>] t, t < x :=
+      Eventually.frequently <| eventually_nhdsWithin_of_forall fun _ hx ↦ hx
+    have := exists_seq_forall_of_frequently h_freq
+    simp_rw [tendsto_nhdsWithin_iff] at this
+    obtain ⟨s, ⟨hs_tendsto, _⟩, hs_gt⟩ := this
+    exact ⟨s, hs_gt, hs_tendsto⟩
+  have h_exists_lt (u : ι) (hu : t < u) : ∃ i, s i < u :=
+    Eventually.exists (f := atTop) (hs_tendsto.eventually_lt_const hu)
+  have h_exists_lt' (u : WithTop ι) (hu : t < u) : ∃ i, s i < u := by
+    refine Eventually.exists (f := atTop) ?_
+    have hs_tendsto' : Tendsto (fun n ↦ (s n : WithTop ι)) atTop (𝓝 (t : WithTop ι)) :=
+      WithTop.continuous_coe.continuousAt.tendsto.comp hs_tendsto
+    exact hs_tendsto'.eventually_lt_const hu
+  -- we write `{τ ≤ t}` as a countable intersection of `{τ < s n}`
+  have h_eq_iInter : {ω | τ ω ≤ t} = ⋂ m, {ω | τ ω < s m} := by
+    ext ω
+    simp only [Set.mem_setOf_eq, Set.mem_iInter]
+    refine ⟨fun h_le m ↦ h_le.trans_lt (mod_cast (hs_gt m)), fun h_lt ↦ ?_⟩
+    refine le_of_forall_gt fun u hu ↦ ?_
+    obtain ⟨i, hi⟩ : ∃ i, s i < u := h_exists_lt' u hu
+    exact (h_lt i).trans hi
+  rw [h_eq_iInter]
+  have h𝓕_eq_iInf : f t = ⨅ m, f (s m) := by
+    nth_rw 1 [← hf.eq, Filtration.rightCont_eq_of_neBot_nhdsGT]
+    refine le_antisymm ?_ ?_
+    · simp only [gt_iff_lt, le_iInf_iff]
+      exact fun i ↦ iInf₂_le (s i) (hs_gt i)
+    · simp only [gt_iff_lt, le_iInf_iff]
+      intro i hti
+      obtain ⟨m, hm⟩ := h_exists_lt i hti
+      exact (iInf_le _ m).trans (f.mono hm.le)
+  rw [h𝓕_eq_iInf]
+  simp only [MeasurableSpace.measurableSet_sInf, Set.mem_range, forall_exists_index,
+    forall_apply_eq_imp_iff]
+  intro k
+  have h_eq_k : ⋂ m, {ω | τ ω < s m} = ⋂ (m) (hm : s m ≤ s k), {ω | τ ω < s m} := by
+    ext x
+    simp only [Set.mem_iInter, Set.mem_setOf_eq]
+    refine ⟨fun h m _ ↦ h m, fun h m ↦ ?_⟩
+    rcases le_total (s m) (s k) with hmk | hkm
+    · exact h m hmk
+    · exact (h k le_rfl).trans_le (mod_cast hkm)
+  rw [h_eq_k]
+  exact MeasurableSet.iInter fun m ↦ MeasurableSet.iInter fun hm ↦ f.mono hm _ (hτ1 (s m))
+
+lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous [DenselyOrdered ι] [NoMaxOrder ι]
+    {τ : Ω → WithTop ι} [f.IsRightContinuous] (hτ : ∀ i, MeasurableSet[f i] {ω | τ ω < i}) :
+    IsStoppingTime f τ :=
+  isStoppingTime_of_measurableSet_lt_of_isRightContinuous' hτ
+    <| fun _ hi ↦ absurd hi (NeBot.ne inferInstance)
+
+end IsRightContinuous
+
 end MeasurableSet
 
 namespace IsStoppingTime
@@ -296,6 +369,26 @@ protected theorem min [LinearOrder ι] {f : Filtration ι m} {τ π : Ω → Wit
 protected theorem min_const [LinearOrder ι] {f : Filtration ι m} {τ : Ω → WithTop ι}
     (hτ : IsStoppingTime f τ) (i : ι) : IsStoppingTime f fun ω => min (τ ω) i :=
   hτ.min (isStoppingTime_const f i)
+
+protected lemma biInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι]
+    [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
+    {κ : Type*} {f : Filtration ι m} {τ : κ → Ω → WithTop ι} {s : Set κ} (hs : s.Countable)
+    [f.IsRightContinuous] (hτ : ∀ n ∈ s, IsStoppingTime f (τ n)) :
+    IsStoppingTime f (fun ω ↦ ⨅ n ∈ s, τ n ω) := by
+  refine isStoppingTime_of_measurableSet_lt_of_isRightContinuous <|
+    fun i ↦ MeasurableSet.of_compl ?_
+  rw [(_ : {ω | ⨅ n ∈ s, τ n ω < i}ᶜ = ⋂ n ∈ s, {ω | i ≤ τ n ω})]
+  · exact MeasurableSet.biInter hs <| fun n hn ↦ (hτ n hn).measurableSet_ge i
+  · ext ω
+    simp
+
+protected lemma iInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι]
+    [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
+    {κ : Type*} [Countable κ] {f : Filtration ι m} {τ : κ → Ω → WithTop ι}
+    [f.IsRightContinuous] (hτ : ∀ n, IsStoppingTime f (τ n)) :
+    IsStoppingTime f (fun ω ↦ ⨅ n, τ n ω) := by
+  convert IsStoppingTime.biInf (κ := κ) Set.countable_univ (fun n _ => hτ n) using 2
+  simp
 
 theorem add_const [AddGroup ι] [Preorder ι] [AddRightMono ι]
     [AddLeftMono ι] {f : Filtration ι m} {τ : Ω → WithTop ι} (hτ : IsStoppingTime f τ)
@@ -667,7 +760,7 @@ theorem measurableSet_stopping_time_le [TopologicalSpace ι] [SecondCountableTop
     MeasurableSet[hπ.measurableSpace] {ω | τ ω ≤ π ω} := by
   have : MeasurableSet[(hτ.min hπ).measurableSpace] {ω | τ ω ≤ π ω} :=
     measurableSet_stopping_time_le_min hτ hπ
-  rw [measurableSet_min_iff hτ hπ] at this; exact (this).2
+  rw [measurableSet_min_iff hτ hπ] at this; exact this.2
 
 theorem measurableSet_eq_stopping_time_min [TopologicalSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι]
@@ -1142,6 +1235,7 @@ theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ �
   rw [Finset.sum_Ico_eq_sub _ h_le', Finset.sum_range_sub, Finset.sum_range_sub]
   simp [stoppedValue]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω ≤ i ∧ i < π ω} (u (i + 1) - u i)) ω := by
@@ -1165,6 +1259,7 @@ section AddCommMonoid
 
 variable [AddCommMonoid β]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u τ = fun x =>
     (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω = i} (u i)) x := by
   refine stoppedValue_eq_of_mem_finset fun ω ↦ ?_
@@ -1182,6 +1277,7 @@ theorem stoppedProcess_eq (n : ℕ) : stoppedProcess u τ n = Set.indicator {a |
   congr with i
   rw [Finset.mem_Iio, Finset.mem_range]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stoppedProcess_eq' (n : ℕ) : stoppedProcess u τ n = Set.indicator {a | n + 1 ≤ τ a} (u n) +
     ∑ i ∈ Finset.range (n + 1), Set.indicator {a | τ a = i} (u i) := by
   have : {a | n ≤ τ a}.indicator (u n) =

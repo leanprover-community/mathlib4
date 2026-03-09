@@ -115,6 +115,7 @@ noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
     Iso.hom_inv_id, comp_id, isoHomologyι_inv_hom_id, singleObjHomologySelfIso_inv_homologyι,
     singleObjOpcyclesSelfIso_hom, single₀ObjXSelf, Iso.refl_inv, id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Epi (P.π.f n) := by
   cases n
   · exact epi_of_isColimit_cofork P.isColimitCokernelCofork
@@ -148,6 +149,7 @@ namespace Hom
 
 attribute [reassoc (attr := simp)] hom_f_zero_comp_π_f_zero
 
+set_option backward.isDefEq.respectTransparency false in
 variable {I I'} in
 @[reassoc (attr := simp)]
 lemma hom_comp_π {f : Z ⟶ Z'} (φ : Hom P P' f) :
@@ -164,6 +166,7 @@ open Limits
 variable {C : Type u} [Category* C] [HasZeroObject C] [Preadditive C]
   {D : Type u'} [Category.{v'} D] [HasZeroObject D] [Preadditive D] [CategoryWithHomology D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An additive functor `F` which preserves homology and sends projective objects to projective
 objects sends a projective resolution of `Z` to a projective resolution of `F.obj Z`. -/
 @[simps complex π]

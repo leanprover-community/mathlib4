@@ -34,6 +34,7 @@ instance : CoeSort (Under R) (Type u) where
 
 instance (A : Under R) : Algebra R A := RingHom.toAlgebra A.hom.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a morphism in `Under R` into an algebra homomorphism. -/
 def toAlgHom {A B : Under R} (f : A ⟶ B) : A →ₐ[R] B where
   __ := f.right.hom
@@ -136,6 +137,7 @@ def tensorProd : Under R ⥤ Under S where
   map f := Algebra.TensorProduct.map (AlgHom.id S S) (toAlgHom f) |>.toUnder
   map_comp {X Y Z} f g := by simp [Algebra.TensorProduct.map_id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 /-- The natural isomorphism `S ⊗[R] A ≅ pushout A.hom (algebraMap R S)` in `Under S`. -/
 def tensorProdObjIsoPushoutObj (A : Under R) :
@@ -145,12 +147,14 @@ def tensorProdObjIsoPushoutObj (A : Under R) :
       mkUnder_hom, AlgHom.toRingHom_eq_coe, IsPushout.inr_isoPushout_hom, Under.mk_hom]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pushout_inl_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
     pushout.inl A.hom (ofHom <| algebraMap R S) ≫ (tensorProdObjIsoPushoutObj S A).inv.right =
       (ofHom <| Algebra.TensorProduct.includeRight.toRingHom) := by
   simp [tensorProdObjIsoPushoutObj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pushout_inr_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
     pushout.inr A.hom (ofHom <| algebraMap R S) ≫
@@ -158,6 +162,7 @@ lemma pushout_inr_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
       (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom) := by
   simp [tensorProdObjIsoPushoutObj]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- `A ↦ S ⊗[R] A` is naturally isomorphic to `A ↦ pushout A.hom (algebraMap R S)`. -/
 def tensorProdIsoPushout : tensorProd R S ≅ Under.pushout (ofHom <| algebraMap R S) :=
