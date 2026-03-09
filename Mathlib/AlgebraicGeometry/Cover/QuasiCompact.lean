@@ -143,6 +143,11 @@ instance of_finite {𝒰 : S.Cover K} [Scheme.JointlySurjective K]
     refine .of_finite_of_isSpectralMap (fun i ↦ (𝒰.f i).isSpectralMap) ?_ U.2 hU.isCompact
     exact (fun x _ ↦ ⟨𝒰.idx x, 𝒰.covers x⟩)
 
+instance [IsAffine S] {P : MorphismProperty Scheme.{u}} (𝒰 : S.AffineCover P) [Finite 𝒰.I₀] :
+    QuasiCompactCover 𝒰.cover.toPreZeroHypercover :=
+  haveI : Finite 𝒰.cover.I₀ := ‹_›
+  .of_finite
+
 variable {P : MorphismProperty Scheme.{u}}
 
 instance homCover {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f) [Surjective f]
