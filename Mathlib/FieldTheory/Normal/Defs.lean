@@ -178,6 +178,16 @@ theorem AlgEquiv.restrictNormal_commutes [Normal F E] (x : E) :
     algebraMap E K₂ (χ.restrictNormal E x) = χ (algebraMap E K₁ x) :=
   χ.toAlgHom.restrictNormal_commutes E x
 
+set_option backward.isDefEq.respectTransparency false in
+theorem AlgEquiv.restrictNormal_apply (L : IntermediateField F K₁) [Normal F L] (σ : Gal(K₁/F))
+    (x : L) : restrictNormal σ L x = σ x := AlgEquiv.restrictNormal_commutes σ L x
+
+set_option backward.isDefEq.respectTransparency false in
+theorem AlgEquiv.restrictNormal_eq_one_iff (L : IntermediateField F K₁) [Normal F L]
+    (σ : Gal(K₁/F)) : restrictNormal σ L = 1 ↔ ∀ x ∈ L, σ x = x := by
+  simp_rw [AlgEquiv.ext_iff, one_apply, Subtype.forall, Subtype.ext_iff,
+    AlgEquiv.restrictNormal_apply]
+
 theorem AlgEquiv.restrictNormal_trans [Normal F E] :
     (χ.trans ω).restrictNormal E = (χ.restrictNormal E).trans (ω.restrictNormal E) :=
   AlgEquiv.ext fun _ =>

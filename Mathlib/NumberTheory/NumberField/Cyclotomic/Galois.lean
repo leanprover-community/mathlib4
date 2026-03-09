@@ -5,18 +5,30 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Data.ZMod.Units
 public import Mathlib.NumberTheory.Cyclotomic.Gal
+public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.NumberTheory.MulChar.Duality
 
 /-!
 # Galois theory for cyclotomic fields
 
 In this file, we study the Galois theory of cyclotomic extensions of `ℚ`.
 
+Let `n` be an integer. There is an isomorphism between `Gal(ℚ(ζₙ)/ℚ)` and `(ℤ/nℤ)ˣ` that sends `σ`
+to `a_σ` such that `σ (ζₙ) = ζₙ ^ a_σ`.
+
+Following [Washington][washington.cyclotomic], we define the bijection between subfields
+of `ℚ(ζₙ)` and subgroups of the group `Xₙ` of Dirichlet characters of level `n` such that
+`F` corresponds to `Y` iff the subgroup `H` of `(ℤ/nℤ)ˣ` corresponding to `F` by the above
+isomorphism is the orthogonal of `Y` for the nondegenerate pairing on `(ℤ/nℤ)ˣ × Xₙ`
+defined by `(n, χ) ↦ χ n`.
+
 ## Main definitions and results
 
 - `IsCyclotomicExtension.Rat.galEquivZMod`: the isomorphism between `Gal(ℚ(ζₙ)/ℚ)` and `(ℤ/nℤ)ˣ`
   that sends `σ` to the class `a` such that `σ (ζₙ) = ζₙ ^ a`.
+- `IsCyclotomicExtension.Rat.intermediateFieldEquivSubgroupChar`: the bijection between the
+  intermediate fields of `ℚ(ζₙ)/ℚ` and subgroups of `Xₙ`.
 
 -/
 
@@ -76,5 +88,65 @@ theorem galEquivZMod_restrictNormal_apply (h : m ∣ n) (σ : Gal(K/ℚ)) :
   rw [← map_pow, (hζ.pow_eq_one_iff_dvd _).mpr h, map_one]
 
 end restrict
+
+open MulChar
+
+variable (R : Type*) [CommRing R] [HasEnoughRootsOfUnity R (Monoid.exponent (ZMod n)ˣ)]
+
+/--
+The bijection between the subgroups of `Gal(ℚ(ζₙ)/ℚ)` and the subgroups of the group
+of Dirichlet characters of level `n`.
+-/
+noncomputable def subgroupGalEquivSubgroupChar :
+    Subgroup Gal(K/ℚ) ≃o (Subgroup (DirichletCharacter R n))ᵒᵈ :=
+  (galEquivZMod n K).mapSubgroup.trans <| subgroupOrderIsoSubgroupMulChar (ZMod n) R
+
+@[simp]
+theorem mem_subgroupGalEquivSubgroupChar_iff (χ : DirichletCharacter R n) (H : Subgroup Gal(K/ℚ)) :
+    χ ∈ (subgroupGalEquivSubgroupChar n K R H).ofDual ↔
+      ∀ σ ∈ H, χ (galEquivZMod n K σ) = 1 := by simp [subgroupGalEquivSubgroupChar]
+
+@[simp]
+theorem mem_subgroupGalEquivSubgroupChar_symm_iff (σ : Gal(K/ℚ))
+    (Y : Subgroup (DirichletCharacter R n)) :
+    σ ∈ (subgroupGalEquivSubgroupChar n K R).symm (OrderDual.toDual Y) ↔
+      ∀ χ ∈ Y, χ (galEquivZMod n K σ) = 1 := by
+  unfold subgroupGalEquivSubgroupChar
+  simp only [OrderIso.symm_trans_apply, MulEquiv.symm_mapSubgroup, MulEquiv.coe_mapSubgroup,
+    Subgroup.mem_map_equiv, MulEquiv.symm_symm, mem_subgroupOrderIsoSubgroupMulChar_symm_iff]
+
+variable [IsGalois ℚ K]
+
+/--
+The bijection between the intermediate fields of `ℚ(ζₙ)/ℚ` and the subgroups of the group
+of Dirichlet characters of level `n`.
+-/
+noncomputable def intermediateFieldEquivSubgroupChar :
+    IntermediateField ℚ K ≃o Subgroup (DirichletCharacter R n) :=
+  IsGalois.intermediateFieldEquivSubgroup.trans <|
+      (subgroupGalEquivSubgroupChar n K R).dual.trans (OrderIso.dualDual _).symm
+
+@[simp]
+theorem mem_intermediateFieldEquivSubgroupChar (F : IntermediateField ℚ K)
+    (χ : DirichletCharacter R n) :
+    χ ∈ intermediateFieldEquivSubgroupChar n K R F ↔
+      ∀ σ : Gal(K/ℚ), σ ∈ F.fixingSubgroup → χ (galEquivZMod n K σ) = 1 := by
+  simp [intermediateFieldEquivSubgroupChar]
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+Assume that `m ∣ n`, then the image of `ℚ(ζₘ) ⊆ ℚ(ζₙ)` by `intermediateFieldEquivSubgroupChar` is
+the orthogonal of the kernel of the reduction map `(ℤ/nℤ)ˣ → (ℤ/mℤ)ˣ`.
+-/
+theorem intermediateFieldEquivSubgroupChar_of_isCyclotomicExtension (F : IntermediateField ℚ K)
+    {m : ℕ} [NeZero m] [IsGalois ℚ F] [IsCyclotomicExtension {m} ℚ F] (hdiv : m ∣ n) :
+    intermediateFieldEquivSubgroupChar n K R F =
+      (MulChar.subgroupOrderIsoSubgroupMulChar (ZMod n) R (ZMod.unitsMap hdiv).ker).ofDual := by
+  ext χ
+  simp_rw [mem_intermediateFieldEquivSubgroupChar, mem_subgroupOrderIsoSubgroupMulChar_iff,
+    MonoidHom.mem_ker, ← (galEquivZMod n K).forall_congr_right, MulEquiv.toEquiv_eq_coe,
+    EquivLike.coe_coe, (galEquivZMod_restrictNormal_apply n K F hdiv _).symm,
+    EmbeddingLike.map_eq_one_iff, AlgEquiv.restrictNormal_eq_one_iff]
+  simp
 
 end IsCyclotomicExtension.Rat
