@@ -804,6 +804,13 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
         baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_eq_id,
         lTensor_id, LinearMap.id_apply])
 
+/-- If `R →+* S` is surjective, the multiplication map `S ⊗[R] S →+* S` is an isomorphism. This
+is the algebraic version of closed immersions are monomorphisms. -/
+lemma mul'_bijective_of_surjective (h : Function.Surjective (algebraMap R A)) :
+    Function.Bijective (LinearMap.mul' R A) :=
+  have : TensorProduct.CompatibleSMul R A A A := .of_algebraMap_surjective _ _ h
+  (Algebra.TensorProduct.lmulEquiv R A).bijective
+
 end LinearMap
 
 namespace Module

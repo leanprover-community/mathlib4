@@ -114,6 +114,15 @@ def lidOfCompatibleSMul : A ⊗[R] M ≃ₗ[A] M :=
 
 theorem lidOfCompatibleSMul_tmul (a m) : lidOfCompatibleSMul R A M (a ⊗ₜ[R] m) = a • m := rfl
 
+variable {R} in
+lemma CompatibleSMul.of_algebraMap_surjective {A : Type*} [CommSemiring A] [Algebra R A]
+    [Module A M] [IsScalarTower R A M] [Module A N] [IsScalarTower R A N]
+    (h : Function.Surjective (algebraMap R A)) :
+    CompatibleSMul R A M N where
+  smul_tmul a m n := by
+    obtain ⟨r, rfl⟩ := h a
+    simp [smul_tmul]
+
 end CompatibleSMul
 
 open LinearMap
