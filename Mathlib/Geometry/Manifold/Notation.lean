@@ -977,7 +977,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 arguments that can use the `T%` elaborator. -/
 @[app_delab mfderiv] meta def delab_mfderiv : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 21 do -- counting the number of arguments until f (inclusive): the x can be omitted
+  withOverApp 21 do
   try
     let fe := (← getExpr).appArg!
     let .lam n _ b _ := fe | failure
@@ -1036,13 +1036,13 @@ arguments that can use the `T%` elaborator. -/
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableOn] meta def delabMDifferentiableOn : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 22 do -- count arguments until the set s (exclusive)
-  let ss ← withAppArg delab -- the set s
+  withOverApp 22 do
+  let ss ← withAppArg delab
   try
     let f := (← getExpr).getAppArgs[20]!
     let .lam n _ b _ := f | failure
     guard <| b.isAppOf ``Bundle.TotalSpace.mk'
-    let σe := b.getAppArgs[4]!.getAppFn -- why this magic number?
+    let σe := b.getAppArgs[4]!.getAppFn
     guard <| σe.isFVar
     let Tσs ← withNaryArg 20 do
       let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
