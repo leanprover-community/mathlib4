@@ -236,6 +236,7 @@ def iso :
   hom_inv_id := by ext; exact functor_comp_inverse X Y
   inv_hom_id := by ext; exact inverse_comp_functor X Y
 
+set_option backward.isDefEq.respectTransparency false in
 variable {X} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the first variable. -/
@@ -248,6 +249,7 @@ def mapHomotopyCategoryProdIdCompInverseIso (f : X ⟶ X') :
       obtain ⟨y, rfl⟩ := y.mk_surjective
       simp))
 
+set_option backward.isDefEq.respectTransparency false in
 variable {Y} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the second variable. -/
@@ -272,6 +274,7 @@ lemma id_prod_mapHomotopyCategory_comp_inverse (g : Y ⟶ Y') :
       inverse X Y ⋙ mapHomotopyCategory (X ◁ g) :=
   Functor.ext_of_iso (idProdMapHomotopyCategoryCompInverseIso _ _) (fun _ ↦ rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the first projection. -/
 def inverseCompMapHomotopyCategoryFstIso :
@@ -305,12 +308,14 @@ lemma inverse_comp_mapHomotopyCategory_snd :
     inverse X Y ⋙ mapHomotopyCategory (snd _ _) = CategoryTheory.Prod.snd _ _ :=
   Functor.ext_of_iso (inverseCompMapHomotopyCategorySndIso _ _) (fun _ ↦ rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma left_unitality [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
     CategoryTheory.Prod.snd _ _ = Functor.prod (isoTerminal X).inv.toFunctor (𝟭 _) ⋙
       inverse X Y ⋙ mapHomotopyCategory (snd _ _) := by
   rw [inverse_comp_mapHomotopyCategory_snd]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
     CategoryTheory.Prod.fst _ _ = Functor.prod (𝟭 _) (isoTerminal Y).inv.toFunctor ⋙
       inverse X Y ⋙ mapHomotopyCategory (fst _ _) := by
@@ -319,7 +324,8 @@ lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
 
 variable (Z)
 
-/-- Auxiliary defininition for `associativityIso`. -/
+set_option backward.isDefEq.respectTransparency false in
+/-- Auxiliary definition for `associativityIso`. -/
 def associativity'Iso :
     (prod.associativity ..).inverse ⋙ (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙
       mapHomotopyCategory (α_ _ _ _).hom ≅
@@ -364,6 +370,7 @@ def associativityIso :
     associator _ _ _ ≪≫
     isoWhiskerLeft (prod.associativity _ _ _).functor (associativity'Iso X Y Z)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {X Y Z} in
 lemma associativityIso_hom_app (xyz) :
     (associativityIso X Y Z).hom.app xyz = 𝟙 _ := by
@@ -410,7 +417,7 @@ def hoFunctor.unitHomEquiv (X : SSet.{u}) :
 
 theorem hoFunctor.unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
     hoFunctor.unitHomEquiv X x =
-      (Functor.LaxMonoidal.ε hoFunctor).toFunctor ⋙ (hoFunctor.map x).toFunctor :=
+      (Functor.LaxMonoidal.ε hoFunctor.{u}).toFunctor ⋙ (hoFunctor.map x).toFunctor :=
   rfl
 
 end SSet

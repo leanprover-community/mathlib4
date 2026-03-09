@@ -290,6 +290,7 @@ section Semiring
 instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) :=
   { Submonoid.center.commMonoid, (center R).toSemiring with }
 
+set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the primed version
 example {R} [Semiring R] :
     center.commSemiring.toSemiring = Subsemiring.toSemiring (center R) := by

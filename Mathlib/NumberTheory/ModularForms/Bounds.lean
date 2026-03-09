@@ -218,6 +218,7 @@ lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.
   rw [petersson, ← Real.rpow_mul_natCast τ.im_pos.le]
   simp [abs_of_pos τ.im_pos, field]
 
+set_option backward.isDefEq.respectTransparency false in
 open Real in
 /-- A weight `k` modular form is bounded in norm by a constant multiple of
 `max 1 (1 / (τ.im) ^ k)`. -/
@@ -247,6 +248,7 @@ local notation "𝕢" => Function.Periodic.qParam
 
 open Complex ModularFormClass
 
+set_option backward.isDefEq.respectTransparency false in
 /-- General result on bounding q-expansion coefficients using a bound on the norm of the function.
 This will get used twice over, once for cusp forms (with `e = k / 2`) and once for modular forms
 (with `e = k`). -/

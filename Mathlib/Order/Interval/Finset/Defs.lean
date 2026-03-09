@@ -1021,6 +1021,7 @@ variable [Preorder α] [Preorder β]
 /-! #### Transfer locally finite orders across order isomorphisms -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrder` across an `OrderIso`. -/
 abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteOrder α where
@@ -1033,6 +1034,7 @@ abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFini
   finset_mem_Ioc := by simp
   finset_mem_Ioo := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderTop` across an `OrderIso`. -/
 abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : LocallyFiniteOrderTop α where
@@ -1041,6 +1043,7 @@ abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : Local
   finset_mem_Ici := by simp
   finset_mem_Ioi := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderBot` across an `OrderIso`. -/
 abbrev locallyFiniteOrderBot [LocallyFiniteOrderBot β] (f : α ≃o β) : LocallyFiniteOrderBot α where

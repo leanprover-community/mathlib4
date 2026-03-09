@@ -9,6 +9,7 @@ public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Lean.Linter.Basic
 public meta import Lean.Elab.AssertExists
+public import Lean.Message
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -593,6 +594,8 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
   (`Mathlib.Algebra.Module.ZLattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
+  (`Mathlib.AlgebraicGeometry.Sites, `Mathlib.AlgebraicTopology), -- Homotopical methods for sheaf cohomology
+  (`Mathlib.AlgebraicGeometry.Sites, `Mathlib.NumberTheory), -- For arithmetic applications
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
   (`Mathlib.LinearAlgebra.Complex, `Mathlib.Topology), -- Complex numbers are analysis/topology.
   (`Mathlib.LinearAlgebra.Matrix, `Mathlib.Topology), -- For e.g. spectra.

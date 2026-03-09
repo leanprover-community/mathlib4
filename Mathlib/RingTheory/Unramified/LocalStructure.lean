@@ -79,6 +79,7 @@ lemma HasStandardEtaleSurjectionOn.isStandardEtale
 
 namespace Algebra.IsUnramifiedAt
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₁
     (P : Ideal R) [P.IsPrime] (x : S) (hx : adjoin R {x} = ⊤) :
     (RingHom.ker (aeval (R := R) x).toRingHom).map (mapRingHom (algebraMap R P.ResidueField)) =
@@ -94,9 +95,10 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
   ext a
   · dsimp [-TensorProduct.algebraMap_apply]
     rw [aeval_C, AlgEquiv.commutes]
-    rfl
+    simp [← Ideal.Quotient.mk_algebraMap, I]
   · simpa [e] using Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₂
     {P : Ideal R} [P.IsPrime] {Q : Ideal S} [Q.IsPrime]
@@ -122,6 +124,7 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
   · apply Algebra.algebra_ext; intros r; congr 1; ext x; simp [← IsScalarTower.algebraMap_apply]
   · simp [← Algebra.TensorProduct.right_algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] aeval_algebraMap_apply in
 -- Subsumed by `Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn`.
 private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
@@ -193,11 +196,14 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_
   obtain ⟨c, hc⟩ := hmp₁
   simp_all [hm.dvd_mul, dvd_add_left, pow_two, mul_dvd_mul_iff_left, hm.ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [Algebra.IsUnramifiedAt R Q] :
     ∃ t ∉ Q, (∀ Q' ∈ (Q.under R).primesOver S, Q' ≠ Q → t ∈ Q') ∧
       adjoin (Ideal.under R Q).ResidueField {algebraMap _ Q.ResidueField t} = ⊤ := by
   let p := Q.under R
+  #adaptation_note /-- Needed after nightly-2023-02-23 -/
+  have : p.IsPrime := Ideal.IsPrime.under R Q
   classical
   have : IsArtinianRing (p.Fiber S) := .of_finite p.ResidueField _
   let α := PrimeSpectrum.primesOverOrderIsoFiber R S p
@@ -230,7 +236,7 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     let φ' : p.Fiber S →ₐ[p.ResidueField] Q'.ResidueField := Algebra.TensorProduct.lift
         (Algebra.ofId _ _) (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _
     have H : φ' r = 0 := (hr (α ⟨Q', ⟨‹_›, ‹_›⟩⟩).asIdeal inferInstance (by
-        rwa [ne_eq, ← PrimeSpectrum.ext_iff, EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]):)
+        rwa [ne_eq, ← PrimeSpectrum.ext_iff, EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]) :)
     rw [← Ideal.algebraMap_residueField_eq_zero]
     trans φ' (1 ⊗ₜ t)
     · simp [φ']
@@ -241,6 +247,7 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     refine adjoin_singleton_le ?_
     exact Subalgebra.smul_mem _ (self_mem_adjoin_singleton _ _) _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Subalgebra.instSMulSubtypeMem
   Subalgebra.toAlgebra Subalgebra.isScalarTower_left in
 /-- Let `S` be an finite `R`-algebra that is unramified at some prime `Q`. Then there exists some
@@ -267,6 +274,7 @@ lemma exists_primesOver_under_adjoin_eq_singleton_and_residueField_bijective
     rw [AlgHom.toRingHom_eq_coe, IsScalarTower.coe_toAlgHom, ← IsScalarTower.algebraMap_apply]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- Subsumed by `Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn`.
 private lemma exists_hasStandardEtaleSurjectionOn_of_finite
     (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [Algebra.IsUnramifiedAt R Q] :
@@ -293,11 +301,13 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_finite
     ((Localization.awayMapₐ (IsScalarTower.toAlgHom _ _ S) (f * r)).comp φ)
     (by exact (H _ (by simp)).surjective.comp hP)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance high] Module.Free.of_divisionRing in
 instance (priority := low)
     [Algebra.EssFiniteType R S] [Algebra.FormallyUnramified R S] : Algebra.QuasiFinite R S where
   finite_fiber _ _ := Algebra.FormallyUnramified.finite_of_free _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_hasStandardEtaleSurjectionOn
     (Q : Ideal S) [Q.IsPrime] [FiniteType R S] [IsUnramifiedAt R Q] :
     ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by
@@ -320,7 +330,7 @@ lemma exists_hasStandardEtaleSurjectionOn
     |>.exists_fg_and_exists_notMem_and_awayMap_bijective
   have : Module.Finite R S' := ⟨(Submodule.fg_top _).mpr hS'⟩
   have : Algebra.FormallyUnramified R (Localization.Away r) :=
-    .of_equiv (AlgEquiv.ofBijective (Localization.awayMapₐ S'.val r) hr:).symm
+    .of_equiv (AlgEquiv.ofBijective (Localization.awayMapₐ S'.val r) hr :).symm
   have : IsUnramifiedAt R (Ideal.under (↥S') Q) := by
     rw [← Algebra.basicOpen_subset_unramifiedLocus_iff] at this
     exact @this ⟨Q.under S', inferInstance⟩ hrQ
@@ -346,6 +356,7 @@ lemma IsEtaleAt.exists_isStandardEtale
     exact .trans (PrimeSpectrum.basicOpen_mul_le_left _ _) h
   exact ⟨f * g, ‹Q.IsPrime›.mul_notMem hfQ hgQ, (hg.of_dvd (by simp)).isStandardEtale⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `S` a finitely presented `R`-algebra, and `p` a prime of `S`. If `S` is smooth over `R`
 at `p`, then there exists `f ∉ p` such that `R → S[1/f]` factors through some `R[X₁,...,Xₙ]`,
 and that `S[1/f]` is standard etale over `R[X₁,...,Xₙ]`. -/

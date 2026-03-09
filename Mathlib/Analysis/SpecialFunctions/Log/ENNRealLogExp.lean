@@ -14,18 +14,19 @@ public import Mathlib.Topology.MetricSpace.Polish
 # Properties of the extended logarithm and exponential
 
 We prove that `log` and `exp` define order isomorphisms between `ℝ≥0∞` and `EReal`.
-## Main DefinitionsP
+
+## Main Definitions
 - `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
-and `exp`.
+  and `exp`.
 - `EReal.expOrderIso`: The order isomorphism between `EReal` and `ℝ≥0∞` defined by `exp`
-and `log`.
+  and `log`.
 - `ENNReal.logHomeomorph`: `log` as a homeomorphism.
 - `EReal.expHomeomorph`: `exp` as a homeomorphism.
 
 ## Main Results
 - `EReal.log_exp`, `ENNReal.exp_log`: `log` and `exp` are inverses of each other.
 - `EReal.exp_nmul`, `EReal.exp_mul`: `exp` satisfies the identities `exp (n * x) = (exp x) ^ n`
-and `exp (x * y) = (exp x) ^ y`.
+  and `exp (x * y) = (exp x) ^ y`.
 - `EReal` is a Polish space.
 
 ## Tags

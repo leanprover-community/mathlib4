@@ -36,6 +36,7 @@ variable {C : Type*} [Category* C] [Preadditive C]
 
 open MorphComponents
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).ReflectsIsomorphisms :=
   ⟨fun {X Y} f => by
     intro
@@ -68,6 +69,7 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
         PInfty_f_naturality_assoc, IsIso.hom_inv_id_assoc, assoc, IsIso.inv_hom_id_assoc,
         SimplicialObject.σ_naturality, h₁, h₂, h₃, and_self]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem compatibility_N₂_N₁_karoubi :
     N₂ ⋙ (karoubiChainComplexEquivalence C ℕ).functor =
       karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C ⋙
@@ -94,6 +96,7 @@ theorem compatibility_N₂_N₁_karoubi :
       karoubiChainComplexEquivalence_functor_obj_X_p, N₂_obj_p_f, eqToHom_refl,
       PInfty_f_naturality_assoc, app_comp_p, PInfty_f_idem_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We deduce that `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 reflects isomorphisms from the fact that
 `N₁ : SimplicialObject (Karoubi C) ⥤ Karoubi (ChainComplex (Karoubi C) ℕ)` does. -/
@@ -109,10 +112,6 @@ instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)
     let F₄ := Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse
       (ComplexShape.down ℕ)
     let F := F₁ ⋙ F₂ ⋙ F₃ ⋙ F₄
-    -- Porting note: we have to help Lean4 find the `ReflectsIsomorphisms` instances
-    -- could this be fixed by setting better instance priorities?
-    haveI : F₁.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
-    haveI : F₂.ReflectsIsomorphisms := by infer_instance
     have : IsIso (F.map f) := by
       simp only [F, F₁]
       rw [← compatibility_N₂_N₁_karoubi, Functor.comp_map]
