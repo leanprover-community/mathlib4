@@ -253,15 +253,12 @@ omit hx h in
 theorem iteratedDerivWithin_comp_const_sub (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (c - z)) s =
       fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (c +ᵥ -s) (c - x) := by
-  have key1 : (fun z : 𝕜 => f (c - z)) = fun z => (fun w => f (c + w)) (-z) := by
-    ext z; simp [sub_eq_add_neg]
-  have key2 : ∀ a, iteratedDerivWithin n (fun w => f (c + w)) (-s) a =
-      iteratedDerivWithin n f (c +ᵥ -s) (c + a) :=
-    fun a => congr_fun (iteratedDerivWithin_comp_const_add (f := f) (s := -s) c) a
   ext a
-  rw [key1, iteratedDerivWithin_comp_neg (f := fun w => f (c + w)) a, key2 (-a)]
-  congr 2
-  ring
+  have : (fun z : 𝕜 => f (c - z)) = fun z => (fun w => f (c + w)) (-z) := by
+    simp only [sub_eq_add_neg]
+  rw [this, iteratedDerivWithin_comp_neg (f := fun w => f (c + w)) a,
+    iteratedDerivWithin_comp_const_add c]
+  ring_nf
 
 lemma iteratedDerivWithin_id :
     iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by
