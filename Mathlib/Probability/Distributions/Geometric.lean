@@ -71,16 +71,12 @@ lemma hasSum_one_geometricMeasure (h1 : 0 < p) (h2 : p ≤ 1) :
   simp [field]
 
 instance isProbabilityMeasure_geometricMeasure :
-    IsProbabilityMeasure (geometricMeasure p) where
-  measure_univ := by
-    rw [geometricMeasure]
-    split_ifs with h
-    · simp only [MeasurableSpace.measurableSet_top, Measure.sum_apply, Measure.smul_apply,
-        measure_univ, smul_eq_mul, mul_one]
-      rw [← ENNReal.ofReal_tsum_of_nonneg ?_ (hasSum_one_geometricMeasure h.1 h.2).summable,
-        (hasSum_one_geometricMeasure h.1 h.2).tsum_eq, ENNReal.ofReal_one]
-      exact geometricMeasure_nonneg h.1 h.2
-    · simp
+    IsProbabilityMeasure (geometricMeasure p) := by
+  rw [geometricMeasure]
+  split_ifs with h
+  · exact (hasSum_one_geometricMeasure h.1 h.2).isProbabilityMeasure_sum_dirac
+      (geometricMeasure_nonneg h.1 h.2)
+  · infer_instance
 
 section Integral
 
