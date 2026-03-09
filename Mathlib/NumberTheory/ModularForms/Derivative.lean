@@ -109,7 +109,6 @@ theorem D_const (c : ℂ) : D (Function.const _ c) = 0 := by
   change (2 * π * I)⁻¹ * deriv (fun _ : ℂ => c) (z : ℂ) = 0
   simp [deriv_const]
 
-
 /--
 Serre derivative of weight $k$.
 -/
@@ -160,7 +159,7 @@ theorem SerreD_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDifferentiable �
 The Serre derivative preserves MDifferentiability.
 If `F : ℍ → ℂ` is MDifferentiable, then `SerreD k F` is also MDifferentiable.
 -/
-theorem SerreD_differentiable {F : ℍ → ℂ} (k : ℂ)
+theorem SerreD_mdifferentiable {F : ℍ → ℂ} (k : ℂ)
     (hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (SerreD k F) := by
   refine (D_differentiable hF).sub ?_
