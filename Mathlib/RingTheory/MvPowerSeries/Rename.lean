@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Renaming variables of power series
@@ -196,6 +197,16 @@ theorem rename_injective (e : σ ↪ τ) : Function.Injective (rename (R := R) e
   intro _ _ h; ext x
   simpa using MvPowerSeries.ext_iff.mp h (embDomain e x)
 
+theorem rename_map (φ : R →+* S) (p : MvPowerSeries σ R) :
+    rename f (map φ p) = map φ (rename f p) := by
+  ext; simp [coeff_rename]
+
+theorem rename_coe (p : MvPolynomial σ R) : rename f (p : MvPowerSeries σ R) = p.rename f := by
+  induction p using MvPolynomial.induction_on with
+  | C a => simp
+  | add P Q hP hQ => simp [hP, hQ]
+  | mul_X P n hP => simp [hP]
+
 variable (R) in
 /-- `rename` is an equivalence when the underlying map is an equivalence. -/
 @[simps apply]
@@ -292,6 +303,10 @@ theorem killCompl_comp_rename : (killCompl e).comp (rename e) = AlgHom.id R _ :=
 @[simp]
 theorem killCompl_rename_app (p : MvPowerSeries σ R) : killCompl e (rename e p) = p :=
   AlgHom.congr_fun (killCompl_comp_rename) p
+
+theorem killCompl_map (φ : R →+* S) (p : MvPowerSeries τ R) :
+    killCompl e (map φ p) = map φ (killCompl e p) := by
+  ext; simp [coeff_killCompl]
 
 end killCompl
 
