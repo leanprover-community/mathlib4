@@ -94,7 +94,6 @@ theorem reindex [Zero α] [One α] (h : IsAdjMatrix A) (f : V ≃ W) :
   rw [reindex_apply]
   apply h.submatrix
 
-@[simp]
 theorem reindex_iff [Zero α] [One α] (f : V ≃ W) : (A.reindex f f).IsAdjMatrix ↔ A.IsAdjMatrix := by
   refine ⟨fun h ↦ ?_, (·.reindex f)⟩
   rw [← Matrix.reindex f f |>.symm_apply_apply A, Matrix.reindex_symm]
@@ -224,12 +223,13 @@ theorem isSymm_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsSymm :=
 
 variable (α)
 
-@[simp] theorem diag_adjMatrix [Zero α] [One α] : (G.adjMatrix α).diag = 0 := by ext; simp
-
 /-- The adjacency matrix of `G` is an adjacency matrix. -/
 @[simp]
 theorem isAdjMatrix_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsAdjMatrix where
   zero_or_one := by grind [adjMatrix_apply]
+
+theorem diag_adjMatrix [Zero α] [One α] : (G.adjMatrix α).diag = 0 := by
+  simp
 
 /-- The graph induced by the adjacency matrix of `G` is `G` itself. -/
 @[simp]
@@ -250,7 +250,6 @@ theorem Embedding.submatrix_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [De
   simp
 
 variable {G} in
-@[simp]
 theorem Iso.reindex_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [DecidableRel H.Adj]
     (f : G ≃g H) : (G.adjMatrix α).reindex f f = H.adjMatrix α := by
   rw [reindex_apply]
