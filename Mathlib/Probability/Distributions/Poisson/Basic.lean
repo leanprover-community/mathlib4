@@ -49,13 +49,8 @@ lemma hasSum_one_poissonMeasure (r : ℝ≥0) : HasSum (fun n ↦ exp (-r) * r ^
   · simp [← exp_eq_exp_ℝ, ← exp_add]
 
 instance isProbabilityMeasure_poissonMeasure (r : ℝ≥0) :
-    IsProbabilityMeasure (poissonMeasure r) where
-  measure_univ := by
-    simp only [poissonMeasure, MeasurableSpace.measurableSet_top, Measure.sum_apply,
-      Measure.smul_apply, measure_univ, smul_eq_mul, mul_one]
-    rw [← ENNReal.ofReal_tsum_of_nonneg ?_ (hasSum_one_poissonMeasure r).summable,
-      (hasSum_one_poissonMeasure r).tsum_eq, ENNReal.ofReal_one]
-    exact fun _ ↦ by positivity
+    IsProbabilityMeasure (poissonMeasure r) :=
+  (hasSum_one_poissonMeasure r).isProbabilityMeasure_sum_dirac (fun _ ↦ by positivity)
 
 section Integral
 
