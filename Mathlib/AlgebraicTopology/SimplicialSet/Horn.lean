@@ -85,7 +85,7 @@ variable (n : ℕ) (i k : Fin (n + 3))
 /-- The (degenerate) subsimplex of `Λ[n+2, i]` concentrated in vertex `k`. -/
 def const (m : SimplexCategoryᵒᵖ) : Λ[n + 2, i].obj m :=
   SSet.yonedaEquiv (X := Λ[n + 2, i])
-    (SSet.const ⟨stdSimplex.obj₀Equiv.symm k, by simp⟩)
+    (SSet.const ⟨stdSimplex.obj₀Equiv.symm k, by simp; tauto⟩)
 
 @[simp]
 lemma const_val_apply {m : ℕ} (a : Fin (m + 1)) :
@@ -108,6 +108,7 @@ def edge (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) 
     rw [Finset.eq_univ_iff_forall, not_forall] at hS
     obtain ⟨k, hk⟩ := hS
     simp only [mem_insert, mem_singleton, not_or] at hk
+    -- simp? [horn_eq_iSup]
     -- this was produced by `simp? [horn_eq_iSup]`
     simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set, Set.mem_compl_iff,
       Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff, Nat.reduceAdd, mem_compl,
