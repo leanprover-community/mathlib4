@@ -224,6 +224,7 @@ variable [LieRing N] [LieAlgebra R N] [LieRing M] [LieAlgebra R M] (E : Extensio
     (hE : E.IsCentral) {s : M →ₗ[R] E.L}
     (hs : Function.LeftInverse E.proj s) (p : E.L →ₗ[R] N)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary function for defining the 2-cocycle attached to a section. -/
 @[simps]
 def twoCocycleOfSplittingAux : M →ₗ[R] M →ₗ[R] E.proj.ker where
@@ -234,6 +235,7 @@ def twoCocycleOfSplittingAux : M →ₗ[R] M →ₗ[R] E.proj.ker where
   map_add' _ _ := by ext; simp; abel
   map_smul' _ _ := by ext; simp [smul_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 include E hE hs in
 /-- Construct a cocycle from a module-split central extension. -/
 def twoCocycleOfSplitting : twoCocycle R M N where

@@ -75,11 +75,13 @@ def loopAlgebraEquivLaurent :
 
 namespace LoopAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie algebra homomorphism induced by an additive map of character groups. -/
 def mapMonomialLieHom {A} {A' : Type*} [AddCommMonoid A] [AddCommMonoid A'] (f : A →+ A') :
     loopAlgebra R A L →ₗ⁅R⁆ loopAlgebra R A' L :=
   LieAlgebra.ExtendScalars.map (AddMonoidAlgebra.mapDomainAlgHom R R f) LieHom.id
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapMonomialLieHom_single {A} {A' : Type*} [AddCommMonoid A] [AddCommMonoid A'] (f : A →+ A')
     (r : R) (a : A) (x : L) :
@@ -120,6 +122,7 @@ lemma toFinsupp_monomial_apply (a : A) (x : L) :
     toFinsupp R A L (monomial R L a x) = Finsupp.single a x:= by
   rw [← Function.comp_apply (f := toFinsupp R A L), ← toFinsupp_comp_monomial R]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toFinsupp_single_tmul (c : A) (z : L) (r : R) :
     ((toFinsupp R A L) (AddMonoidAlgebra.single c r ⊗ₜ[R] z)) = Finsupp.single c (r • z) := by
@@ -127,6 +130,7 @@ lemma toFinsupp_single_tmul (c : A) (z : L) (r : R) :
   by_cases h : c = a <;> simp [toFinsupp, h, AddMonoidAlgebra.basis, AddMonoidAlgebra.single,
     LinearEquiv.refl, LinearMap.id]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma support_toFinsupp_mapMonomialLieHom {B : Type*} [AddCommMonoid A] [AddCommMonoid B]
     (f : B →+ A) (p : loopAlgebra R B L) {a : A}
     (ha : a ∈ ((toFinsupp R A L) ((mapMonomialLieHom R L f) p)).support) :
@@ -450,6 +454,7 @@ instance {R : Type*} [CommRing R] :
     LieAlgebra R (TrivialLieModule R L R) where
   lie_smul _ _ _ := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The extension of a loop algebra by a trivial module. -/
 def extension [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
@@ -460,6 +465,7 @@ def extension [CommRing A] [IsAddTorsionFree R] [Algebra A R]
 --letI _ := Extension.ringModuleOf (extension R A L Φ hΦ hΦs)
 --    have this := Extension.lieModuleOf (extension R A L Φ hΦ hΦs)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma twoCocycleOf_extension [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
@@ -476,6 +482,7 @@ section PositiveEnergy
 
 variable [CommRing A] [Algebra A R]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma twoCocycle_apply_single_single [IsAddTorsionFree R] (Φ : LinearMap.BilinForm R L)
     (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ) {a b : A} (h : -b ≠ a) (r s : R) (x y : L) :
@@ -491,6 +498,7 @@ theorem _root_.Finsupp.prod_eq_one {α M N : Type*} [Zero M] [CommMonoid N] {f :
   exact Finset.prod_eq_one fun b hb ↦ h₀ b (Finsupp.mem_support_iff.mp hb)
 --#find_home! Finsupp.prod_eq_one --[Mathlib.Algebra.BigOperators.Finsupp.Basic]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma twoCocycle_apply_single [IsAddTorsionFree R] (Φ : LinearMap.BilinForm R L)
     (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ) {a : A} {p : loopAlgebra R A L}
@@ -529,6 +537,7 @@ lemma twoCocycle_apply_single [IsAddTorsionFree R] (Φ : LinearMap.BilinForm R L
         residuePairing_apply_apply, toFinsupp_single_tmul, Finsupp.sum]
       exact Finset.sum_eq_zero fun b hb ↦ by simp [Finsupp.single_eq_of_ne (h b hb)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma twoCocycle_apply_apply_zero [IsAddTorsionFree R] (Φ : LinearMap.BilinForm R L)
     (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ) (p q : loopAlgebra R A L)
@@ -548,6 +557,7 @@ lemma twoCocycle_apply_apply_zero [IsAddTorsionFree R] (Φ : LinearMap.BilinForm
 
 --Make this more general - two submonoids that don't generate nontrivial units?
 
+set_option backward.isDefEq.respectTransparency false in
 lemma twoCocycle_nat [IsAddTorsionFree R] (Φ : LinearMap.BilinForm R L)
     (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ) (p q : loopAlgebra R ℕ L) :
@@ -567,6 +577,7 @@ lemma twoCocycle_nat [IsAddTorsionFree R] (Φ : LinearMap.BilinForm R L)
   simp only [Nat.coe_castAddMonoidHom] at hb'
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The linear map from `L` to the extended loop algebra taking `x` to `x ⊗ t^a`. -/
 def monomial' [IsAddTorsionFree R] (Φ : LinearMap.BilinForm R L)
     (hΦ : LinearMap.BilinForm.lieInvariant L Φ) (hΦs : LinearMap.BilinForm.IsSymm Φ) (a : A) :
@@ -575,6 +586,7 @@ def monomial' [IsAddTorsionFree R] (Φ : LinearMap.BilinForm R L)
   map_add' x y := by rw [← of_add, Prod.mk_zero_add_mk_zero, ← TensorProduct.tmul_add]
   map_smul' r x := by rw [TensorProduct.tmul_smul, RingHom.id_apply, ← of_smul, Prod.smul_mk_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma proj_monomial' [IsAddTorsionFree R] (Φ : LinearMap.BilinForm R L)
     (hΦ : LinearMap.BilinForm.lieInvariant L Φ) (hΦs : LinearMap.BilinForm.IsSymm Φ) (a : A)

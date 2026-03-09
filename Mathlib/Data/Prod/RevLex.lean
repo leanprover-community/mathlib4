@@ -190,6 +190,14 @@ def lexEquiv (α β : Type*) [PartialOrder α] [PartialOrder β] : α ×ₗ β �
     intro a b
     simp [le_iff, Lex.le_iff]
 
+@[simp]
+theorem lexEquiv_apply (α β : Type*) [PartialOrder α] [PartialOrder β] (a : Lex (α × β)) :
+    lexEquiv α β a = toRevLex ⟨(ofLex a).2, (ofLex a).1⟩ := rfl
+
+@[simp]
+theorem lexEquiv_symm_apply (α β : Type*) [PartialOrder α] [PartialOrder β] (a : RevLex (β × α)) :
+    (lexEquiv α β).symm a = toLex ⟨(ofRevLex a).2, (ofRevLex a).1⟩ := rfl
+
 theorem LexEquiv_le (α β : Type*) [PartialOrder α] [PartialOrder β] (a b : α ×ₗ β) :
     lexEquiv α β a ≤ lexEquiv α β b ↔ a ≤ b :=
   OrderIso.le_iff_le (lexEquiv α β)

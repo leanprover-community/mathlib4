@@ -136,7 +136,7 @@ instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCance
 @[to_additive /-- An ordered additive isomorphism given by `lexEquiv`. -/]
 def lexEquivMulHom (α β) [PartialOrder α] [Monoid α] [PartialOrder β] [Monoid β] :
     α ×ₗ β ≃*o β ×ᵣ α :=
-  ⟨⟨lexEquiv α β, by simp [lexEquiv, ← toRevLex_mul]⟩, OrderIso.le_iff_le (lexEquiv α β)⟩
+  ⟨⟨lexEquiv α β, fun x y ↦ by simp; rfl⟩, OrderIso.le_iff_le (lexEquiv α β)⟩
 
 end RevLex
 
