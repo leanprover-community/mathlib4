@@ -204,7 +204,7 @@ lemma measure_iInter_of_ae_antitone {ι : Type*}
     specialize hω hj
     simp only [le_Prop_eq] at hω
     exact hω h
-  rw [measure_congr <| EventuallyEq.countable_iInter hst, Antitone.measure_iInter]
+  rw [measure_congr <| Filter.EventuallyEq.countable_iInter hst, Antitone.measure_iInter]
   · exact iInf_congr <| fun i ↦ measure_congr <| (hst i).symm
   · intros i j hij
     simp only [ht]
