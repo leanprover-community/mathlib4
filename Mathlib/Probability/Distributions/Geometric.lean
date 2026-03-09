@@ -10,7 +10,7 @@ public import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 
-/-! # Poisson distributions over ℕ
+/-! # Geometric distributions over ℕ
 
 Define the geometric measure over the natural numbers. For `0 < p ≤ 1`, `geometricMeasure p` is the
 measure which to `{n}` associates `(1 - p) ^ n * n`.
