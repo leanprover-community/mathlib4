@@ -944,6 +944,12 @@ theorem rightInverse_rangeSplitting {f : α → β} (h : Injective f) :
   (leftInverse_rangeSplitting f).rightInverse_of_injective fun _ _ hxy =>
     h <| Subtype.ext_iff.1 hxy
 
+@[simp]
+lemma leftInverse_rangeFactorization_iff_injective (f : α → β) :
+    LeftInverse (rangeSplitting f) (rangeFactorization f) ↔ f.Injective :=
+  ⟨(rangeFactorization_injective.mp ·.injective),
+    fun h ↦ congrFun' (rightInverse_rangeSplitting h).id⟩
+
 theorem preimage_rangeSplitting {f : α → β} (hf : Injective f) :
     preimage (rangeSplitting f) = image (rangeFactorization f) :=
   (image_eq_preimage_of_inverse (rightInverse_rangeSplitting hf)

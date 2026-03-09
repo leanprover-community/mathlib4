@@ -322,6 +322,16 @@ theorem Multipliable.mul (hf : Multipliable f L) (hg : Multipliable g L) :
   (hf.hasProd.mul hg.hasProd).multipliable
 
 @[to_additive]
+lemma HasProd.pow (hf : HasProd f a L) (n : ℕ) : HasProd (f · ^ n) (a ^ n) L := by
+  induction n with
+  | zero => simp
+  | succ n hn => simpa [pow_succ] using hn.mul hf
+
+@[to_additive]
+lemma Multipliable.pow (hf : Multipliable f L) (n : ℕ) : Multipliable (f · ^ n) L :=
+  (hf.hasProd.pow n).multipliable
+
+@[to_additive]
 theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     (∀ i ∈ s, HasProd (f i) (a i) L) → HasProd (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) L := by
   classical
@@ -640,6 +650,13 @@ protected theorem Multipliable.tprod_mul [L.NeBot]
     (hf : Multipliable f L) (hg : Multipliable g L) :
     ∏'[L] b, (f b * g b) = (∏'[L] b, f b) * ∏'[L] b, g b :=
   (hf.hasProd.mul hg.hasProd).tprod_eq
+
+@[to_additive]
+lemma Multipliable.tprod_pow [L.NeBot] (hf : Multipliable f L) (n : ℕ) :
+    ∏'[L] b, (f b) ^ n = (∏'[L] b, f b) ^ n := by
+  induction n with
+  | zero => simp
+  | succ n hn => simp [pow_succ, (hf.pow n).tprod_mul hf, hn]
 
 @[to_additive]
 protected theorem Multipliable.tprod_finsetProd [L.NeBot] {f : γ → β → α} {s : Finset γ}

@@ -81,6 +81,16 @@ lemma overEquiv_symm_top {X : C} (Y : Over X) :
     (overEquiv Y).symm ⊤ = ⊤ :=
   (overEquiv Y).injective (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma overEquiv_bot {X : C} (Y : Over X) : overEquiv Y ⊥ = ⊥ := by
+  simp [overEquiv]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma overEquiv_symm_bot {X : C} (Y : Over X) : (overEquiv Y).symm ⊥ = ⊥ := by
+  rw [overEquiv, Equiv.coe_fn_symm_mk, functorPullback_bot]
+
 lemma overEquiv_le_overEquiv_iff {X : C} {Y : Over X} (R₁ R₂ : Sieve Y) :
     R₁.overEquiv Y ≤ R₂.overEquiv Y ↔ R₁ ≤ R₂ := by
   refine ⟨fun h ↦ ?_, fun h ↦ Sieve.functorPushforward_monotone _ _ h⟩
