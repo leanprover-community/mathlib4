@@ -51,7 +51,7 @@ lemma isCompactOpenCovered_of_isCompact [QuasiCompactCover 𝒰]
     {U : S.Opens} (hU : IsCompact (U : Set S)) :
     IsCompactOpenCovered (𝒰.f ·) (U : Set S) := by
   obtain ⟨Us, hUs, hUf, hUc⟩ := S.isBasis_affineOpens.exists_finite_of_isCompact hU
-  refine .of_biUnion_eq_of_finite (SetLike.coe '' Us) (by aesop) (hUf.image _) ?_
+  refine .of_biUnion_eq_of_finite (SetLike.coe '' Us) (by simp_all) (hUf.image _) ?_
   simpa using fun t ht ↦ IsAffineOpen.isCompactOpenCovered 𝒰 (hUs ht)
 
 variable {𝒰 : PreZeroHypercover.{v} S} {K : Precoverage Scheme.{u}}
@@ -142,6 +142,11 @@ instance of_finite {𝒰 : S.Cover K} [Scheme.JointlySurjective K]
   isCompactOpenCovered_of_isAffineOpen {U} hU := by
     refine .of_finite_of_isSpectralMap (fun i ↦ (𝒰.f i).isSpectralMap) ?_ U.2 hU.isCompact
     exact (fun x _ ↦ ⟨𝒰.idx x, 𝒰.covers x⟩)
+
+instance [IsAffine S] {P : MorphismProperty Scheme.{u}} (𝒰 : S.AffineCover P) [Finite 𝒰.I₀] :
+    QuasiCompactCover 𝒰.cover.toPreZeroHypercover :=
+  haveI : Finite 𝒰.cover.I₀ := ‹_›
+  .of_finite
 
 variable {P : MorphismProperty Scheme.{u}}
 

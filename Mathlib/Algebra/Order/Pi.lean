@@ -120,6 +120,9 @@ lemma mulSingle_le_mulSingle : mulSingle i a ≤ mulSingle i b ↔ a ≤ b := by
 @[to_additive (attr := simp) single_nonneg]
 lemma one_le_mulSingle : 1 ≤ mulSingle i a ↔ 1 ≤ a := by simp [mulSingle]
 
+@[to_additive (attr := simp) single_pos]
+lemma one_lt_mulSingle : 1 < mulSingle i a ↔ 1 < a := by simp [mulSingle]
+
 @[to_additive (attr := simp)]
 lemma mulSingle_le_one : mulSingle i a ≤ 1 ↔ a ≤ 1 := by simp [mulSingle]
 

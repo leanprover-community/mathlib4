@@ -307,7 +307,7 @@ nonrec lemma LocallyQuasiFinite.of_finite_preimage_singleton
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
   · exact (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦ this _ _
-      (fun x ↦ ((hf x).preimage (X.affineCover.f _).isOpenEmbedding.injective.injOn:)) ⟨_, rfl⟩
+      (fun x ↦ ((hf x).preimage (X.affineCover.f _).isOpenEmbedding.injective.injOn :)) ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   simp only [HasRingHomProperty.Spec_iff, id_eq] at *

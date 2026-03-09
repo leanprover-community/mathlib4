@@ -32,10 +32,8 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 * `AlgebraicGeometry.IsArtinianScheme.finite`: An Artinian scheme is finite.
 
-* `AlgebraicGeometry.Scheme.isArtinianRing_iff_IsArtinianScheme`: A commutative ring R is Artinian
-  if and only if Spec R is Artinian.
-
-TODO(Brian-Nugent): Show that all Artinian schemes are affine.
+* `AlgebraicGeometry.Scheme.isArtinianScheme_Spec`: A commutative ring R is Artinian if and only if
+  Spec R is Artinian.
 
 -/
 

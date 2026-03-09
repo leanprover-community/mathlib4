@@ -382,7 +382,7 @@ theorem resultant_C_left (r : R) :
   obtain hg | hg := g.natDegree.eq_zero_or_pos
   · obtain ⟨s, rfl⟩ := natDegree_eq_zero.mp hg
     simp
-  conv_lhs => rw [← g.modByMonic_add_div (monic_X_sub_C r)]
+  conv_lhs => rw [← g.modByMonic_add_div (X - C r)]
   rw [resultant_add_mul_right _ _ _ _ _ _ (natDegree_X_sub_C_le _), modByMonic_X_sub_C_eq_C_eval]
   · simp
   · rw [natDegree_divByMonic g (monic_X_sub_C r), natDegree_sub_C, natDegree_X]
@@ -449,7 +449,7 @@ lemma resultant_eq_prod_roots_sub
     (hg'.map _) (SplittingField.splits _) (by simpa [r, natDegree_C_mul, hr₀] using hrd.le) rfl
   rw [resultant_map_map, natDegree_map, natDegree_map, resultant_C_mul_right,
     map_mul, inv_pow, map_inv₀, inv_mul_eq_iff_eq_mul₀ (by simp [hr₀])] at this
-  rw [← f.modByMonic_add_div hg, resultant_add_mul_left, f.modByMonic_add_div hg,
+  rw [← f.modByMonic_add_div, resultant_add_mul_left, f.modByMonic_add_div,
     ← Nat.sub_add_cancel (hrd.le.trans hfg), add_comm, resultant_add_left_deg, resultant_comm]
   · apply (algebraMap K L).injective
     rw [map_mul, map_mul, map_mul, this, map_sub_roots_sprod_eq_prod_map_eval _ _ hf hf',
@@ -463,7 +463,7 @@ lemma resultant_eq_prod_roots_sub
         simp only [mem_roots', ne_eq, IsRoot.def, eval_mul, eval_C, leadingCoeff_eq_zero, hr₀,
           not_false_eq_true, mul_inv_cancel_left₀, and_imp, r]
         intro x hx hxg
-        conv_lhs => rw [← f.modByMonic_add_div hg, eval_add, eval_mul, hxg, zero_mul, add_zero]
+        conv_lhs => rw [← f.modByMonic_add_div, eval_add, eval_mul, hxg, zero_mul, add_zero]
       · simp [hg'.natDegree_eq_card_roots]
     simp only [coeff_natDegree, hg.leadingCoeff, one_pow, map_one, map_multiset_prod,
       ← hf'.natDegree_eq_card_roots, ← hg'.natDegree_eq_card_roots, this, map_mul, Multiset.map_map,
@@ -473,7 +473,7 @@ lemma resultant_eq_prod_roots_sub
     congr 3 with x
     exact aeval_algebraMap_apply _ _ _
   · simp [r, hr₀, natDegree_C_mul]
-  · rw [f.modByMonic_add_div hg, natDegree_divByMonic _ hg, Nat.sub_add_cancel hfg]
+  · rw [f.modByMonic_add_div, natDegree_divByMonic _ hg, Nat.sub_add_cancel hfg]
   · simp
 
 set_option backward.isDefEq.respectTransparency false in

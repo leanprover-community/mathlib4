@@ -22,7 +22,6 @@ about these definitions.
 
 @[expose] public section
 
-
 variable {𝕜 𝕜' E F α : Type*}
 
 open Filter Metric Function Set Topology Bornology
@@ -168,7 +167,6 @@ instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotie
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   norm_smul_le _ x := norm_smul_le _ x.unop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
@@ -480,7 +478,7 @@ instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 �
 
 -- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
 -- appropriately modified here.
-/-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
+/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
 def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
@@ -521,7 +519,7 @@ instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars �
 
 -- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
 -- appropriately modified here.
-/-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
+/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
 def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
@@ -572,21 +570,21 @@ topology on the type. See note [reducible non-instances]. -/
 abbrev PseudoMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField 𝕜] [AddCommGroup E]
     [Norm E] [Module 𝕜 E] (core : SeminormedSpace.Core 𝕜 E) :
     PseudoMetricSpace E where
-  dist x y := ‖x - y‖
+  dist x y := ‖-x + y‖
   dist_self x := by
-    show ‖x - x‖ = 0
-    simp only [sub_self]
+    show ‖-x + x‖ = 0
+    simp only [add_comm, ← sub_eq_add_neg, sub_self]
     have : (0 : E) = (0 : 𝕜) • (0 : E) := by simp
     rw [this, core.norm_smul]
     simp
   dist_comm x y := by
-    show ‖x - y‖ = ‖y - x‖
-    have : y - x = (-1 : 𝕜) • (x - y) := by simp
+    show ‖-x + y‖ = ‖-y + x‖
+    have : -y + x = (-1 : 𝕜) • (-x + y) := by simp; abel
     rw [this, core.norm_smul]
     simp
   dist_triangle x y z := by
-    show ‖x - z‖ ≤ ‖x - y‖ + ‖y - z‖
-    have : x - z = (x - y) + (y - z) := by abel
+    show ‖-x + z‖ ≤ ‖-x + y‖ + ‖-y + z‖
+    have : -x + z = (-x + y) + (-y + z) := by abel
     rw [this]
     exact core.norm_triangle _ _
   edist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnreal _).symm
@@ -698,8 +696,9 @@ See note [reducible non-instances]. -/
 abbrev NormedAddCommGroup.ofCore (core : NormedSpace.Core 𝕜 E) : NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCore core.toCore with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
@@ -711,8 +710,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceUniformity [U : UniformSpace E] (core : N
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceUniformity core.toCore H with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
@@ -725,8 +725,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceTopology [T : TopologicalSpace E]
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceTopology core.toCore H with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 open Bornology in
@@ -743,8 +744,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceAll core.toCore HU HB with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedSpace 𝕜 E` instance from a `NormedSpace.Core`. This is meant to be used
