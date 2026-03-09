@@ -161,7 +161,7 @@ instance : (topology S).Subcanonical :=
   GrothendieckTopology.subcanonical_of_full_of_faithful (ProEt.forget S) _ (proetaleTopology.over S)
 
 /-- If `S` is the empty scheme, the pro-étale site over `S` is a point. -/
-noncomputable def equivOfIsEmpty [IsEmpty S] : S.ProEt ≌ PUnit :=
+noncomputable def equivOfIsEmpty [IsEmpty S] : S.ProEt ≌ Discrete PUnit :=
   MorphismProperty.overEquivOfIsInitial _ _ _ isInitialOfIsEmpty
 
 variable {S} in
