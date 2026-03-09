@@ -356,7 +356,7 @@ namespace AbsoluteValue
 /-- A real absolute value on a field determines a `NormedField` structure. -/
 @[implicit_reducible]
 noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
-  __ := inferInstanceAs (Field K)
+  toField := inferInstanceAs (Field K)
   __ := v.toNormedRing
   norm_mul := v.map_mul
 
