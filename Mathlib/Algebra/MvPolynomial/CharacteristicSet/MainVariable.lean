@@ -49,9 +49,6 @@ section MainVariable
 appearing in `p`. If `p = 0`, its main variable is `⊥`. -/
 def mainVariable (p : MvPolynomial σ R) : WithBot σ := p.support.sup (fun s ↦ s.support.max)
 
-variable (p) in
-theorem mainVariable_def : p.mainVariable = p.support.sup (fun s ↦ s.support.max) := rfl
-
 @[simp] theorem mainVariable_zero : (0 : MvPolynomial σ R).mainVariable = ⊥ := rfl
 
 theorem ne_zero_of_mainVariable_ne_bot : p.mainVariable ≠ ⊥ → p ≠ 0 :=
@@ -136,7 +133,7 @@ theorem degreeOf_eq_zero_of_mainVariable_lt {i : σ} :
   refine Finsupp.notMem_support_iff.mp ?_
   contrapose! h
   apply le_trans (Finset.le_max h)
-  apply mainVariable_def p ▸ Finset.le_sup hs
+  apply Finset.le_sup hs
 
 theorem degreeOf_of_mainVariable_eq_bot (i : σ) : p.mainVariable = ⊥ → p.degreeOf i = 0 :=
   fun h ↦ degreeOf_eq_zero_of_mainVariable_lt (h ▸ WithBot.bot_lt_coe i)

@@ -60,8 +60,8 @@ theorem mainDegree_eq_zero_iff : p.mainDegree = 0 ↔ p.mainVariable = ⊥ where
       rewrite [← Nat.bot_eq_zero, Finset.sup_eq_bot_iff] at h
       simp only [mem_support_iff, ne_eq, Nat.bot_eq_zero] at h
       have : ⊥ < p.mainVariable := by rewrite [hc]; exact compareOfLessAndEq_eq_lt.mp rfl
-      rcases (Finset.le_sup_iff this).mp <| ge_of_eq p.mainVariable_def with ⟨t, ht1, ht2⟩
-      absurd (Finset.sup_le_iff.mp <| le_of_eq <| p.mainVariable_def.symm.trans hc) t ht1
+      rcases (Finset.le_sup_iff this).mp le_rfl with ⟨t, ht1, ht2⟩
+      absurd (Finset.sup_le_iff.mp <| le_of_eq hc) t ht1
       have h := Finsupp.notMem_support_iff.mpr (h t <| mem_support_iff.mp ht1)
       have : c ≠ t.support.max := by contrapose! h; exact Finset.mem_of_max h.symm
       exact not_le_of_gt <| lt_of_le_of_ne (le_of_eq_of_le hc.symm ht2) this
