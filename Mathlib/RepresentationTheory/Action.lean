@@ -247,11 +247,9 @@ def linearizeTrivialIso (X : Type w) : (linearize k G (Action.trivial _ X)).Equi
     simpa using linearizeTrivial_def (k := k) X g
 
 open CategoryTheory
-@[simp]
 lemma linearizeTrivialIso_apply {X : Type w} (f : (Action.trivial _ X).V →₀ k) :
     (linearizeTrivialIso k G X) f = f := rfl
 
-@[simp]
 lemma linearizeTrivialIso_symm_apply {X : Type w} (f : X →₀ k) :
     (linearizeTrivialIso k G X).symm f = f := rfl
 
