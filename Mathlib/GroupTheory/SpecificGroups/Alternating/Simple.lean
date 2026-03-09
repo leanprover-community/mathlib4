@@ -56,8 +56,7 @@ namespace Equiv.Perm
 variable {α : Type*} [DecidableEq α] [Finite α]
 
 /-- The Iwasawa structure of `Perm α` acting on `Set.powersetCard α 2`. -/
-def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s]
-:
+def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     IwasawaStructure (Perm α) (Set.powersetCard α 2) where
   T s := (ofSubtype : Perm (s : Set α) →* Perm α).range
   is_comm s := by
