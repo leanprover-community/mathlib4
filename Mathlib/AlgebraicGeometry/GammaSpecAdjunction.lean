@@ -402,6 +402,14 @@ def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
   right_triangle_components R :=
     Scheme.Hom.ext' <| locallyRingedSpaceAdjunction.right_triangle_components R
 
+/-- Given `f, g : X ⟶ Spec(R)`, if the two induced maps `R ⟶ Γ(X)` are equal, then `f = g`. -/
+lemma _root_.AlgebraicGeometry.ext_to_Spec {X : Scheme} {R : Type*} [CommRing R]
+    {f g : X ⟶ Spec (.of R)}
+    (h : (Scheme.ΓSpecIso (.of R)).inv ≫ Scheme.Γ.map f.op =
+      (Scheme.ΓSpecIso (.of R)).inv ≫ Scheme.Γ.map g.op) :
+    f = g :=
+  (ΓSpec.adjunction.homEquiv X (.op <| .of R)).symm.injective <| Opposite.unop_injective h
+
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
     ΓSpec.adjunction.homEquiv X R f = ⟨locallyRingedSpaceAdjunction.homEquiv X.1 R f⟩ := rfl
