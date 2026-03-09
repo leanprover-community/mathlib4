@@ -375,6 +375,7 @@ def FriendlyOperation.unfold {op : Seq α → Seq α} (h : FriendlyOperation op)
     | some (t_hd, _) =>
       some (t_hd, ⟨fun s_tl ↦ (op (.cons s_hd s_tl)).tail, FriendlyOperation.cons_tail h⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `unfold` correctly decomposes a friendly operation: the head of `op s` depends only on the
 head of `s` (and is given by `unfold`), while the tail of `op s` is obtained by applying the
 friendly operation returned by `unfold` to the tail of `s`. This gives a coinductive
@@ -404,6 +405,7 @@ theorem FriendlyOperation.destruct_apply_eq_unfold {op : Seq α → Seq α} (h :
       | nil => simp at this
       | cons => simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `op` is friendly, then `op s` and `op t` have the same head if `s` and `t`
 have the same head. -/
 theorem FriendlyOperation.op_head_eq {op : Seq α → Seq α} (h : FriendlyOperation op) {s t : Seq α}
@@ -457,6 +459,7 @@ theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
     apply ih h_next
     simpa [dist_eq_half_of_head h_head, pow_succ'] using hn
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A generalisation of `FriendlyOperation.coind` which allows using `opf ∘ op'` in the tail
 of `op s` where `opf` is friendly and `op'` is a function satisfying `motive`. -/
 theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
@@ -501,6 +504,7 @@ theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
       simp [hT]
       rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A generalisation of `FriendlyOperation.coind` that allows using `op' ∘ opf` in the tail
 of `op s` where `opf` is friendly and `op'` is a function satisfying `motive`. -/
 theorem FriendlyOperation.coind_comp_friend_right {op : Seq α → Seq α}
