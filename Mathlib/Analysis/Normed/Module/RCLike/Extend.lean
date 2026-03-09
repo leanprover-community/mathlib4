@@ -23,11 +23,11 @@ namespace StrongDual
 
 open RCLike in
 /-- The extension `StrongDual.extendRCLike` as a continuous linear equivalence between
-the strong duals when `F` is a topological vector space. -/
+the strong duals when scalar multiplication (by `𝕜`) is jointly continuous. -/
 @[expose, simps! -isSimp toLinearEquiv apply symm_apply]
 noncomputable def extendRCLikeL {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace F]
-    [AddCommGroup F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [IsTopologicalAddGroup F] [Module ℝ F]
-    [IsScalarTower ℝ 𝕜 F] : StrongDual ℝ F ≃L[ℝ] StrongDual 𝕜 F where
+    [AddCommGroup F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F] :
+    StrongDual ℝ F ≃L[ℝ] StrongDual 𝕜 F where
   toLinearEquiv := extendRCLikeₗ
   continuous_toFun := by
     rw [(ContinuousLinearMap.isEmbedding_restrictScalars ℝ).continuous_iff]
