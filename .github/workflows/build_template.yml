@@ -500,7 +500,7 @@ jobs:
 
       - name: upload cache staging artifact
         if: ${{ always() && steps.cache_staging_check.outputs.has_files == 'true' }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: cache-staging
           path: cache-staging/
@@ -696,7 +696,7 @@ jobs:
           echo "CACHE_BIN=$CACHE_BIN" >> "$GITHUB_ENV"
 
       - name: Download cache staging artifact
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           name: cache-staging
           path: cache-staging
@@ -767,7 +767,7 @@ jobs:
           lake exe graph
 
       - name: upload the import graph
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: import-graph
           path: import_graph.dot
