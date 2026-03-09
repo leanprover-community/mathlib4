@@ -27,7 +27,7 @@ For `M` a finitely generated module over Noetherian local ring `R` and an `R`-re
 
 section ENat
 
-lemma WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
+lemma ENat.WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
     a + 1 ≤ 0 ↔ a = ⊥ := by
   induction a with
   | bot => simp
@@ -67,14 +67,15 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ext_vanish_of_for_all_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
     (h : ∀ L : ModuleCat.{v} R, Module.Finite R L →  Subsingleton (Ext M L n)) :
     ∀ N : ModuleCat.{v} R, Subsingleton (Ext M N n) := by
-  induction n generalizing M
-  · let _ := h M ‹_›
+  induction n generalizing M with
+  | zero =>
+    let _ := h M ‹_›
     let _ : Subsingleton (M ⟶ M) := Ext.homEquiv₀.symm.subsingleton
     have : Limits.IsZero M := (Limits.IsZero.iff_id_eq_zero M).mpr (Subsingleton.eq_zero (𝟙 M))
     intro N
     rw [Ext.homEquiv₀.subsingleton_congr]
     exact subsingleton_of_forall_eq 0 (fun f ↦ this.eq_zero_of_src f)
-  · rename_i n hn _
+  | succ n hn =>
     rcases Module.exists_finite_presentation R M with ⟨_, _, _, _, _, f, surjf⟩
     let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
     have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
@@ -119,7 +120,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
     | 0 =>
       rw [projectiveDimension_le_iff]
       simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one,
-        CharP.cast_eq_zero, WithBot.add_one_le_zero_iff_eq_bot (projectiveDimension M),
+        CharP.cast_eq_zero, ENat.WithBot.add_one_le_zero_iff_eq_bot (projectiveDimension M),
         projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton, sub,
         ← IsProjective.iff_projective]
       refine ⟨fun h ↦ ?_, fun h ↦ Projective.of_free⟩
@@ -180,10 +181,11 @@ lemma projectiveDimension_quotient_regular_sequence [Small.{v} R] (M : ModuleCat
     projectiveDimension (ModuleCat.of R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M))) =
     projectiveDimension M + rs.length := by
   generalize len : rs.length = n
-  induction n generalizing M rs
-  · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
+  induction n generalizing M rs with
+  | zero =>
+    rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
     simpa using projectiveDimension_eq_of_iso (Submodule.quotEquivOfEqBot ⊥ rfl).toModuleIso
-  · rename_i n hn _ _
+  | succ n hn =>
     match rs with
     | [] => simp at len
     | x :: rs' =>
@@ -208,29 +210,6 @@ lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Projectiv
       ModuleCat.isZero_iff_subsingleton, not_subsingleton_iff_nontrivial]
     assumption
 
-section
-
-variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-/-- The linear map `M/IM → N/IN` induced by `M → N`. -/
-def Ideal.smulTopLinearMap (I : Ideal R) (f : M →ₗ[R] N) :
-    M ⧸ I • (⊤ : Submodule R M) →ₗ[R] N ⧸ I • (⊤ : Submodule R N) :=
-  Submodule.mapQ _ _ f (Submodule.smul_top_le_comap_smul_top I f)
-
-/-- The linear map `M/IM ≃ N/IN` induced by `M ≃ N`. -/
-def Ideal.smulTopLinearEquiv (I : Ideal R) (e : M ≃ₗ[R] N) :
-    (M ⧸ I • (⊤ : Submodule R M)) ≃ₗ[R] (N ⧸ I • (⊤ : Submodule R N)) where
-  __ := Ideal.smulTopLinearMap I e
-  invFun := Ideal.smulTopLinearMap I e.symm
-  left_inv y := by
-    induction y using Submodule.Quotient.induction_on
-    simp [smulTopLinearMap]
-  right_inv y := by
-    induction y using Submodule.Quotient.induction_on
-    simp [smulTopLinearMap]
-
-end
-
 variable [Small.{v} R]
 
 lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs) :
@@ -241,8 +220,9 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
     simpa using (Ideal.mem_span x).mpr fun p a ↦ a hx
   let e : (Shrink.{v} (R ⧸ Ideal.ofList rs)) ≃ₗ[R]
     (Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)) :=
-    ((Shrink.linearEquiv R _).trans (Submodule.quotEquivOfEq _ _ (by simp))).trans
-    ((Ideal.ofList rs).smulTopLinearEquiv (Shrink.linearEquiv R R).symm)
+    ((Shrink.linearEquiv R _).trans (Submodule.Quotient.equiv _ _ (Shrink.linearEquiv R R).symm (by
+      nth_rw 1 [← (Ideal.ofList rs).mul_top, ← smul_eq_mul, Submodule.map_smul'']
+      simp )))
   rw [projectiveDimension_eq_of_iso e.toModuleIso,
     projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max,
