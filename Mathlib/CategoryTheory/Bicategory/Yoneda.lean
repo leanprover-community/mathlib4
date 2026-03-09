@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Bicategory.Opposites
 /-!
 # 2-Yoneda embedding
 
-In this file we define the 2-categorical yoneda embedding.
+In this file we define the bicategorical yoneda embedding.
 
 -/
 
@@ -89,8 +89,8 @@ def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
 /-- Postcomposing of a 1-morhisms seen as a strong transformation between pseudofunctors. -/
 @[simps!]
 def postcomp₂ {a b : B} (f : a ⟶ b) : yoneda₀ a ⟶ yoneda₀ b where
-  app x := ((postcomposingCat (unop x) a b).obj f)
-  naturality g := (associatorNatIsoMiddleCat g.unop f)
+  app x := (postcomposingCat (unop x) a b).obj f
+  naturality g := associatorNatIsoMiddleCat g.unop f
 
 /-- Postcomposing of `1`-morphisms seen as a functor from `a ⟶ b` to the hom-category of the
 corresponding pseudofunctors.
@@ -108,8 +108,8 @@ It consists of the following:
   `a ↦ (a ⟶ x)` on objects and on 1- and 2-morphisms given by "precomposing"
 * On 1- and 2-morphisms it is given by "postcomposing" -/
 @[simps!]
-def yoneda : B ⥤ᵖ (Bᵒᵖ ⥤ᵖ Cat.{w, v}) where
-  toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun x ↦ yoneda₀ x) postcomposing₂
+def yoneda : B ⥤ᵖ Bᵒᵖ ⥤ᵖ Cat.{w, v} where
+  toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (yoneda₀ ·) postcomposing₂
   mapId a := isoMk (fun b => rightUnitorNatIsoCat (unop b) a)
   mapComp f g := (isoMk (fun b ↦ associatorNatIsoLeftCat (unop b) f g)).symm
 
