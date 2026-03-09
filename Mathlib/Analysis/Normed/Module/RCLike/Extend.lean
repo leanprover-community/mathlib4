@@ -49,6 +49,7 @@ theorem norm_extendRCLike (fr : StrongDual ℝ F) : ‖(fr.extendRCLike : Strong
         _ ≤ ‖(fr.extendRCLike : StrongDual 𝕜 F)‖ * ‖x‖ := le_opNorm _ _
 
 /-- `StrongDual.extendRCLike` bundled into a linear isometry equivalence. -/
+@[expose, simps! -isSimp apply symm_apply]
 noncomputable def extendRCLikeₗᵢ : StrongDual ℝ F ≃ₗᵢ[ℝ] StrongDual 𝕜 F where
   toLinearEquiv := StrongDual.extendRCLikeₗ
   norm_map' := norm_extendRCLike
@@ -58,8 +59,8 @@ end StrongDual
 namespace ContinuousLinearMap
 open StrongDual
 
-@[deprecated (since := "2026-01-28")] alias norm_extendTo𝕜'_bound := norm_extendRCLike_bound
-@[deprecated (since := "2026-01-28")] alias norm_extendTo𝕜' := norm_extendRCLike
-@[deprecated (since := "2026-01-28")] alias norm_extendTo𝕜 := norm_extendRCLike
+@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜'_bound := norm_extendRCLike_bound
+@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜' := norm_extendRCLike
+@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜 := norm_extendRCLike
 
 end ContinuousLinearMap

@@ -110,6 +110,7 @@ namespace ValuativeCriterion.Existence
 
 open IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 01KE]
 lemma specializingMap (H : ValuativeCriterion.Existence f) :
     SpecializingMap f := by
@@ -140,6 +141,7 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
 instance {R S : CommRingCat} (e : R ≅ S) : IsLocalHom e.hom.hom :=
   isLocalHom_of_isIso _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
     ValuativeCriterion.Existence f := by
   rintro ⟨R, K, i₁, i₂, ⟨w⟩⟩
@@ -267,6 +269,7 @@ lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
       · simp only [Category.assoc, pullback.diagonal_snd, Category.comp_id]
         exact congrArg CommSq.LiftStruct.l h₁₂
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 01KZ]
 lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Uniqueness f := by
   intro S

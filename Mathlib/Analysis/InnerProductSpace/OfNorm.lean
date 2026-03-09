@@ -14,12 +14,12 @@ public import Mathlib.Tactic.Module
 # Inner product space derived from a norm
 
 This file defines an `InnerProductSpace` instance from a norm that respects the
-parallellogram identity. The parallelogram identity is a way to express the inner product of `x` and
+parallelogram identity. The parallelogram identity is a way to express the inner product of `x` and
 `y` in terms of the norms of `x`, `y`, `x + y`, `x - y`.
 
 ## Main results
 
-- `InnerProductSpace.ofNorm`: a normed space whose norm respects the parallellogram identity,
+- `InnerProductSpace.ofNorm`: a normed space whose norm respects the parallelogram identity,
   can be seen as an inner product space.
 
 ## Implementation notes
@@ -75,12 +75,12 @@ variable (𝕜) {E}
 
 theorem InnerProductSpace.toInnerProductSpaceable [InnerProductSpace 𝕜 E] :
     InnerProductSpaceable E :=
-  ⟨parallelogram_law_with_norm 𝕜⟩
+  ⟨parallelogram_law_with_norm_mul 𝕜⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) InnerProductSpace.toInnerProductSpaceable_ofReal
     [InnerProductSpace ℝ E] : InnerProductSpaceable E :=
-  ⟨parallelogram_law_with_norm ℝ⟩
+  ⟨parallelogram_law_with_norm_mul ℝ⟩
 
 variable [NormedSpace 𝕜 E]
 

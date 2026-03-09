@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Algebra.Order.ToIntervalMod
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
@@ -580,7 +579,7 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
       have : ∀ᶠ (_ : ℝ) in atTop, False := by
         filter_upwards [hf_nonneg, hneg] with x hx hx'; linarith
       rw [Filter.eventually_false_iff_eq_bot] at this
-      exact False.elim <| (atTop_neBot).ne this
+      exact False.elim <| atTop_neBot.ne this
 
 protected lemma GrowsPolynomially.pow (p : ℕ) (hf : GrowsPolynomially f)
     (hf_nonneg : ∀ᶠ x in atTop, 0 ≤ f x) : GrowsPolynomially fun x => (f x) ^ p := by
@@ -593,13 +592,13 @@ protected lemma GrowsPolynomially.zpow (p : ℤ) (hf : GrowsPolynomially f)
   exact hf.rpow p hf_nonneg
 
 lemma growsPolynomially_rpow (p : ℝ) : GrowsPolynomially fun x => x ^ p :=
-  (growsPolynomially_id).rpow p (eventually_ge_atTop 0)
+  growsPolynomially_id.rpow p (eventually_ge_atTop 0)
 
 lemma growsPolynomially_pow (p : ℕ) : GrowsPolynomially fun x => x ^ p :=
-  (growsPolynomially_id).pow p (eventually_ge_atTop 0)
+  growsPolynomially_id.pow p (eventually_ge_atTop 0)
 
 lemma growsPolynomially_zpow (p : ℤ) : GrowsPolynomially fun x => x ^ p :=
-  (growsPolynomially_id).zpow p (eventually_ge_atTop 0)
+  growsPolynomially_id.zpow p (eventually_ge_atTop 0)
 
 lemma growsPolynomially_log : GrowsPolynomially Real.log := by
   intro b hb

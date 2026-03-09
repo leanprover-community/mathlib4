@@ -220,8 +220,8 @@ lemma topology_eq : ‹_› = upperSet α := topology_eq_upperSetTopology
 
 variable {α}
 
-instance _root_.OrderDual.instIsLowerSet [Preorder α] [TopologicalSpace α] [Topology.IsUpperSet α] :
-    Topology.IsLowerSet αᵒᵈ where
+set_option backward.isDefEq.respectTransparency false in
+instance _root_.OrderDual.instIsLowerSet : Topology.IsLowerSet αᵒᵈ where
   topology_eq_lowerSetTopology := by ext; rw [IsUpperSet.topology_eq α]
 
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
@@ -326,8 +326,8 @@ lemma topology_eq : ‹_› = lowerSet α := topology_eq_lowerSetTopology
 
 variable {α}
 
-instance _root_.OrderDual.instIsUpperSet [Preorder α] [TopologicalSpace α] [Topology.IsLowerSet α] :
-    Topology.IsUpperSet αᵒᵈ where
+set_option backward.isDefEq.respectTransparency false in
+instance _root_.OrderDual.instIsUpperSet : Topology.IsUpperSet αᵒᵈ where
   topology_eq_upperSetTopology := by ext; rw [IsLowerSet.topology_eq α]
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to `WithLowerSet α`. -/

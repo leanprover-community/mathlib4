@@ -5,7 +5,7 @@ Authors: Wojciech Nawrocki
 -/
 module
 
-public meta import Aesop
+public import Aesop
 public import Mathlib.CategoryTheory.Category.Basic
 public meta import Mathlib.Tactic.ToDual
 public import ProofWidgets.Component.PenroseDiagram

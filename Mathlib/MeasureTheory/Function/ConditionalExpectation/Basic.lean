@@ -82,7 +82,10 @@ variable {α β E 𝕜 : Type*} [RCLike 𝕜] {m m₀ : MeasurableSpace α} {μ 
   {s : Set α}
 
 section NormedAddCommGroup
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable [NormedAddCommGroup E] [CompleteSpace E]
+
+section NormedSpace
+variable [NormedSpace ℝ E]
 
 open scoped Classical in
 variable (m) in
@@ -174,6 +177,7 @@ theorem condExp_zero : μ[(0 : α → E) | m] = 0 := by
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
   exact condExp_of_stronglyMeasurable hm stronglyMeasurable_zero (integrable_zero _ _ _)
 
+@[fun_prop]
 theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f | m]) := by
   by_cases hm : m ≤ m₀
   swap; · rw [condExp_of_not_le hm]; exact stronglyMeasurable_zero
@@ -386,6 +390,8 @@ lemma MemLp.condExpL2_ae_eq_condExp (hm : m ≤ m₀) (hf : MemLp f 2 μ) [IsFin
   hf.condExpL2_ae_eq_condExp' hm (memLp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
 
 end RCLike
+
+end NormedSpace
 
 section Real
 variable [InnerProductSpace ℝ E]
