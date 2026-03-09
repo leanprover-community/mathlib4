@@ -774,7 +774,7 @@ namespace EuclideanSpace
 
 variable (𝕜 ι)
 
-/-- The basis `Pi.basisFun`, bundled as an orthornormal basis of `EuclideanSpace 𝕜 ι`. -/
+/-- The basis `Pi.basisFun`, bundled as an orthonormal basis of `EuclideanSpace 𝕜 ι`. -/
 noncomputable def basisFun : OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι) :=
   ⟨LinearIsometryEquiv.refl _ _⟩
 
