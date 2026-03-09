@@ -326,4 +326,26 @@ lemma preservesCokernel_zero' (f : X ⟶ Y) (hf : f = 0) :
   rw [hf]
   infer_instance
 
+section ZeroObject
+
+variable [HasZeroObject C] [HasZeroObject D]
+
+variable {X Y : C} (f : X ⟶ Y)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Mapping a `zeroKernelFork` of `f : X ⟶ Y` along a functor `G` that preserves zero morphisms
+is isomorphic to the `zeroKernelFork` of `G.map f`. -/
+def mapZeroKernelFork :
+    (kernel.zeroKernelFork f).map G ≅ (kernel.zeroKernelFork (G.map f)) :=
+  Fork.ext (by simpa using G.mapZeroObject) (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Mapping a `zeroCokernelCofork` of `f : X ⟶ Y` along a functor `G` that preserves zero morphisms
+is isomorphic to the `zeroCokernelCofork` of `G.map f`. -/
+def mapZeroCokernelCofork :
+    (cokernel.zeroCokernelCofork f).map G ≅ (cokernel.zeroCokernelCofork (G.map f)) :=
+  Cofork.ext (by simpa using G.mapZeroObject) (by simp)
+
+end ZeroObject
+
 end CategoryTheory.Limits
