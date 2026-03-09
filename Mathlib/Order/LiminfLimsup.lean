@@ -854,7 +854,7 @@ theorem limsup_le_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
     rcases h' y x_y with ⟨z, x_z, z_y⟩
     exact (limsup_le_of_le h₁ ((h z x_z).mono (fun _ ↦ le_of_lt))).trans_lt z_y
   · apply limsup_le_of_le h₁
-    push_neg +distrib at h'
+    push +distrib Not at h'
     rcases h' with ⟨z, x_z, hz⟩
     exact (h z x_z).mono <| fun w hw ↦ (or_iff_left (not_le_of_gt hw)).1 (hz (u w))
 
@@ -882,7 +882,7 @@ theorem le_limsup_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
     obtain ⟨z, y_z, z_x⟩ := h' y y_x
     exact y_z.trans_le (le_limsup_of_frequently_le ((h z z_x).mono (fun _ ↦ le_of_lt)) h₂)
   · apply le_limsup_of_frequently_le _ h₂
-    push_neg +distrib at h'
+    push +distrib Not at h'
     rcases h' with ⟨z, z_x, hz⟩
     exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_gt hw)).1 (hz (u w))
 

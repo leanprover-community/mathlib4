@@ -198,7 +198,7 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
     all_goals fun_prop (disch := assumption)
   -- pathological case where `deriv = 0` since `binEntropy` is not differentiable there
   · rw [deriv_zero_of_not_differentiableAt (differentiableAt_binEntropy_iff_ne_zero_one.not.2 hp)]
-    push_neg +distrib at hp
+    push +distrib Not at hp
     obtain rfl | rfl := hp <;> simp
 
 /-! ### `q`-ary entropy -/
