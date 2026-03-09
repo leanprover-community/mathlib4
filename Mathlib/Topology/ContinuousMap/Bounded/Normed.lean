@@ -327,7 +327,7 @@ maximum of their norms. -/
 lemma nnnorm_add_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
     ‖f + g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_add_eq_max h
-  
+
 lemma norm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
     ‖f - g‖ = max ‖f‖ ‖g‖ := by
   simpa [sub_eq_add_neg] using norm_add_eq_max (f := f) (g := -g) (by simpa)
