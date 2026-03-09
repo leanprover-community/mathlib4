@@ -25,7 +25,7 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 
 ## Main Definitions
 - `SkewMonoidAlgebra k G`: the skew monoid algebra of `G` over `k` is the type of finite formal
-`k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
+  `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
 -/
 
@@ -283,7 +283,7 @@ theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [Distr
   inhabit G
   refine ⟨IsSMulRegular.skewMonoidAlgebra, fun ha b₁ b₂ inj ↦ ?_⟩
   rw [← (single_injective _).eq_iff, ← smul_single, ← smul_single] at inj
-  exact single_injective (default) (ha inj)
+  exact single_injective default (ha inj)
 
 end Single
 

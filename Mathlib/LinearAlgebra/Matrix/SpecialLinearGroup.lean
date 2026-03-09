@@ -229,7 +229,6 @@ section center
 
 open Subgroup
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem center_eq_bot_of_subsingleton [Subsingleton n] :
     center (SpecialLinearGroup n R) = ⊥ :=

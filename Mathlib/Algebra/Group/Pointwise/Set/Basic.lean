@@ -531,27 +531,20 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
 
 end Div
 
-/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
-note [pointwise nat action]. -/
-@[instance_reducible]
-protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
-  ⟨nsmulRec⟩
-
+-- TODO: rename `NPow` to `npow` and `ZPow` to `zpow`.
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Set`. See note [pointwise nat action]. -/
-@[instance_reducible, to_additive existing]
+@[to_additive (attr := instance_reducible)
+/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
+note [pointwise nat action]. -/]
 protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
-/-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
-addition/subtraction!) of a `Set`. See note [pointwise nat action]. -/
-@[instance_reducible]
-protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
-  ⟨zsmulRec⟩
-
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
-@[instance_reducible, to_additive existing]
+@[to_additive (attr := instance_reducible)
+/-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
+addition/subtraction!) of a `Set`. See note [pointwise nat action]. -/]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩
 
@@ -865,12 +858,10 @@ variable [Group α] {s t : Set α} {a b : α}
 /-! Note that `Set` is not a `Group` because `s / s ≠ 1` in general. -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem one_mem_div_iff : (1 : α) ∈ s / t ↔ ¬Disjoint s t := by
   simp [not_disjoint_iff_nonempty_inter, mem_div, div_eq_one, Set.Nonempty]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
   aesop (add simp [not_disjoint_iff_nonempty_inter, mem_mul, mul_eq_one_iff_eq_inv, Set.Nonempty])
