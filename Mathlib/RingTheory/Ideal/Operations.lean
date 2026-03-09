@@ -1327,8 +1327,11 @@ theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZero
 
 namespace Submodule
 
-variable {R : Type u} {M : Type v}
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type u}
+
+section
+
+variable [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R M]
 
 instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
@@ -1384,6 +1387,22 @@ instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
     (congr_arg (map · I) <| LinearMap.ext (f.left_inv ·)).trans (map_id I)
   right_inv I := (map_comp _ _ I).symm.trans <|
     (congr_arg (map · I) <| LinearMap.ext (f.right_inv ·)).trans (map_id I)
+
+end
+
+lemma smul_top_le_comap_smul_top {M N : Type*} [Semiring R] [AddCommMonoid M]
+    [AddCommMonoid N] [Module R M] [Module R N] (I : Ideal R)
+    (f : M →ₗ[R] N) : I • ⊤ ≤ comap f (I • ⊤) :=
+  map_le_iff_le_comap.mp <| le_of_eq_of_le (map_smul'' _ _ _) <|
+    smul_mono_right _ le_top
+
+lemma comap_smul_top_of_surjective {M N : Type*} [Semiring R]
+    [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] (I : Ideal R) (f : M →ₗ[R] N)
+    (h : Function.Surjective f) : I • ⊤ ⊔ (LinearMap.ker f) = comap f (I • ⊤) := by
+  refine le_antisymm (sup_le (smul_top_le_comap_smul_top I f) (LinearMap.ker_le_comap f)) ?_
+  rw [← Submodule.comap_map_eq f (I • (⊤ : Submodule R M)),
+    Submodule.comap_le_comap_iff_of_surjective h,
+    Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr h]
 
 end Submodule
 

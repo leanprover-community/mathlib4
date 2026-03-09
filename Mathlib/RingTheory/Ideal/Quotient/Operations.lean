@@ -1186,3 +1186,16 @@ def powQuotPowSuccEquivMapMkPowSuccPow :
 end PowQuot
 
 end Ideal
+
+namespace Submodule
+
+lemma quotient_smul_top_lt_of_le_smul_top {R : Type*} [Ring R] (I : Ideal R) {M : Type*}
+    [AddCommGroup M] [Module R M] {p : Submodule R M} (h : I • (⊤ : Submodule R M) < ⊤)
+    (le : p ≤ I • (⊤ : Submodule R M)) : I • (⊤ : Submodule R (M ⧸ p)) < ⊤ := by
+  rw [lt_top_iff_ne_top]
+  by_contra eq
+  absurd lt_top_iff_ne_top.mp h
+  have := Submodule.comap_smul_top_of_surjective I p.mkQ p.mkQ_surjective
+  simpa [eq, le] using this
+
+end Submodule
