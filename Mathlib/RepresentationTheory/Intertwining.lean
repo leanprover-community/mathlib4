@@ -80,8 +80,6 @@ lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
 
 lemma toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v = f v := rfl
 
-lemma apply_toLinearMap (f : IntertwiningMap ρ σ) (v : V) : f v = f.toLinearMap v := rfl
-
 @[simp] lemma _root_.LinearMap.toIntertwiningMap
   (hf : ∀ (g : G), ∀ (v : V), f (ρ g v) = σ g (f v)) (v : V) :
   f.intertwiningMap_of_isIntertwiningMap ρ σ hf v = f v := rfl
