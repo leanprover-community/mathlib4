@@ -362,63 +362,53 @@ def bot {G : Digraph V} : G.SpanningSubgraph where
     unfold instLE LE.le Digraph.IsSubgraph
     simp only [subset_refl, IsEmpty.forall_iff, implies_true, and_self]
 
+private lemma by_val {G : Digraph V} {H₁ H₂ : G.SpanningSubgraph}
+    (h : H₁.val ≤ H₂.val) : H₁ ≤ H₂ := h
+
 lemma le_sup_left {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph, H₁ ≤ (sup H₁ H₂) := by
-  intro ⟨H₁, H₁_sub, H₁_verts⟩ ⟨H₂, H₂_sub, H₂_verts⟩
-  unfold instLE LE.le Digraph.IsSubgraph Subtype.instLE
-  simp only [sup, max, SemilatticeSup.sup, Set.subset_union_left, true_and]
-  intro _ _ h
-  tauto
+  intro H₁ H₂
+  refine by_val ?_
+  simpa only [sup_of_val] using
+    (show H₁.val ≤ H₁.val ⊔ H₂.val from _root_.le_sup_left)
 
 lemma le_sup_right {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph, H₂ ≤ (sup H₁ H₂) := by
-  intro ⟨H₁, H₁_sub, H₁_verts⟩ ⟨H₂, H₂_sub, H₂_verts⟩
-  unfold instLE LE.le Digraph.IsSubgraph Subtype.instLE
-  simp only [sup, max, SemilatticeSup.sup, Set.subset_union_right, true_and]
-  intro _ _ h
-  tauto
+  intro H₁ H₂
+  refine by_val ?_
+  simpa only [sup_of_val] using
+    (show H₂.val ≤ H₁.val ⊔ H₂.val from _root_.le_sup_right)
 
 lemma sup_le {G : Digraph V} : ∀ H₁ H₂ H₃ : G.SpanningSubgraph,
   H₁ ≤ H₃ → H₂ ≤ H₃ → sup H₁ H₂ ≤ H₃ := by
-  intro ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩ ⟨H₃, ⟨H₃_sub, H₃_verts⟩⟩ h₁ h₂
-  unfold instLE LE.le Digraph.IsSubgraph Subtype.instLE at *
-  simp only [sup, max, SemilatticeSup.sup] at *
-  constructor
-  · exact Set.union_subset h₁.1 h₂.1
-  · intro _ _ h
-    cases h with
-    | inl h' => exact h₁.2 h'
-    | inr h' => exact h₂.2 h'
+  intro H₁ H₂ H₃ h₁ h₂
+  refine by_val ?_
+  have h₁' : H₁.val ≤ H₃.val := h₁
+  have h₂' : H₂.val ≤ H₃.val := h₂
+  simpa only [sup_of_val] using
+    (show H₁.val ⊔ H₂.val ≤ H₃.val from _root_.sup_le h₁' h₂')
 
 
 lemma inf_le_left {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph,
   inf H₁ H₂ ≤ H₁ := by
-  intro ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩
-  unfold instLE LE.le Digraph.IsSubgraph Subtype.instLE
-  simp only [inf, min, SemilatticeInf.inf, Lattice.inf]
-  constructor
-  · exact Set.inter_subset_left
-  · intro _ _ h
-    exact h.1
+  intro H₁ H₂
+  refine by_val ?_
+  simpa only [inf_of_val] using
+    (show H₁.val ⊓ H₂.val ≤ H₁.val from _root_.inf_le_left)
 
 lemma inf_le_right {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph,
   inf H₁ H₂ ≤ H₂ := by
-  intro ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩
-  unfold instLE LE.le Digraph.IsSubgraph Subtype.instLE
-  simp only [inf, min, SemilatticeInf.inf, Lattice.inf]
-  constructor
-  · exact Set.inter_subset_right
-  · intro _ _ h
-    exact h.2
+  intro H₁ H₂
+  refine by_val ?_
+  simpa only [inf_of_val] using
+    (show H₁.val ⊓ H₂.val ≤ H₂.val from _root_.inf_le_right)
 
 lemma le_inf {G : Digraph V} : ∀ H₁ H₂ H₃ : G.SpanningSubgraph,
   H₁ ≤ H₂ → H₁ ≤ H₃ → H₁ ≤ inf H₂ H₃ := by
-  intro ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩ ⟨H₃, ⟨H₃_sub, H₃_verts⟩⟩ h₁ h₂
-  unfold instLE LE.le Digraph.IsSubgraph Subtype.instLE at *
-  simp only [inf, min, SemilatticeInf.inf, Lattice.inf] at *
-  constructor
-  · intro v hv
-    exact ⟨h₁.1 hv, h₂.1 hv⟩
-  · intro v w h
-    exact ⟨h₁.2 h, h₂.2 h⟩
+  intro H₁ H₂ H₃ h₁ h₂
+  refine by_val ?_
+  have h₁' : H₁.val ≤ H₂.val := h₁
+  have h₂' : H₁.val ≤ H₃.val := h₂
+  simpa only [inf_of_val] using
+    (show H₁.val ≤ H₂.val ⊓ H₃.val from _root_.le_inf h₁' h₂')
 
 lemma le_top {G : Digraph V} : ∀ H : G.SpanningSubgraph,
   H ≤ top := by
