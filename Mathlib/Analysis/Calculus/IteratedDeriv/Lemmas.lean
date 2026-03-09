@@ -208,7 +208,7 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
 open Pointwise
 
 omit hx h in
-lemma iteratedDerivWithin_comp_neg (hf : ContDiffOn 𝕜 n f s) (a : 𝕜) :
+lemma iteratedDerivWithin_comp_neg (a : 𝕜) :
     iteratedDerivWithin n (fun x ↦ f (-x)) s a = (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) (-a)
     := by
   induction n generalizing a with
@@ -216,52 +216,52 @@ lemma iteratedDerivWithin_comp_neg (hf : ContDiffOn 𝕜 n f s) (a : 𝕜) :
   | succ n ih =>
     have ih' : iteratedDerivWithin n (fun x ↦ f (-x)) s =
         fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) (-x) :=
-      funext fun x ↦ ih hf.of_succ x
+      funext ih
     rw [iteratedDerivWithin_succ, ih', pow_succ', neg_mul, one_mul,
       derivWithin_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) x),
       derivWithin_fun_const_smul_field, neg_smul, ← iteratedDerivWithin_succ]
 
 omit hx h in
-theorem iteratedDerivWithin_comp_const_add (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
+theorem iteratedDerivWithin_comp_const_add (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (c + z)) s =
     fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (c + x) := by
   induction n with
   | zero => simp
   | succ n IH =>
     ext y
-    rw [iteratedDerivWithin_succ (f := fun z => f (c + z)), IH hf.of_succ,
+    rw [iteratedDerivWithin_succ (f := fun z => f (c + z)), IH,
       derivWithin_comp_const_add, ← iteratedDerivWithin_succ]
 
 omit hx h in
-theorem iteratedDerivWithin_comp_add_const (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
+theorem iteratedDerivWithin_comp_add_const (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (z + c)) s =
     fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (x + c) := by
   induction n with
   | zero => simp
   | succ n IH =>
     ext y
-    rw [iteratedDerivWithin_succ (f := fun z => f (z + c)), IH hf.of_succ,
+    rw [iteratedDerivWithin_succ (f := fun z => f (z + c)), IH,
       derivWithin_comp_add_const, ← iteratedDerivWithin_succ]
 
 omit hx h in
-theorem iteratedDerivWithin_comp_sub_const (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
+theorem iteratedDerivWithin_comp_sub_const (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (z - c)) s =
     fun x ↦ iteratedDerivWithin n f (-c +ᵥ s) (x - c) := by
-  simpa only [sub_eq_add_neg] using iteratedDerivWithin_comp_add_const hf (-c)
+  simpa only [sub_eq_add_neg] using iteratedDerivWithin_comp_add_const (-c)
 
 omit hx h in
-theorem iteratedDerivWithin_comp_const_sub (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
+theorem iteratedDerivWithin_comp_const_sub (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (c - z)) s =
       fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (c +ᵥ -s) (c - x) := by
-  induction n with
-  | zero =>
-      ext x
-      simp
-  | succ n ih =>
-      ext x
-      rw [iteratedDerivWithin_succ,ih hf.of_succ, derivWithin_fun_const_smul_field,
-        derivWithin_comp_const_sub]
-      simpa [pow_succ] using Eq.symm iteratedDerivWithin_succ
+  have key1 : (fun z : 𝕜 => f (c - z)) = fun z => (fun w => f (c + w)) (-z) := by
+    ext z; simp [sub_eq_add_neg]
+  have key2 : ∀ a, iteratedDerivWithin n (fun w => f (c + w)) (-s) a =
+      iteratedDerivWithin n f (c +ᵥ -s) (c + a) :=
+    fun a => congr_fun (iteratedDerivWithin_comp_const_add (f := f) (s := -s) c) a
+  ext a
+  rw [key1, iteratedDerivWithin_comp_neg (f := fun w => f (c + w)) a, key2 (-a)]
+  congr 2
+  ring
 
 lemma iteratedDerivWithin_id :
     iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by
