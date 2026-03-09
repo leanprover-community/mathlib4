@@ -60,12 +60,8 @@ variable (K : Type*) [CommSemiring K] [Algebra R K] (p : MvPolynomial σ R) (a :
 It is the same as `zeroLocus K (Ideal.span a)` for `a : Set (MvPolynomial σ R)` -/
 def vanishingSet : Set (σ → K) := {x | ∀ p ∈ a, p.aeval x = 0}
 
-theorem vanishingSet_def : vanishingSet K a = {x | ∀ p ∈ a, p.aeval x = 0} := rfl
-
 /-- The set of points where a single polynomial `p` vanishes. -/
 def singleVanishingSet : Set (σ → K) := {x | aeval x p = 0}
-
-theorem singleVanishingSet_def : singleVanishingSet K p = {x | p.aeval x = 0} := rfl
 
 theorem vanishingSet_singleton_eq_singleVanishingSet :
     vanishingSet K ({p} : Set (MvPolynomial σ R)) = singleVanishingSet K p := by

@@ -219,7 +219,7 @@ theorem empty_eq_default : (∅ : AscendingSet σ R) = default := rfl
 noncomputable def order (S : AscendingSet σ R) : Lex (ℕ → WithTop (WithBot σ ×ₗ ℕ)) :=
   S.val.order
 
-theorem order_def : S.order = S.val.order := rfl
+theorem order_coe : S.order = S.val.order := rfl
 
 instance : Preorder (AscendingSet σ R) := Preorder.lift ((↑) : _ → TriangulatedSet σ R)
 

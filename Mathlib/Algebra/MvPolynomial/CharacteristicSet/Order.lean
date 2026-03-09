@@ -47,10 +47,8 @@ section Order
 which is ordered lexicographically. -/
 noncomputable def order (p : MvPolynomial σ R) : WithBot σ ×ₗ ℕ := (p.mainVariable, p.mainDegree)
 
-theorem order_def : p.order = (p.mainVariable, p.mainDegree) := rfl
-
-theorem order_eq : p.order = q.order ↔ p.mainVariable = q.mainVariable ∧ p.mainDegree = q.mainDegree
-  := Prod.mk_inj
+theorem order_eq_iff : p.order = q.order ↔
+    p.mainVariable = q.mainVariable ∧ p.mainDegree = q.mainDegree := Prod.mk_inj
 
 instance instPreorder : Preorder (MvPolynomial σ R) where
   le := InvImage (· ≤ ·) order
@@ -70,8 +68,8 @@ instance instIsTotalLe : Std.Total (@LE.le (MvPolynomial σ R) _) where
 theorem le_def : p ≤ q ↔ p.mainVariable < q.mainVariable ∨
     p.mainVariable = q.mainVariable ∧ p.mainDegree ≤ q.mainDegree := Prod.lex_def
 
-theorem le_iff : (p ≤ q) ↔ ¬(p.mainVariable < q.mainVariable) →
-    (p.mainVariable = q.mainVariable ∧ p.mainDegree ≤ q.mainDegree) :=
+theorem le_iff_not_imp : p ≤ q ↔ ¬p.mainVariable < q.mainVariable →
+    p.mainVariable = q.mainVariable ∧ p.mainDegree ≤ q.mainDegree :=
   Iff.trans le_def <| Decidable.or_iff_not_imp_left
 
 theorem mainVariable_le_of_le : p ≤ q → p.mainVariable ≤ q.mainVariable :=
@@ -85,7 +83,7 @@ theorem lt_def : p < q ↔ p.mainVariable < q.mainVariable ∨
     p.mainVariable = q.mainVariable ∧ p.mainDegree < q.mainDegree :=
   Iff.trans lt_def' Prod.lex_def
 
-theorem lt_iff : p < q ↔ ¬(p.mainVariable < q.mainVariable)
+theorem lt_iff_not_imp : p < q ↔ ¬p.mainVariable < q.mainVariable
     → p.mainVariable = q.mainVariable ∧ p.mainDegree < q.mainDegree :=
   Iff.trans lt_def <| Decidable.or_iff_not_imp_left
 
@@ -113,7 +111,7 @@ theorem equiv_def : p ≈ q ↔ ¬p < q ∧ ¬q < p := Iff.trans equiv_def''
   (by rw [not_lt_iff_ge, not_lt_iff_ge, and_comm])
 
 theorem equiv_iff : p ≈ q ↔ p.mainVariable = q.mainVariable ∧ p.mainDegree = q.mainDegree :=
-  Iff.trans equiv_def' order_eq
+  Iff.trans equiv_def' order_eq_iff
 
 theorem le_iff_lt_or_equiv : p ≤ q ↔ p < q ∨ p ≈ q := le_iff_lt_or_antisymmRel
 

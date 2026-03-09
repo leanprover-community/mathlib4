@@ -94,7 +94,7 @@ theorem reducedTo_iff_gt_of_mainVariable_eq (hq : q ≠ 0) (h : q.mainVariable =
       rw [mainDegree_of_mainVariable_isSome hp, mainDegree_of_mainVariable_isSome <| h.trans hp]
       exact (reducedTo_iff hp hq).mp hl⟩
   mpr hr :=
-    have : q.mainDegree < p.mainDegree := (lt_iff.mp hr <| Eq.not_lt h).2
+    have : q.mainDegree < p.mainDegree := (lt_iff_not_imp.mp hr <| Eq.not_lt h).2
     match hp : p.mainVariable with
     | ⊥ => by
       rewrite [mainDegree_eq_zero_iff.mpr hp, mainDegree_eq_zero_iff.mpr (h ▸ hp)] at this
