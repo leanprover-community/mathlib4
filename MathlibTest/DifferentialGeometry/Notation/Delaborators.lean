@@ -21,9 +21,38 @@ variable
   (f : M → M) (x : M) (s : Set M)
   (v : (x : M) → TangentSpace I x)
 
+/-- info: MDiff f : Prop -/
+#guard_msgs in
+#check MDifferentiable I I f
+
+/-- info: MDiffAt (T% v) : Prop -/
+#guard_msgs in
+#check MDiff (T% v)
+
 /-- info: MDiffAt f x : Prop -/
 #guard_msgs in
 #check MDiffAt f x
+
+/-- info: MDiffAt (T% v) x : Prop -/
+#guard_msgs in
+#check MDiffAt (T% v) x
+
+/-- info: MDiff[s] f : Prop -/
+#guard_msgs in
+#check MDifferentiableOn I I f s
+
+/-- info: MDiff[s] (T% v) : Prop -/
+#guard_msgs in
+#check MDifferentiableOn I I.tangent (T% v) s
+
+/-- info: MDiff[s] (T% v) : Prop -/
+#guard_msgs in
+#check MDiff[s] (T% v)
+
+-- The partially applied form omitting `s` is not delaborated.
+/-- info: MDifferentiableOn I I f : Set M → Prop -/
+#guard_msgs in
+#check MDifferentiableOn I I f
 
 /-- info: MDiffAt[s] f x : Prop -/
 #guard_msgs in
