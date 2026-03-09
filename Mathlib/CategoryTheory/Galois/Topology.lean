@@ -62,6 +62,21 @@ lemma obj_discreteTopology (X : C) : DiscreteTopology (F.obj X) := ⟨rfl⟩
 /-- We put the discrete topology on `Aut (F.obj X)`. -/
 scoped instance (X : C) : TopologicalSpace (Aut (F.obj X)) := ⊥
 
+scoped instance {X Y : C} : TopologicalSpace (F.obj X  ⟶ F.obj Y) :=
+  .induced (fun f ↦ (f : F.obj X → F.obj Y)) inferInstance
+
+scoped instance {X Y : C} : DiscreteTopology (F.obj X  ⟶ F.obj Y) := by
+  have : IsHomeomorph (fun (f : F.obj X ⟶ F.obj Y) ↦ (f : F.obj X → F.obj Y)) := by
+    rw [isHomeomorph_iff_isEmbedding_surjective, isEmbedding_iff]
+    refine ⟨⟨⟨rfl⟩, ?_⟩, ?_⟩
+    · intro _ _ _
+      aesop
+    · intro a
+      use ⟨TypeCat.ofHom ⟨a⟩⟩
+      aesop
+  exact DiscreteTopology.of_continuous_injective this.homeomorph.continuous
+    this.homeomorph.injective
+
 @[scoped instance]
 lemma aut_discreteTopology (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl⟩
 
@@ -81,18 +96,17 @@ instance : TopologicalSpace (Aut F) :=
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
 automorphisms. -/
 lemma autEmbedding_range :
-    Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | (F.map f.hom ≫ (a f.right).hom : _ → _) =
+    Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom =
       (a f.left).hom ≫ F.map f.hom } := by
   ext a
-  simp +instances only [Set.mem_range, id_obj, DFunLike.coe_fn_eq, Set.mem_iInter, Set.mem_setOf_eq]
-  refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
-  use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
-  rfl
+  simp +instances only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
+  refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ by cat_disch, fun h ↦ ?_⟩
+  exact ⟨NatIso.ofComponents a fun {X Y} f ↦ h ⟨X, Y, f⟩, rfl⟩
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
 lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
   rw [autEmbedding_range]
-  exact isClosed_iInter (fun f ↦ isClosed_eq (by fun_prop) (by fun_prop))
+  refine isClosed_iInter (fun f ↦ isClosed_eq (by fun_prop) (by fun_prop))
 
 lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
   eq_induced := rfl
@@ -180,7 +194,7 @@ lemma exists_set_ker_evaluation_subset_of_isOpen
       ext x
       obtain ⟨⟨j⟩, a, ha : F.map _ a = x⟩ := Limits.FintypeCat.jointly_surjective
         (Discrete.functor (ff ⟨X, XinI⟩) ⋙ F) _ (Limits.isColimitOfPreserves F (h4 ⟨X, XinI⟩)) x
-      rw [FintypeCat.id_apply, ← ha, FunctorToFintypeCat.naturality]
+      rw [FintypeCat.id_apply, ← ha, NatTrans.naturality_apply]
       simp [h ⟨(ff _) j, ⟨Set.range (ff ⟨X, XinI⟩), ⟨⟨_, rfl⟩, ⟨j, rfl⟩⟩⟩⟩]
     exact Iso.ext h
 
@@ -209,7 +223,7 @@ lemma nhds_one_has_basis_stabilizers : (nhds (1 : Aut F)).HasBasis (fun _ ↦ Tr
       obtain ⟨z, rfl⟩ :=
         surjective_of_nonempty_fiber_of_isConnected F (Pi.π (fun X : I ↦ X.val) X) x
       obtain ⟨f, rfl⟩ := hbij.surjective z
-      rw [FunctorToFintypeCat.naturality, FunctorToFintypeCat.naturality, ht]
+      rw [NatTrans.naturality_apply, NatTrans.naturality_apply, ht]
     · intro ⟨X, _, h⟩
       exact ⟨MulAction.stabilizer (Aut F) X.pt, h, stabilizer_isOpen (Aut F) X.pt,
         Subgroup.one_mem _⟩

@@ -38,22 +38,16 @@ def functorHomEquiv (G H : C ⥤ TypeCat.{max w v u}) : (G ⟶ F.functorHom H) �
   (Functor.functorHomEquiv F H G).trans (homObjEquiv F H G)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given a morphism `f : G ⟶ H`, an object `c : C`, and an element of `(F.functorHom G).obj c`,
-construct an element of `(F.functorHom H).obj c`. -/
-@[simps]
-def rightAdj_map {F G H : C ⥤ TypeCat.{max w v u}} (f : G ⟶ H) (c : C) (a : (F.functorHom G).obj c) :
-    (F.functorHom H).obj c where
-  app d b := a.app d b ≫ f.app d
-  naturality g h := by
-    have := a.naturality g h
-    change (F.map g ≫ a.app _ (h ≫ g)) ≫ _ = _
-    aesop
-
 /-- A right adjoint of `tensorLeft F`. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app]
 def rightAdj : (C ⥤ TypeCat.{max w v u}) ⥤ C ⥤ TypeCat.{max w v u} where
   obj G := F.functorHom G
-  map f := { app X := TypeCat.ofHom ⟨rightAdj_map f X⟩ }
+  map f := { app X := TypeCat.ofHom ⟨fun a ↦ {
+    app d b := a.app d b ≫ f.app d
+    naturality g h := by
+      have := a.naturality g h
+      change (F.map g ≫ a.app _ (h ≫ g)) ≫ _ = _
+      aesop  }⟩}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
@@ -61,13 +55,13 @@ def adj : tensorLeft F ⊣ rightAdj F where
   unit := {
     app := fun G ↦ (functorHomEquiv F G _).2 (𝟙 _)
     naturality := fun G H f ↦ by
-      dsimp [rightAdj]
       ext
-      simp
-      sorry }
+      dsimp
+      ext
+      apply Prod.ext
+      · rfl
+      · simp [← NatTrans.naturality_apply] }
   counit := { app := fun G ↦ functorHomEquiv F _ G (𝟙 _) }
-  left_triangle_components := sorry
-  right_triangle_components := sorry
 
 instance closed : Closed F where
   rightAdj := rightAdj F

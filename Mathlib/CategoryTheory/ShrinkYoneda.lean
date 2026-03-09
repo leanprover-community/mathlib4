@@ -52,9 +52,9 @@ noncomputable def shrinkMap {F G : C ⥤ TypeCat.{w'}} (τ : F ⟶ G) [FunctorTo
 
 /-- Shrinking `F` to `Type w` followed by universe lifting is the same as shrinking to
 `Type (max w w')`. -/
-@[simps!]
+@[simps! hom_app inv_app]
 noncomputable
-def shrinkCompUliftFunctorIso (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F]
+def shrinkCompUliftFunctorIso (F : C ⥤ TypeCat.{w'}) [FunctorToTypes.Small.{w} F]
     [FunctorToTypes.Small.{max w w''} F] :
     shrink.{w} F ⋙ uliftFunctor.{w'', w} ≅ shrink.{max w w''} F :=
   NatIso.ofComponents

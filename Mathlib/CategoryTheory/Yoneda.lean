@@ -673,16 +673,19 @@ theorem corepresentable_of_natIso (F : C ⥤ TypeCat.{v}) {G} (i : F ≅ G) [F.I
     G.IsCorepresentable :=
   (F.corepresentableBy.ofIso i).isCorepresentable
 
+/-- The identity functor on `Type v` is corepresented by `PUnit`. -/
+def Functor.CorepresentableBy.id : (𝟭 TypeCat.{v}).CorepresentableBy (TypeCat.of PUnit) :=
+  corepresentableByEquiv.symm Coyoneda.punitIso
+
+@[simp] lemma Functor.CorepresentableBy.id_homEquiv_apply (X : TypeCat.{v})
+    (a : TypeCat.of PUnit ⟶ X) : dsimp% id.homEquiv a = a ⟨⟩ :=
+  rfl
+
+@[simp] lemma Functor.CorepresentableBy.id_homEquiv_symm_apply (X : TypeCat.{v}) (x : X)
+    (a : TypeCat.of PUnit) : dsimp% id.homEquiv.symm x a = x :=
+  rfl
+
 instance : Functor.IsCorepresentable (𝟭 TypeCat.{v}) :=
-  corepresentable_of_natIso (coyoneda.obj (op <| of <| PUnit)) Coyoneda.punitIso
-
-@[simp] lemma Functor.CorepresentableBy.id_homEquiv_apply (X : TypeCat.{v}) (a : PUnit ⟶ X) :
-    dsimp% id.homEquiv a = a ⟨⟩ := rfl
-
-@[simp] lemma Functor.CorepresentableBy.id_homEquiv_symm_apply (X : TypeCat.{v}) (x : X) (a : PUnit) :
-    dsimp% id.homEquiv.symm x a = x := rfl
-
-instance : Functor.IsCorepresentable (𝟭 (Type v)) :=
   Functor.CorepresentableBy.id.isCorepresentable
 
 open Opposite

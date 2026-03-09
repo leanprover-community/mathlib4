@@ -689,7 +689,7 @@ lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ TypeCat.{w}} {P₂ : Cᵒᵖ �
     exact hP₁.isSeparatedFor x₁ _ _ (by simpa only [this] using ht₂)
       (IsSheafFor.isAmalgamation hP₁ hx₁)
 
-lemma isSheafFor_iff_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
+lemma isSheafFor_iff_of_nat_equiv {P₁ : Cᵒᵖ ⥤ TypeCat.{w}} {P₂ : Cᵒᵖ ⥤ TypeCat.{w'}}
     (e : ∀ ⦃X : C⦄, P₁.obj (op X) ≃ P₂.obj (op X))
     (he : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₁.obj (op Y)),
       e (P₁.map f.op x) = P₂.map f.op (e x))

@@ -31,10 +31,10 @@ open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory
 namespace SSet
 
 instance : CartesianMonoidalCategory SSet.{u} :=
-  (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type u))
+  (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ TypeCat.{u}))
 
 instance : MonoidalClosed (SSet.{u}) :=
-  inferInstanceAs (MonoidalClosed (SimplexCategoryᵒᵖ ⥤ Type u))
+  inferInstanceAs (MonoidalClosed (SimplexCategoryᵒᵖ ⥤ TypeCat.{u}))
 
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :
@@ -77,20 +77,21 @@ lemma associator_inv_app_apply (K L M : SSet.{u}) {Δ : SimplexCategoryᵒᵖ}
     (x : (K ⊗ L ⊗ M).obj Δ) :
     (α_ K L M).inv.app Δ x = ⟨⟨x.1, x.2.1⟩, x.2.2⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(𝟙_ SSet ⟶ K) ≃ K _⦋0⦌`. -/
 def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
   toFun φ := φ.app _ PUnit.unit
   invFun x :=
-    { app := fun Δ _ => K.map (SimplexCategory.const Δ.unop ⦋0⦌ 0).op x
+    { app := fun Δ => TypeCat.ofHom ⟨fun _ => K.map (SimplexCategory.const Δ.unop ⦋0⦌ 0).op x⟩
       naturality := fun Δ Δ' f => by
         ext ⟨⟩
         dsimp
-        rw [← FunctorToTypes.map_comp_apply]
+        rw [← Functor.map_comp_apply]
         rfl }
   left_inv φ := by
     ext Δ ⟨⟩
     dsimp
-    rw [← FunctorToTypes.naturality]
+    rw [← NatTrans.naturality_apply]
     rfl
   right_inv x := by simp
 
@@ -185,10 +186,10 @@ variable (n : ℕ)
 open MonoidalCategory
 
 instance : CartesianMonoidalCategory (Truncated.{u} n) :=
-  (inferInstance : CartesianMonoidalCategory (_ ⥤ Type u))
+  (inferInstance : CartesianMonoidalCategory (_ ⥤ TypeCat.{u}))
 
 instance : MonoidalClosed (Truncated.{u} n) :=
-  inferInstanceAs (MonoidalClosed (_ ⥤ Type u))
+  inferInstanceAs (MonoidalClosed (_ ⥤ TypeCat.{u}))
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (truncation.{u} n).Monoidal :=

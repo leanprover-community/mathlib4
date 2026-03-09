@@ -289,19 +289,22 @@ namespace FunctorToTypes
 variable {C : Type u} [Category.{v} C] (F G H : C ⥤ TypeCat.{w}) {X Y Z : C}
 variable (σ : F ⟶ G) (τ : G ⟶ H)
 
-@[deprecated "No replacement" (since := "2026-02-09")]
-theorem map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
-    (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) := by simp only [Functor.map_comp,
-      CategoryTheory.comp_apply]
+attribute [elementwise nosimp] Functor.map_comp Functor.map_id NatTrans.comp_app
 
-@[deprecated "No replacement" (since := "2026-02-09")]
-theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a := by simp
+@[deprecated Functor.map_comp_apply (since := "2026-03-09")]
+theorem map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
+    (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) :=
+  F.map_comp_apply f g a
+
+@[deprecated Functor.map_id_apply (since := "2026-03-09")]
+theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a :=
+  F.map_id_apply X a
 
 @[deprecated (since := "2026-02-09")] alias naturality := NatTrans.naturality_apply
 
-@[deprecated "No replacement" (since := "2026-02-09")]
+@[deprecated NatTrans.comp_app_apply (since := "2026-03-09")]
 theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
-  rfl
+  σ.comp_app_apply τ X x
 
 attribute [elementwise (attr := simp)] eqToHom_map_comp
 
