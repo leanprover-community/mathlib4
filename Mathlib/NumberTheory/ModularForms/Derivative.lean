@@ -28,36 +28,17 @@ TODO:
   fun (z : ℍ) => (2 * π * I)⁻¹ * ((deriv (F ∘ ofComplex)) z)
 
 /--
-`MDifferentiableAt` on `ℍ` implies `DifferentiableAt` on `ℂ`.
--/
-lemma MDifferentiableAt_DifferentiableAt {F : ℍ → ℂ} {z : ℍ}
-  (h : MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) F z) : DifferentiableAt ℂ (F ∘ ofComplex) ↑z := by
-  have h₁ : DifferentiableWithinAt ℂ (F ∘ ofComplex) Set.univ ↑z :=
-    by simpa [writtenInExtChartAt, extChartAt, Set.range_id] using
-      MDifferentiableWithinAt.differentiableWithinAt_writtenInExtChartAt h
-  exact differentiableWithinAt_univ.1 h₁
-
-/--
-`DifferentiableAt` on `ℂ` implies `MDifferentiableAt` on `ℍ`.
--/
-lemma DifferentiableAt_MDifferentiableAt {G : ℂ → ℂ} {z : ℍ}
-    (h : DifferentiableAt ℂ G ↑z) : MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) (G ∘ (↑) : ℍ → ℂ) z := by
-  rw [mdifferentiableAt_iff]
-  apply DifferentiableAt.congr_of_eventuallyEq h
-  filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.im_pos] with w hw
-  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hw]
-
-/--
 The derivative operator `D` preserves MDifferentiability.
 If `F : ℍ → ℂ` is MDifferentiable, then `D F` is also MDifferentiable.
 -/
-theorem D_differentiable {F : ℍ → ℂ} (hF : MDiff F) :
-    MDiff (D F) := fun z =>
-  let hDiffOn : DifferentiableOn ℂ (F ∘ ofComplex) {z : ℂ | 0 < z.im} :=
-    fun w hw => (MDifferentiableAt_DifferentiableAt (hF ⟨w, hw⟩)).differentiableWithinAt
-  MDifferentiableAt.mul mdifferentiableAt_const <| DifferentiableAt_MDifferentiableAt <|
-    (hDiffOn.deriv isOpen_upperHalfPlaneSet).differentiableAt
-      (isOpen_upperHalfPlaneSet.mem_nhds z.im_pos)
+theorem D_differentiable {F : ℍ → ℂ} (hF : MDiff F) : MDiff (D F) := by
+  rw [UpperHalfPlane.mdifferentiable_iff] at hF ⊢
+  let c : ℂ := (2 * π * I)⁻¹
+  have hDeriv : DifferentiableOn ℂ (fun z => c * deriv (F ∘ ofComplex) z) upperHalfPlaneSet := by
+    simpa [c] using (hF.deriv isOpen_upperHalfPlaneSet).const_mul ((2 * π * I)⁻¹)
+  refine hDeriv.congr ?_
+  intro z hz
+  simp [D, c, Function.comp_apply, ofComplex_apply_of_im_pos hz]
 
 /--
 Basic properties of derivatives: linearity, Leibniz rule, etc.
@@ -66,25 +47,28 @@ Basic properties of derivatives: linearity, Leibniz rule, etc.
 theorem D_add (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
     D (F + G) = D F + D G := by
   ext z
+  have hFz := UpperHalfPlane.mdifferentiableAt_iff.mp (hF z)
+  have hGz := UpperHalfPlane.mdifferentiableAt_iff.mp (hG z)
   simp only [D, Pi.add_apply]
   rw [show (F + G) ∘ ofComplex = F ∘ ofComplex + G ∘ ofComplex from rfl,
-    deriv_add (MDifferentiableAt_DifferentiableAt (hF z))
-      (MDifferentiableAt_DifferentiableAt (hG z)), mul_add]
+    deriv_add hFz hGz, mul_add]
 
 @[simp]
 theorem D_sub (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) : D (F - G) = D F - D G := by
   ext z
+  have hFz := UpperHalfPlane.mdifferentiableAt_iff.mp (hF z)
+  have hGz := UpperHalfPlane.mdifferentiableAt_iff.mp (hG z)
   simp only [D, Pi.sub_apply]
   rw [show (F - G) ∘ ofComplex = F ∘ ofComplex - G ∘ ofComplex from rfl,
-    deriv_sub (MDifferentiableAt_DifferentiableAt (hF z))
-      (MDifferentiableAt_DifferentiableAt (hG z)), mul_sub]
+    deriv_sub hFz hGz, mul_sub]
 
 @[simp]
 theorem D_smul (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) : D (c • F) = c • D F := by
   ext z
+  have hFz := UpperHalfPlane.mdifferentiableAt_iff.mp (hF z)
   simp only [D, Pi.smul_apply, smul_eq_mul]
   rw [show (c • F) ∘ ofComplex = c • (F ∘ ofComplex) from rfl,
-    deriv_const_smul c (MDifferentiableAt_DifferentiableAt (hF z)), smul_eq_mul]
+    deriv_const_smul c hFz, smul_eq_mul]
   ring
 
 @[simp]
@@ -97,12 +81,14 @@ theorem D_neg (F : ℍ → ℂ) (hF : MDiff F) : D (-F) = -D F := by
 @[simp]
 theorem D_mul (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) : D (F * G) = D F * G + F * D G := by
   ext z
+  have hFz := UpperHalfPlane.mdifferentiableAt_iff.mp (hF z)
+  have hGz := UpperHalfPlane.mdifferentiableAt_iff.mp (hG z)
   simp only [D, Pi.add_apply, Pi.mul_apply]
   rw [show (F * G) ∘ ofComplex = (F ∘ ofComplex) * (G ∘ ofComplex) from rfl,
-    deriv_mul (MDifferentiableAt_DifferentiableAt (hF z))
-      (MDifferentiableAt_DifferentiableAt (hG z))]
+    deriv_mul hFz hGz]
   simp [Function.comp_apply, ofComplex_apply]
   ring
+
 
 @[simp]
 theorem D_sq (F : ℍ → ℂ) (hF : MDiff F) : D (F ^ 2) = 2 * F * D F := by
@@ -120,7 +106,7 @@ theorem D_const (c : ℂ) : D (Function.const _ c) = 0 := by
 /--
 Serre derivative of weight $k$.
 -/
-noncomputable def SerreD (k : ℂ) (F : ℍ → ℂ) : ℍ → ℂ :=
+@[expose] public noncomputable def SerreD (k : ℂ) (F : ℍ → ℂ) : ℍ → ℂ :=
   fun z => D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z
 
 @[simp]
@@ -170,6 +156,5 @@ theorem SerreD_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F) : MDif
   refine (D_differentiable hF).sub ?_
   convert
     (MDifferentiable.mul mdifferentiable_const (E2_mdifferentiable.mul hF) :
-      MDiff
-        (fun z => (k * 12⁻¹) * (EisensteinSeries.E2 z * F z)))
+      MDiff (fun z => (k * 12⁻¹) * (EisensteinSeries.E2 z * F z)))
   simp [Pi.mul_apply, mul_assoc, mul_left_comm, mul_comm]
