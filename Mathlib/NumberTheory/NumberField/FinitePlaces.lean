@@ -267,8 +267,6 @@ noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) 
 @[simp]
 theorem mk_maximalIdeal (w : FinitePlace K) : mk (maximalIdeal w) = w := Subtype.ext w.2.choose_spec
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
 theorem norm_embedding_eq (w : FinitePlace K) (x : K) :
     ‖embedding (maximalIdeal w) x‖ = w x := by
   conv_rhs => rw [← mk_maximalIdeal w, mk_apply]
