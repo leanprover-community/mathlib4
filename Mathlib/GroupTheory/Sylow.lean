@@ -70,6 +70,8 @@ instance : SetLike (Sylow p G) G where
   coe := (↑)
   coe_injective' _ _ h := ext (SetLike.coe_injective h)
 
+instance : PartialOrder (Sylow p G) := .ofSetLike (Sylow p G) G
+
 instance : SubgroupClass (Sylow p G) G where
   mul_mem := Subgroup.mul_mem _
   one_mem _ := Subgroup.one_mem _
@@ -208,6 +210,12 @@ theorem finite_of_injective {H : Type*} [Group H] {f : H →* G}
 /-- If `H` is a subgroup of `G`, then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
 instance (H : Subgroup G) [Finite (Sylow p G)] : Finite (Sylow p H) :=
   finite_of_injective H.subtype_injective
+
+/-- If a Sylow `p`-subgroup has finite index, then the number of Sylow `p`-subgroups is finite. -/
+theorem finite_of_finiteIndex (P : Sylow p G) [P.FiniteIndex] : Finite (Sylow p G) := by
+  apply finite_of_ker_is_pGroup (f := QuotientGroup.mk' P.normalCore)
+  rw [QuotientGroup.ker_mk']
+  exact P.isPGroup'.to_le P.normalCore_le
 
 open Pointwise
 
@@ -427,9 +435,10 @@ theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
   exact hp.1.not_dvd_mul hP (not_dvd_card_sylow p G)
 
 /-- A Sylow p-subgroup has index indivisible by `p`. -/
-theorem not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.FiniteIndex] :
-    ¬ p ∣ P.index :=
-  P.not_dvd_index' Nat.card_pos.ne'
+theorem not_dvd_index [Fact p.Prime] (P : Sylow p G) [P.FiniteIndex] :
+    ¬ p ∣ P.index := by
+  have := P.finite_of_finiteIndex
+  exact P.not_dvd_index' Nat.card_pos.ne'
 
 section mapSurjective
 
@@ -522,12 +531,13 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
               (mul_mem_cancel_left (inv_mem hb₁)).1 <| by
                 rw [hx] at hb₂; simpa [mul_inv_rev, mul_assoc] using hb₂)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fixed points of the action of `H` on its cosets correspond to `normalizer H / H`. -/
 def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] :
     MulAction.fixedPoints H (G ⧸ H) ≃
       normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H :=
-  @subtypeQuotientEquivQuotientSubtype G (normalizer H : Set G) (_) (_)
-    (MulAction.fixedPoints H (G ⧸ H))
+  @subtypeQuotientEquivQuotientSubtype G (· ∈ normalizer H) (_) (_)
+    (· ∈ MulAction.fixedPoints H (G ⧸ H))
     (fun _ => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
     (by
       intros

@@ -67,7 +67,7 @@ Q164262:
 
 Q172298:
   title: Lasker–Noether theorem
-  decl: Ideal.isPrimary_decomposition_pairwise_ne_radical
+  decl: Submodule.isPrimary_decomposition_pairwise_ne_radical
 
 Q174955:
   title: Mihăilescu's theorem
@@ -188,11 +188,7 @@ Q195133:
 Q200787:
   title: Gödel's incompleteness theorem
   authors: Shogo Saito
-  # TODO: how to display this data nicely? want two URLs, right?
-  # results:
-  #   - First: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
-  #   - Second: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
-  url: https://formalizedformallogic.github.io/Book/
+  url: https://formalizedformallogic.github.io/Catalogue/
 
 Q203565:
   title: Solutions of a general cubic equation
@@ -202,6 +198,9 @@ Q203565:
 
 Q204884:
   title: Löb's theorem
+  url: https://github.com/FormalizedFormalLogic/Foundation/blob/3c1ddf8af9d2ac715114fe83da0cb2f1c762e02b/Foundation/FirstOrder/Incompleteness/L%C3%B6b.lean#L16
+  authors: Shogo Saito, Mashu Noguchi
+  comment: "See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/L___b___s-Theorem/#l___b-theorem"
 
 Q205966:
   title: Critical line theorem
@@ -559,7 +558,10 @@ Q570779:
   decl: Multiset.prod_X_add_C_eq_sum_esymm
 
 Q574902:
-  title: Tarski's indefinability theorem
+  title: Tarski's undefinability theorem
+  url: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/Tarski.lean#L18
+  authors: Shogo Saito, Mashu Noguchi
+  comment: "See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/Tarski___s-Undefinability-Theorem/#tarski-undefinability"
 
 Q576478:
   title: Liouville's theorem (complex analysis)
@@ -1793,7 +1795,7 @@ Q1683356:
 
 Q1687147:
   title: Sprague–Grundy theorem
-  decl: SetTheory.PGame.equiv_nim_grundyValue
+  url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
   authors: Fox Thomson
   date: 2020
 
@@ -1873,7 +1875,7 @@ Q1816952:
 
 Q1841237:
   title: Fubini's theorem on differentiation
-  # XXX: does mathib have this already?
+  # XXX: does mathlib have this already?
 
 Q1855610:
   title: Theorem of de Moivre–Laplace
@@ -1918,6 +1920,9 @@ Q1964537:
 
 Q1966978:
   title: Lévy continuity theorem
+  decl: MeasureTheory.ProbabilityMeasure.tendsto_iff_tendsto_charFun
+  authors: Rémy Degenne
+  date: 2026
 
 Q1974087:
   title: Riemann's theorem on removable singularities
@@ -2280,7 +2285,7 @@ Q2993319:
   title: Mirsky–Newman theorem
 
 Q2995691:
-  title: Newlander–Niremberg theorem
+  title: Newlander–Nirenberg theorem
 
 Q3001796:
   title: Skolem–Noether theorem
@@ -2305,6 +2310,9 @@ Q3180727:
 
 Q3229335:
   title: Borel–Carathéodory theorem
+  decl: Complex.borelCaratheodory
+  authors: Maksym Radziwill
+  date: 2025
 
 Q3229352:
   title: Vitali covering theorem
@@ -3150,6 +3158,9 @@ Q5456213:
 
 Q5463860:
   title: Focal subgroup theorem
+  decl: Subgroup.commutator_inf_eq_focalSubgroup
+  authors: Boyang Hu
+  date: 2026
 
 Q5473576:
   title: Foster's theorem
@@ -3602,6 +3613,11 @@ Q7200963:
 
 Q7208500:
   title: Poisson limit theorem
+  decls:
+    - ProbabilityTheory.tendsto_choose_mul_pow_of_tendsto_mul_atTop
+    - ProbabilityTheory.binomial_tendsto_poissonPMFReal_atTop
+  authors: Yi Yuan
+  date: 2026
 
 Q7239984:
   title: Preimage theorem

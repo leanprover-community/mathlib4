@@ -24,19 +24,19 @@ universe v u v₁ v₂ u₁ u₂
 /-- Category of refl quivers. -/
 @[nolint checkUnivs]
 def ReflQuiv :=
-  Bundled ReflQuiver.{v + 1, u}
+  Bundled ReflQuiver.{v, u}
 
 namespace ReflQuiv
 
 instance : CoeSort ReflQuiv (Type u) where coe := Bundled.α
 
-instance (C : ReflQuiv.{v, u}) : ReflQuiver.{v + 1, u} C := C.str
+instance (C : ReflQuiv.{v, u}) : ReflQuiver.{v, u} C := C.str
 
 /-- The underlying quiver of a reflexive quiver -/
 def toQuiv (C : ReflQuiv.{v, u}) : Quiv.{v, u} := Quiv.of C.α
 
 /-- Construct a bundled `ReflQuiv` from the underlying type and the typeclass. -/
-def of (C : Type u) [ReflQuiver.{v + 1} C] : ReflQuiv.{v, u} := Bundled.of C
+def of (C : Type u) [ReflQuiver.{v} C] : ReflQuiv.{v, u} := Bundled.of C
 
 instance : Inhabited ReflQuiv := ⟨ReflQuiv.of (Discrete default)⟩
 
@@ -94,6 +94,7 @@ instance forgetToQuiv.Faithful : Functor.Faithful forgetToQuiv where
 
 theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An isomorphism of quivers lifts to an isomorphism of reflexive quivers given a suitable
 compatibility with the identities. -/
 def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W]
@@ -348,11 +349,12 @@ lemma freeReflMap_map {v w : V} (f : v ⟶ w) :
     (freeReflMap F).map (FreeRefl.homMk f) = FreeRefl.homMk (F.map f) := rfl
 
 theorem freeReflMap_naturality
-    {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W] (F : V ⥤rq W) :
+    {V W : Type*} [ReflQuiver.{v₁} V] [ReflQuiver.{v₂} W] (F : V ⥤rq W) :
     FreeRefl.quotientFunctor V ⋙ freeReflMap F =
     freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor W :=
   Paths.ext_functor rfl (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a reflexive quiver to the free category it generates, a quotient of
 its path category -/
 @[simps]
@@ -379,6 +381,7 @@ namespace adj
 variable {V W : Type*} [ReflQuiver W] [ReflQuiver V]
   {C D : Type*} [Category* C] [Category* D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a reflexive quiver `V` and a category `C`, this is the bijection
 between functors `Cat.FreeRefl V ⥤ C` and refl functors `V ⥤rq C`. -/
 @[simps]
@@ -417,15 +420,16 @@ lemma adj_counit_app (D : Type u) [Category.{max u v} D] :
 variable {V : Type*} [ReflQuiver V]
   {C : Type*} [Category* C]
 
-lemma adj_homEquiv (V : Type u) [ReflQuiver.{max u v + 1} V] (C : Type u) [Category.{max u v} C] :
+lemma adj_homEquiv (V : Type u) [ReflQuiver.{max u v} V] (C : Type u) [Category.{max u v} C] :
     (adj).homEquiv (.of V) (.of C) = (Cat.Hom.equivFunctor _ _).trans adj.homEquiv := by
   ext F
   apply Adjunction.homEquiv_unit
 
-lemma adj.unit.map_app_eq (V : Type u) [ReflQuiver.{max u v + 1} V] :
+lemma adj.unit.map_app_eq (V : Type u) [ReflQuiver.{max u v} V] :
     (adj.unit.app (.of V)).toPrefunctor = Quiv.adj.unit.app (.of V) ⋙q
       (Cat.FreeRefl.quotientFunctor V).toPrefunctor := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma adj.counit.comp_app_eq (C : Type u) [Category.{max u v} C] :
     Cat.FreeRefl.quotientFunctor C ⋙ (adj.counit.app (.of C)).toFunctor =
       pathComposition _ :=

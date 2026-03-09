@@ -180,6 +180,7 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
     ← Finset.coe_image]
   exact Submodule.FG.sup ⟨_, rfl⟩ hs'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     [h : Module.FinitePresentation R N] (l : M →ₗ[R] N) (hl : Function.Surjective l) :
     (LinearMap.ker l).FG := by
@@ -402,11 +403,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   obtain ⟨x, rfl⟩ := hπ x
   rw [← LinearMap.comp_apply, ← LinearMap.comp_apply, mul_smul, LinearMap.smul_comp, ← hi,
     ← LinearMap.comp_smul, LinearMap.comp_assoc, LinearMap.comp_assoc]
-  congr 2
-  convert Submodule.liftQ_mkQ _ _ this using 2
-  ext x
-  apply (LinearMap.quotKerEquivOfSurjective _ hπ).injective
-  simp [LinearMap.quotKerEquivOfSurjective]
+  simp
 
 lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
     [hM : Module.Finite R M] (g₁ g₂ : M →ₗ[R] N) (h : f.comp g₁ = f.comp g₂) :
@@ -496,7 +493,7 @@ lemma Module.FinitePresentation.exists_notMem_bijective [Module.Finite R M]
     (hf : Function.Bijective (IsLocalizedModule.map p.primeCompl fM fN f)) :
     ∃ (g : R), g ∉ p ∧ Function.Bijective (LocalizedModule.map (Submonoid.powers g) f) := by
   obtain ⟨g, hg, h⟩ := exists_bijective_map_powers p.primeCompl fM fN f hf
-  exact ⟨g, hg, h g (by rfl)⟩
+  exact ⟨g, hg, h g dvd_rfl⟩
 
 open IsLocalizedModule in
 /--

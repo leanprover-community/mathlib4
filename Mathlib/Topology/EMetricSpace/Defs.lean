@@ -30,7 +30,7 @@ to `EMetricSpace` at the end.
 @[expose] public section
 
 
-assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
+assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding.prod TendstoUniformlyOnFilter
 
 open Filter Set Topology
 
@@ -101,7 +101,7 @@ class PseudoEMetricSpace (α : Type u) : Type u extends EDist α where
   toUniformSpace : UniformSpace α := uniformSpaceOfEDist edist edist_self edist_comm edist_triangle
   uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } := by rfl
 
-attribute [instance] PseudoEMetricSpace.toUniformSpace
+attribute [instance_reducible, instance] PseudoEMetricSpace.toUniformSpace
 
 /- Pseudoemetric spaces are less common than metric spaces. Therefore, we work in a dedicated
 namespace, while notions associated to metric spaces are mostly in the root namespace. -/
@@ -348,6 +348,7 @@ theorem ULift.edist_up_up (x y : α) : edist (ULift.up x) (ULift.up y) = edist x
 
 end ULift
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two pseudoemetric spaces, with the max distance, is an extended
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
@@ -367,59 +368,60 @@ theorem Prod.edist_eq [PseudoEMetricSpace β] (x y : α × β) :
     edist x y = max (edist x.1 y.1) (edist x.2 y.2) :=
   rfl
 
-namespace EMetric
+namespace Metric
 
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
 
-/-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
-def ball (x : α) (ε : ℝ≥0∞) : Set α :=
-  { y | edist y x < ε }
+/-- `Metric.eball x ε` is the set of all points `y` with `edist y x < ε` -/
+def eball (x : α) (ε : ℝ≥0∞) : Set α :=
+  {y | edist y x < ε}
 
-@[simp] theorem mem_ball : y ∈ ball x ε ↔ edist y x < ε := Iff.rfl
+@[simp] theorem mem_eball : y ∈ eball x ε ↔ edist y x < ε := Iff.rfl
 
-theorem mem_ball' : y ∈ ball x ε ↔ edist x y < ε := by rw [edist_comm, mem_ball]
+theorem mem_eball' : y ∈ eball x ε ↔ edist x y < ε := by rw [edist_comm, mem_eball]
 
-/-- `EMetric.closedBall x ε` is the set of all points `y` with `edist y x ≤ ε` -/
-def closedBall (x : α) (ε : ℝ≥0∞) :=
+/-- `Metric.closedEBall x ε` is the set of all points `y` with `edist y x ≤ ε` -/
+def closedEBall (x : α) (ε : ℝ≥0∞) :=
   { y | edist y x ≤ ε }
 
-@[simp] theorem mem_closedBall : y ∈ closedBall x ε ↔ edist y x ≤ ε := Iff.rfl
+@[simp] theorem mem_closedEBall : y ∈ closedEBall x ε ↔ edist y x ≤ ε := Iff.rfl
 
-theorem mem_closedBall' : y ∈ closedBall x ε ↔ edist x y ≤ ε := by rw [edist_comm, mem_closedBall]
+theorem mem_closedEBall' : y ∈ closedEBall x ε ↔ edist x y ≤ ε := by
+  rw [edist_comm, mem_closedEBall]
 
 @[simp]
-theorem closedBall_top (x : α) : closedBall x ∞ = univ :=
+theorem closedEBall_top (x : α) : closedEBall x ∞ = univ :=
   eq_univ_of_forall fun _ => mem_setOf.2 le_top
 
-theorem ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _ h => le_of_lt h.out
+theorem eball_subset_closedEBall : eball x ε ⊆ closedEBall x ε := fun _ h => le_of_lt h.out
 
-theorem pos_of_mem_ball (hy : y ∈ ball x ε) : 0 < ε :=
+theorem pos_of_mem_eball (hy : y ∈ eball x ε) : 0 < ε :=
   lt_of_le_of_lt (zero_le _) hy
 
-theorem mem_ball_self (h : 0 < ε) : x ∈ ball x ε := by
-  rwa [mem_ball, edist_self]
+theorem mem_eball_self (h : 0 < ε) : x ∈ eball x ε := by
+  rwa [mem_eball, edist_self]
 
-theorem mem_closedBall_self : x ∈ closedBall x ε := by
-  rw [mem_closedBall, edist_self]; apply zero_le
+theorem mem_closedEBall_self : x ∈ closedEBall x ε := by
+  rw [mem_closedEBall, edist_self]; apply zero_le
 
-theorem mem_ball_comm : x ∈ ball y ε ↔ y ∈ ball x ε := by rw [mem_ball', mem_ball]
+theorem mem_eball_comm : x ∈ eball y ε ↔ y ∈ eball x ε := by rw [mem_eball', mem_eball]
 
-theorem mem_closedBall_comm : x ∈ closedBall y ε ↔ y ∈ closedBall x ε := by
-  rw [mem_closedBall', mem_closedBall]
+theorem mem_closedEBall_comm : x ∈ closedEBall y ε ↔ y ∈ closedEBall x ε := by
+  rw [mem_closedEBall', mem_closedEBall]
 
 @[gcongr]
-theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y (yx : _ < ε₁) =>
+theorem eball_subset_eball (h : ε₁ ≤ ε₂) : eball x ε₁ ⊆ eball x ε₂ := fun _y (yx : _ < ε₁) =>
   lt_of_lt_of_le yx h
 
 @[gcongr]
-theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ ⊆ closedBall x ε₂ :=
+theorem closedEBall_subset_closedEBall (h : ε₁ ≤ ε₂) : closedEBall x ε₁ ⊆ closedEBall x ε₂ :=
   fun _y (yx : _ ≤ ε₁) => le_trans yx h
 
-theorem ball_disjoint (h : ε₁ + ε₂ ≤ edist x y) : Disjoint (ball x ε₁) (ball y ε₂) :=
+theorem eball_disjoint (h : ε₁ + ε₂ ≤ edist x y) : Disjoint (eball x ε₁) (eball y ε₂) :=
   Set.disjoint_left.mpr fun z h₁ h₂ =>
     (edist_triangle_left x y z).not_gt <| (ENNReal.add_lt_add h₁ h₂).trans_le h
 
-theorem ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) : ball x ε₁ ⊆ ball y ε₂ :=
+theorem eball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) : eball x ε₁ ⊆ eball y ε₂ :=
   fun z zx =>
   calc
     edist z y ≤ edist z x + edist x y := edist_triangle _ _ _
@@ -427,57 +429,82 @@ theorem ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) :
     _ < edist x y + ε₁ := ENNReal.add_lt_add_left h' zx
     _ ≤ ε₂ := h
 
-theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' ⊆ ball x ε := by
+theorem exists_eball_subset_eball (h : y ∈ eball x ε) : ∃ ε' > 0, eball y ε' ⊆ eball x ε := by
   have : 0 < ε - edist y x := by simpa using h
-  refine ⟨ε - edist y x, this, ball_subset ?_ (ne_top_of_lt h)⟩
-  exact (add_tsub_cancel_of_le (mem_ball.mp h).le).le
+  refine ⟨ε - edist y x, this, eball_subset ?_ (ne_top_of_lt h)⟩
+  exact (add_tsub_cancel_of_le (mem_eball.mp h).le).le
 
-theorem ball_eq_empty_iff : ball x ε = ∅ ↔ ε = 0 :=
+theorem eball_eq_empty_iff : eball x ε = ∅ ↔ ε = 0 :=
   eq_empty_iff_forall_notMem.trans
-    ⟨fun h => le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_ball_self ε0)), fun ε0 _ h =>
-      not_lt_of_ge (le_of_eq ε0) (pos_of_mem_ball h)⟩
+    ⟨fun h => le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_eball_self ε0)), fun ε0 _ h =>
+      not_lt_of_ge (le_of_eq ε0) (pos_of_mem_eball h)⟩
 
-theorem ordConnected_setOf_closedBall_subset (x : α) (s : Set α) :
-    OrdConnected { r | closedBall x r ⊆ s } :=
-  ⟨fun _ _ _ h₁ _ h₂ => (closedBall_subset_closedBall h₂.2).trans h₁⟩
+theorem ordConnected_setOf_closedEBall_subset (x : α) (s : Set α) :
+    OrdConnected { r | closedEBall x r ⊆ s } :=
+  ⟨fun _ _ _ h₁ _ h₂ => (closedEBall_subset_closedEBall h₂.2).trans h₁⟩
 
-theorem ordConnected_setOf_ball_subset (x : α) (s : Set α) : OrdConnected { r | ball x r ⊆ s } :=
-  ⟨fun _ _ _ h₁ _ h₂ => (ball_subset_ball h₂.2).trans h₁⟩
+theorem ordConnected_setOf_eball_subset (x : α) (s : Set α) : OrdConnected { r | eball x r ⊆ s } :=
+  ⟨fun _ _ _ h₁ _ h₂ => (eball_subset_eball h₂.2).trans h₁⟩
 
 /-- Relation “two points are at a finite edistance” is an equivalence relation. -/
 def edistLtTopSetoid : Setoid α where
   r x y := edist x y < ⊤
   iseqv :=
-    ⟨fun x => by rw [edist_self]; exact ENNReal.coe_lt_top,
-      fun h => by rwa [edist_comm], fun hxy hyz =>
-        lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩)⟩
+    { refl x := by rw [edist_self]; exact ENNReal.coe_lt_top
+      symm h := by rwa [edist_comm]
+      trans hxy hyz := lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩) }
 
 @[simp]
-theorem ball_zero : ball x 0 = ∅ := by rw [EMetric.ball_eq_empty_iff]
+theorem eball_zero : eball x 0 = ∅ := by rw [eball_eq_empty_iff]
 
-theorem nhds_basis_eball : (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (ball x) :=
+theorem nhds_basis_eball : (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (eball x) :=
   nhds_basis_uniformity uniformity_basis_edist
 
-theorem nhdsWithin_basis_eball : (𝓝[s] x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => ball x ε ∩ s :=
+theorem nhdsWithin_basis_eball : (𝓝[s] x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => eball x ε ∩ s :=
   nhdsWithin_hasBasis nhds_basis_eball s
 
-theorem nhds_basis_closed_eball : (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (closedBall x) :=
+theorem nhds_basis_closedEBall : (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (closedEBall x) :=
   nhds_basis_uniformity uniformity_basis_edist_le
 
-theorem nhdsWithin_basis_closed_eball :
-    (𝓝[s] x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => closedBall x ε ∩ s :=
-  nhdsWithin_hasBasis nhds_basis_closed_eball s
+theorem nhdsWithin_basis_closedEBall :
+    (𝓝[s] x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => closedEBall x ε ∩ s :=
+  nhdsWithin_hasBasis nhds_basis_closedEBall s
 
-theorem nhds_eq : 𝓝 x = ⨅ ε > 0, 𝓟 (ball x ε) :=
+end Metric
+
+namespace EMetric
+variable {x : α} {ε : ℝ≥0∞} {s t : Set α}
+
+open Metric
+
+theorem nhds_eq : 𝓝 x = ⨅ ε > 0, 𝓟 (eball x ε) :=
   nhds_basis_eball.eq_biInf
 
-theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ ε > 0, ball x ε ⊆ s :=
+theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ ε > 0, eball x ε ⊆ s :=
   nhds_basis_eball.mem_iff
 
-theorem mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, ball x ε ∩ t ⊆ s :=
+theorem mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, eball x ε ∩ t ⊆ s :=
   nhdsWithin_basis_eball.mem_iff
 
-section
+theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, eball x ε ⊆ s := by
+  simp [isOpen_iff_nhds, mem_nhds_iff]
+
+/-- ε-characterization of the closure in pseudoemetric spaces -/
+theorem mem_closure_iff : x ∈ closure s ↔ ∀ ε > 0, ∃ y ∈ s, edist x y < ε :=
+  (mem_closure_iff_nhds_basis nhds_basis_eball).trans <| by simp only [mem_eball, edist_comm x]
+
+lemma dense_iff : Dense s ↔ ∀ (x : α), ∀ r > 0, (eball x r ∩ s).Nonempty :=
+  forall_congr' fun x => by
+    simp only [mem_closure_iff, Set.Nonempty, mem_inter_iff, and_comm, mem_eball']
+
+theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
+    Tendsto u f (𝓝 a) ↔ ∀ ε > 0, ∀ᶠ x in f, edist (u x) a < ε :=
+  nhds_basis_eball.tendsto_right_iff
+
+theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α} :
+    Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, edist (u n) a < ε :=
+  (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
+    simp only [true_and, mem_Ici, mem_eball]
 
 variable [PseudoEMetricSpace β] {f : α → β}
 
@@ -498,69 +525,125 @@ theorem tendsto_nhds_nhds {a b} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃x⦄, edist x a < δ → edist (f x) b < ε :=
   nhds_basis_eball.tendsto_iff nhds_basis_eball
 
-end
+end EMetric
 
-theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
-  simp [isOpen_iff_nhds, mem_nhds_iff]
+namespace Metric
+variable {x : α} {ε : ℝ≥0∞} {s t : Set α}
 
-@[simp] theorem isOpen_ball : IsOpen (ball x ε) :=
-  isOpen_iff.2 fun _ => exists_ball_subset_ball
+@[simp] theorem isOpen_eball : IsOpen (eball x ε) :=
+  EMetric.isOpen_iff.2 fun _ => exists_eball_subset_eball
 
-theorem isClosed_ball_top : IsClosed (ball x ⊤) :=
-  isOpen_compl_iff.1 <| isOpen_iff.2 fun _y hy =>
+theorem isClosed_eball_top : IsClosed (eball x ⊤) :=
+  isOpen_compl_iff.1 <| EMetric.isOpen_iff.2 fun _y hy =>
     ⟨⊤, ENNReal.coe_lt_top, fun _z hzy hzx =>
       hy (edistLtTopSetoid.trans (edistLtTopSetoid.symm hzy) hzx)⟩
 
-theorem ball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=
-  isOpen_ball.mem_nhds (mem_ball_self ε0)
+theorem eball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : eball x ε ∈ 𝓝 x :=
+  isOpen_eball.mem_nhds (mem_eball_self ε0)
 
-theorem closedBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedBall x ε ∈ 𝓝 x :=
-  mem_of_superset (ball_mem_nhds x ε0) ball_subset_closedBall
+theorem closedEBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedEBall x ε ∈ 𝓝 x :=
+  mem_of_superset (eball_mem_nhds x ε0) eball_subset_closedEBall
 
-theorem ball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
-    ball x r ×ˢ ball y r = ball (x, y) r :=
+set_option backward.isDefEq.respectTransparency false in
+theorem eball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
+    eball x r ×ˢ eball y r = eball (x, y) r :=
   ext fun z => by simp [Prod.edist_eq]
 
-theorem closedBall_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
-    closedBall x r ×ˢ closedBall y r = closedBall (x, y) r :=
+theorem closedEBall_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
+    closedEBall x r ×ˢ closedEBall y r = closedEBall (x, y) r :=
   ext fun z => by simp [Prod.edist_eq]
 
-/-- ε-characterization of the closure in pseudoemetric spaces -/
-theorem mem_closure_iff : x ∈ closure s ↔ ∀ ε > 0, ∃ y ∈ s, edist x y < ε :=
-  (mem_closure_iff_nhds_basis nhds_basis_eball).trans <| by simp only [mem_ball, edist_comm x]
+end Metric
 
-theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
-    Tendsto u f (𝓝 a) ↔ ∀ ε > 0, ∀ᶠ x in f, edist (u x) a < ε :=
-  nhds_basis_eball.tendsto_right_iff
+namespace EMetric
 
-theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α} :
-    Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, edist (u n) a < ε :=
-  (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
-    simp only [true_and, mem_Ici, mem_ball]
+open Metric
+
+@[deprecated (since := "2026-01-24")] alias ball := eball
+@[deprecated (since := "2026-01-24")] alias mem_ball := mem_eball
+@[deprecated (since := "2026-01-24")] alias mem_ball' := mem_eball'
+@[deprecated (since := "2026-01-24")] alias closedBall := closedEBall
+@[deprecated (since := "2026-01-24")] alias mem_closedBall := mem_closedEBall
+@[deprecated (since := "2026-01-24")] alias mem_closedBall' := mem_closedEBall'
+@[deprecated (since := "2026-01-24")] alias closedBall_top := closedEBall_top
+@[deprecated (since := "2026-01-24")] alias ball_subset_closedBall := eball_subset_closedEBall
+@[deprecated (since := "2026-01-24")] alias pos_of_mem_ball := pos_of_mem_eball
+@[deprecated (since := "2026-01-24")] alias mem_ball_self := mem_eball_self
+@[deprecated (since := "2026-01-24")] alias mem_closedBall_self := mem_closedEBall_self
+@[deprecated (since := "2026-01-24")] alias mem_ball_comm := mem_eball_comm
+@[deprecated (since := "2026-01-24")] alias mem_closedBall_comm := mem_closedEBall_comm
+@[deprecated (since := "2026-01-24")] alias ball_subset_ball := eball_subset_eball
+
+@[deprecated (since := "2026-01-24")]
+alias closedBall_subset_closedBall := closedEBall_subset_closedEBall
+
+@[deprecated (since := "2026-01-24")] alias ball_disjoint := eball_disjoint
+@[deprecated (since := "2026-01-24")] alias ball_subset := eball_subset
+@[deprecated (since := "2026-01-24")] alias exists_ball_subset_ball := exists_eball_subset_eball
+@[deprecated (since := "2026-01-24")] alias ball_eq_empty_iff := eball_eq_empty_iff
+
+@[deprecated (since := "2026-01-24")]
+alias ordConnected_setOf_closedBall_subset := ordConnected_setOf_closedEBall_subset
+
+@[deprecated (since := "2026-01-24")]
+alias ordConnected_setOf_ball_subset := ordConnected_setOf_eball_subset
+
+@[deprecated (since := "2026-01-24")] alias edistLtTopSetoid := edistLtTopSetoid
+@[deprecated (since := "2026-01-24")] alias ball_zero := eball_zero
+
+@[deprecated (since := "2026-01-24")]
+protected alias nhds_basis_eball := nhds_basis_eball
+
+@[deprecated (since := "2026-01-24")] alias nhdsWithin_basis_eball := nhdsWithin_basis_eball
+@[deprecated (since := "2026-01-24")] alias nhds_basis_closed_eball := nhds_basis_closedEBall
+
+@[deprecated (since := "2026-01-24")]
+alias nhdsWithin_basis_closed_eball := nhdsWithin_basis_closedEBall
+
+@[deprecated (since := "2026-01-24")] alias isOpen_ball := isOpen_eball
+@[deprecated (since := "2026-01-24")] alias isClosed_ball_top := isClosed_eball_top
+@[deprecated (since := "2026-01-24")] alias ball_mem_nhds := eball_mem_nhds
+@[deprecated (since := "2026-01-24")] alias closedBall_mem_nhds := closedEBall_mem_nhds
+@[deprecated (since := "2026-01-24")] alias ball_prod_same := eball_prod_same
+@[deprecated (since := "2026-01-24")] alias closedBall_prod_same := closedEBall_prod_same
 
 end EMetric
 
 namespace Subtype
 
+open Metric
+
 @[simp]
-theorem preimage_emetricBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
+theorem preimage_eball {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val ⁻¹' (eball a.1 r) = eball a r :=
   rfl
 
+@[deprecated (since := "2026-01-24")]
+alias preimage_emetricBall := preimage_eball
+
 @[simp]
-theorem preimage_emetricClosedBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val ⁻¹' (closedBall a.1 r) = closedBall a r :=
+theorem preimage_closedEBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val ⁻¹' (closedEBall a.1 r) = closedEBall a r :=
   rfl
 
-@[simp]
-theorem image_emetricBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val '' (ball a r) = ball a.1 r ∩ {a | p a} := by
-  rw [← preimage_emetricBall, image_preimage_eq_inter_range, range_val_subtype]
+@[deprecated (since := "2026-01-24")]
+alias preimage_emetricClosedBall := preimage_closedEBall
 
 @[simp]
-theorem image_emetricClosedBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
-    Subtype.val '' (closedBall a r) = closedBall a.1 r ∩ {a | p a} := by
-  rw [← preimage_emetricClosedBall, image_preimage_eq_inter_range, range_val_subtype]
+theorem image_eball {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val '' (eball a r) = eball a.1 r ∩ {a | p a} := by
+  rw [← preimage_eball, image_preimage_eq_inter_range, range_val_subtype]
+
+@[deprecated (since := "2026-01-24")]
+alias image_emetricBall := image_eball
+
+@[simp]
+theorem image_closedEBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val '' (closedEBall a r) = closedEBall a.1 r ∩ {a | p a} := by
+  rw [← preimage_closedEBall, image_preimage_eq_inter_range, range_val_subtype]
+
+@[deprecated (since := "2026-01-24")]
+alias image_emetricClosedBall := image_closedEBall
 
 end Subtype
 
@@ -609,7 +692,10 @@ theorem edist_le_zero {x y : γ} : edist x y ≤ 0 ↔ x = y :=
 @[simp]
 theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
 
-@[simp] lemma EMetric.closedBall_zero (x : γ) : closedBall x 0 = {x} := by ext; simp
+@[simp] lemma Metric.closedEBall_zero (x : γ) : closedEBall x 0 = {x} := by ext; simp
+
+@[deprecated (since := "2026-01-24")]
+alias EMetric.closedBall_zero := Metric.closedEBall_zero
 
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
 theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x = y :=

@@ -85,7 +85,7 @@ lemma Unitary.norm_sub_one_sq_eq {u : A} (hu : u ∈ unitary A) {x : ℝ}
     have : Antitone (fun y : ℝ ↦ 2 * (1 - y)) := by intro _ _ _; simp only; gcongr
     simpa [Set.image_image] using this.map_isLeast hz
   have h₃ : IsGreatest ((‖· - 1‖ ^ 2) '' spectrum ℂ u) (‖cfc (· - 1 : ℂ → ℂ) u‖ ^ 2) := by
-    have := pow_left_monotoneOn (n := 2) |>.mono (s₂ := ((‖· - 1‖) '' spectrum ℂ u)) (by aesop)
+    have := pow_left_monotoneOn (n := 2) |>.mono (s₂ := ((‖· - 1‖) '' spectrum ℂ u)) (by simp)
     simpa [Set.image_image] using this.map_isGreatest (IsGreatest.norm_cfc (fun z : ℂ ↦ z - 1) u)
   exact h₃.unique (h_eqOn.image_eq ▸ h₂)
 
@@ -135,6 +135,7 @@ noncomputable def Unitary.argSelfAdjoint (u : unitary A) : selfAdjoint A :=
 
 @[deprecated (since := "2025-10-29")] alias unitary.argSelfAdjoint := Unitary.argSelfAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ ≤ π) :
     ‖(expUnitary x - 1 : A)‖ ^ 2 = 2 * (1 - Real.cos ‖x‖) := by
   nontriviality A
@@ -152,6 +153,7 @@ lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ �
     exact Real.cos_abs y ▸ Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) hx <|
       spectrum.norm_le_norm_of_mem hy
 
+set_option backward.isDefEq.respectTransparency false in
 lemma argSelfAdjoint_expUnitary {x : selfAdjoint A} (hx : ‖x‖ < π) :
     argSelfAdjoint (expUnitary x) = x := by
   nontriviality A
@@ -216,6 +218,7 @@ lemma Unitary.norm_argSelfAdjoint {u : unitary A} (hu : ‖(u - 1 : A)‖ < 2) :
 @[deprecated (since := "2025-10-29")] alias unitary.norm_argSelfAdjoint :=
   Unitary.norm_argSelfAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le (u : unitary A)
     {t : ℝ} (ht : t ∈ Set.Icc 0 1) (hu : ‖(u - 1 : A)‖ < 2) :
     ‖(expUnitary (t • argSelfAdjoint u) - 1 : A)‖ ≤ ‖(u - 1 : A)‖ := by
@@ -266,6 +269,7 @@ lemma Unitary.continuousOn_argSelfAdjoint :
 @[deprecated (since := "2025-10-29")] alias unitary.continuousOn_argSelfAdjoint :=
   Unitary.continuousOn_argSelfAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 /-- the maps `unitary.argSelfAdjoint` and `selfAdjoint.expUnitary` form a partial
 homeomorphism between `ball (1 : unitary A) 2` and `ball (0 : selfAdjoint A) π`. -/
 @[simps]
@@ -315,6 +319,7 @@ lemma Unitary.expUnitary_eq_mul_inv (u v : unitary A) (huv : ‖(u - v : A)‖ <
 @[deprecated (since := "2025-10-29")] alias unitary.expUnitary_eq_mul_inv :=
   Unitary.expUnitary_eq_mul_inv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a selfadjoint element `x` in a C⋆-algebra, this is the path from `1` to `expUnitary x`
 given by `t ↦ expUnitary (t • x)`. -/
 @[simps]
@@ -330,6 +335,7 @@ lemma selfAdjoint.joined_one_expUnitary (x : selfAdjoint A) :
     Joined (1 : unitary A) (expUnitary x) :=
   ⟨expUnitaryPathToOne x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The path `t ↦ expUnitary (t • argSelfAdjoint (v * star u)) * u`
 from `u : unitary A` to `v` when `‖v - u‖ < 2`. -/
 @[simps]

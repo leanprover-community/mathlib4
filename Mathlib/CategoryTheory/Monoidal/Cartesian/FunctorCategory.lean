@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # Functor categories have chosen finite products
@@ -28,51 +29,43 @@ variable {J C D E : Type*} [Category* J] [Category* C] [Category* D] [Category* 
 
 namespace Functor
 
-variable (J C) in
-/-- The chosen terminal object in `J ⥤ C`. -/
-abbrev chosenTerminal : J ⥤ C := (Functor.const J).obj (𝟙_ C)
+instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
+  fst X Y := { app _ := CartesianMonoidalCategory.fst _ _ }
+  snd X Y := { app _ := CartesianMonoidalCategory.snd _ _ }
+  tensorProductIsBinaryProduct X Y :=
+    evaluationJointlyReflectsLimits _ (fun j =>
+      (IsLimit.postcomposeHomEquiv
+        (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
+        (IsLimit.ofIsoLimit
+          (tensorProductIsBinaryProduct (X := X.obj j) (Y := Y.obj j))
+          (Cone.ext (Iso.refl _) (by rintro ⟨_ | _⟩; all_goals cat_disch))))
+  isTerminalTensorUnit :=
+    evaluationJointlyReflectsLimits _
+      fun _ ↦ isLimitChangeEmptyCone _ isTerminalTensorUnit _ (.refl _)
+  fst_def X Y := by
+    ext
+    simp only [Monoidal.tensorObj_obj, fst_def, asEmptyCone_pt, NatTrans.comp_app,
+      Monoidal.tensorUnit_obj, Monoidal.whiskerLeft_app, Monoidal.rightUnitor_hom_app,
+      Iso.cancel_iso_hom_right]
+    congr
+    subsingleton
+  snd_def X Y := by
+    ext
+    simp only [Monoidal.tensorObj_obj, snd_def, asEmptyCone_pt, NatTrans.comp_app,
+      Monoidal.tensorUnit_obj, Monoidal.whiskerRight_app, Monoidal.leftUnitor_hom_app,
+      Iso.cancel_iso_hom_right]
+    congr
+    subsingleton
 
-variable (J C) in
-/-- The chosen terminal object in `J ⥤ C` is terminal. -/
-def chosenTerminalIsTerminal : IsTerminal (chosenTerminal J C) :=
-  evaluationJointlyReflectsLimits _
-    fun _ ↦ isLimitChangeEmptyCone _ isTerminalTensorUnit _ (.refl _)
+@[deprecated (since := "2026-03-07")] alias chosenTerminal := MonoidalCategory.tensorUnit
+@[deprecated (since := "2026-03-07")] alias chosenTerminalIsTerminal :=
+  CartesianMonoidalCategory.isTerminalTensorUnit
 
-section
-
-variable (F₁ F₂ : J ⥤ C)
-
-/-- The chosen binary product on `J ⥤ C`. -/
-@[simps]
-def chosenProd : J ⥤ C where
-  obj j := F₁.obj j ⊗ F₂.obj j
-  map φ := F₁.map φ ⊗ₘ F₂.map φ
-
-namespace chosenProd
-
-/-- The first projection `chosenProd F₁ F₂ ⟶ F₁`. -/
-def fst : chosenProd F₁ F₂ ⟶ F₁ where
-  app _ := CartesianMonoidalCategory.fst _ _
-
-/-- The second projection `chosenProd F₁ F₂ ⟶ F₂`. -/
-def snd : chosenProd F₁ F₂ ⟶ F₂ where
-  app _ := CartesianMonoidalCategory.snd _ _
-
-/-- `Functor.chosenProd F₁ F₂` is a binary product of `F₁` and `F₂`. -/
-def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
-  evaluationJointlyReflectsLimits _ (fun j =>
-    (IsLimit.postcomposeHomEquiv (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
-      (IsLimit.ofIsoLimit
-        (tensorProductIsBinaryProduct (X := F₁.obj j) (Y := F₂.obj j))
-        (Cones.ext (Iso.refl _) (by rintro ⟨_ | _⟩; all_goals cat_disch))))
-
-end chosenProd
-
-end
-
-instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) :=
-  .ofChosenFiniteProducts ⟨_, chosenTerminalIsTerminal J C⟩
-    fun F₁ F₂ ↦ ⟨_, chosenProd.isLimit F₁ F₂⟩
+@[deprecated (since := "2026-03-07")] alias chosenProd := MonoidalCategory.tensorObj
+@[deprecated (since := "2026-03-07")] alias chosenProd.fst := CartesianMonoidalCategory.fst
+@[deprecated (since := "2026-03-07")] alias chosenProd.snd := CartesianMonoidalCategory.snd
+@[deprecated (since := "2026-03-07")] alias chosenProd.isLimit :=
+  CartesianMonoidalCategory.tensorProductIsBinaryProduct
 
 namespace Monoidal
 
@@ -93,8 +86,9 @@ lemma snd_app (F₁ F₂ : J ⥤ C) (j : J) : (snd F₁ F₂).app j = snd (F₁.
 
 @[simp]
 lemma leftUnitor_hom_app (F : J ⥤ C) (j : J) :
-    (λ_ F).hom.app j = (λ_ (F.obj j)).hom := (leftUnitor_hom _).symm
+    (λ_ F).hom.app j = (λ_ (F.obj j)).hom := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
     (λ_ F).inv.app j = (λ_ (F.obj j)).inv := by
@@ -103,48 +97,40 @@ lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
 
 @[simp]
 lemma rightUnitor_hom_app (F : J ⥤ C) (j : J) :
-    (ρ_ F).hom.app j = (ρ_ (F.obj j)).hom := (rightUnitor_hom _).symm
+    (ρ_ F).hom.app j = (ρ_ (F.obj j)).hom := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rightUnitor_inv_app (F : J ⥤ C) (j : J) :
     (ρ_ F).inv.app j = (ρ_ (F.obj j)).inv := by
   rw [← cancel_mono ((ρ_ (F.obj j)).hom), Iso.inv_hom_id, ← rightUnitor_hom_app,
     Iso.inv_hom_id_app]
 
-@[reassoc (attr := simp)]
 lemma tensorHom_app_fst {F₁ F₁' F₂ F₂' : J ⥤ C} (f : F₁ ⟶ F₁') (g : F₂ ⟶ F₂') (j : J) :
     (f ⊗ₘ g).app j ≫ fst _ _ = fst _ _ ≫ f.app j := by
-  change (f ⊗ₘ g).app j ≫ (fst F₁' F₂').app j = _
-  rw [← NatTrans.comp_app, tensorHom_fst, NatTrans.comp_app]
-  rfl
+  simp
 
-@[reassoc (attr := simp)]
 lemma tensorHom_app_snd {F₁ F₁' F₂ F₂' : J ⥤ C} (f : F₁ ⟶ F₁') (g : F₂ ⟶ F₂') (j : J) :
     (f ⊗ₘ g).app j ≫ snd _ _ = snd _ _ ≫ g.app j := by
-  change (f ⊗ₘ g).app j ≫ (snd F₁' F₂').app j = _
-  rw [← NatTrans.comp_app, tensorHom_snd, NatTrans.comp_app]
-  rfl
+  simp
 
-@[reassoc (attr := simp)]
 lemma whiskerLeft_app_fst (F₁ : J ⥤ C) {F₂ F₂' : J ⥤ C} (g : F₂ ⟶ F₂') (j : J) :
-    (F₁ ◁ g).app j ≫ fst _ _ = fst _ _ :=
-  (tensorHom_app_fst (𝟙 F₁) g j).trans (by simp)
+    (F₁ ◁ g).app j ≫ fst _ _ = fst _ _ := by
+  simp
 
-@[reassoc (attr := simp)]
 lemma whiskerLeft_app_snd (F₁ : J ⥤ C) {F₂ F₂' : J ⥤ C} (g : F₂ ⟶ F₂') (j : J) :
-    (F₁ ◁ g).app j ≫ snd _ _ = snd _ _ ≫ g.app j :=
-  (tensorHom_app_snd (𝟙 F₁) g j)
+    (F₁ ◁ g).app j ≫ snd _ _ = snd _ _ ≫ g.app j := by
+  simp
 
-@[reassoc (attr := simp)]
 lemma whiskerRight_app_fst {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J ⥤ C) (j : J) :
-    (f ▷ F₂).app j ≫ fst _ _ = fst _ _ ≫ f.app j :=
-  (tensorHom_app_fst f (𝟙 F₂) j)
+    (f ▷ F₂).app j ≫ fst _ _ = fst _ _ ≫ f.app j := by
+  simp
 
-@[reassoc (attr := simp)]
 lemma whiskerRight_app_snd {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J ⥤ C) (j : J) :
-    (f ▷ F₂).app j ≫ snd _ _ = snd _ _ :=
-  (tensorHom_app_snd f (𝟙 F₂) j).trans (by simp)
+    (f ▷ F₂).app j ≫ snd _ _ = snd _ _ := by
+  simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).hom.app j = (α_ _ _ _).hom := by
@@ -159,11 +145,13 @@ lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
         associator_hom_snd_snd]
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := by
   rw [← cancel_mono ((α_ _ _ _).hom), Iso.inv_hom_id, ← associator_hom_app, Iso.inv_hom_id_app]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {K : Type*} [Category* K] [HasColimitsOfShape K C]
     [∀ X : C, PreservesColimitsOfShape K (tensorLeft X)] {F : J ⥤ C} :
     PreservesColimitsOfShape K (tensorLeft F) := by
