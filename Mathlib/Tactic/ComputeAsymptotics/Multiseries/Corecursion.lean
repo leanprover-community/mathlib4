@@ -168,6 +168,14 @@ theorem dist_nil_cons (x : α) (s : Seq α) : dist nil (cons x s) = 1 := by
   rw [dist_comm]
   simp
 
+theorem dist_le_half_iff {s t : Seq α} :
+    dist s t ≤ 2⁻¹ ↔ (s = .nil ∧ t = .nil) ∨ ∃ hd s' t', s = .cons hd s' ∧ t = .cons hd t' where
+  mp h := by
+    cases s <;> cases t <;> norm_num at h <;> simp
+    grind [dist_cons_cons_eq_one]
+  mpr h := by
+    obtain ⟨rfl, rfl⟩ | ⟨hd, s', t', rfl, rfl⟩ := h <;> simp
+
 /-- A function on sequences is called a "friend" if any `n`-prefix of its output depends only on
 the `n`-prefix of the input. Such functions can be used in the tail of (non-primitive) corecursive
 definitions. -/
@@ -176,6 +184,10 @@ def FriendlyOperation (op : Seq α → Seq α) : Prop := LipschitzWith 1 op
 /-- A family of friendly operations on sequences indexed by a type `γ`. -/
 class FriendlyOperationClass (F : γ → Seq α → Seq α) : Prop where
   friend : ∀ c : γ, FriendlyOperation (F c)
+
+theorem friendlyOperation_iff_dist_le_dist (op : Seq α → Seq α) :
+    FriendlyOperation op ↔ ∀ s t, dist (op s) (op t) ≤ dist s t := by
+  simp [FriendlyOperation, lipschitzWith_iff_dist_le_mul]
 
 theorem FriendlyOperation.id : FriendlyOperation (id : Seq α → Seq α) :=
   LipschitzWith.id
@@ -188,7 +200,7 @@ theorem FriendlyOperation.comp {op op' : Seq α → Seq α}
   simp
 
 theorem FriendlyOperation.const {s : Seq α} : FriendlyOperation (fun _ ↦ s) := by
-  simp [FriendlyOperation, lipschitzWith_iff_dist_le_mul]
+  simp [friendlyOperation_iff_dist_le_dist]
 
 theorem FriendlyOperationClass.comp (F : γ → Seq α → Seq α) (g : γ' → γ)
     [h : FriendlyOperationClass F] : FriendlyOperationClass (fun c ↦ F (g c)) := by
@@ -198,7 +210,7 @@ theorem FriendlyOperation.ite {op₁ op₂ : Seq α → Seq α}
     (h₁ : FriendlyOperation op₁) (h₂ : FriendlyOperation op₂)
     {P : Option α → Prop} [DecidablePred P] :
     FriendlyOperation (fun s ↦ if P s.head then op₁ s else op₂ s) := by
-  rw [FriendlyOperation, lipschitzWith_iff_dist_le_mul, NNReal.coe_one] at h₁ h₂ ⊢
+  rw [friendlyOperation_iff_dist_le_dist] at h₁ h₂ ⊢
   intro s t
   by_cases! h_head : s.head ≠ t.head
   · simp [dist_eq_one_of_head h_head]
@@ -299,15 +311,14 @@ theorem gcorec_some {F : β → Option (α × γ × β)} {op : γ → Seq α →
 
 /-- The operation `cons hd ·` is friendly. -/
 theorem FriendlyOperation.cons (hd : α) : FriendlyOperation (cons hd) := by
-  simp only [FriendlyOperation, lipschitzWith_iff_dist_le_mul, dist_cons_cons, NNReal.coe_one,
-    one_mul]
+  simp only [friendlyOperation_iff_dist_le_dist, dist_cons_cons]
   intro x y
   linarith [dist_nonneg (x := x) (y := y)]
 
 /-- The operation `(op (.cons hd ·)).tail` is friendly if `op` is friendly. -/
 theorem FriendlyOperation.cons_tail {op : Seq α → Seq α} {hd : α} (h : FriendlyOperation op) :
     FriendlyOperation (fun s ↦ (op (.cons hd s)).tail) := by
-  simp_rw [FriendlyOperation, lipschitzWith_iff_dist_le_mul, NNReal.coe_one, one_mul] at h ⊢
+  simp_rw [friendlyOperation_iff_dist_le_dist] at h ⊢
   intro x y
   specialize h (.cons hd x) (.cons hd y)
   simp only [dist_cons_cons] at h
@@ -316,44 +327,33 @@ theorem FriendlyOperation.cons_tail {op : Seq α → Seq α} {hd : α} (h : Frie
     cases hy : op (.cons hd y) with
     | nil => simp
     | cons y_hd y_tl =>
-      contrapose! h
-      grw [hx, hy, dist_le_one]
-      norm_num
+      grw [hx, hy, dist_le_one x y] at h
+      norm_num at h
   | cons x_hd x_tl =>
     cases hy : op (.cons hd y) with
     | nil =>
-      contrapose! h
-      grw [hx, hy, dist_le_one]
-      norm_num
+      grw [hx, hy, dist_le_one x y] at h
+      norm_num at h
     | cons y_hd y_tl =>
-      by_cases! h_hd : x_hd ≠ y_hd
-      · contrapose! h
-        grw [hx, hy, dist_cons_cons_eq_one h_hd, dist_le_one]
-        norm_num
-      simpa [hx, hy, h_hd] using h
+      suffices h_hd : x_hd = y_hd by
+        simpa [hx, hy, h_hd] using h
+      contrapose! h with h_hd
+      grw [hx, hy, dist_cons_cons_eq_one h_hd, dist_le_one]
+      norm_num
 
 /-- The first element of `op (a :: s)` depends only on `a`. -/
 theorem FriendlyOperation.op_cons_head_eq {op : Seq α → Seq α} (h : FriendlyOperation op) {a : α}
     {s t : Seq α} : (op <| .cons a s).head = (op <| .cons a t).head := by
-  rw [FriendlyOperation, lipschitzWith_iff_dist_le_mul] at h
+  rw [friendlyOperation_iff_dist_le_dist] at h
   specialize h (.cons a s) (.cons a t)
-  simp only [NNReal.coe_one, dist_cons_cons, one_mul] at h
+  simp only [dist_cons_cons] at h
   replace h : dist (op (.cons a s)) (op (.cons a t)) ≤ 2⁻¹ := by
     apply h.trans
     simp
-  cases hs : op (.cons a s) with
-  | nil =>
-    cases ht : op (.cons a t) with
-    | nil => simp
-    | cons t_hd t_tl => norm_num [hs, ht] at h
-  | cons s_hd s_tl =>
-    cases ht : op (.cons a t) with
-    | nil => norm_num [hs, ht] at h
-    | cons t_hd t_tl =>
-      simp only [Seq.head_cons, Option.some.injEq]
-      by_contra! h_hd
-      rw [hs, ht, dist_cons_cons_eq_one h_hd] at h
-      norm_num at h
+  rw [dist_le_half_iff] at h
+  generalize op (Seq.cons a s) = s' at *
+  generalize op (Seq.cons a t) = t' at *
+  obtain ⟨rfl, rfl⟩ | ⟨hd, s_tl, t_tl, rfl, rfl⟩ := h <;> rfl
 
 /-- Decomposes a friendly operation by the head of the input sequence. Returns `none` if the output
 is `nil`, or `some (out_hd, op')` where `out_hd` is the head of the output and `op'` is a friendly
@@ -414,7 +414,6 @@ theorem FriendlyOperation.op_head_eq {op : Seq α → Seq α} (h : FriendlyOpera
   simp [h_head]
   rfl
 
-attribute [-simp] inv_pow in
 /-- Coinduction principle for proving that an operation is friendly. -/
 theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
     {op : Seq α → Seq α}
@@ -422,9 +421,8 @@ theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
     (h_step : ∀ op, motive op → ∃ T : Option α → Option (α × Subtype motive),
       ∀ s, (op s).destruct = (T s.head).map (fun (hd, op') => (hd, op'.val s.tail))) :
     FriendlyOperation op := by
-  rw [FriendlyOperation, lipschitzWith_iff_dist_le_mul]
+  rw [friendlyOperation_iff_dist_le_dist]
   intro s t
-  simp only [NNReal.coe_one, one_mul]
   suffices ∀ n, dist s t ≤ (2⁻¹ : ℝ) ^ n → dist (op s) (op t) ≤ (2⁻¹ : ℝ) ^ n by
     by_cases h : s = t
     · simp [h]
