@@ -147,19 +147,6 @@ lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
   convert ((summable_nat_add_iff 1).mpr this).mul_left (-2 * π * I) using 1 with n
   grind [one_sub_eta_logDeriv_eq]
 
-lemma differentiableAt_logDeriv_eta (z : ℍ) :
-    DifferentiableAt ℂ (logDeriv ModularForm.eta) (z : ℂ) := by
-  have hη : DifferentiableAt ℂ ModularForm.eta (z : ℂ) :=
-    ModularForm.differentiableAt_eta_of_mem_upperHalfPlaneSet z.2
-  have hη_on : DifferentiableOn ℂ ModularForm.eta {w : ℂ | 0 < w.im} :=
-    fun w hw =>
-      (ModularForm.differentiableAt_eta_of_mem_upperHalfPlaneSet hw).differentiableWithinAt
-  have hderiv : DifferentiableAt ℂ (deriv ModularForm.eta) (z : ℂ) :=
-    (hη_on.deriv isOpen_upperHalfPlaneSet).differentiableAt
-      (isOpen_upperHalfPlaneSet.mem_nhds z.im_pos)
-  have hz0 : ModularForm.eta (z : ℂ) ≠ 0 := ModularForm.eta_ne_zero z.2
-  simpa [logDeriv, hη, hz0] using hderiv.div hη hz0
-
 open EisensteinSeries in
 lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
   unfold eta
