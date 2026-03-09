@@ -460,6 +460,11 @@ theorem support_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Ad
   | _ :: v :: l =>
     simpa using support_ofSupport (l.cons_ne_nil v) hchain.of_cons
 
+@[simp, grind =]
+theorem length_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
+    (ofSupport hne hchain).length = l.length - 1 := by
+  grind [support_ofSupport]
+
 /-- Construct a walk from a list of darts where adjacent darts in the list are also adjacent
 in the graph -/
 def ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
@@ -488,6 +493,11 @@ theorem darts_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.D
   | [_] => rfl
   | d₁ :: d₂ :: l =>
     simpa [hchain.rel.symm] using darts_ofDarts (l.cons_ne_nil d₂) hchain.of_cons
+
+@[simp, grind =]
+theorem length_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
+    (ofDarts hne hchain).length = l.length := by
+  grind [darts_ofDarts]
 
 end Walk
 
