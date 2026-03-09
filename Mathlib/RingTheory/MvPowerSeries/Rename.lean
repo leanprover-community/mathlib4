@@ -69,9 +69,9 @@ theorem Finsupp.mapDomain_tendstoCofinite : TendstoCofinite (mapDomain (M := ℕ
   refine fun y hy ↦ ⟨y.comapDomain e e.injective.injOn, ?_, embDomain_comapDomain ?_⟩
   · rw [← hy, degree_mapDomain_eq]
     exact degree_comapDomain_le ..
-  suffices y.support ⊆ s by simpa [e]
-  simpa [← hy, mapDomain, sum, Finset.subset_iff, single_apply, s] using
-    fun i hi ↦ ⟨i, by simp [hi]⟩
+  · suffices y.support ⊆ s by simpa [e]
+    simpa [← hy, mapDomain, sum, Finset.subset_iff, single_apply, s] using
+      fun i hi ↦ ⟨i, by simp [hi]⟩
 
 namespace MvPowerSeries
 
