@@ -414,6 +414,16 @@ theorem FriendlyOperation.op_head_eq {op : Seq α → Seq α} (h : FriendlyOpera
   simp [h_head]
   rfl
 
+theorem FriendlyOperation.of_dist_le_pow {op : Seq α → Seq α}
+    (h : ∀ s t n, dist s t ≤ (2⁻¹ : ℝ) ^ n → dist (op s) (op t) ≤ (2⁻¹ : ℝ) ^ n) :
+    FriendlyOperation op := by
+  rw [friendlyOperation_iff_dist_le_dist]
+  intro s t
+  by_cases hst : s = t
+  · simp [hst]
+  obtain ⟨n, hst⟩ := dist_eq_two_inv_pow hst
+  grind
+
 /-- Coinduction principle for proving that an operation is friendly. -/
 theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
     {op : Seq α → Seq α}
@@ -421,41 +431,30 @@ theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
     (h_step : ∀ op, motive op → ∃ T : Option α → Option (α × Subtype motive),
       ∀ s, (op s).destruct = (T s.head).map (fun (hd, op') => (hd, op'.val s.tail))) :
     FriendlyOperation op := by
-  rw [friendlyOperation_iff_dist_le_dist]
-  intro s t
-  suffices ∀ n, dist s t ≤ (2⁻¹ : ℝ) ^ n → dist (op s) (op t) ≤ (2⁻¹ : ℝ) ^ n by
-    by_cases h : s = t
-    · simp [h]
-    obtain ⟨n, hst⟩ := dist_eq_two_inv_pow h
-    rw [hst] at this ⊢
-    apply this
-    rfl
-  intro n hn
+  apply of_dist_le_pow
+  intro s t n hn
   induction n generalizing op s t with
   | zero => simp
   | succ n ih =>
-  specialize h_step _ h_base
-  obtain ⟨T, hT⟩ := h_step
+  obtain ⟨T, hT⟩ := h_step _ h_base
+  have h_head : s.head = t.head := by
+    replace hn : dist s t ≤ 2⁻¹ := by
+      apply hn.trans
+      simp only [pow_succ, inv_pos, Nat.ofNat_pos, mul_le_iff_le_one_left]
+      apply pow_le_one₀ <;> norm_num
+    rw [dist_le_half_iff] at hn
+    obtain ⟨rfl, rfl⟩ | ⟨hd, s_tl, t_tl, rfl, rfl⟩ := hn <;> rfl
   have hs := hT s
   have ht := hT t
-  by_cases! h_head : s.head ≠ t.head
-  · contrapose! hn
-    norm_num [pow_succ, dist_eq_one_of_head h_head]
-    refine mul_lt_one_of_nonneg_of_lt_one_right (pow_le_one₀ ?_ ?_) ?_ ?_
-    all_goals norm_num
   cases hT_head : T s.head with
   | none =>
     simp only [hT_head, Option.map_none, ← h_head] at hs ht
-    apply Stream'.Seq.destruct_eq_none at hs
-    apply Stream'.Seq.destruct_eq_none at ht
-    simp [hs,destruct_eq_none, ht]
+    simp [hs, ht, destruct_eq_none]
   | some v =>
     obtain ⟨hd, op', h_next⟩ := v
     simp only [hT_head, Option.map_some, ← h_head] at hs ht
-    apply Stream'.Seq.destruct_eq_cons at hs
-    apply Stream'.Seq.destruct_eq_cons at ht
-    simp only [hs, ht, dist_cons_cons, pow_succ', inv_pos, Nat.ofNat_pos, mul_le_mul_iff_right₀,
-      ge_iff_le]
+    simp only [destruct_eq_cons hs, destruct_eq_cons ht, dist_cons_cons, pow_succ', inv_pos,
+      Nat.ofNat_pos, mul_le_mul_iff_right₀, ge_iff_le]
     apply ih h_next
     simpa [dist_eq_half_of_head h_head, pow_succ'] using hn
 
@@ -472,10 +471,8 @@ theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
     ∃ opf op', op = opf ∘ op' ∧ FriendlyOperation opf ∧ motive op'
   apply FriendlyOperation.coind motive'
   · exact ⟨_root_.id, op, rfl, FriendlyOperation.id, h_base⟩
-  clear h_base op
   rintro _ ⟨opf, op, rfl, h_opf, h_op⟩
-  specialize h_step _ h_op
-  obtain ⟨T, hT⟩ := h_step
+  obtain ⟨T, hT⟩ := h_step _ h_op
   use fun hd? ↦
     match (T hd?) with
     | none => (h_opf.unfold none).map fun (hd, opf') =>
@@ -494,16 +491,16 @@ theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
     simp [hT, destruct_apply_eq_unfold h_opf]
     rfl
   | cons s_hd s_tl =>
-  simp only [destruct_cons] at hT
-  simp only [destruct_apply_eq_unfold h_opf, Seq.tail_cons, Seq.head_cons]
-  generalize T s.head = t? at *
-  cases t? with
-  | none => simp at hT
-  | some v =>
-  obtain ⟨hd, opf', op'⟩ := v
-  simp at hT
-  simp [hT]
-  rfl
+    simp only [destruct_cons] at hT
+    simp only [destruct_apply_eq_unfold h_opf, Seq.tail_cons, Seq.head_cons]
+    generalize T s.head = t? at *
+    cases t? with
+    | none => simp at hT
+    | some v =>
+      obtain ⟨hd, opf', op'⟩ := v
+      simp at hT
+      simp [hT]
+      rfl
 
 /-- A generalisation of `FriendlyOperation.coind` that allows using `op' ∘ opf` in the tail
 of `op s` where `opf` is friendly and `op'` is a function satisfying `motive`. -/
@@ -520,8 +517,7 @@ theorem FriendlyOperation.coind_comp_friend_right {op : Seq α → Seq α}
   · exact ⟨_root_.id, op, rfl, FriendlyOperation.id, h_base⟩
   clear h_base op
   rintro _ ⟨opf, op, rfl, h_opf, h_op⟩
-  specialize h_step _ h_op
-  obtain ⟨T, hT⟩ := h_step
+  obtain ⟨T, hT⟩ := h_step _ h_op
   -- obtain ⟨F, hF⟩ := FriendlyOperation.destruct h_opf
   use fun hd? ↦
     match (h_opf.unfold hd?) with
@@ -576,16 +572,14 @@ theorem FriendlyOperationClass.eq_of_bisim {s t : Seq α} {op : γ → Seq α �
   induction n generalizing s t with
   | zero => simp
   | succ n ih =>
-    specialize step s t base
-    obtain step | ⟨hd, u, v, c, rfl, rfl, h_next⟩ := step
+    obtain step | ⟨hd, u, v, c, rfl, rfl, h_next⟩ := step s t base
     · simp [step]
     simp only [dist_cons_cons]
     specialize ih h_next
     calc
       _ ≤ 2⁻¹ * dist u v := by
         gcongr
-        apply FriendlyOperation.dist_le
-        apply FriendlyOperationClass.friend
+        exact (FriendlyOperationClass.friend _).dist_le
       _ ≤ _ := by
         grw [ih, pow_succ']
 
