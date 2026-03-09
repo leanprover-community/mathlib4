@@ -49,6 +49,7 @@ def dsimpPercentElaborator : TermElab := fun stx expectedType => do
     -- `stx` has the same shape as a normal `dsimp` call, so we can pass it to `mkSimpContext`.
     let { ctx, simprocs, .. } ← mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
     let dsimp (e : Expr) : MetaM Expr := do
+      let e ← instantiateMVars e
       let (dsimpResult, _) ← Meta.dsimp e ctx simprocs
       if dsimpResult == e then
         throwError "`dsimp%` made no progress"
