@@ -120,11 +120,9 @@ lemma Qsqrtd.one_not_isField : ¬ IsField (Qsqrtd (1 : ℚ)) := by
 
 /-- A squarefree integer that is a perfect square must equal `1`. -/
 lemma eq_one_of_squarefree_isSquare {d : ℤ} (hd : Squarefree d) (hsq : IsSquare d) : d = 1 := by
-  rcases Int.isUnit_iff.mp (hd.isUnit_of_isSquare hsq) with h | h
-  · exact h
-  · obtain ⟨z, hz⟩ := hsq
-    have : z * z ≥ 0 := mul_self_nonneg z
-    omega
+  obtain ⟨z, hz⟩ := hsq
+  have hu := (hz ▸ hd).isUnit_of_mul_self
+  rcases Int.isUnit_iff.mp hu with rfl | rfl <;> simp_all
 
 /-- For a squarefree integer `d ≠ 1`, `d` is not a perfect square in `ℤ`. -/
 lemma not_isSquare_int_of_squarefree_ne_one {d : ℤ}
