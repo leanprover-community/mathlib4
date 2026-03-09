@@ -264,7 +264,6 @@ theorem index_bot : (⊥ : Subgroup G).index = Nat.card G :=
 theorem relIndex_top_left : (⊤ : Subgroup G).relIndex H = 1 :=
   index_top
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem relIndex_top_right : H.relIndex ⊤ = H.index := by
   rw [← relIndex_mul_index (show H ≤ ⊤ from le_top), index_top, mul_one]
@@ -287,7 +286,6 @@ theorem index_ker (f : G →* G') : f.ker.index = Nat.card f.range := by
 theorem relIndex_ker (f : G →* G') : f.ker.relIndex K = Nat.card (K.map f) := by
   rw [← MonoidHom.comap_bot, relIndex_comap, relIndex_bot_left]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) card_mul_index]
 theorem card_mul_index : Nat.card H * H.index = Nat.card G := by
   rw [← relIndex_bot_left, ← index_bot]
@@ -328,7 +326,6 @@ theorem dvd_index_map {f : G →* G'} (hf : f.ker ≤ H) :
 theorem index_map_eq (hf1 : Surjective f) (hf2 : f.ker ≤ H) : (H.map f).index = H.index :=
   Nat.dvd_antisymm (H.index_map_dvd hf1) (H.dvd_index_map hf2)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma index_map_of_bijective (hf : Bijective f) (H : Subgroup G) : (H.map f).index = H.index :=
   index_map_eq _ hf.2 (by rw [f.ker_eq_bot_iff.2 hf.1]; exact bot_le)
@@ -381,7 +378,6 @@ lemma relIndex_comap_ne_zero (f : G →* G') {J K : Subgroup G'} (hJK : J.relInd
   rw [relIndex_comap]
   exact fun h ↦ hJK <| relIndex_eq_zero_of_le_right (map_comap_le _ _) h
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem index_eq_zero_of_relIndex_eq_zero (h : H.relIndex K = 0) : H.index = 0 :=
   H.relIndex_top_right.symm.trans (relIndex_eq_zero_of_le_right le_top h)
@@ -473,7 +469,6 @@ theorem index_eq_one : H.index = 1 ↔ H = ⊤ :=
 theorem relIndex_eq_one : H.relIndex K = 1 ↔ K ≤ H :=
   index_eq_one.trans subgroupOf_eq_top
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) card_eq_one]
 theorem card_eq_one : Nat.card H = 1 ↔ H = ⊥ :=
   H.relIndex_bot_left ▸ relIndex_eq_one.trans le_bot_iff
@@ -680,12 +675,21 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
   index_ne_zero := relIndex_ne_zero
 
 @[to_additive]
+lemma isFiniteRelIndex_iff_relIndex_ne_zero : H.IsFiniteRelIndex K ↔ H.relIndex K ≠ 0 :=
+  ⟨fun _ ↦ relIndex_ne_zero, IsFiniteRelIndex.mk⟩
+
+@[to_additive]
 theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
 @[to_additive]
-theorem not_finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
-    ¬ H.FiniteIndex ↔ H.index = 0 := by simp [finiteIndex_iff]
+lemma isFiniteRelIndex_iff_finiteIndex :
+    H.IsFiniteRelIndex K ↔ (H.subgroupOf K).FiniteIndex := by
+  rw [isFiniteRelIndex_iff_relIndex_ne_zero, finiteIndex_iff, relIndex]
+
+@[to_additive]
+theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 :=
+  by simp [finiteIndex_iff]
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive (attr := instance_reducible) /-- A finite index subgroup has finite quotient -/]
@@ -734,7 +738,6 @@ theorem finiteIndex_iInf {ι : Type*} [Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).FiniteIndex) : (⨅ i, f i).FiniteIndex :=
   ⟨index_iInf_ne_zero fun i => (hf i).index_ne_zero⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem finiteIndex_iInf' {ι : Type*} {s : Finset ι}
     (f : ι → Subgroup G) (hs : ∀ i ∈ s, (f i).FiniteIndex) :
@@ -750,6 +753,13 @@ instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
 @[to_additive]
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (index_dvd_of_le h)⟩
+
+@[to_additive]
+lemma isFiniteRelIndex_of_le {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) [H₁.IsFiniteRelIndex H₃]
+    (h : H₁ ≤ H₂) :
+    H₂.IsFiniteRelIndex H₃ := by
+  rw [isFiniteRelIndex_iff_finiteIndex] at *
+  exact finiteIndex_of_le <| subgroupOf_mono H₃ h
 
 @[to_additive (attr := gcongr)]
 lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index :=

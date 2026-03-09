@@ -180,18 +180,12 @@ end Mul
 
 /-! ### Powers -/
 
-
--- TODO: if `to_additive` gets improved sufficiently, derive this from `hasPow`
-instance NonemptyInterval.hasNSMul [AddMonoid α] [Preorder α] [AddLeftMono α]
-    [AddRightMono α] : SMul ℕ (NonemptyInterval α) :=
-  ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_right s.fst_le_snd _⟩⟩
-
 section Pow
 
 variable [Monoid α] [Preorder α]
 
-@[to_additive existing]
-instance NonemptyInterval.hasPow [MulLeftMono α] [MulRightMono α] :
+@[to_additive]
+instance NonemptyInterval.instPow [MulLeftMono α] [MulRightMono α] :
     Pow (NonemptyInterval α) ℕ :=
   ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 
@@ -223,14 +217,14 @@ end Pow
 namespace NonemptyInterval
 
 @[to_additive]
-instance commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (NonemptyInterval α) :=
   NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul toProd_pow
 
 end NonemptyInterval
 
 @[to_additive]
-instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where
   one_mul s :=
     (WithBot.map₂_coe_left _ _ _).trans <| by
@@ -240,7 +234,7 @@ instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid
       simp_rw [mul_one, ← Function.id_def, WithBot.map_id, id]
 
 @[to_additive]
-instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance Interval.commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (Interval α) :=
   { Interval.mulOneClass with
     mul_comm := fun _ _ => Option.map₂_comm mul_comm
@@ -249,7 +243,7 @@ instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid 
 namespace NonemptyInterval
 
 @[to_additive]
-theorem coe_pow_interval [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
+theorem coe_pow_interval [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
     (s : NonemptyInterval α) (n : ℕ) :
     ↑(s ^ n) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
@@ -261,7 +255,7 @@ end NonemptyInterval
 
 namespace Interval
 
-variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
+variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
 
 @[to_additive]
 theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥

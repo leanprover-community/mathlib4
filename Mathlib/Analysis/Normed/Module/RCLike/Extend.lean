@@ -25,7 +25,6 @@ namespace StrongDual
 variable {𝕜 F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The norm of the extension is bounded by `‖fr‖`. -/
 theorem norm_extendRCLike_bound (fr : StrongDual ℝ F) (x : F) :
     ‖(fr.extendRCLike x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ := by
