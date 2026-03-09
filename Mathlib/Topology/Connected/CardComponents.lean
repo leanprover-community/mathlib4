@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Data.Set.Card.Arithmetic
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.Topology.Separation.Connected
+module
+
+public import Mathlib.Data.Set.Card.Arithmetic
+public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.Topology.Separation.Connected
 
 /-!
 # Cardinality of connected components under open and closed maps
@@ -20,6 +22,8 @@ Let `f : X → Y` be an open and closed map.
 - `IsOpenMap.finite_connectedComponents_of_finite_preimage_singleton`: If `f` is also continuous
   with finite fibers and `Y` has finitely many connected components, so does `X`.
 -/
+
+@[expose] public section
 
 open scoped Function
 
