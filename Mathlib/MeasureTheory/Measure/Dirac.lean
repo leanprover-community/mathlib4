@@ -231,7 +231,7 @@ theorem Measure.map_dirac [MeasurableSingletonClass α] [MeasurableSingletonClas
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
 
-lemma _root_.HasSum.isProbabilityMeasure_sum_dirac {ι δ : Type*} {mδ : MeasurableSpace δ}
+lemma _root_.HasSum.isProbabilityMeasure_sum_dirac {ι : Type*} {mδ : MeasurableSpace δ}
     {c : ι → ℝ} {d : ι → δ} (h1 : ∀ i, 0 ≤ c i) (h2 : HasSum c 1) :
     IsProbabilityMeasure (Measure.sum fun i ↦ ENNReal.ofReal (c i) • .dirac (d i)) where
   measure_univ := by
