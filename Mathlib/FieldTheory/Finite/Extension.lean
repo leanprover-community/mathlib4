@@ -3,7 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Kevin Buzzard
 -/
-import Mathlib.FieldTheory.Finite.GaloisField
+module
+
+public import Mathlib.FieldTheory.Finite.GaloisField
 
 /-!
 # Extensions of finite fields
@@ -29,6 +31,8 @@ isomorphic to our chosen `FiniteField.Extension k p n`.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 variable (k : Type*) [Field k] [Finite k]
@@ -39,13 +43,15 @@ open Polynomial
 
 namespace FiniteField
 
-/-- Given a finite field `k` of characteristic `p`, we have a non-canoncailly chosen extension
+set_option backward.isDefEq.respectTransparency false in
+/-- Given a finite field `k` of characteristic `p`, we have a non-canonically chosen extension
 of any given degree `n > 0`. -/
 def Extension [CharP k p] : Type :=
   letI := ZMod.algebra k p
   GaloisField p (Module.finrank (ZMod p) k * n)
   deriving Field, Finite, Algebra (ZMod p), FiniteDimensional (ZMod p)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finrank_zmod_extension [Algebra (ZMod p) k] :
     Module.finrank (ZMod p) (Extension k p n) = Module.finrank (ZMod p) k * n := by
   letI := ZMod.algebra k p
@@ -61,6 +67,7 @@ noncomputable instance : Algebra k (Extension k p n) :=
   letI := ZMod.algebra k p
   (nonempty_algHom_extension k p n).some.toAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module.Finite k (Extension k p n) :=
   .of_finite
 
@@ -68,10 +75,12 @@ instance [Algebra (ZMod p) k] : IsScalarTower (ZMod p) k (Extension k p n) :=
   -- there is at most one map from `𝔽_p` to any ring
   .of_algebraMap_eq' <| Subsingleton.elim _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem natCard_extension : Nat.card (Extension k p n) = Nat.card k ^ n := by
   letI := ZMod.algebra k p
   rw [← pow_finrank_eq_natCard p, ← pow_finrank_eq_natCard p, finrank_zmod_extension, pow_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finrank_extension : Module.finrank k (Extension k p n) = n := by
   refine Nat.pow_right_injective (Finite.one_lt_card : 2 ≤ Nat.card k) ?_
   simp only [← Module.natCard_eq_pow_finrank, natCard_extension]

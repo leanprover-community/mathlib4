@@ -3,9 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # `Mon (ModuleCat R) ≌ AlgCat R`
@@ -15,6 +18,8 @@ is equivalent to the category of "native" bundled `R`-algebras.
 
 Moreover, this equivalence is compatible with the forgetful functors to `ModuleCat R`.
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -35,6 +40,7 @@ variable {R : Type u} [CommRing R]
 
 namespace MonModuleEquivalenceAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)
@@ -60,6 +66,7 @@ instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
     mul_zero := fun x => show μ[A] _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
+set_option backward.isDefEq.respectTransparency false in
 instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [MonObj A] : Algebra R A where
   algebraMap :=
   { η[A].hom with
@@ -94,9 +101,10 @@ def functor : Mon (ModuleCat.{u} R) ⥤ AlgCat R where
       commutes' := fun r =>
         LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) r }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
-@[simps]
+@[instance_reducible, simps]
 def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
   one := ofHom <| Algebra.linearMap R A
   mul := ofHom <| LinearMap.mul' R A
@@ -124,7 +132,7 @@ def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
     --   AlgCat.coe_comp]
     -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [compr₂_apply, compr₂ₛₗ_apply]
-    simp [ModuleCat.hom_comp, LinearMap.comp_apply]
+    simp only [hom_comp, hom_ofHom, id_coe, id_eq, LinearMap.comp_apply]
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
     dsimp
@@ -147,7 +155,7 @@ attribute [local instance] inverseObj
 -/
 @[simps]
 def inverse : AlgCat.{u} R ⥤ Mon (ModuleCat.{u} R) where
-  obj A := { X := ModuleCat.of R A, mon := inverseObj A}
+  obj A := { X := ModuleCat.of R A, mon := inverseObj A }
   map f :=
     { hom := ofHom <| f.hom.toLinearMap
       isMonHom_hom.one_hom := hom_ext <| LinearMap.ext f.hom.commutes

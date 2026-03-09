@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.DirectSum.Algebra
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Algebra.DirectSum.Internal
-import Mathlib.Algebra.DirectSum.Ring
+module
+
+public import Mathlib.Algebra.DirectSum.Algebra
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Algebra.DirectSum.Internal
+public import Mathlib.Algebra.DirectSum.Ring
 
 /-!
 # Internally-graded rings and algebras
@@ -38,6 +40,8 @@ represented with `𝒜 : ι → Submodule ℕ A` and `𝒜 : ι → Submodule �
 
 graded algebra, graded ring, graded semiring, decomposition
 -/
+
+@[expose] public section
 
 
 open DirectSum
@@ -183,6 +187,9 @@ abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)
 
 variable [GradedAlgebra 𝒜]
+
+instance (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R] [Algebra R₀ A] [IsScalarTower R₀ R A]
+    [i : GradedAlgebra 𝒜] : GradedAlgebra (𝒜 · |>.restrictScalars R₀) := { i with }
 
 namespace DirectSum
 

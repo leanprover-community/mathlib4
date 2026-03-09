@@ -3,14 +3,18 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Topology.Homotopy.Equiv
+module
+
+public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.Topology.Homotopy.Equiv
 
 /-!
 # Contractible spaces
 
 In this file, we define `ContractibleSpace`, a space that is homotopy equivalent to `Unit`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -105,5 +109,12 @@ instance (priority := 100) [ContractibleSpace X] : PathConnectedSpace X := by
   obtain ⟨p, ⟨h⟩⟩ := id_nullhomotopic X
   have : ∀ x, Joined p x := fun x => ⟨(h.evalAt x).symm⟩
   rw [pathConnectedSpace_iff_eq]; use p; ext; tauto
+
+/-- The product of two contractible spaces is contractible. -/
+instance [ContractibleSpace X] [ContractibleSpace Y] : ContractibleSpace (X × Y) := by
+  obtain ⟨hX⟩ := hequiv_unit' (X := X)
+  obtain ⟨hY⟩ := hequiv_unit' (X := Y)
+  refine ⟨⟨(hX.prodCongr hY).trans ?_⟩⟩
+  exact (Homeomorph.prodUnique Unit Unit).toHomotopyEquiv
 
 end ContractibleSpace

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GuitartExact.Basic
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+module
+
+public import Mathlib.CategoryTheory.GuitartExact.Basic
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 
 /-!
 # Guitart exact squares and Kan extensions
@@ -23,7 +25,18 @@ is a pointwise left Kan extension at `B.obj X₃` iff
 the composition `T ⋙ F'` is a pointwise left Kan extension at `X₃`
 of `B ⋙ F'`.
 
+When suitable (pointwise) left Kan extensions exist, we also show that
+the natural transformation of functors `(C₂ ⥤ D) ⥤ C₃ ⥤ D`
+`(whiskeringLeft C₁ C₂ D).obj T ⋙ L.lan ⟶ R.lan ⋙ (whiskeringLeft C₃ C₄ D).obj B`
+induced by a Guitart exact square `w` is an isomorphism.
+
+## References
+
+* https://ncatlab.org/nlab/show/exact+square
+
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -57,7 +70,7 @@ noncomputable def isPointwiseLeftKanExtensionAtCompTwoSquareEquiv
     (E.compTwoSquare w).IsPointwiseLeftKanExtensionAt X₃ ≃
       E.IsPointwiseLeftKanExtensionAt (B.obj X₃) := by
   refine Equiv.trans ?_ (Final.isColimitWhiskerEquiv (w.costructuredArrowRightwards X₃) _)
-  exact IsColimit.equivIsoColimit (Cocones.ext (Iso.refl _))
+  exact IsColimit.equivIsoColimit (Cocone.ext (Iso.refl _))
 
 lemma nonempty_isPointwiseLeftKanExtensionAt_compTwoSquare_iff
     (w : TwoSquare T L R B) (X₃ : C₃) [Final (w.costructuredArrowRightwards X₃)] :
@@ -136,6 +149,57 @@ lemma hasLeftKanExtension [w.GuitartExact]
     L.HasLeftKanExtension (T ⋙ F) := by
   have := w.hasPointwiseLeftKanExtension F
   infer_instance
+
+section
+
+open Functor
+
+section
+
+variable [∀ (F : C₁ ⥤ D), L.HasLeftKanExtension F] [∀ (F : C₂ ⥤ D), R.HasLeftKanExtension F]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The base change natural transformation for left Kan extensions associated to
+a 2-square. -/
+@[simps -isSimp]
+noncomputable def lanBaseChange :
+    (whiskeringLeft C₁ C₂ D).obj T ⋙ L.lan ⟶ R.lan ⋙ (whiskeringLeft C₃ C₄ D).obj B where
+  app F :=
+    ((L.lanAdjunction D).homEquiv _ _).symm
+      ((LeftExtension.mk _ (R.lanUnit.app F)).compTwoSquare w).hom
+  naturality {F₁ F₂} τ := by
+    dsimp
+    refine (Adjunction.homEquiv_naturality_left_symm ..).symm.trans
+      (Eq.trans ?_ (Adjunction.homEquiv_naturality_right_symm ..))
+    congr 1
+    ext X
+    have := R.lanUnit.naturality_app (T.obj X) τ
+    simp [reassoc_of% this]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isIso_lanBaseChange_app_iff (F : C₂ ⥤ D) :
+    IsIso (w.lanBaseChange.app F) ↔
+      IsLeftKanExtension _ ((LeftExtension.mk _ (R.lanUnit.app F)).compTwoSquare w).hom := by
+  rw [lanBaseChange_app, isIso_lanAdjunction_homEquiv_symm_iff]
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
+instance isIso_lanBaseChange_app (F : C₂ ⥤ D)
+    [R.HasPointwiseLeftKanExtension F] [w.GuitartExact] :
+    IsIso (w.lanBaseChange.app F) := by
+  rw [isIso_lanBaseChange_app_iff]
+  let hF := isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := F) _ (R.lanUnit.app F)
+  exact (hF.compTwoSquare w).isLeftKanExtension
+
+end
+
+instance [∀ (F : C₁ ⥤ D), L.HasLeftKanExtension F]
+    [∀ (F : C₂ ⥤ D), R.HasPointwiseLeftKanExtension F] [w.GuitartExact] :
+    IsIso (w.lanBaseChange (D := D)) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  infer_instance
+
+end
 
 end TwoSquare
 

@@ -3,13 +3,13 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.HaveI
-import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Control.Basic
-import Mathlib.Data.Nat.Cast.Basic
-import Qq
+module
+
+public meta import Mathlib.Control.Basic
+public import Mathlib.Algebra.Order.Invertible
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Tactic.HaveI
+public import Mathlib.Tactic.NormNum.Core
 
 /-!
 ## `positivity` core functionality
@@ -19,6 +19,8 @@ which allow for plugging in new positivity functionality around a positivity-bas
 The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivity.Basic`
 and elsewhere.
 -/
+
+public meta section
 
 open Lean
 open Lean.Meta Qq Lean.Elab Term
@@ -85,7 +87,7 @@ initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
     (List Entry × DiscrTree PositivityExt) ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq PositivityExt := ⟨fun _ _ => false⟩
-  let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
+  let insert kss v dt := kss.foldl (fun dt ks => dt.insertKeyValue ks v) dt
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
     addImportedFn := fun s => do
@@ -102,6 +104,7 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
     | `(attr| positivity $es,*) => do
+      ensureAttrDeclIsMeta `positivity declName kind
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'positivity', must be global"
       let env ← getEnv
@@ -117,6 +120,8 @@ initialize registerBuiltinAttribute {
             return e
         DiscrTree.mkPath e
       setEnv <| positivityExt.addEntry env ((keys, declName), ext)
+      -- TODO: track what `[positivity]` decls are actually used at use sites
+      recordExtraRevUseOfCurrentModule
     | _ => throwUnsupportedSyntax
 }
 
@@ -197,10 +202,9 @@ def catchNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictnes
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can return `.none`
 into one which never returns `.none` but fails instead. -/
-def throwNone {m : Type → Type*} {e : Q($α)} [Monad m] [Alternative m]
-    (t : m (Strictness zα pα e)) : m (Strictness zα pα e) := do
+def throwNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) := do
   match ← t with
-  | .none => failure
+  | .none => throwError "Strictness result was `{.ofConstName ``Strictness.none}`."
   | r => pure r
 
 /-- Attempts to prove a `Strictness` result when `e` evaluates to a literal number. -/
@@ -530,4 +534,5 @@ macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
 We register `positivity` with the `hint` tactic.
 -/
 
-register_hint positivity
+register_hint 1000 positivity
+register_try?_tactic (priority := 1000) positivity

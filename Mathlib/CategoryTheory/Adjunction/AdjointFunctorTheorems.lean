@@ -3,19 +3,21 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
-import Mathlib.CategoryTheory.Generator.Basic
-import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Subobject.Comma
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+public import Mathlib.CategoryTheory.Generator.Basic
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Subobject.Comma
 
 /-!
 # Adjoint functor theorem
 
 This file proves the (general) adjoint functor theorem, in the form:
 * If `G : D ⥤ C` preserves limits and `D` has limits, and satisfies the solution set condition,
-  then it has a left adjoint: `isRightAdjointOfPreservesLimitsOfIsCoseparating`.
+  then it has a left adjoint: `isRightAdjoint_of_preservesLimits_of_solutionSetCondition`.
 
 We show that the converse holds, i.e. that if `G` has a left adjoint then it satisfies the solution
 set condition, see `solutionSetCondition_of_isRightAdjoint`
@@ -27,7 +29,7 @@ factors through one of the `f_i`.
 
 This file also proves the special adjoint functor theorem, in the form:
 * If `G : D ⥤ C` preserves limits and `D` is complete, well-powered and has a small coseparating
-  set, then `G` has a left adjoint: `isRightAdjointOfPreservesLimitsOfIsCoseparating`
+  set, then `G` has a left adjoint: `isRightAdjoint_of_preservesLimits_of_isCoseparating`
 
 Finally, we prove the following corollaries of the special adjoint functor theorem:
 * If `C` is complete, well-powered and has a small coseparating set, then it is cocomplete:
@@ -37,8 +39,10 @@ Finally, we prove the following corollaries of the special adjoint functor theor
 
 -/
 
+@[expose] public section
 
-universe v u u'
+
+universe w v v₁ u u₁ u'
 
 namespace CategoryTheory
 
@@ -55,18 +59,19 @@ The key part of this definition is that the indexing set `ι` lives in `Type v`,
 universe of morphisms of the category: this is the "smallness" condition which allows the general
 adjoint functor theorem to go through.
 -/
-def SolutionSetCondition {D : Type u} [Category.{v} D] (G : D ⥤ C) : Prop :=
+def SolutionSetCondition {D : Type u₁} [Category.{v₁} D] (G : D ⥤ C) : Prop :=
   ∀ A : C,
-    ∃ (ι : Type v) (B : ι → D) (f : ∀ i : ι, A ⟶ G.obj (B i)),
+    ∃ (ι : Type w) (B : ι → D) (f : ∀ i : ι, A ⟶ G.obj (B i)),
       ∀ (X) (h : A ⟶ G.obj X), ∃ (i : ι) (g : B i ⟶ X), f i ≫ G.map g = h
 
 section GeneralAdjointFunctorTheorem
 
-variable {D : Type u} [Category.{v} D]
+variable {D : Type u₁} [Category.{v₁} D]
 variable (G : D ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition. -/
-theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetCondition G := by
+theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetCondition.{w} G := by
   intro A
   refine
     ⟨PUnit, fun _ => G.leftAdjoint.obj A, fun _ => (Adjunction.ofIsRightAdjoint G).unit.app A, ?_⟩
@@ -78,7 +83,7 @@ theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetC
 if `G` satisfies the solution set condition then `G` is a right adjoint.
 -/
 lemma isRightAdjoint_of_preservesLimits_of_solutionSetCondition [HasLimits D]
-    [PreservesLimits G] (hG : SolutionSetCondition G) : G.IsRightAdjoint := by
+    [PreservesLimitsOfSize.{v₁, v₁} G] (hG : SolutionSetCondition.{v₁} G) : G.IsRightAdjoint := by
   refine @isRightAdjointOfStructuredArrowInitials _ _ _ _ G ?_
   intro A
   specialize hG A

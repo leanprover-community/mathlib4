@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Types.Yoneda
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Yoneda
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.ShrinkYoneda
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.
@@ -16,6 +18,8 @@ We calculate the colimit of `Y ↦ (X ⟶ Y)`, which is just `PUnit`.
 
 We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 -/
+
+@[expose] public section
 
 assert_not_exists AddCommMonoid
 
@@ -44,8 +48,8 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X) where
   fac s Y := by
     funext f
     convert congr_fun (s.w f).symm (𝟙 (unop X))
-    simp only [coyoneda_obj_obj, Functor.const_obj_obj, types_comp_apply,
-      coyoneda_obj_map, Category.id_comp]
+    simp only [Functor.flip_obj_obj, yoneda_obj_obj, Functor.const_obj_obj, Functor.flip_obj_map,
+      types_comp_apply, yoneda_map_app, Category.id_comp]
   uniq s m w := by
     apply funext; rintro ⟨⟩
     rw [← w]
@@ -95,6 +99,7 @@ variable (J) in
 noncomputable instance yoneda_preservesLimitsOfShape (X : C) :
     PreservesLimitsOfShape J (yoneda.obj X) where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embeddings jointly reflect limits. -/
 def yonedaJointlyReflectsLimits (F : J ⥤ Cᵒᵖ) (c : Cone F)
     (hc : ∀ X : C, IsLimit ((yoneda.obj X).mapCone c)) : IsLimit c where
@@ -137,6 +142,7 @@ variable (J) in
 noncomputable instance coyonedaPreservesLimitsOfShape (X : Cᵒᵖ) :
     PreservesLimitsOfShape J (coyoneda.obj X) where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coyoneda embeddings jointly reflect limits. -/
 def coyonedaJointlyReflectsLimits (F : J ⥤ C) (c : Cone F)
     (hc : ∀ X : Cᵒᵖ, IsLimit ((coyoneda.obj X).mapCone c)) : IsLimit c where
@@ -196,11 +202,18 @@ instance uliftYonedaFunctor_preservesLimits :
   change PreservesLimitsOfSize.{t, w} (coyoneda.obj K ⋙ uliftFunctor.{w'})
   infer_instance
 
+instance [LocallySmall.{w'} C] :
+    PreservesLimitsOfSize.{t, w} (shrinkYoneda.{w'} (C := C)) :=
+  preservesLimits_of_evaluation _ (fun K ↦ ⟨fun {J _} ↦ by
+    have := preservesLimitsOfShape_of_natIso (J := J) (Functor.associator _ _ _ ≪≫
+      shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor.{w'} K).symm
+    exact preservesLimitsOfShape_of_reflects_of_preserves _ uliftFunctor.{v}⟩)
+
 namespace Functor
 
 section Representable
 
-variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category J]
+variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category* J]
 
 instance representable_preservesLimit (G : J ⥤ Cᵒᵖ) :
     PreservesLimit G F :=
@@ -217,7 +230,7 @@ end Representable
 
 section Corepresentable
 
-variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category J]
+variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category* J]
 
 instance corepresentable_preservesLimit (G : J ⥤ C) :
     PreservesLimit G F :=

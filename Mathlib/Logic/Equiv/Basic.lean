@@ -3,10 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Logic.Equiv.Option
-import Mathlib.Logic.Equiv.Sum
-import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.Lift
+module
+
+public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Logic.Equiv.Sum
+public import Mathlib.Logic.Function.Conjugate
+public import Mathlib.Tactic.Lift
+public import Mathlib.Data.Int.Notation
 
 /-!
 # Equivalence between types
@@ -15,13 +18,16 @@ In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/
 a lot of equivalences between various types and operations on these equivalences.
 
 More definitions of this kind can be found in other files.
-E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-`Group`, `Module`, etc.
+E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+`Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+other algebraic type classes.
 
 ## Tags
 
 equivalence, congruence, bijective map
 -/
+
+@[expose] public section
 
 universe u v w z
 
@@ -84,24 +90,14 @@ theorem Perm.subtypeCongr.refl :
   by_cases h : p x <;> simp [h]
 
 @[simp]
-theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr ep.symm en.symm := by
-  ext x
-  by_cases h : p x
-  · have : p (ep.symm ⟨x, h⟩) := Subtype.property _
-    simp [h, symm_apply_eq, this]
-  · have : ¬p (en.symm ⟨x, h⟩) := Subtype.property (en.symm _)
-    simp [h, symm_apply_eq, this]
+theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr ep.symm en.symm :=
+  rfl
 
 @[simp]
 theorem Perm.subtypeCongr.trans :
     (ep.subtypeCongr en).trans (ep'.subtypeCongr en')
     = Perm.subtypeCongr (ep.trans ep') (en.trans en') := by
-  ext x
-  by_cases h : p x
-  · have : p (ep ⟨x, h⟩) := Subtype.property _
-    simp [h, this]
-  · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
-    simp [h, this]
+  grind [eq_def, coe_trans]
 
 end subtypeCongr
 
@@ -143,7 +139,7 @@ section
 
 /-- A family of equivalences `∀ a, β₁ a ≃ β₂ a` generates an equivalence between `∀ a, β₁ a` and
 `∀ a, β₂ a`. -/
-@[simps]
+@[simps (attr := grind =)]
 def piCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) : (∀ a, β₁ a) ≃ (∀ a, β₂ a) :=
   ⟨Pi.map fun a ↦ F a, Pi.map fun a ↦ (F a).symm, fun H => funext <| by simp,
     fun H => funext <| by simp⟩
@@ -349,7 +345,7 @@ def subtypeSubtypeEquivSubtype {α} {p q : α → Prop} (h : ∀ {x}, q x → p 
 equivalent to the original type. -/
 @[simps apply symm_apply]
 def subtypeUnivEquiv {α} {p : α → Prop} (h : ∀ x, p x) : Subtype p ≃ α :=
-  ⟨fun x => x, fun x => ⟨x, h x⟩, fun _ => Subtype.eq rfl, fun _ => rfl⟩
+  ⟨fun x => x, fun x => ⟨x, h x⟩, fun _ => Subtype.ext rfl, fun _ => rfl⟩
 
 /-- A subtype of a sigma-type is a sigma-type over a subtype. -/
 def subtypeSigmaEquiv {α} (p : α → Type v) (q : α → Prop) : { y : Sigma p // q y.1 } ≃ Σ x :
@@ -384,7 +380,7 @@ def sigmaSubtypeFiberEquivSubtype {α β : Type*} (f : α → β) {p : α → Pr
           refine (subtypeSubtypeEquivSubtypeExists _ _).trans (subtypeEquivRight ?_)
           intro x
           exact ⟨fun ⟨hp, h'⟩ => congr_arg Subtype.val h', fun h' => ⟨(h x).2 (h'.symm ▸ y.2),
-            Subtype.eq h'⟩⟩ }
+            Subtype.ext h'⟩⟩ }
     _ ≃ Subtype p := sigmaFiberEquiv fun x : Subtype p => (⟨f x, (h x).1 x.property⟩ : Subtype q)
 
 /-- A sigma type over an `Option` is equivalent to the sigma set over the original type,
@@ -408,7 +404,7 @@ def piEquivSubtypeSigma (ι) (π : ι → Type*) :
   toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun _ => rfl⟩
   invFun := fun f i => by rw [← f.2 i]; exact (f.1 i).2
   right_inv := fun ⟨f, hf⟩ =>
-    Subtype.eq <| funext fun i =>
+    Subtype.ext <| funext fun i =>
       Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp
 
 /-- The type of functions `f : ∀ a, β a` such that for all `a` we have `p a (f a)` is equivalent
@@ -671,9 +667,8 @@ theorem symm_swap (a b : α) : (swap a b).symm = swap a b :=
   rfl
 
 @[simp]
-theorem swap_eq_refl_iff {x y : α} : swap x y = Equiv.refl _ ↔ x = y := by
-  refine ⟨fun h => (Equiv.refl _).injective ?_, fun h => h ▸ swap_self _⟩
-  rw [← h, swap_apply_left, h, refl_apply]
+theorem swap_eq_refl_iff {x y : α} : swap x y = Equiv.refl _ ↔ x = y :=
+  ⟨fun h => (Equiv.refl _).injective (by grind), by grind⟩
 
 theorem swap_comp_apply {a b x : α} (π : Perm α) :
     π.trans (swap a b) x = if π x = a then b else if π x = b then a else π x := by
@@ -681,11 +676,11 @@ theorem swap_comp_apply {a b x : α} (π : Perm α) :
   rfl
 
 theorem swap_eq_update (i j : α) : (Equiv.swap i j : α → α) = update (update id j i) i j := by
-  aesop
+  grind
 
 theorem comp_swap_eq_update (i j : α) (f : α → β) :
     f ∘ Equiv.swap i j = update (update f j (f i)) i (f j) := by
-  aesop
+  grind
 
 @[simp]
 theorem symm_trans_swap_trans [DecidableEq β] (a b : α) (e : α ≃ β) :
@@ -699,7 +694,7 @@ theorem trans_swap_trans_symm [DecidableEq β] (a b : β) (e : α ≃ β) :
 
 @[simp]
 theorem swap_apply_self (i j a : α) : swap i j (swap i j a) = a := by
-  rw [← Equiv.trans_apply, Equiv.swap_swap, Equiv.refl_apply]
+  grind
 
 /-- A function is invariant to a swap if it is equal at both elements -/
 theorem apply_swap_eq_self {v : α → β} {i j : α} (hv : v i = v j) (k : α) :
@@ -707,10 +702,37 @@ theorem apply_swap_eq_self {v : α → β} {i j : α} (hv : v i = v j) (k : α) 
   grind
 
 theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := by
-  rw [apply_eq_iff_eq_symm_apply, symm_swap]
+  grind
 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
   grind
+
+theorem swap_injective_of_left (a : α) :
+    Function.Injective (fun x ↦ Equiv.swap a x) := fun c d h ↦ by
+  simp only at h
+  rw [← Equiv.swap_apply_left a c, h, Equiv.swap_apply_left]
+
+theorem swap_injective_of_right (a : α) :
+    Function.Injective (fun x ↦ Equiv.swap x a) := by
+  simp_rw [swap_comm _ a]
+  exact swap_injective_of_left a
+
+instance (α : Type*) [Nontrivial α] : Nontrivial (Equiv.Perm α) := by
+  classical
+  obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
+  exact Function.Injective.nontrivial (Equiv.swap_injective_of_left a)
+
+lemma image_swap_of_mem_of_notMem {α : Type*} [DecidableEq α] {s : Set α} {i j : α}
+    (hi : i ∈ s) (hj : j ∉ s) : s.image (swap i j) = insert j s \ {i} :=
+  Set.ext fun a ↦ by
+    constructor
+    · rintro ⟨a, ha, rfl⟩
+      obtain rfl | ne := eq_or_ne a i
+      · rw [swap_apply_left]; exact ⟨.inl rfl, (ne_of_mem_of_not_mem hi hj).symm⟩
+      · rw [swap_apply_of_ne_of_ne ne (ne_of_mem_of_not_mem ha hj)]; exact ⟨.inr ha, ne⟩
+    · rintro ⟨rfl | has, hai⟩
+      · exact ⟨i, hi, swap_apply_left ..⟩
+      · exact ⟨a, has, swap_apply_of_ne_of_ne hai (ne_of_mem_of_not_mem has hj)⟩
 
 namespace Perm
 
@@ -766,11 +788,7 @@ theorem PLift.eq_up_iff_down_eq {x : PLift α} {y : α} : x = PLift.up y ↔ x.d
 theorem Function.Injective.map_swap [DecidableEq α] [DecidableEq β] {f : α → β}
     (hf : Function.Injective f) (x y z : α) :
     f (Equiv.swap x y z) = Equiv.swap (f x) (f y) (f z) := by
-  conv_rhs => rw [Equiv.swap_apply_def]
-  split_ifs with h₁ h₂
-  · rw [hf h₁, Equiv.swap_apply_left]
-  · rw [hf h₂, Equiv.swap_apply_right]
-  · rw [Equiv.swap_apply_of_ne_of_ne (mt (congr_arg f) h₁) (mt (congr_arg f) h₂)]
+  grind
 
 namespace Equiv
 
@@ -827,7 +845,7 @@ lemma piCongrLeft_apply (f : ∀ a, P (e a)) (b : β) :
     (piCongrLeft P e) f b = e.apply_symm_apply b ▸ f (e.symm b) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 lemma piCongrLeft_symm_apply (g : ∀ b, P b) (a : α) :
     (piCongrLeft P e).symm g a = g (e a) :=
   piCongrLeft'_apply P e.symm g a
@@ -840,7 +858,7 @@ lemma piCongrLeft_refl (P : α → Sort*) : piCongrLeft P (.refl α) = .refl (�
 LHS would have type `P b` while the RHS would have type `P (e (e.symm b))`. This lemma is a way
 around it in the case where `b` is of the form `e a`, so we can use `f a` instead of
 `f (e.symm (e a))`. -/
-@[simp]
+@[simp, grind =]
 lemma piCongrLeft_apply_apply (f : ∀ a, P (e a)) (a : α) :
     (piCongrLeft P e) f (e a) = f a :=
   piCongrLeft'_symm_apply_apply P e.symm f a
@@ -855,12 +873,12 @@ lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
 theorem piCongrLeft_sumInl {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
-  aesop
+  grind
 
 theorem piCongrLeft_sumInr {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
-  aesop
+  grind
 
 end
 
@@ -876,18 +894,18 @@ def piCongr : (∀ a, W a) ≃ ∀ b, Z b :=
   (Equiv.piCongrRight h₂).trans (Equiv.piCongrLeft _ h₁)
 
 @[simp]
-theorem coe_piCongr_symm : ((h₁.piCongr h₂).symm :
-    (∀ b, Z b) → ∀ a, W a) = fun f a => (h₂ a).symm (f (h₁ a)) :=
+theorem coe_piCongr_symm :
+    ((h₁.piCongr h₂).symm : (∀ b, Z b) → ∀ a, W a) = fun f a => (h₂ a).symm (f (h₁ a)) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem piCongr_symm_apply (f : ∀ b, Z b) :
     (h₁.piCongr h₂).symm f = fun a => (h₂ a).symm (f (h₁ a)) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem piCongr_apply_apply (f : ∀ a, W a) (a : α) : h₁.piCongr h₂ f (h₁ a) = h₂ a (f a) := by
-  simp only [piCongr, piCongrRight, trans_apply, coe_fn_mk, piCongrLeft_apply_apply, Pi.map_apply]
+  rw [piCongr, trans_apply, piCongrLeft_apply_apply, piCongrRight_apply, Pi.map_apply]
 
 end
 
@@ -916,6 +934,45 @@ theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
   simp [piCongr', piCongr_apply_apply]
 
 end
+
+variable {α : Type*} {β : Type*} {f : α → β}
+
+/-- A family of equivalences `∀ a, γ₁ a ≃ γ₂ a` generates an equivalence between the product
+over the fibers of a function `f : α → β` on index types. -/
+def piCongrSigmaFiber {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a) :
+    ((σ : (y : β) × { x : α // f x = y }) → γ₁ σ.2.1) ≃ ((a : α) → γ₂ a) :=
+  piCongrLeft γ₁ (sigmaFiberEquiv f) |>.trans (piCongrRight e)
+
+@[simp]
+theorem piCongrSigmaFiber_apply {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a)
+    (g : (σ : (y : β) × { x : α // f x = y }) → γ₁ σ.2.1) (a : α) :
+    piCongrSigmaFiber e g a = e a (g ⟨f a, ⟨a, rfl⟩⟩) := rfl
+
+@[simp]
+theorem piCongrSigmaFiber_symm_apply {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a)
+    (g : (a : α) → γ₂ a) (σ : (y : β) × { x : α // f x = y }) :
+    (piCongrSigmaFiber e).symm g σ = (e σ.2.1).symm (g σ.2.1) := rfl
+
+/-- Let `f : α → β` be a function on index types. A family of equivalences, indexed by `b : β`,
+between the product over the fiber of `b` under `f` given as
+`∀ (σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b` lifts to an equivalence over the products
+`∀ a, γ₁ a ≃ ∀ b, γ₂ b`. -/
+def piCongrFiberwise {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+    (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) :
+    ((a : α) → γ₁ a) ≃ ((b : β) → γ₂ b) :=
+  ((piCongrSigmaFiber (fun _ => Equiv.refl _)).symm.trans
+    (piCurry fun b (x : { x : α // f x = b }) => γ₁ x.1)).trans
+      (piCongrRight e)
+
+@[simp]
+theorem piCongrFiberwise_apply {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+    (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) (g : (a : α) → γ₁ a) (b : β) :
+    piCongrFiberwise e g b = e b fun σ => g σ.1 := rfl
+
+@[simp]
+theorem piCongrFiberwise_symm_apply {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+    (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) (g : (b : β) → γ₂ b) (a : α) :
+    (piCongrFiberwise e).symm g a = (e (f a)).symm (g (f a)) ⟨a, rfl⟩ := rfl
 
 /-- Transport dependent functions through an equality of sets. -/
 @[simps!] def piCongrSet {α} {W : α → Sort w} {s t : Set α} (h : s = t) :

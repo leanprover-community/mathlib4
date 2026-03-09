@@ -26,10 +26,20 @@ jobs:
             : # Do nothing on failure, but suppress errors
         fi
 
-    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+    - name: Checkout local actions
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        ref: ${{ github.workflow_sha }}
+        fetch-depth: 1
+        sparse-checkout: .github/actions
+        path: workflow-actions
+    - name: Get mathlib-ci
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Configure Lean
-      uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+      uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
       with:
         auto-config: false
         use-github-cache: false
@@ -66,13 +76,13 @@ jobs:
 
     - name: Full report
       run: |
-        ./scripts/late_importers.sh Mathlib 0 0 "${{ github.run_id }}"
+        "${CI_SCRIPTS_DIR}/reporting/late_importers.sh" Mathlib 0 0 "${{ github.run_id }}"
 
     - name: Zulip report
       id: late_importers
       run: |
         jobID="${{ github.run_id }}"
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/late_importers.sh Mathlib 15 10 "${jobID}")" |
+        printf $'summary<<EOF\n%s\nEOF' "$("${CI_SCRIPTS_DIR}/reporting/late_importers.sh" Mathlib 15 10 "${jobID}")" |
           tee "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip

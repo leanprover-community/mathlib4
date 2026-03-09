@@ -3,12 +3,15 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Finsupp
-import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.GradedAlgebra.FiniteType
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.Away.Basic
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Finsupp
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.GradedAlgebra.FiniteType
+public import Mathlib.RingTheory.GradedAlgebra.RingHom
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 # Homogeneous Localization
@@ -68,6 +71,8 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -492,6 +497,7 @@ lemma mk_eq_zero_of_den (f : NumDenSameDeg 𝒜 x) (h : f.den = 0) : mk f = 0 :=
   have := subsingleton 𝒜 (h ▸ f.den_mem)
   exact Subsingleton.elim _ _
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝒜 x) in
 /-- The map from `𝒜 0` to the degree `0` part of `𝒜ₓ` sending `f ↦ f/1`. -/
 def fromZeroRingHom : 𝒜 0 →+* HomogeneousLocalization 𝒜 x where
@@ -576,7 +582,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
   have : f.num.1 ∉ 𝔭 := by
     exact fun h ↦ mul_mem c.2 (mul_mem f.den_mem s.2)
       (hc ▸ Ideal.mul_mem_left _ c.1 (Ideal.mul_mem_right b _ h))
-  refine isUnit_of_mul_eq_one _ (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
+  refine .of_mul_eq_one (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
   rw [← mk_mul, ext_iff_val, val_mk]
   simp [mul_comm f.den.1]
 
@@ -597,7 +603,29 @@ abbrev Away (𝒜 : ι → σ) (f : A) :=
   HomogeneousLocalization 𝒜 (Submonoid.powers f)
 
 variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
-variable {𝒜 : ι → σ} [GradedRing 𝒜] {f : A}
+variable (𝒜 : ι → σ) [GradedRing 𝒜] {f : A}
+
+/-- This is a convenient constructor for `Away 𝒜 f` when `f` is homogeneous.
+`Away.mk 𝒜 hf n x hx` is the fraction `x / f ^ n`. -/
+protected def Away.mk {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) (x : A) (hx : x ∈ 𝒜 (n • d)) : Away 𝒜 f :=
+  HomogeneousLocalization.mk ⟨n • d, ⟨x, hx⟩, ⟨f ^ n, SetLike.pow_mem_graded n hf⟩, ⟨n, rfl⟩⟩
+
+@[simp]
+lemma Away.val_mk {d : ι} (n : ℕ) (hf : f ∈ 𝒜 d) (x : A) (hx : x ∈ 𝒜 (n • d)) :
+    (Away.mk 𝒜 hf n x hx).val = Localization.mk x ⟨f ^ n, by use n⟩ :=
+  rfl
+
+protected
+lemma Away.mk_surjective {d : ι} (hf : f ∈ 𝒜 d) (x : Away 𝒜 f) :
+    ∃ n a ha, Away.mk 𝒜 hf n a ha = x := by
+  obtain ⟨⟨N, ⟨s, hs⟩, ⟨b, hn⟩, ⟨n, (rfl : _ = b)⟩⟩, rfl⟩ := mk_surjective x
+  by_cases hfn : f ^ n = 0
+  · have := HomogeneousLocalization.subsingleton 𝒜 (x := .powers f) ⟨n, hfn⟩
+    exact ⟨0, 0, zero_mem _, Subsingleton.elim _ _⟩
+  obtain rfl := DirectSum.degree_eq_of_mem_mem 𝒜 hn (SetLike.pow_mem_graded n hf) hfn
+  exact ⟨n, s, hs, by ext; simp⟩
+
+variable {𝒜}
 
 theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
     ∀ᶠ n in Filter.atTop, f ^ n • z.val ∈ algebraMap _ _ '' (𝒜 (n • m) : Set A) := by
@@ -619,24 +647,34 @@ end
 section
 
 variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
-variable (𝒜 : ι → σ) [GradedRing 𝒜]
+variable {𝒜 : ι → σ} [GradedRing 𝒜]
 variable {B τ : Type*} [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
-variable (ℬ : ι → τ) [GradedRing ℬ]
+variable {ℬ : ι → τ} [GradedRing ℬ]
+variable {C ψ : Type*} [CommRing C] [SetLike ψ C] [AddSubgroupClass ψ C]
+variable {𝒞 : ι → ψ} [GradedRing 𝒞]
 variable {P : Submonoid A} {Q : Submonoid B}
 
+open Graded
+
+/-- Map `NumDenSameDeg` along a graded ring hom. -/
+@[simps] def NumDenSameDeg.map (f : 𝒜 →+*ᵍ ℬ) {W₁ : Submonoid A} {W₂ : Submonoid B}
+    (hw : W₁ ≤ W₂.comap f) (c : NumDenSameDeg 𝒜 W₁) : NumDenSameDeg ℬ W₂ where
+  deg := c.deg
+  den := f.gradedAddHom _ c.den
+  num := f.gradedAddHom _ c.num
+  den_mem := hw c.den_mem
+
 /--
-Let `A, B` be two graded rings with the same indexing set and `g : A → B` be a graded ring
-homomorphism (i.e. `g(Aₘ) ⊆ Bₘ`). Let `P ≤ A` be a submonoid and `Q ≤ B` be a submonoid such that
-`P ≤ g⁻¹ Q`, then `g` induce a map from the homogeneous localizations `A⁰_P` to the homogeneous
-localizations `B⁰_Q`.
+Let `A, B` be two graded rings with the same indexing set and `g : 𝒜 →+*ᵍ ℬ` be a graded ring
+homomorphism. Let `P ≤ A` be a submonoid and `Q ≤ B` be a submonoid such that `P ≤ g⁻¹ Q`, then `g`
+induces a map from the homogeneous localization `A⁰_P` to the homogeneous localization `B⁰_Q`.
 -/
-def map (g : A →+* B)
-    (comap_le : P ≤ Q.comap g) (hg : ∀ i, ∀ a ∈ 𝒜 i, g a ∈ ℬ i) :
+def map (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q where
   toFun := Quotient.map'
-    (fun x ↦ ⟨x.1, ⟨_, hg _ _ x.2.2⟩, ⟨_, hg _ _ x.3.2⟩, comap_le x.4⟩)
+    (fun x ↦ ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩)
     fun x y (e : x.embedding = y.embedding) ↦ by
-      apply_fun IsLocalization.map (Localization Q) g comap_le at e
+      apply_fun IsLocalization.map (Localization Q) g.toRingHom comap_le at e
       simp_rw [HomogeneousLocalization.NumDenSameDeg.embedding, Localization.mk_eq_mk',
         IsLocalization.map_mk', ← Localization.mk_eq_mk'] at e
       exact e
@@ -649,19 +687,86 @@ def map (g : A →+* B)
   map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'',
     num_one, den_one, map_one]; rfl
 
+variable (𝒜) in
 /--
 Let `A` be a graded ring and `P ≤ Q` be two submonoids, then the homogeneous localization of `A`
 at `P` embeds into the homogeneous localization of `A` at `Q`.
 -/
 abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
-  map 𝒜 𝒜 (RingHom.id _) h (fun _ _ ↦ id)
+  map (.id _) h
 
-lemma map_mk (g : A →+* B)
-    (comap_le : P ≤ Q.comap g) (hg : ∀ i, ∀ a ∈ 𝒜 i, g a ∈ ℬ i) (x) :
-    map 𝒜 ℬ g comap_le hg (mk x) =
-    mk ⟨x.1, ⟨_, hg _ _ x.2.2⟩, ⟨_, hg _ _ x.3.2⟩, comap_le x.4⟩ :=
+lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
+    map g comap_le (mk x) = mk ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩ :=
   rfl
+
+variable (𝒜) in
+@[simp] theorem map_id (P : Submonoid A) : map (.id 𝒜) (P := P) (Q := P) le_rfl = .id _ := by
+  ext x
+  obtain ⟨c, rfl⟩ := x.mk_surjective
+  simp [map_mk]
+
+theorem map_comp {f : 𝒜 →+*ᵍ ℬ} {g : ℬ →+*ᵍ 𝒞}
+    {P : Submonoid A} {Q : Submonoid B} {R : Submonoid C}
+    (hpq : P ≤ Q.comap f) (hqr : Q ≤ R.comap g) :
+    map (g.comp f) (hpq.trans <| Submonoid.monotone_comap hqr) = (map g hqr).comp (map f hpq) := by
+  ext x
+  obtain ⟨c, rfl⟩ := x.mk_surjective
+  simp [map_mk]
+
+theorem map_map {f : 𝒜 →+*ᵍ ℬ} {g : ℬ →+*ᵍ 𝒞}
+    {P : Submonoid A} {Q : Submonoid B} {R : Submonoid C}
+    (hpq : P ≤ Q.comap f) (hqr : Q ≤ R.comap g) (x : HomogeneousLocalization 𝒜 P) :
+    map g hqr (map f hpq x) = map (g.comp f) (hpq.trans <| Submonoid.monotone_comap hqr) x :=
+  congr($(map_comp hpq hqr |>.symm) x)
+
+/-- If `g : 𝒜 →+*ᵍ ℬ` is a graded ring homomorphism and `f : A` then we have a map
+`Away 𝒜 f →+* Away ℬ (g f)`. -/
+protected def Away.map (g : 𝒜 →+*ᵍ ℬ) (f : A) : Away 𝒜 f →+* Away ℬ (g f) :=
+  map g <| by rintro _ ⟨n, rfl⟩; exact ⟨n, by simp⟩
+
+@[simp] lemma Away.map_mk {d : ι} (g : 𝒜 →+*ᵍ ℬ) (f : A) (hf : f ∈ 𝒜 d) (n : ℕ) (x : A)
+    (hx : x ∈ 𝒜 (n • d)) :
+    Away.map g f (.mk 𝒜 hf n x hx) = .mk ℬ (map_mem g hf) n (g x) (map_mem g hx) := by
+  simp [Away.map, Away.mk, HomogeneousLocalization.map_mk]
+
+variable (𝒜) in
+@[simp] lemma Away.map_id (f : A) : Away.map (.id 𝒜) f = .id _ :=
+  HomogeneousLocalization.map_id ..
+
+@[simp] lemma Away.map_comp (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) (s : A) :
+    Away.map (g.comp f) s = (Away.map g (f s)).comp (Away.map f s) :=
+  HomogeneousLocalization.map_comp ..
+
+theorem Away.map_map (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) (s : A) (x : Away 𝒜 s) :
+    Away.map g (f s) (Away.map f s x) = Away.map (g.comp f) s x :=
+  HomogeneousLocalization.map_map ..
+
+section AtPrime
+
+variable (f : 𝒜 →+*ᵍ ℬ) (I : Ideal A) [I.IsPrime] (J : Ideal B) [J.IsPrime] (hIJ : I = J.comap f)
+
+-- NB: this is to be consistent with `Localization.localRingHom`. We might change both to
+-- `AtPrime.map` one day.
+/-- If `f : 𝒜 →+*ᵍ ℬ` is a graded ring homomorphism and `I` is a prime ideal of `A` and
+`J` is a prime ideal of `B` and `f⁻¹ J = I` then we have a map `AtPrime 𝒜 I →+* AtPrime ℬ J`. -/
+noncomputable def localRingHom : AtPrime 𝒜 I →+* AtPrime ℬ J :=
+  map f <| Localization.le_comap_primeCompl_iff.mpr <| hIJ ▸ le_rfl
+
+variable {f I J hIJ}
+
+@[simp] lemma val_localRingHom (x : AtPrime 𝒜 I) :
+    (localRingHom f I J hIJ x).val = Localization.localRingHom _ _ f hIJ x.val := by
+  obtain ⟨⟨i, x, s, hs⟩, rfl⟩ := x.mk_surjective
+  simp [localRingHom, map_mk]
+
+instance : IsLocalHom (localRingHom f I J hIJ) where
+  map_nonunit x hx := by
+    rw [← isUnit_iff_isUnit_val] at hx ⊢
+    rw [val_localRingHom] at hx
+    exact IsLocalHom.map_nonunit _ hx
+
+end AtPrime
 
 end
 
@@ -671,6 +776,7 @@ variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
 variable (𝒜 : ι → σ) [GradedRing 𝒜]
 variable {e : ι} {f : A} {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g)
 
+set_option backward.privateInPublic true in
 /-- Given `f ∣ x`, this is the map `A_{(f)} → A_f → A_x`. We will lift this to a map
 `A_{(f)} → A_{(x)}` in `awayMap`. -/
 private def awayMapAux (hx : f ∣ x) : Away 𝒜 f →+* Localization.Away x :=
@@ -678,6 +784,8 @@ private def awayMapAux (hx : f ∣ x) : Away 𝒜 f →+* Localization.Away x :=
     (isUnit_of_dvd_unit (map_dvd _ hx) (IsLocalization.Away.algebraMap_isUnit x))).comp
       (algebraMap (Away 𝒜 f) (Localization.Away f))
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma awayMapAux_mk (n a i hi) :
     awayMapAux 𝒜 ⟨_, hx⟩ (mk ⟨n, a, ⟨f ^ i, hi⟩, ⟨i, rfl⟩⟩) =
       Localization.mk (a * g ^ i) ⟨x ^ i, (Submonoid.mem_powers_iff _ _).mpr ⟨i, rfl⟩⟩ := by
@@ -685,12 +793,14 @@ lemma awayMapAux_mk (n a i hi) :
     (Localization.mk g ⟨f * g, (Submonoid.mem_powers_iff _ _).mpr ⟨1, by simp [hx]⟩⟩) = 1 := by
     rw [← Algebra.smul_def, Localization.smul_mk]
     exact Localization.mk_self ⟨f*g, _⟩
-  simp [awayMapAux]
+  simp only [awayMapAux, RingHom.coe_comp, Function.comp_apply, algebraMap_apply, val_mk]
   rw [Localization.awayLift_mk (hv := this), ← Algebra.smul_def,
     Localization.mk_pow, Localization.smul_mk]
   subst hx
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 include hg in
 lemma range_awayMapAux_subset :
     Set.range (awayMapAux 𝒜 (f := f) ⟨_, hx⟩) ⊆ Set.range (val (𝒜 := 𝒜)) := by
@@ -704,6 +814,8 @@ lemma range_awayMapAux_subset :
     apply SetLike.mul_mem_graded hb'
     exact SetLike.pow_mem_graded _ hg
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Given `x = f * g` with `g` homogeneous of positive degree,
 this is the map `A_{(f)} → A_{(x)}` taking `a/f^i` to `ag^i/(fg)^i`. -/
 def awayMap : Away 𝒜 f →+* Away 𝒜 x := by
@@ -713,6 +825,8 @@ def awayMap : Away 𝒜 f →+* Away 𝒜 x := by
     (awayMapAux 𝒜 (f := f) ⟨_, hx⟩).rangeRestrict
   exact range_awayMapAux_subset 𝒜 hg hx
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma val_awayMap_eq_aux (a) : (awayMap 𝒜 hg hx a).val = awayMapAux 𝒜 ⟨_, hx⟩ a := by
   let e := RingEquiv.ofLeftInverse (f := algebraMap (Away 𝒜 x) (Localization.Away x))
     (h := (val_injective _).hasLeftInverse.choose_spec)
@@ -730,7 +844,7 @@ lemma awayMap_fromZeroRingHom (a) :
     awayMap 𝒜 hg hx (fromZeroRingHom 𝒜 _ a) = fromZeroRingHom 𝒜 _ a := by
   ext
   simp only [fromZeroRingHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    val_awayMap, val_mk, SetLike.GradeZero.coe_one]
+    val_awayMap, val_mk]
   convert IsLocalization.lift_eq _ _
 
 lemma val_awayMap_mk (n a i hi) : (awayMap 𝒜 hg hx (mk ⟨n, a, ⟨f ^ i, hi⟩, ⟨i, rfl⟩⟩)).val =
@@ -744,26 +858,6 @@ def awayMapₐ : Away 𝒜 f →ₐ[𝒜 0] Away 𝒜 x where
   commutes' _ := awayMap_fromZeroRingHom ..
 
 @[simp] lemma awayMapₐ_apply (a) : awayMapₐ 𝒜 hg hx a = awayMap 𝒜 hg hx a := rfl
-
-/-- This is a convenient constructor for `Away 𝒜 f` when `f` is homogeneous.
-`Away.mk 𝒜 hf n x hx` is the fraction `x / f ^ n`. -/
-protected def Away.mk {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) (x : A) (hx : x ∈ 𝒜 (n • d)) : Away 𝒜 f :=
-  HomogeneousLocalization.mk ⟨n • d, ⟨x, hx⟩, ⟨f ^ n, SetLike.pow_mem_graded n hf⟩, ⟨n, rfl⟩⟩
-
-@[simp]
-lemma Away.val_mk {d : ι} (n : ℕ) (hf : f ∈ 𝒜 d) (x : A) (hx : x ∈ 𝒜 (n • d)) :
-    (Away.mk 𝒜 hf n x hx).val = Localization.mk x ⟨f ^ n, by use n⟩ :=
-  rfl
-
-protected
-lemma Away.mk_surjective {d : ι} (hf : f ∈ 𝒜 d) (x : Away 𝒜 f) :
-    ∃ n a ha, Away.mk 𝒜 hf n a ha = x := by
-  obtain ⟨⟨N, ⟨s, hs⟩, ⟨b, hn⟩, ⟨n, (rfl : _ = b)⟩⟩, rfl⟩ := mk_surjective x
-  by_cases hfn : f ^ n = 0
-  · have := HomogeneousLocalization.subsingleton 𝒜 (x := .powers f) ⟨n, hfn⟩
-    exact ⟨0, 0, zero_mem _, Subsingleton.elim _ _⟩
-  obtain rfl := DirectSum.degree_eq_of_mem_mem 𝒜 hn (SetLike.pow_mem_graded n hf) hfn
-  exact ⟨n, s, hs, by ext; simp⟩
 
 open SetLike in
 @[simp]
@@ -791,7 +885,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
     letI := (awayMap 𝒜 hg hx).toAlgebra
     IsLocalization.Away (isLocalizationElem hf hg) (Away 𝒜 x) := by
   letI := (awayMap 𝒜 hg hx).toAlgebra
-  constructor
+  constructor; constructor
   · rintro ⟨r, n, rfl⟩
     rw [map_pow, RingHom.algebraMap_toAlgebra]
     let z : Away 𝒜 x := Away.mk 𝒜 (hx ▸ SetLike.mul_mem_graded hf hg) (d + e)
@@ -840,6 +934,7 @@ end isLocalization
 
 section span
 
+set_option backward.isDefEq.respectTransparency false in
 variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι] {𝒜 : ι → σ} [GradedRing 𝒜] in
 /--
 Let `𝒜` be a graded ring, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,
@@ -1020,7 +1115,7 @@ lemma Away.finiteType (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
   apply (Set.finite_range F).subset
   rintro _ ⟨a, ai, hai, hai', rfl⟩
   refine ⟨⟨⟨⟨a, ?_⟩, fun i ↦ ⟨ai i, (hai' i).trans_lt d.lt_succ_self⟩⟩, hai⟩, rfl⟩
-  rw [Nat.lt_succ, ← mul_le_mul_iff_of_pos_right hd, ← smul_eq_mul, ← hai, Finset.sum_mul]
+  rw [Nat.lt_succ_iff, ← mul_le_mul_iff_of_pos_right hd, ← smul_eq_mul, ← hai, Finset.sum_mul]
   simp_rw [smul_eq_mul, mul_comm _ d]
   gcongr
   exact hai' _

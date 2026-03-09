@@ -3,14 +3,18 @@ Copyright (c) 2018 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, David Renshaw
 -/
-import Lean.Elab.Tactic.Location
-import Lean.Meta.Tactic.SplitIf
-import Lean.Elab.Tactic.Simp
-import Mathlib.Tactic.Core
+module
+
+public meta import Lean.Elab.Tactic.Location
+public meta import Lean.Meta.Tactic.SplitIf
+public meta import Lean.Elab.Tactic.Simp
+public import Mathlib.Tactic.Core
 
 /-!
 Tactic to split if-then-else expressions.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 

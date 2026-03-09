@@ -3,11 +3,13 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Field.Canonical
-import Mathlib.Algebra.Order.Nonneg.Ring
-import Mathlib.Algebra.Order.Positive.Ring
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Order.Field.Canonical
+public import Mathlib.Algebra.Order.Nonneg.Ring
+public import Mathlib.Algebra.Order.Positive.Ring
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Semifield structure on the type of nonnegative elements
@@ -21,6 +23,8 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 
 * `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedSemifield` if `α` is a `LinearOrderedField`.
 -/
+
+@[expose] public section
 
 assert_not_exists abs_inv
 

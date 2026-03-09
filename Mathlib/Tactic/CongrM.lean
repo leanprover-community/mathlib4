@@ -3,8 +3,9 @@ Copyright (c) 2023 Moritz Doll, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
-import Mathlib.Tactic.TermCongr
-import Mathlib.Tactic.WithoutCDot
+module
+
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # The `congrm` tactic
@@ -14,6 +15,8 @@ is a convenient frontend for `congr(...)` congruence quotations.
 Roughly, `congrm e` is `refine congr(e')`, where `e'` is `e` with every `?m` placeholder
 replaced by `$(?m)`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Parser Elab Tactic Meta

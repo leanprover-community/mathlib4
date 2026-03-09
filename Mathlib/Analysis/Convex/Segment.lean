@@ -3,9 +3,14 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.Ray
+module
+
+public import Mathlib.Algebra.Order.Nonneg.Ring
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.LinearAlgebra.Ray
+
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!
 # Segments in vector spaces
@@ -27,11 +32,12 @@ Should we rename `segment` and `openSegment` to `convex.Icc` and `convex.Ioo`? S
 define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
 -/
 
+@[expose] public section
+
 variable {𝕜 E F G ι : Type*} {M : ι → Type*}
 
-open Function Set
-
-open Pointwise Convex
+open Function Module Set
+open scoped Pointwise Convex
 
 section OrderedSemiring
 
@@ -41,13 +47,12 @@ section SMul
 
 variable (𝕜) [SMul 𝕜 E] {s : Set E} {x y : E}
 
-/-- Segments in a vector space. -/
+/-- Segments in a vector space. Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
 def segment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a • x + b • y = z }
 
 /-- Open segment in a vector space. Note that `openSegment 𝕜 x x = {x}` instead of being `∅` when
-the base semiring has some element between `0` and `1`.
-Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
+the base semiring has some element between `0` and `1`. -/
 def openSegment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a • x + b • y = z }
 
@@ -221,6 +226,10 @@ theorem openSegment_eq_image_lineMap (x y : E) :
   convert openSegment_eq_image 𝕜 x y using 2
   exact AffineMap.lineMap_apply_module _ _ _
 
+theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
+    AffineMap.lineMap a b t ∈ openSegment 𝕜 a b :=
+  openSegment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
+
 @[simp]
 theorem image_segment (f : E →ᵃ[𝕜] F) (a b : E) : f '' [a -[𝕜] b] = [f a -[𝕜] f b] :=
   Set.ext fun x => by
@@ -236,11 +245,17 @@ theorem image_openSegment (f : E →ᵃ[𝕜] F) (a b : E) :
 @[simp]
 theorem vadd_segment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ [b -[𝕜] c] = [a +ᵥ b -[𝕜] a +ᵥ c] :=
+  #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
+  we didn't need this `let` statement. -/
+  let : AddTorsor E E := addGroupIsAddTorsor E
   image_segment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
 theorem vadd_openSegment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ openSegment 𝕜 b c = openSegment 𝕜 (a +ᵥ b) (a +ᵥ c) :=
+  #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
+  we didn't need this `let` statement. -/
+  let : AddTorsor E E := addGroupIsAddTorsor E
   image_openSegment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
@@ -299,8 +314,7 @@ theorem sameRay_of_mem_segment [CommRing 𝕜] [PartialOrder 𝕜] [IsStrictOrde
     (SameRay.sameRay_nonneg_smul_left (z - y) hθ₀).nonneg_smul_right (sub_nonneg.2 hθ₁)
 
 lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
-    [CommRing 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [NoZeroDivisors 𝕜]
-    [AddCommGroup E] [Module 𝕜 E]
+    [CommRing 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [IsDomain 𝕜] [AddCommGroup E] [Module 𝕜 E]
     {x y : E} (h : LinearIndependent 𝕜 ![x, y]) {s t : 𝕜} (hs : s ≠ t) (c : E) :
     [c + x -[𝕜] c + t • y] ∩ [c + x -[𝕜] c + s • y] = {c + x} := by
   apply segment_inter_eq_endpoint_of_linearIndependent_sub
@@ -315,20 +329,32 @@ section LinearOrderedRing
 
 variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y : E}
 
-theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x y ∈ [x -[𝕜] y] := by
-  rw [segment_eq_image_lineMap]
-  exact ⟨⅟2, ⟨invOf_nonneg.mpr zero_le_two, invOf_le_one one_le_two⟩, rfl⟩
+theorem midpoint_mem_openSegment [Invertible (2 : 𝕜)] (x y : E) :
+    midpoint 𝕜 x y ∈ openSegment 𝕜 x y := by
+  rw [openSegment_eq_image_lineMap]
+  exact ⟨⅟2, ⟨invOf_pos.mpr two_pos, invOf_lt_one one_lt_two⟩, rfl⟩
 
-theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
-  convert midpoint_mem_segment (𝕜 := 𝕜) (x - y) (x + y)
+theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x y ∈ [x -[𝕜] y] :=
+  openSegment_subset_segment _ _ _ <| midpoint_mem_openSegment _ _
+
+theorem mem_openSegment_sub_add [Invertible (2 : 𝕜)] (x y : E) :
+    x ∈ openSegment 𝕜 (x - y) (x + y) := by
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
   rw [midpoint_sub_add]
 
-theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
-  convert midpoint_mem_segment (𝕜 := 𝕜) (x + y) (x - y)
+theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] :=
+  openSegment_subset_segment _ _ _ <| mem_openSegment_sub_add _ _
+
+theorem mem_openSegment_add_sub [Invertible (2 : 𝕜)] (x y : E) :
+    x ∈ openSegment 𝕜 (x + y) (x - y) := by
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
   rw [midpoint_add_sub]
 
+theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] :=
+  openSegment_subset_segment _ _ _ <| mem_openSegment_add_sub _ _
+
 @[simp]
-theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] :
+theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] :
     x ∈ openSegment 𝕜 x y ↔ x = y := by
   constructor
   · rintro ⟨a, b, _, hb, hab, hx⟩
@@ -339,7 +365,7 @@ theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 
     exact mem_singleton _
 
 @[simp]
-theorem right_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] :
+theorem right_mem_openSegment_iff [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] :
     y ∈ openSegment 𝕜 x y ↔ x = y := by rw [openSegment_symm, left_mem_openSegment_iff, eq_comm]
 
 end LinearOrderedRing
@@ -570,6 +596,31 @@ theorem Convex.mem_Ico (h : x < y) :
     · exact Ioo_subset_Ico_self ((Convex.mem_Ioo h).2 ⟨a, b, ha, hb', hab, rfl⟩)
 
 end LinearOrderedField
+
+namespace Nonneg
+
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y z : 𝕜}
+
+protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
+    Icc x y ⊆ segment {t : 𝕜 // 0 ≤ t} x y := by
+  intro a ⟨hxa, hay⟩
+  rw [← Subtype.coe_le_coe] at hxa hay
+  rcases Icc_subset_segment ⟨hxa, hay⟩ with ⟨t₁, t₂, t₁_nonneg, t₂_nonneg, t_add, hta⟩
+  refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le _, zero_le _, ?_, ?_⟩ <;>
+  ext <;> simpa
+
+protected lemma segment_eq_Icc {x y : {t : 𝕜 // 0 ≤ t}} (hxy : x ≤ y) :
+    segment {t : 𝕜 // 0 ≤ t} x y = Icc x y := by
+  refine subset_antisymm (segment_subset_Icc hxy) Nonneg.Icc_subset_segment
+
+set_option backward.isDefEq.respectTransparency false in
+protected lemma segment_eq_uIcc {x y : {t : 𝕜 // 0 ≤ t}} :
+    segment {t : 𝕜 // 0 ≤ t} x y = uIcc x y := by
+  rcases le_total x y with h | h
+  · simp [h, Nonneg.segment_eq_Icc]
+  · simp [h, segment_symm _ x y, Nonneg.segment_eq_Icc]
+
+end Nonneg
 
 namespace Prod
 

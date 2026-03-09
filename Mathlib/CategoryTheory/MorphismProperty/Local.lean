@@ -3,8 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.Zero
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Locality conditions on morphism properties
@@ -28,6 +31,8 @@ The covers appearing in the definitions have index type in the morphism universe
 
 - Define source and target local closure of a morphism property.
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -175,5 +180,27 @@ lemma of_zeroHypercover_source {P : MorphismProperty C} {K : Precoverage C}
 alias iff_of_zeroHypercover_source := IsLocalAtSource.iff_of_zeroHypercover
 
 end MorphismProperty
+
+/--
+Let `J` be a precoverage for which isomorphisms are local at the target. Let
+`f, g : X ⟶ Y` be two morphisms over `S` and `𝒰` a `J`-cover of `S`.
+If for all `i`, the maps `X ×[S] Uᵢ ⟶ Y ×[S] Uᵢ` are equal, then
+`f` and `g` are equal. -/
+lemma eq_of_zeroHypercover_target [HasEqualizers C] [HasPullbacks C] {X Y S : C} {f g : X ⟶ Y}
+    {s : X ⟶ S} {t : Y ⟶ S} (hf : f ≫ t = s) (hg : g ≫ t = s) {J : Precoverage C}
+    (𝒰 : Precoverage.ZeroHypercover.{v} J S) [J.IsStableUnderBaseChange]
+    [(MorphismProperty.isomorphisms C).IsLocalAtTarget J]
+    (H : ∀ i,
+      pullback.map s (𝒰.f i) t (𝒰.f i) f (𝟙 (𝒰.X i)) (𝟙 S) (by simp [hf]) (by simp) =
+        pullback.map s (𝒰.f i) t (𝒰.f i) g (𝟙 (𝒰.X i)) (𝟙 S) (by simp [hg]) (by simp)) :
+    f = g := by
+  suffices IsIso (equalizer.ι f g) from Limits.eq_of_epi_equalizer
+  change MorphismProperty.isomorphisms C _
+  rw [(MorphismProperty.isomorphisms C).iff_of_zeroHypercover_target (𝒰.pullback₁ s)]
+  intro i
+  have : pullback.snd (equalizer.ι f g) (pullback.fst s (𝒰.f i)) =
+      (equalizerPullbackMapIso hf hg _).inv ≫ equalizer.ι _ _ := by
+    ext <;> simp [pullback.condition]
+  simpa [this] using equalizer.ι_of_eq (H i)
 
 end CategoryTheory

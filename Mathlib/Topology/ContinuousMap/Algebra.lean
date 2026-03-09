@@ -3,13 +3,15 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Nicolò Cavalleri
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.UniformSpace.CompactConvergence
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
 # Algebraic structures over continuous functions
@@ -26,6 +28,8 @@ Note that, rather than using the derived algebraic structures on these subobject
 (for example, when `β` is a group, the derived group structure on `continuousSubgroup α β`),
 one should use `C(α, β)` with the appropriate instance of the structure.
 -/
+
+@[expose] public section
 
 assert_not_exists StoneCech
 
@@ -117,10 +121,7 @@ theorem intCast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :=
 
 /-! ### `nsmul` and `pow` -/
 
-instance instNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
-  ⟨fun n f => ⟨n • ⇑f, f.continuous.nsmul n⟩⟩
-
-@[to_additive existing]
+@[to_additive]
 instance instPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
   ⟨fun f n => ⟨(⇑f) ^ n, f.continuous.pow n⟩⟩
 
@@ -184,10 +185,7 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
 
 /-! ### `zpow` and `zsmul` -/
 
-instance instZSMul [AddGroup β] [IsTopologicalAddGroup β] : SMul ℤ C(α, β) where
-  smul z f := ⟨z • ⇑f, f.continuous.zsmul z⟩
-
-@[to_additive existing]
+@[to_additive]
 instance instZPow [Group β] [IsTopologicalGroup β] : Pow C(α, β) ℤ where
   pow f z := ⟨(⇑f) ^ z, f.continuous.zpow z⟩
 
@@ -338,7 +336,7 @@ instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] : Com
 @[to_additive]
 instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
-    letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
+    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
@@ -348,7 +346,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
         ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prodMk
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
-    letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
+    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     intro f
@@ -688,7 +686,7 @@ def ContinuousMap.compRightAlgHom {α β : Type*} [TopologicalSpace α] [Topolog
     (f : C(α, β)) : C(β, A) →ₐ[R] C(α, A) where
   toFun g := g.comp f
   map_zero' := ext fun _ ↦ rfl
-  map_add'  _ _ := ext fun _ ↦ rfl
+  map_add' _ _ := ext fun _ ↦ rfl
   map_one' := ext fun _ ↦ rfl
   map_mul' _ _ := ext fun _ ↦ rfl
   commutes' _ := ext fun _ ↦ rfl
@@ -744,6 +742,7 @@ def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
 
 variable [Field 𝕜] [IsTopologicalRing 𝕜]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Working in continuous functions into a topological field,
 a subalgebra of functions that separates points also separates points strongly.
 
@@ -778,7 +777,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
       ext f
       have h : f = algebraMap R C(α, R) (f default) := by
         ext x'
-        simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
+        simp only [mul_one, smul_eq_mul, algebraMap_apply]
         congr
         simp [eq_iff_true_of_subsingleton]
       rw [h]

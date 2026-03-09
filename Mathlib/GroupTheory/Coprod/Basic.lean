@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.Congruence.Basic
+module
+
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.GroupTheory.Congruence.Basic
 
 /-!
 # Coproduct (free product) of two monoids or groups
@@ -116,6 +118,8 @@ There are several reasons to build an API from scratch.
 
 group, monoid, coproduct, free product
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -599,6 +603,7 @@ theorem closure_range_inl_union_inr :
     Subgroup.closure (range (inl : G →* G ∗ H) ∪ range inr) = ⊤ :=
   Subgroup.closure_eq_top_of_mclosure_eq_top mclosure_range_inl_union_inr
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)] theorem range_inl_sup_range_inr :
     MonoidHom.range (inl : G →* G ∗ H) ⊔ MonoidHom.range inr = ⊤ := by
   rw [← closure_range_inl_union_inr, Subgroup.closure_union, ← MonoidHom.coe_range,
@@ -614,6 +619,7 @@ theorem codisjoint_range_inl_range_inr :
 
 variable {K : Type*} [Group K]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive] theorem range_eq (f : G ∗ H →* K) :
     MonoidHom.range f = MonoidHom.range (f.comp inl) ⊔ MonoidHom.range (f.comp inr) := by
   rw [MonoidHom.range_eq_map, ← range_inl_sup_range_inr, Subgroup.map_sup, MonoidHom.map_range,
@@ -658,6 +664,7 @@ end MulOneClass
 
 variable (M N P : Type*) [Monoid M] [Monoid N] [Monoid P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A multiplicative equivalence between `(M ∗ N) ∗ P` and `M ∗ (N ∗ P)`. -/
 @[to_additive /-- An additive equivalence between `AddMonoid.Coprod (AddMonoid.Coprod M N) P` and
 `AddMonoid.Coprod M (AddMonoid.Coprod N P)`. -/]

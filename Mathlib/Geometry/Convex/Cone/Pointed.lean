@@ -3,8 +3,10 @@ Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Algebra.Order.Nonneg.Module
-import Mathlib.Geometry.Convex.Cone.Basic
+module
+
+public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.Geometry.Convex.Cone.Basic
 
 /-!
 # Pointed cones
@@ -15,6 +17,8 @@ contains `0`. This is a bundled version of `ConvexCone.Pointed`. We choose the s
 as it allows us to use the `Module` API to work with convex cones.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TopologicalSpace Real Cardinal
 
@@ -65,6 +69,7 @@ instance instZero (C : PointedCone R E) : Zero C :=
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
 def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : PointedCone R E where
   carrier := C
@@ -143,6 +148,7 @@ between pointed cones induced from linear maps between the ambient modules that 
 
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of a pointed cone under an `R`-linear map is a pointed cone. -/
 def map (f : E →ₗ[R] F) (C : PointedCone R E) : PointedCone R F :=
   Submodule.map (f : E →ₗ[R≥0] F) C
@@ -168,6 +174,7 @@ theorem map_map (g : F →ₗ[R] G) (f : E →ₗ[R] F) (C : PointedCone R E) :
 theorem map_id (C : PointedCone R E) : C.map LinearMap.id = C :=
   SetLike.coe_injective <| Set.image_id _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The preimage of a pointed cone under an `R`-linear map is a pointed cone. -/
 def comap (f : E →ₗ[R] F) (C : PointedCone R F) : PointedCone R E :=
   Submodule.comap (f : E →ₗ[R≥0] F) C
@@ -221,4 +228,15 @@ lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y -
     IsOrderedModule R E := .of_smul_nonneg <| by simp +contextual [h, C.smul_mem]
 
 end OrderedAddCommGroup
+
+section Salient
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+/-- A pointed cone is salient iff the intersection of the cone with its negative
+is the set `{0}`. -/
+lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
+    (C : ConvexCone R E).Salient ↔ (C ∩ -C : Set E) = {0} := by
+  simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
+
+end Salient
 end PointedCone

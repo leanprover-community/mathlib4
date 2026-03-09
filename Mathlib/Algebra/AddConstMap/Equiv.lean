@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.AddConstMap.Basic
+module
+
+public import Mathlib.Algebra.AddConstMap.Basic
 
 /-!
 # Equivalences conjugating `(· + a)` to `(· + b)`
@@ -13,6 +15,8 @@ to be the type of equivalences such that `∀ x, f (x + a) = f x + b`.
 
 We also define the corresponding typeclass and prove some basic properties.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

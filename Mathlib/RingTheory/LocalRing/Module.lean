@@ -3,18 +3,20 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Flat.EquationalCriterion
-import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
-import Mathlib.RingTheory.LocalProperties.Exactness
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.Support
-import Mathlib.RingTheory.TensorProduct.Free
+module
+
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Flat.EquationalCriterion
+public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
+public import Mathlib.RingTheory.LocalProperties.Exactness
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Support
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Finite modules over local rings
@@ -32,6 +34,8 @@ This file gathers various results about finite modules over a local ring `(R, �
   Given an `R`-linear map `l : M → N` with `M` finite and `N` finite free,
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
+
+public section
 
 open Module
 
@@ -69,6 +73,7 @@ theorem map_mkQ_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (Submodule.mkQ (𝔪 • ⊤)) = ⊤ ↔ N = ⊤ := by
   rw [← map_mkQ_eq (N₁ := N) le_top Module.Finite.fg_top, Submodule.map_top, Submodule.range_mkQ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (TensorProduct.mk R k M 1) = ⊤ ↔ N = ⊤ := by
   constructor
@@ -95,6 +100,7 @@ theorem subsingleton_tensorProduct [Module.Finite R M] :
     ← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top,
     ← map_tensorProduct_mk_eq_top (M := M), Submodule.map_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
     (f : ι → M) (b : Basis ι k (k ⊗[R] M))
     (hb : ∀ i, 1 ⊗ₜ f i = b i) : Submodule.span R (Set.range f) = ⊤ := by
@@ -105,6 +111,7 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
 
 end IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Module.mem_support_iff_nontrivial_residueField_tensorProduct [Module.Finite R M]
     (p : PrimeSpectrum R) :
     p ∈ Module.support R M ↔ Nontrivial (p.asIdeal.ResidueField ⊗[R] M) := by
@@ -156,6 +163,7 @@ namespace Module
 
 variable [IsLocalRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is of finite presentation over a local ring `(R, 𝔪, k)` such that
 `𝔪 ⊗ M → M` is injective, then every family of elements that is a `k`-basis of
 `k ⊗ M` is an `R`-basis of `M`. -/
@@ -172,9 +180,8 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
     refine IsLocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := v) bk
       (fun _ ↦ by simp [bk])
-  have : Module.Finite R (LinearMap.ker i) := by
-    constructor
-    exact (Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker i hi)
+  have : Module.Finite R (LinearMap.ker i) :=
+    .of_fg (Module.FinitePresentation.fg_ker i hi)
   -- We claim that `i` is actually a bijection,
   -- hence `v` induces an isomorphism `M ≃[R] Rᴵ` showing that `v` is a basis.
   let iequiv : (ι →₀ R) ≃ₗ[R] M := by
@@ -212,6 +219,7 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
   intro j
   simp [iequiv, i]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `M` is a finitely presented module over a local ring `(R, 𝔪)` such that `m ⊗ M → M` is
 injective, then every generating family contains a basis.
@@ -247,6 +255,7 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   obtain ⟨_, _, b, _⟩ := exists_basis_of_span_of_maximalIdeal_rTensor_injective H id (by simp)
   exact Free.of_basis b
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι → M)
     (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
   rw [linearIndependent_iff']; intro s f hfv i hi
@@ -284,6 +293,18 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
     intro i hi; rw [ih i hi, zero_mul]
   · exact ih i hi
 
+set_option backward.isDefEq.respectTransparency false in
+open Finsupp in
+theorem IsLocalRing.linearCombination_bijective_of_flat [Module.Finite R M] [Flat R M] {ι : Type u}
+    (v : ι → M) (h : Function.Bijective (linearCombination k (TensorProduct.mk R k M 1 ∘ v))) :
+    Function.Bijective (linearCombination R v) := by
+  use linearIndependent_of_flat _ h.1
+  rw [← LinearMap.range_eq_top, range_linearCombination]
+  refine span_eq_top_of_tmul_eq_basis _ (.mk h.1 ?_) fun _ ↦ ?_
+  · simpa only [top_le_iff, ← range_linearCombination, LinearMap.range_eq_top] using h.2
+  · simp
+
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00NZ]
 theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
   let w := Free.chooseBasis k (k ⊗[R] P)
@@ -374,47 +395,35 @@ open Ideal TensorProduct Submodule
 
 variable (R M) [Finite (MaximalSpectrum R)] [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is a finite flat module over a commutative semilocal ring `R` that has the same rank `n`
 at every maximal ideal, then `M` is free of rank `n`. -/
 @[stacks 02M9] theorem nonempty_basis_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
     (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.1) ((R ⧸ P.1) ⊗[R] M) = n) :
     Nonempty (Basis (Fin n) R M) := by
   let := @Quotient.field
-  have coprime : Pairwise fun I J : MaximalSpectrum R ↦ IsCoprime I.1 J.1 :=
-    fun _ _ ne ↦ isCoprime_of_isMaximal (MaximalSpectrum.ext_iff.ne.mp ne)
   /- For every maximal ideal `P`, `R⧸P ⊗[R] M` is an `n`-dimensional vector space over the field
     `R⧸P` by assumption, so we can choose a basis `b' P` indexed by `Fin n`. -/
   have b' (P) := Module.finBasisOfFinrankEq _ _ (rk P)
   /- By Chinese remainder theorem for modules, there exist `n` elements `b i : M` that reduces
     to `b' P i` modulo each maximal ideal `P`. -/
-  choose b hb using fun i ↦ pi_tensorProductMk_quotient_surjective M _ coprime (b' · i)
-  /- It suffices to show `b` spans `M` and is linearly independent when localized at each
-    maximal ideal. -/
-  refine ⟨.mk (v := b) (.of_isLocalized_maximal (fun P _ ↦ Localization P.primeCompl) _
-    (fun P _ ↦ TensorProduct.mk R (Localization P.primeCompl) M 1) _ fun P _ ↦ ?_) ?_⟩
-  · /- Since `M` is finite flat, linear independence in `Rₚ ⊗[R] M` is equivalent to linear
-      independence in `Rₚ⧸PRₚ ⊗[Rₚ] (Rₚ ⊗[R] M) ≃ Rₚ⧸PRₚ ⊗[R⧸P] (R⧸P ⊗[R] M)`. -/
-    apply IsLocalRing.linearIndependent_of_flat
-    rw [← LinearMap.linearIndependent_iff _ (AlgebraTensorModule.cancelBaseChange R _ _ _ M).ker]
-    convert LinearMap.linearIndependent_iff _ (AlgebraTensorModule.cancelBaseChange R _ _ _ M).ker
-      |>.mpr (Algebra.TensorProduct.basis P.ResidueField (b' ⟨P, ‹_›⟩)).linearIndependent
-    ext
-    simp [← funext_iff.mp (hb _)]
-  · -- To show `b` spans `M`, it suffices to show `M = Rb + J(R)M` by Nakayama.
-    refine Submodule.le_of_le_smul_of_le_jacobson_bot (Module.finite_def.mp ‹_›) le_rfl fun m _ ↦ ?_
-    /- For each `m : M` and maximal ideal `P`, `1 ⊗ₜ m : R⧸P ⊗[R] M` is in the span of `b' P`.
-      By Chinese remainder theorem for rings, we may lift the coefficients `r i : R`. -/
-    choose r hr using fun i ↦ pi_quotient_surjective coprime fun P ↦ (b' P).repr (1 ⊗ₜ m) i
-    rw [← add_sub_cancel (∑ i, r i • b i) m]
-    /- It suffices to show `m - ∑ i, r i • b i` is `J(R)M`, which equals the kernel of
-      `M → Πₚ R⧸P ⊗[R] M` by Chinese remainder theorem for modules. -/
-    refine Submodule.add_mem_sup (sum_mem fun i _ ↦ smul_mem _ _ <| subset_span ⟨i, rfl⟩) <|
-      ((ker_tensorProductMk_quotient M _ coprime).le.trans <| smul_mono_left <|
-        le_sInf fun i hi ↦ iInf_le_of_le ⟨i, hi.2⟩ le_rfl) ?_
-    ext P
-    simp_rw [map_sub, map_sum, map_smul, hb, Pi.sub_apply]
-    refine sub_eq_zero.mpr (((b' P).sum_repr _).symm.trans ?_)
-    simp [← hr, ← Quotient.algebraMap_eq]
+  choose b hb using fun i ↦ pi_tensorProductMk_quotient_surjective M _
+    (fun _ _ ne ↦ isCoprime_of_isMaximal (MaximalSpectrum.ext_iff.ne.mp ne)) (b' · i)
+  /- It suffices to show the linear map `Rⁿ → M` induced by `b` is bijective, for which
+    it suffices to show `Rₚⁿ → Rₚ ⊗[R] M` is bijective for each maximal ideal `P`. -/
+  refine ⟨⟨.symm <| .ofBijective (Finsupp.linearCombination R b) <| bijective_of_isLocalized_maximal
+    _ (fun P _ ↦ Finsupp.mapRange.linearMap (Algebra.linearMap R (Localization P.primeCompl)))
+    _ (fun P _ ↦ TensorProduct.mk R (Localization P.primeCompl) M 1) _ fun P _ ↦ ?_⟩⟩
+  rw [IsLocalizedModule.map_linearCombination, LinearMap.coe_restrictScalars]
+  /- Since `M` is finite flat, it suffices to show
+    `(Rₚ⧸PRₚ)ⁿ → Rₚ⧸PRₚ ⊗[Rₚ] Rₚ ⊗[R] M ≃ Rₚ⧸PRₚ ⊗[R⧸P] R⧸P ⊗[R] M` is bijective,
+    which follows from that `(R⧸P)ⁿ → R⧸P ⊗[R] M` is bijective. -/
+  apply IsLocalRing.linearCombination_bijective_of_flat
+  rw [← (AlgebraTensorModule.cancelBaseChange _ _ P.ResidueField ..).comp_bijective,
+    ← (AlgebraTensorModule.cancelBaseChange R (R ⧸ P) P.ResidueField ..).symm.comp_bijective]
+  convert ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ _ P.ResidueField _).symm.bijective
+  refine funext fun r ↦ Finsupp.induction_linear r (by simp) (by simp +contextual) fun _ _ ↦ ?_
+  simp [smul_tmul', ← funext_iff.mp (hb _)]
 
 @[stacks 02M9] theorem free_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
     (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.1) ((R ⧸ P.1) ⊗[R] M) = n) :

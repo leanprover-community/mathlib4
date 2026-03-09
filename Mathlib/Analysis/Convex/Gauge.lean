@@ -3,11 +3,13 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Analysis.Seminorm
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # The Minkowski functional
@@ -35,6 +37,8 @@ For a real vector space,
 
 Minkowski functional, gauge
 -/
+
+@[expose] public section
 
 open NormedField Set
 open scoped Pointwise Topology NNReal
@@ -220,13 +224,9 @@ theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {
   · dsimp only
     rw [← mul_smul, mul_inv_cancel_left₀ ha.ne']
 
-@[deprecated (since := "2025-05-23")] alias le_gauge_of_not_mem := le_gauge_of_notMem
-
 theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ s) :
     1 ≤ gauge s x :=
   le_gauge_of_notMem hs₁ hs₂ <| by rwa [one_smul]
-
-@[deprecated (since := "2025-05-23")] alias one_le_gauge_of_not_mem := one_le_gauge_of_notMem
 
 section LinearOrderedField
 

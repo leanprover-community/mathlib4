@@ -3,10 +3,12 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.Portmanteau
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.Layercake
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+module
+
+public import Mathlib.MeasureTheory.Measure.Portmanteau
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.Layercake
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
 # The Lévy-Prokhorov distance on spaces of finite measures and probability measures
@@ -32,6 +34,8 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 finite measure, probability measure, weak convergence, convergence in distribution, metrizability
 -/
+
+@[expose] public section
 
 open Topology Metric Filter Set ENNReal NNReal
 
@@ -100,10 +104,12 @@ lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
   simpa only [← add_assoc] using h (δ + x) B (ENNReal.lt_add_right δ_top x_pos.ne.symm)
     (by simp only [add_lt_top, Ne.lt_top δ_top, x_lt_top, and_self]) B_mble
 
+set_option backward.isDefEq.respectTransparency false in
 lemma levyProkhorovEDist_le_max_measure_univ (μ ν : Measure Ω) :
     levyProkhorovEDist μ ν ≤ max (μ univ) (ν univ) := by
   refine sInf_le fun B _ ↦ ⟨?_, ?_⟩ <;> apply le_add_left <;> simp [measure_mono]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma levyProkhorovEDist_lt_top (μ ν : Measure Ω) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     levyProkhorovEDist μ ν < ∞ :=
   (levyProkhorovEDist_le_max_measure_univ μ ν).trans_lt <| by simp [measure_lt_top]
@@ -244,7 +250,7 @@ lemma levyProkhorovDist_le_of_forall_le
   intro ε B ε_gt ε_lt_top B_mble
   have ε_gt' : δ < ε.toReal := by
     refine (ofReal_lt_ofReal_iff ?_).mp ?_
-    · exact ENNReal.toReal_pos (ne_zero_of_lt ε_gt) ε_lt_top.ne
+    · exact ENNReal.toReal_pos ε_gt.bot_lt.ne' ε_lt_top.ne
     · simpa [ofReal_toReal_eq_iff.mpr ε_lt_top.ne] using ε_gt
   convert h ε.toReal B ε_gt' B_mble
   exact (ENNReal.ofReal_toReal ε_lt_top.ne).symm
@@ -265,7 +271,7 @@ open Lean.PrettyPrinter.Delaborator in
 /-- This prevents `ofMeasure x` being printed as `{ toMeasure := x }` by `delabStructureInstance`.
 -/
 @[app_delab LevyProkhorov.ofMeasure]
-def LevyProkhorov.delabOfMeasure : Delab := delabApp
+meta def LevyProkhorov.delabOfMeasure : Delab := delabApp
 
 namespace LevyProkhorov
 
@@ -468,7 +474,7 @@ lemma LevyProkhorov.continuous_toMeasure_probabilityMeasure :
         linarith [εs_pos n, dist_nonneg (x := μs n) (y := ν)]
     rw [add_zero] at ε_of_room
     have key := (tendsto_integral_meas_thickening_le f (A := Ioc 0 ‖f‖) (by simp) P).comp ε_of_room'
-    have aux : ∀ (z : ℝ), Iio (z + δ/2) ∈ 𝓝 z := fun z ↦ Iio_mem_nhds (by linarith)
+    have aux : ∀ (z : ℝ), Iio (z + δ / 2) ∈ 𝓝 z := fun z ↦ Iio_mem_nhds (by linarith)
     filter_upwards [key (aux _), ε_of_room <| Iio_mem_nhds <| half_pos <|
                       mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
       with n hn hn'
@@ -482,7 +488,7 @@ lemma LevyProkhorov.continuous_toMeasure_probabilityMeasure :
       calc
         δ / 2 + ‖f‖ * (dist (μs n) ν + εs n)
         _ ≤ δ / 2 + ‖f‖ * (‖f‖⁻¹ * δ / 2) := by gcongr
-        _ = δ := by field_simp; ring
+        _ = δ := by field
     · positivity
     · rw [ENNReal.ofReal_add (by positivity) (by positivity), ← add_zero (levyProkhorovEDist _ _)]
       apply ENNReal.add_lt_add_of_le_of_lt (levyProkhorovEDist_ne_top _ _)
@@ -524,11 +530,10 @@ variable [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure Ω)
     {G : Set Ω} (G_open : IsOpen G) {ε : ℝ≥0∞} (ε_pos : 0 < ε) :
     {Q | P.toMeasure G < Q.toMeasure G + ε} ∈ 𝓝 P := by
-  by_cases easy : P.toMeasure G < ε
+  by_cases! easy : P.toMeasure G < ε
   · exact Eventually.of_forall (fun _ ↦ lt_of_lt_of_le easy le_add_self)
   by_cases ε_top : ε = ∞
   · simp [ε_top, measure_lt_top]
-  simp only [not_lt] at easy
   have aux : P.toMeasure G - ε < liminf (fun Q ↦ Q.toMeasure G) (𝓝 P) := by
     apply lt_of_lt_of_le (ENNReal.sub_lt_self (by finiteness) _ _)
         <| ProbabilityMeasure.le_liminf_measure_open_of_tendsto tendsto_id G_open
@@ -592,7 +597,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- Instead of the whole space `Ω = ⋃ n ∈ ℕ, Es n`, focus on a large but finite
   -- union `⋃ n < N, Es n`, chosen in such a way that the complement has small `P`-mass,
   -- `P (⋃ n < N, Es n)ᶜ < ε/3`.
-  obtain ⟨N, hN⟩ : ∃ N, P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε/3) := by
+  obtain ⟨N, hN⟩ : ∃ N, P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε / 3) := by
     have exhaust := @tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint Ω _ P.toMeasure _
                     Es (fun n ↦ (Es_mble n).nullMeasurableSet) Es_disjoint
     simp only [tendsto_atTop_nhds, Function.comp_apply] at exhaust
@@ -605,8 +610,8 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- With the finite `N` fixed above, consider the finite collection of open sets of the form
   -- `Gs J = thickening (ε/3) (⋃ j ∈ J, Es j)`, where `J ⊆ {0, 1, ..., N-1}`.
   have Js_finite : Set.Finite {J | J ⊆ Iio N} := Finite.finite_subsets <| finite_Iio N
-  set Gs := (fun (J : Set ℕ) ↦ thickening (ε/3) (⋃ j ∈ J, Es j)) '' {J | J ⊆ Iio N}
-  have Gs_open : ∀ (J : Set ℕ), IsOpen (thickening (ε/3) (⋃ j ∈ J, Es j)) :=
+  set Gs := (fun (J : Set ℕ) ↦ thickening (ε / 3) (⋃ j ∈ J, Es j)) '' {J | J ⊆ Iio N}
+  have Gs_open : ∀ (J : Set ℕ), IsOpen (thickening (ε / 3) (⋃ j ∈ J, Es j)) :=
     fun J ↦ isOpen_thickening
   -- Any open set `G ⊆ Ω` determines a neighborhood of `P` consisting of those `Q` that
   -- satisfy `P G < Q G + ε/3`.
@@ -621,7 +626,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- Note that in order to show that the Lévy-Prokhorov distance between `P` and `Q` is small
   -- (`≤ 2*ε/3`), it suffices to show that for arbitrary subsets `B ⊆ Ω`, the measure `P B` is
   -- bounded above up to a small error by the `Q`-measure of a small thickening of `B`.
-  apply lt_of_le_of_lt ?_ (show 2*(ε/3) < ε by linarith)
+  apply lt_of_le_of_lt ?_ (show 2 * (ε / 3) < ε by linarith)
   rw [dist_comm, dist_probabilityMeasure_def]
   -- Fix an arbitrary set `B ⊆ Ω`, and an arbitrary `δ > 2*ε/3` to gain some room for error
   -- and for thickening.
@@ -630,9 +635,9 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- Then the open set `Gs JB` approximates `B` rather well:
   -- except for what happens in the small complement `(⋃ n < N, Es n)ᶜ`, the set `B` is
   -- contained in `Gs JB`, and conversely `Gs JB` only contains points within `δ` from `B`.
-  set JB := {i | B ∩ Es i ≠ ∅ ∧ i ∈ Iio N}
-  have B_subset : B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Iio N, Es j)ᶜ := by
-    suffices B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Ici N, Es j) by
+  set JB := {i | (B ∩ Es i).Nonempty ∧ i ∈ Iio N}
+  have B_subset : B ⊆ (⋃ i ∈ JB, thickening (ε / 3) (Es i)) ∪ (⋃ j ∈ Iio N, Es j)ᶜ := by
+    suffices B ⊆ (⋃ i ∈ JB, thickening (ε / 3) (Es i)) ∪ (⋃ j ∈ Ici N, Es j) by
       refine this.trans <| union_subset_union le_rfl ?_
       intro ω hω
       simp only [mem_Ici, mem_iUnion, exists_prop] at hω
@@ -641,14 +646,13 @@ lemma continuous_ofMeasure_probabilityMeasure :
       simp only [mem_Iio, compl_iUnion, mem_iInter, mem_compl_iff, not_forall, not_not,
                   exists_prop] at con
       obtain ⟨j, j_small, ω_in_Esj⟩ := con
-      exact disjoint_left.mp (Es_disjoint (show j ≠ i by cutsat)) ω_in_Esj ω_in_Esi
+      exact disjoint_left.mp (Es_disjoint (show j ≠ i by lia)) ω_in_Esj ω_in_Esi
     intro ω ω_in_B
     obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp only [← mem_iUnion, Es_cover, mem_univ]
     simp only [mem_Ici, mem_union, mem_iUnion, exists_prop]
     by_cases i_small : i ∈ Iio N
     · refine Or.inl ⟨i, ?_, self_subset_thickening third_ε_pos _ hi⟩
       simp only [mem_Iio, mem_setOf_eq, JB]
-      push_neg
       exact ⟨Set.nonempty_of_mem <| mem_inter ω_in_B hi, i_small⟩
     · exact Or.inr ⟨i, by simpa only [mem_Iio, not_lt] using i_small, hi⟩
   have subset_thickB : ⋃ i ∈ JB, thickening (ε / 3) (Es i) ⊆ thickening δ B := by
@@ -657,7 +661,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
     obtain ⟨k, ⟨B_intersects, _⟩, ω_in_thEk⟩ := ω_in_U
     rw [mem_thickening_iff] at ω_in_thEk ⊢
     obtain ⟨w, w_in_Ek, w_near⟩ := ω_in_thEk
-    obtain ⟨z, ⟨z_in_B, z_in_Ek⟩⟩ := nonempty_iff_ne_empty.mpr B_intersects
+    obtain ⟨z, ⟨z_in_B, z_in_Ek⟩⟩ := B_intersects
     refine ⟨z, z_in_B, lt_of_le_of_lt (dist_triangle ω w z) ?_⟩
     apply lt_of_le_of_lt (add_le_add w_near.le <|
             (dist_le_diam_of_mem (Es_bdd k) w_in_Ek z_in_Ek).trans <| Es_diam k)

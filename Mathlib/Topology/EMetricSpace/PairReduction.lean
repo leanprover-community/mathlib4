@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, David Ledvinka
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
-import Mathlib.Order.CompletePartialOrder
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
+public import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Pair Reduction
@@ -19,7 +21,7 @@ such that for any function `f : T → E`:
 2. `∀ (s, t) ∈ K, d(s, t) ≤ cn`
 3. `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))`
 
-When applying the chaining technique for bounding the supremum of the incremements of stochastic
+When applying the chaining technique for bounding the supremum of the increments of stochastic
 processes, `pair_reduction` is used to reduce the order of the dependence of the bound on the
 covering numbers of the pseudometric space. As a simple example of how it could be used, suppose
 `T` has an `ε`-covering number `N` and suppose `J` is an `ε`-covering of `T` with `|J| = N`.
@@ -40,7 +42,7 @@ but applying `pair_reduction` with `n = log |J|` we get
     ≤ 2 a c N log N
 ```
 `pair_reduction` is used in [kratschmer_urusov2023] to prove a form of the Kolmogorov-Chentsov
-theorem that applies to stochastic processses which satisfy the Kolmogorov condition but works
+theorem that applies to stochastic processes which satisfy the Kolmogorov condition but works
 on very general metric spaces.
 
 ## Implementation
@@ -55,9 +57,9 @@ natural number `k` greater than zero such that `|{x ∈ V | d(t, x) ≤ kc}| ≤
 We construct a sequence `Vᵢ` of subsets of `J`, a sequence `tᵢ ∈ Vᵢ` and a sequence of `rᵢ : ℕ`
 inductively as follows (see `logSizeBallSeq`):
 
-* `V₀ = J`, `tₒ` is chosen arbitarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
-* `Vᵢ₊ᵢ = Vᵢ \ Bᵢ` where `Bᵢ := {x ∈ V | d(t, x) ≤ (rᵢ - 1) c}`, `tᵢ₊₁` is chosen arbitarily in
-  `Vᵢ₊₁` (if it is nonempty), `rᵢ₊₁` is the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`.
+* `V₀ = J`, `t₀` is chosen arbitrarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
+* `Vᵢ₊₁ = Vᵢ \ Bᵢ` where `Bᵢ := {x ∈ V | d(t, x) ≤ (rᵢ - 1) c}`, `tᵢ₊₁` is chosen arbitrarily in
+  `Vᵢ₊₁` (if it is nonempty), `rᵢ₊₁` is the log-size radius of `tᵢ₊₁` in `Vᵢ₊₁`.
 
 Then `Vᵢ` is a strictly decreasing sequence (see `card_finset_logSizeBallSeq_add_one_lt`) until
 `Vᵢ` is empty. In particular `Vᵢ = ∅` for `i ≥ |J|`
@@ -98,6 +100,8 @@ taking supremums completes the proof (see `iSup_edist_pairSet`).
 * [M. Talagrand, *Upper and Lower Bounds for Stochastic Processes*][talagrand2014]
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal Finset
 
@@ -142,7 +146,7 @@ lemma pow_logSizeRadius_le_card_le_logSizeRadius (ha : 1 < a) (ht : t ∈ V) :
     simp
   have h := Nat.find_min (exists_radius_le t V ha c) this
   simp only [ENNReal.natCast_sub, Nat.cast_one, not_and, not_le] at h
-  exact (h (by omega)).le
+  exact (h (by lia)).le
 
 /-- A structure for carrying the data of `logSizeBallSeq` -/
 structure logSizeBallStruct (T : Type*) where
@@ -172,12 +176,12 @@ def logSizeBallStruct.ball (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
 variable [DecidableEq T]
 
 /-- We recursively define a log-size ball sequence `(Vᵢ, tᵢ, rᵢ)` by
-  * `V₀ = J`, `tₒ` is chosen arbitarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
-  * `Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitarily in `Vᵢ₊₁, rᵢ₊₁` is
-    the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`. -/
+  * `V₀ = J`, `t₀` is chosen arbitrarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
+  * `Vᵢ₊₁ = Vᵢ \ {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitrarily in `Vᵢ₊₁`, `rᵢ₊₁` is
+    the log-size radius of `tᵢ₊₁` in `Vᵢ₊₁`. -/
 noncomputable
 def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T
-  | 0 => {finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c}
+  | 0 => { finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c }
   | n + 1 =>
     let V' := (logSizeBallSeq J hJ a c n).finset \ ((logSizeBallSeq J hJ a c n).smallBall c)
     let t' := if hV' : V'.Nonempty then hV'.choose else (logSizeBallSeq J hJ a c n).point
@@ -281,7 +285,7 @@ lemma card_finset_logSizeBallSeq_le (hJ : J.Nonempty) (i : ℕ) :
   | succ i ih =>
     by_cases h : (logSizeBallSeq J hJ a c i).finset.Nonempty
     · have := card_finset_logSizeBallSeq_add_one_lt hJ i h
-      omega
+      lia
     apply le_trans <| Finset.card_le_card (finset_logSizeBallSeq_add_one_subset hJ i)
     suffices #(logSizeBallSeq J hJ a c i).finset = 0 by simp [this]
     rwa [← not_ne_iff, Finset.card_ne_zero.not]
@@ -294,8 +298,8 @@ lemma card_finset_logSizeBallSeq_card_eq_zero (hJ : J.Nonempty) :
 lemma disjoint_smallBall_logSizeBallSeq (hJ : J.Nonempty) {i j : ℕ} (hij : i ≠ j) :
     Disjoint
       ((logSizeBallSeq J hJ a c i).smallBall c) ((logSizeBallSeq J hJ a c j).smallBall c) := by
-  wlog h : i < j generalizing i j
-  · exact Disjoint.symm <| this hij.symm <| (ne_iff_lt_iff_le.mpr (not_lt.mp h)).mp hij.symm
+  wlog! h : i < j generalizing i j
+  · exact Disjoint.symm <| this hij.symm <| (ne_iff_lt_iff_le.mpr h).mp hij.symm
   apply Finset.disjoint_of_subset_right
   · exact (Finset.filter_subset _ _).trans (antitone_logSizeBallSeq_add_one_subset hJ h)
   simp [finset_logSizeBallSeq_add_one, Finset.disjoint_sdiff]
@@ -334,10 +338,10 @@ lemma card_pairSetSeq_le_logSizeRadius_mul (hJ : J.Nonempty) (i : ℕ) (ha : 1 <
     simpa [pairSetSeq, hJ, finset_logSizeBallSeq_zero, logSizeBallStruct.ball,
       radius_logSizeBallSeq_zero] using card_le_logSizeRadius_le_pow_logSizeRadius ha
   | succ i ih =>
-    by_cases h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
+    by_cases! h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
     · simpa [pairSetSeq, logSizeBallStruct.ball, h, hJ]
         using card_le_logSizeRadius_le_pow_logSizeRadius ha
-    simp [pairSetSeq, logSizeBallStruct.ball, Finset.not_nonempty_iff_eq_empty.mp h, hJ]
+    simp [pairSetSeq, logSizeBallStruct.ball, h, hJ]
 
 lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
     (if (logSizeBallSeq J hJ a c i).finset.Nonempty then 1 else 0) *
@@ -347,18 +351,19 @@ lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
     simpa [finset_logSizeBallSeq_zero, hJ, logSizeBallStruct.smallBall, radius_logSizeBallSeq_zero]
       using pow_logSizeRadius_le_card_le_logSizeRadius ha (Exists.choose_spec hJ)
   | i + 1 =>
-    by_cases h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
+    by_cases! h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
     · simpa [h, logSizeBallStruct.smallBall, radius_logSizeBallSeq_add_one]
         using pow_logSizeRadius_le_card_le_logSizeRadius ha (point_mem_finset_logSizeBallSeq hJ _ h)
-    simp [Finset.not_nonempty_iff_eq_empty.mp h]
+    simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
   wlog hJ : J.Nonempty
   · simp [Finset.not_nonempty_iff_eq_empty.mp hJ]
   unfold pairSet
   grw [Finset.card_biUnion_le, Nat.cast_sum,
     Finset.sum_le_sum fun i _ ↦ card_pairSetSeq_le_logSizeRadius_mul hJ i ha,
-    Finset.sum_le_sum fun _ _ ↦ mul_le_mul_left' (pow_le_pow_right₀ ha.le le_tsub_add) _]
+    Finset.sum_le_sum fun _ _ ↦ mul_le_mul_right (pow_le_pow_right₀ ha.le le_tsub_add) _]
   conv_lhs => enter [2]; ext _; rw [pow_add, pow_one, ← mul_assoc, mul_comm]
   grw [← Finset.mul_sum]
   gcongr
@@ -374,10 +379,10 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
     (h : (s, t) ∈ pairSet J a c) : edist s t ≤ n * c := by
   obtain ⟨i, hiJ, h'⟩ : ∃ i < #J, (s, t) ∈ pairSetSeq J a c i := by simpa [pairSet] using h
   have hJ : J.Nonempty := Finset.card_pos.mp (Nat.zero_lt_of_lt hiJ)
-  wlog hn : 1 ≤ n
+  wlog! hn : 1 ≤ n
   · convert zero_le (n * c)
     convert edist_self _
-    simp [Nat.lt_one_iff.mp (Nat.lt_of_not_ge hn)] at hJ_card
+    simp only [Nat.lt_one_iff.mp hn, pow_zero, Nat.cast_le_one] at hJ_card
     have ⟨hs, ht⟩ := Finset.mem_product.mp (pairSet_subset h)
     exact Finset.card_le_one_iff.mp hJ_card ht hs
   simp only [pairSetSeq, hJ, ↓reduceDIte, logSizeBallStruct.ball, Finset.product_eq_sprod,
@@ -396,8 +401,7 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
   let l := Nat.findGreatest P (#J - 1)
   obtain ⟨hsV, htV⟩ : P l := by
     apply Nat.findGreatest_spec (zero_le _)
-    simp [P, finset_logSizeBallSeq_zero]
-    exact ⟨hs, ht⟩
+    simpa [P, finset_logSizeBallSeq_zero] using ⟨hs, ht⟩
   wlog h : s ∉ (logSizeBallSeq J hJ a c (l + 1)).finset generalizing s t
   · have h' : t ∉ (logSizeBallSeq J hJ a c (l + 1)).finset := by
       have hl : l < #J - 1 := by
@@ -415,13 +419,13 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
         apply card_finset_logSizeBallSeq_le
       simp only [Decidable.not_not] at h
       have hP := Nat.findGreatest_is_greatest (lt_add_one l) (Nat.add_one_le_of_lt hl)
-      simp [P, h] at hP; exact hP
+      simpa [P, h] using hP
     have hts : edist t s ≤ c := by rw [edist_comm]; exact hst
     rw [edist_comm]
     have hP : P = (fun l ↦
       t ∈ (logSizeBallSeq J hJ a c l).finset ∧ s ∈ (logSizeBallSeq J hJ a c l).finset) := by
         ext; simp [P, and_comm]
-    simp [l, hP] at htV hsV h'
+    simp only [hP, l] at htV hsV h'
     exact this t ht s hs hts htV hsV h'
   simp only [finset_logSizeBallSeq_add_one, logSizeBallStruct.smallBall, Finset.mem_sdiff, hsV,
     Finset.mem_filter, true_and, not_le, not_lt] at h

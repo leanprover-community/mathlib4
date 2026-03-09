@@ -3,14 +3,16 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Tactic.Ring
 
 /-!
 # Small tripling implies small powers
@@ -22,6 +24,8 @@ This file shows that a set with small tripling has small powers, even in non-abe
 In abelian groups, the Plünnecke-Ruzsa inequality is the stronger statement that small doubling
 implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 -/
+
+public section
 
 open Fin MulOpposite
 open List hiding tail
@@ -103,7 +107,7 @@ private lemma small_pos_neg_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * 
   calc
     (#A * #(A * A⁻¹ * A) : ℝ) ≤ #(A * (A * A⁻¹)) * #(A * A) := by
       norm_cast; simpa using ruzsa_triangle_inequality_invMul_mul_mul (A * A⁻¹) A A
-    _ = #(A  * A * A⁻¹) * #(A ^ 2) := by simp [pow_succ, mul_assoc]
+    _ = #(A * A * A⁻¹) * #(A ^ 2) := by simp [pow_succ, mul_assoc]
     _ ≤ (K ^ 2 * #A) * (K * #A) := by
       gcongr
       · exact small_pos_pos_neg_mul hA
@@ -117,6 +121,9 @@ private lemma small_neg_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * 
   rw [← card_inv]
   simpa [mul_assoc] using small_pos_neg_pos_mul (A := A) (K := K) (by simpa)
 
+-- TODO: find a good way to fix this non-terminal simp;
+-- simp is called on 8 goals, with different simp sets
+set_option linter.flexible false in
 /-- If `A` has small tripling, say with constant `K`, then `A` has small alternating powers, in the
 sense that `|A^±1 * ... * A^±1|` is at most `|A|` times a constant exponential in the number of
 terms in the product.
@@ -146,7 +153,7 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
     succ_zero_eq_one, succ_one_eq_two, List.prod_cons, prod_nil, mul_one, ← mul_assoc]
   simp only [zero_le_one, abs_eq, Int.reduceNeg, forall_iff_succ, isValue, succ_zero_eq_one,
     succ_one_eq_two, IsEmpty.forall_iff, and_true] at hδ
-  have : K ≤ K ^ 3 := le_self_pow₀ hK₁ (by cutsat)
+  have : K ≤ K ^ 3 := le_self_pow₀ hK₁ (by lia)
   have : K ^ 2 ≤ K ^ 3 := by
     gcongr
     · exact hK₁

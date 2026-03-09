@@ -3,12 +3,17 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Algebra.Equiv
+module
+
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Algebra.Equiv
+
 /-!
 # Lemmas about different kinds of "lifts" to `SkewMonoidAlgebra`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -36,7 +41,7 @@ variable (k G A)
 /-- Any monoid homomorphism `G →* A` can be lifted to an algebra homomorphism
   `SkewMonoidAlgebra k G →ₐ[k] A`. -/
 def lift : (G →* A) ≃ (AlgHom k (SkewMonoidAlgebra k G) A) where
-  invFun f := (f : SkewMonoidAlgebra k G →* A).comp  (of k G)
+  invFun f := (f : SkewMonoidAlgebra k G →* A).comp (of k G)
   toFun F := by
     apply liftNCAlgHom (Algebra.ofId k A) F
     simp_rw [show ∀ (g : G) (r : k), g • r = r by
@@ -78,7 +83,7 @@ theorem lift_unique' (F : AlgHom k (SkewMonoidAlgebra k G) A) :
 /-- Decomposition of a `k`-algebra homomorphism from `SkewMonoidAlgebra k G` by
   its values on `F (single a 1)`. -/
 theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
-    (f : SkewMonoidAlgebra k G) : F f  = f.sum fun a b ↦ b • F (single a 1) := by
+    (f : SkewMonoidAlgebra k G) : F f = f.sum fun a b ↦ b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
@@ -143,6 +148,7 @@ section domCongr
 
 variable {A : Type*}
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given `AddCommMonoid A` and `e : G ≃ H`, `domCongr e` is the corresponding `Equiv` between
 `SkewMonoidAlgebra A G` and `SkewMonoidAlgebra A H`. -/
 @[simps apply]
@@ -196,12 +202,13 @@ theorem domCongrAlg_toAlgHom {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x =
   equivMapDomain_single ..
 
 theorem domCongr_refl :
-    domCongrAlg k A  (e := MulEquiv.refl G) (fun _ _ ↦ rfl) = AlgEquiv.refl := by
+    domCongrAlg k A (e := MulEquiv.refl G) (fun _ _ ↦ rfl) = AlgEquiv.refl := by
   apply AlgEquiv.ext
   aesop
 
 @[simp] theorem domCongr_symm {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
-    (domCongrAlg k A he).symm = domCongrAlg _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
+    (domCongrAlg k A he).symm =
+      domCongrAlg (e := e.symm) _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
   rfl
 
 end domCongr
@@ -213,6 +220,7 @@ variable [Semiring k] [Monoid G] [MulSemiringAction G k]
 variable {V : Type*} [AddCommMonoid V] [Module k V] [Module (SkewMonoidAlgebra k G) V]
   [IsScalarTower k (SkewMonoidAlgebra k G) V]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
 submodule over `SkewMonoidAlgebra k G` -/
 def submoduleOfSmulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W → of k G g • v ∈ W) :

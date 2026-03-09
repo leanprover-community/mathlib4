@@ -3,8 +3,10 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio, Yongle Hu
 -/
-import Mathlib.RingTheory.DiscreteValuationRing.TFAE
-import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
+module
+
+public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
+public import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
 
 /-!
 # Dedekind domains
@@ -41,6 +43,8 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 dedekind domain, dedekind ring
 -/
+
+@[expose] public section
 
 
 variable (A : Type*) [CommRing A] [IsDomain A]
@@ -109,6 +113,7 @@ instance Localization.AtPrime.isDedekindDomain [IsDedekindDomain A] (P : Ideal A
     IsDedekindDomain (Localization.AtPrime P) :=
   IsLocalization.AtPrime.isDedekindDomain A P _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsLocalization.AtPrime.not_isField {P : Ideal A} (hP : P ≠ ⊥) [pP : P.IsPrime] (Aₘ : Type*)
     [CommRing Aₘ] [Algebra A Aₘ] [IsLocalization.AtPrime Aₘ P] : ¬ IsField Aₘ := by
   intro h

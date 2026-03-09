@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.HomCongr
 /-!
 
 # Restricting adjunctions
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.HomCongr
 `Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful
 inclusions.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Adjunction
 
@@ -29,6 +33,7 @@ variable {iC : C ⥤ C'} {iD : D ⥤ D'}
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a full subcategory of `C'` and `D` is a full subcategory of `D'`, then we can restrict
 an adjunction `L' ⊣ R'` where `L' : C' ⥤ D'` and `R' : D' ⥤ C'` to `C` and `D`.
 The construction here is slightly more general, in that `C` is required only to have a full and
@@ -67,6 +72,7 @@ lemma map_restrictFullyFaithful_counit_app (X : D) :
   dsimp [restrictFullyFaithful]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrictFullyFaithful_homEquiv_apply {X : C} {Y : D} (f : L.obj X ⟶ Y) :
     (adj.restrictFullyFaithful hiC hiD comm1 comm2).homEquiv X Y f =
       hiC.preimage (adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫

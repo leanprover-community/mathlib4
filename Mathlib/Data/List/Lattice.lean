@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
 Kim Morrison
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-!
 # Lattice structure of lists
@@ -23,6 +25,8 @@ counted with multiplicity and in the order they appear in `l₁`.
 As opposed to `List.inter`, `List.bagInter` copes well with multiplicity. For example,
 `bagInter [0, 1, 2, 3, 2, 1, 0] [1, 0, 1, 4, 3] = [0, 1, 3, 1]`.
 -/
+
+public section
 
 
 open Nat
@@ -112,8 +116,6 @@ theorem inter_cons (l₁ : List α) :
     (a :: l₁) ∩ l₂ = if a ∈ l₂ then a :: l₁ ∩ l₂ else l₁ ∩ l₂ := by
   split_ifs <;> simp_all
 
-@[deprecated (since := "2025-05-23")] alias inter_cons_of_not_mem := inter_cons_of_notMem
-
 @[simp, grind =]
 theorem inter_nil' (l : List α) : l ∩ [] = [] := by
   induction l with grind
@@ -149,8 +151,8 @@ theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p
   BAll.imp_left (fun _ => mem_of_mem_inter_right) h
 
 @[simp]
-theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
-  simp only [List.inter, elem_eq_mem, mem_reverse]
+theorem inter_reverse {xs ys : List α} : xs ∩ ys.reverse = xs ∩ ys := by
+  simp only [List.inter_def, elem_eq_mem, mem_reverse]
 
 theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs :=
   List.filter_eq_self.mpr fun _ ha => elem_eq_true_of_mem (h ha)
@@ -190,7 +192,7 @@ theorem mem_bagInter {a : α} {l₁ l₂ : List α} : a ∈ l₁.bagInter l₂ �
 @[simp]
 theorem count_bagInter {a : α} {l₁ l₂ : List α} :
     count a (l₁.bagInter l₂) = min (count a l₁) (count a l₂) := by
-  fun_induction List.bagInter with grind [count_pos_iff]
+  fun_induction List.bagInter with grind
 
 theorem bagInter_sublist_left {l₁ l₂ : List α} : l₁.bagInter l₂ <+ l₁ := by
   fun_induction List.bagInter with grind

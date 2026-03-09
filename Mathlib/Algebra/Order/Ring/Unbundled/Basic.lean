@@ -3,15 +3,17 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Basic facts for ordered rings and semirings
@@ -111,6 +113,8 @@ relating the order structures and ring structures are added as needed.
 TODO: the mixin assumptions can be relaxed in most cases
 
 -/
+
+public section
 
 assert_not_exists IsOrderedMonoid MonoidHom
 
@@ -718,6 +722,22 @@ lemma eq_zero_of_mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
+
+theorem pos_of_right_mul_lt_le [ExistsAddOfLE R] [PosMulMono R]
+    [AddRightMono R] [AddRightReflectLE R]
+    (h : a * b < a * c) (hbc : b ≤ c) :
+    0 < a := by
+  by_cases! ha : 0 < a
+  · exact ha
+  · grind [mul_le_mul_of_nonpos_left hbc ha]
+
+theorem pos_of_left_mul_lt_le [ExistsAddOfLE R] [MulPosMono R]
+    [AddLeftMono R] [AddRightReflectLE R]
+    (h : b * a < c * a) (hbc : b ≤ c) :
+    0 < a := by
+  by_cases! ha : 0 < a
+  · exact ha
+  · grind [mul_le_mul_of_nonpos_right hbc ha]
 
 end LinearOrderedSemiring
 

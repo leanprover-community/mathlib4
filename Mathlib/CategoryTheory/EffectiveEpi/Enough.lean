@@ -3,7 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # Effectively enough objects in the image of a functor
@@ -12,11 +14,13 @@ We define the class `F.EffectivelyEnough` on a functor `F : C ⥤ D` which says 
 in `D`, there exists an effective epi to it from an object in the image of `F`.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
 namespace Functor
 
@@ -59,6 +63,7 @@ noncomputable def effectiveEpiOver (X : D) : F.effectiveEpiOverObj X ⟶ X :=
 instance (X : D) : EffectiveEpi (F.effectiveEpiOver X) :=
   (EffectivelyEnough.presentation X).some.effectiveEpi
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An effective presentation of an object with respect to an equivalence of categories. -/
 def equivalenceEffectivePresentation (e : C ≌ D) (X : D) :
     EffectivePresentation e.functor X where

@@ -3,10 +3,13 @@ Copyright (c) 2024 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
 
 /-!
@@ -20,6 +23,8 @@ and provides basic API.
 + `CFC.abs`: The absolute value as `abs a := CFC.sqrt (star a * a)`.
 
 -/
+
+@[expose] public section
 
 variable {𝕜 A : Type*}
 
@@ -106,6 +111,7 @@ lemma abs_nnrpow_two (a : A) : abs a ^ (2 : ℝ≥0) = star a * a := by
 lemma abs_nnrpow_two_mul (a : A) (x : ℝ≥0) :
     abs a ^ (2 * x) = (star a * a) ^ x := by rw [← nnrpow_nnrpow, abs_nnrpow_two]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma abs_nnrpow (a : A) (x : ℝ≥0) :
     abs a ^ x = (star a * a) ^ (x / 2) := by
   simp only [← abs_nnrpow_two_mul, mul_div_left_comm, ne_eq, OfNat.ofNat_ne_zero,
@@ -142,6 +148,7 @@ lemma cfcAbs_cfcAbs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
 
 variable [StarModule ℝ A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma abs_smul_nonneg {R : Type*} [Semiring R] [SMulWithZero R ℝ≥0] [SMul R A]
     [IsScalarTower R ℝ≥0 A] (r : R) (a : A) :
@@ -276,6 +283,18 @@ lemma spectrum_abs (a : A) (ha : p a := by cfc_tac) :
 end RCLike
 
 end Unital
+
+section Isometric
+
+variable [NonUnitalNormedRing A] [StarRing A] [ContinuousStar A]
+  [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
+  [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] [CompleteSpace A]
+
+protected lemma continuous_abs : Continuous (CFC.abs : A → A) :=
+  continuousOn_sqrt.comp_continuous (by fun_prop) (by cfc_tac)
+
+end Isometric
 
 section CStar
 

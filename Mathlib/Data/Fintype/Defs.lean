@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Filter
-import Mathlib.Data.Finite.Defs
+module
+
+public import Mathlib.Data.Finset.Filter
+public import Mathlib.Data.Finite.Defs
 
 /-!
 # Finite types
@@ -34,6 +36,8 @@ These files also contain appropriate `Infinite` instances for these types.
 
 `Infinite` instances for `ℕ`, `ℤ`, `Multiset α`, and `List α` are in `Data.Fintype.Lattice`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -135,7 +139,7 @@ See also
   form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
 -/
 @[term_elab setBuilder]
-def elabFinsetBuilderSetOf : TermElab
+meta def elabFinsetBuilderSetOf : TermElab
   | `({ $x:ident | $p }), expectedType? => do
     -- If the expected type is not known to be `Finset ?α`, give up.
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
@@ -164,7 +168,7 @@ def elabFinsetBuilderSetOf : TermElab
 
 /-- Delaborator for `Finset.filter`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the filter is over `Finset.univ`. -/
-@[app_delab Finset.filter] def delabFinsetFilter : Delab :=
+@[app_delab Finset.filter] meta def delabFinsetFilter : Delab :=
   whenPPOption getPPNotation do
   let #[_, p, _, t] := (← getExpr).getAppArgs | failure
   guard p.isLambda
@@ -177,7 +181,7 @@ to show the domain type when the filter is over `Finset.univ`. -/
     else
       `({$i:ident | $p})
   -- check if `t` is of the form `s₀ᶜ`, in which case we display `x ∉ s₀` instead
-  else if t.isAppOfArity ``HasCompl.compl 3 then
+  else if t.isAppOfArity ``Compl.compl 3 then
     let #[_, _, s₀] := t.getAppArgs | failure
     -- if `s₀` is a singleton, we can even use the notation `x ≠ a`
     if s₀.isAppOfArity ``Singleton.singleton 4 then

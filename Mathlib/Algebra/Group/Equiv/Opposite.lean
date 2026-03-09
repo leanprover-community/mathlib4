@@ -3,14 +3,36 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Opposite
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Group isomorphism between a group and its opposite
 -/
 
-variable {α : Type*}
+@[expose] public section
+
+variable {M α : Type*}
+
+namespace MulOpposite
+variable [CommMonoid M]
+
+/-- `MulOpposite.op` on a commutative monoid is an isomorphism. -/
+@[to_additive (attr := simps!)
+/-- `AddOpposite.op` on a commutative additive monoid is an isomorphism. -/]
+def opMulEquiv : M ≃* Mᵐᵒᵖ where
+  __ := opEquiv
+  map_mul' _ _ := mul_comm ..
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_opMulEquiv : ⇑opMulEquiv = op (α := M) := rfl
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_symm_opMulEquiv : ⇑opMulEquiv.symm = unop (α := M) := rfl
+
+end MulOpposite
 
 namespace MulOpposite
 
@@ -149,7 +171,7 @@ def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐ
 
 /-- A monoid is isomorphic to the opposite of its opposite. -/
 @[to_additive (attr := simps!)
-      /-- A additive monoid is isomorphic to the opposite of its opposite. -/]
+      /-- An additive monoid is isomorphic to the opposite of its opposite. -/]
 def MulEquiv.opOp (M : Type*) [Mul M] : M ≃* Mᵐᵒᵖᵐᵒᵖ where
   __ := MulOpposite.opEquiv.trans MulOpposite.opEquiv
   map_mul' _ _ := rfl

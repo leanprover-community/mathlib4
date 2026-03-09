@@ -3,13 +3,17 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 
 /-!
 # Collapsing covers
 
 We define the endofunctor on `Scheme.Cover P` that collapses a cover to a single object cover.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -18,8 +22,9 @@ open CategoryTheory Limits
 namespace AlgebraicGeometry.Scheme.Cover
 
 variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}} [IsZariskiLocalAtSource P]
-  [UnivLE.{v, u}] [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
+  [UnivLE.{v, u}]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `𝒰` is a cover of `S`, this is the single object cover where the covering
 object is the disjoint union. -/
 @[simps]
@@ -33,43 +38,46 @@ noncomputable def sigma (𝒰 : Cover.{v} (precoverage P) S) : S.Cover (precover
     obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq s
     refine ⟨default, Sigma.ι 𝒰.X i y, by simp [← Scheme.Hom.comp_apply]⟩
 
+@[simp]
+lemma presieve₀_sigma {S : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) S) :
+    𝒰.sigma.presieve₀ = Presieve.singleton (Sigma.desc 𝒰.f) := by
+  refine le_antisymm ?_ fun T g ⟨⟩ ↦ ⟨⟨⟩⟩
+  rw [Presieve.ofArrows_le_iff]
+  intro i
+  exact Presieve.singleton_self _
+
 variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} (precoverage P) S}
 
 variable (𝒰) in
 instance : Unique 𝒰.sigma.I₀ := inferInstanceAs <| Unique PUnit.{v + 1}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `𝒰` refines the single object cover defined by `𝒰`. -/
 @[simps]
 noncomputable def toSigma (𝒰 : Cover.{v} (precoverage P) S) : 𝒰 ⟶ 𝒰.sigma where
-  idx _ := default
-  app i := Sigma.ι _ i
-  app_prop _ := IsZariskiLocalAtSource.of_isOpenImmersion _
+  s₀ _ := default
+  h₀ i := Sigma.ι _ i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A refinement of coverings induces a refinement on the single object coverings. -/
 @[simps]
 noncomputable def Hom.sigma (f : 𝒰 ⟶ 𝒱) : 𝒰.sigma ⟶ 𝒱.sigma where
-  idx _ := default
-  app _ := Sigma.desc fun j ↦ f.app j ≫ Sigma.ι _ (f.idx j)
-  w _ := Sigma.hom_ext _ _ (by simp)
-  app_prop _ := by
-    simp only [sigma_X, sigma_I₀, PUnit.default_eq_unit,
-      IsZariskiLocalAtSource.iff_of_openCover (Scheme.IsLocallyDirected.openCover _),
-      Discrete.functor_obj_eq_as, IsLocallyDirected.openCover_I₀, IsLocallyDirected.openCover_X,
-      IsLocallyDirected.openCover_f, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-    intro i
-    exact P.comp_mem _ _ (f.app_prop i.1) (IsZariskiLocalAtSource.of_isOpenImmersion _)
+  s₀ _ := default
+  h₀ _ := Sigma.desc fun j ↦ f.h₀ j ≫ Sigma.ι _ (f.s₀ j)
+  w₀ _ := Sigma.hom_ext _ _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Collapsing a cover to a single object cover is functorial. -/
 @[simps]
 noncomputable def sigmaFunctor : S.Cover (precoverage P) ⥤ S.Cover (precoverage P) where
   obj 𝒰 := 𝒰.sigma
-  map f := f.sigma
-  map_id 𝒰 := Scheme.Cover.Hom.ext rfl <| by
-    simp only [sigma_I₀, sigma_X, Hom.sigma_idx, PUnit.default_eq_unit, id_idx_apply, heq_eq_eq]
+  map f := Scheme.Cover.Hom.sigma f
+  map_id 𝒰 := PreZeroHypercover.Hom.ext rfl <| by
+    simp only [sigma_I₀, sigma_X, heq_eq_eq]
     ext j : 1
     exact Sigma.hom_ext _ _ (by simp)
-  map_comp f g := Scheme.Cover.Hom.ext rfl <| by
-    simp only [sigma_I₀, sigma_X, Hom.sigma_idx, PUnit.default_eq_unit, comp_idx_apply, heq_eq_eq]
+  map_comp f g := PreZeroHypercover.Hom.ext rfl <| by
+    simp only [sigma_I₀, sigma_X, heq_eq_eq]
     ext j : 1
     exact Sigma.hom_ext _ _ (by simp)
 

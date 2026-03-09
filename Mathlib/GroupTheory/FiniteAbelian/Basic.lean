@@ -3,9 +3,11 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.Module.PID
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Data.ZMod.QuotientRing
+module
+
+public import Mathlib.Algebra.Module.PID
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Data.ZMod.QuotientRing
 
 /-!
 # Structure of finite(ly generated) abelian groups
@@ -13,10 +15,13 @@ import Mathlib.Data.ZMod.QuotientRing
 * `AddCommGroup.equiv_free_prod_directSum_zmod` : Any finitely generated abelian group is the
   product of a power of `ℤ` and a direct sum of some `ZMod (p i ^ e i)` for some prime powers
   `p i ^ e i`.
+* `CommGroup.equiv_free_prod_prod_multiplicative_zmod` is a version for multiplicative groups.
 * `AddCommGroup.equiv_directSum_zmod_of_finite` : Any finite abelian group is a direct sum of
   some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`.
 * `CommGroup.equiv_prod_multiplicative_zmod_of_finite` is a version for multiplicative groups.
 -/
+
+@[expose] public section
 
 open scoped DirectSum
 
@@ -173,4 +178,64 @@ theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [CommGroup G] [Fini
   exact ⟨ι, inst, n, h₁, ⟨MulEquiv.toAdditive.symm <| h₂.some.trans <|
     (DirectSum.addEquivProd _).trans (MulEquiv.piMultiplicative _).toAdditiveRight⟩⟩
 
+/-- The **Structure theorem of finitely generated abelian groups** in a multiplicative version :
+    Any finitely generated abelian group is the product of a power of `ℤ`
+    and a direct product of some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`. -/
+theorem equiv_free_prod_prod_multiplicative_zmod (G : Type*) [CommGroup G] [hG : Group.FG G] :
+    ∃ (ι j : Type) (_ : Fintype ι) (_ : Fintype j) (p : ι → ℕ)
+    (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
+      Nonempty <| G ≃* (j → Multiplicative ℤ) × ((i : ι) → Multiplicative (ZMod (p i ^ e i))) := by
+  obtain ⟨n, ι, inst, x, p, e, equiv⟩ := AddCommGroup.equiv_free_prod_directSum_zmod (Additive G)
+  exact ⟨ι, Fin n, inst, inferInstance, x, p, e, ⟨MulEquiv.toAdditive.symm <| equiv.some.trans <|
+    ((Finsupp.addEquivFunOnFinite.trans <| ((AddEquiv.piAdditive _).trans <|
+        (AddEquiv.additiveMultiplicative ℤ).arrowCongr (Equiv.refl _)).symm).prodCongr
+          (DirectSum.addEquivProd _ )).trans <| (AddEquiv.prodAdditive _ _).symm⟩⟩
+
 end CommGroup
+
+namespace Subgroup
+
+@[to_additive]
+lemma finiteIndex_range_powMonoidHom_of_fg (A : Type*) [CommGroup A] [Group.FG A] {n : ℕ}
+    (hn : n ≠ 0) :
+    (powMonoidHom (α := A) n).range.FiniteIndex :=
+  finiteIndex_iff_finite_quotient.mpr <| CommGroup.finite_of_fg_torsion _ <|
+    CommGroup.isTorsion_quotient_range_powMonoidHom A hn
+
+@[to_additive]
+lemma isFiniteRelIndex_map_powMonoidHom_of_fg {A : Type*} [CommGroup A] {B : Subgroup A}
+    (hB : B.FG) {n : ℕ} (hn : n ≠ 0) :
+    B.map (powMonoidHom (α := A) n) |>.IsFiniteRelIndex B := by
+  rw [isFiniteRelIndex_iff_finiteIndex]
+  have : (map (powMonoidHom (α := A) n) B).subgroupOf B = (powMonoidHom (α := B) n).range := by
+    ext1
+    simp [mem_subgroupOf, Subtype.ext_iff]
+  rw [this]
+  have := (Group.fg_iff_subgroup_fg B).mpr hB
+  exact finiteIndex_range_powMonoidHom_of_fg B hn
+
+end Subgroup
+
+namespace Submodule
+
+variable {R K M : Type*} [CommRing R] [CommRing K] [Algebra R K] [Module.Finite ℤ R]
+  [AddCommGroup M] [Module R M]
+
+lemma fg_toAddSubgroup {A : Submodule R M} (hfg : A.FG) : A.toAddSubgroup.FG := by
+  rw [← AddSubgroup.toIntSubmodule_toAddSubgroup A.toAddSubgroup, ← fg_iff_addSubgroup_fg]
+  exact FG.restrictScalars hfg
+
+open AddSubgroup in
+/-- If `A` and `B` are two `R`-submodules of the `R`-algebra `M`, where `R` is finitely generated
+as a `ℤ`-module, `A` is finitely generated, and `B` contains `n • A`, then `B` has finite
+relative index in `A`. -/
+lemma isFiniteRelIndex_of_map_linearMapMulLeft_le {A B : Submodule R K} {n : ℕ} (hn : n ≠ 0)
+    (hfg : A.FG) (h : A.map (LinearMap.mulLeft R (n : K)) ≤ B) :
+    B.toAddSubgroup.IsFiniteRelIndex A.toAddSubgroup := by
+  have := fg_toAddSubgroup hfg
+  have := isFiniteRelIndex_map_nsmulAddMonoidHom_of_fg this hn
+  refine isFiniteRelIndex_of_le (H₁ := A.toAddSubgroup.map (nsmulAddMonoidHom n)) A.toAddSubgroup ?_
+  rw [SetLike.le_def] at h ⊢
+  simpa using h
+
+end Submodule

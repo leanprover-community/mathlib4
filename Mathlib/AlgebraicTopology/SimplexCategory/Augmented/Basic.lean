@@ -3,9 +3,11 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.WithTerminal.Basic
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+module
+
+public import Mathlib.CategoryTheory.WithTerminal.Basic
+public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
 /-!
 # The Augmented simplex category
@@ -18,10 +20,12 @@ This definition provides a canonical full and faithful inclusion functor
 
 We prove that functors out of `AugmentedSimplexCategory` are equivalent to augmented cosimplicial
 objects and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent to augmented simplicial
-objects, and we provide a translation of the main constrcutions on augmented (co)simplicial objects
+objects, and we provide a translation of the main constructions on augmented (co)simplicial objects
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -31,7 +35,7 @@ abbrev AugmentedSimplexCategory := WithInitial SimplexCategory
 
 namespace AugmentedSimplexCategory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- The canonical inclusion from `SimplexCategory` to `AugmentedSimplexCategory`. -/
 @[simps!]

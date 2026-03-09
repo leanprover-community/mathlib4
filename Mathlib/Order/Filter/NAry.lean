@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Filter.Bases.Basic
-import Mathlib.Order.Filter.Prod
+module
+
+public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Order.Filter.Prod
 
 /-!
 # N-ary maps of filter
@@ -18,9 +20,11 @@ operations on filters.
 
 ## Notes
 
-This file is very similar to `Data.Set.NAry`, `Data.Finset.NAry` and `Data.Option.NAry`. Please
-keep them in sync.
+This file is very similar to `Mathlib/Data/Set/NAry.lean`, `Mathlib/Data/Finset/NAry.lean` and
+`Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 -/
+
+@[expose] public section
 
 
 open Function Set

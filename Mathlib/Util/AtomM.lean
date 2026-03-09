@@ -3,9 +3,12 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Simp.Types
-import Qq
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.Simp.Types
+public import Qq
+public import Qq.Typ
 
 /-!
 # A monad for tracking and deduplicating atoms
@@ -18,6 +21,8 @@ For performance reasons, consider whether `Lean.Meta.Canonicalizer.canon` can be
 After canonicalizing, a `HashMap Expr Nat` suffices to keep track of previously seen atoms,
 and is much faster as it uses `Expr` equality rather than `isDefEq`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta
@@ -53,6 +58,37 @@ TODO: don't catch any other errors
 def isDefEqSafe (a b : Expr) : MetaM Bool :=
   try isDefEq a b catch _ => pure false
 
+/-- If an atomic expression has already been encountered, return `true`, the index and the stored
+form of the atom (which will be defeq at the specified transparency, but not necessarily
+syntactically equal). If the atomic expression has *not* already been encountered, store it in the
+list of atoms, and return the new index (and the stored form of the atom, which will be itself).
+
+In a normalizing tactic, the expression returned by `containsThenAdd` should be considered
+the normal form.
+-/
+def AtomM.containsThenAdd (e : Expr) : AtomM (Bool × Nat × Expr) := do
+  let c ← get
+  for h : i in [:c.atoms.size] do
+    if ← withTransparency (← read).red <| isDefEqSafe e c.atoms[i] then
+      return (true, i, c.atoms[i])
+  modifyGet fun c ↦ ((false, c.atoms.size, e), { c with atoms := c.atoms.push e })
+
+open Qq in
+/-- If an atomic expression has already been encountered, return `true`, the index and the stored
+form of the atom (which will be defeq at the specified transparency, but not necessarily
+syntactically equal). If the atomic expression has *not* already been encountered, store it in the
+list of atoms, and return the new index (and the stored form of the atom, which will be itself).
+
+In a normalizing tactic, the expression returned by `AtomM.containsThenAddQ` should be considered
+the normal form.
+
+This is a strongly-typed version of `AtomM.containsThenAdd` for code using `Qq`.
+-/
+def AtomM.containsThenAddQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
+    AtomM (Bool × Nat × {e' : Q($α) // $e =Q $e'}) := do
+  let (b, n, e') ← AtomM.containsThenAdd e
+  return (b, n, ⟨e', ⟨⟩⟩)
+
 /-- If an atomic expression has already been encountered, get the index and the stored form of the
 atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
 If the atomic expression has *not* already been encountered, store it in the list of atoms, and
@@ -60,12 +96,8 @@ return the new index (and the stored form of the atom, which will be itself).
 
 In a normalizing tactic, the expression returned by `addAtom` should be considered the normal form.
 -/
-def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) := do
-  let c ← get
-  for h : i in [:c.atoms.size] do
-    if ← withTransparency (← read).red <| isDefEqSafe e c.atoms[i] then
-      return (i, c.atoms[i])
-  modifyGet fun c ↦ ((c.atoms.size, e), { c with atoms := c.atoms.push e })
+def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) :=
+  Prod.snd <$> AtomM.containsThenAdd e
 
 open Qq in
 /-- If an atomic expression has already been encountered, get the index and the stored form of the
