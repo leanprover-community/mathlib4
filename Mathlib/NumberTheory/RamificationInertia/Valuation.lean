@@ -133,6 +133,8 @@ noncomputable instance : Algebra (v.adicCompletionIntegers K) (w.adicCompletionI
 instance : IsLocalHom (algebraMap (v.adicCompletionIntegers K) (w.adicCompletionIntegers L)) :=
   Valuation.HasExtension.instIsLocalHomValuationSubring _ _
 
+attribute [instance 1001] Algebra.toSMul
+
 instance :
     IsScalarTower (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) (w.adicCompletion L) :=
   Valuation.HasExtension.instIsScalarTower_valuationSubring' _ _
