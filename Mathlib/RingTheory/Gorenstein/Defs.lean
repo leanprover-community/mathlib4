@@ -56,7 +56,7 @@ end
 /-- A commutative ring is Gorenstein if its localization at every prime
 `IsGorensteinLocalRing`. -/
 class IsGorensteinRing : Prop where
-  CM_localize : ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsGorensteinLocalRing (Localization.AtPrime p)
+  G_localize : ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsGorensteinLocalRing (Localization.AtPrime p)
 
 lemma isGorensteinRing_def : IsGorensteinRing R ↔
     ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsGorensteinLocalRing (Localization.AtPrime p) :=
