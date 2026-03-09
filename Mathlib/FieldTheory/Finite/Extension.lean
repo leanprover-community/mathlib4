@@ -159,7 +159,7 @@ theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} [NeZero 
   simp only [Polynomial.map_sub, Polynomial.map_pow, map_X, Fintype.card_eq_nat_card] at h
   rw [← natCard_extension, ← Fintype.card_eq_nat_card] at h
   -- `f` has a root a in `F`. We have extensions `AdjoinRoot f / K` and `F / AdjoinRoot f`.
-  choose a ha using exists_root_of_map_dvd_X_pow_card_sub_X
+  choose a ha using exists_eval₂_eq_zero_of_map_dvd_X_pow_card_sub_X
     (Ne.symm (Std.ne_of_lt (Irreducible.degree_pos hi ))) ψ h
   letI := RingHom.toAlgebra (AdjoinRoot.lift ψ a ha)
   -- Compatible `K`-algebra structure on `F`
