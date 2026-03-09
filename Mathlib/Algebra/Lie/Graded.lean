@@ -10,10 +10,10 @@ public import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Graded Lie algebras
-This file defines typeclasses `GBracket`, `GLieRing`, and `GLieAlgebra`, for working with Lie
-algebras that are graded by a collection of modules `A : ι → Type*`. The additivity of degree
-with respect to the bracket product is encoded by a `Prop` so we can avoid the usual difficulties of
-adding elements of `A (i + j)` to elements of `A (j + i)`.
+This file defines typeclasses `GBracket` and `GLieRing`, for working with Lie algebras that are
+graded by a collection of modules `A : ι → Type*`. The additivity of degree with respect to the
+bracket product is encoded by a `Prop` so we can avoid the usual difficulties of adding elements of
+`A (i + j)` to elements of `A (j + i)`.
 ## Main definitions
 * `GBracket` : A typeclass for a graded bracket
 * `GLieRing` : A typeclass for a graded bracket to have a Lie ring structure.
@@ -97,6 +97,7 @@ instance [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRi
     Bracket (⨁ i, A i)  (⨁ i, A i) where
   bracket a b := bracketHom A a b
 
+@[simp]
 lemma bracketHom_apply [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
     (a b : ⨁ i, A i) :
     bracketHom A a b = ⁅a, b⁆ := rfl
@@ -106,67 +107,70 @@ lemma rec_bracket [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
     Eq.rec (GBracket.bracket hk a b) hkl = GBracket.bracket hl a b := by
   grind
 
-instance instBracket [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A] :
-    Bracket (⨁ i, A i) (⨁ i, A i) where
-  bracket := fun a b => bracketHom A a b
+@[simp]
+lemma bracket_of_of [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] [GLieRing A]
+    {i j} (a : A i) (b : A j) :
+    ⁅of A i a, of A j b⁆ = of A (i + j) (GBracket.bracket rfl a b) := by
+  simp [← bracketHom_apply]
 
 /-- `GLieRing` implies a Lie ring structure. -/
 instance toLieRing [DecidableEq ι] [AddCommMonoid ι] [∀ i, AddCommGroup (A i)]
     [GLieRing A] :
     LieRing (⨁ i, A i) :=
   { (inferInstance : AddCommGroup _) with
-    bracket x y := bracketHom A x y
-    add_lie _ _ _ := by simp
-    lie_add _ _ _ := by simp
+    bracket x y := ⁅x, y⁆
+    add_lie _ _ _ := by simp [← bracketHom_apply]
+    lie_add _ _ _ := by simp [← bracketHom_apply]
     lie_self x := by
-      have hsum (i : ι) (a : A i) (f : (⨁ i, A i)) :
-          bracketHom A (of A i a) f + bracketHom A f (of A i a) = 0 := by
+      have hsum (i : ι) (a : A i) (f : (⨁ i, A i)) : ⁅(of A i a), f⁆ + ⁅f, (of A i a)⁆ = 0 := by
         induction f using DirectSum.induction_of with
-        | h0 => simp
-        | ha j b f _ _ hs =>
+        | h0 => simp [← bracketHom_apply]
+        | ha j b f hj _ h =>
+          simp only [← bracketHom_apply, map_add, AddMonoidHom.add_apply] at h ⊢
+          rw [add_rotate, add_left_comm, h, add_zero]
           ext k
-          simp only [map_add, AddMonoidHom.add_apply, add_apply, zero_apply]
-          rw [add_left_comm, add_assoc, ← add_apply, hs]
           by_cases h : i + j = k
           · simp [of_apply, h, add_comm i j ▸ h, rec_bracket, GLieRing.lie_antisymm]
           · simp [of_apply, h, add_comm i j ▸ h]
       induction x using DirectSum.induction_of with
-      | h0 => simp
-      | ha i b f _ _ h =>
-        simp only [map_add, AddMonoidHom.add_apply, h, add_zero]
-        rw [add_assoc, add_comm (((bracketHom A) f) ((of A i) b)), hsum]
+      | h0 => simp [← bracketHom_apply]
+      | ha j b f hj _ h =>
+        simp only [← bracketHom_apply] at h hsum
+        rw [← bracketHom_apply, map_add, map_add, AddMonoidHom.add_apply, AddMonoidHom.add_apply, h,
+          add_zero, add_assoc, add_comm (((bracketHom A) f) ((of A j) b)), hsum]
         simp [GLieRing.lie_self]
     leibniz_lie x y z := by
-      have hbss (i j : ι) (a : A i) (b : A j) :
-          ((bracketHom A) (of A i a)) (((bracketHom A) (of A j b)) z) =
-          ((bracketHom A) (of A j b)) (((bracketHom A) (of A i a)) z) +
-          ((bracketHom A) (((bracketHom A) (of A i a)) (of A j b))) z := by
+      have hboo (i j : ι) (a : A i) (b : A j) :
+          ⁅of A i a, ⁅of A j b, z⁆⁆ = ⁅of A j b, ⁅of A i a, z⁆⁆ + ⁅⁅of A i a, of A j b⁆, z⁆ := by
         induction z using DirectSum.induction_of with
-        | h0 => simp
+        | h0 => simp [← bracketHom_apply]
         | ha k c f _ _ ih =>
-          simp only [map_add, ih, ← add_assoc, add_left_inj]
-          rw [add_right_comm, add_right_cancel_iff]
-          simp only [toAddMonoid_of, AddMonoidHom.flip_apply, AddMonoidHom.coe_comp,
-            Function.comp_apply, AddMonoidHom.compHom_apply_apply, gBracketHom_apply_apply]
+          simp only [← bracketHom_apply, map_add] at ih ⊢
+          rw [ih]
+          simp only [bracketHom_apply, ← add_assoc]
+          rw [add_right_cancel_iff, add_right_comm, add_right_cancel_iff]
           ext l
           by_cases h : i + j + k = l
           · simp [of_apply, h, add_assoc i j k ▸ h, add_assoc j i k ▸ add_comm i j ▸ h, rec_bracket,
-            GLieRing.leibniz_lie, add_comm (GBracket.bracket _ (GBracket.bracket _ a b) c)]
+              GLieRing.leibniz_lie, add_comm (GBracket.bracket _ (GBracket.bracket _ a b) c)]
           · simp [of_apply, h, add_assoc i j k ▸ h, add_assoc j i k ▸ add_comm i j ▸ h]
-      have hbs (i : ι) (a : A i) : ((bracketHom A) (of A i a)) (((bracketHom A) y) z) =
-          ((bracketHom A) y) (((bracketHom A) (of A i a)) z) +
-          ((bracketHom A) (((bracketHom A) (of A i a)) y)) z := by
+      have hbo (i : ι) (a : A i) :
+          ⁅of A i a, ⁅y, z⁆⁆ = ⁅y, ⁅of A i a, z⁆⁆ + ⁅⁅of A i a, y⁆, z⁆ := by
         induction y using DirectSum.induction_of with
-        | h0 => simp
+        | h0 => simp [← bracketHom_apply]
         | ha j b f _ _ ih =>
-          simp only [map_add, AddMonoidHom.add_apply, ih, ← add_assoc]
+          simp only [← bracketHom_apply, map_add, AddMonoidHom.add_apply] at ih ⊢
+          rw [ih]
+          simp only [bracketHom_apply, ← add_assoc]
           rw [add_right_cancel_iff, add_right_comm, add_right_cancel_iff]
-          exact hbss i j a b
+          exact hboo i j a b
       induction x using DirectSum.induction_of with
-      | h0 => simp
+      | h0 => simp [← bracketHom_apply]
       | ha i a f _ _ ih =>
-        simp only [map_add, AddMonoidHom.add_apply, ih, ← add_assoc]
+        simp only [← bracketHom_apply, map_add, AddMonoidHom.add_apply] at ih ⊢
+        rw [ih]
+        simp only [bracketHom_apply, ← add_assoc]
         rw [add_right_cancel_iff, ← add_rotate, add_right_cancel_iff]
-        exact hbs i a }
+        exact hbo i a }
 
 end GLieRing
