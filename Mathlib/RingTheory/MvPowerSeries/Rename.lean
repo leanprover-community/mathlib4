@@ -163,10 +163,6 @@ theorem rename_C (r : R) : rename f (C r : MvPowerSeries σ R) = C r := rename_m
 theorem rename_X (i : σ) : rename f (X i : MvPowerSeries σ R) = X (f i) := by
   simpa using rename_monomial f (single i 1) 1
 
-theorem map_rename (F : R →+* S) (p : MvPowerSeries σ R) :
-    map F (rename f p) = rename f (map F p) := by
-  ext; simp [coeff_rename]
-
 @[simp]
 theorem rename_rename [TendstoCofinite g] (p : MvPowerSeries σ R) :
     rename g (rename f p) = rename (g ∘ f) p := by
