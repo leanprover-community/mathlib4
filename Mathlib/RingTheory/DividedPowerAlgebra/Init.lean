@@ -275,6 +275,11 @@ theorem submodule_span_prod_dp_eq_top (hv : span R (Set.range v) = ⊤) :
       rw [← mul_assoc]
       exact hn (x * dp R c.1 m) c.2 (hm x c.1 hx)
 
+lemma pow_dp (n : ℕ) (m : M) (k : ℕ) :
+    (dp R n m) ^ k = (Multiset.multinomial (k • {n})) * dp R (k * n) m := by
+  rw [Multiset.multinomial_nsmul_singleton, ← Fin.prod_const, prod_dp]
+  simp [Nat.multinomial]
+
 end
 
 end DividedPowerAlgebra
