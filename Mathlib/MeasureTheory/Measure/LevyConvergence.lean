@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Measure.Tight
 
