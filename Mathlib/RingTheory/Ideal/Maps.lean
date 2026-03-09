@@ -1097,7 +1097,8 @@ theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {
   rw [radical_eq_sInf, radical_eq_sInf]
   have : ∀ J ∈ {J : Ideal R | I ≤ J ∧ J.IsPrime}, RingHom.ker f ≤ J := fun J hJ => h.trans hJ.left
   convert map_sInf hf this
-  refine funext fun j => propext ⟨?_, ?_⟩
+  ext j
+  constructor
   · rintro ⟨hj, hj'⟩
     haveI : j.IsPrime := hj'
     exact
@@ -1250,6 +1251,12 @@ variable {R : Type*} [CommSemiring R] (S : Type*) [Semiring S] [Algebra R S]
 def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) :=
   (Algebra.linearMap R S).restrict (q := (I.map (algebraMap R S)).restrictScalars R)
     (fun _ ↦ Ideal.mem_map_of_mem _)
+
+@[simp]
+lemma idealMap_mul (I : Ideal R) (x y : I) :
+    idealMap S I (x * y) = idealMap S I x * idealMap S I y := by
+  ext
+  simp
 
 end Algebra
 
