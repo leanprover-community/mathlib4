@@ -9,6 +9,7 @@ public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.Valuation.Extension
 public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 
 /-!
 # Ramification theory for valuations
@@ -27,7 +28,7 @@ adic valuation on `L` associated to `w`, in terms of the ramification index.
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
-open WithZero Ideal.IsDedekindDomain
+open WithZero Ideal.IsDedekindDomain Valuation.IsRankOneDiscrete
 
 section AKLB
 
@@ -77,10 +78,10 @@ theorem uniformContinuous_algebraMap_liesOver :
   let e := v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal
   -- push `γL` to `ℤᵐ⁰`
   let σL := WithVal.valueGroupOrderIso₀ (w.valuation L)
-  let σw := w.valueGroupOrderIso₀ L
+  let σw := valueGroup₀_equiv_withZeroMulInt (w.valuation L)
   let m : ℤᵐ⁰ := σw (σL γL)
   -- `ℤᵐ⁰` values in `K` exponentiate by `e` in `L` so take the `e`th root and pull back to `γK`
-  let σv := (v.valueGroupOrderIso₀ K)
+  let σv := valueGroup₀_equiv_withZeroMulInt (v.valuation K)
   let σK := (WithVal.valueGroupOrderIso₀ (v.valuation K))
   let γK := σK.symm (σv.symm (exp (m.log / e)))
   have hγK : γK ≠ 0 := by simp [γK]
@@ -89,10 +90,12 @@ theorem uniformContinuous_algebraMap_liesOver :
   intro x hx
   rcases eq_or_ne x 0 with rfl | hx₀; · simp
   rw [σK.lt_symm_apply, σv.lt_symm_apply, WithVal.valueGroupOrderIso₀_restrict,
-    v.valueGroupOrderIso₀_restrict K, ← log_lt_log (by simp_all) (by simp)] at hx
+    valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (v.valuation_surjective K),
+    ← log_lt_log (by simp_all) (by simp)] at hx
   rw [← σL.strictMono.lt_iff_lt, WithVal.valueGroupOrderIso₀_restrict, ← σw.strictMono.lt_iff_lt,
-    w.valueGroupOrderIso₀_restrict L, WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply,
-    ← valuation_liesOver L v, ← log_lt_log (by simp_all) (by simp), log_pow, nsmul_eq_mul, mul_comm]
+    valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (w.valuation_surjective L),
+    WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply, ← valuation_liesOver L v,
+    ← log_lt_log (by simp_all) (by simp), log_pow, nsmul_eq_mul, mul_comm]
   exact Int.mul_lt_of_lt_ediv
     (mod_cast pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
 

@@ -34,9 +34,13 @@ variable {R : Type*} [CommRing R] (v : Valuation R Γ) [hv : v.IsRankOneDiscrete
 
 /-- An order-preserving isomorphism between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`. -/
 @[simps!]
-noncomputable def valueGroup₀_equiv_withZeroMulInt : (ValueGroup₀ v) ≃* ℤᵐ⁰ :=
-  MulEquiv.withZero (intEquivOfZPowersEqTop _
+noncomputable def valueGroup₀_equiv_withZeroMulInt : (ValueGroup₀ v) ≃*o ℤᵐ⁰ where
+  __ := MulEquiv.withZero (intEquivOfZPowersEqTop _
     (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)).symm
+  map_le_map_iff' {x y} := by
+    rw [(WithZero.map'_strictMono (MulEquiv.strictMono_symm (mulintEquivOfZPowersEqTop_strictMono
+    (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)
+    (Left.one_lt_inv_iff.mpr hv.generator'_lt_one)))).le_iff_le]
 
 lemma valueGroup₀_equiv_withZeroMulInt_apply_zero :
     valueGroup₀_equiv_withZeroMulInt v 0 = 0 := by simp
@@ -52,7 +56,6 @@ lemma valueGroup₀_equiv_withZeroMulInt_apply_zpow (k : ℤ) :
 lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
     StrictMono (valueGroup₀_equiv_withZeroMulInt v) := by
   intro x y hxy
-  simp only [valueGroup₀_equiv_withZeroMulInt, MulEquiv.withZero_apply_apply]
   rwa [(WithZero.map'_strictMono (MulEquiv.strictMono_symm (mulintEquivOfZPowersEqTop_strictMono
     (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)
     (Left.one_lt_inv_iff.mpr hv.generator'_lt_one)))).lt_iff_lt]
