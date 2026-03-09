@@ -6,7 +6,7 @@ Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 module
 
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
+public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 
 /-!
 # The infinite adele ring of a number field
