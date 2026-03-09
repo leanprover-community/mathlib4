@@ -29,28 +29,35 @@ open scoped ENNReal
 
 namespace InformationTheory
 
+section FromCondJensenPR27953
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  {α : Type*} {f : α → E} {φ : E → ℝ} {m mα : MeasurableSpace α} {μ : Measure α} {s : Set E}
+
+theorem conditional_jensen (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+    (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
+    (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
+    φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
+  sorry
+
+end FromCondJensenPR27953
+
 section Aux
 
 variable {α β : Type*} {m mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {μ ν : Measure α} {f : ℝ → ℝ}
-
-/-- A specialized version of **Jensen's inequality** for the conditional expectation. -/
-lemma _root_.ConvexOn.apply_condexp_le (hm : m ≤ mα)
-    (hf : StronglyMeasurable f)
-    (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
-    {g : α → ℝ} (hg : Measurable g) (hg_pos : 0 ≤ g)
-    (h_int1 : Integrable g μ) (h_int2 : Integrable (fun x ↦ f (g x)) μ) :
-    (fun x ↦ f (μ[g | m] x)) ≤ᵐ[μ.trim hm] μ[fun x ↦ f (g x) | m] := by
-  sorry
 
 lemma f_condexp_rnDeriv_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hm : m ≤ mα)
     (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
     (h_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) :
     (fun x ↦ f ((ν[fun x ↦ (μ.rnDeriv ν x).toReal | m]) x))
-      ≤ᵐ[ν.trim hm] ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m] :=
-  hf_cvx.apply_condexp_le hm hf hf_cont (μ.measurable_rnDeriv ν).ennreal_toReal
-    (fun _ ↦ ENNReal.toReal_nonneg) Measure.integrable_toReal_rnDeriv h_int
+      ≤ᵐ[ν.trim hm] ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m] := by
+  have h_ae := conditional_jensen hm hf_cvx hf_cont.lowerSemicontinuousOn
+    (ae_of_all _ fun _ ↦ ENNReal.toReal_nonneg) isClosed_Ici Measure.integrable_toReal_rnDeriv h_int
+  rwa [StronglyMeasurable.ae_le_trim_iff]
+  · fun_prop
+  · fun_prop
 
 end Aux
 
