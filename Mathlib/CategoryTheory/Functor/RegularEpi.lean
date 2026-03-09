@@ -43,6 +43,6 @@ instance [∀ {F G : D} (f : F ⟶ G) [Epi f], HasPullback f f] [HasPushouts D]
       · refine NatIso.ofComponents (by rintro (_ | _); exacts [Iso.refl _, Iso.refl _]) ?_
         rintro _ _ (_ | _)
         all_goals cat_disch
-      · exact Cocones.ext (Iso.refl _) <| by rintro (_ | _ | _); all_goals cat_disch }⟩⟩
+      · exact Cocone.ext (Iso.refl _) <| by rintro (_ | _ | _); all_goals cat_disch }⟩⟩
 
 end CategoryTheory.Functor

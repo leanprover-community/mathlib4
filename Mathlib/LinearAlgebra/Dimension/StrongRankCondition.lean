@@ -511,6 +511,11 @@ theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
   rw [← not_le] at this
   simp [Module.finrank, this, Module.rank_zero_iff_of_free]
 
+@[simp]
+theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Module.Finite R M] [Subsingleton M] :
+    Module.finrank R M = 0 :=
+  (finrank_eq_zero_iff_of_free R M).mpr inferInstance
+
 theorem finrank_pos_iff_of_free [Module.Free R M] [Module.Finite R M] :
     0 < Module.finrank R M ↔ Nontrivial M := by
   rw [← not_subsingleton_iff_nontrivial, ← iff_not_comm]
