@@ -25,8 +25,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 @[expose] public section -- TODO: think if we want to expose all definitions!
 
-section real
-
 variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
@@ -116,8 +114,6 @@ lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E] (hcov : IsCovariantDerivat
 end projection_trivial_bundle
 
 end IsCovariantDerivativeOn
-
---end real
 
 namespace Bundle.Trivialization
 
@@ -437,8 +433,6 @@ lemma proj_mderiv [ContMDiffVectorBundle 1 F V I]
 
 end CovariantDerivative
 end horiz
-
-end real
 
 -- variable (E E') in
 -- /-- The trivial connection on a trivial bundle, given by the directional derivative -/
