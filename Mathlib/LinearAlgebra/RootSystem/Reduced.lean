@@ -149,7 +149,7 @@ lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [IsDomain R
     [Module.IsTorsionFree R M] (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.pairing j i • P.root i = (2 : R) • P.root j := by
   rw [LinearIndependent.pair_iff] at h
-  push_neg at h
+  push Not at h
   obtain ⟨s, t, h₁, h₂⟩ := h
   replace h₂ : s ≠ 0 := by
     rcases eq_or_ne s 0 with rfl | hs
@@ -205,7 +205,7 @@ instance instFlipIsReduced [P.IsReduced] [IsTorsionFree R N] : P.flip.IsReduced 
   right
   rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight_flip,
     coxeterWeight_eq_four_iff_not_linearIndependent, IsReduced.linearIndependent_iff] at h
-  push_neg at h
+  push Not at h
   simp [P.root_eq_neg_iff.mp (h hij)]
 
 variable (i j)

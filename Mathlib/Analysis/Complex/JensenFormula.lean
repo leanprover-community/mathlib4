@@ -165,7 +165,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     have h₂f : ¬∀ (u : ↑(closedBall c |R|)), meromorphicOrderAt f ↑u ≠ ⊤ := by aesop
     rw [← h₁f.exists_meromorphicOrderAt_ne_top_iff_forall
       ⟨nonempty_closedBall.mpr (abs_nonneg R), (convex_closedBall c |R|).isPreconnected⟩] at h₂f
-    push_neg at h₂f
+    push Not at h₂f
     have : divisor f CB = 0 := by
       ext x
       by_cases h : x ∈ CB

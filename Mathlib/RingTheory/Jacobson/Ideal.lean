@@ -166,12 +166,12 @@ theorem eq_jacobson_iff_notMem :
   constructor
   · intro h x hx
     rw [← h, Ideal.jacobson, mem_sInf] at hx
-    push_neg at hx
+    push Not at hx
     exact hx
   · refine fun h => le_antisymm (fun x hx => ?_) le_jacobson
     contrapose hx
     rw [Ideal.jacobson, mem_sInf]
-    push_neg
+    push Not
     exact h x hx
 
 theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) :

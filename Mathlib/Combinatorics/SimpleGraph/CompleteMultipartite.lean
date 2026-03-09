@@ -142,7 +142,7 @@ end IsPathGraph3Compl
 lemma exists_isPathGraph3Compl_of_not_isCompleteMultipartite (h : ¬ IsCompleteMultipartite G) :
     ∃ v w₁ w₂, G.IsPathGraph3Compl v w₁ w₂ := by
   rw [IsCompleteMultipartite, Transitive] at h
-  push_neg at h
+  push Not at h
   obtain ⟨_, _, _, h1, h2, h3⟩ := h
   rw [adj_comm] at h1
   exact ⟨_, _, _, h3, h1, h2⟩

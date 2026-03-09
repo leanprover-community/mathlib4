@@ -824,7 +824,7 @@ theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
   classical
   by_contra nind
   rw [IsIndepSet, Set.Pairwise] at nind
-  push_neg at nind
+  push Not at nind
   simp_rw [mem_neighborSet] at nind
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))

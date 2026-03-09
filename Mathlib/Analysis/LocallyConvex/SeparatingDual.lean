@@ -98,7 +98,7 @@ theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
   simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]
   congrm ∀ v, ?_
   rw [not_imp_comm, LinearMap.ext_iff]
-  push_neg; rfl
+  push Not; rfl
 
 variable [SeparatingDual R V]
 

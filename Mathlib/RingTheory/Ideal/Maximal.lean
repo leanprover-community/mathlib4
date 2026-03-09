@@ -117,7 +117,7 @@ theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : Is
     fun e =>
     or_iff_not_imp_left.mpr fun hx => by
       rw [Ideal.mem_sInf] at hx e ⊢
-      push_neg at hx
+      push Not at hx
       obtain ⟨I, hI, hI'⟩ := hx
       intro J hJ
       rcases hs'.total hI hJ with h | h

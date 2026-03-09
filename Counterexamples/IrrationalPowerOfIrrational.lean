@@ -28,7 +28,7 @@ negative bases. See `Real.rpow_def_of_neg` for more details.
 -/
 theorem not_irrational_rpow :
     ¬ ∀ a b : ℝ, Irrational a → Irrational b → 0 < a → Irrational (a ^ b) := by
-  push_neg
+  push Not
   by_cases hc : Irrational (√2 ^ √2)
   · use (√2 ^ √2), √2, hc, irrational_sqrt_two, by positivity
     rw [← rpow_mul, mul_self_sqrt, rpow_two, sq_sqrt] <;> norm_num

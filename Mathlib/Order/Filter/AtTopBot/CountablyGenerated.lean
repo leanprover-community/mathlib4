@@ -118,7 +118,7 @@ theorem frequently_iff_seq_frequently {ι : Type*} {l : Filter ι} {p : ι → P
     [l.IsCountablyGenerated] :
     (∃ᶠ n in l, p n) ↔ ∃ x : ℕ → ι, Tendsto x atTop l ∧ ∃ᶠ n : ℕ in atTop, p (x n) := by
   simp only [Filter.Frequently, eventually_iff_seq_eventually (l := l)]
-  push_neg; rfl
+  push Not; rfl
 
 theorem exists_seq_forall_of_frequently {ι : Type*} {l : Filter ι} {p : ι → Prop}
     [l.IsCountablyGenerated] (h : ∃ᶠ n in l, p n) :

@@ -611,7 +611,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
   split_ifs with H
   · rw [norm_zero]
     exact mul_nonneg hC (pow_nonneg hr₀.le _)
-  · push_neg at H
+  · push Not at H
     exact h _ H
 
 /-- The term norms of any convergent series are bounded by a constant. -/

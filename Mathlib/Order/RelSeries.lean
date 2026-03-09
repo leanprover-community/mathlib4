@@ -788,7 +788,7 @@ variable {r} in
 lemma SetRel.not_finiteDimensional_iff [Nonempty α] :
     ¬ r.FiniteDimensional ↔ r.InfiniteDimensional := by
   rw [finiteDimensional_iff, infiniteDimensional_iff]
-  push_neg
+  push Not
   constructor
   · intro H n
     induction n with

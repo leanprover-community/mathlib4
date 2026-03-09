@@ -1030,9 +1030,9 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
     simp_rw [if_pos H', hv.liminf_eq_sSup_iUnion_iInter, A, iUnion_empty]
   rw [if_neg H']
   apply hv.liminf_eq_ciSup_ciInf
-  · push_neg at H
+  · push Not at H
     simpa only [nonempty_iff_ne_empty] using H
-  · push_neg at H'
+  · push Not at H'
     exact H'
 
 /-- Given an indexed family of sets `s j` and a function `f`, then `limsup_reparam j` is equal

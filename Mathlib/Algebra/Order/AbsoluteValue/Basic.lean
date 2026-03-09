@@ -346,7 +346,7 @@ omit [IsOrderedRing S] in
 lemma not_isNontrivial_iff (v : AbsoluteValue R S) :
     ¬ v.IsNontrivial ↔ ∀ x ≠ 0, v x = 1 := by
   simp only [IsNontrivial]
-  push_neg
+  push Not
   rfl
 
 omit [IsOrderedRing S] in

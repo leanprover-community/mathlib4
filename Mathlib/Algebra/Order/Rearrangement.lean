@@ -177,7 +177,7 @@ theorem MonovaryOn.sum_smul_comp_perm_eq_sum_smul_iff (hfg : MonovaryOn f g s)
   refine ⟨not_imp_not.1 fun h ↦ ?_, fun h ↦ (hfg.sum_smul_comp_perm_le_sum_smul hσ).antisymm <| by
     simpa using h.sum_smul_comp_perm_le_sum_smul ((set_support_symm_eq _).subset.trans hσ)⟩
   rw [MonovaryOn] at h
-  push_neg at h
+  push Not at h
   obtain ⟨x, hx, y, hy, hgxy, hfxy⟩ := h
   set τ : Perm ι := (Equiv.swap x y).trans σ
   have hτs : {x | τ x ≠ x} ⊆ s := by

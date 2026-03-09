@@ -220,7 +220,7 @@ lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
   -- It suffices to show that `fderiv ℝ f x` sends everything to the kernel of `F`.
   suffices h : ∀ y, F (fderiv ℝ f x y) = 0 by
     have ⟨y, hy⟩ := hs''
-    unfold Function.Surjective; push_neg
+    unfold Function.Surjective; push Not
     refine ⟨f x - y, fun z ↦ ne_of_apply_ne F ?_⟩
     rw [h z, F.map_sub]
     exact (sub_pos.2 <| hF _ hy).ne

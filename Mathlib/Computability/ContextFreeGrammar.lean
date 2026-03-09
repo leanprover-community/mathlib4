@@ -224,7 +224,7 @@ lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t)
     (s : List (Symbol T g.NT)) (hs : s ≠ [.nonterminal t]) :
     ¬g.Derives [.nonterminal t] s := by
   rw [derives_iff_eq_or_head]
-  push_neg
+  push Not
   refine ⟨hs.symm, fun _ hx ↦ ?_⟩
   have hxr := hx.exists_nonterminal_input_mem
   simp_rw [List.mem_singleton, Symbol.nonterminal.injEq] at hxr

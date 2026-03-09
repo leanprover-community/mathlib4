@@ -374,7 +374,7 @@ theorem ofPermHom_support :
     rw [(g ^ m).injective.ne_iff, a.injective.ne_iff, not_iff_comm]
     by_cases H : (τ : Perm g.cycleFactorsFinset) c = c
     · simp only [H, iff_true]
-      push_neg
+      push Not
       intro d hd
       rw [← notMem_support]
       have := g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop

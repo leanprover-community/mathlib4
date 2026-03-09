@@ -416,7 +416,7 @@ def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartitio
     rw [sup_biUnion]
     exact sup_congr rfl fun i _ => (P i).sup_parts
   bot_notMem := by
-    rw [mem_biUnion]; push_neg; exact fun i _ => (P i).bot_notMem
+    rw [mem_biUnion]; push Not; exact fun i _ => (P i).bot_notMem
 
 /-- The sum of a set-valued function over a combined partition equals the sum of sums over component
 partitions. -/

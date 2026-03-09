@@ -378,7 +378,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
       · rintro K hK - -
         rw [Set.Finite.mem_toFinset] at hK
         exact hK.1.1.1
-      · push_neg
+      · push Not
         intro K hK e
         have := hr.trans (Ideal.height_mono e)
         rw [Set.Finite.mem_toFinset] at hK

@@ -352,7 +352,7 @@ theorem reachable_or_reachable_compl (u v w : V) : G.Reachable u v ∨ Gᶜ.Reac
 theorem connected_or_preconnected_compl : G.Connected ∨ Gᶜ.Preconnected := by
   rw [or_iff_not_imp_left, G.connected_iff_exists_forall_reachable]
   intro h u v
-  push_neg at h
+  push Not at h
   have ⟨w, huw⟩ := h u
   exact reachable_or_reachable_compl .. |>.resolve_left huw
 
