@@ -437,6 +437,9 @@ variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 /-- The completion of a field with respect to a valuation. -/
 abbrev Completion := UniformSpace.Completion (WithVal v)
 
+lemma Completion.algebraMap_def {R : Type*} [CommRing R] (v : Valuation R Γ₀) :
+  algebraMap (WithVal v) v.Completion = ((↑) : WithVal v → v.Completion) := rfl
+
 -- lower priority so that `Coe (WithVal v) v.Completion` uses `UniformSpace.Completion.instCoe`
 instance (priority := 99) : Coe R v.Completion where
   coe r := (WithVal.equiv v).symm r

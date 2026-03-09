@@ -290,6 +290,13 @@ theorem intValuation_eq_one_iff {v : HeightOneSpectrum R} {x : R} :
   exact le_antisymm (v.intValuation_le_one x) <| by
     simp [← not_lt, (v.intValuation_lt_one_iff_mem _).not, h]
 
+theorem intValuation_eq_coe_neg_multiplicity (v : HeightOneSpectrum R) {x : R} (hnz : x ≠ 0) :
+    v.intValuation x = WithZero.exp (-(multiplicity v.asIdeal (Ideal.span {x}) : ℤ)) := by
+  rw [intValuation_def, if_neg hnz, exp_inj, neg_inj, Nat.cast_inj]
+  refine (multiplicity_eq_of_emultiplicity_eq_some ?_).symm
+  rw [UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors v.irreducible (by simpa),
+    count_associates_factors_eq (by simpa) v.isPrime v.ne_bot, normalize_eq v.asIdeal]
+
 /-! ### Adic valuations on the field of fractions `K` -/
 
 variable (K) in
@@ -442,6 +449,27 @@ theorem exists_primeCompl_mul_eq_of_integer (x : K) (hv : v.valuation K x ≤ 1)
     rw [← (v.intValuation_eq_one_iff_mem_primeCompl d).mpr d.prop,
       ← valuation_of_algebraMap (K := K), ← valuation_of_algebraMap (K := K), ← map_mul, hnd]
 
+variable (K)
+
+open MonoidWithZeroHom ValueGroup₀
+
+/-- The order isomorphism between the value group of the `v`-adic valuation on `K` and `ℤᵐ⁰`. -/
+@[simps!]
+def valueGroupOrderIso₀ : ValueGroup₀ (v.valuation K) ≃*o ℤᵐ⁰ :=
+  valueGroupOrderIsoOfSurjective₀ _ (v.valuation_surjective K)
+
+theorem valueGroupOrderIso₀_restrict (b : K) :
+    v.valueGroupOrderIso₀ K ((v.valuation K).restrict b) = v.valuation K b := by
+  rw [(v.valuation K).restrict_def, restrict₀_apply]
+  rcases eq_or_ne (v.valuation K b) 0 with (hb | hb) <;> simp [hb]
+
+theorem valueGroupOrderIso₀_symm_restrict (b : K) :
+    (v.valueGroupOrderIso₀ K).symm (v.valuation K b) = (v.valuation K).restrict b := by
+  apply_fun (v.valueGroupOrderIso₀ K)
+  rw [v.valueGroupOrderIso₀_restrict K, (v.valueGroupOrderIso₀ K).apply_symm_apply]
+
+variable {K}
+
 /-! ### Completions with respect to adic valuations
 
 Given a Dedekind domain `R` with field of fractions `K` and a maximal ideal `v` of `R`, we define
@@ -545,6 +573,9 @@ variable {R} in
 theorem denseRange_algebraMap : DenseRange (algebraMap K (v.adicCompletion K)) :=
   UniformSpace.Completion.denseRange_coe.comp (WithVal.equiv _).symm.surjective.denseRange
     (UniformSpace.Completion.continuous_coe _)
+
+instance [CharZero K] : CharZero (v.adicCompletion K) :=
+  charZero_of_injective_algebraMap (FaithfulSMul.algebraMap_injective K _)
 
 end Algebra
 
