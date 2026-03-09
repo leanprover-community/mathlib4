@@ -6,6 +6,7 @@ Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 module
 
 public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
+public import Mathlib.NumberTheory.NumberField.FinitePlaces
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 
 /-!
@@ -32,7 +33,7 @@ noncomputable section
 
 namespace NumberField
 
-open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion IsDedekindDomain
+open InfinitePlace AbsoluteValue.Completion Completion IsDedekindDomain HeightOneSpectrum
 
 /-! ## The adele ring  -/
 
@@ -75,6 +76,24 @@ theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K 
 
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
 abbrev principalSubgroup : AddSubgroup (AdeleRing R K) := (algebraMap K _).range.toAddSubgroup
+
+variable [NumberField K]
+
+set_option backward.isDefEq.respectTransparency false in
+instance (v : HeightOneSpectrum (𝓞 K)) : LocallyCompactSpace (v.adicCompletion K) := by
+  have : IsCompact (Set.univ : Set (v.adicCompletionIntegers K)) := isCompact_univ
+  refine IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup ?_
+    ((Valued.is_topological_valuation {x | Valued.v.restrict x < 1}).2 ⟨1, by grind⟩)
+  exact (isCompact_iff_isCompact_univ.2 this).of_isClosed_subset (Valued.isClosed_ball _ _)
+    fun _ _ ↦ by grind [Valuation.restrict_lt_one_iff, SetLike.mem_coe, mem_adicCompletionIntegers]
+
+open scoped RestrictedProduct in
+instance : LocallyCompactSpace (IsDedekindDomain.FiniteAdeleRing (𝓞 K) K) :=
+  have : Fact (∀ v : HeightOneSpectrum (𝓞 K), IsOpen (v.adicCompletionIntegers K).carrier) :=
+    ⟨fun _ ↦ Valued.isOpen_valuationSubring _⟩
+  inferInstanceAs (LocallyCompactSpace (Πʳ _, [_, _]))
+
+instance : LocallyCompactSpace (AdeleRing (𝓞 K) K) := Prod.locallyCompactSpace _ _
 
 end AdeleRing
 
