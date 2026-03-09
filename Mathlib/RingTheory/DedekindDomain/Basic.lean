@@ -91,8 +91,8 @@ theorem eq_bot_of_lt [Ring.DimensionLEOne R] (p P : Ideal R) [p.IsPrime] [P.IsPr
     p = ⊥ :=
   by_contra fun hp0 => not_lt_lt ⊥ p P ⟨Ne.bot_lt hp0, hpP⟩
 
-theorem of_ringEquiv {R S : Type*} [CommRing R] [CommRing S] [hS : Ring.DimensionLEOne S]
-    (e : R ≃+* S) : Ring.DimensionLEOne R where
+variable {A} in
+theorem of_ringEquiv [hA : Ring.DimensionLEOne A] (e : R ≃+* A) : Ring.DimensionLEOne R where
   maximalOfPrime {P} hP_ne hP_prime := by
     rw [← Ideal.map_comap_eq_self_of_equiv e.symm P,
       Ideal.isMaximal_map_iff_of_bijective _ e.symm.bijective]

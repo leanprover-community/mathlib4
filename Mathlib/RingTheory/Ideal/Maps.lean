@@ -114,7 +114,7 @@ theorem map_le_comap_of_inverse [RingHomClass G S R] (g : G) (I : Ideal R)
     I.map f ≤ I.comap g :=
   map_le_comap_of_inv_on _ _ _ <| h.leftInvOn _
 
-theorem eq_bot_of_comap_eq_bot' [RingHomClass F R S] {f : F} (hf : Function.Surjective f)
+theorem eq_bot_of_comap_eq_bot' {f : R →+* S} (hf : Function.Surjective f)
     {I : Ideal S} (h : I.comap f = ⊥) :
     I = ⊥ := by
   ext x

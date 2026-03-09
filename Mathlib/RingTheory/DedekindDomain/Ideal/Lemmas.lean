@@ -525,7 +525,7 @@ section RingEquiv
 
 variable {R} {S : Type*} [CommRing S]
 
-/-- A ring homomorphism `f : R →+* S` induces a map from `HeightOneSpectrum S` to
+/-- A surjective ring homomorphism `f : R →+* S` induces a map from `HeightOneSpectrum S` to
   `HeightOneSpectrum R` sending `v` to `v.asIdeal.comap f`. -/
 @[simps]
 def comap (f : R →+* S) (hf : Function.Surjective f) (v : HeightOneSpectrum S) :
