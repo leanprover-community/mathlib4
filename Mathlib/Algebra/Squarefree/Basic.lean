@@ -91,10 +91,8 @@ theorem Squarefree.isUnit_of_mul_self [Monoid R] {a : R}
 /-- A squarefree element that is a perfect square must be a unit. -/
 theorem Squarefree.isUnit_of_isSquare [Monoid R] {a : R}
     (hsf : Squarefree a) (hsq : IsSquare a) : IsUnit a := by
-  obtain ⟨z, hz⟩ := hsq
-  have hu : IsUnit z := (hsf.squarefree_of_dvd (dvd_of_eq hz.symm)).isUnit_of_mul_self
-  rw [hz]
-  exact hu.mul hu
+  obtain ⟨z, rfl⟩ := hsq
+  simp [hsf.isUnit_of_mul_self]
 
 /-- A squarefree non-unit element is not a perfect square. -/
 theorem Squarefree.not_isSquare [Monoid R] {a : R}
