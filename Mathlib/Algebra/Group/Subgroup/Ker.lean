@@ -507,6 +507,11 @@ theorem map_subtype_lt_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
 theorem map_injective {f : G →* N} (h : Function.Injective f) : Function.Injective (map f) :=
   Function.LeftInverse.injective <| comap_map_eq_self_of_injective h
 
+@[to_additive]
+theorem map_subtype_inj {H : Subgroup G} {K L : Subgroup H} :
+    K.map H.subtype = L.map H.subtype ↔ K = L :=
+  (map_injective H.subtype_injective).eq_iff
+
 /-- Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`. -/
 @[to_additive /-- Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`. -/]
 theorem map_injective_of_ker_le {H K : Subgroup G} (hH : f.ker ≤ H) (hK : f.ker ≤ K)
