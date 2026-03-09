@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Topology.Perfect
 
 /-!
 # Normed division rings and fields
@@ -239,16 +240,17 @@ theorem exists_enorm_lt_one : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < 1 := e
 variable {α}
 
 @[instance]
-theorem nhdsNE_neBot (x : α) : NeBot (𝓝[≠] x) := by
-  rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
-  rintro ε ε0
-  rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
-  refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_eq_left).1 <| norm_pos_iff.1 hb0, ?_⟩
-  rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
+theorem instPerfectSpace : PerfectSpace α where
+  instNeBotNhdsNE x := by
+    rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
+    rintro ε ε0
+    rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
+    refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_eq_left).1 <| norm_pos_iff.1 hb0, ?_⟩
+    rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 
 @[instance]
 theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
-  simpa only [isUnit_iff_ne_zero] using nhdsNE_neBot (0 : α)
+  simpa only [isUnit_iff_ne_zero] using PerfectSpace.instNeBotNhdsNE (0 : α)
 
 end Nontrivially
 

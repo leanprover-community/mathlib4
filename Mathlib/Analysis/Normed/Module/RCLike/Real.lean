@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Patrick Massot, Eric Wieser, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Topology.Perfect
 
 /-!
 # Basic facts about real (semi)normed spaces
@@ -27,11 +28,11 @@ In this file we prove some theorems about (semi)normed spaces over real numbers.
 open Metric Set Function Filter
 open scoped NNReal Topology
 
-/-- If `E` is a nontrivial topological module over `ℝ`, then `E` has no isolated points.
-This is a particular case of `Module.punctured_nhds_neBot`. -/
-instance Real.punctured_nhds_module_neBot {E : Type*} [AddCommGroup E] [TopologicalSpace E]
-    [ContinuousAdd E] [Nontrivial E] [Module ℝ E] [ContinuousSMul ℝ E] (x : E) : NeBot (𝓝[≠] x) :=
-  Module.punctured_nhds_neBot ℝ E x
+/-- If `E` is a nontrivial topological module over `ℝ`, then `E` is a perfect space.
+This is a particular case of `Module.instPerfectSpace`. -/
+instance Real.instPerfectSpaceOfModule {E : Type*} [AddCommGroup E] [TopologicalSpace E]
+    [ContinuousAdd E] [Nontrivial E] [Module ℝ E] [ContinuousSMul ℝ E] : PerfectSpace E :=
+  Module.instPerfectSpace ℝ E
 
 section Seminormed
 

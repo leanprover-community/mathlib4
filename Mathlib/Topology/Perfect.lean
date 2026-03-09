@@ -20,7 +20,8 @@ including a version of the Cantor-Bendixson Theorem.
   This property is also called dense-in-itself.
 * `Perfect C`: A set `C` is perfect, meaning it is closed and every point of it
   is an accumulation point of itself.
-* `PerfectSpace X`: A topological space `X` is perfect if its universe is a perfect set.
+* `PerfectSpace X`: A topological space `X` is perfect if every point has a nontrivial
+  punctured neighborhood filter, i.e. `Filter.NeBot (𝓝[≠] x)` for every `x`.
 
 ## Main Statements
 
@@ -92,12 +93,25 @@ section PerfectSpace
 variable (α)
 
 /--
-A topological space `X` is said to be perfect if its universe is a perfect set.
-Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
+A topological space `X` is said to be perfect if every point has a nontrivial punctured
+neighborhood filter, i.e. `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 -/
-@[mk_iff perfectSpace_def]
 class PerfectSpace : Prop where
-  univ_preperfect : Preperfect (Set.univ : Set α)
+  /-- In a perfect space, every point has a nontrivial punctured neighborhood filter. -/
+  instNeBotNhdsNE (x : α) : Filter.NeBot (𝓝[≠] x)
+
+attribute [instance] PerfectSpace.instNeBotNhdsNE
+
+/-- A `PerfectSpace` can be constructed from `Preperfect Set.univ`. -/
+theorem PerfectSpace.mk' (h : Preperfect (Set.univ : Set α)) : PerfectSpace α where
+  instNeBotNhdsNE x := by
+    have := h x (mem_univ x)
+    rwa [AccPt, nhdsWithin, inf_principal, compl_eq_univ_diff, univ_inter] at this
+
+theorem PerfectSpace.univ_preperfect [PerfectSpace α] : Preperfect (Set.univ : Set α) := by
+  intro x _
+  rw [AccPt, nhdsWithin, inf_principal, compl_eq_univ_diff, univ_inter]
+  exact PerfectSpace.instNeBotNhdsNE x
 
 theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
   ⟨isClosed_univ, PerfectSpace.univ_preperfect⟩
@@ -191,11 +205,11 @@ lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.
       ← accPt_principal_iff_clusterPt] at h
     exact h
 
-instance [T1Space α] [ConnectedSpace α] [Nontrivial α] : PerfectSpace α := by
-  constructor
-  apply isPreconnected_univ.preperfect_of_nontrivial
-  rw [Set.nontrivial_univ_iff]
-  infer_instance
+instance [T1Space α] [ConnectedSpace α] [Nontrivial α] : PerfectSpace α :=
+  PerfectSpace.mk' <| by
+    apply isPreconnected_univ.preperfect_of_nontrivial
+    rw [Set.nontrivial_univ_iff]
+    infer_instance
 
 end Preperfect
 
@@ -254,15 +268,3 @@ theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTop
 end Kernel
 
 end Basic
-
-section PerfectSpace
-
-variable {X : Type*} [TopologicalSpace X]
-
-theorem perfectSpace_iff_forall_not_isolated : PerfectSpace X ↔ ∀ x : X, Filter.NeBot (𝓝[≠] x) := by
-  simp [perfectSpace_def, Preperfect, AccPt]
-
-instance PerfectSpace.not_isolated [PerfectSpace X] (x : X) : Filter.NeBot (𝓝[≠] x) :=
-  perfectSpace_iff_forall_not_isolated.mp ‹_› x
-
-end PerfectSpace

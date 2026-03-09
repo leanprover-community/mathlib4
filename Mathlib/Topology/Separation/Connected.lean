@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Perfect
 
 /-!
 # Interaction of separation properties with connectedness properties
@@ -42,12 +43,9 @@ theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPre
 theorem PreconnectedSpace.infinite [PreconnectedSpace X] [Nontrivial X] [T1Space X] : Infinite X :=
   infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
 
-/-- A non-trivial connected T1 space has no isolated points. -/
-instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
-    [ConnectedSpace X] [Nontrivial X] [T1Space X] (x : X) :
-    NeBot (𝓝[≠] x) := by
-  by_contra contra
-  rw [not_neBot, ← isOpen_singleton_iff_punctured_nhds] at contra
-  replace contra := nonempty_inter isOpen_compl_singleton
-    contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
-  simp [compl_inter_self {x}] at contra
+/-- A non-trivial connected T1 space has no isolated points.
+
+This is now a consequence of the `PerfectSpace` instance for connected T1 nontrivial spaces
+defined in `Mathlib.Topology.Perfect`. -/
+example [ConnectedSpace X] [Nontrivial X] [T1Space X] (x : X) :
+    NeBot (𝓝[≠] x) := inferInstance

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Perfect
 public import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -310,9 +311,10 @@ instance nhdsNE_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoi
   rw [nhdsNE_infty_eq]
   infer_instance
 
-instance (priority := 900) nhdsNE_neBot [∀ x : X, NeBot (𝓝[≠] x)] [NoncompactSpace X]
-    (x : OnePoint X) : NeBot (𝓝[≠] x) :=
-  OnePoint.rec OnePoint.nhdsNE_infty_neBot (fun y => OnePoint.nhdsNE_coe_neBot y) x
+instance (priority := 900) instPerfectSpace [PerfectSpace X] [NoncompactSpace X] :
+    PerfectSpace (OnePoint X) where
+  instNeBotNhdsNE x :=
+    OnePoint.rec OnePoint.nhdsNE_infty_neBot (fun y => OnePoint.nhdsNE_coe_neBot y) x
 
 theorem nhds_infty_eq : 𝓝 (∞ : OnePoint X) = map (↑) (coclosedCompact X) ⊔ pure ∞ := by
   rw [← nhdsNE_infty_eq, nhdsNE_sup_pure]
