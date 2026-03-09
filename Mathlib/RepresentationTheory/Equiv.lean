@@ -1,7 +1,16 @@
+/-
+Copyright (c) 2026 Yunzhou Xie. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Edison Xie
+-/
 module
 
 public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.Basic
+
+/-!
+
+-/
 
 @[expose] public section
 
