@@ -12,14 +12,19 @@ public import Mathlib.Data.Real.Basic
 
 # Multiseries definitions
 
-In this file we define the multiseries and its main properties: sortedness and approximation.
+In this file, we define the multiseries and its main properties: sortedness and approximation.
+A multiseries in a basis `[b₁, ..., bₙ]` represents a multivariate series:
+it is a formal series made from monomials `b₁ ^ e₁ * ... * bₙ ^ eₙ` where `e₁, ..., eₙ` are real
+numbers. We treat multivariate series in a basis `[b₁, ..., bₙ]` as a univariate series in the
+variable `b₁` (`basis_hd`) with coefficients being multiseries
+in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 ## Main definitions
 
 * `Basis` is the list of functions used to construct monomials in multiseries.
 * `Multiseries basis_hd basis_tl` is the type of multiseries in a basis `basis_hd :: basis_tl`.
-* `MultiseriesExpansion basis` is an multiseries expansion of some function `f : ℝ → ℝ`.
-  If `basis = []` then the mutliseries represents a constant function, otherwise it is
+* `MultiseriesExpansion basis` is a multiseries expansion of some function `f : ℝ → ℝ`.
+  If `basis = []`, then the multiseries represents a constant function, otherwise it is
   a pair of a multiseries `ms : Multiseries basis_hd basis_tl` and a function `f : ℝ → ℝ`.
 
 ## Implementation details
@@ -41,7 +46,11 @@ abbrev Basis := List (ℝ → ℝ)
 /-- Multiseries representing a given function `f : ℝ → ℝ`.
 `MultiseriesExpansion []` is just `ℝ`: multiseries representing constant functions.
 Otherwise it is a pair of a `Multiseries basis_hd basis_tl` and a function `ℝ → ℝ`. We call
-the former an expansion of the latter. -/
+the former an expansion of the latter.
+
+Note: most of the theory can be formulated in terms of `Multiseries`, but we need to explicitly
+store the approximated function to be able to use the eventual zeroness oracle at the trimming step.
+-/
 def MultiseriesExpansion (basis : Basis) : Type :=
   match basis with
   | [] => ℝ
@@ -56,7 +65,10 @@ A multiseries in a basis `[b₁, ..., bₙ]` is a formal series made from monomi
 a basis `[b₁, ..., bₙ]` as a univariate series in the variable `b₁` (`basis_hd`) with coefficients
 being multiseries in the basis `[b₂, ..., bₙ]` (`basis_tl`). We represent such a series as a lazy
 list (`Seq`) of pairs `(exp, coef)` where `exp` is the exponent of `b₁` and `coef` is the
-coefficient (a multiseries in `basis_tl`). -/
+coefficient (a multiseries in `basis_tl`).
+
+`MultiseriesExpansion` is a `Multiseries` with an attached real function.
+-/
 @[nolint unusedArguments]
 def Multiseries (basis_hd : ℝ → ℝ) (basis_tl : Basis) : Type :=
   Seq (ℝ × MultiseriesExpansion basis_tl)
@@ -83,23 +95,20 @@ def cons {basis_hd basis_tl} (exp : ℝ) (coef : MultiseriesExpansion basis_tl)
 def recOn {basis_hd basis_tl} {motive : Multiseries basis_hd basis_tl → Sort*}
     (ms : Multiseries basis_hd basis_tl) (nil : motive nil)
     (cons : ∀ exp coef (tl : Multiseries basis_hd basis_tl), motive (cons exp coef tl)) :
-    motive ms := by
-  cases ms using Stream'.Seq.recOn with
-  | nil => apply nil
-  | cons hd tl => apply cons
+    motive ms := Stream'.Seq.recOn _ nil fun _ _ ↦ cons _ _ _
 
-/-- Destruct a multiseries into a triple `(exp, coef, tl)`, where `exp` is leading exponent,
-`coef` is leading coefficient, and `tl` is tail. -/
+/-- Destruct a multiseries into a triple `(exp, coef, tl)`, where `exp` is the leading exponent,
+`coef` is the leading coefficient, and `tl` is the tail. -/
 def destruct {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
     Option (ℝ × MultiseriesExpansion basis_tl × Multiseries basis_hd basis_tl) :=
   (Seq.destruct ms).map (fun ((exp, coef), tl) => (exp, coef, tl))
 
-/-- The head of a multiseries, i.e. the first two elements of `destruct`. -/
+/-- The head of a multiseries, i.e. the first two entries of the tuple returned by `destruct`. -/
 def head {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
     Option (ℝ × MultiseriesExpansion basis_tl) :=
   Seq.head ms
 
-/-- The tail of a multiseries, i.e. the last element of `destruct`. -/
+/-- The tail of a multiseries, i.e. the last entry of the tuple returned by `destruct`. -/
 def tail {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) : Multiseries basis_hd basis_tl :=
   Seq.tail ms
 
@@ -292,13 +301,13 @@ end simp
 
 end Multiseries
 
-/-- Convert a real number to a multiseries in empty basis. -/
+/-- Convert a real number to a multiseries in an empty basis. -/
 def ofReal (c : ℝ) : MultiseriesExpansion [] := c
 
-/-- Convert a multiseries in empty basis to a real number. -/
+/-- Convert a multiseries in an empty basis to a real number. -/
 def toReal (ms : MultiseriesExpansion []) : ℝ := ms
 
-/-- Convert a multiseries in non-empty basis to a sequence of pairs `(exp, coef)`. -/
+/-- Convert a multiseries in a non-empty basis to a sequence of pairs `(exp, coef)`. -/
 def seq {basis_hd basis_tl} (ms : MultiseriesExpansion (basis_hd :: basis_tl)) :
     Multiseries basis_hd basis_tl :=
   ms.1
@@ -352,7 +361,7 @@ theorem mk_eq_mk_iff_iff {basis_hd basis_tl}
     mk s f = ms ↔ ms.seq = s ∧ ms.toFun = f := by
   rw [@Eq.comm _ (mk s f) ms, ms_eq_mk_iff]
 
-theorem ms_eq_ms_iff_mk_eq_mk {basis_hd basis_tl}
+theorem ext_iff {basis_hd basis_tl}
     (ms₁ ms₂ : MultiseriesExpansion (basis_hd :: basis_tl)) :
     ms₁ = ms₂ ↔ ms₁.seq = ms₂.seq ∧ ms₁.toFun = ms₂.toFun where
   mp h := by simp [h]
