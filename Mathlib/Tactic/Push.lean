@@ -14,10 +14,10 @@ public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Util.AtLocation
 
 /-!
-# The `push`, `push_neg` and `pull` tactics
+# The `push` and `pull` tactics
 
 The `push` tactic pushes a given constant inside expressions: it can be applied to goals as well
-as local hypotheses and also works as a `conv` tactic. `push_neg` is a macro for `push Not`.
+as local hypotheses and also works as a `conv` tactic.
 
 The `pull` tactic does the reverse: it pulls the given constant towards the head of the expression.
 -/
@@ -60,7 +60,7 @@ theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
 theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
 theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 
-/-- Set `distrib` to true in `push_neg` and related tactics. -/
+/-- Set `distrib` to true in `push Not` and related tactics. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
     descr := "Set `distrib` to true in `push_neg` and related tactics." }
@@ -235,9 +235,8 @@ To instead move a constant closer to the head of the expression, use the `pull` 
 Examples:
 * `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
 * `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
-* `push ¬ _` is the same as `push_neg` or `push Not`, and it rewrites
-  `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
-  Notably, this preserves the binder names.
+* `push ¬ _` is the same as `push Not`, and it rewrites `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into
+  `∃ ε > 0, ∀ δ > 0, ε ≤ δ`. Notably, this preserves the binder names.
 * `push fun _ ↦ _` rewrites `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
 * `push ∀ _, _` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
 -/
