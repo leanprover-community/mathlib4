@@ -21,7 +21,6 @@ open scoped ComplexConjugate
 
 namespace StrongDual
 
-open RCLike in
 /-- The extension `StrongDual.extendRCLike` as a continuous linear equivalence between
 the strong duals when `F` is a topological vector space. -/
 @[expose, simps! -isSimp toLinearEquiv apply symm_apply]
