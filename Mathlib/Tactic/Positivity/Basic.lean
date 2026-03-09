@@ -175,27 +175,45 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 
 /-- The `positivity` extension which identifies expressions of the form `a - b`,
 such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`. -/
-@[positivity _ - _] def evalSub : PositivityExt where eval {u α} _zα _pα e := do
+@[positivity _ - _] def evalSub : PositivityExt where eval {u α} _zα pα e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | throwError "not -"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ q(AddGroup $α)
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HSub.hSub)
-  if let some fvarId ← findLocalDeclWithType? q($b < $a) then
-    have fvar : Q($b < $a) := .fvar fvarId
-    let _ ← synthInstanceQ q(AddRightStrictMono $α)
-    return .positive q(sub_pos_of_lt $fvar)
-  if let some fvarId ← findLocalDeclWithType? q($b ≤ $a) then
-    have fvar : Q($b ≤ $a) := .fvar fvarId
-    let _ ← synthInstanceQ q(AddRightMono $α)
-    return .nonnegative q(sub_nonneg_of_le $fvar)
-  if let some fvarId ← findLocalDeclWithType? q($a ≠ $b) then
-    have fvar : Q($a ≠ $b) := .fvar fvarId
-    return .nonzero q(sub_ne_zero_of_ne $fvar)
-  if let some fvarId ← findLocalDeclWithType? q($b ≠ $a) then
-    have fvar : Q($b ≠ $a) := .fvar fvarId
-    return .nonzero q(sub_ne_zero_of_ne ($fvar).symm)
-  return .none
+  let mut result := .none
+  for decl in ← getLCtx do
+    if !decl.isImplementationDetail then
+      have e' : Q(Prop) := decl.type
+      have p : Q($e') := .fvar decl.fvarId
+      result ← orElse result do
+        match e' with
+        | ~q(@LE.le.{u} $β $le $lo $hi) =>
+          let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+          let .defEq _ ← isDefEqQ q($le) q(($pα).toLE) | return .none
+          let .defEq (_ : $a =Q $hi) ← isDefEqQ a hi | return .none
+          let .defEq (_ : $b =Q $lo) ← isDefEqQ b lo | return .none
+          let _ ← synthInstanceQ q(AddRightMono $α)
+          return .nonnegative q(sub_nonneg_of_le $p)
+        | ~q(@LT.lt.{u} $β $lt $lo $hi) =>
+          let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+          let .defEq _ ← isDefEqQ q($lt) q(($pα).toLT) | return .none
+          let .defEq (_ : $a =Q $hi) ← isDefEqQ a hi | return .none
+          let .defEq (_ : $b =Q $lo) ← isDefEqQ b lo | return .none
+          let _i ← synthInstanceQ q(AddRightStrictMono $α)
+          assumeInstancesCommute
+          return .positive (q(sub_pos_of_lt $p):)
+        | ~q(@Ne.{u + 1} $β $lhs $rhs) =>
+          let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+          if let .defEq (_ : $a =Q $lhs) ← isDefEqQ a lhs then
+            let .defEq (_ : $b =Q $rhs) ← isDefEqQ b rhs | return .none
+            return .nonzero (q(sub_ne_zero_of_ne $p):)
+          if let .defEq _ ← isDefEqQ a rhs then
+            let .defEq _ ← isDefEqQ b lhs | return .none
+            return .nonzero (q(sub_ne_zero_of_ne ($p).symm):)
+          return .none
+        | _ => return .none
+  return result
 
 /-- The `positivity` extension which identifies expressions of the form `a * b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
