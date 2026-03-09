@@ -16,7 +16,7 @@ public import Mathlib.NumberTheory.NumberField.Basic
 # Basic Definitions for Quadratic Number Fields
 
 field `ℚ(√d)` for a rational parameter `d`, along with basic operations
-(trace, norm, embedding), field and number field instances, and the
+(trace, norm), field and number field instances, and the
 `IsQuadraticField` predicate.
 
 ## Main Definitions
@@ -25,7 +25,7 @@ field `ℚ(√d)` for a rational parameter `d`, along with basic operations
 * `Qsqrtd d`: The quadratic algebra `QuadraticAlgebra ℚ d 0`, representing `ℚ(√d)`.
 * `Qsqrtd.trace`: The trace `Tr(x)`, defined via mathlib's `Algebra.trace`.
 * `Qsqrtd.norm`: The norm `N(x) = x · x̄ = x.re² - d · x.im²`.
-* `Qsqrtd.embed`: The canonical embedding `ℚ → Q(√d)`.
+* `Qsqrtd.norm`: The norm `N(x) = x · x̄ = x.re² - d · x.im²`.
 
 ## Main Results
 
@@ -80,9 +80,6 @@ private theorem leftMulMatrix_eq (x : Qsqrtd d) :
 
 /-- The norm of an element `x : Q(√d)`, defined as `N(x) = x · x̄ = x.re² - d · x.im²`. -/
 abbrev norm {d : ℚ} (x : Qsqrtd d) : ℚ := QuadraticAlgebra.norm x
-
-/-- The canonical embedding of ℚ into `Q(√d)`, mapping `r ↦ r + 0·√d`. -/
-abbrev embed (r : ℚ) : Qsqrtd d := algebraMap ℚ (Qsqrtd d) r
 
 end Qsqrtd
 
