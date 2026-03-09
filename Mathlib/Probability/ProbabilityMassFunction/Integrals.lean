@@ -33,7 +33,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p.toMeasure {a.val}).toReal • f a := by
-    apply integral_countable f p.support_countable
+    apply setIntegral_countable f p.support_countable
     rwa [IntegrableOn, restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p a).toReal • f a := by
     congr with x; congr 2
