@@ -361,13 +361,13 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : SupHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : SupHom α β) a = ⊤ :=
   rfl
 
-/- We cannot use for `to_dual` for `mk_le_mk` and `subtypeVal` because it does not support renaming
-the arguments -/
-
-@[simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
+@[to_dual (attr := simp, gcongr) (reorder := toFun₁ toFun₂, map_sup₁ map_sup₂)
+  (rename := toFun₁ → toFun₂, toFun₂ → toFun₁, map_sup₁ → map_inf₂, map_sup₂ → map_inf₁)]
+lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
     mk toFun₁ map_sup₁ ≤ mk toFun₂ map_sup₂ ↔ toFun₁ ≤ toFun₂ := .rfl
 
 /-- `Subtype.val` as a `SupHom`. -/
+@[to_dual (rename := Psup → Pinf) /-- `Subtype.val` as an `InfHom`. -/]
 def subtypeVal {P : β → Prop}
     (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
     letI := Subtype.semilatticeSup Psup
@@ -375,45 +375,17 @@ def subtypeVal {P : β → Prop}
   letI := Subtype.semilatticeSup Psup
   .mk Subtype.val (by simp)
 
-@[simp]
+@[to_dual (attr := simp) (rename := Psup → Pinf)]
 lemma subtypeVal_apply {P : β → Prop}
     (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) (x : {x : β // P x}) :
     subtypeVal Psup x = x := rfl
 
-@[simp]
+@[to_dual (attr := simp) (rename := Psup → Pinf)]
 lemma subtypeVal_coe {P : β → Prop}
     (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
     ⇑(subtypeVal Psup) = Subtype.val := rfl
 
 end SupHom
-
-namespace InfHom
-
-variable [Min α] [SemilatticeInf β]
-
-@[to_dual existing, simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_inf₁ map_inf₂) :
-    mk toFun₁ map_inf₁ ≤ mk toFun₂ map_inf₂ ↔ toFun₁ ≤ toFun₂ := .rfl
-
-/-- `Subtype.val` as an `InfHom`. -/
-@[to_dual existing]
-def subtypeVal {P : β → Prop}
-    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
-    letI := Subtype.semilatticeInf Pinf
-    InfHom {x : β // P x} β :=
-  letI := Subtype.semilatticeInf Pinf
-  .mk Subtype.val (by simp)
-
-@[to_dual existing, simp]
-lemma subtypeVal_apply {P : β → Prop}
-    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) (x : {x : β // P x}) :
-    subtypeVal Pinf x = x := rfl
-
-@[to_dual existing, simp]
-lemma subtypeVal_coe {P : β → Prop}
-    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
-    ⇑(subtypeVal Pinf) = Subtype.val := rfl
-
-end InfHom
 
 /-! ### Lattice homomorphisms -/
 
