@@ -27,6 +27,7 @@ jobs:
         id: bridge
         uses: leanprover-community/privilege-escalation-bridge/consume@d3bd99c50a4cf8c5350a211e8e3ba07ac19067d8 # v1.1.0
         with:
+          token: ${{ github.token }}
           artifact: workflow-data
           source_workflow: Commit Verification
           require_event: pull_request
