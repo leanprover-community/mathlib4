@@ -17,15 +17,15 @@ uniform ideal filters in terms of ring filter bases.
 
 ## Main definitions
 * `WithIdealFilter`: Type synonym for a ring that depends on a choice of ideal filter. This can be
-used to assign and infer instances on a ring that depend on an ideal filter.
+  used to assign and infer instances on a ring that depend on an ideal filter.
 * `IdealFilter.addGroupFilterBasis`: the `AddGroupFilterBasis` with sets the ideals of `F`.
 * `IdealFilter.ringFilterBasis`: under `[F.IsUniform]`, the `RingFilterBasis` with sets the ideals
-of `F`.
+  of `F`.
 
 ## Main statements
 
 * `IdealFilter.isUniform_iff_exists_ringFilterBasis`: An `IdealFilter` on a ring `A` is uniform if
-and only if its ideals form a `RingFilterBasis` for `A`.
+  and only if its ideals form a `RingFilterBasis` for `A`.
 
 ## References
 

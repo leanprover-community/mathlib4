@@ -235,10 +235,6 @@ theorem _root_.Function.Commute.set_image {f g : α → α} (h : Function.Commut
     Function.Commute (image f) (image g) :=
   Function.Semiconj.set_image h
 
-@[deprecated image_mono (since := "2025-08-01")]
-theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b :=
-  image_mono h
-
 theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪ f '' t := by grind
 
 @[simp]
@@ -246,6 +242,9 @@ theorem image_empty (f : α → β) : f '' ∅ = ∅ := by grind
 
 theorem image_inter_subset (f : α → β) (s t : Set α) : f '' (s ∩ t) ⊆ f '' s ∩ f '' t :=
   subset_inter (image_mono inter_subset_left) (image_mono inter_subset_right)
+
+theorem image_diff_subset (f : α → β) (s t : Set α) : f '' (s \ t) ⊆ f '' s ∩ f '' tᶜ :=
+  image_inter_subset f s tᶜ
 
 theorem image_inter_on {f : α → β} {s t : Set α} (h : ∀ x ∈ t, ∀ y ∈ s, f x = f y → x = y) :
     f '' (s ∩ t) = f '' s ∩ f '' t :=
@@ -365,7 +364,7 @@ theorem subset_image_symmDiff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t :=
 
 theorem image_diff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
   Subset.antisymm
-    (Subset.trans (image_inter_subset _ _ _) <| inter_subset_inter_right _ <| image_compl_subset hf)
+    (Subset.trans (image_diff_subset f s t) <| inter_subset_inter_right _ <| image_compl_subset hf)
     (subset_image_diff f s t)
 
 open scoped symmDiff in
@@ -420,15 +419,16 @@ theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : S
     s ⊆ (fun _ => a) ⁻¹' t ↔ a ∈ t := by
   rw [← image_subset_iff, hs.image_const, singleton_subset_iff]
 
--- Note defeq abuse identifying `preimage` with function composition in the following two proofs.
+@[simp]
+theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
+  rw [← Injective.of_comp_iff Set.mem_injective, ← Injective.of_comp_iff' _ Set.setOf_bijective]
+  exact injective_comp_right_iff_surjective
 
 @[simp]
-theorem preimage_injective : Injective (preimage f) ↔ Surjective f :=
-  injective_comp_right_iff_surjective
-
-@[simp]
-theorem preimage_surjective : Surjective (preimage f) ↔ Injective f :=
-  surjective_comp_right_iff_injective
+theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
+  rw [← Surjective.of_comp_iff _ Set.setOf_bijective.surjective,
+    ← Surjective.of_comp_iff' Set.mem_bijective]
+  exact surjective_comp_right_iff_injective
 
 @[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
@@ -460,7 +460,7 @@ theorem compl_image : image (compl : Set α → Set α) = preimage compl :=
   image_eq_preimage_of_inverse compl_compl compl_compl
 
 theorem compl_image_set_of {p : Set α → Prop} : compl '' { s | p s } = { s | p sᶜ } :=
-  congr_fun compl_image p
+  congr_fun compl_image {x | p x}
 
 theorem inter_preimage_subset (s : Set α) (t : Set β) (f : α → β) :
     s ∩ f ⁻¹' t ⊆ f ⁻¹' (f '' s ∩ t) := fun _ h => ⟨mem_image_of_mem _ h.left, h.right⟩
@@ -944,6 +944,12 @@ theorem rightInverse_rangeSplitting {f : α → β} (h : Injective f) :
   (leftInverse_rangeSplitting f).rightInverse_of_injective fun _ _ hxy =>
     h <| Subtype.ext_iff.1 hxy
 
+@[simp]
+lemma leftInverse_rangeFactorization_iff_injective (f : α → β) :
+    LeftInverse (rangeSplitting f) (rangeFactorization f) ↔ f.Injective :=
+  ⟨(rangeFactorization_injective.mp ·.injective),
+    fun h ↦ congrFun' (rightInverse_rangeSplitting h).id⟩
+
 theorem preimage_rangeSplitting {f : α → β} (hf : Injective f) :
     preimage (rangeSplitting f) = image (rangeFactorization f) :=
   (image_eq_preimage_of_inverse (rightInverse_rangeSplitting hf)
@@ -1349,7 +1355,7 @@ theorem preimage_eq_empty {s : Set β} (h : Disjoint s (range f)) :
 
 theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (range f) :=
   ⟨fun h => by
-    simp only [eq_empty_iff_forall_notMem, disjoint_iff_inter_eq_empty, mem_preimage] at h ⊢
+    simp only [eq_empty_iff_forall_notMem, mem_preimage] at h ⊢
     grind,
   preimage_eq_empty⟩
 
