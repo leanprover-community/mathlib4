@@ -325,7 +325,7 @@ lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
 variable (Z)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Auxiliary defininition for `associativityIso`. -/
+/-- Auxiliary definition for `associativityIso`. -/
 def associativity'Iso :
     (prod.associativity ..).inverse ⋙ (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙
       mapHomotopyCategory (α_ _ _ _).hom ≅
