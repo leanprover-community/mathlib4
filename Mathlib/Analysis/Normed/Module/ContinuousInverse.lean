@@ -5,8 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Complemented
-public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-! # Continuous linear maps with a continuous left/right inverse
 
@@ -17,6 +17,12 @@ linear equivalences, and a sufficient criterion in finite dimension: a surjectiv
 finite-dimensional space always admits a continuous right inverse; an injective linear map on a
 finite-dimensional space always admits a continuous left inverse.
 
+We also prove an equivalent characterisation of admitting a continuous left inverse: `f` admits a
+continuous left inverse if and only if it is injective, has closed range and its range admits a
+closed complement. This characterisation is used to extract a complement from immersions, for use
+in the regular value theorem. (For submersions, there is a natural choice of complement, and an
+analogous statement is not necessary.)
+
 This concept is used to give an equivalent definition of immersions and submersions of manifolds.
 
 ## Main definitions and results
@@ -25,6 +31,16 @@ This concept is used to give an equivalent definition of immersions and submersi
   which is a continuous linear map itself
 * `ContinuousLinearMap.HasRightInverse`: a continuous linear map admits a right inverse
   which is a continuous linear map itself
+
+* `ContinuousLinearMap.HasLeftInverse.isClosed_range`: if `f` has a continuous left inverse,
+  its range is closed
+* `ContinuousLinearMap.HasLeftInverse.closedComplemented_range`: if `f` has a continuous left
+  inverse, its range admits a closed complement
+* `ContinuousLinearMap.HasLeftInverse.complement`: a choice of closed complement for `range f`
+* `ContinuousLinearMap.HasLeftInverse.of_injective_of_isClosed_range_of_closedComplement_range`:
+  if `f` is injective and has closed range with a closed complement, it admits a continuous left
+  inverse
+
 * `ContinuousLinearEquiv.hasRightInverse` and `ContinuousLinearEquiv.hasRightInverse`:
   a continuous linear equivalence admits a continuous left (resp. right) inverse
 * `ContinuousLinearMap.HasLeftInverse.comp`, `ContinuousLinearMap.HasRightInverse.comp`:
@@ -49,9 +65,7 @@ This concept is used to give an equivalent definition of immersions and submersi
 
 * Suppose `E` and `F` are Banach and `f : E → F` is Fredholm.
   If `f` is surjective, it has a continuous right inverse.
-  If `f` is injective, it has a continuout left inverse.
-* `f` has a continuous left inverse if and only if it is injective, has closed range,
-  and its range admits a closed complement
+  If `f` is injective, it has a continuous left inverse.
 
 -/
 
@@ -179,6 +193,72 @@ lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 
 
 end NontriviallyNormedField
 
+/-! An equivalent characterisation of maps with a continuous left inverse -/
+section Ring
+
+-- The next lemmas assume we are working over a ring.
+variable {R E E' F F' G : Type*} [Ring R]
+  [TopologicalSpace E] [AddCommGroup E] [Module R E]
+  [TopologicalSpace F] [AddCommGroup F] [Module R F] {f : E →L[R] F}
+
+/-- If `f` has a continuous left inverse, its range admits a closed complement. -/
+lemma closedComplemented_range (hf : f.HasLeftInverse) : Submodule.ClosedComplemented f.range := by
+  -- Idea of proof: let g be a left inverse for f. Then ker g is a closed subspace of F,
+  -- and a complement to range f.
+  -- Mathlib's definition of closed complement takes a continuous projection to f.range instead
+  -- of a complementary subspace: consider `f.comp g` instead, which is continuous as both maps are,
+  -- and idempotent as a continuous left inverse.
+  use (f.comp hf.leftInverse).codRestrict f.range (by intro y; simp)
+  rintro ⟨y, x, rfl⟩
+  ext
+  simp only [coe_coe, coe_codRestrict_apply, coe_comp', Function.comp_apply]
+  rw [hf.leftInverse_leftInverse]
+
+section
+
+variable [T1Space F]
+
+lemma isClosed_range (hf : f.HasLeftInverse) [IsTopologicalAddGroup F] :
+    IsClosed (range f) := by
+  -- `range f = ker (f ∘ g - id)` is closed since `f ∘ g - id` is continuous.
+  rw [← f.range_toLinearMap, ← f.coe_range,
+    f.range_eq_ker_of_leftInverse (hf.leftInverse_leftInverse)]
+  exact ((f.comp hf.leftInverse) - (ContinuousLinearMap.id R F)).isClosed_ker
+
+/-- Choice of a closed complement of `range f` -/
+def complement (h : f.HasLeftInverse) : Submodule R F :=
+  h.closedComplemented_range.complement
+
+lemma isClosed_complement (h : f.HasLeftInverse) : IsClosed (X := F) h.complement :=
+  h.closedComplemented_range.isClosed_complement
+
+lemma isCompl_complement (h : f.HasLeftInverse) : IsCompl f.range h.complement :=
+  h.closedComplemented_range.isCompl_complement
+
+end
+
+end Ring
+
+section
+
+variable {R E F : Type*} [NontriviallyNormedField R]
+  [NormedAddCommGroup E] [NormedSpace R E] [CompleteSpace E]
+  [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
+
+/-- A continuous linear map between Banach spaces has a continuous left inverse if it is injective,
+has closed range and its range has a closed complement. -/
+lemma of_injective_of_isClosed_range_of_closedComplement_range {f : E →L[R] F}
+    (hf : Injective f) (hf' : IsClosed (range f)) (hf'' : Submodule.ClosedComplemented f.range) :
+    f.HasLeftInverse := by
+  have : (f.rangeRestrict).ker = ⊥ := by
+    rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf
+  -- We compose the continuous inverse of `f : E → range f` with the projection `p : F → range f`.
+  obtain ⟨p, hp⟩ := hf''
+  refine ⟨(f.leftInverse_of_injective_of_isClosed_range hf hf').comp p, fun x ↦ ?_⟩
+  simpa [hp ⟨f x, by simp⟩] using f.rangeRestrict.leftInverse_apply_of_inj this x
+
+end
+
 end HasLeftInverse
 
 namespace HasRightInverse
@@ -208,7 +288,7 @@ lemma _root_.ContinuousLinearEquiv.hasRightInverse (f : E ≃L[R] F) :
   ext y
   exact f.injective <| by simpa using f.hasRightInverse.rightInverse_rightInverse y
 
-/-- An invertible continuous linear map splits. -/
+/-- An invertible continuous linear map has a continuous right inverse. -/
 lemma of_isInvertible (hf : IsInvertible f) : f.HasRightInverse := by
   obtain ⟨e, rfl⟩ := hf
   exact e.hasRightInverse

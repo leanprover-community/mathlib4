@@ -347,9 +347,8 @@ theorem sSup_carrier_def (S : Set (SubDPIdeal hI)) : (sSup S).carrier = sSup ((t
 
 instance : CompleteLattice (SubDPIdeal hI) := by
   refine Function.Injective.completeLattice (fun J : SubDPIdeal hI ↦ (J : Set.Iic I))
-    (fun J J' h ↦ by simpa only [SubDPIdeal.ext_iff, Subtype.mk.injEq] using h) (fun J J' ↦ by rfl)
-    (fun J J' ↦ by rfl)
-    (fun S ↦ ?_) (fun S ↦ ?_) rfl rfl
+    (fun J J' h ↦ by simpa only [SubDPIdeal.ext_iff, Subtype.mk.injEq] using h)
+    .rfl .rfl (fun J J' ↦ by rfl) (fun J J' ↦ by rfl) (fun S ↦ ?_) (fun S ↦ ?_) rfl rfl
   · conv_rhs => rw [iSup]
     rw [Subtype.ext_iff, Set.Iic.coe_sSup]
     dsimp only
@@ -368,7 +367,7 @@ instance : CompleteLattice (SubDPIdeal hI) := by
     apply iInf_congr (fun J ↦ ?_)
     by_cases hJ : J ∈ S
     · rw [ciInf_pos hJ, ciInf_pos hJ]; rfl
-    · simp [hJ, iInf_neg, le_top, inf_of_le_left, Set.Iic.coe_top, le_refl]; rfl
+    · simp [hJ, iInf_neg, le_top, inf_of_le_left, Set.Iic.coe_top]; rfl
 
 end CompleteLattice
 
@@ -515,6 +514,7 @@ theorem le_equalizer_of_isDPMorphism {B : Type*} [CommSemiring B] (f : A →+* B
   rintro b ⟨a, ha, rfl⟩
   exact ⟨hI_le_K (mem_map_of_mem f ha), fun n ↦ by rw [hIK.2 a ha, hIK'.2 a ha]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If there is a divided power structure on `I⬝(A/J)` such that the quotient map is
 a dp-morphism, then `J ⊓ I` is a sub-dp-ideal of `I`. -/

@@ -510,7 +510,7 @@ theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun _ ↦ clog_monotone b (le_add_right n 1)
 
-/-- This lemma says that `⌈log (b ^ k) n⌉ = ⌈(⌈log b n⌉ / k)⌉, using operations on natural numbers
+/-- This lemma says that `⌈log (b ^ k) n⌉ = ⌈(⌈log b n⌉ / k)⌉`, using operations on natural numbers
 to express this equality.
 
 Since Lean has no dedicated function for the ceiling division,

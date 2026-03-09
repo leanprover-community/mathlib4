@@ -377,6 +377,7 @@ lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
       rw [add_smul, sub_lt_iff_lt_add']
       gcongr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `x < y`, then `(Set.Ici y)ᶜ` is star convex at `x`. -/
 lemma starConvex_compl_Ici (h : x < y) : StarConvex 𝕜 x (Ici y)ᶜ :=
   starConvex_compl_Iic (E := Eᵒᵈ) h

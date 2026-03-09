@@ -64,7 +64,7 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
       rw [← Category.assoc, eq_whisker hf.w]
     simp [reassoc']
   isLimit := isLimitOfReflects F <|
-    IsLimit.ofConeEquiv (Cones.postcomposeEquivalence (compNatIso F)) <|
+    IsLimit.ofConeEquiv (Cone.postcomposeEquivalence (compNatIso F)) <|
       (IsLimit.ofIsoLimit (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
         simp only [Functor.map_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
         hf.isLimit)) (Fork.ext (Iso.refl _) (by simp [compNatIso, Fork.ι]))
@@ -115,6 +115,7 @@ def normalOfIsPullbackFstOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
     NormalMono f :=
   normalOfIsPullbackSndOfNormal comm.symm (PullbackCone.flipIsLimit t)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transport a `NormalMono` structure via an isomorphism of arrows. -/
 def NormalMono.ofArrowIso {X Y : C} {f : X ⟶ Y}
     (hf : NormalMono f) {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
@@ -177,7 +178,7 @@ def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMor
   g := F.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
   w := F.map_injective <| by simp [hf.w]
   isColimit := isColimitOfReflects F <|
-    IsColimit.ofCoconeEquiv (Cocones.precomposeEquivalence (compNatIso F).symm) <|
+    IsColimit.ofCoconeEquiv (Cocone.precomposeEquivalence (compNatIso F).symm) <|
       (IsColimit.ofIsoColimit
         (IsCokernel.ofIsoComp _ _ (F.objObjPreimageIso hf.W).symm (by simp) hf.isColimit)
           (Cofork.ext (Iso.refl _) (by simp [compNatIso, Cofork.π])))
@@ -234,6 +235,7 @@ open Opposite
 
 variable [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transport a `NormalEpi` structure via an isomorphism of arrows. -/
 def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}
     (hf : NormalEpi f) {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :

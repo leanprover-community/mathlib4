@@ -39,6 +39,7 @@ namespace Monad
 
 attribute [local instance] endofunctorMonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance (M : Monad C) : MonObj (M : C ⥤ C) where
   one := M.η
@@ -50,6 +51,7 @@ instance (M : Monad C) : MonObj (M : C ⥤ C) where
 def toMon (M : Monad C) : Mon (C ⥤ C) where
   X := (M : C ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 /-- Passing from `Monad C` to `Mon (C ⥤ C)` is functorial. -/
 @[simps]
@@ -75,6 +77,7 @@ def ofMon (M : Mon (C ⥤ C)) : Monad C where
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Passing from `Mon (C ⥤ C)` to `Monad C` is functorial. -/
 @[simps]
 def monToMonad : Mon (C ⥤ C) ⥤ Monad C where
@@ -86,6 +89,7 @@ def monToMonad : Mon (C ⥤ C) ⥤ Monad C where
       app_μ Z := by
         simpa [-IsMonHom.mul_hom] using congrArg (fun t ↦ t.app Z) (IsMonHom.mul_hom f.hom) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
 @[simps]
 def monadMonEquiv : Monad C ≌ Mon (C ⥤ C) where
