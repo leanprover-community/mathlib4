@@ -81,6 +81,12 @@ lemma LocalizedModule.equivTensorProduct_apply_mk (x : M) (s : S) :
   apply (equivTensorProduct S M).symm.injective
   simp
 
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+instance {T : Type*} [CommSemiring T] [Algebra R T] :
+    IsLocalizedModule S (IsScalarTower.toAlgHom R T (A ⊗[R] T) : T →ₗ[R] A ⊗[R] T) := by
+  rw [isLocalizedModule_iff_isBaseChange (S := S) (A := A)]
+  exact TensorProduct.isBaseChange _ _ _
+
 namespace IsLocalization
 
 open TensorProduct Algebra.TensorProduct
