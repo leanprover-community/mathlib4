@@ -28,7 +28,6 @@ namespace ValuativeRel
 variable {R Γ : Type} [CommRing R] [DecidableEq R] [IsDomain R]
   [LinearOrderedCommGroupWithZero Γ]
 
-
 open WithZero
 
 /-- The trivial valuative relation on a domain `R`, such that all non-zero elements are related.
@@ -39,7 +38,7 @@ def trivialRel : ValuativeRel R where
   vle_total _ _ := by split_ifs <;> simp_all
   vle_trans _ _ := by split_ifs; simp_all
   vle_add _ _ := by split_ifs; simp_all
-  vle_mul_right _ := by split_ifs <;> simp_all
+  mul_vle_mul_left _ _ := by split_ifs at * <;> simp_all
   vle_mul_cancel _ := by split_ifs <;> simp_all
   not_vle_one_zero := by split_ifs <;> simp_all
 
@@ -65,7 +64,7 @@ lemma subsingleton_units_valueGroupWithZero_of_trivialRel [ValuativeRel R]
   have : (valuation R).IsEquiv (1 : Valuation R Γ) := isEquiv _ _
   obtain ⟨r, s, hr⟩ := exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq a
   obtain ⟨t, u, ht⟩ := exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq b
-  rw [Units.ext_iff, ← hr, ← ht, div_eq_div_iff, ← map_mul, ← map_mul, this.val_eq] <;>
+  rw [Units.ext_iff, ← hr, ← ht, div_eq_div_iff, ← map_mul, ← map_mul, this.eq_iff] <;>
   simp [one_apply_posSubmonoid]
 
 lemma not_isNontrivial_of_trivialRel [ValuativeRel R] [Valuation.Compatible (1 : Valuation R Γ)] :
@@ -81,7 +80,7 @@ lemma isDiscrete_trivialRel [ValuativeRel R] [Valuation.Compatible (1 : Valuatio
   refine ⟨⟨0, zero_lt_one, fun x ↦ ?_⟩⟩
   have := subsingleton_units_valueGroupWithZero_of_trivialRel R Γ
   rcases GroupWithZero.eq_zero_or_unit x with rfl | ⟨u, rfl⟩
-  · simp_all
+  · simp
   · rw [← Units.val_one, Units.val_lt_val]
     simp
 

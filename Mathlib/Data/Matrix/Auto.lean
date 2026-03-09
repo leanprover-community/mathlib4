@@ -5,8 +5,12 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Expr
-public import Mathlib.Data.Matrix.Reflection
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.SetLike
+public import Mathlib.Util.CompileInductive
 
 /-! # Automatically generated lemmas for working with concrete matrices
 
@@ -26,4 +30,4 @@ TODO: These magic lemmas have been skipped for now, though the plumbing lemmas i
 They should probably be implemented as simprocs.
 -/
 
-@[expose] public section
+public section

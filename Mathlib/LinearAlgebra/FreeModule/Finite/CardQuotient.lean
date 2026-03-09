@@ -20,7 +20,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 -/
 
-@[expose] public section
+public section
 
 open Module Submodule
 
@@ -77,8 +77,6 @@ theorem Submodule.natAbs_det_equiv (N : Submodule ℤ M) {E : Type*} [EquivLike 
     · rw [Matrix.diagonal_apply_ne _ h, Finsupp.single_eq_of_ne h]
   -- Now we map everything through the linear equiv `M ≃ₗ (ι → ℤ)`,
   -- which maps `(M ⧸ N)` to `Π i, ZMod (a i).nat_abs`.
-  haveI : ∀ i, NeZero (a i).natAbs := fun i ↦
-    ⟨Int.natAbs_ne_zero.mpr (smithNormalFormCoeffs_ne_zero b h i)⟩
   simp_rw [Nat.card_congr (quotientEquivPiZMod N b h).toEquiv, Nat.card_pi, Nat.card_zmod, a]
 
 /-- Let `b` be a basis for `M` over `ℤ` and `bN` a basis for `N` over `ℤ` of the same dimension.
@@ -104,15 +102,13 @@ theorem AddSubgroup.index_eq_natAbs_det {E : Type*} [AddCommGroup E] {ι : Type*
   have : Module.Finite ℤ E := Module.Finite.of_basis bE
   (Submodule.natAbs_det_basis_change bE N.toIntSubmodule bN).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AddSubgroup.relIndex_eq_natAbs_det {E : Type*} [AddCommGroup E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
     (b₁ : Basis ι ℤ L₁.toIntSubmodule) (b₂ : Basis ι ℤ L₂.toIntSubmodule) :
     L₁.relIndex L₂ = (b₂.det (fun i ↦ ⟨b₁ i, (H (SetLike.coe_mem _))⟩)).natAbs := by
   rw [relIndex, index_eq_natAbs_det b₂ _ (b₁.map (addSubgroupOfEquivOfLe H).toIntLinearEquiv.symm)]
   rfl
-
-@[deprecated (since := "2025-08-12")]
-alias AddSubgroup.relindex_eq_natAbs_det := AddSubgroup.relIndex_eq_natAbs_det
 
 theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
@@ -124,8 +120,5 @@ theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ
   rw [Basis.det_apply, Basis.det_apply, RingHom.map_det]
   congr; ext
   simp [Basis.toMatrix_apply]
-
-@[deprecated (since := "2025-08-12")]
-alias AddSubgroup.relindex_eq_abs_det := AddSubgroup.relIndex_eq_abs_det
 
 end AddSubgroup

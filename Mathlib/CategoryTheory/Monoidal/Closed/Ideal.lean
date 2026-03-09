@@ -76,6 +76,7 @@ instance : ExponentialIdeal (subterminalInclusion C) := by
   refine ⟨⟨A ⟹ B.1, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
   exact uncurry_injective (B.2 (MonoidalClosed.uncurry g) (MonoidalClosed.uncurry h))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
 the presence of a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, that is:
 `(A ⟹ iB) ≅ i L (A ⟹ iB)`, naturally in `B`.
@@ -115,6 +116,7 @@ theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
 
 open MonoidalClosed MonoidalCategory CartesianMonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 open Limits in
 /-- Given a reflective subcategory `D` of a category with chosen finite products `C`, `D` admits
 finite chosen products. -/
@@ -124,22 +126,22 @@ finite chosen products. -/
 abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Reflective i] :
     CartesianMonoidalCategory D :=
   .ofChosenFiniteProducts
-    ({  cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
-        isLimit := by
-          apply isLimitOfReflects i
-          apply isLimitChangeEmptyCone _ isTerminalTensorUnit
-          letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
-            have := reflective_products i
-            refine Functor.essImage.unit_isIso ⟨terminal D, ⟨PreservesTerminal.iso i |>.trans ?_⟩⟩
-            exact IsLimit.conePointUniqueUpToIso (limit.isLimit _) isTerminalTensorUnit
-          exact asIso ((reflectorAdjunction i).unit.app (𝟙_ C)) })
+    ({ cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
+       isLimit := by
+         apply isLimitOfReflects i
+         apply isLimitChangeEmptyCone _ isTerminalTensorUnit
+         letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
+           have := reflective_products i
+           refine Functor.essImage.unit_isIso ⟨terminal D, ⟨PreservesTerminal.iso i |>.trans ?_⟩⟩
+           exact IsLimit.conePointUniqueUpToIso (limit.isLimit _) isTerminalTensorUnit
+         exact asIso ((reflectorAdjunction i).unit.app (𝟙_ C)) })
   fun X Y ↦
     { cone := BinaryFan.mk
         ((reflector i).map (fst (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
         ((reflector i).map (snd (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
       isLimit := by
         apply isLimitOfReflects i
-        apply IsLimit.equivOfNatIsoOfIso (pairComp X Y _) _ _ _|>.invFun
+        apply IsLimit.equivOfNatIsoOfIso (pairComp X Y _) _ _ _ |>.invFun
           (tensorProductIsBinaryProduct (i.obj X) (i.obj Y))
         fapply BinaryFan.ext
         · change (reflector i ⋙ i).obj (i.obj X ⊗ i.obj Y) ≅ (𝟭 C).obj (i.obj X ⊗ i.obj Y)
@@ -148,18 +150,19 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
             haveI := reflective_products i
             use Limits.prod X Y
             constructor
-            apply Limits.PreservesLimitPair.iso i _ _|>.trans
+            apply Limits.PreservesLimitPair.iso i _ _ |>.trans
             refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit (pair (i.obj X) (i.obj Y)))
               (tensorProductIsBinaryProduct _ _)
-          exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y))|>.symm
-        · simp only [BinaryFan.fst, Cones.postcompose, pairComp]
+          exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) |>.symm
+        · simp only [BinaryFan.fst, Cone.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc]
-        · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
+        · simp only [BinaryFan.snd, Cone.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc] }
 
 variable [CartesianMonoidalCategory C] [Reflective i] [MonoidalClosed C]
   [CartesianMonoidalCategory D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
 -/
@@ -261,6 +264,7 @@ noncomputable def bijection (A B : C) (X : D) :
     _ ≃ ((reflector i).obj A ⊗ (reflector i).obj B ⟶ X) :=
       i.fullyFaithfulOfReflective.homEquiv.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
   simp only [bijection, Equiv.trans_def, curriedTensor_obj_obj, Equiv.symm_trans_apply,
@@ -282,6 +286,7 @@ theorem bijection_symm_apply_id (A B : C) :
     prodComparison_snd]
     apply (reflectorAdjunction i).unit.naturality
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⊗ B) ⟶ X) (g : X ⟶ X') :
     bijection i _ _ _ (f ≫ g) = bijection i _ _ _ f ≫ g := by
   dsimp [bijection]

@@ -25,7 +25,7 @@ See the sixth proof for the infinity of primes in Chapter 1 of [aigner1999proofs
 The proof is due to Erdős.
 -/
 
-@[expose] public section
+public section
 
 open Set Nat
 open scoped Topology
@@ -82,6 +82,7 @@ theorem not_summable_one_div_on_primes :
   refine (indicator_of_mem ?_ fun n : ℕ ↦ (1 / n : ℝ)).symm
   exact ⟨hpp, by simpa [primesBelow, hpp] using hp₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum over the reciprocals of the primes diverges. -/
 theorem Nat.Primes.not_summable_one_div : ¬ Summable (fun p : Nat.Primes ↦ (1 / p : ℝ)) := by
   convert summable_subtype_iff_indicator.mp.mt not_summable_one_div_on_primes

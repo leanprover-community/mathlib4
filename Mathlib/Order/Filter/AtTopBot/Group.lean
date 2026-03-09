@@ -14,7 +14,7 @@ public import Mathlib.Order.Filter.AtTopBot.Monoid
 # Convergence to ±infinity in ordered commutative groups
 -/
 
-@[expose] public section
+public section
 
 variable {α G : Type*}
 open Set
@@ -30,6 +30,7 @@ theorem tendsto_atTop_mul_left_of_le' (C : G) (hf : ∀ᶠ x in l, C ≤ f x) (h
     Tendsto (fun x => f x * g x) l atTop :=
   .atTop_of_isBoundedUnder_le_mul (f := f⁻¹) ⟨C⁻¹, by simpa⟩ (by simpa)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem tendsto_atBot_mul_left_of_ge' (C : G) (hf : ∀ᶠ x in l, f x ≤ C) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot :=
@@ -40,6 +41,7 @@ theorem tendsto_atTop_mul_left_of_le (C : G) (hf : ∀ x, C ≤ f x) (hg : Tends
     Tendsto (fun x => f x * g x) l atTop :=
   tendsto_atTop_mul_left_of_le' l C (univ_mem' hf) hg
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem tendsto_atBot_mul_left_of_ge (C : G) (hf : ∀ x, f x ≤ C) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot :=
@@ -50,6 +52,7 @@ theorem tendsto_atTop_mul_right_of_le' (C : G) (hf : Tendsto f l atTop) (hg : �
     Tendsto (fun x => f x * g x) l atTop :=
   .atTop_of_mul_isBoundedUnder_le (g := g⁻¹) ⟨C⁻¹, by simpa⟩ (by simpa)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem tendsto_atBot_mul_right_of_ge' (C : G) (hf : Tendsto f l atBot) (hg : ∀ᶠ x in l, g x ≤ C) :
     Tendsto (fun x => f x * g x) l atBot :=
@@ -60,6 +63,7 @@ theorem tendsto_atTop_mul_right_of_le (C : G) (hf : Tendsto f l atTop) (hg : ∀
     Tendsto (fun x => f x * g x) l atTop :=
   tendsto_atTop_mul_right_of_le' l C hf (univ_mem' hg)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem tendsto_atBot_mul_right_of_ge (C : G) (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ C) :
     Tendsto (fun x => f x * g x) l atBot :=
@@ -70,6 +74,7 @@ theorem tendsto_atTop_mul_const_left (C : G) (hf : Tendsto f l atTop) :
     Tendsto (fun x => C * f x) l atTop :=
   tendsto_atTop_mul_left_of_le' l C (univ_mem' fun _ => le_refl C) hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem tendsto_atBot_mul_const_left (C : G) (hf : Tendsto f l atBot) :
     Tendsto (fun x => C * f x) l atBot :=
@@ -80,6 +85,7 @@ theorem tendsto_atTop_mul_const_right (C : G) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * C) l atTop :=
   tendsto_atTop_mul_right_of_le' l C hf (univ_mem' fun _ => le_refl C)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem tendsto_atBot_mul_const_right (C : G) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * C) l atBot :=
@@ -105,6 +111,7 @@ theorem comap_inv_atTop : comap (Inv.inv : G → G) atTop = atBot :=
 theorem tendsto_inv_atTop_atBot : Tendsto (Inv.inv : G → G) atTop atBot :=
   (OrderIso.inv G).tendsto_atTop
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem tendsto_inv_atBot_atTop : Tendsto (Inv.inv : G → G) atBot atTop :=
   tendsto_inv_atTop_atBot (G := Gᵒᵈ)
@@ -118,6 +125,16 @@ theorem tendsto_inv_atTop_iff : Tendsto (fun x => (f x)⁻¹) l atTop ↔ Tendst
 @[to_additive (attr := simp)]
 theorem tendsto_inv_atBot_iff : Tendsto (fun x => (f x)⁻¹) l atBot ↔ Tendsto f l atTop :=
   (OrderIso.inv G).tendsto_atTop_iff
+
+@[to_additive (attr := simp)]
+theorem tendsto_comp_inv_atTop_iff {f : G → α} :
+    Tendsto (fun x ↦ f (x⁻¹)) atTop l ↔ Tendsto f atBot l := by
+  simp [← Function.comp_def, Tendsto, ← map_map, map_inv_atTop]
+
+@[to_additive (attr := simp)]
+theorem tendsto_comp_inv_atBot_iff {f : G → α} :
+    Tendsto (fun x ↦ f (x⁻¹)) atBot l ↔ Tendsto f atTop l := by
+  simp [← Function.comp_def, Tendsto, ← map_map, map_inv_atBot]
 
 end OrderedCommGroup
 

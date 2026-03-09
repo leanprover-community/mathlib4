@@ -11,9 +11,9 @@ public import Mathlib.Data.Nat.Totient
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
-public import Mathlib.Topology.Order.T5
+public import Mathlib.Topology.OpenPartialHomeomorph.Defs
 import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.GroupTheory.QuotientGroup.ModEq
 
 /-!
 # The additive circle
@@ -68,53 +68,124 @@ variable [AddCommGroup 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archi
   [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {p : 𝕜} (hp : 0 < p) (a x : 𝕜)
 
-theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x := by
-  intro s h
-  rw [Filter.mem_map, mem_nhdsWithin_iff_exists_mem_nhds_inter]
-  haveI : Nontrivial 𝕜 := ⟨⟨0, p, hp.ne⟩⟩
-  simp_rw [mem_nhds_iff_exists_Ioo_subset] at h ⊢
-  obtain ⟨l, u, hxI, hIs⟩ := h
-  let d := toIcoDiv hp a x • p
-  have hd := toIcoMod_mem_Ico hp a x
-  simp_rw [subset_def, mem_inter_iff]
-  refine ⟨_, ⟨l + d, min (a + p) u + d, ?_, fun x => id⟩, fun y => ?_⟩ <;>
-    simp_rw [← sub_mem_Ioo_iff_left, mem_Ioo, lt_min_iff]
-  · exact ⟨hxI.1, hd.2, hxI.2⟩
-  · rintro ⟨h, h'⟩
-    apply hIs
-    rw [← toIcoMod_sub_zsmul, (toIcoMod_eq_self _).2]
-    exacts [⟨h.1, h.2.2⟩, ⟨hd.1.trans (sub_le_sub_right h' _), h.2.1⟩]
+/-- `toIcoDiv` is eventually constant on the right at every point. -/
+theorem eventuallyEq_toIcoDiv_nhdsGE : toIcoDiv hp a =ᶠ[𝓝[≥] x] fun _ ↦ toIcoDiv hp a x := by
+  simp only [Filter.EventuallyEq, toIcoDiv_eq_iff, sub_mem_Ico_iff_left]
+  apply Ico_mem_nhdsGE_of_mem
+  rw [← sub_mem_Ico_iff_left, ← toIcoDiv_eq_iff]
 
-theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
-  rw [(funext fun y => Eq.trans (by rw [neg_neg]) <| toIocMod_neg _ _ _ :
-      toIocMod hp a = (fun x => p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
-  exact
-    (continuous_sub_left _).continuousAt.comp_continuousWithinAt <|
-      (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuousWithinAt fun y => neg_le_neg
+/-- `toIcoDiv` is continuous on the right at every point.
+
+In fact, a stronger statement is true:
+it's eventually constant on the right, see `eventuallyEq_toIcoDiv_nhdsGE`. -/
+theorem continuousWithinAt_toIcoDiv_Ici : ContinuousWithinAt (toIcoDiv hp a) (Ici x) x :=
+  Filter.tendsto_pure.mpr (eventuallyEq_toIcoDiv_nhdsGE hp a x) |>.mono_right <| pure_le_nhds _
+
+/-- `toIocDiv` is eventually constant on the left at every point. -/
+theorem eventuallyEq_toIocDiv_nhdsLE : toIocDiv hp a =ᶠ[𝓝[≤] x] fun _ ↦ toIocDiv hp a x := by
+  simp only [Filter.EventuallyEq, toIocDiv_eq_iff, sub_mem_Ioc_iff_left]
+  apply Ioc_mem_nhdsLE_of_mem
+  rw [← sub_mem_Ioc_iff_left, ← toIocDiv_eq_iff]
+
+/-- `toIocDiv` is continuous on the left at every point.
+
+In fact, a stronger statement is true:
+it's eventually constant on the left, see `eventuallyEq_toIocDiv_nhdsLE`. -/
+theorem continuousWithinAt_toIocDiv_Iic : ContinuousWithinAt (toIocDiv hp a) (Iic x) x :=
+  Filter.tendsto_pure.mpr (eventuallyEq_toIocDiv_nhdsLE hp a x) |>.mono_right <| pure_le_nhds _
+
+/-- `toIcoMod` is continuous on the right at every point. -/
+theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ici x) x :=
+  continuousWithinAt_id.sub <|
+    (continuousWithinAt_toIcoDiv_Ici hp a x).smul continuousWithinAt_const
+
+@[deprecated (since := "2026-01-04")]
+alias continuous_right_toIcoMod := continuousWithinAt_toIcoMod_Ici
+
+/-- `toIocMod` is continuous on the right at every point. -/
+theorem continuousWithinAt_toIocMod_Iic : ContinuousWithinAt (toIocMod hp a) (Iic x) x :=
+  continuousWithinAt_id.sub <|
+    (continuousWithinAt_toIocDiv_Iic hp a x).smul continuousWithinAt_const
+
+@[deprecated (since := "2026-01-04")]
+alias continuous_left_toIocMod := continuousWithinAt_toIocMod_Iic
+
+/-- At every point `x`, for all `y < x` sufficiently close to `x`,
+we have `toIcoDiv hp a y = toIocDiv hp a x`.
+
+Note that we use different functions on the LHS and on the RHS.
+-/
+theorem eventuallyEq_toIcoDiv_nhdsLT : toIcoDiv hp a =ᶠ[𝓝[<] x] fun _ ↦ toIocDiv hp a x := by
+  simp only [Filter.EventuallyEq, toIcoDiv_eq_iff, sub_mem_Ico_iff_left]
+  apply Ico_mem_nhdsLT_of_mem
+  rw [← sub_mem_Ioc_iff_left, ← toIocDiv_eq_iff]
+
+/-- At every point `x`, for all `y > x` sufficiently close to `x`,
+we have `toIocDiv hp a y = toIcoDiv hp a x`.
+
+Note that we use different functions on the LHS and on the RHS.
+-/
+theorem eventuallyEq_toIocDiv_nhdsGT : toIocDiv hp a =ᶠ[𝓝[>] x] fun _ ↦ toIcoDiv hp a x := by
+  simp only [Filter.EventuallyEq, toIocDiv_eq_iff, sub_mem_Ioc_iff_left]
+  apply Ioc_mem_nhdsGT_of_mem
+  rw [← sub_mem_Ico_iff_left, ← toIcoDiv_eq_iff]
 
 variable {x}
 
-theorem toIcoMod_eventuallyEq_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
-    toIcoMod hp a =ᶠ[𝓝 x] toIocMod hp a :=
-  IsOpen.mem_nhds
-      (by
-        rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
-        exact isOpen_iUnion fun i => isOpen_Ioo) <|
-    (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx.symm
+/-- If `x` is not congruent to `a` modulo `p`, then `toIcoDiv` is locally constant near `x`. -/
+theorem eventuallyEq_toIcoDiv_nhds (hx : ¬x ≡ a [PMOD p]) :
+    toIcoDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIcoDiv hp a x := by
+  rw [← nhdsLT_sup_nhdsGE, Filter.EventuallyEq, Filter.eventually_sup]
+  refine ⟨?_, eventuallyEq_toIcoDiv_nhdsGE hp a x⟩
+  convert (eventuallyEq_toIcoDiv_nhdsLT hp a x).eventually using 3
+  rwa [← not_modEq_iff_toIcoDiv_eq_toIocDiv, AddCommGroup.modEq_comm]
 
-theorem continuousAt_toIcoMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIcoMod hp a) x :=
-  let h := toIcoMod_eventuallyEq_toIocMod hp a hx
-  continuousAt_iff_continuous_left_right.2 <|
-    ⟨(continuous_left_toIocMod hp a x).congr_of_eventuallyEq (h.filter_mono nhdsWithin_le_nhds)
-        h.eq_of_nhds,
-      continuous_right_toIcoMod hp a x⟩
+/-- If `x` is not congruent to `a` modulo `p`, then `toIcoDiv` is continuous at `x`.
 
-theorem continuousAt_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIocMod hp a) x :=
-  let h := toIcoMod_eventuallyEq_toIocMod hp a hx
-  continuousAt_iff_continuous_left_right.2 <|
-    ⟨continuous_left_toIocMod hp a x,
-      (continuous_right_toIcoMod hp a x).congr_of_eventuallyEq
-        (h.symm.filter_mono nhdsWithin_le_nhds) h.symm.eq_of_nhds⟩
+In fact, it is locally near `x`, see `eventuallyEq_toIcoDiv_nhds`. -/
+theorem continuousAt_toIcoDiv (hx : ¬x ≡ a [PMOD p]) :
+    ContinuousAt (toIcoDiv hp a) x :=
+  tendsto_nhds_of_eventually_eq <| eventuallyEq_toIcoDiv_nhds hp a hx
+
+/-- `toIcoDiv` is continuous on the set of points that are not congruent to `a` modulo `p`. -/
+theorem continuousOn_toIcoDiv : ContinuousOn (toIcoDiv hp a) {x | ¬x ≡ a [PMOD p]} := fun _x hx ↦
+  (continuousAt_toIcoDiv hp a hx).continuousWithinAt
+
+/-- If `x` is not congruent to `a` modulo `p`, then `toIocDiv` is locally constant near `x`. -/
+theorem eventuallyEq_toIocDiv_nhds (hx : ¬x ≡ a [PMOD p]) :
+    toIocDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIocDiv hp a x := by
+  rw [← nhdsLE_sup_nhdsGT, Filter.EventuallyEq, Filter.eventually_sup]
+  refine ⟨eventuallyEq_toIocDiv_nhdsLE hp a x, ?_⟩
+  convert (eventuallyEq_toIocDiv_nhdsGT hp a x).eventually using 3
+  rwa [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, AddCommGroup.modEq_comm]
+
+/-- If `x` is not congruent to `a` modulo `p`, then `toIocDiv` is continuous at `x`.
+
+In fact, it is locally near `x`, see `eventuallyEq_toIocDiv_nhds`. -/
+theorem continuousAt_toIocDiv (hx : ¬x ≡ a [PMOD p]) :
+    ContinuousAt (toIocDiv hp a) x :=
+  tendsto_nhds_of_eventually_eq <| eventuallyEq_toIocDiv_nhds hp a hx
+
+/-- `toIocDiv` is continuous on the set of points
+that aren't congruent to the endpoint modulo the period. -/
+theorem continuousOn_toIocDiv :
+    ContinuousOn (toIocDiv hp a) {x | ¬x ≡ a [PMOD p]} := fun _x hx ↦
+  (continuousAt_toIocDiv hp a hx).continuousWithinAt
+
+theorem toIcoMod_eventuallyEq_toIocMod (hx : ¬x ≡ a [PMOD p]) :
+    toIcoMod hp a =ᶠ[𝓝 x] toIocMod hp a := by
+  refine IsOpen.mem_nhds ?_ ?_
+  · rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
+    exact isOpen_iUnion fun i => isOpen_Ioo
+  · rwa [mem_setOf_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
+
+theorem continuousAt_toIcoMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIcoMod hp a) x :=
+  continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
+    (eventuallyEq_toIcoDiv_nhds hp a hx).fun_comp (· • p)
+
+theorem continuousAt_toIocMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIocMod hp a) x :=
+  continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
+    (eventuallyEq_toIocDiv_nhds hp a hx).fun_comp (· • p)
 
 end Continuity
 
@@ -197,11 +268,7 @@ theorem card_torsion_le_of_isSMulRegular_int (n : ℤ) (h0 : n ≠ 0) (hn : IsSM
     {x : AddCircle p | n • x = 0}.encard ≤ n.natAbs := by
   convert card_torsion_le_of_isSMulRegular p _
     (Int.natAbs_ne_zero.mpr h0) (IsSMulRegular.natAbs_iff.mpr hn) using 1
-  conv_lhs => rw [← n.sign_mul_natAbs]
-  obtain h | h | h := n.sign_trichotomy
-  · simp [h]
-  · exact (h0 <| by simpa using h).elim
-  · simp [h]
+  simp
 
 theorem finite_torsion_of_isSMulRegular_int (n : ℤ) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.Finite := by
@@ -215,8 +282,7 @@ end Torsion
 variable [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜]
 
 theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 }.Finite :=
-  finite_torsion_of_isSMulRegular _ _ <|
-    .of_right_eq_zero_of_smul fun _ ↦ (nsmul_eq_zero_iff hn.ne').mp
+  finite_torsion_of_isSMulRegular _ _ <| .of_right_eq_zero_of_smul fun _ ↦ by simp [hn.ne']
 
 theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
@@ -314,12 +380,12 @@ variable [OrderTopology 𝕜] {x : AddCircle p}
 theorem continuousAt_equivIco (hx : x ≠ a) : ContinuousAt (equivIco p a) x := by
   induction x using QuotientAddGroup.induction_on
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
-  exact (continuousAt_toIcoMod hp.out a hx).codRestrict _
+  exact (continuousAt_toIcoMod hp.out a <| not_modEq_iff_ne_mod_zmultiples.mpr hx).codRestrict _
 
 theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := by
   induction x using QuotientAddGroup.induction_on
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
-  exact (continuousAt_toIocMod hp.out a hx).codRestrict _
+  exact (continuousAt_toIocMod hp.out a <| not_modEq_iff_ne_mod_zmultiples.mpr hx).codRestrict _
 
 /-- The quotient map `𝕜 → AddCircle p` as an open partial homeomorphism. -/
 @[simps] def openPartialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
@@ -413,8 +479,8 @@ variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [
 /-- The rescaling homeomorphism between additive circles with different periods. -/
 def homeomorphAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃ₜ AddCircle q :=
   ⟨equivAddCircle p q hp hq,
-    (continuous_quotient_mk'.comp (continuous_mul_right (p⁻¹ * q))).quotient_lift _,
-    (continuous_quotient_mk'.comp (continuous_mul_right (q⁻¹ * p))).quotient_lift _⟩
+    (continuous_quotient_mk'.comp (continuous_mul_const (p⁻¹ * q))).quotient_lift _,
+    (continuous_quotient_mk'.comp (continuous_mul_const (q⁻¹ * p))).quotient_lift _⟩
 
 @[simp]
 theorem homeomorphAddCircle_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
@@ -551,11 +617,6 @@ lemma isOfFinAddOrder_iff_exists_rat_eq_div {a : 𝕜} :
     IsOfFinAddOrder (a : AddCircle p) ↔ ∃ q : ℚ, (q : 𝕜) = a / p := by
   simpa using not_isOfFinAddOrder_iff_forall_rat_ne_div.not_right
 
-@[deprecated not_isOfFinAddOrder_iff_forall_rat_ne_div (since := "2025-08-13")]
-theorem addOrderOf_coe_eq_zero_iff_forall_rat_ne_div {a : 𝕜} :
-    addOrderOf (a : AddCircle p) = 0 ↔ ∀ q : ℚ, (q : 𝕜) ≠ a / p := by
-  simp [not_isOfFinAddOrder_iff_forall_rat_ne_div]
-
 variable (p)
 
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to
@@ -670,8 +731,8 @@ def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot
     all_goals
       apply continuous_quot_mk.continuousAt.comp_continuousWithinAt
       rw [IsInducing.subtypeVal.continuousWithinAt_iff]
-    · apply continuous_left_toIocMod
-    · apply continuous_right_toIcoMod
+    · apply continuousWithinAt_toIocMod_Iic
+    · apply continuousWithinAt_toIcoMod_Ici
   continuous_invFun :=
     continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtype_val)
 

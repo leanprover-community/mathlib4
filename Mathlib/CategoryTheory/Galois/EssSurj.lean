@@ -67,6 +67,7 @@ private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
     Fintype (G ⧸ (MulAction.stabilizer (G) x)) :=
   fintypeQuotient ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `X` is a finite discrete `G`-set, it can be written as the finite disjoint union
@@ -99,11 +100,11 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
   have (i : ι) : ∃ (U : OpenSubgroup (G)), (Nonempty ((f i) ≅ G ⧸ₐ U.toSubgroup)) := by
     obtain ⟨(x : (f i).V)⟩ := nonempty_fiber_of_isConnected (forget₂ _ _) (f i)
     let U : OpenSubgroup (G) := ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
-    letI : Fintype (G ⧸ MulAction.stabilizer (G) x) := fintypeQuotient U
     exact ⟨U, ⟨FintypeCat.isoQuotientStabilizerOfIsConnected (f i) x⟩⟩
   choose g ui using this
   exact ⟨ι, hf, g, ⟨(Sigma.mapIso (fun i ↦ (ui i).some)).symm ≪≫ u⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `X` is connected and `x` is in the fiber of `X`, `F.obj X` is isomorphic
@@ -152,6 +153,7 @@ private def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) 
 
 variable {V} (hUinV : U ≤ V)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiag :
     Cocone (quotientDiag V h u ⋙ functorToAction F) where
@@ -171,6 +173,7 @@ private def coconeQuotientDiag :
     apply (QuotientGroup.leftRel_apply).mpr
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiagDesc
     (s : Cocone (quotientDiag V h u ⋙ functorToAction F)) :
@@ -201,6 +204,7 @@ private def coconeQuotientDiagDesc
     rw [← this, u.inv.comm g]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The constructed cocone `coconeQuotientDiag` on the diagram `quotientDiag` is colimiting. -/
 private def coconeQuotientDiagIsColimit :
     IsColimit (coconeQuotientDiag h u hUinV) where
@@ -220,6 +224,7 @@ private def coconeQuotientDiagIsColimit :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For every open subgroup `V` of `Aut F`, there exists an `X : C` such that
 `F.obj X ≅ Aut F ⧸ V` as `Aut F`-sets. -/
 lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :

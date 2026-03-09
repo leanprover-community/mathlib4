@@ -83,6 +83,12 @@ noncomputable abbrev cohomologyPresheaf (F : Sheaf J AddCommGrpCat.{v}) (n : ℕ
     Cᵒᵖ ⥤ AddCommGrpCat.{w'} :=
   (cohomologyPresheafFunctor J n).obj F
 
+/-- Given an abelian sheaf `F` on `(C, J)`, `n : ℕ` and `X : C`, this is
+the degree-`n` sheaf cohomology of `X` with values in `F`. -/
+noncomputable abbrev H' (F : Sheaf J AddCommGrpCat.{v}) (n : ℕ) (X : C) :
+    AddCommGrpCat.{w'} :=
+  (F.cohomologyPresheaf n).obj (Opposite.op X)
+
 end
 
 end Sheaf

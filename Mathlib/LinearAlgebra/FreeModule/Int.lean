@@ -17,7 +17,7 @@ index.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]
@@ -197,6 +197,7 @@ lemma addSubgroup_index_ne_zero_iff {H : AddSubgroup (ι → ℤ)} :
   convert submodule_toAddSubgroup_index_ne_zero_iff (N := AddSubgroup.toIntSubmodule H) using 1
   exact ⟨fun ⟨e⟩ ↦ ⟨e.toIntLinearEquiv⟩, fun ⟨e⟩ ↦ ⟨e.toAddEquiv⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma subgroup_index_ne_zero_iff {H : Subgroup (ι → Multiplicative ℤ)} :
     H.index ≠ 0 ↔ Nonempty (H ≃* (ι → Multiplicative ℤ)) := by
   let em : Multiplicative (ι → ℤ) ≃* (ι → Multiplicative ℤ) :=

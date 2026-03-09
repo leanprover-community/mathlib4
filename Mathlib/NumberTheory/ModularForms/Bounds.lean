@@ -23,7 +23,7 @@ bounds for its q-expansion coefficients. The main results are
 * `CuspFormClass.qExpansion_isBigO`: **Hecke's bound** for a a cusp form of weight `k` (for
   an arithmetic subgroup `Γ`): the `n`-th q-expansion coefficient is `O(n ^ (k / 2))`.
 -/
-@[expose] public section
+public section
 
 open Filter Topology Asymptotics Matrix.SpecialLinearGroup Matrix.GeneralLinearGroup
 
@@ -218,6 +218,7 @@ lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.
   rw [petersson, ← Real.rpow_mul_natCast τ.im_pos.le]
   simp [abs_of_pos τ.im_pos, field]
 
+set_option backward.isDefEq.respectTransparency false in
 open Real in
 /-- A weight `k` modular form is bounded in norm by a constant multiple of
 `max 1 (1 / (τ.im) ^ k)`. -/
@@ -247,6 +248,7 @@ local notation "𝕢" => Function.Periodic.qParam
 
 open Complex ModularFormClass
 
+set_option backward.isDefEq.respectTransparency false in
 /-- General result on bounding q-expansion coefficients using a bound on the norm of the function.
 This will get used twice over, once for cusp forms (with `e = k / 2`) and once for modular forms
 (with `e = k`). -/
@@ -279,10 +281,8 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
     · grw [hn' _ (by simp [← UpperHalfPlane.coe_im])]
       simp [← UpperHalfPlane.coe_im, Real.rpow_neg_eq_inv_rpow, hne]
   refine (intervalIntegral.integral_mono (by positivity) ?_ ?_ this).trans (le_of_eq ?_)
-  · refine continuous_const.mul (.mul ?_ ?_) |>.norm |>.intervalIntegrable _ _
-    · simp only [Function.Periodic.qParam, ← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
-      fun_prop
-    · exact (continuous f).comp (by fun_prop)
+  · apply Continuous.intervalIntegrable
+    fun_prop (disch := simp [Function.Periodic.qParam_ne_zero])
   · exact continuous_const.intervalIntegrable ..
   · simp [field, intervalIntegral.integral_const, hne]
 

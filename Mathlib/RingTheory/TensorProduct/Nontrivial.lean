@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 
@@ -17,7 +18,7 @@ This file contains some more results on nontriviality of tensor product of algeb
 
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 

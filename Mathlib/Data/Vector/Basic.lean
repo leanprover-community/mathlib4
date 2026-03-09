@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Data.Vector.Defs
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.List.OfFn
 public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Batteries.Data.Fin.Lemmas
+public import Mathlib.Data.Fin.SuccPred
 
 /-!
 # Additional theorems and definitions about the `Vector` type
@@ -51,6 +52,7 @@ instance zero_subsingleton : Subsingleton (Vector α 0) :=
 theorem cons_val (a : α) : ∀ v : Vector α n, (a ::ᵥ v).val = a :: v.val
   | ⟨_, _⟩ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
     v = a ::ᵥ v' ↔ v.head = a ∧ v.tail = v' :=
   ⟨fun h => h.symm ▸ ⟨head_cons a v', tail_cons a v'⟩, fun h =>
@@ -98,6 +100,7 @@ theorem head_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) : (v.map f
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, head_cons, head_cons]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem tail_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) :
     (v.map f).tail = v.tail.map f := by
@@ -114,6 +117,7 @@ theorem toList_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector 
     (hp : ∀ x ∈ v.toList, p x) :
     (v.pmap f hp).toList = v.toList.pmap f hp := by cases v; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem head_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
     (hp : ∀ x ∈ v.toList, p x) :
@@ -122,6 +126,7 @@ theorem head_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   simp_rw [h, pmap_cons, head_cons]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem tail_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
     (hp : ∀ x ∈ v.toList, p x) :
@@ -270,6 +275,7 @@ of one element `x : α` is `x` itself. -/
 theorem get_cons_nil : ∀ {ix : Fin 1} (x : α), get (x ::ᵥ nil) ix = x
   | ⟨0, _⟩, _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem get_cons_succ (a : α) (v : Vector α n) (i : Fin n) : get (a ::ᵥ v) i.succ = get v i := by
   rw [← get_tail_succ, tail_cons]
@@ -286,11 +292,7 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get_toList, get_eq_get_toList]
   simp_rw [toList_reverse]
-  rw [List.get_eq_getElem, List.get_eq_getElem, ← Option.some_inj, Fin.cast, Fin.cast,
-    ← List.getElem?_eq_getElem, ← List.getElem?_eq_getElem, List.getElem?_reverse]
-  · congr
-    simp
-  · simp
+  simp
 
 section Scan
 
@@ -306,8 +308,8 @@ def scanl : Vector β (n + 1) :=
 
 /-- Providing an empty vector to `scanl` gives the starting value `b : β`. -/
 @[simp]
-theorem scanl_nil : scanl f b nil = b ::ᵥ nil :=
-  rfl
+theorem scanl_nil : scanl f b nil = b ::ᵥ nil := by
+  ext; simp [scanl, get]
 
 /-- The recursive step of `scanl` splits a vector `x ::ᵥ v : Vector α (n + 1)`
 into the provided starting value `b : β` and the recursed `scanl`
@@ -316,7 +318,8 @@ into the provided starting value `b : β` and the recursed `scanl`
 This lemma is the `cons` version of `scanl_get`.
 -/
 @[simp]
-theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := rfl
+theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
+  apply Vector.eq; simp [scanl]
 
 /-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
@@ -352,6 +355,7 @@ theorem scanl_head : (scanl f b v).head = b := by
   · rw [← cons_head_tail v]
     simp [← get_zero, get_eq_get_toList]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For an index `i : Fin n`, the nth element of `scanl` of a
 vector `v : Vector α n` at `i.succ`, is equal to the application
 function `f : β → α → β` of the `castSucc i` element of
@@ -544,6 +548,7 @@ theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
   Subtype.ext (List.eraseIdx_insertIdx_self ..)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},

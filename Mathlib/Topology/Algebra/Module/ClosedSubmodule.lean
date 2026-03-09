@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -53,6 +53,8 @@ instance : SetLike (ClosedSubmodule R M) M where
   coe s := s.1
   coe_injective' _ _ h := toSubmodule_injective <| SetLike.coe_injective h
 
+instance : PartialOrder (ClosedSubmodule R M) := .ofSetLike (ClosedSubmodule R M) M
+
 lemma toCloseds_injective : Injective (toCloseds : ClosedSubmodule R M → Closeds M) :=
   fun _s _t h ↦ SetLike.coe_injective congr(($h : Set M))
 
@@ -72,6 +74,10 @@ instance : Coe (ClosedSubmodule R M) (Submodule R M) where
 
 @[simp, norm_cast]
 lemma coe_toSubmodule (s : ClosedSubmodule R M) : (s.toSubmodule : Set M) = s := rfl
+
+@[simp]
+lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s.toSubmodule ↔ x ∈ s := by
+  rfl
 
 @[simp]
 lemma coe_toCloseds (s : ClosedSubmodule R M) : (s.toCloseds : Set M) = s := rfl
@@ -132,7 +138,7 @@ lemma coe_iInf (f : ι → ClosedSubmodule R M) : ↑(⨅ i, f i) = ⨅ i, (f i 
   simp [← SetLike.mem_coe]
 
 instance instSemilatticeInf : SemilatticeInf (ClosedSubmodule R M) :=
-  toSubmodule_injective.semilatticeInf _ fun _ _ ↦ rfl
+  toSubmodule_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
@@ -143,12 +149,8 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 @[simp] lemma mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := .rfl
 
 instance : CompleteSemilatticeInf (ClosedSubmodule R M) where
-  sInf_le s a ha _ := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun h ↦ h a ha
-  le_sInf s a ha b := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun a i hi ↦ ha i hi a
+  sInf_le _ a ha _ h := mem_sInf.1 h a ha
+  le_sInf _ _ ha _ h := mem_sInf.2 fun a hi ↦ ha a hi h
 
 instance : OrderTop (ClosedSubmodule R M) where
   top := ⟨⊤, isClosed_univ⟩
@@ -192,16 +194,25 @@ protected def closure (s : Submodule R M) : ClosedSubmodule R M where
 lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure :=
   Iff.rfl
 
+@[simp]
+lemma closure_eq {s : ClosedSubmodule R M} : s.closure = s := by
+  ext
+  simp only [carrier_eq_coe, ClosedSubmodule.coe_toSubmodule, coe_closure, SetLike.mem_coe]
+  rw [closure_eq_iff_isClosed.mpr]
+  · rfl
+  · exact s.isClosed'
+
+lemma closure_eq' {s : Submodule R M} (hs : IsClosed s.carrier) : s.closure = ⟨s, hs⟩ := by
+  ext; simp
+
 end Submodule
 
 namespace ClosedSubmodule
 
 variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 
-@[simp]
 lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
-  ext x
-  simp [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
+  ext x; simp
 
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
@@ -292,3 +303,83 @@ instance : Lattice (ClosedSubmodule R N) where
 instance [T1Space N] : CompleteLattice (ClosedSubmodule R N) where
 
 end ClosedSubmodule
+
+namespace ClosedSubmodule
+
+variable (f : M ≃L[R] N)
+
+/-- A continuous equivalence `f` between modules `M` and `N` on `R` induces an equivalence between
+closed submodules in `M` and those in `N` through `map f`.
+The definition does not use `ClosedSubmodule.map` because that has additional `ContinuousAdd` and
+`ContinuousConstSMul` type-class assumptions. -/
+def mapEquiv : ClosedSubmodule R M ≃ ClosedSubmodule R N where
+  toFun s := ⟨s.toSubmodule.map f.toLinearMap, by simpa using s.isClosed⟩
+  invFun t := ⟨t.toSubmodule.map f.symm.toLinearMap, by simpa using t.isClosed⟩
+  left_inv := by intro _; ext _; simp
+  right_inv := by intro _; ext _; simp
+
+variable (s : ClosedSubmodule R M)
+
+@[simp]
+lemma mapEquiv_apply : (s.mapEquiv f).toSubmodule = s.toSubmodule.map f.toLinearMap := rfl
+
+@[simp]
+lemma mapEquiv_symm : mapEquiv f.symm = (mapEquiv f).symm := rfl
+
+@[simp]
+lemma mem_mapEquiv_iff (x : N) : x ∈ (s.mapEquiv f) ↔ f.symm x ∈ s :=
+  Submodule.mem_map_equiv (e := f.toLinearEquiv) s.toSubmodule
+
+lemma mem_mapEquiv_iff' (x : M) : f x ∈ (s.mapEquiv f) ↔ x ∈ s := by
+  simp
+
+@[simp]
+lemma mapEquiv_bot_eq_bot [T1Space M] [T1Space N] : ((⊥ : ClosedSubmodule R M).mapEquiv f) = ⊥ := by
+  ext x; simp
+
+@[simp]
+lemma mapEquiv_top_eq_top : ((⊤ : ClosedSubmodule R M).mapEquiv f) = ⊤ := by
+  ext x; simp
+
+@[simp]
+lemma mapEquiv_inf_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
+    (s ⊓ t).mapEquiv f = s.mapEquiv f ⊓ t.mapEquiv f := by
+  ext x
+  simp only [Submodule.carrier_eq_coe, coe_toSubmodule, SetLike.mem_coe, toSubmodule_inf,
+    Submodule.coe_inf, Set.mem_inter_iff, mem_mapEquiv_iff, mem_inf]
+
+variable [ContinuousAdd N] [ContinuousConstSMul R N] [ContinuousAdd M] [ContinuousConstSMul R M]
+
+@[simp]
+lemma closure_map_eq_mapEquiv_closure (s : Submodule R M) :
+    (s.map f.toLinearMap).closure = s.closure.mapEquiv f := by
+  ext x
+  simp only [Submodule.carrier_eq_coe, coe_toSubmodule, Submodule.coe_closure, Submodule.map_coe,
+    LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, mapEquiv_apply, Set.mem_image]
+  rw [← ContinuousLinearEquiv.image_closure]
+  simp
+
+@[simp]
+lemma mapEquiv_sup_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
+    (s ⊔ t).mapEquiv f = s.mapEquiv f ⊔ t.mapEquiv f := by
+  ext x
+  simp only [mapEquiv_apply, toSubmodule_sup, Submodule.carrier_eq_coe, Submodule.map_coe,
+    LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, coe_toSubmodule,
+    Submodule.coe_closure, Set.mem_image]
+  have : f = f.toLinearEquiv.toLinearMap := by
+    exact LinearMap.ext (congrFun rfl)
+  rw [← this, ← Submodule.coe_closure, ← Submodule.map_sup, Submodule.map_coe]
+  simp only [Submodule.coe_closure, ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_coe,
+    ← ContinuousLinearEquiv.image_closure, Set.mem_image]
+
+end ClosedSubmodule
+
+section CompleteSpace
+
+instance {𝕜 H : Type*} [Semiring 𝕜] [AddCommMonoid H] [UniformSpace H] [Module 𝕜 H]
+    [CompleteSpace H] (K : ClosedSubmodule 𝕜 H) : CompleteSpace K := by
+  apply IsComplete.completeSpace_coe
+  rw [← ClosedSubmodule.carrier_eq_coe]
+  exact K.isClosed'.isComplete
+
+end CompleteSpace

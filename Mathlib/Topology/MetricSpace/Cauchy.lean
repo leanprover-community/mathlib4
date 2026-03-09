@@ -20,10 +20,10 @@ Various results on Cauchy sequences in (pseudo-)metric spaces, including
 
 ## Tags
 
-metric, pseudo_metric, Cauchy sequence
+metric, pseudometric space, Cauchy sequence
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Uniformity Topology

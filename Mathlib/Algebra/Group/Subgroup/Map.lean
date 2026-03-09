@@ -288,7 +288,6 @@ theorem comap_top (f : G →* N) : (⊤ : Subgroup N).comap f = ⊤ :=
 def subgroupOf (H K : Subgroup G) : Subgroup K :=
   H.comap K.subtype
 
-set_option backward.proofsInPublic true in
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/
 @[to_additive (attr := simps)
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/]
@@ -297,6 +296,11 @@ def subgroupOfEquivOfLe {G : Type*} [Group G] {H K : Subgroup G} (h : H ≤ K) :
   toFun g := ⟨g.1, g.2⟩
   invFun g := ⟨⟨g.1, h g.2⟩, g.2⟩
   map_mul' _g _h := rfl
+
+@[to_additive]
+lemma subgroupOf_mono {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) (h : H₁ ≤ H₂) :
+    H₁.subgroupOf H₃ ≤ H₂.subgroupOf H₃ :=
+  comap_mono h
 
 @[to_additive (attr := simp)]
 theorem comap_subtype (H K : Subgroup G) : H.comap K.subtype = H.subgroupOf K :=

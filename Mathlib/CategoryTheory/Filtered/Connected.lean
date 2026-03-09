@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.IsConnected
 # Filtered categories are connected
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
