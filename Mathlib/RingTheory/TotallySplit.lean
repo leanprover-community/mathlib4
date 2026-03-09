@@ -61,9 +61,8 @@ instance [IsFiniteSplit R S] : Module.Free R S := by
   obtain ⟨n, ⟨e⟩⟩ := nonempty_algEquiv_fun R S
   exact Module.Free.of_equiv e.symm.toLinearEquiv
 
-instance [IsFiniteSplit R S] : Module.FinitePresentation R S := by
-  obtain ⟨n, ⟨e⟩⟩ := nonempty_algEquiv_fun R S
-  apply Module.FinitePresentation.of_equiv e.symm.toLinearEquiv
+instance [IsFiniteSplit R S] : Module.FinitePresentation R S :=
+  Module.finitePresentation_of_projective _ _
 
 instance [IsFiniteSplit R S] : Etale R S := by
   obtain ⟨n, ⟨e⟩⟩ := nonempty_algEquiv_fun R S
