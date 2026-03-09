@@ -9,6 +9,13 @@ public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.Basic
 
 /-!
+## Main purpose
+
+This file is again a preliminary file for the `Iso`s in `Rep`, we build all the isomorphisms from
+representation level to avoid abusing defeq.
+
+TODO (Edison) : refactor `Rep` into a two-field structure (bundled `Representation`) and rebuild
+all the `Iso`s in `Rep` using the equivs in this file.
 
 -/
 
@@ -44,36 +51,6 @@ lemma ofMulActionSubsingletonEquivTrivial_symm_apply (H : Type w) [Subsingleton 
   letI : Unique H := uniqueOfSubsingleton 1
   simp [ofMulActionSubsingletonEquivTrivial, Subsingleton.elim (1 : H) (default : H)]
 
-lemma linearizeTrivial_def (X : Type w) (g : G) :
-    linearize k G (Action.trivial _ X) g = LinearMap.id := by
-  ext (x : X) : 2
-  rw [LinearMap.comp_apply, LinearMap.id_comp, Finsupp.lsingle_apply, linearize_single]
-  simp only [Action.trivial_V, Action.trivial_ρ]
-  rfl
-
-variable (k G) in
-/-- This a type-changing equivalence (which requires a non-trivial proof that
-  `LinearEquiv.refl _ _` is `G`-equivariant) to avoid abusing defeq. -/
-def linearizeTrivialIso (X : Type w) : (linearize k G (Action.trivial _ X)).Equiv
-    (trivial k G (X →₀ k)) :=
-  .mk (LinearEquiv.refl _ _) fun g ↦ by
-    simpa using linearizeTrivial_def (k := k) X g
-
-open CategoryTheory
-@[simp]
-lemma linearizeTrivialIso_apply {X : Type w} (f : (Action.trivial _ X).V →₀ k) :
-    (linearizeTrivialIso k G X) f = f := rfl
-
-@[simp]
-lemma linearizeTrivialIso_symm_apply {X : Type w} (f : X →₀ k) :
-    (linearizeTrivialIso k G X).symm f = f := rfl
-
-variable (k G) in
-/-- This a type-changing equivalence to avoid abusing defeq. -/
-def linearizeOfMulActionIso (H : Type w) [MulAction G H] :
-    (linearize k G (Action.ofMulAction G H)).Equiv (ofMulAction k G H) :=
-    .mk (LinearEquiv.refl _ _) fun g ↦ by rfl
-
 variable (k G) in
 /-- The equivalence of representations between `(Fin 1 → G) →₀ k` and `G →₀ k`. -/
 def diagonalOneEquivLeftRegular : (diagonal k G 1).Equiv (leftRegular k G) :=
@@ -90,12 +67,6 @@ lemma diagonalOneEquivLeftRegular_symm_apply_single (g : G) (r : k) :
     (diagonalOneEquivLeftRegular k G).symm (Finsupp.single g r) =
       Finsupp.single (uniqueElim g) r := by
   simp [diagonalOneEquivLeftRegular]
-
-variable (k G) in
-/-- This a type-changing equivalence to avoid abusing defeq. -/
-def linearizeDiagonalEquiv (n : ℕ) : (linearize k G (Action.diagonal G n)).Equiv
-    (diagonal k G n) :=
-  .mk (LinearEquiv.refl _ _) fun g ↦ by rfl
 
 section comm
 

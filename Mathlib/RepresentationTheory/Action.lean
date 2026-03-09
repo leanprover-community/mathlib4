@@ -231,6 +231,42 @@ lemma δ_μ (X Y : Action (Type w) G) : (δ X Y).comp (μ (k := k) X Y) = .id _ 
 
 end comm
 
+lemma linearizeTrivial_def (X : Type w) (g : G) :
+    linearize k G (Action.trivial _ X) g = LinearMap.id := by
+  ext (x : X) : 2
+  rw [LinearMap.comp_apply, LinearMap.id_comp, Finsupp.lsingle_apply, linearize_single]
+  simp only [Action.trivial_V, Action.trivial_ρ]
+  rfl
+
+variable (k G) in
+/-- This a type-changing equivalence (which requires a non-trivial proof that
+  `LinearEquiv.refl _ _` is `G`-equivariant) to avoid abusing defeq. -/
+def linearizeTrivialIso (X : Type w) : (linearize k G (Action.trivial _ X)).Equiv
+    (trivial k G (X →₀ k)) :=
+  .mk (LinearEquiv.refl _ _) fun g ↦ by
+    simpa using linearizeTrivial_def (k := k) X g
+
+open CategoryTheory
+@[simp]
+lemma linearizeTrivialIso_apply {X : Type w} (f : (Action.trivial _ X).V →₀ k) :
+    (linearizeTrivialIso k G X) f = f := rfl
+
+@[simp]
+lemma linearizeTrivialIso_symm_apply {X : Type w} (f : X →₀ k) :
+    (linearizeTrivialIso k G X).symm f = f := rfl
+
+variable (k G) in
+/-- This a type-changing equivalence to avoid abusing defeq. -/
+def linearizeOfMulActionIso (H : Type w) [MulAction G H] :
+    (linearize k G (Action.ofMulAction G H)).Equiv (ofMulAction k G H) :=
+    .mk (LinearEquiv.refl _ _) fun g ↦ by rfl
+
+variable (k G) in
+/-- This a type-changing equivalence to avoid abusing defeq. -/
+def linearizeDiagonalEquiv (n : ℕ) : (linearize k G (Action.diagonal G n)).Equiv
+    (diagonal k G n) :=
+  .mk (LinearEquiv.refl _ _) fun g ↦ by rfl
+
 end LinearizeMonoidal
 
 end
