@@ -488,7 +488,7 @@ instance quotient : IsGaloisGroup (G ⧸ N) K F where
 variable (E : IntermediateField K L) (H : Subgroup G) [hE : IsGaloisGroup H E L]
 
 set_option backward.isDefEq.respectTransparency false in
-instance quotientMap (h : E ≤ F) :
+theorem quotientMap (h : E ≤ F) :
     letI : Algebra E F := (IntermediateField.inclusion h).toAlgebra
     IsGaloisGroup (H.map (QuotientGroup.mk' N)) E F :=
   let hFN : IsGaloisGroup (G ⧸ N) K F := inferInstance
