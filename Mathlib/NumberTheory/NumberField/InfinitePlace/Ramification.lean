@@ -589,24 +589,24 @@ namespace NumberField.InfinitePlace
 open ComplexEmbedding AbsoluteValue
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
-
+  [w.1.LiesOver v.1]
 namespace LiesOver
 
 instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ] :
     AbsoluteValue.LiesOver (mk ψ).1 (mk φ).1 where
   comp_eq := by simp [← LiesOver.over ψ φ, ← coe_mk_comp]
 
-theorem comap_eq [w.1.LiesOver v.1] : w.comap (algebraMap K L) = v := by
+theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
   simpa only [coe_apply] using AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
 
-theorem mk_embedding_comp [w.1.LiesOver v.1] :
+theorem mk_embedding_comp :
     InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]
 
 /-- If `w : InfinitePlace L` lies above `v : InfinitePlace K`, then either `w.embedding`
 extends `v.embedding` as complex embeddings, or `conjugate w.embedding` extends `v.embedding`. -/
-theorem embedding_comp_eq_or_conjugate_embedding_comp_eq [w.1.LiesOver v.1] :
+theorem embedding_comp_eq_or_conjugate_embedding_comp_eq :
     w.embedding.comp (algebraMap K L) = v.embedding ∨
       (conjugate w.embedding).comp (algebraMap K L) = v.embedding := by
   cases embedding_mk_eq (w.embedding.comp (algebraMap K L)) with
@@ -616,7 +616,7 @@ theorem embedding_comp_eq_or_conjugate_embedding_comp_eq [w.1.LiesOver v.1] :
 variable {v}
 
 /-- If `w : InfinitePlace L` lies above `v : InfinitePlace K` and `v` is complex, then so is `w`. -/
-theorem isComplex_of_isComplex_under [w.1.LiesOver v.1] (hv : v.IsComplex) : w.IsComplex := by
+theorem isComplex_of_isComplex_under (hv : v.IsComplex) : w.IsComplex := by
   rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv ⊢
   obtain ⟨x, hx⟩ := hv
   use algebraMap K L x
@@ -624,17 +624,16 @@ theorem isComplex_of_isComplex_under [w.1.LiesOver v.1] (hv : v.IsComplex) : w.I
   rcases embedding_mk_eq (w.embedding.comp (algebraMap K L)) with (_ | _) <;> aesop
 
 /-- If `w : InfinitePlace L` lies above `v : InfinitePlace K` and `w` is real, then so is `v`. -/
-theorem isReal_of_isReal_over [w.1.LiesOver v.1] (hw : w.IsReal) : v.IsReal := by
+theorem isReal_of_isReal_over (hw : w.IsReal) : v.IsReal := by
   rw [← not_isComplex_iff_isReal] at hw ⊢
   exact mt (isComplex_of_isComplex_under w) hw
 
 end LiesOver
 
-theorem IsRamified.liesOver_isReal_under [w.1.LiesOver v.1] (hw : w.IsRamified K) :
+theorem IsRamified.liesOver_isReal_under (hw : w.IsRamified K) :
     v.IsReal := LiesOver.comap_eq w v ▸ (isRamified_iff.1 hw).2
 
-theorem IsUnramified.liesOver_isReal_over [w.1.LiesOver v.1]
-    (hw : w.IsUnramified K) (hv : v.IsReal) : w.IsReal :=
+theorem IsUnramified.liesOver_isReal_over (hw : w.IsUnramified K) (hv : v.IsReal) : w.IsReal :=
   (InfinitePlace.isUnramified_iff.1 hw).resolve_right
     (by simpa [LiesOver.comap_eq w v] using not_isComplex_iff_isReal.2 hv)
 
@@ -715,6 +714,7 @@ private noncomputable def embeddingConjugateIte : L →+* ℂ :=
   if ComplexEmbedding.LiesOver w.embedding v.embedding then w.embedding else conjugate w.embedding
 
 variable {v w}
+
 private theorem embeddingConjugateIte_pos (h : ComplexEmbedding.LiesOver w.embedding v.embedding) :
     embeddingConjugateIte v w = w.embedding := by simp [embeddingConjugateIte, h]
 
@@ -735,8 +735,7 @@ private theorem mapsTo_embeddingConjugateIte : Set.MapsTo (embeddingConjugateIte
 private theorem surjOn_embeddingConjugateIte : (unramifiedPlacesOver L v).SurjOn
     (embeddingConjugateIte v) (unmixedEmbeddingsOver L v.embedding) := by
   classical
-  intro ψ h
-  refine ⟨mk ψ, mk_mem_unramifiedPlacesOver h, ?_⟩
+  refine fun ψ h ↦ ⟨mk ψ, mk_mem_unramifiedPlacesOver h, ?_⟩
   rcases embedding_mk_eq ψ with (_ | hψ)
   · aesop (add simp [embeddingConjugateIte, unmixedEmbeddingsOver])
   · simpa [embeddingConjugateIte, hψ] using fun ⟨_⟩ ↦
@@ -753,5 +752,20 @@ embeddings over the place. -/
 theorem unramifiedPlacesOver_ncard :
     (unramifiedPlacesOver L v).ncard = (unmixedEmbeddingsOver L v.embedding).ncard := by
   rw [(bijOn_extensionIte L v).ncard_eq]
+
+open Finset in
+/-- The degree of `L` over `K` is equal to the number of unramified places over `v` plus twice the
+number of ramified places over `v`. -/
+theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L] :
+    (unramifiedPlacesOver L v).ncard + 2 * (ramifiedPlacesOver L v).ncard = Module.finrank K L := by
+  classical
+  letI : Algebra K ℂ := v.embedding.toAlgebra
+  rw [← AlgHom.card K L ℂ, ramifiedPlacesOver_ncard, unramifiedPlacesOver_ncard,
+    ← Set.ncard_union_eq (disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver L v.embedding),
+    union_unmixedEmbeddingsOver_mixedEmbeddingsOver, Set.ncard_eq_toFinset_card]
+  apply (card_nbij AlgHom.toRingHom (fun σ _ ↦ by simpa using ⟨by aesop⟩)
+    AlgHom.coe_ringHom_injective.injOn (fun ψ hψ ↦ ?_)).symm
+  simp only [Set.Finite.toFinset_setOf, coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hψ
+  exact ⟨⟨ψ, fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, ← hψ.over]⟩, by simp⟩
 
 end NumberField.InfinitePlace
