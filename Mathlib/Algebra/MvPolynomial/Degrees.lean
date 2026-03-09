@@ -246,6 +246,12 @@ theorem degreeOf_X [DecidableEq σ] (i j : σ) [Nontrivial R] :
   · simp only [c, if_true, degreeOf_def, degrees_X, Multiset.count_singleton]
   simp [c, degreeOf_def, degrees_X]
 
+@[simp] theorem degreeOf_X_self [Nontrivial R] (i : σ) : (X i : MvPolynomial σ R).degreeOf i = 1 :=
+  by classical rw [degreeOf_X, if_pos rfl]
+
+lemma ne_zero_of_degreeOf_ne_zero {i : σ} : p.degreeOf i ≠ 0 → p ≠ 0 :=
+  mt fun h ↦ h ▸ degreeOf_zero i
+
 theorem degreeOf_add_le (n : σ) (f g : MvPolynomial σ R) :
     degreeOf n (f + g) ≤ max (degreeOf n f) (degreeOf n g) := by
   simp_rw [degreeOf_eq_sup]; exact supDegree_add_le
@@ -258,6 +264,21 @@ theorem monomial_le_degreeOf (i : σ) {f : MvPolynomial σ R} {m : σ →₀ ℕ
 lemma degreeOf_monomial_eq (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
     (monomial s a).degreeOf i = s i := by
   classical rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
+
+@[simp] theorem degreeOf_X_self_pow [Nontrivial R] (i : σ) (k : ℕ) :
+    ((X i : MvPolynomial σ R) ^ k).degreeOf i = k := by
+  rw [X_pow_eq_monomial, degreeOf_monomial_eq _ _ one_ne_zero, Finsupp.single_eq_same]
+
+lemma le_degreeOf_of_mem_support (i : σ) {s : σ →₀ ℕ} :
+    s ∈ p.support → s i ≤ p.degreeOf i := fun h ↦ by
+  by_cases si : s i = 0
+  · simp only [si, zero_le]
+  have : 0 < s i := Nat.zero_lt_of_ne_zero si
+  rewrite [degreeOf_eq_sup, Finset.le_sup_iff this]
+  use s
+
+lemma notMem_support_of_degreeOf_lt (i : σ) {s : σ →₀ ℕ} : p.degreeOf i < s i → s ∉ p.support :=
+  fun h ↦ by contrapose! h; exact le_degreeOf_of_mem_support i h
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -310,6 +331,15 @@ theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
   convert Multiset.count_le_of_le j <| degrees_X' j
   rw [Multiset.count_singleton_self]
 
+theorem degreeOf_X_pow_of_ne {i j : σ} (k : ℕ) (h : i ≠ j) :
+    ((X j : MvPolynomial σ R) ^ k).degreeOf i = 0 := by
+  induction k with
+  | zero => rw [pow_zero, ← C_1, degreeOf_C]
+  | succ k hk => rw [pow_add, pow_one, degreeOf_mul_X_of_ne _ h, hk]
+
+theorem degreeOf_X_of_ne {i j : σ} (h : i ≠ j) : (X j : MvPolynomial σ R).degreeOf i = 0 :=
+  pow_one (X j : MvPolynomial σ R) ▸ degreeOf_X_pow_of_ne 1 h
+
 theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) :
     degreeOf j (f * X j) = degreeOf j f + 1 ↔ f ≠ 0 := by
   refine ⟨fun h => by by_contra ha; simp [ha] at h, fun h => ?_⟩
@@ -322,6 +352,47 @@ theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) 
   simp only [Finset.sup_map, bot_eq_zero', add_pos_iff, zero_lt_one, or_true, Finset.le_sup_iff]
   use x
   simpa using mem_support_iff.mp hx
+
+theorem degreeOf_mul_X_self_pow_eq_add_of_ne_zero (i : σ) (k : ℕ) (h : p ≠ 0) :
+    (p * X i ^ k).degreeOf i = p.degreeOf i + k := by
+  induction k with
+  | zero => rw [pow_zero, mul_one, add_zero]
+  | succ k hk =>
+    have : p * X i ^ k ≠ 0 := by
+      rcases ne_zero_iff.mp h with ⟨s, hs⟩
+      refine ne_zero_iff.mpr ⟨s + Finsupp.single i k, ?_⟩
+      rewrite [X_pow_eq_monomial, coeff_mul_monomial, mul_one]
+      exact hs
+    rewrite [pow_add, pow_one, ← mul_assoc]
+    rw [(degreeOf_mul_X_eq_degreeOf_add_one_iff i _).mpr this, hk, add_assoc]
+
+theorem degreeOf_mul_X_pow_of_ne {i j : σ} (k : ℕ) (h : i ≠ j) :
+    (p * X j ^ k).degreeOf i = p.degreeOf i := by
+  induction k with
+  | zero => rw [pow_zero, mul_one]
+  | succ k hk => rw [pow_add, pow_one, ← mul_assoc, degreeOf_mul_X_of_ne _ h, hk]
+
+theorem degreeOf_add_eq_of_degreeOf_lt {i : σ} (h : q.degreeOf i < p.degreeOf i) :
+    (p + q).degreeOf i = p.degreeOf i := by
+  apply le_antisymm ((max_eq_left_of_lt h) ▸ degreeOf_add_le i p q)
+  nth_rewrite 2 [degreeOf_eq_sup]
+  apply (Finset.le_sup_iff <| Nat.zero_lt_of_lt h).mpr
+  have : p.support.Nonempty := by apply support_nonempty.mpr; contrapose! h; simp [h]
+  have ⟨s, hs1, hs2⟩ := Finset.exists_mem_eq_sup _ this (fun s ↦ s i)
+  rewrite [← degreeOf_eq_sup i p] at hs2
+  refine ⟨s, ?_, by rw [hs2]⟩
+  have : s ∉ q.support := by contrapose! h; exact hs2 ▸ le_degreeOf_of_mem_support i h
+  simp only [mem_support_iff, ne_eq, coeff_add, not_not] at hs1 ⊢ this
+  rewrite [this, add_zero]
+  exact hs1
+
+theorem degreeOf_eq_of_degreeOf_add_lt {i : σ} (h : (p + q).degreeOf i < p.degreeOf i) :
+    p.degreeOf i = q.degreeOf i := by
+  contrapose! h
+  apply le_trans (Nat.le_max_left _ (q.degreeOf i))
+  rcases Nat.lt_or_lt_of_ne h with h | h
+  · simp only [add_comm p q, degreeOf_add_eq_of_degreeOf_lt h, max_eq_right_of_lt h, le_refl]
+  simp only [degreeOf_add_eq_of_degreeOf_lt h, max_eq_left_of_lt h, le_refl]
 
 theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
