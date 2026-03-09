@@ -5,7 +5,7 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
+public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 
 /-!
 # `LiesOver` instances for completions of number fields

@@ -5,7 +5,7 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.FinitePlaces
+public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
