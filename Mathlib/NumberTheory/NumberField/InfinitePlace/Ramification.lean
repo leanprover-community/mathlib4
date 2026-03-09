@@ -600,8 +600,7 @@ theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
   simpa only [coe_apply] using AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
 
-theorem mk_embedding_comp :
-    InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
+theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]
 
 /-- If `w : InfinitePlace L` lies above `v : InfinitePlace K`, then either `w.embedding`
