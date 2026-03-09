@@ -322,14 +322,12 @@ lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜
   rfl
 
 variable (n k) in
-/-- `fderivWithOrderLM 𝕜 n k` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+/-- `fderivLM 𝕜 n k` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
 This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
 
-See `fderivLM` for the very common case where everything is infinitely differentiable.
-
-This is subsumed by `fderivWithOrderCLM`, which also bundles the continuity. -/
-noncomputable def fderivWithOrderLM :
+This is subsumed by `fderivCLM`, which also bundles the continuity. -/
+noncomputable def fderivLM :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K}(E, E →L[ℝ] F) where
   toFun f :=
     if hk : k + 1 ≤ n then
@@ -339,7 +337,7 @@ noncomputable def fderivWithOrderLM :
     else 0
   map_add' f g := by
     split_ifs with hk
-    · have hk' : 1 ≤ (n : WithTop ℕ∞) := mod_cast (le_of_add_le_right hk)
+    · have hk' : 0 < (n : WithTop ℕ∞) := mod_cast (ENat.add_one_pos.trans_le hk)
       ext
       simp [fderiv_add (f.contDiff.differentiable hk').differentiableAt
                        (g.contDiff.differentiable hk').differentiableAt]
