@@ -428,14 +428,14 @@ lemma power_sum_add_indicator_eq_zero (p l : ℕ) (hp : p.Prime) :
   have hbij : (∑ v ∈ Finset.range p with v ≠ 0, (v : ZMod p) ^ l) =
       ∑ u : (ZMod p)ˣ, (u : ZMod p) ^ l :=
     Finset.sum_bij'
-      (fun v hv => Units.mk0 (v : ZMod p) (cast_ne v hv))
-      (fun u _ => (u : ZMod p).val)
-      (fun _ _ => Finset.mem_univ _)
-      (fun u _ => by simp [ZMod.val_lt, u.ne_zero])
-      (fun v hv => by
+      (fun v hv ↦ Units.mk0 (v : ZMod p) (cast_ne v hv))
+      (fun u _ ↦ (u : ZMod p).val)
+      (fun _ _ ↦ Finset.mem_univ _)
+      (fun u _ ↦ by simp [ZMod.val_lt, u.ne_zero])
+      (fun v hv ↦ by
         simp [ZMod.val_cast_of_lt (Finset.mem_range.mp (Finset.mem_filter.mp hv).1)])
-      (fun u _ => Units.ext (ZMod.natCast_zmod_val _))
-      (fun _ _ => rfl)
+      (fun u _ ↦ Units.ext (ZMod.natCast_zmod_val _))
+      (fun _ _ ↦ rfl)
   rw [hbij, FiniteField.sum_pow_units, ZMod.card]
   grind
 
@@ -472,7 +472,7 @@ lemma sum_den_dvd_prod_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
 lemma pIntegral_sum {ι : Type*} (p : ℕ) (s : Finset ι) (f : ι → ℚ)
     (hf : ∀ i ∈ s, pIntegral p (f i)) : pIntegral p (∑ i ∈ s, f i) :=
   Nat.Coprime.coprime_dvd_left (sum_den_dvd_prod_den s f)
-    (Nat.Coprime.prod_left fun i hi => hf i hi)
+    (Nat.Coprime.prod_left fun i hi ↦ hf i hi)
 
 lemma pIntegral_of_int (p : ℕ) (z : ℤ) : pIntegral p z := by simp_all [pIntegral]
 
@@ -510,19 +510,19 @@ lemma sum_primes_eq_indicator_add_rest (k p : ℕ) (hk : k > 0) (hp : p.Prime) :
       q.Prime ∧ (q - 1) ∣ 2 * k ∧ q ≠ p, (1 : ℚ) / q := by
   by_cases hdvd : (p - 1 : ℕ) ∣ 2 * k
   · -- p is in the filtered set; extract its term
-    have hp_mem : p ∈ (Finset.range (2 * k + 2)).filter (fun q => q.Prime ∧ (q - 1) ∣ 2 * k) := by
+    have hp_mem : p ∈ (Finset.range (2 * k + 2)).filter (fun q ↦ q.Prime ∧ (q - 1) ∣ 2 * k) := by
       simp only [Finset.mem_filter, Finset.mem_range]
       exact ⟨by have := Nat.le_of_dvd (by omega) hdvd; omega, hp, hdvd⟩
     rw [← Finset.add_sum_erase _ _ hp_mem]
     simp only [vonStaudtIndicator, if_pos hdvd]
     congr 1
-    apply Finset.sum_congr _ (fun _ _ => rfl)
+    apply Finset.sum_congr _ (fun _ _ ↦ rfl)
     grind
   · -- p is not in the filtered set; indicator is 0, filter sets are equal
     simp only [vonStaudtIndicator, if_neg hdvd, zero_div, zero_add]
-    exact Finset.sum_congr (Finset.filter_congr fun q _ =>
-      ⟨fun ⟨hpr, hd⟩ => ⟨hpr, hd, fun h => hdvd (h ▸ hd)⟩,
-       fun ⟨hpr, hd, _⟩ => ⟨hpr, hd⟩⟩) fun _ _ => rfl
+    exact Finset.sum_congr (Finset.filter_congr fun q _ ↦
+      ⟨fun ⟨hpr, hd⟩ ↦ ⟨hpr, hd, fun h ↦ hdvd (h ▸ hd)⟩,
+       fun ⟨hpr, hd, _⟩ ↦ ⟨hpr, hd⟩⟩) fun _ _ ↦ rfl
 
 /-- If the `p`-adic valuation of `M` is at most `N`, then `p^N / M` is `p`-integral. -/
 lemma pIntegral_pow_div (p M N : ℕ) (hp : p.Prime) (hM : M ≠ 0)
@@ -629,7 +629,7 @@ lemma valuation_bound_d_plus_1 (p d : ℕ) (hp : p.Prime) (hd : d ≥ 2) :
       exact pow_two_ge_succ_of_ge_three _ hd3
   · apply Nat.factorization_le_of_le_pow
     apply pow_ge_succ_of_ge_three
-    · have hne2 : p ≠ 2 := fun h => by simp [h] at hp3
+    · have hne2 : p ≠ 2 := fun h ↦ by simp [h] at hp3
       have h1lt : 1 < p := hp.one_lt
       omega
     · exact hd
@@ -821,7 +821,7 @@ lemma bernoulli_plus_indicator_rearrangement (k p : ℕ) (hk : k > 0) (hp : p.Pr
       rw [show (2 * k + 1 - i : ℕ) = (2 * k - i : ℕ) + 1 from by omega, pow_succ]
       field_simp [h5]
     rw [Finset.sum_div]
-    exact Finset.sum_congr rfl fun i hi => h1 i hi
+    exact Finset.sum_congr rfl fun i hi ↦ h1 i hi
   exact_mod_cast h0
 
 /-- For fixed prime `p`, the denominator of `B_{2k} + e_{2k}(p)/p` is coprime to `p`. -/
@@ -857,6 +857,6 @@ theorem von_staudt_clausen (k : ℕ) :
   rcases Nat.eq_zero_or_pos k with rfl | hk
   · exact ⟨1, by decide +kernel⟩
   · exact is_integer_of_coprime_all_primes _
-      (fun p hp => von_staudt_coprime_all_primes_pos k p hk hp)
+      (fun p hp ↦ von_staudt_coprime_all_primes_pos k p hk hp)
 
 end vonStaudtClausen
