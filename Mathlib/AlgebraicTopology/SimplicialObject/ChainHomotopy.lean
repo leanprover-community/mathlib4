@@ -52,9 +52,8 @@ lemma hom_eq_zero (p q : ℕ) (hpq : p + 1 ≠ q) :
   dif_neg hpq
 
 private lemma comm_zero :
-    ((alternatingFaceMapComplex C).map g).f 0 =
-    prevD 0 (hom H) + ((alternatingFaceMapComplex C).map f).f 0 := by
-  rw [prevD_eq (hom H) (j := 0) (j' := 1) (by simp)]
+    letI d : Y _⦋1⦌ ⟶ Y _⦋0⦌ := ((alternatingFaceMapComplex C).obj Y).d 1 0
+    f.app (op ⦋0⦌) = hom H 0 1 ≫ d + g.app (op ⦋0⦌) := by
   simp [← H.h_last_comp_δ_last 0]
 
 private lemma comm_succ (n : ℕ) :
