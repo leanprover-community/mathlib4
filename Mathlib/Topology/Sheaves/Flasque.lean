@@ -101,12 +101,13 @@ lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
       rfl
   have le₁ : iSup f ≤ U := iSup_le <| fun j => leOfHom j.1.hom.1.unop
   have le₂ : ∀ i, i ∈ c → unop i.right.1 ≤ iSup f := fun i hi ↦ le_iSup f ⟨i, hi⟩
-  use StructuredArrow.mk (CategoryOfElements.homMk _ _ (homOfLE le₁).op (eq_app_of_forall_eq ht
+  use StructuredArrow.mk (CategoryOfElements.homMk _ _ (homOfLE le₁).op (eq_app_of_locally_eq ht
       (fun i ↦ leOfHom i.1.hom.1.unop) (fun i ↦ (CategoryOfElements.map_snd i.1.hom).symm)).symm :
       ⟨op U, s⟩ ⟶ (Functor.whiskerRight g.hom
       (CategoryTheory.forget AddCommGrpCat)).mapElements.obj ⟨op (iSup f), t⟩)
   exact fun i hi => Nonempty.intro (StructuredArrow.homMk (CategoryOfElements.homMk _ _
     (homOfLE (le₂ i hi)).op (ht ⟨i, hi⟩)) (by cat_disch))
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then
 `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`. -/
@@ -162,7 +163,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
       simp only [iSup_le_iff, Fin.forall_fin_two]
       exact ⟨tle, Wle⟩
     have comp : s |_ (iSup f) = S.g.hom.app (op (iSup f)) t₅:= by
-      refine (eq_app_of_forall_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨tle, Wle⟩) ?_).symm
+      refine (eq_app_of_locally_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨tle, Wle⟩) ?_).symm
       rw [Fin.forall_fin_two]
       refine ⟨tcomp.symm, ?_⟩
       change S.g.hom.app (op W) (t₁ + (S.f.hom.app (op W)) t₄) = s |_ W
@@ -190,7 +191,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
 then `𝓗` is flasque. -/
 theorem X₃_shortExact_isFlasque_X₁_isFlasque_X₂ {S : ShortComplex (Sheaf AddCommGrpCat X)}
     (hS : S.ShortExact) [IsFlasque S.X₁] [IsFlasque S.X₂] : IsFlasque S.X₃ where
-  epi {U V} := fun i => by
+  epi {U V} i := by
     have : Epi (S.g.1.app U ≫ S.X₃.obj.map i) := by
       rw [← S.g.hom.naturality i]
       exact CategoryTheory.epi_comp' inferInstance (epi_of_shortExact hS)
