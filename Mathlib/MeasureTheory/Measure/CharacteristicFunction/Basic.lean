@@ -207,8 +207,20 @@ lemma charFun_map_smul [BorelSpace E] (r : ℝ) (t : E) :
     integral_map (by fun_prop) (by fun_prop)]
   simp_rw [inner_smul_right, ← real_inner_smul_left]
 
+lemma charFun_map_smul_comp {X : Type*} {mX : MeasurableSpace X} {μ : Measure X} [BorelSpace E]
+    {f : X → E} (hf : AEMeasurable f μ) (r : ℝ) (t : E) :
+    charFun (μ.map (fun x ↦ r • (f x))) t = charFun (μ.map f) (r • t) := by
+  rw [show (fun x ↦ r • (f x)) = (r • ·) ∘ f from rfl, ← AEMeasurable.map_map_of_aemeasurable,
+    charFun_map_smul]
+  all_goals fun_prop
+
 lemma charFun_map_mul {μ : Measure ℝ} (r t : ℝ) :
     charFun (μ.map (r * ·)) t = charFun μ (r * t) := charFun_map_smul r t
+
+lemma charFun_map_mul_comp {X : Type*} {mX : MeasurableSpace X} {μ : Measure X}
+    {f : X → ℝ} (hf : AEMeasurable f μ) (r t : ℝ) :
+    charFun (μ.map (fun x ↦ r * (f x))) t = charFun (μ.map f) (r * t) :=
+  charFun_map_smul_comp hf r t
 
 variable {E : Type*} [MeasurableSpace E] {μ ν : Measure E} {t : E}
   [NormedAddCommGroup E] [InnerProductSpace ℝ E]

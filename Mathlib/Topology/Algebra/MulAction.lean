@@ -292,6 +292,13 @@ instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ 
       (continuous_fst.smul continuous_snd).comp <|
         continuous_fst.prodMk ((continuous_apply i).comp continuous_snd)⟩
 
+@[to_additive]
+instance {ι : Type*} {γ : ι → Type*} [Π i, TopologicalSpace (γ i)]
+    {N : ι → Type*} [Π i, TopologicalSpace (N i)] [Π i, SMul (N i) (γ i)]
+    [∀ i, ContinuousSMul (N i) (γ i)] : ContinuousSMul (Π i, N i) (Π i, γ i) :=
+  ⟨continuous_pi fun i ↦ ((continuous_apply i).comp continuous_id'.fst).smul
+    ((continuous_apply i).comp continuous_id'.snd)⟩
+
 end Main
 
 section LatticeOps
