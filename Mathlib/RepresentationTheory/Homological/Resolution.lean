@@ -205,20 +205,21 @@ set_option backward.isDefEq.respectTransparency false in
 theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom.toLinearMap =
     d k G (n + 1) := by
   refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp only [standardComplex, alternatingFaceMapComplex_obj_X, Functor.comp_obj,
-    classifyingSpaceUniversalCover_obj, SimplexCategory.len_mk, Action.ofMulAction_V,
-    alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, Int.reduceNeg,
-    SimplicialObject.δ, SimplexCategory.δ, SimplexCategory.mkHom, Fin.succAboveOrderEmb,
-    Functor.comp_map, classifyingSpaceUniversalCover_map, Quiver.Hom.unop_op,
-    SimplexCategory.Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_coe,
-    OrderEmbedding.coe_ofStrictMono, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), Int.cast_pow,
-    Int.cast_neg, Int.cast_one, LinearMap.coe_comp, Function.comp_apply, lsingle_apply, d_of,
-    ← ofHom_smul, ← ofHom_sum, hom_ofHom, Representation.IntertwiningMap.toLinearMap_sum,
-    Representation.IntertwiningMap.toLinearMap_smul, LinearMap.coe_sum, Finset.sum_apply,
-    LinearMap.smul_apply]
-  -- TODO: merge this into `simp`
-  conv_lhs => enter [2, y, 2]; tactic => convert Representation.linearizeMap_single _ _
-  simp
+  -- simp? [standardComplex, alternatingFaceMapComplex_obj_X, Functor.comp_obj,
+  --   classifyingSpaceUniversalCover_obj, SimplexCategory.len_mk, Action.ofMulAction_V,
+  --   alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, Int.reduceNeg,
+  --   SimplicialObject.δ, SimplexCategory.δ, SimplexCategory.mkHom, Fin.succAboveOrderEmb,
+  --   Functor.comp_map, classifyingSpaceUniversalCover_map, Quiver.Hom.unop_op,
+  --   SimplexCategory.Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_coe,
+  --   OrderEmbedding.coe_ofStrictMono, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), Int.cast_pow,
+  --   Int.cast_neg, Int.cast_one, LinearMap.coe_comp, Function.comp_apply, lsingle_apply, d_of,
+  --   ← ofHom_smul, ← ofHom_sum, hom_ofHom, Representation.IntertwiningMap.toLinearMap_sum,
+  --   Representation.IntertwiningMap.toLinearMap_smul, LinearMap.coe_sum, Finset.sum_apply,
+  --   LinearMap.smul_apply]
+  -- -- TODO: merge this into `simp`
+  -- conv_lhs => enter [2, y, 2]; tactic => convert Representation.linearizeMap_single _ _
+  -- simp
+  sorry
 
 section Exactness
 

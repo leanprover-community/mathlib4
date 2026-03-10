@@ -302,7 +302,7 @@ variable {k : Type u} {G : Type v} [CommRing k]
 
 noncomputable section
 
-variable [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
+variable [Group G] (A : Rep.{w} k G) (S : Subgroup G) [S.Normal]
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` restricts to a `G`-representation on
 the kernel of the quotient map to the `S`-coinvariants `A_S`. -/
@@ -414,7 +414,7 @@ instance : (coinvariantsFunctor k G).IsLeftAdjoint := (coinvariantsAdjunction k 
 /-- The functor sending `A, B` to `(A ⊗[k] B)_G`. This is naturally isomorphic to the functor
 sending `A, B` to `A ⊗[k[G]] B`, where we give `A` the `k[G]ᵐᵒᵖ`-module structure defined by
 `g • a := A.ρ g⁻¹ a`. -/
-noncomputable abbrev coinvariantsTensor : Rep.{u} k G ⥤ Rep.{u} k G ⥤ ModuleCat.{u} k :=
+noncomputable abbrev coinvariantsTensor : Rep k G ⥤ Rep k G ⥤ ModuleCat k :=
   (Functor.postcompose₂.obj (coinvariantsFunctor k G)).obj (MonoidalCategory.curriedTensor _)
 
 variable {k G} (A B)

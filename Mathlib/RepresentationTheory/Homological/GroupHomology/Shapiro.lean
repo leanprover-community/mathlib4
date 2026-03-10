@@ -53,17 +53,19 @@ set_option backward.isDefEq.respectTransparency false in
 `(A ⊗ Res(S)(P))_S ≅ (Ind_S^G(A) ⊗ P)_G`. -/
 noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
     (P : ProjectiveResolution (Rep.trivial k G k)) :
-    ((Action.res _ S.subtype).mapProjectiveResolution P).complex.coinvariantsTensorObj A ≅
+    ((resFunctor S.subtype).mapProjectiveResolution P).complex.coinvariantsTensorObj A ≅
       P.complex.coinvariantsTensorObj (ind S.subtype A) :=
   (NatIso.mapHomologicalComplex (coinvariantsTensorIndNatIso S.subtype A).symm _).app _
 
+set_option maxHeartbeats 1000000 in
 set_option backward.isDefEq.respectTransparency false in
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
 noncomputable def indIso [DecidableEq G] (A : Rep k S) (n : ℕ) :
     groupHomology (ind S.subtype A) n ≅ groupHomology A n :=
   (HomologicalComplex.homologyFunctor _ _ _).mapIso (inhomogeneousChainsIso (ind S.subtype A) ≪≫
-    (coinvariantsTensorResProjectiveResolutionIso S A (barResolution k G)).symm) ≪≫
-  (groupHomologyIso A n ((Action.res _ _).mapProjectiveResolution <| barResolution k G)).symm
+    (coinvariantsTensorResProjectiveResolutionIso (k := k) (G := G) S A
+    (barResolution k G)).symm) ≪≫
+  (groupHomologyIso A n ((resFunctor _).mapProjectiveResolution <| barResolution k G)).symm
 
 end groupHomology

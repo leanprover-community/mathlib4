@@ -46,11 +46,26 @@ set_option backward.isDefEq.respectTransparency false in
 `Hom(Res(S)(P), A) ≅ Hom(P, Coind_S^G(A)).` -/
 noncomputable def linearYonedaObjResProjectiveResolutionIso
     (P : ProjectiveResolution (trivial k G k)) (A : Rep k S) :
-    ((Action.res _ S.subtype).mapProjectiveResolution P).complex.linearYonedaObj k A ≅
+    ((resFunctor S.subtype).mapProjectiveResolution P).complex.linearYonedaObj k A ≅
       P.complex.linearYonedaObj k (coind S.subtype A) :=
   HomologicalComplex.Hom.isoOfComponents
     (fun _ => (resCoindHomEquiv _ _ _).toModuleIso) fun _ _ _ =>
-      ModuleCat.hom_ext (LinearMap.ext fun f => Action.Hom.ext <| by ext; simp [hom_comm_apply])
+      ModuleCat.hom_ext (LinearMap.ext fun f => Rep.hom_ext <| by
+        -- ext; simp [← ModuleCat.ofHom_comp, hom_comm_apply]
+        simp only [Functor.mapProjectiveResolution_complex, ChainComplex.linearYonedaObj_X,
+          Functor.mapHomologicalComplex_obj_X, linearYoneda_obj_obj_carrier,
+          LinearEquiv.toModuleIso_hom, ChainComplex.linearYonedaObj_d,
+          Functor.mapHomologicalComplex_obj_d]
+        rw [← ModuleCat.ofHom_comp, ← ModuleCat.ofHom_comp, ModuleCat.hom_ofHom,
+          ModuleCat.hom_ofHom]
+        ext
+        simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+          Linear.leftComp_apply, Rep.hom_comp, Representation.IntertwiningMap.comp_toLinearMap,
+          Representation.IntertwiningMap.toLinearMap_apply, Functor.mapHomologicalComplex_obj_X]
+        simp only [resCoindHomEquiv, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk,
+          ← Representation.IntertwiningMap.toLinearMap_apply]
+        rw [resCoindToHom_hom_hom_apply_coe, resCoindToHom_hom_hom_apply_coe]
+        simp [hom_comm_apply, Representation.IntertwiningMap.toLinearMap_apply])
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
@@ -60,6 +75,6 @@ noncomputable def coindIso (A : Rep k S) (n : ℕ) :
   (HomologicalComplex.homologyFunctor _ _ _).mapIso
     (inhomogeneousCochainsIso (coind S.subtype A) ≪≫
     (linearYonedaObjResProjectiveResolutionIso (barResolution k G) A).symm) ≪≫
-  (groupCohomologyIso A n ((Action.res _ _).mapProjectiveResolution <| barResolution k G)).symm
+  (groupCohomologyIso A n ((resFunctor _).mapProjectiveResolution <| barResolution k G)).symm
 
 end groupCohomology

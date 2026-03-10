@@ -91,7 +91,7 @@ namespace Rep
 open CategoryTheory Finsupp
 
 variable {k : Type u} {G : Type v} {H : Type v'} [CommRing k] [Group G] [Group H] (φ : G →* H)
-  (A : Rep k G)
+  (A : Rep.{w} k G)
 
 section Ind
 
@@ -137,7 +137,7 @@ set_option backward.isDefEq.respectTransparency false in
 `A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
 the `G`-representation morphisms `A ⟶ B`. -/
 @[simps]
-noncomputable def indResHomEquiv (B : Rep.{max w v'} k H) (A : Rep.{max w v} k G):
+noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u} k H) :
     (ind φ A ⟶ B) ≃ₗ[k] (A ⟶ res φ B) where
   toFun f := Rep.ofHom ⟨f.hom.toLinearMap ∘ₗ IndV.mk φ A.ρ 1, fun g ↦ by
     ext x
@@ -162,12 +162,11 @@ noncomputable def indResHomEquiv (B : Rep.{max w v'} k H) (A : Rep.{max w v} k G
   right_inv _ := by ext; simp
 
 set_option backward.isDefEq.respectTransparency false in
-set_option pp.universes true in
 variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, the induction functor `Rep k G ⥤ Rep k H` is left
 adjoint to the restriction functor along `φ`. -/
 -- @[simps! unit_app_hom_hom counit_app_hom_hom]
-noncomputable def indResAdjunction : indFunctor k φ ⊣ resFunctor.{max w t} φ :=
+noncomputable def indResAdjunction : indFunctor k φ ⊣ resFunctor.{max w v' u} φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv A B := (indResHomEquiv φ A B).toEquiv
     homEquiv_naturality_left_symm _ _ := by
@@ -177,17 +176,19 @@ noncomputable def indResAdjunction : indFunctor k φ ⊣ resFunctor.{max w t} φ
 
 open Finsupp
 
-noncomputable instance : (indFunctor k φ).IsLeftAdjoint :=
+noncomputable instance : (indFunctor.{max u v' w} k φ).IsLeftAdjoint :=
   (indResAdjunction k φ).isLeftAdjoint
 
-noncomputable instance : (Action.res (ModuleCat.{u} k) φ).IsRightAdjoint :=
+noncomputable instance : (resFunctor.{max u v' w} (k := k) φ).IsRightAdjoint :=
   (indResAdjunction k φ).isRightAdjoint
 
 end Adjunction
 
 section
 
-variable (B : Rep k H)
+-- variable (H : Type v) [Monoid H] (A : Rep.{u} k G) (B : Rep k H) (φ : G →* H)
+
+variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep k G) (B : Rep k H)
 
 open ModuleCat.MonoidalCategory Representation
 
@@ -197,47 +198,47 @@ set_option backward.isDefEq.respectTransparency false in
 `h : H`, `a : A`, and `b : B`. -/
 noncomputable def coinvariantsTensorIndHom :
     ((coinvariantsTensor k H).obj (ind φ A)).obj B ⟶
-      ((coinvariantsTensor k G).obj A).obj ((Action.res _ φ).obj B) :=
-  ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <|
-    Coinvariants.lift _ (TensorProduct.lift <| Finsupp.lift _ _ _
-      fun g => ((coinvariantsTensorMk A ((Action.res _ φ).obj B)).compl₂ (B.ρ g)))
-      fun s => by ext; simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff]
-        using Coinvariants.sub_mem_ker s _)
-      fun _ => by
-        simp only [MonoidalCategory.curriedTensor_obj_obj, Action.tensorObj_V, tensorObj_carrier]
-        ext
-        simp
+      ((coinvariantsTensor k G).obj A).obj (res φ B) :=
+  ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <| Coinvariants.lift _
+    (TensorProduct.lift <| Finsupp.lift _ _ _ <| fun g ↦
+      (coinvariantsTensorMk A (res φ B)).compl₂ (B.ρ g))
+      fun g ↦ by ext; simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff]
+        using Coinvariants.sub_mem_ker _ _) fun _ ↦ by
+    simp only [MonoidalCategory.curriedTensor_obj_obj, tensor_V, tensor_ρ, res_obj_ρ,
+      Functor.postcompose₂_obj_obj_obj_obj, coinvariantsFunctor_obj_carrier,
+      tprod_apply, ind_apply]
+    ext; simp
 
 set_option backward.isDefEq.respectTransparency false in
 variable {A B} in
 lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
     coinvariantsTensorIndHom φ A B (coinvariantsTensorMk _ _ (IndV.mk φ _ h x) y) =
       coinvariantsTensorMk _ _ x (B.ρ h y) := by
-  simp [tensorObj_carrier, coinvariantsTensorIndHom, coinvariantsTensorMk]
+  simp [coinvariantsTensorIndHom, coinvariantsTensorMk]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
 `(A ⊗ Res(φ)(B))_G ⟶ (Ind(φ)(A) ⊗ B))_H` sending `⟦a ⊗ₜ b⟧` to `⟦1 ⊗ₜ a⟧ ⊗ₜ b` for all
 `a : A`, and `b : B`. -/
 noncomputable def coinvariantsTensorIndInv :
-    ((coinvariantsTensor k G).obj A).obj ((Action.res _ φ).obj B) ⟶
+    ((coinvariantsTensor k G).obj A).obj (res φ B) ⟶
       ((coinvariantsTensor k H).obj (ind φ A)).obj B :=
   ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <|
-      (coinvariantsTensorMk (ind φ A) B) ∘ₗ IndV.mk _ _ 1)
-    fun s => by
-      simp only [MonoidalCategory.curriedTensor_obj_obj, tensorObj_carrier, Action.tensorObj_V]
-      ext x y
-      simpa [Coinvariants.mk_eq_iff, coinvariantsTensorMk] using
-        Coinvariants.mem_ker_of_eq (φ s) (IndV.mk φ A.ρ (1 : H) x ⊗ₜ[k] y) _
-        (by simp [← Coinvariants.mk_inv_tmul])
+    (coinvariantsTensorMk (ind (k := k) φ A) B) ∘ₗ IndV.mk _ _ 1) fun s ↦ by
+    simp only [MonoidalCategory.curriedTensor_obj_obj, tensor_V, tensor_ρ, tprod_apply,
+      MonoidHom.coe_comp, Function.comp_apply]
+    ext x y
+    simpa [Coinvariants.mk_eq_iff, coinvariantsTensorMk] using
+      Coinvariants.mem_ker_of_eq (φ s) (IndV.mk φ A.ρ (1 : H) x ⊗ₜ[k] y) _ <| by
+      simp [← Coinvariants.mk_inv_tmul]
 
 set_option backward.isDefEq.respectTransparency false in
 variable {A B} in
 lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
     coinvariantsTensorIndInv φ A B (Coinvariants.mk
-      (A.ρ.tprod (Rep.ρ ((Action.res _ φ).obj B))) <| x ⊗ₜ y) =
+      (A.ρ.tprod (Rep.ρ (res φ B))) <| x ⊗ₜ y) =
       coinvariantsTensorMk _ _ (IndV.mk φ _ 1 x) y := by
-  simp [tensorObj_carrier, coinvariantsTensorIndInv, coinvariantsTensorMk]
+  simp [coinvariantsTensorIndInv, coinvariantsTensorMk]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear
@@ -246,7 +247,7 @@ for all `h : H`, `a : A`, and `b : B`. -/
 @[simps]
 noncomputable def coinvariantsTensorIndIso :
     ((coinvariantsTensor k H).obj (ind φ A)).obj B ≅
-      ((coinvariantsTensor k G).obj A).obj ((Action.res _ φ).obj B) where
+      ((coinvariantsTensor k G).obj A).obj (res φ B) where
   hom := coinvariantsTensorIndHom φ A B
   inv := coinvariantsTensorIndInv φ A B
   hom_inv_id := by
@@ -256,19 +257,18 @@ noncomputable def coinvariantsTensorIndIso :
         Coinvariants.mem_ker_of_eq h (IndV.mk φ _ h a ⊗ₜ[k] b) _ <| by simp
   inv_hom_id := by
     ext
-    simp [tensorObj_carrier, coinvariantsTensorIndInv, coinvariantsTensorMk,
-      coinvariantsTensorIndHom]
+    simp [coinvariantsTensorIndInv, coinvariantsTensorMk, coinvariantsTensorIndHom]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a group hom `φ : G →* H` and `A : Rep k G`, the functor `Rep k H ⥤ ModuleCat k` sending
 `B ↦ (Ind(φ)(A) ⊗ B))_H` is naturally isomorphic to the one sending `B ↦ (A ⊗ Res(φ)(B))_G`. -/
 @[simps! hom_app inv_app]
 noncomputable def coinvariantsTensorIndNatIso :
-    (coinvariantsTensor k H).obj (ind φ A) ≅ Action.res _ φ ⋙ (coinvariantsTensor k G).obj A :=
+    (coinvariantsTensor k H).obj (ind φ A) ≅ resFunctor φ ⋙ (coinvariantsTensor k G).obj A :=
   NatIso.ofComponents (fun B => coinvariantsTensorIndIso φ A B) fun {X Y} f => by
     ext
-    simp [tensorObj_carrier, coinvariantsTensorIndHom, coinvariantsTensorMk,
-      whiskerLeft_def, hom_comm_apply]
+    simp [coinvariantsTensorIndHom, coinvariantsTensorMk,
+      hom_comm_apply, Representation.IntertwiningMap.toLinearMap_apply]
 
 end
 end Rep

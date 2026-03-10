@@ -454,19 +454,18 @@ end
 
 variable {k G}
 
--- set_option backward.isDefEq.respectTransparency false in
--- /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
--- `g ↦ A.ρ(g)(x).` -/
--- def leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A :=
---   Rep.ofHom (σ := (leftRegular k G).ρ) (ρ := A.ρ) ⟨(Finsupp.lift A k G fun g ↦ A.ρ g x) ∘ₗ
---     (ofMulAction.equivFinsupp k G G).toLinearMap, fun g ↦ by ext; simp⟩
+set_option backward.isDefEq.respectTransparency false in
+/-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
+`g ↦ A.ρ(g)(x).` -/
+abbrev leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A :=
+  Rep.ofHom (σ := (leftRegular k G).ρ) (ρ := A.ρ)
+    ⟨Finsupp.lift A k G fun g ↦ A.ρ g x, fun g ↦ by ext; simp⟩
 
--- set_option backward.isDefEq.respectTransparency false in
--- @[simp]
--- theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
---     (leftRegularHom A x).hom (ofMulAction.single G g r) = r • A.ρ g x := by
---   simp [leftRegularHom]
-
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
+    (leftRegularHom A x).hom (.single g r) = r • A.ρ g x := by
+  simp [leftRegularHom]
 
 end setup
 
@@ -1321,10 +1320,10 @@ representation morphisms `Hom(k[G], A)` and `A`. -/
 abbrev leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A :=
   homLinearEquiv _ _ ≪≫ₗ Representation.leftRegularMapEquiv A.ρ
 
--- set_option backward.isDefEq.respectTransparency false in
--- theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
---     ((leftRegularHomEquiv A).symm x).hom (ofMulAction.single G g 1) = A.ρ g x := by
---   simp
+set_option backward.isDefEq.respectTransparency false in
+theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
+    ((leftRegularHomEquiv A).symm x).hom (.single g 1) = A.ρ g x := by
+  simp [homEquiv]
 
 variable (k G) in
 abbrev linearizationObjOfMulAction (n : ℕ) : diagonal k G n ≅ (linearization k G).obj
