@@ -211,8 +211,7 @@ theorem closure_three_cycles_eq_alternating :
 
 theorem _root_.alternatingGroup.closure_isThreeCycles_eq_top :
     Subgroup.closure {g : alternatingGroup α | Equiv.Perm.IsThreeCycle (g : Equiv.Perm α)} = ⊤ := by
-  apply Subgroup.map_injective (alternatingGroup α).subtype_injective
-  rw [MonoidHom.map_closure]
+  rw [← map_subtype_inj, MonoidHom.map_closure]
   suffices (alternatingGroup α).subtype ''
     { g : alternatingGroup α | (g : Perm α).IsThreeCycle } =
       { g : Perm α | IsThreeCycle g} by
@@ -248,8 +247,7 @@ alias closure_cycleType_eq_2_2_eq_alternatingGroup :=
 
 theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ Nat.card α) :
     Subgroup.closure {g : alternatingGroup α | (g : Perm α).cycleType = {2, 2}} = ⊤ := by
-  apply Subgroup.map_injective (alternatingGroup α).subtype_injective
-  rw [MonoidHom.map_closure]
+  rw [← map_subtype_inj, MonoidHom.map_closure]
   suffices (alternatingGroup α).subtype ''
     { g | (g : Perm α).cycleType = {2, 2} } =
       { g : Perm α | g.cycleType = {2, 2} } by

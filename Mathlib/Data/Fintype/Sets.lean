@@ -245,11 +245,14 @@ instance List.Subtype.fintype [DecidableEq α] (l : List α) : Fintype { x // x 
 instance Multiset.Subtype.fintype [DecidableEq α] (s : Multiset α) : Fintype { x // x ∈ s } :=
   Fintype.ofMultiset s.attach s.mem_attach
 
-instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
+/- instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
   ⟨s.attach, s.mem_attach⟩
+-/
 
+/-
 instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
   Finset.Subtype.fintype s
+-/
 
 theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
   rfl
@@ -302,6 +305,17 @@ lemma coe_finsetOrderIsoSet : ⇑finsetOrderIsoSet = ((↑) : Finset α → Set 
     ⇑(finsetOrderIsoSet : Finset α ≃o Set α).symm = ⇑finsetEquivSet.symm := rfl
 
 end Fintype
+
+section
+
+instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
+  -- ⟨s.attach, s.mem_attach⟩
+  s.fintypeCoeSort
+
+instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
+  Finset.Subtype.fintype s
+
+end
 
 theorem mem_image_univ_iff_mem_range {α β : Type*} [Fintype α] [DecidableEq β] {f : α → β}
     {b : β} : b ∈ univ.image f ↔ b ∈ Set.range f := by simp
