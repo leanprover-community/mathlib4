@@ -7,14 +7,14 @@ module
 
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Computability.Encoding
-public import Mathlib.Computability.TuringMachine
+public import Mathlib.Computability.TuringMachine.StackTuringMachine
 
 /-!
 # Computable functions
 
 This file contains the definition of a Turing machine with some finiteness conditions
-(bundling the definition of TM2 in `TuringMachine.lean`), a definition of when a TM gives a certain
-output (in a certain time), and the definition of computability (in polynomial time or
+(bundling the definition of TM2 in `StackTuringMachine.lean`), a definition of when a TM gives
+a certain output (in a certain time), and the definition of computability (in polynomial time or
 any time function) of a function between two types that have an encoding (as in `Encoding.lean`).
 
 ## Main theorems
@@ -35,12 +35,13 @@ once, this execution time is up to multiplication by a constant the amount of fu
 
 
 
-open Computability
+open Computability StateTransition
+
 
 namespace Turing
 
 /-- A bundled TM2 (an equivalent of the classical Turing machine, defined starting from
-the namespace `Turing.TM2` in `TuringMachine.lean`), with an input and output stack,
+the namespace `Turing.TM2` in `StackTuringMachine.lean`), with an input and output stack,
 a main function, an initial state and some finiteness guarantees. -/
 structure FinTM2 where
   /-- index type of stacks -/
@@ -121,42 +122,10 @@ def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
     @dite (List (tm.Γ k)) (k = tm.k₁) (tm.kDecidableEq k tm.k₁) (fun h => by rw [h]; exact s)
       fun _ => []
 
-/-- A "proof" of the fact that `f` eventually reaches `b` when repeatedly evaluated on `a`,
-remembering the number of steps it takes. -/
-structure EvalsTo {σ : Type*} (f : σ → Option σ) (a : σ) (b : Option σ) where
-  /-- number of steps taken -/
-  steps : ℕ
-  evals_in_steps : (flip bind f)^[steps] a = b
-
--- note: this cannot currently be used in `calc`, as the last two arguments must be `a` and `b`.
--- If this is desired, this argument order can be changed, but this spelling is I think the most
--- natural, so there is a trade-off that needs to be made here. A notation can get around this.
-/-- A "proof" of the fact that `f` eventually reaches `b` in at most `m` steps when repeatedly
-evaluated on `a`, remembering the number of steps it takes. -/
-structure EvalsToInTime {σ : Type*} (f : σ → Option σ) (a : σ) (b : Option σ) (m : ℕ) extends
-  EvalsTo f a b where
-  steps_le_m : steps ≤ m
-
-/-- Reflexivity of `EvalsTo` in 0 steps. -/
-def EvalsTo.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsTo f a (some a) :=
-  ⟨0, rfl⟩
-
-/-- Transitivity of `EvalsTo` in the sum of the numbers of steps. -/
-@[trans]
-def EvalsTo.trans {σ : Type*} (f : σ → Option σ) (a : σ) (b : σ) (c : Option σ)
-    (h₁ : EvalsTo f a b) (h₂ : EvalsTo f b c) : EvalsTo f a c :=
-  ⟨h₂.steps + h₁.steps, by rw [Function.iterate_add_apply, h₁.evals_in_steps, h₂.evals_in_steps]⟩
-
-/-- Reflexivity of `EvalsToInTime` in 0 steps. -/
-def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInTime f a (some a) 0 :=
-  ⟨EvalsTo.refl f a, le_refl 0⟩
-
-/-- Transitivity of `EvalsToInTime` in the sum of the numbers of steps. -/
-@[trans]
-def EvalsToInTime.trans {σ : Type*} (f : σ → Option σ) (m₁ : ℕ) (m₂ : ℕ) (a : σ) (b : σ)
-    (c : Option σ) (h₁ : EvalsToInTime f a b m₁) (h₂ : EvalsToInTime f b c m₂) :
-    EvalsToInTime f a c (m₂ + m₁) :=
-  ⟨EvalsTo.trans f a b c h₁.toEvalsTo h₂.toEvalsTo, add_le_add h₂.steps_le_m h₁.steps_le_m⟩
+@[deprecated (since := "2026-03-06")] protected alias EvalsTo :=
+  StateTransition.EvalsTo
+@[deprecated (since := "2026-03-06")] protected alias EvalsToInTime :=
+  StateTransition.EvalsToInTime
 
 /-- A proof of tm outputting l' when given l. -/
 def TM2Outputs (tm : FinTM2) (l : List (tm.Γ tm.k₀)) (l' : Option (List (tm.Γ tm.k₁))) :=
