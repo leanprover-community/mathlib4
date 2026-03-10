@@ -141,7 +141,7 @@ theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
   rcases h with ⟨s, hs⟩
   simp only [← hs, span_smul_eq]
   rw [← restrictScalars_top R (AdicCompletion I R) (AdicCompletion I M),
-    ← restrictScalars_image_smul_eq_smul_restrictScalars (R := AdicCompletion I R), show
+    ← restrictScalars_image_smul_eq (R := AdicCompletion I R), show
     ⇑(algebraMap R (AdicCompletion I R)) = of I R by rfl,
     ← restrictScalars_ofPowSmul_range_eq_eval_ker, restrictScalars_le,
     image_smul_top_eq_range_lsum]
