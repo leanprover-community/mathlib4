@@ -116,7 +116,6 @@ theorem sum (hΦ : TensorialAt I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι �
       rw [Finset.sum_empty]
       exact hΦ.zero
   | insert a s ha h =>
-      change Φ (fun x' : M ↦ ∑ i ∈ (insert a s : Finset ι), σ i x') = _
       simp only [Finset.sum_insert ha, ← h]
       exact hΦ.add (hσ a) (.sum_section hσ)
 
