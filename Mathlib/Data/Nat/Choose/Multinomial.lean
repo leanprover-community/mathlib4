@@ -353,3 +353,9 @@ theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
 
 end Sym
+
+theorem Finsupp.multinomial_of_support_subset {σ : Type*} {d : σ →₀ ℕ} {s : Finset σ}
+    (h : d.support ⊆ s) : Nat.multinomial s d = d.multinomial := by
+  rw [Nat.multinomial, Finsupp.multinomial,
+    sum_of_support_subset _ h _ (by simp), prod_of_support_subset _ h _ (by simp)]
+  simp
