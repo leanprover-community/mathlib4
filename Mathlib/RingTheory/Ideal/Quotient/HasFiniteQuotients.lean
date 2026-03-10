@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.ZMod.QuotientRing
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.IntegralDomain
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-! # Rings with finite quotients
 
@@ -61,6 +62,41 @@ instance [HasFiniteQuotients R] : IsNoetherianRing R := by
     exact Submodule.FG.of_finite
   · rw [Submodule.ker_mkQ, inf_eq_right.mpr ((Ideal.span_singleton_le_iff_mem I).mpr hx₁)]
     exact Submodule.fg_span_singleton x
+
+theorem cardQuot_pos [HasFiniteQuotients R] (I : Ideal R) (hI : I ≠ ⊥) : 0 < I.cardQuot := by
+  have := finiteQuotient hI
+  rw [Submodule.cardQuot_apply]
+  exact Nat.card_pos
+
+theorem finite_of_mem [HasFiniteQuotients R] (x : R) (hx : x ≠ 0) :
+    {I : Ideal R | x ∈ I}.Finite := by
+  have := finiteQuotient (mt Ideal.span_singleton_eq_bot.mp hx)
+  have : { I | Ideal.comap (Ideal.Quotient.mk (Ideal.span {x})) ⊥ ≤ I }.Finite :=
+    .of_equiv _ (Ideal.relIsoOfSurjective _ Ideal.Quotient.mk_surjective).toEquiv
+  simpa [← RingHom.ker_eq_comap_bot] using this
+
+open Pointwise in
+theorem finite_cardQuot_le [HasFiniteQuotients R] (B : ℕ) :
+    {I : Ideal R | I.cardQuot ≤ B}.Finite := by
+  classical
+  rcases finite_or_infinite R
+  · apply Set.toFinite
+  obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq R (B + 1)
+  let t := (s - s) \ {0}
+  refine Set.Finite.of_diff ?_ (Set.finite_singleton ⊥)
+  suffices {I | Submodule.cardQuot I ≤ B} \ {⊥} ⊆ ⋃ x ∈ t, {I | x ∈ I} from
+    (t.finite_toSet.biUnion fun x hx ↦ finite_of_mem x (by grind)).subset this
+  intro I hI
+  rw [Set.mem_diff, Set.mem_setOf, Submodule.cardQuot_apply] at hI
+  simp_rw [Set.mem_iUnion, exists_prop, Set.mem_setOf_eq]
+  replace hs : (s.image (Ideal.Quotient.mk I)).card < s.card := by
+    have := finiteQuotient hI.2
+    have := Fintype.ofFinite (R ⧸ I)
+    grw [Finset.card_le_univ, Fintype.card_eq_nat_card, hI.1, hs, Nat.lt_add_one_iff]
+  obtain ⟨x, hx, y, hy, hxy, h⟩ := Finset.exists_ne_map_eq_of_card_image_lt hs
+  refine ⟨x - y, ?_, (Submodule.Quotient.eq I).mp h⟩
+  refine Finset.mem_sdiff.mpr ⟨Finset.mem_sub.mpr ⟨x, hx, y, hy, rfl⟩, ?_⟩
+  rwa [Finset.notMem_singleton, sub_ne_zero]
 
 variable (R) in
 /--
