@@ -267,45 +267,6 @@ lemma mono_iff_isIso_of_epi {C : Type*} [Category* C] [Balanced C] {X Y : C} (f 
     Mono f ↔ IsIso f := by
   simp [isIso_iff_mono_and_epi, ‹Epi f›]
 
-namespace Presheaf
-
-/--
-A morphism of presheafs `f : H ⟶ K` is `J`-covering if for any `J`-sheaf `F` the induced
-map `(K ⟶ F) → (H ⟶ F)` is injective.
-(cf. SGA4 II 5.2 (morphisme couvrant))
--/
-def covering : MorphismProperty (Cᵒᵖ ⥤ A) :=
-  ObjectProperty.isHomInjective (Presheaf.IsSheaf J)
-
-instance : ObjectProperty.IsClosedUnderIsomorphisms (Presheaf.IsSheaf J (A := A)) := by
-  constructor
-  intro F G e hF
-  rwa [isSheaf_of_iso_iff e.symm]
-
-@[simp]
-lemma essImage_sheafToPresheaf : (sheafToPresheaf J A).essImage = Presheaf.IsSheaf J := by
-  simp [sheafToPresheaf]
-
-lemma covering_eq_isHomInjective_essImage :
-    covering J = (sheafToPresheaf J A).essImage.isHomInjective := by
-  simp [covering]
-
-def IsCoveringFamily {X : Cᵒᵖ ⥤ A} (R : Presieve X) : Prop :=
-  ObjectProperty.IsJointlyHomInjective (Presheaf.IsSheaf J) R
-
-def IsBicoveringFamily {X : Cᵒᵖ ⥤ A} (R : Presieve X) : Prop :=
-  ObjectProperty.IsJointlyLocal (Presheaf.IsSheaf J) R
-
-variable {J}
-
-lemma covering_of_W {H K : Cᵒᵖ ⥤ A} {f : H ⟶ K} (hf : J.W f) : covering J f :=
-  fun F hF ↦ (hf F hF).injective
-
-lemma covering_iff_epi [HasWeakSheafify J A] {H K : Cᵒᵖ ⥤ A} {f : H ⟶ K} :
-    covering J f ↔ Epi ((presheafToSheaf J A).map f) := by
-  rw [covering_eq_isHomInjective_essImage,
-    ObjectProperty.isHomInjective_iff_epi_map (sheafificationAdjunction _ _)]
-
 lemma Functor.W_map_of_adjunction_of_isContinuous (F : C ⥤ D)
     (H : (Cᵒᵖ ⥤ A) ⥤ (Dᵒᵖ ⥤ A)) (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
     [Functor.IsContinuous.{v} F J K] {G G' : Cᵒᵖ ⥤ A} (f : G ⟶ G') (hf : J.W f) :
@@ -323,19 +284,6 @@ lemma Functor.IsContinuous.of_W_map_of_adjunction [LocallySmall.{w} C] {F : C �
     ← adj.bijective_map_comp_iff]
   exact h hS _ G.property
 
-/-- The assumptions are in particular satisfied for `A = Type w` for large enough `w`. -/
-lemma W_iff_covering_and_covering_diagonal [HasPullbacks A] [HasSheafify J A]
-    [Balanced (Sheaf J A)] {H K : Cᵒᵖ ⥤ A} (f : H ⟶ K) :
-    J.W f ↔
-      covering J f ∧ covering J (pullback.diagonal f) := by
-  rw [covering_iff_epi, covering_iff_epi, J.W_iff, isIso_iff_mono_and_epi, and_comm]
-  dsimp [pullback.diagonalObj, pullback.diagonal]
-  rw [and_congr_right_iff]
-  intro h
-  rw [← epi_comp_iff_of_isIso _ (PreservesPullback.iso (presheafToSheaf J _) f f).hom]
-  simp only [PreservesPullback.iso_hom, map_lift_pullbackComparison, Functor.map_id]
-  rw [← pullback.diagonal, epi_iff_isIso_of_mono, pullback.isIso_diagonal_iff]
-
 /-- `Functor.IsContinuous` is preserved under enlarging the universe if the starting
 universe is large enough. -/
 lemma isContinuous_max_of_isContinuous (F : C ⥤ D) [Functor.IsContinuous.{max u₁ v₁ u₂ v₂} F J K] :
@@ -344,7 +292,7 @@ lemma isContinuous_max_of_isContinuous (F : C ⥤ D) [Functor.IsContinuous.{max 
   let adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op := F.op.lanAdjunction _
   let H' : (Cᵒᵖ ⥤ Type max w u₁ v₁ u₂ v₂) ⥤ Dᵒᵖ ⥤ Type max w u₁ v₁ u₂ v₂ := F.op.lan
   let adj' : H' ⊣ (Functor.whiskeringLeft _ _ _).obj F.op := F.op.lanAdjunction _
-  apply Functor.IsContinuous.of_W_map_of_adjunction _ adj'
+  apply Functor.IsContinuous.of_W_map_of_adjunction _ _ adj'
   intro X S hS
   have hWS : J.W (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} S).ι := by
     -- TODO: extract this into a separate lemma
@@ -386,6 +334,58 @@ lemma isContinuous_of_isContinuous_max (F : C ⥤ D) [Functor.IsContinuous.{max 
   rw [isSheaf_iff_isSheaf_of_type, Presieve.isSheaf_comp_uliftFunctor_iff.{w, v},
     ← isSheaf_iff_isSheaf_of_type]
   exact G.property
+
+namespace Presheaf
+
+/--
+A morphism of presheafs `f : H ⟶ K` is `J`-covering if for any `J`-sheaf `F` the induced
+map `(K ⟶ F) → (H ⟶ F)` is injective.
+(cf. SGA4 II 5.2 (morphisme couvrant))
+-/
+def covering : MorphismProperty (Cᵒᵖ ⥤ A) :=
+  ObjectProperty.isHomInjective (Presheaf.IsSheaf J)
+
+instance : ObjectProperty.IsClosedUnderIsomorphisms (Presheaf.IsSheaf J (A := A)) := by
+  constructor
+  intro F G e hF
+  rwa [isSheaf_of_iso_iff e.symm]
+
+@[simp]
+lemma essImage_sheafToPresheaf : (sheafToPresheaf J A).essImage = Presheaf.IsSheaf J := by
+  simp [sheafToPresheaf]
+
+lemma covering_eq_isHomInjective_essImage :
+    covering J = (sheafToPresheaf J A).essImage.isHomInjective := by
+  simp [covering]
+
+def IsCoveringFamily {X : Cᵒᵖ ⥤ A} (R : Presieve X) : Prop :=
+  ObjectProperty.IsJointlyHomInjective (Presheaf.IsSheaf J) R
+
+def IsBicoveringFamily {X : Cᵒᵖ ⥤ A} (R : Presieve X) : Prop :=
+  ObjectProperty.IsJointlyLocal (Presheaf.IsSheaf J) R
+
+variable {J}
+
+lemma covering_of_W {H K : Cᵒᵖ ⥤ A} {f : H ⟶ K} (hf : J.W f) : covering J f :=
+  fun F hF ↦ (hf F hF).injective
+
+lemma covering_iff_epi [HasWeakSheafify J A] {H K : Cᵒᵖ ⥤ A} {f : H ⟶ K} :
+    covering J f ↔ Epi ((presheafToSheaf J A).map f) := by
+  rw [covering_eq_isHomInjective_essImage,
+    ObjectProperty.isHomInjective_iff_epi_map (sheafificationAdjunction _ _)]
+
+/-- The assumptions are in particular satisfied for `A = Type w` for large enough `w`. -/
+lemma W_iff_covering_and_covering_diagonal [HasPullbacks A] [HasSheafify J A]
+    [Balanced (Sheaf J A)] {H K : Cᵒᵖ ⥤ A} (f : H ⟶ K) :
+    J.W f ↔
+      covering J f ∧ covering J (pullback.diagonal f) := by
+  rw [covering_iff_epi, covering_iff_epi, J.W_iff, isIso_iff_mono_and_epi, and_comm]
+  dsimp [pullback.diagonalObj, pullback.diagonal]
+  rw [and_congr_right_iff]
+  intro h
+  rw [← epi_comp_iff_of_isIso _ (PreservesPullback.iso (presheafToSheaf J _) f f).hom]
+  simp only [PreservesPullback.iso_hom, map_lift_pullbackComparison, Functor.map_id]
+  rw [← pullback.diagonal, epi_iff_isIso_of_mono, pullback.isIso_diagonal_iff]
 
 end Presheaf
 

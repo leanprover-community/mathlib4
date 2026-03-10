@@ -6,9 +6,14 @@ Authors: Joël Riou, Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Sites.Closed
+public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
+public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 public import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
+public import Mathlib.CategoryTheory.Subfunctor.Basic
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 
 /-!
 # Continuous functors between sites.
@@ -109,6 +114,133 @@ end OneHypercover
 
 end GrothendieckTopology
 
+/-- If `C` is `w`-locally small, any sieve induces a subfunctor of `shrinkYoneda.{w}.obj X`. -/
+@[simps, pp_with_univ]
+def Sieve.shrinkFunctor [LocallySmall.{w} C] {X : C} (S : Sieve X) :
+    Subfunctor (shrinkYoneda.{w}.obj X) where
+  obj Y := { f | S (shrinkYonedaObjObjEquiv f) }
+  map {Y Z} g f hf := by
+    simpa [shrinkYonedaObjObjEquiv_map] using S.downward_closed hf _
+
+set_option backward.isDefEq.respectTransparency false in
+/-- `Sieve.shrinkFunctor` is compatible with universe lifting. -/
+noncomputable
+def Sieve.shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max t w, v₁, u₁} C]
+    {X : C} (S : Sieve X) :
+    (Sieve.shrinkFunctor.{w} S).toFunctor ⋙ CategoryTheory.uliftFunctor.{t, w} ≅
+      (Sieve.shrinkFunctor.{max t w} S).toFunctor :=
+  NatIso.ofComponents
+    (fun X ↦ Equiv.toIso
+      (.trans Equiv.ulift
+        (Equiv.subtypeEquiv (shrinkYonedaObjObjEquiv.trans shrinkYonedaObjObjEquiv.symm)
+        fun a ↦ by simp)))
+    fun {U V} f ↦ by
+      ext
+      dsimp
+      ext
+      dsimp [Equiv.subtypeEquiv]
+      rw [shrinkYonedaObjObjEquiv_map, shrinkYonedaObjObjEquiv_symm_comp]
+      simp
+
+@[reassoc]
+lemma Sieve.shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C]
+    [LocallySmall.{max t w, v₁, u₁} C]
+    {X : C} (S : Sieve X) :
+    (Sieve.shrinkFunctorUliftFunctorIso.{w, t} S).inv ≫
+      Functor.whiskerRight (Sieve.shrinkFunctor.{w} _).ι CategoryTheory.uliftFunctor.{t, w} =
+    (Sieve.shrinkFunctor.{max t w} S).ι ≫
+      shrinkYonedaUliftFunctorIso.{w, t}.inv.app X :=
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- (Implementation): Auxiliary equivalence for showing
+`Sieve.isSheafFor_iff_bijective_shrinkFunctor_ι_comp`. -/
+@[simps]
+noncomputable
+def Sieve.shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Type w} {X : C} {S : Sieve X} :
+    (S.shrinkFunctor.toFunctor ⟶ F) ≃ { x : S.arrows.FamilyOfElements F // x.Compatible } where
+  toFun t := ⟨fun Y f hf ↦ t.app _ ⟨shrinkYonedaObjObjEquiv.symm f, by simpa⟩, by
+    rw [Presieve.compatible_iff_sieveCompatible]
+    intro Y Z f g hf
+    simp only [shrinkFunctor_obj, ← FunctorToTypes.naturality]
+    rw! [shrinkYonedaObjObjEquiv_symm_comp]
+    rfl⟩
+  invFun t :=
+    { app X f := t.1 _ f.mem
+      naturality Y Z g := by
+        ext ⟨f, hf⟩
+        dsimp
+        convert t.2.to_sieveCompatible _ _ _
+        simp only [Opposite.op_unop, shrinkYonedaObjObjEquiv_map]
+        rfl }
+  left_inv t := by cat_disch
+  right_inv x := by
+    ext
+    dsimp
+    rw! [Equiv.apply_symm_apply]
+    simp
+
+set_option backward.isDefEq.respectTransparency false in
+lemma Sieve.shrinkFunctor_ι_comp_eq_iff_isAmalgamation [LocallySmall.{w} C] (F : Cᵒᵖ ⥤ Type w)
+    {X : C} {S : Sieve X} (f : S.shrinkFunctor.toFunctor ⟶ F) (g : shrinkYoneda.{w}.obj X ⟶ F) :
+    S.shrinkFunctor.ι ≫ g = f ↔
+      (Sieve.shrinkFunctorHomEquiv f).1.IsAmalgamation (shrinkYonedaEquiv g) := by
+  simp only [Presieve.FamilyOfElements.IsAmalgamation]
+  dsimp
+  refine ⟨?_, ?_⟩
+  · rintro rfl Y f hf
+    simp [shrinkYonedaEquiv_naturality, shrinkYonedaEquiv_comp, shrinkYonedaEquiv_shrinkYoneda_map]
+  · intro h
+    ext Y ⟨u, hu⟩
+    convert h (shrinkYonedaObjObjEquiv u) hu
+    · rw [shrinkYonedaEquiv_naturality, shrinkYonedaEquiv_comp, shrinkYonedaEquiv_shrinkYoneda_map]
+      simp
+    · rw! [Equiv.symm_apply_apply]
+      rfl
+
+lemma Sieve.isSheafFor_iff_bijective_shrinkFunctor_ι_comp [LocallySmall.{w} C] {X : C}
+    (S : Sieve X) (F : Cᵒᵖ ⥤ Type w) :
+    Presieve.IsSheafFor F S.arrows ↔
+      Function.Bijective (fun g : _ ⟶ F ↦ S.shrinkFunctor.ι ≫ g) := by
+  simp only [Presieve.IsSheafFor, Function.bijective_iff_existsUnique,
+    Sieve.shrinkFunctor_ι_comp_eq_iff_isAmalgamation,
+    Equiv.forall_congr_left Sieve.shrinkFunctorHomEquiv, Subtype.forall]
+  exact forall₂_congr fun x hx ↦ by simp [Equiv.existsUnique_congr_right]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma Adjunction.bijective_map_comp_iff {C D : Type*} [Category* C]
+    [Category* D] (F : C ⥤ D) (G : D ⥤ C) (adj : F ⊣ G) {X Y : C} (f : X ⟶ Y)
+    (Z : D) :
+    Function.Bijective (fun (g : F.obj Y ⟶ Z) ↦ F.map f ≫ g) ↔
+      Function.Bijective (fun (g : Y ⟶ G.obj Z) ↦ f ≫ g) := by
+  rw [← Function.Bijective.of_comp_iff' (adj.homEquiv _ _).bijective,
+    ← Function.Bijective.of_comp_iff _ (adj.homEquiv _ _).symm.bijective]
+  congr!
+  ext g
+  simp [Adjunction.homEquiv_apply, Adjunction.homEquiv_symm_apply, ]
+
+lemma Presieve.IsSheaf.comp_of_W_map_of_adjunction
+    {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+    [LocallySmall.{w} C] {F : C ⥤ D} {H : (Cᵒᵖ ⥤ Type w) ⥤ (Dᵒᵖ ⥤ Type w)}
+    (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
+    (h : ∀ ⦃X : C⦄ ⦃S : Sieve X⦄, S ∈ J X →
+      K.W (H.map <| (Sieve.shrinkFunctor.{w} S).ι))
+    (G : Dᵒᵖ ⥤ Type w) (hG : Presieve.IsSheaf K G) :
+    Presieve.IsSheaf J (F.op ⋙ G) := by
+  intro X S hS
+  rw [Sieve.isSheafFor_iff_bijective_shrinkFunctor_ι_comp, ← Functor.whiskeringLeft_obj_obj,
+    ← adj.bijective_map_comp_iff]
+  refine h hS _ ?_
+  rwa [isSheaf_iff_isSheaf_of_type]
+
+lemma Sieve.W_shrinkFunctor_ι_of_mem [LocallySmall.{w} C] {J : GrothendieckTopology C} {X : C}
+    (S : Sieve X) (hS : S ∈ J X) :
+    J.W (Sieve.shrinkFunctor.{w} S).ι := by
+  intro Z hZ
+  rw [isSheaf_iff_isSheaf_of_type] at hZ
+  rw [← Sieve.isSheafFor_iff_bijective_shrinkFunctor_ι_comp]
+  exact hZ _ hS
+
 namespace Functor
 
 variable (F F' : C ⥤ D) (τ : F ⟶ F') (e : F ≅ F') (G : D ⥤ E)
@@ -121,42 +253,96 @@ variable (F F' : C ⥤ D) (τ : F ⟶ F') (e : F ≅ F') (G : D ⥤ E)
 abbrev PreservesOneHypercovers :=
   ∀ {X : C} (E : GrothendieckTopology.OneHypercover.{w} J X), E.IsPreservedBy F K
 
-/-- A functor `F` is continuous if the precomposition with `F.op` sends sheaves of `Type t`
-to sheaves. -/
--- After https://github.com/leanprover/lean4/pull/12286 and
--- https://github.com/leanprover/lean4/pull/12423, the sheaf type universe `t` would default
--- to a universe output parameter, causing failures when a lemma needs `IsContinuous` at two
--- different universe levels. See Note [universe output parameters and typeclass caching].
-@[univ_out_params]
+/-- A functor `F` is continuous if the precomposition with `F.op` sends sheaves of
+`Type (max u₁ v₁ u₂ v₂)` to sheaves. This implies that this holds for an arbitrary
+universe (see `Functor.op_comp_isSheaf_of_types`). -/
 class IsContinuous : Prop where
-  op_comp_isSheaf_of_types (G : Sheaf K (Type t)) : Presieve.IsSheaf J (F.op ⋙ G.obj)
+  op_comp_isSheaf_of_types (G : Sheaf K (Type max u₁ v₁ u₂ v₂)) : Presieve.IsSheaf J (F.op ⋙ G.obj)
 
-lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K (Type t)) :
-    Presieve.IsSheaf J (F.op ⋙ G.obj) :=
-  Functor.IsContinuous.op_comp_isSheaf_of_types _
+/-- (Implementation) Use the more general `Functor.W_map_of_adjunction_of_isContinuous`. -/
+private lemma W_map_of_adjunction_of_isContinuous_aux (F : C ⥤ D)
+    (H : (Cᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂) ⥤ (Dᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂))
+    (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
+    [Functor.IsContinuous F J K] {G G' : Cᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂} (f : G ⟶ G') (hf : J.W f) :
+    K.W (H.map f) := by
+  intro U hU
+  rw [adj.bijective_map_comp_iff]
+  apply hf
+  rw [isSheaf_iff_isSheaf_of_type]
+  exact IsContinuous.op_comp_isSheaf_of_types (F := F) ⟨U, hU⟩
 
-lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
+/-- `Functor.IsContinuous` is preserved under enlarging the universe if the starting
+universe is large enough. -/
+private lemma isSheaf_of_isContinuous_aux (F : C ⥤ D) [Functor.IsContinuous F J K]
+    (G : Dᵒᵖ ⥤ Type max w u₁ v₁ u₂ v₂) (hG : Presieve.IsSheaf K G) :
+    Presieve.IsSheaf J (F.op ⋙ G) := by
+  let H : (Cᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂) ⥤ Dᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂ := F.op.lan
+  let adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op := F.op.lanAdjunction _
+  let H' : (Cᵒᵖ ⥤ Type max w u₁ v₁ u₂ v₂) ⥤ Dᵒᵖ ⥤ Type max w u₁ v₁ u₂ v₂ := F.op.lan
+  let adj' : H' ⊣ (Functor.whiskeringLeft _ _ _).obj F.op := F.op.lanAdjunction _
+  refine Presieve.IsSheaf.comp_of_W_map_of_adjunction adj' ?_ _ hG
+  intro X S hS
+  have hWS : J.W (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} S).ι :=
+    Sieve.W_shrinkFunctor_ι_of_mem.{max u₁ v₁ u₂ v₂} S hS
+  have : K.W _ := Functor.W_map_of_adjunction_of_isContinuous_aux (J := J) K F H adj
+    (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} S).ι hWS
+  let e : H ⋙ (Functor.whiskeringRight _ _ _).obj uliftFunctor.{w} ≅
+      (Functor.whiskeringRight _ _ _).obj uliftFunctor.{w} ⋙ H' :=
+    uliftFunctor.{w, max (max (max u₁ u₂) v₁) v₂}.lanCompIsoOfPreserves F.op
+  let iso : Arrow.mk (H'.map (Sieve.shrinkFunctor.{max w u₁ v₁ u₂ v₂} S).ι) ≅
+      .mk (Functor.whiskerRight
+        (H.map (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} S).ι) uliftFunctor.{w}) :=
+    Arrow.isoMk' _ _
+      (H'.mapIso (Sieve.shrinkFunctorUliftFunctorIso.{max u₁ v₁ u₂ v₂, w} S).symm ≪≫ (e.app _).symm)
+      (H'.mapIso (shrinkYonedaUliftFunctorIso.{max u₁ v₁ u₂ v₂}.app _).symm ≪≫ (e.app _).symm) <| by
+        simp only [Functor.mapIso_symm, Functor.comp_obj, Functor.whiskeringRight_obj_obj,
+          Iso.trans_hom, Iso.symm_hom, Functor.mapIso_inv, Iso.app_inv, Category.assoc]
+        rw [← Functor.map_comp_assoc, ← dsimp% e.inv.naturality, ← Functor.map_comp_assoc,
+          Sieve.shrinkFunctorUliftFunctorIso_inv_ι]
+        rfl
+  rw [K.W.arrow_mk_iso_iff iso]
+  apply GrothendieckTopology.W_of_preservesSheafification
+  exact F.W_map_of_adjunction_of_isContinuous_aux J K H adj
+    (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} S).ι hWS
+
+lemma op_comp_isSheaf_of_types [Functor.IsContinuous F J K] (G : Sheaf K (Type t)) :
+    Presieve.IsSheaf J (F.op ⋙ G.obj) := by
+  rw [← Presieve.isSheaf_comp_uliftFunctor_iff.{t, max u₁ v₁ u₂ v₂}, ← isSheaf_iff_isSheaf_of_type,
+    Presheaf.isSheaf_of_iso_iff (Functor.associator _ _ _), isSheaf_iff_isSheaf_of_type]
+  apply isSheaf_of_isContinuous_aux.{t} J K
+  rw [Presieve.isSheaf_comp_uliftFunctor_iff, ← isSheaf_iff_isSheaf_of_type]
+  exact G.property
+
+lemma op_comp_isSheaf [Functor.IsContinuous F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.obj) :=
   fun T => F.op_comp_isSheaf_of_types J K ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (G.property T)⟩
 
-lemma op_comp_isSheaf_of_isSheaf [IsContinuous.{t} F J K] (P : Dᵒᵖ ⥤ A) (h : Presheaf.IsSheaf K P) :
+lemma op_comp_isSheaf_of_isSheaf [IsContinuous F J K] (P : Dᵒᵖ ⥤ A) (h : Presheaf.IsSheaf K P) :
     Presheaf.IsSheaf J (F.op ⋙ P) :=
   F.op_comp_isSheaf J K ⟨P, h⟩
 
+lemma W_map_of_adjunction_of_isContinuous (F : C ⥤ D) (H : (Cᵒᵖ ⥤ A) ⥤ (Dᵒᵖ ⥤ A))
+    (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
+    [Functor.IsContinuous F J K] {G G' : Cᵒᵖ ⥤ A} (f : G ⟶ G') (hf : J.W f) :
+    K.W (H.map f) := by
+  intro U hU
+  rw [adj.bijective_map_comp_iff]
+  exact hf _ (F.op_comp_isSheaf_of_isSheaf _ _ _ hU)
+
 lemma isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
     (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-    [Functor.IsContinuous.{t} F₁ J K] : Functor.IsContinuous.{t} F₂ J K where
+    [Functor.IsContinuous F₁ J K] : Functor.IsContinuous F₂ J K where
   op_comp_isSheaf_of_types G :=
     Presieve.isSheaf_iso J (isoWhiskerRight (NatIso.op e.symm) _)
       (F₁.op_comp_isSheaf_of_types J K G)
 
-instance isContinuous_id : Functor.IsContinuous.{w} (𝟭 C) J J where
+instance isContinuous_id : Functor.IsContinuous (𝟭 C) J J where
   op_comp_isSheaf_of_types G := (isSheaf_iff_isSheaf_of_type _ _).1 G.2
 
 lemma isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ E) (J : GrothendieckTopology C)
     (K : GrothendieckTopology D) (L : GrothendieckTopology E)
-    [Functor.IsContinuous.{t} F₁ J K] [Functor.IsContinuous.{t} F₂ K L] :
-    Functor.IsContinuous.{t} (F₁ ⋙ F₂) J L where
+    [Functor.IsContinuous F₁ J K] [Functor.IsContinuous F₂ K L] :
+    Functor.IsContinuous (F₁ ⋙ F₂) J L where
   op_comp_isSheaf_of_types G :=
     F₁.op_comp_isSheaf_of_types J K
       ⟨_,(isSheaf_iff_isSheaf_of_type _ _).2 (F₂.op_comp_isSheaf_of_types K L G)⟩
@@ -164,17 +350,17 @@ lemma isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ E) (J : GrothendieckTopol
 lemma isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ E} {F₁₂ : C ⥤ E}
     (e : F₁ ⋙ F₂ ≅ F₁₂) (J : GrothendieckTopology C)
     (K : GrothendieckTopology D) (L : GrothendieckTopology E)
-    [Functor.IsContinuous.{t} F₁ J K] [Functor.IsContinuous.{t} F₂ K L] :
-    Functor.IsContinuous.{t} F₁₂ J L := by
+    [Functor.IsContinuous F₁ J K] [Functor.IsContinuous F₂ K L] :
+    Functor.IsContinuous F₁₂ J L := by
   have := Functor.isContinuous_comp F₁ F₂ J K L
   apply Functor.isContinuous_of_iso e
 
-instance [Functor.IsContinuous.{t} F J K] :
-    Functor.IsContinuous.{t} (F ⋙ 𝟭 D) J K := by
+instance [Functor.IsContinuous F J K] :
+    Functor.IsContinuous (F ⋙ 𝟭 D) J K := by
   assumption
 
-instance [Functor.IsContinuous.{t} F J K] :
-    Functor.IsContinuous.{t} (𝟭 C ⋙ F) J K := by
+instance [Functor.IsContinuous F J K] :
+    Functor.IsContinuous (𝟭 C ⋙ F) J K := by
   assumption
 
 /-- To show a functor `F : C ⥤ D` is continuous for the topologies generated by
@@ -183,7 +369,7 @@ instance [Functor.IsContinuous.{t} F J K] :
 lemma isContinuous_toGrothendieck_of_pullbacksPreservedBy (J : Precoverage C)
     (K : Precoverage D) [J.IsStableUnderBaseChange] [J.HasPullbacks] [K.IsStableUnderBaseChange]
     [K.HasPullbacks] [J.PullbacksPreservedBy F] (h : J ≤ K.comap F) :
-    Functor.IsContinuous.{w} F J.toGrothendieck K.toGrothendieck where
+    Functor.IsContinuous F J.toGrothendieck K.toGrothendieck where
   op_comp_isSheaf_of_types := fun ⟨G, H⟩ ↦ by
     rw [isSheaf_iff_isSheaf_of_type] at H
     rw [← Precoverage.toGrothendieck_toCoverage, Presieve.isSheaf_coverage] at H ⊢
@@ -206,7 +392,7 @@ lemma op_comp_isSheaf_of_preservesOneHypercovers
 
 lemma isContinuous_of_preservesOneHypercovers
     [PreservesOneHypercovers.{w} F J K] [GrothendieckTopology.IsGeneratedByOneHypercovers.{w} J] :
-    IsContinuous.{t} F J K where
+    IsContinuous F J K where
   op_comp_isSheaf_of_types := by
     rintro ⟨P, hP⟩
     rw [← isSheaf_iff_isSheaf_of_type]
@@ -215,11 +401,11 @@ lemma isContinuous_of_preservesOneHypercovers
 end
 
 instance [PreservesOneHypercovers.{max u₁ v₁} F J K] :
-    IsContinuous.{t} F J K :=
+    IsContinuous F J K :=
   isContinuous_of_preservesOneHypercovers.{max u₁ v₁} F J K
 
 variable (A)
-variable [Functor.IsContinuous.{t} F J K]
+variable [Functor.IsContinuous F J K]
 
 /-- The induced functor `Sheaf K A ⥤ Sheaf J A` given by `F.op ⋙ _`
 if `F` is a continuous functor.
@@ -246,7 +432,7 @@ def sheafPushforwardContinuousId :
 /-- The composition of two pushforward functors on sheaves identifies to
 the pushforward for the composition of the two functors. -/
 @[simps!]
-def sheafPushforwardContinuousComp [IsContinuous.{t} G K L] :
+def sheafPushforwardContinuousComp [IsContinuous G K L] :
     letI := isContinuous_comp F G J K L
     sheafPushforwardContinuous G A K L ⋙ sheafPushforwardContinuous F A J K ≅
     sheafPushforwardContinuous (F ⋙ G) A J L := Iso.refl _
@@ -254,14 +440,14 @@ def sheafPushforwardContinuousComp [IsContinuous.{t} G K L] :
 variable {F F'} in
 /-- The action of a natural transformation on pushforward functors of sheaves. -/
 @[simps]
-def sheafPushforwardContinuousNatTrans [IsContinuous.{t} F' J K] :
+def sheafPushforwardContinuousNatTrans [IsContinuous F' J K] :
     sheafPushforwardContinuous F' A J K ⟶ sheafPushforwardContinuous F A J K where
   app M := ⟨whiskerRight (NatTrans.op τ) _⟩
 
 variable {F F'} in
 /-- The action of a natural isomorphism on pushforward functors of sheaves. -/
 @[simps]
-def sheafPushforwardContinuousIso [IsContinuous.{t} F' J K] :
+def sheafPushforwardContinuousIso [IsContinuous F' J K] :
     sheafPushforwardContinuous F A J K ≅ sheafPushforwardContinuous F' A J K where
   hom := sheafPushforwardContinuousNatTrans e.inv _ _ _
   inv := sheafPushforwardContinuousNatTrans e.hom _ _ _
@@ -272,7 +458,7 @@ def sheafPushforwardContinuousIso [IsContinuous.{t} F' J K] :
 then the corresponding pushforward functor on sheaves identifies to the
 identity functor. -/
 @[simps!]
-def sheafPushforwardContinuousId' [IsContinuous.{t} F'' J J] :
+def sheafPushforwardContinuousId' [IsContinuous F'' J J] :
     sheafPushforwardContinuous F'' A J J ≅ 𝟭 _ :=
   sheafPushforwardContinuousIso eF'' _ _ _ ≪≫ sheafPushforwardContinuousId _ _
 
@@ -282,7 +468,7 @@ between sites, the composition of the pushforward functors for
 `G` and `F` identifies to the pushforward functor for `FG`. -/
 @[simps!]
 def sheafPushforwardContinuousComp'
-    [IsContinuous.{t} G K L] [IsContinuous.{t} FG J L] :
+    [IsContinuous G K L] [IsContinuous FG J L] :
     sheafPushforwardContinuous G A K L ⋙ sheafPushforwardContinuous F A J K ≅
     sheafPushforwardContinuous FG A J L :=
   letI := isContinuous_comp F G J K L
