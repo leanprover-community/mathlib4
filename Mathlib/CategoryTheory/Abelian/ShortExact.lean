@@ -32,7 +32,7 @@ lemma reflects_shortExact_of_faithful (hS : (S.map F).ShortExact) : S.ShortExact
   mono_f := ReflectsMonomorphisms.reflects _ hS.mono_f
   epi_g := ReflectsEpimorphisms.reflects _ hS.epi_g
 
-lemma map_shortExact_iff [PreservesFiniteColimits F] [PreservesFiniteLimits F] :
+lemma shortExact_map_iff [PreservesFiniteColimits F] [PreservesFiniteLimits F] :
     (S.map F).ShortExact ↔ S.ShortExact :=
   ⟨reflects_shortExact_of_faithful F, fun h ↦ ShortComplex.ShortExact.map_of_exact h F⟩
 
