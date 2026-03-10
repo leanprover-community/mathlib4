@@ -33,10 +33,13 @@ noncomputable
 def poissonMeasure (r : ℝ≥0) : Measure ℕ :=
   Measure.sum (fun n ↦ ENNReal.ofReal (exp (-r) * r ^ n / (n)!) • (.dirac n))
 
+lemma poissonMeasure_singleton (r : ℝ≥0) (n : ℕ) :
+    (poissonMeasure r) {n} = ENNReal.ofReal (exp (-r) * r ^ n / (n)!) := by
+  rw [poissonMeasure, Measure.sum_smul_dirac_singleton]
+
 lemma poissonMeasure_real_singleton (r : ℝ≥0) (n : ℕ) :
     (poissonMeasure r).real {n} = exp (-r) * r ^ n / (n)! := by
-  rw [poissonMeasure, measureReal_def, Measure.sum_smul_dirac_singleton,
-    ENNReal.toReal_ofReal (by positivity)]
+  rw [measureReal_def, poissonMeasure_singleton, ENNReal.toReal_ofReal (by positivity)]
 
 lemma poissonMeasure_real_singleton_pos {r : ℝ≥0} (n : ℕ) (hr : 0 < r) :
     0 < (poissonMeasure r).real {n} := by

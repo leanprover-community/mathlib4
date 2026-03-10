@@ -94,10 +94,11 @@ under the natural hypotheses (`∀ n, p n ≤ 1` and `r ≥ 0`).
 lemma binomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥0} (h : ∀ n, p n ≤ 1)
     (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     Tendsto (fun n ↦ PMF.binomial (p n) (h n) n (Fin.ofNat (n + 1) k))
-    atTop (𝓝 (.ofReal (Real.exp (-r) * (r ^ k) / k.factorial))) := by
+    atTop (𝓝 (poissonMeasure r {k})) := by
   have t1 : Tendsto (fun n => (ENNReal.ofReal (n.choose k * (p n) ^ k * (1 - p n) ^ (n - k) : ℝ)))
-    atTop (𝓝 (.ofReal (Real.exp (-r) * (r ^ k) / k.factorial))) :=
-    tendsto_ofReal (tendsto_choose_mul_pow_of_tendsto_mul_atTop k (by norm_cast))
+      atTop (𝓝 (poissonMeasure r {k})) := by
+    simp_rw [poissonMeasure_singleton]
+    exact tendsto_ofReal (tendsto_choose_mul_pow_of_tendsto_mul_atTop k (by norm_cast))
   refine Tendsto.congr' ?_ t1
   simpa only [EventuallyEq, eventually_atTop, ge_iff_le] using
     ⟨k, fun b hb ↦ PMF.binomial_apply_of_le hb (h b)⟩
