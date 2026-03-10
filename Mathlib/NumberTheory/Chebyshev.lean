@@ -340,24 +340,20 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
 theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
     θ x = π ⌊x⌋₊ * log x - ∫ t in 2..x, π ⌊t⌋₊ / t := by
   -- Rewrite in a form to which Abel summation can be applied
-  simp only [theta_eq_sum_Icc]
-  rw [sum_filter]
+  rw [theta_eq_sum_Icc, sum_filter]
   let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n ↦ 1)
   trans ∑ n ∈ Icc 0 ⌊x⌋₊, log n * a n
   · refine sum_congr rfl fun n hn ↦ ?_
-    split_ifs with h
-    · have : log n ≠ 0 := log_ne_zero_of_pos_of_ne_one (mod_cast h.pos) (mod_cast h.ne_one)
-      simp [a, h, field]
-    · simp [a, h]
-  rw [sum_mul_eq_sub_integral_mul₁ a (f := fun n ↦ log n)
+    split_ifs with h <;> simp [a, h]
+  rw [sum_mul_eq_sub_integral_mul₁ a
     (by simp [a, Nat.not_prime_zero]) (by simp [a, Nat.not_prime_one]),
     ←intervalIntegral.integral_of_le hx]
   · -- Rewrite the derivative inside the integral
     simp only [primeCounting, primeCounting', count_eq_card_filter_range]
     have int_deriv (f : ℝ → ℝ) :
         ∫ u in 2..x, deriv (fun x ↦ log x) u * f u =
-        ∫ u in 2..x, f u * u⁻¹ :=
-      intervalIntegral.integral_congr fun u _ ↦ by simp [deriv_log, field]
+        ∫ u in 2..x, f u / u :=
+      intervalIntegral.integral_congr fun u _ ↦ by rw [deriv_log, mul_comm, div_eq_mul_inv]
     rw [int_deriv]
     simp [a, Set.indicator_apply, Nat.range_succ_eq_Icc_zero]
     grind
@@ -366,10 +362,9 @@ theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
     have : z ≠ 0 := by linarith
     fun_prop (disch := assumption)
   · -- Integrability of the derivative
+    rw [deriv_log']
     refine ContinuousOn.integrableOn_Icc ?_
-    intro z hz
-    have hz₀ : z ≠ 0 := by linarith [hz.1]
-    simpa [deriv_log] using (continuousAt_inv₀ hz₀).continuousWithinAt
+    fun_prop (disch := grind)
 
 theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt_b : 1 < b) :
     IntervalIntegrable (fun x ↦ 1 / log x ^ 2) MeasureTheory.volume a b := by
