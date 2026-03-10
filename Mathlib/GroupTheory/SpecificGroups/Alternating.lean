@@ -478,9 +478,7 @@ theorem center_eq_bot (hα4 : 4 ≤ Nat.card α) :
 of `alternatingGroup s`, when `s : Finset α`. -/
 def ofSubtype (s : Finset α) : alternatingGroup s →* alternatingGroup α where
   toFun x := ⟨Perm.ofSubtype (x : Perm s), by
-    rw [mem_alternatingGroup, sign_ofSubtype]
-    -- `Subtype.fintype fun x ↦ x ∈ ↑s` is not def. eq. to `Finset.Subtype.fintype ↑s`
-    convert mem_alternatingGroup.mp x.prop⟩
+    rw [mem_alternatingGroup, sign_ofSubtype, mem_alternatingGroup.mp x.prop]⟩
   map_mul' := by simp
   map_one' := by simp
 
@@ -492,13 +490,9 @@ theorem map_ofSubtype (s : Finset α) :
   simp only [mem_alternatingGroup]
   refine ⟨fun ⟨x, hx, hk⟩ ↦ ?_, fun ⟨⟨x, hx⟩, hk⟩ ↦ ?_⟩
   · refine ⟨⟨x, hk⟩, ?_⟩
-    rw [← hk, sign_ofSubtype]
-    -- `Subtype.fintype fun x ↦ x ∈ ↑s` is not def. eq. to `Finset.Subtype.fintype ↑s`
-    convert hx
+    rw [← hk, sign_ofSubtype, hx]
   · refine ⟨x, ?_, hx⟩
-    rw [← hx, sign_ofSubtype] at hk
-    -- `Subtype.fintype fun x ↦ x ∈ ↑s` is not def. eq. to `Finset.Subtype.fintype ↑s`
-    convert hk
+    rwa [← hx, sign_ofSubtype] at hk
 
 open Pointwise in
 lemma conj_smul_subgroupOf (s : Finset α) (g : alternatingGroup α) :
@@ -511,10 +505,10 @@ lemma conj_smul_subgroupOf (s : Finset α) (g : alternatingGroup α) :
     map_ofSubtype, Subgroup.mem_inf, MulAut.smul_def,
     MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
   rw [← MulAut.conj_symm_apply, ← MulAut.inv_apply, ← MulAut.smul_def,
-    ← Subgroup.mem_pointwise_smul_iff_inv_smul_mem, Equiv.Perm.conj_smul_range_ofSubtype]
+    ← Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← Equiv.Perm.conj_smul_range_ofSubtype]
   apply and_congr Iff.rfl (by simp [mul_right_comm])
 
-theorem mem_range_ofSubtype (s : Finset α) (k : alternatingGroup α) :
+theorem mem_range_ofSubtype_iff (s : Finset α) (k : alternatingGroup α) :
     k ∈ (ofSubtype s).range ↔ (k : Perm α).support ⊆ s := by
   constructor
   · rintro ⟨⟨k, hk⟩, rfl⟩
@@ -530,22 +524,20 @@ theorem mem_range_ofSubtype (s : Finset α) (k : alternatingGroup α) :
     suffices k ∈ (Perm.ofSubtype : Perm s →* Perm α).range by
       obtain ⟨k, rfl⟩ := this
       rw [mem_alternatingGroup, sign_ofSubtype] at hk'
-      refine ⟨k, ?_, rfl⟩
-      -- Conflicting `Fintype` instances
-      convert hk'
-    rw [mem_range_ofSubtype_iff]
+      exact ⟨k, hk', rfl⟩
+    rw [Perm.mem_range_ofSubtype_iff]
     simpa using hk
 
 open Pointwise in
-theorem range_ofSubtype_conj (s : Finset α) (g : alternatingGroup α) :
-    (ofSubtype (g • s)).range = MulAut.conj g • (ofSubtype s).range := by
+theorem conj_smul_range_ofSubtype (s : Finset α) (g : alternatingGroup α) :
+    MulAut.conj g • (ofSubtype s).range = (ofSubtype (g • s)).range := by
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
-  rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
-  simp only [mem_range_ofSubtype]
-  simp only [Subgroup.mk_smul, MulAut.smul_def, MulAut.inv_apply,
-    MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
-  rw [Equiv.Perm.support_conj_eq_smul_support', Finset.subset_smul_finset_iff]
+  simp only [mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff, Subgroup.mk_smul,
+    MulAut.smul_def, MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul,
+    InvMemClass.coe_inv]
+  rw [← ConjAct.toConjAct_inv_smul, support_conj_eq_smul_support]
+  simp [Finset.subset_smul_finset_iff]
 
 end alternatingGroup
 

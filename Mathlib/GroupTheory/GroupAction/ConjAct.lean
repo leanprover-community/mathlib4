@@ -168,6 +168,9 @@ end Units
 
 variable [Group G]
 
+theorem toConjAct_inv_smul (g h : G) : toConjAct g⁻¹ • h = g⁻¹ * h * g := by
+  rw [toConjAct_smul, inv_inv]
+
 -- todo: this file is not in good order; I will refactor this after the PR
 
 instance : MulDistribMulAction (ConjAct G) G where

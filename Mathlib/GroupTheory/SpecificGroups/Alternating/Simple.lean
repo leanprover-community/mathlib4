@@ -129,12 +129,12 @@ def iwasawaStructure_three : IwasawaStructure (alternatingGroup α) (Set.powerse
       norm_num
     rw [nat_card_alternatingGroup, Nat.card_eq_finsetCard, s.prop]
     norm_num [Nat.factorial]
-  is_conj g s := range_ofSubtype_conj s g
+  is_conj g s := (conj_smul_range_ofSubtype s g).symm
   is_generator := by
     rw [eq_top_iff, ← closure_isThreeCycles_eq_top, Subgroup.closure_le]
     intro g hg
     apply Subgroup.mem_iSup_of_mem ⟨(g : Perm α).support, hg.card_support⟩
-    rw [mem_range_ofSubtype]
+    rw [mem_range_ofSubtype_iff]
 
 /-- If `α` has at least 5 elements, but not 6,
 then the only nontrivial normal subgroup of `alternatingGroup α`
@@ -190,7 +190,7 @@ theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alter
     rw [mem_support_ofSubtype]
     exact Exists.choose
   · rintro ⟨hk, hk'⟩
-    rw [← mem_range_ofSubtype] at hk
+    rw [← mem_range_ofSubtype_iff] at hk
     obtain ⟨k, rfl⟩ := hk
     apply Subgroup.mem_map_of_mem
     rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hs,
@@ -208,13 +208,14 @@ theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGro
   simp only [mem_map_kleinFour_ofSubtype s hs, Subgroup.mk_smul,
     MulAut.smul_def, MulAut.inv_apply,
     MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
-  rw [Equiv.Perm.support_conj_eq_smul_support',
-    mem_map_kleinFour_ofSubtype (g • s) (by rw [Finset.card_smul_finset, hs]),
-    ← Finset.subset_smul_finset_iff]
-  refine and_congr Iff.rfl (or_congr ?_ ?_)
+  rw [← ConjAct.toConjAct_inv_smul]
+  rw [Equiv.Perm.support_conj_eq_smul_support,
+    mem_map_kleinFour_ofSubtype (g • s) (by rw [Finset.card_smul_finset, hs])]
+  rw [Finset.subset_smul_finset_iff]
+  simp only [ConjAct.toConjAct_smul]
+  apply and_congr Iff.rfl (or_congr ?_ ?_)
   · simp [mul_eq_one_iff_inv_eq']
-  · nth_rewrite 2 [← inv_inv g]
-    rw [cycleType_conj]
+  · simp only [cycleType_conj]
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Set.powersetCard α 4`,
 provided `α` has at least 5 elements. -/
