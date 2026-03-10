@@ -199,8 +199,8 @@ lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq_eq_eq le_refl not_le]
 
 lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
-  rw [lt_iff_not_ge, Decidable.le_iff_lt_or_eq, ← compare_lt_iff_lt, ← compare_eq_iff_eq (a := a)]
-  cases compare a b <;> decide
+  rw [LinearOrder.compare_eq_compareOfLessAndEq,
+    compareOfLessAndEq_eq_gt le_antisymm le_total not_le]
 
 lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
   cases h : compare a b
