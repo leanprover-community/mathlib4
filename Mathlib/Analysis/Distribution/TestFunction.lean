@@ -6,9 +6,6 @@ Authors: Luigi Massacci, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
-public import Mathlib.Topology.ContinuousMap.Bounded.Normed
-public import Mathlib.Algebra.Order.BigOperators.Expect
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Continuously differentiable functions with compact support
@@ -245,6 +242,7 @@ limit of the `𝓓^{n}_{K}(E, F)`s **in the category of topological spaces**.
 Note that this has no reason to be a locally convex (or even vector space) topology. For this
 reason, we actually endow `𝓓^{n}(Ω, F)` with another topology, namely the finest locally convex
 topology which is coarser than this original topology. See `TestFunction.topologicalSpace`. -/
+@[implicit_reducible]
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
   ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
     coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace

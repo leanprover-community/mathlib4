@@ -138,6 +138,7 @@ theorem basisSets_neg (U) (hU' : U ∈ p.basisSets) :
   exact ⟨U, hU', Eq.subset hU⟩
 
 /-- The `addGroupFilterBasis` induced by the filter basis `Seminorm.basisSets`. -/
+@[implicit_reducible]
 protected def addGroupFilterBasis : AddGroupFilterBasis E :=
   addGroupFilterBasisOfComm p.basisSets p.basisSets_nonempty p.basisSets_intersect p.basisSets_zero
     p.basisSets_add p.basisSets_neg
@@ -228,10 +229,18 @@ variable [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
--- Todo: This should be phrased entirely in terms of the von Neumann bornology.
 /-- The proposition that a linear map is bounded between spaces with families of seminorms. -/
 def IsBounded (p : ι → Seminorm 𝕜 E) (q : ι' → Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) : Prop :=
   ∀ i, ∃ s : Finset ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • s.sup p
+
+theorem IsBounded.of_real (p : ι → Seminorm 𝕜 E) (q : ι' → Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F)
+    (H : ∀ i, ∃ s : Finset ι, ∃ C : ℝ, ∀ x, q i (f x) ≤ C * (s.sup p) x) :
+    IsBounded p q f := by
+  rw [IsBounded]
+  peel H with i s H
+  obtain ⟨C, hC⟩ := H
+  refine ⟨C.toNNReal, fun x ↦ show q i (f x) ≤ C.toNNReal • ((s.sup p) x) from ?_⟩
+  exact (hC x).trans <| mul_le_mul_of_nonneg_right C.le_coe_toNNReal (apply_nonneg _ _)
 
 theorem isBounded_const (ι' : Type*) [Nonempty ι'] {p : ι → Seminorm 𝕜 E} {q : Seminorm 𝕜₂ F}
     (f : E →ₛₗ[σ₁₂] F) :
@@ -251,18 +260,18 @@ theorem isBounded_sup {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂
     (hf : IsBounded p q f) (s' : Finset ι') :
     ∃ (C : ℝ≥0) (s : Finset ι), (s'.sup q).comp f ≤ C • s.sup p := by
   classical
-    obtain rfl | _ := s'.eq_empty_or_nonempty
-    · exact ⟨1, ∅, by simp [Seminorm.bot_eq_zero]⟩
-    choose fₛ fC hf using hf
-    use s'.card • s'.sup fC, Finset.biUnion s' fₛ
-    have hs : ∀ i : ι', i ∈ s' → (q i).comp f ≤ s'.sup fC • (Finset.biUnion s' fₛ).sup p := by
-      intro i hi
-      refine (hf i).trans (smul_le_smul ?_ (Finset.le_sup hi))
-      exact Finset.sup_mono (Finset.subset_biUnion_of_mem fₛ hi)
-    refine (comp_mono f (finset_sup_le_sum q s')).trans ?_
-    simp_rw [← pullback_apply, map_sum, pullback_apply]
-    refine (Finset.sum_le_sum hs).trans ?_
-    rw [Finset.sum_const, smul_assoc]
+  obtain rfl | _ := s'.eq_empty_or_nonempty
+  · exact ⟨1, ∅, by simp [Seminorm.bot_eq_zero]⟩
+  choose fₛ fC hf using hf
+  use s'.card • s'.sup fC, Finset.biUnion s' fₛ
+  have hs : ∀ i : ι', i ∈ s' → (q i).comp f ≤ s'.sup fC • (Finset.biUnion s' fₛ).sup p := by
+    intro i hi
+    refine (hf i).trans (smul_le_smul ?_ (Finset.le_sup hi))
+    exact Finset.sup_mono (Finset.subset_biUnion_of_mem fₛ hi)
+  refine (comp_mono f (finset_sup_le_sum q s')).trans ?_
+  simp_rw [← pullback_apply, map_sum, pullback_apply]
+  refine (Finset.sum_le_sum hs).trans ?_
+  rw [Finset.sum_const, smul_assoc]
 
 end Seminorm
 
@@ -587,7 +596,7 @@ theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
   ext s
   refine ⟨fun hs ↦ ?_, fun hs ↦ ?_⟩
   · /- Show that a neighborhood `s` of zero for the topology is a neighborhood for `p`, by using the
-    boundedess of `p.ball 0 1`: this ensures that, for some nonzero `c`, we have
+    boundedness of `p.ball 0 1`: this ensures that, for some nonzero `c`, we have
     `p.ball 0 1 ⊆ c • s`, and therefore `p.ball 0 (‖c‖⁻¹) ⊆ s`. -/
     obtain ⟨c, hc, c_ne⟩ : ∃ (c : 𝕜), p.ball 0 1 ⊆ c • s ∧ c ≠ 0 :=
       ((h' hs).and (eventually_ne_cobounded 0)).exists
@@ -663,7 +672,7 @@ theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   refine continuous_of_continuous_comp hq _ fun i => ?_
   rcases hf i with ⟨s, C, hC⟩
   rw [← Seminorm.finset_sup_smul] at hC
-  -- Note: we deduce continuouty of `s.sup (C • p)` from that of `∑ i ∈ s, C • p i`.
+  -- Note: we deduce continuity of `s.sup (C • p)` from that of `∑ i ∈ s, C • p i`.
   -- The reason is that there is no `continuous_finset_sup`, and even if it were we couldn't
   -- really use it since `ℝ` is not an `OrderBot`.
   refine Seminorm.continuous_of_le ?_ (hC.trans <| Seminorm.finset_sup_le_sum _ _)
