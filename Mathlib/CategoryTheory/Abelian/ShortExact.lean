@@ -24,16 +24,15 @@ open CategoryTheory Limits Preadditive Functor
 
 variable {C : Type u₁} [Category.{v₁} C] [Abelian C]
 variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
-variable (F : C ⥤ D) [PreservesZeroMorphisms F]
+variable (F : C ⥤ D) [PreservesZeroMorphisms F] [F.Faithful]
+variable {S : ShortComplex C}
 
-lemma reflects_shortExact_of_faithful [F.Faithful] [F.ReflectsEpimorphisms]
-    [F.ReflectsMonomorphisms] {S : ShortComplex C} (hS : (S.map F).ShortExact) : S.ShortExact where
+lemma reflects_shortExact_of_faithful (hS : (S.map F).ShortExact) : S.ShortExact where
   exact := F.reflects_exact_of_faithful _ hS.1
   mono_f := ReflectsMonomorphisms.reflects _ hS.mono_f
   epi_g := ReflectsEpimorphisms.reflects _ hS.epi_g
 
-lemma map_shortExact_iff [F.Faithful] [F.ReflectsEpimorphisms] [F.ReflectsMonomorphisms]
-    [PreservesFiniteColimits F] [PreservesFiniteLimits F] {S : ShortComplex C} :
+lemma map_shortExact_iff [PreservesFiniteColimits F] [PreservesFiniteLimits F] :
     (S.map F).ShortExact ↔ S.ShortExact :=
   ⟨reflects_shortExact_of_faithful F, fun h ↦ ShortComplex.ShortExact.map_of_exact h F⟩
 
