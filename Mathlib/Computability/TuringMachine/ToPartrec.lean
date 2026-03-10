@@ -6,15 +6,15 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Computability.Halting
-public import Mathlib.Computability.TuringMachine
+public import Mathlib.Computability.TuringMachine.StackTuringMachine
 public import Mathlib.Data.Num.Lemmas
 public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
-public import Mathlib.Computability.TMConfig
+public import Mathlib.Computability.TuringMachine.Config
 
 /-!
 # Modelling partial recursive functions using Turing machines
 
-The files `TMConfig` and `TMToPartrec` define a simplified basis for partial recursive functions,
+The files `Config` and `ToPartrec` define a simplified basis for partial recursive functions,
 and a `Turing.TM2` model
 Turing machine for evaluating these functions. This amounts to a constructive proof that every
 `Partrec` function can be evaluated by a Turing machine.

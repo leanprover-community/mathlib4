@@ -31,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >- # crude check to skip running this on most reviews / comments
       github.repository == 'leanprover-community/mathlib4' &&
+      (github.event_name != 'issue_comment' || github.event.issue.pull_request != null) &&
       (
         contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer merge') ||
         contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer delegate')
