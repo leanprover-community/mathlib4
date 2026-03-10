@@ -157,7 +157,7 @@ lemma edist_eq_two_iff {u v : V} :
     have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
     simp_all
   · by_contra! hc
-    cases ENat.lt_two_iff.mp hc <;> simp_all
+    cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) <;> simp_all
 
 lemma two_lt_edist_iff {u v : V} :
     2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ IsEmpty (G.commonNeighbors u v) := by
