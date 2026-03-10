@@ -278,7 +278,7 @@ lemma isIso_morphismRestrict_iff_isIso_app [IsAffineHom f] {U : Y.Opens} (hU : I
   simp only [morphismRestrict_app', TopologicalSpace.Opens.map_top]
   congr! <;> simp [Scheme.Opens.toScheme_presheaf_obj]
 
-theorem diagonal_isAffine_forall_isAffineOpen_inf [IsAffine Y] (f : X ⟶ Y) :
+theorem diagonal_isAffine_iff_forall_isAffineOpen_inf [IsAffine Y] (f : X ⟶ Y) :
     AffineTargetMorphismProperty.diagonal (fun X _ _ _ ↦ IsAffine X) f ↔
       ∀ (U V : X.Opens), IsAffineOpen U → IsAffineOpen V → IsAffineOpen (U ⊓ V) := by
   delta AffineTargetMorphismProperty.diagonal
@@ -304,7 +304,7 @@ theorem isAffineHom_diagonal_iff {f : X ⟶ Y} :
         IsAffineOpen V₁ → IsAffineOpen V₂ → IsAffineOpen (V₁ ⊓ V₂) := by
   refine congr($(HasAffineProperty.eq_targetAffineLocally
     (.diagonal @IsAffineHom)) f).to_iff.trans ?_
-  simp only [targetAffineLocally, diagonal_isAffine_forall_isAffineOpen_inf,
+  simp only [targetAffineLocally, diagonal_isAffine_iff_forall_isAffineOpen_inf,
     (IsOpenImmersion.opensEquiv (f ⁻¹ᵁ _).ι).forall_congr_left, Scheme.affineOpens,
     Subtype.forall, Set.mem_setOf_eq, Scheme.Opens.opensRange_ι, ← Scheme.Hom.preimage_inf,
     IsOpenImmersion.opensEquiv_symm_apply, Scheme.Hom.image_preimage_eq_opensRange_inf,
