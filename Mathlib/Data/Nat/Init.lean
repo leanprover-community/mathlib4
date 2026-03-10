@@ -471,4 +471,18 @@ lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); lia⟩
 
 end AtLeastTwo
 
+abbrev mkDivMod (n i j : ℕ) : ℕ := n * i + j
+
+theorem mkDivMod_def {n i j : ℕ} : n.mkDivMod i j = n * i + j := rfl
+
+@[simp] theorem div_mkDivMod_of_lt {n i j : ℕ} (hj : j < n) :
+    (n.mkDivMod i j) / n = i := (Nat.mul_add_div (zero_lt_of_lt hj) _ _).trans <|
+  Nat.add_eq_left.mpr <| Nat.div_eq_of_lt hj
+
+@[simp] theorem mod_mkDivMod_of_lt {n i j : ℕ} (hj : j < n) :
+    (n.mkDivMod i j) % n = j := (Nat.mul_add_mod _ _ _).trans <| Nat.mod_eq_of_lt hj
+
+@[simp] theorem mkDivMod_div_mod {n k : ℕ} :
+    n.mkDivMod (k / n) (k % n) = k := Nat.div_add_mod _ _
+
 end Nat
