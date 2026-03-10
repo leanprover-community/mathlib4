@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.TrivSqZeroExt
+public import Mathlib.Algebra.TrivSqZeroExt.Basic
 
 /-!
 # Dual numbers

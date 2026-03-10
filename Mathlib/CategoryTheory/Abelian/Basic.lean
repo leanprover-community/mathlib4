@@ -253,7 +253,8 @@ attribute [local instance] OfCoimageImageComparisonIsIso.isNormalEpiCategory
 in which the coimage-image comparison morphism is always an isomorphism,
 is an abelian category. -/
 @[stacks 0109
-"The Stacks project uses this characterisation at the definition of an abelian category."]
+"The Stacks project uses this characterisation at the definition of an abelian category.",
+  implicit_reducible]
 def ofCoimageImageComparisonIsIso : Abelian C where
 
 end CategoryTheory.Abelian
@@ -822,9 +823,80 @@ namespace CategoryTheory.NonPreadditiveAbelian
 variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
 /-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category. -/
+@[implicit_reducible]
 def abelian : Abelian C where
   toPreadditive := NonPreadditiveAbelian.preadditive
   normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
   normalEpiOfEpi := fun f _ ↦ ⟨normalEpiOfEpi f⟩
 
 end CategoryTheory.NonPreadditiveAbelian
+
+namespace CategoryTheory.Abelian
+
+variable {C : Type*} [Category C] [Preadditive C]
+
+/-- A preadditive category `C` with finite products is abelian when this
+structure is nonempty for any morphism `f` in `C`, see `Abelian.mk'`. -/
+structure AbelianStruct {X Y : C} (f : X ⟶ Y) where
+  /-- a limit kernel fork of `f` -/
+  kernelFork : KernelFork f
+  /-- the kernel fork is a limit -/
+  isLimitKernelFork : IsLimit kernelFork
+  /-- a colimit cokernel cofork of `f` -/
+  cokernelCofork : CokernelCofork f
+  /-- the cokernel cofork is a a limit -/
+  isColimitCokernelCofork : IsColimit cokernelCofork
+  /-- the image of `f` -/
+  image : C
+  /-- the projection to the image -/
+  imageπ : X ⟶ image
+  ι_imageπ : kernelFork.ι ≫ imageπ = 0 := by cat_disch
+  /-- the image is a cokernel -/
+  imageIsCokernel : IsColimit (CokernelCofork.ofπ _ ι_imageπ)
+  /-- the inclusion of the image -/
+  imageι : image ⟶ Y
+  imageι_π : imageι ≫ cokernelCofork.π = 0 := by cat_disch
+  /-- the image is a kernel -/
+  imageIsKernel : IsLimit (KernelFork.ofι _ imageι_π)
+  fac : imageπ ≫ imageι = f := by cat_disch
+
+namespace AbelianStruct
+
+attribute [reassoc (attr := simp)] ι_imageπ imageι_π fac
+
+end AbelianStruct
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Constructor for abelian categories. We assume that the category `C` is
+preadditive, has finite products, and that any morphism `f : X ⟶ Y` has
+a kernel `i : K ⟶ X`, a cokernel `p : Y ⟶ Q` such that `f` factors as `f = π ≫ ι`
+where `π : X ⟶ I` is a cokernel of `i` and `ι : I ⟶ Y` is a kernel of `p`.
+This assumption is packaged in a structure `AbelianStruct f`. -/
+@[implicit_reducible]
+noncomputable def mk' [HasFiniteProducts C]
+    (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty (AbelianStruct f)) :
+    Abelian C where
+  has_kernels := ⟨fun f ↦ ⟨_, (h f).some.isLimitKernelFork⟩⟩
+  has_cokernels := ⟨fun f ↦ ⟨_, (h f).some.isColimitCokernelCofork⟩⟩
+  normalMonoOfMono f _ := by
+    obtain ⟨hf⟩ := h f
+    exact ⟨{
+      Z := hf.cokernelCofork.pt
+      g := hf.cokernelCofork.π
+      w := by simp
+      isLimit :=
+        have : IsIso hf.imageπ :=
+          CokernelCofork.IsColimit.isIso_π _ hf.imageIsCokernel (by simp [← cancel_mono f])
+        IsLimit.ofIsoLimit hf.imageIsKernel (Fork.ext (asIso hf.imageπ)).symm }⟩
+  normalEpiOfEpi f _ := by
+    obtain ⟨hf⟩ := h f
+    exact ⟨{
+      W := hf.kernelFork.pt
+      g := hf.kernelFork.ι
+      w := by simp
+      isColimit :=
+        have : IsIso hf.imageι :=
+          KernelFork.IsLimit.isIso_ι _ hf.imageIsKernel (by simp [← cancel_epi f])
+        IsColimit.ofIsoColimit hf.imageIsCokernel (Cofork.ext (asIso hf.imageι)) }⟩
+
+end CategoryTheory.Abelian

@@ -253,7 +253,7 @@ instance isIso_limMap {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) [
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limit.lift_map {F G : J ⥤ C} [HasLimit F] [HasLimit G] (c : Cone F) (α : F ⟶ G) :
-    limit.lift F c ≫ limMap α = limit.lift G ((Cones.postcompose α).obj c) := by
+    limit.lift F c ≫ limMap α = limit.lift G ((Cone.postcompose α).obj c) := by
   ext
   rw [assoc, limMap_π, limit.lift_π_assoc, limit.lift_π]
   rfl
@@ -292,7 +292,7 @@ theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X
 -/
 theorem hasLimit_of_iso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G :=
   HasLimit.mk
-    { cone := (Cones.postcompose α.hom).obj (limit.cone F)
+    { cone := (Cone.postcompose α.hom).obj (limit.cone F)
       isLimit := (IsLimit.postcomposeHomEquiv _ _).symm (limit.isLimit F) }
 
 theorem hasLimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasLimit F ↔ HasLimit G :=
@@ -326,14 +326,14 @@ theorem HasLimit.isoOfNatIso_inv_π {F G : J ⥤ C} [HasLimit F] [HasLimit G] (w
 theorem HasLimit.lift_isoOfNatIso_hom {F G : J ⥤ C} [HasLimit F] [HasLimit G] (t : Cone F)
     (w : F ≅ G) :
     limit.lift F t ≫ (HasLimit.isoOfNatIso w).hom =
-      limit.lift G ((Cones.postcompose w.hom).obj _) :=
+      limit.lift G ((Cone.postcompose w.hom).obj _) :=
   IsLimit.lift_comp_conePointsIsoOfNatIso_hom _ _ _
 
 @[reassoc (attr := simp)]
 theorem HasLimit.lift_isoOfNatIso_inv {F G : J ⥤ C} [HasLimit F] [HasLimit G] (t : Cone G)
     (w : F ≅ G) :
     limit.lift G t ≫ (HasLimit.isoOfNatIso w).inv =
-      limit.lift F ((Cones.postcompose w.inv).obj _) :=
+      limit.lift F ((Cone.postcompose w.inv).obj _) :=
   IsLimit.lift_comp_conePointsIsoOfNatIso_inv _ _ _
 
 /-- The limits of `F : J ⥤ C` and `G : K ⥤ C` are isomorphic,
@@ -854,7 +854,7 @@ theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} 
 -/
 theorem hasColimit_of_iso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColimit G :=
   HasColimit.mk
-    { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
+    { cocone := (Cocone.precompose α.hom).obj (colimit.cocone F)
       isColimit := (IsColimit.precomposeHomEquiv _ _).symm (colimit.isColimit F) }
 
 theorem hasColimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasColimit F ↔ HasColimit G :=
@@ -887,14 +887,14 @@ theorem HasColimit.isoOfNatIso_ι_inv {F G : J ⥤ C} [HasColimit F] [HasColimit
 theorem HasColimit.isoOfNatIso_hom_desc {F G : J ⥤ C} [HasColimit F] [HasColimit G] (t : Cocone G)
     (w : F ≅ G) :
     (HasColimit.isoOfNatIso w).hom ≫ colimit.desc G t =
-      colimit.desc F ((Cocones.precompose w.hom).obj _) :=
+      colimit.desc F ((Cocone.precompose w.hom).obj _) :=
   IsColimit.coconePointsIsoOfNatIso_hom_desc _ _ _
 
 @[reassoc (attr := simp)]
 theorem HasColimit.isoOfNatIso_inv_desc {F G : J ⥤ C} [HasColimit F] [HasColimit G] (t : Cocone F)
     (w : F ≅ G) :
     (HasColimit.isoOfNatIso w).inv ≫ colimit.desc F t =
-      colimit.desc G ((Cocones.precompose w.inv).obj _) :=
+      colimit.desc G ((Cocone.precompose w.inv).obj _) :=
   IsColimit.coconePointsIsoOfNatIso_inv_desc _ _ _
 
 /-- The colimits of `F : J ⥤ C` and `G : K ⥤ C` are isomorphic,
@@ -1074,7 +1074,7 @@ theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimit.map_desc (c : Cocone G) :
-    colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocones.precompose α).obj c) := by
+    colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocone.precompose α).obj c) := by
   ext j
   simp [colimit.ι_desc, colimit.ι_desc]
 
