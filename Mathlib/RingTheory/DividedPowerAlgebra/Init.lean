@@ -368,8 +368,6 @@ section Functoriality
 
 namespace LinearMap
 
-variable {R}
-
 variable {S : Type*} [CommSemiring S] {N : Type*} [AddCommMonoid N] [Module R N] [Module S N]
   (f : M →ₗ[R] N)
 
@@ -427,24 +425,21 @@ theorem lift_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
   simp only [Set.mem_range, Prod.exists]
   rintro ⟨n, m, rfl⟩
   obtain ⟨l, rfl⟩ := hf m
-  simp [Algebra.map_top, Subalgebra.coe_comap, AlgHom.coe_range, Set.mem_preimage,
+  simp only [Algebra.map_top, Subalgebra.coe_comap, AlgHom.coe_range, Set.mem_preimage,
     Set.mem_range]
   use dp R n l
-  simp [LinearMap.lift_apply_dp]
-  rfl
+  rw [lift_apply_dp, dp]
 
 end IsScalarTower
 
 end LinearMap
 
-variable {R} (S : Type*) [CommSemiring S] {N : Type*} [AddCommMonoid N] [Module R N] [Module S N]
+variable (S : Type*) [CommSemiring S] {N : Type*} [AddCommMonoid N] [Module R N] [Module S N]
   (f : M →ₗ[R] N)
 
 section IsScalarTower
 
 variable [Algebra R S] [IsScalarTower R S N] {P : Type*} [AddCommMonoid P] [Module R P]
-
--- is there a variant where a ring T acts on P?
 
 lemma LinearMap.lift_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
     LinearMap.lift R (g.comp f) = (LinearMap.lift R g).comp (LinearMap.lift R f) := by
@@ -457,8 +452,8 @@ lemma LinearMap.lift_id :
   intros
   simp [lift_apply_dp]
 
-/-- The functoriality map between divided power algebras associated with a linear equivalence of the
-  underlying modules.
+/-- The functoriality map between divided power algebras associated with a linear equivalence of
+  the underlying modules.
   Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear equivalence `f : M →ₗ[R] N`,
   this is the map `DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N`
   sending `dp R n m` to `dp S n (f m)`. -/
