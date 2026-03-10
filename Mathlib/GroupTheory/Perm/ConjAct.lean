@@ -45,8 +45,11 @@ theorem support_conj_eq_smul_support (k g : Equiv.Perm α) :
 
 theorem support_conj_eq_smul_support' (k g : Equiv.Perm α) :
     (k⁻¹ * g * k).support = k⁻¹ • g.support := by
-  nth_rewrite 2 [← inv_inv k]
-  exact support_conj_eq_smul_support k⁻¹ g
+  rw [← support_conj_eq_smul_support, inv_inv]
+
+theorem support_conjAct_smul_eq_smul_support (k : ConjAct (Perm α)) (g : Perm α) :
+    (k • g).support = k.ofConjAct • g.support := by
+  simp only [← support_conj_eq_smul_support, ← ConjAct.smul_def]
 
 theorem cycleFactorsFinset_conj (g k : Perm α) :
     (ConjAct.toConjAct k • g).cycleFactorsFinset =
@@ -75,17 +78,12 @@ theorem cycleFactorsFinset_conj_eq
   exact Finset.inv_smul_mem_iff
 
 omit [Fintype α] in
-theorem conj_smul_range_ofSubtype
-    [Finite α] (g : Perm α) (s : Finset α)
-    [DecidablePred fun x ↦ x ∈ g • s] [DecidablePred fun x ↦ x ∈ s] :
-    (ofSubtype : Perm { x // x ∈ ↑(g • s) } →*  Perm α).range
-      = MulAut.conj g • (ofSubtype : Perm {x // x ∈ s} →* Perm α).range := by
+theorem conj_smul_range_ofSubtype [Finite α] (g : Perm α) (s : Finset α) :
+    MulAut.conj g • (ofSubtype (p := (· ∈ s))).range = (ofSubtype (p := (· ∈ g • s))).range := by
   have : Fintype α := Fintype.ofFinite α
   ext k
-  rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
-  simp only [mem_range_ofSubtype_iff, SetLike.setOf_mem_eq, MulAut.smul_def, ← map_inv]
-  rw [Finset.coe_smul_finset]
-  rw [MulAut.conj_apply, Equiv.Perm.support_conj]
-  simp [← Set.image_smul, Perm.smul_def]
+  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff,
+    SetLike.setOf_mem_eq, MulAut.smul_def, ← map_inv, MulAut.conj_apply, inv_inv,
+    support_conj_eq_smul_support', Finset.coe_smul_finset,  Set.subset_smul_set_iff]
 
 end Equiv.Perm

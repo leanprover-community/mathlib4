@@ -242,6 +242,10 @@ theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α
     · apply Subgroup.subset_closure
       exact cycleType_swap_mul_swap_of_nodup (by grind [Finset.mem_compl])
 
+@[deprecated (since := "2026-03-10")]
+alias closure_cycleType_eq_2_2_eq_alternatingGroup :=
+  closure_cycleType_eq_two_two_eq_alternatingGroup
+
 theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ Nat.card α) :
     Subgroup.closure {g : alternatingGroup α | (g : Perm α).cycleType = {2, 2}} = ⊤ := by
   apply Subgroup.map_injective (alternatingGroup α).subtype_injective
@@ -475,8 +479,7 @@ theorem center_eq_bot (hα4 : 4 ≤ Nat.card α) :
 
 /-- The element of `alternatingGroup α` induced by an element
 of `alternatingGroup s`, when `s : Finset α`. -/
-def ofSubtype (s : Finset α) : -- {p : ℕ} (s : Set.powersetCard α p) :
-    alternatingGroup s →* alternatingGroup α where
+def ofSubtype (s : Finset α) : alternatingGroup s →* alternatingGroup α where
   toFun x := ⟨Perm.ofSubtype (x : Perm s), by
     rw [mem_alternatingGroup, sign_ofSubtype]
     -- `Subtype.fintype fun x ↦ x ∈ ↑s` is not def. eq. to `Finset.Subtype.fintype ↑s`
@@ -501,11 +504,9 @@ theorem map_ofSubtype (s : Finset α) :
     convert hk
 
 open Pointwise in
-lemma conj_map_subgroupOf (s : Finset α) (g : alternatingGroup α) :
-    ((alternatingGroup ↥(g • s)).map
-      Perm.ofSubtype).subgroupOf (alternatingGroup α) =
-    MulAut.conj g •
-      ((alternatingGroup ↥s).map Perm.ofSubtype).subgroupOf (alternatingGroup α) := by
+lemma conj_smul_subgroupOf (s : Finset α) (g : alternatingGroup α) :
+    MulAut.conj g • ((alternatingGroup ↥s).map Perm.ofSubtype).subgroupOf (alternatingGroup α) =
+      ((alternatingGroup ↥(g • s)).map Perm.ofSubtype).subgroupOf (alternatingGroup α) := by
   classical
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
