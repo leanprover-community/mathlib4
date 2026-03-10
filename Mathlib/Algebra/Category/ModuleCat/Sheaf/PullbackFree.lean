@@ -39,20 +39,20 @@ namespace SheafOfModules
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K]
+  [Functor.IsContinuous F J K]
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
 /-- The canonical map from the (global) sections of a sheaf of modules
 to the (global) sections of its pushforward. -/
 @[simps]
-def pushforwardSections [Functor.IsContinuous.{v} F J K]
+def pushforwardSections [Functor.IsContinuous F J K]
     {M : SheafOfModules.{v} R} (s : M.sections) :
     ((pushforward φ).obj M).sections where
   val _ := s.val _
   property _ := s.property _
 
 variable (M) in
-lemma bijective_pushforwardSections [Functor.IsContinuous.{v} F J K] [F.Final] :
+lemma bijective_pushforwardSections [Functor.IsContinuous F J K] [F.Final] :
     Function.Bijective (pushforwardSections φ (M := M)) :=
   Functor.bijective_sectionsPrecomp _ _
 
