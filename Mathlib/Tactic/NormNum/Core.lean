@@ -8,7 +8,7 @@ module
 public meta import Mathlib.Lean.Expr.Rat
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.NormNum.Result
-public import Mathlib.Util.Qq
+public meta import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` core functionality
