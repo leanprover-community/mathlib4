@@ -289,5 +289,72 @@ theorem div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
   induction n using Nat.binaryRec' with
   | zero => simp
   | bit _ _ h => simp [div2_bit, bits_append_bit _ _ h]
+/-- Converts a little-endian list of booleans back to a natural number.
+    This is the list-based version of `Nat.ofBits`. -/
+abbrev ofBitsList (bs : List Bool) : ℕ :=
+  bs.foldr bit 0
 
+lemma ofBitsList_nil : ofBitsList [] = 0 := rfl
+
+lemma ofBitsList_cons (b : Bool) (bs : List Bool) :
+    ofBitsList (b :: bs) = bit b (ofBitsList bs) := rfl
+
+/-- `ofBitsList` returns 0 if and only if the list is empty,
+    provided it has no trailing `false`s. -/
+lemma ofBitsList_eq_zero_iff {bs : List Bool} (h : bs.getLast? ≠ some false) :
+    ofBitsList bs = 0 ↔ bs = [] := by
+  induction bs with
+  | nil => simp
+  | cons b bs ih =>
+    simp only [ofBitsList_cons, bit_eq_zero_iff, List.cons_ne_nil, iff_false]
+    intro ⟨h_bs_zero, h_b_false⟩
+    cases bs with
+    | nil =>
+      subst h_b_false
+      simp [List.getLast?] at h
+    | cons b' bs' =>
+      have h_last : (b' :: bs').getLast? ≠ some false := by
+        simpa [List.getLast?] using h
+      cases (ih h_last).mp h_bs_zero
+
+/-- `Nat.ofBitsList` is a left inverse to `Nat.bits`. -/
+@[simp]
+theorem ofBitsList_bits (n : ℕ) : ofBitsList (bits n) = n := by
+  induction n using Nat.binaryRec with
+  | zero => rfl
+  | bit b n' ih =>
+    by_cases h_zero : n' = 0
+    · subst h_zero
+      cases b <;> rfl
+    · rw [bits_append_bit n' b (fun h => absurd h h_zero)]
+      simp [ih]
+
+/-- The standard binary representation of natural numbers is injective. -/
+theorem bits_injective : Function.Injective bits :=
+  Function.LeftInverse.injective ofBitsList_bits
+
+/-- `Nat.bits` is a right inverse to `Nat.ofBitsList` for lists not ending in `false`.
+    This shows that `bits` and `ofBitsList` form a bijection between `ℕ` and
+    the set of lists with no trailing `false` values. -/
+theorem bits_ofBitsList {bs : List Bool} (h : bs.getLast? ≠ some false) :
+    bits (ofBitsList bs) = bs := by
+  induction bs with
+  | nil => rfl
+  | cons b bs ih =>
+    rw [ofBitsList_cons]
+    by_cases h_empty : bs = []
+    · subst h_empty
+      cases b
+      · simp [List.getLast?] at h
+      · rfl
+    · have h_last : bs.getLast? ≠ some false := by
+        cases bs
+        · contradiction
+        · simpa [List.getLast?] using h
+      have h_cond : ofBitsList bs = 0 → b = true := by
+        intro hb0
+        have h_bs_nil : bs = [] := (ofBitsList_eq_zero_iff h_last).mp hb0
+        contradiction
+      rw [bits_append_bit (ofBitsList bs) b h_cond]
+      simp [ih h_last]
 end Nat
