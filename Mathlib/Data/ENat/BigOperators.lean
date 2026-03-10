@@ -25,13 +25,6 @@ section OperationsAndInfty
 
 variable {α : Type*}
 
-@[simp, norm_cast]
-theorem coe_finset_sum {s : Finset α} {f : α → ℕ} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℕ∞) :=
-  map_sum (Nat.castRingHom _) f s
-
-@[simp, norm_cast]
-theorem coe_finset_prod {s : Finset α} {f : α → ℕ} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℕ∞) :=
-  map_prod (Nat.castRingHom _) f s
 
 @[simp]
 theorem toNat_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ∞} :
