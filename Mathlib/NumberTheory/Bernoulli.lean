@@ -560,7 +560,7 @@ lemma valuation_bound (p n : ℕ) [Fact p.Prime] : (n + 1).factorization p ≤ n
       _ ≤ p ^ n := Nat.pow_le_pow_left ((Fact.out : p.Prime).two_le) n
 
 /-- The `i = 0` Faulhaber term is `p`-integral. -/
-lemma pIntegral_i0_term (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
+lemma pIntegral_i0_term (k p : ℕ) [Fact p.Prime] :
     pIntegral p ((p : ℚ) ^ (2 * k) / (2 * k + 1)) := by
   have h : (2 * k + 1 : ℚ) = ↑(2 * k + 1) := by norm_cast
   rw [h]
@@ -743,7 +743,7 @@ lemma pIntegral_remainder (k p : ℕ) (hk : k > 0) [Fact p.Prime]
   rw [Finset.mem_range] at hi
   rcases i with _ | _ | i
   · simp only [bernoulli_zero, one_mul, Nat.choose_zero_right, Nat.cast_one, Nat.sub_zero]
-    exact pIntegral_i0_term k p hk
+    exact pIntegral_i0_term k p
   · simp only [zero_add, Nat.choose_one_right]
     convert pIntegral_i1_term k p hk using 1
     push_cast; field_simp
@@ -831,7 +831,7 @@ lemma bernoulli_plus_indicator_rearrangement (k p : ℕ) (hk : k > 0) [Fact p.Pr
   exact_mod_cast h0
 
 /-- For fixed prime `p`, the denominator of `B_{2k} + e_{2k}(p)/p` is not divisible by `p`. -/
-lemma bernoulli_plus_indicator_coprime_p_pos (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
+lemma bernoulli_plus_indicator_den_not_dvd_of_pos (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     ¬ p ∣ (bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p).den := by
   induction k using Nat.strong_induction_on with
   | _ k ih =>
@@ -845,14 +845,14 @@ lemma bernoulli_plus_indicator_coprime_p_pos (k p : ℕ) (hk : k > 0) [Fact p.Pr
       exact (pIntegral_iff_not_dvd_den p _).2 (ih m hm_lt hm_pos)
     exact (pIntegral_iff_not_dvd_den p _).1 (pIntegral_sub p T _ hT_int hR)
 
-/-- Extends the fixed-prime coprimality result to the full prime correction sum. -/
-lemma von_staudt_coprime_all_primes_pos (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
+/-- Extends the fixed-prime nondivisibility result to the full prime correction sum. -/
+lemma von_staudt_sum_den_not_dvd_of_pos (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     ¬ p ∣ (bernoulli (2 * k) + ∑ q ∈ Finset.range (2 * k + 2) with
       q.Prime ∧ (q - 1) ∣ 2 * k, (1 : ℚ) / q).den := by
   rw [sum_primes_eq_indicator_add_rest k p hk, ← add_assoc]
   have h₁ : p.Coprime (bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p).den :=
     (Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).2
-      (bernoulli_plus_indicator_coprime_p_pos k p hk)
+      (bernoulli_plus_indicator_den_not_dvd_of_pos k p hk)
   have h₂ : (∑ q ∈ Finset.range (2 * k + 2) with q.Prime ∧ (q - 1) ∣ 2 * k ∧ q ≠ p,
       (1 : ℚ) / q).den.Coprime p := Nat.Coprime.of_dvd_left (sum_den_dvd_prod_den _ _)
       (prod_den_coprime_p k p)
@@ -873,6 +873,6 @@ theorem von_staudt_clausen (k : ℕ) :
   · exact Rat.mem_range_intCast_of_not_prime_dvd _
       (fun p hp ↦ by
         letI : Fact p.Prime := ⟨hp⟩
-        exact von_staudt_coprime_all_primes_pos k p hk)
+        exact von_staudt_sum_den_not_dvd_of_pos k p hk)
 
 end vonStaudtClausen
