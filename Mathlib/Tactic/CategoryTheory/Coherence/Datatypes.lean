@@ -455,7 +455,7 @@ def mkContext {ρ : Type} [Context ρ] (e : Expr) : MetaM ρ := do
 /-- The state for the `CoherenceM ρ` monad. -/
 structure State where
   /-- The cache for evaluating lean expressions of 1-morphisms into `Mor₁` terms. -/
-  cache : ExprMap Mor₁ := {}
+  cache : PersistentExprMap  Mor₁ := {}
 
 /-- The monad for manipulating 2-morphisms in a monoidal category or bicategory. -/
 abbrev CoherenceM (ρ : Type) := ReaderT ρ <| StateT State MetaM
