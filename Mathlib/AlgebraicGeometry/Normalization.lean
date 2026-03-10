@@ -131,7 +131,6 @@ in `Γ(X, f ⁻¹ U)` where `U` ranges over all affine opens. -/
 def normalizationOpenCover : f.normalization.OpenCover :=
   f.normalizationGlueData.cover
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The dominant morphism into the relative normalization. -/
 def toNormalization : X ⟶ f.normalization :=
@@ -210,7 +209,7 @@ instance : IsIntegralHom f.fromNormalization := by
   rw [← cancel_mono U.2.fromSpec]
   simp [IsAffineOpen.isoSpec_hom, e, ι_fromNormalization]
 
-/-- The sections of the relative normalization on the preimage of an affine open is isomorpic to
+/-- The sections of the relative normalization on the preimage of an affine open is isomorphic to
 the integral closure. -/
 noncomputable
 def normalizationObjIso {U : Y.Opens} (hU : IsAffineOpen U) :
@@ -616,7 +615,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
       ← Scheme.Hom.preimage_inf, inf_eq_right.mpr hVU]) hU hV (f.isCompact_preimage hU.isCompact)
     (f.isQuasiSeparated_preimage hU.isQuasiSeparated)
   let e₀ := (CommRingCat.isPushout_tensorProduct ..).flip.isoPushout ≪≫
-    (pushout.congrHom f.app_eq_appLE rfl ≪≫ @asIso _ _ _ _ _ this:)
+    (pushout.congrHom f.app_eq_appLE rfl ≪≫ @asIso _ _ _ _ _ this :)
   let e : Γ(Y, V) ⊗[Γ(S, U)] Γ(X, f ⁻¹ᵁ U) ≃ₐ[Γ(Y, V)] Γ(pullback f g, pullback.snd f g ⁻¹ᵁ V) :=
     { toRingEquiv := e₀.commRingCatIsoToRingEquiv,
       commutes' r := by

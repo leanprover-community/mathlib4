@@ -97,6 +97,7 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [AnalyticAt.unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
 lemma AnalyticAt.analyticOrderNatAt_eq_iff (hf : AnalyticAt 𝕜 f z₀) (hf' : analyticOrderAt f z₀ ≠ ⊤)
@@ -302,6 +303,7 @@ theorem AnalyticAt.analyticOrderAt_deriv_add_one {x : 𝕜} (hf : AnalyticAt �
       ENat.succ_def, ← Nat.cast_add_one, natCast_le_analyticOrderAt (by fun_prop)]
     exact ⟨deriv F, hFa.deriv, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : AnalyticAt 𝕜 f x)
     (hf' : deriv f x ≠ 0) : analyticOrderAt (f · - f x) x = 1 := by
   generalize h : analyticOrderAt (f · - f x) x = r
@@ -320,7 +322,7 @@ theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : 
     · contrapose! hf'
       simp_rw [sub_eq_iff_eq_add] at hfF
       rw [EventuallyEq.deriv_eq hfF, deriv_add_const, deriv_fun_smul (by fun_prop) (by fun_prop),
-        deriv_fun_pow (by fun_prop), sub_self, zero_pow (by omega), zero_pow (by omega),
+        deriv_fun_pow (by fun_prop), sub_self, zero_pow (by lia), zero_pow (by lia),
         mul_zero, zero_mul, zero_smul, zero_smul, add_zero]
 
 lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero [CharZero 𝕜] [CompleteSpace E]

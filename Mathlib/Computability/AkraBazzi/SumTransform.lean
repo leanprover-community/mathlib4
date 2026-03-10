@@ -129,7 +129,6 @@ lemma dist_r_b' : ∀ᶠ n in atTop, ∀ i, ‖(r i n : ℝ) - b i * n‖ ≤ n 
   intro i
   simpa using IsLittleO.eventuallyLE (R.dist_r_b i)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eventually_b_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n / log n ^ 2) ≤ r i n := by
   filter_upwards [R.dist_r_b'] with n hn i
   have h₁ : 0 ≤ b i := le_of_lt <| R.b_pos _
@@ -323,7 +322,7 @@ lemma eventually_one_sub_smoothingFn_pos_real : ∀ᶠ (x : ℝ) in atTop, 0 < 1
   eventually_one_sub_smoothingFn_gt_const_real 0 zero_lt_one
 
 lemma eventually_one_sub_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 - ε n :=
-  (eventually_one_sub_smoothingFn_pos_real).natCast_atTop
+  eventually_one_sub_smoothingFn_pos_real.natCast_atTop
 
 lemma eventually_one_sub_smoothingFn_nonneg : ∀ᶠ (n : ℕ) in atTop, 0 ≤ 1 - ε n := by
   filter_upwards [eventually_one_sub_smoothingFn_pos] with n hn; exact le_of_lt hn

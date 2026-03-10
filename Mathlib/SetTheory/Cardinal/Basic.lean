@@ -823,7 +823,6 @@ theorem mk_union_of_disjoint {α : Type u} {S T : Set α} (H : Disjoint S T) :
   classical
   exact Quot.sound ⟨Equiv.Set.union H⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
     #(insert a s : Set α) = #s + 1 := by
   rw [← union_singleton, mk_union_of_disjoint, mk_singleton]
@@ -1045,5 +1044,11 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
   exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_gt
+
+/-- The cardinality of a set is an upper-bound for the amount of elements before the set's mex
+(minimum excluded value) -/
+theorem _root_.WellFounded.cardinalMk_subtype_lt_min_compl_le {r : α → α → Prop}
+    (wf : WellFounded r) {s : Set α} (hs : sᶜ.Nonempty) : #{ x // r x (wf.min sᶜ hs) } ≤ #s :=
+  Cardinal.mk_le_mk_of_subset fun _ ↦ wf.mem_of_lt_min_compl
 
 end Cardinal
