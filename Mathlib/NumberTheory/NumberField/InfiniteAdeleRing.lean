@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
+
 /-!
 # The infinite adele ring of a number field
 
