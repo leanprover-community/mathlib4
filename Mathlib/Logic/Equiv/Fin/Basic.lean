@@ -327,28 +327,10 @@ theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
 @[simps]
 def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
-  toFun x :=
-    ⟨x.2 + n * x.1,
-      calc
-        x.2.1 + n * x.1.1 + 1 = x.1.1 * n + x.2.1 + 1 := by ac_rfl
-        _ ≤ x.1.1 * n + n := Nat.add_le_add_left x.2.2 _
-        _ = (x.1.1 + 1) * n := Eq.symm <| Nat.succ_mul _ _
-        _ ≤ m * n := Nat.mul_le_mul_right _ x.1.2
-        ⟩
+  toFun := Fin.mkDivMod.uncurry
   invFun x := (x.divNat, x.modNat)
-  left_inv := fun ⟨x, y⟩ =>
-    have H : 0 < n := Nat.pos_of_ne_zero fun H => Nat.not_lt_zero y.1 <| H ▸ y.2
-    Prod.ext
-      (Fin.eq_of_val_eq <|
-        calc
-          (y.1 + n * x.1) / n = y.1 / n + x.1 := Nat.add_mul_div_left _ _ H
-          _ = 0 + x.1 := by rw [Nat.div_eq_of_lt y.2]
-          _ = x.1 := Nat.zero_add x.1)
-      (Fin.eq_of_val_eq <|
-        calc
-          (y.1 + n * x.1) % n = y.1 % n := Nat.add_mul_mod_self_left _ _ _
-          _ = y.1 := Nat.mod_eq_of_lt y.2)
-  right_inv _ := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
+  left_inv _ := Prod.ext (Fin.divNat_mkDivMod _ _) (Fin.modNat_mkDivMod _ _)
+  right_inv := Fin.divNat_mkDivMod_modNat
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 This is like `finProdFinEquiv.symm` but with `m` infinite.
@@ -356,14 +338,10 @@ See `Nat.div_mod_unique` for a similar propositional statement. -/
 @[simps]
 def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   toFun a := (a / n, Fin.ofNat n a)
-  invFun p := p.1 * n + ↑p.2
-  -- TODO: is there a canonical order of `*` and `+` here?
-  left_inv _ := Nat.div_add_mod' _ _
-  right_inv p := by
-    refine Prod.ext ?_ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
-    dsimp only
-    rw [Nat.add_comm, Nat.add_mul_div_right _ _ n.pos_of_neZero, Nat.div_eq_of_lt p.2.is_lt,
-      Nat.zero_add]
+  invFun := (n.mkDivMod · ·.val).uncurry
+  left_inv _ := n.mkDivMod_div_mod
+  right_inv _ := Prod.ext (n.div_mkDivMod_of_lt <| Fin.is_lt _)
+    (Fin.ext <| by exact mod_mkDivMod_of_lt <| Fin.is_lt _)
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 See `Int.ediv_emod_unique` for a similar propositional statement. -/
