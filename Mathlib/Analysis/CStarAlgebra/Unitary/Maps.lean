@@ -21,77 +21,70 @@ variable [SMulCommClass R A A]
 
 variable (R A) in
 /-- Left multiplication by a unitary as a linear isometric equivalence. -/
-noncomputable def mulLeftLinearIsometryEquiv : unitary A →* A ≃ₗᵢ[R] A where
+noncomputable def mulLeft : unitary A →* A ≃ₗᵢ[R] A where
   toFun u :=
-    { toLinearMap := LinearMap.mulLeft R (u : A)
-      invFun := LinearMap.mulLeft R (star u : A)
-      left_inv _ := by simp [← mul_assoc]
-      right_inv _ := by simp [← mul_assoc]
+    { __ := (toUnits u).mulLeftLinearEquiv R A
       norm_map' _ := CStarRing.norm_coe_unitary_mul _ _ }
   map_one' := by ext; simp
-  map_mul' _ _ := by ext; simp
+  map_mul' _ _ := by ext; simp [mul_assoc]
 
 variable (R) in
-@[simp] lemma mulLeftLinearIsometryEquiv_apply (u : unitary A) (x : A) :
-    mulLeftLinearIsometryEquiv R A u x = u * x := rfl
+@[simp] lemma mulLeft_apply (u : unitary A) (x : A) :
+    mulLeft R A u x = u * x := rfl
 
 variable (R) in
-lemma symm_mulLeftLinearIsometryEquiv_apply (u : unitary A) (x : A) :
-    (mulLeftLinearIsometryEquiv R A u).symm x = (star u : A) * x := rfl
+lemma symm_mulLeft_apply (u : unitary A) (x : A) :
+    (mulLeft R A u).symm x = (star u : A) * x := rfl
 
-@[simp] lemma symm_mulLeftLinearIsometryEquiv (u : unitary A) :
-    (mulLeftLinearIsometryEquiv R A u).symm = mulLeftLinearIsometryEquiv R A (star u) := by ext; rfl
+@[simp] lemma symm_mulLeft (u : unitary A) :
+    (mulLeft R A u).symm = mulLeft R A (star u) := by ext; rfl
 
-lemma mulLeftLinearIsometryEquiv_trans_mulLeftLinearIsometryEquiv (u v : unitary A) :
-    (mulLeftLinearIsometryEquiv R A u).trans (mulLeftLinearIsometryEquiv R A v) =
-      mulLeftLinearIsometryEquiv R A (v * u) := map_mul _ _ _ |>.symm
+lemma mulLeft_trans_mulLeft (u v : unitary A) :
+    (mulLeft R A u).trans (mulLeft R A v) = mulLeft R A (v * u) := map_mul _ _ _ |>.symm
 
-lemma mulLeftLinearIsometryEquiv_mul_apply (u v : unitary A) (x : A) :
-    mulLeftLinearIsometryEquiv R A (u * v) x =
-      mulLeftLinearIsometryEquiv R A u (mulLeftLinearIsometryEquiv R A v x) := by simp
+lemma mulLeft_mul_apply (u v : unitary A) (x : A) :
+    mulLeft R A (u * v) x = mulLeft R A u (mulLeft R A v x) := by simp
 
-@[simp] lemma toLinearMap_mulLeftLinearIsometryEquiv (u : unitary A) :
-    (mulLeftLinearIsometryEquiv R A u).toLinearMap = LinearMap.mulLeft R (u : A) := rfl
+@[simp] lemma toLinearEquiv_mulLeft (u : unitary A) :
+    (mulLeft R A u).toLinearMap = (toUnits u).mulLeftLinearEquiv R A := rfl
 
 end mulLeft
 
 section mulRight
 variable [IsScalarTower R A A]
 
-variable (R A) in
+variable (R) in
 /-- Right multiplication by a unitary as a linear isometric equivalence. -/
-noncomputable def mulRightLinearIsometryEquiv (u : unitary A) : A ≃ₗᵢ[R] A where
-  toLinearMap := LinearMap.mulRight R (u : A)
-  invFun := LinearMap.mulRight R (star u : A)
-  left_inv _ := by simp [mul_assoc]
-  right_inv _ := by simp [mul_assoc]
+noncomputable def mulRight (u : unitary A) : A ≃ₗᵢ[R] A where
+  toLinearEquiv := (toUnits u).mulRightLinearEquiv R
   norm_map' _ := CStarRing.norm_mul_coe_unitary _ _
 
 variable (R) in
-@[simp] lemma mulRightLinearIsometryEquiv_apply (u : unitary A) (x : A) :
-    mulRightLinearIsometryEquiv R A u x = x * u := rfl
+@[simp] lemma mulRight_apply (u : unitary A) (x : A) :
+    mulRight R u x = x * u := rfl
 
 variable (R) in
-lemma symm_mulRightLinearIsometryEquiv_apply (u : unitary A) (x : A) :
-    (mulRightLinearIsometryEquiv R A u).symm x = x * (star u : A) := rfl
+lemma symm_mulRight_apply (u : unitary A) (x : A) :
+    (mulRight R u).symm x = x * (star u : A) := rfl
 
-@[simp] lemma symm_mulRightLinearIsometryEquiv (u : unitary A) :
-    (mulRightLinearIsometryEquiv R A u).symm = mulRightLinearIsometryEquiv R A (star u) := by
+@[simp] lemma symm_mulRight (u : unitary A) :
+    (mulRight R u).symm = mulRight R (star u) := by
   ext; rfl
 
-lemma mulRightLinearIsometryEquiv_trans_mulRightLinearIsometryEquiv (u v : unitary A) :
-    (mulRightLinearIsometryEquiv R A u).trans (mulRightLinearIsometryEquiv R A v) =
-      mulRightLinearIsometryEquiv R A (u * v) := by ext; simp [mul_assoc]
+lemma mulRight_trans_mulRight (u v : unitary A) :
+    (mulRight R u).trans (mulRight R v) = mulRight R (u * v) := by ext; simp [mul_assoc]
 
-lemma mulRightLinearIsometryEquiv_mul_apply (u v : unitary A) (x : A) :
-    mulRightLinearIsometryEquiv R A (u * v) x =
-      mulRightLinearIsometryEquiv R A v (mulRightLinearIsometryEquiv R A u x) := by simp [mul_assoc]
+lemma mulRight_mul_apply (u v : unitary A) (x : A) :
+    mulRight R (u * v) x = mulRight R v (mulRight R u x) := by simp [mul_assoc]
 
-@[simp] lemma toLinearMap_mulRightLinearIsometryEquiv (u : unitary A) :
-    (mulRightLinearIsometryEquiv R A u).toLinearMap = LinearMap.mulRight R (u : A) := rfl
+@[simp] lemma toLinearMap_mulRight (u : unitary A) :
+    (mulRight R u).toLinearMap = LinearMap.mulRight R (u : A) := rfl
 
-@[simp] lemma mulRightLinearIsometryEquiv_one : mulRightLinearIsometryEquiv R A 1 = .refl R A := by
+@[simp] lemma mulRight_one : mulRight R 1 = .refl R A := by
   ext; simp
+
+@[simp] lemma toLinearEquiv_mulRight (u : unitary A) :
+    (mulRight R u).toLinearMap = (toUnits u).mulRightLinearEquiv R A := rfl
 
 end mulRight
 
