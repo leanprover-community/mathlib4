@@ -157,7 +157,7 @@ def PreAbstractSimplicialComplex.toAbstractSimplicialComplex
 
 /-- The closure of a `PreAbstractSimplicialComplex` to an `AbstractSimplicialComplex` by adding
 all singletons. -/
-def PreAbstractSimplicialComplex.toAbstractSimplicialComplex_union_singleton
+def PreAbstractSimplicialComplex.addSingletons
     (K : PreAbstractSimplicialComplex ι) :
     AbstractSimplicialComplex ι :=
   { faces := K.faces ∪ { s | ∃ v, s = {v} }
