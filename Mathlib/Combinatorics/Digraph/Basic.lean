@@ -462,7 +462,7 @@ lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
   constructor <;> aesop (add simp [inf, min, SemilatticeInf.inf, Lattice.inf, compl,
     Set.inter_self, bot, Subtype.mk_le_mk, ge_iff_le])
 
-instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
+instance (G : Digraph V) : CompleteLattice G.SpanningSubgraph where
   sup := sup
   le_sup_left := le_sup_left
   le_sup_right := le_sup_right
@@ -475,16 +475,30 @@ instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
   le_top := le_top
   bot := bot
   bot_le := bot_le
-  compl := compl
-  top_le_sup_compl := top_le_sup_compl
-  le_sup_inf := le_sup_inf
-  inf_compl_le_bot := inf_compl_le_bot
   sSup := sSup
   sInf := sInf
   le_sSup := le_sSup
   sSup_le := sSup_le
   sInf_le := sInf_le
   le_sInf := le_sInf
+
+instance (G : Digraph V) : DistribLattice G.SpanningSubgraph where
+  __ := (inferInstance : Lattice G.SpanningSubgraph)
+  le_sup_inf := le_sup_inf
+
+instance (G : Digraph V) : BooleanAlgebra G.SpanningSubgraph where
+  __ := (inferInstance : DistribLattice G.SpanningSubgraph)
+  __ := (inferInstance : Top G.SpanningSubgraph)
+  __ := (inferInstance : Bot G.SpanningSubgraph)
+  compl := compl
+  le_top := le_top
+  bot_le := bot_le
+  top_le_sup_compl := top_le_sup_compl
+  inf_compl_le_bot := inf_compl_le_bot
+
+instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
+  __ := (inferInstance : CompleteLattice G.SpanningSubgraph)
+  __ := (inferInstance : BooleanAlgebra G.SpanningSubgraph)
 
 instance Top : Top (Digraph V) where
   top := Digraph.completeDigraph V
