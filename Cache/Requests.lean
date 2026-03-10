@@ -664,8 +664,10 @@ def getFiles
 
   let mathlibDepPath := (← read).mathlibDepPath
 
-  -- Start background decompression of already-cached files before downloading
-  let bgDecomp ← if decompress then
+  -- Start background decompression of already-cached files before downloading.
+  -- Skip when forceDownload is set, since downloadFiles will re-download (and pipeline-decompress)
+  -- all files including already-cached ones, which would race with this background task.
+  let bgDecomp ← if decompress && !forceDownload then
     if let some (config, size, skipped) := ← IO.prepareDecompConfig hashMap forceUnpack then
       if skipped > 0 then
         IO.println s!"Decompressing {size} already-cached file(s) ({skipped} already decompressed)"
