@@ -339,7 +339,6 @@ def mapZeroKernelFork :
     (kernel.zeroKernelFork f).map G ≅ (kernel.zeroKernelFork (G.map f)) :=
   Fork.ext G.mapZeroObject
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Mapping a `zeroCokernelCofork` of `f : X ⟶ Y` along a functor `G` that preserves zero morphisms
 is isomorphic to the `zeroCokernelCofork` of `G.map f`. -/
 def mapZeroCokernelCofork :
