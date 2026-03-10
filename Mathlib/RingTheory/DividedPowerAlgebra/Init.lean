@@ -76,6 +76,9 @@ open MvPolynomial
 
 variable {R M}
 
+lemma mkAlgHom_surjective : Function.Surjective (mkAlgHom R (Rel R M)) :=
+  RingQuot.mkAlgHom_surjective _ _
+
 lemma mkAlgHom_C (a : R) :
     mkAlgHom R (Rel R M) (C a) = algebraMap R (DividedPowerAlgebra R M) a := by
   rw [← MvPolynomial.algebraMap_eq, AlgHom.commutes]
