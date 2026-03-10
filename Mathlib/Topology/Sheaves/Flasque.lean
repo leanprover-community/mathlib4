@@ -225,7 +225,7 @@ theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
     rw[← ShortComplex.Exact.epi_f_iff (hLS.exact 1), AddCommGrpCat.epi_iff_surjective,
       ← Equiv.surjective_comp (H.equiv₀ I).symm.toEquiv]
     change Function.Surjective ((H.map S.g 0) ∘ (H.equiv₀ I).symm.toEquiv)
-    conv => right; equals (H.equiv₀ S.X₃).symm.toEquiv ∘ S.g.val.app (op ⊤)
+    conv => right; equals (H.equiv₀ S.X₃).symm.toEquiv ∘ S.g.hom.app (op ⊤)
       => ext x; exact H.equiv₀_symm_comp S.g x
     rw [Equiv.comp_surjective, ← AddCommGrpCat.epi_iff_surjective]
     exact epi_of_shortExact hS

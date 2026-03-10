@@ -187,11 +187,11 @@ variable {U}
 /-- The sheafification of `zeroOutside_openHom` applied to `constZ.zeroOutside U` -/
 @[simps]
 def openHom {V : Opens X} (h : V ≤ U) : zeroOutsideInt V ⟶ zeroOutsideInt U where
-  val := sheafifyMap _ (Presheaf.zeroOutside_openHom Presheaf.constZ h)
+  hom := sheafifyMap _ (Presheaf.zeroOutside_openHom Presheaf.constZ h)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem openHom_generator {V : Opens X} (h : V ≤ U) :
-    (openHom h).val.app (op V) (generator V) = (generator U) |_ V := by
+    (openHom h).hom.app (op V) (generator V) = (generator U) |_ V := by
   simp only [openHom, generator, Presheaf.zeroOutside_obj, Functor.const_obj_obj]
   erw [← ConcreteCategory.comp_apply, ← NatTrans.comp_app, ← toSheafify_naturality,
     NatTrans.comp_app, ConcreteCategory.comp_apply, Presheaf.zeroOutside.openHom_generator,
@@ -209,12 +209,12 @@ instance {V : Opens X} (h : V ≤ U) :
 @[simps]
 def sHom {F : Sheaf AddCommGrpCat.{u} X} (s : F.presheaf.obj (op U)) :
     zeroOutsideInt U ⟶ F where
-  val := sheafifyLift _ (Presheaf.zeroOutside.sHom s) F.cond
+  hom := sheafifyLift _ (Presheaf.zeroOutside.sHom s) F.property
 
 theorem sHom_app_generator {F : Sheaf AddCommGrpCat.{u} X}
-    (s : F.presheaf.obj (op U)) : (sHom s).val.app (op U) (generator U) = s := by
+    (s : F.presheaf.obj (op U)) : (sHom s).hom.app (op U) (generator U) = s := by
   delta generator
-  erw [sHom_val, ← ConcreteCategory.comp_apply, ← NatTrans.comp_app, toSheafify_sheafifyLift]
+  erw [sHom_hom, ← ConcreteCategory.comp_apply, ← NatTrans.comp_app, toSheafify_sheafifyLift]
   exact Presheaf.zeroOutside.sHom_app_generator s
 
 end zeroOutsideInt
@@ -226,10 +226,10 @@ theorem epi_map_of_injective (I : Sheaf AddCommGrpCat.{u} X) [Injective I] {U V 
   rw [AddCommGrpCat.epi_iff_surjective]
   intro s
   let f := Injective.factorThru (sHom s) (openHom h)
-  use f.val.app (op U) (generator U)
-  change f.val.app (op U) (generator U) |_ V = s
+  use f.hom.app (op U) (generator U)
+  change f.hom.app (op U) (generator U) |_ V = s
   rw [← Presheaf.map_restrict, ← openHom_generator]
-  change (openHom h ≫ f).val.app (op V) (generator V) = s
+  change (openHom h ≫ f).hom.app (op V) (generator V) = s
   rw [Injective.comp_factorThru, sHom_app_generator]
 
 end Sheaf
