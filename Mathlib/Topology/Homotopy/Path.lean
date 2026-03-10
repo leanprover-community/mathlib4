@@ -150,6 +150,7 @@ section
 
 variable {p₀ q₀ : Path x₀ x₁} {p₁ q₁ : Path x₁ x₂}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `p₀` and `q₀` are paths from `x₀` to `x₁`, `p₁` and `q₁` are paths from `x₁` to `x₂`.
 Furthermore, suppose `F : Homotopy p₀ q₀` and `G : Homotopy p₁ q₁`. Then we can define a homotopy
 from `p₀.trans p₁` to `q₀.trans q₁`.
@@ -177,6 +178,7 @@ theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × 
           ⟨2 * x.2 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.2.2.2⟩⟩ :=
   show ite _ _ _ = _ by split_ifs <;> exact Path.extend_apply _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
     F.hcomp G (t, ⟨1 / 2, by norm_num, by norm_num⟩) = x₁ :=
   show ite _ _ _ = _ by norm_num
@@ -285,6 +287,7 @@ theorem pathCast {p q : Path x₀ x₁} (hpq : p.Homotopic q) (hsource : x₂ = 
 The setoid on `Path`s defined by the equivalence relation `Path.Homotopic`. That is, two paths are
 equivalent if there is a `Homotopy` between them.
 -/
+@[instance_reducible]
 protected def setoid (x₀ x₁ : X) : Setoid (Path x₀ x₁) :=
   ⟨Homotopic, equivalence⟩
 

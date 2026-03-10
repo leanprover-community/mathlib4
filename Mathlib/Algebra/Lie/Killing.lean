@@ -71,6 +71,7 @@ lemma killingForm_nondegenerate :
   refine (LieModule.traceForm_isSymm R L L).isRefl.nondegenerate_iff_separatingLeft.mpr ?_
   simp [LinearMap.separatingLeft_iff_ker_eq_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R L} in
 lemma ideal_eq_bot_of_isLieAbelian
     [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R]
@@ -78,6 +79,7 @@ lemma ideal_eq_bot_of_isLieAbelian
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
 
+set_option backward.isDefEq.respectTransparency false in
 instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L := by
   apply InvariantForm.isSemisimple_of_nondegenerate (Φ := killingForm K L)
   · exact IsKilling.killingForm_nondegenerate _ _
@@ -130,6 +132,7 @@ end LieEquiv
 
 end LieAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 open LieAlgebra in
 variable {K L} in
 lemma LieIdeal.isCompl_killingCompl [IsKilling K L] [Module.Finite K L] (I : LieIdeal K L) :

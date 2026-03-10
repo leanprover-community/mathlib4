@@ -99,6 +99,7 @@ noncomputable instance : SMul ℚ≥0 ℝ≥0 where
 noncomputable instance zpow : Pow ℝ≥0 ℤ where
   pow x n := ⟨(x : ℝ) ^ n, zpow_nonneg x.2 _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,
 and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
 it needs to be reducible(-with-instances).
@@ -833,6 +834,7 @@ theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_o
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [_root_.iInf_of_isEmpty, sInf_empty]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma iSup_eq_zero (hf : BddAbove (range f)) : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := by
   cases isEmpty_or_nonempty ι
   · simp
@@ -879,6 +881,7 @@ end Set
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
 @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where

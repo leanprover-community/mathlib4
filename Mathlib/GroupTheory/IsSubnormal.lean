@@ -187,7 +187,8 @@ lemma isSubnormal_iff : H.IsSubnormal ↔
       · grind
       · refine monotone_nat_of_le_succ ?_
         grind only [monotone_iff_forall_lt]
-      · grind
+      · simp +instances only
+        grind
   mpr := by
     rintro ⟨n, hyps⟩
     revert H

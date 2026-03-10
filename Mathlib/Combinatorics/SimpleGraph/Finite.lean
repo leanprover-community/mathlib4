@@ -106,6 +106,7 @@ theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeF
 theorem edgeFinset_sdiff [DecidableEq V] :
     (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset := by simp [edgeFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma disjoint_edgeFinset : Disjoint G₁.edgeFinset G₂.edgeFinset ↔ Disjoint G₁ G₂ := by
   simp_rw [← Finset.disjoint_coe, coe_edgeFinset, disjoint_edgeSet]
@@ -591,7 +592,7 @@ theorem map_neighborFinset_induce [DecidableEq V] (v : s) :
   ext; simp
 
 theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
-    ((G.induce s).neighborFinset v).map (.subtype s) = G.neighborFinset v := by
+    ((G.induce s).neighborFinset v).map (.subtype (· ∈ s)) = G.neighborFinset v := by
   classical
   rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
     ← map_neighborFinset_induce v] at h

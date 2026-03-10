@@ -41,7 +41,7 @@ end Bot
 section Preorder
 variable [Preorder α]
 
-instance : Preorder (Shrink.{u} α) :=
+noncomputable instance : Preorder (Shrink.{u} α) :=
   Preorder.lift (equivShrink α).symm
 
 variable (α) in
@@ -84,7 +84,7 @@ instance [WellFoundedLT α] : WellFoundedLT (Shrink.{u} α) where
 
 end Preorder
 
-instance [PartialOrder α] : PartialOrder (Shrink.{u} α) :=
+noncomputable instance [PartialOrder α] : PartialOrder (Shrink.{u} α) :=
   (equivShrink _).symm.injective.partialOrder _ .rfl .rfl
 
 noncomputable instance [LinearOrder α] : LinearOrder (Shrink.{u} α) :=

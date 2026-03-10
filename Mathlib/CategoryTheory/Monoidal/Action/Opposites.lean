@@ -41,7 +41,7 @@ open MonoidalOpposite
 
 /-- Define a left action of `C` on `D` from a right action of `Cᴹᵒᵖ` on `D` via
 the formula `c ⊙ₗ d := d ⊙ᵣ (mop c)`. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
     MonoidalLeftAction C D where
   actionObj c d := d ⊙ᵣ mop c
@@ -66,7 +66,7 @@ def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
 
 /-- Define a left action of `Cᴹᵒᵖ` on `D` from a right action of `C` on `D` via
 the formula `mop c ⊙ₗ d = d ⊙ᵣ c`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def monoidalOppositeLeftAction [MonoidalRightAction C D] :
     MonoidalLeftAction Cᴹᵒᵖ D where
   actionObj c d := d ⊙ᵣ unmop c
@@ -118,7 +118,7 @@ open Opposite
 
 /-- Define a left action of `Cᵒᵖ` on `Dᵒᵖ` from a left action of `C` on `D` via
 the formula `(op c) ⊙ₗ (op d) = op (c ⊙ₗ d)`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def oppositeLeftAction [MonoidalLeftAction C D] :
     MonoidalLeftAction Cᵒᵖ Dᵒᵖ where
   actionObj c d := op <| c.unop ⊙ₗ d.unop
@@ -160,7 +160,7 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
 
 /-- Define a left action of `C` on `D` from a left action of `Cᵒᵖ` on `Dᵒᵖ` via
 the formula `c ⊙ₗ d = unop ((op c) ⊙ₗ (op d))`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def leftActionOfOppositeLeftAction [MonoidalLeftAction Cᵒᵖ Dᵒᵖ] :
     MonoidalLeftAction C D where
   actionObj c d := unop <| op c ⊙ₗ op d
@@ -257,7 +257,7 @@ open MonoidalOpposite
 
 /-- Define a right action of `C` on `D` from a left action of `Cᴹᵒᵖ` on `D` via
 the formula `d ⊙ᵣ c := (mop c) ⊙ₗ d`. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
     MonoidalRightAction C D where
   actionObj d c := mop c ⊙ₗ d
@@ -280,7 +280,7 @@ def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
 
 /-- Define a right action of `Cᴹᵒᵖ` on `D` from a left action of `C` on `D` via
 the formula `d ⊙ᵣ mop c = c ⊙ₗ d`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def monoidalOppositeRightAction [MonoidalLeftAction C D] :
     MonoidalRightAction Cᴹᵒᵖ D where
   actionObj d c := unmop c ⊙ₗ d
@@ -330,7 +330,7 @@ open Opposite
 
 /-- Define a right action of `Cᵒᵖ` on `Dᵒᵖ` from a right action of `C` on `D` via
 the formula `(op d) ⊙ᵣ (op c) = op (d ⊙ᵣ c)`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def oppositeRightAction [MonoidalRightAction C D] :
     MonoidalRightAction Cᵒᵖ Dᵒᵖ where
   actionObj c d := op <| c.unop ⊙ᵣ d.unop
@@ -372,7 +372,7 @@ def oppositeRightAction [MonoidalRightAction C D] :
 
 /-- Define a right action of `C` on `D` from a right action of `Cᵒᵖ` on `Dᵒᵖ` via
 the formula `d ⊙ᵣ c = unop ((op d) ⊙ᵣ (op c))`. -/
-@[simps -isSimp]
+@[instance_reducible, simps -isSimp]
 def rightActionOfOppositeRightAction [MonoidalRightAction Cᵒᵖ Dᵒᵖ] :
     MonoidalRightAction C D where
   actionObj c d := unop <| op c ⊙ᵣ op d

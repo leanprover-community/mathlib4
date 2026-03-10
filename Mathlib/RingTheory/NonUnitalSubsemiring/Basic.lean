@@ -269,6 +269,7 @@ end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
 
+set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
     (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =

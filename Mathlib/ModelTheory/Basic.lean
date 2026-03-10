@@ -169,6 +169,7 @@ variable (N : Type w') [L.Structure M] [L.Structure N]
 open Structure
 
 /-- Used for defining `FirstOrder.Language.Theory.ModelType.instInhabited`. -/
+@[instance_reducible]
 def Inhabited.trivialStructure {α : Type*} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
 
@@ -402,12 +403,7 @@ theorem coe_toHom {f : M ↪[L] N} : (f.toHom : M → N) = f :=
   rfl
 
 theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
-  | f, g, h => by
-    cases f
-    cases g
-    congr
-    ext x
-    exact funext_iff.1 h x
+  | _, _, h => DFunLike.ext'_iff.mpr h
 
 @[ext]
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -767,6 +763,7 @@ end SumStructure
 section Empty
 
 /-- Any type can be made uniquely into a structure over the empty language. -/
+@[implicit_reducible]
 def emptyStructure : Language.empty.Structure M where
 
 instance : Unique (Language.empty.Structure M) :=
@@ -810,7 +807,7 @@ open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 
 /-- A structure induced by a bijection. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
   ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
 

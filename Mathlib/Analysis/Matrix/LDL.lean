@@ -65,6 +65,7 @@ theorem LDL.lowerInv_eq_gramSchmidtBasis :
   rw [LDL.lowerInv, Basis.coePiBasisFun.toMatrix_eq_transpose, coe_gramSchmidtBasis]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := by
   rw [LDL.lowerInv_eq_gramSchmidtBasis]
   haveI :=
@@ -86,6 +87,7 @@ noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
 noncomputable def LDL.diag : Matrix n n 𝕜 :=
   Matrix.diagonal (LDL.diagEntries hS)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
   rw [← @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
       (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ i j hij (Pi.basisFun 𝕜 n),

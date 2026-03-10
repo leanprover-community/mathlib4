@@ -40,9 +40,10 @@ variable {J} in
 /-- The bijection `(Sheaf.freeYoneda J X M ⟶ F) ≃ (M ⟶ F.val.obj (op X))`
 when `F : Sheaf J A`, `X : C` and `M : A`. -/
 noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Sheaf J A} :
-    (freeYoneda J X M ⟶ F) ≃ (M ⟶ F.val.obj (op X)) :=
+    (freeYoneda J X M ⟶ F) ≃ (M ⟶ F.obj.obj (op X)) :=
   ((sheafificationAdjunction J A).homEquiv _ _).trans Presheaf.freeYonedaHomEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSeparating {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S)) :
     ObjectProperty.IsSeparating (.ofObj (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda J X (S i))) := by
   intro F G f g hfg
