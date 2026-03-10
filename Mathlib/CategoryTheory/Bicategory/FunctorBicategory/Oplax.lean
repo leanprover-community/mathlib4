@@ -25,6 +25,7 @@ open Category Bicategory
 open scoped Bicategory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
+
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {F G H I : B ⥤ᵒᵖᴸ C}
 
@@ -93,13 +94,11 @@ variable (B C)
   rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]
 scoped instance OplaxFunctor.bicategory : Bicategory (B ⥤ᵒᵖᴸ C) where
   whiskerLeft {_ _ _} η _ _ Γ := whiskerLeft η Γ
-  whiskerRight {_ _ _} _ _ Γ ι := whiskerRight Γ ι
+  whiskerRight {_ _ _} _ _ Γ η := whiskerRight Γ η
   associator {_ _ _} _ := associator
   leftUnitor {_ _} := leftUnitor
   rightUnitor {_ _} := rightUnitor
-  whisker_exchange {a b c f g h i} η Γ := by
-    ext
-    exact whisker_exchange _ _
+  whisker_exchange {a b c f g h i} η Γ := by ext; exact whisker_exchange _ _
 
 end LaxTrans
 
