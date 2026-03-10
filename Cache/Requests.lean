@@ -664,6 +664,19 @@ def getFiles
 
   let mathlibDepPath := (← read).mathlibDepPath
 
+  -- Start background decompression of already-cached files before downloading
+  let bgDecomp ← if decompress then
+    if let some (config, size, skipped) := ← IO.prepareDecompConfig hashMap forceUnpack then
+      if skipped > 0 then
+        IO.println s!"Decompressing {size} already-cached file(s) ({skipped} already decompressed)"
+      else
+        IO.println s!"Decompressing {size} already-cached file(s)"
+      let now ← IO.monoMsNow
+      let task ← IO.asTask (IO.spawnLeanTarDecompress config forceUnpack)
+      pure (some (task, size, now))
+    else pure none
+  else pure none
+
   if let some repo := repo? then
     let failed ← downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
       (decompress := decompress) (forceUnpack := forceUnpack)
@@ -697,9 +710,26 @@ def getFiles
       IO.println s!"Downloading {failed} files failed"
       IO.Process.exit 1
 
+  -- Wait for decompression of already-cached files to complete
+  if let some (task, size, startTime) := bgDecomp then
+    match task.get with
+    | .ok exitCode =>
+      let elapsed := (← IO.monoMsNow) - startTime
+      if exitCode != 0 then
+        IO.eprintln s!"Decompression of already-cached files failed (exit code {exitCode})"
+        IO.Process.exit 1
+      IO.println s!"Decompressed {size} already-cached file(s) in {elapsed} ms"
+    | .error e =>
+      IO.eprintln s!"Decompression of already-cached files error: {e}"
+      IO.Process.exit 1
+
   if decompress then
-    -- decompress anything which hasn't already been decompressed during download
-    IO.unpackCache hashMap forceUnpack
+    if bgDecomp.isSome && parallel then
+      -- Background task handled pre-cached files, download pipeline handled new files
+      IO.println "Completed successfully!"
+    else
+      -- Either no background decompression ran, or non-parallel mode needs final sweep
+      IO.unpackCache hashMap forceUnpack
   else
     IO.println "Downloaded all files successfully!"
 

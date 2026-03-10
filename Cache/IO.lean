@@ -416,6 +416,29 @@ def ModuleHashMap.filterNeedsDecompression (hashMap : ModuleHashMap) : CacheM Mo
     else
       return acc
 
+/-- Prepare the leantar JSON config for decompressing cached files that need it.
+    Returns `(config, size, skipped)` or `none` if no files need decompression.
+    This is the config-building part of `unpackCache`, separated so it can be used
+    to spawn background decompression tasks. -/
+def prepareDecompConfig (hashMap : ModuleHashMap) (force : Bool) :
+    CacheM (Option (Array Lean.Json × Nat × Nat)) := do
+  let hashMap ← hashMap.filterExists true
+  let totalCached := hashMap.size
+  if totalCached == 0 then return none
+  let hashMap ← if force then pure hashMap else hashMap.filterNeedsDecompression
+  let size := hashMap.size
+  if size == 0 then return none
+  let skipped := totalCached - size
+  let isMathlibRoot ← isMathlibRoot
+  let mathlibDepPath := (← read).mathlibDepPath.toString
+  let config : Array Lean.Json := hashMap.fold (init := #[]) fun config mod hash =>
+    let pathStr := s!"{CACHEDIR / hash.asLTar}"
+    if isMathlibRoot || !isFromMathlib mod then
+      config.push <| .str pathStr
+    else
+      config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
+  return some (config, size, skipped)
+
 /-- Decompresses build files into their respective folders -/
 def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
