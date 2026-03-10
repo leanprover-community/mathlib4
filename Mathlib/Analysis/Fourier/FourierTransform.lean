@@ -553,13 +553,11 @@ def Lp.fourierTransform (f : Lp (α := V) E 1) : V →ᵇ E :=
   BoundedContinuousFunction.ofNormedAddCommGroup (𝓕 (f : V → E))
   (VectorFourier.fourierIntegral_continuous Real.continuous_fourierChar
     (innerSL ℝ).continuous₂ (L1.integrable_coeFn f))
-  ‖f‖
-  (by
-    intro x
+  ‖f‖ fun x ↦ by
     rw [Real.fourier_eq]
     apply (norm_integral_le_integral_norm _).trans
     simp_rw [Circle.norm_smul]
-    exact (L1.norm_eq_integral_norm f).symm.le)
+    exact (L1.norm_eq_integral_norm f).symm.le
 
 @[norm_cast]
 theorem Lp.coe_fourierTransform (f : Lp (α := V) E 1) :
@@ -580,38 +578,36 @@ variable (V E) in
 /-- The Fourier transform from `L1` functions to bounded continuous functions as a continuous linear
 map. -/
 def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
-  LinearMap.mkContinuous ⟨⟨Lp.fourierTransform,
-  by
-    intro f g
-    ext x
-    simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_add, Pi.add_apply,
-      Real.fourier_eq]
-    rw [← integral_add]
-    · apply integral_congr_ae
-      filter_upwards [Lp.coeFn_add f g] with x h₁
-      rw [h₁]
-      simp
-    · rw [Real.fourierIntegral_convergent_iff]
-      exact L1.integrable_coeFn f
-    · rw [Real.fourierIntegral_convergent_iff]
-      exact L1.integrable_coeFn g⟩,
-  by
-    intro c f
-    ext x
-    simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_smul, Real.fourier_eq]
-    rw [← integral_smul]
-    apply integral_congr_ae
-    filter_upwards [Lp.coeFn_smul c f] with x h
-    rw [h, smul_comm]
-    simp⟩
-  1 (by
-    intro f
-    rw [one_mul, BoundedContinuousFunction.norm_le (by positivity)]
-    intro x
-    rw [LinearMap.coe_mk, AddHom.coe_mk, Lp.fourierTransform_apply, Real.fourier_eq]
-    apply (norm_integral_le_integral_norm _).trans
-    simp_rw [Circle.norm_smul]
-    exact (L1.norm_eq_integral_norm f).symm.le)
+  LinearMap.mkContinuous
+    { toFun := Lp.fourierTransform
+      map_add' f g := by
+        ext x
+        simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_add, Pi.add_apply,
+          Real.fourier_eq]
+        rw [← integral_add]
+        · apply integral_congr_ae
+          filter_upwards [Lp.coeFn_add f g] with x h₁
+          rw [h₁]
+          simp
+        · rw [Real.fourierIntegral_convergent_iff]
+          exact L1.integrable_coeFn f
+        · rw [Real.fourierIntegral_convergent_iff]
+          exact L1.integrable_coeFn g
+      map_smul' c f := by
+        ext x
+        simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_smul, Real.fourier_eq]
+        rw [← integral_smul]
+        apply integral_congr_ae
+        filter_upwards [Lp.coeFn_smul c f] with x h
+        rw [h, smul_comm]
+        simp }
+    1 fun f ↦ by
+      rw [one_mul, BoundedContinuousFunction.norm_le (by positivity)]
+      intro x
+      rw [LinearMap.coe_mk, AddHom.coe_mk, Lp.fourierTransform_apply, Real.fourier_eq]
+      apply (norm_integral_le_integral_norm _).trans
+      simp_rw [Circle.norm_smul]
+      exact (L1.norm_eq_integral_norm f).symm.le
 
 @[simp]
 theorem Lp.fourierTransformCLM_apply (f : Lp (α := V) E 1) :
