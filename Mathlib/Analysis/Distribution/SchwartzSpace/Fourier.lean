@@ -308,11 +308,10 @@ section L1
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 
 theorem norm_fourier_apply_le_toLp_one (f : 𝓢(V, F)) (x : V) :
-    ‖𝓕 f x‖ ≤ ‖f.toLp 1‖ := by
-  calc
-    _ = ‖∫ (v : V), 𝐞 (-inner ℝ v x) • f v‖ := by rw [fourier_coe, Real.fourier_eq]
-    _ ≤ ∫ (v : V), ‖𝐞 (-inner ℝ v x) • f v‖ := norm_integral_le_integral_norm _
-    _ = _ := by simp [norm_toLp_one]
+    ‖𝓕 f x‖ ≤ ‖f.toLp 1‖ := calc
+  _ = ‖∫ (v : V), 𝐞 (-inner ℝ v x) • f v‖ := by rw [fourier_coe, Real.fourier_eq]
+  _ ≤ ∫ (v : V), ‖𝐞 (-inner ℝ v x) • f v‖ := norm_integral_le_integral_norm _
+  _ = _ := by simp [norm_toLp_one]
 
 theorem norm_fourier_toBoundedContinuousFunction_le_toLp_one (f : 𝓢(V, F)) :
     ‖(𝓕 f).toBoundedContinuousFunction‖ ≤ ‖f.toLp 1‖ := by
