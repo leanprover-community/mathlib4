@@ -116,7 +116,7 @@ noncomputable def extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
   map_smul' r x := by
     simp only [RingEquiv.toRingHom_eq_coe, Functor.mapExtAddHom, Ext.smul_eq_comp_mk₀,
       ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_coe]
-    rw [Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map]
+    rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀]
     congr 2
     ext
     simp
