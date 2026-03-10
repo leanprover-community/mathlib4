@@ -11,15 +11,27 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 @[expose] public section
 
+namespace VectorBundle
+
 open Bundle FiberBundle
 
-lemma VectorBundle.finiteDimensional
-    (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
-    [NontriviallyNormedField R] [TopologicalSpace B]
-    [TopologicalSpace (TotalSpace F E)]
-    [NormedAddCommGroup F] [NormedSpace R F] [FiniteDimensional R F]
-    [(x : B) → TopologicalSpace (E x)] [FiberBundle F E]
-    [(x : B) → AddCommGroup (E x)] [(x : B) → Module R (E x)] [VectorBundle R F E]
-    (b : B) : FiniteDimensional R (E b) :=
-  (trivializationAt F E b).linearEquivAt R b (mem_baseSet_trivializationAt' b)
-    |>.symm.finiteDimensional
+variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
+  [NontriviallyNormedField R] [TopologicalSpace B]
+  [TopologicalSpace (TotalSpace F E)]
+  [NormedAddCommGroup F] [NormedSpace R F]
+  [(x : B) → TopologicalSpace (E x)] [FiberBundle F E]
+  [(x : B) → AddCommGroup (E x)] [(x : B) → Module R (E x)] [VectorBundle R F E]
+
+include E F
+
+-- Place somewhere upstream since does not need `FiniteDimensional`
+noncomputable def continuousLinearEquivAt (b : B) : E b ≃L[R] F :=
+  (trivializationAt F E b).continuousLinearEquivAt R b (mem_baseSet_trivializationAt' b)
+
+protected lemma finiteDimensional (b : B) [FiniteDimensional R F] : FiniteDimensional R (E b) :=
+  (continuousLinearEquivAt R F E b).symm.finiteDimensional
+
+protected lemma finrank_eq (b : B) : Module.finrank R (E b) = Module.finrank R F :=
+  (continuousLinearEquivAt R F E b).finrank_eq
+
+end VectorBundle
