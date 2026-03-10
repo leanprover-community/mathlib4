@@ -1334,8 +1334,8 @@ theorem mapDomain_apply_eq_sum [DecidableEq β] [AddCommMonoid M] (f : α → β
     (x : α →₀ M) {a : α} : (x.mapDomain f) (f a) = ∑ i ∈ x.support with f i = f a, x i := by
   simp [mapDomain, sum, single_apply, Finset.sum_ite]
 
-theorem mapDomain_apply_eq_zero_iff [AddCommMonoid M] (f : α → β) [Subsingleton (AddUnits M)]
-    (x : α →₀ M) : mapDomain (M := M) f x = 0 ↔ x = 0 := by
+theorem mapDomain_apply_eq_zero_iff_of_subsingletonAddUnits [AddCommMonoid M] (f : α → β)
+    [Subsingleton (AddUnits M)] (x : α →₀ M) : mapDomain (M := M) f x = 0 ↔ x = 0 := by
   classical
   refine ⟨fun h ↦ Finsupp.ext (fun i ↦ ?_), fun h ↦ by rw [h, mapDomain_zero]⟩
   replace h := Finsupp.ext_iff.mp h (f i)
