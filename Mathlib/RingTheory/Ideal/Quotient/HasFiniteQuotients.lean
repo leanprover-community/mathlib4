@@ -72,8 +72,7 @@ theorem cardQuot_pos (I : Ideal R) (hI : I ≠ ⊥) : 0 < I.cardQuot := by
   rw [Submodule.cardQuot_apply]
   exact Nat.card_pos
 
-theorem finite_of_mem (x : R) (hx : x ≠ 0) :
-    {I : Ideal R | x ∈ I}.Finite := by
+theorem finite_of_mem (x : R) (hx : x ≠ 0) : {I : Ideal R | x ∈ I}.Finite := by
   have := finiteQuotient (mt Ideal.span_singleton_eq_bot.mp hx)
   have : {I | Ideal.comap (Ideal.Quotient.mk (Ideal.span {x})) ⊥ ≤ I}.Finite :=
     .of_equiv _ (Ideal.relIsoOfSurjective _ Ideal.Quotient.mk_surjective).toEquiv
