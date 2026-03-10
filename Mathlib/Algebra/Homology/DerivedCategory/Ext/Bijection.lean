@@ -81,9 +81,9 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
       (F.mapExtAddHom S.X₂ Y n) (F.mapExtAddHom S.X₁ Y n) (F.mapExtAddHom S.X₃ Y (n + 1)) _ _
       exac1 exac2 (bij S.X₂).2 (bij S.X₁) surj1 surj2
     · ext x
-      simp [f, f', Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map]
+      simp [f, f', Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀]
     · ext x
-      simp [g, g', Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_extClass_eq_extClass_map]
+      simp [g, g', Ext.mapExactFunctor_comp, Ext.mapExactFunctor_extClass]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
@@ -125,8 +125,8 @@ lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful
       (F.mapExtAddHom X S.X₂ n) (F.mapExtAddHom X S.X₃ n) (F.mapExtAddHom X S.X₁ (n + 1)) _ _
       exac1 exac2 (bij S.X₂).2 (bij S.X₃) surj1 surj2
     · ext x
-      simp [f, f', Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map]
+      simp [f, f', Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀]
     · ext x
-      simp [g, g', Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_extClass_eq_extClass_map]
+      simp [g, g', Ext.mapExactFunctor_comp, Ext.mapExactFunctor_extClass]
 
 end CategoryTheory
