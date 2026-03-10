@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Jiedong Jiang, Christian Merten. All rights reserved.
+Copyright (c) 2026 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Christian Merten
 -/
@@ -61,7 +61,7 @@ sheaf for `ℓ`-adic cohomology.
 [Definition 6.8.1.][proetale2015]
 -/
 noncomputable def ellAdicSheaf (ℓ : ℕ) [Fact ℓ.Prime] :
-    Sheaf (ProEt.topology X) Ab :=
+    Sheaf (ProEt.topology X) Ab.{u} :=
   ((ProEt.forget X ⋙ Over.forget _).sheafPushforwardContinuous _ _ proetaleTopology).obj
     ⟨continuousMapPresheafAb (ℤ_[ℓ]), .of_le proetaleTopology_le_fpqcTopology <|
       isSheaf_fpqcTopology_continuousMapPresheafAb _⟩
