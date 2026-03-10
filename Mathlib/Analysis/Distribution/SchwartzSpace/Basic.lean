@@ -1184,6 +1184,10 @@ theorem toBoundedContinuousFunction_apply (f : 𝓢(E, F)) (x : E) :
 def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
   f.toBoundedContinuousFunction.toContinuousMap
 
+theorem norm_toBoundedContinuousFunction_le (f : 𝓢(E, F)) :
+    ‖f.toBoundedContinuousFunction‖ ≤ SchwartzMap.seminorm ℝ 0 0 f :=
+  BoundedContinuousFunction.norm_ofNormedAddCommGroup_le f.continuous (by positivity) _
+
 variable (𝕜 E F)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
@@ -1223,6 +1227,10 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
 @[simp] theorem toZeroAtInfty_toBCF (f : 𝓢(E, F)) :
     f.toZeroAtInfty.toBCF = f.toBoundedContinuousFunction :=
   rfl
+
+@[simp] theorem norm_toZeroAtInfty (f : 𝓢(E, F)) :
+    ‖f.toZeroAtInfty‖ = ‖f.toBoundedContinuousFunction‖ := by
+  rw [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm, toZeroAtInfty_toBCF]
 
 variable (𝕜 E F)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -1313,6 +1321,22 @@ theorem coeFn_toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volum
 theorem norm_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     ‖f.toLp p μ‖ = ENNReal.toReal (eLpNorm f p μ) := by
   rw [Lp.norm_def, eLpNorm_congr_ae (coeFn_toLp f p μ)]
+
+theorem norm_toLp' {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} (hp₁ : p ≠ 0) (hp₂ : p ≠ ⊤)
+    [hμ : μ.HasTemperateGrowth] :
+    ‖f.toLp p μ‖ = (∫ x, ‖f x‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹ := by
+  rw [norm_toLp, MeasureTheory.MemLp.eLpNorm_eq_integral_rpow_norm hp₁ hp₂ (f.memLp p μ),
+    ENNReal.toReal_ofReal (by positivity)]
+
+theorem norm_toLp_one {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    ‖f.toLp 1 μ‖ = ∫ x, ‖f x‖ ∂ μ := by
+  simpa using norm_toLp' (p := 1) (by simp) (by simp)
+
+theorem norm_toLp_top_le {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    ‖f.toLp ⊤ μ‖ ≤ SchwartzMap.seminorm ℝ 0 0 f := by
+  rw [norm_toLp, ← ENNReal.ofReal_le_ofReal_iff (by positivity),
+    ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
+  exact eLpNormEssSup_le_of_ae_bound <| .of_forall <| norm_le_seminorm ℝ f
 
 theorem injective_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
     [μ.IsOpenPosMeasure] : Function.Injective (fun f : 𝓢(E, F) ↦ f.toLp p μ) :=
