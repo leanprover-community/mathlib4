@@ -1,4 +1,4 @@
-/-
+﻿/-
 Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
@@ -10,17 +10,24 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 /-!
 # Modifications between transformations of oplax functors
 
-In this file we define modifications of oplax and strong transformations of oplax functors.
+In this file we define modifications of lax, oplax, and strong transformations of oplax functors.
 
 A modification `Γ` between oplax transformations `η` and `θ` (of oplax functors) consists of a
 family of 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which for all 1-morphisms `f : a ⟶ b`
 satisfies the equation `(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ (app a ▷ G.map f)`.
 
-Modifications between strong transformations are defined similarly.
+Modifications between lax and strong transformations are defined similarly.
 
 ## Main definitions
 
 Given two oplax functors `F` and `G`, we define:
+
+* `LaxTrans.Modification η θ`: modifications between lax transformations `η` and `θ` between
+  `F` and `G`.
+* `LaxTrans.homCategory F G`: the category structure on the lax transformations
+  between `F` and `G`, where composition is given by vertical composition. Note that this a scoped
+  instance in the `Oplax.LaxTrans` namespace, so you need to run `open scoped Oplax.LaxTrans`
+  to access it.
 
 * `OplaxTrans.Modification η θ`: modifications between oplax transformations `η` and `θ` between
   `F` and `G`.
