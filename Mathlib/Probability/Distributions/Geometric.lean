@@ -68,9 +68,13 @@ lemma geometricMeasure_nonneg (p : unitInterval) n :
 lemma geometricMeasure_pos (h1 : p ≠ 0) (h2 : p ≠ 1) n :
     0 < (1 - p : ℝ) ^ n * p := mul_pos (pow_pos (by grind) n) (by grind)
 
+lemma geometricMeasure_singleton (hp : p ≠ 0) n :
+    geometricMeasure p {n} = ENNReal.ofReal ((1 - p) ^ n * p) := by
+  rw [geometricMeasure_eq hp, Measure.sum_smul_dirac_singleton]
+
 lemma geometricMeasure_real_singleton (hp : p ≠ 0) n :
     (geometricMeasure p).real {n} = (1 - p) ^ n * p := by
-  rw [geometricMeasure_eq hp, measureReal_def, Measure.sum_smul_dirac_singleton,
+  rw [measureReal_def, geometricMeasure_singleton hp,
     ENNReal.toReal_ofReal (geometricMeasure_nonneg p n)]
 
 lemma geometricMeasure_real_singleton_pos (h1 : p ≠ 0) (h2 : p ≠ 1) n :
