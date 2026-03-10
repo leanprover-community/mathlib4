@@ -225,19 +225,12 @@ section Finset
 
 /-! ### `Fintype (s : Finset α)` -/
 
-
 instance Finset.fintypeCoeSort {α : Type u} (s : Finset α) : Fintype s :=
   ⟨s.attach, s.mem_attach⟩
 
 @[simp]
 theorem Finset.univ_eq_attach {α : Type u} (s : Finset α) : (univ : Finset s) = s.attach :=
   rfl
-
-instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
-  Finset.fintypeCoeSort s
-
-instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
-  Finset.Subtype.fintype s
 
 end Finset
 
@@ -251,14 +244,11 @@ instance List.Subtype.fintype [DecidableEq α] (l : List α) : Fintype { x // x 
 instance Multiset.Subtype.fintype [DecidableEq α] (s : Multiset α) : Fintype { x // x ∈ s } :=
   Fintype.ofMultiset s.attach s.mem_attach
 
-/- instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
+instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
   ⟨s.attach, s.mem_attach⟩
--/
 
-/-
 instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
   Finset.Subtype.fintype s
--/
 
 theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
   rfl
