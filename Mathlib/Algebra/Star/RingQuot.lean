@@ -42,8 +42,8 @@ private def star' (hr : ∀ a b, r a b → r (star a) (star b)) : RingQuot r →
 private theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
     (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := rfl
 
-@[implicit_reducible]
 /-- Transfer a `StarRing` instance through a quotient, if the quotient is invariant to `star` -/
+@[implicit_reducible]
 def starRing {R : Type u} [Semiring R] [StarRing R] (r : R → R → Prop)
     (hr : ∀ a b, r a b → r (star a) (star b)) : StarRing (RingQuot r) where
   star := star' r hr
