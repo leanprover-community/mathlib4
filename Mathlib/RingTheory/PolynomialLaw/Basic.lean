@@ -55,7 +55,7 @@ only assumes `R` is a commutative semiring.
 ## References
 
 * [Roby, Norbert. 1963. «Lois polynomes et lois formelles en théorie des modules».
-Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
+  Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
 
@@ -306,7 +306,6 @@ variable {S}
 def φ (s : Finset S) : MvPolynomial (Fin s.card) R →ₐ[R] S :=
   aeval (R := R) (fun n ↦ (s.equivFin.symm n : S))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
   simp only [φ]
   rw [← Algebra.adjoin_range_eq_range_aeval]
