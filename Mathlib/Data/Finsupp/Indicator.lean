@@ -28,7 +28,7 @@ variable {ι α : Type*}
 
 namespace Finsupp
 
-variable [Zero α] {s : Finset ι} (f : ∀ i ∈ s, α) {i : ι}
+variable [Zero α] {s t : Finset ι} (f : ∀ i ∈ s, α) {i : ι}
 
 /-- Create an element of `ι →₀ α` from a finset `s` and a function `f` defined on this finset. -/
 def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α where
@@ -70,5 +70,26 @@ lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) :
   classical
   ext j
   simp [single_apply, indicator_apply, @eq_comm _ j]
+
+theorem indicator_indicator [DecidableEq ι] :
+    indicator t (fun i _ ↦ indicator s f i) =
+      indicator (s ∩ t) (fun i hi ↦ f i (Finset.mem_of_mem_inter_left hi)) := by
+  ext i
+  grind [indicator_apply]
+
+theorem eq_indicator_iff {g : ι → α} :
+    g = indicator s f ↔ g.support ⊆ s ∧ ∀ i (hi : i ∈ s), f i hi = g i := by
+  classical
+  suffices g.support ⊆ s ∧ (∀ i (hi : i ∈ s), f i hi = g i) ↔
+      (∀ i , if hi : i ∈ s then f i hi = g i else g i = 0) by
+    simp only [this, funext_iff, indicator_apply]
+    grind
+  rw [Set.subset_def, and_comm]
+  have : (∀ (i : ι), if hi : i ∈ s then f i hi = g i else g i = 0) ↔
+      ((∀ (i : ι) (hi : i ∈ s),  f i hi = g i) ∧ ∀ i (hi : i ∉ s), g i = 0) := by grind
+  simp [this, not_imp_comm]
+
+theorem eq_indicator_self_iff {d : ι →₀ α} : (d = indicator s fun i _ ↦ d i) ↔ d.support ⊆ s := by
+  grind [indicator]
 
 end Finsupp
