@@ -531,7 +531,7 @@ lemma IsStarProjection.mul_right_eq_self_and_mul_left_eq_self_of_nonneg_of_le {a
   intro a e he ha hae
   suffices sqrt a * (1 - e : A⁺¹) = 0 by
     simpa [← mul_assoc, sqrt_mul_sqrt_self a, mul_sub, sub_eq_zero, eq_comm (a := a)]
-      using congr(CFC.sqrt a * $this)
+      using congr(sqrt a * $this)
   rw [← norm_eq_zero, ← sq_eq_zero_iff, ← norm_star_mul_mul_self_of_nonneg, norm_eq_zero]
   refine le_antisymm ?_ <| star_left_conjugate_nonneg ha _
   grw [star_left_conjugate_le_conjugate hae (1 - e), mul_assoc, he.mul_one_sub_self, mul_zero]
