@@ -746,7 +746,7 @@ noncomputable def fderivCLM :
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{k}_{K}(E, E →L[ℝ] F) where
   toLinearMap := fderivLM 𝕜 n k
   cont := show Continuous (fderivLM 𝕜 n k) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms ..)
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
       (ContDiffMapSupportedIn.withSeminorms ..) _ (fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩)
     simpa using seminorm_fderivLM_le 𝕜 f
 
