@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
+Authors: Kyle Miller, Vincent Beffara, Rida Hamadani, Nelson Spence
 -/
 module
 
@@ -13,12 +13,14 @@ public import Mathlib.Data.ENat.Lattice
 
 This module defines the `SimpleGraph.edist` function, which takes pairs of vertices to the length of
 the shortest walk between them, or `⊤` if they are disconnected. It also defines `SimpleGraph.dist`
-which is the `ℕ`-valued version of `SimpleGraph.edist`.
+which is the `ℕ`-valued version of `SimpleGraph.edist`, and `SimpleGraph.ball` which is the open
+ball in the graph extended metric.
 
 ## Main definitions
 
 - `SimpleGraph.edist` is the graph extended metric.
 - `SimpleGraph.dist` is the graph metric.
+- `SimpleGraph.ball` is the open ball of a given radius around a vertex.
 
 ## TODO
 
@@ -30,7 +32,7 @@ which is the `ℕ`-valued version of `SimpleGraph.edist`.
 
 ## Tags
 
-graph metric, distance
+graph metric, distance, ball
 
 -/
 
@@ -396,5 +398,63 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
   exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 
 end dist
+
+/-! ## Ball -/
+
+section ball
+
+/-- The open ball of radius `r` around vertex `c` in the graph extended metric. -/
+def ball (c : V) (r : ℕ∞) : Set V :=
+  {v | G.edist c v < r}
+
+variable {G} {c v : V} {r r₁ r₂ : ℕ∞}
+
+@[simp]
+theorem mem_ball : v ∈ G.ball c r ↔ G.edist c v < r :=
+  Iff.rfl
+
+@[simp]
+theorem ball_zero : G.ball c 0 = ∅ := by
+  ext v; simp [ball]
+
+@[simp]
+theorem ball_one : G.ball c 1 = {c} := by
+  ext v
+  simp only [mem_ball, Set.mem_singleton_iff]
+  constructor
+  · intro h
+    rcases eq_or_ne c v with rfl | hne
+    · rfl
+    · exact absurd h (not_lt.mpr
+        (Order.one_le_iff_pos.mpr (edist_pos_of_ne hne)))
+  · rintro rfl; simp
+
+theorem ball_top :
+    G.ball c ⊤ = (G.connectedComponentMk c).supp := by
+  ext v
+  simp only [mem_ball, ConnectedComponent.mem_supp_iff]
+  constructor
+  · intro h
+    exact (ConnectedComponent.eq.mpr
+      (reachable_of_edist_ne_top (ne_top_of_lt h))).symm
+  · intro h
+    exact lt_top_iff_ne_top.mpr
+      (edist_ne_top_iff_reachable.mpr
+        (ConnectedComponent.eq.mp h.symm))
+
+/-- Balls are monotone in the radius. -/
+@[gcongr]
+theorem ball_subset_ball (h : r₁ ≤ r₂) : G.ball c r₁ ⊆ G.ball c r₂ :=
+  fun _ hv ↦ lt_of_lt_of_le hv h
+
+/-- The center vertex belongs to any ball of positive radius. -/
+theorem mem_ball_self (hr : 0 < r) : c ∈ G.ball c r := by
+  simp [ball, hr]
+
+/-- Ball membership is symmetric in center and point. -/
+theorem mem_ball_comm : v ∈ G.ball c r ↔ c ∈ G.ball v r := by
+  simp [ball, edist_comm]
+
+end ball
 
 end SimpleGraph
