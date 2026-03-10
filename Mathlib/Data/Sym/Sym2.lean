@@ -593,10 +593,13 @@ def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (
   OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
 
 @[simp]
-theorem fromRel_eq_fromRell_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Symmetric r₁)
+theorem fromRel_eq_fromRel_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Symmetric r₁)
     (sym₂ : Symmetric r₂) : fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
   rw [← Subtype.mk.injEq r₁ sym₁ r₂ sym₂, ← fromRelOrderEmbedding.eq_iff_eq]
   rfl
+
+@[deprecated (since := "2026-03-10")]
+alias fromRel_eq_fromRell_iff_eq := fromRel_eq_fromRel_iff_eq
 
 theorem fromRel_bot : fromRel (α := α) (r := ⊥) (fun _ _ ↦ id) = ∅ :=
   Set.eq_empty_of_forall_notMem <| Sym2.ind <| by simp
