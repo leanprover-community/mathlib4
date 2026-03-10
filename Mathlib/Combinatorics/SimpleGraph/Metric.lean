@@ -149,12 +149,9 @@ lemma edist_eq_two_iff {u v : V} :
   · simp [← edist_eq_one_iff_adj, h]
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_eq_coe h
     use w.getVert 1
-    have h : w.getVert 1 ∈ G.commonNeighbors (w.getVert 0) (w.getVert w.length) := by
-      rw [mem_commonNeighbors]
-      apply And.intro <| w.adj_getVert_succ (Nat.lt_of_sub_eq_succ hw)
-      rw [hw]
-      exact (w.adj_getVert_succ (hw ▸ Nat.one_lt_two)).symm
-    rwa [Walk.getVert_zero, Walk.getVert_length] at h
+    suffices w.getVert 1 ∈ G.commonNeighbors (w.getVert 0) (w.getVert w.length) by simpa
+    refine hw ▸ G.mem_commonNeighbors.mp ?_
+    exact ⟨w.adj_getVert_succ (by simp [hw]), (w.adj_getVert_succ (by simp [hw])).symm⟩
   · obtain ⟨w, hw⟩ := nonempty_subtype.mp h.2.2
     rw [mem_commonNeighbors] at hw
     have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
@@ -165,11 +162,11 @@ lemma edist_eq_two_iff {u v : V} :
 lemma two_lt_edist_iff {u v : V} :
     2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ IsEmpty (G.commonNeighbors u v) := by
   refine ⟨fun h ↦ ?_, fun h ↦ lt_of_le_of_ne ?_ (Ne.symm ?_)⟩
-  · have hn : u ≠ v := by simp [← G.edist_eq_zero_iff.not (b := u = v), ne_of_gt (pos_of_gt h)]
-    have : ¬ G.Adj u v := by simpa [← edist_eq_one_iff_adj] using ne_of_gt (lt_trans (by decide) h)
+  · have hn : u ≠ v := fun hc ↦ by simp [hc] at h
+    have : ¬ G.Adj u v := fun hc ↦ by simp [edist_eq_one_iff_adj.mpr hc] at h
     use hn, this
     by_contra! hc
-    rwa [edist_eq_two_iff.mpr ⟨hn, this, hc⟩, lt_self_iff_false 2] at h
+    simp [edist_eq_two_iff.mpr ⟨hn, this, hc⟩] at h
   · rw [← one_add_one_eq_two]
     refine Order.add_one_le_of_lt <| lt_of_le_of_ne ?_ ?_
     <;> grind [Order.one_le_iff_pos, pos_iff_ne_zero, edist_eq_zero_iff, edist_eq_one_iff_adj]
