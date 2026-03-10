@@ -217,7 +217,7 @@ theorem algHom_ext_iff {A : Type*} [CommSemiring A] [Algebra R A]
     (f = g) ↔ (∀ n m, f (dp R n m) = g (dp R n m)) := by
   refine ⟨fun h _ _ ↦ by rw [h], fun h ↦ ?_⟩
   rw [DFunLike.ext'_iff]
-  apply Function.Surjective.injective_comp_right (mkAlgHom_surjective R (Rel R M))
+  apply Function.Surjective.injective_comp_right mkAlgHom_surjective
   simp only [← AlgHom.coe_comp, ← AlgHom.coe_comp, ← DFunLike.ext'_iff]
   exact MvPolynomial.algHom_ext fun ⟨n, m⟩ => h n m
 
