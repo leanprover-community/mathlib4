@@ -367,7 +367,7 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
     · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def,
         upperBounds_singleton, mem_Ici, le_himp_iff, iInf_inf, iInf_le_iff, le_inf_iff, le_iInf_iff,
         and_imp]
-      intro y h
+      intro _ h
       specialize h (a ⊓ b).toNucleus
       simp only [toNucleus, map_inf, Nucleus.coe_mk, InfHom.coe_mk, le_himp_iff] at h
       refine le_trans' (h.left (fun _ ↦ ?_) ?_) (le_inf (by rfl) (le_inf_iff.mpr h.right))
@@ -402,16 +402,34 @@ variable {C D : Closed X}
 
 private lemma le_def' : C ≤ D ↔ D.element ≤ C.element := ge_iff_le
 
+instance : Lattice (Closed X) where
+  sup x y := ⟨x.element ⊓ y.element⟩
+  le_sup_left := by simp [le_def']
+  le_sup_right := by simp [le_def']
+  sup_le := by simp_all [le_def']
+  inf x y := ⟨x.element ⊔ y.element⟩
+  inf_le_left := by simp [le_def']
+  inf_le_right := by simp [le_def']
+  le_inf := by simp_all [le_def']
+
 instance : CompleteSemilatticeInf (Closed X) where
   sInf s := ⟨sSup {x.val.element | x : s}⟩
   sInf_le s c hc := by simpa [le_def'] using le_sSup (by grind)
   le_sInf s c hc := by simpa [le_def'] using fun d hd ↦ (le_def'.mpr (hc d hd))
 
-def closedIsoDual : sInfHom (Closed X) Xᵒᵈ where
+instance : BoundedOrder (Closed X) where
+  top := ⟨⊥⟩
+  bot := ⟨⊤⟩
+  le_top := by simp [le_def']
+  bot_le := by simp [le_def']
+
+def closedIsoDual : CoFrameHom (Closed X) Xᵒᵈ where
   toFun x := OrderDual.toDual x.element
   map_sInf' s := by
     change (⟨sSup _⟩ : Closed X).element = sSup _
     simpa using by rfl
+  map_bot' := by rfl
+  map_sup' a b := by rfl
 
 abbrev getElement (c : Closed X) : X := OrderDual.ofDual (closedIsoDual c)
 
@@ -452,6 +470,25 @@ def toSublocale : sInfHom (Closed X) (Sublocale X) where
         Nucleus.le_apply, iInf_le_iff] using fun _ h1 ↦ h1 (_ : Closed X).toNucleus <|
           fun a ha _ ↦ le_sup_of_le_left <| le_sInf <| fun _ h ↦ h a ha (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
+lemma toSublocale.map_sup {C D : Closed X} : (C ⊔ D).toSublocale = C.toSublocale ⊔ D.toSublocale := by
+  simp only [toSublocale, sInfHom.coe_mk, ← OrderIso.map_sup, ← toDual_inf,
+    EmbeddingLike.apply_eq_iff_eq]
+  congr
+  simp [Closed.toNucleus, Nucleus.ext_iff]
+  intro a
+  rw [Closed.getElement, closedIsoDual.map_sup, ofDual_sup]
+  repeat rw [← Closed.getElement]
+  simp [inf_sup_left, inf_sup_right]
+  apply le_antisymm
+  . simp
+    sorry
+  . simp
+
+
+
+
+
 def compl (c : Closed X) : Open X := ⟨c.getElement⟩
 
 end Closed
@@ -461,7 +498,7 @@ open Sublocale
 
 def compl (u : Open X) : Closed X := ⟨u.getElement⟩
 
-variable {U : Open X}
+variable {U V : Open X}
 
 set_option backward.isDefEq.respectTransparency false in
 lemma sup_compl_eq_top : U.toSublocale ⊔ U.compl.toSublocale = ⊤ := by
@@ -486,5 +523,7 @@ lemma inf_compl_eq_bot : U.toSublocale ⊓ U.compl.toSublocale = ⊥ := by
     let h2 := le_himp_iff.mp <| le_of_eq h2
     simp only [le_sup_left, inf_of_le_right] at h2
     exact himp_eq_top_iff.mpr h2
+
+lemma compl_le_compl_iff : U.compl ≤ V.compl ↔ V ≤ U := by rfl
 
 end Open

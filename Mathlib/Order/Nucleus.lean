@@ -283,7 +283,7 @@ lemma comp_eq_right_iff_le : n ∘ m = m ↔ n ≤ m where
     rw [← coe_le_coe, ← h]
     exact fun _ ↦ monotone le_apply
 
-@[simp] lemma range_subset_range : range m ⊆ range n ↔ n ≤ m where
+@[simp↓] lemma range_subset_range : range m ⊆ range n ↔ n ≤ m where
   mp h x := by
     rw [← mem_range.mp (Set.range_subset_iff.mp h x)]
     exact n.monotone m.le_apply
