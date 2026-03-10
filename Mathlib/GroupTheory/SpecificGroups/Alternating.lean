@@ -530,8 +530,9 @@ theorem mem_range_ofSubtype (s : Finset α) (k : alternatingGroup α) :
     suffices k ∈ (Perm.ofSubtype : Perm s →* Perm α).range by
       obtain ⟨k, rfl⟩ := this
       rw [mem_alternatingGroup, sign_ofSubtype] at hk'
-      -- same `Fintype` issue
-      refine ⟨k, by convert hk', rfl⟩
+      refine ⟨k, ?_, rfl⟩
+      -- Conflicting `Fintype` instances
+      convert hk'
     rw [mem_range_ofSubtype_iff]
     simpa using hk
 

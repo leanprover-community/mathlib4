@@ -233,6 +233,12 @@ instance Finset.fintypeCoeSort {α : Type u} (s : Finset α) : Fintype s :=
 theorem Finset.univ_eq_attach {α : Type u} (s : Finset α) : (univ : Finset s) = s.attach :=
   rfl
 
+instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
+  Finset.fintypeCoeSort s
+
+instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
+  Finset.Subtype.fintype s
+
 end Finset
 
 theorem Fintype.coe_image_univ [Fintype α] [DecidableEq β] {f : α → β} :
@@ -305,17 +311,6 @@ lemma coe_finsetOrderIsoSet : ⇑finsetOrderIsoSet = ((↑) : Finset α → Set 
     ⇑(finsetOrderIsoSet : Finset α ≃o Set α).symm = ⇑finsetEquivSet.symm := rfl
 
 end Fintype
-
-section
-
-instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
-  -- ⟨s.attach, s.mem_attach⟩
-  s.fintypeCoeSort
-
-instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
-  Finset.Subtype.fintype s
-
-end
 
 theorem mem_image_univ_iff_mem_range {α β : Type*} [Fintype α] [DecidableEq β] {f : α → β}
     {b : β} : b ∈ univ.image f ↔ b ∈ Set.range f := by simp

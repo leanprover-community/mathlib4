@@ -65,7 +65,8 @@ def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
       apply MonoidHom.range_isMulCommutative
     apply isCyclic_of_prime_card (p := 2)
     rw [Nat.card_perm, Nat.card_eq_finsetCard, s.prop, Nat.factorial_two]
-  is_conj g s := by convert conj_smul_range_ofSubtype g s
+  is_conj g s := by
+    convert (conj_smul_range_ofSubtype g s).symm
   is_generator := by
     rw [eq_top_iff, ← Equiv.Perm.closure_isSwap, Subgroup.closure_le]
     intro g hg
