@@ -332,18 +332,12 @@ def inf {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) : G.SpanningSubgraph :=
   constructor
   case val => exact (min H₁.val H₂.val)
   case property =>
-    obtain ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ := H₁
-    obtain ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩ := H₂
+    have h₁verts : H₁.val.verts = G.verts := H₁.property.2
+    have h₂verts : H₂.val.verts = G.verts := H₂.property.2
     constructor
-    · simp_all only [min, SemilatticeInf.inf, Lattice.inf, Set.inter_self]
-      unfold instLE LE.le Digraph.IsSubgraph
-      simp only [subset_refl, and_imp, true_and]
-      intro v w H₁_adj H₂_adj
-      apply H₂_sub.right
-      exact H₂_adj
-    · simp only [min, SemilatticeInf.inf, Lattice.inf]
-      rw [H₁_verts, H₂_verts]
-      simp only [Set.inter_self]
+    · simpa [min, SemilatticeInf.inf, Lattice.inf] using
+        (show H₁.val ⊓ H₂.val ≤ G from _root_.inf_le_left.trans H₁.property.1)
+    · aesop (add simp [min, SemilatticeInf.inf, Lattice.inf, h₁verts, h₂verts])
 
 @[push_cast]
 lemma inf_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
@@ -367,47 +361,37 @@ private lemma by_val {G : Digraph V} {H₁ H₂ : G.SpanningSubgraph}
 
 lemma le_sup_left {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph, H₁ ≤ (sup H₁ H₂) := by
   intro H₁ H₂
-  refine by_val ?_
-  simpa only [sup_of_val] using
-    (show H₁.val ≤ H₁.val ⊔ H₂.val from _root_.le_sup_left)
+  exact by_val <| by
+    aesop (add safe [_root_.le_sup_left]) (add simp [sup_of_val])
 
 lemma le_sup_right {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph, H₂ ≤ (sup H₁ H₂) := by
   intro H₁ H₂
-  refine by_val ?_
-  simpa only [sup_of_val] using
-    (show H₂.val ≤ H₁.val ⊔ H₂.val from _root_.le_sup_right)
+  exact by_val <| by
+    aesop (add safe [_root_.le_sup_right]) (add simp [sup_of_val])
 
 lemma sup_le {G : Digraph V} : ∀ H₁ H₂ H₃ : G.SpanningSubgraph,
   H₁ ≤ H₃ → H₂ ≤ H₃ → sup H₁ H₂ ≤ H₃ := by
   intro H₁ H₂ H₃ h₁ h₂
-  refine by_val ?_
-  have h₁' : H₁.val ≤ H₃.val := h₁
-  have h₂' : H₂.val ≤ H₃.val := h₂
-  simpa only [sup_of_val] using
-    (show H₁.val ⊔ H₂.val ≤ H₃.val from _root_.sup_le h₁' h₂')
+  exact by_val <| by
+    aesop (add safe [_root_.sup_le]) (add simp [sup_of_val])
 
 lemma inf_le_left {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph,
   inf H₁ H₂ ≤ H₁ := by
   intro H₁ H₂
-  refine by_val ?_
-  simpa only [inf_of_val] using
-    (show H₁.val ⊓ H₂.val ≤ H₁.val from _root_.inf_le_left)
+  exact by_val <| by
+    aesop (add safe [_root_.inf_le_left]) (add simp [inf_of_val])
 
 lemma inf_le_right {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph,
   inf H₁ H₂ ≤ H₂ := by
   intro H₁ H₂
-  refine by_val ?_
-  simpa only [inf_of_val] using
-    (show H₁.val ⊓ H₂.val ≤ H₂.val from _root_.inf_le_right)
+  exact by_val <| by
+    aesop (add safe [_root_.inf_le_right]) (add simp [inf_of_val])
 
 lemma le_inf {G : Digraph V} : ∀ H₁ H₂ H₃ : G.SpanningSubgraph,
   H₁ ≤ H₂ → H₁ ≤ H₃ → H₁ ≤ inf H₂ H₃ := by
   intro H₁ H₂ H₃ h₁ h₂
-  refine by_val ?_
-  have h₁' : H₁.val ≤ H₂.val := h₁
-  have h₂' : H₁.val ≤ H₃.val := h₂
-  simpa only [inf_of_val] using
-    (show H₁.val ≤ H₂.val ⊓ H₃.val from _root_.le_inf h₁' h₂')
+  exact by_val <| by
+    aesop (add safe [_root_.le_inf]) (add simp [inf_of_val])
 
 lemma le_top {G : Digraph V} : ∀ H : G.SpanningSubgraph,
   H ≤ top := by
@@ -427,27 +411,19 @@ def sSup {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph whe
     verts := G.verts,
     Adj v w := ∃ H ∈ ℋ, Adj H.val v w
     left_mem_verts_of_adj := by
-      simp_all only [SpanningSubgraph, Subtype.exists, exists_and_right, forall_exists_index,
-        and_imp, forall_and_index]
-      intro v w H H_sub H_verts H_mem H_adj
-      apply H_sub.right at H_adj
-      apply G.left_mem_verts_of_adj H_adj
+      rintro v w ⟨H, -, hAdj⟩
+      exact G.left_mem_verts_of_adj (H.property.1.2 hAdj)
     right_mem_verts_of_adj := by
-      simp_all only [SpanningSubgraph, Subtype.exists, exists_and_right, forall_exists_index,
-        and_imp, forall_and_index]
-      intro v w H H_sub H_verts H_mem H_adj
-      apply H_sub.right at H_adj
-      apply G.right_mem_verts_of_adj H_adj
+      rintro v w ⟨H, -, hAdj⟩
+      exact G.right_mem_verts_of_adj (H.property.1.2 hAdj)
   }
   property := by
     constructor
-    · simp_all only [Subtype.exists, exists_and_right]
-      constructor
-      · simp only [subset_refl]
-      · intro v w ⟨H, ⟨⟨H_sub, H_verts⟩,H_mem⟩, H_adj⟩
-        apply H_sub.right at H_adj
-        exact H_adj
-    · simp only
+    · constructor
+      · simp
+      · rintro v w ⟨H, -, hAdj⟩
+        exact H.property.1.2 hAdj
+    · rfl
 
 /--
 The infimum of a set of spanning subgraphs of a graph `G`
@@ -465,90 +441,61 @@ def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph whe
   }
   property := by
     constructor
-    · constructor
-      · simp
-      · simp only [Subtype.forall, forall_and_index]
-        intro v w h
-        tauto
-    · simp
+    · constructor <;> aesop
+    · rfl
 
 lemma le_sSup {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph), ∀ H ∈ ℋ, H ≤ sSup ℋ := by
-  intro ℋ ⟨H, ⟨H_sub, H_verts⟩⟩ H_mem
-  constructor
-  · simp_all [sSup]
-  · simp_all only [sSup, Subtype.exists, exists_and_right]
-    intro v w H_adj
-    tauto
+  intros
+  constructor <;> aesop (add simp [sSup])
 
 lemma sSup_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
   (H : G.SpanningSubgraph), (∀ H' ∈ ℋ, H' ≤ H) → sSup ℋ ≤ H := by
-  intro ℋ ⟨H, ⟨H_verts, H_adj⟩, H_verts_eq⟩ H'
+  intro ℋ H hH
   constructor
-  · simp only [sSup, Subtype.exists, exists_and_right]
-    rw [H_verts_eq]
-  · intro v w ⟨Hs, Hs_mem, Hs_adj⟩
-    specialize H' Hs Hs_mem
-    apply H'.right at Hs_adj
-    assumption
+  · aesop (add simp [sSup])
+  · rintro v w ⟨H', H'_mem, _⟩
+    have : ∀ ⦃v w⦄, H'.val.Adj v w → H.val.Adj v w := (hH H' H'_mem).2
+    aesop
 
 lemma top_le_sup_compl {G : Digraph V} : ∀ (H : G.SpanningSubgraph), top ≤ sup H (compl H) := by
   intro ⟨H, ⟨H_sub_verts, H_sub_adj⟩, H_verts⟩
   constructor
-  · intro v v_in_G
+  · intro
     grind
-  · intro v w top_adj
-    simp [top] at top_adj
+  · intro _ _ top_adj
     push_cast
     simp only [compl, sup_adj]
     tauto
 
 lemma sInf_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph),
   ∀ H ∈ ℋ, sInf ℋ ≤ H := by
-  intro ℋ ⟨H, ⟨H_sub, H_verts_eq⟩⟩ H_mem
-  constructor
-  · simp only [sInf, Subtype.forall, forall_and_index]
-    rw [H_verts_eq]
-  · intro v w adj
-    simp_all only [sInf, Subtype.forall, forall_and_index]
+  intros
+  constructor <;> aesop (add simp [sInf])
 
 lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
   (H : G.SpanningSubgraph), (∀ H' ∈ ℋ, H ≤ H') → H ≤ sInf ℋ := by
-  intro ℋ ⟨H, ⟨H_sub, H_verts⟩⟩ h_sub
+  intro ℋ H h_sub
   constructor
-  · simp_all [sInf]
+  · aesop (add simp [sInf])
   · intro v w h_adj
-    simp_all only [Subtype.forall, Subtype.mk_le_mk, forall_and_index, sInf]
-    constructor
-    · intro H' H'_sub_G H'_verts_eq H'_mem
-      specialize h_sub H' H'_sub_G H'_verts_eq H'_mem
-      apply h_sub.right at h_adj
-      assumption
-    · apply H_sub.right at h_adj
-      assumption
+    have h_adj_all : ∀ H' ∈ ℋ, H'.val.Adj v w := fun H' hH' => (h_sub H' hH').2 h_adj
+    simpa [sInf] using And.intro h_adj_all (H.property.1.2 h_adj)
 
 lemma le_sup_inf {G : Digraph V} : ∀ (H₁ H₂ H₃ : G.SpanningSubgraph),
   (inf (sup H₁ H₂) (sup H₁ H₃)) ≤ (sup H₁ (inf H₂ H₃)) := by
-  intro ⟨H₁, ⟨H₁_sub_verts, H₁_sub_adj⟩, H₁_verts_eq⟩ ⟨H₂, ⟨H₂_sub_verts, H₂_sub_adj⟩, H₂_verts_eq⟩
-    ⟨H₃, ⟨H₃_sub_verts, H₃_sub_adj⟩, H₃_verts_eq⟩
+  intro H₁ H₂ H₃
   constructor
   · grind
   · intro v w h_inf_sup_adj
-    push_cast
     push_cast at h_inf_sup_adj
-    simp_all only [subset_refl, inf_adj, sup_adj]
-    tauto
+    push_cast
+    grind [inf_adj, sup_adj]
 
 lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
   inf H (compl H) ≤ bot := by
-  intro ⟨H, ⟨H_sub_verts, H_sub_adj⟩, H_verts⟩
-  simp_all only [inf, min, SemilatticeInf.inf, Lattice.inf, compl, Set.inter_self, bot,
-    Subtype.mk_le_mk, ge_iff_le]
-  constructor
-  · simp only [subset_refl]
-  · simp only [imp_false, not_and]
-    intro v w h _ hcontra
-    exfalso
-    exact hcontra h
+  intro
+  constructor <;> aesop (add simp [inf, min, SemilatticeInf.inf, Lattice.inf, compl,
+    Set.inter_self, bot, Subtype.mk_le_mk, ge_iff_le])
 
 instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
   sup := sup
