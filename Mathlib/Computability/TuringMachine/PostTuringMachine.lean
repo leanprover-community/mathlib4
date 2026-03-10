@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.Tape
+public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Computability.StateTransition
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Finset.Option
@@ -16,12 +16,12 @@ public import Mathlib.Data.Vector.Basic
 /-!
 # Turing machines
 
-The files `PostTuringMachine.lean` and `TuringMachine.lean` define
+The files `PostTuringMachine.lean` and `StackTuringMachine.lean` define
 a sequence of simple machine languages, starting with Turing machines and working
 up to more complex languages based on Wang B-machines.
 
 `PostTuringMachine.lean` covers the TM0 model and TM1 model;
-`TuringMachine.lean` adds the TM2 model.
+`StackTuringMachine.lean` adds the TM2 model.
 
 ## Naming conventions
 

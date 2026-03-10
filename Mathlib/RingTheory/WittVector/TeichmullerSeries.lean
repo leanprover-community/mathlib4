@@ -20,10 +20,10 @@ every element `x` of the Witt vectors `𝕎 R` can be written as the
 ## Main theorems
 
 * `WittVector.dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff` : `p ^ (n + 1)` divides
-`x` minus the summation of the first `n + 1` terms of the Teichmuller series.
+  `x` minus the summation of the first `n + 1` terms of the Teichmuller series.
 * `WittVector.eq_of_apply_teichmuller_eq` : Given a ring `S` such that `p` is nilpotent in `S`
-and two ring maps `f g : 𝕎 R →+* S`, if they coincide on the teichmuller representatives,
-then they are equal.
+  and two ring maps `f g : 𝕎 R →+* S`, if they coincide on the teichmuller representatives,
+  then they are equal.
 
 ## TODO
 Show that the Teichmuller series is unique.

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Adjunction.Whiskering
 
 /-!
 # Continuous functors between sites.
@@ -127,15 +129,15 @@ to sheaves. -/
 -- different universe levels. See Note [universe output parameters and typeclass caching].
 @[univ_out_params]
 class IsContinuous : Prop where
-  op_comp_isSheaf_of_types (G : Sheaf K (Type t)) : Presieve.IsSheaf J (F.op ⋙ G.val)
+  op_comp_isSheaf_of_types (G : Sheaf K (Type t)) : Presieve.IsSheaf J (F.op ⋙ G.obj)
 
 lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K (Type t)) :
-    Presieve.IsSheaf J (F.op ⋙ G.val) :=
+    Presieve.IsSheaf J (F.op ⋙ G.obj) :=
   Functor.IsContinuous.op_comp_isSheaf_of_types _
 
 lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
-    Presheaf.IsSheaf J (F.op ⋙ G.val) :=
-  fun T => F.op_comp_isSheaf_of_types J K ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (G.cond T)⟩
+    Presheaf.IsSheaf J (F.op ⋙ G.obj) :=
+  fun T => F.op_comp_isSheaf_of_types J K ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (G.property T)⟩
 
 lemma op_comp_isSheaf_of_isSheaf [IsContinuous.{t} F J K] (P : Dᵒᵖ ⥤ A) (h : Presheaf.IsSheaf K P) :
     Presheaf.IsSheaf J (F.op ⋙ P) :=
@@ -223,9 +225,10 @@ variable [Functor.IsContinuous.{t} F J K]
 if `F` is a continuous functor.
 -/
 @[simps!]
-def sheafPushforwardContinuous : Sheaf K A ⥤ Sheaf J A where
-  obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
-  map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
+def sheafPushforwardContinuous : Sheaf K A ⥤ Sheaf J A :=
+  ObjectProperty.lift _
+    (sheafToPresheaf _ _ ⋙ (whiskeringLeft _ _ _).obj F.op)
+    (F.op_comp_isSheaf J K)
 
 /-- The functor `F.sheafPushforwardContinuous A J K : Sheaf K A ⥤ Sheaf J A`
 is induced by the precomposition with `F.op`. -/
@@ -286,5 +289,21 @@ def sheafPushforwardContinuousComp'
   sheafPushforwardContinuousComp _ _ _ _ _ _ ≪≫ sheafPushforwardContinuousIso eFG _ _ _
 
 end Functor
+
+/-- If `F ⊣ G` is an adjunction between continuous functors, the associated
+pushforwards on sheaves are adjoint. -/
+@[simps!]
+def Adjunction.sheafPushforwardContinuous {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
+    (J : GrothendieckTopology C) (K : GrothendieckTopology D) [F.IsContinuous J K]
+    [G.IsContinuous K J] :
+    F.sheafPushforwardContinuous E J K ⊣ G.sheafPushforwardContinuous E K J where
+  unit.app P := { hom := (adj.op.whiskerLeft _).unit.app P.obj }
+  counit.app P := { hom := (adj.op.whiskerLeft _).counit.app P.obj }
+  left_triangle_components P := by
+    ext : 1
+    exact (adj.op.whiskerLeft _).left_triangle_components P.obj
+  right_triangle_components P := by
+    ext : 1
+    exact (adj.op.whiskerLeft _).right_triangle_components P.obj
 
 end CategoryTheory
