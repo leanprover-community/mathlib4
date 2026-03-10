@@ -165,7 +165,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
       refine ⟨tcomp.symm, ?_⟩
       change S.g.hom.app (op W) (t₁ + (S.f.hom.app (op W)) t₄) = s |_ W
       have : (S.f.hom.app (op W) ≫ S.g.hom.app (op W)) = 0 := by
-        change (S.f ≫ S.g).hom.app (op W) = 0; rw [S.6]; rfl
+        rw [← NatTrans.comp_app, ← ObjectProperty.FullSubcategory.comp_hom, S.6]; rfl
       simp [← ConcreteCategory.comp_apply, this, ht₁]
     let t₆ : Under S.g s := by
       refine StructuredArrow.mk ?_ (S := ⟨op U, s⟩)
