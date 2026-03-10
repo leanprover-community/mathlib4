@@ -154,6 +154,7 @@ end
 
 /-- Construct an honest category from a `Type v`-enriched category.
 -/
+@[instance_reducible]
 def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Type v) C] :
     Category.{v} C where
   Hom := 𝒞.Hom
@@ -337,6 +338,7 @@ variable {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
   {D : Type u₂} [EnrichedCategory W D]
   {E : Type u₃} [EnrichedCategory W E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An enriched functor induces an honest functor of the underlying categories,
 by mapping the `(𝟙_ W)`-shaped morphisms.
 -/

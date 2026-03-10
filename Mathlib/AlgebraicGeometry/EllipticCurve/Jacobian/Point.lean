@@ -562,6 +562,7 @@ lemma toAffineLift_add [DecidableEq F] (P Q : W.Point) :
   rcases P, Q with ⟨@⟨⟨_⟩, hP⟩, @⟨⟨_⟩, hQ⟩⟩
   exact toAffine_add hP hQ
 
+set_option backward.isDefEq.respectTransparency false in
 variable (W) in
 /-- The addition-preserving equivalence between the type of nonsingular Jacobian points on a
 Weierstrass curve `W` and the type of nonsingular points `W⟮F⟯` in affine coordinates. -/

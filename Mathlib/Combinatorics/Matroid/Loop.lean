@@ -666,6 +666,7 @@ lemma closure_eq_of_subset_coloops (hK : K ⊆ M.coloops) : M.closure K = K ∪ 
   rw [← empty_union K, closure_union_eq_of_subset_coloops _ hK, empty_union, union_comm,
     closure_empty]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma closure_diff_eq_of_subset_coloops (X : Set α) (hK : K ⊆ M.coloops) :
     M.closure (X \ K) = M.closure X \ K := by
   nth_rw 2 [← inter_union_diff X K]
@@ -676,6 +677,7 @@ lemma closure_diff_eq_of_subset_coloops (X : Set α) (hK : K ⊆ M.coloops) :
   rw [IsColoop.mem_closure_iff_mem (hK heK)] at heX
   exact heX.2 heK
 
+set_option backward.isDefEq.respectTransparency false in
 lemma closure_disjoint_of_disjoint_of_subset_coloops (hXK : Disjoint X K) (hK : K ⊆ M.coloops) :
     Disjoint (M.closure X) K := by
   rwa [disjoint_iff_inter_eq_empty, closure_inter_eq_of_subset_coloops X hK,
@@ -729,6 +731,7 @@ lemma restrict_isColoop_iff {R : Set α} (hRE : R ⊆ M.E) :
   simp only [restrict_isCircuit_iff hRE, insert_diff_singleton]
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two matroids agree on loops and coloops, and have the same independent sets after
   loops/coloops are removed, they are equal. -/
 lemma ext_indep_disjoint_loops_coloops {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)

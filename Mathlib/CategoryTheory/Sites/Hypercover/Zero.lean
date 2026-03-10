@@ -349,7 +349,7 @@ lemma Hom.sieve₀_le_sieve₀ {E F : PreZeroHypercover S} (f : E.Hom F) : E.sie
   intro i
   rw [← f.w₀ i]
   apply Sieve.downward_closed
-  exact Sieve.le_generate _ _ ⟨f.s₀ i⟩
+  exact Sieve.le_generate _ _ _ ⟨f.s₀ i⟩
 
 lemma sieve₀_eq_of_iso {E F : PreZeroHypercover S} (e : E ≅ F) : E.sieve₀ = F.sieve₀ :=
   le_antisymm e.hom.sieve₀_le_sieve₀ e.inv.sieve₀_le_sieve₀
@@ -372,6 +372,7 @@ lemma presieve₀_map : (E.map F).presieve₀ = E.presieve₀.map F :=
 
 end Functoriality
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Pullback symmetry isomorphism. -/
 @[simps]
 noncomputable def pullbackIso {S T : C} (f : S ⟶ T) (E : PreZeroHypercover.{w} T)
@@ -427,6 +428,7 @@ def interFst : Hom (inter E F) E where
   s₀ i := i.1
   h₀ _ := pullback.fst _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Second projection from the intersection of two pre-`0`-hypercovers. -/
 @[simps]
 noncomputable
@@ -435,6 +437,7 @@ def interSnd : Hom (inter E F) F where
   h₀ _ := pullback.snd _ _
   w₀ i := by simp [← pullback.condition]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {E F} in
 /-- Universal property of the intersection of two pre-`0`-hypercovers. -/
 @[simps]
@@ -452,6 +455,7 @@ def restrictIndexHom {ι : Type w'} (f : ι → E.I₀) : (E.restrictIndex f).Ho
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `{Uᵢ}` covers `X`, the pre-`0`-hypercover `{Uᵢ ×[Z] Y}` of `X ×[Z] Y` is isomorphic
 to the pullback of `{Uᵢ}` along the first projection. -/
 noncomputable
@@ -462,6 +466,7 @@ def pullbackCoverOfLeftIsoPullback₁ {X : C} (E : PreZeroHypercover X) {Y Z : C
   PreZeroHypercover.isoMk (.refl _)
     (fun _ ↦ (pullbackRightPullbackFstIso _ _ _).symm ≪≫ pullbackSymmetry _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `{Uᵢ}` covers `Y`, the pre-`0`-hypercover `{X ×[Z] Uᵢ}` of `X ×[Z] Y` is isomorphic
 to the pullback of `{Uᵢ}` along the second projection. -/
 noncomputable
@@ -517,6 +522,7 @@ lemma PreZeroHypercover.presieve₀_eq_presieve₀_iff {S : C} {E F : PreZeroHyp
   refine ⟨fun h ↦ shrink_eq_shrink_of_presieve₀_eq_presieve₀ h, fun h ↦ ?_⟩
   rw [← E.presieve₀_shrink, ← F.presieve₀_shrink, h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `E` refines its deduplication. -/
 def PreZeroHypercover.toShrink {S : C} (E : PreZeroHypercover.{w} S) : E.Hom E.shrink where
   s₀ i := ⟨⟨_, E.f i⟩, .mk i⟩

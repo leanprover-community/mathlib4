@@ -122,12 +122,14 @@ instance (priority := 100) standardBorelSpace_of_discreteMeasurableSpace [Discre
   have : DiscreteTopology α := ⟨rfl⟩
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [lower instance priority]
 instance (priority := 100) countablyGenerated_of_standardBorel [StandardBorelSpace α] :
     MeasurableSpace.CountablyGenerated α :=
   letI := upgradeStandardBorel α
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [lower instance priority]
 instance (priority := 100) measurableSingleton_of_standardBorel [StandardBorelSpace α] :
     MeasurableSingletonClass α :=
@@ -140,12 +142,14 @@ variable {β : Type*} [MeasurableSpace β]
 
 section instances
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A product of two standard Borel spaces is standard Borel. -/
 instance prod [StandardBorelSpace α] [StandardBorelSpace β] : StandardBorelSpace (α × β) :=
   letI := upgradeStandardBorel α
   letI := upgradeStandardBorel β
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A product of countably many standard Borel spaces is standard Borel. -/
 instance pi_countable {ι : Type*} [Countable ι] {α : ι → Type*} [∀ n, MeasurableSpace (α n)]
     [∀ n, StandardBorelSpace (α n)] : StandardBorelSpace (∀ n, α n) :=
@@ -340,6 +344,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
     hb.continuous_iff.2 fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
   exact continuous_subtype_val.comp this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of a measurable set in a standard Borel space under a measurable map
 is an analytic set. -/
 theorem _root_.MeasurableSet.analyticSet_image {X Y : Type*} [MeasurableSpace X]
@@ -499,6 +504,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   -- this is a contradiction.
   exact M n B
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Lusin separation theorem**: if two analytic sets are disjoint, then they are contained in
 disjoint Borel sets. -/
 theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [OpensMeasurableSpace α]
@@ -817,6 +823,7 @@ theorem MeasurableSet.image_of_continuousOn_injOn [OpensMeasurableSpace β]
     @IsClosed.measurableSet_image_of_continuousOn_injOn γ t' t'_polish β _ _ _ _ s s_closed f
       (f_cont.mono_dom t't) f_inj
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lusin-Souslin theorem: if `s` is Borel-measurable in a standard Borel space,
 then its image under a measurable injective map taking values in a
 countably separate measurable space is also Borel-measurable. -/
@@ -984,6 +991,7 @@ lemma MeasureTheory.measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι
   simp_rw [tendsto_iff_dist_tendsto_zero (f := fun n ↦ f n _)]
   exact measurableSet_tendsto (𝓝 0) (fun n ↦ (hf n).dist hg)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
 @[measurability]
 theorem MeasureTheory.measurableSet_exists_tendsto
@@ -1015,6 +1023,7 @@ section StandardBorelSpace
 
 variable [MeasurableSpace α] [StandardBorelSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is a measurable set in a standard Borel space, there is a compatible Polish topology
 making `s` clopen. -/
 theorem MeasurableSet.isClopenable' {s : Set α} (hs : MeasurableSet s) :
@@ -1050,6 +1059,7 @@ noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas
   letI := upgradeStandardBorel β
   (fmeas.measurableEmbedding finj).schroederBernstein (gmeas.measurableEmbedding ginj)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/
 noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) := by
   apply Nonempty.some

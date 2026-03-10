@@ -629,7 +629,7 @@ lemma Indep.indep_insert_diff_of_mem_closure (hI : M.Indep I) (hfI : f ∈ M.clo
   · exact hI.subset (by simp)
   rw [Indep.insert_diff_indep_iff (hI.subset (diff_subset ..)) heI]
   refine .inl ⟨mem_ground_of_mem_closure hfI, fun h ↦ hI.notMem_closure_diff_of_mem heI ?_⟩
-  exact closure_insert_eq_of_mem_closure h ▸ M.closure_subset_closure (by intro; aesop) he
+  exact closure_insert_eq_of_mem_closure h ▸ M.closure_subset_closure (by intro; simp_all) he
 
 lemma IsBasis.isBasis_insert_diff_of_mem_closure (hB : M.IsBasis B X)
     (he : e ∈ M.closure (insert f B \ {e})) (heB : e ∈ insert f B) (hfX : f ∈ X) :
@@ -694,6 +694,7 @@ lemma indep_iff_forall_closure_ssubset_of_ssubset (hI : I ⊆ M.E := by aesop_ma
     insert_eq_of_mem hecl]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Indep.closure_diff_ssubset (hI : M.Indep I) (hX : (I ∩ X).Nonempty) :
     M.closure (I \ X) ⊂ M.closure I := by
   refine hI.closure_ssubset_closure <| diff_subset.ssubset_of_ne fun h ↦ ?_

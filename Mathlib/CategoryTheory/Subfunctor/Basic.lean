@@ -49,6 +49,7 @@ variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 instance : PartialOrder (Subfunctor F) :=
   PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CompleteLattice (Subfunctor F) where
   sup F G :=
     { obj U := F.obj U ⊔ G.obj U

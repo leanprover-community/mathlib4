@@ -43,6 +43,7 @@ open Matrix
 variable {R}
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The algebra isomorphism stating "matrices of polynomials are the same as polynomials of matrices".
 
@@ -54,12 +55,14 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
   ((matrixEquivTensor n R R[X]).trans (Algebra.TensorProduct.comm R _ _)).trans
     (polyEquivTensor R (Matrix n n R)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem matPolyEquiv_symm_C (M : Matrix n n R) : matPolyEquiv.symm (C M) = M.map C := by
   simp [matPolyEquiv]
 
 @[simp] theorem matPolyEquiv_map_C (M : Matrix n n R) : matPolyEquiv (M.map C) = C M := by
   rw [← matPolyEquiv_symm_C, AlgEquiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem matPolyEquiv_symm_X :
     matPolyEquiv.symm X = diagonal fun _ : n => (X : R[X]) := by
   simp [matPolyEquiv, Matrix.smul_one_eq_diagonal]
@@ -70,6 +73,7 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
 
 open Finset
 
+set_option backward.isDefEq.respectTransparency false in
 unseal Algebra.TensorProduct.mul in
 theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
     matPolyEquiv (single i j <| monomial k x) = monomial k (single i j x) := by

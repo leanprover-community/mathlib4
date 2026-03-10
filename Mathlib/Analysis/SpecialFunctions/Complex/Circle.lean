@@ -65,6 +65,7 @@ lemma leftInverse_exp_arg : LeftInverse exp (arg ∘ (↑)) := exp_arg
 lemma invOn_arg_exp : InvOn (arg ∘ (↑)) exp (Ioc (-π) π) univ := argPartialEquiv.symm.invOn
 lemma surjOn_exp_neg_pi_pi : SurjOn exp (Ioc (-π) π) univ := argPartialEquiv.symm.surjOn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exp_eq_exp {x y : ℝ} : exp x = exp y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
   rw [Subtype.ext_iff, coe_exp, coe_exp, exp_eq_exp_iff_exists_int]
   refine exists_congr fun n => ?_

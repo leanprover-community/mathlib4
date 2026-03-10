@@ -743,10 +743,12 @@ variable [Preorder α] {a b : α}
   Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
   simp only [covBy_iff_Ioo_eq, ← image_coe_Ioi, coe_lt_top, image_eq_empty,
     true_and, Ioi_eq_empty_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_wcovBy_top : (a : WithTop α) ⩿ ⊤ ↔ IsMax a := by
   simp only [wcovBy_iff_Ioo_eq, ← image_coe_Ioi, le_top, image_eq_empty, true_and, Ioi_eq_empty_iff]
 

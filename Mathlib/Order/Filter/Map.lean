@@ -189,6 +189,7 @@ an instance because its `Seq` projection is not equal to the `Filter.seq` functi
 section
 
 /-- The monad structure on filters. -/
+@[instance_reducible]
 protected def monad : Monad Filter where map := @Filter.map
 
 attribute [local instance] Filter.monad

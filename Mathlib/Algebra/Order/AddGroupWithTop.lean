@@ -246,6 +246,7 @@ end LinearOrderedAddCommGroupWithTop
 
 namespace WithTop
 
+set_option backward.isDefEq.respectTransparency false in
 instance linearOrderedAddCommMonoidWithTop [AddCancelCommMonoid α] [LinearOrder α]
     [IsOrderedAddMonoid α] : LinearOrderedAddCommMonoidWithTop (WithTop α) where
   top_add' := WithTop.top_add

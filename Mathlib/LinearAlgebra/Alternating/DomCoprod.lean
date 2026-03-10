@@ -42,6 +42,7 @@ open Equiv
 
 variable [DecidableEq ιa] [DecidableEq ιb]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- summand used in `AlternatingMap.domCoprod` -/
 def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
     (σ : Perm.ModSumCongr ιa ιb) : MultilinearMap R' (fun _ : ιa ⊕ ιb => Mᵢ) (N₁ ⊗[R'] N₂) :=

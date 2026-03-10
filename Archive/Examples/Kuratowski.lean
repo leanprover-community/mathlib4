@@ -173,6 +173,7 @@ theorem k_Icc_4_5_inter_rat : k (Icc (4 : ℝ) 5 ∩ range Rat.cast) = Icc 4 5 :
   (closure_ordConnected_inter_rat ordConnected_Icc ⟨4, by norm_num, 5, by norm_num⟩).trans
     isClosed_Icc.closure_eq
 
+set_option backward.isDefEq.respectTransparency false in
 theorem i_fourteenSet : i fourteenSet = Ioo 0 1 ∪ Ioo 1 2 := by
   have := interior_eq_empty_iff_dense_compl.mpr dense_irrational
   rw [fourteenSet, interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]
@@ -189,6 +190,7 @@ theorem k_fourteenSet : k fourteenSet = Icc 0 2 ∪ {3} ∪ Icc 4 5 := by
 theorem kc_fourteenSet : k fourteenSetᶜ = (Ioo 0 1 ∪ Ioo 1 2)ᶜ := by
   rw [closure_compl, compl_inj_iff, i_fourteenSet]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem kck_fourteenSet : k (k fourteenSet)ᶜ = (Ioo 0 2 ∪ Ioo 4 5)ᶜ := by
   rw [closure_compl, k_fourteenSet,
     interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]

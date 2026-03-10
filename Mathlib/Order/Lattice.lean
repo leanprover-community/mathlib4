@@ -300,14 +300,6 @@ theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
 theorem ite_le_sup (a b : α) (P : Prop) [Decidable P] : ite P a b ≤ a ⊔ b :=
   if h : P then (if_pos h).trans_le le_sup_left else (if_neg h).trans_le le_sup_right
 
-/-- If `f` is monotone, `g` is antitone, and `f ≤ g`, then for all `a`, `b` we have `f a ≤ g b`. -/
-theorem Monotone.forall_le_of_antitone {β : Type*} [Preorder β] {f g : α → β} (hf : Monotone f)
-    (hg : Antitone g) (h : f ≤ g) (m n : α) : f m ≤ g n :=
-  calc
-    f m ≤ f (m ⊔ n) := hf le_sup_left
-    _ ≤ g (m ⊔ n) := h _
-    _ ≤ g n := hg le_sup_right
-
 -- `to_dual` cannot yet reorder arguments of arguments
 theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y)

@@ -111,6 +111,7 @@ lemma abs_nnrpow_two (a : A) : abs a ^ (2 : ℝ≥0) = star a * a := by
 lemma abs_nnrpow_two_mul (a : A) (x : ℝ≥0) :
     abs a ^ (2 * x) = (star a * a) ^ x := by rw [← nnrpow_nnrpow, abs_nnrpow_two]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma abs_nnrpow (a : A) (x : ℝ≥0) :
     abs a ^ x = (star a * a) ^ (x / 2) := by
   simp only [← abs_nnrpow_two_mul, mul_div_left_comm, ne_eq, OfNat.ofNat_ne_zero,
@@ -147,6 +148,7 @@ lemma cfcAbs_cfcAbs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
 
 variable [StarModule ℝ A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma abs_smul_nonneg {R : Type*} [Semiring R] [SMulWithZero R ℝ≥0] [SMul R A]
     [IsScalarTower R ℝ≥0 A] (r : R) (a : A) :

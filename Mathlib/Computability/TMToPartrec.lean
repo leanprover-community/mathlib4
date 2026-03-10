@@ -31,7 +31,7 @@ open List (Vector)
 
 open Function (update)
 
-open Relation
+open Relation StateTransition
 
 namespace Turing
 
@@ -917,6 +917,7 @@ theorem tr_init (c v) :
     ∃ b, TrCfg (stepNormal c Cont.halt v) b ∧ Reaches₁ (TM2.step tr) (init c v) b :=
   trNormal_respects _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v := by
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
   refine Part.ext fun x => ?_
@@ -927,7 +928,7 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
     obtain ⟨v', hv, rfl⟩ := hc₂
     exact ⟨_, hv, hc₁.symm⟩
   · rintro ⟨v', hv, rfl⟩
-    have := Turing.tr_eval (b₁ := Cfg.halt v') tr_respects h₁
+    have := StateTransition.tr_eval (b₁ := Cfg.halt v') tr_respects h₁
     simp only [stepNormal_eval, Part.map_eq_map, Part.mem_map_iff, Cfg.halt.injEq,
       exists_eq_right] at this
     obtain ⟨_, ⟨⟩, h⟩ := this hv

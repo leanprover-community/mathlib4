@@ -227,6 +227,7 @@ theorem noncommPiCoprod_range [Fintype ι]
     rintro i x ⟨y, rfl⟩
     exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem injective_noncommPiCoprod_of_iSupIndep [Fintype ι]
     {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}

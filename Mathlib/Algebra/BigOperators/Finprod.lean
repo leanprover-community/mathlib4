@@ -260,7 +260,7 @@ theorem finprod_nonneg {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedR
   finprod_induction (fun x => 0 ≤ x) zero_le_one (fun _ _ => mul_nonneg) hf
 
 @[to_additive finsum_nonneg]
-theorem one_le_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+theorem one_le_finprod' {M : Type*} [CommMonoid M] [Preorder M] [IsOrderedMonoid M]
     {f : α → M} (hf : ∀ i, 1 ≤ f i) :
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ => one_le_mul) hf
@@ -805,6 +805,7 @@ theorem finprod_cond_eq_left : (∏ᶠ (i) (_ : i = a), f i) = f a :=
 @[to_additive (attr := simp)]
 theorem finprod_cond_eq_right : (∏ᶠ (i) (_ : a = i), f i) = f a := by simp [@eq_comm _ a]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A more general version of `finprod_mem_insert` that requires `s ∩ mulSupport f` rather than `s`
 to be finite. -/
 @[to_additive
@@ -859,6 +860,7 @@ theorem finprod_mem_pair (h : a ≠ b) : (∏ᶠ i ∈ ({a, b} : Set α), f i) =
   rw [finprod_mem_insert, finprod_mem_singleton]
   exacts [h, finite_singleton b]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of `f y` over `y ∈ g '' s` equals the product of `f (g i)` over `s`
 provided that `g` is injective on `s ∩ mulSupport (f ∘ g)`. -/
 @[to_additive
@@ -1081,7 +1083,7 @@ theorem finprod_cond_nonneg {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrd
   finprod_nonneg fun x => finprod_nonneg <| hf x
 
 @[to_additive]
-theorem single_le_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+theorem single_le_finprod {M : Type*} [CommMonoid M] [Preorder M] [IsOrderedMonoid M]
     (i : α) {f : α → M}
     (hf : (mulSupport f).Finite) (h : ∀ j, 1 ≤ f j) : f i ≤ ∏ᶠ j, f j := by
   classical calc

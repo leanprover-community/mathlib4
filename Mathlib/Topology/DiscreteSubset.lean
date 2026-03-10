@@ -220,6 +220,7 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any set is codiscrete within itself. -/
 @[simp]
 theorem Filter.self_mem_codiscreteWithin (U : Set X) :

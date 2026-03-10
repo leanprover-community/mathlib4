@@ -152,12 +152,14 @@ lemma ContDiffWithinAt.analyticWithinAt (h : ContDiffWithinAt 𝕜 ω f s x) :
   have xu : x ∈ u := mem_of_mem_nhdsWithin (by simp) hu
   exact (hf x xu).mono_of_mem_nhdsWithin (nhdsWithin_mono _ (subset_insert _ _) hu)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffWithinAt_omega_iff_analyticWithinAt [CompleteSpace F] :
     ContDiffWithinAt 𝕜 ω f s x ↔ AnalyticWithinAt 𝕜 f s x := by
   refine ⟨fun h ↦ h.analyticWithinAt, fun h ↦ ?_⟩
   obtain ⟨u, hu, p, hp, h'p⟩ := h.exists_hasFTaylorSeriesUpToOn ω
   exact ⟨u, hu, p, hp.of_le le_top, fun i ↦ h'p i⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffWithinAt_nat {n : ℕ} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn n f p u :=
@@ -175,6 +177,7 @@ lemma contDiffWithinAt_iff_of_ne_infty (hn : n ≠ ∞) :
   | ∞ => simp at hn
   | (n : ℕ) => simp [contDiffWithinAt_nat]
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem ContDiffWithinAt.of_le (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m ≤ n) :
     ContDiffWithinAt 𝕜 m f s x := by
@@ -189,6 +192,7 @@ theorem ContDiffWithinAt.of_le (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m ≤ 
     | ω => simp at hmn
     | (m : ℕ∞) => exact fun k hk ↦ h k (le_trans hk (mod_cast hmn))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a complete space, a function which is analytic within a set at a point is also `C^ω` there.
 Note that the same statement for `AnalyticOn` does not require completeness, see
 `AnalyticOn.contDiffOn`. -/
@@ -196,6 +200,7 @@ theorem AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] (h : AnalyticWithinA
     ContDiffWithinAt 𝕜 n f s x :=
   (contDiffWithinAt_omega_iff_analyticWithinAt.2 h).of_le le_top
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffWithinAt_iff_forall_nat_le {n : ℕ∞} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∀ m : ℕ, ↑m ≤ n → ContDiffWithinAt 𝕜 m f s x :=
   ⟨fun H _ hm => H.of_le (mod_cast hm), fun H m hm => H m hm _ le_rfl⟩
@@ -204,6 +209,7 @@ theorem contDiffWithinAt_infty :
     ContDiffWithinAt 𝕜 ∞ f s x ↔ ∀ n : ℕ, ContDiffWithinAt 𝕜 n f s x :=
   contDiffWithinAt_iff_forall_nat_le.trans <| by simp only [forall_prop_of_true, le_top]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) :
     ContinuousWithinAt f s x := by
   have := h.of_le (zero_le _)
@@ -348,6 +354,7 @@ theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s
     DifferentiableWithinAt 𝕜 f s x :=
   (h.differentiableWithinAt' hn).mono (subset_insert x s)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`
 (and moreover the function is analytic when `n = ω`). -/
 theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
@@ -455,6 +462,7 @@ depend on the finite order we consider).
 def ContDiffOn (n : WithTop ℕ∞) (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, ContDiffWithinAt 𝕜 n f s x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasFTaylorSeriesUpToOn.contDiffOn {n : ℕ∞} {f' : E → FormalMultilinearSeries 𝕜 E F}
     (hf : HasFTaylorSeriesUpToOn n f f' s) : ContDiffOn 𝕜 n f s := by
   intro x hx m hm
@@ -470,6 +478,7 @@ theorem ContDiffOn.contDiffWithinAt (h : ContDiffOn 𝕜 n f s) (hx : x ∈ s) :
 theorem ContDiffOn.of_le (h : ContDiffOn 𝕜 n f s) (hmn : m ≤ n) : ContDiffOn 𝕜 m f s := fun x hx =>
   (h x hx).of_le hmn
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContDiffWithinAt.contDiffOn' (hm : m ≤ n) (h' : m = ∞ → n = ω)
     (h : ContDiffWithinAt 𝕜 n f s x) :
     ∃ u, IsOpen u ∧ x ∈ u ∧ ContDiffOn 𝕜 m f (insert x s ∩ u) := by
@@ -525,6 +534,7 @@ theorem ContDiffOn.of_succ (h : ContDiffOn 𝕜 (n + 1) f s) : ContDiffOn 𝕜 n
 theorem ContDiffOn.one_of_succ (h : ContDiffOn 𝕜 (n + 1) f s) : ContDiffOn 𝕜 1 f s :=
   h.of_le le_add_self
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_iff_forall_nat_le {n : ℕ∞} :
     ContDiffOn 𝕜 n f s ↔ ∀ m : ℕ, ↑m ≤ n → ContDiffOn 𝕜 m f s :=
   ⟨fun H _ hm => H.of_le (mod_cast hm), fun H x hx m hm => H m hm x hx m le_rfl⟩
@@ -598,6 +608,7 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
 
 /-! ### Iterated derivative within a set -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem contDiffOn_zero : ContDiffOn 𝕜 0 f s ↔ ContinuousOn f s := by
   refine ⟨fun H => H.continuousOn, fun H => fun x hx m hm ↦ ?_⟩
@@ -621,6 +632,7 @@ theorem contDiffWithinAt_zero (hx : x ∈ s) :
     have h' : x ∈ s ∩ u := ⟨hx, mem_of_mem_nhdsWithin hx H⟩
     exact (contDiffOn_zero.mpr hu).contDiffWithinAt h'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When a function is `C^n` in a set `s` of unique differentiability, it admits
 `ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
 protected theorem ContDiffOn.ftaylorSeriesWithin
@@ -683,6 +695,7 @@ theorem ContDiffWithinAt.eventually_hasFTaylorSeriesUpToOn {f : E → F} {s : Se
   refine (hfU.ftaylorSeriesWithin (hs.inter hUo)).congr_series fun k hk x hx ↦ ?_
   exact iteratedFDerivWithin_inter_open hUo hx.2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- On a set with unique differentiability, an analytic function is automatically `C^ω`, as its
 successive derivatives are also analytic. This does not require completeness of the space. See
 also `AnalyticOn.contDiffOn_of_completeSpace`. -/
@@ -711,6 +724,7 @@ theorem AnalyticOnNhd.contDiffOn_of_completeSpace [CompleteSpace F] (h : Analyti
     ContDiffOn 𝕜 n f s :=
   h.analyticOn.contDiffOn_of_completeSpace
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
     (Hcont : ∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s)
     (Hdiff : ∀ m : ℕ, m < n →
@@ -734,6 +748,7 @@ theorem contDiffOn_of_differentiableOn {n : ℕ∞}
   contDiffOn_of_continuousOn_differentiableOn (fun m hm => (h m hm).continuousOn) fun m hm =>
     h m (le_of_lt hm)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_of_analyticOn_iteratedFDerivWithin
     (h : ∀ m, AnalyticOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s) :
     ContDiffOn 𝕜 n f s := by
@@ -761,6 +776,7 @@ theorem ContDiffOn.continuousOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn �
     (hmn : m ≤ n) (hs : UniqueDiffOn 𝕜 s) : ContinuousOn (iteratedFDerivWithin 𝕜 m f s) s :=
   ((h.of_le hmn).ftaylorSeriesWithin hs).cont m le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn 𝕜 n f s)
     (hmn : m < n) (hs : UniqueDiffOn 𝕜 s) :
     DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s := by
@@ -769,6 +785,7 @@ theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiff
   apply (((h.of_le this).ftaylorSeriesWithin hs).fderivWithin m ?_ x hx).differentiableWithinAt
   exact_mod_cast lt_add_one m
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m < n) (hs : UniqueDiffOn 𝕜 (insert x s)) :
     DifferentiableWithinAt 𝕜 (iteratedFDerivWithin 𝕜 m f s) s x := by
@@ -789,6 +806,7 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
   rw [differentiableWithinAt_congr_set' _ A] at C
   exact C.congr_of_eventuallyEq (B.filter_mono inf_le_left) B.self_of_nhds
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔
       (∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
@@ -797,6 +815,7 @@ theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDi
       fun _m hm => h.differentiableOn_iteratedFDerivWithin (mod_cast hm) hs⟩,
     fun h => contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_nat_iff_continuousOn_differentiableOn {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔
       (∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
@@ -804,6 +823,7 @@ theorem contDiffOn_nat_iff_continuousOn_differentiableOn {n : ℕ} (hs : UniqueD
   rw [← WithTop.coe_natCast, contDiffOn_iff_continuousOn_differentiableOn hs]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_succ_of_fderivWithin (hf : DifferentiableOn 𝕜 f s)
     (h' : n = ω → AnalyticOn 𝕜 f s)
     (h : ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 (n + 1) f s := by
@@ -821,11 +841,13 @@ theorem contDiffOn_succ_of_fderivWithin (hf : DifferentiableOn 𝕜 f s)
     exact ⟨s, self_mem_nhdsWithin, h', fderivWithin 𝕜 f s,
       fun y hy => (hf y hy).hasFDerivWithinAt, h x hx⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_of_analyticOn_of_fderivWithin (hf : AnalyticOn 𝕜 f s)
     (h : ContDiffOn 𝕜 ω (fun y ↦ fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 n f s := by
   suffices ContDiffOn 𝕜 (ω + 1) f s from this.of_le le_top
   exact contDiffOn_succ_of_fderivWithin hf.differentiableOn (fun _ ↦ hf) h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function is `C^(n + 1)` on a domain with unique derivatives if and only if it is
 differentiable there, and its derivative (expressed with `fderivWithin`) is `C^n`. -/
 theorem contDiffOn_succ_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
@@ -1047,6 +1069,7 @@ theorem HasFTaylorSeriesUpTo.contDiff {n : ℕ∞} {f' : E → FormalMultilinear
 
 @[simp, fun_prop] theorem contDiffOn_empty : ContDiffOn 𝕜 n f ∅ := fun _x hx ↦ hx.elim
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_univ : ContDiffOn 𝕜 n f univ ↔ ContDiff 𝕜 n f := by
   match n with
   | ω =>
@@ -1116,9 +1139,11 @@ theorem ContDiff.of_succ (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 n f :=
 theorem ContDiff.one_of_succ (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 1 f := by
   apply h.of_le le_add_self
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContDiff.continuous (h : ContDiff 𝕜 n f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem ContDiff.continuous_zero (h : ContDiff 𝕜 0 f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
@@ -1190,6 +1215,7 @@ theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
   simp [contDiffOn_univ.symm, continuousOn_univ, differentiableOn_univ.symm,
     iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
     ContDiff 𝕜 n f ↔
       (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
@@ -1207,6 +1233,7 @@ theorem ContDiff.continuous_iteratedFDeriv' {m : ℕ} (hf : ContDiff 𝕜 m f) :
     Continuous fun x => iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.mp hf).1 m le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
 theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : ContDiff 𝕜 n f) :
     Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x :=
