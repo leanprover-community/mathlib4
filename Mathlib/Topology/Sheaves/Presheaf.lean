@@ -142,10 +142,6 @@ theorem map_restrict
   delta restrictOpen restrict
   rw [← ConcreteCategory.comp_apply, NatTrans.naturality, ConcreteCategory.comp_apply]
 
-theorem restrict_inf_flip {F : X.Presheaf C} {U V : Opens X} {s : ToType (F.obj (op U))}
-    {t : ToType (F.obj (op V))} (h : s |_ (U ⊓ V) = t |_ (U ⊓ V)) :
-    s |_ (V ⊓ U) = t |_ (V ⊓ U) := by grind
-
 open CategoryTheory.Limits
 
 variable (C)
