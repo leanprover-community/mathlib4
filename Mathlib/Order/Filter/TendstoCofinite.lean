@@ -104,8 +104,6 @@ theorem mapDomain_eq_zero (v : α → M) {i : β} (h' : i ∉ Set.range f) : map
 
 end TendstoCofinite
 
-open TendstoCofinite
-
 end Filter
 
 @[instance]
