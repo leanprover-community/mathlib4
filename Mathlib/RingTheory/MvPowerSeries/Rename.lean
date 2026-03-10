@@ -5,7 +5,7 @@ Authors: Bingyu Xia
 -/
 module
 
-public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.Filter.TendstoCofinite
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.Algebra.MvPolynomial.Rename
 
@@ -14,6 +14,18 @@ public import Mathlib.Algebra.MvPolynomial.Rename
 
 This file establishes the `rename` operation on multivariate power series
 under a map with finite fibers, which modifies the set of variables.
+
+Unlike polynomials, renaming variables in power series requires a finiteness condition
+on the map `f : σ → τ` between the index types. Specifically, we require that `f` has
+finite fibers, which is formalized as `Filter.TendstoCofinite f`.
+To see why this is necessary, consider a map from infinitely many variables to a single
+variable sending each `X_i` to `X`. The sum `X_0 + X_1 + ⋯` is a valid power series in
+`ℤ⟦X_0, X_1, ...⟧`, but we cannot rename each `X_i` to `X` since its image `X + X + ⋯`
+would have an infinite coefficient for `X`.
+
+To avoid writing this assumption everywhere, we usually work with the typeclass assumption
+`Filter.TendstoCofinite f`. Note that this holds automatically if `f` is injective
+or if `σ` is finite.
 
 This file is patterned after `Mathlib/Algebra/MvPolynomial/Rename.lean`.
 
@@ -32,60 +44,21 @@ noncomputable section
 
 open Finsupp Filter
 
-variable {σ τ γ R M : Type*} (f : σ → τ) (g : τ → γ) [AddCommMonoid M] [TendstoCofinite f]
-
-namespace Filter.TendstoCofinite
-
-/-- Given `f : σ → τ` with `Filter.TendstoCofinite f` and `v : σ → M`,
-`Filter.TendstoCofinite.mapDomain f v : τ → M` is the function whose value at `b : τ` is
-the sum of `v x` over all `x` such that `f x = b`. -/
-def mapDomain (v : σ → M) : τ → M := fun i ↦ (finite_preimage_singleton f i).toFinset.sum v
-
-@[simp]
-lemma mapDomain_add (u v : σ → M) : mapDomain f (u + v) = mapDomain f u + mapDomain f v := by
-  ext; simp [mapDomain, Finset.sum_add_distrib]
-
-@[simp]
-lemma mapDomain_smul [DistribSMul R M] (r : R) (v : σ → M) :
-    mapDomain f (r • v) = r • (mapDomain f v) := by ext; simp [mapDomain, Finset.smul_sum]
-
-theorem mapDomain_eq_zero (v : σ → M) {i : τ} (h' : i ∉ Set.range f) : mapDomain f v i = 0 := by
-  rw [← Set.preimage_singleton_eq_empty] at h'
-  simp [mapDomain, Set.Finite.toFinset, h']
-
-end Filter.TendstoCofinite
-
-open TendstoCofinite
-
-@[instance]
-theorem Finsupp.mapDomain_tendstoCofinite : TendstoCofinite (mapDomain (M := ℕ) f) := by
-  classical
-  refine (tendstoCofinite_iff_finite_preimage_singleton _).mpr fun x ↦ ?_
-  let s := Finset.sup x.support (fun t ↦ (finite_preimage_singleton f t).toFinset)
-  let e : s ↪ σ := Function.Embedding.subtype (fun u ↦ u ∈ s)
-  refine Set.Finite.subset (Set.Finite.image (embDomain e) <|
-    finite_of_degree_le (σ := s) (degree x)) ?_
-  simp only [Set.subset_def, Set.mem_preimage, Set.mem_singleton_iff, Set.mem_image,
-    Set.mem_setOf_eq]
-  refine fun y hy ↦ ⟨y.comapDomain e e.injective.injOn, ?_, embDomain_comapDomain ?_⟩
-  · rw [← hy, degree_mapDomain_eq]
-    exact degree_comapDomain_le ..
-  · suffices y.support ⊆ s by simpa [e]
-    simpa [← hy, mapDomain, sum, Finset.subset_iff, single_apply, s] using
-      fun i hi ↦ ⟨i, by simp [hi]⟩
+variable {σ τ γ R S : Type*} (f : σ → τ) (g : τ → γ) [TendstoCofinite f]
 
 namespace MvPowerSeries
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S]
+variable [CommSemiring R] [CommSemiring S]
 
 section rename
 
 /-- Implementation detail for `rename`. Use `MvPowerSeries.rename` instead. -/
 def renameFun [TendstoCofinite f] : MvPowerSeries σ R → MvPowerSeries τ R :=
-  mapDomain (Finsupp.mapDomain f)
+  TendstoCofinite.mapDomain (Finsupp.mapDomain f)
 
 private lemma coeff_renameFun {p : MvPowerSeries σ R} {x : τ →₀ ℕ} : (renameFun f p).coeff x =
-    (finite_preimage_singleton (Finsupp.mapDomain f) x).toFinset.sum (p.coeff ·) := rfl
+    (TendstoCofinite.finite_preimage_singleton (Finsupp.mapDomain f) x).toFinset.sum (p.coeff ·) :=
+  rfl
 
 private lemma renameFun_monomial (x : σ →₀ ℕ) (r : R) :
     renameFun f (monomial x r) = monomial (mapDomain f x) r := by
@@ -96,7 +69,7 @@ private theorem renameFunAux [DecidableEq σ] (x : τ →₀ ℕ) :
     {p : (σ →₀ ℕ) × (σ →₀ ℕ) × (σ →₀ ℕ) | (p.1).mapDomain f = x ∧
       p.2 ∈ Finset.antidiagonal p.1}.Finite := by
   apply Set.Finite.subset
-    (s := ↑((finite_preimage_singleton (Finsupp.mapDomain f) x).toFinset.sup
+    (s := ↑((TendstoCofinite.finite_preimage_singleton (Finsupp.mapDomain f) x).toFinset.sup
     (fun y ↦ Finset.product {y} (Finset.antidiagonal y))))
   · exact Finset.finite_toSet ..
   · intro; simp
@@ -104,12 +77,12 @@ private theorem renameFunAux [DecidableEq σ] (x : τ →₀ ℕ) :
 
 private theorem renameFunAux' [DecidableEq τ] (x : τ →₀ ℕ) :
     {p : ((τ →₀ ℕ) × (τ →₀ ℕ)) × (σ →₀ ℕ) × (σ →₀ ℕ) | p.1 ∈ Finset.antidiagonal x
-      ∧ p.2 ∈ (finite_preimage_singleton (Finsupp.mapDomain f) p.1.1).toFinset ×ˢ
-    (finite_preimage_singleton (Finsupp.mapDomain f) p.1.2).toFinset}.Finite := by
+      ∧ p.2 ∈ (TendstoCofinite.finite_preimage_singleton (Finsupp.mapDomain f) p.1.1).toFinset ×ˢ
+    (TendstoCofinite.finite_preimage_singleton (Finsupp.mapDomain f) p.1.2).toFinset}.Finite := by
   classical
   apply Set.Finite.subset (s := ↑((Finset.antidiagonal x).sup (fun q ↦ Finset.product {q}
-    ((finite_preimage_singleton (Finsupp.mapDomain f) q.1).toFinset ×ˢ
-      (finite_preimage_singleton (Finsupp.mapDomain f) q.2).toFinset))))
+    ((TendstoCofinite.finite_preimage_singleton (Finsupp.mapDomain f) q.1).toFinset ×ˢ
+      (TendstoCofinite.finite_preimage_singleton (Finsupp.mapDomain f) q.2).toFinset))))
   · exact Finset.finite_toSet ..
   · intro; simp
     grind
@@ -141,7 +114,8 @@ def rename [TendstoCofinite f] : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R
   commutes' := renameFun_monomial f 0
 
 theorem coeff_rename (p : MvPowerSeries σ R) (x : τ →₀ ℕ) : coeff x (rename f p) =
-    (finite_preimage_singleton (Finsupp.mapDomain f) x).toFinset.sum (p.coeff ·) := by rfl
+    (TendstoCofinite.finite_preimage_singleton (Finsupp.mapDomain f) x).toFinset.sum
+      (p.coeff ·) := by rfl
 
 theorem rename_monomial (x : σ →₀ ℕ) (r : R) : rename f (monomial x r) =
     monomial (mapDomain f x) r := renameFun_monomial f ..
@@ -168,7 +142,7 @@ theorem rename_rename [TendstoCofinite g] (p : MvPowerSeries σ R) :
     rename g (rename f p) = rename (g ∘ f) p := by
   classical
   ext y; simp only [coeff_rename]
-  rw [← Finset.sum_finset_product' ((finite_preimage_singleton
+  rw [← Finset.sum_finset_product' ((TendstoCofinite.finite_preimage_singleton
     (Finsupp.mapDomain (g ∘ f)) y).toFinset.image (fun u ↦ (Finsupp.mapDomain f u, u))) _ _
       (by simp; grind [mapDomain_comp]), Finset.sum_image (by simp)]
 
@@ -201,7 +175,8 @@ theorem rename_coe (p : MvPolynomial σ R) : rename f (p : MvPowerSeries σ R) =
   induction p using MvPolynomial.induction_on with
   | C a => simp
   | add P Q hP hQ => simp [hP, hQ]
-  | mul_X P n hP => simp [hP]
+  | mul_X P n hP => simp only [MvPolynomial.coe_mul, MvPolynomial.coe_X, map_mul, hP, rename_X,
+    MvPolynomial.rename_X]
 
 variable (R) in
 /-- `rename` is an equivalence when the underlying map is an equivalence. -/
