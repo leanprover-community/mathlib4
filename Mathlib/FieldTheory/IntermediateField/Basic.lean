@@ -116,7 +116,6 @@ theorem mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hi) (x 
 theorem mem_toSubalgebra (s : IntermediateField K L) (x : L) : x ∈ s.toSubalgebra ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield ↔ x ∈ s :=
   Iff.rfl
 
@@ -620,7 +619,6 @@ variable {F E : IntermediateField K L}
 @[simp]
 theorem toSubalgebra_inj : F.toSubalgebra = E.toSubalgebra ↔ F = E := toSubalgebra_injective.eq_iff
 
-@[simp]
 theorem toSubfield_inj : F.toSubfield = E.toSubfield ↔ F = E := toSubfield_injective.eq_iff
 
 theorem map_injective (f : L →ₐ[K] L') : Function.Injective (map f) := by
