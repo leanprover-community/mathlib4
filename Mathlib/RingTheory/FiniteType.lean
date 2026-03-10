@@ -698,14 +698,3 @@ instance (priority := 100) CommRing.orzechProperty
   | smul a x _ hx => exact smul_mem _ a hx
 
 end Orzech
-
-section
-
-instance {R S : Type*} [CommRing R] [CommRing S] [Module R S] [Module.Finite R S]
-    [IsScalarTower R S S] (I : Ideal R) (J : Ideal S) [Module (R ⧸ I) (S ⧸ J)]
-    [IsScalarTower R (R ⧸ I) (S ⧸ J)] :
-    Module.Finite (R ⧸ I) (S ⧸ J) :=
-  have := Module.Finite.quotient R J
-  Module.Finite.of_restrictScalars_finite R (R ⧸ I) (S ⧸ J)
-
-end
