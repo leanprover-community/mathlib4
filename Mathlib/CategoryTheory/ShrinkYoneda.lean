@@ -91,6 +91,13 @@ lemma shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm
   simp [shrinkYoneda, shrinkYonedaObjObjEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
+lemma shrinkYonedaObjObjEquiv_map {X : C} {Y Y' : Cᵒᵖ} (g : Y ⟶ Y')
+    (f : (shrinkYoneda.{w}.obj X).obj Y) :
+    shrinkYonedaObjObjEquiv ((shrinkYoneda.{w}.obj X).map g f) =
+      g.unop ≫ shrinkYonedaObjObjEquiv f := by
+  simp [shrinkYonedaObjObjEquiv, shrinkYoneda]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The type of natural transformations `shrinkYoneda.{w}.obj X ⟶ P`
 with `X : C` and `P : Cᵒᵖ ⥤ Type w` is equivalent to `P.obj (op X)`. -/
 noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ Type w} :
