@@ -33,35 +33,40 @@ namespace CategoryTheory
 
 section
 
-variable {I : Type u₁} [Category.{v₁} I] [HasColimitsOfShape I (Type v)]
-  [HasLimitsOfShape Iᵒᵖ (Type v)]
+variable {I : Type u₁} [Category.{v₁} I] [HasColimitsOfShape I TypeCat.{v}]
+  [HasLimitsOfShape Iᵒᵖ TypeCat.{v}]
 variable {J : Type u₂} [Category.{v₂} J]
-  [HasLimitsOfShape Iᵒᵖ (Type (max u v))]
-variable (F : I ⥤ C) (G : Cᵒᵖ ⥤ Type v)
+  [HasLimitsOfShape Iᵒᵖ TypeCat.{max u v}]
+variable (F : I ⥤ C) (G : Cᵒᵖ ⥤ TypeCat.{v})
 
 /-- Variant of `colimitYonedaHomIsoLimitOp`: natural transformations with domain
 `colimit (F ⋙ yoneda)` are equivalent to a limit in a lower universe. -/
-noncomputable def colimitYonedaHomEquiv : (colimit (F ⋙ yoneda) ⟶ G) ≃ limit (F.op ⋙ G) :=
+noncomputable def colimitYonedaHomEquiv :
+    (colimit (F ⋙ yoneda) ⟶ G) ≃ (limit (F.op ⋙ G) : TypeCat) :=
   Equiv.symm <| Equiv.ulift.symm.trans <| Equiv.symm <| Iso.toEquiv <| calc
-  (colimit (F ⋙ yoneda) ⟶ G) ≅ limit (F.op ⋙ G ⋙ uliftFunctor.{u}) :=
+  TypeCat.of (colimit (F ⋙ yoneda) ⟶ G) ≅ limit (F.op ⋙ G ⋙ uliftFunctor.{u}) :=
         colimitYonedaHomIsoLimitOp _ _
   _ ≅ limit ((F.op ⋙ G) ⋙ uliftFunctor.{u}) :=
         HasLimit.isoOfNatIso (Functor.associator _ _ _).symm
   _ ≅ uliftFunctor.{u}.obj (limit (F.op ⋙ G)) :=
         (preservesLimitIso _ _).symm
 
+attribute [elementwise] HasLimit.isoOfNatIso_hom_π
+
 @[simp]
 theorem colimitYonedaHomEquiv_π_apply (η : colimit (F ⋙ yoneda) ⟶ G) (i : Iᵒᵖ) :
     limit.π (F.op ⋙ G) i (colimitYonedaHomEquiv F G η) =
       η.app (op (F.obj i.unop)) ((colimit.ι (F ⋙ yoneda) i.unop).app _ (𝟙 _)) := by
-  simp only [Functor.comp_obj, Functor.op_obj, colimitYonedaHomEquiv, uliftFunctor_obj,
-    Iso.trans_def, Iso.trans_assoc, Iso.toEquiv_comp, Equiv.symm_trans_apply,
-    Equiv.symm_symm, Equiv.trans_apply, Iso.toEquiv_fun, Iso.symm_hom, Equiv.ulift_apply]
-  have (a : _) := congrArg ULift.down
-    (congrFun (preservesLimitIso_inv_π uliftFunctor.{u, v} (F.op ⋙ G) i) a)
-  dsimp at this
-  rw [this, ← types_comp_apply (HasLimit.isoOfNatIso _).hom (limit.π _ _),
-    HasLimit.isoOfNatIso_hom_π]
+  simp only [Functor.comp_obj, Functor.op_obj, colimitYonedaHomEquiv, Iso.toEquiv, uliftFunctor_obj,
+    Iso.trans_def, Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, Iso.trans_inv, Iso.symm_inv,
+    Category.assoc, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_mk, comp_apply,
+    Equiv.ulift_apply, yoneda_obj_obj]
+  have (a : (limit ((F.op ⋙ G) ⋙ uliftFunctor.{u, v}) : TypeCat)) := congrArg ULift.down
+    (ConcreteCategory.congr_hom (preservesLimitIso_inv_π uliftFunctor.{u, v} (F.op ⋙ G) i) a)
+  refine Eq.trans (by convert this _) ?_
+  erw [HasLimit.isoOfNatIso_hom_π_apply]
+  dsimp
+  erw [colimitYonedaHomIsoLimitOp_π_apply]
   simp
 
 instance : Small.{v} (colimit (F ⋙ yoneda) ⟶ G) where

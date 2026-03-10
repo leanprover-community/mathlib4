@@ -91,7 +91,7 @@ initialize_simps_projections Fun (as → coe)
 --   rfl
 
 @[simp]
-lemma Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x := by
+lemma Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
   rfl
 
 def Fun.id (X : Type*) : Fun X X where
@@ -150,9 +150,9 @@ lemma TypeCat.Fun.comp_apply {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) (x : X)
     f.comp g x = f (g x) :=
   rfl
 
-@[simp] lemma TypeCat.Fun.comp_apply' {X Y Z : Type*} (f : Y → Z) (g : X → Y) (x : X) :
-    Fun.mk f (Fun.mk g x) = f (g x) :=
-  rfl
+-- @[simp] lemma TypeCat.Fun.comp_apply' {X Y Z : Type*} (f : Y → Z) (g : X → Y) (x : X) :
+--     Fun.mk f (Fun.mk g x) = f (g x) :=
+--   rfl
 
 -- @[simp]
 -- lemma TypeCat.hom_as_apply {X Y : Type*} (f : Fun X Y) (x : X) : f.as x = f x :=

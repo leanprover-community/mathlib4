@@ -88,8 +88,7 @@ lemma isLocallyInjective_of_injective (hφ : ∀ (X : Cᵒᵖ), Function.Injecti
 
 instance [IsIso φ] : IsLocallyInjective J φ :=
   isLocallyInjective_of_injective J φ (fun X => Function.Bijective.injective (by
-    rw [← isIso_iff_bijective]
-    change IsIso ((forget D).map (φ.app X))
+    rw [bijective_iff_isIso_ofHom]
     infer_instance))
 
 instance isLocallyInjective_forget [IsLocallyInjective J φ] :
@@ -169,7 +168,7 @@ lemma isLocallyInjective_iff_injective_of_separated
     exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf => hf)
   · apply isLocallyInjective_of_injective
 
-instance (F : Cᵒᵖ ⥤ Type w) (G : Subfunctor F) :
+instance (F : Cᵒᵖ ⥤ TypeCat.{w}) (G : Subfunctor F) :
     IsLocallyInjective J G.ι :=
   isLocallyInjective_of_injective _ _ (fun X => by
     intro ⟨x, _⟩ ⟨y, _⟩ h
@@ -179,7 +178,7 @@ section
 
 open GrothendieckTopology.Plus
 
-instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
+instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ TypeCat.{max u v}) :
     IsLocallyInjective J (J.toPlus P) where
   equalizerSieve_mem {X} x y h := by
     rw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
@@ -187,7 +186,7 @@ instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     exact J.superset_covering (fun Y f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩) W.2
 
 set_option backward.isDefEq.respectTransparency false in
-instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
+instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ TypeCat.{max u v}) :
     IsLocallyInjective J (J.toSheafify P) := by
   dsimp [GrothendieckTopology.toSheafify]
   rw [GrothendieckTopology.plusMap_toPlus]
@@ -248,7 +247,7 @@ lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
-instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
+instance {F G : Sheaf J TypeCat.{w}} (f : F ⟶ G) :
     IsLocallyInjective (Sheaf.imageι f) := by
   dsimp [Sheaf.imageι]
   infer_instance

@@ -61,7 +61,7 @@ variable {A B φ} (f g : RelativeMorphism A B φ)
 
 lemma map_eq_of_mem {n : SimplexCategoryᵒᵖ} (a : X.obj n) (ha : a ∈ A.obj n) :
     f.map.app n a = φ.app n ⟨a, ha⟩ :=
-  congr_fun (congr_app f.comm n) ⟨a, ha⟩
+  ConcreteCategory.congr_hom (congr_app f.comm n) ⟨a, ha⟩
 
 @[simp]
 lemma map_coe {n : SimplexCategoryᵒᵖ} (a : A.obj n) :

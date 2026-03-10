@@ -412,8 +412,6 @@ def typeToCat : TypeCat.{u} ⥤ Cat where
     · simp
     · intro X Y f
       cases f
-      simp only [Discrete.functor_obj_eq_as, Function.comp_apply, id_obj, eqToHom_refl,
-        Functor.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
       cat_disch
   map_comp f g := by
@@ -430,13 +428,9 @@ instance : Functor.Faithful typeToCat.{u} where
 instance : Functor.Full typeToCat.{u} where
   map_surjective F := ⟨TypeCat.ofHom ⟨(Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk)⟩, by
     ext
-    apply Functor.ext
-    · intro x y f
-      dsimp
-      apply ULift.ext
-      cat_disch
-    · rintro ⟨x⟩
-      apply Discrete.ext
-      rfl⟩
+    refine Functor.ext (by cat_disch) ?_
+    intro x y f
+    apply ULift.ext
+    cat_disch⟩
 
 end CategoryTheory
