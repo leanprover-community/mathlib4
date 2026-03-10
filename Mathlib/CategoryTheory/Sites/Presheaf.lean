@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Grothendieck
+public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.ShrinkYoneda
 public import Mathlib.CategoryTheory.Subfunctor.Image
@@ -34,6 +35,36 @@ variable {P : ObjectProperty C}
 
 def ObjectProperty.isHomInjective (P : ObjectProperty C) : MorphismProperty C := fun _ _ f ↦
   ∀ Z, P Z → Function.Injective fun (g : _ ⟶ Z) ↦ f ≫ g
+
+lemma ObjectProperty.isLocal_le_isHomInjective (P : ObjectProperty C) :
+    P.isLocal ≤ P.isHomInjective :=
+  fun _ _ _ hf Z hZ ↦ (hf Z hZ).injective
+
+instance (P : ObjectProperty C) : P.isHomInjective.IsMultiplicative where
+  id_mem X Z _ := by simpa [Category.id_comp] using Function.injective_id
+  comp_mem f g hf hg Z hZ := by
+    simpa using Function.Injective.comp (hf Z hZ) (hg Z hZ)
+
+instance (P : ObjectProperty C) : P.isHomInjective.HasOfPrecompProperty P.isHomInjective where
+  of_precomp f g hf hfg Z hZ := by
+    rw [← Function.Injective.of_comp_iff (hf Z hZ)]
+    simpa using hfg Z hZ
+
+instance (P : ObjectProperty C) : P.isHomInjective.HasOfPrecompProperty P.isLocal :=
+  .of_le _ P.isHomInjective P.isLocal_le_isHomInjective
+
+instance (P : ObjectProperty C) : P.isHomInjective.HasOfPostcompProperty P.isLocal where
+  of_postcomp f g hg hfg Z hZ := by
+    rw [← Function.Injective.of_comp_iff' _ (hg Z hZ)]
+    simpa using hfg Z hZ
+
+instance (P : ObjectProperty C) : P.isHomInjective.RespectsRight P.isLocal where
+  postcomp f hf g hg Z hZ := by
+    simpa using Function.Injective.comp (hg Z hZ) (hf Z hZ).injective
+
+instance (P : ObjectProperty C) : P.isHomInjective.RespectsLeft P.isLocal where
+  precomp f hf g hg Z hZ := by
+    simpa using Function.Injective.comp (hf Z hZ).injective (hg Z hZ)
 
 def Presieve.leftComp {X : C} (R : Presieve X) (Y : C) :
     (X ⟶ Y) → ∀ (T : C) (u : T ⟶ X) (_ : R u), T ⟶ Y :=
@@ -96,18 +127,66 @@ lemma Adjunction.bijective_map_comp_iff {C D : Type*} [Category* C] [Category* D
   ext g
   simp [Adjunction.homEquiv_apply, Adjunction.homEquiv_symm_apply, ]
 
+section
+
+variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma ObjectProperty.isHomInjective_iff_epi_map {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
+    {X Y : C} (f : X ⟶ Y) :
+    isHomInjective G.essImage f ↔ Epi (F.map f) := by
+  refine ⟨fun h ↦ ⟨fun {Z} a b hab ↦ ?_⟩, ?_⟩
+  · apply (adj.homEquiv _ _).injective (h _ (G.obj_mem_essImage Z) ?_)
+    apply (adj.homEquiv _ _).symm.injective
+    simp [adj.homEquiv_naturality_left_symm, hab]
+  · intro h Z ⟨U, ⟨e⟩⟩ a b hab
+    rw [← cancel_mono e.inv]
+    apply (adj.homEquiv _ _).symm.injective
+    simp_rw [adj.homEquiv_naturality_left_symm,
+      ← cancel_epi (F.map f), ← Functor.map_comp_assoc, dsimp% hab]
+
+end
 open Limits
 
 def Sieve.equivSubfunctorYoneda (X : C) : Sieve X ≃ Subfunctor (yoneda.obj X) where
   toFun S := ⟨fun Y ↦ { f | S f }, fun {Y Z} g f hf ↦ S.downward_closed hf _⟩
   invFun F := ⟨fun Y f ↦ f ∈ F.obj (.op Y), fun {Y Z} f hf g ↦ F.map g.op hf⟩
 
-@[simps]
+@[simps, pp_with_univ]
 def Sieve.shrinkFunctor [LocallySmall.{w} C] {X : C} (S : Sieve X) :
     Subfunctor (shrinkYoneda.{w}.obj X) where
   obj Y := { f | S (shrinkYonedaObjObjEquiv f) }
   map {Y Z} g f hf := by
     simpa [shrinkYonedaObjObjEquiv_map] using S.downward_closed hf _
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable
+def Sieve.shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max v w, v₁, u₁} C]
+    {X : C} (S : Sieve X) :
+    (Sieve.shrinkFunctor.{w} S).toFunctor ⋙ CategoryTheory.uliftFunctor.{v, w} ≅
+      (Sieve.shrinkFunctor.{max v w} S).toFunctor :=
+  NatIso.ofComponents
+    (fun X ↦ Equiv.toIso
+      (.trans Equiv.ulift
+        (Equiv.subtypeEquiv (shrinkYonedaObjObjEquiv.trans shrinkYonedaObjObjEquiv.symm)
+        fun a ↦ by simp)))
+    fun {U V} f ↦ by
+      ext
+      dsimp
+      ext
+      dsimp [Equiv.subtypeEquiv]
+      rw [shrinkYonedaObjObjEquiv_map, shrinkYonedaObjObjEquiv_symm_comp]
+      simp
+
+@[reassoc]
+lemma Sieve.shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C]
+    [LocallySmall.{max v w, v₁, u₁} C]
+    {X : C} (S : Sieve X) :
+    (Sieve.shrinkFunctorUliftFunctorIso.{w, v} S).inv ≫
+      Functor.whiskerRight (Sieve.shrinkFunctor.{w} _).ι CategoryTheory.uliftFunctor.{v, w} =
+    (Sieve.shrinkFunctor.{max v w} S).ι ≫
+      shrinkYonedaUliftFunctorIso.{w, v}.inv.app X :=
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
@@ -175,15 +254,18 @@ def Sieve.equivSubfunctorShrinkYoneda [LocallySmall.{w} C] {X : C} :
   left_inv S := by simp
   right_inv F := by ext; simp
 
-instance : J.PreservesSheafification (uliftFunctor.{max u₁ v₁, w}) := by
-  -- apply J.instPreservesSheafification
-  sorry
+@[simp]
+lemma ObjectProperty.essImage_ι (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms] :
+    P.ι.essImage = P :=
+  le_antisymm (fun _ ⟨Y, ⟨e⟩⟩ ↦ P.prop_of_iso e Y.property) fun X h ↦ ⟨⟨X, h⟩, ⟨.refl _⟩⟩
 
---lemma GrothendieckTopology.W_whiskerRight_uliftFunctor_iff
---    (F : A ⥤ B) {P₁ P₂ : Cᵒᵖ ⥤ A} (f : P₁ ⟶ P₂) [J.PreservesSheafification F] :
---    J.W (Functor.whiskerRight f F) ↔ J.W f := by
---  refine ⟨fun h ↦ ?_, fun h ↦ J.W_of_preservesSheafification _ _ h⟩
---  sorry
+lemma epi_iff_isIso_of_mono {C : Type*} [Category* C] [Balanced C] {X Y : C} (f : X ⟶ Y) [Mono f] :
+    Epi f ↔ IsIso f := by
+  simp [isIso_iff_mono_and_epi, ‹Mono f›]
+
+lemma mono_iff_isIso_of_epi {C : Type*} [Category* C] [Balanced C] {X Y : C} (f : X ⟶ Y) [Epi f] :
+    Mono f ↔ IsIso f := by
+  simp [isIso_iff_mono_and_epi, ‹Epi f›]
 
 namespace Presheaf
 
@@ -195,6 +277,19 @@ map `(K ⟶ F) → (H ⟶ F)` is injective.
 def covering : MorphismProperty (Cᵒᵖ ⥤ A) :=
   ObjectProperty.isHomInjective (Presheaf.IsSheaf J)
 
+instance : ObjectProperty.IsClosedUnderIsomorphisms (Presheaf.IsSheaf J (A := A)) := by
+  constructor
+  intro F G e hF
+  rwa [isSheaf_of_iso_iff e.symm]
+
+@[simp]
+lemma essImage_sheafToPresheaf : (sheafToPresheaf J A).essImage = Presheaf.IsSheaf J := by
+  simp [sheafToPresheaf]
+
+lemma covering_eq_isHomInjective_essImage :
+    covering J = (sheafToPresheaf J A).essImage.isHomInjective := by
+  simp [covering]
+
 def IsCoveringFamily {X : Cᵒᵖ ⥤ A} (R : Presieve X) : Prop :=
   ObjectProperty.IsJointlyHomInjective (Presheaf.IsSheaf J) R
 
@@ -205,6 +300,11 @@ variable {J}
 
 lemma covering_of_W {H K : Cᵒᵖ ⥤ A} {f : H ⟶ K} (hf : J.W f) : covering J f :=
   fun F hF ↦ (hf F hF).injective
+
+lemma covering_iff_epi [HasWeakSheafify J A] {H K : Cᵒᵖ ⥤ A} {f : H ⟶ K} :
+    covering J f ↔ Epi ((presheafToSheaf J A).map f) := by
+  rw [covering_eq_isHomInjective_essImage,
+    ObjectProperty.isHomInjective_iff_epi_map (sheafificationAdjunction _ _)]
 
 lemma Functor.W_map_of_adjunction_of_isContinuous (F : C ⥤ D)
     (H : (Cᵒᵖ ⥤ A) ⥤ (Dᵒᵖ ⥤ A)) (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
@@ -221,9 +321,24 @@ lemma Functor.IsContinuous.of_W_map_of_adjunction [LocallySmall.{w} C] {F : C �
   refine ⟨fun G X S hS ↦ ?_⟩
   rw [Sieve.isSheafFor_iff_bijective_shrinkFunctor_ι_comp, ← Functor.whiskeringLeft_obj_obj,
     ← adj.bijective_map_comp_iff]
-  exact h hS _ G.cond
+  exact h hS _ G.property
 
-lemma asdfasdf (F : C ⥤ D) [Functor.IsContinuous.{max u₁ v₁ u₂ v₂} F J K] :
+/-- The assumptions are in particular satisfied for `A = Type w` for large enough `w`. -/
+lemma W_iff_covering_and_covering_diagonal [HasPullbacks A] [HasSheafify J A]
+    [Balanced (Sheaf J A)] {H K : Cᵒᵖ ⥤ A} (f : H ⟶ K) :
+    J.W f ↔
+      covering J f ∧ covering J (pullback.diagonal f) := by
+  rw [covering_iff_epi, covering_iff_epi, J.W_iff, isIso_iff_mono_and_epi, and_comm]
+  dsimp [pullback.diagonalObj, pullback.diagonal]
+  rw [and_congr_right_iff]
+  intro h
+  rw [← epi_comp_iff_of_isIso _ (PreservesPullback.iso (presheafToSheaf J _) f f).hom]
+  simp only [PreservesPullback.iso_hom, map_lift_pullbackComparison, Functor.map_id]
+  rw [← pullback.diagonal, epi_iff_isIso_of_mono, pullback.isIso_diagonal_iff]
+
+/-- `Functor.IsContinuous` is preserved under enlarging the universe if the starting
+universe is large enough. -/
+lemma isContinuous_max_of_isContinuous (F : C ⥤ D) [Functor.IsContinuous.{max u₁ v₁ u₂ v₂} F J K] :
     Functor.IsContinuous.{max w u₁ v₁ u₂ v₂} F J K := by
   let H : (Cᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂) ⥤ Dᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂ := F.op.lan
   let adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op := F.op.lanAdjunction _
@@ -236,38 +351,41 @@ lemma asdfasdf (F : C ⥤ D) [Functor.IsContinuous.{max u₁ v₁ u₂ v₂} F J
     intro Z hZ
     rw [isSheaf_iff_isSheaf_of_type] at hZ
     rw [← Sieve.isSheafFor_iff_bijective_shrinkFunctor_ι_comp]
-    apply hZ
-    exact hS
+    exact hZ _ hS
   have : K.W _ := Functor.W_map_of_adjunction_of_isContinuous (J := J) K F H adj
     (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} S).ι hWS
   let e : H ⋙ (Functor.whiskeringRight _ _ _).obj uliftFunctor.{w} ≅
       (Functor.whiskeringRight _ _ _).obj uliftFunctor.{w} ⋙ H' :=
     uliftFunctor.{w, max (max (max u₁ u₂) v₁) v₂}.lanCompIsoOfPreserves F.op
-  sorry
+  have := e.app
+  dsimp at this
+  let e' := Sieve.shrinkFunctorUliftFunctorIso.{max u₁ v₁ u₂ v₂, w} S
+  let iso : Arrow.mk (H'.map (Sieve.shrinkFunctor.{max w u₁ v₁ u₂ v₂} S).ι) ≅
+      .mk
+        (Functor.whiskerRight
+          (H.map (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} S).ι) uliftFunctor.{w}) :=
+    Arrow.isoMk' _ _ (H'.mapIso e'.symm ≪≫ (e.app _).symm)
+      (H'.mapIso (shrinkYonedaUliftFunctorIso.{max u₁ v₁ u₂ v₂}.app _).symm ≪≫ (e.app _).symm) <| by
+      simp only [Functor.mapIso_symm, Functor.comp_obj, Functor.whiskeringRight_obj_obj,
+        Iso.trans_hom, Iso.symm_hom, Functor.mapIso_inv, Iso.app_inv, Category.assoc, e']
+      rw [← Functor.map_comp_assoc]
+      rw [← dsimp% e.inv.naturality, ← Functor.map_comp_assoc]
+      rw [Sieve.shrinkFunctorUliftFunctorIso_inv_ι]
+      rfl
+  rw [K.W.arrow_mk_iso_iff iso]
+  apply GrothendieckTopology.W_of_preservesSheafification
+  apply Functor.W_map_of_adjunction_of_isContinuous (J := J) K F H adj
+    (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} S).ι hWS
 
-lemma adfasdfasd (F : C ⥤ D)
-    (H : (Cᵒᵖ ⥤ Type w) ⥤ (Dᵒᵖ ⥤ Type w)) (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
-    [Functor.IsContinuous.{w} F J K]
-    {G : Cᵒᵖ ⥤ Type w} (R : Presieve G) (hR : IsBicoveringFamily J R) :
-    IsBicoveringFamily K (R.map H) := by
-  intro U hU
-  have := hR _ (F.op_comp_isSheaf_of_isSheaf _ _ _ hU)
-  sorry
-
---lemma foo {H K : Cᵒᵖ ⥤ Type w} (f : H ⟶ K) :
---    covering J f ↔
---      ∀ (X : C) (u : shrinkYoneda.{w}.obj X ⟶ K),
---        Sieve.equivSubfunctorShrinkYoneda.symm (Subfunctor.range (pullback.snd f u)) ∈ J X := by
---  refine ⟨?_, ?_⟩
---  · sorry
---  · sorry
-
-lemma foo' [HasPullbacks A] {H K : Cᵒᵖ ⥤ A} (f : H ⟶ K) :
-    J.W f ↔
-      covering J f ∧ covering J (pullback.diagonal f) := by
-  refine ⟨fun hf ↦ ⟨covering_of_W hf, ?_⟩, ?_⟩
-  · sorry
-  · sorry
+lemma isContinuous_of_isContinuous_max (F : C ⥤ D) [Functor.IsContinuous.{max w v} F J K] :
+    Functor.IsContinuous.{w} F J K := by
+  refine ⟨fun G ↦ ?_⟩
+  rw [← Presieve.isSheaf_comp_uliftFunctor_iff.{w, v}, ← isSheaf_iff_isSheaf_of_type,
+    Presheaf.isSheaf_of_iso_iff (Functor.associator _ _ _)]
+  refine F.op_comp_isSheaf_of_isSheaf J K _ ?_
+  rw [isSheaf_iff_isSheaf_of_type, Presieve.isSheaf_comp_uliftFunctor_iff.{w, v},
+    ← isSheaf_iff_isSheaf_of_type]
+  exact G.property
 
 end Presheaf
 
