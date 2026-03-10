@@ -476,50 +476,61 @@ See the discussion before Equation (3) of [MM92], Chapter III, Section 4. See al
 def YonedaSheafCondition (P : Cᵒᵖ ⥤ Type v₁) (S : Sieve X) : Prop :=
   ∀ f : S.functor ⟶ P, ∃! g, S.functorInclusion ≫ g = f
 
--- TODO: We can generalize the universe parameter v₁ above by composing with
--- appropriate `ulift_functor`s.
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). This is a (primarily internal) equivalence between natural transformations
 and compatible families.
 
 Cf the discussion after Lemma 7.47.10 in <https://stacks.math.columbia.edu/tag/00YW>. See also
 the proof of C2.1.4 of [Elephant], and the discussion in [MM92], Chapter III, Section 4.
 -/
-def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
-    (S.functor ⟶ P) ≃ { x : FamilyOfElements P (S : Presieve X) // x.Compatible } where
-  toFun α := by
-    refine ⟨fun Y f hf => ?_, ?_⟩
-    · apply α.app (op Y) ⟨_, hf⟩
-    · rw [compatible_iff_sieveCompatible]
-      intro Y Z f g hf
-      dsimp
-      rw [← FunctorToTypes.naturality _ _ α g.op]
-      rfl
+@[simps]
+noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Type w} :
+    (S.shrinkFunctor.toFunctor ⟶ F) ≃ { x : S.arrows.FamilyOfElements F // x.Compatible } where
+  toFun t := ⟨fun Y f hf ↦ t.app _ ⟨shrinkYonedaObjObjEquiv.symm f, by simpa⟩, by
+    rw [Presieve.compatible_iff_sieveCompatible]
+    intro Y Z f g hf
+    simp only [shrinkFunctor_obj, ← FunctorToTypes.naturality]
+    rw! [shrinkYonedaObjObjEquiv_symm_comp]
+    rfl⟩
   invFun t :=
-    { app := fun _ f => t.1 _ f.2
-      naturality := fun Y Z g => by
+    { app X f := t.1 _ f.mem
+      naturality Y Z g := by
         ext ⟨f, hf⟩
-        apply t.2.to_sieveCompatible _ }
-  left_inv α := by
-    ext X ⟨_, _⟩
-    rfl
-  right_inv := by
-    rintro ⟨x, hx⟩
-    rfl
+        dsimp
+        convert t.2.to_sieveCompatible _ _ _
+        simp only [Opposite.op_unop, shrinkYonedaObjObjEquiv_map]
+        rfl }
+  left_inv t := by cat_disch
+  right_inv x := by
+    ext
+    dsimp
+    rw! [Equiv.apply_symm_apply]
+    simp
 
-/-- (Implementation). A lemma useful to prove `isSheafFor_iff_yonedaSheafCondition`. -/
-theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor ⟶ P) (g : yoneda.obj X ⟶ P) :
-    S.functorInclusion ≫ g = x ↔
-      (natTransEquivCompatibleFamily x).1.IsAmalgamation (yonedaEquiv g) := by
-  change _ ↔ ∀ ⦃Y : C⦄ (f : Y ⟶ X) (h : S f), P.map f.op (yonedaEquiv g) = x.app (op Y) ⟨f, h⟩
-  constructor
+set_option backward.isDefEq.respectTransparency false in
+lemma shrinkFunctor_ι_comp_eq_iff_isAmalgamation [LocallySmall.{w} C] (F : Cᵒᵖ ⥤ Type w)
+    (f : S.shrinkFunctor.toFunctor ⟶ F) (g : shrinkYoneda.{w}.obj X ⟶ F) :
+    S.shrinkFunctor.ι ≫ g = f ↔
+      (shrinkFunctorHomEquiv f).1.IsAmalgamation (shrinkYonedaEquiv g) := by
+  dsimp [Presieve.FamilyOfElements.IsAmalgamation]
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro rfl Y f hf
-    rw [yonedaEquiv_naturality]
-    simp [yonedaEquiv_apply]
-  · intro h
-    ext Y ⟨f, hf⟩
-    convert h f hf
-    rw [yonedaEquiv_naturality]
-    simp [yonedaEquiv]
+    simp [shrinkYonedaEquiv_naturality, shrinkYonedaEquiv_comp, shrinkYonedaEquiv_shrinkYoneda_map]
+  · ext Y ⟨u, hu⟩
+    convert h (shrinkYonedaObjObjEquiv u) hu
+    · rw [shrinkYonedaEquiv_naturality, shrinkYonedaEquiv_comp, shrinkYonedaEquiv_shrinkYoneda_map]
+      simp
+    · rw! [Equiv.symm_apply_apply]
+      rfl
+
+lemma isSheafFor_iff_bijective_shrinkFunctor_ι_comp [LocallySmall.{w} C] {X : C}
+    (S : Sieve X) (F : Cᵒᵖ ⥤ Type w) :
+    IsSheafFor F S.arrows ↔
+      Function.Bijective (fun g : _ ⟶ F ↦ S.shrinkFunctor.ι ≫ g) := by
+  simp only [IsSheafFor, Function.bijective_iff_existsUnique,
+    shrinkFunctor_ι_comp_eq_iff_isAmalgamation, shrinkFunctorHomEquiv.forall_congr_left,
+    Subtype.forall]
+  exact forall₂_congr fun x hx ↦ by simp [Equiv.existsUnique_congr_right]
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
 
@@ -527,11 +538,20 @@ C2.1.4 of [Elephant].
 -/
 theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
     IsSheafFor P (S : Presieve X) ↔ YonedaSheafCondition P S := by
-  rw [IsSheafFor, YonedaSheafCondition]
-  simp_rw [extension_iff_amalgamation]
-  rw [Equiv.forall_congr_left natTransEquivCompatibleFamily]
-  rw [Subtype.forall]
-  exact forall₂_congr fun x hx ↦ by simp [Equiv.existsUnique_congr_right]
+  rw [isSheafFor_iff_bijective_shrinkFunctor_ι_comp, YonedaSheafCondition,
+    Function.bijective_iff_existsUnique,
+    Equiv.forall_congr_left S.shrinkFunctorIsoFunctor.homFromEquiv]
+  refine forall_congr' fun a ↦ ?_
+  rw [Equiv.existsUnique_congr_left (shrinkYonedaIsoYoneda.app X).homFromEquiv]
+  refine existsUnique_congr fun b ↦ ?_
+  dsimp
+  rw [NatTrans.ext_iff, NatTrans.ext_iff, funext_iff, funext_iff]
+  congr!
+  rw [funext_iff, funext_iff]
+  dsimp [functor]
+  simp only [Subtype.forall, shrinkYonedaObjObjEquiv.forall_congr_left, Equiv.apply_symm_apply]
+  congr!
+  simp
 
 /--
 If `P` is a sheaf for the sieve `S` on `X`, a natural transformation from `S` (viewed as a functor)
