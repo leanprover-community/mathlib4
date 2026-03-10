@@ -288,6 +288,10 @@ theorem symm_trans_self (e : α ≃ᵐ β) : e.symm.trans e = refl β :=
 theorem self_trans_symm (e : α ≃ᵐ β) : e.trans e.symm = refl α :=
   ext e.symm_comp_self
 
+@[simp]
+theorem trans_symm (e₁ : α ≃ᵐ β) (e₂ : β ≃ᵐ γ) : (e₁.trans e₂).symm = e₂.symm.trans (e₁.symm) :=
+  rfl
+
 protected theorem surjective (e : α ≃ᵐ β) : Surjective e :=
   e.toEquiv.surjective
 
