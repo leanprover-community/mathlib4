@@ -70,20 +70,29 @@ def IsMatching (M : Subgraph G) : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w,
 noncomputable def IsMatching.toEdge (h : M.IsMatching) (v : M.verts) : M.edgeSet :=
   ⟨s(v, (h v.property).choose), (h v.property).choose_spec.1⟩
 
-theorem IsMatching.toEdge_eq_of_adj (h : M.IsMatching) (hv : v ∈ M.verts) (hvw : M.Adj v w) :
-    h.toEdge ⟨v, hv⟩ = ⟨s(v, w), hvw⟩ := by
-  simp only [IsMatching.toEdge, Subtype.mk_eq_mk]
-  congr
-  exact ((h (M.edge_vert hvw)).choose_spec.2 w hvw).symm
+theorem IsMatching.toEdge_eq_of_adj (h : M.IsMatching) (hvw : M.Adj v w) :
+    h.toEdge ⟨v, hvw.fst_mem⟩ = ⟨s(v, w), hvw⟩ := by
+  rw [IsMatching.toEdge, Subtype.mk_eq_mk, ← h hvw.fst_mem |>.choose_spec.right w hvw]
 
 theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge := by
   rintro ⟨⟨x, y⟩, he⟩
-  exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
+  exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj he⟩
 
-theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)
-    (hv : v ∈ M.verts) (hw : w ∈ M.verts) (ha : M.Adj v w) :
-    h.toEdge ⟨v, hv⟩ = h.toEdge ⟨w, hw⟩ := by
-  rw [h.toEdge_eq_of_adj hv ha, h.toEdge_eq_of_adj hw (M.symm ha), Subtype.mk_eq_mk, Sym2.eq_swap]
+theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching) (ha : M.Adj v w) :
+    h.toEdge ⟨v, ha.fst_mem⟩ = h.toEdge ⟨w, ha.snd_mem⟩ := by
+  rw [h.toEdge_eq_of_adj ha, h.toEdge_eq_of_adj ha.symm, Subtype.mk_eq_mk, Sym2.eq_swap]
+
+theorem IsMatching.mem_coe_toEdge (h : M.IsMatching) {v : V} (hv : v ∈ M.verts) :
+    v ∈ (h.toEdge ⟨v, hv⟩ : Sym2 V) :=
+  ⟨h hv |>.choose, rfl⟩
+
+theorem IsMatching.toEdge_preimage (h : M.IsMatching) (huv : M.Adj u v) :
+    h.toEdge ⁻¹' {⟨s(u, v), huv⟩} = {⟨u, huv.fst_mem⟩, ⟨v, huv.snd_mem⟩} := by
+  refine Set.ext fun w ↦ ⟨fun hw ↦ ?_, fun hw ↦ ?_⟩
+  · grind [h.mem_coe_toEdge w.property]
+  · rcases hw with rfl | rfl
+    · simp [h.toEdge_eq_of_adj huv]
+    · simp [h.toEdge_eq_of_adj huv.symm]
 
 lemma IsMatching.map_ofLE (h : M.IsMatching) (hGG' : G ≤ G') :
     (M.map (Hom.ofLE hGG')).IsMatching := by
@@ -203,6 +212,24 @@ lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching where
   mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.injective
   mpr := .map f.toHom f.injective
+
+theorem IsMatching.verts_eq_biUnion_edgeSet {M : G.Subgraph} (h : M.IsMatching) :
+    M.verts = ⋃ e ∈ M.edgeSet, (e : Set V) := by
+  refine Set.ext fun v ↦ .trans ⟨fun hv ↦ ?_, fun ⟨e, he, hv⟩ ↦ ?_⟩ Set.mem_iUnion₂.symm
+  · have ⟨u, he, _⟩ := h hv
+    exact ⟨s(v, u), he, Sym2.mem_mk_left ..⟩
+  · exact mem_verts_of_mem_edge he hv
+
+variable (G) in
+theorem _root_.SimpleGraph.injOn_edgeSet_isMatching :
+    (setOf IsMatching).InjOn (edgeSet (G := G)) := by
+  refine fun M₁ h₁ M₂ h₂ h ↦ Subgraph.ext ?_ <| Sym2.fromRel_eq_fromRel_iff_eq .. |>.mp h
+  rw [h₁.verts_eq_biUnion_edgeSet, h₂.verts_eq_biUnion_edgeSet, h]
+
+variable (G) in
+theorem _root_.SimpleGraph.strictMonoOn_edgeSet_isMatching :
+    StrictMonoOn (edgeSet (G := G)) (setOf IsMatching) :=
+  G.subgraph_edgeSet_monotone.monotoneOn _ |>.strictMonoOn_of_injOn G.injOn_edgeSet_isMatching
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
