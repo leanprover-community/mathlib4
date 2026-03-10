@@ -438,7 +438,7 @@ def finite_affine_combination {ι : Type*} {s : Finset ι}
 /-- An affine combination of two `C^k` connections is a `C^k` connection. -/
 lemma ContMDiffCovariantDerivative.affine_combination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
   (cov cov' : CovariantDerivative I F V)
-    {f : M → 𝕜} {n : WithTop ℕ∞} (hf : ContMDiff I 𝓘(𝕜) n f)
+    {f : M → 𝕜} {n : WithTop ℕ∞} (hf : CMDiff n f)
     (hcov : ContMDiffCovariantDerivative cov n) (hcov' : ContMDiffCovariantDerivative cov' n) :
     ContMDiffCovariantDerivative (affine_combination cov cov' f) n where
   contMDiff :=
@@ -447,7 +447,7 @@ lemma ContMDiffCovariantDerivative.affine_combination [IsManifold I 1 M] [Vector
 /-- An affine combination of finitely many `C^k` connections is a `C^k` connection. -/
 lemma ContMDiffCovariantDerivative.finite_affine_combination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
     {ι : Type*} {s : Finset ι} (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜}
-    (hf : ∑ i ∈ s, f i = 1) {n : WithTop ℕ∞} (hf' : ∀ i ∈ s, ContMDiff I 𝓘(𝕜) n (f i))
+    (hf : ∑ i ∈ s, f i = 1) {n : WithTop ℕ∞} (hf' : ∀ i ∈ s, CMDiff n (f i))
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivative (cov i) n) :
     ContMDiffCovariantDerivative (finite_affine_combination cov hf) n where
   contMDiff :=
