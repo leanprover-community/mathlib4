@@ -265,10 +265,10 @@ lemma fderivLM_apply_of_le [SMulCommClass ℝ 𝕜 F] (f : 𝓓^{n}(Ω, F)) (hk 
     fderivLM 𝕜 n k f = fderiv ℝ f := by
   simp [hk]
 
-lemma fderivLM_apply_of_gt [SMulCommClass ℝ 𝕜 F] (f : 𝓓^{n}(Ω, F)) (hk : ¬ (k + 1 ≤ n)) :
+lemma fderivLM_apply_of_gt [SMulCommClass ℝ 𝕜 F] (f : 𝓓^{n}(Ω, F)) (hk : n < k + 1) :
     fderivLM 𝕜 n k f = 0 := by
   ext : 1
-  simp [hk]
+  simp [not_le_of_gt hk]
 
 variable (𝕜) in
 lemma fderivLM_eq_of_scalars [SMulCommClass ℝ 𝕜 F] (𝕜' : Type*)
@@ -492,7 +492,7 @@ lemma fderivCLM_apply_of_le [SMulCommClass ℝ 𝕜 F] (f : 𝓓^{n}(Ω, F)) (hk
     fderivCLM 𝕜 n k f = fderiv ℝ f :=
   fderivLM_apply_of_le f hk
 
-lemma fderivCLM_apply_of_gt [SMulCommClass ℝ 𝕜 F] (f : 𝓓^{n}(Ω, F)) (hk : ¬ (k + 1 ≤ n)) :
+lemma fderivCLM_apply_of_gt [SMulCommClass ℝ 𝕜 F] (f : 𝓓^{n}(Ω, F)) (hk : n < k + 1) :
     fderivCLM 𝕜 n k f = 0 :=
   fderivLM_apply_of_gt f hk
 
