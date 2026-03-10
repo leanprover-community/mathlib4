@@ -900,6 +900,7 @@ section mulLeft
 variable [SMulCommClass R A A]
 
 variable (R A) in
+/-- Left multiplication by a unit of a semiring as a linear equivalence. -/
 def mulLeftLinearEquiv : Aˣ →* A ≃ₗ[R] A where
   toFun a :=
     { __ := mulLeft a
@@ -938,6 +939,7 @@ section mulRight
 variable [IsScalarTower R A A]
 
 variable (R) in
+/-- Right multiplication by a unit of a semiring as a linear equivalence. -/
 def mulRightLinearEquiv (a : Aˣ) : A ≃ₗ[R] A where
   __ := mulRight a
   __ := LinearMap.mulRight R (a : A)
