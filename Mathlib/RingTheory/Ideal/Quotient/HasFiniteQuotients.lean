@@ -41,18 +41,22 @@ variable {R : Type*} [CommRing R]
 instance [Finite R] : Ring.HasFiniteQuotients R where
   finiteQuotient := fun _ ↦ Quotient.finite _
 
+section properties
+
+variable [HasFiniteQuotients R]
+
 /-- A nonzero prime ideal of a ring with finite quotients is maximal. -/
-theorem maximalOfPrime [HasFiniteQuotients R] {P : Ideal R} [P.IsPrime] (hp : P ≠ ⊥) :
+theorem maximalOfPrime {P : Ideal R} [P.IsPrime] (hp : P ≠ ⊥) :
     P.IsMaximal :=
   have : Finite (R ⧸ P) := finiteQuotient hp
   Ideal.Quotient.maximal_of_isField P <| Finite.isField_of_domain (R ⧸ P)
 
 /-- A ring with finite quotients has dimension `≤ 1`. -/
-instance [HasFiniteQuotients R] : DimensionLEOne R where
+instance : DimensionLEOne R where
   maximalOfPrime := fun h _ ↦ maximalOfPrime h
 
 /-- A ring with finite quotients is noetherian. -/
-instance [HasFiniteQuotients R] : IsNoetherianRing R := by
+instance =: IsNoetherianRing R := by
   refine (isNoetherianRing_iff_ideal_fg R).mpr fun I ↦ ?_
   by_cases hI : I = 0
   · exact hI ▸ Submodule.fg_bot
@@ -63,20 +67,21 @@ instance [HasFiniteQuotients R] : IsNoetherianRing R := by
   · rw [Submodule.ker_mkQ, inf_eq_right.mpr ((Ideal.span_singleton_le_iff_mem I).mpr hx₁)]
     exact Submodule.fg_span_singleton x
 
-theorem cardQuot_pos [HasFiniteQuotients R] (I : Ideal R) (hI : I ≠ ⊥) : 0 < I.cardQuot := by
+theorem cardQuot_pos (I : Ideal R) (hI : I ≠ ⊥) : 0 < I.cardQuot := by
   have := finiteQuotient hI
   rw [Submodule.cardQuot_apply]
   exact Nat.card_pos
 
-theorem finite_of_mem [HasFiniteQuotients R] (x : R) (hx : x ≠ 0) :
+theorem finite_of_mem (x : R) (hx : x ≠ 0) :
     {I : Ideal R | x ∈ I}.Finite := by
   have := finiteQuotient (mt Ideal.span_singleton_eq_bot.mp hx)
-  have : { I | Ideal.comap (Ideal.Quotient.mk (Ideal.span {x})) ⊥ ≤ I }.Finite :=
+  have : {I | Ideal.comap (Ideal.Quotient.mk (Ideal.span {x})) ⊥ ≤ I}.Finite :=
     .of_equiv _ (Ideal.relIsoOfSurjective _ Ideal.Quotient.mk_surjective).toEquiv
   simpa [← RingHom.ker_eq_comap_bot] using this
 
 open Pointwise in
-theorem finite_cardQuot_le [HasFiniteQuotients R] (B : ℕ) :
+/-- A ring with finite quotients has only finitely many ideals of bounded norm. -/
+theorem finite_cardQuot_ideal_le (B : ℕ) :
     {I : Ideal R | I.cardQuot ≤ B}.Finite := by
   classical
   rcases finite_or_infinite R
@@ -98,12 +103,28 @@ theorem finite_cardQuot_le [HasFiniteQuotients R] (B : ℕ) :
   refine Finset.mem_sdiff.mpr ⟨Finset.mem_sub.mpr ⟨x, hx, y, hy, rfl⟩, ?_⟩
   rwa [Finset.notMem_singleton, sub_ne_zero]
 
+/-- A ring with finite quotients has only finitely many ideals of bounded norm. -/
+theorem finite_absNorm_ideal_le [IsDedekindDomain R] [Module.Free ℤ R] (B : ℕ) :
+    {I : Ideal R | I.absNorm ≤ B}.Finite :=
+  finite_cardQuot_ideal_le B
+
+/-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
+theorem finite_cardQuot_heightOneSpectrum_le (B : ℕ) :
+    {p : IsDedekindDomain.HeightOneSpectrum R | p.asIdeal.cardQuot ≤ B}.Finite :=
+  (finite_cardQuot_ideal_le B).of_injOn (by simp [Set.MapsTo])
+    (Function.Injective.injOn fun _ _ ↦ IsDedekindDomain.HeightOneSpectrum.ext)
+
+/-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
+theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain R] [Module.Free ℤ R] (B : ℕ) :
+    {p : IsDedekindDomain.HeightOneSpectrum R | p.asIdeal.absNorm ≤ B}.Finite :=
+  finite_cardQuot_heightOneSpectrum_le B
+
 variable (R) in
 /--
 Assume that `R` has finite quotients and that `S` is a domain and a finite `R`-module. Then
 `S` has finite quotients.
 -/
-theorem of_module_finite [h : HasFiniteQuotients R] (S : Type*) [CommRing S] [IsDomain S]
+theorem of_module_finite (S : Type*) [CommRing S] [IsDomain S]
     [Algebra R S] [Module.Finite R S] :
     HasFiniteQuotients S where
   finiteQuotient {I} hI := by
@@ -111,9 +132,11 @@ theorem of_module_finite [h : HasFiniteQuotients R] (S : Type*) [CommRing S] [Is
     · have : Finite S := Module.finite_of_finite R
       exact Quotient.finite _
     let J : Ideal R := Ideal.under R I
-    have : Finite (R ⧸ J) := h.finiteQuotient <| Ideal.under_ne_bot R hI
+    have : Finite (R ⧸ J) := finiteQuotient <| Ideal.under_ne_bot R hI
     have : Module.Finite (R ⧸ J) (S ⧸ I) := Module.Finite.of_restrictScalars_finite R _ _
     exact Module.finite_of_finite (R ⧸ J)
+
+end properties
 
 /-- The ring `ℤ` has finite quotients. -/
 instance : HasFiniteQuotients ℤ where
