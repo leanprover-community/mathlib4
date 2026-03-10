@@ -224,6 +224,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
+@[implicit_reducible]
 noncomputable def createsLimitsOfShapeOfCreatesEqualizersAndProducts :
     CreatesLimitsOfShape J G where
   CreatesLimit {K} :=
@@ -244,6 +245,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
+@[implicit_reducible]
 noncomputable def createsFiniteLimitsOfCreatesEqualizersAndFiniteProducts [HasEqualizers D]
     [HasFiniteProducts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesLimitsOfShape WalkingParallelPair G]
@@ -256,6 +258,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
+@[implicit_reducible]
 noncomputable def createsLimitsOfSizeOfCreatesEqualizersAndProducts [HasEqualizers D]
     [HasProducts.{w} D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesLimitsOfShape WalkingParallelPair G] [∀ J, CreatesLimitsOfShape (Discrete.{w} J) G] :
@@ -289,6 +292,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
+@[implicit_reducible]
 noncomputable def createsFiniteLimitsOfCreatesTerminalAndPullbacks [HasTerminal D]
     [HasPullbacks D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesLimitsOfShape (Discrete.{0} PEmpty) G] [CreatesLimitsOfShape WalkingCospan G] :
@@ -493,6 +497,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
+@[implicit_reducible]
 noncomputable def createsColimitsOfShapeOfCreatesCoequalizersAndCoproducts :
     CreatesColimitsOfShape J G where
   CreatesColimit {K} :=
@@ -513,6 +518,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
+@[implicit_reducible]
 noncomputable def createsFiniteColimitsOfCreatesCoequalizersAndFiniteCoproducts [HasCoequalizers D]
     [HasFiniteCoproducts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesColimitsOfShape WalkingParallelPair G]
@@ -525,6 +531,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
+@[implicit_reducible]
 noncomputable def createsColimitsOfSizeOfCreatesCoequalizersAndCoproducts [HasCoequalizers D]
     [HasCoproducts.{w} D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesColimitsOfShape WalkingParallelPair G]
@@ -560,6 +567,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
+@[implicit_reducible]
 noncomputable def createsFiniteColimitsOfCreatesInitialAndPushouts [HasInitial D]
     [HasPushouts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesColimitsOfShape (Discrete.{0} PEmpty) G] [CreatesColimitsOfShape WalkingSpan G] :
