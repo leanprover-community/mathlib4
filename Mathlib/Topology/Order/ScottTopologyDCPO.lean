@@ -165,17 +165,10 @@ lemma isOpen_of_basis (e : α) (he₀ : IsCompactElement e) : IsOpen (Ici e) := 
     choose a a_in_d ha' using he₀ d nonempty hd he₁
     exact ⟨a, a_in_d, mem_Ici.mpr ha'⟩
 
-/-- A Subtype for compact elements in an ambient partial order. -/
-abbrev CompactElement (α : Type*) [PartialOrder α] := {x : α // IsCompactElement x}
-
-/-- The upwards closure of a compact element forms an open set. -/
-abbrev Subtype.toOpen (c : CompactElement α) : Opens α :=
-  ⟨Ici c, isOpen_of_basis c.val c.prop⟩
-
 /-- The upwards closure of a compact element forms an open set.
 In this version the data is implicit. -/
 abbrev IsCompactElement.toOpen {c : α} (hc : IsCompactElement c) : Opens α :=
-  (⟨c, hc⟩ : CompactElement α).toOpen
+  ⟨Ici c, isOpen_of_basis c hc⟩
 
 /-- A helper. This can be made more straightforward by replacing `{u : Opens α}` with
 `{u : UpperSet}` and applying the additional lemma `Topology.IsScott.isUpperSet_of_isOpen`
