@@ -11,6 +11,8 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpo
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
+
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
 This file contains various basic facts about star-ordered rings (i.e. mainly C⋆-algebras)
@@ -108,12 +110,19 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
     · exact isSelfAdjoint_inr (R := ℂ) |>.mp <| .of_nonneg h
     · exact .of_nonneg h
 
-alias ⟨_root_.LE.le.of_inr, _root_.LE.le.inr⟩ := Unitization.inr_nonneg_iff
+alias ⟨LE.le.of_inr, LE.le.inr⟩ := inr_nonneg_iff
 
 set_option backward.isDefEq.respectTransparency false in
 lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
   cfcₙ_eq_cfc_inr inr_nonneg_iff ..
+
+set_option backward.isDefEq.respectTransparency false in
+lemma sqrt_inr {a : A} : CFC.sqrt (a : A⁺¹) = (↑(CFC.sqrt a) : A⁺¹) := by
+  by_cases ha : 0 ≤ a <;> have ha' := by rwa [← Unitization.inr_nonneg_iff] at ha
+  · rw [CFC.sqrt_eq_iff .., ← inr_mul, CFC.sqrt_mul_sqrt_self a]
+  · rw [CFC.sqrt, CFC.sqrt, cfcₙ_apply_of_not_predicate _ ha,
+      cfcₙ_apply_of_not_predicate _ ha', inr_zero]
 
 end Unitization
 
@@ -511,22 +520,25 @@ end Icc
 
 end CStarAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 open CStarAlgebra Unitization CFC in
-lemma IsStarProjection.mul_right_eq_self_of_nonneg_of_le {a e : A} (he : IsStarProjection e)
-    (ha : 0 ≤ a) (hae : a ≤ e) : a * e = a := by
+lemma IsStarProjection.mul_right_eq_self_and_mul_left_eq_self_of_nonneg_of_le {a e : A}
+    (he : IsStarProjection e) (ha : 0 ≤ a) (hae : a ≤ e) : a * e = a ∧ e * a = a := by
+  suffices a * e = a from
+    ⟨this, by simpa [ha.star_eq, he.isSelfAdjoint.star_eq] using congr(star $this)⟩
+  suffices ∀ a e : A⁺¹, IsStarProjection e → 0 ≤ a → a ≤ e → a * e = a from
+    mod_cast this a e he.inr ha.inr (inr_le_iff a e |>.mpr hae)
+  intro a e he ha hae
   suffices sqrt a * (1 - e : A⁺¹) = 0 by
-    rw [mul_sub, sub_eq_zero, mul_one, ← inr_mul, inr_injective.eq_iff] at this
-    rw [nonneg_iff_eq_sqrt_mul_sqrt.mp ha, mul_assoc, ← this]
-  rw [← CStarRing.star_mul_self_eq_zero_iff, star_mul, (sqrt_nonneg a).inr.star_eq, mul_assoc,
-    ← mul_assoc ((sqrt a : A) : A⁺¹), ← inr_mul, ← nonneg_iff_eq_sqrt_mul_sqrt.mp ha, ← mul_assoc]
-  apply le_antisymm (le_of_le_of_eq (star_left_conjugate_le_conjugate
-    (inr_le_iff a e |>.mpr hae) _) _) (star_left_conjugate_nonneg (by simpa) _)
-  simp [mul_assoc, (he.inr (R := ℂ)).mul_one_sub_self]
+    simpa [← mul_assoc, sqrt_mul_sqrt_self a, mul_sub, sub_eq_zero, eq_comm (a := a)]
+      using congr(CFC.sqrt a * $this)
+  rw [← norm_eq_zero, ← sq_eq_zero_iff, ← norm_star_mul_mul_self_of_nonneg, norm_eq_zero]
+  refine le_antisymm ?_ <| star_left_conjugate_nonneg ha _
+  grw [star_left_conjugate_le_conjugate hae (1 - e), mul_assoc, he.mul_one_sub_self, mul_zero]
 
 lemma IsStarProjection.conjugate_of_nonneg_of_le {a e : A} (he : IsStarProjection e)
     (ha : 0 ≤ a) (hae : a ≤ e) : e * a * e = a := by
-  have := he.mul_right_eq_self_of_nonneg_of_le ha hae
-  rwa [mul_assoc, this, ← he.2, ← star_star a, ← star_mul, star_inj, ha.star_eq]
+  grind [he.mul_right_eq_self_and_mul_left_eq_self_of_nonneg_of_le ha hae]
 
 end CStar_nonunital
 
