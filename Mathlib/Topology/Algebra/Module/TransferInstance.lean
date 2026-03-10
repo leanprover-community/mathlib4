@@ -101,26 +101,14 @@ def Equiv.IsTopologicalAddGroup
 @[implicit_reducible]
 def ContinuousLinearEquiv.continuousSMul
     [TopologicalSpace α] [AddCommGroup α] [Module R α] [TopologicalSpace R] [ContinuousSMul R α]
-    (e : α ≃ β) : --[TopologicalSpace β] [AddCommGroup β] [Module R β]
-    letI := e.symm.topologicalSpace
-    letI := e.symm.addCommGroup
-    letI := e.symm.module R
-    --(e : α ≃L[R] β) :
-    ContinuousSMul R β := by--where
-  letI := e.symm.topologicalSpace
-  letI := e.symm.addCommGroup
-  letI := e.symm.module R
-  exact {
-    continuous_smul := by
-      let f : R × β → β := fun p ↦ e <| p.1 • (e.symm p.2)
-      have he : Continuous e := sorry
-      have : Continuous f := by --unfold f; fun_prop
-        unfold f
-        exact Continuous.comp' he--(map_continuous e)
-        (Continuous.smul (Continuous.fst continuous_id')
-        (Continuous.comp' (map_continuous e.symm) (Continuous.snd continuous_id')))
-      exact this.congr (fun p ↦ by simp [f])
-  }
+    [TopologicalSpace β] [AddCommGroup β] [Module R β]
+    (e : α ≃L[R] β) :
+    ContinuousSMul R β where
+  continuous_smul := by
+    let f : R × β → β := fun p ↦ e <| p.1 • (e.symm p.2)
+    have : Continuous f := by fun_prop
+    exact this.congr (fun p ↦ by simp [f])
+
 end ContinuousLinearEquiv
 
 universe v
