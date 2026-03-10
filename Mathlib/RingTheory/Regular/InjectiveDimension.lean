@@ -413,13 +413,13 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     · ext z
       have : (Ext.mk₀ (Fr.map S.f)).comp (z.mapExactFunctor Fr) (zero_add n) =
         (((Ext.mk₀ S.f).comp z (zero_add n)).mapExactFunctor Fr) := by
-        rw [Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map]
+        rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀]
       apply (Ext.comp_assoc _ _ _ (zero_add n) rfl (zero_add (n + 1))).symm.trans
       exact congrFun (congrFun (congrFun (congrArg Ext.comp this) _) (n + 1)) rfl
     · ext z
       have : (S_exact.map_of_exact Fr).extClass.comp (z.mapExactFunctor Fr) (add_comm 1 n) =
         (S_exact.extClass.comp z (add_comm 1 n)).mapExactFunctor Fr := by
-        rw [Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_extClass_eq_extClass_map]
+        rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_extClass]
       apply (Ext.comp_assoc _ _ _ (add_comm 1 n) rfl (add_comm 1 (n + 1))).symm.trans
       exact congrFun (congrFun (congrFun (congrArg Ext.comp this) _) (n + 2)) rfl
 
