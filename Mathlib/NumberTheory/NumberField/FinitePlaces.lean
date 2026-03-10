@@ -180,15 +180,16 @@ lemma toNNReal_valued_eq_adicAbv [Module.Finite ℤ R] [Module.Free ℤ R]
     (x : WithVal (v.valuation K)) :
     toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv K v (WithVal.equiv _ x) := rfl
 
+variable {K} in
 /-- A predicate singling out finite places among the absolute values on a number field `K`. -/
 def IsFinitePlace (w : AbsoluteValue K ℝ) : Prop :=
   ∃ v : IsDedekindDomain.HeightOneSpectrum (𝓞 K), place (FinitePlace.embedding K v) = w
 
-lemma FinitePlace.isFinitePlace (v : FinitePlace K) : IsFinitePlace K v.val := by
+lemma FinitePlace.isFinitePlace (v : FinitePlace K) : IsFinitePlace v.val := by
   simp [IsFinitePlace, v.prop]
 
 lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
-    IsFinitePlace K v ↔ ∃ w : FinitePlace K, w.val = v :=
+    IsFinitePlace v ↔ ∃ w : FinitePlace K, w.val = v :=
   ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isFinitePlace⟩
 
 omit [NumberField K] in
