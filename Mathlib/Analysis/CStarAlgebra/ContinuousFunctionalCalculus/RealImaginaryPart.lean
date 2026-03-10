@@ -3,9 +3,13 @@ Copyright (c) 2026 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-! # Interactions of the continuous functional calculus with the real and imaginary part -/
+
+public section
 
 open Complex ComplexStarModule
 
