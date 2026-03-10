@@ -898,6 +898,22 @@ instance : IsOrderedAddMonoid (ℤ√d) :=
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
 
+theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
+  refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
+  dsimp only [norm] at ha
+  rw [sub_eq_zero] at ha
+  by_cases! h : 0 ≤ d
+  · obtain ⟨d', rfl⟩ := Int.eq_ofNat_of_zero_le h
+    haveI : Nonsquare d' := ⟨fun n h => h_nonsquare n <| mod_cast h⟩
+    exact divides_sq_eq_zero_z ha
+  · suffices a.re * a.re = 0 by
+      rw [eq_zero_of_mul_self_eq_zero this] at ha ⊢
+      simpa only [true_and, or_self_right, re_zero, im_zero, eq_self_iff_true, zero_eq_mul,
+        mul_zero, mul_eq_zero, h.ne, false_or, or_self_iff] using ha
+    apply _root_.le_antisymm _ (mul_self_nonneg _)
+    rw [ha, mul_assoc]
+    exact mul_nonpos_of_nonpos_of_nonneg h.le (mul_self_nonneg _)
+
 private theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b := by
   obtain ⟨n, hn⟩ := le_arch' a
   have hnorm_ne : b.norm ≠ 0 := by
@@ -939,21 +955,6 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n :=
 
 end
 
-theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
-  refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
-  dsimp only [norm] at ha
-  rw [sub_eq_zero] at ha
-  by_cases! h : 0 ≤ d
-  · obtain ⟨d', rfl⟩ := Int.eq_ofNat_of_zero_le h
-    haveI : Nonsquare d' := ⟨fun n h => h_nonsquare n <| mod_cast h⟩
-    exact divides_sq_eq_zero_z ha
-  · suffices a.re * a.re = 0 by
-      rw [eq_zero_of_mul_self_eq_zero this] at ha ⊢
-      simpa only [true_and, or_self_right, re_zero, im_zero, eq_self_iff_true, zero_eq_mul,
-        mul_zero, mul_eq_zero, h.ne, false_or, or_self_iff] using ha
-    apply _root_.le_antisymm _ (mul_self_nonneg _)
-    rw [ha, mul_assoc]
-    exact mul_nonpos_of_nonpos_of_nonneg h.le (mul_self_nonneg _)
 
 variable {R : Type}
 
