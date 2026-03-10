@@ -522,7 +522,7 @@ end CStarAlgebra
 
 set_option backward.isDefEq.respectTransparency false in
 open CStarAlgebra Unitization CFC in
-lemma IsStarProjection.mul_right_eq_self_and_mul_left_eq_self_of_nonneg_of_le {a e : A}
+lemma IsStarProjection.mul_right_and_mul_left_of_nonneg_of_le {a e : A}
     (he : IsStarProjection e) (ha : 0 ≤ a) (hae : a ≤ e) : a * e = a ∧ e * a = a := by
   suffices a * e = a from
     ⟨this, by simpa [ha.star_eq, he.isSelfAdjoint.star_eq] using congr(star $this)⟩
@@ -538,7 +538,7 @@ lemma IsStarProjection.mul_right_eq_self_and_mul_left_eq_self_of_nonneg_of_le {a
 
 lemma IsStarProjection.conjugate_of_nonneg_of_le {a e : A} (he : IsStarProjection e)
     (ha : 0 ≤ a) (hae : a ≤ e) : e * a * e = a := by
-  grind [he.mul_right_eq_self_and_mul_left_eq_self_of_nonneg_of_le ha hae]
+  grind [he.mul_right_and_mul_left_of_nonneg_of_le ha hae]
 
 end CStar_nonunital
 
