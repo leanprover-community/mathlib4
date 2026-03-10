@@ -58,7 +58,7 @@ theorem DifferentiableWithinAt.comp_mdifferentiableWithinAt
   hg.mdifferentiableWithinAt.comp x hf h
 
 theorem DifferentiableAt.comp_mdifferentiableWithinAt {g : F → F'} {f : M → F} {s : Set M} {x : M}
-(hg : DifferentiableAt 𝕜 g (f x)) (hf : MDiffAt[s] f x) : MDiffAt[s] (g ∘ f) x :=
+    (hg : DifferentiableAt 𝕜 g (f x)) (hf : MDiffAt[s] f x) : MDiffAt[s] (g ∘ f) x :=
   hg.mdifferentiableAt.comp_mdifferentiableWithinAt x hf
 
 theorem DifferentiableAt.comp_mdifferentiableAt {g : F → F'} {f : M → F} {x : M}
@@ -116,10 +116,9 @@ theorem MDifferentiableOn.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set 
     MDiff[s] (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) :=
   fun x hx ↦ (hf x hx).clm_precomp
 
-theorem MDifferentiable.clm_precomp
-    {f : M → F₁ →L[𝕜] F₂} (hf : MDiff f) :
-    MDiff (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
-  (hf x).clm_precomp
+theorem MDifferentiable.clm_precomp {f : M → F₁ →L[𝕜] F₂} (hf : MDiff f) :
+    MDiff (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) :=
+  fun x ↦ (hf x).clm_precomp
 
 theorem MDifferentiableWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
     (hf : MDiffAt[s] f x) :
@@ -137,8 +136,8 @@ nonrec theorem MDifferentiableOn.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {
   (hf x hx).clm_postcomp
 
 theorem MDifferentiable.clm_postcomp {f : M → F₂ →L[𝕜] F₃} (hf : MDiff f) :
-    MDiff (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
-  (hf x).clm_postcomp
+    MDiff (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) :=
+  fun x ↦ (hf x).clm_postcomp
 
 theorem MDifferentiableWithinAt.clm_comp
     {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {s : Set M} {x : M}
@@ -191,8 +190,8 @@ theorem MDifferentiable.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F�
     (hg : MDiff g) (hf : MDiff f) : MDiff fun x ↦ g x (f x) :=
   fun x ↦ (hg x).clm_apply (hf x)
 
-theorem MDifferentiableWithinAt.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
-    {s : Set M} {x : M}
+theorem MDifferentiableWithinAt.cle_arrowCongr
+    {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄} {s : Set M} {x : M}
     (hf : MDiffAt[s] (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)
     (hg : MDiffAt[s] (fun x ↦ (g x : F₃ →L[𝕜] F₄)) x) :
     MDiffAt[s] (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) x :=
@@ -368,10 +367,9 @@ typecheck we need a phrasing involving the canonical identification `NormedSpace
 between the vector space `V` and the tangent space to this vector space at any point. This is
 because two different tangent spaces (at `(f • g) x` and `g x`) appear in the equation. -/
 lemma fromTangentSpace_mfderiv_smul_apply (hf : MDiffAt f x) (hg : MDiffAt g x)
-    (v : TangentSpace I x)  :
+    (v : TangentSpace I x) :
     fromTangentSpace _ (mfderiv% (f • g) x v)
-    = f x • fromTangentSpace _ (mfderiv% g x v)
-    + fromTangentSpace _ (mfderiv% f x v) • g x := by
+    = f x • fromTangentSpace _ (mfderiv% g x v) + fromTangentSpace _ (mfderiv% f x v) • g x := by
   simpa using congr($(fromTangentSpace_mfderiv_smul hf hg) v)
 
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
@@ -388,8 +386,7 @@ the tangent space at `f x • g x` (the simp-normal form) rather than at `(f •
 lemma fromTangentSpace_mfderiv_smul_apply' (hf : MDiffAt f x) (hg : MDiffAt g x)
     (v : TangentSpace I x) :
     fromTangentSpace (f x • g x) (mfderiv% (f • g) x v)
-    = f x • fromTangentSpace _ (mfderiv% g x v)
-    + fromTangentSpace _ (mfderiv% f x v) • g x :=
+    = f x • fromTangentSpace _ (mfderiv% g x v) + fromTangentSpace _ (mfderiv% f x v) • g x :=
   fromTangentSpace_mfderiv_smul_apply hf hg v
 
 end smul
