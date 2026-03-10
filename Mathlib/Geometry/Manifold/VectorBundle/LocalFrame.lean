@@ -32,8 +32,8 @@ complete field). In the planned file `Mathlib/Geometry/Manifold/VectorBundle/Ort
 metric. This includes bundles of finite rank, modelled on a Hilbert space or on a Banach space which
 has smooth partitions of unity.
 
-We will use this to construct local extensions of a vector to a section which is smooth on the
-trivialisation domain.
+We also use this to extend a vector in a single fiber `V x` to a section near `x` which is
+smooth on the trivialisation domain.
 
 ## Main definitions and results
 
@@ -83,6 +83,18 @@ the model fiber `F`.
 * `e.contMDiffOn_iff_localFrame_coeff b`: a section `s` is `C^k` on an open set `t ⊆ e.baseSet`
   iff all of its frame coefficients are
 
+A local frame can be used to extend any single vector `v : V x` to a section which is smooth near
+`x`, such that the construction is linear in `v`.
+* `localExtensionOn b e v`: given a basis `b` and a compatible trivialisation `e` of `V` near `x`,
+  extend the vector `v : V x` to a section of `V` which is smooth on `e.baseSet`
+* `localExtensionOn_apply_self`: `localExtensionOn b e v x = v`, i.e. we really extend `v` at `x`
+* `contMDiffOn_localExtensionOn`: `localExtensionOn b e v` is `C^n` on `e.baseSet`
+* `localExtensionOn_localFrame_coeff`: `localExtensionOn` has constant frame coefficients
+  (knowing this is sometimes useful when working with local extensions for covariant derivatives)
+* `localExtensionOn_add`, `localExtensionOn_zero` and `localExtensionOn_smul` prove that
+  `v ↦ localExtensionON b e v` is a linear map.
+
+
 ## Note
 
 This file proves smoothness criteria in terms of coefficients for local frames induced by a
@@ -93,8 +105,15 @@ trivialization. A fully frame-intrinsic converse for `IsLocalFrameOn` will be ad
 Local frames use the junk value pattern: they are defined on all of `M`, but their value is
 only meaningful on the set on which they are a local frame.
 
+Note that `localExtensionOn` need not be smooth globally; in turn, this definition makes sense over
+any field. In contrast, an extension to a global holomorphic vector field is more delicate for
+complex vector bundles (whereas *locally* holomorphic sections always exist).
+For real bundles, global extensions always exist and can be constructed by scalar multiplication
+of a local extension with a smooth bump function of sufficiently small support.
+
+
 ## Tags
-vector bundle, local frame, smoothness
+vector bundle, local frame, smoothness, local extension of section
 
 -/
 
@@ -568,3 +587,76 @@ lemma mdifferentiableAt_iff_localFrame_coeff (hx : x' ∈ e.baseSet) :
 end MDifferentiable
 
 end
+
+-- local extension of a vector field in a trivialisation's base set
+section localExtensionOn
+
+variable {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTrivializationAtlas e]
+  {ι : Type*} [Fintype ι] {b : Basis ι 𝕜 F} {x x' : M}
+  [VectorBundle 𝕜 F V]
+
+open scoped Classical in
+/-- Extend a vector `v ∈ V x` to a section `s` of the bundle `V` which is smooth near `x`,
+such that `s x = v` and this construction is linear in `v`.
+
+The details of this extension are unspecified (and could be subject to change).
+Currently, we construct this extension using a local frame induced by a choose of basis of the
+fibre `F` and a compatible trivialisation `e` of `V` around `x`.
+(Allowing any local frame near `x` would be easy to implement.)
+Our construction has constant coefficients on `e.baseSet` w.r.t. this local frame, and is zero
+otherwise. In particular, it is smooth on `e.baseSet`, and (globally) linear in `v`.
+
+We choose an extension with these particularly nice properties because this simplifies later
+constructions on covariant derivatives (and in this context, the value at `s` at points other than
+`x` does not matter, but constant frame coefficients are useful).
+-/
+-- XXX: we could generalise this definition to any local frame on `U ∋ x`, with smoothness on `U`.
+-- Would this be useful? Should do this?
+noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
+    {x : M} : V x →ₗ[𝕜] ((x' : M) → V x') where
+  toFun v := open scoped Classical in
+    fun x' ↦ if hx : x ∈ e.baseSet then ∑ i, (e.basisAt b hx).repr v i • e.localFrame b i x' else 0
+  map_add' v v' := by
+    ext x'
+    by_cases hx: x ∈ e.baseSet; swap
+    · simp [hx]
+    · simp [hx, add_smul, Finset.sum_add_distrib]
+  map_smul' a v := by
+    ext x'
+    by_cases hx: x ∈ e.baseSet; swap
+    · simp [hx]
+    · simp +contextual [hx, Finset.smul_sum, mul_smul a (((e.basisAt b hx).repr v) _)]
+
+variable (b e) in
+@[simp]
+lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
+    (localExtensionOn b e v) x = v := by
+  simp [localExtensionOn, hx]
+
+variable (b) in
+/-- A local extension has constant frame coefficients within its defining trivialisation. -/
+lemma localExtensionOn_localFrame_coeff [ContMDiffVectorBundle 1 F V I]
+    (hx : x ∈ e.baseSet) (hx' : x' ∈ e.baseSet) (v : V x) (i : ι) :
+    (Trivialization.localFrame_coeff I e b i x') ((localExtensionOn b e) v x') =
+    (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn b e) v x) := by
+  -- Combining these into one `simp` call makes these lemmas never fire.
+  rw [e.localFrame_coeff_apply_of_mem_baseSet b hx ((localExtensionOn b e) v) i,
+    e.localFrame_coeff_apply_of_mem_baseSet b hx' ((localExtensionOn b e) v) i]
+  simp [localExtensionOn, hx, hx']
+
+variable (F) in
+lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    {x : M} (hx : x ∈ e.baseSet) (v : V x) [ContMDiffVectorBundle ∞ F V I] :
+    CMDiff[e.baseSet] ∞ (T% (localExtensionOn b e v)) := by
+  -- The local frame coefficients of `localExtensionOn` w.r.t. the frame induced by `e` are
+  -- constant, hence smoothness follows.
+  rw [contMDiffOn_baseSet_iff_localFrame_coeff b]
+  intro i
+  simp only [LinearMap.piApply_apply]
+  apply (contMDiffOn_const
+    (c := (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn b e) v x))).congr
+  intro y hy
+  rw [localExtensionOn_localFrame_coeff b hx hy v i]
+
+end localExtensionOn
