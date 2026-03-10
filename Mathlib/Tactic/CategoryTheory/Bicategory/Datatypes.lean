@@ -442,7 +442,10 @@ def comp? (e : Expr) : BicategoryM (Option (Mor₁ × Mor₁)) := do
 
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def mor₁OfExpr (e : Expr) : BicategoryM Mor₁ := do
-  if let some f := (← get).cache.find? e then
+  let e := e.consumeMData
+  if e.hasExprMVar then
+    throwError m!"mor₁OfExpr: expression contains metavariables:\n{e}"
+  if let some f := (← get).cache.get? e then
     return f
   let f ←
     if let some a ← id₁? e then

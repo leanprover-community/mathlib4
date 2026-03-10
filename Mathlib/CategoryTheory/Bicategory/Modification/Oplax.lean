@@ -49,6 +49,87 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
   {F G : B ⥤ᵒᵖᴸ C}
 
+namespace LaxTrans
+
+variable (η θ : LaxTrans F G)
+
+/-- A modification between lax natural transformations of oplax functors. -/
+@[ext]
+structure Modification where
+  /-- The underlying family of 2-morphisms. -/
+  app (a : B) : η.app a ⟶ θ.app a
+  /-- The naturality condition. -/
+  naturality :
+    ∀ {a b : B} (f : a ⟶ b),
+      app a ▷ G.map f ≫ θ.naturality f = η.naturality f ≫ F.map f ◁ app b := by
+    cat_disch
+
+attribute [reassoc (attr := simp)] Modification.naturality
+
+variable {η θ}
+
+namespace Modification
+
+variable (η) in
+/-- The identity modification. -/
+@[simps]
+def id : Modification η η where
+  app a := 𝟙 (η.app a)
+
+instance : Inhabited (Modification η η) :=
+  ⟨Modification.id η⟩
+
+/-- Vertical composition of modifications. -/
+@[simps]
+def vcomp {ι : LaxTrans F G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
+  app a := Γ.app a ≫ Δ.app a
+
+end Modification
+
+variable (η θ) in
+/-- Type-alias for modifications between lax transformations of oplax functors. This is the type
+used for the 2-homomorphisms in the bicategory of oplax functors equipped with lax
+transformations. -/
+@[ext]
+structure Hom where
+  of ::
+  /-- The underlying modification of lax transformations. -/
+  as : Modification η θ
+
+/-- Category structure on the lax natural transformations between oplax functors.
+
+Note that this is a scoped instance in the `Oplax.LaxTrans` namespace. -/
+@[simps!]
+scoped instance homCategory : Category (LaxTrans F G) where
+  Hom := Hom
+  id η := ⟨Modification.id η⟩
+  comp Γ Δ := ⟨Modification.vcomp Γ.as Δ.as⟩
+
+instance : Inhabited (η ⟶ η) :=
+  ⟨𝟙 η⟩
+
+@[ext]
+lemma homCategory.ext {m n : η ⟶ θ} (h : ∀ a, m.as.app a = n.as.app a) : m = n :=
+  Hom.ext <| Modification.ext <| funext h
+
+/-- Construct a modification isomorphism between lax natural transformations
+by giving object level isomorphisms, and checking naturality only in the forward direction.
+-/
+@[simps]
+def isoMk (app : ∀ a, η.app a ≅ θ.app a)
+    (naturality :
+      ∀ {a b} (f : a ⟶ b),
+        (app a).hom ▷ G.map f ≫ θ.naturality f =
+          η.naturality f ≫ F.map f ◁ (app b).hom := by cat_disch) :
+    η ≅ θ where
+  hom := ⟨{ app a := (app a).hom }⟩
+  inv := ⟨{
+      app a := (app a).inv
+      naturality {a b} f := by
+        simpa using (app a).inv ▷ G.map f ≫= (naturality f).symm =≫ F.map f ◁ (app b).inv }⟩
+
+end LaxTrans
+
 namespace OplaxTrans
 
 variable (η θ : F ⟶ G)
