@@ -225,6 +225,7 @@ section Finset
 
 /-! ### `Fintype (s : Finset α)` -/
 
+
 instance Finset.fintypeCoeSort {α : Type u} (s : Finset α) : Fintype s :=
   ⟨s.attach, s.mem_attach⟩
 
