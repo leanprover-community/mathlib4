@@ -193,44 +193,42 @@ theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i)
 
 instance distribLattice : DistribLattice (Digraph V) where
     le := fun G H ↦ (G.verts ⊆ H.verts) ∧ (∀ ⦃v w⦄, G.Adj v w → H.Adj v w)
-    le_refl := by
-      intro G
-      aesop
+    le_refl := by aesop
     le_trans := by
-      intro G₁ G₂ G₃ h₁₂ h₂₃
+      intros _ _ _ h₁₂ h₂₃
       constructor
       · exact h₁₂.1.trans h₂₃.1
       · aesop
     le_antisymm := by
-      intro G H h h'
+      intros
       ext v w <;> tauto
     sup := max
     inf := min
     le_sup_left := by
-      intro G H
+      intros
       constructor <;> aesop (add simp [max, SemilatticeSup.sup])
     le_sup_right := by
-      intro G H
+      intros
       constructor <;> aesop (add simp [max, SemilatticeSup.sup])
 
     inf_le_left := by
-      intro G H
+      intros
       constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
 
     inf_le_right := by
-      intro G H
+      intros
       constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
 
     sup_le := by
-      intro G H supG hG hH
+      intros
       constructor <;> aesop (add simp [max, SemilatticeSup.sup])
 
     le_inf := by
-      intro G H infG hG hH
+      intros
       constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
 
     le_sup_inf := by
-      intro G H I
+      intros
       constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf, max,
         SemilatticeSup.sup, Set.union_inter_distrib_left])
 
