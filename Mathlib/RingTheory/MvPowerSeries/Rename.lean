@@ -47,6 +47,8 @@ variable {σ τ γ R S : Type*} (f : σ → τ) (g : τ → γ) [TendstoCofinite
 
 namespace MvPowerSeries
 
+section CommSemiring
+
 variable [CommSemiring R] [CommSemiring S]
 
 section rename
@@ -280,5 +282,7 @@ theorem killCompl_map (φ : R →+* S) (p : MvPowerSeries τ R) :
   ext; simp [coeff_killCompl]
 
 end killCompl
+
+end CommSemiring
 
 end MvPowerSeries
