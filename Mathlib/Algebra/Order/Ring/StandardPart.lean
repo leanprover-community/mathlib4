@@ -145,7 +145,7 @@ def FiniteResidueField : Type _ :=
 namespace FiniteResidueField
 
 noncomputable instance : Field (FiniteResidueField K) :=
-  inferInstanceAs (Field (IsLocalRing.ResidueField _))
+  inferInstanceAs% Field (IsLocalRing.ResidueField _)
 
 private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
     (Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))) ⁻¹' {x} := by
@@ -198,12 +198,6 @@ theorem mk_lt_mk {x y : FiniteElement K} : mk x < mk y ↔ x < y ∧ mk x ≠ mk
 theorem lt_of_mk_lt_mk {x y : FiniteElement K} (h : mk x < mk y) : x < y :=
   (mk_lt_mk.1 h).1
 
-#adaptation_note /-- Upon bumping to v4.29.0-rc3, this was previously proved by
-`grind [mul_le_mul_of_nonneg_left]`, but `grind` fails due to `inferInstanceAs` leakage in the
-`Field (FiniteResidueField K)` instance causing a defeq mismatch between
-`DivisionMonoid.toDivInvOneMonoid.toInvOneClass.toInv` and `Field.toGrindField.toInv`.
-See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576520256
--/
 private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x ≤ y) (hz : 0 ≤ z) :
     z * x ≤ z * y := by
   induction x with | mk x
@@ -212,11 +206,7 @@ private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x
   rw [← map_mul, ← map_mul]
   rw [← map_zero mk] at hz
   rw [mk_le_mk] at h hz ⊢
-  rcases h with h | h
-  · rcases hz with hz | hz
-    · simp [mul_le_mul_of_nonneg_left h hz]
-    · simp [← hz]
-  · simp [h]
+  grind [mul_le_mul_of_nonneg_left]
 
 instance : IsOrderedRing (FiniteResidueField K) where
   zero_le_one := mk.monotone' zero_le_one
