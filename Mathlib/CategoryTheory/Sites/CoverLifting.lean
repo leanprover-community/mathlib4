@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Restrict
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-public import Mathlib.CategoryTheory.Sites.CoverPreserving
+public import Mathlib.CategoryTheory.Sites.Continuous
 public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
@@ -87,34 +87,6 @@ instance isCocontinuous_id : Functor.IsCocontinuous (𝟭 C) J J :=
 theorem isCocontinuous_comp [G.IsCocontinuous J K] [G'.IsCocontinuous K L] :
     (G ⋙ G').IsCocontinuous J L where
   cover_lift h := G.cover_lift J K (G'.cover_lift K L h)
-
-section
-
-variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma Adjunction.homEquiv_symm_unit (X : C) :
-    dsimp% (adj.homEquiv _ _).symm (adj.unit.app X) = 𝟙 _ := by
-  simp [Adjunction.homEquiv_symm_apply]
-
-set_option backward.isDefEq.respectTransparency false in
-lemma Adjunction.isCocontinuous_iff_coverPreserving (adj : F ⊣ G) :
-    F.IsCocontinuous J K ↔ CoverPreserving K J G := by
-  refine ⟨fun h ↦ ⟨?_⟩, fun h ↦ ⟨?_⟩⟩
-  · intro U S hS
-    refine J.superset_covering ?_ <| h.cover_lift (K.pullback_stable (adj.counit.app _) hS)
-    intro X f hf
-    refine ⟨F.obj X, F.map f ≫ adj.counit.app _, adj.unit.app _, hf, by simp⟩
-  · intro U S hS
-    refine J.superset_covering ?_ (J.pullback_stable (adj.unit.app U) <| h.cover_preserve hS)
-    intro X f ⟨Y, g, u, hg, heq⟩
-    suffices F.map f = (adj.homEquiv _ _).symm u ≫ g by
-      simp [this, S.downward_closed hg]
-    simp [← Adjunction.homEquiv_naturality_right_symm, ← heq,
-      Adjunction.homEquiv_naturality_left_symm]
-
-end
 
 end IsCocontinuous
 
