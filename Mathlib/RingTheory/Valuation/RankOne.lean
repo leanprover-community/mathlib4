@@ -130,7 +130,6 @@ instance : IsNontrivial v where
 
 section Restrict
 
-set_option backward.isDefEq.respectTransparency false in
 instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
