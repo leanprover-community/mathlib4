@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Nucleus
 public import Mathlib.Order.SupClosed
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Sublocale
@@ -217,7 +218,7 @@ variable {S T : Sublocale X}
   · intro hx
     exact ⟨x, by simp_all⟩
 
-@[simp↓] lemma toNucleus_le_toNucleus : S.toNucleus ≤ T.toNucleus ↔ T ≤ S := by
+lemma toNucleus_le_toNucleus : S.toNucleus ≤ T.toNucleus ↔ T ≤ S := by
   simp [↓← Nucleus.range_subset_range]
 
 end Sublocale
@@ -356,3 +357,96 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
   map_top' := by simpa [Open.toNucleus] using by rfl
 
 end Open
+
+
+/--
+A closed sublocale is defined by an element of the locale.
+-/
+@[ext]
+structure Closed (X : Type*) [Order.Frame X] where
+  /-- The element of a closed sublocale. Do not use this directly, use `Closed.getElement` instead. -/
+  element : X
+
+namespace Closed
+
+instance : PartialOrder (Closed X) where
+  le x y := y.element ≤ x.element
+  le_refl _ := le_refl _
+  le_trans _ _ _ h1 h2 := le_trans h2 h1
+  le_antisymm _ _ h1 h2 := by ext; exact le_antisymm h2 h1
+
+variable {C D : Closed X}
+
+private lemma le_def' : C ≤ D ↔ D.element ≤ C.element := ge_iff_le
+
+instance : CompleteSemilatticeInf (Closed X) where
+  sInf s := ⟨sSup {x.val.element | x : s}⟩
+  sInf_le s c hc := by simpa [le_def'] using le_sSup (by grind)
+  le_sInf s c hc := by simpa [le_def'] using fun d hd ↦ (le_def'.mpr (hc d hd))
+
+def closedIsoDual : sInfHom (Closed X) Xᵒᵈ where
+  toFun x := OrderDual.toDual x.element
+  map_sInf' s := by
+    change (⟨sSup _⟩ : Closed X).element = sSup _
+    simp
+    grind
+
+abbrev getElement (c : Closed X) : X := OrderDual.ofDual (closedIsoDual c)
+
+@[simp] lemma getElement_mk {x : X} : ({element := x} : Closed X).getElement = x := rfl
+
+lemma le_def : C ≤ D ↔ D.getElement ≤ C.getElement := ge_iff_le
+
+/-- TODO Docstring -/
+def toNucleus (c : Closed X) : Nucleus X where
+  toFun x := c.getElement ⊔ x
+  map_inf' a b := by
+    simpa [getElement, inf_sup_left, inf_sup_right] using le_antisymm (by gcongr; simp) (by simp)
+  idempotent' := by simp
+  le_apply' := by simp
+
+def toSublocale : sInfHom (Closed X) (Sublocale X) where
+  toFun c := c.toNucleus.toSublocale
+  map_sInf' s := by
+    simp only [Nucleus.toSublocale, toNucleus, ← Set.image_image]
+    rw [sInf_eq_iInf, iInf_image, ← OrderIso.map_sInf]
+    congr
+    ext i
+    simp only [getElement, map_sInf, ofDual_sInf, OrderDual.ofDual_toDual, Nucleus.coe_mk,
+      InfHom.coe_mk]
+    apply le_antisymm
+    · simp only [sup_le_iff, sSup_le_iff, mem_preimage, mem_image, forall_exists_index, and_imp,
+      Nucleus.le_apply, and_true]
+      intro b x hx h1
+      simp only [← sInf_upperBounds_eq_sSup,upperBounds, mem_preimage, mem_image, EmbeddingLike.apply_eq_iff_eq,
+        forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Nucleus.sInf_apply, mem_setOf_eq,
+        le_iInf_iff]
+      intro n h2
+      specialize h2 x hx
+      simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def, sup_le_iff,
+        n.le_apply, and_true] at h2
+      exact le_trans (le_of_eq (Eq.symm h1)) (h2 i)
+    · simpa [← sInf_upperBounds_eq_sSup, upperBounds, ← Nucleus.coe_le_coe, Pi.le_def,
+        Nucleus.le_apply, iInf_le_iff] using fun _ h1 ↦ h1 (_ : Closed X).toNucleus <|
+          fun a ha _ ↦ le_sup_of_le_left <| le_sInf <| fun _ h ↦ h a ha (by simp)
+
+def compl (c : Closed X) : Open X := ⟨c.getElement⟩
+
+end Closed
+
+namespace Open
+open Sublocale
+
+def compl (u : Open X) : Closed X := ⟨u.getElement⟩
+
+variable {U : Open X}
+
+set_option backward.isDefEq.respectTransparency false in
+lemma sup_compl_eq_top : U.toSublocale ⊔ U.compl.toSublocale = ⊤ := by
+  rw [eq_top_iff, ← toNucleus_le_toNucleus, Sublocale.toNucleus]
+  simp only [toSublocale, toNucleus, FrameHom.coe_mk, InfTopHom.coe_mk, InfHom.coe_mk,
+    Closed.toSublocale, Closed.toNucleus, compl, sInfHom.coe_mk, Closed.getElement_mk, map_sup,
+    OrderIso.symm_apply_apply, ← toDual_inf, OrderDual.ofDual_toDual, Sublocale.toNucleus, map_top,
+    OrderDual.ofDual_top, le_bot_iff]
+  ext i
+  simp [inf_sup_left]
