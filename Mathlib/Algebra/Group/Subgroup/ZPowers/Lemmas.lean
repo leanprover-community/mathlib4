@@ -55,7 +55,17 @@ end Ring
 
 end AddSubgroup
 
-@[simp] lemma Int.range_castAddHom {A : Type*} [AddGroupWithOne A] :
+namespace Int
+
+@[simp] lemma range_castAddHom {A : Type*} [AddGroupWithOne A] :
     (Int.castAddHom A).range = AddSubgroup.zmultiples 1 := by
   ext a
   simp_rw [AddMonoidHom.mem_range, Int.coe_castAddHom, AddSubgroup.mem_zmultiples_iff, zsmul_one]
+
+lemma range_nsmulAddMonoidHom (n : ℕ) :
+    (nsmulAddMonoidHom (α := ℤ) n).range = AddSubgroup.zmultiples (n : ℤ) := by
+  ext1 m
+  suffices (∃ x : ℤ , n * x = m) ↔ ∃ y, y * n = m by simpa only using this
+  refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩ <;> obtain ⟨k, rfl⟩ := H <;> exact ⟨k, Int.mul_comm ..⟩
+
+end Int
