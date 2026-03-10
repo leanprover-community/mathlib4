@@ -298,9 +298,10 @@ def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
       ext x
       have := ((f.hom x).2 g 1).symm
       have := hom_comm_apply f (φ g) x
-      simp_all [Representation.IntertwiningMap.apply_toLinearMap]⟩
+      simp_all [Representation.IntertwiningMap.toLinearMap_apply]⟩
   left_inv x := by
-    ext; simp [resCoindToHom_hom_hom_apply_coe _, Representation.IntertwiningMap.apply_toLinearMap]
+    ext; simp [resCoindToHom_hom_hom_apply_coe _,
+      ← Representation.IntertwiningMap.toLinearMap_apply]
   right_inv z := by
     ext (b : B.V)
     have := hom_comm_apply z

@@ -6,6 +6,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.RepresentationTheory.Action
+public import Mathlib.RepresentationTheory.Equiv
 public import Mathlib.CategoryTheory.Action.Monoidal
 
 @[expose] public section
@@ -1148,8 +1149,8 @@ instance : (linearization k G).Monoidal where
   right_unitality X := hom_ext <| μ_rightUnitor X
   η := ofHom (η k G)
   δ X Y := ofHom (δ X Y)
-  δ_natural_left f Z := hom_ext <| rTensor_comp_δ f Z
-  δ_natural_right Z f := hom_ext <| lTensor_comp_δ f Z
+  δ_natural_left f Z := hom_ext <| rTensor_comp_δ Z f
+  δ_natural_right Z f := hom_ext <| lTensor_comp_δ Z f
   oplax_associativity X Y Z := hom_ext <| assoc_comp_δ X Y Z
   oplax_left_unitality X := hom_ext <| leftUnitor_δ X
   oplax_right_unitality X := hom_ext <| rightUnitor_δ X

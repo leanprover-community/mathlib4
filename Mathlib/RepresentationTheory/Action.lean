@@ -238,6 +238,8 @@ lemma δ_μ : (δ X Y).comp (μ (k := k) X Y) = .id _ := by
 
 end comm
 
+end LinearizeMonoidal
+
 lemma linearizeTrivial_def (X : Type w) (g : G) :
     linearize k G (Action.trivial _ X) g = LinearMap.id := by
   ext (x : X) : 2
@@ -271,8 +273,6 @@ variable (k G) in
 def linearizeDiagonalEquiv (n : ℕ) : (linearize k G (Action.diagonal G n)).Equiv
     (diagonal k G n) :=
   .mk (LinearEquiv.refl _ _) fun g ↦ by rfl
-
-end LinearizeMonoidal
 
 end
 
