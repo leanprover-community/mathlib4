@@ -403,7 +403,7 @@ end dist
 
 section ball
 
-/-- The open ball of radius `r` around vertex `c` in the graph extended metric. -/
+/-- The open ball of radius `r` centered at the vertex `c` in the graph extended metric. -/
 def ball (c : V) (r : ℕ∞) : Set V :=
   {v | G.edist c v < r}
 
@@ -413,10 +413,11 @@ variable {G} {c v : V} {r r₁ r₂ : ℕ∞}
 theorem mem_ball : v ∈ G.ball c r ↔ G.edist c v < r :=
   Iff.rfl
 
+/-- The ball of radius zero is empty. -/
 @[simp]
-theorem ball_zero : G.ball c 0 = ∅ := by
-  ext v; simp [ball]
+theorem ball_zero : G.ball c 0 = ∅ := by ext v; simp [ball]
 
+/-- The ball of radius one consists of just the center. -/
 @[simp]
 theorem ball_one : G.ball c 1 = {c} := by
   ext v
@@ -429,6 +430,16 @@ theorem ball_one : G.ball c 1 = {c} := by
         (Order.one_le_iff_pos.mpr (edist_pos_of_ne hne)))
   · rintro rfl; simp
 
+/-- The ball of radius two consists of the center and its neighbors. -/
+@[simp]
+theorem ball_two : G.ball c 2 = insert c (G.neighborSet c) := by
+  ext v
+  simp only [mem_ball, Set.mem_insert_iff, mem_neighborSet,
+    show (2 : ℕ∞) = 1 + 1 from rfl, ENat.lt_add_one_iff ENat.one_ne_top,
+    edist_le_one_iff_adj_or_eq]
+  tauto
+
+/-- The ball of radius `⊤` is the connected component of the center. -/
 theorem ball_top :
     G.ball c ⊤ = (G.connectedComponentMk c).supp := by
   ext v
@@ -441,6 +452,10 @@ theorem ball_top :
     exact lt_top_iff_ne_top.mpr
       (edist_ne_top_iff_reachable.mpr
         (ConnectedComponent.eq.mp h.symm))
+
+/-- A vertex is in the ball of radius `⊤` iff it is reachable from the center. -/
+theorem mem_ball_top : v ∈ G.ball c ⊤ ↔ G.Reachable c v := by
+  simp only [mem_ball, lt_top_iff_ne_top, edist_ne_top_iff_reachable]
 
 /-- Balls are monotone in the radius. -/
 @[gcongr]
