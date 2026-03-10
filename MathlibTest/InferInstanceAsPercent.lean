@@ -110,6 +110,4 @@ is not definitionally equal to the right-hand side
 example : testField_leaky = testField_direct := by with_reducible_and_instances rfl
 
 -- The fixed instance IS defeq at `instances` transparency.
-example : testField_fixed = testField_direct := by with_reducible_and_instances
-set_option trace.Meta.isDefEq true in
-rfl
+example : testField_fixed = testField_direct := by with_reducible_and_instances rfl
