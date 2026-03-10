@@ -294,17 +294,6 @@ lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearE
 
 lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
 
-open LinearMap in
-lemma _root_.LinearEquiv.isIntertwining_symm_isIntertwining {e : V ≃ₗ[A] W}
-    (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) (g : G) :
-    e.symm ∘ₗ (σ g) = (ρ g) ∘ₗ e.symm := by
-  apply e.comp_toLinearMap_eq_iff _ _|>.1
-  rw [← comp_assoc, ← comp_assoc, he g, e.comp_symm, id_comp, comp_assoc, e.comp_symm, comp_id]
-
-@[simp]
-lemma mk_symm {e : V ≃ₗ[A] W} (he1 : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
-    (mk e he1).symm = mk e.symm (e.isIntertwining_symm_isIntertwining he1) := rfl
-
 variable {τ}
 
 open LinearMap in
