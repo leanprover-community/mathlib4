@@ -46,6 +46,7 @@ open scoped Real Filter FourierTransform
 
 open ContinuousMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The key lemma for Poisson summation: the `m`-th Fourier coefficient of the periodic function
 `∑' n : ℤ, f (x + n)` is the value at `m` of the Fourier transform of `f`. -/
 theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
@@ -226,6 +227,7 @@ section Schwartz
 
 open scoped SchwartzMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Poisson's summation formula** for Schwartz functions. -/
 theorem SchwartzMap.tsum_eq_tsum_fourier (f : 𝓢(ℝ, ℂ)) (x : ℝ) :
     ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) := by

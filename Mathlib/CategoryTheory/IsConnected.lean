@@ -224,7 +224,7 @@ attribute [local instance] uliftCategory in
 instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
   apply IsConnected.of_induct
   · rintro p hj₀ h ⟨j⟩
-    let p' : Set J := {j : J | p ⟨j⟩}
+    let p' : Set J := {j : J | ⟨j⟩ ∈ p}
     have hj₀' : Classical.choice hc.is_nonempty ∈ p' := by
       simp only [p']
       exact hj₀
@@ -365,6 +365,7 @@ theorem Zigzag.of_inv_inv {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₃�
 /-- The setoid given by the equivalence relation `Zigzag`. A quotient for this
 setoid is a connected component of the category.
 -/
+@[implicit_reducible]
 def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
   r := Zigzag
   iseqv := zigzag_equivalence

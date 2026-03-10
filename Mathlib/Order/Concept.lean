@@ -180,7 +180,11 @@ theorem intent_injective : Injective (@intent α β r) := fun _ _ => ext'
 /-- Copy a concept, adjusting definitional equalities. -/
 @[simps!]
 def copy (c : Concept α β r) (e : Set α) (i : Set β) (he : e = c.extent) (hi : i = c.intent) :
-    Concept α β r := ⟨e, i, he ▸ hi ▸ c.upperPolar_extent, he ▸ hi ▸ c.lowerPolar_intent⟩
+    Concept α β r where
+  extent := e
+  intent := i
+  upperPolar_extent := he ▸ hi ▸ c.upperPolar_extent
+  lowerPolar_intent := he ▸ hi ▸ c.lowerPolar_intent
 
 theorem copy_eq (c : Concept α β r) (e : Set α) (i : Set β) (he hi) : c.copy e i he hi = c := by
   ext; simp_all
@@ -368,6 +372,24 @@ theorem extent_sInf (S : Set (Concept α β r)) : (sInf S).extent = ⋂ c ∈ S,
 theorem intent_sInf (S : Set (Concept α β r)) :
     (sInf S).intent = upperPolar r (⋂ c ∈ S, extent c) :=
   rfl
+
+@[simp]
+theorem extent_iSup (f : ι → Concept α β r) :
+    (⨆ i, f i).extent = lowerPolar r (⋂ i, (f i).intent) := by
+  simp_rw [iSup, extent_sSup, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem intent_iSup (f : ι → Concept α β r) : (⨆ i, f i).intent = ⋂ i, (f i).intent := by
+  simp_rw [iSup, intent_sSup, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem extent_iInf (f : ι → Concept α β r) : (⨅ i, f i).extent = ⋂ i, (f i).extent := by
+  simp_rw [iInf, extent_sInf, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem intent_iInf (f : ι → Concept α β r) :
+    (⨅ i, f i).intent = upperPolar r (⋂ i, (f i).extent) := by
+  simp_rw [iInf, intent_sInf, ← Set.iInf_eq_iInter, iInf_range]
 
 instance : Inhabited (Concept α β r) :=
   ⟨⊥⟩

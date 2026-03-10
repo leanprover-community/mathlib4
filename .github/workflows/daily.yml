@@ -314,7 +314,7 @@ jobs:
           reinstall-transient-toolchain: true
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@631a55b12751854ce901bb631d5902ceb48146f7 # stable
 
       - name: Check Mathlib using nanoda # make sure this name is consistent with "Get job status and URLs" in the notify job
         id: nanoda

@@ -271,6 +271,7 @@ theorem ofLine_extend (γ : Path x y) : ofLine (by fun_prop) (extend_zero γ) (e
 
 attribute [local simp] Iic_def
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Concatenation of two paths from `x` to `y` and from `y` to `z`, putting the first
 path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 @[trans]
@@ -291,6 +292,7 @@ theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
       else γ' ⟨2 * t - 1, two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, t.2.2⟩⟩ :=
   show ite _ _ _ = _ by split_ifs <;> rw [extend_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.symm.trans γ.symm := by
   ext t
@@ -325,6 +327,7 @@ theorem refl_trans_refl {a : X} :
   ext
   simp [Path.trans]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
     range (γ₁.trans γ₂) = range γ₁ ∪ range γ₂ := by
   rw [← extend_range, ← image_univ, ← Iic_union_Ici (a := 1 / 2), image_union,
