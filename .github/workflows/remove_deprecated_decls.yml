@@ -211,7 +211,7 @@ jobs:
     - name: Generate app token
       id: app-token
       if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
-      uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@marcelo/2026/02/GHAppTokens
+      uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
       with:
         app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
         key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
