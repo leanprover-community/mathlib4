@@ -56,7 +56,7 @@ instance : DimensionLEOne R where
   maximalOfPrime := fun h _ ↦ maximalOfPrime h
 
 /-- A ring with finite quotients is noetherian. -/
-instance =: IsNoetherianRing R := by
+instance : IsNoetherianRing R := by
   refine (isNoetherianRing_iff_ideal_fg R).mpr fun I ↦ ?_
   by_cases hI : I = 0
   · exact hI ▸ Submodule.fg_bot
@@ -85,18 +85,24 @@ theorem finite_cardQuot_ideal_le (B : ℕ) :
   classical
   rcases finite_or_infinite R
   · apply Set.toFinite
+  -- if `R` is infinite, then we can pick a finite set `s` of cardinality `B + 1`
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq R (B + 1)
+  -- and consider the finite set `t` of nonzero differences
   let t := (s - s) \ {0}
   refine Set.Finite.of_diff ?_ (Set.finite_singleton ⊥)
+  -- in a ring with finite quotients, each nonzero element is contained in only finitely many ideals
+  -- so it is enough to show that each ideal `I` of norm at most `B` contains some element of `t`
   suffices {I | Submodule.cardQuot I ≤ B} \ {⊥} ⊆ ⋃ x ∈ t, {I | x ∈ I} from
     (t.finite_toSet.biUnion fun x hx ↦ finite_of_mem x (by grind)).subset this
   intro I hI
   rw [Set.mem_diff, Set.mem_setOf, Submodule.cardQuot_apply] at hI
   simp_rw [Set.mem_iUnion, exists_prop, Set.mem_setOf_eq]
+  -- `s` has cardinality `B + 1`, but the quotient `R ⧸ I` has cardinality at most `B`
   replace hs : (s.image (Ideal.Quotient.mk I)).card < s.card := by
     have := finiteQuotient hI.2
     have := Fintype.ofFinite (R ⧸ I)
     grw [Finset.card_le_univ, Fintype.card_eq_nat_card, hI.1, hs, Nat.lt_add_one_iff]
+  -- so we can find distinct `x, y ∈ s` with the desired collision `x - y ∈ I`
   obtain ⟨x, hx, y, hy, hxy, h⟩ := Finset.exists_ne_map_eq_of_card_image_lt hs
   refine ⟨x - y, ?_, (Submodule.Quotient.eq I).mp h⟩
   refine Finset.mem_sdiff.mpr ⟨Finset.mem_sub.mpr ⟨x, hx, y, hy, rfl⟩, ?_⟩
