@@ -118,13 +118,15 @@ initialize_simps_projections Finsupp (toFun → apply)
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
+instance instSubsingleton [IsEmpty α] : Subsingleton (α →₀ M) where
+  allEq f g := by ext x; exact isEmptyElim x
+
+instance instSubsingleton' [Subsingleton M] : Subsingleton (α →₀ M) where
+  allEq f g := by ext x; exact Subsingleton.elim ..
+
 variable (α) in
-theorem nontrivial_of_nontrivial [Nontrivial (α →₀ M)] :
-    Nontrivial M := by
-  obtain ⟨x, y, h⟩ := exists_pair_ne (α →₀ M)
-  rw [ne_eq, Finsupp.ext_iff, not_forall] at h
-  obtain ⟨a, h⟩ := h
-  exact nontrivial_of_ne _ _ h
+theorem nontrivial_of_nontrivial [h : Nontrivial (α →₀ M)] : Nontrivial M := by
+  contrapose! h; infer_instance
 
 lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
 

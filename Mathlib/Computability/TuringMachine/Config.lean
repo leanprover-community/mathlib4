@@ -6,12 +6,12 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Computability.Halting
-public import Mathlib.Computability.PostTuringMachine
+public import Mathlib.Computability.TuringMachine.PostTuringMachine
 
 /-!
 # Modelling partial recursive functions using Turing machines
 
-The files `TMConfig` and `TMToPartrec` define a simplified basis for partial recursive functions,
+The files `Config` and `ToPartrec` define a simplified basis for partial recursive functions,
 and a `Turing.TM2` model
 Turing machine for evaluating these functions. This amounts to a constructive proof that every
 `Partrec` function can be evaluated by a Turing machine.
@@ -350,7 +350,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       · simp only [List.headI_cons, exists_false, or_false, Part.mem_some_iff,
           List.tail_cons, false_and, Sum.inl.injEq, reduceCtorEq] at this
         subst this
-        exact ⟨_, ⟨h, @(hm)⟩, rfl⟩
+        exact ⟨_, ⟨h, @hm⟩, rfl⟩
       · refine IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => ?_
         obtain h | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
         exacts [hm _ h, h]

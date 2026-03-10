@@ -405,6 +405,7 @@ protected def metricSpace : MetricSpace (∀ n, E n) :=
 /-- Metric space structure on `Π (n : ℕ), E n` when the spaces `E n` have the discrete uniformity,
 where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest index where `x` and
 `y` differ. Not registered as a global instance by default. -/
+@[implicit_reducible]
 protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
     (h : ∀ n, uniformity (E n) = 𝓟 SetRel.id) : MetricSpace (∀ n, E n) :=
   haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
@@ -440,6 +441,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
 /-- Metric space structure on `ℕ → ℕ` where the distance is given by `dist x y = (1/2)^n`,
 where `n` is the smallest index where `x` and `y` differ.
 Not registered as a global instance by default. -/
+@[implicit_reducible]
 def metricSpaceNatNat : MetricSpace (ℕ → ℕ) :=
   PiNat.metricSpaceOfDiscreteUniformity fun _ => rfl
 
@@ -963,6 +965,7 @@ variable [∀ i, MetricSpace (F i)]
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+@[implicit_reducible]
 protected def metricSpace : MetricSpace (∀ i, F i) :=
   EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
 
