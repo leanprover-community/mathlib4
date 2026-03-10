@@ -92,6 +92,7 @@ a compatible Polish topology.
 Warning: following this with `borelize α` will cause an error. Instead, one can
 rewrite with `eq_borel_upgradeStandardBorel α`.
 TODO: fix the corresponding bug in `borelize`. -/
+@[implicit_reducible]
 noncomputable
 def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
     UpgradedStandardBorel α := by
@@ -504,7 +505,6 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   -- this is a contradiction.
   exact M n B
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Lusin separation theorem**: if two analytic sets are disjoint, then they are contained in
 disjoint Borel sets. -/
 theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [OpensMeasurableSpace α]

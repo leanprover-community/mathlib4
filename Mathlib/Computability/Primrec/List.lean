@@ -35,6 +35,7 @@ variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
 open Primrec
 
 set_option backward.privateInPublic true in
+@[implicit_reducible]
 private def prim : Primcodable (List β) := ⟨H⟩
 
 private theorem list_casesOn' {f : α → List β} {g : α → σ} {h : α → β × List β → σ}
@@ -427,7 +428,7 @@ theorem listFilter (hf : PrimrecRel R) [DecidableRel R] :
   simp only [← List.filterMap_eq_filter]
   refine listFilterMap fst (Primrec.ite ?_ ?_ (Primrec.const Option.none))
   · exact Primrec.eq.comp (hf.decide.comp snd (snd.comp fst)) (.const true)
-  · exact (option_some).comp snd
+  · exact option_some.comp snd
 
 /-- If `R a b` is decidable, then given `L : List α` and `b : β`, `g L b ↔ ∃ a L, R a b`
 is a primitive recursive relation. -/

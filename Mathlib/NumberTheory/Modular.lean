@@ -533,7 +533,6 @@ lemma coe_truncatedFundamentalDomain (y : ℝ) :
         ← h3, ← sq] using h2.trans_lt (by norm_num)
     exact ⟨⟨z, hz'⟩, ⟨⟨by simpa [Complex.normSq_eq_norm_sq], h2⟩, h1⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any `y : ℝ`, the standard fundamental domain truncated at height `y` is compact. -/
 lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     IsCompact (truncatedFundamentalDomain y) := by

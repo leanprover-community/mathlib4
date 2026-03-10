@@ -76,7 +76,7 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   rw [← modByMonic_eq_zero_iff_dvd (monic hx)]
   by_contra hnz
   apply degree_le_of_ne_zero A x hnz
-    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp) |>.not_gt
+    ((aeval_modByMonic_eq_self_of_root (aeval _ _)).trans hp) |>.not_gt
   exact degree_modByMonic_lt _ (monic hx)
 
 variable {A x} in
@@ -211,6 +211,7 @@ section AlgHomFintype
 
 open scoped Classical in
 /-- A technical finiteness result. -/
+@[implicit_reducible]
 noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L : Type*}
     (F : E → Multiset L) : Fintype (∀ x : X, { l : L // l ∈ F x }) :=
   @Pi.instFintype _ _ _ (Finite.fintype hX) _

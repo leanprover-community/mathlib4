@@ -137,7 +137,7 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
 /-- Find the first style exception in `exceptions` (if any) which covers a style exception `e`. -/
 def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorContext) :
     Option ErrorContext :=
-  (exceptions).find? (fun new ↦ compare e new == ComparisonResult.Comparable)
+  exceptions.find? (fun new ↦ compare e new == ComparisonResult.Comparable)
 
 /-- Output the formatted error message, containing its context.
 `style` specifies if the error should be formatted for humans to read, github problem matchers

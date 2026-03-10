@@ -51,6 +51,7 @@ theorem mul_left_bijective_of_finite₀ [IsRightCancelMulZero M] {a : M} (ha : a
   Finite.injective_iff_bijective.1 <| mul_left_injective₀ ha
 
 /-- Every finite nontrivial cancellative monoid with zero is a group with zero. -/
+@[implicit_reducible]
 def Fintype.groupWithZeroOfCancel (M : Type*) [MonoidWithZero M] [IsLeftCancelMulZero M]
     [DecidableEq M] [Fintype M] [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
@@ -92,6 +93,7 @@ section Ring
 
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
 `Mathlib/RingTheory/LittleWedderburn.lean`. -/
+@[implicit_reducible]
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
   __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slightly slow
@@ -103,6 +105,7 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
+@[implicit_reducible]
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 
@@ -114,7 +117,6 @@ end Ring
 
 variable [CommRing R] [IsDomain R] [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
     {n : ℕ} (hn : 0 < n) (g₀ : G) :
     #{g | g ^ n = g₀} ≤ Multiset.card (nthRoots n (f g₀)) := by
@@ -165,7 +167,7 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
   · have hg' : algebraMap R[X] K g ≠ 0 :=
       (map_ne_zero_iff _ (IsFractionRing.injective R[X] K)).mpr (Monic.ne_zero hg)
     field_simp
-    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
+    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div]
 
 end Polynomial
 
