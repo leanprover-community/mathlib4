@@ -78,13 +78,14 @@ we can choose to only translate `α` by writing `to_additive (dont_translate := 
 
 syntax dontTranslateOption := &"dont_translate" " := " (ident <|> num)+
 
-syntax renameRule := ident " → " ident
+syntax renameRule := ident (" → " <|> " ↔ ") ident
 
 attribute [nolint docBlame] renameRule
 
 /--
 The `(rename := ...)` option takes a comma-separated list of rename rules of the form
-`oldName → newName` specifying the argument names of the translated constant.
+`oldName → newName` specifying the argument names of the translated constant. The syntax
+`firstName ↔ secondName` can also be used for swapping two argument names.
 -/
 syntax renameOption := &"rename" " := " renameRule,+
 
@@ -999,6 +1000,26 @@ def proceedFields (t : TranslateData) (src tgt : Name) (reorder : Reorder)
     | some (ConstantInfo.inductInfo { ctors, .. }) => ctors.toArray
     | _ => #[]
 
+/-- Elaboration of the `(rename := ...)` option. -/
+def elabRename (stx : Array (TSyntax ``renameRule)) (declName : Name) (argNames : Array Name) :
+    MetaM (NameMap Name) :=
+  stx.foldlM elabRule {}
+where
+  elabRule rename stx := do
+    match stx with
+    | `(renameRule| $old → $new) =>
+      addRule old new rename
+    | `(renameRule| $first ↔ $second) =>
+      addRule first second rename >>= addRule second first
+    | _ => throwUnsupportedSyntax
+  addRule old new rename := do
+    if !argNames.contains old.getId then
+      throwErrorAt old
+        "invalid argument `{old.getId}`, it is not an argument of `{.ofConstName declName}`"
+    if rename.contains old.getId then
+      throwErrorAt old "rename rule for `{old.getId}` already specified"
+    return rename.insert old.getId new.getId
+
 /-- Elaboration of the configuration options for a translation attribute. It is assumed that
 - `stx[0]` is the attribute (e.g. `to_additive`)
 - `stx[1]` is the optional tracing `?`
@@ -1038,14 +1059,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | `(bracketedOption| (rename := $[$rules],*)) =>
         if !rename.isEmpty then
           throwErrorAt opt "cannot specify `rename` multiple times"
-        for rule in rules do
-          let `(renameRule| $old → $new) := rule | throwUnsupportedSyntax
-          if !argNames.contains old.getId then
-            throwErrorAt old
-              "invalid argument `{old.getId}`, it is not an argument of `{.ofConstName declName}`."
-          if rename.contains old.getId then
-            throwErrorAt old "rename rule for `{old.getId}` already specified"
-          rename := rename.insert old.getId new.getId
+        rename ← elabRename rules declName argNames
       | _ => throwUnsupportedSyntax
     let mut existing := false; let mut self := false; let mut none := false
     match hint with

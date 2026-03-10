@@ -91,8 +91,8 @@ In the above example, the `simp` is added to all 3 lemmas. All other options to 
 and can be given manually to each individual `to_additive` call.
 
 The `(rename := ...)` syntax can be used for specifying the argument names of the generated
-declaration, overriding the automatic translation of names. For example, `(rename := x → a, y → b)`
-will translate `lemma mul_foo (x y : α) ...` to `lemma add_foo (a b : α) ...`.
+declaration, overriding the automatic translation of names. For example, `(rename := x → a, y ↔ z)`
+will translate `lemma mul_foo (x y z : α) ...` to `lemma add_foo (a z y : α) ...`.
 
 ## Implementation notes
 

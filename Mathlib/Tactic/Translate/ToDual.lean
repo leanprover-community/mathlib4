@@ -87,8 +87,8 @@ attribute will add a `to_dual none` tag to an `_assoc` theorem if the original t
 already tagged with `to_dual`. This also works with `to_dual (attr := reassoc)`.
 
 The `(rename := ...)` syntax can be used for specifying the argument names of the generated
-declaration, overriding the automatic translation of names. For example, `(rename := x → a, y → b)`
-will translate `lemma min_foo (x y : α) ...` to `lemma max_foo (a b : α) ...`.
+declaration, overriding the automatic translation of names. For example, `(rename := x → a, y ↔ z)`
+will translate `lemma min_foo (x y z : α) ...` to `lemma max_foo (a z y : α) ...`.
 
 Some definitions are dual to something other than the dual of their value. Some examples:
 - `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`.

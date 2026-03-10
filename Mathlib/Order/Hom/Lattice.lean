@@ -362,7 +362,7 @@ theorem top_apply [Top β] (a : α) : (⊤ : SupHom α β) a = ⊤ :=
   rfl
 
 @[to_dual (attr := simp, gcongr) (reorder := toFun₁ toFun₂, map_sup₁ map_sup₂)
-  (rename := toFun₁ → toFun₂, toFun₂ → toFun₁, map_sup₁ → map_inf₂, map_sup₂ → map_inf₁)]
+  (rename := toFun₁ ↔ toFun₂, map_sup₁ → map_inf₂, map_sup₂ → map_inf₁)]
 lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
     mk toFun₁ map_sup₁ ≤ mk toFun₂ map_sup₂ ↔ toFun₁ ≤ toFun₂ := .rfl
 
