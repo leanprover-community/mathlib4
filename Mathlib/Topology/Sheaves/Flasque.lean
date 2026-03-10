@@ -137,10 +137,9 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
       simp [map_restrict, ← tcomp, restrict_restrict, ht₁, t₂]
     -- Since `S` is exact and `t₂` maps to zero, we can lift it to a section `t₃` of `S.X₁`
     obtain ⟨t₃, ht₃⟩ := addCommGrpCat_mono_exact hS.1 hS.2 t₂ this
-    have i₁ : t.right.1.unop ⊓ W ⟶ W := homOfLE inf_le_right
-    -- Using that `S.X₁` is flasque, we can lift `t₃` to a section on `W`
-    obtain ⟨t₄, (ht₄ : t₄ |_ (t.right.1.unop ⊓ W) = t₃)⟩ :=
-      (AddCommGrpCat.epi_iff_surjective (S.X₁.obj.map i₁.op)).mp inferInstance t₃
+    -- Using that `S.X₁` is flasque, we can lift `t₃` to a section on `W`.
+    obtain ⟨t₄, (ht₄ : t₄ |_ (t.right.1.unop ⊓ W) = t₃)⟩ := (AddCommGrpCat.epi_iff_surjective
+      (S.X₁.obj.map (homOfLE inf_le_right).op)).mp inferInstance t₃
     let f : Fin 2 → Opens X
     | 0 => t.right.1.unop
     | 1 => W
