@@ -453,16 +453,6 @@ lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
     have h_adj_all : ∀ H' ∈ ℋ, H'.val.Adj v w := fun H' hH' => (h_sub H' hH').2 h_adj
     simpa [sInf] using And.intro h_adj_all (H.property.1.2 h_adj)
 
-lemma le_sup_inf {G : Digraph V} : ∀ (H₁ H₂ H₃ : G.SpanningSubgraph),
-  (inf (sup H₁ H₂) (sup H₁ H₃)) ≤ (sup H₁ (inf H₂ H₃)) := by
-  intro H₁ H₂ H₃
-  constructor
-  · grind
-  · intro v w h_inf_sup_adj
-    push_cast at h_inf_sup_adj
-    push_cast
-    grind [inf_adj, sup_adj]
-
 lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
   inf H (compl H) ≤ bot := by
   intro
@@ -489,9 +479,11 @@ instance (G : Digraph V) : CompleteLattice G.SpanningSubgraph where
   sInf_le := sInf_le
   le_sInf := le_sInf
 
-instance (G : Digraph V) : DistribLattice G.SpanningSubgraph where
-  __ := (inferInstance : Lattice G.SpanningSubgraph)
-  le_sup_inf := le_sup_inf
+instance (G : Digraph V) : DistribLattice G.SpanningSubgraph :=
+  Subtype.coe_injective.distribLattice (fun H : G.SpanningSubgraph => (H : Digraph V))
+    .rfl .rfl
+    (fun H₁ H₂ ↦ by simpa using (sup_of_val H₁ H₂))
+    (fun H₁ H₂ ↦ by simpa using (inf_of_val H₁ H₂))
 
 instance (G : Digraph V) : BooleanAlgebra G.SpanningSubgraph where
   __ := (inferInstance : DistribLattice G.SpanningSubgraph)
