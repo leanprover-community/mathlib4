@@ -986,7 +986,7 @@ theorem restrictScalars_map_smul_eq {S M : Type*}
     [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower S R M]
     (I : Ideal S) (N : Submodule R M) :
     ((I.map (algebraMap S R)) • N).restrictScalars S = I • N.restrictScalars S := by
-  have := N.restrictScalars_image_smul_eq_smul_restrictScalars (I : Set S)
+  have := N.restrictScalars_image_smul_eq (I : Set S)
   rw [coe_set_smul] at this
   rw [Ideal.map, span_smul_eq, ← this]
 
