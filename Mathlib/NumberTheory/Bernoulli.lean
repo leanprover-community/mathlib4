@@ -455,7 +455,6 @@ lemma pIntegral_iff_not_dvd_den (p : ℕ) (x : ℚ) [Fact p.Prime] : pIntegral p
 lemma pIntegral_iff_padicValuation_le_one (p : ℕ) (x : ℚ) [Fact p.Prime] :
     pIntegral p x ↔ Rat.padicValuation p x ≤ 1 := by rfl
 
-
 @[simp] lemma pIntegral_zero (p : ℕ) [Fact p.Prime] : pIntegral p (0 : ℚ) :=
   (pIntegral_iff_not_dvd_den p _).2 (by simpa using Nat.Prime.not_dvd_one Fact.out)
 
@@ -477,39 +476,21 @@ lemma pIntegral_sum {ι : Type*} (p : ℕ) [Fact p.Prime] (s : Finset ι) (f : �
   exact (pIntegral_iff_not_dvd_den p _).2
     ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).1 hcop.symm)
 
-lemma pIntegral_of_int (p : ℕ) [Fact p.Prime] (z : ℤ) : pIntegral p z := by
-  exact (pIntegral_iff_not_dvd_den p _).2
-    (by simpa using (Nat.Prime.not_dvd_one (Fact.out : p.Prime)))
+lemma pIntegral_of_int (p : ℕ) [Fact p.Prime] (z : ℤ) : pIntegral p z :=
+  (pIntegral_iff_not_dvd_den p _).2 (by simpa using (Nat.Prime.not_dvd_one Fact.out))
 
 lemma pIntegral_mul (p : ℕ) [Fact p.Prime] (x y : ℚ) (hx : pIntegral p x) (hy : pIntegral p y) :
     pIntegral p (x * y) := by
-  have hxcop : x.den.Coprime p := by
-    have hxnot : ¬ p ∣ x.den := (pIntegral_iff_not_dvd_den p x).1 hx
-    exact ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).2 hxnot).symm
-  have hycop : y.den.Coprime p := by
-    have hynot : ¬ p ∣ y.den := (pIntegral_iff_not_dvd_den p y).1 hy
-    exact ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).2 hynot).symm
-  have hcop : (x * y).den.Coprime p := Nat.Coprime.of_dvd_left (Rat.mul_den_dvd x y)
-    (Nat.Coprime.mul_left hxcop hycop)
-  exact (pIntegral_iff_not_dvd_den p _).2
-    ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).1 hcop.symm)
+  simp only [pIntegral, map_mul] at *
+  exact mul_le_one' hx hy
 
 lemma pIntegral_int_mul (p : ℕ) [Fact p.Prime] (x : ℚ) (z : ℤ) (hx : pIntegral p x) :
     pIntegral p (z * x) := by
-  simpa [mul_comm] using pIntegral_mul p (z : ℚ) x (pIntegral_of_int p z) hx
+  simpa [mul_comm] using pIntegral_mul p z x (pIntegral_of_int p z) hx
 
 lemma pIntegral_sub (p : ℕ) [Fact p.Prime] (x y : ℚ) (hx : pIntegral p x) (hy : pIntegral p y) :
     pIntegral p (x - y) := by
-  have hxcop : x.den.Coprime p := by
-    have hxnot : ¬ p ∣ x.den := (pIntegral_iff_not_dvd_den p x).1 hx
-    exact ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).2 hxnot).symm
-  have hycop : y.den.Coprime p := by
-    have hynot : ¬ p ∣ y.den := (pIntegral_iff_not_dvd_den p y).1 hy
-    exact ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).2 hynot).symm
-  have hcop : (x - y).den.Coprime p := Nat.Coprime.coprime_dvd_left (Rat.sub_den_dvd x y)
-    (Nat.Coprime.mul_left hxcop hycop)
-  exact (pIntegral_iff_not_dvd_den p _).2
-    ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).1 hcop.symm)
+  simpa [pIntegral] using (Rat.padicValuation p).map_sub_le hx hy
 
 /-- Denominators of the "other primes" part of the indicator sum
 stay coprime to a fixed prime `p`. -/
@@ -533,7 +514,7 @@ lemma sum_primes_eq_indicator_add_rest (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
   · -- p is in the filtered set; extract its term
     have hp_mem : p ∈ (Finset.range (2 * k + 2)).filter (fun q ↦ q.Prime ∧ (q - 1) ∣ 2 * k) := by
       simp only [Finset.mem_filter, Finset.mem_range]
-      exact ⟨by have := Nat.le_of_dvd (by omega) hdvd; omega, (Fact.out : p.Prime), hdvd⟩
+      exact ⟨by have := Nat.le_of_dvd (by lia) hdvd; lia, (Fact.out : p.Prime), hdvd⟩
     rw [← Finset.add_sum_erase _ _ hp_mem]
     simp only [vonStaudtIndicator, if_pos hdvd]
     congr 1
@@ -584,7 +565,7 @@ lemma pIntegral_i0_term (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
   have h : (2 * k + 1 : ℚ) = ↑(2 * k + 1) := by norm_cast
   rw [h]
   apply pIntegral_pow_div p (2 * k + 1) (2 * k)
-  · omega
+  · lia
   · exact valuation_bound p (2 * k)
 
 /-- The `i = 1` Faulhaber term is `p`-integral (handled separately for `p = 2` and odd `p`). -/
@@ -597,7 +578,7 @@ lemma pIntegral_i1_term (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
       have hpow : (2 : ℚ) ^ (2 * k - 1) = (2 : ℚ) ^ (2 * k - 2) * 2 := by rw [← pow_succ]; lia
       rw [hpow]; push_cast; field_simp
     simpa [h] using (pIntegral_of_int (p := 2) (z := (-(2 : ℤ) ^ (2 * k - 2))))
-  · have h2 : ((2 * k : ℕ) : ℚ) ≠ 0 := by norm_cast; omega
+  · have h2 : ((2 * k : ℕ) : ℚ) ≠ 0 := by norm_cast; lia
     field_simp [h2]
     rw [neg_div']
     have hdvd : (-(p : ℚ) ^ (2 * k - 1) / 2).den ∣ 2 := by
@@ -621,10 +602,10 @@ lemma pow_two_ge_succ_of_ge_three (d : ℕ) (hd : d ≥ 3) : d + 1 ≤ 2 ^ (d - 
     | refl => norm_num
     | @step m hm IH =>
       have hm : (3 : ℕ) ≤ m := hm
-      have h1 : 2 ^ (m - 1) ≥ 1 := Nat.one_le_pow _ _ (by omega)
-      calc m + 1 + 1 ≤ 2 ^ (m - 1) + 1 := by omega
+      have h1 : 2 ^ (m - 1) ≥ 1 := Nat.one_le_pow _ _ (by lia)
+      calc m + 1 + 1 ≤ 2 ^ (m - 1) + 1 := by lia
         _ ≤ 2 ^ (m - 1) * 2 := by nlinarith
-        _ = 2 ^ m := by conv_rhs => rw [show m = m - 1 + 1 from by omega]; exact pow_succ ..
+        _ = 2 ^ m := by conv_rhs => rw [show m = m - 1 + 1 by lia]; exact pow_succ ..
   exact h d hd
 
 /-- Auxiliary growth inequality: for `p ≥ 3` and `d ≥ 2`, we have `d + 1 ≤ p^(d - 1)`. -/
@@ -632,15 +613,15 @@ lemma pow_ge_succ_of_ge_three (p d : ℕ) (hp : 3 ≤ p) (hd : d ≥ 2) : d + 1 
   have h2 : ∀ d : ℕ, d ≥ 2 → d + 1 ≤ p ^ (d - 1) := by
     intro d hd
     induction hd with
-    | refl => norm_num; omega
+    | refl => norm_num; lia
     | @step m hm IH =>
       have hm : (2 : ℕ) ≤ m := hm
-      calc m + 1 + 1 ≤ p ^ (m - 1) + 1 := by omega
+      calc m + 1 + 1 ≤ p ^ (m - 1) + 1 := by lia
         _ ≤ p ^ (m - 1) * p := by
-          have : p ^ (m - 1) ≥ 1 := Nat.one_le_pow _ _ (by omega)
+          have : p ^ (m - 1) ≥ 1 := Nat.one_le_pow _ _ (by lia)
           nlinarith
         _ = p ^ m := by
-          conv_rhs => rw [show m = m - 1 + 1 from by omega]; exact pow_succ ..
+          conv_rhs => rw [show m = m - 1 + 1 by lia]; exact pow_succ ..
   exact h2 d hd
 
 /-- Main valuation estimate behind the contradiction step for even-index summands. -/
@@ -656,7 +637,7 @@ lemma valuation_bound_d_plus_1 (p d : ℕ) [Fact p.Prime] (hd : d ≥ 2) :
     apply pow_ge_succ_of_ge_three
     · have hne2 : p ≠ 2 := fun h ↦ by simp [h] at hp3
       have h1lt : 1 < p := (Fact.out : p.Prime).one_lt
-      omega
+      lia
     · exact hd
 
 /-- Rewrites the binomial coefficient denominator exactly as in Rado's summand. -/
@@ -683,7 +664,7 @@ lemma pIntegral_case_one (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime] (hd : 2 * 
       (2 * k - 2 * m + 1)) := by
   set d := 2 * k - 2 * m with hd_def
   have ⟨hd_ne_zero, hd_plus_one_ne_zero, h_exp, hkm⟩ :
-      d ≠ 0 ∧ d + 1 ≠ 0 ∧ 2 * k - 2 * m - 1 = d - 1 ∧ 2 * m ≤ 2 * k := by omega
+      d ≠ 0 ∧ d + 1 ≠ 0 ∧ 2 * k - 2 * m - 1 = d - 1 ∧ 2 * m ≤ 2 * k := by lia
   have h_denom_rat : (2 * (k : ℚ) - 2 * m + 1) = ((d + 1 : ℕ) : ℚ) := by
     simp only [hd_def]; push_cast [Nat.cast_sub hkm]; ring
   rw [h_exp, h_denom_rat]
@@ -708,14 +689,14 @@ lemma pIntegral_even_term_in_sum (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
       (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1) -
     vonStaudtIndicator (2 * m) p * ((2 * k + 1).choose (2 * m)) *
       (p : ℚ) ^ (2 * k - 2 * m - 1) / (2 * k + 1) := by
-    simp only [show 2 * k - 2 * m = 2 * (k - m) from by omega]
+    simp only [show 2 * k - 2 * m = 2 * (k - m) by lia]
     have h : bernoulli (2 * m) * (p : ℚ) ^ (2 * (k - m)) =
         (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) * (p : ℚ) ^ (2 * (k - m)) -
           vonStaudtIndicator (2 * m) p * (p : ℚ) ^ (2 * (k - m) - 1) := by
       have hpow : (p : ℚ) ^ (2 * (k - m)) = (p : ℚ) ^ (2 * (k - m) - 1) * p := by
-        conv_lhs => rw [show 2 * (k - m) = (2 * (k - m) - 1) + 1 from by omega, pow_succ]
+        conv_lhs => rw [show 2 * (k - m) = (2 * (k - m) - 1) + 1 by lia, pow_succ]
       rcases eq_or_ne (p : ℚ) 0 with hp0 | hp0
-      · simp [hp0, zero_pow (show 2 * (k - m) - 1 ≠ 0 from by omega)]
+      · simp [hp0, zero_pow (show 2 * (k - m) - 1 ≠ 0 by lia)]
       · rw [hpow]; field_simp [hp0]; ring
     set C := ((2 * k + 1).choose (2 * m) : ℚ)
     set N := (2 * k + 1 : ℚ)
@@ -740,16 +721,16 @@ lemma pIntegral_even_term_in_sum (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
         (p : ℚ) ^ (2 * k - 2 * m - 1) / (2 * k - 2 * m + 1)) := by
       have hpow : (p : ℚ) ^ (2 * k - 2 * m) = (p : ℚ) * (p : ℚ) ^ (2 * k - 2 * m - 1) := by
         conv_lhs =>
-          rw [show (2 * k - 2 * m : ℕ) = (2 * k - 2 * m - 1) + 1 from by omega]
+          rw [show (2 * k - 2 * m : ℕ) = (2 * k - 2 * m - 1) + 1 by lia]
         exact pow_succ' _ _
       rw [hpow]; ring
     rw [hp_factor]
-    exact pIntegral_mul _ _ _ (pIntegral_of_int p p) (pIntegral_case_one k m p hm_lt (by omega))
+    exact pIntegral_mul _ _ _ (pIntegral_of_int p p) (pIntegral_case_one k m p hm_lt (by lia))
   · unfold vonStaudtIndicator
     split_ifs with h
     · simp only [one_mul]
       rw [choose_div_simplify k m _ hm_lt]
-      exact pIntegral_case_one k m p hm_lt (by omega)
+      exact pIntegral_case_one k m p hm_lt (by lia)
     · simp
 
 /-- The full remainder sum in Faulhaber's formula is `p`-integral. -/
@@ -767,12 +748,12 @@ lemma pIntegral_remainder (k p : ℕ) (hk : k > 0) [Fact p.Prime]
     convert pIntegral_i1_term k p hk using 1
     push_cast; field_simp
   · set j := i + 2 with hj_def
-    have hj_lt : j < 2 * k := by omega
+    have hj_lt : j < 2 * k := by lia
     rcases Nat.even_or_odd j with ⟨m, hm⟩ | hodd
-    · have ⟨_, hm_lt, hj_eq⟩ : m ≥ 1 ∧ m < k ∧ j = 2 * m := by omega
+    · have ⟨_, hm_lt, hj_eq⟩ : m ≥ 1 ∧ m < k ∧ j = 2 * m := by lia
       simp only [hj_eq]
-      exact pIntegral_even_term_in_sum k m p hm_lt (ih m (by omega) hm_lt)
-    · simp [bernoulli_eq_zero_of_odd hodd (by rcases hodd with ⟨r, hr⟩; omega)]
+      exact pIntegral_even_term_in_sum k m p hm_lt (ih m (by lia) hm_lt)
+    · simp [bernoulli_eq_zero_of_odd hodd (by rcases hodd with ⟨r, hr⟩; lia)]
 
 /-- Rearranges the Faulhaber identity and power-sum congruence to isolate
 `bernoulli (2*k) + vonStaudtIndicator (2*k) p / p`. -/
@@ -815,15 +796,15 @@ lemma bernoulli_plus_indicator_rearrangement (k p : ℕ) (hk : k > 0) [Fact p.Pr
         rw [show (v : ℚ) ^ (2 * k) = if v ≠ 0 then (v : ℚ) ^ (2 * k) else 0 by
           split_ifs with h
           · rfl
-          · simp [show v = 0 by omega, show 2 * k ≠ 0 from by omega]]
+          · simp [show v = 0 by lia, show 2 * k ≠ 0 by lia]]
       rw [Finset.sum_filter]
     rw [← hfilter]
     simp only [sum_range_pow]; push_cast
     rw [Finset.sum_range_succ]
     congr 1
     have h1 : (2 * k + 1).choose (2 * k) = 2 * k + 1 := by
-      rw [← Nat.choose_symm_of_eq_add (by omega : 2 * k + 1 = 1 + 2 * k), Nat.choose_one_right]
-    rw [h1, show (2 * k + 1 - 2 * k : ℕ) = 1 from by omega, pow_one]
+      rw [← Nat.choose_symm_of_eq_add (by lia : 2 * k + 1 = 1 + 2 * k), Nat.choose_one_right]
+    rw [h1, show (2 * k + 1 - 2 * k : ℕ) = 1 by lia, pow_one]
     have h4 : (2 * k + 1 : ℚ) ≠ 0 := by positivity
     norm_cast; field_simp [h4]
   have hAlg : bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
@@ -843,7 +824,7 @@ lemma bernoulli_plus_indicator_rearrangement (k p : ℕ) (hk : k > 0) [Fact p.Pr
       intro i hi
       have h2 : i < 2 * k := Finset.mem_range.mp hi
       have h5 : (p : ℚ) ≠ 0 := by norm_cast; exact Nat.Prime.ne_zero (Fact.out : p.Prime)
-      rw [show (2 * k + 1 - i : ℕ) = (2 * k - i : ℕ) + 1 from by omega, pow_succ]
+      rw [show (2 * k + 1 - i : ℕ) = (2 * k - i : ℕ) + 1 by lia, pow_succ]
       field_simp [h5]
     rw [Finset.sum_div]
     exact Finset.sum_congr rfl fun i hi ↦ h1 i hi
