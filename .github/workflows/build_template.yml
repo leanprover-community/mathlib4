@@ -707,18 +707,10 @@ jobs:
           name: cache-staging
           path: cache-staging
 
-      - name: Checkout mathlib-ci
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          repository: leanprover-community/mathlib-ci
-          ref: ${{ inputs.mathlib_ci_ref }}
-          fetch-depth: 1
-          path: ci-tools
-
       - name: Azure CLI OIDC login and mint storage bearer token
         id: mint_cache_bearer
         continue-on-error: true
-        uses: ./ci-tools/.github/actions/azure-create-cache-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
         with:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
