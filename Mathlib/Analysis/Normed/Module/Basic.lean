@@ -22,7 +22,6 @@ about these definitions.
 
 @[expose] public section
 
-
 variable {𝕜 𝕜' E F α : Type*}
 
 open Filter Metric Function Set Topology Bornology
@@ -168,7 +167,6 @@ instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotie
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   norm_smul_le _ x := norm_smul_le _ x.unop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
@@ -480,9 +478,10 @@ instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 �
 
 -- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
 -- appropriately modified here.
-/-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
+/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
+@[implicit_reducible]
 def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
@@ -521,9 +520,10 @@ instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars �
 
 -- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
 -- appropriately modified here.
-/-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
+/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
+@[implicit_reducible]
 def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
