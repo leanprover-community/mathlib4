@@ -291,14 +291,14 @@ structure Config : Type where
   /-- The given name of the target. -/
   tgt : Name := Name.anonymous
   /-- An optional doc string. -/
-  doc : Option String := none
+  doc : Option String := .none
   /-- If `allowAutoName` is `false` (default) then
   we check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The arguments that should be reordered when translating, using cycle notation. -/
-  reorder? : Option Reorder := none
+  reorder? : Option Reorder := .none
   /-- The argument used to determine whether this constant should be translated. -/
-  relevantArg? : Option RelevantArg := none
+  relevantArg? : Option RelevantArg := .none
   /-- The attributes which we want to give to the original and translated declaration.
   For `simps` this will also add generated lemmas to the translation dictionary. -/
   attrs : Array Syntax := #[]
