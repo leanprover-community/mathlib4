@@ -120,6 +120,9 @@ theorem im_ne_zero (z : ℍ) : z.im ≠ 0 :=
 theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 
+lemma mem_slitPlane (z : ℍ) : (z : ℂ) ∈ Complex.slitPlane := by
+  simp [Complex.slitPlane, im_ne_zero z]
+
 end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity
@@ -202,7 +205,6 @@ end PosRealAction
 
 section RealAddAction
 
-set_option backward.whnf.reducibleClassField false in
 instance : AddAction ℝ ℍ where
   vadd x z := mk (x + z) <| by simpa using z.im_pos
   zero_vadd _ := by simp [HVAdd.hVAdd]

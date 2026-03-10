@@ -98,7 +98,6 @@ upper bound `a` and is a subset of `s` then `a` also lies in `s`.
 def DirSupClosed (s : Set α) : Prop :=
   ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → d ⊆ s → a ∈ s
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma dirSupInacc_compl : DirSupInacc sᶜ ↔ DirSupClosed s := by
   simp [DirSupInacc, DirSupClosed, ← not_disjoint_iff_nonempty_inter, not_imp_not,
     disjoint_compl_right_iff]
@@ -148,6 +147,7 @@ section ScottHausdorff
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
+@[implicit_reducible]
 def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α where
   IsOpen u := ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
@@ -180,7 +180,6 @@ lemma topology_eq [IsScottHausdorff α D] : ‹_› = scottHausdorff α D := top
 
 variable {α D}
 
-set_option backward.whnf.reducibleClassField false in
 lemma isOpen_iff [IsScottHausdorff α D] :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
       a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
@@ -221,6 +220,7 @@ section Preorder
 /-- The Scott topology.
 
 It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
+@[implicit_reducible]
 def scott (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α :=
   upperSet α ⊔ scottHausdorff α D
 

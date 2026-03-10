@@ -47,6 +47,7 @@ theorem eq_of_mem_eqv_class {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b
   (H x).unique ⟨hc, hb⟩ ⟨hc', hb'⟩
 
 /-- Makes an equivalence relation from a set of sets partitioning α. -/
+@[implicit_reducible]
 def mkClasses (c : Set (Set α)) (H : ∀ a, ∃! b ∈ c, a ∈ b) : Setoid α where
   r x y := ∀ s ∈ c, x ∈ s → y ∈ s
   iseqv.refl := fun _ _ _ hx => hx
@@ -142,6 +143,7 @@ theorem eqv_classes_of_disjoint_union {c : Set (Set α)} (hu : Set.sUnion c = @S
   ExistsUnique.intro b ⟨hc, ha⟩ fun _ hc' => H.elim_set hc'.1 hc _ hc'.2 ha
 
 /-- Makes an equivalence relation from a set of disjoints sets covering α. -/
+@[implicit_reducible]
 def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
     (H : c.PairwiseDisjoint id) : Setoid α :=
   Setoid.mkClasses c <| eqv_classes_of_disjoint_union hu H
@@ -202,7 +204,6 @@ theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
     c.PairwiseDisjoint id :=
   eqv_classes_disjoint hc.2
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*} {s : Set (Set α)}
     (h₁ : s.PairwiseDisjoint id) (h₂ : ∀ a : α, ∃ x ∈ s, a ∈ x) (h₃ : ∅ ∉ s) :
     Setoid.IsPartition s := by

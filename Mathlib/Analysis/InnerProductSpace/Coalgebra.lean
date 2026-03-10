@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Coalgebra.Basic
 # Finite-dimensional inner product space with a (co)algebra structure
 
 This file proves that a finite-dimensional inner product space has a
-colagebra structure if it has an algebra structure, where
+coalgebra structure if it has an algebra structure, where
 the comultiplication and counit maps are given by taking adjoints of the
 multiplication and algebra linear maps, respectively.
 This is implemented by providing a linear equivalence between the inner product space
@@ -109,7 +109,6 @@ lemma AlgebraOfCoalgebra.mul_def (x y : E) :
 
 attribute [local simp] AlgebraOfCoalgebra.mul_def
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] InnerProductSpace.mulOfCoalgebra in
 /-- A finite-dimensional inner product space with a coalgebra structure induces a ring structure,

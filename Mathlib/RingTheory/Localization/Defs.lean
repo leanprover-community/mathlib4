@@ -313,6 +313,7 @@ theorem exists_mk'_eq (z : S) : ∃ (x : R) (y : M), mk' S x y = z :=
 
 variable (S) in
 /-- The localization of a `Fintype` is a `Fintype`. Cannot be an instance. -/
+@[implicit_reducible]
 noncomputable def fintype' [Fintype R] : Fintype S :=
   have := Classical.propDecidable
   .ofSurjective (Function.uncurry <| IsLocalization.mk' S) <| mk'_surjective M
@@ -320,6 +321,7 @@ noncomputable def fintype' [Fintype R] : Fintype S :=
 variable {M}
 
 /-- Localizing at a submonoid with 0 inside it leads to the trivial ring. -/
+@[implicit_reducible]
 def uniqueOfZeroMem (h : (0 : R) ∈ M) : Unique S :=
   uniqueOfZeroEqOne <| by simpa using IsLocalization.map_units S ⟨0, h⟩
 
@@ -775,6 +777,14 @@ theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
   apply Algebra.algebra_ext
   intro r
   rw [RingHom.algebraMap_toAlgebra]
+
+theorem of_ringEquiv_left {S : Type*} [CommSemiring S] {K : Type*} [CommSemiring K]
+    [Algebra R K] (e : R ≃+* S) [Algebra S K] {M₁ : Submonoid S} {M₂ : Submonoid R}
+    (hM : M₂.map e = M₁) (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsLocalization M₁ K] :
+    IsLocalization M₂ K := by
+  rw [IsLocalization.isLocalization_iff_of_base_ringEquiv _ _ e, hM]
+  convert inferInstanceAs (IsLocalization M₁ K)
+  exact Algebra.algebra_ext _ _ (by simp [RingHom.algebraMap_toAlgebra, h])
 
 end
 
