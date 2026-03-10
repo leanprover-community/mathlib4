@@ -172,7 +172,7 @@ end Sublocale
 /-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
 The sublocales are ordered dually to the nuclei. -/
 @[simps] def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
-  --- The range of a nucleus is a sublocale.
+  -- The range of a nucleus is a sublocale.
   toFun n := {
     carrier := range n.ofDual,
     sInf_mem' a h := (by
@@ -183,7 +183,7 @@ The sublocales are ordered dually to the nuclei. -/
     exact n.monotone (sInf_le h1)),
     himp_mem' a b h := by rw [Nucleus.mem_range, ← h, Nucleus.map_himp_apply] at *
   }
-  --- The restriction from the locale X into a sublocale is a nucleus.
+  -- The restriction from the locale X into a sublocale is a nucleus.
   invFun s := .toDual {
     toFun x := s.restrict x
     map_inf' _ _ := by simp [s.giRestrict.gc.u_inf]
@@ -203,7 +203,7 @@ The sublocales are ordered dually to the nuclei. -/
 
 namespace Sublocale
 
-/-- The restriction from the locale X into a sublocale is a nucleus. -/
+/-- The restriction from the locale X into a sublocale is a nucleus· -/
 abbrev toNucleus (S : Sublocale X) : Nucleus X := (nucleusIsoSublocale.symm S).ofDual
 
 variable {S T : Sublocale X}
@@ -220,6 +220,8 @@ variable {S T : Sublocale X}
 
 lemma toNucleus_le_toNucleus : S.toNucleus ≤ T.toNucleus ↔ T ≤ S := by
   simp [↓← Nucleus.range_subset_range]
+
+lemma mem_iff_mem_range_toNucleus {i : X} : i ∈ S ↔ i ∈ range S.toNucleus := by simp
 
 end Sublocale
 
@@ -254,6 +256,27 @@ lemma Sublocale.univ_eq_top :
 
 lemma Sublocale.singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
+lemma Sublocale.inf_carrier {A B : Sublocale X} : A ⊓ B =
+    ⟨A.carrier ⊓ B.carrier, (by simp; grind [sInf_mem]), by simp; grind [himp_mem]⟩ := by
+  apply le_antisymm
+  · simp only [inf_eq_inter, ← toNucleus_le_toNucleus, toNucleus, nucleusIsoSublocale,
+    OrderIso.symm_mk, RelIso.coe_fn_mk, Equiv.coe_fn_symm_mk, OrderDual.ofDual_toDual, map_inf,
+    ofDual_inf, ← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def]
+    rw [Sublocale.restrict, ← sSup_pair,  ← sInf_upperBounds_eq_sSup]
+    simp only [FrameHom.coe_mk, InfTopHom.coe_mk, InfHom.coe_mk, coe_sInf, ↓Nucleus.sInf_apply,
+      upperBounds_insert, upperBounds_singleton, Ici_inter_Ici, mem_Ici, sup_le_iff,
+      ← Nucleus.coe_le_coe, Nucleus.coe_mk, Pi.le_def, le_iInf_iff, sInf_le_iff, lowerBounds,
+      mem_image, mem_setOf_eq, Subtype.exists, mem_mk, mem_inter_iff, mem_carrier, exists_and_left,
+      exists_prop, exists_eq_right_right, and_imp]
+    refine fun i n h1 h2 _ h3 ↦ h3 Nucleus.le_apply ?_ ?_
+    <;> rw [mem_iff_mem_range_toNucleus, Nucleus.mem_range]
+    · exact le_antisymm (le_trans (h1 (n i)) (le_of_eq (n.idempotent i))) Nucleus.le_apply
+    · exact le_antisymm (le_trans (h2 (n i)) (le_of_eq (n.idempotent i))) Nucleus.le_apply
+  · simp only [↓le_inf_iff, inf_eq_inter, SetLike.le_def, mem_mk, mem_inter_iff, mem_carrier,
+    and_imp, imp_self, implies_true, and_true]
+    grind
+
 instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
   iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
   nucleusIsoSublocale.symm.map_sup,
@@ -267,7 +290,7 @@ An open sublocale is defined by an element of the locale.
 -/
 @[ext]
 structure Open (X : Type*) [Order.Frame X] where
-  /-- The element of an open sublocale. Do not use this directly, use `Open.getElement` instead. -/
+  /-- The element of an open sublocale· Do not use this directly, use `Open.getElement` instead· -/
   element : X
 
 namespace Open
@@ -315,7 +338,7 @@ instance : Order.Frame (Open X) := .ofMinimalAxioms ⟨fun a s  ↦ by
 
 set_option backward.isDefEq.respectTransparency false in
 /--
-The map from open sublocales to their corresponding sublocale is a `FrameHom`. It preserves finite
+The map from open sublocales to their corresponding sublocale is a `FrameHom`· It preserves finite
 meets and arbitrary joins.
 -/
 def toSublocale : FrameHom (Open X) (Sublocale X) where
@@ -358,13 +381,13 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
 
 end Open
 
-
 /--
 A closed sublocale is defined by an element of the locale.
 -/
 @[ext]
 structure Closed (X : Type*) [Order.Frame X] where
-  /-- The element of a closed sublocale. Do not use this directly, use `Closed.getElement` instead. -/
+  /-- The element of a closed sublocale.
+  Do not use this directly, use `Closed.getElement` instead· -/
   element : X
 
 namespace Closed
@@ -388,8 +411,7 @@ def closedIsoDual : sInfHom (Closed X) Xᵒᵈ where
   toFun x := OrderDual.toDual x.element
   map_sInf' s := by
     change (⟨sSup _⟩ : Closed X).element = sSup _
-    simp
-    grind
+    simpa using by rfl
 
 abbrev getElement (c : Closed X) : X := OrderDual.ofDual (closedIsoDual c)
 
@@ -418,7 +440,7 @@ def toSublocale : sInfHom (Closed X) (Sublocale X) where
     · simp only [sup_le_iff, sSup_le_iff, mem_preimage, mem_image, forall_exists_index, and_imp,
       Nucleus.le_apply, and_true]
       intro b x hx h1
-      simp only [← sInf_upperBounds_eq_sSup,upperBounds, mem_preimage, mem_image, EmbeddingLike.apply_eq_iff_eq,
+      simp only [Equiv.preimage_image, ← sInf_upperBounds_eq_sSup, upperBounds, mem_image,
         forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Nucleus.sInf_apply, mem_setOf_eq,
         le_iInf_iff]
       intro n h2
@@ -450,3 +472,19 @@ lemma sup_compl_eq_top : U.toSublocale ⊔ U.compl.toSublocale = ⊤ := by
     OrderDual.ofDual_top, le_bot_iff]
   ext i
   simp [inf_sup_left]
+
+lemma inf_compl_eq_bot : U.toSublocale ⊓ U.compl.toSublocale = ⊥ := by
+  simp only [inf_carrier, inf_eq_inter, ← singleton_top_eq_bot, Sublocale.ext_iff, mem_mk,
+    mem_inter_iff, mem_carrier, mem_singleton_iff]
+  refine fun _ ↦ ⟨?_, by grind [top_mem]⟩
+  · simp only [toSublocale, toNucleus, FrameHom.coe_mk, InfTopHom.coe_mk, InfHom.coe_mk,
+    Nucleus.mem_toSublocale, Nucleus.coe_mk, Closed.toSublocale, Closed.toNucleus, compl,
+    sInfHom.coe_mk, Closed.getElement_mk, and_imp, forall_exists_index]
+    intro _ h1 _ h2
+    rw [← h1] at h2
+    subst h1
+    let h2 := le_himp_iff.mp <| le_of_eq h2
+    simp only [le_sup_left, inf_of_le_right] at h2
+    exact himp_eq_top_iff.mpr h2
+
+end Open
