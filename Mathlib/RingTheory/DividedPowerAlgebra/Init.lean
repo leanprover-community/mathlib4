@@ -29,10 +29,13 @@ divided_powers.
 * `DividedPowerAlgebra.dp R n m`: the equivalence class of `X (⟨n, m⟩)` in
   `DividedPowerAlgebra R M`.
 
-## TODO
+* `DividedPowerAlgebra.LinearMap.lift`: the functoriality map between divided power algebras
+  associated with a linear map of the underlying modules.
+  Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear map `f : M →ₗ[R] N`,
+  this is the map `DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N`
+  sending `dp R n m` to `dp S n (f m)`.
 
-* Add the weak universal property of `DividedPowerAlgebra R M`.
-* Show in upcoming files that `DividedPowerAlgebra R M` has divided powers.
+* `DividedPowerAlgebra.lift'`: the weak universal property of `DividedPowerAlgebra R M`.
 
 -/
 
