@@ -261,11 +261,11 @@ lemma injectiveDimension_lt_iff {X : C} {n : ℕ} :
   · obtain _ | n := n
     · exact ⟨⊥, fun _ _ ↦ hasInjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
     · exact ⟨n, fun i hi ↦ hasInjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
-        by simp [WithBot.lt_add_one_iff]⟩
+        by simp [ENat.WithBot.lt_add_one_iff]⟩
 
 lemma injectiveDimension_le_iff (X : C) (n : ℕ) :
     injectiveDimension X ≤ n ↔ HasInjectiveDimensionLE X n := by
-  simp [← injectiveDimension_lt_iff, ← WithBot.lt_add_one_iff]
+  simp [← injectiveDimension_lt_iff, ← ENat.WithBot.lt_add_one_iff]
 
 lemma injectiveDimension_ge_iff (X : C) (n : ℕ) :
     n ≤ injectiveDimension X ↔ ¬ HasInjectiveDimensionLT X n := by

@@ -435,6 +435,26 @@ lemma Over.w {A B : P.Over Q X} (f : A ⟶ B) :
     f.left ≫ B.hom = A.hom := by
   simp
 
+section
+
+variable {P' Q' : MorphismProperty T} [Q'.IsMultiplicative] (hPP' : P ≤ P') (hQQ' : Q ≤ Q')
+
+variable (X) in
+/-- The natural inclusion induced by implications of morphism properties. -/
+abbrev Over.changeProp (hPP' : P ≤ P') (hQQ' : Q ≤ Q') :
+    P.Over Q X ⥤ P'.Over Q' X :=
+  Comma.changeProp _ _ hPP' hQQ' le_rfl
+
+@[simp]
+lemma Over.changeProp_obj_left (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (Y : P.Over Q X) :
+    ((changeProp X hPP' hQQ').obj Y).left = Y.left := rfl
+
+@[simp]
+lemma Over.changeProp_obj_hom (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (Y : P.Over Q X) :
+    ((changeProp X hPP' hQQ').obj Y).hom = Y.hom := rfl
+
+end
+
 end Over
 
 section Under

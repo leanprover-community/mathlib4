@@ -59,8 +59,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     apply LocallyRingedSpace.isoOfSheafedSpaceIso
     refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
-    · exact Subtype.range_coe_subtype
-    · exact Opens.isOpenEmbedding _
+    exact Subtype.range_coe_subtype
 
 end LocallyRingedSpace.IsOpenImmersion
 

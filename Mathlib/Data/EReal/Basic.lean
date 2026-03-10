@@ -34,7 +34,6 @@ noncomputable section
 def EReal := WithBot (WithTop ℝ)
   deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder, AddCommMonoid
 
-set_option backward.isDefEq.respectTransparency false in
 instance : ZeroLEOneClass EReal := inferInstanceAs% (ZeroLEOneClass (WithBot (WithTop ℝ)))
 instance : SupSet EReal := inferInstanceAs% (SupSet (WithBot (WithTop ℝ)))
 instance : InfSet EReal := inferInstanceAs% (InfSet (WithBot (WithTop ℝ)))
@@ -45,14 +44,12 @@ instance : CompleteLinearOrder EReal :=
 instance : LinearOrder EReal :=
   inferInstanceAs% (LinearOrder (WithBot (WithTop ℝ)))
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsOrderedAddMonoid EReal :=
   inferInstanceAs% (IsOrderedAddMonoid (WithBot (WithTop ℝ)))
 
 instance : AddCommMonoidWithOne EReal :=
   inferInstanceAs% (AddCommMonoidWithOne (WithBot (WithTop ℝ)))
 
-set_option backward.isDefEq.respectTransparency false in
 instance : DenselyOrdered EReal :=
   inferInstanceAs% (DenselyOrdered (WithBot (WithTop ℝ)))
 
@@ -523,7 +520,6 @@ lemma preimage_coe_Iio (y : ℝ) : Real.toEReal ⁻¹' Iio y = Iio y := by
   refine preimage_comp.trans ?_
   simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_coe_Iio_top : Real.toEReal ⁻¹' Iio ⊤ = univ := by
   change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some ⊤)) = _

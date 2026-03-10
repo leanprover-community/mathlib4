@@ -25,4 +25,5 @@ open CategoryTheory
 instance : CartesianMonoidalCategory (CondensedSet.{u}) :=
   inferInstanceAs% (CartesianMonoidalCategory (Sheaf _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 instance : MonoidalClosed (CondensedSet.{u}) := inferInstanceAs% (MonoidalClosed (Sheaf _ _))

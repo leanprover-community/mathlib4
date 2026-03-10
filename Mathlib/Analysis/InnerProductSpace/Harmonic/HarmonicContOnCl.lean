@@ -67,7 +67,6 @@ theorem mk_ball {x : E} {r : ℝ} (hd : HarmonicOnNhd f (ball x r))
 theorem contDiffAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     ContDiffAt ℝ 2 f x := (h.1 x hx).1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem differentiableAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     DifferentiableAt ℝ f x := (h.contDiffAt hx).differentiableAt two_ne_zero
 

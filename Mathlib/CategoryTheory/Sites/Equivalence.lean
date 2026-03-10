@@ -108,31 +108,29 @@ instance : e.functor.IsDenseSubsite J K := by
 
 /-- The functor in the equivalence of sheaf categories. -/
 @[simps!]
-def sheafCongr.functor : Sheaf J A ⥤ Sheaf K A where
-  obj F := ⟨e.inverse.op ⋙ F.val, e.inverse.op_comp_isSheaf _ _ _⟩
-  map f := ⟨whiskerLeft e.inverse.op f.val⟩
+def sheafCongr.functor : Sheaf J A ⥤ Sheaf K A :=
+  ObjectProperty.lift _
+    (sheafToPresheaf _ _ ⋙ (Functor.whiskeringLeft _ _ _).obj e.inverse.op)
+    (e.inverse.op_comp_isSheaf _ _)
 
 /-- The inverse in the equivalence of sheaf categories. -/
 @[simps!]
-def sheafCongr.inverse : Sheaf K A ⥤ Sheaf J A where
-  obj F := ⟨e.functor.op ⋙ F.val, e.functor.op_comp_isSheaf _ _ _⟩
-  map f := ⟨whiskerLeft e.functor.op f.val⟩
+def sheafCongr.inverse : Sheaf K A ⥤ Sheaf J A :=
+  ObjectProperty.lift _
+    (sheafToPresheaf _ _ ⋙ (Functor.whiskeringLeft _ _ _).obj e.functor.op)
+    (e.functor.op_comp_isSheaf _ _)
 
 /-- The unit iso in the equivalence of sheaf categories. -/
 @[simps!]
 def sheafCongr.unitIso : 𝟭 (Sheaf J A) ≅ functor J K e A ⋙ inverse J K e A :=
-  NatIso.ofComponents (fun F ↦ ⟨⟨(isoWhiskerRight e.op.unitIso F.val).hom⟩,
-    ⟨(isoWhiskerRight e.op.unitIso F.val).inv⟩,
-    Sheaf.hom_ext _ _ (isoWhiskerRight e.op.unitIso F.val).hom_inv_id,
-    Sheaf.hom_ext _ _ (isoWhiskerRight e.op.unitIso F.val).inv_hom_id⟩ ) (by aesop)
+  NatIso.ofComponents
+    (fun F ↦ ObjectProperty.isoMk _ (isoWhiskerRight e.op.unitIso F.obj))
 
 /-- The counit iso in the equivalence of sheaf categories. -/
 @[simps!]
 def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _ A) :=
-  NatIso.ofComponents (fun F ↦ ⟨⟨(isoWhiskerRight e.op.counitIso F.val).hom⟩,
-    ⟨(isoWhiskerRight e.op.counitIso F.val).inv⟩,
-    Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).hom_inv_id,
-    Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).inv_hom_id⟩ ) (by aesop)
+  NatIso.ofComponents
+    (fun F ↦ ObjectProperty.isoMk _ (isoWhiskerRight e.op.counitIso F.obj))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of sheaf categories. -/
@@ -144,12 +142,6 @@ def sheafCongr : Sheaf J A ≌ Sheaf K A where
   counitIso := sheafCongr.counitIso J K e A
   functor_unitIso_comp X := by
     ext
-    simp only [id_obj, sheafCongr.functor_obj_val_obj, comp_obj,
-      Sheaf.comp_val, NatTrans.comp_app, sheafCongr.inverse_obj_val_obj,
-      Opposite.unop_op, sheafCongr.functor_map_val_app,
-      sheafCongr.unitIso_hom_app_val_app, sheafCongr.counitIso_hom_app_val_app,
-      sheafCongr.functor_obj_val_map, Quiver.Hom.unop_op, Sheaf.id_val,
-      NatTrans.id_app]
     simp [← Functor.map_comp, ← op_comp]
 
 variable [HasSheafify K A]
@@ -163,7 +155,7 @@ def transportAndSheafify : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
 noncomputable
 def transportIsoSheafToPresheaf : (e.sheafCongr J K A).functor ⋙
     sheafToPresheaf K A ⋙ e.op.congrLeft.inverse ≅ sheafToPresheaf J A :=
-  NatIso.ofComponents (fun F ↦ isoWhiskerRight e.op.unitIso.symm F.val)
+  NatIso.ofComponents (fun F ↦ isoWhiskerRight e.op.unitIso.symm F.obj)
 
 /-- Transporting and sheafifying is left adjoint to taking the underlying presheaf. -/
 noncomputable
@@ -263,14 +255,14 @@ lemma W_inverseImage_whiskeringLeft :
       exact ⟨_, ⟨_, rfl⟩, ⟨e.trans ((sheafToPresheaf _ _).mapIso
         ((G.sheafPushforwardContinuous A K J).objObjPreimageIso R).symm)⟩⟩
     · rintro ⟨_, ⟨R, rfl⟩, ⟨e⟩⟩
-      exact ⟨G.op ⋙ R.val, ⟨(G.sheafPushforwardContinuous A K J).obj R, rfl⟩, ⟨e⟩⟩
+      exact ⟨G.op ⋙ R.obj, ⟨(G.sheafPushforwardContinuous A K J).obj R, rfl⟩, ⟨e⟩⟩
   have h₂ : ∀ (R : Sheaf J A),
-    Function.Bijective (fun (g : G.op ⋙ Q ⟶ G.op ⋙ R.val) ↦ whiskerLeft G.op f ≫ g) ↔
-      Function.Bijective (fun (g : Q ⟶ R.val) ↦ f ≫ g) := fun R ↦ by
+    Function.Bijective (fun (g : G.op ⋙ Q ⟶ G.op ⋙ R.obj) ↦ whiskerLeft G.op f ≫ g) ↔
+      Function.Bijective (fun (g : Q ⟶ R.obj) ↦ f ≫ g) := fun R ↦ by
     rw [← Function.Bijective.of_comp_iff _
-      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G Q R.val R.cond)]
+      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G Q R.obj R.property)]
     exact Function.Bijective.of_comp_iff'
-      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G P R.val R.cond)
+      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G P R.obj R.property)
         (fun g ↦ f ≫ g)
   rw [h₁, J.W_eq_isLocal_range_sheafToPresheaf_obj, MorphismProperty.inverseImage_iff]
   constructor

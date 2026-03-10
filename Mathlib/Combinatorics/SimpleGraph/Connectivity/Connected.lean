@@ -693,7 +693,6 @@ def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
     convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
       rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Extract as lemma about general equivalence relation
 lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
     Pairwise fun c c' : ConnectedComponent G ↦ Disjoint c.supp c'.supp := by

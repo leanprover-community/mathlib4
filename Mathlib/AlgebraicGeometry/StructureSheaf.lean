@@ -172,23 +172,23 @@ def structureSheafInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
   subsheafToTypes (isLocallyFraction R M)
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    AddCommGroup ((structureSheafInType R M).val.obj U) :=
+    AddCommGroup ((structureSheafInType R M).obj.obj U) :=
   (sectionsSubmodule M U.unop).toAddSubgroup.toAddCommGroup
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Module R ((structureSheafInType R M).val.obj U) :=
+    Module R ((structureSheafInType R M).obj.obj U) :=
   (sectionsSubmodule M U.unop).module
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    CommRing ((structureSheafInType R A).val.obj U) :=
+    CommRing ((structureSheafInType R A).obj.obj U) :=
   (sectionsSubalgebra A U.unop).toCommRing
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Algebra R ((structureSheafInType R A).val.obj U) :=
+    Algebra R ((structureSheafInType R A).obj.obj U) :=
   (sectionsSubalgebra A U.unop).algebra
 
 local notation "Γ(" M ", " U ")" =>
-  (Functor.obj (Sheaf.val (structureSheafInType _ M))) (Opposite.op U)
+  (Functor.obj (ObjectProperty.FullSubcategory.obj (structureSheafInType _ M))) (Opposite.op U)
 
 @[simp]
 lemma structureSheafInType.add_apply {U : Opens (PrimeSpectrum.Top R)} (s t : Γ(M, U)) (x : U) :
@@ -229,11 +229,11 @@ def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) 
 
 set_option backward.isDefEq.respectTransparency false in
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Module ((structureSheafInType R R).val.obj U) ((structureSheafInType R M).val.obj U) :=
+    Module ((structureSheafInType R R).obj.obj U) ((structureSheafInType R M).obj.obj U) :=
   inferInstanceAs% (Module (sectionsSubalgebra R _) (sectionsSubalgebraSubmodule M _))
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    IsScalarTower R ((structureSheafInType R R).val.obj U) ((structureSheafInType R M).val.obj U) :=
+    IsScalarTower R ((structureSheafInType R R).obj.obj U) ((structureSheafInType R M).obj.obj U) :=
   .of_algebraMap_smul fun r m ↦ Subtype.ext <| funext fun x ↦
     IsScalarTower.algebraMap_smul (Localizations R x.1) r (m.1 x)
 
@@ -379,7 +379,7 @@ end StructureSheaf
 end Public
 
 local notation "Γ(" M ", " U ")" =>
-  (Functor.obj (Sheaf.val (structureSheafInType _ M))) (Opposite.op U)
+  (Functor.obj (ObjectProperty.FullSubcategory.obj (structureSheafInType _ M))) (Opposite.op U)
 
 namespace StructureSheaf
 
@@ -458,11 +458,11 @@ theorem exists_le_iSup_basicOpen_and_smul_eq_smul_and_eq_const
     refine toBasicOpenₗ_injective (g i * g j) ?_
     simp only [toBasicOpenₗ_mk]
     have := H i
-    trans (structureSheafInType R M).val.map (homOfLE ?_).op s
-    · refine .trans (Subtype.ext <| funext fun a ↦ ?_) congr((structureSheafInType R M).val.map
+    trans (structureSheafInType R M).obj.map (homOfLE ?_).op s
+    · refine .trans (Subtype.ext <| funext fun a ↦ ?_) congr((structureSheafInType R M).obj.map
         (homOfLE ((PrimeSpectrum.basicOpen_mul (g i) (g j)).trans_le inf_le_right)).op $(H j))
       exact LocalizedModule.mk_eq.mpr ⟨1, by simp [Submonoid.smul_def, ← smul_assoc]; ring_nf⟩
-    · refine congr((structureSheafInType R M).val.map (homOfLE ((PrimeSpectrum.basicOpen_mul (g i)
+    · refine congr((structureSheafInType R M).obj.map (homOfLE ((PrimeSpectrum.basicOpen_mul (g i)
         (g j)).trans_le inf_le_left)).op $(H i)).symm.trans (Subtype.ext <| funext fun a ↦ ?_)
       exact LocalizedModule.mk_eq.mpr ⟨1, by simp [Submonoid.smul_def, ← smul_assoc]⟩
     · exact ((PrimeSpectrum.basicOpen_mul (g i) (g j)).trans_le inf_le_right).trans (igU _)
@@ -887,7 +887,7 @@ This is provided as a bundled `SheafedSpace` as `Spec.SheafedSpace R` later. -/
 def _root_.AlgebraicGeometry.Spec.structureSheaf : Sheaf CommRingCat (PrimeSpectrum.Top R) :=
   ⟨structurePresheafInCommRingCat R,
     (TopCat.Presheaf.isSheaf_iff_isSheaf_comp _ _).mpr (TopCat.Presheaf.isSheaf_of_iso
-      (structurePresheafCompForget R).symm (structureSheafInType R R).cond)⟩
+      (structurePresheafCompForget R).symm (structureSheafInType R R).property)⟩
 
 open Spec (structureSheaf)
 
@@ -918,17 +918,17 @@ instance IsLocalization.to_stalk (p : PrimeSpectrum R) :
     IsLocalization.AtPrime ((structureSheaf R).presheaf.stalk p) p.asIdeal :=
   inferInstanceAs% (IsLocalization.AtPrime ((structurePresheafInCommRingCat R).stalk p) p.asIdeal)
 
-instance openAlgebra (U : (Opens (PrimeSpectrum R))ᵒᵖ) : Algebra R ((structureSheaf R).val.obj U) :=
+instance openAlgebra (U : (Opens (PrimeSpectrum R))ᵒᵖ) : Algebra R ((structureSheaf R).obj.obj U) :=
   inferInstanceAs% (Algebra R ((structureSheafInType R R).presheaf.obj _))
 
 /-- Sections of the structure sheaf of Spec R on a basic open as localization of R -/
 instance IsLocalization.to_basicOpen (r : R) :
-    IsLocalization.Away r ((structureSheaf R).val.obj (op <| basicOpen r)) :=
+    IsLocalization.Away r ((structureSheaf R).obj.obj (op <| basicOpen r)) :=
   inferInstanceAs% (IsLocalization.Away r Γ(R, basicOpen r))
 
 instance to_basicOpen_epi (r : R) :
     Epi (CommRingCat.ofHom <|
-      algebraMap R ((structureSheaf R).val.obj (op <| basicOpen r))) :=
+      algebraMap R ((structureSheaf R).obj.obj (op <| basicOpen r))) :=
   ⟨fun _ _ h => CommRingCat.hom_ext (IsLocalization.ringHom_ext (Submonoid.powers r)
     (CommRingCat.hom_ext_iff.mp h))⟩
 

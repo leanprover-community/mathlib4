@@ -36,7 +36,7 @@ example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
   rfl
 
 example (α β : Type _) [AddMonoid α] [AddMonoid β] :
-    (Prod.instSMul : SMul ℕ (α × β)) = AddMonoid.toNatSMul := by
+    (Prod.instSMul : SMul ℕ (α × β)) = AddMonoid.toNSMul := by
   with_reducible_and_instances rfl
 
 example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
@@ -44,7 +44,7 @@ example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
-    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNatSMul := by
+    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, SubNegMonoid (β a)] :

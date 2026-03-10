@@ -491,7 +491,6 @@ end
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
   (ρ : Representation k G V)
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem ofMulAction_self_smul_eq_mul (x : k[G]) (y : (ofMulAction k G G).asModule) :
     x • y = (x * y : k[G]) := by
@@ -533,7 +532,7 @@ lemma leftRegular_norm_apply :
       linearCombination _ (fun _ => 1) := by
   ext i : 2
   simpa [Representation.norm] using Finset.sum_bijective _
-    (Group.mulRight_bijective i) (by simp_all) (by simp_all)
+    (Group.mulRight_bijective i) (by simp) (by simp)
 
 lemma leftRegular_norm_eq_zero_iff (x : G →₀ k) :
     (leftRegular k G).norm x = 0 ↔ x.linearCombination k (fun _ => (1 : k)) = 0 := by

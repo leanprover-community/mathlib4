@@ -153,6 +153,9 @@ instance (X : C) : Cofibration (HoCat.iResolutionObj X) :=
 instance (X : C) : WeakEquivalence (HoCat.iResolutionObj X) :=
   (HoCat.exists_resolution X).choose_spec.choose_spec.choose_spec.2
 
+instance (X : C) [IsCofibrant X] : IsCofibrant (HoCat.resolutionObj X) :=
+  isCofibrant_of_cofibration (HoCat.iResolutionObj X)
+
 lemma HoCat.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
     ∃ (g : resolutionObj X ⟶ resolutionObj Y),
       iResolutionObj X ≫ g = f ≫ iResolutionObj Y := by

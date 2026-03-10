@@ -110,4 +110,7 @@ lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [WeaklyEtale (f ≫ g)] [WeaklyEtale g
 
 end WeaklyEtale
 
+lemma etale_le_weaklyEtale : @Etale ≤ @WeaklyEtale :=
+  fun _ _ _ _ ↦ inferInstance
+
 end AlgebraicGeometry

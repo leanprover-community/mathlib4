@@ -92,7 +92,7 @@ lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
   refine ⟨fun H ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · obtain ⟨m, n, e⟩ := mem_lattice.mp H
     have := LinearIndependent.pair_iff.mp L.indep (m - α) (n - β)
-      (by simpa using by linear_combination e)
+      (by simp; linear_combination e)
     simp only [sub_eq_zero] at this
     norm_cast at this
     aesop
@@ -275,7 +275,7 @@ lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
   rw [weierstrassPExcept, ← Summable.tsum_add]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *]
   · exact ⟨_, L.hasSum_weierstrassPExcept _ _⟩
-  · exact summable_of_finite_support ((Set.finite_singleton l₀).subset (by simp_all))
+  · exact summable_of_hasFiniteSupport ((Set.finite_singleton l₀).subset (by simp))
 
 lemma weierstrassPExcept_def (l₀ : L.lattice) (z : ℂ) :
     ℘[L - l₀] z = ℘[L] z + (1 / l₀.1 ^ 2 - 1 / (z - l₀.1) ^ 2) := by
@@ -529,7 +529,7 @@ lemma derivWeierstrassPExcept_sub (l₀ : L.lattice) (z : ℂ) :
   rw [derivWeierstrassP, derivWeierstrassPExcept, ← Summable.tsum_add, ← tsum_neg]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *, neg_div]
   · exact ⟨_, L.hasSum_derivWeierstrassPExcept _ _⟩
-  · exact summable_of_finite_support ((Set.finite_singleton l₀).subset (by simp_all))
+  · exact summable_of_hasFiniteSupport ((Set.finite_singleton l₀).subset (by simp))
 
 lemma derivWeierstrassPExcept_def (l₀ : L.lattice) (z : ℂ) :
     ℘'[L - l₀] z = ℘'[L] z + 2 / (z - l₀) ^ 3 := by
@@ -647,7 +647,7 @@ lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
           split_ifs with e
           · simp only [e, zpow_natCast, sub_self, mul_zero]
           · dsimp; norm_cast; ring
-        · exact summable_of_finite_support ((Set.finite_singleton ⟨l₀, hl₀⟩).subset (by simp_all))
+        · exact summable_of_hasFiniteSupport ((Set.finite_singleton ⟨l₀, hl₀⟩).subset (by simp))
     · have h₁ (l : L.lattice) : l.1 ≠ l₀ := fun e ↦ hl₀ (e ▸ l.2)
       simp [h₁, tsum_mul_left, sumInvPow, add_assoc,
         one_add_one_eq_two, ← zpow_natCast, -neg_add_rev]
@@ -1010,7 +1010,6 @@ private lemma iteratedDeriv_six_relation_mul_id_pow_six :
     show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local fun_prop] AnalyticAt.contDiffAt in
 private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
   refine .of_meromorphicOrderAt_pos (one_pos.trans_le ?_) (by simp [relation])

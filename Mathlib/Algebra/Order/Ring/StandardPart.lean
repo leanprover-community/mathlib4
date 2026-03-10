@@ -12,7 +12,6 @@ public import Mathlib.Order.Quotient
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 import Mathlib.Data.Real.CompleteField
-import Mathlib.Tactic.InferInstanceAsPercent
 
 /-!
 # Standard part function
@@ -29,10 +28,6 @@ field, meaning we can uniquely embed it in the reals.
 Given a finite element of the field, the `ArchimedeanClass.stdPart` function returns the real number
 corresponding to this unique embedding. This function generalizes, among other things, the standard
 part function on `Hyperreal`.
-
-## TODO
-
-Redefine `Hyperreal.st` in terms of `ArchimedeanClass.stdPart`.
 
 ## References
 

@@ -34,7 +34,6 @@ namespace Polynomial
 
 variable {R : Type*} [CommSemiring R] [NoZeroDivisors R] [WfDvdMonoid R] {f : R[X]}
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
   wf := by
     classical

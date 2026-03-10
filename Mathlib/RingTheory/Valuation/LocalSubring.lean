@@ -207,7 +207,6 @@ lemma LocalSubring.eq_iInf_of_isIntegrallyClosedIn {R : LocalSubring K}
     have ⟨V, hV⟩ := R.exists_le_valuationSubring_of_isIntegrallyClosedIn hxR
     hV.2 (iInf_le_of_le (α := Subring K) ⟨V, hV.1⟩ le_rfl h)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The integral closure of a subset in a field is the intersection of all valuation subrings
 containing it. -/
 lemma iInf_valuationSubring_superset {s : Set K} :

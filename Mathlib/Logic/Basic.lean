@@ -9,7 +9,6 @@ public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Basic
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
-public import Mathlib.Tactic.InferInstanceAsPercent
 
 import Mathlib.Tactic.Attr.Register
 
