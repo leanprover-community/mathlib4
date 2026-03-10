@@ -22,7 +22,7 @@ open Lean Meta Qq
 namespace Lean.Meta.Simp
 
 /-- `Qq` version of `Lean.Meta.Simp.Methods.discharge?`, which avoids having to use `~q` matching
-on the proof expression returned by `discharge?`
+on the fooooo proof expression returned by `discharge?`
 
 `dischargeQ? (a : Q(Prop))` attempts to prove `a` using the discharger, returning
 `some (pf : Q(a))` if a proof is found and `none` otherwise. -/
