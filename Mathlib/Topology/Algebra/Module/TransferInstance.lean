@@ -62,6 +62,55 @@ lemma toLinearEquiv_continuousLinearEquiv (e : α ≃ β) :
 
 end Equiv
 
+section ContinuousLinearEquiv
+
+variable [Semiring R]
+
+@[implicit_reducible]
+def ContinuousLinearEquiv.IsTopologicalAddGroup
+    [TopologicalSpace α] [AddCommGroup α] [IsTopologicalAddGroup α] [Module R α]
+    [TopologicalSpace β] [AddCommGroup β] [Module R β]
+    (e : α ≃L[R] β) : IsTopologicalAddGroup β where
+  continuous_add := by
+    let f := (fun q ↦ q.1 + q.2 : α × α → α)
+    have : Continuous (fun p ↦ e <| f (e.symm p.1, e.symm p.2) : (β × β → β)) := by fun_prop
+    exact this.congr <| fun p ↦ by simp [f]
+  continuous_neg := by
+    have : Continuous (e ∘ (fun q ↦ -q : α → α) ∘ e.symm) := by fun_prop
+    exact this.congr (fun p ↦ by simp)
+
+/- TODO: should there be the following version instead, deducing the instances for β
+-- from the ones for α? Currently, the statement errors for reasons I don't understand yet.
+def Equiv.IsTopologicalAddGroup
+    [TopologicalSpace α] [AddCommGroup α] [IsTopologicalAddGroup α] [Module R α]
+    (e : α ≃ β) :
+    letI := e.symm.topologicalSpace
+    letI := e.symm.addCommGroup
+    letI := e.symm.module R
+    IsTopologicalAddGroup β where
+  continuous_add := by
+    let f := (fun q ↦ q.1 + q.2 : α × α → α)
+    have : Continuous (fun p ↦ e <| f (e.symm p.1, e.symm p.2) : (β × β → β)) := by fun_prop
+    exact this.congr <| fun p ↦ by simp [f]
+  continuous_neg := by
+    have : Continuous (e ∘ (fun q ↦ -q : α → α) ∘ e.symm) := by fun_prop
+    exact this.congr (fun p ↦ by simp)
+-/
+
+-- TODO: should the instnaces for β be deduced from the ones for α?
+@[implicit_reducible]
+def ContinuousLinearEquiv.continuousSMul
+    [TopologicalSpace α] [AddCommGroup α] [Module R α] [TopologicalSpace R] [ContinuousSMul R α]
+    [TopologicalSpace β] [AddCommGroup β] [Module R β]
+    (e : α ≃L[R] β) :
+    ContinuousSMul R β where
+  continuous_smul := by
+    let f : R × β → β := fun p ↦ e <| p.1 • (e.symm p.2)
+    have : Continuous f := by fun_prop
+    exact this.congr (fun p ↦ by simp [f])
+
+end ContinuousLinearEquiv
+
 universe v
 
 variable (R α) in
