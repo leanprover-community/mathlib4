@@ -44,10 +44,14 @@ variable {C : Type u} [Category.{v} C] [Preadditive C] [HasFiniteBiproducts C]
 namespace leftExactFunctorForgetEquivalence
 
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
+
+-- This was deprecated on 2025-10-10 but is still used as a local instance here!
 attribute [local instance] AddCommGrpCat.cartesianMonoidalCategoryAddCommGrp
 
+set_option backward.privateInPublic true in
 private noncomputable local instance : CartesianMonoidalCategory C := .ofHasFiniteProducts
 
+set_option backward.privateInPublic true in
 private noncomputable local instance : BraidedCategory C := .ofCartesianMonoidalCategory
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
@@ -65,10 +69,11 @@ instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :=
-  ObjectProperty.lift _ inverseAux inferInstance
+  ObjectProperty.lift _ inverseAux (by simp only [leftExactFunctor_iff]; infer_instance)
 
 open scoped MonObj
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 /-- Implementation, see `leftExactFunctorForgetEquivalence`.
 This is the complicated bit, where we show that forgetting the group structure in the image of

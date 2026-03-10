@@ -89,6 +89,7 @@ def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
     decode_inv := fun n => by
       simp [decode_ofEquiv, encode_ofEquiv] }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
@@ -259,6 +260,7 @@ theorem ofNat_range : Set.range (ofNat s) = Set.univ :=
 theorem coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s := by
   rw [Set.range_comp Subtype.val, ofNat_range, Set.image_univ, Subtype.range_coe]
 
+set_option backward.privateInPublic true in
 private def toFunAux (x : s) : ℕ :=
   (List.range x).countP (· ∈ s)
 
@@ -267,6 +269,7 @@ private theorem toFunAux_eq {s : Set ℕ} [DecidablePred (· ∈ s)] (x : s) :
   rw [toFunAux, List.countP_eq_length_filter]
   rfl
 
+set_option backward.privateInPublic true in
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_notMem]
@@ -291,6 +294,8 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
       rhs
       rw [← ih, ← card_insert_of_notMem h₁, ← h₂]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Any infinite set of naturals is denumerable. -/
 def denumerable (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : Denumerable s :=
   Denumerable.ofEquiv ℕ

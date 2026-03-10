@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Tactic.ByContra
+public import Mathlib.Tactic.Push
 
 /-! # Embeddings of complex shapes
 
@@ -29,26 +29,26 @@ category of an abelian category (TODO).
 ## Description of the API
 
 - The extension functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalComplex C c'`
-(extending by the zero object outside of the image of `e.f`) is defined in
-the file `Embedding.Extend`;
+  (extending by the zero object outside of the image of `e.f`) is defined in
+  the file `Embedding.Extend`;
 - assuming `e.IsRelIff`, the restriction functor
-`e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`
-is defined in the file `Embedding.Restriction`;
+  `e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`
+  is defined in the file `Embedding.Restriction`;
 - the stupid truncation functor
-`e.stupidTruncFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
-which is the composition of the two previous functors is defined in the file
-`Embedding.StupidTrunc`.
+  `e.stupidTruncFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
+  which is the composition of the two previous functors is defined in the file
+  `Embedding.StupidTrunc`.
 - assuming `e.IsTruncGE`, we have truncation functors
-`e.truncGE'Functor C : HomologicalComplex C c' ⥤ HomologicalComplex C c` and
-`e.truncGEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
-(see the file `Embedding.TruncGE`), and a natural
-transformation `e.πTruncGENatTrans : 𝟭 _ ⟶ e.truncGEFunctor C` which is a quasi-isomorphism
-in degrees in the image of `e.f` (TODO);
+  `e.truncGE'Functor C : HomologicalComplex C c' ⥤ HomologicalComplex C c` and
+  `e.truncGEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
+  (see the file `Embedding.TruncGE`), and a natural
+  transformation `e.πTruncGENatTrans : 𝟭 _ ⟶ e.truncGEFunctor C` which is a quasi-isomorphism
+  in degrees in the image of `e.f` (TODO);
 - assuming `e.IsTruncLE`, we have truncation functors
-`e.truncLE'Functor C : HomologicalComplex C c' ⥤ HomologicalComplex C c` and
-`e.truncLEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`, and a natural
-transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a quasi-isomorphism
-in degrees in the image of `e.f` (TODO);
+  `e.truncLE'Functor C : HomologicalComplex C c' ⥤ HomologicalComplex C c` and
+  `e.truncLEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`, and a natural
+  transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a quasi-isomorphism
+  in degrees in the image of `e.f` (TODO);
 
 -/
 
@@ -255,26 +255,20 @@ lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by
   constructor
   · intro h
-    by_contra!
+    by_contra
     exact h (p - n).natAbs (by simp; lia)
   · intros
     dsimp
     lia
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_range_embeddingUpIntLE_iff := notMem_range_embeddingUpIntLE_iff
-
 lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
   constructor
   · intro h
-    by_contra!
+    by_contra
     exact h (n - p).natAbs (by simp; lia)
   · intros
     dsimp
     lia
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_range_embeddingUpIntGE_iff := notMem_range_embeddingUpIntGE_iff
 
 end ComplexShape

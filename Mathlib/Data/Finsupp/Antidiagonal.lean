@@ -29,13 +29,13 @@ variable {α : Type u} [DecidableEq α]
 /-- The `Finsupp` counterpart of `Multiset.antidiagonal`: the antidiagonal of
 `s : α →₀ ℕ` consists of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 The finitely supported function `antidiagonal s` is equal to the multiplicities of these pairs. -/
-def antidiagonal' (f : α →₀ ℕ) : (α →₀ ℕ) × (α →₀ ℕ) →₀ ℕ :=
+noncomputable def antidiagonal' (f : α →₀ ℕ) : (α →₀ ℕ) × (α →₀ ℕ) →₀ ℕ :=
   Multiset.toFinsupp
     ((Finsupp.toMultiset f).antidiagonal.map (Prod.map Multiset.toFinsupp Multiset.toFinsupp))
 
 /-- The antidiagonal of `s : α →₀ ℕ` is the finset of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)`
 such that `t₁ + t₂ = s`. -/
-instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
+noncomputable instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
   antidiagonal f := f.antidiagonal'.support
   mem_antidiagonal {f} {p} := by
     rcases p with ⟨p₁, p₂⟩

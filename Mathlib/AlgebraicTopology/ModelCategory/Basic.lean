@@ -67,6 +67,8 @@ class ModelCategory where
 
 namespace ModelCategory
 
+attribute [instance_reducible]
+  categoryWithFibrations categoryWithCofibrations categoryWithWeakEquivalences
 attribute [instance] categoryWithFibrations categoryWithCofibrations categoryWithWeakEquivalences
   cm1a cm1b cm2 cm3a cm3b cm3c cm4a cm4b cm5a cm5b
 
@@ -76,7 +78,7 @@ variable [ModelCategory C]
 
 instance : MorphismProperty.IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C) :=
   MorphismProperty.IsWeakFactorizationSystem.mk' _ _ (fun {A B X Y} i p hi hp ↦ by
-    obtain ⟨_, _⟩ := mem_trivialCofibrations_iff i|>.mp hi
+    obtain ⟨_, _⟩ := mem_trivialCofibrations_iff i |>.mp hi
     rw [← fibration_iff] at hp
     infer_instance)
 
@@ -94,6 +96,7 @@ section mk'
 
 open MorphismProperty
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C]
@@ -116,6 +119,7 @@ private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations 
     ⟨hw.hp, (weakEquivalence_iff _).1 (weakEquivalence_of_precomp_of_fac hw.fac)⟩
   simpa only [weakEquivalence_iff] using (of_retract this h').2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for `ModelCategory C` which assumes a formulation of axioms
 using weak factorization systems. -/
 def mk' [CategoryWithFibrations C] [CategoryWithCofibrations C]

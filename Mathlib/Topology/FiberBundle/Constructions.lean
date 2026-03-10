@@ -122,7 +122,7 @@ variable [TopologicalSpace B] (F₁ : Type*) [TopologicalSpace F₁] (E₁ : B �
   [TopologicalSpace (TotalSpace F₁ E₁)] (F₂ : Type*) [TopologicalSpace F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)]
 
-namespace Trivialization
+namespace Bundle.Trivialization
 
 variable {F₁ E₁ F₂ E₂}
 variable (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))
@@ -169,14 +169,14 @@ theorem Prod.left_inv {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
     Prod.invFun' e₁ e₂ (Prod.toFun' e₁ e₂ x) = x := by
   obtain ⟨x, v₁, v₂⟩ := x
   obtain ⟨h₁ : x ∈ e₁.baseSet, h₂ : x ∈ e₂.baseSet⟩ := h
-  simp only [Prod.toFun', Prod.invFun', symm_apply_apply_mk, h₁, h₂]
+  simp [Prod.toFun', Prod.invFun', h₁, h₂]
 
 theorem Prod.right_inv {x : B × F₁ × F₂}
     (h : x ∈ (e₁.baseSet ∩ e₂.baseSet) ×ˢ (univ : Set (F₁ × F₂))) :
     Prod.toFun' e₁ e₂ (Prod.invFun' e₁ e₂ x) = x := by
   obtain ⟨x, w₁, w₂⟩ := x
   obtain ⟨⟨h₁ : x ∈ e₁.baseSet, h₂ : x ∈ e₂.baseSet⟩, -⟩ := h
-  simp only [Prod.toFun', Prod.invFun', apply_mk_symm, h₁, h₂]
+  simp [Prod.toFun', Prod.invFun', h₁, h₂]
 
 theorem Prod.continuous_inv_fun :
     ContinuousOn (Prod.invFun' e₁ e₂) ((e₁.baseSet ∩ e₂.baseSet) ×ˢ univ) := by
@@ -214,14 +214,12 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   target_eq := rfl
   proj_toFun _ _ := rfl
 
-@[deprecated (since := "2025-06-19")] alias baseSet_prod := prod_baseSet
-
 theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
 
-end Trivialization
+end Bundle.Trivialization
 
-open Trivialization
+open Bundle Trivialization
 
 variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSpace (E₁ x)]
   [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
@@ -249,6 +247,8 @@ instance {e₁ : Trivialization F₁ (π F₁ E₁)} {e₂ : Trivialization F₂
 end Prod
 
 /-! ### Pullbacks of fiber bundles -/
+
+open Bundle
 
 section
 
@@ -301,7 +301,7 @@ variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass
 
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
 @[simps]
-noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
+noncomputable def Bundle.Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
     Trivialization F (π F ((f : B' → B) *ᵖ E)) where
   toFun z := (z.proj, (e (Pullback.lift f z)).2)
   invFun y := @TotalSpace.mk _ F (f *ᵖ E) y.1 (e.symm (f y.1) y.2)

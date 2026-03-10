@@ -54,9 +54,6 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 
 * Redefine and/or relate the definition of Chebyshev polynomials to `LinearRecurrence`.
 * Add explicit formula involving square roots for Chebyshev polynomials
-* Compute zeroes and extrema of Chebyshev polynomials.
-* Prove that the roots of the Chebyshev polynomials (except 0) are irrational.
-* Prove minimax properties of Chebyshev polynomials.
 -/
 
 @[expose] public section
@@ -105,17 +102,20 @@ protected theorem induct' (motive : ℤ → Prop)
     apply neg (n + 2) (add_two n (neg' _ h₀) (neg' n ?_))
     convert h₁ using 1; omega
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem T_add_two : ∀ n, T R (n + 2) = 2 * X * T R (n + 1) - T R n
   | (k : ℕ) => T.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) T.eq_4 R k
 
+set_option backward.isDefEq.respectTransparency false in
 theorem T_add_one (n : ℤ) : T R (n + 1) = 2 * X * T R n - T R (n - 1) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 1)
 
 theorem T_sub_two (n : ℤ) : T R (n - 2) = 2 * X * T R (n - 1) - T R n := by
   linear_combination (norm := ring_nf) T_add_two R (n - 2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem T_sub_one (n : ℤ) : T R (n - 1) = 2 * X * T R n - T R (n + 1) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 1)
 
@@ -138,6 +138,7 @@ theorem T_neg_one : T R (-1) = X := by
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
   unfold T; simp [pow_two, mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   induction n using Polynomial.Chebyshev.induct with
@@ -165,6 +166,7 @@ theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -182,6 +184,28 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
+theorem T_eval_zero (n : ℤ) :
+    (T R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    have : ((n : ℤ) + 2) / 2 = (n : ℤ) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [Int.negOnePow_add]
+  | neg_add_one n ih1 ih2 =>
+    have : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [T_sub_one, ← Int.not_even_iff_odd, Int.negOnePow_add]
+
+@[simp]
+theorem T_eval_zero_of_even {n : ℤ} (hn : Even n) : (T R n).eval 0 = (n / 2).negOnePow := by
+  simp [T_eval_zero, hn]
+
+theorem T_eval_two_mul_zero (n : ℤ) : (T R (2 * n)).eval 0 = n.negOnePow := by simp
+
+@[simp]
+theorem T_eval_zero_of_odd {n : ℤ} (hn : Odd n) : (T R n).eval 0 = 0 := by
+  simp [T_eval_zero, ← Int.not_odd_iff_even, hn]
+
 @[simp]
 theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.natAbs := by
   induction n using Chebyshev.induct' with
@@ -189,11 +213,10 @@ theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.na
   | one => simp
   | add_two n ih1 ih2 =>
     have : (2 * X * T R (n + 1)).degree = ↑(n + 2) := by
-      change (C 2 * X * T R (n + 1)).degree = ↑(n + 2)
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, ih1]
-      rfl
+      rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, ih1]
+      norm_cast
     rw [T_add_two, degree_sub_eq_left_of_degree_lt]
-    · rw [this]; rfl
+    · rw [this]; norm_cast
     · rw [ih2, this]; tauto
   | neg n ih => simp [ih]
 
@@ -214,11 +237,12 @@ theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     rw [T_add_two, leadingCoeff_sub_of_degree_lt, leadingCoeff_mul, ih1,
       leadingCoeff_mul, leadingCoeff_X, this]
     · norm_cast; simp [pow_add, mul_comm]
-    · change (T R n).degree < (C 2 * X * T R (n + 1)).degree
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, degree_T, degree_T]
+    · rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, degree_T,
+        degree_T]
       tauto
   | neg n ih => simp [ih]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n).eval x := by
   induction n using Chebyshev.induct' with
@@ -232,6 +256,9 @@ theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n)
     · simp
   | neg n ih => simp [ih]
 
+theorem T_ne_zero (n : ℤ) [IsDomain R] [NeZero (2 : R)] : T R n ≠ 0 :=
+  (T R n).degree_ne_bot.mp (by simp [degree_T R n])
+
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
 noncomputable def U : ℤ → R[X]
   | 0 => 1
@@ -240,17 +267,20 @@ noncomputable def U : ℤ → R[X]
   | -((n : ℕ) + 1) => 2 * X * U (-n) - U (-n + 1)
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem U_add_two : ∀ n, U R (n + 2) = 2 * X * U R (n + 1) - U R n
   | (k : ℕ) => U.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) U.eq_4 R k
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_add_one (n : ℤ) : U R (n + 1) = 2 * X * U R n - U R (n - 1) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 1)
 
 theorem U_sub_two (n : ℤ) : U R (n - 2) = 2 * X * U R (n - 1) - U R n := by
   linear_combination (norm := ring_nf) U_add_two R (n - 2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_sub_one (n : ℤ) : U R (n - 1) = 2 * X * U R n - U R (n + 1) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 1)
 
@@ -275,6 +305,7 @@ theorem U_two : U R 2 = 4 * X ^ 2 - 1 := by
 theorem U_neg_two : U R (-2) = -1 := by
   simpa [zero_sub, Int.reduceNeg, U_neg_one, mul_zero, U_zero] using U_sub_two R 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_neg_sub_one (n : ℤ) : U R (-n - 1) = -U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -309,6 +340,7 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
       sub_add_cancel]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -328,20 +360,39 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     norm_num
     ring
 
+theorem U_eval_zero (n : ℤ) :
+    (U R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    have : ((n : ℤ) + 2) / 2 = (n : ℤ) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [Int.negOnePow_add]
+  | neg_add_one n ih1 ih2 =>
+    have : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [U_sub_one, ← Int.not_even_iff_odd, Int.negOnePow_add]
+
+@[simp]
+theorem U_eval_zero_of_even {n : ℤ} (hn : Even n) : (U R n).eval 0 = (n / 2).negOnePow := by
+  simp [U_eval_zero, hn]
+
+theorem U_eval_two_mul_zero (n : ℤ) : (U R (2 * n)).eval 0 = n.negOnePow := by simp
+
+@[simp]
+theorem U_eval_zero_of_odd {n : ℤ} (hn : Odd n) : (U R n).eval 0 = 0 := by
+  simp [U_eval_zero, ← Int.not_odd_iff_even, hn]
+
 @[simp]
 theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degree = n := by
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one =>
     norm_cast
-    rw [U_one]
-    change (C (2:R) * X).degree = 1
-    exact degree_C_mul_X (NeZero.ne 2)
+    rw [U_one, ← C_ofNat, degree_C_mul_X two_ne_zero]
   | more n ih1 ih2 =>
     push_cast; push_cast at ih2
-    have : (2 * X * U R (n+1)).degree = ↑(n + 2) := by
-      change (C 2 * X * U R (n+1)).degree = ↑(n + 2)
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, ih2]
+    have : (2 * X * U R (n + 1)).degree = ↑(n + 2) := by
+      rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, ih2]
       norm_cast
     rw [U_add_two, degree_sub_eq_left_of_degree_lt]
     · rw [this]; norm_cast
@@ -381,8 +432,7 @@ theorem natDegree_U [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
 theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
     (U R n).leadingCoeff = 2 ^ n := by
   have : leadingCoeff (2 : R[X]) = 2 := by
-    change leadingCoeff (C 2) = 2
-    rw [leadingCoeff_C]
+    rw [← C_ofNat, leadingCoeff_C]
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one => simp [this]
@@ -391,9 +441,8 @@ theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
     rw [U_add_two, leadingCoeff_sub_of_degree_lt, leadingCoeff_mul, ih2,
       leadingCoeff_mul, leadingCoeff_X, this]
     · norm_cast; rw [pow_add, pow_add]; ring_nf
-    · change (U R n).degree < (C 2 * X * U R (n + 1)).degree
-      norm_cast
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X,
+    · norm_cast
+      rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X,
         degree_U_natCast R n, degree_U_natCast R (n + 1)]
       norm_cast; omega
 
@@ -410,6 +459,14 @@ theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow *
       simp; ring
     · simp
 
+theorem U_ne_zero (n : ℤ) [IsDomain R] [NeZero (2 : R)] (hn : n ≠ -1) : U R n ≠ 0 :=
+  (U R n).degree_ne_bot.mp (by simp [degree_U_of_ne_neg_one R n hn])
+
+theorem U_eq_zero_iff (n : ℤ) [IsDomain R] [NeZero (2 : R)] :
+    U R n = 0 ↔ n = -1 :=
+  ⟨fun h => by contrapose! h; exact U_ne_zero R n h, fun h => by simp [h]⟩
+
+set_option backward.isDefEq.respectTransparency false in
 theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp [two_mul]
@@ -438,6 +495,12 @@ theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℤ) :
     (1 - X ^ 2) * U R n = X * T R (n + 1) - T R (n + 2) := by
   linear_combination T_eq_X_mul_T_sub_pol_U R n
 
+theorem T_eq_X_mul_U_sub_U (n : ℤ) : T R (n + 2) = X * U R (n + 1) - U R n := by
+  have h := T_eq_U_sub_X_mul_U (R := R) (-(n + 2))
+  rw [T_neg, U_neg, Int.add_sub_cancel, ← neg_add' _ 1, U_neg,
+    show n + 2 + 1 - 2 = n + 1 by ring] at h
+  linear_combination (norm := ring_nf) h
+
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
 noncomputable def C : ℤ → R[X]
@@ -447,17 +510,20 @@ noncomputable def C : ℤ → R[X]
   | -((n : ℕ) + 1) => X * C (-n) - C (-n + 1)
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem C_add_two : ∀ n, C R (n + 2) = X * C R (n + 1) - C R n
   | (k : ℕ) => C.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) C.eq_4 R k
 
+set_option backward.isDefEq.respectTransparency false in
 theorem C_add_one (n : ℤ) : C R (n + 1) = X * C R n - C R (n - 1) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 1)
 
 theorem C_sub_two (n : ℤ) : C R (n - 2) = X * C R (n - 1) - C R n := by
   linear_combination (norm := ring_nf) C_add_two R (n - 2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem C_sub_one (n : ℤ) : C R (n - 1) = X * C R n - C R (n + 1) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 1)
 
@@ -479,6 +545,7 @@ theorem C_neg_one : C R (-1) = X := by
 theorem C_two : C R 2 = X ^ 2 - 2 := by
   simpa [pow_two, mul_assoc] using C_add_two R 0
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   induction n using Polynomial.Chebyshev.induct with
@@ -487,11 +554,11 @@ theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   | add_two n ih1 ih2 =>
     have h₁ := C_add_two R n
     have h₂ := C_sub_two R (-n)
-    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 - h₁ + h₂
+    linear_combination (norm := ring_nf) (X : R[X]) * ih1 - ih2 - h₁ + h₂
   | neg_add_one n ih1 ih2 =>
     have h₁ := C_add_one R n
     have h₂ := C_sub_one R (-n)
-    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 + h₁ - h₂
+    linear_combination (norm := ring_nf) (X : R[X]) * ih1 - ih2 + h₁ - h₂
 
 theorem C_natAbs (n : ℤ) : C R n.natAbs = C R n := by
   obtain h | h := Int.natAbs_eq n <;> nth_rw 2 [h]; simp
@@ -517,6 +584,7 @@ theorem C_eval_two (n : ℤ) : (C R n).eval 2 = 2 := by
   | add_two n ih1 ih2 => simp [C_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [C_sub_one, -C_neg, ih1, ih2]; norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
@@ -557,17 +625,20 @@ noncomputable def S : ℤ → R[X]
   | -((n : ℕ) + 1) => X * S (-n) - S (-n + 1)
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem S_add_two : ∀ n, S R (n + 2) = X * S R (n + 1) - S R n
   | (k : ℕ) => S.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) S.eq_4 R k
 
+set_option backward.isDefEq.respectTransparency false in
 theorem S_add_one (n : ℤ) : S R (n + 1) = X * S R n - S R (n - 1) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 1)
 
 theorem S_sub_two (n : ℤ) : S R (n - 2) = X * S R (n - 1) - S R n := by
   linear_combination (norm := ring_nf) S_add_two R (n - 2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem S_sub_one (n : ℤ) : S R (n - 1) = X * S R n - S R (n + 1) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 1)
 
@@ -592,6 +663,7 @@ theorem S_two : S R 2 = X ^ 2 - 1 := by
 theorem S_neg_two : S R (-2) = -1 := by
   simpa [zero_sub, Int.reduceNeg, S_neg_one, mul_zero, S_zero] using S_sub_two R 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem S_neg_sub_one (n : ℤ) : S R (-n - 1) = -S R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -599,11 +671,11 @@ theorem S_neg_sub_one (n : ℤ) : S R (-n - 1) = -S R (n - 1) := by
   | add_two n ih1 ih2 =>
     have h₁ := S_add_one R n
     have h₂ := S_sub_two R (-n - 1)
-    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 + h₁ + h₂
+    linear_combination (norm := ring_nf) (X : R[X]) * ih1 - ih2 + h₁ + h₂
   | neg_add_one n ih1 ih2 =>
     have h₁ := S_eq R n
     have h₂ := S_sub_two R (-n)
-    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 + h₁ + h₂
+    linear_combination (norm := ring_nf) (X : R[X]) * ih1 - ih2 + h₁ + h₂
 
 theorem S_neg (n : ℤ) : S R (-n) = -S R (n - 2) := by simpa [sub_sub] using S_neg_sub_one R (n - 1)
 
@@ -626,6 +698,7 @@ theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
       sub_add_cancel]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -670,6 +743,7 @@ theorem S_eq_U_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
     Nat.cast_ofNat, mul_invOf_self', map_one, one_mul, comp_X] at this
   assumption
 
+set_option backward.isDefEq.respectTransparency false in
 theorem S_eq_X_mul_S_add_C (n : ℤ) : 2 * S R (n + 1) = X * S R n + C R (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp [two_mul]
@@ -678,12 +752,12 @@ theorem S_eq_X_mul_S_add_C (n : ℤ) : 2 * S R (n + 1) = X * S R n + C R (n + 1)
     have h₁ := S_add_two R (n + 1)
     have h₂ := S_add_two R n
     have h₃ := C_add_two R (n + 1)
-    linear_combination (norm := ring_nf) -h₃ - (X:R[X]) * h₂ + 2 * h₁ + (X:R[X]) * ih1 - ih2
+    linear_combination (norm := ring_nf) -h₃ - (X : R[X]) * h₂ + 2 * h₁ + (X : R[X]) * ih1 - ih2
   | neg_add_one n ih1 ih2 =>
     have h₁ := S_add_two R (-n - 1)
     have h₂ := S_add_two R (-n)
     have h₃ := C_add_two R (-n)
-    linear_combination (norm := ring_nf) -h₃ + 2 * h₂ - (X:R[X]) * h₁ - ih2 + (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) -h₃ + 2 * h₂ - (X : R[X]) * h₁ - ih2 + (X : R[X]) * ih1
 
 theorem C_eq_S_sub_X_mul_S (n : ℤ) : C R n = 2 * S R n - X * S R (n - 1) := by
   linear_combination (norm := ring_nf) - S_eq_X_mul_S_add_C R (n - 1)
@@ -770,6 +844,7 @@ theorem algebraMap_eval_S [Algebra R R'] (x : R) (n : ℤ) :
     algebraMap R R' ((S R n).eval x) = (S R' n).eval (algebraMap R R' x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_S]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -798,6 +873,7 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     (-n - 1) * h₁ + (-(X : R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
 
+set_option backward.isDefEq.respectTransparency false in
 theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
     ((n : R[X]) + 1) * T R (n + 1) = X * U R n - (1 - X ^ 2) * derivative (U R n) := by
   have h₁ := congr_arg derivative <| T_eq_X_mul_T_sub_pol_U R n
@@ -807,8 +883,178 @@ theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     h₁ + (n + 2) * h₂
 
+set_option backward.isDefEq.respectTransparency false in
+theorem add_one_mul_self_mul_T_eq_poly_in_T (n : ℤ) :
+    ((n + 1) * n : R[X]) * (T R (n + 1)) =
+    (n : R[X]) * X * derivative (T R (n + 1)) - (n + 1 : R[X]) * derivative (T R n) := by
+  have h := T_eq_X_mul_U_sub_U (R := R) (n - 1)
+  rw [T_derivative_eq_U, T_derivative_eq_U]
+  linear_combination (norm := (push_cast; ring_nf))
+    (n + 1) * n * h
+
+theorem one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (n : ℤ) :
+    (1 - X ^ 2) * derivative^[2] (T R n) = X * derivative (T R n) - (n ^ 2 : R[X]) * T R n := by
+  have h₁ := congr_arg derivative <| one_sub_X_sq_mul_derivative_T_eq_poly_in_T (R := R) (n - 1)
+  simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
+    C_eq_natCast, sub_add_cancel, Int.cast_sub, Int.cast_one, derivative_intCast] at h₁
+  have h₂ := add_one_mul_self_mul_T_eq_poly_in_T (R := R) (n - 1)
+  rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
+  linear_combination (norm := (push_cast; ring_nf))
+    h₁ + h₂
+
+theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
+    (1 - X ^ 2) * derivative^[2] (U R n) =
+      3 * X * derivative (U R n) - ((n + 2) * n : R[X]) * U R n := by
+  have h := congr_arg derivative <| add_one_mul_T_eq_poly_in_U (R := R) n
+  simp only [derivative_add, derivative_sub, derivative_mul, derivative_X, derivative_one,
+    derivative_X_pow, derivative_intCast, C_eq_natCast, T_derivative_eq_U] at h
+  rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
+  linear_combination (norm := (push_cast; ring_nf)) h
+
+set_option backward.isDefEq.respectTransparency false in
+theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
+    (1 - X ^ 2) * derivative^[k + 2] (T R n) =
+      (2 * k + 1 : R[X]) * X * derivative^[k + 1] (T R n) -
+      (n ^ 2 - k ^ 2 : R[X]) * derivative^[k] (T R n) := by
+  have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T
+    (R := R) n
+  norm_cast at h
+  rw [sub_mul, iterate_derivative_sub, one_mul, ← Function.iterate_add_apply, mul_comm (X ^ 2),
+    iterate_derivative_sub, mul_comm X, iterate_derivative_intCast_mul,
+    iterate_derivative_derivative_mul_X_sq, iterate_derivative_derivative_mul_X] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+  cases k <;> grind
+
+set_option backward.isDefEq.respectTransparency false in
+theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
+    (1 - X ^ 2) * derivative^[k + 2] (U R n) =
+      (2 * k + 3 : R[X]) * X * derivative^[k + 1] (U R n) -
+      ((n + 1) ^ 2 - (k + 1) ^ 2 : R[X]) * derivative^[k] (U R n) := by
+  have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U
+    (R := R) n
+  norm_cast at h
+  rw [sub_mul, iterate_derivative_sub, one_mul, ← Function.iterate_add_apply, mul_comm (X ^ 2),
+    iterate_derivative_sub, mul_assoc 3, ← Nat.cast_three, iterate_derivative_natCast_mul,
+    mul_comm X, iterate_derivative_intCast_mul, iterate_derivative_derivative_mul_X_sq,
+    iterate_derivative_derivative_mul_X] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+  cases k <;> grind
+
+theorem one_sub_X_sq_mul_iterate_derivative_T_eval (n : ℤ) (k : ℕ) (x : R) :
+    (1 - x ^ 2) * (derivative^[k + 2] (T R n)).eval x =
+      (2 * k + 1) * x * (derivative^[k + 1] (T R n)).eval x -
+      (n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval x := by
+  have h := congr_arg (fun (p : R[X]) => p.eval x) <|
+    one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T n k
+  simp only [eval_mul, eval_sub, eval_one, eval_pow,
+    eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+
+theorem one_sub_X_sq_mul_iterate_derivative_U_eval (n : ℤ) (k : ℕ) (x : R) :
+    (1 - x ^ 2) * (derivative^[k + 2] (U R n)).eval x =
+      (2 * k + 3) * x * (derivative^[k + 1] (U R n)).eval x -
+      ((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval x := by
+  have h := congr_arg (fun (p : R[X]) => p.eval x) <|
+    one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U n k
+  simp only [eval_mul, eval_sub, eval_one, eval_pow,
+    eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+
+theorem iterate_derivative_T_eval_one_recurrence (n : ℤ) (k : ℕ) :
+    (2 * k + 1) * (derivative^[k + 1] (T R n)).eval 1 =
+      (n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 1 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_T_eval (R := R) n k 1
+  rw [one_pow, sub_self, zero_mul, mul_one] at h
+  exact sub_eq_zero.mp h.symm
+
+theorem iterate_derivative_U_eval_one_recurrence (n : ℤ) (k : ℕ) :
+    (2 * k + 3) * (derivative^[k + 1] (U R n)).eval 1 =
+      ((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval 1 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_U_eval (R := R) n k 1
+  rw [one_pow, sub_self, zero_mul, mul_one] at h
+  exact sub_eq_zero.mp h.symm
+
+theorem iterate_derivative_T_eval_zero_recurrence (n : ℤ) (k : ℕ) :
+    (derivative^[k + 2] (T R n)).eval 0 =
+      -(n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 0 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_T_eval (R := R) n k 0
+  rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+
+theorem iterate_derivative_U_eval_zero_recurrence (n : ℤ) (k : ℕ) :
+    (derivative^[k + 2] (U R n)).eval 0 =
+      -((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval 0 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_U_eval (R := R) n k 0
+  rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+
+theorem iterate_derivative_T_eval_one (n : ℤ) (k : ℕ) :
+    (∏ l ∈ Finset.range k, (2 * l + 1)) * (derivative^[k] (T R n)).eval 1 =
+      ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
+  induction k
+  case zero => simp
+  case succ k ih =>
+    push_cast at ih ⊢
+    rw [Finset.range_add_one, Finset.prod_insert Finset.notMem_range_self, mul_comm (2 * _ + 1),
+      mul_assoc, iterate_derivative_T_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
+      mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self]
+
+theorem iterate_derivative_U_eval_one (n : ℤ) (k : ℕ) :
+    (∏ l ∈ Finset.range k, (2 * l + 3)) * (derivative^[k] (U R n)).eval 1 =
+      (∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2 : ℤ)) * (n + 1) := by
+  induction k
+  case zero => simp
+  case succ k ih =>
+    push_cast at ih ⊢
+    rw [Finset.range_add_one, Finset.prod_insert Finset.notMem_range_self, mul_comm (2 * _ + 3),
+      mul_assoc, iterate_derivative_U_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
+      mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self, mul_assoc]
+
+theorem derivative_T_eval_one (n : ℤ) :
+    (derivative (T R n)).eval 1 = n ^ 2 := by
+  simp [T_derivative_eq_U, sq]
+
+theorem derivative_U_eval_one (n : ℤ) :
+    3 * (derivative (U R n)).eval 1 = (n + 2) * (n + 1) * n := by
+  have h := iterate_derivative_U_eval_one (R := R) n 1
+  simp only [Finset.range_one, Finset.prod_singleton, Function.iterate_one] at h
+  grind
+
+variable {𝔽 : Type*} [Field 𝔽]
+
+theorem iterate_derivative_T_eval_one_eq_div [CharZero 𝔽] (n : ℤ) (k : ℕ) :
+    (derivative^[k] (T 𝔽 n)).eval 1 =
+      (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / (∏ l ∈ Finset.range k, (2 * l + 1)) := by
+  rw [eq_div_iff (Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr (fun _ _ => by positivity))),
+    mul_comm, iterate_derivative_T_eval_one]
+
+theorem iterate_derivative_U_eval_one_eq_div [CharZero 𝔽] (n : ℤ) (k : ℕ) :
+    (derivative^[k] (U 𝔽 n)).eval 1 =
+      ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) /
+      (∏ l ∈ Finset.range k, (2 * l + 3)) := by
+  rw [eq_div_iff (Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr (fun _ _ => by positivity))),
+    mul_comm, iterate_derivative_U_eval_one]
+
+theorem iterate_derivative_T_eval_one_dvd (n : ℤ) (k : ℕ) :
+    ((∏ l ∈ Finset.range k, (2 * l + 1) : ℕ) : 𝔽) ∣ (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) : ℤ) :=
+  dvd_of_mul_right_eq _ <| iterate_derivative_T_eval_one n k
+
+theorem iterate_derivative_U_eval_one_dvd (n : ℤ) (k : ℕ) :
+    ((∏ l ∈ Finset.range k, (2 * l + 3) : ℕ) : 𝔽) ∣
+      ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) :=
+  dvd_of_mul_right_eq _ <| iterate_derivative_U_eval_one n k
+
+theorem derivative_U_eval_one_eq_div [neZero3 : NeZero (3 : 𝔽)] (n : ℤ) :
+    (derivative (U 𝔽 n)).eval 1 = ((n + 2) * (n + 1) * n) / 3 :=
+  eq_div_of_mul_eq neZero3.ne ((mul_comm ..).trans (derivative_U_eval_one n))
+
+theorem derivative_U_eval_one_dvd (n : ℤ) :
+    (3 : 𝔽) ∣ (n + 2) * (n + 1) * n :=
+  dvd_of_mul_right_eq _ (derivative_U_eval_one n)
+
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
 polynomials. -/
 theorem T_mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
@@ -826,6 +1072,7 @@ theorem T_mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := b
     have h₃ := T_add_two R (-k - 1)
     linear_combination (norm := ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X : R[X]) * ih1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two Chebyshev `C` polynomials is the sum of two other Chebyshev `C` polynomials.
 -/
 theorem C_mul_C (m k : ℤ) : C R m * C R k = C R (m + k) + C R (m - k) := by
@@ -836,13 +1083,14 @@ theorem C_mul_C (m k : ℤ) : C R m * C R k = C R (m + k) + C R (m - k) := by
     have h₁ := C_add_two R (m + k)
     have h₂ := C_sub_two R (m - k)
     have h₃ := C_add_two R k
-    linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X : R[X]) * ih1
   | neg_add_one k ih1 ih2 =>
     have h₁ := C_add_two R (m + (-k - 1))
     have h₂ := C_sub_two R (m - (-k - 1))
     have h₃ := C_add_two R (-k - 1)
-    linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X : R[X]) * ih1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `(m * n)`-th Chebyshev `T` polynomial is the composition of the `m`-th and `n`-th. -/
 theorem T_mul (m n : ℤ) : T R (m * n) = (T R m).comp (T R n) := by
   induction m using Polynomial.Chebyshev.induct with
@@ -859,6 +1107,7 @@ theorem T_mul (m n : ℤ) : T R (m * n) = (T R m).comp (T R n) := by
     simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `(m * n)`-th Chebyshev `C` polynomial is the composition of the `m`-th and `n`-th. -/
 theorem C_mul (m n : ℤ) : C R (m * n) = (C R m).comp (C R n) := by
   induction m using Polynomial.Chebyshev.induct with

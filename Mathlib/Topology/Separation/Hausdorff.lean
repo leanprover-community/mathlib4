@@ -167,6 +167,15 @@ theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonal X) := by
 theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
   t2_iff_isClosed_diagonal.mp ‹_›
 
+theorem t2Space_iff_of_isOpenQuotientMap [TopologicalSpace Y] {π : X → Y}
+    (h : IsOpenQuotientMap π) : T2Space Y ↔ IsClosed {q : X × X | π q.1 = π q.2} := by
+  rw [t2_iff_isClosed_diagonal]
+  replace h := IsOpenQuotientMap.prodMap h h
+  refine ⟨fun H ↦ H.preimage h.continuous, fun H ↦ ?_⟩
+  simp_rw [← isOpen_compl_iff] at H ⊢
+  convert h.isOpenMap _ H
+  exact (h.surjective.image_preimage _).symm
+
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : a = b :=
   (tendsto_nhds_unique_inseparable ha hb).eq
@@ -204,9 +213,6 @@ lemma IsCompact.separation_of_notMem {X : Type u_1} [TopologicalSpace X] [T2Spac
     ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ t ⊆ U ∧ x ∈ V ∧ Disjoint U V := by
   simpa [SeparatedNhds] using SeparatedNhds.of_isCompact_isCompact_isClosed H1 isCompact_singleton
     isClosed_singleton <| disjoint_singleton_right.mpr H2
-
-@[deprecated (since := "2025-05-23")]
-alias IsCompact.separation_of_not_mem := IsCompact.separation_of_notMem
 
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, `𝓝ˢ t` and `𝓝 x` are
 disjoint. -/
@@ -387,10 +393,10 @@ instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
 instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
     T2Space (Σ i, X i) := by
   constructor
-  rintro ⟨i, x⟩ ⟨j, y⟩ neq
+  rintro ⟨i, x⟩ ⟨j, y⟩ ne
   rcases eq_or_ne i j with (rfl | h)
-  · replace neq : x ≠ y := ne_of_apply_ne _ neq
-    exact separated_by_isOpenEmbedding .sigmaMk neq
+  · replace ne : x ≠ y := ne_of_apply_ne _ ne
+    exact separated_by_isOpenEmbedding .sigmaMk ne
   · let _ := (⊥ : TopologicalSpace ι); have : DiscreteTopology ι := ⟨rfl⟩
     exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
 
@@ -403,8 +409,6 @@ def t2Setoid : Setoid X := sInf {s | T2Space (Quotient s)}
 /-- The largest T2 quotient of a topological space. This construction is left-adjoint to the
 inclusion of T2 spaces into all topological spaces. -/
 def T2Quotient := Quotient (t2Setoid X)
-
-@[deprecated (since := "2025-05-15")] alias t2Quotient := T2Quotient
 
 namespace T2Quotient
 variable {X}
@@ -654,10 +658,6 @@ theorem ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE [T2Space Y] {x : 
       simp_all
     simp at ha
   · exact hfg.filter_mono nhdsWithin_le_nhds
-
-@[deprecated (since := "2025-05-22")]
-alias ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE :=
-  ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
 protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X → Y}

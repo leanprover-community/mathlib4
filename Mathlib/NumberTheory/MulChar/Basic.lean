@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.OrderOfElement
 
@@ -116,11 +115,7 @@ theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
   rfl
 
 /-- Extensionality. See `ext` below for the version that will actually be used. -/
-theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
-  cases χ
-  cases χ'
-  congr
-  exact MonoidHom.ext h
+theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := DFunLike.ext _ _ h
 
 instance : MulCharClass (MulChar R R') R R' where
   map_mul χ := χ.map_mul'
@@ -358,8 +353,8 @@ lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups
 as a multiplicative equivalence. -/
-noncomputable
-def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
+@[simps! apply symm_apply]
+noncomputable def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
   { equivToUnitHom with
     map_mul' := by
       intro χ ψ
@@ -368,8 +363,15 @@ def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
         MonoidHom.mul_apply, Units.val_mul]
   }
 
-end Group
+/--
+The restriction of a `MulChar` to a submonoid.
+-/
+@[simps! apply]
+noncomputable def restrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+    (χ : MulChar R R') : MulChar T R' :=
+  ofUnitHom <| χ.toUnitHom.comp <| Units.map (SubmonoidClass.subtype T)
 
+end Group
 
 /-!
 ### Properties of multiplicative characters
@@ -392,6 +394,10 @@ lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
 
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
+
+theorem restrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S R] {T : S}
+    {χ : MulChar R R'} : χ.restrict T = 1 ↔ ∀ x : Tˣ, χ x = 1 := by
+  simp [eq_one_iff]
 
 end nontrivial
 
@@ -501,7 +507,7 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
 if and only if `χ^2 = 1`. -/
 lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZeroDivisors R]
     [Nontrivial R] {χ : MulChar M R} :
-    IsQuadratic χ ↔ χ ^ 2 = 1:= by
+    IsQuadratic χ ↔ χ ^ 2 = 1 := by
   refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
   · rw [one_apply_coe, χ.pow_apply_coe]
     rcases h x with H | H | H

@@ -70,6 +70,7 @@ theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ 
       simp [mul_zero, ne_eq] at ha
     refine ⟨Units.mk0 y hy, ?_⟩; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `a : ZMod p` is nonzero, then `a^(p/2)` is either `1` or `-1`. -/
 theorem pow_div_two_eq_neg_one_or_one {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p / 2) = 1 ∨ a ^ (p / 2) = -1 := by
@@ -110,6 +111,7 @@ def legendreSym (a : ℤ) : ℤ :=
 
 namespace legendreSym
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We have the congruence `legendreSym p a ≡ a ^ (p / 2) mod p`. -/
 theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) := by
   rcases eq_or_ne (ringChar (ZMod p)) 2 with hc | hc

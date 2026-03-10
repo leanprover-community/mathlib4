@@ -6,14 +6,14 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Polynomial.RingDivision
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Ideals in polynomial rings
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

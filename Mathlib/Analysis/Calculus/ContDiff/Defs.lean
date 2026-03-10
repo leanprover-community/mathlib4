@@ -137,7 +137,7 @@ lemma HasFTaylorSeriesUpToOn.analyticOn
     (hf : HasFTaylorSeriesUpToOn ω f p s) (h : AnalyticOn 𝕜 (fun x ↦ p x 0) s) :
     AnalyticOn 𝕜 f s := by
   have : AnalyticOn 𝕜 (fun x ↦ (continuousMultilinearCurryFin0 𝕜 E F) (p x 0)) s :=
-    (LinearIsometryEquiv.analyticOnNhd _ _ ).comp_analyticOn
+    (LinearIsometryEquiv.analyticOnNhd _ _).comp_analyticOn
       h (Set.mapsTo_univ _ _)
   exact this.congr (fun y hy ↦ (hf.zero_eq _ hy).symm)
 
@@ -158,6 +158,7 @@ theorem contDiffWithinAt_omega_iff_analyticWithinAt [CompleteSpace F] :
   obtain ⟨u, hu, p, hp, h'p⟩ := h.exists_hasFTaylorSeriesUpToOn ω
   exact ⟨u, hu, p, hp.of_le le_top, fun i ↦ h'p i⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffWithinAt_nat {n : ℕ} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn n f p u :=
@@ -204,6 +205,7 @@ theorem contDiffWithinAt_infty :
     ContDiffWithinAt 𝕜 ∞ f s x ↔ ∀ n : ℕ, ContDiffWithinAt 𝕜 n f s x :=
   contDiffWithinAt_iff_forall_nat_le.trans <| by simp only [forall_prop_of_true, le_top]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) :
     ContinuousWithinAt f s x := by
   have := h.of_le (zero_le _)
@@ -335,15 +337,16 @@ theorem contDiffWithinAt_diff_singleton {y : E} :
 
 /-- If a function is `C^n` within a set at a point, with `n ≥ 1`, then it is differentiable
 within this set at this point. -/
-theorem ContDiffWithinAt.differentiableWithinAt' (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
+theorem ContDiffWithinAt.differentiableWithinAt' (h : ContDiffWithinAt 𝕜 n f s x) (hn : n ≠ 0) :
     DifferentiableWithinAt 𝕜 f (insert x s) x := by
-  rcases contDiffWithinAt_nat.1 (h.of_le hn) with ⟨u, hu, p, H⟩
+  rcases contDiffWithinAt_nat.1 (h.of_le <| ENat.one_le_iff_ne_zero_withTop.mpr hn)
+    with ⟨u, hu, p, H⟩
   rcases mem_nhdsWithin.1 hu with ⟨t, t_open, xt, tu⟩
   rw [inter_comm] at tu
   exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 <|
-    ((H.mono tu).differentiableOn le_rfl) x ⟨mem_insert x s, xt⟩
+    ((H.mono tu).differentiableOn one_ne_zero) x ⟨mem_insert x s, xt⟩
 
-theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
+theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s x) (hn : n ≠ 0) :
     DifferentiableWithinAt 𝕜 f s x :=
   (h.differentiableWithinAt' hn).mono (subset_insert x s)
 
@@ -358,7 +361,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
   · intro h
     rcases (contDiffWithinAt_iff_of_ne_infty h'n).1 h with ⟨u, hu, p, Hp, H'p⟩
     refine ⟨u, hu, ?_, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1),
-        fun y hy => Hp.hasFDerivWithinAt le_add_self hy, ?_⟩
+        fun y hy => Hp.hasFDerivWithinAt (by simp) hy, ?_⟩
     · rintro rfl
       exact Hp.analyticOn (H'p rfl 0)
     apply (contDiffWithinAt_iff_of_ne_infty hn).2
@@ -558,12 +561,12 @@ theorem ContDiffOn.congr_mono (hf : ContDiffOn 𝕜 n f s) (h₁ : ∀ x ∈ s�
   (hf.mono hs).congr h₁
 
 /-- If a function is `C^n` on a set with `n ≥ 1`, then it is differentiable there. -/
-theorem ContDiffOn.differentiableOn (h : ContDiffOn 𝕜 n f s) (hn : 1 ≤ n) :
+theorem ContDiffOn.differentiableOn (h : ContDiffOn 𝕜 n f s) (hn : n ≠ 0) :
     DifferentiableOn 𝕜 f s := fun x hx => (h x hx).differentiableWithinAt hn
 
 @[fun_prop]
 theorem ContDiffOn.differentiableOn_one (h : ContDiffOn 𝕜 1 f s) :
-    DifferentiableOn 𝕜 f s := fun x hx => (h x hx).differentiableWithinAt (le_refl 1)
+    DifferentiableOn 𝕜 f s := fun x hx => (h x hx).differentiableWithinAt one_ne_zero
 
 /-- If a function is `C^n` around each point in a set, then it is `C^n` on the set. -/
 theorem contDiffOn_of_locally_contDiffOn
@@ -597,6 +600,7 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
 
 /-! ### Iterated derivative within a set -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem contDiffOn_zero : ContDiffOn 𝕜 0 f s ↔ ContinuousOn f s := by
   refine ⟨fun H => H.continuousOn, fun H => fun x hx m hm ↦ ?_⟩
@@ -620,6 +624,7 @@ theorem contDiffWithinAt_zero (hx : x ∈ s) :
     have h' : x ∈ s ∩ u := ⟨hx, mem_of_mem_nhdsWithin hx H⟩
     exact (contDiffOn_zero.mpr hu).contDiffWithinAt h'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When a function is `C^n` in a set `s` of unique differentiability, it admits
 `ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
 protected theorem ContDiffOn.ftaylorSeriesWithin
@@ -710,6 +715,7 @@ theorem AnalyticOnNhd.contDiffOn_of_completeSpace [CompleteSpace F] (h : Analyti
     ContDiffOn 𝕜 n f s :=
   h.analyticOn.contDiffOn_of_completeSpace
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
     (Hcont : ∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s)
     (Hdiff : ∀ m : ℕ, m < n →
@@ -760,6 +766,7 @@ theorem ContDiffOn.continuousOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn �
     (hmn : m ≤ n) (hs : UniqueDiffOn 𝕜 s) : ContinuousOn (iteratedFDerivWithin 𝕜 m f s) s :=
   ((h.of_le hmn).ftaylorSeriesWithin hs).cont m le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn 𝕜 n f s)
     (hmn : m < n) (hs : UniqueDiffOn 𝕜 s) :
     DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s := by
@@ -768,6 +775,7 @@ theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiff
   apply (((h.of_le this).ftaylorSeriesWithin hs).fderivWithin m ?_ x hx).differentiableWithinAt
   exact_mod_cast lt_add_one m
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m < n) (hs : UniqueDiffOn 𝕜 (insert x s)) :
     DifferentiableWithinAt 𝕜 (iteratedFDerivWithin 𝕜 m f s) s x := by
@@ -796,6 +804,7 @@ theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDi
       fun _m hm => h.differentiableOn_iteratedFDerivWithin (mod_cast hm) hs⟩,
     fun h => contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_nat_iff_continuousOn_differentiableOn {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔
       (∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
@@ -832,7 +841,7 @@ theorem contDiffOn_succ_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
       DifferentiableOn 𝕜 f s ∧ (n = ω → AnalyticOn 𝕜 f s) ∧
       ContDiffOn 𝕜 n (fderivWithin 𝕜 f s) s := by
   refine ⟨fun H => ?_, fun h => contDiffOn_succ_of_fderivWithin h.1 h.2.1 h.2.2⟩
-  refine ⟨H.differentiableOn le_add_self, ?_, fun x hx => ?_⟩
+  refine ⟨H.differentiableOn (by simp), ?_, fun x hx => ?_⟩
   · rintro rfl
     exact H.analyticOn
   have A (m : ℕ) (hm : m ≤ n) : ContDiffWithinAt 𝕜 m (fun y => fderivWithin 𝕜 f s y) s x := by
@@ -969,7 +978,7 @@ theorem contDiffWithinAt_compl_self :
   rw [compl_eq_univ_diff, contDiffWithinAt_diff_singleton, contDiffWithinAt_univ]
 
 /-- If a function is `C^n` with `n ≥ 1` at a point, then it is differentiable there. -/
-theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
+theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : n ≠ 0) :
     DifferentiableAt 𝕜 f x := by
   simpa [hn, differentiableWithinAt_univ] using h.differentiableWithinAt
 
@@ -1115,6 +1124,7 @@ theorem ContDiff.of_succ (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 n f :=
 theorem ContDiff.one_of_succ (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 1 f := by
   apply h.of_le le_add_self
 
+@[fun_prop]
 theorem ContDiff.continuous (h : ContDiff 𝕜 n f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
 
@@ -1123,12 +1133,13 @@ theorem ContDiff.continuous_zero (h : ContDiff 𝕜 0 f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
 
 /-- If a function is `C^n` with `n ≥ 1`, then it is differentiable. -/
-theorem ContDiff.differentiable (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) : Differentiable 𝕜 f :=
+@[fun_prop]
+theorem ContDiff.differentiable (h : ContDiff 𝕜 n f) (hn : n ≠ 0) : Differentiable 𝕜 f :=
   differentiableOn_univ.1 <| (contDiffOn_univ.2 h).differentiableOn hn
 
 @[fun_prop]
 theorem ContDiff.differentiable_one (h : ContDiff 𝕜 1 f) : Differentiable 𝕜 f :=
-  differentiableOn_univ.1 <| (contDiffOn_univ.2 h).differentiableOn (le_refl 1)
+  differentiableOn_univ.1 <| (contDiffOn_univ.2 h).differentiableOn one_ne_zero
 
 theorem contDiff_iff_forall_nat_le {n : ℕ∞} :
     ContDiff 𝕜 n f ↔ ∀ m : ℕ, ↑m ≤ n → ContDiff 𝕜 m f := by
@@ -1189,6 +1200,7 @@ theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
   simp [contDiffOn_univ.symm, continuousOn_univ, differentiableOn_univ.symm,
     iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
     ContDiff 𝕜 n f ↔
       (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
@@ -1206,6 +1218,7 @@ theorem ContDiff.continuous_iteratedFDeriv' {m : ℕ} (hf : ContDiff 𝕜 m f) :
     Continuous fun x => iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.mp hf).1 m le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
 theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : ContDiff 𝕜 n f) :
     Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x :=
@@ -1235,13 +1248,13 @@ theorem contDiff_infty_iff_fderiv :
   rw [← ENat.coe_top_add_one, contDiff_succ_iff_fderiv]
   simp
 
-theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
+theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : n ≠ 0) :
     Continuous (fderiv 𝕜 f) :=
-  (contDiff_one_iff_fderiv.1 (h.of_le hn)).2
+  (contDiff_one_iff_fderiv.1 (h.of_le <| ENat.one_le_iff_ne_zero_withTop.mpr hn)).2
 
 /-- If a function is at least `C^1`, its bundled derivative (mapping `(x, v)` to `Df(x) v`) is
 continuous. -/
-theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
+theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : n ≠ 0) :
     Continuous fun p : E × E => (fderiv 𝕜 f p.1 : E → F) p.2 :=
   have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMap_apply.continuous
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=

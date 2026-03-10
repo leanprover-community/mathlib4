@@ -12,9 +12,9 @@ public import Mathlib.CategoryTheory.Center.Preadditive
 /-!
 # Center of a linear category
 
-If `C` is a `R`-linear category, we define a ring morphism `R →+* CatCenter C`
+If `C` is an `R`-linear category, we define a ring morphism `R →+* CatCenter C`
 and conversely, if `C` is a preadditive category, and `φ : R →+* CatCenter C`
-is a ring morphism, we define a `R`-linear structure on `C` attached to `φ`.
+is a ring morphism, we define an `R`-linear structure on `C` attached to `φ`.
 
 -/
 
@@ -30,7 +30,7 @@ namespace Linear
 
 variable (R : Type w) [Ring R] (C : Type u) [Category.{v} C] [Preadditive C]
 
-/-- The canonical morphism `R →+* CatCenter C` when `C` is a `R`-linear category. -/
+/-- The canonical morphism `R →+* CatCenter C` when `C` is an `R`-linear category. -/
 @[simps]
 def toCatCenter [Linear R C] : R →+* CatCenter C where
   toFun a :=
@@ -70,6 +70,7 @@ lemma smulOfRingMorphism_smul_eq' (a : R) (f : X ⟶ Y) :
 
 variable (X Y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `R`-module structure on the type `X ⟶ Y` of morphisms in
 a category `C` equipped with a ring morphism `R →+* CatCenter C`. -/
 def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
@@ -91,6 +92,7 @@ def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
     add_smul := fun a b f => by
       simp [smulOfRingMorphism_smul_eq] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `R`-linear structure on a preadditive category `C` equipped with
 a ring morphism `R →+* CatCenter C`. -/
 def ofRingMorphism : Linear R C := by

@@ -98,9 +98,9 @@ def equivHollom : ℕ × ℕ × ℕ ≃ Hollom where
 namespace Hollom
 
 @[simp] lemma «forall» {p : Hollom → Prop} : (∀ x, p x) ↔ ∀ x, p (toHollom x) := by aesop
-@[simp] lemma «forall₂» {p : Hollom → Hollom → Prop} :
+@[simp] lemma forall₂ {p : Hollom → Hollom → Prop} :
     (∀ x y, p x y) ↔ ∀ x y, p (toHollom x) (toHollom y) := by aesop
-@[simp] lemma «forall₃» {p : Hollom → Hollom → Hollom → Prop} :
+@[simp] lemma forall₃ {p : Hollom → Hollom → Hollom → Prop} :
     (∀ x y z, p x y z) ↔ ∀ x y z, p (toHollom x) (toHollom y) (toHollom z) := by aesop
 @[simp] lemma «exists» {p : Hollom → Prop} : (∃ x, p x) ↔ ∃ x, p (toHollom x) := by aesop
 
@@ -235,7 +235,7 @@ lemma to prove that fact later: `no_infinite_antichain`.
 -/
 lemma no_infinite_antichain_level {n : ℕ} {A : Set Hollom} (hA : A ⊆ level n)
     (hA' : IsAntichain (· ≤ ·) A) : A.Finite :=
-  hA'.finite_of_partiallyWellOrderedOn ((level_isPWO).mono hA)
+  hA'.finite_of_partiallyWellOrderedOn (level_isPWO.mono hA)
 
 /--
 Each level is order-connected, i.e. for any `x ∈ level n` and `y ∈ level n` we have

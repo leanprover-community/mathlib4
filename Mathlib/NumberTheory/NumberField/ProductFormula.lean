@@ -15,9 +15,9 @@ In this file we prove the Product Formula for number fields: for any non-zero el
 number field `K`, we have `∏ |x|ᵥ=1` where the product runs over the equivalence classes of absolute
 values of `K`. The `|⬝|ᵥ` are normalized as follows:
 - for the infinite places, `|⬝|ᵥ` is the absolute value on `K` induced by the corresponding field
-embedding in `ℂ` and the usual absolute value on `ℂ`;
+  embedding in `ℂ` and the usual absolute value on `ℂ`;
 - for the finite places and a non-zero `x`, `|x|ᵥ` is equal to the norm of the corresponding maximal
-ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
+  ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
 
 ## Main Results
 
@@ -31,7 +31,7 @@ ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
 number field, embeddings, places, infinite places, finite places, product formula
 -/
 
-@[expose] public section
+public section
 
 namespace NumberField
 
@@ -72,6 +72,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   rw [h_prod, ← finprod_mul_distrib h_fin₁ h_fin₂]
   exact finprod_eq_one_of_forall_eq_one fun v ↦ v.embedding_mul_absNorm h_x_nezero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any non-zero `x` in `K`, the product of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℚ x`. -/
 theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
@@ -82,15 +83,16 @@ theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
   have ha : a ≠ 0 := by
     rintro rfl
     simp at h_x_nezero
-  simp_rw [map_div₀, Rat.cast_inv, Rat.cast_abs, finprod_div_distrib (mulSupport_finite_int ha)
-    (mulSupport_finite_int hb), prod_eq_inv_abs_norm_int ha, prod_eq_inv_abs_norm_int hb]
+  simp_rw [map_div₀, Rat.cast_inv, Rat.cast_abs,
+    finprod_div_distrib (hasFiniteMulSupport_int ha) (hasFiniteMulSupport_int hb),
+    prod_eq_inv_abs_norm_int ha, prod_eq_inv_abs_norm_int hb]
   rw [← inv_eq_iff_eq_inv, inv_inv_div_inv, ← abs_div]
   congr
   have hb₀ : ((Algebra.norm ℤ) b : ℝ) ≠ 0 := by simp [hb]
   refine (eq_div_of_mul_eq hb₀ ?_).symm
   norm_cast
-  rw [coe_norm_int a, coe_norm_int b, ← map_mul, div_mul_cancel₀ _
-    (RingOfIntegers.coe_ne_zero_iff.mpr hb)]
+  rw [coe_norm_int a, coe_norm_int b, ← map_mul,
+    div_mul_cancel₀ _ (RingOfIntegers.coe_ne_zero_iff.mpr hb)]
 
 open FinitePlace in
 /-- The Product Formula for the Number Field `K`. -/

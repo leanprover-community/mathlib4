@@ -41,12 +41,14 @@ noncomputable def fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (_ : p + 
     Cochain ((singleFunctor C p).obj X) K n :=
   Cochain.single ((HomologicalComplex.singleObjXSelf (.up ℤ) p X).hom ≫ f) n
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X K) in
 @[simp]
 lemma fromSingleMk_zero (p q n : ℤ) (h : p + n = q) :
     fromSingleMk (X := X) (K := K) 0 h = 0 := by
   simp [fromSingleMk]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fromSingleMk_v {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
     (fromSingleMk f h).v p q h =
@@ -58,6 +60,7 @@ lemma fromSingleMk_v_eq_zero {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n 
     (fromSingleMk f h).v p' q' hpq' = 0 :=
   single_v_eq_zero _ _ _ _ _ hp'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
     (n' q' : ℤ) (h' : p + n' = q') :
     δ n n' (fromSingleMk f h) = fromSingleMk (f ≫ K.d q q') h' := by
@@ -68,6 +71,7 @@ lemma δ_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
   · simp [δ_shape n n' (by lia), HomologicalComplex.shape K q q' (by simp; lia),
       fromSingleMk]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Cochains of degree `n` from `(singleFunctor C p).obj X` to `K` identify
 to `X ⟶ K.X q` when `p + n = q`. -/
 noncomputable def fromSingleEquiv {p q n : ℤ} (h : p + n = q) :
@@ -81,6 +85,11 @@ noncomputable def fromSingleEquiv {p q n : ℤ} (h : p + n = q) :
     · exact (HomologicalComplex.isZero_single_obj_X _ _ _ _ hp).eq_of_src _ _
   right_inv f := by simp
   map_add' := by simp
+
+@[simp]
+lemma fromSingleEquiv_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
+    fromSingleEquiv h (fromSingleMk f h) = f := by
+  simp [fromSingleEquiv]
 
 @[simp]
 lemma fromSingleMk_add {p q : ℤ} (f g : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
@@ -102,18 +111,35 @@ lemma fromSingleMk_surjective {p n : ℤ} (α : Cochain ((singleFunctor C p).obj
     ∃ (f : X ⟶ K.X q), fromSingleMk f h = α :=
   (fromSingleEquiv h).symm.surjective α
 
+set_option backward.isDefEq.respectTransparency false in
+lemma fromSingleMk_precomp
+    {X' : C} (g : X' ⟶ X) {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
+    fromSingleMk (g ≫ f) h =
+      (Cochain.ofHom ((singleFunctor C p).map g)).comp (fromSingleMk f h) (zero_add n) := by
+  apply (fromSingleEquiv h).injective
+  simp [fromSingleEquiv, singleFunctor, singleFunctors, HomologicalComplex.single_map_f_self]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma fromSingleMk_postcomp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    {L : CochainComplex C ℤ} (g : K ⟶ L) :
+    fromSingleMk (f ≫ g.f q) h =
+      (fromSingleMk f h).comp (.ofHom g) (add_zero n) :=
+  (fromSingleEquiv h).injective (by simp [fromSingleEquiv, singleFunctor, singleFunctors])
+
 /-- Constructor for cochains to a single complex. -/
 @[nolint unusedArguments]
 noncomputable def toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (_ : p + n = q) :
     Cochain K ((singleFunctor C q).obj X) n :=
   Cochain.single (f ≫ (HomologicalComplex.singleObjXSelf (.up ℤ) q X).inv) n
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X K) in
 @[simp]
 lemma toSingleMk_zero (p q n : ℤ) (h : p + n = q) :
     toSingleMk (X := X) (K := K) 0 h = 0 := by
   simp [toSingleMk]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toSingleMk_v {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
     (toSingleMk f h).v p q h =
@@ -125,6 +151,7 @@ lemma toSingleMk_v_eq_zero {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = 
     (toSingleMk f h).v p' q' hpq' = 0 :=
   single_v_eq_zero _ _ _ _ _ hp'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
     (n' p' : ℤ) (h' : p' + n' = q) :
     δ n n' (toSingleMk f h) = n'.negOnePow • toSingleMk (K.d p' p ≫ f) h' := by
@@ -134,6 +161,7 @@ lemma δ_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
     simp
   · simp [δ_shape n n' (by lia), HomologicalComplex.shape K p' p (by simp; lia)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Cochains of degree `n` from `(singleFunctor C q).obj X` to `K` identify
 to `K.X p ⟶ X` when `p + n = q`. -/
 noncomputable def toSingleEquiv {p q n : ℤ} (h : p + n = q) :
@@ -147,6 +175,12 @@ noncomputable def toSingleEquiv {p q n : ℤ} (h : p + n = q) :
     · exact (HomologicalComplex.isZero_single_obj_X _ _ _ _ hq).eq_of_tgt _ _
   right_inv f := by simp
   map_add' := by simp
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma toSingleEquiv_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
+    toSingleEquiv h (toSingleMk f h) = f := by
+  simp [toSingleEquiv]
 
 @[simp]
 lemma toSingleMk_add {p q : ℤ} (f g : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
@@ -168,6 +202,22 @@ lemma toSingleMk_surjective {q n : ℤ} (α : Cochain K ((singleFunctor C q).obj
     ∃ (f : K.X p ⟶ X), toSingleMk f h = α :=
   (toSingleEquiv h).symm.surjective α
 
+set_option backward.isDefEq.respectTransparency false in
+lemma toSingleMk_postcomp
+    {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) {X' : C} (g : X ⟶ X') :
+    toSingleMk (f ≫ g) h =
+      (toSingleMk f h).comp (.ofHom ((singleFunctor C q).map g)) (add_zero n) := by
+  apply (toSingleEquiv h).injective
+  simp [toSingleEquiv, singleFunctor, singleFunctors, HomologicalComplex.single_map_f_self]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma toSingleMk_precomp
+    {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    {L : CochainComplex C ℤ} (g : L ⟶ K) :
+    toSingleMk (g.f p ≫ f) h =
+      (Cochain.ofHom g).comp (toSingleMk f h) (zero_add n) :=
+  (toSingleEquiv h).injective (by simp [toSingleEquiv, singleFunctor, singleFunctors])
+
 end Cochain
 
 namespace Cocycle
@@ -181,6 +231,22 @@ noncomputable def fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + 
     rw [Cochain.δ_fromSingleMk _ _ _ q' (by lia), hf]
     simp)
 
+lemma fromSingleMk_precomp {X' : C} (g : X' ⟶ X) {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    (q' : ℤ) (hq' : q + 1 = q') (hf : f ≫ K.d q q' = 0) :
+    fromSingleMk (g ≫ f) h q' hq' (by simp [hf]) =
+      (fromSingleMk f h q' hq' hf).precomp ((singleFunctor C p).map g) := by
+  ext : 1
+  exact (Cochain.fromSingleEquiv h).injective (by simp [Cochain.fromSingleMk_precomp])
+
+lemma fromSingleMk_postcomp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    (q' : ℤ) (hq' : q + 1 = q') (hf : f ≫ K.d q q' = 0) {L : CochainComplex C ℤ}
+    (g : K ⟶ L) :
+    fromSingleMk (f ≫ g.f q) h q' hq' (by simp [reassoc_of% hf]) =
+      (fromSingleMk f h q' hq' hf).postcomp g := by
+  ext : 1
+  exact (Cochain.fromSingleEquiv h).injective (by simp [Cochain.fromSingleMk_postcomp])
+
+set_option backward.isDefEq.respectTransparency false in
 lemma fromSingleMk_surjective {p n : ℤ} (α : Cocycle ((singleFunctor C p).obj X) K n)
     (q : ℤ) (h : p + n = q) (q' : ℤ) (hq' : q + 1 = q') :
     ∃ (f : X ⟶ K.X q) (hf : f ≫ K.d q q' = 0), fromSingleMk f h q' hq' hf = α := by
@@ -238,6 +304,23 @@ noncomputable def toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n 
     rw [Cochain.δ_toSingleMk _ _ _ p' (by lia), hf]
     simp)
 
+lemma toSingleMk_postcomp {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    (p' : ℤ) (hp' : p' + 1 = p) (hf : K.d p' p ≫ f = 0) {X' : C} (g : X ⟶ X') :
+    toSingleMk (f ≫ g) h p' hp' (by simp [reassoc_of% hf]) =
+      (toSingleMk f h p' hp' hf).postcomp ((singleFunctor C q).map g) := by
+  ext : 1
+  exact (Cochain.toSingleEquiv h).injective (by simp [Cochain.toSingleMk_postcomp])
+
+lemma toSingleMk_precomp
+    {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    (p' : ℤ) (hp' : p' + 1 = p) (hf : K.d p' p ≫ f = 0)
+    {L : CochainComplex C ℤ} (g : L ⟶ K) :
+    toSingleMk (g.f p ≫ f) h p' hp' (by simp [← g.comm_assoc, hf]) =
+      (toSingleMk f h p' hp' hf).precomp g := by
+  ext : 1
+  exact (Cochain.toSingleEquiv h).injective (by simp [Cochain.toSingleMk_precomp])
+
+set_option backward.isDefEq.respectTransparency false in
 lemma toSingleMk_surjective {q n : ℤ} (α : Cocycle K ((singleFunctor C q).obj X) n)
     (p : ℤ) (h : p + n = q) (p' : ℤ) (hp' : p' + 1 = p) :
     ∃ (f : K.X p ⟶ X) (hf : K.d p' p ≫ f = 0), toSingleMk f h p' hp' hf = α := by
@@ -275,6 +358,7 @@ lemma toSingleMk_zero {p q : ℤ} {n : ℤ} (h : p + n = q)
     toSingleMk (0 : K.X p ⟶ X) h p' hp' (by simp) = 0 := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toSingleMk_mem_coboundaries_iff {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
     (p' : ℤ) (hp' : p' + 1 = p) (hf : K.d p' p ≫ f = 0)
     (p'' : ℤ) (hp'' : p + 1 = p'') :

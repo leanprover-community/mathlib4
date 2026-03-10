@@ -14,7 +14,7 @@ In this file we prove basic properties of the Lp-seminorm of a function
 with respect to the restriction of a measure to a sub-σ-algebra.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

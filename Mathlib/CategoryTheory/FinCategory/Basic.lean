@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.Category.ULift
@@ -46,9 +46,12 @@ class FinCategory (J : Type v) [SmallCategory J] where
   fintypeObj : Fintype J := by infer_instance
   fintypeHom : ∀ j j' : J, Fintype (j ⟶ j') := by infer_instance
 
-attribute [instance] FinCategory.fintypeObj FinCategory.fintypeHom
+attribute [instance_reducible, instance] FinCategory.fintypeObj FinCategory.fintypeHom
 
 instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
+
+instance {J : Type u} [Finite J] [SmallCategory J] [Quiver.IsThin J] : FinCategory J :=
+  FinCategory.mk (Fintype.ofFinite J) (fun j j' ↦ Fintype.ofFinite (j ⟶ j'))
 
 open Opposite
 

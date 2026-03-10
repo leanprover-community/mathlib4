@@ -48,7 +48,7 @@ lemma whiskerVertical [w.GuitartExact] (α : L ≅ L') (β : R ≅ R') :
   rw [guitartExact_iff_initial]
   intro X₂
   let e : structuredArrowDownwards (w.whiskerVertical α.hom β.inv) X₂ ≅
-      w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂) ).functor :=
+      w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂)).functor :=
     NatIso.ofComponents (fun f => StructuredArrow.isoMk (α.symm.app f.right) (by
       dsimp
       simp only [NatTrans.naturality_assoc, assoc, ← B.map_comp,
@@ -104,6 +104,7 @@ def vComp' {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L�
 
 namespace GuitartExact
 
+set_option backward.isDefEq.respectTransparency false in
 instance vComp [hw : w.GuitartExact] [hw' : w'.GuitartExact] :
     (w ≫ᵥ w').GuitartExact := by
   simp only [TwoSquare.guitartExact_iff_initial]
@@ -117,6 +118,7 @@ instance vComp' [GuitartExact w] [GuitartExact w'] {L₁₂ : C₁ ⥤ C₃}
   dsimp only [TwoSquare.vComp']
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     (w' : H₂ ⋙ eR.functor ≅ eL.functor ⋙ H₃) :
     (w ≫ᵥ w'.hom).GuitartExact ↔ w.GuitartExact := by

@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Analysis.Normed.Field.WithAbs
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Equivalence of real-valued absolute values
@@ -108,11 +108,11 @@ alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
 
 variable [IsStrictOrderedRing S]
 
-set_option linter.flexible false in -- TODO: non-terminal simp_all with no obvious fix
 theorem isEquiv_iff_lt_one_iff :
     v.IsEquiv w ↔ ∀ x, v x < 1 ↔ w x < 1 := by
   refine ⟨fun h _ ↦ h.lt_one_iff, fun h x y ↦ ?_⟩
-  rcases eq_or_ne (v x) 0 with (_ | hy₀) <;> simp_all
+  rcases eq_or_ne (v x) 0 with (_ | hy₀)
+  · simp_all
   rw [le_iff_le_iff_lt_iff_lt, ← one_mul (v x), ← mul_inv_lt_iff₀ (by simp_all), ← one_mul (w x),
     ← mul_inv_lt_iff₀ (by simp_all), ← map_inv₀, ← map_mul, ← map_inv₀, ← map_mul]
   exact h _
@@ -164,7 +164,7 @@ open scoped Topology
 
 variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
   [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [OrderTopology S]
-  {ι : Type*} [Fintype ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
+  {ι : Type*} [Finite ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
   {a b : R} {i : ι}
 
 /--
@@ -186,10 +186,11 @@ private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j 
     simpa [c] using Tendsto.atTop_mul_const (by linarith) (tendsto_pow_atTop_atTop_of_one_lt ha)
   have hcⱼ (j : ι) (hj : j ≠ i) : Tendsto (fun n ↦ (v j) (c n)) atTop (𝓝 0) := by
     simpa [c] using (tendsto_pow_atTop_nhds_zero_of_lt_one ((v j).nonneg _) (haj j hj)).mul_const _
-  simp_rw [OrderTopology.topology_eq_generate_intervals,
+  simp_rw +instances [OrderTopology.topology_eq_generate_intervals,
     TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using tendsto_atTop_atTop.1 hcᵢ 2
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
+  have := Fintype.ofFinite ι
   let r := Finset.univ.sup fun j ↦ if h : j = i then r₁ else rₙ j h
   refine ⟨c r, lt_of_lt_of_le (by linarith) (hr₁ r ?_), fun j hj ↦ ?_, by simpa [c, haw]⟩
   · exact Finset.le_sup_dite_pos (p := fun j ↦ j = i) (f := fun _ _ ↦ r₁) (Finset.mem_univ _) rfl
@@ -220,11 +221,12 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
   have hcₙ : atTop.Tendsto (fun n ↦ w (c n)) (𝓝 (w b)) := by
     have : w a⁻¹ < 1 := map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ haw
     simpa [c] using (tendsto_div_one_add_pow_nhds_one this).mul_const (w b)
-  simp_rw [OrderTopology.topology_eq_generate_intervals,
+  simp_rw +instances [OrderTopology.topology_eq_generate_intervals,
     TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_const_lt hb hcᵢ
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
   choose rN hrN using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_lt_const hbw hcₙ
+  have := Fintype.ofFinite ι
   let r := max (Finset.univ.sup fun j ↦ if h : j = i then r₁ else rₙ j h) rN
   refine ⟨c r, hr₁ r ?_, fun j hj ↦ ?_, ?_⟩
   · exact le_max_iff.2 <| .inl <|
@@ -243,6 +245,7 @@ theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
     (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
     ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1 := by
   classical
+  have := Fintype.ofFinite ι
   let P (ι : Type _) [Fintype ι] : Prop :=
     ∀ v : ι → AbsoluteValue R S, (∀ i, (v i).IsNontrivial) →
       (Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1
@@ -348,40 +351,43 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
         rcases eq_or_ne x 0 with rfl | h₀ <;>
         aesop (add simp [h.isNontrivial_congr])⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (WithAbs v)}
-    (hU : U ∈ 𝓝 0) : WithAbs.equivWithAbs v w '' U ∈ 𝓝 0 := by
+    (hU : U ∈ 𝓝 0) : WithAbs.congr v w (.refl F) '' U ∈ 𝓝 0 := by
   rw [Metric.mem_nhds_iff] at hU ⊢
   obtain ⟨ε, hε, hU⟩ := hU
   obtain ⟨c, hc, hvw⟩ := isEquiv_iff_exists_rpow_eq.1 h
   refine ⟨ε ^ c, rpow_pos_of_pos hε _, fun x hx ↦ ?_⟩
-  rw [← RingEquiv.apply_symm_apply (WithAbs.equivWithAbs v w) x]
+  rw [← RingEquiv.apply_symm_apply (WithAbs.congr v w (.refl F)) x]
   refine Set.mem_image_of_mem _ (hU ?_)
-  rw [Metric.mem_ball, dist_zero_right, WithAbs.norm_eq_abv, ← funext_iff.1 hvw,
+  rw [Metric.mem_ball, dist_zero_right, WithAbs.norm_eq_apply_ofAbs, ← funext_iff.1 hvw,
     rpow_lt_rpow_iff (v.nonneg _) hε.le hc] at hx
-  simpa [WithAbs.norm_eq_abv]
+  simpa [WithAbs.norm_eq_apply_ofAbs]
 
 open Topology IsTopologicalAddGroup in
 theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
-    IsEmbedding (WithAbs.equivWithAbs v w) := by
+    IsEmbedding (WithAbs.congr v w (.refl F)) := by
   refine IsInducing.isEmbedding <| isInducing_iff_nhds_zero.2 <| Filter.ext fun U ↦
     ⟨fun hU ↦ ?_, fun hU ↦ ?_⟩
-  · exact ⟨WithAbs.equivWithAbs v w '' U, h.equivWithAbs_image_mem_nhds_zero hU,
-      by simp [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
+  · exact ⟨WithAbs.congr v w (.refl F)'' U, h.equivWithAbs_image_mem_nhds_zero hU,
+      by grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
   · rw [← RingEquiv.coe_toEquiv, ← Filter.map_equiv_symm] at hU
     obtain ⟨s, hs, hss⟩ := Filter.mem_map_iff_exists_image.1 hU
-    rw [← RingEquiv.coe_toEquiv_symm, WithAbs.equivWithAbs_symm] at hss
+    rw [← RingEquiv.coe_toEquiv_symm, WithAbs.congr_symm] at hss
     exact Filter.mem_of_superset (h.symm.equivWithAbs_image_mem_nhds_zero hs) hss
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isEquiv_iff_isHomeomorph (v w : AbsoluteValue F ℝ) :
-    v.IsEquiv w ↔ IsHomeomorph (WithAbs.equivWithAbs v w) := by
+    v.IsEquiv w ↔ IsHomeomorph (WithAbs.congr v w (.refl F)) := by
   rw [isHomeomorph_iff_isEmbedding_surjective]
   refine ⟨fun h ↦ ⟨h.isEmbedding_equivWithAbs, RingEquiv.surjective _⟩, fun ⟨hi, _⟩ ↦ ?_⟩
   refine isEquiv_iff_lt_one_iff.2 fun x ↦ ?_
-  conv_lhs => rw [← (WithAbs.equiv v).apply_symm_apply x]
-  conv_rhs => rw [← (WithAbs.equiv w).apply_symm_apply x]
-  simp_rw [← WithAbs.norm_eq_abv, ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one]
+  conv_lhs => rw [← WithAbs.ofAbs_toAbs v x]
+  conv_rhs => rw [← WithAbs.ofAbs_toAbs w x]
+  rw [← WithAbs.norm_eq_apply_ofAbs, ← WithAbs.norm_eq_apply_ofAbs,
+    ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one, ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one]
   exact ⟨fun h ↦ by simpa [Function.comp_def] using (hi.continuous.tendsto 0).comp h, fun h ↦ by
-    simpa [Function.comp_def] using (hi.continuous_iff (f := (WithAbs.equivWithAbs v w).symm)).2
+    simpa [Function.comp_def] using (hi.continuous_iff (f := (WithAbs.congr v w (.refl F)).symm)).2
       continuous_id |>.tendsto 0 |>.comp h ⟩
 
 end Real

@@ -148,6 +148,8 @@ instance : SetLike (Subfield K) K where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
+instance : PartialOrder (Subfield K) := .ofSetLike (Subfield K) K
+
 instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'
   zero_mem s := s.zero_mem'
@@ -272,7 +274,6 @@ instance toDivisionRing (s : Subfield K) : DivisionRing s := fast_instance%
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ ↦ rfl) fun _ ↦ rfl
 
-/-- A subfield inherits a field structure -/
 instance toField {K} [Field K] (s : Subfield K) : Field s := fast_instance%
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)

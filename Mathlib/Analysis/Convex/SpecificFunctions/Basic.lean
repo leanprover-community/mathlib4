@@ -33,7 +33,7 @@ theory.
 `Mathlib/Analysis/Convex/Mul.lean` for convexity of `x ↦ x ^ n`
 -/
 
-@[expose] public section
+public section
 
 open Real Set NNReal
 
@@ -228,6 +228,7 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exp_mul_le_cosh_add_mul_sinh {t : ℝ} (ht : |t| ≤ 1) (x : ℝ) :
     exp (t * x) ≤ cosh x + t * sinh x := by
   rw [abs_le] at ht
