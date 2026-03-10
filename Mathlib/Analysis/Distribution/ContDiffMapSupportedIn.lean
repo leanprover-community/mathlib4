@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
 public import Mathlib.MeasureTheory.Function.Holder
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.Sets.Compacts
 
@@ -778,15 +779,38 @@ noncomputable def integralAgainstBilinLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F�
 
 @[simp]
 lemma integralAgainstBilinLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinLM B μ φ f = open scoped Classical in
+      if IntegrableOn φ K μ then ∫ x, B (f x) (φ x) ∂μ else 0 := by
+  rfl
+
+lemma integralAgainstBilinLM_eq_integral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
     (hφ : IntegrableOn φ K μ) {f : 𝓓^{n}_{K}(E, F₁)} :
     integralAgainstBilinLM B μ φ f = ∫ x, B (f x) (φ x) ∂μ := by
-  simp [integralAgainstBilinLM, hφ]
+  simp [hφ]
+
+lemma integralAgainstBilinLM_eq_setIntegral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : IntegrableOn φ K μ) {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinLM B μ φ f = ∫ x in K, B (f x) (φ x) ∂μ := by
+  rw [integralAgainstBilinLM_eq_integral hφ, setIntegral_eq_integral_of_forall_compl_eq_zero]
+  intro x hx
+  rw [f.zero_on_compl hx, Pi.zero_apply, map_zero, ContinuousLinearMap.zero_apply]
 
 lemma norm_integralAgainstBilinLM_le {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
     {f : 𝓓^{n}_{K}(E, F₁)} :
     ‖integralAgainstBilinLM B μ φ f‖ ≤
-      ‖B‖ * (eLpNorm φ 1 (μ.restrict K)).toReal * N[𝕜]_{K, n, 0} f := by
-  sorry
+      (∫ x in K, ‖φ x‖ ∂μ) * ‖B‖ * N[𝕜]_{K, n, 0} f := by
+  by_cases hφ : IntegrableOn φ K μ
+  · have h : ∀ᵐ x ∂(μ.restrict K), ‖B (f x) (φ x)‖ ≤ ‖φ x‖ * ‖B‖ * N[𝕜]_{K, n, 0} f := by
+      filter_upwards [] with x
+      grw [ContinuousLinearMap.le_opNorm, ContinuousLinearMap.le_opNorm, norm_apply_le_seminorm 𝕜,
+        mul_comm, mul_assoc]
+    rw [integralAgainstBilinLM_eq_setIntegral hφ]
+    apply le_trans (norm_integral_le_of_norm_le
+      ((hφ.norm.mul_const _).mul_const _) h)
+    rw [integral_mul_const, integral_mul_const]
+  · simp only [integralAgainstBilinLM, hφ, ↓reduceIte, LinearMap.coe_mk, AddHom.coe_mk, norm_zero]
+    positivity
 
 noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
     𝓓^{n}_{K}(E, F₁) →L[𝕜] F₃ where
