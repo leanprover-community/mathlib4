@@ -141,6 +141,15 @@ lemma sum_smul_dirac_singleton [MeasurableSingletonClass α] {f : α → ℝ≥0
     sum (fun b : α ↦ f b • dirac b) {a} = f a := by
   simp +contextual [tsum_eq_single a]
 
+/-- The sum of scaled Dirac measures applied to a singleton is the coefficient of that singleton. -/
+lemma sum_smul_dirac_singleton' [MeasurableSingletonClass α] {f : δ → ℝ≥0∞}
+    {x : δ → α} (hx : Injective x) {d : δ} :
+    sum (fun d ↦ f d • dirac (x d)) {x d} = f d := by
+  simp only [MeasurableSet.singleton, sum_apply, smul_apply, dirac_apply', smul_eq_mul]
+  rw [tsum_eq_single d]
+  · simp
+  · simp; grind
+
 /-- A measure on a countable type is a sum of Dirac measures.
 If `α` has measurable singletons, `sum_smul_dirac` gives a simpler sum. -/
 lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
