@@ -208,7 +208,7 @@ theorem iInf_maxPowDividing_eq {I : Ideal R} (h0 : I ≠ 0) :
     ⨅ i : HeightOneSpectrum R, i.maxPowDividing I = I := by
   nth_rw 2 [← Ideal.finprod_heightOneSpectrum_factorization h0]
   classical
-  rw [finprod_def, dif_pos (Ideal.finite_mulSupport h0), Ideal.prod_eq_iInf_of_coprime]
+  rw [finprod_def, dif_pos (Ideal.finite_mulSupport h0), Ideal.prod_eq_iInf_of_pairwise_isCoprime]
   · ext x
     constructor
     · aesop
@@ -216,7 +216,7 @@ theorem iInf_maxPowDividing_eq {I : Ideal R} (h0 : I ≠ 0) :
       intro h i
       by_cases i.maxPowDividing I = ⊤ <;> simp_all
   · intro x hx y hy hxy
-    apply IsDedekindDomain.HeightOneSpectrum.pow_sup_pow_eq_top _ _ hxy
+    apply IsDedekindDomain.HeightOneSpectrum.isCoprime_pow_of_ne _ _ hxy
 
 variable (K)
 
@@ -646,7 +646,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
     refine Ideal.mul_mono_right ?_ (ha q hq.1)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := p') (by simpa [hp's] using Ne.symm hq.2))
   apply ha' _ hp's
-  have := IsDedekindDomain.inf_prime_pow_eq_prod s (fun i ↦ i.asIdeal) (fun _ ↦ 1)
+  have := IsDedekindDomain.inf_pow_eq_prod_of_prime s (fun i ↦ i.asIdeal) (fun _ ↦ 1)
     (fun i _ ↦ i.prime) (fun i _ j _ e ↦ mt HeightOneSpectrum.ext e)
   simp only [pow_one] at this
   have inst : Nonempty {x // x ∈ s} := ⟨_, hp's⟩
