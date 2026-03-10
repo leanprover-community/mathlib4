@@ -60,6 +60,11 @@ lemma toLinearEquiv_continuousLinearEquiv (e : α ≃ β) :
     letI := e.module R
     (e.continuousLinearEquiv R).toLinearEquiv = e.linearEquiv R := rfl
 
+-- def smul (e : α ≃ β) [SMul R β] : SMul R α :=
+--     letI := e.topologicalSpace
+--     letI := e.addCommMonoid
+--     letI := e.module R
+
 end Equiv
 
 section ContinuousLinearEquiv
@@ -112,6 +117,35 @@ def ContinuousLinearEquiv.continuousSMul
     let f : R × α → α := fun p ↦ e.symm <| p.1 • (e p.2)
     have : Continuous f := by fun_prop
     exact this.congr (fun p ↦ by simp [f])
+
+/-- info: DistribMulAction.toDistribSMul.toSMul -/
+#guard_msgs in
+variable [TopologicalSpace β] [AddCommGroup β] [Module R β] [TopologicalSpace R] in
+#synth SMul R β
+
+/-- info: DistribMulAction.toDistribSMul.toSMul -/
+#guard_msgs in
+variable [TopologicalSpace α] [AddCommGroup α] [Module R α] [TopologicalSpace R] in
+#synth SMul R α
+
+/--
+error: failed to synthesize instance of type class
+  SMul R α
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+-/
+#guard_msgs in
+set_option backward.isDefEq.respectTransparency false in
+@[implicit_reducible]
+def Equiv.continuousSMul [TopologicalSpace R]
+    [TopologicalSpace β] [AddCommGroup β] [Module R β] [ContinuousSMul R β]
+    (e : α ≃ β) :
+    letI := e.topologicalSpace
+    letI := e.addCommGroup
+    letI := e.module R
+    -- letI := e.smul R -- adding or removing this line does not change the error
+    ContinuousSMul R α where
+  continuous_smul := sorry
 
 end ContinuousLinearEquiv
 
