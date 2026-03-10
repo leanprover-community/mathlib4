@@ -894,6 +894,7 @@ def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
     ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩
 
 /-- `L` with the spectral norm is a `SeminormedRing`. -/
+@[implicit_reducible]
 def seminormedRing : SeminormedRing L := by
   letI : NormedField L := normedField K L
   infer_instance
@@ -920,6 +921,7 @@ def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
       exact le_of_eq (map_smul_eq_mul _ _ _) }
 
 /-- `L` with the spectral norm is a `NormedAlgebra` over `K`. -/
+@[implicit_reducible]
 def normedAlgebra :
     @NormedAlgebra K L _ (seminormedRing K L) :=
   letI _ := normedField K L
@@ -928,6 +930,7 @@ def normedAlgebra :
 set_option backward.isDefEq.respectTransparency false in
 /-- `L` with the spectral norm is a `NormedAlgebra` over any intermediate `E`
 that is a normed algebra over `K`. -/
+@[implicit_reducible]
 def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormedField E]
     [NormedAlgebra K E] [Algebra E L] [IsScalarTower K E L] :
     @NormedAlgebra E L _ (seminormedRing K L) :=
