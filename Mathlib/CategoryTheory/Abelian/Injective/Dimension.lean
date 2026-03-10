@@ -221,8 +221,7 @@ end ShortComplex
 instance (X Y : C) (n : ℕ) [HasInjectiveDimensionLT X n]
     [HasInjectiveDimensionLT Y n] :
     HasInjectiveDimensionLT (X ⊞ Y) n :=
-  (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasInjectiveDimensionLT_X₂ n
-    (by assumption) (by assumption)
+  (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasInjectiveDimensionLT_X₂ n ‹_› ‹_›
 
 lemma hasProjectiveDimensionLT_of_subsingleton [HasExt.{w} C] [EnoughProjectives C] (X : C) (n : ℕ)
     (hX : ∀ Y : C, Subsingleton (Ext Y X n)) : HasInjectiveDimensionLT X n := by
