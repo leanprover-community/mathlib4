@@ -627,6 +627,7 @@ lemma eRk_freeOn (hXY : X ⊆ Y) : (freeOn Y).eRk X = X.encard := by
 lemma IsBase.encard_compl_eq (hB : M.IsBase B) : (M.E \ B).encard = M✶.eRank :=
   (hB.compl_isBase_dual).encard_eq_eRank
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subtraction-free formula for the rank of a set in the dual matroid. -/
 lemma eRk_dual_add_eRank (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     M✶.eRk X + M.eRank = M.eRk (M.E \ X) + X.encard := by

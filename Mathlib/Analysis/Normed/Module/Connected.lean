@@ -39,6 +39,7 @@ section TopologicalVectorSpace
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is path
 connected. -/
 theorem Set.Countable.isPathConnected_compl_of_one_lt_rank

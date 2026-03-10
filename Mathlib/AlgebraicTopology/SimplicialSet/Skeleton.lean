@@ -56,6 +56,7 @@ lemma mem_skeleton {i : ℕ} (x : X _⦋i⦌) {n : ℕ} (hi : i < n := by lia) :
     (le_iSup _ ⟨j, lt_of_le_of_lt
       (SimplexCategory.len_le_of_epi f) hi⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma skeleton_obj_eq_top {d n : ℕ} (h : d < n) :
     (X.skeleton n).obj (op ⦋d⦌) = ⊤ := by
   rw [← top_le_iff]
@@ -144,6 +145,7 @@ lemma mem_skeletonOfMono_obj_iff_of_nonDegenerate
       x.1 ∈ Set.range (i.app _) ∨ d < n := by
   simp [skeletonOfMono, mem_skeleton_obj_iff_of_nonDegenerate]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma skeletonOfMono_obj_eq_top {d n : ℕ} (h : d < n) :
     (skeletonOfMono i n).obj (op ⦋d⦌) = ⊤ := by
   rw [← top_le_iff, ← Y.skeleton_obj_eq_top h]

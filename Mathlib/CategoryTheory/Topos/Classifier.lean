@@ -272,6 +272,7 @@ lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
     (Subobject.pullback (𝒞.χ i)).obj 𝒞.truth_as_subobject = .mk i :=
   Subobject.pullback_obj_mk (𝒞.isPullback i).flip
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
     𝒞.χ ((Subobject.pullback φ).obj 𝒞.truth_as_subobject).arrow = φ := by
@@ -284,6 +285,7 @@ lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
   rw [Iso.eq_inv_comp, comp_id, underlyingIso_hom_comp_eq_mk]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any subobject classifier `Ω` represents the subobjects functor `Subobject.presheaf`. -/
 noncomputable def representableBy :
     (Subobject.presheaf C).RepresentableBy 𝒞.Ω where
@@ -355,6 +357,7 @@ noncomputable def iso : MonoOver.mk m ≅
 noncomputable def π : U ⟶ Subobject.underlying.obj h.Ω₀ :=
   (h.iso m).hom.hom.left ≫ Subobject.pullbackπ (h.χ m) h.Ω₀
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma iso_inv_left_π :
     (h.iso m).inv.hom.left ≫ h.π m = Subobject.pullbackπ (h.χ m) h.Ω₀ := by
@@ -371,6 +374,7 @@ lemma iso_inv_hom_left_comp :
 
 @[deprecated (since := "2025-12-18")] alias iso_inv_left_comp := iso_inv_hom_left_comp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPullback {U X : C} (m : U ⟶ X) [Mono m] :
     IsPullback m (h.π m) (h.χ m) h.Ω₀.arrow := by
   fapply (Subobject.isPullback (h.χ m) h.Ω₀).flip.of_iso

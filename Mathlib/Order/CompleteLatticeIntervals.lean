@@ -38,6 +38,7 @@ open Classical in
 /-- `SupSet` structure on a nonempty subset `s` of a preorder with `SupSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
+@[instance_reducible]
 noncomputable def subsetSupSet [Inhabited s] : SupSet s where
   sSup t :=
     if ht : t.Nonempty ∧ BddAbove t ∧ sSup ((↑) '' t : Set α) ∈ s
@@ -77,6 +78,7 @@ open Classical in
 /-- `InfSet` structure on a nonempty subset `s` of a preorder with `InfSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
+@[instance_reducible]
 noncomputable def subsetInfSet [Inhabited s] : InfSet s where
   sInf t :=
     if ht : t.Nonempty ∧ BddBelow t ∧ sInf ((↑) '' t : Set α) ∈ s

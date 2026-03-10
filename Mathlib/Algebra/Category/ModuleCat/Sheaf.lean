@@ -201,6 +201,7 @@ variable {N : PresheafOfModules.{v} R} (hN : Presheaf.IsSheaf J N.presheaf)
 
 variable {J}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(M₂ ⟶ N) ≃ (M₁ ⟶ N)` induced by a locally bijective morphism
 `f : M₁ ⟶ M₂` of presheaves of modules, when `N` is a sheaf. -/
 @[simps]

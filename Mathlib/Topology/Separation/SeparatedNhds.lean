@@ -54,6 +54,7 @@ alias ⟨SeparatedNhds.disjoint_nhdsSet, _⟩ := separatedNhds_iff_disjoint
 def HasSeparatingCover : Set X → Set X → Prop := fun s t ↦
   ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) t
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Used to prove that a regular topological space with Lindelöf topology is a normal space,
 and a perfectly normal space is a completely normal space. -/
 theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
@@ -99,6 +100,7 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         fun _ ↦
           ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U (UV_dis.closure_right U_open).symm⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Set.hasSeparatingCover_empty_left (s : Set X) : HasSeparatingCover ∅ s :=
   ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅),
    fun _ ↦ ⟨isOpen_empty, by simp only [closure_empty, empty_disjoint]⟩⟩

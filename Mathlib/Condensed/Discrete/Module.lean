@@ -90,6 +90,7 @@ noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
       (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u + 1}) M)) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (M : ModuleCat R) : IsIso ((forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M))) := by
   dsimp [Condensed.forget, discreteUnderlyingAdj]
@@ -105,6 +106,7 @@ instance (M : ModuleCat R) : IsIso ((forget R).map
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage CondensedSet.LocallyConstant.functor M
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
     (discrete _).obj M ≅ (functor R).obj M :=
@@ -114,6 +116,7 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
     isIso_of_reflects_iso _ (Condensed.forget R)
   functorIsoDiscreteAux₂ R M ≪≫ asIso ((discreteUnderlyingAdj _).counit.app ((functor R).obj M))
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 `CondensedMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
 `R`-modules to condensed `R`-modules.
@@ -201,6 +204,7 @@ noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat.{u} R) :
 instance : HasSheafify (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R) :=
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (M : ModuleCat R) :
     IsIso ((LightCondensed.forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app
@@ -218,6 +222,7 @@ instance (M : ModuleCat R) :
   rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage LightCondSet.LocallyConstant.functor M
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
     (discrete _).obj M ≅ (functor R).obj M :=
@@ -227,6 +232,7 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
     isIso_of_reflects_iso _ (LightCondensed.forget R)
   functorIsoDiscreteAux₂ R M ≪≫ asIso ((discreteUnderlyingAdj _).counit.app ((functor R).obj M))
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 `LightCondMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
 `R`-modules to light condensed `R`-modules.

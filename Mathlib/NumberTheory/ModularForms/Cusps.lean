@@ -46,6 +46,7 @@ namespace Subgroup.HasDetPlusMinusOne
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
   {𝒢 : Subgroup (GL (Fin 2) K)} [𝒢.HasDetPlusMinusOne]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isParabolic_iff_of_upperTriangular {g} (hg : g ∈ 𝒢) (hg10 : g 1 0 = 0) :
     g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ 0, g = -upperRightHom x) :=
   isParabolic_iff_of_upperTriangular_of_det (HasDetPlusMinusOne.det_eq hg) hg10
@@ -117,6 +118,7 @@ lemma IsCusp.of_isFiniteRelIndex_conj {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c 
   rw [← ℋ.conjAct_pointwise_smul_eq_self (ℋ.le_normalizer hh), 𝒢.relIndex_pointwise_smul]
   exact 𝒢.relIndex_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cusps of `SL(2, ℤ)` are precisely the elements of `ℙ¹(ℚ)`. -/
 lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range (OnePoint.map Rat.cast) := by
   constructor
@@ -133,6 +135,7 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
     · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
       simp [OnePoint.map_smul, SemigroupAction.mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cusps of `SL(2, ℤ)` are precisely the `SL(2, ℤ)` orbit of `∞`. -/
 lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ ∃ g : SL(2, ℤ), c = mapGL ℝ g • ∞ := by
   rw [isCusp_SL2Z_iff]
@@ -163,7 +166,8 @@ We consider the orbits for the action of `𝒢` on its own cusps. The main resul
 -/
 
 /-- The action of `𝒢` on its own cusps. -/
-def cusps_subMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) : SubMulAction 𝒢 (OnePoint ℝ) where
+noncomputable def cusps_subMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
+    SubMulAction 𝒢 (OnePoint ℝ) where
   carrier := {c | IsCusp c 𝒢}
   smul_mem' g _ hc := IsCusp.smul_of_mem hc g.property
 
@@ -171,6 +175,7 @@ def cusps_subMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) : SubMulAction 𝒢 (O
 abbrev CuspOrbits (𝒢 : Subgroup (GL (Fin 2) ℝ)) :=
   MulAction.orbitRel.Quotient 𝒢 (cusps_subMulAction 𝒢)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Surjection from `SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ))` to cusp orbits of `𝒢`. Mostly useful for showing
 that `CuspOrbits 𝒢` is finite for arithmetic subgroups. -/
 noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] :
@@ -185,6 +190,7 @@ noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsAr
       refine Quotient.eq.mpr ⟨⟨_, hab⟩, ?_⟩
       simp [SemigroupAction.mul_smul])
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma cosetToCuspOrbit_apply_mk {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.IsArithmetic] (g : SL(2, ℤ)) :
     cosetToCuspOrbit 𝒢 ⟦g⟧ = ⟦⟨mapGL ℝ g⁻¹ • ∞,

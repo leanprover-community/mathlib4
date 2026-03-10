@@ -99,7 +99,7 @@ lemma factorsThruAlong_id {X : C} (S T : Presieve X) :
 
 lemma factorsThru_of_le {X : C} (S T : Presieve X) (h : S ≤ T) :
     S.FactorsThru T :=
-  fun Y g hg => ⟨Y, 𝟙 _, g, h _ hg, by simp⟩
+  fun Y g hg => ⟨Y, 𝟙 _, g, h _ _ hg, by simp⟩
 
 lemma le_of_factorsThru_sieve {X : C} (S : Presieve X) (T : Sieve X) (h : S.FactorsThru T) :
     S ≤ T := by
@@ -264,7 +264,7 @@ associated Grothendieck topology is pullback stable, and so an additional constr
 in the inductive construction is not needed.
 -/
 def toGrothendieck (K : Coverage C) : GrothendieckTopology C :=
-  K.toPrecoverage.toGrothendieck.copy K.Saturate <| by
+  K.toPrecoverage.toGrothendieck.copy (fun X ↦ setOf (K.Saturate X)) <| by
     ext
     exact K.saturate_iff_saturate_toPrecoverage.symm
 
@@ -367,10 +367,10 @@ lemma Pretopology.toGrothendieck_toCoverage [HasPullbacks C] (J : Pretopology C)
     | transitive X R S hR hRS hle hfS =>
         obtain ⟨R', hR', hle⟩ := hle
         choose S' hS' hS'le using hfS
-        refine ⟨Presieve.bind R' (fun Y f hf ↦ S' (hle _ hf)), ?_, fun Z u hu ↦ ?_⟩
-        · exact J.transitive R' (fun Y f hf ↦ S' (hle Y hf)) hR' fun Y f H ↦ hS' (hle Y H)
+        refine ⟨Presieve.bind R' (fun Y f hf ↦ S' (hle _ _ hf)), ?_, fun Z u hu ↦ ?_⟩
+        · exact J.transitive R' (fun Y f hf ↦ S' (hle Y _ hf)) hR' fun Y f H ↦ hS' (hle Y _ H)
         · obtain ⟨W, g, w, hw, hg, rfl⟩ := hu
-          exact hS'le _ _ hg
+          exact hS'le _ _ _ hg
   · refine Coverage.saturate_of_superset _ ?_ (.of _ _ hR)
     rwa [Sieve.generate_le_iff]
 

@@ -35,6 +35,7 @@ namespace Represents
 
 variable {C : Set G.ConnectedComponent} {s : Set V} {c : G.ConnectedComponent}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma image_out (C : Set G.ConnectedComponent) :
     Represents (Quot.out '' C) C :=
   Set.BijOn.mk (by rintro c ⟨x, ⟨hx, rfl⟩⟩; simp_all [connectedComponentMk]) (by
@@ -52,6 +53,7 @@ lemma exists_inter_eq_singleton (hrep : Represents s C) (h : c ∈ C) : ∃ x, s
   obtain ⟨a, ha⟩ := existsUnique_rep hrep h
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_supp_of_notMem (hrep : Represents s C) (h : c ∉ C) : Disjoint s c.supp := by
   rw [Set.disjoint_left]
   intro a ha hc

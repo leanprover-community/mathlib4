@@ -88,6 +88,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   simp only [map_mul, map_one] at heq'
   simpa using .of_mul_eq_one _ heq'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     (h : ∀ (x) (hx : x ∈ U), IsUnit (X.presheaf.germ U x hx f)) : IsUnit f := by
@@ -196,6 +197,7 @@ theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
   · simp [mem_basicOpen (hx := hx)]
   · simp [mt (basicOpen_le X _ ·) hx]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma basicOpen_pow {U : Opens X} (f : X.presheaf.obj (op U)) (n : ℕ) (h : 0 < n) :
     X.basicOpen (f ^ n) = X.basicOpen f := by

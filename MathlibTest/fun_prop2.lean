@@ -76,6 +76,7 @@ example : AEMeasurable T := by
   fun_prop
 
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by norm_cast
 
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :

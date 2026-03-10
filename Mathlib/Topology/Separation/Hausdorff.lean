@@ -393,10 +393,10 @@ instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
 instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
     T2Space (Σ i, X i) := by
   constructor
-  rintro ⟨i, x⟩ ⟨j, y⟩ neq
+  rintro ⟨i, x⟩ ⟨j, y⟩ ne
   rcases eq_or_ne i j with (rfl | h)
-  · replace neq : x ≠ y := ne_of_apply_ne _ neq
-    exact separated_by_isOpenEmbedding .sigmaMk neq
+  · replace ne : x ≠ y := ne_of_apply_ne _ ne
+    exact separated_by_isOpenEmbedding .sigmaMk ne
   · let _ := (⊥ : TopologicalSpace ι); have : DiscreteTopology ι := ⟨rfl⟩
     exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
 
@@ -623,6 +623,7 @@ theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (clos
   Subset.antisymm hf.image_closure <|
     closure_minimal (image_mono subset_closure) (hs.image_of_continuousOn hf).isClosed
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two continuous maps into a Hausdorff space disagree at a point iff they disagree in a
 neighborhood. -/
 theorem ContinuousAt.ne_iff_eventually_ne [T2Space Y] {x : X} {f g : X → Y}

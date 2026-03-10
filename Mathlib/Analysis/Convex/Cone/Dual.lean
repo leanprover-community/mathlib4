@@ -128,6 +128,7 @@ theorem hyperplane_separation (C : ProperCone ℝ E) (hKconv : Convex ℝ K) (hK
   simpa [hx₀.ne] using hv ((v * (f x)⁻¹) • x)
     (C.smul_mem hx <| le_of_lt <| mul_pos_of_neg_of_neg hv₀ <| inv_neg''.2 hx₀)
 
+set_option backward.isDefEq.respectTransparency false in
 open ConvexCone in
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
 **Hahn-Banach separation theorem** for proper cones. -/

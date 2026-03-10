@@ -198,6 +198,7 @@ theorem C_0 : C 0 = (0 : MvPolynomial σ R) := map_zero _
 theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
   -- Porting note: this `change` feels like defeq abuse, but I can't find the appropriate lemmas
   change AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
@@ -529,6 +530,11 @@ theorem support_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
 @[simp]
 theorem support_zero : (0 : MvPolynomial σ R).support = ∅ :=
   rfl
+
+@[simp]
+lemma support_one [Nontrivial R] : (1 : MvPolynomial σ R).support = {0} := by
+  classical
+  simp [show support (1 : MvPolynomial σ R) = if (1 : R) = 0 then ∅ else {0} from rfl]
 
 theorem support_smul {S₁ : Type*} [SMulZeroClass S₁ R] {a : S₁} {f : MvPolynomial σ R} :
     (a • f).support ⊆ f.support :=
@@ -1077,10 +1083,12 @@ lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M *
     rw [MvPolynomial.coeff_mul]
     exact sum_mem fun c hc ↦ Submodule.mul_mem_mul (hx _) (hy _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffsIn_pow : ∀ {n}, n ≠ 0 → ∀ M : Submodule R S, coeffsIn σ (M ^ n) = coeffsIn σ M ^ n
   | 1, _, M => by simp
   | n + 2, _, M => by rw [pow_succ, coeffsIn_mul, coeffsIn_pow, ← pow_succ]; exact n.succ_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_coeffsIn_pow : ∀ {n}, coeffsIn σ M ^ n ≤ coeffsIn σ (M ^ n)
   | 0 => by simpa using ⟨1, map_one _⟩
   | n + 1 => (coeffsIn_pow n.succ_ne_zero _).ge

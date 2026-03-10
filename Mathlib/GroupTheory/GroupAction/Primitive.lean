@@ -182,6 +182,7 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
         rw [← IsTrivialBlock.smul_iff g]
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
 @[to_additive
@@ -255,6 +256,7 @@ theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontriv
     | inr h =>
       simp [BlockMem.coe_top, h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitive action is preprimitive
 iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
 @[to_additive
@@ -266,6 +268,7 @@ theorem isCoatom_stabilizer_iff_preprimitive [IsPretransitive G X] [Nontrivial X
   simp only [isSimpleOrder_iff_isCoatom_bot]
   rw [← OrderIso.isCoatom_iff (block_stabilizerOrderIso G a), OrderIso.map_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a preprimitive action, stabilizers are maximal subgroups -/
 @[to_additive /-- In a preprimitive action, stabilizers are maximal subgroups. -/]
 theorem IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
