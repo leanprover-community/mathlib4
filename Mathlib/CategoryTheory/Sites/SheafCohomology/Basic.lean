@@ -137,16 +137,39 @@ lemma H.addEquiv₀_comp (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEq
   rfl
 
 /-- `H.equiv₀` is natural -/
-theorem H.equiv₀_comp (x : H F 0) :
+theorem H.equiv₀_naturality (x : H F 0) :
     f.hom.app (op T) (H.equiv₀ F hT x) = H.equiv₀ G hT (H.map f 0 x) := by
   simp only [equiv₀, AddEquiv.trans_apply]
   erw[addEquiv₀_comp f x]
   rfl
 
-theorem H.equiv₀_symm_comp (x : F.obj.obj (op T)) :
+theorem H.equiv₀_symm_naturality (x : F.obj.obj (op T)) :
     H.map f 0 ((H.equiv₀ F hT).symm x) = (H.equiv₀ G hT).symm (f.hom.app (op T) x) := by
   apply (H.equiv₀ G hT).injective
-  simp [← H.equiv₀_comp]
+  simp [← H.equiv₀_naturality]
+
+lemma H.map_apply {n : ℕ} (x : H F n) :
+    H.map f n x = x.comp (Ext.mk₀ f) (add_zero n) := rfl
+
+@[simp]
+lemma H.map_id_apply {n : ℕ} (x : H F n) : H.map (𝟙 F) n x = x := by
+  simp [H.map_apply]
+
+lemma H.map_comp_apply {n : ℕ} {G' : Sheaf J AddCommGrpCat.{w}} (g : G ⟶ G') (x : H F n) :
+    H.map (f ≫ g) n x = H.map g n (H.map f n x) := by
+  simp [H.map_apply]
+
+attribute [local simp] H.map_comp_apply in
+variable (J) in
+/-- `H` as a functor. -/
+@[simps]
+noncomputable def functorH (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} where
+  obj F := .of (H F n)
+  map f := AddCommGrpCat.ofHom (H.map f n)
+
+set_option backward.isDefEq.respectTransparency false in
+instance (n : ℕ) : (functorH J n).Additive where
+  map_add {_ _ f g} := by ext; simp [H.map_apply, Ext.mk₀_add];
 
 end
 
