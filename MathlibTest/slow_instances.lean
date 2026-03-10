@@ -30,6 +30,7 @@ Hint: Additional diagnostic information may be available using the `set_option d
 variable {d : Type*} in
 set_option maxHeartbeats 5000 in -- uses about 2400 as of 2026-02-20,
                                  -- and then about 3200 as of 2026-03-04
+                                 -- and then about 4400 as of 2026-03-10
 /--
 error: failed to synthesize
   Lean.Grind.OrderedAdd (Submodule ℂ (WithLp 2 (d → ℂ)))

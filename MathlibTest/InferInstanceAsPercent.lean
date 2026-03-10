@@ -87,8 +87,6 @@ def testField_direct : TestField TestNat where
 def testField_leaky : TestField TestNat := inferInstanceAs (TestField Nat)
 
 -- Fixed: inferInstanceAs% patches lambda domains to use TestNat
--- (warns about leaky direct sub-instances that could be defined separately)
-#guard_msgs in
 @[implicit_reducible]
 def testField_fixed : TestField TestNat := inferInstanceAs% (TestField Nat)
 
@@ -112,4 +110,6 @@ is not definitionally equal to the right-hand side
 example : testField_leaky = testField_direct := by with_reducible_and_instances rfl
 
 -- The fixed instance IS defeq at `instances` transparency.
-example : testField_fixed = testField_direct := by with_reducible_and_instances rfl
+example : testField_fixed = testField_direct := by with_reducible_and_instances
+set_option trace.Meta.isDefEq true in
+rfl

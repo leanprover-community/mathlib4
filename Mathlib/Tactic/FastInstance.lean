@@ -1,15 +1,14 @@
 /-
 Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Kyle Miller
+Authors: Eric Wieser, Kyle Miller, Jovan Gerbscheid
 -/
 module
 
-public meta import Lean.Elab.SyntheticMVars
 public import Mathlib.Init
-public meta import Std.Do
+
 /-!
-# The `fast_instance%` term elaborator
+# The `fast_instance%` and `inferInstanceAs%` term elaborators
 -/
 
 meta section
@@ -84,6 +83,7 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
     -- Unify the parameters
     unless ← isDefEq expectedType cls do
       throwError "`{expectedType}` does not unify with the conclusion of `{.ofConstName c}`"
+    -- TODO: use structure eta reduction when possible?
     for i in ci.numParams...args.size do
       let bi := bis[i]!
       let mvarId := mvars[i]!.mvarId!
@@ -91,7 +91,7 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
       let argExpectedType ← instantiateMVars mvarDecl.type
       let arg := args[i]!
       if ← isProp argExpectedType then
-        -- For proofs, reate an auxiliary theorem of the expected type.
+        -- For proofs, create an auxiliary theorem of the expected type.
         if ← withDefault <| isDefEq argExpectedType (← inferType arg) then
           mvarId.assign <| ← mkAuxTheorem argExpectedType arg (zetaDelta := true)
         else
@@ -137,8 +137,10 @@ public def elabFastInstance : TermElab
       return inst
   | _, _ => Elab.throwUnsupportedSyntax
 
-/-- `inferInstanceAs% A` is shorhand for `fast_instance% inferInstanceAs A`.
-This is preferred over `inferInstanceAs` when -/
+/-- `inferInstanceAs% A` is shorthand for `fast_instance% inferInstanceAs A`.
+This is preferred over `inferInstanceAs` when the instance can be reduced to
+constructor applications. In that case, the parameters of the constructors will be filled in
+using the expected type, so that the instance will unfold nicely during unification. -/
 macro "inferInstanceAs% " source:term : term =>
   `(fast_instance% inferInstanceAs $source)
 
