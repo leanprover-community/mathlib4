@@ -1327,11 +1327,11 @@ theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZero
 
 namespace Submodule
 
-variable {R : Type u}
+variable {R : Type*}
 
 section
 
-variable [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R M]
+variable [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
 instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
