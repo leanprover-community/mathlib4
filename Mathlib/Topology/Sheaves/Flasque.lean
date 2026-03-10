@@ -84,41 +84,39 @@ abbrev Under := StructuredArrow ⟨op U, s⟩ (Functor.whiskerRight g.hom
 /-- Given `t₁` and `t₂` in `Under g s`, we say `t₁ ≤ t₂` if `t₁` restricts to `t₂` -/
 def Under.R : Under g s → Under g s → Prop := fun x y ↦ Nonempty (y ⟶ x)
 
-/- The next lemma proves that the relation `R` satisfies the requirements for applying Zorn's
-lemma -/
+/- The next lemma proves that the relation `fun x y ↦ Nonempty (y ⟶ x)` on `Under g s`
+satisfies the requirements for applying Zorn's lemma -/
 lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
-    (h : IsChain (Under.R g s) c) : ∃ ub, ∀ a ∈ c, (Under.R g s) a ub := by
+    (h : IsChain (fun x y ↦ Nonempty (y ⟶ x)) c) : ∃ ub, ∀ a ∈ c, Nonempty (ub ⟶ a) := by
   let f : c → (Opens X) := fun x => x.1.right.1.unop
   obtain ⟨t, ht, _⟩ : ∃! s_1, IsGluing F.obj f (fun x => x.val.right.2) s_1 := by
     refine Sheaf.existsUnique_gluing F _ _ (fun i j ↦ ?_)
     by_cases hij : i = j
     · subst hij; rfl
-    obtain h₁ | h₁ := h i.property j.property (by grind)
-    · rw [← CategoryOfElements.map_snd (Classical.choice h₁).2]
-      dsimp
-      rw [← CategoryTheory.comp_apply, ← Functor.map_comp]
-      congr 2
-    · rw [← CategoryOfElements.map_snd (Classical.choice h₁).2]
-      dsimp
-      rw [← CategoryTheory.comp_apply, ← Functor.map_comp]
-      congr
+    obtain h₁ | h₁ := h i.property j.property (fun h ↦ hij (SetCoe.ext_iff.mp h))
+    · simp only [← CategoryOfElements.map_snd (Classical.choice h₁).2, Functor.comp_obj,
+        Functor.comp_map, ConcreteCategory.forget_map_eq_coe,
+        ← CategoryTheory.comp_apply, ← Functor.map_comp]
+      rfl
+    · simp only [← CategoryOfElements.map_snd (Classical.choice h₁).2, Functor.comp_obj,
+        Functor.comp_map, ConcreteCategory.forget_map_eq_coe, ← CategoryTheory.comp_apply,
+        ← Functor.map_comp]
+      rfl
   have le₁ : iSup f ≤ U := iSup_le <| fun j => leOfHom j.1.hom.1.unop
   have le₂ : ∀ i, i ∈ c → unop i.right.1 ≤ iSup f := fun i hi ↦ le_iSup f ⟨i, hi⟩
-  set X : ⟨op U, s⟩ ⟶ (Functor.whiskerRight g.hom
-      (CategoryTheory.forget AddCommGrpCat)).mapElements.obj ⟨op (iSup f), t⟩ := by
-    exact CategoryOfElements.homMk _ _ (homOfLE le₁).op (eq_app_of_forall_eq ht
-      (fun i ↦ leOfHom i.1.hom.1.unop) (fun i ↦ (CategoryOfElements.map_snd i.1.hom).symm)).symm
-  use StructuredArrow.mk X
+  use StructuredArrow.mk (CategoryOfElements.homMk _ _ (homOfLE le₁).op (eq_app_of_forall_eq ht
+      (fun i ↦ leOfHom i.1.hom.1.unop) (fun i ↦ (CategoryOfElements.map_snd i.1.hom).symm)).symm :
+      ⟨op U, s⟩ ⟶ (Functor.whiskerRight g.hom
+      (CategoryTheory.forget AddCommGrpCat)).mapElements.obj ⟨op (iSup f), t⟩)
   exact fun i hi => Nonempty.intro (StructuredArrow.homMk (CategoryOfElements.homMk _ _
     (homOfLE (le₂ i hi)).op (ht ⟨i, hi⟩)) (by cat_disch))
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then
 `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`. -/
 theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.ShortExact)
     [IsFlasque S.X₁] : Epi (S.g.1.app (op U)) := by
-  apply (AddCommGrpCat.epi_iff_surjective _).mpr
-  intro s
+  refine (AddCommGrpCat.epi_iff_surjective _).mpr (fun s ↦ ?_)
+  -- We want to find a preimage of `s` by `S.g`.
   -- We apply Zorn's lemma to obtain a term `t` of `Under S.g s` that is maximal.
   obtain ⟨t, ht⟩ := exists_maximal_of_chains_bounded
     (structured_arrows_elements_sheaf_chains_bounded S.g s)
@@ -129,8 +127,8 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
   have : U ≤ t.right.1.unop := by
     intro x hx
     have := (isLocallySurjective_iff_epi S.g).mpr hS.epi_g
-    -- We use local surjectivity to find a section of `S.X₂` on a neighborhood `W` of `x` that maps
-    -- to `s |_ W`
+    -- We use local surjectivity to find a section `t₁` of `S.X₂` on a neighborhood `W` of `x`
+    -- that maps to `s |_ W` by `S.g`.
     obtain ⟨W, Wle, ⟨t₁, ht₁⟩, hW⟩ := (isLocallySurjective_iff S.g.hom).mp this U s x hx
     --`t.right.2` and `t₁` need not agree on their overlap so we need to deal with their
     -- difference `t₂`
