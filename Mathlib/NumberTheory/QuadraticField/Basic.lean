@@ -246,7 +246,17 @@ lemma not_isSquare_neg_one_rat : ¬ IsSquare (- (1 : ℚ)) := by
   have hnonneg : 0 ≤ r ^ 2 := sq_nonneg r
   nlinarith [hr, hnonneg]
 
-/-- A squarefree integer that is a perfect square (as an integer) must equal `1`. -/
+/-- A squarefree integer that is a perfect square must equal `1`. -/
+lemma eq_one_of_squarefree_isSquare {m : ℤ}
+    (hsm : Squarefree m) (hsq : IsSquare m) : m = 1 := by
+  obtain ⟨r, rfl⟩ := hsq
+  have hnonneg : 0 ≤ r * r := mul_self_nonneg r
+  have hu := hsm.isUnit_of_isSquare ⟨r, rfl⟩
+  rcases Int.isUnit_iff.mp hu with h | h
+  · exact h
+  · linarith
+
+/-- A squarefree natural number that is a perfect square (as an integer) must equal `1`. -/
 lemma nat_eq_one_of_squarefree_intcast_of_isSquare (m : ℕ)
     (hsm : Squarefree (m : ℤ)) (hsq : IsSquare (m : ℤ)) : m = 1 := by
   have hmz : (m : ℤ) = 1 :=
