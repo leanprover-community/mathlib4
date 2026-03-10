@@ -392,9 +392,8 @@ functions as a continuous `𝕜`-linear map. -/
 @[simps! apply]
 noncomputable def toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F :=
-  TestFunction.limitCLM 𝕜 (↑)
-    (fun _ _ ↦ ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜)
-    (fun _ _ _ ↦ rfl)
+  TestFunction.mkCLM 𝕜 (↑) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ (ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜).continuous)
 
 lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] (𝕜' : Type*)
     [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
