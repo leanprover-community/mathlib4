@@ -691,18 +691,6 @@ theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
       hst ▸
         (mul_add r s t).symm ▸ Ideal.add_mem (I * J) (mul_mem_mul_rev hsi hrj) (mul_mem_mul hri htj)
 
-theorem prod_eq_iInf_of_coprime {s : Finset ι} {J : ι → Ideal R}
-    (hp : (s : Set _).Pairwise fun (i j : ι) => J i ⊔ J j = ⊤) :
-    ∏ i ∈ s, J i = ⨅ i ∈ s, J i := by
-  classical
-  induction s using Finset.induction with
-  | empty => simp
-  | insert a s hs ih =>
-    simp_all only [Finset.iInf_insert, Finset.coe_insert, Set.pairwise_insert, SetLike.mem_coe,
-      ne_eq, not_false_eq_true, Finset.prod_insert, forall_const]
-    obtain ⟨hp1, hp2⟩ := hp
-    rw [Ideal.mul_eq_inf_of_coprime (sup_iInf_eq_top (fun i hi ↦ (hp2 i hi (by grind)).1))]
-
 theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
     (I ⊔ ∏ i ∈ s, J i) = ⊤ :=
   Finset.prod_induction _ (fun J => I ⊔ J = ⊤)
@@ -773,8 +761,6 @@ theorem _root_.IsCoprime.exists (h : IsCoprime I J) : ∃ i ∈ I, ∃ j ∈ J, 
 
 theorem _root_.IsCoprime.sup_eq (h : IsCoprime I J) : I ⊔ J = ⊤ := isCoprime_iff_sup_eq.mp h
 
-theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
-  (Ideal.mul_eq_inf_of_coprime coprime.sup_eq).symm
 
 theorem isCoprime_span_singleton_iff (x y : R) :
     IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
@@ -788,6 +774,26 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
     (hf : ∀ j ∈ s, IsCoprime I (J j)) : IsCoprime I (⨅ j ∈ s, J j) := by
   simp only [isCoprime_iff_add, one_eq_top] at hf ⊢
   exact sup_iInf_eq_top hf
+
+theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
+  (Ideal.mul_eq_inf_of_coprime coprime.sup_eq)
+
+@[deprecated mul_eq_inf_of_isCoprime (since := "2026-03-10")]
+theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
+  (Ideal.mul_eq_inf_of_coprime coprime.sup_eq).symm
+
+open Function
+theorem prod_eq_iInf_of_pairwise_isCoprime {s : Finset ι} {J : ι → Ideal R}
+    (hp : (s : Set ι).Pairwise (IsCoprime on J)) :
+    ∏ i ∈ s, J i = ⨅ i ∈ s, J i := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s hs ih =>
+    simp_all only [Finset.iInf_insert, Finset.coe_insert, Set.pairwise_insert, SetLike.mem_coe,
+      ne_eq, not_false_eq_true, Finset.prod_insert, forall_const]
+    obtain ⟨hp1, hp2⟩ := hp
+    rw [Ideal.mul_eq_inf_of_isCoprime (isCoprime_biInf (by grind))]
 
 /-- The radical of an ideal `I` consists of the elements `r` such that `r ^ n ∈ I` for some `n`. -/
 def radical (I : Ideal R) : Ideal R where

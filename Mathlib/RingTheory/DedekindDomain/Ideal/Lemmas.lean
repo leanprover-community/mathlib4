@@ -500,13 +500,13 @@ theorem ideal_ne_top_iff_exists (hR : ¬IsField R) (I : Ideal R) :
   · rintro ⟨P, hP⟩
     exact ⟨((equivMaximalSpectrum hR) P).asIdeal, ((equivMaximalSpectrum hR) P).isMaximal, hP⟩
 
-theorem coprime_of_ne (P Q : HeightOneSpectrum R) (hPQ : P ≠ Q) : P.asIdeal ⊔ Q.asIdeal = ⊤ :=
-  (Ideal.IsMaximal.coprime_of_ne P.isMaximal Q.isMaximal
+theorem isCoprime_of_ne (P Q : HeightOneSpectrum R) (hPQ : P ≠ Q) : IsCoprime P.asIdeal Q.asIdeal :=
+  Ideal.isCoprime_iff_sup_eq.mpr (Ideal.IsMaximal.coprime_of_ne P.isMaximal Q.isMaximal
     (by simpa [HeightOneSpectrum.ext_iff] using hPQ))
 
-theorem pow_sup_pow_eq_top (P Q : HeightOneSpectrum R) (hPQ : P ≠ Q) (n m : ℕ) :
-    P.asIdeal ^ n ⊔ Q.asIdeal ^ m = ⊤ :=
-  Ideal.pow_sup_pow_eq_top (P.coprime_of_ne Q hPQ)
+theorem isCoprime_pow_of_ne (P Q : HeightOneSpectrum R) (hPQ : P ≠ Q) (n m : ℕ) :
+    IsCoprime (P.asIdeal ^ n) (Q.asIdeal ^ m) :=
+  Ideal.isCoprime_iff_sup_eq.mpr (Ideal.pow_sup_pow_eq_top (P.isCoprime_of_ne Q hPQ).sup_eq)
 
 variable (R)
 
@@ -762,22 +762,25 @@ prime powers. -/
 theorem IsDedekindDomain.HeightOneSpectrum.inf_pow_eq_prod (s : Finset ι) (e : ι → ℕ)
     (f : ι → HeightOneSpectrum R) (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
     (s.inf fun i => (f i).asIdeal ^ e i) = ∏ i ∈ s, (f i).asIdeal ^ e i := by
-  rw [prod_eq_iInf_of_coprime]
+  rw [prod_eq_iInf_of_pairwise_isCoprime]
   · rw [Finset.inf_eq_iInf s fun i ↦ (f i).asIdeal ^ e i]
   · intro i hi j hj hij
-    exact HeightOneSpectrum.pow_sup_pow_eq_top _ _ (coprime i hi j hj hij) _ _
+    exact HeightOneSpectrum.isCoprime_pow_of_ne _ _ (coprime i hi j hj hij) _ _
 
 /-- The intersection of distinct prime powers in a Dedekind domain is the product of these
 prime powers. -/
-theorem IsDedekindDomain.inf_prime_pow_eq_prod (s : Finset ι) (f : ι → Ideal R)
+theorem IsDedekindDomain.inf_pow_eq_prod_of_prime (s : Finset ι) (f : ι → Ideal R)
     (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (f i)) (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
     (s.inf fun i => f i ^ e i) = ∏ i ∈ s, f i ^ e i := by
-  rw [prod_eq_iInf_of_coprime, Finset.inf_eq_iInf s fun i ↦ (f i) ^ e i]
+  rw [prod_eq_iInf_of_pairwise_isCoprime, Finset.inf_eq_iInf s fun i ↦ (f i) ^ e i]
   intro i hi j hj hij
-  exact pow_sup_pow_eq_top (IsMaximal.coprime_of_ne
+  exact Ideal.isCoprime_iff_sup_eq.mpr (pow_sup_pow_eq_top (IsMaximal.coprime_of_ne
     (IsPrime.isMaximal (isPrime_of_prime (prime i hi)) (prime i hi).ne_zero)
     (IsPrime.isMaximal (isPrime_of_prime (prime j hj)) (prime j hj).ne_zero)
-    (coprime i hi j hj hij))
+    (coprime i hi j hj hij)))
+
+@[deprecated (since := "2026-03-10")] alias IsDedekindDomain.inf_prime_pow_eq_prod :=
+  IsDedekindDomain.inf_pow_eq_prod_of_prime
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
@@ -787,9 +790,8 @@ def IsDedekindDomain.HeightOneSpectrum.quotientEquivPiOfProdEq [Fintype ι] (I :
   (Ideal.quotEquivOfEq
     (by simp [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ,
       ← HeightOneSpectrum.inf_pow_eq_prod _ _ _ (coprime.set_pairwise _)])).trans <|
-    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => by
-      rw [Function.onFun, Ideal.isCoprime_iff_sup_eq]
-      exact HeightOneSpectrum.pow_sup_pow_eq_top _ _ (coprime hij) _ _
+    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij =>
+      HeightOneSpectrum.isCoprime_pow_of_ne _ _ (coprime hij) _ _
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
