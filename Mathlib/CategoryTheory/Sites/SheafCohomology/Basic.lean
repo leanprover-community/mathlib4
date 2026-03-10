@@ -69,6 +69,10 @@ noncomputable def cohomologyFunctor (n : ℕ) :
   (extFunctor.{w'} n).obj <|
     .op <| ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift ℤ)))
 
+lemma cohomologyFunctor_obj (n : ℕ) (F : Sheaf J AddCommGrpCat.{w}) :
+    (cohomologyFunctor J n).obj F = F.H n :=
+  rfl
+
 set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : (cohomologyFunctor J n).Additive := by
   dsimp [cohomologyFunctor]
@@ -76,7 +80,7 @@ instance (n : ℕ) : (cohomologyFunctor J n).Additive := by
 
 lemma subsingleton_H_of_isZero {F : Sheaf J AddCommGrpCat.{w}} (h : Limits.IsZero F) (n : ℕ) :
     Subsingleton (F.H n) := by
-  change Subsingleton ((cohomologyFunctor J n).obj F)
+  rw [← cohomologyFunctor_obj]
   apply AddCommGrpCat.subsingleton_of_isZero
   exact Functor.map_isZero (cohomologyFunctor J n) h
 
