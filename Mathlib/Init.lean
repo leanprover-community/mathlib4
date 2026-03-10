@@ -121,6 +121,15 @@ register_linter_set linter.nightlyRegressionSet :=
 register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
 
+-- Disable the `checkType` env_linter: it takes ~44% of total linting time to type-check
+-- every declaration statement, but is redundant since all declarations are already type-checked
+-- when added to the environment.
+-- See https://leanprover.zulipchat.com/#narrow/channel/345428-mathlib-reviewers/topic/THE.20FOLLOWING.20DECLARATIONS.20DO.20NOT.20TYPE-CHECK
+run_cmd do
+  let env ← Lean.getEnv
+  Lean.setEnv (Batteries.Tactic.Lint.batteriesLinterExt.addEntry env
+    (`Batteries.Tactic.Lint.checkType, false))
+
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
 
