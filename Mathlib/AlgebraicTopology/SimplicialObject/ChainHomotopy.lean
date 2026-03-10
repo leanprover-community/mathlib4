@@ -56,213 +56,109 @@ private lemma comm_zero :
     f.app (op ⦋0⦌) = hom H 0 1 ≫ d + g.app (op ⦋0⦌) := by
   simp [← H.h_last_comp_δ_last 0]
 
+lemma Finset.compl_eq_of_disjoint_of_card_add_eq
+    {ι : Type*} [DecidableEq ι] [Fintype ι] {S₁ S₂ : Finset ι} (h : Disjoint S₁ S₂)
+    (h' : S₁.card + S₂.card = Finset.card (.univ : Finset ι)) :
+    S₁ᶜ = S₂ :=
+  (Finset.eq_of_subset_of_card_le
+    (by rwa [Finset.subset_compl_iff_disjoint_left])
+    (by simp [← add_le_add_iff_left S₁.card, h'])).symm
+
 private lemma comm_succ (n : ℕ) :
-    ((alternatingFaceMapComplex C).map g).f (n + 1) = dNext (n + 1) (hom H) + prevD (n + 1) (hom H)
-    + ((alternatingFaceMapComplex C).map f).f (n + 1) := by
-  rw [dNext_eq (hom H) (i := n + 1) (i' := n) (by simp)]
-  rw [prevD_eq (hom H) (j := n + 1) (j' := n + 2) (by simp)]
-  simp only [alternatingFaceMapComplex_obj_X, alternatingFaceMapComplex_map_f,
-    alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, Int.reduceNeg, hom_eq]
-  refine (sub_eq_iff_eq_add).1 ?_
-  rw [sub_eq_add_neg]
-  set dX : (X _⦋n + 1⦌ ⟶ X _⦋n⦌) := ∑ i : Fin (n + 2), ((-1 : ℤ) ^ (i : ℕ)) • X.δ i
-  set dY : (Y _⦋n + 2⦌ ⟶ Y _⦋n + 1⦌) := ∑ i : Fin (n + 3), ((-1 : ℤ) ^ (i : ℕ)) • Y.δ i
-  set hn : (X _⦋n⦌ ⟶ Y _⦋n + 1⦌) := ∑ k : Fin (n + 1), ((-1 : ℤ) ^ (k : ℕ)) • H.h k
-  set hn1 : (X _⦋n + 1⦌ ⟶ Y _⦋n + 2⦌) := ∑ k : Fin (n + 2), ((-1 : ℤ) ^ (k : ℕ)) • H.h k
-  have hdXhn : dX ≫ hn = ∑ i : Fin (n + 2), ∑ k : Fin (n + 1),
-    (((-1 : ℤ) ^ (i : ℕ)) * ((-1 : ℤ) ^ (k : ℕ))) • (X.δ i ≫ H.h k) := by
-    simp only [dX, hn, Preadditive.sum_comp]
-    simp only [Int.reduceNeg, Preadditive.comp_sum, Linear.comp_smul, Linear.smul_comp, smul_smul,
-      mul_comm]
-  have hhn1dY : hn1 ≫ dY = ∑ k : Fin (n + 2), ∑ i : Fin (n + 3),
-    (((-1 : ℤ) ^ (k : ℕ)) * ((-1 : ℤ) ^ (i : ℕ))) • (H.h k ≫ Y.δ i) := by
-    simp only [hn1, dY, Preadditive.sum_comp]
-    simp only [Int.reduceNeg, Preadditive.comp_sum, Linear.comp_smul, Linear.smul_comp, smul_smul,
-      mul_comm]
-  simp only [hdXhn, hhn1dY]
-  let P := (Fin (n + 1) × Fin (n + 2))
-  let S : Finset P := {x : P | (x.2 : ℕ) ≤ (x.1 : ℕ)}
-  let Q := Fin (n + 3) × Fin (n + 2)
-  let t : Q → (X _⦋n+1⦌ ⟶ Y _⦋n+1⦌) :=
-    fun x => ((-1) ^ (x.1 : ℕ) * (-1) ^ (x.2 : ℕ)) • (H.h x.2 ≫ Y.δ x.1)
-  let U : Finset Q :=
-    (Finset.univ.image (fun b : Fin (n + 2) => (b.castSucc, b))) ∪
-    (Finset.univ.image (fun b : Fin (n + 2) => (b.succ, b)))
-  let φS  : P → Q := fun ⟨j,i⟩ => (i.castSucc, j.succ)
-  let φSc : P → Q := fun ⟨j,i⟩ => (i.succ, j.castSucc)
-  let U1 : Finset Q := (S.image φS)
-  let U2 : Finset Q := (Sᶜ.image φSc)
-  set SumQ : (X _⦋n+1⦌ ⟶ Y _⦋n+1⦌) := ∑ x : Q, t x
-  set Sum1 : (X _⦋n+1⦌ ⟶ Y _⦋n+1⦌) :=
-    ∑ i ∈ S, ((-1) ^ (i.1 : ℕ) * (-1) ^ (i.2 : ℕ)) • X.δ i.2 ≫ H.h i.1
-  set Sum2 : (X _⦋n+1⦌ ⟶ Y _⦋n+1⦌) :=
-    ∑ i ∈ Sᶜ, ((-1) ^ (i.1 : ℕ) * (-1) ^ (i.2 : ℕ)) • X.δ i.2 ≫ H.h i.1
-  set Sum3 : (X _⦋n+1⦌ ⟶ Y _⦋n+1⦌) := ∑ x ∈ U, t x
-  set Sum4 : (X _⦋n+1⦌ ⟶ Y _⦋n+1⦌) := ∑ x ∈ Uᶜ, t x
-  -- U consists of "diagonal" terms where face maps satisfy d_i h_j with i adjacent to j
-  -- The complement Uᶜ splits into U1 (i < j) and U2 (i > j+1), which we'll show cancel
-  have U1_lt : ∀ q : Q, q ∈ U1 → (q.1 : ℕ) < (q.2 : ℕ) := by
-    intro q hq
-    rcases Finset.mem_image.mp hq with ⟨⟨j, i⟩, hxS, rfl⟩
-    have hij : (i : ℕ) ≤ (j : ℕ) := by simpa [S] using hxS
-    simpa using (Nat.lt_succ_of_le hij)
-  have U2_gt : ∀ q : Q, q ∈ U2 → (q.2 : ℕ) + 1 < (q.1 : ℕ) := by
-    intro q hq
-    rcases Finset.mem_image.mp hq with ⟨⟨j, i⟩, hxSc, rfl⟩
-    have hji : (j : ℕ) < (i : ℕ) := by
-      have : ¬ ((i : ℕ) ≤ (j : ℕ)) := by simpa [S] using hxSc
-      exact Nat.lt_of_not_ge this
-    simpa [φSc, Nat.succ_eq_add_one, add_assoc, add_left_comm, add_comm]
-      using (Nat.succ_lt_succ hji)
-  have mem_U_iff (q : Q) : q ∈ U ↔ q.1 = q.2.castSucc ∨ q.1 = q.2.succ := by
-    rcases q with ⟨i, j⟩
-    simp only [U, Finset.mem_union, Finset.mem_image, Finset.mem_univ, true_and]
-    constructor
-    · rintro (⟨x, h⟩ | ⟨x, h⟩) <;> cases h <;> simp
-    · rintro (rfl | rfl) <;> [left; right] <;> exact ⟨j, rfl⟩
-  have hU : Uᶜ = U1 ∪ U2 := by
-    ext q
-    constructor
-    · intro hqC
-      have hnotU : q ∉ U := by simpa using hqC
-      by_cases hlt : (q.1 : ℕ) < (q.2 : ℕ)
-      · rcases q with ⟨a, b⟩
-        have hb0 : b ≠ 0 := fun h => Nat.not_lt_zero a (by simp [h] at hlt)
-        apply Finset.mem_union.2
-        left
-        refine Finset.mem_image.2 ⟨(b.pred hb0, ⟨a, by linarith [hlt, b.isLt]⟩), ?_, ?_⟩
-        · simp only [Finset.mem_filter, Finset.mem_univ, Fin.val_pred, true_and, S]
-          exact Nat.le_pred_of_lt hlt
-        · simp only [Fin.castSucc_mk, Fin.eta, Fin.succ_pred, φS]
-      · rcases q with ⟨a, b⟩
-        simp only [mem_U_iff, Fin.ext_iff, Fin.val_castSucc, Fin.val_succ, not_or] at hnotU
-        have hgt : (b : ℕ) + 1 < a := by
-          refine Nat.lt_of_le_of_ne (Nat.succ_le_of_lt ?_) (Ne.symm hnotU.2)
-          exact Nat.lt_of_le_of_ne (Nat.le_of_not_lt hlt) (Ne.symm hnotU.1)
-        have ha0 : a ≠ 0 := fun h => Nat.not_lt_zero ((b : ℕ) + 1)
-          (by simp only [h, Fin.coe_ofNat_eq_mod, Nat.zero_mod, not_lt_zero] at hgt)
-        apply Finset.mem_union.2
-        right
-        refine Finset.mem_image.2 ⟨(⟨b, by linarith [hgt, a.isLt]⟩, a.pred ha0), ?_, ?_⟩
-        · simp only [Finset.compl_filter, not_le, Finset.mem_filter, Finset.mem_univ,
-          true_and, S]
-          exact Nat.lt_pred_iff.mpr hgt
-        · simp only [φSc, Fin.succ_pred]; ext <;> simp [Fin.castSucc_mk]
-    · intro hqU12
-      refine Finset.mem_compl.2 (fun hqU ↦ ?_)
-      simp only [mem_U_iff, Fin.ext_iff, Fin.val_castSucc, Fin.val_succ] at hqU
-      rcases Finset.mem_union.mp hqU12 with h | h
-      · have := U1_lt q h; omega
-      · have := U2_gt q h; omega
-  -- Using the simplicial identities, U1 and U2 terms reindex to give ±Sum1 and ±Sum2
-  -- These combine to cancel in Sum4 = -(Sum1 + Sum2)
-  have hU1 : (∑ q ∈ U1, t q) = -Sum1 := by
-    have hSum1 : Sum1 =
-        ∑ x ∈ S, ((-1) ^ (x.1 : ℕ) * (-1) ^ (x.2 : ℕ)) • (H.h x.1.succ ≫ Y.δ x.2.castSucc) := by
-      refine Finset.sum_congr rfl ?_
-      intro x hx
-      rcases x with ⟨j, i⟩
-      have hij : i ≤ j.castSucc := by simpa [S] using hx
-      simpa using congrArg (fun m => ((-1 : ℤ) ^ (j : ℕ) * (-1 : ℤ) ^ (i : ℕ)) • m)
-        ((H.h_succ_comp_δ_castSucc_of_lt (i := i) (j := j) hij).symm)
-    have hφS_inj : Set.InjOn φS (↑S : Set P) := by
-      rintro ⟨j, i⟩ _ ⟨j', i'⟩ _ h
-      simp only [φS] at h
-      injection h with h1 h2
-      rw [Fin.castSucc_inj.mp h1, Fin.succ_inj.mp h2]
-    calc (∑ q ∈ U1, t q)
-      _ = ∑ x ∈ S, t (φS x) := by
-        rw [Finset.sum_image]
-        simp only [hφS_inj]
-      _ = - ∑ x ∈ S, ((-1) ^ (x.1 : ℕ) * (-1) ^ (x.2 : ℕ)) • (H.h x.1.succ ≫ Y.δ x.2.castSucc) := by
-        rw [← Finset.sum_neg_distrib]
-        refine Finset.sum_congr rfl fun ⟨j, i⟩ _ ↦ ?_
-        simp only [Int.reduceNeg, Fin.val_castSucc, Fin.val_succ, pow_succ, mul_comm, neg_mul,
-          one_mul, mul_neg, neg_smul, t, φS]
-    simp only [Int.reduceNeg, hSum1]
-  have hU2 : (∑ q ∈ U2, t q) = -Sum2 := by
-    have hSum2 : Sum2 =
-        ∑ x ∈ Sᶜ, ((-1) ^ (x.1 : ℕ) * (-1) ^ (x.2 : ℕ)) • (H.h x.1.castSucc ≫ Y.δ x.2.succ) := by
-      refine Finset.sum_congr rfl ?_
-      intro x hx
-      rcases x with ⟨j, i⟩
-      have hji : j.castSucc < i := by simpa [S, not_le] using hx
-      simpa using congrArg (fun m => ((-1 : ℤ) ^ (j : ℕ) * (-1 : ℤ) ^ (i : ℕ)) • m)
-        ((H.h_castSucc_comp_δ_succ_of_lt (i := i) (j := j) hji).symm)
-    have hφSc_inj : Set.InjOn φSc (↑(Sᶜ) : Set P) := by
-      rintro ⟨j, i⟩ _ ⟨j', i'⟩ _ h
-      simp only [φSc] at h
-      injection h with h1 h2
-      rw [Fin.succ_inj.mp h1, Fin.castSucc_inj.mp h2]
-    calc (∑ q ∈ U2, t q) = ∑ x ∈ Sᶜ, t (φSc x) := by rw [Finset.sum_image]; simp only [hφSc_inj]
-      _ = - ∑ x ∈ Sᶜ, ((-1) ^ (x.1 : ℕ) * (-1) ^ (x.2 : ℕ)) •
-        (H.h x.1.castSucc ≫ Y.δ x.2.succ) := by
-        rw [← Finset.sum_neg_distrib]
-        refine Finset.sum_congr rfl fun ⟨j, i⟩ _ ↦ ?_
-        simp only [Int.reduceNeg, Fin.val_succ, pow_succ, mul_comm, neg_mul, one_mul,
-          Fin.val_castSucc, mul_neg, neg_smul, t, φSc]
-    rw [hSum2]
-  have h_cancel : Sum4 = -(Sum1 + Sum2) := by
-    have hdisj : Disjoint U1 U2 := by
-      refine Finset.disjoint_left.2 ?_
-      intro q hq1 hq2
-      exact (Nat.not_lt_of_ge (Nat.le_succ (q.2 : ℕ))) (Nat.lt_trans (U2_gt q hq2) (U1_lt q hq1))
-    have hSum4_split : Sum4 = (∑ x ∈ U1, t x) + (∑ x ∈ U2, t x) := by
-      simp only [hU, hdisj, Finset.sum_union, Sum4]
-    calc Sum4 = (∑ q ∈ U1, t q) + (∑ q ∈ U2, t q) := by simp only [hSum4_split]
-          _   = (-Sum1) + (-Sum2) := by simp only [hU1, hU2]
-          _   = -(Sum1 + Sum2) := by abel
-  -- Sum3 contains only terms where i is adjacent to j, which telescope to leave only
-  -- the endpoints h_0 ∘ d_0 = f and h_n ∘ d_{n+1} = g
-  have h_band : Sum3 = g.app (op ⦋n+1⦌) + -f.app (op ⦋n+1⦌) := by
-    let A : Finset Q := Finset.univ.image (fun b : Fin (n + 2) => (b.castSucc, b))
-    let B : Finset Q := Finset.univ.image (fun b : Fin (n + 2) => (b.succ, b))
-    have hU' : U = A ∪ B := by simp [U, A, B]
-    have hdisj : Disjoint A B := by
-      rw [Finset.disjoint_left]
-      simp only [A, B, Finset.mem_image, Finset.mem_univ, true_and]
-      rintro _ ⟨i, rfl⟩ ⟨j, h_eq⟩
-      injection h_eq with h1 h2
-      subst h2
-      exact Fin.castSucc_lt_succ.ne h1.symm
-    have h_cancel : (∑ i : Fin (n + 1), H.h i.succ ≫ Y.δ i.succ.castSucc) =
-                    (∑ i : Fin (n + 1), H.h i.castSucc ≫ Y.δ i.castSucc.succ) := by
-      refine Finset.sum_congr rfl (fun i _ ↦ ?_)
-      rw [Fin.castSucc_succ, h_succ_comp_δ_castSucc_succ]
-    have h_diff : Sum3 = (∑ b : Fin (n + 2), H.h b ≫ Y.δ b.castSucc) -
-                         (∑ b : Fin (n + 2), H.h b ≫ Y.δ b.succ) := by
-      simp only [Sum3, U, A, B, hdisj, Finset.sum_union, sub_eq_add_neg]
-      rw [Finset.sum_image (fun _ _ _ _ h => (Prod.mk.inj h).2),
-          Finset.sum_image (fun _ _ _ _ h => (Prod.mk.inj h).2)]
-      simp only [Int.reduceNeg, Fin.val_castSucc, ← mul_pow, mul_neg, mul_one, neg_neg, one_pow,
-        one_smul, Fin.val_succ, pow_succ, neg_mul, neg_smul, Finset.sum_neg_distrib, t]
-    calc Sum3
-      _ = (∑ b : Fin (n + 2), H.h b ≫ Y.δ b.castSucc) -
-          (∑ b : Fin (n + 2), H.h b ≫ Y.δ b.succ) := by simp only [h_diff]
-      _ = (H.h 0 ≫ Y.δ 0 + ∑ i : Fin (n + 1), H.h i.succ ≫ Y.δ i.succ.castSucc) -
-          ((∑ i : Fin (n + 1), H.h i.castSucc ≫ Y.δ i.castSucc.succ) +
-           H.h (Fin.last _) ≫ Y.δ (Fin.last _)) := by
-        congr 1
-        · simp only [Fin.sum_univ_succ, Fin.castSucc_zero]
-        · simp only [Fin.sum_univ_castSucc, Fin.succ_last]
-      _ = (H.h 0 ≫ Y.δ 0) - (H.h (Fin.last _) ≫ Y.δ (Fin.last _)) := by
-        rw [h_cancel]
-        abel
-      _ = g.app (op ⦋n+1⦌) + -f.app (op ⦋n+1⦌) := by
-        simp only [H.h_zero_comp_δ_zero, H.h_last_comp_δ_last, sub_eq_add_neg]
-  have hSumY : (∑ k : Fin (n + 2), ∑ i : Fin (n + 3),
-          (((-1 : ℤ) ^ (k : ℕ)) * ((-1 : ℤ) ^ (i : ℕ))) • (H.h k ≫ Y.δ i)) = SumQ := by
-    simp only [Int.reduceNeg, SumQ, t]
-    rw [Fintype.sum_prod_type, Finset.sum_comm]
-    simp only [Int.reduceNeg, mul_comm]
-  have hSumX : (∑ i : Fin (n + 2), ∑ k : Fin (n + 1),
-          ((-1 : ℤ) ^ (i : ℕ) * (-1 : ℤ) ^ (k : ℕ)) • (X.δ i ≫ H.h k)) = Sum1 + Sum2 := by
-    rw [← Finset.sum_union disjoint_compl_right, Finset.union_compl, ← Finset.univ_product_univ,
-      Finset.sum_product, Finset.sum_comm]
-    simp only [Int.reduceNeg, mul_comm]
-  simp only [Int.reduceNeg, hSumX, hSumY, Finset.sum_add_sum_compl (s := U) (f := t).symm, h_band,
-    h_cancel, neg_add_rev, add_assoc, SumQ, Sum3, Sum4]
-  abel
+    letI α : X _⦋n + 1⦌ ⟶ Y _⦋n + 1⦌ :=
+      ((alternatingFaceMapComplex C).obj X).d (n + 1) n ≫ ToChainHomotopy.hom H n (n + 1)
+    letI β : X _⦋n + 1⦌ ⟶ Y _⦋n + 1⦌ := hom H (n + 1) (n + 1 + 1) ≫
+      ((alternatingFaceMapComplex C).obj Y).d (n + 1 + 1) (n + 1)
+    f.app (op ⦋n + 1⦌) = α + β + g.app (op ⦋n + 1⦌) := by
+  rw [← H.h_zero_comp_δ_zero, ← H.h_last_comp_δ_last]
+  dsimp
+  simp only [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, hom_eq,
+    Preadditive.comp_neg, Preadditive.neg_comp, Preadditive.comp_sum,
+    Preadditive.sum_comp, Preadditive.comp_zsmul, Preadditive.zsmul_comp,
+    smul_neg, Finset.sum_neg_distrib, ← Finset.sum_zsmul, smul_smul, ← pow_add]
+  let α (x : Fin (n + 1) × Fin (n + 2)) := (-1) ^ ((x.1 + x.2 : ℕ)) • X.δ x.2 ≫ H.h x.1
+  let β (x : Fin (n + 3) × Fin (n + 2)) := (-1) ^ ((x.1 + x.2 : ℕ)) • H.h x.2 ≫ Y.δ x.1
+  have h₂ (x : Fin (n + 1) × Fin (n + 2)) (hx : x.1.castSucc < x.2) :
+      α x = -β ⟨x.2.succ, x.1.castSucc⟩ := by
+    dsimp [α, β]
+    simp only [← H.h_castSucc_comp_δ_succ_of_lt x.2 x.1 hx,
+      pow_add, pow_one, mul_neg, mul_one, neg_mul, neg_smul, neg_neg]
+    rw [mul_comm]
+  rw [← Finset.sum_product .univ .univ α, ← Finset.sum_product .univ .univ β,
+    Finset.univ_product_univ, Finset.univ_product_univ]
+  let S : Finset (Fin (n + 1) × Fin (n + 2)) := { x | x.1.castSucc < x.2 }
+  let γ₁ (x : Fin (n + 1) × Fin (n + 2)) := (x.2.castSucc, x.1.succ)
+  let γ₂ (x : Fin (n + 1) × Fin (n + 2)) := (x.2.succ, x.1.castSucc)
+  let γ₃ (i : Fin (n + 1)) := (i.castSucc.succ, i.succ)
+  let γ₄ (i : Fin (n + 1)) := (i.castSucc.succ, i.castSucc)
+  have hγ₁ : Function.Injective γ₁ := fun _ _ ↦ by aesop
+  have hγ₂ : Function.Injective γ₂ := fun _ _ ↦ by aesop
+  have hγ₃ : Function.Injective γ₃ := fun _ _ ↦ by aesop
+  have hγ₄ : Function.Injective γ₄ := fun _ _ ↦ by aesop
+  have eq₁ : H.h 0 ≫ Y.δ 0 = β ⟨0, 0⟩ := by simp [β]
+  have eq₂ : H.h (Fin.last _) ≫ Y.δ (Fin.last _) = - β ⟨Fin.last _, Fin.last _⟩ := by
+    dsimp [β]
+    simp only [pow_add, even_two, Even.neg_pow, one_pow, mul_one,
+      pow_one, mul_neg, neg_smul, neg_neg]
+    rw [← pow_add, (Even.add_self n).neg_one_pow, one_smul]
+  have eq₃ : ∑ x ∈ Sᶜ, α x = - ∑ y ∈ Finset.image γ₁ Sᶜ, β y := by
+    rw [← Finset.sum_neg_distrib, Finset.sum_image hγ₁.injOn]
+    refine Finset.sum_congr rfl (fun x hx ↦ ?_)
+    dsimp [α, β, γ₁]
+    simp only [← H.h_succ_comp_δ_castSucc_of_lt x.2 x.1 (by simpa [S] using hx),
+      pow_add, pow_one, mul_neg, mul_one, neg_smul, neg_neg]
+    rw [mul_comm]
+  have eq₄ : ∑ x ∈ S, α x = - ∑ y ∈ Finset.image γ₂ S, β y := by
+    rw [← Finset.sum_neg_distrib, Finset.sum_image hγ₂.injOn]
+    refine Finset.sum_congr rfl (fun x hx ↦ ?_)
+    dsimp [α, β, γ₂]
+    simp only [← H.h_castSucc_comp_δ_succ_of_lt x.2 x.1 (by simpa [S] using hx),
+      pow_add, pow_one, mul_neg, mul_one, neg_mul, neg_smul, neg_neg]
+    rw [mul_comm]
+  have eq₅ : ∑ x, β (γ₄ x) = - ∑ x, β (γ₃ x) := by
+    rw [← Finset.sum_neg_distrib]
+    exact Finset.sum_congr rfl (fun x hx ↦ by simp [β, γ₃, γ₄])
+  have h₁ : Disjoint (Finset.image γ₁ Sᶜ) (Finset.image γ₂ S) := by
+    rw [Finset.disjoint_iff_ne]
+    simp only [Finset.compl_filter, not_lt, Finset.mem_image, Finset.mem_filter, Finset.mem_univ,
+      true_and, Prod.exists, ne_eq, forall_exists_index, and_imp, Prod.forall, Prod.mk.injEq,
+      not_and, γ₁, S, γ₂]
+    rintro _ _ ⟨a, _⟩ ⟨b, _⟩ h₁ rfl rfl _ _ ⟨a', _⟩ ⟨b', _⟩ h₂ rfl rfl h₃ h₄
+    simp only [Fin.castSucc_mk, Fin.mk_le_mk, Fin.mk_lt_mk,
+      Fin.succ_mk, Fin.mk.injEq] at h₁ h₂ h₃ h₄
+    grind
+  have h₂ : Disjoint (Finset.image γ₃ .univ) (Finset.image γ₄ .univ) := by
+    rw [Finset.disjoint_iff_ne]
+    grind
+  have h₃ : Disjoint (Finset.disjUnion _ _ h₂) {(0, 0), (Fin.last _, Fin.last _)} := by
+    rw [Finset.disjoint_iff_ne]
+    grind
+  have h₄ : Disjoint (Finset.disjUnion _ _ h₁) (Finset.disjUnion _ _ h₃) := by
+    rw [Finset.disjoint_iff_ne]
+    simp only [Finset.compl_filter, not_lt, Finset.disjUnion_eq_union, Finset.mem_union,
+      Finset.mem_image, Finset.mem_filter, Finset.mem_univ, true_and, Prod.exists, ne_eq,
+      Finset.mem_insert, Finset.mem_singleton, Prod.forall, Prod.mk.injEq, not_and,
+      S, γ₁, γ₂, γ₃, γ₄]
+    rintro _ _ (⟨⟨j, _⟩, ⟨k, _⟩, h₁, h₂, h₃⟩ | ⟨⟨j, _⟩, ⟨k, _⟩, h₁, h₂, h₃⟩) _ _
+      ((⟨⟨i, _⟩, h₄, h₅⟩ | ⟨⟨i, _⟩, h₄, h₅⟩) | (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)) <;>
+      simp at h₁ h₂ h₃ <;> grind
+  have H : (Finset.disjUnion _ _ h₁)ᶜ = Finset.disjUnion _ _ h₃ :=
+    Finset.compl_eq_of_disjoint_of_card_add_eq h₄ (by
+      rw [Finset.card_disjUnion, Finset.card_disjUnion, Finset.card_disjUnion,
+        Finset.card_image_of_injective _ hγ₁, Finset.card_image_of_injective _ hγ₂,
+        Finset.card_image_of_injective _ hγ₃, Finset.card_image_of_injective _ hγ₄]
+      simp only [Finset.card_compl_add_card, Fintype.card_prod, Fintype.card_fin,
+        Finset.card_univ]
+      grind)
+  rw [eq₁, eq₂, ← S.sum_add_sum_compl, eq₃, eq₄,
+    neg_add_rev, neg_neg, neg_neg, ← Finset.sum_disjUnion h₁,
+    ← (Finset.disjUnion _ _ h₁).sum_add_sum_compl, neg_add,
+    ← add_assoc, add_neg_cancel, zero_add, H,
+    Finset.sum_disjUnion, Finset.sum_disjUnion,
+    Finset.sum_image hγ₃.injOn, Finset.sum_image hγ₄.injOn,
+    Finset.sum_insert (by simp), Finset.sum_singleton,
+    neg_add_rev, neg_add_rev, neg_add_rev, eq₅]
+  simp
 
 end ToChainHomotopy
 
@@ -270,36 +166,22 @@ end ToChainHomotopy
 between the induced morphisms on the alternating face map complexes. -/
 noncomputable def toChainHomotopy (H : Homotopy f g) :
     _root_.Homotopy
-      ((alternatingFaceMapComplex C).map g)
-      ((alternatingFaceMapComplex C).map f) := by
-  refine
-    { hom := ToChainHomotopy.hom H
-      zero := by
-        intro i j hij
-        by_cases h : i + 1 = j
-        · exfalso
-          exact hij (by simpa [ComplexShape.down] using h)
-        · simp only [alternatingFaceMapComplex_obj_X, ToChainHomotopy.hom, h, ↓reduceDIte]
-      comm := by
-        intro n
-        cases n with
-        | zero =>
-            simpa only [ComplexShape.down, alternatingFaceMapComplex,
-              AlternatingFaceMapComplex.obj_X, AlternatingFaceMapComplex.map_f, dNext,
-              ComplexShape.down'_Rel, Nat.add_eq_zero_iff, one_ne_zero, and_false,
-              not_false_eq_true, HomologicalComplex.shape, Limits.zero_comp, AddMonoidHom.mk'_apply,
-              prevD, zero_add, id_eq, Nat.reduceAdd] using
-              (ToChainHomotopy.comm_zero (H := H) (C := C) (f := f) (g := g))
-        | succ n =>
-            simpa only [ComplexShape.down, alternatingFaceMapComplex,
-              AlternatingFaceMapComplex.obj_X, AlternatingFaceMapComplex.map_f, dNext,
-              AddMonoidHom.mk'_apply, ToChainHomotopy.hom, Nat.add_right_cancel_iff,
-              prevD, id_eq] using
-              (ToChainHomotopy.comm_succ (H := H) (C := C) (f := f) (g := g) n) }
+      ((alternatingFaceMapComplex C).map f)
+      ((alternatingFaceMapComplex C).map g) where
+  hom := ToChainHomotopy.hom H
+  zero i j hij := ToChainHomotopy.hom_eq_zero _ _ _ hij
+  comm n := by
+    cases n with
+    | zero =>
+      rw [prevD_eq (j' := 1) (w := by simp), dNext_eq_zero _ _ (by simp), zero_add]
+      simp [ToChainHomotopy.comm_zero H]
+    | succ n =>
+      rw [dNext_eq (i' := n) (w := by simp), prevD_eq (j' := n + 1 + 1) (w := by simp)]
+      simp [ToChainHomotopy.comm_succ H]
 
 theorem map_homology_eq [CategoryWithHomology C] (H : Homotopy f g) (n : ℕ) :
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map f) =
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map g) := by
-  simpa [eq_comm] using (H.toChainHomotopy).homologyMap_eq n
+  simpa using (H.toChainHomotopy).homologyMap_eq n
 
 end CategoryTheory.SimplicialObject.Homotopy

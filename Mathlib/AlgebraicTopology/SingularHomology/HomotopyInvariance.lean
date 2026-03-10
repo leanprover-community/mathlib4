@@ -36,10 +36,10 @@ maps on the singular chain complexes with coefficients in `R`.
 noncomputable def singularChainComplexFunctor_mapHomotopy_of_simplicialHomotopy
     (H : Homotopy f g) :
     Homotopy
-      (((singularChainComplexFunctor C).obj R).map g)
-      (((singularChainComplexFunctor C).obj R).map f) := by
-  simpa [singularChainComplexFunctor] using
-    (toChainHomotopy (H := whiskerRight (F := (_ : Type _ ⥤ C)) H))
+      (((singularChainComplexFunctor C).obj R).map f)
+      (((singularChainComplexFunctor C).obj R).map g) := by
+  simpa using
+    toChainHomotopy (H.whiskerRight (_ : Type _ ⥤ C))
 
 /--
 Simplicially homotopic maps of simplicial sets induce the same map on homology of the singular
@@ -52,6 +52,6 @@ theorem singularChainComplexFunctor_map_homology_eq_of_simplicialHomotopy
         (((singularChainComplexFunctor C).obj R).map f) =
       (HomologicalComplex.homologyFunctor C _ n).map
         (((singularChainComplexFunctor C).obj R).map g) := by
-  simpa [eq_comm] using
+  simpa using
     (singularChainComplexFunctor_mapHomotopy_of_simplicialHomotopy
         (C := C) (R := R) (f := f) (g := g) H).homologyMap_eq n
