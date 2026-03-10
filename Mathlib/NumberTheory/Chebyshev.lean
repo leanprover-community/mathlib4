@@ -358,8 +358,7 @@ theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
     simp [a, Set.indicator_apply, Nat.range_succ_eq_Icc_zero, mul_comm (log x)]
   · -- Differentiability
     intro z ⟨hz, _⟩
-    have : z ≠ 0 := by linarith
-    fun_prop (disch := assumption)
+    fun_prop (disch := linarith)
   · -- Integrability of the derivative
     rw [deriv_log']
     refine ContinuousOn.integrableOn_Icc ?_
