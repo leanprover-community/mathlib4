@@ -223,7 +223,7 @@ theorem ord_of_irreducible (ϖ : R) (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
   rw [isSimpleModule_iff_isSimpleModule_of_algebraMap_surjective (S := R ⧸ Ideal.span {ϖ})
     Ideal.Quotient.mk_surjective]
   letI := Ideal.Quotient.field (Ideal.span {ϖ})
-  infer_instance
+  exact instIsSimpleModule _
 
 end IsPrincipalIdealRing
 

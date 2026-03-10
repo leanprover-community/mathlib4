@@ -247,7 +247,7 @@ lemma IsDiscreteValuationRing.ringKrullDim_eq_one [IsDomain R] [IsDiscreteValuat
     ringKrullDim R = 1 := by
   refine eq_of_le_of_not_lt (krullDimLE_iff (n := 1).mp ?_) fun h ↦ ?_
   · exact krullDimLE_one_iff_of_isPrime_bot.mpr fun I hI hI' ↦ hI'.isMaximal hI
-  · have : KrullDimLE 0 R := krullDimLE_iff.mpr (WithBot.lt_add_one_iff.mp h)
+  · have : KrullDimLE 0 R := krullDimLE_iff.mpr (ENat.WithBot.lt_add_one_iff.mp h)
     exact IsDiscreteValuationRing.not_isField R KrullDimLE.isField_of_isDomain
 
 open Ring in

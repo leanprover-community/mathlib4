@@ -127,6 +127,7 @@ theorem div_smul_div_comm {G K : Type*}
   · simp [hb, this]
   rw [eq_div_iff_mul_eq (ne_of_apply_ne (h⁻¹ • ·) (by simpa [this])), smul_mul_smul_comm]
   simp [hb]
+
 @[simp] theorem smul_zpow₀' [Group G] [GroupWithZero G₀] [MulDistribMulAction G G₀]
     (g : G) (x : G₀) (n : ℤ) : g • (x ^ n) = (g • x) ^ n := by
   cases n <;> simp

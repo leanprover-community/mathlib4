@@ -47,12 +47,13 @@ Order of vanishing function as a monoid homomorphism
 noncomputable
 def ordMonoidHom : R⁰ →* Multiplicative ℕ where
   toFun x := .ofAdd <| (Ring.ord R x).untop (ord_ne_top _ x.2)
-  map_one' := by simp
+  map_one' := by simp only [OneMemClass.coe_one, isUnit_one, ord_of_isUnit, ofAdd_eq_one]; rfl
   map_mul' x y := by
     rw [← ofAdd_add]
     congr 1
     apply WithTop.coe_injective
     simp [ord_mul]
+    rfl
 
 lemma ord_eq_ordMonoidHom (x : R⁰) : Ring.ord R x = (ordMonoidHom x).toAdd := by
   change _ = WithTop.some ((Ring.ord R x).untop (ord_ne_top _ x.2))
@@ -66,6 +67,7 @@ lemma ordMonoidWithZeroHom_eq_ordMonoidHom [Nontrivial R] (x : R⁰) :
   generalize ord R x.1 = a at *
   induction a
   · simp at ha
+    contradiction
   · rfl
 
 /--
@@ -86,7 +88,8 @@ lemma ord_le_iff (a b : R) (ha : a ∈ nonZeroDivisors R) (hb : b ∈ nonZeroDiv
     ord R a ≤ ord R b ↔ ordMonoidWithZeroHom R a ≤ ordMonoidWithZeroHom R b := by
   lift a to R⁰ using ha
   lift b to R⁰ using hb
-  simp [ordMonoidWithZeroHom_eq_ordMonoidHom, ord_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
+  simp [ordMonoidWithZeroHom_eq_ordMonoidHom, ord_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord,
+      ENat.coe_le_coe]
 
 end NoetherianDimLEOne
 
