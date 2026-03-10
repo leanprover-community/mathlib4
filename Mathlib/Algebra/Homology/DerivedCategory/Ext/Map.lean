@@ -237,15 +237,13 @@ namespace Abelian.Ext
 set_option backward.isDefEq.respectTransparency false in
 lemma mapExactFunctor_mk₀ [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
     (mk₀ f).mapExactFunctor F = mk₀ (F.map f) := by
-  simp only [Ext.mapExactFunctor, Functor.comp_obj, Int.cast_ofNat_Int, mk₀]
-  rw [(F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-    (ComplexShape.up ℤ)).smallShiftedHomMap_mk₀
+  dsimp [Ext.mapExactFunctor, mk₀]
+  rw [(F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (.up ℤ)).smallShiftedHomMap_mk₀
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y)
-    (0 : ℤ) rfl ((CochainComplex.singleFunctor C 0).map f)]
+    (0 : ℤ) rfl]
   congr
-  simp only [Functor.comp_obj, Functor.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism_functor,
-    Functor.mapCochainComplexSingleFunctor, Iso.app_inv, Iso.app_hom]
-  exact NatIso.naturality_1 _ f
+  simpa only [Functor.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism_functor,
+    Functor.mapCochainComplexSingleFunctor, Iso.app_inv, Iso.app_hom] using NatIso.naturality_1 _ f
 
 lemma mapExactFunctor₀ [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) :
     Ext.mapExactFunctor F (X := X) (Y := Y) = Ext.homEquiv₀.symm ∘ F.map ∘ Ext.homEquiv₀ := by
@@ -255,13 +253,9 @@ lemma mapExactFunctor₀ [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) :
 
 lemma mapExactFunctor_comp [HasExt.{w} C] [HasExt.{w'} D] {X Y Z : C} {a b : ℕ}
     (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + b = c) :
-    (α.comp β h).mapExactFunctor F = (α.mapExactFunctor F).comp (β.mapExactFunctor F) h := by
-  simp only [mapExactFunctor, Functor.comp_obj, comp]
-  have h' : b + a = (c : ℤ) := by simp [← h, add_comm]
-  exact (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-    (ComplexShape.up ℤ)).smallShiftedHomMap_comp
-    ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y)
-    ((F.mapCochainComplexSingleFunctor 0).app Z) α β h'
+    (α.comp β h).mapExactFunctor F = (α.mapExactFunctor F).comp (β.mapExactFunctor F) h :=
+  (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (.up ℤ)).smallShiftedHomMap_comp _
+    ((F.mapCochainComplexSingleFunctor 0).app Y) _ α β (show b + a = (c : ℤ) by grind)
 
 attribute [local instance] HasDerivedCategory.standard in
 lemma mapExactFunctor_extClass [HasExt.{w} C] [HasExt.{w'} D] {S : ShortComplex C}
