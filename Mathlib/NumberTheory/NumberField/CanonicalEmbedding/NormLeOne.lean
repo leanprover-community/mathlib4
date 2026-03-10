@@ -349,8 +349,8 @@ linearly independent, see `linearIndependent_completeFamily`.
 -/
 def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
   toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
-  map_add' := fun _ _ ↦ funext fun _ ↦ by simpa [sum_add_distrib] using by ring
-  map_smul' := fun _ _ ↦ funext fun _ ↦ by simpa [← mul_sum] using by ring
+  map_add' := fun _ _ ↦ funext fun _ ↦ by simp [sum_add_distrib]; ring
+  map_smul' := fun _ _ ↦ funext fun _ ↦ by simp [← mul_sum]; ring
 
 theorem realSpaceToLogSpace_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
     realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl

@@ -252,7 +252,6 @@ theorem trapezoidal_error_le {f : ℝ → ℝ} {a b : ℝ}
     rw [abs_of_neg (sub_neg.mpr h_gt), neg_sub, trapezoidal_error_symm f N_nonzero a b, abs_neg]
     exact trapezoidal_error_le_of_lt h_gt h_df h_ddf h_ddf_integrable.symm fpp_bound N_nonzero
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The error bound for trapezoidal integration in the slightly weaker, but very common, case where
 `f` is `C^2`. -/
 theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContDiffOn ℝ 2 f [[a, b]])

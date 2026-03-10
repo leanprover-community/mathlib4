@@ -100,6 +100,19 @@ instance (P₁ P₂ : Cᵒᵖ ⥤ A) :
 noncomputable instance : (Φ.presheafFiber (A := A)).Monoidal :=
   .ofOplaxMonoidal _
 
+set_option backward.isDefEq.respectTransparency false in
+lemma toPresheafFiber_ε (X : C) (x : Φ.fiber.obj X) :
+    LaxMonoidal.ε Φ.presheafFiber = Φ.toPresheafFiber X x (𝟙_ (Cᵒᵖ ⥤ A)) := by
+  simp [← cancel_mono (OplaxMonoidal.η Φ.presheafFiber)]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma tensorHom_comp_toPresheafFiber_μ (X : C) (x : Φ.fiber.obj X) (G₁ G₂ : Cᵒᵖ ⥤ A) :
+    (Φ.toPresheafFiber X x G₁ ⊗ₘ Φ.toPresheafFiber X x G₂) ≫
+      LaxMonoidal.μ Φ.presheafFiber G₁ G₂ =
+    Φ.toPresheafFiber X x (G₁ ⊗ G₂) := by
+  simp [← cancel_mono (OplaxMonoidal.δ Φ.presheafFiber G₁ G₂)]
+
 section
 
 attribute [local instance] Sheaf.monoidalCategory
@@ -110,7 +123,7 @@ noncomputable instance : (Φ.sheafFiber (A := A)).Monoidal :=
   Localization.Monoidal.functorMonoidalOfComp (presheafToSheaf J A) J.W
     Φ.sheafFiber Φ.presheafFiber
 
-instance : NatTrans.IsMonoidal (Φ.presheafToSheafCompSheafFiber A).hom :=
+instance : NatTrans.IsMonoidal (Φ.presheafToSheafCompSheafFiberIso A).hom :=
   Localization.Monoidal.lifting_isMonoidal (presheafToSheaf J A) J.W
     Φ.sheafFiber Φ.presheafFiber
 

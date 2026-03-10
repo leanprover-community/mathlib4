@@ -217,24 +217,34 @@ noncomputable def skyscraperSheafAdjunction :
         Φ.skyscraperPresheafHomEquiv.trans
           ((fullyFaithfulSheafToPresheaf J A).homEquiv (Y := Φ.skyscraperSheaf M)).symm
       homEquiv_naturality_left_symm f g :=
-        Φ.skyscraperPresheafHomEquiv_naturality_left_symm f.val g.val
+        Φ.skyscraperPresheafHomEquiv_naturality_left_symm f.hom g.hom
       homEquiv_naturality_right f g := by
         ext : 1
         exact Φ.skyscraperPresheafHomEquiv_naturality_right f g }
 
+instance : (Φ.sheafFiber (A := A)).IsLeftAdjoint :=
+  Φ.skyscraperSheafAdjunction.isLeftAdjoint
+
+instance : (Φ.skyscraperSheafFunctor (A := A)).IsRightAdjoint :=
+  Φ.skyscraperSheafAdjunction.isRightAdjoint
+
 @[simp]
-lemma skyscraperSheafAdjunction_homEquiv_apply_val {F : Sheaf J A} {M : A}
-    (f : Φ.presheafFiber.obj F.val ⟶ M) :
-    letI e : (Φ.presheafFiber.obj F.val ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
-    letI a : F.val ⟶ Φ.skyscraperPresheaf M := (e f).val
+lemma skyscraperSheafAdjunction_homEquiv_apply_hom {F : Sheaf J A} {M : A}
+    (f : Φ.presheafFiber.obj F.obj ⟶ M) :
+    letI e : (Φ.presheafFiber.obj F.obj ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
+    letI a : F.obj ⟶ Φ.skyscraperPresheaf M := (e f).hom
     a = Φ.skyscraperPresheafHomEquiv f := by
   simp [skyscraperSheafAdjunction, Functor.FullyFaithful.homEquiv]
+
+@[deprecated (since := "2026-03-05")]
+alias skyscraperSheafAdjunction_homEquiv_apply_val :=
+  skyscraperSheafAdjunction_homEquiv_apply_hom
 
 @[simp]
 lemma skyscraperSheafAdjunction_homEquiv_symm_apply {F : Sheaf J A} {M : A}
     (f : F ⟶ Φ.skyscraperSheaf M) :
-    letI e : (Φ.presheafFiber.obj F.val ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
-    e.symm f = Φ.skyscraperPresheafHomEquiv.symm f.val := by
+    letI e : (Φ.presheafFiber.obj F.obj ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
+    e.symm f = Φ.skyscraperPresheafHomEquiv.symm f.hom := by
   simp [skyscraperSheafAdjunction, Functor.FullyFaithful.homEquiv]
 
 lemma W_isInvertedBy_presheafFiber :
@@ -255,37 +265,22 @@ set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- The fiber functor on sheaves is obtained from the fiber functor on presheaves
 by localization with respect to the class of morphisms `J.W`. -/
-noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A] :
+noncomputable def presheafToSheafCompSheafFiberIso [HasWeakSheafify J A] :
     presheafToSheaf J A ⋙ Φ.sheafFiber ≅ Φ.presheafFiber :=
   (NatIso.ofComponents
     (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
-      (by simp [← Functor.map_comp])).symm
+      (by simp [sheafFiber, ← Functor.map_comp])).symm
+
+@[deprecated (since := "2026-03-08")]
+alias presheafToSheafCompSheafFiber := presheafToSheafCompSheafFiberIso
 
 noncomputable instance [HasWeakSheafify J A] :
     Localization.Lifting (presheafToSheaf J A) J.W
-        Φ.presheafFiber Φ.sheafFiber where
-  iso := Φ.presheafToSheafCompSheafFiber A
+      Φ.presheafFiber Φ.sheafFiber where
+  iso := Φ.presheafToSheafCompSheafFiberIso A
 
-set_option backward.isDefEq.respectTransparency false in
-instance [HasWeakSheafify J A] :
-    PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) where
-  preservesColimitsOfShape {K _} := ⟨fun {F} ↦
-    preservesColimit_of_preserves_colimit_cocone
-      (Sheaf.isColimitSheafifyCocone _ (colimit.isColimit _))
-        (IsColimit.ofIsoColimit (isColimitOfPreserves Φ.presheafFiber
-          (colimit.isColimit (F ⋙ sheafToPresheaf J A))) (by
-            let G := colimit (F ⋙ sheafToPresheaf J A)
-            let φ := CategoryTheory.toSheafify J G
-            have : IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)) :=
-              W_isInvertedBy_presheafFiber _ _ (W_toSheafify J _)
-            refine Cocones.ext (asIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)))
-              (fun k ↦ ?_)
-            dsimp
-            rw [← Functor.map_comp, Sheaf.sheafifyCocone_ι_app_val]
-            dsimp))⟩
-
-instance [HasWeakSheafify J A] :
-    PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
+instance : PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
+  have : PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) := inferInstance
   PreservesColimitsOfSize.preservesFiniteColimits _
 
 end CategoryTheory.GrothendieckTopology.Point

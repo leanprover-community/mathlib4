@@ -123,7 +123,6 @@ theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {0} A B :=
   (iff_adjoin_eq_top _ _ _).2 <| by simpa
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isCyclotomicExtension_zero_iff :
     IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
   rw [surjective_algebraMap_iff, eq_comm]

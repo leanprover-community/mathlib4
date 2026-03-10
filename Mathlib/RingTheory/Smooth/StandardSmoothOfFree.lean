@@ -44,7 +44,6 @@ open KaehlerDifferential
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `H¹(S/R) = 0` and `Ω[S⁄R]` is free on `{d sᵢ}ᵢ` for some `sᵢ : S`, then `S`
 is `R`-standard smooth. -/
 theorem IsStandardSmooth.of_basis_kaehlerDifferential [FinitePresentation R S]
