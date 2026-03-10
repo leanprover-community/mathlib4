@@ -57,7 +57,7 @@ The proof of von Staudt-Clausen's theorem follows Rado's JLMS 1934 paper
 
 * `sum_bernoulli : ∑ k ∈ Finset.range n, (n.choose k : ℚ) * bernoulli k =
   if n = 1 then 1 else 0`
-* `von_staudt_clausen : bernoulli (2 * k) + ∑ p ∈ Finset.range (2 * k + 2)
+* `vonStaudt_clausen : bernoulli (2 * k) + ∑ p ∈ Finset.range (2 * k + 2)
   with p.Prime ∧ (p - 1) ∣ 2 * k, (1 : ℚ) / p ∈ Set.range Int.cast`
 
 ## References
@@ -416,7 +416,7 @@ Rado's proof is based on Faulhaber's theorem and induction on $k$.
 noncomputable def vonStaudtIndicator (k p : ℕ) : ℚ := if (p - 1 : ℕ) ∣ k then 1 else 0
 
 /-- Over `ZMod p`, the nonzero `l`-th power sum equals the negative indicator of `(p - 1) ∣ l`. -/
-lemma power_sum_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
+lemma sum_pow_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
     (∑ v ∈ Finset.range p with v ≠ 0, (v : ZMod p) ^ l) +
     (if (p - 1 : ℕ) ∣ l then (1 : ZMod p) else 0) = 0 := by
   have cast_ne : ∀ v, v ∈ (Finset.range p).filter (· ≠ 0) → (v : ZMod p) ≠ 0 := by
@@ -439,7 +439,7 @@ lemma power_sum_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
   grind
 
 /-- If a rational number is $p$-integral for all primes $p$, then it is an integer. -/
-lemma Rat.mem_range_intCast_of_not_prime_dvd (q : ℚ) (h : ∀ p : ℕ, p.Prime → ¬ p ∣ q.den) :
+lemma Rat.isInt_of_forall_prime_not_dvd_den (q : ℚ) (h : ∀ p : ℕ, p.Prime → ¬ p ∣ q.den) :
     q ∈ Set.range Int.cast := by
   rw [Set.mem_range]
   refine ⟨q.num, Rat.coe_int_num_of_den_eq_one ?_⟩
@@ -449,14 +449,14 @@ lemma Rat.mem_range_intCast_of_not_prime_dvd (q : ℚ) (h : ∀ p : ℕ, p.Prime
 /-- A rational number `x` is `p`-integral if `p` does not divide its denominator. -/
 def pIntegral (p : ℕ) (x : ℚ) [Fact p.Prime] : Prop := Rat.padicValuation p x ≤ 1
 
-lemma pIntegral_iff_not_dvd_den (p : ℕ) (x : ℚ) [Fact p.Prime] : pIntegral p x ↔ ¬ p ∣ x.den := by
+lemma pIntegral_iff_not_dvd (p : ℕ) (x : ℚ) [Fact p.Prime] : pIntegral p x ↔ ¬ p ∣ x.den := by
   simp only [pIntegral, Rat.padicValuation_le_one_iff]
 
-lemma pIntegral_iff_padicValuation_le_one (p : ℕ) (x : ℚ) [Fact p.Prime] :
+lemma pIntegral_iff_padicValuation (p : ℕ) (x : ℚ) [Fact p.Prime] :
     pIntegral p x ↔ Rat.padicValuation p x ≤ 1 := by rfl
 
 @[simp] lemma pIntegral_zero (p : ℕ) [Fact p.Prime] : pIntegral p (0 : ℚ) :=
-  (pIntegral_iff_not_dvd_den p _).2 (by simpa using Nat.Prime.not_dvd_one Fact.out)
+  (pIntegral_iff_not_dvd p _).2 (by simpa using Nat.Prime.not_dvd_one Fact.out)
 
 lemma sum_den_dvd_prod_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
     (∑ i ∈ s, f i).den ∣ ∏ i ∈ s, (f i).den := by
@@ -471,22 +471,21 @@ lemma pIntegral_sum {ι : Type*} (p : ℕ) [Fact p.Prime] (s : Finset ι) (f : �
     (hf : ∀ i ∈ s, pIntegral p (f i)) : pIntegral p (∑ i ∈ s, f i) := by
   have hcop : (∑ i ∈ s, f i).den.Coprime p := Nat.Coprime.coprime_dvd_left (sum_den_dvd_prod_den s f)
     (Nat.Coprime.prod_left fun i hi ↦ by
-      have hfi_not : ¬ p ∣ (f i).den := (pIntegral_iff_not_dvd_den p (f i)).1 (hf i hi)
-      exact ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).2 hfi_not).symm)
-  exact (pIntegral_iff_not_dvd_den p _).2
-    ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).1 hcop.symm)
+      have hfi_not : ¬ p ∣ (f i).den := (pIntegral_iff_not_dvd p (f i)).1 (hf i hi)
+      exact ((Nat.Prime.coprime_iff_not_dvd Fact.out).2 hfi_not).symm)
+  exact (pIntegral_iff_not_dvd p _).2 ((Nat.Prime.coprime_iff_not_dvd Fact.out).1 hcop.symm)
 
-lemma pIntegral_of_int (p : ℕ) [Fact p.Prime] (z : ℤ) : pIntegral p z :=
-  (pIntegral_iff_not_dvd_den p _).2 (by simpa using (Nat.Prime.not_dvd_one Fact.out))
+lemma pIntegral_intCast (p : ℕ) [Fact p.Prime] (z : ℤ) : pIntegral p z :=
+  (pIntegral_iff_not_dvd p _).2 (by simpa using (Nat.Prime.not_dvd_one Fact.out))
 
 lemma pIntegral_mul (p : ℕ) [Fact p.Prime] (x y : ℚ) (hx : pIntegral p x) (hy : pIntegral p y) :
     pIntegral p (x * y) := by
   simp only [pIntegral, map_mul] at *
   exact mul_le_one' hx hy
 
-lemma pIntegral_int_mul (p : ℕ) [Fact p.Prime] (x : ℚ) (z : ℤ) (hx : pIntegral p x) :
+lemma pIntegral_intCast_mul (p : ℕ) [Fact p.Prime] (x : ℚ) (z : ℤ) (hx : pIntegral p x) :
     pIntegral p (z * x) := by
-  simpa [mul_comm] using pIntegral_mul p z x (pIntegral_of_int p z) hx
+  simpa [mul_comm] using pIntegral_mul p z x (pIntegral_intCast p z) hx
 
 lemma pIntegral_sub (p : ℕ) [Fact p.Prime] (x y : ℚ) (hx : pIntegral p x) (hy : pIntegral p y) :
     pIntegral p (x - y) := by
@@ -494,7 +493,7 @@ lemma pIntegral_sub (p : ℕ) [Fact p.Prime] (x y : ℚ) (hx : pIntegral p x) (h
 
 /-- Denominators of the "other primes" part of the indicator sum
 stay coprime to a fixed prime `p`. -/
-lemma prod_den_coprime_p (k p : ℕ) [Fact p.Prime] :
+lemma prod_one_div_prime_den_coprime (k p : ℕ) [Fact p.Prime] :
     (∏ q ∈ Finset.range (2 * k + 2) with q.Prime ∧ (q - 1) ∣ 2 * k ∧ q ≠ p,
       ((1 : ℚ) / q).den).Coprime p := by
   apply Nat.Coprime.prod_left
@@ -506,7 +505,7 @@ lemma prod_den_coprime_p (k p : ℕ) [Fact p.Prime] :
 
 /-- Splits the prime-indexed correction sum into the `p`-term (`vonStaudtIndicator / p`)
 plus the rest. -/
-lemma sum_primes_eq_indicator_add_rest (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
+lemma sum_one_div_prime_eq_vonStaudtIndicator_div_add (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     (∑ q ∈ Finset.range (2 * k + 2) with q.Prime ∧ (q - 1) ∣ 2 * k, (1 : ℚ) / q) =
     vonStaudtIndicator (2 * k) p / p + ∑ q ∈ Finset.range (2 * k + 2) with
       q.Prime ∧ (q - 1) ∣ 2 * k ∧ q ≠ p, (1 : ℚ) / q := by
@@ -514,7 +513,7 @@ lemma sum_primes_eq_indicator_add_rest (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
   · -- p is in the filtered set; extract its term
     have hp_mem : p ∈ (Finset.range (2 * k + 2)).filter (fun q ↦ q.Prime ∧ (q - 1) ∣ 2 * k) := by
       simp only [Finset.mem_filter, Finset.mem_range]
-      exact ⟨by have := Nat.le_of_dvd (by lia) hdvd; lia, (Fact.out : p.Prime), hdvd⟩
+      exact ⟨by have := Nat.le_of_dvd (by lia) hdvd; lia, Fact.out, hdvd⟩
     rw [← Finset.add_sum_erase _ _ hp_mem]
     simp only [vonStaudtIndicator, if_pos hdvd]
     congr 1
@@ -532,10 +531,10 @@ lemma pIntegral_pow_div (p M N : ℕ) [Fact p.Prime] (hM : M ≠ 0)
   set e := M.factorization p
   set M' := M / p ^ e with hM'_def
   have hM'_ne : M' ≠ 0 := (Nat.ordCompl_pos p hM).ne'
-  have hM'_cop : M'.Coprime p := (Nat.coprime_ordCompl (Fact.out : p.Prime) hM).symm
+  have hM'_cop : M'.Coprime p := (Nat.coprime_ordCompl Fact.out hM).symm
   -- Rewrite p^N / M as p^(N-e) / M' where M' = M / p^e is coprime to p
   have hdecomp : p ^ e * M' = M := Nat.ordProj_mul_ordCompl_eq_self M p
-  have hp_ne : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.Prime.ne_zero (Fact.out : p.Prime))
+  have hp_ne : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.Prime.ne_zero Fact.out)
   have hpe_ne : (p : ℚ) ^ e ≠ 0 := pow_ne_zero e hp_ne
   have hrw : (p : ℚ) ^ N / M = (p : ℚ) ^ (N - e) / M' := by
     have hM_cast : (M : ℚ) = (p ^ e : ℕ) * (M' : ℕ) := by rw [← hdecomp]; simp
@@ -549,27 +548,27 @@ lemma pIntegral_pow_div (p M N : ℕ) [Fact p.Prime] (hM : M ≠ 0)
     rw [h1]
     exact Int.natCast_dvd_natCast.mp (Rat.den_dvd _ _)
   have hcop : ((p : ℚ) ^ (N - e) / M').den.Coprime p := hM'_cop.coprime_dvd_left hdvd
-  exact (pIntegral_iff_not_dvd_den p _).2
-    ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).1 hcop.symm)
+  exact (pIntegral_iff_not_dvd p _).2
+    ((Nat.Prime.coprime_iff_not_dvd Fact.out).1 hcop.symm)
 
 /-- Basic valuation bound used for the `i = 0` term in the Faulhaber expansion. -/
-lemma valuation_bound (p n : ℕ) [Fact p.Prime] : (n + 1).factorization p ≤ n :=
+lemma factorization_succ_le (p n : ℕ) [Fact p.Prime] : (n + 1).factorization p ≤ n :=
   Nat.factorization_le_of_le_pow <|
     calc n + 1 = (n + 1).choose 1 := by simp
       _ ≤ 2 ^ n := Nat.choose_succ_le_two_pow n 1
       _ ≤ p ^ n := Nat.pow_le_pow_left ((Fact.out : p.Prime).two_le) n
 
 /-- The `i = 0` Faulhaber term is `p`-integral. -/
-lemma pIntegral_i0_term (k p : ℕ) [Fact p.Prime] :
+lemma pIntegral_pow_div_two_mul_succ (k p : ℕ) [Fact p.Prime] :
     pIntegral p ((p : ℚ) ^ (2 * k) / (2 * k + 1)) := by
   have h : (2 * k + 1 : ℚ) = ↑(2 * k + 1) := by norm_cast
   rw [h]
   apply pIntegral_pow_div p (2 * k + 1) (2 * k)
   · lia
-  · exact valuation_bound p (2 * k)
+  · exact factorization_succ_le p (2 * k)
 
 /-- The `i = 1` Faulhaber term is `p`-integral (handled separately for `p = 2` and odd `p`). -/
-lemma pIntegral_i1_term (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
+lemma pIntegral_bernoulli_one_term (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     pIntegral p (bernoulli 1 * (2 * k) * (p : ℚ) ^ (2 * k - 1) / (2 * k)) := by
   rw [bernoulli_one]
   obtain rfl | hp2 := eq_or_ne p 2
@@ -577,7 +576,7 @@ lemma pIntegral_i1_term (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
         (-(2 : ℤ) ^ (2 * k - 2) : ℤ) := by
       have hpow : (2 : ℚ) ^ (2 * k - 1) = (2 : ℚ) ^ (2 * k - 2) * 2 := by rw [← pow_succ]; lia
       rw [hpow]; push_cast; field_simp
-    simpa [h] using (pIntegral_of_int (p := 2) (z := (-(2 : ℤ) ^ (2 * k - 2))))
+    simpa [h] using (pIntegral_intCast _ (z := (-(2 : ℤ) ^ (2 * k - 2))))
   · have h2 : ((2 * k : ℕ) : ℚ) ≠ 0 := by norm_cast; lia
     field_simp [h2]
     rw [neg_div']
@@ -587,15 +586,15 @@ lemma pIntegral_i1_term (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
       exact Int.natCast_dvd_natCast.mp (Rat.den_dvd _ _)
     have hcop : (-(p : ℚ) ^ (2 * k - 1) / 2).den.Coprime p := Nat.Coprime.of_dvd_left hdvd
       (Odd.coprime_two_left ((Fact.out : p.Prime).odd_of_ne_two hp2))
-    exact (pIntegral_iff_not_dvd_den p _).2
-      ((Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).1 hcop.symm)
+    exact (pIntegral_iff_not_dvd p _).2
+      ((Nat.Prime.coprime_iff_not_dvd Fact.out).1 hcop.symm)
 
 /-- The exceptional base case of the inequality argument (`p = 2`, `d = 2`). -/
-lemma valuation_bound_d_plus_1_p2_d2 : (2 + 1).factorization 2 ≤ 2 - 1 := by
+lemma factorization_two_three_le_one : (2 + 1).factorization 2 ≤ 2 - 1 := by
   simp [Nat.factorization_eq_zero_of_not_dvd (show ¬(2 ∣ 3) by decide)]
 
 /-- Auxiliary growth inequality: for `d ≥ 3`, we have `d + 1 ≤ 2^(d - 1)`. -/
-lemma pow_two_ge_succ_of_ge_three (d : ℕ) (hd : d ≥ 3) : d + 1 ≤ 2 ^ (d - 1) := by
+lemma succ_le_two_pow_sub_one (d : ℕ) (hd : d ≥ 3) : d + 1 ≤ 2 ^ (d - 1) := by
   have h : ∀ n : ℕ, n ≥ 3 → n + 1 ≤ 2 ^ (n - 1) := by
     intro n hn
     induction hn with
@@ -609,7 +608,7 @@ lemma pow_two_ge_succ_of_ge_three (d : ℕ) (hd : d ≥ 3) : d + 1 ≤ 2 ^ (d - 
   exact h d hd
 
 /-- Auxiliary growth inequality: for `p ≥ 3` and `d ≥ 2`, we have `d + 1 ≤ p^(d - 1)`. -/
-lemma pow_ge_succ_of_ge_three (p d : ℕ) (hp : 3 ≤ p) (hd : d ≥ 2) : d + 1 ≤ p ^ (d - 1) := by
+lemma succ_le_pow_sub_one (p d : ℕ) (hp : 3 ≤ p) (hd : d ≥ 2) : d + 1 ≤ p ^ (d - 1) := by
   have h2 : ∀ d : ℕ, d ≥ 2 → d + 1 ≤ p ^ (d - 1) := by
     intro d hd
     induction hd with
@@ -625,23 +624,23 @@ lemma pow_ge_succ_of_ge_three (p d : ℕ) (hp : 3 ≤ p) (hd : d ≥ 2) : d + 1 
   exact h2 d hd
 
 /-- Main valuation estimate behind the contradiction step for even-index summands. -/
-lemma valuation_bound_d_plus_1 (p d : ℕ) [Fact p.Prime] (hd : d ≥ 2) :
+lemma factorization_succ_le_sub_one (p d : ℕ) [Fact p.Prime] (hd : d ≥ 2) :
     (d + 1).factorization p ≤ d - 1 := by
   obtain hp2 | hp3 := (Fact.out : p.Prime).eq_two_or_odd
   · subst hp2
     obtain rfl | hd3 := eq_or_lt_of_le hd
-    · exact valuation_bound_d_plus_1_p2_d2
+    · exact factorization_two_three_le_one
     · apply Nat.factorization_le_of_le_pow
-      exact pow_two_ge_succ_of_ge_three _ hd3
+      exact succ_le_two_pow_sub_one _ hd3
   · apply Nat.factorization_le_of_le_pow
-    apply pow_ge_succ_of_ge_three
+    apply succ_le_pow_sub_one
     · have hne2 : p ≠ 2 := fun h ↦ by simp [h] at hp3
       have h1lt : 1 < p := (Fact.out : p.Prime).one_lt
       lia
     · exact hd
 
 /-- Rewrites the binomial coefficient denominator exactly as in Rado's summand. -/
-lemma choose_div_core (k m : ℕ) (hm_lt : m < k) :
+lemma choose_two_mul_succ_div_eq (k m : ℕ) (hm_lt : m < k) :
     ((2 * k + 1).choose (2 * m) : ℚ) / (2 * k + 1) =
     ((2 * k).choose (2 * m) : ℚ) / (2 * k - 2 * m + 1) := by
   rw [div_eq_div_iff (by norm_cast) (by norm_cast; lia)]
@@ -650,16 +649,16 @@ lemma choose_div_core (k m : ℕ) (hm_lt : m < k) :
   norm_cast
   grind
 
-/-- Multiplicative form of `choose_div_core`, used to move factors around in the even case. -/
-lemma choose_div_simplify (k m : ℕ) (x : ℚ) (hm_lt : m < k) :
+/-- Multiplicative variant of `choose_two_mul_succ_div_eq`. -/
+lemma choose_two_mul_succ_mul_div_eq (k m : ℕ) (x : ℚ) (hm_lt : m < k) :
     ((2 * k + 1).choose (2 * m) : ℚ) * x / (2 * k + 1) =
     ((2 * k).choose (2 * m) : ℚ) * x / (2 * k - 2 * m + 1) := by
-  have h := choose_div_core k m hm_lt
+  have h := choose_two_mul_succ_div_eq k m hm_lt
   rw [mul_comm ((2 * k + 1).choose (2 * m) : ℚ) x, mul_div_assoc,
       mul_comm ((2 * k).choose (2 * m) : ℚ) x, mul_div_assoc, h]
 
 /-- `p`-integrality of the core even-index summand after denominator normalization. -/
-lemma pIntegral_case_one (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime] (hd : 2 * k - 2 * m ≥ 2) :
+lemma pIntegral_choose_mul_pow_div (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime] (hd : 2 * k - 2 * m ≥ 2) :
     pIntegral p (((2 * k).choose (2 * m) : ℚ) * (p : ℚ) ^ (2 * k - 2 * m - 1) /
       (2 * k - 2 * m + 1)) := by
   set d := 2 * k - 2 * m with hd_def
@@ -670,15 +669,15 @@ lemma pIntegral_case_one (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime] (hd : 2 * 
   rw [h_exp, h_denom_rat]
   have h_pow_integral : pIntegral p ((p : ℚ) ^ (d - 1) / ((d + 1 : ℕ) : ℚ)) := by
     apply pIntegral_pow_div p (d + 1) (d - 1) hd_plus_one_ne_zero
-    exact valuation_bound_d_plus_1 p d hd
+    exact factorization_succ_le_sub_one p d hd
   have h_eq : ((2 * k).choose (2 * m) : ℚ) * (p : ℚ) ^ (d - 1) / ((d + 1 : ℕ) : ℚ) =
       ((2 * k).choose (2 * m) : ℕ) * ((p : ℚ) ^ (d - 1) / ((d + 1 : ℕ) : ℚ)) := by ring
   rw [h_eq]
-  exact pIntegral_int_mul p _ _ h_pow_integral
+  exact pIntegral_intCast_mul p _ _ h_pow_integral
 
 /-- Uses the induction hypothesis on `B_{2m} + e_{2m}(p)/p`
 to prove `p`-integrality of the even term. -/
-lemma pIntegral_even_term_in_sum (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
+lemma pIntegral_bernoulli_even_term (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
     (ih : pIntegral p (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p)) :
     pIntegral p (bernoulli (2 * m) * ((2 * k + 1).choose (2 * m)) *
       (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1)) := by
@@ -715,7 +714,7 @@ lemma pIntegral_even_term_in_sum (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
         (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) *
         (((2 * k + 1).choose (2 * m) : ℚ) * (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1)) by ring]
     apply pIntegral_mul _ _ _ ih
-    rw [choose_div_simplify k m ((p : ℚ) ^ (2 * k - 2 * m)) hm_lt]
+    rw [choose_two_mul_succ_mul_div_eq k m ((p : ℚ) ^ (2 * k - 2 * m)) hm_lt]
     have hp_factor : ((2 * k).choose (2 * m) : ℚ) * (p : ℚ) ^ (2 * k - 2 * m) /
         (2 * k - 2 * m + 1) = (p : ℚ) * (((2 * k).choose (2 * m) : ℚ) *
         (p : ℚ) ^ (2 * k - 2 * m - 1) / (2 * k - 2 * m + 1)) := by
@@ -725,16 +724,16 @@ lemma pIntegral_even_term_in_sum (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
         exact pow_succ' _ _
       rw [hpow]; ring
     rw [hp_factor]
-    exact pIntegral_mul _ _ _ (pIntegral_of_int p p) (pIntegral_case_one k m p hm_lt (by lia))
+    exact pIntegral_mul _ _ _ (pIntegral_intCast p p) (pIntegral_choose_mul_pow_div k m p hm_lt (by lia))
   · unfold vonStaudtIndicator
     split_ifs with h
     · simp only [one_mul]
-      rw [choose_div_simplify k m _ hm_lt]
-      exact pIntegral_case_one k m p hm_lt (by lia)
+      rw [choose_two_mul_succ_mul_div_eq k m _ hm_lt]
+      exact pIntegral_choose_mul_pow_div k m p hm_lt (by lia)
     · simp
 
 /-- The full remainder sum in Faulhaber's formula is `p`-integral. -/
-lemma pIntegral_remainder (k p : ℕ) (hk : k > 0) [Fact p.Prime]
+lemma pIntegral_faulhaber_sum (k p : ℕ) (hk : k > 0) [Fact p.Prime]
     (ih : ∀ m, 0 < m → m < k → pIntegral p (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p)) :
     pIntegral p (∑ i ∈ Finset.range (2 * k),
       bernoulli i * ((2 * k + 1).choose i) * (p : ℚ) ^ (2 * k - i) / (2 * k + 1)) := by
@@ -743,21 +742,21 @@ lemma pIntegral_remainder (k p : ℕ) (hk : k > 0) [Fact p.Prime]
   rw [Finset.mem_range] at hi
   rcases i with _ | _ | i
   · simp only [bernoulli_zero, one_mul, Nat.choose_zero_right, Nat.cast_one, Nat.sub_zero]
-    exact pIntegral_i0_term k p
+    exact pIntegral_pow_div_two_mul_succ k p
   · simp only [zero_add, Nat.choose_one_right]
-    convert pIntegral_i1_term k p hk using 1
+    convert pIntegral_bernoulli_one_term k p hk using 1
     push_cast; field_simp
   · set j := i + 2 with hj_def
     have hj_lt : j < 2 * k := by lia
     rcases Nat.even_or_odd j with ⟨m, hm⟩ | hodd
     · have ⟨_, hm_lt, hj_eq⟩ : m ≥ 1 ∧ m < k ∧ j = 2 * m := by lia
       simp only [hj_eq]
-      exact pIntegral_even_term_in_sum k m p hm_lt (ih m (by lia) hm_lt)
+      exact pIntegral_bernoulli_even_term k m p hm_lt (ih m (by lia) hm_lt)
     · simp [bernoulli_eq_zero_of_odd hodd (by rcases hodd with ⟨r, hr⟩; lia)]
 
 /-- Rearranges the Faulhaber identity and power-sum congruence to isolate
 `bernoulli (2*k) + vonStaudtIndicator (2*k) p / p`. -/
-lemma bernoulli_plus_indicator_rearrangement (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
+lemma bernoulli_add_vonStaudtIndicator_eq_sub (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     ∃ T : ℤ, bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
       T - (∑ i ∈ Finset.range (2 * k),
         bernoulli i * ((2 * k + 1).choose i) * (p : ℚ) ^ (2 * k - i) / (2 * k + 1)) := by
@@ -765,7 +764,7 @@ lemma bernoulli_plus_indicator_rearrangement (k p : ℕ) (hk : k > 0) [Fact p.Pr
       (if (p - 1 : ℕ) ∣ (2 * k) then 1 else 0) = p * T := by
     have h_cast : (↑((∑ v ∈ Finset.range p with v ≠ 0, (v : ℤ) ^ (2 * k)) +
         (if (p - 1 : ℕ) ∣ (2 * k) then 1 else 0)) : ZMod p) = 0 := by
-      push_cast; exact power_sum_add_indicator_eq_zero p (2 * k)
+      push_cast; exact sum_pow_add_indicator_eq_zero p (2 * k)
     rw [ZMod.intCast_zmod_eq_zero_iff_dvd] at h_cast; exact h_cast
   obtain ⟨T, hT⟩ := hDiv
   use T
@@ -823,7 +822,7 @@ lemma bernoulli_plus_indicator_rearrangement (k p : ℕ) (hk : k > 0) [Fact p.Pr
         (2 * k + 1 : ℚ) := by
       intro i hi
       have h2 : i < 2 * k := Finset.mem_range.mp hi
-      have h5 : (p : ℚ) ≠ 0 := by norm_cast; exact Nat.Prime.ne_zero (Fact.out : p.Prime)
+      have h5 : (p : ℚ) ≠ 0 := by norm_cast; exact Nat.Prime.ne_zero Fact.out
       rw [show (2 * k + 1 - i : ℕ) = (2 * k - i : ℕ) + 1 by lia, pow_succ]
       field_simp [h5]
     rw [Finset.sum_div]
@@ -831,48 +830,48 @@ lemma bernoulli_plus_indicator_rearrangement (k p : ℕ) (hk : k > 0) [Fact p.Pr
   exact_mod_cast h0
 
 /-- For fixed prime `p`, the denominator of `B_{2k} + e_{2k}(p)/p` is not divisible by `p`. -/
-lemma bernoulli_plus_indicator_den_not_dvd_of_pos (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
+lemma bernoulli_add_vonStaudtIndicator_den_not_dvd (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     ¬ p ∣ (bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p).den := by
   induction k using Nat.strong_induction_on with
   | _ k ih =>
-    obtain ⟨T, hT⟩ := bernoulli_plus_indicator_rearrangement k p hk
+    obtain ⟨T, hT⟩ := bernoulli_add_vonStaudtIndicator_eq_sub k p hk
     rw [hT]
-    have hT_int : pIntegral p (T : ℚ) := pIntegral_of_int p T
+    have hT_int : pIntegral p (T : ℚ) := pIntegral_intCast p T
     have hR : pIntegral p (∑ i ∈ Finset.range (2 * k),
         bernoulli i * ((2 * k + 1).choose i) * (p : ℚ) ^ (2 * k - i) / (2 * k + 1)) := by
-      apply pIntegral_remainder k p hk
+      apply pIntegral_faulhaber_sum k p hk
       intro m hm_pos hm_lt
-      exact (pIntegral_iff_not_dvd_den p _).2 (ih m hm_lt hm_pos)
-    exact (pIntegral_iff_not_dvd_den p _).1 (pIntegral_sub p T _ hT_int hR)
+      exact (pIntegral_iff_not_dvd p _).2 (ih m hm_lt hm_pos)
+    exact (pIntegral_iff_not_dvd p _).1 (pIntegral_sub p T _ hT_int hR)
 
 /-- Extends the fixed-prime nondivisibility result to the full prime correction sum. -/
-lemma von_staudt_sum_den_not_dvd_of_pos (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
+lemma vonStaudt_sum_den_not_dvd (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     ¬ p ∣ (bernoulli (2 * k) + ∑ q ∈ Finset.range (2 * k + 2) with
       q.Prime ∧ (q - 1) ∣ 2 * k, (1 : ℚ) / q).den := by
-  rw [sum_primes_eq_indicator_add_rest k p hk, ← add_assoc]
+  rw [sum_one_div_prime_eq_vonStaudtIndicator_div_add k p hk, ← add_assoc]
   have h₁ : p.Coprime (bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p).den :=
-    (Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).2
-      (bernoulli_plus_indicator_den_not_dvd_of_pos k p hk)
+    (Nat.Prime.coprime_iff_not_dvd Fact.out).2
+      (bernoulli_add_vonStaudtIndicator_den_not_dvd k p hk)
   have h₂ : (∑ q ∈ Finset.range (2 * k + 2) with q.Prime ∧ (q - 1) ∣ 2 * k ∧ q ≠ p,
       (1 : ℚ) / q).den.Coprime p := Nat.Coprime.of_dvd_left (sum_den_dvd_prod_den _ _)
-      (prod_den_coprime_p k p)
+      (prod_one_div_prime_den_coprime k p)
   have hcop : (bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p +
       ∑ q ∈ Finset.range (2 * k + 2) with q.Prime ∧ (q - 1) ∣ 2 * k ∧ q ≠ p,
         (1 : ℚ) / q).den.Coprime p := Nat.Coprime.of_dvd_left (Rat.add_den_dvd _ _)
       (h₁.symm.mul_left h₂)
-  exact (Nat.Prime.coprime_iff_not_dvd (Fact.out : p.Prime)).1 hcop.symm
+  exact (Nat.Prime.coprime_iff_not_dvd Fact.out).1 hcop.symm
 
 /-- **von Staudt-Clausen theorem:** For any natural number $k$, the sum
 $$B_{2k} + \sum_{p - 1 \mid 2k} \frac{1}{p}$$ is an integer.
 -/
-theorem von_staudt_clausen (k : ℕ) :
+theorem vonStaudt_clausen (k : ℕ) :
     bernoulli (2 * k) + ∑ p ∈ Finset.range (2 * k + 2) with p.Prime ∧ (p - 1) ∣ 2 * k,
       (1 : ℚ) / p ∈ Set.range Int.cast := by
   rcases Nat.eq_zero_or_pos k with rfl | hk
   · exact ⟨1, by decide +kernel⟩
-  · exact Rat.mem_range_intCast_of_not_prime_dvd _
+  · exact Rat.isInt_of_forall_prime_not_dvd_den _
       (fun p hp ↦ by
         letI : Fact p.Prime := ⟨hp⟩
-        exact von_staudt_sum_den_not_dvd_of_pos k p hk)
+        exact vonStaudt_sum_den_not_dvd k p hk)
 
 end vonStaudtClausen
