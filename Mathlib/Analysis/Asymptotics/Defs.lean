@@ -991,9 +991,9 @@ theorem IsLittleO.add (h₁ : f₁ =o[l] g) (h₂ : f₂ =o[l] g) : (fun x => f�
     ((h₁.forall_isBigOWith <| half_pos cpos).add (h₂.forall_isBigOWith <|
       half_pos cpos)).congr_const (add_halves c)
 
-variable {g₁ g₂ : α → ℝ} in
-theorem IsBigOWith.add_add' (h₁ : IsBigOWith c₁ l f₁ g₁) (h₂ : IsBigOWith c₂ l f₂ g₂)
-    (hg₁_nonneg : ∀ᶠ x in l, 0 ≤ g₁ x) (hg₂_nonneg : ∀ᶠ x in l, 0 ≤ g₂ x) :
+theorem IsBigOWith.add_add' {g₁ g₂ : α → ℝ} (h₁ : IsBigOWith c₁ l f₁ g₁)
+    (h₂ : IsBigOWith c₂ l f₂ g₂) (hg₁_nonneg : ∀ᶠ x in l, 0 ≤ g₁ x)
+    (hg₂_nonneg : ∀ᶠ x in l, 0 ≤ g₂ x) :
     IsBigOWith (max c₁ c₂) l (fun x ↦ f₁ x + f₂ x) (fun x ↦ g₁ x + g₂ x) := by
   rw [IsBigOWith_def] at *
   filter_upwards [h₁, h₂, hg₁_nonneg, hg₂_nonneg] with x hx₁ hx₂ hgx₁ hgx₂
