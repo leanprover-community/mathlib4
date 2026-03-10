@@ -168,7 +168,7 @@ theorem epi_of_zero_cancel {X Y : C} (f : X ⟶ Y)
 
 variable {D : Type*} [Category* D] [HasZeroMorphisms D] [HasZeroObject D]
 
-instance (F : D ⥤ C) [F.PreservesZeroMorphisms]
+lemma preservesEpimorphisms_of_preservesCokernels (F : D ⥤ C) [F.PreservesZeroMorphisms]
     [∀ {X Y : D} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] :
     F.PreservesEpimorphisms where
   preserves f :=
@@ -333,7 +333,7 @@ theorem mono_of_cancel_zero {X Y : C} (f : X ⟶ Y)
 
 variable {D : Type*} [Category* D] [HasZeroMorphisms D] [HasZeroObject D]
 
-instance (F : D ⥤ C) [F.PreservesZeroMorphisms]
+instance preservesMonomorphisms_of_preservesKernels (F : D ⥤ C) [F.PreservesZeroMorphisms]
     [∀ {X Y : D} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
     F.PreservesMonomorphisms where
   preserves f :=
