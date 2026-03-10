@@ -71,7 +71,7 @@ lemma Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda {X : C} (R : Pre
     Presieve.EffectiveEpimorphic, Sieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda]
 
 lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Presieve X}
-    (hR : R.EffectiveEpimorphic) (F : Cᵒᵖ ⥤ Type w) [F.IsRepresentable] :
+    (hR : R.EffectiveEpimorphic) (F : Cᵒᵖ ⥤ TypeCat.{w}) [F.IsRepresentable] :
     R.IsSheafFor F := by
   rw [Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda] at hR
   rw [← isSheafFor_comp_uliftFunctor_iff]
@@ -171,7 +171,7 @@ theorem Sieve.effectiveEpimorphic_singleton {X Y : C} (f : Y ⟶ X) :
     apply Nonempty.map (isColimitOfEffectiveEpiStruct _) h
 
 lemma Presieve.IsSheafFor.singleton_of_isRepresentable_of_effectiveEpi {X Y : C} (f : X ⟶ Y)
-    [EffectiveEpi f] (F : Cᵒᵖ ⥤ Type*) [F.IsRepresentable] :
+    [EffectiveEpi f] (F : Cᵒᵖ ⥤ TypeCat) [F.IsRepresentable] :
     (Presieve.singleton f).IsSheafFor F :=
   Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable
     ((Sieve.effectiveEpimorphic_singleton f).mpr ‹_›) _

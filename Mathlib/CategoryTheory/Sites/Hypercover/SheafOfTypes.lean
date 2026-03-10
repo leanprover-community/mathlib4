@@ -71,8 +71,8 @@ lemma isLimit_toPreOneHypercover_type_iff (E : PreZeroHypercover.{w} S) [E.HasPu
 end PreZeroHypercover
 
 lemma Precoverage.ZeroHypercover.Hom.isSheafFor_iff [Limits.HasPullbacks C] {K : Precoverage C}
-    [K.IsStableUnderBaseChange] {S : C} {F : Cᵒᵖ ⥤ Type*} {𝒰 𝒱 : K.ZeroHypercover S} (f : 𝒰.Hom K 𝒱)
-    (H₁ : Presieve.IsSheafFor F (.ofArrows _ 𝒰.f))
+    [K.IsStableUnderBaseChange] {S : C} {F : Cᵒᵖ ⥤ TypeCat} {𝒰 𝒱 : K.ZeroHypercover S}
+    (f : 𝒰.Hom K 𝒱) (H₁ : Presieve.IsSheafFor F (.ofArrows _ 𝒰.f))
     (H₂ : ∀ {X : C} (f : X ⟶ S),
       Presieve.IsSeparatedFor F (.ofArrows (𝒰.pullback₂ f).X (𝒰.pullback₂ f).f)) :
     Presieve.IsSheafFor F (.ofArrows 𝒱.X 𝒱.f) := by

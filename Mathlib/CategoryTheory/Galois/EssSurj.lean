@@ -87,7 +87,7 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
     let q' (p : G × (f i).V) : (f i).V := ((f i).ρ p.1).hom p.2
     have heq : q ∘ r'' = r.hom ∘ q' := by
       ext (p : G × (f i).V)
-      exact (DFunLike.congr_fun (r.comm p.1) p.2).symm
+      exact (ConcreteCategory.congr_hom (r.comm p.1) p.2).symm
     have hrinj : Function.Injective r.hom :=
       (ConcreteCategory.mono_iff_injective_of_preservesPullback r).mp <| mono_comp _ _
     let t₁ : TopologicalSpace (G × (f i).V) := inferInstance
@@ -254,7 +254,7 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
     let p : A ⟶ X := f ≫ Pi.π (fun Z : I => (Z : C)) ⟨X, hX⟩
     have : IsConnected X := hc X hX
     obtain ⟨a, rfl⟩ := surjective_of_nonempty_fiber_of_isConnected F p x
-    simp only [FintypeCat.id_apply, FunctorToFintypeCat.naturality, h1 σ σinU]
+    simp only [FintypeCat.id_apply, NatTrans.naturality_apply, h1 σ σinU]
   have hUinV : (U : Set (Aut F)) ≤ V := fun u uinU ↦ hi u (h2 u uinU)
   have := V.quotient_finite_of_isOpen' (U.subgroupOf V) V.isOpen (V.subgroupOf_isOpen U U.isOpen)
   exact ⟨colimit (quotientDiag V hUnormal u),
