@@ -160,6 +160,7 @@ theorem revzip_powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) :
   simp only [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p]
   exact (powersetAux_perm p).map _
 
+@[simp]
 theorem powerset_le_powerset_iff_le {s t : Multiset α} :
     s.powerset ≤ t.powerset ↔ s ≤ t where
   mp powerset := Multiset.mem_powerset.mp <| Multiset.mem_of_le powerset (self_mem_powerset s)
