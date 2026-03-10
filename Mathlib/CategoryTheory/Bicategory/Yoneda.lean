@@ -88,7 +88,7 @@ def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
   mapComp f g := associatorNatIsoRightCat g.unop f.unop x
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Postcomposing of a 1-morhisms seen as a strong transformation between pseudofunctors. -/
+/-- Postcomposing of a 1-morphism seen as a strong transformation between pseudofunctors. -/
 @[simps!]
 def postcomp₂ {a b : B} (f : a ⟶ b) : yoneda₀ a ⟶ yoneda₀ b where
   app x := (postcomposingCat (unop x) a b).obj f
