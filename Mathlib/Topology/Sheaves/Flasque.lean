@@ -170,15 +170,15 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
       have : (S.f.hom.app (op W) ≫ S.g.hom.app (op W)) = 0 := by
         rw [← NatTrans.comp_app, ← ObjectProperty.FullSubcategory.comp_hom, S.6]; rfl
       simp [← ConcreteCategory.comp_apply, this, ht₁]
+    -- We upgrade `t₅` to an object in `Under S.g s` that is defined on `t.right.1.unop ⊔ W`.
     let t₆ : Under S.g s := by
-      refine StructuredArrow.mk ?_ (S := ⟨op U, s⟩)
+      refine StructuredArrow.mk (S := ⟨op U, s⟩)
         (T := (Functor.whiskerRight S.g.hom (CategoryTheory.forget AddCommGrpCat)).mapElements)
-        (Y := ⟨op (iSup f), t₅⟩)
-      refine CategoryOfElements.homMk _ _ (homOfLE le).op comp
-    have : Under.R S.g s t t₆ := by
-      refine Nonempty.intro ?_
-      exact StructuredArrow.homMk (CategoryOfElements.homMk _ _ (homOfLE (le_iSup f 0)).op (ht₅ 0))
-        (by cat_disch)
+        (Y := ⟨op (iSup f), t₅⟩) ?_
+      exact CategoryOfElements.homMk _ _ (homOfLE le).op comp
+    -- We prove that `t₆` is bigger than `t` for the preorder used on `Under S.g s`.
+    have : Nonempty (t₆ ⟶ t) := Nonempty.intro (StructuredArrow.homMk (CategoryOfElements.homMk _ _
+      (homOfLE (le_iSup f 0)).op (ht₅ 0)) (by cat_disch))
     apply leOfHom (Classical.choice ((ht t₆) this)).right.1.unop
     apply (le_iSup f 1)
     exact hW
