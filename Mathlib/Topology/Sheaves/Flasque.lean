@@ -81,9 +81,6 @@ an open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. -/
 abbrev Under := StructuredArrow ⟨op U, s⟩ (Functor.whiskerRight g.hom
   (CategoryTheory.forget AddCommGrpCat.{u})).mapElements
 
-/-- Given `t₁` and `t₂` in `Under g s`, we say `t₁ ≤ t₂` if `t₁` restricts to `t₂` -/
-def Under.R : Under g s → Under g s → Prop := fun x y ↦ Nonempty (y ⟶ x)
-
 /- The next lemma proves that the relation `fun x y ↦ Nonempty (y ⟶ x)` on `Under g s`
 satisfies the requirements for applying Zorn's lemma -/
 lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
