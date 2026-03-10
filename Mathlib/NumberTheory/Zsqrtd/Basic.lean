@@ -900,7 +900,6 @@ instance : IsStrictOrderedRing (ℤ√d) :=
 
 private theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b := by
   obtain ⟨n, hn⟩ := le_arch' a
-  have hb0 : (0 : ℤ√d) ≤ b := le_of_lt hb
   have hnorm_ne : b.norm ≠ 0 := by
     intro h0
     have : b = 0 := by
@@ -917,8 +916,8 @@ private theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n
     ⟨hm1.trans hm_cast.1, hm2.trans hm_cast.2⟩
   have hnorm_le : (b.norm : ℤ√d) ≤ (m : ℤ√d) * b ∧ (-(b.norm : ℤ√d)) ≤ (m : ℤ√d) * b := by
     constructor
-    · simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hstar_le.1 hb0
-    · simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hstar_le.2 hb0
+    · simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hstar_le.1 hb.le
+    · simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hstar_le.2 hb.le
   have hnatAbs_le : (b.norm.natAbs : ℤ√d) ≤ (m : ℤ√d) * b := by
     simp [abs_le'.2 hnorm_le]
   have hone_le_mul : (1 : ℤ√d) ≤ (m : ℤ√d) * b :=
