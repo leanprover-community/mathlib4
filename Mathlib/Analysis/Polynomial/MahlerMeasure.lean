@@ -343,7 +343,6 @@ theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ)
     _ = √(p.natDegree + 1) * p.supNorm := by
         rw [Real.sqrt_mul (by positivity), Real.sqrt_sq p.supNorm_nonneg]
 
-set_option backward.isDefEq.respectTransparency false in
 open Multiset in
 theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure := by
