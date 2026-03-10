@@ -17,10 +17,10 @@ We construct etale neighborhoods that split fibers of finite algebras.
 
 ## Main results
 - `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`:
-Let `S` be a module-finite `R`-algebra, and `q` a prime lying over `p`.
-We may construct an etale `R`-algebra `R'` and a prime `P` lying over `p` with `κ(P) = κ(p)`,
-such that `R' ⊗[R] S = A × B` and there exists a unique prime in `A` lying over `P`.
-This prime will also lie over `q`.
+  Let `S` be a module-finite `R`-algebra, and `q` a prime lying over `p`.
+  We may construct an etale `R`-algebra `R'` and a prime `P` lying over `p` with `κ(P) = κ(p)`,
+  such that `R' ⊗[R] S = A × B` and there exists a unique prime in `A` lying over `P`.
+  This prime will also lie over `q`.
 
 -/
 
@@ -33,9 +33,7 @@ section BijectiveResidueField
 variable {R R' S : Type*} [CommRing R] [CommRing R'] [CommRing S] [Algebra R R'] [Algebra R S]
     {p : Ideal R} {q : Ideal R'} [p.IsPrime] [q.IsPrime] [q.LiesOver p]
 
-#adaptation_note /-- The maxHeartbeats bump is required after leanprover/lean4#12564. -/
 set_option backward.isDefEq.respectTransparency false in
-set_option synthInstance.maxHeartbeats 40000 in -- see adaptation note
 /-- If `q` is a prime of `R'` lying over `p`, a prime of `R`, such that `κ(q) = κ(p)`, then
 the fiber of `R' → R' ⊗[R] S` over `q` is in bijection with the fiber of `R → S` over `p`. -/
 noncomputable

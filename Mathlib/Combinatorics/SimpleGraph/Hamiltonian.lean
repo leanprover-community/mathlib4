@@ -60,6 +60,7 @@ theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
   rw [nil_iff_support_eq.mp p.nil_of_subsingleton, Subsingleton.elim v a, List.count_singleton_self]
 
 /-- If a path `p` is Hamiltonian then its vertex set must be finite. -/
+@[implicit_reducible]
 protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
   elems := p.support.toFinset
   complete x := List.mem_toFinset.mpr (mem_support hp x)
