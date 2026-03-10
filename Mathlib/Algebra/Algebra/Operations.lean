@@ -900,11 +900,11 @@ end Quotient
 
 end AlgebraCommSemiring
 
-open scoped Pointwise in
-theorem restrictScalars_image_smul_eq_smul_restrictScalars {S M : Type*} [AddCommGroup M]
-    [Module R M] [CommSemiring S] [Module S M] [Algebra S R] [IsScalarTower S R M]
-    (s : Set S) (N : Submodule R M) : ((algebraMap S R) '' s • N).restrictScalars S =
-      s • N.restrictScalars S := by
+theorem restrictScalars_image_smul_eq {S M : Type*}
+    [CommSemiring S] [Algebra S R]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower S R M]
+    (s : Set S) (N : Submodule R M) :
+    (algebraMap S R '' s • N).restrictScalars S = s • N.restrictScalars S := by
   refine le_antisymm (fun x x_in ↦ ?_) (set_smul_le _ _ _ fun r x r_in x_in ↦ ?_)
   · rw [restrictScalars_mem] at x_in
     refine set_smul_inductionOn x x_in ?_ ?_ (fun _ _ _ _ h h' ↦  add_mem h h') (zero_mem _)

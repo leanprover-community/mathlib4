@@ -981,11 +981,12 @@ theorem annihilator_span_singleton (g : M) :
 @[simp]
 theorem mul_annihilator (I : Ideal R) : I * annihilator I = ⊥ := by rw [mul_comm, annihilator_mul]
 
-theorem restrictScalars_map_smul_eq_smul_restrictScalars {S M : Type*} [AddCommGroup M]
-    [Module R M] [CommSemiring S] [Module S M] [Algebra S R] [IsScalarTower S R M]
-      (I : Ideal S) (N : Submodule R M) : ((I.map (algebraMap S R)) • N).restrictScalars S =
-    I • N.restrictScalars S := by
-  have := Submodule.restrictScalars_image_smul_eq_smul_restrictScalars (I : Set S) N
+theorem restrictScalars_map_smul_eq {S M : Type*}
+    [CommSemiring S] [Algebra S R]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower S R M]
+    (I : Ideal S) (N : Submodule R M) :
+    ((I.map (algebraMap S R)) • N).restrictScalars S = I • N.restrictScalars S := by
+  have := N.restrictScalars_image_smul_eq_smul_restrictScalars (I : Set S)
   rw [coe_set_smul] at this
   rw [Ideal.map, span_smul_eq, ← this]
 
