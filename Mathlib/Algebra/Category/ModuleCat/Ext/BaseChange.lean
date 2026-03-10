@@ -253,7 +253,7 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       (IsBaseChange.ofEquiv linearEquiv₀.symm)
     ext x
     rcases (Ext.mk₀_bijective M N).2 x with ⟨y, hy⟩
-    simp only [← hy, extendScalars'.mapExtLinearMap_eq_mapExt, mapExt_mk₀_eq_mk₀_map, linearEquiv₀,
+    simp only [← hy, extendScalars'.mapExtLinearMap_eq_mapExt, mapExactFunctor_mk₀, linearEquiv₀,
       addEquiv₀, homEquiv₀, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
       AddEquiv.coe_mk, Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm, AddEquiv.symm_mk,
       Equiv.symm_symm, LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
@@ -299,16 +299,15 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       simp only [ShortComplex.map_X₁, ZeroHom.toFun_eq_coe,
         AddMonoidHom.toZeroHom_coe, LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
         Function.comp_apply, bilinearComp_apply_apply, ShortComplex.map_X₂, ShortComplex.map_f,
-        ← mapExt_mk₀_eq_mk₀_map, LinearMap.coe_restrictScalars, TS, h₂, f, f', h₁]
+        ← mapExactFunctor_mk₀, LinearMap.coe_restrictScalars, TS, h₂, f, f', h₁]
       rw [extendScalars'.mapExtLinearMap_eq_mapExt, extendScalars'.mapExtLinearMap_eq_mapExt,
-        Ext.mapExt_comp_eq_comp_mapExt]
+        Ext.mapExactFunctor_comp]
     · ext x
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
         LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
         bilinearComp_apply_apply, LinearMap.coe_restrictScalars, h₃, g, g', h₂]
-      rw [← Ext.mapExt_extClass_eq_extClass_map (ModuleCat.extendScalars'.{v, v'} R S) T_exact]
-      exact Ext.mapExt_comp_eq_comp_mapExt (ModuleCat.extendScalars'.{v, v'} R S)
-        T_exact.extClass x (add_comm 1 n)
+      rw [← Ext.mapExactFunctor_extClass (ModuleCat.extendScalars'.{v, v'} R S) T_exact]
+      exact Ext.mapExactFunctor_comp (ModuleCat.extendScalars'.{v, v'} R S) _ x (add_comm 1 n)
 
 /-- If `MS` in `ModuleCat S` is base change of an `R`-module `M`,
 then it is isomporhic to `(ModuleCat.extendScalars' R S).obj M`. -/
