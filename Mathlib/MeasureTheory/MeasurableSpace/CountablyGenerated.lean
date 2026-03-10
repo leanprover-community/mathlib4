@@ -169,6 +169,21 @@ theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoint
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
     @SeparatesPoints.separates _ m hsep _ _ fun _ hs ↦ hxy _ (h _ hs)
 
+theorem _root_.eq_const_of_measurable_bot [MeasurableSpace β] [Nonempty β]
+    [SeparatesPoints β] {f : α → β} (hf : Measurable[⊥] f) :
+    ∃ c, f = fun _ ↦ c := by
+  have h (a₁ : α) (a₂ : α) : f a₁ = f a₂ := by
+    by_contra! h
+    obtain ⟨s, hs, hx, hy⟩ := exists_measurableSet_of_ne h
+    obtain h' | h' := MeasurableSpace.measurableSet_bot_iff.mp (hf hs)
+    · absurd hx
+      simp [← mem_preimage, h']
+    · absurd hy
+      simp [← mem_preimage, h']
+  obtain h' | h' := isEmpty_or_nonempty α
+  · use (Classical.ofNonempty : β), funext (by simp)
+  · use f (Classical.ofNonempty : α), funext (fun x ↦ h _ _)
+
 /-- We say that a measurable space is countably separated if there is a
 countable sequence of measurable sets separating points. -/
 class CountablySeparated (α : Type*) [MeasurableSpace α] : Prop where
@@ -288,7 +303,7 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
   use range (mapNatBool α), Equiv.ofInjective _ <|
     injective_mapNatBool _,
     Measurable.subtype_mk <| measurable_mapNatBool _
-  simp_rw [← generateFrom_natGeneratingSequence α]
+  simp_rw +instances [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
   rw [← Equiv.image_eq_preimage_symm _ _]
@@ -333,6 +348,7 @@ lemma generateFrom_memPartition_le_succ (t : ℕ → Set α) (n : ℕ) :
     generateFrom (memPartition t n) ≤ generateFrom (memPartition t (n + 1)) :=
   generateFrom_le (fun _ hs ↦ measurableSet_succ_memPartition t n hs)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ) (s : Set α) :
     MeasurableSet[generateFrom (memPartition t n)] s
       ↔ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ s = ⋃₀ S := by

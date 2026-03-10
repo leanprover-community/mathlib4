@@ -90,6 +90,7 @@ instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] :
   apply Disjoint.mono (cf.tendsto_nhdsSet_nhds hhf) cf.continuousAt
   exact disjoint_nhds_nhds.mpr (hf.symm ▸ zero_ne_one).symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] [R0Space X] :
     CompletelyRegularSpace X := by
   rw [completelyRegularSpace_iff]
@@ -150,6 +151,7 @@ lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     specialize hfsU i (by tauto_set)
     exists i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma completelyRegularSpace_inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (ht₁ : @CompletelyRegularSpace X t₁) (ht₂ : @CompletelyRegularSpace X t₂) :
     @CompletelyRegularSpace X (t₁ ⊓ t₂) := by

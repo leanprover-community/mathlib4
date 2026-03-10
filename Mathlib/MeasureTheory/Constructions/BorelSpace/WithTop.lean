@@ -43,6 +43,7 @@ noncomputable
 def MeasurableEquiv.neTopEquiv : { r : WithTop ι | r ≠ ⊤ } ≃ᵐ ι :=
   (WithTop.neTopHomeomorph ι).toMeasurableEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α}
     {f : WithTop ι → α} (h : Measurable fun p : ι ↦ f p) :
     Measurable f :=

@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Data.Finset.Attr

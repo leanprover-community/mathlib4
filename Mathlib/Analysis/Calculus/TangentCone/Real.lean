@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
 public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Unique differentiability property in real normed spaces
@@ -28,6 +29,7 @@ section RealTVS
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set E} {x y : E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a subset of a real vector space contains an open segment, then the direction of this
 segment belongs to the positive tangent cone at its endpoints. -/
 theorem sub_mem_posTangentConeAt_of_openSegment_subset (h : openSegment ℝ x y ⊆ s) :

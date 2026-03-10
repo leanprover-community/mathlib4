@@ -12,14 +12,25 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with: # checkout all history so that we can compare across commits
         fetch-depth: 0
+
+    - name: Checkout mathlib-ci
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: leanprover-community/mathlib-ci
+        ref: 7c2dcf950607e48029aec2a614e840f2a14ae7e1
+        fetch-depth: 1
+        path: ci-tools
+
+    - name: Set up CI scripts paths
+      uses: ./ci-tools/.github/actions/setup-ci-scripts
 
     - name: Run script
       id: tech_debt
       run: |
-        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/technical-debt-metrics.sh)" >> "$GITHUB_OUTPUT"
+        printf $'summary<<EOF\n%s\nEOF' "$("${CI_SCRIPTS_DIR}/reporting/technical-debt-metrics.sh")" >> "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2

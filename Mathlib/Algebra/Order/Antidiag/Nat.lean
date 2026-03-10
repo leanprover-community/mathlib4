@@ -25,7 +25,7 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 @[expose] public section
 
 open Finset
-open scoped BigOperators ArithmeticFunction
+open scoped ArithmeticFunction
 namespace PNat
 
 instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) :=

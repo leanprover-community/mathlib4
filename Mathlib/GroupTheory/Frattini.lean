@@ -20,17 +20,20 @@ We give the definition of the Frattini subgroup of a group, and three elementary
 
 @[expose] public section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Frattini subgroup of a group is the intersection of the maximal subgroups. -/
 def frattini (G : Type*) [Group G] : Subgroup G :=
   Order.radical (Subgroup G)
 
 variable {G H : Type*} [Group G] [Group H] {φ : G →* H}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma frattini_le_coatom {K : Subgroup G} (h : IsCoatom K) : frattini G ≤ K :=
   Order.radical_le_coatom h
 
 open Subgroup
 
+set_option backward.isDefEq.respectTransparency false in
 lemma frattini_le_comap_frattini_of_surjective (hφ : Function.Surjective φ) :
     frattini G ≤ (frattini H).comap φ := by
   simp_rw [frattini, Order.radical, comap_iInf, le_iInf_iff]
@@ -44,6 +47,7 @@ instance frattini_characteristic : (frattini G).Characteristic := by
   intro φ
   apply φ.comapSubgroup.map_radical
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The Frattini subgroup consists of "non-generating" elements in the following sense:
 

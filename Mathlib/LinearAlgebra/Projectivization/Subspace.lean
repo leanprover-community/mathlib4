@@ -132,10 +132,12 @@ instance : CompleteLattice (Subspace K V) :=
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The span of the empty set is the bottom of the lattice of subspaces. -/
 @[simp]
 theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The span of the entire projective space is the top of the lattice of subspaces. -/
 @[simp]
 theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by

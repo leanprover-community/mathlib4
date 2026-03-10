@@ -379,7 +379,7 @@ theorem ofPermHom_support :
       rw [← notMem_support]
       have := g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
       rw [disjoint_iff_disjoint_support, Finset.disjoint_left] at this
-      exact this (by aesop) hc
+      exact this (by lia) hc
     · simpa only [H, iff_false, not_not] using ⟨c, H, mem_support.mp hc⟩
 
 theorem card_ofPermHom_support :
@@ -536,6 +536,7 @@ theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
     rintro - ⟨a, rfl⟩ - ⟨-, ⟨b, rfl⟩, ⟨-⟩⟩
     exact (ofSubtype_support_disjoint a).mono_right (mem_cycleFactorsFinset_support_le b.2)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem kerParam_range_eq :
     (kerParam g).range = (toPermHom g).ker.map (Subgroup.subtype _) := by
   apply le_antisymm

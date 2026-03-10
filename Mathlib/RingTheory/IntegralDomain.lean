@@ -6,6 +6,7 @@ Authors: Johan Commelin, Chris Hughes
 module
 
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Fintype.Inv
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.Tactic.FieldSimp
@@ -163,7 +164,7 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
   · have hg' : algebraMap R[X] K g ≠ 0 :=
       (map_ne_zero_iff _ (IsFractionRing.injective R[X] K)).mpr (Monic.ne_zero hg)
     field_simp
-    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
+    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div]
 
 end Polynomial
 

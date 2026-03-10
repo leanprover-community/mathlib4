@@ -13,6 +13,7 @@ public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.Group
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Cyclic groups
@@ -103,7 +104,7 @@ instance IsCyclic.commutative [Group α] [IsCyclic α] :
 
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
       /-- A cyclic group is always commutative. This is not an `instance` because often we have
       a better proof of `AddCommGroup`. -/]
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
@@ -234,6 +235,7 @@ theorem orderOf_eq_card_of_zpowers_eq_top {g : G} (h : Subgroup.zpowers g = ⊤)
     orderOf g = Nat.card G :=
   orderOf_eq_card_of_forall_mem_zpowers fun _ ↦ h.ge (Subgroup.mem_top _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem exists_pow_ne_one_of_isCyclic [G_cyclic : IsCyclic G]
     {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Nat.card G) : ∃ a : G, a ^ k ≠ 1 := by
@@ -329,6 +331,7 @@ open Finset Nat
 
 section Classical
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 @[to_additive IsAddCyclic.card_nsmul_eq_zero_le]
 theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :
@@ -602,6 +605,7 @@ section CommSimpleGroup
 
 variable [CommGroup α] [IsSimpleGroup α]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance (priority := 100) isCyclic : IsCyclic α := by
   nontriviality α
@@ -610,6 +614,7 @@ instance (priority := 100) isCyclic : IsCyclic α := by
     (eq_bot_or_eq_top (Subgroup.zpowers g)).resolve_left (Subgroup.zpowers_ne_bot.2 hg)
   exact ⟨⟨g, (Subgroup.eq_top_iff' _).1 this⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem prime_card : (Nat.card α).Prime := by
   have hα : Nontrivial α := IsSimpleGroup.toNontrivial
@@ -622,12 +627,7 @@ theorem prime_card : (Nat.card α).Prime := by
     · simp only [Nat.coprime_iff_gcd_eq_one]
       have hgn : g ∈ Subgroup.zpowers (g ^ n) := by simp_all only [ne_eq, orderOf_eq_one_iff,
         Subgroup.mem_top]
-      have hgn_int : g ∈ Subgroup.zpowers (g ^ (n : ℤ)) := by simpa [zpow_natCast]
-      have hgcd_int :
-          (n : ℤ).gcd (↑(orderOf g) : ℤ) = 1 :=
-        (mem_zpowers_zpow_iff (g := g) (k := (n : ℤ))).1 hgn_int
-      simp_all only [ne_eq, orderOf_eq_one_iff, Subgroup.mem_top, zpow_natCast,
-        Int.gcd_natCast_natCast]
+      exact mem_zpowers_pow_iff.mp hgn
   apply Nat.prime_of_coprime
   · refine Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨?_, hα⟩
     contrapose! h
@@ -784,14 +784,13 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     ZMod (Nat.card G) ≃+ G := by
   let n := Nat.card G
   let ⟨g, surj⟩ := Classical.indefiniteDescription _ h.exists_generator
-  have kereq : ((zmultiplesHom G) g).ker = zmultiples ↑(Nat.card G) := by
+  have kereq : zmultiples ↑(Nat.card G) = ((zmultiplesHom G) g).ker := by
     rw [zmultiplesHom_ker_eq]
     congr
     rw [← Nat.card_zmultiples]
-    exact Nat.card_congr (Equiv.subtypeUnivEquiv surj)
-  exact Int.quotientZMultiplesNatEquivZMod n
-    |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
-    |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
+    exact Nat.card_congr (Equiv.subtypeUnivEquiv surj).symm
+  exact Int.quotientZMultiplesNatEquivZMod n |>.symm.trans <|
+    QuotientAddGroup.liftEquiv _ (φ := zmultiplesHom G g) surj kereq
 
 /-- A commutative simple group is isomorphic to `ZMod p` from some prime `p`. -/
 theorem exists_prime_addEquiv_ZMod [CommGroup G] [IsSimpleGroup G] :
@@ -827,6 +826,78 @@ noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Group G] [Group G']
   have hHcyc := isCyclic_of_prime_card hH
   apply mulEquivOfCyclicCardEq
   exact hG.trans hH.symm
+
+section Infinite
+
+variable [Infinite G]
+
+lemma zpowersHom_bijective [Group G] {g : G} (hg : zpowers g = ⊤) :
+    Function.Bijective (zpowersHom G g) := by
+  refine ⟨(MonoidHom.ker_eq_bot_iff _).mp ?_, MonoidHom.range_eq_top.mp hg⟩
+  simp [zpowersHom_ker_eq, ← infinite_zpowers, hg, Set.infinite_univ]
+
+/-- The isomorphism between `Multiplicative ℤ` and the infinite cyclic group `G` sending
+`Multiplicative.ofAdd 1` to the generator `g : G`. -/
+@[simps! apply]
+noncomputable def intEquivOfZPowersEqTop [Group G] (g : G) (hg : zpowers g = ⊤) :
+    Multiplicative ℤ ≃* G :=
+  .ofBijective (zpowersHom G g) (zpowersHom_bijective hg)
+
+@[simp]
+lemma intEquivOfZPowersEqTop_symm_self [Group G] {g : G} (hg : zpowers g = ⊤) :
+    (intEquivOfZPowersEqTop g hg).symm g = Multiplicative.ofAdd 1 := by
+  simp [MulEquiv.symm_apply_eq]
+
+lemma mulintEquivOfZPowersEqTop_symm_apply_zpow [Group G] {g : G} (hg : zpowers g = ⊤) (k : ℤ) :
+    (intEquivOfZPowersEqTop g hg).symm (g ^ k) = Multiplicative.ofAdd k := by
+  simp [← ofAdd_zsmul]
+
+lemma mulintEquivOfZPowersEqTop_strictMono [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
+    {g : G} (hg : zpowers g = ⊤) (hg1 : 1 < g) :
+    StrictMono (intEquivOfZPowersEqTop g hg) := by
+  intro x y hxy
+  simp only [intEquivOfZPowersEqTop, MulEquiv.ofBijective_apply, zpowersHom_apply]
+  exact zpow_lt_zpow_right hg1 hxy
+
+lemma mulintEquivOfZPowersEqTop_strictAnti [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
+    {g : G} (hg : zpowers g = ⊤) (hg1 : g < 1) :
+    StrictAnti (intEquivOfZPowersEqTop g hg) := by
+  intro x y hxy
+  simp only [intEquivOfZPowersEqTop, MulEquiv.ofBijective_apply, zpowersHom_apply]
+  exact zpow_right_strictAnti hg1 hxy
+
+/-- An infinite cyclic group is isomorphic to `Multiplicative ℤ`. -/
+noncomputable
+abbrev intCyclicMulEquiv [Group G] [IsCyclic G] : Multiplicative ℤ ≃* G :=
+  intEquivOfZPowersEqTop _ (isCyclic_iff_exists_zpowers_eq_top.mp ‹IsCyclic G›).choose_spec
+
+lemma zmultiplesHom_bijective [AddGroup G] {g : G} (hg : zmultiples g = ⊤) :
+    Function.Bijective (zmultiplesHom G g) := by
+  refine ⟨(AddMonoidHom.ker_eq_bot_iff _).mp ?_, AddMonoidHom.range_eq_top.mp hg⟩
+  simp [zmultiplesHom_ker_eq, ← infinite_zmultiples, hg, Set.infinite_univ]
+
+/-- The isomorphism between `ℤ` and the infinite cyclic group `G` sending
+`1` to the generator `g : G`. -/
+@[simps! apply]
+noncomputable def intEquivOfZMultiplesEqTop [AddGroup G] (g : G) (hg : zmultiples g = ⊤) : ℤ ≃+ G :=
+  .ofBijective (zmultiplesHom G g) (zmultiplesHom_bijective hg)
+
+@[simp]
+lemma intEquivOfZMultiplesEqTop_symm_self [AddGroup G] (g : G) (hg : zmultiples g = ⊤) :
+    (intEquivOfZMultiplesEqTop g hg).symm g = 1 := by
+  simp [AddEquiv.symm_apply_eq]
+
+lemma intEquivOfZMultiplesEqTop_symm_apply_zsmul [AddGroup G]
+    {g : G} (hg : zmultiples g = ⊤) (k : ℤ) :
+    (intEquivOfZMultiplesEqTop g hg).symm (k • g) = k := by
+  simp
+
+/-- An infinite cyclic additive group is isomorphic to `ℤ`. -/
+noncomputable
+abbrev intCyclicAddEquiv [AddGroup G] [IsAddCyclic G] : ℤ ≃+ G :=
+  intEquivOfZMultiplesEqTop _ (isAddCyclic_iff_exists_zmultiples_eq_top.mp ‹_›).choose_spec
+
+end Infinite
 
 variable (G) in
 /-- The automorphism group of a cyclic group is isomorphic to the multiplicative group of ZMod. -/

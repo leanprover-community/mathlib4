@@ -217,6 +217,7 @@ lemma lieBracket_add_right (hW : DifferentiableAt 𝕜 W x) (hW₁ : Differentia
   rw [fderiv_add hW hW₁, ContinuousLinearMap.add_apply]
   abel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The differentiation operator along `[W, V]`
 is the commutator of the differentiation operators along `W` and `V`. -/
 lemma fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt {f : E → F}
@@ -411,6 +412,7 @@ protected theorem _root_.Filter.EventuallyEq.lieBracket_vectorField
   filter_upwards [hV.eventuallyEq_nhds, hW.eventuallyEq_nhds] with y hVy hWy
   exact hVy.lieBracket_vectorField_eq hWy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie bracket of vector fields in vector spaces satisfies the Leibniz identity
 `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`. -/
 lemma leibniz_identity_lieBracketWithin_of_isSymmSndFDerivWithinAt
@@ -583,6 +585,7 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
   rw [B (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v), I]
   simp only [ContinuousLinearMap.comp_neg, eN.fderivWithin_eq e'N]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma DifferentiableWithinAt.pullbackWithin {f : E → F} {V : F → F} {s : Set E} {t : Set F} {x : E}
     (hV : DifferentiableWithinAt 𝕜 V t (f x))
     (hf : ContDiffWithinAt 𝕜 2 f s x) (hf' : (fderivWithin 𝕜 f s x).IsInvertible)
@@ -613,6 +616,7 @@ lemma _root_.exists_continuousLinearEquiv_fderiv_symm_eq
   simp only [← fderivWithin_univ, ← contDiffWithinAt_univ, ← nhdsWithin_univ] at hf h'f ⊢
   exact exists_continuousLinearEquiv_fderivWithin_symm_eq h'f hf uniqueDiffOn_univ (mem_univ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
 completeness but requiring that `f` is a local diffeo. -/

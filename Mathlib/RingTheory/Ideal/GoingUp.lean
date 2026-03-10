@@ -127,6 +127,7 @@ theorem exists_coeff_ne_zero_mem_comap_of_root_mem [IsDomain S] {r : S} (r_ne_ze
   exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem
     (fun {_} h => Or.resolve_right (mul_eq_zero.mp h) r_ne_zero) hr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_coeff_mem_comap_sdiff_comap_of_root_mem_sdiff [IsPrime I] (hIJ : I ≤ J) {r : S}
     (hr : r ∈ (J : Set S) \ I) {p : R[X]} (p_ne_zero : p.map (Quotient.mk (I.comap f)) ≠ 0)
     (hpI : p.eval₂ f r ∈ I) : ∃ i, p.coeff i ∈ (J.comap f : Set R) \ I.comap f := by
@@ -244,11 +245,13 @@ theorem IsIntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
 
 end IsIntegralClosure
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IntegralClosure.comap_lt_comap {I J : Ideal (integralClosure R S)} [I.IsPrime]
     (I_lt_J : I < J) :
     I.comap (algebraMap R (integralClosure R S)) < J.comap (algebraMap R (integralClosure R S)) :=
   IsIntegralClosure.comap_lt_comap S I_lt_J
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IntegralClosure.isMaximal_of_isMaximal_comap (I : Ideal (integralClosure R S)) [I.IsPrime]
     (hI : IsMaximal (I.comap (algebraMap R (integralClosure R S)))) : IsMaximal I :=
   IsIntegralClosure.isMaximal_of_isMaximal_comap S I hI
@@ -257,10 +260,12 @@ section
 
 variable [IsDomain S]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal (integralClosure R S)}
     (I_ne_bot : I ≠ ⊥) : I.comap (algebraMap R (integralClosure R S)) ≠ ⊥ :=
   IsIntegralClosure.comap_ne_bot S I_ne_bot
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal (integralClosure R S)} :
     I.comap (algebraMap R (integralClosure R S)) = ⊥ → I = ⊥ :=
   IsIntegralClosure.eq_bot_of_comap_eq_bot S
@@ -361,6 +366,26 @@ lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
     (f : R →+* S) {I : Ideal R} (hf₁ : Function.Injective f) (hf₂ : f.IsIntegral) :
     I.map f = ⊤ ↔ I = ⊤ :=
   map_eq_top_iff_of_ker_le f (by simp [(RingHom.injective_iff_ker_eq_bot f).mp hf₁]) hf₂
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
+a prime `p` of `R`, then any `x ∉ q` divides some `r ∉ p`. -/
+lemma exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton
+    {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime] (hq : p.primesOver S = {q})
+    [Algebra.IsIntegral R S] (x : S) (hx : x ∉ q) : ∃ r ∉ p, x ∣ algebraMap _ _ r := by
+  simp only [dvd_def, eq_comm, mul_comm x]
+  by_contra!
+  obtain ⟨Q, hQ, hxQ, hQp⟩ := Ideal.exists_le_prime_disjoint (.span {x})
+    (Algebra.algebraMapSubmonoid _ p.primeCompl)
+    (by simpa [Set.disjoint_iff_forall_ne, Ideal.mem_span_singleton',
+      Algebra.algebraMapSubmonoid, @forall_comm S])
+  have hQp' : Q.under _ ≤ p := by
+    intro x hxQ
+    by_contra hxp
+    exact Set.subset_compl_iff_disjoint_right.mpr hQp hxQ ⟨x, hxp, rfl⟩
+  obtain ⟨Q', hQ'Q, hQ', hQ'p⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isPrime _ _ hQp'
+  obtain rfl : Q' = q := hq.le ⟨hQ', ⟨hQ'p.symm⟩⟩
+  exact hx (hQ'Q (hxQ (Ideal.mem_span_singleton_self _)))
 
 end IsDomain
 
