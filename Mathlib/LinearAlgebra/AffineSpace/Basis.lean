@@ -71,7 +71,7 @@ lemma AffineIndependent.injOn_affineCombination_fintypeAffineCoords [Fintype ι]
 
 variable (ι k) in
 /-- The space of coordinates for affine combinations indexed by a general type. -/
-def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
+noncomputable def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
   (affineSpan k {(1 : k)}).comap (Finsupp.linearCombination k (1 : ι → k)).toAffineMap
 
 lemma mem_finsuppAffineCoords_iff_linearCombination {w : ι →₀ k} :
@@ -118,6 +118,7 @@ theorem ind : AffineIndependent k b :=
 theorem tot : affineSpan k (range b) = ⊤ :=
   b.tot'
 
+set_option backward.isDefEq.respectTransparency false in
 include b in
 protected theorem nonempty : Nonempty ι :=
   not_isEmpty_iff.mp fun hι => by

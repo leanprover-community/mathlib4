@@ -56,6 +56,7 @@ theorem CharP.natCast_gcdA_mul_intCast_eq_gcd (n : ℕ) :
 
 /-- In a ring of characteristic `p`, `(n : R)` is invertible when `n` is coprime with `p`, with
 inverse `n.gcdA p`. -/
+@[implicit_reducible]
 def invertibleOfCoprime {n : ℕ} (h : n.Coprime p) :
     Invertible (n : R) where
   invOf := n.gcdA p
@@ -92,11 +93,13 @@ variable [Semifield K]
 
 /-- A natural number `t` is invertible in a semifield `K` if the characteristic of `K` does not
 divide `t`. -/
+@[implicit_reducible]
 def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((ringChar.spec K t).mp h)
 
 /-- A natural number `t` is invertible in a semifield `K` of characteristic `p` if `p` does not
 divide `t`. -/
+@[implicit_reducible]
 def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((CharP.cast_eq_zero_iff K p t).mp h)
 

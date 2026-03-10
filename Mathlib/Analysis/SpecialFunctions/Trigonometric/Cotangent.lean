@@ -35,6 +35,7 @@ local notation "ℂ_ℤ" => integerComplement
 
 local notation "ℍₒ" => UpperHalfPlane.upperHalfPlaneSet
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Complex.cot_eq_exp_ratio (z : ℂ) :
     cot z = (Complex.exp (2 * I * z) + 1) / (I * (1 - Complex.exp (2 * I * z))) := by
   rw [Complex.cot, Complex.sin, Complex.cos]
@@ -261,9 +262,9 @@ lemma eqOn_iteratedDeriv_cotTerm (d : ℕ) :
     rw [h2, h3]
     ring
   · simpa [sub_eq_add_neg] using (contDiffOn_inv_linear k (-(d + 1))).contDiffAt
-      ((isOpen_compl_range_intCast).mem_nhds hz)
+      (isOpen_compl_range_intCast.mem_nhds hz)
   · simpa using (contDiffOn_inv_linear k (d + 1)).contDiffAt
-      ((isOpen_compl_range_intCast).mem_nhds hz)
+      (isOpen_compl_range_intCast.mem_nhds hz)
 
 lemma eqOn_iteratedDerivWithin_cotTerm_integerComplement (d : ℕ) :
     EqOn

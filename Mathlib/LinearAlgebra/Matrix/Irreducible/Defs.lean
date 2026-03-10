@@ -73,6 +73,7 @@ variable {n R : Type*} [Ring R] [LinearOrder R]
 
 /-- The directed graph (quiver) associated with a matrix `A`,
 with an edge `i ⟶ j` iff `0 < A i j`. -/
+@[implicit_reducible]
 def toQuiver (A : Matrix n n R) : Quiver n :=
   ⟨fun i j => PLift (0 < A i j)⟩
 
@@ -104,7 +105,7 @@ lemma IsIrreducible.exists_pos [Nontrivial n]
   have ⟨v, p₁, p₂, _hp_eq, hp₁_len⟩ := p.exists_eq_comp_of_le_length (n := 1) h_le
   have hlen_ne : p₁.length ≠ 0 := by simp [hp₁_len]
   obtain ⟨c, p', e, rfl⟩ := (Quiver.Path.length_ne_zero_iff_eq_cons (p := p₁)).1 (by lia)
-  obtain ⟨rfl⟩ : i = c := Quiver.Path.eq_of_length_zero p' (by aesop)
+  obtain ⟨rfl⟩ : i = c := Quiver.Path.eq_of_length_zero p' (by simp_all)
   exact (no_out _).false e
 
 /--
