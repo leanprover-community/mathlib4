@@ -226,9 +226,8 @@ def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
   S.toSubsemiring.toAddSubmonoid
 
 /-- A subalgebra over a ring is also a `Subring`. -/
-@[implicit_reducible, simps toSubsemiring]
-def toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
-    Subring A :=
+abbrev toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+    (S : Subalgebra R A) : Subring A :=
   { S.toSubsemiring with neg_mem' := S.neg_mem }
 
 @[simp]

@@ -70,8 +70,7 @@ protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   change -x ∈ S.toSubalgebra; simpa
 
 /-- Reinterpret an `IntermediateField` as a `Subfield`. -/
-@[implicit_reducible]
-def toSubfield : Subfield L :=
+abbrev toSubfield : Subfield L :=
   { S.toSubalgebra with
     neg_mem' := S.neg_mem,
     inv_mem' := S.inv_mem' }
@@ -804,7 +803,7 @@ variable (F)
 into an order isomorphism from
 `{ E : Subfield L // F ≤ E }` to `IntermediateField F L`. Its inverse is
 `IntermediateField.toSubfield`. -/
-@[simps]
+@[simps apply symm_apply]
 def extendScalars.orderIso :
     { E : Subfield L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
