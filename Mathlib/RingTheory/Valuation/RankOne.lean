@@ -172,6 +172,7 @@ variable {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v]
 
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
+@[implicit_reducible]
 def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
   exists_val_nontrivial := by
     by_contra H'
@@ -181,6 +182,7 @@ def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
 
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
+@[implicit_reducible]
 def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v where
   exists_val_nontrivial := by
     by_contra H'
@@ -214,6 +216,7 @@ variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 /-- A valuative relation has a rank one valuation when it is both nontrivial
 and the rank is at most one. -/
+@[implicit_reducible]
 def Valuation.RankOne.ofRankLeOneStruct [ValuativeRel.IsNontrivial R] (e : RankLeOneStruct R) :
     Valuation.RankOne (valuation R) where
   hom' := e.emb.comp embedding

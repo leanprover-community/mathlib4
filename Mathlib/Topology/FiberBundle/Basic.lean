@@ -730,6 +730,7 @@ variable {F E}
 variable (a : FiberPrebundle F E) {e : Pretrivialization F (π F E)}
 
 /-- Topology on the total space that will make the prebundle into a bundle. -/
+@[implicit_reducible]
 def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace F E) :=
   ⨆ (e : Pretrivialization F (π F E)) (_ : e ∈ a.pretrivializationAtlas),
     coinduced e.setSymm instTopologicalSpaceSubtype
@@ -811,6 +812,7 @@ number of "pretrivializations" identifying parts of `E` with product spaces `U �
 establishes that for the topology constructed on the sigma-type using
 `FiberPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
+@[implicit_reducible]
 def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology _ :=
   let _ := a.totalSpaceTopology
   { totalSpaceMk_isInducing' := fun b ↦ a.inducing_totalSpaceMk_of_inducing_comp b
