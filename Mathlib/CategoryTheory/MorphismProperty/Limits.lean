@@ -428,8 +428,8 @@ instance : (W.limitsOfShape J).RespectsIso :=
       e.inv.w.symm
     let c₁' : Cone X₁ := { pt := Y₁, π := (Functor.const _).map e₁.inv ≫ c₁.π }
     let c₂' : Cone X₂ := { pt := Y₂, π := (Functor.const _).map e₂.inv ≫ c₂.π }
-    have h₁' : IsLimit c₁' := IsLimit.ofIsoLimit h₁ (Cones.ext e₁)
-    have h₂' : IsLimit c₂' := IsLimit.ofIsoLimit h₂ (Cones.ext e₂)
+    have h₁' : IsLimit c₁' := IsLimit.ofIsoLimit h₁ (Cone.ext e₁)
+    have h₂' : IsLimit c₂' := IsLimit.ofIsoLimit h₂ (Cone.ext e₂)
     obtain hg : h₂'.lift (Cone.mk _ (c₁'.π ≫ f)) = g :=
       h₂'.hom_ext (fun j ↦ by
         rw [h₂'.fac]
@@ -530,8 +530,8 @@ instance : (W.colimitsOfShape J).RespectsIso :=
     have fac : e₁.hom ≫ g = h₁.desc (Cocone.mk _ (f ≫ c₂.ι)) ≫ e₂.hom := e.hom.w
     let c₁' : Cocone X₁ := { pt := Y₁, ι := c₁.ι ≫ (Functor.const _).map e₁.hom }
     let c₂' : Cocone X₂ := { pt := Y₂, ι := c₂.ι ≫ (Functor.const _).map e₂.hom }
-    have h₁' : IsColimit c₁' := IsColimit.ofIsoColimit h₁ (Cocones.ext e₁)
-    have h₂' : IsColimit c₂' := IsColimit.ofIsoColimit h₂ (Cocones.ext e₂)
+    have h₁' : IsColimit c₁' := IsColimit.ofIsoColimit h₁ (Cocone.ext e₁)
+    have h₂' : IsColimit c₂' := IsColimit.ofIsoColimit h₂ (Cocone.ext e₂)
     obtain hg : h₁'.desc (Cocone.mk _ (f ≫ c₂'.ι)) = g :=
       h₁'.hom_ext (fun j ↦ by
         rw [h₁'.fac]
@@ -786,6 +786,11 @@ instance diagonal_isStableUnderComposition [P.IsStableUnderComposition] [Respect
     rw [diagonal_iff, pullback.diagonal_comp]
     exact P.comp_mem _ _ h₁
       (by simpa only [cancel_left_of_respectsIso] using P.pullback_snd _ _ h₂)
+
+instance [P.ContainsIdentities] [P.RespectsIso] : P.diagonal.ContainsIdentities where
+  id_mem _ := P.of_isIso _
+
+instance [P.IsMultiplicative] [P.IsStableUnderBaseChange] : P.diagonal.IsMultiplicative where
 
 set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.RespectsIso] :

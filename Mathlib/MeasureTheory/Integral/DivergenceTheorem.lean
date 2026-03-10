@@ -136,7 +136,6 @@ private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I
       Box.coe_subset_Icc
     exact (this.hasBoxIntegral ⊥ rfl).integral_eq
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma for
 `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`. Compared to the previous
 lemma, here we drop the assumption of differentiability on the boundary of the box. -/
@@ -250,7 +249,6 @@ local notation "face " i => Set.Icc (a ∘ Fin.succAbove i) (b ∘ Fin.succAbove
 local notation:max "frontFace " i:arg => Fin.insertNth i (b i)
 local notation:max "backFace " i:arg => Fin.insertNth i (a i)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Divergence theorem** for Bochner integral. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is continuous on a rectangular
 box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative
 `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹` and the divergence `fun x ↦ ∑ i, f' x eᵢ i` is integrable on `[a, b]`,
@@ -364,7 +362,6 @@ open ContinuousLinearMap (smulRight)
 local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
 local macro:arg t:term:max noWs "²" : term => `(Fin 2 → $t)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Fundamental theorem of calculus, part 2**. This version assumes that `f` is continuous on the
 interval and is differentiable off a countable set `s`.
 
@@ -420,7 +417,6 @@ theorem integral_eq_of_hasDerivAt_off_countable [CompleteSpace E] (f f' : ℝ �
     rw [intervalIntegral.integral_symm, neg_eq_iff_eq_neg, neg_sub]
     exact integral_eq_of_hasDerivAt_off_countable_of_le f f' hab hs Hc Hd Hi.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Divergence theorem** for functions on the plane along rectangles. It is formulated in terms of
 two functions `f g : ℝ × ℝ → E` and an integral over `Icc a b = [a.1, b.1] × [a.2, b.2]`, where
 `a b : ℝ × ℝ`, `a ≤ b`. When thinking of `f` and `g` as the two coordinates of a single function
@@ -497,7 +493,6 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_of_le (f g : ℝ × ℝ → 
   integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le f g f' g' a b hle ∅
     (by simp) Hcf Hcg (by simpa only [diff_empty]) (by simpa only [diff_empty]) Hi
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Divergence theorem** for functions on the plane. It is formulated in terms of two functions
 `f g : ℝ × ℝ → E` and iterated integral `∫ x in a₁..b₁, ∫ y in a₂..b₂, _`, where
 `a₁ a₂ b₁ b₂ : ℝ`. When thinking of `f` and `g` as the two coordinates of a single function

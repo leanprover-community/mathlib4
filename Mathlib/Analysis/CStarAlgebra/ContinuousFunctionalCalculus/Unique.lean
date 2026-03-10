@@ -111,7 +111,6 @@ section IsTopologicalRing
 
 variable [TopologicalSpace A] [IsTopologicalRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)` into an `ℝ`-algebra `A`, this is
 the unique extension of `φ` from `C(X, ℝ)` to `A` as a star `ℝ`-algebra homomorphism. -/
 @[simps]
@@ -340,7 +339,6 @@ lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ�
 
 end IsTopologicalRing
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp high]
 lemma realContinuousMapZeroOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (f : C(X, ℝ≥0)₀) :
@@ -354,7 +352,6 @@ lemma realContinuousMapZeroOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)₀ →
     ext x
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma realContinuousMapZeroOfNNReal_injective :
     Function.Injective (realContinuousMapZeroOfNNReal (X := X) (A := A)) := by
   intro φ ψ h
