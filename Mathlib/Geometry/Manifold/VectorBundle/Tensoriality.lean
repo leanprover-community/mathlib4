@@ -100,11 +100,10 @@ variable [VectorBundle 𝕜 F V] [VectorBundle 𝕜 F' V']
 /-- A tensorial operation on sections of a vector bundle respects zero (since it respects scalar
   multiplication). -/
 theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 := by
-  have h₁ : MDiffAt (fun x' : M ↦ (0 : 𝕜)) x := mdifferentiableAt_const
-  rw [show (0 : Π x : M, V x) = (0 : M → 𝕜) • fun x' ↦ 0 by simp, hΦ.smul]
-  · simp
-  · exact h₁
-  · exact mdifferentiable_zeroSection ..
+  calc
+    Φ 0 = Φ ((0 : M → 𝕜) • (0 : Π x, V x)) := by simp
+    _   = 0 • Φ 0 := hΦ.smul mdifferentiableAt_const (mdifferentiable_zeroSection ..)
+    _   = 0 := by simp
 
 /-- A tensorial operation on sections of a vector bundle respects sums (since it respects binary
 addition). -/
@@ -188,7 +187,7 @@ variable
 the construction `TensorialAt.mkHom` provides the associated continuous linear map `V x →L[𝕜] A`. -/
 noncomputable def mkHom
     -- `Φ` and `x` explicit to make it easier to generate the side condition at point of use
-    (Φ : (Π x : M, V x) → A) (x : M) (hΦ : TensorialAt I F (Φ) x) :
+    (Φ : (Π x : M, V x) → A) (x : M) (hΦ : TensorialAt I F Φ x) :
     V x →L[𝕜] A :=
   have : T2Space (V x) := FiberBundle.t2Space F V x
   have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
