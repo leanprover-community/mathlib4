@@ -250,3 +250,17 @@ theorem inv_symm : (Equiv.inv G).symm = Equiv.inv G := rfl
 end InvolutiveInv
 
 end Equiv
+
+namespace MulEquiv
+
+variable [CommMonoid M] [CommMonoid N]
+
+/-- The `n`th power map commutes with isomorphisms. -/
+@[to_additive
+   /-- The multiplication-by-`n` map commutes with isomorphisms. -/]
+lemma powMonoidHom_comm (e : M ≃* N) (n : ℕ) :
+    (e : M →* N).comp (powMonoidHom n) = (powMonoidHom n).comp e := by
+  ext1
+  simp
+
+end MulEquiv
