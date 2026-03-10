@@ -204,32 +204,6 @@ jobs:
           ls .lake/build/bin/check-yaml
           ls .lake/packages/importGraph/.lake/build/bin/graph
 
-      - name: cleanup .cache/mathlib
-        # This needs write access to .cache/mathlib, so can't be run inside landrun.
-        # However it is only using the `tools` version of `cache`, so is safe to run outside landrun.
-        shell: bash
-        run: |
-          # Define the cache directory path
-          CACHE_DIR="$HOME/.cache/mathlib"
-
-          # Check if directory exists
-          if [ ! -d "$CACHE_DIR" ]; then
-            echo "::warning::Cache directory does not exist: $CACHE_DIR"
-            exit 0
-          fi
-
-          # Calculate directory size in bytes
-          DIR_SIZE=$(du -sb "$CACHE_DIR" | cut -f1)
-          printf 'Cache size (in bytes): %s\n' "$DIR_SIZE"
-
-          # Check if size exceeds 10GB
-          if [ "$DIR_SIZE" -gt "10737418240" ]; then
-            echo "Cache size exceeds threshold, running lake exe cache clean"
-            # We use the tools-branch version of `cache`.
-            cd tools-branch
-            lake exe cache clean
-          fi
-
       - name: download dependencies
         # We need network access to download dependencies
         # We run this inside landrun, but restrict disk access.
@@ -500,7 +474,7 @@ jobs:
 
       - name: upload cache staging artifact
         if: ${{ always() && steps.cache_staging_check.outputs.has_files == 'true' }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: cache-staging
           path: cache-staging/
@@ -594,20 +568,6 @@ jobs:
             exit $status
           done
 
-      # We need to separate this step from the previous script because it needs to run outside of landrun
-      - name: kill stray runLinter processes
-        if: ${{ steps.lint.outcome == 'failure' }}
-        continue-on-error: true
-        shell: bash
-        run: |
-          echo "Checking for runLinter processes..."
-          if pgrep -af runLinter; then
-            echo "Killing runLinter processes..."
-            pkill -f runLinter || true
-          else
-            echo "No stray runLinter processes found."
-          fi
-
       - name: end gh-problem-match-wrap for shake and lint steps
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -696,7 +656,7 @@ jobs:
           echo "CACHE_BIN=$CACHE_BIN" >> "$GITHUB_ENV"
 
       - name: Download cache staging artifact
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           name: cache-staging
           path: cache-staging
@@ -767,7 +727,7 @@ jobs:
           lake exe graph
 
       - name: upload the import graph
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: import-graph
           path: import_graph.dot
@@ -812,10 +772,13 @@ jobs:
     steps:
       - name: Generate auto merge app token
         id: auto-merge-app-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
         with:
           app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_AUTO_MERGE_PRIVATE_KEY }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-auto-merge-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_CI_AUTO_MERGE }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - id: PR_from_push
         uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
@@ -927,7 +890,7 @@ jobs:
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
-          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+          # This token is masked by the token minting action and will not be logged accidentally.
           token: ${{ steps.auto-merge-app-token.outputs.token }}
           issue-number: ${{ steps.PR.outputs.number }}
           body: |
