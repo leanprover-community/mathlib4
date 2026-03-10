@@ -47,6 +47,7 @@ namespace TopologicalSpace
 /-- Given a family of topological spaces `X i`, the `X`-generated topology on
 a topological space `Y` is the topology that is coinduced
 by all continuous maps `X i → Y`. -/
+@[implicit_reducible]
 def generatedBy : TopologicalSpace Y :=
   ⨆ (i : ι) (f : C(X i, Y)), coinduced f inferInstance
 
