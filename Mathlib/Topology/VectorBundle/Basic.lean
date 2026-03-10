@@ -231,9 +231,19 @@ theorem linearMapAt_def_of_notMem (e : Trivialization F (π F E)) [e.IsLinear R]
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
   dif_neg hb
 
+@[simp]
+theorem symm_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
+    (y : E b) : e.symm b (e.linearMapAt R b y) = y :=
+  e.toPretrivialization.symmₗ_linearMapAt hb y
+
 theorem symmₗ_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symmₗ R b (e.linearMapAt R b y) = y :=
   e.toPretrivialization.symmₗ_linearMapAt hb y
+
+@[simp]
+theorem linearMapAt_symm (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
+    (y : F) : e.linearMapAt R b (e.symm b y) = y :=
+  e.toPretrivialization.linearMapAt_symmₗ hb y
 
 theorem linearMapAt_symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
     (y : F) : e.linearMapAt R b (e.symmₗ R b y) = y :=
@@ -422,8 +432,17 @@ theorem coe_continuousLinearEquivAt_eq (e : Trivialization F (π F E)) [e.IsLine
     (e.continuousLinearEquivAt R b hb : E b → F) = e.continuousLinearMapAt R b :=
   (e.coe_linearMapAt_of_mem hb).symm
 
+theorem coe_continuousLinearEquivAt_eq' (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
+    (hb : b ∈ e.baseSet) :
+    (e.continuousLinearEquivAt R b hb : E b →L[R] F) = e.continuousLinearMapAt R b :=
+  DFunLike.coe_injective (e.coe_linearMapAt_of_mem hb).symm
+
 theorem symm_continuousLinearEquivAt_eq (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet) : ((e.continuousLinearEquivAt R b hb).symm : F → E b) = e.symmL R b :=
+  rfl
+
+theorem symm_continuousLinearEquivAt_eq' (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
+    (hb : b ∈ e.baseSet) : ((e.continuousLinearEquivAt R b hb).symm : F →L[R] E b) = e.symmL R b :=
   rfl
 
 @[simp]
@@ -792,6 +811,7 @@ def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
       rw [a.mk_coordChange _ _ hb, e'.mk_symm hb.1] }
 
 /-- Topology on the total space that will make the prebundle into a bundle. -/
+@[implicit_reducible]
 def totalSpaceTopology (a : VectorPrebundle R F E) : TopologicalSpace (TotalSpace F E) :=
   a.toFiberPrebundle.totalSpaceTopology
 
@@ -827,6 +847,7 @@ theorem continuous_totalSpaceMk (b : B) :
 
 /-- Make a `FiberBundle` from a `VectorPrebundle`; auxiliary construction for
 `VectorPrebundle.toVectorBundle`. -/
+@[implicit_reducible]
 def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology _ :=
   a.toFiberPrebundle.toFiberBundle
 

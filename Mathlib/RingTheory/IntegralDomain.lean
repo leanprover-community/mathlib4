@@ -51,6 +51,7 @@ theorem mul_left_bijective_of_finite₀ [IsRightCancelMulZero M] {a : M} (ha : a
   Finite.injective_iff_bijective.1 <| mul_left_injective₀ ha
 
 /-- Every finite nontrivial cancel_monoid_with_zero is a group_with_zero. -/
+@[implicit_reducible]
 def Fintype.groupWithZeroOfCancel (M : Type*) [MonoidWithZero M] [IsLeftCancelMulZero M]
     [DecidableEq M] [Fintype M] [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
@@ -92,6 +93,7 @@ section Ring
 
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
 `Mathlib/RingTheory/LittleWedderburn.lean`. -/
+@[implicit_reducible]
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
   __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slightly slow
@@ -103,6 +105,7 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
+@[implicit_reducible]
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 

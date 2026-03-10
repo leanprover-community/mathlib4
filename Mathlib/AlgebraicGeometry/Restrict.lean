@@ -758,6 +758,10 @@ lemma le_resLE_preimage_iff {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
 @[deprecated (since := "2025-10-07")] alias le_preimage_resLE_iff := le_resLE_preimage_iff
 
 set_option backward.isDefEq.respectTransparency false in
+@[simp] lemma resLE_app_top : (f.resLE U V e).app ⊤ =
+    U.topIso.hom ≫ f.appLE U V e ≫ V.topIso.inv := by simp [Scheme.Hom.resLE]
+
+set_option backward.isDefEq.respectTransparency false in
 lemma resLE_appLE {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
     (O : U.toScheme.Opens) (W : V.toScheme.Opens) (e' : W ≤ resLE f U V e ⁻¹ᵁ O) :
     (f.resLE U V e).appLE O W e' =
