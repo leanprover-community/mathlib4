@@ -112,7 +112,7 @@ abbrev closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a 
   haveI := isMulCommutative_of_comm _ hcomm
   inferInstance
 
-instance [SetLike S M] [MulMemClass S M] (s : S) [IsMulCommutative s] :
+instance {S : Type*} [SetLike S M] [MulMemClass S M] (s : S) [IsMulCommutative s] :
     IsMulCommutative (closure (s : Set M)) :=
   isMulCommutative_of_comm _ fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 

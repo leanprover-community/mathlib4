@@ -591,6 +591,12 @@ theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
   obtain ⟨k, hik, hjk⟩ := dir i j
   exact setLike_mul_comm (hik ha) (hjk hb)
 
+@[to_additive]
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o Subgroup G} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subgroup G) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 
 @[to_additive]
