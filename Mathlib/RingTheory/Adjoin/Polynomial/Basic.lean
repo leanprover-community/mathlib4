@@ -61,6 +61,12 @@ instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] (x : B) (p : 
     CoeT B (p.aeval x) (Algebra.adjoin A {x}) where
   coe := ⟨p.aeval x, aeval_mem_adjoin_singleton A x⟩
 
+@[simp]
+theorem adjoin_aeval_self (R : Type*) {A : Type*} [CommSemiring R] [Semiring A]
+    [Algebra R A] {p : Polynomial R} (x : A) :
+    aeval (x : Algebra.adjoin R {x}) p = (aeval x p : Algebra.adjoin R {x}) := by
+  ext; simp
+
 theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ Algebra.adjoin R {x}) :
     ∃ p : R[X], aeval x p = a := by
   rw [Algebra.adjoin_singleton_eq_range_aeval] at h
