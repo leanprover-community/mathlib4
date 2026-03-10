@@ -37,6 +37,7 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 instance (n : ℕ) [NeZero n] : Finite (ℤ ⧸ (Ideal.span {(n : ℤ)})) :=
   Ideal.finiteQuotientOfFreeOfNeBot _ <| by simpa using NeZero.ne _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Int.card_ideal_quot (n : ℕ) : Nat.card (ℤ ⧸ (Ideal.span {(n : ℤ)})) = n := by
   simp [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
 
