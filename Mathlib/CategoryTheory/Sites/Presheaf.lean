@@ -28,6 +28,8 @@ namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
   {A : Type*} [Category.{v} A] {B : Type*} [Category.{v} B]
 
+variable {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D)
+
 variable {P : ObjectProperty C}
 
 def ObjectProperty.isHomInjective (P : ObjectProperty C) : MorphismProperty C := fun _ _ f ↦
@@ -204,8 +206,6 @@ variable {J}
 lemma covering_of_W {H K : Cᵒᵖ ⥤ A} {f : H ⟶ K} (hf : J.W f) : covering J f :=
   fun F hF ↦ (hf F hF).injective
 
-variable {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D)
-
 lemma Functor.W_map_of_adjunction_of_isContinuous (F : C ⥤ D)
     (H : (Cᵒᵖ ⥤ A) ⥤ (Dᵒᵖ ⥤ A)) (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
     [Functor.IsContinuous.{v} F J K] {G G' : Cᵒᵖ ⥤ A} (f : G ⟶ G') (hf : J.W f) :
@@ -270,5 +270,87 @@ lemma foo' [HasPullbacks A] {H K : Cᵒᵖ ⥤ A} (f : H ⟶ K) :
   · sorry
 
 end Presheaf
+
+namespace Functor
+
+variable {F : C ⥤ D}
+
+lemma functorPushforward_mem [IsContinuous.{max u₂ v₂} F J K] {X : C} (S : Sieve X) (hS : S ∈ J X) :
+    S.functorPushforward F ∈ K _ := by
+  rw [K.mem_iff_isSheafFor_closedSieves]
+  obtain ⟨S, h⟩ := S
+  obtain ⟨ι, Y, f, rfl⟩ := S.exists_eq_ofArrows
+  dsimp
+  sorry
+
+lemma adsfasdf' [IsContinuous.{max u₂ v₂} F J K] :
+    PreservesOneHypercovers.{w} F J K := by
+  have H {X : C} (R : Presieve X) (hS : Sieve.generate R ∈ J X) :
+      Presieve.IsSheafFor (F.op ⋙ closedSieves K) R := by
+    rw [Presieve.isSheafFor_iff_generate]
+    apply IsContinuous.op_comp_isSheaf_of_types (J := J) (K := K) ⟨closedSieves K, _⟩ _ hS
+    rw [isSheaf_iff_isSheaf_of_type]
+    exact classifier_isSheaf _
+  --let auxSieve (Y : D) : Sieve Y :=
+  --  { arrows Z f := ∃ (X : C), Nonempty (Z ⟶ F.obj X)
+  --    downward_closed := sorry }
+  intro X E
+  refine ⟨?_, ?_⟩
+  · rw [K.mem_iff_isSheafFor_closedSieves]
+    rw [PreZeroHypercover.sieve₀, Sieve.ofArrows, ← Presieve.isSheafFor_iff_generate]
+    rw [Presieve.isSheafFor_arrows_iff]
+    intro x hx
+    have := H E.presieve₀ E.mem₀
+    rw [Presieve.isSheafFor_arrows_iff] at this
+    refine this x ?_
+    intro i j Z gi gj hgij
+    apply hx
+    simp [← Functor.map_comp, hgij]
+  · intro i j W p₁ p₂ h
+    --rw [K.mem_iff_isSheafFor_closedSieves]
+    --intro x hx
+    --let S : Sieve W :=
+    --  ⟨fun T g ↦ ∃ (X : C), Nonempty (T ⟶ F.obj X), by
+    --    intro Y Z f ⟨X, ⟨p⟩⟩ g
+    --    use X, g ≫ p⟩
+    --have hS : S ∈ K W := sorry
+    let S : Sieve W :=
+      ⟨fun T g ↦ ∃ (B : C) (u : B ⟶ E.X i) (u' : B ⟶ E.X j) (b : T ⟶ F.obj B),
+          b ≫ F.map u = g ≫ p₁ ∧ b ≫ F.map u' = g ≫ p₂, by
+        intro Y Z f ⟨B, u, u', b, hb₁, hb₂⟩ g
+        use B, u, u', g ≫ b
+        simp [hb₁, hb₂]⟩
+    have hS : S ∈ K W :=
+      sorry
+    refine GrothendieckTopology.transitive _ hS _ ?_
+    intro Y f ⟨B, u, u', b, hb₁, hb₂⟩
+    --intro Y f ⟨X, ⟨p⟩⟩
+    have := E.sieve₁ u u'
+    have := E.mem₁ _ _ u u' <| by
+      sorry
+    have hmem : ((E.sieve₁ u u').functorPushforward F).pullback b ∈ K Y :=
+      sorry
+    refine K.superset_covering ?_ hmem
+    intro Z p ⟨T, w, v, ⟨k, a, ha, ha'⟩, heq⟩
+    use k, v ≫ F.map a
+    refine ⟨?_, ?_⟩
+    · simp [← hb₁, ← Functor.map_comp, ← ha, reassoc_of% heq]
+    · simp [← hb₂, ← Functor.map_comp, ← ha', reassoc_of% heq]
+  --rw [K.mem_iff_isSheafFor_closedSieves]
+  --have : Presieve.IsSheafFor (F.op ⋙ closedSieves K) S.arrows := by
+  --  apply IsContinuous.op_comp_isSheaf_of_types (J := J) (K := K) ⟨closedSieves K, _⟩ _ hS
+  --  rw [isSheaf_iff_isSheaf_of_type]
+  --  exact classifier_isSheaf _
+
+lemma adsfasdf [IsContinuous.{max u₂ v₂} F J K] {X : C} {S : Sieve X} (hS : S ∈ J X) :
+    S.functorPushforward F ∈ K (F.obj X) := by
+  rw [K.mem_iff_isSheafFor_closedSieves]
+  have : Presieve.IsSheafFor (F.op ⋙ closedSieves K) S.arrows := by
+    apply IsContinuous.op_comp_isSheaf_of_types (J := J) (K := K) ⟨closedSieves K, _⟩ _ hS
+    rw [isSheaf_iff_isSheaf_of_type]
+    exact classifier_isSheaf _
+  sorry
+
+end Functor
 
 end CategoryTheory
