@@ -1060,8 +1060,8 @@ theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T]
     [Q.IsPrime] [Q.LiesOver P] [P.LiesOver p] :
     ramificationIdx (algebraMap R T) p Q =
       ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
-  by_cases hp : p = ⊥
-  · rw [hp, ramificationIdx_bot, ramificationIdx_bot, zero_mul]
+  obtain rfl | hp := eq_or_ne p ⊥
+  · simp
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under S Q
   have : Module.IsTorsionFree R T := by
     refine Module.IsTorsionFree.of_smul_eq_zero fun r m h ↦ ?_
