@@ -6,6 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.Data.ENat.Lattice
 
@@ -222,6 +223,27 @@ instance (X Y : C) (n : ℕ) [HasInjectiveDimensionLT X n]
     HasInjectiveDimensionLT (X ⊞ Y) n :=
   (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasInjectiveDimensionLT_X₂ n
     (by assumption) (by assumption)
+
+lemma hasProjectiveDimensionLT_of_subsingleton [HasExt.{w} C] [EnoughProjectives C] (X : C) (n : ℕ)
+    (hX : ∀ Y : C, Subsingleton (Ext Y X n)) : HasInjectiveDimensionLT X n := by
+  match n with
+  | 0 =>
+    exact (IsZero.of_epi_eq_zero (𝟙 X) ((Ext.homEquiv₀.subsingleton_congr.mp (hX X)).eq_zero
+      (𝟙 X))).hasInjectiveDimensionLT_zero
+  | n + 1 =>
+    refine HasInjectiveDimensionLT.mk (fun i hi {Y} e ↦ @ Subsingleton.eq_zero _ _ ?_ e)
+    obtain ⟨k, rfl⟩ : ∃ k, i = n + 1 + k := Nat.exists_eq_add_of_le hi
+    induction k generalizing Y with
+    | zero => simpa using hX Y
+    | succ k ih =>
+      rcases EnoughProjectives.presentation Y with ⟨P, g⟩
+      let S := ShortComplex.mk (kernel.ι g) g (kernel.condition g)
+      have S_exact : S.ShortExact := { exact := ShortComplex.exact_kernel g }
+      have eq : 1 + (n + 1 + k) = n + 1 + (k + 1) := by abel
+      have sub : Subsingleton (Ext P X (n + 1 + (k + 1))) := Ext.subsingleton_of_projective P X _
+      have surj : Function.Surjective (S_exact.extClass.precomp X eq) :=
+        fun x ↦ Ext.contravariant_sequence_exact₃ S_exact X x (sub.eq_zero _) eq
+      exact @surj.subsingleton _ _ _ (ih (Nat.le_add_right _ k) 0)
 
 end CategoryTheory
 
