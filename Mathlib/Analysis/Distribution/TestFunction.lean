@@ -456,7 +456,19 @@ protected theorem integrable {μ : Measure E}
   rw [IntegrableOn, ← memLp_one_iff_integrable] at H ⊢
   exact f.memLp_top.smul H
 
-variable [SMulCommClass ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [SMulCommClass ℝ 𝕜 F₃]
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₂] [NormedSpace ℝ F₃]
+  [IsScalarTower ℝ 𝕜 F₃]
+
+noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
+    𝓓^{n}(Ω, F₁) →L[ℝ] F₃ where
+  toLinearMap := integralAgainstBilinLM B μ φ
+  cont := show Continuous (integralAgainstBilinLM B μ φ) by
+    rw [TestFunction.continuous_iff_continuous_comp]
+    intro K K_sub_Ω
+    by_cases hφ : LocallyIntegrableOn φ Ω μ
+    · refine .congr ?_ fun f ↦ (integralAgainstBilinLM_ofSupportedIn hφ K_sub_Ω).symm
+      exact ContDiffMapSupportedIn.integralAgainstBilinCLM B μ φ |>.continuous
+    · simpa [integralAgainstBilinLM_eq_zero hφ] using continuous_zero
 
 noncomputable def integralAgainstBilinLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
     𝓓^{n}(Ω, F₁) →ₗ[𝕜] F₃ where

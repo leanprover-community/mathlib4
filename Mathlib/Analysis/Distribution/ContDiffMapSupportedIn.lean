@@ -783,14 +783,25 @@ noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F
   cont := show Continuous (integralAgainstBilinLM B μ φ) by
     refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
       (norm_withSeminorms 𝕜 _) _
-      (fun _ ↦ ⟨{0}, ‖B‖₊ * (eLpNorm φ 1 (μ.restrict K)).toNNReal, fun f ↦ ?_⟩)
+      (.of_real _ _ _ <| fun _ ↦ ⟨{0}, (∫ x in K, ‖φ x‖ ∂μ) * ‖B‖, fun f ↦ ?_⟩)
     simpa using norm_integralAgainstBilinLM_le
 
 @[simp]
 lemma integralAgainstBilinCLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinCLM B μ φ f = open scoped Classical in
+      if IntegrableOn φ K μ then ∫ x, B (f x) (φ x) ∂μ else 0 :=
+  integralAgainstBilinLM_apply
+
+lemma integralAgainstBilinCLM_eq_integral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
     (hφ : IntegrableOn φ K μ) {f : 𝓓^{n}_{K}(E, F₁)} :
     integralAgainstBilinCLM B μ φ f = ∫ x, B (f x) (φ x) ∂μ :=
-  integralAgainstBilinLM_apply hφ
+  integralAgainstBilinLM_eq_integral hφ
+
+lemma integralAgainstBilinCLM_eq_setIntegral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : IntegrableOn φ K μ) {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinCLM B μ φ f = ∫ x in K, B (f x) (φ x) ∂μ :=
+  integralAgainstBilinLM_eq_setIntegral hφ
 
 end Integral
 
