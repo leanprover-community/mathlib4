@@ -5,7 +5,6 @@ Authors: Yuma Mizuno
 -/
 module
 
-import Mathlib.Tactic.Widget.StringDiagram
 public import Mathlib.CategoryTheory.Bicategory.Modification.Lax
 
 /-!
@@ -16,7 +15,6 @@ Given bicategories `B` and `C`, we give bicategory structures on `LaxFunctor B C
 * 1-morphisms are lax or oplax natural transformations, and
 * 2-morphisms are modifications.
 -/
-open ProofWidgets Mathlib.Tactic.Widget
 
 @[expose] public section
 
@@ -31,11 +29,6 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory
 variable {F G H I : LaxFunctor B C}
 
 namespace LaxTrans
-
-open scoped Lax.LaxTrans
-show_panel_widgets [local StringDiagram]
-
-#string_diagram Modification.naturality
 
 /-- Left whiskering of a lax natural transformation and a modification. -/
 @[simps]
@@ -109,9 +102,6 @@ scoped instance LaxFunctor.bicategory : Bicategory (LaxFunctor B C) where
 end LaxTrans
 
 namespace OplaxTrans
-
-open scoped Lax.OplaxTrans
-show_panel_widgets [local StringDiagram]
 
 /-- Left whiskering of an oplax natural transformation and a modification. -/
 @[simps]

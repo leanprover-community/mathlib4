@@ -6,7 +6,6 @@ Authors: Yuma Mizuno
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
-import Mathlib.Tactic.Widget.StringDiagram
 
 /-!
 # The bicategory of oplax functors between two bicategories
@@ -20,7 +19,6 @@ Given bicategories `B` and `C`, we give a bicategory structure on `B ⥤ᵒᵖ�
 @[expose] public section
 
 namespace CategoryTheory.Oplax
-open ProofWidgets Mathlib.Tactic.Widget
 
 open Category Bicategory
 
@@ -31,9 +29,6 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory
 variable {F G H I : B ⥤ᵒᵖᴸ C}
 
 namespace LaxTrans
-
-open scoped Oplax.LaxTrans
-show_panel_widgets [local StringDiagram]
 
 /-- Left whiskering of a lax natural transformation and a modification. -/
 @[simps]
