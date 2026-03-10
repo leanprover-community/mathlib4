@@ -882,13 +882,6 @@ theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology 
 
 end VectorPrebundle
 
-variable [TopologicalSpace (TotalSpace F E)] [FiberBundle F E] [VectorBundle R F E] in
-/-- A continuous linear equivalence between the fiber at `b` and the model fiber,
-induced by the preferred trivialisation at each `b`. -/
-@[simps!]
-noncomputable def continuousLinearEquivAt (b : B) : E b ≃L[R] F :=
-  (trivializationAt F E b).continuousLinearEquivAt R b (FiberBundle.mem_baseSet_trivializationAt' b)
-
 namespace ContinuousLinearMap
 
 variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
