@@ -405,10 +405,15 @@ variable {s t}
   | ⟨a, b⟩ => by simp [Multiset.sigma, and_left_comm]
 
 protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
-    Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=
-  Quot.induction_on s fun l₁ => by
-    choose f hf using fun a => Quotient.exists_rep (t a)
-    simpa [← funext hf] using List.Nodup.sigma
+    Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) := by
+  refine Multiset.induction_on s (fun _ _ ↦ by simp) (fun a s ih hs ht ↦ ?_)
+  simp only [cons_sigma]
+  refine nodup_add.2 ⟨Nodup.map (fun _ _ h ↦ by simpa using h) (ht _), ih (nodup_cons.1 hs).2 ht,
+    disjoint_iff_ne.2 (fun ⟨x₁, x₂⟩ hx ⟨y₁, y₂⟩ hy h ↦ ?_)⟩
+  obtain ⟨A, hA, H⟩ := mem_map.1 hx
+  refine (nodup_cons.1 hs).1 ?_
+  convert (mem_sigma.1 hy).1
+  exact congr_arg Sigma.fst (H.trans h)
 
 end Sigma
 
