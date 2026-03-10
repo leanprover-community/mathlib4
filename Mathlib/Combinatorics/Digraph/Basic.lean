@@ -126,6 +126,10 @@ instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
 @[simp]
 theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Prop) = (· ≤ ·) := rfl
 
+/-- The relation that one `Digraph` is a spanning subgraph of another. -/
+abbrev IsSpanningSubgraph (x y : Digraph V) : Prop :=
+  x ≤ y ∧ x.verts = y.verts
+
 /-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
 instance : Max (Digraph V) where
   max x y := {
@@ -245,7 +249,7 @@ In this section we provide the complete boolean algebra for spanning subgraphs
 /--
 The type of spanning subgraphs of a digraph `G`
 -/
-abbrev SpanningSubgraph (G : Digraph V) := {H : Digraph V // H ≤ G ∧ H.verts = G.verts}
+abbrev SpanningSubgraph (G : Digraph V) := {H : Digraph V // IsSpanningSubgraph H G}
 
 /--
 The join/union of two Digraphs i.e. `G₁ ⊔ G₂`
@@ -284,11 +288,13 @@ def compl {G : Digraph V} (H : G.SpanningSubgraph) : G.SpanningSubgraph := by
     Adj v w := G.Adj v w ∧ ¬ H.val.Adj v w
   }
   case property =>
-    simp_all only [H.property, and_true]
-    unfold instLE LE.le Digraph.IsSubgraph
-    simp only [subset_refl, and_imp, true_and]
-    intro v w G_adj H_adj
-    assumption
+    constructor
+    · constructor
+      · intro v hv
+        simpa [H.property.2] using hv
+      · intro _ _ h
+        exact h.1
+    · simp [H.property.2]
 
 /--
 The meet/intersection of two spanning subgraphs `H₁` and `H₂` of `G`
@@ -318,8 +324,9 @@ def bot {G : Digraph V} : G.SpanningSubgraph where
   val :=
     ⟨G.verts, fun _ _ => False, by simp, by simp⟩
   property := by
-    unfold instLE LE.le Digraph.IsSubgraph
-    simp only [subset_refl, IsEmpty.forall_iff, implies_true, and_self]
+    constructor
+    · constructor <;> aesop
+    · aesop
 
 private lemma by_val {G : Digraph V} {H₁ H₂ : G.SpanningSubgraph}
     (h : H₁.val ≤ H₂.val) : H₁ ≤ H₂ := h
