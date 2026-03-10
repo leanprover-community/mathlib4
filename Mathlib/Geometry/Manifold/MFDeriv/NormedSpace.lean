@@ -52,33 +52,30 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
 section Module
 
 theorem DifferentiableWithinAt.comp_mdifferentiableWithinAt
-    {g : F → F'} {f : M → F} {s : Set M} {t : Set F}
-    {x : M} (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : MDiffAt[s] f x)
-    (h : MapsTo f s t) : MDiffAt[s] (g ∘ f) x :=
+    {g : F → F'} {f : M → F} {s : Set M} {t : Set F} {x : M}
+    (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : MDiffAt[s] f x) (h : MapsTo f s t) :
+    MDiffAt[s] (g ∘ f) x :=
   hg.mdifferentiableWithinAt.comp x hf h
 
-theorem DifferentiableAt.comp_mdifferentiableWithinAt {g : F → F'} {f : M → F} {s : Set M}
-    {x : M} (hg : DifferentiableAt 𝕜 g (f x)) (hf : MDiffAt[s] f x) :
-    MDiffAt[s] (g ∘ f) x :=
+theorem DifferentiableAt.comp_mdifferentiableWithinAt {g : F → F'} {f : M → F} {s : Set M} {x : M}
+(hg : DifferentiableAt 𝕜 g (f x)) (hf : MDiffAt[s] f x) : MDiffAt[s] (g ∘ f) x :=
   hg.mdifferentiableAt.comp_mdifferentiableWithinAt x hf
 
-theorem DifferentiableAt.comp_mdifferentiableAt
-    {g : F → F'} {f : M → F} {x : M} (hg : DifferentiableAt 𝕜 g (f x))
-    (hf : MDiffAt f x) : MDiffAt (g ∘ f) x :=
+theorem DifferentiableAt.comp_mdifferentiableAt {g : F → F'} {f : M → F} {x : M}
+    (hg : DifferentiableAt 𝕜 g (f x)) (hf : MDiffAt f x) : MDiffAt (g ∘ f) x :=
   hg.comp_mdifferentiableWithinAt hf
 
 theorem Differentiable.comp_mdifferentiableWithinAt {g : F → F'} {f : M → F} {s : Set M} {x : M}
     (hg : Differentiable 𝕜 g) (hf : MDiffAt[s] f x) : MDiffAt[s] (g ∘ f) x :=
   hg.differentiableAt.comp_mdifferentiableWithinAt hf
 
-theorem Differentiable.comp_mdifferentiableAt
-    {g : F → F'} {f : M → F} {x : M} (hg : Differentiable 𝕜 g)
-    (hf : MDiffAt f x) : MDiffAt (g ∘ f) x :=
+theorem Differentiable.comp_mdifferentiableAt {g : F → F'} {f : M → F} {x : M}
+    (hg : Differentiable 𝕜 g) (hf : MDiffAt f x) : MDiffAt (g ∘ f) x :=
   hg.comp_mdifferentiableWithinAt hf
 
-theorem Differentiable.comp_mdifferentiable {g : F → F'} {f : M → F} (hg : Differentiable 𝕜 g)
-    (hf : MDiff f) : MDiff (g ∘ f) := fun x =>
-  hg.differentiableAt.comp_mdifferentiableAt (hf x)
+theorem Differentiable.comp_mdifferentiable {g : F → F'} {f : M → F}
+    (hg : Differentiable 𝕜 g) (hf : MDiff f) : MDiff (g ∘ f) :=
+  fun x ↦ hg.differentiableAt.comp_mdifferentiableAt (hf x)
 
 end Module
 
