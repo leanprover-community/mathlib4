@@ -265,8 +265,6 @@ variable {D E : Type*} [Category* D] [Category* E] (F : D ⥤ E)
   [PreservesLimitsOfSize.{max v u, max v u} (forget D)]
   [PreservesLimitsOfSize.{max v u, max v u} (forget E)]
   [(forget D).ReflectsIsomorphisms] [(forget E).ReflectsIsomorphisms]
-  [∀ (P : Cᵒᵖ ⥤ E) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-  [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
 set_option backward.isDefEq.respectTransparency false in
 include instCCD instCCE in
