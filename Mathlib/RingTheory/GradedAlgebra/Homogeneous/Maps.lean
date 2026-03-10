@@ -16,6 +16,10 @@ In this file we define `HomogeneousIdeal.map` and `HomogeneousIdeal.comap`.
 
 @[expose] public section
 
+namespace HomogeneousIdeal
+
+section arbitrary_grading
+
 variable {A B C σ τ ω ι F G : Type*}
   [Semiring A] [Semiring B] [Semiring C]
   [SetLike σ A] [SetLike τ B] [SetLike ω C]
@@ -24,8 +28,6 @@ variable {A B C σ τ ω ι F G : Type*}
   {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ω}
   [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
   (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞)
-
-namespace HomogeneousIdeal
 
 /-- Map a homogeneous ideal along a graded ring homomorphism. The underlying ideal is
 (definitionally) equal to `Ideal.map`. -/
@@ -85,5 +87,25 @@ lemma map_comp : I.map (g.comp f) = (I.map f).map g := (map_map f g).symm
 @[simp] lemma comap_id : I.comap (GradedRingHom.id 𝒜) = I := rfl
 
 lemma comap_comap : (K.comap g).comap f = K.comap (g.comp f) := rfl
+
+end arbitrary_grading
+
+section canonical_grading
+
+variable {A B C σ τ ω ι F G : Type*}
+  [Semiring A] [Semiring B] [Semiring C]
+  [SetLike σ A] [SetLike τ B] [SetLike ω C]
+  [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [AddSubmonoidClass ω C]
+  [DecidableEq ι] [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
+  {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ω}
+  [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
+  {f : 𝒜 →+*ᵍ ℬ} {g : ℬ →+*ᵍ 𝒞}
+
+theorem irrelevant_le_map_comp
+    (hf : ℬ₊ ≤ 𝒜₊.map f) (hg : 𝒞₊ ≤ ℬ₊.map g) : 𝒞₊ ≤ 𝒜₊.map (g.comp f) := by
+  rw [map_comp]
+  exact hg.trans <| map_mono _ hf
+
+end canonical_grading
 
 end HomogeneousIdeal

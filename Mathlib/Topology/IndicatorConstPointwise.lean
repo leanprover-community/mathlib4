@@ -111,7 +111,6 @@ for every `x`, we eventually have the equivalence `x ∈ Asᵢ ↔ x ∈ A`. -/
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne, not_false_eq_true]
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm, not_false_eq_true]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_indicator_const_iff_tendsto_pi_pure'
     (b : β) (nhds_b : {0}ᶜ ∈ 𝓝 b) (nhds_o : {b}ᶜ ∈ 𝓝 0) :
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
@@ -120,7 +119,6 @@ lemma tendsto_indicator_const_iff_tendsto_pi_pure'
   simp_rw [tendsto_pure]
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_indicator_const_iff_tendsto_pi_pure [T1Space β] (b : β) [NeZero b] :
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
       ↔ (Tendsto (fun i x ↦ x ∈ As i) L <| Filter.pi (pure <| · ∈ A)) := by
