@@ -100,6 +100,7 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
     rfl
 
 /-- The opposite linear order to a given linear order -/
+@[implicit_reducible]
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
   inferInstanceAs <| LinearOrder (OrderDual α)
 
