@@ -36,15 +36,14 @@ variable (H : Homotopy f g)
 namespace ToChainHomotopy
 
 /-- The family of components of the induced chain homotopy -/
-noncomputable def hom (p q : ℕ) :
-    ((alternatingFaceMapComplex C).obj X).X p ⟶ ((alternatingFaceMapComplex C).obj Y).X q :=
+noncomputable def hom (p q : ℕ) : X _⦋p⦌ ⟶ Y _⦋q⦌ :=
   if h : p + 1 = q then
-    ∑ k : Fin (p + 1), ((-1 : ℤ) ^ (k : ℕ)) • H.h k ≫ eqToHom (by simp [h])
+    -∑ k : Fin (p + 1), ((-1 : ℤ) ^ (k : ℕ)) • H.h k ≫ eqToHom (by simp [h])
   else 0
 
 @[simp]
 lemma hom_eq (p : ℕ) :
-    hom H p (p + 1) = ∑ k : Fin (p + 1), ((-1 : ℤ) ^ (k : ℕ)) • H.h k := by
+    hom H p (p + 1) = -∑ k : Fin (p + 1), ((-1 : ℤ) ^ (k : ℕ)) • H.h k := by
   simp [hom]
 
 @[simp]
