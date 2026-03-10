@@ -188,6 +188,9 @@ instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G
 theorem smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofConjAct g) h :=
   rfl
 
+theorem toConjAct_smul_eq_mulAut_conj (g h : G) : ConjAct.toConjAct g • h = MulAut.conj g h :=
+  rfl
+
 /-- The set of fixed points of the conjugation action of `G` on itself is the center of `G`. -/
 theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
   ext x

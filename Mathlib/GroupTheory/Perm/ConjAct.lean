@@ -82,8 +82,9 @@ theorem conj_smul_range_ofSubtype [Finite α] (g : Perm α) (s : Finset α) :
     MulAut.conj g • (ofSubtype (p := (· ∈ s))).range = (ofSubtype (p := (· ∈ g • s))).range := by
   have : Fintype α := Fintype.ofFinite α
   ext k
-  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff,
-    SetLike.setOf_mem_eq, MulAut.smul_def, ← map_inv, MulAut.conj_apply, inv_inv,
-    support_conj_eq_smul_support', Finset.coe_smul_finset,  Set.subset_smul_set_iff]
+  simp only [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff, ← map_inv,
+    MulAut.smul_def, ← ConjAct.toConjAct_smul_eq_mulAut_conj,
+    support_conjAct_smul_eq_smul_support]
+  simp [Set.subset_smul_set_iff]
 
 end Equiv.Perm
