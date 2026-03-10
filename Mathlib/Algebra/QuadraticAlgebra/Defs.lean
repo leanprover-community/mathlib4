@@ -7,6 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 
 /-!
@@ -460,6 +462,16 @@ instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) whe
   algebraMap.map_add' x y := by ext <;> simp
   commutes' s z := by ext <;> simp [Algebra.commutes]
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
+
+/-- The left multiplication matrix of an element in `QuadraticAlgebra R a b`
+with respect to the basis `{1, i}`. -/
+theorem leftMulMatrix_eq (x : QuadraticAlgebra R a b) :
+    Algebra.leftMulMatrix (basis a b) x = !![x.re, a * x.im; x.im, x.re + b * x.im] := by
+  ext i j
+  fin_cases i <;> fin_cases j
+  all_goals
+    rw [Algebra.leftMulMatrix_apply, LinearMap.toMatrix_apply]
+    simp [QuadraticAlgebra.basis]
 
 theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = ⟨r, 0⟩ := rfl
 

@@ -83,6 +83,22 @@ theorem Squarefree.of_mul_right [CommMonoid R] {m n : R} (hmn : Squarefree (m * 
 theorem Squarefree.squarefree_of_dvd [Monoid R] {x y : R} (hdvd : x ∣ y) (hsq : Squarefree y) :
     Squarefree x := fun _ h => hsq _ (h.trans hdvd)
 
+/-- If `a * a` is squarefree, then `a` is a unit. -/
+theorem Squarefree.isUnit_of_mul_self [Monoid R] {a : R}
+    (h : Squarefree (a * a)) : IsUnit a :=
+  h a ⟨1, (mul_one _).symm⟩
+
+/-- A squarefree element that is a perfect square must be a unit. -/
+theorem Squarefree.isUnit_of_isSquare [Monoid R] {a : R}
+    (hsf : Squarefree a) (hsq : IsSquare a) : IsUnit a := by
+  obtain ⟨z, rfl⟩ := hsq
+  simp [hsf.isUnit_of_mul_self]
+
+/-- A squarefree non-unit element is not a perfect square. -/
+theorem Squarefree.not_isSquare [Monoid R] {a : R}
+    (hsf : Squarefree a) (ha : ¬ IsUnit a) : ¬ IsSquare a :=
+  fun hsq ↦ ha (hsf.isUnit_of_isSquare hsq)
+
 theorem Associated.squarefree_iff [Monoid R] {x y : R} (h : Associated x y) :
     Squarefree x ↔ Squarefree y :=
   ⟨fun hx ↦ hx.squarefree_of_dvd h.dvd', fun hy ↦ hy.squarefree_of_dvd h.dvd⟩
