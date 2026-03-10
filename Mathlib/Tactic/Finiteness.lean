@@ -60,8 +60,8 @@ This tactic is extensible. By adding more rules, `finiteness` can prove more goa
 * `add_aesop_rules safe tactic (rule_sets := [finiteness]) (by ...)`
 (Note that a `simp` rule cannot be added this way, since all `simp` rules are disabled.)
 
-* `finiteness (clause)` customizes the `aesop` call using the given clause. See `aesop` documentation
-  for detailed explanation. Note that `finiteness` disables `simp`, so
+* `finiteness (clause)` customizes the `aesop` call using the given clause. See `aesop`
+  documentation for detailed explanation. Note that `finiteness` disables `simp`, so
   `finiteness (add simp [lemma1, lemma2])` does not do anything more than a bare `finiteness`.
 * `finiteness [t₁, ..., tₙ]` adds the terms `t₁`, ..., `tₙ` as local hypotheses before applying
   the search rules.
