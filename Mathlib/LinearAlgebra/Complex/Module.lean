@@ -554,22 +554,23 @@ lemma star_mul_self_add_self_mul_star (a : A) :
         smul_mul_assoc]
       abel
 
+lemma star_mul_self_sub_self_mul_star (a : A) :
+    star a * a - a * star a = 2 • I • (ℜ a * ℑ a - ℑ a * ℜ a) :=
+  have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
+  calc
+    star a * a - a * star a = _ :=
+      congr((star $(a_eq)) * $(a_eq) - $(a_eq) * (star $(a_eq)))
+    _ = 2 • I • (ℜ a * ℑ a - ℑ a * ℜ a) := by
+      simp [mul_add, add_mul, mul_smul_comm, smul_mul_assoc, smul_smul]
+      module
+
 /-- An element in a non-unital star `ℂ`-algebra is normal if and only if its real and imaginary
 parts commute. -/
 lemma isStarNormal_iff_commute_realPart_imaginaryPart {x : A} :
     IsStarNormal x ↔ Commute (ℜ x : A) (ℑ x : A) := by
-  conv_lhs => rw [isStarNormal_iff, ← realPart_add_I_smul_imaginaryPart x]
-  rw [commute_iff_eq]
-  simp only [star_add, selfAdjoint.star_val_eq, star_smul, Complex.star_def, Complex.conj_I,
-    neg_smul, ← sub_eq_add_neg, mul_add, sub_mul, smul_mul_assoc, mul_smul_comm, smul_sub,
-    smul_smul, Complex.I_mul_I, one_smul, sub_neg_eq_add, mul_sub, add_mul, smul_add]
-  rw [sub_eq_add_neg, add_assoc, add_sub_assoc, add_left_cancel_iff, ← sub_add,
-    ← add_assoc, add_right_cancel_iff, ← sub_eq_zero, sub_sub_eq_add_sub, add_assoc, ← two_nsmul,
-    add_comm, sub_eq_add_neg, add_assoc, ← two_nsmul, smul_neg, ← sub_eq_add_neg, sub_eq_zero]
-  refine ⟨fun h ↦ ?_, fun h ↦ congr(2 • I • $h)⟩
-  have := congr(I • (2⁻¹ : ℂ) • $h)
-  rw [← smul_one_smul ℂ 2 (I • (ℑ x * ℜ x : A)), ← smul_one_smul ℂ 2] at this
-  simpa [smul_smul]
+  rw [isStarNormal_iff, commute_iff_eq, ← sub_eq_zero, star_mul_self_sub_self_mul_star,
+    two_smul ℕ, ← two_smul ℂ, smul_eq_zero_iff_right two_ne_zero, smul_eq_zero_iff_right I_ne_zero,
+    sub_eq_zero, commute_iff_eq]
 
 lemma star_mul_self_eq_realPart_sq_add_imaginaryPart_sq (x : A) [hx : IsStarNormal x] :
     star x * x = ℜ x * ℜ x + ℑ x * ℑ x := calc
