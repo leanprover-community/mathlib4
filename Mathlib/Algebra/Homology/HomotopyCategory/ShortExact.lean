@@ -163,15 +163,18 @@ lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C �
 variable {D : Type*} [Category* D] [Abelian D]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma descShortComplex_mapHomologicalComplex (F : C ⥤ D) [F.Additive]
+@[reassoc (attr := simp)]
+lemma mapHomologicalComplexIso_hom_descShortComplex (F : C ⥤ D) [F.Additive]
     (S : ShortComplex (CochainComplex C ℤ)) :
-    (F.mapHomologicalComplex (ComplexShape.up ℤ)).map (descShortComplex S) =
-    (mapHomologicalComplexIso S.f F).hom ≫
-    descShortComplex (S.map (F.mapHomologicalComplex (ComplexShape.up ℤ))) := by
+    (mapHomologicalComplexIso _ _).hom ≫
+      descShortComplex (S.map (F.mapHomologicalComplex (.up ℤ))) =
+    (F.mapHomologicalComplex (.up ℤ)).map (descShortComplex S) := by
+  symm
   ext n
   simp [mapHomologicalComplexIso, descShortComplex, mapHomologicalComplexXIso,
     mapHomologicalComplexXIso'_hom, Functor.mapHomologicalComplex_map_f,
     desc_f _ _ _ _ n (n + 1) rfl]
+
 
 end mappingCone
 
