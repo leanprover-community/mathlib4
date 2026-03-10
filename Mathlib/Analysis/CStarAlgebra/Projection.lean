@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Projection
+
 /-!
 
 # Projections in C⋆-algebras
@@ -31,7 +33,7 @@ public section
 
 open scoped CStarAlgebra
 
-section
+section NonUnital
 variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A]
 
 lemma isStarProjection_iff_quasispectrum_subset_and_isSelfAdjoint [Module ℝ A] [IsScalarTower ℝ A A]
@@ -50,7 +52,7 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal {p : A} (hp : IsIdempote
   simp only [isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts,
     QuasispectrumRestricts.real_iff, and_iff_left_iff_imp]
   intro h x hx
-  rcases hp.quasispectrum_subset hx with (hx | hx) <;> simp [Set.mem_singleton_iff.mp hx]
+  rcases hp.quasispectrum_subset _ hx with (hx | hx) <;> simp [Set.mem_singleton_iff.mp hx]
 
 /-- An element in a non-unital C⋆-algebra is a star projection
 if and only if it is idempotent and normal. -/
@@ -64,26 +66,28 @@ theorem isStarProjection_iff_quasispectrum_subset_and_isStarNormal {p : A} :
     and_congr_left_iff.mpr fun h ↦ isIdempotentElem_iff_quasispectrum_subset ℂ p h
 
 end Normal
-end
+end NonUnital
 
-section CStar
-variable {A : Type*} [NonUnitalCStarAlgebra A]
+section Unital
+variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A]
 
-theorem CStarAlgebra.isStarProjection_tfae {p : A} :
-    [ IsStarProjection p,
-      IsIdempotentElem p ∧ IsSelfAdjoint p,
-      IsIdempotentElem p ∧ IsStarNormal p,
-      quasispectrum ℂ p ⊆ {0, 1} ∧ IsStarNormal p,
-      quasispectrum ℝ p ⊆ {0, 1} ∧ IsSelfAdjoint p ].TFAE := by
-  tfae_have 1 ↔ 2 := isStarProjection_iff p
-  tfae_have 1 ↔ 3 := isStarProjection_iff_isIdempotentElem_and_isStarNormal
-  tfae_have 1 ↔ 4 := isStarProjection_iff_quasispectrum_subset_and_isStarNormal
-  tfae_have 1 ↔ 5 := isStarProjection_iff_quasispectrum_subset_and_isSelfAdjoint
-  tfae_finish
+lemma isStarProjection_iff_spectrum_subset_and_isSelfAdjoint [Algebra ℝ A]
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] {p : A} :
+    IsStarProjection p ↔ spectrum ℝ p ⊆ {0, 1} ∧ IsSelfAdjoint p :=
+  (isStarProjection_iff p).eq ▸
+    and_congr_left_iff.mpr fun h ↦ isIdempotentElem_iff_spectrum_subset ℝ p h
+
+theorem isStarProjection_iff_spectrum_subset_and_isStarNormal [Algebra ℂ A]
+    [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal] {p : A} :
+    IsStarProjection p ↔ spectrum ℂ p ⊆ {0, 1} ∧ IsStarNormal p :=
+  isStarProjection_iff_isIdempotentElem_and_isStarNormal (p := p).eq ▸
+    and_congr_left_iff.mpr fun h ↦ isIdempotentElem_iff_spectrum_subset ℂ p h
+
+end Unital
 
 namespace IsStarProjection
 
-variable [PartialOrder A] [StarOrderedRing A] {p q : A}
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] {p q : A}
 
 set_option backward.isDefEq.respectTransparency false in
 open CFC in
@@ -135,4 +139,3 @@ lemma commute_of_le (hp : IsStarProjection p) (hq : IsStarProjection q) (h : p �
   rw [commute_iff_eq, hp.le_iff_mul_eq_right hq |>.mp h, hp.le_iff_mul_eq_left hq |>.mp h]
 
 end IsStarProjection
-end CStar
