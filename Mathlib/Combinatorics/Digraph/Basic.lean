@@ -430,7 +430,7 @@ lemma sSup_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
     aesop
 
 lemma top_le_sup_compl {G : Digraph V} : ∀ (H : G.SpanningSubgraph), top ≤ sup H (compl H) := by
-  intro ⟨H, ⟨H_sub_verts, H_sub_adj⟩, H_verts⟩
+  intro
   constructor
   · intro
     grind
