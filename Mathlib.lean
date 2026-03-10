@@ -2934,6 +2934,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.CommGrp_
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.CommMon_
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Comon_
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.InfSemilattice
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mod_
@@ -3505,7 +3506,6 @@ public import Mathlib.Computability.MyhillNerode
 public import Mathlib.Computability.NFA
 public import Mathlib.Computability.Partrec
 public import Mathlib.Computability.PartrecCode
-public import Mathlib.Computability.PostTuringMachine
 public import Mathlib.Computability.Primrec
 public import Mathlib.Computability.Primrec.Basic
 public import Mathlib.Computability.Primrec.List
@@ -3513,12 +3513,13 @@ public import Mathlib.Computability.RecursiveIn
 public import Mathlib.Computability.Reduce
 public import Mathlib.Computability.RegularExpressions
 public import Mathlib.Computability.StateTransition
-public import Mathlib.Computability.TMComputable
-public import Mathlib.Computability.TMConfig
-public import Mathlib.Computability.TMToPartrec
-public import Mathlib.Computability.Tape
 public import Mathlib.Computability.TuringDegree
-public import Mathlib.Computability.TuringMachine
+public import Mathlib.Computability.TuringMachine.Computable
+public import Mathlib.Computability.TuringMachine.Config
+public import Mathlib.Computability.TuringMachine.PostTuringMachine
+public import Mathlib.Computability.TuringMachine.StackTuringMachine
+public import Mathlib.Computability.TuringMachine.Tape
+public import Mathlib.Computability.TuringMachine.ToPartrec
 public import Mathlib.Condensed.AB
 public import Mathlib.Condensed.Basic
 public import Mathlib.Condensed.CartesianClosed
@@ -4373,6 +4374,7 @@ public import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
 public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 public import Mathlib.Geometry.Euclidean.Triangle
+public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
 public import Mathlib.Geometry.Group.Growth.QuotientInter
 public import Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation
@@ -5182,6 +5184,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
 public import Mathlib.MeasureTheory.Integral.Bochner.L1
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 public import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 public import Mathlib.MeasureTheory.Integral.CircleAverage
@@ -6032,11 +6035,13 @@ public import Mathlib.Probability.Process.Stopping
 public import Mathlib.Probability.ProductMeasure
 public import Mathlib.Probability.StrongLaw
 public import Mathlib.Probability.UniformOn
+public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
 public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Coinvariants
+public import Mathlib.RepresentationTheory.Equiv
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.FinGroupCharZero
 public import Mathlib.RepresentationTheory.FiniteIndex
@@ -6297,6 +6302,7 @@ public import Mathlib.RingTheory.Ideal.Pure
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 public import Mathlib.RingTheory.Ideal.Quotient.Index
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
@@ -6643,6 +6649,7 @@ public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 public import Mathlib.RingTheory.TensorProduct.Nontrivial
 public import Mathlib.RingTheory.TensorProduct.Pi
 public import Mathlib.RingTheory.TensorProduct.Quotient
+public import Mathlib.RingTheory.TotallySplit
 public import Mathlib.RingTheory.Trace.Basic
 public import Mathlib.RingTheory.Trace.Defs
 public import Mathlib.RingTheory.Trace.Quotient
