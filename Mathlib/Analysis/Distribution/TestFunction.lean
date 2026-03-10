@@ -241,6 +241,7 @@ limit of the `𝓓^{n}_{K}(E, F)`s **in the category of topological spaces**.
 Note that this has no reason to be a locally convex (or even vector space) topology. For this
 reason, we actually endow `𝓓^{n}(Ω, F)` with another topology, namely the finest locally convex
 topology which is coarser than this original topology. See `TestFunction.topologicalSpace`. -/
+@[implicit_reducible]
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
   ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
     coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace
@@ -337,7 +338,7 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
 variable (𝕜) in
 /-- Reformulation of the universal property of the topology on `𝓓^{n}(Ω, F)`, in the form of a
 custom constructor for continuous linear maps `𝓓^{n}(Ω, F) →L[𝕜] V`, where `V` is an arbitrary
-locally convex topological vector space. -/
+locally convex topological vector space. See also `limitCLM`. -/
 @[simps]
 protected noncomputable def mkCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [Module 𝕜 V]
     [IsScalarTower ℝ 𝕜 V]
@@ -354,7 +355,7 @@ protected noncomputable def mkCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] 
 variable (𝕜) in
 /-- Reformulation of the universal property of the topology on `𝓓^{n}(Ω, F)`, in the form of a
 custom constructor for continuous linear maps `𝓓^{n}(Ω, F) →L[𝕜] V`, where `V` is an arbitrary
-locally convex topological vector space. -/
+locally convex topological vector space. See also `mkCLM`. -/
 @[simps!]
 protected noncomputable def limitCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [Module 𝕜 V]
     [IsScalarTower ℝ 𝕜 V]

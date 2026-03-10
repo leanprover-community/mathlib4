@@ -812,10 +812,13 @@ jobs:
     steps:
       - name: Generate auto merge app token
         id: auto-merge-app-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
         with:
           app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_AUTO_MERGE_PRIVATE_KEY }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-auto-merge-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_CI_AUTO_MERGE }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - id: PR_from_push
         uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
@@ -927,7 +930,7 @@ jobs:
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
-          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+          # This token is masked by the token minting action and will not be logged accidentally.
           token: ${{ steps.auto-merge-app-token.outputs.token }}
           issue-number: ${{ steps.PR.outputs.number }}
           body: |
