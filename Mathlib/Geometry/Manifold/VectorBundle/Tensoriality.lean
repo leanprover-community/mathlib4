@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
+public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
@@ -173,14 +174,7 @@ lemma pointwise₂
   · exact (hΦ₁ _ hτ).pointwise hσ hσ' hσσ'
   · exact (hΦ₂ _ hσ').pointwise hτ hτ' hττ'
 
-variable
-  -- TODO prove transport lemmas `ContinuousLinearEquiv.IsTopologicalAddGroup` and
-  -- `ContinuousLinearEquiv.continuousSMul`, then the next four hypotheses can be removed
-  -- (and the appropriate instances constructed in the proof of `TensorialAt.mkHom` by transport
-  -- from the model fibre.)
-  [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
-  [∀ x, IsTopologicalAddGroup (V' x)] [∀ x, ContinuousSMul 𝕜 (V' x)]
-  [TopologicalSpace A] [IsTopologicalAddGroup A] [ContinuousSMul 𝕜 A]
+variable [TopologicalSpace A] [IsTopologicalAddGroup A] [ContinuousSMul 𝕜 A]
 
 /-- Given an `A`-valued operation `Φ` on sections of a vector bundle `V` which is tensorial at `x`,
 the construction `TensorialAt.mkHom` provides the associated continuous linear map `V x →L[𝕜] A`. -/
@@ -190,6 +184,10 @@ noncomputable def mkHom
     V x →L[𝕜] A :=
   have : T2Space (V x) := FiberBundle.t2Space F V x
   have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
+  have : IsTopologicalAddGroup (V x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).symm.IsTopologicalAddGroup
+  have (x : M) : ContinuousSMul 𝕜 (V x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).symm.continuousSMul
   LinearMap.toContinuousLinearMap {
     toFun v := Φ (extend F v)
     map_add' v₁ v₂ := by
@@ -226,6 +224,14 @@ noncomputable def mkHom₂
   have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
   have : T2Space (V' x) := FiberBundle.t2Space F' V' x
   have : FiniteDimensional 𝕜 (V' x) := VectorBundle.finiteDimensional 𝕜 F' V' x
+  have : IsTopologicalAddGroup (V x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).symm.IsTopologicalAddGroup
+  have : IsTopologicalAddGroup (V' x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F' V' x).symm.IsTopologicalAddGroup
+  have (x : M) : ContinuousSMul 𝕜 (V x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).symm.continuousSMul
+  have (x : M) : ContinuousSMul 𝕜 (V' x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F' V' x).symm.continuousSMul
   have H : IsBilinearMap 𝕜
     (fun (v : V x) (w : V' x) ↦ Φ (extend F v) (extend F' w)) :=
   { add_left v₁ v₂ w := by
