@@ -71,8 +71,11 @@ instance : HasExt.{u} (CategoryTheory.Sheaf (Opens.grothendieckTopology X) AddCo
 /-- The cohomology of a sheaf of abelian groups in degree `n`. -/
 def H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : Type u := CategoryTheory.Sheaf.H F n
 
+instance (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : AddCommGroup (H F n) :=
+  inferInstanceAs (AddCommGroup (CategoryTheory.Sheaf.H F n))
+
 /-- Given a morphism `𝓕 ⟶ 𝓖`, we get an induced morphism on cohomology `H 𝓕 n ⟶ H 𝓖 n` -/
-def H.map {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (n : ℕ) : H F n → H G n :=
+def H.map {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (n : ℕ) : H F n →+ H G n :=
     CategoryTheory.Sheaf.H.map f n
 
 instance {F : (Sheaf AddCommGrpCat X)} {n : ℕ} : AddCommGroup (H F n) :=
@@ -86,17 +89,6 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `H F 0` is equivalent to taking global sections. -/
 def H.equiv₀ (F : (Sheaf AddCommGrpCat X)) : H F 0 ≃+ F.obj.obj (op ⊤) :=
     CategoryTheory.Sheaf.H.equiv₀ F Limits.isTerminalTop
-
-set_option backward.isDefEq.respectTransparency false in
-/-- `H.equiv₀` is natural. -/
-theorem H.equiv₀_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : H F 0) :
-    f.hom.app (op ⊤) ((H.equiv₀ F) x) = H.equiv₀ G (H.map f 0 x) :=
-  CategoryTheory.Sheaf.H.equiv₀_comp Limits.isTerminalTop f x
-
-set_option backward.isDefEq.respectTransparency false in
-theorem H.equiv₀_symm_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : F.obj.obj (op ⊤)) :
-    H.map f 0 ((H.equiv₀ F).symm x) = (H.equiv₀ G).symm (f.hom.app (op ⊤) x)
-  := CategoryTheory.Sheaf.H.equiv₀_symm_comp Limits.isTerminalTop f x
 
 end
 
