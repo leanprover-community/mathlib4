@@ -355,8 +355,7 @@ theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
         ∫ u in 2..x, f u / u :=
       intervalIntegral.integral_congr fun u _ ↦ by rw [deriv_log, mul_comm, div_eq_mul_inv]
     rw [int_deriv]
-    simp [a, Set.indicator_apply, Nat.range_succ_eq_Icc_zero]
-    grind
+    simp [a, Set.indicator_apply, Nat.range_succ_eq_Icc_zero, mul_comm (log x)]
   · -- Differentiability
     intro z ⟨hz, _⟩
     have : z ≠ 0 := by linarith
