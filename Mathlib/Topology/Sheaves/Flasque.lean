@@ -178,9 +178,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
     -- We prove that `t₆` is bigger than `t` for the preorder used on `Under S.g s`.
     have : Nonempty (t₆ ⟶ t) := Nonempty.intro (StructuredArrow.homMk (CategoryOfElements.homMk _ _
       (homOfLE (le_iSup f 0)).op (ht₅ 0)) (by cat_disch))
-    apply leOfHom (Classical.choice ((ht t₆) this)).right.1.unop
-    apply (le_iSup f 1)
-    exact hW
+    exact leOfHom (Classical.choice ((ht t₆) this)).right.1.unop ((le_iSup f 1) hW)
   use t.right.2 |_ U
   conv => rhs; equals (S.g.hom.app (op t.right.1.unop)) t.right.2 |_ U =>
     rw [← tcomp]
