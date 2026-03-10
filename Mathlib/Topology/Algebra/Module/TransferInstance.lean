@@ -66,46 +66,50 @@ section ContinuousLinearEquiv
 
 variable [Semiring R]
 
+/-- Given a continuous linear equivalence `e : α ≃L[R] β`, if `β` is a topological additive group,
+then so is `α`. -/
 @[implicit_reducible]
 def ContinuousLinearEquiv.IsTopologicalAddGroup
-    [TopologicalSpace α] [AddCommGroup α] [IsTopologicalAddGroup α] [Module R α]
-    [TopologicalSpace β] [AddCommGroup β] [Module R β]
-    (e : α ≃L[R] β) : IsTopologicalAddGroup β where
+    [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β] [Module R β]
+    [TopologicalSpace α] [AddCommGroup α] [Module R α]
+    (e : α ≃L[R] β) : IsTopologicalAddGroup α where
   continuous_add := by
-    let f := (fun q ↦ q.1 + q.2 : α × α → α)
-    have : Continuous (fun p ↦ e <| f (e.symm p.1, e.symm p.2) : (β × β → β)) := by fun_prop
+    let f := (fun q ↦ q.1 + q.2 : β × β → β)
+    have : Continuous (fun p ↦ e.symm <| f (e p.1, e p.2) : (α × α → α)) := by fun_prop
     exact this.congr <| fun p ↦ by simp [f]
   continuous_neg := by
-    have : Continuous (e ∘ (fun q ↦ -q : α → α) ∘ e.symm) := by fun_prop
+    have : Continuous (e.symm ∘ (fun q ↦ -q) ∘ e) := by fun_prop
     exact this.congr (fun p ↦ by simp)
 
-/- TODO: should there be the following version instead, deducing the instances for β
--- from the ones for α? Currently, the statement errors for reasons I don't understand yet.
+/- TODO: should there be the following version instead, deducing the instances for α
+-- from the ones for β? Currently, the statement errors for reasons I don't understand yet.
 def Equiv.IsTopologicalAddGroup
-    [TopologicalSpace α] [AddCommGroup α] [IsTopologicalAddGroup α] [Module R α]
+    [TopologicalSpace β] [AddCommGroup β] [IsTopologicalAddGroup β] [Module R β]
     (e : α ≃ β) :
-    letI := e.symm.topologicalSpace
-    letI := e.symm.addCommGroup
-    letI := e.symm.module R
-    IsTopologicalAddGroup β where
+    letI := e.topologicalSpace
+    letI := e.addCommGroup
+    letI := e.module R
+    IsTopologicalAddGroup α where
   continuous_add := by
-    let f := (fun q ↦ q.1 + q.2 : α × α → α)
-    have : Continuous (fun p ↦ e <| f (e.symm p.1, e.symm p.2) : (β × β → β)) := by fun_prop
+    let f := (fun q ↦ q.1 + q.2 : β × β → β)
+    have : Continuous (fun p ↦ e.symm <| f (e p.1, e p.2) : (α × α → α)) := by fun_prop
     exact this.congr <| fun p ↦ by simp [f]
   continuous_neg := by
-    have : Continuous (e ∘ (fun q ↦ -q : α → α) ∘ e.symm) := by fun_prop
+    have : Continuous (e.symm ∘ (fun q ↦ -q) ∘ e) := by fun_prop
     exact this.congr (fun p ↦ by simp)
 -/
 
--- TODO: should the instnaces for β be deduced from the ones for α?
+-- TODO: should the instances for α be deduced from the ones for β?
+/-- Given a continuous linear equivalence `e : α ≃L[R] β`, if scalar multiplication on `β` is
+continuous, then so is it for `α`. -/
 @[implicit_reducible]
 def ContinuousLinearEquiv.continuousSMul
-    [TopologicalSpace α] [AddCommGroup α] [Module R α] [TopologicalSpace R] [ContinuousSMul R α]
-    [TopologicalSpace β] [AddCommGroup β] [Module R β]
+    [TopologicalSpace β] [AddCommGroup β] [Module R β] [TopologicalSpace R] [ContinuousSMul R β]
+    [TopologicalSpace α] [AddCommGroup α] [Module R α]
     (e : α ≃L[R] β) :
-    ContinuousSMul R β where
+    ContinuousSMul R α where
   continuous_smul := by
-    let f : R × β → β := fun p ↦ e <| p.1 • (e.symm p.2)
+    let f : R × α → α := fun p ↦ e.symm <| p.1 • (e p.2)
     have : Continuous f := by fun_prop
     exact this.congr (fun p ↦ by simp [f])
 

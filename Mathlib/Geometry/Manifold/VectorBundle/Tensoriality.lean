@@ -185,9 +185,9 @@ noncomputable def mkHom
   have : T2Space (V x) := FiberBundle.t2Space F V x
   have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
   have : IsTopologicalAddGroup (V x) :=
-    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).symm.IsTopologicalAddGroup
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).IsTopologicalAddGroup
   have (x : M) : ContinuousSMul 𝕜 (V x) :=
-    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).symm.continuousSMul
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).continuousSMul
   LinearMap.toContinuousLinearMap {
     toFun v := Φ (extend F v)
     map_add' v₁ v₂ := by
@@ -225,13 +225,13 @@ noncomputable def mkHom₂
   have : T2Space (V' x) := FiberBundle.t2Space F' V' x
   have : FiniteDimensional 𝕜 (V' x) := VectorBundle.finiteDimensional 𝕜 F' V' x
   have : IsTopologicalAddGroup (V x) :=
-    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).symm.IsTopologicalAddGroup
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).IsTopologicalAddGroup
   have : IsTopologicalAddGroup (V' x) :=
-    (VectorBundle.continuousLinearEquivAt 𝕜 F' V' x).symm.IsTopologicalAddGroup
+    (VectorBundle.continuousLinearEquivAt 𝕜 F' V' x).IsTopologicalAddGroup
   have (x : M) : ContinuousSMul 𝕜 (V x) :=
-    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).symm.continuousSMul
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).continuousSMul
   have (x : M) : ContinuousSMul 𝕜 (V' x) :=
-    (VectorBundle.continuousLinearEquivAt 𝕜 F' V' x).symm.continuousSMul
+    (VectorBundle.continuousLinearEquivAt 𝕜 F' V' x).continuousSMul
   have H : IsBilinearMap 𝕜
     (fun (v : V x) (w : V' x) ↦ Φ (extend F v) (extend F' w)) :=
   { add_left v₁ v₂ w := by
