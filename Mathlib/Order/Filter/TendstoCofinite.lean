@@ -12,7 +12,8 @@ public import Mathlib.Data.Finsupp.Weight
 # Functions tending to the cofinite filter
 
 This file introduces the typeclass `Filter.TendstoCofinite`, which represents functions
-`f : α → β` that tend to the cofinite filter along the cofinite filter.
+`f : α → β` that tend to the cofinite filter along the cofinite filter. Functions of this class
+are precisely the valid index transformations for renaming variables in multivariate power series.
 
 ## Main definitions
 
