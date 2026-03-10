@@ -473,6 +473,16 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
   rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
   exact B.memLp_of_bilin 1 f.memLp_top hφ
 
+/-- A test function on `Ω` is `μ`-integrable for any measure `μ` on `E` satisfying
+`LocallyIntegrableOn 1 Ω μ`. Note that this is a weaker assumption than both
+- `IsLocallyFiniteMeasure (μ.restrict Ω)` (because we say nothing about points outside of `Ω`)
+- `IsFiniteMeasureOnCompacts (μ.restrict Ω)` (because we say nothing about compacts not
+  contained in `Ω`)
+
+For example, if `μ` is the measure with density `fun (x : ℝ) ↦ x⁻¹` wrt Lebesgue satisfies
+and `Ω` is the open set `Ioo 0 1`, we have `LocallyIntegrableOn 1 Ω μ` (hence `μ` defines
+a distribution on `Ω`) but the other two conditions are not satisfied.
+-/
 protected theorem integrable {μ : Measure E}
     (H : LocallyIntegrableOn (fun (_ : E) ↦ (1 : ℝ)) Ω μ) -- TODO
     (f : 𝓓^{n}(Ω, F)) : Integrable f μ := by
@@ -484,7 +494,10 @@ protected theorem integrable {μ : Measure E}
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
 
--- TODO: allow semicontinuity
+-- TODO: semilinearize
+/-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
+and a function `φ : E → F₂` which is locally `μ`-integrable, this is the *continuous* `𝕜`-linear map
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}(E, F₁)` to `F₃`. -/
 noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
     𝓓^{n}(Ω, F₁) →L[𝕜] F₃ := open scoped Classical in
   TestFunction.limitCLM 𝕜

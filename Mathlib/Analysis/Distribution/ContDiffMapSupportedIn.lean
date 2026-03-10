@@ -727,6 +727,12 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
 
 variable [SMulCommClass ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [SMulCommClass ℝ 𝕜 F₃]
 
+-- TODO: semilinearize
+/-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
+and a function `φ : E → F₂` which is integrable on `K`, this is the `𝕜`-linear map
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}_{K}(E, F₁)` to `F₃`.
+
+You should probably use `integralAgainstBilinCLM`, which bundles the continuity. -/
 noncomputable def integralAgainstBilinLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
     𝓓^{n}_{K}(E, F₁) →ₗ[𝕜] F₃ where
   toFun f := open scoped Classical in
@@ -777,6 +783,10 @@ lemma norm_integralAgainstBilinLM_le {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} 
   · simp only [integralAgainstBilinLM, hφ, ↓reduceIte, LinearMap.coe_mk, AddHom.coe_mk, norm_zero]
     positivity
 
+-- TODO: semilinearize
+/-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
+and a function `φ : E → F₂` which is integrable on `K`, this is the *continuous* `𝕜`-linear map
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}_{K}(E, F₁)` to `F₃`. -/
 noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
     𝓓^{n}_{K}(E, F₁) →L[𝕜] F₃ where
   toLinearMap := integralAgainstBilinLM B μ φ
