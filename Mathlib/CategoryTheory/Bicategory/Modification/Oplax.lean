@@ -51,7 +51,9 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory
 
 namespace LaxTrans
 
-variable (η θ : LaxTrans F G)
+open scoped Oplax.LaxTrans
+
+variable (η θ : F ⟶ G)
 
 /-- A modification between lax natural transformations of oplax functors. -/
 @[ext]
@@ -69,6 +71,24 @@ attribute [reassoc (attr := simp)] Modification.naturality
 variable {η θ}
 
 namespace Modification
+
+section
+
+variable (Γ : Modification η θ) {a b c : B} {a' : C}
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_naturality (f : a' ⟶ F.obj a) (g : a ⟶ b) :
+    f ◁ Γ.app a ▷ G.map g ≫ f ◁ θ.naturality g =
+      f ◁ η.naturality g ≫ f ◁ F.map g ◁ Γ.app b := by
+  simp_rw [← whiskerLeft_comp, naturality]
+
+@[reassoc (attr := simp)]
+theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
+    Γ.app a ▷ G.map f ▷ g ≫ θ.naturality f ▷ g =
+      η.naturality f ▷ g ≫ (F.map f ◁ Γ.app b) ▷ g := by
+  simp_rw [← comp_whiskerRight, naturality]
+
+end
 
 variable (η) in
 /-- The identity modification. -/
@@ -100,7 +120,7 @@ structure Hom where
 
 Note that this is a scoped instance in the `Oplax.LaxTrans` namespace. -/
 @[simps!]
-scoped instance homCategory : Category (LaxTrans F G) where
+scoped instance homCategory : Category (F ⟶ G) where
   Hom := Hom
   id η := ⟨Modification.id η⟩
   comp Γ Δ := ⟨Modification.vcomp Γ.as Δ.as⟩
@@ -115,7 +135,7 @@ lemma homCategory.ext {m n : η ⟶ θ} (h : ∀ a, m.as.app a = n.as.app a) : m
 /-- Construct a modification isomorphism between lax natural transformations
 by giving object level isomorphisms, and checking naturality only in the forward direction.
 -/
-@[simps]
+@[simps!]
 def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     (naturality :
       ∀ {a b} (f : a ⟶ b),
@@ -124,9 +144,11 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     η ≅ θ where
   hom := ⟨{ app a := (app a).hom }⟩
   inv := ⟨{
-      app a := (app a).inv
-      naturality {a b} f := by
-        simpa using (app a).inv ▷ G.map f ≫= (naturality f).symm =≫ F.map f ◁ (app b).inv }⟩
+    app a := (app a).inv
+    naturality {a b} f := by
+      simpa using (app a).inv ▷ G.map f ≫= (naturality f).symm =≫ F.map f ◁ (app b).inv }⟩
+
+@[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
 
 end LaxTrans
 
