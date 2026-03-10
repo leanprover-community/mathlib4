@@ -80,8 +80,6 @@ lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
 
 lemma toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v = f v := rfl
 
-lemma apply_toLinearMap (f : IntertwiningMap ρ σ) (v : V) : f v = f.toLinearMap v := rfl
-
 @[simp] lemma _root_.LinearMap.toIntertwiningMap
   (hf : ∀ (g : G), ∀ (v : V), f (ρ g v) = σ g (f v)) (v : V) :
   f.intertwiningMap_of_isIntertwiningMap ρ σ hf v = f v := rfl
@@ -112,13 +110,6 @@ instance : SMul ℕ (IntertwiningMap ρ σ) :=
 instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
   fast_instance%
   DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
-
-@[simp]
-lemma toLinearMap_sum {ι : Type*} (s : Finset ι) (f : ι → σ.IntertwiningMap ρ) :
-    (∑ i ∈ s, f i).toLinearMap = ∑ i ∈ s, (f i).toLinearMap := by
-  classical induction s using Finset.induction with
-    | empty => simp
-    | insert i s hi ih => simp [Finset.sum_insert hi, ih]
 
 section group
 
@@ -248,6 +239,10 @@ instance : LinearEquivClass (σ.Equiv ρ) A W V where
   map_add f := f.map_add
   map_smulₛₗ f := f.map_smul
 
+@[simp]
+lemma mk_apply {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) (v : V) :
+    (mk e he) v = e v := rfl
+
 @[ext]
 lemma ext {φ ψ : Equiv ρ σ} (h : (φ : V → W) = ψ) : φ = ψ := by
   cases φ; cases ψ
@@ -298,6 +293,17 @@ lemma mk_symm {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e
 lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
 
 lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
+
+open LinearMap in
+lemma _root_.LinearEquiv.isIntertwining_symm_isIntertwining {e : V ≃ₗ[A] W}
+    (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) (g : G) :
+    e.symm ∘ₗ (σ g) = (ρ g) ∘ₗ e.symm := by
+  apply e.comp_toLinearMap_eq_iff _ _|>.1
+  rw [← comp_assoc, ← comp_assoc, he g, e.comp_symm, id_comp, comp_assoc, e.comp_symm, comp_id]
+
+@[simp]
+lemma mk_symm {e : V ≃ₗ[A] W} (he1 : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
+    (mk e he1).symm = mk e.symm (e.isIntertwining_symm_isIntertwining he1) := rfl
 
 variable {τ}
 
