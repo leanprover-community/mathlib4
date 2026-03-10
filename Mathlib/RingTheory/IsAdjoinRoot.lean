@@ -657,18 +657,6 @@ section mkOfAdjoinEqTop'
 
 variable [Module.Finite R S] [Module.Free R S] [Nontrivial R]
 
--- theorem could be placed here with 0 imports, but
--- it does not logically make sense.
-theorem alternate_natDegree_le' :
-    (minpoly A x).natDegree ≤ Module.finrank A B := by
-  have b := Module.Free.chooseBasis A B
-  let M := LinearMap.toMatrixAlgEquiv b (Algebra.lmul A B x)
-  refine (natDegree_le_natDegree (minpoly.min A x M.charpoly_monic ?_)).trans
-    (M.charpoly_natDegree_eq_dim.trans (Module.finrank_eq_card_chooseBasisIndex A B).symm).le
-  let h := Matrix.aeval_self_charpoly M
-  rwa [aeval_algHom_apply, _root_.map_eq_zero_iff _ (LinearMap.toMatrixAlgEquiv b).injective,
-    aeval_algHom_apply, _root_.map_eq_zero_iff _ Algebra.lmul_injective] at h
-
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
 def mkOfAdjoinEqTop'
     {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
@@ -683,7 +671,7 @@ def mkOfAdjoinEqTop'
     rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
     exact fun s =>
       let ⟨p, hp⟩ := hα s; ⟨AdjoinRoot.mk f p, by simp [φ, ← aeval_def, hp]⟩
-  have hrank : f.natDegree = Module.finrank R S := le_antisymm (minpoly.natDegree_le' α) (by
+  have hrank : f.natDegree = Module.finrank R S := le_antisymm (minpoly.natDegree_le') (by
     have e := φ.toLinearMap.quotKerEquivRange.trans
       (LinearEquiv.ofTop _ (LinearMap.range_eq_top.mpr hφ_surj))
     rw [← e.finrank_eq]
