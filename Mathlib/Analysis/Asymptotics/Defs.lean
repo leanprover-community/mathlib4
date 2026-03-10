@@ -1005,8 +1005,7 @@ theorem IsBigOWith.add_add' {g₁ g₂ : α → ℝ} (h₁ : IsBigOWith c₁ l f
         rw [Real.norm_of_nonneg hgx₁, Real.norm_of_nonneg hgx₂]; ring
     _ = (max c₁ c₂) * ‖g₁ x + g₂ x‖ := by rw [Real.norm_of_nonneg (add_nonneg hgx₁ hgx₂)]
 
-variable {g₁ g₂ : α → ℝ} in
-theorem IsBigO.add_add' (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =O[l] g₂)
+theorem IsBigO.add_add {g₁ g₂ : α → ℝ} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =O[l] g₂)
     (hg₁_nonneg : ∀ᶠ x in l, 0 ≤ g₁ x) (hg₂_nonneg : ∀ᶠ x in l, 0 ≤ g₂ x) :
     (fun x ↦ f₁ x + f₂ x) =O[l] fun x ↦ g₁ x + g₂ x := by
   obtain ⟨c₁, hc₁⟩ := h₁.isBigOWith
