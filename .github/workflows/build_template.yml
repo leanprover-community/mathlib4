@@ -204,32 +204,6 @@ jobs:
           ls .lake/build/bin/check-yaml
           ls .lake/packages/importGraph/.lake/build/bin/graph
 
-      - name: cleanup .cache/mathlib
-        # This needs write access to .cache/mathlib, so can't be run inside landrun.
-        # However it is only using the `tools` version of `cache`, so is safe to run outside landrun.
-        shell: bash
-        run: |
-          # Define the cache directory path
-          CACHE_DIR="$HOME/.cache/mathlib"
-
-          # Check if directory exists
-          if [ ! -d "$CACHE_DIR" ]; then
-            echo "::warning::Cache directory does not exist: $CACHE_DIR"
-            exit 0
-          fi
-
-          # Calculate directory size in bytes
-          DIR_SIZE=$(du -sb "$CACHE_DIR" | cut -f1)
-          printf 'Cache size (in bytes): %s\n' "$DIR_SIZE"
-
-          # Check if size exceeds 10GB
-          if [ "$DIR_SIZE" -gt "10737418240" ]; then
-            echo "Cache size exceeds threshold, running lake exe cache clean"
-            # We use the tools-branch version of `cache`.
-            cd tools-branch
-            lake exe cache clean
-          fi
-
       - name: download dependencies
         # We need network access to download dependencies
         # We run this inside landrun, but restrict disk access.
@@ -593,20 +567,6 @@ jobs:
             fi
             exit $status
           done
-
-      # We need to separate this step from the previous script because it needs to run outside of landrun
-      - name: kill stray runLinter processes
-        if: ${{ steps.lint.outcome == 'failure' }}
-        continue-on-error: true
-        shell: bash
-        run: |
-          echo "Checking for runLinter processes..."
-          if pgrep -af runLinter; then
-            echo "Killing runLinter processes..."
-            pkill -f runLinter || true
-          else
-            echo "No stray runLinter processes found."
-          fi
 
       - name: end gh-problem-match-wrap for shake and lint steps
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
