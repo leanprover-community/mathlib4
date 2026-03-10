@@ -248,16 +248,28 @@ private meta def isCanonicalTopologyInst (inst : Expr) : DelabM Bool := do
 
 /--
 Delaborate `@Continuous _ _ t₁ t₂` as `Continuous[t₁, t₂]`
-when either topology is noncanonical.
+when at least one topology is noncanonical, using `_` for canonical arguments.
 -/
 @[app_delab Continuous] meta def delabContinuousOf : Delab :=
   whenNotPPOption getPPExplicit <|
   whenPPOption getPPNotation <|
   withOverApp 4 do
     let #[_, _, t₁, t₂] := (← getExpr).getAppArgs | failure
-    if (← isCanonicalTopologyInst t₁) && (← isCanonicalTopologyInst t₂) then
-      failure
-    `(Continuous[$(← withNaryArg 2 delab), $(← withNaryArg 3 delab)])
+    let c₁ ← isCanonicalTopologyInst t₁
+    if c₁ then
+      let c₂ ← isCanonicalTopologyInst t₂
+      if c₂ then
+        failure
+      else
+        let hole ← `(term| _)
+        `(Continuous[$hole, $(← withNaryArg 3 delab)])
+    else
+      let c₂ ← isCanonicalTopologyInst t₂
+      if c₂ then
+        let hole ← `(term| _)
+        `(Continuous[$(← withNaryArg 2 delab), $hole])
+      else
+        `(Continuous[$(← withNaryArg 2 delab), $(← withNaryArg 3 delab)])
 
 end Topology
 
