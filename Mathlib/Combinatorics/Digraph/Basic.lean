@@ -195,10 +195,12 @@ instance distribLattice : DistribLattice (Digraph V) where
     le := fun G H ↦ (G.verts ⊆ H.verts) ∧ (∀ ⦃v w⦄, G.Adj v w → H.Adj v w)
     le_refl := by
       intro G
-      tauto
+      aesop
     le_trans := by
       intro G₁ G₂ G₃ h₁₂ h₂₃
-      tauto
+      constructor
+      · exact h₁₂.1.trans h₂₃.1
+      · aesop
     le_antisymm := by
       intro G H h h'
       ext v w <;> tauto
@@ -206,59 +208,31 @@ instance distribLattice : DistribLattice (Digraph V) where
     inf := min
     le_sup_left := by
       intro G H
-      constructor
-      · simp only [max, SemilatticeSup.sup, Set.subset_union_left]
-      · intro v w adj
-        simp only [max, SemilatticeSup.sup]
-        left; assumption
+      constructor <;> aesop (add simp [max, SemilatticeSup.sup])
     le_sup_right := by
       intro G H
-      constructor
-      · simp only [max, SemilatticeSup.sup, Set.subset_union_right]
-      · intro v w adj
-        simp only [max, SemilatticeSup.sup]
-        right; assumption
+      constructor <;> aesop (add simp [max, SemilatticeSup.sup])
 
     inf_le_left := by
       intro G H
-      constructor
-      · simp only [min, SemilatticeInf.inf, Lattice.inf, Set.inter_subset_left]
-      · intro v w adj
-        simp only [min, SemilatticeInf.inf, Lattice.inf] at adj
-        tauto
+      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
 
     inf_le_right := by
       intro G H
-      constructor
-      · simp only [min, SemilatticeInf.inf, Lattice.inf, Set.inter_subset_right]
-      · intro v w adj
-        simp only [min, SemilatticeInf.inf, Lattice.inf] at adj
-        tauto
+      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
 
     sup_le := by
       intro G H supG hG hH
-      constructor
-      · simp only [max, SemilatticeSup.sup, Set.union_subset_iff]
-        tauto
-      · simp only [max, SemilatticeSup.sup]
-        tauto
+      constructor <;> aesop (add simp [max, SemilatticeSup.sup])
 
     le_inf := by
       intro G H infG hG hH
-      constructor
-      · simp only [min, SemilatticeInf.inf, Lattice.inf, Set.subset_inter_iff]
-        tauto
-      · simp only [min, SemilatticeInf.inf, Lattice.inf]
-        tauto
+      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
 
     le_sup_inf := by
       intro G H I
-      simp only [min, SemilatticeInf.inf,
-        Lattice.inf, max, SemilatticeSup.sup, and_imp]
-      constructor
-      · rw [←Set.union_inter_distrib_left]
-      · intro v w hGH gGI
-        tauto
+      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf, max,
+        SemilatticeSup.sup, Set.union_inter_distrib_left])
 
 instance : PartialOrder (Digraph V) where
   le_antisymm := by
@@ -279,22 +253,15 @@ abbrev SpanningSubgraph (G : Digraph V) := {H : Digraph V // H ≤ G ∧ H.verts
 The join/union of two Digraphs i.e. `G₁ ⊔ G₂`
 -/
 def sup {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) : G.SpanningSubgraph := by
-  obtain ⟨H₁, H₁_sub, H₁_verts_eq⟩ := H₁
-  obtain ⟨H₂, H₂_sub, H₂_verts_eq⟩ := H₂
   constructor
-  case val =>
-    exact (max H₁ H₂)
+  case val => exact (max H₁.val H₂.val)
   case property =>
-    simp_all only [LE.le, max, SemilatticeSup.sup, Set.union_self, and_true]
+    have h₁verts : H₁.val.verts = G.verts := H₁.property.2
+    have h₂verts : H₂.val.verts = G.verts := H₂.property.2
     constructor
-    · rintro v h
-      simp only at h
-      exact h
-    · intro v w adj
-      simp only at adj
-      obtain (hH₁ |hH₂) := adj
-      · apply H₁_sub.right hH₁
-      · apply H₂_sub.right hH₂
+    · simpa [max, SemilatticeSup.sup] using
+        (show H₁.val ⊔ H₂.val ≤ G from _root_.sup_le H₁.property.1 H₂.property.1)
+    · aesop (add simp [max, SemilatticeSup.sup, h₁verts, h₂verts])
 
 @[push_cast]
 lemma sup_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
