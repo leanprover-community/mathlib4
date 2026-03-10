@@ -290,7 +290,7 @@ lemma PreservesFiniteCoproducts.of_preserves_binary_and_initial (J : Type*) [Fin
 
 @[deprecated (since := "2026-03-10")]
 alias preservesFiniteCoproductsOfPreservesBinaryAndInitial :=
-  PreservesFiniteCoproducts.of_preserves_binary_and_initial 
+  PreservesFiniteCoproducts.of_preserves_binary_and_initial
 
 end Preserves
 
