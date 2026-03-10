@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 
 /-!
-# The bicategory of oplax functors between two bicategories
+# Bicategories of oplax functors
 
 Given bicategories `B` and `C`, we give a bicategory structure on `B ⥤ᵒᵖᴸ C` whose
 * objects are oplax functors,

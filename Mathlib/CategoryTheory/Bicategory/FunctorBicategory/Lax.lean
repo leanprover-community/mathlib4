@@ -26,7 +26,7 @@ open scoped Bicategory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-variable {F G H I : LaxFunctor B C}
+variable {F G H I : B ⥤ᴸ C}
 
 namespace LaxTrans
 
@@ -91,7 +91,7 @@ variable (B C)
 /-- A bicategory structure on the lax functors between bicategories, with lax transformations. -/
 @[simps! whiskerLeft_as_app whiskerRight_as_app associator_hom_as_app associator_inv_as_app
   rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]
-scoped instance LaxFunctor.bicategory : Bicategory (LaxFunctor B C) where
+scoped instance LaxFunctor.bicategory : Bicategory (B ⥤ᴸC) where
   whiskerLeft {_ _ _} η _ _ Γ := whiskerLeft η Γ
   whiskerRight {_ _ _} _ _ Γ := whiskerRight Γ
   associator {_ _ _} _ := associator
@@ -164,7 +164,7 @@ variable (B C)
 /-- A bicategory structure on the lax functors between bicategories, with oplax transformations. -/
 @[simps! whiskerLeft_as_app whiskerRight_as_app associator_hom_as_app associator_inv_as_app
   rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]
-scoped instance LaxFunctor.bicategory : Bicategory (LaxFunctor B C) where
+scoped instance LaxFunctor.bicategory : Bicategory (B ⥤ᴸC) where
   whiskerLeft {_ _ _} η _ _ Γ := whiskerLeft η Γ
   whiskerRight {_ _ _} _ _ Γ := whiskerRight Γ
   associator {_ _ _} _ := associator
