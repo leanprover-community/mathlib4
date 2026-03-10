@@ -101,6 +101,13 @@ lemma shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm
   simp [shrinkYoneda, shrinkYonedaObjObjEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
+lemma shrinkYonedaObjObjEquiv_map_app
+    {X X' : C} {Y : Cᵒᵖ} (f : (shrinkYoneda.{w, v, u}.obj X).obj Y) (g : X ⟶ X') :
+    shrinkYonedaObjObjEquiv ((shrinkYoneda.map g).app Y f) =
+      shrinkYonedaObjObjEquiv f ≫ g := by
+  simp [shrinkYoneda, shrinkYonedaObjObjEquiv]
+
+set_option backward.isDefEq.respectTransparency false in
 lemma shrinkYonedaObjObjEquiv_map {X : C} {Y Y' : Cᵒᵖ} (g : Y ⟶ Y')
     (f : (shrinkYoneda.{w}.obj X).obj Y) :
     shrinkYonedaObjObjEquiv ((shrinkYoneda.{w}.obj X).map g f) =
@@ -176,6 +183,15 @@ noncomputable def fullyFaithfulShrinkYoneda :
 instance : (shrinkYoneda.{w} (C := C)).Faithful := (fullyFaithfulShrinkYoneda C).faithful
 
 instance : (shrinkYoneda.{w} (C := C)).Full := (fullyFaithfulShrinkYoneda C).full
+
+/-- `shrinkYoneda` at the morphism universe level is `yoneda`. -/
+@[simps!]
+noncomputable
+def shrinkYonedaIsoYoneda : shrinkYoneda.{v} ≅ yoneda (C := C) :=
+  NatIso.ofComponents
+    (fun X ↦ NatIso.ofComponents (fun Y ↦ shrinkYonedaObjObjEquiv.toIso)
+      (by intros; ext; simp [shrinkYonedaObjObjEquiv_map]))
+    (by intros; ext; simp [shrinkYonedaObjObjEquiv_map_app])
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `shrinkYoneda` is compatible with `uliftFunctor`. -/

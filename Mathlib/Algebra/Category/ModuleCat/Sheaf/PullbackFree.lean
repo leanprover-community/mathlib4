@@ -45,14 +45,13 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 /-- The canonical map from the (global) sections of a sheaf of modules
 to the (global) sections of its pushforward. -/
 @[simps]
-def pushforwardSections [Functor.IsContinuous F J K]
-    {M : SheafOfModules.{v} R} (s : M.sections) :
+def pushforwardSections {M : SheafOfModules.{v} R} (s : M.sections) :
     ((pushforward φ).obj M).sections where
   val _ := s.val _
   property _ := s.property _
 
 variable (M) in
-lemma bijective_pushforwardSections [Functor.IsContinuous F J K] [F.Final] :
+lemma bijective_pushforwardSections [F.Final] :
     Function.Bijective (pushforwardSections φ (M := M)) :=
   Functor.bijective_sectionsPrecomp _ _
 
