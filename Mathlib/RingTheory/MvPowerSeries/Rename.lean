@@ -160,7 +160,8 @@ lemma rename_id_apply (p : MvPowerSeries σ R) : rename id p = p := by simp
 theorem constantCoeff_rename (p : MvPowerSeries σ R) :
     constantCoeff (rename f p) = constantCoeff p := by
   rw [← coeff_zero_eq_constantCoeff_apply, ← coeff_zero_eq_constantCoeff_apply,
-    coeff_rename, Finset.sum_eq_single 0 (by simp [mapDomain_apply_eq_zero_iff]) (by simp)]
+    coeff_rename, Finset.sum_eq_single 0 (by
+      simp [mapDomain_apply_eq_zero_iff_of_subsingletonAddUnits]) (by simp)]
 
 theorem rename_injective (e : σ ↪ τ) : Function.Injective (rename (R := R) e) := by
   intro _ _ h; ext x
