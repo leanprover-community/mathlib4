@@ -33,16 +33,16 @@ jobs:
         fetch-depth: 0  # Fetch all branches and history
         token: ${{ steps.app-token.outputs.token }}
 
-    - name: Checkout mathlib-ci
+    - name: Checkout local actions
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        repository: leanprover-community/mathlib-ci
-        ref: 7c2dcf950607e48029aec2a614e840f2a14ae7e1
+        ref: ${{ github.workflow_sha }}
         fetch-depth: 1
-        path: ci-tools
-
-    - name: Set up CI scripts paths
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
+        sparse-checkout: .github/actions
+        path: workflow-actions
+    - name: Get mathlib-ci
+      id: get_mathlib_ci
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Set up Git
       run: |
@@ -332,7 +332,7 @@ jobs:
             MESSAGE+="- [lean-pr-testing-${PR_NUMBER}](${GITHUB_DIFF}) (adaptations for lean#${PR_NUMBER})"$'\n\n'
             MESSAGE+=$'```bash\n'
             MESSAGE+=$'tmp=$(mktemp)\n'
-            MESSAGE+=$'wget -qO "$tmp" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/7c2dcf950607e48029aec2a614e840f2a14ae7e1/scripts/nightly/merge-lean-testing-pr.sh\n'
+            MESSAGE+=$'wget -qO "$tmp" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/${{ steps.get_mathlib_ci.outputs.ref }}/scripts/nightly/merge-lean-testing-pr.sh\n'
             MESSAGE+=$'chmod +x "$tmp"\n'
             MESSAGE+="\"\$tmp\" ${PR_NUMBER}"$'\n'
             MESSAGE+=$'```\n\n'
