@@ -38,6 +38,8 @@ the unit sphere, and this makes some of the intermediate statements more complic
 
 @[expose] public section
 
+namespace IsCompactOperator
+
 variable {𝕜 X : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X]
 variable {T : X →L[𝕜] X} {μ : 𝕜}
 
@@ -154,8 +156,12 @@ private theorem exists_seq {S : End 𝕜 X} (hS_not_surj : ¬ (S : X → X).Surj
 
 variable [CompleteSpace X]
 
-/-- The **Fredholm alternative** for compact operators: if `T` is a compact operator and `μ ≠ 0`,
-then either `μ` is an eigenvalue of `T`, or `μ` is in the resolvent set of `T`. -/
+/--
+The **Fredholm alternative** for compact operators: if `T` is a compact operator and `μ ≠ 0`,
+then either `μ` is an eigenvalue of `T`, or `μ` is in the resolvent set of `T`.
+See also `hasEigenvalue_iff_mem_spectrum`, which says that the nonzero eigenvalues of a compact
+operator are exactly the nonzero points in the spectrum of the operator.
+-/
 theorem hasEigenvalue_or_mem_resolventSet (hT : IsCompactOperator T) (hμ : μ ≠ 0) :
     HasEigenvalue (T : End 𝕜 X) μ ∨ μ ∈ resolventSet 𝕜 T := by
   -- Suppose not, then `μ` is not an eigenvalue and is in the spectrum.
@@ -209,12 +215,6 @@ theorem hasEigenvalue_or_mem_resolventSet (hT : IsCompactOperator T) (hμ : μ �
   refine this.not_ge (hp ?_)
   simp [hψ.injective.eq_iff]
 
-theorem ContinuousLinearMap.spectrum_eq :
-    spectrum 𝕜 (T : X →L[𝕜] X) = spectrum 𝕜 (T : End 𝕜 X) := by
-  ext μ
-  rw [spectrum.mem_iff, spectrum.mem_iff, isUnit_iff_isUnit_toLinearMap]
-  rfl
-
 /--
 If `T` is a compact operator on a Banach space, then the nonzero eigenvalues of `T` are exactly
 the nonzero points in the spectrum of `T`. This is a consequence of the Fredholm alternative for
@@ -226,3 +226,5 @@ theorem hasEigenvalue_iff_mem_spectrum (hT : IsCompactOperator T) (hμ : μ ≠ 
     rw [ContinuousLinearMap.spectrum_eq]
     exact hμ'.mem_spectrum
   · exact (hasEigenvalue_or_mem_resolventSet hT hμ).resolve_right
+
+end IsCompactOperator
