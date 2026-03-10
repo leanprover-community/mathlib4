@@ -26,7 +26,7 @@ noncomputable def mulLeft : unitary A →* A ≃ₗᵢ[R] A where
     { __ := (toUnits u).mulLeftLinearEquiv R A
       norm_map' _ := CStarRing.norm_coe_unitary_mul _ _ }
   map_one' := by ext; simp
-  map_mul' _ _ := by ext; simp [mul_assoc]
+  map_mul' _ _ := by ext; simp
 
 variable (R) in
 @[simp] lemma mulLeft_apply (u : unitary A) (x : A) :
@@ -84,7 +84,7 @@ lemma mulRight_mul_apply (u v : unitary A) (x : A) :
   ext; simp
 
 @[simp] lemma toLinearEquiv_mulRight (u : unitary A) :
-    (mulRight R u).toLinearMap = (toUnits u).mulRightLinearEquiv R A := rfl
+    (mulRight R u).toLinearMap = (toUnits u).mulRightLinearEquiv R := rfl
 
 end mulRight
 
