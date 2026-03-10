@@ -230,12 +230,10 @@ abbrev toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) : Subring A :=
   { S.toSubsemiring with neg_mem' := S.neg_mem }
 
-@[simp]
 theorem mem_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     {S : Subalgebra R A} {x} : x ∈ S.toSubring ↔ x ∈ S :=
   Iff.rfl
 
-@[simp]
 theorem coe_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) : (↑S.toSubring : Set A) = S :=
   rfl
