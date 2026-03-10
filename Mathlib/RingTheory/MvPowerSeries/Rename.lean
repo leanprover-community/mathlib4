@@ -31,7 +31,6 @@ This file is patterned after `Mathlib/Algebra/MvPolynomial/Rename.lean`.
 
 ## Main declarations
 
-* `Filter.TendstoCofinite.mapDomain`
 * `MvPowerSeries.rename`
 * `MvPowerSeries.renameEquiv`
 * `MvPowerSeries.killCompl`
