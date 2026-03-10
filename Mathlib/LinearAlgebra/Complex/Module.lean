@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Data.Complex.Basic
 public import Mathlib.Data.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # Complex number as a vector space over `ℝ`
@@ -572,13 +573,17 @@ lemma isStarNormal_iff_commute_realPart_imaginaryPart {x : A} :
     two_smul ℕ, ← two_smul ℂ, smul_eq_zero_iff_right two_ne_zero, smul_eq_zero_iff_right I_ne_zero,
     sub_eq_zero, commute_iff_eq]
 
+lemma Commute.realPart_imaginaryPart (x : A) [IsStarNormal x] :
+    Commute (ℜ x : A) (ℑ x : A) :=
+  isStarNormal_iff_commute_realPart_imaginaryPart.mp inferInstance
+
 lemma star_mul_self_eq_realPart_sq_add_imaginaryPart_sq (x : A) [hx : IsStarNormal x] :
     star x * x = ℜ x * ℜ x + ℑ x * ℑ x := calc
   star x * x = ℜ x * ℜ x + ℑ x * ℑ x + Complex.I • (ℜ x * ℑ x - ℑ x * ℜ x) := by
     conv_lhs => rw [← realPart_add_I_smul_imaginaryPart x]
     simp [add_mul, mul_add, smul_mul_assoc, mul_smul_comm, smul_smul, smul_sub]
     grind
-  _ = _ := by simp [isStarNormal_iff_commute_realPart_imaginaryPart.mp hx |>.eq]
+  _ = _ := by simp [Commute.realPart_imaginaryPart x |>.eq]
 
 end NonUnitalNonAssocRing
 
