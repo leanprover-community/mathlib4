@@ -471,6 +471,9 @@ lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); lia⟩
 
 end AtLeastTwo
 
+/-- `Nat.mkDivMod n i j` computes the natural number with
+quotient `i` and remainder `j` with respect to modulus `n`.
+This is the `ℕ`-level analogue of `Fin.mkDivMod`. -/
 abbrev mkDivMod (n i j : ℕ) : ℕ := n * i + j
 
 theorem mkDivMod_def {n i j : ℕ} : n.mkDivMod i j = n * i + j := rfl
