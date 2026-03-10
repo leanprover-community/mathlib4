@@ -150,7 +150,7 @@ scoped instance OplaxFunctor.bicategory : Bicategory (B ⥤ᵒᵖᴸ C) where
   associator {_ _ _} _ := associator
   leftUnitor {_ _} := leftUnitor
   rightUnitor {_ _} := rightUnitor
-  whisker_exchange {a b c f g h i} η Γ := by ext; exact whisker_exchange _ _
+  whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
 
 end OplaxTrans
 
