@@ -170,7 +170,6 @@ variable [Field K]
 
 instance (priority := 100) Field.toGrindField : Lean.Grind.Field K :=
   { CommRing.toGrindCommRing K, ‹Field K› with
-    inv a := a⁻¹
     zpow := ⟨fun a n => a^n⟩
     zpow_zero a := by simp
     zpow_succ a n := by
@@ -178,7 +177,7 @@ instance (priority := 100) Field.toGrindField : Lean.Grind.Field K :=
       · rw [← Int.natCast_add_one, zpow_natCast, zpow_natCast, pow_succ]
       · rw [zpow_add_one₀ h]
     zpow_neg a n := by simp
-    zero_ne_one := zero_ne_one' K }
+    zero_ne_one := zero_ne_one }
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 
