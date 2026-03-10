@@ -1311,12 +1311,9 @@ theorem norm_toLp_one {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGr
 
 theorem norm_toLp_top_le {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     ‖f.toLp ⊤ μ‖ ≤ SchwartzMap.seminorm ℝ 0 0 f := by
-  rw [norm_toLp]
-  rw [← ENNReal.ofReal_le_ofReal_iff (by positivity)]
-  rw [ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
-  apply eLpNormEssSup_le_of_ae_bound
-  filter_upwards with x
-  exact norm_le_seminorm ℝ f x
+  rw [norm_toLp, ← ENNReal.ofReal_le_ofReal_iff (by positivity),
+    ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
+  exact eLpNormEssSup_le_of_ae_bound <| .of_forall <| norm_le_seminorm ℝ f
 
 theorem injective_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
     [μ.IsOpenPosMeasure] : Function.Injective (fun f : 𝓢(E, F) ↦ f.toLp p μ) :=
