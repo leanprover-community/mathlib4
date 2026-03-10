@@ -279,7 +279,7 @@ theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker
   have := range_eq_top.mp (top_le_iff.mp (hf.2.ge.trans
     (map_le_range (transferSylow P hP) P)))
   rw [← (comap_injective this).eq_iff, comap_top, comap_map_eq, sup_comm, SetLike.ext'_iff,
-    normal_mul, ← ker_eq_bot_iff, ← (map_injective (P : Subgroup G).subtype_injective).eq_iff,
+    normal_mul, ← ker_eq_bot_iff, ← map_subtype_inj,
     ker_restrict, subgroupOf_map_subtype, Subgroup.map_bot, coe_top] at hf
   exact isComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
 

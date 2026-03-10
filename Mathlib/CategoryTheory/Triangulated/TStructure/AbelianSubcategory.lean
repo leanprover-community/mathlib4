@@ -299,6 +299,7 @@ is abelian if the following conditions are satisfied:
   we complete `ι.obj f₁` in a distinguished triangle
   `ι.obj X₁ ⟶ ι.obj X₂ ⟶ X₃ ⟶ (ι.obj X₁)⟦1⟧`, there exists objects `K`
   and `Q`, and a distinguished triangle `(ι.obj K)⟦1⟧ ⟶ X₃ ⟶ (ι.obj Q) ⟶ ...`. -/
+@[implicit_reducible]
 noncomputable def abelian [IsTriangulated C] : Abelian A :=
   Abelian.mk' (fun X₁ X₂ f₁ ↦ by
     obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (ι.map f₁)
