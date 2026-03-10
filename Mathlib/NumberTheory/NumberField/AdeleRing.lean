@@ -77,10 +77,10 @@ theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K 
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
 abbrev principalSubgroup : AddSubgroup (AdeleRing R K) := (algebraMap K _).range.toAddSubgroup
 
-variable [NumberField K]
+variable [NumberField K] [Module.Free ℤ R] [Module.Finite ℤ R]
 
 set_option backward.isDefEq.respectTransparency false in
-instance (v : HeightOneSpectrum (𝓞 K)) : LocallyCompactSpace (v.adicCompletion K) := by
+instance (v : HeightOneSpectrum R) : LocallyCompactSpace (v.adicCompletion K) := by
   have : IsCompact (Set.univ : Set (v.adicCompletionIntegers K)) := isCompact_univ
   refine IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup ?_
     ((Valued.is_topological_valuation {x | Valued.v.restrict x < 1}).2 ⟨1, by grind⟩)
@@ -88,12 +88,12 @@ instance (v : HeightOneSpectrum (𝓞 K)) : LocallyCompactSpace (v.adicCompletio
     fun _ _ ↦ by grind [Valuation.restrict_lt_one_iff, SetLike.mem_coe, mem_adicCompletionIntegers]
 
 open scoped RestrictedProduct in
-instance : LocallyCompactSpace (IsDedekindDomain.FiniteAdeleRing (𝓞 K) K) :=
-  have : Fact (∀ v : HeightOneSpectrum (𝓞 K), IsOpen (v.adicCompletionIntegers K).carrier) :=
+instance : LocallyCompactSpace (IsDedekindDomain.FiniteAdeleRing R K) :=
+  have : Fact (∀ v : HeightOneSpectrum R, IsOpen (v.adicCompletionIntegers K).carrier) :=
     ⟨fun _ ↦ Valued.isOpen_valuationSubring _⟩
   inferInstanceAs (LocallyCompactSpace (Πʳ _, [_, _]))
 
-instance : LocallyCompactSpace (AdeleRing (𝓞 K) K) := Prod.locallyCompactSpace _ _
+instance : LocallyCompactSpace (AdeleRing R K) := Prod.locallyCompactSpace _ _
 
 end AdeleRing
 
