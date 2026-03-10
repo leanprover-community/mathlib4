@@ -386,6 +386,28 @@ theorem inner_vsub_vsub_of_mem_sphere_of_mem_sphere {p₁ p₂ : P} {s₁ s₂ :
   inner_vsub_vsub_of_dist_eq_of_dist_eq (dist_center_eq_dist_center_of_mem_sphere hp₁s₁ hp₂s₁)
     (dist_center_eq_dist_center_of_mem_sphere hp₁s₂ hp₂s₂)
 
+/-- The vector from the midpoint of a chord to the center of the sphere is
+orthogonal to the chord. -/
+theorem Sphere.inner_vsub_center_midpoint_vsub {A C : P} {s : Sphere P}
+    (hA : A ∈ s) (hC : C ∈ s) :
+    ⟪s.center -ᵥ midpoint ℝ A C, C -ᵥ A⟫ = 0 :=
+  inner_vsub_vsub_of_dist_eq_of_dist_eq
+    (dist_left_midpoint_eq_dist_right_midpoint A C)
+    (dist_center_eq_dist_center_of_mem_sphere hA hC)
+
+/-- The distance from the center of a sphere to the midpoint of a chord
+with distinct endpoints `A` and `C` is strictly less than the radius. -/
+theorem Sphere.dist_center_midpoint_lt_radius {A C : P} {s : Sphere P}
+    (hA : A ∈ s) (hC : C ∈ s) (hAC : A ≠ C) :
+    dist s.center (midpoint ℝ A C) < s.radius := by
+  have hA' : ‖A -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub]; exact mem_sphere.mp hA
+  have hC' : ‖C -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub]; exact mem_sphere.mp hC
+  rw [dist_comm, dist_eq_norm_vsub, ← midpoint_self ℝ s.center, midpoint_vsub_midpoint, ← hA']
+  convert (norm_midpoint_lt_iff (hA'.trans hC'.symm)).mpr
+    (fun h => hAC (vsub_left_cancel h)) using 2
+  simp only [midpoint, AffineMap.lineMap_apply, invOf_eq_inv, vsub_eq_sub, vadd_eq_add, one_div]
+  module
+
 /-- Two spheres intersect in at most two points in a two-dimensional subspace containing their
 centers; this is a version of `eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two` for bundled
 spheres. -/
@@ -451,6 +473,19 @@ theorem inner_pos_of_dist_lt_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁
   · rw [h, mem_sphere] at hp₁
     exact False.elim (hp₂.ne hp₁)
   exact (inner_pos_or_eq_of_dist_le_radius hp₁ hp₂.le).resolve_right h
+
+/-- Given two distinct points on a sphere, the inner product of the chord with
+the radius vector at one endpoint is negative. -/
+theorem inner_vsub_vsub_center_lt_zero {A B : P} {s : Sphere P}
+    (hA : A ∈ s) (hB : B ∈ s) (hBA : B ≠ A) :
+    ⟪B -ᵥ A, A -ᵥ s.center⟫ < 0 := by
+  have hA' : ‖A -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hA
+  have hB' : ‖B -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hB
+  have hd : ‖B -ᵥ s.center‖ ^ 2 =
+      ‖B -ᵥ A‖ ^ 2 + 2 * ⟪B -ᵥ A, A -ᵥ s.center⟫ + ‖A -ᵥ s.center‖ ^ 2 := by
+    rw [← vsub_add_vsub_cancel B A s.center, norm_add_sq_real]
+  rw [hB', hA'] at hd
+  nlinarith [sq_pos_of_pos (norm_pos_iff.mpr (vsub_ne_zero.mpr hBA))]
 
 /-- Given three collinear points, two on a sphere and one not outside it, the one not outside it
 is weakly between the other two points. -/
