@@ -75,7 +75,7 @@ theorem IsHausdorff.eq_iff_smodEq [IsHausdorff I M] {x y : M} :
 theorem IsHausdorff.map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
     [IsScalarTower R S M] : IsHausdorff (I.map (algebraMap R S)) M ↔ IsHausdorff I M := by
   simp [isHausdorff_iff, ← Ideal.map_pow, ← SModEq.restrictScalars R,
-    restrictScalars_map_smul_eq_smul_restrictScalars]
+    restrictScalars_map_smul_eq]
 
 theorem IsHausdorff.of_map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S]
     [IsScalarTower R S M] (hIJ : I.map (algebraMap R S) ≤ J) [IsHausdorff J M] :
@@ -152,7 +152,7 @@ theorem isPrecomplete_iff :
 theorem IsPrecomplete.map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
     [IsScalarTower R S M] : IsPrecomplete (I.map (algebraMap R S)) M ↔ IsPrecomplete I M := by
   simp [isPrecomplete_iff, ← Ideal.map_pow, ← SModEq.restrictScalars R,
-    restrictScalars_map_smul_eq_smul_restrictScalars]
+    restrictScalars_map_smul_eq]
 
 variable (I M)
 
