@@ -121,7 +121,10 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
   have tle : t.right.1.unop ≤ U := leOfHom t.hom.1.unop
   have tcomp : s |_ t.right.1.unop = (ConcreteCategory.hom (S.g.hom.app t.right.1)) t.right.2 :=
       CategoryOfElements.map_snd t.hom
+  -- We get a section `t.right.2` of `S.g` defined on an open subset `t.right.1.unop` of `U`,
+  -- that is sent to the restriction of `s` by `S.g`.
   have : U ≤ t.right.1.unop := by
+  -- Prove that the set of definition of `t.right.2` contains `U`.
     intro x hx
     have := (isLocallySurjective_iff_epi S.g).mpr hS.epi_g
     -- We use local surjectivity to find a section `t₁` of `S.X₂` on a neighborhood `W` of `x`
