@@ -69,15 +69,15 @@ theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X
 
 end TopCat.Sheaf
 
-lemma CompactSpace.elim_finite_isOpenCover {X : Type u} [TopologicalSpace X] {I : Type v}
-    {U : I → Opens X} (h : IsOpenCover U) : ∃ ι : Finset I, IsOpenCover <| Finset.restrict ι U :=
-  sorry
-
 namespace AlgebraicGeometry.Scheme.Modules
 
 open TopCat TopCat.Sheaf Limits Opposite
 
-variable {X : Scheme.{u}} (F : X.Modules) {I : Type u} (U : I → X.Opens)
+variable {X : Scheme.{u}} (F : X.Modules)
+
+section
+
+variable {I : Type u} (U : I → X.Opens)
 
 noncomputable def CoverSheaf : X.Modules :=
   ∏ᶜ (fun i => (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F)
@@ -155,19 +155,18 @@ theorem toCoverSheaf_H_map_zero (n : ℕ) (c : H F.sheaf n) [Finite I]
   rw [restrictAdjunction_toSheaf_map, ← h i]
   rfl
 
+end
+
 theorem base [IsAffine X] [F.IsQuasicoherent] : Subsingleton (H F.sheaf 1) := by
   sorry
 
-example (r : ℕ) (hr : 1 ≤ r) : r - 1 + 1 = r := Nat.sub_add_cancel hr
-
 open ConcreteCategory
 
-set_option backward.isDefEq.respectTransparency false in
-theorem induct (n : ℕ) (hi : ∀ m ≤ n, ∀ {X : Scheme.{u}} [IsAffine X] (F : X.Modules)
-    [F.IsQuasicoherent], Subsingleton (H F.sheaf (m + 1))) :
-    ∀ {X : Scheme.{u}} [IsAffine X] (F : X.Modules) [F.IsQuasicoherent],
-      Subsingleton (H F.sheaf (n + 1 + 1)) := by
-  intro X _ F _
+instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n + 1)) := by
+  revert F X
+  refine Nat.case_strong_induction_on (p := fun n => ∀ {X : Scheme.{u}} (F : X.Modules)
+    [IsAffine X] [F.IsQuasicoherent], Subsingleton (F.sheaf.H (n + 1))) n base ?_
+  intro n hi X F _ _
   apply subsingleton_of_forall_eq 0
   intro c
   obtain ⟨I, ⟨(U : I → X.Opens) , ⟨hU, vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf (n + 1)
@@ -192,6 +191,7 @@ theorem induct (n : ℕ) (hi : ∀ m ≤ n, ∀ {X : Scheme.{u}} [IsAffine X] (F
     obtain ⟨x₃, hx₃⟩ := Sheaf.H.longSequence_exact₁ hSsheaf (n + 1) (n + 1 + 1) rfl c hc
     haveI : Subsingleton (H Ssheaf.X₃ (n + 1)) := hi n (le_refl n) S.X₃
     rw [← hx₃, Subsingleton.elim x₃ 0, map_zero]
+    rfl
   apply this
   rw [map_zero]
   exact F.toCoverSheaf_H_map_zero U (n + 1 + 1) c (fun i => (vanish i).right)
