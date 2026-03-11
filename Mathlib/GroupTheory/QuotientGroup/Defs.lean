@@ -430,26 +430,4 @@ theorem congr_symm (e : G ≃* H) (he : G'.map ↑e = H') :
 
 end congr
 
-section powMonoidHom
-
-/-- The isomorphism between the quotient of a product by the image of the `n`th power map
-and the product of the quotients by the images of the `n`th power maps on the factors. -/
-@[to_additive
-  /-- The isomorphism between the quotient of a product by the image of the multiplication-by-`n`
-  map and the product of the quotients by the images of the multiplication-by-`n` maps
-  on the factors. -/ ]
-noncomputable
-def mulEquivPiModRangePowMonoidHom {ι : Type*} (A : ι → Type*) [∀ i, CommGroup (A i)] (n : ℕ) :
-    ((i : ι) → A i) ⧸ (powMonoidHom n).range ≃* ((i : ι) → A i ⧸ (powMonoidHom n).range) :=
-  let φ : ((i : ι) → A i) →* (i : ι) → A i ⧸ (powMonoidHom n).range := {
-    toFun x := (x ·)
-    map_one' := by simp [Pi.one_def]
-    map_mul' x y := by simp [Pi.mul_def]
-  }
-  liftEquiv (φ := φ) _ (fun y ↦ ⟨fun i ↦ Quotient.out (y i), by simp [φ]⟩) <| by
-    ext1 x
-    simpa [φ, funext_iff] using (Classical.skolem (p := fun i a ↦ a ^ n = x i)).symm
-
-end powMonoidHom
-
 end QuotientGroup
