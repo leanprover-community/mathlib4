@@ -233,23 +233,15 @@ omit hx h in
 theorem iteratedDerivWithin_comp_const_add (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (c + z)) s =
     fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (c + x) := by
-  induction n with
-  | zero => simp
-  | succ n IH =>
-    ext y
-    rw [iteratedDerivWithin_succ (f := fun z => f (c + z)), IH,
-      derivWithin_comp_const_add, ← iteratedDerivWithin_succ]
+  ext x
+  simp [iteratedDerivWithin, ← iteratedFDerivWithin_comp_add_left n c x]
 
 omit hx h in
 theorem iteratedDerivWithin_comp_add_const (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (z + c)) s =
     fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (x + c) := by
-  induction n with
-  | zero => simp
-  | succ n IH =>
-    ext y
-    rw [iteratedDerivWithin_succ (f := fun z => f (z + c)), IH,
-      derivWithin_comp_add_const, ← iteratedDerivWithin_succ]
+  ext x
+  simp [iteratedDerivWithin, ← iteratedFDerivWithin_comp_add_right n c x]
 
 omit hx h in
 theorem iteratedDerivWithin_comp_sub_const (c : 𝕜) :
