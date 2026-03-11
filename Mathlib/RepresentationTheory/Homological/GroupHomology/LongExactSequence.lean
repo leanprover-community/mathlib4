@@ -143,8 +143,7 @@ theorem δ₀_apply
     ← cyclesMk₀_eq X.X₁, ← cyclesMk₁_eq X.X₃]
   using δ_apply hX (i := 1) (j := 0) rfl ((chainsIso₁ X.X₃).inv z.1) (by simp +instances)
     ((chainsIso₁ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hy])
-    ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ => by simp [chainsIso₀, ← hx,
-      Representation.IntertwiningMap.toLinearMap_apply])
+    ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ => by simp [chainsIso₀, ← hx])
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
@@ -153,7 +152,7 @@ theorem mem_cycles₁_of_comp_eq_d₂₁
     d₂₁ X.X₂ y) :
     x ∈ cycles₁ X.X₁ := LinearMap.mem_ker.2 <| (Rep.mono_iff_injective k G X.f).1 hX.2 <| by
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
-  simp_all [shortComplexH1, Representation.IntertwiningMap.toLinearMap_apply]
+  simp_all [shortComplexH1]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem δ₁_apply
