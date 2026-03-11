@@ -22,7 +22,9 @@ permissions:
 
 env:
   TRANSIENT_PREFIX: "transient: "
-  AUTO_PREFIX: "x: "
+  # Support both "x " and "x: " (legacy) prefixes
+  AUTO_PREFIX_COLON: "x: "
+  AUTO_PREFIX_SPACE: "x "
 
 jobs:
   verify:
@@ -32,13 +34,21 @@ jobs:
     # This is a quick check to avoid unnecessary runs
     steps:
       - name: Checkout PR head
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           # Checkout the actual PR head, not the merge commit GitHub creates
           ref: ${{ github.event.pull_request.head.sha }}
           # Fetch full history to access all PR commits
           fetch-depth: 0
-
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
       - name: Check for special commits
         id: check
         run: |
@@ -46,8 +56,9 @@ jobs:
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
 
           # Check if any commits have transient or auto prefix
+          # Auto prefix can be "x " or "x: " (legacy)
           HAS_SPECIAL=$(git log --format="%s" "$BASE_SHA..$HEAD_SHA" | \
-            grep -E "^(${TRANSIENT_PREFIX}|${AUTO_PREFIX})" || true)
+            grep -E "^(${TRANSIENT_PREFIX}|${AUTO_PREFIX_COLON}|${AUTO_PREFIX_SPACE})" || true)
 
           if [[ -n "$HAS_SPECIAL" ]]; then
             echo "has_special=true" >> "$GITHUB_OUTPUT"
@@ -66,7 +77,7 @@ jobs:
 
           # Run verification (human-readable to stdout, JSON to file)
           set +e
-          ./scripts/verify_commits.sh "$BASE_SHA" --json-file verification_result.json
+          "${CI_SCRIPTS_DIR}/verification/verify_commits.sh" "$BASE_SHA" --json-file verification_result.json
           EXIT_CODE=$?
           set -e
 
@@ -84,7 +95,7 @@ jobs:
           REPO="${{ github.repository }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
 
-          COMMENT=$(cat verification_result.json | ./scripts/verify_commits_summary.sh "$REPO" "$PR_NUMBER")
+          COMMENT=$(cat verification_result.json | "${CI_SCRIPTS_DIR}/verification/verify_commits_summary.sh" "$REPO" "$PR_NUMBER")
 
           # Save to file (GitHub Actions has issues with multiline outputs)
           echo "$COMMENT" > comment_body.md

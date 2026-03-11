@@ -148,7 +148,7 @@ attribute [notation_class mod] HMod
 attribute [notation_class append] HAppend
 attribute [notation_class pow Simps.copyFirst] HPow
 attribute [notation_class andThen] HAndThen
-attribute [notation_class] Neg Dvd LE LT HasEquiv HasSubset HasSSubset Union Inter SDiff Insert
+attribute [notation_class] Neg Inv Dvd LE LT HasEquiv HasSubset HasSSubset Union Inter SDiff Insert
   Singleton Sep Membership
 attribute [notation_class one Simps.findOneArgs] OfNat
 attribute [notation_class zero Simps.findZeroArgs] OfNat
@@ -326,7 +326,7 @@ This default behavior is customisable as such:
 
 Here are a few extra pieces of information:
   * Run `initialize_simps_projections?` (or `set_option trace.simps.verbose true`)
-  to see the generated projections.
+    to see the generated projections.
 * Running `initialize_simps_projections MyStruct` without arguments is not necessary, it has the
   same effect if you just add `@[simps]` to a declaration.
 * It is recommended to call `@[simps]` or `initialize_simps_projections` in the same file as the
@@ -809,7 +809,7 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
     CoreM (List Name × Array ProjectionData) := do
   withOptions (fun o => if trc then o.set `trace.simps.verbose true else o) do
   let env ← getEnv
-  if let some data := (structureExt.getState env).find? str then
+  if let some data := structureExt.find? env str then
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
     withOptions (fun o => if traceIfExists then o.set `trace.simps.verbose true else o) do

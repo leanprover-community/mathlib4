@@ -46,7 +46,7 @@ class FinCategory (J : Type v) [SmallCategory J] where
   fintypeObj : Fintype J := by infer_instance
   fintypeHom : ∀ j j' : J, Fintype (j ⟶ j') := by infer_instance
 
-attribute [instance] FinCategory.fintypeObj FinCategory.fintypeHom
+attribute [instance_reducible, instance] FinCategory.fintypeObj FinCategory.fintypeHom
 
 instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
 

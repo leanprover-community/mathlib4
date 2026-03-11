@@ -65,7 +65,7 @@ is just multiplication with `-1`. -/
 theorem IsTopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [NonAssocRing R]
     [ContinuousMul R] : ContinuousNeg R where
   continuous_neg := by
-    simpa using (continuous_const.mul continuous_id : Continuous fun x : R => -1 * x)
+    simpa using (continuous_const.fun_mul continuous_id : Continuous fun x : R => -1 * x)
 
 /-- If `R` is a ring which is a topological semiring, then it is automatically a topological
 ring. This exists so that one can place a topological ring structure on `R` without explicitly
@@ -114,6 +114,11 @@ theorem topologicalClosure_minimal (s : NonUnitalSubsemiring R) {t : NonUnitalSu
     (h : s ≤ t) (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
+theorem topologicalClosure_mono {s t : NonUnitalSubsemiring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 /-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
 topological closure.
 
@@ -160,6 +165,11 @@ theorem Subsemiring.isClosed_topologicalClosure (s : Subsemiring R) :
 theorem Subsemiring.topologicalClosure_minimal (s : Subsemiring R) {t : Subsemiring R} (h : s ≤ t)
     (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
+
+@[gcongr]
+theorem Subsemiring.topologicalClosure_mono {s t : Subsemiring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
 
 /-- If a subsemiring of a topological semiring is commutative, then so is its
 topological closure.
@@ -302,6 +312,11 @@ theorem topologicalClosure_minimal (s : NonUnitalSubring R) {t : NonUnitalSubrin
     (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
+theorem topologicalClosure_mono {s t : NonUnitalSubring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 /-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
 topological closure.
 
@@ -336,6 +351,11 @@ theorem Subring.isClosed_topologicalClosure (s : Subring R) :
 theorem Subring.topologicalClosure_minimal (s : Subring R) {t : Subring R} (h : s ≤ t)
     (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
+
+@[gcongr]
+theorem Subring.topologicalClosure_mono {s t : Subring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
 
 /-- If a subring of a topological ring is commutative, then so is its topological closure.
 

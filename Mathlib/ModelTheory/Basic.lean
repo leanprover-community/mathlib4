@@ -169,6 +169,7 @@ variable (N : Type w') [L.Structure M] [L.Structure N]
 open Structure
 
 /-- Used for defining `FirstOrder.Language.Theory.ModelType.instInhabited`. -/
+@[instance_reducible]
 def Inhabited.trivialStructure {α : Type*} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
 
@@ -254,8 +255,8 @@ class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam Type*)
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 
-instance (priority := 100) StrongHomClass.homClass {F : Type*} [L.Structure M]
-    [L.Structure N] [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
+instance (priority := 100) StrongHomClass.homClass {F : Type*}
+    [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
   map_rel φ _ R x := (StrongHomClass.map_rel φ R x).2
 
@@ -402,12 +403,7 @@ theorem coe_toHom {f : M ↪[L] N} : (f.toHom : M → N) = f :=
   rfl
 
 theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
-  | f, g, h => by
-    cases f
-    cases g
-    congr
-    ext x
-    exact funext_iff.1 h x
+  | _, _, h => DFunLike.ext'_iff.mpr h
 
 @[ext]
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -767,6 +763,7 @@ end SumStructure
 section Empty
 
 /-- Any type can be made uniquely into a structure over the empty language. -/
+@[implicit_reducible]
 def emptyStructure : Language.empty.Structure M where
 
 instance : Unique (Language.empty.Structure M) :=
@@ -810,7 +807,7 @@ open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 
 /-- A structure induced by a bijection. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
   ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
 

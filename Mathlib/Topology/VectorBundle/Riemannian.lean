@@ -69,6 +69,7 @@ section Trivial
 
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A trivial vector bundle, in which the model fiber has an inner product,
 is a Riemannian bundle. -/
 instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
@@ -470,6 +471,7 @@ def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetri
     simp only [A]
     fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a Riemannian bundle structure is defined using `g.toRiemannianMetric` where `g` is
 a `ContinuousRiemannianMetric`, then we make sure typeclass inference can infer automatically
 that the bundle is a continuous Riemannian bundle. -/

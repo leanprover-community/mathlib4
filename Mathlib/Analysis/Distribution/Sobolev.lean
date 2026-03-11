@@ -28,6 +28,8 @@ section normed
 variable [NormedSpace ℂ F]
 
 variable (E F) in
+/-- The Bessel potential operator is the Fourier multiplier with the function
+`(1 + ‖x‖ ^ 2) ^ (s / 2)`. -/
 def besselPotential (s : ℝ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
   fourierMultiplierCLM F (fun (x : E) ↦ ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ))
 
@@ -58,10 +60,11 @@ theorem besselPotential_compL_besselPotential (s s' : ℝ) :
 
 open scoped Real Laplacian
 
+set_option backward.isDefEq.respectTransparency false in
 theorem besselPotential_neg_two_laplacian_eq (f : 𝓢'(E, F)) :
     ((besselPotential E F (-2)) (Δ f)) = fourierMultiplierCLM F (fun x ↦ Complex.ofReal <|
       -(2 * π) ^ 2 * ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1 : ℝ)) f := calc
-  _ = -(2 * π) ^ 2 • (fourierMultiplierCLM F
+  _ = (-(2 * π) ^ 2 • fourierMultiplierCLM F
       (fun x ↦ Complex.ofReal <| (‖x‖ ^ 2) * (1 + ‖x‖ ^ 2) ^ (- (1 : ℝ)))) f := by
     rw [laplacian_eq_fourierMultiplierCLM, besselPotential,
       ContinuousLinearMap.map_smul_of_tower,
@@ -70,7 +73,7 @@ theorem besselPotential_neg_two_laplacian_eq (f : 𝓢'(E, F)) :
     ext x
     simp
   _ = _ := by
-    rw [← Complex.coe_smul, ← fourierMultiplierCLM_smul_apply (by fun_prop)]
+    rw [← Complex.coe_smul, ← fourierMultiplierCLM_smul (by fun_prop)]
     congr
     ext x
     simp [mul_assoc]
@@ -97,6 +100,8 @@ section normed
 
 variable [NormedSpace ℂ F] [CompleteSpace F]
 
+/-- A tempered distribution `f` is a Sobolev function of order `s` if there exists an `Lp` function
+`f'` such that `𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 f = f'`. -/
 def MemSobolev (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (f : 𝓢'(E, F)) : Prop :=
   ∃ (f' : Lp F p (volume : Measure E)),
     besselPotential E F s f = f'
@@ -131,6 +136,7 @@ theorem memSobolev_besselPotential_iff {s r : ℝ} {p : ℝ≥0∞} [hp : Fact (
     MemSobolev s p (besselPotential E F r f) ↔ MemSobolev (r + s) p f := by
   simp [MemSobolev]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Schwartz functions are in every Sobolev space. -/
 theorem memSobolev_toTemperedDistributionCLM {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : 𝓢(E, F)) :
     MemSobolev s p (f : 𝓢'(E, F)) := by
@@ -142,6 +148,11 @@ theorem memSobolev_toTemperedDistributionCLM {s : ℝ} {p : ℝ≥0∞} [hp : Fa
     (Function.hasTemperateGrowth_one_add_norm_sq_rpow E (s / 2))
 
 variable (E F) in
+/-- The Sobolev space of order `s`.
+
+It is defined as the set of all tempered distributions `f` such that
+`𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 f` can be represented by a `Lp` function `f'`. Both `f` and `f'` are
+stored as data to avoid using `Classical.choose`. -/
 structure Sobolev (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] where
   toDistr : 𝓢'(E, F)
   sobFn : Lp F p (volume : Measure E)
@@ -179,6 +190,7 @@ def _root_.MemSobolev.toSobolev {f : 𝓢'(E, F)} (hf : MemSobolev s p f) : Sobo
   sobFn := hf.choose
   bessel_toDistr_eq_sobFn := hf.choose_spec
 
+/-- Transfer a Sobolev function in `H^{s,p}` to `H^{s', p}` given that `s = s'`. -/
 def copy {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {s s' : ℝ} (hs : s = s') (f : Sobolev E F s p) :
     Sobolev E F s' p where
   toDistr := f.toDistr
@@ -286,6 +298,10 @@ instance instModule : Module ℂ (Sobolev E F s p) :=
   coeHom_injective.module ℂ (coeHom E F s p) fun _ _ => rfl
 
 variable (E F s p) in
+/-- The map `f ↦ 𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 f` as a linear map from `H ^ {s,p}` to `Lp`.
+
+This definition is mainly used to define the norm and inner product on `H ^ {s,p}` and `H ^ s`,
+respectively. -/
 def toLpₗ : Sobolev E F s p →ₗ[ℂ] Lp F p (volume : Measure E) where
   toFun := sobFn
   map_add' f g := by rfl
@@ -448,8 +464,7 @@ theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f)
   simp only [pow_one, norm_mul, norm_pow, norm_inv, Real.norm_eq_abs]
   simp only [abs_neg, abs_pow, abs_mul, Nat.abs_ofNat, abs_norm]
   have : 0 < π := by positivity
-  rw [abs_of_pos this]
-  rw [mul_inv_le_iff₀]
+  rw [abs_of_pos this, mul_inv_le_iff₀]
   · gcongr
     grind
   norm_cast
