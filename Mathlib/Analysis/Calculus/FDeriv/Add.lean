@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Linear
 public import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Const
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Additive operations on derivatives
@@ -154,6 +155,12 @@ lemma fderivWithin_const_smul_field (c : R) (hs : UniqueDiffWithinAt 𝕜 s x) :
   · have : Invertible c := invertibleOfNonzero ha
     ext x
     simp [fderivWithin_const_smul_of_invertible c (f := f) hs]
+
+lemma fderivWithin_const_smul_field' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} (c : R) :
+    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact fderivWithin_const_smul_field c hsx
+  · simp [fderivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[deprecated (since := "2026-01-11")] alias fderivWithin_const_smul_of_field :=
   fderivWithin_const_smul_field
