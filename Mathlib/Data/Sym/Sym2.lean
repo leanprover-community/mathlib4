@@ -586,17 +586,8 @@ theorem fromRel_mono_iff (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
     fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
   ⟨fun hle a b ↦ @hle s(a, b), fun hle ↦ Sym2.ind hle⟩
 
+@[gcongr]
 alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
-
-/-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
-def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
-  OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
-
-@[simp]
-theorem fromRel_eq_fromRell_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Symmetric r₁)
-    (sym₂ : Symmetric r₂) : fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
-  rw [← Subtype.mk.injEq r₁ sym₁ r₂ sym₂, ← fromRelOrderEmbedding.eq_iff_eq]
-  rfl
 
 theorem fromRel_bot : fromRel (α := α) (r := ⊥) (fun _ _ ↦ id) = ∅ :=
   Set.eq_empty_of_forall_notMem <| Sym2.ind <| by simp
@@ -681,6 +672,40 @@ theorem toRel_fromRel (sym : Symmetric r) : ToRel (fromRel sym) = r :=
 
 theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
   Set.ext fun z => Sym2.ind (fun _ _ => Iff.rfl) z
+
+theorem toRel_mono_iff (s₁ s₂ : Set (Sym2 α)) : ToRel s₁ ≤ ToRel s₂ ↔ s₁ ⊆ s₂ :=
+  ⟨fun hle ↦ Sym2.ind hle, fun hle a b ↦ @hle s(a, b)⟩
+
+@[gcongr]
+alias ⟨_, toRel_mono⟩ := toRel_mono_iff
+
+variable (α) in
+/-- `ToRel` induces an order embedding from `Sym2` sets to relations -/
+def toRelOrderEmbedding : Set (Sym2 α) ↪o (α → α → Prop) :=
+  .ofMapLEIff ToRel toRel_mono_iff
+
+variable (α) in
+/-- `fromRel`/`ToRel` induce an order isomorphism between symmetric relations and `Sym2` sets -/
+@[simps]
+def fromRelOrderIso : { r : α → α → Prop // Symmetric r } ≃o Set (Sym2 α) where
+  toFun r := fromRel r.prop
+  invFun s := ⟨ToRel s, toRel_symmetric s⟩
+  left_inv r := by simp [toRel_fromRel]
+  right_inv s := by simp [fromRel_toRel]
+  map_rel_iff' {r₁ r₂} := by simpa using fromRel_mono_iff ..
+
+/-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
+@[deprecated fromRelOrderIso (since := "2026-03-11")]
+def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
+  fromRelOrderIso α |>.toOrderEmbedding
+
+@[simp]
+theorem fromRel_eq_fromRel_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Symmetric r₁)
+    (sym₂ : Symmetric r₂) : fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
+  rw [← Subtype.mk.injEq r₁ sym₁ r₂ sym₂, ← fromRelOrderIso α |>.eq_iff_eq]
+  rfl
+
+@[deprecated (since := "2026-03-11")] alias fromRel_eq_fromRell_iff_eq := fromRel_eq_fromRel_iff_eq
 
 end Relations
 
