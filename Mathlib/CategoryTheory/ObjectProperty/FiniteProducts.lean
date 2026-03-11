@@ -42,7 +42,7 @@ lemma prop_of_isLimit_binaryFan [P.IsClosedUnderBinaryProducts] {X Y : C} {B : B
 lemma prop_prod [P.IsClosedUnderBinaryProducts] (X Y : C) [HasBinaryProduct X Y]
     (hX : P X) (hY : P Y) :
     P (X ⨯ Y) :=
-  P.prop_of_isBinaryProduct (limit.isLimit _) hX hY
+  P.prop_of_isLimit_binaryFan (limit.isLimit _) hX hY
 
 lemma prop_of_isTerminal [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)]
     (X : C) (hX : IsTerminal X) :
@@ -59,7 +59,7 @@ lemma IsClosedUnderBinaryProducts.closedUnderIsomorphisms [HasTerminal C]
   of_iso {X Y} e hX := by
     let h : IsLimit (BinaryFan.mk (terminal.from Y) e.inv) :=
       BinaryFan.IsLimit.mk _ (fun _ f ↦ f ≫ e.hom) (by cat_disch) (by simp) (by cat_disch)
-    exact P.prop_of_isBinaryProduct h P.prop_terminal hX
+    exact P.prop_of_isLimit_binaryFan h P.prop_terminal hX
 
 /-- The typeclass saying that `P : ObjectProperty C` is stable under finite products. -/
 class IsClosedUnderFiniteProducts : Prop where
@@ -77,7 +77,7 @@ instance [HasFiniteProducts C] [P.IsClosedUnderFiniteProducts] :
     HasFiniteProducts P.FullSubcategory where
   out _ := inferInstance
 
-lemma prop_of_isProduct [P.IsClosedUnderFiniteProducts] {J : Type*} [Finite J] {f : J → C}
+lemma prop_of_isLimit_fan [P.IsClosedUnderFiniteProducts] {J : Type*} [Finite J] {f : J → C}
     {F : Fan f} (hF : IsLimit F) (h : ∀ j, P (f j)) :
     P F.pt :=
   P.prop_of_isLimit hF (by intro ⟨j⟩; exact h j)
@@ -85,7 +85,7 @@ lemma prop_of_isProduct [P.IsClosedUnderFiniteProducts] {J : Type*} [Finite J] {
 lemma prop_product [P.IsClosedUnderFiniteProducts] {J : Type*} [Finite J] {f : J → C}
     [HasProduct f] (h : ∀ j, P (f j)) :
     P (∏ᶜ f) :=
-  P.prop_of_isProduct (limit.isLimit (Discrete.functor f)) h
+  P.prop_of_isLimit_fan (limit.isLimit (Discrete.functor f)) h
 
 instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms] :
     P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty) where
@@ -112,7 +112,7 @@ lemma IsClosedUnderFiniteProducts.mk' [HasFiniteProducts C]
 abbrev IsClosedUnderBinaryCoproducts :=
   P.IsClosedUnderColimitsOfShape (Discrete WalkingPair)
 
-lemma prop_of_isBinaryCoproduct [P.IsClosedUnderBinaryCoproducts] {X Y : C} {B : BinaryCofan X Y}
+lemma prop_of_isColimit_binaryCofan [P.IsClosedUnderBinaryCoproducts] {X Y : C} {B : BinaryCofan X Y}
     (hB : IsColimit B) (hX : P X) (hY : P Y) :
     P B.pt :=
   P.prop_of_isColimit hB (by rintro ⟨_ | _⟩ <;> assumption)
@@ -120,7 +120,7 @@ lemma prop_of_isBinaryCoproduct [P.IsClosedUnderBinaryCoproducts] {X Y : C} {B :
 lemma prop_coprod [P.IsClosedUnderBinaryCoproducts] (X Y : C) [HasBinaryCoproduct X Y]
     (hX : P X) (hY : P Y) :
     P (X ⨿ Y) :=
-  P.prop_of_isBinaryCoproduct (colimit.isColimit (Limits.pair X Y)) hX hY
+  P.prop_of_isColimit_binaryCofan (colimit.isColimit (Limits.pair X Y)) hX hY
 
 lemma prop_of_isInitial [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)]
     (X : C) (hX : IsInitial X) :
@@ -137,7 +137,7 @@ lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
   of_iso {X Y} e hX := by
     let h : IsColimit (BinaryCofan.mk (initial.to Y) e.hom) :=
       BinaryCofan.IsColimit.mk _ (fun _ f ↦ e.inv ≫ f) (by cat_disch) (by simp) (by cat_disch)
-    exact P.prop_of_isBinaryCoproduct h P.prop_initial hX
+    exact P.prop_of_isColimit_binaryCofan h P.prop_initial hX
 
 /-- The typeclass saying that `P : ObjectProperty C` is stable under finite coproducts. -/
 class IsClosedUnderFiniteCoproducts : Prop where
@@ -155,7 +155,7 @@ instance [HasFiniteCoproducts C] [P.IsClosedUnderFiniteCoproducts] :
     HasFiniteCoproducts P.FullSubcategory where
   out _ := inferInstance
 
-lemma prop_of_isCoproduct [P.IsClosedUnderFiniteCoproducts] {J : Type*} [Finite J] {f : J → C}
+lemma prop_of_isColimit_cofan [P.IsClosedUnderFiniteCoproducts] {J : Type*} [Finite J] {f : J → C}
     {F : Cofan f} (hF : IsColimit F) (h : ∀ j, P (f j)) :
     P F.pt :=
   P.prop_of_isColimit hF (by intro ⟨j⟩; exact h j)
@@ -163,7 +163,7 @@ lemma prop_of_isCoproduct [P.IsClosedUnderFiniteCoproducts] {J : Type*} [Finite 
 lemma prop_coproduct [P.IsClosedUnderFiniteCoproducts] {J : Type*} [Finite J] {f : J → C}
     [HasCoproduct f] (h : ∀ j, P (f j)) :
     P (∐ f) :=
-  P.prop_of_isCoproduct (colimit.isColimit (Discrete.functor f)) h
+  P.prop_of_isColimit_cofan (colimit.isColimit (Discrete.functor f)) h
 
 instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms] :
     P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty) where
