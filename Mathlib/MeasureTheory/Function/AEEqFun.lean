@@ -235,7 +235,7 @@ theorem coeFn_compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (hf : QuasiMeasu
   apply coeFn_mk
 
 theorem compQuasiMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν)
-    {f' : α → β} (hf' : QuasiMeasurePreserving f' μ ν) (h : f = f') :
+    {f' : α → β} (hf' : QuasiMeasurePreserving f' μ ν) (h : f =ᵐ[μ] f') :
     compQuasiMeasurePreserving g f hf = compQuasiMeasurePreserving g f' hf' := by
   ext
   grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving, h]
