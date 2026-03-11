@@ -208,18 +208,26 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
 open Pointwise
 
 omit hx h in
-lemma iteratedDerivWithin_comp_neg (a : 𝕜) :
-    iteratedDerivWithin n (fun x ↦ f (-x)) s a = (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) (-a)
-    := by
+lemma iteratedFDerivWithin_comp_neg (a : 𝕜) : iteratedFDerivWithin 𝕜 n (fun x ↦ f (-x)) s a
+    = (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (-s) (-a) := by
   induction n generalizing a with
-  | zero => simp
+  | zero => simp [iteratedFDerivWithin]
   | succ n ih =>
-    have ih' : iteratedDerivWithin n (fun x ↦ f (-x)) s =
-        fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) (-x) :=
-      funext ih
-    rw [iteratedDerivWithin_succ, ih', pow_succ', neg_mul, one_mul,
-      derivWithin_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) x),
-      derivWithin_fun_const_smul_field, neg_smul, ← iteratedDerivWithin_succ]
+    have ih' : iteratedFDerivWithin 𝕜 n (fun x => f (-x)) s
+      = fun a ↦ (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (-s) (-a) := by
+      ext b
+      rw [ih b]
+    set g := fun a ↦ iteratedFDerivWithin 𝕜 n f (-s) a
+    rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left,
+      Function.comp_apply, Function.comp_apply, ih', ← Pi.smul_def,
+      fderivWithin_const_smul_field' ((-1 : 𝕜) ^ n) (f := fun a ↦ g (-a)),
+      fderivWithin_comp_neg (f := g), ← neg_one_smul 𝕜 (fderivWithin 𝕜 _ (-s) (-a)),
+      ← mul_smul _ (-1), ← pow_succ (-1) n, map_smul]
+
+omit hx h in
+lemma iteratedDerivWithin_comp_neg (a : 𝕜) : iteratedDerivWithin n (fun x ↦ f (-x)) s a
+    = (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) (-a) := by
+  simp [iteratedDerivWithin, iteratedFDerivWithin_comp_neg a]
 
 omit hx h in
 theorem iteratedDerivWithin_comp_const_add (c : 𝕜) :
