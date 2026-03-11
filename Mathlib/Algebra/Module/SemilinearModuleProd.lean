@@ -212,4 +212,67 @@ end Submodule
 
 end SemilinearProdModule
 
+namespace SemilinearProdModule.LinearMap
+
+section
+
+variable {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (E : Type*) [AddCommGroup E]
+  [Module R E] (F : Type*) [AddCommGroup F] [Module S F]
+  {M : Type*} [AddCommGroup M] [Module R M]
+
+/-- The first projection of a product is a linear map. -/
+def fst : (E ×[σ] F) →ₗ[R] E where
+  toFun x := x.fst
+  map_add' _x _y := rfl
+  map_smul' _x _y := rfl
+
+/-- The second projection of a product is a linear map. -/
+def snd : (E ×[σ] F) →ₛₗ[σ] F where
+  toFun x := x.snd
+  map_add' _x _y := rfl
+  map_smul' _x _y := rfl
+
+@[simp] lemma fst_apply (x : E ×[σ] F) :
+    fst σ E F x = x.fst := rfl
+
+@[simp] lemma snd_apply (x : E ×[σ] F) :
+    snd σ E F x = x.snd := rfl
+
+
+@[simp, norm_cast] lemma coe_fst : ⇑(fst σ E F) = fun x => x.fst := rfl
+
+@[simp, norm_cast] lemma coe_snd : ⇑(snd σ E F) = fun x => x.snd := rfl
+
+theorem fst_surjective : Function.Surjective (fst σ E F) := fun x => ⟨mk x 0, rfl⟩
+
+theorem snd_surjective : Function.Surjective (snd σ E F) := fun x => ⟨mk 0 x, rfl⟩
+
+end
+
+section
+
+variable {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) {E : Type*} [AddCommGroup E]
+  [Module R E] {F : Type*} [AddCommGroup F] [Module S F]
+  {M : Type*} [AddCommGroup M] [Module R M]
+
+/-- Combine a linear map `f : M →ₗ[R] E` and a semilinear map
+`g : M →ₛₗ[σ] F` into a linear map with target `E ×[σ] F`. -/
+def prod (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) : M →ₗ[R] E ×[σ] F where
+  toFun x := mk (f x) (g x)
+  map_add' x y := by ext <;> simp
+  map_smul' c x := by ext <;> simp
+
+@[simp] lemma prod_apply (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) (x : M) :
+    prod σ f g x = mk (f x) (g x) := rfl
+
+@[simp] lemma fst_prod (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
+    (fst σ E F).comp (prod σ f g) = f := by ext x; rfl
+
+@[simp] lemma snd_prod (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
+    (snd σ E F).comp (prod σ f g) = g := by ext x; rfl
+
+end
+
+end SemilinearProdModule.LinearMap
+
 end
