@@ -45,7 +45,6 @@ def isSimpaUsingBy : Syntax → Bool
   | `(tactic| simpa! $_:optConfig $(_)? $[only]? $[[$args,*]]? using by $_) => true
   | _ => false
 
-
 /--
 The `simpaUsingBy` linter flags any invocation of the form `simpa ... using by tactic`.
 
