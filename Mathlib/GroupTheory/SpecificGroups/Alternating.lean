@@ -184,30 +184,25 @@ open alternatingGroup
 
 @[simp]
 theorem closure_three_cycles_eq_alternating :
-    closure { σ : Perm α | IsThreeCycle σ } = alternatingGroup α :=
-  closure_eq_of_le _ (fun _ hσ => mem_alternatingGroup.2 hσ.sign) fun σ hσ => by
-    suffices hind :
-      ∀ (n : ℕ) (l : List (Perm α)) (_ : ∀ g, g ∈ l → IsSwap g) (_ : l.length = 2 * n),
-        l.prod ∈ closure { σ : Perm α | IsThreeCycle σ } by
-      obtain ⟨l, rfl, hl⟩ := truncSwapFactors σ
-      obtain ⟨n, hn⟩ := (prod_list_swap_mem_alternatingGroup_iff_even_length hl).1 hσ
-      rw [← two_mul] at hn
-      exact hind n l hl hn
-    intro n
-    induction n with intro l hl hn
-    | zero => simp [List.length_eq_zero_iff.1 hn, one_mem]
-    | succ n ih =>
+    closure { σ : Perm α | IsThreeCycle σ } = alternatingGroup α := by
+  refine closure_eq_of_le _ (fun _ ↦ IsThreeCycle.mem_alternatingGroup) fun σ hσ ↦ ?_
+  suffices hind :
+    ∀ (n : ℕ) (l : List (Perm α)) (_ : ∀ g, g ∈ l → IsSwap g) (_ : l.length = 2 * n),
+      l.prod ∈ closure { σ : Perm α | IsThreeCycle σ } by
+    obtain ⟨l, rfl, hl⟩ := truncSwapFactors σ
+    obtain ⟨n, hn⟩ := (prod_list_swap_mem_alternatingGroup_iff_even_length hl).1 hσ
+    rw [← two_mul] at hn
+    exact hind n l hl hn
+  intro n
+  induction n with intro l hl hn
+  | zero => simp [List.length_eq_zero_iff.1 hn, one_mem]
+  | succ n ih =>
     rw [Nat.mul_succ] at hn
     obtain ⟨a, l, rfl⟩ := l.exists_of_length_succ hn
     rw [List.length_cons, Nat.succ_inj] at hn
     obtain ⟨b, l, rfl⟩ := l.exists_of_length_succ hn
     rw [List.prod_cons, List.prod_cons, ← mul_assoc]
-    rw [List.length_cons, Nat.succ_inj] at hn
-    exact
-      mul_mem
-        (IsSwap.mul_mem_closure_three_cycles (hl a List.mem_cons_self)
-          (hl b (List.mem_cons_of_mem a List.mem_cons_self)))
-        (ih _ (fun g hg => hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
+    apply mul_mem <;> grind [IsSwap.mul_mem_closure_three_cycles]
 
 theorem isThreeCycle_subset_alternatingGroup :
     {g : Perm α | g.IsThreeCycle} ⊆ alternatingGroup α :=
@@ -264,17 +259,14 @@ theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ 
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
 theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f : Perm α}
     (hf : IsThreeCycle f) :
-    normalClosure ({⟨f, hf.mem_alternatingGroup⟩} : Set (alternatingGroup α)) = ⊤ :=
-  eq_top_iff.2
-    (by
-      rw [← map_subtype_le_map_subtype]
-      rw [← MonoidHom.range_eq_map, range_subtype, normalClosure, MonoidHom.map_closure]
-      refine (le_of_eq closure_three_cycles_eq_alternating.symm).trans (closure_mono ?_)
-      intro g h
-      obtain ⟨c, rfl⟩ := isConj_iff.1 (isConj_iff_cycleType_eq.2 (hf.trans h.symm))
-      refine ⟨⟨c * f * c⁻¹, h.mem_alternatingGroup⟩, ?_, rfl⟩
-      rw [Group.mem_conjugatesOfSet_iff]
-      exact ⟨⟨f, hf.mem_alternatingGroup⟩, Set.mem_singleton _, isThreeCycle_isConj h5 hf h⟩)
+    normalClosure ({⟨f, hf.mem_alternatingGroup⟩} : Set (alternatingGroup α)) = ⊤ := by
+  rw [eq_top_iff, ← map_subtype_le_map_subtype, ← MonoidHom.range_eq_map, range_subtype,
+    normalClosure, MonoidHom.map_closure]
+  refine (le_of_eq closure_three_cycles_eq_alternating.symm).trans (closure_mono fun g h ↦ ?_)
+  obtain ⟨c, rfl⟩ := isConj_iff.mp (isConj_iff_cycleType_eq.mpr (hf.trans h.symm))
+  refine ⟨⟨c * f * c⁻¹, h.mem_alternatingGroup⟩, ?_, rfl⟩
+  rw [Group.mem_conjugatesOfSet_iff]
+  exact ⟨⟨f, hf.mem_alternatingGroup⟩, Set.mem_singleton _, isThreeCycle_isConj h5 hf h⟩
 
 /-- Part of proving $A_5$ is simple. Shows that the square of any element of $A_5$ with a 3-cycle in
   its cycle decomposition is a 3-cycle, so the normal closure of the original element must be
@@ -316,10 +308,7 @@ theorem nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternati
   exact le_trans h3 (card α).self_le_factorial
 
 instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
-  nontrivial_of_three_le_card
-    (by
-      rw [card_fin]
-      exact le_add_left (le_refl 3))
+  nontrivial_of_three_le_card (by simp)
 
 /-- The normal closure of the 5-cycle `finRotate 5` within $A_5$ is the whole group. This will be
   used to show that the normal closure of any 5-cycle within $A_5$ is the whole group. -/
