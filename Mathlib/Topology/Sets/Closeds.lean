@@ -532,37 +532,20 @@ noncomputable
 def mapOrderIso (f : β → α) (h : IsOpenEmbedding f) :
     IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
   toFun T := ⟨map f h.continuous T, map_preimage_nonemtpy f h.continuous T⟩
-  invFun V := {
-      carrier := f ⁻¹' V
-      isIrreducible' := ⟨V.2, IsPreirreducible.preimage (IsIrreducible.isPreirreducible V.1.2) h⟩
-      isClosed' := V.1.3.preimage h.continuous
-      }
-  left_inv := by
-    intro V
-    simp only [map]
-    ext x
-    dsimp
-    rw [IsOpenMap.preimage_closure_image f h.isOpenMap h.injective h.continuous]
-    exact isClosed V
-  right_inv := by
-    intro V
-    simp only [map]
-    ext x
-    dsimp
-    rw [IsPreirreducible.closure_image_preimage f h.isOpenMap V V.2 V.1.2.2 V.1.3]
-  map_rel_iff' := by
-    intro a b
-    simp only [coe_setOf, mem_setOf_eq, Equiv.coe_fn_mk]
-    constructor
-    · intro c
-      have eq : f ⁻¹' closure (f '' a.carrier) ≤ f ⁻¹' closure (f '' b.carrier) := fun _ b ↦ c b
-      have (z : IrreducibleCloseds β) : z.carrier = f ⁻¹' (closure (f '' z.carrier)) := by
-        suffices closure z.carrier = f ⁻¹' (closure (f '' z.carrier)) by
-          nth_rewrite 1 [← IsClosed.closure_eq z.3]
-          exact this
-        exact Topology.IsEmbedding.closure_eq_preimage_closure_image h.isEmbedding z
-      rwa [← this a, ← this b] at eq
-    · exact fun c ↦ (map_mono h.continuous) c
+  invFun V :=
+    { carrier := f ⁻¹' V
+      isIrreducible' := ⟨V.2, V.1.2.isPreirreducible.preimage h⟩
+      isClosed' := V.1.3.preimage h.continuous }
+  left_inv V := by
+    ext
+    simp [IsOpenMap.preimage_closure_image f h.isOpenMap h.injective h.continuous _ V.isClosed]
+  right_inv V := by
+    ext
+    simp [IsPreirreducible.closure_image_preimage f h.isOpenMap V V.2 V.1.2.2 V.1.3]
+  map_rel_iff' {a b} := by
+    refine ⟨fun hle ↦ ?_, fun hle ↦ map_mono h.continuous hle⟩
+    simpa [← h.isEmbedding.closure_eq_preimage_closure_image, a.isClosed.closure_eq,
+      b.isClosed.closure_eq] using Set.preimage_mono (f := f) hle
 
 end IrreducibleCloseds
 
