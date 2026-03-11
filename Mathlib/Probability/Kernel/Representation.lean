@@ -18,7 +18,7 @@ import Mathlib.Probability.CDF
 This file contains results about isolation of kernels randomness. In particular, it shows that,
 when the target space is a standard Borel space, any Markov kernel can be represented as the image
 of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemma 4.22 in
-"Foundations of Modern Probability" by Olav Kallenberg, 2021.
+[Foundations of Modern Probability][kallenberg2021].
 
 ## Main results
 
