@@ -245,11 +245,10 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
 lemma mapDomain_tsub {f : ι → κ} (h : f.Injective) (f1 f2 : ι →₀ α) :
     (f1 - f2).mapDomain f = f1.mapDomain f - f2.mapDomain f := by
   ext y
-  rw [tsub_apply]
-  by_cases! h : y ∉ Set.range f
-  · simp [mapDomain_notin_range _ _ h]
-  obtain ⟨x, rfl⟩ := h
-  simp [mapDomain_apply h _ x]
+  by_cases! hy : y ∉ Set.range f
+  · simp [mapDomain_notin_range _ _ hy]
+  · obtain ⟨x, rfl⟩ := hy
+    simp [mapDomain_apply h]
 
 lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
     (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by
