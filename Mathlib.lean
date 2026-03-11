@@ -4535,6 +4535,7 @@ public import Mathlib.GroupTheory.GroupExtension.Basic
 public import Mathlib.GroupTheory.GroupExtension.Defs
 public import Mathlib.GroupTheory.HNNExtension
 public import Mathlib.GroupTheory.Index
+public import Mathlib.GroupTheory.IndexNSmul
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.GroupTheory.IsSubnormal
