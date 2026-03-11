@@ -354,8 +354,8 @@ lemma forgetToTop_comp_forget : forgetToTop ⋙ CategoryTheory.forget TopCat = f
 -- poor performance consequences.
 unif_hint forget_obj_eq_coe (X : Scheme) where ⊢ forget.obj X ≟ (X : Type*)
 
-@[simp] lemma forget_obj (X) : Scheme.forget.obj X = TypeCat.of X := rfl
-@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = TypeCat.ofHom ⟨f⟩ := rfl
+@[simp] lemma forget_obj (X) : (Scheme.forget.obj X : Type _) = X := rfl
+@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : (forget.map f : _ → _) = f := rfl
 
 namespace Hom
 

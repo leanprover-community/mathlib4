@@ -63,6 +63,12 @@ set_option backward.privateInPublic.warn false in
 /-- The object in the category of types associated to a type. -/
 abbrev of (X : Type u) : TypeCat.{u} := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator
+/-- This prevents `FintypeCat.of X` being printed as `{ carrier := X, str := ... }` by
+`delabStructureInstance`. -/
+@[app_delab TypeCat.of]
+meta def delabOf : Delab := delabApp
+
 instance : Inhabited TypeCat.{u} := ⟨of <| PUnit⟩
 
 @[ext]
