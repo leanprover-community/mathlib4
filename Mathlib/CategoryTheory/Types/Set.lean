@@ -28,8 +28,8 @@ namespace Set
 /-- Given `X : Type u`, this is the functor `Set X ⥤ TypeCat.{u}` which sends `A`
 to its underlying type. -/
 @[simps obj map]
-def functorToTypes {X : Type u} : Set X ⥤ TypeCat.{u} where
-  obj S := TypeCat.of S
+def functorToTypes {X : Type u} : Set X ⥤ Type u where
+  obj S := S
   map {S T} f := TypeCat.ofHom ⟨fun ⟨x, hx⟩ ↦ ⟨x, leOfHom f hx⟩⟩
 
 end Set

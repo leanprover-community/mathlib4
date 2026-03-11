@@ -142,7 +142,7 @@ end SqStruct
 /-- The projective system `j ↦ SqStruct c p f g j.unop`. -/
 @[simps]
 def sqFunctor : Jᵒᵖ ⥤ TypeCat where
-  obj j := TypeCat.of <| SqStruct c p f g j.unop
+  obj j := <| SqStruct c p f g j.unop
   map α := TypeCat.ofHom ⟨fun sq' ↦ sq'.map α.unop⟩
 
 variable [F.IsWellOrderContinuous]

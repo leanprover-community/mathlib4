@@ -40,7 +40,7 @@ instance : HasProp P (Σ (a : α), (σ a)) := HasExplicitFiniteCoproducts.hasPro
 The comparison map from the value of a condensed set on a finite coproduct to the product of the
 values on the components.
 -/
-def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ TypeCat.of ((a : α) → X.obj ⟨of P (σ a)⟩) :=
+def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.obj ⟨of P (σ a)⟩) :=
   TypeCat.ofHom ⟨fun x a ↦ X.map (ofHom _ ⟨Sigma.mk a, continuous_sigmaMk⟩).op x⟩
 
 set_option backward.isDefEq.respectTransparency false in

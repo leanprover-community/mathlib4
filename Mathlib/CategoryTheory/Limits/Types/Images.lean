@@ -29,7 +29,7 @@ section
 -- implementation of `HasImage`
 /-- the image of a morphism in Type is just `Set.range f` -/
 def Image : TypeCat.{u} :=
-  TypeCat.of (Set.range f)
+  (Set.range f)
 
 instance [Inhabited α] : Inhabited (Image f) where default := ⟨f default, ⟨_, rfl⟩⟩
 

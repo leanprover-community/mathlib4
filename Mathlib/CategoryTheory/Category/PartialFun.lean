@@ -106,7 +106,7 @@ be computable because `= Option.none` is decidable while the domain of a general
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
   classical
   exact
-    { obj := fun X => ⟨TypeCat.of (Option X), none⟩
+    { obj := fun X => ⟨(Option X), none⟩
       map := fun f => ⟨Option.elim' none fun a => (f a).toOption, rfl⟩
       map_id := fun X => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => (by
         dsimp [CategoryStruct.id]

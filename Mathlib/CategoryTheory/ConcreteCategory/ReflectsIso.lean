@@ -20,7 +20,7 @@ universe u
 
 namespace CategoryTheory
 
-instance : (forget (TypeCat.{u})).ReflectsIsomorphisms where reflects _ _ _ {i} := i
+instance : (forget (Type u)).ReflectsIsomorphisms where reflects _ _ _ {i} := i
 
 variable (C : Type (u + 1)) [Category* C]
     {FC : outParam <| C → C → Type u} {CC : outParam <| C → Type u}

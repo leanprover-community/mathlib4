@@ -91,7 +91,7 @@ end HomObj
 /-- The contravariant functor taking `A : C ⥤ Type w` to `HomObj F G A`, i.e. Hom(F ⊗ -, G). -/
 @[simps obj map]
 def homObjFunctor : (C ⥤ TypeCat.{w})ᵒᵖ ⥤ TypeCat.{max w v' u} where
-  obj A := TypeCat.of <| HomObj F G A.unop
+  obj A := <| HomObj F G A.unop
   map {A A'} f := TypeCat.ofHom ⟨fun x ↦
     { app := fun X a ↦ x.app X (f.unop.app _ a)
       naturality := fun {X Y} φ a ↦ by

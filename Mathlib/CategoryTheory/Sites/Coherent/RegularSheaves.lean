@@ -86,7 +86,7 @@ theorem equalizerCondition_precomp_of_preservesPullback (P : Cᵒᵖ ⥤ D) (F :
 /-- The canonical map to the explicit equalizer. -/
 def mapToEqualizer (P : Cᵒᵖ ⥤ TypeCat) {W X B : C} (f : X ⟶ B)
     (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
-    P.obj (op B) ⟶ TypeCat.of { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } :=
+    P.obj (op B) ⟶ { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } :=
   TypeCat.ofHom ⟨fun t ↦
     ⟨P.map f.op t, by simp only [Set.mem_setOf_eq, ← comp_apply, ← Functor.map_comp, ← op_comp, w]⟩⟩
 

@@ -83,7 +83,7 @@ variable (G)
 @[simps obj map]
 def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action TypeCat.{u} G) where
-  obj n := Action.ofMulAction G (TypeCat.of (Fin (n.unop.len + 1) → G))
+  obj n := Action.ofMulAction G ((Fin (n.unop.len + 1) → G))
   map f :=
     { hom := TypeCat.ofHom ⟨fun x => x ∘ f.unop.toOrderHom⟩
       comm := fun _ => rfl }
@@ -99,7 +99,7 @@ variable [Monoid G]
 set_option backward.isDefEq.respectTransparency false in
 /-- When the category is `G`-Set, `cechNerveTerminalFrom` of `G` with the left regular action is
 isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
-def cechNerveTerminalFromIso : cechNerveTerminalFrom (Action.ofMulAction G (TypeCat.of G)) ≅
+def cechNerveTerminalFromIso : cechNerveTerminalFrom (Action.ofMulAction G (G)) ≅
     classifyingSpaceUniversalCover G :=
   NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
     refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
@@ -110,10 +110,10 @@ def cechNerveTerminalFromIso : cechNerveTerminalFrom (Action.ofMulAction G (Type
 /-- As a simplicial set, `cechNerveTerminalFrom` of a monoid `G` is isomorphic to the universal
 cover of the classifying space of `G` as a simplicial set. -/
 def cechNerveTerminalFromIsoCompForget :
-    cechNerveTerminalFrom (TypeCat.of G) ≅ classifyingSpaceUniversalCover G ⋙ forget _ := by
+    cechNerveTerminalFrom (G) ≅ classifyingSpaceUniversalCover G ⋙ forget _ := by
   refine NatIso.ofComponents (fun _ => Types.productIso _) fun _ => ?_
   ext : 2
-  exact Matrix.ext fun _ _ => Pi.lift_π_apply (f := fun _ ↦ TypeCat.of G) _ _ _
+  exact Matrix.ext fun _ _ => Pi.lift_π_apply (f := fun _ ↦ G) _ _ _
 
 variable (k)
 
@@ -128,18 +128,18 @@ def compForgetAugmented : SimplicialObject.Augmented TypeCat.{u} :=
 /-- The augmented Čech nerve of the map from `Fin 1 → G` to the terminal object in `Type u` has an
 extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
-    ExtraDegeneracy (Arrow.mk <| terminal.from (TypeCat.of G)).augmentedCechNerve :=
-  AugmentedCechNerve.extraDegeneracy (Arrow.mk <| terminal.from (TypeCat.of G))
+    ExtraDegeneracy (Arrow.mk <| terminal.from (G)).augmentedCechNerve :=
+  AugmentedCechNerve.extraDegeneracy (Arrow.mk <| terminal.from (G))
     ⟨TypeCat.ofHom ⟨fun _ => (1 : G)⟩, by cat_disch⟩
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
 from `Fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
 def extraDegeneracyCompForgetAugmented : ExtraDegeneracy (compForgetAugmented G) := by
   refine
-    ExtraDegeneracy.ofIso (?_ : (Arrow.mk <| terminal.from (TypeCat.of G)).augmentedCechNerve ≅ _)
+    ExtraDegeneracy.ofIso (?_ : (Arrow.mk <| terminal.from (G)).augmentedCechNerve ≅ _)
       (extraDegeneracyAugmentedCechNerve G)
   exact
-    Comma.isoMk (CechNerveTerminalFrom.iso (TypeCat.of G) ≪≫ cechNerveTerminalFromIsoCompForget G)
+    Comma.isoMk (CechNerveTerminalFrom.iso (G) ≪≫ cechNerveTerminalFromIsoCompForget G)
       (Iso.refl _) (by ext : 1; exact IsTerminal.hom_ext terminalIsTerminal _ _)
 
 /-- The free functor `Type u ⥤ ModuleCat.{u} k` applied to the universal cover of the classifying

@@ -39,7 +39,7 @@ obtained by shrinking `F.obj X` for all `X : C`. -/
 @[simps obj map, pp_with_univ]
 noncomputable def shrink (F : C ⥤ TypeCat.{w'}) [FunctorToTypes.Small.{w} F] :
     C ⥤ TypeCat.{w} where
-  obj X := TypeCat.of <| Shrink.{w} (F.obj X)
+  obj X := <| Shrink.{w} (F.obj X)
   map f := TypeCat.ofHom ⟨equivShrink.{w} _ ∘ F.map f ∘ (equivShrink.{w} _).symm⟩
 
 /-- The natural transformation `shrink.{w} F ⟶ shrink.{w} G` induces by a natural

@@ -164,7 +164,7 @@ theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), Func
 /-- The subfunctor of `F` obtained by restricting to the preimages of a set `s ∈ F.obj i`. -/
 @[simps obj map]
 def toPreimages : J ⥤ TypeCat.{v} where
-  obj j := TypeCat.of (⋂ f : j ⟶ i, F.map f ⁻¹' s)
+  obj j := (⋂ f : j ⟶ i, F.map f ⁻¹' s)
   map g := TypeCat.ofHom ⟨MapsTo.restrict (F.map g) _ _ fun x h => by
     rw [mem_iInter] at h ⊢
     intro f
@@ -243,7 +243,7 @@ theorem isMittagLeffler_of_exists_finite_range
 /-- The subfunctor of `F` obtained by restricting to the eventual range at each index. -/
 @[simps obj map]
 def toEventualRanges : J ⥤ TypeCat.{v} where
-  obj j := TypeCat.of (F.eventualRange j)
+  obj j := (F.eventualRange j)
   map f := TypeCat.ofHom ⟨(F.eventualRange_mapsTo f).restrict _ _ _⟩
 
 instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.toEventualRanges.obj j) :=

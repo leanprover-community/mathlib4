@@ -47,7 +47,7 @@ def discretePresieve (α : TypeCat.{u}) : Presieve α :=
 
 theorem generate_discretePresieve_mem (α : TypeCat.{u}) :
     Sieve.generate (discretePresieve α) ∈ typesGrothendieckTopology α :=
-  fun x => ⟨TypeCat.of PUnit, 𝟙 _, TypeCat.ofHom ⟨fun _ => x⟩,
+  fun x => ⟨PUnit, 𝟙 _, TypeCat.ofHom ⟨fun _ => x⟩,
     ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩, rfl⟩
 
 /-- The sheaf condition for `yoneda'`. -/
@@ -82,7 +82,7 @@ open Opposite
 /-- Given a presheaf `P` on the category of types, construct
 a map `P(α) → (α → P(*))` for all type `α`. -/
 def eval (P : TypeCat.{u}ᵒᵖ ⥤ TypeCat.{u}) (α : TypeCat.{u}) (s : P.obj (op α)) :
-  α ⟶ P.obj (op (TypeCat.of PUnit)) :=
+  α ⟶ P.obj (op (PUnit)) :=
   TypeCat.ofHom ⟨fun x ↦ P.map (TypeCat.ofHom ⟨fun _ => x⟩).op s⟩
 
 open Presieve
@@ -92,7 +92,7 @@ set_option backward.isDefEq.respectTransparency false in
 `(α → S(*)) → S(α)` that is inverse to `eval`. -/
 noncomputable def typesGlue (S : TypeCat.{u}ᵒᵖ ⥤ TypeCat.{u})
     (hs : IsSheaf typesGrothendieckTopology S) (α : TypeCat.{u})
-    (f : α → S.obj (op (TypeCat.of PUnit))) : S.obj (op α) :=
+    (f : α → S.obj (op (PUnit))) : S.obj (op α) :=
   (hs.isSheafFor _ (generate_discretePresieve_mem α)).amalgamate
     (fun _ g hg => S.map (TypeCat.ofHom ⟨fun _ => PUnit.unit⟩).op <| f <| g <| Classical.choose hg)
     fun β γ δ g₁ g₂ f₁ f₂ hf₁ hf₂ h =>
@@ -123,7 +123,7 @@ theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s :
 @[simps]
 noncomputable def evalEquiv (S : TypeCat.{u}ᵒᵖ ⥤ TypeCat.{u})
     (hs : Presheaf.IsSheaf typesGrothendieckTopology S)
-    (α : TypeCat.{u}) : S.obj (op α) ≃ (α ⟶ S.obj (op (TypeCat.of PUnit))) where
+    (α : TypeCat.{u}) : S.obj (op α) ≃ (α ⟶ S.obj (op (PUnit))) where
   toFun := eval S α
   invFun f := typesGlue S ((isSheaf_iff_isSheaf_of_type _ _).1 hs) α f
   left_inv := typesGlue_eval
@@ -138,7 +138,7 @@ theorem eval_map (S : TypeCat.{u}ᵒᵖ ⥤ TypeCat.{u}) (α β) (f : β ⟶ α)
 @[simps!]
 noncomputable def equivYoneda (S : TypeCat.{u}ᵒᵖ ⥤ TypeCat.{u})
     (hs : Presheaf.IsSheaf typesGrothendieckTopology S) :
-    S ≅ yoneda.obj (S.obj (op (TypeCat.of PUnit))) :=
+    S ≅ yoneda.obj (S.obj (op (PUnit))) :=
   NatIso.ofComponents
     (fun α ↦ (evalEquiv S hs <| unop α).toIso) fun {α β} f => by
       dsimp
@@ -148,7 +148,7 @@ noncomputable def equivYoneda (S : TypeCat.{u}ᵒᵖ ⥤ TypeCat.{u})
 /-- Given a sheaf `S`, construct an isomorphism `S ≅ [-, S(*)]`. -/
 @[simps]
 noncomputable def equivYoneda' (S : Sheaf typesGrothendieckTopology TypeCat.{u}) :
-    S ≅ yoneda'.obj (S.1.obj (op (TypeCat.of PUnit))) where
+    S ≅ yoneda'.obj (S.1.obj (op (PUnit))) where
   hom := ⟨(equivYoneda S.1 S.2).hom⟩
   inv := ⟨(equivYoneda S.1 S.2).inv⟩
   hom_inv_id := by ext1; apply (equivYoneda S.1 S.2).hom_inv_id
@@ -156,7 +156,7 @@ noncomputable def equivYoneda' (S : Sheaf typesGrothendieckTopology TypeCat.{u})
 
 theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology TypeCat.{u}) (f : S₁ ⟶ S₂)
     (α : TypeCat.{u}) (s : S₁.1.obj (op α)) (x : α) :
-    eval S₂.1 α (f.hom.app (op α) s) x = f.hom.app (op (TypeCat.of PUnit)) (eval S₁.1 α s x) :=
+    eval S₂.1 α (f.hom.app (op α) s) x = f.hom.app (op (PUnit)) (eval S₁.1 α s x) :=
   (ConcreteCategory.congr_hom (f.hom.naturality (TypeCat.ofHom ⟨fun _ => x⟩).op) s).symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -165,7 +165,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 noncomputable def typeEquiv : TypeCat.{u} ≌ Sheaf typesGrothendieckTopology TypeCat.{u} where
   functor := yoneda'
-  inverse := sheafToPresheaf _ _ ⋙ (evaluation _ _).obj (op (TypeCat.of PUnit))
+  inverse := sheafToPresheaf _ _ ⋙ (evaluation _ _).obj (op (PUnit))
   unitIso := NatIso.ofComponents
       (fun _α => -- α ≅ PUnit ⟶ α
         { hom := TypeCat.ofHom ⟨fun x => TypeCat.ofHom ⟨fun _ => x⟩⟩
@@ -189,13 +189,13 @@ instance subcanonical_typesGrothendieckTopology : typesGrothendieckTopology.{u}.
 theorem typesGrothendieckTopology_eq_canonical :
     typesGrothendieckTopology.{u} = Sheaf.canonicalTopology TypeCat.{u} := by
   refine le_antisymm typesGrothendieckTopology.le_canonical (sInf_le ?_)
-  refine ⟨yoneda.obj (TypeCat.of (ULift Bool)), ⟨_, rfl⟩, GrothendieckTopology.ext ?_⟩
+  refine ⟨yoneda.obj ((ULift Bool)), ⟨_, rfl⟩, GrothendieckTopology.ext ?_⟩
   funext α
   ext S
   refine ⟨fun hs x => ?_, fun hs β f => Presieve.isSheaf_yoneda' _ fun y => hs (f y)⟩
   by_contra hsx
   have : TypeCat.ofHom ⟨(fun _ => ULift.up true)⟩ = TypeCat.ofHom ⟨(fun _ => ULift.up false)⟩ :=
-    (hs (TypeCat.of PUnit) (TypeCat.ofHom ⟨fun _ => x⟩)).isSeparatedFor.ext
+    (hs (PUnit) (TypeCat.ofHom ⟨fun _ => x⟩)).isSeparatedFor.ext
       fun β f hf => by
         dsimp
         ext y

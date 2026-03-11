@@ -439,7 +439,7 @@ instance faithful : compactumToCompHaus.Faithful where
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :
-    compactumToCompHaus.obj (Compactum.ofTopologicalSpace (TypeCat.of D)) ≅ D where
+    compactumToCompHaus.obj (Compactum.ofTopologicalSpace (D)) ≅ D where
   hom := CompHausLike.ofHom _
     { toFun := id
       continuous_toFun :=
@@ -456,7 +456,7 @@ noncomputable def isoOfTopologicalSpace {D : CompHaus} :
 
 /-- The functor `compactumToCompHaus` is essentially surjective. -/
 instance essSurj : compactumToCompHaus.EssSurj :=
-  { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace (TypeCat.of X),
+  { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace (X),
       ⟨isoOfTopologicalSpace⟩⟩ }
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/

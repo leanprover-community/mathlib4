@@ -66,24 +66,24 @@ theorem pi_map_π_apply' {β : Type v} {f g : β → TypeCat.{v}} (α : ∀ j, f
 def terminalLimitCone : Limits.LimitCone (Functor.empty (TypeCat.{u})) where
   -- Porting note: tidy was able to fill the structure automatically
   cone :=
-    { pt := TypeCat.of PUnit
+    { pt := PUnit
       π := (Functor.uniqueFromEmpty _).hom }
   isLimit :=
     { lift _ := TypeCat.ofHom ⟨fun _ => PUnit.unit⟩
       fac := fun _ => by rintro ⟨⟨⟩⟩ }
 
 /-- The terminal object in `Type u` is `PUnit`. -/
-noncomputable def terminalIso : ⊤_ TypeCat.{u} ≅ TypeCat.of PUnit :=
+noncomputable def terminalIso : ⊤_ TypeCat.{u} ≅ PUnit :=
   limit.isoLimitCone terminalLimitCone.{u, 0}
 
 /-- The terminal object in `Type u` is `PUnit`. -/
-noncomputable def isTerminalPUnit : IsTerminal (TypeCat.of PUnit : TypeCat.{u}) :=
+noncomputable def isTerminalPUnit : IsTerminal (PUnit : TypeCat.{u}) :=
   terminalIsTerminal.ofIso terminalIso
 
 @[deprecated (since := "2026-02-08")] alias isTerminalPunit := isTerminalPUnit
 
 noncomputable instance : Inhabited (⊤_ (TypeCat.{u})) :=
-  ⟨@terminal.from (TypeCat.{u}) _ _ (TypeCat.of (ULift (Fin 1))) (ULift.up 0)⟩
+  ⟨@terminal.from (TypeCat.{u}) _ _ ((ULift (Fin 1))) (ULift.up 0)⟩
 
 instance : Subsingleton (⊤_ (TypeCat.{u})) := ⟨fun a b =>
   ConcreteCategory.congr_hom (@Subsingleton.elim (_ ⟶ ⊤_ (TypeCat.{u})) _
@@ -101,11 +101,11 @@ noncomputable def isTerminalEquivUnique (X : TypeCat.{u}) : IsTerminal X ≃ Uni
 
 /-- A type is terminal if and only if it is isomorphic to `PUnit`. -/
 noncomputable def isTerminalEquivIsoPUnit (X : TypeCat.{u}) :
-    IsTerminal X ≃ (X ≅ TypeCat.of PUnit) := by
+    IsTerminal X ≃ (X ≅ PUnit) := by
   calc
     IsTerminal X ≃ Unique X := isTerminalEquivUnique _
-    _ ≃ (X ≃ TypeCat.of PUnit) := uniqueEquivEquivUnique _ _
-    _ ≃ (X ≅ TypeCat.of PUnit) := equivEquivIso
+    _ ≃ (X ≃ PUnit) := uniqueEquivEquivUnique _ _
+    _ ≃ (X ≅ PUnit) := equivEquivIso
 
 open CategoryTheory.Limits.WalkingPair
 
@@ -144,7 +144,7 @@ def binaryProductLimitCone (X Y : TypeCat.{u}) : Limits.LimitCone (pair X Y) :=
   ⟨_, binaryProductLimit X Y⟩
 
 /-- The categorical binary product in `Type u` is Cartesian product. -/
-noncomputable def binaryProductIso (X Y : TypeCat.{u}) : Limits.prod X Y ≅ TypeCat.of (X × Y) :=
+noncomputable def binaryProductIso (X Y : TypeCat.{u}) : Limits.prod X Y ≅ (X × Y) :=
   limit.isoLimitCone (binaryProductLimitCone X Y)
 
 @[elementwise (attr := simp)]
@@ -171,7 +171,7 @@ theorem binaryProductIso_inv_comp_snd (X Y : TypeCat.{u}) :
 @[simps]
 def binaryProductFunctor : TypeCat.{u} ⥤ TypeCat.{u} ⥤ TypeCat.{u} where
   obj X :=
-    { obj := fun Y => TypeCat.of (X × Y)
+    { obj := fun Y => (X × Y)
       map := fun {_ Y₂} f => (binaryProductLimit X Y₂).lift
         (BinaryFan.mk (TypeCat.ofHom ⟨_root_.Prod.fst⟩) (TypeCat.ofHom ⟨_root_.Prod.snd⟩ ≫ f)) }
   map {X₁ X₂} f :=
@@ -198,7 +198,7 @@ The category of types has `Π j, f j` as the product of a type family `f : J →
 def productLimitCone {J : Type v} (F : J → TypeCat.{max v u}) :
     Limits.LimitCone (Discrete.functor F) where
   cone :=
-    { pt := TypeCat.of (∀ j, F j)
+    { pt := (∀ j, F j)
       π := Discrete.natTrans (fun ⟨j⟩ => TypeCat.ofHom ⟨fun f => f j⟩) }
   isLimit :=
     { lift := fun s => TypeCat.ofHom ⟨fun x j => s.π.app ⟨j⟩ x⟩
@@ -208,7 +208,7 @@ def productLimitCone {J : Type v} (F : J → TypeCat.{max v u}) :
 
 /-- The categorical product in `Type max v u` is the type-theoretic product `Π j, F j`. -/
 noncomputable def productIso {J : Type v} (F : J → TypeCat.{max v u}) :
-    ∏ᶜ F ≅ TypeCat.of (∀ j, F j) :=
+    ∏ᶜ F ≅ (∀ j, F j) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
 @[elementwise (attr := simp)]
@@ -237,7 +237,7 @@ A variant of `productLimitCone` using a `Small` hypothesis rather than a functio
 noncomputable def productLimitCone :
     Limits.LimitCone (Discrete.functor F) where
   cone :=
-    { pt := TypeCat.of (Shrink (∀ j, F j))
+    { pt := (Shrink (∀ j, F j))
       π := Discrete.natTrans (fun ⟨j⟩ =>
         TypeCat.ofHom ⟨fun f => (equivShrink (∀ j, F j)).symm f j⟩) }
   isLimit :=
@@ -249,7 +249,7 @@ noncomputable def productLimitCone :
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type-theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
 noncomputable def productIso :
-    (∏ᶜ F : TypeCat.{u}) ≅ TypeCat.of (Shrink (∀ j, F j)) :=
+    (∏ᶜ F : TypeCat.{u}) ≅ (Shrink (∀ j, F j)) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
 @[elementwise (attr := simp)]

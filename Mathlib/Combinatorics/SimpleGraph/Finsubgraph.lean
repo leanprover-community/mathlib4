@@ -148,7 +148,7 @@ def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' �
 /-- The inverse system of finite homomorphisms. -/
 def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) :
     G.Finsubgraphᵒᵖ ⥤ TypeCat.{max u v} where
-  obj G' := TypeCat.of <| G'.unop →fg F
+  obj G' := <| G'.unop →fg F
   map g := TypeCat.ofHom ⟨fun f ↦ f.restrict (CategoryTheory.leOfHom g.unop)⟩
 
 /-- If every finite subgraph of a graph `G` has a homomorphism to a finite graph `F`, then there is

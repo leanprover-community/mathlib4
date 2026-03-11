@@ -33,7 +33,7 @@ namespace CategoryTheory
 /-- The nerve of a category -/
 @[simps -isSimp obj map]
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
-  obj Δ := TypeCat.of (ComposableArrows C (Δ.unop.len))
+  obj Δ := (ComposableArrows C (Δ.unop.len))
   map f := TypeCat.ofHom ⟨fun x ↦ x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor⟩
   -- `aesop` can prove these but is slow, help it out:
   map_id _ := rfl

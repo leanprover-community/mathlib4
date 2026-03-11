@@ -256,7 +256,7 @@ The functor assigning, to a finite set in `V`, the set of connected components i
 -/
 @[simps]
 def componentComplFunctor : (Finset V)ᵒᵖ ⥤ TypeCat.{u} where
-  obj K := TypeCat.of (G.ComponentCompl K.unop)
+  obj K := (G.ComponentCompl K.unop)
   map f := TypeCat.ofHom ⟨ComponentCompl.hom (le_of_op_hom f)⟩
   map_id _ := by
     ext

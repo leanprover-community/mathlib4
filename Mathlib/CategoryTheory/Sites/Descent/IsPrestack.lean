@@ -123,7 +123,7 @@ an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type
 of morphisms $p^* M ⟶ p^* N$. -/
 @[simps obj map]
 def presheafHom : (Over S)ᵒᵖ ⥤ TypeCat.{v'} where
-  obj T := TypeCat.of ((F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
+  obj T := ((F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
     (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N)
   map {T₁ T₂} p := TypeCat.ofHom ⟨fun f ↦ pullHom f p.unop.left T₂.unop.hom T₂.unop.hom⟩
 

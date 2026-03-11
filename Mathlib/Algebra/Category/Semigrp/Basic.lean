@@ -418,7 +418,7 @@ in `MagmaCat` -/
     /-- additive equivalences between `Add`s are the same
     as (isomorphic to) isomorphisms in `AddMagmaCat` -/]
 def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] :
-    TypeCat.of (X ≃* Y) ≅ TypeCat.of (MagmaCat.of X ≅ MagmaCat.of Y) where
+    (X ≃* Y) ≅ (MagmaCat.of X ≅ MagmaCat.of Y) where
   hom := TypeCat.ofHom ⟨fun e ↦ e.toMagmaCatIso⟩
   inv := TypeCat.ofHom ⟨fun i ↦ i.magmaCatIsoToMulEquiv⟩
 
@@ -428,7 +428,7 @@ in `Semigroup` -/
   /-- additive equivalences between `AddSemigroup`s are
   the same as (isomorphic to) isomorphisms in `AddSemigroup` -/]
 def mulEquivIsoSemigrpIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
-    TypeCat.of (X ≃* Y) ≅ TypeCat.of (Semigrp.of X ≅ Semigrp.of Y) where
+    (X ≃* Y) ≅ (Semigrp.of X ≅ Semigrp.of Y) where
   hom := TypeCat.ofHom ⟨fun e ↦ e.toSemigrpIso⟩
   inv := TypeCat.ofHom ⟨fun i ↦ i.semigrpIsoToMulEquiv⟩
 

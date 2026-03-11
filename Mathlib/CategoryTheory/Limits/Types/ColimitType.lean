@@ -46,13 +46,13 @@ variable {J : Type u} [Category.{v} J]
 
 namespace Functor
 
-variable (F : J ⥤ TypeCat.{w₀})
+variable (F : J ⥤ Type w₀)
 
 /-- Given a functor `F : J ⥤ Type w₀`, this is a "cocone" of `F` where
 we allow the point `pt` to be in a different universe than `w`. -/
 structure CoconeTypes where
   /-- the point of the cocone -/
-  pt : TypeCat.{w₁}
+  pt : Type w₁
   /-- a family of maps to `pt` -/
   ι (j : J) : F.obj j → pt
   ι_naturality {j j' : J} (f : j ⟶ j') :
@@ -74,13 +74,13 @@ the cocone for `F` obtained by postcomposition with `φ`. -/
 @[simps -fullyApplied]
 def postcomp (c : CoconeTypes.{w₁} F) {T : Type w₂} (φ : c.pt → T) :
     F.CoconeTypes where
-  pt := .of T
+  pt := T
   ι j := φ.comp (c.ι j)
 
 /-- The cocone for `G : J ⥤ Type w₀'` that is deduced from a cocone for `F : J ⥤ Type w₀`
 and a natural map `G.obj j → F.obj j` for all `j : J`. -/
 @[simps -fullyApplied]
-def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ TypeCat.{w₀'}} (app : ∀ j, G.obj j → F.obj j)
+def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G.obj j → F.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), app j' ∘ G.map f = F.map f ∘ app j) :
     CoconeTypes.{w₁} G where
   pt := c.pt
@@ -137,7 +137,7 @@ lemma ιColimitType_map {j j' : J} (f : j ⟶ j') (x : F.obj j) :
 /-- The cocone corresponding to `F.ColimitType`. -/
 @[simps -fullyApplied]
 def coconeTypes : F.CoconeTypes where
-  pt := .of F.ColimitType
+  pt := F.ColimitType
   ι j := F.ιColimitType j
 
 /-- A heterogeneous universe version of the universal property of the colimit is
@@ -291,7 +291,7 @@ set_option backward.isDefEq.respectTransparency false in
 for `G : J ⥤ Type w₉'` when we have a natural equivalence `G.obj j ≃ F.obj j`
 for all `j : J`. -/
 def precompose (hc : IsColimitCore.{w₂} c)
-    {G : J ⥤ TypeCat.{w₀'}} (e : ∀ j, G.obj j ≃ F.obj j)
+    {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ G.map f = F.map f ∘ e j) :
     IsColimitCore.{w₂} (c.precompose _ naturality) where
   desc c' := hc.desc (c'.precompose _ (FunctorToTypes.naturality_symm e naturality))
@@ -335,13 +335,13 @@ lemma IsColimitCore.isColimit (hc : IsColimitCore.{max u w₀ w₁} c) :
     exact e.bijective
 
 variable {c} in
-lemma IsColimit.precompose (hc : c.IsColimit) {G : J ⥤ TypeCat.{w₀'}} (e : ∀ j, G.obj j ≃ F.obj j)
+lemma IsColimit.precompose (hc : c.IsColimit) {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ G.map f = F.map f ∘ e j) :
     (c.precompose _ naturality).IsColimit :=
   (hc.isColimitCore.precompose e naturality).isColimit
 
 set_option backward.isDefEq.respectTransparency false in
-lemma isColimit_precompose_iff {G : J ⥤ TypeCat.{w₀'}} (e : ∀ j, G.obj j ≃ F.obj j)
+lemma isColimit_precompose_iff {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ G.map f = F.map f ∘ e j) :
     (c.precompose _ naturality).IsColimit ↔ c.IsColimit :=
   ⟨fun hc ↦ (hc.precompose (fun j ↦ (e j).symm)

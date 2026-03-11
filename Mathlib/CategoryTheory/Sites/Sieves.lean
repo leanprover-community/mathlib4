@@ -1198,7 +1198,7 @@ end Functor
 /-- A sieve induces a presheaf. -/
 @[simps obj map]
 def functor (S : Sieve X) : Cᵒᵖ ⥤ TypeCat.{v₁} where
-  obj Y := TypeCat.of { g : Y.unop ⟶ X // S g }
+  obj Y := { g : Y.unop ⟶ X // S g }
   map f := TypeCat.ofHom ⟨fun g ↦ ⟨f.unop ≫ g.1, downward_closed _ g.2 _⟩⟩
 
 /-- If a sieve S is contained in a sieve T, then we have a morphism of presheaves on their induced

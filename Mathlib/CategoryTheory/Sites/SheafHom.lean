@@ -44,7 +44,7 @@ this `presheafHom F G` is the presheaf of types which sends an object `X : C`
 to the type of morphisms between the "restrictions" of `F` and `G` to the category `Over X`. -/
 @[simps! obj]
 def presheafHom : Cᵒᵖ ⥤ TypeCat where
-  obj X := TypeCat.of ((Over.forget X.unop).op ⋙ F ⟶ (Over.forget X.unop).op ⋙ G)
+  obj X := ((Over.forget X.unop).op ⋙ F ⟶ (Over.forget X.unop).op ⋙ G)
   map f := TypeCat.ofHom ⟨Functor.whiskerLeft (Over.map f.unop).op⟩
   map_id := by
     rintro ⟨X⟩
@@ -213,7 +213,7 @@ lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
 /-- The underlying presheaf of `sheafHom F G`. It is isomorphic to `presheafHom F.1 G.1`
 (see `sheafHom'Iso`), but has better definitional properties. -/
 def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ TypeCat where
-  obj X := TypeCat.of ((J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G)
+  obj X := ((J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G)
   map f := TypeCat.ofHom ⟨(J.overMapPullback A f.unop).map⟩
   map_id X := by
     ext φ : 4

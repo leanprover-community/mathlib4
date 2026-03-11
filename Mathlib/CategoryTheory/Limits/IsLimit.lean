@@ -384,7 +384,7 @@ lemma homEquiv_symm_naturality (h : IsLimit t) {W W' : C}
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
   a cone on `F` with cone point `W`. -/
 def homIso (h : IsLimit t) (W : C) :
-    TypeCat.of (ULift.{u₁} (W ⟶ t.pt : Type v₃)) ≅ TypeCat.of ((const J).obj W ⟶ F) :=
+    (ULift.{u₁} (W ⟶ t.pt : Type v₃)) ≅ ((const J).obj W ⟶ F) :=
   Equiv.toIso (Equiv.ulift.trans h.homEquiv)
 
 @[simp]
@@ -400,8 +400,8 @@ def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones
 /-- Another, more explicit, formulation of the universal property of a limit cone.
 See also `homIso`. -/
 def homIso' (h : IsLimit t) (W : C) :
-    TypeCat.of (ULift.{u₁} (W ⟶ t.pt : Type v₃)) ≅
-      TypeCat.of { p : ∀ j, W ⟶ F.obj j // ∀ {j j'} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
+    (ULift.{u₁} (W ⟶ t.pt : Type v₃)) ≅
+      { p : ∀ j, W ⟶ F.obj j // ∀ {j j'} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
   h.homIso W ≪≫
     { hom := TypeCat.ofHom ⟨fun π =>
         ⟨fun j => π.app j, fun f => by convert ← (π.naturality f).symm; apply id_comp⟩⟩
@@ -435,7 +435,7 @@ def mapConeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ 
 there is a unique cone morphism from any other cone.
 -/
 def isoUniqueConeMorphism {t : Cone F} :
-    TypeCat.of (IsLimit t) ≅ TypeCat.of (∀ s, Unique (s ⟶ t)) where
+    (IsLimit t) ≅ (∀ s, Unique (s ⟶ t)) where
   hom := TypeCat.ofHom ⟨fun h s ↦
     { default := h.liftConeMorphism s
       uniq := fun _ => h.uniq_cone_morphism }⟩
@@ -884,7 +884,7 @@ lemma homEquiv_symm_naturality (h : IsColimit t) {W W' : C}
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
   a cocone on `F` with cone point `W`. -/
 def homIso (h : IsColimit t) (W : C) :
-    TypeCat.of (ULift.{u₁} (t.pt ⟶ W : Type v₃)) ≅ TypeCat.of (F ⟶ (const J).obj W) :=
+    (ULift.{u₁} (t.pt ⟶ W : Type v₃)) ≅ (F ⟶ (const J).obj W) :=
   Equiv.toIso (Equiv.ulift.trans h.homEquiv)
 
 @[simp]
@@ -900,8 +900,8 @@ def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} �
 /-- Another, more explicit, formulation of the universal property of a colimit cocone.
 See also `homIso`. -/
 def homIso' (h : IsColimit t) (W : C) :
-    TypeCat.of (ULift.{u₁} (t.pt ⟶ W : Type v₃)) ≅
-      TypeCat.of { p : ∀ j, F.obj j ⟶ W // ∀ {j j' : J} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
+    (ULift.{u₁} (t.pt ⟶ W : Type v₃)) ≅
+      { p : ∀ j, F.obj j ⟶ W // ∀ {j j' : J} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
   h.homIso W ≪≫
     { hom := TypeCat.ofHom ⟨fun ι =>
         ⟨fun j => ι.app j, fun {j} {j'} f => by convert ← ι.naturality f; apply comp_id⟩⟩
@@ -937,7 +937,7 @@ set_option backward.isDefEq.respectTransparency false in
 there is a unique cocone morphism from any other cocone.
 -/
 def isoUniqueCoconeMorphism {t : Cocone F} :
-    TypeCat.of (IsColimit t) ≅ TypeCat.of (∀ s, Unique (t ⟶ s)) where
+    (IsColimit t) ≅ (∀ s, Unique (t ⟶ s)) where
   hom := TypeCat.ofHom ⟨fun h s ↦
     { default := h.descCoconeMorphism s
       uniq := fun _ => h.uniq_cocone_morphism }⟩

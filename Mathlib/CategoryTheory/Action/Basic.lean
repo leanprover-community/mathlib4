@@ -73,7 +73,7 @@ section
 def trivial (X : V) : Action V G := { V := X, ρ := 1 }
 
 instance inhabited' : Inhabited (Action TypeCat G) :=
-  ⟨⟨TypeCat.of PUnit, 1⟩⟩
+  ⟨⟨PUnit, 1⟩⟩
 
 instance : Inhabited (Action AddCommGrpCat G) :=
   ⟨trivial G <| AddCommGrpCat.of PUnit⟩

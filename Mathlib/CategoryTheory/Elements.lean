@@ -163,7 +163,7 @@ theorem map_π {F₁ F₂ : C ⥤ TypeCat.{w}} (α : F₁ ⟶ F₂) : map α ⋙
   rfl
 
 /-- The forward direction of the equivalence `F.Elements ≅ (*, F)`. -/
-def toStructuredArrow : F.Elements ⥤ StructuredArrow (TypeCat.of PUnit) F where
+def toStructuredArrow : F.Elements ⥤ StructuredArrow (PUnit) F where
   obj X := StructuredArrow.mk <| TypeCat.ofHom ⟨fun _ => X.2⟩
   map {X Y} f := StructuredArrow.homMk f.val (by ext; simp [f.2])
 
@@ -180,7 +180,7 @@ theorem to_comma_map_right {X Y} (f : X ⟶ Y) : ((toStructuredArrow F).map f).r
   rfl
 
 /-- The reverse direction of the equivalence `F.Elements ≅ (*, F)`. -/
-def fromStructuredArrow : StructuredArrow (TypeCat.of PUnit) F ⥤ F.Elements where
+def fromStructuredArrow : StructuredArrow (PUnit) F ⥤ F.Elements where
   obj X := ⟨X.right, X.hom PUnit.unit⟩
   map f := ⟨f.right, ConcreteCategory.congr_hom f.w.symm PUnit.unit⟩
 
@@ -196,7 +196,7 @@ theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
 /-- The equivalence between the category of elements `F.Elements`
 and the comma category `(*, F)`. -/
 @[simps]
-def structuredArrowEquivalence : F.Elements ≌ StructuredArrow (TypeCat.of PUnit) F where
+def structuredArrowEquivalence : F.Elements ≌ StructuredArrow (PUnit) F where
   functor := toStructuredArrow F
   inverse := fromStructuredArrow F
   unitIso := Iso.refl _

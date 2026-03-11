@@ -38,7 +38,7 @@ variable {C : Type u} [Category.{v} C]
 lemma Functor.isCofiltered_elements
     (F : C ⥤ TypeCat.{w}) [HasFiniteLimits C] [PreservesFiniteLimits F] :
     IsCofiltered F.Elements where
-  nonempty := ⟨⊤_ C, (terminalIsTerminal.isTerminalObj F).from (TypeCat.of PUnit) .unit⟩
+  nonempty := ⟨⊤_ C, (terminalIsTerminal.isTerminalObj F).from (PUnit) .unit⟩
   cone_objs := by
     rintro ⟨X, x⟩ ⟨Y, y⟩
     let h := mapIsLimitOfPreservesOfIsLimit F _ _ (prodIsProd X Y)

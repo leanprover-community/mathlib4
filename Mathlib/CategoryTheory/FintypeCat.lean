@@ -56,7 +56,7 @@ instance instCoeSort : CoeSort FintypeCat Type* :=
   ⟨fun X ↦ (X.carrier :)⟩
 
 instance : Inhabited FintypeCat :=
-  ⟨of <| TypeCat.of PEmpty⟩
+  ⟨of <| PEmpty⟩
 
 instance {X : FintypeCat} : Fintype X :=
   X.2
@@ -217,7 +217,7 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
 
 /-- The canonical fully faithful embedding of `Fintype.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
-  obj X := FintypeCat.of <| TypeCat.of (ULift (Fin X.len))
+  obj X := FintypeCat.of <| (ULift (Fin X.len))
   map f := homMk f
 
 instance : incl.Full where map_surjective f := ⟨(f.hom : _ → _), rfl⟩
@@ -260,7 +260,7 @@ universe v
 `uSwitch.{u, v} : FintypeCat.{u} ⥤ FintypeCat.{v}` by sending
 `X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
 noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
-  obj X := FintypeCat.of <| TypeCat.of <| ULift.{v} (Fin (Fintype.card X))
+  obj X := FintypeCat.of <| <| ULift.{v} (Fin (Fintype.card X))
   map {X Y} f :=
     homMk (ULift.up ∘ Fintype.equivFin Y ∘ f.hom ∘ (Fintype.equivFin X).symm ∘ ULift.down)
 

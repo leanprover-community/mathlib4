@@ -71,7 +71,7 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
   let ht := (Types.productLimitCone (fun a ↦ F.obj ⟨Y a⟩)).isLimit
   let ht' := (Functor.Initial.isLimitWhiskerEquiv (Discrete.opposite α).inverse
     (Cocone.op (Cofan.mk X π))).symm h.some.op
-  let i : TypeCat.of ((a : α) → (F.obj ⟨Y a⟩)) ≅ (F.obj ⟨X⟩) :=
+  let i : ((a : α) → (F.obj ⟨Y a⟩)) ≅ (F.obj ⟨X⟩) :=
     ht.conePointsIsoOfNatIso (isLimitOfPreserves F ht')
       (Discrete.natIso (fun _ ↦ (Iso.refl (F.obj ⟨_⟩))))
   refine ⟨i.hom y, ?_⟩
@@ -120,7 +120,7 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
     rw [mem_sieves_iff_hasEffectiveEpi]
     let x : (a : α) → (F.obj ⟨Z a⟩) := fun a ↦ (h' a).choose
     let _ : Fintype α := Fintype.ofFinite _
-    let i' : TypeCat.of ((a : α) → (F.obj ⟨Z a⟩)) ≅ (F.obj ⟨∐ Z⟩) := (Types.productIso _).symm ≪≫
+    let i' : ((a : α) → (F.obj ⟨Z a⟩)) ≅ (F.obj ⟨∐ Z⟩) := (Types.productIso _).symm ≪≫
       (PreservesProduct.iso F _).symm ≪≫ F.mapIso (opCoproductIsoProduct _).symm
     refine ⟨∐ Z, Sigma.desc π, inferInstance, i'.hom x, ?_⟩
     have := preservesLimitsOfShape_of_equiv (Discrete.opposite α).symm G

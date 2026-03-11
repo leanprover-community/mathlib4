@@ -117,9 +117,9 @@ open ConcreteCategory
 /-- In the category of types, any map can be functorially factored as a surjective
 map followed by an injective map. -/
 def functorialSurjectiveInjectiveFactorizationData :
-    FunctorialSurjectiveInjectiveFactorizationData (TypeCat.{u}) where
+    FunctorialSurjectiveInjectiveFactorizationData (Type u) where
   Z :=
-    { obj := fun f => TypeCat.of (Subtype (Set.range f.hom.hom))
+    { obj := fun f => (Subtype (Set.range f.hom.hom))
       map := fun φ => TypeCat.ofHom ⟨fun y => ⟨φ.right y.1, by
         obtain ⟨_, x, rfl⟩ := y
         exact ⟨φ.left x, congr_hom φ.w x⟩ ⟩ ⟩ }
@@ -139,7 +139,7 @@ def functorialSurjectiveInjectiveFactorizationData :
     rw [Subtype.ext_iff]
     exact h
 
-instance : HasFunctorialSurjectiveInjectiveFactorization (TypeCat.{u}) where
+instance : HasFunctorialSurjectiveInjectiveFactorization (Type u) where
   nonempty_functorialFactorizationData :=
     ⟨functorialSurjectiveInjectiveFactorizationData⟩
 

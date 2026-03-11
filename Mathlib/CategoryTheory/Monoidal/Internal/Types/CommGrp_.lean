@@ -48,7 +48,7 @@ noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp TypeCat.{u} where
     (GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrpCat GrpCat).map f))
 
 @[simp]
-theorem inverse_obj_X {A : CommGrpCat.{u}} : (inverse.obj A).X = TypeCat.of A := rfl
+theorem inverse_obj_X {A : CommGrpCat.{u}} : (inverse.obj A).X = A := rfl
 @[simp]
 theorem inverse_obj_one {A : CommGrpCat.{u}} {x} : η[(inverse.obj A).X] x = (1 : A) := rfl
 @[simp]

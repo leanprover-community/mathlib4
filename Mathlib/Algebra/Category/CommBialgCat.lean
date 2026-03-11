@@ -120,7 +120,7 @@ lemma hom_inv_apply (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by simp
 
 instance : Inhabited (CommBialgCat R) := ⟨of R R⟩
 
-lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A = TypeCat.of A :=
+lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A = A :=
   rfl
 
 @[deprecated ConcreteCategory.forget_map_eq_coe (since := "2026-03-06")]

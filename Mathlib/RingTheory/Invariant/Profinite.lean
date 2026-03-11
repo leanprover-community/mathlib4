@@ -65,7 +65,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
     ∃ g : G, Q = g • P := by
   let B' := FixedPoints.subalgebra A B
   let F : OpenNormalSubgroup G ⥤ TypeCat :=
-  { obj N := TypeCat.of { g : G ⧸ N.1.1 // Q.under (B' N.1.1) = g • P.under (B' N.1.1) }
+  { obj N := { g : G ⧸ N.1.1 // Q.under (B' N.1.1) = g • P.under (B' N.1.1) }
     map {N N'} f := TypeCat.ofHom ⟨fun x ↦ ⟨(QuotientGroup.map _ _ (.id _) (leOfHom f)) x.1, by
       have h : B' N'.1.1 ≤ B' N.1.1 := fun x hx n ↦ hx ⟨_, f.le n.2⟩
       obtain ⟨x, hx⟩ := x
@@ -136,7 +136,7 @@ def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
     letI f : (B' ⧸ Q.under B') →ₐ[A ⧸ P] B ⧸ Q :=
     { toRingHom := Ideal.quotientMap _ B'.subtype le_rfl,
       commutes' := Quotient.ind fun _ ↦ rfl }
-    TypeCat.of { σ' // f.comp (Ideal.Quotient.stabilizerHom
+    { σ' // f.comp (Ideal.Quotient.stabilizerHom
       (Q.under B') P (G ⧸ N.1.1) σ') = σ.toAlgHom.comp f }
   map {N N'} i := TypeCat.ofHom ⟨fun x ↦ ⟨⟨(QuotientGroup.map _ _ (.id _) (leOfHom i)) x.1,
       Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux Q i.le x.1.1 x.1.2⟩, by

@@ -41,7 +41,7 @@ def Cat :=
 namespace Cat
 
 instance : Inhabited Cat :=
-  ⟨⟨TypeCat.{u}, CategoryTheory.types⟩⟩
+  ⟨⟨Type u, CategoryTheory.types⟩⟩
 
 -- TODO: maybe this coercion should be defined to be `objects.obj`?
 instance : CoeSort Cat (Type u) :=
@@ -360,8 +360,8 @@ theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) :
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
-def objects : Cat.{v, u} ⥤ TypeCat.{u} where
-  obj C := .of C
+def objects : Cat.{v, u} ⥤ Type u where
+  obj C := C
   map F := TypeCat.ofHom ⟨F.toFunctor.obj⟩
 
 /-- See through the defeq `objects.obj X = X`. -/
@@ -402,7 +402,7 @@ end Cat
 This ought to be modelled as a 2-functor!
 -/
 @[simps]
-def typeToCat : TypeCat.{u} ⥤ Cat where
+def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
   map f := (Discrete.functor (Discrete.mk ∘ f)).toCatHom
   map_id X := by

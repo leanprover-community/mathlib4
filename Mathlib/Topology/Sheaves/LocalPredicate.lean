@@ -225,7 +225,7 @@ end PrelocalPredicate
 -/
 @[simps obj map]
 def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf TypeCat X where
-  obj U := TypeCat.of { f : ∀ x : U.unop, T x // P.pred f }
+  obj U := { f : ∀ x : U.unop, T x // P.pred f }
   map i := TypeCat.ofHom ⟨fun f ↦ ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩⟩
 
 namespace subpresheafToTypes
@@ -285,10 +285,10 @@ def subsheafToTypes (P : LocalPredicate T) : Sheaf TypeCat X :=
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
 -/
 def stalkToFiber (P : LocalPredicate T) (x : X) :
-    (subsheafToTypes P).presheaf.stalk x ⟶ TypeCat.of (T x) := by
+    (subsheafToTypes P).presheaf.stalk x ⟶ (T x) := by
   refine
     colimit.desc _
-      { pt := TypeCat.of (T x)
+      { pt := (T x)
         ι :=
           { app U := TypeCat.ofHom ⟨fun f ↦ ?_⟩
             naturality := ?_ } }

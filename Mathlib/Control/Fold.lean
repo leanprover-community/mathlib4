@@ -108,7 +108,7 @@ And this is how `const` turns a monoid into an applicative functor and
 how the monoid of endofunctions define `Foldl`.
 -/
 abbrev Foldl (α : Type u) : Type u :=
-  (End (TypeCat.of α))ᵐᵒᵖ
+  (End α)ᵐᵒᵖ
 
 def Foldl.mk (f : α → α) : Foldl α :=
   op (TypeCat.ofHom ⟨f⟩)
@@ -126,7 +126,7 @@ def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl 
     rfl
 
 abbrev Foldr (α : Type u) : Type u :=
-  End (TypeCat.of α)
+  End α
 
 def Foldr.mk (f : α → α) : Foldr α :=
   TypeCat.ofHom ⟨f⟩

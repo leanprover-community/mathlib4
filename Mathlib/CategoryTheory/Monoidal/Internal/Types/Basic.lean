@@ -49,7 +49,7 @@ set_option backward.isDefEq.respectTransparency false in
 -/
 noncomputable def inverse : MonCat.{u} ⥤ Mon TypeCat.{u} where
   obj A :=
-    { X := TypeCat.of A
+    { X := A
       mon :=
         { one := TypeCat.ofHom ⟨fun _ => 1⟩
           mul := TypeCat.ofHom ⟨fun p => p.1 * p.2⟩

@@ -45,7 +45,7 @@ variable (F) in
 /-- The cofan given by a sigma type. -/
 @[simps]
 def sigma : CofanTypes F where
-  pt := TypeCat.of (Σ (i : C), F i)
+  pt := (Σ (i : C), F i)
   ι := fun ⟨i⟩ x ↦ ⟨i, x⟩
   ι_naturality := by
     rintro ⟨i⟩ ⟨j⟩ f
@@ -185,7 +185,7 @@ namespace Types
 def initialColimitCocone : Limits.ColimitCocone (Functor.empty (TypeCat.{u})) where
   -- Porting note: tidy was able to fill the structure automatically
   cocone :=
-    { pt := TypeCat.of PEmpty
+    { pt := PEmpty
       ι := (Functor.uniqueFromEmpty _).inv }
   isColimit :=
     { desc := fun _ => TypeCat.ofHom ⟨fun x => x.elim⟩
@@ -193,11 +193,11 @@ def initialColimitCocone : Limits.ColimitCocone (Functor.empty (TypeCat.{u})) wh
       uniq := fun _ _ _ => by ext x; cases x }
 
 /-- The initial object in `Type u` is `PEmpty`. -/
-noncomputable def initialIso : ⊥_ TypeCat.{u} ≅ TypeCat.of PEmpty :=
+noncomputable def initialIso : ⊥_ TypeCat.{u} ≅ PEmpty :=
   colimit.isoColimitCocone initialColimitCocone.{u, 0}
 
 /-- The initial object in `Type u` is `PEmpty`. -/
-noncomputable def isInitialPEmpty : IsInitial (TypeCat.of PEmpty : TypeCat.{u}) :=
+noncomputable def isInitialPEmpty : IsInitial (PEmpty : TypeCat.{u}) :=
   initialIsInitial.ofIso initialIso
 
 @[deprecated (since := "2026-02-08")] alias isInitialPunit := isInitialPEmpty
@@ -206,7 +206,7 @@ noncomputable def isInitialPEmpty : IsInitial (TypeCat.of PEmpty : TypeCat.{u}) 
 lemma initial_iff_empty (X : TypeCat.{u}) : Nonempty (IsInitial X) ↔ IsEmpty X := by
   constructor
   · intro ⟨h⟩
-    exact Function.isEmpty (IsInitial.to h (TypeCat.of PEmpty))
+    exact Function.isEmpty (IsInitial.to h (PEmpty))
   · intro h
     exact ⟨IsInitial.ofIso Types.isInitialPEmpty <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
 
@@ -234,7 +234,7 @@ def binaryCoproductColimitCocone (X Y : TypeCat.{u}) : Limits.ColimitCocone (pai
   ⟨_, binaryCoproductColimit X Y⟩
 
 /-- The categorical binary coproduct in `Type u` is the sum `X ⊕ Y`. -/
-noncomputable def binaryCoproductIso (X Y : TypeCat.{u}) : Limits.coprod X Y ≅ TypeCat.of (X ⊕ Y) :=
+noncomputable def binaryCoproductIso (X Y : TypeCat.{u}) : Limits.coprod X Y ≅ (X ⊕ Y) :=
   colimit.isoColimitCocone (binaryCoproductColimitCocone X Y)
 
 --open CategoryTheory.Type
@@ -325,7 +325,7 @@ noncomputable def isCoprodOfMono {X Y : TypeCat.{u}} (f : X ⟶ Y) [Mono f] :
 def coproductColimitCocone {J : Type v} (F : J → TypeCat.{max v u}) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
-    { pt := TypeCat.of (Σ j, F j)
+    { pt := (Σ j, F j)
       ι := Discrete.natTrans (fun ⟨j⟩ => TypeCat.ofHom ⟨fun x => ⟨j, x⟩⟩) }
   isColimit :=
     { desc := fun s => TypeCat.ofHom ⟨fun x => s.ι.app ⟨x.1⟩ x.2⟩
@@ -335,7 +335,7 @@ def coproductColimitCocone {J : Type v} (F : J → TypeCat.{max v u}) :
 
 /-- The categorical coproduct in `Type u` is the type-theoretic coproduct `Σ j, F j`. -/
 noncomputable def coproductIso {J : Type v} (F : J → TypeCat.{max v u}) :
-    ∐ F ≅ TypeCat.of (Σ j, F j) :=
+    ∐ F ≅ (Σ j, F j) :=
   colimit.isoColimitCocone (coproductColimitCocone F)
 
 @[elementwise (attr := simp)]

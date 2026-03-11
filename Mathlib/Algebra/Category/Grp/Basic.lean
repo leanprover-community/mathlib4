@@ -543,7 +543,7 @@ end CategoryTheory.Iso
 /-- multiplicative equivalences between `Group`s are the same as (isomorphic to) isomorphisms
 in `GrpCat` -/
 @[to_additive]
-def mulEquivIsoGroupIso {X Y : GrpCat.{u}} : TypeCat.of (X ≃* Y) ≅ TypeCat.of (X ≅ Y) where
+def mulEquivIsoGroupIso {X Y : GrpCat.{u}} : (X ≃* Y) ≅ (X ≅ Y) where
   hom := TypeCat.ofHom ⟨fun e ↦ e.toGrpIso⟩
   inv := TypeCat.ofHom ⟨fun i ↦ i.groupIsoToMulEquiv⟩
 
@@ -554,7 +554,7 @@ add_decl_doc addEquivIsoAddGroupIso
 /-- Multiplicative equivalences between `CommGroup`s are the same as (isomorphic to) isomorphisms
 in `CommGrpCat`. -/
 @[to_additive]
-def mulEquivIsoCommGroupIso {X Y : CommGrpCat.{u}} : TypeCat.of (X ≃* Y) ≅ TypeCat.of (X ≅ Y) where
+def mulEquivIsoCommGroupIso {X Y : CommGrpCat.{u}} : (X ≃* Y) ≅ (X ≅ Y) where
   hom := TypeCat.ofHom ⟨fun e ↦ e.toCommGrpIso⟩
   inv := TypeCat.ofHom ⟨fun i ↦ i.commGroupIsoToMulEquiv⟩
 
@@ -566,7 +566,7 @@ namespace CategoryTheory.Aut
 
 /-- The (bundled) group of automorphisms of a type is isomorphic to the (bundled) group
 of permutations. -/
-def isoPerm {α : Type u} : GrpCat.of (Aut (TypeCat.of α)) ≅ GrpCat.of (Equiv.Perm α) where
+def isoPerm {α : Type u} : GrpCat.of (Aut (α)) ≅ GrpCat.of (Equiv.Perm α) where
   hom := GrpCat.ofHom
     { toFun := fun g => g.toEquiv
       map_one' := by aesop
@@ -578,7 +578,7 @@ def isoPerm {α : Type u} : GrpCat.of (Aut (TypeCat.of α)) ≅ GrpCat.of (Equiv
 
 /-- The (unbundled) group of automorphisms of a type is `MulEquiv` to the (unbundled) group
 of permutations. -/
-def mulEquivPerm {α : Type u} : Aut (TypeCat.of α) ≃* Equiv.Perm α :=
+def mulEquivPerm {α : Type u} : Aut (α) ≃* Equiv.Perm α :=
   isoPerm.groupIsoToMulEquiv
 
 end CategoryTheory.Aut

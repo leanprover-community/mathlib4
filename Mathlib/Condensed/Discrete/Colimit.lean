@@ -180,14 +180,14 @@ The functor which takes a finite set to the set of maps into `F(*)` for a preshe
 -/
 @[simps obj map]
 abbrev finYoneda : FintypeCat.{u}ᵒᵖ ⥤ TypeCat.{u + 1} where
-  obj X := TypeCat.of (X.unop → F.obj (toProfinite.op.obj ⟨of <| TypeCat.of PUnit.{u + 1}⟩))
+  obj X := (X.unop → F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩))
   map f := TypeCat.ofHom ⟨fun g ↦ g ∘ f.unop⟩
 
 /-- `locallyConstantPresheaf` restricted to finite sets is isomorphic to `finYoneda F`. -/
 @[simps! hom_app]
 def locallyConstantIsoFinYoneda :
     toProfinite.op ⋙ (locallyConstantPresheaf (F.obj (toProfinite.op.obj
-      ⟨of <| TypeCat.of PUnit.{u + 1}⟩))) ≅
+      ⟨of <| PUnit.{u + 1}⟩))) ≅
     finYoneda F :=
   NatIso.ofComponents fun Y ↦ {
     hom := TypeCat.ofHom ⟨fun f ↦ f.1⟩
@@ -216,7 +216,7 @@ noncomputable instance (X : Profinite) [Finite X] :
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
 def isoFinYonedaComponents (X : Profinite.{u}) [Finite X] :
-    F.obj ⟨X⟩ ≅ TypeCat.of (X → F.obj ⟨Profinite.of PUnit.{u + 1}⟩) :=
+    F.obj ⟨X⟩ ≅ (X → F.obj ⟨Profinite.of PUnit.{u + 1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
       (Types.productLimitCone.{u, u + 1} fun _ ↦ F.obj ⟨Profinite.of PUnit.{u + 1}⟩).2
@@ -265,7 +265,7 @@ colimit, is isomorphic to the presheaf `LocallyConstant - F(*)`.
 -/
 def isoLocallyConstantOfIsColimit
     (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op) :
-    F ≅ (locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of <| TypeCat.of PUnit.{u + 1}⟩))) :=
+    F ≅ (locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩))) :=
   (lanPresheafNatIso hF).symm ≪≫
     lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
       lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _

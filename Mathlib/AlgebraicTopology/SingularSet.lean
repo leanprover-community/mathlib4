@@ -88,7 +88,7 @@ instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
 
 /-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/
 noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpace X] :
-    TopCat.toSSet.obj X ≅ (Functor.const _).obj (TypeCat.of X) :=
+    TopCat.toSSet.obj X ≅ (Functor.const _).obj (X) :=
   (NatIso.ofComponents (fun n ↦ Equiv.toIso
     ((TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace _ X).symm.trans
       (X.toSSetObjEquiv n).symm))).symm

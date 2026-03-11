@@ -31,7 +31,7 @@ variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
 The full `LimitCone` data is bundled as `pullbackLimitCone f g`.
 -/
 abbrev PullbackObj : TypeCat.{u} :=
-  TypeCat.of { p : X × Y // f p.1 = g p.2 }
+  { p : X × Y // f p.1 = g p.2 }
 
 -- `PullbackObj f g` comes with a coercion to the product type `X × Y`.
 example (p : PullbackObj f g) : X × Y :=

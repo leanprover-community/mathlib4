@@ -80,7 +80,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`. -/
 @[simps]
 noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
-    limit (F ⋙ coyoneda.obj (op X)) ≅ TypeCat.of ((const J).obj X ⟶ F) where
+    limit (F ⋙ coyoneda.obj (op X)) ≅ ((const J).obj X ⟶ F) where
   hom := TypeCat.ofHom ⟨fun a ↦ {
     app j := limit.π (F ⋙ coyoneda.obj (op X)) j a
     naturality _ _ _ := by simpa using (limit.w_apply _ _ _).symm }⟩
@@ -107,7 +107,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`. -/
 @[simps]
 noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
-    limit (F.op ⋙ yoneda.obj X) ≅ TypeCat.of (F ⟶ (const J).obj X) where
+    limit (F.op ⋙ yoneda.obj X) ≅ (F ⟶ (const J).obj X) where
   hom := TypeCat.ofHom ⟨fun a ↦ {
     app j := limit.π (F.op ⋙ yoneda.obj X) ⟨j⟩ a
     naturality _ _ f := by simpa using (limit.w_apply _ f.op a) }⟩

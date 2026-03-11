@@ -468,7 +468,7 @@ end CategoryTheory.Iso
 in `MonCat` -/
 @[to_additive addEquivIsoAddMonCatIso]
 def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] :
-    TypeCat.of (X ≃* Y) ≅ TypeCat.of (MonCat.of X ≅ MonCat.of Y) where
+    (X ≃* Y) ≅ (MonCat.of X ≅ MonCat.of Y) where
   hom := TypeCat.ofHom ⟨fun e ↦ e.toMonCatIso⟩
   inv := TypeCat.ofHom ⟨fun i ↦ i.monCatIsoToMulEquiv⟩
 
@@ -480,7 +480,7 @@ add_decl_doc addEquivIsoAddMonCatIso
 in `CommMonCat` -/
 @[to_additive addEquivIsoAddCommMonCatIso]
 def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
-    TypeCat.of (X ≃* Y) ≅ TypeCat.of (CommMonCat.of X ≅ CommMonCat.of Y) where
+    (X ≃* Y) ≅ (CommMonCat.of X ≅ CommMonCat.of Y) where
   hom := TypeCat.ofHom ⟨fun e ↦ e.toCommMonCatIso⟩
   inv := TypeCat.ofHom ⟨fun i ↦ i.commMonCatIsoToMulEquiv⟩
 

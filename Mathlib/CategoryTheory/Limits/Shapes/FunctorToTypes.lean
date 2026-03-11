@@ -35,7 +35,7 @@ section prod
 /-- `prod F G` is the explicit binary product of type-valued functors `F` and `G`. -/
 @[simps obj map]
 def prod : C ⥤ TypeCat.{w} where
-  obj a := TypeCat.of <| F.obj a × G.obj a
+  obj a := <| F.obj a × G.obj a
   map f := TypeCat.ofHom ⟨fun a ↦ (F.map f a.1, G.map f a.2)⟩
 
 variable {F G}
@@ -167,7 +167,7 @@ section coprod
 /-- `coprod F G` is the explicit binary coproduct of type-valued functors `F` and `G`. -/
 @[simps obj map]
 def coprod : C ⥤ TypeCat.{w} where
-  obj a := TypeCat.of <| F.obj a ⊕ G.obj a
+  obj a := <| F.obj a ⊕ G.obj a
   map f := TypeCat.ofHom ⟨Sum.map (F.map f) (G.map f)⟩
   map_id _ := by ext ⟨⟩<;> simp
   map_comp _ _ := by ext ⟨⟩<;> simp

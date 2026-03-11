@@ -71,7 +71,7 @@ variable (P R)
 set_option backward.isDefEq.respectTransparency false in
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
-def firstObjEqFamily : FirstObj P R ≅ TypeCat.of (R.FamilyOfElements P) where
+def firstObjEqFamily : FirstObj P R ≅ (R.FamilyOfElements P) where
   hom := TypeCat.ofHom ⟨fun t _ _ hf ↦
     Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t⟩
   inv := Pi.lift fun f => TypeCat.ofHom ⟨fun x => x _ f.2.2⟩

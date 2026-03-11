@@ -58,7 +58,7 @@ variable [ConcreteCategory.{max w v} C FC] {J : Type w} (F : J → C)
 in a concrete category `C`. -/
 noncomputable def productEquiv : ToType (∏ᶜ F) ≃ ∀ j, ToType (F j) :=
   ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} fun j =>
-    TypeCat.of (ToType (F j)))).toEquiv
+    (ToType (F j)))).toEquiv
 
 @[simp]
 lemma productEquiv_apply_apply (x : ToType (∏ᶜ F)) (j : J) :
@@ -105,13 +105,13 @@ singleton. -/
 @[implicit_reducible]
 noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0} C) (forget C)]
     (X : C) (h : IsTerminal X) : Unique (ToType X) :=
-  Types.isTerminalEquivUnique (TypeCat.of (ToType X)) <| IsTerminal.isTerminalObj (forget C) X h
+  Types.isTerminalEquivUnique ((ToType X)) <| IsTerminal.isTerminalObj (forget C) X h
 
 /-- If `forget C` reflects terminals and `ToType X` is a singleton, then `X` is terminal. -/
 noncomputable def terminalOfUniqueOfReflects [ReflectsLimit (Functor.empty.{0} C) (forget C)]
     (X : C) (h : Unique (ToType X)) : IsTerminal X :=
   IsTerminal.isTerminalOfObj (forget C) X <|
-    (Types.isTerminalEquivUnique (TypeCat.of (ToType X))).symm h
+    (Types.isTerminalEquivUnique ((ToType X))).symm h
 
 /-- The equivalence `IsTerminal X ≃ Unique (ToType X)` if the forgetful functor
 preserves and reflects terminals. -/
@@ -148,7 +148,7 @@ lemma empty_of_initial_of_preserves [PreservesColimit (Functor.empty.{0} C) (for
 lemma initial_of_empty_of_reflects [ReflectsColimit (Functor.empty.{0} C) (forget C)] (X : C)
     (h : IsEmpty (ToType X)) : Nonempty (IsInitial X) :=
   Nonempty.map (IsInitial.isInitialOfObj (forget C) _) <|
-    (Types.initial_iff_empty (TypeCat.of (ToType X))).mpr h
+    (Types.initial_iff_empty ((ToType X))).mpr h
 
 /-- If `forget C` preserves and reflects initials, then `X` is initial if and only if
 `ToType X` is empty. -/

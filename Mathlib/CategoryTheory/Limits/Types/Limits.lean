@@ -106,7 +106,7 @@ implemented as flat sections of a pi type
 -/
 @[simps pt π_app]
 noncomputable def limitCone : Cone F where
-  pt := TypeCat.of (Shrink F.sections)
+  pt := (Shrink F.sections)
   π :=
     { app j := TypeCat.ofHom ⟨fun u => ((equivShrink F.sections).symm u).val j⟩ }
 
@@ -143,7 +143,7 @@ implemented as flat sections of a pi type
 -/
 @[simps]
 noncomputable def limitCone (F : J ⥤ TypeCat.{max v u}) : Cone F where
-  pt := TypeCat.of F.sections
+  pt := F.sections
   π := { app j := TypeCat.ofHom ⟨fun u => u.val j⟩ }
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/

@@ -187,7 +187,7 @@ instance colim_preservesTerminal_of_isSifted :
     PreservesLimit (Functor.empty.{0} (C ⥤ TypeCat.{u})) colim := by
   apply preservesTerminal_of_iso
   symm
-  apply (_ : ⊤_ (TypeCat.{u}) ≅ TypeCat.of PUnit.{u + 1}).trans
+  apply (_ : ⊤_ (TypeCat.{u}) ≅ PUnit.{u + 1}).trans
   · apply_rules [(Types.colimitConstPUnitIsoPUnit C).symm.trans, HasColimit.isoOfNatIso,
       IsTerminal.uniqueUpToIso _ terminalIsTerminal, evaluationJointlyReflectsLimits]
     exact fun _ ↦ isLimitChangeEmptyCone _ Types.isTerminalPUnit _ <| Iso.refl _
@@ -222,9 +222,9 @@ theorem isSiftedOrEmpty_of_colim_preservesBinaryProducts
       HasColimit.isoOfNatIso <| isoWhiskerLeft _ <| .refl _
     _ ≅ colimit (_ ⊗ _) := HasColimit.isoOfNatIso <| .refl _
     _ ≅ (colimit _) ⊗ (colimit _) := CartesianMonoidalCategory.prodComparisonIso colim _ _
-    _ ≅ TypeCat.of PUnit ⊗ TypeCat.of PUnit :=
+    _ ≅ PUnit ⊗ PUnit :=
       (Coyoneda.colimitCoyonedaIso _) ⊗ᵢ (Coyoneda.colimitCoyonedaIso _)
-    _ ≅ TypeCat.of PUnit := λ_ _
+    _ ≅ PUnit := λ_ _
 
 lemma isSiftedOrEmpty_of_colim_preservesFiniteProducts
     [h : PreservesFiniteProducts (colim : (C ⥤ TypeCat.{u}) ⥤ TypeCat.{u})] :

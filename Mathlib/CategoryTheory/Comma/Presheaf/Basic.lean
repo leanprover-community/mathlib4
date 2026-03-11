@@ -193,7 +193,7 @@ lemma yonedaArrow_val {Y : C} {η : yoneda.obj Y ⟶ A} {X : C} {s : yoneda.obj 
 /-- If `η` is also `yoneda`-costructured, then `OverArrows η s` is just morphisms of costructured
 arrows. -/
 def costructuredArrowIso (s t : CostructuredArrow yoneda A) :
-    TypeCat.of (OverArrows s.hom t.hom) ≅ TypeCat.of (t ⟶ s) where
+    (OverArrows s.hom t.hom) ≅ (t ⟶ s) where
   hom := TypeCat.ofHom ⟨fun p ↦ CostructuredArrow.homMk p.val (by simp)⟩
   inv := TypeCat.ofHom ⟨fun f ↦ yonedaArrow f.left f.w⟩
 
@@ -205,7 +205,7 @@ smaller universe. -/
 @[simps obj map]
 def restrictedYonedaObj {F : Cᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ A) :
     (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v} where
-  obj s := TypeCat.of (OverArrows η s.unop.hom)
+  obj s := (OverArrows η s.unop.hom)
   map f := TypeCat.ofHom ⟨fun u ↦ u.map₂ f.unop.left f.unop.w⟩
 
 /-- Functoriality of `restrictedYonedaObj η` in `η`. -/
@@ -470,7 +470,7 @@ lemma unitBackward_unitForward {F : Cᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ A) (X :
 /-- Intermediate stage of assembling the unit. -/
 @[simps]
 def unitAuxAuxAux {F : Cᵒᵖ ⥤ TypeCat.{v}} (η : F ⟶ A) (X : C) :
-    TypeCat.of (YonedaCollection (restrictedYonedaObj η) X) ≅ F.obj (op X) where
+    (YonedaCollection (restrictedYonedaObj η) X) ≅ F.obj (op X) where
   hom := TypeCat.ofHom ⟨unitForward η X⟩
   inv := TypeCat.ofHom ⟨unitBackward η X⟩
   hom_inv_id := ConcreteCategory.ext (TypeCat.Fun.ext (unitBackward_unitForward η X))
@@ -567,7 +567,7 @@ lemma counitBackward_counitForward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ T
 @[simps]
 def counitAuxAux (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ TypeCat.{v})
     (s : CostructuredArrow yoneda A) :
-    TypeCat.of (F.obj (op s)) ≅ TypeCat.of (OverArrows (yonedaCollectionPresheafToA F) s.hom) where
+    (F.obj (op s)) ≅ (OverArrows (yonedaCollectionPresheafToA F) s.hom) where
   hom := TypeCat.ofHom ⟨counitForward F s⟩
   inv := TypeCat.ofHom ⟨counitBackward F s⟩
   hom_inv_id := ConcreteCategory.ext (TypeCat.Fun.ext (counitBackward_counitForward F s))

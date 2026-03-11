@@ -347,7 +347,7 @@ def ofMulActionSubsingletonIsoTrivial
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
 def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
-    (linearization k G).obj (Action.ofMulAction G (TypeCat.of H)) ≅ ofMulAction k G H :=
+    (linearization k G).obj (Action.ofMulAction G (H)) ≅ ofMulAction k G H :=
   Iso.refl _
 
 section
@@ -567,7 +567,7 @@ def diagonalSuccIsoTensorTrivial :
     diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G ((Fin n → G) →₀ k) :=
   (linearization k G).mapIso (Action.diagonalSuccIsoTensorTrivial G n) ≪≫
     (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
-      tensorIso (Iso.refl _) (linearizationTrivialIso k G (TypeCat.of (Fin n → G)))
+      tensorIso (Iso.refl _) (linearizationTrivialIso k G ((Fin n → G)))
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

@@ -564,7 +564,7 @@ open Opposite
 /-- Auxiliary definition for `CategoryTheory.Mat.equivalenceSingleObj`. -/
 @[simps]
 def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
-  obj X := FintypeCat.of (TypeCat.of X.ι)
+  obj X := FintypeCat.of (X.ι)
   map f i j := MulOpposite.unop (f i j)
   map_id X := by
     ext

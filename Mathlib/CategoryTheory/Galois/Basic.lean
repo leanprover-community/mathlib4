@@ -292,7 +292,7 @@ lemma fiberPullbackEquiv_symm_snd_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
 noncomputable def fiberBinaryProductEquiv (X Y : C) :
     F.obj (X ⨯ Y) ≃ F.obj X × F.obj Y :=
   (PreservesLimitPair.iso (F ⋙ FintypeCat.incl) X Y ≪≫
-  Types.binaryProductIso (TypeCat.of <| F.obj X) (TypeCat.of <| F.obj Y)).toEquiv
+  Types.binaryProductIso (<| F.obj X) (<| F.obj Y)).toEquiv
 
 @[simp]
 lemma fiberBinaryProductEquiv_symm_fst_apply {X Y : C} (x : F.obj X) (y : F.obj Y) :

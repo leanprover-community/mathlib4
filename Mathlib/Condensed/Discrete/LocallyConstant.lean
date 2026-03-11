@@ -84,7 +84,7 @@ maps.
 @[simps obj_obj obj_map map_app]
 def functorToPresheaves : TypeCat.{max u w} ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ TypeCat.{max u w}) where
   obj X := {
-    obj := fun ⟨S⟩ ↦ TypeCat.of (LocallyConstant S X)
+    obj := fun ⟨S⟩ ↦ (LocallyConstant S X)
     map f := TypeCat.ofHom ⟨fun g ↦ g.comap f.unop.hom.hom⟩ }
   map f := { app _ := TypeCat.ofHom ⟨fun t ↦ t.map f⟩ }
 
@@ -94,7 +94,7 @@ topology
 -/
 @[simps]
 def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
-    TypeCat.of (LocallyConstant Y X) ≅ TypeCat.of C(Y, TopCat.discrete.obj (TypeCat.of X)) :=
+    (LocallyConstant Y X) ≅ C(Y, TopCat.discrete.obj (X)) :=
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
   { hom := TypeCat.ofHom ⟨fun f ↦ (f : C(Y, X))⟩
@@ -151,7 +151,7 @@ the value of `f` on `Sᵢ`. Our desired element is the image of `yᵢ` under the
 noncomputable def counitAppApp (S : CompHausLike.{u} P)
     (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ TypeCat.{max u w})
     [PreservesFiniteProducts Y] [HasExplicitFiniteCoproducts.{u} P] :
-    TypeCat.of (LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u + 1})))) ⟶ Y.obj ⟨S⟩ :=
+    (LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u + 1})))) ⟶ Y.obj ⟨S⟩ :=
   TypeCat.ofHom ⟨fun r ↦ ((inv (sigmaComparison Y (fun a ↦ (fiber r a).1))) ≫
     (Y.mapIso (sigmaIso r).op).inv) (counitAppAppImage r)⟩
 

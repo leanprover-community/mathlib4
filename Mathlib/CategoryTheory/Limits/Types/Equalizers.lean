@@ -46,7 +46,7 @@ noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X
 /-- The converse of `type_equalizer_of_unique`. -/
 theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y = h y) :
     ∃! x : X, f x = y := by
-  let y' : TypeCat.of PUnit ⟶ Y := TypeCat.ofHom ⟨fun _ => y⟩
+  let y' : PUnit ⟶ Y := TypeCat.ofHom ⟨fun _ => y⟩
   have hy' : y' ≫ g = y' ≫ h := by ext; exact hy
   refine ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_hom (Fork.IsLimit.lift' t y' _).2 ⟨⟩, ?_⟩
   intro x' hx'
@@ -74,7 +74,7 @@ def equalizerLimit : Limits.LimitCone (parallelPair g h) where
 variable (g h)
 
 /-- The categorical equalizer in `Type u` is `{x : Y // g x = h x}`. -/
-noncomputable def equalizerIso : equalizer g h ≅ TypeCat.of { x : Y // g x = h x } :=
+noncomputable def equalizerIso : equalizer g h ≅ { x : Y // g x = h x } :=
   limit.isoLimitCone equalizerLimit
 
 @[elementwise (attr := simp)]

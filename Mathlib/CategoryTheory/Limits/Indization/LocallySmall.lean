@@ -44,7 +44,7 @@ variable (F : I ⥤ C) (G : Cᵒᵖ ⥤ TypeCat.{v})
 noncomputable def colimitYonedaHomEquiv :
     (colimit (F ⋙ yoneda) ⟶ G) ≃ (limit (F.op ⋙ G) : TypeCat) :=
   Equiv.symm <| Equiv.ulift.symm.trans <| Equiv.symm <| Iso.toEquiv <| calc
-  TypeCat.of (colimit (F ⋙ yoneda) ⟶ G) ≅ limit (F.op ⋙ G ⋙ uliftFunctor.{u}) :=
+  (colimit (F ⋙ yoneda) ⟶ G) ≅ limit (F.op ⋙ G ⋙ uliftFunctor.{u}) :=
         colimitYonedaHomIsoLimitOp _ _
   _ ≅ limit ((F.op ⋙ G) ⋙ uliftFunctor.{u}) :=
         HasLimit.isoOfNatIso (Functor.associator _ _ _).symm

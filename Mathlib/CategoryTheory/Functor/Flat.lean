@@ -413,9 +413,9 @@ instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)
 
 instance (G : D ⥤ TypeCat) [RepresentablyFlat F] [IsCofiltered G.Elements] :
     IsCofiltered (F ⋙ G).Elements := by
-  suffices h : IsCofiltered (StructuredArrow (TypeCat.of PUnit) (F ⋙ G)) from
+  suffices h : IsCofiltered (StructuredArrow (PUnit) (F ⋙ G)) from
     .of_equivalence (CategoryOfElements.structuredArrowEquivalence _).symm
-  have : IsCofiltered (StructuredArrow (TypeCat.of PUnit) G) :=
+  have : IsCofiltered (StructuredArrow (PUnit) G) :=
     .of_equivalence (CategoryOfElements.structuredArrowEquivalence _)
   infer_instance
 

@@ -148,7 +148,7 @@ lemma hom_inv_apply {A B : AlgCat.{v} R} (e : A ≅ B) (x : B) : e.hom (e.inv x)
 instance : Inhabited (AlgCat R) :=
   ⟨of R R⟩
 
-lemma forget_obj {A : AlgCat.{v} R} : (forget (AlgCat.{v} R)).obj A = TypeCat.of A := rfl
+lemma forget_obj {A : AlgCat.{v} R} : (forget (AlgCat.{v} R)).obj A = A := rfl
 
 @[deprecated ConcreteCategory.forget_map_eq_coe (since := "2026-03-03")]
 lemma forget_map {A B : AlgCat.{v} R} (f : A ⟶ B) :
@@ -228,7 +228,7 @@ end CategoryTheory.Iso
 `AlgCat`. -/
 @[simps]
 def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
-    TypeCat.of (X ≃ₐ[R] Y) ≅ TypeCat.of (AlgCat.of R X ≅ AlgCat.of R Y) where
+    (X ≃ₐ[R] Y) ≅ (AlgCat.of R X ≅ AlgCat.of R Y) where
   hom := TypeCat.ofHom ⟨fun e ↦ e.toAlgebraIso⟩
   inv := TypeCat.ofHom ⟨fun i ↦ i.toAlgEquiv⟩
 

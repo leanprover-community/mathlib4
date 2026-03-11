@@ -184,7 +184,7 @@ the linear order `Fin (n + 1)` to `C`
 -/
 def SimplicialNerve (C : Type u) [Category.{v} C] [SimplicialCategory C] :
     SSet.{max u v} where
-  obj n := TypeCat.of (EnrichedFunctor SSet (SimplicialThickening (ULift (Fin (n.unop.len + 1)))) C)
+  obj n := (EnrichedFunctor SSet (SimplicialThickening (ULift (Fin (n.unop.len + 1)))) C)
   map f := TypeCat.ofHom ⟨(SimplicialThickening.functor f.unop.toOrderHom.uliftMap).comp
     (E := C) SSet⟩
   map_id i := by

@@ -170,7 +170,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[implicit_reducible]
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
     EnrichedCategory (TypeCat.{v}) C where
-  Hom X Y := TypeCat.of (𝒞.Hom X Y)
+  Hom X Y := (𝒞.Hom X Y)
   id X := TypeCat.ofHom ⟨fun _ ↦ 𝟙 _⟩
   comp _ _ _ := TypeCat.ofHom ⟨fun p ↦ p.1 ≫ p.2⟩
   id_comp X Y := by ext; simp; rfl
@@ -484,7 +484,7 @@ the `V`-object of natural transformations from `F` to `G`.
 -/
 @[simps]
 def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ TypeCat.{max u₁ w} where
-  obj A := TypeCat.of (GradedNatTrans ((Center.ofBraided V).obj (unop A)) F G)
+  obj A := (GradedNatTrans ((Center.ofBraided V).obj (unop A)) F G)
   map f := TypeCat.ofHom ⟨fun σ ↦
     { app X := f.unop ≫ σ.app X
       naturality X Y := by
@@ -528,7 +528,7 @@ the usual type of natural transformations!
 def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (TypeCat.{v}) C]
     {D : Type v} [EnrichedCategory (TypeCat.{v}) D] (F G : EnrichedFunctor (TypeCat.{v}) C D) :
     enrichedNatTransYoneda F G ≅
-      yoneda.obj (TypeCat.of (enrichedFunctorTypeEquivFunctor F ⟶
+      yoneda.obj ((enrichedFunctorTypeEquivFunctor F ⟶
         enrichedFunctorTypeEquivFunctor G)) :=
   NatIso.ofComponents
     (fun α =>

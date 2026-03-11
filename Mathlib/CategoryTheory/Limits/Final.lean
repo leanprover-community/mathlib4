@@ -477,7 +477,7 @@ end Final
 /-- If `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit` for all `d : D`, then `F` is final.
 -/
 theorem final_of_colimit_comp_coyoneda_iso_pUnit
-    (I : ∀ d, colimit (F ⋙ coyoneda.obj (op d)) ≅ TypeCat.of PUnit) : Final F :=
+    (I : ∀ d, colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit) : Final F :=
   ⟨fun d => by
     have : Nonempty (StructuredArrow d F) := by
       have := (I d).inv PUnit.unit
@@ -510,7 +510,7 @@ then `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`
 (simply because `colimit (coyoneda.obj (op d)) ≅ PUnit`).
 -/
 def Final.colimitCompCoyonedaIso (d : D) [IsIso (colimit.pre (coyoneda.obj (op d)) F)] :
-    colimit (F ⋙ coyoneda.obj (op d)) ≅ TypeCat.of PUnit :=
+    colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit :=
   asIso (colimit.pre (coyoneda.obj (op d)) F) ≪≫ Coyoneda.colimitCoyonedaIso (op d)
 
 end LocallySmall

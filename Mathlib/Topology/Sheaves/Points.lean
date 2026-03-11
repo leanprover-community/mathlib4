@@ -36,7 +36,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a topological space `X` and `x : X`, this is the point of the site
 `(Opens X, Opens.grothendieckTopology X)` corresponding to `x`. -/
 def pointGrothendieckTopology : Point.{u} (grothendieckTopology X) where
-  fiber.obj U := TypeCat.of (ULift.{u} (PLift (x ∈ U)))
+  fiber.obj U := (ULift.{u} (PLift (x ∈ U)))
   fiber.map f := TypeCat.ofHom ⟨fun h ↦ ⟨⟨leOfHom f h.down.down⟩⟩⟩
   isCofiltered :=
     { nonempty := ⟨⊤, ⟨⟨by simp⟩⟩⟩

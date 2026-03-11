@@ -175,15 +175,15 @@ instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
 
 /-- The discrete topology on any type. -/
-def discrete : TypeCat.{u} ⥤ TopCat.{u} where
+def discrete : Type u ⥤ TopCat.{u} where
   obj X := @of X ⊥
   map f := @ofHom _ _ ⊥ ⊥ <| @ContinuousMap.mk _ _ ⊥ ⊥ f continuous_bot
 
-instance {X : TypeCat.{u}} : DiscreteTopology (discrete.obj X) :=
+instance {X : Type u} : DiscreteTopology (discrete.obj X) :=
   ⟨rfl⟩
 
 /-- The trivial topology on any type. -/
-def trivial : TypeCat.{u} ⥤ TopCat.{u} where
+def trivial : Type u ⥤ TopCat.{u} where
   obj X := @of X ⊤
   map f := @ofHom _ _ ⊤ ⊤ <| @ContinuousMap.mk _ _ ⊤ ⊤ f continuous_top
 

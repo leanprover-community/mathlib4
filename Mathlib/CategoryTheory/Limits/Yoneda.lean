@@ -37,7 +37,7 @@ variable {C : Type u} [Category.{v} C]
 -/
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
-  pt := TypeCat.of PUnit
+  pt := PUnit
   ι := { app _ := TypeCat.ofHom ⟨fun _ ↦ by cat_disch⟩ }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -60,7 +60,7 @@ instance (X : Cᵒᵖ) : HasColimit (coyoneda.obj X) :=
 
 /-- The colimit of `coyoneda.obj X` is isomorphic to `PUnit`.
 -/
-noncomputable def colimitCoyonedaIso (X : Cᵒᵖ) : colimit (coyoneda.obj X) ≅ TypeCat.of PUnit := by
+noncomputable def colimitCoyonedaIso (X : Cᵒᵖ) : colimit (coyoneda.obj X) ≅ PUnit := by
   apply colimit.isoColimitCocone
     { cocone := _
       isColimit := colimitCoconeIsColimit X }

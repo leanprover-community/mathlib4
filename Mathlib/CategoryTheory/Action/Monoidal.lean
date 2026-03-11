@@ -233,7 +233,7 @@ noncomputable def leftRegularTensorIso (X : Action TypeCat.{u} G) :
 `G` but trivially on `Gⁿ`. The map sends `(g₀, ..., gₙ) ↦ (g₀, (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`,
 and the inverse is `(g₀, (g₁, ..., gₙ)) ↦ (g₀, g₀g₁, g₀g₁g₂, ..., g₀g₁...gₙ).` -/
 noncomputable def diagonalSuccIsoTensorTrivial :
-    ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ trivial G (TypeCat.of (Fin n → G))
+    ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ trivial G ((Fin n → G))
   | 0 =>
     diagonalOneIsoLeftRegular G ≪≫
       (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.ofUnique PUnit _).toIso)

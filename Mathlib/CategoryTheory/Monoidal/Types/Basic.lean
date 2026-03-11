@@ -125,8 +125,8 @@ theorem CartesianMonoidalCategory.lift_apply {X Y Z : TypeCat.{u}} {f : X ⟶ Y}
 of a type to the image of that type, tensored with the image of the nth Cartesian power. -/
 noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category* C] [MonoidalCategory C]
     (F : TypeCat ⥤ C) [F.Monoidal] (n : ℕ) (β : Type*) :
-    F.obj (TypeCat.of (Fin (n + 1) → β)) ≅ F.obj (TypeCat.of β) ⊗ F.obj (TypeCat.of (Fin n → β)) :=
+    F.obj ((Fin (n + 1) → β)) ≅ F.obj (β) ⊗ F.obj ((Fin n → β)) :=
   Functor.mapIso _ (Fin.consEquiv _).symm.toIso ≪≫
-    (Functor.Monoidal.μIso F (TypeCat.of β) (TypeCat.of (Fin n → β))).symm
+    (Functor.Monoidal.μIso F (β) ((Fin n → β))).symm
 
 end CategoryTheory

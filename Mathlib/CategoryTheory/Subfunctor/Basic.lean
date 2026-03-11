@@ -35,7 +35,7 @@ variable {C : Type u} [Category.{v} C]
 /-- A subfunctor of a functor consists of a subset of `F.obj U` for every `U`,
 compatible with the restriction maps `F.map i`. -/
 @[ext]
-structure Subfunctor (F : C ⥤ TypeCat.{w}) where
+structure Subfunctor (F : C ⥤ Type w) where
   /-- If `G` is a subfunctor of `F`, then the sections of `G` on `U` forms a subset of sections of
   `F` on `U`. -/
   obj : ∀ U, Set (F.obj U)
@@ -45,9 +45,9 @@ structure Subfunctor (F : C ⥤ TypeCat.{w}) where
 
 @[deprecated (since := "2025-12-11")] alias Subpresheaf := Subfunctor
 
-variable {F F' F'' : C ⥤ TypeCat.{w}} (G G' : Subfunctor F)
+variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 
-instance (F : C ⥤ TypeCat.{w}) (G : Subfunctor F) (U : C) : Membership (F.obj U) (G.obj U) where
+instance (F : C ⥤ Type w) (G : Subfunctor F) (U : C) : Membership (F.obj U) (G.obj U) where
   mem _ := G.obj U
 
 instance : PartialOrder (Subfunctor F) :=
@@ -145,8 +145,8 @@ instance : Nonempty (Subfunctor F) :=
 
 /-- The subfunctor as a functor. -/
 @[simps obj map]
-def toFunctor : C ⥤ TypeCat.{w} where
-  obj U := TypeCat.of (Subtype (G.obj U))
+def toFunctor : C ⥤ Type w where
+  obj U := (Subtype (G.obj U))
   map i := TypeCat.ofHom ⟨fun x => ⟨F.map i x, G.map i x.prop⟩⟩
 
 instance {U} : CoeHead (G.toFunctor.obj U) (F.obj U) where

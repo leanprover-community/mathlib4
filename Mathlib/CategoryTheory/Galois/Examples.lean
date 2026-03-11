@@ -33,7 +33,7 @@ namespace FintypeCat
 noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     FintypeCat.{u} := by
   haveI : Fintype (↑(Set.range f)ᶜ) := Fintype.ofFinite _
-  exact FintypeCat.of (TypeCat.of (↑(Set.range f)ᶜ))
+  exact FintypeCat.of ((↑(Set.range f)ᶜ))
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
 noncomputable def imageComplementIncl {X Y : FintypeCat.{u}}
@@ -113,9 +113,9 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     connectedness, the orbit equals `X.V`. -/
     let T : Set X.V := MulAction.orbit G x
     have : Fintype T := Fintype.ofFinite T
-    letI : MulAction G (FintypeCat.of (TypeCat.of T)) := inferInstanceAs <| MulAction G
+    letI : MulAction G (FintypeCat.of (T)) := inferInstanceAs <| MulAction G
       ↑(MulAction.orbit G x)
-    let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G (FintypeCat.of (TypeCat.of T))
+    let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G (FintypeCat.of (T))
     let i : T' ⟶ X := ⟨FintypeCat.homMk Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
     have : IsIso i := by

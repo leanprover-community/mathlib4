@@ -55,12 +55,12 @@ lemma free_hom_ext {X : TypeCat.{u}} {M : ModuleCat.{u} R} {f g : (free R).obj X
 
 /-- The morphism of modules `(free R).obj X ⟶ M` corresponding
 to a map `f : X ⟶ M`. -/
-noncomputable def freeDesc {X : TypeCat.{u}} {M : ModuleCat.{u} R} (f : X ⟶ TypeCat.of M) :
+noncomputable def freeDesc {X : TypeCat.{u}} {M : ModuleCat.{u} R} (f : X ⟶ M) :
     (free R).obj X ⟶ M :=
   ofHom <| Finsupp.lift M R X f
 
 @[simp]
-lemma freeDesc_apply {X : TypeCat.{u}} {M : ModuleCat.{u} R} (f : X ⟶ TypeCat.of M) (x : X) :
+lemma freeDesc_apply {X : TypeCat.{u}} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
     freeDesc f (freeMk x) = f x := by
   dsimp [freeDesc]
   erw [Finsupp.lift_apply, Finsupp.sum_single_index]
@@ -74,7 +74,7 @@ lemma free_map_apply {X Y : TypeCat.{u}} (f : X ⟶ Y) (x : X) :
 /-- The bijection `((free R).obj X ⟶ M) ≃ (X → M)` when `X` is a type and `M` a module. -/
 @[simps]
 def freeHomEquiv {X : TypeCat.{u}} {M : ModuleCat.{u} R} :
-    ((free R).obj X ⟶ M) ≃ (X ⟶ TypeCat.of M) where
+    ((free R).obj X ⟶ M) ≃ (X ⟶ M) where
   toFun φ := TypeCat.ofHom ⟨fun x ↦ φ (freeMk x)⟩
   invFun ψ := freeDesc (TypeCat.ofHom ⟨ψ⟩)
   left_inv _ := by ext; simp
