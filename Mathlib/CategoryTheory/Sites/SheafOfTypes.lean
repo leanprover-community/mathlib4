@@ -60,12 +60,12 @@ open Opposite CategoryTheory Category Limits Sieve
 namespace Presieve
 
 variable {C : Type u} [Category.{v} C]
-variable {P : Cᵒᵖ ⥤ TypeCat.{w}}
+variable {P : Cᵒᵖ ⥤ Type w}
 variable {X : C}
 variable (J J₂ : GrothendieckTopology C)
 
 /-- A presheaf is separated for a topology if it is separated for every sieve in the topology. -/
-def IsSeparated (P : Cᵒᵖ ⥤ TypeCat.{w}) : Prop :=
+def IsSeparated (P : Cᵒᵖ ⥤ Type w) : Prop :=
   ∀ ⦃X⦄ (S : Sieve X), S ∈ J X → IsSeparatedFor P (S : Presieve X)
 
 /-- A presheaf is a sheaf for a topology if it is a sheaf for every sieve in the topology.
@@ -73,23 +73,23 @@ def IsSeparated (P : Cᵒᵖ ⥤ TypeCat.{w}) : Prop :=
 If the given topology is given by a pretopology, `isSheaf_pretopology` shows it suffices to
 check the sheaf condition at presieves in the pretopology.
 -/
-def IsSheaf (P : Cᵒᵖ ⥤ TypeCat.{w}) : Prop :=
+def IsSheaf (P : Cᵒᵖ ⥤ Type w) : Prop :=
   ∀ ⦃X⦄ (S : Sieve X), S ∈ J X → IsSheafFor P (S : Presieve X)
 
 variable {J} in
-theorem IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ TypeCat.{w}} (hp : IsSheaf J P) (R : Presieve X)
+theorem IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Presieve X)
     (hr : generate R ∈ J X) : IsSheafFor P R :=
   (isSheafFor_iff_generate R).2 <| hp _ hr
 
-theorem isSheaf_of_le (P : Cᵒᵖ ⥤ TypeCat.{w}) {J₁ J₂ : GrothendieckTopology C} :
+theorem isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
     J₁ ≤ J₂ → IsSheaf J₂ P → IsSheaf J₁ P := fun h t _ S hS => t S (h _ hS)
 
-theorem isSeparated_of_le (P : Cᵒᵖ ⥤ TypeCat.{w}) {J₁ J₂ : GrothendieckTopology C} :
+theorem isSeparated_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
     J₁ ≤ J₂ → IsSeparated J₂ P → IsSeparated J₁ P :=
   fun h hP _ S hS ↦ hP S <| h _ hS
 
 variable {J} in
-theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ TypeCat.{w}} (h : IsSheaf J P) : IsSeparated J P :=
+theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ Type w} (h : IsSheaf J P) : IsSeparated J P :=
   fun _ S hS => (h S hS).isSeparatedFor
 
 @[deprecated (since := "2025-08-28")] alias isSeparated_of_isSheaf := IsSheaf.isSeparated
@@ -97,14 +97,14 @@ theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ TypeCat.{w}} (h : IsSheaf J P) : Is
 variable {J} in
 /-- If `P` is separated and every compatible family of elements of `P` for a covering
 sieve has an amalgamation, `P` is a sheaf. -/
-theorem IsSeparated.isSheaf {P : Cᵒᵖ ⥤ TypeCat.{w}} (h : IsSeparated J P) (h' : ∀ X, ∀ S ∈ J X,
+theorem IsSeparated.isSheaf {P : Cᵒᵖ ⥤ Type w} (h : IsSeparated J P) (h' : ∀ X, ∀ S ∈ J X,
       ∀ x : FamilyOfElements P S.arrows, x.Compatible → ∃ t, x.IsAmalgamation t) :
     IsSheaf J P :=
   fun _ S hS ↦ (h S hS).isSheafFor <| h' _ S hS
 
 section
 
-variable {J} {P₁ : Cᵒᵖ ⥤ TypeCat.{w}} {P₂ : Cᵒᵖ ⥤ TypeCat.{w'}}
+variable {J} {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
   (e : ∀ ⦃X : C⦄, P₁.obj (op X) ≃ P₂.obj (op X))
   (he : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₁.obj (op Y)),
     e (P₁.map f.op x) = P₂.map f.op (e x))
@@ -122,15 +122,15 @@ lemma isSheaf_iff_of_nat_equiv :
 end
 
 /-- The property of being a sheaf is preserved by isomorphism. -/
-theorem isSheaf_iso {P' : Cᵒᵖ ⥤ TypeCat.{w}} (i : P ≅ P') (h : IsSheaf J P) : IsSheaf J P' :=
+theorem isSheaf_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (h : IsSheaf J P) : IsSheaf J P' :=
   fun _ S hS => isSheafFor_iso i (h S hS)
 
 /-- The property of being separated is preserved under isomorphisms. -/
-theorem isSeparated_iso {P' : Cᵒᵖ ⥤ TypeCat.{w}} (i : P ≅ P') (hP : IsSeparated J P) :
+theorem isSeparated_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSeparated J P) :
     IsSeparated J P' :=
   fun _ S hS ↦ isSeparatedFor_iso i (hP S hS)
 
-theorem isSheaf_of_yoneda {P : Cᵒᵖ ⥤ TypeCat.{v}}
+theorem isSheaf_of_yoneda {P : Cᵒᵖ ⥤ Type v}
     (h : ∀ {X} (S : Sieve X), S ∈ J X → YonedaSheafCondition P S) : IsSheaf J P := fun _ _ hS =>
   isSheafFor_iff_yonedaSheafCondition.2 (h _ hS)
 

@@ -36,7 +36,7 @@ variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 /-- A multiplicative action M ↻ X viewed as a functor mapping the single object of M to X
   and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
 @[simps obj map]
-def actionAsFunctor : SingleObj M ⥤ TypeCat.{u} where
+def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
   map f := TypeCat.ofHom ⟨(f • ·)⟩
   map_id _ := by ext; exact MulAction.one_smul _

@@ -71,7 +71,7 @@ lemma Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda {X : C} (R : Pre
     Presieve.EffectiveEpimorphic, Sieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda]
 
 lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Presieve X}
-    (hR : R.EffectiveEpimorphic) (F : Cᵒᵖ ⥤ TypeCat.{w}) [F.IsRepresentable] :
+    (hR : R.EffectiveEpimorphic) (F : Cᵒᵖ ⥤ Type w) [F.IsRepresentable] :
     R.IsSheafFor F := by
   rw [Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda] at hR
   rw [← isSheafFor_comp_uliftFunctor_iff]

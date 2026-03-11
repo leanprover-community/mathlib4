@@ -128,9 +128,9 @@ to sheaves. -/
 -- different universe levels. See Note [universe output parameters and typeclass caching].
 @[univ_out_params]
 class IsContinuous : Prop where
-  op_comp_isSheaf_of_types (G : Sheaf K TypeCat.{t}) : Presieve.IsSheaf J (F.op ⋙ G.obj)
+  op_comp_isSheaf_of_types (G : Sheaf K Type t) : Presieve.IsSheaf J (F.op ⋙ G.obj)
 
-lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K TypeCat.{t}) :
+lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K Type t) :
     Presieve.IsSheaf J (F.op ⋙ G.obj) :=
   Functor.IsContinuous.op_comp_isSheaf_of_types _
 

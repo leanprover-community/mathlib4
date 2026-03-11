@@ -34,7 +34,7 @@ structure FintypeCat where
   /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
   of ::
   /-- The underlying type. -/
-  carrier : TypeCat.{u}
+  carrier : Type u
   [str : Fintype carrier]
 
 section Notation

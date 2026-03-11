@@ -28,29 +28,29 @@ namespace CategoryTheory.Types
 open Limits
 
 /-! The forgetful functor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
-over to `forget TypeCat.{u}`.
+over to `forget Type u`.
 
 Since instance synthesis only looks through reducible definitions, we need to help it out by copying
 over the instances that wouldn't be found otherwise.
 -/
 
-instance : (forget TypeCat.{u}).Full :=
+instance : (forget Type u).Full :=
   Functor.Full.id
 
-instance : PreservesLimitsOfSize (forget TypeCat.{u}) :=
+instance : PreservesLimitsOfSize (forget Type u) :=
   id_preservesLimitsOfSize
-instance : PreservesColimitsOfSize (forget TypeCat.{u}) :=
+instance : PreservesColimitsOfSize (forget Type u) :=
   id_preservesColimitsOfSize
 
-instance : ReflectsLimitsOfSize (forget TypeCat.{u}) :=
+instance : ReflectsLimitsOfSize (forget Type u) :=
   id_reflectsLimits
-instance : ReflectsColimitsOfSize (forget TypeCat.{u}) :=
+instance : ReflectsColimitsOfSize (forget Type u) :=
   id_reflectsColimits
 
-instance : (forget TypeCat.{u}).IsEquivalence :=
+instance : (forget Type u).IsEquivalence :=
   Functor.isEquivalence_refl
 
-instance : (forget TypeCat.{u}).IsCorepresentable :=
+instance : (forget Type u).IsCorepresentable :=
   inferInstanceAs (𝟭 TypeCat).IsCorepresentable
 
 end CategoryTheory.Types

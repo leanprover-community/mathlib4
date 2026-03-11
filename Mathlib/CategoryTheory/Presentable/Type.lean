@@ -26,7 +26,7 @@ open CategoryTheory Limits Opposite ConcreteCategory
 
 namespace HasCardinalLT
 
-variable (X : TypeCat.{u}) (κ : Cardinal.{u})
+variable (X : Type u) (κ : Cardinal.{u})
 
 set_option backward.isDefEq.respectTransparency false in
 variable {X κ} in
@@ -89,7 +89,7 @@ lemma isFiltered_of_aleph0_le (hκ : Cardinal.aleph0 ≤ κ) :
 /-- The functor `HasCardinalLT.Set X κ ⥤ Type u` which sends a subset of `X`
 of cardinality `κ` to the corresponding subtype. -/
 @[simps!]
-def functor : HasCardinalLT.Set X κ ⥤ TypeCat.{u} :=
+def functor : HasCardinalLT.Set X κ ⥤ Type u :=
   Monotone.functor (f := Subtype.val) (by tauto) ⋙ Set.functorToTypes (X := X)
 
 /-- The cocone for `Set.functor X κ : HasCardinalLT.Set X κ ⥤ Type u` with point `X`. -/
@@ -117,7 +117,7 @@ namespace CategoryTheory
 
 namespace Types
 
-variable {X : TypeCat.{u}}
+variable {X : Type u}
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isCardinalPresentable_iff (κ : Cardinal.{u}) [Fact κ.IsRegular] :
@@ -136,7 +136,7 @@ lemma isCardinalPresentable_iff (κ : Cardinal.{u}) [Fact κ.IsRegular] :
     simp
   exact (hasCardinalLT_iff_of_equiv (Equiv.Set.univ X) _).1 hA
 
-instance (X : TypeCat.{u}) : IsPresentable.{u} X := by
+instance (X : Type u) : IsPresentable.{u} X := by
   obtain ⟨κ, hκ, hX⟩ := HasCardinalLT.exists_regular_cardinal.{u} X
   have : Fact κ.IsRegular := ⟨hκ⟩
   have := hX.isCardinalPresentable

@@ -36,7 +36,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace IndizationClosedUnderFilteredColimitsAux
 
-variable {I : Type v} [SmallCategory I] (F : I ⥤ Cᵒᵖ ⥤ TypeCat.{v})
+variable {I : Type v} [SmallCategory I] (F : I ⥤ Cᵒᵖ ⥤ Type v)
 
 
 section Interchange
@@ -139,7 +139,7 @@ end IndizationClosedUnderFilteredColimitsAux
 
 set_option backward.isDefEq.respectTransparency false in
 theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
-    (F : I ⥤ Cᵒᵖ ⥤ TypeCat.{v}) (hF : ∀ i, IsIndObject (F.obj i)) : IsIndObject (colimit F) := by
+    (F : I ⥤ Cᵒᵖ ⥤ Type v) (hF : ∀ i, IsIndObject (F.obj i)) : IsIndObject (colimit F) := by
   have : IsFiltered (CostructuredArrow yoneda (colimit F)) :=
     IndizationClosedUnderFilteredColimitsAux.isFiltered F hF
   refine (isIndObject_iff _).mpr ⟨this, ?_⟩

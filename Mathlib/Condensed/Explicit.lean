@@ -158,17 +158,17 @@ end Condensed
 namespace CondensedSet
 
 /-- A `CondensedSet` version of `Condensed.ofSheafStonean`. -/
-noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ TypeCat.{u + 1})
+noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u + 1))
     [PreservesFiniteProducts F] : CondensedSet :=
   Condensed.ofSheafStonean F
 
 /-- A `CondensedSet` version of `Condensed.ofSheafProfinite`. -/
-noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1})
+noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u + 1))
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedSet :=
   Condensed.ofSheafProfinite F hF
 
 /-- A `CondensedSet` version of `Condensed.ofSheafCompHaus`. -/
-noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ TypeCat.{u + 1})
+noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u + 1))
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedSet :=
   Condensed.ofSheafCompHaus F hF
 

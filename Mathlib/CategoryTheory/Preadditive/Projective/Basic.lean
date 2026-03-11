@@ -110,12 +110,12 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
   ⟨of_iso i, of_iso i.symm⟩
 
 /-- The axiom of choice says that every type is a projective object in `Type`. -/
-instance (X : TypeCat.{u}) : Projective X where
+instance (X : Type u) : Projective X where
   factors f e _ :=
     have he : Function.Surjective e := surjective_of_epi e
     ⟨TypeCat.ofHom ⟨fun x => (he (f x)).choose⟩, by ext x; exact (he (f x)).choose_spec⟩
 
-instance Type.enoughProjectives : EnoughProjectives (TypeCat.{u}) where
+instance Type.enoughProjectives : EnoughProjectives (Type u) where
   presentation X := ⟨⟨X, 𝟙 X⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in

@@ -64,7 +64,7 @@ section FiniteKonig
 the `F` functor is between categories of the same universe, and it is an easy
 corollary to `TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system`. -/
 theorem nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCategory J]
-    [IsCofilteredOrEmpty J] (F : J ⥤ TypeCat.{u}) [hf : ∀ j, Finite (F.obj j)]
+    [IsCofilteredOrEmpty J] (F : J ⥤ Type u) [hf : ∀ j, Finite (F.obj j)]
     [hne : ∀ j, Nonempty (F.obj j)] : F.sections.Nonempty := by
   let F' : J ⥤ TopCat := F ⋙ TopCat.discrete
   haveI : ∀ j, DiscreteTopology (F'.obj j) := fun _ => ⟨rfl⟩
@@ -77,12 +77,12 @@ theorem nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCa
 
 See `nonempty_sections_of_finite_inverse_system` for a specialization to inverse limits. -/
 theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w} J]
-    [IsCofilteredOrEmpty J] (F : J ⥤ TypeCat.{v}) [∀ j : J, Finite (F.obj j)]
+    [IsCofilteredOrEmpty J] (F : J ⥤ Type v) [∀ j : J, Finite (F.obj j)]
     [∀ j : J, Nonempty (F.obj j)] : F.sections.Nonempty := by
   -- Step 1: lift everything to the `max u v w` universe.
   let J' : Type max w v u := AsSmall.{max w v} J
   let down : J' ⥤ J := AsSmall.down
-  let F' : J' ⥤ TypeCat.{max u v w} := down ⋙ F ⋙ uliftFunctor.{max u w, v}
+  let F' : J' ⥤ Type (max u v w) := down ⋙ F ⋙ uliftFunctor.{max u w, v}
   haveI : ∀ i, Nonempty (F'.obj i) := fun i => ⟨⟨Classical.arbitrary (F.obj (down.obj i))⟩⟩
   haveI : ∀ i, Finite (F'.obj i) := fun i => Finite.of_equiv (F.obj (down.obj i)) Equiv.ulift.symm
   -- Step 2: apply the bootstrap theorem
@@ -109,7 +109,7 @@ To specialize: given a locally finite connected graph, take `Jᵒᵖ` to be `ℕ
 `F j` to be length-`j` paths that start from an arbitrary fixed vertex.
 Elements of `F.sections` can be read off as infinite rays in the graph. -/
 theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirectedOrder J]
-    (F : Jᵒᵖ ⥤ TypeCat.{v}) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
+    (F : Jᵒᵖ ⥤ Type v) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
     F.sections.Nonempty := nonempty_sections_of_finite_cofiltered_system F
 
 end FiniteKonig
@@ -118,7 +118,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {J : Type u} [Category* J] (F : J ⥤ TypeCat.{v}) {i j k : J} (s : Set (F.obj i))
+variable {J : Type u} [Category* J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
 
 /-- The eventual range of the functor `F : J ⥤ Type v` at index `j : J` is the intersection
 of the ranges of all maps `F.map f` with `i : J` and `f : i ⟶ j`. -/
@@ -163,7 +163,7 @@ theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), Func
 
 /-- The subfunctor of `F` obtained by restricting to the preimages of a set `s ∈ F.obj i`. -/
 @[simps obj map]
-def toPreimages : J ⥤ TypeCat.{v} where
+def toPreimages : J ⥤ Type v where
   obj j := (⋂ f : j ⟶ i, F.map f ⁻¹' s)
   map g := TypeCat.ofHom ⟨MapsTo.restrict (F.map g) _ _ fun x h => by
     rw [mem_iInter] at h ⊢
@@ -242,7 +242,7 @@ theorem isMittagLeffler_of_exists_finite_range
 
 /-- The subfunctor of `F` obtained by restricting to the eventual range at each index. -/
 @[simps obj map]
-def toEventualRanges : J ⥤ TypeCat.{v} where
+def toEventualRanges : J ⥤ Type v where
   obj j := (F.eventualRange j)
   map f := TypeCat.ofHom ⟨(F.eventualRange_mapsTo f).restrict _ _ _⟩
 

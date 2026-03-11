@@ -28,10 +28,10 @@ variable {J : Type v} [Category.{w} J]
 
 namespace Functor
 
-instance [Small.{u} J] (F : J ⥤ TypeCat.{u}) : Small.{u} (F.ColimitType) :=
+instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (F.ColimitType) :=
   small_of_surjective Quot.mk_surjective
 
-variable (F : J ⥤ TypeCat.{u})
+variable (F : J ⥤ Type u)
 
 /-- If `F : J ⥤ TypeCat u`, then the data of a "type-theoretic" cocone of `F`
 with a point in `TypeCat u` is the same as the data of a cocone (in a categorical sense). -/
@@ -87,53 +87,53 @@ end Functor
 
 namespace Limits.Types
 
-theorem isColimit_iff_coconeTypesIsColimit {F : J ⥤ TypeCat.{u}} (c : Cocone F) :
+theorem isColimit_iff_coconeTypesIsColimit {F : J ⥤ Type u} (c : Cocone F) :
     Nonempty (IsColimit c) ↔ (F.coconeTypesEquiv.symm c).IsColimit := by
   simp only [Functor.CoconeTypes.isColimit_iff, Equiv.apply_symm_apply]
 
 /-- (internal implementation) the colimit cocone of a functor,
 implemented as a quotient of a sigma type
 -/
-noncomputable abbrev colimitCocone (F : J ⥤ TypeCat.{u}) [Small.{u} F.ColimitType] : Cocone F :=
+noncomputable abbrev colimitCocone (F : J ⥤ Type u) [Small.{u} F.ColimitType] : Cocone F :=
   F.coconeTypesEquiv (F.coconeTypes.postcomp (equivShrink.{u} F.ColimitType))
 
 /-- (internal implementation) the fact that the proposed colimit cocone is the colimit -/
-noncomputable def colimitCoconeIsColimit (F : J ⥤ TypeCat.{u}) [Small.{u} F.ColimitType] :
+noncomputable def colimitCoconeIsColimit (F : J ⥤ Type u) [Small.{u} F.ColimitType] :
     IsColimit (colimitCocone F) :=
   Nonempty.some ((isColimit_iff_coconeTypesIsColimit _).2
     (F.isColimit_coconeTypes.of_equiv (equivShrink.{u} F.ColimitType) (by aesop)))
 
-theorem hasColimit_iff_small_colimitType (F : J ⥤ TypeCat.{u}) :
+theorem hasColimit_iff_small_colimitType (F : J ⥤ Type u) :
     HasColimit F ↔ Small.{u} F.ColimitType :=
   ⟨fun _ ↦ small_of_injective
       ((isColimit_iff_coconeTypesIsColimit _).1 ⟨colimit.isColimit F⟩).bijective.1,
     fun _ ↦ ⟨_, colimitCoconeIsColimit F⟩⟩
 
-theorem small_colimitType_of_hasColimit (F : J ⥤ TypeCat.{u}) [HasColimit F] :
+theorem small_colimitType_of_hasColimit (F : J ⥤ Type u) [HasColimit F] :
     Small.{u} F.ColimitType :=
   (hasColimit_iff_small_colimitType F).mp inferInstance
 
-instance hasColimit [Small.{u} J] (F : J ⥤ TypeCat.{u}) : HasColimit F :=
+instance hasColimit [Small.{u} J] (F : J ⥤ Type u) : HasColimit F :=
   (hasColimit_iff_small_colimitType F).mpr inferInstance
 
-instance hasColimitsOfShape [Small.{u} J] : HasColimitsOfShape J TypeCat.{u} where
+instance hasColimitsOfShape [Small.{u} J] : HasColimitsOfShape J Type u where
 
 /-- The category of types has all colimits. -/
 @[stacks 002U]
 instance (priority := 1300) hasColimitsOfSize [UnivLE.{v, u}] :
-    HasColimitsOfSize.{w, v} TypeCat.{u} where
+    HasColimitsOfSize.{w, v} Type u where
 
 section instances
 
-example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} TypeCat.{max w v} :=
+example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} Type (max w v) :=
   inferInstance
-example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} TypeCat.{max v w} :=
+example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} Type (max v w) :=
   inferInstance
 
-example : HasColimitsOfSize.{0, 0, v, v + 1} TypeCat.{v} := inferInstance
-example : HasColimitsOfSize.{v, v, v, v + 1} TypeCat.{v} := inferInstance
+example : HasColimitsOfSize.{0, 0, v, v + 1} Type v := inferInstance
+example : HasColimitsOfSize.{v, v, v, v + 1} Type v := inferInstance
 
-example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u + 1} TypeCat.{u} := inferInstance
+example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u + 1} Type u := inferInstance
 
 end instances
 
@@ -142,24 +142,24 @@ namespace TypeMax
 /-- (internal implementation) the colimit cocone of a functor,
 implemented as a quotient of a sigma type
 -/
-abbrev colimitCocone (F : J ⥤ TypeCat.{max v u}) : Cocone F :=
+abbrev colimitCocone (F : J ⥤ Type (max v u)) : Cocone F :=
   F.coconeTypesEquiv F.coconeTypes
 
 /-- (internal implementation) the fact that the proposed colimit cocone is the colimit -/
-noncomputable def colimitCoconeIsColimit (F : J ⥤ TypeCat.{max v u}) :
+noncomputable def colimitCoconeIsColimit (F : J ⥤ Type (max v u)) :
     IsColimit (colimitCocone F) :=
   (F.coconeTypes.isColimit_iff.1 F.isColimit_coconeTypes).some
 
 end TypeMax
 
-variable (F : J ⥤ TypeCat.{u}) [HasColimit F]
+variable (F : J ⥤ Type u) [HasColimit F]
 
 attribute [local instance] small_colimitType_of_hasColimit
 
 /-- The equivalence between the abstract colimit of `F` in `TypeCat u`
 and the "concrete" definition as a quotient.
 -/
-noncomputable def colimitEquivColimitType : (colimit F : TypeCat.{u}) ≃ F.ColimitType :=
+noncomputable def colimitEquivColimitType : (colimit F : Type u) ≃ F.ColimitType :=
   (IsColimit.coconePointUniqueUpToIso
     (colimit.isColimit F) (colimitCoconeIsColimit F)).toEquiv.trans (equivShrink _).symm
 
@@ -189,7 +189,7 @@ theorem Colimit.ι_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
   congr_hom (colimit.ι_desc s j) x
 
 @[deprecated colimit.ι_map_apply (since := "2026-03-06")]
-theorem Colimit.ι_map_apply {F G : J ⥤ TypeCat.{u}} [HasColimitsOfShape J TypeCat.{u}]
+theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J Type u]
     (α : F ⟶ G) (j : J) (x : F.obj j) :
     colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
   congr_hom (colimit.ι_map α j) x
@@ -218,7 +218,7 @@ theorem colimit_eq {j j' : J} {x : F.obj j} {x' : F.obj j'}
   apply Quot.eq.1
   simpa using congr_arg (colimitEquivColimitType F) w
 
-theorem jointly_surjective_of_isColimit {F : J ⥤ TypeCat.{u}} {t : Cocone F} (h : IsColimit t)
+theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : IsColimit t)
     (x : t.pt) : ∃ j y, t.ι.app j y = x := by
   by_contra hx
   simp_rw [not_exists] at hx
@@ -235,18 +235,18 @@ theorem jointly_surjective_of_isColimit {F : J ⥤ TypeCat.{u}} {t : Cocone F} (
     dsimp at this
     exact of_eq_true (congrArg ULift.down this).symm rfl
 
-theorem jointly_surjective (F : J ⥤ TypeCat.{u}) {t : Cocone F} (h : IsColimit t) (x : t.pt) :
+theorem jointly_surjective (F : J ⥤ Type u) {t : Cocone F} (h : IsColimit t) (x : t.pt) :
     ∃ j y, t.ι.app j y = x := jointly_surjective_of_isColimit h x
 
 variable {F} in
 /-- A variant of `jointly_surjective` for `x : colimit F`. -/
-theorem jointly_surjective' (x : (colimit F : TypeCat.{u})) :
+theorem jointly_surjective' (x : (colimit F : Type u)) :
     ∃ j y, colimit.ι F j y = x :=
   jointly_surjective F (colimit.isColimit F) x
 
 /-- If a colimit is nonempty, also its index category is nonempty. -/
-theorem nonempty_of_nonempty_colimit {F : J ⥤ TypeCat.{u}} [HasColimit F] :
-    Nonempty (colimit F : TypeCat.{u}) → Nonempty J :=
+theorem nonempty_of_nonempty_colimit {F : J ⥤ Type u} [HasColimit F] :
+    Nonempty (colimit F : Type u) → Nonempty J :=
   Nonempty.map <| Sigma.fst ∘ Quot.out ∘ (colimitEquivColimitType F).toFun
 
 end CategoryTheory.Limits.Types

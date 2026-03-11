@@ -82,7 +82,7 @@ The functor from the category of sets to presheaves on `CompHausLike P` given by
 maps.
 -/
 @[simps obj_obj obj_map map_app]
-def functorToPresheaves : TypeCat.{max u w} ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ TypeCat.{max u w}) where
+def functorToPresheaves : Type (max u w) ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w)) where
   obj X := {
     obj := fun ⟨S⟩ ↦ (LocallyConstant S X)
     map f := TypeCat.ofHom ⟨fun g ↦ g.comap f.unop.hom.hom⟩ }
@@ -123,7 +123,7 @@ noncomputable def sigmaIso [HasExplicitFiniteCoproducts.{u} P] : (finiteCoproduc
   isoOfBijective (ofHom _ (sigmaIsoHom r)) ⟨sigmaIsoHom_inj r, sigmaIsoHom_surj r⟩
 
 lemma sigmaComparison_comp_sigmaIso [HasExplicitFiniteCoproducts.{u} P]
-    (X : (CompHausLike.{u} P)ᵒᵖ ⥤ TypeCat.{max u w}) :
+    (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w)) :
     (X.mapIso (sigmaIso r).op).hom ≫ sigmaComparison X (fun a ↦ (fiber r a).1) ≫
       (TypeCat.ofHom ⟨fun g ↦ g a⟩) = X.map (sigmaIncl r a).op := by
   ext
@@ -134,7 +134,7 @@ lemma sigmaComparison_comp_sigmaIso [HasExplicitFiniteCoproducts.{u} P]
 
 end
 
-variable {S : CompHausLike.{u} P} {Y : (CompHausLike.{u} P)ᵒᵖ ⥤ TypeCat.{max u w}}
+variable {S : CompHausLike.{u} P} {Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w)}
   [HasProp P PUnit.{u + 1}] (f : LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u + 1}))))
 
 /-- The projection of the counit. -/
@@ -149,7 +149,7 @@ the value of `f` on `Sᵢ`. Our desired element is the image of `yᵢ` under the
 `Y(*) → Y(Sᵢ)`.
 -/
 noncomputable def counitAppApp (S : CompHausLike.{u} P)
-    (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ TypeCat.{max u w})
+    (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w))
     [PreservesFiniteProducts Y] [HasExplicitFiniteCoproducts.{u} P] :
     (LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u + 1})))) ⟶ Y.obj ⟨S⟩ :=
   TypeCat.ofHom ⟨fun r ↦ ((inv (sigmaComparison Y (fun a ↦ (fiber r a).1))) ≫
@@ -160,7 +160,7 @@ noncomputable def counitAppApp (S : CompHausLike.{u} P)
 To check equality of two elements of `X(S)`, it suffices to check equality after composing with
 each `X(S) → X(Sᵢ)`.
 -/
-lemma presheaf_ext (X : (CompHausLike.{u} P)ᵒᵖ ⥤ TypeCat.{max u w})
+lemma presheaf_ext (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w))
     [PreservesFiniteProducts X] (x y : X.obj ⟨S⟩)
     [HasExplicitFiniteCoproducts.{u} P]
     (h : ∀ (a : Fiber f), X.map (sigmaIncl f a).op x = X.map (sigmaIncl f a).op y) : x = y := by
@@ -207,7 +207,7 @@ lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
 /-- The counit is natural in `S : CompHausLike P` -/
 @[simps! app]
 noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
-    (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ TypeCat.{max u w}) [PreservesFiniteProducts Y] :
+    (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w)) [PreservesFiniteProducts Y] :
     (functorToPresheaves.obj (Y.obj (op (CompHausLike.of P PUnit.{u + 1})))) ⟶ Y where
   app := fun ⟨S⟩ ↦ counitAppApp S Y
   naturality := by
@@ -229,7 +229,7 @@ variable (P) (X : TopCat.{max u w})
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
 /-- `locallyConstantIsoContinuousMap` is a natural isomorphism. -/
-noncomputable def functorToPresheavesIso (X : TypeCat.{max u w}) :
+noncomputable def functorToPresheavesIso (X : Type (max u w)) :
     functorToPresheaves.{u, w}.obj X ≅ ((TopCat.discrete.obj X).toSheafCompHausLike P hs).obj :=
   NatIso.ofComponents (fun S ↦ locallyConstantIsoContinuousMap _ _)
 
@@ -237,7 +237,7 @@ noncomputable def functorToPresheavesIso (X : TypeCat.{max u w}) :
 @[simps! obj_obj_obj obj_obj_map map_hom_app]
 def functor :
     haveI := CompHausLike.preregular hs
-    TypeCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) TypeCat.{max u w} :=
+    Type (max u w) ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) Type (max u w) :=
   ObjectProperty.lift _ (functorToPresheaves.{u, w}) (fun X ↦ by
     rw [Presheaf.isSheaf_of_iso_iff (functorToPresheavesIso P hs X)]
     exact ((TopCat.discrete.obj X).toSheafCompHausLike P hs).property)
@@ -256,7 +256,7 @@ noncomputable def functorIso :
 @[simps!]
 noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHausLike.preregular hs
     (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ ⋙ functor.{u, w} P hs ⟶
-        𝟭 (Sheaf (coherentTopology (CompHausLike.{u} P)) (TypeCat.{max u w})) where
+        𝟭 (Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w))) where
   app X := haveI := CompHausLike.preregular hs
     (ObjectProperty.homMk) (counitApp X.obj)
   naturality X Y g := by
@@ -307,13 +307,13 @@ def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.o
   app _ := TypeCat.ofHom ⟨fun x ↦ LocallyConstant.const _ x⟩
 
 /-- The unit of the adjunction is an iso. -/
-noncomputable def unitIso : 𝟭 TypeCat.{max u w} ≅ functor.{u, w} P hs ⋙
+noncomputable def unitIso : 𝟭 Type (max u w) ≅ functor.{u, w} P hs ⋙
     (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ where
   hom := unit P hs
   inv := { app _ := TypeCat.ofHom ⟨fun f ↦ f.toFun PUnit.unit⟩ }
 
 lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
-    (X : TypeCat.{max u w}) : functorToPresheaves.{u, w}.map ((unit P hs).app X) ≫
+    (X : Type (max u w)) : functorToPresheaves.{u, w}.map ((unit P hs).app X) ≫
       ((counit P hs).app ((functor P hs).obj X)).hom = 𝟙 (functorToPresheaves.obj X) := by
   ext ⟨S⟩ (f : LocallyConstant _ X)
   simp only [Functor.id_obj, functor_obj_obj_obj, functorToPresheaves_obj_obj, Functor.comp_obj,
@@ -373,7 +373,7 @@ open Condensed CompHausLike
 namespace CondensedSet.LocallyConstant
 
 /-- The functor from sets to condensed sets given by locally constant maps into the set. -/
-abbrev functor : TypeCat.{u + 1} ⥤ CondensedSet.{u} :=
+abbrev functor : Type (u + 1) ⥤ CondensedSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u + 1} (P := fun _ ↦ True)
     (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
@@ -381,7 +381,7 @@ abbrev functor : TypeCat.{u + 1} ⥤ CondensedSet.{u} :=
 `CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`
 (by uniqueness of adjoints).
 -/
-noncomputable def iso : functor ≅ discrete TypeCat.{u + 1} :=
+noncomputable def iso : functor ≅ discrete Type (u + 1) :=
   (LocallyConstant.adjunction _ _).leftAdjointUniq (discreteUnderlyingAdj _)
 
 /-- `CondensedSet.LocallyConstant.functor` is fully faithful. -/
@@ -401,7 +401,7 @@ end CondensedSet.LocallyConstant
 namespace LightCondSet.LocallyConstant
 
 /-- The functor from sets to light condensed sets given by locally constant maps into the set. -/
-abbrev functor : TypeCat.{u} ⥤ LightCondSet.{u} :=
+abbrev functor : Type u ⥤ LightCondSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u}
     (P := fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X)
     (hs := fun _ _ _ ↦ (LightProfinite.effectiveEpi_iff_surjective _).mp)
@@ -415,7 +415,7 @@ instance (S : LightProfinite.{u}) (p : S → Prop) :
 `LightCondSet.LocallyConstant.functor` is isomorphic to `LightCondensed.discrete`
 (by uniqueness of adjoints).
 -/
-noncomputable def iso : functor ≅ LightCondensed.discrete TypeCat.{u} :=
+noncomputable def iso : functor ≅ LightCondensed.discrete Type u :=
   (LocallyConstant.adjunction _ _).leftAdjointUniq (LightCondensed.discreteUnderlyingAdj _)
 
 /-- `LightCondSet.LocallyConstant.functor` is fully faithful. -/
@@ -426,9 +426,9 @@ instance : functor.{u}.Faithful := functorFullyFaithful.faithful
 
 instance : LightCondSet.LocallyConstant.functor.Full := functorFullyFaithful.full
 
-instance : (LightCondensed.discrete TypeCat.{u}).Faithful := Functor.Faithful.of_iso iso.{u}
+instance : (LightCondensed.discrete Type u).Faithful := Functor.Faithful.of_iso iso.{u}
 
-instance : (LightCondensed.discrete TypeCat.{u}).Full := Functor.Full.of_iso iso.{u}
+instance : (LightCondensed.discrete Type u).Full := Functor.Full.of_iso iso.{u}
 
 end LightCondSet.LocallyConstant
 

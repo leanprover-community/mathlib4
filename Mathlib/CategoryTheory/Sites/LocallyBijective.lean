@@ -36,7 +36,7 @@ namespace Sheaf
 
 section
 
-variable {F G : Sheaf J TypeCat.{w}} (f : F ⟶ G)
+variable {F G : Sheaf J Type w} (f : F ⟶ G)
 
 /-- A morphism of sheaves of types is locally bijective iff it is an isomorphism.
 (This is generalized below as `isLocallyBijective_iff_isIso`.) -/
@@ -157,7 +157,7 @@ instance {D : Type w} [Category.{w'} D] {FD : D → D → Type*} {CD : D → Typ
     J.WEqualsLocallyBijective D := by
   apply WEqualsLocallyBijective.mk'
 
-instance : J.WEqualsLocallyBijective TypeCat.{max u v} :=
+instance : J.WEqualsLocallyBijective Type (max u v) :=
   inferInstance
 
 end GrothendieckTopology

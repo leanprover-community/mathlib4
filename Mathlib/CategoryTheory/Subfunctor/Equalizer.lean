@@ -24,7 +24,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] {F₁ F₂ : C ⥤ TypeCat.{w}} {A : Subfunctor F₁}
+variable {C : Type u} [Category.{v} C] {F₁ F₂ : C ⥤ Type w} {A : Subfunctor F₁}
   (f g : A.toFunctor ⟶ F₂)
 
 namespace Subfunctor
@@ -53,7 +53,7 @@ lemma mem_equalizer_iff {i : C} (x : A.toFunctor.obj i) :
   simp
 
 set_option backward.isDefEq.respectTransparency false in
-lemma range_le_equalizer_iff {G : C ⥤ TypeCat.{w}} (φ : G ⟶ A.toFunctor) :
+lemma range_le_equalizer_iff {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor) :
     range (φ ≫ A.ι) ≤ Subfunctor.equalizer f g ↔ φ ≫ f = φ ≫ g := by
   rw [NatTrans.ext_iff]
   simp [le_def, Set.subset_def, ConcreteCategory.hom_ext_iff, funext_iff]
@@ -90,19 +90,19 @@ is such that `φ ≫ f = φ ≫ g`, then this is the lifted morphism
 `G ⟶ (Subfunctor.equalizer f g).toFunctor`. This is part of the universal
 property of the equalizer that is satisfied by
 the functor `(Subfunctor.equalizer f g).toFunctor`. -/
-def equalizer.lift {G : C ⥤ TypeCat.{w}} (φ : G ⟶ A.toFunctor)
+def equalizer.lift {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor)
     (w : φ ≫ f = φ ≫ g) :
     G ⟶ (Subfunctor.equalizer f g).toFunctor :=
   Subfunctor.lift (φ ≫ A.ι) (by simpa only [range_le_equalizer_iff] using w)
 
 @[reassoc (attr := simp)]
-lemma equalizer.lift_ι' {G : C ⥤ TypeCat.{w}} (φ : G ⟶ A.toFunctor)
+lemma equalizer.lift_ι' {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor)
     (w : φ ≫ f = φ ≫ g) :
     equalizer.lift f g φ w ≫ (Subfunctor.equalizer f g).ι = φ ≫ A.ι :=
   rfl
 
 @[reassoc (attr := simp)]
-lemma equalizer.lift_ι {G : C ⥤ TypeCat.{w}} (φ : G ⟶ A.toFunctor)
+lemma equalizer.lift_ι {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor)
     (w : φ ≫ f = φ ≫ g) :
     equalizer.lift f g φ w ≫ equalizer.ι f g = φ :=
   rfl

@@ -21,7 +21,7 @@ universe v
 
 namespace CategoryTheory.Limits
 
-instance : AB5 TypeCat.{v} where
+instance : AB5 Type v where
   ofShape _ _ _ := ⟨inferInstance⟩
 
 end CategoryTheory.Limits

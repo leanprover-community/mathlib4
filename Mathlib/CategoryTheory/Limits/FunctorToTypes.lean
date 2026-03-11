@@ -24,7 +24,7 @@ open CategoryTheory.Limits
 universe w v₁ v₂ u₁ u₂
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
-variable (F : J ⥤ K ⥤ TypeCat.{w})
+variable (F : J ⥤ K ⥤ Type w)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem jointly_surjective (k : K) {t : Cocone F} (h : IsColimit t) (x : t.pt.obj k)

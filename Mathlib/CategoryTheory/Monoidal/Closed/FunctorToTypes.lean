@@ -30,17 +30,17 @@ namespace CategoryTheory.FunctorToTypes
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-variable (F : C ⥤ TypeCat.{max w v u})
+variable (F : C ⥤ Type (max w v u))
 
 /-- When `F G H : C ⥤ Type max w v u`, we have `(G ⟶ F.functorHom H) ≃ (F ⊗ G ⟶ H)`. -/
 @[simps! apply_app symm_apply_app]
-def functorHomEquiv (G H : C ⥤ TypeCat.{max w v u}) : (G ⟶ F.functorHom H) ≃ (F ⊗ G ⟶ H) :=
+def functorHomEquiv (G H : C ⥤ Type (max w v u)) : (G ⟶ F.functorHom H) ≃ (F ⊗ G ⟶ H) :=
   (Functor.functorHomEquiv F H G).trans (homObjEquiv F H G)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A right adjoint of `tensorLeft F`. -/
 @[simps! obj_obj obj_map map_app]
-def rightAdj : (C ⥤ TypeCat.{max w v u}) ⥤ C ⥤ TypeCat.{max w v u} where
+def rightAdj : (C ⥤ Type (max w v u)) ⥤ C ⥤ Type (max w v u) where
   obj G := F.functorHom G
   map f := { app X := TypeCat.ofHom ⟨fun a ↦ {
     app d b := a.app d b ≫ f.app d
@@ -67,6 +67,6 @@ instance closed : Closed F where
   rightAdj := rightAdj F
   adj := adj F
 
-instance monoidalClosed : MonoidalClosed (C ⥤ TypeCat.{max w v u}) where
+instance monoidalClosed : MonoidalClosed (C ⥤ Type (max w v u)) where
 
 end CategoryTheory.FunctorToTypes

@@ -26,7 +26,7 @@ namespace CategoryTheory
 
 open Opposite
 
-variable {C : Type u} [Category.{v} C] {F : Cᵒᵖ ⥤ TypeCat.{w}}
+variable {C : Type u} [Category.{v} C] {F : Cᵒᵖ ⥤ Type w}
 
 namespace Subfunctor
 
@@ -62,7 +62,7 @@ lemma of_equiv {ι' : Type w''} (e : ι' ≃ ι) :
   rw [isGeneratedBy_iff, ← h.iSup_eq]
   exact Equiv.iSup_congr e (congrFun rfl)
 
-lemma image {F' : Cᵒᵖ ⥤ TypeCat.{w}} (f : F ⟶ F') :
+lemma image {F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F') :
     (G.image f).IsGeneratedBy (fun i ↦ f.app _ (x i)) := by
   simp only [isGeneratedBy_iff, ← h.iSup_eq, image_iSup, ofSection_image]
 
@@ -108,7 +108,7 @@ lemma IsGeneratedBy.isFinite
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
   exact ⟨Fin n, inferInstance, _, _, ⟨h.of_equiv e.symm⟩⟩
 
-lemma image_isFinite [G.IsFinite] {F' : Cᵒᵖ ⥤ TypeCat.{w}} (f : F ⟶ F') :
+lemma image_isFinite [G.IsFinite] {F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F') :
     (G.image f).IsFinite :=
   ((isGeneratedBy_of_isFinite G).image f).isFinite
 
@@ -146,7 +146,7 @@ abbrev PresheafIsGeneratedBy : Prop := (⊤ : Subfunctor F).IsGeneratedBy x
 
 namespace PresheafIsGeneratedBy
 
-variable {F x} (h : PresheafIsGeneratedBy F x) {F' : Cᵒᵖ ⥤ TypeCat.{w}} (f : F ⟶ F')
+variable {F x} (h : PresheafIsGeneratedBy F x) {F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F')
 
 include h
 
@@ -167,11 +167,11 @@ lemma presheafIsGeneratedBy_of_isFinite [PresheafIsFinite F] :
     PresheafIsGeneratedBy F (Subfunctor.IsFinite.x (G := ⊤)) :=
   (Subfunctor.isGeneratedBy_of_isFinite (⊤ : Subfunctor F))
 
-lemma Subfunctor.range_isFinite [PresheafIsFinite F] {F' : Cᵒᵖ ⥤ TypeCat.{w}} (f : F ⟶ F') :
+lemma Subfunctor.range_isFinite [PresheafIsFinite F] {F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F') :
     (Subfunctor.range f).IsFinite :=
   ((presheafIsGeneratedBy_of_isFinite F).range f).isFinite
 
-lemma presheafIsFinite_of_epi [PresheafIsFinite F] {F' : Cᵒᵖ ⥤ TypeCat.{w}} (f : F ⟶ F') [Epi f] :
+lemma presheafIsFinite_of_epi [PresheafIsFinite F] {F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F') [Epi f] :
     PresheafIsFinite F' :=
   ((presheafIsGeneratedBy_of_isFinite F).of_epi f).isFinite
 

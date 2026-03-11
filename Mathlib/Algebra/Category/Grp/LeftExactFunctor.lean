@@ -55,20 +55,20 @@ set_option backward.privateInPublic true in
 private noncomputable local instance : BraidedCategory C := .ofCartesianMonoidalCategory
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
-noncomputable def inverseAux : (C ⥤ₗ TypeCat.{v}) ⥤ C ⥤ AddCommGrpCat.{v} :=
+noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrpCat.{v} :=
   Functor.mapCommGrpFunctor ⋙
     (Functor.whiskeringLeft _ _ _).obj Preadditive.commGrpEquivalence.functor ⋙
       (Functor.whiskeringRight _ _ _).obj
         (commGrpTypeEquivalenceCommGrp.functor ⋙ commGroupAddCommGroupEquivalence.functor)
 
-instance (F : C ⥤ₗ TypeCat.{v}) : PreservesFiniteLimits (inverseAux.obj F) where
+instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
   preservesFiniteLimits J _ _ :=
     have : PreservesLimitsOfShape J (inverseAux.obj F ⋙ forget AddCommGrpCat) :=
       inferInstanceAs (PreservesLimitsOfShape J F.1)
     preservesLimitsOfShape_of_reflects_of_preserves _ (forget AddCommGrpCat)
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
-noncomputable def inverse : (C ⥤ₗ TypeCat.{v}) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :=
+noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :=
   ObjectProperty.lift _ inverseAux (by simp only [leftExactFunctor_iff]; infer_instance)
 
 open scoped MonObj
@@ -117,7 +117,7 @@ variable (C) in
 /-- If `C` is an additive category, the forgetful functor `(C ⥤ₗ AddCommGroup) ⥤ (C ⥤ₗ Type v)` is
 an equivalence. -/
 noncomputable def leftExactFunctorForgetEquivalence :
-    (C ⥤ₗ AddCommGrpCat.{v}) ≌ (C ⥤ₗ TypeCat.{v}) where
+    (C ⥤ₗ AddCommGrpCat.{v}) ≌ (C ⥤ₗ Type v) where
   functor := (LeftExactFunctor.whiskeringRight _ _ _).obj (LeftExactFunctor.of (forget _))
   inverse := leftExactFunctorForgetEquivalence.inverse
   unitIso := leftExactFunctorForgetEquivalence.unitIso

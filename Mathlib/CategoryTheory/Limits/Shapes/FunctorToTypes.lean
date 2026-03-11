@@ -28,13 +28,13 @@ universe w v u
 namespace CategoryTheory.FunctorToTypes
 
 variable {C : Type u} [Category.{v} C]
-variable (F G : C ⥤ TypeCat.{w})
+variable (F G : C ⥤ Type w)
 
 section prod
 
 /-- `prod F G` is the explicit binary product of type-valued functors `F` and `G`. -/
 @[simps obj map]
-def prod : C ⥤ TypeCat.{w} where
+def prod : C ⥤ Type w where
   obj a := <| F.obj a × G.obj a
   map f := TypeCat.ofHom ⟨fun a ↦ (F.map f a.1, G.map f a.2)⟩
 
@@ -53,16 +53,16 @@ def prod.snd : prod F G ⟶ G where
 /-- Given natural transformations `F ⟶ F₁` and `F ⟶ F₂`, construct
 a natural transformation `F ⟶ prod F₁ F₂`. -/
 @[simps]
-def prod.lift {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
+def prod.lift {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     F ⟶ prod F₁ F₂ where
   app x := TypeCat.ofHom ⟨fun y ↦ ⟨τ₁.app x y, τ₂.app x y⟩⟩
 
 @[simp]
-lemma prod.lift_fst {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
+lemma prod.lift_fst {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     prod.lift τ₁ τ₂ ≫ prod.fst = τ₁ := rfl
 
 @[simp]
-lemma prod.lift_snd {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
+lemma prod.lift_snd {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     prod.lift τ₁ τ₂ ≫ prod.snd = τ₂ := rfl
 
 variable (F G)
@@ -166,7 +166,7 @@ section coprod
 
 /-- `coprod F G` is the explicit binary coproduct of type-valued functors `F` and `G`. -/
 @[simps obj map]
-def coprod : C ⥤ TypeCat.{w} where
+def coprod : C ⥤ Type w where
   obj a := <| F.obj a ⊕ G.obj a
   map f := TypeCat.ofHom ⟨Sum.map (F.map f) (G.map f)⟩
   map_id _ := by ext ⟨⟩<;> simp
@@ -187,17 +187,17 @@ def coprod.inr : G ⟶ coprod F G where
 /-- Given natural transformations `F₁ ⟶ F` and `F₂ ⟶ F`, construct
 a natural transformation `coprod F₁ F₂ ⟶ F`. -/
 @[simps]
-def coprod.desc {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
+def coprod.desc {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
     coprod F₁ F₂ ⟶ F where
   app a := TypeCat.ofHom ⟨Sum.elim (τ₁.app a) (τ₂.app a)⟩
   naturality _ _ _ := by ext ⟨⟩<;> simp
 
 @[simp]
-lemma coprod.desc_inl {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
+lemma coprod.desc_inl {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
     coprod.inl ≫ coprod.desc τ₁ τ₂ = τ₁ := rfl
 
 @[simp]
-lemma coprod.desc_inr {F₁ F₂ : C ⥤ TypeCat.{w}} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
+lemma coprod.desc_inr {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
     coprod.inr ≫ coprod.desc τ₁ τ₂ = τ₂ := rfl
 
 variable (F G)

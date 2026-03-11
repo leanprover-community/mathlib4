@@ -731,7 +731,7 @@ instance (priority := 100) hasCoproductsOfShape_of_hasCoproducts [HasCoproducts.
 open Opposite in
 /-- The functor sending `(X, n)` to the product of copies of `X` indexed by `n`. -/
 @[simps]
-def piConst [Limits.HasProducts.{w} C] : C ⥤ TypeCat.{w}ᵒᵖ ⥤ C where
+def piConst [Limits.HasProducts.{w} C] : C ⥤ Type wᵒᵖ ⥤ C where
   obj X := { obj n := ∏ᶜ fun _ : (unop n :) ↦ X, map f := Limits.Pi.map' f.unop fun _ ↦ 𝟙 _ }
   map f := { app n := Limits.Pi.map fun _ ↦ f }
 
@@ -747,7 +747,7 @@ def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
 
 /-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
 @[simps]
-def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ TypeCat.{w} ⥤ C where
+def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ Type w ⥤ C where
   obj X := { obj n := ∐ fun _ : n ↦ X, map f := Limits.Sigma.map' f fun _ ↦ 𝟙 _ }
   map f := { app n := Limits.Sigma.map fun _ ↦ f }
 
@@ -956,7 +956,7 @@ end Fubini
 the product of copies of `X` indexed by `α`. -/
 @[simps]
 def piFunctor [HasProducts.{w} C] :
-    C ⥤ TypeCat.{w}ᵒᵖ ⥤ C where
+    C ⥤ Type wᵒᵖ ⥤ C where
   obj X :=
     { obj α := ∏ᶜ (fun (t : α.unop) ↦ X)
       map f := Pi.map' f.unop (fun _ ↦ 𝟙 _) }
@@ -966,7 +966,7 @@ def piFunctor [HasProducts.{w} C] :
 the coproduct of copies of `X` indexed by `α`. -/
 @[simps]
 def sigmaFunctor [HasCoproducts.{w} C] :
-    C ⥤ TypeCat.{w} ⥤ C where
+    C ⥤ Type w ⥤ C where
   obj X :=
     { obj α := ∐ (fun (t : α) ↦ X)
       map f := Sigma.map' f (fun _ ↦ 𝟙 _) }

@@ -28,9 +28,9 @@ namespace CategoryTheory
 
 namespace Limits
 
-variable {C : Type u} (F : C → TypeCat.{v})
+variable {C : Type u} (F : C → Type v)
 
-/-- Given a functor `F : Discrete C ⥤ TypeCat.{v}`, this is a "cofan" for `F`,
+/-- Given a functor `F : Discrete C ⥤ Type v`, this is a "cofan" for `F`,
 but we allow the point to be in `Type w` for an arbitrary universe `w`. -/
 abbrev CofanTypes := Functor.CoconeTypes.{w} (Discrete.functor F)
 
@@ -139,7 +139,7 @@ end CofanTypes
 
 namespace Cofan
 
-variable {C : Type u} {F : C → TypeCat.{v}} (c : Cofan F)
+variable {C : Type u} {F : C → Type v} (c : Cofan F)
 
 /-- If `F : C → Type v`, then the data of a "type-theoretic" cofan of `F`
 with a point in `Type v` is the same as the data of a cocone (in a categorical sense). -/
@@ -182,7 +182,7 @@ end Cofan
 namespace Types
 
 /-- The category of types has `PEmpty` as an initial object. -/
-def initialColimitCocone : Limits.ColimitCocone (Functor.empty (TypeCat.{u})) where
+def initialColimitCocone : Limits.ColimitCocone (Functor.empty (Type u)) where
   -- Porting note: tidy was able to fill the structure automatically
   cocone :=
     { pt := PEmpty
@@ -193,17 +193,17 @@ def initialColimitCocone : Limits.ColimitCocone (Functor.empty (TypeCat.{u})) wh
       uniq := fun _ _ _ => by ext x; cases x }
 
 /-- The initial object in `Type u` is `PEmpty`. -/
-noncomputable def initialIso : ⊥_ TypeCat.{u} ≅ PEmpty :=
+noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
   colimit.isoColimitCocone initialColimitCocone.{u, 0}
 
 /-- The initial object in `Type u` is `PEmpty`. -/
-noncomputable def isInitialPEmpty : IsInitial (PEmpty : TypeCat.{u}) :=
+noncomputable def isInitialPEmpty : IsInitial (PEmpty : Type u) :=
   initialIsInitial.ofIso initialIso
 
 @[deprecated (since := "2026-02-08")] alias isInitialPunit := isInitialPEmpty
 
 /-- An object in `Type u` is initial if and only if it is empty. -/
-lemma initial_iff_empty (X : TypeCat.{u}) : Nonempty (IsInitial X) ↔ IsEmpty X := by
+lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := by
   constructor
   · intro ⟨h⟩
     exact Function.isEmpty (IsInitial.to h (PEmpty))
@@ -213,14 +213,14 @@ lemma initial_iff_empty (X : TypeCat.{u}) : Nonempty (IsInitial X) ↔ IsEmpty X
 
 /-- The sum type `X ⊕ Y` forms a cocone for the binary coproduct of `X` and `Y`. -/
 @[simps!]
-def binaryCoproductCocone (X Y : TypeCat.{u}) : Cocone (pair X Y) :=
+def binaryCoproductCocone (X Y : Type u) : Cocone (pair X Y) :=
   BinaryCofan.mk (TypeCat.ofHom ⟨Sum.inl⟩) (TypeCat.ofHom ⟨Sum.inr⟩)
 
 open CategoryTheory.Limits.WalkingPair
 
 /-- The sum type `X ⊕ Y` is a binary coproduct for `X` and `Y`. -/
 @[simps]
-def binaryCoproductColimit (X Y : TypeCat.{u}) : IsColimit (binaryCoproductCocone X Y) where
+def binaryCoproductColimit (X Y : Type u) : IsColimit (binaryCoproductCocone X Y) where
   desc := fun s : BinaryCofan X Y => TypeCat.ofHom ⟨Sum.elim s.inl s.inr⟩
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq _ _ w := by
@@ -230,39 +230,39 @@ def binaryCoproductColimit (X Y : TypeCat.{u}) : IsColimit (binaryCoproductCocon
 /-- The category of types has `X ⊕ Y`,
 as the binary coproduct of `X` and `Y`.
 -/
-def binaryCoproductColimitCocone (X Y : TypeCat.{u}) : Limits.ColimitCocone (pair X Y) :=
+def binaryCoproductColimitCocone (X Y : Type u) : Limits.ColimitCocone (pair X Y) :=
   ⟨_, binaryCoproductColimit X Y⟩
 
 /-- The categorical binary coproduct in `Type u` is the sum `X ⊕ Y`. -/
-noncomputable def binaryCoproductIso (X Y : TypeCat.{u}) : Limits.coprod X Y ≅ (X ⊕ Y) :=
+noncomputable def binaryCoproductIso (X Y : Type u) : Limits.coprod X Y ≅ (X ⊕ Y) :=
   colimit.isoColimitCocone (binaryCoproductColimitCocone X Y)
 
 --open CategoryTheory.Type
 
 @[elementwise (attr := simp)]
-theorem binaryCoproductIso_inl_comp_hom (X Y : TypeCat.{u}) :
+theorem binaryCoproductIso_inl_comp_hom (X Y : Type u) :
     Limits.coprod.inl ≫ (binaryCoproductIso X Y).hom = TypeCat.ofHom ⟨Sum.inl⟩ :=
   colimit.isoColimitCocone_ι_hom (binaryCoproductColimitCocone X Y) ⟨WalkingPair.left⟩
 
 @[elementwise (attr := simp)]
-theorem binaryCoproductIso_inr_comp_hom (X Y : TypeCat.{u}) :
+theorem binaryCoproductIso_inr_comp_hom (X Y : Type u) :
     Limits.coprod.inr ≫ (binaryCoproductIso X Y).hom = TypeCat.ofHom ⟨Sum.inr⟩ :=
   colimit.isoColimitCocone_ι_hom (binaryCoproductColimitCocone X Y) ⟨WalkingPair.right⟩
 
 @[elementwise (attr := simp)]
-theorem binaryCoproductIso_inl_comp_inv (X Y : TypeCat.{u}) :
+theorem binaryCoproductIso_inl_comp_inv (X Y : Type u) :
     TypeCat.ofHom ⟨Sum.inl⟩ ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inl :=
   colimit.isoColimitCocone_ι_inv (binaryCoproductColimitCocone X Y) ⟨WalkingPair.left⟩
 
 @[elementwise (attr := simp)]
-theorem binaryCoproductIso_inr_comp_inv (X Y : TypeCat.{u}) :
+theorem binaryCoproductIso_inr_comp_inv (X Y : Type u) :
     TypeCat.ofHom ⟨Sum.inr⟩ ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inr :=
   colimit.isoColimitCocone_ι_inv (binaryCoproductColimitCocone X Y) ⟨WalkingPair.right⟩
 
 open Function (Injective)
 
 set_option backward.isDefEq.respectTransparency false in
-theorem binaryCofan_isColimit_iff {X Y : TypeCat.{u}} (c : BinaryCofan X Y) :
+theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
       Injective c.inl ∧ Injective c.inr ∧ IsCompl (Set.range c.inl) (Set.range c.inr) := by
   classical
@@ -311,7 +311,7 @@ theorem binaryCofan_isColimit_iff {X Y : TypeCat.{u}} (c : BinaryCofan X Y) :
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 
 /-- Any monomorphism in `Type` is a coproduct injection. -/
-noncomputable def isCoprodOfMono {X Y : TypeCat.{u}} (f : X ⟶ Y) [Mono f] :
+noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
     IsColimit (BinaryCofan.mk f (TypeCat.ofHom ⟨(Subtype.val : ↑(Set.range f)ᶜ → Y)⟩)) := by
   apply Nonempty.some
   rw [binaryCofan_isColimit_iff]
@@ -322,7 +322,7 @@ noncomputable def isCoprodOfMono {X Y : TypeCat.{u}} (f : X ⟶ Y) [Mono f] :
 
 /-- The category of types has `Σ j, f j` as the coproduct of a type family `f : J → Type`.
 -/
-def coproductColimitCocone {J : Type v} (F : J → TypeCat.{max v u}) :
+def coproductColimitCocone {J : Type v} (F : J → Type (max v u)) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
     { pt := (Σ j, F j)
@@ -334,17 +334,17 @@ def coproductColimitCocone {J : Type v} (F : J → TypeCat.{max v u}) :
         exact ConcreteCategory.congr_hom (w ⟨j⟩) x }
 
 /-- The categorical coproduct in `Type u` is the type-theoretic coproduct `Σ j, F j`. -/
-noncomputable def coproductIso {J : Type v} (F : J → TypeCat.{max v u}) :
+noncomputable def coproductIso {J : Type v} (F : J → Type (max v u)) :
     ∐ F ≅ (Σ j, F j) :=
   colimit.isoColimitCocone (coproductColimitCocone F)
 
 @[elementwise (attr := simp)]
-theorem coproductIso_ι_comp_hom {J : Type v} (F : J → TypeCat.{max v u}) (j : J) :
+theorem coproductIso_ι_comp_hom {J : Type v} (F : J → Type (max v u)) (j : J) :
     Sigma.ι F j ≫ (coproductIso F).hom = TypeCat.ofHom ⟨fun x => ⟨j, x⟩⟩ :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 
 @[elementwise (attr := simp)]
-theorem coproductIso_mk_comp_inv {J : Type v} (F : J → TypeCat.{max v u}) (j : J) :
+theorem coproductIso_mk_comp_inv {J : Type v} (F : J → Type (max v u)) (j : J) :
     TypeCat.ofHom ⟨fun x => ⟨j, x⟩⟩ ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
 

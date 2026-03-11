@@ -34,7 +34,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 /-- Structure containing data exhibiting two parallel natural transformations `f` and `g` between
 presheaves `A` and `B` as induced by a natural transformation in a functor category exhibiting
 `A` and `B` as ind-objects. -/
-structure IndParallelPairPresentation {A B : Cᵒᵖ ⥤ TypeCat.{v₁}} (f g : A ⟶ B) where
+structure IndParallelPairPresentation {A B : Cᵒᵖ ⥤ Type v₁} (f g : A ⟶ B) where
   /-- The indexing category. -/
   I : Type v₁
   /-- Category instance on the indexing category. -/
@@ -61,14 +61,14 @@ structure IndParallelPairPresentation {A B : Cᵒᵖ ⥤ TypeCat.{v₁}} (f g : 
   /-- `g` is in fact presented by `ψ`. -/
   hg : g = IsColimit.map isColimit₁ (Cocone.mk B ι₂) (whiskerRight ψ yoneda)
 
-instance {A B : Cᵒᵖ ⥤ TypeCat.{v₁}} {f g : A ⟶ B} (P : IndParallelPairPresentation f g) :
+instance {A B : Cᵒᵖ ⥤ Type v₁} {f g : A ⟶ B} (P : IndParallelPairPresentation f g) :
     SmallCategory P.I := P.ℐ
-instance {A B : Cᵒᵖ ⥤ TypeCat.{v₁}} {f g : A ⟶ B} (P : IndParallelPairPresentation f g) :
+instance {A B : Cᵒᵖ ⥤ Type v₁} {f g : A ⟶ B} (P : IndParallelPairPresentation f g) :
     IsFiltered P.I := P.hI
 
 namespace NonemptyParallelPairPresentationAux
 
-variable {A B : Cᵒᵖ ⥤ TypeCat.{v₁}} (f g : A ⟶ B) (P₁ : IndObjectPresentation A)
+variable {A B : Cᵒᵖ ⥤ Type v₁} (f g : A ⟶ B) (P₁ : IndObjectPresentation A)
   (P₂ : IndObjectPresentation B)
 
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/
@@ -149,7 +149,7 @@ noncomputable def presentation : IndParallelPairPresentation f g where
 
 end NonemptyParallelPairPresentationAux
 
-theorem nonempty_indParallelPairPresentation {A B : Cᵒᵖ ⥤ TypeCat.{v₁}} (hA : IsIndObject A)
+theorem nonempty_indParallelPairPresentation {A B : Cᵒᵖ ⥤ Type v₁} (hA : IsIndObject A)
     (hB : IsIndObject B) (f g : A ⟶ B) : Nonempty (IndParallelPairPresentation f g) :=
   ⟨NonemptyParallelPairPresentationAux.presentation f g hA.presentation hB.presentation⟩
 
@@ -158,7 +158,7 @@ namespace IndParallelPairPresentation
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an `IndParallelPairPresentation f g`, we can understand the parallel pair `(f, g)`
 as the colimit of `(P.φ, P.ψ)` in `Cᵒᵖ ⥤ Type v`. -/
-noncomputable def parallelPairIsoParallelPairCompYoneda {A B : Cᵒᵖ ⥤ TypeCat.{v₁}} {f g : A ⟶ B}
+noncomputable def parallelPairIsoParallelPairCompYoneda {A B : Cᵒᵖ ⥤ Type v₁} {f g : A ⟶ B}
     (P : IndParallelPairPresentation f g) :
     parallelPair f g ≅ parallelPair P.φ P.ψ ⋙ (whiskeringRight _ _ _).obj yoneda ⋙ colim :=
   parallelPair.ext

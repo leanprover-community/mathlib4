@@ -106,7 +106,7 @@ end Pointed
 
 /-- `Option` as a functor from types to pointed types. This is the free functor. -/
 @[simps]
-def typeToPointed : TypeCat.{u} ⥤ Pointed.{u} where
+def typeToPointed : Type u ⥤ Pointed.{u} where
   obj X := ⟨Option X, none⟩
   map f := ⟨Option.map f, rfl⟩
   map_id _ := Pointed.Hom.ext Option.map_id

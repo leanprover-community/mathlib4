@@ -325,7 +325,7 @@ category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
 
 This is implemented as a special case of the more general notion of `P.relative`, to the case when
 the functor `F` is `yoneda`. -/
-abbrev presheaf : MorphismProperty (Cᵒᵖ ⥤ TypeCat.{v₁}) := P.relative yoneda
+abbrev presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v₁) := P.relative yoneda
 
 variable {P} {F}
 
@@ -436,7 +436,7 @@ lemma presheaf_monomorphisms_le_monomorphisms :
   have : Mono (hf.rep.snd (a ≫ f)) := hf.property_snd (a ≫ f)
   simp only [← cancel_mono (hf.rep.snd (a ≫ f)), lift_snd]
 
-variable {G : Cᵒᵖ ⥤ TypeCat.{v₁}}
+variable {G : Cᵒᵖ ⥤ Type v₁}
 
 lemma presheaf_mono_of_le (hP : P ≤ MorphismProperty.monomorphisms C)
     {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : Mono f :=

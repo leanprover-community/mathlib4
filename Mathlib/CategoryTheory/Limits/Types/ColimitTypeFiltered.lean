@@ -34,7 +34,7 @@ variable {J : Type u} [Category.{v} J] [IsFiltered J]
 
 namespace Functor
 
-variable (F : J ⥤ TypeCat.{w₀})
+variable (F : J ⥤ Type w₀)
 
 lemma eqvGen_colimitTypeRel_iff_of_isFiltered
     (x y : (j : J) × (F.obj j)) :

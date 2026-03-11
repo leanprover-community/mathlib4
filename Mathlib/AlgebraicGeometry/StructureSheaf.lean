@@ -168,7 +168,7 @@ open StructureSheaf
 variable (R M) in
 /-- The structure sheaf (valued in `Type`, not yet `CommRingCat`) is the subsheaf consisting of
 functions satisfying `isLocallyFraction`. -/
-def structureSheafInType : Sheaf TypeCat.{u} (PrimeSpectrum.Top R) :=
+def structureSheafInType : Sheaf Type u (PrimeSpectrum.Top R) :=
   subsheafToTypes (isLocallyFraction R M)
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :

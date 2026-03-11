@@ -29,7 +29,7 @@ namespace Subfunctor
 
 section
 
-variable {F : Cᵒᵖ ⥤ TypeCat.{w}} {X : Cᵒᵖ} (x : F.obj X)
+variable {F : Cᵒᵖ ⥤ Type w} {X : Cᵒᵖ} (x : F.obj X)
 
 /-- The subpresheaf of `F : Cᵒᵖ ⥤ Type w` that is generated
 by a section `x : F.obj X`. -/
@@ -52,7 +52,7 @@ lemma ofSection_le_iff (G : Subfunctor F) :
     exact G.map f hx
 
 @[simp]
-lemma ofSection_image {F' : Cᵒᵖ ⥤ TypeCat.{w}} (f : F ⟶ F') :
+lemma ofSection_image {F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F') :
     (ofSection x).image f = ofSection (f.app _ x) := by
   apply le_antisymm
   · rw [image_le_iff, ofSection_le_iff, preimage_obj, Set.mem_preimage]
@@ -64,7 +64,7 @@ end
 
 section
 
-variable {F : Cᵒᵖ ⥤ TypeCat.{v}}
+variable {F : Cᵒᵖ ⥤ Type v}
 
 lemma ofSection_eq_range {X : Cᵒᵖ} (x : F.obj X) :
     ofSection x = range (yonedaEquiv.symm x) := by
@@ -85,7 +85,7 @@ end
 
 section
 
-variable {F : Cᵒᵖ ⥤ TypeCat.{max v w}}
+variable {F : Cᵒᵖ ⥤ Type (max v w)}
 
 lemma ofSection_eq_range' {X : Cᵒᵖ} (x : F.obj X) :
     ofSection x = range (uliftYonedaEquiv.symm x) := by

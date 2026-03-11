@@ -78,7 +78,7 @@ open Opposite CategoryTheory Category Limits Sieve
 namespace Presieve
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {P Q U : Cᵒᵖ ⥤ TypeCat.{w}}
+variable {P Q U : Cᵒᵖ ⥤ Type w}
 variable {X Y : C} {S : Sieve X} {R : Presieve X}
 
 /-- A family of elements for a presheaf `P` given a collection of arrows `R` with fixed codomain `X`
@@ -91,7 +91,7 @@ version of the elements of the middle object in the Stacks entry which is
 more useful for direct calculations. It is also used implicitly in Definition C2.1.2 in [Elephant].
 -/
 @[stacks 00VM "This is a concrete version of the elements of the middle object there."]
-def FamilyOfElements (P : Cᵒᵖ ⥤ TypeCat.{w}) (R : Presieve X) :=
+def FamilyOfElements (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) :=
   ∀ ⦃Y : C⦄ (f : Y ⟶ X), R f → P.obj (op Y)
 
 instance : Inhabited (FamilyOfElements P (⊥ : Presieve X)) :=
@@ -427,7 +427,7 @@ lemma FamilyOfElements.isAmalgamation_singleton_iff {X Y : C} (f : X ⟶ Y)
   exact H
 
 /-- A presheaf is separated for a presieve if there is at most one amalgamation. -/
-def IsSeparatedFor (P : Cᵒᵖ ⥤ TypeCat.{w}) (R : Presieve X) : Prop :=
+def IsSeparatedFor (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) : Prop :=
   ∀ (x : FamilyOfElements P R) (t₁ t₂), x.IsAmalgamation t₁ → x.IsAmalgamation t₂ → t₁ = t₂
 
 theorem IsSeparatedFor.ext {R : Presieve X} (hR : IsSeparatedFor P R) {t₁ t₂ : P.obj (op X)}
@@ -446,7 +446,7 @@ theorem isSeparatedFor_iff_generate :
     · exact isAmalgamation_sieveExtend x t₁ ht₁
     · exact isAmalgamation_sieveExtend x t₂ ht₂
 
-theorem isSeparatedFor_top (P : Cᵒᵖ ⥤ TypeCat.{w}) : IsSeparatedFor P (⊤ : Presieve X) :=
+theorem isSeparatedFor_top (P : Cᵒᵖ ⥤ Type w) : IsSeparatedFor P (⊤ : Presieve X) :=
   fun x t₁ t₂ h₁ h₂ => by
   have q₁ := h₁ (𝟙 X) (by tauto)
   have q₂ := h₂ (𝟙 X) (by tauto)
@@ -461,7 +461,7 @@ https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents.
 Using `compatible_iff_sieveCompatible`,
 this is equivalent to the definition of a sheaf in [MM92], Chapter III, Section 4.
 -/
-def IsSheafFor (P : Cᵒᵖ ⥤ TypeCat.{w}) (R : Presieve X) : Prop :=
+def IsSheafFor (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) : Prop :=
   ∀ x : FamilyOfElements P R, x.Compatible → ∃! t, x.IsAmalgamation t
 
 /-- This is an equivalent condition to be a sheaf, which is useful for the abstraction to local
@@ -473,7 +473,7 @@ presheaves.
 See the discussion before Equation (3) of [MM92], Chapter III, Section 4. See also C2.1.4 of
 [Elephant]. -/
 @[stacks 00Z8 "Direct reformulation"]
-def YonedaSheafCondition (P : Cᵒᵖ ⥤ TypeCat.{v₁}) (S : Sieve X) : Prop :=
+def YonedaSheafCondition (P : Cᵒᵖ ⥤ Type v₁) (S : Sieve X) : Prop :=
   ∀ f : S.functor ⟶ P, ∃! g, S.functorInclusion ≫ g = f
 
 -- TODO: We can generalize the universe parameter v₁ above by composing with
@@ -484,7 +484,7 @@ and compatible families.
 Cf the discussion after Lemma 7.47.10 in <https://stacks.math.columbia.edu/tag/00YW>. See also
 the proof of C2.1.4 of [Elephant], and the discussion in [MM92], Chapter III, Section 4.
 -/
-def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ TypeCat.{v₁}} :
+def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
     (S.functor ⟶ P) ≃ { x : FamilyOfElements P (S : Presieve X) // x.Compatible } where
   toFun α := by
     refine ⟨fun Y f hf => ?_, ?_⟩
@@ -507,7 +507,7 @@ def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ TypeCat.{v₁}} :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). A lemma useful to prove `isSheafFor_iff_yonedaSheafCondition`. -/
-theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ TypeCat.{v₁}} (x : S.functor ⟶ P)
+theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor ⟶ P)
     (g : yoneda.obj X ⟶ P) :
     S.functorInclusion ≫ g = x ↔
       (natTransEquivCompatibleFamily x).1.IsAmalgamation (yonedaEquiv g) := by
@@ -526,7 +526,7 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ TypeCat.{v₁}} (x : S.funct
 
 C2.1.4 of [Elephant].
 -/
-theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ TypeCat.{v₁}} :
+theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
     IsSheafFor P (S : Presieve X) ↔ YonedaSheafCondition P S := by
   rw [IsSheafFor, YonedaSheafCondition]
   simp_rw [extension_iff_amalgamation]
@@ -544,7 +544,7 @@ to `P` can be (uniquely) extended to all of `yoneda.obj X`.
    yX
 ```
 -/
-noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ TypeCat.{v₁}} (h : IsSheafFor P (S : Presieve X))
+noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P (S : Presieve X))
     (f : S.functor ⟶ P) : yoneda.obj X ⟶ P :=
   (isSheafFor_iff_yonedaSheafCondition.1 h f).exists.choose
 
@@ -559,12 +559,12 @@ i.e. that the triangle below commutes, provided `P` is a sheaf for `S`
 ```
 -/
 @[reassoc (attr := simp)]
-theorem IsSheafFor.functorInclusion_comp_extend {P : Cᵒᵖ ⥤ TypeCat.{v₁}} (h : IsSheafFor P S.arrows)
+theorem IsSheafFor.functorInclusion_comp_extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P S.arrows)
     (f : S.functor ⟶ P) : S.functorInclusion ≫ h.extend f = f :=
   (isSheafFor_iff_yonedaSheafCondition.1 h f).exists.choose_spec
 
 /-- The extension of `f` to `yoneda.obj X` is unique. -/
-theorem IsSheafFor.unique_extend {P : Cᵒᵖ ⥤ TypeCat.{v₁}} (h : IsSheafFor P S.arrows)
+theorem IsSheafFor.unique_extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P S.arrows)
     {f : S.functor ⟶ P} (t : yoneda.obj X ⟶ P) (ht : S.functorInclusion ≫ t = f) :
     t = h.extend f :=
   (isSheafFor_iff_yonedaSheafCondition.1 h f).unique ht (h.functorInclusion_comp_extend f)
@@ -573,7 +573,7 @@ theorem IsSheafFor.unique_extend {P : Cᵒᵖ ⥤ TypeCat.{v₁}} (h : IsSheafFo
 If `P` is a sheaf for the sieve `S` on `X`, then if two natural transformations from `yoneda.obj X`
 to `P` agree when restricted to the subfunctor given by `S`, they are equal.
 -/
-theorem IsSheafFor.hom_ext {P : Cᵒᵖ ⥤ TypeCat.{v₁}} (h : IsSheafFor P (S : Presieve X))
+theorem IsSheafFor.hom_ext {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P (S : Presieve X))
     (t₁ t₂ : yoneda.obj X ⟶ P) (ht : S.functorInclusion ≫ t₁ = S.functorInclusion ≫ t₂) :
     t₁ = t₂ :=
   (h.unique_extend t₁ ht).trans (h.unique_extend t₂ rfl).symm
@@ -640,7 +640,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
 
 [Elephant] C2.1.5(i)
 -/
-theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ TypeCat.{w}) :
+theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) :
     IsSheafFor P (Presieve.singleton (𝟙 X)) := by
   intro x _
   refine ⟨x _ (Presieve.singleton_self _), ?_, ?_⟩
@@ -653,7 +653,7 @@ theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ TypeCat.{w}) :
 
 [Elephant] C2.1.5(ii)
 -/
-theorem isSheafFor_top (P : Cᵒᵖ ⥤ TypeCat.{w}) : IsSheafFor P (⊤ : Presieve X) := by
+theorem isSheafFor_top (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (⊤ : Presieve X) := by
   rw [← arrows_top, ← generate_of_singleton_isSplitEpi (𝟙 X)]
   rw [← isSheafFor_iff_generate]
   apply isSheafFor_singleton_iso
@@ -661,9 +661,9 @@ theorem isSheafFor_top (P : Cᵒᵖ ⥤ TypeCat.{w}) : IsSheafFor P (⊤ : Presi
 @[deprecated (since := "2026-01-22")]
 alias isSheafFor_top_sieve := isSheafFor_top
 
-/-- If `P₁ : Cᵒᵖ ⥤ TypeCat.{w}` and `P₂  : Cᵒᵖ ⥤ TypeCat.{w}` are two naturally equivalent
+/-- If `P₁ : Cᵒᵖ ⥤ Type w` and `P₂  : Cᵒᵖ ⥤ Type w` are two naturally equivalent
 presheaves, and `P₁` is a sheaf for a presieve `R`, then `P₂` is also a sheaf for `R`. -/
-lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ TypeCat.{w}} {P₂ : Cᵒᵖ ⥤ TypeCat.{w'}}
+lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
     (e : ∀ ⦃X : C⦄, P₁.obj (op X) ≃ P₂.obj (op X))
     (he : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₁.obj (op Y)),
       e (P₁.map f.op x) = P₂.map f.op (e x))
@@ -689,7 +689,7 @@ lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ TypeCat.{w}} {P₂ : Cᵒᵖ �
     exact hP₁.isSeparatedFor x₁ _ _ (by simpa only [this] using ht₂)
       (IsSheafFor.isAmalgamation hP₁ hx₁)
 
-lemma isSheafFor_iff_of_nat_equiv {P₁ : Cᵒᵖ ⥤ TypeCat.{w}} {P₂ : Cᵒᵖ ⥤ TypeCat.{w'}}
+lemma isSheafFor_iff_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
     (e : ∀ ⦃X : C⦄, P₁.obj (op X) ≃ P₂.obj (op X))
     (he : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₁.obj (op Y)),
       e (P₁.map f.op x) = P₂.map f.op (e x))
@@ -705,17 +705,17 @@ lemma isSheafFor_iff_of_nat_equiv {P₁ : Cᵒᵖ ⥤ TypeCat.{w}} {P₂ : Cᵒ�
 /-- If `P` is a sheaf for `S`, and it is iso to `P'`, then `P'` is a sheaf for `S`. This shows that
 "being a sheaf for a presieve" is a mathematical or hygienic property.
 -/
-theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ TypeCat.{w}} (i : P ≅ P') (hP : IsSheafFor P R) :
+theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSheafFor P R) :
     IsSheafFor P' R :=
   isSheafFor_of_nat_equiv (fun X ↦ (i.app (op X)).toEquiv)
     (fun _ _ f x ↦ ConcreteCategory.congr_hom (i.hom.naturality f.op) x) hP
 
-theorem isSheafFor_iff_of_iso {P' : Cᵒᵖ ⥤ TypeCat.{w}} (i : P ≅ P') :
+theorem isSheafFor_iff_of_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') :
     IsSheafFor P R ↔ IsSheafFor P' R :=
   ⟨isSheafFor_iso i, isSheafFor_iso i.symm⟩
 
 /-- The property of being separated for some presieve is preserved under isomorphisms. -/
-theorem isSeparatedFor_iso {P' : Cᵒᵖ ⥤ TypeCat.{w}} (i : P ≅ P') (hP : IsSeparatedFor P R) :
+theorem isSeparatedFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSeparatedFor P R) :
     IsSeparatedFor P' R := by
   intro x t₁ t₂ ht₁ ht₂
   simpa using congrArg (i.hom.app _) <| hP (x.map i.inv) _ _ (ht₁.map i.inv) (ht₂.map i.inv)
@@ -729,7 +729,7 @@ then `P` is a sheaf for `R`.
 
 This is closely related to [Elephant] C2.1.6(i).
 -/
-theorem isSheafFor_subsieve_aux (P : Cᵒᵖ ⥤ TypeCat.{w}) {S : Sieve X} {R : Presieve X}
+theorem isSheafFor_subsieve_aux (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve X}
     (h : (S : Presieve X) ≤ R) (hS : IsSheafFor P (S : Presieve X))
     (trans : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, R f → IsSeparatedFor P (S.pullback f : Presieve Y)) :
     IsSheafFor P R := by
@@ -753,7 +753,7 @@ If `P` is a sheaf for every pullback of the sieve `S`, then `P` is a sheaf for a
 contains `S`.
 This is closely related to [Elephant] C2.1.6.
 -/
-theorem isSheafFor_subsieve (P : Cᵒᵖ ⥤ TypeCat.{w}) {S : Sieve X} {R : Presieve X}
+theorem isSheafFor_subsieve (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve X}
     (h : (S : Presieve X) ≤ R) (trans : ∀ ⦃Y⦄ (f : Y ⟶ X),
       IsSheafFor P (S.pullback f : Presieve Y)) :
     IsSheafFor P R :=
@@ -845,7 +845,7 @@ theorem isSheafFor_ofArrows_iff_bijective_toCompabible :
     exact ⟨y, fun _ ↦ rfl, fun y' hy' ↦ h.1 (by ext; apply hy')⟩
 
 @[simp]
-lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ TypeCat.{w}) {X : C} (R : Sieve X)
+lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
     {Y : C} (f : Y ⟶ X) [IsIso f] :
     IsSheafFor P (Sieve.pullback f R).arrows ↔ IsSheafFor P R.arrows := by
   obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
@@ -869,7 +869,7 @@ lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ TypeCat.{w}) {X : C} (R : Sieve X
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isSheafFor_over_map_op_comp_ofArrows_iff
-    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ TypeCat.{w})
+    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {X : Over B} {Y : I → Over B} (f : ∀ i, Y i ⟶ X) :
     IsSheafFor ((Over.map p).op ⋙ P) (Presieve.ofArrows _ f) ↔
       IsSheafFor P (Presieve.ofArrows _ (fun i ↦ (Over.map p).map (f i))) := by
@@ -898,7 +898,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isSheafFor_over_map_op_comp_iff
-    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ TypeCat.{w})
+    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {X : Over B} (R : Sieve X) {X' : Over B'}
     (e : (Over.map p).obj X ≅ X') :
     IsSheafFor ((Over.map p).op ⋙ P) R.arrows ↔

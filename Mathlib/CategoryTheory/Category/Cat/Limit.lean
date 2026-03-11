@@ -47,7 +47,7 @@ set_option backward.isDefEq.respectTransparency false in
 the diagram whose limit gives the morphism space between two objects of the limit category. -/
 @[simps obj map]
 def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : (limit (F ⋙ Cat.objects.{v, v}) :)) :
-    J ⥤ TypeCat.{v} where
+    J ⥤ Type v where
   obj j := <| limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
   map f := TypeCat.ofHom ⟨fun g ↦ by
     refine eqToHom ?_ ≫ (F.map f).toFunctor.map g ≫ eqToHom ?_

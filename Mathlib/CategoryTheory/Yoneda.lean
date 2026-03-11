@@ -844,8 +844,8 @@ variable {C}
 /- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
-    (yoneda.op ⋙ coyoneda : Cᵒᵖ ⥤ (Cᵒᵖ ⥤ TypeCat.{u₁}) ⥤ TypeCat.{u₁}) ≅
-      evaluation Cᵒᵖ TypeCat.{u₁} :=
+    (yoneda.op ⋙ coyoneda : Cᵒᵖ ⥤ (Cᵒᵖ ⥤ Type u₁) ⥤ Type u₁) ≅
+      evaluation Cᵒᵖ Type u₁ :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun _ ↦ Equiv.toIso yonedaEquiv)) (by
     intro X Y f
     ext a b
@@ -875,8 +875,8 @@ def yonedaOpCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ T
 
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
-    yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ TypeCat.{u₁})ᵒᵖ TypeCat.{u₁}).obj yoneda.op
-      ≅ 𝟭 (Cᵒᵖ ⥤ TypeCat.{u₁}) :=
+    yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ Type u₁)ᵒᵖ Type u₁).obj yoneda.op
+      ≅ 𝟭 (Cᵒᵖ ⥤ Type u₁) :=
   NatIso.ofComponents (fun F ↦ NatIso.ofComponents (fun _ ↦ Equiv.toIso yonedaEquiv) (by
     intro X Y f
     ext a
@@ -956,7 +956,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A variant of the curried version of the Yoneda lemma with a raise in the universe level. -/
 def uliftYonedaOpCompCoyoneda {C : Type u₁} [Category.{v₁} C] :
     uliftYoneda.{w}.op ⋙ coyoneda ≅
-      evaluation Cᵒᵖ (TypeCat.{max v₁ w}) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+      evaluation Cᵒᵖ (Type (max v₁ w)) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
   NatIso.ofComponents
     (fun X => NatIso.ofComponents
       (fun _ => Equiv.toIso <| uliftYonedaEquiv.trans Equiv.ulift.symm)
@@ -1070,7 +1070,7 @@ variable {C}
 /- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma {C : Type u₁} [SmallCategory C] :
-    coyoneda.rightOp ⋙ coyoneda ≅ evaluation C TypeCat.{u₁} :=
+    coyoneda.rightOp ⋙ coyoneda ≅ evaluation C Type u₁ :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun _ ↦ Equiv.toIso coyonedaEquiv)) (by
     intro X Y f
     ext a b
@@ -1102,8 +1102,8 @@ def coyonedaCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : C ⥤ Type v�
 
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma' {C : Type u₁} [SmallCategory C] :
-    yoneda ⋙ (whiskeringLeft C (C ⥤ TypeCat.{u₁})ᵒᵖ TypeCat.{u₁}).obj coyoneda.rightOp
-      ≅ 𝟭 (C ⥤ TypeCat.{u₁}) :=
+    yoneda ⋙ (whiskeringLeft C (C ⥤ Type u₁)ᵒᵖ Type u₁).obj coyoneda.rightOp
+      ≅ 𝟭 (C ⥤ Type u₁) :=
   NatIso.ofComponents (fun F ↦ NatIso.ofComponents (fun _ ↦ Equiv.toIso coyonedaEquiv) (by
     intro X Y f
     ext a
@@ -1185,7 +1185,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A variant of the curried version of the Coyoneda lemma with a raise in the universe level. -/
 def uliftCoyonedaRightOpCompCoyoneda {C : Type u₁} [Category.{v₁} C] :
     uliftCoyoneda.{w}.rightOp ⋙ coyoneda ≅
-      evaluation C TypeCat.{max v₁ w} ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+      evaluation C Type (max v₁ w) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
   NatIso.ofComponents
     (fun X => NatIso.ofComponents
       (fun _ => Equiv.toIso <| uliftCoyonedaEquiv.trans Equiv.ulift.symm)
@@ -1243,7 +1243,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 to it. We use the constant functor on a given singleton type here as a specific choice of terminal
 functor. -/
 @[simps apply_app]
-def Functor.sectionsEquivHom (F : C ⥤ TypeCat.{u₂}) (X : TypeCat.{u₂}) [Unique X] :
+def Functor.sectionsEquivHom (F : C ⥤ Type u₂) (X : Type u₂) [Unique X] :
     F.sections ≃ ((const _).obj X ⟶ F) where
   toFun s :=
     { app j := ofHom ⟨fun _ ↦ s.1 j⟩
@@ -1258,13 +1258,13 @@ def Functor.sectionsEquivHom (F : C ⥤ TypeCat.{u₂}) (X : TypeCat.{u₂}) [Un
     rw [Unique.eq_default x]
     rfl
 
-lemma Functor.sectionsEquivHom_naturality {F G : C ⥤ TypeCat.{u₂}} (f : F ⟶ G) (X : TypeCat.{u₂})
+lemma Functor.sectionsEquivHom_naturality {F G : C ⥤ Type u₂} (f : F ⟶ G) (X : Type u₂)
     [Unique X] (x : F.sections) :
     (G.sectionsEquivHom X) ((sectionsFunctor C).map f x) = (F.sectionsEquivHom X) x ≫ f := by
   rfl
 
-lemma Functor.sectionsEquivHom_naturality_symm {F G : C ⥤ TypeCat.{u₂}} (f : F ⟶ G)
-    (X : TypeCat.{u₂}) [Unique X] (τ : (const C).obj X ⟶ F) :
+lemma Functor.sectionsEquivHom_naturality_symm {F G : C ⥤ Type u₂} (f : F ⟶ G)
+    (X : Type u₂) [Unique X] (τ : (const C).obj X ⟶ F) :
     (G.sectionsEquivHom X).symm (τ ≫ f) =
       (sectionsFunctor C).map f ((F.sectionsEquivHom X).symm τ) := by
   rfl
@@ -1272,7 +1272,7 @@ lemma Functor.sectionsEquivHom_naturality_symm {F G : C ⥤ TypeCat.{u₂}} (f :
 /-- A natural isomorphism between the sections functor `(C ⥤ TypeCat) ⥤ TypeCat` and the co-Yoneda
 embedding of a terminal functor, specifically a constant functor on a given singleton type `X`. -/
 @[simps!]
-noncomputable def sectionsFunctorNatIsoCoyoneda (X : TypeCat.{max u₁ u₂}) [Unique X] :
+noncomputable def sectionsFunctorNatIsoCoyoneda (X : Type (max u₁ u₂)) [Unique X] :
     Functor.sectionsFunctor.{v₁, max u₁ u₂} C ≅ coyoneda.obj (op ((Functor.const C).obj X)) :=
   NatIso.ofComponents fun F ↦ (F.sectionsEquivHom X).toIso
 

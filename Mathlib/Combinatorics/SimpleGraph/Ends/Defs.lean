@@ -255,7 +255,7 @@ open CategoryTheory
 The functor assigning, to a finite set in `V`, the set of connected components in its complement.
 -/
 @[simps]
-def componentComplFunctor : (Finset V)ᵒᵖ ⥤ TypeCat.{u} where
+def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
   obj K := (G.ComponentCompl K.unop)
   map f := TypeCat.ofHom ⟨ComponentCompl.hom (le_of_op_hom f)⟩
   map_id _ := by

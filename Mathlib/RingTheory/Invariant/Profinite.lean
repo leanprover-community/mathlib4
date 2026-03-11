@@ -130,7 +130,7 @@ The functor taking an open normal subgroup `N ≤ G` to the set of lifts of `σ`
 We will show that its inverse limit is nonempty to conclude that there exists a lift in `G`. -/
 def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
     (P : Ideal A) (Q : Ideal B) [Q.LiesOver P] (σ : (B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) :
-    OpenNormalSubgroup G ⥤ TypeCat.{u} where
+    OpenNormalSubgroup G ⥤ Type u where
   obj N :=
     letI B' := FixedPoints.subalgebra A B N.1.1
     letI f : (B' ⧸ Q.under B') →ₐ[A ⧸ P] B ⧸ Q :=

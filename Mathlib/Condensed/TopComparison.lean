@@ -108,7 +108,7 @@ The sheaf on `CompHausLike P` of continuous maps to a topological space.
 @[simps! obj_obj obj_map]
 def TopCat.toSheafCompHausLike :
     have := CompHausLike.preregular hs
-    Sheaf (coherentTopology (CompHausLike.{u} P)) TypeCat.{max u w} where
+    Sheaf (coherentTopology (CompHausLike.{u} P)) Type (max u w) where
   obj := yonedaPresheaf.{u, max u w} (CompHausLike.compHausLikeToTop.{u} P) X
   property := by
     have := CompHausLike.preregular hs
@@ -126,7 +126,7 @@ def TopCat.toSheafCompHausLike :
 @[simps]
 noncomputable def topCatToSheafCompHausLike :
     have := CompHausLike.preregular hs
-    TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) TypeCat.{max u w} where
+    TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) Type (max u w) where
   obj X := X.toSheafCompHausLike P hs
   map f := ⟨⟨fun _ ↦ TypeCat.ofHom ⟨fun g ↦ f.hom.comp g⟩,  by aesop⟩⟩
 

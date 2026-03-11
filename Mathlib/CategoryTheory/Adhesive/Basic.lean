@@ -419,7 +419,7 @@ instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
           ← sq_f_v.w_assoc, w, ← pullback.condition_assoc, Category.assoc,
           ← sq_g_v.w_assoc]
 
-instance TypeCat.adhesive : Adhesive (TypeCat.{u}) :=
+instance TypeCat.adhesive : Adhesive (Type u) :=
   ⟨fun {_ _ _ _ f _ _ _ _} H =>
     (IsPushout.isVanKampen_inl _ (Types.isCoprodOfMono f) _ _ _ H.flip).flip⟩
 

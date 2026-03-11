@@ -34,7 +34,7 @@ open Simplicial
 This is the category of contravariant functors from
 `SimplexCategory` to `Type u`. -/
 abbrev SSet : Type (u + 1) :=
-  SimplicialObject TypeCat.{u}
+  SimplicialObject Type u
 
 namespace SSet
 
@@ -74,7 +74,7 @@ def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
   (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}
 
 /-- Truncated simplicial sets. -/
-abbrev Truncated (n : ℕ) := SimplicialObject.Truncated TypeCat.{u} n
+abbrev Truncated (n : ℕ) := SimplicialObject.Truncated Type u n
 
 namespace Truncated
 
@@ -91,7 +91,7 @@ lemma hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n 
 /-- Further truncation of truncated simplicial sets. -/
 abbrev trunc (n m : ℕ) (h : m ≤ n := by lia) :
     SSet.Truncated n ⥤ SSet.Truncated m :=
-  SimplicialObject.Truncated.trunc TypeCat.{u} n m
+  SimplicialObject.Truncated.trunc Type u n m
 
 @[simp]
 lemma id_app {n : ℕ} (X : Truncated n) (d : (SimplexCategory.Truncated n)ᵒᵖ) :
@@ -185,7 +185,7 @@ end adjunctions
 /-- The category of augmented simplicial sets, as a particular case of
 augmented simplicial objects. -/
 abbrev Augmented :=
-  SimplicialObject.Augmented TypeCat.{u}
+  SimplicialObject.Augmented Type u
 
 section applications
 variable {S : SSet}

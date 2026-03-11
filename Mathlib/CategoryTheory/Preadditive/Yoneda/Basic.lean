@@ -104,7 +104,7 @@ Yoneda embedding.
 @[simp]
 theorem whiskering_preadditiveYoneda :
     preadditiveYoneda ⋙
-        (whiskeringRight Cᵒᵖ AddCommGrpCat (TypeCat.{v})).obj (forget AddCommGrpCat) =
+        (whiskeringRight Cᵒᵖ AddCommGrpCat (Type v)).obj (forget AddCommGrpCat) =
       yoneda :=
   rfl
 
@@ -114,23 +114,23 @@ Yoneda embedding.
 @[simp]
 theorem whiskering_preadditiveCoyoneda :
     preadditiveCoyoneda ⋙
-        (whiskeringRight C AddCommGrpCat (TypeCat.{v})).obj (forget AddCommGrpCat) =
+        (whiskeringRight C AddCommGrpCat (Type v)).obj (forget AddCommGrpCat) =
       coyoneda :=
   rfl
 
 instance full_preadditiveYoneda : (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGrpCat).Full :=
   let _ : Functor.Full (preadditiveYoneda ⋙
-      (whiskeringRight Cᵒᵖ AddCommGrpCat (TypeCat.{v})).obj (forget AddCommGrpCat)) :=
+      (whiskeringRight Cᵒᵖ AddCommGrpCat (Type v)).obj (forget AddCommGrpCat)) :=
     Yoneda.yoneda_full
   Functor.Full.of_comp_faithful preadditiveYoneda
-    ((whiskeringRight Cᵒᵖ AddCommGrpCat (TypeCat.{v})).obj (forget AddCommGrpCat))
+    ((whiskeringRight Cᵒᵖ AddCommGrpCat (Type v)).obj (forget AddCommGrpCat))
 
 instance full_preadditiveCoyoneda : (preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat).Full :=
   let _ : Functor.Full (preadditiveCoyoneda ⋙
-      (whiskeringRight C AddCommGrpCat (TypeCat.{v})).obj (forget AddCommGrpCat)) :=
+      (whiskeringRight C AddCommGrpCat (Type v)).obj (forget AddCommGrpCat)) :=
     Coyoneda.coyoneda_full
   Functor.Full.of_comp_faithful preadditiveCoyoneda
-    ((whiskeringRight C AddCommGrpCat (TypeCat.{v})).obj (forget AddCommGrpCat))
+    ((whiskeringRight C AddCommGrpCat (Type v)).obj (forget AddCommGrpCat))
 
 instance faithful_preadditiveYoneda : (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGrpCat).Faithful :=
   Functor.Faithful.of_comp_eq whiskering_preadditiveYoneda

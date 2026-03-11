@@ -40,7 +40,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace CategoryOfElements
 
-variable {A : C ⥤ TypeCat.{w}} {I : Type u₁} [Category.{v₁} I]-- [Small.{w} I]
+variable {A : C ⥤ Type w} {I : Type u₁} [Category.{v₁} I]-- [Small.{w} I]
 
 namespace CreatesLimitsAux
 -- TODO: all this auxiliary stuff can be removed and the relevant instances can be deduced from

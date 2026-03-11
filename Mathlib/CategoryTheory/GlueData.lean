@@ -191,10 +191,10 @@ instance π_epi : Epi D.π := by
 end
 
 universe w in
-theorem types_π_surjective (D : GlueData TypeCat.{w}) : Function.Surjective D.π :=
+theorem types_π_surjective (D : GlueData Type w) : Function.Surjective D.π :=
   (epi_iff_surjective _).mp inferInstance
 
-theorem types_ι_jointly_surjective (D : GlueData (TypeCat.{v})) (x : D.glued) :
+theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
     ∃ (i : _) (y : D.U i), D.ι i y = x := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ D.diagram]
@@ -335,7 +335,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
 
 /-- If there is a forgetful functor into `Type` that preserves enough (co)limits, then `D.ι` will
 be jointly surjective. -/
-theorem ι_jointly_surjective (F : C ⥤ TypeCat.{v}) [PreservesColimit D.diagram.multispan F]
+theorem ι_jointly_surjective (F : C ⥤ Type v) [PreservesColimit D.diagram.multispan F]
     [∀ i j k : D.J, PreservesLimit (cospan (D.f i j) (D.f i k)) F] (x : F.obj D.glued) :
     ∃ (i : _) (y : F.obj (D.U i)), F.map (D.ι i) y = x := by
   let e := D.gluedIso F

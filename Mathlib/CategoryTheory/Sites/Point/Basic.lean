@@ -68,7 +68,7 @@ and such that covering sieves induce jointly surjective maps on fibers (which
 allows to show that the fibers of a presheaf and its associated sheaf are isomorphic). -/
 structure Point where
   /-- the fiber functor on the underlying category of the site -/
-  fiber : C ⥤ TypeCat.{w}
+  fiber : C ⥤ Type w
   isCofiltered : IsCofiltered fiber.Elements := by infer_instance
   initiallySmall : InitiallySmall.{w} fiber.Elements := by infer_instance
   jointly_surjective {X : C} (R : Sieve X) (h : R ∈ J X) (x : fiber.obj X) :

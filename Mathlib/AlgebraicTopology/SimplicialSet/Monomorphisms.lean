@@ -25,7 +25,7 @@ open CategoryTheory Limits MorphismProperty
 
 namespace SSet
 
-instance [HasCoproducts.{v'} (TypeCat.{u})] :
+instance [HasCoproducts.{v'} (Type u)] :
     IsStableUnderCoproducts.{v'} (monomorphisms SSet.{u}) :=
   inferInstanceAs (IsStableUnderCoproducts.{v'} (monomorphisms (_ ⥤ _)))
 

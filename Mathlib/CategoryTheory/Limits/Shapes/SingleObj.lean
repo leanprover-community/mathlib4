@@ -18,10 +18,10 @@ We characterise (co)limits of shape `SingleObj M`. Currently only in the categor
 
 ## Main results
 
-* `SingleObj.Types.limitEquivFixedPoints`: The limit of `J : SingleObj G ⥤ TypeCat.{u}` is the fixed
+* `SingleObj.Types.limitEquivFixedPoints`: The limit of `J : SingleObj G ⥤ Type u` is the fixed
   points of `J.obj (SingleObj.star G)` under the induced action.
 
-* `SingleObj.Types.colimitEquivQuotient`: The colimit of `J : SingleObj G ⥤ TypeCat.{u}` is the
+* `SingleObj.Types.colimitEquivQuotient`: The colimit of `J : SingleObj G ⥤ Type u` is the
   quotient of `J.obj (SingleObj.star G)` by the induced action.
 
 -/
@@ -40,8 +40,8 @@ namespace SingleObj
 
 variable {M G : Type v} [Monoid M] [Group G]
 
-/-- The induced `G`-action on the target of `J : SingleObj G ⥤ TypeCat.{u}`. -/
-instance (J : SingleObj M ⥤ TypeCat.{u}) : MulAction M (J.obj (SingleObj.star M)) where
+/-- The induced `G`-action on the target of `J : SingleObj G ⥤ Type u`. -/
+instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) where
   smul g x := J.map g x
   one_smul x := by
     change J.map (𝟙 _) x = x
@@ -54,9 +54,9 @@ instance (J : SingleObj M ⥤ TypeCat.{u}) : MulAction M (J.obj (SingleObj.star 
 
 section Limits
 
-variable (J : SingleObj M ⥤ TypeCat.{u})
+variable (J : SingleObj M ⥤ Type u)
 
-/-- The equivalence between sections of `J : SingleObj M ⥤ TypeCat.{u}` and fixed points of the
+/-- The equivalence between sections of `J : SingleObj M ⥤ Type u` and fixed points of the
 induced action on `J.obj (SingleObj.star M)`. -/
 @[simps]
 def Types.sections.equivFixedPoints :
@@ -64,7 +64,7 @@ def Types.sections.equivFixedPoints :
   toFun s := ⟨s.val _, s.property⟩
   invFun p := ⟨fun _ ↦ p.val, p.property⟩
 
-/-- The limit of `J : SingleObj M ⥤ TypeCat.{u}` is equivalent to the fixed points of the
+/-- The limit of `J : SingleObj M ⥤ Type u` is equivalent to the fixed points of the
 induced action on `J.obj (SingleObj.star M)`. -/
 @[simps!]
 noncomputable def Types.limitEquivFixedPoints :
@@ -75,9 +75,9 @@ end Limits
 
 section Colimits
 
-variable {G : Type v} [Group G] (J : SingleObj G ⥤ TypeCat.{u})
+variable {G : Type v} [Group G] (J : SingleObj G ⥤ Type u)
 
-/-- The relation used to construct colimits in types for `J : SingleObj G ⥤ TypeCat.{u}` is
+/-- The relation used to construct colimits in types for `J : SingleObj G ⥤ Type u` is
 equivalent to the `MulAction.orbitRel` equivalence relation on `J.obj (SingleObj.star G)`. -/
 lemma colimitTypeRel_iff_orbitRel (x y : J.obj (SingleObj.star G)) :
     J.ColimitTypeRel ⟨SingleObj.star G, x⟩ ⟨SingleObj.star G, y⟩ ↔
@@ -86,7 +86,7 @@ lemma colimitTypeRel_iff_orbitRel (x y : J.obj (SingleObj.star G)) :
   change (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
   grind
 
-/-- The explicit quotient construction of the colimit of `J : SingleObj G ⥤ TypeCat.{u}` is
+/-- The explicit quotient construction of the colimit of `J : SingleObj G ⥤ Type u` is
 equivalent to the quotient of `J.obj (SingleObj.star G)` by the induced action. -/
 @[simps]
 def colimitTypeRelEquivOrbitRelQuotient :
@@ -98,7 +98,7 @@ def colimitTypeRelEquivOrbitRelQuotient :
   left_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
   right_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
 
-/-- The colimit of `J : SingleObj G ⥤ TypeCat.{u}` is equivalent to the quotient of
+/-- The colimit of `J : SingleObj G ⥤ Type u` is equivalent to the quotient of
 `J.obj (SingleObj.star G)` by the induced action. -/
 @[simps!]
 noncomputable def Types.colimitEquivQuotient :

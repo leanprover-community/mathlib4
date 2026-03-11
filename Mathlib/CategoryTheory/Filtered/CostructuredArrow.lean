@@ -40,7 +40,7 @@ private lemma isFiltered_of_isFiltered_costructuredArrow_small (L : A ⥤ T) (R 
   refine isFiltered_of_nonempty_limit_colimit_to_colimit_limit fun J {_ _} F => ⟨?_⟩
   let R' := Grothendieck.pre (CostructuredArrow.functor L) R
   haveI : ∀ b, PreservesLimitsOfShape J
-      (colim (J := (R ⋙ CostructuredArrow.functor L).obj b) (C := TypeCat.{u₁})) := fun b => by
+      (colim (J := (R ⋙ CostructuredArrow.functor L).obj b) (C := Type u₁)) := fun b => by
     simp only [comp_obj, CostructuredArrow.functor_obj, Cat.of_α]
     exact filtered_colim_preservesFiniteLimits
   refine lim.map ((colimitIsoColimitGrothendieck L F.flip).hom ≫

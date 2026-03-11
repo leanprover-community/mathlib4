@@ -28,10 +28,10 @@ open CategoryTheory Limits
 
 namespace TypeCat
 
-instance (X : TypeCat.{u}) : CoeFun (End X) (fun _ ↦ X → X) := inferInstanceAs <| CoeFun (X ⟶ X) _
+instance (X : Type u) : CoeFun (End X) (fun _ ↦ X → X) := inferInstanceAs <| CoeFun (X ⟶ X) _
 
 @[simps apply symm_apply]
-def endEquiv (X : TypeCat.{u}) : Function.End X ≃* End X where
+def endEquiv (X : Type u) : Function.End X ≃* End X where
   toFun f := TypeCat.ofHom ⟨f⟩
   invFun f := (ConcreteCategory.hom f).as
   left_inv := by intro; rfl
@@ -43,7 +43,7 @@ end TypeCat
 namespace Action
 
 section
-variable {G : Type u} [Group G] {A : Action TypeCat.{u} G}
+variable {G : Type u} [Group G] {A : Action Type u G}
 
 @[simp]
 theorem ρ_inv_self_apply (g : G) (x : A.V) :
@@ -59,8 +59,8 @@ end
 
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
 @[simps -isSimp]
-def ofMulAction (G : Type*) (H : TypeCat.{u}) [Monoid G] [MulAction G H] :
-    Action TypeCat.{u} G where
+def ofMulAction (G : Type*) (H : Type u) [Monoid G] [MulAction G H] :
+    Action Type u G where
   V := H
   ρ := (TypeCat.endEquiv _).toMonoidHom.comp (@MulAction.toEndHom _ _ _ (by assumption))
 
@@ -95,11 +95,11 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
         rfl }
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/
-abbrev leftRegular (G : Type u) [Monoid G] : Action TypeCat.{u} G :=
+abbrev leftRegular (G : Type u) [Monoid G] : Action Type u G :=
   Action.ofMulAction G (G)
 
 /-- The `G`-set `Gⁿ`, acting on itself by left multiplication. -/
-abbrev diagonal (G : Type u) [Monoid G] (n : ℕ) : Action TypeCat.{u} G :=
+abbrev diagonal (G : Type u) [Monoid G] (n : ℕ) : Action Type u G :=
   Action.ofMulAction G ((Fin n → G))
 
 /-- We have `Fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/

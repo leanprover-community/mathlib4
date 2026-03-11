@@ -33,11 +33,11 @@ namespace CategoryTheory
 
 section
 
-variable {I : Type u₁} [Category.{v₁} I] [HasColimitsOfShape I TypeCat.{v}]
-  [HasLimitsOfShape Iᵒᵖ TypeCat.{v}]
+variable {I : Type u₁} [Category.{v₁} I] [HasColimitsOfShape I Type v]
+  [HasLimitsOfShape Iᵒᵖ Type v]
 variable {J : Type u₂} [Category.{v₂} J]
-  [HasLimitsOfShape Iᵒᵖ TypeCat.{max u v}]
-variable (F : I ⥤ C) (G : Cᵒᵖ ⥤ TypeCat.{v})
+  [HasLimitsOfShape Iᵒᵖ Type (max u v)]
+variable (F : I ⥤ C) (G : Cᵒᵖ ⥤ Type v)
 
 /-- Variant of `colimitYonedaHomIsoLimitOp`: natural transformations with domain
 `colimit (F ⋙ yoneda)` are equivalent to a limit in a lower universe. -/

@@ -46,7 +46,7 @@ variable (C : Type u) [Category.{v} C] [Limits.HasPullbacks C]
 and every morphism `f : X ⟶ Y` to the function `Subobject Y → Subobject X` that maps every
 subobject of `Y` to its pullback along `f`. -/
 @[simps]
-noncomputable def presheaf : Cᵒᵖ ⥤ TypeCat.{max u v} where
+noncomputable def presheaf : Cᵒᵖ ⥤ Type (max u v) where
   obj X := (Subobject X.unop)
   map f := TypeCat.ofHom ⟨(pullback f.unop).obj⟩
   map_id _ := by ext : 3; simp [pullback_id]

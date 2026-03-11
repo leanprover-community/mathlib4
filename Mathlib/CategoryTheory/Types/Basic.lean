@@ -273,7 +273,7 @@ attribute [elementwise (attr := simp)] Iso.hom_inv_id_app Iso.inv_hom_id_app
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_app_apply := Iso.hom_inv_id_app_apply
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_app_apply := Iso.inv_hom_id_app_apply
 
--- TODO: spell the assumptions as `{F G : C ⥤ TypeCat.{*}`}
+-- TODO: spell the assumptions as `{F G : C ⥤ Type*`}
 lemma naturality_symm {F : C ⥤ Type w} {G : C ⥤ Type u'} (e : ∀ j, F.obj j ≃ G.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ F.map f = G.map f ∘ e j) {j j' : C}
     (f : j ⟶ j') :
@@ -475,7 +475,7 @@ theorem isSplitEpi_iff_surjective {X Y : Type u} (f : X ⟶ Y) :
     fun hf => (by simp only [(epi_iff_surjective f).mpr hf, isSplitEpi_of_epi])
 
 -- unif_hint Functor.comp_obj_types {J J' : Type*} [Category* J] [Category* J']
---     (G G' : J' ⥤ J) (F F' : J ⥤ TypeCat.{u}) (j j' : J') where
+--     (G G' : J' ⥤ J) (F F' : J ⥤ Type u) (j j' : J') where
 --   G ≟ G'
 --   F ≟ F'
 --   j ≟ j'

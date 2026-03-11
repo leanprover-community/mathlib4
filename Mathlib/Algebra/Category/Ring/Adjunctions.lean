@@ -36,16 +36,16 @@ namespace CommRingCat
 /-- The free functor `Type u ⥤ CommRingCat` sending a type `X` to the multivariable (commutative)
 polynomials with variables `x : X`.
 -/
-def free : TypeCat.{u} ⥤ CommRingCat.{u} where
+def free : Type u ⥤ CommRingCat.{u} where
   obj α := of (MvPolynomial α ℤ)
   map {X Y} f := ofHom (↑(rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
 
 @[simp]
-theorem free_obj_coe {α : TypeCat.{u}} : (free.obj α : Type u) = MvPolynomial α ℤ :=
+theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = MvPolynomial α ℤ :=
   rfl
 
 -- This is not a `@[simp]` lemma as the left-hand side simplifies via `dsimp`.
-theorem free_map_coe {α β : TypeCat.{u}} {f : α ⟶ β} : ⇑(free.map f) = ⇑(rename f) :=
+theorem free_map_coe {α β : Type u} {f : α ⟶ β} : ⇑(free.map f) = ⇑(rename f) :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -65,7 +65,7 @@ instance : (forget CommRingCat.{u}).IsRightAdjoint :=
 
 /-- `Fun(-, -)` as a functor `Type vᵒᵖ ⥤ CommRingCat ⥤ CommRingCat`. -/
 @[simps]
-def coyoneda : TypeCat.{v}ᵒᵖ ⥤ CommRingCat.{u} ⥤ CommRingCat.{max u v} where
+def coyoneda : Type vᵒᵖ ⥤ CommRingCat.{u} ⥤ CommRingCat.{max u v} where
   obj n :=
   { obj R := CommRingCat.of ((unop n :) → R)
     map {R S} φ := CommRingCat.ofHom (Pi.ringHom (φ.hom.comp <| Pi.evalRingHom _ ·)) }
@@ -83,7 +83,7 @@ instance (R : CommRingCat.{u}) : (yoneda.obj R).IsRightAdjoint := ⟨_, ⟨coyon
 set_option backward.isDefEq.respectTransparency false in
 /-- If `n` is a singleton, `Hom(n, -)` is the identity in `CommRingCat`. -/
 @[simps!]
-def coyonedaUnique {n : TypeCat.{v}} [Unique n] : coyoneda.obj (op n) ≅ 𝟭 CommRingCat.{max u v} :=
+def coyonedaUnique {n : Type v} [Unique n] : coyoneda.obj (op n) ≅ 𝟭 CommRingCat.{max u v} :=
   NatIso.ofComponents (fun X ↦ (RingEquiv.piUnique _).toCommRingCatIso) (fun f ↦ by ext; simp)
 
 /-- The monoid algebra functor `CommGrpCat ⥤ R-Alg` given by `G ↦ R[G]`. -/

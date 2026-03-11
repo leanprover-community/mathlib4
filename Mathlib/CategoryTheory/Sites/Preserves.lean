@@ -39,7 +39,7 @@ universe v u w
 
 namespace CategoryTheory.Presieve
 
-variable {C : Type u} [Category.{v} C] {I : C} (F : Cᵒᵖ ⥤ TypeCat.{w})
+variable {C : Type u} [Category.{v} C] {I : C} (F : Cᵒᵖ ⥤ Type w)
 
 open Limits Opposite
 

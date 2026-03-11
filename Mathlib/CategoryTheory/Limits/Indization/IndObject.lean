@@ -55,7 +55,7 @@ variable {C : Type u} [Category.{v} C]
 /-- The data that witnesses that a presheaf `A` is an ind-object. It consists of a small
 filtered indexing category `I`, a diagram `F : I ⥤ C` and the data for a colimit cocone on
 `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v` with cocone point `A`. -/
-structure IndObjectPresentation (A : Cᵒᵖ ⥤ TypeCat.{v}) where
+structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
   /-- The indexing category of the filtered colimit presentation -/
   I : Type v
   /-- The indexing category of the filtered colimit presentation -/
@@ -80,7 +80,7 @@ def ofCocone {I : Type v} [SmallCategory I] [IsFiltered I] {F : I ⥤ C}
   ι := c.ι
   isColimit := hc
 
-variable {A : Cᵒᵖ ⥤ TypeCat.{v}} (P : IndObjectPresentation A)
+variable {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A)
 
 instance : SmallCategory P.I := P.ℐ
 instance : IsFiltered P.I := P.hI
@@ -99,7 +99,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
 ind-object presentation of `B`. -/
 @[simps!]
-noncomputable def extend {A B : Cᵒᵖ ⥤ TypeCat.{v}} (P : IndObjectPresentation A) (η : A ⟶ B)
+noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B)
     [IsIso η] : IndObjectPresentation B :=
   .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso η)
 
@@ -126,10 +126,10 @@ end IndObjectPresentation
 
 /-- A presheaf is called an ind-object if it can be written as a filtered colimit of representable
 presheaves. -/
-structure IsIndObject (A : Cᵒᵖ ⥤ TypeCat.{v}) : Prop where
+structure IsIndObject (A : Cᵒᵖ ⥤ Type v) : Prop where
   mk' :: nonempty_presentation : Nonempty (IndObjectPresentation A)
 
-theorem IsIndObject.mk {A : Cᵒᵖ ⥤ TypeCat.{v}} (P : IndObjectPresentation A) : IsIndObject A :=
+theorem IsIndObject.mk {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) : IsIndObject A :=
   ⟨⟨P⟩⟩
 
 /-- Representable presheaves are (trivially) ind-objects. -/
@@ -138,12 +138,12 @@ theorem isIndObject_yoneda (X : C) : IsIndObject (yoneda.obj X) :=
 
 namespace IsIndObject
 
-variable {A : Cᵒᵖ ⥤ TypeCat.{v}}
+variable {A : Cᵒᵖ ⥤ Type v}
 
-theorem map {A B : Cᵒᵖ ⥤ TypeCat.{v}} (η : A ⟶ B) [IsIso η] : IsIndObject A → IsIndObject B
+theorem map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A → IsIndObject B
   | ⟨⟨P⟩⟩ => ⟨⟨P.extend η⟩⟩
 
-theorem iff_of_iso {A B : Cᵒᵖ ⥤ TypeCat.{v}} (η : A ⟶ B) [IsIso η] :
+theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] :
     IsIndObject A ↔ IsIndObject B :=
   ⟨.map η, .map (inv η)⟩
 
@@ -164,7 +164,7 @@ end IsIndObject
 
 open IsFiltered.SmallFilteredIntermediate
 
-theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ TypeCat.{v})
+theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     [IsFiltered (CostructuredArrow yoneda A)] [FinallySmall.{v} (CostructuredArrow yoneda A)] :
     IsIndObject A := by
   have h₁ : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙
@@ -183,7 +183,7 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ TypeCat.{v})
 /-- The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
 `CostructuredArrow yoneda A` is filtered and finally `v`-small.
 Theorem 6.1.5 of [Kashiwara2006] -/
-theorem isIndObject_iff (A : Cᵒᵖ ⥤ TypeCat.{v}) : IsIndObject A ↔
+theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
     (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
   ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,
    fun ⟨_, _⟩ => isIndObject_of_isFiltered_of_finallySmall A⟩
@@ -202,7 +202,7 @@ variable {C : Type u} [SmallCategory C]
 
 /-- Presheaves over a small finitely cocomplete category `C : Type u` are Ind-objects if and only if
 they are left-exact. -/
-lemma isIndObject_iff_preservesFiniteLimits [HasFiniteColimits C] (A : Cᵒᵖ ⥤ TypeCat.{u}) :
+lemma isIndObject_iff_preservesFiniteLimits [HasFiniteColimits C] (A : Cᵒᵖ ⥤ Type u) :
     IsIndObject A ↔ PreservesFiniteLimits A :=
   (isIndObject_iff A).trans <| by
     refine ⟨fun ⟨h₁, h₂⟩ => ?_, fun h => ⟨?_, ?_⟩⟩

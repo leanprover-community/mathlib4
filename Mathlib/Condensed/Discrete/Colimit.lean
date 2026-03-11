@@ -31,10 +31,10 @@ namespace Condensed
 section LocallyConstantAsColimit
 
 variable {I : Type u} [Category.{u} I] [IsCofiltered I] {F : I ⥤ FintypeCat.{u}}
-  (c : Cone <| F ⋙ toProfinite) (X : TypeCat.{u + 1})
+  (c : Cone <| F ⋙ toProfinite) (X : Type (u + 1))
 
 /-- The presheaf on `Profinite` of locally constant functions to `X`. -/
-abbrev locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1} :=
+abbrev locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ Type (u + 1) :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u + 1}.obj X
 
 /--
@@ -90,21 +90,21 @@ end LocallyConstantAsColimit
 Given a presheaf `F` on `Profinite`, `lanPresheaf F` is the left Kan extension of its
 restriction to finite sets along the inclusion functor of finite sets into `Profinite`.
 -/
-abbrev lanPresheaf (F : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1}) : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1} :=
+abbrev lanPresheaf (F : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)) : Profinite.{u}ᵒᵖ ⥤ Type (u + 1) :=
   pointwiseLeftKanExtension toProfinite.op (toProfinite.op ⋙ F)
 
 /--
 To presheaves on `Profinite` whose restrictions to finite sets are isomorphic have isomorphic left
 Kan extensions.
 -/
-def lanPresheafExt {F G : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1}}
+def lanPresheafExt {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)}
     (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : lanPresheaf F ≅ lanPresheaf G :=
   leftKanExtensionUniqueOfIso _ (pointwiseLeftKanExtensionUnit _ _) i _
     (pointwiseLeftKanExtensionUnit _ _)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma lanPresheafExt_hom {F G : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1}} (S : Profinite.{u}ᵒᵖ)
+lemma lanPresheafExt_hom {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)} (S : Profinite.{u}ᵒᵖ)
     (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : (lanPresheafExt i).hom.app S =
       colimMap (whiskerLeft (CostructuredArrow.proj toProfinite.op S) i.hom) := by
   simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
@@ -114,7 +114,7 @@ lemma lanPresheafExt_hom {F G : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1}} (S : Pr
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma lanPresheafExt_inv {F G : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1}} (S : Profinite.{u}ᵒᵖ)
+lemma lanPresheafExt_inv {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)} (S : Profinite.{u}ᵒᵖ)
     (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : (lanPresheafExt i).inv.app S =
       colimMap (whiskerLeft (CostructuredArrow.proj toProfinite.op S) i.inv) := by
   simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
@@ -122,7 +122,7 @@ lemma lanPresheafExt_inv {F G : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1}} (S : Pr
   apply colimit.hom_ext
   aesop
 
-variable {S : Profinite.{u}} {F : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1}}
+variable {S : Profinite.{u}} {F : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)}
 
 instance : Final <| Profinite.Extend.functorOp S.asLimitCone :=
   Profinite.Extend.functorOp_final S.asLimitCone S.asLimit
@@ -159,8 +159,8 @@ lemma lanPresheafNatIso_hom_app (hF : ∀ S : Profinite, IsColimit <| F.mapCocon
 /--
 `lanPresheaf (locallyConstantPresheaf X)` is a sheaf for the coherent topology on `Profinite`.
 -/
-def lanSheafProfinite (X : TypeCat.{u + 1}) :
-    Sheaf (coherentTopology Profinite.{u}) TypeCat.{u + 1} where
+def lanSheafProfinite (X : Type (u + 1)) :
+    Sheaf (coherentTopology Profinite.{u}) Type (u + 1) where
   obj := lanPresheaf (locallyConstantPresheaf X)
   property := by
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
@@ -169,17 +169,17 @@ def lanSheafProfinite (X : TypeCat.{u + 1}) :
       (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).property
 
 /-- `lanPresheaf (locallyConstantPresheaf X)` as a condensed set. -/
-def lanCondensedSet (X : TypeCat.{u + 1}) : CondensedSet.{u} :=
+def lanCondensedSet (X : Type (u + 1)) : CondensedSet.{u} :=
   (ProfiniteCompHaus.equivalence _).functor.obj (lanSheafProfinite X)
 
-variable (F : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1})
+variable (F : Profinite.{u}ᵒᵖ ⥤ Type (u + 1))
 
 /--
 The functor which takes a finite set to the set of maps into `F(*)` for a presheaf `F` on
 `Profinite`.
 -/
 @[simps obj map]
-abbrev finYoneda : FintypeCat.{u}ᵒᵖ ⥤ TypeCat.{u + 1} where
+abbrev finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type (u + 1) where
   obj X := (X.unop → F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩))
   map f := TypeCat.ofHom ⟨fun g ↦ g ∘ f.unop⟩
 
@@ -271,7 +271,7 @@ def isoLocallyConstantOfIsColimit
       lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
 
 set_option backward.isDefEq.respectTransparency false in
-lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ TypeCat.{u + 1})
+lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1))
     [PreservesFiniteProducts X]
     (hX : ∀ S : Profinite.{u}, (IsColimit <| X.mapCocone S.asLimitCone.op)) :
     (isoLocallyConstantOfIsColimit X hX).inv =

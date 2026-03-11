@@ -47,10 +47,10 @@ For better universe generality, we state this manually as for every `Y`, the
 induced map `(Y ⟶ X) → F.obj Y` is bijective.
 -/
 @[mk_iff]
-structure IsRepresentedBy (F : Cᵒᵖ ⥤ TypeCat.{w}) {X : C} (x : F.obj (op X)) : Prop where
+structure IsRepresentedBy (F : Cᵒᵖ ⥤ Type w) {X : C} (x : F.obj (op X)) : Prop where
   map_bijective {Y : C} : Function.Bijective (fun f : Y ⟶ X ↦ F.map f.op x)
 
-variable {F : Cᵒᵖ ⥤ TypeCat.{w}} {X : C} {x : F.obj (op X)}
+variable {F : Cᵒᵖ ⥤ Type w} {X : C} {x : F.obj (op X)}
 
 set_option backward.isDefEq.respectTransparency false in
 lemma IsRepresentedBy.iff_isIso_uliftYonedaEquiv :
@@ -96,14 +96,14 @@ lemma IsRepresentedBy.iff_exists_representableBy :
     F.IsRepresentedBy x ↔ ∃ (R : F.RepresentableBy X), R.homEquiv (𝟙 X) = x :=
   ⟨fun h ↦ ⟨h.representableBy, by simp⟩, fun ⟨R, h⟩ ↦ h ▸ R.isRepresentedBy⟩
 
-lemma IsRepresentedBy.of_natIso (h : F.IsRepresentedBy x) {F' : Cᵒᵖ ⥤ TypeCat.{w}}
+lemma IsRepresentedBy.of_natIso (h : F.IsRepresentedBy x) {F' : Cᵒᵖ ⥤ Type w}
     (e : F ≅ F') :
     F'.IsRepresentedBy (e.hom.app (op X) x) := by
   rw [iff_exists_representableBy]
   use h.representableBy.ofIso e
   simp [RepresentableBy.ofIso]
 
-lemma IsRepresentedBy.iff_natIso {F' : Cᵒᵖ ⥤ TypeCat.{w}} (e : F ≅ F') :
+lemma IsRepresentedBy.iff_natIso {F' : Cᵒᵖ ⥤ Type w} (e : F ≅ F') :
     F'.IsRepresentedBy (e.hom.app (op X) x) ↔ F.IsRepresentedBy x :=
   ⟨fun h ↦ by simpa using h.of_natIso e.symm, fun h ↦ .of_natIso h _⟩
 

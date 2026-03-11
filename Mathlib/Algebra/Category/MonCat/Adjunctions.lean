@@ -64,7 +64,7 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
 /-- The free functor `Type u ⥤ MonCat` sending a type `X` to the free monoid on `X`. -/
 @[to_additive
 /-- The free functor `Type u ⥤ AddMonCat` sending a type `X` to the free additive monoid on `X`. -/]
-def free : TypeCat.{u} ⥤ MonCat.{u} where
+def free : Type u ⥤ MonCat.{u} where
   obj α := MonCat.of (FreeMonoid α)
   map f := ofHom (FreeMonoid.map f)
   map_id _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl)
@@ -94,7 +94,7 @@ namespace AddCommMonCat
 sending a type `X` to the free commutative monoid on `X`. -/
 @[simps]
 noncomputable
-def free : TypeCat.{u} ⥤ AddCommMonCat.{u} where
+def free : Type u ⥤ AddCommMonCat.{u} where
   obj α := .of (α →₀ ℕ)
   map f := ofHom (Finsupp.mapDomain.addMonoidHom f)
 

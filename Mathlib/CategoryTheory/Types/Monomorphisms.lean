@@ -33,14 +33,14 @@ namespace CategoryTheory.Types
 
 open MorphismProperty Limits ConcreteCategory
 
-instance : (monomorphisms (TypeCat.{u})).IsStableUnderCobaseChange where
+instance : (monomorphisms (Type u)).IsStableUnderCobaseChange where
   of_isPushout {X₁ X₂ X₃ X₄ t l r b} sq ht := by
     simp only [monomorphisms.iff] at ht ⊢
     exact Limits.Types.pushoutCocone_inr_mono_of_isColimit sq.flip.isColimit
 
 set_option backward.isDefEq.respectTransparency false in
 instance : MorphismProperty.IsStableUnderFilteredColimits.{v', u'}
-    (monomorphisms (TypeCat.{u})) where
+    (monomorphisms (Type u)) where
   isStableUnderColimitsOfShape J _ _ := ⟨fun F₁ F₂ c₁ c₂ hc₁ hc₂ f hf φ hφ ↦ by
     simp only [functorCategory, monomorphisms.iff, mono_iff_injective] at hf ⊢
     replace hφ (j : J) := congr_hom (hφ j)
@@ -58,7 +58,7 @@ instance : MorphismProperty.IsStableUnderFilteredColimits.{v', u'}
     rw [← c₁.w α, comp_apply, comp_apply, hf _ hk]⟩
 
 instance (T : Type u') : MorphismProperty.IsStableUnderCoproductsOfShape
-    (monomorphisms (TypeCat.{u})) T :=
+    (monomorphisms (Type u)) T :=
   IsStableUnderCoproductsOfShape.mk _ _ (by
     intro X₁ X₂ _ _ f h
     simp only [monomorphisms.iff, mono_iff_injective] at h ⊢
@@ -77,6 +77,6 @@ instance (T : Type u') : MorphismProperty.IsStableUnderCoproductsOfShape
     obtain rfl := h _ (Cofan.inj_injective_of_isColimit (coproductIsCoproduct X₂) i₁ hx)
     rfl)
 
-instance : MorphismProperty.IsStableUnderCoproducts (monomorphisms (TypeCat.{u})) where
+instance : MorphismProperty.IsStableUnderCoproducts (monomorphisms (Type u)) where
 
 end CategoryTheory.Types

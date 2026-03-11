@@ -29,7 +29,7 @@ open CategoryTheory Limits
 namespace CompHausLike
 
 variable {P : TopCat.{u} → Prop} [HasExplicitFiniteCoproducts.{u} P]
-  (X : (CompHausLike.{u} P)ᵒᵖ ⥤ TypeCat.{max u w}) [PreservesFiniteProducts X]
+  (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w)) [PreservesFiniteProducts X]
   {α : Type u} [Finite α] (σ : α → Type u)
   [∀ a, TopologicalSpace (σ a)] [∀ a, CompactSpace (σ a)] [∀ a, T2Space (σ a)]
   [∀ a, HasProp P (σ a)]

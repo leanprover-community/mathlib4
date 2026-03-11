@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.EssentiallySmall
 # The Yoneda functor for locally small categories
 
 Let `C` be a locally `w`-small category. We define the Yoneda
-embedding `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ TypeCat.{w}`. (See the
+embedding `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w`. (See the
 file `CategoryTheory.Yoneda` for the other variants `yoneda` and
 `uliftYoneda`.)
 
@@ -29,23 +29,23 @@ variable {C : Type u} [Category.{v} C]
 
 namespace FunctorToTypes
 
-/-- A functor to types `F : C ⥤ TypeCat.{w'}` is `w`-small if for any `X : C`,
+/-- A functor to types `F : C ⥤ Type w'` is `w`-small if for any `X : C`,
 the type `F.obj X` is `w`-small. -/
 @[pp_with_univ]
-protected abbrev Small (F : C ⥤ TypeCat.{w'}) := ∀ (X : C), _root_.Small.{w} (F.obj X)
+protected abbrev Small (F : C ⥤ Type w') := ∀ (X : C), _root_.Small.{w} (F.obj X)
 
-/-- If a functor `F : C ⥤ TypeCat.{w'}` is `w`-small, this is the functor `C ⥤ TypeCat.{w}`
+/-- If a functor `F : C ⥤ Type w'` is `w`-small, this is the functor `C ⥤ Type w`
 obtained by shrinking `F.obj X` for all `X : C`. -/
 @[simps obj map, pp_with_univ]
-noncomputable def shrink (F : C ⥤ TypeCat.{w'}) [FunctorToTypes.Small.{w} F] :
-    C ⥤ TypeCat.{w} where
+noncomputable def shrink (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F] :
+    C ⥤ Type w where
   obj X := <| Shrink.{w} (F.obj X)
   map f := TypeCat.ofHom ⟨equivShrink.{w} _ ∘ F.map f ∘ (equivShrink.{w} _).symm⟩
 
 /-- The natural transformation `shrink.{w} F ⟶ shrink.{w} G` induces by a natural
 transformation `τ : F ⟶ G` between `w`-small functors to types. -/
 @[simps]
-noncomputable def shrinkMap {F G : C ⥤ TypeCat.{w'}} (τ : F ⟶ G) [FunctorToTypes.Small.{w} F]
+noncomputable def shrinkMap {F G : C ⥤ Type w'} (τ : F ⟶ G) [FunctorToTypes.Small.{w} F]
     [FunctorToTypes.Small.{w} G] :
     shrink.{w} F ⟶ shrink.{w} G where
   app X := TypeCat.ofHom ⟨equivShrink.{w} _ ∘ τ.app X ∘ (equivShrink.{w} _).symm⟩
@@ -54,7 +54,7 @@ noncomputable def shrinkMap {F G : C ⥤ TypeCat.{w'}} (τ : F ⟶ G) [FunctorTo
 `Type (max w w')`. -/
 @[simps! hom_app inv_app]
 noncomputable
-def shrinkCompUliftFunctorIso (F : C ⥤ TypeCat.{w'}) [FunctorToTypes.Small.{w} F]
+def shrinkCompUliftFunctorIso (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F]
     [FunctorToTypes.Small.{max w w''} F] :
     shrink.{w} F ⋙ uliftFunctor.{w'', w} ≅ shrink.{max w w''} F :=
   NatIso.ofComponents
@@ -68,10 +68,10 @@ instance (X : C) : FunctorToTypes.Small.{w} (yoneda.obj X) :=
   fun _ ↦ by dsimp; infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Yoneda embedding `C ⥤ Cᵒᵖ ⥤ TypeCat.{w}` for a locally `w`-small category `C`. -/
+/-- The Yoneda embedding `C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`. -/
 @[simps -isSimp obj map, pp_with_univ]
 noncomputable def shrinkYoneda :
-    C ⥤ Cᵒᵖ ⥤ TypeCat.{w} where
+    C ⥤ Cᵒᵖ ⥤ Type w where
   obj X := FunctorToTypes.shrink (yoneda.obj X)
   map f := FunctorToTypes.shrinkMap (yoneda.map f)
 
@@ -101,8 +101,8 @@ lemma shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The type of natural transformations `shrinkYoneda.{w}.obj X ⟶ P`
-with `X : C` and `P : Cᵒᵖ ⥤ TypeCat.{w}` is equivalent to `P.obj (op X)`. -/
-noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ TypeCat.{w}} :
+with `X : C` and `P : Cᵒᵖ ⥤ Type w` is equivalent to `P.obj (op X)`. -/
+noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ Type w} :
     (shrinkYoneda.{w}.obj X ⟶ P) ≃ P.obj (op X) where
   toFun τ := τ.app _ (equivShrink.{w} _ (𝟙 X))
   invFun x :=
@@ -115,7 +115,7 @@ noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ TypeCat.{w}} :
   right_inv x := by simp
 
 set_option backward.isDefEq.respectTransparency false in
-lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ TypeCat.{w}} (f : shrinkYoneda.obj X ⟶ P)
+lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ Type w} (f : shrinkYoneda.obj X ⟶ P)
     (g : Y ⟶ X) : P.map g.op (shrinkYonedaEquiv f) =
       f.app (op Y) (shrinkYonedaObjObjEquiv.symm g) := by
   simp [shrinkYonedaObjObjEquiv, shrinkYonedaEquiv, shrinkYoneda,
@@ -127,20 +127,20 @@ lemma shrinkYonedaEquiv_shrinkYoneda_map {X Y : C} (f : X ⟶ Y) :
     shrinkYonedaEquiv (shrinkYoneda.{w}.map f) = shrinkYonedaObjObjEquiv.symm f := by
   simp [shrinkYonedaEquiv, shrinkYoneda, shrinkYonedaObjObjEquiv]
 
-lemma shrinkYonedaEquiv_comp {X : C} {P Q : Cᵒᵖ ⥤ TypeCat.{w}} (α : shrinkYoneda.obj X ⟶ P)
+lemma shrinkYonedaEquiv_comp {X : C} {P Q : Cᵒᵖ ⥤ Type w} (α : shrinkYoneda.obj X ⟶ P)
     (β : P ⟶ Q) :
     shrinkYonedaEquiv (α ≫ β) = β.app _ (shrinkYonedaEquiv α) := by
   simp [shrinkYonedaEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma shrinkYonedaEquiv_naturality {X Y : C} {P : Cᵒᵖ ⥤ TypeCat.{w}}
+lemma shrinkYonedaEquiv_naturality {X Y : C} {P : Cᵒᵖ ⥤ Type w}
     (f : shrinkYoneda.obj X ⟶ P) (g : Y ⟶ X) :
     P.map g.op (shrinkYonedaEquiv f) = shrinkYonedaEquiv (shrinkYoneda.map g ≫ f) := by
   simpa [shrinkYonedaEquiv, shrinkYoneda]
     using (f.naturality_apply g.op ((equivShrink _) (𝟙 _))).symm
 
 @[reassoc]
-lemma shrinkYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {P : Cᵒᵖ ⥤ TypeCat.{w}} (t : P.obj X) :
+lemma shrinkYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {P : Cᵒᵖ ⥤ Type w} (t : P.obj X) :
     shrinkYonedaEquiv.symm (P.map f t) =
       shrinkYoneda.map f.unop ≫ shrinkYonedaEquiv.symm t :=
   shrinkYonedaEquiv.injective (by
@@ -148,7 +148,7 @@ lemma shrinkYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {P : Cᵒᵖ ⥤ 
     rw [← shrinkYonedaEquiv_naturality]
     simp)
 
-lemma shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm {X : C} {P : Cᵒᵖ ⥤ TypeCat.{w}}
+lemma shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm {X : C} {P : Cᵒᵖ ⥤ Type w}
     (s : P.obj (op X)) {Y : C} (f : Y ⟶ X) :
     (shrinkYonedaEquiv.symm s).app (op Y) (shrinkYonedaObjObjEquiv.symm f) =
       P.map f.op s := by
@@ -156,7 +156,7 @@ lemma shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm {X : C} {P : Cᵒ�
   simp [map_shrinkYonedaEquiv]
 
 variable (C) in
-/-- The functor `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ TypeCat.{w}` for a locally `w`-small category `C`
+/-- The functor `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`
 is fully faithful. -/
 noncomputable def fullyFaithfulShrinkYoneda :
     (shrinkYoneda.{w} (C := C)).FullyFaithful where

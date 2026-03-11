@@ -32,7 +32,7 @@ namespace CategoryTheory
 open Category Opposite Limits Abelian
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-  [HasWeakSheafify J TypeCat.{v}] [HasSheafify J AddCommGrpCat.{v}]
+  [HasWeakSheafify J Type v] [HasSheafify J AddCommGrpCat.{v}]
   [HasExt.{w} (Sheaf J AddCommGrpCat.{v})]
 
 namespace GrothendieckTopology.MayerVietorisSquare

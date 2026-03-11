@@ -24,7 +24,7 @@ namespace CategoryTheory.Types
 
 open MorphismProperty Limits
 
-instance : (epimorphisms (TypeCat.{u})).IsStableUnderBaseChange where
+instance : (epimorphisms (Type u)).IsStableUnderBaseChange where
   of_isPullback {_ _ _ _} b r t l sq hr := by
     simp only [epimorphisms.iff, epi_iff_surjective] at hr ⊢
     intro x

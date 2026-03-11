@@ -36,7 +36,7 @@ instance {C : Type w} [Category.{v} C] : Category (LightCondensed.{u} C) :=
 Light condensed sets. Because `LightProfinite` is an essentially small category, we don't need the
 same universe bump as in `CondensedSet`.
 -/
-abbrev LightCondSet := LightCondensed.{u} TypeCat.{u}
+abbrev LightCondSet := LightCondensed.{u} Type u
 
 namespace LightCondensed
 

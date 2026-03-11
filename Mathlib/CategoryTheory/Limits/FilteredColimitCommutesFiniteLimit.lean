@@ -46,11 +46,11 @@ variable {J : Type u₁} {K : Type u₂} [Category.{v₁} J] [Category.{v₂} K]
 
 /-- `(G ⋙ lim).obj j` = `limit (G.obj j)` definitionally, so this
 is just a variant of `limit_ext'`. -/
-@[ext] lemma comp_lim_obj_ext {j : J} {G : J ⥤ K ⥤ TypeCat.{v}} (x y : (G ⋙ lim).obj j)
+@[ext] lemma comp_lim_obj_ext {j : J} {G : J ⥤ K ⥤ Type v} (x y : (G ⋙ lim).obj j)
     (w : ∀ (k : K), limit.π (G.obj j) k x = limit.π (G.obj j) k y) : x = y :=
   limit_ext _ x y w
 
-variable (F : J × K ⥤ TypeCat.{v})
+variable (F : J × K ⥤ Type v)
 
 open Prod
 
@@ -148,7 +148,7 @@ variable {J : Type u₁} {K : Type u₂} [SmallCategory J] [Category.{v₂} K] [
 
 variable [FinCategory J]
 
-variable (F : J × K ⥤ TypeCat.{v})
+variable (F : J × K ⥤ Type v)
 
 open CategoryTheory.Prod
 
@@ -321,7 +321,7 @@ instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F)
     ⟨colimitLimitToLimitColimit_injective F, colimitLimitToLimitColimit_surjective F⟩
 
 set_option backward.isDefEq.respectTransparency false in
-instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ TypeCat.{v}) :
+instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     IsIso (colimitLimitToLimitColimitCone F) := by
   have : IsIso (colimitLimitToLimitColimitCone F).hom := by
     suffices IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
@@ -331,7 +331,7 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ TypeCat.{v}) :
   apply Cone.cone_iso_of_hom_iso
 
 noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
-    PreservesFiniteLimits (colim : (K ⥤ TypeCat.{v}) ⥤ _) := by
+    PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{v₂}
   intro J _ _
   refine ⟨fun {F} => ⟨fun {c} hc => ⟨IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩⟩

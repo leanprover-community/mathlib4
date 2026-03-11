@@ -37,13 +37,13 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 /-- When `F : C ⥤ D` and `P : D ⥤ Type _`, this is the obvious map
 `P.sections → (F ⋙ P).sections`. -/
 @[simps]
-def sectionsPrecomp (F : C ⥤ D) {P : D ⥤ TypeCat.{w}} (x : P.sections) :
+def sectionsPrecomp (F : C ⥤ D) {P : D ⥤ Type w} (x : P.sections) :
     (F ⋙ P).sections where
   val _ := x.val _
   property _ := x.property _
 
 set_option backward.isDefEq.respectTransparency false in
-lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ TypeCat.{w}) [F.Initial] :
+lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
     Function.Bijective (F.sectionsPrecomp (P := P)) := by
   refine ⟨fun s₁ s₂ h ↦ ?_, fun t ↦ ?_⟩
   · ext Y
@@ -70,18 +70,18 @@ lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ TypeCat.{w}) [F.Initial
 
 /-- Given `P : D ⥤ Type w` and `F : C ⥤ D`, this is the obvious map
 `(F ⋙ P).ColimitType → P.ColimitType`. -/
-def colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ TypeCat.{w}) :
+def colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ Type w) :
     (F ⋙ P).ColimitType → P.ColimitType :=
   (F ⋙ P).descColimitType (P.coconeTypes.precomp F)
 
 @[simp]
-lemma colimitTypePrecomp_ιColimitType (F : C ⥤ D) {P : D ⥤ TypeCat.{w}}
+lemma colimitTypePrecomp_ιColimitType (F : C ⥤ D) {P : D ⥤ Type w}
     (i : C) (x : P.obj (F.obj i)) :
     colimitTypePrecomp F P ((F ⋙ P).ιColimitType i x) = P.ιColimitType (F.obj i) x :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-lemma bijective_colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ TypeCat.{w}) [F.Final] :
+lemma bijective_colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Final] :
     Function.Bijective (F.colimitTypePrecomp (P := P)) := by
   refine ⟨?_, fun x ↦ ?_⟩
   · have h (Y : D) : ∃ (a : P.obj Y → (F ⋙ P).ColimitType), ∀ (j : StructuredArrow Y F),

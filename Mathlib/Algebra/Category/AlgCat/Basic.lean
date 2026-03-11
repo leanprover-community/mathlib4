@@ -183,7 +183,7 @@ lemma forget₂_module_map {X Y : AlgCat.{v} R} (f : X ⟶ Y) :
 
 /-- The "free algebra" functor, sending a type `S` to the free algebra on `S`. -/
 @[simps! obj map]
-def free : TypeCat.{u} ⥤ AlgCat.{u} R where
+def free : Type u ⥤ AlgCat.{u} R where
   obj S := of R (FreeAlgebra R S)
   map f := ofHom <| FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
 

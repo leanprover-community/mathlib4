@@ -24,7 +24,7 @@ open CategoryTheory Limits ConcreteCategory
 
 namespace CategoryTheory.Limits.Types
 
-variable {X Y Z : TypeCat.{u}} (f : X ⟶ Y) {g h : Y ⟶ Z} (w : f ≫ g = f ≫ h)
+variable {X Y Z : Type u} (f : X ⟶ Y) {g h : Y ⟶ Z} (w : f ≫ g = f ≫ h)
 
 /--
 Show the given fork in `Type u` is an equalizer given that any element in the "difference kernel"

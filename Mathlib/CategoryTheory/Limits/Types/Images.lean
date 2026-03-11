@@ -22,13 +22,13 @@ universe v u
 
 namespace CategoryTheory.Limits.Types
 
-variable {α β : TypeCat.{u}} (f : α ⟶ β)
+variable {α β : Type u} (f : α ⟶ β)
 
 section
 
 -- implementation of `HasImage`
 /-- the image of a morphism in Type is just `Set.range f` -/
-def Image : TypeCat.{u} :=
+def Image : Type u :=
   (Set.range f)
 
 instance [Inhabited α] : Inhabited (Image f) where default := ⟨f default, ⟨_, rfl⟩⟩
@@ -68,11 +68,11 @@ noncomputable def isImage : IsImage (monoFactorisation f) where
 instance : HasImage f :=
   HasImage.mk ⟨_, isImage f⟩
 
-instance : HasImages (TypeCat.{u}) where
+instance : HasImages (Type u) where
   has_image := by infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
-instance : HasImageMaps (TypeCat.{u}) where
+instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
       (TypeCat.ofHom ⟨fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
@@ -81,7 +81,7 @@ instance : HasImageMaps (TypeCat.{u}) where
         simp only [Functor.id_obj, Functor.id_map, comp_apply] at p
         erw [p, Classical.choose_spec x.2]⟩⟩⟩) rfl
 
-variable {F : ℕᵒᵖ ⥤ TypeCat.{u}} {c : Cone F}
+variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
   (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))
 
 private noncomputable def limitOfSurjectionsSurjective.preimage

@@ -82,7 +82,7 @@ variable (G)
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
 @[simps obj map]
 def classifyingSpaceUniversalCover [Monoid G] :
-    SimplicialObject (Action TypeCat.{u} G) where
+    SimplicialObject (Action Type u G) where
   obj n := Action.ofMulAction G ((Fin (n.unop.len + 1) → G))
   map f :=
     { hom := TypeCat.ofHom ⟨fun x => x ∘ f.unop.toOrderHom⟩
@@ -121,7 +121,7 @@ open AlgebraicTopology SimplicialObject.Augmented SimplicialObject CategoryTheor
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
 from `Fin 1 → G` to the terminal object in `Type u`. -/
-def compForgetAugmented : SimplicialObject.Augmented TypeCat.{u} :=
+def compForgetAugmented : SimplicialObject.Augmented Type u :=
   SimplicialObject.augment (classifyingSpaceUniversalCover G ⋙ forget _) (terminal _)
     (terminal.from _) fun _ _ _ => Subsingleton.elim _ _
 
@@ -236,7 +236,7 @@ def forget₂ToModuleCatHomotopyEquiv :
           (extraDegeneracyCompForgetAugmentedToModule k G)).trans
       (HomotopyEquiv.ofIso <|
         (ChainComplex.single₀ (ModuleCat.{u} k)).mapIso
-          (@Finsupp.LinearEquiv.finsuppUnique k k _ _ _ (⊤_ TypeCat.{u})
+          (@Finsupp.LinearEquiv.finsuppUnique k k _ _ _ (⊤_ Type u)
               Types.terminalIso.toEquiv.unique).toModuleIso)
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/

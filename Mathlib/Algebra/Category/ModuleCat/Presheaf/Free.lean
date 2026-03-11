@@ -39,14 +39,14 @@ variable {R} in
 /-- Given a presheaf of types `F : Cᵒᵖ ⥤ Type u`, this is the presheaf
 of modules over `R` which sends `X : Cᵒᵖ` to the free `R.obj X`-module on `F.obj X`. -/
 @[simps]
-noncomputable def freeObj (F : Cᵒᵖ ⥤ TypeCat.{u}) : PresheafOfModules.{u} R where
+noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R where
   obj X := (ModuleCat.free (R.obj X)).obj (F.obj X)
   map {X Y} f := ModuleCat.freeDesc (TypeCat.ofHom ⟨fun x ↦ ModuleCat.freeMk (F.map f x)⟩)
   map_id := by aesop
 
 /-- The free presheaf of modules functor `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
 @[simps]
-noncomputable def free : (Cᵒᵖ ⥤ TypeCat.{u}) ⥤ PresheafOfModules.{u} R where
+noncomputable def free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R where
   obj := freeObj
   map {F G} φ := { app := fun X ↦ (ModuleCat.free (R.obj X)).map (φ.app X) }
 
@@ -54,7 +54,7 @@ section
 
 variable {R}
 
-variable {F : Cᵒᵖ ⥤ TypeCat.{u}} {G : PresheafOfModules.{u} R}
+variable {F : Cᵒᵖ ⥤ Type u} {G : PresheafOfModules.{u} R}
 
 /-- The morphism of presheaves of modules `freeObj F ⟶ G` corresponding to
 a morphism `F ⟶ G.presheaf ⋙ forget _` of presheaves of types. -/

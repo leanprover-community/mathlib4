@@ -43,7 +43,7 @@ open Opposite CategoryTheory Category Limits Sieve
 
 namespace Equalizer
 
-variable {C : Type u} [Category.{v} C] (P : Cᵒᵖ ⥤ TypeCat.{max v u}) {X : C} (R : Presieve X)
+variable {C : Type u} [Category.{v} C] (P : Cᵒᵖ ⥤ Type (max v u)) {X : C} (R : Presieve X)
   (S : Sieve X)
 
 noncomputable section
@@ -53,7 +53,7 @@ The middle object of the fork diagram given in Equation (3) of [MM92], as well a
 of the Stacks entry.
 -/
 @[stacks 00VM "This is the middle object of the fork diagram there."]
-abbrev FirstObj : TypeCat.{max v u} :=
+abbrev FirstObj : Type (max v u) :=
   ∏ᶜ fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)
 
 variable {P R}
@@ -106,7 +106,7 @@ namespace Sieve
 /-- The rightmost object of the fork diagram of Equation (3) [MM92], which contains the data used
 to check a family is compatible.
 -/
-abbrev SecondObj : TypeCat.{max v u} :=
+abbrev SecondObj : Type (max v u) :=
   ∏ᶜ fun f : Σ (Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
 
 variable {P S}
@@ -192,7 +192,7 @@ The rightmost object of the fork diagram of the Stacks entry, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
 @[simp, stacks 00VM "This is the rightmost object of the fork diagram there."]
-def SecondObj : TypeCat.{max v u} :=
+def SecondObj : Type (max v u) :=
   ∏ᶜ fun fg : (Σ Y, { f : Y ⟶ X // R f }) × Σ Z, { g : Z ⟶ X // R g } =>
     haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
@@ -264,7 +264,7 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
 
 namespace Arrows
 
-variable (P : Cᵒᵖ ⥤ TypeCat.{w}) {X : C} (R : Presieve X) (S : Sieve X)
+variable (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X) (S : Sieve X)
 
 open Presieve
 
@@ -277,7 +277,7 @@ The difference between this and `Equalizer.FirstObj P (ofArrows X π)` arises if
 arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
 @[stacks 00VM "The middle object of the fork diagram there."]
-abbrev FirstObj : TypeCat.{w} := ∏ᶜ (fun i ↦ P.obj (op (X i)))
+abbrev FirstObj : Type w := ∏ᶜ (fun i ↦ P.obj (op (X i)))
 
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P X) (h : ∀ i, (Pi.π _ i : FirstObj P X ⟶ _) z₁ =
@@ -292,7 +292,7 @@ The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)`
 family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
 @[stacks 00VM "The rightmost object of the fork diagram there."]
-abbrev SecondObj : TypeCat.{w} :=
+abbrev SecondObj : Type w :=
   ∏ᶜ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
 
 @[ext]

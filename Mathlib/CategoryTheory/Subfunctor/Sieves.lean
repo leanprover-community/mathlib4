@@ -25,7 +25,7 @@ namespace CategoryTheory.Subfunctor
 
 open Opposite
 
-variable {C : Type u} [Category.{v} C] {F : Cᵒᵖ ⥤ TypeCat.{w}} (G : Subfunctor F)
+variable {C : Type u} [Category.{v} C] {F : Cᵒᵖ ⥤ Type w} (G : Subfunctor F)
 
 /-- Given a subpresheaf `G` of `F`, an `F`-section `s` on `U`, we may define a sieve of `U`
 consisting of all `f : V ⟶ U` such that the restriction of `s` along `f` is in `G`. -/

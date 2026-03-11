@@ -36,7 +36,7 @@ open Limits
 variable {C : Type u} [Category.{v} C]
 
 lemma Functor.isCofiltered_elements
-    (F : C ⥤ TypeCat.{w}) [HasFiniteLimits C] [PreservesFiniteLimits F] :
+    (F : C ⥤ Type w) [HasFiniteLimits C] [PreservesFiniteLimits F] :
     IsCofiltered F.Elements where
   nonempty := ⟨⊤_ C, (terminalIsTerminal.isTerminalObj F).from (PUnit) .unit⟩
   cone_objs := by
@@ -60,11 +60,11 @@ lemma Functor.isCofiltered_elements
 
 namespace FunctorToTypes
 
-variable (F : C ⥤ TypeCat.{w}) {X : C} (x : F.obj X)
+variable (F : C ⥤ Type w) {X : C} (x : F.obj X)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given a functor `F : C ⥤ TypeCat.{w}`, an object `X : C` and `x : F.obj X`,
-this is the subfunctor of the functor `Over.forget X ⋙ F : Over X ⥤ TypeCat.{w}`
+/-- Given a functor `F : C ⥤ Type w`, an object `X : C` and `x : F.obj X`,
+this is the subfunctor of the functor `Over.forget X ⋙ F : Over X ⥤ Type w`
 which sends an object of `Over X` corresponding to a morphism `f : Y ⟶ X`
 to the subset of `F.obj Y` consisting of those elements `y : F.obj Y`
 such that `F.map f y = x`. -/
@@ -80,15 +80,15 @@ lemma mem_fromOverSubfunctor_iff {U : Over X} (u : F.obj U.left) :
 lemma mem_fromOverSubfunctor_iff' {U : Over X} (u : F.obj U.left) :
     (fromOverSubfunctor F x).obj U u ↔ F.map U.hom u = x := Iff.rfl
 
-/-- Given a functor `F : C ⥤ TypeCat.{w}`, an object `X : C` and `x : F.obj X`,
+/-- Given a functor `F : C ⥤ Type w`, an object `X : C` and `x : F.obj X`,
 this is the functor `Over X ⥤ Type w` which sends an object of `Over X`
 corresponding to a morphism `f : Y ⟶ X` to the subtype of `F.obj Y`
 consisting of those elements `y : F.obj Y` such that `F.map f y = x`. -/
-abbrev fromOverFunctor : Over X ⥤ TypeCat.{w} := (fromOverSubfunctor F x).toFunctor
+abbrev fromOverFunctor : Over X ⥤ Type w := (fromOverSubfunctor F x).toFunctor
 
 set_option backward.isDefEq.respectTransparency false in
 open CategoryOfElements in
-/-- Given a functor `F : C ⥤ TypeCat.{w}`, an object `X : C` and `x : F.obj X`,
+/-- Given a functor `F : C ⥤ Type w`, an object `X : C` and `x : F.obj X`,
 this is the equivalence between the category of elements of `fromOverFunctor F x`
 with the `Over` category of `x` considered as an object of `F.Elements`. -/
 def fromOverFunctorElementsEquivalence :

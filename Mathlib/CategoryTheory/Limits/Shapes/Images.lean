@@ -183,7 +183,7 @@ def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
   m_mono := by rw [hm]; infer_instance
 
 @[simp]
-lemma fac_apply {F G : C ⥤ TypeCat.{w}} {f : F ⟶ G} {X : C}
+lemma fac_apply {F G : C ⥤ Type w} {f : F ⟶ G} {X : C}
     (H : MonoFactorisation f) (x : F.obj X) : H.m.app X (H.e.app X x) = f.app X x := by
   simp [← comp_apply, ← NatTrans.comp_app]
 

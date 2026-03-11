@@ -45,13 +45,13 @@ variable {C : Type u} [Category.{v} C]
 /-- The type of objects for the category of elements of a functor `F : C ⥤ Type`
 is a pair `(X : C, x : F.obj X)`.
 -/
-def Functor.Elements (F : C ⥤ TypeCat.{w}) :=
+def Functor.Elements (F : C ⥤ Type w) :=
   Σ c : C, F.obj c
 
 /-- Constructor for the type `F.Elements` when `F` is a functor to types. -/
-abbrev Functor.elementsMk (F : C ⥤ TypeCat.{w}) (X : C) (x : F.obj X) : F.Elements := ⟨X, x⟩
+abbrev Functor.elementsMk (F : C ⥤ Type w) (X : C) (x : F.obj X) : F.Elements := ⟨X, x⟩
 
-lemma Functor.Elements.ext {F : C ⥤ TypeCat.{w}} (x y : F.Elements) (h₁ : x.fst = y.fst)
+lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst = y.fst)
     (h₂ : F.map (eqToHom h₁) x.snd = y.snd) : x = y := by
   cases x
   cases y
@@ -60,20 +60,20 @@ lemma Functor.Elements.ext {F : C ⥤ TypeCat.{w}} (x y : F.Elements) (h₁ : x.
 
 /-- The category structure on `F.Elements`, for `F : C ⥤ Type`.
 A morphism `(X, x) ⟶ (Y, y)` is a morphism `f : X ⟶ Y` in `C`, so `F.map f` takes `x` to `y`. -/
-instance categoryOfElements (F : C ⥤ TypeCat.{w}) : Category.{v} F.Elements where
+instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   Hom p q := { f : p.1 ⟶ q.1 // (F.map f) p.2 = q.2 }
   id p := ⟨𝟙 p.1, by simp⟩
   comp {X Y Z} f g := ⟨f.val ≫ g.val, by simp [f.2, g.2]⟩
 
 /-- Natural transformations are mapped to functors between categories of elements. -/
 @[simps]
-def NatTrans.mapElements {F G : C ⥤ TypeCat.{w}} (φ : F ⟶ G) : F.Elements ⥤ G.Elements where
+def NatTrans.mapElements {F G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.Elements where
   obj := fun ⟨X, x⟩ ↦ ⟨_, φ.app X x⟩
   map {p q} := fun ⟨f, h⟩ ↦ ⟨f, by have hb := φ.naturality_apply f p.2; cat_disch⟩
 
-/-- The functor mapping functors `C ⥤ TypeCat.{w}` to their category of elements -/
+/-- The functor mapping functors `C ⥤ Type w` to their category of elements -/
 @[simps]
-def Functor.elementsFunctor : (C ⥤ TypeCat.{w}) ⥤ Cat where
+def Functor.elementsFunctor : (C ⥤ Type w) ⥤ Cat where
   obj F := Cat.of F.Elements
   map n := (NatTrans.mapElements n).toCatHom
 
@@ -81,42 +81,42 @@ namespace CategoryOfElements
 
 /-- Constructor for morphisms in the category of elements of a functor to types. -/
 @[simps]
-def homMk {F : C ⥤ TypeCat.{w}} (x y : F.Elements) (f : x.1 ⟶ y.1) (hf : F.map f x.snd = y.snd) :
+def homMk {F : C ⥤ Type w} (x y : F.Elements) (f : x.1 ⟶ y.1) (hf : F.map f x.snd = y.snd) :
     x ⟶ y :=
   ⟨f, hf⟩
 
 @[ext]
-theorem ext (F : C ⥤ TypeCat.{w}) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
+theorem ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
   Subtype.ext w
 
 @[simp]
-theorem comp_val {F : C ⥤ TypeCat.{w}} {p q r : F.Elements} {f : p ⟶ q} {g : q ⟶ r} :
+theorem comp_val {F : C ⥤ Type w} {p q r : F.Elements} {f : p ⟶ q} {g : q ⟶ r} :
     (f ≫ g).val = f.val ≫ g.val :=
   rfl
 
 @[simp]
-theorem id_val {F : C ⥤ TypeCat.{w}} {p : F.Elements} : (𝟙 p : p ⟶ p).val = 𝟙 p.1 :=
+theorem id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = 𝟙 p.1 :=
   rfl
 
 @[simp]
-theorem map_snd {F : C ⥤ TypeCat.{w}} {p q : F.Elements} (f : p ⟶ q) : (F.map f.val) p.2 = q.2 :=
+theorem map_snd {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : (F.map f.val) p.2 = q.2 :=
   f.property
 
 /-- Constructor for isomorphisms in the category of elements of a functor to types. -/
 @[simps]
-def isoMk {F : C ⥤ TypeCat.{w}} (x y : F.Elements) (e : x.1 ≅ y.1)
+def isoMk {F : C ⥤ Type w} (x y : F.Elements) (e : x.1 ≅ y.1)
     (he : F.map e.hom x.snd = y.snd) : x ≅ y where
   hom := homMk x y e.hom he
   inv := homMk y x e.inv (by rw [← he, Functor.map_hom_inv'_apply])
 
-instance [LocallySmall.{w} C] (F : C ⥤ TypeCat.{w}) : LocallySmall.{w} F.Elements where
+instance [LocallySmall.{w} C] (F : C ⥤ Type w) : LocallySmall.{w} F.Elements where
   hom_small := by
     rintro ⟨X, _⟩ ⟨Y, y⟩
     exact small_of_injective (f := fun g ↦ g.val) (by cat_disch)
 
 end CategoryOfElements
 
-instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ TypeCat.{w}) :
+instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
     Groupoid F.Elements where
   inv {p q} f :=
     ⟨Groupoid.inv f.val,
@@ -136,7 +136,7 @@ instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ TypeCat.{w}
 
 namespace CategoryOfElements
 
-variable (F : C ⥤ TypeCat.{w})
+variable (F : C ⥤ Type w)
 
 /-- The functor out of the category of elements which forgets the element. -/
 @[simps]
@@ -154,12 +154,12 @@ instance : (π F).ReflectsIsomorphisms where
 /-- A natural transformation between functors induces a functor between the categories of elements.
 -/
 @[simps]
-def map {F₁ F₂ : C ⥤ TypeCat.{w}} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements where
+def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements where
   obj t := ⟨t.1, α.app t.1 t.2⟩
   map {t₁ t₂} k := ⟨k.1, by simpa [map_snd] using (NatTrans.naturality_apply α k.1 t₁.2).symm⟩
 
 @[simp]
-theorem map_π {F₁ F₂ : C ⥤ TypeCat.{w}} (α : F₁ ⟶ F₂) : map α ⋙ π F₂ = π F₁ :=
+theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F₂ = π F₁ :=
   rfl
 
 /-- The forward direction of the equivalence `F.Elements ≅ (*, F)`. -/
@@ -208,7 +208,7 @@ open Opposite
 given by `CategoryTheory.yonedaEquiv`.
 -/
 @[simps]
-def toCostructuredArrow (F : Cᵒᵖ ⥤ TypeCat.{v}) : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F where
+def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F where
   obj X := CostructuredArrow.mk (yonedaEquiv.symm (unop X).2)
   map f :=
     CostructuredArrow.homMk f.unop.val.unop (by
@@ -220,7 +220,7 @@ set_option backward.isDefEq.respectTransparency false in
 given by `CategoryTheory.yonedaEquiv`.
 -/
 @[simps]
-def fromCostructuredArrow (F : Cᵒᵖ ⥤ TypeCat.{v}) :
+def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) :
     (CostructuredArrow yoneda F)ᵒᵖ ⥤ F.Elements where
   obj X := ⟨op (unop X).1, yonedaEquiv.1 (unop X).3⟩
   map {X Y} f :=
@@ -231,14 +231,14 @@ def fromCostructuredArrow (F : Cᵒᵖ ⥤ TypeCat.{v}) :
       simp [yonedaEquiv_apply, ← this, -CommaMorphism.w]⟩
 
 @[simp]
-theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ TypeCat.{v}) {X : C} (f : yoneda.obj X ⟶ F) :
+theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
 @[simps]
-def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ TypeCat.{v}) :
+def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
     F.Elementsᵒᵖ ≌ CostructuredArrow yoneda F where
   functor := toCostructuredArrow F
   inverse := (fromCostructuredArrow F).rightOp
@@ -251,7 +251,7 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ TypeCat.{v}) :
 
 /-- The equivalence `(-.Elements)ᵒᵖ ≅ (yoneda, -)` of is actually a natural isomorphism of functors.
 -/
-theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤ TypeCat.{v}} (α : F₁ ⟶ F₂) :
+theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤ Type v} (α : F₁ ⟶ F₂) :
     (map α).op ⋙ toCostructuredArrow F₂ = toCostructuredArrow F₁ ⋙ CostructuredArrow.map α := by
   fapply Functor.ext
   · intro X
@@ -264,13 +264,13 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
 
 /-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/
 @[simps!]
-def costructuredArrowYonedaEquivalenceFunctorProj (F : Cᵒᵖ ⥤ TypeCat.{v}) :
+def costructuredArrowYonedaEquivalenceFunctorProj (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).functor ⋙ CostructuredArrow.proj _ _ ≅ (π F).leftOp :=
   Iso.refl _
 
 /-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/
 @[simps!]
-def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ TypeCat.{v}) :
+def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
@@ -278,7 +278,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of the category of elements of a presheaf of types
 is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
 @[simps]
-def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ TypeCat.{max w v}) :
+def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ Type (max w v)) :
     F.Elementsᵒᵖ ≌ CostructuredArrow uliftYoneda.{w} F where
   functor :=
     { obj x := CostructuredArrow.mk (uliftYonedaEquiv.{w}.symm x.unop.2)
@@ -296,7 +296,7 @@ def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ TypeCat.{max w v}) 
 
 /-- The equivalence of categories `costructuredArrowULiftYonedaEquivalence`
 commutes with the projections. -/
-def costructuredArrowULiftYonedaEquivalenceFunctorCompProjIso (F : Cᵒᵖ ⥤ TypeCat.{max w v}) :
+def costructuredArrowULiftYonedaEquivalenceFunctorCompProjIso (F : Cᵒᵖ ⥤ Type (max w v)) :
     (costructuredArrowULiftYonedaEquivalence.{w} F).functor ⋙ CostructuredArrow.proj _ _ ≅
       (π F).leftOp :=
   Iso.refl _

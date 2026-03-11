@@ -39,8 +39,8 @@ open CategoryTheory.Limits Opposite Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-variable {J : Type u₂} [Category.{v₂} J] [HasColimitsOfShape J TypeCat.{v₁}]
-  [HasColimitsOfShape J TypeCat.{max u₁ v₁}] (F : J ⥤ Cᵒᵖ ⥤ TypeCat.{v₁})
+variable {J : Type u₂} [Category.{v₂} J] [HasColimitsOfShape J Type v₁]
+  [HasColimitsOfShape J Type (max u₁ v₁)] (F : J ⥤ Cᵒᵖ ⥤ Type v₁)
 
 /-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`. -/
 noncomputable def yonedaYonedaColimit :

@@ -82,7 +82,7 @@ lemma isPushout_iff_op_map_yoneda_isPullback :
 
 section
 
-variable {sq₁ : Square (TypeCat.{v})} {sq₂ : Square (TypeCat.{u})}
+variable {sq₁ : Square (Type v)} {sq₂ : Square (Type u)}
   (e₁ : sq₁.X₁ ≃ sq₂.X₁) (e₂ : sq₁.X₂ ≃ sq₂.X₂)
   (e₃ : sq₁.X₃ ≃ sq₂.X₃) (e₄ : sq₁.X₄ ≃ sq₂.X₄)
   (comm₁₂ : e₂ ∘ sq₁.f₁₂ = sq₂.f₁₂ ∘ e₁)

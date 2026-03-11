@@ -30,7 +30,7 @@ namespace ModuleCat
 
 open CategoryTheory Abelian
 
-instance (X : TypeCat.{u}) : Projective ((free R).obj X) where
+instance (X : Type u) : Projective ((free R).obj X) where
   factors {M N} f p hp := by
     rw [epi_iff_surjective] at hp
     obtain ⟨s, hs⟩ := hp.hasRightInverse

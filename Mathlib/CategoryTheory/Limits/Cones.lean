@@ -68,7 +68,7 @@ type of natural transformations from the constant functor with value `X` to `F`.
 An object representing this functor is a limit of `F`.
 -/
 @[simps! obj map]
-def cones : Cᵒᵖ ⥤ TypeCat.{max u₁ v₃} :=
+def cones : Cᵒᵖ ⥤ Type (max u₁ v₃) :=
   (const J).op ⋙ yoneda.obj F
 
 /-- If `F : J ⥤ C` then `F.cocones` is the functor assigning to an object `(X : C)`
@@ -76,7 +76,7 @@ the type of natural transformations from `F` to the constant functor with value 
 An object corepresenting this functor is a colimit of `F`.
 -/
 @[simps! obj map]
-def cocones : C ⥤ TypeCat.{max u₁ v₃} :=
+def cocones : C ⥤ Type (max u₁ v₃) :=
   const J ⋙ coyoneda.obj (op F)
 
 end Functor
@@ -89,7 +89,7 @@ variable (J C)
 cones with a given cone point.
 -/
 @[simps! obj_obj obj_map map_app]
-def cones : (J ⥤ C) ⥤ Cᵒᵖ ⥤ TypeCat.{max u₁ v₃} where
+def cones : (J ⥤ C) ⥤ Cᵒᵖ ⥤ Type (max u₁ v₃) where
   obj := Functor.cones
   map f := whiskerLeft (const J).op (yoneda.map f)
 
@@ -97,7 +97,7 @@ def cones : (J ⥤ C) ⥤ Cᵒᵖ ⥤ TypeCat.{max u₁ v₃} where
 cocones with a given cocone point.
 -/
 @[simps! obj_obj obj_map map_app]
-def cocones : (J ⥤ C)ᵒᵖ ⥤ C ⥤ TypeCat.{max u₁ v₃} where
+def cocones : (J ⥤ C)ᵒᵖ ⥤ C ⥤ Type (max u₁ v₃) where
   obj F := Functor.cocones (unop F)
   map f := whiskerLeft (const J) (coyoneda.map f)
 

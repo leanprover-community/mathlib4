@@ -155,21 +155,21 @@ end
 /-- Construct an honest category from a `Type v`-enriched category.
 -/
 @[instance_reducible]
-def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (TypeCat.{v}) C] :
+def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Type v) C] :
     Category.{v} C where
   Hom X Y := 𝒞.Hom X Y
-  id X := eId TypeCat.{v} X PUnit.unit
-  comp f g := eComp TypeCat.{v} _ _ _ ⟨f, g⟩
-  id_comp f := ConcreteCategory.congr_hom (e_id_comp (TypeCat.{v}) _ _) f
-  comp_id f := ConcreteCategory.congr_hom (e_comp_id (TypeCat.{v}) _ _) f
-  assoc f g h := ConcreteCategory.congr_hom (e_assoc (TypeCat.{v}) _ _ _ _) ⟨f, g, h⟩
+  id X := eId Type v X PUnit.unit
+  comp f g := eComp Type v _ _ _ ⟨f, g⟩
+  id_comp f := ConcreteCategory.congr_hom (e_id_comp (Type v) _ _) f
+  comp_id f := ConcreteCategory.congr_hom (e_comp_id (Type v) _ _) f
+  assoc f g h := ConcreteCategory.congr_hom (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
 @[implicit_reducible]
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
-    EnrichedCategory (TypeCat.{v}) C where
+    EnrichedCategory (Type v) C where
   Hom X Y := (𝒞.Hom X Y)
   id X := TypeCat.ofHom ⟨fun _ ↦ 𝟙 _⟩
   comp _ _ _ := TypeCat.ofHom ⟨fun p ↦ p.1 ≫ p.2⟩
@@ -180,7 +180,7 @@ def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
 /-- We verify that an enriched category in `Type u` is just the same thing as an honest category.
 -/
 def enrichedCategoryTypeEquivCategory (C : Type u₁) :
-    EnrichedCategory (TypeCat.{v}) C ≃ Category.{v} C where
+    EnrichedCategory (Type v) C ≃ Category.{v} C where
   toFun _ := categoryOfEnrichedCategoryType C
   invFun _ := enrichedCategoryTypeOfCategory C
 
@@ -230,7 +230,7 @@ theorem ForgetEnrichment.of_to (X : ForgetEnrichment W C) :
   rfl
 
 instance categoryForgetEnrichment : Category (ForgetEnrichment W C) :=
-  enrichedCategoryTypeEquivCategory C (inferInstanceAs (EnrichedCategory TypeCat.{w}
+  enrichedCategoryTypeEquivCategory C (inferInstanceAs (EnrichedCategory Type w
       (TransportEnrichment (coyoneda.obj (op (𝟙_ W))) C)))
 
 /-- We verify that the morphism types in `ForgetEnrichment W C` are `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
@@ -483,7 +483,7 @@ open BraidedCategory
 the `V`-object of natural transformations from `F` to `G`.
 -/
 @[simps]
-def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ TypeCat.{max u₁ w} where
+def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type (max u₁ w) where
   obj A := (GradedNatTrans ((Center.ofBraided V).obj (unop A)) F G)
   map f := TypeCat.ofHom ⟨fun σ ↦
     { app X := f.unop ≫ σ.app X
@@ -507,9 +507,9 @@ attribute [local instance] categoryOfEnrichedCategoryType
 is just the same thing as an honest functor.
 -/
 @[simps]
-def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (TypeCat.{v}) C]
-    {D : Type u₂} [𝒟 : EnrichedCategory (TypeCat.{v}) D] :
-    EnrichedFunctor (TypeCat.{v}) C D ≃ C ⥤ D where
+def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Type v) C]
+    {D : Type u₂} [𝒟 : EnrichedCategory (Type v) D] :
+    EnrichedFunctor (Type v) C D ≃ C ⥤ D where
   toFun F :=
     { obj := fun X => F.obj X
       map := fun f => F.map _ _ f
@@ -525,8 +525,8 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
 between `Type v`-enriched functors is actually represented by
 the usual type of natural transformations!
 -/
-def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (TypeCat.{v}) C]
-    {D : Type v} [EnrichedCategory (TypeCat.{v}) D] (F G : EnrichedFunctor (TypeCat.{v}) C D) :
+def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (Type v) C]
+    {D : Type v} [EnrichedCategory (Type v) D] (F G : EnrichedFunctor (Type v) C D) :
     enrichedNatTransYoneda F G ≅
       yoneda.obj ((enrichedFunctorTypeEquivFunctor F ⟶
         enrichedFunctorTypeEquivFunctor G)) :=

@@ -519,7 +519,7 @@ section SmallCategory
 
 variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ D)
 
-theorem final_iff_isIso_colimit_pre : Final F ↔ ∀ G : D ⥤ TypeCat.{v}, IsIso (colimit.pre G F) :=
+theorem final_iff_isIso_colimit_pre : Final F ↔ ∀ G : D ⥤ Type v, IsIso (colimit.pre G F) :=
   ⟨fun _ => inferInstance,
    fun _ => final_of_colimit_comp_coyoneda_iso_pUnit _ fun _ => Final.colimitCompCoyonedaIso _ _⟩
 
@@ -1101,7 +1101,7 @@ fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H
 functor `H : Grothendieck G ⥤ Type`. -/
 def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]
     {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [∀ X, Final (α.app X).toFunctor]
-    (H : Grothendieck G ⥤ TypeCat.{u₂}) : fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H :=
+    (H : Grothendieck G ⥤ Type u₂) : fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H :=
   NatIso.ofComponents
     (fun X =>
       HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫

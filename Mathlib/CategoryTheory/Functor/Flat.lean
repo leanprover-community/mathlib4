@@ -345,9 +345,9 @@ instance lan_preservesFiniteLimits_of_preservesFiniteLimits (F : C ⥤ D)
   infer_instance
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
-    RepresentablyFlat F ↔ RepresentablyFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ TypeCat.{u₁}) :=
+    RepresentablyFlat F ↔ RepresentablyFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
   ⟨fun _ => inferInstance, fun H => by
-    haveI := preservesFiniteLimits_of_flat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ TypeCat.{u₁})
+    haveI := preservesFiniteLimits_of_flat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
       apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{u₁}
       intros; apply preservesLimit_of_lan_preservesLimit
@@ -357,7 +357,7 @@ theorem flat_iff_lan_flat (F : C ⥤ D) :
 `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves finite limits.
 -/
 lemma preservesFiniteLimits_iff_lan_preservesFiniteLimits (F : C ⥤ D) :
-    PreservesFiniteLimits F ↔ PreservesFiniteLimits (F.op.lan : _ ⥤ Dᵒᵖ ⥤ TypeCat.{u₁}) :=
+    PreservesFiniteLimits F ↔ PreservesFiniteLimits (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
   ⟨fun _ ↦ inferInstance,
     fun _ ↦ preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{u₁} _
       (fun _ _ _ ↦ preservesLimit_of_lan_preservesLimit _ _)⟩

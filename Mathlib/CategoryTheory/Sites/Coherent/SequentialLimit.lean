@@ -36,11 +36,11 @@ open CategoryTheory Limits Opposite
 namespace CategoryTheory.coherentTopology
 
 variable {C : Type u} [Category.{v} C] [Preregular C] [FinitaryExtensive C]
-variable {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) TypeCat.{v}} {c : Cone F}
+variable {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) Type v} {c : Cone F}
     (hc : IsLimit c)
     (hF : ∀ n, Sheaf.IsLocallySurjective (F.map (homOfLE (Nat.le_succ n)).op))
 
-private structure struct (F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) TypeCat.{v}) where
+private structure struct (F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) Type v) where
   X (n : ℕ) : C
   x (n : ℕ) : (F.obj ⟨n⟩).obj.obj ⟨X n⟩
   map (n : ℕ) : X (n + 1) ⟶ X n
@@ -109,10 +109,10 @@ lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map :
   rfl
 
 include h in
-lemma epi_π_app_zero_of_epi [HasSheafify (coherentTopology C) TypeCat.{v}]
-    [Balanced (Sheaf (coherentTopology C) TypeCat.{v})]
-    [(coherentTopology C).WEqualsLocallyBijective TypeCat.{v}]
-    {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) TypeCat.{v}}
+lemma epi_π_app_zero_of_epi [HasSheafify (coherentTopology C) Type v]
+    [Balanced (Sheaf (coherentTopology C) Type v)]
+    [(coherentTopology C).WEqualsLocallyBijective Type v]
+    {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) Type v}
     {c : Cone F} (hc : IsLimit c)
     (hF : ∀ n, Epi (F.map (homOfLE (Nat.le_succ n)).op)) : Epi (c.π.app ⟨0⟩) := by
   simp_rw [← Sheaf.isLocallySurjective_iff_epi'] at hF ⊢

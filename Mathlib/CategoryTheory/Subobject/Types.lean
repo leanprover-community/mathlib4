@@ -40,7 +40,7 @@ attribute [local instance] subtype_val_mono
 /-- The category of `MonoOver α`, for `α : Type u`, is equivalent to the partial order `Set α`.
 -/
 @[simps]
-noncomputable def Types.monoOverEquivalenceSet (α : TypeCat.{u}) : MonoOver α ≌ Set α where
+noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ Set α where
   functor :=
     { obj := fun f => Set.range f.1.hom
       map := fun {f g} t =>
@@ -57,11 +57,11 @@ noncomputable def Types.monoOverEquivalenceSet (α : TypeCat.{u}) : MonoOver α 
       MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso
   counitIso := NatIso.ofComponents fun _ => eqToIso Subtype.range_val
 
-instance : WellPowered.{u} (TypeCat.{u}) :=
+instance : WellPowered.{u} (Type u) :=
   wellPowered_of_essentiallySmall_monoOver fun α =>
     EssentiallySmall.mk' (Types.monoOverEquivalenceSet α)
 
-/-- For `α : TypeCat.{u}`, `Subobject α` is order isomorphic to `Set α`.
+/-- For `α : Type u`, `Subobject α` is order isomorphic to `Set α`.
 -/
-noncomputable def Types.subobjectEquivSet (α : TypeCat.{u}) : Subobject α ≃o Set α :=
+noncomputable def Types.subobjectEquivSet (α : Type u) : Subobject α ≃o Set α :=
   (Types.monoOverEquivalenceSet α).thinSkeletonOrderIso

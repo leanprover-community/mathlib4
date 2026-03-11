@@ -304,7 +304,7 @@ instance [PreservesLimits (forget D)] [HasFiniteLimits D]
     HasSheafify J D :=
   HasSheafify.mk' J D (plusPlusAdjunction J D)
 
-instance : HasSheafify J TypeCat.{max u v} := by
+instance : HasSheafify J Type (max u v) := by
   infer_instance
 
 end
@@ -319,16 +319,16 @@ instance [Adhesive D] [HasPullbacks D] [HasPushouts D] [HasSheafify J D] :
     Adhesive (Sheaf J D) :=
   adhesive_of_reflective (sheafificationAdjunction _ _)
 
-instance SheafOfTypes.finitary_extensive [HasSheafify J (TypeCat.{w})] :
-    FinitaryExtensive (Sheaf J TypeCat.{w}) :=
+instance SheafOfTypes.finitary_extensive [HasSheafify J (Type w)] :
+    FinitaryExtensive (Sheaf J Type w) :=
   inferInstance
 
-instance SheafOfTypes.adhesive [HasSheafify J (TypeCat.{w})] :
-    Adhesive (Sheaf J TypeCat.{w}) :=
+instance SheafOfTypes.adhesive [HasSheafify J (Type w)] :
+    Adhesive (Sheaf J Type w) :=
   inferInstance
 
-instance SheafOfTypes.balanced [HasSheafify J (TypeCat.{w})] :
-    Balanced (Sheaf J TypeCat.{w}) :=
+instance SheafOfTypes.balanced [HasSheafify J (Type w)] :
+    Balanced (Sheaf J Type w) :=
   inferInstance
 
 end CategoryTheory

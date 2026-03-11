@@ -169,7 +169,7 @@ noncomputable def tensorObjComp (F G : D ⥤ C) (H : C ⥤ E) [PreservesFinitePr
 
 /-- A tensor product of representable functors is representable. -/
 @[simps]
-protected def RepresentableBy.tensorObj {F : Cᵒᵖ ⥤ TypeCat.{v}} {G : Cᵒᵖ ⥤ TypeCat.{v}} {X Y : C}
+protected def RepresentableBy.tensorObj {F : Cᵒᵖ ⥤ Type v} {G : Cᵒᵖ ⥤ Type v} {X Y : C}
     (h₁ : F.RepresentableBy X) (h₂ : G.RepresentableBy Y) : (F ⊗ G).RepresentableBy (X ⊗ Y) where
   homEquiv {I} := homEquivToProd.trans (h₁.homEquiv.prodCongr h₂.homEquiv)
   homEquiv_comp {I W} f g := by

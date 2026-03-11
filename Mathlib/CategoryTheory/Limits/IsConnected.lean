@@ -50,7 +50,7 @@ namespace Limits.Types
 variable (C : Type u) [Category.{v} C]
 
 /-- The functor mapping every object to `PUnit`. -/
-def constPUnitFunctor : C ⥤ TypeCat.{w} := (Functor.const C).obj (.of PUnit.{w + 1})
+def constPUnitFunctor : C ⥤ Type w := (Functor.const C).obj (.of PUnit.{w + 1})
 
 /-- The cocone on `constPUnitFunctor` with cone point `PUnit`. -/
 @[simps]
@@ -92,7 +92,7 @@ noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
 
 /-- Let `F` be a `TypeCat`-valued functor. If two elements `a : F c` and `b : F d` represent the
 same element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
-theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ TypeCat.{w}) (c d : Σ j, F.obj j)
+theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
     (h : Relation.EqvGen F.ColimitTypeRel c d) : Zigzag c.1 d.1 := by
   induction h with
   | rel _ _ h => exact Zigzag.of_hom <| Exists.choose h

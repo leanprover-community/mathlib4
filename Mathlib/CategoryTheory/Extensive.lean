@@ -209,9 +209,9 @@ theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFi
   obtain ⟨hl, hr⟩ := (H c (HT.from _) (HT.from _) d hd.symm hd'.symm).mp ⟨hc⟩
   rw [hl.paste_vert_iff hX.symm, hr.paste_vert_iff hY.symm]
 
-instance types.finitaryExtensive : FinitaryExtensive (TypeCat.{u}) := by
+instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
   classical
-  rw [finitaryExtensive_iff_of_isTerminal (TypeCat.{u}) (PUnit) Types.isTerminalPUnit _
+  rw [finitaryExtensive_iff_of_isTerminal (Type u) (PUnit) Types.isTerminalPUnit _
       (Types.binaryCoproductColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => Types.binaryCoproductColimit X Y) _
       fun f g => (Limits.Types.pullbackLimitCone f g).2

@@ -91,7 +91,7 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 
 set_option backward.isDefEq.respectTransparency false in
-instance monoCoprodType : MonoCoprod (TypeCat.{u}) :=
+instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
     refine ⟨BinaryCofan.mk (TypeCat.ofHom ⟨(Sum.inl : A → A ⊕ B)⟩)
       (TypeCat.ofHom ⟨(Sum.inr : B → A ⊕ B)⟩), ?_, ?_⟩

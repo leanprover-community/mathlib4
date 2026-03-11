@@ -25,7 +25,7 @@ open ConcreteCategory
 
 section limit_characterization
 
-variable {J : Type v} [Category.{w} J] {F : J ⥤ TypeCat.{u}}
+variable {J : Type v} [Category.{w} J] {F : J ⥤ Type u}
 
 /-- Given a section of a functor F into `Type*`,
   construct a cone over F with `PUnit` as the cone point. -/
@@ -85,7 +85,7 @@ The first, in the `CategoryTheory.Limits.Types.Small` namespace,
 assumes `Small.{u} J` and constructs `J`-indexed limits in `Type u`.
 
 The second, in the `CategoryTheory.Limits.Types.TypeMax` namespace
-constructs limits for functors `F : J ⥤ TypeCat.{max v u}`, for `J : Type v`.
+constructs limits for functors `F : J ⥤ Type (max v u)`, for `J : Type v`.
 This construction is slightly nicer, as the limit is definitionally just `F.sections`,
 rather than `Shrink F.sections`, which makes an arbitrary choice of `u`-small representative.
 
@@ -95,7 +95,7 @@ but for now they are useful glue for the later parts of the library.
 
 namespace Small
 
-variable (F : J ⥤ TypeCat.{u})
+variable (F : J ⥤ Type u)
 
 section
 
@@ -129,7 +129,7 @@ end
 
 end Small
 
-theorem hasLimit_iff_small_sections (F : J ⥤ TypeCat.{u}) : HasLimit F ↔ Small.{u} F.sections :=
+theorem hasLimit_iff_small_sections (F : J ⥤ Type u) : HasLimit F ↔ Small.{u} F.sections :=
   ⟨fun _ => .mk ⟨_, ⟨(Equiv.ofBijective _
     ((isLimit_iff_bijective_sectionOfCone (limit.cone F)).mp ⟨limit.isLimit _⟩)).symm⟩⟩,
    fun _ => ⟨_, Small.limitConeIsLimit F⟩⟩
@@ -142,13 +142,13 @@ section TypeMax
 implemented as flat sections of a pi type
 -/
 @[simps]
-noncomputable def limitCone (F : J ⥤ TypeCat.{max v u}) : Cone F where
+noncomputable def limitCone (F : J ⥤ Type (max v u)) : Cone F where
   pt := F.sections
   π := { app j := TypeCat.ofHom ⟨fun u => u.val j⟩ }
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
-noncomputable def limitConeIsLimit (F : J ⥤ TypeCat.{max v u}) : IsLimit (limitCone F) where
+noncomputable def limitConeIsLimit (F : J ⥤ Type (max v u)) : IsLimit (limitCone F) where
   lift s := TypeCat.ofHom ⟨fun v ↦
     { val := fun j => s.π.app j v
       property := fun f => congr_hom (Cone.w s f) _ }⟩
@@ -171,10 +171,10 @@ section UnivLE
 
 open UnivLE
 
-instance hasLimit [Small.{u} J] (F : J ⥤ TypeCat.{u}) : HasLimit F :=
+instance hasLimit [Small.{u} J] (F : J ⥤ Type u) : HasLimit F :=
   (hasLimit_iff_small_sections F).mpr inferInstance
 
-instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J TypeCat.{u} where
+instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J Type u where
 
 /--
 The category of types has all limits.
@@ -182,15 +182,15 @@ The category of types has all limits.
 More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small limits. -/
 @[stacks 002U]
 instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] :
-    HasLimitsOfSize.{w, v} TypeCat.{u} where
+    HasLimitsOfSize.{w, v} Type u where
   has_limits_of_shape _ := { }
 
-variable (F : J ⥤ TypeCat.{u}) [HasLimit F]
+variable (F : J ⥤ Type u) [HasLimit F]
 
 /-- The equivalence between the abstract limit of `F` in `Type max v u`
 and the "concrete" definition as the sections of `F`.
 -/
-noncomputable def limitEquivSections : (limit F : TypeCat.{u}) ≃ F.sections :=
+noncomputable def limitEquivSections : (limit F : Type u) ≃ F.sections :=
   isLimitEquivSections (limit.isLimit F)
 
 @[simp]
@@ -205,7 +205,7 @@ theorem limitEquivSections_symm_apply (x : F.sections) (j : J) :
 
 /-- The limit of a functor `F : J ⥤ TypeCat _` is naturally isomorphic to `F.sections`. -/
 noncomputable def limNatIsoSectionsFunctor :
-    (lim : (J ⥤ TypeCat.{max u v}) ⥤ TypeCat.{max u v}) ≅ Functor.sectionsFunctor J :=
+    (lim : (J ⥤ Type (max u v)) ⥤ Type (max u v)) ≅ Functor.sectionsFunctor J :=
   NatIso.ofComponents (fun F ↦ (limitEquivSections F).toIso)
     fun f ↦ by ext x; exact Subtype.ext (funext fun j ↦ congr_hom (limMap_π f j) x)
 
@@ -213,7 +213,7 @@ noncomputable def limNatIsoSectionsFunctor :
 which are "coherent": `∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j'`.
 -/
 noncomputable def Limit.mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') :
-    (limit F : TypeCat.{u}) :=
+    (limit F : Type u) :=
   (limitEquivSections F).symm ⟨x, h _ _⟩
 
 @[simp]
@@ -224,18 +224,18 @@ theorem Limit.π_mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), F.map f
 
 -- PROJECT: prove this for concrete categories where the forgetful functor preserves limits
 @[ext]
-theorem limit_ext (x y : (limit F : TypeCat.{u})) (w : ∀ j, limit.π F j x = limit.π F j y) :
+theorem limit_ext (x y : (limit F : Type u)) (w : ∀ j, limit.π F j x = limit.π F j y) :
     x = y := by
   apply (limitEquivSections F).injective
   ext j
   simp [w j]
 
 @[ext]
-theorem limit_ext' (F' : J ⥤ TypeCat.{v}) (x y : (limit F' : TypeCat.{v}))
+theorem limit_ext' (F' : J ⥤ Type v) (x y : (limit F' : Type v))
     (w : ∀ j, limit.π F' j x = limit.π F' j y) : x = y :=
   limit_ext F' x y w
 
-theorem limit_ext_iff' (F' : J ⥤ TypeCat.{v}) (x y : (limit F' : TypeCat.{v})) :
+theorem limit_ext_iff' (F' : J ⥤ Type v) (x y : (limit F' : Type v)) :
     x = y ↔ ∀ j, limit.π F' j x = limit.π F' j y :=
   ⟨fun t _ => t ▸ rfl, limit_ext' _ _ _⟩
 
@@ -243,7 +243,7 @@ attribute [elementwise (attr := simp)] limit.lift_π limMap_π limit.w
 
 variable {F} in
 @[deprecated limit.w_apply (since := "2026-02-17")]
-theorem Limit.w_apply {j j' : J} {x : (limit F : TypeCat.{u})} (f : j ⟶ j') :
+theorem Limit.w_apply {j j' : J} {x : (limit F : Type u)} (f : j ⟶ j') :
     F.map f (limit.π F j x) = limit.π F j' x :=
   limit.w_apply _ _ _
 
@@ -253,23 +253,23 @@ theorem Limit.lift_π_apply (s : Cone F) (j : J) (x : s.pt) :
   limit.lift_π_apply _ _ _
 
 @[deprecated limMap_π_apply (since := "2026-02-17")]
-theorem Limit.map_π_apply {F G : J ⥤ TypeCat.{u}} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J)
-    (x : (limit F : TypeCat.{u})) : limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
+theorem Limit.map_π_apply {F G : J ⥤ Type u} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J)
+    (x : (limit F : Type u)) : limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
   limMap_π_apply _ _ _
 
 @[deprecated limit.w_apply (since := "2026-02-17")]
-theorem Limit.w_apply' {F' : J ⥤ TypeCat.{v}} {j j' : J} {x : (limit F' : TypeCat.{v})}
+theorem Limit.w_apply' {F' : J ⥤ Type v} {j j' : J} {x : (limit F' : Type v)}
     (f : j ⟶ j') : F'.map f (limit.π F' j x) = limit.π F' j' x :=
   limit.w_apply _ _ _
 
 @[deprecated limit.lift_π_apply (since := "2026-02-17")]
-theorem Limit.lift_π_apply' (F' : J ⥤ TypeCat.{v}) (s : Cone F') (j : J) (x : s.pt) :
+theorem Limit.lift_π_apply' (F' : J ⥤ Type v) (s : Cone F') (j : J) (x : s.pt) :
     limit.π F' j (limit.lift F' s x) = s.π.app j x :=
   limit.lift_π_apply _ _ _
 
 @[deprecated limMap_π_apply (since := "2026-02-17")]
-theorem Limit.map_π_apply' {F' G' : J ⥤ TypeCat.{v}} (α : F' ⟶ G') (j : J)
-    (x : (limit F' : TypeCat.{v})) : limit.π G' j (limMap α x) = α.app j (limit.π F' j x) :=
+theorem Limit.map_π_apply' {F' G' : J ⥤ Type v} (α : F' ⟶ G') (j : J)
+    (x : (limit F' : Type v)) : limit.π G' j (limMap α x) = α.app j (limit.π F' j x) :=
   limMap_π_apply _ _ _
 
 end UnivLE
@@ -279,13 +279,13 @@ In this section we verify that instances are available as expected.
 -/
 section instances
 
-example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} TypeCat.{max w v} := inferInstance
-example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} TypeCat.{max v w} := inferInstance
+example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} Type (max w v) := inferInstance
+example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} Type (max v w) := inferInstance
 
-example : HasLimitsOfSize.{0, 0, v, v + 1} TypeCat.{v} := inferInstance
-example : HasLimitsOfSize.{v, v, v, v + 1} TypeCat.{v} := inferInstance
+example : HasLimitsOfSize.{0, 0, v, v + 1} Type v := inferInstance
+example : HasLimitsOfSize.{v, v, v, v + 1} Type v := inferInstance
 
-example [UnivLE.{v, u}] : HasLimitsOfSize.{v, v, u, u + 1} TypeCat.{u} := inferInstance
+example [UnivLE.{v, u}] : HasLimitsOfSize.{v, v, u, u + 1} Type u := inferInstance
 
 end instances
 

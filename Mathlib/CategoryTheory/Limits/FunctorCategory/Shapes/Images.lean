@@ -27,14 +27,14 @@ variable {C : Type*} [Category* C]
 attribute [local simp] FunctorToTypes.naturality in
 /-- The image of a natural transformation between type-valued functors is a `MonoFactorisation` -/
 @[simps]
-def monoFactorisation {F G : C ⥤ TypeCat.{u}} (f : F ⟶ G) : MonoFactorisation f where
+def monoFactorisation {F G : C ⥤ Type u} (f : F ⟶ G) : MonoFactorisation f where
   I := (Subfunctor.range f).toFunctor
   m := (Subfunctor.range f).ι
   e := Subfunctor.toRange f
 
 /-- The image of a natural transformation between type-valued functors satisfies the universal
 property of images -/
-noncomputable def monoFactorisationIsImage {F G : C ⥤ TypeCat.{u}} (f : F ⟶ G) :
+noncomputable def monoFactorisationIsImage {F G : C ⥤ Type u} (f : F ⟶ G) :
     IsImage <| monoFactorisation f where
   lift H := {
     app X := TypeCat.ofHom ⟨fun ⟨x, hx⟩ ↦ H.e.app _ hx.choose⟩

@@ -50,18 +50,18 @@ namespace AddCommGrpCat
 free abelian group with generators `x : X`.
 -/
 @[simps obj map]
-def free : TypeCat.{u} ⥤ AddCommGrpCat where
+def free : Type u ⥤ AddCommGrpCat where
   obj α := of (FreeAbelianGroup α)
   map f := ofHom (FreeAbelianGroup.map f)
 
 @[simp]
-theorem free_obj_coe {α : TypeCat.{u}} : (free.obj α : Type u) = FreeAbelianGroup α :=
+theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
   rfl
 
 -- This currently can't be a `simp` lemma,
 -- because `free_obj_coe` will simplify implicit arguments in the LHS.
 -- (The `simpNF` linter will, correctly, complain.)
-theorem free_map_coe {α β : TypeCat.{u}} {f : α ⟶ β} (x : FreeAbelianGroup α) :
+theorem free_map_coe {α β : Type u} {f : α ⟶ β} (x : FreeAbelianGroup α) :
     (free.map f) x = f <$> x :=
   rfl
 
@@ -113,7 +113,7 @@ namespace GrpCat
 
 /-- The free functor `Type u ⥤ Group` sending a type `X` to the free group with generators `x : X`.
 -/
-def free : TypeCat.{u} ⥤ GrpCat where
+def free : Type u ⥤ GrpCat where
   obj α := of (FreeGroup α)
   map f := ofHom (FreeGroup.map f)
 

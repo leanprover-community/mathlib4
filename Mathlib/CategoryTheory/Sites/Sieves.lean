@@ -1197,7 +1197,7 @@ end Functor
 
 /-- A sieve induces a presheaf. -/
 @[simps obj map]
-def functor (S : Sieve X) : Cᵒᵖ ⥤ TypeCat.{v₁} where
+def functor (S : Sieve X) : Cᵒᵖ ⥤ Type v₁ where
   obj Y := { g : Y.unop ⟶ X // S g }
   map f := TypeCat.ofHom ⟨fun g ↦ ⟨f.unop ≫ g.1, downward_closed _ g.2 _⟩⟩
 
@@ -1256,7 +1256,7 @@ instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
   ⟨⟨{ app := fun _ => TypeCat.ofHom ⟨fun a => ⟨a, ⟨⟩⟩⟩ }, rfl, rfl⟩⟩
 
 /-- A variant of `Sieve.functor` with universe lifting. -/
-abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ TypeCat.{max w v₁} :=
+abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type (max w v₁) :=
   S.functor ⋙ CategoryTheory.uliftFunctor
 
 /-- A variant of `Sieve.natTransOfLe` with universe lifting. -/
@@ -1291,7 +1291,7 @@ instance uliftFunctorInclusion_is_mono (S : Sieve X) :
 
 /-- A variant of `Sieve.sieveOfSubfunctor` with universe lifting. -/
 @[simps]
-def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ TypeCat.{max w v₁}} (f : R ⟶ uliftYoneda.obj.{w} X) :
+def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type (max w v₁)} (f : R ⟶ uliftYoneda.obj.{w} X) :
     Sieve X where
   arrows Y g := ∃ t, f.app (Opposite.op Y) t = { down := g }
   downward_closed := by

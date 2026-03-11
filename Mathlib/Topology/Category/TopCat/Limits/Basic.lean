@@ -312,7 +312,7 @@ instance topCat_hasColimits : HasColimits TopCat.{u} :=
 instance forget_preservesColimitsOfSize :
     PreservesColimitsOfSize.{w, v} (forget : TopCat.{u} ⥤ _) where
 
-instance forget_preservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ TypeCat.{u}) where
+instance forget_preservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) where
 
 end Colimits
 

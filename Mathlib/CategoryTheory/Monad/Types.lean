@@ -33,7 +33,7 @@ variable (m : Type u → Type u) [_root_.Monad m] [LawfulMonad m]
 /-- A lawful `Control.Monad` gives a category theory `Monad` on the category of types.
 -/
 @[simps! obj map η_app μ_app]
-def ofTypeMonad : Monad TypeCat.{u} where
+def ofTypeMonad : Monad Type u where
   toFunctor := ofTypeFunctor m
   η := ⟨fun X ↦ TypeCat.ofHom ⟨@pure m _ X⟩, fun _ _ f => by
     ext x; exact (LawfulApplicative.map_pure f x).symm⟩

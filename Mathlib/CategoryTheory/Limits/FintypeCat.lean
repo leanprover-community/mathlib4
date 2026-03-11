@@ -38,7 +38,7 @@ instance {J : Type} [SmallCategory J] (K : J ⥤ FintypeCat.{u}) (j : J) :
 /-- Any functor from a finite category to `Type*` that only involves finite objects,
 has a finite limit. -/
 noncomputable instance finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
-    (K : J ⥤ TypeCat.{u}) [∀ j, Finite (K.obj j)] : Fintype (limit K : TypeCat) := by
+    (K : J ⥤ Type u) [∀ j, Finite (K.obj j)] : Fintype (limit K : TypeCat) := by
   have : Fintype (sections K) := Fintype.ofFinite (sections K)
   exact Fintype.ofEquiv (sections K) (Types.limitEquivSections K).symm
 
@@ -100,20 +100,20 @@ instance nonempty_pi_of_nonempty {ι : Type*} [Finite ι] (X : ι → FintypeCat
 /-- The colimit type of a functor from a finite category to Types that only
 involves finite objects is finite. -/
 instance finite_colimitType {J : Type} [SmallCategory J] [FinCategory J]
-    (K : J ⥤ TypeCat.{u}) [∀ j, Finite (K.obj j)] : Finite K.ColimitType :=
+    (K : J ⥤ Type u) [∀ j, Finite (K.obj j)] : Finite K.ColimitType :=
   Quot.finite _
 
 /-- Any functor from a finite category to `Type*` that only involves finite objects,
 has a finite colimit. -/
 lemma finite_of_isColimit {J : Type} [SmallCategory J] [FinCategory J]
-    {K : J ⥤ TypeCat.{u}} [∀ j, Finite (K.obj j)] {c : Cocone K} (hc : IsColimit c) :
+    {K : J ⥤ Type u} [∀ j, Finite (K.obj j)] {c : Cocone K} (hc : IsColimit c) :
     Finite c.pt :=
   Finite.of_equiv _ ((Types.isColimit_iff_coconeTypesIsColimit c).1 ⟨hc⟩).equiv
 
 /-- Any functor from a finite category to `Type*` that only involves finite objects,
 has a finite colimit. -/
 noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
-    (K : J ⥤ TypeCat.{u}) [∀ j, Finite (K.obj j)] : Fintype (colimit K : TypeCat) := by
+    (K : J ⥤ Type u) [∀ j, Finite (K.obj j)] : Fintype (colimit K : TypeCat) := by
   have : Finite (colimit K : TypeCat) := finite_of_isColimit (colimit.isColimit K)
   apply Fintype.ofFinite
 

@@ -28,7 +28,7 @@ All this could be made with 2-functors
 universe v u
 namespace CategoryTheory.Cat
 
-variable (X : TypeCat.{u}) (C : Cat)
+variable (X : Type u) (C : Cat)
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
@@ -61,7 +61,7 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
             cat_disch) } }
 
 /-- The connected components functor -/
-def connectedComponents : Cat.{v, u} ⥤ TypeCat.{u} where
+def connectedComponents : Cat.{v, u} ⥤ Type u where
   obj C := <| ConnectedComponents C
   map F := TypeCat.ofHom ⟨Functor.mapConnectedComponents F.toFunctor⟩
   map_id _ := by ext x; simpa using (Quotient.exists_rep x).elim (fun _ h ↦ by subst h; rfl)

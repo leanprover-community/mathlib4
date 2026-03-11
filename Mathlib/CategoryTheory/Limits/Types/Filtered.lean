@@ -25,7 +25,7 @@ universe v u w
 
 namespace CategoryTheory.Limits.Types.FilteredColimit
 
-variable {J : Type v} [Category.{w} J] (F : J ⥤ TypeCat.{u})
+variable {J : Type v} [Category.{w} J] (F : J ⥤ Type u)
 
 attribute [local instance] small_colimitType_of_hasColimit
 

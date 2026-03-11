@@ -24,13 +24,13 @@ open CategoryTheory Limits ConcreteCategory
 
 namespace CategoryTheory.Limits.Types
 
-variable {X Y Z : TypeCat.{u}} {X' Y' Z' : TypeCat.{v}}
+variable {X Y Z : Type u} {X' Y' Z' : Type v}
 variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
 
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
 The full `LimitCone` data is bundled as `pullbackLimitCone f g`.
 -/
-abbrev PullbackObj : TypeCat.{u} :=
+abbrev PullbackObj : Type u :=
   { p : X × Y // f p.1 = g p.2 }
 
 -- `PullbackObj f g` comes with a coercion to the product type `X × Y`.
@@ -61,7 +61,7 @@ end Types
 
 namespace PullbackCone
 
-variable {X Y S : TypeCat.{v}} {f : X ⟶ S} {g : Y ⟶ S} {c : PullbackCone f g}
+variable {X Y S : Type v} {f : X ⟶ S} {g : Y ⟶ S} {c : PullbackCone f g}
 
 namespace IsLimit
 
@@ -126,7 +126,7 @@ section Pullback
 
 open CategoryTheory.Limits.WalkingCospan
 
-variable {W X Y Z : TypeCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {W X Y Z : Type u} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- The pullback given by the instance `HasPullbacks (Type u)` is isomorphic to the
 explicit pullback object given by `PullbackObj`.
@@ -167,7 +167,7 @@ end CategoryTheory.Limits
 
 namespace CategoryTheory.Limits.Types
 
-variable {P X Y Z : TypeCat.{u}} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
+variable {P X Y Z : Type u} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
 
 lemma range_fst_of_isPullback (h : IsPullback fst snd f g) :
     Set.range fst = f ⁻¹' Set.range g := by
@@ -196,7 +196,7 @@ lemma range_pullbackSnd : Set.range (pullback.snd f g) = g ⁻¹' Set.range f :=
 
 section
 
-variable {X₁ X₂ X₃ X₄ : TypeCat.{u}} {t : X₁ ⟶ X₂} {r : X₂ ⟶ X₄}
+variable {X₁ X₂ X₃ X₄ : Type u} {t : X₁ ⟶ X₂} {r : X₂ ⟶ X₄}
   {l : X₁ ⟶ X₃} {b : X₃ ⟶ X₄}
 
 lemma ext_of_isPullback (h : IsPullback t l r b) {x₁ y₁ : X₁}

@@ -77,7 +77,7 @@ end LightCondensed
 namespace LightCondSet
 
 /-- A `LightCondSet` version of `LightCondensed.ofSheafLightProfinite`. -/
-noncomputable abbrev ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ TypeCat.{u})
+noncomputable abbrev ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ Type u)
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : LightCondSet :=
   LightCondensed.ofSheafLightProfinite F hF
 

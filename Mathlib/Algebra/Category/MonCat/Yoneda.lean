@@ -49,7 +49,7 @@ monoids. -/
 
 This is also the coyoneda embedding of `Type` into `AddCommMonCat`-valued presheaves of commutative
 monoids. -/]
-def CommMonCat.coyonedaType : TypeCat.{u}ᵒᵖ ⥤ CommMonCat.{u} ⥤ CommMonCat.{u} where
+def CommMonCat.coyonedaType : Type uᵒᵖ ⥤ CommMonCat.{u} ⥤ CommMonCat.{u} where
   obj X := { obj M := of <| X.unop → M
              map f := ofHom <| Pi.monoidHom fun i ↦ f.hom.comp <| Pi.evalMonoidHom _ i }
   map f := { app N := ofHom <| Pi.monoidHom fun i ↦ Pi.evalMonoidHom _ <| f.unop i }

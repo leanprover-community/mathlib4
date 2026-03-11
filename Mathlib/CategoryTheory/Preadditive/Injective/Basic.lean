@@ -101,7 +101,7 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Injective P ↔ Injective Q :=
   ⟨of_iso i, of_iso i.symm⟩
 
 /-- The axiom of choice says that every nonempty type is an injective object in `Type`. -/
-instance (X : TypeCat.{u₁}) [Nonempty X] : Injective X where
+instance (X : Type u₁) [Nonempty X] : Injective X where
   factors g f mono :=
     ⟨TypeCat.ofHom ⟨fun z => by
       classical
@@ -115,7 +115,7 @@ instance (X : TypeCat.{u₁}) [Nonempty X] : Injective X where
         simp [mono (Classical.choose_spec h)]
       · exact False.elim (h ⟨y, rfl⟩)⟩
 
-instance Type.enoughInjectives : EnoughInjectives (TypeCat.{u₁}) where
+instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
   presentation X :=
     Nonempty.intro
       { J := (WithBot X)

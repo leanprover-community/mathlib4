@@ -84,7 +84,7 @@ end GrothendieckTopology
 
 namespace Presheaf
 
-variable (F : Cᵒᵖ ⥤ TypeCat.{w}) {I : Type*} (Y : I → C)
+variable (F : Cᵒᵖ ⥤ Type w) {I : Type*} (Y : I → C)
 
 /-- A family of elements of a presheaf of types `F` indexed by a family of objects
 `Y : I → C` consists of the data of an element in `F.obj (Opposite.op (Y i))` for all `i`. -/

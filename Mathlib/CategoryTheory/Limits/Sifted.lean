@@ -144,7 +144,7 @@ section
 
 open scoped MonoidalCategory.ExternalProduct
 
-variable (X Y : C ⥤ TypeCat.{u})
+variable (X Y : C ⥤ Type u)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Through the isomorphisms `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` and
@@ -154,7 +154,7 @@ lemma factorization_prodComparison_colim :
     (HasColimit.isoOfNatIso ((externalProductCompDiagIso _ _).app (X, Y)).symm).hom ≫
       colimit.pre (X ⊠ Y) (diag C) ≫
         (PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂ X Y <|
-          curriedTensor <| TypeCat.{u}).hom =
+          curriedTensor <| Type u).hom =
     CartesianMonoidalCategory.prodComparison colim X Y := by
   apply colimit.hom_ext
   intro j
@@ -171,35 +171,35 @@ instance : IsIso (CartesianMonoidalCategory.prodComparison colim X Y) := by
   rw [← factorization_prodComparison_colim]
   infer_instance
 
-instance colim_preservesLimits_pair_of_sSifted {X Y : C ⥤ TypeCat.{u}} :
+instance colim_preservesLimits_pair_of_sSifted {X Y : C ⥤ Type u} :
     PreservesLimit (pair X Y) colim :=
   preservesLimit_pair_of_isIso_prodComparison _ _ _
 
 /-- Sifted colimits commute with binary products -/
 instance colim_preservesBinaryProducts_of_isSifted :
-    PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ _) ⥤ TypeCat.{u}) := by
+    PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ _) ⥤ Type u) := by
   constructor
   intro F
   apply preservesLimit_of_iso_diagram colim (diagramIsoPair F).symm
 
 /-- If `C` is sifted, the `colimit` functor `(C ⥤ Type) ⥤ Type` preserves terminal objects -/
 instance colim_preservesTerminal_of_isSifted :
-    PreservesLimit (Functor.empty.{0} (C ⥤ TypeCat.{u})) colim := by
+    PreservesLimit (Functor.empty.{0} (C ⥤ Type u)) colim := by
   apply preservesTerminal_of_iso
   symm
-  apply (_ : ⊤_ (TypeCat.{u}) ≅ PUnit.{u + 1}).trans
+  apply (_ : ⊤_ (Type u) ≅ PUnit.{u + 1}).trans
   · apply_rules [(Types.colimitConstPUnitIsoPUnit C).symm.trans, HasColimit.isoOfNatIso,
       IsTerminal.uniqueUpToIso _ terminalIsTerminal, evaluationJointlyReflectsLimits]
     exact fun _ ↦ isLimitChangeEmptyCone _ Types.isTerminalPUnit _ <| Iso.refl _
-  · exact Types.isTerminalEquivIsoPUnit (⊤_ (TypeCat.{u})) |>.toFun terminalIsTerminal
+  · exact Types.isTerminalEquivIsoPUnit (⊤_ (Type u)) |>.toFun terminalIsTerminal
 
 instance colim_preservesLimitsOfShape_pempty_of_isSifted :
-    PreservesLimitsOfShape (Discrete PEmpty.{1}) (colim : (C ⥤ _) ⥤ TypeCat.{u}) :=
+    PreservesLimitsOfShape (Discrete PEmpty.{1}) (colim : (C ⥤ _) ⥤ Type u) :=
   preservesLimitsOfShape_pempty_of_preservesTerminal _
 
 /-- If `C` is sifted, the `colim` functor `(C ⥤ Type) ⥤ Type` preserves finite products. -/
 instance colim_preservesFiniteProducts_of_isSifted :
-    PreservesFiniteProducts (colim : (C ⥤ _) ⥤ TypeCat.{u}) :=
+    PreservesFiniteProducts (colim : (C ⥤ _) ⥤ Type u) :=
   PreservesFiniteProducts.of_preserves_binary_and_terminal colim
 
 end
@@ -213,7 +213,7 @@ open scoped MonoidalCategory.ExternalProduct in
 /-- If the `colim` functor `(C ⥤ Type) ⥤ Type` preserves binary products, then `C` is sifted or
 empty. -/
 theorem isSiftedOrEmpty_of_colim_preservesBinaryProducts
-    [PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ TypeCat.{u}) ⥤ TypeCat.{u})] :
+    [PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ Type u) ⥤ Type u)] :
     IsSiftedOrEmpty C := by
   apply final_of_colimit_comp_coyoneda_iso_pUnit
   rintro ⟨c₁, c₂⟩
@@ -227,19 +227,19 @@ theorem isSiftedOrEmpty_of_colim_preservesBinaryProducts
     _ ≅ PUnit := λ_ _
 
 lemma isSiftedOrEmpty_of_colim_preservesFiniteProducts
-    [h : PreservesFiniteProducts (colim : (C ⥤ TypeCat.{u}) ⥤ TypeCat.{u})] :
+    [h : PreservesFiniteProducts (colim : (C ⥤ Type u) ⥤ Type u)] :
     IsSiftedOrEmpty C :=
   isSiftedOrEmpty_of_colim_preservesBinaryProducts C
 
 lemma nonempty_of_colim_preservesLimitsOfShapeFinZero
-    [PreservesLimitsOfShape (Discrete (Fin 0)) (colim : (C ⥤ TypeCat.{u}) ⥤ TypeCat.{u})] :
+    [PreservesLimitsOfShape (Discrete (Fin 0)) (colim : (C ⥤ Type u) ⥤ Type u)] :
     Nonempty C := by
   suffices connected : IsConnected C by infer_instance
   rw [Types.isConnected_iff_colimit_constPUnitFunctor_iso_pUnit]
   constructor
-  haveI : PreservesLimitsOfShape (Discrete PEmpty) (colim : (C ⥤ _) ⥤ TypeCat.{u}) :=
+  haveI : PreservesLimitsOfShape (Discrete PEmpty) (colim : (C ⥤ _) ⥤ Type u) :=
     preservesLimitsOfShape_of_equiv (Discrete.equivalence finZeroEquiv') _
-  apply HasColimit.isoOfNatIso (_ : Types.constPUnitFunctor C ≅ (⊤_ (C ⥤ TypeCat.{u}))) |>.trans
+  apply HasColimit.isoOfNatIso (_ : Types.constPUnitFunctor C ≅ (⊤_ (C ⥤ Type u))) |>.trans
   · apply PreservesTerminal.iso colim |>.trans
     exact Types.terminalIso
   · apply_rules [IsTerminal.uniqueUpToIso _ terminalIsTerminal, evaluationJointlyReflectsLimits]
@@ -248,7 +248,7 @@ lemma nonempty_of_colim_preservesLimitsOfShapeFinZero
 
 /-- If the `colim` functor `(C ⥤ Type) ⥤ Type` preserves finite products, then `C` is sifted. -/
 theorem of_colim_preservesFiniteProducts
-    [h : PreservesFiniteProducts (colim : (C ⥤ TypeCat.{u}) ⥤ TypeCat.{u})] :
+    [h : PreservesFiniteProducts (colim : (C ⥤ Type u) ⥤ Type u)] :
     IsSifted C := by
   have := isSiftedOrEmpty_of_colim_preservesFiniteProducts C
   have := nonempty_of_colim_preservesLimitsOfShapeFinZero C
@@ -260,7 +260,7 @@ variable {C}
 small category. -/
 theorem of_final_functor_from_sifted'
     {D : Type u} [SmallCategory D] [IsSifted C] (F : C ⥤ D) [Final F] : IsSifted D := by
-  have : PreservesFiniteProducts (colim : (D ⥤ TypeCat.{u}) ⥤ _) :=
+  have : PreservesFiniteProducts (colim : (D ⥤ Type u) ⥤ _) :=
     ⟨fun n ↦ preservesLimitsOfShape_of_natIso (Final.colimIso F)⟩
   exact of_colim_preservesFiniteProducts D
 

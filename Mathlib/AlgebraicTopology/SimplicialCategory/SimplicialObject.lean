@@ -32,13 +32,13 @@ variable {D : Type u} [Category.{v} D]
 namespace SimplicialObject
 
 instance : EnrichedCategory SSet.{v} (SimplicialObject D) :=
-  inferInstanceAs (EnrichedCategory (_ ⥤ TypeCat.{v}) (_ ⥤ D))
+  inferInstanceAs (EnrichedCategory (_ ⥤ Type v) (_ ⥤ D))
 
 instance : SimplicialCategory (SimplicialObject D) where
   homEquiv := Functor.natTransEquiv.symm
 
 instance : SimplicialCategory SSet.{v} :=
-  inferInstanceAs (SimplicialCategory (SimplicialObject TypeCat.{v}))
+  inferInstanceAs (SimplicialCategory (SimplicialObject Type v))
 
 end SimplicialObject
 

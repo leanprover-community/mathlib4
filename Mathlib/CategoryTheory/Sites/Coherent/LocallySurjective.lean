@@ -59,7 +59,7 @@ lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ 
 
 set_option backward.isDefEq.respectTransparency false in
 lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [FinitaryPreExtensive C]
-    {F G : Cᵒᵖ ⥤ TypeCat.{w}} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
+    {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (extensiveTopology C) f) {X : C} :
         Function.Surjective (f.app (op X)) := by
   intro x
@@ -110,7 +110,7 @@ lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
-    {F G : Cᵒᵖ ⥤ TypeCat.{w}} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
+    {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (coherentTopology C) f) :
         Presheaf.IsLocallySurjective (regularTopology C) f where
   imageSieve_mem y := by

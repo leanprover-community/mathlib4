@@ -35,7 +35,7 @@ open CategoryTheory Option
 universe u
 
 /-- The category of types equipped with partial functions. -/
-def PartialFun : Type (u + 1) := TypeCat.{u}
+def PartialFun : Type (u + 1) := Type u
 
 namespace PartialFun
 
@@ -69,7 +69,7 @@ def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
 end PartialFun
 
 /-- The forgetful functor from `Type` to `PartialFun` which forgets that the maps are total. -/
-def typeToPartialFun : TypeCat.{u} ⥤ PartialFun where
+def typeToPartialFun : Type u ⥤ PartialFun where
   obj := id
   map f := PFun.lift (f : _ → _)
   map_comp _ _ := PFun.coe_comp _ _

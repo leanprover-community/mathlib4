@@ -32,15 +32,15 @@ namespace Types
 
 /-- The jointly surjective precoverage in the category of types has the jointly surjective
 families as coverings. -/
-def jointlySurjectivePrecoverage : Precoverage (TypeCat.{u}) where
-  coverings X R := ∀ x : X, ∃ (Y : TypeCat.{u}) (g : Y ⟶ X), R g ∧ x ∈ Set.range g
+def jointlySurjectivePrecoverage : Precoverage (Type u) where
+  coverings X R := ∀ x : X, ∃ (Y : Type u) (g : Y ⟶ X), R g ∧ x ∈ Set.range g
 
-lemma mem_jointlySurjectivePrecoverage_iff {X : TypeCat.{u}} {R : Presieve X} :
+lemma mem_jointlySurjectivePrecoverage_iff {X : Type u} {R : Presieve X} :
     R ∈ jointlySurjectivePrecoverage X ↔
-      ∀ x : X, ∃ (Y : TypeCat.{u}) (g : Y ⟶ X), R g ∧ x ∈ Set.range g :=
+      ∀ x : X, ∃ (Y : Type u) (g : Y ⟶ X), R g ∧ x ∈ Set.range g :=
   .rfl
 
-lemma singleton_mem_jointlySurjectivePrecoverage_iff {X Y : TypeCat.{u}} {f : X ⟶ Y} :
+lemma singleton_mem_jointlySurjectivePrecoverage_iff {X Y : Type u} {f : X ⟶ Y} :
     Presieve.singleton f ∈ jointlySurjectivePrecoverage Y ↔ Function.Surjective f := by
   rw [mem_jointlySurjectivePrecoverage_iff]
   refine ⟨fun hf x ↦ ?_, fun hf x ↦ ⟨X, f, ⟨⟩, by simp [hf.range_eq]⟩⟩
@@ -48,8 +48,8 @@ lemma singleton_mem_jointlySurjectivePrecoverage_iff {X Y : TypeCat.{u}} {f : X 
   exact hx
 
 @[simp]
-lemma ofArrows_mem_jointlySurjectivePrecoverage_iff {X : TypeCat.{u}} {ι : Type*}
-    {Y : ι → TypeCat.{u}} {f : ∀ i, Y i ⟶ X} :
+lemma ofArrows_mem_jointlySurjectivePrecoverage_iff {X : Type u} {ι : Type*}
+    {Y : ι → Type u} {f : ∀ i, Y i ⟶ X} :
     Presieve.ofArrows Y f ∈ jointlySurjectivePrecoverage X ↔
       ∀ x, ∃ (i : ι), x ∈ Set.range (f i) := by
   refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
@@ -87,7 +87,7 @@ instance : Precoverage.Small.{u} jointlySurjectivePrecoverage.{u} where
 
 end Types
 
-variable {C : Type*} [Category* C] (F : C ⥤ TypeCat.{u})
+variable {C : Type*} [Category* C] (F : C ⥤ Type u)
 
 lemma Presieve.mem_comap_jointlySurjectivePrecoverage_iff {X : C} {R : Presieve X} :
     R ∈ Types.jointlySurjectivePrecoverage.comap F X ↔

@@ -117,7 +117,7 @@ end
 `free I` which is a coproduct indexed by `I` of copies of `R` (thought of as a
 presheaf of modules over itself). -/
 @[simps]
-noncomputable def freeFunctor : TypeCat.{u} ⥤ SheafOfModules.{u} R where
+noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
   obj X := free X
   map f := freeMap f
   map_id X := (freeHomEquiv _).injective (by ext1 i; simp)

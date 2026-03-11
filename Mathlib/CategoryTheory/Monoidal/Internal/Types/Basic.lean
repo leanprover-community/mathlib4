@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Monoidal.CommMon_
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
-# `Mon TypeCat.{u} ≌ MonCat.{u}`
+# `Mon Type u ≌ MonCat.{u}`
 
 The category of internal monoid objects in `Type`
 is equivalent to the category of "native" bundled monoids.
@@ -28,7 +28,7 @@ open CategoryTheory MonObj ConcreteCategory
 
 namespace MonTypeEquivalenceMon
 
-instance monMonoid (A : TypeCat.{u}) [MonObj A] : Monoid A.carrier where
+instance monMonoid (A : Type u) [MonObj A] : Monoid A.carrier where
   one := η[A] PUnit.unit
   mul x y := μ[A] (x, y)
   one_mul x := by convert congr_hom (one_mul A) (PUnit.unit, x)
@@ -37,7 +37,7 @@ instance monMonoid (A : TypeCat.{u}) [MonObj A] : Monoid A.carrier where
 
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
-noncomputable def functor : Mon TypeCat.{u} ⥤ MonCat.{u} where
+noncomputable def functor : Mon Type u ⥤ MonCat.{u} where
   obj A := MonCat.of A.X
   map f := MonCat.ofHom
     { toFun := f.hom
@@ -47,7 +47,7 @@ noncomputable def functor : Mon TypeCat.{u} ⥤ MonCat.{u} where
 set_option backward.isDefEq.respectTransparency false in
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
-noncomputable def inverse : MonCat.{u} ⥤ Mon TypeCat.{u} where
+noncomputable def inverse : MonCat.{u} ⥤ Mon Type u where
   obj A :=
     { X := A
       mon :=
@@ -75,7 +75,7 @@ open MonTypeEquivalenceMon
 /-- The category of internal monoid objects in `Type`
 is equivalent to the category of "native" bundled monoids.
 -/
-noncomputable def monTypeEquivalenceMon : Mon TypeCat.{u} ≌ MonCat.{u} where
+noncomputable def monTypeEquivalenceMon : Mon Type u ≌ MonCat.{u} where
   functor := functor
   inverse := inverse
   unitIso := Iso.refl _
@@ -87,27 +87,27 @@ noncomputable def monTypeEquivalenceMon : Mon TypeCat.{u} ≌ MonCat.{u} where
 is naturally compatible with the forgetful functors to `Type u`.
 -/
 noncomputable def monTypeEquivalenceMonForget :
-    MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon.forget TypeCat.{u} :=
+    MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon.forget Type u :=
   NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
-noncomputable instance monTypeInhabited : Inhabited (Mon TypeCat.{u}) :=
+noncomputable instance monTypeInhabited : Inhabited (Mon Type u) :=
   ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : TypeCat.{u}) [MonObj A] [IsCommMonObj A] : CommMonoid A.carrier :=
+instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid A.carrier :=
   { MonTypeEquivalenceMon.monMonoid A with
     mul_comm := fun x y => by convert congr_hom (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/
-noncomputable def functor : CommMon TypeCat.{u} ⥤ CommMonCat.{u} where
+noncomputable def functor : CommMon Type u ⥤ CommMonCat.{u} where
   obj A := CommMonCat.of A.X
   map f := CommMonCat.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
 
 /-- Converting a bundled commutative monoid to a commutative monoid object in `Type`.
 -/
-noncomputable def inverse : CommMonCat.{u} ⥤ CommMon (TypeCat.{u}) where
+noncomputable def inverse : CommMonCat.{u} ⥤ CommMon (Type u) where
   obj A :=
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ CommMonCat MonCat).obj A) with
       comm :=
@@ -123,7 +123,7 @@ open CommMonTypeEquivalenceCommMon
 /-- The category of internal commutative monoid objects in `Type`
 is equivalent to the category of "native" bundled commutative monoids.
 -/
-noncomputable def commMonTypeEquivalenceCommMon : CommMon TypeCat.{u} ≌ CommMonCat.{u} where
+noncomputable def commMonTypeEquivalenceCommMon : CommMon Type u ≌ CommMonCat.{u} where
   functor := functor
   inverse := inverse
   unitIso := Iso.refl _
@@ -136,5 +136,5 @@ are naturally compatible with the forgetful functors to `MonCat` and `Mon (Type 
 -/
 noncomputable def commMonTypeEquivalenceCommMonForget :
     CommMonTypeEquivalenceCommMon.functor ⋙ forget₂ CommMonCat MonCat ≅
-      CommMon.forget₂Mon TypeCat.{u} ⋙ MonTypeEquivalenceMon.functor :=
+      CommMon.forget₂Mon Type u ⋙ MonTypeEquivalenceMon.functor :=
   Iso.refl _
