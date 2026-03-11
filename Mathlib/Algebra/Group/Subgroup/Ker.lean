@@ -565,17 +565,15 @@ variable {M : Type*} [CommGroup M]
 @[to_additive]
 lemma subgroupOf_map_powMonoidHom_eq_range (S : Subgroup M) (n : ℕ) :
     (map (powMonoidHom n) S).subgroupOf S = (powMonoidHom n).range := by
-  ext1
-  simp only [mem_subgroupOf, mem_map, MonoidHom.mem_range, powMonoidHom_apply, Subtype.exists,
-    SubmonoidClass.mk_pow]
-  exact ⟨fun ⟨x, h₁, h₂⟩ ↦ ⟨x, h₁, Subtype.ext h₂⟩,
-    fun ⟨a, h₁, h₂⟩ ↦ ⟨a, h₁, Subtype.ext_iff.mp h₂⟩⟩
+  ext
+  simp [mem_subgroupOf]
+  grind
 
 end Subgroup
 
 namespace MulEquiv
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma range_eq_top (e : G ≃* G') : (e : G →* G').range = ⊤ :=
   MonoidHom.range_eq_top.mpr e.surjective
 
@@ -585,6 +583,7 @@ open MonoidHom in
 @[to_additive]
 lemma map_range_powMonoidHom (e : M ≃* N) (n : ℕ) :
     (powMonoidHom (α := M) n).range.map e = (powMonoidHom (α := N) n).range := by
-  rw [map_range, e.powMonoidHom_comm, range_comp, e.range_eq_top, ← range_eq_map]
+  have H : (e : M →* N).comp (powMonoidHom n) = (powMonoidHom n).comp e := by ext; simp
+  rw [map_range, H, range_comp, e.range_eq_top, ← range_eq_map]
 
 end MulEquiv
