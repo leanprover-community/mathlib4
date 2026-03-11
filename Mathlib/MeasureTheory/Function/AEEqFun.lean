@@ -293,6 +293,27 @@ theorem coeFn_compMeasurePreserving (g : β →ₘ[ν] γ) (hf : MeasurePreservi
     g.compMeasurePreserving f hf =ᵐ[μ] g ∘ f :=
   g.coeFn_compQuasiMeasurePreserving _
 
+theorem compMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν)
+    {f' : α → β} (hf' : MeasurePreserving f' μ ν) (h : f =ᵐ[μ] f') :
+    compMeasurePreserving g f hf = compMeasurePreserving g f' hf' :=
+  compQuasiMeasurePreserving_congr _ _ _ h
+
+@[simp]
+theorem compMeasurePreserving_id (g : β →ₘ[ν] γ) :
+    compMeasurePreserving g id (MeasurePreserving.id ν) = g :=
+  compQuasiMeasurePreserving_id _
+
+theorem compMeasurePreserving_comp {γ : Type*} [MeasurableSpace γ]
+    {ξ : Measure γ} (g : γ →ₘ[ξ] δ) {f : β → γ} (hf : MeasurePreserving f ν ξ) {f' : α → β}
+    (hf' : MeasurePreserving f' μ ν) : compMeasurePreserving g (f ∘ f') (hf.comp hf') =
+    compMeasurePreserving (compMeasurePreserving g f hf) f' hf' :=
+  compQuasiMeasurePreserving_comp _ _ _
+
+theorem compMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
+    (hf : MeasurePreserving f μ μ) (n : ℕ) : (compMeasurePreserving · f hf)^[n] g =
+    compMeasurePreserving g (f^[n]) (MeasurePreserving.iterate hf n) :=
+  compQuasiMeasurePreserving_iterate _ _ _
+
 end compMeasurePreserving
 
 variable [TopologicalSpace β] [TopologicalSpace γ]
