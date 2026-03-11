@@ -479,15 +479,6 @@ lemma inner_eq_zero_of_left {x : E} (y : E) (h : ‖x‖ = 0) : ⟪x, y⟫_𝕜 
 lemma inner_eq_zero_of_right (x : E) {y : E} (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
   rw [inner_eq_zero_symm, inner_eq_zero_of_left _ h]
 
-/-- Subtracting the orthogonal projection of `u` onto `d` yields a vector orthogonal to `d`. -/
-theorem real_inner_sub_smul_div_inner_self_eq_zero (u d : F) :
-    ⟪u - (⟪u, d⟫_ℝ / ⟪d, d⟫_ℝ) • d, d⟫_ℝ = 0 := by
-  rw [inner_sub_left, real_inner_smul_left]
-  by_cases hd : ⟪d, d⟫_ℝ = 0
-  · have : ‖d‖ = 0 := by rwa [real_inner_self_eq_norm_sq, sq_eq_zero_iff] at hd
-    simp [inner_eq_zero_of_right u this]
-  · field_simp; ring
-
 variable (𝕜)
 
 include 𝕜 in
