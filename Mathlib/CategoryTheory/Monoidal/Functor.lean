@@ -984,7 +984,27 @@ def leftAdjointLaxMonoidal : F.OplaxMonoidal where
       ← Adjunction.homEquiv_naturality_left_symm, assoc, ← μ_natural_right]
     simp [← id_tensorHom]
   oplax_associativity X Y Z := (adj.homEquiv _ _).injective (by
-    sorry)
+    rw [← Adjunction.homEquiv_naturality_right_symm,
+      ← Adjunction.homEquiv_naturality_right_symm,
+      ← Adjunction.homEquiv_naturality_left_symm,
+      Equiv.apply_symm_apply, Equiv.apply_symm_apply, assoc, assoc]
+    conv_lhs =>
+      rw [homEquiv_counit, map_comp_assoc, map_comp,
+        ← μ_natural_left_assoc, map_comp, map_comp, tensorHom_def'_assoc]
+      dsimp
+      rw [← comp_whiskerRight_assoc]
+    conv_rhs =>
+      rw [← μ_natural_right, homEquiv_counit, map_comp_assoc,
+        map_comp, tensorHom_def_assoc, ← associator_naturality_left_assoc]
+      dsimp
+      rw [← MonoidalCategory.whiskerLeft_comp_assoc, map_comp,
+        unit_naturality_assoc, MonoidalCategory.whiskerLeft_comp,
+        unit_naturality_assoc, right_triangle_components, comp_id, assoc,
+        tensorHom_def, MonoidalCategory.whiskerLeft_comp_assoc,
+        ← associator_naturality_middle_assoc, ← associator_naturality_right_assoc,
+        ← associativity G, ← comp_whiskerRight_assoc, ← tensorHom_def,
+        ← whisker_exchange_assoc, ← comp_whiskerRight_assoc]
+    simp)
   oplax_left_unitality _ := (adj.homEquiv _ _).injective (by
     rw [Adjunction.homEquiv_naturality_left, Adjunction.homEquiv_naturality_right,
       Equiv.apply_symm_apply, assoc, ← μ_natural_left, ← tensorHom_id,
