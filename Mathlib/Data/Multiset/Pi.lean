@@ -138,21 +138,22 @@ theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
   Multiset.induction_on m (by simp) (by simp +contextual)
 
 protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
-    Nodup s → (∀ a ∈ s, Nodup (t a)) → Nodup (pi s t) := by
-  refine Multiset.induction_on s (fun _ _ ↦ nodup_singleton _) (fun a s ih hs ht ↦ ?_)
-  simp only [pi_cons]
-  specialize ih (nodup_cons.1 hs).2 (fun a' h' ↦ ht a' (mem_cons_of_mem h'))
-  specialize ht a (mem_cons_self _ _)
-  revert ih ht
-  refine Quot.induction_on (t a) <| fun la ↦ Quot.induction_on (pi s t) (fun lp hlp hla ↦ ?_)
-  simp only [quot_mk_to_coe', map_coe, coe_bind, coe_nodup, List.nodup_flatMap]
-  refine ⟨fun b _ ↦ hlp.map (Pi.cons_injective (nodup_cons.1 hs).1), hla.imp
-    (@fun b₁ b₂ hne x hx₁ hx₂ ↦ hne ?_)⟩
-  obtain ⟨g₁, _, rfl⟩ := List.mem_map.1 hx₁
-  obtain ⟨g₂, _, heq⟩ := List.mem_map.1 hx₂
-  have h : Pi.cons s a b₁ g₁ a (mem_cons_self _ _) = Pi.cons s a b₂ g₂ a (mem_cons_self _ _) :=
-    congr_fun (congr_fun heq a).symm (mem_cons_self _ _)
-  rwa [Pi.cons_same (mem_cons_self a s), Pi.cons_same] at h
+    Nodup s → (∀ a ∈ s, Nodup (t a)) → Nodup (pi s t) :=
+  Multiset.induction_on s (fun _ _ => nodup_singleton _)
+    (by
+      intro a s ih hs ht
+      have has : a ∉ s := by simp only [nodup_cons] at hs; exact hs.1
+      have hs : Nodup s := by simp only [nodup_cons] at hs; exact hs.2
+      simp only [pi_cons, nodup_bind]
+      refine
+        ⟨fun b _ => ((ih hs) fun a' h' => ht a' <| mem_cons_of_mem h').map (Pi.cons_injective has),
+          ?_⟩
+      refine (ht a <| mem_cons_self _ _).pairwise ?_
+      exact fun b₁ _ b₂ _ neb =>
+        disjoint_map_map.2 fun f _ g _ eq =>
+          have : Pi.cons s a b₁ f a (mem_cons_self _ _) =
+            Pi.cons s a b₂ g a (mem_cons_self _ _) := by rw [eq]
+          neb <| show b₁ = b₂ by rwa [Pi.cons_same, Pi.cons_same] at this)
 
 theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) (f : ∀ a ∈ m, β a) :
     f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
