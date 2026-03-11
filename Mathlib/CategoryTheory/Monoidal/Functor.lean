@@ -972,7 +972,7 @@ variable [G.LaxMonoidal]
 set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of a lax monoidal functor is oplax monoidal. -/
 @[simps, implicit_reducible]
-def leftAdjointLaxMonoidal : F.OplaxMonoidal where
+def leftAdjointOplaxMonoidal : F.OplaxMonoidal where
   η := (adj.homEquiv _ _).symm (ε G)
   δ X Y := (adj.homEquiv _ _).symm ((adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _)
   δ_natural_left _ _ := by
@@ -1018,9 +1018,9 @@ def leftAdjointLaxMonoidal : F.OplaxMonoidal where
 
 set_option backward.isDefEq.respectTransparency false in
 instance :
-    letI := adj.leftAdjointLaxMonoidal
+    letI := adj.leftAdjointOplaxMonoidal
     adj.IsMonoidal := by
-  letI := adj.leftAdjointLaxMonoidal
+  letI := adj.leftAdjointOplaxMonoidal
   refine ⟨?_, fun X Y ↦ ?_⟩
   · simp [homEquiv_counit]
   · simp [homEquiv_counit, ← μ_natural]
