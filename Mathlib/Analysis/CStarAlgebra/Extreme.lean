@@ -14,12 +14,11 @@ This file contains results on the extreme points of the closed unit ball in (uni
 
 public section
 
-set_option backward.isDefEq.respectTransparency false
-
 open Set Metric CFC CStarAlgebra Unitization
 
 variable {A : Type*} [NonUnitalCStarAlgebra A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The star projections in a non-unital C⋆-algebra are exactly the extreme points of
 the nonnegative closed unit ball. -/
 theorem isStarProjection_iff_mem_extremePoints_nonneg_and_mem_closedUnitBall
