@@ -406,14 +406,7 @@ theorem iteratedDeriv_comp_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff
 
 lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ f (-x)) a = (-1 : 𝕜) ^ n • iteratedDeriv n f (-a) := by
-  induction n generalizing a with
-  | zero => simp only [iteratedDeriv_zero, pow_zero, one_smul]
-  | succ n ih =>
-    have ih' : iteratedDeriv n (fun x ↦ f (-x)) = fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (-x) :=
-      funext ih
-    rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
-      deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_fun_const_smul_field,
-      neg_smul]
+  simp [iteratedDeriv, ← iteratedFDerivWithin_univ, iteratedFDerivWithin_comp_neg]
 
 lemma iteratedDeriv_id {n : ℕ} {x : 𝕜} :
     iteratedDeriv n id x = if n = 0 then x else if n = 1 then 1 else 0 := by
