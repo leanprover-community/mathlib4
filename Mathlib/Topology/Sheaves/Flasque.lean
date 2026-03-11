@@ -181,11 +181,9 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
       (homOfLE (le_iSup f 0)).op (ht₅ 0)) (by cat_disch))
     exact leOfHom (Classical.choice ((ht t₆) this)).right.1.unop ((le_iSup f 1) hW)
   use t.right.2 |_ U
-  conv_rhs => equals (S.g.hom.app (op t.right.1.unop)) t.right.2 |_ U =>
-    rw [← tcomp, restrict_restrict]
-    change _ = (CategoryTheory.ConcreteCategory.hom (S.X₃.obj.map (𝟙 _))) s
-    simp [CategoryTheory.Functor.map_id]
-  exact map_restrict ..
+  rw [map_restrict, ← tcomp, restrict_restrict]
+  change (CategoryTheory.ConcreteCategory.hom (S.X₃.obj.map (𝟙 _))) s = _
+  simp [CategoryTheory.Functor.map_id]
 
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
 then `𝓗` is flasque. -/
