@@ -67,10 +67,11 @@ structure FrameHom (α β : Type*) [CompleteLattice α] [CompleteLattice β] ext
   /-- The proposition that frame homomorphisms commute with arbitrary suprema/joins. -/
   map_sSup' (s : Set α) : toFun (sSup s) = sSup (toFun '' s)
 
-structure CoFrameHom (α β : Type*) [InfSet α] [Max α] [Bot α] [InfSet β] [Max β] [Bot β] extends
+/-- The type of coframe homomorphisms from `α` to `β`. They preserve finite joins and arbitrary meets.
+-/
+structure CoFrameHom (α β : Type*) [CompleteLattice α] [CompleteLattice β] extends
   SupBotHom α β where
   map_sInf' (s : Set α) : toFun (sInf s) = sInf (toFun '' s)
-
 
 /-- The type of complete lattice homomorphisms from `α` to `β`. -/
 structure CompleteLatticeHom (α β : Type*) [CompleteLattice α] [CompleteLattice β] extends
@@ -102,7 +103,7 @@ class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] 
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 
-class CoFrameHomClass (F α β : Type*) [InfSet α] [Max α] [Bot α] [InfSet β] [Max β] [Bot β]
+class CoFrameHomClass (F α β : Type*)  [CompleteLattice α] [CompleteLattice β]
     [FunLike F α β] : Prop extends SupBotHomClass F α β where
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sInf (f : F) (s : Set α) : f (sInf s) = sInf (f '' s)
@@ -167,8 +168,8 @@ instance (priority := 100) FrameHomClass.tosSupHomClass [CompleteLattice α]
   { ‹FrameHomClass F α β› with }
 
 -- See note [lower instance priority]
-instance (priority := 100) CoFrameHomClass.tosInfHomClass [InfSet α] [Max α] [Bot α] [InfSet β]
-   [Max β] [Bot β] [CoFrameHomClass F α β] : sInfHomClass F α β :=
+instance (priority := 100) CoFrameHomClass.tosInfHomClass [CompleteLattice α] [CompleteLattice β]
+   [CoFrameHomClass F α β] : sInfHomClass F α β :=
   { ‹CoFrameHomClass F α β› with }
 
 -- See note [lower instance priority]
@@ -178,8 +179,7 @@ instance (priority := 100) FrameHomClass.v [CompleteLattice α]
 
 -- See note [lower instance priority]
 instance (priority := 100) CoFrameHomClass.toBoundedLatticeHomClass
-  [Lattice α] [Lattice β] [BoundedOrder α] [BoundedOrder β] [InfSet α] [InfSet β]
-   [CoFrameHomClass F α β] : BoundedLatticeHomClass F α β :=
+   [CompleteLattice α] [CompleteLattice β] [CoFrameHomClass F α β] : BoundedLatticeHomClass F α β :=
   { ‹CoFrameHomClass F α β›, sInfHomClass.toInfTopHomClass with }
 
 -- See note [lower instance priority]
@@ -593,9 +593,7 @@ end FrameHom
 
 namespace CoFrameHom
 
-variable [PartialOrder α] [InfSet α] [Max α] [OrderBot α]
-variable [PartialOrder β] [InfSet β] [Max β] [OrderBot β]
-variable [Lattice γ] [BoundedOrder γ] [Lattice δ] [BoundedOrder δ] [InfSet γ] [InfSet δ]
+variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
 instance : FunLike (CoFrameHom α β) α β where
   coe f := f.toFun
@@ -609,91 +607,91 @@ instance : CoFrameHomClass (CoFrameHom α β) α β where
   map_bot f := f.map_bot'
   map_sInf f := f.map_sInf'
 
-/-- Reinterpret a `FrameHom` as a `LatticeHom`. -/
+/-- Reinterpret a `CoFrameHom` as a `LatticeHom`. -/
 def toLatticeHom (f : CoFrameHom γ δ) : LatticeHom γ δ :=
   f
 
-lemma toFun_eq_coe (f : FrameHom α β) : f.toFun = f := rfl
+lemma toFun_eq_coe (f : CoFrameHom α β) : f.toFun = f := rfl
 
-@[simp] lemma coe_toInfTopHom (f : FrameHom α β) : ⇑f.toInfTopHom = f := rfl
-@[simp] lemma coe_toLatticeHom (f : FrameHom α β) : ⇑f.toLatticeHom = f := rfl
-@[simp] lemma coe_mk (f : InfTopHom α β) (hf) : ⇑(mk f hf) = f := rfl
+@[simp] lemma coe_toSupBotHom (f : CoFrameHom α β) : ⇑f.toSupBotHom = f := rfl
+@[simp] lemma coe_toLatticeHom (f : CoFrameHom α β) : ⇑f.toLatticeHom = f := rfl
+@[simp] lemma coe_mk (f : SupBotHom α β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
-theorem ext {f g : FrameHom α β} (h : ∀ a, f a = g a) : f = g :=
+theorem ext {f g : CoFrameHom α β} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
-/-- Copy of a `FrameHom` with a new `toFun` equal to the old one. Useful to fix definitional
+/-- Copy of a `CoFrameHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : FrameHom α β) (f' : α → β) (h : f' = f) : FrameHom α β :=
-  { (f : sSupHom α β).copy f' h with toInfTopHom := f.toInfTopHom.copy f' h }
+protected def copy (f : CoFrameHom α β) (f' : α → β) (h : f' = f) : CoFrameHom α β :=
+  { (f : sInfHom α β).copy f' h with toSupBotHom := f.toSupBotHom.copy f' h }
 
 @[simp]
-theorem coe_copy (f : FrameHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+theorem coe_copy (f : CoFrameHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 
-theorem copy_eq (f : FrameHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+theorem copy_eq (f : CoFrameHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
 variable (α)
 
-/-- `id` as a `FrameHom`. -/
-protected def id : FrameHom α α :=
-  { sSupHom.id α with toInfTopHom := InfTopHom.id α }
+/-- `id` as a `CoFrameHom`. -/
+protected def id : CoFrameHom α α :=
+  { sInfHom.id α with toSupBotHom := SupBotHom.id α }
 
-instance : Inhabited (FrameHom α α) :=
-  ⟨FrameHom.id α⟩
+instance : Inhabited (CoFrameHom α α) :=
+  ⟨CoFrameHom.id α⟩
 
 @[simp, norm_cast]
-theorem coe_id : ⇑(FrameHom.id α) = id :=
+theorem coe_id : ⇑(CoFrameHom.id α) = id :=
   rfl
 
 variable {α}
 
 @[simp]
-theorem id_apply (a : α) : FrameHom.id α a = a :=
+theorem id_apply (a : α) : CoFrameHom.id α a = a :=
   rfl
 
-/-- Composition of `FrameHom`s as a `FrameHom`. -/
-def comp (f : FrameHom β γ) (g : FrameHom α β) : FrameHom α γ :=
-  { (f : sSupHom β γ).comp (g : sSupHom α β) with
-    toInfTopHom := f.toInfTopHom.comp g.toInfTopHom }
+/-- Composition of `CoFrameHom`s as a `CoFrameHom`. -/
+def comp (f : CoFrameHom β γ) (g : CoFrameHom α β) : CoFrameHom α γ :=
+  { (f : sInfHom β γ).comp (g : sInfHom α β) with
+    toSupBotHom := f.toSupBotHom.comp g.toSupBotHom}
 
 @[simp]
-theorem coe_comp (f : FrameHom β γ) (g : FrameHom α β) : ⇑(f.comp g) = f ∘ g :=
-  rfl
-
-@[simp]
-theorem comp_apply (f : FrameHom β γ) (g : FrameHom α β) (a : α) : (f.comp g) a = f (g a) :=
+theorem coe_comp (f : CoFrameHom β γ) (g : CoFrameHom α β) : ⇑(f.comp g) = f ∘ g :=
   rfl
 
 @[simp]
-theorem comp_assoc (f : FrameHom γ δ) (g : FrameHom β γ) (h : FrameHom α β) :
+theorem comp_apply (f : CoFrameHom β γ) (g : CoFrameHom α β) (a : α) : (f.comp g) a = f (g a) :=
+  rfl
+
+@[simp]
+theorem comp_assoc (f : CoFrameHom γ δ) (g : CoFrameHom β γ) (h : CoFrameHom α β) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
 @[simp]
-theorem comp_id (f : FrameHom α β) : f.comp (FrameHom.id α) = f :=
+theorem comp_id (f : CoFrameHom α β) : f.comp (CoFrameHom.id α) = f :=
   ext fun _ => rfl
 
 @[simp]
-theorem id_comp (f : FrameHom α β) : (FrameHom.id β).comp f = f :=
+theorem id_comp (f : CoFrameHom α β) : (CoFrameHom.id β).comp f = f :=
   ext fun _ => rfl
 
 @[simp]
-theorem cancel_right {g₁ g₂ : FrameHom β γ} {f : FrameHom α β} (hf : Surjective f) :
+theorem cancel_right {g₁ g₂ : CoFrameHom β γ} {f : CoFrameHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 
 @[simp]
-theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Injective g) :
+theorem cancel_left {g : CoFrameHom β γ} {f₁ f₂ : CoFrameHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
-instance : PartialOrder (FrameHom α β) :=
+instance : PartialOrder (CoFrameHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
-end FrameHom
+end CoFrameHom
 
 /-! ### Complete lattice homomorphisms -/
 

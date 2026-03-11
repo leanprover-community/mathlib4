@@ -400,42 +400,22 @@ instance : PartialOrder (Closed X) where
 
 variable {C D : Closed X}
 
-private lemma le_def' : C ≤ D ↔ D.element ≤ C.element := ge_iff_le
+def closedIsoDual : (Closed X) ≃o Xᵒᵈ where
+  toFun c := OrderDual.toDual c.element
+  invFun x := ⟨x.ofDual⟩
+  map_rel_iff' := by aesop
 
-instance : Lattice (Closed X) where
-  sup x y := ⟨x.element ⊓ y.element⟩
-  le_sup_left := by simp [le_def']
-  le_sup_right := by simp [le_def']
-  sup_le := by simp_all [le_def']
-  inf x y := ⟨x.element ⊔ y.element⟩
-  inf_le_left := by simp [le_def']
-  inf_le_right := by simp [le_def']
-  le_inf := by simp_all [le_def']
+abbrev getElement (C : Closed X) := C.closedIsoDual.ofDual
 
-instance : CompleteSemilatticeInf (Closed X) where
-  sInf s := ⟨sSup {x.val.element | x : s}⟩
-  sInf_le s c hc := by simpa [le_def'] using le_sSup (by grind)
-  le_sInf s c hc := by simpa [le_def'] using fun d hd ↦ (le_def'.mpr (hc d hd))
+lemma le_def : C ≤ D ↔ D.getElement ≤ C.getElement:= by simp [getElement,closedIsoDual]; rfl
 
-instance : BoundedOrder (Closed X) where
-  top := ⟨⊥⟩
-  bot := ⟨⊤⟩
-  le_top := by simp [le_def']
-  bot_le := by simp [le_def']
+instance : CompleteLattice (Closed X) := closedIsoDual.symm.toGaloisInsertion.liftCompleteLattice
 
-def closedIsoDual : CoFrameHom (Closed X) Xᵒᵈ where
-  toFun x := OrderDual.toDual x.element
-  map_sInf' s := by
-    change (⟨sSup _⟩ : Closed X).element = sSup _
-    simpa using by rfl
-  map_bot' := by rfl
-  map_sup' a b := by rfl
+instance : Order.Coframe (Closed X) := .ofMinimalAxioms ⟨by
+  simp [le_def, OrderIso.map_sup, OrderIso.map_sInf, sup_iInf_eq, OrderIso.map_iInf]⟩
 
-abbrev getElement (c : Closed X) : X := OrderDual.ofDual (closedIsoDual c)
 
 @[simp] lemma getElement_mk {x : X} : ({element := x} : Closed X).getElement = x := rfl
-
-lemma le_def : C ≤ D ↔ D.getElement ≤ C.getElement := ge_iff_le
 
 /-- TODO Docstring -/
 def toNucleus (c : Closed X) : Nucleus X where
@@ -445,30 +425,40 @@ def toNucleus (c : Closed X) : Nucleus X where
   idempotent' := by simp
   le_apply' := by simp
 
-def toSublocale : sInfHom (Closed X) (Sublocale X) where
+def toSublocale : CoFrameHom (Closed X) (Sublocale X) where
   toFun c := c.toNucleus.toSublocale
-  map_sInf' s := by
-    simp only [Nucleus.toSublocale, toNucleus, ← Set.image_image]
-    rw [sInf_eq_iInf, iInf_image, ← OrderIso.map_sInf]
+  map_sup' a b := by
+    simp only [Nucleus.toSublocale, ← OrderIso.map_sup, EmbeddingLike.apply_eq_iff_eq]
+    change _ = (OrderDual.instSup (Nucleus X)).max _ _  -- Weird why this is needed
+    rw [← toDual_inf] -- set option backwards transparency false would also work
     congr
-    ext i
-    simp only [getElement, map_sInf, ofDual_sInf, OrderDual.ofDual_toDual, Nucleus.coe_mk,
-      InfHom.coe_mk]
-    apply le_antisymm
-    · simp only [sup_le_iff, sSup_le_iff, mem_preimage, mem_image, forall_exists_index, and_imp,
-      Nucleus.le_apply, and_true]
-      intro b x hx h1
-      simp only [Equiv.preimage_image, ← sInf_upperBounds_eq_sSup, upperBounds, mem_image,
-        forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Nucleus.sInf_apply, mem_setOf_eq,
-        le_iInf_iff]
-      intro n h2
-      specialize h2 x hx
-      simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def, sup_le_iff,
-        n.le_apply, and_true] at h2
-      exact le_trans (le_of_eq (Eq.symm h1)) (h2 i)
-    · simpa [← sInf_upperBounds_eq_sSup, upperBounds, ← Nucleus.coe_le_coe, Pi.le_def,
-        Nucleus.le_apply, iInf_le_iff] using fun _ h1 ↦ h1 (_ : Closed X).toNucleus <|
-          fun a ha _ ↦ le_sup_of_le_left <| le_sInf <| fun _ h ↦ h a ha (by simp)
+    simp only [toNucleus, getElement, OrderIso.map_sup, Nucleus.ext_iff, Nucleus.coe_mk,
+      InfHom.coe_mk, Nucleus.inf_apply]
+    intro i
+    change OrderDual.ofDual ((OrderDual.instSup X).max _ _) ⊔ _ = _ -- weird
+    rw [ofDual_sup]
+    refine le_antisymm ?_ (by rw [sup_inf_right])
+    . simp [inf_sup_left]
+      exact le_sup_of_le_left (by simp)
+
+
+
+/-
+  map_sInf' s := by
+    simp_rw [Nucleus.toSublocale, ← image_image, sInf_image, ← OrderIso.map_sInf]
+    simpa [OrderDual.ext_iff, ofDual_sInf] using le_antisymm
+      (by simpa [le_sSup_iff, upperBounds, toNucleus, ← Nucleus.coe_le_coe, Pi.le_def, getElement,
+      OrderIso.map_sInf, Nucleus.le_apply] using fun _ h i c hc ↦ h c hc i)
+      <| by simpa [toNucleus, getElement, sSup_le_iff, Pi.le_def, le_sup_right, OrderIso.map_sInf,
+       ofDual_iInf] using fun _ _ _ ↦ le_sup_of_le_left (by simp [le_iSup_iff]; grind)
+
+
+
+
+
+
+
+/-
 
 set_option backward.isDefEq.respectTransparency false in
 lemma toSublocale.map_sup {C D : Closed X} : (C ⊔ D).toSublocale = C.toSublocale ⊔ D.toSublocale := by
