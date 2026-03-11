@@ -91,6 +91,7 @@ theorem sigma_eq_biUnion [DecidableEq (Σ i, α i)] (s : Finset ι) (t : ∀ i, 
   ext ⟨x, y⟩
   simp [and_left_comm]
 
+@[simp]
 lemma filter_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) (p : {i : ι} → α i → Prop)
     [∀ i, DecidablePred (p (i := i))] :
     (s.sigma t).filter (fun x ↦ p x.snd) = (s.sigma fun i ↦ ((t i).filter p)) := by
