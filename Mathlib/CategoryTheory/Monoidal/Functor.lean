@@ -966,6 +966,47 @@ instance isMonoidal_comp {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
 
 end LaxMonoidal
 
+section OplaxMonoidal
+variable [G.LaxMonoidal]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The right adjoint of an oplax monoidal functor is lax monoidal. -/
+@[simps, implicit_reducible]
+def leftAdjointLaxMonoidal : F.OplaxMonoidal where
+  η := (adj.homEquiv _ _).symm (ε G)
+  δ X Y := (adj.homEquiv _ _).symm ((adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _)
+  δ_natural_left _ _ := by
+    rw [← Adjunction.homEquiv_naturality_right_symm,
+      ← Adjunction.homEquiv_naturality_left_symm, assoc, ← μ_natural_left]
+    simp [← tensorHom_id]
+  δ_natural_right _ _ := by
+    rw [← Adjunction.homEquiv_naturality_right_symm,
+      ← Adjunction.homEquiv_naturality_left_symm, assoc, ← μ_natural_right]
+    simp [← id_tensorHom]
+  oplax_associativity X Y Z := (adj.homEquiv _ _ ).injective (by
+    sorry)
+  oplax_left_unitality _ := (adj.homEquiv _ _ ).injective (by
+    rw [Adjunction.homEquiv_naturality_left, Adjunction.homEquiv_naturality_right,
+      Equiv.apply_symm_apply, assoc, ← μ_natural_left, ← tensorHom_id,
+      tensorHom_comp_tensorHom_assoc]
+    simp [tensorHom_def', homEquiv_unit, homEquiv_counit])
+  oplax_right_unitality _ := (adj.homEquiv _ _ ).injective (by
+    rw [Adjunction.homEquiv_naturality_left, Adjunction.homEquiv_naturality_right,
+      Equiv.apply_symm_apply, assoc, ← μ_natural_right, ← id_tensorHom,
+      tensorHom_comp_tensorHom_assoc]
+    simp [tensorHom_def, homEquiv_unit, homEquiv_counit])
+
+set_option backward.isDefEq.respectTransparency false in
+instance :
+    letI := adj.leftAdjointLaxMonoidal
+    adj.IsMonoidal := by
+  letI := adj.leftAdjointLaxMonoidal
+  refine ⟨?_, fun X Y ↦ ?_⟩
+  · simp [homEquiv_counit]
+  · simp [homEquiv_counit, ← μ_natural]
+
+end OplaxMonoidal
+
 section Monoidal
 variable [F.Monoidal] [G.Monoidal] [adj.IsMonoidal]
 
