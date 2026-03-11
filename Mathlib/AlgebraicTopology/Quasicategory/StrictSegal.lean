@@ -46,16 +46,25 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     apply congr_arg
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
-    rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
-      Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map, Equiv.apply_symm_apply,
-      mkOfSucc_δ_lt hlt]
+    apply ULift.down_injective
+    change _ = (TypeCat.Hom.hom (TypeCat.ofHom ⟨_⟩) _)
+    dsimp
+    erw [Subcomplex.yonedaEquiv_coe]
+    rw [Subfunctor.lift_ι]
+    erw [stdSimplex.map_apply,Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map,
+      Equiv.apply_symm_apply, mkOfSucc_δ_lt hlt]
     rfl
   · rw [← spine_arrow, spine_δ_arrow_gt sx _ hgt]
     dsimp only [Path.map_arrow, spine_arrow, Fin.coe_eq_castSucc]
     apply congr_arg
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
-    rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
+    apply ULift.down_injective
+    change _ = (TypeCat.Hom.hom (TypeCat.ofHom ⟨_⟩) _)
+    dsimp
+    erw [Subcomplex.yonedaEquiv_coe]
+    rw [Subfunctor.lift_ι]
+    erw [stdSimplex.map_apply,
       Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_gt hgt]
     rfl
@@ -74,7 +83,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
           X.spine 2 (σ₀.app _ triangle) := by
         ext m
         dsimp [spine_arrow, Path.map_interval, Path.map_arrow]
-        rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
+        erw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
         apply congr_arg
         apply Subtype.ext
         ext a : 1
@@ -86,8 +95,11 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       apply Subtype.ext
       ext z : 1
       dsimp [horn.face]
-      rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
-        Quiver.Hom.unop_op, stdSimplex.map_apply, Quiver.Hom.unop_op]
+      change (Δ[n + 1 + 2].map (diag 2).op ↑triangle) z =
+        (Δ[n + 1 + 2].map (mkOfSucc k).op ↑(yonedaEquiv (Subfunctor.lift (stdSimplex.δ j) _))) z
+      erw [Subcomplex.yonedaEquiv_coe]
+      rw [Subfunctor.lift_ι, stdSimplex.map_apply, Quiver.Hom.unop_op, stdSimplex.map_apply,
+        Quiver.Hom.unop_op]
       dsimp [CosimplicialObject.δ]
       rw [stdSimplex.yonedaEquiv_map]
       simp only [Equiv.apply_symm_apply, triangle]

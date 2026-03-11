@@ -76,6 +76,10 @@ def fromOverSubfunctor : Subfunctor (Over.forget X ⋙ F) where
 lemma mem_fromOverSubfunctor_iff {U : Over X} (u : F.obj U.left) :
     u ∈ (fromOverSubfunctor F x).obj U ↔ F.map U.hom u = x := Iff.rfl
 
+@[simp]
+lemma mem_fromOverSubfunctor_iff' {U : Over X} (u : F.obj U.left) :
+    (fromOverSubfunctor F x).obj U u ↔ F.map U.hom u = x := Iff.rfl
+
 /-- Given a functor `F : C ⥤ TypeCat.{w}`, an object `X : C` and `x : F.obj X`,
 this is the functor `Over X ⥤ Type w` which sends an object of `Over X`
 corresponding to a morphism `f : Y ⟶ X` to the subtype of `F.obj Y`

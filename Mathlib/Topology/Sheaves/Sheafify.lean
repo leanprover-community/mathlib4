@@ -41,7 +41,7 @@ noncomputable section
 
 open TopCat Opposite TopologicalSpace CategoryTheory
 
-variable {X : TopCat.{v}} (F : Presheaf (Type v) X)
+variable {X : TopCat.{v}} (F : Presheaf TypeCat.{v} X)
 
 namespace TopCat.Presheaf
 
@@ -65,7 +65,7 @@ end Sheafify
 /-- The sheafification of a `Type`-valued presheaf, defined as the functions into the stalks which
 are locally equal to germs.
 -/
-def sheafify : Sheaf (Type v) X :=
+def sheafify : Sheaf TypeCat.{v} X :=
   subsheafToTypes (Sheafify.isLocallyGerm F)
 
 /-- The morphism from a presheaf to its sheafification,
@@ -73,7 +73,8 @@ sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
 def toSheafify : F ⟶ F.sheafify.1 where
-  app U f := ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
+  app U := TypeCat.ofHom ⟨fun f ↦ ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf
+    ⟨f, fun x => rfl⟩⟩⟩
   naturality U U' f := by
     ext x
     apply Subtype.ext -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Added `apply`

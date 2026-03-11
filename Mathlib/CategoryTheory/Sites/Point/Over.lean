@@ -53,7 +53,7 @@ def over : Point.{w} (J.over X) where
     simp only [mem_over_iff, Equiv.apply_symm_apply] at hR
     obtain ⟨Y, f, hf, v, rfl⟩ := Φ.jointly_surjective R hR u
     refine ⟨Over.mk (f ≫ U.hom), Over.homMk f, hf, ⟨v, ?_⟩, rfl⟩
-    rw [FunctorToTypes.mem_fromOverSubfunctor_iff] at hu ⊢
+    rw [FunctorToTypes.mem_fromOverSubfunctor_iff'] at hu ⊢
     simpa
 
 end GrothendieckTopology.Point
@@ -63,8 +63,8 @@ namespace ObjectProperty
 set_option backward.isDefEq.respectTransparency false in
 lemma IsConservativeFamilyOfPoints.over
     {P : ObjectProperty (Point.{w} J)} [ObjectProperty.Small.{w} P]
-    [J.WEqualsLocallyBijective (Type w)] [HasSheafify J (Type w)]
-    (hP : P.IsConservativeFamilyOfPoints) (X : C) [HasSheafify (J.over X) (Type w)] :
+    [J.WEqualsLocallyBijective TypeCat.{w}] [HasSheafify J TypeCat.{w}]
+    (hP : P.IsConservativeFamilyOfPoints) (X : C) [HasSheafify (J.over X) TypeCat.{w}] :
     IsConservativeFamilyOfPoints
       (ObjectProperty.ofObj (fun (ψ : Σ (Φ : P.FullSubcategory),
         Φ.obj.fiber.obj X) ↦ ψ.1.obj.over ψ.2)) :=
@@ -76,18 +76,18 @@ lemma IsConservativeFamilyOfPoints.over
     rw [hP.jointly_reflect_ofArrows_mem_of_small]
     intro Φ y
     obtain ⟨T, a, ⟨_, b, _, ⟨i⟩, hb⟩, ⟨z, hz₁⟩, hz₂⟩ := hS (⟨_, ⟨⟨Φ, Φ.obj.fiber.map f y⟩⟩⟩)
-      (⟨by exact y, by rw [FunctorToTypes.mem_fromOverSubfunctor_iff]; rfl⟩)
+      (⟨by exact y, by rw [FunctorToTypes.mem_fromOverSubfunctor_iff']; rfl⟩)
     rw [Subtype.ext_iff] at hz₂
     exact ⟨i, Φ.obj.fiber.map b z,
-      (congr_fun (Φ.obj.fiber.map_comp b (g i)) _).symm.trans (by rwa [hb])⟩)
+      (ConcreteCategory.congr_hom (Φ.obj.fiber.map_comp b (g i)) _).symm.trans (by rwa [hb])⟩)
 
 end ObjectProperty
 
 namespace GrothendieckTopology
 
-instance [HasEnoughPoints.{w} J] [J.WEqualsLocallyBijective (Type w)]
-    [HasSheafify J (Type w)] (X : C)
-    [HasSheafify (J.over X) (Type w)] :
+instance [HasEnoughPoints.{w} J] [J.WEqualsLocallyBijective TypeCat.{w}]
+    [HasSheafify J TypeCat.{w}] (X : C)
+    [HasSheafify (J.over X) TypeCat.{w}] :
     HasEnoughPoints.{w} (J.over X) := by
   obtain ⟨P, _, hP⟩ := HasEnoughPoints.exists_objectProperty J
   exact ⟨_, inferInstance, hP.over X⟩

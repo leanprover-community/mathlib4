@@ -163,7 +163,7 @@ end
 
 /-- The structure sheaf (valued in `Type`, not yet `CommRing`) is the subsheaf consisting of
 functions satisfying `isLocallyFraction`. -/
-def structureSheafInType : Sheaf (Type _) (ProjectiveSpectrum.top 𝒜) :=
+def structureSheafInType : Sheaf TypeCat (ProjectiveSpectrum.top 𝒜) :=
   subsheafToTypes (isLocallyFraction 𝒜)
 
 instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :

@@ -121,11 +121,11 @@ set_option backward.isDefEq.respectTransparency false in
 `F.obj (.mk (op S))`, this is the presheaf of morphisms from `M` to `N`: it sends
 an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type
 of morphisms $p^* M ⟶ p^* N$. -/
-@[simps]
-def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
-  obj T := (F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
-    (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N
-  map {T₁ T₂} p f := pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
+@[simps obj map]
+def presheafHom : (Over S)ᵒᵖ ⥤ TypeCat.{v'} where
+  obj T := TypeCat.of ((F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
+    (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N)
+  map {T₁ T₂} p := TypeCat.ofHom ⟨fun f ↦ pullHom f p.unop.left T₂.unop.hom T₂.unop.hom⟩
 
 /-- The bijection `(M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S)))`. -/
 @[simps! -isSimp]
@@ -147,7 +147,8 @@ def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
       rintro ⟨T₁⟩ ⟨T₂⟩ ⟨f⟩
       ext g
       dsimp [pullHom]
-      simp only [Category.assoc, Functor.map_comp]
+      simp only [Category.assoc, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
+        Functor.map_comp]
       rw [F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom_app_assoc _ _ _ _ _ _ rfl _ rfl,
         F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app _ _ _ _ _ _ _ _ (by
           simp only [← Quiver.Hom.comp_toLoc, ← op_comp, Over.w_assoc])])
@@ -171,7 +172,7 @@ a morphism `p : X ⟶ S` to the type of morphisms $p^* M ⟶ p^* N$. -/
 @[simps]
 def sheafHom (J : GrothendieckTopology C) [F.IsPrestack J]
     {S : C} (M N : F.obj (.mk (op S))) :
-    Sheaf (J.over S) (Type v') where
+    Sheaf (J.over S) TypeCat.{v'} where
   obj := F.presheafHom M N
   property := IsPrestack.isSheaf _ _ _
 
