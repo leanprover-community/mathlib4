@@ -17,7 +17,6 @@ public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.Topology.Algebra.AffineSubspace
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
 public import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -454,98 +453,6 @@ theorem exists_seq_norm_le_one_le_norm_sub (h : ¬FiniteDimensional 𝕜 E) :
   exact ⟨‖c‖ + 1, f, hc.trans A, hf.1, hf.2⟩
 
 variable (𝕜)
-
-section TVS
-
-variable {V : Type*} [AddCommGroup V] [UniformSpace V] [IsUniformAddGroup V] [T2Space V]
-  [Module 𝕜 V] [ContinuousSMul 𝕜 V]
-
-open scoped Pointwise in
-/-- **Riesz's theorem**: a T2 topological vector space over a complete non-trivial normed field
-which admits a totally bounded neighborhood of `0` is finite-dimensional. -/
-theorem FiniteDimensional.of_totallyBounded_nhds_zero
-    {U : Set V} (hU_nhds : U ∈ 𝓝 (0 : V)) (hU_tb : TotallyBounded U) :
-    FiniteDimensional 𝕜 V := by
-  obtain ⟨c, hc0, hc1⟩ : ∃ c : 𝕜, 0 < ‖c‖ ∧ ‖c‖ < 1 := NormedField.exists_norm_lt 𝕜 zero_lt_one
-  have hc_ne : c ≠ 0 := norm_pos_iff.mp hc0
-  have hcU_nhds : c • U ∈ 𝓝 (0 : V) := (set_smul_mem_nhds_zero_iff hc_ne).mpr hU_nhds
-  obtain ⟨F, hF_finite, hF_subset_raw⟩ :=
-    totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hU_tb (c • U) hcU_nhds
-  have hF_subset : U ⊆ F + c • U := fun x hx ↦ by
-    have hx_sub := hF_subset_raw hx
-    simp only [Set.mem_iUnion] at hx_sub
-    rcases hx_sub with ⟨f, hf, v, hv, rfl⟩
-    exact Set.add_mem_add hf hv
-  let M : Submodule 𝕜 V := Submodule.span 𝕜 F
-  haveI hM_fin : FiniteDimensional 𝕜 M := Finite.span_of_finite 𝕜 hF_finite
-  have h_ind : ∀ n : ℕ, U ⊆ (M : Set V) + c ^ n • U := by
-    intro n
-    induction n with
-    | zero =>
-      intro x hx
-      rw [pow_zero, one_smul]
-      exact ⟨0, M.zero_mem, x, hx, zero_add x⟩
-    | succ n ih =>
-      intro x hx
-      rcases ih hx with ⟨m, hm, y, ⟨u, hu, rfl⟩, rfl⟩
-      rcases hF_subset hu with ⟨f, hf, y', ⟨v, hv, rfl⟩, rfl⟩
-      refine ⟨m + c ^ n • f, M.add_mem hm (M.smul_mem (c ^ n) (Submodule.subset_span hf)),
-        c ^ (n + 1) • v, ⟨v, hv, rfl⟩, ?_⟩
-      simp [smul_add, smul_smul, pow_succ, add_assoc]
-  have h_vonN : Bornology.IsVonNBounded 𝕜 U := TotallyBounded.isVonNBounded 𝕜 hU_tb
-  have h_U_small : Filter.Tendsto (fun n ↦ c ^ n • U) Filter.atTop (𝓝 0).smallSets :=
-    h_vonN.tendsto_smallSets_nhds.comp (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc1)
-  have hU_sub_M : U ⊆ M := fun x hx ↦ by
-    choose m hm u hu h_eq using fun n ↦ h_ind n hx
-    have hu_tendsto : Filter.Tendsto u Filter.atTop (𝓝 0) := fun W hW ↦
-      (Filter.tendsto_smallSets_iff.mp h_U_small W hW).mono fun n hn ↦ hn (hu n)
-    have hm_tendsto : Filter.Tendsto m Filter.atTop (𝓝 x) := by
-      have : m = fun n ↦ x - u n := funext fun n ↦ eq_sub_of_add_eq (h_eq n)
-      rw [this]
-      simpa using tendsto_const_nhds.sub hu_tendsto
-    exact M.closed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Filter.Eventually.of_forall hm)
-  have hM_top : M = ⊤ := eq_top_iff.mpr fun z _ ↦ by
-    have h_z_tendsto : Filter.Tendsto (fun n : ℕ ↦ c ^ n • z) Filter.atTop (𝓝 0) := by
-      simpa only [zero_smul] using (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc1).smul_const z
-    have h_ev : ∀ᶠ n in Filter.atTop, c ^ n • z ∈ U := h_z_tendsto hU_nhds
-    obtain ⟨N, hN⟩ := h_ev.exists
-    have h_smul : (c ^ N)⁻¹ • c ^ N • z ∈ M := M.smul_mem _ (hU_sub_M hN)
-    rwa [smul_smul, inv_mul_cancel₀ (pow_ne_zero N hc_ne), one_smul] at h_smul
-  exact FiniteDimensional.of_surjective M.subtype fun x ↦ ⟨⟨x, by simp [hM_top]⟩, rfl⟩
-
-/-- **Riesz's theorem**: in a T2 topological vector space over a complete non-trivial normed field,
-if there exists a totally bounded neighborhood of `0`, then the space is finite-dimensional. -/
-theorem FiniteDimensional.of_exists_totallyBounded_nhds_zero
-    (h : ∃ U ∈ 𝓝 (0 : V), TotallyBounded U) :
-    FiniteDimensional 𝕜 V :=
-  let ⟨_, hU_nhds, hU_tb⟩ := h
-  of_totallyBounded_nhds_zero 𝕜 hU_nhds hU_tb
-
-/-- **Riesz's theorem**: a locally compact topological vector space is finite-dimensional. -/
-theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace V] :
-    FiniteDimensional 𝕜 V :=
-  let ⟨_, hU_compact, hU_nhds⟩ := exists_compact_mem_nhds (0 : V)
-  .of_totallyBounded_nhds_zero 𝕜 hU_nhds hU_compact.totallyBounded
-
-/-- If a function has compact support, then either the function is trivial
-or the space is finite-dimensional. -/
-theorem HasCompactSupport.eq_zero_or_finiteDimensional {X : Type*}
-    [TopologicalSpace X] [Zero X] [T1Space X]
-    {f : V → X} (hf : HasCompactSupport f) (h'f : Continuous f) :
-    f = 0 ∨ FiniteDimensional 𝕜 V :=
-  (HasCompactSupport.eq_zero_or_locallyCompactSpace_of_addGroup hf h'f).imp_right fun h ↦
-    have : LocallyCompactSpace V := h; .of_locallyCompactSpace 𝕜
-
-/-- If a function has compact multiplicative support, then either the function is trivial
-or the space is finite-dimensional. -/
-theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*}
-    [TopologicalSpace X] [One X] [T1Space X]
-    {f : V → X} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
-    f = 1 ∨ FiniteDimensional 𝕜 V :=
-  have : T1Space (Additive X) := ‹_›
-  HasCompactSupport.eq_zero_or_finiteDimensional (X := Additive X) 𝕜 hf h'f
-
-end TVS
 
 /-- **Riesz's theorem**: if a closed ball with center zero of positive radius is compact in a vector
 space, then the space is finite-dimensional. -/
