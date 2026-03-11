@@ -594,7 +594,7 @@ theorem compMeasurePreserving_compMeasurePreserving {γ : Type*} [MeasurableSpac
     (compMeasurePreserving (f∘f') (MeasurePreserving.comp hf hf')) g := by
   apply Subtype.ext
   repeat rw [compMeasurePreserving_compMeasurePreserving_val]
-  exact AEEqFun.compQuasiMeasurePreserving_compQuasiMeasurePreserving g.val
+  exact Eq.symm <|AEEqFun.compQuasiMeasurePreserving_comp g.val
     hf.quasiMeasurePreserving hf'.quasiMeasurePreserving
 
 theorem compMeasurePreserving_iterate {f : α → α} (g : Lp E p μ) (hf : MeasurePreserving f μ μ)
