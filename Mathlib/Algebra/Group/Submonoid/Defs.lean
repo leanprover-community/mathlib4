@@ -160,6 +160,10 @@ instance : SubmonoidClass (Submonoid M) M where
   one_mem := Submonoid.one_mem'
   mul_mem {s} := s.mul_mem'
 
+instance isMulCommutative_toSubsemigroup (s : Submonoid M) [IsMulCommutative s] :
+    IsMulCommutative s.toSubsemigroup :=
+  ‹IsMulCommutative s›
+
 @[to_additive (attr := simp)]
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl

@@ -140,8 +140,8 @@ abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x *
   have := isMulCommutative_closure hcomm
   inferInstance
 
-instance {S : Type*} [SetLike S G] [MulMemClass S G] (s : S) [IsMulCommutative s] :
-    IsMulCommutative (closure (s : Set G)) :=
+instance instIsMulCommutative_closure {S : Type*} [SetLike S G] [MulMemClass S G] (s : S)
+    [IsMulCommutative s] : IsMulCommutative (closure (s : Set G)) :=
   isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 
 /-- The conjugation action of N(H) on H. -/

@@ -1292,4 +1292,8 @@ abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [StarR
   have := isMulCommutative_adjoin R hcomm hcomm_star
   inferInstance
 
+instance isMulCommutative_toNonUnitalSubalgebra (S : NonUnitalStarSubalgebra R A)
+    [IsMulCommutative S] : IsMulCommutative S.toNonUnitalSubalgebra :=
+  ‹IsMulCommutative S›
+
 end NonUnitalStarAlgebra

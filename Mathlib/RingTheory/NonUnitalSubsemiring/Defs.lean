@@ -215,6 +215,9 @@ theorem mk'_toAddSubmonoid {s : Set R} {sg : Subsemigroup R} (hg : ↑sg = s) {s
     (ha : ↑sa = s) : (NonUnitalSubsemiring.mk' s sg hg sa ha).toAddSubmonoid = sa :=
   SetLike.coe_injective ha.symm
 
+instance isMulCommutative_toSubsemigroup (S : NonUnitalSubsemiring R) [IsMulCommutative S] :
+    IsMulCommutative S.toSubsemigroup := ‹IsMulCommutative S›
+
 end NonUnitalSubsemiring
 
 namespace NonUnitalSubsemiring

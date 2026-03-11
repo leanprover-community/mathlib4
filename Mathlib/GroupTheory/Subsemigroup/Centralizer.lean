@@ -80,7 +80,7 @@ lemma closure_le_centralizer_centralizer (s : Set M) :
 /-- If all the elements of a set `s` commute, then `closure s` is commutative. -/
 @[to_additive
 /-- If all the elements of a set `s` commute, then `closure s` is commutative. -/]
-theorem isMulCommutative_of_comm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+theorem isMulCommutative_closure {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     IsMulCommutative (closure s) :=
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -88,17 +88,17 @@ theorem isMulCommutative_of_comm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, 
 
 open scoped IsMulCommutative in
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative semigroup. -/
-@[to_additive (attr := deprecated isMulCommutative_of_comm (since := "2026-03-09"))
+@[to_additive (attr := deprecated isMulCommutative_closure (since := "2026-03-09"))
 /-- If all the elements of a set `s` commute, then `closure s` forms an additive
 commutative semigroup. -/]
 abbrev closureCommSemigroupOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommSemigroup (closure s) :=
-  haveI := isMulCommutative_of_comm M hcomm
+  haveI := isMulCommutative_closure M hcomm
   inferInstance
 
-instance {S : Type*} [SetLike S M] [MulMemClass S M] (s : S) [IsMulCommutative s] :
-    IsMulCommutative (closure (s : Set M)) :=
-  isMulCommutative_of_comm _ fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+instance instIsMulCommutative_closure {S : Type*} [SetLike S M] [MulMemClass S M] (s : S)
+    [IsMulCommutative s] : IsMulCommutative (closure (s : Set M)) :=
+  isMulCommutative_closure _ fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 
 end
 

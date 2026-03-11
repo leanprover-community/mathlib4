@@ -213,6 +213,14 @@ lemma toNonUnitalSubalgebra_inj {S U : Subalgebra R A} :
     S.toNonUnitalSubalgebra = U.toNonUnitalSubalgebra ↔ S = U :=
   toNonUnitalSubalgebra_injective.eq_iff
 
+instance isMulCommutative_toNonUnitalSubalgebra (S : Subalgebra R A) [IsMulCommutative S] :
+    IsMulCommutative S.toNonUnitalSubalgebra :=
+  ‹IsMulCommutative S›
+
+instance isMulCommutative_toSubsemiring (S : Subalgebra R A) [IsMulCommutative S] :
+    IsMulCommutative S.toSubsemiring :=
+  ‹IsMulCommutative S›
+
 instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
   { Subalgebra.instSubsemiringClass with
     neg_mem := fun {S x} hx => neg_one_smul R x ▸ S.smul_mem hx _ }

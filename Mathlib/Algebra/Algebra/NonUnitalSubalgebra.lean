@@ -141,6 +141,10 @@ theorem coe_toNonUnitalSubsemiring (S : NonUnitalSubalgebra R A) :
     (↑S.toNonUnitalSubsemiring : Set A) = S :=
   rfl
 
+instance isMulCommutative_toNonUnitalSubsemiring (S : NonUnitalSubalgebra R A)
+    [IsMulCommutative S] : IsMulCommutative S.toNonUnitalSubsemiring :=
+  ‹IsMulCommutative S›
+
 theorem mem_toSubmodule (S : NonUnitalSubalgebra R A) {x} : x ∈ S.toSubmodule ↔ x ∈ S :=
   Iff.rfl
 
@@ -199,6 +203,10 @@ theorem toNonUnitalSubring_injective :
 theorem toNonUnitalSubring_inj {S U : NonUnitalSubalgebra R A} :
     S.toNonUnitalSubring = U.toNonUnitalSubring ↔ S = U :=
   toNonUnitalSubring_injective.eq_iff
+
+instance isMulCommutative_toNonUnitalSubring (S : NonUnitalSubalgebra R A)
+    [IsMulCommutative S] : IsMulCommutative S.toNonUnitalSubring :=
+  ‹IsMulCommutative S›
 
 end NonUnitalNonAssocRing
 

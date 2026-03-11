@@ -399,6 +399,11 @@ theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ 
 @[to_additive (attr := simp)]
 lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
 
+@[to_additive]
+instance isMulCommutative_toSubmonoid (s : Subgroup G) [IsMulCommutative s] :
+    IsMulCommutative s.toSubmonoid :=
+  ‹IsMulCommutative s›
+
 end Subgroup
 
 namespace Subgroup
