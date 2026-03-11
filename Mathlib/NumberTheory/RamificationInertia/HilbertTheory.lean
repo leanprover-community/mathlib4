@@ -109,15 +109,13 @@ noncomputable def IsDecompositionField.ringEquiv (D' : Type*) [Field D'] [Algebr
 @[simp]
 theorem IsDecompositionField.algebraMap_ringEquiv_apply (D' : Type*) [Field D'] [Algebra D' L]
     [IsDecompositionField K L P D] [IsDecompositionField K L P D'] (x : D) :
-    algebraMap D' L (IsDecompositionField.ringEquiv K L P D D' x) =
-      algebraMap D L x := by
+    algebraMap D' L (IsDecompositionField.ringEquiv K L P D D' x) = algebraMap D L x := by
   simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
 
 @[simp]
 theorem IsDecompositionField.algebraMap_ringEquiv_symm_apply (D' : Type*) [Field D'] [Algebra D' L]
     [IsDecompositionField K L P D] [IsDecompositionField K L P D'] (x : D') :
-    algebraMap D L ((IsDecompositionField.ringEquiv K L P D D').symm x) =
-      algebraMap D' L x := by
+    algebraMap D L ((IsDecompositionField.ringEquiv K L P D D').symm x) = algebraMap D' L x := by
   simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
 
 /-- Two inertia fields are isomorphic. -/
