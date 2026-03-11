@@ -234,7 +234,6 @@ theorem algEquivOfTranscendental_algebraMap (g : K[X]) :
   ext
   simp [algEquivOfTranscendental]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem algEquivOfTranscendental_X :
     algEquivOfTranscendental f h (X : RatFunc K) = f := by
