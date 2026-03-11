@@ -151,7 +151,7 @@ def measurableEquivPiIoc : UnitAddTorus d ≃ᵐ {x : d → ℝ | ∀ i, x i ∈
   MeasurableEquiv.subtypePiEquivPi.symm
 
 /-- The measurable equivalence between `UnitAddTorus d` and a product of `Ico` intervals. -/
-def measurableEquivPiIco : UnitAddTorus d ≃ᵐ {x : d → ℝ | ∀ i, x i ∈ Ico (a i) (a i + 1)}  :=
+def measurableEquivPiIco : UnitAddTorus d ≃ᵐ {x : d → ℝ | ∀ i, x i ∈ Ico (a i) (a i + 1)} :=
   (MeasurableEquiv.piCongrRight fun i => AddCircle.measurableEquivIco 1 (a i)).trans <|
   MeasurableEquiv.subtypePiEquivPi.symm
 
