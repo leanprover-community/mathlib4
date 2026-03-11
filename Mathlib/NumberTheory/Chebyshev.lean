@@ -348,7 +348,7 @@ theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
   rw [sum_mul_eq_sub_integral_mul₁ a (by simp [a, Nat.not_prime_zero])
     (by simp [a, Nat.not_prime_one]) _ (fun z ⟨hz, _⟩ ↦ (by fun_prop (disch := linarith))) ?hint,
     ←intervalIntegral.integral_of_le hx]
-  case hint => 
+  case hint =>
     rw [deriv_log']
     refine ContinuousOn.integrableOn_Icc ?_
     fun_prop (disch := grind)
