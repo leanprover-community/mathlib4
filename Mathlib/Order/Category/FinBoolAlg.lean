@@ -118,7 +118,7 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
 
 /-- The powerset functor. `Set` as a functor. -/
 @[simps]
-def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
+noncomputable def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
   obj X := op <| .of (Set X)
   map {X Y} f :=
     Quiver.Hom.op <| InducedCategory.homMk <|

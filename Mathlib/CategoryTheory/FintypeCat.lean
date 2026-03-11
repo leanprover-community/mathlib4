@@ -28,55 +28,34 @@ We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat
 open CategoryTheory
 
 /-- The category of finite types. -/
-structure FintypeCat where
-  /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
-  of ::
-  /-- The underlying type. -/
-  carrier : Type*
-  [str : Fintype carrier]
-
-section Notation
-
-open Lean.PrettyPrinter.Delaborator
-
-/-- This prevents `FintypeCat.of X` being printed as `{ carrier := X, str := ... }` by
-`delabStructureInstance`. -/
-@[app_delab FintypeCat.of]
-meta def FintypeCat.delabOf : Delab := delabApp
-
-end Notation
-
-attribute [instance] FintypeCat.str
+abbrev FintypeCat := ObjectProperty.FullSubcategory (C := Type*) Finite
 
 namespace FintypeCat
 
+abbrev of (X : Type*) [Finite X] : FintypeCat :=
+  ⟨X, inferInstance⟩
+
 instance instCoeSort : CoeSort FintypeCat Type* :=
-  ⟨carrier⟩
+  ⟨fun X ↦ X.obj⟩
 
 instance : Inhabited FintypeCat :=
   ⟨of PEmpty⟩
 
-instance {X : FintypeCat} : Fintype X :=
-  X.2
+instance {X : FintypeCat} : Finite X :=
+  X.property
 
-instance : Category FintypeCat :=
-  inferInstanceAs (Category (InducedCategory _ carrier))
+noncomputable instance {X : FintypeCat} : Fintype X :=
+  Fintype.ofFinite X.obj
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
 @[simps!]
-def incl : FintypeCat ⥤ Type* :=
-  inducedFunctor _
+abbrev incl : FintypeCat ⥤ Type* := ObjectProperty.ι _
 
-instance : incl.Full := InducedCategory.full _
-instance : incl.Faithful := InducedCategory.faithful _
+instance : incl.Full := ObjectProperty.full_ι _
+instance : incl.Faithful := ObjectProperty.faithful_ι _
 
-instance (X Y : FintypeCat) : FunLike (X ⟶ Y) X Y where
-  coe f := f.hom
-  coe_injective' _ _ h := InducedCategory.homEquiv.injective h
-
-instance concreteCategoryFintype : ConcreteCategory FintypeCat (· ⟶ ·) where
-  hom f := f
-  ofHom f := f
+instance concreteCategoryFintype : ConcreteCategory FintypeCat (fun X Y ↦ X.obj ⟶ Y.obj) :=
+  inferInstance
 
 /- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
@@ -95,15 +74,15 @@ lemma hom_apply {X Y : FintypeCat} (f : X ⟶ Y) (x : X) :
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  DFunLike.congr_fun f.hom_inv_id x
+  ConcreteCategory.congr_hom f.hom_inv_id x
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  DFunLike.congr_fun f.inv_hom_id y
+  ConcreteCategory.congr_hom f.inv_hom_id y
 
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g :=
-  DFunLike.ext _ _ h
+  ConcreteCategory.hom_ext _ _ h
 
 /-- Constructor for morphisms in `FintypeCat`. -/
 def homMk {X Y : FintypeCat} (f : X → Y) : X ⟶ Y where
@@ -246,7 +225,8 @@ noncomputable def equivalence : Skeleton ≌ FintypeCat :=
 @[simp]
 theorem incl_mk_nat_card (n : ℕ) : Fintype.card (incl.obj (mk n)) = n := by
   convert Finset.card_fin n
-  apply Fintype.ofEquiv_card
+  dsimp [incl, mk, len]
+  convert (Fintype.ofEquiv_card Equiv.ulift).symm
 
 end Skeleton
 
@@ -322,6 +302,6 @@ variable {C : Type u} [Category.{v} C] (F G : C ⥤ FintypeCat.{w}) {X Y : C}
 
 lemma naturality (σ : F ⟶ G) (f : X ⟶ Y) (x : F.obj X) :
     σ.app Y (F.map f x) = G.map f (σ.app X x) :=
-  DFunLike.congr_fun (σ.naturality f) x
+  (σ.naturality_apply f) x
 
 end FunctorToFintypeCat
