@@ -977,14 +977,6 @@ lemma centralizer_centralizer_centralizer {s : Set A} :
 
 end Centralizer
 
-section IsMulCommutative
-
-instance isMulCommutative_toNonUnitalSubalgebra [IsMulCommutative S] :
-    IsMulCommutative S.toNonUnitalSubalgebra := by
-  simpa [isMulCommutative_iff_of_setLike] using ‹IsMulCommutative S›
-
-end IsMulCommutative
-
 end Subalgebra
 
 section Nat
