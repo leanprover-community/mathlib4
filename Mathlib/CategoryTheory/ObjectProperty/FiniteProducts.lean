@@ -34,7 +34,7 @@ variable {C : Type*} [Category* C] (P : ObjectProperty C)
 abbrev IsClosedUnderBinaryProducts :=
   P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)
 
-lemma prop_of_isBinaryProduct [P.IsClosedUnderBinaryProducts] {X Y : C} {B : BinaryFan X Y}
+lemma prop_of_isLimit_binaryFan [P.IsClosedUnderBinaryProducts] {X Y : C} {B : BinaryFan X Y}
     (hB : IsLimit B) (hX : P X) (hY : P Y) :
     P B.pt :=
   P.prop_of_isLimit hB (by rintro ⟨_ | _⟩ <;> assumption)
