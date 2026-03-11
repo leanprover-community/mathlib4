@@ -455,9 +455,9 @@ theorem inner_pos_of_dist_lt_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁
 
 /-- Given two distinct points on a sphere, the inner product of the chord with
 the radius vector at one endpoint is negative. -/
-theorem inner_vsub_vsub_center_lt_zero {A B : P} {s : Sphere P}
+theorem inner_vsub_center_vsub_pos {A B : P} {s : Sphere P}
     (hA : A ∈ s) (hB : B ∈ s) (hBA : B ≠ A) :
-    ⟪B -ᵥ A, A -ᵥ s.center⟫ < 0 := by
+    0 < ⟪B -ᵥ A, s.center -ᵥ A⟫ := by
   have hA' : ‖A -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hA
   have hB' : ‖B -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hB
   have hd : ‖B -ᵥ s.center‖ ^ 2 =
