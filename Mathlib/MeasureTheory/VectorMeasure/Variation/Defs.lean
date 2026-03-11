@@ -22,7 +22,8 @@ not less than this function. It turns out that this function is a measure.
 ## Main definitions
 
 * `VectorMeasure.ennrealVariation` — the variation as a `VectorMeasure X ℝ≥0∞`
-* `VectorMeasure.variation` — the variation as a `Measure X`
+* `VectorMeasure.variation`: the variation as a `Measure X`
+* `VectorMeasure.ennrealVariation`: the variation as a `VectorMeasure X ℝ≥0∞`
 
 ## References
 

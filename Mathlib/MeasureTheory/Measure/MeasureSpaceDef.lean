@@ -162,7 +162,7 @@ theorem Measure.toOuterMeasure_apply (μ : Measure α) (s : Set α) :
 
 @[simp]
 theorem ofMeasurable_zero (s : Set α) :
-    Measure.ofMeasurable (fun s _ => (0 : ℝ≥0∞)) rfl (by intro _ _; simp) s = 0 := by
+    Measure.ofMeasurable (fun _ _ => 0) rfl (by simp) s = 0 := by
   rw [Measure.ofMeasurable, ← MeasureTheory.Measure.toOuterMeasure_apply]
   simp [inducedOuterMeasure_zero MeasurableSet.iUnion]
 

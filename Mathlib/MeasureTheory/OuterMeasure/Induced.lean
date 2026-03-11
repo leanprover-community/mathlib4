@@ -204,15 +204,10 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
 
 omit msU m_mono in
 theorem inducedOuterMeasure_zero (Pu : P univ) :
-    inducedOuterMeasure (fun s _ => 0) P0 (by simp) = 0 := by
+    inducedOuterMeasure (fun _ _ => 0) P0 (by simp) = 0 := by
   ext s
   rw [inducedOuterMeasure_eq_iInf PU (fun _ _ => by simp) (fun _ _ => by simp)]
-  simp only [coe_zero, Pi.zero_apply]
-  apply le_antisymm
-  · letI : Nonempty (s ⊆ univ) := Nonempty.intro (subset_univ s)
-    refine iInf₂_le_of_le (univ : Set α) Pu ?_
-    rw [iInf_const]
-  · exact zero_le (⨅ t, ⨅ (_ : P t), ⨅ (_ : s ⊆ t), 0)
+  exact le_antisymm (iInf₂_le_of_le univ Pu (by simp)) (zero_le _)
 
 theorem inducedOuterMeasure_preimage (f : α ≃ α) (Pm : ∀ s : Set α, P (f ⁻¹' s) ↔ P s)
     (mm : ∀ (s : Set α) (hs : P s), m (f ⁻¹' s) ((Pm _).mpr hs) = m s hs) {A : Set α} :

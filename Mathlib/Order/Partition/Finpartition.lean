@@ -527,12 +527,10 @@ lemma parts_subset_extendOfLE (hab : a ≤ b) : P.parts ⊆ (P.extendOfLE hab).p
   · cases le_antisymm (sdiff_eq_bot_iff.mp hr) hab; rfl
   · exact Finset.subset_insert _ _
 
-lemma mem_parts_or_mem_sdiff_of_mem_extendOfLE (hab : a ≤ b) (p : α)
+lemma mem_parts_or_mem_sdiff_of_mem_extendOfLE (hab : a ≤ b) {p : α}
     (hp : p ∈ (P.extendOfLE hab).parts) : p ∈ P.parts ∨ p = b \ a := by
   by_cases h : a < b
-  · rw [parts_extendOfLE_of_lt _ h] at hp
-    simp only [mem_insert] at hp
-    exact Or.comm.mp hp
+  · simp_all [parts_extendOfLE_of_lt _ h, mem_insert, Or.comm]
   · left
     simpa [parts_extendOfLE_of_eq _ (LE.le.eq_of_not_lt hab h)] using hp
 
