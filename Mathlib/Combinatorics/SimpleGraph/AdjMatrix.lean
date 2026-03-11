@@ -90,9 +90,8 @@ theorem submatrix [Zero α] [One α] (h : IsAdjMatrix A) (f : W → V) :
   apply_diag i := by simp [h.apply_diag]
 
 theorem reindex [Zero α] [One α] (h : IsAdjMatrix A) (f : V ≃ W) :
-    A.reindex f f |>.IsAdjMatrix := by
-  rw [reindex_apply]
-  apply h.submatrix
+    A.reindex f f |>.IsAdjMatrix :=
+  h.submatrix f.symm
 
 theorem reindex_iff [Zero α] [One α] (f : V ≃ W) : (A.reindex f f).IsAdjMatrix ↔ A.IsAdjMatrix := by
   refine ⟨fun h ↦ ?_, (·.reindex f)⟩
