@@ -467,29 +467,31 @@ lemma sum_den_dvd_prod_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
     rw [Finset.sum_insert has, Finset.prod_insert has]
     exact dvd_trans (Rat.add_den_dvd (f a) (∑ x ∈ s, f x)) (mul_dvd_mul_left _ ih)
 
+lemma pIntegral_add (p : ℕ) [Fact p.Prime] (x y : ℚ) (hx : pIntegral p x) (hy : pIntegral p y) :
+    pIntegral p (x + y) := by
+  simpa [pIntegral] using (Rat.padicValuation p).map_add_le hx hy
+
+lemma pIntegral_sub (p : ℕ) [Fact p.Prime] (x y : ℚ) (hx : pIntegral p x) (hy : pIntegral p y) :
+    pIntegral p (x - y) := by
+  simpa [pIntegral] using (Rat.padicValuation p).map_sub_le hx hy
+
 lemma pIntegral_sum {ι : Type*} (p : ℕ) [Fact p.Prime] (s : Finset ι) (f : ι → ℚ)
     (hf : ∀ i ∈ s, pIntegral p (f i)) : pIntegral p (∑ i ∈ s, f i) := by
-  have hcop : (∑ i ∈ s, f i).den.Coprime p := Nat.Coprime.coprime_dvd_left (sum_den_dvd_prod_den s f)
-    (Nat.Coprime.prod_left fun i hi ↦ by
-      have hfi_not : ¬ p ∣ (f i).den := (pIntegral_iff_not_dvd p (f i)).1 (hf i hi)
-      exact ((Nat.Prime.coprime_iff_not_dvd Fact.out).2 hfi_not).symm)
-  exact (pIntegral_iff_not_dvd p _).2 ((Nat.Prime.coprime_iff_not_dvd Fact.out).1 hcop.symm)
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp [pIntegral_zero]
+  | @insert a s ha ih =>
+    rw [Finset.sum_insert ha]
+    refine pIntegral_add p _ _ (hf a (Finset.mem_insert_self a s)) ?_
+    exact ih (fun i hi ↦ hf i (Finset.mem_insert_of_mem hi))
 
-lemma pIntegral_intCast (p : ℕ) [Fact p.Prime] (z : ℤ) : pIntegral p z :=
+lemma pIntegral_ofInt (p : ℕ) [Fact p.Prime] (z : ℤ) : pIntegral p z :=
   (pIntegral_iff_not_dvd p _).2 (by simpa using (Nat.Prime.not_dvd_one Fact.out))
 
 lemma pIntegral_mul (p : ℕ) [Fact p.Prime] (x y : ℚ) (hx : pIntegral p x) (hy : pIntegral p y) :
     pIntegral p (x * y) := by
   simp only [pIntegral, map_mul] at *
   exact mul_le_one' hx hy
-
-lemma pIntegral_intCast_mul (p : ℕ) [Fact p.Prime] (x : ℚ) (z : ℤ) (hx : pIntegral p x) :
-    pIntegral p (z * x) := by
-  simpa [mul_comm] using pIntegral_mul p z x (pIntegral_intCast p z) hx
-
-lemma pIntegral_sub (p : ℕ) [Fact p.Prime] (x y : ℚ) (hx : pIntegral p x) (hy : pIntegral p y) :
-    pIntegral p (x - y) := by
-  simpa [pIntegral] using (Rat.padicValuation p).map_sub_le hx hy
 
 /-- Denominators of the "other primes" part of the indicator sum
 stay coprime to a fixed prime `p`. -/
@@ -576,7 +578,7 @@ lemma pIntegral_bernoulli_one_term (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
         (-(2 : ℤ) ^ (2 * k - 2) : ℤ) := by
       have hpow : (2 : ℚ) ^ (2 * k - 1) = (2 : ℚ) ^ (2 * k - 2) * 2 := by rw [← pow_succ]; lia
       rw [hpow]; push_cast; field_simp
-    simpa [h] using (pIntegral_intCast _ (z := (-(2 : ℤ) ^ (2 * k - 2))))
+    simpa [h] using (pIntegral_ofInt _ (z := (-(2 : ℤ) ^ (2 * k - 2))))
   · have h2 : ((2 * k : ℕ) : ℚ) ≠ 0 := by norm_cast; lia
     field_simp [h2]
     rw [neg_div']
@@ -658,7 +660,8 @@ lemma choose_two_mul_succ_mul_div_eq (k m : ℕ) (x : ℚ) (hm_lt : m < k) :
       mul_comm ((2 * k).choose (2 * m) : ℚ) x, mul_div_assoc, h]
 
 /-- `p`-integrality of the core even-index summand after denominator normalization. -/
-lemma pIntegral_choose_mul_pow_div (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime] (hd : 2 * k - 2 * m ≥ 2) :
+lemma pIntegral_choose_mul_pow_div (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
+    (hd : 2 * k - 2 * m ≥ 2) :
     pIntegral p (((2 * k).choose (2 * m) : ℚ) * (p : ℚ) ^ (2 * k - 2 * m - 1) /
       (2 * k - 2 * m + 1)) := by
   set d := 2 * k - 2 * m with hd_def
@@ -673,7 +676,9 @@ lemma pIntegral_choose_mul_pow_div (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime] 
   have h_eq : ((2 * k).choose (2 * m) : ℚ) * (p : ℚ) ^ (d - 1) / ((d + 1 : ℕ) : ℚ) =
       ((2 * k).choose (2 * m) : ℕ) * ((p : ℚ) ^ (d - 1) / ((d + 1 : ℕ) : ℚ)) := by ring
   rw [h_eq]
-  exact pIntegral_intCast_mul p _ _ h_pow_integral
+  have hchoose : pIntegral p ((2 * k).choose (2 * m) : ℚ) := by
+    simpa using (pIntegral_ofInt p ((2 * k).choose (2 * m)))
+  exact pIntegral_mul p _ _ hchoose h_pow_integral
 
 /-- Uses the induction hypothesis on `B_{2m} + e_{2m}(p)/p`
 to prove `p`-integrality of the even term. -/
@@ -724,7 +729,7 @@ lemma pIntegral_bernoulli_even_term (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
         exact pow_succ' _ _
       rw [hpow]; ring
     rw [hp_factor]
-    exact pIntegral_mul _ _ _ (pIntegral_intCast p p) (pIntegral_choose_mul_pow_div k m p hm_lt (by lia))
+    exact pIntegral_mul _ _ _ (pIntegral_ofInt p p) (pIntegral_choose_mul_pow_div k m p hm_lt (by lia))
   · unfold vonStaudtIndicator
     split_ifs with h
     · simp only [one_mul]
@@ -836,7 +841,7 @@ lemma bernoulli_add_vonStaudtIndicator_den_not_dvd (k p : ℕ) (hk : k > 0) [Fac
   | _ k ih =>
     obtain ⟨T, hT⟩ := bernoulli_add_vonStaudtIndicator_eq_sub k p hk
     rw [hT]
-    have hT_int : pIntegral p (T : ℚ) := pIntegral_intCast p T
+    have hT_int : pIntegral p (T : ℚ) := pIntegral_ofInt p T
     have hR : pIntegral p (∑ i ∈ Finset.range (2 * k),
         bernoulli i * ((2 * k + 1).choose i) * (p : ℚ) ^ (2 * k - i) / (2 * k + 1)) := by
       apply pIntegral_faulhaber_sum k p hk
