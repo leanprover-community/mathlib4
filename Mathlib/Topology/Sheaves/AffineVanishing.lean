@@ -14,6 +14,14 @@ universe u v
 
 open CategoryTheory TopologicalSpace
 
+namespace CompactSpace
+
+lemma isOpenCover_elim_finite_subcover {X : Type u} [TopologicalSpace X] [CompactSpace X]
+    {ι : Type v} {U : ι → Opens X} (h : IsOpenCover U) :
+    ∃ t : Finset ι, IsOpenCover (Finset.restrict t U) := sorry
+
+end CompactSpace
+
 namespace AlgebraicGeometry.Scheme.Modules
 
 variable {X : Scheme.{u}} (U : Scheme.{u}) (f : U ⟶ X) [hf : IsOpenImmersion f] (M : X.Modules)
@@ -169,7 +177,7 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
   intro n hi X F _ _
   apply subsingleton_of_forall_eq 0
   intro c
-  obtain ⟨I, ⟨(U : I → X.Opens) , ⟨hU, vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf (n + 1)
+  obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf (n + 1)
     (isBasis_affineOpens X) sorry (by
       intro r (U : X.Opens) hr1 hr2 hU
       haveI : IsAffine U := hU
@@ -177,7 +185,8 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
       have v := hi (r - 1) (by lia) ((restrictFunctor U.ι).obj F)
       rw [Nat.sub_add_cancel hr1] at v
       exact v) c
-  haveI : Finite I := sorry
+  obtain ⟨ι, hU⟩ := CompactSpace.isOpenCover_elim_finite_subcover hU'
+  let U : ι → X.Opens := ι.restrict U'
   haveI : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
   let S := ShortComplex.mk (F.toCoverSheaf U) (cokernel.π (F.toCoverSheaf U)) (by cat_disch)
   have hS : S.ShortExact :=
