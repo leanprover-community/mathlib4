@@ -103,6 +103,7 @@ theorem ae (h : QuasiMeasurePreserving f μa μb) {p : β → Prop} (hg : ∀ᵐ
     ∀ᵐ x ∂μa, p (f x) :=
   h.tendsto_ae hg
 
+@[gcongr]
 theorem ae_eq (h : QuasiMeasurePreserving f μa μb) {g₁ g₂ : β → δ} (hg : g₁ =ᵐ[μb] g₂) :
     g₁ ∘ f =ᵐ[μa] g₂ ∘ f :=
   h.ae hg

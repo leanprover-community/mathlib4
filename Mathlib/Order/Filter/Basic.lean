@@ -976,8 +976,9 @@ theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : �
       intros
       simp only [*]
 
--- See `EventuallyEq.comp_tendsto` further below for a similar statement w.r.t.
--- composition on the right.
+/-- See `EventuallyEq.comp_tendsto` in Mathlib.Order.Filter.Tendsto for a similar statement w.r.t.
+composition on the right. -/
+@[gcongr]
 theorem EventuallyEq.fun_comp {f g : α → β} {l : Filter α} (H : f =ᶠ[l] g) (h : β → γ) :
     h ∘ f =ᶠ[l] h ∘ g :=
   H.mono fun _ hx => congr_arg h hx
