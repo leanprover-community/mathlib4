@@ -345,24 +345,21 @@ theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
   trans ∑ n ∈ Icc 0 ⌊x⌋₊, log n * a n
   · refine sum_congr rfl fun n hn ↦ ?_
     split_ifs with h <;> simp [a, h]
-  rw [sum_mul_eq_sub_integral_mul₁ a
-    (by simp [a, Nat.not_prime_zero]) (by simp [a, Nat.not_prime_one]),
+  rw [sum_mul_eq_sub_integral_mul₁ a (by simp [a, Nat.not_prime_zero])
+    (by simp [a, Nat.not_prime_one]) _ (fun z ⟨hz, _⟩ ↦ (by fun_prop (disch := linarith))) ?hint,
     ←intervalIntegral.integral_of_le hx]
-  · -- Rewrite the derivative inside the integral
-    simp only [primeCounting, primeCounting', count_eq_card_filter_range]
-    have int_deriv (f : ℝ → ℝ) :
-        ∫ u in 2..x, deriv (fun x ↦ log x) u * f u =
-        ∫ u in 2..x, f u / u :=
-      intervalIntegral.integral_congr fun u _ ↦ by rw [deriv_log, mul_comm, div_eq_mul_inv]
-    rw [int_deriv]
-    simp [a, Set.indicator_apply, Nat.range_succ_eq_Icc_zero, mul_comm (log x)]
-  · -- Differentiability
-    intro z ⟨hz, _⟩
-    fun_prop (disch := linarith)
-  · -- Integrability of the derivative
+  case hint => 
     rw [deriv_log']
     refine ContinuousOn.integrableOn_Icc ?_
     fun_prop (disch := grind)
+  -- Rewrite the derivative inside the integral
+  simp only [primeCounting, primeCounting', count_eq_card_filter_range]
+  have int_deriv (f : ℝ → ℝ) :
+      ∫ u in 2..x, deriv (fun x ↦ log x) u * f u =
+      ∫ u in 2..x, f u / u :=
+    intervalIntegral.integral_congr fun u _ ↦ by rw [deriv_log, mul_comm, div_eq_mul_inv]
+  rw [int_deriv]
+  simp [a, Set.indicator_apply, Nat.range_succ_eq_Icc_zero, mul_comm]
 
 theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt_b : 1 < b) :
     IntervalIntegrable (fun x ↦ 1 / log x ^ 2) MeasureTheory.volume a b := by
