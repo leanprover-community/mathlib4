@@ -116,7 +116,8 @@ variable [FiniteDimensional K L] [MulSemiringAction Gal(L/K) B]
 
 variable (D : Type*) [Field D] [Algebra D L] [IsDecompositionField K L P D]
 
-include K P in
+include K P
+
 /--
 The degree `[L : D]` of `L` over the decomposition field `D` equals the product of the
 ramification index and the inertia degree of `p` in `B`.
@@ -127,7 +128,6 @@ theorem IsDecompositionField.rank_left (hp : p ≠ ⊥) :
   have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
   rw [← IsGaloisGroup.card_eq_finrank (stabilizer Gal(L/K) P) D L, card_stabilizer_eq p hp]
 
-include P in
 /--
 The degree `[D : K]` of the decomposition field `D` over `K` equals the number of prime ideals
 of `B` lying over `p`.
@@ -146,7 +146,6 @@ theorem IsDecompositionField.rank_right [IsGalois K L] [Algebra K D] [IsScalarTo
 
 variable (E : Type*) [Field E] [Algebra E L] [IsInertiaField K L P E]
 
-include K P in
 /--
 The degree `[L : E]` of `L` over the inertia field `E` equals the ramification index of `p` in `B`.
 -/
@@ -157,7 +156,6 @@ theorem IsInertiaField.rank_left (hp : p ≠ ⊥) :
   rw [← IsGaloisGroup.card_eq_finrank (inertia Gal(L/K) P) E L,
     card_inertia_eq_ramificationIdxIn p hp]
 
-include P in
 /--
 The degree `[E : K]` of the inertia field `E` over `K` equals the product of the number of
 prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`.
@@ -173,7 +171,6 @@ theorem IsInertiaField.rank_right [IsGalois K L] [Algebra K E] [IsScalarTower K 
       ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B Gal(L/K),
       IsGaloisGroup.card_eq_finrank Gal(L/K) K L]
 
-include P in
 /--
 The degree `[E : D]` of the inertia field `E` over the decomposition field `D` equals the
 inertia degree of `p` in `B`.
