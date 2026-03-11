@@ -732,12 +732,10 @@ theorem sign_zero : (0 : Angle).sign = 0 := by
 @[simp, grind =]
 theorem sign_coe_pi : (π : Angle).sign = 0 := by rw [sign, sin_coe_pi, _root_.sign_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem sign_neg (θ : Angle) : (-θ).sign = -θ.sign := by
   simp_rw [sign, sin_neg, Left.sign_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sign_antiperiodic : Function.Antiperiodic sign (π : Angle) := fun θ => by
   rw [sign, sign, sin_add_pi, Left.sign_neg]
 
@@ -809,7 +807,6 @@ theorem eq_iff_abs_toReal_eq_of_sign_eq {θ ψ : Angle} (h : θ.sign = ψ.sign) 
 theorem sign_coe_pi_div_two : (↑(π / 2) : Angle).sign = 1 := by
   rw [sign, sin_coe, sin_pi_div_two, sign_one]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sign_coe_neg_pi_div_two : (↑(-π / 2) : Angle).sign = -1 := by
   rw [sign, sin_coe, neg_div, Real.sin_neg, sin_pi_div_two, Left.sign_neg, sign_one]
@@ -824,7 +821,6 @@ theorem sign_neg_coe_nonpos_of_nonneg_of_le_pi {θ : ℝ} (h0 : 0 ≤ θ) (hpi :
   rw [sign, sign_nonpos_iff, sin_neg, Left.neg_nonpos_iff]
   exact sin_nonneg_of_nonneg_of_le_pi h0 hpi
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sign_two_nsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℕ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   simp only [sign, sin_two_nsmul, nsmul_eq_mul, Nat.cast_ofNat, sign_mul, Nat.ofNat_pos, sign_pos,
@@ -837,7 +833,6 @@ theorem sign_two_zsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℤ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   rw [two_zsmul, ← two_nsmul, sign_two_nsmul_eq_sign_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sign_two_nsmul_eq_neg_sign_iff {θ : Angle} :
     ((2 : ℕ) • θ).sign = -θ.sign ↔ θ = 0 ∨ π / 2 < |θ.toReal| := by
   simpa [← cos_pos_iff_abs_toReal_lt_pi_div_two, ← cos_neg_iff_pi_div_two_lt_abs_toReal]

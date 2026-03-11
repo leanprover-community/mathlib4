@@ -118,7 +118,6 @@ instance instPreorder : Preorder ℚ := inferInstance
 instance : AddLeftMono ℚ where
   elim := fun _ _ _ h => Rat.add_le_add_left.2 h
 
-set_option backward.whnf.reducibleClassField false in
 @[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by
   simp +instances [Int.le_iff_lt_or_eq, instLE, Rat.blt]
 @[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
@@ -131,7 +130,11 @@ theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
   · simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
 
-theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_iff]
+theorem num_le_denom_iff {q : ℚ} : q.num ≤ q.den ↔ q ≤ 1 := by simp [Rat.le_iff]
+
+theorem num_lt_denom_iff {q : ℚ} : q.num < q.den ↔ q < 1 := by simp [Rat.lt_iff]
+
+@[deprecated (since := "2026-02-24")] alias lt_one_iff_num_lt_denom := Rat.num_lt_denom_iff
 
 theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
   grind [abs_of_nonpos, neg_def, Rat.num_nonneg, abs_of_nonneg, num_divInt_den]

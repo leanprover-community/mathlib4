@@ -64,7 +64,7 @@ Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
 
 In the following lemmas, let `e` be a compatible local trivialisation of `V`, and `b` a basis of
 the model fiber `F`.
-* `Trivialization.basisAt e b`: for each `x ∈ e.baseSet`,
+* `Bundle.Trivialization.basisAt e b`: for each `x ∈ e.baseSet`,
   return the basis of `V x` induced by `e` and `b`
 * `e.localFrame b`: the local frame on `V` induced by `e` and `b`.
   Use `e.localFrame b i` to access the i-th section in that frame.
@@ -172,6 +172,7 @@ lemma toBasisAt_coe (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (i : ι) :
 
 /-- If `{sᵢ}` is a local frame on a vector bundle, `F` being finite-dimensional implies the
 indexing set being finite. -/
+@[implicit_reducible]
 noncomputable def fintypeOfFiniteDimensional [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
     (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) : Fintype ι := by
   have : FiniteDimensional 𝕜 (V x) := by
@@ -325,7 +326,7 @@ end IsLocalFrameOn
 
 end IsLocalFrame
 
-namespace Trivialization
+namespace Bundle.Trivialization
 
 variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I] {ι : Type*} {x : M}
   (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
@@ -436,7 +437,7 @@ lemma localFrame_coeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
     e.localFrame_coeff I b i x (s x) = b.repr (e ((T% s) x)).2 i := by
   simp [e.localFrame_coeff_apply_of_mem_baseSet b hxe, basisAt]
 
-end Trivialization
+end Bundle.Trivialization
 
 /-! # Determining smoothness of a section via its local frame coefficients
 We show that for finite rank bundles over a complete field, a section is smooth iff its coefficients

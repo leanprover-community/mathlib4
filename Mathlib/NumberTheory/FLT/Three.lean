@@ -132,7 +132,7 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
   by_cases h1 : 3 ∣ a * b * c
   swap
   · exact fermatLastTheoremThree_case_1 h1 hF
-  rw [(prime_three).dvd_mul, (prime_three).dvd_mul] at h1
+  rw [prime_three.dvd_mul, prime_three.dvd_mul] at h1
   rw [← sub_eq_zero, sub_eq_add_neg, ← (show Odd 3 by decide).neg_pow] at hF
   rcases h1 with (h3a | h3b) | h3c
   · refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 ha h3a ?_ H hF
@@ -279,6 +279,7 @@ lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
     _ = S'.u⁻¹ * (S'.u * S'.c ^ 3) := by rw [S'.H]
     _ = S'.c ^ 3 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
 lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   have hm := S'.multiplicity_lambda_c_finite
@@ -319,6 +320,7 @@ lemma a_cube_add_b_cube_eq_mul :
 section IsCyclotomicExtension
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides one amongst `S'.a + S'.b`,
 `S'.a + η * S'.b` and `S'.a + η ^ 2 * S'.b`. -/
 lemma lambda_sq_dvd_or_dvd_or_dvd :

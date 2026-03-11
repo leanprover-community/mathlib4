@@ -192,7 +192,6 @@ theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f 
 theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' f g <| Subset.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
   fun f g h a ha ↦ by rw [mem_support_iff, ← pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
 
@@ -286,6 +285,15 @@ theorem add_sub_single_one {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
 lemma sub_add_single_one_cancel {u : ι →₀ ℕ} {i : ι} (h : u i ≠ 0) :
     u - single i 1 + single i 1 = u := by
   rw [sub_single_one_add h, add_tsub_cancel_right]
+
+theorem isLowerSet_range_embDomain (f : α ↪ β) :
+    IsLowerSet ((Set.range (embDomain f)) : Set (β →₀ ℕ)) := by
+  rintro _ y h ⟨z, rfl⟩
+  obtain ⟨w, hw⟩ := exists_add_of_le h
+  rw [mem_range_embDomain_iff]
+  trans ↑(y + w).support
+  · exact fun _ ↦ by simp; grind
+  · simp [← hw]
 
 end Nat
 
