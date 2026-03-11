@@ -114,11 +114,11 @@ def LambdaTheorem.getProof (thm : LambdaTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 
 /-- Environment extension storing lambda theorems. -/
-abbrev LambdaTheoremsExt := SimpleScopedEnvExtension LambdaTheorem LambdaTheorems
+abbrev LambdaTheoremsExt := SharedScopedEnvExtension LambdaTheorem LambdaTheorems
 
 /-- Environment extension storing all lambda theorems. -/
 initialize lambdaTheoremsExt : LambdaTheoremsExt ←
-  registerSimpleScopedEnvExtension {
+  registerSharedScopedEnvExtension {
     name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
@@ -194,11 +194,11 @@ def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
 
 set_option linter.style.docString.empty false in
 /-- -/
-abbrev FunctionTheoremsExt := SimpleScopedEnvExtension FunctionTheorem FunctionTheorems
+abbrev FunctionTheoremsExt := SharedScopedEnvExtension FunctionTheorem FunctionTheorems
 
 /-- Extension storing all function theorems. -/
 initialize functionTheoremsExt : FunctionTheoremsExt ←
-  registerSimpleScopedEnvExtension {
+  registerSharedScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
     addEntry := fun d e =>
@@ -226,11 +226,11 @@ def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 
 /-- Extensions for transition or morphism theorems -/
-abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
+abbrev GeneralTheoremsExt := SharedScopedEnvExtension GeneralTheorem GeneralTheorems
 
 /-- Environment extension for transition theorems. -/
 initialize transitionTheoremsExt : GeneralTheoremsExt ←
-  registerSimpleScopedEnvExtension {
+  registerSharedScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
     addEntry := fun d e =>
@@ -251,7 +251,7 @@ def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
 
 /-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
-  registerSimpleScopedEnvExtension {
+  registerSharedScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
     addEntry := fun d e =>

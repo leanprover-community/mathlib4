@@ -10,6 +10,7 @@ public meta import Batteries.Lean.Except
 public meta import Mathlib.Tactic.GCongr.ForwardAttr
 import all Lean.Meta.Tactic.Apply
 public import Batteries.Tactic.Exact
+public import Mathlib.Lean.EnvExtension
 public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
@@ -199,8 +200,8 @@ where
     | l'::ls => if l'.prioLE l then l::l'::ls else l' :: insert l ls
 
 /-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
-initialize gcongrExt : SimpleScopedEnvExtension GCongrLemma GCongrLemmas ←
-  registerSimpleScopedEnvExtension {
+initialize gcongrExt : SharedScopedEnvExtension GCongrLemma GCongrLemmas ←
+  registerSharedScopedEnvExtension {
     addEntry := addGCongrLemmaEntry
     initial := {}
   }

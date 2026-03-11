@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
+public import Mathlib.Lean.EnvExtension
 public import Lean.Meta.Tactic.Simp
 
 /-!
@@ -44,8 +44,8 @@ def Head.ofExpr? : Expr → Option Head
   | _ => none
 
 /-- The `push` environment extension -/
-initialize pushExt : SimpleScopedEnvExtension SimpTheorem (DiscrTree SimpTheorem) ←
-  registerSimpleScopedEnvExtension {
+initialize pushExt : SharedScopedEnvExtension SimpTheorem (DiscrTree SimpTheorem) ←
+  registerSharedScopedEnvExtension {
     initial  := {}
     addEntry := fun d e => d.insertKeyValue e.keys e
   }
@@ -77,8 +77,8 @@ where
 abbrev PullTheorem := SimpTheorem × Head
 
 /-- The `pull` environment extension -/
-initialize pullExt : SimpleScopedEnvExtension PullTheorem (DiscrTree PullTheorem) ←
-  registerSimpleScopedEnvExtension {
+initialize pullExt : SharedScopedEnvExtension PullTheorem (DiscrTree PullTheorem) ←
+  registerSharedScopedEnvExtension {
     initial  := {}
     addEntry := fun d e => d.insertKeyValue e.1.keys e
   }

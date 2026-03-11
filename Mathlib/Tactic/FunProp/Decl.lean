@@ -5,7 +5,7 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public import Mathlib.Init
+public import Mathlib.Lean.EnvExtension
 
 /-!
 ## `funProp` environment extension that stores all registered function properties
@@ -42,12 +42,12 @@ structure FunPropDecls where
 
 set_option linter.style.docString.empty false in
 /-- -/
-abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
+abbrev FunPropDeclsExt := SharedScopedEnvExtension FunPropDecl FunPropDecls
 
 /-- Extension storing function properties tracked and used by the `fun_prop` attribute and tactic,
 including, for example, `Continuous`, `Measurable`, `Differentiable`, etc. -/
 initialize funPropDeclsExt : FunPropDeclsExt ←
-  registerSimpleScopedEnvExtension {
+  registerSharedScopedEnvExtension {
     name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
@@ -82,7 +82,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
     funArgId := funArgId
   }
 
-  modifyEnv fun env => funPropDeclsExt.addEntry env decl
+  funPropDeclsExt.add decl
 
   trace[Meta.Tactic.fun_prop.attr]
     "added new function property `{declName}`\nlook up pattern is `{path}`"
