@@ -178,6 +178,7 @@ theorem of_leftInverse [DecidableEq ι] (i : ι) :
 theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by
   classical exact (of_leftInverse i).injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
     MonoidHom.mrange (lift f) = ⨆ i, MonoidHom.mrange (f i) := by
   rw [lift, Equiv.coe_fn_mk, Con.lift_range, FreeMonoid.mrange_lift,
@@ -929,7 +930,7 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 
 -- NB: One might expect this theorem to be phrased with ℤ, but ℤ is an additive group,
 -- and using `Multiplicative ℤ` runs into diamond issues.
-/-- A free group is a free product of copies of the free_group over one generator. -/
+/-- A free group is a free product of copies of the `FreeGroup` over one generator. -/
 @[simps!]
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
     FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by

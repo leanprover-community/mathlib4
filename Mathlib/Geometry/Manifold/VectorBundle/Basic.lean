@@ -139,7 +139,7 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
     extChartAt (IB.prod 𝓘(𝕜, F)) x =
       (trivializationAt F E x.proj).toPartialEquiv ≫
         (extChartAt IB x.proj).prod (PartialEquiv.refl F) := by
-  simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
+  simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, OpenPartialHomeomorph.extend]
   simp only [PartialEquiv.trans_assoc, mfld_simps]
   -- Porting note: should not be needed
   rw [PartialEquiv.prod_trans, PartialEquiv.refl_trans]
@@ -292,7 +292,6 @@ instance {a : WithTop ℕ∞} [ContMDiffVectorBundle ∞ F E IB] [h : ENat.LEInf
     ContMDiffVectorBundle a F E IB :=
   ContMDiffVectorBundle.of_le h.out
 
-set_option backward.isDefEq.respectTransparency false in
 instance {a : WithTop ℕ∞} [ContMDiffVectorBundle ω F E IB] : ContMDiffVectorBundle a F E IB :=
   ContMDiffVectorBundle.of_le le_top
 

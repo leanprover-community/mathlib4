@@ -39,7 +39,6 @@ def range (p : F' ⟶ F) : Subfunctor F where
     rintro U V i _ ⟨x, rfl⟩
     exact ⟨_, FunctorToTypes.naturality  _ _ p i x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 lemma range_id : range (𝟙 F) = ⊤ := by aesop
 
@@ -92,7 +91,6 @@ lemma range_toRange : range (toRange p) = ⊤ := by
   obtain ⟨y, rfl⟩ := hx
   exact ⟨y, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff_range_eq_top :
     Epi p ↔ range p = ⊤ := by
   simp [NatTrans.epi_iff_epi_app, epi_iff_surjective, Subfunctor.ext_iff, funext_iff,
@@ -130,7 +128,6 @@ def image : Subfunctor F' where
     rintro Δ Δ' φ _ ⟨x, hx, rfl⟩
     exact ⟨F.map φ x, G.map φ hx, by apply FunctorToTypes.naturality⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma image_top : (⊤ : Subfunctor F).image f = range f := by aesop
 
 @[simp]

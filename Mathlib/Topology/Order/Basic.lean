@@ -75,6 +75,7 @@ class OrderTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop 
 `(a, ∞) = { x ∣ a < x }, (-∞, b) = {x ∣ x < b}` for all `a, b` in `α`. We do not register it as an
 instance as many ordered sets are already endowed with the same topology, most often in a non-defeq
 way though. Register as a local instance when necessary. -/
+@[implicit_reducible]
 def Preorder.topology (α : Type*) [Preorder α] : TopologicalSpace α :=
   generateFrom { s : Set α | ∃ a : α, s = { b : α | a < b } ∨ s = { b : α | b < a } }
 
@@ -333,7 +334,7 @@ lemma OrderEmbedding.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
-  ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder <| by
+  ⟨(Subtype.strictMono_coe (· ∈ t)).induced_topology_eq_preorder <| by
     rwa [← @Subtype.range_val _ t] at ht⟩
 
 theorem nhdsGE_eq_iInf_inf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
