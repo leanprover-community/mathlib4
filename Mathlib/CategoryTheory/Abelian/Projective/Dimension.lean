@@ -225,8 +225,7 @@ end ShortExact
 
 end ShortComplex
 
-instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n]
-    [HasProjectiveDimensionLT Y n] :
+instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n] [HasProjectiveDimensionLT Y n] :
     HasProjectiveDimensionLT (X ⊞ Y) n :=
   (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasProjectiveDimensionLT_X₂ n
     (by assumption) (by assumption)
