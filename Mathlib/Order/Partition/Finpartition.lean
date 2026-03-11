@@ -832,4 +832,73 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
 
 end Atomise
 
+
+/-- A `Finpartition` constructor in `Subtype pr` for `pr : Set X → Prop` such that `pr` is closed
+under intersection and union and `pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
+that `pr s` and `pr p` for each part `p`.
+-/
+noncomputable def toSubtype
+  {X : Type*} [DistribLattice X] [OrderBot X] {s : X} (P : Finpartition s)
+  (pr : X → Prop) [DecidableEq (Subtype pr)] (printer : ∀ s t, pr s → pr t → pr (s ⊓ t))
+  (prunion : ∀ s t, pr s → pr t → pr (s ⊔ t))
+  (hbot : pr (⊥ : X))
+  (hs : pr s) (hP : ∀ p ∈ P.parts, pr p) :
+  @Finpartition (Subtype pr) (Subtype.Lattice pr printer prunion)
+    (Subtype.orderBot hbot) ⟨s, hs⟩ :=
+  letI : Fintype (Subtype (P.parts : Set X)) := Fintype.subtype P.parts (by intro; rfl)
+  letI : DistribLattice (Subtype pr) := Subtype.DistribLattice pr printer prunion
+  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  { parts := Finset.image
+      (fun p : (Subtype (P.parts : Set X)) =>
+        (⟨p.val, hP p.val p.property⟩ : Subtype pr))
+      Finset.univ
+    supIndep := by
+      apply Finset.SupIndep.image
+      simp only [id_comp]
+      have hPd := P.supIndep
+      rw [Finset.supIndep_iff_pairwiseDisjoint]
+      rw [Finset.supIndep_iff_pairwiseDisjoint] at hPd
+      simp_all only [Finset.coe_univ]
+      intro x hx y hy h
+      refine disjoint_iff.mpr ?_
+      simp only
+      have hPd' := @Set.PairwiseDisjoint.eq_or_disjoint _ _ _ _ _ _ hPd x y (by simp) (by simp)
+      have hxy : x.val ≠ y.val := by exact Subtype.coe_ne_coe.mpr h
+      rcases hPd' with (hxy' | hxy')
+      · exfalso; exact (iff_false_intro hxy).mp hxy'
+      · rw [disjoint_iff] at hxy'
+        exact Subtype.ext (id hxy')
+    sup_parts := by
+      apply Subtype.ext
+      have Psub := P.sup_parts
+      simp only [sup_image, id_comp]
+      rw [Finset.sup_coe]
+      · simp_rw [← Psub]
+        classical
+        have hmap :
+          ((Finset.univ : Finset (Subtype (P.parts : Set X))).image Subtype.val) = P.parts := by
+          classical
+          ext x
+          constructor
+          · intro hx
+            obtain ⟨p, hp, rfl⟩ := mem_image.mp hx
+            exact p.property
+          · intro hx
+            refine mem_image.mpr ⟨⟨x, hx⟩, mem_univ _, rfl⟩
+        calc
+          (Finset.univ : Finset (Subtype (P.parts : Set X))).sup
+              (fun p : Subtype (P.parts : Set X) => p.val)
+              =
+              ((Finset.univ : Finset (Subtype (P.parts : Set X))).image Subtype.val).sup id := by
+                simp only [sup_image, id_comp]
+          _ = P.parts.sup id := by simp [hmap]
+      · exact fun s t hs ht ↦ prunion s t hs ht
+    bot_notMem := by
+      simp only [Finset.mem_image, Finset.mem_univ, true_and]
+      intro ⟨p, hp⟩
+      apply P.bot_notMem
+      rw [Subtype.mk_eq_bot_iff hbot] at hp
+      rw [← hp]
+      exact Finset.coe_mem p }
+
 end Finpartition
