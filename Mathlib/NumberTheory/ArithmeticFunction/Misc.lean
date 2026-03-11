@@ -431,20 +431,6 @@ end Sum
 
 end ArithmeticFunction
 
-namespace Nat.Coprime
-
-open ArithmeticFunction
-
-theorem card_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
-    #(m * n).divisors = #m.divisors * #n.divisors := by
-  simp only [← sigma_zero_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
-
-theorem sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
-    ∑ d ∈ (m * n).divisors, d = (∑ d ∈ m.divisors, d) * ∑ d ∈ n.divisors, d := by
-  simp only [← sigma_one_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
-
-end Nat.Coprime
-
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq
 

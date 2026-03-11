@@ -7,6 +7,8 @@ module
 
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
 
 /-!
 # `Nat.divisors` as a multiplicative homomorpism
@@ -47,3 +49,33 @@ lemma Multiset.nat_divisors_prod (s : Multiset ℕ) : divisors s.prod = (s.map d
 lemma Finset.nat_divisors_prod {ι : Type*} (s : Finset ι) (f : ι → ℕ) :
     divisors (∏ i ∈ s, f i) = ∏ i ∈ s, divisors (f i) :=
   map_prod Nat.divisorsHom f s
+
+namespace Nat.Coprime
+
+lemma divisors_mul_injective {m n : ℕ} (hmn : m.Coprime n) :
+    Set.InjOn (fun p : ℕ × ℕ => p.1 * p.2) (m.divisors ×ˢ n.divisors) := by
+  rcases eq_or_ne m 0 with rfl | hm0
+  · simp
+  rcases eq_or_ne n 0 with rfl | hn0
+  · simp
+  intro p1 hp1 p2 hp2 heq
+  let hmn' := (Nat.coprime_iff_isRelPrime.mp hmn)
+  simp only [Set.mem_prod, SetLike.mem_coe, mem_divisors, ne_eq] at hp1 hp2
+  exact (hmn'.existsUnique_dvd_dvd_of_dvd_mul
+    (mul_dvd_mul hp1.1.1 hp1.2.1)).unique
+    ⟨hp1.1.1, hp1.2.1, rfl⟩
+    ⟨hp2.1.1, hp2.2.1, heq.symm⟩
+
+theorem card_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
+    #(m * n).divisors = #m.divisors * #n.divisors := by
+  rw [Nat.divisors_mul]
+  exact (Finset.card_mul_iff).2 (divisors_mul_injective hmn)
+
+theorem sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
+    ∑ d ∈ (m * n).divisors, d = (∑ d ∈ m.divisors, d) * ∑ d ∈ n.divisors, d := by
+  rw [Nat.divisors_mul, Finset.mul_def,
+      Finset.sum_image (by exact_mod_cast divisors_mul_injective hmn), Finset.sum_product]
+  simpa using
+    (Finset.sum_mul_sum m.divisors n.divisors (fun d : ℕ => d) (fun d : ℕ => d)).symm
+
+end Nat.Coprime
