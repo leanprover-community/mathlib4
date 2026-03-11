@@ -166,11 +166,16 @@ theorem toCoverSheaf_H_map_zero (n : ℕ) (c : H F.sheaf n) [Finite I]
 
 end
 
+#check diagonal_isAffine_iff_forall_isAffineOpen_inf
+
+#check HasAffineProperty.affineAnd_containsIdentities
+
 theorem base [IsAffine X] [F.IsQuasicoherent] : Subsingleton (H F.sheaf 1) := by
   apply subsingleton_of_forall_eq 0
   intro c
-  obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf 0
-    (isBasis_affineOpens X) sorry (by intros; lia) c
+  obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf 0 (isBasis_affineOpens X)
+    ((diagonal_isAffine_iff_forall_isAffineOpen_inf (𝟙 X)).mp (fun _ _ _ _ => inferInstance))
+    (by intros; lia) c
   obtain ⟨ι, hU⟩ := CompactSpace.isOpenCover_elim_finite_subcover hU'
   let U : ι → X.Opens := ι.restrict U'
   haveI : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
@@ -198,7 +203,9 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
     [IsAffine X] [F.IsQuasicoherent], Subsingleton (F.sheaf.H (n + 1))) n base ?_
   refine fun n hi X F _ _ => subsingleton_of_forall_eq 0 (fun c => ?_)
   obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf (n + 1)
-    (isBasis_affineOpens X) sorry (by
+    (isBasis_affineOpens X)
+    ((diagonal_isAffine_iff_forall_isAffineOpen_inf (𝟙 X)).mp (fun _ _ _ _ => inferInstance))
+    (by
       intro r (U : X.Opens) hr1 hr2 hU
       haveI : IsAffine U := hU
       haveI : ((restrictFunctor U.ι).obj F).IsQuasicoherent := sorry
