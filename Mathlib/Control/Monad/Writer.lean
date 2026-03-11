@@ -109,9 +109,20 @@ instance : MonadWriter ω (WriterT ω M) where
   listen := fun cmd ↦ WriterT.mk <| (fun (a, w) ↦ ((a, w), w)) <$> cmd
   pass := fun cmd ↦ WriterT.mk <| (fun ((a, f), w) ↦ (a, f w)) <$> cmd
 
-instance {ε : Type*} [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
+instance {ε : Type*} [MonadExceptOf ε M] : MonadExceptOf ε (WriterT ω M) where
   throw := fun e ↦ WriterT.mk <| throw e
   tryCatch := fun cmd c ↦ WriterT.mk <| tryCatch cmd fun e ↦ (c e).run
+
+@[simp]
+theorem run_throw {M} {ε : Type*} [MonadExceptOf ε M] (e : ε) :
+    (throw e : WriterT ω M α).run = throw e :=
+  rfl
+
+@[simp]
+theorem run_tryCatch {M} {ε : Type*} [MonadExceptOf ε M]
+    (cmd : WriterT ω M α) (c : ε → WriterT ω M α) :
+    (tryCatch cmd c : WriterT ω M α).run = tryCatch cmd.run fun e ↦ (c e).run :=
+  rfl
 
 instance [MonadLiftT M (WriterT ω M)] : MonadControl M (WriterT ω M) where
   stM := fun α ↦ α × ω
