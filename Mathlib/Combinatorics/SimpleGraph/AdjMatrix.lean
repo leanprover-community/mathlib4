@@ -111,6 +111,7 @@ instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix 
   simp only [toGraph]
   infer_instance
 
+variable (A) in
 /-- A homomorphism of the graph of a submatrix of an adjacency matrix to the graph of the
 adjacency matrix itself -/
 def toGraphSubmatrixHom [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : W → V) :
@@ -118,6 +119,7 @@ def toGraphSubmatrixHom [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A)
   toFun := f
   map_rel' := by simp
 
+variable (A) in
 /-- An embedding of the graph of a submatrix of an adjacency matrix to the graph of the
 adjacency matrix itself, when the submatrix is given by an embedding -/
 def toGraphSubmatrixEmbedding [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : W ↪ V) :
@@ -125,6 +127,7 @@ def toGraphSubmatrixEmbedding [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMat
   __ := f
   map_rel_iff' := by simp
 
+variable (A) in
 /-- An isomorphism of the graph of a reindexing of an adjacency matrix to the graph of the
 adjacency matrix itself -/
 def toGraphReindexIso [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : V ≃ W) :
