@@ -131,7 +131,6 @@ in `Γ(X, f ⁻¹ U)` where `U` ranges over all affine opens. -/
 def normalizationOpenCover : f.normalization.OpenCover :=
   f.normalizationGlueData.cover
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The dominant morphism into the relative normalization. -/
 def toNormalization : X ⟶ f.normalization :=
@@ -210,7 +209,7 @@ instance : IsIntegralHom f.fromNormalization := by
   rw [← cancel_mono U.2.fromSpec]
   simp [IsAffineOpen.isoSpec_hom, e, ι_fromNormalization]
 
-/-- The sections of the relative normalization on the preimage of an affine open is isomorpic to
+/-- The sections of the relative normalization on the preimage of an affine open is isomorphic to
 the integral closure. -/
 noncomputable
 def normalizationObjIso {U : Y.Opens} (hU : IsAffineOpen U) :

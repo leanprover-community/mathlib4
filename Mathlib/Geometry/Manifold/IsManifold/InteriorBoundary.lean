@@ -26,7 +26,7 @@ Define the interior and boundary of a manifold.
 - `ModelWithCorners.interior_boundary_disjoint`: interior and boundary of `M` are disjoint
 - `BoundarylessManifold.isInteriorPoint`: if `M` is boundaryless, every point is an interior point
 - `ModelWithCorners.Boundaryless.boundary_eq_empty` and `of_boundary_eq_empty`:
-`M` is boundaryless if and only if its boundary is empty
+  `M` is boundaryless if and only if its boundary is empty
 
 - `isInteriorPoint_iff_of_mem_atlas`: a point is an interior point iff any given chart around it
   sends it to the interior of the model; that is, the notion of interior is independent of choices
@@ -41,7 +41,7 @@ Define the interior and boundary of a manifold.
 - `ModelWithCorners.BoundarylessManifold.open`: if `M` is boundaryless, so is `u : Opens M`
 
 - `ModelWithCorners.interior_prod`: the interior of `M × N` is the product of the interiors
-of `M` and `N`.
+  of `M` and `N`.
 - `ModelWithCorners.boundary_prod`: the boundary of `M × N` is `∂M × N ∪ (M × ∂N)`.
 - `ModelWithCorners.BoundarylessManifold.prod`: if `M` and `N` are boundaryless, so is `M × N`
 
@@ -235,6 +235,7 @@ lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
 
 variable {n : WithTop ℕ∞} [IsManifold I n M] {e e' : OpenPartialHomeomorph M H} {x : M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any two charts `e`, `e'` around a point `x` in a C¹ manifold, if `e` maps `x` to the
 interior of the model space, `e'` does too - in other words, the notion of interior points does not
 depend on any choice of charts.

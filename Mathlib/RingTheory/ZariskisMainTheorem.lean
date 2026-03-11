@@ -212,7 +212,7 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
       obtain ⟨r, hr : φ r = _⟩ := hp
       use C ha.unit⁻¹.1 * mapRingHom (algebraMap R R') r
       simp [aeval_algebraMap_apply, aeval_algHom_apply, hr, mul_assoc])
-  obtain ⟨⟨_, n, rfl⟩, e⟩ := IsLocalization.integerNormalization_map_to_map (.powers a) q
+  obtain ⟨_, ⟨n, rfl⟩, e⟩ := IsLocalization.integerNormalization_spec (.powers a) q
   generalize IsLocalization.integerNormalization (.powers a) q = q' at e
   have : IsIntegral R' ((algebraMap S S') (a ^ n • t - φ q')) := by
     have : algebraMap S S' (φ q') = (algebraMap R S' a) ^ n * aeval (algebraMap S S' (φ X)) q := by
@@ -474,7 +474,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
       top_le_iff.mp fun x _ ↦ (Subalgebra.mem_restrictScalars _).mp (this trivial)
     refine hx.ge.trans ?_
     rw [Algebra.restrictScalars_adjoin]
-    exact Algebra.adjoin_mono (by aesop)
+    exact Algebra.adjoin_mono (by simp)
   have H₀ : Function.Surjective (aeval (R := R) x) := by
     rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_singleton_eq_range_aeval]
   have ⟨f, (hf : aeval x f = 0), hfp⟩ := SetLike.not_le_iff_exists.mp

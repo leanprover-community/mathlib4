@@ -48,22 +48,22 @@ section Domain
 variable [CommRing K] [IsDomain K]
 
 /-- `RatFunc.C a` is the constant rational function `a`. -/
-def C : K →+* RatFunc K := algebraMap _ _
+def C : K →+* K⟮X⟯ := algebraMap _ _
 
 @[simp]
-theorem algebraMap_eq_C : algebraMap K (RatFunc K) = C :=
+theorem algebraMap_eq_C : algebraMap K K⟮X⟯ = C :=
   rfl
 
 @[simp]
-theorem algebraMap_C (a : K) : algebraMap K[X] (RatFunc K) (Polynomial.C a) = C a :=
+theorem algebraMap_C (a : K) : algebraMap K[X] K⟮X⟯ (Polynomial.C a) = C a :=
   rfl
 
 @[simp]
-theorem algebraMap_comp_C : (algebraMap K[X] (RatFunc K)).comp Polynomial.C = C :=
+theorem algebraMap_comp_C : (algebraMap K[X] K⟮X⟯).comp Polynomial.C = C :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem smul_eq_C_mul (r : K) (x : RatFunc K) : r • x = C r * x := by
+theorem smul_eq_C_mul (r : K) (x : K⟮X⟯) : r • x = C r * x := by
   rw [Algebra.smul_def, algebraMap_eq_C]
 
 theorem C_injective : Function.Injective (RatFunc.C (K := K)) := by
@@ -71,22 +71,22 @@ theorem C_injective : Function.Injective (RatFunc.C (K := K)) := by
   exact Function.Injective.comp (algebraMap_injective K) (Polynomial.C_injective)
 
 /-- `RatFunc.X` is the polynomial variable (aka indeterminate). -/
-def X : RatFunc K :=
-  algebraMap K[X] (RatFunc K) Polynomial.X
+def X : K⟮X⟯ :=
+  algebraMap K[X] K⟮X⟯ Polynomial.X
 
 @[simp]
-theorem algebraMap_X : algebraMap K[X] (RatFunc K) Polynomial.X = X :=
+theorem algebraMap_X : algebraMap K[X] K⟮X⟯ Polynomial.X = X :=
   rfl
 
 @[simp]
 theorem algebraMap_monomial (n : ℕ) (a : K) :
-    algebraMap K[X] (RatFunc K) (Polynomial.monomial n a) = C a * X ^ n := by
+    algebraMap K[X] K⟮X⟯ (Polynomial.monomial n a) = C a * X ^ n := by
   simp [← Polynomial.C_mul_X_pow_eq_monomial]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aeval_X_left_eq_algebraMap (p : K[X]) :
-    p.aeval (X : RatFunc K) = algebraMap K[X] (RatFunc K) p := by
+    p.aeval (X : K⟮X⟯) = algebraMap K[X] K⟮X⟯ p := by
   induction p using Polynomial.induction_on' <;> simp_all
 
 @[simp]
@@ -114,17 +114,17 @@ theorem denom_C (c : K) : denom (C c) = 1 :=
   denom_algebraMap _
 
 @[simp]
-theorem num_X : num (X : RatFunc K) = Polynomial.X :=
+theorem num_X : num (X : K⟮X⟯) = Polynomial.X :=
   num_algebraMap _
 
 @[simp]
-theorem denom_X : denom (X : RatFunc K) = 1 :=
+theorem denom_X : denom (X : K⟮X⟯) = 1 :=
   denom_algebraMap _
 
-theorem X_ne_zero : (X : RatFunc K) ≠ 0 :=
+theorem X_ne_zero : (X : K⟮X⟯) ≠ 0 :=
   RatFunc.algebraMap_ne_zero Polynomial.X_ne_zero
 
-theorem eq_C_iff (f : RatFunc K) :
+theorem eq_C_iff (f : K⟮X⟯) :
     (∃ c, f = C c) ↔ f.num.natDegree = 0 ∧ f.denom.natDegree = 0 := by
   refine ⟨by rintro ⟨c, rfl⟩; simp, ?_⟩
   rw [Polynomial.natDegree_eq_zero, Polynomial.natDegree_eq_zero]
@@ -140,15 +140,15 @@ to the target and a value `x` for the variable in the target.
 Fractions are reduced by clearing common denominators before evaluating:
 `eval id 1 ((X^2 - 1) / (X - 1)) = eval id 1 (X + 1) = 2`, not `0 / 0 = 0`.
 -/
-def eval (f : K →+* L) (a : L) (p : RatFunc K) : L :=
+def eval (f : K →+* L) (a : L) (p : K⟮X⟯) : L :=
   (num p).eval₂ f a / (denom p).eval₂ f a
 
 variable {f : K →+* L} {a : L}
 
-theorem eval_eq_zero_of_eval₂_denom_eq_zero {x : RatFunc K}
+theorem eval_eq_zero_of_eval₂_denom_eq_zero {x : K⟮X⟯}
     (h : Polynomial.eval₂ f a (denom x) = 0) : eval f a x = 0 := by rw [eval, h, div_zero]
 
-theorem eval₂_denom_ne_zero {x : RatFunc K} (h : eval f a x ≠ 0) :
+theorem eval₂_denom_ne_zero {x : K⟮X⟯} (h : eval f a x ≠ 0) :
     Polynomial.eval₂ f a (denom x) ≠ 0 :=
   mt eval_eq_zero_of_eval₂_denom_eq_zero h
 
@@ -169,7 +169,7 @@ theorem eval_one : eval f a 1 = 1 := by simp [eval]
 @[simp]
 theorem eval_algebraMap {S : Type*} [CommSemiring S] [Algebra S K[X]] (p : S) :
     eval f a (algebraMap _ _ p) = (algebraMap _ K[X] p).eval₂ f a := by
-  simp [eval, IsScalarTower.algebraMap_apply S K[X] (RatFunc K)]
+  simp [eval, IsScalarTower.algebraMap_apply S K[X] K⟮X⟯]
 
 /-- `eval` is an additive homomorphism except when a denominator evaluates to `0`.
 
@@ -178,7 +178,7 @@ Counterexample: `eval _ 1 (X / (X-1)) + eval _ 1 (-1 / (X-1)) = 0`
 
 See also `RatFunc.eval₂_denom_ne_zero` to make the hypotheses simpler but less general.
 -/
-theorem eval_add {x y : RatFunc K} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
+theorem eval_add {x y : K⟮X⟯} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
     (hy : Polynomial.eval₂ f a (denom y) ≠ 0) : eval f a (x + y) = eval f a x + eval f a y := by
   unfold eval
   by_cases hxy : Polynomial.eval₂ f a (denom (x + y)) = 0
@@ -197,7 +197,7 @@ Counterexample: `eval _ 0 X * eval _ 0 (1/X) = 0 ≠ 1 = eval _ 0 1 = eval _ 0 (
 
 See also `RatFunc.eval₂_denom_ne_zero` to make the hypotheses simpler but less general.
 -/
-theorem eval_mul {x y : RatFunc K} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
+theorem eval_mul {x y : K⟮X⟯} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
     (hy : Polynomial.eval₂ f a (denom y) ≠ 0) : eval f a (x * y) = eval f a x * eval f a y := by
   unfold eval
   by_cases hxy : Polynomial.eval₂ f a (denom (x * y)) = 0
@@ -214,15 +214,60 @@ end Field
 
 end Eval
 
+section algEquivOfTranscendental
+
+open Polynomial IntermediateField algebraAdjoinAdjoin
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (f : L) (h : Transcendental K f)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Given a transcendental `f : L`, the `K`-algebra isomorphism between `RatFunc K` and `L` given
+by sending `X` to `f`. -/
+noncomputable def algEquivOfTranscendental : RatFunc K ≃ₐ[K] K⟮f⟯ :=
+  IsFractionRing.algEquivOfAlgEquiv (Polynomial.algEquivOfTranscendental K f h)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_algebraMap (g : K[X]) :
+    algEquivOfTranscendental f h (algebraMap K[X] (RatFunc K) g) =
+    aeval (AdjoinSimple.gen K f) g := by
+  ext
+  simp [algEquivOfTranscendental]
+
+@[simp]
+theorem algEquivOfTranscendental_X :
+    algEquivOfTranscendental f h (X : RatFunc K) = f := by
+  simp [← algebraMap_X]
+
+set_option backward.isDefEq.respectTransparency false in
+theorem algEquivOfTranscendental_apply (u : RatFunc K) :
+    algEquivOfTranscendental f h u = aeval f u.num / aeval f u.denom := by
+  conv_lhs => rw [← num_div_denom u]
+  simp [-num_div_denom]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_symm_aeval (g : K[X]) :
+    (algEquivOfTranscendental f h).symm (aeval (AdjoinSimple.gen _ f) g) = algebraMap _ _ g := by
+  simp [algEquivOfTranscendental, ← algebraMap_eq_gen_self, aeval_algebraMap_apply]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_symm_gen :
+    (algEquivOfTranscendental f h).symm (AdjoinSimple.gen _ f) = (X : RatFunc K) := by
+  simp [algEquivOfTranscendental, ← algebraMap_eq_gen_self]
+
+end algEquivOfTranscendental
+
 section Algebra
 
 variable [CommRing K] [IsDomain K]
 
-lemma transcendental_X : Transcendental K (X : RatFunc K) := by
+lemma transcendental_X : Transcendental K (X : K⟮X⟯) := by
   rw [← RatFunc.algebraMap_X, transcendental_algebraMap_iff (algebraMap_injective K)]
   exact Polynomial.transcendental_X K
 
-instance transcendental : Algebra.Transcendental K (RatFunc K) := ⟨X, transcendental_X⟩
+instance transcendental : Algebra.Transcendental K K⟮X⟯ := ⟨X, transcendental_X⟩
 
 end Algebra
 
@@ -233,6 +278,8 @@ section AdicValuation
 variable (K : Type*) [Field K]
 
 namespace Polynomial
+
+open RatFunc
 
 section HeightOneSpectrum
 
@@ -251,7 +298,7 @@ theorem idealX_span : (idealX K).asIdeal = Ideal.span {X} := rfl
 
 @[simp]
 theorem valuation_X_eq_neg_one :
-    (idealX K).valuation (RatFunc K) RatFunc.X = exp (-1 : ℤ) := by
+    (idealX K).valuation K⟮X⟯ RatFunc.X = exp (-1 : ℤ) := by
   rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton
       _ (Polynomial.X_ne_zero) (idealX_span K)]
 
@@ -279,7 +326,7 @@ lemma valuation_aeval_monomial_eq_valuation_pow (w : L) (n : ℕ) {a : K} (ha : 
 
 theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : L) (hpos : 1 < v w)
     {p : Polynomial K} (hp : p ≠ 0) : v (p.aeval w) = v w ^ p.natDegree := by
-  rw [← valuation_aeval_monomial_eq_valuation_pow _ _ hv _ _ ((leadingCoeff_ne_zero).mpr hp)]
+  rw [← valuation_aeval_monomial_eq_valuation_pow _ _ hv _ _ (leadingCoeff_ne_zero.mpr hp)]
   nth_rw 1 [as_sum_range p, map_sum]
   apply Valuation.map_sum_eq_of_lt _ (by simp)
   intro i hi
@@ -287,14 +334,14 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
     ← lt_iff_le_and_ne] at hi
   simp only [← C_mul_X_pow_eq_monomial, map_mul, aeval_C, map_pow, aeval_X, coeff_natDegree]
   by_cases h0 : (p.coeff i) = 0
-  · simp [h0, map_zero, zero_mul, one_mul, hv p.leadingCoeff ((leadingCoeff_ne_zero).mpr hp),
+  · simp [h0, map_zero, zero_mul, one_mul, hv p.leadingCoeff (leadingCoeff_ne_zero.mpr hp),
       pow_pos (lt_trans zero_lt_one hpos) p.natDegree]
-  · simp [one_mul, hv p.leadingCoeff ((leadingCoeff_ne_zero).mpr hp),
+  · simp [one_mul, hv p.leadingCoeff (leadingCoeff_ne_zero.mpr hp),
       hv _ h0, one_mul, pow_lt_pow_right₀ hpos hi]
 
 end Algebra
 
-variable {v : Valuation (RatFunc K) Γ} (hv : ∀ a : K, a ≠ 0 → v (C a) = 1)
+variable {v : Valuation K⟮X⟯ Γ} (hv : ∀ a : K, a ≠ 0 → v (C a) = 1)
 
 open Valuation
 
@@ -312,11 +359,11 @@ lemma valuation_monomial_eq_valuation_X_pow (n : ℕ) {a : K} (ha : a ≠ 0) :
 Note: The condition `1 < v RatFunc.X` is typically satisfied by the valuation at infinity. -/
 theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (hlt : 1 < v RatFunc.X)
     {p : K[X]} (hp : p ≠ 0) : v p = v RatFunc.X ^ p.natDegree := by
-  convert valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X K (RatFunc K) hv
+  convert valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X K K⟮X⟯ hv
     RatFunc.X hlt hp
   ext p
   nth_rw 1 [RatFunc.X, ← aeval_X_left_apply p (R := K)]
-  exact (aeval_algebraMap_apply (RatFunc K) X p).symm
+  exact (aeval_algebraMap_apply K⟮X⟯ X p).symm
 
 
 /-- If a valuation `v` is trivial on constants and `v RatFunc.X ≤ 1` then for every polynomial `p`,
@@ -347,11 +394,18 @@ open scoped WithZero
 
 open Polynomial
 
-instance : Valued (RatFunc K) ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
+instance : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 
 @[simp]
-theorem v_def {x : RatFunc K} :
+theorem v_def {x : K⟮X⟯} :
     Valued.v x = (idealX K).valuation _ x := rfl
+
+lemma valuation_surjective : Function.Surjective (Valued.v (R := RatFunc K)) := by
+  intro n
+  by_cases hn0 : n = 0
+  · use 0; simp [hn0]
+  · use (RatFunc.X ^ (-WithZero.log n))
+    simp [WithZero.exp_log hn0]
 
 end RatFunc
 
