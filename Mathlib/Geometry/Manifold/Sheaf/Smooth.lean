@@ -87,7 +87,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 section TypeCat
 
 /-- The sheaf of smooth functions from `M` to `N`, as a sheaf of types. -/
-def smoothSheaf : TopCat.Sheaf (Type u) (TopCat.of M) :=
+def smoothSheaf : TopCat.Sheaf TypeCat.{u} (TopCat.of M) :=
   (contDiffWithinAt_localInvariantProp (I := IM) (I' := I) ∞).sheaf M N
 
 variable {M}
@@ -110,7 +110,8 @@ def smoothSheaf.eval (x : M) : (smoothSheaf IM I M N).presheaf.stalk x → N :=
 
 /-- Canonical map from the stalk of `smoothSheaf IM I M N` at `x` to `N`, given by evaluating
 sections at `x`, considered as a morphism in the category of types. -/
-def smoothSheaf.evalHom (x : TopCat.of M) : (smoothSheaf IM I M N).presheaf.stalk x ⟶ N :=
+def smoothSheaf.evalHom (x : TopCat.of M) :
+    (smoothSheaf IM I M N).presheaf.stalk x ⟶ TypeCat.of N :=
   TopCat.stalkToFiber (StructureGroupoid.LocalInvariantProp.localPredicate M N _) x
 
 open CategoryTheory Limits
@@ -124,7 +125,7 @@ def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
 @[simp, reassoc, elementwise] lemma smoothSheaf.ι_evalHom (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M N).obj) U ≫
     smoothSheaf.evalHom IM I N x =
-    smoothSheaf.evalAt _ _ _ _ _ :=
+    TypeCat.ofHom ⟨smoothSheaf.evalAt IM I N x (unop U)⟩  :=
   colimit.ι_desc _ _
 
 /-- The `eval` map is surjective at `x`. -/
@@ -292,18 +293,13 @@ open CategoryTheory Limits
 /-- Identify the stalk at a point of the sheaf-of-commutative-rings of functions from `M` to `R`
 (for `R` a smooth ring) with the stalk at that point of the corresponding sheaf of types. -/
 def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
-    ((smoothSheafCommRing IM I M R).presheaf.stalk x).carrier ≅
+    TypeCat.of ((smoothSheafCommRing IM I M R).presheaf.stalk x).carrier ≅
     (smoothSheaf IM I M R).presheaf.stalk x :=
   preservesColimitIso (forget CommRingCat) _
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_hom (x : TopCat.of M) (U) :
-    CategoryStruct.comp
-      (Z := (smoothSheaf IM I M R).presheaf.stalk x)
-      (DFunLike.coe
-        (α := (((smoothSheafCommRing IM I M R).presheaf.obj
-          (op ((OpenNhds.inclusion x).obj U.unop)))))
-        (colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheafCommRing IM I M R).presheaf) U).hom)
-      (forgetStalk IM I M R x).hom =
+    TypeCat.ofHom ⟨(colimit.ι ((OpenNhds.inclusion x).op ⋙
+      (smoothSheafCommRing IM I M R).presheaf) U).hom⟩ ≫ (forgetStalk IM I M R x).hom =
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U :=
   ι_preservesColimitIso_hom (forget CommRingCat) _ _
 
@@ -311,9 +307,9 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_inv (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U ≫
     (smoothSheafCommRing.forgetStalk IM I M R x).inv =
-    ⇑(colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheafCommRing IM I M R).presheaf) U) := by
+    TypeCat.ofHom ⟨(colimit.ι ((OpenNhds.inclusion x).op ⋙
+      (smoothSheafCommRing IM I M R).presheaf) U)⟩  := by
   rw [Iso.comp_inv_eq, ← smoothSheafCommRing.ι_forgetStalk_hom]
-  simp_rw [Functor.comp_obj, Functor.op_obj]
 
 /-- Given a smooth commutative ring `R` and a manifold `M`, and an open neighbourhood `U` of a point
 `x : M`, the evaluation-at-`x` map to `R` from smooth functions from  `U` to `R`. -/
@@ -351,7 +347,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_inv_comp_eval
     (x : TopCat.of M) :
     (smoothSheafCommRing.forgetStalk IM I M R x).inv ≫
-     (DFunLike.coe (smoothSheafCommRing.evalHom IM I M R x).hom) =
+      TypeCat.ofHom ⟨(smoothSheafCommRing.evalHom IM I M R x).hom⟩ =
     smoothSheaf.evalHom _ _ _ _ := by
   apply Limits.colimit.hom_ext
   intro U
@@ -363,7 +359,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_hom_comp_evalHom
     (x : TopCat.of M) :
     (smoothSheafCommRing.forgetStalk IM I M R x).hom ≫ (smoothSheaf.evalHom IM I R x) =
-      ⇑(smoothSheafCommRing.evalHom _ _ _ _ _) := by
+      TypeCat.ofHom ⟨(smoothSheafCommRing.evalHom _ _ _ _ _)⟩ := by
   simp_rw [← CategoryTheory.Iso.eq_inv_comp]
   rw [← smoothSheafCommRing.forgetStalk_inv_comp_eval]
 

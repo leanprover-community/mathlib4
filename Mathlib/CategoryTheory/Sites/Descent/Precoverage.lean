@@ -225,8 +225,8 @@ lemma compatible_familyOfElements (i : ι) :
   obtain ⟨_, a₁, _, ⟨j₁⟩, fac₁⟩ := h₁
   obtain ⟨_, a₂, _, ⟨j₂⟩, fac₂⟩ := h₂
   dsimp at a₁ a₂ fac₁ fac₂
-  rw [familyOfElements_eq _ _ _ _ fac₁, familyOfElements_eq _ _ _ _ fac₂,
-    ← mor_precomp w φ Y₁.hom a₁ fac₁ _ _ _ hg₁ rfl,
+  rw [familyOfElements_eq _ _ _ _ fac₁, familyOfElements_eq _ _ _ _ fac₂]
+  erw [← mor_precomp w φ Y₁.hom a₁ fac₁ _ _ _ hg₁ rfl,
     ← mor_precomp w φ Y₂.hom a₂ fac₂ _ _ _ hg₂ rfl]
   apply mor_unique
 
