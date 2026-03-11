@@ -6,15 +6,12 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Submonoid
-public import Mathlib.Algebra.Ring.Subring.IntPolynomial
-public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
-public import Mathlib.NumberTheory.Padics.ProperSpace
 public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
-public import Mathlib.Topology.Algebra.Valued.LocallyCompact
+public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
