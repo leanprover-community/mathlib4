@@ -882,7 +882,7 @@ noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F
     𝓓^{n}_{K}(E, F₁) →L[𝕜] F₃ where
   toLinearMap := integralAgainstBilinLM B μ φ
   cont := show Continuous (integralAgainstBilinLM B μ φ) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms ..)
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
       (norm_withSeminorms 𝕜 _) _
       (.of_real fun _ ↦ ⟨{0}, (∫ x in K, ‖φ x‖ ∂μ) * ‖B‖, fun f ↦ ?_⟩)
     simpa using norm_integralAgainstBilinLM_le
