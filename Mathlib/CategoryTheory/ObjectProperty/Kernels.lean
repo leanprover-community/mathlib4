@@ -28,7 +28,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category* C] [HasZeroMorphisms C] 
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 namespace MorphismProperty
 
