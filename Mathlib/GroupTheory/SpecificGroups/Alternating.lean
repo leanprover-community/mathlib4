@@ -556,4 +556,3 @@ instance : (alternatingGroup α).Characteristic where
     nontriviality α
     apply eq_alternatingGroup_of_index_eq_two
     rw [index_comap_of_surjective _ (Equiv.surjective _), alternatingGroup.index_eq_two]
-
