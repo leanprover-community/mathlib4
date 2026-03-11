@@ -314,6 +314,34 @@ theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
 
 end kronecker
 
+section Hadamard
+
+omit [Fintype n]
+variable [Finite n]
+
+open Matrix in
+open scoped MatrixOrder in
+set_option backward.isDefEq.respectTransparency false in
+/-- Schur's product: The Hadamard product of two PSD matrices is PSD. -/
+theorem hadamard_prod {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB : B.PosSemidef) :
+  (A ⊙ B).PosSemidef := by
+  have := Fintype.ofFinite n
+  letI := Classical.decEq n
+  --  Use `√A` to rewrite `A ⊙ B` into a finite sum of PSD matrices.
+  have h : A ⊙ B = ∑ k, let Dk := diagonal ((CFC.sqrt A)ᵀ k); Dk * B * Dkᴴ := by
+    ext
+    simp only [hadamard_apply, diagonal_conjTranspose, sum_apply, mul_diagonal, diagonal_mul,
+      transpose_apply, Pi.star_apply, RCLike.star_def, mul_right_comm _ (B _ _) _, ←Finset.sum_mul]
+    congr 1
+    simp_rw [<-RCLike.star_def, (CFC.sqrt_nonneg A).posSemidef.1.apply,
+      <-mul_apply, CFC.sqrt_mul_sqrt_self A]
+  rw [h]
+  refine posSemidef_sum Finset.univ ?_
+  intro k hk
+  exact PosSemidef.mul_mul_conjTranspose_same hB (diagonal ((CFC.sqrt A)ᵀ k))
+
+end Hadamard
+
 set_option backward.isDefEq.respectTransparency false in
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
