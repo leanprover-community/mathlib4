@@ -85,8 +85,8 @@ instance [P.IsClosedUnderSubobjects] : P.IsClosedUnderKernels where
     letI := Fork.IsLimit.mono hk
     exact P.prop_of_mono k.ι hf.1
 
-noncomputable instance hasLimitParallelPairInclusion [P.IsClosedUnderKernels]
-    {X Y : P.FullSubcategory} (f : X ⟶ Y) [HasKernel f.hom] :
+noncomputable instance hasLimitParallelPairInclusion {X Y : P.FullSubcategory}
+    (f : X ⟶ Y) [HasKernel f.hom] :
     HasLimit (parallelPair f 0 ⋙ P.ι) :=
   hasLimit_of_iso (F := parallelPair f.hom 0) (Iso.symm (diagramIsoParallelPair _))
 
@@ -127,8 +127,8 @@ instance [P.IsClosedUnderQuotients] : P.IsClosedUnderCokernels where
     letI := Cofork.IsColimit.epi hk
     exact P.prop_of_epi k.π hf.2
 
-noncomputable instance hasColimitParallelPairInclusion [P.IsClosedUnderCokernels]
-    {X Y : P.FullSubcategory} (f : X ⟶ Y) [HasCokernel f.hom] :
+noncomputable instance hasColimitParallelPairInclusion {X Y : P.FullSubcategory}
+    (f : X ⟶ Y) [HasCokernel f.hom] :
     HasColimit (parallelPair f 0 ⋙ P.ι) :=
   hasColimit_of_iso (F := parallelPair f.hom 0) (diagramIsoParallelPair _)
 
