@@ -1176,6 +1176,7 @@ initialize_simps_projections AddHomPlus2 (-myMul, myMul_toFun_toFun → mul)
 
 attribute [ext] Equiv'
 
+set_option warn.classDefReducibility false in
 @[simps]
 def thing (h : Bool ≃ (Bool ≃ Bool)) : AddHomPlus2 (fun _ : ℕ ↦ Bool) :=
   { myMul :=

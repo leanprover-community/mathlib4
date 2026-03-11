@@ -110,7 +110,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance [P.RespectsIso] : P.ind.RespectsIso where
   postcomp {X Y Z} i (hi : IsIso i) f := fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ by
     refine ⟨J, ‹_›, ‹_›, D, t, s ≫ (Functor.const J).map i, ?_, fun j ↦ ⟨(hst j).1, ?_⟩⟩
-    · exact (IsColimit.equivIsoColimit (Cocones.ext (asIso i))) hs
+    · exact (IsColimit.equivIsoColimit (Cocone.ext (asIso i))) hs
     · simp [reassoc_of% (hst j).2]
 
 lemma ind_underObj_pushout {X Y : C} (g : X ⟶ Y) [HasPushouts C] [P.IsStableUnderCobaseChange]

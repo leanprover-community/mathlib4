@@ -481,6 +481,7 @@ lemma FiniteDimensional.exists_mul_eq_one (F : Type*) {K : Type*} [Field F] [Rin
   exact this 1
 
 /-- A domain that is module-finite as an algebra over a field is a division ring. -/
+@[implicit_reducible]
 noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : DivisionRing K where
   __ := ‹IsDomain K›
@@ -501,6 +502,7 @@ lemma FiniteDimensional.isUnit (F : Type*) {K : Type*} [Field F] [Ring K] [IsDom
   let _ := divisionRingOfFiniteDimensional F K; H.isUnit
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
+@[implicit_reducible]
 noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : Field K :=
   { divisionRingOfFiniteDimensional F K with
