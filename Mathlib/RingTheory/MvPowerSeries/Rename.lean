@@ -35,6 +35,11 @@ This file is patterned after `Mathlib/Algebra/MvPolynomial/Rename.lean`.
 * `MvPowerSeries.renameEquiv`
 * `MvPowerSeries.killCompl`
 
+## TODO
+
+* Show that under appropriate substitution, `MvPowerSeries.substAlgHom` coincides with
+  `MvPowerSeries.rename` in the `CommRing` case.
+
 -/
 
 @[expose] public section
@@ -47,11 +52,9 @@ variable {σ τ γ R S : Type*} (f : σ → τ) (g : τ → γ) [TendstoCofinite
 
 namespace MvPowerSeries
 
-section CommSemiring
+section Semiring
 
-variable [CommSemiring R] [CommSemiring S]
-
-section rename
+variable [Semiring R] [Semiring S]
 
 /-- Implementation detail for `rename`. Use `MvPowerSeries.rename` instead. -/
 def renameFun [TendstoCofinite f] : MvPowerSeries σ R → MvPowerSeries τ R :=
@@ -103,6 +106,12 @@ private theorem renameFun_mul (p q : MvPowerSeries σ R) :
   rw [← sum_finset_product' (renameFunAux f x).toFinset _ _ (by simp),
     ← sum_finset_product' (renameFunAux' f x).toFinset _ _ (by simp),
     ← renameFunAuxImage f x, sum_image fun _ ↦ by simp; grind]
+
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R] [CommSemiring S]
 
 /-- Rename all the variables in a multivariable power series by a map with finite fibers. -/
 @[no_expose]
@@ -169,6 +178,9 @@ theorem rename_injective (e : σ ↪ τ) : Function.Injective (rename (R := R) e
   intro _ _ h; ext x
   simpa using MvPowerSeries.ext_iff.mp h (embDomain e x)
 
+theorem rename_inj (e : σ ↪ τ) (p q : MvPowerSeries σ R) :
+    rename e p = rename e q ↔ p = q := (rename_injective e).eq_iff
+
 theorem rename_map (φ : R →+* S) (p : MvPowerSeries σ R) :
     rename f (map φ p) = map φ (rename f p) := by
   ext; simp [coeff_rename]
@@ -199,10 +211,6 @@ theorem renameEquiv_symm (f : σ ≃ τ) : (renameEquiv R f).symm = renameEquiv 
 theorem renameEquiv_trans (e : σ ≃ τ) (f : τ ≃ γ) : (renameEquiv R e).trans (renameEquiv R f) =
     renameEquiv R (e.trans f) := AlgEquiv.ext (rename_rename e f)
 
-end rename
-
-section killCompl
-
 variable {e : σ ↪ τ}
 
 /-- Implementation detail for `killCompl`. Use `MvPowerSeries.killCompl` instead. -/
@@ -232,7 +240,7 @@ private theorem killComplFun_mul (p q : MvPowerSeries τ R) :
       embDomain_injective e⟩)))]
 
 /-- Given an embedding `e : σ ↪ τ`, `MvPowerSeries.killComplFun e` is the function from
-`R[[τ]]` to `R[[σ]]` that is left inverse to `rename e.injective.fiberFinite : R[[σ]] → R[[τ]]`
+`R⟦τ⟧` to `R⟦σ⟧` that is left inverse to `rename e.injective.fiberFinite : R⟦σ⟧ → R⟦τ⟧`
 and sends the variables in the complement of the range of `e` to `0`. -/
 @[no_expose]
 def killCompl (e : σ ↪ τ) : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R where
@@ -280,8 +288,6 @@ theorem killCompl_rename_app (p : MvPowerSeries σ R) : killCompl e (rename e p)
 theorem killCompl_map (φ : R →+* S) (p : MvPowerSeries τ R) :
     killCompl e (map φ p) = map φ (killCompl e p) := by
   ext; simp [coeff_killCompl]
-
-end killCompl
 
 end CommSemiring
 
