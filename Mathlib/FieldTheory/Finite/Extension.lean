@@ -138,58 +138,44 @@ end FiniteField
 
 section Polynomial
 
-variable {K : Type*} [hf : Field K]
+open FiniteField IntermediateField Polynomial
 
-open Polynomial FiniteField
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+
+theorem eq_minpoly_of_irreducible {f : K[X]} (hi : Irreducible f) {x : L} (hx : f.aeval x = 0) :
+    f = C f.leadingCoeff * minpoly K x := by
+  rw [← minpoly.eq_of_irreducible hi hx, mul_comm, mul_assoc, ← C_mul,
+    inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr hi.ne_zero), C_1, mul_one]
+
+theorem natDegree_dvd_finrank_of_irreducible {f : K[X]} (hi : Irreducible f)
+    (hs : (f.map (algebraMap K L)).Splits) : f.natDegree ∣ Module.finrank K L := by
+  have := hi.degree_pos.ne'
+  rw [← f.degree_map (algebraMap K L)] at this
+  obtain ⟨x, hx⟩ := hs.exists_eval_eq_zero this
+  rw [eval_map_algebraMap] at hx
+  have key := eq_minpoly_of_irreducible hi hx
+  replace hi := hi.ne_zero
+  rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
+  apply minpoly.degree_dvd
+  rw [← minpoly.ne_zero_iff]
+  contrapose! hi
+  rwa [hi, mul_zero] at key
 
 theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} {f : K[X]}
     (hi : Irreducible f) (h : f ∣ X ^ (Nat.card K) ^ n - X) : f.natDegree ∣ n := by
-  by_cases hn : n = 0
-  · simp only [hn, dvd_zero]
-  · by_cases hf : Finite K
-    · haveI : Fintype K := Fintype.ofFinite _
-      obtain ⟨p, _, m, hp, hm⟩ := card' K
-      haveI : Fact <| Nat.Prime p := ⟨hp⟩
-      haveI : Fact <| Irreducible f := ⟨hi⟩
-      haveI : NeZero n := ⟨hn⟩
-      -- `F` is the splitting field of `X ^ (Nat.card K) ^ n - X`
-      let F := Extension K p n
-      haveI : Algebra (ZMod p) K := ZMod.algebra K p
-      have haux : Nonempty (K →ₐ[ZMod p] F) := nonempty_algHom_extension K p n
-      let ψ := (Classical.choice haux).toRingHom
-      replace h := Polynomial.map_dvd ψ h
-      rw [Polynomial.map_sub, Polynomial.map_pow, map_X,  ← natCard_extension] at h
-      -- `f` has a root a in `F`. We have extensions `AdjoinRoot f / K` and `F / AdjoinRoot f`.
-      obtain ⟨a, ha⟩ : ∃ a, eval₂ ψ a f = 0 := by
-        convert exists_eval_eq_zero_of_dvd_X_pow_card_sub_X ?_ h
-        · exact eval₂_eq_eval_map ψ
-        · simp only [degree_map, ne_eq, (Ne.symm (Std.ne_of_lt (Irreducible.degree_pos hi ))),
-            not_false_eq_true]
-      letI := RingHom.toAlgebra (AdjoinRoot.lift ψ a ha)
-      -- Compatible `K`-algebra structure on `F`
-      letI : Algebra K F := RingHom.toAlgebra
-        (RingHom.comp (algebraMap (AdjoinRoot f) F) (algebraMap K (AdjoinRoot f)))
-      letI M1 : Module K F := Algebra.toModule
-      letI M2 : Module (AdjoinRoot f) F := Algebra.toModule
-      letI M3 : Module K (AdjoinRoot f) := Algebra.toModule
-      haveI hfinite : IsScalarTower K (AdjoinRoot f) F := IsScalarTower.of_algebraMap_eq' rfl
-      haveI hF1 : Module.Free K (AdjoinRoot f) := Module.Free.of_divisionRing K _
-      have hdim1 : Module.finrank K (AdjoinRoot f) = f.natDegree := by
-        rw [PowerBasis.finrank (AdjoinRoot.powerBasis (Irreducible.ne_zero hi)),
-          AdjoinRoot.powerBasis_dim (Irreducible.ne_zero hi)]
-      have hdim2 : Module.finrank K F = n := (pow_right_inj₀ (Nat.card_pos)
-        (Ne.symm (Nat.ne_of_lt Finite.one_lt_card))).1 ((natCard_extension K p n) ▸
-        (Module.natCard_eq_pow_finrank (K := K) (V := F))).symm
-      rw [← hdim1, ← hdim2]
-      use (Module.finrank (AdjoinRoot f) F)
-      -- The rank of `AdjoinRoot f` over `K` divides the rank of `F` over `K`.
-      refine (@Module.finrank_mul_finrank K (AdjoinRoot f) F _ _ _ M3 M2 M1 hfinite _ _
-        hF1 (Module.Free.of_divisionRing (AdjoinRoot f) _) ).symm
-    · simp only [Nat.card_eq, hf, reduceDIte, zero_pow hn, pow_zero] at h
-      rw [← dvd_neg, neg_sub] at h
-      rw [natDegree_eq_of_degree_eq_some (Splits.degree_eq_one_of_irreducible
-        (Splits.of_dvd (Splits.X_sub_C _) (X_sub_C_ne_zero _) h) hi)]
-      exact one_dvd _
-
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  cases fintypeOrInfinite K; swap
+  · rw [Nat.card_eq_zero_of_infinite, zero_pow hn, pow_zero, ← dvd_neg, neg_sub] at h
+    rw [((Splits.X_sub_C 1).of_dvd (X_sub_C_ne_zero 1) h).natDegree_eq_one_of_irreducible hi]
+    exact one_dvd n
+  let ⟨p, hp⟩ := CharP.exists K
+  have : Fact (Nat.Prime p) := ⟨CharP.char_is_prime K p⟩
+  have : NeZero n := ⟨hn⟩
+  rw [← finrank_extension K p n]
+  apply natDegree_dvd_finrank_of_irreducible hi
+  refine Splits.of_dvd ?_ ?_ (map_dvd (algebraMap K (Extension K p n)) h)
+  · apply IsSplittingField.splits
+  · exact map_ne_zero (X_pow_card_pow_sub_X_ne_zero K hn Finite.one_lt_card)
 
 end Polynomial
