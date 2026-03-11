@@ -95,8 +95,7 @@ theorem submatrix_iff [Zero α] [One α] {f : W → V} (hf : f.Surjective) :
   rw [← A.submatrix_id_id, ← f.comp_surjInv hf]
   apply h.submatrix
 
-theorem reindex [Zero α] [One α] (h : IsAdjMatrix A) (f : V ≃ W) :
-    A.reindex f f |>.IsAdjMatrix :=
+theorem reindex [Zero α] [One α] (h : IsAdjMatrix A) (f : V ≃ W) : A.reindex f f |>.IsAdjMatrix :=
   h.submatrix f.symm
 
 theorem reindex_iff [Zero α] [One α] (f : V ≃ W) : (A.reindex f f).IsAdjMatrix ↔ A.IsAdjMatrix :=
