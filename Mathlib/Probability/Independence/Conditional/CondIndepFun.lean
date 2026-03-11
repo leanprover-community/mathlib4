@@ -191,7 +191,7 @@ theorem iCondIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (
   have h' : ∀ᵐ ω ∂P, ∀ i ∈ S, (P⁻⸨g i ⁻¹' sets i| mΩ⸩) ω = (P⁻⸨f i ⁻¹' sets i| mΩ⸩) ω := by
     rw [eventually_finset_ball]
     intro i _
-    apply condLExp_congr_ae
+    apply condLProb_congr_ae
     sorry
      -- need condLExp and condLProb theorems
   have h'' : P⁻⸨⋂ i ∈ S, g i ⁻¹' sets i| mΩ⸩ =ᵐ[P] P⁻⸨⋂ i ∈ S, f i ⁻¹' sets i| mΩ⸩ := by

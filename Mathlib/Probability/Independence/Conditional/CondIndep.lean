@@ -91,7 +91,7 @@ lemma iCondIndepSets.of_subsingleton (hm : mΩ ≤ mΩ₀) [SigmaFinite (P.trim 
   rintro s f hf
   obtain rfl | ⟨i, rfl⟩ : s = ∅ ∨ ∃ i, s = {i} := by
     simpa using (subsingleton_of_subsingleton (s := (s : Set ι))).eq_empty_or_singleton
-  · simp [condLExp_one hm P]
+  · simp [hm]
   · simp
 
 @[nontriviality, simp]
@@ -326,11 +326,11 @@ theorem CondIndepSets.condIndep_aux {m₂ m : MeasurableSpace Ω} {p1 p2 : Set (
     (ht1m : MeasurableSet[m] t1) (ht2m : MeasurableSet[m₂] t2) :
     P⁻⸨t1 ∩ t2| mΩ⸩ =ᵐ[P] P⁻⸨t1| mΩ⸩ * P⁻⸨t2| mΩ⸩ := by
   by_cases hm : mΩ ≤ mΩ₀
-  swap; · filter_upwards using by simp [condLExp_of_not_le hm]
+  swap; · filter_upwards using by simp [condLProb_of_not_le hm]
   by_cases hσ : SigmaFinite (P.trim hm)
-  swap; · filter_upwards using by simp [condLExp_of_not_sigmaFinite hm hσ]
+  swap; · filter_upwards using by simp [condLProb_of_not_sigmaFinite hm hσ]
   induction t2, ht2m using induction_on_inter hpm2 hp2 with
-  | empty => simp [← Pi.zero_def]
+  | empty => simp
   | basic u hu => exact hyp t1 u ht1 hu
   | compl u hu ihu =>
     grw [← Set.diff_eq, ← Set.diff_self_inter, condLProb_diff inter_subset_left, condLProb_compl]
@@ -354,7 +354,7 @@ theorem CondIndepSets.condIndep (hm : mΩ ≤ mΩ₀) [SigmaFinite (P.trim hm)]
     CondIndep P mΩ m1 m2 := by
   intro t1 t2 ht1 ht2
   induction t1, ht1 using induction_on_inter hpm1 hp1 with
-  | empty => simp [← Pi.zero_def]
+  | empty => simp
   | basic t ht =>
     refine CondIndepSets.condIndep_aux (le_refl _) h2 h2 hp2 hpm2 hyp ht (h1 _ ?_) ht2
     rw [hpm1]

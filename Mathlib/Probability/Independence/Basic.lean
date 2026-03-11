@@ -113,7 +113,7 @@ iCondIndep μ ⊥ m
 /-- Two measurable space structures (or σ-algebras) `m₁, m₂` are independent with respect to a
 measure `μ` (defined on a third σ-algebra) if for any sets `t₁ ∈ m₁, t₂ ∈ m₂`,
 `μ (t₁ ∩ t₂) = μ (t₁) * μ (t₂)` -/
-def Indep (m₁ m₂ : MeasurableSpace Ω) (μ : Measure Ω := by volume_tac) : Prop :=
+def Indep (m₁ m₂ : MeasurableSpace Ω) (μ : Measure[mΩ] Ω := by volume_tac) : Prop :=
   CondIndep μ ⊥ m₁ m₂
 
 /-- A family of sets is independent if the family of measurable space structures they generate is
@@ -151,124 +151,154 @@ scoped[ProbabilityTheory] notation3 X:50 " ⟂ᵢ[" μ "] " Y:50 => ProbabilityT
 scoped[ProbabilityTheory] notation3 X:50 " ⟂ᵢ " Y:50 => ProbabilityTheory.IndepFun X Y volume
 
 section Definition_lemmas
-variable {π : ι → Set (Set Ω)} {m : ι → MeasurableSpace Ω} {_ : MeasurableSpace Ω} {μ : Measure Ω}
+variable {π : ι → Set (Set Ω)} {m : ι → MeasurableSpace Ω} {mΩ : MeasurableSpace Ω} {μ : Measure Ω}
   {S : Finset ι} {s : ι → Set Ω} {ι' : Type*} {g : ι' → ι}
 
-lemma iIndepSets_iff (π : ι → Set (Set Ω)) (μ : Measure Ω) [IsProbabilityMeasure μ]
-    (hπ : ∀ i s, s ∈ π i → NullMeasurableSet s μ) :
-    iIndepSets π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_hf : ∀ i, i ∈ s → f i ∈ π i),
-    μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) := by
-  simp only [iIndepSets, iCondIndepSets]
-  congr! with s f hf
-  rw [condLProb_bot (s.nullMeasurableSet_biInter (fun _ hi ↦ hπ _ _ (hf _ hi))),
-    Finset.prod_congr rfl (fun i hi ↦ condLProb_bot (hπ _ _ (hf _ hi))), Filter.EventuallyEq]
-  convert Filter.eventually_const
-  · simp
-  exact Measure.ae.neBot
+private lemma meas_biInter_iff_condLProb_bot_biInter [IsProbabilityMeasure μ]
+    {s : Finset ι} {f : ι → Set Ω} (hπ : ∀ i ∈ s, NullMeasurableSet (f i) μ) :
+    μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) ↔ μ⁻⸨⋂ i ∈ s, f i|⊥⸩ =ᵐ[μ] ∏ i ∈ s, μ⁻⸨f i|⊥⸩ := by
+  rw [condLProb_bot₀ (s.nullMeasurableSet_biInter hπ),
+    Finset.prod_congr rfl (fun i hi ↦ condLProb_bot₀ (hπ i hi))]
+  simp [Filter.EventuallyEq]
 
-lemma iIndepSets.meas_biInter [IsProbabilityMeasure μ] (h : iIndepSets π μ) (s : Finset ι)
-    {f : ι → Set Ω} (hπ : ∀ i s, s ∈ π i → NullMeasurableSet s μ) (hf : ∀ i, i ∈ s → f i ∈ π i) :
-    μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) :=
-  (iIndepSets_iff _ _ hπ).1 h s hf
+private lemma meas_inter_iff_condLProb_bot_inter [IsProbabilityMeasure μ]
+   {s1 s2 : Set Ω} (hs1 : NullMeasurableSet s1 μ) (hs1 : NullMeasurableSet s2 μ) :
+   μ (s1 ∩ s2) = μ s1 * μ s2 ↔ μ⁻⸨s1 ∩ s2|⊥⸩ =ᵐ[μ] μ⁻⸨s1|⊥⸩ * μ⁻⸨s2|⊥⸩ := by
+  repeat rw [condLProb_bot₀ (by measurability)]
+  simp [Filter.EventuallyEq]
+
+lemma iIndepSets.meas_biInter [IsProbabilityMeasure μ] (h : iIndepSets π μ) {s : Finset ι}
+    {f : ι → Set Ω} (hπ : ∀ i ∈ s, NullMeasurableSet (f i) μ) (hf : ∀ i ∈ s, f i ∈ π i) :
+    μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) := by
+  simp [meas_biInter_iff_condLProb_bot_biInter (by measurability), h s hf]
 
 lemma iIndepSets.meas_iInter [IsProbabilityMeasure μ] [Fintype ι] (h : iIndepSets π μ)
     (hπ : ∀ i, NullMeasurableSet (s i) μ) (hs : ∀ i, s i ∈ π i) :
     μ (⋂ i, s i) = ∏ i, μ (s i) := by
-  simp [← h.meas_biInter _ (by sorry) _ fun _i _ ↦ hs _]
+  simpa using h.meas_biInter (fun i (_ : i ∈ Finset.univ) ↦ hπ i) (fun i _ ↦ hs i)
 
-lemma IndepSets_iff (s1 s2 : Set (Set Ω)) (μ : Measure Ω) :
+lemma iIndepSets_iff [IsProbabilityMeasure μ] {π : ι → Set (Set Ω)}
+    (hπ : ∀ i s, s ∈ π i → NullMeasurableSet s μ) :
+    iIndepSets π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_hf : ∀ i ∈ s, f i ∈ π i),
+    μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) := by
+  refine ⟨fun h _ _ hf ↦ h.meas_biInter (fun _ hi ↦ hπ _ _ (hf _ hi)) hf, ?_⟩
+  intro h s f hf
+  rw [← meas_biInter_iff_condLProb_bot_biInter (by measurability)]
+  exact h s hf
+
+lemma IndepSets_iff [IsProbabilityMeasure μ] {s1 s2 : Set (Set Ω)}
+    (hs1 : ∀ s ∈ s1, NullMeasurableSet s μ) (hs2 : ∀ s ∈ s2, NullMeasurableSet s μ) :
     IndepSets s1 s2 μ ↔ ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → (μ (t1 ∩ t2) = μ t1 * μ t2) := by
-  simp only [IndepSets, Kernel.IndepSets, ae_dirac_eq, Filter.eventually_pure, Kernel.const_apply]
+  simp only [IndepSets, CondIndepSets]
+  congr! with t1 t2 ht1 ht2
+  exact meas_inter_iff_condLProb_bot_inter (by measurability) (by measurability) |>.symm
 
-lemma iIndep_iff_iIndepSets (m : ι → MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (μ : Measure Ω) :
+lemma iIndep.meas_biInter [IsProbabilityMeasure μ] (h : iIndep m μ)
+    (hs : ∀ i ∈ S, NullMeasurableSet (s i) μ) (hsm : ∀ i ∈ S, MeasurableSet[m i] (s i)) :
+    μ (⋂ i ∈ S, s i) = ∏ i ∈ S, μ (s i) := by
+  rw [meas_biInter_iff_condLProb_bot_biInter (by measurability)]
+  apply iCondIndep.meas_biInter h hsm
+
+lemma iIndep.meas_iInter [Fintype ι] [IsProbabilityMeasure μ] (h : iIndep m μ)
+    (hs : ∀ i, NullMeasurableSet (s i) μ) (hsm : ∀ i, MeasurableSet[m i] (s i)) :
+    μ (⋂ i, s i) = ∏ i, μ (s i) := by
+  simpa using h.meas_biInter (fun i (_ : i ∈ Finset.univ) ↦ hs i) (fun i _ ↦ hsm i)
+
+lemma iIndep_iff_iIndepSets (m : ι → MeasurableSpace Ω) :
     iIndep m μ ↔ iIndepSets (fun x ↦ {s | MeasurableSet[m x] s}) μ := by
-  simp only [iIndep, iIndepSets, Kernel.iIndep]
+  simp [iIndep, iIndepSets, iCondIndep]
 
 lemma iIndep.iIndepSets' {m : ι → MeasurableSpace Ω}
-    {_ : MeasurableSpace Ω} {μ : Measure Ω} (hμ : iIndep m μ) :
-    iIndepSets (fun x ↦ {s | MeasurableSet[m x] s}) μ := (iIndep_iff_iIndepSets _ _).1 hμ
+    {_ : MeasurableSpace Ω} {μ : Measure Ω} (h : iIndep m μ) :
+    iIndepSets (fun x ↦ {s | MeasurableSet[m x] s}) μ := (iIndep_iff_iIndepSets _).1 h
 
-lemma iIndep.isProbabilityMeasure (h : iIndep m μ) : IsProbabilityMeasure μ :=
-  h.iIndepSets'.isProbabilityMeasure
-
-lemma iIndep_iff (m : ι → MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (μ : Measure Ω) :
-    iIndep m μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → MeasurableSet[m i] (f i)),
+lemma iIndep_iff [IsProbabilityMeasure μ] (m : ι → MeasurableSpace Ω)
+    (hm : ∀ i s, MeasurableSet[m i] s → NullMeasurableSet s μ) :
+    iIndep m μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i ∈ s, MeasurableSet[m i] (f i)),
       μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) := by
-  simp only [iIndep_iff_iIndepSets, iIndepSets_iff]; rfl
+  rw [iIndep_iff_iIndepSets, iIndepSets_iff (by measurability)]; rfl
 
-lemma iIndep.meas_biInter (hμ : iIndep m μ) (hs : ∀ i, i ∈ S → MeasurableSet[m i] (s i)) :
-    μ (⋂ i ∈ S, s i) = ∏ i ∈ S, μ (s i) := (iIndep_iff _ _).1 hμ _ hs
-
-lemma iIndep.meas_iInter [Fintype ι] (hμ : iIndep m μ) (hs : ∀ i, MeasurableSet[m i] (s i)) :
-    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [← hμ.meas_biInter fun _ _ ↦ hs _]
-
-lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (μ : Measure Ω) :
+lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) :
     Indep m₁ m₂ μ ↔ IndepSets {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
-  simp only [Indep, IndepSets, Kernel.Indep]
+  simp [Indep, IndepSets, CondIndep]
 
-lemma Indep_iff (m₁ m₂ : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (μ : Measure Ω) :
+lemma Indep_iff [IsProbabilityMeasure μ] (m₁ m₂ : MeasurableSpace Ω)
+    (hm₁ : ∀ s, MeasurableSet[m₁] s → NullMeasurableSet[mΩ] s μ)
+    (hm₂ : ∀ s, MeasurableSet[m₂] s → NullMeasurableSet[mΩ] s μ) :
     Indep m₁ m₂ μ
-      ↔ ∀ t1 t2, MeasurableSet[m₁] t1 → MeasurableSet[m₂] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
-  rw [Indep_iff_IndepSets, IndepSets_iff]; rfl
+    ↔ ∀ t1 t2, MeasurableSet[m₁] t1 → MeasurableSet[m₂] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
+  rw [Indep_iff_IndepSets, IndepSets_iff (by measurability) (by measurability)]; rfl
 
 lemma iIndepSet_iff_iIndep (s : ι → Set Ω) (μ : Measure Ω) :
     iIndepSet s μ ↔ iIndep (fun i ↦ generateFrom {s i}) μ := by
-  simp only [iIndepSet, iIndep, Kernel.iIndepSet]
+  simp [iIndepSet, iIndep, iCondIndepSet]
 
-lemma iIndepSet.isProbabilityMeasure (h : iIndepSet s μ) : IsProbabilityMeasure μ :=
-  ((iIndepSet_iff_iIndep _ _).1 h).isProbabilityMeasure
-
-lemma iIndepSet_iff (s : ι → Set Ω) (μ : Measure Ω) :
+lemma iIndepSet_iff [IsProbabilityMeasure μ] (s : ι → Set Ω) (hs : ∀ i, NullMeasurableSet (s i) μ) :
     iIndepSet s μ ↔ ∀ (s' : Finset ι) {f : ι → Set Ω}
       (_H : ∀ i, i ∈ s' → MeasurableSet[generateFrom {s i}] (f i)),
       μ (⋂ i ∈ s', f i) = ∏ i ∈ s', μ (f i) := by
-  simp only [iIndepSet_iff_iIndep, iIndep_iff]
+  rw [iIndepSet_iff_iIndep, iIndep_iff]
+  intro i s' hs'
+  apply generateFrom_le (s := s '' {i})
+  · simpa using hs i
+  · convert hs'
+    simp
 
 lemma IndepSet_iff_Indep (s t : Set Ω) (μ : Measure Ω) :
     IndepSet s t μ ↔ Indep (generateFrom {s}) (generateFrom {t}) μ := by
-  simp only [IndepSet, Indep, Kernel.IndepSet]
+  simp [IndepSet, Indep, CondIndepSet]
 
-lemma IndepSet_iff (s t : Set Ω) (μ : Measure Ω) :
+lemma IndepSet_iff [IsProbabilityMeasure μ] (s t : Set Ω)
+    (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) :
     IndepSet s t μ ↔ ∀ t1 t2, MeasurableSet[generateFrom {s}] t1
       → MeasurableSet[generateFrom {t}] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
-  simp only [IndepSet_iff_Indep, Indep_iff]
+  rw [IndepSet_iff_Indep, Indep_iff]
+  · exact fun s' ↦ generateFrom_le (by simpa using hs) s'
+  · exact fun t' ↦ generateFrom_le (by simpa using ht) t'
 
 lemma iIndepFun_iff_iIndep {β : ι → Type*}
     (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x) (μ : Measure Ω) :
     iIndepFun f μ ↔ iIndep (fun x ↦ (m x).comap (f x)) μ := by
-  simp only [iIndepFun, iIndep, Kernel.iIndepFun]
+  simp only [iIndepFun, iIndep, iCondIndepFun]
 
 @[nontriviality, simp]
 lemma iIndepSets.of_subsingleton [Subsingleton ι] {m : ι → Set (Set Ω)} [IsProbabilityMeasure μ] :
-    iIndepSets m μ := Kernel.iIndepSets.of_subsingleton
+    iIndepSets m μ := iCondIndepSets.of_subsingleton bot_le
 
 @[nontriviality, simp]
 lemma iIndep.of_subsingleton [Subsingleton ι] {m : ι → MeasurableSpace Ω} [IsProbabilityMeasure μ] :
-    iIndep m μ := Kernel.iIndep.of_subsingleton
+    iIndep m μ := iCondIndep.of_subsingleton bot_le
 
 @[nontriviality, simp]
 lemma iIndepFun.of_subsingleton [Subsingleton ι] {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)}
     {f : ∀ i, Ω → β i} [IsProbabilityMeasure μ] : iIndepFun f μ :=
-  Kernel.iIndepFun.of_subsingleton
+  iCondIndepFun.of_subsingleton bot_le
 
 protected lemma iIndepFun.iIndep {m : ∀ i, MeasurableSpace (κ i)} {f : ∀ x : ι, Ω → κ x}
     (hf : iIndepFun f μ) :
     iIndep (fun x ↦ (m x).comap (f x)) μ := hf
 
-lemma iIndepFun_iff {β : ι → Type*}
-    (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x) (μ : Measure Ω) :
+lemma iIndepFun_iff [IsProbabilityMeasure μ] {β : ι → Type*} (m : ∀ i, MeasurableSpace (β i))
+    (f : (i : ι) → Ω → β i) (hf : ∀ i, NullMeasurable (f i) μ) :
     iIndepFun f μ ↔ ∀ (s : Finset ι) {f' : ι → Set Ω}
       (_H : ∀ i, i ∈ s → MeasurableSet[(m i).comap (f i)] (f' i)),
       μ (⋂ i ∈ s, f' i) = ∏ i ∈ s, μ (f' i) := by
-  simp only [iIndepFun_iff_iIndep, iIndep_iff]
+  rw [iIndepFun_iff_iIndep, iIndep_iff]
+  intro _ _ hs
+  obtain ⟨s', hs', rfl⟩ := measurableSet_comap.mp hs
+  exact hf _ hs'
 
-lemma iIndepFun.meas_biInter {m : ∀ i, MeasurableSpace (κ i)} {f : ∀ x : ι, Ω → κ x}
-    (hf : iIndepFun f μ) (hs : ∀ i, i ∈ S → MeasurableSet[(m i).comap (f i)] (s i)) :
-    μ (⋂ i ∈ S, s i) = ∏ i ∈ S, μ (s i) := hf.iIndep.meas_biInter hs
+lemma iIndepFun.meas_biInter [IsProbabilityMeasure μ] {m : ∀ i, MeasurableSpace (κ i)}
+    {f : ∀ x : ι, Ω → κ x} (hf : iIndepFun f μ) (hS : ∀ i ∈ S, NullMeasurableSet (s i) μ)
+    (hs : ∀ i, i ∈ S → MeasurableSet[(m i).comap (f i)] (s i)) :
+    μ (⋂ i ∈ S, s i) = ∏ i ∈ S, μ (s i) :=
+  hf.iIndep.meas_biInter hS hs
 
-lemma iIndepFun.meas_iInter [Fintype ι] {m : ∀ i, MeasurableSpace (κ i)} {f : ∀ x : ι, Ω → κ x}
-    (hf : iIndepFun f μ) (hs : ∀ i, MeasurableSet[(m i).comap (f i)] (s i)) :
-    μ (⋂ i, s i) = ∏ i, μ (s i) := hf.iIndep.meas_iInter hs
+lemma iIndepFun.meas_iInter [IsProbabilityMeasure μ] [Fintype ι] {m : ∀ i, MeasurableSpace (κ i)}
+    {f : ∀ i, Ω → κ i} (hf : iIndepFun f μ) (h : ∀ i, NullMeasurableSet (s i) μ)
+    (hs : ∀ i, MeasurableSet[(m i).comap (f i)] (s i)) :
+    μ (⋂ i, s i) = ∏ i, μ (s i) :=
+  hf.iIndep.meas_iInter h hs
 
 lemma IndepFun_iff_Indep [mβ : MeasurableSpace β]
     [mγ : MeasurableSpace γ] (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) :

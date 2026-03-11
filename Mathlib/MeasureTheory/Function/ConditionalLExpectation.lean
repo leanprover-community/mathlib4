@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.Probability.Notation
 public import Mathlib.Probability.Notation
 
 /-! # Conditional Lebesgue expectation
@@ -370,6 +369,12 @@ theorem condLProb_bot [IsProbabilityMeasure P] {s : Set Ω} (hs : MeasurableSet[
     P⁻⸨s| ⊥⸩ = fun _ => P s :=
   condLProb_bot₀ hs.nullMeasurableSet
 
+@[gcongr]
+theorem condLProb_congr_ae {P : Measure[mΩ₀] Ω} {s t : Set Ω} (hst : s =ᵐ[P] t) :
+    P⁻⸨s|mΩ⸩ =ᵐ[P] P⁻⸨t|mΩ⸩ := by
+  -- should be a indicator_congr_ae lemma ?
+  sorry
+
 variable {s s₁ s₂ t : Set Ω}
 
 theorem condLProb_le_union (hd : Disjoint s₁ s₂) :
@@ -430,6 +435,12 @@ theorem condLProb_union_add_inter (hs : MeasurableSet[mΩ₀] s) (ht : Measurabl
     P⁻⸨s ∪ t| mΩ⸩ + P⁻⸨s ∩ t| mΩ⸩ =ᵐ[P] P⁻⸨s| mΩ⸩ + P⁻⸨t| mΩ⸩ :=
   condLProb_union_add_inter₀ hs.nullMeasurableSet ht.nullMeasurableSet
 
+@[simp]
+theorem condLProb_empty (P : Measure[mΩ₀] Ω) :
+    P⁻⸨∅| mΩ⸩ = 0 := by
+  simp [condLProb_def, ← Pi.zero_def]
+
+@[simp]
 theorem condLProb_univ (P : Measure[mΩ₀] Ω) (hm : mΩ ≤ mΩ₀) [SigmaFinite (P.trim hm)] :
     P⁻⸨univ| mΩ⸩ = 1 := by
   simp [condLProb_def, indicator_univ, hm]
@@ -475,16 +486,70 @@ theorem condLProb_compl (hm : mΩ ≤ mΩ₀) [SigmaFinite (P.trim hm)] (hs : Me
     P⁻⸨sᶜ| mΩ⸩ =ᵐ[P] 1 - P⁻⸨s| mΩ⸩ :=
   condLProb_compl₀ hm hs.nullMeasurableSet
 
+-- in PR #34138
+
+variable {α β γ δ : Type*}
+
+lemma Function.support_subsingleton_of_disjoint [Zero β] {s : δ → Set α} (f : α → β)
+    (hs : Pairwise (Disjoint on s)) (i : α) [DecidablePred (fun d => i ∈ s d)] (j : δ)
+    (hj : i ∈ s j) : Function.support (fun d ↦ if i ∈ s d then f i else 0) ⊆ {j} := by
+  intro d
+  simp_rw [Set.mem_singleton_iff, Function.mem_support, ne_eq, ite_eq_right_iff, Classical.not_imp]
+  rw [← not_imp_not]
+  intro hd e
+  obtain r := Set.disjoint_iff_inter_eq_empty.mp (hs hd)
+  revert r
+  change s d ∩ s j ≠ ∅
+  rw [← Set.nonempty_iff_ne_empty, Set.nonempty_def]
+  exact ⟨i, ⟨e.1, hj⟩⟩
+
+lemma Set.indicator_iUnion_of_disjoint [AddCommMonoid β] [TopologicalSpace β]
+    (s : δ → Set α) (hs : Pairwise (Disjoint on s)) (f : α → β) (i : α) :
+    (⋃ d, s d).indicator f i = ∑' d, (s d).indicator f i := by
+  classical
+  simp only [Set.indicator, Set.mem_iUnion]
+  by_cases h₀ : ∃ d, i ∈ s d <;> simp only [h₀, ↓reduceIte]
+  · obtain ⟨j, hj⟩ := h₀
+    rw [← tsum_subtype_eq_of_support_subset (s := {j})]
+    · simp only [tsum_fintype, Finset.univ_unique, Set.default_coe_singleton, Finset.sum_singleton,
+      left_eq_ite_iff]
+      exact fun h ↦ False.elim (h hj)
+    · apply (Function.support_subsingleton_of_disjoint f hs i j hj)
+  · push_neg at h₀
+    simp_rw [if_neg (h₀ _), tsum_zero]
+
+lemma Set.indicator_iUnion_of_disjoint' [AddCommMonoid β] [TopologicalSpace β]
+    (s : δ → Set α) (hs : Pairwise (Disjoint on s)) (f : α → β) :
+    (⋃ d, s d).indicator f = fun i ↦ ∑' d, (s d).indicator f i := by
+  ext i
+  simp [Set.indicator_iUnion_of_disjoint, hs]
+
+--
+
 theorem condLProb_iUnion {ι : Type*} [Countable ι] {f : ι → Set Ω}
     (hn : Pairwise (Disjoint on f)) (h : ∀ i, MeasurableSet[mΩ₀] (f i)) :
     P⁻⸨⋃ i, f i| mΩ⸩ =ᵐ[P] ∑' i, P⁻⸨f i| mΩ⸩ := by
-  sorry
+  simp only [condLProb_def, Set.indicator_iUnion_of_disjoint' _ hn, ← ENNReal.tsum_apply]
+  grw [← condLExp_tsum _ (fun i ↦ AEMeasurable.indicator (by fun_prop) (h i))]
 
-  -- rw [measure_eq_extend (MeasurableSet.iUnion h),
-  --   extend_iUnion MeasurableSet.empty _ MeasurableSet.iUnion _ hn h]
-  -- · simp [measure_eq_extend, h]
-  -- · exact μ.empty
-  -- · exact μ.m_iUnion
+#check measure_iUnion₀
+theorem condLProb_iUnion₀ {ι : Type*} [Countable ι] {f : ι → Set Ω}
+    (hn : Pairwise (AEDisjoint P on f)) (h : ∀ i, NullMeasurableSet[mΩ₀] (f i) P) :
+    P⁻⸨⋃ i, f i| mΩ⸩ =ᵐ[P] ∑' i, P⁻⸨f i| mΩ⸩ := by
+  rcases exists_subordinate_pairwise_disjoint h hn with ⟨t, _ht_sub, ht_eq, htm, htd⟩
+  have h1 : P⁻⸨⋃ i, f i|mΩ⸩ =ᵐ[P] P⁻⸨⋃ i, t i|mΩ⸩ := by
+    exact condLProb_congr_ae (EventuallyEq.countable_iUnion ht_eq)
+  have h2 : ∑' i, P⁻⸨f i| mΩ⸩ =ᵐ[P] ∑' i, P⁻⸨t i| mΩ⸩ := by
+    have : ∀ᵐ ω ∂P, ∀ i, P⁻⸨f i| mΩ⸩ ω = P⁻⸨t i| mΩ⸩ ω := by
+      simpa [ae_all_iff] using fun i ↦ condLProb_congr_ae (ht_eq i)
+    filter_upwards [this] with ω hω
+    simp only [ENNReal.tsum_apply]
+    congr with i
+    simp [hω]
+  calc
+    P⁻⸨⋃ i, f i|mΩ⸩ =ᵐ[P] P⁻⸨⋃ i, t i|mΩ⸩ := by exact h1
+                  _ =ᵐ[P] ∑' i, P⁻⸨t i| mΩ⸩ := condLProb_iUnion htd htm
+                  _ =ᵐ[P] ∑' i, P⁻⸨f i| mΩ⸩ := by exact h2.symm
 
 -- theorem measure_biUnion₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
 --     (hd : s.Pairwise (AEDisjoint μ on f)) (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) :

@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 /-! # Conditional expectation
 
@@ -144,6 +145,18 @@ theorem condExp_const (hm : m ≤ m₀) (c : E) [IsFiniteMeasure μ] :
     μ[fun _ : α ↦ c | m] = fun _ ↦ c :=
   condExp_of_stronglyMeasurable hm stronglyMeasurable_const (integrable_const c)
 
+@[simp]
+theorem condExp_zero : μ[0|m] = (0 : α → E) := by
+  by_cases hm : m ≤ m₀
+  swap; · simp [condExp_of_not_le hm]
+  by_cases hσ : SigmaFinite (μ.trim hm)
+  swap; · simp [condExp_of_not_sigmaFinite hm hσ]
+  exact condExp_of_stronglyMeasurable hm stronglyMeasurable_const (integrable_zero _ _ _)
+
+@[simp]
+theorem condExp_one [One E] (hm : m ≤ m₀) [IsFiniteMeasure μ] : μ[1|m] = (1 : α → E) :=
+  condExp_const hm 1
+
 theorem condExp_ae_eq_condExpL1 (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] (f : α → E) :
     μ[f | m] =ᵐ[μ] condExpL1 hm μ f := by
   rw [condExp_of_sigmaFinite hm]
@@ -168,14 +181,6 @@ theorem condExp_of_not_integrable (hf : ¬Integrable f μ) : μ[f | m] = 0 := by
   by_cases hμm : SigmaFinite (μ.trim hm)
   swap; · rw [condExp_of_not_sigmaFinite hm hμm]
   rw [condExp_of_sigmaFinite, if_neg hf]
-
-@[simp]
-theorem condExp_zero : μ[(0 : α → E) | m] = 0 := by
-  by_cases hm : m ≤ m₀
-  swap; · rw [condExp_of_not_le hm]
-  by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · rw [condExp_of_not_sigmaFinite hm hμm]
-  exact condExp_of_stronglyMeasurable hm stronglyMeasurable_zero (integrable_zero _ _ _)
 
 theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f | m]) := by
   by_cases hm : m ≤ m₀
