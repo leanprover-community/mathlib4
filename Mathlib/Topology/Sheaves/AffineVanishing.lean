@@ -18,7 +18,14 @@ namespace CompactSpace
 
 lemma isOpenCover_elim_finite_subcover {X : Type u} [TopologicalSpace X] [CompactSpace X]
     {ι : Type v} {U : ι → Opens X} (h : IsOpenCover U) :
-    ∃ t : Finset ι, IsOpenCover (Finset.restrict t U) := sorry
+    ∃ t : Finset ι, IsOpenCover (Finset.restrict t U) := by
+  obtain ⟨t, ht⟩ := IsCompact.elim_finite_subcover (isCompact_univ (X := X)) (fun i => U i)
+    (fun i => (U i).2) (by rw [IsOpenCover.iSup_set_eq_univ h])
+  use t
+  apply IsOpenCover.of_sets
+  rw [Set.univ_subset_iff] at ht
+  rw [← ht, Set.iUnion_subtype]
+  rfl
 
 end CompactSpace
 
@@ -35,6 +42,14 @@ instance : (toSheaf X).Additive := inferInstanceAs (SheafOfModules.toSheaf X.rin
 
 instance : Limits.PreservesFiniteLimits (toSheaf X) :=
   inferInstanceAs (Limits.PreservesFiniteLimits (SheafOfModules.toSheaf X.ringCatSheaf))
+
+#check SheafOfModules.forget
+
+#check PresheafOfModules.toPresheaf
+
+#check Sheaf.isLocallySurjective_iff_epi'
+
+#check SheafOfModules.GeneratingSections.epi
 
 instance : Limits.PreservesFiniteColimits (toSheaf X) := sorry
 
@@ -117,19 +132,15 @@ theorem toCoverSheaf_mono (h : IsOpenCover U) : Mono (F.toCoverSheaf U) := by
     apply Sheaf.mono_of_injective
     intro W
     rw [injective_iff_map_eq_zero]
-    intro s hs
-    refine TopCat.Presheaf.IsSheaf.section_ext F.sheaf.property ?_
-    intro x hx
+    refine fun s hs => TopCat.Presheaf.IsSheaf.section_ext F.sheaf.property (fun x hx => ?_)
     obtain ⟨i, hi⟩ := h.exists_mem x
-    use (unop W) ⊓ (U i)
-    use inf_le_left
+    use (unop W) ⊓ (U i), inf_le_left
     refine ⟨by rw [Opens.mem_inf]; exact ⟨hx, hi⟩, ?_⟩
     rw [map_zero]
     have reszero : ((restrictAdjunction (U i).ι).unit.app F).sheafhom.hom.app W s = 0 := by
       have := DFunLike.congr_arg (ConcreteCategory.hom ((Pi.π (fun i =>
         (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F) i).sheafhom.hom.app W)) hs
-      rw [toCoverSheaf_comp_pi_sheafhom_hom_app] at this
-      erw [map_zero] at this
+      erw [toCoverSheaf_comp_pi_sheafhom_hom_app, map_zero] at this
       simpa using this
     rw [restrictAdjunction_sheafhom] at reszero
     simp only [Functor.comp_obj, Functor.id_obj,
@@ -166,6 +177,19 @@ theorem toCoverSheaf_H_map_zero (n : ℕ) (c : H F.sheaf n) [Finite I]
 end
 
 theorem base [IsAffine X] [F.IsQuasicoherent] : Subsingleton (H F.sheaf 1) := by
+  apply subsingleton_of_forall_eq 0
+  intro c
+  obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf 0
+    (isBasis_affineOpens X) sorry (by intros; lia) c
+  obtain ⟨ι, hU⟩ := CompactSpace.isOpenCover_elim_finite_subcover hU'
+  let U : ι → X.Opens := ι.restrict U'
+  haveI : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
+  let S := ShortComplex.mk (F.toCoverSheaf U) (cokernel.π (F.toCoverSheaf U)) (by cat_disch)
+  have hS : S.ShortExact :=
+    ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel (F.toCoverSheaf U))
+  let Ssheaf := S.map (toSheaf X)
+  have hSsheaf : Ssheaf.ShortExact := ShortComplex.ShortExact.map_of_exact hS (toSheaf X)
+  
   sorry
 
 open ConcreteCategory
@@ -174,9 +198,7 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
   revert F X
   refine Nat.case_strong_induction_on (p := fun n => ∀ {X : Scheme.{u}} (F : X.Modules)
     [IsAffine X] [F.IsQuasicoherent], Subsingleton (F.sheaf.H (n + 1))) n base ?_
-  intro n hi X F _ _
-  apply subsingleton_of_forall_eq 0
-  intro c
+  refine fun n hi X F _ _ => subsingleton_of_forall_eq 0 (fun c => ?_)
   obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf (n + 1)
     (isBasis_affineOpens X) sorry (by
       intro r (U : X.Opens) hr1 hr2 hU
