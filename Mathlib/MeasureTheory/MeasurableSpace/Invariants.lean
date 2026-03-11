@@ -29,6 +29,7 @@ variable {α : Type*}
 
 A set `s` is `(invariants f)`-measurable
 iff it is measurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
+@[implicit_reducible]
 def invariants [m : MeasurableSpace α] (f : α → α) : MeasurableSpace α :=
   { m ⊓ ⟨fun s ↦ f ⁻¹' s = s, by simp, by simp, fun f hf ↦ by simp [hf]⟩ with
     MeasurableSet' := fun s ↦ MeasurableSet[m] s ∧ f ⁻¹' s = s }
