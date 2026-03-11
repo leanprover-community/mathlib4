@@ -425,3 +425,31 @@ This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 @[stacks 09FE]
 class IsDomain (α : Type u) [Semiring α] : Prop extends IsCancelMulZero α, Nontrivial α
+
+namespace IsMulCommutative
+
+scoped instance (priority := 50) [NonUnitalNonAssocSemiring R] [IsMulCommutative R] :
+    NonUnitalNonAssocCommSemiring R where
+
+scoped instance (priority := 50) [NonUnitalSemiring R] [IsMulCommutative R] :
+    NonUnitalCommSemiring R where
+
+scoped instance (priority := 50) [NonUnitalNonAssocRing R] [IsMulCommutative R] :
+    NonUnitalNonAssocCommRing R where
+
+scoped instance (priority := 50) [NonUnitalRing R] [IsMulCommutative R] :
+    NonUnitalCommRing R where
+
+scoped instance (priority := 50) [NonAssocSemiring R] [IsMulCommutative R] :
+    NonAssocCommSemiring R where
+
+scoped instance (priority := 50) [Semiring R] [IsMulCommutative R] :
+    CommSemiring R where
+
+scoped instance (priority := 50) [NonAssocRing R] [IsMulCommutative R] :
+    NonAssocCommRing R where
+
+scoped instance (priority := 50) [Ring R] [IsMulCommutative R] :
+    CommRing R where
+
+end IsMulCommutative
