@@ -40,10 +40,6 @@ section Submodule
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
 variable {C : PointedCone R E}
 
-/-- A submodule is a pointed cone. -/
-@[coe] abbrev ofSubmodule' (S : Submodule R E) : PointedCone R E :=
-  @S.restrictScalars _ _ _ _ _ _ _ _ _ (inferInstanceAs <| IsScalarTower { c : R // 0 ≤ c } R E)
-
 set_option backward.isDefEq.respectTransparency false in
 /-- A submodule is a pointed cone. -/
 @[coe] abbrev ofSubmodule (S : Submodule R E) : PointedCone R E := S.restrictScalars _
