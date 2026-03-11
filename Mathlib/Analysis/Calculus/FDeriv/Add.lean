@@ -162,6 +162,11 @@ lemma fderivWithin_const_smul_field' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} 
   · exact fderivWithin_const_smul_field c hsx
   · simp [fderivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
+omit [DivisionSemiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F] in
+lemma fderivWithin_neg' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} :
+    fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x := by
+  simpa only [neg_smul, one_smul] using fderivWithin_const_smul_field' (f := f) (-1 : 𝕜)
+
 @[deprecated (since := "2026-01-11")] alias fderivWithin_const_smul_of_field :=
   fderivWithin_const_smul_field
 

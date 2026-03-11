@@ -591,8 +591,6 @@ theorem fderivWithin_comp_neg {f : 𝕜 → F} {s : Set 𝕜} {x : 𝕜} :
     fderivWithin 𝕜 (fun a => f (-a)) s x = -fderivWithin 𝕜 f (-s) (-x) := by
   have t1 := fderivWithin_comp_smul_eq_fderivWithin_smul (-1 : 𝕜) (f := f) (s := s) (x := x)
   simp only [neg_smul, one_smul, Set.neg_smul_set] at t1
-  have t2 := fderivWithin_const_smul_field' (f := f) (c := (-1 : 𝕜)) (s := -s) (x := -x)
-  simp only [neg_smul, one_smul] at t2
-  exact t1.trans t2
+  exact t1.trans fderivWithin_neg'
 
 end SMulLeft
