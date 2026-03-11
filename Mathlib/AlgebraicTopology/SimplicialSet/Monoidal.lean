@@ -84,7 +84,7 @@ def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
         rfl }
   left_inv φ := by
     ext Δ ⟨⟩
-    dsimp
+    dsimp [-Monoidal.tensorUnit_obj]
     rw [← NatTrans.naturality_apply]
     rfl
   right_inv x := by simp

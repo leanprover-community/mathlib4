@@ -51,7 +51,7 @@ jointly reflect isomorphisms. -/
 structure IsConservativeFamilyOfPoints : Prop where
   jointlyReflectIsomorphisms_type :
     JointlyReflectIsomorphisms
-      (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := Type w))
+      (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := TypeCat.{w}))
 
 namespace IsConservativeFamilyOfPoints
 
@@ -108,27 +108,27 @@ omit [(forget A).ReflectsIsomorphisms] hJ in
 include hP in
 variable {A} in
 lemma jointly_reflect_isLocallySurjective
-    [J.WEqualsLocallyBijective (Type w)] [HasSheafify J (Type w)]
+    [J.WEqualsLocallyBijective TypeCat.{w}] [HasSheafify J TypeCat.{w}]
     {X Y : Cᵒᵖ ⥤ A} (f : X ⟶ Y)
     (hf : ∀ (Φ : P.FullSubcategory),
       Function.Surjective (Φ.obj.presheafFiber.map f)) :
     Presheaf.IsLocallySurjective J f := by
-  simp only [← epi_iff_surjective] at hf
+  simp only [← ofHom_epi_iff_surjective] at hf
   rw [Presheaf.isLocallySurjective_iff_whisker_forget,
     ← Presheaf.isLocallySurjective_presheafToSheaf_map_iff,
     Sheaf.isLocallySurjective_iff_epi,
-    (hP.jointlyReflectEpimorphisms (Type w)).epi_iff]
-  exact fun Φ ↦ ((MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
+    (hP.jointlyReflectEpimorphisms TypeCat.{w}).epi_iff]
+  exact fun Φ ↦ ((MorphismProperty.epimorphisms TypeCat.{w}).arrow_mk_iso_iff
     (((Functor.mapArrowFunctor _ _).mapIso
       ((Φ.obj.presheafFiberCompIso (forget A)).symm ≪≫
-        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiber (Type w)).symm)).app
+        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiber TypeCat.{w}).symm)).app
           (Arrow.mk f))).1 (hf Φ)
 
 end
 
 set_option backward.isDefEq.respectTransparency false in
 lemma jointly_reflect_ofArrows_mem
-    [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
+    [HasSheafify J TypeCat.{w}] [J.WEqualsLocallyBijective TypeCat.{w}]
     (hP : P.IsConservativeFamilyOfPoints)
     {X : C} {ι : Type*} [Small.{w} ι] {U : ι → C} (f : ∀ i, U i ⟶ X) :
     Sieve.ofArrows _ f ∈ J X ↔
@@ -143,13 +143,14 @@ lemma jointly_reflect_ofArrows_mem
     obtain ⟨i, y, rfl⟩ := hf Φ x
     refine ⟨Φ.obj.presheafFiber.map (Sigma.ι (fun i ↦ shrinkYoneda.{w}.obj (U i)) i)
       (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.app _ y), ?_⟩
-    have := congr_fun (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
+    have := ConcreteCategory.congr_hom
+      (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
     dsimp at this ⊢
     rw [this, ← Sigma.ι_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i, Functor.map_comp]
     rfl
 
 lemma jointly_reflect_ofArrows_mem_of_small
-    [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
+    [HasSheafify J TypeCat.{w}] [J.WEqualsLocallyBijective TypeCat.{w}]
     (hP : P.IsConservativeFamilyOfPoints) [ObjectProperty.Small.{w} P]
     {X : C} {ι : Type*} {U : ι → C} (f : ∀ i, U i ⟶ X) :
     Sieve.ofArrows _ f ∈ J X ↔
@@ -171,7 +172,7 @@ private lemma mk'.isLocallySurjective
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
         S ∈ J X)
-    {F₁ F₂ : Cᵒᵖ ⥤ Type w} (f : F₁ ⟶ F₂) [Mono f]
+    {F₁ F₂ : Cᵒᵖ ⥤ TypeCat.{w}} (f : F₁ ⟶ F₂) [Mono f]
     (hf : ∀ (Φ : P.FullSubcategory), Function.Surjective (Φ.obj.presheafFiber.map f)) :
     Presheaf.IsLocallySurjective J f := by
   wlog hF₂ : ∃ (U : C), F₂ = shrinkYoneda.obj U generalizing F₁ F₂
@@ -189,7 +190,8 @@ private lemma mk'.isLocallySurjective
       (Presheaf.imageSieve_mem J f' (shrinkYonedaObjObjEquiv.symm (𝟙 U)))
     rintro V g ⟨v, hv⟩
     refine ⟨(pullback.fst f (shrinkYonedaEquiv.{w}.symm s)).app _ v, ?_⟩
-    refine (congr_fun (NatTrans.congr_app (pullback.condition (f := f)) (op V)) _).trans ?_
+    refine (ConcreteCategory.congr_hom (NatTrans.congr_app
+      (pullback.condition (f := f)) (op V)) _).trans ?_
     dsimp at hv ⊢
     refine (congr_arg _ hv).trans ?_
     refine (congr_arg _ (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm g.op (𝟙 _))).trans ?_
@@ -205,12 +207,12 @@ private lemma mk'.isLocallySurjective
     simpa [← hg]⟩
   refine hP _ (fun Φ u ↦ ?_)
   obtain ⟨x₁, hx₁⟩ := hf Φ (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.app _ u)
-  obtain ⟨V, v, y, rfl⟩ := Φ.obj.toPresheafFiber_jointly_surjective (A := Type w) x₁
+  obtain ⟨V, v, y, rfl⟩ := Φ.obj.toPresheafFiber_jointly_surjective (A := TypeCat.{w}) x₁
   obtain ⟨t, ht⟩ := shrinkYonedaObjObjEquiv.symm.surjective (f.app _ y)
   refine ⟨V, t, ⟨y, ht.symm.trans ?_⟩, v, ?_⟩
   · simpa using (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm t.op (𝟙 _)).symm
   · refine (Φ.obj.shrinkYonedaCompPresheafFiberIso.symm.app U).toEquiv.injective ?_
-    dsimp
+    dsimp [-Functor.comp_obj]
     trans (Φ.obj.toPresheafFiber V v (shrinkYoneda.{w}.obj U)) (shrinkYonedaObjObjEquiv.symm t)
     · rw [← Φ.obj.presheafFiber_map_shrinkYoneda_map_shrinkYonedaCompPresheafFiberIso_inv_app]
       exact Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality_apply t v
@@ -223,7 +225,7 @@ family of points if the following condition is satisfied (SGA 4 IV 6.5 (a)):
 for any sieve `S : Sieve X`, if the family of maps `Φ.map.fiber.map f`
 for all morphisms `f` in the sieve `S` is jointly surjective for any `Φ` in `P`,
 then `S` is a covering sieve for `J`. -/
-lemma mk' [HasSheafify J (Type w)]
+lemma mk' [HasSheafify J TypeCat.{w}]
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
         S ∈ J X) :

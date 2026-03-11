@@ -287,7 +287,7 @@ lemma sections_ext_iff {F : J ⥤ TypeCat.{w}} {x y : F.sections} : x = y ↔ �
 variable (J)
 
 /-- The functor which sends a functor to types to its sections. -/
-@[simps]
+@[simps obj map]
 def sectionsFunctor : (J ⥤ TypeCat.{w}) ⥤ TypeCat.{max u w} where
   obj F := .of F.sections
   map {F G} φ := TypeCat.ofHom ⟨fun x ↦ ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>

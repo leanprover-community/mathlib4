@@ -179,11 +179,11 @@ theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).hom.base ''
         (imageBasicOpen f g U s).1) = (imageBasicOpen f g U s).1 := by
-  fapply Types.coequalizer_preimage_image_eq_of_preimage_eq f.base
-    -- Porting note: Type of `g.base` needs to be explicit
-    (g.base : X.carrier.1 ⟶ Y.carrier.1)
+  fapply Types.coequalizer_preimage_image_eq_of_preimage_eq (TypeCat.ofHom ⟨f.base⟩)
+    (TypeCat.ofHom ⟨g.base⟩) (TypeCat.ofHom ⟨(coequalizer.π f.toShHom g.toShHom).hom.base⟩)
   · ext
-    simp_rw [types_comp_apply, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
+    simp only [TypeCat.hom_as_apply, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
+      ← TopCat.comp_app, ← PresheafedSpace.comp_base]
     congr 3
     exact SheafedSpace.forgetToPresheafedSpace.congr_map
       (coequalizer.condition f.toShHom g.toShHom)

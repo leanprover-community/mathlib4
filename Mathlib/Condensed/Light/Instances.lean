@@ -38,7 +38,7 @@ instance hasSheafify :
   hasSheafifyEssentiallySmallSite _ _
 
 instance hasSheafify_type :
-    HasSheafify (coherentTopology LightProfinite.{u}) (Type u) :=
+    HasSheafify (coherentTopology LightProfinite.{u}) TypeCat.{u} :=
   hasSheafifyEssentiallySmallSite _ _
 
 instance : (coherentTopology LightProfinite.{u}).WEqualsLocallyBijective A :=
