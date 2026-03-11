@@ -204,6 +204,14 @@ theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠
   have := IsMulTorsionFree.pow_right_injective₀ (by rwa [one_eq_top]) h₂ this
   simp_all
 
+variable (p P) in
+theorem ramificationIdx_le_ramificationIdx {T : Type*} [CommRing T] (Q : Ideal T) (f : R →+* S)
+    (g : S →+* T) (hp : p = Ideal.comap f P) (h : BddAbove {n | map (g.comp f) p ≤ Q ^ n}) :
+    Ideal.ramificationIdx g P Q ≤ Ideal.ramificationIdx (g.comp f) p Q := by
+  refine csSup_le_csSup' h fun n hn ↦ ?_
+  rw [Set.mem_setOf_eq, ← map_map, map_le_iff_le_comap, map_le_iff_le_comap, hp]
+  refine Ideal.comap_mono <| by rwa [← Ideal.map_le_iff_le_comap]
+
 namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
@@ -271,6 +279,19 @@ lemma ramificationIdx_eq_one_iff
   on_goal 2 => infer_instance
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
+
+theorem ramificationIdx_le_ramificationIdx [IsDomain R] [Algebra R S] [Module.IsTorsionFree R S]
+    {S₀ : Type*} [CommRing S₀] [Algebra R S₀] [Algebra S₀ S] [IsScalarTower R S₀ S] (p : Ideal R)
+    (P : Ideal S₀) (Q : Ideal S) [Q.LiesOver p] [P.LiesOver p] [Q.IsPrime] (hp : p ≠ ⊥) :
+    Ideal.ramificationIdx (algebraMap S₀ S) P Q ≤ Ideal.ramificationIdx (algebraMap R S) p Q := by
+  rw [IsScalarTower.algebraMap_eq R S₀ S]
+  refine Ideal.ramificationIdx_le_ramificationIdx p P Q (algebraMap R S₀) (algebraMap S₀ S) ?_ ?_
+  · rwa [← under_def, ← liesOver_iff]
+  · rw [← IsScalarTower.algebraMap_eq R S₀ S]
+    suffices ramificationIdx (algebraMap R S) p Q ≠ 0 by
+      contrapose! this
+      exact ramificationIdx_eq_zero (by rwa [not_bddAbove_iff] at this)
+    exact ramificationIdx_ne_zero_of_liesOver _ hp
 
 theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] [Algebra R S] {v : Ideal R}
     {w : Ideal S} {p : Ideal R} (hv : Irreducible v) (hp : Prime p) (hvp : v ≠ p) [w.LiesOver v] :
@@ -378,6 +399,16 @@ theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
   rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
     ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
   rfl
+
+theorem inertiaDeg_le_inertiaDeg {T : Type*} [CommRing T] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] [Module.Finite R T] (Q : Ideal T) [P.LiesOver p] [Q.LiesOver P]
+    [p.IsPrime] :
+    Ideal.inertiaDeg P Q ≤ Ideal.inertiaDeg p Q := by
+  have : Q.LiesOver p := Ideal.LiesOver.trans Q P p
+  rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
+  have : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ Q) := IsScalarTower.of_algebraMap_eq <| by
+    rintro ⟨x⟩; exact congr_arg _ (IsScalarTower.algebraMap_apply R S T x)
+  exact Module.finrank_top_le_finrank_of_isScalarTower _ _ _
 
 end DecEq
 
@@ -1054,6 +1085,21 @@ theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
     ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
   rw [IsScalarTower.algebraMap_eq R S T] at hfg ⊢
   exact ramificationIdx_tower hg0 hfg hg
+
+theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T] [IsDomain R]
+    [Module.IsTorsionFree R S] [Module.IsTorsionFree S T] (p : Ideal R) (P : Ideal S) (Q : Ideal T)
+    [Q.IsPrime] [Q.LiesOver P] [P.LiesOver p] :
+    ramificationIdx (algebraMap R T) p Q =
+      ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
+  by_cases hp : p = ⊥
+  · rw [hp, ramificationIdx_bot, ramificationIdx_bot, zero_mul]
+  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under S Q
+  have : Module.IsTorsionFree R T := by
+    refine Module.IsTorsionFree.of_smul_eq_zero fun r m h ↦ ?_
+    rwa [algebra_compatible_smul S, smul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff] at h
+  have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
+  exact ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot hP) (map_ne_bot_of_ne_bot hp)
+    <| map_le_iff_le_comap.mpr <| le_of_eq <| over_def Q P
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,
   and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,

@@ -317,6 +317,29 @@ theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
   card_eq_finrank ..
 
+set_option backward.isDefEq.respectTransparency false in
+open IntermediateField in
+theorem fixedPoints_of_isGaloisGroup (F : IntermediateField K L) [hGKL : IsGaloisGroup G K L]
+    (H : Subgroup G) [hHFL : IsGaloisGroup H F L] :
+    FixedPoints.intermediateField H = F := by
+  refine IntermediateField.ext_iff.mpr fun x ↦ ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · obtain ⟨a, rfl⟩ := hHFL.isInvariant.isInvariant x hx
+    exact a.prop
+  · have := congr_arg (restrictScalars K) <| IsGaloisGroup.fixedPoints_eq_bot H F L
+    rw [IntermediateField.restrictScalars_bot_eq_self] at this
+    rwa [← this] at hx
+
+theorem of_fixedPoints_eq (F : IntermediateField K L) [hGKL : IsGaloisGroup G K L] {H : Subgroup G}
+    (hF : FixedPoints.intermediateField H = F) :
+    IsGaloisGroup H F L := by
+  rw [eq_comm] at hF
+  convert IsGaloisGroup.subgroup G K L H
+
+variable {G K L} in
+theorem subgroup_iff {F : IntermediateField K L} [hGKL : IsGaloisGroup G K L] {H : Subgroup G} :
+    IsGaloisGroup H F L ↔ FixedPoints.intermediateField H = F :=
+  ⟨fun _ ↦ fixedPoints_of_isGaloisGroup G K L F H, fun h ↦ of_fixedPoints_eq G K L F h⟩
+
 section GaloisCorrespondence
 
 theorem fixingSubgroup_le_of_le (h : F ≤ F') :
