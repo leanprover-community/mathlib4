@@ -237,11 +237,12 @@ theorem count_bind [DecidableEq α] {m : Multiset β} {f : β → Multiset α} {
 
 theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : α} (hx : x ∈ S) :
     f x ≤ S.bind f := by
-  classical
-  refine le_iff_count.2 fun a ↦ ?_
-  obtain ⟨m', hm'⟩ := exists_cons_of_mem <| mem_map_of_mem (fun b ↦ count a (f b)) hx
-  rw [count_bind, hm', sum_cons]
-  exact Nat.le_add_right _ _
+  revert hx
+  refine Multiset.induction_on S (by simp) (fun y a s hx ↦ ?_)
+  simp only [cons_bind]
+  rcases mem_cons.1 hx with rfl | hx
+  · exact le_add_right _ _
+  · exact le_trans (s hx) (le_add_left _ _)
 
 @[simp]
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
@@ -253,13 +254,13 @@ variable {f s t}
 open scoped Function in -- required for scoped `on` notation
 @[simp] lemma nodup_bind :
     Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise (Disjoint on f) := by
-  have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
-  choose f' h' using this
-  have : f = fun a ↦ ofList (f' a) := funext h'
-  have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
-  exact Quot.induction_on s <| by
-    unfold Function.onFun
-    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
+  refine Multiset.induction_on s (by simp) (fun a s ih ↦ ⟨fun hs ↦ ⟨fun b hb ↦ ?_, ?_⟩, ?_⟩)
+  · simp only [cons_bind, nodup_add] at hs
+    rcases mem_cons.mp hb with rfl | hb
+    · exact hs.1
+    · exact (ih.mp hs.2.1).1 b hb
+  · sorry
+  · sorry
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :
