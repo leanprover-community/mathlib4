@@ -67,5 +67,3 @@ instance [Q.IsClosedUnderIsomorphisms] : (ofObjectProperty P Q).RespectsRight (i
     exact ⟨hY, (Q.prop_iff_of_isIso i).mp hZ⟩
 
 end CategoryTheory.MorphismProperty
-
-
