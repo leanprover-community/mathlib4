@@ -264,9 +264,8 @@ theorem Embedding.submatrix_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [De
 
 variable {G} in
 theorem Iso.reindex_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [DecidableRel H.Adj]
-    (f : G ≃g H) : (G.adjMatrix α).reindex f f = H.adjMatrix α := by
-  rw [reindex_apply]
-  exact f.symm.toEmbedding.submatrix_adjMatrix α
+    (f : G ≃g H) : (G.adjMatrix α).reindex f f = H.adjMatrix α :=
+  f.symm.toEmbedding.submatrix_adjMatrix α
 
 set_option backward.isDefEq.respectTransparency false in
 variable {G} in
