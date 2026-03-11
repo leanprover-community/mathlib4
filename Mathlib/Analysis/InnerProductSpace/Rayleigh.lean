@@ -172,13 +172,10 @@ theorem rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
 theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
     (hT' : algebraMap ℝ 𝕜 ‖T‖ ∈ resolventSet 𝕜 T) (hT'' : -algebraMap ℝ 𝕜 ‖T‖ ∈ resolventSet 𝕜 T) :
     ∃ ε > 0, ∀ x, |T.rayleighQuotient x| ≤ ‖T‖ - ε := by
-  replace hT'' : (algebraMap ℝ 𝕜) (‖-T‖) ∈ resolventSet 𝕜 (-T) := by
-    rwa [resolventSet_neg, Set.mem_neg, norm_neg]
   obtain ⟨ε, hε0, hε⟩ := T.rayleighQuotient_le_of_norm_mem_resolventSet hT'
-  obtain ⟨ε', hε'0, hε'⟩ := (-T).rayleighQuotient_le_of_norm_mem_resolventSet hT''
-  refine ⟨min ε ε', lt_min hε0 hε'0, fun x ↦ ?_⟩
-  simp_rw [rayleighQuotient_neg_apply, norm_neg] at hε'
-  grind
+  obtain ⟨ε', hε'0, hε'⟩ := (-T).rayleighQuotient_le_of_norm_mem_resolventSet <| by
+    simpa [resolventSet_neg]
+  exact ⟨min ε ε', by grind, fun x ↦ by grind [rayleighQuotient_neg_apply, norm_neg]⟩
 
 -- TODO: Prove this from `IsSelfAdjoint.toReal_spectralRadius_eq_norm` using complexification.
 /-- The spectral radius of a self-adjoint operator on a complete space equals the norm. -/
