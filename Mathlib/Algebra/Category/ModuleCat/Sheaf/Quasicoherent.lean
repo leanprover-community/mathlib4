@@ -448,21 +448,6 @@ instance
   · apply compatiblePreserving_overPullback
   · apply coverPreserving_overPullback
 
-@[simps!]
-def _root_.CategoryTheory.Adjunction.sheafPushforwardContinuous
-    {C D A : Type*} [Category* C] [Category* D] [Category* A] {F : C ⥤ D} {G : D ⥤ C}
-    (adj : F ⊣ G) (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-    [F.IsContinuous J K] [G.IsContinuous K J] :
-    F.sheafPushforwardContinuous A J K ⊣ G.sheafPushforwardContinuous A K J where
-  unit.app P := { val := (adj.op.whiskerLeft _).unit.app P.val }
-  counit.app P := { val := (adj.op.whiskerLeft _).counit.app P.val }
-  left_triangle_components P := by
-    ext : 1
-    exact (adj.op.whiskerLeft _).left_triangle_components P.val
-  right_triangle_components P := by
-    ext : 1
-    exact (adj.op.whiskerLeft _).right_triangle_components P.val
-
 instance {C : Type*} [Category* C] {A : Type*} [Category* A]
     (J : GrothendieckTopology C) {F G : Sheaf J A} (f : F ⟶ G) [IsIso f] :
     IsIso f.val := by
@@ -479,13 +464,14 @@ lemma _root_.CategoryTheory.Sheaf.inv_val {C : Type*} [Category* C]
   simp [← Sheaf.comp_val]
 
 lemma isLeftAdjoint_pushforward_of_isIso (G : C' ⥤ C) [G.IsContinuous J' J]
+    [G.IsCocontinuous J' J]
     (φ : S ⟶ (G.sheafPushforwardContinuous RingCat.{u} J' J).obj R) [IsIso φ]
     [G.IsLeftAdjoint] :
     (pushforward.{u} φ).IsLeftAdjoint := by
   let adj := Adjunction.ofIsLeftAdjoint G
   have : G.rightAdjoint.IsContinuous J J' :=
     sorry
-  let shAdj := adj.sheafPushforwardContinuous (A := RingCat.{u}) J' J
+  let shAdj := adj.sheafPushforwardContinuous (E := RingCat.{u}) J' J
   let ψ : R ⟶ (G.rightAdjoint.sheafPushforwardContinuous RingCat.{u} J J').obj S :=
      shAdj.unit.app R ≫ (G.rightAdjoint.sheafPushforwardContinuous _ _ _).map (inv φ)
   let adj := by
