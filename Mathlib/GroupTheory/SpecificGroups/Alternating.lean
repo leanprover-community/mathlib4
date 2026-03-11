@@ -209,15 +209,16 @@ theorem closure_three_cycles_eq_alternating :
           (hl b (List.mem_cons_of_mem a List.mem_cons_self)))
         (ih _ (fun g hg => hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
 
+theorem isThreeCycle_subset_alternatingGroup :
+    {g : Perm α | g.IsThreeCycle} ⊆ alternatingGroup α :=
+  fun _ ↦ IsThreeCycle.mem_alternatingGroup
+
 theorem _root_.alternatingGroup.closure_isThreeCycles_eq_top :
     Subgroup.closure {g : alternatingGroup α | Equiv.Perm.IsThreeCycle (g : Equiv.Perm α)} = ⊤ := by
   rw [← map_subtype_inj, MonoidHom.map_closure]
-  suffices (alternatingGroup α).subtype ''
-    { g : alternatingGroup α | (g : Perm α).IsThreeCycle } =
-      { g : Perm α | IsThreeCycle g} by
-    aesop
-  ext g
-  refine ⟨fun ⟨k, _⟩ ↦ by simp_all, fun hg ↦ ⟨⟨g, hg.mem_alternatingGroup⟩, by simpa⟩⟩
+  have : (alternatingGroup α).subtype '' _ = {g : Perm α | IsThreeCycle g} :=
+    Subtype.coe_image_of_subset isThreeCycle_subset_alternatingGroup
+  aesop
 
 /-- The alternating group is the closure of the set of permutations with cycle type (2, 2). -/
 theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α) :
@@ -245,18 +246,19 @@ theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α
 alias closure_cycleType_eq_2_2_eq_alternatingGroup :=
   closure_cycleType_eq_two_two_eq_alternatingGroup
 
+theorem cycleType_eq_two_two_subset_alternatingGroup :
+    {g : Perm α | g.cycleType = {2, 2}} ⊆ alternatingGroup α := by
+  intro g hg
+  rw [Set.mem_setOf_eq] at hg
+  simp [sign_of_cycleType, hg, ← Units.val_inj]
+
 theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ Nat.card α) :
     Subgroup.closure {g : alternatingGroup α | (g : Perm α).cycleType = {2, 2}} = ⊤ := by
   rw [← map_subtype_inj, MonoidHom.map_closure]
-  suffices (alternatingGroup α).subtype ''
-    { g | (g : Perm α).cycleType = {2, 2} } =
-      { g : Perm α | g.cycleType = {2, 2} } by
-    rw [this, closure_cycleType_eq_two_two_eq_alternatingGroup h5]
-    aesop
-  ext g
-  refine ⟨fun ⟨k, _⟩ ↦ by simp_all, fun hg ↦ ⟨⟨g, ?_⟩, by simpa⟩⟩
-  simp only [Set.mem_setOf_eq] at hg
-  simp [sign_of_cycleType, hg, ← Units.val_inj]
+  have : (alternatingGroup α).subtype '' _ = {g : Perm α | g.cycleType = {2, 2}} :=
+    Subtype.coe_image_of_subset cycleType_eq_two_two_subset_alternatingGroup
+  have := closure_cycleType_eq_two_two_eq_alternatingGroup h5
+  aesop
 
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
