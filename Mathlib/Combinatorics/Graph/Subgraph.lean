@@ -17,7 +17,7 @@ and components.
 
 ## Main definitions
 
-- `H ≤ G` : the subgraph relation as a partial order on graphs.
+- `H ≤ G`: the subgraph relation as a partial order on graphs.
 - `H ≤s G` (`Graph.IsSpanningSubgraph`): `H` has the same vertex set as `G`.
 - `H ≤i G` (`Graph.IsInducedSubgraph`): `H` contains every ambient link between its vertices.
 - `H ≤c G` (`Graph.IsClosedSubgraph`): `H` is a union of components of `G`.
