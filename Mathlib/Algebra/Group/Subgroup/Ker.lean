@@ -565,11 +565,9 @@ variable {M : Type*} [CommGroup M]
 @[to_additive]
 lemma subgroupOf_map_powMonoidHom_eq_range (S : Subgroup M) (n : ℕ) :
     (map (powMonoidHom n) S).subgroupOf S = (powMonoidHom n).range := by
-  ext1
-  simp only [mem_subgroupOf, mem_map, MonoidHom.mem_range, powMonoidHom_apply, Subtype.exists,
-    SubmonoidClass.mk_pow]
-  exact ⟨fun ⟨x, h₁, h₂⟩ ↦ ⟨x, h₁, Subtype.ext h₂⟩,
-    fun ⟨a, h₁, h₂⟩ ↦ ⟨a, h₁, Subtype.ext_iff.mp h₂⟩⟩
+  ext
+  simp [mem_subgroupOf]
+  grind
 
 end Subgroup
 

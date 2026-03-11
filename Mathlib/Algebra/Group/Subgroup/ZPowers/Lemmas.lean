@@ -66,7 +66,7 @@ open AddSubgroup
 
 lemma range_nsmulAddMonoidHom (n : ℕ) : (nsmulAddMonoidHom n).range = zmultiples (n : ℤ) := by
   ext1 m
-  suffices (∃ x : ℤ, n * x = m) ↔ ∃ y, y * n = m by simpa only using this
-  refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩ <;> obtain ⟨k, rfl⟩ := H <;> exact ⟨k, Int.mul_comm ..⟩
+  simp [mem_zmultiples_iff, dvd_def]
+  grind
 
 end Int
