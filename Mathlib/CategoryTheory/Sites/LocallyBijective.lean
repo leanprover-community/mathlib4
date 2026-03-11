@@ -36,7 +36,7 @@ namespace Sheaf
 
 section
 
-variable {F G : Sheaf J (Type w)} (f : F ⟶ G)
+variable {F G : Sheaf J TypeCat.{w}} (f : F ⟶ G)
 
 /-- A morphism of sheaves of types is locally bijective iff it is an isomorphism.
 (This is generalized below as `isLocallyBijective_iff_isIso`.) -/
@@ -58,18 +58,18 @@ private lemma isLocallyBijective_iff_isIso' :
     have ht : t.Compatible := by
       intro Y₁ Y₂ W g₁ g₂ f₁ f₂ hf₁ hf₂ w
       apply h₁
-      have eq₁ := FunctorToTypes.naturality _ _ f.hom g₁.op (t f₁ hf₁)
-      have eq₂ := FunctorToTypes.naturality _ _ f.hom g₂.op (t f₂ hf₂)
+      have eq₁ := NatTrans.naturality_apply f.hom g₁.op (t f₁ hf₁)
+      have eq₂ := NatTrans.naturality_apply f.hom g₂.op (t f₂ hf₂)
       have eq₃ := congr_arg (G.obj.map g₁.op) (Presheaf.app_localPreimage f.hom s _ hf₁)
       have eq₄ := congr_arg (G.obj.map g₂.op) (Presheaf.app_localPreimage f.hom s _ hf₂)
       refine eq₁.trans (eq₃.trans (Eq.trans ?_ (eq₄.symm.trans eq₂.symm)))
-      erw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply]
+      rw [← Functor.map_comp_apply, ← Functor.map_comp_apply]
       simp only [← op_comp, w]
     refine ⟨H.amalgamate t ht, ?_⟩
     · apply (((isSheaf_iff_isSheaf_of_type J G.obj).1 G.property).isSeparated _
         (Presheaf.imageSieve_mem J f.hom s)).ext
       intro Y g hg
-      rw [← FunctorToTypes.naturality, H.valid_glue ht]
+      rw [← NatTrans.naturality_apply, H.valid_glue ht]
       exact Presheaf.app_localPreimage f.hom s g hg
   · intro
     constructor <;> infer_instance
@@ -157,7 +157,7 @@ instance {D : Type w} [Category.{w'} D] {FD : D → D → Type*} {CD : D → Typ
     J.WEqualsLocallyBijective D := by
   apply WEqualsLocallyBijective.mk'
 
-instance : J.WEqualsLocallyBijective (Type (max u v)) :=
+instance : J.WEqualsLocallyBijective TypeCat.{max u v} :=
   inferInstance
 
 end GrothendieckTopology

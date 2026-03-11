@@ -123,7 +123,7 @@ variable {K}
 variable {A : Type*} [Category* A] (G : C ⥤ D)
 
 -- this is not marked with `@[ext]` because `H` cannot be inferred from the type
-theorem ext [G.IsCoverDense K] (ℱ : Sheaf K (Type _)) (X : D) {s t : ℱ.obj.obj (op X)}
+theorem ext [G.IsCoverDense K] (ℱ : Sheaf K TypeCat) (X : D) {s t : ℱ.obj.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.obj.map f.op s = ℱ.obj.map f.op t) : s = t := by
   apply ((isSheaf_iff_isSheaf_of_type _ _).1 ℱ.property
     (Sieve.coverByImage G X) (G.is_cover_of_isCoverDense K X)).isSeparatedFor.ext
@@ -145,7 +145,7 @@ theorem functorPullback_pushforward_covering [G.IsCoverDense K] [G.IsLocallyFull
 /-- (Implementation). Given a hom between the pullbacks of two sheaves, we can whisker it with
 `coyoneda` to obtain a hom between the pullbacks of the sheaves of maps from `X`.
 -/
-@[simps!]
+@[simps! app]
 def homOver {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) (X : A) :
     G.op ⋙ ℱ ⋙ coyoneda.obj (op X) ⟶ G.op ⋙ (sheafOver ℱ' X).obj :=
   whiskerRight α (coyoneda.obj (op X))
@@ -165,19 +165,19 @@ theorem sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (h
 
 namespace Types
 
-variable {ℱ : Dᵒᵖ ⥤ Type v} {ℱ' : Sheaf K (Type v)} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj)
+variable {ℱ : Dᵒᵖ ⥤ TypeCat.{v}} {ℱ' : Sheaf K TypeCat.{v}} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj)
 
 theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) (x) :
     ℱ'.1.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
   have {X Y} (i : X ⟶ Y) (x) :
       ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
-    exact congr_fun (α.naturality i.op).symm x
+    exact ConcreteCategory.congr_hom (α.naturality i.op).symm x
   refine IsLocallyFull.ext G _ i fun V iVX iVY e ↦ ?_
-  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, ← e, this]
+  simp only [← Functor.map_comp_apply, ← op_comp, ← e, this]
 
 @[reassoc]
 theorem naturality [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) :
-    α.app _ ≫ ℱ'.1.map i.op = ℱ.map i.op ≫ α.app _ := types_ext _ _ (naturality_apply α i)
+    α.app _ ≫ ℱ'.1.map i.op = ℱ.map i.op ≫ α.app _ := by ext; exact naturality_apply α i _
 
 /--
 (Implementation). Given a section of `ℱ` on `X`, we can obtain a family of elements valued in `ℱ'`
@@ -190,6 +190,7 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
     ℱ'.obj.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pushforwardFamily_apply [G.IsLocallyFull K]
     {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
@@ -197,7 +198,7 @@ theorem pushforwardFamily_apply [G.IsLocallyFull K]
   simp only [pushforwardFamily_def, op_obj]
   generalize Nonempty.some (Presieve.in_coverByImage G f) = l
   obtain ⟨W, iYW, iWX, rfl⟩ := l
-  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, naturality_apply]
+  simp only [← op_comp, ← Functor.map_comp_apply, naturality_apply]
 
 variable [G.IsCoverDense K] [G.IsLocallyFull K]
 
@@ -208,7 +209,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
       (iZW₂ : Z ⟶ G.obj W₂), iZW₁ ≫ iWX₁ = iZW₂ ≫ iWX₂ →
       ℱ'.1.map iZW₁.op (α.app _ (ℱ.map iWX₁.op x)) = ℱ'.1.map iZW₂.op (α.app _ (ℱ.map iWX₂.op x)) by
     rintro Y₁ Y₂ Z iZY₁ iZY₂ f₁ f₂ h₁ h₂ e
-    simp only [pushforwardFamily, ← FunctorToTypes.map_comp_apply, ← op_comp]
+    simp only [pushforwardFamily, ← Functor.map_comp_apply, ← op_comp]
     generalize Nonempty.some h₁ = l₁
     generalize Nonempty.some h₂ = l₂
     obtain ⟨W₁, iYW₁, iWX₁, rfl⟩ := l₁
@@ -216,14 +217,14 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     exact this _ _ _ _ (by simpa only [Category.assoc] using e)
   introv e
   refine ext G _ _ fun V iVZ ↦ ?_
-  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, naturality_apply,
+  simp only [← op_comp, ← Functor.map_comp_apply, naturality_apply,
     Category.assoc, e]
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
-noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.obj.obj (op X) := fun x =>
+noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.obj.obj (op X) := TypeCat.ofHom ⟨fun x =>
   ((isSheaf_iff_isSheaf_of_type _ _).1 ℱ'.property _
     (G.is_cover_of_isCoverDense _ X)).amalgamate (pushforwardFamily α x)
-      (pushforwardFamily_compatible α x)
+      (pushforwardFamily_compatible α x)⟩
 
 @[simp]
 theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
@@ -238,11 +239,18 @@ theorem appHom_valid_glue {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) :
   ext
   apply appHom_restrict
 
+unif_hint Functor.comp_op_obj {J J' C : Type*} [Category* J] [Category* J'] [Category* C]
+    (G G' : J' ⥤ J) (F F' : Jᵒᵖ ⥤ C) (j j' : J') where
+  G ≟ G'
+  F ≟ F'
+  j ≟ j'
+  ⊢ (G.op ⋙ F).obj (op j) ≟ F'.obj (op (G'.obj j'))
+
 /--
 (Implementation). The maps given in `appIso` is inverse to each other and gives a `ℱ(X) ≅ ℱ'(X)`.
 -/
 @[simps]
-noncomputable def appIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj)
+noncomputable def appIso {ℱ ℱ' : Sheaf K TypeCat.{v}} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj)
     (X : D) : ℱ.obj.obj (op X) ≅ ℱ'.obj.obj (op X) where
   hom := appHom i.hom X
   inv := appHom i.inv X
@@ -269,7 +277,11 @@ noncomputable def presheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) : ℱ �
     ext x
     apply Functor.IsCoverDense.ext G
     intro Y' f'
-    simp only [appHom_restrict, types_comp_apply, ← FunctorToTypes.map_comp_apply]
+    simp only [TypeCat.hom_as_apply, types_comp_apply, ← map_comp_apply]
+    rw [appHom_restrict, appHom_restrict]
+    simp
+
+    -- simp only [appHom_restrict, types_comp_apply, ← FunctorToTypes.map_comp_apply]
 
 /--
 Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types,
@@ -277,7 +289,7 @@ where `G` is locally-full and cover-dense, and `ℱ, ℱ'` are sheaves,
 we may obtain a natural isomorphism between presheaves.
 -/
 @[simps!]
-noncomputable def presheafIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) :
+noncomputable def presheafIso {ℱ ℱ' : Sheaf K TypeCat.{v}} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) :
     ℱ.obj ≅ ℱ'.obj :=
   NatIso.ofComponents (fun X => appIso i (unop X)) @(presheafHom i.hom).naturality
 
@@ -287,7 +299,7 @@ where `G` is locally-full and cover-dense, and `ℱ, ℱ'` are sheaves,
 we may obtain a natural isomorphism between sheaves.
 -/
 @[simps! hom_hom inv_hom]
-noncomputable def sheafIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) :
+noncomputable def sheafIso {ℱ ℱ' : Sheaf K TypeCat.{v}} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) :
     ℱ ≅ ℱ' :=
   (fullyFaithfulSheafToPresheaf _ _).preimageIso (presheafIso i)
 
@@ -297,11 +309,12 @@ open Types
 
 variable [G.IsCoverDense K] [G.IsLocallyFull K] {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The sheaf map given in `types.sheaf_hom` is natural in terms of `X`. -/
 @[simps]
 noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
-    coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type _)).obj ℱ ⟶
-      coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type _)).obj ℱ'.obj where
+    coyoneda ⋙ (whiskeringLeft Dᵒᵖ A TypeCat).obj ℱ ⟶
+      coyoneda ⋙ (whiskeringLeft Dᵒᵖ A TypeCat).obj ℱ'.obj where
   app X := presheafHom (homOver α (unop X))
   naturality X Y f := by
     ext U x
@@ -314,7 +327,6 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
     -- Porting note: the following line closes a goal which didn't exist before reenableeta
     · exact pushforwardFamily_compatible (homOver α Y.unop) (f.unop ≫ x)
     intro Y' f' hf'
-    change unop X ⟶ ℱ.obj (op (unop _)) at x
     dsimp
     simp only [Category.assoc]
     congr 1
@@ -334,7 +346,7 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
       naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
   naturality U V i := by
     ext X x
-    exact congr_fun (((sheafCoyonedaHom α).app X).naturality i) x
+    exact ConcreteCategory.congr_hom (((sheafCoyonedaHom α).app X).naturality i) x
 
 /--
 Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,
@@ -389,18 +401,20 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
   · exact (pushforwardFamily_compatible _ _)
   intro Y f hf
   conv_lhs => rw [← hf.some.fac]
-  simp only [pushforwardFamily, Functor.comp_map, yoneda_map_app, flip_obj_map, op_comp,
-    FunctorToTypes.map_comp_apply, homOver_app]
-  congr 1
-  simp only [Category.assoc]
-  congr 1
+  simp only [op_unop, comp_obj, flip_obj_obj, yoneda_obj_obj, op_comp, comp_map, flip_obj_map,
+    yoneda_map_app, TypeCat.ofHom_hom, op_obj, TypeCat.Fun.mk_apply,
+    pushforwardFamily_def, sheafOver_obj, homOver_app, Functor.map_comp, Category.assoc]
   have := naturality_apply (G := G) (ℱ := ℱ ⋙ coyoneda.obj (op <| (G.op ⋙ ℱ).obj X))
     (ℱ' := ⟨_, Presheaf.isSheaf_comp_of_isSheaf K ℱ'.obj
       (coyoneda.obj (op ((G.op ⋙ ℱ).obj X))) ℱ'.property⟩)
     (whiskerRight α (coyoneda.obj _)) hf.some.map (𝟙 _)
-  simpa using this
+  simp only [comp_obj, op_obj, flip_obj_obj, yoneda_obj_obj, comp_map, flip_obj_map, yoneda_map_app,
+    ConcreteCategory.hom_ofHom, op_unop, whiskerRight_app, TypeCat.Fun.mk_apply,
+    Category.id_comp] at this
+  simp [this]
 
 variable (G) in
+set_option backward.isDefEq.respectTransparency false in
 /--
 If the pullback map is obtained via whiskering,
 then the result `sheaf_hom (whisker_left G.op α)` is equal to `α`.
@@ -481,7 +495,7 @@ lemma compatiblePreserving [G.IsLocallyFaithful K] : CompatiblePreserving K G :=
   refine IsLocallyFull.ext G _ (G.map iVW ≫ i ≫ f₂) fun V₂ iV₂V₁ iV₂Y₂ e₂ ↦ ?_
   refine IsLocallyFaithful.ext G _ (iV₂V₁ ≫ iV₁Y₁ ≫ g₁) (iV₂Y₂ ≫ g₂) (by simp [e₁, e₂, eq]) ?_
   intro V₃ iV₃ e₄
-  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, ← e₁, ← e₂, ← Functor.map_comp]
+  simp only [← op_comp, ← Functor.map_comp_apply, ← e₁, ← e₂, ← Functor.map_comp]
   apply hx
   simpa using e₄
 

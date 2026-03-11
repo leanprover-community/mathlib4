@@ -148,9 +148,9 @@ lemma sectionsMap_id {M : SheafOfModules.{v} R} (s : M.sections) :
 variable (R) in
 /-- The functor which sends a sheaf of modules to its type of sections. -/
 @[simps]
-def sectionsFunctor : SheafOfModules.{v} R ⥤ Type _ where
-  obj := sections
-  map f := sectionsMap f
+def sectionsFunctor : SheafOfModules.{v} R ⥤ TypeCat where
+  obj M := .of M.sections
+  map f := TypeCat.ofHom ⟨sectionsMap f⟩
 
 variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 

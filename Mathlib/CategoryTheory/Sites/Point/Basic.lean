@@ -67,7 +67,7 @@ and such that covering sieves induce jointly surjective maps on fibers (which
 allows to show that the fibers of a presheaf and its associated sheaf are isomorphic). -/
 structure Point where
   /-- the fiber functor on the underlying category of the site -/
-  fiber : C ⥤ Type w
+  fiber : C ⥤ TypeCat.{w}
   isCofiltered : IsCofiltered fiber.Elements := by infer_instance
   initiallySmall : InitiallySmall.{w} fiber.Elements := by infer_instance
   jointly_surjective {X : C} (R : Sieve X) (h : R ∈ J X) (x : fiber.obj X) :
@@ -218,9 +218,13 @@ lemma toPresheafFiber_eq_iff' (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (
     Φ.toPresheafFiber X x P z₁ = Φ.toPresheafFiber X x P z₂ ↔
       ∃ (Y : C) (f : Y ⟶ X) (y : Φ.fiber.obj Y), Φ.fiber.map f y = x ∧
         P.map f.op z₁ = P.map f.op z₂ := by
-  refine (Types.FilteredColimit.isColimit_eq_iff'
-    (ht := isColimitOfPreserves (forget A)
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) ..).trans ?_
+  trans (∃ (j : Φ.fiber.Elementsᵒᵖ) (f : op ⟨X, x⟩ ⟶ j),
+    (((CategoryOfElements.π Φ.fiber).op ⋙ P) ⋙ forget A).map f (by exact z₁) =
+      (((CategoryOfElements.π Φ.fiber).op ⋙ P) ⋙ forget A).map f (by exact z₂))
+  · convert Types.FilteredColimit.isColimit_eq_iff'
+      (ht := isColimitOfPreserves (forget A)
+      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) ..
+    all_goals cat_disch
   constructor
   · rintro ⟨⟨Y, y⟩, ⟨f, hf⟩, hf'⟩
     exact ⟨Y, f, y, hf, hf'⟩

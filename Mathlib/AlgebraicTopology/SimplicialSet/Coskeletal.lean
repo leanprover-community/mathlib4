@@ -93,7 +93,6 @@ lemma fac_aux₁ {n : ℕ}
   rw [spineToSimplex_arrow]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i j : ℕ) (hij : i ≤ j) (hj : j ≤ n) :
@@ -159,6 +158,7 @@ lemma fac_aux₂ {n : ℕ}
             rfl
       erw [← StructuredArrow.w β₁, Functor.map_comp_apply, this, ← s.w β₁]
       dsimp
+      rfl
 
 lemma fac_aux₃ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
@@ -173,7 +173,6 @@ end isPointwiseRightKanExtensionAt
 
 open Truncated
 
-set_option backward.isDefEq.respectTransparency false in
 open isPointwiseRightKanExtensionAt in
 /-- A strict Segal simplicial set is 2-coskeletal. -/
 noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
@@ -188,7 +187,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     dsimp
     ext k
     · dsimp only [spineEquiv, Equiv.coe_fn_mk]
-      rw [show op f = f.op from rfl]
+      erw [show op f = f.op from rfl]
       erw [spine_map_vertex, spine_spineToSimplex_apply, spine_vertex]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (⦋0⦌.const ⦋n⦌ (f.toOrderHom k)) :=
         StructuredArrow.homMk ((Hom.tr (⦋0⦌.const _ (by exact k))).op) (by simp; rfl)
@@ -203,7 +202,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     ext x
     apply sx.spineInjective (X := X)
     dsimp [spineEquiv]
-    rw [sx.spine_spineToSimplex_apply]
+    erw [sx.spine_spineToSimplex_apply]
     ext i
     · exact ConcreteCategory.congr_hom (hm (StructuredArrow.mk
         (Y := op ⦋0⦌₂) (⦋0⦌.const ⦋n⦌ i).op)) x
