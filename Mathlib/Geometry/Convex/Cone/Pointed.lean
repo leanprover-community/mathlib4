@@ -41,6 +41,11 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Modu
 variable {C : PointedCone R E}
 
 /-- A submodule is a pointed cone. -/
+@[coe] abbrev ofSubmodule' (S : Submodule R E) : PointedCone R E :=
+  @S.restrictScalars _ _ _ _ _ _ _ _ _ (inferInstanceAs <| IsScalarTower { c : R // 0 ≤ c } R E)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- A submodule is a pointed cone. -/
 @[coe] abbrev ofSubmodule (S : Submodule R E) : PointedCone R E := S.restrictScalars _
 
 instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
@@ -49,22 +54,27 @@ instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
 
 lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R E) ↔ x ∈ S := by rfl
 
-lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T
-  := Submodule.restrictScalars_inj ..
+set_option backward.isDefEq.respectTransparency false in
+lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
+  Submodule.restrictScalars_inj ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as an order embedding. -/
 abbrev ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
   Submodule.restrictScalarsEmbedding ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as a lattice homomorphism. -/
 abbrev ofSubmoduleLatticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
   Submodule.restrictScalarsLatticeHom ..
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_inf (S T : Submodule R E) : S ⊓ T = (S ⊓ T : PointedCone R E) :=
   Submodule.restrictScalars_inf _ _ _
 
-lemma ofSubmodule_sup (S T : Submodule R E) : S ⊔ T = (S ⊔ T : PointedCone R E)
-    := Submodule.restrictScalars_sup _ _ _
+set_option backward.isDefEq.respectTransparency false in
+lemma ofSubmodule_sup (S T : Submodule R E) : S ⊔ T = (S ⊔ T : PointedCone R E) :=
+  Submodule.restrictScalars_sup _ _ _
 
 lemma ofSubmodule_sInf (s : Set (Submodule R E)) : sInf s = sInf (ofSubmodule '' s) :=
   ofSubmoduleLatticeHom.map_sInf' s
