@@ -970,7 +970,7 @@ section OplaxMonoidal
 variable [G.LaxMonoidal]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The right adjoint of an oplax monoidal functor is lax monoidal. -/
+/-- The left adjoint of a lax monoidal functor is oplax monoidal. -/
 @[simps, implicit_reducible]
 def leftAdjointLaxMonoidal : F.OplaxMonoidal where
   η := (adj.homEquiv _ _).symm (ε G)
