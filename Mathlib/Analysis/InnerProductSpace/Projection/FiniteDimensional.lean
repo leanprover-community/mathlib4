@@ -130,7 +130,18 @@ theorem finrank_orthogonal_span_singleton {n : ℕ} [_i : Fact (finrank 𝕜 E =
   exact finrank_add_finrank_orthogonal' <| by
     simp [finrank_span_singleton hv, _i.elim, add_comm]
 
-/-- If two nonzero vectors `w` and `u` are both orthogonal to the same nonzero vector `v`
+/-- A submodule of finrank 1 is spanned by any of its nonzero elements. -/
+theorem eq_span_singleton_of_mem_of_finrank_eq_one
+    {𝕜 E : Type*} [DivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    {K : Submodule 𝕜 E} {w : E}
+    (hK : finrank 𝕜 K = 1) (hw : w ∈ K) (hw0 : w ≠ 0) :
+    K = Submodule.span 𝕜 {w} := by
+  haveI : FiniteDimensional 𝕜 K := Module.finite_of_finrank_pos (by omega)
+  exact (Submodule.eq_of_le_of_finrank_le
+    ((Submodule.span_singleton_le_iff_mem _ _).mpr hw)
+    (by rw [hK, finrank_span_singleton (K := 𝕜) hw0])).symm
+
+/-- If a nonzero vector `w` and a vector `u` are both orthogonal to the same nonzero vector `v`
 in a two-dimensional inner product space, then `u` lies in the span of `w`. -/
 theorem mem_span_singleton_of_inner_eq_zero_of_inner_eq_zero
     {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -139,12 +150,11 @@ theorem mem_span_singleton_of_inner_eq_zero_of_inner_eq_zero
     (huv : ⟪v, u⟫_𝕜 = 0) (hwv : ⟪v, w⟫_𝕜 = 0) :
     u ∈ Submodule.span 𝕜 {w} := by
   haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ 1
-  have heq : 𝕜 ∙ w = (𝕜 ∙ v)ᗮ :=
-      Submodule.eq_of_le_of_finrank_le
-        ((Submodule.span_singleton_le_iff_mem _ _).mpr
-          (Submodule.mem_orthogonal_singleton_iff_inner_right.mpr hwv))
-        (by rw [finrank_orthogonal_span_singleton (n := 1) hv, finrank_span_singleton hw])
-  rwa [heq, Submodule.mem_orthogonal_singleton_iff_inner_right]
+  have heq : (𝕜 ∙ v)ᗮ = 𝕜 ∙ w :=
+    eq_span_singleton_of_mem_of_finrank_eq_one
+      (finrank_orthogonal_span_singleton (n := 1) hv)
+      (Submodule.mem_orthogonal_singleton_iff_inner_right.mpr hwv) hw
+  rwa [← heq, Submodule.mem_orthogonal_singleton_iff_inner_right]
 
 end Submodule
 
