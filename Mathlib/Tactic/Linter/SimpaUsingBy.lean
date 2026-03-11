@@ -14,6 +14,12 @@ public import Lean.Message
 /-!
 # Linter against `simpa [...] using by tactic`
 
+The `simpaUsingBy` linter flags any invocation of the form `simpa ... using by tactic`.
+
+This is rather misleading since `by tactic` is always elaborated at the very last so this
+is effectively equivalent to `simp; tactic`, and it has the potential to sneak non-terminal simps
+past the flexible linter.
+
 -/
 
 meta section
@@ -22,8 +28,8 @@ open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
--- /-- Lint on any occurrence of `attribute [...] name in` which is not `local` or `scoped`:
--- these are a footgun, as the attribute is applied *globally* (despite the `in`). -/
+/-- Lint on any occurrence of `simpa ... using by tactic`.
+This is a hack to bypass flexible linters. -/
 public register_option linter.simpaUsingBy : Bool :=
   { defValue := true
     descr := "enable the simpaUsingBy linter" }
@@ -43,7 +49,7 @@ def isSimpaUsingBy : Syntax → Bool
 /--
 The `simpaUsingBy` linter flags any invocation of the form `simpa ... using by tactic`.
 
-This is rather misleading since `by tactic` is always elaborated at the very last, and this
+This is rather misleading since `by tactic` is always elaborated at the very last so this
 is effectively equivalent to `simp; tactic`, and it has the potential to sneak non-terminal simps
 past the flexible linter.
 -/
