@@ -171,6 +171,8 @@ protected lemma ModularFormClass.cuspFunction_apply_zero [ModularFormClass F Γ 
     (hΓ : h ∈ Γ.strictPeriods) : cuspFunction h f 0 = valueAtInfty f :=
   cuspFunction_apply_zero hh (analyticAt_cuspFunction_zero f hh hΓ) (periodic_comp_ofComplex f hΓ)
 
+namespace ModularFormClass
+
 variable (h) in
 /-- The `q`-expansion of a level `n` modular form, bundled as a `PowerSeries`. -/
 def qExpansion (f : ℍ → ℂ) : PowerSeries ℂ :=
@@ -180,9 +182,11 @@ lemma qExpansion_coeff (f : ℍ → ℂ) (m : ℕ) :
     (qExpansion h f).coeff m = (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction h f) 0 := by
   simp [qExpansion]
 
-protected lemma ModularFormClass.qExpansion_coeff_zero [ModularFormClass F Γ k] (hh : 0 < h)
+protected lemma qExpansion_coeff_zero [ModularFormClass F Γ k] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) : (qExpansion h f).coeff 0 = valueAtInfty f := by
   simp [qExpansion_coeff, ModularFormClass.cuspFunction_apply_zero f hh hΓ]
+
+end ModularFormClass
 
 lemma hasSum_qExpansion_of_norm_lt {f : ℍ → ℂ} (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
     (hfhol : ∀ z : ℂ, 0 < im z → DifferentiableAt ℂ (f ∘ ofComplex) z)
