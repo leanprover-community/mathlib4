@@ -252,9 +252,9 @@ theorem compQuasiMeasurePreserving_compQuasiMeasurePreserving {γ : Type*} [Meas
     compQuasiMeasurePreserving (compQuasiMeasurePreserving g f hf) f' hf' =
     compQuasiMeasurePreserving g (f ∘ f') (QuasiMeasurePreserving.comp hf hf') := by
   ext
-  grw [coeFn_compQuasiMeasurePreserving,
-    coeFn_compQuasiMeasurePreserving g (QuasiMeasurePreserving.comp hf hf'), ← comp_assoc]
-  exact QuasiMeasurePreserving.ae_eq hf' <|coeFn_compQuasiMeasurePreserving g hf
+  grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving,
+    coeFn_compQuasiMeasurePreserving, comp_assoc]
+  assumption
 
 theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
     (hf : QuasiMeasurePreserving f μ μ) (n : ℕ) : (compQuasiMeasurePreserving · f hf)^[n] g =
