@@ -454,7 +454,7 @@ theorem omega0_opow_mul_nat_lt {a b : Ordinal} (h : a < b) (n : ℕ) : ω ^ a * 
   apply lt_of_lt_of_le _ (opow_le_opow_right omega0_pos (succ_le_of_lt h))
   rw [opow_succ]
   gcongr
-  exacts [opow_pos a omega0_pos, nat_lt_omega0 n]
+  exacts [opow_pos a omega0_pos, natCast_lt_omega0 n]
 
 theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
     a < ω ^ b ↔ ∃ c < b, ∃ n : ℕ, a < ω ^ c * n := by
