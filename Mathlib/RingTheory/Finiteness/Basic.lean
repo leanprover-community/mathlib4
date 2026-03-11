@@ -284,11 +284,6 @@ variable (R)
 theorem _root_.Ideal.fg_top : (⊤ : Ideal R).FG :=
   ⟨{1}, by simpa only [Finset.coe_singleton] using Ideal.span_singleton_one⟩
 
-variable {R} in
-theorem _root_.Ideal.fg_span (s : Set R) [Finite s] : (Ideal.span s).FG :=
-  have := Fintype.ofFinite s
-  ⟨s.toFinset, by simp⟩
-
 instance self : Module.Finite R R := ⟨Ideal.fg_top R⟩
 
 variable (M)
