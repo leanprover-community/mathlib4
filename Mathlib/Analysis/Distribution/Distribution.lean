@@ -188,4 +188,23 @@ lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω,
 
 end mapCLM
 
+section DiracDelta
+
+/-- The Dirac delta distribution -/
+def delta (x : Ω) : 𝓓'^{n}(Ω, ℝ) := by
+  refine {
+    toLinearMap := {
+      toFun := fun f => f x
+      map_add' := by simp
+      map_smul' := by simp
+    }
+    cont := continuous_eval_const (x : E)
+  }
+
+@[simp]
+theorem delta_apply (x : Ω) (f : 𝓓^{n}(Ω, ℝ)) : delta (n := n) x f = f x := by
+  rfl
+
+end DiracDelta
+
 end Distribution
