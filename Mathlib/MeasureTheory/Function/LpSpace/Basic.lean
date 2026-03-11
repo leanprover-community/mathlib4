@@ -556,21 +556,6 @@ theorem compMeasurePreserving_val (g : Lp E p μb) (hf : MeasurePreserving f μ 
     (compMeasurePreserving f hf g).1 = g.1.compMeasurePreserving f hf :=
   rfl
 
-theorem compMeasurePreserving_compMeasurePreserving_val {γ : Type*} [MeasurableSpace γ]
-    {μc : Measure γ} (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc)
-    {f' : α → β} (hf' : MeasurePreserving f' μ μb) :
-    (((compMeasurePreserving f' hf')∘(compMeasurePreserving f hf)) g).1 =
-    (AEEqFun.compMeasurePreserving (AEEqFun.compMeasurePreserving g f hf) f' hf') := rfl
-
-theorem compMeasurePreserving_iterate_val (g : Lp E p μ) {f : α → α} (hf : MeasurePreserving f μ μ)
-    (n : ℕ) :
-    ((compMeasurePreserving f hf)^[n] g).1 = (AEEqFun.compMeasurePreserving · f hf)^[n] g := by
-  induction n with
-  | zero => rfl
-  | succ n hind =>
-    rw [add_comm]
-    simp [Function.iterate_add, hind]
-
 theorem coeFn_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
     compMeasurePreserving f hf g =ᵐ[μ] g ∘ f :=
   g.1.coeFn_compMeasurePreserving hf
@@ -587,22 +572,35 @@ theorem isometry_compMeasurePreserving [Fact (1 ≤ p)] (hf : MeasurePreserving 
 theorem toLp_compMeasurePreserving {g : β → E} (hg : MemLp g p μb) (hf : MeasurePreserving f μ μb) :
     compMeasurePreserving f hf (hg.toLp g) = (hg.comp_measurePreserving hf).toLp _ := rfl
 
+@[simp]
+theorem compMeasurePreserving_id (g : Lp E p μb) :
+    compMeasurePreserving id (MeasurePreserving.id μb) g = g := by
+  apply Subtype.ext
+  rw [compMeasurePreserving_val]
+  apply AEEqFun.compMeasurePreserving_id
+
 theorem compMeasurePreserving_compMeasurePreserving {γ : Type*} [MeasurableSpace γ]
     {μc : Measure γ} (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc)
     {f' : α → β} (hf' : MeasurePreserving f' μ μb) :
     ((compMeasurePreserving f' hf')∘(compMeasurePreserving f hf)) g =
     (compMeasurePreserving (f∘f') (MeasurePreserving.comp hf hf')) g := by
+  rw [Function.comp_apply]
   apply Subtype.ext
-  repeat rw [compMeasurePreserving_compMeasurePreserving_val]
-  exact Eq.symm <|AEEqFun.compQuasiMeasurePreserving_comp g.val
-    hf.quasiMeasurePreserving hf'.quasiMeasurePreserving
+  repeat rw [compMeasurePreserving_val]
+  symm
+  apply AEEqFun.compMeasurePreserving_comp
 
 theorem compMeasurePreserving_iterate {f : α → α} (g : Lp E p μ) (hf : MeasurePreserving f μ μ)
     (n : ℕ) : (compMeasurePreserving f hf)^[n] g =
     compMeasurePreserving f^[n] (MeasurePreserving.iterate hf n) g := by
-  apply Subtype.ext
-  rw [compMeasurePreserving_iterate_val]
-  exact AEEqFun.compQuasiMeasurePreserving_iterate g.val hf.quasiMeasurePreserving n
+  induction n with
+  | zero => simp
+  | succ n h =>
+    nth_rewrite 1 [add_comm]
+    rw [Function.iterate_add, Function.iterate_one, Function.comp_apply, h]
+    change (_ ∘ compMeasurePreserving _ _) _ = _
+    rw [compMeasurePreserving_compMeasurePreserving]
+    simp
 
 variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
