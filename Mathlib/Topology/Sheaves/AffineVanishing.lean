@@ -181,6 +181,8 @@ theorem base [IsAffine X] [F.IsQuasicoherent] : Subsingleton (H F.sheaf 1) := by
     ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel (F.toCoverSheaf U))
   let Ssheaf := S.map (toSheaf X)
   have hSsheaf : Ssheaf.ShortExact := ShortComplex.ShortExact.map_of_exact hS (toSheaf X)
+
+  sorry
   have : Function.Surjective (H.map Ssheaf.g 0) := by
     rw [← Equiv.comp_surjective (H.map Ssheaf.g 0) (H.equiv₀ Ssheaf.X₃).toEquiv]
     conv => arg 1; equals (Ssheaf.g.hom.app (op ⊤)) ∘ (H.equiv₀ Ssheaf.X₂).toEquiv =>
