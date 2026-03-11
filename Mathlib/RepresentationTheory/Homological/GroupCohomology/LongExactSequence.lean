@@ -45,7 +45,7 @@ lemma map_cochainsFunctor_shortExact :
     ShortExact (X.map (cochainsFunctor k G)) :=
   HomologicalComplex.shortExact_of_degreewise_shortExact _ fun i => {
     exact := by
-      have : LinearMap.range X.f.hom.hom = LinearMap.ker X.g.hom.hom :=
+      have : LinearMap.range X.f.hom.toLinearMap = LinearMap.ker X.g.hom.toLinearMap :=
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
       simp [moduleCat_exact_iff_range_eq_ker, LinearMap.range_compLeft,
         LinearMap.ker_compLeft, this]
@@ -130,7 +130,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mem_cocycles₁_of_comp_eq_d₀₁
     {y : X.X₂} {x : G → X.X₁} (hx : X.f.hom ∘ x = d₀₁ X.X₂ y) :
     x ∈ cocycles₁ X.X₁ := by
-  apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
+  apply Function.Injective.comp_left ((Rep.mono_iff_injective k G X.f).1 hX.2)
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
 
@@ -155,7 +155,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mem_cocycles₂_of_comp_eq_d₁₂
     {y : G → X.X₂} {x : G × G → X.X₁} (hx : X.f.hom ∘ x = d₁₂ X.X₂ y) :
     x ∈ cocycles₂ X.X₁ := by
-  apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
+  apply Function.Injective.comp_left ((Rep.mono_iff_injective k G X.f).1 hX.2)
   have := congr($((mapShortComplexH2 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH2, LinearMap.compLeft]
 

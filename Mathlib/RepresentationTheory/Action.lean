@@ -56,7 +56,7 @@ def linearizeMap (f : X ⟶ Y) : IntertwiningMap (A := k) (linearize k G X) (lin
 
 @[simp]
 lemma linearizeMap_single (f : X ⟶ Y) (x : X.V) :
-    (linearizeMap f).toLinearMap (Finsupp.single x (1 : k)) = Finsupp.single (f.hom x) 1 := by
+    (linearizeMap f) (Finsupp.single x (1 : k)) = Finsupp.single (f.hom x) 1 := by
   simp [linearizeMap]
 
 lemma linearizeMap_toLinearMap (f : X ⟶ Y) :
@@ -154,7 +154,7 @@ lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
     TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
     TensorProduct.curry_apply, LinearEquiv.coe_coe, LinearMap.rTensor_tmul,
     finsuppTensorFinsupp'_single_tmul_single, mul_one, toLinearMap_lTensor, toLinearMap_assoc,
-    TensorProduct.assoc_tmul, LinearMap.lTensor_tmul]
+    TensorProduct.assoc_tmul, LinearMap.lTensor_tmul, toLinearMap_apply]
   -- after fixing the defeq problems in `Action` and in the monoidal category structure of `types`
   -- this line should close the goal so this is left as an indicator.
   with_reducible convert linearizeMap_single (α_ X Y Z).hom ((x, y), z)
@@ -189,7 +189,7 @@ def δ : (linearize k G (X ⊗ Y)).IntertwiningMap
 
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_apply_single (xy : (X ⊗ Y).V) :
-    (δ (k := k) X Y).toLinearMap (Finsupp.single xy 1) = Finsupp.single xy.1 1 ⊗ₜ
+    (δ (k := k) X Y) (Finsupp.single xy 1) = Finsupp.single xy.1 1 ⊗ₜ
       Finsupp.single xy.2 1 := by
   simp [δ, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul k]
 

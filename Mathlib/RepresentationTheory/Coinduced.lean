@@ -275,7 +275,7 @@ def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coin
 
 @[simp]
 lemma resCoindToHom_hom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
-    (i : H) : ((resCoindToHom φ B A f).hom.toLinearMap c).1 i = (Hom.hom f) ((B.ρ i) c) := rfl
+    (i : H) : ((resCoindToHom φ B A f).hom c).1 i = (Hom.hom f) ((B.ρ i) c) := rfl
 
 -- unif_hint (G H : Type*) [Monoid G] [Monoid H] (φ : G →* H) (A : Rep k G) where ⊢
 --   A.ρ.coind φ ≟ (coind φ A).ρ
@@ -298,10 +298,8 @@ def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
       ext x
       have := ((f.hom x).2 g 1).symm
       have := hom_comm_apply f (φ g) x
-      simp_all [Representation.IntertwiningMap.toLinearMap_apply]⟩
-  left_inv x := by
-    ext; simp [resCoindToHom_hom_hom_apply_coe _,
-      ← Representation.IntertwiningMap.toLinearMap_apply]
+      simp_all⟩
+  left_inv x := by ext; simp [resCoindToHom_hom_hom_apply_coe _]
   right_inv z := by
     ext (b : B.V)
     have := hom_comm_apply z

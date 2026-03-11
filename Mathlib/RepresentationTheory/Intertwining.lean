@@ -76,9 +76,11 @@ lemma toLinearMap_mk (f : V →ₗ[A] W) (h) :
   (⟨f, h⟩ : IntertwiningMap ρ σ).toLinearMap = f := rfl
 
 lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
-    f.toLinearMap (ρ g v) = σ g (f.toLinearMap v) := congr($(f.isIntertwining' g) v)
+    f (ρ g v) = σ g (f v) := congr($(f.isIntertwining' g) v)
 
 lemma toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v = f v := rfl
+
+@[simp] lemma coe_toLinearMap (f : IntertwiningMap ρ σ) : (f.toLinearMap : _ → _) = f := rfl
 
 @[simp] lemma _root_.LinearMap.toIntertwiningMap
   (hf : ∀ (g : G), ∀ (v : V), f (ρ g v) = σ g (f v)) (v : V) :
@@ -390,7 +392,7 @@ def equivLinearMapAsModule :
 def llcomp : IntertwiningMap σ τ →ₗ[A] IntertwiningMap ρ σ →ₗ[A] IntertwiningMap ρ τ where
   toFun f :=
     { toFun g := ((f.toLinearMap.comp g.toLinearMap).intertwiningMap_of_isIntertwiningMap ρ τ
-      (by intro γ v; simp [f.isIntertwining, g.isIntertwining, toLinearMap_apply]))
+      (by intro γ v; simp [f.isIntertwining, g.isIntertwining]))
       map_add' _ _ := by ext; simp [map_add, toLinearMap_apply]
       map_smul' _ _ := by ext; simp [toLinearMap_apply] }
   map_add' _ _ := by ext; simp [toLinearMap_apply]

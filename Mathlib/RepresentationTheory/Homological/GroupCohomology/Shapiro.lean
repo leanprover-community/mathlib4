@@ -59,13 +59,7 @@ noncomputable def linearYonedaObjResProjectiveResolutionIso
         rw [← ModuleCat.ofHom_comp, ← ModuleCat.ofHom_comp, ModuleCat.hom_ofHom,
           ModuleCat.hom_ofHom]
         ext
-        simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-          Linear.leftComp_apply, Rep.hom_comp, Representation.IntertwiningMap.comp_toLinearMap,
-          Representation.IntertwiningMap.toLinearMap_apply, Functor.mapHomologicalComplex_obj_X]
-        simp only [resCoindHomEquiv, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk,
-          ← Representation.IntertwiningMap.toLinearMap_apply]
-        rw [resCoindToHom_hom_hom_apply_coe, resCoindToHom_hom_hom_apply_coe]
-        simp [hom_comm_apply, Representation.IntertwiningMap.toLinearMap_apply])
+        simp [resCoindHomEquiv, resCoindToHom_hom_hom_apply_coe S.subtype, hom_comm_apply])
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have

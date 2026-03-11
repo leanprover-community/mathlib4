@@ -143,37 +143,52 @@ lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
 
 variable (A)
 
+lemma coindToInd_indToCoind : A.indToCoind ∘ₗ A.coindToInd = LinearMap.id := by
+  ext g a
+  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq]
+  rw [coindToInd_of_support_subset_orbit a g]
+  · simp
+  · simp only [Function.support_subset_iff]
+    intro x hx
+    contrapose! hx
+    sorry
+
+
+    -- simpa using indToCoindAux_of_not_rel (h := hx) ..
+#exit
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
 `S`, and `A` a `k`-linear `S`-representation. This is an isomorphism `Ind_S^G(A) ≅ Coind_S^G(A)`.
 The forward map sends `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`, and the inverse sends `f : G → A` to
 `∑ᵢ ⟦gᵢ ⊗ₜ[k] f(gᵢ)⟧` for `1 ≤ i ≤ n`. -/
 @[simps! hom_hom_hom inv_hom_hom]
 noncomputable def indCoindIso : ind S.subtype A ≅ coind S.subtype A :=
-  Action.mkIso ({
-    hom := ModuleCat.ofHom <| indToCoind A
-    inv := ModuleCat.ofHom <| coindToInd A
-    hom_inv_id := by
-      ext g a
-      simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply,
-        TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
-        LinearMap.coe_restrictScalars]
-      rw [coindToInd_of_support_subset_orbit g]
-      · simp
-      · simp only [Function.support_subset_iff]
-        intro x hx
-        contrapose! hx
-        simpa using indToCoindAux_of_not_rel (h := hx) ..
-    inv_hom_id := by
-      ext f g
-      simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply,
-        coindToInd_apply A, map_sum, AddSubmonoidClass.coe_finset_sum, Finset.sum_apply]
-      rw [Finset.sum_eq_single ⟦g⟧]
-      · simp
-      · intro b _ hb
-        induction b using Quotient.inductionOn with | h b =>
-        simpa using indToCoindAux_of_not_rel b g (f.1 b) (mt Quotient.sound hb.symm)
-      · simp })
-    fun _ => by ext; simp [ModuleCat.endRingEquiv]
+  mkIso (.mk (.ofLinear (indToCoind A) (coindToInd A)
+    (by ext; sorry) sorry) <| fun g ↦ by ext; simp)
+  -- Action.mkIso ({
+  --   hom := ModuleCat.ofHom <| indToCoind A
+  --   inv := ModuleCat.ofHom <| coindToInd A
+  --   hom_inv_id := by
+  --     ext g a
+  --     simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply,
+  --       TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+  --       LinearMap.coe_restrictScalars]
+  --     rw [coindToInd_of_support_subset_orbit g]
+  --     · simp
+  --     · simp only [Function.support_subset_iff]
+  --       intro x hx
+  --       contrapose! hx
+  --       simpa using indToCoindAux_of_not_rel (h := hx) ..
+  --   inv_hom_id := by
+  --     ext f g
+  --     simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply,
+  --       coindToInd_apply A, map_sum, AddSubmonoidClass.coe_finset_sum, Finset.sum_apply]
+  --     rw [Finset.sum_eq_single ⟦g⟧]
+  --     · simp
+  --     · intro b _ hb
+  --       induction b using Quotient.inductionOn with | h b =>
+  --       simpa using indToCoindAux_of_not_rel b g (f.1 b) (mt Quotient.sound hb.symm)
+  --     · simp })
+    -- fun _ => by ext; simp [ModuleCat.endRingEquiv]
 
 variable (k S)
 
