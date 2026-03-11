@@ -717,3 +717,58 @@ lemma quotient_regular_isGorenstein_iff_isGorenstein (rs : List R) (reg : IsRegu
         fun h ↦ IsGorensteinLocalRing.of_ringEquiv e'.symm⟩
 
 end
+
+section
+
+variable [IsLocalRing R] [IsNoetherianRing R]
+
+lemma exists_isPrime_no_insert (p : Ideal R) [p.IsPrime] (lt : p < maximalIdeal R) :
+    ∃ q, q.IsPrime ∧ p ≤ q ∧ (∀ r, r.IsPrime → q < r → r = maximalIdeal R) := by
+  sorry
+
+lemma residueField_ext_subsingleton_of_no_insert (p : Ideal R) [p.IsPrime] (lt : p < maximalIdeal R)
+    (h : ∀ q, q.IsPrime → p < q → q = maximalIdeal R) (k l : ℕ) (eq : l = k + 1)
+    (sub : Subsingleton (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) l)) :
+    Subsingleton (Ext (ModuleCat.of (Localization.AtPrime p) p.ResidueField)
+      (ModuleCat.of (Localization.AtPrime p) (Localization.AtPrime p)) k) := by
+  sorry
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
+    (h : Subsingleton (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) k)) :
+    IsGorensteinLocalRing R := by
+  obtain ⟨n, hn⟩ : ∃ n : ℕ, ringKrullDim R = n := exist_nat_eq' R
+  induction n generalizing R k with
+  | zero =>
+    let _ : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr hn
+    have injlt : HasInjectiveDimensionLT (ModuleCat.of R R) k := by
+      apply hasInjectiveDimensionLT_of_enoughProjectives (ModuleCat.of R R) k
+      apply ModuleCat.ext_subsingleton_of_quotients _ _ (fun I ↦ ?_)
+      apply ext_subsingleton_of_support_subset _ _ k (fun p hp ↦ ?_)
+      rw [Set.mem_setOf_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
+      let e : (ModuleCat.of R (Shrink.{u, u} (R ⧸ maximalIdeal R))) ≅
+        ModuleCat.of R (R ⧸ maximalIdeal R) := (Shrink.linearEquiv _ _).toModuleIso
+      exact (((extFunctor k).mapIso e.op).app
+        (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp h
+    exact (isGorensteinLocalRing_def R).mpr (ne_top_of_lt (injectiveDimension_lt_iff.mpr injlt))
+  | succ n ih =>
+    have supp_eq (M : ModuleCat.{u} R) [Module.Finite R M] :
+      Module.support R (Ext M (ModuleCat.of R R) k) ⊆ {closedPoint R} := by
+      intro p hp
+      by_contra ne
+      have ltm : p.1 < maximalIdeal R := lt_of_le_of_ne (le_maximalIdeal_of_isPrime p.1) (by
+        simpa [PrimeSpectrum.ext_iff, closedPoint] using ne)
+      rcases exists_isPrime_no_insert p.1 ltm with ⟨q, qp, ple, hq⟩
+      have isg : IsGorensteinLocalRing (Localization.AtPrime q) := by
+        sorry
+      have qmem : ⟨q, qp⟩ ∈ support R (Ext M (ModuleCat.of R R) k) := by
+        sorry
+      --injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing
+      --`Ext M_q R_q k` is localization of `Ext M R k` at `q`
+      --is subsingleton by injective dimension
+      sorry
+    --this impies finite length
+    --inj => surj for smul => find maximal cause contradiction
+    sorry
+
+end
