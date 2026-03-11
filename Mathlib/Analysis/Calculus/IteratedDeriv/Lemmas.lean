@@ -208,26 +208,9 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
 open Pointwise
 
 omit hx h in
-lemma iteratedFDerivWithin_comp_neg (a : 𝕜) : iteratedFDerivWithin 𝕜 n (fun x ↦ f (-x)) s a
-    = (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (-s) (-a) := by
-  induction n generalizing a with
-  | zero => simp [iteratedFDerivWithin]
-  | succ n ih =>
-    have ih' : iteratedFDerivWithin 𝕜 n (fun x => f (-x)) s
-      = fun a ↦ (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (-s) (-a) := by
-      ext b
-      rw [ih b]
-    set g := fun a ↦ iteratedFDerivWithin 𝕜 n f (-s) a
-    rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left,
-      Function.comp_apply, Function.comp_apply, ih', ← Pi.smul_def,
-      fderivWithin_const_smul_field' ((-1 : 𝕜) ^ n) (f := fun a ↦ g (-a)),
-      fderivWithin_comp_neg (f := g), ← neg_one_smul 𝕜 (fderivWithin 𝕜 _ (-s) (-a)),
-      ← mul_smul _ (-1), ← pow_succ (-1) n, map_smul]
-
-omit hx h in
 lemma iteratedDerivWithin_comp_neg (a : 𝕜) : iteratedDerivWithin n (fun x ↦ f (-x)) s a
     = (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) (-a) := by
-  simp [iteratedDerivWithin, iteratedFDerivWithin_comp_neg a]
+  simp [iteratedDerivWithin, iteratedFDerivWithin_comp_neg n a]
 
 omit hx h in
 theorem iteratedDerivWithin_comp_const_add (c : 𝕜) :
@@ -254,11 +237,7 @@ theorem iteratedDerivWithin_comp_const_sub (c : 𝕜) :
     iteratedDerivWithin n (fun z => f (c - z)) s =
       fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (c +ᵥ -s) (c - x) := by
   ext a
-  have : (fun z : 𝕜 => f (c - z)) = fun z => (fun w => f (c + w)) (-z) := by
-    simp only [sub_eq_add_neg]
-  rw [this, iteratedDerivWithin_comp_neg (f := fun w => f (c + w)) a,
-    iteratedDerivWithin_comp_const_add c]
-  ring_nf
+  simp [iteratedDerivWithin, iteratedFDerivWithin_comp_const_sub]
 
 lemma iteratedDerivWithin_id :
     iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by
