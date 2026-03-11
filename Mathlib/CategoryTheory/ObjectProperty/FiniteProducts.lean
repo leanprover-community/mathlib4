@@ -112,8 +112,8 @@ lemma IsClosedUnderFiniteProducts.mk' [HasFiniteProducts C]
 abbrev IsClosedUnderBinaryCoproducts :=
   P.IsClosedUnderColimitsOfShape (Discrete WalkingPair)
 
-lemma prop_of_isColimit_binaryCofan [P.IsClosedUnderBinaryCoproducts] {X Y : C} {B : BinaryCofan X Y}
-    (hB : IsColimit B) (hX : P X) (hY : P Y) :
+lemma prop_of_isColimit_binaryCofan [P.IsClosedUnderBinaryCoproducts] {X Y : C}
+    {B : BinaryCofan X Y} (hB : IsColimit B) (hX : P X) (hY : P Y) :
     P B.pt :=
   P.prop_of_isColimit hB (by rintro ⟨_ | _⟩ <;> assumption)
 
