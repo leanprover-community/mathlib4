@@ -573,7 +573,7 @@ end Subgroup
 
 namespace MulEquiv
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma range_eq_top (e : G ≃* G') : (e : G →* G').range = ⊤ :=
   MonoidHom.range_eq_top.mpr e.surjective
 
