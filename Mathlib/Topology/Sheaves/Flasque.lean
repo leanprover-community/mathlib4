@@ -159,9 +159,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
       apply_fun (fun s ↦ restrictOpen s (W ⊓ t.right.1.unop) (le_of_eq (inf_comm _ _))) at this
       rw [restrict_restrict, restrict_restrict] at this
       exact this
-    have le : iSup f ≤ U := by
-      simp only [iSup_le_iff, Fin.forall_fin_two]
-      exact ⟨tle, Wle⟩
+    have le : iSup f ≤ U := iSup_le_iff.mpr (Fin.forall_fin_two.mpr ⟨tle, Wle⟩)
     have comp : s |_ (iSup f) = S.g.hom.app (op (iSup f)) t₅:= by
       refine (eq_app_of_locally_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨tle, Wle⟩) ?_).symm
       rw [Fin.forall_fin_two]
