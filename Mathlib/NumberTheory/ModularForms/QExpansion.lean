@@ -64,12 +64,23 @@ lemma qParam_tendsto_atImInfty {h : ℝ} (hh : 0 < h) :
     Tendsto (fun τ : ℍ ↦ 𝕢 h τ) atImInfty (nhds 0) :=
   ((Periodic.qParam_tendsto hh).mono_right nhdsWithin_le_nhds).comp tendsto_coe_atImInfty
 
+variable (h) in
+/--
+The analytic function `F` such that `f τ = F (exp (2 * π * I * τ / h))`, extended by a choice of
+limit at `0`.
+-/
+def cuspFunction (f : ℍ → ℂ) : ℂ → ℂ := Function.Periodic.cuspFunction h (f ∘ ofComplex)
+
+theorem eq_cuspFunction {f : ℍ → ℂ} (τ : ℍ) (hh : h ≠ 0) (hfper : Periodic (f ∘ ofComplex) h) :
+    cuspFunction h f (𝕢 h τ) = f τ := by
+  simpa [cuspFunction] using (Periodic.eq_cuspFunction hh hfper τ)
+
 end UpperHalfPlane
 
 namespace SlashInvariantFormClass
 
-theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ.strictPeriods) :
-    Periodic (f ∘ ofComplex) h := by
+theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k]
+    (hΓ : h ∈ Γ.strictPeriods) : Periodic (f ∘ ofComplex) h := by
   intro w
   by_cases! hw : 0 < im w
   · have : 0 < im (w + h) := by simp [hw]
@@ -80,15 +91,8 @@ theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ
   · have : im (w + h) ≤ 0 := by simpa using hw
     simp [ofComplex_apply_of_im_nonpos this, ofComplex_apply_of_im_nonpos hw]
 
-variable (h) in
-/--
-The analytic function `F` such that `f τ = F (exp (2 * π * I * τ / h))`, extended by a choice of
-limit at `0`.
--/
-def cuspFunction (f : ℍ → ℂ) : ℂ → ℂ := Function.Periodic.cuspFunction h (f ∘ ofComplex)
-
-theorem eq_cuspFunction [SlashInvariantFormClass F Γ k] (τ : ℍ) (hΓ : h ∈ Γ.strictPeriods)
-    (hh : h ≠ 0) : cuspFunction h f (𝕢 h τ) = f τ := by
+theorem eq_cuspFunction [SlashInvariantFormClass F Γ k] (τ : ℍ)
+    (hΓ : h ∈ Γ.strictPeriods) (hh : h ≠ 0) : cuspFunction h f (𝕢 h τ) = f τ := by
   simpa using (periodic_comp_ofComplex f hΓ).eq_cuspFunction hh τ
 
 end SlashInvariantFormClass
@@ -97,46 +101,75 @@ open SlashInvariantFormClass
 
 namespace ModularFormClass
 
-theorem differentiableAt_comp_ofComplex [ModularFormClass F Γ k]
-      {z : ℂ} (hz : 0 < im z) :
-    DifferentiableAt ℂ (f ∘ ofComplex) z :=
-  mdifferentiableAt_iff_differentiableAt.mp ((holo f _).comp z (mdifferentiableAt_ofComplex hz))
+theorem periodic_comp_ofComplex
+    [ModularFormClass F Γ k] (hΓ : h ∈ Γ.strictPeriods) :
+    Periodic (f ∘ ofComplex) h := by
+  simpa using (SlashInvariantFormClass.periodic_comp_ofComplex f hΓ)
 
-theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] (hi : IsCusp OnePoint.infty Γ) :
-    BoundedAtFilter I∞ (f ∘ ofComplex) :=
-  (OnePoint.isBoundedAt_infty_iff.mp (bdd_at_cusps f hi)).comp_tendsto tendsto_comap_im_ofComplex
+theorem differentiableAt_comp_ofComplex [ModularFormClass F Γ k] :
+    ∀ z : ℂ, 0 < im z → DifferentiableAt ℂ (f ∘ ofComplex) z := by
+  intro z hz
+  exact mdifferentiableAt_iff_differentiableAt.mp
+    ((holo f _).comp z (mdifferentiableAt_ofComplex hz))
 
-theorem differentiableAt_cuspFunction [ModularFormClass F Γ k]
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
+theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) : IsBoundedAtImInfty f :=
+  OnePoint.isBoundedAt_infty_iff.mp (bdd_at_cusps f (Γ.isCusp_of_mem_strictPeriods hh hΓ))
+
+end ModularFormClass
+
+open ModularFormClass
+
+theorem differentiableAt_cuspFunction {f : ℍ → ℂ} (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
+    (hfhol : ∀ z : ℂ, 0 < im z → DifferentiableAt ℂ (f ∘ ofComplex) z)
+    (hfbdd : IsBoundedAtImInfty f) {q : ℂ} (hq : ‖q‖ < 1) :
     DifferentiableAt ℂ (cuspFunction h f) q := by
   rcases eq_or_ne q 0 with rfl | hq'
-  · exact (periodic_comp_ofComplex f hΓ).differentiableAt_cuspFunction_zero hh
+  · exact hfper.differentiableAt_cuspFunction_zero hh
       (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
-        (fun _ ↦ differentiableAt_comp_ofComplex f))
-      (bounded_at_infty_comp_ofComplex f <| Γ.isCusp_of_mem_strictPeriods hh hΓ)
+        (fun z hz ↦ by simpa using hfhol z hz))
+      (hfbdd.comp_tendsto tendsto_comap_im_ofComplex)
   · exact Periodic.qParam_right_inv hh.ne' hq' ▸
-      (periodic_comp_ofComplex f hΓ).differentiableAt_cuspFunction hh.ne'
-        <| differentiableAt_comp_ofComplex _ <| Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq'
+      hfper.differentiableAt_cuspFunction hh.ne' <|
+        hfhol _ (Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq')
 
-lemma differentiableOn_cuspFunction_ball [ModularFormClass F Γ k]
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
-    DifferentiableOn ℂ (cuspFunction h f) (Metric.ball 0 1) :=
-  fun _ hz ↦ (differentiableAt_cuspFunction f hh hΓ <| mem_ball_zero_iff.mp hz)
+protected theorem ModularFormClass.differentiableAt_cuspFunction [ModularFormClass F Γ k]
+    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
+    DifferentiableAt ℂ (cuspFunction h f) q :=
+  differentiableAt_cuspFunction hh (periodic_comp_ofComplex f hΓ)
+    (differentiableAt_comp_ofComplex f) (bounded_at_infty_comp_ofComplex f hh hΓ) hq
+
+lemma differentiableOn_cuspFunction_ball {f : ℍ → ℂ} (hh : 0 < h)
+    (hfper : Periodic (f ∘ ofComplex) h)
+    (hfhol : ∀ z : ℂ, 0 < im z → DifferentiableAt ℂ (f ∘ ofComplex) z)
+    (hfbdd : IsBoundedAtImInfty f) : DifferentiableOn ℂ (cuspFunction h f) (Metric.ball 0 1) :=
+  fun _ hz ↦ (differentiableAt_cuspFunction hh hfper hfhol hfbdd <| mem_ball_zero_iff.mp hz)
     |>.differentiableWithinAt
 
-lemma analyticAt_cuspFunction_zero [ModularFormClass F Γ k]
+protected lemma ModularFormClass.differentiableOn_cuspFunction_ball [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
-    AnalyticAt ℂ (cuspFunction h f) 0 :=
+    DifferentiableOn ℂ (cuspFunction h f) (Metric.ball 0 1) :=
+  differentiableOn_cuspFunction_ball hh (periodic_comp_ofComplex f hΓ)
+    (differentiableAt_comp_ofComplex f) (bounded_at_infty_comp_ofComplex f hh hΓ)
+
+lemma ModularFormClass.analyticAt_cuspFunction_zero [ModularFormClass F Γ k] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) : AnalyticAt ℂ (cuspFunction h f) 0 :=
   DifferentiableOn.analyticAt
-    (fun q hq ↦ (differentiableAt_cuspFunction _ hh hΓ hq).differentiableWithinAt)
+    (fun q hq ↦ (ModularFormClass.differentiableAt_cuspFunction _ hh hΓ hq).differentiableWithinAt)
     (by simpa [ball_zero_eq] using Metric.ball_mem_nhds (0 : ℂ) zero_lt_one)
 
-lemma cuspFunction_apply_zero [ModularFormClass F Γ k] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
-    cuspFunction h f 0 = valueAtInfty f := by
+lemma cuspFunction_apply_zero {f : ℍ → ℂ} (hh : 0 < h)
+    (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
+    (hfper : Periodic (f ∘ UpperHalfPlane.ofComplex) h) : cuspFunction h f 0 = valueAtInfty f := by
   refine (Tendsto.limUnder_eq ?_).symm
-  nth_rw 1 [← funext fun τ ↦ eq_cuspFunction f τ hΓ hh.ne']
-  refine (analyticAt_cuspFunction_zero f hh hΓ).continuousAt.tendsto.comp ?_
-  exact qParam_tendsto_atImInfty hh
+  have : (cuspFunction h f ∘ fun τ ↦ 𝕢 h τ : ℍ → ℂ) = f := by
+    funext τ
+    simpa using eq_cuspFunction τ hh.ne' hfper
+  simpa [this] using hfanalytic.continuousAt.tendsto.comp (qParam_tendsto_atImInfty hh)
+
+protected lemma ModularFormClass.cuspFunction_apply_zero [ModularFormClass F Γ k] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) : cuspFunction h f 0 = valueAtInfty f :=
+  cuspFunction_apply_zero hh (analyticAt_cuspFunction_zero f hh hΓ) (periodic_comp_ofComplex f hΓ)
 
 variable (h) in
 /-- The `q`-expansion of a level `n` modular form, bundled as a `PowerSeries`. -/
@@ -147,26 +180,41 @@ lemma qExpansion_coeff (f : ℍ → ℂ) (m : ℕ) :
     (qExpansion h f).coeff m = (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction h f) 0 := by
   simp [qExpansion]
 
-lemma qExpansion_coeff_zero [ModularFormClass F Γ k] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
-    (qExpansion h f).coeff 0 = valueAtInfty f := by
-  simp [qExpansion_coeff, cuspFunction_apply_zero f hh hΓ]
+protected lemma ModularFormClass.qExpansion_coeff_zero [ModularFormClass F Γ k] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) : (qExpansion h f).coeff 0 = valueAtInfty f := by
+  simp [qExpansion_coeff, ModularFormClass.cuspFunction_apply_zero f hh hΓ]
 
-lemma hasSum_qExpansion_of_norm_lt [ModularFormClass F Γ k]
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
+lemma hasSum_qExpansion_of_norm_lt {f : ℍ → ℂ} (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
+    (hfhol : ∀ z : ℂ, 0 < im z → DifferentiableAt ℂ (f ∘ ofComplex) z)
+    (hfbdd : IsBoundedAtImInfty f) {q : ℂ} (hq : ‖q‖ < 1) :
     HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • q ^ m) (cuspFunction h f q) := by
-  convert hasSum_taylorSeries_on_ball (differentiableOn_cuspFunction_ball f hh hΓ)
-    (by simpa using hq) using 2 with m
+  convert hasSum_taylorSeries_on_ball (differentiableOn_cuspFunction_ball hh hfper hfhol hfbdd)
+      (by simpa using hq) using 2 with m
   grind [qExpansion_coeff, sub_zero, smul_eq_mul]
 
-@[deprecated (since := "2025-12-04")] alias hasSum_qExpansion_of_abs_lt :=
-  hasSum_qExpansion_of_norm_lt
+protected lemma ModularFormClass.hasSum_qExpansion_of_norm_lt [ModularFormClass F Γ k]
+    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
+    HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • q ^ m) (cuspFunction h f q) :=
+  hasSum_qExpansion_of_norm_lt hh (periodic_comp_ofComplex f hΓ)
+    (differentiableAt_comp_ofComplex f) (bounded_at_infty_comp_ofComplex f hh hΓ) hq
 
-lemma hasSum_qExpansion [ModularFormClass F Γ k]
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (τ : ℍ) :
+@[deprecated (since := "2025-12-04")] alias ModularFormClass.hasSum_qExpansion_of_abs_lt :=
+  ModularFormClass.hasSum_qExpansion_of_norm_lt
+
+lemma hasSum_qExpansion {f : ℍ → ℂ} (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
+    (hfhol : ∀ z : ℂ, 0 < im z → DifferentiableAt ℂ (f ∘ ofComplex) z)
+    (hfbdd : IsBoundedAtImInfty f) (τ : ℍ) :
     HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • 𝕢 h τ ^ m) (f τ) := by
   have : 0 < 2 * π * τ.im / h := by positivity
   have : ‖𝕢 h τ‖ < 1 := by simpa [Periodic.qParam, Complex.norm_exp, neg_div]
-  simpa [eq_cuspFunction f _ hΓ hh.ne'] using hasSum_qExpansion_of_norm_lt f hh hΓ this
+  simpa [eq_cuspFunction τ hh.ne' hfper] using
+    hasSum_qExpansion_of_norm_lt hh hfper hfhol hfbdd this
+
+protected lemma ModularFormClass.hasSum_qExpansion [ModularFormClass F Γ k] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) (τ : ℍ) :
+    HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • 𝕢 h τ ^ m) (f τ) :=
+  hasSum_qExpansion hh (periodic_comp_ofComplex f hΓ) (differentiableAt_comp_ofComplex f)
+    (bounded_at_infty_comp_ofComplex f hh hΓ) τ
 
 variable (h) in
 /--
@@ -199,16 +247,96 @@ lemma qExpansionFormalMultilinearSeries_radius [ModularFormClass F Γ k]
   simp only [qExpansionFormalMultilinearSeries_apply_norm]
   rw [← r.abs_eq]
   simp_rw [← Real.norm_eq_abs, ← Complex.norm_real, ← norm_pow, ← norm_mul]
-  exact (hasSum_qExpansion_of_norm_lt f hh hΓ (q := r) (by simpa using hr)).summable.norm
+  exact (ModularFormClass.hasSum_qExpansion_of_norm_lt f hh hΓ (by simpa using hr)).summable.norm
+
+lemma hasSum_cuspFunction_of_hasSum_punctured {f : ℍ → ℂ} (hh : 0 < h) {c : ℕ → ℂ}
+    (hf : ∀ (τ : ℍ), HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) {q : ℂ} (hq : ‖q‖ < 1)
+    (hq1 : q ≠ 0) : HasSum (fun m ↦ c m • q ^ m) (cuspFunction h f q) := by
+  have h1 := Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1
+  let τ : ℍ := ⟨Periodic.invQParam h q, h1⟩
+  have h2 := (Periodic.cuspFunction_eq_of_nonzero h (f ∘ ofComplex) hq1)
+  have : cuspFunction h f q = f τ := by simpa [UpperHalfPlane.ofComplex_apply_of_im_pos h1] using h2
+  grind [hf τ, Periodic.qParam_right_inv]
+
+protected lemma ModularFormClass.hasSum_cuspFunction_of_hasSum_punctured (hh : 0 < h) {c : ℕ → ℂ}
+    [ModularFormClass F Γ k] {f : F} (hf : ∀ (τ : ℍ), HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ))
+    {q : ℂ} (hq : ‖q‖ < 1) (hq1 : q ≠ 0) : HasSum (fun m ↦ c m • q ^ m) (cuspFunction h f q) :=
+  hasSum_cuspFunction_of_hasSum_punctured hh hf hq hq1
+
+lemma hasFPowerSeriesOnBall_update {f : ℍ → ℂ} (hh : 0 < h) {c : ℕ → ℂ}
+    (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) :
+    HasFPowerSeriesOnBall (update (cuspFunction h f) 0 (c 0)) (.ofScalars ℂ c) 0 1 := by
+  constructor
+  · refine le_of_forall_lt_imp_le_of_dense fun r hr ↦ ?_
+    rcases eq_or_ne r 0 with rfl | hr'
+    · simp
+    · lift r to NNReal using hr.ne_top
+      letI : FiniteDimensional ℝ ℂ := basisOneI.finiteDimensional_of_finite
+      apply FormalMultilinearSeries.le_radius_of_summable
+      simpa [smul_eq_mul, norm_mul, mul_comm, mul_left_comm, mul_assoc] using
+        (hasSum_cuspFunction_of_hasSum_punctured hh hf (q := r) (by simpa using hr)
+          (mod_cast hr')).summable.norm
+  · simp
+  · intro y hy
+    rw [zero_add]
+    -- note the `simp`s below do not automatically apply this lemma to the argument of
+    -- `Function.update`, because of limitations in `simp`'s support for dependent function types,
+    -- see lean4 issue #12478.
+    rw [← ENNReal.coe_one, Metric.eball_coe, NNReal.coe_one, mem_ball_zero_iff] at hy
+    rcases eq_or_ne y 0 with rfl | hy'
+    · simpa +contextual [zero_pow_eq] using hasSum_ite_eq 0 (c 0)
+    · simpa [update_of_ne hy', mul_comm]
+        using hasSum_cuspFunction_of_hasSum_punctured hh hf hy hy'
+
+protected lemma ModularFormClass.hasFPowerSeriesOnBall_update (hh : 0 < h) {c : ℕ → ℂ} {f : F}
+    [ModularFormClass F Γ k] (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) :
+    HasFPowerSeriesOnBall (update (cuspFunction h f) 0 (c 0)) (.ofScalars ℂ c) 0 1 :=
+  hasFPowerSeriesOnBall_update hh hf
+
+lemma hasFPowerSeriesOnBall_cuspFunction {f : ℍ → ℂ} {c : ℕ → ℂ} (hh : 0 < h)
+    (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
+    (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) :
+    HasFPowerSeriesOnBall (cuspFunction h f) (.ofScalars ℂ c) 0 1 := by
+  -- previous lemma gives result after updating at 0
+  have H1 : HasFPowerSeriesOnBall (update (cuspFunction h f) 0 (c 0)) (.ofScalars ℂ c) 0 1 :=
+    hasFPowerSeriesOnBall_update hh hf
+  -- now just need to check values at 0 match
+  -- use continuity of both functions & we know it everywhere else
+  have H2 : c 0 = cuspFunction h f 0 := by
+    have L1 := H1.hasFPowerSeriesAt.continuousAt
+    have L2 := hfanalytic.continuousAt
+    have := (L1.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE L2).mp <|
+      by filter_upwards [self_mem_nhdsWithin] with a ha using update_of_ne ha ..
+    simpa [update_self] using this.eq_of_nhds
+  rwa [update_eq_self_iff.mpr H2] at H1
+
+protected lemma ModularFormClass.hasFPowerSeriesOnBall_cuspFunction {c : ℕ → ℂ} (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) {f : F} [ModularFormClass F Γ k]
+    (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) :
+    HasFPowerSeriesOnBall (cuspFunction h f) (.ofScalars ℂ c) 0 1 :=
+  hasFPowerSeriesOnBall_cuspFunction hh (analyticAt_cuspFunction_zero f hh hΓ) hf
+
+lemma hasFPowerSeries_cuspFunction {c : ℕ → ℂ}
+    (hh : 0 < h) (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
+    (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) :
+    HasFPowerSeriesOnBall (cuspFunction h f) (qExpansionFormalMultilinearSeries h f) 0 1 := by
+  have h1 := (hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf).hasFPowerSeriesAt
+  have h2 : HasFPowerSeriesAt (cuspFunction h f) (qExpansionFormalMultilinearSeries h f) 0 := by
+    simpa [qExpansionFormalMultilinearSeries, qExpansion_coeff, div_eq_mul_inv, mul_comm]
+      using hfanalytic.hasFPowerSeriesAt
+  simpa [h1.eq_formalMultilinearSeries h2] using hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf
+
+namespace ModularFormClass
 
 /-- The `q`-expansion of `f` is an `FPowerSeries` representing `cuspFunction n f`. -/
-lemma hasFPowerSeries_cuspFunction [ModularFormClass F Γ k]
+protected lemma hasFPowerSeries_cuspFunction [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     HasFPowerSeriesOnBall (cuspFunction h f) (qExpansionFormalMultilinearSeries h f) 0 1 := by
   refine ⟨qExpansionFormalMultilinearSeries_radius f hh hΓ, zero_lt_one, fun hy ↦ ?_⟩
   rw [Metric.mem_eball, edist_zero_right, enorm_eq_nnnorm, ENNReal.coe_lt_one_iff,
     ← NNReal.coe_lt_one, coe_nnnorm] at hy
-  simpa [qExpansionFormalMultilinearSeries, mul_comm] using hasSum_qExpansion_of_norm_lt f hh hΓ hy
+  simpa [qExpansionFormalMultilinearSeries, mul_comm]
+    using ModularFormClass.hasSum_qExpansion_of_norm_lt f hh hΓ hy
 
 /-- The `q`-expansion coefficient can be expressed as a `circleIntegral` for any radius `0 < R < 1`.
 -/
@@ -216,7 +344,7 @@ lemma qExpansion_coeff_eq_circleIntegral [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (n : ℕ) {R : ℝ} (hR : 0 < R) (hR' : R < 1) :
     (qExpansion h f).coeff n =
       ((2 * π * I)⁻¹ * ∮ (z : ℂ) in C(0, R), cuspFunction h f z / z ^ (n + 1)) := by
-  have := ((differentiableOn_cuspFunction_ball f hh hΓ).mono
+  have := ((ModularFormClass.differentiableOn_cuspFunction_ball f hh hΓ).mono
     (Metric.closedBall_subset_ball hR')).circleIntegral_one_div_sub_center_pow_smul hR n
   rw [smul_eq_mul, div_eq_mul_inv, mul_assoc, mul_comm, ← div_eq_iff two_pi_I_ne_zero] at this
   simp_rw [qExpansion, PowerSeries.coeff_mk, ← this, sub_zero, smul_eq_mul, one_div_mul_eq_div,
@@ -253,17 +381,16 @@ lemma qExpansion_coeff_eq_intervalIntegral [ModularFormClass F Γ k] (hh : 0 < h
     grind
   -- now just complex exponential arithmetic to finish
   simp_rw [deriv_circleMap, this, show u + t * I = τ by rfl, show ⟨↑τ, τ.2⟩ = τ by rfl,
-    eq_cuspFunction f _ hΓ hh.ne', smul_eq_mul, pow_succ, push_cast]
+    SlashInvariantFormClass.eq_cuspFunction f _ hΓ hh.ne', smul_eq_mul, pow_succ, push_cast]
   field_simp [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
 
 theorem exp_decay_sub_atImInfty [ModularFormClass F Γ k] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     (fun τ ↦ f τ - valueAtInfty f) =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) := by
-  have hi : IsCusp OnePoint.infty Γ := Γ.isCusp_of_mem_strictPeriods hh hΓ
+  have := (bounded_at_infty_comp_ofComplex f hh hΓ).comp_tendsto tendsto_comap_im_ofComplex
   convert ((periodic_comp_ofComplex f hΓ).exp_decay_sub_of_bounded_at_inf hh
     (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
-        fun _ ↦ differentiableAt_comp_ofComplex f)
-    (bounded_at_infty_comp_ofComplex f hi)).comp_tendsto tendsto_coe_atImInfty
-  simp [← cuspFunction_apply_zero f hh hΓ, cuspFunction]
+      fun _ ↦ differentiableAt_comp_ofComplex f _) this).comp_tendsto tendsto_coe_atImInfty
+  simp [← ModularFormClass.cuspFunction_apply_zero f hh hΓ, cuspFunction]
 
 /-- Version of `exp_decay_sub_atImInfty` stating a less precise result but easier to apply in
 practice (not specifying the growth rate precisely).
@@ -280,8 +407,6 @@ theorem exp_decay_sub_atImInfty' [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOn
   ring_nf
 
 end ModularFormClass
-
-open ModularFormClass
 
 namespace UpperHalfPlane.IsZeroAtImInfty
 
@@ -397,33 +522,47 @@ protected lemma ModularForm.qExpansion_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     qExpansion h (f.mul g) = qExpansion h f * qExpansion h g :=
   qExpansion_mul (analyticAt_cuspFunction_zero f hh hΓ) (analyticAt_cuspFunction_zero g hh hΓ)
 
-lemma qExpansion_add {G : Type*} [FunLike G ℍ ℂ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
-    {a b : ℤ} (f : F) [ModularFormClass F Γ a] (g : G) [ModularFormClass G Γ b] :
+lemma qExpansion_add {f g : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 0)
+    (hg : AnalyticAt ℂ (cuspFunction h g) 0) :
     qExpansion h (f + g) = qExpansion h f + qExpansion h g := by
-  ext
-  grind [qExpansion, cuspFunction_add (analyticAt_cuspFunction_zero f hh hΓ).continuousAt
-    (analyticAt_cuspFunction_zero g hh hΓ).continuousAt, PowerSeries.coeff_mk,
-    iteratedDeriv_add (analyticAt_cuspFunction_zero f hh hΓ).contDiffAt
-      (analyticAt_cuspFunction_zero g hh hΓ).contDiffAt]
+  ext m
+  simp [qExpansion_coeff, cuspFunction_add hf.continuousAt hg.continuousAt,
+    iteratedDeriv_add hf.contDiffAt hg.contDiffAt, mul_add]
 
-lemma qExpansion_smul
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (a : ℂ) (f : F) [ModularFormClass F Γ k] :
+protected lemma ModularForm.qExpansion_add {G : Type*} [FunLike G ℍ ℂ] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : F) [ModularFormClass F Γ a] (g : G)
+    [ModularFormClass G Γ b] : qExpansion h (f + g) = qExpansion h f + qExpansion h g :=
+    qExpansion_add (analyticAt_cuspFunction_zero f hh hΓ) (analyticAt_cuspFunction_zero g hh hΓ)
+
+lemma qExpansion_smul {f : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 0) (a : ℂ) :
     qExpansion h (a • f) = a • qExpansion h f := by
-  ext
-  grind [map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk, cuspFunction_smul
-    (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, iteratedDeriv_const_smul_field]
+  ext m
+  simp [qExpansion_coeff, cuspFunction_smul hf.continuousAt, iteratedDeriv_const_smul_field,
+    mul_left_comm]
+
+protected lemma ModularForm.qExpansion_smul (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (a : ℂ) (f : F)
+    [ModularFormClass F Γ k] : qExpansion h (a • f) = a • qExpansion h f :=
+  qExpansion_smul (analyticAt_cuspFunction_zero f hh hΓ) a
 
 set_option backward.isDefEq.respectTransparency false in
-lemma qExpansion_neg
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (f : F) [ModularFormClass F Γ k] :
+lemma qExpansion_neg {f : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 0) :
     qExpansion h (-f) = -qExpansion h f := by
-  simpa using qExpansion_smul hh hΓ (-1 : ℂ) f
+  simpa using qExpansion_smul hf (-1)
 
-set_option backward.isDefEq.respectTransparency false in
-lemma qExpansion_sub (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ}
+protected lemma ModularForm.qExpansion_neg (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (f : F)
+    [ModularFormClass F Γ k] : qExpansion h (-f) = -qExpansion h f :=
+  qExpansion_neg (analyticAt_cuspFunction_zero f hh hΓ)
+
+lemma qExpansion_sub {f g : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 0) (hg : AnalyticAt ℂ
+    (cuspFunction h g) 0) : qExpansion h (f - g) = qExpansion h f - qExpansion h g := by
+  have hg' : AnalyticAt ℂ (cuspFunction h (-g)) 0 := by
+    simpa [cuspFunction_neg hg.continuousAt] using hg.neg
+  simpa [sub_eq_add_neg, qExpansion_neg hg] using (qExpansion_add hf hg')
+
+protected lemma ModularForm.qExpansion_sub (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ}
     (f : ModularForm Γ a) (g : ModularForm Γ b) :
-    qExpansion h (f - g) = qExpansion h f - qExpansion h g := by
-  simpa [sub_eq_add_neg, ← qExpansion_neg hh hΓ g] using qExpansion_add hh hΓ f (-g)
+    qExpansion h (f - g) = qExpansion h f - qExpansion h g :=
+  qExpansion_sub (analyticAt_cuspFunction_zero f hh hΓ) (analyticAt_cuspFunction_zero g hh hΓ)
 
 lemma qExpansion_zero (h) : qExpansion h 0 = 0 := by
   suffices cuspFunction h 0 = 0 by ext; simp [qExpansion_coeff, this]
@@ -434,14 +573,14 @@ lemma qExpansion_eq_zero_iff (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : �
     qExpansion h f = 0 ↔ f = 0 := by
   refine ⟨fun H ↦ ?_, (· ▸ qExpansion_zero h)⟩
   ext z
-  simp [← (hasSum_qExpansion f hh hΓ z).tsum_eq, H]
+  simp [← (ModularFormClass.hasSum_qExpansion f hh hΓ z).tsum_eq, H]
 
 /-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
 def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :
     ModularForm Γ k →+ PowerSeries ℂ where
   toFun f := qExpansion h f
   map_zero' := qExpansion_zero h
-  map_add' f g := qExpansion_add hh hΓ f g
+  map_add' f g := ModularForm.qExpansion_add hh hΓ f g
 
 lemma qExpansion_one [Γ.HasDetPlusMinusOne] : qExpansion h (1 : ModularForm Γ 0) = 1 := by
   ext m
@@ -483,61 +622,16 @@ end ring
 
 section uniqueness
 
-private lemma hasSum_cuspFunction_of_hasSum_punctured
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {c : ℕ → ℂ} [ModularFormClass F Γ k] {f : F}
-    (hf : ∀ (τ : ℍ), HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) {q : ℂ} (hq : ‖q‖ < 1)
-    (hq1 : q ≠ 0) : HasSum (fun m ↦ c m • q ^ m) (cuspFunction h f q) := by
-  grind [eq_cuspFunction f ⟨_, Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1⟩,
-    Periodic.qParam_right_inv]
-
-set_option backward.isDefEq.respectTransparency false in
-private lemma hasFPowerSeriesOnBall_update (hh : 0 < h)
-    (hΓ : h ∈ Γ.strictPeriods) {c : ℕ → ℂ} {f : F} [ModularFormClass F Γ k]
-    (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) :
-    HasFPowerSeriesOnBall (update (cuspFunction h f) 0 (c 0)) (.ofScalars ℂ c) 0 1 := by
-  constructor
-  · refine le_of_forall_lt_imp_le_of_dense fun r hr ↦ ?_
-    rcases eq_or_ne r 0 with rfl | hr'
-    · simp
-    · lift r to NNReal using hr.ne_top
-      apply FormalMultilinearSeries.le_radius_of_summable
-      simpa [norm_smul] using (hasSum_cuspFunction_of_hasSum_punctured hh hΓ hf (q := r)
-        (by simpa using hr) (mod_cast hr')).summable.norm
-  · simp
-  · intro y hy
-    rw [zero_add]
-    -- note the `simp`s below do not automatically apply this lemma to the argument of
-    -- `Function.update`, because of limitations in `simp`'s support for dependent function types,
-    -- see lean4 issue #12478.
-    rw [← ENNReal.coe_one, eball_coe, NNReal.coe_one, mem_ball_zero_iff] at hy
-    rcases eq_or_ne y 0 with rfl | hy'
-    · simpa +contextual [zero_pow_eq] using hasSum_ite_eq 0 (c 0)
-    · simpa [update_of_ne hy', mul_comm]
-        using hasSum_cuspFunction_of_hasSum_punctured hh hΓ hf hy hy'
-
-lemma hasFPowerSeriesOnBall_cuspFunction {c : ℕ → ℂ} (hh : 0 < h)
-    (hΓ : h ∈ Γ.strictPeriods) {f : F} [ModularFormClass F Γ k]
-    (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) :
-    HasFPowerSeriesOnBall (cuspFunction h f) (.ofScalars ℂ c) 0 1 := by
-  -- previous lemma gives result after updating at 0
-  have H1 : HasFPowerSeriesOnBall (update (cuspFunction h f) 0 (c 0)) (.ofScalars ℂ c) 0 1 :=
-    hasFPowerSeriesOnBall_update hh hΓ hf
-  -- now just need to check values at 0 match
-  -- use continuity of both functions & we know it everywhere else
-  have H2 : c 0 = cuspFunction h f 0 := by
-    have L1 := H1.hasFPowerSeriesAt.continuousAt
-    have L2 := (analyticAt_cuspFunction_zero f hh hΓ).continuousAt
-    have := (L1.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE L2).mp <|
-      by filter_upwards [self_mem_nhdsWithin] with a ha using update_of_ne ha ..
-    simpa [update_self] using this.eq_of_nhds
-  rwa [update_eq_self_iff.mpr H2] at H1
-
 lemma qExpansion_coeff_unique {c : ℕ → ℂ} (hh : 0 < h)
-    (hΓ : h ∈ Γ.strictPeriods) {f : F} [ModularFormClass F Γ k]
+    (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
     (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) (m : ℕ) :
     c m = (qExpansion h f).coeff m := by
-  have h1 : HasFPowerSeriesAt (cuspFunction h f) (.ofScalars ℂ c) 0 :=
-    (hasFPowerSeriesOnBall_cuspFunction hh hΓ hf).hasFPowerSeriesAt
-  have h2 : HasFPowerSeriesAt (cuspFunction h f) (qExpansionFormalMultilinearSeries h f) 0 :=
-    (hasFPowerSeries_cuspFunction f hh hΓ).hasFPowerSeriesAt
+  have h1 := (hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf).hasFPowerSeriesAt
+  have h2 := (hasFPowerSeries_cuspFunction f hh hfanalytic hf).hasFPowerSeriesAt
   simpa using congr_arg (FormalMultilinearSeries.coeff · m) (h1.eq_formalMultilinearSeries h2)
+
+protected lemma ModularForm.qExpansion_coeff_unique {c : ℕ → ℂ} (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) {f : F} [ModularFormClass F Γ k]
+    (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) (m : ℕ) :
+    c m = (qExpansion h f).coeff m :=
+  qExpansion_coeff_unique f hh (analyticAt_cuspFunction_zero f hh hΓ) hf m
