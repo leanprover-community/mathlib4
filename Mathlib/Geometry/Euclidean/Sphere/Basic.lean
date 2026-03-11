@@ -463,7 +463,7 @@ theorem inner_vsub_center_vsub_pos {A B : P} {s : Sphere P}
   have hd : ‖B -ᵥ s.center‖ ^ 2 =
       ‖B -ᵥ A‖ ^ 2 + 2 * ⟪B -ᵥ A, A -ᵥ s.center⟫ + ‖A -ᵥ s.center‖ ^ 2 := by
     rw [← vsub_add_vsub_cancel B A s.center, norm_add_sq_real]
-  rw [hB', hA'] at hd
+  rw [hB', hA', ← neg_vsub_eq_vsub_rev s.center A, inner_neg_right] at hd
   nlinarith [sq_pos_of_pos (norm_pos_iff.mpr (vsub_ne_zero.mpr hBA))]
 
 /-- Given three collinear points, two on a sphere and one not outside it, the one not outside it
