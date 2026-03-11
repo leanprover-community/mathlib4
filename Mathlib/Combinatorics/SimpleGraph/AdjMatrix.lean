@@ -117,6 +117,7 @@ instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix 
 variable (A) in
 /-- A homomorphism of the graph of a submatrix of an adjacency matrix to the graph of the
 adjacency matrix itself -/
+@[simps]
 def toGraphSubmatrixHom [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : W → V) :
     (h.submatrix f).toGraph →g h.toGraph where
   toFun := f
@@ -131,8 +132,15 @@ def toGraphSubmatrixEmbedding [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMat
   map_rel_iff' := by simp
 
 variable (A) in
+@[simp]
+theorem toGraphSubmatrixEmbedding_apply [MulZeroOneClass α] [Nontrivial α] (h : A.IsAdjMatrix)
+    (f : W → V) (v : W) : (toGraphSubmatrixHom A h f) v = f v :=
+  rfl
+
+variable (A) in
 /-- An isomorphism of the graph of a reindexing of an adjacency matrix to the graph of the
 adjacency matrix itself -/
+@[simps!]
 def toGraphReindexIso [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : V ≃ W) :
     (h.reindex f).toGraph ≃g h.toGraph where
   __ := f.symm
