@@ -32,6 +32,7 @@ abbrev FintypeCat := ObjectProperty.FullSubcategory (C := Type*) Finite
 
 namespace FintypeCat
 
+/-- Construct a term of `FintypeCat` from a type endowed with a `Finite` instance. -/
 abbrev of (X : Type*) [Finite X] : FintypeCat :=
   ⟨X, inferInstance⟩
 
@@ -93,11 +94,11 @@ lemma homMk_apply {X Y : FintypeCat} (f : X → Y) (x : X) :
     homMk f x = f x := rfl
 
 @[simp]
-lemma id_hom (X : FintypeCat) : InducedCategory.Hom.hom (𝟙 X) = id := rfl
+lemma id_hom (X : FintypeCat) : 𝟙 X.obj = id := rfl
 
 @[simp, reassoc]
 lemma comp_hom {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom ∘ f.hom := rfl
+    f.hom ≫ g.hom = g.hom ∘ f.hom := rfl
 
 @[simp]
 lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :
