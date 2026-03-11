@@ -895,3 +895,8 @@ def dontTranslateId {α} : α → α := id
 @[to_additive]
 theorem functionTypeMonoid {ι : Type*} {R : ι → Type*} [(i : ι) → Monoid (R i)] (i : ι)
   (a : R (dontTranslateId i)) : a * a = a * a := rfl
+
+/-- error: `to_additive` cannot translate `MulAxiom` because it has no value. -/
+#guard_msgs in
+@[to_additive]
+axiom MulAxiom {α} : Mul α

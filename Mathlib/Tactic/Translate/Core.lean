@@ -699,13 +699,13 @@ def getRelevantArg (t : TranslateData) (cfg : Config) (relevantArg? : Option Rel
   else
     return relevantArg
 
-/-- Translate the declaration `src` and recursively all declarations `pre._proof_i`
+/-- Translate the declaration `src` and recursively all declarations `rootSrc._proof_i`
 occurring in `src` using the `translations` dictionary.
 
-`replace_all`, `trace`, `ignore` and `reorder` are configuration options.
-
-`pre` is the declaration that got the translation attribute and `tgt_pre` is the target of this
-declaration. -/
+- `rootSrc` is the declaration that got the translation attribute and `rootTgt` is its target.
+- `src` is assumed to have a value available in the environment.
+- `reorder` is used only for the translation of `src`.
+-/
 partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt src : Name)
     (reorder : Reorder := {}) : CoreM Unit := do
   let env ← getEnv
@@ -734,7 +734,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `rootSrc`
   for n in ← findAuxDecls srcDecl rootSrc do
-    discard <| transformDeclRec t cfg rootSrc rootTgt n
+    transformDeclRec t cfg rootSrc rootTgt n
   -- expose target body when source body is exposed
   withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
   -- We still lack a heuristic that automatically infers the `dontTranslate`,
@@ -1150,6 +1150,8 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     trace[translate_detail] "declaration {tgt} already exists."
     proceedFields t src tgt reorder relevantArg cfg.ref
   else
+    unless (← withoutExporting do getConstInfo src).hasValue (allowOpaque := true) do
+      throwError "`{t.attrName}` cannot translate `{.ofConstName src}` because it has no value."
     let reorder := cfg.reorder?.getD {}
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg src tgt src reorder
