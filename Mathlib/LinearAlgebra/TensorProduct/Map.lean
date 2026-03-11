@@ -383,16 +383,17 @@ theorem lTensor_bij_iff_rTensor_bij :
     Function.Bijective (lTensor M f) ↔ Function.Bijective (rTensor M f) := by
   simp [← comm_comp_rTensor_comp_comm_eq]
 
+open TensorProduct
+
+attribute [local ext high] TensorProduct.ext
+
 variable {M} in
 theorem smul_lTensor {S : Type*} [CommSemiring S] [SMul R S] [Module S M] [IsScalarTower R S M]
     [SMulCommClass R S M] (s : S) (m : M ⊗[R] N) : s • (f.lTensor M) m = (f.lTensor M) (s • m) :=
   have h : s • (f.lTensor M) = f.lTensor M ∘ₗ (LinearMap.lsmul S (M ⊗[R] N) s).restrictScalars R :=
-    TensorProduct.ext rfl
+    by ext; simp [smul_tmul']
   congrFun (congrArg DFunLike.coe h) m
 
-open TensorProduct
-
-attribute [local ext high] TensorProduct.ext
 
 /-- `lTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `M ⊗ f`.
 

@@ -106,7 +106,7 @@ variable {f f'}
 
 @[simp]
 theorem liftAux.smulₛₗ (r : R) (x) : liftAux f' (r • x) = σ₁₂ r • liftAux f' x :=
-  TensorProduct.induction_on x (smul_zero _).symm
+  TensorProduct.induction_on x (by simp)
     (fun p q => by simp_rw [← tmul_smul, liftAux_tmul, (f' p).map_smulₛₗ])
     fun p q ih1 ih2 => by simp_rw [smul_add, (liftAux f').map_add, ih1, ih2, smul_add]
 
@@ -312,9 +312,9 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[A] M ⊗[R] N :=
   lift
   { toFun := fun m ↦
     { __ := mk R M N m
-      map_smul' := fun _ _ ↦ (smul_tmul _ _ _).symm }
+      map_smul' := fun _ _ ↦ tmul_smul _ _ _ }
     map_add' := fun _ _ ↦ LinearMap.ext <| by simp
-    map_smul' := fun _ _ ↦ rfl }
+    map_smul' := fun _ _ ↦ LinearMap.ext fun _ ↦ (smul_tmul' _ _ _).symm }
 
 @[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A M N (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
@@ -328,7 +328,7 @@ attribute [local instance] SMulCommClass.symm
 /-- `mapOfCompatibleSMul R A M N` is also R-linear. -/
 def mapOfCompatibleSMul' : M ⊗[A] N →ₗ[R] M ⊗[R] N where
   __ := mapOfCompatibleSMul R A M N
-  map_smul' _ x := x.induction_on (map_zero _) (fun _ _ ↦ by simp [smul_tmul'])
+  map_smul' _ x := x.induction_on (by simp) (fun _ _ ↦ by simp [smul_tmul'])
     fun _ _ h h' ↦ by simpa using congr($h + $h')
 
 /-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,

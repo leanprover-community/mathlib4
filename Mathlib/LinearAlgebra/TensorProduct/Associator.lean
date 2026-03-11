@@ -190,7 +190,7 @@ lemma assoc_tensor'' :
 lemma lid_tensor :
     TensorProduct.lid R (M ⊗[R] N) = (TensorProduct.assoc R R M N).symm ≪≫ₗ
       .rTensor N (TensorProduct.lid R M) :=
-  LinearEquiv.toLinearMap_inj.mp <| ext_threefold' fun _ _ => congrFun rfl
+  LinearEquiv.toLinearMap_inj.mp <| ext_threefold' smul_tmul'
 
 section
 

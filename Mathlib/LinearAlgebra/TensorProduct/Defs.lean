@@ -214,17 +214,16 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
 
-set_option backward.privateInPublic true in
 @[instance_reducible]
 private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
 attribute [local instance] addMonoidWithWrongNSMul in
 /-- Auxiliary function to defining scalar multiplication on tensor product. -/
-def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
+private def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
   FreeAddMonoid.lift fun p : M × N => (r • p.1) ⊗ₜ p.2
 
-theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
+private theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
     SMul.aux r (.of (m, n)) = (r • m) ⊗ₜ[R] n :=
   rfl
 
@@ -242,6 +241,7 @@ action. Two natural ways in which this situation arises are:
 Note that in the special case that `R = R'`, since `R` is commutative, we just get the usual scalar
 action on a tensor product of two modules. This special case is important enough that, for
 performance reasons, we define it explicitly below. -/
+@[no_expose]
 instance leftHasSMul : SMul R' (M ⊗[R] N) :=
   ⟨fun r =>
     (addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|
@@ -315,22 +315,22 @@ theorem _root_.IsAddUnit.tmul_right {m : M} (hm : IsAddUnit m) (n : N) : IsAddUn
 
 variable {R}
 
-instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
-  have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
-  { smul_add := fun r x y => TensorProduct.smul_add r x y
-    mul_smul := fun r s x =>
-      x.induction_on (by simp_rw [TensorProduct.smul_zero])
-        (fun m n => by simp_rw [this, mul_smul]) fun x y ihx ihy => by
-        simp_rw [TensorProduct.smul_add]
-        rw [ihx, ihy]
-    one_smul := TensorProduct.one_smul
-    smul_zero := TensorProduct.smul_zero }
+instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) where
+  smul_add := fun r x y => TensorProduct.smul_add r x y
+  mul_smul := fun r s x =>
+    have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => by rfl
+    x.induction_on (by simp_rw [TensorProduct.smul_zero])
+      (fun m n => by simp_rw [this, mul_smul]) fun x y ihx ihy => by
+      simp_rw [TensorProduct.smul_add]
+      rw [ihx, ihy]
+  one_smul := TensorProduct.one_smul
+  smul_zero := TensorProduct.smul_zero
 
 instance : DistribMulAction R (M ⊗[R] N) :=
   TensorProduct.leftDistribMulAction
 
 theorem smul_tmul' (r : R') (m : M) (n : N) : r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem tmul_smul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (x : M) (y : N) :
