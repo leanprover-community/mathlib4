@@ -191,7 +191,11 @@ instance [AddGroup X] [IsIsometricVAdd Xᵃᵒᵖ X] (d : ℕ) :
 set_option backward.isDefEq.respectTransparency false in
 /-- A measurable equivalence between an affine space and its orthogonal decomposition by a base
 point and a direction. We show that this is measure preserving between `μHE[finrank ℝ V]` and
-`volume` at `Submodule.measurePreserving_measurableEquivProd`. -/
+`volume` at `Submodule.measurePreserving_measurableEquivProd`.
+
+This is similar to `Submodule.orthogonalDecomposition` as a `MeasurableEquiv`, but as the right-hand
+side is not with L²-norm, this is not an isometry.
+-/
 noncomputable def Submodule.measurableEquivProd (s : Submodule ℝ V) (p : P) : P ≃ᵐ s × sᗮ :=
   (IsometryEquiv.vaddConst p).toHomeomorph.toMeasurableEquiv.symm.trans <|
   s.orthogonalDecomposition.toHomeomorph.toMeasurableEquiv.trans <|
