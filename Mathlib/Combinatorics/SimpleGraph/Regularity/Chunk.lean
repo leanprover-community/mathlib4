@@ -117,7 +117,6 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
   grw [sum_const, smul_eq_mul, card_filter_atomise_le_two_pow (s := U) hX,
     Finpartition.card_nonuniformWitnesses_le, filter_subset] <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ P.parts)
     (hUV : U ≠ V) (hunif : ¬G.IsUniform ε U V) (hPε : ↑100 ≤ ↑4 ^ #P.parts * ε ^ 5)
     (hε₁ : ε ≤ 1) :
@@ -448,11 +447,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     exact this
   have hε' : ε ^ 5 ≤ ε := by
     simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by simp)
-  rw [abs_sub_le_iff] at hrs hpr hqt
-  rw [le_abs] at hst ⊢
-  cases hst
-  · left; linarith
-  · right; linarith
+  grind
 
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.
 -/

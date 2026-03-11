@@ -36,6 +36,7 @@ variable (V : Type*) [Quiver.{u} V]
 
 /-- Two vertices are related in the zigzag setoid if there is a
 zigzag of arrows from one to the other. -/
+@[implicit_reducible]
 def zigzagSetoid : Setoid V :=
   ⟨fun a b ↦ Nonempty (@Path (Symmetrify V) _ a b), fun _ ↦ ⟨Path.nil⟩, fun ⟨p⟩ ↦
     ⟨p.reverse⟩, fun ⟨p⟩ ⟨q⟩ ↦ ⟨p.comp q⟩⟩
@@ -71,7 +72,7 @@ variable {V}
 /-- A wide subquiver `H` of `Symmetrify V` determines a wide subquiver of `V`, containing an
 arrow `e` if either `e` or its reversal is in `H`. -/
 def wideSubquiverSymmetrify (H : WideSubquiver (Symmetrify V)) : WideSubquiver V :=
-  fun _ _ ↦ { e | H _ _ (Sum.inl e) ∨ H _ _ (Sum.inr e) }
+  fun a b ↦ {e | .inl e ∈ H a b ∨ .inr e ∈ H b a}
 
 /-!
 ## Strongly connected components (directed connectivity)
@@ -114,6 +115,7 @@ lemma IsSStronglyConnected.isStronglyConnected
   intro i j; obtain ⟨p, _⟩ := h i j; exact ⟨p⟩
 
 /-- Equivalence relation identifying vertices connected by directed paths in both directions. -/
+@[implicit_reducible]
 def stronglyConnectedSetoid : Setoid V :=
   ⟨fun a b => (Nonempty (Path a b)) ∧ (Nonempty (Path b a)),
    fun _ => ⟨⟨Path.nil⟩, ⟨Path.nil⟩⟩, fun ⟨hab, hba⟩ => ⟨hba, hab⟩, fun ⟨hab, hba⟩ ⟨hbc, hcb⟩ =>

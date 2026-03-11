@@ -306,7 +306,7 @@ variable {r : α → α → Prop} {a b c : α}
 @[mk_iff ReflTransGen.cases_tail_iff, grind]
 inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflTransGen r a a
-  | tail {b c} : ReflTransGen r a b → r b c → ReflTransGen r a c
+  | tail {b c : α} : ReflTransGen r a b → r b c → ReflTransGen r a c
 
 attribute [refl] ReflTransGen.refl
 
@@ -314,7 +314,7 @@ attribute [refl] ReflTransGen.refl
 @[mk_iff, grind]
 inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
-  | single {b} : r a b → ReflGen r a b
+  | single {b : α} : r a b → ReflGen r a b
 
 /-- `SymmGen r`: symmetric closure of `r`. This is also the comparability relation, such
   that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`). -/
@@ -751,6 +751,7 @@ theorem is_equivalence : Equivalence (@EqvGen α r) :=
 
 The motivation for this definition is that `Quot r` behaves like `Quotient (EqvGen.setoid r)`,
 see for example `Quot.eqvGen_exact` and `Quot.eqvGen_sound`. -/
+@[implicit_reducible]
 def setoid : Setoid α :=
   Setoid.mk _ (EqvGen.is_equivalence r)
 
