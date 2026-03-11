@@ -12,7 +12,6 @@ on:
       - 'trying'
       # ignore branches meant for experiments
       - 'ci-dev/**'
-  merge_group:
 
 concurrency:
   # label each workflow run; only the latest with each label will run
