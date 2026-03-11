@@ -166,37 +166,37 @@ theorem toCoverSheaf_H_map_zero (n : ℕ) (c : H F.sheaf n) [Finite I]
 
 end
 
-theorem base [IsAffine X] [F.IsQuasicoherent] : Subsingleton (H F.sheaf 1) := by
-  apply subsingleton_of_forall_eq 0
-  intro c
-  obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf 0 (isBasis_affineOpens X)
-    ((diagonal_isAffine_iff_forall_isAffineOpen_inf (𝟙 X)).mp (fun _ _ _ _ => inferInstance))
-    (by intros; lia) c
-  obtain ⟨ι, hU⟩ := CompactSpace.isOpenCover_elim_finite_subcover hU'
-  let U : ι → X.Opens := ι.restrict U'
-  haveI : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
-  let S := ShortComplex.mk (F.toCoverSheaf U) (cokernel.π (F.toCoverSheaf U)) (by cat_disch)
-  have hS : S.ShortExact :=
-    ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel (F.toCoverSheaf U))
-  let Ssheaf := S.map (toSheaf X)
-  have hSsheaf : Ssheaf.ShortExact := ShortComplex.ShortExact.map_of_exact hS (toSheaf X)
-  have : Function.Surjective (H.map Ssheaf.g 0) := by
-    rw [← Equiv.comp_surjective (H.map Ssheaf.g 0) (H.equiv₀ Ssheaf.X₃).toEquiv]
-    conv => arg 1; equals (Ssheaf.g.hom.app (op ⊤)) ∘ (H.equiv₀ Ssheaf.X₂).toEquiv =>
-      ext
-      simp [H.equiv₀_naturality]
-    rw [Equiv.surjective_comp (H.equiv₀ Ssheaf.X₂).toEquiv (Ssheaf.g.hom.app (op ⊤))]
-    conv => arg 1; arg 1; arg 1; change S.g.sheafHom.hom.app (op ⊤)
-    sorry
-  obtain ⟨x₃, hx₃⟩ := Sheaf.H.longSequence_exact₁ hSsheaf 0 1 rfl c <|
-    F.toCoverSheaf_H_map_zero U 1 c (fun i => (vanish i).right)
-  obtain ⟨x₂, hx₂⟩ := this x₃
-  simpa [← hx₃, ← hx₂] using Sheaf.H.map_comp_connectingHom_zero hSsheaf 0 1 rfl x₂
-
 instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n + 1)) := by
   revert F X
   refine Nat.case_strong_induction_on (p := fun n => ∀ {X : Scheme.{u}} (F : X.Modules)
-    [IsAffine X] [F.IsQuasicoherent], Subsingleton (F.sheaf.H (n + 1))) n base ?_
+    [IsAffine X] [F.IsQuasicoherent], Subsingleton (F.sheaf.H (n + 1))) n ?_ ?_
+    -- Base Case: Show `H F 1 = 0`
+  · intro X F _ _
+    refine subsingleton_of_forall_eq 0 (fun c => ?_)
+    obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf 0 (isBasis_affineOpens X)
+      ((diagonal_isAffine_iff_forall_isAffineOpen_inf (𝟙 X)).mp (fun _ _ _ _ => inferInstance))
+      (by intros; lia) c
+    obtain ⟨ι, hU⟩ := CompactSpace.isOpenCover_elim_finite_subcover hU'
+    let U : ι → X.Opens := ι.restrict U'
+    haveI : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
+    let S := ShortComplex.mk (F.toCoverSheaf U) (cokernel.π (F.toCoverSheaf U)) (by cat_disch)
+    have hS : S.ShortExact :=
+      ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel (F.toCoverSheaf U))
+    let Ssheaf := S.map (toSheaf X)
+    have hSsheaf : Ssheaf.ShortExact := ShortComplex.ShortExact.map_of_exact hS (toSheaf X)
+    have : Function.Surjective (H.map Ssheaf.g 0) := by
+      rw [← Equiv.comp_surjective (H.map Ssheaf.g 0) (H.equiv₀ Ssheaf.X₃).toEquiv]
+      conv => arg 1; equals (Ssheaf.g.hom.app (op ⊤)) ∘ (H.equiv₀ Ssheaf.X₂).toEquiv =>
+        ext
+        simp [H.equiv₀_naturality]
+      rw [Equiv.surjective_comp (H.equiv₀ Ssheaf.X₂).toEquiv (Ssheaf.g.hom.app (op ⊤))]
+      conv => arg 1; arg 1; arg 1; change S.g.sheafHom.hom.app (op ⊤)
+      sorry
+    obtain ⟨x₃, hx₃⟩ := Sheaf.H.longSequence_exact₁ hSsheaf 0 1 rfl c <|
+      F.toCoverSheaf_H_map_zero U 1 c (fun i => (vanish i).right)
+    obtain ⟨x₂, hx₂⟩ := this x₃
+    simpa [← hx₃, ← hx₂] using Sheaf.H.map_comp_connectingHom_zero hSsheaf 0 1 rfl x₂
+  -- Inductive Step
   refine fun n hi X F _ _ => subsingleton_of_forall_eq 0 (fun c => ?_)
   obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf (n + 1)
     (isBasis_affineOpens X)
@@ -207,8 +207,7 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
       haveI : ((restrictFunctor U.ι).obj F).IsQuasicoherent := sorry
       have := hi (r - 1) (by lia) ((restrictFunctor U.ι).obj F)
       rw [Nat.sub_add_cancel hr1] at this
-      exact this)
-    c
+      exact this) c
   obtain ⟨ι, hU⟩ := CompactSpace.isOpenCover_elim_finite_subcover hU'
   let U : ι → X.Opens := ι.restrict U'
   haveI : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
