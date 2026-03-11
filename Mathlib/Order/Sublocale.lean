@@ -400,24 +400,30 @@ instance : PartialOrder (Closed X) where
 
 variable {C D : Closed X}
 
+/-- The order of the closed sublocales is dual to the order of the underlying frame. -/
 def closedIsoDual : (Closed X) ≃o Xᵒᵈ where
   toFun c := OrderDual.toDual c.element
   invFun x := ⟨x.ofDual⟩
   map_rel_iff' := by aesop
 
+/-- The element of a closed sublocale. -/
 abbrev getElement (C : Closed X) := C.closedIsoDual.ofDual
 
-lemma le_def : C ≤ D ↔ D.getElement ≤ C.getElement:= by simp [getElement,closedIsoDual]; rfl
+lemma le_def : C ≤ D ↔ D.getElement ≤ C.getElement:= by simp [getElement, closedIsoDual]; rfl
 
 instance : CompleteLattice (Closed X) := closedIsoDual.symm.toGaloisInsertion.liftCompleteLattice
 
 instance : Order.Coframe (Closed X) := .ofMinimalAxioms ⟨by
   simp [le_def, OrderIso.map_sup, OrderIso.map_sInf, sup_iInf_eq, OrderIso.map_iInf]⟩
 
+@[simp] lemma top.getElement : (⊤ : Closed X).getElement = ⊥ := rfl
+
+@[simp] lemma bot.getElement : (⊥ : Closed X).getElement = ⊤ := rfl
 
 @[simp] lemma getElement_mk {x : X} : ({element := x} : Closed X).getElement = x := rfl
 
-/-- TODO Docstring -/
+/-- The nucleus corresponding to a closed sublocale with the element `C` has the function:
+  `fun x ↦ x ⊔ C`. -/
 def toNucleus (c : Closed X) : Nucleus X where
   toFun x := c.getElement ⊔ x
   map_inf' a b := by
@@ -425,8 +431,11 @@ def toNucleus (c : Closed X) : Nucleus X where
   idempotent' := by simp
   le_apply' := by simp
 
+/-- The map from closed sublocales into sublocales is a `CoFrameHom`. It preserves arbitrary meets
+  and finite joins. -/
 def toSublocale : CoFrameHom (Closed X) (Sublocale X) where
   toFun c := c.toNucleus.toSublocale
+  map_bot' := by simp [Closed.toNucleus, Sublocale.ext_iff, ←Sublocale.singleton_top_eq_bot]; grind
   map_sup' a b := by
     simp only [Nucleus.toSublocale, ← OrderIso.map_sup, EmbeddingLike.apply_eq_iff_eq]
     change _ = (OrderDual.instSup (Nucleus X)).max _ _  -- Weird why this is needed
@@ -434,16 +443,10 @@ def toSublocale : CoFrameHom (Closed X) (Sublocale X) where
     congr
     simp only [toNucleus, getElement, OrderIso.map_sup, Nucleus.ext_iff, Nucleus.coe_mk,
       InfHom.coe_mk, Nucleus.inf_apply]
-    intro i
-    change OrderDual.ofDual ((OrderDual.instSup X).max _ _) ⊔ _ = _ -- weird
+    change ∀ _, OrderDual.ofDual ((OrderDual.instSup X).max _ _) ⊔ _ = _ -- weird
     rw [ofDual_sup]
-    refine le_antisymm ?_ (by rw [sup_inf_right])
-    . simp [inf_sup_left]
-      exact le_sup_of_le_left (by simp)
-
-
-
-/-
+    refine fun _ ↦ le_antisymm ?_ (by rw [sup_inf_right])
+    · simpa [inf_sup_left] using le_sup_of_le_left (by simp)
   map_sInf' s := by
     simp_rw [Nucleus.toSublocale, ← image_image, sInf_image, ← OrderIso.map_sInf]
     simpa [OrderDual.ext_iff, ofDual_sInf] using le_antisymm
@@ -452,33 +455,7 @@ def toSublocale : CoFrameHom (Closed X) (Sublocale X) where
       <| by simpa [toNucleus, getElement, sSup_le_iff, Pi.le_def, le_sup_right, OrderIso.map_sInf,
        ofDual_iInf] using fun _ _ _ ↦ le_sup_of_le_left (by simp [le_iSup_iff]; grind)
 
-
-
-
-
-
-
-/-
-
-set_option backward.isDefEq.respectTransparency false in
-lemma toSublocale.map_sup {C D : Closed X} : (C ⊔ D).toSublocale = C.toSublocale ⊔ D.toSublocale := by
-  simp only [toSublocale, sInfHom.coe_mk, ← OrderIso.map_sup, ← toDual_inf,
-    EmbeddingLike.apply_eq_iff_eq]
-  congr
-  simp [Closed.toNucleus, Nucleus.ext_iff]
-  intro a
-  rw [Closed.getElement, closedIsoDual.map_sup, ofDual_sup]
-  repeat rw [← Closed.getElement]
-  simp [inf_sup_left, inf_sup_right]
-  apply le_antisymm
-  . simp
-    sorry
-  . simp
-
-
-
-
-
+/-- The complement of a closed sublocale is the open sublocale with the same element. -/
 def compl (c : Closed X) : Open X := ⟨c.getElement⟩
 
 end Closed
@@ -486,6 +463,7 @@ end Closed
 namespace Open
 open Sublocale
 
+/-- The complement of an open sublocale is the closed sublocale with the same element. -/
 def compl (u : Open X) : Closed X := ⟨u.getElement⟩
 
 variable {U V : Open X}
@@ -494,9 +472,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma sup_compl_eq_top : U.toSublocale ⊔ U.compl.toSublocale = ⊤ := by
   rw [eq_top_iff, ← toNucleus_le_toNucleus, Sublocale.toNucleus]
   simp only [toSublocale, toNucleus, FrameHom.coe_mk, InfTopHom.coe_mk, InfHom.coe_mk,
-    Closed.toSublocale, Closed.toNucleus, compl, sInfHom.coe_mk, Closed.getElement_mk, map_sup,
-    OrderIso.symm_apply_apply, ← toDual_inf, OrderDual.ofDual_toDual, Sublocale.toNucleus, map_top,
-    OrderDual.ofDual_top, le_bot_iff]
+    Closed.toSublocale, Closed.toNucleus, compl, CoFrameHom.coe_mk, SupBotHom.coe_mk, SupHom.coe_mk,
+    Closed.getElement_mk, map_sup, OrderIso.symm_apply_apply, ofDual_sup, OrderDual.ofDual_toDual,
+    Sublocale.toNucleus, map_top, OrderDual.ofDual_top, le_bot_iff]
   ext i
   simp [inf_sup_left]
 
@@ -506,7 +484,8 @@ lemma inf_compl_eq_bot : U.toSublocale ⊓ U.compl.toSublocale = ⊥ := by
   refine fun _ ↦ ⟨?_, by grind [top_mem]⟩
   · simp only [toSublocale, toNucleus, FrameHom.coe_mk, InfTopHom.coe_mk, InfHom.coe_mk,
     Nucleus.mem_toSublocale, Nucleus.coe_mk, Closed.toSublocale, Closed.toNucleus, compl,
-    sInfHom.coe_mk, Closed.getElement_mk, and_imp, forall_exists_index]
+    CoFrameHom.coe_mk, SupBotHom.coe_mk, SupHom.coe_mk, Closed.getElement_mk, and_imp,
+    forall_exists_index]
     intro _ h1 _ h2
     rw [← h1] at h2
     subst h1
