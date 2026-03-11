@@ -21,7 +21,7 @@ private initialize sharedScopedEnvExtensions :
     IO.Ref (NameMap (Descr EnvExtensionEntry EnvExtensionState)) ←
   IO.mkRef {}
 
-private noncomputable instance {α} [h : Nonempty α] : Inhabited α :=
+private noncomputable local instance {α} [h : Nonempty α] : Inhabited α :=
   ⟨Classical.choice h⟩
 
 private initialize sharedScopedEnvExtension :
