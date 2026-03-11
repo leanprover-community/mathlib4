@@ -325,7 +325,6 @@ lemma image_degenerate_le (f : X ⟶ Y) (n : ℕ) :
     (f.app _) '' (X.degenerate n) ⊆ Y.degenerate n := by
   simpa using degenerate_le_preimage f n
 
-set_option backward.isDefEq.respectTransparency false in
 lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :
     f.app _ x ∈ Y.degenerate n ↔ x ∈ X.degenerate n := by
   constructor

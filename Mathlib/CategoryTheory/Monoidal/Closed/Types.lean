@@ -58,6 +58,7 @@ instance {C : Type v₁} [SmallCategory C] : MonoidalClosed (C ⥤ TypeCat.{v₁
 attribute [local instance] uliftCategory in
 /-- This is not a good instance because of the universe levels. Below is the instance where the
 target category is `TypeCat.{max u₁ v₁}`. -/
+@[implicit_reducible]
 def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
     MonoidalClosed (C ⥤ TypeCat.{max u₁ v₁ u₂}) :=
   let e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ TypeCat.{max u₁ v₁ u₂} ≌

@@ -102,6 +102,7 @@ variable [ConcreteCategory.{w} C FC]
 
 /-- If `forget C` preserves terminals and `X` is terminal, then `ToType X` is a
 singleton. -/
+@[implicit_reducible]
 noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0} C) (forget C)]
     (X : C) (h : IsTerminal X) : Unique (ToType X) :=
   Types.isTerminalEquivUnique (TypeCat.of (ToType X)) <| IsTerminal.isTerminalObj (forget C) X h

@@ -126,7 +126,7 @@ end Mon
 set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
-@[simps]
+@[simps, implicit_reducible]
 def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     MonObj X where
   one := α.homEquiv'.symm 1

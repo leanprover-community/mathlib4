@@ -167,6 +167,7 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
+@[implicit_reducible]
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
     EnrichedCategory (TypeCat.{v}) C where
   Hom X Y := TypeCat.of (𝒞.Hom X Y)

@@ -33,24 +33,10 @@ open Simplicial
 /-- The category of simplicial sets.
 This is the category of contravariant functors from
 `SimplexCategory` to `Type u`. -/
-def SSet : Type (u + 1) :=
+abbrev SSet : Type (u + 1) :=
   SimplicialObject TypeCat.{u}
 
 namespace SSet
-
-instance largeCategory : LargeCategory SSet := by
-  dsimp only [SSet]
-  infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance hasLimits : HasLimits SSet := by
-  dsimp only [SSet]
-  infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance hasColimits : HasColimits SSet := by
-  dsimp only [SSet]
-  infer_instance
 
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
@@ -88,24 +74,9 @@ def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
   (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}
 
 /-- Truncated simplicial sets. -/
-def Truncated (n : ℕ) :=
-  SimplicialObject.Truncated TypeCat.{u} n
+abbrev Truncated (n : ℕ) := SimplicialObject.Truncated TypeCat.{u} n
 
 namespace Truncated
-
-instance largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
-  dsimp only [Truncated]
-  infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance hasLimits {n : ℕ} : HasLimits (Truncated n) := by
-  dsimp only [Truncated]
-  infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance hasColimits {n : ℕ} : HasColimits (Truncated n) := by
-  dsimp only [Truncated]
-  infer_instance
 
 /-- The ulift functor `SSet.Truncated.{u} ⥤ SSet.Truncated.{max u v}` on truncated
 simplicial sets. -/

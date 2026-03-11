@@ -922,6 +922,7 @@ open DayConvolution DayConvolutionUnit in
 /-- We can promote a `LawfulDayConvolutionMonoidalCategoryStruct` to a monoidal category,
 note that every non-prop data is already here, so this is just about showing that they
 satisfy the axioms of a monoidal category. -/
+@[implicit_reducible]
 def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
     (D : Type u₃) [Category.{v₃} D]
     [MonoidalCategoryStruct D]
@@ -1210,6 +1211,7 @@ lemma ι_map_tensorHom_eq {d₁ d₁' d₂ d₂' : D} (f : d₁ ⟶ d₂) (f' : 
 set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal category struct constructed in `DayConvolution.mkMonoidalCategoryStruct` extends
 to a `LawfulDayConvolutionMonoidalCategoryStruct`. -/
+@[implicit_reducible]
 def mkLawfulDayConvolutionMonoidalCategoryStruct :
     letI : MonoidalCategoryStruct D := mkMonoidalCategoryStruct C V D
     LawfulDayConvolutionMonoidalCategoryStruct C V D :=
@@ -1256,6 +1258,7 @@ variable {C V} in
 `ι.obj d` and `ι.obj d'` such that the convolution remains in the essential image of `ι`,
 construct an `InducedLawfulDayConvolutionMonoidalCategoryStructCore` by letting all other
 data be the generic ones from the `HasPointwiseLeftKanExtension` API. -/
+@[implicit_reducible]
 noncomputable def ofHasDayConvolutions
     {D : Type u₃} [Category.{v₃} D]
     (ι : D ⥤ C ⥤ V)
@@ -1334,6 +1337,7 @@ variable {C V}
 of relevant colimits by the tensor product of `V`, we can define a `MonoidalCategory D`
 from the data of a fully faithful functor `ι : D ⥤ C ⥤ V` whose essential image
 contains a Day convolution unit and is stable under binary Day convolutions. -/
+@[implicit_reducible]
 noncomputable def monoidalOfHasDayConvolutions : MonoidalCategory D :=
   letI induced : InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D :=
     .ofHasDayConvolutions ι ffι essImageDayConvolution essImageDayConvolutionUnit
@@ -1345,6 +1349,7 @@ noncomputable def monoidalOfHasDayConvolutions : MonoidalCategory D :=
 open InducedLawfulDayConvolutionMonoidalCategoryStructCore in
 /-- The monoidal category constructed via `monoidalOfHasDayConvolutions` has a canonical
 `LawfulDayConvolutionMonoidalCategoryStruct C V D`. -/
+@[implicit_reducible]
 noncomputable def lawfulDayConvolutionMonoidalCategoryStructOfHasDayConvolutions :
     letI := monoidalOfHasDayConvolutions
       ι ffι essImageDayConvolution essImageDayConvolutionUnit
