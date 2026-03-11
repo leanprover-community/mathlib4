@@ -52,9 +52,6 @@ instance : IsGrothendieckAbelian.{u + 1} (Sheaf (ProEt.topology X) Ab.{u + 1}) :
   have : EssentiallySmall.{u + 1} X.ProEt := inferInstance
   exact Sheaf.isGrothendieckAbelian_of_essentiallySmall (ProEt.topology X) Ab.{u + 1}
 
-instance : HasExt.{u + 1} (Sheaf (ProEt.topology X) Ab.{u + 1}) :=
-  hasExt_of_enoughInjectives _
-
 /--
 The sheaf of continuous maps `U ↦ C(U, ℤ_[ℓ])` on the pro-étale site. This the coefficient
 sheaf for `ℓ`-adic cohomology.
