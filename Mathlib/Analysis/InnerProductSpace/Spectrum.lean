@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Operator.FredholmAlternative
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.Data.Fin.Tuple.Sort
@@ -66,7 +67,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped ComplexConjugate
 
-open Module.End WithLp
+open Module End WithLp
 
 namespace LinearMap
 
@@ -368,3 +369,57 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
   exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
 end Nonneg
+
+namespace ContinuousLinearMap
+
+variable [CompleteSpace E] {T : E →L[𝕜] E}
+
+theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    (∀ μ, HasEigenvalue (T : End 𝕜 E) μ → μ = 0) ↔ T = 0 := by
+  constructor
+  · intro h
+    replace h : spectrum 𝕜 T ⊆ {0} := by
+      intro μ hμ
+      contrapose! h
+      exact ⟨μ, (hT.hasEigenvalue_iff_mem_spectrum h).mpr hμ, h⟩
+    rw [← isSelfAdjoint_iff_isSymmetric] at hT'
+    rw [← nnnorm_eq_zero, ← ENNReal.coe_eq_zero, ← T.spectralRadius_eq_nnnorm hT', spectralRadius]
+    obtain (h | h) := Set.subset_singleton_iff_eq.mp h <;> simp [h]
+  · rintro rfl μ h
+    obtain ⟨v, hv⟩ := h.exists_hasEigenvector
+    rw [hasEigenvector_iff, mem_genEigenspace_one] at hv
+    exact (smul_eq_zero_iff_left hv.2).mp hv.1.symm
+
+set_option backward.isDefEq.respectTransparency false in
+theorem orthogonalComplement_iSup_eigenspaces_eq_bot
+    (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    (⨆ μ, eigenspace (T : Module.End 𝕜 E) μ)ᗮ = ⊥ := by
+  let S : (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ →L[𝕜] (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ :=
+  { __ := T.restrict hT'.orthogonalComplement_iSup_eigenspaces_invariant
+    cont := by
+      simp only [LinearMap.restrict, LinearMap.codRestrict, LinearMap.domRestrict_apply,
+        coe_coe, AddHom.toFun_eq_coe, AddHom.coe_mk]
+      fun_prop }
+  have hS_compact : IsCompactOperator S :=
+    hT.restrict' hT'.orthogonalComplement_iSup_eigenspaces_invariant
+  have hS_symm : S.IsSymmetric :=
+    hT'.restrict_invariant (hT'.orthogonalComplement_iSup_eigenspaces_invariant)
+  have hS μ : eigenspace (S : Module.End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ = ⊥ := by
+    rw [Submodule.eq_bot_iff]
+    intro v hv
+    rw [Subtype.ext_iff, Submodule.coe_zero, ← Submodule.mem_bot 𝕜,
+      ← Submodule.inf_orthogonal_eq_bot (⨆ μ, eigenspace T μ : Submodule 𝕜 E)]
+    refine ⟨Submodule.mem_iSup_of_mem μ ?_, v.2⟩
+    rw [mem_eigenspace_iff] at hv ⊢
+    exact Subtype.ext_iff.mp hv
+  have h μ : HasEigenvalue (S : End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ → μ = 0 := by
+    intro hμ
+    rw [hasEigenvalue_iff] at hμ
+    specialize hS μ
+    contradiction
+  rw [eq_zero_of_forall_hasEigenvalue_eq_zero hS_compact hS_symm] at h
+  rw [← Submodule.subsingleton_iff_eq_bot]
+  by_contra! hV
+  simpa [h] using hS 0
+
+end ContinuousLinearMap
