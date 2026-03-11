@@ -446,7 +446,7 @@ def sumProdSum (α β γ δ) [MeasurableSpace α] [MeasurableSpace β] [Measurab
 
 variable {π π' : δ' → Type*} [∀ x, MeasurableSpace (π x)] [∀ x, MeasurableSpace (π' x)]
 
-/-- The type of functions `f : ∀ a, β a` such that for all `a` we have `p a (f a)` is measurable
+/-- The type of functions `f : ∀ a, β a` such that for all `a` we have `p a (f a)` is measurably
 equivalent to the type of functions `∀ a, {b : β a // p a b}`. -/
 def subtypePiEquivPi {p : (a : δ') → π a → Prop} :
     { f : (a : δ') → π a // ∀ (a : δ'), p a (f a) } ≃ᵐ ((a : δ') → { b : π a // p a b }) where
