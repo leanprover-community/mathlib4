@@ -39,42 +39,49 @@ variable {α σ : Type}
 
 deriving instance Inhabited for Descr
 
+/-- `SharedScopedEnvExtension` is an alternative to `SimpleScopedEnvExtension`
+which may be more efficient. -/
 structure SharedScopedEnvExtension (α σ : Type) where
+  /-- The underlying `SimpleScopedEnvExtension.Descr`. -/
   descr : Descr α σ
   deriving Inhabited
 
-unsafe def registerSharedScopedEnvExtensionUnsafe (descr : Descr α σ) :
+private unsafe def registerSharedScopedEnvExtensionUnsafe (descr : Descr α σ) :
     IO (SharedScopedEnvExtension α σ) := do
   if (← sharedScopedEnvExtensions.get).contains descr.name then
     throw <| IO.userError s!"A shared scoped env extension called `{descr.name}` already exists"
   sharedScopedEnvExtensions.modify (·.insert descr.name (unsafeCast descr))
   return { descr }
 
+/-- Register a new `SharedScopedEnvExtension`. -/
 @[implemented_by registerSharedScopedEnvExtensionUnsafe]
 opaque registerSharedScopedEnvExtension (descr : Descr α σ) : IO (SharedScopedEnvExtension α σ)
 
 namespace SharedScopedEnvExtension
 
-unsafe def addCoreUnsafe (env : Environment) (ext : SharedScopedEnvExtension α σ)
+private unsafe def addCoreUnsafe (env : Environment) (ext : SharedScopedEnvExtension α σ)
     (a : α) (kind : AttributeKind) (namespaceName : Name) : Environment :=
   sharedScopedEnvExtension.addCore env (ext.descr.name, unsafeCast a) kind namespaceName
 
+/-- Add an entry to the environment extension. -/
 @[implemented_by addCoreUnsafe]
 opaque addCore (env : Environment) (ext : SharedScopedEnvExtension α σ)
     (a : α) (kind : AttributeKind) (namespaceName : Name) : Environment
 
+/-- Add an entry to the environment extension. -/
 def add {m} [Monad m] [MonadResolveName m] [MonadEnv m]
     (ext : SharedScopedEnvExtension α σ) (a : α) (kind := AttributeKind.global) : m Unit := do
   let ns ← getCurrNamespace
   modifyEnv (ext.addCore · a kind ns)
 
-unsafe def getStateUnsafe [Inhabited σ] (ext : SharedScopedEnvExtension α σ)
+private unsafe def getStateUnsafe [Inhabited σ] (ext : SharedScopedEnvExtension α σ)
     (env : Environment) : σ :=
   if let some (_, s) := (sharedScopedEnvExtension.getState env).get? ext.descr.name then
     unsafeCast s
   else
     panic! s!"There is no shared scoped env extension called `{ext.descr.name}`."
 
+/-- Get the state of the environment extension. -/
 @[implemented_by getStateUnsafe]
 opaque getState [Inhabited σ] (ext : SharedScopedEnvExtension α σ) (env : Environment) : σ
 
