@@ -37,7 +37,6 @@ We also define the `q`-expansion of a modular form, either as a power series or 
 
 -/
 
-
 @[expose] public noncomputable section
 
 open ModularForm Complex Filter Function Matrix.SpecialLinearGroup Metric Set
@@ -262,11 +261,6 @@ lemma hasSum_cuspFunction_of_hasSum_punctured {f : ℍ → ℂ} (hh : 0 < h) {c 
   have : cuspFunction h f q = f τ := by simpa [UpperHalfPlane.ofComplex_apply_of_im_pos h1] using h2
   grind [hf τ, Periodic.qParam_right_inv]
 
-protected lemma ModularFormClass.hasSum_cuspFunction_of_hasSum_punctured (hh : 0 < h) {c : ℕ → ℂ}
-    [ModularFormClass F Γ k] {f : F} (hf : ∀ (τ : ℍ), HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ))
-    {q : ℂ} (hq : ‖q‖ < 1) (hq1 : q ≠ 0) : HasSum (fun m ↦ c m • q ^ m) (cuspFunction h f q) :=
-  hasSum_cuspFunction_of_hasSum_punctured hh hf hq hq1
-
 lemma hasFPowerSeriesOnBall_update {f : ℍ → ℂ} (hh : 0 < h) {c : ℕ → ℂ}
     (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) :
     HasFPowerSeriesOnBall (update (cuspFunction h f) 0 (c 0)) (.ofScalars ℂ c) 0 1 := by
@@ -291,11 +285,6 @@ lemma hasFPowerSeriesOnBall_update {f : ℍ → ℂ} (hh : 0 < h) {c : ℕ → �
     · simpa +contextual [zero_pow_eq] using hasSum_ite_eq 0 (c 0)
     · simpa [update_of_ne hy', mul_comm]
         using hasSum_cuspFunction_of_hasSum_punctured hh hf hy hy'
-
-protected lemma ModularFormClass.hasFPowerSeriesOnBall_update (hh : 0 < h) {c : ℕ → ℂ} {f : F}
-    [ModularFormClass F Γ k] (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) :
-    HasFPowerSeriesOnBall (update (cuspFunction h f) 0 (c 0)) (.ofScalars ℂ c) 0 1 :=
-  hasFPowerSeriesOnBall_update hh hf
 
 lemma hasFPowerSeriesOnBall_cuspFunction {f : ℍ → ℂ} {c : ℕ → ℂ} (hh : 0 < h)
     (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
