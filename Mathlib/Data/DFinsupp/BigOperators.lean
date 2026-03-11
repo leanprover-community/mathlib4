@@ -79,6 +79,16 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
     (g : ∀ i, β i → γ) : γ :=
   ∏ i ∈ f.support, g i (f i)
 
+theorem sum_of_support_le [∀ i, AddCommMonoid (β i)]
+    [∀ (i) (x : β i), Decidable (x ≠ 0)] [AddCommMonoid γ]
+    {f : Π₀ i, β i} {g : (i : ι) → (β i →+ γ)} {s : Finset ι} (hs : f.support ⊆ s) :
+    f.sum (fun i x ↦ g i x) = ∑ i ∈ s, g i (f i) := by
+  simp only [DFinsupp.sum]
+  apply Finset.sum_subset hs
+  intro i _ hi'
+  simp only [DFinsupp.mem_support_toFun, ne_eq, not_not] at hi'
+  rw [hi', map_zero]
+
 @[to_additive (attr := simp)]
 theorem _root_.map_dfinsuppProd
     {R S H : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
