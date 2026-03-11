@@ -32,6 +32,7 @@ instance {X Y : FGModuleCat k} (f : X ⟶ Y) : IsIso (Abelian.coimageImageCompar
       (forget₂ (FGModuleCat k) (ModuleCat k)) f).symm
   Functor.FullyFaithful.isIso_of_isIso_map (ModuleCat.isFG k).fullyFaithfulι _
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Abelian (FGModuleCat k) := Abelian.ofCoimageImageComparisonIsIso
 
 end FGModuleCat
