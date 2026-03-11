@@ -36,6 +36,9 @@ jobs:
         contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer merge') ||
         contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer delegate')
       )
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Find maintainer merge/delegate
         id: merge_or_delegate

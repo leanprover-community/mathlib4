@@ -99,11 +99,3 @@ Primary trigger for this section: completion of other workflows (`workflow_run`)
 | [`maintainer_bors_wf_run.yml`](../.github/workflows/maintainer_bors_wf_run.yml) | Add "ready-to-merge" and "delegated" label (workflow_run)<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/maintainer_bors_wf_run.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/maintainer_bors_wf_run.yml) | Medium | `workflow_run` | Manages labels plus Zulip emoji updates for Bors commands. |
 | [`maintainer_merge_wf_run.yml`](../.github/workflows/maintainer_merge_wf_run.yml) | Maintainer merge (workflow_run)<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/maintainer_merge_wf_run.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/maintainer_merge_wf_run.yml) | Medium | `workflow_run` | Manages labels and posts on Zulip for maintainer merge/delegate commands. |
 | [`export_telemetry.yaml`](../.github/workflows/export_telemetry.yaml) | Export workflow telemetry<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/export_telemetry.yaml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/export_telemetry.yaml) | Low | `workflow_run` | Exports CI run telemetry to OTLP when selected CI workflows complete. |
-
-## Manual-only workflows
-
-Primary trigger for this section: explicit manual invocation (`workflow_dispatch`).
-
-| File | Name | Importance | Triggers | Description |
-|---|---|---|---|---|
-| [`stale.yml`](../.github/workflows/stale.yml) | Close stale issues and PRs<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/stale.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/stale.yml) | Low | `workflow_dispatch` | Manual stale-bot workflow for inactive PRs/issues (currently configured in debug-only mode). |
