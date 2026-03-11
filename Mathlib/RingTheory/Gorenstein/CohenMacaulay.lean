@@ -21,6 +21,7 @@ public import Mathlib.RingTheory.CohenMacaulay.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Gorenstein.Defs
 public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Noetherian.Basic
@@ -724,6 +725,7 @@ variable [IsLocalRing R] [IsNoetherianRing R]
 
 lemma exists_isPrime_no_insert (p : Ideal R) [p.IsPrime] (lt : p < maximalIdeal R) :
     ∃ q, q.IsPrime ∧ p ≤ q ∧ (∀ r, r.IsPrime → q < r → r = maximalIdeal R) := by
+  --set_has_maximal_iff_noetherian
   sorry
 
 lemma residueField_ext_subsingleton_of_no_insert (p : Ideal R) [p.IsPrime] (lt : p < maximalIdeal R)
@@ -732,6 +734,22 @@ lemma residueField_ext_subsingleton_of_no_insert (p : Ideal R) [p.IsPrime] (lt :
     Subsingleton (Ext (ModuleCat.of (Localization.AtPrime p) p.ResidueField)
       (ModuleCat.of (Localization.AtPrime p) (Localization.AtPrime p)) k) := by
   sorry
+
+lemma Module.length_ne_top_of_support_subset (M : Type*) [AddCommGroup M] [Module R M]
+    [fin : Module.Finite R M] (h : support R M ⊆ {closedPoint R}) : Module.length R M ≠ ⊤ := by
+  induction fin using IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime with
+  | subsingleton N => simp
+  | quotient N p e =>
+    simp only [e.support_eq, support_eq_zeroLocus, Ideal.annihilator_quotient,
+      Set.subset_singleton_iff, PrimeSpectrum.mem_zeroLocus, SetLike.coe_subset_coe] at h
+    have : IsSimpleModule R (R ⧸ p.1) := isSimpleModule_iff_isCoatom.mpr (by
+      simpa [p.ext_iff.mp (h p (le_refl _)), closedPoint] using (maximalIdeal.isMaximal R).out)
+    simp [e.length_eq]
+  | exact N₁ N₂ N₃ f g inj surj exac ih1 ih3 =>
+    simp only [Module.support_of_exact exac inj surj, Set.union_subset_iff] at h
+    rw [Module.length_eq_add_of_exact f g inj surj exac, ← ENat.coe_toNat_eq_self.mpr (ih1 h.1),
+      ← ENat.coe_toNat_eq_self.mpr (ih3 h.2), ← Nat.cast_add]
+    exact ENat.coe_ne_top _
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
@@ -768,7 +786,9 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       --is subsingleton by injective dimension
       sorry
     --this impies finite length
-    --inj => surj for smul => find maximal cause contradiction
+    --inj => surj for smul
+    --find maximal using `set_has_maximal_iff_noetherian`
+    --cause contradiction by smul short complex
     sorry
 
 end
