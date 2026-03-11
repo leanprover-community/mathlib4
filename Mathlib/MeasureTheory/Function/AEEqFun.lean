@@ -250,7 +250,7 @@ theorem compQuasiMeasurePreserving_compQuasiMeasurePreserving {γ : Type*} [Meas
     {ξ : Measure γ} (g : γ →ₘ[ξ] δ) {f : β → γ} (hf : QuasiMeasurePreserving f ν ξ) {f' : α → β}
     (hf' : QuasiMeasurePreserving f' μ ν) :
     compQuasiMeasurePreserving (compQuasiMeasurePreserving g f hf) f' hf' =
-    compQuasiMeasurePreserving g (f ∘ f') (QuasiMeasurePreserving.comp hf hf') := by
+    compQuasiMeasurePreserving g (f ∘ f') (hf.comp hf') := by
   ext
   grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving,
     coeFn_compQuasiMeasurePreserving, comp_assoc]
