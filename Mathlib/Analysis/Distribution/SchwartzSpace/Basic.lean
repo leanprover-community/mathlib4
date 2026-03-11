@@ -611,7 +611,7 @@ def mkCLM [RingHomIsometric σ] (A : 𝓢(D, E) → F → G)
   cont := by
     change Continuous (mkLM A hadd hsmul hsmooth hbound : 𝓢(D, E) →ₛₗ[σ] 𝓢(F, G))
     refine
-      Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 D E)
+      WithSeminorms.continuous_of_isBounded (schwartz_withSeminorms 𝕜 D E)
         (schwartz_withSeminorms 𝕜' F G) _ fun n => ?_
     rcases hbound n with ⟨s, C, hC, h⟩
     refine ⟨s, ⟨C, hC⟩, fun f => ?_⟩
@@ -632,7 +632,7 @@ def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
   { toLinearMap := f
     cont := by
       change Continuous (LinearMap.mk _ _)
-      apply Seminorm.cont_withSeminorms_normedSpace G (schwartz_withSeminorms 𝕜 D E)
+      apply WithSeminorms.continuous_normedSpace_rng G (schwartz_withSeminorms 𝕜 D E)
       rcases hbound with ⟨s, C, hC, h⟩
       exact ⟨s, ⟨C, hC⟩, h⟩ }
 
