@@ -48,10 +48,11 @@ instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
 
 @[simp] lemma coe_ofSubmodule (S : Submodule R E) : (ofSubmodule S : Set E) = S := rfl
 
-lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R E) ↔ x ∈ S := by rfl
+@[simp] lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} :
+    x ∈ (S : PointedCone R E) ↔ x ∈ S := by rfl
 
 set_option backward.isDefEq.respectTransparency false in
-lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
+@[simp] lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
   Submodule.restrictScalars_inj ..
 
 set_option backward.isDefEq.respectTransparency false in
