@@ -459,6 +459,18 @@ theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath)
     (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
   simpa [hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
 
+variable {G'} in
+theorem IsPath.injOn_support_of_isPath_map {p : G.Walk u v} {f : G →g G'} (h : (p.map f).IsPath) :
+    Set.InjOn f {w | w ∈ p.support} := by
+  intro u hu v hv hf
+  obtain ⟨u, rfl⟩ := List.get_of_mem hu
+  obtain ⟨v, rfl⟩ := List.get_of_mem hv
+  congr
+  have := List.nodup_iff_injective_getElem.mp h.support_nodup
+  rw! (castMode := .all) [support_map, List.length_map] at this
+  apply this
+  simpa
+
 /-! ### About cycles -/
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
