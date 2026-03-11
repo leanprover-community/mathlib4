@@ -312,9 +312,8 @@ instance nhdsNE_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoi
   infer_instance
 
 instance (priority := 900) instPerfectSpace [PerfectSpace X] [NoncompactSpace X] :
-    PerfectSpace (OnePoint X) where
-  instNeBotNhdsNE x :=
-    OnePoint.rec OnePoint.nhdsNE_infty_neBot (fun y => OnePoint.nhdsNE_coe_neBot y) x
+    PerfectSpace (OnePoint X) :=
+  fun x => OnePoint.rec OnePoint.nhdsNE_infty_neBot (fun y => OnePoint.nhdsNE_coe_neBot y) x
 
 theorem nhds_infty_eq : 𝓝 (∞ : OnePoint X) = map (↑) (coclosedCompact X) ⊔ pure ∞ := by
   rw [← nhdsNE_infty_eq, nhdsNE_sup_pure]

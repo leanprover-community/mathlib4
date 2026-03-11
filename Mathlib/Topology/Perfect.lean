@@ -96,22 +96,20 @@ variable (α)
 A topological space `X` is said to be perfect if every point has a nontrivial punctured
 neighborhood filter, i.e. `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 -/
-class PerfectSpace : Prop where
-  /-- In a perfect space, every point has a nontrivial punctured neighborhood filter. -/
-  instNeBotNhdsNE (x : α) : Filter.NeBot (𝓝[≠] x)
+abbrev PerfectSpace := ∀ (x : α), Filter.NeBot (𝓝[≠] x)
 
-attribute [instance] PerfectSpace.instNeBotNhdsNE
+variable {α}
 
 /-- A `PerfectSpace` can be constructed from `Preperfect Set.univ`. -/
-theorem PerfectSpace.mk' (h : Preperfect (Set.univ : Set α)) : PerfectSpace α where
-  instNeBotNhdsNE x := by
-    have := h x (mem_univ x)
-    rwa [AccPt, nhdsWithin, inf_principal, compl_eq_univ_diff, univ_inter] at this
+theorem PerfectSpace.mk' (h : Preperfect (Set.univ : Set α)) : PerfectSpace α := by
+  intro x
+  have := h x (mem_univ x)
+  rwa [AccPt, principal_univ, inf_of_le_left le_top] at this
 
 theorem PerfectSpace.univ_preperfect [PerfectSpace α] : Preperfect (Set.univ : Set α) := by
   intro x _
-  rw [AccPt, nhdsWithin, inf_principal, compl_eq_univ_diff, univ_inter]
-  exact PerfectSpace.instNeBotNhdsNE x
+  rw [AccPt, principal_univ, inf_of_le_left le_top]
+  infer_instance
 
 theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
   ⟨isClosed_univ, PerfectSpace.univ_preperfect⟩
