@@ -236,6 +236,9 @@ lemma homEquiv_symm_apply {X Y : TypeCat.{u}} (f : X → Y) :
     homEquiv.symm f = ofHom ⟨f⟩ :=
   rfl
 
+lemma congr_arg {X Y : TypeCat.{u}} (f : X ⟶ Y) {x x' : X} (h : x = x') : f x = f x' := by
+  rw [h]
+
 end TypeCat
 
 namespace CategoryTheory

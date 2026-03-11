@@ -43,12 +43,10 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
   obtain hlt | hgt | heq : ksucc < j ∨ j < ksucc ∨ j = ksucc := by lia
   · rw [← spine_arrow, spine_δ_arrow_lt sx _ hlt]
     dsimp only [Path.map_arrow, spine_arrow, Fin.coe_eq_castSucc]
-    simp
     apply congr_arg
     apply Subtype.ext
-    simp? [horn.face, CosimplicialObject.δ, yonedaEquiv, uliftYonedaEquiv]
-    simp? [← comp_apply, mkOfSucc_δ_lt hlt]
-    erw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
+    dsimp [horn.face, CosimplicialObject.δ]
+    rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
       Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_lt hlt]
     rfl

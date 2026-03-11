@@ -149,6 +149,7 @@ structure SMulCandidate where
   h ⦃Y : Cᵒᵖ⦄ (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.app Y r₀ = R.obj.map f r)
     (m₀ : M₀.obj Y) (hm₀ : φ.app Y m₀ = A.obj.map f m) : A.obj.map f x = φ.app Y (r₀ • m₀)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for `SMulCandidate`. -/
 def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     (r₀ : Presieve.FamilyOfElements (R₀ ⋙ forget _) S.arrows)

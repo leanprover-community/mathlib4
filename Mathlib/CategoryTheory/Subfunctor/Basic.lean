@@ -147,7 +147,7 @@ instance : Nonempty (Subfunctor F) :=
 @[simps obj map]
 def toFunctor : C ⥤ TypeCat.{w} where
   obj U := TypeCat.of (Subtype (G.obj U))
-  map := @fun _ _ i => TypeCat.ofHom ⟨fun x => ⟨F.map i x, G.map i x.prop⟩⟩
+  map i := TypeCat.ofHom ⟨fun x => ⟨F.map i x, G.map i x.prop⟩⟩
 
 instance {U} : CoeHead (G.toFunctor.obj U) (F.obj U) where
   coe := Subtype.val

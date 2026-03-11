@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
@@ -218,13 +219,7 @@ lemma toPresheafFiber_eq_iff' (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (
     Φ.toPresheafFiber X x P z₁ = Φ.toPresheafFiber X x P z₂ ↔
       ∃ (Y : C) (f : Y ⟶ X) (y : Φ.fiber.obj Y), Φ.fiber.map f y = x ∧
         P.map f.op z₁ = P.map f.op z₂ := by
-  trans (∃ (j : Φ.fiber.Elementsᵒᵖ) (f : op ⟨X, x⟩ ⟶ j),
-    (((CategoryOfElements.π Φ.fiber).op ⋙ P) ⋙ forget A).map f (by exact z₁) =
-      (((CategoryOfElements.π Φ.fiber).op ⋙ P) ⋙ forget A).map f (by exact z₂))
-  · convert Types.FilteredColimit.isColimit_eq_iff'
-      (ht := isColimitOfPreserves (forget A)
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) ..
-    all_goals cat_disch
+  refine ((colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P)).eq_iff' ..).trans ?_
   constructor
   · rintro ⟨⟨Y, y⟩, ⟨f, hf⟩, hf'⟩
     exact ⟨Y, f, y, hf, hf'⟩

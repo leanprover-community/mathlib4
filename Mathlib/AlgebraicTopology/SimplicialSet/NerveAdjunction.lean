@@ -72,7 +72,7 @@ def f₂ (x : X _⦋2⦌₂) : Y _⦋2⦌₂ :=
       (Y.spine 1 (by simp) (f₁ (X.map (δ₂ 0).op x))) (by
         simp only [spine_vertex]
         rw [← δ₂_one_eq_const, ← δ₂_zero_eq_const, ← hδ₁, ← hδ₀]
-        simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_δ₂_two]))
+        simp only [← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_δ₂_two]))
 
 @[simp]
 lemma spineEquiv_f₂_arrow_zero (x : X _⦋2⦌₂) :
@@ -108,14 +108,14 @@ lemma hσ'₀ (x : X _⦋1⦌₂) :
   · dsimp
     rw [spineEquiv_f₂_arrow_zero]
     dsimp [StrictSegal.spineEquiv]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero, op_comp,
-      FunctorToTypes.map_comp_apply, hσ, SimplexCategory.mkOfSucc_zero_eq_δ,
-      ← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero,
-      op_comp, FunctorToTypes.map_comp_apply, hδ₁]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero, op_comp,
+      Functor.map_comp_apply, hσ, SimplexCategory.mkOfSucc_zero_eq_δ,
+      ← Functor.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero,
+      op_comp, Functor.map_comp_apply, hδ₁]
   · dsimp
     rw [spineEquiv_f₂_arrow_one]
     simp [StrictSegal.spineEquiv, SimplexCategory.mkOfSucc_one_eq_δ,
-      ← FunctorToTypes.map_comp_apply, ← op_comp]
+      ← Functor.map_comp_apply, ← op_comp]
 
 include hσ in
 lemma hσ'₁ (x : X _⦋1⦌₂) :
@@ -126,23 +126,23 @@ lemma hσ'₁ (x : X _⦋1⦌₂) :
   · dsimp
     rw [spineEquiv_f₂_arrow_zero]
     simp [StrictSegal.spineEquiv, SimplexCategory.mkOfSucc_zero_eq_δ,
-      ← FunctorToTypes.map_comp_apply, ← op_comp]
+      ← Functor.map_comp_apply, ← op_comp]
   · dsimp
     rw [spineEquiv_f₂_arrow_one]
     dsimp [StrictSegal.spineEquiv]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one, op_comp,
-      FunctorToTypes.map_comp_apply, hσ, SimplexCategory.mkOfSucc_one_eq_δ,
-      ← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one,
-      op_comp, FunctorToTypes.map_comp_apply, hδ₀]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one, op_comp,
+      Functor.map_comp_apply, hσ, SimplexCategory.mkOfSucc_one_eq_δ,
+      ← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one,
+      op_comp, Functor.map_comp_apply, hδ₀]
 
 /-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
   obtain ⟨n, hn⟩ := n
   induction n using SimplexCategory.rec with | _ n
   match n with
-  | 0 => exact f₀
-  | 1 => exact f₁
-  | 2 => exact f₂ f₀ f₁ hδ₁ hδ₀ hY
+  | 0 => exact TypeCat.ofHom ⟨f₀⟩
+  | 1 => exact TypeCat.ofHom ⟨f₁⟩
+  | 2 => exact TypeCat.ofHom ⟨f₂ f₀ f₁ hδ₁ hδ₀ hY⟩
 
 /-- The property of morphisms in `SimplexCategory.Truncated 2` for
 which `liftOfStrictSegal.app` is natural. -/
@@ -182,13 +182,11 @@ def liftOfStrictSegal : X ⟶ Y where
     (liftOfStrictSegal.naturalityProperty_eq_top f₀ f₁ hδ₁ hδ₀ H hσ hY).symm.le
       φ.unop (by simp)
 
-@[simp]
 lemma liftOfStrictSegal_app_0 :
-    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = f₀ := rfl
+    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = TypeCat.ofHom ⟨f₀⟩ := rfl
 
-@[simp]
 lemma liftOfStrictSegal_app_1 :
-    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = f₁ := rfl
+    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = TypeCat.ofHom ⟨f₁⟩ := rfl
 
 end liftOfStrictSegal
 
@@ -296,10 +294,10 @@ def functorEquiv :
         descOfTruncation_map_homMk]
       refine ComposableArrows.ext₁ ?_ ?_ rfl
       · dsimp [nerveEquiv, ComposableArrows.right]
-        simp only [← f.src_eq, FunctorToTypes.naturality]
+        simp only [← f.src_eq, NatTrans.naturality_apply]
         rfl
       · dsimp [nerveEquiv, ComposableArrows.right]
-        simp only [← f.tgt_eq, FunctorToTypes.naturality]
+        simp only [← f.tgt_eq, NatTrans.naturality_apply]
         rfl)
 
 set_option backward.isDefEq.respectTransparency false in
