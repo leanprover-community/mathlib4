@@ -60,7 +60,7 @@ variable (G : SimpleGraph V) (G' : SimpleGraph V')
 
 namespace Walk
 
-variable {G} {u u' v w : V}
+variable {G G'} {u u' v w : V} {p : G.Walk u v} {f : G →g G'}
 
 /-! ### Trails, paths, circuits, cycles -/
 
@@ -459,8 +459,7 @@ theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath)
     (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
   simpa [hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
 
-variable {G'} in
-theorem IsPath.injOn_support_of_isPath_map {p : G.Walk u v} {f : G →g G'} (h : (p.map f).IsPath) :
+theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
     Set.InjOn f {w | w ∈ p.support} := by
   intro u hu v hv hf
   obtain ⟨u, rfl⟩ := List.get_of_mem hu

@@ -26,8 +26,10 @@ In this file we introduce Hamiltonian paths, cycles and graphs.
 open Finset Function
 
 namespace SimpleGraph
-variable {α β : Type*} [DecidableEq α] [DecidableEq β] {G : SimpleGraph α}
-  {a b : α} {p : G.Walk a b}
+
+variable {α : Type*} [DecidableEq α] {G : SimpleGraph α}
+variable {β : Type*} [DecidableEq β] {H : SimpleGraph β}
+variable {a b : α} {p : G.Walk a b} {f : G →g H}
 
 namespace Walk
 
@@ -35,7 +37,8 @@ namespace Walk
 this definition doesn't contain that `p` is a path, `p.isPath` gives that. -/
 def IsHamiltonian (p : G.Walk a b) : Prop := ∀ a, p.support.count a = 1
 
-lemma IsHamiltonian.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective f) (hp : p.IsHamiltonian) :
+variable (f) in
+lemma IsHamiltonian.map (hf : Bijective f) (hp : p.IsHamiltonian) :
     (p.map f).IsHamiltonian := by
   simp [IsHamiltonian, hf.surjective.forall, hf.injective, hp _]
 
@@ -115,8 +118,8 @@ theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : p.getVert.Surj
     isHamiltonian_iff_support_get_bijective.mp hp |>.surjective
 
 omit [DecidableEq β] in
-theorem IsHamiltonian.injective_of_isPath_map {G' : SimpleGraph β} {u v : α} {p : G.Walk u v}
-    {f : G →g G'} (hp : p.IsHamiltonian) (h : (p.map f).IsPath) : Function.Injective f := by
+theorem IsHamiltonian.injective_of_isPath_map (hp : p.IsHamiltonian) (h : (p.map f).IsPath) :
+    Function.Injective f := by
   rw [← Set.injOn_univ, ← hp.setOf_support]
   exact h.injOn_support_of_isPath_map
 
@@ -139,7 +142,7 @@ variable {p : G.Walk a a}
 lemma IsHamiltonianCycle.isCycle (hp : p.IsHamiltonianCycle) : p.IsCycle :=
   hp.toIsCycle
 
-lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective f)
+lemma IsHamiltonianCycle.map (hf : Bijective f)
     (hp : p.IsHamiltonianCycle) : (p.map f).IsHamiltonianCycle where
   toIsCycle := hp.isCycle.map hf.injective
   isHamiltonian_tail := by
@@ -200,7 +203,7 @@ def IsHamiltonian (G : SimpleGraph α) : Prop :=
 
 lemma IsHamiltonian.mono {H : SimpleGraph α} (hGH : G ≤ H) (hG : G.IsHamiltonian) :
     H.IsHamiltonian :=
-  fun hα ↦ let ⟨_, p, hp⟩ := hG hα; ⟨_, p.map <| .ofLE hGH, hp.map _ bijective_id⟩
+  fun hα ↦ let ⟨_, p, hp⟩ := hG hα; ⟨_, p.map <| .ofLE hGH, hp.map bijective_id⟩
 
 lemma not_isHamiltonian_of_isEmpty [IsEmpty α] : ¬G.IsHamiltonian :=
   (IsEmpty.exists_iff.mp <| · <| by simp)
