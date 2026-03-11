@@ -108,6 +108,100 @@ noncomputable def _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpartit
       rw [← hp]
       exact Finset.coe_mem p }
 
+section
+
+/-- If `pr` remains true for intersection and union, `Subtype Pr` carries the lattice structure. -/
+abbrev instSubtypeLattice {X : Type*} (pr : Set X → Prop)
+  (printer : ∀ s t, pr s → pr t → pr (s ⊓ t)) (prunion : ∀ s t, pr s → pr t → pr (s ⊔ t)) :
+    Lattice (Subtype pr) where
+  sup := fun ⟨s, hs⟩ ⟨t, ht⟩ => ⟨s ⊔ t, prunion s t hs ht⟩
+  inf := fun ⟨s, hs⟩ ⟨t, ht⟩ => ⟨s ⊓ t, printer s t hs ht⟩
+  le_sup_left := by simp
+  le_sup_right := by simp
+  sup_le a b c hac hbc := by
+    intro x hx
+    rcases hx with (hx | hx)
+    · exact Set.mem_of_subset_of_mem hac hx
+    · exact Set.mem_of_subset_of_mem hbc hx
+  inf_le_left := by simp
+  inf_le_right := by simp
+  le_inf a b c hac hbc := by
+    intro x hx
+    exact ⟨hac hx, hbc hx⟩
+
+/-- If `pr` remains true for intersection and union, `Subtype Pr` carries the distributive lattice
+structure. -/
+abbrev instSubtypeDistribLattice {X : Type*} (pr : Set X → Prop)
+  (printer : ∀ s t, pr s → pr t → pr (s ⊓ t)) (prunion : ∀ s t, pr s → pr t → pr (s ⊔ t)) :
+    DistribLattice (Subtype pr) :=
+  { toLattice := instSubtypeLattice pr printer prunion
+    le_sup_inf := by
+      intro a b c x hx
+      simp_all only
+      rw [Subtype.coe_sup prunion]
+      rw [Subtype.coe_inf printer] at hx
+      simp only [Set.inf_eq_inter, Set.mem_inter_iff] at hx
+      rcases hx.1 with hxa | hxb
+      · left; exact hxa
+      · rcases hx.2 with hxab | hxac
+        · left; exact hxab
+        · right
+          rw [Subtype.coe_inf printer b c]
+          simpa using ⟨hxb, hxac⟩ }
+
+/-- A `Finpartition` constructor in `Subtype pr` for `pr : Set X → Prop` such that `pr` is closed
+under intersection and union and `pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
+that `pr s` and `pr p` for each part `p`.
+-/
+noncomputable def _root_.Finpartition.toSubtype
+  {X : Type*} {s : Set X} (P : Finpartition s)
+  (pr : Set X → Prop) (printer : ∀ s t, pr s → pr t → pr (s ⊓ t))
+  (prunion : ∀ s t, pr s → pr t → pr (s ⊔ t))
+  (hbot : pr (⊥ : Set X))
+  (hs : pr s) (hP : ∀ p ∈ P.parts, pr p) :
+  @Finpartition (Subtype pr) (instSubtypeLattice pr printer prunion)
+    (Subtype.orderBot hbot) ⟨s, hs⟩ :=
+  letI : Fintype (Subtype (P.parts : Set (Set X))) := Fintype.subtype P.parts (by intro; rfl)
+  letI : DistribLattice (Subtype pr) := instSubtypeDistribLattice pr printer prunion
+  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  { parts := Finset.image
+      (fun p : (Subtype (P.parts : Set (Set X))) =>
+        (⟨p.val, hP p.val p.property⟩ : Subtype pr))
+      Finset.univ
+    supIndep := by
+      apply Finset.SupIndep.image
+      simp only [CompTriple.comp_eq]
+      have hPd := P.supIndep
+      rw [Finset.supIndep_iff_pairwiseDisjoint]
+      rw [Finset.supIndep_iff_pairwiseDisjoint] at hPd
+      simp_all only [Finset.coe_univ]
+      intro x hx y hy h
+      refine disjoint_iff.mpr ?_
+      simp only
+      have hPd' := @Set.PairwiseDisjoint.eq_or_disjoint _ _ _ _ _ _ hPd x y (by simp) (by simp)
+      have hxy : x.val ≠ y.val := by exact Subtype.coe_ne_coe.mpr h
+      rcases hPd' with (hxy' | hxy')
+      · exfalso; exact (iff_false_intro hxy).mp hxy'
+      · apply disjoint_iff.mp
+        intro a hax hay z hz
+        simp_all only [Set.mem_univ, ne_eq, id_eq]
+        exact Set.mem_of_subset_of_mem (hxy' hax hay) hz
+    sup_parts := by
+      apply Subtype.ext
+      ext x
+      rw [Finset.sup_coe]
+      · exact ⟨by intro h; simpa [← P.sup_parts] using h, by intro h; simpa [← P.sup_parts] using h⟩
+      exact fun s t hs ht ↦ prunion s t hs ht
+    bot_notMem := by
+      simp only [Finset.mem_image, Finset.mem_univ, true_and]
+      intro ⟨p, hp⟩
+      apply P.bot_notMem
+      rw [Subtype.mk_eq_bot_iff hbot] at hp
+      rw [← hp]
+      exact Finset.coe_mem p }
+
+end
+
 lemma sum_eq_sum_finpartition_subtype {s : Set X} (hs : MeasurableSet s) (P : Finpartition s)
     (hP : ∀ p ∈ P.parts, MeasurableSet p) :
     ∑ p ∈ P.parts, f p = ∑ p ∈ (Finpartition.toMeasurableSet P hs hP).parts, f p := by
