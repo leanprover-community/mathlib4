@@ -473,7 +473,7 @@ theorem cos_two_mul : cos (2 * x) = 2 * cos x ^ 2 - 1 := by
   rw [cos_two_mul', eq_sub_iff_add_eq.2 (sin_sq_add_cos_sq x), ← sub_add, sub_add_eq_add_sub,
     two_mul]
 
-theorem cos_two_mul'' : cos (2 * x) = 1 - 2 * sin x ^ 2 := by
+theorem cos_two_mul_eq_one_sub : cos (2 * x) = 1 - 2 * sin x ^ 2 := by
   grind [cos_two_mul, sin_sq_add_cos_sq]
 
 theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x := by
@@ -702,8 +702,8 @@ nonrec theorem cos_two_mul : cos (2 * x) = 2 * cos x ^ 2 - 1 :=
 nonrec theorem cos_two_mul' : cos (2 * x) = cos x ^ 2 - sin x ^ 2 :=
   ofReal_injective <| by simp [cos_two_mul']
 
-nonrec theorem cos_two_mul'' : cos (2 * x) = 1 - 2 * sin x ^ 2 :=
-  ofReal_injective <| by simp [cos_two_mul'']
+nonrec theorem cos_two_mul_eq_one_sub : cos (2 * x) = 1 - 2 * sin x ^ 2 :=
+  ofReal_injective <| by simp [cos_two_mul_eq_one_sub]
 
 nonrec theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x :=
   ofReal_injective <| by simp [sin_two_mul]
