@@ -15,12 +15,10 @@ in the product space.
 
 ## Main statements
 
-- `hasStrictFDerivAt_uncurry_coprod`: establishing strict differentiability at a point `u` in the
+* `hasStrictFDerivAt_uncurry_coprod`: establishing strict differentiability at a point `u` in the
   product space, this requires that both partial derivatives exist in a neighbourhood of `u` and be
   continuous at `u`.
 -/
-
-public section
 
 open Asymptotics Filter
 open scoped Convex Topology
@@ -49,10 +47,10 @@ theorem isLittleO_sub_sub_fderiv
 variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
   [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-/-- If a bivariate function `f` has partial derivatives `f₁` and `f₂` in a neighbourhood of a point
-`(u₁, u₂)` and if they are continuous at that point then the uncurried function `↿f` is strictly
-differentiable there with its derivative mapping `(z₁, z₂)` to `f₁ u₁ u₂ z₁ + f₂ u₁ u₂ z₂`. -/
-theorem hasStrictFDerivAt_uncurry_coprod
+/-- If bivariate `f : E₁ → E₂ → F` has partial derivatives `f₁` and `f₂` in a neighbourhood of
+`u : E₁ × E₂` and if they are continuous there then the uncurried function `↿f` is strictly
+differentiable at `u` with its derivative mapping `z` to `f₁ u.1 u.2 z.1 + f₂ u.1 u.2 z.2`. -/
+public theorem hasStrictFDerivAt_uncurry_coprod
     [IsRCLikeNormedField 𝕜] {u : E₁ × E₂} {f : E₁ → E₂ → F} {f₁ : E₁ → E₂ → E₁ →L[𝕜] F}
     {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (df₁ : ∀ᶠ v in 𝓝 u, HasFDerivAt (f · v.2) (↿f₁ v) v.1)
     (df₂ : ∀ᶠ v in 𝓝 u, HasFDerivAt (f v.1 ·) (↿f₂ v) v.2) (cf₁ : ContinuousAt ↿f₁ u)
@@ -96,5 +94,3 @@ theorem hasStrictFDerivAt_uncurry_coprod
             · simpa using cf₂.comp h
           _ =O[(𝓝 u.1 ×ˢ 𝓝 u.2) ×ˢ (𝓝 u.1 ×ˢ 𝓝 u.2)] (fun (v, w) => v - w : _ → E₁ × E₂) := by
             simp [isBigO_of_le]
-
-end

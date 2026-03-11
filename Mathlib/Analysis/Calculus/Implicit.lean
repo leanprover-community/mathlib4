@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Normed.Module.Complemented
 /-!
 # Implicit function theorem
 
-We prove a few different versions of the implicit function theorem. First we define a structure
+We prove three versions of the implicit function theorem. First we define a structure
 `ImplicitFunctionData` that holds arguments for the most general version of the implicit function
 theorem, see `ImplicitFunctionData.implicitFunction` and
 `ImplicitFunctionData.implicitFunction_hasStrictFDerivAt`. This version allows a user to choose a
@@ -23,7 +23,7 @@ Then we define `HasStrictFDerivAt.implicitFunctionDataOfComplemented`: implicit 
 `f (g z y) = z`, where `f : E → F` is a function strictly differentiable at `a` such that its
 derivative `f'` is surjective and has a `complemented` kernel.
 
-Third, if the codomain of `f` is a finite-dimensional space, then we can automatically prove
+Finally, if the codomain of `f` is a finite-dimensional space, then we can automatically prove
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 

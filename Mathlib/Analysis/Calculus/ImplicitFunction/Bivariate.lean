@@ -12,14 +12,15 @@ public import Mathlib.Analysis.Calculus.FDeriv.Partial
 # Implicit function theorem — curried bivariate
 
 This specialization of the implicit function theorem applies to a curried bivariate function
-`f : E₁ → E₂ → F` and assumes continuity of both its partial derivatives as well as invertibility of
-`f₂ : E₂ →L[𝕜] F` its partial derivative with respect to the second argument.
+`f : E₁ → E₂ → F` and assumes continuity of both its partial derivatives at `u : E₁ × E₂` as well as
+invertibility of `f₂ u.1 u.2 : E₂ →L[𝕜] F` its partial derivative with respect to the second
+argument.
 
-In particular there exists `ψ : E₁ → E₂` such that for `v` in a neighbourhood of `u : E₁ × E₂` we
-have `f v.1 v.2 = f u.1 u.2 ↔ ψ v.1 = v.2`. This is `implicitFunctionOfBivariate`. A formula for its
+It proves the existence of `ψ : E₁ → E₂` such that for `v` in a neighbourhood of `u` we have
+`f v.1 v.2 = f u.1 u.2 ↔ ψ v.1 = v.2`. This is `implicitFunctionOfBivariate`. A formula for its
 first derivative follows.
 
-A similar specialization is made for uncurried bivariate `f` by
+A similar specialization is made to an uncurried bivariate function by
 `HasStrictFDerivAt.implicitFunctionOfProdDomain` in a sister file.
 
 ## Tags
