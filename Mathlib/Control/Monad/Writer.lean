@@ -45,7 +45,7 @@ class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
 
 export MonadWriter (tell listen pass)
 
-variable {M : Type u → Type v} {α ω ρ σ : Type u}
+variable {M : Type u → Type v} {α β ω ρ σ : Type u}
 
 instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
   tell w := (tell w : M _)
