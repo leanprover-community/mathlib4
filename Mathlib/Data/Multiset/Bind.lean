@@ -254,13 +254,34 @@ variable {f s t}
 open scoped Function in -- required for scoped `on` notation
 @[simp] lemma nodup_bind :
     Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise (Disjoint on f) := by
-  refine Multiset.induction_on s (by simp) (fun a s ih ↦ ⟨fun hs ↦ ⟨fun b hb ↦ ?_, ?_⟩, ?_⟩)
+  refine Multiset.induction_on s (by simp) (fun a s ih ↦ ⟨fun hs ↦ ⟨fun b hb ↦ ?_, ?_⟩, fun
+    ⟨h₁, l, hl, hpl⟩ ↦ ?_⟩)
   · simp only [cons_bind, nodup_add] at hs
     rcases mem_cons.mp hb with rfl | hb
     · exact hs.1
     · exact (ih.mp hs.2.1).1 b hb
-  · sorry
-  · sorry
+  · simp only [cons_bind, nodup_add] at hs
+    obtain ⟨l, rfl, hpl⟩ := (ih.mp hs.2.1).2
+    exact ⟨a :: l, by simp, List.Pairwise.cons
+      (fun b hb => hs.2.2.mono_right (le_bind _ (Multiset.mem_coe.mpr hb))) hpl⟩
+  · simp only [cons_bind, nodup_add]
+    refine ⟨h₁ a (mem_cons_self a s), ?_, ?_⟩
+    · refine ih.mpr ⟨fun b hb ↦ h₁ b (mem_cons.mpr (.inr hb)), ?_⟩
+      induction s using Quotient.inductionOn with
+      | h l_s =>
+        have hperm : l.Perm (a :: l_s) := by simpa using Quotient.exact hl.symm
+        exact (pairwise_coe_iff_pairwise (fun _ _ d ↦ d.symm)).mpr
+          (List.pairwise_cons.mp (hperm.pairwise_iff (fun d ↦ d.symm) |>.mp hpl)).2
+    · rw [disjoint_left]
+      intro x hxa hxb
+      obtain ⟨b, hbs, hxfb⟩ := mem_bind.mp hxb
+      induction s using Quotient.inductionOn with
+      | h l_s =>
+        have hperm : l.Perm (a :: l_s) := by simpa using Quotient.exact hl.symm
+        have hpl' : (a :: l_s).Pairwise (Function.onFun Disjoint f) :=
+          (hperm.pairwise_iff fun d ↦ d.symm).mp hpl
+        exact absurd hxfb (disjoint_left.mp
+          ((List.pairwise_cons.mp hpl').1 b (Multiset.mem_coe.mp hbs)) hxa)
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :
