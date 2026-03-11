@@ -6,9 +6,7 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Operator.FredholmAlternative
-public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.Data.Fin.Tuple.Sort
 
@@ -59,6 +57,39 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 -/
 
 @[expose] public section
+
+#check ContinuousLinearMap.toLinearMap
+
+@[fun_prop]
+theorem foo {R S : Type*}
+    [inst : Semiring R]
+      [inst_1 : Semiring S]
+        {σ : R →+* S}
+          {M : Type*}
+            [inst_2 : TopologicalSpace M]
+              [inst_3 : AddCommMonoid M]
+                {M₂ : Type*}
+                  [inst_4 : TopologicalSpace M₂]
+                    [inst_5 : AddCommMonoid M₂]
+                      [inst_6 : Module R M] [inst_7 : Module S M₂] (f : M →SL[σ] M₂) :
+                      Continuous f.toLinearMap := by
+                    fun_prop
+
+#min_imports
+
+@[fun_prop]
+theorem LinearMap.continuous_domRestrict {R R₂ M M₂ : Type*}
+    [TopologicalSpace M] [TopologicalSpace M₂]
+        [Semiring R]
+          [Semiring R₂]
+            [AddCommMonoid M]
+              [inst_3 : AddCommMonoid M₂]
+                [inst_4 : Module R M]
+                  [inst_5 : Module R₂ M₂]
+                    {σ₁₂ : R →+* R₂} (f : M →ₛₗ[σ₁₂] M₂) (hf : Continuous f)
+                      (p : Submodule R M) : Continuous (f.domRestrict p) := by
+              simp [domRestrict]
+              fun_prop
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -370,6 +401,8 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
 
 end Nonneg
 
+
+
 namespace ContinuousLinearMap
 
 variable [CompleteSpace E] {T : E →L[𝕜] E}
@@ -397,8 +430,6 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot
   let S : (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ →L[𝕜] (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ :=
   { __ := T.restrict hT'.orthogonalComplement_iSup_eigenspaces_invariant
     cont := by
-      simp only [LinearMap.restrict, LinearMap.codRestrict, LinearMap.domRestrict_apply,
-        coe_coe, AddHom.toFun_eq_coe, AddHom.coe_mk]
       fun_prop }
   have hS_compact : IsCompactOperator S :=
     hT.restrict' hT'.orthogonalComplement_iSup_eigenspaces_invariant
