@@ -61,6 +61,7 @@ theorem IsNormalClosureFG.invariant_surj_hom {G H : Type*} [Group G] [Group H]
   · rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
 /-- A group is finitely presented if it admits an isomorphism to a finitely presented group. -/
+@[mk_iff]
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out: ∃ (α : Type) (_: Finite α) (rels : Set (FreeGroup α)) (_ : rels.Finite),
   Nonempty (G ≃* (PresentedGroup rels))
@@ -315,5 +316,25 @@ theorem of_mulEquiv {G H : Type*} [Group G] [Group H]
     IsFinitelyPresented H := by
     obtain ⟨α, hα, rels, hrels, ⟨iso'⟩⟩ := h
     exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
+
+/-- Quotienting a group by the normal closure of the empty set gives back the group. -/
+def quotient_normalClosure_empty_mulEquiv (G : Type*) [Group G] :
+    G ⧸ Subgroup.normalClosure (∅ : Set G) ≃* G := by
+  exact (QuotientGroup.quotientMulEquivOfEq (normalClosure_empty (G := G))).trans
+    (QuotientGroup.quotientBot (G := G))
+
+/- FreeGroup over `a : Type` on finitely many generators is FP -/
+instance {α : Type} [Finite α] : IsFinitelyPresented (FreeGroup α) := by
+   rw [isFinitelyPresented_iff]
+   use α, inferInstance, ∅, Set.finite_empty
+   exact ⟨quotient_normalClosure_empty_mulEquiv (FreeGroup α)|>.symm⟩
+
+/- FreeGroup over `a : Type*` on finitely many generators is FP -/
+instance {α : Type*} [Finite α] : IsFinitelyPresented (FreeGroup α) := by
+  let n := Nat.card α
+  let β : Type := Fin n
+  let e : α ≃ β := Finite.equivFin α
+  let iso : FreeGroup α ≃* FreeGroup β := FreeGroup.freeGroupCongr e
+  apply of_mulEquiv iso.symm inferInstance
 
 end IsFinitelyPresented
