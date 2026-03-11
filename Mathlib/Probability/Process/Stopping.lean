@@ -440,6 +440,7 @@ section Preorder
 variable [Preorder ι] {f : Filtration ι m} {τ π : Ω → WithTop ι}
 
 /-- The associated σ-algebra with a stopping time. -/
+@[implicit_reducible]
 protected def measurableSpace (hτ : IsStoppingTime f τ) : MeasurableSpace Ω where
   MeasurableSet' s := MeasurableSet s ∧ ∀ i : ι, MeasurableSet[f i] (s ∩ {ω | τ ω ≤ i})
   measurableSet_empty := by simp
