@@ -496,20 +496,6 @@ theorem map_ofSubtype (s : Finset α) :
   · refine ⟨x, ?_, hx⟩
     rwa [← hx, sign_ofSubtype] at hk
 
-open Pointwise in
-lemma conj_smul_subgroupOf (s : Finset α) (g : alternatingGroup α) :
-    MulAut.conj g • ((alternatingGroup ↥s).map Perm.ofSubtype).subgroupOf (alternatingGroup α) =
-      ((alternatingGroup ↥(g • s)).map Perm.ofSubtype).subgroupOf (alternatingGroup α) := by
-  classical
-  rcases g with ⟨g, hg⟩
-  ext ⟨k, hk⟩
-  simp only [Subgroup.mem_subgroupOf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem,
-    map_ofSubtype, Subgroup.mem_inf, MulAut.smul_def,
-    MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
-  rw [← MulAut.conj_symm_apply, ← MulAut.inv_apply, ← MulAut.smul_def,
-    ← Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← Equiv.Perm.conj_smul_range_ofSubtype]
-  apply and_congr Iff.rfl (by simp [mul_right_comm])
-
 theorem mem_range_ofSubtype_iff (s : Finset α) (k : alternatingGroup α) :
     k ∈ (ofSubtype s).range ↔ (k : Perm α).support ⊆ s := by
   constructor
