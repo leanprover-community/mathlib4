@@ -166,10 +166,6 @@ theorem toCoverSheaf_H_map_zero (n : ℕ) (c : H F.sheaf n) [Finite I]
 
 end
 
-#check diagonal_isAffine_iff_forall_isAffineOpen_inf
-
-#check HasAffineProperty.affineAnd_containsIdentities
-
 theorem base [IsAffine X] [F.IsQuasicoherent] : Subsingleton (H F.sheaf 1) := by
   apply subsingleton_of_forall_eq 0
   intro c
@@ -209,9 +205,10 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
       intro r (U : X.Opens) hr1 hr2 hU
       haveI : IsAffine U := hU
       haveI : ((restrictFunctor U.ι).obj F).IsQuasicoherent := sorry
-      have v := hi (r - 1) (by lia) ((restrictFunctor U.ι).obj F)
-      rw [Nat.sub_add_cancel hr1] at v
-      exact v) c
+      have := hi (r - 1) (by lia) ((restrictFunctor U.ι).obj F)
+      rw [Nat.sub_add_cancel hr1] at this
+      exact this)
+    c
   obtain ⟨ι, hU⟩ := CompactSpace.isOpenCover_elim_finite_subcover hU'
   let U : ι → X.Opens := ι.restrict U'
   haveI : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
