@@ -189,7 +189,7 @@ theorem base [IsAffine X] [F.IsQuasicoherent] : Subsingleton (H F.sheaf 1) := by
     ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel (F.toCoverSheaf U))
   let Ssheaf := S.map (toSheaf X)
   have hSsheaf : Ssheaf.ShortExact := ShortComplex.ShortExact.map_of_exact hS (toSheaf X)
-  
+
   sorry
 
 open ConcreteCategory
