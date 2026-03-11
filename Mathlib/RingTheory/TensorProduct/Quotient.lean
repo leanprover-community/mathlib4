@@ -109,8 +109,8 @@ end
 end Algebra.TensorProduct
 
 lemma Ideal.subtype_rTensor_range {R : Type*} [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
-    (I : Ideal R) : ((TensorProduct.lid R M).comp (I.subtype.rTensor M)).range =
-    I • (⊤ : Submodule R M) := by
+    (I : Ideal R) :
+    ((TensorProduct.lid R M).comp (I.subtype.rTensor M)).range = I • (⊤ : Submodule R M) := by
   rw [← Submodule.ker_mkQ (I • (⊤ : Submodule R M)), LinearMap.range_comp,
     ← Submodule.map_symm_eq_iff, ← Submodule.comap_equiv_eq_map_symm, ← LinearMap.ker_comp,
     ← TensorProduct.quotTensorEquivQuotSMul_comp_mkQ_rTensor, LinearEquiv.ker_comp]
