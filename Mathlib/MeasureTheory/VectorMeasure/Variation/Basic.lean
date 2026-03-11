@@ -19,9 +19,9 @@ is `ℝ≥0∞`-valued measure, `μ.variation` coincides with `μ` on measurable
 
 ## Main results
 
-* `norm_measure_le_variation`: `‖μ E‖ₑ ≤ variation μ E`.
-* `variation_neg`: `(-μ).variation = μ.variation`.
+* `enorm_measure_le_variation`: `‖μ E‖ₑ ≤ variation μ E`.
 * `variation_zero`: `(0 : VectorMeasure X V).variation = 0`.
+* `variation_neg`: `(-μ).variation = μ.variation`.
 * `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
 
 ## References
@@ -72,7 +72,7 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
       apply preVariation.sum_le' (fun p => ‖μ p‖ₑ) hs
       intro p hp
       have : p ∈ Q.parts ∨ p = s \ (P.sup id) := by
-        apply Finpartition.mem_parts_or_mem_sdiff_of_mem_extendOfLE Q _ _ hp
+        apply Finpartition.mem_parts_or_mem_sdiff_of_mem_extendOfLE _ _ hp
       rcases this with h | h
       · rw [hQ, Finpartition.ofPairwiseDisjoint] at h
         simp only [Set.bot_eq_empty, mem_erase, ne_eq] at h

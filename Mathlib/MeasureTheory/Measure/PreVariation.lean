@@ -17,8 +17,6 @@ measure.
 
 ## Main definitions
 
-* `IsSigmaSubadditiveSetFun f` — `f` is σ-subadditive on measurable sets
-* `ennrealPreVariation f` — the `VectorMeasure X ℝ≥0∞` built from a σ-subadditive function
 * `IsSigmaSubadditiveSetFun f`: `f` is σ-subadditive on measurable sets
 * `ennrealPreVariation f`: the `VectorMeasure X ℝ≥0∞` built from a σ-subadditive function
 * `preVariation f`: the `Measure X` built from a σ-subadditive function
