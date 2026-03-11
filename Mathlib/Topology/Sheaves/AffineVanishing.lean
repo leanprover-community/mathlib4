@@ -43,14 +43,6 @@ instance : (toSheaf X).Additive := inferInstanceAs (SheafOfModules.toSheaf X.rin
 instance : Limits.PreservesFiniteLimits (toSheaf X) :=
   inferInstanceAs (Limits.PreservesFiniteLimits (SheafOfModules.toSheaf X.ringCatSheaf))
 
-#check SheafOfModules.forget
-
-#check PresheafOfModules.toPresheaf
-
-#check Sheaf.isLocallySurjective_iff_epi'
-
-#check SheafOfModules.GeneratingSections.epi
-
 instance : Limits.PreservesFiniteColimits (toSheaf X) := sorry
 
 noncomputable abbrev sheaf : TopCat.Sheaf AddCommGrpCat X := (toSheaf X).obj M
@@ -189,8 +181,18 @@ theorem base [IsAffine X] [F.IsQuasicoherent] : Subsingleton (H F.sheaf 1) := by
     ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel (F.toCoverSheaf U))
   let Ssheaf := S.map (toSheaf X)
   have hSsheaf : Ssheaf.ShortExact := ShortComplex.ShortExact.map_of_exact hS (toSheaf X)
-  
-  sorry
+  have : Function.Surjective (H.map Ssheaf.g 0) := by
+    rw [← Equiv.comp_surjective (H.map Ssheaf.g 0) (H.equiv₀ Ssheaf.X₃).toEquiv]
+    conv => arg 1; equals (Ssheaf.g.hom.app (op ⊤)) ∘ (H.equiv₀ Ssheaf.X₂).toEquiv =>
+      ext
+      simp [H.equiv₀_naturality]
+    rw [Equiv.surjective_comp (H.equiv₀ Ssheaf.X₂).toEquiv (Ssheaf.g.hom.app (op ⊤))]
+    conv => arg 1; arg 1; arg 1; change S.g.sheafhom.hom.app (op ⊤)
+    sorry
+  obtain ⟨x₃, hx₃⟩ := Sheaf.H.longSequence_exact₁ hSsheaf 0 1 rfl c <|
+    F.toCoverSheaf_H_map_zero U 1 c (fun i => (vanish i).right)
+  obtain ⟨x₂, hx₂⟩ := this x₃
+  simpa [← hx₃, ← hx₂] using Sheaf.H.map_comp_connectingHom_zero hSsheaf 0 1 rfl x₂
 
 open ConcreteCategory
 

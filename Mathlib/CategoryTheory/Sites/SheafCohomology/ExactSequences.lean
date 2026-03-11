@@ -66,6 +66,25 @@ lemma longSequence_exact₂' (n : ℕ) :
       convert ((longSequence_exact hS n).sc 0).zero)).Exact := by
   convert (longSequence_exact hS n).exact 0
 
+#check AddCommGrpCat.zero_apply
+
+include hS in
+lemma map_comp_map_zero (n : ℕ) (x₁ : H S.X₁ n) : H.map S.g n (H.map S.f n x₁) = 0 := by
+  have : ofHom (H.map S.f n) ≫ ofHom (H.map S.g n) = 0 := ((longSequence_exact hS n).sc 0).zero
+  simpa [← this] using zero_apply (of (H S.X₁ n)) (of (H S.X₃ n)) x₁
+
+lemma map_comp_connectingHom_zero (h : n₀ + 1 = n₁ := by omega) (x₂ : H S.X₂ n₀) :
+    H.connectingHom hS n₀ n₁ h (H.map S.g n₀ x₂) = 0 := by
+  have : ofHom (H.map S.g n₀) ≫ ofHom (H.connectingHom hS n₀ n₁ h) = 0 :=
+    ((longSequence_exact hS n₀ n₁ h).sc 1).zero
+  simpa [← this] using zero_apply (of (H S.X₂ n₀)) (of (H S.X₁ n₁)) x₂
+
+lemma connectingHom_comp_map_zero (h : n₀ + 1 = n₁ := by omega) (x₃ : H S.X₃ n₀) :
+    H.map S.f n₁ (H.connectingHom hS n₀ n₁ h x₃) = 0 := by
+  have : ofHom (H.connectingHom hS n₀ n₁ h) ≫ ofHom (H.map S.f n₁) = 0 :=
+    ((longSequence_exact hS n₀ n₁ h).sc 2).zero
+  simpa [← this] using zero_apply (of (H S.X₃ n₀)) (of (H S.X₂ n₁)) x₃
+
 include hS in
 lemma longSequence_exact₂ (x₂ : H S.X₂ n) (hx₂ : H.map S.g n x₂ = 0) :
     ∃ x₁ : H S.X₁ n, H.map S.f n x₁ = x₂ := by
