@@ -34,6 +34,10 @@ the pro-étale site of `X` has no essentially small subcategory with the same ca
 Eventually, we will be able to compare the `ℓ`-adic cohomology defined here with the classical
 definition using étale cohomology. This will show that the groups defined here are indeed `u`-small.
 
+## References
+
+- [Bhatt, Bhargav and Scholze, Peter, The pro-étale topology for schemes][proetale2015]
+
 -/
 
 @[expose] public section
