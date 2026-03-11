@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
@@ -100,7 +101,7 @@ end InnerProductSpace
 
 namespace L2
 
-variable {α E F 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
+variable {α E F 𝕜 : Type*} [RCLike 𝕜] {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -268,6 +269,12 @@ lemma real_inner_indicatorConstLp_one_indicatorConstLp_one
     (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
     ⟪indicatorConstLp 2 hs hμs (1 : ℝ), indicatorConstLp 2 ht hμt (1 : ℝ)⟫_ℝ = μ.real (s ∩ t) := by
   simp [inner_indicatorConstLp_indicatorConstLp]
+
+lemma _root_.MeasureTheory.posSemidef_matrix_measure_inter {ι : Type*} [Finite ι] {s : ι → (Set α)}
+    (mv : ∀ j, MeasurableSet (s j)) (hv : ∀ j, μ (s j) ≠ ∞ := by finiteness) :
+    Matrix.PosSemidef (Matrix.of fun i j : ι ↦ μ.real (s i ∩ s j)) := by
+  simpa [mv, hv, ← L2.real_inner_indicatorConstLp_one_indicatorConstLp_one] using
+    Matrix.posSemidef_gram ℝ _
 
 end IndicatorConstLp
 
