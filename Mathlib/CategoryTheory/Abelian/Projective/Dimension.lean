@@ -225,25 +225,25 @@ instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n] [HasProjectiveDimens
     HasProjectiveDimensionLT (X ⊞ Y) n :=
   (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasProjectiveDimensionLT_X₂ n ‹_› ‹_›
 
-lemma hasProjectiveDimensionLT_of_subsingleton [HasExt.{w} C] [EnoughInjectives C] (X : C) (n : ℕ)
-    (hX : ∀ Y : C, Subsingleton (Ext X Y n)) : HasProjectiveDimensionLT X n := by
-  match n with
-  | 0 =>
-    exact (IsZero.of_epi_eq_zero (𝟙 X) ((Ext.homEquiv₀.subsingleton_congr.mp (hX X)).eq_zero
-      (𝟙 X))).hasProjectiveDimensionLT_zero
-  | n + 1 =>
-    refine HasProjectiveDimensionLT.mk (fun i hi {Y} e ↦ @ Subsingleton.eq_zero _ _ ?_ e)
-    obtain ⟨k, rfl⟩ : ∃ k, i = n + 1 + k := Nat.exists_eq_add_of_le hi
-    induction k generalizing Y with
-    | zero => simpa using hX Y
-    | succ k ih =>
-      rcases EnoughInjectives.presentation Y with ⟨I, inj, g⟩
-      let S := ShortComplex.mk g (cokernel.π g) (cokernel.condition g)
-      have S_exact : S.ShortExact := { exact := ShortComplex.exact_cokernel g }
-      have eq : n + 1 + k + 1 = n + 1 + (k + 1) := by abel
-      have surj : Function.Surjective (S_exact.extClass.postcomp X eq) :=
-        fun x ↦ Ext.covariant_sequence_exact₁ X S_exact x (Ext.eq_zero_of_injective _) rfl
-      exact @surj.subsingleton _ _ _ (ih (Nat.le_add_right _ k) 0)
+lemma hasProjectiveDimensionLT_of_enoughInjectives [HasExt.{w} C] [EnoughInjectives C] (X : C)
+    (n : ℕ) (hX : ∀ Y : C, Subsingleton (Ext X Y n)) : HasProjectiveDimensionLT X n := by
+  suffices ∀ ⦃d : ℕ⦄ ⦃Y : C⦄ (e : Ext X Y d) (k : ℕ), d = n + k → e = 0 from
+    HasProjectiveDimensionLT.mk (fun i hi Y e ↦ by
+      obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hi
+      exact this e k rfl)
+  intro d Y e k hd
+  induction k generalizing d Y with
+  | zero =>
+    obtain rfl : d = n := by simpa using hd
+    subsingleton
+  | succ k hk =>
+    let ⟨p⟩ := EnoughInjectives.presentation Y
+    have h : (ShortComplex.mk _ _ (cokernel.condition p.f)).ShortExact :=
+      { exact := ShortComplex.exact_cokernel p.f }
+    have hd : n + k + 1 = d := by lia
+    obtain ⟨x, rfl⟩ := Ext.covariant_sequence_exact₁ X h e
+      (by subst hd; apply Ext.eq_zero_of_injective) hd
+    simp [hk x rfl]
 
 end CategoryTheory
 
