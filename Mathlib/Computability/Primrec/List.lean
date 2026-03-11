@@ -372,7 +372,45 @@ theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}
       (list_map (hl.comp fst snd) (Primrec₂.pair.comp₂ (fst.comp₂ .left) .right))
       (hg.comp₂ (fst.comp₂ .left) (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right))
       (by simpa using Ord) (by simpa [Function.comp] using H)
+/-- `List.drop` is primitive recursive. -/
+theorem list_drop : Primrec₂ fun (l : List α) (n : ℕ) => l.drop n :=
+  (nat_rec' snd fst (list_tail.comp (snd.comp snd)).to₂).to₂.of_eq fun l n => by
+    induction n generalizing l with
+    | zero => rfl
+    | succ n ih => simp [ih]
 
+/-- `List.takeWhile` is primitive recursive if the predicate is. -/
+theorem list_takeWhile {p : α → Bool} (hp : Primrec p) :
+    Primrec fun (l : List α) => l.takeWhile p :=
+  (list_rec Primrec.id (const [])
+    (cond (hp.comp (fst.comp snd))
+      (list_cons.comp (fst.comp snd) (snd.comp (snd.comp snd)))
+      (const [])).to₂).of_eq fun l => by
+    induction l with
+    | nil => rfl
+    | cons a l ih =>
+      dsimp at ih ⊢
+      rw [ih, List.takeWhile]
+      cases p a <;> rfl
+
+/-- `List.dropWhile` is primitive recursive if the predicate is. -/
+theorem list_dropWhile {p : α → Bool} (hp : Primrec p) :
+    Primrec fun (l : List α) => l.dropWhile p :=
+  (list_rec Primrec.id (const [])
+    (cond (hp.comp (fst.comp snd))
+      (snd.comp (snd.comp snd))
+      (list_cons.comp (fst.comp snd) (fst.comp (snd.comp snd)))).to₂).of_eq fun l => by
+    induction l with
+    | nil => rfl
+    | cons a l ih =>
+      dsimp at ih ⊢
+      rw [ih, List.dropWhile]
+      cases p a <;> rfl
+
+/-- The length of a prefix satisfying a predicate is primitive recursive. -/
+theorem list_length_takeWhile {p : α → Bool} (hp : Primrec p) :
+    Primrec fun (l : List α) => (l.takeWhile p).length :=
+  list_length.comp (list_takeWhile hp)
 end Primrec
 
 namespace PrimrecPred
