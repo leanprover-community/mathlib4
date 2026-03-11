@@ -415,7 +415,8 @@ theorem mem_ball : v ∈ G.ball c r ↔ G.edist c v < r :=
 
 /-- The ball of radius zero is empty. -/
 @[simp]
-theorem ball_zero : G.ball c 0 = ∅ := by ext v; simp [ball]
+theorem ball_zero : G.ball c 0 = ∅ := by
+  ext v; simp [ball]
 
 /-- The ball of radius one consists of just the center. -/
 @[simp]
@@ -444,14 +445,11 @@ theorem ball_top :
     G.ball c ⊤ = (G.connectedComponentMk c).supp := by
   ext v
   simp only [mem_ball, ConnectedComponent.mem_supp_iff]
-  constructor
-  · intro h
-    exact (ConnectedComponent.eq.mpr
-      (reachable_of_edist_ne_top (ne_top_of_lt h))).symm
-  · intro h
-    exact lt_top_iff_ne_top.mpr
-      (edist_ne_top_iff_reachable.mpr
-        (ConnectedComponent.eq.mp h.symm))
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [eq_comm, ConnectedComponent.eq]
+    exact reachable_of_edist_ne_top (ne_top_of_lt h)
+  · rw [lt_top_iff_ne_top, edist_ne_top_iff_reachable]
+    exact ConnectedComponent.eq.mp h.symm
 
 /-- A vertex is in the ball of radius `⊤` iff it is reachable from the center. -/
 theorem mem_ball_top : v ∈ G.ball c ⊤ ↔ G.Reachable c v := by
@@ -459,7 +457,7 @@ theorem mem_ball_top : v ∈ G.ball c ⊤ ↔ G.Reachable c v := by
 
 /-- Balls are monotone in the radius. -/
 @[gcongr]
-theorem ball_subset_ball (h : r₁ ≤ r₂) : G.ball c r₁ ⊆ G.ball c r₂ :=
+theorem ball_mono (h : r₁ ≤ r₂) : G.ball c r₁ ⊆ G.ball c r₂ :=
   fun _ hv ↦ lt_of_lt_of_le hv h
 
 /-- The center vertex belongs to any ball of positive radius. -/
