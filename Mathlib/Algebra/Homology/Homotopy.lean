@@ -104,16 +104,14 @@ theorem dNext_nat (C D : ChainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶ D
     dNext i f = C.d i (i - 1) ≫ f (i - 1) i := by
   dsimp [dNext]
   cases i
-  · simp only [shape, ChainComplex.next_nat_zero, ComplexShape.down_Rel, not_false_iff, zero_comp,
-      reduceCtorEq]
+  · simp
   · congr <;> simp
 
 theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶ D.X j) :
     prevD i f = f i (i - 1) ≫ D.d (i - 1) i := by
   dsimp [prevD]
   cases i
-  · simp only [shape, CochainComplex.prev_nat_zero, ComplexShape.up_Rel, not_false_iff, comp_zero,
-      reduceCtorEq]
+  · simp
   · congr <;> simp
 
 /-- A homotopy `h` between chain maps `f` and `g` consists of components `h i j : C.X i ⟶ D.X j`
@@ -472,7 +470,6 @@ def mkInductiveAux₁ :
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary construction for `mkInductive`.
 -/
 def mkInductiveAux₂ :
@@ -488,7 +485,6 @@ def mkInductiveAux₂ :
       ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem mkInductiveAux₂_add_one (n) :
     mkInductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
       letI I := mkInductiveAux₁ e zero one comm_one succ n

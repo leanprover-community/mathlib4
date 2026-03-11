@@ -279,7 +279,6 @@ lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
     rw [mem_nonDegenerate_iff] at ha
     exact B.map f.op (h _ ⟨_, ha⟩ a.prop)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_top_iff_contains_nonDegenerate :
     A = ⊤ ↔ ∀ (n : ℕ), X.nonDegenerate n ⊆ A.obj _ := by
   simpa using le_iff_contains_nonDegenerate ⊤ A
@@ -326,7 +325,6 @@ lemma image_degenerate_le (f : X ⟶ Y) (n : ℕ) :
     (f.app _) '' (X.degenerate n) ⊆ Y.degenerate n := by
   simpa using degenerate_le_preimage f n
 
-set_option backward.isDefEq.respectTransparency false in
 lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :
     f.app _ x ∈ Y.degenerate n ↔ x ∈ X.degenerate n := by
   constructor

@@ -109,6 +109,7 @@ theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / 
 
 /-- An auxiliary `MetricSpace` instance on the upper half-plane. This instance has bad projection
 to `TopologicalSpace`. We replace it later. -/
+@[implicit_reducible]
 def metricSpaceAux : MetricSpace ℍ where
   dist := dist
   dist_self z := by rw [dist_eq, dist_self, zero_div, arsinh_zero, mul_zero]
@@ -220,7 +221,7 @@ theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
       simp_rw [dist_eq]
       dsimp only [coe_mk, mk_im]
       gcongr
-      simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_norm (z - w)
+      simpa [sqrt_sq_eq_abs, ← dist_eq_norm] using Complex.abs_im_le_norm (z - w)
 
 theorem im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by
   rw [← div_le_iff₀' w.im_pos, ← exp_log z.im_pos, ← exp_log w.im_pos, ← Real.exp_sub, exp_le_exp]
@@ -274,7 +275,8 @@ theorem im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
     0 < z.im * (Real.cosh r - Real.sinh r) := mul_pos z.im_pos (sub_pos.2 <| sinh_lt_cosh _)
     _ = (z.center r).im - z.im * Real.sinh r := mul_sub _ _ _
     _ ≤ (z.center r).im - dist (z.center r : ℂ) w := sub_le_sub_left (by rwa [dist_comm]) _
-    _ ≤ w.im := sub_le_comm.1 <| (le_abs_self _).trans (abs_im_le_norm <| z.center r - w)
+    _ ≤ w.im := sub_le_comm.1 <|
+      (le_abs_self _).trans ((abs_im_le_norm <| z.center r - w).trans_eq (dist_eq_norm _ _).symm)
 
 theorem image_coe_closedBall (z : ℍ) (r : ℝ) :
     ((↑) : ℍ → ℂ) '' closedBall (α := ℍ) z r = closedBall ↑(z.center r) (z.im * Real.sinh r) := by

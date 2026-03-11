@@ -67,6 +67,9 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : Flat f] [hg : Flat g] : Flat (f ≫ g) :=
   MorphismProperty.comp_mem _ f g hf hg
 
+instance : MorphismProperty.Respects @Flat @IsOpenImmersion where
+  postcomp _ _ _ _ := inferInstance
+
 instance : MorphismProperty.IsMultiplicative @Flat where
   id_mem _ := inferInstance
 
@@ -288,7 +291,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
   let e : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ≅
       .of (Γ(T, UT) ⊗[Γ(S, US)] Γ(X, UX)) :=
     (CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.symm
-  -- It remains to check that the square indeed commutes, and we may concluce that the map
+  -- It remains to check that the square indeed commutes, and we may conclude that the map
   -- at the left is also injective.
   suffices (ψY.comp (pushoutSection H hUST hUSX hUY).hom).comp e.inv.hom = φ.comp
       (Algebra.TensorProduct.map (AlgHom.id Γ(T, UT) Γ(T, UT)) ψ).toRingHom by
@@ -299,7 +302,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
   · have H₁ : e.inv.hom.comp Algebra.TensorProduct.includeLeftRingHom =
         (pushout.inr (C := CommRingCat) _ _).hom :=
       congr($((CommRingCat.isPushout_tensorProduct _ _ _).flip.inr_isoPushout_hom).hom)
-    have H₂ (x j) : φ (x ⊗ₜ[↑Γ(S, US)] 1) j = pushoutSection H hUST (UX := VX j) (by aesop) rfl
+    have H₂ (x j) : φ (x ⊗ₜ[↑Γ(S, US)] 1) j = pushoutSection H hUST (UX := VX j) (by simp_all) rfl
         (pushout.inr (C := CommRingCat) _ _ x) := congr(pushoutSection H hUST (UX := VX j) _ rfl
         ($((CommRingCat.isPushout_tensorProduct ↑Γ(S, US)
           ↑Γ(T, UT) ↑Γ(X, VX j)).flip.inr_isoPushout_hom) x))
@@ -309,7 +312,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
   · have H₁ : e.inv.hom.comp Algebra.TensorProduct.includeRight.toRingHom =
         (pushout.inl (C := CommRingCat) _ _).hom :=
       congr($((CommRingCat.isPushout_tensorProduct _ _ _).flip.inl_isoPushout_hom).hom)
-    have H₂ (x j) : φ (1 ⊗ₜ[↑Γ(S, US)] x) j = pushoutSection H hUST (UX := VX j) (by aesop) rfl
+    have H₂ (x j) : φ (1 ⊗ₜ[↑Γ(S, US)] x) j = pushoutSection H hUST (UX := VX j) (by simp_all) rfl
         (pushout.inl (C := CommRingCat) _ _ (x j)) := congr(pushoutSection H hUST (UX := VX j) _ rfl
         ($((CommRingCat.isPushout_tensorProduct ↑Γ(S, US)
           ↑Γ(T, UT) ↑Γ(X, VX j)).flip.inl_isoPushout_hom) (x j)))
@@ -383,13 +386,13 @@ lemma isIso_pushoutSection_of_iSup_eq
         dsimp [D, G]; rw [Scheme.Hom.preimage_inf, inf_inf_distrib_right]))
     haveI HX := ((TopCat.Presheaf.isSheaf_iff_isSheafPreservesLimitPairwiseIntersections _).mp
       Y.IsSheaf (fun i ↦ g ⁻¹ᵁ VX i ⊓ iY ⁻¹ᵁ UT)).preserves
-        (c := ((Cocones.precompose e.inv).obj c'₀).op)
+        (c := ((Cocone.precompose e.inv).obj c'₀).op)
     exact (IsLimit.postcomposeHomEquiv (Functor.isoWhiskerRight (NatIso.op e.symm) Y.presheaf) _)
       ((HX ((IsColimit.precomposeInvEquiv e _).symm
-        (IsColimit.extendIso _ (colimit.isColimit _))).op).some.ofIsoLimit (Cones.ext (.refl _)))
+        (IsColimit.extendIso _ (colimit.isColimit _))).op).some.ofIsoLimit (Cone.ext (.refl _)))
   have HαF₂ (i j : _) : Mono (αF.app (.op <| .pair i j)) := by infer_instance
   -- We construct the morphisms between the cone points,
-  let f₁ : c.pt ⟶ c'.pt := hc'.lift ((Cones.postcompose αF).obj c)
+  let f₁ : c.pt ⟶ c'.pt := hc'.lift ((Cone.postcompose αF).obj c)
   let f₂ : c'.pt ⟶ c.pt := hc.lift ⟨c'.pt, ⟨fun
     | .op (.single i) => c'.π.app _ ≫ inv (αF.app (.op <| .single i))
     | .op (.pair i j) => c'.π.app (.op (.single i)) ≫ inv (αF.app (.op <| .single i)) ≫

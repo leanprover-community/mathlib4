@@ -159,7 +159,7 @@ namespace ENat
 theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
   unfold ENat.card
   apply symm
-  rw [Cardinal.natCast_eq_toENat_iff]
+  rw [Cardinal.natCast_eq_toENat]
   exact Nat.cast_card
 
 end ENat
