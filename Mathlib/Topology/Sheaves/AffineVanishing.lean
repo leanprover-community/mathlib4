@@ -14,6 +14,21 @@ universe u v
 
 open CategoryTheory TopologicalSpace
 
+namespace TopCat.Sheaf
+
+variable {X : TopCat.{u}}
+
+set_option backward.isDefEq.respectTransparency false in
+theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X)}
+    (hB : Opens.IsBasis B)
+    (hinter : ∀ (U V : Opens X), U ∈ B → V ∈ B → U ⊓ V ∈ B)
+    (vanish : ∀ (r : ℕ) (U : Opens X), 1 ≤ r → r ≤ n → U ∈ B →
+    Subsingleton (H ((restrict AddCommGrpCat.{u} U.isOpenEmbedding).obj F) r))
+    (c : H F (n + 1)) : ∃ (I : Type u) (U : I → Opens X) (_ : IsOpenCover U),
+    (∀ i, U i ∈ B ∧ H.map ((toRestrict _ (U i)).app F) (n + 1) c = 0) := sorry
+
+end TopCat.Sheaf
+
 namespace CompactSpace
 
 lemma isOpenCover_elim_finite_subcover {X : Type u} [TopologicalSpace X] [CompactSpace X]
@@ -31,7 +46,9 @@ end CompactSpace
 
 namespace AlgebraicGeometry.Scheme.Modules
 
-variable {X : Scheme.{u}} (U : Scheme.{u}) (f : U ⟶ X) [hf : IsOpenImmersion f] (M : X.Modules)
+variable {X : Scheme.{u}} (F : X.Modules)
+
+section
 
 variable (X) in
 @[simps!]
@@ -45,50 +62,31 @@ instance : Limits.PreservesFiniteLimits (toSheaf X) :=
 
 instance : Limits.PreservesFiniteColimits (toSheaf X) := sorry
 
-noncomputable abbrev sheaf : TopCat.Sheaf AddCommGrpCat X := (toSheaf X).obj M
+noncomputable abbrev sheaf : TopCat.Sheaf AddCommGrpCat X := (toSheaf X).obj F
 
-noncomputable abbrev Hom.sheafhom {F G : X.Modules} (φ : F ⟶ G) : F.sheaf ⟶ G.sheaf :=
+noncomputable abbrev Hom.sheafHom {F G : X.Modules} (φ : F ⟶ G) : F.sheaf ⟶ G.sheaf :=
   (toSheaf X).map φ
 
-variable {F G : X.Modules} (φ : F ⟶ G)
+variable {U : Scheme.{u}} (f : U ⟶ X) [hf : IsOpenImmersion f]
 
-example : ((restrictFunctor f ⋙ pushforward f).obj M).sheaf =
-  (TopCat.Sheaf.restrict _ hf.base_open ⋙ TopCat.Sheaf.pushforward _ f.base).obj M.sheaf := rfl
+example : ((restrictFunctor f ⋙ pushforward f).obj F).sheaf =
+  (TopCat.Sheaf.restrict _ hf.base_open ⋙ TopCat.Sheaf.pushforward _ f.base).obj F.sheaf := rfl
 
-lemma restrictAdjunction_sheafhom : ((restrictAdjunction f).unit.app M).sheafhom =
-    (TopCat.Sheaf.restrictPushforwardAdjunction _ hf.base_open).unit.app M.sheaf := rfl
+lemma restrictAdjunction_sheafHom : ((restrictAdjunction f).unit.app F).sheafHom =
+    (TopCat.Sheaf.restrictPushforwardAdjunction _ hf.base_open).unit.app F.sheaf := rfl
 
 lemma restrictAdjunction_toSheaf_map : (SheafOfModules.toSheaf X.ringCatSheaf).map
-    ((restrictAdjunction f).unit.app M) =
-    (TopCat.Sheaf.restrictPushforwardAdjunction _ hf.base_open).unit.app M.sheaf := rfl
+    ((restrictAdjunction f).unit.app F) =
+    (TopCat.Sheaf.restrictPushforwardAdjunction _ hf.base_open).unit.app F.sheaf := rfl
 
-lemma restrictAdjunction_toRestrict (U : X.Opens) : ((restrictAdjunction U.ι).unit.app M).sheafhom =
+lemma restrictAdjunction_toRestrict (U : X.Opens) : ((restrictAdjunction U.ι).unit.app F).sheafHom =
     (TopCat.Sheaf.restrictPushforwardAdjunction _ U.instIsOpenImmersionι.base_open).unit.app
-    M.sheaf := by
-  apply restrictAdjunction_sheafhom
+    F.sheaf := by
+  apply restrictAdjunction_sheafHom
 
-end AlgebraicGeometry.Scheme.Modules
-
-namespace TopCat.Sheaf
-
-variable {X : TopCat.{u}}
-
-set_option backward.isDefEq.respectTransparency false in
-theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X)}
-    (hB : Opens.IsBasis B)
-    (hinter : ∀ (U V : Opens X), U ∈ B → V ∈ B → U ⊓ V ∈ B)
-    (vanish : ∀ (r : ℕ) (U : Opens X), 1 ≤ r → r ≤ n → U ∈ B →
-    Subsingleton (H ((restrict AddCommGrpCat.{u} U.isOpenEmbedding).obj F) r))
-    (c : H F (n + 1)) : ∃ (I : Type u) (U : I → Opens X) (_ : IsOpenCover U),
-    (∀ i, U i ∈ B ∧ H.map ((toRestrict _ (U i)).app F) (n + 1) c = 0) := sorry
-
-end TopCat.Sheaf
-
-namespace AlgebraicGeometry.Scheme.Modules
+end
 
 open TopCat TopCat.Sheaf Limits Opposite
-
-variable {X : Scheme.{u}} (F : X.Modules)
 
 section
 
@@ -106,13 +104,13 @@ lemma toCoverSheaf_comp_pi (i : I) : (F.toCoverSheaf U) ≫
   delta toCoverSheaf CoverSheaf
   simp [Pi.lift_π]
 
-lemma toCoverSheaf_comp_pi_sheafhom_hom_app {V : X.Opens} (s : F.sheaf.obj.obj (op V)) (i : I)
-    : (Pi.π (fun i => (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F) i).sheafhom.hom.app
-      (op V) ((F.toCoverSheaf U).sheafhom.hom.app (op V) s)
-    = ((restrictAdjunction (U i).ι).unit.app F).sheafhom.hom.app (op V) s := by
+lemma toCoverSheaf_comp_pi_sheafHom_hom_app {V : X.Opens} (s : F.sheaf.obj.obj (op V)) (i : I)
+    : (Pi.π (fun i => (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F) i).sheafHom.hom.app
+      (op V) ((F.toCoverSheaf U).sheafHom.hom.app (op V) s)
+    = ((restrictAdjunction (U i).ι).unit.app F).sheafHom.hom.app (op V) s := by
   have : ((F.toCoverSheaf U) ≫ (Pi.π (fun i =>
-      (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F) i)).sheafhom.hom.app (op V) s
-      = ((restrictAdjunction (U i).ι).unit.app F).sheafhom.hom.app (op V) s := by
+      (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F) i)).sheafHom.hom.app (op V) s
+      = ((restrictAdjunction (U i).ι).unit.app F).sheafHom.hom.app (op V) s := by
     rw [toCoverSheaf_comp_pi]
     rfl
   simpa using this
@@ -120,7 +118,7 @@ lemma toCoverSheaf_comp_pi_sheafhom_hom_app {V : X.Opens} (s : F.sheaf.obj.obj (
 set_option backward.isDefEq.respectTransparency false in
 variable {U} in
 theorem toCoverSheaf_mono (h : IsOpenCover U) : Mono (F.toCoverSheaf U) := by
-  haveI : Mono (F.toCoverSheaf U).sheafhom := by
+  haveI : Mono (F.toCoverSheaf U).sheafHom := by
     apply Sheaf.mono_of_injective
     intro W
     rw [injective_iff_map_eq_zero]
@@ -129,12 +127,12 @@ theorem toCoverSheaf_mono (h : IsOpenCover U) : Mono (F.toCoverSheaf U) := by
     use (unop W) ⊓ (U i), inf_le_left
     refine ⟨by rw [Opens.mem_inf]; exact ⟨hx, hi⟩, ?_⟩
     rw [map_zero]
-    have reszero : ((restrictAdjunction (U i).ι).unit.app F).sheafhom.hom.app W s = 0 := by
+    have reszero : ((restrictAdjunction (U i).ι).unit.app F).sheafHom.hom.app W s = 0 := by
       have := DFunLike.congr_arg (ConcreteCategory.hom ((Pi.π (fun i =>
-        (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F) i).sheafhom.hom.app W)) hs
-      erw [toCoverSheaf_comp_pi_sheafhom_hom_app, map_zero] at this
+        (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F) i).sheafHom.hom.app W)) hs
+      erw [toCoverSheaf_comp_pi_sheafHom_hom_app, map_zero] at this
       simpa using this
-    rw [restrictAdjunction_sheafhom] at reszero
+    rw [restrictAdjunction_sheafHom] at reszero
     simp only [Functor.comp_obj, Functor.id_obj,
       InducedCategory.homMk_hom, Adjunction.sheafPushforwardContinuous_unit_app_hom_app] at reszero
     have : ((unop W) ⊓ (U i)) ≤ ((U i).isOpenEmbedding.functor.obj ((Opens.map (U i).inclusion').obj
@@ -151,7 +149,7 @@ theorem toCoverSheaf_mono (h : IsOpenCover U) : Mono (F.toCoverSheaf U) := by
 set_option backward.isDefEq.respectTransparency false in
 theorem toCoverSheaf_H_map_zero (n : ℕ) (c : H F.sheaf n) [Finite I]
     (h : (∀ i, H.map ((toRestrict _ (U i)).app F.sheaf) n c = 0)) :
-    H.map (F.toCoverSheaf U).sheafhom n c = 0 := by
+    H.map (F.toCoverSheaf U).sheafHom n c = 0 := by
   haveI : (SheafOfModules.toSheaf X.ringCatSheaf ⋙ functorH X n).Additive := inferInstance
   conv_lhs => change (SheafOfModules.toSheaf _ ⋙ functorH X n).map (F.toCoverSheaf U) c
   conv_rhs => equals (SheafOfModules.toSheaf _ ⋙ functorH X n).map (F.toCoverSheaf U) 0 =>
@@ -187,14 +185,12 @@ theorem base [IsAffine X] [F.IsQuasicoherent] : Subsingleton (H F.sheaf 1) := by
       ext
       simp [H.equiv₀_naturality]
     rw [Equiv.surjective_comp (H.equiv₀ Ssheaf.X₂).toEquiv (Ssheaf.g.hom.app (op ⊤))]
-    conv => arg 1; arg 1; arg 1; change S.g.sheafhom.hom.app (op ⊤)
+    conv => arg 1; arg 1; arg 1; change S.g.sheafHom.hom.app (op ⊤)
     sorry
   obtain ⟨x₃, hx₃⟩ := Sheaf.H.longSequence_exact₁ hSsheaf 0 1 rfl c <|
     F.toCoverSheaf_H_map_zero U 1 c (fun i => (vanish i).right)
   obtain ⟨x₂, hx₂⟩ := this x₃
   simpa [← hx₃, ← hx₂] using Sheaf.H.map_comp_connectingHom_zero hSsheaf 0 1 rfl x₂
-
-open ConcreteCategory
 
 instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n + 1)) := by
   revert F X
@@ -217,7 +213,7 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
     ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel (F.toCoverSheaf U))
   let Ssheaf := S.map (toSheaf X)
   have hSsheaf : Ssheaf.ShortExact := ShortComplex.ShortExact.map_of_exact hS (toSheaf X)
-  have : Function.Injective (H.map (F.toCoverSheaf U).sheafhom (n + 1 + 1)) := by
+  have : Function.Injective (H.map (F.toCoverSheaf U).sheafHom (n + 1 + 1)) := by
     haveI : S.X₃.IsQuasicoherent := sorry
     rw [injective_iff_map_eq_zero]
     intro c hc

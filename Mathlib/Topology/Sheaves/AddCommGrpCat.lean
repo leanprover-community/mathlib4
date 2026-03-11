@@ -90,7 +90,7 @@ instance {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
 variable (F) in
 set_option backward.isDefEq.respectTransparency false in
 /-- `H F 0` is equivalent to taking global sections. -/
-def H.equiv₀ : H F 0 ≃+ F.obj.obj (op ⊤) :=
+abbrev H.equiv₀ : H F 0 ≃+ F.obj.obj (op ⊤) :=
     CategoryTheory.Sheaf.H.equiv₀ F Limits.isTerminalTop
 
 set_option backward.isDefEq.respectTransparency false in

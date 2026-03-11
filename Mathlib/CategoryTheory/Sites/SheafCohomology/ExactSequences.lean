@@ -66,8 +66,6 @@ lemma longSequence_exact₂' (n : ℕ) :
       convert ((longSequence_exact hS n).sc 0).zero)).Exact := by
   convert (longSequence_exact hS n).exact 0
 
-#check AddCommGrpCat.zero_apply
-
 include hS in
 lemma map_comp_map_zero (n : ℕ) (x₁ : H S.X₁ n) : H.map S.g n (H.map S.f n x₁) = 0 := by
   have : ofHom (H.map S.f n) ≫ ofHom (H.map S.g n) = 0 := ((longSequence_exact hS n).sc 0).zero
