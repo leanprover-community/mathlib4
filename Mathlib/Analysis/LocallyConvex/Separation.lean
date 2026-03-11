@@ -26,6 +26,9 @@ We provide many variations to stricten the result under more assumptions on the 
 * `geometric_hahn_banach_open_open`: Both sets are open. Semistrict separation.
 * `geometric_hahn_banach_of_nonempty_interior`: One set has nonempty interior, the other one is
   nonempty. Nonstrict separation.
+* `geometric_hahn_banach_of_nonempty_interior_point`: One set has nonempty interior, the other one
+  is a singleton outside this interior. Nonstrict separation, with the maximum attained at the
+  singleton.
 * `geometric_hahn_banach_compact_closed`, `geometric_hahn_banach_closed_compact`: One set is closed,
   the other one is compact. Strict separation.
 * `geometric_hahn_banach_point_closed`, `geometric_hahn_banach_closed_point`: One set is closed, the
@@ -142,6 +145,10 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
   exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
 
+/-- If `A` and `B` are convex, `interior A` is nonempty and disjoint from `B`, then a nonzero
+continuous linear functional weakly separates `A` and `B`. The proof first separates `interior A`
+from `B`, then extends the inequality from `interior A` to all of `A` using
+`closure (interior A) = closure A`. -/
 theorem geometric_hahn_banach_of_nonempty_interior
     {A B : Set E} (hA : Convex ℝ A) (hB : Convex ℝ B) (hAB : Disjoint (interior A) B)
     (hAint : (interior A).Nonempty) (hBne : B.Nonempty) :
@@ -160,6 +167,17 @@ theorem geometric_hahn_banach_of_nonempty_interior
       exact subset_closure ha
     have hclosed : IsClosed {x : E | f x ≤ u} := isClosed_Iic.preimage f.continuous
     exact closure_minimal (fun x hx => le_of_lt (hfA x hx)) hclosed hmem
+
+/-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
+continuous linear functional whose maximum on `A` is attained at `x`. -/
+theorem geometric_hahn_banach_of_nonempty_interior_point
+    {A : Set E} (hA : Convex ℝ A) (hxA : x ∉ interior A) (hAint : (interior A).Nonempty) :
+    ∃ f : StrongDual ℝ E, f ≠ 0 ∧ ∀ a ∈ A, f a ≤ f x := by
+  obtain ⟨f, u, hfne, hA', hx'⟩ :=
+    geometric_hahn_banach_of_nonempty_interior hA (convex_singleton x)
+      (disjoint_singleton_right.2 hxA) hAint (singleton_nonempty x)
+  refine ⟨f, hfne, fun a ha => ?_⟩
+  exact (hA' a ha).trans (hx' x (mem_singleton _))
 
 variable [LocallyConvexSpace ℝ E]
 
@@ -276,6 +294,17 @@ theorem geometric_hahn_banach_of_nonempty_interior
   · exact hfne <| (StrongDual.extendRCLikeₗ (𝕜 := 𝕜)).injective (by simpa using hzero)
   · simpa [f.extendRCLikeₗ_apply] using hA'
   · simpa [f.extendRCLikeₗ_apply] using hB'
+
+/-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
+continuous `𝕜`-linear functional whose real part attains its maximum on `A` at `x`. -/
+theorem geometric_hahn_banach_of_nonempty_interior_point
+    {A : Set E} (hA : Convex ℝ A) (hxA : x ∉ interior A) (hAint : (interior A).Nonempty) :
+    ∃ f : StrongDual 𝕜 E, f ≠ 0 ∧ ∀ a ∈ A, re (f a) ≤ re (f x) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  obtain ⟨f, hfne, hA'⟩ := _root_.geometric_hahn_banach_of_nonempty_interior_point hA hxA hAint
+  refine ⟨f.extendRCLikeₗ, fun hzero => ?_, ?_⟩
+  · exact hfne <| (StrongDual.extendRCLikeₗ (𝕜 := 𝕜)).injective (by simpa using hzero)
+  · simpa [f.extendRCLikeₗ_apply] using hA'
 
 variable [LocallyConvexSpace ℝ E]
 
