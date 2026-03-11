@@ -69,6 +69,8 @@ lemma isRadical_iff_isZero (Φ : Preradical C) :
 end Preradical
 
 variable (C) in
+/-- The category of radicals on `C`, defined as the full subcategory of
+`Preradical C` consisting of preradicals `Φ` such that `toColon Φ Φ` is an isomorphism. -/
 abbrev Radical := (Preradical.isRadical C).FullSubcategory
 
 namespace Radical
