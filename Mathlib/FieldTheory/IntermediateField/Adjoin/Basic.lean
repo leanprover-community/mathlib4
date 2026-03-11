@@ -561,6 +561,20 @@ theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
   use finrank K⟮x⟯ L
   rw [mul_comm, finrank_mul_finrank]
 
+theorem _root_.Polynomial.natDegree_dvd_finrank_of_irreducible {f : K[X]} (hi : Irreducible f)
+    (hs : (f.map (algebraMap K L)).Splits) : f.natDegree ∣ finrank K L := by
+  have := hi.degree_pos.ne'
+  rw [← f.degree_map (algebraMap K L)] at this
+  obtain ⟨x, hx⟩ := hs.exists_eval_eq_zero this
+  rw [eval_map_algebraMap] at hx
+  have key := minpoly.eq_minpoly_of_irreducible hi hx
+  replace hi := hi.ne_zero
+  rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
+  apply minpoly.degree_dvd
+  rw [← minpoly.ne_zero_iff]
+  contrapose! hi
+  rwa [hi, mul_zero] at key
+
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/

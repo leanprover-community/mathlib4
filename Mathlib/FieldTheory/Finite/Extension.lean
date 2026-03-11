@@ -138,28 +138,9 @@ end FiniteField
 
 section Polynomial
 
-open FiniteField IntermediateField Polynomial
+open FiniteField Polynomial
 
-variable {K L : Type*} [Field K] [Field L] [Algebra K L]
-
-theorem eq_minpoly_of_irreducible {f : K[X]} (hi : Irreducible f) {x : L} (hx : f.aeval x = 0) :
-    f = C f.leadingCoeff * minpoly K x := by
-  rw [← minpoly.eq_of_irreducible hi hx, mul_comm, mul_assoc, ← C_mul,
-    inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr hi.ne_zero), C_1, mul_one]
-
-theorem natDegree_dvd_finrank_of_irreducible {f : K[X]} (hi : Irreducible f)
-    (hs : (f.map (algebraMap K L)).Splits) : f.natDegree ∣ Module.finrank K L := by
-  have := hi.degree_pos.ne'
-  rw [← f.degree_map (algebraMap K L)] at this
-  obtain ⟨x, hx⟩ := hs.exists_eval_eq_zero this
-  rw [eval_map_algebraMap] at hx
-  have key := eq_minpoly_of_irreducible hi hx
-  replace hi := hi.ne_zero
-  rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
-  apply minpoly.degree_dvd
-  rw [← minpoly.ne_zero_iff]
-  contrapose! hi
-  rwa [hi, mul_zero] at key
+variable {K : Type*} [Field K]
 
 theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} {f : K[X]}
     (hi : Irreducible f) (h : f ∣ X ^ (Nat.card K) ^ n - X) : f.natDegree ∣ n := by
