@@ -225,6 +225,7 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
 
 variable {F G}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone over `F ⋙ G`, we can construct a `Cocone G` with the same cocone point.
 -/
 @[simps]
@@ -248,6 +249,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
             · rw [← Functor.map_comp_assoc] } }
   map f := { hom := f.hom }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
@@ -277,6 +279,7 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
 
 variable (F G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is final,
 the category of cocones on `F ⋙ G` is equivalent to the category of cocones on `G`,
 for any `G : D ⥤ E`.
@@ -284,9 +287,9 @@ for any `G : D ⥤ E`.
 @[simps]
 def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G where
   functor := extendCocone
-  inverse := Cocones.whiskering F
-  unitIso := NatIso.ofComponents fun c => Cocones.ext (Iso.refl _)
-  counitIso := NatIso.ofComponents fun c => Cocones.ext (Iso.refl _)
+  inverse := Cocone.whiskering F
+  unitIso := NatIso.ofComponents fun c => Cocone.ext (Iso.refl _)
+  counitIso := NatIso.ofComponents fun c => Cocone.ext (Iso.refl _)
 
 variable {G}
 
@@ -317,21 +320,21 @@ instance (priority := 100) comp_preservesColimit {B : Type u₄} [Category.{v₄
   preserves {c} hc := by
     refine ⟨isColimitExtendCoconeEquiv (G := G ⋙ H) F (H.mapCocone c) ?_⟩
     let hc' := isColimitOfPreserves H ((isColimitExtendCoconeEquiv F c).symm hc)
-    exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
+    exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
 instance (priority := 100) comp_reflectsColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsColimit G H] : ReflectsColimit (F ⋙ G) H where
   reflects {c} hc := by
     refine ⟨isColimitExtendCoconeEquiv F _ (isColimitOfReflects H ?_)⟩
     let hc' := (isColimitExtendCoconeEquiv (G := G ⋙ H) F _).symm hc
-    exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
+    exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
 instance (priority := 100) compCreatesColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit G H] : CreatesColimit (F ⋙ G) H where
   lifts {c} hc := by
     refine ⟨(liftColimit ((isColimitExtendCoconeEquiv F (G := G ⋙ H) _).symm hc)).whisker F, ?_⟩
     let i := liftedColimitMapsToOriginal ((isColimitExtendCoconeEquiv F (G := G ⋙ H) _).symm hc)
-    exact (Cocones.whiskering F).mapIso i ≪≫ ((coconesEquiv F (G ⋙ H)).unitIso.app _).symm
+    exact (Cocone.whiskering F).mapIso i ≪≫ ((coconesEquiv F (G ⋙ H)).unitIso.app _).symm
 
 instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
   rw [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G)]
@@ -397,16 +400,17 @@ theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ 
   preserves {c} hc := by
     refine ⟨isColimitWhiskerEquiv F _ ?_⟩
     let hc' := isColimitOfPreserves H ((isColimitWhiskerEquiv F _).symm hc)
-    exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
+    exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
 theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsColimit (F ⋙ G) H] : ReflectsColimit G H where
   reflects {c} hc := by
     refine ⟨isColimitWhiskerEquiv F _ (isColimitOfReflects H ?_)⟩
     let hc' := (isColimitWhiskerEquiv F _).symm hc
-    exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
+    exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
 /-- If `F` is final and `F ⋙ G` creates colimits of `H`, then so does `G`. -/
+@[implicit_reducible]
 def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit (F ⋙ G) H] : CreatesColimit G H where
   reflects := (reflectsColimit_of_comp F).reflects
@@ -414,7 +418,7 @@ def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     refine ⟨(extendCocone (F := F)).obj (liftColimit ((isColimitWhiskerEquiv F _).symm hc)), ?_⟩
     let i := liftedColimitMapsToOriginal (K := (F ⋙ G)) ((isColimitWhiskerEquiv F _).symm hc)
     refine ?_ ≪≫ ((extendCocone (F := F)).mapIso i) ≪≫ ((coconesEquiv F (G ⋙ H)).counitIso.app _)
-    exact Cocones.ext (Iso.refl _)
+    exact Cocone.ext (Iso.refl _)
 
 include F in
 theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShape D E where
@@ -433,6 +437,7 @@ theorem reflectsColimitsOfShape_of_final {B : Type u₄} [Category.{v₄} B] (H 
 include F in
 /-- If `H` creates colimits of shape `C` and `F : C ⥤ D` is final, then `H` creates colimits of
 shape `D`. -/
+@[implicit_reducible]
 def createsColimitsOfShapeOfFinal {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
     [CreatesColimitsOfShape C H] : CreatesColimitsOfShape D H where
   CreatesColimit := createsColimitOfComp F
@@ -638,9 +643,9 @@ for any `G : D ⥤ E`.
 @[simps]
 def conesEquiv : Cone (F ⋙ G) ≌ Cone G where
   functor := extendCone
-  inverse := Cones.whiskering F
-  unitIso := NatIso.ofComponents fun c => Cones.ext (Iso.refl _)
-  counitIso := NatIso.ofComponents fun c => Cones.ext (Iso.refl _)
+  inverse := Cone.whiskering F
+  unitIso := NatIso.ofComponents fun c => Cone.ext (Iso.refl _)
+  counitIso := NatIso.ofComponents fun c => Cone.ext (Iso.refl _)
 
 variable {G}
 
@@ -670,21 +675,21 @@ instance (priority := 100) comp_preservesLimit {B : Type u₄} [Category.{v₄} 
   preserves {c} hc := by
     refine ⟨isLimitExtendConeEquiv (G := G ⋙ H) F (H.mapCone c) ?_⟩
     let hc' := isLimitOfPreserves H ((isLimitExtendConeEquiv F c).symm hc)
-    exact IsLimit.ofIsoLimit hc' (Cones.ext (Iso.refl _) (by simp))
+    exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
 instance (priority := 100) comp_reflectsLimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsLimit G H] : ReflectsLimit (F ⋙ G) H where
   reflects {c} hc := by
     refine ⟨isLimitExtendConeEquiv F _ (isLimitOfReflects H ?_)⟩
     let hc' := (isLimitExtendConeEquiv (G := G ⋙ H) F _).symm hc
-    exact IsLimit.ofIsoLimit hc' (Cones.ext (Iso.refl _) (by simp))
+    exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
 instance (priority := 100) compCreatesLimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesLimit G H] : CreatesLimit (F ⋙ G) H where
   lifts {c} hc := by
     refine ⟨(liftLimit ((isLimitExtendConeEquiv F (G := G ⋙ H) _).symm hc)).whisker F, ?_⟩
     let i := liftedLimitMapsToOriginal ((isLimitExtendConeEquiv F (G := G ⋙ H) _).symm hc)
-    exact (Cones.whiskering F).mapIso i ≪≫ ((conesEquiv F (G ⋙ H)).unitIso.app _).symm
+    exact (Cone.whiskering F).mapIso i ≪≫ ((conesEquiv F (G ⋙ H)).unitIso.app _).symm
 
 instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
   rw [limit.pre_eq (limitConeComp F (getLimitCone G)) (getLimitCone G)]
@@ -738,16 +743,17 @@ theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
   preserves {c} hc := by
     refine ⟨isLimitWhiskerEquiv F _ ?_⟩
     let hc' := isLimitOfPreserves H ((isLimitWhiskerEquiv F _).symm hc)
-    exact IsLimit.ofIsoLimit hc' (Cones.ext (Iso.refl _) (by simp))
+    exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
 theorem reflectsLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsLimit (F ⋙ G) H] : ReflectsLimit G H where
   reflects {c} hc := by
     refine ⟨isLimitWhiskerEquiv F _ (isLimitOfReflects H ?_)⟩
     let hc' := (isLimitWhiskerEquiv F _).symm hc
-    exact IsLimit.ofIsoLimit hc' (Cones.ext (Iso.refl _) (by simp))
+    exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
 /-- If `F` is initial and `F ⋙ G` creates limits of `H`, then so does `G`. -/
+@[implicit_reducible]
 def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesLimit (F ⋙ G) H] : CreatesLimit G H where
   reflects := (reflectsLimit_of_comp F).reflects
@@ -755,7 +761,7 @@ def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     refine ⟨(extendCone (F := F)).obj (liftLimit ((isLimitWhiskerEquiv F _).symm hc)), ?_⟩
     let i := liftedLimitMapsToOriginal (K := (F ⋙ G)) ((isLimitWhiskerEquiv F _).symm hc)
     refine ?_ ≪≫ ((extendCone (F := F)).mapIso i) ≪≫ ((conesEquiv F (G ⋙ H)).counitIso.app _)
-    exact Cones.ext (Iso.refl _)
+    exact Cone.ext (Iso.refl _)
 
 include F in
 theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D E where
@@ -774,6 +780,7 @@ theorem reflectsLimitsOfShape_of_initial {B : Type u₄} [Category.{v₄} B] (H 
 include F in
 /-- If `H` creates limits of shape `C` and `F : C ⥤ D` is initial, then `H` creates limits of shape
 `D`. -/
+@[implicit_reducible]
 def createsLimitsOfShapeOfInitial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
     [CreatesLimitsOfShape C H] : CreatesLimitsOfShape D H where
   CreatesLimit := createsLimitOfComp F
@@ -1197,7 +1204,7 @@ noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
     Over.isLimitLiftCone _ _ _ _ _ <| (Functor.Initial.isLimitWhiskerEquiv _ _).symm hc
   refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ hc''
   · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Over.isoMk (Iso.refl _))
-  · exact Cones.ext (Iso.refl _)
+  · exact Cone.ext (Iso.refl _)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `Over j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
@@ -1212,7 +1219,7 @@ noncomputable def Limits.IsColimit.underPost {c : Cocone D} (hc : IsColimit c) (
     Under.isColimitLiftCocone _ _ _ _ _ <| (Functor.Final.isColimitWhiskerEquiv _ _).symm hc
   refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ hc''
   · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Under.isoMk (Iso.refl _))
-  · exact Cocones.ext (Iso.refl _)
+  · exact Cocone.ext (Iso.refl _)
 
 end Restriction
 
