@@ -6064,7 +6064,9 @@ public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Irreducible
 public import Mathlib.RepresentationTheory.Maschke
-public import Mathlib.RepresentationTheory.Rep
+public import Mathlib.RepresentationTheory.Rep'.Basic
+public import Mathlib.RepresentationTheory.Rep'.Iso
+public import Mathlib.RepresentationTheory.Rep'.Res
 public import Mathlib.RepresentationTheory.Semisimple
 public import Mathlib.RepresentationTheory.Submodule
 public import Mathlib.RepresentationTheory.Subrepresentation
