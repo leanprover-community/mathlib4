@@ -83,6 +83,8 @@ variable [DecidableEq R]
 /-- The multiplicity of an irreducible factor of a nonzero element is exactly the number of times
 the normalized factor occurs in the `normalizedFactors`.
 
+For a version using `multiplicity`, see `multiplicity_eq_count_normalizedFactors`.
+
 See also `count_normalizedFactors_eq` which expands the definition of `multiplicity`
 to produce a specification for `count (normalizedFactors _) _`..
 -/
@@ -137,15 +139,11 @@ theorem count_normalizedFactors_eq' {p x : R} (hp : p = 0 ∨ Irreducible p) (hn
       exact absurd hle hlt
   · exact count_normalizedFactors_eq hp hnorm hle hlt
 
-/-- The `finprod` over the powers of the elements `p` of `R` with exponent their multiplicity
-in `normalizedFactors x` is associated to `x`. -/
 lemma associated_finprod_pow_count {x : R} (hx : x ≠ 0) :
     Associated (∏ᶠ p : R, p ^ (normalizedFactors x).count p) x := by
   rw [← Multiset.prod_map_eq_finprod, Multiset.map_id']
   exact prod_normalizedFactors hx
 
-/-- The `finprod` over the powers of the elements `p` of `R` with exponent their multiplicity
-in `normalizedFactors x` is equal to `x` when `R` has only one unit. -/
 lemma finprod_pow_count_eq_of_subsingleton_units [Subsingleton Rˣ] {x : R} (hx : x ≠ 0) :
     ∏ᶠ p : R, p ^ (normalizedFactors x).count p = x :=
   associated_iff_eq.mp <| associated_finprod_pow_count hx
