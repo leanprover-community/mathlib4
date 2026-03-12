@@ -45,7 +45,7 @@ variable (X : Profinite.{u})
 
 /-- The functor `DiscreteQuotient X ⥤ Fintype` whose limit is isomorphic to `X`. -/
 def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
-  obj S := @FintypeCat.of (S) (Fintype.ofFinite S)
+  obj S := FintypeCat.of S
   map f := FintypeCat.homMk (DiscreteQuotient.ofLE f.le)
 
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/

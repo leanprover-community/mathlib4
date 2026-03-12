@@ -24,10 +24,10 @@ namespace CategoryTheory
 instance typesCartesianMonoidalCategory : CartesianMonoidalCategory (Type u) :=
   .ofChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
 
-unif_hint tensor_eq_prod {X X' Y Y' : Type u} where
-  X ≟ X'
-  Y ≟ Y' ⊢
-  X ⊗ Y ≟ X × Y
+-- unif_hint tensor_eq_prod {X X' Y Y' : Type u} where
+--   X ≟ X'
+--   Y ≟ Y' ⊢
+--   X ⊗ Y ≟ X × Y
 
 instance : BraidedCategory (Type u) := .ofCartesianMonoidalCategory
 
@@ -36,18 +36,18 @@ theorem types_tensorObj_def {X Y : Type u} : X ⊗ Y = (X × Y) := rfl
 theorem types_tensorUnit_def : 𝟙_ (Type u) = PUnit := rfl
 
 @[simp]
-theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : (W ⊗ Y : TypeCat)) :
+theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :
     (f ⊗ₘ g) p = (f p.1, g p.2) :=
   rfl
 
 @[simp]
 theorem whiskerLeft_apply (X : Type u) {Y Z : Type u} (f : Y ⟶ Z)
-    (p : (X ⊗ Y : TypeCat)) : (X ◁ f) p = (p.1, f p.2) :=
+    (p : X ⊗ Y) : (X ◁ f) p = (p.1, f p.2) :=
   rfl
 
 @[simp]
 theorem whiskerRight_apply {Y Z : Type u} (f : Y ⟶ Z) (X : Type u)
-    (p : (Y ⊗ X : TypeCat)) : (f ▷ X) p = (f p.1, p.2) :=
+    (p : Y ⊗ X) : (f ▷ X) p = (f p.1, p.2) :=
   rfl
 
 @[simp]
@@ -124,7 +124,7 @@ theorem CartesianMonoidalCategory.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g :
 /-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st Cartesian power
 of a type to the image of that type, tensored with the image of the nth Cartesian power. -/
 noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category* C] [MonoidalCategory C]
-    (F : TypeCat ⥤ C) [F.Monoidal] (n : ℕ) (β : Type*) :
+    (F : Type _ ⥤ C) [F.Monoidal] (n : ℕ) (β : Type*) :
     F.obj ((Fin (n + 1) → β)) ≅ F.obj (β) ⊗ F.obj ((Fin n → β)) :=
   Functor.mapIso _ (Fin.consEquiv _).symm.toIso ≪≫
     (Functor.Monoidal.μIso F (β) ((Fin n → β))).symm

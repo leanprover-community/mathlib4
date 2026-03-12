@@ -62,7 +62,7 @@ def Fun.id (X : Type*) : Fun X X where
 def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z where
   as x := f (g x)
 
-def Fun.homEquiv (X Y : Type*) : (Fun X Y) ≃ (X → Y) where
+def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
   toFun f := f
   invFun f := ⟨f⟩
   left_inv := by intro; rfl
@@ -99,7 +99,7 @@ lemma TypeCat.Fun.comp_apply {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) (x : X)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory (Type u) (fun X Y ↦ Fun X Y) where
+instance (priority := high) : ConcreteCategory.{u} (Type u) (fun X Y ↦ Fun X Y) where
   hom := Hom.hom'
   ofHom := Hom.mk
 
@@ -189,6 +189,9 @@ lemma types_id_apply (X : Type u) (x : X) : 𝟙 X x = x :=
 lemma types_comp_apply {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g) x = g (f x) :=
   rfl
+
+lemma types_congr_hom {X Y : Type u} (f g : X ⟶ Y) (h : f = g) (x : X) : f x = g x := by
+  rw [h]
 
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_apply := Iso.hom_inv_id_apply
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_apply := Iso.inv_hom_id_apply

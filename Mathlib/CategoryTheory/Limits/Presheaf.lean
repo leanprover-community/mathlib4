@@ -84,11 +84,9 @@ lemma map_comp_uliftYonedaEquiv_down (E : ℰ) {X Y : C} (f : X ⟶ Y)
     (g : uliftYoneda.{max w v₂}.obj Y ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E) :
     A.map f ≫ (uliftYonedaEquiv g).down =
       (uliftYonedaEquiv (uliftYoneda.map f ≫ g)).down := by
-  have this := congr_hom (g.naturality f.op) (ULift.up (𝟙 Y))
+  have this := (g.naturality_apply f.op) (ULift.up (𝟙 Y))
   dsimp [uliftYonedaEquiv, uliftYoneda] at this ⊢
-  simp only [comp_apply, hom_ofHom, TypeCat.Fun.mk_apply, comp_id] at this
-  simp [id_comp, this]
-  rfl
+  cat_disch
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `restrictedULiftYonedaHomEquiv`. -/
@@ -107,10 +105,8 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
               dsimp
               rw [uliftYonedaEquiv_symm_map])
         dsimp
-        apply ULift.down_injective
-        convert (f.naturality φ).symm
-        simp
-        rfl }
+        congr 1
+        simpa using (f.naturality φ).symm }
   invFun g :=
     { app y := (uliftYonedaEquiv.{max w v₂} (y.hom ≫ g)).down
       naturality y y' f := by
@@ -203,7 +199,6 @@ lemma uliftYonedaAdjunction_homEquiv_app {P : Cᵒᵖ ⥤ Type (max w v₁ v₂)
       ULift.up (α.app Z.unop ≫ L.map (uliftYonedaEquiv.symm z) ≫ f) := by
   simp [uliftYonedaAdjunction, restrictedULiftYonedaHomEquiv,
     restrictedULiftYonedaHomEquiv', IsColimit.homEquiv]
-  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -304,7 +299,6 @@ def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type (max w v₁)) :
       ((uliftYonedaEquiv.symm (unop j).snd).app X x)) := ⟨x.down.op, rfl⟩
     have := s.w φ.op
     dsimp [φ] at this x ⊢
-    simp only [comp_apply, hom_ofHom, TypeCat.Fun.mk_apply]
     rw [← this, uliftYonedaEquiv_apply]
     simp [uliftYoneda]
   uniq s m hm := by
@@ -424,8 +418,9 @@ instance (X : C) (Y : F.op.LeftExtension (uliftYoneda.{max w v₂}.obj X)) :
   default := StructuredArrow.homMk
     (uliftYonedaEquiv.symm (uliftYonedaEquiv (F := F.op ⋙ Y.right) Y.hom)) (by
       ext Z ⟨f⟩
-      simpa [uliftYonedaEquiv, uliftYoneda] using
-        (Y.hom.naturality_apply f.op ((ULift.up (𝟙 _)))).symm)
+      dsimp [uliftYonedaEquiv, uliftYoneda]
+      erw [← Y.hom.naturality_apply]
+      simp)
   uniq φ := by
     ext : 1
     apply uliftYonedaEquiv.injective
@@ -473,8 +468,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
     ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
           ((F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)).app (op X)
-        (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) :=
-  (ConcreteCategory.congr_hom (Functor.descOfIsLeftKanExtension_fac_app _
+        (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) := by
+  exact (types_congr_hom (Functor.descOfIsLeftKanExtension_fac_app _
     (F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)) _
     (uliftYonedaMap.{w} F X) (op X)) (ULift.up (𝟙 X))).trans (by simp [uliftYonedaMap])
 

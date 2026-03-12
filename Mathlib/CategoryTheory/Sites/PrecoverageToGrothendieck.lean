@@ -96,7 +96,7 @@ The main theorem of this file: given a precoverage `J` on `C`, a `Type*`-valued 
 a sheaf for the associated Grothendieck topology if and only if it is a sheaf for all pullback
 sieves of presieves in `J`.
 -/
-theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ TypeCat) :
+theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
     Presieve.IsSheaf J.toGrothendieck P ↔
       (∀ {X Y : C} {f : Y ⟶ X} (R : Presieve X), R ∈ J X →
         Presieve.IsSheafFor P ((Sieve.generate R).pullback f).arrows) := by
@@ -209,19 +209,19 @@ lemma toGrothendieck_toPretopology_eq_toGrothendieck [IsStableUnderComposition J
 end Precoverage
 
 @[grind .]
-lemma Presieve.IsSheaf.isSheafFor_of_mem_precoverage {J : Precoverage C} {P : Cᵒᵖ ⥤ TypeCat}
+lemma Presieve.IsSheaf.isSheafFor_of_mem_precoverage {J : Precoverage C} {P : Cᵒᵖ ⥤ Type*}
     (h : Presieve.IsSheaf J.toGrothendieck P) {S : C} {R : Presieve S}
     (hR : R ∈ J S) : R.IsSheafFor P := by
   rw [J.isSheaf_toGrothendieck_iff] at h
   simpa [Presieve.isSheafFor_iff_generate] using h (f := 𝟙 S) R hR
 
-lemma PreZeroHypercover.isSheafFor_iff_of_iso {F : Cᵒᵖ ⥤ TypeCat} {S : C}
+lemma PreZeroHypercover.isSheafFor_iff_of_iso {F : Cᵒᵖ ⥤ Type*} {S : C}
     {𝒰 𝒱 : PreZeroHypercover S} (e : 𝒰 ≅ 𝒱) :
     𝒰.presieve₀.IsSheafFor F ↔ 𝒱.presieve₀.IsSheafFor F := by
   rw [Presieve.isSheafFor_iff_generate, ← Sieve.ofArrows, ← PreZeroHypercover.sieve₀,
     PreZeroHypercover.sieve₀_eq_of_iso e, ← Presieve.isSheafFor_iff_generate]
 
-lemma Presieve.isSheafFor_ofArrows_comp_iff {F : Cᵒᵖ ⥤ TypeCat} {X : C} {ι : Type*} {Y Z : ι → C}
+lemma Presieve.isSheafFor_ofArrows_comp_iff {F : Cᵒᵖ ⥤ Type*} {X : C} {ι : Type*} {Y Z : ι → C}
     (g : ∀ i, Z i ⟶ X) (e : ∀ i, Y i ≅ Z i) :
     IsSheafFor F (ofArrows _ (fun i ↦ (e i).hom ≫ g i)) ↔ IsSheafFor F (ofArrows _ g) := by
   let 𝒰 : PreZeroHypercover X := ⟨_, _, g⟩
@@ -229,7 +229,7 @@ lemma Presieve.isSheafFor_ofArrows_comp_iff {F : Cᵒᵖ ⥤ TypeCat} {X : C} {�
   let e : 𝒰 ≅ 𝒱 := PreZeroHypercover.isoMk (.refl _) (fun i ↦ (e i).symm)
   exact PreZeroHypercover.isSheafFor_iff_of_iso e.symm
 
-lemma Presieve.isSheafFor_singleton_iff_of_iso {F : Cᵒᵖ ⥤ TypeCat} {S X Y : C} (f : X ⟶ S)
+lemma Presieve.isSheafFor_singleton_iff_of_iso {F : Cᵒᵖ ⥤ Type*} {S X Y : C} (f : X ⟶ S)
     (g : Y ⟶ S) (e : X ≅ Y) (he : e.hom ≫ g = f) :
     (singleton f).IsSheafFor F ↔ (singleton g).IsSheafFor F := by
   subst he
@@ -241,7 +241,7 @@ open Limits
 variable {D : Type*} [Category* D]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma Presieve.IsSheafFor.comp_iff_of_preservesPairwisePullbacks (F : C ⥤ D) (P : Dᵒᵖ ⥤ TypeCat)
+lemma Presieve.IsSheafFor.comp_iff_of_preservesPairwisePullbacks (F : C ⥤ D) (P : Dᵒᵖ ⥤ Type*)
     {X : C} (R : Presieve X) [R.HasPairwisePullbacks]
     [F.PreservesPairwisePullbacks R] :
     Presieve.IsSheafFor (F.op ⋙ P) R ↔ Presieve.IsSheafFor P (R.map F) := by

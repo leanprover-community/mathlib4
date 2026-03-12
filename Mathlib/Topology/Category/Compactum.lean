@@ -88,7 +88,7 @@ def Compactum :=
 namespace Compactum
 
 /-- The forgetful functor to TypeCat -/
-def forget : Compactum ⥤ TypeCat :=
+def forget : Compactum ⥤ Type _ :=
   Monad.forget _
 
 instance : forget.Faithful :=
@@ -98,7 +98,7 @@ noncomputable instance : CreatesLimits forget :=
   show CreatesLimits <| Monad.forget _ from inferInstance
 
 /-- The "free" Compactum functor. -/
-def free : TypeCat ⥤ Compactum :=
+def free : Type _ ⥤ Compactum :=
   Monad.free _
 
 /-- The adjunction between `free` and `forget`. -/
@@ -374,7 +374,7 @@ theorem continuous_of_hom {X Y : Compactum} (f : X ⟶ Y) : Continuous f := by
   apply h
 
 /-- Given any compact Hausdorff space, we construct a Compactum. -/
-noncomputable def ofTopologicalSpace (X : TypeCat) [TopologicalSpace X] [CompactSpace X]
+noncomputable def ofTopologicalSpace (X : Type*) [TopologicalSpace X] [CompactSpace X]
     [T2Space X] : Compactum where
   A := X
   a := TypeCat.ofHom ⟨Ultrafilter.lim⟩

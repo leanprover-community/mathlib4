@@ -153,7 +153,7 @@ The presheaf sending each object to the set of `J`-closed sieves on it. This pre
 -/
 @[simps obj map]
 def Functor.closedSieves : Cᵒᵖ ⥤ Type (max v u) where
-  obj X := .of { S : Sieve X.unop // J₁.IsClosed S }
+  obj X := { S : Sieve X.unop // J₁.IsClosed S }
   map f := TypeCat.ofHom ⟨fun S => ⟨S.1.pullback f.unop, J₁.isClosed_pullback f.unop _ S.2⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in

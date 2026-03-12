@@ -171,7 +171,7 @@ theorem Sieve.effectiveEpimorphic_singleton {X Y : C} (f : Y ⟶ X) :
     apply Nonempty.map (isColimitOfEffectiveEpiStruct _) h
 
 lemma Presieve.IsSheafFor.singleton_of_isRepresentable_of_effectiveEpi {X Y : C} (f : X ⟶ Y)
-    [EffectiveEpi f] (F : Cᵒᵖ ⥤ TypeCat) [F.IsRepresentable] :
+    [EffectiveEpi f] (F : Cᵒᵖ ⥤ Type*) [F.IsRepresentable] :
     (Presieve.singleton f).IsSheafFor F :=
   Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable
     ((Sieve.effectiveEpimorphic_singleton f).mpr ‹_›) _
