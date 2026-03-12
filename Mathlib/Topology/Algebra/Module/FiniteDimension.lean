@@ -589,21 +589,20 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 open scoped Pointwise in
 /-- **Riesz's theorem**: a T2 topological vector space over a complete non-trivial normed field
 which admits a totally bounded neighborhood of `0` is finite-dimensional. -/
-theorem FiniteDimensional.of_totallyBounded_nhds_zero
-    {U : Set E} (hU_nhds : U ∈ 𝓝 (0 : E)) (hU_tb : TotallyBounded U) :
-    FiniteDimensional 𝕜 E := by
+theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set E} (hU_nhds : U ∈ 𝓝 (0 : E))
+    (hU_tb : TotallyBounded U) : FiniteDimensional 𝕜 E := by
   obtain ⟨c, hc0, hc1⟩ : ∃ c : 𝕜, 0 < ‖c‖ ∧ ‖c‖ < 1 := NormedField.exists_norm_lt 𝕜 zero_lt_one
   have hc_ne : c ≠ 0 := norm_pos_iff.mp hc0
-  have hcU_nhds : c • U ∈ 𝓝 (0 : E) := (set_smul_mem_nhds_zero_iff hc_ne).mpr hU_nhds
-  obtain ⟨F, hF_finite, hF_subset_raw⟩ :=
-    totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hU_tb (c • U) hcU_nhds
-  have hF_subset : U ⊆ F + c • U := fun x hx ↦ by
-    have hx_sub := hF_subset_raw hx
-    simp only [Set.mem_iUnion] at hx_sub
-    rcases hx_sub with ⟨f, hf, v, hv, rfl⟩
-    exact Set.add_mem_add hf hv
+  obtain ⟨F, hF_finite, hF_cover⟩ := totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hU_tb
+    (c • U) ((set_smul_mem_nhds_zero_iff hc_ne).mpr hU_nhds)
   let M : Submodule 𝕜 E := Submodule.span 𝕜 F
-  haveI hM_fin : FiniteDimensional 𝕜 M := Finite.span_of_finite 𝕜 hF_finite
+  letI : FiniteDimensional 𝕜 M := Finite.span_of_finite 𝕜 hF_finite
+  have h_cover : U ⊆ (M : Set E) + c • U := by
+    intro x hx
+    have hx' := hF_cover hx
+    simp only [Set.mem_iUnion] at hx'
+    rcases hx' with ⟨f, hf, y, hy, rfl⟩
+    exact ⟨f, Submodule.subset_span hf, y, hy, rfl⟩
   have h_ind : ∀ n : ℕ, U ⊆ (M : Set E) + c ^ n • U := by
     intro n
     induction n with
@@ -614,17 +613,18 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero
     | succ n ih =>
       intro x hx
       rcases ih hx with ⟨m, hm, y, ⟨u, hu, rfl⟩, rfl⟩
-      rcases hF_subset hu with ⟨f, hf, y', ⟨v, hv, rfl⟩, rfl⟩
-      refine ⟨m + c ^ n • f, M.add_mem hm (M.smul_mem (c ^ n) (Submodule.subset_span hf)),
-        c ^ (n + 1) • v, ⟨v, hv, rfl⟩, ?_⟩
+      rcases h_cover hu with ⟨f, hf, y', ⟨v, hv, rfl⟩, rfl⟩
+      refine ⟨m + c ^ n • f, M.add_mem hm (M.smul_mem _ hf), c ^ (n + 1) • v, ⟨v, hv, rfl⟩, ?_⟩
       simp [smul_add, smul_smul, pow_succ, add_assoc]
-  have h_vonN : Bornology.IsVonNBounded 𝕜 U := TotallyBounded.isVonNBounded 𝕜 hU_tb
-  have h_U_small : Filter.Tendsto (fun n ↦ c ^ n • U) Filter.atTop (𝓝 0).smallSets :=
-    h_vonN.tendsto_smallSets_nhds.comp (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc1)
-  have hU_sub_M : U ⊆ M := fun x hx ↦ by
+  have h_small : Filter.Tendsto (fun n ↦ c ^ n • U) Filter.atTop (𝓝 0).smallSets :=
+    (TotallyBounded.isVonNBounded 𝕜 hU_tb).tendsto_smallSets_nhds.comp
+    (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc1)
+  have hU_sub_M : U ⊆ M := by
+    intro x hx
     choose m hm u hu h_eq using fun n ↦ h_ind n hx
-    have hu_tendsto : Filter.Tendsto u Filter.atTop (𝓝 0) := fun W hW ↦
-      (Filter.tendsto_smallSets_iff.mp h_U_small W hW).mono fun n hn ↦ hn (hu n)
+    have hu_tendsto : Filter.Tendsto u Filter.atTop (𝓝 0) := by
+      intro W hW
+      exact (Filter.tendsto_smallSets_iff.mp h_small W hW).mono fun n hn ↦ hn (hu n)
     have hm_tendsto : Filter.Tendsto m Filter.atTop (𝓝 x) := by
       have : m = fun n ↦ x - u n := funext fun n ↦ eq_sub_of_add_eq (h_eq n)
       rw [this]
@@ -639,34 +639,54 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero
     rwa [smul_smul, inv_mul_cancel₀ (pow_ne_zero N hc_ne), one_smul] at h_smul
   exact FiniteDimensional.of_surjective M.subtype fun x ↦ ⟨⟨x, by simp [hM_top]⟩, rfl⟩
 
+/-- **Riesz's theorem**: if a T2 topological vector space over a complete non-trivial
+normed field admits a totally bounded neighborhood of some point, then it is
+finite-dimensional. -/
+theorem FiniteDimensional.of_totallyBounded_nhds {x : E} {U : Set E} (hU_nhds : U ∈ 𝓝 x)
+    (hU_tb : TotallyBounded U) : FiniteDimensional 𝕜 E := by
+  let V : Set E := (fun y : E => y - x) '' U
+  have hV_eq : V = (fun y : E => y + x) ⁻¹' U := by
+    ext z
+    constructor
+    · rintro ⟨u, hu, rfl⟩
+      simpa [sub_eq_add_neg, add_assoc] using hu
+    · intro hz
+      exact ⟨z + x, hz, by simp [sub_eq_add_neg, add_assoc]⟩
+  have h_add : Filter.Tendsto (fun y : E => y + x) (𝓝 0) (𝓝 x) := by
+    simpa using ((continuous_id.add (continuous_const : Continuous fun _ :
+      E => x)).continuousAt.tendsto : Filter.Tendsto (fun y : E => y + x) (𝓝 0) (𝓝 (0 + x)))
+  have hV_nhds : V ∈ 𝓝 0 := by
+    rw [hV_eq]
+    exact h_add hU_nhds
+  have hV_tb : TotallyBounded V := by
+    simpa [V] using hU_tb.image (uniformContinuous_id.sub uniformContinuous_const)
+  exact FiniteDimensional.of_totallyBounded_nhds_zero (𝕜 := 𝕜) hV_nhds hV_tb
+
 /-- **Riesz's theorem**: in a T2 topological vector space over a complete non-trivial normed field,
-if there exists a totally bounded neighborhood of `0`, then the space is finite-dimensional. -/
-theorem FiniteDimensional.of_exists_totallyBounded_nhds_zero
-    (h : ∃ U ∈ 𝓝 (0 : E), TotallyBounded U) :
-    FiniteDimensional 𝕜 E :=
-  let ⟨_, hU_nhds, hU_tb⟩ := h
-  of_totallyBounded_nhds_zero 𝕜 hU_nhds hU_tb
+if there exists a totally bounded neighborhood of some point, then the space is finite-dimensional.
+-/
+theorem FiniteDimensional.of_exists_totallyBounded_nhds (h : ∃ x : E, ∃ U ∈ 𝓝 x, TotallyBounded U) :
+    FiniteDimensional 𝕜 E := by
+  rcases h with ⟨x, U, hU_nhds, hU_tb⟩
+  exact FiniteDimensional.of_totallyBounded_nhds (𝕜 := 𝕜) hU_nhds hU_tb
 
 /-- **Riesz's theorem**: a locally compact topological vector space is finite-dimensional. -/
-theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] :
-    FiniteDimensional 𝕜 E :=
+theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] : FiniteDimensional 𝕜 E :=
   let ⟨_, hU_compact, hU_nhds⟩ := exists_compact_mem_nhds (0 : E)
   .of_totallyBounded_nhds_zero 𝕜 hU_nhds hU_compact.totallyBounded
 
 /-- If a function has compact support, then either the function is trivial
 or the space is finite-dimensional. -/
-theorem HasCompactSupport.eq_zero_or_finiteDimensional {X : Type*}
-    [TopologicalSpace X] [Zero X] [T1Space X]
-    {f : E → X} (hf : HasCompactSupport f) (h'f : Continuous f) :
+theorem HasCompactSupport.eq_zero_or_finiteDimensional {X : Type*} [TopologicalSpace X] [Zero X]
+    [T1Space X] {f : E → X} (hf : HasCompactSupport f) (h'f : Continuous f) :
     f = 0 ∨ FiniteDimensional 𝕜 E :=
   (HasCompactSupport.eq_zero_or_locallyCompactSpace_of_addGroup hf h'f).imp_right fun h ↦
     have : LocallyCompactSpace E := h; .of_locallyCompactSpace 𝕜
 
 /-- If a function has compact multiplicative support, then either the function is trivial
 or the space is finite-dimensional. -/
-theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*}
-    [TopologicalSpace X] [One X] [T1Space X]
-    {f : E → X} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
+theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [TopologicalSpace X] [One X]
+    [T1Space X] {f : E → X} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
     f = 1 ∨ FiniteDimensional 𝕜 E :=
   have : T1Space (Additive X) := ‹_›
   HasCompactSupport.eq_zero_or_finiteDimensional 𝕜 (X := Additive X) hf h'f

@@ -456,24 +456,21 @@ variable (𝕜)
 
 /-- **Riesz's theorem**: if a closed ball with center zero of positive radius is compact in a vector
 space, then the space is finite-dimensional. -/
-theorem FiniteDimensional.of_isCompact_closedBall₀ {V : Type*}
-    [NormedAddCommGroup V] [Module 𝕜 V] [ContinuousSMul 𝕜 V]
-    {r : ℝ} (rpos : 0 < r)
-    (h : IsCompact (Metric.closedBall (0 : V) r)) : FiniteDimensional 𝕜 V :=
+theorem FiniteDimensional.of_isCompact_closedBall₀ {V : Type*} [NormedAddCommGroup V] [Module 𝕜 V]
+    [ContinuousSMul 𝕜 V] {r : ℝ} (rpos : 0 < r) (h : IsCompact (Metric.closedBall (0 : V) r)) :
+    FiniteDimensional 𝕜 V :=
   .of_totallyBounded_nhds_zero 𝕜 (Metric.closedBall_mem_nhds 0 rpos) h.totallyBounded
 
 /-- **Riesz's theorem**: if a closed ball of positive radius is compact in a vector space, then the
 space is finite-dimensional. -/
-theorem FiniteDimensional.of_isCompact_closedBall {V : Type*}
-    [NormedAddCommGroup V] [Module 𝕜 V] [ContinuousSMul 𝕜 V]
-    {r : ℝ} (rpos : 0 < r) {c : V}
-    (h : IsCompact (Metric.closedBall c r)) : FiniteDimensional 𝕜 V :=
+theorem FiniteDimensional.of_isCompact_closedBall {V : Type*} [NormedAddCommGroup V] [Module 𝕜 V]
+    [ContinuousSMul 𝕜 V] {r : ℝ} (rpos : 0 < r) {c : V} (h : IsCompact (Metric.closedBall c r)) :
+    FiniteDimensional 𝕜 V :=
   .of_isCompact_closedBall₀ 𝕜 rpos <| by simpa using h.vadd (-c)
 
 /-- A locally compact normed vector space is proper. -/
-lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] :
-    ProperSpace E := by
+lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*}
+    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] : ProperSpace E := by
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have hC : ∀ n, IsCompact (closedBall (0 : E) (‖c‖ ^ n * r)) := fun n ↦ by
@@ -483,11 +480,9 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
   exact .of_seq_closedBall hTop (Eventually.of_forall hC)
 
-lemma ProperSpace.of_locallyCompact_module (V : Type*)
-    [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V] [T2Space V] [Nontrivial V]
-    [LocallyCompactSpace V]
-    [Module 𝕜 V] [ContinuousSMul 𝕜 V] :
-    ProperSpace 𝕜 :=
+lemma ProperSpace.of_locallyCompact_module (V : Type*) [AddCommGroup V] [TopologicalSpace V]
+    [IsTopologicalAddGroup V] [T2Space V] [Nontrivial V] [LocallyCompactSpace V] [Module 𝕜 V]
+    [ContinuousSMul 𝕜 V] : ProperSpace 𝕜 :=
   have : LocallyCompactSpace 𝕜 := by
     obtain ⟨v, hv⟩ : ∃ v : V, v ≠ 0 := exists_ne 0
     let L : 𝕜 → V := fun t ↦ t • v
