@@ -17,8 +17,10 @@ abelian category `C` to be *radical*, and we introduce a bundled `Radical C`
 structure.
 
 Following Stenström, a preradical `Φ` is called radical if it coincides with its self colon.
-We encode this as the existence of an isomorphism `Φ.colon Φ ≅ Φ`.  We then prove a basic
-characterization of radicals in terms of the vanishing of `Φ.r` on `Φ.quotient`.
+We encode this as the property that the natural transformation `toColon Φ Φ : Φ ⟶ Φ.colon Φ`
+is an isomorphism, and we prove a basic characterization of radicals in terms
+of the vanishing of `Φ.r` on `Φ.quotient`.
+
 
 ## Main definitions
 
@@ -26,12 +28,11 @@ characterization of radicals in terms of the vanishing of `Φ.r` on `Φ.quotient
   The property that a preradical `Φ` is radical, i.e. that `(Φ.colon Φ) ≅ Φ`.
 
 * `Preradical.Radical C` :
-  The type of radicals on `C`, given by a preradical together with a proof
-  that it is radical.
+  The type of radicals on `C`, as a full subcategory of `Preradical C`.
 
 ## Main results
 
-* `Preradical.isRadical_iff_isZero_whisker` :
+* `Preradical.isRadical_iff_isZero` :
   A preradical `Φ` is radical if and only if `Φ.quotient ⋙ Φ.r` is the zero object.
 
 ## References
