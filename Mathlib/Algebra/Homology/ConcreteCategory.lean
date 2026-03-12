@@ -69,7 +69,6 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj (S.X₃.homology i))
     (forget₂ C Ab).map (hS.δ i j hij) x₃ = (forget₂ C Ab).map (S.X₁.homologyπ j) x₁ :=
   (HomologicalComplex.HomologySequence.snakeInput hS i j hij).δ_apply' x₃ x₂ x₁ h₂ h₁
 
-set_option linter.style.commandStart false in
 include hS in
 /--
 In the short exact sequence of complexes

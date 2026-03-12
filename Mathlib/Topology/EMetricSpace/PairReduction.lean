@@ -181,7 +181,7 @@ variable [DecidableEq T]
     the log-size radius of `tᵢ₊₁` in `Vᵢ₊₁`. -/
 noncomputable
 def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T
-  | 0 => {finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c}
+  | 0 => { finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c }
   | n + 1 =>
     let V' := (logSizeBallSeq J hJ a c n).finset \ ((logSizeBallSeq J hJ a c n).smallBall c)
     let t' := if hV' : V'.Nonempty then hV'.choose else (logSizeBallSeq J hJ a c n).point
@@ -356,6 +356,7 @@ lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
         using pow_logSizeRadius_le_card_le_logSizeRadius ha (point_mem_finset_logSizeBallSeq hJ _ h)
     simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
   wlog hJ : J.Nonempty
   · simp [Finset.not_nonempty_iff_eq_empty.mp hJ]

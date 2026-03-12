@@ -30,6 +30,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [Category.{v₆} T'] {L' : C' ⥤ T'} {R' : D' ⥤ T'} {F₁ : C ⥤ C'} {F₂ : D ⥤ D'} {F : T ⥤ T'}
   (α : F₁ ⋙ L' ⟶ L ⋙ F) (β : R ⋙ F ⟶ F₂ ⋙ R')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps]
 def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
@@ -48,6 +49,7 @@ def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
   map_id X := by ext <;> rfl
   map_comp f g := by ext <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps]
 def commaMapEquivalenceInverse [IsIso β] (X : Comma L' R') :
@@ -61,7 +63,7 @@ def commaMapEquivalenceInverse [IsIso β] (X : Comma L' R') :
       ext
       <;> simp only [Comma.map_obj_right, Comma.map_obj_left, Functor.const_obj_obj,
           mk_left, mk_right, mk_hom_eq_self, Comma.comp_left, Comma.map_map_left, w]
-      · simp only [Comma.map_obj_right, Comma.comp_right, Comma.map_map_right, w] )
+      · simp only [Comma.map_obj_right, Comma.comp_right, Comma.map_map_right, w])
   map_id X := by ext <;> rfl
   map_comp f g := by ext <;> rfl
 

@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Fin
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Data.Finsupp.Option
 public import Mathlib.Logic.Equiv.Fin.Basic
 
@@ -28,7 +27,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
 
 + `a : R`
 
@@ -304,6 +303,12 @@ def sumRingEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃+* MvPolynomial S₁ (MvPol
   · ext1; simp only [RingHom.comp_apply, sumToIter_C, iterToSum_C_C]
   · rintro ⟨⟩ <;> simp only [sumToIter_Xl, iterToSum_X, sumToIter_Xr, iterToSum_C_X]
 
+@[simp] lemma iterToSum_sumToIter (p) :
+    iterToSum R S₁ S₂ (sumToIter R S₁ S₂ p) = p := (sumRingEquiv _ _ _).symm_apply_apply _
+
+@[simp] lemma sumToIter_iterToSum (p) :
+    sumToIter R S₁ S₂ (iterToSum R S₁ S₂ p) = p := (sumRingEquiv _ _ _).apply_symm_apply _
+
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
@@ -368,12 +373,15 @@ def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolyn
     (Polynomial.aevalTower (MvPolynomial.rename some) (X none))
     (by ext : 2 <;> simp) (by ext i : 2; cases i <;> simp)
 
+@[simp]
 lemma optionEquivLeft_X_some (x : S₁) : optionEquivLeft R S₁ (X (some x)) = Polynomial.C (X x) := by
   simp [optionEquivLeft_apply, aeval_X]
 
+@[simp]
 lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X := by
   simp [optionEquivLeft_apply, aeval_X]
 
+@[simp]
 lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
   simp only [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
 
@@ -387,9 +395,23 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
   · simp
   · intros; rw [pow_add]
 
+@[simp]
+lemma optionEquivLeft_symm_C_X (x : S₁) :
+    (optionEquivLeft R S₁).symm (.C (X x)) = .X (.some x) := by
+  simp [optionEquivLeft]
+
+@[simp]
+lemma optionEquivLeft_symm_C_C (x : R) :
+    (optionEquivLeft R S₁).symm (.C (.C x)) = .C x := by simp [optionEquivLeft]
+
+@[simp]
+lemma optionEquivLeft_symm_X :
+    (optionEquivLeft R S₁).symm .X = .X .none := by simp [optionEquivLeft]
+
 /-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
 equals the coefficient of `n` in `f` -/
-theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
+theorem optionEquivLeft_coeff_some_coeff_none
+    (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
     coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) = coeff n f := by
   induction f using MvPolynomial.induction_on' generalizing n with
   | monomial j r =>
@@ -429,8 +451,9 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
 
 theorem mem_support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
     m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
-  simp [← optionEquivLeft_coeff_coeff]
+  simp [← optionEquivLeft_coeff_some_coeff_none]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     (optionEquivLeft R σ p).support = Finset.image (fun m => m none) p.support := by
   ext i
@@ -473,7 +496,7 @@ lemma totalDegree_coeff_optionEquivLeft_add_le
   intro σ hσ
   refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain, add_comm i]
-  · simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff R S₁] using hσ
+  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
 
 lemma totalDegree_coeff_optionEquivLeft_le
     (p : MvPolynomial (Option S₁) R) (i : ℕ) :
@@ -485,7 +508,13 @@ lemma totalDegree_coeff_optionEquivLeft_le
   intro σ hσ
   refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain]
-  · simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff R S₁] using hσ
+  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
+
+theorem optionEquivLeft_coeff_coeff
+    (p : MvPolynomial (Option σ) R) (m : ℕ) (d : σ →₀ ℕ) :
+    coeff d (((optionEquivLeft R σ) p).coeff m) = p.coeff (d.optionElim m) := by
+  rw [← optionEquivLeft_coeff_some_coeff_none]
+  congr <;> simp
 
 end optionEquivLeft
 
@@ -638,6 +667,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   · rw [← mem_support_coeff_finSuccEquiv]
     exact hσ1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by
   ext i

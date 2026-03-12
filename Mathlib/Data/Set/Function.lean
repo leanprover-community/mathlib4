@@ -115,19 +115,19 @@ theorem mapsTo_iff_image_subset : MapsTo f s t ↔ f '' s ⊆ t :=
 
 @[deprecated (since := "2025-08-30")] alias mapsTo' := mapsTo_iff_image_subset
 
-theorem mapsTo_prodMap_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
-  diagonal_subset_iff.2 fun _ => rfl
-
 theorem MapsTo.subset_preimage (hf : MapsTo f s t) : s ⊆ f ⁻¹' t := hf
 
 theorem mapsTo_iff_subset_preimage : MapsTo f s t ↔ s ⊆ f ⁻¹' t := Iff.rfl
 
+theorem mapsTo_prodMap_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
+  mapsTo_iff_subset_preimage.mpr <| diagonal_subset_iff.2 fun _ => rfl
+
 @[simp]
 theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t :=
-  singleton_subset_iff
+  mapsTo_iff_subset_preimage.trans singleton_subset_iff
 
 theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
-  empty_subset _
+  fun _ ↦ False.elim
 
 @[simp] theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
   simp [mapsTo_iff_image_subset, subset_empty_iff]
@@ -228,6 +228,9 @@ lemma MapsTo.comp_right {s : Set β} {t : Set γ} (hg : MapsTo g s t) (f : α �
 lemma mapsTo_univ_iff : MapsTo f univ t ↔ ∀ x, f x ∈ t :=
   ⟨fun h _ => h (mem_univ _), fun h x _ => h x⟩
 
+lemma mapsTo_univ_iff_range_subset : MapsTo f univ t ↔ range f ⊆ t :=
+  mapsTo_univ_iff.trans range_subset_iff.symm
+
 @[simp]
 lemma mapsTo_range_iff {g : ι → α} : MapsTo f (range g) t ↔ ∀ i, f (g i) ∈ t :=
   forall_mem_range
@@ -297,7 +300,7 @@ theorem injOn_of_injective (h : Injective f) {s : Set α} : InjOn f s := fun _ _
 alias _root_.Function.Injective.injOn := injOn_of_injective
 
 -- A specialization of `injOn_of_injective` for `Subtype.val`.
-theorem injOn_subtype_val {s : Set { x // p x }} : Set.InjOn Subtype.val s :=
+theorem injOn_subtype_val {p : α → Prop} {s : Set {x // p x}} : Set.InjOn Subtype.val s :=
   Subtype.coe_injective.injOn
 
 lemma injOn_id (s : Set α) : InjOn id s := injective_id.injOn
@@ -1082,8 +1085,6 @@ theorem preimage_invFun_of_notMem [n : Nonempty α] {f : α → β} (hf : Inject
   · have : x ∉ f '' s := fun h' => hx (image_subset_range _ _ h')
     simp only [mem_preimage, invFun_neg hx, h, this]
 
-@[deprecated (since := "2025-05-23")] alias preimage_invFun_of_not_mem := preimage_invFun_of_notMem
-
 lemma BijOn.symm {g : β → α} (h : InvOn f g t s) (hf : BijOn f s t) : BijOn g t s :=
   ⟨h.2.mapsTo hf.surjOn, h.1.injOn, h.2.surjOn hf.mapsTo⟩
 
@@ -1179,16 +1180,10 @@ theorem update_comp_eq_of_notMem_range' {α : Sort*} {β : Type*} {γ : β → S
     (fun j => update g i a (f j)) = fun j => g (f j) :=
   (update_comp_eq_of_forall_ne' _ _) fun x hx => h ⟨x, hx⟩
 
-@[deprecated (since := "2025-05-23")]
-alias update_comp_eq_of_not_mem_range' := update_comp_eq_of_notMem_range'
-
 /-- Non-dependent version of `Function.update_comp_eq_of_notMem_range'` -/
 theorem update_comp_eq_of_notMem_range {α : Sort*} {β : Type*} {γ : Sort*} [DecidableEq β]
     (g : β → γ) {f : α → β} {i : β} (a : γ) (h : i ∉ Set.range f) : update g i a ∘ f = g ∘ f :=
   update_comp_eq_of_notMem_range' g a h
-
-@[deprecated (since := "2025-05-23")]
-alias update_comp_eq_of_not_mem_range := update_comp_eq_of_notMem_range
 
 theorem insert_injOn (s : Set α) : sᶜ.InjOn fun a => insert a s := fun _a ha _ _ =>
   (insert_inj ha).1

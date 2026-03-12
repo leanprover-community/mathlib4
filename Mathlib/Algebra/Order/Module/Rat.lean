@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Algebra.Order.Module.Basic
 public import Mathlib.Data.Rat.Cast.Order
+public import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Monotonicity of the action by rational numbers
@@ -38,10 +38,6 @@ variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
     |q • a| = q • |a| := by
   obtain ha | ha := le_total a 0 <;>
     simp [*, abs_of_nonneg, abs_of_nonpos, smul_nonneg, smul_nonpos_of_nonneg_of_nonpos]
-
-@[deprecated abs_smul (since := "2025-06-24")]
-lemma abs_qsmul [Module ℚ α] [PosSMulMono ℚ α] (q : ℚ) (a : α) :
-    |q • a| = |q| • |a| := abs_smul q a
 
 end LinearOrderedAddCommGroup
 

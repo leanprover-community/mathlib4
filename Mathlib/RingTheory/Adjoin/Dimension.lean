@@ -15,13 +15,15 @@ public import Mathlib.RingTheory.Adjoin.Basic
 This file contains some results on dimensions of `Algebra.adjoin`.
 -/
 
-@[expose] public section
+public section
 
 open Module
 
 universe u v
 
 namespace Subalgebra
+
+set_option backward.isDefEq.respectTransparency false
 
 variable {R : Type u} {S : Type v} [CommRing R] [StrongRankCondition R] [CommRing S] [Algebra R S]
   (A B : Subalgebra R S) [Free R A] [Free R B]

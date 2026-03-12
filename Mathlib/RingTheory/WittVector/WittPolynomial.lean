@@ -159,6 +159,7 @@ section PPrime
 
 variable [hp : NeZero p]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars = range (n + 1) := by
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i

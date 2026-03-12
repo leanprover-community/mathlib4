@@ -163,8 +163,6 @@ noncomputable def finsetApprox : Finset R :=
 theorem finsetApprox.zero_notMem : (0 : R) ∉ finsetApprox bS adm :=
   Finset.notMem_erase _ _
 
-@[deprecated (since := "2025-05-23")] alias finsetApprox.zero_not_mem := finsetApprox.zero_notMem
-
 @[simp]
 theorem mem_finsetApprox {x : R} :
     x ∈ finsetApprox bS adm ↔ ∃ i j, i ≠ j ∧ distinctElems bS adm i - distinctElems bS adm j =
@@ -325,6 +323,7 @@ algebraic extension `L` is finite if there is an admissible absolute value.
 See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite
 extension of `K = Frac(R)`, supplying most of the required assumptions automatically.
 -/
+@[implicit_reducible]
 noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
     [Algebra.IsAlgebraic R S] : Fintype (ClassGroup S) :=
   @Fintype.ofSurjective _ _ _
@@ -346,6 +345,7 @@ absolute value.
 See also `ClassGroup.fintypeOfAdmissibleOfAlgebraic` where `L` is an
 algebraic extension of `R`, that includes some extra assumptions.
 -/
+@[implicit_reducible]
 noncomputable def fintypeOfAdmissibleOfFinite [IsIntegralClosure S R L] :
     Fintype (ClassGroup S) := by
   letI := Classical.decEq L

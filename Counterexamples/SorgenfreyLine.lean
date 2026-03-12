@@ -3,15 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Analysis.Real.Cardinality
 import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Compactness.Paracompact
-import Mathlib.Topology.Metrizable.Urysohn
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.LocallyCompactRegular
+import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.Topology.Instances.Irrational
+import Mathlib.Topology.Metrizable.Urysohn
+import Mathlib.Topology.Separation.NotNormal
 
 /-!
 # Sorgenfrey line
@@ -88,6 +87,7 @@ theorem nhds_basis_Ico_rat (a : ℝₗ) :
   rcases exists_rat_btwn hb with ⟨r, har, hrb⟩
   exact ⟨r, har, Ico_subset_Ico_right hrb.le⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) := by
   refine (nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun n hn =>
@@ -101,6 +101,7 @@ theorem nhds_countable_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasCountableBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, Set.to_countable _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasAntitoneBasis fun n : ℕ+ => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, monotone_const.Ico <| Antitone.const_add
@@ -155,8 +156,8 @@ theorem isClopen_Ico (a b : ℝₗ) : IsClopen (Ico a b) :=
 
 instance : TotallyDisconnectedSpace ℝₗ :=
   ⟨fun _ _ hs x hx y hy =>
-    le_antisymm (hs.subset_isClopen (isClopen_Ici x) ⟨x, hx, left_mem_Ici⟩ hy)
-      (hs.subset_isClopen (isClopen_Ici y) ⟨y, hy, left_mem_Ici⟩ hx)⟩
+    le_antisymm (hs.subset_isClopen (isClopen_Ici x) ⟨x, hx, self_mem_Ici⟩ hy)
+      (hs.subset_isClopen (isClopen_Ici y) ⟨y, hy, self_mem_Ici⟩ hx)⟩
 
 instance : FirstCountableTopology ℝₗ :=
   ⟨fun x => (nhds_basis_Ico_rat x).isCountablyGenerated⟩
@@ -213,6 +214,7 @@ theorem cardinal_antidiagonal (c : ℝₗ) : #{x : ℝₗ × ℝₗ | x.1 + x.2 
     fun x ↦ ⟨(toReal.symm x, c - toReal.symm x), by simp⟩,
     fun ⟨x, hx⟩ ↦ by ext <;> simp [← hx.out], fun x ↦ rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any subset of an antidiagonal `{(x, y) : ℝₗ × ℝₗ| x + y = c}` is a closed set. -/
 theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ} (hs : ∀ x ∈ s, x.1 + x.2 = c) :
     IsClosed s := by
@@ -221,7 +223,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
   obtain rfl : x + y = c := by
     change (x, y) ∈ {p : ℝₗ × ℝₗ | p.1 + p.2 = c}
     exact closure_minimal (hs : s ⊆ {x | x.1 + x.2 = c}) (isClosed_antidiagonal c) H
-  rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 left_mem_Ici with
+  rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 self_mem_Ici with
     ⟨⟨x', y'⟩, ⟨hx : x ≤ x', hy : y ≤ y'⟩, H⟩
   convert H
   · refine hx.antisymm ?_
@@ -254,6 +256,7 @@ theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
   rw [nhds_prod_eq]
   exact (nhds_antitone_basis_Ico_inv_pnat x).prod (nhds_antitone_basis_Ico_inv_pnat y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sets of rational and irrational points of the antidiagonal `{(x, y) | x + y = 0}` cannot be
 separated by open neighborhoods. This implies that `ℝₗ × ℝₗ` is not a normal space. -/
 theorem not_separatedNhds_rat_irrational_antidiag :

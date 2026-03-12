@@ -241,16 +241,12 @@ theorem sup_eq_bot_of_isEmpty [IsEmpty β] (f : β → α) (S : Finset β) : S.s
 theorem le_sup_dite_pos (p : β → Prop) [DecidablePred p]
     {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : p b) :
     f b h₁ ≤ s.sup fun i ↦ if h : p i then f i h else g i h := by
-  have : f b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
-  rw [this]
-  apply le_sup h₀
+  grind [le_sup_of_le]
 
 theorem le_sup_dite_neg (p : β → Prop) [DecidablePred p]
     {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : ¬p b) :
     g b h₁ ≤ s.sup fun i ↦ if h : p i then f i h else g i h := by
-  have : g b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
-  rw [this]
-  apply le_sup h₀
+  grind [le_sup_of_le]
 
 end Sup
 
@@ -548,10 +544,12 @@ theorem sup_himp_left (hs : s.Nonempty) (f : ι → α) (a : α) :
     (s.sup fun b => a ⇨ f b) = a ⇨ s.sup f :=
   @inf_sdiff_right αᵒᵈ _ _ _ hs _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem compl_sup (s : Finset ι) (f : ι → α) : (s.sup f)ᶜ = s.inf fun i => (f i)ᶜ :=
   map_finset_sup (OrderIso.compl α) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem compl_inf (s : Finset ι) (f : ι → α) : (s.inf f)ᶜ = s.sup fun i => (f i)ᶜ :=
   map_finset_inf (OrderIso.compl α) _ _
@@ -1139,14 +1137,8 @@ theorem sup_singleton_apply (s : Finset β) (f : β → α) :
   rw [mem_sup, mem_image]
   simp only [mem_singleton, eq_comm]
 
-@[deprecated (since := "2025-05-24")]
-alias sup_singleton'' := sup_singleton_apply
-
 @[simp]
 theorem sup_singleton_eq_self (s : Finset α) : s.sup singleton = s :=
   (s.sup_singleton_apply _).trans image_id
-
-@[deprecated (since := "2025-05-24")]
-alias sup_singleton' := sup_singleton_eq_self
 
 end Finset

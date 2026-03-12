@@ -59,6 +59,7 @@ abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Conti
 lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- Homs in `TopModuleCat` as one field structures over `ContinuousLinearMap`. -/
 structure Hom (X Y : TopModuleCat.{v} R) where
@@ -67,11 +68,16 @@ structure Hom (X Y : TopModuleCat.{v} R) where
   /-- The underlying continuous linear map. Use `hom` instead. -/
   hom' : X →L[R] Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category (TopModuleCat R) where
   Hom := Hom
   id M := ⟨ContinuousLinearMap.id R M⟩
   comp φ ψ := ⟨ψ.hom' ∘L φ.hom'⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (TopModuleCat R) (· →L[R] ·) where
   hom   := Hom.hom'
   ofHom := Hom.ofHom'
@@ -129,8 +135,8 @@ instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
   __ := Equiv.addCommGroup CategoryTheory.ConcreteCategory.homEquiv
 
 instance : Preadditive (TopModuleCat R) where
-  add_comp _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
-  comp_add _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
+  add_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
+  comp_add _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
 
 section
 
@@ -139,7 +145,7 @@ variable {M₁ M₂ : TopModuleCat R}
 @[simp] lemma hom_zero : (0 : M₁ ⟶ M₂).hom = 0 := rfl
 @[simp] lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
 @[simp] lemma hom_add (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ + φ₂).hom = φ₁.hom + φ₂.hom := rfl
-@[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (- φ).hom = - φ.hom := rfl
+@[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (-φ).hom = -φ.hom := rfl
 @[simp] lemma hom_sub (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ - φ₂).hom = φ₁.hom - φ₂.hom := rfl
 @[simp] lemma hom_nsmul (n : ℕ) (φ : M₁ ⟶ M₂) : (n • φ).hom = n • φ.hom := rfl
 @[simp] lemma hom_zsmul (n : ℤ) (φ : M₁ ⟶ M₂) : (n • φ).hom = n • φ.hom := rfl
@@ -154,7 +160,7 @@ instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)
   __ := Equiv.module _ CategoryTheory.ConcreteCategory.homEquiv
 
-instance [CommRing S] : Linear S (TopModuleCat S) where
+instance : Linear S (TopModuleCat S) where
   smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)
   comp_smul _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.smul_comp _ _ _)
 
@@ -174,7 +180,7 @@ instance : HasForget₂ (TopModuleCat R) (ModuleCat R) where
 instance : HasForget₂ (TopModuleCat R) TopCat where
   forget₂ :=
   { obj M := .of M
-    map φ   := TopCat.ofHom ⟨φ, φ.1.2⟩ }
+    map φ := TopCat.ofHom ⟨φ, φ.1.2⟩ }
 
 instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
   reflects {X Y} f hf := by
@@ -207,6 +213,7 @@ def coinduced : TopModuleCat R :=
   have : ContinuousSMul R M := continuousSMul_sInf fun _ hs ↦ hs.1
   .of R M
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The maps into the coinduced topology as homs in `TopModuleCat R`. -/
 def toCoinduced (i) : X i ⟶ coinduced f :=
   ofHom (Y := coinduced f)
@@ -221,6 +228,7 @@ def ofCocone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
   { app := toCoinduced c.ι.app,
     naturality {X Y} f := by ext x; exact congr($(c.ι.naturality f).hom x) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a colimit cocone over the underlying modules, equipping the cocone point with
 the coinduced topology gives a colimit cocone in `TopModuleCat R`. -/
 def isColimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
@@ -267,6 +275,7 @@ def induced : TopModuleCat R :=
   have : ContinuousSMul R M := continuousSMul_iInf fun _ ↦ continuousSMul_induced _
   .of R M
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The maps from the induced topology as homs in `TopModuleCat R`. -/
 def fromInduced (i) : induced f ⟶ X i :=
   ofHom (X := induced f) ⟨(f i).hom, continuous_iff_le_induced.mpr (iInf_le _ i)⟩
@@ -282,6 +291,7 @@ def ofCone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
   { app := fromInduced c.π.app,
     naturality {X Y} f := by ext x; exact congr($(c.π.naturality f).hom x) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a limit cone over the underlying modules, equipping the cone point with
 the induced topology gives a limit cone in `TopModuleCat R`. -/
 def isLimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
@@ -319,7 +329,7 @@ instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     PreservesLimit F (forget₂ _ TopCat) :=
   preservesLimit_of_preserves_limit_cone (isLimit (limit.isLimit _))
     (TopCat.isLimitConeOfForget (F := F ⋙ forget₂ _ TopCat)
-      ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1:)
+      ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1 :)
       (isLimitOfPreserves (forget (ModuleCat R)) (limit.isLimit _)))
 
 instance {J : Type*} [Category* J]
@@ -333,6 +343,8 @@ end Limit
 
 section Adjunction
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The functor equipping a module over a topological ring with the finest possible
 topology making it into a topological module. This is left adjoint to the forgetful functor. -/
 def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
@@ -346,6 +358,7 @@ def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
     letI := IsModuleTopology.topologicalAddGroup R Y
     ⟨f.hom, IsModuleTopology.continuous_of_linearMap f.hom⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between `withModuleTopology` and the forgetful functor. -/
 def withModuleTopologyAdj : withModuleTopology R ⊣ forget₂ (TopModuleCat R) (ModuleCat R) where
   unit := 𝟙 _
@@ -356,6 +369,7 @@ def withModuleTopologyAdj : withModuleTopology R ⊣ forget₂ (TopModuleCat R) 
 instance : (forget₂ (TopModuleCat R) (ModuleCat R)).IsRightAdjoint := ⟨_, ⟨withModuleTopologyAdj R⟩⟩
 instance : (withModuleTopology R).IsLeftAdjoint := ⟨_, ⟨withModuleTopologyAdj R⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor equipping a module with the indiscrete topology.
 This is right adjoint to the forgetful functor. -/
 def indiscrete : ModuleCat.{v} R ⥤ TopModuleCat.{v} R where
@@ -370,6 +384,7 @@ def indiscrete : ModuleCat.{v} R ⥤ TopModuleCat.{v} R where
     ConcreteCategory.ofHom (C := TopModuleCat R)
       ⟨f.hom, by rw [continuous_iff_coinduced_le]; exact le_top⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the forgetful functor and the indiscrete topology functor. -/
 def indiscreteAdj : forget₂ (TopModuleCat.{v} R) (ModuleCat.{v} R) ⊣ indiscrete.{v} R where
   counit := 𝟙 _
@@ -391,6 +406,7 @@ def freeObj (X : TopCat.{v}) : TopModuleCat.{max v u} R :=
 
 lemma coe_freeObj (X : TopCat.{v}) : freeObj R X = (X →₀ R) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free topological module over a topological space is functorial. -/
 noncomputable
 def freeMap {X Y : TopCat.{v}} (f : X ⟶ Y) : freeObj R X ⟶ freeObj R Y :=
@@ -419,6 +435,7 @@ def free : TopCat.{v} ⥤ TopModuleCat.{max v u} R :=
     map_id M := by ext x; exact DFunLike.congr_fun (Finsupp.lmapDomain_id _ _) x
     map_comp f g := by ext; exact DFunLike.congr_fun (Finsupp.lmapDomain_comp _ _ f.hom g.hom) _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjoint for `TopModuleCat R`. -/
 noncomputable
 def freeAdj : free.{max v u} R ⊣ forget₂ (TopModuleCat.{max v u} R) TopCat.{max v u} where

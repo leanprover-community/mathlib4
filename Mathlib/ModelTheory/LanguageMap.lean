@@ -51,7 +51,7 @@ structure LHom where
   onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
     exact fun {n} => isEmptyElim
   /-- The mapping of relations -/
-  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
+  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n := by
     exact fun {n} => isEmptyElim
 
 @[inherit_doc FirstOrder.Language.LHom]
@@ -65,6 +65,7 @@ namespace LHom
 variable (ϕ : L →ᴸ L')
 
 /-- Pulls a structure back along a language map. -/
+@[implicit_reducible]
 def reduct (M : Type*) [L'.Structure M] : L.Structure M where
   funMap f xs := funMap (ϕ.onFunction f) xs
   RelMap r xs := RelMap (ϕ.onRelation r) xs
@@ -181,6 +182,7 @@ protected structure Injective : Prop where
 
 /-- Pulls an `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
   to an `L'`-structure arbitrarily. -/
+@[implicit_reducible]
 noncomputable def defaultExpansion (ϕ : L →ᴸ L')
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => onFunction ϕ f)]
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => onRelation ϕ r)]
@@ -345,6 +347,7 @@ theorem card_constantsOn : (constantsOn α).card = #α := by
   simp [card_eq_card_functions_add_card_relations, sum_nat_eq_add_sum_succ]
 
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
+@[implicit_reducible]
 def constantsOn.structure (f : α → M) : (constantsOn α).Structure M where
   funMap := fun {n} c _ =>
     match n, c with
@@ -382,7 +385,7 @@ def withConstants : Language.{max u w', v} :=
   L.sum (constantsOn α)
 
 @[inherit_doc FirstOrder.Language.withConstants]
-scoped[FirstOrder] notation:95 L "[[" α "]]" => Language.withConstants L α
+scoped[FirstOrder] notation:max L "[[" α "]]" => Language.withConstants L α
 
 @[simp]
 theorem card_withConstants :
@@ -414,6 +417,7 @@ instance paramsStructure (A : Set α) : (constantsOn A).Structure α :=
 
 variable (L)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The language map removing an empty constant set. -/
 @[simps]
 def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
@@ -428,12 +432,12 @@ variable {α} {β : Type*}
 
 @[simp]
 theorem withConstants_funMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {f : L.Functions n} {x : Fin n → M} : @funMap (L[[α]]) M _ n (Sum.inl f) x = funMap f x :=
+    {n} {f : L.Functions n} {x : Fin n → M} : @funMap L[[α]] M _ n (Sum.inl f) x = funMap f x :=
   (lhomWithConstants L α).map_onFunction f x
 
 @[simp]
 theorem withConstants_relMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
+    {n} {R : L.Relations n} {x : Fin n → M} : @RelMap L[[α]] M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 
 /-- The language map extending the constant set. -/
@@ -479,7 +483,7 @@ instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ 
 
 @[simp]
 theorem withConstants_funMap_sumInr {a : α} {x : Fin 0 → M} :
-    @funMap (L[[α]]) M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
+    @funMap L[[α]] M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
   rw [Unique.eq_default x]
   exact (LHom.sumInr : constantsOn α →ᴸ L.sum _).map_onFunction _ _
 

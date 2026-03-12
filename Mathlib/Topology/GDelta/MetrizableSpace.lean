@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel, Yury Kudryashov, Aaron Liu
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.HausdorffDistance
 public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.Separation.GDelta
 
@@ -22,25 +21,14 @@ Gδ set.
 @[expose] public section
 
 variable {X : Type*} [TopologicalSpace X]
-open TopologicalSpace Metric Set
+open TopologicalSpace Set
 
 section Metrizable
 
-instance (priority := 100) [PseudoMetrizableSpace X] : NormalSpace X where
-  normal s t hs ht hst := by
-    let _ := pseudoMetrizableSpacePseudoMetric X
-    by_cases hee : s = ∅ ∨ t = ∅
-    · obtain rfl | rfl := hee <;> simp
-    simp only [not_or, ← ne_eq, ← nonempty_iff_ne_empty] at hee
-    obtain ⟨hse, hte⟩ := hee
-    let g (p : X) := infDist p t - infDist p s
-    have hg : Continuous g := by fun_prop
-    refine ⟨g ⁻¹' (Ioi 0), g ⁻¹' (Iio 0), isOpen_Ioi.preimage hg, isOpen_Iio.preimage hg,
-      fun x hx ↦ ?_, fun x hx ↦ ?_, Ioi_disjoint_Iio_same.preimage g⟩
-    · simp [g, infDist_zero_of_mem hx,
-        (ht.notMem_iff_infDist_pos hte).mp (hst.notMem_of_mem_left hx)]
-    · simp [g, infDist_zero_of_mem hx,
-        (hs.notMem_iff_infDist_pos hse).mp (hst.notMem_of_mem_right hx)]
+instance (priority := 100) [PseudoMetrizableSpace X] : NormalSpace X :=
+  (@UniformSpace.completelyNormalSpace_of_isCountablyGenerated_uniformity X
+    (pseudoMetrizableSpaceUniformity X)
+    (pseudoMetrizableSpaceUniformity_countably_generated X)).toNormalSpace
 
 instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X where
   closed_gdelta s hs := by

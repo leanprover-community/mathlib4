@@ -193,6 +193,7 @@ open JordanDecomposition Measure Set VectorMeasure
 
 variable {s : SignedMeasure α}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a signed measure `s`, `s.toJordanDecomposition` is the Jordan decomposition `j`,
 such that `s = j.toSignedMeasure`. This property is known as the Jordan decomposition
 theorem, and is shown by
@@ -279,7 +280,10 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
         (hu.diff hv) (hv.diff hu)] at hs
     rw [zero_apply] at a b
     constructor
-  all_goals first | linarith | assumption
+  · linarith
+  · linarith
+  · assumption
+  · assumption
 
 /-- If the symmetric difference of two negative sets is a null-set, then so are the differences
 between the two sets. -/
@@ -466,6 +470,7 @@ theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
   · simp [hs.1, hs.2, measureReal_def]
   · simp [if_neg hi]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     s ≪ᵥ μ ↔ s.totalVariation ≪ μ.ennrealToMeasure := by
   constructor <;> intro h
@@ -493,6 +498,7 @@ theorem totalVariation_absolutelyContinuous_iff (s : SignedMeasure α) (μ : Mea
   · refine Measure.AbsolutelyContinuous.mk fun S _ hS₂ => ?_
     rw [totalVariation, Measure.add_apply, h.1 hS₂, h.2 hS₂, add_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalize to vector measures once total variation on vector measures is defined
 theorem mutuallySingular_iff (s t : SignedMeasure α) :
     s ⟂ᵥ t ↔ s.totalVariation ⟂ₘ t.totalVariation := by
@@ -513,6 +519,7 @@ theorem mutuallySingular_iff (s t : SignedMeasure α) :
       ⟨u, hmeas, fun t htu => null_of_totalVariation_zero _ (measure_mono_null htu hu₁),
         fun t htv => null_of_totalVariation_zero _ (measure_mono_null htv hu₂)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mutuallySingular_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     s ⟂ᵥ μ ↔ s.totalVariation ⟂ₘ μ.ennrealToMeasure := by
   constructor

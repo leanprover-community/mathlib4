@@ -14,7 +14,7 @@ A thin category (also known as a sparse category) is a category with at most one
 each pair of objects.
 Examples include posets, but also some indexing categories (diagrams) for special shapes of
 (co)limits.
-To construct a category instance one only needs to specify the `category_struct` part,
+To construct a category instance one only needs to specify the `CategoryStruct` part,
 as the axioms hold for free.
 If `C` is thin, then the category of functors to `C` is also thin.
 Further, to show two objects are isomorphic in a thin category, it suffices only to give a morphism
@@ -34,8 +34,9 @@ section
 
 variable [CategoryStruct.{v₁} C] [Quiver.IsThin C]
 
-/-- Construct a category instance from a category_struct, using the fact that
+/-- Construct a category instance from a `CategoryStruct`, using the fact that
     hom spaces are subsingletons to prove the axioms. -/
+@[implicit_reducible]
 def thin_category : Category C where
 
 end

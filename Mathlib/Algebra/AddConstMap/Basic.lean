@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -46,7 +47,7 @@ structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
   map_add_const' (x : G) : toFun (x + a) = toFun x + b
 
 @[inherit_doc]
-scoped [AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
+scoped[AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
 
 /-- Typeclass for maps satisfying `f (x + a) = f x + b`.
 
@@ -67,7 +68,7 @@ namespace AddConstMapClass
 In this section we prove properties like `f (x + n • a) = f x + n • b`.
 -/
 
-scoped [AddConstMapClass] attribute [simp] map_add_const
+scoped[AddConstMapClass] attribute [simp] map_add_const
 
 variable {F G H : Type*} [FunLike F G H] {a : G} {b : H}
 
@@ -288,6 +289,7 @@ theorem monotone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
   ⟨(Monotone.monotoneOn · _), fun hf ↦ monotone_iff_forall_lt.2 <|
     AddConstMapClass.rel_map_of_Icc ha fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem antitone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
@@ -300,6 +302,7 @@ theorem strictMono_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid 
     StrictMono f ↔ StrictMonoOn f (Icc l (l + a)) :=
   ⟨(StrictMono.strictMonoOn · _), AddConstMapClass.rel_map_of_Icc ha⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem strictAnti_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :

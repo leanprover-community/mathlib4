@@ -18,7 +18,7 @@ to construct `Option α →₀ M` from a map α →₀ M, and vice versa.
 
 As functions, these behave as `Option.elim'`, and as an application of `some` hence the names.
 
-We prove a variety of API lemmas, see `Data/Finsupp/Fin.lean` for comparison.
+We prove a variety of API lemmas, see `Mathlib/Data/Finsupp/Fin.lean` for comparison.
 
 ## Main declarations
 
@@ -106,7 +106,7 @@ theorem some_update_none (f : Option α →₀ M) (a : M) :
 pairs of an element and a `Finsupp` on the original type. -/
 @[simps]
 noncomputable
-def optionEquiv [Zero M] : (Option α →₀ M) ≃ M × (α →₀ M) where
+def optionEquiv : (Option α →₀ M) ≃ M × (α →₀ M) where
   toFun P := (P none, P.some)
   invFun P := (P.2.embDomain .some).update none P.1
   left_inv P := by ext (_ | a) <;> simp [Finsupp.update]

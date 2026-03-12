@@ -21,7 +21,7 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a field.
 * `Nat.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

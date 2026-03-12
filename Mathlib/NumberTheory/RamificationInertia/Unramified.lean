@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 
@@ -22,7 +23,7 @@ We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate o
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
@@ -79,11 +80,10 @@ in `R`, then `P ∩ S` (as a prime of `S`) is also unramified in `R`.
 lemma Algebra.IsUnramifiedAt.of_liesOver
     (p : Ideal S) (P : Ideal T) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [IsUnramifiedAt R P] [EssFiniteType R S] [EssFiniteType R T]
-    [IsDedekindDomain S] [IsDomain T] [NoZeroSMulDivisors S T] : IsUnramifiedAt R p :=
+    [IsDedekindDomain S] [IsDomain T] [Module.IsTorsionFree S T] : IsUnramifiedAt R p :=
   IsUnramifiedAt.of_liesOver_of_ne_bot R p P P.primeCompl_le_nonZeroDivisors
     (Ideal.ne_bot_of_liesOver_of_ne_bot · P)
 
-set_option synthInstance.maxHeartbeats 25000 in -- infer_instance timeout
 /-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a Dedekind domain
 that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`. -/
 lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain

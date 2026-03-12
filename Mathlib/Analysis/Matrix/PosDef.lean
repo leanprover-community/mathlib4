@@ -93,9 +93,11 @@ lemma det_pos [DecidableEq n] (hA : A.PosDef) : 0 < det A := by
 
 end PosDef
 
+set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
 `Matrix.toSeminormedAddCommGroup`, `Matrix.toNormedAddCommGroup`,
 and `Matrix.toInnerProductSpace`. -/
+@[implicit_reducible]
 private def PosSemidef.preInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
     PreInnerProductSpace.Core 𝕜 (n → 𝕜) where
   inner x y := (M *ᵥ y) ⬝ᵥ star x
@@ -106,11 +108,15 @@ private def PosSemidef.preInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosSem
   add_left := by simp only [star_add, dotProduct_add, forall_const]
   smul_left _ _ _ := by rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A positive semi-definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
 noncomputable abbrev toSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     SeminormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.preInnerProductSpace
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
 noncomputable abbrev toNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=
@@ -121,6 +127,7 @@ noncomputable abbrev toNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) 
       simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h }
 
 /-- A positive semi-definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
+@[implicit_reducible]
 def toInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ (M.toSeminormedAddCommGroup hM) :=
   InnerProductSpace.ofCore _

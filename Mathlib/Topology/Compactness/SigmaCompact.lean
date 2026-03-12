@@ -121,7 +121,7 @@ lemma Topology.IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
         exact (subset_iUnion _ n).trans hcov.le
       apply hf.isCompact_iff.mpr (this.symm ▸ (hcomp n))
     · calc ⋃ n, f ⁻¹' L n ∩ s
-        _ = f ⁻¹' (⋃ n, L n) ∩ s  := by rw [preimage_iUnion, iUnion_inter]
+        _ = f ⁻¹' (⋃ n, L n) ∩ s := by rw [preimage_iUnion, iUnion_inter]
         _ = f ⁻¹' (f '' s) ∩ s := by rw [hcov]
         _ = s := inter_eq_right.mpr (subset_preimage_image _ _)
 
@@ -200,7 +200,7 @@ open SigmaCompactSpace
 
 /-- A choice of compact covering for a `σ`-compact space, chosen to be monotone. -/
 def compactCovering : ℕ → Set X :=
-  Accumulate exists_compact_covering.choose
+  accumulate exists_compact_covering.choose
 
 theorem isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering X n) :=
   isCompact_accumulate (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).1 n
@@ -280,6 +280,7 @@ protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyF
 
 /-- If `f : ι → Set X` is a locally finite covering of a σ-compact topological space by nonempty
 sets, then the index type `ι` is encodable. -/
+@[implicit_reducible]
 protected noncomputable def LocallyFinite.encodable {ι : Type*} {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Encodable ι :=
   @Encodable.ofEquiv _ _ (hf.countable_univ hne).toEncodable (Equiv.Set.univ _).symm

@@ -12,11 +12,14 @@ public import Mathlib.CategoryTheory.Localization.StructuredArrow
 /-!
 # Pointwise right derived functors
 
-We define the pointwise right derived functors using the notion
+We define pointwise right derived functors using the notion
 of pointwise left Kan extensions.
 
 We show that if `F : C ⥤ H` inverts `W : MorphismProperty C`,
 then it has a pointwise right derived functor.
+
+Note: the file `Mathlib/CategoryTheory/Functor/Derived/PointwiseLeftDerived.lean` was obtained
+by dualizing this file. These two files should be kept in sync.
 
 -/
 
@@ -104,6 +107,7 @@ section
 
 variable {F L}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `L : C ⥤ D` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
 then `e.hom` makes `G` a pointwise left Kan extension of `F` along `L` at `L.obj Y`
 for any `Y : C`. -/
@@ -148,6 +152,7 @@ noncomputable def isPointwiseLeftKanExtensionOfIsoOfIsLocalization
   (LeftExtension.mk _ e.hom).isPointwiseLeftKanExtensionAtEquivOfIso'
     (L.objObjPreimageIso Y) (isPointwiseLeftKanExtensionAtOfIsoOfIsLocalization W e _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `L : C ⥤ D` be a localization functor for `W`, if an extension `E`
 of `F : C ⥤ H` along `L` is such that the natural transformation
 `E.hom : F ⟶ L ⋙ E.right` is an isomorphism, then `E` is a pointwise
@@ -163,7 +168,7 @@ lemma hasPointwiseRightDerivedFunctor_of_inverts
   intro X
   rw [hasPointwiseRightDerivedFunctorAt_iff F W.Q W]
   exact (isPointwiseLeftKanExtensionOfIsoOfIsLocalization W
-    (Localization.fac F hF W.Q).symm).hasPointwiseLeftKanExtension  _
+    (Localization.fac F hF W.Q).symm).hasPointwiseLeftKanExtension _
 
 lemma isRightDerivedFunctor_of_inverts
     [L.IsLocalization W] (F' : D ⥤ H) (e : L ⋙ F' ≅ F) :

@@ -62,6 +62,13 @@ theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafTo
     exact fun _ _ _ ↦ preservesLimitsOfShape_of_natIso
       (adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint (sheafToPresheaf J A)))⟩
 
+instance : HasSheafify (⊥ : GrothendieckTopology C) A :=
+  HasSheafify.mk' _ _
+    (sheafBotEquivalence A).symm.toAdjunction
+
+instance {F G : Sheaf J A} [HasWeakSheafify J A] (f : F ⟶ G) [Mono f] : Mono f.hom :=
+  inferInstanceAs (Mono ((sheafToPresheaf J A).map f))
+
 /-- The sheafification functor, left adjoint to the inclusion. -/
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   (sheafToPresheaf J A).leftAdjoint
@@ -80,7 +87,7 @@ instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
   L := presheafToSheaf J A
   adj := sheafificationAdjunction _ _
 
-instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
+instance [HasSheafify J A] : PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
   inferInstanceAs (PreservesFiniteLimits (presheafToSheaf _ _))
 
 end
@@ -89,7 +96,7 @@ variable {D : Type*} [Category* D] [HasWeakSheafify J D]
 
 /-- The sheafification of a presheaf `P`. -/
 noncomputable abbrev sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
-  presheafToSheaf J D |>.obj P |>.val
+  presheafToSheaf J D |>.obj P |>.obj
 
 /-- The canonical map from `P` to its sheafification. -/
 noncomputable abbrev toSheafify (P : Cᵒᵖ ⥤ D) : P ⟶ sheafify J P :=
@@ -101,7 +108,7 @@ theorem sheafificationAdjunction_unit_app (P : Cᵒᵖ ⥤ D) :
 
 /-- The canonical map on sheafifications induced by a morphism. -/
 noncomputable abbrev sheafifyMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : sheafify J P ⟶ sheafify J Q :=
-  presheafToSheaf J D |>.map η |>.val
+  presheafToSheaf J D |>.map η |>.hom
 
 @[simp]
 theorem sheafifyMap_id (P : Cᵒᵖ ⥤ D) : sheafifyMap J (𝟙 P) = 𝟙 (sheafify J P) := by
@@ -140,7 +147,7 @@ theorem toSheafification_app (P : Cᵒᵖ ⥤ D) : (toSheafification J D).app P 
 variable {D}
 
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (toSheafify J P) := by
-  refine ⟨(sheafificationAdjunction J D |>.counit.app ⟨P, hP⟩).val, ?_, ?_⟩
+  refine ⟨(sheafificationAdjunction J D |>.counit.app ⟨P, hP⟩).hom, ?_, ?_⟩
   · change _ = (𝟙 (sheafToPresheaf J D ⋙ 𝟭 (Cᵒᵖ ⥤ D)) :).app ⟨P, hP⟩
     rw [← sheafificationAdjunction J D |>.right_triangle]
     rfl
@@ -162,15 +169,16 @@ theorem isoSheafify_hom {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
 /-- Given a sheaf `Q` and a morphism `P ⟶ Q`, construct a morphism from `sheafify J P` to `Q`. -/
 noncomputable def sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     sheafify J P ⟶ Q :=
-  (sheafificationAdjunction J D).homEquiv P ⟨Q, hQ⟩ |>.symm η |>.val
+  (sheafificationAdjunction J D).homEquiv P ⟨Q, hQ⟩ |>.symm η |>.hom
 
 @[simp]
 theorem sheafificationAdjunction_counit_app_val (P : Sheaf J D) :
-    ((sheafificationAdjunction J D).counit.app P).val = sheafifyLift J (𝟙 P.val) P.cond := by
+    ((sheafificationAdjunction J D).counit.app P).hom = sheafifyLift J (𝟙 P.obj) P.property := by
   unfold sheafifyLift
   rw [Adjunction.homEquiv_counit]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     toSheafify J P ≫ sheafifyLift J η hQ = η := by
@@ -188,8 +196,8 @@ theorem sheafifyLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.
   rw [toSheafify] at h
   rw [sheafifyLift]
   let γ' : (presheafToSheaf J D).obj P ⟶ ⟨Q, hQ⟩ := ⟨γ⟩
-  change γ'.val = _
-  rw [← Sheaf.Hom.ext_iff, ← Adjunction.homEquiv_apply_eq, Adjunction.homEquiv_unit]
+  change γ'.hom = _
+  rw [← Sheaf.hom_ext_iff, ← Adjunction.homEquiv_apply_eq, Adjunction.homEquiv_unit]
   exact h
 
 @[simp]
@@ -210,11 +218,16 @@ theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q 
   apply sheafifyLift_unique
   rw [← Category.assoc, ← toSheafify_naturality, Category.assoc, toSheafify_sheafifyLift]
 
+lemma sheafifyLift_comp {F P Q : Cᵒᵖ ⥤ D} (a : F ⟶ P) (hP : Presheaf.IsSheaf J P)
+    (η : P ⟶ Q) (hQ : CategoryTheory.Presheaf.IsSheaf J Q) :
+    sheafifyLift J (a ≫ η) hQ = sheafifyLift _ a hP ≫ η :=
+  (sheafifyLift_unique _ _ _ _ (by simp)).symm
+
 variable {J}
 
 /-- A sheaf `P` is isomorphic to its own sheafification. -/
 @[simps]
-noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D).obj P.val where
+noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D).obj P.obj where
   hom := ⟨(isoSheafify J P.2).hom⟩
   inv := ⟨(isoSheafify J P.2).inv⟩
   hom_inv_id := by
@@ -229,16 +242,17 @@ instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
   isIso_of_fully_faithful (sheafToPresheaf J D) _
 
 instance (P : Sheaf J D) :
-    IsIso ((sheafificationAdjunction J D).counit.app P).val :=
+    IsIso ((sheafificationAdjunction J D).counit.app P).hom :=
   inferInstanceAs (IsIso ((sheafToPresheaf J D).map _))
 
 instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma sheafifyLift_id_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
     sheafifyLift J (𝟙 P) hP ≫ toSheafify J P = 𝟙 (sheafify J P) := by
-  rw [← cancel_mono ((sheafificationAdjunction J D).counit.app ⟨P, hP⟩).val]
+  rw [← cancel_mono ((sheafificationAdjunction J D).counit.app ⟨P, hP⟩).hom]
   cat_disch
 
 variable (J D)

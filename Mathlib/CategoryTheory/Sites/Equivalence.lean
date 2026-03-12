@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
-public import Mathlib.CategoryTheory.Sites.Whiskering
+
 /-!
 # Equivalences of sheaf categories
 
@@ -52,6 +52,7 @@ variable (A : Type u₃) [Category.{v₃} A]
 
 namespace Equivalence
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
   is_cover U := by
     let e := (asEquivalence G).symm
@@ -63,6 +64,7 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
     replace := Sieve.downward_closed _ this (e.unit.app Y)
     simpa [g] using this
 
+set_option backward.isDefEq.respectTransparency false in
 instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
   have : J = e.functor.inducedTopology (e.inverse.inducedTopology J) := by
     ext X S
@@ -77,6 +79,27 @@ lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
   ext
   exact (e.inverse.functorPushforward_mem_iff K J).symm
 
+set_option backward.isDefEq.respectTransparency false in
+lemma isDenseSubsite_functor_of_isCocontinuous
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.functor.IsDenseSubsite J K where
+  functorPushforward_mem_iff {X S} := by
+    constructor
+    · intro H
+      refine J.superset_covering ?_ (e.functor.cover_lift J K H)
+      rw [(Sieve.fullyFaithfulFunctorGaloisCoinsertion e.functor X).u_l_eq S]
+    · intro H
+      refine K.superset_covering ?_
+        (e.inverse.cover_lift K J (J.pullback_stable (e.unitInv.app X) H))
+      exact fun Y f (H : S _) ↦ ⟨_, _, e.counitInv.app Y, H, by simp⟩
+
+lemma isDenseSubsite_inverse_of_isCocontinuous
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.inverse.IsDenseSubsite K J :=
+  have : e.symm.functor.IsCocontinuous K J := inferInstanceAs (e.inverse.IsCocontinuous _ _)
+  have : e.symm.inverse.IsCocontinuous J K := inferInstanceAs (e.functor.IsCocontinuous _ _)
+  isDenseSubsite_functor_of_isCocontinuous _ _ e.symm
+
 variable [e.inverse.IsDenseSubsite K J]
 
 instance : e.functor.IsDenseSubsite J K := by
@@ -85,32 +108,31 @@ instance : e.functor.IsDenseSubsite J K := by
 
 /-- The functor in the equivalence of sheaf categories. -/
 @[simps!]
-def sheafCongr.functor : Sheaf J A ⥤ Sheaf K A where
-  obj F := ⟨e.inverse.op ⋙ F.val, e.inverse.op_comp_isSheaf _ _ _⟩
-  map f := ⟨whiskerLeft e.inverse.op f.val⟩
+def sheafCongr.functor : Sheaf J A ⥤ Sheaf K A :=
+  ObjectProperty.lift _
+    (sheafToPresheaf _ _ ⋙ (Functor.whiskeringLeft _ _ _).obj e.inverse.op)
+    (e.inverse.op_comp_isSheaf _ _)
 
 /-- The inverse in the equivalence of sheaf categories. -/
 @[simps!]
-def sheafCongr.inverse : Sheaf K A ⥤ Sheaf J A where
-  obj F := ⟨e.functor.op ⋙ F.val, e.functor.op_comp_isSheaf _ _ _⟩
-  map f := ⟨whiskerLeft e.functor.op f.val⟩
+def sheafCongr.inverse : Sheaf K A ⥤ Sheaf J A :=
+  ObjectProperty.lift _
+    (sheafToPresheaf _ _ ⋙ (Functor.whiskeringLeft _ _ _).obj e.functor.op)
+    (e.functor.op_comp_isSheaf _ _)
 
 /-- The unit iso in the equivalence of sheaf categories. -/
 @[simps!]
 def sheafCongr.unitIso : 𝟭 (Sheaf J A) ≅ functor J K e A ⋙ inverse J K e A :=
-  NatIso.ofComponents (fun F ↦ ⟨⟨(isoWhiskerRight e.op.unitIso F.val).hom⟩,
-    ⟨(isoWhiskerRight e.op.unitIso F.val).inv⟩,
-    Sheaf.hom_ext _ _ (isoWhiskerRight e.op.unitIso F.val).hom_inv_id,
-    Sheaf.hom_ext _ _ (isoWhiskerRight e.op.unitIso F.val).inv_hom_id⟩ ) (by aesop)
+  NatIso.ofComponents
+    (fun F ↦ ObjectProperty.isoMk _ (isoWhiskerRight e.op.unitIso F.obj))
 
 /-- The counit iso in the equivalence of sheaf categories. -/
 @[simps!]
 def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _ A) :=
-  NatIso.ofComponents (fun F ↦ ⟨⟨(isoWhiskerRight e.op.counitIso F.val).hom⟩,
-    ⟨(isoWhiskerRight e.op.counitIso F.val).inv⟩,
-    Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).hom_inv_id,
-    Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).inv_hom_id⟩ ) (by aesop)
+  NatIso.ofComponents
+    (fun F ↦ ObjectProperty.isoMk _ (isoWhiskerRight e.op.counitIso F.obj))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of sheaf categories. -/
 @[simps]
 def sheafCongr : Sheaf J A ≌ Sheaf K A where
@@ -120,12 +142,6 @@ def sheafCongr : Sheaf J A ≌ Sheaf K A where
   counitIso := sheafCongr.counitIso J K e A
   functor_unitIso_comp X := by
     ext
-    simp only [id_obj, sheafCongr.functor_obj_val_obj, comp_obj,
-      Sheaf.comp_val, NatTrans.comp_app, sheafCongr.inverse_obj_val_obj,
-      Opposite.unop_op, sheafCongr.functor_map_val_app,
-      sheafCongr.unitIso_hom_app_val_app, sheafCongr.counitIso_hom_app_val_app,
-      sheafCongr.functor_obj_val_map, Quiver.Hom.unop_op, Sheaf.id_val,
-      NatTrans.id_app]
     simp [← Functor.map_comp, ← op_comp]
 
 variable [HasSheafify K A]
@@ -139,7 +155,7 @@ def transportAndSheafify : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
 noncomputable
 def transportIsoSheafToPresheaf : (e.sheafCongr J K A).functor ⋙
     sheafToPresheaf K A ⋙ e.op.congrLeft.inverse ≅ sheafToPresheaf J A :=
-  NatIso.ofComponents (fun F ↦ isoWhiskerRight e.op.unitIso.symm F.val)
+  NatIso.ofComponents (fun F ↦ isoWhiskerRight e.op.unitIso.symm F.obj)
 
 /-- Transporting and sheafifying is left adjoint to taking the underlying presheaf. -/
 noncomputable
@@ -223,6 +239,7 @@ variable [Functor.IsContinuous.{v₃} G K J] [(G.sheafPushforwardContinuous A K 
 
 open Localization
 
+set_option backward.isDefEq.respectTransparency false in
 lemma W_inverseImage_whiskeringLeft :
     K.W.inverseImage ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op) = J.W := by
   ext P Q f
@@ -238,14 +255,14 @@ lemma W_inverseImage_whiskeringLeft :
       exact ⟨_, ⟨_, rfl⟩, ⟨e.trans ((sheafToPresheaf _ _).mapIso
         ((G.sheafPushforwardContinuous A K J).objObjPreimageIso R).symm)⟩⟩
     · rintro ⟨_, ⟨R, rfl⟩, ⟨e⟩⟩
-      exact ⟨G.op ⋙ R.val, ⟨(G.sheafPushforwardContinuous A K J).obj R, rfl⟩, ⟨e⟩⟩
+      exact ⟨G.op ⋙ R.obj, ⟨(G.sheafPushforwardContinuous A K J).obj R, rfl⟩, ⟨e⟩⟩
   have h₂ : ∀ (R : Sheaf J A),
-    Function.Bijective (fun (g : G.op ⋙ Q ⟶ G.op ⋙ R.val) ↦ whiskerLeft G.op f ≫ g) ↔
-      Function.Bijective (fun (g : Q ⟶ R.val) ↦ f ≫ g) := fun R ↦ by
+    Function.Bijective (fun (g : G.op ⋙ Q ⟶ G.op ⋙ R.obj) ↦ whiskerLeft G.op f ≫ g) ↔
+      Function.Bijective (fun (g : Q ⟶ R.obj) ↦ f ≫ g) := fun R ↦ by
     rw [← Function.Bijective.of_comp_iff _
-      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G Q R.val R.cond)]
+      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G Q R.obj R.property)]
     exact Function.Bijective.of_comp_iff'
-      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G P R.val R.cond)
+      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G P R.obj R.property)
         (fun g ↦ f ≫ g)
   rw [h₁, J.W_eq_isLocal_range_sheafToPresheaf_obj, MorphismProperty.inverseImage_iff]
   constructor

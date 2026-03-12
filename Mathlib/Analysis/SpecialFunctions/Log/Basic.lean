@@ -74,6 +74,8 @@ theorem le_exp_log (x : ℝ) : x ≤ exp (log x) := by
 theorem log_exp (x : ℝ) : log (exp x) = x :=
   exp_injective <| exp_log (exp_pos x)
 
+@[simp] theorem log_comp_exp : log ∘ exp = id := funext log_exp
+
 theorem exp_one_mul_le_exp {x : ℝ} : exp 1 * x ≤ exp x := by
   by_cases hx0 : x ≤ 0
   · apply le_trans (mul_nonpos_of_nonneg_of_nonpos (exp_pos 1).le hx0) (exp_nonneg x)
@@ -200,7 +202,7 @@ theorem log_nonneg (hx : 1 ≤ x) : 0 ≤ log x :=
 
 theorem log_nonpos_iff (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · simp [le_refl, zero_le_one]
+  · simp [zero_le_one]
   rw [← not_lt, log_pos_iff hx.le, not_lt]
 
 @[bound]
@@ -388,6 +390,20 @@ theorem log_prod {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ x ∈ s
 protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : log (f.prod g) = f.sum fun a b ↦ log (g a b) :=
   log_prod fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
+
+-- Note: This is wrong assuming only `f a ≠ 0` (as in `Real.log_prod`).
+-- E.g., `f = (2, -1, -1, ...)` (with infinitely many `-1`s).
+lemma log_finprod {α : Type*} {f : α → ℝ} (h : ∀ a, 0 < f a) :
+    log (∏ᶠ a, f a) = ∑ᶠ a, log (f a) := by
+  classical
+  have H : (fun i ↦ log (f i)).support = f.mulSupport := by
+    grind [mem_mulSupport, mem_support, log_eq_zero]
+  have H' : HasFiniteMulSupport f ↔ HasFiniteSupport fun a ↦ log (f a) := by
+    simp [HasFiniteMulSupport, HasFiniteSupport, H]
+  simp only [finprod_def, finsum_def]
+  by_cases h' : HasFiniteMulSupport f
+  · simp [h', log_prod (fun a _ ↦ (h a).ne'), H'.mp h', H]
+  · simp [h', mt H'.mpr h']
 
 theorem log_nat_eq_sum_factorization (n : ℕ) :
     log n = n.factorization.sum fun p t => t * log p := by

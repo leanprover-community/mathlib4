@@ -97,6 +97,7 @@ end
 variable (𝕜 : Type*) [Field 𝕜]
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
+set_option backward.isDefEq.respectTransparency false in
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
 -- rather than just `[Simple X]`, as this form is useful for
 -- Müger's formulation of semisimplicity.
@@ -134,6 +135,7 @@ theorem endomorphism_simple_eq_smul_id {X : C} [Simple X] [FiniteDimensional �
 /-- Endomorphisms of a simple object form a field if they are finite dimensional.
 This can't be an instance as `𝕜` would be undetermined.
 -/
+@[implicit_reducible]
 noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDimensional 𝕜 (X ⟶ X)] :
     Field (End X) := by
   classical exact
@@ -153,7 +155,7 @@ for the refinements when we know whether or not the simples are isomorphic.
 -/
 theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)] [Simple X]
     [Simple Y] : finrank 𝕜 (X ⟶ Y) ≤ 1 := by
-  obtain (h|h) := subsingleton_or_nontrivial (X ⟶ Y)
+  obtain (h | h) := subsingleton_or_nontrivial (X ⟶ Y)
   · rw [finrank_zero_of_subsingleton]
     exact zero_le_one
   · obtain ⟨f, nz⟩ := (nontrivial_iff_exists_ne 0).mp h

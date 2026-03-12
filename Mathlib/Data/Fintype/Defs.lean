@@ -181,7 +181,7 @@ to show the domain type when the filter is over `Finset.univ`. -/
     else
       `({$i:ident | $p})
   -- check if `t` is of the form `s₀ᶜ`, in which case we display `x ∉ s₀` instead
-  else if t.isAppOfArity ``HasCompl.compl 3 then
+  else if t.isAppOfArity ``Compl.compl 3 then
     let #[_, _, s₀] := t.getAppArgs | failure
     -- if `s₀` is a singleton, we can even use the notation `x ≠ a`
     if s₀.isAppOfArity ``Singleton.singleton 4 then
@@ -257,6 +257,8 @@ instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
 
 instance (α : Type*) : Lean.Meta.FastSubsingleton (Fintype α) := {}
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- Given a predicate that can be represented by a finset, the subtype
 associated to the predicate is a fintype. -/
 protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
@@ -264,6 +266,8 @@ protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s
   ⟨⟨s.1.pmap Subtype.mk fun x => (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
     fun ⟨x, px⟩ => Multiset.mem_pmap.2 ⟨x, (H x).2 px, rfl⟩⟩
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- Construct a fintype from a finset with the same elements. -/
 def ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : Fintype p :=
   Fintype.subtype s H

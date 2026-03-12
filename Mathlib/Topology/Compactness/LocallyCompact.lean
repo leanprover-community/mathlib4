@@ -174,6 +174,15 @@ theorem exists_compact_between [LocallyCompactSpace X] {K U : Set X} (hK : IsCom
   let ⟨L, hKL, hL, hLU⟩ := exists_mem_nhdsSet_isCompact_mapsTo continuous_id hK hU h_KU
   ⟨L, hL, subset_interior_iff_mem_nhdsSet.2 hKL, hLU⟩
 
+/-- In a (possibly non-Hausdorff) locally compact space, for every compact set `K`,
+`𝓝ˢ K` has a basis consisting of compact sets. -/
+theorem IsCompact.nhdsSet_basis_isCompact [LocallyCompactSpace X] {K : Set X} (hK : IsCompact K) :
+    (𝓝ˢ K).HasBasis (fun L ↦ L ∈ 𝓝ˢ K ∧ IsCompact L) id := by
+  rw [hasBasis_self, (hasBasis_nhdsSet _).forall_iff (by grind)]
+  intro U ⟨hU, h_KU⟩
+  obtain ⟨L, hL, hKL, hLU⟩ := exists_compact_between hK hU h_KU
+  exact ⟨L, by rwa [← subset_interior_iff_mem_nhdsSet], hL, hLU⟩
+
 theorem IsOpenQuotientMap.locallyCompactSpace [LocallyCompactSpace X] {f : X → Y}
     (hf : IsOpenQuotientMap f) : LocallyCompactSpace Y where
   local_compact_nhds := by

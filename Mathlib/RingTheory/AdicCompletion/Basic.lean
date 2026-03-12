@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -85,16 +86,14 @@ theorem IsHausdorff.of_map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S]
   apply SModEq.of_toAddSubgroup_le
       (U := (I ^ n • ⊤ : Submodule R M)) (V := (J ^ n • ⊤ : Submodule S M))
   · rw [← AddSubgroup.toAddSubmonoid_le]
-    simp only [Submodule.toAddSubgroup_toAddSubmonoid, Submodule.smul_toAddSubmonoid,
-      Submodule.top_toAddSubmonoid]
+    simp only [Submodule.smul_toAddSubmonoid, Submodule.top_toAddSubmonoid]
     rw [AddSubmonoid.smul_le]
-    intro r hr m _
+    intro r hr m hm
     rw [← algebraMap_smul S r m]
-    apply AddSubmonoid.smul_mem_smul
-    · have := Ideal.mem_map_of_mem (algebraMap R S) hr
-      simp only [Ideal.map_pow] at this
-      apply Ideal.pow_right_mono (I := I.map (algebraMap R S)) hIJ n this
-    · trivial
+    apply AddSubmonoid.smul_mem_smul ?_ hm
+    have := Ideal.mem_map_of_mem (algebraMap R S) hr
+    simp only [Ideal.map_pow] at this
+    exact Ideal.pow_right_mono hIJ n this
   · exact h n
 
 variable (I) in
@@ -261,6 +260,7 @@ end IsPrecomplete
 
 namespace AdicCompletion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `AdicCompletion` is the submodule of compatible families in
 `∀ n : ℕ, M ⧸ (I ^ n • ⊤)`. -/
 def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
@@ -400,6 +400,7 @@ variable {I M}
 
 variable (I M)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsHausdorff I (AdicCompletion I M) where
   haus' x h := ext fun n ↦ by
     refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
@@ -598,6 +599,7 @@ section Bijective
 
 variable {I}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_injective_iff : Function.Injective (of I M) ↔ IsHausdorff I M := by
   constructor
   · refine fun h ↦ ⟨fun x hx ↦ h ?_⟩
@@ -720,7 +722,7 @@ theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 
 /--
 The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
-projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
+projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n`.
 -/
 @[simp]
 theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
@@ -731,7 +733,7 @@ theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 /--
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
-If `F : M →ₗ[R] N` makes the following diagram commutes
+If `F : M →ₗ[R] N` makes the following diagram commute
 ```
   N
   | \

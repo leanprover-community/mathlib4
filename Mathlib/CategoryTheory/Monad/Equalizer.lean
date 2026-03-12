@@ -46,7 +46,7 @@ Show that any coalgebra is an equalizer of cofree coalgebras.
 
 /-- The top map in the equalizer diagram we will construct. -/
 @[simps!]
-def CofreeEqualizer.topMap :  (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) :=
+def CofreeEqualizer.topMap : (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) :=
   (Comonad.cofree T).map X.a
 
 /-- The bottom map in the equalizer diagram we will construct. -/
@@ -67,6 +67,7 @@ theorem CofreeEqualizer.condition :
       CofreeEqualizer.ι X ≫ CofreeEqualizer.bottomMap X :=
   Coalgebra.Hom.ext X.coassoc.symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsCoreflexivePair (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) := by
   apply IsCoreflexivePair.mk' _ _ _
   · apply (cofree T).map (T.ε.app X.A)
@@ -83,14 +84,15 @@ equalizer.
 def beckCoalgebraFork : Fork (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) :=
   Fork.ofι _ (CofreeEqualizer.condition X)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fork constructed is a limit. This shows that any coalgebra is a (coreflexive) equalizer of
 cofree coalgebras.
 -/
 def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
   Fork.IsLimit.mk' _ fun s => by
-    have h₁ :  s.ι.f  ≫ (T : C ⥤ C).map X.a = s.ι.f ≫ T.δ.app X.A :=
+    have h₁ : s.ι.f ≫ (T : C ⥤ C).map X.a = s.ι.f ≫ T.δ.app X.A :=
       congr_arg Comonad.Coalgebra.Hom.f s.condition
-    have h₂ :  s.pt.a ≫ (T : C ⥤ C).map s.ι.f = s.ι.f ≫ T.δ.app X.A := s.ι.h
+    have h₂ : s.pt.a ≫ (T : C ⥤ C).map s.ι.f = s.ι.f ≫ T.δ.app X.A := s.ι.h
     refine ⟨⟨s.ι.f ≫ T.ε.app _, ?_⟩, ?_, ?_⟩
     · dsimp
       rw [Functor.map_comp, reassoc_of% h₂, Comonad.right_counit]

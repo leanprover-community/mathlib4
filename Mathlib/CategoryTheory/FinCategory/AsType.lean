@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.Data.Fintype.EquivFin
 
 /-!
-# Finite categories are equivalent to category in `Type 0`.
+# Finite categories are equivalent to categories in `Type 0`.
 -/
 
 @[expose] public section
@@ -31,13 +31,13 @@ abbrev ObjAsType : Type :=
   InducedCategory α (Fintype.equivFin α).symm
 
 instance {i j : ObjAsType α} : Fintype (i ⟶ j) :=
-  FinCategory.fintypeHom ((Fintype.equivFin α).symm i) _
+  Fintype.ofEquiv _ InducedCategory.homEquiv.symm
 
 /-- The constructed category is indeed equivalent to `α`. -/
 noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
   (inducedFunctor (Fintype.equivFin α).symm).asEquivalence
 
-/-- A FinCategory `α` is equivalent to a fin_category with in `Type`. -/
+/-- A FinCategory `α` is equivalent to a FinCategory in `Type`. -/
 --@[nolint unused_arguments]
 abbrev AsType : Type :=
   Fin (Fintype.card α)
@@ -56,12 +56,14 @@ noncomputable def asTypeToObjAsType : AsType α ⥤ ObjAsType α where
   obj := id
   map {_ _} := (Fintype.equivFin _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The "identity" functor from `ObjAsType α` to `AsType α`. -/
 @[simps]
 noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α where
   obj := id
   map {_ _} := Fintype.equivFin _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The constructed category (`AsType α`) is equivalent to `ObjAsType α`. -/
 noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where
   functor := asTypeToObjAsType α

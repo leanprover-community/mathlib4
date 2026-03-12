@@ -6,9 +6,12 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.Analysis.Analytic.Polynomial
-public import Mathlib.Analysis.Complex.JensenFormula
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+public import Mathlib.Analysis.Polynomial.Norm
+public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
+public import Mathlib.Analysis.Convex.Integral
+public import Mathlib.Analysis.Polynomial.Fourier
 
 /-!
 # Mahler measure of complex polynomials
@@ -128,7 +131,7 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
   apply integral_congr_ae
   rw [MeasureTheory.ae_iff]
   apply Set.Finite.measure_zero _ MeasureTheory.volume
-  simp only [_root_.not_imp]
+  simp only [Classical.not_imp]
   apply Set.Finite.of_finite_image (f := circleMap 0 1) _ <|
     (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [le_of_eq, pi_nonneg])).mono (fun _ h ↦ h.1)
   apply (p * q).roots.finite_toSet.subset
@@ -188,6 +191,7 @@ theorem mahlerMeasure_X_sub_C (z : ℂ) : (X - C z).mahlerMeasure = max 1 ‖z�
 theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z‖ := by
   simp [← sub_neg_eq_add, ← map_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
     (C a * X + C b).mahlerMeasure = max ‖a‖ ‖b‖ := by
@@ -224,7 +228,7 @@ theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeas
   rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
   apply_fun exp at this
   rw [exp_add, exp_log <| mahlerMeasure_pos_of_ne_zero hp,
-    exp_log <|norm_pos_iff.mpr <| leadingCoeff_ne_zero.mpr hp] at this
+    exp_log <| norm_pos_iff.mpr <| leadingCoeff_ne_zero.mpr hp] at this
   simp [this, exp_multiset_sum, posLog_eq_log_max_one, exp_log]
 
 /-!
@@ -275,6 +279,70 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     apply norm_sum_le_of_le p.support
     simp
 
+set_option linter.style.emptyLine false in
+open MeasureTheory Set in
+/-- The Mahler measure of a polynomial is at most the sup norm of the polynomial times the square
+root of its degree plus one. -/
+theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ) :
+    p.mahlerMeasure ≤ √(p.natDegree + 1) * p.supNorm := by
+  -- Proof strategy: Apply Jensen's inequality to the definition of the Mahler measure, then to the
+  -- square function, and finally apply Parseval's inequality to the polynomial
+  -- Instances necessary for Jensen's inequality
+  have : IsFiniteMeasure (volume.restrict (uIoc 0 (2 * π))) := by
+    rw [uIoc_of_le (by positivity)]; infer_instance
+  have : NeZero (volume (uIoc 0 (2 * π))) := ⟨by simp⟩
+  -- Trivial case
+  by_cases! hp : p = 0
+  · simp [hp]
+  -- Elementary facts
+  have : ∀ᵐ (θ : ℝ) ∂volume.restrict (uIoc 0 (2 * π)), 0 < ‖p.eval (circleMap 0 1 θ)‖ := by
+    rw [ae_restrict_iff' measurableSet_uIoc]
+    refine Set.Finite.measure_zero ?_ _
+    simp only [norm_pos_iff, ne_eq, compl_setOf, Classical.not_imp, Decidable.not_not]
+    refine Finite.of_finite_image (f := circleMap 0 1) (p.roots.finite_toSet.subset ?_) ?_
+    · rintro z ⟨θ, ⟨_, heval⟩, rfl⟩
+      exact (mem_roots hp).mpr heval
+    · apply InjOn.mono fun _ h ↦ h.1
+      exact injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [abs_of_pos pi_pos])
+  have hlogAe : ∀ᵐ (θ : ℝ) ∂volume.restrict (uIoc 0 (2 * π)),
+      exp (log ‖p.eval (circleMap 0 1 θ)‖) = ‖p.eval (circleMap 0 1 θ)‖ := by
+    filter_upwards [this] with θ hθ
+    exact exp_log hθ
+  have hcont : Continuous (fun x : ℝ ↦ ‖eval (circleMap 0 1 x) p‖) := by fun_prop
+  -- Main calc block
+  simp only [mahlerMeasure, logMahlerMeasure, ne_eq, hp, not_false_eq_true, ↓reduceIte]
+  rw [circleAverage_eq_intervalAverage]
+  calc exp (⨍ (θ : ℝ) in 0..(2 * π), log ‖p.eval (circleMap 0 1 θ)‖)
+    ≤ ⨍ (θ : ℝ) in 0..(2 * π), exp (log ‖p.eval (circleMap 0 1 θ)‖) := by
+        -- First Jensen's inequality invocation
+        refine convexOn_exp.map_average_le continuousOn_exp isClosed_univ (by simp) ?_ ?_
+        · rw [Set.uIoc_of_le (by positivity : 0 ≤ 2 * Real.pi)]
+          exact (circleIntegrable_log_norm_meromorphicOn
+            (analyticOnNhd_id.aeval_polynomial p).meromorphicOn).1
+        · exact (integrable_congr hlogAe).mpr hcont.integrableOn_uIoc
+    _ = ⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖ := average_congr hlogAe
+    _ = √ ((⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖) ^ 2) := by
+        rw [sqrt_sq]; exact integral_nonneg (fun _ ↦ norm_nonneg _)
+    _ ≤ √ (⨍ (θ : ℝ) in 0..(2 * π),  ‖p.eval (circleMap 0 1 θ)‖ ^ 2) := by
+        -- Second Jensen's inequality invocation
+        gcongr
+        refine (convexOn_pow 2).map_average_le (continuousOn_pow 2)
+            isClosed_Ici (by filter_upwards; simp) ?_ ?_
+        · exact hcont.integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self
+        · exact ((continuous_pow 2).comp hcont).integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self
+    _ = √ (circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1) := by simp [circleAverage_eq_intervalAverage]
+    _ = √ (∑ i ∈ p.support, ‖p.coeff i‖ ^ 2) := by simp [p.sum_sq_norm_coeff_eq_circleAverage]
+    _ ≤ √ ((p.natDegree + 1) * p.supNorm ^ 2) := by
+        gcongr
+        refine (p.support.sum_le_card_nsmul _ (p.supNorm ^ 2) fun i hi ↦ ?_).trans ?_
+        · gcongr
+          exact p.le_supNorm _
+        · simp only [nsmul_eq_mul]
+          gcongr
+          exact mod_cast p.card_supp_le_succ_natDegree
+    _ = √(p.natDegree + 1) * p.supNorm := by
+        rw [Real.sqrt_mul (by positivity), Real.sqrt_sq p.supNorm_nonneg]
+
 open Multiset in
 theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure := by
@@ -309,20 +377,28 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       · exact le_max_left 1 ‖a‖
       · exact hx.1
   --final calc block:
-  calc
-  ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
-     ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
-    gcongr with x hx
-    rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
-    simp_rw [norm_pow]
-    exact this x hx
-  _  = p.natDegree.choose n * (p.roots.map (fun a ↦ 1 ⊔ ‖a‖)).prod := by
-    rw [← Finset.sum_mul]
-    congr
-    norm_cast
-    simp only [mem_powersetCard, mem_toFinset, imp_self, implies_true, sum_count_eq_card,
-      card_powersetCard, S, ← Nat.choose_symm hn]
-    congr
-    exact splits_iff_card_roots.mp <| IsAlgClosed.splits p
+  calc ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
+    _ ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
+      gcongr with x hx
+      rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
+      simp_rw [norm_pow]
+      exact this x hx
+    _ = p.natDegree.choose n * (p.roots.map (fun a ↦ 1 ⊔ ‖a‖)).prod := by
+      rw [← Finset.sum_mul]
+      congr
+      norm_cast
+      simp only [mem_powersetCard, mem_toFinset, imp_self, implies_true, sum_count_eq_card,
+        card_powersetCard, S, ← Nat.choose_symm hn]
+      congr
+      exact splits_iff_card_roots.mp <| IsAlgClosed.splits p
+
+theorem supNorm_le_choose_natDegree_div_two_mul_mahlerMeasure (p : Polynomial ℂ) :
+    p.supNorm ≤ p.natDegree.choose (p.natDegree / 2) * p.mahlerMeasure := by
+  obtain ⟨i, hi⟩ := p.exists_eq_supNorm
+  calc p.supNorm = ‖p.coeff i‖ := hi
+    _ ≤ (p.natDegree.choose i) * p.mahlerMeasure := p.norm_coeff_le_choose_mul_mahlerMeasure i
+    _ ≤ (p.natDegree.choose (p.natDegree / 2)) * p.mahlerMeasure :=
+      mul_le_mul_of_nonneg_right (by exact_mod_cast Nat.choose_le_middle i p.natDegree)
+        p.mahlerMeasure_nonneg
 
 end Polynomial

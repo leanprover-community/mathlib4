@@ -286,6 +286,7 @@ variable {Γ Γ' : Type*} [PartialOrder Γ] [PartialOrder Γ'] {R : Type*}
   [CommRing R] {U V W : Type*} [AddCommGroup U] [Module R U] [AddCommGroup V] [Module R V]
   [AddCommGroup W] [Module R W] (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ' R U V)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
 series. -/
 @[simps]
@@ -297,6 +298,7 @@ def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
     intro g' hg' hAB
     exact hg' (by simp [hAB])
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem compHahnSeries_add (u v : U) :
     compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
@@ -304,6 +306,7 @@ theorem compHahnSeries_add (u v : U) :
   simp only [compHahnSeries_coeff, map_add, coeff_apply_apply, HahnSeries.coeff_add', Pi.add_apply]
   rw [← HahnSeries.coeff_add]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem compHahnSeries_smul (r : R) (u : U) :
     compHahnSeries A B (r • u) = r • compHahnSeries A B u := by

@@ -17,7 +17,7 @@ types, `MulOpposite`, etc.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -320,7 +320,7 @@ theorem hasSum_unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} :
   ⟨HasSum.op, HasSum.unop⟩
 
 @[simp]
-theorem summable_op : (Summable (fun a ↦ op (f a)) L) ↔ Summable f L:=
+theorem summable_op : (Summable (fun a ↦ op (f a)) L) ↔ Summable f L :=
   ⟨Summable.unop, Summable.op⟩
 
 theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable (fun a ↦ unop (f a)) L) ↔ Summable f L :=

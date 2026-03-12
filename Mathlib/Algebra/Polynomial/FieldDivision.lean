@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -141,12 +142,14 @@ end CommRing
 
 section IsDomain
 
-variable [CommRing R] [IsDomain R]
+variable [CommRing R]
 
 theorem one_lt_rootMultiplicity_iff_isRoot_gcd
     [GCDMonoid R[X]] {p : R[X]} {t : R} (h : p ≠ 0) :
     1 < p.rootMultiplicity t ↔ (gcd p (derivative p)).IsRoot t := by
   simp_rw [one_lt_rootMultiplicity_iff_isRoot h, ← dvd_iff_isRoot, dvd_gcd_iff]
+
+variable [NoZeroDivisors R]
 
 theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt : p.IsRoot t) :
     p.derivative.rootMultiplicity t = p.rootMultiplicity t - 1 := by
@@ -189,6 +192,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
   by_contra hg
   have hdfg0 : f.derivative * g ≠ 0 := mul_ne_zero hdf0 (by rintro rfl; simp at hg)
   have hr' := congr_arg (rootMultiplicity a) hr
+  have : IsDomain R := {}
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
@@ -230,7 +234,8 @@ theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := b
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
 
-theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
+theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p : R[X]} :
+    (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
 theorem normUnit_X : normUnit (X : Polynomial R) = 1 := by
@@ -292,7 +297,7 @@ variable [Field R] {p q : R[X]}
 
 theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
   ⟨degree_eq_zero_of_isUnit, fun h =>
-    have : degree p ≤ 0 := by simp [*, le_refl]
+    have : degree p ≤ 0 := by simp [*]
     have hc : coeff p 0 ≠ 0 := fun hc => by
       rw [eq_C_of_degree_le_zero this, hc] at h; simp only [map_zero] at h; contradiction
     isUnit_iff_dvd_one.2
@@ -313,7 +318,7 @@ private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + m
   · simp only [h, zero_mul, mod, modByMonic_zero, zero_add]
   · conv =>
       rhs
-      rw [← modByMonic_add_div p (monic_mul_leadingCoeff_inv h)]
+      rw [← modByMonic_add_div p (q * C q.leadingCoeff⁻¹)]
     rw [div, mod, add_comm, mul_assoc]
 
 private theorem remainder_lt_aux (p : R[X]) (hq : q ≠ 0) : degree (mod p q) < degree q := by
@@ -355,8 +360,8 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
     remainder := (· % ·)
     r := _
     r_wellFounded := degree_lt_wf
-    quotient_mul_add_remainder_eq := quotient_mul_add_remainder_eq_aux
-    remainder_lt := fun _ _ hq => remainder_lt_aux _ hq
+    quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
+    remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
     mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
@@ -396,7 +401,7 @@ theorem degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p := by
 theorem degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degree p := by
   have hq0 : q ≠ 0 := fun hq0 => by simp [hq0] at hq
   rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq0]
-  exact degree_divByMonic_lt _ (monic_mul_leadingCoeff_inv hq0) hp
+  exact degree_divByMonic_lt _ (q * C q.leadingCoeff⁻¹) hp
     (by rw [degree_mul_leadingCoeff_inv _ hq0]; exact hq)
 
 theorem isUnit_map [Field k] (f : R →+* k) : IsUnit (p.map f) ↔ IsUnit p := by
@@ -605,7 +610,7 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
     Monic.prime_of_degree_eq_one (hp1 ▸ degree_normalize)
-      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp [degree_zero]))
+      (monic_normalize fun hp0 ↦ absurd hp1 (by simp [hp0]))
   exact (normalize_associated _).prime this
 
 theorem irreducible_of_degree_eq_one (hp1 : degree p = 1) : Irreducible p :=
@@ -625,7 +630,6 @@ theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
 theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Ring K] (f : K[X]) (a : K) :
     (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
-  exact monic_X_sub_C a
 
 theorem divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
     {K : Type*} [CommRing K] (f : K[X]) (a : K) :
@@ -633,10 +637,6 @@ theorem divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
   simpa only [derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero, one_mul,
     modByMonic_X_sub_C_eq_C_eval] using key
-
-@[deprecated (since := "2025-07-08")]
-alias divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative :=
-divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
 
 theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by

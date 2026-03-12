@@ -62,35 +62,44 @@ theorem Ideal.IsPrime.isMaximal {R : Type*} [CommRing R] [DimensionLEOne R]
     {p : Ideal R} (h : p.IsPrime) (hp : p ≠ ⊥) : p.IsMaximal :=
   DimensionLEOne.maximalOfPrime hp h
 
-namespace Ring
+namespace Ring.DimensionLEOne
 
-instance DimensionLEOne.principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
+instance principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
     DimensionLEOne A where
   maximalOfPrime := fun nonzero _ =>
     IsPrime.to_maximal_ideal nonzero
 
-theorem DimensionLEOne.isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
-    [Algebra R A] [Algebra R B] [Algebra B A] [IsScalarTower R B A] [IsIntegralClosure B R A]
-    [DimensionLEOne R] : DimensionLEOne B where
+theorem isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R] [Algebra R A]
+    [Algebra R B] [Algebra B A] [IsScalarTower R B A] [IsIntegralClosure B R A] [DimensionLEOne R] :
+    DimensionLEOne B where
   maximalOfPrime := fun {p} ne_bot _ =>
     IsIntegralClosure.isMaximal_of_isMaximal_comap (R := R) A p
       (Ideal.IsPrime.isMaximal inferInstance (IsIntegralClosure.comap_ne_bot A ne_bot))
 
-nonrec instance DimensionLEOne.integralClosure [Nontrivial R] [IsDomain A] [Algebra R A]
-    [DimensionLEOne R] : DimensionLEOne (integralClosure R A) :=
+set_option backward.isDefEq.respectTransparency false in
+nonrec instance integralClosure [Nontrivial R] [IsDomain A] [Algebra R A] [DimensionLEOne R] :
+    DimensionLEOne (integralClosure R A) :=
   DimensionLEOne.isIntegralClosure R A (integralClosure R A)
 
 variable {R}
 
-theorem DimensionLEOne.not_lt_lt [Ring.DimensionLEOne R] (p₀ p₁ p₂ : Ideal R) [hp₁ : p₁.IsPrime]
+theorem not_lt_lt [Ring.DimensionLEOne R] (p₀ p₁ p₂ : Ideal R) [hp₁ : p₁.IsPrime]
     [hp₂ : p₂.IsPrime] : ¬(p₀ < p₁ ∧ p₁ < p₂)
   | ⟨h01, h12⟩ => h12.ne ((hp₁.isMaximal (bot_le.trans_lt h01).ne').eq_of_le hp₂.ne_top h12.le)
 
-theorem DimensionLEOne.eq_bot_of_lt [Ring.DimensionLEOne R] (p P : Ideal R) [p.IsPrime]
-    [P.IsPrime] (hpP : p < P) : p = ⊥ :=
+theorem eq_bot_of_lt [Ring.DimensionLEOne R] (p P : Ideal R) [p.IsPrime] [P.IsPrime] (hpP : p < P) :
+    p = ⊥ :=
   by_contra fun hp0 => not_lt_lt ⊥ p P ⟨Ne.bot_lt hp0, hpP⟩
 
-end Ring
+variable {A} in
+theorem of_ringEquiv [hA : Ring.DimensionLEOne A] (e : R ≃+* A) : Ring.DimensionLEOne R where
+  maximalOfPrime {P} hP_ne hP_prime := by
+    rw [← Ideal.map_comap_eq_self_of_equiv e.symm P,
+      Ideal.isMaximal_map_iff_of_bijective _ e.symm.bijective]
+    apply Ring.DimensionLEOne.maximalOfPrime ?_ (P.comap_isPrime e.symm)
+    simp [Ideal.map_eq_bot_iff_of_injective e.injective, hP_ne]
+
+end Ring.DimensionLEOne
 
 /-- A Dedekind ring is a commutative ring that is Noetherian, integrally closed, and
 has Krull dimension at most one.
@@ -163,6 +172,7 @@ variable {R} in
 theorem IsLocalRing.primesOver_eq [IsLocalRing A] [IsDedekindDomain A] [Algebra R A]
     [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
     Ideal.primesOver p A = {IsLocalRing.maximalIdeal A} := by
+  have : IsDomain R := .of_faithfulSMul R A
   refine Set.eq_singleton_iff_nonempty_unique_mem.mpr ⟨?_, fun P hP ↦ ?_⟩
   · obtain ⟨w', hmax, hover⟩ := exists_maximal_ideal_liesOver_of_isIntegral (S := A) p
     exact ⟨w', hmax.isPrime, hover⟩

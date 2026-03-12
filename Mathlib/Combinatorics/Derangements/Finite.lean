@@ -34,7 +34,7 @@ open derangements Equiv Fintype
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
-instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
+instance : DecidablePred (· ∈ derangements α) := fun _ => Fintype.decidableForallFintype
 
 instance : Fintype (derangements α) :=
   inferInstanceAs <| Fintype { f : Perm α | ∀ x : α, f x ≠ x }
@@ -50,17 +50,14 @@ theorem card_derangements_fin_add_two (n : ℕ) :
   -- get some basic results about the size of Fin (n+1) plus or minus an element
   have h1 : ∀ a : Fin (n + 1), card ({a}ᶜ : Set (Fin (n + 1))) = card (Fin n) := by
     intro a
-    simp only
-      [card_ofFinset (s := Finset.filter (fun x => x ∈ ({a}ᶜ : Set (Fin (n + 1)))) Finset.univ),
-      Set.mem_compl_singleton_iff, Finset.filter_ne' _ a,
-      Finset.card_erase_of_mem (Finset.mem_univ a), Finset.card_fin, add_tsub_cancel_right,
-      card_fin]
+    rw [Fintype.card_compl_set]
+    simp
   have h2 : card (Fin (n + 2)) = card (Option (Fin (n + 1))) := by simp only [card_fin, card_option]
   -- rewrite the LHS and substitute in our fintype-level equivalence
   simp only [card_derangements_invariant h2,
     card_congr
       (@derangementsRecursionEquiv (Fin (n + 1))
-        _),-- push the cardinality through the Σ and ⊕ so that we can use `card_n`
+        _), -- push the cardinality through the Σ and ⊕ so that we can use `card_n`
     card_sigma,
     card_sum, card_derangements_invariant (h1 _), Finset.sum_const, nsmul_eq_mul, Finset.card_fin,
     mul_add, Nat.cast_id]

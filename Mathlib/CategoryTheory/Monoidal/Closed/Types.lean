@@ -31,7 +31,7 @@ universe v₁ v₂ u₁ u₂
 
 variable {C : Type v₂} [Category.{v₁} C]
 
-section CartesianClosed
+section MonoidalClosed
 
 /-- The adjunction `tensorLeft.obj X ⊣ coyoneda.obj (Opposite.op X)`
 for any `X : Type v₁`. -/
@@ -43,23 +43,24 @@ def Types.tensorProductAdjunction (X : Type v₁) :
 instance (X : Type v₁) : (tensorLeft X).IsLeftAdjoint :=
   ⟨_, ⟨Types.tensorProductAdjunction X⟩⟩
 
-instance : CartesianClosed (Type v₁) := CartesianClosed.mk _
-  fun X => Exponentiable.mk _ _ (Types.tensorProductAdjunction X)
+instance : MonoidalClosed (Type v₁) := MonoidalClosed.mk
+  fun X => Closed.mk _ (Types.tensorProductAdjunction X)
 
-instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :=
-  CartesianClosed.mk _ fun F => by
+instance {C : Type v₁} [SmallCategory C] : MonoidalClosed (C ⥤ Type v₁) :=
+  MonoidalClosed.mk fun F => by
     haveI : ∀ X : Type v₁, PreservesColimits (tensorLeft X) := by infer_instance
     letI : PreservesColimits (tensorLeft F) := ⟨by infer_instance⟩
     have := Presheaf.isLeftAdjoint_of_preservesColimits.{v₁} (tensorLeft F)
-    exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (tensorLeft F))
+    exact Closed.mk _ (Adjunction.ofIsLeftAdjoint (tensorLeft F))
 
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
 -- closed categories, replace this with that, as it will be a more explicit construction.
 attribute [local instance] uliftCategory in
 /-- This is not a good instance because of the universe levels. Below is the instance where the
 target category is `Type (max u₁ v₁)`. -/
+@[implicit_reducible]
 def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
-    CartesianClosed (C ⥤ Type (max u₁ v₁ u₂)) :=
+    MonoidalClosed (C ⥤ Type (max u₁ v₁ u₂)) :=
   let e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ Type (max u₁ v₁ u₂) ≌
       C ⥤ Type (max u₁ v₁ u₂) :=
       Functor.asEquivalence ((Functor.whiskeringLeft _ _ _).obj
@@ -68,18 +69,18 @@ def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
 
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
 -- closed categories, replace this with that, as it will be a more explicit construction.
-instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max u₁ v₁)) :=
+instance {C : Type u₁} [Category.{v₁} C] : MonoidalClosed (C ⥤ Type (max u₁ v₁)) :=
   cartesianClosedFunctorToTypes
 
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
 -- closed categories, replace this with that, as it will be a more explicit construction.
 instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
-    CartesianClosed (C ⥤ Type v₁) :=
+    MonoidalClosed (C ⥤ Type v₁) :=
   let e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
     Functor.asEquivalence ((Functor.whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
   cartesianClosedOfEquiv e
 
-end CartesianClosed
+end MonoidalClosed
 
 end
 

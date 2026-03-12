@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Finiteness tactic
@@ -20,13 +20,14 @@ set.
 
 Standard `aesop` syntax applies. Namely one can write
 * `finiteness (add unfold [def1, def2])` to make `finiteness` unfold `def1`, `def2`
-* `finiteness?` for the tactic to show what proof it found
-* etc
 * Note that `finiteness` disables `simp`, so `finiteness (add simp [lemma1, lemma2])` does not do
   anything more than a bare `finiteness`.
 
-We also provide `finiteness_nonterminal` as a version of `finiteness` that doesn't have to close the
-goal.
+One can pass additional expressions as local hypotheses: `finiteness [c]` is equivalent to
+`have := c; finiteness`. (This can be combined with the aesop syntax above.)
+
+* `finiteness?` (supporting the same syntax) shows the proof that `finiteness` found
+* `finiteness_nonterminal` is a version of `finiteness` that doesn't have to close the goal.
 
 Note to users: when tagging a lemma for finiteness, prefer tagging a lemma with `≠ ⊤`.
 Aesop can deduce `< ∞` from `≠ ∞` safely (`Ne.lt_top` is a safe rule), but not conversely
@@ -47,30 +48,66 @@ attribute [aesop (rule_sets := [finiteness]) safe -50] assumption intros
 set_option linter.unusedTactic false in
 add_aesop_rules safe tactic (rule_sets := [finiteness]) (by positivity)
 
-/-- Tactic to solve goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
-nonnegative reals (`ℝ≥0∞`). -/
-macro (name := finiteness) "finiteness" c:Aesop.tactic_clause* : tactic =>
-`(tactic|
+/-- `finiteness` proves goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
+nonnegative reals (`ℝ≥0∞`). If the goal cannot be proven, `finiteness` prints a warning and shows
+its intermediate progress.
+
+This tactic is based on `aesop`. It calls `assumption`, `intros`, `positivity`, and any
+lemma or rule added to the `finiteness` ruleset, except that all `simp` rules are disabled.
+
+This tactic is extensible. By adding more rules, `finiteness` can prove more goals. For example:
+* `@[aesop (rule_sets := [finiteness]) safe 50] lemma ...`
+* `add_aesop_rules safe tactic (rule_sets := [finiteness]) (by ...)`
+(Note that a `simp` rule cannot be added this way, since all `simp` rules are disabled.)
+
+* `finiteness (clause)` customizes the `aesop` call using the given clause. See `aesop`
+  documentation for detailed explanation. Note that `finiteness` disables `simp`, so
+  `finiteness (add simp [lemma1, lemma2])` does not do anything more than a bare `finiteness`.
+* `finiteness [t₁, ..., tₙ]` adds the terms `t₁`, ..., `tₙ` as local hypotheses before applying
+  the search rules.
+* `finiteness?` additionally shows the proof that `finiteness` found.
+* `finiteness_nonterminal` is a version of `finiteness` that does not report a warning if it fails
+  to close the goal.
+-/
+syntax (name := finiteness) "finiteness" Aesop.tactic_clause* (ppSpace "[" term,* "]")? : tactic
+
+macro_rules
+| `(tactic | finiteness $c:Aesop.tactic_clause*) => `(tactic|
+  classical
   aesop $c*
     (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
+| `(tactic| finiteness $c:Aesop.tactic_clause* [$h,*]) =>
+  `(tactic| · ($[have := $h];*); finiteness $c*)
 
-/-- Tactic to solve goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
-nonnegative reals (`ℝ≥0∞`). -/
-macro (name := finiteness?) "finiteness?" c:Aesop.tactic_clause* : tactic =>
+@[tactic_alt finiteness]
+syntax (name := finiteness?) "finiteness?" Aesop.tactic_clause* (ppSpace "[" term,* "]")? : tactic
+
+macro_rules
+| `(tactic | finiteness? $c:Aesop.tactic_clause*) =>
 `(tactic|
+  classical
   aesop? $c*
     (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
+| `(tactic| finiteness? $c:Aesop.tactic_clause* [$h,*]) =>
+  `(tactic| · ($[have := $h];*); finiteness? $c*)
 
-/-- Tactic to solve goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
-nonnegative reals (`ℝ≥0∞`). -/
-macro (name := finiteness_nonterminal) "finiteness_nonterminal" c:Aesop.tactic_clause* : tactic =>
+
+@[tactic_alt finiteness]
+syntax (name := finiteness_nonterminal)
+"finiteness_nonterminal" Aesop.tactic_clause* (ppSpace "[" term,* "]")? : tactic
+
+macro_rules
+| `(tactic | finiteness_nonterminal $c:Aesop.tactic_clause*) =>
 `(tactic|
+  classical
   aesop $c*
     (config := { introsTransparency? := some .reducible, terminal := false, enableSimp := false,
-                 warnOnNonterminal := false  })
+                 warnOnNonterminal := false })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
+| `(tactic| finiteness_nonterminal $c:Aesop.tactic_clause* [$h,*]) =>
+  `(tactic| · ($[have := $h];*); finiteness_nonterminal $c*)
 
 /-!
  We register `finiteness` with the `hint` tactic.
