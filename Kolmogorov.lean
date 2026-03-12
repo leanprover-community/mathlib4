@@ -231,6 +231,26 @@ lemma measure_partialSum_tail_ge_le_variance_div_sq {Ω : Type*} [MeasurableSpac
       ENNReal.ofReal (variance (partialSum (fun j => X (m + 1 + j)) n) μ / ε ^ 2) := by
   exact measure_partialSum_ge_le_variance_div_sq (μ := μ) (fun j => X (m + 1 + j)) n hX hε
 
+lemma variance_partialSum_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
+    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (n : ℕ)
+    (hX : ∀ k ∈ Finset.range n, MemLp (X k) 2 μ)
+    (hindep : Set.Pairwise ↑(Finset.range n) fun i j => X i ⟂ᵢ[μ] X j) :
+    variance (partialSum X n) μ = ∑ k ∈ Finset.range n, variance (X k) μ := by
+  have hsum := IndepFun.variance_sum (μ := μ) (s := Finset.range n) hX hindep
+  have hAE : partialSum X n =ᵐ[μ] ∑ i ∈ Finset.range n, X i := by
+    filter_upwards with ω
+    simp [partialSum]
+  rw [variance_congr hAE]
+  exact hsum
+
+lemma variance_partialSum_tail_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
+    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ)
+    (hindep : Set.Pairwise ↑(Finset.range n) fun i j => X (m + 1 + i) ⟂ᵢ[μ] X (m + 1 + j)) :
+    variance (partialSum (fun j => X (m + 1 + j)) n) μ =
+      ∑ k ∈ Finset.range n, variance (X (m + 1 + k)) μ := by
+  exact variance_partialSum_eq_sum_variance (μ := μ) (fun j => X (m + 1 + j)) n hX hindep
+
 end Real
 
 end Kolmogorov
