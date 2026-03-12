@@ -62,17 +62,10 @@ theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j �
     (Pi.π g b : ∏ᶜ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ᶜ f → f b) x) := by
   simp
 
-instance (X Y : Type u) [Subsingleton (X → Y)] : Subsingleton (X ⟶ Y) :=
-  inferInstance
-
-instance (X Y : Type u) [Inhabited (X → Y)] : Inhabited (X ⟶ Y) :=
-  inferInstance
-
-instance (X Y : Type u) [Unique (X → Y)] : Unique (X ⟶ Y) :=
-  inferInstanceAs (Unique (X → Y))
-
 /-- The terminal object in `Type u` is `PUnit`. -/
-def isTerminalPUnit : IsTerminal (PUnit : Type u) := .ofUnique _
+def isTerminalPUnit : IsTerminal (PUnit : Type u) :=
+  letI (X : Type u) : Unique (X ⟶ PUnit) := inferInstanceAs (Unique (X → PUnit))
+  .ofUnique _
 
 @[simp]
 lemma isTerminalPUnit_from_apply {X : Type u} (x : X) : isTerminalPUnit.from X x = .unit := rfl
@@ -80,7 +73,7 @@ lemma isTerminalPUnit_from_apply {X : Type u} (x : X) : isTerminalPUnit.from X x
 @[deprecated (since := "2026-02-08")] alias isTerminalPunit := isTerminalPUnit
 
 /-- The category of types has `PUnit` as a terminal object. -/
-def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) := ⟨_,isTerminalPUnit⟩
+def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) := ⟨_, isTerminalPUnit⟩
 
 /-- The terminal object in `Type u` is `PUnit`. -/
 noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=

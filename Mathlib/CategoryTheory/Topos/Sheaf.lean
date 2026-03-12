@@ -72,29 +72,29 @@ def Presheaf.χ {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) :
     simp [ha, FunctorToTypes.naturality]⟩
 
 lemma Presheaf.comp_χ_eq {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) :
-    m ≫ Presheaf.χ m = (Functor.isTerminalTerminal _ Types.isTerminalPUnit).from F ≫
+    m ≫ Presheaf.χ m = (isTerminalConst _ Types.isTerminalPUnit).from F ≫
       Presheaf.truth C := by
   ext
   apply Sieve.ext
   simp [← FunctorToTypes.naturality F G m]
 
 lemma Presheaf.isPullback_χ_truth {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] :
-    IsPullback m ((Functor.isTerminalTerminal _ Types.isTerminalPUnit).from F)
+    IsPullback m ((isTerminalConst _ Types.isTerminalPUnit).from F)
       (χ m) (truth C) := by
   refine IsPullback.of_forall_isPullback_app fun X => ?_
   rw [Types.isPullback_iff]
   refine ⟨congr(($(comp_χ_eq m)).app X), ?_, ?_⟩
   · simpa using (mono_iff_injective (m.app X)).mp (inferInstance)
   · simp only [Functor.terminal_obj, Functor.sieves_obj, χ_app, Opposite.op_unop, truth_app,
-      Functor.isTerminalTerminal_from_app, and_true, forall_const]
+      isTerminalConst_from_app, and_true, forall_const]
     intro p hp
     simpa [eq_comm] using congr($(hp).arrows (𝟙 _))
 
 lemma Presheaf.χ_unique {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) (χ' : G ⟶ Functor.sieves C)
-    (hχ' : IsPullback m ((Functor.isTerminalTerminal _ _).from _) χ' (truth C)) : χ' = χ m := by
+    (hχ' : IsPullback m ((isTerminalConst _ _).from _) χ' (truth C)) : χ' = χ m := by
   ext X x
   simp only [IsPullback.iff_app, Functor.terminal_obj, Functor.sieves_obj,
-    Functor.isTerminalTerminal_from_app, Types.isPullback_iff, Types.isTerminalPUnit_from_apply,
+    isTerminalConst_from_app, Types.isPullback_iff, Types.isTerminalPUnit_from_apply,
     and_true, truth_app, forall_const, forall_and] at hχ'
   obtain ⟨h₁, h₂, h₃⟩ := hχ'
   refine Sieve.ext fun Y f => ?_
@@ -141,7 +141,7 @@ variable (C) in
 @[simps! Ω truth Ω₀ χ χ₀]
 def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
   .mkOfTerminalΩ₀ (Functor.terminal _ (Types.isTerminalPUnit))
-    (Functor.isTerminalTerminal _ (Types.isTerminalPUnit)) (Functor.sieves C) (Presheaf.truth C)
+    (isTerminalConst _ (Types.isTerminalPUnit)) (Functor.sieves C) (Presheaf.truth C)
     (Presheaf.χ ·) Presheaf.isPullback_χ_truth (Presheaf.χ_unique ·)
 
 /-- Presheaf categories on an essentially small domain have a subobject classifier. -/
