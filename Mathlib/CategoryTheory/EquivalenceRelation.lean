@@ -30,7 +30,7 @@ In general, kernel pairs in any category are internal equivalence relations.
 
 @[expose] public section
 
-universe w v u
+universe v u
 
 namespace CategoryTheory
 
