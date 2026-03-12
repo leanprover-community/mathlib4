@@ -1265,6 +1265,175 @@ lemma tendsto_iSup_four_mul_variance_div_sq_of_summable
   intro m
   exact iSup_four_mul_variance_div_sq_le_ofReal_tsum_variance_tail (μ := μ) X m hvar hη
 
+/-- The bad event that some two partial sums in the tail starting at `m + 1`
+are at least `ε` apart. -/
+def tailOscillationEvent (X : ℕ → Ω → ℝ) (m : ℕ) (ε : ℝ) : Set Ω :=
+  {ω | ∃ j k, ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|}
+
+lemma finiteTailOscillationMax_measurable {Ω : Type*} [MeasurableSpace Ω]
+    (X : ℕ → Ω → ℝ) (m n : ℕ) (hX : ∀ k, Measurable (X k)) :
+    Measurable (finiteTailOscillationMax X m n) := by
+  simpa [finiteTailOscillationMax] using
+    (Finset.measurable_range_sup'' (n := n)
+      (f := fun j ω =>
+        (Finset.range (n + 1)).sup' (by simp)
+          (fun k => |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|))
+      (fun j hj =>
+        Finset.measurable_range_sup'' (n := n)
+          (f := fun k ω =>
+            |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|)
+          (fun k hk =>
+            continuous_abs.measurable.comp <|
+              (partialSum_measurable X (m + j + 1) hX).sub
+                (partialSum_measurable X (m + k + 1) hX))))
+
+lemma measurableSet_finiteTailOscillationMax_event {Ω : Type*} [MeasurableSpace Ω]
+    (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) (hX : ∀ k, Measurable (X k)) :
+    MeasurableSet {ω | ε ≤ finiteTailOscillationMax X m n ω} := by
+  exact measurableSet_le measurable_const
+    (finiteTailOscillationMax_measurable X m n hX)
+
+lemma tailOscillationEvent_eq_iUnion_finiteTailOscillationMax_event
+    (X : ℕ → Ω → ℝ) (m : ℕ) (ε : ℝ) :
+    tailOscillationEvent X m ε = ⋃ n : ℕ, {ω | ε ≤ finiteTailOscillationMax X m n ω} := by
+  ext ω
+  constructor
+  · rintro ⟨j, k, hω⟩
+    refine Set.mem_iUnion.2 ⟨max j k, ?_⟩
+    exact (le_finiteTailOscillationMax_iff X m (max j k) ε ω).2
+      ⟨j, Finset.mem_range.mpr <| Nat.lt_succ_of_le <| le_max_left _ _,
+        k, Finset.mem_range.mpr <| Nat.lt_succ_of_le <| le_max_right _ _, hω⟩
+  · intro hω
+    rcases Set.mem_iUnion.1 hω with ⟨n, hn⟩
+    rcases (le_finiteTailOscillationMax_iff X m n ε ω).1 hn with ⟨j, hj, k, hk, hjk⟩
+    exact ⟨j, k, hjk⟩
+
+lemma measurableSet_tailOscillationEvent {Ω : Type*} [MeasurableSpace Ω]
+    (X : ℕ → Ω → ℝ) (m : ℕ) (ε : ℝ) (hX : ∀ k, Measurable (X k)) :
+    MeasurableSet (tailOscillationEvent X m ε) := by
+  rw [tailOscillationEvent_eq_iUnion_finiteTailOscillationMax_event]
+  exact MeasurableSet.iUnion fun n =>
+    measurableSet_finiteTailOscillationMax_event X m n ε hX
+
+lemma measure_tailOscillationEvent_le_tailVarianceBound_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m : ℕ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) :
+    μ (tailOscillationEvent X m ε) ≤ tailVarianceBound (μ := μ) X ε m := by
+  let s : ℕ → Set Ω := fun n => {ω | ε ≤ finiteTailOscillationMax X m n ω}
+  have hs_mono : Monotone s := by
+    intro n k hnk ω hω
+    exact le_trans hω (finiteTailOscillationMax_mono X m hnk ω)
+  calc
+    μ (tailOscillationEvent X m ε) = μ (⋃ n : ℕ, s n) := by
+      rw [tailOscillationEvent_eq_iUnion_finiteTailOscillationMax_event]
+    _ = ⨆ n : ℕ, μ (s n) := by
+      exact hs_mono.measure_iUnion
+    _ ≤ tailVarianceBound (μ := μ) X ε m := by
+      refine iSup_le fun n => ?_
+      refine (measure_finiteTailOscillationMax_event_le_four_mul_variance_div_sq_of_mean_zero
+          (μ := μ) X m n hX hLp hindep hmean (ε := ε) hε).trans ?_
+      exact le_iSup
+        (fun n => ENNReal.ofReal
+          (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / ε ^ 2)) n
+
+lemma tailOscillationEvent_antitone (X : ℕ → Ω → ℝ) (ε : ℝ) :
+    Antitone (fun m => tailOscillationEvent X m ε) := by
+  intro m n hmn ω hω
+  rcases hω with ⟨j, k, hω⟩
+  rcases Nat.exists_eq_add_of_le hmn with ⟨d, rfl⟩
+  refine ⟨d + j, d + k, ?_⟩
+  simpa [tailOscillationEvent, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hω
+
+lemma measure_iInter_tailOscillationEvent_eq_zero_of_summable
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    (hvar : Summable (fun n => variance (X n) μ))
+    {ε : ℝ} (hε : 0 < ε) :
+    μ (⋂ m : ℕ, tailOscillationEvent X m ε) = 0 := by
+  let s : ℕ → Set Ω := fun m => tailOscillationEvent X m ε
+  have hs_meas : ∀ m, NullMeasurableSet (s m) μ := by
+    intro m
+    exact (measurableSet_tailOscillationEvent X m ε (fun k => (hX k).measurable)).nullMeasurableSet
+  have hs_anti : Antitone s := tailOscillationEvent_antitone X ε
+  have hμ_tendsto :
+      Filter.Tendsto (fun m => μ (s m)) Filter.atTop (nhds 0) := by
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+      (tendsto_iSup_four_mul_variance_div_sq_of_summable (μ := μ) X hvar hε)
+      (fun m => by exact bot_le) ?_
+    intro m
+    exact measure_tailOscillationEvent_le_tailVarianceBound_of_mean_zero
+      (μ := μ) X m hX hLp hindep hmean hε
+  have hμ_iInter :
+      Filter.Tendsto (fun m => μ (s m)) Filter.atTop (nhds (μ (⋂ m : ℕ, s m))) := by
+    refine tendsto_measure_iInter_atTop hs_meas hs_anti ?_
+    exact ⟨0, measure_ne_top μ (s 0)⟩
+  exact tendsto_nhds_unique hμ_iInter hμ_tendsto
+
+lemma ae_eventually_pairwise_lt_of_summable_variance
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    (hvar : Summable (fun n => variance (X n) μ))
+    {ε : ℝ} (hε : 0 < ε) :
+    ∀ᵐ ω ∂μ, ∃ N, ∀ j k,
+      |partialSum X (N + j + 1) ω - partialSum X (N + k + 1) ω| < ε := by
+  have hzero :
+      μ (⋂ m : ℕ, tailOscillationEvent X m ε) = 0 :=
+    measure_iInter_tailOscillationEvent_eq_zero_of_summable
+      (μ := μ) X hX hLp hindep hmean hvar hε
+  have hAE : ∀ᵐ ω ∂μ, ω ∉ ⋂ m : ℕ, tailOscillationEvent X m ε := by
+    exact (measure_eq_zero_iff_ae_notMem).1 hzero
+  filter_upwards [hAE] with ω hω
+  simpa [tailOscillationEvent, not_exists, not_le] using hω
+
+lemma ae_cauchySeq_partialSum_of_summable_variance_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    (hvar : Summable (fun n => variance (X n) μ)) :
+    ∀ᵐ ω ∂μ, CauchySeq (fun n => partialSum X n ω) := by
+  have hscales :
+      ∀ n : ℕ, ∀ᵐ ω ∂μ, ∃ N, ∀ j k,
+        |partialSum X (N + j + 1) ω - partialSum X (N + k + 1) ω| < 1 / (n + 1 : ℝ) := by
+    intro n
+    exact ae_eventually_pairwise_lt_of_summable_variance
+      (μ := μ) X hX hLp hindep hmean hvar (show 0 < 1 / (n + 1 : ℝ) by positivity)
+  have hAEall :
+      ∀ᵐ ω ∂μ, ∀ n : ℕ, ∃ N, ∀ j k,
+        |partialSum X (N + j + 1) ω - partialSum X (N + k + 1) ω| < 1 / (n + 1 : ℝ) :=
+    (ae_all_iff.2 hscales)
+  filter_upwards [hAEall] with ω hω
+  refine Metric.cauchySeq_iff.2 ?_
+  intro ε hε
+  rcases exists_nat_one_div_lt hε with ⟨n, hn⟩
+  rcases hω n with ⟨N, hN⟩
+  refine ⟨N + 1, ?_⟩
+  intro a ha b hb
+  rcases Nat.exists_eq_add_of_le ha with ⟨j, rfl⟩
+  rcases Nat.exists_eq_add_of_le hb with ⟨k, rfl⟩
+  have hsmall : |partialSum X (N + j + 1) ω - partialSum X (N + k + 1) ω| < ε :=
+    lt_trans (hN j k) hn
+  simpa [Real.dist_eq, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hsmall
+
+theorem ae_exists_tendsto_partialSum_of_summable_variance_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    (hvar : Summable (fun n => variance (X n) μ)) :
+    ∀ᵐ ω ∂μ, ∃ x : ℝ, Filter.Tendsto (fun n => partialSum X n ω) Filter.atTop (nhds x) := by
+  filter_upwards
+    [ae_cauchySeq_partialSum_of_summable_variance_of_mean_zero
+      (μ := μ) X hX hLp hindep hmean hvar] with ω hω
+  exact cauchySeq_tendsto_of_complete hω
+
 lemma measure_finite_tail_oscillation_event_le_four_mul_variance_div_sq_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     (X : ℕ → Ω → ℝ) (m n : ℕ)
