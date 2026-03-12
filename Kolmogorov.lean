@@ -344,6 +344,36 @@ lemma measure_event_two_mul_partialSumMax_tail_le_sum_variance_div_sq_of_forall_
   exact measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero_of_mem_range
     (μ := μ) X m n k hk hX hindep hmean (ε := ε / 2) hε2
 
+lemma measure_event_two_mul_partialSumMax_tail_le_mul_variance_div_sq_of_forall_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ j ∈ Finset.range (n + 1), MemLp (X (m + 1 + j)) 2 μ)
+    (hindep : Set.Pairwise ↑(Finset.range (n + 1))
+      fun i j => X (m + 1 + i) ⟂ᵢ[μ] X (m + 1 + j))
+    (hmean : ∀ j ∈ Finset.range (n + 1), μ[X (m + 1 + j)] = 0) {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ 2 * partialSumMax (fun j => X (m + 1 + j)) n ω} ≤
+      (n + 1) * ENNReal.ofReal
+        ((∑ j ∈ Finset.range (n + 1), variance (X (m + 1 + j)) μ) / (ε / 2) ^ 2) := by
+  calc
+    μ {ω | ε ≤ 2 * partialSumMax (fun j => X (m + 1 + j)) n ω} ≤
+        ∑ k ∈ Finset.range (n + 1),
+          ENNReal.ofReal ((∑ j ∈ Finset.range k, variance (X (m + 1 + j)) μ) / (ε / 2) ^ 2) := by
+      exact measure_event_two_mul_partialSumMax_tail_le_sum_variance_div_sq_of_forall_mean_zero
+        (μ := μ) X m n hX hindep hmean hε
+    _ ≤ ∑ k ∈ Finset.range (n + 1),
+          ENNReal.ofReal
+            ((∑ j ∈ Finset.range (n + 1), variance (X (m + 1 + j)) μ) / (ε / 2) ^ 2) := by
+      refine Finset.sum_le_sum fun k hk => ?_
+      apply ENNReal.ofReal_le_ofReal
+      refine div_le_div_of_nonneg_right ?_ (sq_nonneg (ε / 2))
+      refine Finset.sum_le_sum_of_subset_of_nonneg
+        (Finset.range_subset_range.2 (Nat.le_of_lt (Finset.mem_range.mp hk))) ?_
+      intro j _ hj
+      exact variance_nonneg (X (m + 1 + j)) μ
+    _ = (n + 1) * ENNReal.ofReal
+          ((∑ j ∈ Finset.range (n + 1), variance (X (m + 1 + j)) μ) / (ε / 2) ^ 2) := by
+      simp
+
 end Real
 
 end Kolmogorov

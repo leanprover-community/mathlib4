@@ -136,3 +136,36 @@ useful Kolmogorov inequality results
         `∑ k ≤ n, (∑ j < k, a_j)` 和 `C * ∑ j < n, a_j`；
     (b) 或者改方向，直接开始接 Doob/maximal inequality，避免 union bound 带来的多余求和。
     从当前文件状态看，若继续保持“小步稳编译”，更适合先把右侧有限和的整理接口做出来。
+
+2026-03-12 再压一层:
+
+28. 这次在上一条 finite maximal bound 的基础上，新增了
+    `measure_event_two_mul_partialSumMax_tail_le_mul_variance_div_sq_of_forall_mean_zero`。
+    它把右侧的“前缀方差和的有限和”压成
+    `(n + 1) * ENNReal.ofReal ((尾部总方差和) / (ε / 2)^2)`。
+
+29. 证明思路是纯序比较，没有新概率内容：
+    (a) 对每个 `k ≤ n`，用
+        `∑_{j < k} variance_j ≤ ∑_{j < n+1} variance_j`；
+    (b) 这里用的是
+        `Finset.sum_le_sum_of_subset_of_nonneg`，
+        非负性来自 `variance_nonneg`；
+    (c) 然后把有限个相同常数求和，`simp` 自动化成 `(n + 1) * c`。
+
+30. 这一步的意义：
+    虽然还保留了多余的 `(n + 1)` 因子，离真正的 Kolmogorov inequality 还差一截，
+    但右侧现在已经从“双重和”化成“单个 tail variance sum”，后面无论继续做纯代数整理，
+    还是改走 Doob/maximal inequality 路线，接口都会更干净。
+
+31. 完成情况：
+    (a) 新 lemma 已加入 `Kolmogorov.lean`；
+    (b) `lake env lean Kolmogorov.lean` 通过；
+    (c) 这说明当前 union-bound 路线至少已经稳定地产出了一个可用但较弱的 finite maximal estimate。
+
+32. 下一小步建议：
+    更合理的是开始尝试避开 union bound 的 `(n + 1)` 损失。
+    即优先研究能否把 `partialSum` 序列包装成 martingale / submartingale，
+    然后直接套 `MeasureTheory.maximal_ineq` 或相关结果。
+    如果先不换路线，也可以补一个纯代数 lemma，把
+    `ENNReal.ofReal ((A) / (ε / 2)^2)` 改写成
+    `ENNReal.ofReal (4 * A / ε^2)` 的经典常数外形。
