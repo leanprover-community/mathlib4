@@ -371,10 +371,7 @@ def StandardEtalePresentation.baseChange :
     let α : T ⊗[R] S ≃ₐ[T] (P.map (algebraMap R T)).Ring :=
       .ofAlgHom f ((P.map (algebraMap R T)).lift (1 ⊗ₜ[R] P.x)
         (P.hasMap.map (Algebra.TensorProduct.includeRight (R := R) (A := T))).map_algebraMap) (by
-        ext; simp [f]) (by
-        ext1
-        · ext
-        · apply P.hom_ext; simp [f])
+        ext; simp [f]) (by ext1; apply P.hom_ext; simp [f])
     exact α.symm.bijective
 
 namespace Algebra
@@ -403,7 +400,6 @@ instance : IsStandardEtale R R :=
       (by ext) (by ext; simp [this])
     exact e.bijective⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     {Sₛ : Type*} [CommRing Sₛ] [Algebra S Sₛ]
     [Algebra R Sₛ] [IsScalarTower R S Sₛ] (s : S) [IsLocalization.Away s Sₛ] :

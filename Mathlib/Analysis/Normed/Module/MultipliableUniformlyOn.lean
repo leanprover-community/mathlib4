@@ -35,7 +35,6 @@ lemma TendstoUniformlyOn.comp_cexp {p : Filter ι} {g : α → ℂ}
   refine (UniformContinuousOn.cexp _).comp_tendstoUniformlyOn_eventually (by simpa) ?_ hf
   exact fun x hx ↦ (hv x hx).trans (lt_add_one v).le
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Summable.hasSumUniformlyOn_log_one_add (hu : Summable u)
     (h : ∀ᶠ i in cofinite, ∀ x ∈ K, ‖f i x‖ ≤ u i) :
     HasSumUniformlyOn (fun i x ↦ log (1 + f i x)) (fun x ↦ ∑' i, log (1 + f i x)) K := by

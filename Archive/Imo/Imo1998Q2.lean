@@ -153,7 +153,6 @@ end
 theorem add_sq_add_sq_sub {α : Type*} [Ring α] (x y : α) :
     (x + y) * (x + y) + (x - y) * (x - y) = 2 * x * x + 2 * y * y := by noncomm_ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_bound_of_odd_sum {x y z : ℤ} (h : x + y = 2 * z + 1) :
     2 * z * z + 2 * z + 1 ≤ x * x + y * y := by
   suffices 4 * z * z + 4 * z + 1 + 1 ≤ 2 * x * x + 2 * y * y by

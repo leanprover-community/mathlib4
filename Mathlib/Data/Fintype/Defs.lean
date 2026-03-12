@@ -63,7 +63,6 @@ class Fintype (α : Type*) where
 
 namespace Finset
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nodup_map_iff_injOn {f : α → β} {s : Finset α} :
     (Multiset.map f s.val).Nodup ↔ Set.InjOn f s := by
   simp [Multiset.nodup_map_iff_inj_on s.nodup, Set.InjOn]
@@ -103,7 +102,6 @@ theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [Finset.ext_
 theorem eq_univ_of_forall : (∀ x, x ∈ s) → s = univ :=
   eq_univ_iff_forall.2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_univ : ↑(univ : Finset α) = (Set.univ : Set α) := by ext; simp
 
@@ -259,6 +257,8 @@ instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
 
 instance (α : Type*) : Lean.Meta.FastSubsingleton (Fintype α) := {}
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- Given a predicate that can be represented by a finset, the subtype
 associated to the predicate is a fintype. -/
 protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
@@ -266,6 +266,8 @@ protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s
   ⟨⟨s.1.pmap Subtype.mk fun x => (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
     fun ⟨x, px⟩ => Multiset.mem_pmap.2 ⟨x, (H x).2 px, rfl⟩⟩
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- Construct a fintype from a finset with the same elements. -/
 def ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : Fintype p :=
   Fintype.subtype s H

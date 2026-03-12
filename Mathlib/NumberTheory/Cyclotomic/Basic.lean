@@ -123,7 +123,6 @@ theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {0} A B :=
   (iff_adjoin_eq_top _ _ _).2 <| by simpa
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isCyclotomicExtension_zero_iff :
     IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
   rw [surjective_algebraMap_iff, eq_comm]
@@ -212,7 +211,7 @@ theorem union_of_isPrimitiveRoot [hB : IsCyclotomicExtension S A B] {r : B}
   by_cases hn : n = 0
   · rwa [hn, eq_self_sdiff_zero, Set.union_diff_right, ← eq_self_sdiff_zero]
   rw [iff_adjoin_eq_top]
-  refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by aesop) ?_⟩
+  refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by simp) ?_⟩
   · obtain hm₁ | rfl := hm₁
     · exact exists_isPrimitiveRoot A B hm₁ hm₂
     · use r
@@ -372,7 +371,6 @@ end Basic
 
 section Fintype
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
     Module.Finite A B := by
   classical
@@ -719,7 +717,6 @@ instance isCyclotomicExtension [NeZero (n : K)] :
   · rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
     exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsCyclotomicExtension {0} K (CyclotomicField 0 K) where
   exists_isPrimitiveRoot := by aesop
   adjoin_roots x := by

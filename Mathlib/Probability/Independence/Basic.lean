@@ -910,7 +910,6 @@ lemma iIndepFun.indepFun_prodMk_prodMk₀ (h_indep : iIndepFun f μ) (hf : ∀ i
     IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ :=
   Kernel.iIndepFun.indepFun_prodMk_prodMk₀ h_indep (by simp [hf]) i j k l hik hil hjk hjl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.restrict f) μ where
   mp h s := h.precomp (g := ((↑) : s → ι)) Subtype.val_injective
   mpr h := by
@@ -919,6 +918,8 @@ lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.
     have : ⋂ i ∈ s, f i = ⋂ i : s, f i := by ext; simp
     rw [← Finset.prod_coe_sort, this]
     exact (h s).meas_iInter fun i ↦ hs i i.2
+
+alias ⟨iIndepFun.restrict, _⟩ := iIndepFun_iff_finset
 
 end iIndepFun
 

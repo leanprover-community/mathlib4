@@ -270,7 +270,6 @@ lemma _root_.MeasureTheory.measurePreserving_snd [IsProbabilityMeasure μ] :
     MeasurePreserving Prod.snd (μ.prod ν) ν :=
   ⟨measurable_snd, by rw [map_snd_prod, measure_univ, one_smul]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {m : MeasurableSpace X} {μ : Measure X} [IsOpenPosMeasure μ] {m' : MeasurableSpace Y}
     {ν : Measure Y} [IsOpenPosMeasure ν] [SFinite ν] : IsOpenPosMeasure (μ.prod ν) := by
@@ -801,7 +800,7 @@ theorem dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
     dirac_apply' _ hs, ← indicator_mul_left _ _ fun _ => sfiniteSeq ν i t, Pi.one_apply, one_mul]
 
 theorem dirac_prod_dirac {x : α} {y : β} : (dirac x).prod (dirac y) = dirac (x, y) := by
-  rw [prod_dirac, map_dirac measurable_prodMk_right]
+  rw [prod_dirac, map_dirac' measurable_prodMk_right]
 
 theorem prod_add (ν' : Measure β) [SFinite ν'] : μ.prod (ν + ν') = μ.prod ν + μ.prod ν' := by
   simp_rw [← sum_sfiniteSeq ν, ← sum_sfiniteSeq ν', sum_add_sum, ← sum_sfiniteSeq μ, prod_sum,
