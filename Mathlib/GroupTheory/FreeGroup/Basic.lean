@@ -796,9 +796,17 @@ then the induced map on their additive free groups is also surjective. -/]
 theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := by
   rw [← MonoidHom.range_eq_top, range_map, hf.range_eq, Set.image_univ, closure_range_of]
 
+/-- If `α` and `β` are arbitrary types and there is a injection between them,
+then the induced map on their free groups is also injective. -/
+@[to_additive /-- If `α` and `β` are arbitrary types and there is a injection between them,
+then the induced map on their additive free groups is also injective. -/]
 theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := by
   sorry
 
+/-- If `α` and `β` are arbitrary types and there is a bijection between them,
+then the induced map on their free groups is also bijective. -/
+@[to_additive /-- If `α` and `β` are arbitrary types and there is a bijection between them,
+then the induced map on their additive free groups is also bijective. -/]
 theorem map_bijective (hf : Function.Bijective f) : Function.Bijective (map f) :=
   ⟨map_injective hf.1, map_surjective hf.2⟩
 
