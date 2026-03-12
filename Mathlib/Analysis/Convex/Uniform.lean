@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Analysis.Convex.StrictConvexSpace
+public import Mathlib.Topology.Instances.Rat
 
 /-!
 # Uniformly convex spaces
@@ -172,7 +173,7 @@ def uniformConvexFilter (E : Type*) [SeminormedAddCommGroup E] : Filter (E × E)
 pairs on the unit sphere with `‖x + y‖` close to `2`. -/
 theorem UniformConvexSpace.tendsto_norm_sub [UniformConvexSpace E] :
     Tendsto (fun p : E × E => ‖p.1 - p.2‖) (uniformConvexFilter E) (𝓝 0) := by
-  simp +decide [Metric.tendsto_nhds, uniformConvexFilter]
+  rw [Metric.tendsto_nhds, uniformConvexFilter]
   intro ε hε
   obtain ⟨δ, hδ_pos, hδ⟩ : ∃ δ > 0, ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 →
       ‖x + y‖ > 2 - δ → ‖x - y‖ < ε := by
@@ -224,7 +225,7 @@ theorem UniformConvexSpace.tendsto_norm_sub_of_tendsto_norm_add [UniformConvexSp
     (h : Tendsto (fun i => ‖x i + y i‖) l (𝓝 2)) :
     Tendsto (fun i => ‖x i - y i‖) l (𝓝 0) := by
   have h_tendsto_map : Tendsto (fun i => (x i, y i)) l (uniformConvexFilter E) := by
-    refine' Filter.tendsto_inf.mpr ⟨_, _⟩ <;> aesop;
+    refine Filter.tendsto_inf.mpr ⟨?_, ?_⟩ <;> aesop;
   exact UniformConvexSpace.tendsto_norm_sub.comp h_tendsto_map
 
 /-- Uniform convexity can be checked via the net/sequence criterion: if for every filter `l`
@@ -237,19 +238,41 @@ theorem uniformConvexSpace_of_tendsto_norm_sub_of_tendsto_norm_add
       Tendsto (fun i => ‖x i - y i‖) l (𝓝 0)) :
     UniformConvexSpace E := by
   by_contra h_not_uniform_convex;
-  obtain ⟨ε, hε⟩ : ∃ ε > 0, ∀ δ > 0, ∃ x y : E, ‖x‖ = 1 ∧ ‖y‖ = 1 ∧ ‖x - y‖ ≥ ε ∧ ‖x + y‖ > 2 - δ := by
+  obtain ⟨ε, hε⟩ : ∃ ε > 0, ∀ δ > 0, ∃ x y : E, ‖x‖ = 1 ∧ ‖y‖ = 1 ∧ ‖x - y‖ ≥ ε ∧
+      ‖x + y‖ > 2 - δ := by
     contrapose! h_not_uniform_convex;
-    refine' ⟨ fun ε hε => _ ⟩;
+    refine ⟨fun ε hε => ?_⟩;
     grind;
-  obtain ⟨x, y, hx, hy, hxy⟩ : ∃ x y : ℕ → E, (∀ n, ‖x n‖ = 1) ∧ (∀ n, ‖y n‖ = 1) ∧ (∀ n, ‖x n - y n‖ ≥ ε) ∧ (∀ n, ‖x n + y n‖ > 2 - 1 / (n + 2)) := by
+  obtain ⟨x, y, hx, hy, hxy⟩ : ∃ x y : ℕ → E, (∀ n, ‖x n‖ = 1) ∧ (∀ n, ‖y n‖ = 1) ∧
+      (∀ n, ‖x n - y n‖ ≥ ε) ∧ (∀ n, ‖x n + y n‖ > 2 - 1 / (n + 2)) := by
     choose x y hxy using fun n : ℕ => hε.2 ( 1 / ( n + 2 ) ) ( by positivity );
-    exact ⟨ x, y, fun n => hxy n |>.1, fun n => hxy n |>.2.1, fun n => hxy n |>.2.2.1, fun n => hxy n |>.2.2.2 ⟩;
+    exact ⟨x, y, fun n => hxy n |>.1, fun n => hxy n |>.2.1, fun n => hxy n |>.2.2.1, fun n ↦
+         hxy n |>.2.2.2⟩
   have h_sum : Filter.Tendsto (fun n => ‖x n + y n‖) Filter.atTop (nhds 2) := by
     have h_sum : ∀ n, ‖x n + y n‖ ≤ 2 := by
-      exact fun n => le_trans ( norm_add_le _ _ ) ( by linarith [ hx n, hy n ] );
-    exact tendsto_of_tendsto_of_tendsto_of_le_of_le ( by simpa using tendsto_const_nhds.sub ( tendsto_inverse_atTop_nhds_zero_nat.comp ( Filter.tendsto_add_atTop_nat 2 ) ) ) tendsto_const_nhds ( fun n => le_of_lt ( hxy.2 n ) ) ( fun n => h_sum n );
-  specialize h ( ULift ℕ ) ( Filter.map ULift.up Filter.atTop ) ( fun n => x n.down ) ( fun n => y n.down ) ; simp_all +decide;
-  exact absurd ( h ( h_sum.comp ( Filter.tendsto_atTop_atTop.mpr fun n => ⟨ n, fun m hm => hm ⟩ ) ) ) ( by intro H; exact absurd ( le_of_tendsto_of_tendsto' tendsto_const_nhds H fun n => hxy.1 _ ) ( by linarith ) )
+      exact fun n => le_trans ( norm_add_le _ _ ) ( by linarith [ hx n, hy n ])
+    apply @tendsto_of_tendsto_of_tendsto_of_le_of_le (b := (atTop : Filter ℕ)) (a := 2)
+      (f := fun n ↦ ‖x n + y n‖) (g := fun n ↦ 2 - 1 /(n + 2)) (h := fun n ↦ 2)
+    · infer_instance
+    · have := @Tendsto.sub (G := ℝ) (α := ℕ) _ _ _ (f := fun n ↦ 2) (g := fun n ↦ 1/(n+2))
+        (l := atTop) (a := 2) (b := 0) (by simp) ?_
+      simpa [sub_zero]
+      sorry -- **asking** `Aristotle`...
+    · exact tendsto_const_nhds
+    · intro n
+      simp only
+      linarith [hxy.2 n]
+    · intro n
+      simp only
+      exact h_sum n
+  specialize h ( ULift ℕ ) ( Filter.map ULift.up Filter.atTop ) ( fun n => x n.down )
+    ( fun n => y n.down )
+  simp_all only [gt_iff_lt, ge_iff_le, exists_and_left, one_div, implies_true, tendsto_map'_iff,
+    forall_const]
+  apply absurd ( h ( h_sum.comp ( Filter.tendsto_atTop_atTop.mpr fun n => ⟨ n, fun m hm => hm⟩)))--
+  intro H
+  apply absurd ( le_of_tendsto_of_tendsto' tendsto_const_nhds H fun n => hxy.1 _ )
+  linarith
 
 /-- A seminormed space is uniformly convex if and only if for every filter `l` and functions
 `x y : ι → E` with `‖x i‖ = 1` and `‖y i‖ = 1`, `‖x i + y i‖ → 2` along `l` implies
