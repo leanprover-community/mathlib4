@@ -349,7 +349,7 @@ Compose an `Algebra` with a `RingHom`, with action `f s • m`.
 This is the algebra version of `Module.compHom`.
 -/
 abbrev compHom : Algebra S A where
-  smul s a := f s • a
+  __ := Module.compHom A f
   algebraMap := (algebraMap R A).comp f
   commutes' _ _ := Algebra.commutes _ _
   smul_def' _ _ := Algebra.smul_def _ _

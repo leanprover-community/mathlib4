@@ -283,6 +283,11 @@ theorem torsionBySet_eq_torsionBySet_span :
 theorem torsionBySet_span_singleton_eq : torsionBySet R M (R ∙ a) = torsionBy R M a :=
   (torsionBySet_eq_torsionBySet_span _).symm.trans <| torsionBySet_singleton_eq _
 
+@[simp]
+theorem torsionBySet_ideal_span_singleton_eq :
+    torsionBySet R M (Ideal.span {a}) = torsionBy R M a :=
+  torsionBySet_span_singleton_eq a
+
 theorem torsionBy_le_torsionBy_of_dvd (a b : R) (dvd : a ∣ b) :
     torsionBy R M a ≤ torsionBy R M b := by
   rw [← torsionBySet_span_singleton_eq, ← torsionBySet_singleton_eq]
@@ -364,6 +369,14 @@ theorem torsionBySet_isTorsionBySet : IsTorsionBySet R (torsionBySet R M s) s :=
 /-- The `a`-torsion submodule is an `a`-torsion module. -/
 theorem torsionBy_isTorsionBy : IsTorsionBy R (torsionBy R M a) a := smul_torsionBy a
 
+theorem torsionBy_isTorsion_nonZeroDivisor (ha : a ∈ nonZeroDivisors R) :
+    IsTorsion R (torsionBy R M a) :=
+  (⟨⟨a, ha⟩, smul_torsionBy _ ·⟩)
+
+theorem torsionBySet_ideal_isTorsion_of_noZeroDivisors [NoZeroDivisors R] [Nontrivial R]
+    {I : Ideal R} (hbot : I ≠ ⊥) : IsTorsion R (torsionBySet R M I) := by
+  aesop (add norm Submodule.eq_bot_iff)
+
 @[simp]
 theorem torsionBy_torsionBy_eq_top : torsionBy R (torsionBy R M a) a = ⊤ :=
   (isTorsionBy_iff_torsionBy_eq_top a).mp <| torsionBy_isTorsionBy a
@@ -421,6 +434,16 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf
         exact Ideal.mul_mem_left _ _ (this j hj ij)
     · rw [← Finset.sum_smul, hμ, one_smul]
 
+theorem sup_torsionBySet_ideal_eq_torsionBySet_inf (P Q : Ideal R) {hc : P ⊔ Q = ⊤} :
+    torsionBySet R M ↑(P) ⊔ torsionBySet R M ↑(Q) = torsionBySet R M ↑(P ⊓ Q) := by
+  let map : Fin 2 → Ideal R | 0 => P | 1 => Q
+  have heq := Submodule.iSup_torsionBySet_ideal_eq_torsionBySet_iInf
+    (p := map) (M := M) (S := ⊤) ?_
+  · have : ⨆ i, ⨆ (_ : i = 0 ∨ i = 1), torsionBySet R M ↑(map i) =
+        torsionBySet R M ↑(map 0) ⊔ torsionBySet R M ↑(map 1) := iSup_pair
+    simpa [Finset.top_eq_univ, Fin.univ_succ, Fin.isValue, coe_iInf, this] using heq
+  · simp_all [Set.pairwise_pair, Fin.univ_succ, map, sup_comm]
+
 set_option backward.isDefEq.respectTransparency false in
 theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     S.SupIndep fun i => torsionBySet R M <| p i :=
@@ -432,6 +455,13 @@ theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i �
   dsimp at this ⊢
   rw [← this, Ideal.sup_iInf_eq_top, top_coe, torsionBySet_univ]
   intro j hj; apply hp hi (hT hj); rintro rfl; exact hiT hj
+
+theorem disjoint_torsionBySet_ideal {P Q : Ideal R} (hc : P ⊔ Q = ⊤) :
+    Disjoint (torsionBySet R M ↑(P)) (torsionBySet R M ↑(Q)) := by
+  let map : Fin 2 → Ideal R | 0 => P | 1 => Q
+  have heq := Submodule.supIndep_torsionBySet_ideal (p := map) (M := M) (S := ⊤) ?_
+  · simpa [Finset.top_eq_univ, Fin.isValue, map] using heq
+  · aesop (add norm [Fin.univ_succ, Set.pairwise_pair, map, sup_comm])
 
 variable {q : ι → R}
 
@@ -501,6 +531,8 @@ namespace Module
 variable [Ring R] [AddCommGroup M] [Module R M]
 variable {I : Ideal R} {r : R}
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- can't be an instance because `hM` can't be inferred -/
 def IsTorsionBySet.hasSMul (hM : IsTorsionBySet R M I) : SMul (R ⧸ I) M where
   smul b := QuotientAddGroup.lift I.toAddSubgroup (smulAddHom R M)
@@ -522,6 +554,8 @@ theorem IsTorsionBy.mk_smul [(Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M 
     Ideal.Quotient.mk (Ideal.span {r}) b • x = b • x :=
   rfl
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- An `(R ⧸ I)`-module is an `R`-module which `IsTorsionBySet R M I`. -/
 def IsTorsionBySet.module [I.IsTwoSided] (hM : IsTorsionBySet R M I) : Module (R ⧸ I) M :=
   letI := hM.hasSMul; I.mkQ_surjective.moduleLeft _ (IsTorsionBySet.mk_smul hM)
@@ -553,6 +587,8 @@ abbrev IsTorsionBy.module [h : (Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R 
     Module (R ⧸ Ideal.span {r}) M := by
   rw [Ideal.span] at h; exact ((isTorsionBySet_span_singleton_iff r).mpr hM).module
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- Any module is also a module over the quotient of the ring by the annihilator.
 Not an instance because it causes synthesis failures / timeouts. -/
 def quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
@@ -624,7 +660,6 @@ namespace Submodule
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (I : Ideal R) : Module (R ⧸ I) (torsionBySet R M I) :=
   -- Porting note: times out without the (R := R)
   Module.IsTorsionBySet.module <| torsionBySet_isTorsionBySet (R := R) I
@@ -638,7 +673,6 @@ instance (I : Ideal R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M]
     [IsScalarTower S R R] : IsScalarTower S (R ⧸ I) (torsionBySet R M I) :=
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `a`-torsion submodule as an `(R ⧸ R ∙ a)`-module. -/
 instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy R M a) :=
   Module.IsTorsionBySet.module <|
@@ -950,6 +984,8 @@ lemma torsionBy.mod_self_nsmul' (s : ℕ) {x : A} (h : x ∈ A[n]) :
     s • x = (s % n) • x :=
   nsmul_eq_mod_nsmul s (torsionBy.nsmul_iff.mp h)
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- For a natural number `n`, the `n`-torsion subgroup of `A` is a `ZMod n` module. -/
 def torsionBy.zmodModule : Module (ZMod n) A[n] :=
   AddCommGroup.zmodModule torsionBy.nsmul
