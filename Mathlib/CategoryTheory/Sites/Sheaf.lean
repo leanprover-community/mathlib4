@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 
 /-!
 # Sheaves taking values in a category
@@ -424,6 +425,12 @@ lemma Presheaf.IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hP : Presheaf.IsShea
 variable {A} in
 lemma Presheaf.isSheaf_bot (P : Cᵒᵖ ⥤ A) : IsSheaf ⊥ P := fun _ ↦ Presieve.isSheaf_bot
 
+variable {A J} in
+lemma Presheaf.IsSheaf.of_le {K : GrothendieckTopology C} {F : Cᵒᵖ ⥤ A} (hle : J ≤ K)
+    (h : Presheaf.IsSheaf K F) :
+    Presheaf.IsSheaf J F :=
+  fun _ _ _ hS ↦ h _ _ (hle _ hS)
+
 /--
 The category of sheaves on the bottom (trivial) Grothendieck topology is
 equivalent to the category of presheaves.
@@ -462,6 +469,13 @@ variable (J) in
 @[simps!]
 def Sheaf.isTerminalTerminal {X : A} (hX : IsTerminal X) : IsTerminal (Sheaf.terminal J hX) :=
   .ofUniqueHom (⟨{app X := hX.from <| ·.obj.obj X}⟩) (by intros; ext; simpa using hX.hom_ext _ _)
+
+/-- If the topology is discrete, any sheaf is terminal. -/
+noncomputable def Sheaf.isTerminalOfEqTop (H : J = ⊤) (F : Sheaf J A) :
+    IsTerminal F := by
+  refine IsTerminal.isTerminalOfObj (sheafToPresheaf _ _) _ ?_
+  refine Functor.isTerminal fun X ↦ Sheaf.isTerminalOfBotCover _ _ ?_
+  simp [H]
 
 @[simp]
 theorem Sheaf.Hom.add_app [Preadditive A] {P Q : Sheaf J A} (f g : P ⟶ Q) (U : Cᵒᵖ) :

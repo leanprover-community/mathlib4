@@ -261,11 +261,9 @@ theorem star_neg [AddGroup R] [StarAddMonoid R] (r : R) : star (-r) = -star r :=
 theorem star_sub [AddGroup R] [StarAddMonoid R] (r s : R) : star (r - s) = star r - star s :=
   (starAddEquiv : R ≃+ R).map_sub _ _
 
-@[simp]
 theorem star_nsmul [AddMonoid R] [StarAddMonoid R] (n : ℕ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_nsmul _ _
 
-@[simp]
 theorem star_zsmul [AddGroup R] [StarAddMonoid R] (n : ℤ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_zsmul _ _
 
@@ -406,10 +404,10 @@ attribute [simp] star_smul
 instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
   ⟨star_mul'⟩
 
-instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] :
-    StarModule ℕ α where star_smul := star_nsmul
+instance StarAddMonoid.toStarModuleNat {α} [AddMonoid α] [StarAddMonoid α] : StarModule ℕ α where
+  star_smul := star_nsmul
 
-instance StarAddMonoid.toStarModuleInt {α} [AddCommGroup α] [StarAddMonoid α] : StarModule ℤ α where
+instance StarAddMonoid.toStarModuleInt {α} [AddGroup α] [StarAddMonoid α] : StarModule ℤ α where
   star_smul := star_zsmul
 
 namespace RingHomInvPair
