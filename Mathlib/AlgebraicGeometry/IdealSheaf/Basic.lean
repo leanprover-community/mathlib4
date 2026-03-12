@@ -98,8 +98,7 @@ instance : CompleteSemilatticeSup (IdealSheafData X) where
         conv_lhs => rw [← Subtype.range_val (s := s), ← Set.range_comp]
         rfl
       simp only [this, iSup_apply, Ideal.map_iSup, map_ideal_basicOpen, implies_true] }
-  le_sSup s x hxs := le_sSup (s := ideal '' s) ⟨_, hxs, rfl⟩
-  sSup_le s i hi := sSup_le (s := ideal '' s) (Set.forall_mem_image.mpr hi)
+  isLUB_sSup _ := .of_image (f := ideal) le_def (isLUB_sSup _)
 
 /-- The largest ideal sheaf contained in a family of ideals. -/
 def ofIdeals (I : ∀ U : X.affineOpens, Ideal Γ(X, U)) : IdealSheafData X :=
@@ -564,7 +563,7 @@ set_option backward.isDefEq.respectTransparency false in
 which is the largest ideal sheaf whose support is equal to it.
 The reduced induced scheme structure on the closed set is the quotient of this ideal. -/
 @[simps! ideal coe_support]
-nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
+noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
   mkOfMemSupportIff
     (fun U ↦ vanishingIdeal (U.2.fromSpec ⁻¹' Z))
     (fun U f ↦ by

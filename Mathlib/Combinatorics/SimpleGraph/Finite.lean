@@ -592,12 +592,11 @@ theorem map_neighborFinset_induce [DecidableEq V] (v : s) :
   ext; simp
 
 theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
-    ((G.induce s).neighborFinset v).map (.subtype s) = G.neighborFinset v := by
+    ((G.induce s).neighborFinset v).map (.subtype (· ∈ s)) = G.neighborFinset v := by
   classical
   rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
     ← map_neighborFinset_induce v] at h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the neighbor set of a vertex `v` is a subset of `s`, then the degree of the vertex in the
 induced subgraph of `s` is the same as in `G`. -/
 theorem degree_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
