@@ -371,10 +371,7 @@ def StandardEtalePresentation.baseChange :
     let α : T ⊗[R] S ≃ₐ[T] (P.map (algebraMap R T)).Ring :=
       .ofAlgHom f ((P.map (algebraMap R T)).lift (1 ⊗ₜ[R] P.x)
         (P.hasMap.map (Algebra.TensorProduct.includeRight (R := R) (A := T))).map_algebraMap) (by
-        ext; simp [f]) (by
-        ext1
-        · ext
-        · apply P.hom_ext; simp [f])
+        ext; simp [f]) (by ext1; apply P.hom_ext; simp [f])
     exact α.symm.bijective
 
 namespace Algebra

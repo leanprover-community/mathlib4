@@ -221,7 +221,6 @@ lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
     · exact div_le_div_of_nonneg_left (norm_nonneg _)
         (mod_cast pow_pos hp.out.pos _) (mod_cast pow_le_pow_right₀ hp.out.one_le hk)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Key lemma for Mahler's theorem: for `f` a continuous function on `ℤ_[p]`, the sequence
 `n ↦ Δ^[n] f 0` tends to 0. See `PadicInt.fwdDiff_iter_le_of_forall_le` for an explicit
 estimate of the decay rate. -/
@@ -286,7 +285,6 @@ noncomputable def mahlerSeries (a : ℕ → E) : C(ℤ_[p], E) := ∑' n, mahler
 
 variable [IsUltrametricDist E] [CompleteSpace E] {a : ℕ → E}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A Mahler series whose coefficients tend to 0 is convergent. -/
 lemma hasSum_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) :
     HasSum (fun n ↦ mahlerTerm (a n) n) (mahlerSeries a : C(ℤ_[p], E)) := by
