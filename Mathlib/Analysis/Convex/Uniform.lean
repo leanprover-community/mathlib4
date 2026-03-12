@@ -172,7 +172,7 @@ def uniformConvexFilter (E : Type*) [SeminormedAddCommGroup E] : Filter (E × E)
 pairs on the unit sphere with `‖x + y‖` close to `2`. -/
 theorem UniformConvexSpace.tendsto_norm_sub [UniformConvexSpace E] :
     Tendsto (fun p : E × E => ‖p.1 - p.2‖) (uniformConvexFilter E) (𝓝 0) := by
-  rw [Metric.tendsto_nhds, uniformConvexFilter]
+  simp +decide [Metric.tendsto_nhds, uniformConvexFilter]
   intro ε hε
   obtain ⟨δ, hδ_pos, hδ⟩ : ∃ δ > 0, ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 →
       ‖x + y‖ > 2 - δ → ‖x - y‖ < ε := by
@@ -224,7 +224,7 @@ theorem UniformConvexSpace.tendsto_norm_sub_of_tendsto_norm_add [UniformConvexSp
     (h : Tendsto (fun i => ‖x i + y i‖) l (𝓝 2)) :
     Tendsto (fun i => ‖x i - y i‖) l (𝓝 0) := by
   have h_tendsto_map : Tendsto (fun i => (x i, y i)) l (uniformConvexFilter E) := by
-    refine Filter.tendsto_inf.mpr ⟨?_, ?_⟩ <;> aesop;
+    refine' Filter.tendsto_inf.mpr ⟨_, _⟩ <;> aesop;
   exact UniformConvexSpace.tendsto_norm_sub.comp h_tendsto_map
 
 /-- Uniform convexity can be checked via the net/sequence criterion: if for every filter `l`
