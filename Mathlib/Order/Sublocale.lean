@@ -468,6 +468,8 @@ def compl (u : Open X) : Closed X := ⟨u.getElement⟩
 
 variable {U V : Open X}
 
+@[simp] lemma compl_compl : U.compl.compl = U := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 lemma sup_compl_eq_top : U.toSublocale ⊔ U.compl.toSublocale = ⊤ := by
   rw [eq_top_iff, ← toNucleus_le_toNucleus, Sublocale.toNucleus]
@@ -496,3 +498,21 @@ lemma inf_compl_eq_bot : U.toSublocale ⊓ U.compl.toSublocale = ⊥ := by
 lemma compl_le_compl_iff : U.compl ≤ V.compl ↔ V ≤ U := by rfl
 
 end Open
+
+namespace Closed
+
+variable {C D : Closed X}
+
+@[simp] lemma compl_compl : C.compl.compl = C := rfl
+
+lemma compl_le_compl_iff : C.compl ≤ D.compl ↔ D ≤ C := by rfl
+
+lemma sup_compl_eq_top : C.toSublocale ⊔ C.compl.toSublocale = ⊤ := by
+  rw [← @compl_compl _ _ C, sup_comm]
+  exact Open.sup_compl_eq_top
+
+lemma inf_compl_eq_bot : C.toSublocale ⊓ C.compl.toSublocale = ⊥ := by
+  rw [← @compl_compl _ _ C, inf_comm]
+  exact Open.inf_compl_eq_bot
+
+end Closed
