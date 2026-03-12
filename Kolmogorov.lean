@@ -96,6 +96,18 @@ lemma partialSumMax_measurable {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω
     (Finset.measurable_range_sup'' (n := n) (f := fun k ω => |partialSum X k ω|)
       (fun k hk => continuous_abs.measurable.comp (partialSum_measurable X k hX)))
 
+lemma measurableSet_partialSumMax_ge {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ)
+    (n : ℕ) (ε : ℝ) (hX : ∀ k, Measurable (X k)) :
+    MeasurableSet {ω | ε ≤ partialSumMax X n ω} := by
+  exact measurableSet_le measurable_const (partialSumMax_measurable X n hX)
+
+lemma tail_event_subset_partialSumMax_event (X : ℕ → Ω → ℝ) (m n k : ℕ)
+    (hk : k ∈ Finset.range (n + 1)) (ε : ℝ) :
+    {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} ⊆
+      {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} := by
+  intro ω hω
+  exact le_trans hω (abs_sub_partialSum_le_partialSumMax_tail X m n k hk ω)
+
 end Real
 
 end Kolmogorov
