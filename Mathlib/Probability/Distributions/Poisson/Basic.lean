@@ -66,8 +66,8 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
 
 lemma poissonPMFReal_ofReal_eq_poissonPMF (r : ℝ≥0) (n : ℕ) :
-    ENNReal.ofReal (poissonPMFReal r n) = poissonPMF r n := by
-  simpa only [poissonPMF] using by rfl
+    ENNReal.ofReal (poissonPMFReal r n) = poissonPMF r n :=
+  rfl
 
 /-- The Poisson pmf is measurable. -/
 @[fun_prop]

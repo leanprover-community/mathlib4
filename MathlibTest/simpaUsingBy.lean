@@ -10,10 +10,10 @@ import Mathlib.Tactic.Linter.SimpaUsingBy
 
 /--
 warning: `simpa ... using by tactic` is a convoluted way to write `simp; tactic`
-that potentially by-passes the flexible linter. Please change this to `simp; tactic`,
+that potentially by-passes the flexible linter. Please change this to `simp; assumption`,
 and adjust accordingly if this is flagged by the flexible linter.
 
-Note: This linter can be disabled with `set_option linter.simpaUsingBy false`
+Note: This linter can be disabled with `set_option linter.style.simpaUsingBy false`
 -/
 #guard_msgs in
 example (a b : Nat) (h : a = b) : a = b := by simpa using by assumption
@@ -41,12 +41,12 @@ example (a b : Nat) (h : a = b) : a = b := by
 section
 
 -- Test disabling the linter.
-set_option linter.simpaUsingBy false
+set_option linter.style.simpaUsingBy false
 
 example (a b : Nat) (h : a = b) : a = b := by simpa using by assumption
 
 end
 
 -- Test disabling the linter.
-set_option linter.simpaUsingBy false in
+set_option linter.style.simpaUsingBy false in
 example (a b : Nat) (h : a = b) : a = b := by simpa using by assumption

@@ -208,7 +208,7 @@ lemma cgf_le (h : HasSubgaussianMGF X c κ ν) :
   _ = log (mgf X (κ ω') t) := rfl
   _ ≤ log (exp (c * t ^ 2 / 2)) := by
     by_cases h0 : κ ω' = 0
-    · simpa [h0] using by positivity
+    · simpa [h0] using show 0 ≤ c * t ^ 2 / 2 by positivity
     gcongr
     · exact mgf_pos' h0 (h_int t)
     · exact h t

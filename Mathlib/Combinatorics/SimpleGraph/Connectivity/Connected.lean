@@ -118,7 +118,8 @@ theorem reachable_fromEdgeSet_eq_reflTransGen_toRel {s : Set (Sym2 V)} :
   rw [reachable_eq_reflTransGen, ← Relation.transGen_reflGen, ← Relation.transGen_reflGen]
   congr 1
   ext
-  simpa [Relation.reflGen_iff] using by tauto
+  simp only [Relation.reflGen_iff, fromEdgeSet_adj, ne_eq, Sym2.toRel_prop]
+  tauto
 
 theorem reachable_fromEdgeSet_fromRel_eq_reflTransGen {r : V → V → Prop} (sym : Symmetric r) :
     (fromEdgeSet <| Sym2.fromRel sym).Reachable = Relation.ReflTransGen r :=

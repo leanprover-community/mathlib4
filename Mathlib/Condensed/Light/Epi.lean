@@ -117,7 +117,9 @@ variable {R : Type u} [Ring R] {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M 
 instance : Epi (Limits.Pi.map f) := by
   have : Limits.Pi.map f = (cone f).π.app ⟨0⟩ := rfl
   rw [this]
-  exact epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by simpa using by infer_instance)
+  refine epi_π_app_zero_of_epi R (isLimit f) fun n ↦ ?_
+  simp only [Functor.ofOpSequence_obj, Functor.ofOpSequence_map_homOfLE_succ]
+  infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
