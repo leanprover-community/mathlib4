@@ -35,20 +35,20 @@ def EReal := WithBot (WithTop ℝ)
   deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder, AddCommMonoid
 
 instance : ZeroLEOneClass EReal := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop ℝ)))
-instance : SupSet EReal := inferInstanceAs (SupSet (WithBot (WithTop ℝ)))
-instance : InfSet EReal := inferInstanceAs (InfSet (WithBot (WithTop ℝ)))
+instance : SupSet EReal := inferInstanceAs% (SupSet (WithBot (WithTop ℝ)))
+instance : InfSet EReal := inferInstanceAs% (InfSet (WithBot (WithTop ℝ)))
 
 instance : CompleteLinearOrder EReal :=
-  inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℝ)))
+  inferInstanceAs% (CompleteLinearOrder (WithBot (WithTop ℝ)))
 
 instance : LinearOrder EReal :=
-  inferInstanceAs (LinearOrder (WithBot (WithTop ℝ)))
+  inferInstanceAs% (LinearOrder (WithBot (WithTop ℝ)))
 
 instance : IsOrderedAddMonoid EReal :=
   inferInstanceAs (IsOrderedAddMonoid (WithBot (WithTop ℝ)))
 
 instance : AddCommMonoidWithOne EReal :=
-  inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop ℝ)))
+  inferInstanceAs% (AddCommMonoidWithOne (WithBot (WithTop ℝ)))
 
 instance : DenselyOrdered EReal :=
   inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))

@@ -116,7 +116,7 @@ def _root_.CategoryTheory.InducedCategory.homAddEquiv
 end InducedCategory
 
 instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory :=
-  inferInstanceAs (Preadditive (InducedCategory _ ObjectProperty.FullSubcategory.obj))
+  inferInstanceAs% (Preadditive (InducedCategory _ ObjectProperty.FullSubcategory.obj))
 
 instance (X : C) : AddCommGroup (End X) := by
   dsimp [End]

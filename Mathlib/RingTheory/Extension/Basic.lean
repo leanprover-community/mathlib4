@@ -277,7 +277,7 @@ a diamond. -/
 def Cotangent : Type _ := P.ker.Cotangent
 
 noncomputable
-instance : AddCommGroup P.Cotangent := inferInstanceAs (AddCommGroup P.ker.Cotangent)
+instance : AddCommGroup P.Cotangent := inferInstanceAs% (AddCommGroup P.ker.Cotangent)
 
 variable {P}
 

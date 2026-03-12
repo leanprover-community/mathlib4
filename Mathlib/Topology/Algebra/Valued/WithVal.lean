@@ -268,7 +268,7 @@ section left
 variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
 instance : Algebra (WithVal v) S where
-  __ := inferInstanceAs (Module (WithVal v) S)
+  __ := inferInstanceAs% (Module (WithVal v) S)
   __ := Algebra.compHom S (equiv v).toRingHom
 
 theorem algebraMap_left_apply (s : WithVal v) :

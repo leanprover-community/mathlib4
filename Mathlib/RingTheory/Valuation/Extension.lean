@@ -181,7 +181,7 @@ lemma algebraMap_mem_valuationSubring (x : K₀) : algebraMap K L x ∈ L₀ := 
   exact x.2
 
 instance instAlgebra_valuationSubring : Algebra K₀ L₀ :=
-  inferInstanceAs (Algebra vK.integer vL.integer)
+  inferInstanceAs% (Algebra vK.integer vL.integer)
 
 @[simp]
 lemma coe_algebraMap_valuationSubring_eq (x : K₀) :

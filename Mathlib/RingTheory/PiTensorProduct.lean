@@ -37,7 +37,7 @@ instance instOne : One (⨂[R] i, A i) where
 lemma one_def : 1 = tprod R (1 : Π i, A i) := rfl
 
 instance instAddCommMonoidWithOne : AddCommMonoidWithOne (⨂[R] i, A i) where
-  __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
+  __ := inferInstanceAs% (AddCommMonoid (⨂[R] i, A i))
   __ := instOne
 
 end AddCommMonoidWithOne
@@ -82,7 +82,7 @@ lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
   __ := instMul
-  __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
+  __ := inferInstanceAs% (AddCommMonoid (⨂[R] i, A i))
   left_distrib _ _ _ := (mul _).map_add _ _
   right_distrib _ _ _ := mul.map_add₂ _ _ _
   zero_mul _ := mul.map_zero₂ _

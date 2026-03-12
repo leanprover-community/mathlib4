@@ -46,7 +46,7 @@ instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Mat
   Fintype.decidablePiFintype
 
 instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fintype α] :
-    Fintype (Matrix m n α) := inferInstanceAs (Fintype (m → n → α))
+    Fintype (Matrix m n α) := inferInstanceAs% (Fintype (m → n → α))
 
 instance {n m} [Finite m] [Finite n] (α) [Finite α] :
     Finite (Matrix m n α) := inferInstanceAs (Finite (m → n → α))

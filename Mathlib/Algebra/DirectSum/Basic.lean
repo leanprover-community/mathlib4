@@ -77,7 +77,7 @@ section AddCommGroup
 variable [∀ i, AddCommGroup (β i)]
 
 instance : AddCommGroup (DirectSum ι β) :=
-  inferInstanceAs (AddCommGroup (Π₀ i, β i))
+  inferInstanceAs% (AddCommGroup (Π₀ i, β i))
 variable {β}
 
 @[simp]

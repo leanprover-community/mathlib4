@@ -65,7 +65,7 @@ from `K` to `L`. -/
 def CohomologyClass : Type v := Cocycle K L n ⧸ coboundaries K L n
 
 instance : AddCommGroup (CohomologyClass K L n) :=
-  inferInstanceAs (AddCommGroup (Cocycle K L n ⧸ coboundaries K L n))
+  inferInstanceAs% (AddCommGroup (Cocycle K L n ⧸ coboundaries K L n))
 
 namespace CohomologyClass
 

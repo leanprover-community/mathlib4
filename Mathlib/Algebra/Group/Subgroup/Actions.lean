@@ -30,7 +30,7 @@ variable [MulAction G α] {S : Subgroup G}
 /-- The action by a subgroup is the action by the underlying group. -/
 @[to_additive
 /-- The additive action by an `AddSubgroup` is the action by the underlying `AddGroup`. -/]
-instance instMulAction : MulAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
+instance instMulAction : MulAction S α := inferInstanceAs% (MulAction S.toSubmonoid α)
 
 @[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
 
@@ -61,11 +61,11 @@ instance [MulAction G α] [FaithfulSMul G α] (S : Subgroup G) : FaithfulSMul S 
 
 /-- The action by a subgroup is the action by the underlying group. -/
 instance [AddMonoid α] [DistribMulAction G α] (S : Subgroup G) : DistribMulAction S α :=
-  inferInstanceAs (DistribMulAction S.toSubmonoid α)
+  inferInstanceAs% (DistribMulAction S.toSubmonoid α)
 
 /-- The action by a subgroup is the action by the underlying group. -/
 instance [Monoid α] [MulDistribMulAction G α] (S : Subgroup G) : MulDistribMulAction S α :=
-  inferInstanceAs (MulDistribMulAction S.toSubmonoid α)
+  inferInstanceAs% (MulDistribMulAction S.toSubmonoid α)
 
 /-- The center of a group acts commutatively on that group. -/
 instance center.smulCommClass_left : SMulCommClass (center G) G G :=

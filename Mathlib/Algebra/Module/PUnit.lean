@@ -83,17 +83,17 @@ lemma smul_eq' (r : PUnit) (a : R) : r • a = a := rfl
 instance [SMul R S] : IsScalarTower PUnit R S := ⟨by simp⟩
 
 instance : MulAction PUnit R where
-  __ := inferInstanceAs (SMul PUnit R)
+  __ := inferInstanceAs% (SMul PUnit R)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
 instance [Zero R] : SMulZeroClass PUnit R where
-  __ := inferInstanceAs (SMul PUnit R)
+  __ := inferInstanceAs% (SMul PUnit R)
   smul_zero _ := rfl
 
 instance [AddMonoid R] : DistribMulAction PUnit R where
-  __ := inferInstanceAs (MulAction PUnit R)
-  __ := inferInstanceAs (SMulZeroClass PUnit R)
+  __ := inferInstanceAs% (MulAction PUnit R)
+  __ := inferInstanceAs% (SMulZeroClass PUnit R)
   smul_add _ _ _ := rfl
 
 end PUnit

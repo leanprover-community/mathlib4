@@ -230,7 +230,7 @@ def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) 
 set_option backward.isDefEq.respectTransparency false in
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module ((structureSheafInType R R).obj.obj U) ((structureSheafInType R M).obj.obj U) :=
-  inferInstanceAs (Module (sectionsSubalgebra R _) (sectionsSubalgebraSubmodule M _))
+  inferInstanceAs% (Module (sectionsSubalgebra R _) (sectionsSubalgebraSubmodule M _))
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     IsScalarTower R ((structureSheafInType R R).obj.obj U) ((structureSheafInType R M).obj.obj U) :=
@@ -919,7 +919,7 @@ instance IsLocalization.to_stalk (p : PrimeSpectrum R) :
   inferInstanceAs (IsLocalization.AtPrime ((structurePresheafInCommRingCat R).stalk p) p.asIdeal)
 
 instance openAlgebra (U : (Opens (PrimeSpectrum R))ᵒᵖ) : Algebra R ((structureSheaf R).obj.obj U) :=
-  inferInstanceAs (Algebra R ((structureSheafInType R R).presheaf.obj _))
+  inferInstanceAs% (Algebra R ((structureSheafInType R R).presheaf.obj _))
 
 /-- Sections of the structure sheaf of Spec R on a basic open as localization of R -/
 instance IsLocalization.to_basicOpen (r : R) :

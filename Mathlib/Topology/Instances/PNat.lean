@@ -21,7 +21,7 @@ open Metric
 
 namespace PNat
 
-instance : MetricSpace ℕ+ := inferInstanceAs (MetricSpace { n : ℕ // 0 < n })
+instance : MetricSpace ℕ+ := inferInstanceAs% (MetricSpace { n : ℕ // 0 < n })
 
 theorem dist_eq (x y : ℕ+) : dist x y = |(↑x : ℝ) - ↑y| := rfl
 

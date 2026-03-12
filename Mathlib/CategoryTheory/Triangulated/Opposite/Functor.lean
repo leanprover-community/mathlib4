@@ -39,7 +39,7 @@ namespace Pretriangulated.Opposite
 `CategoryTheory.Triangulated.Opposite.Basic`.
 -/
 noncomputable scoped instance commShiftFunctorOpInt : F.op.CommShift ℤ :=
-  inferInstanceAs ((PullbackShift.functor
+  inferInstanceAs% ((PullbackShift.functor
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; lia))
       (OppositeShift.functor ℤ F)).CommShift ℤ)
 

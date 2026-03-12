@@ -179,7 +179,7 @@ variable (n : ℕ)
 open MonoidalCategory
 
 instance : (truncation.{u} n).Monoidal :=
-  inferInstanceAs ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
+  inferInstanceAs% ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
 
 variable {n} {X Y : Truncated.{u} n}
 

@@ -35,9 +35,9 @@ in the fundamental groupoid. -/
 def FundamentalGroup (x : X) :=
   End (FundamentalGroupoid.mk x)
 
-instance (x : X) : Group (FundamentalGroup X x) := inferInstanceAs (Group (End _))
+instance (x : X) : Group (FundamentalGroup X x) := inferInstanceAs% (Group (End _))
 
-instance (x : X) : Inhabited (FundamentalGroup X x) := inferInstanceAs (Inhabited (End _))
+instance (x : X) : Inhabited (FundamentalGroup X x) := inferInstanceAs% (Inhabited (End _))
 
 variable {X}
 

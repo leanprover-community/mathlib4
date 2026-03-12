@@ -119,7 +119,7 @@ instance (f : R) : IsLocalizedModule (.powers f) (toOpen M (basicOpen f)).hom :=
 
 noncomputable
 instance (x : PrimeSpectrum.Top R) : Module R ((tilde M).presheaf.stalk x) :=
-  inferInstanceAs (Module R ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R M).presheaf x))
+  inferInstanceAs% (Module R ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R M).presheaf x))
 
 /--
 If `x` is a point of `Spec R`, this is the morphism of `R`-modules from `M` to the stalk of

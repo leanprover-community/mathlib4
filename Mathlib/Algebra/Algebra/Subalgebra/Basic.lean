@@ -785,7 +785,7 @@ variable {α β : Type*}
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
 instance [SMul A α] (S : Subalgebra R A) : SMul S α :=
-  inferInstanceAs (SMul S.toSubsemiring α)
+  inferInstanceAs% (SMul S.toSubsemiring α)
 
 theorem smul_def [SMul A α] {S : Subalgebra R A} (g : S) (m : α) : g • m = (g : A) • m := rfl
 
@@ -817,23 +817,23 @@ instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S �
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
 instance [MulAction A α] (S : Subalgebra R A) : MulAction S α :=
-  inferInstanceAs (MulAction S.toSubsemiring α)
+  inferInstanceAs% (MulAction S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
 instance [AddMonoid α] [DistribMulAction A α] (S : Subalgebra R A) : DistribMulAction S α :=
-  inferInstanceAs (DistribMulAction S.toSubsemiring α)
+  inferInstanceAs% (DistribMulAction S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
 instance [Zero α] [SMulWithZero A α] (S : Subalgebra R A) : SMulWithZero S α :=
-  inferInstanceAs (SMulWithZero S.toSubsemiring α)
+  inferInstanceAs% (SMulWithZero S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
 instance [Zero α] [MulActionWithZero A α] (S : Subalgebra R A) : MulActionWithZero S α :=
-  inferInstanceAs (MulActionWithZero S.toSubsemiring α)
+  inferInstanceAs% (MulActionWithZero S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
 instance moduleLeft [AddCommMonoid α] [Module A α] (S : Subalgebra R A) : Module S α :=
-  inferInstanceAs (Module S.toSubsemiring α)
+  inferInstanceAs% (Module S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
 instance toAlgebra {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
@@ -903,10 +903,10 @@ theorem center_toSubring (R A : Type*) [CommRing R] [Ring A] [Algebra R A] :
 variable {R A}
 
 instance : CommSemiring (center R A) :=
-  inferInstanceAs (CommSemiring (Subsemiring.center A))
+  inferInstanceAs% (CommSemiring (Subsemiring.center A))
 
 instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
-  inferInstanceAs (CommRing (Subring.center A))
+  inferInstanceAs% (CommRing (Subring.center A))
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff

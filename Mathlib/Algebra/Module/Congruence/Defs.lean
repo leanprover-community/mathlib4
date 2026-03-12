@@ -80,47 +80,47 @@ namespace ModuleCon
 protected def Quotient [Add M] [SMul S M] (c : ModuleCon S M) : Type _ := Quotient c.toSetoid
 
 instance [SMul S M] [Add M] (c : ModuleCon S M) : SMul S c.Quotient :=
-  inferInstanceAs (SMul S c.toSMulCon.Quotient)
+  inferInstanceAs% (SMul S c.toSMulCon.Quotient)
 
 instance [SMul S M] [Zero M] [Add M] (c : ModuleCon S M) : Zero c.Quotient where
   zero := ⟦0⟧
 
 instance [SMul S M] [Add M] (c : ModuleCon S M) : Add c.Quotient :=
-  inferInstanceAs (Add c.toAddCon.Quotient)
+  inferInstanceAs% (Add c.toAddCon.Quotient)
 
 instance [SMul S M] [AddZeroClass M] (c : ModuleCon S M) : AddZeroClass c.Quotient :=
-  inferInstanceAs (AddZeroClass c.toAddCon.Quotient)
+  inferInstanceAs% (AddZeroClass c.toAddCon.Quotient)
 
 instance [SMul S M] [AddCommMagma M] (c : ModuleCon S M) : AddCommMagma c.Quotient :=
-  inferInstanceAs (AddCommMagma c.toAddCon.Quotient)
+  inferInstanceAs% (AddCommMagma c.toAddCon.Quotient)
 
 instance [SMul S M] [AddSemigroup M] (c : ModuleCon S M) : AddSemigroup c.Quotient :=
-  inferInstanceAs (AddSemigroup c.toAddCon.Quotient)
+  inferInstanceAs% (AddSemigroup c.toAddCon.Quotient)
 
 instance [SMul S M] [AddCommSemigroup M] (c : ModuleCon S M) : AddCommSemigroup c.Quotient :=
-  inferInstanceAs (AddCommSemigroup c.toAddCon.Quotient)
+  inferInstanceAs% (AddCommSemigroup c.toAddCon.Quotient)
 
 instance [SMul S M] [AddMonoid M] (c : ModuleCon S M) : AddMonoid c.Quotient :=
-  inferInstanceAs (AddMonoid c.toAddCon.Quotient)
+  inferInstanceAs% (AddMonoid c.toAddCon.Quotient)
 
 instance [SMul S M] [AddCommMonoid M] (c : ModuleCon S M) : AddCommMonoid c.Quotient :=
-  inferInstanceAs (AddCommMonoid c.toAddCon.Quotient)
+  inferInstanceAs% (AddCommMonoid c.toAddCon.Quotient)
 
 instance [SMul S M] [AddGroup M] (c : ModuleCon S M) : AddGroup c.Quotient :=
-  inferInstanceAs (AddGroup c.toAddCon.Quotient)
+  inferInstanceAs% (AddGroup c.toAddCon.Quotient)
 
 instance [SMul S M] [AddCommGroup M] (c : ModuleCon S M) : AddCommGroup c.Quotient :=
-  inferInstanceAs (AddCommGroup c.toAddCon.Quotient)
+  inferInstanceAs% (AddCommGroup c.toAddCon.Quotient)
 
 instance [Zero M] [Add M] [SMulZeroClass S M] (c : ModuleCon S M) : SMulZeroClass S c.Quotient :=
-  inferInstanceAs (SMulZeroClass S c.toSMulCon.Quotient)
+  inferInstanceAs% (SMulZeroClass S c.toSMulCon.Quotient)
 
 instance [Zero S] [Zero M] [Add M] [SMulWithZero S M] (c : ModuleCon S M) :
     SMulWithZero S c.Quotient :=
-  inferInstanceAs (SMulWithZero S c.toSMulCon.Quotient)
+  inferInstanceAs% (SMulWithZero S c.toSMulCon.Quotient)
 
 instance [Monoid S] [Add M] [MulAction S M] (c : ModuleCon S M) : MulAction S c.Quotient :=
-  inferInstanceAs (MulAction S c.toSMulCon.Quotient)
+  inferInstanceAs% (MulAction S c.toSMulCon.Quotient)
 
 instance [AddZeroClass M] [DistribSMul S M] (c : ModuleCon S M) : DistribSMul S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.distribSMul c.mk' fun _ _ ↦ rfl

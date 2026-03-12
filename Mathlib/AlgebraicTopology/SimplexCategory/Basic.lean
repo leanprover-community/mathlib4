@@ -603,10 +603,10 @@ instance : ConcreteCategory SimplexCategory (fun i j => Fin (i.len + 1) →o Fin
   ofHom f := Hom.mk f
 
 instance (x : SimplexCategory) : Fintype (ToType x) :=
-  inferInstanceAs (Fintype (Fin _))
+  inferInstanceAs% (Fintype (Fin _))
 
 instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
-  inferInstanceAs (OfNat (Fin _) n)
+  inferInstanceAs% (OfNat (Fin _) n)
 
 lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 

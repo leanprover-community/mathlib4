@@ -314,7 +314,7 @@ variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace 
   (S : Submodule R M)
 
 instance _root_.QuotientModule.Quotient.topologicalSpace : TopologicalSpace (M ⧸ S) :=
-  inferInstanceAs (TopologicalSpace (Quotient S.quotientRel))
+  inferInstanceAs% (TopologicalSpace (Quotient S.quotientRel))
 
 theorem isOpenMap_mkQ [ContinuousAdd M] : IsOpenMap S.mkQ :=
   QuotientAddGroup.isOpenMap_coe

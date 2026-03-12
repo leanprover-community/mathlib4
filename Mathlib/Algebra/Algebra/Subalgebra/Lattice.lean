@@ -335,7 +335,7 @@ instance _root_.AlgEquiv.subsingleton_right [Subsingleton (Subalgebra R B)] :
   ⟨fun f g => by rw [← f.symm_symm, Subsingleton.elim f.symm g.symm, g.symm_symm]⟩
 
 instance : Unique (Subalgebra R R) :=
-  { inferInstanceAs (Inhabited (Subalgebra R R)) with
+  { inferInstanceAs% (Inhabited (Subalgebra R R)) with
     uniq := by
       intro S
       refine le_antisymm ?_ bot_le

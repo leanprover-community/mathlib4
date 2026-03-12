@@ -144,7 +144,7 @@ theorem le_iff_sign {x y : EReal} :
     all_goals rw [← x.sign_mul_abs, ← y.sign_mul_abs]; simp [h]
 
 instance : CommMonoidWithZero EReal :=
-  { inferInstanceAs (MulZeroOneClass EReal) with
+  { inferInstanceAs% (MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
       simp only [mul_assoc, abs_mul, sign_mul, and_self_iff]

@@ -542,7 +542,7 @@ def hoFunctor.obj.equiv (X : SSet) : hoFunctor.obj X ≃ X _⦋0⦌ :=
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus
 `OneTruncation₂ ((truncation 2).obj Δ[0])` has a unique inhabitant. -/
 instance instUniqueOneTruncation₂DeltaZero : Unique (OneTruncation₂ ((truncation 2).obj Δ[0])) :=
-  inferInstanceAs (Unique (ULift.{_, 0} (⦋0⦌ ⟶ ⦋0⦌)))
+  inferInstanceAs% (Unique (ULift.{_, 0} (⦋0⦌ ⟶ ⦋0⦌)))
 
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique edge and thus the homs of
 `OneTruncation₂ ((truncation 2).obj Δ[0])` have unique inhabitants. -/
@@ -558,7 +558,7 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     exact this.allEq _ _
 
 instance : Unique ((truncation.{u} 2).obj Δ[0]).HomotopyCategory :=
-  inferInstanceAs (Unique <| CategoryTheory.Quotient _)
+  inferInstanceAs% (Unique <| CategoryTheory.Quotient _)
 
 instance : IsDiscrete ((truncation.{u} 2).obj Δ[0]).HomotopyCategory where
   subsingleton x y :=

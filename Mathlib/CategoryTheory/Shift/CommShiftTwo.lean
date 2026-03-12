@@ -118,7 +118,7 @@ instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
     (F ⋙ G).CommShift₂ h where
   commShiftObj (X₁' : C₁') := inferInstanceAs ((G.obj (F.obj X₁')).CommShift M)
   commShift_map {X₁' Y₁' : C₁'} (f : X₁' ⟶ Y₁') := by dsimp; infer_instance
-  commShiftFlipObj (X₂ : C₂) := inferInstanceAs ((F ⋙ G.flip.obj X₂).CommShift M)
+  commShiftFlipObj (X₂ : C₂) := inferInstanceAs% ((F ⋙ G.flip.obj X₂).CommShift M)
   commShift_flip_map {X₂ Y₂ : C₂} (g : X₂ ⟶ Y₂) :=
     inferInstanceAs (NatTrans.CommShift (whiskerLeft F (G.flip.map g)) M)
   comm X₁' X₂ m n := by

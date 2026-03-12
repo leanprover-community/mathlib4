@@ -102,7 +102,7 @@ theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 
 /-- If `K` is a field, then so is `K` viewed as a valuation subring
 of itself. (That is, `⊤ : ValuationSubring K`.) -/
-instance : Field (⊤ : ValuationSubring K) := inferInstanceAs (Field (⊤ : Subfield K))
+instance : Field (⊤ : ValuationSubring K) := inferInstanceAs% (Field (⊤ : Subfield K))
 
 @[simp, norm_cast]
 theorem top_coe_div (x y : (⊤ : ValuationSubring K)) :

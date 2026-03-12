@@ -36,7 +36,7 @@ section
 
 variable {C : Type v₁} [Category.{v₂} C] [HasSheafify (Opens.grothendieckTopology X) C] [Abelian C]
 
-noncomputable instance : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
+noncomputable instance : Abelian (Presheaf C X) := inferInstanceAs% (Abelian (_ ⥤ _))
 
 namespace Sheaf
 

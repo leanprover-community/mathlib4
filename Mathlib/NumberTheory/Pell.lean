@@ -99,13 +99,13 @@ namespace Solution₁
 variable {d : ℤ}
 
 instance instCommGroup : CommGroup (Solution₁ d) :=
-  inferInstanceAs (CommGroup (unitary (ℤ√d)))
+  inferInstanceAs% (CommGroup (unitary (ℤ√d)))
 
 instance instHasDistribNeg : HasDistribNeg (Solution₁ d) :=
-  inferInstanceAs (HasDistribNeg (unitary (ℤ√d)))
+  inferInstanceAs% (HasDistribNeg (unitary (ℤ√d)))
 
 instance instInhabited : Inhabited (Solution₁ d) :=
-  inferInstanceAs (Inhabited (unitary (ℤ√d)))
+  inferInstanceAs% (Inhabited (unitary (ℤ√d)))
 
 instance : Coe (Solution₁ d) (ℤ√d) where coe := Subtype.val
 

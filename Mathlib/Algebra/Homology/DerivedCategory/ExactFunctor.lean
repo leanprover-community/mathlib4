@@ -98,7 +98,7 @@ instance : F.mapDerivedCategory.IsTriangulated :=
 
 instance : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
     (ComplexShape.up ℤ)).functor.CommShift ℤ :=
-  inferInstanceAs ((F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ)
+  inferInstanceAs% ((F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ)
 
 /-- `DerivedCategory.singleFunctor` commutes with `F` and `F.mapDerivedCategory`. -/
 noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :

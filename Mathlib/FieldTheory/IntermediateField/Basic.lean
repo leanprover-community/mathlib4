@@ -341,7 +341,7 @@ variable {X Y}
 
 /-- The action by an intermediate field is the action by the underlying field. -/
 instance [SMul L X] (F : IntermediateField K L) : SMul F X :=
-  inferInstanceAs (SMul F.toSubfield X)
+  inferInstanceAs% (SMul F.toSubfield X)
 
 theorem smul_def [SMul L X] {F : IntermediateField K L} (g : F) (m : X) : g • m = (g : L) • m :=
   rfl
@@ -369,32 +369,32 @@ instance [SMul L X] [FaithfulSMul L X] (F : IntermediateField K L) : FaithfulSMu
 
 /-- The action by an intermediate field is the action by the underlying field. -/
 instance [MulAction L X] (F : IntermediateField K L) : MulAction F X :=
-  inferInstanceAs (MulAction F.toSubfield X)
+  inferInstanceAs% (MulAction F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/
 instance [AddMonoid X] [DistribMulAction L X] (F : IntermediateField K L) : DistribMulAction F X :=
-  inferInstanceAs (DistribMulAction F.toSubfield X)
+  inferInstanceAs% (DistribMulAction F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/
 instance [Monoid X] [MulDistribMulAction L X] (F : IntermediateField K L) :
     MulDistribMulAction F X :=
-  inferInstanceAs (MulDistribMulAction F.toSubfield X)
+  inferInstanceAs% (MulDistribMulAction F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/
 instance [Zero X] [SMulWithZero L X] (F : IntermediateField K L) : SMulWithZero F X :=
-  inferInstanceAs (SMulWithZero F.toSubfield X)
+  inferInstanceAs% (SMulWithZero F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/
 instance [Zero X] [MulActionWithZero L X] (F : IntermediateField K L) : MulActionWithZero F X :=
-  inferInstanceAs (MulActionWithZero F.toSubfield X)
+  inferInstanceAs% (MulActionWithZero F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/
 instance [AddCommMonoid X] [Module L X] (F : IntermediateField K L) : Module F X :=
-  inferInstanceAs (Module F.toSubfield X)
+  inferInstanceAs% (Module F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/
 instance [Semiring X] [MulSemiringAction L X] (F : IntermediateField K L) : MulSemiringAction F X :=
-  inferInstanceAs (MulSemiringAction F.toSubfield X)
+  inferInstanceAs% (MulSemiringAction F.toSubfield X)
 
 /-! `IntermediateField`s inherit structure from their `Subalgebra` coercions. -/
 
@@ -403,11 +403,11 @@ instance toAlgebra : Algebra S L :=
 
 set_option backward.isDefEq.respectTransparency false in
 instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] : Module R S :=
-  inferInstanceAs (Module R S.toSubalgebra)
+  inferInstanceAs% (Module R S.toSubalgebra)
 
 instance algebra' {R' K L : Type*} [Field K] [Field L] [Algebra K L] (S : IntermediateField K L)
     [CommSemiring R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
-  inferInstanceAs (Algebra R' S.toSubalgebra)
+  inferInstanceAs% (Algebra R' S.toSubalgebra)
 
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
     IsScalarTower R K S :=
@@ -433,7 +433,7 @@ instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
 instance isScalarTower_mid' : IsScalarTower K S L :=
   inferInstance
 
-instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs (Algebra S.toSubalgebra E)
+instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs% (Algebra S.toSubalgebra E)
 
 section shortcut_instances
 

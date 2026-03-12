@@ -37,7 +37,7 @@ def AlternatingMap (M : ModuleCat.{v} R) (N : ModuleCat.{max u v} R) (n : ℕ) :
 
 instance (M : ModuleCat.{v} R) (N : ModuleCat.{max u v} R) (n : ℕ) :
     FunLike (M.AlternatingMap N n) (Fin n → M) N :=
-  inferInstanceAs (FunLike (M [⋀^(Fin n)]→ₗ[R] N) (Fin n → M) N)
+  inferInstanceAs% (FunLike (M [⋀^(Fin n)]→ₗ[R] N) (Fin n → M) N)
 
 namespace AlternatingMap
 

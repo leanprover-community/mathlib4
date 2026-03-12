@@ -624,7 +624,7 @@ variable {X Y}
 
 /-- The action by a subfield is the action by the underlying field. -/
 instance [SMul K X] (F : Subfield K) : SMul F X :=
-  inferInstanceAs (SMul F.toSubsemiring X)
+  inferInstanceAs% (SMul F.toSubsemiring X)
 
 theorem smul_def [SMul K X] {F : Subfield K} (g : F) (m : X) : g • m = (g : K) • m :=
   rfl
@@ -647,31 +647,31 @@ instance [SMul K X] [FaithfulSMul K X] (F : Subfield K) : FaithfulSMul F X :=
 
 /-- The action by a subfield is the action by the underlying field. -/
 instance [MulAction K X] (F : Subfield K) : MulAction F X :=
-  inferInstanceAs (MulAction F.toSubsemiring X)
+  inferInstanceAs% (MulAction F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/
 instance [AddMonoid X] [DistribMulAction K X] (F : Subfield K) : DistribMulAction F X :=
-  inferInstanceAs (DistribMulAction F.toSubsemiring X)
+  inferInstanceAs% (DistribMulAction F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/
 instance [Monoid X] [MulDistribMulAction K X] (F : Subfield K) : MulDistribMulAction F X :=
-  inferInstanceAs (MulDistribMulAction F.toSubsemiring X)
+  inferInstanceAs% (MulDistribMulAction F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/
 instance [Zero X] [SMulWithZero K X] (F : Subfield K) : SMulWithZero F X :=
-  inferInstanceAs (SMulWithZero F.toSubsemiring X)
+  inferInstanceAs% (SMulWithZero F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/
 instance [Zero X] [MulActionWithZero K X] (F : Subfield K) : MulActionWithZero F X :=
-  inferInstanceAs (MulActionWithZero F.toSubsemiring X)
+  inferInstanceAs% (MulActionWithZero F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/
 instance [AddCommMonoid X] [Module K X] (F : Subfield K) : Module F X :=
-  inferInstanceAs (Module F.toSubsemiring X)
+  inferInstanceAs% (Module F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/
 instance [Semiring X] [MulSemiringAction K X] (F : Subfield K) : MulSemiringAction F X :=
-  inferInstanceAs (MulSemiringAction F.toSubsemiring X)
+  inferInstanceAs% (MulSemiringAction F.toSubsemiring X)
 
 end Subfield
 

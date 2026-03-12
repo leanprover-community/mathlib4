@@ -59,7 +59,7 @@ expected by `grind`. The `deriving` mechanism produces a `NatCast` instance
 See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576566138
 -/
 instance : CommSemiring ENat := {
-  __ := inferInstanceAs (CommSemiring (WithTop ℕ))
+  __ := inferInstanceAs% (CommSemiring (WithTop ℕ))
   toNatCast := inferInstance
 }
 

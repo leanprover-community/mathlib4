@@ -42,7 +42,7 @@ abbrev Two :=
   WithZero Unit
 
 instance : Fintype Two :=
-  inferInstanceAs (Fintype (Option Unit))
+  inferInstanceAs% (Fintype (Option Unit))
 
 instance : IsOrderedAddMonoid Two :=
   { add_le_add_left := by decide }

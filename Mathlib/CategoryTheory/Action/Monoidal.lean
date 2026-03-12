@@ -131,7 +131,7 @@ instance functorCategoryEquivalenceFunctorMonoidal :
 /-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
 instance FunctorCategoryEquivalence.inverseMonoidal :
     (FunctorCategoryEquivalence.inverse (V := V) (G := G)).Monoidal :=
-  inferInstanceAs (Monoidal.equivalenceTransported
+  inferInstanceAs% (Monoidal.equivalenceTransported
     (Action.functorCategoryEquivalence V G).symm).functor.Monoidal
 
 instance functorCategoryEquivalenceInverseMonoidal :

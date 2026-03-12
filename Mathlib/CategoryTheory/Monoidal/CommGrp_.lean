@@ -63,7 +63,7 @@ instance : Inhabited (CommGrp C) where
   default := trivial C
 
 instance : Category (CommGrp C) :=
-  inferInstanceAs (Category (InducedCategory _ CommGrp.toGrp))
+  inferInstanceAs% (Category (InducedCategory _ CommGrp.toGrp))
 
 @[simp]
 theorem id_hom (A : CommGrp C) : (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.toGrp :=

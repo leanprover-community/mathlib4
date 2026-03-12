@@ -298,7 +298,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
   haveI : FormallySmooth P.Ring (Localization M') := .of_isLocalization M'
   haveI : FormallySmooth R Q.Ring := .comp R P.Ring (Localization M')
   haveI : Module.Flat S T := IsLocalization.flat T M
-  letI : Algebra P.Ring Q.Ring := inferInstanceAs (Algebra P.Ring (Localization M'))
+  letI : Algebra P.Ring Q.Ring := inferInstanceAs% (Algebra P.Ring (Localization M'))
   letI := ((algebraMap S T).comp (algebraMap P.Ring S)).toAlgebra
   letI := fQ.toRingHom.toAlgebra
   haveI : IsScalarTower P.Ring S T := .of_algebraMap_eq' rfl

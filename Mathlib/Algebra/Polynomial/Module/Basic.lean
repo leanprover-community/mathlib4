@@ -89,7 +89,7 @@ theorem induction_linear {motive : PolynomialModule R M → Prop} (f : Polynomia
   Finsupp.induction_linear f zero add single
 
 noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
-  inferInstanceAs (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
+  inferInstanceAs% (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
 
 lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
     f • m = aeval (Finsupp.lmapDomain M R Nat.succ) f m := by

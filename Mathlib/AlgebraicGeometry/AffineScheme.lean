@@ -639,7 +639,7 @@ theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
 
 noncomputable
 instance {R : CommRingCat} {U} : Algebra R Γ(Spec R, U) :=
-  inferInstanceAs (Algebra R ((Spec.structureSheaf R).presheaf.obj _))
+  inferInstanceAs% (Algebra R ((Spec.structureSheaf R).presheaf.obj _))
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

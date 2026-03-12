@@ -111,7 +111,7 @@ def RingOfIntegers : Type _ :=
 namespace RingOfIntegers
 
 instance : CommRing (𝓞 K) :=
-  inferInstanceAs (CommRing (integralClosure _ _))
+  inferInstanceAs% (CommRing (integralClosure _ _))
 
 instance : IsDomain (𝓞 K) :=
   inferInstanceAs (IsDomain (integralClosure _ _))
@@ -137,7 +137,7 @@ instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
   inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
 
 instance {G : Type*} [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) :=
-  inferInstanceAs (MulSemiringAction G (integralClosure ℤ K))
+  inferInstanceAs% (MulSemiringAction G (integralClosure ℤ K))
 
 instance {G : Type*} [Group G] [MulSemiringAction G K] : SMulDistribClass G (𝓞 K) K :=
   inferInstanceAs (SMulDistribClass G (integralClosure ℤ K) K)

@@ -110,7 +110,7 @@ instance (H : Subgroup G) [H.Normal] :
 
 instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subalgebra A B H) :=
-  inferInstanceAs (MulSemiringAction (G ⧸ H) (FixedPoints.subring B H))
+  inferInstanceAs% (MulSemiringAction (G ⧸ H) (FixedPoints.subring B H))
 
 instance (H : Subgroup G) [H.Normal] :
     SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H) where
