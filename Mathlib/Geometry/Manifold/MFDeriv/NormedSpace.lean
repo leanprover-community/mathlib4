@@ -389,4 +389,12 @@ lemma fromTangentSpace_mfderiv_smul_apply' (hf : MDiffAt f x) (hg : MDiffAt g x)
     = f x • fromTangentSpace _ (mfderiv% g x v) + fromTangentSpace _ (mfderiv% f x v) • g x :=
   fromTangentSpace_mfderiv_smul_apply hf hg v
 
+lemma fromTangentSpace_mfderiv_add {g g' : M → 𝕜} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
+    letI a : _ →L[𝕜] 𝕜 := (fromTangentSpace (𝕜 := 𝕜) (g' x)) ∘L (mfderiv% g' x)
+    (fromTangentSpace (𝕜 := 𝕜) (g x + g' x)) ∘L (mfderiv% (g + g') x) =
+      ((fromTangentSpace (𝕜 := 𝕜) (g x)) ∘L (mfderiv% g x)) + a := by
+  rw [mfderiv_add hg hg']
+  simp
+  congr
+
 end smul
