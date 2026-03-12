@@ -202,7 +202,7 @@ local instance [MonoidalCategory C] [MonoidalClosed C] [BraidedCategory C] :
   preservesColimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight S)
 
 @[simps]
-instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
+scoped instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
     [BraidedCategory C] : MonoidalCategoryStruct (Arrow C) where
   tensorObj X Y := X □ Y
   whiskerLeft X _ _ f := (pushoutProduct.obj X).map f
@@ -266,7 +266,7 @@ lemma triangle (X Y : Arrow C) :
     exact initialIsInitial.ofIso (zeroMul initialIsInitial).symm
   · simp [← comp_whiskerRight_assoc]
 
-instance : MonoidalCategory (Arrow C) where
+scoped instance : MonoidalCategory (Arrow C) where
   tensorHom_comp_tensorHom := tensorHom_comp_tensorHom
   associator_naturality := associator_naturality
   leftUnitor_naturality := leftUnitor_naturality
@@ -287,16 +287,16 @@ lemma hexagon_reverse (X Y Z : Arrow C) :
   apply ((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
 
 @[simps -isSimp]
-instance braidedCategory : BraidedCategory (Arrow C) where
+scoped instance braidedCategory : BraidedCategory (Arrow C) where
   braiding := braiding
   hexagon_forward := hexagon_forward
   hexagon_reverse := hexagon_reverse
 
 attribute [local simp] braidedCategory_braiding in
 @[simps! -isSimp]
-instance symmetricCategory : SymmetricCategory (Arrow C) where
+scoped instance symmetricCategory : SymmetricCategory (Arrow C) where
 
-instance [HasPullbacks C] : MonoidalClosed (Arrow C) where
+scoped instance [HasPullbacks C] : MonoidalClosed (Arrow C) where
   closed X := {
     rightAdj := pullbackHom.obj (Opposite.op X)
     adj := LeibnizAdjunction.adj _ _ (MonoidalClosed.internalHomAdjunction₂) X }
