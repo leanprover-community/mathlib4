@@ -54,10 +54,7 @@ theorem preimage_univ {f : α → β} [Fintype α] [Fintype β] (hf) : preimage 
 theorem disjoint_preimage {f : α → β} {s t : Finset β}
     {hs : Set.InjOn f (f ⁻¹' ↑s)} {ht : Set.InjOn f (f ⁻¹' ↑t)} (hd : Disjoint s t) :
     Disjoint (s.preimage f hs) (t.preimage f ht) := by
-  rw [disjoint_left]
-  intro i mib mic
-  rw [mem_preimage] at mib mic
-  exact not_disjoint_iff.mpr ⟨_, mib, mic⟩ hd
+  grind [not_disjoint_iff, mem_preimage]
 
 @[simp]
 theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β}
