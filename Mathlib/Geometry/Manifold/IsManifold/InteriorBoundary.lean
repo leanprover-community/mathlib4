@@ -581,24 +581,11 @@ lemma boundaryPoint_inr (x : M') (hx : I.IsBoundaryPoint x) :
 -- it had to be a boundary point, hence `p` were a boundary point also, contradiction.
 lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
     (hleft : Sum.isLeft p) : I.IsInteriorPoint (Sum.getLeft p hleft) := by
-  by_contra h
-  set x := Sum.getLeft p hleft
-  rw [isInteriorPoint_iff_not_isBoundaryPoint x, not_not] at h
-  rw [isInteriorPoint_iff_not_isBoundaryPoint p] at hp
-  have := boundaryPoint_inl (M' := M') x (by tauto)
-  rw [← Sum.eq_left_getLeft_of_isLeft hleft] at this
-  exact hp this
+  grind [isInteriorPoint_iff_not_isBoundaryPoint, boundaryPoint_inl]
 
 lemma isInteriorPoint_disjointUnion_right {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
     (hright : Sum.isRight p) : I.IsInteriorPoint (Sum.getRight p hright) := by
-  by_contra h
-  set x := Sum.getRight p hright
-  rw [← mem_empty_iff_false p, ← (disjoint_interior_boundary (I := I)).inter_eq]
-  constructor
-  · rw [ModelWithCorners.interior, mem_setOf]; exact hp
-  · rw [ModelWithCorners.boundary, mem_setOf, Sum.eq_right_getRight_of_isRight hright]
-    have := isInteriorPoint_or_isBoundaryPoint (I := I) x
-    exact boundaryPoint_inr (M' := M') x (by tauto)
+  grind [isInteriorPoint_iff_not_isBoundaryPoint, boundaryPoint_inr]
 
 lemma interior_disjointUnion :
     ModelWithCorners.interior (I := I) (M ⊕ M') =
