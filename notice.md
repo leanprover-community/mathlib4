@@ -73,7 +73,8 @@ A. 已经完成的接口分层
     `smul_measure_partialSum_succ_sq_sup_ge_le_integral_partialSum_succ_sq_of_mean_zero`,
     `smul_measure_partialSumMax_ge_le_integral_partialSum_succ_sq_of_mean_zero`,
     `smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero`,
-    `smul_measure_partialSumMax_ge_le_sum_variance_of_mean_zero`.
+    `smul_measure_partialSumMax_ge_le_sum_variance_of_mean_zero`,
+    `measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero`.
 
 B. 目前最重要的判断
 
@@ -112,9 +113,13 @@ B. 目前最重要的判断
     且现在也已成功接上有限方差可加，
     得到
     `(ε^2) • μ {ε ≤ partialSumMax X (n + 1)} ≤ ofReal (∑ variance (X k))`。
-    当前真正剩余的瓶颈只剩最后一层纯代数整理：
-    从上式除以 `ε^2`，
-    并把它改写成经典的 `1 / ε^2` 或 `4 / ε^2` 形状。
+    这最后一层纯代数整理现在也已完成 finite 版本：
+    `μ {ε ≤ partialSumMax X (n + 1)} ≤ ofReal ((∑ variance (X k)) / ε^2)`。
+    当前真正剩余的瓶颈已经切换到 tail 版本：
+    把这条强版 finite Kolmogorov inequality 施加到 shifted sequence
+    `fun j => X (m + 1 + j)`，
+    再配合 `ε / 2` 改写成证明 two-series theorem 所需的
+    `4 / ε^2` 形状。
 
 C. 离最终 two-series theorem 还差什么
 
@@ -174,13 +179,20 @@ D. 实现时的具体注意点
     所需的有限 `Set.Pairwise` 独立性；
     这里不需要额外的 finite-family bridge lemma。
 
-30. `condExp_of_stronglyMeasurable` 给的是函数等式；
+30. 在 `ENNReal.le_div_iff_mul_le` 里，
+    用 `ε : NNReal` 组织“除以 `ε^2`”最稳，
+    然后再通过
+    `ENNReal.ofReal_div_of_pos` 和
+    `ENNReal.ofReal_pow`
+    回到实数里的 `/ ε^2` 形状。
+
+31. `condExp_of_stronglyMeasurable` 给的是函数等式；
     若要和 `condExp_sub` 等 a.e. 等式拼接，需要显式加 `.eventuallyEq`。
 
-31. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
+32. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
     更好用；当前平方过程 submartingale 的证明就是通过它手工搭起来的。
 
-32. 目前 `notice.md` 已清理过一次。
+33. 目前 `notice.md` 已清理过一次。
     以后优先维护：
     当前有效接口、
     当前真实瓶颈、

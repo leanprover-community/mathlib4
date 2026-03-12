@@ -573,6 +573,39 @@ lemma smul_measure_partialSumMax_ge_le_sum_variance_of_mean_zero
   rw [hvar] at hbound
   exact hbound
 
+lemma measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) (n : ℕ) :
+    μ {ω | ε ≤ partialSumMax X (n + 1) ω} ≤
+      ENNReal.ofReal ((∑ k ∈ Finset.range (n + 1), variance (X k) μ) / ε ^ 2) := by
+  let ε' : NNReal := ⟨ε, hε.le⟩
+  have hbound :=
+    smul_measure_partialSumMax_ge_le_sum_variance_of_mean_zero
+      (μ := μ) X hX hLp hindep hmean ε' n
+  rw [ENNReal.smul_def, smul_eq_mul] at hbound
+  have hdiv :
+      μ {ω | ε ≤ partialSumMax X (n + 1) ω} ≤
+        (ENNReal.ofReal (∑ k ∈ Finset.range (n + 1), variance (X k) μ)) /
+          ((ε' : ENNReal) ^ 2) := by
+    rw [ENNReal.le_div_iff_mul_le]
+    · simpa [ε', mul_comm, mul_left_comm, mul_assoc] using hbound
+    · left
+      have hε' : (ε' : ENNReal) = ENNReal.ofReal ε := by
+        simpa [ε'] using (ENNReal.ofReal_eq_coe_nnreal hε.le).symm
+      rw [hε']
+      simpa using (ENNReal.pow_ne_zero ((ENNReal.ofReal_ne_zero_iff).2 hε) 2)
+    · right
+      exact ENNReal.ofReal_ne_top
+  refine hdiv.trans_eq ?_
+  rw [show ((ε' : ENNReal) ^ 2) = ENNReal.ofReal (ε ^ 2) by
+    have hε' : (ε' : ENNReal) = ENNReal.ofReal ε := by
+      simpa [ε'] using (ENNReal.ofReal_eq_coe_nnreal hε.le).symm
+    rw [hε']
+    exact (ENNReal.ofReal_pow hε.le 2).symm]
+  rw [← ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero hε.ne.symm)]
+
 lemma variance_partialSum_tail_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)
     (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ)
