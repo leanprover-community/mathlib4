@@ -120,16 +120,12 @@ lemma Presheaf.isClosed_χ_app_apply_of_isSheaf_of_isSeparated (J : Grothendieck
   choose a ha using fun Z (g : Z ⟶ Y) (hg : (Sieve.pullback f ((χ m).app X x)).arrows g) => hg
   refine ⟨(hF.isSheafFor _ hf).amalgamate a ?_, ?_⟩
   · introv Y₁ h
-    have : (m.app (.op Z)).Injective := by
-      rw [← mono_iff_injective]
-      infer_instance
-    apply this
-    simp_rw [FunctorToTypes.naturality]
-    rw [← ha, ← ha]
-    simp_rw [← FunctorToTypes.map_comp_apply, ← op_comp, reassoc_of% h]
-  · refine (hG _ hf).ext (fun Z f' hf' => ?_)
+    apply (mono_iff_injective (m.app (.op Z))).mp inferInstance
+    simp_rw [FunctorToTypes.naturality, ← ha, ← FunctorToTypes.map_comp_apply, ← op_comp,
+      reassoc_of% h]
+  · refine (hG _ hf).ext fun Z f' hf' => ?_
     rw [← FunctorToTypes.naturality, (hF.isSheafFor _ hf).valid_glue _ _ hf', ← (ha _ _ _),
-      op_comp,FunctorToTypes.map_comp_apply]
+      op_comp, FunctorToTypes.map_comp_apply]
 
 variable (C) in
 /-- A construction of a subject classifier in a category of presheaves. -/
@@ -162,7 +158,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def Sheaf.truth {J : GrothendieckTopology C} :
     Sheaf.terminal J (Types.isTerminalPUnit) ⟶ Sheaf.Ω where
-  hom := (Functor.closedSieves J).lift (Presheaf.truth C) (fun {X} x => by cat_disch)
+  hom := (Functor.closedSieves J).lift (Presheaf.truth C) fun {X} x => by cat_disch
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -196,20 +192,19 @@ lemma Sheaf.isPullback_χ_truth {J : GrothendieckTopology C} {F G : Sheaf J (Typ
       exact Presheaf.isPullback_χ_truth m.hom
     · simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.χ_unique {J : GrothendieckTopology C} {F G : Sheaf J (Type max u v)} (m : F ⟶ G)
     [Mono m] (χ' : G ⟶ Sheaf.Ω)
-    (hχ' : IsPullback m ((isTerminalTerminal J _).from F) χ' (Sheaf.truth)) :
+    (hχ' : IsPullback m ((isTerminalTerminal J _).from F) χ' Sheaf.truth) :
     χ' = Sheaf.χ m := by
   ext : 1
-  apply (cancel_mono (closedSieves J).ι).mp
-  simp only [χ_hom, Subfunctor.lift_ι]
+  rw [← cancel_mono (closedSieves J).ι,χ_hom, Subfunctor.lift_ι]
   apply Presheaf.χ_unique _
-  · have pb : IsPullback (𝟙 G.obj) χ'.hom (χ'.hom ≫ (closedSieves J).ι)
-      (closedSieves J).ι := @IsPullback.of_horiz_isIso_mono
-        _ _ _ _ _ _ _ _ _ _ _ (inferInstanceAs (Mono (closedSieves J).ι)) (by simp)
-    have : IsPullback m.hom ?_ χ'.hom (truth.hom) := by
-      simpa using hχ'.map (sheafToPresheaf J _)
-    simpa using this.paste_horiz pb
+  have pb : IsPullback (𝟙 G.obj) χ'.hom (χ'.hom ≫ (closedSieves J).ι)
+    (closedSieves J).ι := IsPullback.of_horiz_isIso_mono (by simp)
+  have : IsPullback m.hom ?_ χ'.hom (truth.hom) := by
+    simpa using hχ'.map (sheafToPresheaf J _)
+  simpa using this.paste_horiz pb
 
 /--
 A construction of a subobject classifier for sheaf categories. `Ω` is the sheaf of closed sieves,
