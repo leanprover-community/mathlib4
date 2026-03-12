@@ -121,6 +121,16 @@ lemma measure_tail_event_le_measure_partialSumMax_event {Ω : Type*} [Measurable
       μ {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} := by
   exact measure_mono (tail_event_subset_partialSumMax_event X m n k hk ε)
 
+lemma le_partialSumMax_iff (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) (ω : Ω) :
+    ε ≤ partialSumMax X n ω ↔ ∃ k ∈ Finset.range (n + 1), ε ≤ |partialSum X k ω| := by
+  simp [partialSumMax, Finset.le_sup'_iff]
+
+lemma partialSumMax_event_eq_biUnion (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) :
+    {ω | ε ≤ partialSumMax X n ω} =
+      ⋃ k ∈ Finset.range (n + 1), {ω | ε ≤ |partialSum X k ω|} := by
+  ext ω
+  simp [le_partialSumMax_iff]
+
 end Real
 
 end Kolmogorov
