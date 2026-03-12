@@ -548,6 +548,24 @@ lemma closure_le_centralizer_centralizer {R : Type*} [NonUnitalRing R] (s : Set 
     closure s ≤ centralizer (centralizer s) :=
   closure_le.mpr Set.subset_centralizer_centralizer
 
+/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
+@[implicit_reducible]
+def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
+    (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (closure s) :=
+  { (closure s).toNonUnitalRing with
+    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
+      ext
+      simp only [MulMemClass.mk_mul_mk]
+      induction hx, hy using closure_induction₂ with
+      | mem_mem x y hx hy => exact hcomm x hx y hy
+      | zero_left x _ => exact Commute.zero_left x
+      | zero_right x _ => exact Commute.zero_right x
+      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
+      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
+      | add_left _ _ _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
+      | add_right _ _ _ _ _ _ h₁ h₂ => exact Commute.add_right h₁ h₂
+      | neg_left _ _ _ _ h => exact Commute.neg_left h
+      | neg_right _ _ _ _ h => exact Commute.neg_right h }
 
 variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
