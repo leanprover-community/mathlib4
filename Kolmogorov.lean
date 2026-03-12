@@ -554,6 +554,25 @@ lemma smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero
   rw [hEq'] at hbound
   exact hbound
 
+lemma smul_measure_partialSumMax_ge_le_sum_variance_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0) (ε : NNReal) (n : ℕ) :
+    (ε ^ 2) • μ {ω | (ε : ℝ) ≤ partialSumMax X (n + 1) ω} ≤
+      ENNReal.ofReal (∑ k ∈ Finset.range (n + 1), variance (X k) μ) := by
+  have hbound :=
+    smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero
+      (μ := μ) X hX hLp hindep hmean ε n
+  have hpair : Set.Pairwise ↑(Finset.range (n + 1)) fun i j => X i ⟂ᵢ[μ] X j := by
+    intro i hi j hj hij
+    exact hindep.indepFun hij
+  have hvar :
+      variance (partialSum X (n + 1)) μ =
+        ∑ k ∈ Finset.range (n + 1), variance (X k) μ := by
+    exact variance_partialSum_eq_sum_variance (μ := μ) X (n + 1) (fun k _ => hLp k) hpair
+  rw [hvar] at hbound
+  exact hbound
+
 lemma variance_partialSum_tail_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)
     (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ)
