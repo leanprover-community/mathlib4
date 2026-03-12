@@ -405,6 +405,7 @@ theorem degree_pow_le (p : R[X]) : ∀ n : ℕ, degree (p ^ n) ≤ n • degree 
   | 0 => by rw [pow_zero, zero_nsmul]; exact degree_one_le
   | n + 1 => by grw [pow_succ, succ_nsmul, degree_mul_le, degree_pow_le]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
     degree (p ^ b) ≤ b * a := by
   induction b with

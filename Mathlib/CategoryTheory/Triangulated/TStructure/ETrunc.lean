@@ -449,6 +449,7 @@ noncomputable def eTruncLTGELTSelfToGELT :
   (Functor.associator _ _ _).inv ≫ Functor.whiskerLeft _ (t.eTruncLTι b) ≫
     (Functor.rightUnitor _).hom
 
+set_option instance.normalForm false in
 set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
@@ -467,7 +468,7 @@ instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
         eTruncLT_map_eq_truncLTι, zero_map, Functor.map_zero, isIsoZero_iff_source_target_isZero]
       constructor
       all_goals exact Functor.map_isZero _ (Functor.zero_obj _)
-  | top => simpa using inferInstanceAs (IsIso (𝟙 _))
+  | top => simpa using _root_.inferInstanceAs (IsIso (𝟙 _))
 
 variable (b : EInt) (X : C)
 
@@ -485,7 +486,7 @@ instance : IsIso (t.eTruncLTGELTSelfToGELT a b) := by
       simp only [eTruncLT_obj_coe, eTruncGE_obj_coe, Functor.comp_obj, eTruncLTGELTSelfToGELT_app,
         eTruncLT_map_eq_truncLTι]
       infer_instance
-    | top => simpa using inferInstanceAs (IsIso (𝟙 _))
+    | top => simpa using _root_.inferInstanceAs (IsIso (𝟙 _))
   | top =>
     exact ⟨0, ((t.eTruncLT.obj b).map_isZero (by simp)).eq_of_src _ _,
       IsZero.eq_of_src (by simp) _ _⟩
