@@ -193,6 +193,22 @@ lemma AlgEquiv.restrictNormalHom_apply (L : IntermediateField F K₁) [Normal F 
     (σ : Gal(K₁/F)) (x : L) : restrictNormalHom L σ x = σ x :=
   AlgEquiv.restrictNormal_commutes σ L x
 
+theorem AlgEquiv.algebraMap_restrictNormalHom_smul (x : E) (g : Gal(K₁/F)) [Normal F E] :
+    algebraMap E K₁ (AlgEquiv.restrictNormalHom E g • x) = g • (algebraMap E K₁ x) := by
+  rw [AlgEquiv.smul_def, AlgEquiv.smul_def]
+  exact AlgEquiv.restrictNormal_commutes _ _ _
+
+theorem AlgEquiv.algebraMap_restrictNormalHom_smul' {A B : Type*} [CommRing A] [CommRing B]
+    [Algebra A B] [MulSemiringAction Gal(K₁/F) B] [Algebra B K₁] [SMulDistribClass Gal(K₁/F) B K₁]
+    [FaithfulSMul B K₁] [Algebra A K₁] [IsScalarTower A B K₁] [Algebra A E] [Normal F E]
+    [MulSemiringAction Gal(E/F) A] [SMulDistribClass Gal(E/F) A E] [IsScalarTower A E K₁] (x : A)
+    (g : Gal(K₁/F)) :
+    algebraMap A B (AlgEquiv.restrictNormalHom E g • x) = g • (algebraMap A B x) := by
+  apply FaithfulSMul.algebraMap_injective B K₁
+  rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A E K₁, algebraMap.smul',
+    algebraMap_restrictNormalHom_smul, ← IsScalarTower.algebraMap_apply, algebraMap.smul',
+    ← IsScalarTower.algebraMap_apply]
+
 variable (F K₁)
 
 /-- If `K₁/E/F` is a tower of fields with `E/F` normal then `AlgHom.restrictNormal'` is an
