@@ -481,6 +481,13 @@ theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (Ï
 
 end Bundle.Trivialization
 
+variable (F E) [TopologicalSpace (TotalSpace F E)] [FiberBundle F E] [VectorBundle R F E] in
+/-- A continuous linear equivalence between the fiber at `b` and the model fiber,
+induced by the preferred trivialisation at each `b`. -/
+@[simps!]
+noncomputable def VectorBundle.continuousLinearEquivAt (b : B) : E b â‰ƒL[R] F :=
+  (trivializationAt F E b).continuousLinearEquivAt R b (FiberBundle.mem_baseSet_trivializationAt' b)
+
 /-! ### Constructing vector bundles -/
 
 variable (B F)
