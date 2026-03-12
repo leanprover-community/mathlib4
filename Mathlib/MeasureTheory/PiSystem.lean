@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 module
 
+public import Mathlib.Data.Set.Dissipate
 public import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Disjointed
@@ -106,6 +107,17 @@ theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : �
   rintro _ ⟨s, hs_mem, rfl⟩ _ ⟨t, ht_mem, rfl⟩ hst
   rw [← Set.preimage_inter] at hst ⊢
   exact ⟨s ∩ t, h_pi s hs_mem t ht_mem (nonempty_of_nonempty_preimage hst), rfl⟩
+
+/-- For a `π`-system `C` over `α` and a sequence of sets `s` belonging to `C`,
+`dissipate s n` belongs to `C`. -/
+lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {C : Set (Set α)}
+    (hC : IsPiSystem C) (h : ∀ n, s n ∈ C) (n : ℕ) (h' : (dissipate s n).Nonempty) :
+    dissipate s n ∈ C := by
+  induction n with
+  | zero => simpa using h 0
+  | succ n hn =>
+    rw [dissipate_succ] at h' ⊢
+    exact hC (dissipate s n) (hn h'.left) (s (n + 1)) (h (n + 1)) h'
 
 theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
     (hp_pi : ∀ n, IsPiSystem (p n)) (hp_directed : Directed (· ≤ ·) p) :
