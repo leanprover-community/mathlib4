@@ -487,7 +487,6 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
   [S : AffineSpace V P] {ι : Sort*}
 
 instance : CompleteLattice (AffineSubspace k P) where
-  __ := PartialOrder.lift ((↑) : AffineSubspace k P → Set P) coe_injective
   sup := fun s₁ s₂ => affineSpan k (s₁ ∪ s₂)
   le_sup_left := fun _ _ =>
     Set.Subset.trans Set.subset_union_left (subset_spanPoints k _)
