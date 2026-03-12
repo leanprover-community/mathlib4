@@ -36,10 +36,12 @@ section Quiver
 
 variable [Quiver.{v₁} C]
 
+@[to_dual self]
 theorem Quiver.Hom.op_inj {X Y : C} :
     Function.Injective (Quiver.Hom.op : (X ⟶ Y) → (Opposite.op Y ⟶ Opposite.op X)) := fun _ _ H =>
   congr_arg Quiver.Hom.unop H
 
+@[to_dual self]
 theorem Quiver.Hom.unop_inj {X Y : Cᵒᵖ} :
     Function.Injective (Quiver.Hom.unop : (X ⟶ Y) → (Opposite.unop Y ⟶ Opposite.unop X)) :=
   fun _ _ H => congr_arg Quiver.Hom.op H
@@ -372,7 +374,7 @@ section
 variable {F G : C ⥤ D}
 
 /-- The opposite of a natural transformation. -/
-@[simps]
+@[simps, to_dual self]
 protected def op (α : F ⟶ G) : G.op ⟶ F.op where
   app X := (α.app (unop X)).op
   naturality X Y f := Quiver.Hom.unop_inj (by simp)
@@ -430,7 +432,7 @@ lemma unop_whiskerLeft {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category* E] {H 
 /-- Given a natural transformation `α : F.op ⟶ G.op`,
 we can take the "unopposite" of each component obtaining a natural transformation `G ⟶ F`.
 -/
-@[simps]
+@[simps, to_dual self]
 protected def removeOp (α : F.op ⟶ G.op) : G ⟶ F where
   app X := (α.app (op X)).unop
   naturality X Y f :=
@@ -461,7 +463,7 @@ variable {F G H : C ⥤ Dᵒᵖ}
 /-- Given a natural transformation `α : F ⟶ G`, for `F G : C ⥤ Dᵒᵖ`,
 taking `unop` of each component gives a natural transformation `G.leftOp ⟶ F.leftOp`.
 -/
-@[simps]
+@[simps, to_dual self]
 protected def leftOp (α : F ⟶ G) : G.leftOp ⟶ F.leftOp where
   app X := (α.app (unop X)).unop
   naturality X Y f := Quiver.Hom.op_inj (by simp)
@@ -484,7 +486,7 @@ lemma leftOpWhiskerRight {E : Type*} [Category* E] {H : E ⥤ C} (α : F ⟶ G) 
 /-- Given a natural transformation `α : F.leftOp ⟶ G.leftOp`, for `F G : C ⥤ Dᵒᵖ`,
 taking `op` of each component gives a natural transformation `G ⟶ F`.
 -/
-@[simps]
+@[simps, to_dual self]
 protected def removeLeftOp (α : F.leftOp ⟶ G.leftOp) : G ⟶ F where
   app X := (α.app (op X)).op
   naturality X Y f :=
