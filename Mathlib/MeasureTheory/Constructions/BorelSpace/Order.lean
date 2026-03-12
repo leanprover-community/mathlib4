@@ -454,6 +454,7 @@ theorem ext_of_Ico_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
   rintro - ⟨a, b, hlt, rfl⟩
   exact h hlt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two finite measures on a Borel space are equal if they agree on all open-closed intervals.  If
 `α` is a conditionally complete linear order with no top element,
 `MeasureTheory.Measure.ext_of_Ioc` is an extensionality lemma with weaker assumptions on `μ` and
@@ -531,6 +532,7 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     finiteness
   · finiteness
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two finite measures on a Borel space are equal if they agree on all left-closed right-infinite
 intervals. -/
 theorem ext_of_Ici {α : Type*} [TopologicalSpace α] {_ : MeasurableSpace α}
@@ -1055,7 +1057,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
     rw [← measure_union]
     · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
         ← _root_.bot_eq_zero, Ici_bot, preimage_univ, inter_univ]
-    · exact disjoint_singleton_left.mpr notMem_Ioi_self
+    · exact disjoint_singleton_left.mpr self_notMem_Ioi
         |>.preimage f |>.inter_right' s |>.inter_left' s
     · exact hs.inter (hf measurableSet_Ioi)
   have B : μ (s ∩ f ⁻¹' Ioi 0) = μ (s ∩ f ⁻¹' {∞}) + μ (s ∩ f ⁻¹' Ioo 0 ∞) := by

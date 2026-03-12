@@ -61,6 +61,7 @@ In the following, we will show that this has the structure of a semiring.
 abbrev R : MonCat.{max v u} :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ SemiRingCat.{max v u} MonCat)
 
+set_option backward.isDefEq.respectTransparency false in
 instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
   { (R.{v, u} F).str,
     AddCommMonCat.FilteredColimits.colimitAddCommMonoid.{v, u}
@@ -294,6 +295,14 @@ instance forget₂SemiRing_preservesFilteredColimits :
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
             (F ⋙ forget₂ RingCat SemiRingCat.{u})) }
+
+instance : Limits.PreservesFilteredColimits (forget₂ RingCat AddCommGrpCat.{u}) where
+  preserves_filtered_colimits _ :=
+    { preservesColimit := fun {F} =>
+        Limits.preservesColimit_of_preserves_colimit_cocone
+          (RingCat.FilteredColimits.colimitCoconeIsColimit.{u, u} F)
+          (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
+            (F ⋙ forget₂ RingCat AddCommGrpCat.{u})) }
 
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget RingCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ RingCat SemiRingCat) (forget SemiRingCat.{u})

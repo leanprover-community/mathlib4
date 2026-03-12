@@ -523,13 +523,13 @@ instance innerRegular_map_smul {α} [Monoid α] [MulAction α G] [ContinuousCons
 @[to_additive
 /-- The image of an inner regular measure under left addition is again inner regular. -/]
 instance innerRegular_map_mul_left [IsTopologicalGroup G] [InnerRegular μ] (g : G) :
-    InnerRegular (Measure.map (g * ·) μ) := InnerRegular.map_of_continuous (continuous_mul_left g)
+    InnerRegular (Measure.map (g * ·) μ) := InnerRegular.map_of_continuous (continuous_const_mul g)
 
 /-- The image of an inner regular measure under right multiplication is again inner regular. -/
 @[to_additive
 /-- The image of an inner regular measure under right addition is again inner regular. -/]
 instance innerRegular_map_mul_right [IsTopologicalGroup G] [InnerRegular μ] (g : G) :
-    InnerRegular (Measure.map (· * g) μ) := InnerRegular.map_of_continuous (continuous_mul_right g)
+    InnerRegular (Measure.map (· * g) μ) := InnerRegular.map_of_continuous (continuous_mul_const g)
 
 variable [IsTopologicalGroup G]
 
@@ -817,6 +817,7 @@ theorem isHaarMeasure_map [BorelSpace G] [ContinuousMul G] {H : Type*} [Group H]
       exact IsCompact.measure_lt_top (g.isCompact_preimage_of_isClosed hK.closure isClosed_closure)
     toIsOpenPosMeasure := hf.isOpenPosMeasure_map h_surj }
 
+@[to_additive]
 protected theorem IsHaarMeasure.comap [BorelSpace G] [MeasurableMul G]
     [Group H] [TopologicalSpace H] [BorelSpace H] {mH : MeasurableMul H}
     (μ : Measure H) [IsHaarMeasure μ] {f : G →* H} (hf : Topology.IsOpenEmbedding f) :

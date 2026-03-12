@@ -293,7 +293,7 @@ def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι
     | .inr i => by apply (continuous_apply _).comp' continuous_snd
 
 private theorem _root_.Fin.appendEquiv_eq_homeomorph (m n : ℕ) : Fin.appendEquiv m n =
-    ((sumArrowHomeomorphProdArrow).symm.trans
+    (sumArrowHomeomorphProdArrow.symm.trans
     (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)).toEquiv := by
   apply Equiv.symm_bijective.injective
   ext x i <;> simp
@@ -432,6 +432,11 @@ noncomputable def toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
   Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
     IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
 
+@[simp]
+lemma toHomeomorph_symm_apply {f : X → Y} (hf : IsEmbedding f) (x : X) :
+    hf.toHomeomorph.symm ⟨f x, by simp⟩ = x :=
+  hf.toHomeomorph.injective (by ext; simp)
+
 /-- A surjective embedding is a homeomorphism. -/
 @[simps! apply]
 noncomputable def toHomeomorphOfSurjective {f : X → Y}
@@ -453,6 +458,18 @@ theorem homeomorphOfSubsetRange_apply_coe {f : X → Y} (hf : IsEmbedding f)
     ↑(hf.homeomorphOfSubsetRange hs x) = f ↑x := rfl
 
 end Topology.IsEmbedding
+
+lemma Topology.IsEmbedding.uliftMap {f : X → Y} (hf : IsEmbedding f) :
+    IsEmbedding (ULift.map f) :=
+  .comp Homeomorph.ulift.symm.isEmbedding (.comp hf <| Homeomorph.ulift.isEmbedding)
+
+lemma Topology.IsOpenEmbedding.uliftMap {f : X → Y} (hf : IsOpenEmbedding f) :
+    IsOpenEmbedding (ULift.map f) :=
+  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf <| Homeomorph.ulift.isOpenEmbedding)
+
+lemma Topology.IsClosedEmbedding.uliftMap {f : X → Y} (hf : IsClosedEmbedding f) :
+    IsClosedEmbedding (ULift.map f) :=
+  .comp Homeomorph.ulift.symm.isClosedEmbedding (.comp hf <| Homeomorph.ulift.isClosedEmbedding)
 
 end
 
@@ -493,7 +510,8 @@ noncomputable def homeomorph : X ≃ₜ Y where
   continuous_toFun := hf.1
   continuous_invFun := by
     rw [← continuousOn_univ, ← hf.bijective.2.range_eq]
-    exact hf.isOpenMap.continuousOn_range_of_leftInverse (leftInverse_surjInv hf.bijective)
+    exact hf.isOpenMap.continuousOn_range_of_leftInverse
+      (Equiv.ofBijective f hf.bijective).left_inv
   toEquiv := Equiv.ofBijective f hf.bijective
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap

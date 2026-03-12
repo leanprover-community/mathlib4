@@ -267,6 +267,24 @@ variable {A} in
 @[simp]
 theorem rid_symm_apply (a : A) : (TensorProduct.rid R S A).symm a = a ⊗ₜ 1 := rfl
 
+variable (T) in
+lemma linearMap_comp_rid : (Algebra.linearMap S (S ⊗[R] B)).restrictScalars R ∘ₗ
+    (TensorProduct.rid R R S).toLinearMap = (Algebra.linearMap R B).lTensor S := by
+  ext; simp
+
+section
+
+variable (R A B C : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] [Semiring B]
+  [Algebra R B] [Semiring C] [Algebra R C]
+
+lemma tmul_one_tmul_one_tmul (x : A) (y : C) :
+    x ⊗ₜ[R] (1 : B) ⊗ₜ[A] ((1 : A) ⊗ₜ[R] y) = 1 ⊗ₜ[A] (x ⊗ₜ[R] y) := by
+  trans x • 1 ⊗ₜ[A] (1 ⊗ₜ[R] y)
+  · simp [Algebra.smul_def]
+  · simp [← tmul_smul, smul_tmul' (M := A)]
+
+end
+
 section CompatibleSMul
 
 variable (R S A B : Type*) [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
@@ -312,6 +330,7 @@ def lidOfCompatibleSMul : S ⊗[R] A ≃ₐ[S] A :=
 
 theorem lidOfCompatibleSMul_tmul (s a) : lidOfCompatibleSMul R S A (s ⊗ₜ[R] a) = s • a := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R M N : Type*} [CommSemiring R] [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] [Module ℚ M] [Module ℚ N] : CompatibleSMul R ℚ M N where
   smul_tmul q m n := by
@@ -363,6 +382,29 @@ lemma comm_comp_includeRight :
 
 theorem adjoin_tmul_eq_top : adjoin R { t : A ⊗[R] B | ∃ a b, a ⊗ₜ[R] b = t } = ⊤ :=
   top_le_iff.mp <| (top_le_iff.mpr <| span_tmul_eq_top R A B).trans (span_le_adjoin R _)
+
+section
+
+omit [Algebra S A] [IsScalarTower R S A]
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- `S`-linear version of `Algebra.TensorProduct.comm` when `A ⊗[R] S`
+is viewed as an `S`-algebra via the right component. -/
+noncomputable def commRight : S ⊗[R] A ≃ₐ[S] A ⊗[R] S where
+  __ := Algebra.TensorProduct.comm R S A
+  commutes' _ := rfl
+
+variable {S A} in
+@[simp]
+lemma commRight_tmul (s : S) (a : A) : commRight R S A (s ⊗ₜ a) = a ⊗ₜ s := rfl
+
+variable {S A} in
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+@[simp]
+lemma Algebra.TensorProduct.commRight_symm_tmul (s : S) (a : A) :
+    (commRight R S A).symm (a ⊗ₜ[R] s) = s ⊗ₜ a := rfl
+
+end
 
 end
 
