@@ -61,7 +61,7 @@ variable
 variable {A : Type*} [AddCommGroup A] [Module 𝕜 A]
 
 /-- An operation `Φ` on sections of a vector bundle `V` over `M` is *tensorial* at `x : M`, if it
-respects addition and scalar multiplication by germs of diffentiable functions at `f`. -/
+respects addition and scalar multiplication by germs of differentiable functions at `f`. -/
 structure TensorialAt (Φ : (Π x : M, V x) → A) (x : M) : Prop where
   smul : ∀ {f : M → 𝕜} {σ : Π x : M, V x}, MDiffAt f x → MDiffAt (T% σ) x → Φ (f • σ) = f x • Φ σ
   add : ∀ {σ σ'}, MDiffAt (T% σ) x → MDiffAt (T% σ') x → Φ (σ + σ') = Φ σ + Φ σ'
