@@ -1,8 +1,11 @@
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
-import Mathlib.Data.Real.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+import Mathlib.MeasureTheory.Group.Arithmetic
+import Mathlib.MeasureTheory.Order.Lattice
 
 open scoped BigOperators
+open MeasureTheory
 
 namespace Kolmogorov
 
@@ -26,6 +29,10 @@ lemma partialSum_succ (X : ℕ → Ω → α) (n : ℕ) :
     partialSum X (n + 1) = fun ω => partialSum X n ω + X n ω := by
   ext ω
   simp [partialSum, Finset.sum_range_succ]
+
+lemma partialSum_measurable {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ) (n : ℕ)
+    (hX : ∀ k, Measurable (X k)) : Measurable (partialSum X n) := by
+  simpa [partialSum] using Finset.measurable_sum (Finset.range n) (fun i _ => hX i)
 
 /-- Reindex a tail sum as the difference of two initial partial sums. -/
 lemma sum_range_shift_eq_sub (f : ℕ → α) (m n : ℕ) :
@@ -82,6 +89,12 @@ lemma abs_sub_partialSum_le_partialSumMax_tail (X : ℕ → Ω → ℝ) (m n k :
     simpa using congrArg (fun g => g ω) (partialSum_tail_eq_sub (X := X) (m := m) (n := k))
   rw [← htail]
   exact abs_partialSum_le_partialSumMax (X := fun j => X (m + 1 + j)) (n := n) (k := k) hk ω
+
+lemma partialSumMax_measurable {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ) (n : ℕ)
+    (hX : ∀ k, Measurable (X k)) : Measurable (partialSumMax X n) := by
+  simpa [partialSumMax] using
+    (Finset.measurable_range_sup'' (n := n) (f := fun k ω => |partialSum X k ω|)
+      (fun k hk => continuous_abs.measurable.comp (partialSum_measurable X k hX)))
 
 end Real
 
