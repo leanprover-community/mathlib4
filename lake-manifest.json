@@ -1,4 +1,4 @@
-{"version": "1.2.0",
+{"version": "1.1.0",
  "packagesDir": ".lake/packages",
  "packages":
  [{"url": "https://github.com/leanprover-community/plausible",
@@ -65,10 +65,10 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "97c42f1e39b15549018b622df1758f4b87df148b",
+   "rev": "86fff72dc9d94c11f7035d754c92098595cb0f48",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "nightly-testing",
+   "inputRev": "lean-pr-testing-12897",
    "inherited": false,
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover/lean4-cli",
@@ -82,5 +82,4 @@
    "inherited": true,
    "configFile": "lakefile.toml"}],
  "name": "mathlib",
- "lakeDir": ".lake",
- "fixedToolchain": false}
+ "lakeDir": ".lake"}
