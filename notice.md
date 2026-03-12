@@ -263,3 +263,38 @@ useful Kolmogorov inequality results
     先证明
     `μ[partialSum X (j + 1) | Filtration.natural X hX i] = partialSum X (i + 1)` a.e.
     在 `i ≤ j` 的情形。
+
+2026-03-12 一步增量接口:
+
+46. 这次继续沿 martingale 路线，但仍然只做“一步递推”的准备，不直接写完整 martingale。
+    新增了两个 lemma：
+    (a) `partialSum_succ_sub_partialSum`：
+        `partialSum X (n + 2) - partialSum X (n + 1) = X (n + 1)`；
+    (b) `condExp_partialSum_succ_sub_eq_zero_of_mean_zero`：
+        若 `X` 独立且逐项均值为零，则 shifted partial sums 的一步增量在时刻 `i`
+        的自然过滤下条件期望为 `0`。
+
+47. 搜索/实现记录：
+    (a) `Mathlib/Probability/Martingale/Basic.lean` 里已经有
+        `martingale_of_condExp_sub_eq_zero_nat`，
+        这说明更合理的目标不是自己展开 martingale 定义，
+        而是给它准备 `hf : ∀ i, μ[f (i+1) - f i | 𝒢 i] = 0`；
+    (b) `partialSum_succ_sub_partialSum` 一开始把 lhs 写成
+        `fun ω => ...`，导致后面条件期望里不好 rewrite；
+        改成真正的函数减法形式后，`rw` 就顺了；
+    (c) 纯代数证明里用
+        `congrArg (fun f => f ω - partialSum X (n+1) ω) (partialSum_succ X (n+1))`
+        比直接 `abel` 稳。
+
+48. 完成情况：
+    (a) `Kolmogorov.lean` 现在已经有 shifted partial sums 的 one-step increment identity；
+    (b) 也已经有对应的条件期望为零版本；
+    (c) `lake env lean Kolmogorov.lean` 已通过。
+
+49. 下一小步建议：
+    现在很自然地可以直接尝试把
+    `stronglyAdapted_partialSum_succ_natural`、
+    `partialSum_memLp` / 可积性接口、
+    `condExp_partialSum_succ_sub_eq_zero_of_mean_zero`
+    三者喂给 `martingale_of_condExp_sub_eq_zero_nat`，
+    得到 `n ↦ partialSum X (n + 1)` 是 martingale。

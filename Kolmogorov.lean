@@ -95,6 +95,13 @@ lemma stronglyAdapted_partialSum_succ_natural {Ω : Type*} [MeasurableSpace Ω]
   intro n
   exact partialSum_stronglyMeasurable_natural X hX (n := n + 1) (i := n) le_rfl
 
+lemma partialSum_succ_sub_partialSum (X : ℕ → Ω → α) (n : ℕ) :
+    partialSum X (n + 2) - partialSum X (n + 1) = X (n + 1) := by
+  ext ω
+  have h :=
+    congrArg (fun f : Ω → α => f ω - partialSum X (n + 1) ω) (partialSum_succ X (n + 1))
+  simpa [sub_eq_add_neg, add_assoc, add_comm, add_left_comm] using h
+
 end Deterministic
 
 section Real
@@ -107,6 +114,14 @@ lemma condExp_natural_eq_zero_of_mean_zero {Ω : Type*} [MeasurableSpace Ω]
     {i j : ℕ} (hij : i < j) (hmean : μ[X j] = 0) :
     μ[X j | Filtration.natural X hX i] =ᵐ[μ] 0 := by
   simpa [hmean] using hindep.condExp_natural_ae_eq_of_lt hX hij
+
+lemma condExp_partialSum_succ_sub_eq_zero_of_mean_zero {Ω : Type*} [MeasurableSpace Ω]
+    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hindep : iIndepFun X μ)
+    (hmean : ∀ k, μ[X k] = 0) (i : ℕ) :
+    μ[partialSum X (i + 2) - partialSum X (i + 1) | Filtration.natural X hX i] =ᵐ[μ] 0 := by
+  rw [partialSum_succ_sub_partialSum]
+  exact condExp_natural_eq_zero_of_mean_zero X hX hindep i.lt_succ_self (hmean (i + 1))
 
 /-- The maximum absolute value of the partial sums `partialSum X k` for `k ≤ n`. -/
 def partialSumMax (X : ℕ → Ω → ℝ) (n : ℕ) : Ω → ℝ :=
