@@ -558,16 +558,16 @@ lemma addContent_accumulate (m : AddContent G C) (hC : IsSetRing C)
     · exact hC.accumulate_mem hsC n
 
 theorem addContent_iUnion_eq_tsum (hC : IsSetRing C) (m : AddContent ℝ≥0∞ C)
-    (s : ℕ → Set α) (hf : ∀ i, s i ∈ C) (hf_disj : Pairwise (Disjoint on s))
+    {s : ℕ → Set α} (hd : Pairwise (Disjoint on s)) (hs : ∀ i, s i ∈ C)
     (hm_iSup : ∀ ⦃s : ℕ → Set α⦄ (_ : ∀ n, s n ∈ C), Monotone s → m (⋃ n, s n) = ⨆ n, m (s n)) :
     m (⋃ i, s i) = ∑' i, m (s i) :=
   calc
     m (⋃ i, s i) = m (⋃ i, accumulate s i) := by
       simp
-    _ = ⨆ i, m (accumulate s i) := hm_iSup (fun n ↦ IsSetRing.accumulate_mem hC hf n)
-      monotone_accumulate
+    _ = ⨆ i, m (accumulate s i) :=
+      hm_iSup (fun n ↦ IsSetRing.accumulate_mem hC hs n) monotone_accumulate
     _ = ⨆ i, ∑ j ∈ range (i + 1), m (s j) :=
-      iSup_congr fun i ↦ addContent_accumulate m hC hf_disj hf i
+      iSup_congr fun i ↦ addContent_accumulate m hC hd hs i
     _ = ∑' i, m (s i) :=
       (ENNReal.tsum_eq_iSup_nat' (tendsto_add_atTop_nat 1)).symm
 
