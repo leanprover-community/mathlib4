@@ -246,15 +246,16 @@ strictly positive order. -/
 def meval [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) : PowerSeries R →+* HahnSeries Γ R :=
   ((embDomainRingHom (multiplesHom Γ g) (StrictMono.injective (nsmul_left_strictMono hg))
       (fun _ _ => StrictMono.le_iff_le (nsmul_left_strictMono hg))).comp
-      (toPowerSeries (R := R)).symm).comp (PowerSeries.rescale r)
+      (toPowerSeries (R := R)).symm.toRingHom).comp (PowerSeries.rescale r)
 
 theorem meval_apply_coeff [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (a : PowerSeries R)
     (n : ℕ) : (meval hg r a).coeff (n • g) = r ^ n * PowerSeries.coeff n a := by
   let f : ℕ ↪o Γ := ⟨⟨multiplesHom Γ g, StrictMono.injective (nsmul_left_strictMono hg)⟩,
       (StrictMono.le_iff_le (nsmul_left_strictMono hg))⟩
   rw [meval, RingHom.comp_apply, RingHom.comp_apply, embDomainRingHom_apply,
-    show n • g = f n by rfl, embDomain_coeff]
-  simp
+    show n • g = f n by rfl, embDomain_coeff, ← PowerSeries.coeff_rescale,
+    ← toPowerSeries_symm_apply_coeff]
+  rfl
 
 theorem meval_notin_range [CommSemiring R] {g g' : Γ} (hg : 0 < g) (r : R) (a : PowerSeries R)
     (hg' : g' ∉ Set.range (multiplesHom Γ g)) : (meval hg r a).coeff g' = 0 := by

@@ -668,9 +668,7 @@ theorem binomialPow_smul_injective {g g' : Γ} (n : S) :
   refine Function.HasLeftInverse.injective ?_
   use (HahnSeries.binomialPow (A := R) g g' (-n) • ·)
   intro A
-  simp only [smul_smul, HahnSeries.binomialPow_add, neg_add_cancel]
-  rw [show OfNat.ofNat (α := S) 0 = Nat.cast 0 by norm_cast,
-    HahnSeries.binomialPow_zero, HahnSeries.single_zero_one, one_smul]
+  simp [smul_smul]
 
 end binomialPow
 

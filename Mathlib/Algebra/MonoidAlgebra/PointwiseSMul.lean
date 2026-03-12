@@ -91,4 +91,29 @@ theorem smul_apply_mulAction [Group G] [MulAction G P] [Semiring R] [AddCommMono
     rw [mem_smulAntidiagonal_of_group] at hg
     rw [hg.2.2]
 
+@[to_additive (dont_translate := R) smul_eq_addMonoidAlgebra_mul]
+theorem smul_eq_MonoidAlgebra_mul [Semiring R] [CancelMonoid G] (a b : MonoidAlgebra R G) :
+    a • ⇑b = (a * b : MonoidAlgebra R G) := by
+  ext g
+  classical
+  rw [MonoidAlgebra.smul_eq, MonoidAlgebra.mul_apply, Finsupp.sum]
+  simp_rw [Finsupp.sum]
+  rw [Finset.sum_sigma', Finset.sum_of_injOn]
+  · exact fun (x, y) ↦ ⟨x, y⟩
+  · simp
+  · intro gh h
+    rw [Finset.mem_coe, mem_smulAntidiagonal_iff] at h
+    have : b gh.2 ≠ 0 := h.2.1
+    simp [h.1, this]
+  · intro gh _ h
+    simp only [Set.mem_image, Finset.mem_coe, Prod.exists, not_exists, not_and] at h
+    contrapose! h
+    use gh.fst, gh.snd
+    rw [mem_smulAntidiagonal_iff]
+    simp only [ne_eq, ite_eq_right_iff, Classical.not_imp] at h
+    exact ⟨⟨(by simp [left_ne_zero_of_mul h.2]), right_ne_zero_of_mul h.2, h.1⟩, rfl⟩
+  · intro _ h
+    rw [mem_smulAntidiagonal_iff, smul_eq_mul] at h
+    simp [h.2.2]
+
 end MonoidAlgebra

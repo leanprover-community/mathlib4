@@ -278,7 +278,7 @@ theorem coeff_sum {α} (s : Finset α) (f : α → HahnSeries Γ R) (g : Γ) :
 
 theorem finsum_prod {R} [AddCommMonoid R] (f : ℕ × ℕ →₀ R) :
     ∑ᶠ (i : ℕ), ∑ᶠ (j : ℕ),  f (i, j) = ∑ᶠ (i : ℕ × ℕ), f i :=
-  Eq.symm (finsum_curry (fun ab ↦ f ab) (Finsupp.finite_support f))
+  Eq.symm (finsum_curry (fun ab ↦ f ab) (Finsupp.hasFiniteSupport f))
 
 theorem finsum_antidiagonal_prod [AddCommMonoid α] [HasAntidiagonal α] (f : α × α →₀ R) :
     ∑ᶠ (i : α), (∑ j ∈ antidiagonal i, f j) =
@@ -428,11 +428,8 @@ theorem mvPowerSeriesFamilySMul [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     mvPowerSeriesFamily y (r • f) =
       (HahnSeries.single (0 : Γ) r) • (mvPowerSeriesFamily y f) := by
   ext1 n
-  simp only [smulFamily_toFun, map_smul, smul_eq_mul, mvPowers, equiv_map_on_fintype_finsupp,
-      Finsupp.equivFunOnFinite_apply, Equiv_toFun, Equiv.coe_fn_symm_mk, PiFamily_toFun, mem_univ,
-      ↓reduceDIte, powers_toFun, smul_apply, HahnModule.of_smul,
-      Algebra.mul_smul_comm, single_zero_mul_eq_smul]
-  rw [mul_comm, Equiv.eq_symm_apply, HahnModule.of_smul, mul_smul]
+  simp only [smulFamily_toFun, map_smul, smul_eq_mul, smul_apply, HahnModule.of_smul,
+    HahnModule.single_zero_smul_eq_smul, HahnModule.of_symm_smul, Equiv.symm_apply_apply, mul_smul]
 
 /-!
 open Classical in

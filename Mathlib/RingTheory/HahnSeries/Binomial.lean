@@ -6,7 +6,6 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.RingTheory.HahnSeries.HEval
-public import Mathlib.RingTheory.HahnSeries.PowerSeries
 public import Mathlib.RingTheory.PowerSeries.Binomial
 
 /-!
@@ -71,22 +70,11 @@ theorem single_sub_single_neg (g g' : Γ) :
 theorem single_sub_single_pow [CommMonoid Γ] (g g' : Γ) (n : ℕ) :
     (single_sub_single g g' (R := R)) ^ n = ∑ i ∈ antidiagonal n,
       Int.negOnePow (i.2) • n.choose (i.1) • single (g ^ (i.1) * g' ^ i.2) 1 := by
-  rw [single_sub_single, Ring.sub_eq_add_neg, Commute.add_pow]
-  · rw [Nat.sum_antidiagonal_eq_sum_range_succ_mk]
-    refine sum_congr rfl ?_
+  rw [single_sub_single, Ring.sub_eq_add_neg, Commute.add_pow']
+  · refine sum_congr rfl ?_
     intro i hi
-    rw [neg_pow']
-    simp only [single_pow, one_pow, smul_single, nsmul_eq_mul, mul_one]
-    rw [← mul_assoc, single_mul_single, one_mul, Int.negOnePow_def, uzpow_natCast]
-    have : Commute (single (g ^ i * g' ^ (n - i)) 1) ((-1 : MonoidAlgebra R Γ) ^ (n - i)) :=
-      single_commute (fun a' ↦ Commute.all (g ^ i * g' ^ (n - i)) a') (fun b' ↦ Commute.one_left b')
-        ((-1) ^ (n - i))
-    rw [this, ← Nat.cast_comm,
-      show (-1 : MonoidAlgebra R Γ) ^ (n - i) = ((-1) ^  (n - i) : ℤ) by norm_cast]
-    rw [← zsmul_eq_mul, ← nsmul_eq_mul, smul_single, smul_single]
-    congr 1
-    rw [nsmul_eq_mul, Nat.cast_comm, smul_one_mul]
-    congr
+    rw [← Int.negOnePow_smul_pow, mul_smul_comm, single_pow, one_pow, single_pow, single_mul_single,
+      one_pow, one_mul, smul_comm]
   · exact Commute.neg_right (single_commute_single (Commute.all g g') rfl)
 
 end MonoidAlgebra
@@ -128,13 +116,15 @@ theorem binomialPow_apply_of_not_gt {g g' : Γ} (h : ¬ g < g') (r : R) :
     rw [binomialPow_apply, PowerSeries.heval_of_orderTop_not_pos _ this]
     simp
 
+@[simp]
 theorem binomialPow_zero {g g' : Γ} :
-    binomialPow A g g' (Nat.cast (R := R) 0) = single 0 (1 : A) := by
+    binomialPow A g g' (0 : R) = 1 := by
   by_cases h : g < g'
-  · rw [binomialPow_apply, Nat.cast_zero, zero_smul, single_zero_one, one_mul,
-      PowerSeries.binomialSeries_zero, OneHomClass.map_one]
+  · rw [binomialPow_apply, zero_smul, single_zero_one, one_mul, PowerSeries.binomialSeries_zero,
+      OneHomClass.map_one]
   · simp [binomialPow_apply_of_not_gt A h (0 : R)]
 
+@[simp]
 theorem binomialPow_add {g g' : Γ} (r r' : R) :
     binomialPow A g g' r * binomialPow A g g' r' =
       binomialPow A g g' (r + r') := by
@@ -144,13 +134,13 @@ theorem binomialPow_add {g g' : Γ} (r r' : R) :
 theorem binomialPow_one {g g' : Γ} (h : g < g') :
     binomialPow A g g' (Nat.cast (R := R) 1) = ((single g) (1 : A) - (single g') 1) := by
   rw [binomialPow_apply, PowerSeries.binomialSeries_nat 1, pow_one, map_add,
-    PowerSeries.heval_X _ (pos_orderTop_single_sub A h (-1)),
-    ← RingHom.map_one (f := PowerSeries.C), PowerSeries.heval_C _, one_smul, mul_add, mul_one,
-    single_mul_single, one_mul, single_neg, Nat.cast_one, one_smul, add_sub_cancel,
-    sub_eq_add_neg]
+    PowerSeries.heval_X _ (pos_orderTop_single_sub A h (-1)), Nat.cast_one, one_smul,
+    show (1 : PowerSeries A) = PowerSeries.C 1 from (RingHom.map_one (PowerSeries.C)).symm,
+    PowerSeries.heval_C, one_smul, mul_add, mul_one, single_mul_single, one_mul, single_neg,
+    add_sub_cancel, sub_eq_add_neg]
 
 theorem ofAddMonoidAlgebra_single_sub_single {g g' : Γ} (h : g < g') :
-    ofAddMonoidAlgebra (Finsupp.single g 1 - Finsupp.single g' 1) =
+    ofAddMonoidAlgebra (AddMonoidAlgebra.single g (1 : A) - AddMonoidAlgebra.single g' 1) =
       binomialPow A g g' (Nat.cast (R := R) 1) := by
   rw [binomialPow_one A h, map_sub]
   simp
@@ -372,11 +362,11 @@ theorem coeff_toOrderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) 
 end Pow
 
 theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single g r) := by
-  rw [← meval_X hg, ← RingHom.map_one (meval hg r), ← RingHom.map_sub]
-  refine RingHom.isUnit_map (meval hg r) ?_
-  rw [← pow_one (1 - PowerSeries.X)]
-  rw [← PowerSeries.invOneSubPow_inv_eq_one_sub_pow R 1]
-  exact Units.isUnit (PowerSeries.invOneSubPow R 1)⁻¹
+  refine isUnit_of_orderTop_pos ?_
+  rw [sub_sub_cancel_left, orderTop_neg]
+  exact lt_of_lt_of_le (WithTop.coe_pos.mpr hg) orderTop_single_le
+
+/-
 
 theorem one_sub_single_npow_coeff {g : Γ} (hg : 0 < g) (r : R) (n k : ℕ) :
     ((1 - single g r) ^ n).coeff (k • g) = (-1) ^ k • Nat.choose n k • r ^ k := by
@@ -396,7 +386,6 @@ theorem one_sub_single_npow_coeff {g : Γ} (hg : 0 < g) (r : R) (n k : ℕ) :
       Polynomial.coeff_one_add_X_pow R n k, mul_rotate']
     simp
 
-/-!
 theorem one_sub_single_negSuccPow_coeff {g : Γ} (hg : 0 < g) (r : R) (n k : ℕ) :
     ((isUnit_one_sub_single hg r).unit ^ (Int.negSucc n)).val.coeff (k • g) =
       Nat.choose (n + k) k • r ^ k := by

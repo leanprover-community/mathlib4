@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Data.Finset.MulAntidiagonal
 public import Mathlib.Data.Finset.SMulAntidiagonal
-public import Mathlib.Data.Finsupp.PointwiseSMul
+public import Mathlib.Algebra.MonoidAlgebra.PointwiseSMul
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.RingTheory.HahnSeries.Addition
 public import Mathlib.RingTheory.Nilpotent.Defs
@@ -299,11 +299,12 @@ theorem coeff_smul_left [SMulWithZero R V] {x : R⟦Γ⟧}
 
 @[deprecated (since := "2025-01-31")] alias smul_coeff_left := coeff_smul_left
 
-open Finsupp in
-theorem ofFinsupp_smul_coeff [SMulWithZero R V] (f : Γ →₀ R) (x : HahnModule Γ' R V) :
+open AddMonoidAlgebra MonoidAlgebra Finsupp in
+theorem ofFinsupp_smul_coeff {R} [Semiring R] [Module R V] (f : AddMonoidAlgebra R Γ)
+    (x : HahnModule Γ' R V) :
     ((of R).symm ((HahnSeries.ofFinsupp f) • x)).coeff = f • ((of R).symm x).coeff := by
   ext g
-  rw [coeff_smul,  Finsupp.smul_eq, HahnSeries.coeff_ofFinsupp]
+  rw [coeff_smul, AddMonoidAlgebra.smul_eq, HahnSeries.coeff_ofFinsupp]
   refine (Finset.sum_of_injOn (M := V) id (Set.injOn_id _) ?_ ?_ ?_).symm
   · intro gh h
     simpa [mem_coe, mem_vaddAntidiagonal_iff] using h
@@ -410,12 +411,12 @@ theorem one_smul' {Γ} [AddCommMonoid Γ] [PartialOrder Γ] [AddAction Γ Γ'] [
 theorem support_smul_subset_vadd_support' [Zero R] [SMulWithZero R V] {x : R⟦Γ⟧}
     {y : HahnModule Γ' R V} :
     ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
-  apply Set.Subset.trans _ <|
-    support_vaddAntidiagonal_subset_vadd (hs := x.isPWO_support) (ht := y.isPWO_support)
+  apply Set.Subset.trans _ <| support_vaddAntidiagonal_subset_vadd (hs := x.isPWO_support)
+    (ht := ((of R).symm y).isPWO_support)
   intro x hx
   simp only [Set.mem_setOf_eq]
   contrapose! hx
-  simp [hx, coeff_smul]
+  simp [coeff_smul, hx]
 
 theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}
     {y : HahnModule Γ' R V} :
@@ -737,7 +738,7 @@ theorem orderTop_pow_of_nonzero {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrde
     rw [pow_succ, orderTop_mul_of_ne_zero (leadingCoeff_pow_of_ne_zero (left_ne_zero_of_mul h) ▸ h),
       ih, succ_nsmul]
 
-theorem orderTop_nsmul_le_orderTop_pow [AddCommMonoid Γ] [LinearOrder Γ]
+theorem orderTop_nsmul_le_orderTop_pow {Γ} [AddCommMonoid Γ] [LinearOrder Γ]
     [IsOrderedCancelAddMonoid Γ] [Semiring R] {x : R⟦Γ⟧} {n : ℕ} :
     n • x.orderTop ≤ (x ^ n).orderTop := by
   induction n with
@@ -753,7 +754,8 @@ theorem orderTop_nsmul_le_orderTop_pow [AddCommMonoid Γ] [LinearOrder Γ]
       n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop :=
         add_le_add_left ih (1 • x.orderTop)
       (x ^ n).orderTop + 1 • x.orderTop = (x ^ n).orderTop + x.orderTop := by rw [one_nsmul]
-      (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := orderTop_add_le_mul
+      (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop :=
+        orderTop_add_le_mul (x := (x ^ n)) (y := x)
       (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]
 
 instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring R⟦Γ⟧ where
@@ -1403,7 +1405,8 @@ theorem equivDomainModuleHom_base_smul (x : HahnModule Γ₁ R V) (r : R) :
     equivDomainModuleHom f f₁ (r • x) =
       r • equivDomainModuleHom f f₁ x := by
   ext
-  simp [equivDomainModuleHom]
+  rw [equivDomainModuleHom_apply_coeff, of_symm_smul, HahnSeries.coeff_smul,
+    ← equivDomainModuleHom_apply_coeff, of_symm_smul, HahnSeries.coeff_smul]
 
 @[simp]
 theorem equivDomainModuleHom_symm_base_smul (x : HahnModule Γ₂ R V) (r : R) :
@@ -1465,9 +1468,11 @@ def ofAddMonoidAlgebra {Γ} [PartialOrder Γ] [AddCancelCommMonoid Γ] [IsOrdere
       rw [← of_symm_smul_of_eq_mul,
         HahnModule.ofFinsupp_smul_coeff x (HahnModule.of R (ofFinsupp y)),
         Equiv.symm_apply_apply, coeff_ofFinsupp, coeff_ofFinsupp,
-        Finsupp.smul_eq_addMonoidAlgebra_mul]
+        AddMonoidAlgebra.smul_eq_addMonoidAlgebra_mul]
   map_zero' := rfl
-  map_add' x y := by simp [← ofFinsuppLinearMap_apply R (x + y), LinearMap.map_add]
+  map_add' x y := by
+    simp only [← ofFinsuppLinearMap_apply R, ← map_add]
+    exact LinearMap.congr_fun rfl (x + y) --defeq problem here
   commutes' r := by
     ext g
     by_cases h : g = 0

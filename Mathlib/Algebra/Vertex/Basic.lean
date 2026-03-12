@@ -127,8 +127,8 @@ theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 Y a b c r s
       (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero, neg_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr (Nat.succ_ne_zero n)),
-        Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ), one_smul, Nat.cast_zero,
-        add_zero, sub_zero, zero_add, add_zero, zpow_one, Units.neg_smul, one_smul]
+      Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ), one_smul, Nat.cast_zero,
+      add_zero, sub_zero, zero_add, add_zero, uzpow_one, Units.neg_smul, one_smul]
     intro i hi
     rw [Ring.choose_zero_pos ℤ (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
         zero_smul, smul_zero]
