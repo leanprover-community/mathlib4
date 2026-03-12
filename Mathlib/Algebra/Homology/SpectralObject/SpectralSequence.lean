@@ -183,8 +183,6 @@ noncomputable def page (r : ℤ) (hr : r₀ ≤ r) :
   d := pageD X data r
   shape pq pq' hpq := dif_neg hpq
 
-section
-
 /-- The short complex of the `r`th page of the spectral sequence on position `pq'`
 identifies to the short complex given by the differentials of the spectral object.
 Then, the homology of this short complex can be computed using
@@ -474,8 +472,6 @@ noncomputable def homologyIso :
       (page X data r' (hr.trans (by lia))).X pq' :=
   homologyIso' X data r r' hrr' hr _ pq' _ rfl rfl _ _ _ _ _ _ rfl rfl
     rfl rfl rfl rfl (data.deg pq' - 1) (data.deg pq') _ rfl (by lia) rfl
-
-end
 
 end
 
