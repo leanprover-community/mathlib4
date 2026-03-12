@@ -196,7 +196,7 @@ infixl:50 " ≤s " => Graph.IsSpanningSubgraph
 
 namespace IsSpanningSubgraph
 
-alias le := toIsSubgraph
+protected alias le := toIsSubgraph
 
 protected lemma trans (h₁ : G ≤s G₁) (h₂ : G₁ ≤s G₂) : G ≤s G₂ :=
   ⟨h₁.le.trans h₂.le, h₁.vertexSet_eq.trans h₂.vertexSet_eq⟩
