@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.Tactic.Ring
 public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-! # ℤ[√d]
 
@@ -680,7 +681,7 @@ instance preorder : Preorder (ℤ√d) where
   lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
-theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
+private theorem le_arch' (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
     | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩
@@ -893,7 +894,50 @@ instance : IsOrderedAddMonoid (ℤ√d) :=
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
 
+
+private theorem le_arch_smul (a b : ℤ√d) (hb : 0 < b) : ∃ n : ℕ, a ≤ n • b := by
+  obtain ⟨n, hn⟩ := le_arch' a
+  have hnorm_ne : b.norm ≠ 0 := by
+    intro h0
+    have : b = 0 := by
+      ext <;> simp [divides_sq_eq_zero_z <| sub_eq_zero.mp h0]
+    exact ne_of_gt hb this
+  have h1_natAbs' : (1 : ℤ√d) ≤ (b.norm.natAbs : ℤ√d) := by
+    exact_mod_cast Nat.succ_le_iff.2 (Int.natAbs_pos.2 hnorm_ne)
+  obtain ⟨m1, hm1⟩ := le_arch' (star b)
+  obtain ⟨m2, hm2⟩ := le_arch' (-star b)
+  let m : ℕ := max m1 m2
+  have hm_cast : (m1 : ℤ√d) ≤ (m : ℤ√d) ∧ (m2 : ℤ√d) ≤ (m : ℤ√d) := by
+    constructor <;> exact_mod_cast (by simp [m])
+  have hstar_le : star b ≤ (m : ℤ√d) ∧ -star b ≤ (m : ℤ√d) :=
+    ⟨hm1.trans hm_cast.1, hm2.trans hm_cast.2⟩
+  have hnorm_le : (b.norm : ℤ√d) ≤ (m : ℤ√d) * b ∧ (-(b.norm : ℤ√d)) ≤ (m : ℤ√d) * b := by
+    constructor
+    · simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hstar_le.1 hb.le
+    · simpa [norm_eq_mul_conj, mul_comm] using mul_le_mul_of_nonneg_right hstar_le.2 hb.le
+  have hnatAbs_le : (b.norm.natAbs : ℤ√d) ≤ (m : ℤ√d) * b := by
+    simp [abs_le'.2 hnorm_le]
+  have hone_le_mul : (1 : ℤ√d) ≤ (m : ℤ√d) * b :=
+    h1_natAbs'.trans hnatAbs_le
+  have hone_le : (1 : ℤ√d) ≤ m • b := by simp [hone_le_mul]
+  have hn_le : (n : ℤ√d) ≤ (n * m) • b := by
+    calc
+      (n : ℤ√d) = n • (1 : ℤ√d) := by simp
+      _ ≤ n • (m • b) := nsmul_le_nsmul_right hone_le n
+      _ = (n * m) • b := by simp [mul_assoc]
+  exact ⟨n * m, hn.trans hn_le⟩
+
+instance : Archimedean (ℤ√d) where
+  arch := Zsqrtd.le_arch_smul
+
+@[deprecated _root_.exists_nat_ge (since := "2026-02-22")]
+theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n :=
+  _root_.exists_nat_ge a
+
 end
+
+
+variable {R : Type}
 
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
   refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
@@ -910,8 +954,6 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
     apply _root_.le_antisymm _ (mul_self_nonneg _)
     rw [ha, mul_assoc]
     exact mul_nonpos_of_nonpos_of_nonneg h.le (mul_self_nonneg _)
-
-variable {R : Type}
 
 @[ext]
 theorem hom_ext [NonAssocRing R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by

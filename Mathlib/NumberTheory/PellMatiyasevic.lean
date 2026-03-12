@@ -315,7 +315,7 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 theorem eq_pellZd (b : ℤ√(d a1)) (b1 : 1 ≤ b) (hp : IsPell b) : ∃ n, b = pellZd a1 n :=
-  let ⟨n, h⟩ := @Zsqrtd.le_arch (d a1) b
+  let ⟨n, h⟩ := exists_nat_ge b
   eq_pell_lem a1 n b b1 hp <|
     h.trans <| by
       rw [Zsqrtd.natCast_val]
