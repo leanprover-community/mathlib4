@@ -48,13 +48,11 @@ open Subgroup
 
 section
 
-variable {G H : Type*} [Group G]
+variable {G H : Type*} [Group G] [Group H]
 
 /-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG (K : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = K
-
-variable [Group H]
 
 /-- `IsNormalClosureFG` is invariant under surjective homomorphism. -/
 theorem IsNormalClosureFG.invariant_surj_hom
@@ -133,7 +131,7 @@ theorem isNormalClosureFG_ker_comp_freeGroupCongr
 
 /-- Reindexing free-group generators via an equivalence preserves surjectivity and
 normal-closure finite generation of the kernel. -/
-theorem exists_reindex_freeGroup_hom
+lemma exists_reindex_freeGroup_hom
     (e : α ≃ β) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f)
     (hfker : IsNormalClosureFG f.ker) :
     ∃ f' : FreeGroup β →* G, Function.Surjective f' ∧ IsNormalClosureFG f'.ker := by
@@ -267,7 +265,7 @@ theorem isNormalClosureFG_ker_lift_range_freeGroupOf
 normal closure, one can choose a finite generating set of the target and recover the canonical
 surjective map from the free group on that set, with kernel still finitely generated in the
 normal closure. -/
-theorem exists_set_hom_surj_and_normalClosureFG_ker_of_freeGroup_hom
+lemma exists_set_hom_surj_and_normalClosureFG_ker_of_freeGroup_hom
   [Finite α] (h : FreeGroup α →* G) (hhsurj : Function.Surjective h)
   (hhker : IsNormalClosureFG h.ker) :
     ∃ (S : Set G) (_ : S.Finite),
@@ -343,26 +341,6 @@ theorem of_mulEquiv {H : Type*} [Group H]
     obtain ⟨α, hα, rels, hrels, ⟨iso'⟩⟩ := h
     exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
 
-/-- Quotienting a group by the normal closure of the empty set gives back the group. -/
-def quotient_normalClosure_empty_mulEquiv (G : Type*) [Group G] :
-    G ⧸ Subgroup.normalClosure (∅ : Set G) ≃* G := by
-  exact (QuotientGroup.quotientMulEquivOfEq (normalClosure_empty (G := G))).trans
-    (QuotientGroup.quotientBot (G := G))
-
 end Group
-
-/- FreeGroup over `a : Type` on finitely many generators is finitely presented. -/
-instance {α : Type} [Finite α] : IsFinitelyPresented (FreeGroup α) := by
-   rw [isFinitelyPresented_iff]
-   use α, inferInstance, ∅, Set.finite_empty
-   exact ⟨quotient_normalClosure_empty_mulEquiv (FreeGroup α)|>.symm⟩
-
-/- FreeGroup over `a : Type*` on finitely many generators is finitely presented. -/
-instance {α : Type*} [Finite α] : IsFinitelyPresented (FreeGroup α) := by
-  let n := Nat.card α
-  let β : Type := Fin n
-  let e : α ≃ β := Finite.equivFin α
-  let iso : FreeGroup α ≃* FreeGroup β := FreeGroup.freeGroupCongr e
-  apply of_mulEquiv iso.symm inferInstance
 
 end IsFinitelyPresented
