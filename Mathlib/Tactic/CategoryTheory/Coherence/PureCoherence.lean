@@ -156,7 +156,7 @@ partial def naturality (nm : Name) (p : NormalizedHom) (η : Mor₂Iso) : Cohere
     let ⟨_, η_g⟩ ← normalize p g
     let ih_η ← naturality nm p η
     mkNaturalityInv p pf f g η η_f η_g ih_η
-  withTraceNode nm (fun _ => return m!"{checkEmoji} {← inferType result}") do
+  withTraceNode nm (fun _ => return m!"{← inferType result}") do
     if ← isTracingEnabledFor nm then addTrace nm m!"proof: {result}"
   return result
 
@@ -176,8 +176,8 @@ def pureCoherence (ρ : Type) [Context ρ] [MkMor₂ (CoherenceM ρ)]
     (nm : Name) (mvarId : MVarId) : MetaM (List MVarId) :=
   mvarId.withContext do
     withTraceNode nm (fun ex => match ex with
-      | .ok _ => return m!"{checkEmoji} coherence equality: {← mvarId.getType}"
-      | .error err => return m!"{crossEmoji} {err.toMessageData}") do
+      | .ok _ => return m!"coherence equality: {← mvarId.getType}"
+      | .error err => return err.toMessageData) do
       let e ← instantiateMVars <| ← mvarId.getType
       let some (_, η, θ) := (← whnfR e).eq?
         | throwError "coherence requires an equality goal"

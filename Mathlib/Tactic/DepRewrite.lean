@@ -292,7 +292,7 @@ The expected types of certain subterms are computed from `et?`. -/
 partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
   withTraceNode traceClsVisit (fun
     | .ok e' => pure m!"{e} => {e'} (et: {et?})"
-    | .error _ => pure m!"{e} => 💥️") <| Meta.withIncRecDepth do
+    | .error _ => pure m!"{e} => ??") <| Meta.withIncRecDepth do
   let ctx ← read
   if let some (eup, cacheOcc, dCacheOcc) ← MonadCache.findCached? { val := e : ExprStructEq } then
     if canUseCache cacheOcc dCacheOcc (← get) ctx.cfg.occs then
@@ -401,7 +401,7 @@ def dabstract (e : Expr) (p : Expr) (cfg : DepRewrite.Config) : MetaM Expr := do
   withTraceNode traceCls (fun
     -- Message shows unified pattern (without mvars) b/c it is constructed after the body runs
     | .ok motive => pure m!"{e} =[x/{p}]=> {motive}"
-    | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> 💥️{indentD err.toMessageData}") do
+    | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> {indentD err.toMessageData}") do
   withLocalDeclD `x tp fun x => do
   withLocalDeclD `h (← mkEq p x) fun h => do
     let e' ← visit e none |>.run { cfg, p, x, h, Δ := ∅, δ := ∅ } |>.run.run' 1
@@ -516,7 +516,7 @@ def cleanupCasts (e : Expr) : MetaM Expr :=
       | .ok (.visit e') => pure m!"{e} => visit {e'}"
       | .ok (.continue e'?) => pure m!"{e} => continue {e'?.getD e}"
       | .ok (.done e') => pure m!"{e} => done {e'}"
-      | .error _ => pure m!"{e} => 💥️") <| do
+      | .error _ => pure m!"{e} => ??") <| do
     let .mdata mdata e := e | return .continue
     if mdata != castMData then return .continue
     trace[Tactic.depRewrite.cleanupCasts] "found potential cast{indentExpr e}"

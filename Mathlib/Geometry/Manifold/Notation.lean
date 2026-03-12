@@ -280,7 +280,7 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelRe
     TermElabM (Option FindModelResult) := do
   let s ← saveState
   try
-    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
+    withTraceNode `Elab.DiffGeo.MDiff (fun _ => pure m!"{strategyDescr}") do
       let e ←
         try
           Term.withoutErrToSorry <| Term.withSynthesize x

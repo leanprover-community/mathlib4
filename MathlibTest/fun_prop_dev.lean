@@ -536,16 +536,16 @@ example [Add α] (a : α) :
 
 -- Test that local theorem is being used
 /--
-trace: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
-  [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
+trace: [Meta.Tactic.fun_prop] ✅️ Con fun x => f x y
+  [Meta.Tactic.fun_prop] ✅️ Con fun x => f x y
     [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
     [Meta.Tactic.fun_prop] removing argument to later use this : Con f
-    [Meta.Tactic.fun_prop] [✅️] applying: Con_comp
-      [Meta.Tactic.fun_prop] [✅️] Con fun f => f y
-        [Meta.Tactic.fun_prop] [✅️] applying: Con_apply
-      [Meta.Tactic.fun_prop] [✅️] Con fun x => f x
+    [Meta.Tactic.fun_prop] ✅️ applying: Con_comp
+      [Meta.Tactic.fun_prop] ✅️ Con fun f => f y
+        [Meta.Tactic.fun_prop] ✅️ applying: Con_apply
+      [Meta.Tactic.fun_prop] ✅️ Con fun x => f x
         [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
-        [Meta.Tactic.fun_prop] [✅️] applying: this : Con f
+        [Meta.Tactic.fun_prop] ✅️ applying: this : Con f
 -/
 #guard_msgs in
 example [Add α] (y : α):
