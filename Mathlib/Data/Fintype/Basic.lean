@@ -289,9 +289,4 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine ⟨f, hf, fun m n hmn => ?_⟩
-  rcases lt_trichotomy m n with (h | rfl | h)
-  · exact hf' m n h
-  · exact (hmn rfl).elim
-  · unfold Function.onFun
-    apply symm
-    exact hf' n m h
+  grind +splitIndPred
