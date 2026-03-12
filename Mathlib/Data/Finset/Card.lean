@@ -656,8 +656,9 @@ theorem le_card_iff_exists_subset_card : n ≤ #s ↔ ∃ t ⊆ s, #t = n := by
 
 theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finset α} {n : ℕ}
     (hXY : 2 * n < #(X ∪ Y)) : ∃ C : Finset α, n < #C ∧ (C ⊆ X ∨ C ⊆ Y) := by
-  have : #(X ∪ Y) = #X + #(Y \ X) := by grind
-  grind
+  grind =>
+    have : #(X ∪ Y) = #X + #(Y \ X)
+    finish
 
 /-! ### Explicit description of a finset from its card -/
 

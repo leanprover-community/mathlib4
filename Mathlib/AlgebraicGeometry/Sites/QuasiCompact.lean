@@ -201,7 +201,7 @@ lemma Cover.mem_propQCTopology {S : Scheme.{u}} (𝒰 : Cover.{u} (precoverage P
 
 lemma zariskiTopology_le_propQCTopology [P.IsMultiplicative] [IsZariskiLocalAtSource P] :
     zariskiTopology ≤ propQCTopology P :=
-    Precoverage.toGrothendieck_mono zariskiPrecoverage_le_propQCPrecoverage
+  Precoverage.toGrothendieck_mono zariskiPrecoverage_le_propQCPrecoverage
 
 end Property
 
