@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
+public import Mathlib.Analysis.Normed.Group.Submodule
 public import Mathlib.Analysis.Normed.Operator.FredholmAlternative
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.Data.Fin.Tuple.Sort
@@ -46,9 +47,13 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
 These are forms of the *diagonalization theorem* for self-adjoint operators on finite-dimensional
 inner product spaces.
 
+The third part of the file covers properties of compact self-adjoint operators:
+* `orthogonalComplement_iSup_eigenspaces_eq_bot` states that the the eigenspaces of a compact
+  self-adjoint operator have trivial orthogonal complement.
+
 ## TODO
 
-Spectral theory for compact self-adjoint operators, bounded self-adjoint operators.
+Spectral theory for bounded self-adjoint operators.
 
 ## Tags
 
@@ -57,39 +62,6 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 -/
 
 @[expose] public section
-
-#check ContinuousLinearMap.toLinearMap
-
-@[fun_prop]
-theorem foo {R S : Type*}
-    [inst : Semiring R]
-      [inst_1 : Semiring S]
-        {σ : R →+* S}
-          {M : Type*}
-            [inst_2 : TopologicalSpace M]
-              [inst_3 : AddCommMonoid M]
-                {M₂ : Type*}
-                  [inst_4 : TopologicalSpace M₂]
-                    [inst_5 : AddCommMonoid M₂]
-                      [inst_6 : Module R M] [inst_7 : Module S M₂] (f : M →SL[σ] M₂) :
-                      Continuous f.toLinearMap := by
-                    fun_prop
-
-#min_imports
-
-@[fun_prop]
-theorem LinearMap.continuous_domRestrict {R R₂ M M₂ : Type*}
-    [TopologicalSpace M] [TopologicalSpace M₂]
-        [Semiring R]
-          [Semiring R₂]
-            [AddCommMonoid M]
-              [inst_3 : AddCommMonoid M₂]
-                [inst_4 : Module R M]
-                  [inst_5 : Module R₂ M₂]
-                    {σ₁₂ : R →+* R₂} (f : M →ₛₗ[σ₁₂] M₂) (hf : Continuous f)
-                      (p : Submodule R M) : Continuous (f.domRestrict p) := by
-              simp [domRestrict]
-              fun_prop
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -401,8 +373,6 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
 
 end Nonneg
 
-
-
 namespace ContinuousLinearMap
 
 variable [CompleteSpace E] {T : E →L[𝕜] E}
@@ -423,6 +393,8 @@ theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' 
     rw [hasEigenvector_iff, mem_genEigenspace_one] at hv
     exact (smul_eq_zero_iff_left hv.2).mp hv.1.symm
 
+/-- The **Spectral Theorem** for compact self-adjoint operators: the eigenspaces of a compact
+self-adjoint operator have trivial orthogonal complement. -/
 set_option backward.isDefEq.respectTransparency false in
 theorem orthogonalComplement_iSup_eigenspaces_eq_bot
     (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
