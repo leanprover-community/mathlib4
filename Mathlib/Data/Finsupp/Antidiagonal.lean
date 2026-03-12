@@ -89,4 +89,19 @@ theorem image_prodMap_embDomain_antidiagonal {β : Type*} [DecidableEq β] (f : 
   · rw [embDomain_comapDomain ((mem_range_embDomain_iff ..).mp
       (isLowerSet_range_embDomain f (le_iff_exists_add'.mpr ⟨u, h.symm⟩) (by simp)))]
 
+open Finset in
+theorem image_sumElim_product_antidiagonal {β : Type*} [DecidableEq β]
+    {x : α →₀ ℕ} {y : β →₀ ℕ} : image (fun ((x, y), z, w) ↦
+      (x.sumElim z, y.sumElim w)) (antidiagonal x ×ˢ antidiagonal y) =
+    antidiagonal (x.sumElim y) := by
+  symm; ext ⟨u, v⟩
+  simp only [mem_antidiagonal, mem_image, mem_product, Prod.mk.injEq, Prod.exists]
+  refine ⟨fun h ↦ ⟨u.comapDomain Sum.inl Sum.inl_injective.injOn,
+    v.comapDomain Sum.inl Sum.inl_injective.injOn, u.comapDomain Sum.inr Sum.inr_injective.injOn,
+    v.comapDomain Sum.inr Sum.inr_injective.injOn, ⟨?_, ?_⟩, comapDomain_sumElim_comapDomain ..,
+    comapDomain_sumElim_comapDomain ..⟩, fun ⟨a, b, a', b', h1, h2, h3⟩ ↦ ?_⟩
+  · rw [← comapDomain_add_of_injective Sum.inl_injective, h, comapDomain_sumInl_sumElim]
+  · rw [← comapDomain_add_of_injective Sum.inr_injective, h, comapDomain_sumInr_sumElim]
+  rw [← h2, ← h3, sumElim_add, h1.left, h1.right]
+
 end Finsupp
