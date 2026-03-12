@@ -415,11 +415,15 @@ instance : SupSet (Concept α β r) where
   sSup S := ofIsIntent _ _ (.iInter₂ _ fun c (_ : c ∈ S) ↦ c.isIntent_intent)
 
 instance : CompleteLattice (Concept α β r) where
-  le_sSup _ _ hc := intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
-  sSup_le _ _ hc := intent_subset_intent_iff.1 <|
-    subset_iInter₂ (intent_subset_intent_iff.2 <| hc · ·)
-  sInf_le _ _ := biInter_subset_of_mem
-  le_sInf _ _ := subset_iInter₂
+  isLUB_sSup s := by
+    constructor <;> intro _ hc
+    · exact intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
+    · exact intent_subset_intent_iff.1 <|
+        subset_iInter₂ (fun a ha ↦ intent_subset_intent_iff.2 (hc ha))
+  isGLB_sInf s := by
+    constructor <;> intro
+    · exact biInter_subset_of_mem
+    · exact subset_iInter₂
 
 @[simp]
 theorem extent_iSup (f : ι → Concept α β r) :
