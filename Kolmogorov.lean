@@ -224,6 +224,23 @@ lemma measure_partialSum_ge_le_variance_div_sq {Ω : Type*} [MeasurableSpace Ω]
   · exact partialSum_memLp (μ := μ) X n hX
   · exact hε
 
+lemma integral_partialSum_eq_sum_integral {Ω : Type*} [MeasurableSpace Ω]
+    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (n : ℕ)
+    (hX : ∀ k ∈ Finset.range n, MemLp (X k) 2 μ) :
+    μ[partialSum X n] = ∑ k ∈ Finset.range n, μ[X k] := by
+  simpa [partialSum] using
+    (integral_finset_sum (μ := μ) (s := Finset.range n) (f := fun k => X k) fun k hk =>
+      (hX k hk).integrable (by norm_num))
+
+lemma integral_partialSum_tail_eq_zero_of_forall_integral_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ)
+    (hmean : ∀ k ∈ Finset.range n, μ[X (m + 1 + k)] = 0) :
+    μ[partialSum (fun j => X (m + 1 + j)) n] = 0 := by
+  rw [integral_partialSum_eq_sum_integral (μ := μ) (X := fun j => X (m + 1 + j)) n hX]
+  exact Finset.sum_eq_zero fun k hk => hmean k hk
+
 lemma measure_partialSum_tail_ge_le_variance_div_sq {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)
     (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ) {ε : ℝ} (hε : 0 < ε) :
@@ -273,6 +290,19 @@ lemma measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_mean_zero
     measure_partialSum_tail_ge_le_sum_variance_div_sq (μ := μ) X m n hX hindep hε
   rw [hmean] at hbound
   simpa using hbound
+
+lemma measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ)
+    (hindep : Set.Pairwise ↑(Finset.range n) fun i j => X (m + 1 + i) ⟂ᵢ[μ] X (m + 1 + j))
+    (hmean : ∀ k ∈ Finset.range n, μ[X (m + 1 + k)] = 0) {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ |partialSum (fun j => X (m + 1 + j)) n ω|} ≤
+      ENNReal.ofReal ((∑ k ∈ Finset.range n, variance (X (m + 1 + k)) μ) / ε ^ 2) := by
+  apply measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_mean_zero
+    (μ := μ) X m n hX hindep
+  exact integral_partialSum_tail_eq_zero_of_forall_integral_zero (μ := μ) X m n hX hmean
+  exact hε
 
 end Real
 

@@ -59,3 +59,26 @@ useful Kolmogorov inequality results
    一次只加一个桥接 lemma；
    每次优先让新 lemma 的 statement 尽量贴近原证明文本；
    避免过早把整个 two-series theorem 的顶层 statement 硬写出来。
+
+2026-03-12 本次推进:
+
+16. 这次优先补了“零均值如何传给 tail partial sums”这一层，没有直接碰 maximal inequality。
+    新增了三个 lemma：
+    (a) `integral_partialSum_eq_sum_integral`：把 `μ[partialSum X n]` 展开成有限和 `∑ μ[X k]`；
+    (b) `integral_partialSum_tail_eq_zero_of_forall_integral_zero`：若尾部每一项均值为 `0`，则尾部 partial sum 的均值为 `0`；
+    (c) `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero`：把现有 Chebyshev + variance bound 包装成直接接受“逐项零均值”假设的版本。
+
+17. 搜索记录：
+    (a) `Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` 里的 `integral_finset_sum` 可以直接处理 `μ[∑ i ∈ s, f i]`；
+    (b) `MemLp.integrable` 足够把 `MemLp _ 2 μ` 降到可积性；
+    (c) 试过直接 `rw [partialSum, integral_finset_sum]`，rewrite 方向不稳，最后改成 `simpa [partialSum] using integral_finset_sum ...` 更可靠。
+
+18. 完成情况：
+    (a) `lake env lean Kolmogorov.lean` 已通过；
+    (b) 当前零均值接口不再需要手工提供 `μ[partialSum ...] = 0`，后面拼 maximal bound 时可以直接从逐项均值为零出发。
+
+19. 下一小步建议：
+    用 `measure_event_two_mul_partialSumMax_tail_le_sum_sub'` 和新得到的
+    `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero`
+    组装出一个 finite tail maximal bound。
+    即使暂时还是 union-bound 形状，也能把“最大值事件”统一改写成“若干 tail variance sums”的和，为后面再收紧常数做准备。
