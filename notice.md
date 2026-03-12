@@ -1,426 +1,133 @@
 useful Kolmogorov inequality results
 
-1. `MeasureTheory.maximal_ineq`：Doob 的 maximal inequality，适用于**非负 submartingale**。文档写得很明确。
+1. `MeasureTheory.maximal_ineq`：Doob 的 maximal inequality，适用于非负 submartingale。
 2. `ProbabilityTheory.IndepFun.variance_sum`：有限个两两独立实随机变量的方差可加。
 3. `ProbabilityTheory.meas_ge_le_variance_div_sq`：Chebyshev 不等式。
-
-2026-03-12:
-
-4. 在 `Kolmogorov.lean` 里先落了一个纯代数步骤，不碰概率空间：
-   `Kolmogorov.sum_range_shift_eq_sub` 和 `Kolmogorov.sum_range_shift_succ_eq_sub`。
-   它们把尾和 `∑_{i < n} f (m + i)` / `∑_{i < n} f (m + 1 + i)` 改写成两个初始部分和的差。
-5. 这一步用归纳最稳。试过直接拿 `Finset.sum_Ico_eq_sub` + `simp`，化简方向不太顺，先不硬凑。
-6. 代码里注意本地记号是 `∑ i ∈ s, ...`，不是 `∑ i in s, ...`。
-
-2026-03-12 当前进展（阶段性总结）:
-
-7. 已经把“尾部部分和”这条链路的基础接口铺到概率层了，主要分成六层：
-   (a) 纯代数：`partialSum`、`partialSum_tail_eq_sub`，把 shifted partial sums 改写成原序列两个部分和的差。
-   (b) 最大部分和：`partialSumMax`、`abs_partialSum_le_partialSumMax`、`abs_sub_partialSum_le_partialSumMax_tail`。
-   (c) 事件层：`partialSumMax_event_eq_biUnion`、`partialSumMax_tail_event_eq_biUnion_sub`，把 maximal event 改写成有限并。
-   (d) union bound：`measure_partialSumMax_event_le_sum`、`measure_partialSumMax_tail_event_le_sum_sub`。
-   (e) `ε/2` 缩放：`partialSumMax_nonneg`、`event_two_mul_partialSumMax_ge_eq`、`measure_event_two_mul_partialSumMax_tail_le_sum_sub`、`measure_event_two_mul_partialSumMax_tail_le_sum_sub'`。
-   (f) 概率与方差：`partialSum_memLp`、`measure_partialSum_ge_le_variance_div_sq`、`measure_partialSum_tail_ge_le_variance_div_sq`、`variance_partialSum_eq_sum_variance`、`variance_partialSum_tail_eq_sum_variance`。
-
-8. 已经有一个相当关键的尾部估计：
-   `measure_partialSum_tail_ge_le_sum_variance_div_sq`。
-   它把 shifted partial sum 的 Chebyshev 上界直接改写成“尾部方差和 / ε^2”形式。
-
-9. 在“尾部部分和均值为 0”的附加假设下，又得到：
-   `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_mean_zero`。
-   这已经非常接近原证明里真正想用的
-   `μ { ε ≤ |∑ tail terms| } ≤ ...`
-   形式。
-
-10. 当前还没做的核心部分主要有两块：
-   (a) 把单个 shifted partial sum 的方差和版 Chebyshev 上界，系统地汇总成一个 finite maximal inequality 风格的结论。
-   (b) 从 finite tail estimate 走到 `limsup - liminf = 0` a.s.，也就是 two-series theorem 的收尾部分。
-
-11. 一个重要判断：现在仓库里虽然还没有真正的 Kolmogorov inequality lemma，但已经有足够多的接口，能把“最大值事件”“`ε/2` 缩放”“tail difference”“方差和”这些步骤几乎逐块拼起来。剩下工作比前面更像“组装”而不是“找定理名”。
-
-2026-03-12 接下来最自然的计划:
-
-12. 下一小步优先做一个 finite tail maximal bound，目标形状接近：
-   `μ {ω | ε ≤ 2 * partialSumMax (fun j => X (m+1+j)) n ω} ≤ ENNReal.ofReal (4 * ((∑ variance)/ε^2))`
-   或等价改写。
-   这一步应该只是在现有 lemma 之间做一次组合，不需要碰最终 almost sure 收敛。
-
-13. 如果上一步顺利，再继续做一个“零均值如何传给 tail partial sums”的小 lemma。
-   目前零均值版本是手工假设 `μ[partialSum ...] = 0`。
-   后面最好把它从更原子的假设
-   `∀ k < n, μ[X (m+1+k)] = 0`
-   推出来。
-
-14. 再下一步才是处理极限对象：
-   把 `limsup S_N - liminf S_N` 用 tail maximal sums 控制；
-   然后利用 tail variance sums 随 `m → ∞` 消失，得到 oscillation 为 `0`。
-
-15. 目前建议继续保持“小步可编译”的节奏：
-   一次只加一个桥接 lemma；
-   每次优先让新 lemma 的 statement 尽量贴近原证明文本；
-   避免过早把整个 two-series theorem 的顶层 statement 硬写出来。
-
-2026-03-12 本次推进:
-
-16. 这次优先补了“零均值如何传给 tail partial sums”这一层，没有直接碰 maximal inequality。
-    新增了三个 lemma：
-    (a) `integral_partialSum_eq_sum_integral`：把 `μ[partialSum X n]` 展开成有限和 `∑ μ[X k]`；
-    (b) `integral_partialSum_tail_eq_zero_of_forall_integral_zero`：若尾部每一项均值为 `0`，则尾部 partial sum 的均值为 `0`；
-    (c) `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero`：把现有 Chebyshev + variance bound 包装成直接接受“逐项零均值”假设的版本。
-
-17. 搜索记录：
-    (a) `Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` 里的 `integral_finset_sum` 可以直接处理 `μ[∑ i ∈ s, f i]`；
-    (b) `MemLp.integrable` 足够把 `MemLp _ 2 μ` 降到可积性；
-    (c) 试过直接 `rw [partialSum, integral_finset_sum]`，rewrite 方向不稳，最后改成 `simpa [partialSum] using integral_finset_sum ...` 更可靠。
-
-18. 完成情况：
-    (a) `lake env lean Kolmogorov.lean` 已通过；
-    (b) 当前零均值接口不再需要手工提供 `μ[partialSum ...] = 0`，后面拼 maximal bound 时可以直接从逐项均值为零出发。
-
-19. 下一小步建议：
-    用 `measure_event_two_mul_partialSumMax_tail_le_sum_sub'` 和新得到的
-    `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero`
-    组装出一个 finite tail maximal bound。
-    即使暂时还是 union-bound 形状，也能把“最大值事件”统一改写成“若干 tail variance sums”的和，为后面再收紧常数做准备。
-
-2026-03-12 继续推进:
-
-20. 这次没有直接做完整 maximal bound，而是先补了一个更细的“截断接口”：
-    `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero_of_mem_range`。
-    它的作用是：
-    若我们已知对 `range (n + 1)` 上所有 tail terms 都有 `MemLp`、两两独立、均值为 `0`，
-    那么对任意 `k ≤ n`，都能直接得到第 `k` 个 tail partial sum 的 variance bound。
-
-21. 这一步的技术点主要是“把大范围假设限制到小范围”：
-    (a) `MemLp` 和均值为零都用 `Finset.mem_range.mp` + `Nat.lt_trans` 从 `j < k` 推到 `j < n + 1`；
-    (b) pairwise independence 用 `Set.Pairwise.mono` 把
-        `↑(Finset.range (n + 1))` 上的结论限制到 `↑(Finset.range k)`。
-
-22. 完成情况：
-    (a) 新 lemma 已加入 `Kolmogorov.lean`；
-    (b) `lake env lean Kolmogorov.lean` 再次通过；
-    (c) 现在已经能对 union bound 展开后每一个 summand 自动套上同一模板，不必再为每个 `k` 单独重建假设。
-
-23. 下一小步更明确了：
-    直接从 `measure_event_two_mul_partialSumMax_tail_le_sum_sub'` 出发，
-    对右侧 `∑ k ∈ range (n + 1), μ {... partialSum ... k ...}` 的每一项应用新 lemma，
-    得到一个 finite maximal event 的总和上界。
-    这一步很可能就是把当前准备好的接口真正“组装”起来。
-
-2026-03-12 再推进一步:
-
-24. 这次把上两步准备好的接口真正组装起来了，新增：
-    `measure_event_two_mul_partialSumMax_tail_le_sum_variance_div_sq_of_forall_mean_zero`。
-    它给出一个 finite maximal event 的总和上界：
-    `μ { ε ≤ 2 * partialSumMax tail n }`
-    被一个
-    `∑ k ∈ range (n + 1), ENNReal.ofReal ((∑_{j<k} variance_j) / (ε/2)^2)`
-    控制。
-
-25. 证明结构非常直接：
-    (a) 先用 `measure_event_two_mul_partialSumMax_tail_le_sum_sub'`
-        把 maximal event 变成对各个 `k` 的 partial sum 事件求和；
-    (b) 再对每一项调用
-        `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero_of_mem_range`；
-    (c) `ε / 2 > 0` 用一次 `linarith` 即可。
-
-26. 完成情况：
-    (a) 这已经是第一个真正意义上的 finite tail maximal bound，只是右侧还是“前缀方差和的有限和”；
-    (b) `lake env lean Kolmogorov.lean` 通过；
-    (c) 目前还没有把右侧再压缩成单个尾部方差和，常数也还没整理成 `4 / ε^2` 的经典外形。
-
-27. 下一小步建议：
-    尝试继续压缩右侧的有限和。
-    可能有两条路：
-    (a) 先做一个纯代数/序上的 lemma，比较
-        `∑ k ≤ n, (∑ j < k, a_j)` 和 `C * ∑ j < n, a_j`；
-    (b) 或者改方向，直接开始接 Doob/maximal inequality，避免 union bound 带来的多余求和。
-    从当前文件状态看，若继续保持“小步稳编译”，更适合先把右侧有限和的整理接口做出来。
-
-2026-03-12 再压一层:
-
-28. 这次在上一条 finite maximal bound 的基础上，新增了
-    `measure_event_two_mul_partialSumMax_tail_le_mul_variance_div_sq_of_forall_mean_zero`。
-    它把右侧的“前缀方差和的有限和”压成
-    `(n + 1) * ENNReal.ofReal ((尾部总方差和) / (ε / 2)^2)`。
-
-29. 证明思路是纯序比较，没有新概率内容：
-    (a) 对每个 `k ≤ n`，用
-        `∑_{j < k} variance_j ≤ ∑_{j < n+1} variance_j`；
-    (b) 这里用的是
-        `Finset.sum_le_sum_of_subset_of_nonneg`，
-        非负性来自 `variance_nonneg`；
-    (c) 然后把有限个相同常数求和，`simp` 自动化成 `(n + 1) * c`。
-
-30. 这一步的意义：
-    虽然还保留了多余的 `(n + 1)` 因子，离真正的 Kolmogorov inequality 还差一截，
-    但右侧现在已经从“双重和”化成“单个 tail variance sum”，后面无论继续做纯代数整理，
-    还是改走 Doob/maximal inequality 路线，接口都会更干净。
-
-31. 完成情况：
-    (a) 新 lemma 已加入 `Kolmogorov.lean`；
-    (b) `lake env lean Kolmogorov.lean` 通过；
-    (c) 这说明当前 union-bound 路线至少已经稳定地产出了一个可用但较弱的 finite maximal estimate。
-
-32. 下一小步建议：
-    更合理的是开始尝试避开 union bound 的 `(n + 1)` 损失。
-    即优先研究能否把 `partialSum` 序列包装成 martingale / submartingale，
-    然后直接套 `MeasureTheory.maximal_ineq` 或相关结果。
-    如果先不换路线，也可以补一个纯代数 lemma，把
-    `ENNReal.ofReal ((A) / (ε / 2)^2)` 改写成
-    `ENNReal.ofReal (4 * A / ε^2)` 的经典常数外形。
-
-2026-03-12 常数整理:
-
-33. 这次先走了上面 32(b) 这条更稳的小步，没有碰 martingale。
-    新增了两个 lemma：
-    (a) `div_sq_half_eq_four_mul_div_sq`：
-        纯代数地把 `a / (ε / 2)^2` 改写成 `4 * a / ε^2`；
-    (b) `measure_event_two_mul_partialSumMax_tail_le_mul_four_mul_variance_div_sq_of_forall_mean_zero`：
-        把前一版 finite tail maximal bound 的常数整理成更贴近原证明文本的
-        `4 / ε^2` 外形。
-
-34. 搜索/实现记录：
-    (a) 这一步不需要新搜 mathlib 定理，直接在本地做一个实数域恒等式最省事；
-    (b) `field_simp` + `ring` 足够处理 `ε ≠ 0` 情形；
-    (c) `ε = 0` 单独分支后 `simp` 即可，所以这个重写 lemma 不需要额外假设。
-
-35. 完成情况：
-    (a) `Kolmogorov.lean` 新增经典常数版接口；
-    (b) `lake env lean Kolmogorov.lean` 已通过；
-    (c) 现在现有的较弱 finite maximal estimate 在 statement 上已经更接近 wiki 里的 `4 ε^{-2}` 形式，
-        后续如果改走 Doob/maximal inequality，只需要继续去掉多余的 `(n + 1)` 因子。
-
-36. 下一小步建议：
-    优先开始研究 `partialSum` 是否已经能接到现成的 martingale / submartingale maximal inequality。
-    如果能直接套 `MeasureTheory.maximal_ineq`，就有机会绕开 union bound，
-    从当前“弱但形状接近”的版本过渡到真正的 Kolmogorov inequality。
-
-2026-03-12 自然过滤桥接:
-
-37. 这次开始实际探 Doob / martingale 方向，但仍然只补一个桥接层，没有去写完整 martingale 证明。
-    新增了两个 lemma：
-    (a) `partialSum_stronglyMeasurable_natural`：
-        若 `n ≤ i + 1`，则 `partialSum X n` 对 `Filtration.natural X` 在时刻 `i` 强可测；
-    (b) `stronglyAdapted_partialSum_succ_natural`：
-        于是过程 `n ↦ partialSum X (n + 1)` 对 `X` 的自然过滤是 `StronglyAdapted`。
-
-38. 搜索记录：
-    (a) `Mathlib/Probability/Process/Adapted.lean` 里有
-        `Filtration.stronglyAdapted_natural`，可直接给 `X` 在自己自然过滤下的强适应性；
-    (b) `Mathlib/Probability/BorelCantelli.lean` 里有
-        `iIndepFun.condExp_natural_ae_eq_of_lt`，
-        这说明后面要做“未来项对过去过滤的条件期望等于常数”时，不必从头证明；
-    (c) 一个重要判断：更合适的对象不是 `partialSum X n`，而是 shifted process
-        `n ↦ partialSum X (n + 1)`，这样时刻 `i` 的过滤正好包含第 `i` 项增量。
-
-39. 实现细节：
-    (a) `partialSum_stronglyMeasurable_natural` 用 `partialSum_succ` 归纳；
-    (b) 递归项里 `partialSum X n` 保持在同一时刻 `i` 上可测，
-        单项 `X n` 则由 `Filtration.stronglyAdapted_natural hX n`
-        再用 filtration monotonicity 推到时刻 `i`；
-    (c) 为了使用这些接口，这次在 `Kolmogorov.lean` 补加了
-        `import Mathlib.Probability.Process.Adapted`。
-
-40. 完成情况：
-    (a) `lake env lean Kolmogorov.lean` 已通过；
-    (b) 现在已经把 partial sums 和 natural filtration 接到了同一套语言里，
-        后面可以继续尝试证明 shifted partial sums 是 martingale，
-        再考虑 `square` / `pos` / `maximal_ineq` 这条线。
-
-41. 下一小步建议：
-    直接尝试证明一个“shifted partial sums 在自然过滤下是 martingale”的 lemma。
-    预期关键步会是把
-    `μ[X j | Filtration.natural X i]`
-    在 `i < j` 时改写成常数 `μ[X j]`，然后在零均值假设下化成 `0`。
-
-2026-03-12 条件期望原子步:
-
-42. 这次没有直接写 martingale，而是先把上条 41 里点名的关键原子步单独落下。
-    新增：
-    `condExp_natural_eq_zero_of_mean_zero`。
-    它表明：若 `X_j` 独立于 `X` 的过去自然过滤，且 `μ[X_j] = 0`，那么
-    `μ[X_j | Filtration.natural X i] = 0` a.e.（当 `i < j`）。
-
-43. 搜索记录：
-    (a) 直接复用了 `Mathlib/Probability/BorelCantelli.lean` 里的
-        `iIndepFun.condExp_natural_ae_eq_of_lt`；
-    (b) 这个 theorem 已经把“未来项条件期望等于常数期望”做好了，
-        所以这里只需要再用 `hmean : μ[X j] = 0` 做一次 `simpa`；
-    (c) 为了调用它，这次在 `Kolmogorov.lean` 增加了
-        `import Mathlib.Probability.BorelCantelli`。
-
-44. 完成情况：
-    (a) 新 lemma 已加入 `Kolmogorov.lean`；
-    (b) `lake env lean Kolmogorov.lean` 已通过；
-    (c) 现在“独立 + 零均值增量”已经能直接转成条件期望为零，
-        这正是后面证明 shifted partial sums 为 martingale 时最关键的一步。
-
-45. 下一小步建议：
-    尝试把 `partialSum_succ` 和新得到的
-    `condExp_natural_eq_zero_of_mean_zero`
-    组装成一个有限步 martingale 递推 lemma，
-    先证明
-    `μ[partialSum X (j + 1) | Filtration.natural X hX i] = partialSum X (i + 1)` a.e.
-    在 `i ≤ j` 的情形。
-
-2026-03-12 一步增量接口:
-
-46. 这次继续沿 martingale 路线，但仍然只做“一步递推”的准备，不直接写完整 martingale。
-    新增了两个 lemma：
-    (a) `partialSum_succ_sub_partialSum`：
-        `partialSum X (n + 2) - partialSum X (n + 1) = X (n + 1)`；
-    (b) `condExp_partialSum_succ_sub_eq_zero_of_mean_zero`：
-        若 `X` 独立且逐项均值为零，则 shifted partial sums 的一步增量在时刻 `i`
-        的自然过滤下条件期望为 `0`。
-
-47. 搜索/实现记录：
-    (a) `Mathlib/Probability/Martingale/Basic.lean` 里已经有
-        `martingale_of_condExp_sub_eq_zero_nat`，
-        这说明更合理的目标不是自己展开 martingale 定义，
-        而是给它准备 `hf : ∀ i, μ[f (i+1) - f i | 𝒢 i] = 0`；
-    (b) `partialSum_succ_sub_partialSum` 一开始把 lhs 写成
-        `fun ω => ...`，导致后面条件期望里不好 rewrite；
-        改成真正的函数减法形式后，`rw` 就顺了；
-    (c) 纯代数证明里用
-        `congrArg (fun f => f ω - partialSum X (n+1) ω) (partialSum_succ X (n+1))`
-        比直接 `abel` 稳。
-
-48. 完成情况：
-    (a) `Kolmogorov.lean` 现在已经有 shifted partial sums 的 one-step increment identity；
-    (b) 也已经有对应的条件期望为零版本；
-    (c) `lake env lean Kolmogorov.lean` 已通过。
-
-49. 下一小步建议：
-    现在很自然地可以直接尝试把
-    `stronglyAdapted_partialSum_succ_natural`、
-    `partialSum_memLp` / 可积性接口、
-    `condExp_partialSum_succ_sub_eq_zero_of_mean_zero`
-    三者喂给 `martingale_of_condExp_sub_eq_zero_nat`，
-    得到 `n ↦ partialSum X (n + 1)` 是 martingale。
-
-2026-03-12 partial sums 成为 martingale:
-
-50. 这次把上面 49 里的三块接口真正拼起来了，新增：
-    `martingale_partialSum_succ_natural_of_mean_zero`。
-    它表明：若 `X_n` 全部二阶可积、独立、逐项均值为零，
-    那么过程 `n ↦ partialSum X (n + 1)` 对 `X` 的自然过滤是 martingale。
-
-51. 搜索/实现记录：
-    (a) 直接使用 `Mathlib/Probability/Martingale/Basic.lean` 里的
-        `martingale_of_condExp_sub_eq_zero_nat`；
-    (b) 这个 theorem 只要求三件事：
-        强适应性 `hadp`，
-        可积性 `hint`，
-        以及一步增量条件期望为零 `hf`；
-    (c) 这三件事现在分别由
-        `stronglyAdapted_partialSum_succ_natural`、
-        `partialSum_memLp ... .integrable`、
-        `condExp_partialSum_succ_sub_eq_zero_of_mean_zero`
-        精确提供，拼装几乎是无损的。
-
-52. 实现细节：
-    (a) `hint` 里把全局假设 `∀ k, MemLp (X k) 2 μ`
-        限制到 `range (i + 1)`，再用 `MemLp.integrable (by norm_num)`；
-    (b) 由于前面已经把过程换成 shifted 版本 `n ↦ partialSum X (n + 1)`，
-        增量正好是 `X (n + 1)`，索引没有再卡住；
-    (c) 为了调用这个 martingale 构造 theorem，这次在 `Kolmogorov.lean`
-        增加了 `import Mathlib.Probability.Martingale.Basic`。
-
-53. 完成情况：
-    (a) `Kolmogorov.lean` 已经有一个真正可用的 partial-sum martingale lemma；
-    (b) `lake env lean Kolmogorov.lean` 已通过；
-    (c) 这说明 Doob/maximal inequality 路线已经不再只是“计划”，而是开始有核心对象了。
-
-54. 下一小步建议：
-    开始研究如何从这个 martingale 构造出适合 `maximal_ineq` 的非负 submartingale。
-    最自然的候选是平方过程
-    `n ↦ (partialSum X (n + 1))^2`
-    或其正部/绝对值变体；
-    下一步应优先搜索 mathlib 里已有的
-    “martingale 的 square / pos / abs 是 submartingale”
-    相关接口。
-
-2026-03-12 平方过程基础接口:
-
-55. 这次没有直接证明“平方是 submartingale”，而是先把平方过程作为
-    `maximal_ineq` 候选对象的基础三件套补齐了。
-    新增：
-    (a) `partialSum_succ_sq_nonneg`：
-        `0 ≤ fun n ω => partialSum X (n + 1) ω ^ 2`；
-    (b) `stronglyAdapted_partialSum_succ_sq_natural`：
-        平方过程对自然过滤仍然是 `StronglyAdapted`；
-    (c) `integrable_partialSum_succ_sq`：
-        在逐项 `MemLp 2` 假设下，每个时刻的平方过程都可积。
-
-56. 搜索记录：
-    (a) 没有直接搜到“martingale 的 square 是 submartingale”的现成 theorem 名；
-    (b) 但 `Mathlib/Probability/CondVar.lean` 里有
-        `condVar_ae_le_condExp_sq`，
-        这已经非常接近后面要用的条件期望非负性；
-    (c) `Mathlib/MeasureTheory/Function/L2Space.lean` 里有
-        `MemLp.integrable_sq`，
-        正好能给平方过程提供可积性。
-
-57. 实现细节：
-    (a) 平方过程的强适应性是从
-        `stronglyAdapted_partialSum_succ_natural` 出发，
-        对每个时刻先取 `measurable`，再 `pow_const 2`；
-    (b) 非负性直接用 `sq_nonneg`；
-    (c) 可积性直接由对应 partial sum 的 `MemLp 2` 经 `integrable_sq` 得到。
-
-58. 完成情况：
-    (a) `Kolmogorov.lean` 现在已经有一个很像 `maximal_ineq` 输入对象的平方过程；
-    (b) `lake env lean Kolmogorov.lean` 已通过；
-    (c) 下一步只差“条件期望非负”这一层，就能尝试真正构造 submartingale。
-
-59. 下一小步建议：
-    直接尝试利用
-    `martingale_partialSum_succ_natural_of_mean_zero`
-    和 `condVar_ae_le_condExp_sq`
-    证明平方过程
+4. `ProbabilityTheory.iIndepFun.condExp_natural_ae_eq_of_lt`：未来项对自然过滤的条件期望等于常数期望。
+5. `MeasureTheory.martingale_of_condExp_sub_eq_zero_nat`：用一步增量条件期望为零构造 martingale。
+6. `MeasureTheory.submartingale_of_condExp_sub_nonneg_nat`：用一步条件期望增量非负构造 submartingale。
+7. `ProbabilityTheory.condVar_ae_eq_condExp_sq_sub_sq_condExp`：conditional Jensen 风格桥接的核心接口。
+
+2026-03-12 当前有效进展
+
+A. 已经完成的接口分层
+
+8. 纯代数 / tail 重写：
+   `partialSum`,
+   `sum_range_shift_eq_sub`,
+   `sum_range_shift_succ_eq_sub`,
+   `partialSum_tail_eq_sub`,
+   `partialSum_succ_sub_partialSum`.
+
+9. 最大部分和与事件层：
+   `partialSumMax`,
+   `abs_partialSum_le_partialSumMax`,
+   `abs_sub_partialSum_le_partialSumMax_tail`,
+   `partialSumMax_event_eq_biUnion`,
+   `partialSumMax_tail_event_eq_biUnion_sub`,
+   `measure_partialSumMax_event_le_sum`,
+   `measure_partialSumMax_tail_event_le_sum_sub`,
+   `measure_event_two_mul_partialSumMax_tail_le_sum_sub`,
+   `measure_event_two_mul_partialSumMax_tail_le_sum_sub'`.
+
+10. 单个 partial sum 的概率/方差控制：
+    `partialSum_memLp`,
+    `measure_partialSum_ge_le_variance_div_sq`,
+    `measure_partialSum_tail_ge_le_variance_div_sq`,
+    `variance_partialSum_eq_sum_variance`,
+    `variance_partialSum_tail_eq_sum_variance`,
+    `measure_partialSum_tail_ge_le_sum_variance_div_sq`.
+
+11. 零均值接口：
+    `integral_partialSum_eq_sum_integral`,
+    `integral_partialSum_tail_eq_zero_of_forall_integral_zero`,
+    `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_mean_zero`,
+    `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero`,
+    `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero_of_mem_range`.
+
+12. union-bound 路线下的弱 finite maximal bound：
+    `measure_event_two_mul_partialSumMax_tail_le_sum_variance_div_sq_of_forall_mean_zero`,
+    `measure_event_two_mul_partialSumMax_tail_le_mul_variance_div_sq_of_forall_mean_zero`,
+    `div_sq_half_eq_four_mul_div_sq`,
+    `measure_event_two_mul_partialSumMax_tail_le_mul_four_mul_variance_div_sq_of_forall_mean_zero`.
+    注意：这些结果仍然带有多余的 `(n + 1)` 损失，只能算弱版。
+
+13. 自然过滤与 martingale 路线：
+    `partialSum_stronglyMeasurable_natural`,
+    `stronglyAdapted_partialSum_succ_natural`,
+    `condExp_natural_eq_zero_of_mean_zero`,
+    `condExp_partialSum_succ_sub_eq_zero_of_mean_zero`,
+    `martingale_partialSum_succ_natural_of_mean_zero`.
+
+14. 平方过程与 submartingale 路线：
+    `partialSum_succ_sq_nonneg`,
+    `stronglyAdapted_partialSum_succ_sq_natural`,
+    `integrable_partialSum_succ_sq`,
+    `partialSum_succ_sq_le_condExp_partialSum_succ_sq_of_mean_zero`,
+    `submartingale_partialSum_succ_sq_natural_of_mean_zero`.
+
+B. 目前最重要的判断
+
+15. 现在已经不需要继续扩写 union-bound 路线。
+    Doob/maximal inequality 路线已经有了真正可用的输入对象：
     `fun n ω => partialSum X (n + 1) ω ^ 2`
-    是 `Submartingale`。
+    是自然过滤下的非负 submartingale。
 
-2026-03-12 平方过程成为 submartingale:
-
-60. 这次把上条 59 真的做出来了，新增了两个关键 lemma：
-    (a) `partialSum_succ_sq_le_condExp_partialSum_succ_sq_of_mean_zero`：
-        给出一步桥接不等式
-        `(partialSum X (i+1))^2 ≤ μ[(partialSum X (i+2))^2 | G_i]` a.e.；
-    (b) `submartingale_partialSum_succ_sq_natural_of_mean_zero`：
-        平方过程 `n ↦ (partialSum X (n + 1))^2` 对自然过滤是 `Submartingale`。
-
-61. 搜索/实现记录：
-    (a) `Mathlib/Probability/CondVar.lean` 里的
-        `condVar_ae_eq_condExp_sq_sub_sq_condExp`
-        和 `condExp_nonneg`
-        已经足够推出
-        `μ[X|G]^2 ≤ μ[X^2|G]` 这种 conditional Jensen 风格不等式；
-    (b) 一开始尝试直接用 `linarith`/`eventually_sub_nonneg` 硬推，稳定性一般；
-        最后改成先手工构造差值等式，再 rewrite 到目标，证明更稳；
-    (c) `condExp_of_stronglyMeasurable` 给的是函数相等，不是 a.e. 相等，
-        这里需要额外用 `.eventuallyEq` 接到 `condExp_sub` 后面。
-
-62. 实现细节：
-    (a) 为了调用 conditional variance 接口，这次在 `Kolmogorov.lean`
-        增加了 `import Mathlib.Probability.CondVar`；
-    (b) 桥接不等式的证明核心是：
-        `0 ≤ Var[S_{i+2} | G_i] = μ[S_{i+2}^2|G_i] - μ[S_{i+2}|G_i]^2`，
-        再用 martingale lemma 把 `μ[S_{i+2}|G_i]` 改写成 `S_{i+1}`；
-    (c) 最后通过 `submartingale_of_condExp_sub_nonneg_nat`
-        把“平方过程强适应 + 可积 + 一步条件期望增量非负”组装成
-        `Submartingale`。
-
-63. 完成情况：
-    (a) `Kolmogorov.lean` 现在已经有一个真正适合拿去喂 `maximal_ineq` 的非负 submartingale；
-    (b) `lake env lean Kolmogorov.lean` 已通过；
-    (c) Doob/maximal inequality 路线的主要技术障碍已经明显减少。
-
-64. 下一小步建议：
-    直接尝试把
+16. 因此当前最自然的下一步是：
+    直接把
     `submartingale_partialSum_succ_sq_natural_of_mean_zero`
-    和 `partialSum_succ_sq_nonneg`
+    和
+    `partialSum_succ_sq_nonneg`
     喂给 `MeasureTheory.maximal_ineq`，
-    得到一个 finite maximal inequality，
-    然后再把 sup 事件改写回当前文件里的 `partialSumMax` 记号。
+    先得到一个以 `sup' (partialSum^2)` 表述的 finite maximal inequality。
+
+17. 做完 16 之后，还需要把 `maximal_ineq` 的 `sup'` 事件翻译回当前文件的
+    `partialSumMax` / tail 记号，
+    才能真正替代目前那个带 `(n + 1)` 损失的弱版 maximal bound。
+
+C. 离最终 two-series theorem 还差什么
+
+18. 强版 finite Kolmogorov inequality：
+    去掉 union-bound 带来的 `(n + 1)`，得到经典的
+    `4 / ε^2 * ∑ variance`
+    形状。
+
+19. tail 版本：
+    把上面的 finite maximal inequality 改写成
+    `fun j => X (m + 1 + j)` 的 tail 版本。
+
+20. oscillation 控制：
+    形式化
+    `limsup (S_N - S_m) - liminf (S_N - S_m) ≤ 2 * sup_k |tail partial sums|`。
+
+21. 实分析尾和收敛：
+    从 `∑ σ_n^2` 收敛推出
+    `∑_{i=m+1}^{m+N} σ_i^2`
+    随 `m → ∞` 消失。
+
+22. 几乎处处收敛收尾：
+    用上面几步证明 oscillation 为 `0` a.s.，
+    得到 mean-zero 版本的 almost sure convergence。
+
+23. 最后才是一般均值版本：
+    用 `X_n - μ_n` 归约到 mean-zero 情形，
+    再利用 `∑ μ_n` 收敛把原级数加回来。
+
+D. 实现时的具体注意点
+
+24. 处理 natural filtration 时，shifted process
+    `n ↦ partialSum X (n + 1)`
+    比 `partialSum X n` 更顺手，因为时刻 `i` 的增量正好是 `X (i + 1)`。
+
+25. `condExp_of_stronglyMeasurable` 给的是函数等式；
+    若要和 `condExp_sub` 等 a.e. 等式拼接，需要显式加 `.eventuallyEq`。
+
+26. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
+    更好用；当前平方过程 submartingale 的证明就是通过它手工搭起来的。
+
+27. 目前 `notice.md` 已清理过一次。
+    以后优先维护：
+    当前有效接口、
+    当前真实瓶颈、
+    下一步唯一最自然的目标。
+    不要继续累积已经完成后的旧“下一步建议”。
