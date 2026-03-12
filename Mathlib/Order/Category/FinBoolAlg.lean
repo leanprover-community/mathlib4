@@ -116,6 +116,7 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
       forget₂ FinBoolAlg FinBddDistLat ⋙ FinBddDistLat.dual :=
   rfl
 
+attribute [local instance] FintypeCat.fintype in
 /-- The powerset functor. `Set` as a functor. -/
 @[simps]
 noncomputable def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
