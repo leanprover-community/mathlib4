@@ -179,7 +179,8 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Algebra",
       "Mathlib" / "FieldTheory",
       "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebra"] }
+      "Mathlib" / "LinearAlgebra"],
+    dependencies := #[.«t-data»] }
   | .«t-algebraic-geometry» => {
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
@@ -207,7 +208,8 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Geometry" / "Polygon"] }
   | .«t-geometric-group-theory» => {
     dirs := #["Mathlib" / "Geometry" / "Group"] }
-  | .«t-group-theory» => {}
+  | .«t-group-theory» => {
+    dependencies := #[.«t-algebra»] }
   | .«t-linter» => {
     dirs := #[
       "Mathlib" / "Tactic" / "Linter",
@@ -232,7 +234,8 @@ def mathlibLabelData : (l : Label) → LabelData l
     exclusions := #["Mathlib" / "Tactic" / "Linter"] }
   | .«t-number-theory» => {}
   | .«t-order» => {}
-  | .«t-ring-theory» => {}
+  | .«t-ring-theory» => {
+    dependencies := #[.«t-algebra», .«t-group-theory»] }
   | .«t-set-theory» => {}
   | .«t-topology» => {}
   | .«CI» => {
