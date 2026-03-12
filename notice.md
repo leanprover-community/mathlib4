@@ -7,6 +7,8 @@ Kolmogorov two-series theorem formalization notes
 - Finite Kolmogorov tail inequality is already formalized.
 - Deterministic tail oscillation bridge is already formalized.
 - Step 1 is done: the liminf tail-oscillation event is reduced to a countable union of finite oscillation events.
+- Step 2 is done in a usable form: tail oscillation event inclusion and a measure bound with an `iSup`
+  over finite tail variance bounds are now formalized.
 
 2. Most useful lemmas already in `Kolmogorov.lean`
 
@@ -15,16 +17,11 @@ Kolmogorov two-series theorem formalization notes
 - `limsup_sub_liminf_partialSum_tail_le_liminf_finiteTailOscillationMax`
 - `finiteTailOscillationMax_nonneg`
 - `event_le_liminf_finiteTailOscillationMax_subset_iUnion`
+- `tail_oscillation_event_subset_iUnion_finiteTailOscillationMax_event`
+- `measure_tail_oscillation_event_le_iSup_four_mul_variance_div_sq_of_mean_zero`
 
 3. What remains
 
-- Step 2:
-  Turn
-  `limsup_sub_liminf_partialSum_tail_le_liminf_finiteTailOscillationMax`
-  plus
-  `event_le_liminf_finiteTailOscillationMax_subset_iUnion`
-  into a measure bound for
-  `{ω | ε ≤ limsup tail partial sums - liminf tail partial sums}`.
 - Step 3:
   Show tail variance sums
   `∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ`
@@ -41,7 +38,8 @@ Kolmogorov two-series theorem formalization notes
 
 - `Filter.eventually_lt_of_lt_liminf`
 - `Filter.isBoundedUnder_of`
-- For measure estimates, likely next tool is `measure_iUnion_le`.
+- `Monotone.measure_iUnion`
+- For Step 3, the next real work is to identify the `iSup` tail-variance bound with the tail-series limit.
 
 5. Implementation reminders
 

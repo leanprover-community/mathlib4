@@ -813,6 +813,31 @@ lemma event_le_liminf_finiteTailOscillationMax_subset_iUnion
   refine Set.mem_iUnion.2 ⟨N, ?_⟩
   exact le_of_lt (hN N le_rfl)
 
+lemma tail_oscillation_event_subset_iUnion_finiteTailOscillationMax_event
+    (X : ℕ → Ω → ℝ) (m : ℕ) {η ε : ℝ} (hηε : η < ε)
+    (hcu : ∀ ω, Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop
+      (fun n => partialSum X (m + n + 1) ω))
+    (hbu : ∀ ω, Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
+      (fun n => finiteTailSup X m n ω))
+    (hbl : ∀ ω, Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailInf X m n ω))
+    (hcl : ∀ ω, Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
+      (fun n => partialSum X (m + n + 1) ω))
+    (hcuOsc : ∀ ω, Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailOscillationMax X m n ω))
+    (hbuOsc : ∀ ω, Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailOscillationMax X m n ω)) :
+    {ω | ε ≤ Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop -
+        Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop} ⊆
+      ⋃ n : ℕ, {ω | η ≤ finiteTailOscillationMax X m n ω} := by
+  intro ω hω
+  have hliminf :
+      ε ≤ Filter.liminf (fun n => finiteTailOscillationMax X m n ω) Filter.atTop := by
+    exact hω.trans <|
+      limsup_sub_liminf_partialSum_tail_le_liminf_finiteTailOscillationMax
+        X m ω (hcu ω) (hbu ω) (hbl ω) (hcl ω) (hcuOsc ω) (hbuOsc ω)
+  exact event_le_liminf_finiteTailOscillationMax_subset_iUnion X m hηε hliminf
+
 lemma finiteTailSup_sub_finiteTailInf_event_subset_finiteTailOscillationMax_event
     (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
     {ω | ε ≤ finiteTailSup X m n ω - finiteTailInf X m n ω} ⊆
@@ -1144,6 +1169,49 @@ lemma measure_finiteTailOscillationMax_event_le_four_mul_variance_div_sq_of_mean
       (μ := μ) X m n ε).trans ?_
   exact measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero
     (μ := μ) X m n hX hLp hindep hmean hε
+
+lemma measure_tail_oscillation_event_le_iSup_four_mul_variance_div_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m : ℕ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {η ε : ℝ} (hη : 0 < η) (hηε : η < ε)
+    (hcu : ∀ ω, Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop
+      (fun n => partialSum X (m + n + 1) ω))
+    (hbu : ∀ ω, Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
+      (fun n => finiteTailSup X m n ω))
+    (hbl : ∀ ω, Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailInf X m n ω))
+    (hcl : ∀ ω, Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
+      (fun n => partialSum X (m + n + 1) ω))
+    (hcuOsc : ∀ ω, Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailOscillationMax X m n ω))
+    (hbuOsc : ∀ ω, Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailOscillationMax X m n ω)) :
+    μ {ω | ε ≤ Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop -
+        Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop} ≤
+      ⨆ n : ℕ,
+        ENNReal.ofReal (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / η ^ 2) := by
+  let s : ℕ → Set Ω := fun n => {ω | η ≤ finiteTailOscillationMax X m n ω}
+  have hs_mono : Monotone s := by
+    intro n k hnk ω hω
+    exact le_trans hω (finiteTailOscillationMax_mono X m hnk ω)
+  calc
+    μ {ω | ε ≤ Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop -
+        Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop} ≤
+        μ (⋃ n : ℕ, s n) := by
+      refine measure_mono ?_
+      exact tail_oscillation_event_subset_iUnion_finiteTailOscillationMax_event
+        X m hηε hcu hbu hbl hcl hcuOsc hbuOsc
+    _ = ⨆ n : ℕ, μ (s n) := by
+      exact hs_mono.measure_iUnion
+    _ ≤ ⨆ n : ℕ,
+        ENNReal.ofReal (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / η ^ 2) := by
+      refine iSup_le fun n => ?_
+      refine (measure_finiteTailOscillationMax_event_le_four_mul_variance_div_sq_of_mean_zero
+          (μ := μ) X m n hX hLp hindep hmean (ε := η) hη).trans ?_
+      exact le_iSup (fun n => ENNReal.ofReal
+        (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / η ^ 2)) n
 
 lemma measure_finite_tail_oscillation_event_le_four_mul_variance_div_sq_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
