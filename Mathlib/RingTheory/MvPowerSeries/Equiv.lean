@@ -34,6 +34,9 @@ is patterned after `Mathlib/Algebra/MvPolynomial/Equiv.lean`.
 * `MvPowerSeries.optionEquivLeft` : The isomorphism between multivariable power series
   in `Option σ` and power series with coefficients in `MvPowerSeries σ R`.
 
+* `MvPowerSeries.optionEquivRight` : The isomorphism between multivariable power series
+  in `Option σ` and multivariable power series in `σ` with coefficients in `PowerSeries R`.
+
 * `MvPowerSeries.finSuccEquiv` : The isomorphism between multivariable power series
   in `Fin (n + 1)` and power series over multivariable power series in `Fin n`.
 
