@@ -271,3 +271,31 @@ D. 实现时的具体注意点
     压到
     `2 * partialSumMax tail n ω`；
     之后再考虑把这个 finite 版本送入 `limsup/liminf`。
+
+2026-03-12 本轮新增进展（二）
+
+39. 这次继续保持“小步”：
+    没有碰 `limsup/liminf`，
+    只把 finite oscillation 的“存在一对 indices”事件正式封装出来。
+    新增：
+    `finite_tail_oscillation_event_eq_biUnion`,
+    `finite_tail_oscillation_event_subset_two_mul_partialSumMax_event`,
+    `measure_finite_tail_oscillation_event_le_measure_two_mul_partialSumMax_event`.
+
+40. 本轮实现结论：
+    事件
+    `{ω | ∃ j,k ≤ n, ε ≤ |S_(m+j+1) ω - S_(m+k+1) ω|}`
+    不需要引入新的 `sup` 定义；
+    先保留为 `∃ j ∈ range, ∃ k ∈ range` 的 set-builder 形状更稳。
+    它和双重有限并的等价可直接用
+    `ext` + `simp`
+    完成。
+    之后的事件包含直接复用
+    `tail_pair_event_subset_two_mul_partialSumMax_event`，
+    测度版则只是 `measure_mono`。
+
+41. 当前最自然的下一步因此更具体了：
+    把 39 中的 finite oscillation 事件与某个 finite `sup`/`sSup` 数值对象对接，
+    或者直接证明
+    “若所有 `j,k ≤ n` 的差都被同一个上界控制，则对应 finite window oscillation 被控制”，
+    这样就能更平滑地过渡到 `limsup - liminf`。

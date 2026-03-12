@@ -409,6 +409,23 @@ lemma tail_pair_event_subset_two_mul_partialSumMax_event (X : ℕ → Ω → ℝ
   intro ω hω
   exact le_trans hω (abs_sub_partialSum_le_two_mul_partialSumMax_tail X m n j k hj hk ω)
 
+lemma finite_tail_oscillation_event_eq_biUnion (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
+    {ω | ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
+        ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} =
+      ⋃ j ∈ Finset.range (n + 1), ⋃ k ∈ Finset.range (n + 1),
+        {ω | ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} := by
+  ext ω
+  simp
+
+lemma finite_tail_oscillation_event_subset_two_mul_partialSumMax_event
+    (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
+    {ω | ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
+        ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} ⊆
+      {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
+  intro ω hω
+  rcases hω with ⟨j, hj, k, hk, hω⟩
+  exact tail_pair_event_subset_two_mul_partialSumMax_event X m n j k hj hk ε hω
+
 lemma measurableSet_tail_partialSum_sub_ge {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ)
     (m k : ℕ) (ε : ℝ) (hX : ∀ k, Measurable (X k)) :
     MeasurableSet {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} := by
@@ -421,6 +438,13 @@ lemma measure_tail_event_le_measure_partialSumMax_event {Ω : Type*} [Measurable
     μ {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} ≤
       μ {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} := by
   exact measure_mono (tail_event_subset_partialSumMax_event X m n k hk ε)
+
+lemma measure_finite_tail_oscillation_event_le_measure_two_mul_partialSumMax_event
+    {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
+    μ {ω | ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
+      ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} ≤
+      μ {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
+  exact measure_mono (finite_tail_oscillation_event_subset_two_mul_partialSumMax_event X m n ε)
 
 lemma le_partialSumMax_iff (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) (ω : Ω) :
     ε ≤ partialSumMax X n ω ↔ ∃ k ∈ Finset.range (n + 1), ε ≤ |partialSum X k ω| := by
