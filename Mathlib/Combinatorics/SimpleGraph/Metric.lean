@@ -419,7 +419,6 @@ theorem ball_zero : G.ball c 0 = ∅ := by simp [ball]
 /-- The ball of radius one consists of just the center. -/
 @[simp]
 theorem ball_one : G.ball c 1 = {c} := by
-  ext v
   simp [ball, ENat.lt_one_iff_eq_zero]
 
 /-- The ball of radius two consists of the center and its neighbors. -/
