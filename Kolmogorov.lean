@@ -164,6 +164,15 @@ lemma measure_partialSumMax_event_le_sum {Ω : Type*} [MeasurableSpace Ω]
   simpa using measure_biUnion_finset_le (μ := μ) (Finset.range (n + 1))
     (fun k => {ω | ε ≤ |partialSum X k ω|})
 
+lemma measure_partialSumMax_tail_event_le_sum_sub {Ω : Type*} [MeasurableSpace Ω]
+    (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
+    μ {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} ≤
+      ∑ k ∈ Finset.range (n + 1),
+        μ {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} := by
+  rw [partialSumMax_tail_event_eq_biUnion_sub]
+  simpa using measure_biUnion_finset_le (μ := μ) (Finset.range (n + 1))
+    (fun k => {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|})
+
 end Real
 
 end Kolmogorov
