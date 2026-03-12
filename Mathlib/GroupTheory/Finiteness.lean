@@ -468,17 +468,10 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite :
     Group.FG G ↔ ∃ (α : Type) (_ : Finite α) (φ : FreeGroup α →* G), Function.Surjective φ := by
   constructor
   · rw [fg_iff_exists_freeGroup_hom_surjective]
-    intro ⟨S, hS, φ⟩
-    let n := hS.toFinset.card
-    let α := Fin n
-    use α, inferInstance
-    haveI := hS.fintype
-    have hn : Fintype.card S = n := by
-      simp [n]
-    let e : S ≃ α := Fintype.equivFinOfCardEq hn
-    obtain ⟨φ, hφ⟩ := φ
-    refine ⟨φ.comp (FreeGroup.map e.symm), ?_⟩
-    exact hφ.comp (FreeGroup.map_surjective (f := e.symm) e.symm.surjective)
+    intro ⟨S, hS, φ, hφ⟩
+    obtain ⟨n, ⟨e⟩⟩ := hS.exists_equiv_fin S
+    exact ⟨Fin n, inferInstance, φ.comp (FreeGroup.freeGroupCongr e).symm,
+      hφ.comp (FreeGroup.freeGroupCongr e).symm.surjective⟩
   · intro ⟨α, _, φ, hφ⟩
     exact Group.fg_of_surjective hφ
 
