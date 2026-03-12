@@ -356,7 +356,7 @@ theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι] [DecidableLE ι] [
     (s : Finset ι) :
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   ext
-  simpa using fun _ _ a ↦ (Ne.le_iff_lt a).symm
+  simpa using fun _ _ a ↦ Ne.le_iff_lt a
 
 end Diag
 
