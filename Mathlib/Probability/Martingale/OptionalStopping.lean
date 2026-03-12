@@ -8,8 +8,6 @@ module
 public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Process.HittingTime
 public import Mathlib.Probability.Martingale.Basic
-public import Mathlib.Probability.Independence.Basic
-public import Mathlib.Probability.Moments.Variance
 
 /-! # Optional stopping theorem (fair game theorem)
 
