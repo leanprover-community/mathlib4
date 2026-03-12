@@ -298,6 +298,7 @@ noncomputable def isTerminalFiberObj (T : C) (hT : IsTerminal T) :
   IsTerminal.isTerminalObj _ _ hT
 
 /-- The fiber of the terminal object contains a unique element. -/
+@[implicit_reducible]
 noncomputable def uniqueFiberObj (T : C) (hT : IsTerminal T) :
     Unique (Φ.fiber.obj T) :=
   Types.isTerminalEquivUnique _ (Φ.isTerminalFiberObj T hT)

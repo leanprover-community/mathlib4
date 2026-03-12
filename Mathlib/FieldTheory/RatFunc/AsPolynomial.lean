@@ -234,7 +234,6 @@ theorem algEquivOfTranscendental_algebraMap (g : K[X]) :
   ext
   simp [algEquivOfTranscendental]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem algEquivOfTranscendental_X :
     algEquivOfTranscendental f h (X : RatFunc K) = f := by
@@ -395,7 +394,9 @@ open scoped WithZero
 
 open Polynomial
 
-instance : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
+/- We give this instance a name so that it can be locally disabled when defining `FqtInfty`.
+Something similar might be needed after the refactor from `Valued` to `ValuativeRel`. -/
+instance valuedRatFunc : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 
 @[simp]
 theorem v_def {x : K⟮X⟯} :
