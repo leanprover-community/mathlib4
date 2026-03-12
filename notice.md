@@ -11,6 +11,8 @@ Done:
 
 Current endpoint in `Kolmogorov.lean`:
 - `kolmogorov_two_series`
+- `kolmogorov_inequality`
+- `kolmogorov_inequality_sum_variance`
 
 Remaining:
 - No remaining step in `notice.md`.
@@ -21,3 +23,9 @@ Useful Step 5 lemmas added:
 - `variance_centered_eq`
 - `partialSum_eq_partialSum_centered_add_sum_integral`
 - `ae_exists_tendsto_partialSum_of_summable_mean_of_summable_variance`
+
+Additional packaged finite result:
+- `kolmogorov_inequality`: 0-indexed version of the wiki inequality
+  `P(max_{1≤k≤n} |S_k| ≥ ε) ≤ Var(S_n) / ε^2`.
+- `kolmogorov_inequality_sum_variance`: same bound with `Var(S_n)` rewritten as
+  `∑ variance (X_k)`.

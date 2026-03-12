@@ -1041,6 +1041,52 @@ lemma smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero
   rw [hEq'] at hbound
   exact hbound
 
+lemma measure_partialSumMax_ge_le_variance_partialSum_div_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) (n : ℕ) :
+    μ {ω | ε ≤ partialSumMax X (n + 1) ω} ≤
+      ENNReal.ofReal (variance (partialSum X (n + 1)) μ / ε ^ 2) := by
+  let ε' : NNReal := ⟨ε, hε.le⟩
+  have hbound :=
+    smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero
+      (μ := μ) X hX hLp hindep hmean ε' n
+  rw [ENNReal.smul_def, smul_eq_mul] at hbound
+  have hdiv :
+      μ {ω | ε ≤ partialSumMax X (n + 1) ω} ≤
+        ENNReal.ofReal (variance (partialSum X (n + 1)) μ) / ((ε' : ENNReal) ^ 2) := by
+    rw [ENNReal.le_div_iff_mul_le]
+    · simpa [ε', mul_comm, mul_left_comm, mul_assoc] using hbound
+    · left
+      have hε' : (ε' : ENNReal) = ENNReal.ofReal ε := by
+        simpa [ε'] using (ENNReal.ofReal_eq_coe_nnreal hε.le).symm
+      rw [hε']
+      simpa using (ENNReal.pow_ne_zero ((ENNReal.ofReal_ne_zero_iff).2 hε) 2)
+    · right
+      exact ENNReal.ofReal_ne_top
+  refine hdiv.trans_eq ?_
+  rw [show ((ε' : ENNReal) ^ 2) = ENNReal.ofReal (ε ^ 2) by
+    have hε' : (ε' : ENNReal) = ENNReal.ofReal ε := by
+      simpa [ε'] using (ENNReal.ofReal_eq_coe_nnreal hε.le).symm
+    rw [hε']
+    exact (ENNReal.ofReal_pow hε.le 2).symm]
+  rw [← ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero hε.ne.symm)]
+
+/-- Kolmogorov's inequality in 0-indexed form:
+`partialSum X (k + 1)` plays the role of `S_k` in the wiki statement. -/
+theorem kolmogorov_inequality
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) (n : ℕ) :
+    μ {ω | ε ≤ (Finset.range (n + 1)).sup' (by simp)
+      (fun k => |partialSum X (k + 1) ω|)} ≤
+      ENNReal.ofReal (variance (partialSum X (n + 1)) μ / ε ^ 2) := by
+  simpa [partialSumMax_succ_eq_sup_abs_partialSum_succ] using
+    measure_partialSumMax_ge_le_variance_partialSum_div_sq_of_mean_zero
+      (μ := μ) X hX hLp hindep hmean hε n
+
 lemma smul_measure_partialSumMax_ge_le_sum_variance_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
@@ -1092,6 +1138,21 @@ lemma measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero
     rw [hε']
     exact (ENNReal.ofReal_pow hε.le 2).symm]
   rw [← ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero hε.ne.symm)]
+
+/-- Kolmogorov's inequality with the variance of the terminal partial sum rewritten
+as the sum of the individual variances. This matches the usual independent mean-zero statement,
+up to the repository's 0-indexing convention. -/
+theorem kolmogorov_inequality_sum_variance
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) (n : ℕ) :
+    μ {ω | ε ≤ (Finset.range (n + 1)).sup' (by simp)
+      (fun k => |partialSum X (k + 1) ω|)} ≤
+      ENNReal.ofReal ((∑ k ∈ Finset.range (n + 1), variance (X k) μ) / ε ^ 2) := by
+  simpa [partialSumMax_succ_eq_sup_abs_partialSum_succ] using
+    measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero
+      (μ := μ) X hX hLp hindep hmean hε n
 
 lemma measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
@@ -1531,8 +1592,8 @@ theorem ae_exists_tendsto_partialSum_of_summable_mean_of_summable_variance
   rcases hω with ⟨x, hx⟩
   refine ⟨x + ∑' i, μ[X i], ?_⟩
   refine Filter.Tendsto.congr' (Filter.Eventually.of_forall fun n => ?_) (hx.add hmean_tendsto)
-  exact by
-    simpa [Y] using partialSum_eq_partialSum_centered_add_sum_integral (μ := μ) X n ω
+  have hEq := partialSum_eq_partialSum_centered_add_sum_integral (μ := μ) X n ω
+  simpa [Y] using hEq
 
 theorem kolmogorov_two_series
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
