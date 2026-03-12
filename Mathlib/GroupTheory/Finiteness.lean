@@ -419,7 +419,7 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective :
 `FreeGroup` on an arbitrary finite type `α` to the group. -/
 @[to_additive /-- An additive group is finitely generated iff there exists a surjective homomorphism
 from a `FreeAddGroup` on an arbitrary finite type `α` to the group. -/]
-theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G] :
+theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite :
     Group.FG G ↔ ∃ (α : Type) (_ : Finite α) (φ : FreeGroup α →* G), Function.Surjective φ := by
     constructor
     · rw [fg_iff_exists_freeGroup_hom_surjective]
