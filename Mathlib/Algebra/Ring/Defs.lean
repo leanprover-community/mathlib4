@@ -428,27 +428,91 @@ class IsDomain (α : Type u) [Semiring α] : Prop extends IsCancelMulZero α, No
 
 namespace IsMulCommutative
 
+/-- A `NonUnitalNonAssocSemiring` which `IsMulCommutative` is a `NonUnitalNonAssocCommSemiring`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative-subobjects]. -/
 scoped instance (priority := 50) [NonUnitalNonAssocSemiring R] [IsMulCommutative R] :
     NonUnitalNonAssocCommSemiring R where
 
+/-- A `NonUnitalSemiring` which `IsMulCommutative` is a `NonUnitalCommSemiring`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative-subobjects]. -/
 scoped instance (priority := 50) [NonUnitalSemiring R] [IsMulCommutative R] :
     NonUnitalCommSemiring R where
 
+/-- A `NonUnitalNonAssocRing` which `IsMulCommutative` is a `NonUnitalNonAssocCommRing`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative-subobjects]. -/
 scoped instance (priority := 50) [NonUnitalNonAssocRing R] [IsMulCommutative R] :
     NonUnitalNonAssocCommRing R where
 
+/-- A `NonUnitalRing` which `IsMulCommutative` is a `NonUnitalCommRing`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative-subobjects]. -/
 scoped instance (priority := 50) [NonUnitalRing R] [IsMulCommutative R] :
     NonUnitalCommRing R where
 
+/-- A `NonAssocSemiring` which `IsMulCommutative` is a `NonAssocCommSemiring`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative-subobjects]. -/
 scoped instance (priority := 50) [NonAssocSemiring R] [IsMulCommutative R] :
     NonAssocCommSemiring R where
 
+/-- A `Semiring` which `IsMulCommutative` is a `CommSemiring`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative-subobjects]. -/
 scoped instance (priority := 50) [Semiring R] [IsMulCommutative R] :
     CommSemiring R where
 
+/-- A `NonAssocRing` which `IsMulCommutative` is a `NonAssocCommRing`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative-subobjects]. -/
 scoped instance (priority := 50) [NonAssocRing R] [IsMulCommutative R] :
     NonAssocCommRing R where
 
+/-- A `Ring` which `IsMulCommutative` is a `CommRing`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative-subobjects]. -/
 scoped instance (priority := 50) [Ring R] [IsMulCommutative R] :
     CommRing R where
 
