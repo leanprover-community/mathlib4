@@ -557,6 +557,20 @@ lemma addContent_accumulate (m : AddContent G C) (hC : IsSetRing C)
     · exact Set.disjoint_accumulate hs_disj (Nat.lt_succ_self n)
     · exact hC.accumulate_mem hsC n
 
+theorem addContent_iUnion_eq_tsum (hC : IsSetRing C) (m : AddContent ℝ≥0∞ C)
+    (s : ℕ → Set α) (hf : ∀ i, s i ∈ C) (hf_disj : Pairwise (Disjoint on s))
+    (hm_iSup : ∀ ⦃s : ℕ → Set α⦄ (_ : ∀ n, s n ∈ C), Monotone s → m (⋃ n, s n) = ⨆ n, m (s n)) :
+    m (⋃ i, s i) = ∑' i, m (s i) :=
+  calc
+    m (⋃ i, s i) = m (⋃ i, accumulate s i) := by
+      simp
+    _ = ⨆ i, m (accumulate s i) := hm_iSup (fun n ↦ IsSetRing.accumulate_mem hC hf n)
+      monotone_accumulate
+    _ = ⨆ i, ∑ j ∈ range (i + 1), m (s j) :=
+      iSup_congr fun i ↦ addContent_accumulate m hC hf_disj hf i
+    _ = ∑' i, m (s i) :=
+      (ENNReal.tsum_eq_iSup_nat' (tendsto_add_atTop_nat 1)).symm
+
 /-- A function which is additive on disjoint elements in a ring of sets `C` defines an
 additive content on `C`. -/
 def IsSetRing.addContent_of_union (m : Set α → G) (hC : IsSetRing C) (m_empty : m ∅ = 0)
