@@ -359,3 +359,40 @@ D. 实现时的具体注意点
     转成
     `limsup - liminf` 小，
     再把这一层事件包含到 46 的 finite oscillation 概率界上。
+
+2026-03-12 本轮新增进展（五）
+
+49. 这次把 finite tail window 的 upper/lower envelope 单独抽出来了：
+    `finiteTailSup`,
+    `finiteTailInf`，
+    并证明了
+    `finiteTailSup - finiteTailInf ≤ finiteTailOscillationMax`。
+    这正是从 finite window 走向 `limsup - liminf` 所需的中间层。
+
+50. 围绕 49 新增的事件/测度接口：
+    `finiteTailSup_sub_finiteTailInf_event_subset_finiteTailOscillationMax_event`,
+    `measure_finiteTailSup_sub_finiteTailInf_event_le_measure_finiteTailOscillationMax_event`,
+    `measure_finiteTailSup_sub_finiteTailInf_event_le_four_mul_variance_div_sq_of_mean_zero`.
+    因而现在 finite tail 的“最大值减最小值”已经直接具备 theorem-ready 概率上界。
+
+51. 本轮实现结论：
+    证明 `finiteTailSup - finiteTailInf ≤ finiteTailOscillationMax`
+    不需要任何新极限工具；
+    只要用
+    `Finset.exists_mem_eq_sup'`,
+    `Finset.exists_mem_eq_inf'`
+    取到实现最大/最小值的 index，
+    再用
+    `le_abs_self`
+    和
+    `le_finiteTailOscillationMax_iff`
+    即可。
+
+52. 当前最自然的下一步更明确了：
+    需要把真正的 tail `limsup` / `liminf`
+    与这些 finite tail sup/inf 联系起来。
+    比如先证明 tail `limsup` 被每个 finite tail sup 上界控制，
+    tail `liminf` 被每个 finite tail inf 下界控制，
+    或者直接做一个
+    `limsup - liminf ≤ a`
+    的纯实分析桥接 lemma。

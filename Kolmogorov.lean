@@ -392,11 +392,33 @@ def finiteTailOscillationMax (X : ℕ → Ω → ℝ) (m n : ℕ) : Ω → ℝ :
       (Finset.range (n + 1)).sup' (by simp) fun k =>
         |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|
 
+/-- The maximum of the finite tail window
+`partialSum X (m + j + 1)` for `j ≤ n`. -/
+def finiteTailSup (X : ℕ → Ω → ℝ) (m n : ℕ) : Ω → ℝ :=
+  fun ω => (Finset.range (n + 1)).sup' (by simp) fun j => partialSum X (m + j + 1) ω
+
+/-- The minimum of the finite tail window
+`partialSum X (m + j + 1)` for `j ≤ n`. -/
+def finiteTailInf (X : ℕ → Ω → ℝ) (m n : ℕ) : Ω → ℝ :=
+  fun ω => (Finset.range (n + 1)).inf' (by simp) fun j => partialSum X (m + j + 1) ω
+
 lemma le_finiteTailOscillationMax_iff (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) (ω : Ω) :
     ε ≤ finiteTailOscillationMax X m n ω ↔
       ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
         ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω| := by
   simp [finiteTailOscillationMax, Finset.le_sup'_iff]
+
+lemma finiteTailSup_sub_finiteTailInf_le_finiteTailOscillationMax
+    (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
+    finiteTailSup X m n ω - finiteTailInf X m n ω ≤ finiteTailOscillationMax X m n ω := by
+  obtain ⟨j, hj, hjEq⟩ := Finset.exists_mem_eq_sup' (s := Finset.range (n + 1)) (H := by simp)
+    (fun j => partialSum X (m + j + 1) ω)
+  obtain ⟨k, hk, hkEq⟩ := Finset.exists_mem_eq_inf' (s := Finset.range (n + 1)) (H := by simp)
+    (fun k => partialSum X (m + k + 1) ω)
+  rw [finiteTailSup, finiteTailInf, hjEq, hkEq]
+  refine (le_abs_self _).trans ?_
+  exact (le_finiteTailOscillationMax_iff X m n
+    (|partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|) ω).2 ⟨j, hj, k, hk, le_rfl⟩
 
 lemma finiteTailOscillationMax_le_two_mul_partialSumMax_tail
     (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
@@ -463,6 +485,13 @@ lemma finiteTailOscillationMax_event_subset_two_mul_partialSumMax_event
   intro ω hω
   exact le_trans hω (finiteTailOscillationMax_le_two_mul_partialSumMax_tail X m n ω)
 
+lemma finiteTailSup_sub_finiteTailInf_event_subset_finiteTailOscillationMax_event
+    (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
+    {ω | ε ≤ finiteTailSup X m n ω - finiteTailInf X m n ω} ⊆
+      {ω | ε ≤ finiteTailOscillationMax X m n ω} := by
+  intro ω hω
+  exact le_trans hω (finiteTailSup_sub_finiteTailInf_le_finiteTailOscillationMax X m n ω)
+
 lemma measurableSet_tail_partialSum_sub_ge {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ)
     (m k : ℕ) (ε : ℝ) (hX : ∀ k, Measurable (X k)) :
     MeasurableSet {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} := by
@@ -488,6 +517,13 @@ lemma measure_finiteTailOscillationMax_event_le_measure_two_mul_partialSumMax_ev
     μ {ω | ε ≤ finiteTailOscillationMax X m n ω} ≤
       μ {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
   exact measure_mono (finiteTailOscillationMax_event_subset_two_mul_partialSumMax_event X m n ε)
+
+lemma measure_finiteTailSup_sub_finiteTailInf_event_le_measure_finiteTailOscillationMax_event
+    {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
+    μ {ω | ε ≤ finiteTailSup X m n ω - finiteTailInf X m n ω} ≤
+      μ {ω | ε ≤ finiteTailOscillationMax X m n ω} := by
+  exact measure_mono (finiteTailSup_sub_finiteTailInf_event_subset_finiteTailOscillationMax_event
+    X m n ε)
 
 lemma le_partialSumMax_iff (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) (ω : Ω) :
     ε ≤ partialSumMax X n ω ↔ ∃ k ∈ Finset.range (n + 1), ε ≤ |partialSum X k ω| := by
@@ -794,6 +830,20 @@ lemma measure_finite_tail_oscillation_event_le_four_mul_variance_div_sq_of_mean_
   refine (measure_finite_tail_oscillation_event_le_measure_two_mul_partialSumMax_event
       (μ := μ) X m n ε).trans ?_
   exact measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero
+    (μ := μ) X m n hX hLp hindep hmean hε
+
+lemma measure_finiteTailSup_sub_finiteTailInf_event_le_four_mul_variance_div_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ finiteTailSup X m n ω - finiteTailInf X m n ω} ≤
+      ENNReal.ofReal
+        (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / ε ^ 2) := by
+  refine (measure_finiteTailSup_sub_finiteTailInf_event_le_measure_finiteTailOscillationMax_event
+      (μ := μ) X m n ε).trans ?_
+  exact measure_finiteTailOscillationMax_event_le_four_mul_variance_div_sq_of_mean_zero
     (μ := μ) X m n hX hLp hindep hmean hε
 
 lemma variance_partialSum_tail_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
