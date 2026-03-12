@@ -4,6 +4,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.Probability.Moments.Variance
+import Mathlib.Probability.Process.Adapted
 
 open scoped BigOperators ProbabilityTheory
 open MeasureTheory
@@ -73,6 +74,25 @@ lemma partialSum_tail_eq_sub (X : ℕ → Ω → α) (m n : ℕ) :
       fun ω => partialSum X (m + n + 1) ω - partialSum X (m + 1) ω := by
   ext ω
   simpa [partialSum] using sum_range_shift_succ_eq_sub (fun i => X i ω) m n
+
+lemma partialSum_stronglyMeasurable_natural {Ω : Type*} [MeasurableSpace Ω]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) :
+    ∀ {n i : ℕ}, n ≤ i + 1 → StronglyMeasurable[Filtration.natural X hX i] (partialSum X n)
+  | 0, i, _ => by
+      simpa [partialSum_zero] using
+        (stronglyMeasurable_zero : StronglyMeasurable[Filtration.natural X hX i] (0 : Ω → ℝ))
+  | n + 1, i, hni => by
+      rw [partialSum_succ]
+      refine (partialSum_stronglyMeasurable_natural X hX (n := n)
+        (i := i) (Nat.le_trans (Nat.le_succ n) hni)).add ?_
+      exact (Filtration.stronglyAdapted_natural hX n).mono
+        ((Filtration.natural X hX).mono (Nat.succ_le_succ_iff.mp hni))
+
+lemma stronglyAdapted_partialSum_succ_natural {Ω : Type*} [MeasurableSpace Ω]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) :
+    StronglyAdapted (Filtration.natural X hX) (fun n => partialSum X (n + 1)) := by
+  intro n
+  exact partialSum_stronglyMeasurable_natural X hX (n := n + 1) (i := n) le_rfl
 
 end Deterministic
 

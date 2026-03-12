@@ -195,3 +195,41 @@ useful Kolmogorov inequality results
     优先开始研究 `partialSum` 是否已经能接到现成的 martingale / submartingale maximal inequality。
     如果能直接套 `MeasureTheory.maximal_ineq`，就有机会绕开 union bound，
     从当前“弱但形状接近”的版本过渡到真正的 Kolmogorov inequality。
+
+2026-03-12 自然过滤桥接:
+
+37. 这次开始实际探 Doob / martingale 方向，但仍然只补一个桥接层，没有去写完整 martingale 证明。
+    新增了两个 lemma：
+    (a) `partialSum_stronglyMeasurable_natural`：
+        若 `n ≤ i + 1`，则 `partialSum X n` 对 `Filtration.natural X` 在时刻 `i` 强可测；
+    (b) `stronglyAdapted_partialSum_succ_natural`：
+        于是过程 `n ↦ partialSum X (n + 1)` 对 `X` 的自然过滤是 `StronglyAdapted`。
+
+38. 搜索记录：
+    (a) `Mathlib/Probability/Process/Adapted.lean` 里有
+        `Filtration.stronglyAdapted_natural`，可直接给 `X` 在自己自然过滤下的强适应性；
+    (b) `Mathlib/Probability/BorelCantelli.lean` 里有
+        `iIndepFun.condExp_natural_ae_eq_of_lt`，
+        这说明后面要做“未来项对过去过滤的条件期望等于常数”时，不必从头证明；
+    (c) 一个重要判断：更合适的对象不是 `partialSum X n`，而是 shifted process
+        `n ↦ partialSum X (n + 1)`，这样时刻 `i` 的过滤正好包含第 `i` 项增量。
+
+39. 实现细节：
+    (a) `partialSum_stronglyMeasurable_natural` 用 `partialSum_succ` 归纳；
+    (b) 递归项里 `partialSum X n` 保持在同一时刻 `i` 上可测，
+        单项 `X n` 则由 `Filtration.stronglyAdapted_natural hX n`
+        再用 filtration monotonicity 推到时刻 `i`；
+    (c) 为了使用这些接口，这次在 `Kolmogorov.lean` 补加了
+        `import Mathlib.Probability.Process.Adapted`。
+
+40. 完成情况：
+    (a) `lake env lean Kolmogorov.lean` 已通过；
+    (b) 现在已经把 partial sums 和 natural filtration 接到了同一套语言里，
+        后面可以继续尝试证明 shifted partial sums 是 martingale，
+        再考虑 `square` / `pos` / `maximal_ineq` 这条线。
+
+41. 下一小步建议：
+    直接尝试证明一个“shifted partial sums 在自然过滤下是 martingale”的 lemma。
+    预期关键步会是把
+    `μ[X j | Filtration.natural X i]`
+    在 `i < j` 时改写成常数 `μ[X j]`，然后在零均值假设下化成 `0`。
