@@ -520,3 +520,28 @@ D. 实现时的具体注意点
     得到真实 tail oscillation
     受某个由 `finiteTailOscillationMax X m n ω` 生成的极限对象控制的 lemma。
     暂时仍然不要同时展开测度层和尾和衰减层。
+
+2026-03-12 本轮新增进展（十）
+
+66. 这次继续只补 deterministic 极限桥接，新增了
+    `le_liminf_of_monotone_nat'`,
+    `finiteTailOscillationMax_le_liminf`,
+    `finiteTailSup_sub_finiteTailInf_le_liminf_finiteTailOscillationMax`。
+
+67. 现在已经能把“窗口 `n` 上的 finite oscillation 包络”
+    直接压到
+    `liminf (fun k => finiteTailOscillationMax X m k ω)`，
+    前提只需显式给出该序列在 `atTop` 下的
+    `IsCoboundedUnder (· ≥ ·)` / `IsBoundedUnder (· ≥ ·)`。
+
+68. 这一步的意义是：
+    后续若要控制
+    `limsup partialSum tail - liminf partialSum tail`，
+    就不必再反复回到某个固定 finite window，
+    而是可以把 finite 包络统一送进一个 tail 极限对象。
+
+69. 下一步仍应保持小步：
+    优先尝试把 66 和
+    `limsup_sub_liminf_partialSum_tail_le_limsup_finiteTailSup_sub_liminf_finiteTailInf`
+    真正拼成一个 deterministic lemma，
+    形式上最好直接以上述 `liminf finiteTailOscillationMax` 为右端。

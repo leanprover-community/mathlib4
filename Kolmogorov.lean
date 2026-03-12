@@ -134,6 +134,15 @@ lemma le_liminf_of_eventually_le_nat'
   rcases h with ⟨N, hN⟩
   exact Filter.eventually_atTop.2 ⟨N, fun n hn => (le_of_lt hy).trans (hN n hn)⟩
 
+lemma le_liminf_of_monotone_nat'
+    {u : ℕ → ℝ}
+    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop u)
+    (hbu : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop u)
+    (hmono : Monotone u) (n : ℕ) :
+    u n ≤ Filter.liminf u Filter.atTop := by
+  apply le_liminf_of_eventually_le_nat' hcu hbu
+  exact ⟨n, fun k hk => hmono hk⟩
+
 lemma limsup_sub_liminf_le_of_eventually_bounded_nat'
     {u : ℕ → ℝ} {a b : ℝ}
     (hcu : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop u)
@@ -571,6 +580,17 @@ lemma finiteTailOscillationMax_mono (X : ℕ → Ω → ℝ) (m : ℕ) {n k : �
           Nat.lt_of_lt_of_le (Finset.mem_range.mp hl) (Nat.succ_le_succ hnk),
         le_rfl⟩
 
+lemma finiteTailOscillationMax_le_liminf
+    (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω)
+    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
+      (fun k => finiteTailOscillationMax X m k ω))
+    (hbu : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun k => finiteTailOscillationMax X m k ω)) :
+    finiteTailOscillationMax X m n ω ≤
+      Filter.liminf (fun k => finiteTailOscillationMax X m k ω) Filter.atTop := by
+  exact le_liminf_of_monotone_nat' hcu hbu
+    (fun a b hab => finiteTailOscillationMax_mono X m hab ω) n
+
 lemma finiteTailSup_sub_finiteTailInf_le_finiteTailOscillationMax
     (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
     finiteTailSup X m n ω - finiteTailInf X m n ω ≤ finiteTailOscillationMax X m n ω := by
@@ -582,6 +602,17 @@ lemma finiteTailSup_sub_finiteTailInf_le_finiteTailOscillationMax
   refine (le_abs_self _).trans ?_
   exact (le_finiteTailOscillationMax_iff X m n
     (|partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|) ω).2 ⟨j, hj, k, hk, le_rfl⟩
+
+lemma finiteTailSup_sub_finiteTailInf_le_liminf_finiteTailOscillationMax
+    (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω)
+    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
+      (fun k => finiteTailOscillationMax X m k ω))
+    (hbu : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun k => finiteTailOscillationMax X m k ω)) :
+    finiteTailSup X m n ω - finiteTailInf X m n ω ≤
+      Filter.liminf (fun k => finiteTailOscillationMax X m k ω) Filter.atTop := by
+  exact (finiteTailSup_sub_finiteTailInf_le_finiteTailOscillationMax X m n ω).trans <|
+    finiteTailOscillationMax_le_liminf X m n ω hcu hbu
 
 lemma finiteTailOscillationMax_le_two_mul_partialSumMax_tail
     (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
