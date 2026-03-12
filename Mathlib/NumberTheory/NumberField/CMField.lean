@@ -541,6 +541,7 @@ theorem of_forall_isConj [IsGalois ℚ K] {σ : Gal(K/ℚ)}
     rw [IsGaloisGroup.finrank_fixedPoints_eq_card_subgroup, hσ']⟩
   exact IsCMField.ofCMExtension L K
 
+open scoped IsMulCommutative in
 /--
 A totally complex abelian extension of `ℚ` is CM.
 -/
