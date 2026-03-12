@@ -1,4 +1,6 @@
 import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Data.Real.Basic
 
 open scoped BigOperators
 
@@ -56,5 +58,31 @@ lemma partialSum_tail_eq_sub (X : ℕ → Ω → α) (m n : ℕ) :
   simpa [partialSum] using sum_range_shift_succ_eq_sub (fun i => X i ω) m n
 
 end Deterministic
+
+section Real
+
+variable {Ω : Type*}
+
+/-- The maximum absolute value of the partial sums `partialSum X k` for `k ≤ n`. -/
+def partialSumMax (X : ℕ → Ω → ℝ) (n : ℕ) : Ω → ℝ :=
+  fun ω => (Finset.range (n + 1)).sup' (by simp) (fun k => |partialSum X k ω|)
+
+lemma abs_partialSum_le_partialSumMax (X : ℕ → Ω → ℝ) (n k : ℕ)
+    (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
+    |partialSum X k ω| ≤ partialSumMax X n ω := by
+  exact Finset.le_sup' (fun j => |partialSum X j ω|) hk
+
+/-- Any tail difference of partial sums is bounded by the maximal tail partial sum. -/
+lemma abs_sub_partialSum_le_partialSumMax_tail (X : ℕ → Ω → ℝ) (m n k : ℕ)
+    (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
+    |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|
+      ≤ partialSumMax (fun j => X (m + 1 + j)) n ω := by
+  have htail : partialSum (fun j => X (m + 1 + j)) k ω =
+      partialSum X (m + k + 1) ω - partialSum X (m + 1) ω := by
+    simpa using congrArg (fun g => g ω) (partialSum_tail_eq_sub (X := X) (m := m) (n := k))
+  rw [← htail]
+  exact abs_partialSum_le_partialSumMax (X := fun j => X (m + 1 + j)) (n := n) (k := k) hk ω
+
+end Real
 
 end Kolmogorov
