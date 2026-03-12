@@ -85,9 +85,8 @@ noncomputable def isTerminalPUnit : IsTerminal (PUnit : Type u) :=
 noncomputable instance : Inhabited (⊤_ (Type u)) :=
   ⟨@terminal.from (Type u) _ _ ((ULift (Fin 1))) (ULift.up 0)⟩
 
-instance : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
-  ConcreteCategory.congr_hom (@Subsingleton.elim (_ ⟶ ⊤_ (Type u)) _
-    (TypeCat.ofHom ⟨fun _ => a⟩) (TypeCat.ofHom ⟨fun _ => b⟩)) (ULift.up (0 : Fin 1))⟩
+instance : Subsingleton (⊤_ (Type u)) where
+  allEq a b := terminalIso.toEquiv.injective (by subsingleton)
 
 noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
 
@@ -133,8 +132,9 @@ def binaryProductLimit (X Y : Type u) : IsLimit (binaryProductCone X Y) where
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq _ _ w := by
     ext x
-    exact Prod.ext (ConcreteCategory.congr_hom (w ⟨left⟩) x)
-      (ConcreteCategory.congr_hom (w ⟨right⟩) x)
+    apply Prod.ext
+    · exact ConcreteCategory.congr_hom (w ⟨left⟩) x
+    · exact ConcreteCategory.congr_hom (w ⟨right⟩) x
 
 /-- The category of types has `X × Y`, the usual Cartesian product,
 as the binary product of `X` and `Y`.

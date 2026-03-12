@@ -73,9 +73,7 @@ end
 
 variable {J : Type v} [SmallCategory J] {C : Type u} [Category.{v} C]
 
-macro (name := aesop_concrete_cat) "aesop_concrete_cat" : tactic => do
-  `(tactic| (intros; ext; simp; simp [← CategoryTheory.comp_apply]; cat_disch))
-
+attribute [local simp←] comp_apply in
 set_option backward.isDefEq.respectTransparency false in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`. -/
 @[simps]
@@ -86,23 +84,19 @@ noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
     naturality _ _ _ := by simpa using (limit.w_apply _ _ _).symm }⟩
   inv := TypeCat.ofHom ⟨fun t ↦ limit.lift _ (Types.coneOfSection (s := t.app) <| by
     simp [Functor.sections, ← t.naturality]) ⟨⟩⟩
-  hom_inv_id := by
-    aesop_concrete_cat
-  inv_hom_id := by
-    aesop_concrete_cat
 
+attribute [local simp←] comp_apply in
 set_option backward.isDefEq.respectTransparency false in
 variable (J) (C) in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
     naturally in `F` and `X`. -/
 @[simps!]
 noncomputable def whiskeringLimYonedaIsoCones : whiskeringLeft _ _ _ ⋙
-    (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj coyoneda ≅ cones J C := by
-  refine NatIso.ofComponents (fun F ↦ NatIso.ofComponents
-    (fun X => limitCompCoyonedaIsoCone F X.unop) ?_) ?_
-  · aesop_concrete_cat
-  · aesop_concrete_cat
+    (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj coyoneda ≅ cones J C :=
+  NatIso.ofComponents fun F ↦ NatIso.ofComponents
+    (fun X => limitCompCoyonedaIsoCone F X.unop)
 
+attribute [local simp←] comp_apply in
 set_option backward.isDefEq.respectTransparency false in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`. -/
 @[simps]
@@ -110,23 +104,18 @@ noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
     limit (F.op ⋙ yoneda.obj X) ≅ (F ⟶ (const J).obj X) where
   hom := TypeCat.ofHom ⟨fun a ↦ {
     app j := limit.π (F.op ⋙ yoneda.obj X) ⟨j⟩ a
-    naturality _ _ f := by simpa using (limit.w_apply _ f.op a) }⟩
+    naturality _ _ f := by simpa using (limit.w_apply (F.op ⋙ yoneda.obj X) f.op a) }⟩
   inv := TypeCat.ofHom ⟨fun t ↦ limit.lift _ (Types.coneOfSection (s := fun j ↦ t.app j.unop) <| by
     simp [Functor.sections]) ⟨⟩⟩
-  hom_inv_id := by
-    aesop_concrete_cat
-  inv_hom_id := by
-    aesop_concrete_cat
 
+attribute [local simp←] comp_apply in
 set_option backward.isDefEq.respectTransparency false in
 variable (J) (C) in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
     naturally in `F` and `X`. -/
 @[simps!]
 noncomputable def opHomCompWhiskeringLimYonedaIsoCocones : opHom _ _ ⋙ whiskeringLeft _ _ _ ⋙
-      (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj yoneda ≅ cocones J C := by
-  refine NatIso.ofComponents (fun F => NatIso.ofComponents (limitCompYonedaIsoCocone F.unop) ?_) ?_
-  · aesop_concrete_cat
-  · aesop_concrete_cat
+      (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj yoneda ≅ cocones J C :=
+  NatIso.ofComponents fun F => NatIso.ofComponents (limitCompYonedaIsoCocone F.unop)
 
 end CategoryTheory.Limits

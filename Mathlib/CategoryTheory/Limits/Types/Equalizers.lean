@@ -69,7 +69,7 @@ def equalizerLimit : Limits.LimitCone (parallelPair g h) where
   isLimit :=
     Fork.IsLimit.mk' _ fun s =>
       ⟨TypeCat.ofHom ⟨fun i => ⟨s.ι i, by apply congr_hom s.condition i⟩⟩, rfl, fun hm =>
-        by ext x; exact Subtype.ext (congr_hom hm x)⟩
+        by ext x; exact Subtype.ext (by exact congr_hom hm x)⟩
 
 variable (g h)
 

@@ -34,8 +34,8 @@ variable (X : TopCat)
 /-- The presheaf of dependently typed functions on `X`, with fibres given by a type family `T`.
 There is no requirement that the functions are continuous, here.
 -/
-def presheafToTypes (T : X → Type*) : X.Presheaf TypeCat where
-  obj U := .of <| ∀ x : U.unop, T x
+def presheafToTypes (T : X → Type*) : X.Presheaf (Type _) where
+  obj U := ∀ x : U.unop, T x
   map {_ V} i := TypeCat.ofHom ⟨fun (g) (x : V.unop) => g (i.unop x)⟩
 
 @[simp]
@@ -57,8 +57,8 @@ theorem presheafToTypes_map {T : X → Type*} {U V : (Opens X)ᵒᵖ} {i : U ⟶
 /-- The presheaf of functions on `X` with values in a type `T`.
 There is no requirement that the functions are continuous, here.
 -/
-def presheafToType (T : Type*) : X.Presheaf TypeCat where
-  obj U := .of <| U.unop → T
+def presheafToType (T : Type*) : X.Presheaf (Type _) where
+  obj U := U.unop → T
   map {_ _} i := TypeCat.ofHom ⟨fun g ↦ g ∘ i.unop⟩
 
 @[simp]
@@ -73,7 +73,7 @@ theorem presheafToType_map {T : Type*} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f}
 
 /-- The presheaf of continuous functions on `X` with values in fixed target topological space
 `T`. -/
-def presheafToTop (T : TopCat) : X.Presheaf TypeCat :=
+def presheafToTop (T : TopCat) : X.Presheaf (Type _) :=
   (Opens.toTopCat X).op ⋙ yoneda.obj T
 
 @[simp]

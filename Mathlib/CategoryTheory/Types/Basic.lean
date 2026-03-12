@@ -504,3 +504,14 @@ theorem equivEquivIso_hom {X Y : Type u} (e : X ≃ Y) : equivEquivIso e = e.toI
 @[simp]
 theorem equivEquivIso_inv {X Y : Type u} (e : X ≅ Y) : equivEquivIso.symm e = e.toEquiv :=
   rfl
+
+section unif_hints
+
+unif_hint id_obj_eq_self (X X' : Type u) where
+  X ≟ X' ⊢ (𝟭 _).obj X ≟ X'
+
+unif_hint comp_map_eq_comp {C D : Type*} [Category* C] [Category* D]
+    (F : C ⥤ D) (G : D ⥤ Type*) (X X' : C) where
+  X ≟ X' ⊢ (F ⋙ G).obj X ≟ (G.obj (F.obj X))
+
+end unif_hints

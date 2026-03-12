@@ -43,7 +43,7 @@ end TypeCat
 namespace Action
 
 section
-variable {G : Type u} [Group G] {A : Action Type u G}
+variable {G : Type u} [Group G] {A : Action (Type u) G}
 
 @[simp]
 theorem ρ_inv_self_apply (g : G) (x : A.V) :
@@ -60,12 +60,12 @@ end
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
 @[simps -isSimp]
 def ofMulAction (G : Type*) (H : Type u) [Monoid G] [MulAction G H] :
-    Action Type u G where
+    Action (Type u) G where
   V := H
   ρ := (TypeCat.endEquiv _).toMonoidHom.comp (@MulAction.toEndHom _ _ _ (by assumption))
 
 @[simp]
-theorem ofMulAction_apply {G : Type*} {H : TypeCat} [Monoid G] [MulAction G H] (g : G) (x : H) :
+theorem ofMulAction_apply {G : Type*} {H : Type*} [Monoid G] [MulAction G H] (g : G) (x : H) :
     ConcreteCategory.hom ((ofMulAction G H).ρ g) x = (g • x : H) :=
   rfl
 
@@ -95,11 +95,11 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
         rfl }
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/
-abbrev leftRegular (G : Type u) [Monoid G] : Action Type u G :=
+abbrev leftRegular (G : Type u) [Monoid G] : Action (Type u) G :=
   Action.ofMulAction G (G)
 
 /-- The `G`-set `Gⁿ`, acting on itself by left multiplication. -/
-abbrev diagonal (G : Type u) [Monoid G] (n : ℕ) : Action Type u G :=
+abbrev diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) G :=
   Action.ofMulAction G ((Fin n → G))
 
 /-- We have `Fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/

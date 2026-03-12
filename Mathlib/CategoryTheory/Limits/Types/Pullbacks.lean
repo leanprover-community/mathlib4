@@ -72,13 +72,13 @@ noncomputable def equivPullbackObj : c.pt ≃ Types.PullbackObj f g :=
   (IsLimit.conePointUniqueUpToIso hc (Types.pullbackLimitCone f g).isLimit).toEquiv
 
 @[simp]
-lemma equivPullbackObj_apply_fst (x : c.pt) : (equivPullbackObj hc x).1.1 = c.fst x :=
-  congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
+lemma equivPullbackObj_apply_fst (x : c.pt) : (equivPullbackObj hc x).1.1 = c.fst x := by
+  exact congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
     (Types.pullbackLimitCone f g).isLimit .left) x
 
 @[simp]
-lemma equivPullbackObj_apply_snd (x : c.pt) : (equivPullbackObj hc x).1.2 = c.snd x :=
-  congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
+lemma equivPullbackObj_apply_snd (x : c.pt) : (equivPullbackObj hc x).1.2 = c.snd x := by
+  exact congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
     (Types.pullbackLimitCone f g).isLimit .right) x
 
 @[simp]
@@ -86,14 +86,12 @@ lemma equivPullbackObj_symm_apply_fst (x : Types.PullbackObj f g) :
     c.fst ((equivPullbackObj hc).symm x) = x.1.1 := by
   obtain ⟨x, rfl⟩ := (equivPullbackObj hc).surjective x
   simp
-  rfl
 
 @[simp]
 lemma equivPullbackObj_symm_apply_snd (x : Types.PullbackObj f g) :
     c.snd ((equivPullbackObj hc).symm x) = x.1.2 := by
   obtain ⟨x, rfl⟩ := (equivPullbackObj hc).surjective x
   simp
-  rfl
 
 include hc in
 lemma type_ext {x y : c.pt} (h₁ : c.fst x = c.fst y) (h₂ : c.snd x = c.snd y) : x = y :=

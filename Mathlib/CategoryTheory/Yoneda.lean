@@ -43,7 +43,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 @[simps obj_obj obj_map map_app, stacks 001O]-- @[simps, stacks 001O]
 def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
   obj X :=
-    { obj Y := of ((unop Y) ⟶ X)
+    { obj Y := ((unop Y) ⟶ X)
       map f := ofHom ⟨fun g ↦ f.unop ≫ g⟩ }
   map f :=
     { app _ := ofHom ⟨fun g ↦ g ≫ f⟩ }
@@ -234,9 +234,9 @@ theorem isIso {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso (coyoneda.map f)] : IsIso f :
   isIso_of_fully_faithful coyoneda f
 
 /-- The identity functor on `Type` is isomorphic to the coyoneda functor coming from `PUnit`. -/
-def punitIso : coyoneda.obj (Opposite.op (of PUnit)) ≅ 𝟭 (Type v₁) :=
+def punitIso : coyoneda.obj (Opposite.op PUnit) ≅ 𝟭 (Type v₁) :=
   NatIso.ofComponents fun X =>
-    { hom := ofHom ⟨fun f => f ⟨⟩⟩
+    { hom := ofHom ⟨fun f => f.hom ⟨⟩⟩
       inv := ofHom ⟨fun x => ofHom ⟨fun _ => x⟩⟩ }
 
 /-- Taking the `unop` of morphisms is a natural isomorphism. -/
@@ -282,7 +282,7 @@ lemma RepresentableBy.comp_homEquiv_symm {F : Cᵒᵖ ⥤ Type v} {Y : C}
     f ≫ e.homEquiv.symm x = e.homEquiv.symm (F.map f.op x) :=
   e.homEquiv.injective (by simp [homEquiv_comp])
 
-lemma RepresentableBy.homEquiv_unop_comp {F : Cᵒᵖ ⥤ TypeCat} {Y : C}
+lemma RepresentableBy.homEquiv_unop_comp {F : Cᵒᵖ ⥤ Type*} {Y : C}
     (h : F.RepresentableBy Y) {X : Cᵒᵖ} {X' : C} (f : Opposite.op X' ⟶ X) (g : X' ⟶ Y) :
     h.homEquiv (f.unop ≫ g) = F.map f (h.homEquiv g) :=
   h.homEquiv_comp _ _
@@ -674,7 +674,7 @@ theorem corepresentable_of_natIso (F : C ⥤ Type v) {G} (i : F ≅ G) [F.IsCore
   (F.corepresentableBy.ofIso i).isCorepresentable
 
 /-- The identity functor on `Type v` is corepresented by `PUnit`. -/
-def Functor.CorepresentableBy.id : (𝟭 Type v).CorepresentableBy (PUnit) :=
+def Functor.CorepresentableBy.id : (𝟭 (Type v)).CorepresentableBy (PUnit) :=
   corepresentableByEquiv.symm Coyoneda.punitIso
 
 @[simp] lemma Functor.CorepresentableBy.id_homEquiv_apply (X : Type v)
@@ -685,7 +685,7 @@ def Functor.CorepresentableBy.id : (𝟭 Type v).CorepresentableBy (PUnit) :=
     (a : PUnit) : dsimp% id.homEquiv.symm x a = x :=
   rfl
 
-instance : Functor.IsCorepresentable (𝟭 Type v) :=
+instance : Functor.IsCorepresentable (𝟭 (Type v)) :=
   Functor.CorepresentableBy.id.isCorepresentable
 
 open Opposite
@@ -828,14 +828,9 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
   NatIso.ofComponents
     (fun _ ↦ Equiv.toIso (yonedaEquiv.trans Equiv.ulift.symm))
     (by intro (X, F) (Y, G) f
-        ext (a : <| yoneda.obj X.unop ⟶ F)
+        ext (a : yoneda.obj X.unop ⟶ F)
         apply ULift.ext
-        simp? [yonedaEvaluation, yonedaEquiv] says
-          simp only [evaluationUncurried_obj, yonedaEvaluation, comp_obj, uliftFunctor_obj,
-            yonedaPairing_map, prod_obj, op_obj, id_obj, op_unop, yonedaEquiv, yoneda_obj_obj,
-            Equiv.toIso_hom, Equiv.coe_trans, Equiv.ulift_symm_apply, Equiv.coe_fn_mk, hom_as_apply,
-            comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Function.comp_apply,
-            Functor.comp_map, evaluationUncurried_map, NatTrans.naturality, uliftFunctor_map]
+        dsimp [yonedaEvaluation, yonedaEquiv]
         change (yoneda.map f.1.unop ≫ a ≫ f.2).app _ _ = _ -- regression
         simp [← NatTrans.naturality_apply])
 
@@ -845,7 +840,7 @@ variable {C}
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
     (yoneda.op ⋙ coyoneda : Cᵒᵖ ⥤ (Cᵒᵖ ⥤ Type u₁) ⥤ Type u₁) ≅
-      evaluation Cᵒᵖ Type u₁ :=
+      evaluation Cᵒᵖ (Type u₁) :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun _ ↦ Equiv.toIso yonedaEquiv)) (by
     intro X Y f
     ext a b
@@ -855,7 +850,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The curried version of the Yoneda lemma. -/
 def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
     yoneda.op ⋙ coyoneda ≅
-      evaluation Cᵒᵖ Type v₁ ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+      evaluation Cᵒᵖ (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
   NatIso.ofComponents
     (fun X => NatIso.ofComponents
       (fun _ => Equiv.toIso <| yonedaEquiv.trans Equiv.ulift.symm)
@@ -875,7 +870,7 @@ def yonedaOpCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ T
 
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
-    yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ Type u₁)ᵒᵖ Type u₁).obj yoneda.op
+    yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ (Type u₁))ᵒᵖ (Type u₁)).obj yoneda.op
       ≅ 𝟭 (Cᵒᵖ ⥤ Type u₁) :=
   NatIso.ofComponents (fun F ↦ NatIso.ofComponents (fun _ ↦ Equiv.toIso yonedaEquiv) (by
     intro X Y f
@@ -920,7 +915,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma uliftYonedaEquiv_naturality {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type (max w v₁)}
     (f : uliftYoneda.{w}.obj (unop X) ⟶ F) (g : X ⟶ Y) :
     F.map g (uliftYonedaEquiv.{w} f) = uliftYonedaEquiv.{w} (uliftYoneda.map g.unop ≫ f) := by
-  simp [uliftYonedaEquiv, uliftYoneda, ← f.naturality_apply g (ULift.up (𝟙 _))]
+  simp [uliftYonedaEquiv, uliftYoneda, ← f.naturality_apply]
 
 lemma uliftYonedaEquiv_comp {X : C} {F G : Cᵒᵖ ⥤ Type (max w v₁)}
     (α : uliftYoneda.{w}.obj X ⟶ F) (β : F ⟶ G) :
@@ -1027,7 +1022,7 @@ variable (C)
 to `F.obj X`, functorially in both `X` and `F`.
 -/
 def coyonedaEvaluation : C × (C ⥤ Type v₁) ⥤ Type (max u₁ v₁) :=
-  evaluationUncurried C Type v₁ ⋙ uliftFunctor
+  evaluationUncurried C (Type v₁) ⋙ uliftFunctor
 
 @[simp]
 theorem coyonedaEvaluation_map_down (P Q : C × (C ⥤ Type v₁)) (α : P ⟶ Q)
@@ -1070,7 +1065,7 @@ variable {C}
 /- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma {C : Type u₁} [SmallCategory C] :
-    coyoneda.rightOp ⋙ coyoneda ≅ evaluation C Type u₁ :=
+    coyoneda.rightOp ⋙ coyoneda ≅ evaluation C (Type u₁) :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun _ ↦ Equiv.toIso coyonedaEquiv)) (by
     intro X Y f
     ext a b
@@ -1080,7 +1075,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The curried version of the Coyoneda lemma. -/
 def largeCurriedCoyonedaLemma {C : Type u₁} [Category.{v₁} C] :
     coyoneda.rightOp ⋙ coyoneda ≅
-      evaluation C Type v₁ ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+      evaluation C (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
   NatIso.ofComponents
     (fun X => NatIso.ofComponents
       (fun _ => Equiv.toIso <| coyonedaEquiv.trans Equiv.ulift.symm)
@@ -1102,7 +1097,7 @@ def coyonedaCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : C ⥤ Type v�
 
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma' {C : Type u₁} [SmallCategory C] :
-    yoneda ⋙ (whiskeringLeft C (C ⥤ Type u₁)ᵒᵖ Type u₁).obj coyoneda.rightOp
+    yoneda ⋙ (whiskeringLeft C (C ⥤ (Type u₁))ᵒᵖ (Type u₁)).obj coyoneda.rightOp
       ≅ 𝟭 (C ⥤ Type u₁) :=
   NatIso.ofComponents (fun F ↦ NatIso.ofComponents (fun _ ↦ Equiv.toIso coyonedaEquiv) (by
     intro X Y f
@@ -1139,7 +1134,6 @@ def uliftCoyonedaEquiv {X : Cᵒᵖ} {F : C ⥤ Type (max w v₁)} :
   left_inv τ := by
     ext Y ⟨x⟩
     simp [← comp_apply, ← τ.naturality]
-    simp
   right_inv x := by simp
 
 attribute [simp] uliftCoyonedaEquiv_symm_apply_app
@@ -1149,7 +1143,6 @@ lemma uliftCoyonedaEquiv_naturality {X Y : C} {F : C ⥤ Type (max w v₁)}
     (f : uliftCoyoneda.{w}.obj (op X) ⟶ F) (g : X ⟶ Y) :
     F.map g (uliftCoyonedaEquiv.{w} f) = uliftCoyonedaEquiv.{w} (uliftCoyoneda.map g.op ≫ f) := by
   simp [uliftCoyonedaEquiv, ← comp_apply, ← f.naturality]
-  simp
 
 lemma uliftCoyonedaEquiv_comp {X : Cᵒᵖ} {F G : C ⥤ Type (max w v₁)}
     (α : uliftCoyoneda.{w}.obj X ⟶ F) (β : F ⟶ G) :
@@ -1185,7 +1178,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A variant of the curried version of the Coyoneda lemma with a raise in the universe level. -/
 def uliftCoyonedaRightOpCompCoyoneda {C : Type u₁} [Category.{v₁} C] :
     uliftCoyoneda.{w}.rightOp ⋙ coyoneda ≅
-      evaluation C Type (max v₁ w) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+      evaluation C (Type (max v₁ w)) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
   NatIso.ofComponents
     (fun X => NatIso.ofComponents
       (fun _ => Equiv.toIso <| uliftCoyonedaEquiv.trans Equiv.ulift.symm)

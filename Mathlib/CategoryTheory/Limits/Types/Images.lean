@@ -76,10 +76,8 @@ instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
       (TypeCat.ofHom ⟨fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
-        have p := st.w
-        replace p := ConcreteCategory.congr_hom p (Classical.choose x.2)
-        simp only [Functor.id_obj, Functor.id_map, comp_apply] at p
-        erw [p, Classical.choose_spec x.2]⟩⟩⟩) rfl
+        rw [dsimp% (elementwise_of% st.w)]
+        rw [Classical.choose_spec x.2]⟩⟩⟩) rfl
 
 variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
   (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))

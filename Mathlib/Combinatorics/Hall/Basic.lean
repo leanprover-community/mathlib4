@@ -85,7 +85,7 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
 -/
 def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) :
     (Finset ι)ᵒᵖ ⥤ Type (max u v) where
-  obj ι' := <| hallMatchingsOn t ι'.unop
+  obj ι' := hallMatchingsOn t ι'.unop
   map {_ _} g := TypeCat.ofHom ⟨hallMatchingsOn.restrict t (CategoryTheory.leOfHom g.unop)⟩
 
 instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Finset ι) :

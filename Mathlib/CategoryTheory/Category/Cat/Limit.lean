@@ -48,7 +48,7 @@ the diagram whose limit gives the morphism space between two objects of the limi
 @[simps obj map]
 def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : (limit (F ⋙ Cat.objects.{v, v}) :)) :
     J ⥤ Type v where
-  obj j := <| limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
+  obj j := limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
   map f := TypeCat.ofHom ⟨fun g ↦ by
     refine eqToHom ?_ ≫ (F.map f).toFunctor.map g ≫ eqToHom ?_
     · exact (congr_hom (limit.w (F ⋙ Cat.objects) f) X).symm
@@ -114,7 +114,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
     map f := by
       fapply Types.Limit.mk.{v, v}
       · intro j
-        refine eqToHom ?_ ≫ (s.π.app j).toFunctor.map f ≫ eqToHom ?_ <;> simp<;> rfl
+        refine eqToHom ?_ ≫ (s.π.app j).toFunctor.map f ≫ eqToHom ?_ <;> simp
       · intro j j' h
         dsimp [Functor.comp_obj, homDiagram_obj]
         simp only [Functor.map_comp, eqToHom_map, ← Functor.comp_map, Category.assoc, eqToHom_trans,
@@ -137,7 +137,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition: the proposed cone is a limit cone. -/
 def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
   lift := limitConeLift F
-  fac s j := Cat.Hom.ext <| CategoryTheory.Functor.ext (by intro; simp [← comp_apply]; rfl)
+  fac s j := Cat.Hom.ext <| CategoryTheory.Functor.ext (by intro; simp [← comp_apply])
     fun X Y f => by
       dsimp [limitConeLift]
       exact Types.Limit.π_mk.{v, v} _ _ _ _
@@ -149,13 +149,9 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
       apply Types.limit_ext.{v, v}
       intro j
       simp [← comp_apply, ← w j]
-      rfl
     · intro X Y f
       have := fun j => Functor.congr_hom congr($((w j).symm).toFunctor) f
-      simp only [limitConeX_α, limitConeLift_toFunctor, this, limitCone_pt, limitCone_π_app,
-        Hom.comp_toFunctor, Functor.toCatHom_toFunctor, Functor.comp_obj, Functor.comp_map,
-        Category.assoc, eqToHom_trans, eqToHom_trans_assoc, comp_def, limit_π_homDiagram_eqToHom,
-        Types.Limit.π_mk]
+      simp [this, -homDiagram_obj]
 
 
 end HasLimits

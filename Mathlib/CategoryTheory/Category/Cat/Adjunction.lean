@@ -62,7 +62,7 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
 
 /-- The connected components functor -/
 def connectedComponents : Cat.{v, u} ⥤ Type u where
-  obj C := <| ConnectedComponents C
+  obj C := ConnectedComponents C
   map F := TypeCat.ofHom ⟨Functor.mapConnectedComponents F.toFunctor⟩
   map_id _ := by ext x; simpa using (Quotient.exists_rep x).elim (fun _ h ↦ by subst h; rfl)
   map_comp _ _ := by ext x; simpa using (Quotient.exists_rep x).elim (fun _ h => by subst h; rfl)

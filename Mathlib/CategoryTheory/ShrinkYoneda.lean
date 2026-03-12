@@ -39,7 +39,7 @@ obtained by shrinking `F.obj X` for all `X : C`. -/
 @[simps obj map, pp_with_univ]
 noncomputable def shrink (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F] :
     C ⥤ Type w where
-  obj X := <| Shrink.{w} (F.obj X)
+  obj X := Shrink.{w} (F.obj X)
   map f := TypeCat.ofHom ⟨equivShrink.{w} _ ∘ F.map f ∘ (equivShrink.{w} _).symm⟩
 
 /-- The natural transformation `shrink.{w} F ⟶ shrink.{w} G` induces by a natural
@@ -120,7 +120,6 @@ lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ Type w} (f : shrinkYoneda
       f.app (op Y) (shrinkYonedaObjObjEquiv.symm g) := by
   simp [shrinkYonedaObjObjEquiv, shrinkYonedaEquiv, shrinkYoneda,
     ← comp_apply, ← NatTrans.naturality]
-  simp
 
 set_option backward.isDefEq.respectTransparency false in
 lemma shrinkYonedaEquiv_shrinkYoneda_map {X Y : C} (f : X ⟶ Y) :

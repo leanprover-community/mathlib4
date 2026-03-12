@@ -40,17 +40,17 @@ def PartialFun : Type (u + 1) := Type u
 namespace PartialFun
 
 instance : CoeSort PartialFun Type* :=
-  ⟨TypeCat.carrier⟩
+  ⟨id⟩
 
 /-- Turns a type into a `PartialFun`. -/
 def of : Type* → PartialFun :=
-  TypeCat.of
+  id
 
 instance : Inhabited PartialFun.{u} :=
   ⟨PartialFun.of PUnit⟩
 
 instance largeCategory : LargeCategory.{u} PartialFun where
-  Hom X Y := PFun X.carrier Y.carrier
+  Hom X Y := PFun X Y
   id X := PFun.id X
   comp f g := g.comp f
 

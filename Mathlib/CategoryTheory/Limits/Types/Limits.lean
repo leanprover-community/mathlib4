@@ -30,7 +30,7 @@ variable {J : Type v} [Category.{w} J] {F : J ⥤ Type u}
 /-- Given a section of a functor F into `Type*`,
   construct a cone over F with `PUnit` as the cone point. -/
 def coneOfSection {s} (hs : s ∈ F.sections) : Cone F where
-  pt := .of PUnit
+  pt := PUnit
   π := { app j := TypeCat.ofHom ⟨fun _ ↦ s j⟩, naturality _ _ f := by ext; exact (hs f).symm }
 
 /-- Given a cone over a functor F into `Type*` and an element in the cone point,
@@ -174,7 +174,7 @@ open UnivLE
 instance hasLimit [Small.{u} J] (F : J ⥤ Type u) : HasLimit F :=
   (hasLimit_iff_small_sections F).mpr inferInstance
 
-instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J Type u where
+instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J (Type u) where
 
 /--
 The category of types has all limits.
@@ -182,7 +182,7 @@ The category of types has all limits.
 More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small limits. -/
 @[stacks 002U]
 instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] :
-    HasLimitsOfSize.{w, v} Type u where
+    HasLimitsOfSize.{w, v} (Type u) where
   has_limits_of_shape _ := { }
 
 variable (F : J ⥤ Type u) [HasLimit F]
@@ -279,13 +279,13 @@ In this section we verify that instances are available as expected.
 -/
 section instances
 
-example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} Type (max w v) := inferInstance
-example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} Type (max v w) := inferInstance
+example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type (max w v)) := inferInstance
+example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type (max v w)) := inferInstance
 
-example : HasLimitsOfSize.{0, 0, v, v + 1} Type v := inferInstance
-example : HasLimitsOfSize.{v, v, v, v + 1} Type v := inferInstance
+example : HasLimitsOfSize.{0, 0, v, v + 1} (Type v) := inferInstance
+example : HasLimitsOfSize.{v, v, v, v + 1} (Type v) := inferInstance
 
-example [UnivLE.{v, u}] : HasLimitsOfSize.{v, v, u, u + 1} Type u := inferInstance
+example [UnivLE.{v, u}] : HasLimitsOfSize.{v, v, u, u + 1} (Type u) := inferInstance
 
 end instances
 

@@ -116,24 +116,24 @@ theorem small_colimitType_of_hasColimit (F : J ⥤ Type u) [HasColimit F] :
 instance hasColimit [Small.{u} J] (F : J ⥤ Type u) : HasColimit F :=
   (hasColimit_iff_small_colimitType F).mpr inferInstance
 
-instance hasColimitsOfShape [Small.{u} J] : HasColimitsOfShape J Type u where
+instance hasColimitsOfShape [Small.{u} J] : HasColimitsOfShape J (Type u) where
 
 /-- The category of types has all colimits. -/
 @[stacks 002U]
 instance (priority := 1300) hasColimitsOfSize [UnivLE.{v, u}] :
-    HasColimitsOfSize.{w, v} Type u where
+    HasColimitsOfSize.{w, v} (Type u) where
 
 section instances
 
-example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} Type (max w v) :=
+example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type (max w v)) :=
   inferInstance
-example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} Type (max v w) :=
+example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type (max v w)) :=
   inferInstance
 
-example : HasColimitsOfSize.{0, 0, v, v + 1} Type v := inferInstance
-example : HasColimitsOfSize.{v, v, v, v + 1} Type v := inferInstance
+example : HasColimitsOfSize.{0, 0, v, v + 1} (Type v) := inferInstance
+example : HasColimitsOfSize.{v, v, v, v + 1} (Type v) := inferInstance
 
-example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u + 1} Type u := inferInstance
+example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u + 1} (Type u) := inferInstance
 
 end instances
 
@@ -189,7 +189,7 @@ theorem Colimit.ι_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
   congr_hom (colimit.ι_desc s j) x
 
 @[deprecated colimit.ι_map_apply (since := "2026-03-06")]
-theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J Type u]
+theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J (Type u)]
     (α : F ⟶ G) (j : J) (x : F.obj j) :
     colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
   congr_hom (colimit.ι_map α j) x

@@ -39,8 +39,8 @@ open CategoryTheory.Limits Opposite Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-variable {J : Type u₂} [Category.{v₂} J] [HasColimitsOfShape J Type v₁]
-  [HasColimitsOfShape J Type (max u₁ v₁)] (F : J ⥤ Cᵒᵖ ⥤ Type v₁)
+variable {J : Type u₂} [Category.{v₂} J] [HasColimitsOfShape J (Type v₁)]
+  [HasColimitsOfShape J (Type (max u₁ v₁))] (F : J ⥤ Cᵒᵖ ⥤ Type v₁)
 
 /-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`. -/
 noncomputable def yonedaYonedaColimit :
@@ -71,8 +71,6 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
     whiskerLeft_app, uliftFunctor_map, Functor.comp_map, evaluation_obj_map, yoneda_map_app]
   ext η Y f
   dsimp [largeCurriedYonedaLemma, yonedaOpCompYonedaObj, yonedaEquiv]
-  simp only [comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Function.comp_apply,
-    Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.ulift_apply, Equiv.coe_fn_symm_mk]
   simp only [← comp_apply, Category.assoc, colimitObjIsoColimitCompEvaluation_ι_inv,
     ← NatTrans.naturality, ← NatTrans.naturality_assoc, yoneda_obj_obj, yoneda_obj_map,
     Quiver.Hom.unop_op]

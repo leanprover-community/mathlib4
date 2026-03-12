@@ -387,7 +387,7 @@ end YonedaCollection
 @[simps obj map]
 def yonedaCollectionPresheaf (A : Cᵒᵖ ⥤ Type v)
     (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) : Cᵒᵖ ⥤ Type v where
-  obj X := .of <| YonedaCollection F X.unop
+  obj X := YonedaCollection F X.unop
   map f := TypeCat.ofHom ⟨YonedaCollection.map₂ F f.unop⟩
 
 /-- Functoriality of `yonedaCollectionPresheaf A F` in `F`. -/

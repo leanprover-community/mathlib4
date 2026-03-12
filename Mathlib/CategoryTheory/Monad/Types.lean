@@ -33,7 +33,7 @@ variable (m : Type u → Type u) [_root_.Monad m] [LawfulMonad m]
 /-- A lawful `Control.Monad` gives a category theory `Monad` on the category of types.
 -/
 @[simps! obj map η_app μ_app]
-def ofTypeMonad : Monad Type u where
+def ofTypeMonad : Monad (Type u) where
   toFunctor := ofTypeFunctor m
   η := ⟨fun X ↦ TypeCat.ofHom ⟨@pure m _ X⟩, fun _ _ f => by
     ext x; exact (LawfulApplicative.map_pure f x).symm⟩
@@ -42,6 +42,7 @@ def ofTypeMonad : Monad Type u where
   left_unit _ := by ext; exact joinM_pure _
   right_unit _ := by ext; exact joinM_map_pure _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `Kleisli` category of a `Control.Monad` is equivalent to the `Kleisli` category of its
 category-theoretic version, provided the monad is lawful.
 -/
@@ -56,12 +57,12 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
         simp [joinM]
         rfl }
   inverse :=
-    { obj X := X.of.carrier
+    { obj X := X.of
       map f x := f.of x
       map_id := fun _ => rfl
       map_comp := fun f g => by
+        dsimp
         ext t
-        change joinM (g.of <$> f.of t) = (f.of >=> g.of) t
         simp [joinM]
         rfl }
   unitIso := by

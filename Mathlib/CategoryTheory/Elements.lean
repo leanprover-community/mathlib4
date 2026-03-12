@@ -98,6 +98,8 @@ theorem comp_val {F : C ⥤ Type w} {p q r : F.Elements} {f : p ⟶ q} {g : q �
 theorem id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = 𝟙 p.1 :=
   rfl
 
+-- lemma map_val {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : F.map f.val = TypeCat.ofHom ⟨_⟩
+
 @[simp]
 theorem map_snd {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : (F.map f.val) p.2 = q.2 :=
   f.property
@@ -307,37 +309,31 @@ namespace Functor
 
 /-- The initial object in `F.Elements` if `F` is representable. -/
 @[simps]
-def Elements.initialOfRepresentableBy {F : Cᵒᵖ ⥤ TypeCat} {X : C} (h : F.RepresentableBy X) :
+def Elements.initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
     F.Elements :=
   ⟨.op X, h.homEquiv (𝟙 X)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is represented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/
-def Elements.isInitialOfRepresentableBy {F : Cᵒᵖ ⥤ TypeCat} {X : C} (h : F.RepresentableBy X) :
+def Elements.isInitialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
     Limits.IsInitial (initialOfRepresentableBy h) :=
   .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd |>.op, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
-    apply Subtype.ext
-    dsimp
-    conv_rhs => rw [← m.2]
-    simp [← h.homEquiv_unop_comp]
+    simp [← m.2, ← h.homEquiv_unop_comp]
 
 /-- The initial object in `F.Elements` if `F` is corepresentable. -/
 @[simps]
-def Elements.initialOfCorepresentableBy {F : C ⥤ TypeCat} {X : C} (h : F.CorepresentableBy X) :
+def Elements.initialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
     F.Elements :=
   ⟨X, h.homEquiv (𝟙 X)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is corepresented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/
-def Elements.isInitialOfCorepresentableBy {F : C ⥤ TypeCat} {X : C} (h : F.CorepresentableBy X) :
+def Elements.isInitialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
     Limits.IsInitial (initialOfCorepresentableBy h) :=
   .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
-    apply Subtype.ext
-    dsimp
-    conv_rhs => rw [← m.2]
-    simp [← h.homEquiv_comp]
+    simp [← m.2, ← h.homEquiv_comp]
 
 /--
 The initial object in the category of elements for a representable functor. In `isInitial` it is

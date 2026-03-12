@@ -574,7 +574,7 @@ def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
     -- Porting note: this proof was automatic in mathlib3
     ext
     simp only [Mat_.comp_apply, comp_apply]
-    apply Finset.unop_sum
+    convert Finset.unop_sum _ _
 
 instance : (equivalenceSingleObjInverse R).Faithful where
   map_injective w := by
