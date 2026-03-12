@@ -602,12 +602,19 @@ lemma Subalgebra.topologicalClosure_adjoin_le_centralizer_centralizer [T2Space A
     (adjoin R s).topologicalClosure ≤ centralizer R (centralizer R s) :=
   topologicalClosure_minimal (adjoin_le_centralizer_centralizer R s) (Set.isClosed_centralizer _)
 
+instance Subalgebra.isMulCommutative_topologicalClosure [T2Space A] (s : Subalgebra R A)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubsemiring.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-03-12")]
 abbrev Subalgebra.commSemiringTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
-  { s.topologicalClosure.toSemiring, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  have : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 /-- This is really a statement about topological algebra isomorphisms,
 but we don't have those, so we use the clunky approach of talking about
@@ -650,9 +657,13 @@ theorem le_iff_mem {x : A} {s : Subalgebra R A} (hs : IsClosed (s : Set A)) :
 instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
+instance isMulCommutative [T2Space A] (x : A) : IsMulCommutative (elemental R x) := by
+  unfold elemental; infer_instance
+
 open scoped IsMulCommutative in
+@[deprecated isMulCommutative (since := "2026-03-12")]
 instance [T2Space A] {x : A} : CommSemiring (elemental R x) :=
-  commSemiringTopologicalClosure _ mul_comm
+  inferInstance
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
     [IsTopologicalSemiring A] [Algebra R A] (x : A) :
@@ -680,11 +691,15 @@ variable {A : Type u} [TopologicalSpace A]
 variable [Ring A]
 variable [Algebra R A] [IsTopologicalRing A]
 
+set_option backward.isDefEq.respectTransparency false in
+open scoped IsMulCommutative in
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-03-12")]
 abbrev Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
-  { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  have : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 instance [T2Space A] {x : A} : CommRing (elemental R x) where
   mul_comm := mul_comm

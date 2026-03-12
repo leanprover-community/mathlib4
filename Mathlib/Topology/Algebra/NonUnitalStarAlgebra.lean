@@ -60,13 +60,20 @@ theorem topologicalClosure_mono {s t : NonUnitalStarSubalgebra R A} (h : s ≤ t
     s.topologicalClosure ≤ t.topologicalClosure :=
   closure_mono h
 
+instance isMulCommutative_topologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toNonUnitalSubalgebra.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.
 
 See note [reducible non-instances] -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-03-12")]
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
-  s.toNonUnitalSubalgebra.nonUnitalCommSemiringTopologicalClosure hs
+  have : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 variable [TopologicalSpace B] [Star B] [NonUnitalSemiring B] [Module R B]
     [IsTopologicalSemiring B] [ContinuousConstSMul R B] [ContinuousStar B]
@@ -104,13 +111,16 @@ variable [ContinuousConstSMul R A]
 instance instIsTopologicalRing (s : NonUnitalStarSubalgebra R A) : IsTopologicalRing s :=
   s.toNonUnitalSubring.instIsTopologicalRing
 
+open scoped IsMulCommutative in
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-03-12")]
 abbrev nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
-  { s.topologicalClosure.toNonUnitalRing, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
+  have : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end Ring
 
@@ -151,9 +161,14 @@ theorem le_iff_mem {x : A} {s : NonUnitalStarSubalgebra R A} (hs : IsClosed (s :
 theorem isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
+instance isMulCommutative [T2Space A] (x : A) [IsStarNormal x] :
+    IsMulCommutative (elemental R x) :=
+  isMulCommutative_topologicalClosure _
+
 open scoped IsMulCommutative in
+@[deprecated isMulCommutative (since := "2026-03-12")]
 instance [T2Space A] {x : A} [IsStarNormal x] : NonUnitalCommSemiring (elemental R x) :=
-  nonUnitalCommSemiringTopologicalClosure _ mul_comm
+  inferInstance
 
 instance {R A : Type*} [CommRing R] [StarRing R] [NonUnitalRing A] [StarRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
