@@ -689,9 +689,7 @@ instance preorder : Preorder (ℤ√d) where
     exact (and_iff_right_of_imp ht.resolve_left).symm
 
 open Int in
--- TODO(2026-02-19): there is currently no `Archimedean (ℤ√d)` instance.
--- Keep `le_arch` for compatibility with `Mathlib/NumberTheory/PellMatiyasevic.lean`;
--- once that instance is available, migrate callers to `exists_nat_ge` and remove this theorem.
+-- TODO add an `Archimedean (ℤ√d)` instance and drop this lemma
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
