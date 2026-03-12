@@ -211,7 +211,7 @@ end Monoid
 
 section Semiring
 
-variable [Semiring R] [StarRing R]
+variable [NonAssocSemiring R] [StarRing R]
 
 @[simp]
 protected theorem natCast (n : ℕ) : IsSelfAdjoint (n : R) :=

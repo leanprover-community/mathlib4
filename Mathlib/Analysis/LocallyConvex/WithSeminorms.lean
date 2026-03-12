@@ -229,10 +229,18 @@ variable [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
--- Todo: This should be phrased entirely in terms of the von Neumann bornology.
 /-- The proposition that a linear map is bounded between spaces with families of seminorms. -/
 def IsBounded (p : ι → Seminorm 𝕜 E) (q : ι' → Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) : Prop :=
   ∀ i, ∃ s : Finset ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • s.sup p
+
+theorem IsBounded.of_real {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂ F} {f : E →ₛₗ[σ₁₂] F}
+    (H : ∀ i, ∃ s : Finset ι, ∃ C : ℝ, ∀ x, q i (f x) ≤ C * (s.sup p) x) :
+    IsBounded p q f := by
+  rw [IsBounded]
+  peel H with i s H
+  obtain ⟨C, hC⟩ := H
+  refine ⟨C.toNNReal, fun x ↦ show q i (f x) ≤ C.toNNReal • ((s.sup p) x) from ?_⟩
+  exact (hC x).trans <| mul_le_mul_of_nonneg_right C.le_coe_toNNReal (apply_nonneg _ _)
 
 theorem isBounded_const (ι' : Type*) [Nonempty ι'] {p : ι → Seminorm 𝕜 E} {q : Seminorm 𝕜₂ F}
     (f : E →ₛₗ[σ₁₂] F) :
@@ -252,18 +260,18 @@ theorem isBounded_sup {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂
     (hf : IsBounded p q f) (s' : Finset ι') :
     ∃ (C : ℝ≥0) (s : Finset ι), (s'.sup q).comp f ≤ C • s.sup p := by
   classical
-    obtain rfl | _ := s'.eq_empty_or_nonempty
-    · exact ⟨1, ∅, by simp [Seminorm.bot_eq_zero]⟩
-    choose fₛ fC hf using hf
-    use s'.card • s'.sup fC, Finset.biUnion s' fₛ
-    have hs : ∀ i : ι', i ∈ s' → (q i).comp f ≤ s'.sup fC • (Finset.biUnion s' fₛ).sup p := by
-      intro i hi
-      refine (hf i).trans (smul_le_smul ?_ (Finset.le_sup hi))
-      exact Finset.sup_mono (Finset.subset_biUnion_of_mem fₛ hi)
-    refine (comp_mono f (finset_sup_le_sum q s')).trans ?_
-    simp_rw [← pullback_apply, map_sum, pullback_apply]
-    refine (Finset.sum_le_sum hs).trans ?_
-    rw [Finset.sum_const, smul_assoc]
+  obtain rfl | _ := s'.eq_empty_or_nonempty
+  · exact ⟨1, ∅, by simp [Seminorm.bot_eq_zero]⟩
+  choose fₛ fC hf using hf
+  use s'.card • s'.sup fC, Finset.biUnion s' fₛ
+  have hs : ∀ i : ι', i ∈ s' → (q i).comp f ≤ s'.sup fC • (Finset.biUnion s' fₛ).sup p := by
+    intro i hi
+    refine (hf i).trans (smul_le_smul ?_ (Finset.le_sup hi))
+    exact Finset.sup_mono (Finset.subset_biUnion_of_mem fₛ hi)
+  refine (comp_mono f (finset_sup_le_sum q s')).trans ?_
+  simp_rw [← pullback_apply, map_sum, pullback_apply]
+  refine (Finset.sum_le_sum hs).trans ?_
+  rw [Finset.sum_const, smul_assoc]
 
 end Seminorm
 
