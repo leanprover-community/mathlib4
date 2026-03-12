@@ -85,6 +85,7 @@ instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful
     ext x
     exact CategoryTheory.congr_fun h x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
 them. -/
 @[simps]

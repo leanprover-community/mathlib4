@@ -277,8 +277,7 @@ lemma _root_.MeasurableEquiv.gaussianReal_map_symm_apply (hv : v ≠ 0) (f : ℝ
 lemma gaussianReal_map_add_const (y : ℝ) :
     (gaussianReal μ v).map (· + y) = gaussianReal (μ + y) v := by
   by_cases hv : v = 0
-  · simp only [hv, gaussianReal_zero_var]
-    exact Measure.map_dirac (measurable_id'.add_const _) _
+  · simp [hv, gaussianReal_zero_var]
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.addRight y).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ 1) x) x := fun _ ↦ (hasDerivAt_id _).sub_const y
   change (gaussianReal μ v).map e.symm = gaussianReal (μ + y) v
@@ -294,19 +293,14 @@ lemma gaussianReal_map_const_add (y : ℝ) :
   simp_rw [add_comm y]
   exact gaussianReal_map_add_const y
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
 lemma gaussianReal_map_const_mul (c : ℝ) :
     (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v) := by
   by_cases hv : v = 0
-  · simp only [hv, mul_zero, gaussianReal_zero_var]
-    exact Measure.map_dirac (measurable_id'.const_mul c) μ
+  · simp [hv, mul_zero, gaussianReal_zero_var]
   by_cases hc : c = 0
-  · simp only [hc, zero_mul]
-    rw [Measure.map_const]
-    simp only [measure_univ, one_smul]
-    convert (gaussianReal_zero_var 0).symm
-    simp only [ne_eq, zero_pow, mul_eq_zero, hv, or_false, not_false_eq_true, reduceCtorEq,
-      NNReal.mk_zero]
+  · simp [hc, zero_mul]
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ c hc).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
     suffices ∀ x, HasDerivAt (fun x => c⁻¹ * x) (c⁻¹ * 1) x by rwa [mul_one] at this
@@ -333,8 +327,16 @@ lemma gaussianReal_map_mul_const (c : ℝ) :
   simp_rw [mul_comm _ c]
   exact gaussianReal_map_const_mul c
 
+set_option backward.isDefEq.respectTransparency false in
 lemma gaussianReal_map_neg : (gaussianReal μ v).map (fun x ↦ -x) = gaussianReal (-μ) v := by
   simpa using gaussianReal_map_const_mul (μ := μ) (v := v) (-1)
+
+/-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
+lemma gaussianReal_map_div_const (c : ℝ) :
+    (gaussianReal μ v).map (· / c) = gaussianReal (μ / c) (v / ⟨c ^ 2, sq_nonneg _⟩) := by
+  simp_rw [div_eq_mul_inv]
+  convert gaussianReal_map_mul_const c⁻¹ using 2 <;> rw [mul_comm]
+  ext; simp
 
 lemma gaussianReal_map_sub_const (y : ℝ) :
     (gaussianReal μ v).map (· - y) = gaussianReal (μ - y) v := by
@@ -384,6 +386,12 @@ lemma gaussianReal_neg (hX : HasLaw X (gaussianReal μ v) P) :
   rw [Pi.neg_def, ← Function.comp_def]
   exact HasLaw.comp ⟨by fun_prop, gaussianReal_map_neg⟩ hX
 
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X * c`
+has Gaussian law with mean `c * μ` and variance `c ^ 2 * v`. -/
+lemma gaussianReal_div_const (hX : HasLaw X (gaussianReal μ v) P) (c : ℝ) :
+    HasLaw (fun ω ↦ X ω / c) (gaussianReal (μ / c) (v / ⟨c ^ 2, sq_nonneg _⟩)) P :=
+  HasLaw.comp ⟨by fun_prop, gaussianReal_map_div_const c⟩ hX
+
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `y - X`
 has Gaussian law with mean `y - μ` and variance `v`. -/
 lemma gaussianReal_const_sub (hX : HasLaw X (gaussianReal μ v) P) (y : ℝ) :
@@ -398,6 +406,7 @@ open Real Complex
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- The complex moment-generating function of a Gaussian distribution with mean `μ` and variance `v`
@@ -566,10 +575,7 @@ variable {μ : ℝ} {v : ℝ≥0}
 
 lemma gaussianReal_map_linearMap (L : ℝ →ₗ[ℝ] ℝ) :
     (gaussianReal μ v).map L = gaussianReal (L μ) ((L 1 ^ 2).toNNReal * v) := by
-  have : (L : ℝ → ℝ) = fun x ↦ L 1 * x := by
-    ext x
-    have : x = x • 1 := by simp
-    conv_lhs => rw [this, L.map_smul, smul_eq_mul, mul_comm]
+  have : (L : ℝ → ℝ) = fun x ↦ L 1 * x := by simp
   rw [this, gaussianReal_map_const_mul]
   congr
   simp only [mul_one, left_eq_sup]

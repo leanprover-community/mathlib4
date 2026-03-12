@@ -89,7 +89,7 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
     rw [MeasureTheory.Measure.sub_def]
     apply le_antisymm
     · apply sInf_le
-      simp [le_refl, add_comm, h_measure_sub_add]
+      simp [add_comm, h_measure_sub_add]
     apply le_sInf
     intro d h_d
     rw [← h_measure_sub_add, mem_setOf_eq, add_comm d] at h_d
