@@ -208,6 +208,10 @@ theorem toNonUnitalSubsemiring_mono :
     Monotone (toNonUnitalSubsemiring : NonUnitalSubring R → NonUnitalSubsemiring R) :=
   toNonUnitalSubsemiring_strictMono.monotone
 
+instance isMulCommutative_toNonUnitalSubsemiring (s : NonUnitalSubring R) [IsMulCommutative s] :
+    IsMulCommutative s.toNonUnitalSubsemiring :=
+  ‹IsMulCommutative s›
+
 theorem toAddSubgroup_injective :
     Function.Injective (toAddSubgroup : NonUnitalSubring R → AddSubgroup R)
   | _r, _s, h => ext (SetLike.ext_iff.mp h :)
@@ -231,6 +235,10 @@ theorem toSubsemigroup_strictMono :
 @[mono]
 theorem toSubsemigroup_mono : Monotone (toSubsemigroup : NonUnitalSubring R → Subsemigroup R) :=
   toSubsemigroup_strictMono.monotone
+
+instance isMulCommutative_toSubsemigroup (s : NonUnitalSubring R) [IsMulCommutative s] :
+    IsMulCommutative s.toSubsemigroup :=
+  ‹IsMulCommutative s›
 
 /-- Construct a `NonUnitalSubring R` from a set `s`, a subsemigroup `sm`, and an additive
 subgroup `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/

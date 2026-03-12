@@ -928,3 +928,19 @@ lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra (s : Set A) :
   le_antisymm
     (adjoin_le <| NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin R s)
     (adjoin_le <| (NonUnitalStarAlgebra.subset_adjoin R s).trans <| subset_adjoin R _)
+
+namespace StarSubalgebra
+
+section IsMulCommutative
+
+instance isMulCommutative_toSubalgebra (S : StarSubalgebra R A) [IsMulCommutative S] :
+    IsMulCommutative S.toSubalgebra :=
+  ‹IsMulCommutative S›
+
+instance isMulCommutative_toNonUnitalStarSubalgebra (S : StarSubalgebra R A) [IsMulCommutative S] :
+    IsMulCommutative S.toNonUnitalStarSubalgebra :=
+  ‹IsMulCommutative S›
+
+end IsMulCommutative
+
+end StarSubalgebra

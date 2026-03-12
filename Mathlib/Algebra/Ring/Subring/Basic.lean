@@ -87,6 +87,10 @@ lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubse
 @[deprecated toSubsemiring_mono (since := "2025-10-20")]
 lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
 
+instance isMulCommutative_toSubsemiring (s : Subring R) [IsMulCommutative s] :
+    IsMulCommutative s.toSubsemiring :=
+  ‹IsMulCommutative s›
+
 @[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
