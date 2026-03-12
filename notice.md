@@ -499,3 +499,24 @@ D. 实现时的具体注意点
     `finiteTailInf ≤ u n ≤ finiteTailSup`。
     一旦这步打通，就能第一次真正得到
     tail `limsup - liminf` 的 deterministic 控制。
+
+2026-03-12 本轮新增进展（九）
+
+63. 这次继续只推进 deterministic 层，新补了
+    `finiteTailOscillationMax_mono`。
+    现在有限 tail oscillation 随窗口扩大单调增加，
+    这使它更适合作为后续 infinite tail oscillation 的 envelope。
+
+64. 实现上没有引入新 API。
+    证明直接复用
+    `le_finiteTailOscillationMax_iff`
+    和 `Finset.sup'_le_iff`，
+    把较小窗口中的 `(j, k)` 配对嵌入到较大窗口里。
+
+65. 下一步应继续停留在 deterministic bridge：
+    优先尝试把
+    `limsup_sub_liminf_partialSum_tail_le_limsup_finiteTailSup_sub_liminf_finiteTailInf`
+    与 57, 63 组合，
+    得到真实 tail oscillation
+    受某个由 `finiteTailOscillationMax X m n ω` 生成的极限对象控制的 lemma。
+    暂时仍然不要同时展开测度层和尾和衰减层。
