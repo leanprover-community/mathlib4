@@ -135,7 +135,6 @@ lemma map_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃
     X.map f₂₃ f₄ f₅ f₂₃ f₄ f₅₆ (fourδ₄Toδ₃ f₂₃ f₄ f₅ f₆ f₅₆ h₅₆) n₁ n₂ n₃ hn₂ hn₃ ≫
       X.map f₂₃ f₄ f₅₆ f₃ f₄ f₅₆ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅₆ f₂₃ h₂₃) n₁ n₂ n₃ hn₂ hn₃ := by
   simp only [← map_comp]
-  congr 1
   cat_disch
 
 set_option backward.isDefEq.respectTransparency false in
