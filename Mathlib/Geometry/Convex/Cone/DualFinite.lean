@@ -23,8 +23,9 @@ variable [AddCommGroup N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R}
 
 variable (p) in
-/-- A cone is `FGDual` if it is the dual of a finite set.
-  This is in analogy to `FG` (finitely generated) which is the span of a finite set. -/
+/-- A cone is `FGDual` if it is the dual of a finite set. Equivalently, the cone can be written
+  as the intersection of finitely many halfspace. This is the counterpart to `FG` (finitely
+  generated) which states that the cone is the span of a finite set. -/
 def FGDual (C : PointedCone R N) : Prop := ∃ s : Finset M, dual p s = C
 
 /-- The top cone is FGDual. -/
@@ -36,8 +37,7 @@ lemma FGDual.exists_fg_dual {C : PointedCone R N} (hC : C.FGDual p) :
   obtain ⟨s, hs⟩ := hC; exact ⟨_, Submodule.fg_span s.finite_toSet, by simp [hs]⟩
 
 /-- An FGDual cone is FGDual w.r.t. the standard pairing. -/
-lemma FGDual.to_id {C : PointedCone R N} (hC : C.FGDual p) : C.FGDual .id
-    := by classical
+lemma FGDual.to_id {C : PointedCone R N} (hC : C.FGDual p) : C.FGDual .id := by classical
   obtain ⟨s, hs⟩ := hC
   use Finset.image p s
   simp [← dual_id, hs]
