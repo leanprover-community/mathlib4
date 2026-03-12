@@ -30,14 +30,11 @@ deriving instance ToExpr for Substring.Raw
 deriving instance ToExpr for SourceInfo
 deriving instance ToExpr for Syntax
 
-set_option backward.privateInPublic true
-set_option backward.privateInPublic.warn false
-
 open DataValue in
 /-- Core of a hand-written `ToExpr` handler for `MData`.
 Uses the `KVMap.set*` functions rather than going into the internals
 of the `KVMap` data structure. -/
-private def toExprMData (md : MData) : Expr := Id.run do
+protected def _root_.Lean.MData.toExpr (md : MData) : Expr := Id.run do
   let mut e := mkConst ``MData.empty
   for (k, v) in md do
     let k := toExpr k
@@ -51,7 +48,7 @@ private def toExprMData (md : MData) : Expr := Id.run do
   return e
 
 instance : ToExpr MData where
-  toExpr := toExprMData
+  toExpr := MData.toExpr
   toTypeExpr := mkConst ``MData
 
 deriving instance ToExpr for MVarId
