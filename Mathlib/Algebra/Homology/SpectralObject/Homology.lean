@@ -61,7 +61,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma dCokernelSequence_exact
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     (X.dCokernelSequence f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := by
-  refine (ShortComplex.exact_iff_exact_up_to_refinements _).mpr (fun _ x₂ hx₂ ↦ ?_)
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A x₂ hx₂
   dsimp at hx₂ ⊢
   have hx₂' := hx₂ =≫ X.ιE ..
   simp only [assoc, zero_comp] at hx₂'
@@ -90,7 +91,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma dKernelSequence_exact
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     (X.dKernelSequence f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := by
-  refine (ShortComplex.exact_iff_exact_up_to_refinements _).mpr (fun _ x₂ hx₂ ↦ ?_)
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A x₂ hx₂
   dsimp at hx₂ ⊢
   obtain ⟨A₁, π₁, _, y₂, hy₂⟩ :=
     surjective_up_to_refinements_of_epi (X.πE f₃ f₄ f₅ n₀ n₁ n₂) x₂
