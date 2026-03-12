@@ -253,8 +253,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       refine ⟨g₁ + g₂, ?_, fun x hx => ?_⟩
       · convert I.add_mem hI₁ hI₂
         ext y
-        simp only [coe_add, Pi.add_apply, map_add, coe_comp, Function.comp_apply,
-          ContinuousMap.coe_coe]
+        simp
       · rcases hx with (hx | hx)
         · simpa only [zero_add] using add_lt_add_of_lt_of_le (hgt₁ x hx) zero_le'
         · simpa only [zero_add] using add_lt_add_of_le_of_lt zero_le' (hgt₂ x hx)
