@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Filippo A. E. Nuccio, Aristotle AI
 -/
 module
 
@@ -251,20 +251,14 @@ theorem uniformConvexSpace_of_tendsto_norm_sub_of_tendsto_norm_add
   have h_sum : Filter.Tendsto (fun n => ‖x n + y n‖) Filter.atTop (nhds 2) := by
     have h_sum : ∀ n, ‖x n + y n‖ ≤ 2 := by
       exact fun n => le_trans ( norm_add_le _ _ ) ( by linarith [ hx n, hy n ])
-    apply @tendsto_of_tendsto_of_tendsto_of_le_of_le (b := (atTop : Filter ℕ)) (a := 2)
-      (f := fun n ↦ ‖x n + y n‖) (g := fun n ↦ 2 - 1 /(n + 2)) (h := fun n ↦ 2)
-    · infer_instance
-    · have := @Tendsto.sub (G := ℝ) (α := ℕ) _ _ _ (f := fun n ↦ 2) (g := fun n ↦ 1/(n+2))
+    apply tendsto_of_tendsto_of_tendsto_of_le_of_le (α := ℝ) (β := ℕ) (b := (atTop : Filter ℕ))
+    · have := @Tendsto.sub (G := ℝ) (α := ℕ) _ _ _ (f := fun n ↦ 2) (g := fun n ↦ 1/(n + 2))
         (l := atTop) (a := 2) (b := 0) (by simp) ?_
-      simpa [sub_zero]
+      · simpa [sub_zero]
       sorry -- **asking** `Aristotle`...
     · exact tendsto_const_nhds
-    · intro n
-      simp only
-      linarith [hxy.2 n]
-    · intro n
-      simp only
-      exact h_sum n
+    · intro; grind
+    · intro; grind
   specialize h ( ULift ℕ ) ( Filter.map ULift.up Filter.atTop ) ( fun n => x n.down )
     ( fun n => y n.down )
   simp_all only [gt_iff_lt, ge_iff_le, exists_and_left, one_div, implies_true, tendsto_map'_iff,
