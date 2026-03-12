@@ -241,3 +241,33 @@ D. 实现时的具体注意点
     当前真实瓶颈、
     下一步唯一最自然的目标。
     不要继续累积已经完成后的旧“下一步建议”。
+
+2026-03-12 本轮新增进展
+
+36. 这次按“小步推进”只补了 deterministic bridge，不碰 a.e.、`limsup/liminf` 和尾和收敛。
+    新增：
+    `abs_sub_partialSum_le_two_mul_partialSumMax_tail`，
+    `tail_pair_event_subset_two_mul_partialSumMax_event`。
+    它们把原先“每个 tail partial sum 与基点 `S_(m+1)` 的距离受控”
+    升级成
+    “任意两个有限 tail partial sums 的差都受 `2 * partialSumMax` 控制”
+    以及对应事件包含。
+
+37. 本轮搜索/实现结论：
+    证明这个 pairwise bound 不需要新找概率论 API；
+    直接用
+    `abs_sub_partialSum_le_partialSumMax_tail`
+    两次，
+    再配合实数三角不等式 `abs_add_le` 与 `ring_nf`
+    做代数重写即可。
+    因而这一步是稳定的 deterministic 层封装。
+
+38. 当前真实瓶颈进一步收缩为：
+    把 36 的 pairwise finite oscillation 控制提升到真正要用的
+    tail oscillation / `limsup - liminf` 控制。
+    下一步最自然目标是：
+    先在固定样本点 `ω` 下，把有限窗口
+    `sup_{j,k≤n} |S_{m+j+1} ω - S_{m+k+1} ω|`
+    压到
+    `2 * partialSumMax tail n ω`；
+    之后再考虑把这个 finite 版本送入 `limsup/liminf`。

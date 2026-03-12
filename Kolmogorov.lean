@@ -360,6 +360,30 @@ lemma abs_sub_partialSum_le_partialSumMax_tail (X : ℕ → Ω → ℝ) (m n k :
   rw [← htail]
   exact abs_partialSum_le_partialSumMax (X := fun j => X (m + 1 + j)) (n := n) (k := k) hk ω
 
+/-- Any two tail partial sums differ by at most twice the maximal tail partial sum. -/
+lemma abs_sub_partialSum_le_two_mul_partialSumMax_tail (X : ℕ → Ω → ℝ) (m n j k : ℕ)
+    (hj : j ∈ Finset.range (n + 1)) (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
+    |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|
+      ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω := by
+  have hj' := abs_sub_partialSum_le_partialSumMax_tail X m n j hj ω
+  have hk' := abs_sub_partialSum_le_partialSumMax_tail X m n k hk ω
+  calc
+    |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|
+      = |(partialSum X (m + j + 1) ω - partialSum X (m + 1) ω) +
+          (partialSum X (m + 1) ω - partialSum X (m + k + 1) ω)| := by ring_nf
+    _ ≤ |partialSum X (m + j + 1) ω - partialSum X (m + 1) ω| +
+          |partialSum X (m + 1) ω - partialSum X (m + k + 1) ω| := by
+        exact abs_add_le
+          (partialSum X (m + j + 1) ω - partialSum X (m + 1) ω)
+          (partialSum X (m + 1) ω - partialSum X (m + k + 1) ω)
+    _ = |partialSum X (m + j + 1) ω - partialSum X (m + 1) ω| +
+          |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω| := by
+        rw [abs_sub_comm (partialSum X (m + 1) ω) (partialSum X (m + k + 1) ω)]
+    _ ≤ partialSumMax (fun l => X (m + 1 + l)) n ω +
+          partialSumMax (fun l => X (m + 1 + l)) n ω := by
+        exact add_le_add hj' hk'
+    _ = 2 * partialSumMax (fun l => X (m + 1 + l)) n ω := by ring
+
 lemma partialSumMax_measurable {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ) (n : ℕ)
     (hX : ∀ k, Measurable (X k)) : Measurable (partialSumMax X n) := by
   simpa [partialSumMax] using
@@ -377,6 +401,13 @@ lemma tail_event_subset_partialSumMax_event (X : ℕ → Ω → ℝ) (m n k : �
       {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} := by
   intro ω hω
   exact le_trans hω (abs_sub_partialSum_le_partialSumMax_tail X m n k hk ω)
+
+lemma tail_pair_event_subset_two_mul_partialSumMax_event (X : ℕ → Ω → ℝ) (m n j k : ℕ)
+    (hj : j ∈ Finset.range (n + 1)) (hk : k ∈ Finset.range (n + 1)) (ε : ℝ) :
+    {ω | ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} ⊆
+      {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
+  intro ω hω
+  exact le_trans hω (abs_sub_partialSum_le_two_mul_partialSumMax_tail X m n j k hj hk ω)
 
 lemma measurableSet_tail_partialSum_sub_ge {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ)
     (m k : ℕ) (ε : ℝ) (hX : ∀ k, Measurable (X k)) :
