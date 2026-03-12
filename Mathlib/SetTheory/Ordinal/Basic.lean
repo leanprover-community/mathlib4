@@ -1418,6 +1418,11 @@ theorem card_eq_zero {o} : card o = 0 ↔ o = 0 := by
 theorem card_eq_one {o} : card o = 1 ↔ o = 1 := by
   simpa using card_eq_nat (n := 1)
 
+theorem _root_.Cardinal.le_ord_iff_card_le_of_lt_aleph0 (o : Ordinal) {c : Cardinal} (hc : c < ℵ₀) :
+    o ≤ c.ord ↔ o.card ≤ c := by
+  rcases lt_aleph0.mp hc with ⟨n, rfl⟩
+  simp
+
 theorem mem_range_lift_of_card_le {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card b ≤ Cardinal.lift.{v, u} a) : b ∈ Set.range lift.{v, u} := by
   rw [card_le_iff, ← lift_succ, ← lift_ord] at h
