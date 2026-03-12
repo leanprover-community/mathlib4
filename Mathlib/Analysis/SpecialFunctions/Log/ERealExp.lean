@@ -21,7 +21,7 @@ in the extended nonnegative reals `ℝ≥0∞`, with `exp ⊥ = 0` and `exp ⊤ 
 ## Main Results
 - `EReal.exp_strictMono`: `exp` is increasing;
 - `EReal.exp_neg`, `EReal.exp_add`: `exp` satisfies
-the identities `exp (-x) = (exp x)⁻¹` and `exp (x + y) = exp x * exp y`.
+  the identities `exp (-x) = (exp x)⁻¹` and `exp (x + y) = exp x * exp y`.
 
 ## Tags
 ENNReal, EReal, exponential
@@ -47,9 +47,11 @@ def exp : EReal → ℝ≥0∞
 @[simp] lemma exp_top : exp ⊤ = ∞ := rfl
 @[simp] lemma exp_coe (x : ℝ) : exp x = ENNReal.ofReal (Real.exp x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma exp_eq_zero_iff {x : EReal} : exp x = 0 ↔ x = ⊥ := by
   induction x <;> simp [Real.exp_pos]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma exp_eq_top_iff {x : EReal} : exp x = ∞ ↔ x = ⊤ := by
   induction x <;> simp
 

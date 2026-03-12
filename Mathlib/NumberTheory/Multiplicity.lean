@@ -55,9 +55,9 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
     p ^ 2 ∣ (x + p) ^ n - x ^ (n - 1) * p * n - x ^ n := by
   rcases n with - | n
   · simp only [pow_zero, Nat.cast_zero, sub_zero, sub_self, dvd_zero, mul_zero]
-  · simp only [Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.cast_succ, add_pow, Finset.sum_range_succ,
-      Nat.choose_self, tsub_self, pow_one, Nat.choose_succ_self_right, pow_zero,
-      mul_one, Nat.cast_zero, zero_add, add_tsub_cancel_left]
+  · simp only [add_pow, sum_range_succ, add_tsub_cancel_left, pow_one, Nat.choose_succ_self_right,
+      Nat.cast_succ, tsub_self, pow_zero, mul_one, Nat.choose_self, Nat.cast_zero, zero_add,
+      Nat.succ_sub_succ_eq_sub, Nat.sub_zero]
     suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
       convert this; abel
     apply Finset.dvd_sum
@@ -360,6 +360,7 @@ namespace padicValNat
 
 variable {x y : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : n ≠ 0)
     (hneven : Even n) :
     padicValNat 2 (x ^ n - y ^ n) + 1 =
@@ -381,13 +382,15 @@ lemma pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven :
     padicValNat 2 n + 2 ≤ padicValNat 2 (x ^ n - 1) := by
   have : padicValNat 2 ((x + 1) * (x - 1)) ≥ 3 := by
     refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
-    simpa [← Nat.pow_two_sub_pow_two x 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
+    simp [← Nat.pow_two_sub_pow_two x 1]
+    grind [Nat.eight_dvd_sq_sub_one_of_odd]
   have := pow_two_sub_one h1x hx hn hneven
   grind [← padicValNat.mul]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
@@ -397,6 +400,7 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
   · exact Nat.sub_ne_zero_of_lt hyx
   · exact Nat.sub_ne_zero_of_lt (Nat.pow_lt_pow_left hyx hn)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
   rcases y with - | y

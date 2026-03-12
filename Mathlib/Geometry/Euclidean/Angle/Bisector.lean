@@ -296,9 +296,7 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq {p p₁ p₂ p₃
       convert (ha.inf_affineSpan_eq_affineSpan_inter {0, 1} {0, 2})
       · simp [Set.image_insert_eq]
       · simp [Set.image_insert_eq]
-      · suffices {p₁} = ![p₁, p₂, p₃] '' {0} by
-          convert this
-          grind
+      · suffices {p₁} = ![p₁, p₂, p₃] '' {0} by grind
         simp
     have hsup : line[ℝ, p₁, p₂] ⊔ line[ℝ, p₁, p₃] = ⊤ := by
       rw [← AffineSubspace.span_union]

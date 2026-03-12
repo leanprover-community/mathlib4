@@ -89,6 +89,7 @@ section Preorder
 variable [Preorder α]
 
 /-- A constructor for `SuccOrder α` usable when `α` has no maximal element. -/
+@[implicit_reducible]
 def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
     SuccOrder α where
   succ := succ
@@ -97,6 +98,7 @@ def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a �
   succ_le_of_lt := hsucc_le_iff.2
 
 /-- A constructor for `PredOrder α` usable when `α` has no minimal element. -/
+@[implicit_reducible]
 def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b) :
     PredOrder α where
   pred := pred
@@ -111,7 +113,7 @@ section LinearOrder
 variable [LinearOrder α]
 
 /-- A constructor for `SuccOrder α` for `α` a linear order. -/
-@[simps]
+@[simps, implicit_reducible]
 def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < b ↔ succ a ≤ b)
     (hm : ∀ a, IsMax a → succ a = a) : SuccOrder α where
   succ := succ
@@ -120,7 +122,7 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
   max_of_succ_le {a} := not_imp_not.mp fun h ↦ by simpa using (hn h a).not
 
 /-- A constructor for `PredOrder α` for `α` a linear order. -/
-@[simps]
+@[simps, implicit_reducible]
 def PredOrder.ofCore (pred : α → α)
     (hn : ∀ {a}, ¬IsMin a → ∀ b, b ≤ pred a ↔ b < a) (hm : ∀ a, IsMin a → pred a = a) :
     PredOrder α where
@@ -133,6 +135,7 @@ variable (α)
 
 open Classical in
 /-- A well-order is a `SuccOrder`. -/
+@[implicit_reducible]
 noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder α :=
   ofCore (fun a ↦ if h : (Ioi a).Nonempty then wellFounded_lt.min _ h else a)
     (fun ha _ ↦ by
@@ -142,7 +145,7 @@ noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder
     fun _ ha ↦ dif_neg (not_not_intro ha <| not_isMax_iff.mpr ·)
 
 /-- A linear order with well-founded greater-than relation is a `PredOrder`. -/
-@[to_dual existing]
+@[implicit_reducible, to_dual existing]
 noncomputable def PredOrder.ofLinearWellFoundedGT (α) [LinearOrder α] [WellFoundedGT α] :
     PredOrder α := letI := SuccOrder.ofLinearWellFoundedLT αᵒᵈ; inferInstanceAs (PredOrder αᵒᵈᵒᵈ)
 
@@ -222,6 +225,7 @@ theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
   · rw [succ_le_iff_of_not_isMax fun ha => hb <| ha.mono h]
     apply lt_succ_of_le_of_not_isMax h hb
 
+@[to_dual]
 theorem succ_mono : Monotone (succ : α → α) := fun _ _ => succ_le_succ
 
 /-- See also `Order.succ_eq_of_covBy`. -/
@@ -421,6 +425,9 @@ section LinearOrder
 
 variable [LinearOrder α] [SuccOrder α] {a b : α}
 
+@[to_dual] lemma succ_max (a b : α) : succ (max a b) = max (succ a) (succ b) := succ_mono.map_max
+@[to_dual] lemma succ_min (a b : α) : succ (min a b) = min (succ a) (succ b) := succ_mono.map_min
+
 @[to_dual le_of_pred_lt]
 theorem le_of_lt_succ {a b : α} : a < succ b → a ≤ b := fun h ↦ by
   by_contra! nh
@@ -619,9 +626,6 @@ theorem pred_covBy_of_not_isMin (h : ¬IsMin a) : pred a ⋖ a :=
 @[deprecated pred_lt_of_le_of_not_isMin (since := "2025-12-04")]
 theorem pred_lt_of_not_isMin_of_le (ha : ¬IsMin a) : a ≤ b → pred a < b :=
   (pred_lt_of_not_isMin ha).trans_le
-
-@[to_dual existing]
-theorem pred_mono : Monotone (pred : α → α) := fun _ _ => pred_le_pred
 
 @[deprecated (since := "2025-12-04")]
 alias pred_le_pred_of_not_isMin_of_le := pred_mono
@@ -1118,6 +1122,7 @@ section OrderIso
 
 variable {X Y : Type*} [Preorder X] [Preorder Y]
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- `SuccOrder` transfers across equivalences between orders. -/
 protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y where
@@ -1129,6 +1134,7 @@ protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y
     simp [f.le_symm_apply, h]
   succ_le_of_lt h := by rw [← le_map_inv_iff]; exact succ_le_of_lt (by simp [h])
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- `PredOrder` transfers across equivalences between orders. -/
 @[to_dual existing]

@@ -376,6 +376,7 @@ end NonUnitalNonAssocRing
 section NonUnitalRing
 variable [NonUnitalRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example : (center.instNonUnitalCommRing _).toNonUnitalRing =
       NonUnitalSubringClass.toNonUnitalRing (center R) := by
@@ -503,6 +504,7 @@ theorem mem_closure_iff {s : Set R} {x} :
     | neg _ _ h => exact neg_mem h⟩
 
 /-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
+@[implicit_reducible]
 def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
     (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (closure s) :=
   { (closure s).toNonUnitalRing with

@@ -230,7 +230,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     (isLittleO_iff.2 fun ε εpos => ?_) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
   -- consider a ball of radius `δ` around `x` in which the Taylor approximation for `f''` is
   -- good up to `δ`.
-  rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff] at hx
+  rw [hasFDerivWithinAt_iff_isLittleO, isLittleO_iff] at hx
   rcases Metric.mem_nhdsWithin_iff.1 (hx εpos) with ⟨δ, δpos, sδ⟩
   have E1 : ∀ᶠ h in 𝓝[>] (0 : ℝ), h * (‖v‖ + ‖w‖) < δ := by
     have : Filter.Tendsto (fun h => h * (‖v‖ + ‖w‖)) (𝓝[>] (0 : ℝ)) (𝓝 (0 * (‖v‖ + ‖w‖))) :=
@@ -459,6 +459,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
     {f' : E → E →L[𝕜] F} {x : E}
     {f'' : E →L[𝕜] E →L[𝕜] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y)
@@ -536,7 +537,7 @@ lemma exist_minSmoothness_le_ne_infty {n : WithTop ℕ∞} {m : ℕ} (hm : minSm
   split_ifs with h
   · simp only [h, ↓reduceIte] at hm
     exact ⟨m, le_rfl, hm, by simp⟩
-  · simp only [h, ↓reduceIte, top_le_iff] at hm
+  · simp only [h, ↓reduceIte] at hm
     refine ⟨ω, le_rfl, by simp [hm], by simp⟩
 
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. Over a field

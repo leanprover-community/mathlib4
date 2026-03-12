@@ -285,6 +285,7 @@ def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a multilinear map `f` on `n` variables (parameterized by `Fin n`) and a subset `s` of `k`
 of these variables, one gets a new multilinear map on `Fin k` by varying these variables, and fixing
 the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, where `hk` is a
@@ -415,11 +416,11 @@ def compMultilinearMap (g : MultilinearMap R M₁ M₂) (f : (i : ι) → Multil
   toFun m := g fun i ↦ f i (Sigma.curry m i)
   map_update_add' {hDecEqSigma} := by
     classical
-    simp [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
+    simp +instances [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
       Sigma.curry_update, Function.apply_update (fun i ↦ f i)]
   map_update_smul' {hDecEqSigma} := by
     classical
-    simp [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
+    simp +instances [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
       Sigma.curry_update, Function.apply_update (fun i ↦ f i)]
 
 end compMultilinear
@@ -1325,12 +1326,12 @@ lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i
     f (update x i v) = f x - f (update x i (x i - v)) := by
   rw [map_update_sub, update_eq_self, sub_sub_cancel]
 
-open Finset in
 lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Finset ι) :
     f a - f (s.piecewise b a) =
     ∑ i ∈ s, f (fun j ↦ if j ∈ s → j < i then a j else if i = j then a j - b j else b j) := by
-  refine s.induction_on_min ?_ fun k s hk ih ↦ ?_
-  · rw [Finset.piecewise_empty, sum_empty, sub_self]
+  induction s using induction_on_min with
+  | empty => rw [Finset.piecewise_empty, sum_empty, sub_self]
+  | insert k s hk ih => ?_
   rw [Finset.piecewise_insert, map_update, ← sub_add, ih,
       add_comm, sum_insert (lt_irrefl _ <| hk k ·)]
   simp_rw [s.mem_insert]
