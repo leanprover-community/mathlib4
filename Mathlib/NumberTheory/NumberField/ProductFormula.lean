@@ -52,7 +52,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
     ← finprod_heightOneSpectrum_factorization h_span_nezero, Int.cast_natCast]
   let t₀ := {v : HeightOneSpectrum (𝓞 K) | x ∈ v.asIdeal}
   have h_fin₀ : t₀.Finite := by simp only [← dvd_span_singleton, finite_factors h_span_nezero, t₀]
-  let t₁ := (fun v : HeightOneSpectrum (𝓞 K) ↦ ‖embedding _ v (x : K)‖).mulSupport
+  let t₁ := (fun v : HeightOneSpectrum (𝓞 K) ↦ ‖embedding K v (x : K)‖).mulSupport
   let t₂ :=
     (fun v : HeightOneSpectrum (𝓞 K) ↦ (absNorm (v.maxPowDividing (span {x})) : ℝ)).mulSupport
   have h_fin₁ : t₁.Finite := h_fin₀.subset <| by simp [norm_eq_one_iff_notMem, t₁, t₀]
@@ -70,7 +70,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
     ((Nat.castRingHom ℝ).toMonoidHom.comp absNorm.toMonoidHom).map_finprod_of_preimage_one
       (by simp) _
   rw [h_prod, ← finprod_mul_distrib h_fin₁ h_fin₂]
-  exact finprod_eq_one_of_forall_eq_one fun v ↦ v.embedding_mul_absNorm _ h_x_nezero
+  exact finprod_eq_one_of_forall_eq_one fun v ↦ embedding_mul_absNorm v h_x_nezero
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For any non-zero `x` in `K`, the product of `w x`, where `w` runs over `FinitePlace K`, is
