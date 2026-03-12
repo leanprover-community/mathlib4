@@ -158,8 +158,7 @@ noncomputable def dHomologyIso
     (hn₃ : n₂ + 1 = n₃ := by lia) (hn₄ : n₃ + 1 = n₄ := by lia) :
     (X.dShortComplex f₁ f₂ f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄).homology ≅
       X.E f₂₃ f₄ f₅₆ n₁ n₂ n₃ hn₂ hn₃ :=
-  (X.dHomologyData f₁ f₂ f₃ f₄ f₅ f₆ f₇ f₂₃
-    h₂₃ f₅₆ h₅₆ n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄).left.homologyIso
+  (X.dHomologyData f₁ f₂ f₃ f₄ f₅ f₆ f₇ f₂₃ h₂₃ f₅₆ h₅₆ ..).left.homologyIso
 
 end SpectralObject
 
