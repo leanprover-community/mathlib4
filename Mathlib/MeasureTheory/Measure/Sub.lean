@@ -53,7 +53,7 @@ theorem sub_top : μ - ⊤ = 0 :=
   sub_eq_zero_of_le le_top
 
 @[simp]
-protect theorem zero_sub : 0 - μ = 0 :=
+protected theorem zero_sub : 0 - μ = 0 :=
   sub_eq_zero_of_le μ.zero_le
 
 @[simp]
