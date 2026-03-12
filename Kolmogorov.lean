@@ -661,6 +661,74 @@ lemma limsup_finiteTailSup_sub_liminf_finiteTailInf_eq_ciSup_sub_ciInf
       (⨆ n : ℕ, finiteTailSup X m n ω) - (⨅ n : ℕ, finiteTailInf X m n ω) := by
   rw [limsup_finiteTailSup_eq_ciSup X m ω hbu, liminf_finiteTailInf_eq_ciInf X m ω hbl]
 
+lemma ciSup_finiteTailSup_sub_ciInf_finiteTailInf_le_liminf_finiteTailOscillationMax
+    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
+    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
+      (fun n => finiteTailSup X m n ω))
+    (hbl : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailInf X m n ω))
+    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailOscillationMax X m n ω))
+    (hbuOsc : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailOscillationMax X m n ω)) :
+    (⨆ n : ℕ, finiteTailSup X m n ω) - (⨅ n : ℕ, finiteTailInf X m n ω) ≤
+      Filter.liminf (fun n => finiteTailOscillationMax X m n ω) Filter.atTop := by
+  let d : ℕ → ℝ := fun n => finiteTailSup X m n ω - finiteTailInf X m n ω
+  have hd_nonneg : ∀ n, 0 ≤ d n := by
+    intro n
+    have hInf : finiteTailInf X m n ω ≤ partialSum X (m + 1) ω := by
+      exact finiteTailInf_le_partialSum X m n 0 (by simp) ω
+    have hSup : partialSum X (m + 1) ω ≤ finiteTailSup X m n ω := by
+      exact partialSum_le_finiteTailSup X m n 0 (by simp) ω
+    dsimp [d]
+    linarith
+  have hd_le : ∀ n, d n ≤ Filter.liminf (fun k => finiteTailOscillationMax X m k ω) Filter.atTop := by
+    intro n
+    simpa [d] using
+      finiteTailSup_sub_finiteTailInf_le_liminf_finiteTailOscillationMax X m n ω hcu hbuOsc
+  have hcu_d : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop d := by
+    exact Filter.isCoboundedUnder_le_of_le Filter.atTop hd_nonneg
+  have hbu_d : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop d := by
+    exact Filter.isBoundedUnder_of_eventually_le (Filter.Eventually.of_forall hd_le)
+  have hlimsup_d :
+      Filter.limsup d Filter.atTop ≤
+        Filter.liminf (fun n => finiteTailOscillationMax X m n ω) Filter.atTop := by
+    apply limsup_le_of_eventually_le_nat' hcu_d hbu_d
+    exact ⟨0, fun n _ => hd_le n⟩
+  have hd_tendsto :
+      Filter.Tendsto d Filter.atTop
+        (nhds ((⨆ n : ℕ, finiteTailSup X m n ω) - (⨅ n : ℕ, finiteTailInf X m n ω))) := by
+    simpa [d] using (tendsto_finiteTailSup_ciSup X m ω hbu).sub
+      (tendsto_finiteTailInf_ciInf X m ω hbl)
+  have hd_eq :
+      Filter.limsup d Filter.atTop =
+        (⨆ n : ℕ, finiteTailSup X m n ω) - (⨅ n : ℕ, finiteTailInf X m n ω) := by
+    exact hd_tendsto.limsup_eq
+  simpa [hd_eq] using hlimsup_d
+
+lemma limsup_sub_liminf_partialSum_tail_le_liminf_finiteTailOscillationMax
+    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
+    (hcu : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop
+      (fun n => partialSum X (m + n + 1) ω))
+    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
+      (fun n => finiteTailSup X m n ω))
+    (hbl : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailInf X m n ω))
+    (hcl : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
+      (fun n => partialSum X (m + n + 1) ω))
+    (hcuOsc : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailOscillationMax X m n ω))
+    (hbuOsc : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailOscillationMax X m n ω)) :
+    Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop -
+        Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop ≤
+      Filter.liminf (fun n => finiteTailOscillationMax X m n ω) Filter.atTop := by
+  refine (limsup_sub_liminf_partialSum_tail_le_limsup_finiteTailSup_sub_liminf_finiteTailInf
+      X m ω hcu hbu hbl hcl).trans ?_
+  rw [limsup_finiteTailSup_sub_liminf_finiteTailInf_eq_ciSup_sub_ciInf X m ω hbu hbl]
+  exact ciSup_finiteTailSup_sub_ciInf_finiteTailInf_le_liminf_finiteTailOscillationMax
+    X m ω hbu hbl hcuOsc hbuOsc
+
 lemma finiteTailOscillationMax_le_two_mul_partialSumMax_tail
     (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
     finiteTailOscillationMax X m n ω ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω := by

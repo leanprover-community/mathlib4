@@ -575,3 +575,28 @@ D. 实现时的具体注意点
     `(⨆ n, finiteTailSup X m n ω) - (⨅ n, finiteTailInf X m n ω)`
     被某个由 `finiteTailOscillationMax X m n ω` 生成的极限对象控制，
     然后再回接到 tail `partialSum` 的 oscillation。
+
+2026-03-12 本轮新增进展（十二）
+
+74. 这次把上一步的 `ciSup/ciInf` 形式真正接到了 oscillation envelope 上。
+    新增目标 lemma：
+    `ciSup_finiteTailSup_sub_ciInf_finiteTailInf_le_liminf_finiteTailOscillationMax`,
+    `limsup_sub_liminf_partialSum_tail_le_liminf_finiteTailOscillationMax`。
+
+75. 证明策略是看差序列
+    `d n = finiteTailSup X m n ω - finiteTailInf X m n ω`。
+    一方面由
+    `tendsto_finiteTailSup_ciSup` /
+    `tendsto_finiteTailInf_ciInf`
+    得到 `d n` 收敛到 `ciSup - ciInf`；
+    另一方面每个 `d n` 都已由
+    `finiteTailSup_sub_finiteTailInf_le_liminf_finiteTailOscillationMax`
+    控制，因此其 `limsup` 也被同一右端控制。
+
+76. 如果这一步通过编译，那么 deterministic bridge 的核心形状就首次成型了：
+    tail `partialSum` 的
+    `limsup - liminf`
+    可直接压到
+    `liminf (finiteTailOscillationMax ...)`，
+    后续只差把这个 `liminf finiteTailOscillationMax`
+    再送进已有的概率界。
