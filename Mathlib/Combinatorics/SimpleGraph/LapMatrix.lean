@@ -69,7 +69,7 @@ theorem isSymm_degMatrix [AddMonoidWithOne R] : (G.degMatrix R).IsSymm :=
   isSymm_diagonal _
 
 theorem isHermitian_degMatrix [NonAssocSemiring R] [StarRing R] : (G.degMatrix R).IsHermitian :=
-  Matrix.isHermitian_diagonal_iff.mpr fun i ↦ by simp [IsSelfAdjoint]
+  Matrix.isHermitian_diagonal_iff.mpr <| by simp
 
 theorem isSymm_lapMatrix [AddGroupWithOne R] : (G.lapMatrix R).IsSymm :=
   G.isSymm_degMatrix R |>.sub G.isSymm_adjMatrix
