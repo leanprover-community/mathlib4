@@ -22,7 +22,7 @@ We prove inequalities between these covering and packing numbers.
 
 ## Main definitions
 
-* `externalCoveringNumber`: the extenal covering number of a set `A` for radius `ε` is the minimal
+* `externalCoveringNumber`: the external covering number of a set `A` for radius `ε` is the minimal
   cardinality (in `ℕ∞`) of an `ε`-cover.
 * `coveringNumber`: the covering number (or internal covering number) of a set `A` for radius `ε` is
   the minimal cardinality (in `ℕ∞`) of an `ε`-cover contained in `A`.

@@ -820,6 +820,13 @@ theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChart
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
 
+theorem writtenInExtChartAt_mapsTo {x : M} {f : M → M'} :
+    MapsTo (writtenInExtChartAt I I' x f)
+      ((extChartAt I x).target ∩ f ∘ (extChartAt I x).symm ⁻¹' (extChartAt I' (f x)).source)
+      (extChartAt I' (f x)).target := by
+  intro x' hx'
+  simpa using (chartAt H' (f x)).mapsTo (by simpa using hx'.2)
+
 section
 
 variable {G G' F F' N N' : Type*}
