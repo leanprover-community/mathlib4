@@ -173,7 +173,8 @@ lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     have := ((Arrow.finite_iff A).1 hA).some
     exact ⟨IsFiltered.cocone F⟩
 
--- TODO: in a linear order, `h` is equivalent to `κ ≤ Order.cof J`
+-- TODO: make a version specialized to linear orders.
+-- In a linear order, `h` is equivalent to `κ ≤ Order.cof J`
 lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (h : ∀ ⦃K : Type w⦄ (s : K → J) (_ : Cardinal.mk K < κ),

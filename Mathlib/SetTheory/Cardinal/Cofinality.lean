@@ -139,8 +139,8 @@ theorem isCofinal_of_isCofinal_sUnion {α : Type*} [LinearOrder α] {s : Set (Se
   obtain ⟨b, ⟨t, ht, hb⟩, hab⟩ := h₁ a
   simpa using ⟨t, ht, hab.trans (hf t ht b hb).le⟩
 
-/-- If the union of `s` is cofinal and `s` is smaller than the cofinality, then `s` has a cofinal
-member. -/
+/-- If the union of the `ι`-indexed family `s` is cofinal and `ι` is smaller than the cofinality,
+then `s` has a cofinal member. -/
 theorem isCofinal_of_isCofinal_iUnion {α : Type*} {ι} [LinearOrder α] {s : ι → Set α}
     (h₁ : IsCofinal (⋃ i, s i)) (h₂ : #ι < Order.cof α) : ∃ i, IsCofinal (s i) := by
   rw [← sUnion_range] at h₁
@@ -149,6 +149,7 @@ theorem isCofinal_of_isCofinal_iUnion {α : Type*} {ι} [LinearOrder α] {s : ι
 
 /-! ### Cofinality of ordinals -/
 
+-- TODO: generalize to `OrderType`
 namespace Ordinal
 
 /-- The cofinality on an ordinal is the `Order.cof` of any isomorphic linear order.
@@ -215,7 +216,7 @@ theorem cof_add_one (o) : cof (o + 1) = 1 :=
 theorem cof_one : cof 1 = 1 := by
   simpa using cof_add_one 0
 
--- TODO: deprecate
+-- TODO: deprecate in favor of `cof_add_one`
 theorem cof_succ (o) : cof (succ o) = 1 :=
   cof_add_one o
 
@@ -583,7 +584,7 @@ theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
 theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
   rcases zero_or_succ_or_isSuccLimit o with (rfl | ⟨o, rfl⟩ | l)
   · simp [Cardinal.aleph0_ne_zero]
-  · simp 
+  · simp
   · simp only [l, iff_true]
     refine le_of_not_gt fun h => ?_
     obtain ⟨n, e⟩ := Cardinal.lt_aleph0.1 h
