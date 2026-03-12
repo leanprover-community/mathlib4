@@ -40,12 +40,6 @@ lemma formallySmooth_algebraMap [Algebra R S] :
     (algebraMap R S).FormallySmooth ↔ Algebra.FormallySmooth R S := by
   rw [FormallySmooth, toAlgebra_algebraMap]
 
-/-- Composition of formally smooth ring homomorphisms is formally smooth. -/
-lemma FormallySmooth.comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
-    (hf : f.FormallySmooth) (hg : g.FormallySmooth) : (g.comp f).FormallySmooth := by
-  algebraize [f, g, g.comp f]
-  exact Algebra.FormallySmooth.comp R S T
-
 lemma FormallySmooth.of_bijective {f : R →+* S} (hf : Function.Bijective f) :
     f.FormallySmooth := by
   algebraize [f]
@@ -54,8 +48,10 @@ lemma FormallySmooth.of_bijective {f : R →+* S} (hf : Function.Bijective f) :
 lemma FormallySmooth.holdsForLocalizationAway : HoldsForLocalizationAway @FormallySmooth :=
   fun _ _ _ _ _ r _ ↦ formallySmooth_algebraMap.mpr <| .of_isLocalization (.powers r)
 
-lemma FormallySmooth.stableUnderComposition : StableUnderComposition @FormallySmooth :=
-  fun _ _ _ _ _ _ _ _ hf hg ↦ hf.comp hg
+lemma FormallySmooth.stableUnderComposition : StableUnderComposition @FormallySmooth := by
+  intro R S T _ _ _ f g hf hg
+  algebraize [f, g, g.comp f]
+  exact .comp R S T
 
 lemma FormallySmooth.respectsIso : RespectsIso @FormallySmooth :=
   stableUnderComposition.respectsIso fun e ↦ holdsForLocalizationAway.of_bijective _ _ e.bijective
