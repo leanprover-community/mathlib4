@@ -29,15 +29,6 @@ namespace PresheafOfModules
 variable {C D : Type*} [Category* C] [Category* D]
   (F : C ⥤ D) (R : Dᵒᵖ ⥤ CommRingCat.{u})
 
-/-- If `F : C ⥤ D` if a functor and `R : Dᵒᵖ ⥤ CommRingCat` is a presheaf
-of commutative rings, this is the pushforward functor from the category
-of presheaves of modules on `R` to the category of presheaves of
-modules on `F.op ⋙ R`. -/
-abbrev pushforward₀OfCommRingCat :
-    PresheafOfModules.{v} (R ⋙ forget₂ _ _) ⥤
-      PresheafOfModules.{v} ((F.op ⋙ R) ⋙ forget₂ _ _) :=
-  pushforward₀ F (R ⋙ forget₂ _ _)
-
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (pushforward₀OfCommRingCat F R).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
