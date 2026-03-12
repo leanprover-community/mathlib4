@@ -487,6 +487,25 @@ lemma integral_partialSum_eq_sum_integral {Ω : Type*} [MeasurableSpace Ω]
     (integral_finset_sum (μ := μ) (s := Finset.range n) (f := fun k => X k) fun k hk =>
       (hX k hk).integrable (by norm_num))
 
+lemma integral_partialSum_eq_zero_of_forall_integral_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (n : ℕ)
+    (hX : ∀ k ∈ Finset.range n, MemLp (X k) 2 μ)
+    (hmean : ∀ k ∈ Finset.range n, μ[X k] = 0) :
+    μ[partialSum X n] = 0 := by
+  rw [integral_partialSum_eq_sum_integral (μ := μ) X n hX]
+  exact Finset.sum_eq_zero fun k hk => hmean k hk
+
+lemma integral_partialSum_sq_eq_variance_of_forall_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (n : ℕ)
+    (hX : ∀ k ∈ Finset.range (n + 1), MemLp (X k) 2 μ)
+    (hmean : ∀ k ∈ Finset.range (n + 1), μ[X k] = 0) :
+    ∫ ω, partialSum X (n + 1) ω ^ 2 ∂μ = variance (partialSum X (n + 1)) μ := by
+  rw [variance_eq_integral (partialSum_memLp (μ := μ) X (n + 1) hX).aemeasurable]
+  rw [integral_partialSum_eq_zero_of_forall_integral_zero (μ := μ) X (n + 1) hX hmean]
+  simp
+
 lemma integral_partialSum_tail_eq_zero_of_forall_integral_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     (X : ℕ → Ω → ℝ) (m n : ℕ)
@@ -514,6 +533,26 @@ lemma variance_partialSum_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
     simp [partialSum]
   rw [variance_congr hAE]
   exact hsum
+
+lemma smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0) (ε : NNReal) (n : ℕ) :
+    (ε ^ 2) • μ {ω | (ε : ℝ) ≤ partialSumMax X (n + 1) ω} ≤
+      ENNReal.ofReal (variance (partialSum X (n + 1)) μ) := by
+  have hbound :=
+    smul_measure_partialSumMax_ge_le_integral_partialSum_succ_sq_of_mean_zero
+      (μ := μ) X hX hLp hindep hmean ε n
+  have hEq :
+      ∫ ω, partialSum X (n + 1) ω ^ 2 ∂μ = variance (partialSum X (n + 1)) μ := by
+    exact integral_partialSum_sq_eq_variance_of_forall_mean_zero (μ := μ) X n
+      (fun k hk => hLp k) (fun k hk => hmean k)
+  have hEq' :
+      ENNReal.ofReal (∫ ω, partialSum X (n + 1) ω ^ 2 ∂μ) =
+        ENNReal.ofReal (variance (partialSum X (n + 1)) μ) := by
+    rw [hEq]
+  rw [hEq'] at hbound
+  exact hbound
 
 lemma variance_partialSum_tail_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)

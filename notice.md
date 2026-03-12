@@ -34,12 +34,14 @@ A. 已经完成的接口分层
    `measure_event_two_mul_partialSumMax_tail_le_sum_sub'`.
 
 10. 单个 partial sum 的概率/方差控制：
-    `partialSum_memLp`,
-    `measure_partialSum_ge_le_variance_div_sq`,
-    `measure_partialSum_tail_ge_le_variance_div_sq`,
-    `variance_partialSum_eq_sum_variance`,
-    `variance_partialSum_tail_eq_sum_variance`,
-    `measure_partialSum_tail_ge_le_sum_variance_div_sq`.
+   `partialSum_memLp`,
+   `measure_partialSum_ge_le_variance_div_sq`,
+   `integral_partialSum_eq_zero_of_forall_integral_zero`,
+   `integral_partialSum_sq_eq_variance_of_forall_mean_zero`,
+   `measure_partialSum_tail_ge_le_variance_div_sq`,
+   `variance_partialSum_eq_sum_variance`,
+   `variance_partialSum_tail_eq_sum_variance`,
+   `measure_partialSum_tail_ge_le_sum_variance_div_sq`.
 
 11. 零均值接口：
     `integral_partialSum_eq_sum_integral`,
@@ -69,7 +71,8 @@ A. 已经完成的接口分层
     `partialSum_succ_sq_le_condExp_partialSum_succ_sq_of_mean_zero`,
     `submartingale_partialSum_succ_sq_natural_of_mean_zero`,
     `smul_measure_partialSum_succ_sq_sup_ge_le_integral_partialSum_succ_sq_of_mean_zero`,
-    `smul_measure_partialSumMax_ge_le_integral_partialSum_succ_sq_of_mean_zero`.
+    `smul_measure_partialSumMax_ge_le_integral_partialSum_succ_sq_of_mean_zero`,
+    `smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero`.
 
 B. 目前最重要的判断
 
@@ -102,8 +105,11 @@ B. 目前最重要的判断
     `(ε ≤ partialSumMax)`，
     因而 Doob 不等式左端已经转成了真正可用的
     `(ε^2) • μ {ε ≤ partialSumMax ...}`。
-    当前剩余瓶颈变成右端：
-    需要把 `∫ partialSum X (n + 1)^2 dμ` 改写成方差和。
+    右端也已完成第一层改写：
+    在零均值假设下，
+    `∫ partialSum X (n + 1)^2 dμ = variance (partialSum X (n + 1))`，
+    因而当前真正剩余的瓶颈只剩
+    `variance (partialSum X (n + 1)) = ∑ variance (X k)`。
 
 C. 离最终 two-series theorem 还差什么
 
@@ -154,13 +160,17 @@ D. 实现时的具体注意点
     `ε^2 ≤ |x|^2` 和 `ε ≤ |x|`
     之间稳定往返。
 
-28. `condExp_of_stronglyMeasurable` 给的是函数等式；
+28. 右端从 `∫ S_n^2` 到 `variance S_n` 的改写不需要额外概率论 machinery：
+    直接用 `variance_eq_integral`，
+    再用零均值把 `μ[S_n]` 消掉即可。
+
+29. `condExp_of_stronglyMeasurable` 给的是函数等式；
     若要和 `condExp_sub` 等 a.e. 等式拼接，需要显式加 `.eventuallyEq`。
 
-29. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
+30. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
     更好用；当前平方过程 submartingale 的证明就是通过它手工搭起来的。
 
-30. 目前 `notice.md` 已清理过一次。
+31. 目前 `notice.md` 已清理过一次。
     以后优先维护：
     当前有效接口、
     当前真实瓶颈、
