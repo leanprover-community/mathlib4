@@ -370,6 +370,15 @@ def IsRegularEpi.getStruct (f : X ⟶ Y) [h : IsRegularEpi f] : RegularEpi f :=
 @[deprecated (since := "2025-12-01")] noncomputable alias regularEpiOfIsRegularEpi :=
   IsRegularEpi.getStruct
 
+/-- A coequalizer diagram gives rise to a regular epimorphism. -/
+def Cofork.IsColimit.regularEpi {R A : C} {p₁ p₂ : R ⟶ A} {c : Cofork p₁ p₂} (h : IsColimit c) :
+    RegularEpi c.π where
+  W := R
+  left := p₁
+  right := p₂
+  isColimit := .ofIsoColimit h c.isoCoforkOfπ
+  w := c.condition
+
 section IsRegularEpi
 
 /-!
