@@ -53,11 +53,11 @@ theorem sub_top : μ - ⊤ = 0 :=
   sub_eq_zero_of_le le_top
 
 @[simp]
-theorem zero_sub : 0 - μ = 0 :=
+protect theorem zero_sub : 0 - μ = 0 :=
   sub_eq_zero_of_le μ.zero_le
 
 @[simp]
-theorem sub_self : μ - μ = 0 :=
+protected theorem sub_self : μ - μ = 0 :=
   sub_eq_zero_of_le le_rfl
 
 @[simp]
