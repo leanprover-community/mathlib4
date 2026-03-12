@@ -438,7 +438,6 @@ instance isIso_prodComparison_stdSimplex.{w} (n m : ℕ) :
   IsIso.of_isIso_fac_right (prodComparison_natural.{w}
     hoFunctor (stdSimplex.isoNerve n).hom (stdSimplex.isoNerve m).hom).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by

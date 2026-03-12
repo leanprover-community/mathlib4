@@ -596,7 +596,7 @@ instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec.{u} := by
   exact preservesColimitsOfShape_pempty_of_preservesInitial _
 
 instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec.{u} :=
-  preservesFiniteCoproductsOfPreservesBinaryAndInitial _ _
+  PreservesFiniteCoproducts.of_preserves_binary_and_initial _ _
 
 /-- The canonical map `∐ Spec Rᵢ ⟶ Spec (Π Rᵢ)`.
 This is an isomorphism when the product is finite. -/

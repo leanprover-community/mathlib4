@@ -217,8 +217,7 @@ lemma resIndAdjunction_homEquiv_apply (A : Rep.{u} k S)
     {B : Rep.{u} k G} (f : res S.subtype B ⟶ A) :
     (resIndAdjunction k S).homEquiv _ _ f =
       resCoindHomEquiv S.subtype B A f ≫ (indCoindIso A).inv := by
-  simp only [resIndAdjunction, Adjunction.ofNatIsoRight, resCoindAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
+  simp only [resIndAdjunction, resCoindAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
   rfl
 
 lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{u} k S)
@@ -226,8 +225,6 @@ lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{u} k S)
     (f : B ⟶ (indFunctor.{u} k S.subtype).obj A) :
     ((resIndAdjunction k S).homEquiv _ _).symm f =
       (resCoindHomEquiv S.subtype B A).symm (f ≫ (indCoindIso A).hom) := by
-  simp only [resIndAdjunction, Adjunction.ofNatIsoRight, resCoindAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
   rfl
 
 variable (k S) in
@@ -249,8 +246,7 @@ lemma coindResAdjunction_counit_app (B : Rep.{u} k G) :
     (coindResAdjunction k S).counit.app B =
       (indCoindIso (res S.subtype B)).inv ≫
       (indResAdjunction k S.subtype).counit.app B := by
-  simp [coindResAdjunction, Adjunction.ofNatIsoLeft, Adjunction.equivHomsetLeftOfNatIso,
-    indResAdjunction]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -265,16 +261,15 @@ lemma coindResAdjunction_homEquiv_apply (A : Rep.{u} k S)
     {B : Rep.{u} k G} (f : coind S.subtype A ⟶ B) :
     (coindResAdjunction k S).homEquiv _ _ f =
       indResHomEquiv S.subtype A B ((indCoindIso A).hom ≫ f) := by
-  simp only [coindResAdjunction, Adjunction.ofNatIsoLeft, indResAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
   rfl
 
 lemma coindResAdjunction_homEquiv_symm_apply (A : Rep.{u} k S)
     {B : Rep.{u} k G} (f : A ⟶ res S.subtype B) :
     ((coindResAdjunction k S).homEquiv _ _).symm f =
       (indCoindIso A).inv ≫ (indResHomEquiv S.subtype A B).symm f := by
-  simp only [coindResAdjunction, Adjunction.ofNatIsoLeft, indResAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
+  simp only [coindResAdjunction, indResAdjunction,
+    Adjunction.homEquiv_ofNatIsoLeft_symm_apply]
+  simp
   rfl
 
 end Rep
