@@ -82,6 +82,11 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
   [FiberBundle F V]
 
+/-- The exterior derivative of a scalar function on `M`, as a section of the cotangent bundle. -/
+noncomputable abbrev extDerivFun (g : M → 𝕜) :
+    Π x : M, TangentSpace I x →L[𝕜] 𝕜 :=
+  fun x ↦ (fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
+
 /-- A function from sections of a vector bundle `V` on a manifold `M` to sections of $Hom(TM, E)$
 is a *covariant derivative* over a set `s` in `M` if it is additive and satisfies the Leibniz rule
 when applied to sections that are differentiable at a point of `s`.
@@ -97,7 +102,7 @@ structure IsCovariantDerivativeOn
   leibniz {σ : Π x : M, V x} {g : M → 𝕜} {x}
     (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial) :
     cov (g • σ) x = g x • cov σ x
-     + .toSpanSingleton 𝕜 (σ x) ∘L (fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
+     + .toSpanSingleton 𝕜 (σ x) ∘L (extDerivFun g x)
 
 /--
 A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k` section and `σ` a
@@ -176,10 +181,10 @@ lemma congr_of_eqOn
   -- Then, it's a chain of (dependent) equalities.
   calc cov σ x
     _ = cov ((ψ : M → 𝕜) • σ) x := by
-          simp [hcov.leibniz hσ hψ'.mdifferentiableAt, hψx, hψ'.mfderiv]
+          simp [hcov.leibniz hσ hψ'.mdifferentiableAt, hψx, extDerivFun, hψ'.mfderiv]
     _ = cov ((ψ : M → 𝕜) • σ') x := by rw [funext H]
     _ = cov σ' x := by
-          simp [hcov.leibniz hσ' hψ'.mdifferentiableAt, hψx, hψ'.mfderiv]
+          simp [hcov.leibniz hσ' hψ'.mdifferentiableAt, hψx, extDerivFun, hψ'.mfderiv]
 
 open Filter Set in
 /-- Given a covariant derivative `cov` on a neighborhood `s` of a point `x`, if sections `σ` and
@@ -211,7 +216,7 @@ theorem smul_const (hcov : IsCovariantDerivativeOn F cov s)
     {σ : Π x : M, V x} {x} (a : 𝕜)
     (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     cov (a • σ) x = a • cov σ x := by
-  simpa using hcov.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
+  simpa [extDerivFun] using hcov.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
 
 end computational_properties
 
