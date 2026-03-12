@@ -63,6 +63,28 @@ noncomputable instance (n : ℕ) : AddCommGroup (F.H n) := by
   dsimp only [H]
   infer_instance
 
+variable (J) in
+/-- Cohomology of an abelian sheaf in degree `n` as a functor. -/
+noncomputable def cohomologyFunctor (n : ℕ) :
+    Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} :=
+  (extFunctor.{w'} n).obj <|
+    .op <| ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift ℤ)))
+
+lemma cohomologyFunctor_obj (n : ℕ) (F : Sheaf J AddCommGrpCat.{w}) :
+    (cohomologyFunctor J n).obj F = F.H n :=
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+instance (n : ℕ) : (cohomologyFunctor J n).Additive := by
+  dsimp [cohomologyFunctor]
+  infer_instance
+
+lemma subsingleton_H_of_isZero {F : Sheaf J AddCommGrpCat.{w}} (h : Limits.IsZero F) (n : ℕ) :
+    Subsingleton (F.H n) := by
+  rw [← cohomologyFunctor_obj]
+  apply AddCommGrpCat.subsingleton_of_isZero
+  exact Functor.map_isZero (cohomologyFunctor J n) h
+
 end
 
 section
