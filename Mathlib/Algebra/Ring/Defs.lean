@@ -435,7 +435,7 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 `IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
 commutativity.
 
-See note [commutative-subobjects]. -/
+See note [commutative subobjects]. -/
 scoped instance (priority := 50) [NonUnitalNonAssocSemiring R] [IsMulCommutative R] :
     NonUnitalNonAssocCommSemiring R where
 
@@ -446,7 +446,7 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 `IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
 commutativity.
 
-See note [commutative-subobjects]. -/
+See note [commutative subobjects]. -/
 scoped instance (priority := 50) [NonUnitalSemiring R] [IsMulCommutative R] :
     NonUnitalCommSemiring R where
 
@@ -457,7 +457,7 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 `IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
 commutativity.
 
-See note [commutative-subobjects]. -/
+See note [commutative subobjects]. -/
 scoped instance (priority := 50) [NonUnitalNonAssocRing R] [IsMulCommutative R] :
     NonUnitalNonAssocCommRing R where
 
@@ -468,7 +468,7 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 `IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
 commutativity.
 
-See note [commutative-subobjects]. -/
+See note [commutative subobjects]. -/
 scoped instance (priority := 50) [NonUnitalRing R] [IsMulCommutative R] :
     NonUnitalCommRing R where
 
@@ -479,7 +479,7 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 `IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
 commutativity.
 
-See note [commutative-subobjects]. -/
+See note [commutative subobjects]. -/
 scoped instance (priority := 50) [NonAssocSemiring R] [IsMulCommutative R] :
     NonAssocCommSemiring R where
 
@@ -490,7 +490,7 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 `IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
 commutativity.
 
-See note [commutative-subobjects]. -/
+See note [commutative subobjects]. -/
 scoped instance (priority := 50) [Semiring R] [IsMulCommutative R] :
     CommSemiring R where
 
@@ -501,7 +501,7 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 `IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
 commutativity.
 
-See note [commutative-subobjects]. -/
+See note [commutative subobjects]. -/
 scoped instance (priority := 50) [NonAssocRing R] [IsMulCommutative R] :
     NonAssocCommRing R where
 
@@ -512,7 +512,7 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 `IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
 commutativity.
 
-See note [commutative-subobjects]. -/
+See note [commutative subobjects]. -/
 scoped instance (priority := 50) [Ring R] [IsMulCommutative R] :
     CommRing R where
 
