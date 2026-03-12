@@ -54,9 +54,8 @@ noncomputable def dCokernelSequence
   ShortComplex.mk _ _ (X.d_map_fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃)
 
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) :
-    Epi (X.dCokernelSequence f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).g := by
-  dsimp
-  infer_instance
+    Epi (X.dCokernelSequence f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).g :=
+  inferInstanceAs (Epi (X.map f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) ..))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma dCokernelSequence_exact
