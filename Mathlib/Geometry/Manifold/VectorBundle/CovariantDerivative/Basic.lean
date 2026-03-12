@@ -68,7 +68,7 @@ open scoped Manifold ContDiff Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-@[expose] public section
+@[expose] public noncomputable section
 
 /-! ## Local unbundled theory -/
 
@@ -83,14 +83,15 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [FiberBundle F V]
 
 /-- The exterior derivative of a scalar function on `M`, as a section of the cotangent bundle. -/
-noncomputable abbrev extDerivFun (g : M → 𝕜) :
+abbrev extDerivFun (g : M → 𝕜) :
     Π x : M, TangentSpace I x →L[𝕜] 𝕜 :=
   fun x ↦ (fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
 
 @[simp]
 lemma extDerivFun_add {g g' : M → 𝕜} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
     extDerivFun (g + g') x = extDerivFun (I := I) g x + extDerivFun g' x := by
-  simp [extDerivFun, fromTangentSpace_mfderiv_add hg hg']
+  simp [extDerivFun, mfderiv_add hg hg']
+  congr
 
 @[simp]
 lemma extDerivFun_zero {x : M} : extDerivFun (I := I) (0 : M → 𝕜) x = 0 := by
@@ -161,8 +162,9 @@ lemma iUnion {ι : Type*} {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x
 end changing_set
 
 -- TODO: prove that `cov σ x` depends on `σ` only via the 1-jet of `σ` at `x`.
--- This should be easy using the projection formula in `CovariantDerivative.Ehresmann`.
--- In the mean time we use the following weaker results (which are convenient to apply anyway).
+-- This will be easy using the projection formula about Ehresmann connections,
+-- which will be added in the planned file `CovariantDerivative/Ehresmann.lean`.
+-- In the mean-time we use the following weaker results (which are convenient to apply anyway).
 
 /-- Given a covariant derivative `cov` on a neighborhood `s` of a point `x`, if sections `σ` and
 `σ'` agree on `s` and are differentiable at `x`, then `cov σ x = cov σ x'`. -/
@@ -325,7 +327,7 @@ section difference
 
 /-- The difference of two covariant derivatives, as a function `Γ(V) → Γ(Hom(TM, V))`.
 Future lemmas will upgrade this to a one-form taking values in the endomorphisms of `V`. -/
-noncomputable def differenceAux
+private def differenceAux
     (cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)) :
     (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x) :=
   fun σ ↦ cov σ - cov' σ
@@ -336,7 +338,7 @@ variable
   (hcov : IsCovariantDerivativeOn F cov s)
   (hcov' : IsCovariantDerivativeOn F cov' s)
 
-theorem differenceAux_tensorial (hcov : IsCovariantDerivativeOn F cov s)
+private theorem differenceAux_tensorial (hcov : IsCovariantDerivativeOn F cov s)
     (hcov' : IsCovariantDerivativeOn F cov' s)
     (x : M) (hx : x ∈ s) : TensorialAt I F (differenceAux cov cov' · x) x where
   smul hf hσ := by
@@ -354,7 +356,7 @@ variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
 open scoped Classical in
 /-- The difference of two covariant derivatives, as a one-form taking values in the
 endomorphisms of `V`. -/
-noncomputable def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
+@[no_expose] def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
   if hxs : x ∈ s then
     TensorialAt.mkHom _ x (differenceAux_tensorial hcov hcov' _ hxs)
   else
@@ -504,7 +506,7 @@ variable [CompleteSpace 𝕜] [IsManifold I 1 M] [FiniteDimensional 𝕜 F]
 
 /-- The difference of two covariant derivatives, as a one-form taking values in the
 endomorphisms of `V`. -/
-noncomputable def difference (cov cov' : CovariantDerivative I F V) :
+def difference (cov cov' : CovariantDerivative I F V) :
     Π (x : M), V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
   cov.isCovariantDerivativeOnUniv.difference cov'.isCovariantDerivativeOnUniv
 
