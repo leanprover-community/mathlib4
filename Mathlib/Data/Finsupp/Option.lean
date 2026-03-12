@@ -211,7 +211,7 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
 
-lemma optionElim_add [AddZeroClass M] {a b : α →₀ M} {i j : M} :
+lemma optionElim_add [AddZeroClass M] (a b : α →₀ M) (i j : M) :
     a.optionElim i + b.optionElim j = (a + b).optionElim (i + j) := by
   ext x; cases x <;> simp
 
