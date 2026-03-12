@@ -42,23 +42,32 @@ def eq_comm_eq {α : Sort*} (a b : α) : (a = b) = (b = a) := by rw [@eq_comm _ 
 def iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b]
 
 open Lean Meta Simp in
-simproc eqComm (_ = _) := fun e => do
+simproc ↓ eqComm (_ = _) := fun e => do
   let_expr Eq x y := e | return .continue
   let symmExpr ← mkEq y x
   let r ← withoutTheorem `eqComm <| simp symmExpr
-  if r.expr == e then return .visit r
-  return .done (← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r)
+  -- Don't do anything if we didn't make progress.
+  if r.expr == symmExpr then return .continue
+  let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r
+  -- If we go `x = y` --symm-> `y = x` --simp--> `y' = x'`, then we want to end up with `x' = y'`.
+  match_expr r.expr with
+  | Eq y' x' => return .done (← symmR.mkEqTrans
+      { expr := ← mkEq x' y', proof? := ← mkAppM ``eq_comm_eq #[y', x'] })
+  | _ => return .done symmR
 
 open Lean Meta Simp in
-simproc iffComm (_ ↔ _) := fun e => do
+simproc ↓ iffComm (_ ↔ _) := fun e => do
   let_expr Iff x y := e | return .continue
   let symmExpr := .app (.app (.const ``Iff []) y) x
   let r ← withoutTheorem `iffComm <| simp symmExpr
-  if r.expr == e then return .visit r
-  return .done (← Result.mkEqTrans
-    { expr := symmExpr,
-      proof? := some (.app (.app (.const ``iff_comm_eq []) x) y) }
-    r)
+  -- Don't do anything if we didn't make progress.
+  if r.expr == symmExpr then return .continue
+  let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``iff_comm_eq #[x, y] } r
+  -- If we go `x ↔ y` --symm-> `y ↔ x` --simp--> `y' ↔ x'`, then we want to end up with `x' ↔ y'`.
+  match_expr r.expr with
+  | Iff y' x' => return .done (← symmR.mkEqTrans
+      { expr := .app (.app (.const ``Iff []) x') y', proof? := ← mkAppM ``iff_comm_eq #[y', x'] })
+  | _ => return .done symmR
 
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
 
