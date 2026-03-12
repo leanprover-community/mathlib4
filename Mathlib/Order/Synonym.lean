@@ -32,11 +32,12 @@ coercions should be inserted:
 
 ## See also
 
-This file is similar to `Algebra.Group.TypeTags`.
+This file is similar to `Mathlib.Algebra.Group.TypeTags.Basic`.
 -/
 
 @[expose] public section
 
+assert_not_exists OrderDual
 
 variable {α : Type*}
 

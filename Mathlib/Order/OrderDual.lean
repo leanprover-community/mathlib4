@@ -27,6 +27,7 @@ coercions should be inserted:
 
 @[expose] public section
 
+assert_not_exists Lex
 
 variable {α : Type*}
 
