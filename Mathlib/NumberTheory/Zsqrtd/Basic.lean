@@ -670,6 +670,7 @@ protected theorem nonneg_total : ∀ a : ℤ√d, Nonneg a ∨ Nonneg (-a)
   | ⟨(_ + 1 : ℕ), -[_+1]⟩ => Nat.le_total _ _
   | ⟨-[_+1], (_ + 1 : ℕ)⟩ => Nat.le_total _ _
 
+@[deprecated _root_.le_total (since := "2026-02-19")]
 protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
   have t := (b - a).nonneg_total
   rwa [neg_sub] at t
@@ -677,9 +678,14 @@ protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
 instance preorder : Preorder (ℤ√d) where
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
-  lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
+  lt_iff_le_not_ge a b := by
+    have ht : b ≤ a ∨ a ≤ b := by
+      have t := (a - b).nonneg_total
+      rwa [neg_sub] at t
+    exact (and_iff_right_of_imp ht.resolve_left).symm
 
 open Int in
+-- TODO add an `Archimedean (ℤ√d)` instance and drop this lemma
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
@@ -697,14 +703,11 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]
   exact h (y + 1)
 
+@[deprecated _root_.add_le_add_left (since := "2026-02-19")]
 protected theorem add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : a + c ≤ b + c :=
   show Nonneg _ by rwa [add_sub_add_right_eq_sub]
 
-protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
-  simpa using Zsqrtd.add_le_add_left _ _ h (-c)
 
-protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
-  h (Zsqrtd.le_of_add_le_add_left _ _ _ h')
 
 theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ√d) * a) := by
   rw [← Int.cast_natCast n]
@@ -833,13 +836,16 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
     rw [one_mul] at t
     exact absurd t (not_divides_sq _ _)
 
+@[deprecated _root_.le_antisymm (since := "2026-02-19")]
 theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
   eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
 
 instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
-    le_antisymm := fun _ _ => Zsqrtd.le_antisymm
-    le_total := Zsqrtd.le_total
+    le_antisymm := fun _ _ ab ba => eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
+    le_total := fun a b => by
+      have t := (b - a).nonneg_total
+      rwa [neg_sub] at t
     toDecidableLE := Zsqrtd.decidableLE
     toDecidableEq := inferInstance }
 
@@ -881,14 +887,22 @@ instance : IsDomain (ℤ√d) :=
 protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b := fun ab =>
   Or.elim
     (eq_zero_or_eq_zero_of_mul_eq_zero
-      (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
+      (_root_.le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
     (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
 
 instance : ZeroLEOneClass (ℤ√d) :=
   { zero_le_one := by trivial }
 
 instance : IsOrderedAddMonoid (ℤ√d) :=
-  { add_le_add_left := Zsqrtd.add_le_add_left }
+  { add_le_add_left := fun a b ab c => show Nonneg _ by rwa [add_sub_add_right_eq_sub] }
+
+@[deprecated _root_.le_of_add_le_add_left (since := "2026-02-19")]
+protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
+  exact _root_.le_of_add_le_add_left h
+
+@[deprecated _root_.add_lt_add_left (since := "2026-02-19")]
+protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
+  h (_root_.le_of_add_le_add_left h')
 
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
