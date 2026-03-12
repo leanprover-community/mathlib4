@@ -494,10 +494,6 @@ theorem mem_range_ofSubtype_iff (s : Finset α) (k : alternatingGroup α) :
   rw [range_ofSubtype, mem_subgroupOf, Perm.mem_range_ofSubtype_iff]
   simp
 
-theorem _root_.ConjAct.coe_smul {G : Type*} [Group G] {H : Subgroup G} (g h : H) :
-    (ConjAct.toConjAct g • h).1 = ConjAct.toConjAct g.1 • h.1 := by
-  rfl
-
 open Pointwise in
 theorem conj_smul_range_ofSubtype (s : Finset α) (g : alternatingGroup α) :
     MulAut.conj g • (ofSubtype s).range = (ofSubtype (g • s)).range := by

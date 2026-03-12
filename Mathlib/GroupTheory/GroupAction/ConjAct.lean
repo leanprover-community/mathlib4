@@ -168,6 +168,10 @@ end Units
 
 variable [Group G]
 
+theorem coe_smul {G : Type*} [Group G] {H : Subgroup G} (g h : H) :
+    (ConjAct.toConjAct g • h).1 = ConjAct.toConjAct g.1 • h.1 := by
+  rfl
+
 theorem toConjAct_inv_smul (g h : G) : toConjAct g⁻¹ • h = g⁻¹ * h * g := by
   rw [toConjAct_smul, inv_inv]
 
