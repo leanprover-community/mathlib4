@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # `Take` and `Drop` lemmas for lists
@@ -163,5 +164,17 @@ theorem length_dropSlice (i j : ℕ) (xs : List α) :
 
 theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     (dropSlice i j xs).length < xs.length := by grind
+
+/-- Applying `tail` to a list `n` times is strictly equivalent to dropping `n` elements. -/
+theorem tail_iterate (l : List α) (n : ℕ) : (List.tail^[n]) l = l.drop n := by
+  induction n generalizing l with
+  | zero => rfl
+  | succ n ih =>
+    cases l with
+    | nil =>
+      change (List.tail^[n]) [] = []
+      rw [ih []]
+      cases n <;> rfl
+    | cons a as => exact ih as
 
 end List
