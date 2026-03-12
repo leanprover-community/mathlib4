@@ -435,8 +435,8 @@ theorem ball_top :
   simp [lt_top_iff_ne_top, edist_ne_top_iff_reachable]
 
 /-- A vertex is in the ball of radius `⊤` iff it is reachable from the center. -/
-theorem mem_ball_top : v ∈ G.ball c ⊤ ↔ G.Reachable c v := by
-  simp [lt_top_iff_ne_top, edist_ne_top_iff_reachable, reachable_comm]
+theorem mem_ball_top : v ∈ G.ball c ⊤ ↔ G.Reachable v c := by
+  simp [lt_top_iff_ne_top, edist_ne_top_iff_reachable]
 
 /-- Balls are monotone in the radius. -/
 @[gcongr]
