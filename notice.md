@@ -23,6 +23,8 @@ A. 已经完成的接口分层
    `partialSumMax`,
    `abs_partialSum_le_partialSumMax`,
    `partialSumMax_succ_eq_sup_abs_partialSum_succ`,
+   `sq_le_sup_partialSum_succ_sq_iff_le_partialSumMax_succ`,
+   `event_sup_partialSum_succ_sq_ge_eq_event_partialSumMax_ge`,
    `abs_sub_partialSum_le_partialSumMax_tail`,
    `partialSumMax_event_eq_biUnion`,
    `partialSumMax_tail_event_eq_biUnion_sub`,
@@ -66,7 +68,8 @@ A. 已经完成的接口分层
     `integrable_partialSum_succ_sq`,
     `partialSum_succ_sq_le_condExp_partialSum_succ_sq_of_mean_zero`,
     `submartingale_partialSum_succ_sq_natural_of_mean_zero`,
-    `smul_measure_partialSum_succ_sq_sup_ge_le_integral_partialSum_succ_sq_of_mean_zero`.
+    `smul_measure_partialSum_succ_sq_sup_ge_le_integral_partialSum_succ_sq_of_mean_zero`,
+    `smul_measure_partialSumMax_ge_le_integral_partialSum_succ_sq_of_mean_zero`.
 
 B. 目前最重要的判断
 
@@ -94,6 +97,13 @@ B. 目前最重要的判断
     `partialSumMax X (n + 1)` 已可改写成
     `sup' (fun k => |partialSum X (k + 1)|)`，
     即去掉了 `partialSumMax` 里的初始零项。
+    这一层现在进一步完成到了事件/测度层：
+    `((ε : ℝ)^2 ≤ sup' partialSum^2)` 已可精确改写为
+    `(ε ≤ partialSumMax)`，
+    因而 Doob 不等式左端已经转成了真正可用的
+    `(ε^2) • μ {ε ≤ partialSumMax ...}`。
+    当前剩余瓶颈变成右端：
+    需要把 `∫ partialSum X (n + 1)^2 dμ` 改写成方差和。
 
 C. 离最终 two-series theorem 还差什么
 
@@ -138,13 +148,19 @@ D. 实现时的具体注意点
     `partialSumMax` 与 shifted `sup'` 的确定性改写；
     这一步不需要额外找 `sup'_image` 风格 API。
 
-27. `condExp_of_stronglyMeasurable` 给的是函数等式；
+27. 处理平方阈值时，`sq_le_sq₀` 比 `sq_le_sq` 更合适：
+    因为阈值来自 `NNReal`，其非负性可直接使用，
+    从而能在
+    `ε^2 ≤ |x|^2` 和 `ε ≤ |x|`
+    之间稳定往返。
+
+28. `condExp_of_stronglyMeasurable` 给的是函数等式；
     若要和 `condExp_sub` 等 a.e. 等式拼接，需要显式加 `.eventuallyEq`。
 
-28. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
+29. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
     更好用；当前平方过程 submartingale 的证明就是通过它手工搭起来的。
 
-29. 目前 `notice.md` 已清理过一次。
+30. 目前 `notice.md` 已清理过一次。
     以后优先维护：
     当前有效接口、
     当前真实瓶颈、

@@ -298,6 +298,57 @@ lemma partialSumMax_succ_eq_sup_abs_partialSum_succ (X : ℕ → Ω → ℝ) (n 
     intro k hk
     exact abs_partialSum_le_partialSumMax X (n + 1) (k + 1) (by simpa using hk) ω
 
+lemma sq_le_sup_partialSum_succ_sq_iff_le_partialSumMax_succ
+    (X : ℕ → Ω → ℝ) (ε : NNReal) (n : ℕ) (ω : Ω) :
+    (ε : ℝ) ^ 2 ≤ (Finset.range (n + 1)).sup' (by simp) (fun k => partialSum X (k + 1) ω ^ 2) ↔
+      (ε : ℝ) ≤ partialSumMax X (n + 1) ω := by
+  rw [partialSumMax_succ_eq_sup_abs_partialSum_succ]
+  constructor
+  · intro h
+    rcases ((Finset.le_sup'_iff (H := by simp)
+      (f := fun k => partialSum X (k + 1) ω ^ 2))).mp h with ⟨k, hk, hkε⟩
+    have habs : (ε : ℝ) ≤ |partialSum X (k + 1) ω| := by
+      have hkε' : (ε : ℝ) ^ 2 ≤ |partialSum X (k + 1) ω| ^ 2 := by
+        simpa [sq_abs] using hkε
+      exact (sq_le_sq₀ ε.2 (abs_nonneg _)).mp hkε'
+    exact le_trans habs <| Finset.le_sup' (f := fun k => |partialSum X (k + 1) ω|) hk
+  · intro h
+    rcases ((Finset.le_sup'_iff (H := by simp)
+      (f := fun k => |partialSum X (k + 1) ω|))).mp h with ⟨k, hk, hkε⟩
+    have hsquare : (ε : ℝ) ^ 2 ≤ partialSum X (k + 1) ω ^ 2 := by
+      have := (sq_le_sq₀ ε.2 (abs_nonneg (partialSum X (k + 1) ω))).2 hkε
+      simpa [sq_abs] using this
+    exact le_trans hsquare <| Finset.le_sup' (f := fun k => partialSum X (k + 1) ω ^ 2) hk
+
+lemma event_sup_partialSum_succ_sq_ge_eq_event_partialSumMax_ge
+    (X : ℕ → Ω → ℝ) (ε : NNReal) (n : ℕ) :
+    {ω | (ε : ℝ) ^ 2 ≤ (Finset.range (n + 1)).sup' (by simp)
+      (fun k => partialSum X (k + 1) ω ^ 2)} =
+      {ω | (ε : ℝ) ≤ partialSumMax X (n + 1) ω} := by
+  ext ω
+  exact sq_le_sup_partialSum_succ_sq_iff_le_partialSumMax_succ X ε n ω
+
+lemma smul_measure_partialSumMax_ge_le_integral_partialSum_succ_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0) (ε : NNReal) (n : ℕ) :
+    (ε ^ 2) • μ {ω | (ε : ℝ) ≤ partialSumMax X (n + 1) ω} ≤
+      ENNReal.ofReal (∫ ω, partialSum X (n + 1) ω ^ 2 ∂μ) := by
+  have hset :
+      {ω | (((ε ^ 2 : NNReal) : ℝ)) ≤ (Finset.range (n + 1)).sup' (by simp)
+        (fun k => partialSum X (k + 1) ω ^ 2)} =
+        {ω | (ε : ℝ) ≤ partialSumMax X (n + 1) ω} := by
+    ext ω
+    change (ε : ℝ) ^ 2 ≤ (Finset.range (n + 1)).sup' (by simp)
+      (fun k => partialSum X (k + 1) ω ^ 2) ↔
+        (ε : ℝ) ≤ partialSumMax X (n + 1) ω
+    exact sq_le_sup_partialSum_succ_sq_iff_le_partialSumMax_succ X ε n ω
+  have hdoob :=
+    smul_measure_partialSum_succ_sq_sup_ge_le_integral_partialSum_succ_sq_of_mean_zero
+      (μ := μ) X hX hLp hindep hmean (ε := ε ^ 2) n
+  rw [hset] at hdoob
+  exact hdoob
+
 /-- Any tail difference of partial sums is bounded by the maximal tail partial sum. -/
 lemma abs_sub_partialSum_le_partialSumMax_tail (X : ℕ → Ω → ℝ) (m n k : ℕ)
     (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
