@@ -545,3 +545,33 @@ D. 实现时的具体注意点
     `limsup_sub_liminf_partialSum_tail_le_limsup_finiteTailSup_sub_liminf_finiteTailInf`
     真正拼成一个 deterministic lemma，
     形式上最好直接以上述 `liminf finiteTailOscillationMax` 为右端。
+
+2026-03-12 本轮新增进展（十一）
+
+70. 这次仍然停留在 deterministic 层，先把 finite envelope 序列本身做成“真正收敛”。
+    新增：
+    `tendsto_finiteTailSup_ciSup`,
+    `tendsto_finiteTailInf_ciInf`,
+    `limsup_finiteTailSup_eq_ciSup`,
+    `liminf_finiteTailInf_eq_ciInf`,
+    `limsup_finiteTailSup_sub_liminf_finiteTailInf_eq_ciSup_sub_ciInf`。
+
+71. 这样现在
+    `limsup (finiteTailSup) - liminf (finiteTailInf)`
+    已经可以稳定改写成
+    `(⨆ n, finiteTailSup ...) - (⨅ n, finiteTailInf ...)`，
+    后面若要把它再压到某个 oscillation envelope，
+    就不必继续和两个 filter 极限对象打交道。
+
+72. 这一步用到的关键现成接口是
+    `tendsto_atTop_ciSup`,
+    `tendsto_atTop_ciInf`,
+    再配合单调性
+    `finiteTailSup_mono` / `finiteTailInf_anti`
+    与 `IsBoundedUnder.bddAbove_range` / `bddBelow_range`。
+
+73. 下一步最自然的目标变成：
+    证明
+    `(⨆ n, finiteTailSup X m n ω) - (⨅ n, finiteTailInf X m n ω)`
+    被某个由 `finiteTailOscillationMax X m n ω` 生成的极限对象控制，
+    然后再回接到 tail `partialSum` 的 oscillation。
