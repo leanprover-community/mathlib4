@@ -13,13 +13,13 @@ public import Mathlib.Order.WithBotTop
 /-!
 # The spectral sequence of a spectral object
 
-The main definition in this file is `Abelian.SpectralObject.spectralSequence`.
+The main definition in this file is `Abelian.SpectralObject.spectralSequence` (TODO).
 Assume that `X` is a spectral object indexed by `ι` in an abelian category `C`,
 and that we have `data : SpectralSequenceDataCore ι c r₀` for a family
 of complexes shapes `c : ℤ → ComplexShape κ` for a type `κ` and `r₀ : ℤ`.
 Then, under the assumption `X.HasSpectralSequence data` (see the file
 `Mathlib/Algebra/Homology/SpectralObject/HasSpectralSequence.lean`),
-we obtain `X.spectralSequence data` which is a spectral sequence starting
+we obtain `X.spectralSequence data` (TODO) which is a spectral sequence starting
 on page `r₀`, such that the `r`th page (for `r₀ ≤ r`) is a homological
 complex of shape `c r`.
 
@@ -61,19 +61,8 @@ a limit cokernel cofork `cc` of the differentials on the `r`th page,
 together with an epi-mono factorization `fac` which allows
 to obtain that the homology of the `r`th page identifies to the homology
 of the next page (see the definitions
-`SpectralObject.SpectralSequence.homologyData` and
-`SpectralObject.spectralSequenceHomologyData`).
-
-## Spectral objects indexed by `EInt`.
-
-When `X` is a spectral object indexed by the extended integers `EInt`,
-we obtain the `E₂`-cohomological spectral sequence
-`X.E₂SpectralSequence` where the objects of each page are indexed by
-`ℤ × ℤ` (the condition `HasSpectralSequence` is automatically satisfied).
-Under the `X.IsFirstQuadrant` assumption, we obtain
-`X.E₂SpectralSequenceNat` which is a first quadrant `E₂`-spectral
-sequence (the objects in the pages are indexed by `ℕ × ℕ` instead
-of `ℤ × ℤ`).
+`SpectralObject.SpectralSequence.homologyData` (TODO) and
+`SpectralObject.spectralSequenceHomologyData` (TODO)).
 
 -/
 
