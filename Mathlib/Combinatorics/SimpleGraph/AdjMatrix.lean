@@ -6,9 +6,11 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
-public import Mathlib.LinearAlgebra.Matrix.Hermitian
 
+import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
@@ -75,13 +77,6 @@ theorem apply_ne_one_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A
 @[simp]
 theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
     ¬A i j = 0 ↔ A i j = 1 := by rw [← apply_ne_one_iff h, Classical.not_not]
-
-@[simp]
-protected theorem isHermitian [NonAssocSemiring α] [StarRing α] (h : A.IsAdjMatrix) :
-    A.IsHermitian := by
-  ext i j
-  rcases h.zero_or_one i j with heq | heq
-    <;> simp [heq, h.symm.apply]
 
 /-- For `A : Matrix V V α` and `h : IsAdjMatrix A`,
 `h.toGraph` is the simple graph whose adjacency matrix is `A`. -/
