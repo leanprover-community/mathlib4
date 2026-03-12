@@ -296,8 +296,11 @@ theorem subset_iff_notMem : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
 
-theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s := by
+theorem not_univ_subset : ¬univ ⊆ s ↔ ∃ a, a ∉ s := by
   simp [not_subset]
+
+theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s :=
+  not_univ_subset
 
 lemma eq_of_forall_subset_iff (h : ∀ u, s ⊆ u ↔ t ⊆ u) : s = t := eq_of_forall_ge_iff h
 
@@ -560,14 +563,25 @@ theorem exists_mem_of_nonempty (α) : ∀ [Nonempty α], ∃ x : α, x ∈ (univ
 theorem ne_univ_iff_exists_notMem {α : Type*} (s : Set α) : s ≠ univ ↔ ∃ a, a ∉ s := by
   rw [← not_forall, ← eq_univ_iff_forall]
 
-theorem not_subset_iff_exists_mem_notMem {α : Type*} {s t : Set α} :
-    ¬s ⊆ t ↔ ∃ x, x ∈ s ∧ x ∉ t := by simp [subset_def]
+@[deprecated (since := "2026-03-12")] alias not_subset_iff_exists_mem_notMem := Set.not_subset
 
 theorem univ_unique [Unique α] : @Set.univ α = {default} :=
   Set.ext fun x => iff_of_true trivial <| Subsingleton.elim x default
 
 theorem ssubset_univ_iff : s ⊂ univ ↔ s ≠ univ :=
   lt_top_iff_ne_top
+
+theorem univ_ssubset : s ⊂ univ ↔ sᶜ.Nonempty := by
+  rw [ssubset_def, Set.not_univ_subset, Set.nonempty_def]
+  simp
+
+alias ⟨_, Nonempty.univ_ssubset⟩ := univ_ssubset
+
+theorem univ_compl_ssubset : sᶜ ⊂ univ ↔ s.Nonempty := by
+  rw [ssubset_def, Set.not_univ_subset, Set.nonempty_def]
+  simp
+
+alias ⟨_, Nonempty.univ_compl_ssubset⟩ := univ_compl_ssubset
 
 instance nontrivial_of_nonempty [Nonempty α] : Nontrivial (Set α) :=
   ⟨⟨∅, univ, empty_ne_univ⟩⟩

@@ -612,7 +612,7 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 
 variable (r) in
 /-- The cardinality of a set is an upper-bound for the cardinality of the order type of the set's
-mex (minimum excluded value) -/
+mex (minimum excluded value). See `not_lt_enum_ord_mk_min_compl` for the `α` version. -/
 theorem card_typein_min_le_mk [IsWellOrder α r] {s : Set α} (hs : sᶜ.Nonempty) :
     (typein r <| IsWellFounded.wf.min (r := r) sᶜ hs).card ≤ #s :=
   IsWellFounded.wf.cardinalMk_subtype_lt_min_compl_le hs
@@ -1433,11 +1433,32 @@ theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
     card o = ofNat(n) ↔ o = OfNat.ofNat n :=
   card_eq_nat
 
+variable (r) in
 @[simp]
-theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] :
+theorem type_fintype [IsWellOrder α r] [Fintype α] :
     type r = Fintype.card α := by rw [← card_eq_nat, card_type, mk_fintype]
 
 theorem type_fin (n : ℕ) : typeLT (Fin n) = n := by simp
+
+variable (r) in
+theorem ord_mk_le_type [IsWellOrder α r] (s : Set α) : (#s).ord ≤ type r := by
+  grw [← ord_le_type, ord_le_ord, le_mk_iff_exists_set]
+  use s
+
+variable (r) in
+theorem ord_mk_lt_type [IsWellOrder α r] {s : Set α} (hfin : s.Finite) (h : sᶜ.Nonempty) :
+    (#s).ord < type r := by
+  grw [← ord_le_type, ord_lt_ord, ← mk_univ (α := α)]
+  exact card_lt_card_of_left_finite hfin h.univ_ssubset
+
+variable (r) in
+/-- The `#s`-th element of `α` is an upper-bound for the set's mex (minimum excluded value),
+ordered by `r`, when `s` is finite. See `card_typein_min_le_mk` for the `Ordinal` version. -/
+theorem not_lt_enum_ord_mk_min_compl [IsWellOrder α r] {s : Set α} (hfin : s.Finite)
+    (h : sᶜ.Nonempty) :
+    ¬r (enum r ⟨#s |>.ord, ord_mk_lt_type r hfin h⟩) (IsWellFounded.wf.min (r := r) sᶜ h) := by
+  grw [← typein_le_typein, typein_enum, Cardinal.le_ord_iff_card_le_of_lt_aleph0 _ hfin.lt_aleph0,
+    card_typein_min_le_mk]
 
 end Ordinal
 
