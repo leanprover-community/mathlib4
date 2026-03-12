@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Nucleus
 public import Mathlib.Order.SupClosed
-public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Sublocale
@@ -431,9 +430,9 @@ def toNucleus (c : Closed X) : Nucleus X where
   idempotent' := by simp
   le_apply' := by simp
 
-/-- The map from closed sublocales into sublocales is a `CoFrameHom`. It preserves arbitrary meets
+/-- The map from closed sublocales into sublocales is a `CoframeHom`. It preserves arbitrary meets
   and finite joins. -/
-def toSublocale : CoFrameHom (Closed X) (Sublocale X) where
+def toSublocale : CoframeHom (Closed X) (Sublocale X) where
   toFun c := c.toNucleus.toSublocale
   map_bot' := by simp [Closed.toNucleus, Sublocale.ext_iff, ←Sublocale.singleton_top_eq_bot]; grind
   map_sup' a b := by
@@ -474,7 +473,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma sup_compl_eq_top : U.toSublocale ⊔ U.compl.toSublocale = ⊤ := by
   rw [eq_top_iff, ← toNucleus_le_toNucleus, Sublocale.toNucleus]
   simp only [toSublocale, toNucleus, FrameHom.coe_mk, InfTopHom.coe_mk, InfHom.coe_mk,
-    Closed.toSublocale, Closed.toNucleus, compl, CoFrameHom.coe_mk, SupBotHom.coe_mk, SupHom.coe_mk,
+    Closed.toSublocale, Closed.toNucleus, compl, CoframeHom.coe_mk, SupBotHom.coe_mk, SupHom.coe_mk,
     Closed.getElement_mk, map_sup, OrderIso.symm_apply_apply, ofDual_sup, OrderDual.ofDual_toDual,
     Sublocale.toNucleus, map_top, OrderDual.ofDual_top, le_bot_iff]
   ext i
@@ -486,7 +485,7 @@ lemma inf_compl_eq_bot : U.toSublocale ⊓ U.compl.toSublocale = ⊥ := by
   refine fun _ ↦ ⟨?_, by grind [top_mem]⟩
   · simp only [toSublocale, toNucleus, FrameHom.coe_mk, InfTopHom.coe_mk, InfHom.coe_mk,
     Nucleus.mem_toSublocale, Nucleus.coe_mk, Closed.toSublocale, Closed.toNucleus, compl,
-    CoFrameHom.coe_mk, SupBotHom.coe_mk, SupHom.coe_mk, Closed.getElement_mk, and_imp,
+    CoframeHom.coe_mk, SupBotHom.coe_mk, SupHom.coe_mk, Closed.getElement_mk, and_imp,
     forall_exists_index]
     intro _ h1 _ h2
     rw [← h1] at h2
