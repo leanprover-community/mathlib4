@@ -301,7 +301,7 @@ end right
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
 
 variable (R) in
-/-- The canonical `R`-algeba isomorphism between `WithVal v` and `S`, when `v : Valuation S Γ₀`. -/
+/-- The canonical `R`-algebra isomorphism between `WithVal v` and `S`, when `v : Valuation S Γ₀`. -/
 def algEquiv : WithVal v ≃ₐ[R] S := (equiv v).algEquiv R
 
 @[simp] theorem algEquiv_apply (x : WithVal v) : algEquiv R v x = x.ofVal := rfl
@@ -533,12 +533,12 @@ lemma IsEquiv.uniformContinuous (h : v.IsEquiv w) :
   let u := WithZero.unzero (Units.ne_zero x)
   obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
   simp only [Set.mem_setOf_eq, RingHom.id_apply]
-  set y₀ := ((h_val).orderMonoidIso x) with hy₀_def
+  set y₀ := h_val.orderMonoidIso x with hy₀_def
   have hy₀_ne_zero : y₀ ≠ 0 := by simp [hy₀_def]
   set y := (Units.mk0 y₀ hy₀_ne_zero) with hy_def
   use y
   intro b hb
-  rwa [← (h_val).orderMonoidIso_spec, hy_def, Units.val_mk0, hy₀_def,
+  rwa [← h_val.orderMonoidIso_spec, hy_def, Units.val_mk0, hy₀_def,
     h_val.orderMonoidIso.strictMono.lt_iff_lt] at hb
 
 theorem IsEquiv.uniformContinuous_congr (h : v.IsEquiv w) :

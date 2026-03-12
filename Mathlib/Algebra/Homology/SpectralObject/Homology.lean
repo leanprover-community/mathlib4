@@ -65,19 +65,18 @@ lemma dCokernelSequence_exact
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A x₂ hx₂
   dsimp at x₂ hx₂ ⊢
-  have hx₂' := hx₂ =≫ X.ιE _ _ _ _ _ _ _ _
+  have hx₂' := hx₂ =≫ X.ιE ..
   simp only [assoc, zero_comp] at hx₂'
   rw [X.map_ιE f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)
     (threeδ₃Toδ₂ f₂ f₃ f₄ f₃₄ h₃₄) n₁ n₂ n₃] at hx₂'
   obtain ⟨A₁, π₁, _, x₁, hx₁⟩ :=
     ((X.sequenceΨ_exact f₂ f₃ f₄ _ rfl f₃₄ h₃₄ n₁ n₂).exact 1).exact_up_to_refinements
-      (x₂ ≫ X.ιE _ _ _ _ _ _ _ _) (by
+      (x₂ ≫ X.ιE ..) (by
         dsimp [sequenceΨ, Precomp.map]
         rw [assoc, hx₂'])
   dsimp [sequenceΨ, Precomp.map] at x₁ hx₁
   refine ⟨A₁, π₁, inferInstance, x₁ ≫ X.πE f₃ f₄ f₅ n₀ n₁ n₂, ?_⟩
-  rw [← cancel_mono (X.ιE _ _ _ _ _ _ _ _), assoc, assoc, assoc, hx₁,
-    πE_d_ιE _ _ _ _ _ _ _ _ _ _]
+  rw [← cancel_mono (X.ιE ..), assoc, assoc, assoc, hx₁, πE_d_ιE ..]
 
 /-- The (exact) sequence expressing `E^n(f₂ ≫ f₃, f₄, f₅)` as the kernel
 of the differential `E^n(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` -/
@@ -101,7 +100,7 @@ lemma dKernelSequence_exact
   dsimp at x₂ hx₂ ⊢
   obtain ⟨A₁, π₁, _, y₂, hy₂⟩ :=
     surjective_up_to_refinements_of_epi (X.πE f₃ f₄ f₅ n₀ n₁ n₂) x₂
-  have hy₂' := hy₂ =≫ (X.d f₁ f₂ f₃ f₄ f₅ n₀ n₁ n₂ n₃ ≫ X.ιE _ _ _ _ _ _ _ _)
+  have hy₂' := hy₂ =≫ (X.d f₁ f₂ f₃ f₄ f₅ n₀ n₁ n₂ n₃ ≫ X.ιE ..)
   simp only [assoc, reassoc_of% hx₂, zero_comp, comp_zero, πE_d_ιE] at hy₂'
   obtain ⟨A₂, π₂, _, y₁, hy₁⟩ :=
     ((X.sequenceΨ_exact f₂ f₃ f₄ f₂₃ h₂₃ _ rfl n₁ n₂).exact 0).exact_up_to_refinements

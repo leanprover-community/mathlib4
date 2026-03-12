@@ -1009,20 +1009,11 @@ def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp where
   pt := unop c.pt
   ι := NatTrans.leftOp c.π
 
-/- When trying use `@[simps]` to generate the `ι_app` field of this definition, `@[simps]` tries to
-  reduce the RHS using `expr.dsimp` and `expr.simp`, but for some reason the expression is not
-  being simplified properly. -/
 /-- Change a cone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
-@[simps pt]
+@[simps!]
 def coconeOfConeLeftOp (c : Cone F.leftOp) : Cocone F where
   pt := op c.pt
   ι := NatTrans.removeLeftOp c.π
-
-@[simp]
-theorem coconeOfConeLeftOp_ι_app (c : Cone F.leftOp) (j) :
-    (coconeOfConeLeftOp c).ι.app j = (c.π.app (op j)).op := by
-  dsimp only [coconeOfConeLeftOp]
-  simp
 
 /-- Change a cocone on `F : J ⥤ Cᵒᵖ` to a cone on `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps!]

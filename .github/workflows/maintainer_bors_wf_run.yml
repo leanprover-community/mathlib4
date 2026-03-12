@@ -6,93 +6,124 @@ on:
     types:
       - completed
 
+permissions:
+  actions: read
+  contents: read
+
 
 jobs:
   add_ready_to_merge_label:
     name: Add ready-to-merge or delegated label
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
     steps:
-      - name: Generate app token
-        id: app-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      - name: Consume bridge artifact
+        id: bridge
+        uses: leanprover-community/privilege-escalation-bridge/consume@d3bd99c50a4cf8c5350a211e8e3ba07ac19067d8 # v1.1.0
         with:
-          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_TRIAGE_PRIVATE_KEY }}
+          artifact: workflow-data
+          source_workflow: Add "ready-to-merge" and "delegated" label
+          require_event: issue_comment,pull_request_review,pull_request_review_comment
+          fail_on_missing: false
+          token: ${{ github.token }}
+          extract: |
+            author=event.comment.user.login|event.review.user.login
+            pr_number=meta.pr_number
+            bot=outputs.bot
+            removeLabels=outputs.removeLabels
+            mOrD=outputs.mOrD
 
-      - name: Download artifact
-        id: download-artifact
-        uses: dawidd6/action-download-artifact@5c98f0b039f36ef966fdb7dfa9779262785ecb05 # v14
+      - name: Download legacy artifact (fallback)
+        id: download-legacy-artifact
+        if: ${{ steps.bridge.outputs.pr_number == '' }}
+        uses: dawidd6/action-download-artifact@2536c51d3d126276eb39f74d6bc9c72ac6ef30d3 # v16
         with:
           workflow: maintainer_bors.yml
           name: workflow-data
           path: ./artifacts
           if_no_artifact_found: ignore
-          # Use the workflow run that triggered this workflow
           run_id: ${{ github.event.workflow_run.id }}
 
-      - if: ${{ steps.download-artifact.outputs.found_artifact == 'true' }}
-        name: Extract data from JSON artifact
-        id: extract-data
+      - name: Extract legacy artifact data (fallback)
+        id: legacy
+        if: ${{ steps.bridge.outputs.pr_number == '' && steps.download-legacy-artifact.outputs.found_artifact == 'true' }}
         run: |
-          # Read the JSON artifact file and extract data
-          if [ -f "./artifacts/artifact-data.json" ]; then
-            echo "JSON artifact found, extracting data..."
-            echo "Full JSON artifact content:"
-            cat ./artifacts/artifact-data.json
-
-            # Extract specific values using jq
-            author=$(jq -r '.author' ./artifacts/artifact-data.json)
-            pr_number=$(jq -r '.pr_number' ./artifacts/artifact-data.json)
-            comment=$(jq -r '.comment' ./artifacts/artifact-data.json)
-            bot=$(jq -r '.bot' ./artifacts/artifact-data.json)
-            remove_labels=$(jq -r '.remove_labels' ./artifacts/artifact-data.json)
-            m_or_d=$(jq -r '.m_or_d' ./artifacts/artifact-data.json)
-
-            # Set as step outputs for use in later steps
-            {
-              echo "author=$author"
-              echo "pr_number=$pr_number"
-              echo "comment<<EOF"
-              echo "$comment"
-              echo "EOF"
-              echo "bot=$bot"
-              echo "removeLabels=$remove_labels"
-              echo "mOrD=$m_or_d"
-            } | tee -a "$GITHUB_OUTPUT"
-          else
-            echo "JSON artifact file not found!"
-            exit 1
+          data_file="./artifacts/artifact-data.json"
+          if [ ! -f "${data_file}" ]
+          then
+            echo "Legacy artifact not found at ${data_file}."
+            exit 0
           fi
+          {
+            echo "author=$(jq -r '.author // empty' "${data_file}")"
+            echo "pr_number=$(jq -r '.pr_number // empty' "${data_file}")"
+            echo "bot=$(jq -r '.bot // empty' "${data_file}")"
+            echo "removeLabels=$(jq -r '.removeLabels // .remove_labels // empty' "${data_file}")"
+            echo "mOrD=$(jq -r '.mOrD // .m_or_d // empty' "${data_file}")"
+          } | tee -a "$GITHUB_OUTPUT"
+
+      - name: Select bridge or legacy inputs
+        id: inputs
+        if: ${{ steps.bridge.outputs.pr_number != '' || steps.legacy.outputs.pr_number != '' }}
+        run: |
+          {
+            echo "author=${{ steps.bridge.outputs.author }}${{ steps.legacy.outputs.author }}"
+            echo "pr_number=${{ steps.bridge.outputs.pr_number }}${{ steps.legacy.outputs.pr_number }}"
+            echo "bot=${{ steps.bridge.outputs.bot }}${{ steps.legacy.outputs.bot }}"
+            echo "removeLabels=${{ steps.bridge.outputs.removeLabels }}${{ steps.legacy.outputs.removeLabels }}"
+            echo "mOrD=${{ steps.bridge.outputs.mOrD }}${{ steps.legacy.outputs.mOrD }}"
+            echo "input_source=${{ steps.bridge.outputs.pr_number != '' && 'bridge' || (steps.legacy.outputs.pr_number != '' && 'legacy' || 'none') }}"
+          } | tee -a "$GITHUB_OUTPUT"
+
+      - name: Note legacy artifact fallback
+        if: ${{ steps.inputs.outputs.input_source == 'legacy' }}
+        run: |
+          echo "::notice::Using legacy workflow-data artifact fallback from maintainer_bors.yml"
+          echo "Using legacy workflow-data artifact fallback from maintainer_bors.yml" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Check whether user is a mathlib admin
         id: user_permission
-        if: ${{ ! steps.extract-data.outputs.mOrD == '' || ! steps.extract-data.outputs.removeLabels == '' }}
+        if: ${{ ! steps.inputs.outputs.mOrD == '' || ! steps.inputs.outputs.removeLabels == '' }}
         uses: actions-cool/check-user-permission@7b90a27f92f3961b368376107661682c441f6103 # v2.3.0
         with:
-          username: ${{ steps.extract-data.outputs.author }}
+          username: ${{ steps.inputs.outputs.author }}
           require: 'admin'
+
+      - name: Generate app token
+        id: app-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        if: ${{ ! steps.inputs.outputs.mOrD == '' || ! steps.inputs.outputs.removeLabels == '' }}
+        with:
+          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-triage-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_TRIAGE }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Add ready-to-merge or delegated label
         id: add_label
-        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
+            steps.inputs.outputs.bot == 'true' ) }}
         uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
         with:
           route: POST /repos/:repository/issues/:issue_number/labels
           # Unexpected input warning from the following is expected:
           # https://github.com/octokit/request-action?tab=readme-ov-file#warnings
           repository: ${{ github.repository }}
-          issue_number: ${{ steps.extract-data.outputs.pr_number }}
-          labels: '["${{ steps.extract-data.outputs.mOrD }}"]'
+          issue_number: ${{ steps.inputs.outputs.pr_number }}
+          labels: '["${{ steps.inputs.outputs.mOrD }}"]'
         env:
-          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+          # This token is masked by the token minting action and will not be logged accidentally
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
-      - if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+      - if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
+            steps.inputs.outputs.bot == 'true' ) }}
         id: remove_labels
         name: Remove "awaiting-author" and "maintainer-merge"
         # we use curl rather than octokit/request-action so that the job won't fail
@@ -100,25 +131,25 @@ jobs:
         run: |
           for label in awaiting-author maintainer-merge; do
             curl --request DELETE \
-              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.extract-data.outputs.pr_number }}/labels/${label}" \
+              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.inputs.outputs.pr_number }}/labels/${label}" \
               --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
       - name: On bors r/d-, remove ready-to-merge or delegated label
-        if: ${{ ! steps.extract-data.outputs.removeLabels == '' && steps.user_permission.outputs.require-result == 'true' }}
+        if: ${{ ! steps.inputs.outputs.removeLabels == '' && steps.user_permission.outputs.require-result == 'true' }}
         # we use curl rather than octokit/request-action so that the job won't fail
         # (and send an annoying email) if the labels don't exist
         run: |
           for label in ready-to-merge delegated; do
             curl --request DELETE \
-              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.extract-data.outputs.pr_number }}/labels/${label}" \
+              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.inputs.outputs.pr_number }}/labels/${label}" \
               --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
       - name: Checkout local actions
-        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
+            steps.inputs.outputs.bot == 'true' ) }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.workflow_sha }}
@@ -126,34 +157,34 @@ jobs:
           sparse-checkout: .github/actions
           path: workflow-actions
       - name: Get mathlib-ci
-        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
+            steps.inputs.outputs.bot == 'true' ) }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       - name: Set up Python
-        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
+            steps.inputs.outputs.bot == 'true' ) }}
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.x'
 
       - name: Install dependencies
-        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
+            steps.inputs.outputs.bot == 'true' ) }}
         run: |
           python -m pip install --upgrade pip
           pip install -r "$CI_SCRIPTS_DIR/zulip/requirements.txt"
 
       - name: update zulip emoji reactions
-        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
+            steps.inputs.outputs.bot == 'true' ) }}
         env:
           ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
           ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
           ZULIP_SITE: https://leanprover.zulipchat.com
         run: |
-          python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.pr_number }}"
+          python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.inputs.outputs.mOrD }}" "${{ steps.inputs.outputs.mOrD }}" "${{ steps.inputs.outputs.pr_number }}"
