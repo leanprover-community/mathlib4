@@ -87,7 +87,7 @@ instance : HasFiniteQuotients ℤ where
     exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})
 
 /-- A domain that is also a finite `ℤ`-module has finite quotients. -/
-instance [IsDomain R] [Module.Finite ℤ R] : HasFiniteQuotients R :=
+scoped instance [IsDomain R] [Module.Finite ℤ R] : HasFiniteQuotients R :=
   of_module_finite ℤ R
 
 end Ring.HasFiniteQuotients
