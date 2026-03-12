@@ -81,7 +81,7 @@ theorem spectralNorm_eq (x : PadicAlgCl p) : spectralNorm ℚ_[p] (PadicAlgCl p)
 @[simp] theorem norm_extends (x : ℚ_[p]) : ‖(x : PadicAlgCl p)‖ = ‖x‖ :=
   spectralAlgNorm_extends (K := ℚ_[p]) (L := PadicAlgCl p) _
 
-/-- The underlying metric space of `PadicAlgCl p` is ultrametic. -/
+/-- The underlying metric space of `PadicAlgCl p` is ultrametric. -/
 instance isUltrametricDist : IsUltrametricDist (PadicAlgCl p) :=
   IsUltrametricDist.isUltrametricDist_of_forall_norm_add_le_max_norm (PadicAlgCl.isNonarchimedean p)
 
@@ -204,7 +204,7 @@ theorem norm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
 theorem norm_extends' (x : ℚ_[p]) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
   simp
 
-/-- The underlying metric space of `ℂ_[p]` is ultrametic. -/
+/-- The underlying metric space of `ℂ_[p]` is ultrametric. -/
 instance isUltrametricDist : IsUltrametricDist ℂ_[p] := IsUltrametricDist.of_normedAlgebra ℚ_[p]
 
 /-- The norm on `ℂ_[p]` is nonarchimedean. -/
@@ -212,19 +212,19 @@ theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) :=
   IsUltrametricDist.norm_add_le_max
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
-theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.norm := by
-  apply UniformSpace.Completion.extension_unique (f := @norm (PadicAlgCl p) _) (g := Valued.norm)
+theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
+  apply UniformSpace.Completion.extension_unique (f := @norm (PadicAlgCl p) _) (g := Valued.v.norm)
   · exact uniformContinuous_norm
   · letI S := (Valued.toNormedField ℂ_[p] NNReal).toNormedCommRing.toNormedRing.toSeminormedRing
     letI := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup
     exact @uniformContinuous_norm ℂ_[p] this
   · intro x
-    simp only [Valued.norm_def, RankOne.hom_eq_embedding]
+    simp only [Valued.v.norm_def, RankOne.hom_eq_embedding]
     erw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends]
     exact (PadicAlgCl.valuation_coe p x).symm
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
-theorem norm_eq_norm (x : ℂ_[p]) : ‖x‖ = Valued.norm x := by
+theorem norm_eq_norm (x : ℂ_[p]) : ‖x‖ = Valued.v.norm x := by
   congr!
   exact norm_eq_norm' p
 
@@ -250,7 +250,7 @@ instance charZero : CharZero ℂ_[p] :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] ℂ_[p]).injective).mp inferInstance
 
 set_option backward.isDefEq.respectTransparency false in
-/-- `ℂ_[p]` is algebrically closed. -/
+/-- `ℂ_[p]` is algebraically closed. -/
 instance isAlgClosed : IsAlgClosed ℂ_[p] :=
   IsAlgClosed.of_denseRange UniformSpace.Completion.denseRange_coe
 

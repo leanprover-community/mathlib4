@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
+public import Mathlib.Topology.VectorBundle.FiniteDimensional
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 
@@ -60,7 +61,7 @@ variable
 variable {A : Type*} [AddCommGroup A] [Module 𝕜 A]
 
 /-- An operation `Φ` on sections of a vector bundle `V` over `M` is *tensorial* at `x : M`, if it
-respects addition and scalar multiplication by germs of diffentiable functions at `f`. -/
+respects addition and scalar multiplication by germs of differentiable functions at `f`. -/
 structure TensorialAt (Φ : (Π x : M, V x) → A) (x : M) : Prop where
   smul : ∀ {f : M → 𝕜} {σ : Π x : M, V x}, MDiffAt f x → MDiffAt (T% σ) x → Φ (f • σ) = f x • Φ σ
   add : ∀ {σ σ'}, MDiffAt (T% σ) x → MDiffAt (T% σ') x → Φ (σ + σ') = Φ σ + Φ σ'
@@ -79,28 +80,30 @@ protected theorem «local» (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x
     (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x) (hσσ' : ∀ᶠ x' in 𝓝 x, σ x' = σ' x') :
     Φ σ = Φ σ' := by
   classical
-  rw [eventually_nhds_iff] at hσσ'
   -- Introduce the indicator function of a neighbourhood `t` of `x` on which equality holds,
   -- and cut off the two sections `σ` and `σ'` using this indicator function.
-  obtain ⟨t, htσσ', ht, hxt⟩ := hσσ'
-  let ψ (x' : M) : 𝕜 := if x' ∈ t then 1 else 0
-  have hψx : ψ x = 1 := by simp [ψ, hxt]
+  let ψ (x' : M) : 𝕜 := if σ x' = σ' x' then 1 else 0
+  have hψx : ψ x = 1 := by simp [ψ, hσσ'.self_of_nhds]
   have (x' : M) : (ψ • σ) x' = (ψ • σ') x' := by
     dsimp [ψ]
-    split_ifs with hx't
-    · simpa using htσσ' _ hx't
-    · simp
+    split_ifs with hx' <;> simp [hx']
   have hψ' : MDiffAt ψ x := by
     have : MDiffAt (fun (_x : M) ↦ (1 : 𝕜)) x := mdifferentiableAt_const
-    refine this.congr_of_eventuallyEq ?_
-    apply eventually_nhds_iff.mpr
-    exact ⟨t, by simp [ψ], ht, hxt⟩
+    exact this.congr_of_eventuallyEq (hσσ'.mono fun x' hx' ↦ by simp [ψ, hx'])
   calc Φ σ
     _ = Φ (ψ • σ) := by simp [hΦ.smul hψ' hσ, hψx]
     _ = Φ (ψ • σ') := by rw [funext this]
     _ = Φ σ' := by simp [hΦ.smul hψ' hσ', hψx]
 
 variable [VectorBundle 𝕜 F V] [VectorBundle 𝕜 F' V']
+
+/-- A tensorial operation on sections of a vector bundle respects zero (since it respects scalar
+  multiplication). -/
+theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 := by
+  calc
+    Φ 0 = Φ ((0 : M → 𝕜) • (0 : Π x, V x)) := by simp
+    _   = 0 • Φ 0 := hΦ.smul mdifferentiableAt_const (mdifferentiable_zeroSection ..)
+    _   = 0 := by simp
 
 /-- A tensorial operation on sections of a vector bundle respects sums (since it respects binary
 addition). -/
@@ -110,14 +113,9 @@ theorem sum (hΦ : TensorialAt I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι �
   classical
   induction s using Finset.induction_on with
   | empty =>
-      simp only [Finset.sum_empty]
-      have h₁ : MDiffAt (fun x' : M ↦ (0 : 𝕜)) x := mdifferentiableAt_const
-      rw [show (fun x' : M ↦ (0 : V x')) = (0 : M → 𝕜) • fun x' ↦ 0 by simp; rfl, hΦ.smul]
-      · simp
-      · exact h₁
-      · exact mdifferentiable_zeroSection ..
+      rw [Finset.sum_empty]
+      exact hΦ.zero
   | insert a s ha h =>
-      change Φ (fun x' : M ↦ ∑ i ∈ (insert a s : Finset ι), σ i x') = _
       simp only [Finset.sum_insert ha, ← h]
       exact hΦ.add (hσ a) (.sum_section hσ)
 
@@ -188,12 +186,10 @@ variable
 the construction `TensorialAt.mkHom` provides the associated continuous linear map `V x →L[𝕜] A`. -/
 noncomputable def mkHom
     -- `Φ` and `x` explicit to make it easier to generate the side condition at point of use
-    (Φ : (Π x : M, V x) → A) (x : M) (hΦ : TensorialAt I F (Φ) x) :
+    (Φ : (Π x : M, V x) → A) (x : M) (hΦ : TensorialAt I F Φ x) :
     V x →L[𝕜] A :=
-  let Ψ : V x ≃L[𝕜] F := (trivializationAt F V x).continuousLinearEquivAt 𝕜 x
-    (FiberBundle.mem_baseSet_trivializationAt' x)
-  have : T2Space (V x) := Ψ.symm.toHomeomorph.t2Space
-  have : FiniteDimensional 𝕜 (V x) := Ψ.symm.toLinearEquiv.finiteDimensional
+  have : T2Space (V x) := FiberBundle.t2Space F V x
+  have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
   LinearMap.toContinuousLinearMap {
     toFun v := Φ (extend F v)
     map_add' v₁ v₂ := by
@@ -226,14 +222,10 @@ noncomputable def mkHom₂
     (hΦ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (Φ · τ) x)
     (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x) :
     V x →L[𝕜] V' x →L[𝕜] A :=
-  let Ψ : V x ≃L[𝕜] F := (trivializationAt F V x).continuousLinearEquivAt 𝕜 x
-    (FiberBundle.mem_baseSet_trivializationAt' x)
-  have : T2Space (V x) := Ψ.symm.toHomeomorph.t2Space
-  have : FiniteDimensional 𝕜 (V x) := Ψ.symm.toLinearEquiv.finiteDimensional
-  let Ψ' : V' x ≃L[𝕜] F' := (trivializationAt F' V' x).continuousLinearEquivAt 𝕜 x
-    (FiberBundle.mem_baseSet_trivializationAt' x)
-  have : T2Space (V' x) := Ψ'.symm.toHomeomorph.t2Space
-  have : FiniteDimensional 𝕜 (V' x) := Ψ'.symm.toLinearEquiv.finiteDimensional
+  have : T2Space (V x) := FiberBundle.t2Space F V x
+  have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
+  have : T2Space (V' x) := FiberBundle.t2Space F' V' x
+  have : FiniteDimensional 𝕜 (V' x) := VectorBundle.finiteDimensional 𝕜 F' V' x
   have H : IsBilinearMap 𝕜
     (fun (v : V x) (w : V' x) ↦ Φ (extend F v) (extend F' w)) :=
   { add_left v₁ v₂ w := by
