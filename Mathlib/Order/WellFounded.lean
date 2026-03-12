@@ -78,6 +78,14 @@ theorem onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
     WellFounded r → WellFounded (r on f) :=
   InvImage.wf _
 
+instance (r : β → β → Prop) (f : α → β) [IsWellFounded β r] :
+    IsWellFounded α (r.onFun f) where
+  wf := IsWellFounded.wf.onFun
+
+theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α → β} (hf : f.Injective)
+    [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
+  __ := hf.trichotomous_onFun r
+
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
 theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
