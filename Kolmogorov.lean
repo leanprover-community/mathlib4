@@ -131,6 +131,31 @@ lemma partialSumMax_event_eq_biUnion (X : ℕ → Ω → ℝ) (n : ℕ) (ε : �
   ext ω
   simp [le_partialSumMax_iff]
 
+lemma partialSumMax_tail_event_eq_biUnion_sub (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
+    {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} =
+      ⋃ k ∈ Finset.range (n + 1),
+        {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} := by
+  rw [partialSumMax_event_eq_biUnion]
+  ext ω
+  simp only [Set.mem_iUnion, Set.mem_setOf_eq]
+  constructor
+  · rintro ⟨k, hk, hω⟩
+    have hEq : |partialSum (fun j => X (m + 1 + j)) k ω| =
+        |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω| := by
+      simpa using congrArg abs
+        (congrArg (fun g => g ω) (partialSum_tail_eq_sub (X := X) (m := m) (n := k)))
+    refine ⟨k, hk, ?_⟩
+    rw [← hEq]
+    exact hω
+  · rintro ⟨k, hk, hω⟩
+    have hEq : |partialSum (fun j => X (m + 1 + j)) k ω| =
+        |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω| := by
+      simpa using congrArg abs
+        (congrArg (fun g => g ω) (partialSum_tail_eq_sub (X := X) (m := m) (n := k)))
+    refine ⟨k, hk, ?_⟩
+    rw [hEq]
+    exact hω
+
 lemma measure_partialSumMax_event_le_sum {Ω : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) :
     μ {ω | ε ≤ partialSumMax X n ω} ≤
