@@ -767,6 +767,35 @@ lemma measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_me
     measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero'
       (μ := μ) X m n hX hLp hindep hmean (ε := ε / 2) hε2
 
+lemma measure_finiteTailOscillationMax_event_le_four_mul_variance_div_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ finiteTailOscillationMax X m n ω} ≤
+      ENNReal.ofReal
+        (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / ε ^ 2) := by
+  refine (measure_finiteTailOscillationMax_event_le_measure_two_mul_partialSumMax_event
+      (μ := μ) X m n ε).trans ?_
+  exact measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero
+    (μ := μ) X m n hX hLp hindep hmean hε
+
+lemma measure_finite_tail_oscillation_event_le_four_mul_variance_div_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
+      ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} ≤
+      ENNReal.ofReal
+        (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / ε ^ 2) := by
+  refine (measure_finite_tail_oscillation_event_le_measure_two_mul_partialSumMax_event
+      (μ := μ) X m n ε).trans ?_
+  exact measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero
+    (μ := μ) X m n hX hLp hindep hmean hε
+
 lemma variance_partialSum_tail_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)
     (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ)

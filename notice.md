@@ -333,3 +333,29 @@ D. 实现时的具体注意点
     或者先在纯实分析层做
     `limsup f - liminf f ≤ a`
     的桥接 lemma。
+
+2026-03-12 本轮新增进展（四）
+
+46. 这次没有再加新的 deterministic 对象；
+    只是把上一轮的 finite oscillation 封装直接接到了现有的强 tail maximal inequality。
+    新增：
+    `measure_finiteTailOscillationMax_event_le_four_mul_variance_div_sq_of_mean_zero`,
+    `measure_finite_tail_oscillation_event_le_four_mul_variance_div_sq_of_mean_zero`.
+
+47. 本轮实现结论：
+    这两条引理都不需要新概率论 machinery；
+    只是把
+    `measure_finiteTailOscillationMax_event_le_measure_two_mul_partialSumMax_event`
+    /
+    `measure_finite_tail_oscillation_event_le_measure_two_mul_partialSumMax_event`
+    与
+    `measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero`
+    直接串起来。
+    这样 finite oscillation 这层现在已经拥有 theorem-ready 的 `4 / ε^2` 界。
+
+48. 当前最自然的下一步因此更纯粹了：
+    剩下主要是实分析桥接，而不是概率界。
+    也就是把“所有足够远的 pairwise 差都小”
+    转成
+    `limsup - liminf` 小，
+    再把这一层事件包含到 46 的 finite oscillation 概率界上。
