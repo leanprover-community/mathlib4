@@ -297,8 +297,8 @@ lemma yonedaEquiv_naturality {X : SSet} {m n : SimplexCategory}
     X.map f.op (yonedaEquiv g) = yonedaEquiv (stdSimplex.map f ≫ g) :=
   uliftYonedaEquiv_naturality _ _
 
-/-- `yonedaEquiv.symm` is natural -/
-lemma yonedaEquiv_symm_naturality {X : SSet} {m n : SimplexCategory}
+/-- `yonedaEquiv.symm` is natural under precomposition -/
+lemma yonedaEquiv_symm_naturality_left {X : SSet} {m n : SimplexCategory}
     (f : m ⟶ n) (g : X.obj (Opposite.op n)) :
     stdSimplex.map f ≫ yonedaEquiv.symm g = yonedaEquiv.symm (X.map f.op g) := by
   rw [← yonedaEquiv.apply_eq_iff_eq_symm_apply]
