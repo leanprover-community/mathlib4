@@ -765,7 +765,7 @@ protected lemma exists_subtype_congr (e : {a // p a} ≃ {b // q b}) : (∃ a, p
   simp [← nonempty_subtype, nonempty_congr e]
 
 protected lemma existsUnique_congr_right : (∃! a, q (e a)) ↔ ∃! b, q b :=
-  e.exists_congr <| by simpa using fun _ _ ↦ e.forall_congr (by simp)
+  e.exists_congr <| by simpa [-iffComm] using fun _ _ ↦ e.forall_congr (by simp)
 
 protected lemma existsUnique_congr_left : (∃! a, p a) ↔ ∃! b, p (e.symm b) :=
   e.symm.existsUnique_congr_right.symm

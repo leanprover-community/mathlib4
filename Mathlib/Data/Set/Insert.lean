@@ -260,7 +260,7 @@ theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x 
 theorem setOf_mem_list_eq_replicate {l : List α} {a : α} :
     { x | x ∈ l } = {a} ↔ ∃ n > 0, l = List.replicate n a := by
   simpa +contextual [Set.ext_iff, iff_iff_implies_and_implies, forall_and, List.eq_replicate_iff,
-    List.length_pos_iff_exists_mem] using ⟨fun _ _ ↦ ⟨_, ‹_›⟩, fun x hx h ↦ h _ hx ▸ hx⟩
+    List.length_pos_iff_exists_mem] using ⟨fun x hx h ↦ h _ hx ▸ hx, fun _ _ ↦ ⟨_, ‹_›⟩⟩
 
 theorem setOf_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α} :
     { x | x ∈ l } = {a} ↔ l = [a] := by
