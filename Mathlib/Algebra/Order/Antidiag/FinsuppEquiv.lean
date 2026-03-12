@@ -12,7 +12,7 @@ import Mathlib.Data.Sym.Card
 
 /-!
 
-# Equivalence related to `Finset.finsuppAntidiag`
+# Equivalence between `Finset.finsuppAntidiag` and `Sym`
 
 This file collects further results about equivalence and cardinality related to
 `Finset.finsuppAntidiag`. This file is separated from `Mathlib.Algebra.Order.Antidiag.Finsupp` to
