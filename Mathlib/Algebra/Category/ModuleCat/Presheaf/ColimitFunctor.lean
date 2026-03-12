@@ -173,14 +173,27 @@ noncomputable def homEquiv' {N : Type w} [AddCommGroup N] :
     { toEquiv := hcM.homEquiv
       map_add' _ _ := rfl }
 
+omit [LocallySmall.{w, v, u} C] [IsCofiltered C] [InitiallySmall C] in
+lemma homEquiv'_app_apply {N : ModuleCat.{w} cR.pt}
+    (α : ModuleColimit hcR hcM →+ N) {X : Cᵒᵖ} (x : M.obj X) :
+    dsimp% (homEquiv' hcR hcM α).app X x = α (cM.ι.app X x) :=
+  rfl
+
 lemma map_smul_homEquiv'_iff {N : ModuleCat.{w} cR.pt}
     (α : ModuleColimit hcR hcM →+ N) :
-    letI β := homEquiv' hcR hcM α
-    (∀ (U : Cᵒᵖ) (r : R.obj U) (m : M.obj U), β.app U (r • m) =
-        letI m' : N := β.app U m; letI r' : cR.pt := cR.ι.app U r
+    (∀ (U : Cᵒᵖ) (r : R.obj U) (m : M.obj U), (homEquiv' hcR hcM α).app U (r • m) =
+        letI m' : N := (homEquiv' hcR hcM α).app U m; letI r' : cR.pt := cR.ι.app U r
         r' • m') ↔
     ∀ (r : cR.pt) (m : ModuleColimit hcR hcM), α (r • m) = r • α m := by
-  sorry
+  refine ⟨fun h r m ↦ ?_, fun h U r m ↦ ?_⟩
+  · obtain ⟨U, r, m, rfl, rfl⟩ := jointly_surjective₂ r m
+    refine Eq.trans ?_ ((homEquiv'_app_apply ..).symm.trans (h U r m))
+    congr 1
+    apply smul_eq
+  · dsimp
+    rw [homEquiv'_app_apply, homEquiv'_app_apply, ← h]
+    congr 1
+    exact (smul_eq ..).symm
 
 noncomputable def homEquiv {N : ModuleCat.{w} cR.pt} :
     (ModuleCat.of cR.pt (ModuleColimit hcR hcM) ⟶ N) ≃+ (M ⟶ (constFunctor cR).obj N) where
@@ -206,44 +219,106 @@ noncomputable def homEquiv {N : ModuleCat.{w} cR.pt} :
     ((homEquiv' hcR hcM).map_add ((forget₂ _ AddCommGrpCat).map φ₁).hom
       ((forget₂ _ AddCommGrpCat).map φ₂).hom)
 
+@[simp]
+lemma homEquiv_app_apply {N : ModuleCat.{w} cR.pt}
+    (α : ModuleCat.of cR.pt (ModuleColimit hcR hcM) ⟶ N) {X : Cᵒᵖ} (x : M.obj X) :
+    dsimp% (homEquiv hcR hcM α).app X x = α (cM.ι.app X x) :=
+  rfl
+
+lemma homEquiv_naturality_right {N N' : ModuleCat.{w} cR.pt}
+    (φ : ModuleCat.of cR.pt (ModuleColimit hcR hcM) ⟶ N) (g : N ⟶ N') :
+    homEquiv hcR hcM (φ ≫ g) = homEquiv hcR hcM φ ≫ (constFunctor cR).map g := rfl
+
+section
+
+variable {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf}
+  (hcM' : IsColimit cM')
+
+variable (cM') in
+@[simps]
+noncomputable def mapCocone (f : M ⟶ M') : Cocone M.presheaf where
+  pt := cM'.pt
+  ι.app U := (forget₂ _ _).map (f.app U) ≫ cM'.ι.app U
+  ι.naturality U V g := by
+    ext m
+    have h₁ := ConcreteCategory.congr_arg (cM'.ι.app V)
+      (ConcreteCategory.congr_hom (f.naturality g) m)
+    have h₂ := ConcreteCategory.congr_hom (cM'.w g)  (f.app _ m)
+    exact h₁.trans h₂
+
+noncomputable def map (f : M ⟶ M') :
+    ModuleColimit hcR hcM →ₗ[cR.pt] ModuleColimit hcR hcM' where
+  toFun := hcM.desc (mapCocone cM' f)
+  map_add' _ _ := map_add _ _ _
+  map_smul' r m := by
+    obtain ⟨U, r, m, rfl, rfl⟩ := ModuleColimit.jointly_surjective₂ r m
+    have h₁ := ConcreteCategory.congr_hom (hcM.fac (mapCocone cM' f) U) (r • m)
+    have h₂ := ConcreteCategory.congr_hom (hcM.fac (mapCocone cM' f) U) m
+    dsimp at h₁ h₂ ⊢
+    rw [ModuleColimit.smul_eq]
+    erw [h₁, h₂, ModuleColimit.smul_eq, ← (f.app U).hom.map_smul]
+    rfl
+
+@[simp]
+lemma map_apply (f : M ⟶ M') {U : Cᵒᵖ} (m : M.obj U) :
+    dsimp% map hcR hcM hcM' f (ιM m) = ιM (f.app _ m) :=
+  ConcreteCategory.congr_hom (hcM.fac (mapCocone cM' f) U) m
+
+@[simp]
+lemma map_id : map hcR hcM hcM (𝟙 M) = .id := by
+  ext m
+  obtain ⟨U, m, rfl⟩ := ιM_jointly_surjective m
+  simp
+
+lemma comp_map
+    (f : M ⟶ M')
+    {M'' : PresheafOfModules.{w} R} {cM'' : Cocone M''.presheaf}
+    (hcM'' : IsColimit cM'') (g : M' ⟶ M'') :
+    (map hcR hcM' hcM'' g).comp (map hcR hcM hcM' f) = map hcR hcM hcM'' (f ≫ g) := by
+  ext m
+  obtain ⟨U, m, rfl⟩ := ιM_jointly_surjective m
+  simp
+
+end
+
+lemma homEquiv_naturality_left {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf}
+    (hcM' : IsColimit cM') {N : ModuleCat.{w} cR.pt}
+    (φ' : ModuleCat.of cR.pt (ModuleColimit hcR hcM') ⟶ N)
+    (f : M ⟶ M') :
+    homEquiv hcR hcM (ModuleCat.ofHom (map hcR hcM hcM' f) ≫ φ') =
+      f ≫ homEquiv hcR hcM' φ' := by
+  ext U m
+  simp only [homEquiv_app_apply, ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp,
+    Function.comp_apply, comp_app]
+  apply congr_arg
+  exact map_apply hcR hcM hcM' f m
+
+lemma homEquiv_naturality_left_symm {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf}
+    (hcM' : IsColimit cM') {N : ModuleCat.{w} cR.pt}
+    (f : M ⟶ M') (g : M' ⟶ (constFunctor cR).obj N) :
+    (homEquiv hcR hcM).symm (f ≫ g) =
+      ModuleCat.ofHom (map hcR hcM hcM' f) ≫ (homEquiv hcR hcM').symm g :=
+  (homEquiv hcR hcM).injective (by
+    obtain ⟨g, rfl⟩ := (homEquiv hcR hcM').surjective g
+    simp [homEquiv_naturality_left])
+
 end ModuleColimit
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The colimit module of a presheaf of modules over a cofiltered category. -/
 @[simps! obj]
 noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat cR.pt where
   obj M := ModuleCat.of _ (ModuleColimit hcR (colimit.isColimit M.presheaf))
-  map {M₁ M₂} f := ModuleCat.ofHom
-    { toFun := colimMap ((toPresheaf _).map f)
-      map_add' := by simp
-      map_smul' m x := by
-        obtain ⟨U, m, x, rfl, rfl⟩ := ModuleColimit.jointly_surjective₂ m x
-        have h₁ := ConcreteCategory.congr_hom
-          (ι_colimMap ((toPresheaf _).map f) U) (m • x)
-        have h₂ := ConcreteCategory.congr_hom
-          (ι_colimMap ((toPresheaf _).map f) U) x
-        dsimp at h₁ h₂ ⊢
-        rw [ModuleColimit.smul_eq]
-        erw [h₁, h₂, ModuleColimit.smul_eq, (f.app U).hom.map_smul]
-        rfl }
-  map_id M :=
-    (forget₂ _ AddCommGrpCat).map_injective (by
-      change colimMap ((toPresheaf _).map (𝟙 M)) = 𝟙 _
-      exact colimit.hom_ext (by simp))
-  map_comp f g :=
-    (forget₂ _ AddCommGrpCat).map_injective (by
-      change colimMap ((toPresheaf _).map (f ≫ g)) =
-        colimMap ((toPresheaf _).map f) ≫ colimMap ((toPresheaf _).map g)
-      exact colimit.hom_ext (by simp))
+  map f := ModuleCat.ofHom (ModuleColimit.map _ _ _ f)
+  map_comp f g := by ext : 1; exact (ModuleColimit.comp_map ..).symm
 
 noncomputable def colimitAdjunction :
     colimitFunctor.{w} hcR ⊣ constFunctor.{w} cR :=
   Adjunction.mkOfHomEquiv
-    { homEquiv M N := (ModuleColimit.homEquiv _ _).toEquiv
-      homEquiv_naturality_left_symm := sorry
-      homEquiv_naturality_right := sorry }
+    { homEquiv _ _ := (ModuleColimit.homEquiv _ _).toEquiv
+      homEquiv_naturality_left_symm _ _ := ModuleColimit.homEquiv_naturality_left_symm _ _ _ _ _
+      homEquiv_naturality_right _ _ := ModuleColimit.homEquiv_naturality_right _ _ _ _ }
 
 end
 
