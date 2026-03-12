@@ -121,7 +121,7 @@ lemma jointly_reflect_isLocallySurjective
   exact fun Φ ↦ ((MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
     (((Functor.mapArrowFunctor _ _).mapIso
       ((Φ.obj.presheafFiberCompIso (forget A)).symm ≪≫
-        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiber (Type w)).symm)).app
+        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiberIso (Type w)).symm)).app
           (Arrow.mk f))).1 (hf Φ)
 
 end
