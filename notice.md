@@ -22,6 +22,7 @@ A. 已经完成的接口分层
 9. 最大部分和与事件层：
    `partialSumMax`,
    `abs_partialSum_le_partialSumMax`,
+   `partialSumMax_succ_eq_sup_abs_partialSum_succ`,
    `abs_sub_partialSum_le_partialSumMax_tail`,
    `partialSumMax_event_eq_biUnion`,
    `partialSumMax_tail_event_eq_biUnion_sub`,
@@ -89,6 +90,10 @@ B. 目前最重要的判断
     `partialSumMax` / tail 记号，
     才能真正替代目前那个带 `(n + 1)` 损失的弱版 maximal bound。
     这是下一步唯一自然目标。
+    其中第一层纯代数重写现在也已到位：
+    `partialSumMax X (n + 1)` 已可改写成
+    `sup' (fun k => |partialSum X (k + 1)|)`，
+    即去掉了 `partialSumMax` 里的初始零项。
 
 C. 离最终 two-series theorem 还差什么
 
@@ -129,13 +134,17 @@ D. 实现时的具体注意点
     因而第一步最好先用 `setIntegral_le_integral` 把右端放宽到全空间积分，
     再做事件改写和除以阈值的整理。
 
-26. `condExp_of_stronglyMeasurable` 给的是函数等式；
+26. `Finset.sup'_le_iff` / `Finset.le_sup'` 足够处理
+    `partialSumMax` 与 shifted `sup'` 的确定性改写；
+    这一步不需要额外找 `sup'_image` 风格 API。
+
+27. `condExp_of_stronglyMeasurable` 给的是函数等式；
     若要和 `condExp_sub` 等 a.e. 等式拼接，需要显式加 `.eventuallyEq`。
 
-27. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
+28. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
     更好用；当前平方过程 submartingale 的证明就是通过它手工搭起来的。
 
-28. 目前 `notice.md` 已清理过一次。
+29. 目前 `notice.md` 已清理过一次。
     以后优先维护：
     当前有效接口、
     当前真实瓶颈、

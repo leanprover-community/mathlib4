@@ -279,6 +279,25 @@ lemma partialSumMax_nonneg (X : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :
   have h := abs_partialSum_le_partialSumMax X n 0 (by simp) ω
   simpa using h
 
+lemma partialSumMax_succ_eq_sup_abs_partialSum_succ (X : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :
+    partialSumMax X (n + 1) ω =
+      (Finset.range (n + 1)).sup' (by simp) (fun k => |partialSum X (k + 1) ω|) := by
+  apply le_antisymm
+  · rw [partialSumMax, Finset.sup'_le_iff]
+    intro k hk
+    rcases Nat.eq_zero_or_pos k with rfl | hk0
+    · have hnonneg :
+          0 ≤ (Finset.range (n + 1)).sup' (by simp) (fun k => |partialSum X (k + 1) ω|) := by
+        have hle := Finset.le_sup' (f := fun k => |partialSum X (k + 1) ω|) (by simp : 0 ∈ Finset.range (n + 1))
+        exact le_trans (by simp) hle
+      simpa [partialSum_zero] using hnonneg
+    · rcases Nat.exists_eq_succ_of_ne_zero hk0.ne' with ⟨l, rfl⟩
+      exact Finset.le_sup' (f := fun k => |partialSum X (k + 1) ω|)
+        (by simpa using hk)
+  · rw [Finset.sup'_le_iff]
+    intro k hk
+    exact abs_partialSum_le_partialSumMax X (n + 1) (k + 1) (by simpa using hk) ω
+
 /-- Any tail difference of partial sums is bounded by the maximal tail partial sum. -/
 lemma abs_sub_partialSum_le_partialSumMax_tail (X : ℕ → Ω → ℝ) (m n k : ℕ)
     (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
