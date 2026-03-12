@@ -76,7 +76,8 @@ A. 已经完成的接口分层
     `smul_measure_partialSumMax_ge_le_sum_variance_of_mean_zero`,
     `measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero`,
     `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero`,
-    `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero'`.
+    `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero'`,
+    `measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero`.
 
 B. 目前最重要的判断
 
@@ -133,14 +134,12 @@ C. 离最终 two-series theorem 还差什么
     且右端是
     `∑_{j < n} variance (X (m + 1 + j)) / ε^2`。
 
-19. 在 18 的基础上做阈值改写：
-    把
-    `μ {ε / 2 ≤ partialSumMax tail}`
-    或等价的
-    `μ {ε ≤ 2 * partialSumMax tail}`
-    整理成证明中真正需要的
-    `4 / ε^2 * ∑ tail variances`
-    形状。
+19. 18 的阈值改写现在也已经完成 strong 版本：
+    已有
+    `measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero`，
+    即
+    `μ {ε ≤ 2 * partialSumMax tail} ≤ ofReal (4 * ∑ tail variances / ε^2)`。
+    当前真正的下一步已经切换到 oscillation 控制。
 
 20. oscillation 控制：
     形式化
@@ -202,13 +201,17 @@ D. 实现时的具体注意点
     `iIndepFun.precomp` 已经够用；
     目前这条路线里的索引偏移已经通过对 `n = 0 / n + 1` 分情况吸收掉了。
 
-32. `condExp_of_stronglyMeasurable` 给的是函数等式；
+32. strong tail maximal inequality 现在已经不再依赖 union-bound；
+    旧的 weak tail lemmas 可以作为对照保留，但主线应优先使用
+    `measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero`。
+
+33. `condExp_of_stronglyMeasurable` 给的是函数等式；
     若要和 `condExp_sub` 等 a.e. 等式拼接，需要显式加 `.eventuallyEq`。
 
-33. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
+34. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
     更好用；当前平方过程 submartingale 的证明就是通过它手工搭起来的。
 
-34. 目前 `notice.md` 已清理过一次。
+35. 目前 `notice.md` 已清理过一次。
     以后优先维护：
     当前有效接口、
     当前真实瓶颈、

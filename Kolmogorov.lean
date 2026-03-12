@@ -646,6 +646,29 @@ lemma measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero'
         measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero
           (μ := μ) X m n hX hLp hindep hmean hε
 
+lemma measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ 2 * partialSumMax (fun j => X (m + 1 + j)) n ω} ≤
+      ENNReal.ofReal
+        (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / ε ^ 2) := by
+  have hε2 : 0 < ε / 2 := by
+    linarith
+  rw [event_two_mul_partialSumMax_ge_eq]
+  have hdiv :
+      (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / (ε / 2) ^ 2 =
+        4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / ε ^ 2 := by
+    by_cases hε0 : ε = 0
+    · simp [hε0]
+    · field_simp [hε0]
+      ring
+  simpa [hdiv] using
+    measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero'
+      (μ := μ) X m n hX hLp hindep hmean (ε := ε / 2) hε2
+
 lemma variance_partialSum_tail_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)
     (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ)
