@@ -25,7 +25,7 @@ we construct a Haar measure on `B` from Haar measures on `A` and `C`.
 
 * `TopologicalGroup.IsSES.isHaarMeasure_inducedMeasure`: `inducedMeasure` is a Haar measure.
 * `TopologicalGroup.IsSES.inducedMeasure_lt_of_injOn`: If `ψ` is injective on an open set `U`,
-then `U` has bounded measure.
+  then `U` has bounded measure.
 
 -/
 
@@ -42,9 +42,9 @@ variable {A B C E : Type*} [Group A] [Group B] [Group C]
   {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
   [IsTopologicalGroup A] [IsTopologicalGroup B] [NormedAddCommGroup E]
 
-/-- Pullback a continuous compactly supported function `f` on `B` to the
+/-- Pull back a continuous compactly supported function `f` on `B` to the
 continuous compactly supported function `a ↦ f (b * φ a)` on `A`. -/
-@[to_additive /--Pullback a continuous compactly supported function `f` on `B` to the
+@[to_additive /--Pull back a continuous compactly supported function `f` on `B` to the
 continuous compactly supported function `a ↦ f (b * φ a)` on `A`.-/]
 noncomputable def pullback (f : CompactlySupportedContinuousMap B E) (b : B) :
     CompactlySupportedContinuousMap A E where
@@ -77,9 +77,9 @@ theorem integral_pullback_invFun_apply (f : CompactlySupportedContinuousMap B E)
 
 variable [IsTopologicalGroup C] [LocallyCompactSpace B]
 
-/-- Pushforward a continuous comapctly supported function on `B` to a
+/-- Push forward a continuous compactly supported function on `B` to a
 continuous compactly supported function on `C` by integrating over `A`. -/
-@[to_additive /-- Pushforward a continuous comapctly supported function on `B` to a
+@[to_additive /-- Push forward a continuous compactly supported function on `B` to a
 continuous compactly supported function on `C` by integrating over `A`. -/]
 noncomputable def pushforward :
     CompactlySupportedContinuousMap B E →ₗ[ℝ] CompactlySupportedContinuousMap C E where
@@ -155,8 +155,8 @@ theorem pushforward_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f �
 
 variable [MeasurableSpace C] [BorelSpace C] (μC : Measure C) [hμC : IsHaarMeasure μC]
 
-/-- Integrate a continuous comapctly supported function on `B` by integrating over `A` and `C`. -/
-@[to_additive /-- Integrate a continuous comapctly supported function on `B` by integrating
+/-- Integrate a continuous compactly supported function on `B` by integrating over `A` and `C`. -/
+@[to_additive /-- Integrate a continuous compactly supported function on `B` by integrating
 over `A` and `C`. -/]
 noncomputable def integrate : CompactlySupportedContinuousMap B E →ₗ[ℝ] E where
   toFun f := ∫ c, pushforward H μA f c ∂μC
