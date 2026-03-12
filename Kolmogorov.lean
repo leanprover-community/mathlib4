@@ -108,6 +108,19 @@ lemma tail_event_subset_partialSumMax_event (X : ℕ → Ω → ℝ) (m n k : �
   intro ω hω
   exact le_trans hω (abs_sub_partialSum_le_partialSumMax_tail X m n k hk ω)
 
+lemma measurableSet_tail_partialSum_sub_ge {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ)
+    (m k : ℕ) (ε : ℝ) (hX : ∀ k, Measurable (X k)) :
+    MeasurableSet {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} := by
+  exact measurableSet_le measurable_const
+    (continuous_abs.measurable.comp
+      ((partialSum_measurable X (m + k + 1) hX).sub (partialSum_measurable X (m + 1) hX)))
+
+lemma measure_tail_event_le_measure_partialSumMax_event {Ω : Type*} [MeasurableSpace Ω]
+    (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n k : ℕ) (hk : k ∈ Finset.range (n + 1)) (ε : ℝ) :
+    μ {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} ≤
+      μ {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} := by
+  exact measure_mono (tail_event_subset_partialSumMax_event X m n k hk ε)
+
 end Real
 
 end Kolmogorov
