@@ -172,7 +172,7 @@ Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
 
 **Grind tactic analysis**
-- `grind_unused_lemmas.sh [N] [logfile]`
+- `grind_unused_lemmas.sh` `[N] [logfile]`
   Builds Mathlib with `set_option grind.unusedLemmaThreshold N` (default 10) and reports
   E-matching lemmas that are activated N+ times but do not appear in the final proof term.
   Outputs `grind-unused-lemmas.md` with a table of lemmas ranked by how many files they
