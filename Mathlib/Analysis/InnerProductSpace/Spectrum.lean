@@ -48,8 +48,8 @@ These are forms of the *diagonalization theorem* for self-adjoint operators on f
 inner product spaces.
 
 The third part of the file covers properties of compact self-adjoint operators:
-* `orthogonalComplement_iSup_eigenspaces_eq_bot` states that the the eigenspaces of a compact
-  self-adjoint operator have trivial orthogonal complement.
+* `orthogonalComplement_iSup_eigenspaces_eq_bot`: the eigenspaces of a compact self-adjoint operator
+  have trivial orthogonal complement.
 
 ## TODO
 
