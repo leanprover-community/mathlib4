@@ -478,43 +478,33 @@ theorem map_ofSubtype (s : Finset α) :
       (Perm.ofSubtype : Perm s →* Perm α).range ⊓ (alternatingGroup α) := by
   ext k
   rw [Subgroup.mem_map, Subgroup.mem_inf, MonoidHom.mem_range]
-  simp only [mem_alternatingGroup]
-  refine ⟨fun ⟨x, hx, hk⟩ ↦ ?_, fun ⟨⟨x, hx⟩, hk⟩ ↦ ?_⟩
-  · refine ⟨⟨x, hk⟩, ?_⟩
-    rw [← hk, sign_ofSubtype, hx]
-  · refine ⟨x, ?_, hx⟩
-    rwa [← hx, sign_ofSubtype] at hk
+  grind [sign_ofSubtype, mem_alternatingGroup]
+
+theorem ofSubtype_comp_subtype (s : Finset α) : (alternatingGroup α).subtype.comp (ofSubtype s) =
+    Perm.ofSubtype.comp (alternatingGroup s).subtype := by
+  rfl
+
+theorem range_ofSubtype (s : Finset α) : (ofSubtype s).range =
+    (Perm.ofSubtype (p := (· ∈ s))).range.subgroupOf (alternatingGroup α) := by
+  rw [← map_subtype_inj, ← MonoidHom.range_comp, ofSubtype_comp_subtype, MonoidHom.range_comp,
+    range_subtype, subgroupOf_map_subtype, map_ofSubtype]
 
 theorem mem_range_ofSubtype_iff (s : Finset α) (k : alternatingGroup α) :
     k ∈ (ofSubtype s).range ↔ (k : Perm α).support ⊆ s := by
-  constructor
-  · rintro ⟨⟨k, hk⟩, rfl⟩
-    intro x hx
-    simp only [ofSubtype, MonoidHom.coe_mk, OneHom.coe_mk,
-      support_ofSubtype] at hx
-    aesop
-  · intro hk
-    rcases k with ⟨k, hk'⟩
-    simp only at hk
-    simp only [ofSubtype, MonoidHom.mem_range, MonoidHom.coe_mk, OneHom.coe_mk, ← Subtype.coe_inj,
-      Subtype.exists, mem_alternatingGroup, exists_prop]
-    suffices k ∈ (Perm.ofSubtype : Perm s →* Perm α).range by
-      obtain ⟨k, rfl⟩ := this
-      rw [mem_alternatingGroup, sign_ofSubtype] at hk'
-      exact ⟨k, hk', rfl⟩
-    rw [Perm.mem_range_ofSubtype_iff]
-    simpa using hk
+  rw [range_ofSubtype, mem_subgroupOf, Perm.mem_range_ofSubtype_iff]
+  simp
+
+theorem _root_.ConjAct.coe_smul {G : Type*} [Group G] {H : Subgroup G} (g h : H) :
+    (ConjAct.toConjAct g • h).1 = ConjAct.toConjAct g.1 • h.1 := by
+  rfl
 
 open Pointwise in
 theorem conj_smul_range_ofSubtype (s : Finset α) (g : alternatingGroup α) :
     MulAut.conj g • (ofSubtype s).range = (ofSubtype (g • s)).range := by
-  rcases g with ⟨g, hg⟩
-  ext ⟨k, hk⟩
-  simp only [mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff, Subgroup.mk_smul,
-    MulAut.smul_def, MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul,
-    InvMemClass.coe_inv]
-  rw [← ConjAct.toConjAct_inv_smul, support_conj_eq_smul_support]
-  simp [Finset.subset_smul_finset_iff]
+  ext k
+  simp_rw [mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff, ← map_inv,
+    MulAut.smul_def, ← ConjAct.toConjAct_smul_eq_mulAut_conj, ConjAct.coe_smul]
+  simp [support_conj_eq_smul_support, Finset.subset_smul_finset_iff, Subgroup.smul_def]
 
 end alternatingGroup
 
