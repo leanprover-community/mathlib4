@@ -1038,6 +1038,17 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R
     (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
+theorem isMulCommutative_iSup [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, NonUnitalSubsemiring.coe_iSup_of_directed dir,
+    coe_iSup_of_directed dir] using NonUnitalSubsemiring.isMulCommutative_iSup dir
+
+theorem instIsMulCommutative_iSup [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o NonUnitalStarSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 /-- Define a non-unital star algebra homomorphism on a directed supremum of non-unital star
 subalgebras by defining it on each non-unital star subalgebra, and proving that it agrees on the
 intersection of non-unital star subalgebras. -/
@@ -1241,12 +1252,12 @@ theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x
     IsMulCommutative (adjoin R s) := by
   have := adjoin_le_centralizer_centralizer R s
   refine .of_setLike_mul_comm fun _ h₁ _ h₂ ↦ ?_
-      have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
-        Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
-          (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
-      apply this at h₁
-      apply this at h₂
-      rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
+  have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
+    Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
+      (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
+  apply this at h₁
+  apply this at h₂
+  rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
   exact Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂
 
 variable (R) in

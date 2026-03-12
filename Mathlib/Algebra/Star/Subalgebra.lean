@@ -5,7 +5,7 @@ Authors: Kim Morrison, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Subalgebra.Directed
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Star.Module
 public import Mathlib.Algebra.Star.NonUnitalSubalgebra
@@ -592,12 +592,12 @@ theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x
     IsMulCommutative (adjoin R s) := by
   have := adjoin_le_centralizer_centralizer R s
   refine .of_setLike_mul_comm fun _ h₁ _ h₂ ↦ ?_
-      have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
-        Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
-          (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
-      apply this at h₁
-      apply this at h₂
-      rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
+  have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
+    Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
+      (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
+  apply this at h₁
+  apply this at h₂
+  rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
   exact Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂
 
 open scoped IsMulCommutative in
@@ -928,3 +928,36 @@ lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra (s : Set A) :
   le_antisymm
     (adjoin_le <| NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin R s)
     (adjoin_le <| (NonUnitalStarAlgebra.subset_adjoin R s).trans <| subset_adjoin R _)
+
+namespace StarSubalgebra
+
+section directed
+
+variable {R}
+
+theorem coe_iSup_of_directed {ι : Type*} [Nonempty ι] {S : ι → StarSubalgebra R A}
+    (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
+  let K : StarSubalgebra R A :=
+    { __ := NonUnitalStarSubalgebra.copy _ _ (NonUnitalStarSubalgebra.coe_iSup_of_directed
+        (S := fun i ↦ (S i).toNonUnitalStarSubalgebra) dir).symm
+      algebraMap_mem' x :=
+        let ⟨i⟩ := ‹Nonempty ι›
+        Set.mem_iUnion.mpr ⟨i, algebraMap_mem (S i) x⟩ }
+  have : iSup S = K := le_antisymm (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i)
+    (Set.iUnion_subset fun _ ↦ le_iSup S _)
+  this.symm ▸ rfl
+
+theorem isMulCommutative_iSup {ι : Type*} [Nonempty ι] {S : ι → StarSubalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : StarSubalgebra R A) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    Subalgebra.coe_iSup_of_directed dir] using Subalgebra.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o StarSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : StarSubalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
+end directed
+
+end StarSubalgebra
