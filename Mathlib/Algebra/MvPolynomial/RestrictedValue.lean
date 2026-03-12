@@ -62,17 +62,20 @@ def restrictedValue (σ) (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] :
 
 section IntegerValued
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eval_choose (i : σ) (n : ℕ) (g : σ → ℤ) :
     eval ((algebraMap ℤ ℚ) ∘ g) (Ring.choose (X i : MvPolynomial σ ℚ) n) =
       (algebraMap ℤ ℚ) (Ring.choose (g i) n) := by
   simp [Ring.map_choose]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma choose_mem_restrictedValue (i : σ) (n : ℕ) :
     (Ring.choose (X i) n) ∈ restrictedValue σ ℤ ℚ := by
   intro g
   rw [eval_choose]
   exact RingHom.mem_range_self (algebraMap ℤ ℚ) (Ring.choose (g i) n)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma choose_eq (i : σ) (n : ℕ) :
     (Ring.choose (X i : MvPolynomial σ ℚ) n) =
     (n.factorial : ℚ)⁻¹ • rename (fun () ↦ i) ((pUnitAlgEquiv ℚ).symm (descPochhammer ℚ n)) := by
@@ -96,6 +99,7 @@ lemma choose_eq (i : σ) (n : ℕ) :
       ← smul_eq_mul]
     norm_cast
 
+set_option backward.isDefEq.respectTransparency false in
 lemma choose_support [DecidableEq σ] (i : σ) (n : ℕ) :
     (Ring.choose (X i : MvPolynomial σ ℚ) n).support ⊆
       Finset.image (fun d ↦ Finsupp.single i d) (Finset.range (n + 1)) := by
