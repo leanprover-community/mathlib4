@@ -49,10 +49,10 @@ a vector bundle over `M` with model fiber `F`.
 On paper there are several equivalent ways to define covariant derivatives on a vector bundle
 `V → M`. The most common one starts with a function `∇` taking as input a global smooth vector field
 `X` and a global smooth section `σ` and giving as output a global smooth section `∇_X σ`, before
-proving the result `(∇_X σ) x` at a point `x` only depends on the value of the vector field at that
-point and the 1-jet of the section at that point.
+proving the result that `(∇_X σ) x` at a point `x` only depends on the value of the vector field at
+that point and the 1-jet of the section at that point.
 
-Here we ask for a map sending a global section `σ` to a section `∇ σ` of `Hom(TM, End(V))`.
+Here we ask for a map sending a global section `σ` of `V` to a global section `∇ σ` of `Hom(TM, V)`.
 So the fact that `(∇_X σ) x` depends only on `X x` is baked into the definition.
 Note also that we don’t put any differentiability restriction on `σ` and `X`, the type of
 the covariant derivative map is simply `(Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))`.
@@ -68,7 +68,7 @@ open scoped Manifold ContDiff Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-@[expose] public section
+@[expose] public noncomputable section
 
 /-! ## Local unbundled theory -/
 
@@ -96,15 +96,15 @@ structure IsCovariantDerivativeOn
     cov (σ + σ') x = cov σ x + cov σ' x
   leibniz {σ : Π x : M, V x} {g : M → 𝕜} {x}
     (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial) :
-    cov (g • σ) x = g x • cov σ x
-     + .toSpanSingleton 𝕜 (σ x) ∘L (fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
+    cov (g • σ) x = g x • cov σ x + (extDerivFun g x).smulRight (σ x)
 
 /--
 A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k` section and `σ` a
 `C^{k+1}` section, the result `∇_X σ` is a `C^k` section. This is a class so typeclass inference can
-deduce this automatically.
+deduce this automatically. We will prove in a later file that any `C^(k+1)` covariant derivative
+is `C^k`.
 -/
-class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] [VectorBundle 𝕜 F V] (k : ℕ∞)
+class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] [VectorBundle 𝕜 F V] (k : WithTop ℕ∞)
     (cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))
     (u : Set M) where
   contMDiff : ∀ {σ : Π x : M, V x}, CMDiff[u] (k + 1) (T% σ) →
@@ -116,11 +116,37 @@ variable {F}
 
 namespace IsCovariantDerivativeOn
 
--- TODO: prove that `cov σ x` depends on `σ` only via the 1-jet of `σ` at `x`.
--- This should be easy using the projection formula in `CovariantDerivative.Ehresmann`.
--- In the mean time we use the following weaker result (which is convenient to apply anyway).
+/-! ### Changing set
 
-set_option backward.isDefEq.respectTransparency false in
+In this section, we change `s` in `IsCovariantDerivativeOn F cov s`, proving the condition is
+monotone and local.
+-/
+
+section changing_set
+
+lemma mono
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)} {s t : Set M}
+    (hcov : IsCovariantDerivativeOn F cov t) (hst : s ⊆ t) : IsCovariantDerivativeOn F cov s where
+  add hσ hσ' hx := hcov.add hσ hσ' (hst hx)
+  leibniz hσ hcov' hx := hcov.leibniz hσ hcov' (hst hx)
+
+lemma iUnion {ι : Type*} {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
+    {s : ι → Set M} (hcov : ∀ i, IsCovariantDerivativeOn F cov (s i)) :
+    IsCovariantDerivativeOn F cov (⋃ i, s i) where
+  add hσ hσ' hx := by
+    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
+    exact (hcov i).add hσ hσ'
+  leibniz hσ hf' hx := by
+    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
+    exact (hcov i).leibniz hσ hf'
+
+end changing_set
+
+-- TODO: prove that `cov σ x` depends on `σ` only via the 1-jet of `σ` at `x`.
+-- This will be easy using the projection formula about Ehresmann connections,
+-- which will be added in the planned file `CovariantDerivative/Ehresmann.lean`.
+-- In the mean-time we use the following weaker results (which are convenient to apply anyway).
+
 /-- Given a covariant derivative `cov` on a neighborhood `s` of a point `x`, if sections `σ` and
 `σ'` agree on `s` and are differentiable at `x`, then `cov σ x = cov σ x'`. -/
 lemma congr_of_eqOn
@@ -150,36 +176,24 @@ lemma congr_of_eqOn
   -- Then, it's a chain of (dependent) equalities.
   calc cov σ x
     _ = cov ((ψ : M → 𝕜) • σ) x := by
-          simp [hcov.leibniz hσ hψ'.mdifferentiableAt, hψx, hψ'.mfderiv]
+      simp [hcov.leibniz hσ hψ'.mdifferentiableAt, hψx, extDerivFun, hψ'.mfderiv]
     _ = cov ((ψ : M → 𝕜) • σ') x := by rw [funext H]
     _ = cov σ' x := by
-          simp [hcov.leibniz hσ' hψ'.mdifferentiableAt, hψx, hψ'.mfderiv]
+      simp [hcov.leibniz hσ' hψ'.mdifferentiableAt, hψx, extDerivFun, hψ'.mfderiv]
 
-/-! ### Changing set
-
-In this section, we change `s` in `IsCovariantDerivativeOn F cov s`, proving the condition is
-monotone and local.
--/
-
-section changing_set
-
-lemma mono
-    {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)} {s t : Set M}
-    (hcov : IsCovariantDerivativeOn F cov t) (hst : s ⊆ t) : IsCovariantDerivativeOn F cov s where
-  add hσ hσ' hx := hcov.add hσ hσ' (hst hx)
-  leibniz hσ hcov' hx := hcov.leibniz hσ hcov' (hst hx)
-
-lemma iUnion {ι : Type*} {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
-    {s : ι → Set M} (hcov : ∀ i, IsCovariantDerivativeOn F cov (s i)) :
-    IsCovariantDerivativeOn F cov (⋃ i, s i) where
-  add hσ hσ' hx := by
-    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
-    exact (hcov i).add hσ hσ'
-  leibniz hσ hf' hx := by
-    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
-    exact (hcov i).leibniz hσ hf'
-
-end changing_set
+open Filter Set in
+/-- Given a covariant derivative `cov` on a neighborhood `s` of a point `x`, if sections `σ` and
+`σ'` agree near `x` and are differentiable at `x`, then `cov σ x = cov σ x'`. -/
+lemma congr_of_eventuallyEq
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
+    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
+    {σ σ' : Π x : M, V x} {x : M}
+    (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x)
+    (hxs : s ∈ 𝓝 x) (hσσ' : ∀ᶠ x in 𝓝 x, σ x = σ' x) :
+    cov σ x = cov σ' x := by
+  rw [eventually_iff_exists_mem] at hσσ'
+  choose s' hs' b using hσσ'
+  exact (hcov.mono inter_subset_left).congr_of_eqOn hσ hσ' (inter_mem hxs hs') fun x hx ↦ b x hx.2
 
 /-! ### Computational properties -/
 
@@ -197,7 +211,7 @@ theorem smul_const (hcov : IsCovariantDerivativeOn F cov s)
     {σ : Π x : M, V x} {x} (a : 𝕜)
     (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     cov (a • σ) x = a • cov σ x := by
-  simpa using hcov.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
+  simpa [extDerivFun] using hcov.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
 
 end computational_properties
 
@@ -235,7 +249,7 @@ lemma affine_combination (hcov : IsCovariantDerivativeOn F cov s)
 lemma _root_.ContMDiffCovariantDerivativeOn.affine_combination [IsManifold I 1 M]
     [VectorBundle 𝕜 F V]
     {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
-    {u: Set M} {f : M → 𝕜} {n : ℕ∞} (hf : CMDiff[u] n f)
+    {u: Set M} {f : M → 𝕜} {n : WithTop ℕ∞} (hf : CMDiff[u] n f)
     (Hcov : ContMDiffCovariantDerivativeOn (F := F) n cov u)
     (Hcov' : ContMDiffCovariantDerivativeOn (F := F) n cov' u) :
     ContMDiffCovariantDerivativeOn F n (fun σ ↦ (f • (cov σ)) + (1 - f) • (cov' σ)) u where
@@ -244,6 +258,7 @@ lemma _root_.ContMDiffCovariantDerivativeOn.affine_combination [IsManifold I 1 M
     · exact hf.smul_section <| Hcov.contMDiff hσ
     · exact (contMDiffOn_const.sub hf).smul_section <| Hcov'.contMDiff hσ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A finite affine combination of covariant derivatives is a covariant derivative. -/
 lemma finite_affine_combination {ι : Type*} {s : Finset ι}
     {u : Set M} {cov : ι → (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
@@ -255,20 +270,20 @@ lemma finite_affine_combination {ι : Type*} {s : Finset ι}
     ext i
     rw [← smul_add, (h i).add hσ hσ' hx]
   leibniz {σ g x} hσ hg hx := by
-    set B := (ContinuousLinearMap.toSpanSingleton 𝕜 (σ x) ∘L
-      ((fromTangentSpace (g x)).toContinuousLinearMap ∘L (mfderiv% g x)))
     calc ∑ i ∈ s, f i x • cov i (g • σ) x
-      _ = ∑ i ∈ s, (g x • f i x • cov i σ x + f i x • B) := by
+      _ = ∑ i ∈ s, (g x • f i x • cov i σ x + f i x • (extDerivFun g x).smulRight (σ x)) := by
           congr! 1 with i hi
           rw [(h i).leibniz hσ hg]
+          simp [extDerivFun]
           module
-      _ = g x • ∑ i ∈ s, f i x • cov i σ x + (∑ i ∈ s, f i) x • B := by
+      _ = g x • ∑ i ∈ s, f i x • cov i σ x +
+        (∑ i ∈ s, f i) x • (extDerivFun g x).smulRight (σ x) := by
           rw [Finset.sum_add_distrib, Finset.smul_sum, Finset.sum_apply, Finset.sum_smul]
-      _ = g x • ∑ i ∈ s, f i x • cov i σ x + B := by rw [hf]; simp
+      _ = g x • ∑ i ∈ s, f i x • cov i σ x + (extDerivFun g x).smulRight (σ x) := by rw [hf]; simp
 
 /-- An affine combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
-lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifold I 1 M] {n : ℕ∞}
-    [VectorBundle 𝕜 F V] {ι : Type*} {s : Finset ι} {u : Set M}
+lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifold I 1 M]
+    {n : WithTop ℕ∞} [VectorBundle 𝕜 F V] {ι : Type*} {s : Finset ι} {u : Set M}
     {cov : ι → (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivativeOn F n (cov i) u)
     {f : ι → M → 𝕜} (hf : ∀ i ∈ s, CMDiff[u] n (f i)) :
@@ -293,7 +308,7 @@ section difference
 
 /-- The difference of two covariant derivatives, as a function `Γ(V) → Γ(Hom(TM, V))`.
 Future lemmas will upgrade this to a one-form taking values in the endomorphisms of `V`. -/
-noncomputable def differenceAux
+private def differenceAux
     (cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)) :
     (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x) :=
   fun σ ↦ cov σ - cov' σ
@@ -304,7 +319,7 @@ variable
   (hcov : IsCovariantDerivativeOn F cov s)
   (hcov' : IsCovariantDerivativeOn F cov' s)
 
-theorem differenceAux_tensorial (hcov : IsCovariantDerivativeOn F cov s)
+private theorem differenceAux_tensorial (hcov : IsCovariantDerivativeOn F cov s)
     (hcov' : IsCovariantDerivativeOn F cov' s)
     (x : M) (hx : x ∈ s) : TensorialAt I F (differenceAux cov cov' · x) x where
   smul hf hσ := by
@@ -322,7 +337,7 @@ variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
 open scoped Classical in
 /-- The difference of two covariant derivatives, as a one-form taking values in the
 endomorphisms of `V`. -/
-noncomputable def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
+@[no_expose] def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
   if hxs : x ∈ s then
     TensorialAt.mkHom _ x (differenceAux_tensorial hcov hcov' _ hxs)
   else
@@ -390,14 +405,15 @@ lemma of_isCovariantDerivativeOn_of_open_cover_coe {ι : Type*} {s : ι → Set 
 A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k` section and `σ` a
 `C^{k+1}` section, the result `∇_X σ` is a `C^k` section.
 This is a class so typeclass inference can deduce this automatically.
+We will prove in a later file that any `C^(k+1)` covariant derivative is `C^k`.
 -/
 class ContMDiffCovariantDerivative [IsManifold I 1 M] [VectorBundle 𝕜 F V]
-    (cov : CovariantDerivative I F V) (k : ℕ∞) where
+    (cov : CovariantDerivative I F V) (k : WithTop ℕ∞) where
   contMDiff : ContMDiffCovariantDerivativeOn F k cov.toFun Set.univ
 
 @[simp]
 lemma contMDiffCovariantDerivativeOn_univ_iff [IsManifold I 1 M] [VectorBundle 𝕜 F V]
-    {cov : CovariantDerivative I F V} {k : ℕ∞} :
+    {cov : CovariantDerivative I F V} {k : WithTop ℕ∞} :
     ContMDiffCovariantDerivativeOn F k cov.toFun Set.univ ↔ ContMDiffCovariantDerivative cov k :=
   ⟨fun h ↦ ⟨h⟩, fun h ↦ h.contMDiff⟩
 
@@ -436,7 +452,7 @@ def finite_affine_combination {ι : Type*} {s : Finset ι}
 /-- An affine combination of two `C^k` connections is a `C^k` connection. -/
 lemma ContMDiffCovariantDerivative.affine_combination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
   (cov cov' : CovariantDerivative I F V)
-    {f : M → 𝕜} {n : ℕ∞} (hf : ContMDiff I 𝓘(𝕜) n f)
+    {f : M → 𝕜} {n : WithTop ℕ∞} (hf : CMDiff n f)
     (hcov : ContMDiffCovariantDerivative cov n) (hcov' : ContMDiffCovariantDerivative cov' n) :
     ContMDiffCovariantDerivative (affine_combination cov cov' f) n where
   contMDiff :=
@@ -444,8 +460,8 @@ lemma ContMDiffCovariantDerivative.affine_combination [IsManifold I 1 M] [Vector
 
 /-- An affine combination of finitely many `C^k` connections is a `C^k` connection. -/
 lemma ContMDiffCovariantDerivative.finite_affine_combination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
-    {ι : Type*} {s : Finset ι} (cov : ι → CovariantDerivative I F V)
-    {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) {n : ℕ∞} (hf' : ∀ i ∈ s, ContMDiff I 𝓘(𝕜) n (f i))
+    {ι : Type*} {s : Finset ι} (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜}
+    (hf : ∑ i ∈ s, f i = 1) {n : WithTop ℕ∞} (hf' : ∀ i ∈ s, CMDiff n (f i))
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivative (cov i) n) :
     ContMDiffCovariantDerivative (finite_affine_combination cov hf) n where
   contMDiff :=
@@ -471,7 +487,7 @@ variable [CompleteSpace 𝕜] [IsManifold I 1 M] [FiniteDimensional 𝕜 F]
 
 /-- The difference of two covariant derivatives, as a one-form taking values in the
 endomorphisms of `V`. -/
-noncomputable def difference (cov cov' : CovariantDerivative I F V) :
+def difference (cov cov' : CovariantDerivative I F V) :
     Π (x : M), V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
   cov.isCovariantDerivativeOnUniv.difference cov'.isCovariantDerivativeOnUniv
 
