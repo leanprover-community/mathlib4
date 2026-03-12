@@ -13,8 +13,8 @@ public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 # Radicals of preradicals
 
 In this file we define what it means for a preradical `Φ : Preradical C` on an
-abelian category `C` to be *radical*, and we introduce a bundled `Radical C`
-structure.
+abelian category `C` to be *radical*, and we define `Radical C` as the full
+subcategory of `Preradical C` consisting of radicals.
 
 Following Stenström, a preradical `Φ` is called radical if it coincides with its self colon.
 We encode this as the property that the natural transformation `toColon Φ Φ : Φ ⟶ Φ.colon Φ`
