@@ -521,8 +521,8 @@ instance [SMul M X] [Monoid N] [CommMonoid Y] [MulDistribMulAction N Y] :
 
 instance [SMul M X] [Monoid N] [Semiring Y] [MulSemiringAction N Y] :
     Semiring (X →ₑ[σ] Y) where
-  __ := inferInstanceAs (Monoid _)
-  __ := inferInstanceAs (AddCommMonoid _)
+  __ := _root_.inferInstanceAs (Monoid _)
+  __ := _root_.inferInstanceAs (AddCommMonoid _)
   zero_mul _ := ext fun x ↦ zero_mul _
   mul_zero _ := ext fun x ↦ mul_zero _
   left_distrib _ _ _ := ext fun x ↦ left_distrib _ _ _
