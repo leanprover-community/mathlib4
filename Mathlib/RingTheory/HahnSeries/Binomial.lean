@@ -291,11 +291,12 @@ theorem binomialPow_apply_of_not_gt {g g' : Γ} (h : ¬ g < g') (a : A) (r : R) 
 
 @[simp]
 theorem binomialPow_zero {g g' : Γ} (a : A) :
-    binomialPow g g' a (0 : R) = single 0 (1 : A) := by
+    binomialPow g g' a (0 : R) = 1 := by
   by_cases h : g < g'
   · simp [binomialPow_apply, OneHomClass.map_one]
   · simp [binomialPow_apply_of_not_gt h a (0 : R)]
 
+@[simp]
 theorem binomialPow_add {g g' : Γ} (a : A) (r r' : R) :
     binomialPow g g' a r * binomialPow g g' a r' =
       binomialPow g g' a (r + r') := by
@@ -305,9 +306,9 @@ theorem binomialPow_add {g g' : Γ} (a : A) (r r' : R) :
 theorem binomialPow_one {g g' : Γ} (h : g < g') (a : A) :
     binomialPow g g' a (Nat.cast (R := R) 1) = ((single g) (1 : A) + (single g') a) := by
   rw [binomialPow_apply, PowerSeries.binomialSeries_nat 1, pow_one, map_add,
-    PowerSeries.heval_X _ (pos_orderTop_single_sub h a), ← RingHom.map_one PowerSeries.C,
-    PowerSeries.heval_C _, one_smul, mul_add, mul_one, single_mul_single, one_mul,
-    Nat.cast_one, one_smul, add_sub_cancel]
+    PowerSeries.heval_X _ (pos_orderTop_single_sub h a), Nat.cast_one, one_smul,
+    show (1 : PowerSeries A) = PowerSeries.C 1 from (RingHom.map_one (PowerSeries.C)).symm,
+    PowerSeries.heval_C, one_smul, mul_add, mul_one, single_mul_single, one_mul, add_sub_cancel]
 
 theorem binomialPow_nat {g g' : Γ} (h : g < g') (a : A) (n : ℕ) :
     binomialPow g g' a (n : R) = ((single g (1 : A)) + single g' a) ^ n := by

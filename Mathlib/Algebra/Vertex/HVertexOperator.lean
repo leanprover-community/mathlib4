@@ -274,7 +274,7 @@ theorem binomialPow_smul_injective {g g' : Γ} (n : S) :
   use (HahnSeries.binomialPow (A := R) g g' (-1) (-n) • ·)
   intro A
   simp only [smul_smul, HahnSeries.binomialPow_add, neg_add_cancel]
-  rw [HahnSeries.binomialPow_zero, HahnSeries.single_zero_one, one_smul]
+  rw [HahnSeries.binomialPow_zero, one_smul]
 
 end binomialPow
 
