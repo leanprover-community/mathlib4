@@ -466,9 +466,13 @@ def Sheaf.terminal {X : A} (hX : IsTerminal X) : Sheaf J A where
 
 variable (J) in
 /-- The constant sheaf of a terminal object is indeed terminal -/
-@[simps!]
 def Sheaf.isTerminalTerminal {X : A} (hX : IsTerminal X) : IsTerminal (Sheaf.terminal J hX) :=
-  .ofUniqueHom (⟨{app X := hX.from <| ·.obj.obj X}⟩) (by intros; ext; simpa using hX.hom_ext _ _)
+  .ofUniqueHom (⟨(Functor.isTerminalConst _ hX).from ·.obj⟩)
+    (by intros; ext; simpa using hX.hom_ext _ _)
+
+@[simp]
+lemma Sheaf.isTerminalTerminal_from_hom {X : A} (hX : IsTerminal X) (G : Sheaf J A) :
+    ((Sheaf.isTerminalTerminal J hX).from G).hom = (Functor.isTerminalConst _ hX).from G.obj := rfl
 
 /-- If the topology is discrete, any sheaf is terminal. -/
 noncomputable def Sheaf.isTerminalOfEqTop (H : J = ⊤) (F : Sheaf J A) :
