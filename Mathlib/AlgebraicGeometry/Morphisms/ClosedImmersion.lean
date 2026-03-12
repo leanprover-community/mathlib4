@@ -245,7 +245,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isDominant_of_of_appTop_injective [CompactSpace X]
     (hfinj : Function.Injective (f.appTop)) :
     IsDominant f := by
-  have : QuasiCompact f := HasAffineProperty.iff_of_isAffine.mpr ‹_›
   have : f.ker = ⊥ := Scheme.IdealSheafData.ext_of_isAffine
     (by simpa [f.ker_apply ⟨⊤, isAffineOpen_top Y⟩, ← RingHom.injective_iff_ker_eq_bot])
   exact ⟨by simpa only [Scheme.Hom.support_ker, Scheme.IdealSheafData.support_bot,
