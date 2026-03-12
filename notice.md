@@ -126,39 +126,63 @@ B. 目前最重要的判断
 
 C. 离最终 two-series theorem 还差什么
 
-18. 强版 finite Kolmogorov inequality 的 shifted/tail 版本现在已经对齐到常用索引：
-    已有
-    `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero'`，
-    可以直接控制
-    `partialSumMax (fun j => X (m + 1 + j)) n`
-    且右端是
-    `∑_{j < n} variance (X (m + 1 + j)) / ε^2`。
+18. strong tail maximal inequality 已经具备 theorem-ready 输入：
+    `measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero`
+    直接给出
+    `μ {ε ≤ 2 * partialSumMax (fun j => X (m + 1 + j)) n} ≤ ofReal (4 * tailVarSum / ε^2)`。
+    因而概率论部分当前不再是瓶颈。
 
-19. 18 的阈值改写现在也已经完成 strong 版本：
-    已有
-    `measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero`，
-    即
-    `μ {ε ≤ 2 * partialSumMax tail} ≤ ofReal (4 * ∑ tail variances / ε^2)`。
-    当前真正的下一步已经切换到 oscillation 控制。
+19. 下一步 1：先做纯确定性的 oscillation 控制小 lemma。
+    目标形状应尽量只涉及有限 tail partial sums，
+    例如先证明对任意固定 `m` 与样本点 `ω`，
+    所有
+    `S_(m + k) ω - S_m ω`
+    都被
+    `partialSumMax (fun j => X (m + 1 + j)) n ω`
+    控制；
+    再把它提升为
+    `limsup (fun N => S_N ω - S_m ω) - liminf (fun N => S_N ω - S_m ω)
+      ≤ 2 * sInf {a | ...}` / 或更直接的 tail `sup` 控制版本。
+    这里应优先复用
+    `partialSum_tail_eq_sub`
+    和
+    `abs_sub_partialSum_le_partialSumMax_tail`，
+    不要重新走一遍索引代数。
 
-20. oscillation 控制：
-    形式化
-    `limsup (S_N - S_m) - liminf (S_N - S_m) ≤ 2 * sup_k |tail partial sums|`，
-    把 tail maximal inequality 接到级数收敛问题上。
+20. 下一步 2：把 19 的 deterministic bound 接到事件层。
+    需要得到“oscillation 大于等于 `ε` 的事件”
+    被
+    `{ω | ε ≤ 2 * partialSumMax tail}`
+    覆盖，
+    这样才能直接套用 18。
+    这一步应该先做集合包含，再转成测度不等式。
 
-21. 实分析尾和收敛：
-    从 `∑ σ_n^2` 收敛推出
-    `∑_{i=m+1}^{m+N} σ_i^2`
-    随 `m → ∞` 消失，
-    从而让 19 中得到的 tail 概率上界趋于 `0`。
+21. 下一步 3：补实分析尾和衰减。
+    从
+    `HasSum (fun n => variance (X n) μ) s`
+    或相应的级数收敛假设，
+    推出对每个 `ε > 0`，
+    存在 `M`，使得当 `m ≥ M` 时，
+    所有有限 tail sums
+    `∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ`
+    都足够小。
+    这一层一旦完成，18 的右端就能随 `m → ∞` 压到 `0`。
 
-22. 几乎处处收敛收尾：
-    用 20 和 21 证明 oscillation 为 `0` a.s.，
-    得到 mean-zero 版本的 almost sure convergence。
+22. 下一步 4：完成 mean-zero 的 a.s. 收敛。
+    用 20 和 21 证明 tail oscillation 的概率任意小，
+    再令 `m → ∞` 得到 oscillation 为 `0` a.s.；
+    随后把“oscillation 为 0”转成部分和序列 a.s. 收敛。
 
-23. 最后才是一般均值版本：
-    对 `X_n - μ_n` 应用 mean-zero 情形，
-    再用 `∑ μ_n` 收敛把原级数加回来。
+23. 下一步 5：最后才做一般均值版本。
+    定义中心化变量
+    `Y n ω = X n ω - ∫ ω, X n ω ∂μ`，
+    对 `Y` 应用 22，
+    再用 `∑ μ_n` 收敛把原部分和恢复回来。
+
+24. 当前最小可执行目标：
+    先在 `Kolmogorov.lean` 中加入一个纯 deterministic oscillation bridge lemma，
+    只处理固定 `m`、固定 tail partial sums 与 `partialSumMax` 的关系，
+    暂时不要同时碰 a.e.、`limsup/liminf` 与级数尾和衰减三层内容。
 
 D. 实现时的具体注意点
 
