@@ -5,6 +5,8 @@ Authors: Benoît Guillemet, Christian Merten
 -/
 module
 
+public import Batteries
+
 public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
@@ -40,7 +42,7 @@ variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
 variable {R X : C} {p₁ p₂ : R ⟶ X}
 
 /-- A typeclass for pairs of morphisms that are jointly monic. -/
-class JointlyMono₂ {R X₁ X₂ : C} (p₁ : R ⟶ X₁) (p₂ : R ⟶ X₂) where
+class JointlyMono₂ {R X₁ X₂ : C} (p₁ : R ⟶ X₁) (p₂ : R ⟶ X₂) : Prop where
   right_cancellation : ∀ ⦃Y : C⦄ (f g : Y ⟶ R), f ≫ p₁ = g ≫ p₁ → f ≫ p₂ = g ≫ p₂ → f = g
 
 /-- A reflexive relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X`, together
@@ -80,7 +82,16 @@ attribute [reassoc (attr := simp)] TransitiveRelation.transitivity₁ Transitive
 
 /-- An equivalence relation is a reflexive, symmetric and transitive relation. -/
 structure EquivalenceRelation {R X : C} (p₁ p₂ : R ⟶ X) extends ReflexiveRelation p₁ p₂,
-    SymmetricRelation p₁ p₂, TransitiveRelation p₁ p₂
+  SymmetricRelation p₁ p₂, TransitiveRelation p₁ p₂
+
+/-- Reinterpret an equivalence relation as a reflexive relation. -/
+add_decl_doc EquivalenceRelation.toReflexiveRelation
+
+/-- Reinterpret an equivalence relation as a symmetric relation. -/
+add_decl_doc EquivalenceRelation.toSymmetricRelation
+
+/-- Reinterpret an equivalence relation as a transitive relation. -/
+add_decl_doc EquivalenceRelation.toTransitiveRelation
 
 /-- The typeclass associated with the structure `EquivalenceRelation`. -/
 class IsEquivalenceRelation {R X : C} (p₁ p₂ : R ⟶ X) : Prop where
