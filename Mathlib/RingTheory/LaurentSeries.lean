@@ -444,8 +444,8 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
       not_false_eq_true, true_and, (idealX K).3]
   classical
-  rw [count_associates_factors_eq (span_ne_zero).1
-    (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr prime_X) (span_ne_zero).2,
+  rw [count_associates_factors_eq span_ne_zero.1
+    (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr prime_X) span_ne_zero.2,
     count_associates_factors_eq]
   on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
   exacts [count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
@@ -555,7 +555,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (a := n - s) (by grind)
     obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D - s) (by lia)
-    rw [(sub_eq_iff_eq_add).mp hm, add_comm, ← neg_neg (s : ℤ), ← hs, neg_neg,
+    rw [sub_eq_iff_eq_add.mp hm, add_comm, ← neg_neg (s : ℤ), ← hs, neg_neg,
       ← powerSeriesPart_coeff]
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
     rw [hF, ofPowerSeries_powerSeriesPart f, map_mul, ← hd, hs, neg_sub, sub_eq_add_neg,

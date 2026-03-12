@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.RatFunc.Degree
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Function fields
@@ -232,6 +233,7 @@ theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
 instance : Valuation.IsNontrivial (inftyValuation Fq) := ⟨RatFunc.X, by simp⟩
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
+@[implicit_reducible]
 def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=
   Valued.mk' <| inftyValuation Fq
 
@@ -239,16 +241,22 @@ theorem inftyValuedFqt.def {x : RatFunc Fq} :
     (inftyValuedFqt Fq).v x = inftyValuationDef Fq x :=
   rfl
 
+namespace FqtInfty
+
+/- We temporarily disable the existing valued instance coming from the ideal `X` to avoid diamonds
+with the uniform space structure coming from the valuation at infinity. -/
+attribute [-instance] RatFunc.valuedRatFunc
+
+/- Locally add the uniform space structure coming from the valuation at infinity. This instance
+is scoped in the `FqtInfty` namescape in case it is needed in the future. -/
+/-- The uniform space structure on `RatFunc Fq` coming from the valuation at infinity. -/
+scoped instance : UniformSpace (RatFunc Fq) := (inftyValuedFqt Fq).toUniformSpace
+
 /-- The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the valuation at infinity. -/
-def FqtInfty :=
-  @UniformSpace.Completion (RatFunc Fq) <| (inftyValuedFqt Fq).toUniformSpace
+def _root_.FunctionField.FqtInfty := UniformSpace.Completion (RatFunc Fq)
+deriving Field, Algebra (RatFunc Fq), Coe (RatFunc Fq), Inhabited
 
-instance : Field (FqtInfty Fq) :=
-  letI := inftyValuedFqt Fq
-  UniformSpace.Completion.instField
-
-instance : Inhabited (FqtInfty Fq) :=
-  ⟨(0 : FqtInfty Fq)⟩
+end FqtInfty
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
 instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ := (inftyValuedFqt Fq).valuedCompletion
