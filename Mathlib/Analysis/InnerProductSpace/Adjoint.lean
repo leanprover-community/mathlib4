@@ -213,9 +213,16 @@ theorem ker_adjoint_comp_self (T : E →L[𝕜] F) : (T† ∘L T).ker = T.ker :
   rw [LinearMap.mem_ker, ← inner_self_eq_zero (𝕜 := 𝕜), coe_coe, ← adjoint_inner_left]
   simp_all
 
+theorem ker_self_comp_adjoint (T : E →L[𝕜] F) : (T ∘L T†).ker = T†.ker := by
+  simpa using T†.ker_adjoint_comp_self
+
 lemma adjoint_comp_self_injective_iff (T : E →L[𝕜] F) :
     Function.Injective (T† ∘L T) ↔ Function.Injective T := by
   rw [← coe_coe, ← LinearMap.ker_eq_bot, ← coe_coe, ← LinearMap.ker_eq_bot, ker_adjoint_comp_self]
+
+lemma self_comp_adjoint_injective_iff (T : E →L[𝕜] F) :
+    Function.Injective (T ∘L T†) ↔ Function.Injective (T†) := by
+  simpa using T†.adjoint_comp_self_injective_iff
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
 instance : Star (E →L[𝕜] E) :=
@@ -574,15 +581,25 @@ lemma ker_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).ker = 
   haveI := FiniteDimensional.complete 𝕜 F
   simpa using A.toContinuousLinearMap.ker_adjoint_comp_self
 
+lemma ker_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).ker = A.adjoint.ker := by
+  simpa using A.adjoint.ker_adjoint_comp_self
+
 lemma adjoint_comp_self_injective_iff (A : E →ₗ[𝕜] F) :
     Function.Injective (A.adjoint ∘ₗ A) ↔ Function.Injective A := by
   rw [← ker_eq_bot, ← ker_eq_bot, ker_adjoint_comp_self]
+
+lemma self_comp_adjoint_injective_iff (A : E →ₗ[𝕜] F) :
+    Function.Injective (A ∘ₗ A.adjoint) ↔ Function.Injective A.adjoint := by
+  simpa using A.adjoint.adjoint_comp_self_injective_iff
 
 /-- 7.64(c) in [axler2024]. -/
 lemma range_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).range = A.adjoint.range :=
   calc
     (A.adjoint ∘ₗ A).range = (A.adjoint ∘ₗ A).kerᗮ := by simp [orthogonal_ker]
     _ = A.adjoint.range := by rw [ker_adjoint_comp_self, orthogonal_ker]
+
+lemma range_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).range = A.range := by
+  simpa using A.adjoint.range_adjoint_comp_self
 
 /-- Part of 7.64(d) in [axler2024]. -/
 theorem finrank_range_adjoint (A : E →ₗ[𝕜] F) :
