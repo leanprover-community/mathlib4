@@ -35,7 +35,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E
 
 /-- If `f` lies in a closed convex set `s` a.e., then `μ[f | m]` lies in `s` a.e.
 #TODO: Generalize this theorem. -/
-lemma condExp_mem_convex [IsFiniteMeasure μ] [HereditarilyLindelofSpace E] (hm : m ≤ mα)
+lemma Convex.condExp_mem [IsFiniteMeasure μ] [HereditarilyLindelofSpace E] (hm : m ≤ mα)
     (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
     ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
   obtain ⟨L, c, hLc⟩ := RCLike.iInter_countable_halfSpaces_eq (𝕜 := ℝ) hc hs
