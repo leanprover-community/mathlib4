@@ -51,9 +51,15 @@ noncomputable instance : (extendScalars.{w} f).Monoidal :=
     (.mk'
       (εIso := (AlgebraTensorModule.rid R S S).symm.toModuleIso)
       (μIso := fun M₁ M₂ ↦ (AlgebraTensorModule.distribBaseChange R S M₁ M₂).symm.toModuleIso)
-      (μIso_inv_natural_left := sorry)
-      (μIso_inv_natural_right := sorry)
-      (oplax_associativity := sorry)
+      (μIso_inv_natural_left := fun {M₁ M₁'} g M₂ ↦
+        ((extendRestrictScalarsAdj f).homEquiv _ _).injective
+          (tensor_ext (fun _ _ ↦ rfl)))
+      (μIso_inv_natural_right := fun {M₂ M₂'} M₁ g ↦
+        ((extendRestrictScalarsAdj f).homEquiv _ _).injective
+          (tensor_ext (fun _ _ ↦ rfl)))
+      (oplax_associativity := fun M₁ M₂ M₃ ↦
+        ((extendRestrictScalarsAdj f).homEquiv _ _).injective
+          (tensor_ext₃' (fun _ _ _ ↦ rfl)))
       (oplax_left_unitality := fun M ↦ by
         ext m
         dsimp
