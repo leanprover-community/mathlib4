@@ -335,24 +335,6 @@ noncomputable def isLimitKf (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 
   (kfSc_exact X data r r' hrr' hr pq' pq'' hpq'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃  n₀ n₁ n₂ hn₁' hn₁ hn₂).fIsKernel
 
-set_option backward.isDefEq.respectTransparency false in
-lemma cc_w (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
-    (page X data r hr).d pq pq' ≫
-      (pageXIso X data _ hr _ _ _ _ _ hi₀ hi₁ hi₂ hi₃ _ _ _ hn₁').hom ≫
-      X.mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃' _ _ _
-        (data.le₃₃' hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ hn₁ hn₂ = 0 := by
-  by_cases h : (c r).Rel pq pq'
-  · dsimp
-    rw [pageD_eq X data r hr pq pq' h _
-      _ (homOfLE (data.le₂₃' r hr pq' hi₂ hi₃)) (homOfLE (data.le₃₃' hrr' hr pq' hi₃ hi₃'))
-      (homOfLE (by simpa only [hi₃', data.i₃_next r r' _ _ h] using data.le₂₃ r pq))
-       hi₀ hi₁ (by rw [hi₂, data.hc₀₂ r _ _ h])
-      (by rw [hi₃, data.hc₁₃ r _ _ h]) (by rw [hi₃', data.i₃_next r r' _ _ h]) rfl
-      (n₀ - 1) n₀ n₁ n₂ (by have := data.hc r pq pq' h; lia) (by simp) hn₁ hn₂,
-      Category.assoc, Category.assoc, Iso.inv_hom_id_assoc,
-      d_map_fourδ₄Toδ₃ _ _ _ _ _ _ _ _ _ _ _ _, comp_zero]
-  · rw [HomologicalComplex.shape _ _ _ h, zero_comp]
-
 end HomologyData
 
 end
