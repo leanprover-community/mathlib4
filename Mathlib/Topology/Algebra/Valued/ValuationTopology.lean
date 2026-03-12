@@ -194,8 +194,8 @@ end Valuation
 --       simp_rw [restrict_lt_iff_lt_embedding]
 --       exact exists_congr fun γ ↦ by rw [true_and]; rfl }
 
-variable {R : Type u} [CommRing R] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
-  [ValuativeRel R]
+variable {R K : Type u} [CommRing R] [Field K] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
+  [ValuativeRel R] [ValuativeRel K]
 
 section TopologicalSpace
 
@@ -290,7 +290,7 @@ namespace Valuation
 
 section UniformSpace
 
-variable [UniformSpace R] [IsUniformAddGroup R] [IsValuativeTopology R] (v : Valuation R Γ₀)
+variable [_u : UniformSpace R] [IsUniformAddGroup R] [IsValuativeTopology R] (v : Valuation R Γ₀)
   [v.Compatible]
 
 theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
@@ -299,21 +299,37 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
   rw [uniformity_eq_comap_nhds_zero]
   exact v.hasBasis_nhds_zero.comap _
 
-theorem toUniformSpace_eq : (inferInstance : UniformSpace R) =
+theorem toUniformSpace_eq : _u =
     @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
   refine UniformSpace.ext (v.hasBasis_uniformity.eq_of_same_basis ?_)
   convert v.subgroups_basis.hasBasis_nhds_zero.comap _
   simp_rw [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
+theorem cauchy_iff {F : Filter R} : Cauchy F ↔
+    F.NeBot ∧ ∀ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ,
+      ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), v.restrict (y - x) < γ.1 := by
+  rw [v.toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
+  apply and_congr Iff.rfl
+  simp_rw [v.subgroups_basis.mem_addGroupFilterBasis_iff]
+  constructor
+  · intro h γ
+    simp_rw [restrict_lt_iff_lt_embedding]
+    exact h _ (v.subgroups_basis.mem_addGroupFilterBasis γ)
+  · rintro h - ⟨γ, rfl⟩
+    simp_rw [restrict_lt_iff_lt_embedding] at h
+    exact h γ
+
 end UniformSpace
 
 section TopologicalSpace
 
-variable [TopologicalSpace R] [IsValuativeTopology R]
+variable [_t : TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ₀) [v.Compatible]
+  [TopologicalSpace K] [IsValuativeTopology K]
 
-theorem toTopologicalSpace_eq (v : Valuation R Γ₀) [v.Compatible] :
-    (inferInstance : TopologicalSpace R) = v.subgroups_basis.topology := by
+theorem toTopologicalSpace_eq :
+    _t = v.subgroups_basis.topology := by
   letI u := IsTopologicalAddGroup.rightUniformSpace R
   letI := isUniformAddGroup_of_addCommGroup (G := R)
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
@@ -322,150 +338,131 @@ instance (priority := low) isTopologicalRing : IsTopologicalRing R := by
   convert (valuation R).nonarchimedeanRing.toIsTopologicalRing
   exact toTopologicalSpace_eq _
 
-end TopologicalSpace
-
-end Valuation
-
-
 section Discrete
 
 lemma discreteTopology_of_forall_map_eq_one (h : ∀ x : R, x ≠ 0 → v x = 1) :
     DiscreteTopology R := by
   simp only [discreteTopology_iff_isOpen_singleton_zero, isOpen_iff_mem_nhds, mem_singleton_iff,
-    forall_eq, mem_nhds_zero, subset_singleton_iff, mem_setOf_eq]
+    forall_eq, v.mem_nhds_zero, subset_singleton_iff, mem_setOf_eq]
   use 1
   contrapose! h
   obtain ⟨x, hx, hx'⟩ := h
   rw [restrict_lt_iff_lt_embedding, Units.val_one, map_one] at hx
   exact ⟨x, hx', hx.ne⟩
 
-lemma discreteTopology_of_forall_lt [MulArchimedean Γ₀] [Valued K Γ₀] {r : Γ₀} (hr : r ≠ 0)
-    (h : ∀ x : K, v x ≠ 0 → r < v x) :
+lemma discreteTopology_of_forall_lt [MulArchimedean Γ₀] (v : Valuation K Γ₀)
+    [v.Compatible] {r : Γ₀} (hr : r ≠ 0) (h : ∀ x : K, v x ≠ 0 → r < v x) :
     DiscreteTopology K :=
-  discreteTopology_of_forall_map_eq_one (by simpa using Valued.v.map_eq_one_of_forall_lt hr h)
+  v.discreteTopology_of_forall_map_eq_one (by simpa using v.map_eq_one_of_forall_lt hr h)
 
 end Discrete
 
-set_option backward.isDefEq.respectTransparency false in
-theorem cauchy_iff {F : Filter R} : Cauchy F ↔
-    F.NeBot ∧ ∀ γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ,
-      ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), _i.v.restrict (y - x) < γ.1 := by
-  rw [toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
-  apply and_congr Iff.rfl
-  simp_rw [Valued.v.subgroups_basis.mem_addGroupFilterBasis_iff]
-  constructor
-  · intro h γ
-    simp_rw [restrict_lt_iff_lt_embedding]
-    exact h _ (Valued.v.subgroups_basis.mem_addGroupFilterBasis γ)
-  · rintro h - ⟨γ, rfl⟩
-    simp_rw [restrict_lt_iff_lt_embedding] at h
-    exact h γ
+variable {v}
 
-variable (R)
-
-set_option backward.isDefEq.respectTransparency false in
 /-- An open ball centred at the origin in a valued ring is open. -/
-theorem isOpen_ball (r : ValueGroup₀ _i.v) : IsOpen (X := R) {x | v.restrict x < r} := by
+theorem isOpen_ball (r : ValueGroup₀ v) : IsOpen (X := R) {x | v.restrict x < r} := by
   rw [isOpen_iff_mem_nhds]
   rcases eq_or_ne r 0 with rfl | hr
-  · simp
+  · intro x hx
+    simp only [mem_setOf_eq] at hx
+    exact (not_lt_zero' hx).elim
   intro x hx
-  rw [mem_nhds]
+  rw [v.mem_nhds]
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr,
     fun y hy ↦ (sub_add_cancel y x).symm ▸ (v.restrict.map_add _ x).trans_lt (max_lt hy hx)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An open ball centred at the origin in a valued ring is closed. -/
-theorem isClosed_ball (r : ValueGroup₀ _i.v) : IsClosed (X := R) {x | v.restrict x < r} := by
+theorem isClosed_ball (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
-  · simp
+  · convert isClosed_empty
+    ext
+    simp only [mem_setOf_eq, mem_empty_iff_false, iff_false, not_lt]
+    exact zero_le'
   exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v.restrict (Units.mk0 r hr))
-    (isOpen_ball _ _)
+    (isOpen_ball _)
 
 /-- An open ball centred at the origin in a valued ring is clopen. -/
-theorem isClopen_ball (r : ValueGroup₀ _i.v) : IsClopen (X := R) {x | v.restrict x < r} :=
-  ⟨isClosed_ball _ _, isOpen_ball _ _⟩
+theorem isClopen_ball (r : ValueGroup₀ v) : IsClopen (X := R) {x | v.restrict x < r} :=
+  ⟨isClosed_ball _, isOpen_ball _⟩
 
 /-- A closed ball centred at the origin in a valued ring is open. -/
-theorem isOpen_closedBall {r : ValueGroup₀ _i.v} (hr : r ≠ 0) :
+theorem isOpen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
   IsOpen (X := R) {x | v.restrict x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
-  rw [mem_nhds]
+  rw [v.mem_nhds]
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
-@[deprecated (since := "2025-10-09")]
-alias isOpen_closedball := isOpen_closedBall
-
 /-- A closed ball centred at the origin in a valued ring is closed. -/
-theorem isClosed_closedBall (r : ValueGroup₀ _i.v) : IsClosed (X := R) {x | v.restrict x ≤ r} := by
+theorem isClosed_closedBall (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
-  rw [mem_nhds]
+  rw [v.mem_nhds]
   have hx' : v.restrict x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
   exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
-theorem isClopen_closedBall {r : ValueGroup₀ _i.v} (hr : r ≠ 0) :
+theorem isClopen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
     IsClopen (X := R) {x | v.restrict x ≤ r} :=
-  ⟨isClosed_closedBall _ _, isOpen_closedBall _ hr⟩
+  ⟨isClosed_closedBall _, isOpen_closedBall hr⟩
 
 /-- A sphere centred at the origin in a valued ring is clopen. -/
-theorem isClopen_sphere {r : ValueGroup₀ _i.v} (hr : r ≠ 0) :
+theorem isClopen_sphere {r : ValueGroup₀ v} (hr : r ≠ 0) :
     IsClopen (X := R) {x | v.restrict x = r} := by
   have h : {x : R | v.restrict x = r} = {x | v.restrict x ≤ r} \ {x | v.restrict x < r} := by
     ext x
     simp [← le_antisymm_iff]
   rw [h]
-  exact IsClopen.diff (isClopen_closedBall _ hr) (isClopen_ball _ _)
+  exact IsClopen.diff (isClopen_closedBall hr) (isClopen_ball _)
 
 /-- A sphere centred at the origin in a valued ring is open. -/
-theorem isOpen_sphere {r : ValueGroup₀ _i.v} (hr : r ≠ 0) :
+theorem isOpen_sphere {r : ValueGroup₀ v} (hr : r ≠ 0) :
     IsOpen (X := R) {x | v.restrict x = r} :=
-  isClopen_sphere _ hr |>.isOpen
+  isClopen_sphere hr |>.isOpen
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A sphere centred at the origin in a valued ring is closed. -/
-theorem isClosed_sphere (r : ValueGroup₀ _i.v) : IsClosed (X := R) {x | v.restrict x = r} := by
+theorem isClosed_sphere (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
-  · simpa using isClosed_closedBall R 0
-  exact isClopen_sphere _ hr |>.isClosed
+  · convert v.isClosed_closedBall 0 using 3
+    exact le_zero_iff.symm
+  exact isClopen_sphere hr |>.isClosed
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The closed unit ball in a valued ring is open. -/
-theorem isOpen_integer : IsOpen (_i.v.integer : Set R) := by
+theorem isOpen_integer : IsOpen (v.integer : Set R) := by
   simp only [integer, Subring.coe_set_mk, Subsemiring.coe_set_mk, Submonoid.coe_set_mk,
     Subsemigroup.coe_set_mk, ← v.restrict_le_one_iff]
-  exact isOpen_closedBall _ one_ne_zero
+  apply isOpen_closedBall one_ne_zero
 
 /-- The closed unit ball of a valued ring is closed. -/
-theorem isClosed_integer : IsClosed (_i.v.integer : Set R) := by
+theorem isClosed_integer : IsClosed (v.integer : Set R) := by
   simp only [integer, Subring.coe_set_mk, Subsemiring.coe_set_mk, Submonoid.coe_set_mk,
     Subsemigroup.coe_set_mk, ← v.restrict_le_one_iff]
-  exact isClosed_closedBall _ _
+  exact isClosed_closedBall _
 
 /-- The closed unit ball of a valued ring is clopen. -/
-theorem isClopen_integer : IsClopen (_i.v.integer : Set R) :=
-  ⟨isClosed_integer _, isOpen_integer _⟩
+theorem isClopen_integer : IsClopen (v.integer : Set R) :=
+  ⟨isClosed_integer, isOpen_integer⟩
 
 /-- The valuation subring of a valued field is open. -/
-theorem isOpen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
-    IsOpen (hv.v.valuationSubring : Set K) :=
-  isOpen_integer K
+theorem isOpen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
+    IsOpen (v.valuationSubring : Set K) :=
+  isOpen_integer
 
 /-- The valuation subring of a valued field is closed. -/
-theorem isClosed_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
-    IsClosed (hv.v.valuationSubring : Set K) :=
-  isClosed_integer K
+theorem isClosed_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
+    IsClosed (v.valuationSubring : Set K) :=
+  isClosed_integer
 
 /-- The valuation subring of a valued field is clopen. -/
-theorem isClopen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
-    IsClopen (hv.v.valuationSubring : Set K) :=
-  isClopen_integer K
+theorem isClopen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
+    IsClopen (v.valuationSubring : Set K) :=
+  isClopen_integer
 
-end Valued
+end TopologicalSpace
+
+end Valuation
