@@ -393,6 +393,47 @@ theorem center_eq_top (R) [NonUnitalCommRing R] : center R = ⊤ :=
 
 end NonUnitalRing
 
+section Centralizer
+
+/-- The centralizer of a set as non-unital subring. -/
+def centralizer {R} [NonUnitalRing R] (s : Set R) : NonUnitalSubring R :=
+  { Subsemigroup.centralizer s with
+    carrier := s.centralizer
+    zero_mem' := Set.zero_mem_centralizer
+    add_mem' := Set.add_mem_centralizer
+    neg_mem' := Set.neg_mem_centralizer }
+
+@[simp, norm_cast]
+theorem coe_centralizer {R} [NonUnitalRing R] (s : Set R) :
+    (centralizer s : Set R) = s.centralizer :=
+  rfl
+
+theorem centralizer_toSubsemigroup {R} [NonUnitalRing R] (s : Set R) :
+    (centralizer s).toSubsemigroup = Subsemigroup.centralizer s :=
+  rfl
+
+theorem mem_centralizer_iff {R} [NonUnitalRing R] {s : Set R} {z : R} :
+    z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
+  Iff.rfl
+
+theorem center_le_centralizer {R} [NonUnitalRing R] (s) : center R ≤ centralizer s :=
+  s.center_subset_centralizer
+
+theorem centralizer_le {R} [NonUnitalRing R] (s t : Set R) (h : s ⊆ t) :
+    centralizer t ≤ centralizer s :=
+  Set.centralizer_subset h
+
+@[simp]
+theorem centralizer_eq_top_iff_subset {R} [NonUnitalRing R] {s : Set R} :
+    centralizer s = ⊤ ↔ s ⊆ center R :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+
+@[simp]
+theorem centralizer_univ {R} [NonUnitalRing R] : centralizer Set.univ = center R :=
+  SetLike.ext' (Set.centralizer_univ R)
+
+end Centralizer
+
 end Center
 
 /-! ## `NonUnitalSubring` closure of a subset -/
@@ -503,24 +544,10 @@ theorem mem_closure_iff {s : Set R} {x} :
     | add _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
     | neg _ _ h => exact neg_mem h⟩
 
-/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
-@[implicit_reducible]
-def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
-    (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (closure s) :=
-  { (closure s).toNonUnitalRing with
-    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
-      ext
-      simp only [MulMemClass.mk_mul_mk]
-      induction hx, hy using closure_induction₂ with
-      | mem_mem x y hx hy => exact hcomm x hx y hy
-      | zero_left x _ => exact Commute.zero_left x
-      | zero_right x _ => exact Commute.zero_right x
-      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
-      | add_left _ _ _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
-      | add_right _ _ _ _ _ _ h₁ h₂ => exact Commute.add_right h₁ h₂
-      | neg_left _ _ _ _ h => exact Commute.neg_left h
-      | neg_right _ _ _ _ h => exact Commute.neg_right h }
+lemma closure_le_centralizer_centralizer {R : Type*} [NonUnitalRing R] (s : Set R) :
+    closure s ≤ centralizer (centralizer s) :=
+  closure_le.mpr Set.subset_centralizer_centralizer
+
 
 variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
