@@ -173,7 +173,7 @@ instance (priority := 100) CoframeHomClass.tosInfHomClass [CompleteLattice α] [
   { ‹CoframeHomClass F α β› with }
 
 -- See note [lower instance priority]
-instance (priority := 100) FrameHomClass.v [CompleteLattice α]
+instance (priority := 100) FrameHomClass.toBoundedLatticeHomClass [CompleteLattice α]
     [CompleteLattice β] [FrameHomClass F α β] : BoundedLatticeHomClass F α β :=
   { ‹FrameHomClass F α β›, sSupHomClass.toSupBotHomClass with }
 
