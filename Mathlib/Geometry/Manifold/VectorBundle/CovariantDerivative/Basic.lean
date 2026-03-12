@@ -117,11 +117,36 @@ variable {F}
 
 namespace IsCovariantDerivativeOn
 
+/-! ### Changing set
+
+In this section, we change `s` in `IsCovariantDerivativeOn F cov s`, proving the condition is
+monotone and local.
+-/
+
+section changing_set
+
+lemma mono
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)} {s t : Set M}
+    (hcov : IsCovariantDerivativeOn F cov t) (hst : s ⊆ t) : IsCovariantDerivativeOn F cov s where
+  add hσ hσ' hx := hcov.add hσ hσ' (hst hx)
+  leibniz hσ hcov' hx := hcov.leibniz hσ hcov' (hst hx)
+
+lemma iUnion {ι : Type*} {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
+    {s : ι → Set M} (hcov : ∀ i, IsCovariantDerivativeOn F cov (s i)) :
+    IsCovariantDerivativeOn F cov (⋃ i, s i) where
+  add hσ hσ' hx := by
+    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
+    exact (hcov i).add hσ hσ'
+  leibniz hσ hf' hx := by
+    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
+    exact (hcov i).leibniz hσ hf'
+
+end changing_set
+
 -- TODO: prove that `cov σ x` depends on `σ` only via the 1-jet of `σ` at `x`.
 -- This should be easy using the projection formula in `CovariantDerivative.Ehresmann`.
--- In the mean time we use the following weaker result (which is convenient to apply anyway).
+-- In the mean time we use the following weaker results (which are convenient to apply anyway).
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a covariant derivative `cov` on a neighborhood `s` of a point `x`, if sections `σ` and
 `σ'` agree on `s` and are differentiable at `x`, then `cov σ x = cov σ x'`. -/
 lemma congr_of_eqOn
@@ -156,31 +181,19 @@ lemma congr_of_eqOn
     _ = cov σ' x := by
           simp [hcov.leibniz hσ' hψ'.mdifferentiableAt, hψx, hψ'.mfderiv]
 
-/-! ### Changing set
-
-In this section, we change `s` in `IsCovariantDerivativeOn F cov s`, proving the condition is
-monotone and local.
--/
-
-section changing_set
-
-lemma mono
-    {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)} {s t : Set M}
-    (hcov : IsCovariantDerivativeOn F cov t) (hst : s ⊆ t) : IsCovariantDerivativeOn F cov s where
-  add hσ hσ' hx := hcov.add hσ hσ' (hst hx)
-  leibniz hσ hcov' hx := hcov.leibniz hσ hcov' (hst hx)
-
-lemma iUnion {ι : Type*} {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
-    {s : ι → Set M} (hcov : ∀ i, IsCovariantDerivativeOn F cov (s i)) :
-    IsCovariantDerivativeOn F cov (⋃ i, s i) where
-  add hσ hσ' hx := by
-    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
-    exact (hcov i).add hσ hσ'
-  leibniz hσ hf' hx := by
-    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
-    exact (hcov i).leibniz hσ hf'
-
-end changing_set
+open Filter Set in
+/-- Given a covariant derivative `cov` on a neighborhood `s` of a point `x`, if sections `σ` and
+`σ'` agree near `x` and are differentiable at `x`, then `cov σ x = cov σ x'`. -/
+lemma congr_of_eventuallyEq
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
+    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
+    {σ σ' : Π x : M, V x} {x : M}
+    (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x)
+    (hxs : s ∈ 𝓝 x) (hσσ' : ∀ᶠ x in 𝓝 x, σ x = σ' x) :
+    cov σ x = cov σ' x := by
+  rw [eventually_iff_exists_mem] at hσσ'
+  choose s' hs' b using hσσ'
+  exact (hcov.mono inter_subset_left).congr_of_eqOn hσ hσ' (inter_mem hxs hs') fun x hx ↦ b x hx.2
 
 /-! ### Computational properties -/
 
