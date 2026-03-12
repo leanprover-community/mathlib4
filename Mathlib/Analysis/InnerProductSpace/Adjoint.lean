@@ -216,12 +216,23 @@ theorem ker_adjoint_comp_self (T : E →L[𝕜] F) : (T† ∘L T).ker = T.ker :
 theorem ker_self_comp_adjoint (T : E →L[𝕜] F) : (T ∘L T†).ker = T†.ker := by
   simpa using T†.ker_adjoint_comp_self
 
+/--
+This lemma uses the simp-normal form `⇑(T†) ∘ ⇑T` instead of `⇑(T† ∘L T)`
+(note the difference between `∘` and `∘L`).
+You may need to rewrite with `ContinuousLinearMap.coe_comp'` before applying this lemma.
+-/
 lemma adjoint_comp_self_injective_iff (T : E →L[𝕜] F) :
-    Function.Injective (T† ∘L T) ↔ Function.Injective T := by
-  rw [← coe_coe, ← LinearMap.ker_eq_bot, ← coe_coe, ← LinearMap.ker_eq_bot, ker_adjoint_comp_self]
+    Function.Injective (T† ∘ T) ↔ Function.Injective T := by
+  rw [← coe_comp', ← coe_coe, ← LinearMap.ker_eq_bot, ← coe_coe, ← LinearMap.ker_eq_bot,
+    ker_adjoint_comp_self]
 
+/--
+This lemma uses the simp-normal form `⇑T ∘ ⇑(T†)` instead of `⇑(T ∘L T†)`
+(note the difference between `∘` and `∘L`).
+You may need to rewrite with `ContinuousLinearMap.coe_comp'` before applying this lemma.
+-/
 lemma self_comp_adjoint_injective_iff (T : E →L[𝕜] F) :
-    Function.Injective (T ∘L T†) ↔ Function.Injective (T†) := by
+    Function.Injective (T ∘ T†) ↔ Function.Injective (T†) := by
   simpa using T†.adjoint_comp_self_injective_iff
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
@@ -584,12 +595,22 @@ lemma ker_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).ker = 
 lemma ker_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).ker = A.adjoint.ker := by
   simpa using A.adjoint.ker_adjoint_comp_self
 
+/--
+This lemma uses the simp-normal form `⇑(A.adjoint) ∘ ⇑A` instead of `⇑(A.adjoint ∘ₗ A)`
+(note the difference between `∘` and `∘ₗ`).
+You may need to rewrite with `LinearMap.coe_comp` before applying this lemma.
+-/
 lemma adjoint_comp_self_injective_iff (A : E →ₗ[𝕜] F) :
-    Function.Injective (A.adjoint ∘ₗ A) ↔ Function.Injective A := by
-  rw [← ker_eq_bot, ← ker_eq_bot, ker_adjoint_comp_self]
+    Function.Injective (A.adjoint ∘ A) ↔ Function.Injective A := by
+  rw [← coe_comp, ← ker_eq_bot, ← ker_eq_bot, ker_adjoint_comp_self]
 
+/--
+This lemma uses the simp-normal form `⇑A ∘ ⇑(A.adjoint)` instead of `⇑(A ∘ₗ A.adjoint)`
+(note the difference between `∘` and `∘ₗ`).
+You may need to rewrite with `LinearMap.coe_comp` before applying this lemma.
+-/
 lemma self_comp_adjoint_injective_iff (A : E →ₗ[𝕜] F) :
-    Function.Injective (A ∘ₗ A.adjoint) ↔ Function.Injective A.adjoint := by
+    Function.Injective (A ∘ A.adjoint) ↔ Function.Injective A.adjoint := by
   simpa using A.adjoint.adjoint_comp_self_injective_iff
 
 /-- 7.64(c) in [axler2024]. -/
