@@ -804,7 +804,8 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       have ltm : p.1 < maximalIdeal R := lt_of_le_of_ne (le_maximalIdeal_of_isPrime p.1) (by
         simpa [PrimeSpectrum.ext_iff, closedPoint] using ne)
       rcases exists_isPrime_no_insert p.1 ltm with ⟨q, qp, ple, qlt, hq⟩
-      obtain ⟨m, hm⟩ := exist_nat_eq' (Localization.AtPrime q)
+      let Rq := Localization.AtPrime q
+      obtain ⟨m, hm⟩ := exist_nat_eq' Rq
       have mle : m ≤ n := by
         rw [← Order.lt_add_one_iff, ← Nat.cast_lt (α := WithBot ℕ∞), ← hm, ← hn,
           IsLocalization.AtPrime.ringKrullDim_eq_height q, Ideal.height_eq_primeHeight,
@@ -812,16 +813,24 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
         exact Ideal.primeHeight_strict_mono qlt
       simp only [hn, Nat.cast_lt] at gt
       have mlt : m < k - 1 := by omega
-      have isg : IsGorensteinLocalRing (Localization.AtPrime q) := by
+      have isg : IsGorensteinLocalRing Rq := by
         apply ih m mle (k - 1) (lt_of_eq_of_lt hm (Nat.cast_lt.mpr mlt)) _ hm
         exact residueField_ext_subsingleton_of_no_insert q qlt hq (k - 1) k (by omega) h
+      have injlt : HasInjectiveDimensionLT (ModuleCat.of Rq Rq) k := by
+        rw [← injectiveDimension_lt_iff,
+          injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing, hm, Nat.cast_lt]
+        omega
       have qmem : ⟨q, qp⟩ ∈ support R (Ext M (ModuleCat.of R R) k) :=
         Module.mem_support_iff_of_finite.mpr ((Module.mem_support_iff_of_finite.mp hp).trans ple)
-
-      --injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing
-      --`Ext M_q R_q k` is localization of `Ext M R k` at `q`
-      --is subsingleton by injective dimension
-      sorry
+      let Mq := ModuleCat.of Rq (LocalizedModule.AtPrime q M)
+      let g : M →ₗ[R] Mq := LocalizedModule.mkLinearMap q.primeCompl M
+      let h : (ModuleCat.of R R) →ₗ[R] (ModuleCat.of Rq Rq) := Algebra.linearMap R Rq
+      let isl := Ext.isLocalizedModule' q.primeCompl Rq g inferInstance h inferInstance k
+      have : Subsingleton (Ext Mq (ModuleCat.of Rq Rq) k) := injlt.subsingleton _ k k (le_refl _) Mq
+      absurd qmem
+      simp only [notMem_support_iff]
+      exact (@IsLocalizedModule.linearEquiv R _ q.primeCompl _ _ _ _ _ _ _ _ _
+        (LocalizedModule.mkLinearMap q.primeCompl _) _ _ isl).subsingleton
     --this impies finite length
     --inj => surj for smul
     --find maximal using `set_has_maximal_iff_noetherian`
