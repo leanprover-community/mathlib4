@@ -559,7 +559,7 @@ lemma addContent_accumulate (m : AddContent G C) (hC : IsSetRing C)
 
 theorem addContent_iUnion_eq_tsum (hC : IsSetRing C) (m : AddContent ℝ≥0∞ C)
     {s : ℕ → Set α} (hd : Pairwise (Disjoint on s)) (hs : ∀ i, s i ∈ C)
-    (hm_iSup : ∀ ⦃s : ℕ → Set α⦄ (_ : ∀ n, s n ∈ C), Monotone s → m (⋃ n, s n) = ⨆ n, m (s n)) :
+    (hm_iSup : ∀ ⦃s : ℕ → Set α⦄, (∀ n, s n ∈ C) → Monotone s → m (⋃ n, s n) = ⨆ n, m (s n)) :
     m (⋃ i, s i) = ∑' i, m (s i) :=
   calc
     m (⋃ i, s i) = m (⋃ i, accumulate s i) := by
