@@ -172,8 +172,8 @@ def ExSum.eq
 end
 
 -- TODO: this should be somewhere else
-instance : Ord Rat where
-  compare a b := if a ≤ b then if b ≤ a then .eq else .lt else .gt
+local instance : Ord Rat where
+  compare a b := compareOfLessAndEq a b
 
 mutual
 /--
