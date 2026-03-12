@@ -280,11 +280,8 @@ theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U 
 
 /-- Every function to the indiscrete topology is continuous -/
 theorem continuous_of_indiscreteTopology {β} [TopologicalSpace β] [IndiscreteTopology β]
-    {f : α → β} : Continuous f := by
-  refine Continuous.mk ?_
-  intro s hs
-  rw [IndiscreteTopology.isOpen_iff] at hs
-  rcases hs <;> simp_all
+    {f : α → β} : Continuous f where
+  isOpen_preimage := by simp [IndiscreteTopology.isOpen_iff]
 
 /-- A topological space is discrete if every set is open, that is,
   its topology equals the discrete topology `⊥`. -/
@@ -701,9 +698,7 @@ theorem IndiscreteTopology.nhds_eq [TopologicalSpace α] [IndiscreteTopology α]
 
 theorem clusterPt_of_indiscreteTopology [TopologicalSpace α] [IndiscreteTopology α]
     {x : α} {f : Filter α} [f.NeBot] : ClusterPt x f := by
-  refine ClusterPt.of_le_nhds ?_
-  rw [IndiscreteTopology.nhds_eq]
-  exact le_top
+  simpa [ClusterPt, IndiscreteTopology.nhds_eq]
 
 /-- In the indiscrete topology no points are separable.
 
