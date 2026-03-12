@@ -464,3 +464,38 @@ D. 实现时的具体注意点
     避开 `CompleteLattice` 版本；
     或者显式构造 shifted tail sequence，
     把 57 的单调 finite envelopes 接到那层 API 上。
+
+2026-03-12 本轮新增进展（八）
+
+60. 这次把 `limsup/liminf` 的桥接重新落回
+    `ConditionallyCompleteLinearOrder` 层，
+    不再碰 `CompleteLattice` 版本。
+    新增：
+    `limsup_le_of_eventually_le_nat'`,
+    `le_liminf_of_eventually_le_nat'`,
+    `limsup_sub_liminf_le_of_eventually_bounded_nat'`。
+
+61. 这些 wrapper 的特点是：
+    不试图自动构造 bounded/cobounded 假设，
+    而是把
+    `Filter.IsCoboundedUnder`
+    /
+    `Filter.IsBoundedUnder`
+    作为显式输入，
+    然后用
+    `Filter.limsup_le_iff'`
+    和
+    `Filter.le_liminf_iff'`
+    把
+    `∃ N, ∀ n ≥ N, ...`
+    转成最终的 `limsup/liminf` 不等式。
+    这样更贴合当前主线，也绕开了之前 `CompleteLattice ℝ` 的障碍。
+
+62. 当前最自然的下一步因此更直接了：
+    选定 tail sequence
+    `u n := partialSum X (m + n + 1) ω`，
+    然后为它提供 60 所需的 bounded/cobounded 输入，
+    再用 finite tail interval / monotonicity lemmas 构造 eventually
+    `finiteTailInf ≤ u n ≤ finiteTailSup`。
+    一旦这步打通，就能第一次真正得到
+    tail `limsup - liminf` 的 deterministic 控制。

@@ -112,6 +112,46 @@ section Real
 
 variable {Ω : Type*}
 
+lemma limsup_le_of_eventually_le_nat'
+    {u : ℕ → ℝ} {a : ℝ}
+    (hcu : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop u)
+    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop u)
+    (h : ∃ N : ℕ, ∀ n ≥ N, u n ≤ a) :
+    Filter.limsup u Filter.atTop ≤ a := by
+  rw [Filter.limsup_le_iff' (f := Filter.atTop) (u := u) (x := a) hcu hbu]
+  intro y hy
+  rcases h with ⟨N, hN⟩
+  exact Filter.eventually_atTop.2 ⟨N, fun n hn => (hN n hn).trans (le_of_lt hy)⟩
+
+lemma le_liminf_of_eventually_le_nat'
+    {u : ℕ → ℝ} {a : ℝ}
+    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop u)
+    (hbu : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop u)
+    (h : ∃ N : ℕ, ∀ n ≥ N, a ≤ u n) :
+    a ≤ Filter.liminf u Filter.atTop := by
+  rw [Filter.le_liminf_iff' (f := Filter.atTop) (u := u) (x := a) hcu hbu]
+  intro y hy
+  rcases h with ⟨N, hN⟩
+  exact Filter.eventually_atTop.2 ⟨N, fun n hn => (le_of_lt hy).trans (hN n hn)⟩
+
+lemma limsup_sub_liminf_le_of_eventually_bounded_nat'
+    {u : ℕ → ℝ} {a b : ℝ}
+    (hcu : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop u)
+    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop u)
+    (hcl : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop u)
+    (hbl : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop u)
+    (h : ∃ N : ℕ, ∀ n ≥ N, a ≤ u n ∧ u n ≤ b) :
+    Filter.limsup u Filter.atTop - Filter.liminf u Filter.atTop ≤ b - a := by
+  have hsup : Filter.limsup u Filter.atTop ≤ b := by
+    apply limsup_le_of_eventually_le_nat' hcu hbu
+    rcases h with ⟨N, hN⟩
+    exact ⟨N, fun n hn => (hN n hn).2⟩
+  have hinf : a ≤ Filter.liminf u Filter.atTop := by
+    apply le_liminf_of_eventually_le_nat' hcl hbl
+    rcases h with ⟨N, hN⟩
+    exact ⟨N, fun n hn => (hN n hn).1⟩
+  linarith
+
 lemma condExp_natural_eq_zero_of_mean_zero {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ)
     (hX : ∀ k, StronglyMeasurable (X k)) (hindep : iIndepFun X μ)
