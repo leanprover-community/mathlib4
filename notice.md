@@ -8,19 +8,19 @@ Kolmogorov two-series theorem formalization notes
 - Deterministic tail oscillation bridge.
 - Step 1: liminf tail-oscillation event reduced to a countable union.
 - Step 2: tail oscillation event has a measure bound in terms of an `iSup` of finite tail variance bounds.
+- Step 3: the tail variance bound is now controlled by tail `tsum`, and tends to `0` as `m → ∞`.
 
 2. Key lemmas in `Kolmogorov.lean`
 
 - `limsup_sub_liminf_partialSum_tail_le_liminf_finiteTailOscillationMax`
 - `event_le_liminf_finiteTailOscillationMax_subset_iUnion`
 - `measure_tail_oscillation_event_le_iSup_four_mul_variance_div_sq_of_mean_zero`
+- `tailVarianceBound`
+- `iSup_four_mul_variance_div_sq_le_ofReal_tsum_variance_tail`
+- `tendsto_iSup_four_mul_variance_div_sq_of_summable`
 
 3. Remaining steps
 
-- Step 3:
-  Prove the tail variance bound
-  `⨆ n, ENNReal.ofReal (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / η ^ 2)`
-  goes to `0` as `m → ∞`, from convergence/summability of `∑ variance (X n)`.
 - Step 4:
   Finish the mean-zero theorem: tail oscillation is `0` a.s., hence partial sums converge a.s.
 - Step 5:
@@ -29,4 +29,5 @@ Kolmogorov two-series theorem formalization notes
 4. Next useful interfaces
 
 - `Monotone.measure_iUnion`
-- summability / convergence lemmas for real series tails
+- `_root_.tendsto_sum_nat_add`
+- `Summable.sum_le_tsum`

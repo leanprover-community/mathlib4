@@ -1170,6 +1170,10 @@ lemma measure_finiteTailOscillationMax_event_le_four_mul_variance_div_sq_of_mean
   exact measure_event_two_mul_partialSumMax_tail_le_four_mul_variance_div_sq_of_mean_zero
     (μ := μ) X m n hX hLp hindep hmean hε
 
+noncomputable def tailVarianceBound {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    (X : ℕ → Ω → ℝ) (η : ℝ) (m : ℕ) : ENNReal :=
+  ⨆ n : ℕ, ENNReal.ofReal (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / η ^ 2)
+
 lemma measure_tail_oscillation_event_le_iSup_four_mul_variance_div_sq_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     (X : ℕ → Ω → ℝ) (m : ℕ)
@@ -1190,8 +1194,7 @@ lemma measure_tail_oscillation_event_le_iSup_four_mul_variance_div_sq_of_mean_ze
       (fun n => finiteTailOscillationMax X m n ω)) :
     μ {ω | ε ≤ Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop -
         Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop} ≤
-      ⨆ n : ℕ,
-        ENNReal.ofReal (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / η ^ 2) := by
+      tailVarianceBound (μ := μ) X η m := by
   let s : ℕ → Set Ω := fun n => {ω | η ≤ finiteTailOscillationMax X m n ω}
   have hs_mono : Monotone s := by
     intro n k hnk ω hω
@@ -1205,13 +1208,62 @@ lemma measure_tail_oscillation_event_le_iSup_four_mul_variance_div_sq_of_mean_ze
         X m hηε hcu hbu hbl hcl hcuOsc hbuOsc
     _ = ⨆ n : ℕ, μ (s n) := by
       exact hs_mono.measure_iUnion
-    _ ≤ ⨆ n : ℕ,
-        ENNReal.ofReal (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / η ^ 2) := by
+    _ ≤ tailVarianceBound (μ := μ) X η m := by
       refine iSup_le fun n => ?_
       refine (measure_finiteTailOscillationMax_event_le_four_mul_variance_div_sq_of_mean_zero
           (μ := μ) X m n hX hLp hindep hmean (ε := η) hη).trans ?_
       exact le_iSup (fun n => ENNReal.ofReal
         (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / η ^ 2)) n
+
+lemma iSup_four_mul_variance_div_sq_le_ofReal_tsum_variance_tail
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m : ℕ)
+    (hvar : Summable (fun n => variance (X n) μ))
+    {η : ℝ} (hη : 0 < η) :
+    tailVarianceBound (μ := μ) X η m ≤
+      ENNReal.ofReal (4 * (∑' j, variance (X (m + 1 + j)) μ) / η ^ 2) := by
+  let v : ℕ → ℝ := fun n => variance (X n) μ
+  have hvar_tail : Summable (fun j => variance (X (m + 1 + j)) μ) := by
+    simpa [v, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
+      ((_root_.summable_nat_add_iff (f := v) (m + 1)).2 hvar)
+  refine iSup_le fun n => ?_
+  apply ENNReal.ofReal_le_ofReal
+  refine div_le_div_of_nonneg_right ?_ (sq_pos_of_pos hη).le
+  refine mul_le_mul_of_nonneg_left ?_ (by norm_num)
+  exact hvar_tail.sum_le_tsum (Finset.range n) fun j _ => variance_nonneg (X (m + 1 + j)) μ
+
+lemma tendsto_iSup_four_mul_variance_div_sq_of_summable
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ)
+    (hvar : Summable (fun n => variance (X n) μ))
+    {η : ℝ} (hη : 0 < η) :
+    Filter.Tendsto (fun m => tailVarianceBound (μ := μ) X η m) Filter.atTop (nhds 0) := by
+  have htail :
+      Filter.Tendsto (fun m => ∑' j, variance (X (m + 1 + j)) μ) Filter.atTop (nhds 0) := by
+    convert ((_root_.tendsto_sum_nat_add (f := fun n => variance (X n) μ)).comp
+      (Filter.tendsto_add_atTop_nat 1)) using 1
+    ext m
+    congr 1
+    ext j
+    simp [Nat.add_left_comm, Nat.add_comm]
+  have hupper :
+      Filter.Tendsto
+        (fun m => ENNReal.ofReal (4 * (∑' j, variance (X (m + 1 + j)) μ) / η ^ 2))
+        Filter.atTop (nhds 0) := by
+    have hreal :
+        Filter.Tendsto
+          (fun m => 4 * (∑' j, variance (X (m + 1 + j)) μ) / η ^ 2)
+          Filter.atTop (nhds 0) := by
+      have hscaled : Filter.Tendsto
+          (fun m => ((4 : ℝ) / η ^ 2) * (∑' j, variance (X (m + 1 + j)) μ))
+          Filter.atTop (nhds (((4 : ℝ) / η ^ 2) * 0)) := by
+        exact htail.const_mul ((4 : ℝ) / η ^ 2)
+      simpa [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm] using hscaled
+    simpa [ENNReal.ofReal_zero] using ENNReal.tendsto_ofReal hreal
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hupper
+    (fun m => by exact bot_le) ?_
+  intro m
+  exact iSup_four_mul_variance_div_sq_le_ofReal_tsum_variance_tail (μ := μ) X m hvar hη
 
 lemma measure_finite_tail_oscillation_event_le_four_mul_variance_div_sq_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
