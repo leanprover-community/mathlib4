@@ -192,7 +192,6 @@ theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f 
 theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' f g <| Subset.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
   fun f g h a ha ↦ by rw [mem_support_iff, ← pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
 
@@ -243,6 +242,18 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
     f1.support \ f2.support ⊆ (f1 - f2).support := by
   simp +contextual [subset_iff]
 
+lemma mapDomain_tsub {f : ι → κ} (h : f.Injective) (f1 f2 : ι →₀ α) :
+    (f1 - f2).mapDomain f = f1.mapDomain f - f2.mapDomain f := by
+  ext y
+  by_cases! hy : y ∉ Set.range f
+  · simp [mapDomain_notin_range _ _ hy]
+  · obtain ⟨x, rfl⟩ := hy
+    simp [mapDomain_apply h]
+
+lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
+    (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by
+  simp_rw [embDomain_eq_mapDomain, mapDomain_tsub f.injective]
+
 end PartialOrder
 
 section LinearOrder
@@ -286,6 +297,15 @@ theorem add_sub_single_one {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
 lemma sub_add_single_one_cancel {u : ι →₀ ℕ} {i : ι} (h : u i ≠ 0) :
     u - single i 1 + single i 1 = u := by
   rw [sub_single_one_add h, add_tsub_cancel_right]
+
+theorem isLowerSet_range_embDomain (f : α ↪ β) :
+    IsLowerSet ((Set.range (embDomain f)) : Set (β →₀ ℕ)) := by
+  rintro _ y h ⟨z, rfl⟩
+  obtain ⟨w, hw⟩ := exists_add_of_le h
+  rw [mem_range_embDomain_iff]
+  trans ↑(y + w).support
+  · exact fun _ ↦ by simp; grind
+  · simp [← hw]
 
 end Nat
 

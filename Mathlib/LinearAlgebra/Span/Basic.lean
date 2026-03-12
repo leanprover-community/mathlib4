@@ -577,7 +577,6 @@ lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempt
   rw [iSup_subtype'] at hp ⊢
   rw [← comap_map_eq, map_iSup_comap_of_surjective hf, hp, comap_top]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma biSup_comap_eq_top_of_range_eq_biSup
     {R R₂ : Type*} [Semiring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
     [Module R M] [Module R₂ M₂] {ι : Type*} (s : Set ι) (hs : s.Nonempty)
