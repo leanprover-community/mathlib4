@@ -778,11 +778,16 @@ lemma Module.length_ne_top_of_support_subset (M : Type*) [AddCommGroup M] [Modul
       ← ENat.coe_toNat_eq_self.mpr (ih3 h.2), ← Nat.cast_add]
     exact ENat.coe_ne_top _
 
+omit [IsLocalRing R] in
 lemma LinearMap.surjective_of_injective_of_length_ne_top (M : Type*) [AddCommGroup M] [Module R M]
     [fin : Module.Finite R M] (ne : Module.length R M ≠ ⊤)
     (f : M →ₗ[R] M) (inj : Function.Injective f) : Function.Surjective f := by
-
-  sorry
+  rw [← LinearMap.range_eq_top]
+  by_contra netop
+  let _ : IsFiniteLength R M := length_ne_top_iff.mp ne
+  let _ : IsArtinian R M := (isFiniteLength_iff_isNoetherian_isArtinian.mp ‹_›).2
+  absurd not_le.mpr (Submodule.length_lt netop)
+  exact Module.length_le_of_injective f.rangeRestrict ((injective_rangeRestrict_iff f).mpr inj)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
