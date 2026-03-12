@@ -304,6 +304,29 @@ lemma measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero
   exact integral_partialSum_tail_eq_zero_of_forall_integral_zero (μ := μ) X m n hX hmean
   exact hε
 
+lemma measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero_of_mem_range
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n k : ℕ)
+    (hk : k ∈ Finset.range (n + 1))
+    (hX : ∀ j ∈ Finset.range (n + 1), MemLp (X (m + 1 + j)) 2 μ)
+    (hindep : Set.Pairwise ↑(Finset.range (n + 1))
+      fun i j => X (m + 1 + i) ⟂ᵢ[μ] X (m + 1 + j))
+    (hmean : ∀ j ∈ Finset.range (n + 1), μ[X (m + 1 + j)] = 0) {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ |partialSum (fun j => X (m + 1 + j)) k ω|} ≤
+      ENNReal.ofReal ((∑ j ∈ Finset.range k, variance (X (m + 1 + j)) μ) / ε ^ 2) := by
+  apply measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero
+    (μ := μ) X m k
+  · intro j hj
+    exact hX j <| Finset.mem_range.mpr <|
+      Nat.lt_trans (Finset.mem_range.mp hj) (Finset.mem_range.mp hk)
+  · exact hindep.mono fun j hj =>
+      Finset.mem_range.mpr <|
+        Nat.lt_trans (Finset.mem_range.mp hj) (Finset.mem_range.mp hk)
+  · intro j hj
+    exact hmean j <| Finset.mem_range.mpr <|
+      Nat.lt_trans (Finset.mem_range.mp hj) (Finset.mem_range.mp hk)
+  · exact hε
+
 end Real
 
 end Kolmogorov

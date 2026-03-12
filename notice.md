@@ -82,3 +82,27 @@ useful Kolmogorov inequality results
     `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero`
     组装出一个 finite tail maximal bound。
     即使暂时还是 union-bound 形状，也能把“最大值事件”统一改写成“若干 tail variance sums”的和，为后面再收紧常数做准备。
+
+2026-03-12 继续推进:
+
+20. 这次没有直接做完整 maximal bound，而是先补了一个更细的“截断接口”：
+    `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero_of_mem_range`。
+    它的作用是：
+    若我们已知对 `range (n + 1)` 上所有 tail terms 都有 `MemLp`、两两独立、均值为 `0`，
+    那么对任意 `k ≤ n`，都能直接得到第 `k` 个 tail partial sum 的 variance bound。
+
+21. 这一步的技术点主要是“把大范围假设限制到小范围”：
+    (a) `MemLp` 和均值为零都用 `Finset.mem_range.mp` + `Nat.lt_trans` 从 `j < k` 推到 `j < n + 1`；
+    (b) pairwise independence 用 `Set.Pairwise.mono` 把
+        `↑(Finset.range (n + 1))` 上的结论限制到 `↑(Finset.range k)`。
+
+22. 完成情况：
+    (a) 新 lemma 已加入 `Kolmogorov.lean`；
+    (b) `lake env lean Kolmogorov.lean` 再次通过；
+    (c) 现在已经能对 union bound 展开后每一个 summand 自动套上同一模板，不必再为每个 `k` 单独重建假设。
+
+23. 下一小步更明确了：
+    直接从 `measure_event_two_mul_partialSumMax_tail_le_sum_sub'` 出发，
+    对右侧 `∑ k ∈ range (n + 1), μ {... partialSum ... k ...}` 的每一项应用新 lemma，
+    得到一个 finite maximal event 的总和上界。
+    这一步很可能就是把当前准备好的接口真正“组装”起来。
