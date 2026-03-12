@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
@@ -142,6 +142,30 @@ noncomputable def isColimitPresheafFiberCocone (P : Cᵒᵖ ⥤ A) :
     IsColimit (Φ.presheafFiberCocone P) :=
   colimit.isColimit _
 
+/-- The isomorphism `shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber`. -/
+noncomputable def shrinkYonedaCompPresheafFiberIso [LocallySmall.{w} C] :
+    shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber :=
+  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso _
+
+lemma shrinkYonedaCompPresheafFiberIso_inv_app_toPresheafFiber
+    [LocallySmall.{w} C] {X : C} (x : Φ.fiber.obj X) :
+    Φ.shrinkYonedaCompPresheafFiberIso.inv.app X x =
+    Φ.toPresheafFiber X x (shrinkYoneda.{w}.obj X)
+      (shrinkYonedaObjObjEquiv.symm (𝟙 X)) :=
+  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
+    _ (Functor.elementsMk (Φ.fiber) _ x)
+
+lemma presheafFiber_map_shrinkYoneda_map_shrinkYonedaCompPresheafFiberIso_inv_app
+    [LocallySmall.{w} C] {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) :
+    Φ.presheafFiber.map (shrinkYoneda.{w}.map f)
+      (Φ.shrinkYonedaCompPresheafFiberIso.inv.app X x) =
+    Φ.toPresheafFiber X x (shrinkYoneda.{w}.obj Y)
+      (shrinkYonedaObjObjEquiv.symm f) := by
+  rw [shrinkYonedaCompPresheafFiberIso_inv_app_toPresheafFiber]
+  refine (Φ.toPresheafFiber_naturality_apply (shrinkYoneda.{w}.map f) _ x
+    (shrinkYonedaObjObjEquiv.symm (𝟙 X))).trans (congr_arg _ ?_)
+  simpa using shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w} (𝟙 _) f
+
 section
 
 variable {P : Cᵒᵖ ⥤ A} {T : A}
@@ -233,8 +257,9 @@ lemma toPresheafFiber_map_bijective
     Function.Bijective (Φ.presheafFiber.map f) :=
   ⟨Φ.toPresheafFiber_map_injective f, Φ.toPresheafFiber_map_surjective f⟩
 
-/-- This is generalized as `W_isInvertedBy_presheafFiber` in the file
-`Mathlib/CategoryTheory/Sites/Point/Basic.lean` -/
+/-- See also the lemma `W_isInvertedBy_presheafFiber` in the file
+`Mathlib/CategoryTheory/Sites/Point/Basic.lean` which may apply
+in more cases. -/
 lemma W_isInvertedBy_presheafFiber'
     [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
     J.W.IsInvertedBy (Φ.presheafFiber (A := A)) := by
@@ -266,6 +291,37 @@ instance : PreservesColimitsOfSize.{w, w} (Φ.presheafFiber (A := A)) where
   preservesColimitsOfShape := by
     dsimp [presheafFiber]
     infer_instance
+
+section
+
+variable [LocallySmall.{w} C]
+
+instance : PreservesFiniteLimits Φ.fiber :=
+  preservesFiniteLimits_of_natIso Φ.shrinkYonedaCompPresheafFiberIso
+
+/-- The fiber of the terminal object is a terminal object in `Type w`. -/
+noncomputable def isTerminalFiberObj (T : C) (hT : IsTerminal T) :
+    IsTerminal (Φ.fiber.obj T) :=
+  IsTerminal.isTerminalObj _ _ hT
+
+/-- The fiber of the terminal object contains a unique element. -/
+@[implicit_reducible]
+noncomputable def uniqueFiberObj (T : C) (hT : IsTerminal T) :
+    Unique (Φ.fiber.obj T) :=
+  Types.isTerminalEquivUnique _ (Φ.isTerminalFiberObj T hT)
+
+lemma fiber_map_injective_of_mono {U T : C} (f : U ⟶ T) [Mono f] :
+    Function.Injective (Φ.fiber.map f) := by
+  rw [← mono_iff_injective]
+  infer_instance
+
+lemma subsingleton_fiber_obj {U T : C} (f : U ⟶ T) [Mono f] (hT : IsTerminal T) :
+    Subsingleton (Φ.fiber.obj U) where
+  allEq _ _ := Φ.fiber_map_injective_of_mono f (by
+    have := Φ.uniqueFiberObj T hT
+    subsingleton)
+
+end
 
 variable (F : A ⥤ B) [LocallySmall.{w} C] [PreservesFilteredColimitsOfSize.{w, w} F]
 
