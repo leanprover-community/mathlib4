@@ -749,14 +749,18 @@ lemma residueField_ext_subsingleton_of_no_insert (p : Ideal R) [p.IsPrime] (lt :
     rw [h q qp qgt, ← eq]
     exact (((extFunctor l).mapIso (e (maximalIdeal R)).op).app
       (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp sub
-  let f := Submodule.toLocalizedQuotient' (Localization.AtPrime p) p.primeCompl
-    (Algebra.linearMap R (Localization.AtPrime p)) p
-  have eqm : Submodule.localized' (Localization.AtPrime p) p.primeCompl (Algebra.linearMap R
-    (Localization.AtPrime p)) p = maximalIdeal (Localization.AtPrime p) := by
+  let Rp := Localization.AtPrime p
+  let f := Submodule.toLocalizedQuotient' Rp p.primeCompl (Algebra.linearMap R Rp) p
+  have eqm : Submodule.localized' Rp p.primeCompl (Algebra.linearMap R Rp) p = maximalIdeal Rp := by
     rw [Ideal.localized'_eq_map, Localization.AtPrime.map_eq_maximalIdeal]
-
-  --IsLocalizedModule.of_linearEquiv
-  sorry
+  let g : (ModuleCat.of R (R ⧸ p)) →ₗ[R] (ModuleCat.of Rp p.ResidueField) :=
+    ((Submodule.quotEquivOfEq _ _ eqm).restrictScalars R).comp f
+  let _ : IsLocalizedModule.AtPrime p g :=
+    IsLocalizedModule.of_linearEquiv p.primeCompl f _
+  let h : (ModuleCat.of R R) →ₗ[R] (ModuleCat.of Rp Rp) := Algebra.linearMap R Rp
+  let isl := Ext.isLocalizedModule' p.primeCompl (Localization.AtPrime p) g
+    (IsLocalizedModule.of_linearEquiv p.primeCompl f _) h inferInstance k
+  exact isl.subsingleton_of_subsingleton
 
 lemma Module.length_ne_top_of_support_subset (M : Type*) [AddCommGroup M] [Module R M]
     [fin : Module.Finite R M] (h : support R M ⊆ {closedPoint R}) : Module.length R M ≠ ⊤ := by
