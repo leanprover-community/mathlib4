@@ -1356,8 +1356,7 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
      (∀ i ≠ n, Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i)) ∧
      (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R)
       n)).IsPrincipal,
-     ∃ n, ∀ i > n,
-      Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i),
+     ∃ i > n, Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i),
      (∀ i < n, Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i)) ∧
      (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R)
       n)).IsPrincipal,
@@ -1390,12 +1389,10 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
     · let _ : HasInjectiveDimensionLE (ModuleCat.of R R) n := by
         simp [← injectiveDimension_le_iff, injdim]
       exact HasInjectiveDimensionLT.subsingleton (ModuleCat.of R R) (n + 1) i gt _
-  tfae_have 3 → 4 := fun ⟨h, _⟩ ↦ ⟨n, fun i hi ↦ h i hi.ne.symm⟩
+  tfae_have 3 → 4 := fun ⟨h, _⟩ ↦ ⟨n + 1, ⟨lt_add_one n, h _ (Nat.succ_ne_self n)⟩⟩
   tfae_have 4 → 1 := by
-    refine fun ⟨n, hn⟩ ↦ ?_
-    rw [isGorensteinLocalRing_iff_exists]
-    use n + 1
-    exact hn
+    rintro ⟨k, kgt, hk⟩
+    exact isGorensteinLocalRing_of_exists k (by simpa [h] using kgt) hk
   tfae_have 3 → 5 := fun ⟨nesub, prin⟩ ↦ ⟨fun i hi ↦ nesub i hi.ne, prin⟩
   tfae_have 5 → 6 := by
     refine fun ⟨ltsub, prin⟩ ↦ ⟨?_, prin⟩
