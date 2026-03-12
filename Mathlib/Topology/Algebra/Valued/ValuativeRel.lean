@@ -105,6 +105,7 @@ lemma hasBasis_nhds_zero' :
   (hasBasis_nhds_zero R).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
     fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
 
+-- changed file
 variable (R) in
 instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
   have cts_add : ContinuousConstVAdd R R :=
@@ -120,6 +121,7 @@ instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
   · simpa [ContinuousAt] using (cts_add.1 x₀).continuousAt (x := (0 : R))
   · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
 
+-- changed file
 instance (priority := low) : IsTopologicalRing R :=
   letI := IsTopologicalAddGroup.rightUniformSpace R
   letI := isUniformAddGroup_of_addCommGroup (G := R)

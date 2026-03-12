@@ -1212,24 +1212,21 @@ lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) 
   ValueGroupWithZero.embedAux_strictMono v
 
 lemma leftInverse_embedding_embed : Function.LeftInverse (ValueGroup₀.embedding)
-    ((ValueGroupWithZero.embed (valuation R))).toFun := by
+    (ValueGroupWithZero.embed (valuation R)) := by
   intro x
   induction x using ValueGroupWithZero.ind
-  simp only [ValueGroupWithZero.embed, ValueGroupWithZero.embedAux, ValueGroup₀.restrict₀_apply,
-    ValueGroupWithZero.lift_mk, map_div₀]
-  split_ifs <;> simp_all [ValueGroup₀.embedding_apply, ValueGroupWithZero.mk_eq_div]
+  simp only [ValueGroup₀.embedding, WithZero.toMonoidWithZeroHom_withZeroUnitsEquiv,
+    ValueGroupWithZero.embed, ValueGroupWithZero.embedAux, ValueGroup₀.restrict₀_apply,
+    Valuation.apply_posSubmonoid_ne_zero, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk,
+    Valuation.IsEquiv.orderMonoidIso_eq_refl, OrderMonoidIso.coe_refl, id_eq, coe_comp,
+    Function.comp_apply, OrderMonoidIso.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk, ↓reduceDIte,
+    ValueGroupWithZero.lift_mk, map_div₀, WithZero.map'_coe, Subgroup.subtype_apply,
+    WithZero.lift'_coe, Units.coeHom_apply, Units.val_mk0]
+  split_ifs <;> simp_all [ValueGroupWithZero.mk_eq_div]
 
 /-- The isomorphism between `ValueGroupWithZero R` and `ValueGroup₀ (valuation R)`. -/
-def valueGroupWithZero_equiv_valueGroup₀ :
-    ValueGroupWithZero R ≃*o ValueGroup₀ (valuation R) :=
-  { ValuativeRel.ValueGroupWithZero.embed (v := valuation R) with
-    invFun := ValueGroup₀.embedding
-    left_inv := leftInverse_embedding_embed
-    right_inv := Function.rightInverse_of_injective_of_leftInverse
-      ValueGroup₀.embedding_strictMono.injective leftInverse_embedding_embed
-    map_le_map_iff' := sorry} -- this follows a more general lemma above.
-    -- Preorder + orderhom + equiv implies orderiso + instance
-    -- `MonoidWithZeroHom.ValueGroup₀.instLinearOrderedCommGroupWithZero`
+@[deprecated "use ValueGroupWithZero.embed (valuation R) instead" (since := "2026-03-11")]
+def valueGroupWithZero_equiv_valueGroup₀ := ValueGroupWithZero.embed (valuation R)
 
 /-- For any `x ∈ posSubmonoid R`, the trivial valuation `1 : Valuation R Γ` sends `x` to `1`.
 In fact, this is true for any `x ≠ 0`. This lemma is a special case useful for shorthand of
@@ -1281,16 +1278,12 @@ variable (A B) in
 def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
   have := compatible_comap A (valuation B)
   MonoidWithZeroHom.ValueGroup₀.embedding.comp
-    (ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B)))
+    (ValueGroupWithZero.embed ((valuation B).comap (algebraMap A B))).toMonoidWithZeroHom
 
 @[simp]
 lemma mapValueGroupWithZero_mk (r : A) (s : posSubmonoid A) :
     mapValueGroupWithZero A B (.mk r s) = .mk (algebraMap A B r) (mapPosSubmonoid A B s) := by
-  simp only [mapValueGroupWithZero, MonoidWithZeroHom.coe_comp, Function.comp_apply,
-    ValueGroupWithZero.embed_mk, map_div₀,
-    ValueGroupWithZero.mk_eq_div (R := B), mapPosSubmonoid_apply_coe,
-    MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
-  rfl
+  simp [mapValueGroupWithZero, ValueGroupWithZero.mk_eq_div (R := B)]
 
 @[simp]
 lemma mapValueGroupWithZero_valuation (a : A) :

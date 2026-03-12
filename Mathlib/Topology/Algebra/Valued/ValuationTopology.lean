@@ -12,8 +12,6 @@ public import Mathlib.RingTheory.Valuation.ValuationSubring
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Range
 
-public import Mathlib.Algebra.Order.GroupWithZero.Range
-
 /-!
 # The topology on a valued ring
 
@@ -30,8 +28,8 @@ should take this into consideration.
 
 @[expose] public section
 
-open scoped Topology uniformity
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Set Valuation ValuativeRel
+open scoped Topology Uniformity
+open Set Filter Valuation ValuativeRel MonoidWithZeroHom ValueGroup₀
 
 noncomputable section
 
@@ -170,7 +168,7 @@ instance nonarchimedeanRing : @NonarchimedeanRing R _ v.subgroups_basis.topology
 def uniformSpace : UniformSpace R :=
   @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
 
-instance isUniformAddGroup' : @IsUniformAddGroup R v.uniformSpace _ :=
+instance isUniformAddGroup : @IsUniformAddGroup R v.uniformSpace _ :=
   @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
 
 -- theorem is_topological_valuation' : ∀ s, s ∈ @nhds _ v.subgroups_basis.topology (0 : R) ↔
@@ -196,100 +194,138 @@ end Valuation
 --       simp_rw [restrict_lt_iff_lt_embedding]
 --       exact exists_congr fun γ ↦ by rw [true_and]; rfl }
 
-variable (R : Type u) [CommRing R] (Γ₀ : Type v) [LinearOrderedCommGroupWithZero Γ₀]
--- variable [_i : Valued R Γ₀]
+variable {R : Type u} [CommRing R] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
+  [ValuativeRel R]
+
 section TopologicalSpace
 
-variable [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
-  (v : Valuation R Γ₀) [v.Compatible]
+variable [TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ₀) [v.Compatible]
 
 namespace IsValuativeTopology
 
-lemma mem_nhds_iff' {s : Set R} {x : R} :
+lemma mem_nhds {s : Set R} {x : R} :
     s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { z | valuation R (z - x) < γ } ⊆ s := by
   convert mem_nhds_iff (s := s) using 4
   simp [neg_add_eq_sub]
 
-lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
+lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { x | valuation R x < γ } ⊆ s := by
-  convert IsValuativeTopology.mem_nhds_iff' (x := (0 : R))
+  convert IsValuativeTopology.mem_nhds (x := (0 : R))
   rw [sub_zero]
 
 end IsValuativeTopology
 
 open IsValuativeTopology
 
-variable {R Γ₀} in
-theorem Valuation.is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔
-    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { x : R | v.restrict x < γ.1 } ⊆ s := by
-  intro s
-  convert IsValuativeTopology.mem_nhds_zero_iff (s := s)
+namespace Valuation
+
+lemma mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
+    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
+  convert IsValuativeTopology.mem_nhds_iff (s := s) using 4
+  simp only [image_add_left, preimage_setOf_eq, neg_add_eq_sub]
   refine ⟨fun ⟨r, hr⟩ ↦ ?_, fun ⟨r, hr⟩ ↦ ?_⟩
   · use r.mapEquiv (ValueGroupWithZero.embed v).symm
     simp only [Units.coe_mapEquiv, OrderMonoidIso.coe_mulEquiv]
     convert hr with x
     convert OrderIso.lt_symm_apply (ValueGroupWithZero.embed v).toOrderIso
-    exact (ValueGroupWithZero.embed_valuation v x).symm
+    exact (ValueGroupWithZero.embed_valuation v _).symm
   · use r.mapEquiv (ValueGroupWithZero.embed v)
     convert hr with x
     convert OrderIso.lt_iff_lt (ValueGroupWithZero.embed v).toOrderIso
-    exact (ValueGroupWithZero.embed_valuation v x).symm
+    exact (ValueGroupWithZero.embed_valuation v _).symm
+
+lemma mem_nhds_zero (s : Set R) : s ∈ 𝓝 (0 : R) ↔
+    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { x | v.restrict x < γ.val } ⊆ s := by
+  convert v.mem_nhds (x := (0 : R))
+  rw [sub_zero]
+
+alias is_topological_valuation := mem_nhds_zero
 
 attribute [deprecated Valuation.is_topological_valuation (since := "2026-03-05")]
 _root_.Valued.is_topological_valuation
 
-theorem Valuation.hasBasis_nhds_zero :
+theorem hasBasis_nhds (x : R) :
+    (𝓝 x).HasBasis (fun _ => True)
+      fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ => { z | v.restrict (z - x) < γ.val } := by
+  simp [Filter.hasBasis_iff, v.mem_nhds]
+
+theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True)
-      fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ => { x | v.restrict x < γ.1 } := by
+      fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ => { x | v.restrict x < γ.val } := by
   simp [Filter.hasBasis_iff, v.is_topological_valuation]
 
-end TopologicalSpace
-
-section UniformSpace
-
-variable [ValuativeRel R] [UniformSpace R] [IsValuativeTopology R]
-  (v : Valuation R Γ₀) [v.Compatible]
-
-instance Valuation.isUniformAddGroup : IsUniformAddGroup R := sorry
-  -- @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
-
-open Uniformity in
-theorem Valuation.hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
-    fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ ↦
-      { p : R × R | v.restrict (p.2 - p.1) < γ.1 } := by
-  rw [uniformity_eq_comap_nhds_zero]
-  exact (v.hasBasis_nhds_zero R Γ₀).comap _
-
-set_option backward.isDefEq.respectTransparency false in
-theorem Valuation.toUniformSpace_eq : (inferInstance : UniformSpace R) =
-    @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
-  refine UniformSpace.ext ((v.hasBasis_uniformity R Γ₀).eq_of_same_basis ?_)
-  convert v.subgroups_basis.hasBasis_nhds_zero.comap _
-  simp_rw [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
-  simp
-
-variable {R Γ₀}
-
-theorem mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔
-    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ, { y | (v.restrict (y - x) ) < γ.1 } ⊆ s := by
-  simp only [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_setOf_eq, true_and,
-    ((hasBasis_nhds_zero R Γ₀).comap fun y ↦ y - x).mem_iff]
-
-theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
-    ∃ γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ, { x | v.restrict x < γ.1 } ⊆ s := by
-  simp only [mem_nhds, sub_zero]
-
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
-  rw [mem_nhds]
+  rw [v.mem_nhds]
   have h' : v.restrict x ≠ 0 := by simp [h]
   use Units.mk0 _ h'
   rw [Units.val_mk0]
   intro y y_in
   exact Valuation.map_eq_of_sub_lt _ (v.restrict_lt_iff.mp y_in)
 
-instance (priority := 100) : IsTopologicalRing R :=
-  (toUniformSpace_eq R Γ₀).symm ▸ v.subgroups_basis.toRingFilterBasis.isTopologicalRing
+end Valuation
+
+namespace IsValuativeTopology
+
+variable (R) in
+instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
+  have cts_add : ContinuousConstVAdd R R :=
+    ⟨fun x ↦ continuous_iff_continuousAt.2 fun z ↦
+      (((valuation R).hasBasis_nhds z).tendsto_iff ((valuation R).hasBasis_nhds (x + z))).2
+        fun γ _ ↦ ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩⟩
+  have basis := (valuation R).hasBasis_nhds_zero
+  refine .of_comm_of_nhds_zero ?_ ?_ fun x₀ ↦ (map_eq_of_inverse (-x₀ + ·) ?_ ?_ ?_).symm
+  · exact (basis.prod_self.tendsto_iff basis).2 fun γ _ ↦
+      ⟨γ, trivial, fun ⟨_, _⟩ hx ↦ (valuation R).restrict.map_add_lt hx.left hx.right⟩
+  · exact (basis.tendsto_iff basis).2 fun γ _ ↦ ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩
+  · ext; simp
+  · simpa [ContinuousAt] using (cts_add.1 x₀).continuousAt (x := (0 : R))
+  · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
+
+end IsValuativeTopology
+
+end TopologicalSpace
+
+namespace Valuation
+
+section UniformSpace
+
+variable [UniformSpace R] [IsUniformAddGroup R] [IsValuativeTopology R] (v : Valuation R Γ₀)
+  [v.Compatible]
+
+theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
+    fun γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ ↦
+      { p : R × R | v.restrict (p.2 - p.1) < γ.1 } := by
+  rw [uniformity_eq_comap_nhds_zero]
+  exact v.hasBasis_nhds_zero.comap _
+
+theorem toUniformSpace_eq : (inferInstance : UniformSpace R) =
+    @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
+  refine UniformSpace.ext (v.hasBasis_uniformity.eq_of_same_basis ?_)
+  convert v.subgroups_basis.hasBasis_nhds_zero.comap _
+  simp_rw [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
+  simp
+
+end UniformSpace
+
+section TopologicalSpace
+
+variable [TopologicalSpace R] [IsValuativeTopology R]
+
+theorem toTopologicalSpace_eq (v : Valuation R Γ₀) [v.Compatible] :
+    (inferInstance : TopologicalSpace R) = v.subgroups_basis.topology := by
+  letI u := IsTopologicalAddGroup.rightUniformSpace R
+  letI := isUniformAddGroup_of_addCommGroup (G := R)
+  exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
+
+instance (priority := low) isTopologicalRing : IsTopologicalRing R := by
+  convert (valuation R).nonarchimedeanRing.toIsTopologicalRing
+  exact toTopologicalSpace_eq _
+
+end TopologicalSpace
+
+end Valuation
+
 
 section Discrete
 
