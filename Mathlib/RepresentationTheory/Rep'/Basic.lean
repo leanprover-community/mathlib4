@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Yunzhou Xie. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Edison Xie
+-/
 module
 
 public import Mathlib.RepresentationTheory.Intertwining
@@ -8,6 +13,15 @@ public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.Equiv
 public import Mathlib.CategoryTheory.Action.Monoidal
+
+/-!
+# `Rep k G` is the category of `k`-linear representations of `G`.
+
+Given a `G`-representaiton `ρ` on a module `V`, you can construct the bundled representation as
+`Rep.of ρ`. Conversely, given a bundled representation `A : Rep k G`, you can get the underlying
+module as `A.V` and the representation on it as `A.ρ`.
+
+-/
 
 @[expose] public section
 
@@ -302,7 +316,6 @@ variable (k G) in
 abbrev trivial (V : Type w) [AddCommGroup V] [Module k V] : Rep k G :=
   Rep.of (Representation.trivial k G V)
 
--- @[simp]
 lemma trivial_V {V : Type w} [AddCommGroup V] [Module k V] : (trivial k G V).V = V := rfl
 
 lemma trivial_ρ {V : Type w} [AddCommGroup V] [Module k V] (g : G) :
@@ -329,7 +342,7 @@ lemma applyAsHom_apply {A : Rep k G} (g : G) (x : A) : (A.applyAsHom g).hom x = 
 @[reassoc, elementwise]
 lemma applyAsHom_comm {A B : Rep k G} (f : A ⟶ B) (g : G) :
     A.applyAsHom g ≫ f = f ≫ B.applyAsHom g := by
-  ext; simp [hom_comm_apply, Representation.IntertwiningMap.toLinearMap_apply]
+  ext; simp [hom_comm_apply]
 
 end Commutative
 
@@ -919,7 +932,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
   ext
-  simp [Representation.IntertwiningMap.toLinearMap_apply, Representation.norm, hom_comm_apply]
+  simp [Representation.norm, hom_comm_apply]
 
 /-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
 `x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
@@ -953,44 +966,6 @@ set_option backward.isDefEq.respectTransparency false in
 abbrev free : Rep k G :=
   Rep.of (Representation.free k G α)
 
--- def free.single (i : α) : (G →₀ k) →ₗ[k] free k G α := Finsupp.lsingle i
-
--- lemma free.single_def (i : α) (f : G →₀ k) :
---     free.single α i f = Finsupp.single i f := rfl
-
--- variable (k G) in
--- def freeEquivFinsupp : free k G α ≃ₗ[k] (α →₀ G →₀ k) := .refl _ _
-
--- @[simp]
--- lemma freeEquivFinsupp_single (i : α) (g : G) (r : k) :
---     freeEquivFinsupp k G α (free.single α i (Finsupp.single g r)) =
---     Finsupp.single i (Finsupp.single g r) := rfl
-
--- @[simp]
--- lemma freeEquivFinsupp_symm_single (i : α) (g : G) (r : k) :
---     (freeEquivFinsupp k G α).symm (Finsupp.single i (Finsupp.single g r)) =
---     free.single α i (Finsupp.single g r) := rfl
-
--- set_option backward.isDefEq.respectTransparency false in
--- @[simp]
--- lemma free.ρ_single (i : α) (g g' : G) (r : k) :
---     (free k G α).ρ g' (free.single α i (Finsupp.single g r)) =
---     free.single α i (Finsupp.single (g' * g) r) := by
---   simp [free, free.single]
-
--- lemma free.single_single (i : α) (g : G) (r : k) :
---     free.single α i (Finsupp.single g r) = (freeEquivFinsupp k G α).symm
---     (Finsupp.single i (Finsupp.single g r)) := rfl
-
--- lemma freeEquivFinsupp_comp_single (i : α) :
---     (freeEquivFinsupp k G α).toLinearMap ∘ₗ free.single α i = Finsupp.lsingle i := by
---   ext; simp
-
--- @[ext high]
--- lemma free_ext {M : Type*} [AddCommGroup M] [Module k M] {f1 f2 : free k G α →ₗ[k] M}
---     (h : ∀ i, f1 ∘ₗ (free.single α i) = f2 ∘ₗ (free.single α i)) : f1 = f2 :=
---   Finsupp.lhom_ext' h
-
 variable {α}
 
 /-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
@@ -1019,7 +994,6 @@ variable (A B : Rep.{u} k G) (α : Type u) [DecidableEq α]
 open ModuleCat.MonoidalCategory
 
 set_option backward.isDefEq.respectTransparency false in
--- set_option pp.all true in
 open TensorProduct in
 -- the proof below can be simplified after https://github.com/leanprover-community/mathlib4/issues/24823 is merged
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
@@ -1048,34 +1022,7 @@ abbrev leftRegularTensorTrivialIsoFree :
     leftRegular k G ⊗ trivial k G (α →₀ k) ≅ free k G α :=
   mkIso (Representation.leftRegularTensorTrivialIsoFree α)
 
-
-  -- Rep.mkIso _ _ (TensorProduct.congr (ofMulAction.equivFinsupp k G G) (.refl k _) ≪≫ₗ
-  --   finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ
-  --   curryLinearEquiv k ≪≫ₗ (freeEquivFinsupp k G α).symm) fun g ↦ by
-  -- dsimp; ext; simp
-
 variable {α}
-
--- omit [DecidableEq α]
-
--- set_option backward.isDefEq.respectTransparency false in
--- @[simp]
--- lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
---     (leftRegularTensorTrivialIsoFree k G α).hom.hom.toLinearMap
---       (ofMulAction.single G g r ⊗ₜ[k] single i s) =
---       free.single α i (single g (r * s)) := by
---   simp [leftRegularTensorTrivialIsoFree]
-
--- set_option backward.isDefEq.respectTransparency false in
--- @[simp]
--- lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
---     (leftRegularTensorTrivialIsoFree k G α).inv.hom.toLinearMap (free.single α i (single g r)) =
---       ofMulAction.single G g r ⊗ₜ[k] single i 1 := by
---   dsimp
---   suffices ofMulAction.single G g 1 ⊗ₜ[k] single i r = ofMulAction.single G g r ⊗ₜ[k] single i 1 by
---     simpa [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
---   rw [← mul_one r, ← smul_eq_mul, ← Finsupp.smul_single, ← TensorProduct.smul_tmul]
---   simp [ofMulAction.single_def, (Finsupp.smul_single)]
 
 end
 end
@@ -1087,55 +1034,6 @@ end Finsupp
 abbrev linearization : (Action (Type w) G) ⥤ (Rep.{max w u} k G) where
   obj X := Rep.of (X := X.V →₀ k) <| Representation.linearize k G X
   map f := Rep.ofHom <| Representation.linearizeMap f
-  -- Functor.mapAction (ModuleCat.free k) G
-
-
--- unif_hint (X : Action (Type u) G) (Y : Type u) where
---   X.V ≟ Y ⊢ ((linearization k G).obj X).V ≟ Y →₀ k
-
--- def _root_.ModuleCat.freeObjIso (X : Type u) : (ModuleCat.free k).obj X ≃ₗ[k] (X →₀ k) :=
--- LinearEquiv.refl _ _
-
--- @[simp]
--- lemma _root_.ModuleCat.freeObjIso_freeMk {X : Type u} (x : X) :
---     (ModuleCat.freeObjIso k X) (ModuleCat.freeMk x) = Finsupp.single x 1 := rfl
-
--- @[simp]
--- lemma _root_.ModuleCat.freeObjIso_symm_single {X : Type u} (x : X) :
---     (ModuleCat.freeObjIso k X).symm (Finsupp.single x 1) = ModuleCat.freeMk x := rfl
-
--- set_option backward.isDefEq.respectTransparency false in
--- def foo : linearization k G ≅ Functor.mapAction (ModuleCat.free k) G ⋙
---    (repIsoAction _ _).inverse := .refl _
-
--- lemma : foo.app _ = (ModuleCat.freeObjIso k X.V).symm _
-
-  -- NatIso.ofComponents (fun X => Rep.mkIso (.mk' (ModuleCat.freeObjIso k X.V).symm (fun g ↦ by
-  --   ext : 2; simp))) fun f ↦ by
-  --   ext
-  --   simp
-  --   rfl
-    -- simp only [linearization_obj_V, Functor.comp_obj, linearization_obj_ρ, linearization_map,
-    --   Functor.mapAction_obj_V, RingHom.toMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, hom_comp,
-    --   mkIso_hom_hom, hom_ofHom, Functor.comp_map]
-    -- ext x
-    -- simp only [Representation.IntertwiningMap.comp_toLinearMap, linearization_obj_V,
-    --   Representation.Equiv.mk'_toLinearMap, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    --   Function.comp_apply, Finsupp.lsingle_apply,
-    --   Representation.IntertwiningMap.toLinearMap_apply,
-    --   Representation.linearize_map_toFun, Finsupp.mapDomain_single]
-    -- erw? [ModuleCat.freeObjIso_symm_single]
-    -- sorry
-
--- instance : (linearization k G).Monoidal :=
---   inferInstanceAs (Functor.mapAction (ModuleCat.free k) G ⋙ (repIsoAction _ _).inverse).Monoidal
-
--- example : (MonoidalCategoryStruct.tensorUnit (Action (Type u) G)) = Action.trivial G PUnit := by
---    with_reducible rfl
--- #check LinearEquiv.comp_coe
-
--- #check MulEquiv.coe_trans
--- #exit
 
 open MonoidalCategory Representation.LinearizeMonoidal in
 instance : (linearization k G).Monoidal where
@@ -1160,134 +1058,9 @@ instance : (linearization k G).Monoidal where
 
 variable {k G}
 
--- def linearizationSingle (X : Action (Type u) G) (x : X.V) :
---     k →ₗ[k] (linearization k G).obj X := Finsupp.lsingle x
-
--- def linearizationObjEquiv (X : Action (Type u) G) :
---     ((linearization k G).obj X).V ≃ₗ[k] (X.V →₀ k) := .refl _ _
-
--- @[simp]
--- lemma linearizationObjEquiv_single (X : Action (Type u) G) (x : X.V) (r : k) :
---     linearizationObjEquiv X (linearizationSingle X x r) = Finsupp.single x r := rfl
-
--- @[simp]
--- lemma linearizationObjEquiv_symm_single (X : Action (Type u) G) (x : X.V) (r : k) :
---     (linearizationObjEquiv X).symm (Finsupp.single x r) = linearizationSingle X x r := rfl
-
--- @[ext high]
--- lemma linearizationObj_ext {M : Type*} [AddCommGroup M] [Module k M] (X : Action (Type u) G)
---     {f1 f2 : (linearization k G).obj X →ₗ[k] M} (h : ∀ x, f1 ∘ₗ linearizationSingle X x =
---     f2 ∘ₗ linearizationSingle X x) : f1 = f2 :=
---   Finsupp.lhom_ext' h
-
--- -- theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) :
--- --     ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) :=
--- --   rfl
-
--- @[simp]
--- theorem coe_linearization_obj_ρ (X : Action (Type u) G) (g : G) :
---     @DFunLike.coe (no_index G →* ((X.V →₀ k) →ₗ[k] (X.V →₀ k))) _
---       (fun _ => (X.V →₀ k) →ₗ[k] (X.V →₀ k)) _
---       ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) := rfl
-
--- @[simp]
--- theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (y : k) :
---     ((linearization k G).obj X).ρ g (linearizationSingle X x y) =
---       linearizationSingle X (X.ρ g x) y :=
---   Finsupp.mapDomain_single ..
-
--- set_option backward.isDefEq.respectTransparency false in
--- -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
--- theorem linearization_comp_single (X : Action (Type u) G) (g : G) (x : X.V) :
---     (((linearization k G).obj X).ρ g) ∘ₗ (linearizationSingle X x) =
---       linearizationSingle X (X.ρ g x) :=
---   LinearMap.ext <| linearization_single X g x
-
--- variable {X Y : Action (Type u) G} (f : X ⟶ Y)
-
--- -- @[simp]
--- theorem linearization_map_hom : ((linearization k G).map f).hom.toLinearMap =
---     Finsupp.lmapDomain k k f.hom :=
---   rfl
-
--- @[simp]
--- lemma linearization_map_hom_single (x : X.V) (r : k) :
---     ((linearization k G).map f).hom (linearizationSingle _ x r) =
---     linearizationSingle _ (f.hom x) r :=
---   Finsupp.mapDomain_single
-
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
 open scoped MonoidalCategory
-
--- set_option backward.isDefEq.respectTransparency false in
--- @[simp]
--- theorem linearization_μ_hom (X Y : Action (Type u) G) :
---     (μ (linearization k G) X Y).hom.toLinearMap =
---       ((TensorProduct.congr (linearizationObjEquiv X) (linearizationObjEquiv Y)) ≪≫ₗ
---       finsuppTensorFinsupp' k X.V Y.V ≪≫ₗ
---       (linearizationObjEquiv (X ⊗ Y)).symm).toLinearMap :=
---   rfl
-
--- open TensorProduct in
--- @[simp]
--- lemma linearization_μ_apply (X Y : Action (Type u) G)
---     (x : ((linearization k G).obj X).V ⊗[k] ((linearization k G).obj Y).V) :
---     (μ (linearization k G) X Y).hom x =
---       (linearizationObjEquiv _).symm
---       (finsuppTensorFinsupp' k X.V Y.V (TensorProduct.congr (linearizationObjEquiv X)
---         (linearizationObjEquiv Y) x)) := rfl
-
--- set_option backward.isDefEq.respectTransparency false in
--- example (X Y : Action (Type u) G) : (X.V × Y.V) = (X.V ⊗ Y.V) := by
---    with_reducible_and_instances rfl
--- example (X Y : Action (Type u) G) : (linearization k G).obj (X ⊗ Y) = (X.V × Y.V →₀ k) := by
---   with_reducible rfl
-
--- set_option backward.isDefEq.respectTransparency false in
--- @[simp]
--- theorem linearization_δ_hom (X Y : Action (Type u) G) :
---     (δ (linearization k G) X Y).hom.toLinearMap =
---       (TensorProduct.congr (linearizationObjEquiv _)
---       (linearizationObjEquiv _)).symm.toLinearMap ∘ₗ
---       (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap ∘ₗ
---       (linearizationObjEquiv _).toLinearMap := by
---   apply LinearMap.ext
---   intro x
---   apply ((TensorProduct.congr (linearizationObjEquiv X) (linearizationObjEquiv Y)) ≪≫ₗ
---       finsuppTensorFinsupp' k X.V Y.V ≪≫ₗ
---       (linearizationObjEquiv (X ⊗ Y)).symm).injective
---   simp? [-EmbeddingLike.apply_eq_iff_eq, LinearEquiv.comp_coe, -linearization_obj_V,
---     types_tensorObj_def, Action.tensorObj_V, ← (linearization_μ_apply)]
---   -- exact Iso.inv_hom_id_apply _
---   -- simp only [Action.tensorObj_V, tensor_V, linearization_obj_ρ, tensor_ρ]
---   -- exact?
-
---   -- refine TensorProduct.ext' fun x y ↦ ?_
-
---   -- apply Finsupp.linearMap_ext
---   -- apply LinearMap.ext
---   -- intro x
---   -- apply ((forget₂ _ (ModuleCat _)).mapIso <|
---   --    μIso (linearization k G) X Y).toLinearEquiv.injective
---   sorry
-
-
--- @[simp]
--- theorem linearization_δ_apply (X Y : Action (Type u) G) (x) :
---     (δ (linearization k G) X Y).hom x =
---       (TensorProduct.congr (linearizationObjEquiv _) (linearizationObjEquiv _)).symm.toLinearMap
---       ((finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap ((linearizationObjEquiv _ x))) :=
---   congr($(linearization_δ_hom X Y) x)
-
--- @[simp]
--- theorem linearization_ε_hom : (ε (linearization k G)).hom.toLinearMap =
---     linearizationSingle _ PUnit.unit :=
---   rfl
-
--- theorem linearization_η_hom_apply (r : k) :
---     (η (linearization k G)).hom (Finsupp.single PUnit.unit r) = r :=
---   (εIso (linearization k G)).hom_inv_id_apply r
 
 variable (k G) in
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
@@ -1295,17 +1068,6 @@ on `k[X]`. -/
 abbrev linearizationTrivialIso (X : Type u) :
     (linearization k G).obj (Action.trivial _ X) ≅ trivial k G (X →₀ k) :=
   Rep.mkIso (Representation.linearizeTrivialIso k G X)
-
--- #exit
--- @[simp]
--- lemma linearizationTrivialIso_hom_single (X : Type u) (x : X) (r : k) :
---     (linearizationTrivialIso k G X).hom.hom (linearizationSingle _ x r) =
---     Finsupp.single x r := rfl
-
--- @[simp]
--- lemma linearizationTrivialIso_inv_single (X : Type u) (x : X) (r : k) :
---     (linearizationTrivialIso k G X).inv.hom (Finsupp.single x r) =
---     linearizationSingle _ x r := rfl
 
 variable (k G) in
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the

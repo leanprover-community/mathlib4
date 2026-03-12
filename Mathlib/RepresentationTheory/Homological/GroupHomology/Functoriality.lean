@@ -76,7 +76,7 @@ lemma lsingle_comp_chainsMap_f (n : ℕ) (x : Fin n → G) :
 set_option backward.isDefEq.respectTransparency false in
 lemma chainsMap_f_single (n : ℕ) (x : Fin n → G) (a : A) :
     (chainsMap f φ).f n (single x a) = single (f ∘ x) (φ.hom a) := by
-  simp [chainsMap_f, Representation.IntertwiningMap.toLinearMap_apply]
+  simp [chainsMap_f]
 
 @[simp]
 lemma chainsMap_id :
@@ -97,7 +97,7 @@ lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
     (f : G →* H) (g : H →* K) (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
     chainsMap (g.comp f) (φ ≫ (resFunctor f).map ψ) = chainsMap f φ ≫ chainsMap g ψ := by
   ext
-  simp [chainsMap_f, Function.comp_assoc, Representation.IntertwiningMap.toLinearMap_apply]
+  simp [chainsMap_f, Function.comp_assoc]
 
 lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     chainsMap (MonoidHom.id G) (φ ≫ ψ) =
@@ -213,7 +213,7 @@ lemma chainsMap_f_0_comp_chainsIso₀ :
       ModuleCat.ofHom φ.hom.toLinearMap := by
   ext
   simp [chainsMap_f, Unique.eq_default (α := Fin 0 → G), Unique.eq_default (α := Fin 0 → H),
-    chainsIso₀, Representation.IntertwiningMap.toLinearMap_apply]
+    chainsIso₀]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -323,7 +323,7 @@ theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
   all_goals
   { simp only [shortComplexH1]
     ext
-    simp [Prod.map, Representation.IntertwiningMap.toLinearMap_apply]}
+    simp [Prod.map]}
 
 theorem mapShortComplexH1_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     mapShortComplexH1 (MonoidHom.id G) (φ ≫ ψ) =
@@ -573,6 +573,7 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
     chains₁ToCoinvariantsKer, d₁₀, single_sum, mul_assoc, sub_add_eq_add_sub,
     sum_sum_index, add_smul, sub_sub_sub_eq, lsingle, singleAddHom] using add_comm _ _
 
+#print "change mkQ to Representation level"
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the map
 `H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S` is an
@@ -592,8 +593,13 @@ instance : Epi (H1CoresCoinf A S).g := by
   have : d₁₀ _ Y ∈ Coinvariants.ker (A.ρ.comp S.subtype) := by
     have h' := congr($((mapShortComplexH1 (B := toCoinvariants A S)
       (MonoidHom.id G) (toCoinvariantsMkQ A S)).comm₂₃) Y)
-    simp_all [shortComplexH1, ← Coinvariants.mk_eq_zero]
-    sorry
+    simp only [shortComplexH1, mapShortComplexH1_τ₂, ModuleCat.ofHom_comp, MonoidHom.coe_id,
+      lmapDomain_id, ModuleCat.ofHom_id, res_obj_ρ, hom_ofHom, Category.id_comp, ModuleCat.hom_comp,
+      ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply,
+      IntertwiningMap.coe_toLinearMap, mapShortComplexH1_τ₃] at h'
+    change (d₁₀ (A.toCoinvariants S)).hom (mapRange (Coinvariants.mk _) _ _) =
+      Coinvariants.mk _ _ at h'
+    simp [← Coinvariants.mk_eq_zero, ← h', hY]
   /- Thus we can pick a representation of `d(Y)` as a sum `∑ ρ(sᵢ⁻¹)(aᵢ) - aᵢ`, `sᵢ ∈ S, aᵢ ∈ A`,
 and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
   rcases chains₁ToCoinvariantsKer_surjective
@@ -607,10 +613,10 @@ and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
 /- Moreover, the image of `Y - ∑ aᵢ·sᵢ` in `Z₁(G ⧸ S, A_S)` is `x - ∑ aᵢ·1`, and hence differs from
 `x` by a boundary, since `aᵢ·1 = d(aᵢ·(1, 1))`. -/
   refine (H1π_eq_iff _ _).2 ?_
-  sorry
-  -- simpa [← hy, mapCycles₁_hom, map_sub, mapRange_sub, hY, ← mapDomain_comp, ← mapDomain_mapRange,
-  --   Function.comp_def, (QuotientGroup.eq_one_iff <| Subtype.val _).2 (Subtype.prop _)]
-  --   using Submodule.finsuppSum_mem _ _ _ _ fun _ _ => sorry--single_one_mem_boundaries₁ _
+  change mapRange (A.ρ.toCoinvariantsMkQ S) _ Y = _ at hY
+  simpa [← hy, mapCycles₁_hom, map_sub, Rep.hom_id (res _ _), ← mapDomain_comp,
+    ← mapDomain_mapRange, hY, Function.comp_def, (QuotientGroup.eq_one_iff <| Subtype.val _).2
+    (Subtype.prop _)] using Submodule.finsuppSum_mem _ _ _ _ fun _ _ ↦ single_one_mem_boundaries₁ _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the degree 1
@@ -761,7 +767,7 @@ theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
   all_goals
   { simp only [shortComplexH2]
     ext
-    simp [Prod.map, Representation.IntertwiningMap.toLinearMap_apply] }
+    simp [Prod.map] }
 
 theorem mapShortComplexH2_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     mapShortComplexH2 (MonoidHom.id G) (φ ≫ ψ) =

@@ -1,7 +1,19 @@
+/-
+Copyright (c) 2026 Yunzhou Xie. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Edison Xie
+-/
 module
 
 public import Mathlib.RepresentationTheory.Rep'.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Projective
+
+/-!
+# Equivalence between `Rep k G` and `ModuleCat k[G]`
+
+In this file we show that the category of `k`-linear representations of a monoid `G` is
+equivalent to the category of modules over the monoid algebra `k[G]`.
+-/
 
 @[expose] public section
 
@@ -21,158 +33,22 @@ variable (k G H : Type u) [Group G] [Monoid H] [MulAction G H] [CommRing k] (n :
 
 open MonoidalCategory Finsupp ModuleCat.MonoidalCategory Representation.IntertwiningMap
 
--- set_option allowUnsafeReducibility true in
--- attribute [local irreducible] ofMulAction in
 /-- An isomorphism of `k`-linear representations of `G` from `k[Gⁿ⁺¹]` to `k[G] ⊗ₖ k[Gⁿ]` (on
 which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, ..., gₙ)` to
 `g₀ ⊗ (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ)`. The inverse sends `g₀ ⊗ (g₁, ..., gₙ)` to
 `(g₀, g₀g₁, ..., g₀g₁...gₙ)`. -/
 abbrev diagonalSuccIsoTensorTrivial :
     diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G ((Fin n → G) →₀ k) :=
-  -- (linearizarionObjOfMulAction k G (Fin (n + 1) → G)).symm ≪≫
   linearizationObjOfMulAction k G (n + 1) ≪≫ (linearization k G).mapIso
     (Action.diagonalSuccIsoTensorTrivial G n) ≪≫
     (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
     tensorIso (linearizationOfMulActionIso k G G) (linearizationTrivialIso k G (Fin n → G)) --≪≫
-    --   tensorIso (linearizarionObjOfMulAction k G G) (linearizationTrivialIso k G (Fin n → G))
-
--- set_option backward.isDefEq.respectTransparency false in
--- theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
---     (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g a ⊗ₜ single f b) =
---       single (g • Fin.partialProd f) (a * b) := by
---   have := Action.diagonalSuccIsoTensorTrivial_inv_hom_apply (G := G) (n := n)
---   -- simp [diagonalSuccIsoTensorTrivial, linearizationTrivialIso]
---   sorry
-  -- simp_all [diagonalSuccIsoTensorTrivial, ModuleCat.MonoidalCategory.tensorHom_def,
-  --   tensorObj_carrier, types_tensorObj_def, ModuleCat.hom_id (M := .of _ _), Action.ofMulAction_V]
-
--- unif_hint (G : Type*) [Monoid G] where ⊢ G ≟ (Action.leftRegular G).V
-
--- set_option backward.isDefEq.respectTransparency false in
--- @[simp]
--- theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
---     (diagonalSuccIsoTensorTrivial k G n).hom.hom.toLinearMap (ofMulAction.single G f a) =
---       ofMulAction.single G (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
---   dsimp [diagonalSuccIsoTensorTrivial, Action.ofMulAction_V, -tensor_V, -tensor_ρ]
---   simp only [linearization_map_hom_single, Action.diagonalSuccIsoTensorTrivial_hom_hom_apply,
---     linearization_δ_apply, Action.ofMulAction_V, Action.trivial_V, Action.tensorObj_V,
---     LinearEquiv.coe_coe]
---   have := linearizationObjEquiv_single (k := k)
---     (Action.leftRegular G ⊗ Action.trivial G (Fin n → G))
---     (f 0, fun i ↦ (f i.castSucc)⁻¹ * f i.succ) a
---   dsimp at this
---   simp only [tensor_V, tensorObj_carrier, coe_of, this]
---   rw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
---   simp only [TensorProduct.congr_symm_tmul, (linearizationObjEquiv_symm_single),
---     TensorProduct.map_tmul, toLinearMap_apply, linearizarionObjOfMulAction_single]
---   congr 1
-
--- example {V : Type*} [AddCommGroup V] [Module k V] (ρ : Representation k G V) :
---     (Rep.of ρ).ρ = ρ := rfl
-
--- unif_hint {V : Type*} [AddCommGroup V] [Module k V] (ρ : Representation k G V) where ⊢
---     (Rep.of ρ).V ≟ V
-
--- -- unif_hint {V : Type*} [AddCommGroup V] [Module k V] (ρ : Representation k G V) where ⊢
--- --     (Rep.of ρ).ρ ≟ ρ
-
--- set_option backward.isDefEq.respectTransparency false in
--- -- set_option pp.all true in
--- -- set_option pp.maxSteps 1000000000 in
--- attribute [local irreducible] linearization ofMulAction in
--- theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
---     (diagonalSuccIsoTensorTrivial k G n).inv.hom (ofMulAction.single G g a ⊗ₜ single f b) =
---       ofMulAction.single G (g • Fin.partialProd f) (a * b) := by
---   have := Action.diagonalSuccIsoTensorTrivial_inv_hom_apply (G := G) (n := n)
---   dsimp [diagonalSuccIsoTensorTrivial, Action.tensor_ρ, tensorObj_carrier]
---   have heq := linearization_μ_apply (k := k) (Action.leftRegular G) (Action.trivial G (Fin n → G))
---   dsimp [ModuleCat.MonoidalCategory.tensorObj_carrier] at heq
---   rw [heq]
---   simp only [TensorProduct.map_tmul, LinearEquiv.coe_coe, linearizationObjEquiv_single]
---   rw [linearizationTrivialIso_inv_single]
---   dsimp [Action.trivial]
---   rw [linearizationObjEquiv_single]
---   simp only [finsuppTensorFinsupp'_single_tmul_single]
---   dsimp [Action.leftRegular, Action.ofMulAction, Action.tensorObj_V]
---   -- rw [linearizationObjEquiv_symm_single]
---   -- simp only [TensorProduct.map_tmul, LinearEquiv.coe_coe, linearizationObjEquiv_single]
---   -- conv_lhs => enter [2, 2, 2, 2, 3]; erw [linearizationObjEquiv_single]
---   -- simp only [Action.trivial_V, finsuppTensorFinsupp'_single_tmul_single]
---   erw [linearizationObjEquiv_symm_single, linearization_map_hom_single]
---   rw [this]
---   rfl
-
--- set_option backward.isDefEq.respectTransparency false in
--- theorem diagonalSuccIsoTensorTrivial_inv_hom_single_left (g : G) (f : (Fin n → G) →₀ k) (r : k) :
---     (diagonalSuccIsoTensorTrivial k G n).inv.hom (ofMulAction.single G g r ⊗ₜ f) =
---       (ofMulAction.equivFinsupp k G (Fin (n + 1) → G)).symm (Finsupp.lift ((Fin (n + 1) → G) →₀ k)
---       k (Fin n → G) (fun f => single (g • Fin.partialProd f) r) f) := by
---   refine f.induction ?_ ?_
---   · simp only [TensorProduct.tmul_zero, map_zero]
---   · intro a b x _ _ hx
---     classical
---     simp only [tensor_V, tensorObj_carrier, coe_of, tensor_ρ, of_ρ, lift_apply, smul_single,
---       smul_eq_mul, TensorProduct.tmul_add, map_add, zero_mul, single_zero, sum_single_index,
---       ofMulAction.equivFinsupp_symm_single] at hx ⊢
---     rw [← hx]
---     simp only [add_left_inj]
---     erw [diagonalSuccIsoTensorTrivial_inv_hom_single_single k G n g a r b]
---     rw [mul_comm]
-
--- set_option backward.isDefEq.respectTransparency false in
--- theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : Fin n → G) (r : k) :
---     (diagonalSuccIsoTensorTrivial k G n).inv.hom (g ⊗ₜ single f r) =
---       (ofMulAction.equivFinsupp k G (Fin (n + 1) → G)).symm (Finsupp.lift _ k G (fun a => single
---       (a • Fin.partialProd f) r) g) := by
---   refine g.induction ?_ ?_
---   · simp only [TensorProduct.zero_tmul, map_zero]
---   · intro a b x _ _ hx
---     classical
---     simp only [tensor_V, tensorObj_carrier, coe_of, tensor_ρ, of_ρ, lift_apply, smul_single,
---       smul_eq_mul] at hx ⊢
---     rw [Finsupp.sum_add_index (by simp) (by simp [add_mul])]
---     simp only [TensorProduct.add_tmul, map_add, zero_mul, single_zero, sum_single_index,
---       ofMulAction.equivFinsupp_symm_single, ← hx, add_left_inj]
---     rw [← ofMulAction.single_def]
---     exact diagonalSuccIsoTensorTrivial_inv_hom_single_single k G n ..
 
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the right-hand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
 `single (g₀, ..., gₙ) a ↦ single (g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ) (single g₀ a)`. -/
 abbrev diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
   diagonalSuccIsoTensorTrivial k G n ≪≫ leftRegularTensorTrivialIsoFree k G (Fin n → G)
-
--- set_option backward.isDefEq.respectTransparency false in
--- @[simp]
--- theorem diagonalSuccIsoFree_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
---     (diagonalSuccIsoFree k G n).hom.hom (ofMulAction.single G f a) =
---       free.single _ (fun i => (f i.castSucc)⁻¹ * f i.succ) (single (f 0) a) := by
---   simp only [diagonalSuccIsoFree, Iso.trans_hom, hom_comp, tensor_V, tensorObj_carrier, coe_of,
---     tensor_ρ, of_ρ, Representation.IntertwiningMap.comp_apply]
---   erw [diagonalSuccIsoTensorTrivial_hom_hom_single k G n f a]
---   erw [leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single k G]
---   rw [one_mul]
-
--- set_option backward.isDefEq.respectTransparency false in
--- @[simp]
--- theorem diagonalSuccIsoFree_inv_hom_single_single (g : G) (f : Fin n → G) (a : k) :
---     (diagonalSuccIsoFree k G n).inv.hom (free.single _ f (single g a)) =
---       ofMulAction.single G (g • Fin.partialProd f) a := by
---   have := diagonalSuccIsoTensorTrivial_inv_hom_single_single k G n g f a 1
---   simp only [diagonalSuccIsoFree, Iso.trans_inv, hom_comp, tensor_V, tensor_ρ, coe_of, of_ρ,
---     Representation.IntertwiningMap.comp_apply, mul_one] at this ⊢
---   erw [leftRegularTensorTrivialIsoFree_inv_hom_single_single]
---   exact this
-
--- theorem diagonalSuccIsoFree_inv_hom_single (g : G →₀ k) (f : Fin n → G) :
---     (diagonalSuccIsoFree k G n).inv.hom (free.single _ f g) =
---       (ofMulAction.equivFinsupp k G (Fin (n + 1) → G)).symm (lift _ k G (fun a => single
---       (a • Fin.partialProd f) 1) g) :=
---   g.induction (by simp) fun g1 k1 l1 _ _ hh => by
---     simp only [lift_apply, smul_single, smul_eq_mul, mul_one, map_add,
---       diagonalSuccIsoFree_inv_hom_single_single, single_zero, sum_single_index,
---       ofMulAction.equivFinsupp_symm_single, add_right_inj] at hh ⊢
---     exact hh
 
 variable (A : Rep k G)
 
@@ -184,27 +60,6 @@ abbrev diagonalHomEquiv :
     freeLiftLEquiv k G (Fin n → G) A
 
 variable {n A}
-
--- set_option backward.isDefEq.respectTransparency false in
--- /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
--- the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that this
--- sends a morphism of representations `f : k[Gⁿ⁺¹] ⟶ A` to the function
--- `(g₁, ..., gₙ) ↦ f(1, g₁, g₁g₂, ..., g₁g₂...gₙ).` -/
--- theorem diagonalHomEquiv_apply (f : Rep.diagonal k G (n + 1) ⟶ A) (x : Fin n → G) :
---     diagonalHomEquiv k G n A f x = f.hom (ofMulAction.single G (Fin.partialProd x) 1) := by
---   simp [diagonalHomEquiv, Linear.homCongr_apply,
---     diagonalSuccIsoFree_inv_hom_single_single (k := k)]
-
--- set_option backward.isDefEq.respectTransparency false in
--- /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
--- the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
--- inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
--- `(g₀, ... gₙ) ↦ ρ(g₀)(f(g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`, where `ρ` is the representation attached
--- to `A`. -/
--- theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
---     ((diagonalHomEquiv k G n A).symm f).hom (ofMulAction.single G x 1) =
---       A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
---   simp [diagonalHomEquiv, Linear.homCongr_symm_apply, diagonalSuccIsoFree_hom_hom_single (k := k)]
 
 end Group
 

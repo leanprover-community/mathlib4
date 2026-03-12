@@ -142,7 +142,7 @@ noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u
   toFun f := Rep.ofHom ⟨f.hom.toLinearMap ∘ₗ IndV.mk φ A.ρ 1, fun g ↦ by
     ext x
     have := (hom_comm_apply f (φ g) (IndV.mk φ A.ρ 1 x)).symm
-    simp_all [Representation.IntertwiningMap.toLinearMap_apply, ← Coinvariants.mk_inv_tmul] ⟩
+    simp_all [← Coinvariants.mk_inv_tmul] ⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := Rep.ofHom ⟨Representation.Coinvariants.lift _

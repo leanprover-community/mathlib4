@@ -256,7 +256,6 @@ set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 /-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A^S`. -/
--- @[simps! obj_V map_hom_hom]
 noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
@@ -270,7 +269,7 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
       change _ = ((((Y.ρ.toInvariants S).ofQuotient S) g) ((LinearMap.codRestrict _
           (f.hom.toLinearMap ∘ₗ (invariants (MonoidHom.comp X.ρ S.subtype)).subtype) _) x)).1
       induction g using QuotientGroup.induction_on with
-      | H g => simp [hom_comm_apply, IntertwiningMap.toLinearMap_apply]⟩
+      | H g => simp [hom_comm_apply]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and
