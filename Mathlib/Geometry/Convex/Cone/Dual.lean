@@ -119,11 +119,18 @@ variable {M' : Type*} [AddCommGroup M'] [Module R M']
 @[simp] lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s :=
   by ext; simp
 
-lemma dual_id (s : Set M) : dual p s = dual .id (p '' s) := by simp
+/-- Duality with respect to a general bilinear map can be expressed as duality using the
+  identity pairing. -/
+lemma dual_eq_dual_id_image (s : Set M) : dual p s = dual .id (p '' s) := by simp
 
-lemma dual_id_map (C : PointedCone R M) : dual p C = dual .id (map p C) := by simp
+/-- Duality with respect to a general bilinear map can be expressed as duality using the
+  identity pairing. -/
+lemma dual_eq_dual_id_map (C : PointedCone R M) : dual p C = dual .id (map p C) := by simp
 
-lemma dual_eval (s : Set M) : dual p s = comap p.flip (dual (Module.Dual.eval R M) s) := by
+/-- Duality with respect to a general bilinear map can be expressed as duality using the
+  standard pairing `Dual.eval`. -/
+lemma dual_eq_comap_dual_eval (s : Set M) :
+    dual p s = comap p.flip (dual (Module.Dual.eval R M) s) := by
   ext; simp
 
 @[simp] lemma dual_neg {s : Set M} : dual p (-s) = -dual p s := by ext; simp
