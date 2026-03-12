@@ -169,7 +169,6 @@ open Module
 -- deterministic timeout.
 instance : HasKernels (FDRep k G) := by infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is `0` if
 they are not isomorphic, and `1` if they are. -/
