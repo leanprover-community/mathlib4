@@ -719,10 +719,8 @@ theorem lieSpan_induction {p : (x : L) → x ∈ lieSpan R L s → Prop}
   exact lieSpan_le (K := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 @[simp] lemma lieSpan_neg : lieSpan R L (-s) = lieSpan R L s := by
-  suffices ∀ s : Set L, lieSpan R L (-s) ≤ lieSpan R L s by
-    apply le_antisymm (this s)
-    convert this (-s)
-    simp
+  suffices ∀ s : Set L, lieSpan R L (-s) ≤ lieSpan R L s from
+    le_antisymm (this s) <| by simpa using (this (-s))
   intro s x hx
   induction hx using lieSpan_induction with
   | mem y h => exact neg_mem_iff.mp <| subset_lieSpan <| Set.mem_neg.mp h
