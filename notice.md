@@ -340,3 +340,44 @@ useful Kolmogorov inequality results
     下一步应优先搜索 mathlib 里已有的
     “martingale 的 square / pos / abs 是 submartingale”
     相关接口。
+
+2026-03-12 平方过程基础接口:
+
+55. 这次没有直接证明“平方是 submartingale”，而是先把平方过程作为
+    `maximal_ineq` 候选对象的基础三件套补齐了。
+    新增：
+    (a) `partialSum_succ_sq_nonneg`：
+        `0 ≤ fun n ω => partialSum X (n + 1) ω ^ 2`；
+    (b) `stronglyAdapted_partialSum_succ_sq_natural`：
+        平方过程对自然过滤仍然是 `StronglyAdapted`；
+    (c) `integrable_partialSum_succ_sq`：
+        在逐项 `MemLp 2` 假设下，每个时刻的平方过程都可积。
+
+56. 搜索记录：
+    (a) 没有直接搜到“martingale 的 square 是 submartingale”的现成 theorem 名；
+    (b) 但 `Mathlib/Probability/CondVar.lean` 里有
+        `condVar_ae_le_condExp_sq`，
+        这已经非常接近后面要用的条件期望非负性；
+    (c) `Mathlib/MeasureTheory/Function/L2Space.lean` 里有
+        `MemLp.integrable_sq`，
+        正好能给平方过程提供可积性。
+
+57. 实现细节：
+    (a) 平方过程的强适应性是从
+        `stronglyAdapted_partialSum_succ_natural` 出发，
+        对每个时刻先取 `measurable`，再 `pow_const 2`；
+    (b) 非负性直接用 `sq_nonneg`；
+    (c) 可积性直接由对应 partial sum 的 `MemLp 2` 经 `integrable_sq` 得到。
+
+58. 完成情况：
+    (a) `Kolmogorov.lean` 现在已经有一个很像 `maximal_ineq` 输入对象的平方过程；
+    (b) `lake env lean Kolmogorov.lean` 已通过；
+    (c) 下一步只差“条件期望非负”这一层，就能尝试真正构造 submartingale。
+
+59. 下一小步建议：
+    直接尝试利用
+    `martingale_partialSum_succ_natural_of_mean_zero`
+    和 `condVar_ae_le_condExp_sq`
+    证明平方过程
+    `fun n ω => partialSum X (n + 1) ω ^ 2`
+    是 `Submartingale`。

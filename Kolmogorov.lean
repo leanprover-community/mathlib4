@@ -138,6 +138,23 @@ lemma martingale_partialSum_succ_natural_of_mean_zero {Ω : Type*} [MeasurableSp
   · exact (partialSum_memLp (μ := μ) X (i + 1) fun k _ => hLp k).integrable (by norm_num)
   · exact condExp_partialSum_succ_sub_eq_zero_of_mean_zero X hX hindep hmean i
 
+lemma partialSum_succ_sq_nonneg (X : ℕ → Ω → ℝ) :
+    0 ≤ fun n ω => partialSum X (n + 1) ω ^ 2 := by
+  intro n ω
+  exact sq_nonneg _
+
+lemma stronglyAdapted_partialSum_succ_sq_natural {Ω : Type*} [MeasurableSpace Ω]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) :
+    StronglyAdapted (Filtration.natural X hX) (fun n ω => partialSum X (n + 1) ω ^ 2) := by
+  intro n
+  exact ((stronglyAdapted_partialSum_succ_natural X hX n).measurable.pow_const 2).stronglyMeasurable
+
+lemma integrable_partialSum_succ_sq {Ω : Type*} [MeasurableSpace Ω]
+    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ)
+    (hLp : ∀ k, MemLp (X k) 2 μ) (n : ℕ) :
+    Integrable (fun ω => partialSum X (n + 1) ω ^ 2) μ := by
+  exact (partialSum_memLp (μ := μ) X (n + 1) fun k _ => hLp k).integrable_sq
+
 /-- The maximum absolute value of the partial sums `partialSum X k` for `k ≤ n`. -/
 def partialSumMax (X : ℕ → Ω → ℝ) (n : ℕ) : Ω → ℝ :=
   fun ω => (Finset.range (n + 1)).sup' (by simp) (fun k => |partialSum X k ω|)
