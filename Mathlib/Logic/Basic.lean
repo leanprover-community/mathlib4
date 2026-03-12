@@ -28,6 +28,38 @@ open Function
 
 section Miscellany
 
+meta def Lean.Meta.Simp.withoutTheorem {α} (declName : Name) (e : SimpM α) : SimpM α := do
+  let theorems := (← getSimpTheorems).eraseTheorem (.decl declName)
+  let procs := (← getSimprocs).erase declName
+  let oldMethods ← getMethods
+  let methods := mkMethods #[procs] oldMethods.discharge? oldMethods.wellBehavedDischarge
+  withSimpTheorems theorems do
+    let (x, s) ← e.run (← getContext) (← get) methods
+    set s
+    return x
+
+def eq_comm_eq {α : Sort*} (a b : α) : (a = b) = (b = a) := by rw [@eq_comm _ a b]
+def iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b]
+
+open Lean Meta Simp in
+simproc eqComm (_ = _) := fun e => do
+  let_expr Eq x y := e | return .continue
+  let symmExpr ← mkEq y x
+  let r ← withoutTheorem `eqComm <| simp symmExpr
+  if r.expr == e then return .visit r
+  return .done (← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r)
+
+open Lean Meta Simp in
+simproc iffComm (_ ↔ _) := fun e => do
+  let_expr Iff x y := e | return .continue
+  let symmExpr := .app (.app (.const ``Iff []) y) x
+  let r ← withoutTheorem `iffComm <| simp symmExpr
+  if r.expr == e then return .visit r
+  return .done (← Result.mkEqTrans
+    { expr := symmExpr,
+      proof? := some (.app (.app (.const ``iff_comm_eq []) x) y) }
+    r)
+
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
