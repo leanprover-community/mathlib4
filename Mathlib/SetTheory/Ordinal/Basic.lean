@@ -1449,7 +1449,7 @@ variable (r) in
 theorem ord_mk_lt_type [IsWellOrder α r] {s : Set α} (hfin : s.Finite) (h : sᶜ.Nonempty) :
     (#s).ord < type r := by
   grw [← ord_le_type, ord_lt_ord, ← mk_univ (α := α)]
-  exact card_lt_card_of_left_finite hfin h.univ_ssubset
+  exact card_lt_card_of_left_finite hfin h.ssubset_univ
 
 variable (r) in
 /-- The `#s`-th element of `α` is an upper-bound for the set's mex (minimum excluded value),

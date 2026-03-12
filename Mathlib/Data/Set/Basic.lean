@@ -573,17 +573,17 @@ theorem univ_unique [Unique α] : @Set.univ α = {default} :=
 theorem ssubset_univ_iff : s ⊂ univ ↔ s ≠ univ :=
   lt_top_iff_ne_top
 
-theorem univ_ssubset : s ⊂ univ ↔ sᶜ.Nonempty := by
+theorem ssubset_univ_iff_nonempty_compl : s ⊂ univ ↔ sᶜ.Nonempty := by
   rw [ssubset_def, Set.not_univ_subset, Set.nonempty_def]
   simp
 
-alias ⟨_, Nonempty.univ_ssubset⟩ := univ_ssubset
+alias ⟨_, Nonempty.ssubset_univ⟩ := ssubset_univ_iff_nonempty_compl
 
-theorem univ_compl_ssubset : sᶜ ⊂ univ ↔ s.Nonempty := by
+theorem compl_ssubset_univ : sᶜ ⊂ univ ↔ s.Nonempty := by
   rw [ssubset_def, Set.not_univ_subset, Set.nonempty_def]
   simp
 
-alias ⟨_, Nonempty.univ_compl_ssubset⟩ := univ_compl_ssubset
+alias ⟨_, Nonempty.compl_ssubset_univ⟩ := compl_ssubset_univ
 
 instance nontrivial_of_nonempty [Nonempty α] : Nontrivial (Set α) :=
   ⟨⟨∅, univ, empty_ne_univ⟩⟩
