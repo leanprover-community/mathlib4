@@ -37,18 +37,75 @@ Let `R` be a commutative semiring, `A` a commutative `R`-algebra, `I` an ideal i
 
 -/
 
+section AdditiveRelations
+
+variable {A : Type*} [AddCommMonoid A] {r : A → A → Prop}
+    {ι : Type*}
+    {β : ι → Type*} [∀ i, AddCommMonoid (β i)] {f g : (i : ι) → β i} (h : (i : ι) → (β i →+ A))
+
+lemma rel_of_sum_of_rel_add
+    (hr_zero : r 0 0)
+    (hr_add : ∀ {a b c d} (_ : r a c) (_ : r b d), r (a + b) (c + d))
+    {f g : ι → A} {s : Finset ι} (H : ∀ i ∈ s, r (f i) (g i)) :
+    r (s.sum f) (s.sum g) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => exact hr_zero
+  | @insert i s hi hs =>
+    simp only [Finset.sum_insert hi]
+    exact hr_add (H _ (Finset.mem_insert_self _ _))
+      (hs (fun _ hi => H _ (Finset.mem_insert_of_mem hi)))
+
+lemma rel_of_finsupp_sum_of_rel_add
+    (hr_zero : r 0 0)
+    (hr_add : ∀ {a b c d} (_ : r a c) (_ : r b d), r (a + b) (c + d))
+    {ι : Type*} {f g : ι →₀ A} (H : ∀ i, r (f i) (g i)) :
+    r (f.sum fun _ x => x) (g.sum fun _ x => x) := by
+  classical
+  rw [Finsupp.sum_of_support_subset f Finset.subset_union_left,
+    Finsupp.sum_of_support_subset g Finset.subset_union_right]
+  · exact rel_of_sum_of_rel_add hr_zero hr_add (fun i _ =>  H i)
+  all_goals { aesop }
+
+lemma rel_of_dsum_of_rel_add
+    (hr_zero : r 0 0)
+    (hr_add : ∀ {a b c d} (_ : r a c) (_ : r b d), r (a + b) (c + d)) {ι : Type*}
+    {β : ι → Type*} [∀ i, AddCommMonoid (β i)] {f g : (i : ι) → β i} (h : (i : ι) → (β i →+ A))
+    {s : Finset ι} (H : ∀ i ∈ s, r (h i (f i)) (h i (g i))) :
+  r (s.sum (fun i => h i (f i))) (s.sum (fun i => h i (g i))) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => exact hr_zero
+  | @insert i s hi hs =>
+    simp only [Finset.sum_insert hi]
+    exact hr_add (H _ (Finset.mem_insert_self _ _))
+      (hs (fun _ hi => H _ (Finset.mem_insert_of_mem hi)))
+
+lemma rel_of_dfinsupp_sum_of_rel_add
+    (hr_zero : r 0 0) (hr_add : ∀ {a b c d} (_ : r a c) (_ : r b d), r (a + b) (c + d))
+    {ι : Type*} [DecidableEq ι] {β : ι → Type*} [∀ i, AddCommMonoid (β i)]
+    [∀ i (y : β i), Decidable (y ≠ 0)] (h : (i : ι) → (β i →+ A)) (h' : (i : ι) → (β i →+ A))
+    {f g : DFinsupp β} (H : ∀ i, r (h i (f i)) (h' i (g i))) :
+    r (f.sum fun i y => h i y) (g.sum fun i y => h' i y) := by
+  have := Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)
+  rw [DFinsupp.sum_of_support_le (Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)),
+    DFinsupp.sum_of_support_le (Finset.subset_union_right (s₁ := f.support) (s₂ := g.support))]
+  exact rel_of_sum_of_rel_add hr_zero hr_add (fun i _ => H i)
+
+
 open DirectSum Function
 
 section GradedQuot
 
-section Semiring
+section Module
 
-variable {R ι A : Type*} [CommSemiring R] [DecidableEq ι] [AddMonoid ι] [Semiring A]
-  [Algebra R A] (𝒜 : ι → Submodule R A)
+variable {R : Type*} [CommSemiring R]
+  {A : Type*} [AddCommMonoid A] [Module R A]
+  {ι : Type*} (𝒜 : ι → Submodule R A)
 
 section HomogeneousRelation
 
-variable (rel : A → A → Prop)
+variable (r : A → A → Prop)
 
 /-
 lemma RingConGen.Rel.sum {α : Type*} [AddCommMonoid α] [Mul α]
@@ -67,35 +124,33 @@ lemma RingConGen.Rel.sum {α : Type*} [AddCommMonoid α] [Mul α]
 
 namespace Rel
 
-/-- A relation `r` is `PureHomogeneous` iff `r a b` implies that `a` and `b`
-  are homogeneous of the same degree. -/
-def IsPureHomogeneous :=
-  ∀ {a b : A} (_ : rel a b), ∃ i, a ∈ 𝒜 i ∧ b ∈ 𝒜 i
-
-/-- A relation is `Homogeneous` iff `r a b` implies that the components of `a` and `b`
-  are related by `r`. -/
-def IsHomogeneous [GradedAlgebra 𝒜] : Prop :=
-  ∀ {a b : A} (_ : rel a b), ∀ i,
-    rel (decomposeAlgEquiv 𝒜 a i) (decomposeAlgEquiv 𝒜 b i)
-
-variable {𝒜 rel}
-
-lemma isHomogeneous_of_isPureHomogeneous [GradedAlgebra 𝒜] (hrel : IsPureHomogeneous 𝒜 rel)
-    (hrel0 : rel 0 0) : IsHomogeneous 𝒜 rel := by
-  intro a b h i
-  obtain ⟨j, ha, hb⟩ := hrel h
-  by_cases hij : j = i
-  · rw [← hij]
-    simp only [decomposeAlgEquiv_apply, decompose_of_mem_same, ha, hb, h]
-  · simp only [decomposeAlgEquiv_apply, decompose_of_mem_ne _ ha hij, decompose_of_mem_ne _ hb hij]
-    exact hrel0
-
-end Rel
-
 open Relation
 
-theorem eqvGenIsHomogeneous_of [GradedAlgebra 𝒜] (hr : Rel.IsHomogeneous 𝒜 rel) :
-    Rel.IsHomogeneous 𝒜 (EqvGen rel) := by
+/-- A relation `r` is `PureHomogeneous` iff `r a b` implies that `a` and `b`
+  are homogeneous of the same degree. -/
+def IsPureHomogeneous : Prop :=
+  ∀ {a b : A} (_ : r a b), ∃ i, a ∈ 𝒜 i ∧ b ∈ 𝒜 i
+
+/-- A relation `r` is `Homogeneous` for a `DirectSum.Decomposition` iff
+`r a b` implies that the components of `a` and `b` are related by `r` -/
+def IsHomogeneous [DecidableEq ι] [DirectSum.Decomposition 𝒜] : Prop :=
+  ∀ {a b : A} (_ : r a b), ∀ i, r (decompose 𝒜 a i) (decompose 𝒜 b i)
+
+variable {𝒜 r}
+
+variable [DecidableEq ι] [DirectSum.Decomposition 𝒜]
+
+lemma IsPureHomogeneous.isHomogeneous (hr0 : r 0 0) (hr : IsPureHomogeneous 𝒜 r) :
+    IsHomogeneous 𝒜 r := by
+  intro a b h i
+  obtain ⟨j, ha, hb⟩ := hr h
+  by_cases hij : j = i
+  · rw [← hij]
+    simp only [decompose_of_mem_same, ha, hb, h]
+  · simp only [decompose_of_mem_ne _ ha hij, decompose_of_mem_ne _ hb hij, hr0]
+
+theorem IsHomogeneous.eqvGenIsHomogeneous (hr : Rel.IsHomogeneous 𝒜 r) :
+    Rel.IsHomogeneous 𝒜 (EqvGen r) := by
   intro a b h
   induction h with
   | rel a b h => exact fun i => EqvGen.rel _ _ (hr h i)
@@ -103,50 +158,16 @@ theorem eqvGenIsHomogeneous_of [GradedAlgebra 𝒜] (hr : Rel.IsHomogeneous 𝒜
   | symm a b _ k => exact fun i => EqvGen.symm _ _ (k i)
   | trans a b c _ _ k k' => exact fun i => EqvGen.trans _ _ _ (k i) (k' i)
 
-lemma rel_of_sum_of_rel_add {A : Type*} [AddCommMonoid A] {r : A → A → Prop} (hr_zero : r 0 0)
-    (hr_add : ∀ {a b c d} (_ : r a c) (_ : r b d), r (a + b) (c + d)) {ι : Type*}
-    {f g : ι → A} {s : Finset ι} (H : ∀ i ∈ s, r (f i) (g i)) : r (s.sum f) (s.sum g) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => exact hr_zero
-  | @insert i s hi hs =>
-    simp only [Finset.sum_insert hi]
-    exact hr_add (H _ (Finset.mem_insert_self _ _))
-      (hs (fun _ hi => H _ (Finset.mem_insert_of_mem hi)))
+end Rel
 
-lemma rel_of_finsupp_sum_of_rel_add {A : Type*} [AddCommMonoid A] {r : A → A → Prop}
-    (hr_zero : r 0 0) (hr_add : ∀ {a b c d} (_ : r a c) (_ : r b d), r (a + b) (c + d))
-    {ι : Type*} {f g : ι →₀ A} (H : ∀ i, r (f i) (g i)) :
-    r (f.sum fun _ x => x) (g.sum fun _ x => x) := by
-  classical
-  rw [Finsupp.sum_of_support_subset f Finset.subset_union_left,
-    Finsupp.sum_of_support_subset g Finset.subset_union_right]
-  · exact rel_of_sum_of_rel_add hr_zero hr_add (fun i _ =>  H i)
-  all_goals { aesop }
+end HomogeneousRelation
 
-lemma rel_of_dsum_of_rel_add {A : Type*} [AddCommMonoid A] {r : A → A → Prop} (hr_zero : r 0 0)
-    (hr_add : ∀ {a b c d} (_ : r a c) (_ : r b d), r (a + b) (c + d)) {ι : Type*}
-    {β : ι → Type*} [∀ i, AddCommMonoid (β i)] {f g : (i : ι) → β i} (h : (i : ι) → (β i →+ A))
-    {s : Finset ι} (H : ∀ i ∈ s, r (h i (f i)) (h i (g i))) :
-  r (s.sum (fun i => h i (f i))) (s.sum (fun i => h i (g i))) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => exact hr_zero
-  | @insert i s hi hs =>
-    simp only [Finset.sum_insert hi]
-    exact hr_add (H _ (Finset.mem_insert_self _ _))
-      (hs (fun _ hi => H _ (Finset.mem_insert_of_mem hi)))
+end Module
 
-lemma rel_of_dfinsupp_sum_of_rel_add {A : Type*} [AddCommMonoid A] {r : A → A → Prop}
-    (hr_zero : r 0 0) (hr_add : ∀ {a b c d} (_ : r a c) (_ : r b d), r (a + b) (c + d))
-    {ι : Type*} [DecidableEq ι] {β : ι → Type*} [∀ i, AddCommMonoid (β i)]
-    [∀ i (y : β i), Decidable (y ≠ 0)] (h : (i : ι) → (β i →+ A)) (h' : (i : ι) → (β i →+ A))
-    {f g : DFinsupp β} (H : ∀ i, r (h i (f i)) (h' i (g i))) :
-    r (f.sum fun i y => h i y) (g.sum fun i y => h' i y) := by
-  have := Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)
-  rw [DFinsupp.sum_of_support_le (Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)),
-    DFinsupp.sum_of_support_le (Finset.subset_union_right (s₁ := f.support) (s₂ := g.support))]
-  exact rel_of_sum_of_rel_add hr_zero hr_add (fun i _ => H i)
+variable {R : Type*} [CommSemiring R]
+  {A : Type*} [Semiring A] [Algebra R A]
+  {ι : Type*} [DecidableEq ι] [AddCommMonoid ι] (𝒜 : ι → Submodule R A)
+  (r : A → A → Prop)
 
 private def Φ (n i j : ι) : 𝒜 i →+ 𝒜 j →+ A where
   toFun x := {
@@ -160,14 +181,15 @@ private def Φ (n i j : ι) : 𝒜 i →+ 𝒜 j →+ A where
     split_ifs <;> simp only [Submodule.coe_add, add_mul, add_zero]
   map_zero' := by simp only [ZeroMemClass.coe_zero, zero_mul, ite_self]; rfl
 
-private def Φy [DecidableEq A] (n : ι) (y : DirectSum ι (fun i => 𝒜 i)) (i : ι) : (𝒜 i) →+ A where
+private def Φy [DecidableEq A] (n : ι) (y : ⨁ i, 𝒜 i) (i : ι) :
+    (𝒜 i) →+ A where
   toFun a       := y.sum (fun j b => Φ 𝒜 n i j a b)
   map_add' a a' := by simp only [map_add, AddMonoidHom.add_apply, DFinsupp.sum_add]
   map_zero'     := by simp only [map_zero, AddMonoidHom.zero_apply, DFinsupp.sum_zero]
 
 /-- The equivalence ring relation generated by a homogeneous relation is homogeneous. -/
-theorem RingConGen.Rel.isHomogeneous_of [GradedAlgebra 𝒜]
-    (hr : Rel.IsHomogeneous 𝒜 rel) : Rel.IsHomogeneous 𝒜 (RingConGen.Rel rel) := by
+theorem RingConGen.Rel.isHomogeneous_of [GradedAlgebra 𝒜] (hr : Rel.IsHomogeneous 𝒜 r) :
+    Rel.IsHomogeneous 𝒜 (RingConGen.Rel r) := by
   intro a b h
   induction h with
   | of x y h => exact fun i =>  RingConGen.Rel.of _ _ (hr h i)
@@ -176,12 +198,12 @@ theorem RingConGen.Rel.isHomogeneous_of [GradedAlgebra 𝒜]
   | trans _ _ k k' => exact fun i => RingConGen.Rel.trans (k i) (k' i)
   | add _ _  k k' =>
     intro i
-    simp only [map_add]
+    simp only [decompose_add]
     exact RingConGen.Rel.add (k i) (k' i)
   | @mul a b c d _ _ k k' =>
     classical
     intro n
-    simp only [map_mul, coe_mul_apply_eq_dfinsuppSum]
+    simp only [decompose_mul, coe_mul_apply_eq_dfinsuppSum]
     apply rel_of_dfinsupp_sum_of_rel_add (RingConGen.Rel.refl 0) (RingConGen.Rel.add)
       (Φy 𝒜 n (decomposeAlgEquiv 𝒜 c)) (Φy 𝒜 n (decomposeAlgEquiv 𝒜 d))
     intro i
