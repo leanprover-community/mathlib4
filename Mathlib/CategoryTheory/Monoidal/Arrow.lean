@@ -97,44 +97,6 @@ local instance [CartesianMonoidalCategory C] (X : C) : PreservesMonomorphisms (t
   let := BraidedCategory.ofCartesianMonoidalCategory (C := C)
   preservesMonomorphisms.of_iso (BraidedCategory.tensorLeftIsoTensorRight _)
 
-open Adhesive in
-def isPullback_of_mono_desc_mono [MonoidalCategory C] [Adhesive C] {X₁ X₂ X₃ X₄ : C}
-    {a : X₁ ⟶ X₂} {b : X₁ ⟶ X₃} {c : X₂ ⟶ X₄} {d : X₃ ⟶ X₄} (w : a ≫ c = b ≫ d)
-    [Mono a] [h : Mono (pushout.desc c d w)] : IsPullback a b c d := by
-  refine ?_
-  exact {
-  w := w
-  isLimit' := ⟨by
-    refine PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_
-    · intro s
-      apply (isPullback_of_isPushout_of_mono_left (.of_hasPushout a b)).lift
-        (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)
-      · apply h.right_cancellation
-        simp [s.condition]
-    · simp
-    · simp
-    · intro _ _ h₁ h₂
-      apply (isPullback_of_isPushout_of_mono_left (.of_hasPushout a b)).hom_ext
-      · simp [← h₁]
-      · simp [← h₂]⟩}
-
-open Adhesive in
-def isPullback_of_mono_desc_mono' [MonoidalCategory C] [Adhesive C] {X₁ X₂ X₃ X₄ : C}
-    {a : X₁ ⟶ X₂} {b : X₁ ⟶ X₃} {c : X₂ ⟶ X₄} {d : X₃ ⟶ X₄} (w : a ≫ c = b ≫ d)
-    [Mono b] [Mono (pushout.desc c d w)] : IsPullback a b c d :=
-  let : Mono (pushout.desc d c w.symm) := by
-    convert show Mono ((pushoutSymmetry a b).inv ≫ (pushout.desc c d w)) by infer_instance
-    ext <;> simp
-  IsPullback.flip (isPullback_of_mono_desc_mono w.symm)
-
-instance mono_desc_of_isPullback_mono_mono [MonoidalCategory C] [Adhesive C] {X₁ X₂ X₃ X₄ : C}
-    {a : X₁ ⟶ X₂} {b : X₁ ⟶ X₃} {c : X₂ ⟶ X₄} {d : X₃ ⟶ X₄} (w : a ≫ c = b ≫ d)
-    [Mono c] [Mono d] (h : IsPullback a b c d) : Mono (pushout.desc c d w) := by
-  let : pushout (pullback.fst c d) (pullback.snd c d) ≅ pushout a b := HasColimit.isoOfNatIso <|
-    spanExt h.isoPullback.symm (Iso.refl _) (Iso.refl _) (by simp) (by simp)
-  convert show Mono (this.inv ≫ (pushout.desc c d pullback.condition)) from mono_comp ..
-  ext <;> simp [this]
-
 instance [MonoidalCategory C] [Adhesive C] {A B X Y : C} {f : A ⟶ B} {g : X ⟶ Y}
     (h : IsPullback (f ▷ X) (A ◁ g) (B ◁ g) (f ▷ Y)) [Mono (f ▷ Y)] [Mono (B ◁ g)] :
     Mono (PushoutObjObj.ofHasPushout (curriedTensor C) f g).ι := by
@@ -147,14 +109,16 @@ instance [MonoidalCategory C] [Adhesive C] {A B X Y : C} {f : A ⟶ B} {g : X �
 open CartesianMonoidalCategory in
 instance [CartesianMonoidalCategory C] [Adhesive C] {A B X Y : C} (f : A ⟶ B) (g : X ⟶ Y)
     [Mono f] [Mono g] : Mono (PushoutObjObj.ofHasPushout (curriedTensor C) f g).ι := by
-  let : Mono (B ◁ g) := (Arrow.instPreservesMonomorphismsTensorLeft B).preserves g
-  let : Mono (f ▷ Y) := (Arrow.instPreservesMonomorphismsTensorRight Y).preserves f
-  convert mono_desc_of_isPullback_mono_mono (whisker_exchange f g).symm
+  let : Mono (B ◁ g) := (tensorLeft B).map_mono g
+  let : Mono (f ▷ Y) := (tensorRight Y).map_mono f
+  convert Adhesive.desc_mono_of_isPullback_mono (whisker_exchange f g).symm
     (isPullback_whisker_exchange f g)
   ext <;> simp
 
-
-/--/
+instance [CartesianMonoidalCategory C] [Adhesive C] {X Y : Arrow C} [Mono X.hom] [Mono Y.hom] :
+    Mono (X □ Y).hom := by
+  change Mono (PushoutObjObj.ofHasPushout (curriedTensor C) _ _).ι
+  infer_instance
 
 variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
 
