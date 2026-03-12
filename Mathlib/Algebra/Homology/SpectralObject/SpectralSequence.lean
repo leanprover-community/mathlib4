@@ -157,7 +157,7 @@ lemma pageD_pageD (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ) :
           (data.hc₀₂ r pq pq' hpq) (data.hc₁₃ r pq pq' hpq)
           _ _ (data.deg pq + 2) _ (data.hc r pq pq' hpq) rfl (by lia) rfl,
         Category.assoc, Category.assoc, Iso.inv_hom_id_assoc,
-        d_d_assoc _ _ _ _ _ _ _ _ _ _ _ _ _, zero_comp, comp_zero]
+        d_d_assoc .., zero_comp, comp_zero]
     · dsimp only [pageD]
       rw [dif_neg hpq', comp_zero]
   · dsimp only [pageD]
@@ -234,16 +234,16 @@ set_option backward.isDefEq.respectTransparency false in
 lemma kf_w (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.mapFourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃ (data.i₀_le' hrr' hr pq' hi₀' hi₀)
       (data.le₀₁' r hr pq' hi₀ hi₁) (data.le₁₂' pq' hi₁ hi₂) (data.le₂₃' r hr pq' hi₂ hi₃)
-      n₀ n₁ n₂ hn₁ hn₂ ≫ (pageXIso X data _ hr _ _ _ _ _ hi₀ hi₁ hi₂ hi₃ _ _ _ hn₁' _ _ ).inv) ≫
-      (page X data r hr).d pq' pq'' = 0 := by
+        n₀ n₁ n₂ hn₁ hn₂ ≫
+      (pageXIso X data _ hr _ _ _ _ _ hi₀ hi₁ hi₂ hi₃ _ _ _ hn₁' _ _ ).inv) ≫
+        (page X data r hr).d pq' pq'' = 0 := by
   by_cases h : (c r).Rel pq' pq''
   · dsimp
     rw [pageD_eq X data r hr pq' pq'' h
       (homOfLE (by simpa only [hi₀', data.i₀_prev r r' _ _ h] using data.le₀₁ r pq''))
       (homOfLE (data.i₀_le' hrr' hr pq' hi₀' hi₀)) _ _ _ rfl
       (by rw [hi₀', data.i₀_prev r r' pq' pq'' h]) hi₀ hi₁ hi₂ hi₃ _ _ _ _ hn₁' hn₁ hn₂ rfl,
-      Category.assoc, Iso.inv_hom_id_assoc,
-      map_fourδ₁Toδ₀_d_assoc _ _ _ _ _ _ _ _ _ _ _ _, zero_comp]
+      Category.assoc, Iso.inv_hom_id_assoc, map_fourδ₁Toδ₀_d_assoc .., zero_comp]
   · rw [HomologicalComplex.shape _ _ _ h, comp_zero]
 
 /-- A (limit) kernel fork of the differential on the `r`th page whose point
@@ -273,7 +273,7 @@ lemma isIso_mapFourδ₁Toδ₀' (h : ¬ (c r).Rel pq' pq'')
     IsIso (X.mapFourδ₁Toδ₀'
       i₀' i₀ i₁ i₂ i₃ (data.i₀_le' hrr' hr pq' hi₀' hi₀) (data.le₀₁' r hr pq' hi₀ hi₁)
         (data.le₁₂' pq' hi₁ hi₂) (data.le₂₃' r hr pq' hi₂ hi₃) n₀ n₁ n₂ hn₁ hn₂) := by
-  apply X.isIso_map_fourδ₁Toδ₀_of_isZero _ _ _ _ _ _ _ _ _
+  apply X.isIso_map_fourδ₁Toδ₀_of_isZero ..
   refine X.isZero_H_obj_mk₁_i₀_le' data r r' hrr' hr pq'
     (fun k hk ↦ ?_) _ (by lia) _ _ hi₀' hi₀
   obtain rfl := (c r).next_eq' hk
