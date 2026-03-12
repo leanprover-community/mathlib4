@@ -466,7 +466,7 @@ namespace RatFunc
 open IsDedekindDomain.HeightOneSpectrum PowerSeries
 open scoped LaurentSeries
 
-/-- `valuationX` is an abbrevation for the `X`-adic valuation given by
+/-- `polynomialValuationX` is an abbreviation for the `X`-adic valuation given by
 `(Polynomial.idealX K).valuation K⟮X⟯`. -/
 abbrev polynomialValuationX : Valuation K⟮X⟯ ℤᵐ⁰ :=
   (Polynomial.idealX K).valuation _
