@@ -26,7 +26,7 @@ This file contains the conditional Jensen's inequality. We follow the proof in
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Function Set Filter
 
