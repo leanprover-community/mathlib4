@@ -1,5 +1,6 @@
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Order.Filter.Ring
+import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Group.Arithmetic
@@ -422,6 +423,32 @@ lemma partialSum_mem_Icc_finiteTailInf_finiteTailSup (X : ℕ → Ω → ℝ) (m
     (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
     partialSum X (m + k + 1) ω ∈ Set.Icc (finiteTailInf X m n ω) (finiteTailSup X m n ω) := by
   exact ⟨finiteTailInf_le_partialSum X m n k hk ω, partialSum_le_finiteTailSup X m n k hk ω⟩
+
+lemma finiteTailSup_mono (X : ℕ → Ω → ℝ) (m : ℕ) {n k : ℕ} (hnk : n ≤ k) (ω : Ω) :
+    finiteTailSup X m n ω ≤ finiteTailSup X m k ω := by
+  rw [finiteTailSup, Finset.sup'_le_iff]
+  intro j hj
+  exact partialSum_le_finiteTailSup X m k j
+    (Finset.mem_range.mpr <|
+      Nat.lt_of_lt_of_le (Finset.mem_range.mp hj) (Nat.succ_le_succ hnk)) ω
+
+lemma finiteTailInf_anti (X : ℕ → Ω → ℝ) (m : ℕ) {n k : ℕ} (hnk : n ≤ k) (ω : Ω) :
+    finiteTailInf X m k ω ≤ finiteTailInf X m n ω := by
+  rw [finiteTailInf]
+  refine Finset.le_inf' (s := Finset.range (n + 1)) (H := by simp)
+    (f := fun j => partialSum X (m + j + 1) ω) ?_
+  intro j hj
+  exact finiteTailInf_le_partialSum X m k j
+    (Finset.mem_range.mpr <|
+      Nat.lt_of_lt_of_le (Finset.mem_range.mp hj) (Nat.succ_le_succ hnk)) ω
+
+lemma finiteTailSup_sub_finiteTailInf_mono (X : ℕ → Ω → ℝ) (m : ℕ) {n k : ℕ}
+    (hnk : n ≤ k) (ω : Ω) :
+    finiteTailSup X m n ω - finiteTailInf X m n ω ≤
+      (finiteTailSup X m k ω - finiteTailInf X m k ω) := by
+  have hsup := finiteTailSup_mono X m hnk ω
+  have hinf := finiteTailInf_anti X m hnk ω
+  linarith
 
 lemma finiteTailSup_sub_finiteTailInf_le_finiteTailOscillationMax
     (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :

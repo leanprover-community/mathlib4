@@ -427,3 +427,40 @@ D. 实现时的具体注意点
     若 eventually `a ≤ u n ≤ b`，则
     `a ≤ liminf u atTop` 且 `limsup u atTop ≤ b`；
     然后把 `a,b` 具体取成 `finiteTailInf/finiteTailSup`。
+
+2026-03-12 本轮新增进展（七）
+
+56. 这次没有强行继续做 `limsup/liminf` wrapper；
+    实测发现 `Mathlib/Order/LiminfLimsup.lean` 中
+    `limsup_eq_iInf_iSup_of_nat` / `liminf_eq_iSup_iInf_of_nat`
+    位于 `CompleteLattice` 那一层，
+    因而不能直接用于 `ℝ`。
+    所以本轮改为继续补 finite-window 的单调性接口。
+
+57. 新增：
+    `finiteTailSup_mono`,
+    `finiteTailInf_anti`,
+    `finiteTailSup_sub_finiteTailInf_mono`。
+    也就是说，随着窗口 `n` 变大，
+    `finiteTailSup` 单调上升，
+    `finiteTailInf` 单调下降，
+    因而它们的差也单调上升。
+
+58. 本轮实现结论：
+    这一层只需要已有的
+    `partialSum_le_finiteTailSup`
+    与
+    `finiteTailInf_le_partialSum`；
+    然后用
+    `Finset.sup'_le_iff`
+    / `Finset.le_inf'`
+    和简单的线性算术即可。
+    这为下一步重新切回 `limsup/liminf` 时提供了更稳定的 finite approximation skeleton。
+
+59. 当前最自然的下一步更明确了：
+    现在应直接研究 `Mathlib` 中
+    `limsup_le_iff'` / `le_liminf_iff'`
+    这一层 `ConditionallyCompleteLinearOrder` 接口，
+    避开 `CompleteLattice` 版本；
+    或者显式构造 shifted tail sequence，
+    把 57 的单调 finite envelopes 接到那层 API 上。
