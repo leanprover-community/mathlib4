@@ -66,6 +66,15 @@ instance (A : Type*) : Category (Codiscrete A) where
   id _ := ⟨⟩
   comp _ _ := ⟨⟩
 
+/-- Any two objects in a codiscrete category are isomorphic. -/
+def iso {A : Type u} (x y : Codiscrete A) : x ≅ y where
+  hom := ()
+  inv := ()
+
+lemma eq_iso_hom {A : Type u} {x y : Codiscrete A} (f : x ⟶ y) : f = (iso x y).hom := rfl
+
+lemma eq_iso_inv {A : Type u} {x y : Codiscrete A} (f : x ⟶ y) : f = (iso y x).inv := rfl
+
 section
 variable {C : Type u} [Category.{v} C] {A : Type w}
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
+public import Mathlib.CategoryTheory.CodiscreteCategory
 
 /-!
 # The Coherent Isomorphism
@@ -37,39 +38,13 @@ open CategoryTheory
 
 namespace CategoryTheory
 
-/-- This is the free-living isomorphism as a category with objects `false` and `true`. -/
-inductive WalkingIso : Type u where
-  | zero : WalkingIso
-  | one  : WalkingIso
-
-attribute [aesop safe cases (rule_sets := [CategoryTheory])] WalkingIso
-attribute [grind cases] WalkingIso
+/-- This is the free-living isomorphism as the codiscrete category on `Bool`. -/
+abbrev WalkingIso : Type u := Codiscrete (ULift Bool)
 
 namespace WalkingIso
 
 /-- The underlying type of `WalkingIso` is equivalent to `Bool`, since they both have 2 elements. -/
-def equivBool : WalkingIso.{u} ≃ Bool where
-  toFun := fun
-    | .zero => false
-    | .one => true
-  invFun := fun
-    | false => .zero
-    | true => .one
-  left_inv := by
-    rintro (_ | _) <;>
-    rfl
-  right_inv := by
-    rintro (_ | _) <;>
-    rfl
-
-instance : DecidableEq WalkingIso.{u} :=
-  fun _ _ ↦ decidable_of_iff _ (Equiv.apply_eq_iff_eq equivBool)
-
-/-- The free isomorphism is the codiscrete category on two objects. -/
-instance : Category.{0, u} WalkingIso.{u} where
-  Hom _ _ := Unit
-  id _ := ⟨⟩
-  comp _ _ := ⟨⟩
+def equivBool : WalkingIso.{u} ≃ Bool := codiscreteEquiv.trans Equiv.ulift
 
 instance homUnique {x y : WalkingIso.{u}} : Unique (x ⟶ y) := inferInstanceAs (Unique Unit)
 
@@ -77,14 +52,18 @@ section
 
 variable {C : Type u} [Category.{v} C]
 
+/-- The domain of the isomorphism -/
+def zero : WalkingIso := .mk (ULift.up false)
+
+/-- The codomain of the isomorphism -/
+def one : WalkingIso := .mk (ULift.up true)
+
 /-- The isomorphism at the heart of `WalkingIso` -/
-def iso : zero ≅ one where
-  hom := ()
-  inv := ()
+def iso : zero ≅ one := Codiscrete.iso zero one
 
-lemma eq_iso_hom (f : zero ⟶ one) : f = iso.hom := rfl
+lemma eq_iso_hom (f : zero ⟶ one) : f = iso.hom := Codiscrete.eq_iso_hom f
 
-lemma eq_iso_inv (f : one ⟶ zero) : f = iso.inv := rfl
+lemma eq_iso_inv (f : one ⟶ zero) : f = iso.inv := Codiscrete.eq_iso_inv f
 
 /-- Functors out of `WalkingIso` define isomorphisms in the target category. -/
 @[simps!]
@@ -93,15 +72,18 @@ def toIso (F : WalkingIso.{w} ⥤ C) : F.obj zero ≅ F.obj one := F.mapIso iso
 /-- From an isomorphism in a category, true can build a functor out of `WalkingIso` to
   that category. -/
 def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{w} ⥤ C where
-  obj := fun
-    | zero => X
-    | one => Y
-  map := @fun
-    | zero, zero, _ => 𝟙 _
-    | zero, one,  _ => e.hom
-    | one, zero, _ => e.inv
-    | one, one,  _ => 𝟙 _
+  obj x := by
+    rcases ULift.down x.as
+    · exact X
+    · exact Y
+  map {x} {y} _ := by
+    rcases ULift.down x.as <;> rcases ULift.down y.as
+    · exact 𝟙 _
+    · exact e.hom
+    · exact e.inv
+    · exact 𝟙 _
   map_comp := by rintro (_ | _) (_ | _) (_ | _) <;> simp
+  map_id := by rintro (_ | _) <;> rfl
 
 section
 
@@ -149,6 +131,23 @@ end
 
 end WalkingIso
 
+namespace Codiscrete
+
+open Simplicial
+
+/-- Since the morphisms in a codiscrete category do not carry information, an n-simplex of
+  coherentIso is equivalent to an X-vector of length (n + 1). -/
+def equivFun {X : Type u} {n : ℕ} : nerve (Codiscrete X) _⦋n⦌ ≃ (Fin (n + 1) → X) where
+  toFun f n := (f.obj n).as
+  invFun f := .mk (fun n ↦ .mk (f n)) (fun _ ↦ ⟨⟩) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+
+/-- Since `Bool` (and hence `WalkingIso`) has decidable equality,
+  the simplices of coherentIso have decidable equality as well. -/
+instance {X : Type u} [DecidableEq X] {n : ℕ} : DecidableEq (nerve (Codiscrete X) _⦋n⦌) :=
+  fun _ _ ↦ decidable_of_iff _ (Equiv.apply_eq_iff_eq equivFun)
+
+end Codiscrete
+
 end CategoryTheory
 
 namespace SSet
@@ -163,16 +162,8 @@ namespace coherentIso
 
 instance : IsStrictSegal coherentIso := inferInstanceAs (IsStrictSegal (nerve _))
 
-/-- Since the morphisms in WalkingIso do not carry information, an n-simplex of coherentIso
-  is equivalent to an (n + 1)-vector of the objects of WalkingIso. -/
-def equivFun {n : ℕ} : coherentIso _⦋n⦌ ≃ (Fin (n + 1) → WalkingIso.{u}) where
-  toFun f := f.obj
-  invFun f := .mk f (fun _ ↦ ⟨⟩) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-
-/-- Since `Bool` (and hence `WalkingIso`) has decidable equality,
-  the simplices of coherentIso have decidable equality as well. -/
-instance (n : ℕ) : DecidableEq (coherentIso.{u} _⦋n⦌) :=
-  fun _ _ ↦ decidable_of_iff _ (Equiv.apply_eq_iff_eq coherentIso.equivFun)
+instance {n : ℕ} : DecidableEq (coherentIso _⦋n⦌) :=
+  inferInstanceAs (DecidableEq (nerve (Codiscrete _) _⦋n⦌))
 
 /-- The source vertex of `coherentIso`. -/
 def x₀ : coherentIso _⦋0⦌ :=
