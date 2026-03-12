@@ -796,6 +796,12 @@ then the induced map on their additive free groups is also surjective. -/]
 theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := by
   rw [← MonoidHom.range_eq_top, range_map, hf.range_eq, Set.image_univ, closure_range_of]
 
+theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := by
+  sorry
+
+theorem map_bijective (hf : Function.Bijective f) : Function.Bijective (map f) :=
+  ⟨map_injective hf.1, map_surjective hf.2⟩
+
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
 The converse can be found in `Mathlib/GroupTheory/FreeGroup/GeneratorEquiv.lean`, as
