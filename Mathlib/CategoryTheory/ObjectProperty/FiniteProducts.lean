@@ -32,7 +32,7 @@ variable {C : Type*} [Category* C] (P : ObjectProperty C)
 
 /-- The typeclass saying that `P : ObjectProperty C` is stable under binary products. -/
 abbrev IsClosedUnderBinaryProducts :=
-    P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)
+  P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)
 
 lemma prop_prod [P.IsClosedUnderBinaryProducts] (X Y : C) [HasBinaryProduct X Y]
     (hX : P X) (hY : P Y) :
@@ -74,7 +74,7 @@ instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms] :
     obtain ⟨Z, hZ, hZ₂⟩ := P.exists_prop_of_containsZero
     have hX : IsTerminal X :=
       (IsLimit.equivOfNatIsoOfIso p.diag.uniqueFromEmpty _ _
-        (by exact Cones.ext (Iso.refl _) (by rintro ⟨⟨⟩⟩))).1 p.isLimit
+        (by exact Cone.ext (Iso.refl _) (by rintro ⟨⟨⟩⟩))).1 p.isLimit
     exact P.prop_of_isZero (IsZero.of_iso hZ
       (IsLimit.conePointUniqueUpToIso hX (IsZero.isTerminal hZ)))
 

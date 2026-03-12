@@ -157,7 +157,7 @@ theorem isSubwalk_toWalk_iff_mem_edges {p : G.Walk u v} (h : G.Adj u' v') :
   refine ⟨fun h ↦ by grind [Dart.edge], fun h ↦ ?_⟩
   have ⟨d, hd, h⟩ := h
   rw [Dart.edge, Sym2.eq, Sym2.rel_iff'] at h
-  refine h.elim (fun h ↦ .inl ?_) (fun h ↦ .inr ?_)
+  refine h.imp (fun h ↦ ?_) (fun h ↦ ?_)
     <;> convert hd using 2
     <;> exact h.symm
 
@@ -214,6 +214,7 @@ protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
     (hpq : p.IsSubwalk q) : p.tail.IsSubwalk q :=
   (isSubwalk_drop _ _).trans hpq
 
+set_option backward.isDefEq.respectTransparency false in
 theorem take_isSubwalk_take {u v n k} (p : G.Walk u v) (h : n ≤ k) :
     (p.take n).IsSubwalk (p.take k) := by
   induction k, h using Nat.le_induction with

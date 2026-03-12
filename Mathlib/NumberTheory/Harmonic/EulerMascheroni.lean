@@ -62,6 +62,7 @@ lemma strictMono_eulerMascheroniSeq : StrictMono eulerMascheroniSeq := by
   · positivity
   · simp only [add_sub_cancel_left]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma one_half_lt_eulerMascheroniSeq_six : 1 / 2 < eulerMascheroniSeq 6 := by
   have : eulerMascheroniSeq 6 = 49 / 20 - log 7 := by
     rw [eulerMascheroniSeq]
