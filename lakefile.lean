@@ -70,7 +70,7 @@ lean_lib Cache where
   globs := #[`Cache.+]
 
 lean_lib MathlibTest where
-  globs := #[.submodules `MathlibTest]
+  globs := #[`MathlibTest.+]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
