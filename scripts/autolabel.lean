@@ -197,10 +197,14 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Control",
       "Mathlib" / "Data"] }
   | .«t-differential-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Manifold"] }
+    dirs := #[
+      "Mathlib" / "Geometry" / "Diffeology",
+      "Mathlib" / "Geometry" / "Manifold"] }
   | .«t-dynamics» => {}
   | .«t-euclidean-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Euclidean"] }
+    dirs := #[
+      "Mathlib" / "Geometry" / "Euclidean",
+      "Mathlib" / "Geometry" / "Polygon"] }
   | .«t-geometric-group-theory» => {
     dirs := #["Mathlib" / "Geometry" / "Group"] }
   | .«t-group-theory» => {}
@@ -234,6 +238,7 @@ def mathlibLabelData : (l : Label) → LabelData l
   | .«CI» => {
     dirs := #[
       ".github",
+      "Cache",
       "scripts",
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",
