@@ -327,6 +327,23 @@ lemma measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero_
       Nat.lt_trans (Finset.mem_range.mp hj) (Finset.mem_range.mp hk)
   · exact hε
 
+lemma measure_event_two_mul_partialSumMax_tail_le_sum_variance_div_sq_of_forall_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ j ∈ Finset.range (n + 1), MemLp (X (m + 1 + j)) 2 μ)
+    (hindep : Set.Pairwise ↑(Finset.range (n + 1))
+      fun i j => X (m + 1 + i) ⟂ᵢ[μ] X (m + 1 + j))
+    (hmean : ∀ j ∈ Finset.range (n + 1), μ[X (m + 1 + j)] = 0) {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ 2 * partialSumMax (fun j => X (m + 1 + j)) n ω} ≤
+      ∑ k ∈ Finset.range (n + 1),
+        ENNReal.ofReal ((∑ j ∈ Finset.range k, variance (X (m + 1 + j)) μ) / (ε / 2) ^ 2) := by
+  have hε2 : 0 < ε / 2 := by
+    linarith
+  refine (measure_event_two_mul_partialSumMax_tail_le_sum_sub' (μ := μ) X m n ε).trans ?_
+  refine Finset.sum_le_sum fun k hk => ?_
+  exact measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero_of_mem_range
+    (μ := μ) X m n k hk hX hindep hmean (ε := ε / 2) hε2
+
 end Real
 
 end Kolmogorov

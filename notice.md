@@ -106,3 +106,33 @@ useful Kolmogorov inequality results
     对右侧 `∑ k ∈ range (n + 1), μ {... partialSum ... k ...}` 的每一项应用新 lemma，
     得到一个 finite maximal event 的总和上界。
     这一步很可能就是把当前准备好的接口真正“组装”起来。
+
+2026-03-12 再推进一步:
+
+24. 这次把上两步准备好的接口真正组装起来了，新增：
+    `measure_event_two_mul_partialSumMax_tail_le_sum_variance_div_sq_of_forall_mean_zero`。
+    它给出一个 finite maximal event 的总和上界：
+    `μ { ε ≤ 2 * partialSumMax tail n }`
+    被一个
+    `∑ k ∈ range (n + 1), ENNReal.ofReal ((∑_{j<k} variance_j) / (ε/2)^2)`
+    控制。
+
+25. 证明结构非常直接：
+    (a) 先用 `measure_event_two_mul_partialSumMax_tail_le_sum_sub'`
+        把 maximal event 变成对各个 `k` 的 partial sum 事件求和；
+    (b) 再对每一项调用
+        `measure_partialSum_tail_abs_ge_le_sum_variance_div_sq_of_forall_mean_zero_of_mem_range`；
+    (c) `ε / 2 > 0` 用一次 `linarith` 即可。
+
+26. 完成情况：
+    (a) 这已经是第一个真正意义上的 finite tail maximal bound，只是右侧还是“前缀方差和的有限和”；
+    (b) `lake env lean Kolmogorov.lean` 通过；
+    (c) 目前还没有把右侧再压缩成单个尾部方差和，常数也还没整理成 `4 / ε^2` 的经典外形。
+
+27. 下一小步建议：
+    尝试继续压缩右侧的有限和。
+    可能有两条路：
+    (a) 先做一个纯代数/序上的 lemma，比较
+        `∑ k ≤ n, (∑ j < k, a_j)` 和 `C * ∑ j < n, a_j`；
+    (b) 或者改方向，直接开始接 Doob/maximal inequality，避免 union bound 带来的多余求和。
+    从当前文件状态看，若继续保持“小步稳编译”，更适合先把右侧有限和的整理接口做出来。
