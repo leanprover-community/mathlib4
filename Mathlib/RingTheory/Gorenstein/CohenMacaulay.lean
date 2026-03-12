@@ -778,11 +778,19 @@ lemma Module.length_ne_top_of_support_subset (M : Type*) [AddCommGroup M] [Modul
       ← ENat.coe_toNat_eq_self.mpr (ih3 h.2), ← Nat.cast_add]
     exact ENat.coe_ne_top _
 
+lemma LinearMap.surjective_of_injective_of_length_ne_top (M : Type*) [AddCommGroup M] [Module R M]
+    [fin : Module.Finite R M] (ne : Module.length R M ≠ ⊤)
+    (f : M →ₗ[R] M) (inj : Function.Injective f) : Function.Surjective f := by
+
+  sorry
+
 set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
     (h : Subsingleton (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) k)) :
     IsGorensteinLocalRing R := by
   obtain ⟨n, hn⟩ := exist_nat_eq' R
+  let e (I : Ideal R) : (ModuleCat.of R (Shrink.{u, u} (R ⧸ I))) ≅
+    ModuleCat.of R (R ⧸ I) := (Shrink.linearEquiv _ _).toModuleIso
   induction n using Nat.case_strong_induction_on generalizing R k with
   | hz =>
     let _ : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr hn
@@ -791,13 +799,11 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       apply ModuleCat.ext_subsingleton_of_quotients _ _ (fun I ↦ ?_)
       apply ext_subsingleton_of_support_subset _ _ k (fun p hp ↦ ?_)
       rw [Set.mem_setOf_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
-      let e : (ModuleCat.of R (Shrink.{u, u} (R ⧸ maximalIdeal R))) ≅
-        ModuleCat.of R (R ⧸ maximalIdeal R) := (Shrink.linearEquiv _ _).toModuleIso
-      exact (((extFunctor k).mapIso e.op).app
+      exact (((extFunctor k).mapIso (e (maximalIdeal R)).op).app
         (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp h
     exact (isGorensteinLocalRing_def R).mpr (ne_top_of_lt (injectiveDimension_lt_iff.mpr injlt))
   | hi n ih =>
-    have supp_eq (M : ModuleCat.{u} R) [Module.Finite R M] :
+    have supp_le (M : ModuleCat.{u} R) [Module.Finite R M] :
       Module.support R (Ext M (ModuleCat.of R R) k) ⊆ {closedPoint R} := by
       intro p hp
       by_contra ne
@@ -831,10 +837,64 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       simp only [notMem_support_iff]
       exact (@IsLocalizedModule.linearEquiv R _ q.primeCompl _ _ _ _ _ _ _ _ _
         (LocalizedModule.mkLinearMap q.primeCompl _) _ _ isl).subsingleton
-    --this impies finite length
-    --inj => surj for smul
-    --find maximal using `set_has_maximal_iff_noetherian`
-    --cause contradiction by smul short complex
-    sorry
+    let S := {p : Ideal R | p.IsPrime ∧
+      Nontrivial (Ext (ModuleCat.of R (R ⧸ p)) (ModuleCat.of R R) k)}
+    have empty (nept : S.Nonempty) : False := by
+      rcases set_has_maximal_iff_noetherian.mpr ‹_› S nept with ⟨p, ⟨_, ntr⟩, hp⟩
+      have pne : p ≠ maximalIdeal R := by
+        by_contra eq
+        rw [eq, ← not_subsingleton_iff_nontrivial] at ntr
+        exact ntr h
+      have plt : p < maximalIdeal R :=  lt_of_le_of_ne (le_maximalIdeal_of_isPrime p) pne
+      obtain ⟨x, hx, nmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ p := Set.exists_of_ssubset plt
+      have reg : IsSMulRegular (R ⧸ p) x := by
+        refine isSMulRegular_iff_right_eq_zero_of_smul.mpr (fun r hr ↦ ?_)
+        simpa [Algebra.smul_def, Ideal.Quotient.eq_zero_iff_mem, nmem] using hr
+      have : Subsingleton (Ext (ModuleCat.of R (QuotSMulTop x (R ⧸ p))) (ModuleCat.of R R) k) := by
+        apply ext_subsingleton_of_support_subset
+        intro q hq
+        have qnin : q.1 ∉ S := by
+          apply (hp q.1).mt
+          simp only [support_quotSMulTop, Set.mem_inter_iff, PrimeSpectrum.mem_zeroLocus,
+            Set.singleton_subset_iff, SetLike.mem_coe, Module.mem_support_iff_of_finite] at hq
+          apply not_not.mpr (lt_of_le_of_ne _ (ne_of_mem_of_not_mem' hq.2 nmem).symm)
+          exact le_of_eq_of_le Ideal.annihilator_quotient.symm hq.1
+        simp only [Set.mem_setOf_eq, q.2, true_and, not_nontrivial_iff_subsingleton, S] at qnin
+        exact (((extFunctor k).mapIso (e q.1).op).app
+          (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp qnin
+      let S := (ModuleCat.of R (R ⧸ p)).smulShortComplex x
+      have S_exact : S.ShortExact := IsSMulRegular.smulShortComplex_shortExact reg
+      have exac := Ext.contravariant_sequence_exact₂' S_exact (ModuleCat.of R R) k
+      have mono := exac.mono_g ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_src _)
+      have : S.f = x • 𝟙 (ModuleCat.of R (R ⧸ p)) := by
+        ext
+        simp [S]
+      simp only [S, this, AddCommGrpCat.mono_iff_injective, AddCommGrpCat.hom_ofHom] at mono
+      simp only [ModuleCat.smulShortComplex] at mono
+      have surjx : Function.Surjective
+        (x • LinearMap.id (R := R) (M := Ext (ModuleCat.of R (R ⧸ p)) (ModuleCat.of R R) k)) := by
+        apply LinearMap.surjective_of_injective_of_length_ne_top _
+          (Module.length_ne_top_of_support_subset _ (supp_le _))
+        convert mono
+        ext y
+        simp [Ext.mk₀_smul]
+      have : x ∈ (Module.annihilator R (Ext (ModuleCat.of R (R ⧸ p))
+        (ModuleCat.of R R) k)).jacobson := maximalIdeal_le_jacobson _ hx
+      absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
+      rw [eq_comm, eq_top_iff]
+      intro y hy
+      rcases surjx y with ⟨z, hz⟩
+      simpa [← hz] using Submodule.smul_mem_pointwise_smul z x _ hy
+    have ext_zero (p : Ideal R) [p.IsPrime] :
+      Subsingleton (Ext (ModuleCat.of R (R ⧸ p)) (ModuleCat.of R R) k) := by
+      by_contra! ntr
+      exact empty ⟨p, ⟨‹_›, ntr⟩⟩
+    have injlt : HasInjectiveDimensionLT (ModuleCat.of R R) k := by
+      apply hasInjectiveDimensionLT_of_enoughProjectives
+      apply ModuleCat.ext_subsingleton_of_quotients _ _ (fun I ↦ ?_)
+      apply ext_subsingleton_of_support_subset _ _ k (fun p hp ↦ ?_)
+      apply (((extFunctor k).mapIso (e p.1).op).app
+        (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp (ext_zero p.1)
+    exact (isGorensteinLocalRing_def R).mpr (injectiveDimension_lt_iff.mpr injlt).ne_top
 
 end
