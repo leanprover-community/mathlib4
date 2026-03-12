@@ -74,7 +74,8 @@ A. 已经完成的接口分层
     `smul_measure_partialSumMax_ge_le_integral_partialSum_succ_sq_of_mean_zero`,
     `smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero`,
     `smul_measure_partialSumMax_ge_le_sum_variance_of_mean_zero`,
-    `measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero`.
+    `measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero`,
+    `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero`.
 
 B. 目前最重要的判断
 
@@ -123,31 +124,41 @@ B. 目前最重要的判断
 
 C. 离最终 two-series theorem 还差什么
 
-18. 强版 finite Kolmogorov inequality：
-    去掉 union-bound 带来的 `(n + 1)`，得到经典的
-    `4 / ε^2 * ∑ variance`
-    形状。
+18. 强版 finite Kolmogorov inequality 的 shifted/tail 版本现在也已拿到第一版：
+    已有
+    `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero`，
+    可以直接控制
+    `partialSumMax (fun j => X (m + 1 + j)) (n + 1)`。
+    当前仍差的是把这个结果和现有 tail 事件记号彻底对齐，
+    主要是处理这个自然出现的 `n + 1` 索引。
 
-19. tail 版本：
-    把上面的 finite maximal inequality 改写成
-    `fun j => X (m + 1 + j)` 的 tail 版本。
+19. 在 18 的基础上做阈值改写：
+    把
+    `μ {ε / 2 ≤ partialSumMax tail}`
+    或等价的
+    `μ {ε ≤ 2 * partialSumMax tail}`
+    整理成证明中真正需要的
+    `4 / ε^2 * ∑ tail variances`
+    形状。
 
 20. oscillation 控制：
     形式化
-    `limsup (S_N - S_m) - liminf (S_N - S_m) ≤ 2 * sup_k |tail partial sums|`。
+    `limsup (S_N - S_m) - liminf (S_N - S_m) ≤ 2 * sup_k |tail partial sums|`，
+    把 tail maximal inequality 接到级数收敛问题上。
 
 21. 实分析尾和收敛：
     从 `∑ σ_n^2` 收敛推出
     `∑_{i=m+1}^{m+N} σ_i^2`
-    随 `m → ∞` 消失。
+    随 `m → ∞` 消失，
+    从而让 19 中得到的 tail 概率上界趋于 `0`。
 
 22. 几乎处处收敛收尾：
-    用上面几步证明 oscillation 为 `0` a.s.，
+    用 20 和 21 证明 oscillation 为 `0` a.s.，
     得到 mean-zero 版本的 almost sure convergence。
 
 23. 最后才是一般均值版本：
-    用 `X_n - μ_n` 归约到 mean-zero 情形，
-    再利用 `∑ μ_n` 收敛把原级数加回来。
+    对 `X_n - μ_n` 应用 mean-zero 情形，
+    再用 `∑ μ_n` 收敛把原级数加回来。
 
 D. 实现时的具体注意点
 
@@ -186,13 +197,18 @@ D. 实现时的具体注意点
     `ENNReal.ofReal_pow`
     回到实数里的 `/ ε^2` 形状。
 
-31. `condExp_of_stronglyMeasurable` 给的是函数等式；
+31. 把 non-tail 引理搬到 shifted sequence 时，
+    `iIndepFun.precomp` 已经够用；
+    当前 tail 版本里出现的主要技术噪音不是独立性，而是
+    `partialSumMax` 采用 `0..n` 记号带来的自然 `n + 1` 偏移。
+
+32. `condExp_of_stronglyMeasurable` 给的是函数等式；
     若要和 `condExp_sub` 等 a.e. 等式拼接，需要显式加 `.eventuallyEq`。
 
-32. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
+33. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
     更好用；当前平方过程 submartingale 的证明就是通过它手工搭起来的。
 
-33. 目前 `notice.md` 已清理过一次。
+34. 目前 `notice.md` 已清理过一次。
     以后优先维护：
     当前有效接口、
     当前真实瓶颈、

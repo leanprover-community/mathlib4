@@ -606,6 +606,26 @@ lemma measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero
     exact (ENNReal.ofReal_pow hε.le 2).symm]
   rw [← ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero hε.ne.symm)]
 
+lemma measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) (n + 1) ω} ≤
+      ENNReal.ofReal ((∑ j ∈ Finset.range (n + 1), variance (X (m + 1 + j)) μ) / ε ^ 2) := by
+  simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
+    measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero
+      (μ := μ) (X := fun j => X (m + 1 + j))
+      (hX := fun j => hX (m + 1 + j))
+      (hLp := fun j => hLp (m + 1 + j))
+      (hindep := hindep.precomp (g := fun j => m + 1 + j) <| by
+        intro a b hab
+        exact Nat.add_left_cancel (n := m + 1) <| by
+          simpa [Nat.add_assoc] using hab)
+      (hmean := fun j => hmean (m + 1 + j))
+      hε n
+
 lemma variance_partialSum_tail_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)
     (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ)
