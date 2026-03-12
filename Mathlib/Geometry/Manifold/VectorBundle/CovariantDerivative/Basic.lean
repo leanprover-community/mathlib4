@@ -82,25 +82,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
   [FiberBundle F V]
 
-/-- The exterior derivative of a scalar function on `M`, as a section of the cotangent bundle. -/
-abbrev extDerivFun (g : M → 𝕜) :
-    Π x : M, TangentSpace I x →L[𝕜] 𝕜 :=
-  fun x ↦ (fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
-
-@[simp]
-lemma extDerivFun_add {g g' : M → 𝕜} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
-    extDerivFun (g + g') x = extDerivFun (I := I) g x + extDerivFun g' x := by
-  simp [extDerivFun, mfderiv_add hg hg']
-  congr
-
-@[simp]
-lemma extDerivFun_zero {x : M} : extDerivFun (I := I) (0 : M → 𝕜) x = 0 := by
-  have : extDerivFun (0 : M → 𝕜) x + extDerivFun (0 : M → 𝕜) x =
-      extDerivFun (I := I) (0 : M → 𝕜) x := by
-    rw [← extDerivFun_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
-    simp
-  simpa using this
-
 /-- A function from sections of a vector bundle `V` on a manifold `M` to sections of $Hom(TM, E)$
 is a *covariant derivative* over a set `s` in `M` if it is additive and satisfies the Leibniz rule
 when applied to sections that are differentiable at a point of `s`.
