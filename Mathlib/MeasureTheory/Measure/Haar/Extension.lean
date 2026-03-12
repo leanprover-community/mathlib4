@@ -25,7 +25,7 @@ we construct a Haar measure on `B` from Haar measures on `A` and `C`.
 
 * `TopologicalGroup.IsSES.isHaarMeasure_inducedMeasure`: `inducedMeasure` is a Haar measure.
 * `TopologicalGroup.IsSES.inducedMeasure_lt_of_injOn`: If `ψ` is injective on an open set `U`,
-  then then the induced measure on `U` is bounded by `μC Set.univ * μA {1}` (possibly infinite).
+  then the induced measure on `U` is bounded by `μC Set.univ * μA {1}` (possibly infinite).
 
 -/
 
