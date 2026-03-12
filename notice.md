@@ -169,3 +169,29 @@ useful Kolmogorov inequality results
     如果先不换路线，也可以补一个纯代数 lemma，把
     `ENNReal.ofReal ((A) / (ε / 2)^2)` 改写成
     `ENNReal.ofReal (4 * A / ε^2)` 的经典常数外形。
+
+2026-03-12 常数整理:
+
+33. 这次先走了上面 32(b) 这条更稳的小步，没有碰 martingale。
+    新增了两个 lemma：
+    (a) `div_sq_half_eq_four_mul_div_sq`：
+        纯代数地把 `a / (ε / 2)^2` 改写成 `4 * a / ε^2`；
+    (b) `measure_event_two_mul_partialSumMax_tail_le_mul_four_mul_variance_div_sq_of_forall_mean_zero`：
+        把前一版 finite tail maximal bound 的常数整理成更贴近原证明文本的
+        `4 / ε^2` 外形。
+
+34. 搜索/实现记录：
+    (a) 这一步不需要新搜 mathlib 定理，直接在本地做一个实数域恒等式最省事；
+    (b) `field_simp` + `ring` 足够处理 `ε ≠ 0` 情形；
+    (c) `ε = 0` 单独分支后 `simp` 即可，所以这个重写 lemma 不需要额外假设。
+
+35. 完成情况：
+    (a) `Kolmogorov.lean` 新增经典常数版接口；
+    (b) `lake env lean Kolmogorov.lean` 已通过；
+    (c) 现在现有的较弱 finite maximal estimate 在 statement 上已经更接近 wiki 里的 `4 ε^{-2}` 形式，
+        后续如果改走 Doob/maximal inequality，只需要继续去掉多余的 `(n + 1)` 因子。
+
+36. 下一小步建议：
+    优先开始研究 `partialSum` 是否已经能接到现成的 martingale / submartingale maximal inequality。
+    如果能直接套 `MeasureTheory.maximal_ineq`，就有机会绕开 union bound，
+    从当前“弱但形状接近”的版本过渡到真正的 Kolmogorov inequality。

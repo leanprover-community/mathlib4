@@ -374,6 +374,27 @@ lemma measure_event_two_mul_partialSumMax_tail_le_mul_variance_div_sq_of_forall_
           ((∑ j ∈ Finset.range (n + 1), variance (X (m + 1 + j)) μ) / (ε / 2) ^ 2) := by
       simp
 
+lemma div_sq_half_eq_four_mul_div_sq (a ε : ℝ) :
+    a / (ε / 2) ^ 2 = 4 * a / ε ^ 2 := by
+  by_cases hε : ε = 0
+  · simp [hε]
+  · field_simp [hε]
+    ring
+
+lemma measure_event_two_mul_partialSumMax_tail_le_mul_four_mul_variance_div_sq_of_forall_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ j ∈ Finset.range (n + 1), MemLp (X (m + 1 + j)) 2 μ)
+    (hindep : Set.Pairwise ↑(Finset.range (n + 1))
+      fun i j => X (m + 1 + i) ⟂ᵢ[μ] X (m + 1 + j))
+    (hmean : ∀ j ∈ Finset.range (n + 1), μ[X (m + 1 + j)] = 0) {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ 2 * partialSumMax (fun j => X (m + 1 + j)) n ω} ≤
+      (n + 1) * ENNReal.ofReal
+        (4 * (∑ j ∈ Finset.range (n + 1), variance (X (m + 1 + j)) μ) / ε ^ 2) := by
+  simpa [div_sq_half_eq_four_mul_div_sq] using
+    measure_event_two_mul_partialSumMax_tail_le_mul_variance_div_sq_of_forall_mean_zero
+      (μ := μ) X m n hX hindep hmean hε
+
 end Real
 
 end Kolmogorov
