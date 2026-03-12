@@ -1343,7 +1343,6 @@ commutativity.
 See note [commutative subobjects]. -/ ]
 scoped instance (priority := 50) {M : Type*} [Semigroup M] [IsMulCommutative M] :
     CommSemigroup M where
-  mul_comm := IsMulCommutative.is_comm.comm
 
 /-- A `Monoid` which `IsMulCommutative` is a `CommMonoid`.
 
@@ -1364,7 +1363,6 @@ commutativity.
 See note [commutative subobjects]. -/ ]
 scoped instance (priority := 50) {M : Type*} [Monoid M] [IsMulCommutative M] :
     CommMonoid M where
-  mul_comm := IsMulCommutative.is_comm.comm
 
 /-- A `DivisionMonoid` which `IsMulCommutative` is a `DivisionCommMonoid`.
 
@@ -1385,7 +1383,6 @@ commutativity.
 See note [commutative subobjects]. -/ ]
 scoped instance (priority := 50) {M : Type*} [DivisionMonoid M] [IsMulCommutative M] :
     DivisionCommMonoid M where
-  mul_comm := IsMulCommutative.is_comm.comm
 
 /-- A `Group` which `IsMulCommutative` is a `CommGroup`.
 
