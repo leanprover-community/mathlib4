@@ -458,6 +458,10 @@ lemma le_finiteTailOscillationMax_iff (X : ℕ → Ω → ℝ) (m n : ℕ) (ε :
         ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω| := by
   simp [finiteTailOscillationMax, Finset.le_sup'_iff]
 
+lemma finiteTailOscillationMax_nonneg (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
+    0 ≤ finiteTailOscillationMax X m n ω := by
+  exact (le_finiteTailOscillationMax_iff X m n 0 ω).2 ⟨0, by simp, 0, by simp, by simp⟩
+
 lemma partialSum_le_finiteTailSup (X : ℕ → Ω → ℝ) (m n k : ℕ)
     (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
     partialSum X (m + k + 1) ω ≤ finiteTailSup X m n ω := by
@@ -793,6 +797,21 @@ lemma finiteTailOscillationMax_event_subset_two_mul_partialSumMax_event
       {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
   intro ω hω
   exact le_trans hω (finiteTailOscillationMax_le_two_mul_partialSumMax_tail X m n ω)
+
+lemma event_le_liminf_finiteTailOscillationMax_subset_iUnion
+    (X : ℕ → Ω → ℝ) (m : ℕ) {η ε : ℝ} (hηε : η < ε) :
+    {ω | ε ≤ Filter.liminf (fun n => finiteTailOscillationMax X m n ω) Filter.atTop} ⊆
+      ⋃ n : ℕ, {ω | η ≤ finiteTailOscillationMax X m n ω} := by
+  intro ω hω
+  have hbuOsc : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
+      (fun n => finiteTailOscillationMax X m n ω) := by
+    exact Filter.isBoundedUnder_of ⟨0, fun k => finiteTailOscillationMax_nonneg X m k ω⟩
+  have hlt : ∀ᶠ n : ℕ in Filter.atTop, η < finiteTailOscillationMax X m n ω := by
+    exact Filter.eventually_lt_of_lt_liminf (lt_of_lt_of_le hηε hω) hbuOsc
+  simp only [Filter.eventually_atTop] at hlt
+  rcases hlt with ⟨N, hN⟩
+  refine Set.mem_iUnion.2 ⟨N, ?_⟩
+  exact le_of_lt (hN N le_rfl)
 
 lemma finiteTailSup_sub_finiteTailInf_event_subset_finiteTailOscillationMax_event
     (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :

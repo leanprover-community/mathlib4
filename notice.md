@@ -95,3 +95,49 @@ Kolmogorov two-series theorem formalization notes
   and
   `limsup_sub_liminf_partialSum_tail_le_liminf_finiteTailOscillationMax`.
 - This means the deterministic oscillation bridge has reached the form actually needed for the final theorem.
+
+2026-03-12 Step1 progress update
+
+8. What was completed this round
+
+- Finished the `notice` Step 1 in the minimal useful form.
+- Added `finiteTailOscillationMax_nonneg`.
+  This packages the trivial lower bound needed to use `Filter.eventually_lt_of_lt_liminf`.
+- Added
+  `event_le_liminf_finiteTailOscillationMax_subset_iUnion`.
+  Concretely, for `η < ε`,
+  `{ω | ε ≤ liminf (fun n => finiteTailOscillationMax X m n ω)}`
+  is contained in
+  `⋃ n, {ω | η ≤ finiteTailOscillationMax X m n ω}`.
+
+9. Useful search result for this step
+
+- `Mathlib/Order/LiminfLimsup.lean`:
+  `Filter.eventually_lt_of_lt_liminf`.
+  This is the right interface to turn a pointwise inequality
+  `η < liminf u`
+  into an eventual statement `η < u n`.
+- `Mathlib/Order/Filter/IsBounded.lean`:
+  `Filter.isBoundedUnder_of`.
+  This is the clean way to manufacture the bounded-below hypothesis for the liminf lemma from
+  `finiteTailOscillationMax_nonneg`.
+
+10. Why this formulation was chosen
+
+- It keeps the step small and directly reusable for the measure step.
+- The target set is controlled by a countable union of finite oscillation events, so the next move can use
+  `measure_iUnion_le`.
+- I intentionally used a slack threshold `η < ε` instead of trying to force the exact threshold `ε`.
+  The strict liminf API naturally gives eventual strict inequalities, so this avoids unnecessary friction.
+  For the next step, taking `η = ε / 2` when `ε > 0` should be the clean path.
+
+11. Immediate next step
+
+- Use the deterministic bridge
+  `limsup_sub_liminf_partialSum_tail_le_liminf_finiteTailOscillationMax`
+  together with
+  `event_le_liminf_finiteTailOscillationMax_subset_iUnion`
+  to get an event inclusion for
+  `{ω | ε ≤ limsup tail partial sums - liminf tail partial sums}`.
+- Then convert that inclusion into a measure bound, probably first with
+  `measure_iUnion_le`, and only afterwards optimize it if a sharper monotone-union argument is available.
