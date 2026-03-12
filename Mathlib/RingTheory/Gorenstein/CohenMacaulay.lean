@@ -782,7 +782,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
     (h : Subsingleton (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) k)) :
     IsGorensteinLocalRing R := by
-  obtain ⟨n, hn⟩ : ∃ n : ℕ, ringKrullDim R = n := exist_nat_eq' R
+  obtain ⟨n, hn⟩ := exist_nat_eq' R
   induction n using Nat.case_strong_induction_on generalizing R k with
   | hz =>
     let _ : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr hn
@@ -804,8 +804,17 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       have ltm : p.1 < maximalIdeal R := lt_of_le_of_ne (le_maximalIdeal_of_isPrime p.1) (by
         simpa [PrimeSpectrum.ext_iff, closedPoint] using ne)
       rcases exists_isPrime_no_insert p.1 ltm with ⟨q, qp, ple, qlt, hq⟩
+      obtain ⟨m, hm⟩ := exist_nat_eq' (Localization.AtPrime q)
+      have mle : m ≤ n := by
+        rw [← Order.lt_add_one_iff, ← Nat.cast_lt (α := WithBot ℕ∞), ← hm, ← hn,
+          IsLocalization.AtPrime.ringKrullDim_eq_height q, Ideal.height_eq_primeHeight,
+          ← maximalIdeal_primeHeight_eq_ringKrullDim, WithBot.coe_lt_coe]
+        exact Ideal.primeHeight_strict_mono qlt
+      simp only [hn, Nat.cast_lt] at gt
+      have mlt : m < k - 1 := by omega
       have isg : IsGorensteinLocalRing (Localization.AtPrime q) := by
-        sorry
+        apply ih m mle (k - 1) (lt_of_eq_of_lt hm (Nat.cast_lt.mpr mlt)) _ hm
+        exact residueField_ext_subsingleton_of_no_insert q qlt hq (k - 1) k (by omega) h
       have qmem : ⟨q, qp⟩ ∈ support R (Ext M (ModuleCat.of R R) k) :=
         Module.mem_support_iff_of_finite.mpr ((Module.mem_support_iff_of_finite.mp hp).trans ple)
 
