@@ -75,7 +75,8 @@ A. 已经完成的接口分层
     `smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero`,
     `smul_measure_partialSumMax_ge_le_sum_variance_of_mean_zero`,
     `measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero`,
-    `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero`.
+    `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero`,
+    `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero'`.
 
 B. 目前最重要的判断
 
@@ -124,13 +125,13 @@ B. 目前最重要的判断
 
 C. 离最终 two-series theorem 还差什么
 
-18. 强版 finite Kolmogorov inequality 的 shifted/tail 版本现在也已拿到第一版：
+18. 强版 finite Kolmogorov inequality 的 shifted/tail 版本现在已经对齐到常用索引：
     已有
-    `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero`，
+    `measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero'`，
     可以直接控制
-    `partialSumMax (fun j => X (m + 1 + j)) (n + 1)`。
-    当前仍差的是把这个结果和现有 tail 事件记号彻底对齐，
-    主要是处理这个自然出现的 `n + 1` 索引。
+    `partialSumMax (fun j => X (m + 1 + j)) n`
+    且右端是
+    `∑_{j < n} variance (X (m + 1 + j)) / ε^2`。
 
 19. 在 18 的基础上做阈值改写：
     把
@@ -199,8 +200,7 @@ D. 实现时的具体注意点
 
 31. 把 non-tail 引理搬到 shifted sequence 时，
     `iIndepFun.precomp` 已经够用；
-    当前 tail 版本里出现的主要技术噪音不是独立性，而是
-    `partialSumMax` 采用 `0..n` 记号带来的自然 `n + 1` 偏移。
+    目前这条路线里的索引偏移已经通过对 `n = 0 / n + 1` 分情况吸收掉了。
 
 32. `condExp_of_stronglyMeasurable` 给的是函数等式；
     若要和 `condExp_sub` 等 a.e. 等式拼接，需要显式加 `.eventuallyEq`。

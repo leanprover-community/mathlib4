@@ -626,6 +626,26 @@ lemma measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero
       (hmean := fun j => hmean (m + 1 + j))
       hε n
 
+lemma measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero'
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
+    {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} ≤
+      ENNReal.ofReal ((∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / ε ^ 2) := by
+  cases n with
+  | zero =>
+      have hset : {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) 0 ω} = (∅ : Set Ω) := by
+        ext ω
+        simp [partialSumMax, not_le_of_gt hε]
+      rw [hset]
+      simp
+  | succ n =>
+      simpa using
+        measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero
+          (μ := μ) X m n hX hLp hindep hmean hε
+
 lemma variance_partialSum_tail_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)
     (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ)
