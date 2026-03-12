@@ -3,6 +3,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Finset
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Order.Lattice
+import Mathlib.Probability.BorelCantelli
 import Mathlib.Probability.Moments.Variance
 import Mathlib.Probability.Process.Adapted
 
@@ -99,6 +100,13 @@ end Deterministic
 section Real
 
 variable {Ω : Type*}
+
+lemma condExp_natural_eq_zero_of_mean_zero {Ω : Type*} [MeasurableSpace Ω]
+    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hindep : iIndepFun X μ)
+    {i j : ℕ} (hij : i < j) (hmean : μ[X j] = 0) :
+    μ[X j | Filtration.natural X hX i] =ᵐ[μ] 0 := by
+  simpa [hmean] using hindep.condExp_natural_ae_eq_of_lt hX hij
 
 /-- The maximum absolute value of the partial sums `partialSum X k` for `k ≤ n`. -/
 def partialSumMax (X : ℕ → Ω → ℝ) (n : ℕ) : Ω → ℝ :=

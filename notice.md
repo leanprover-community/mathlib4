@@ -233,3 +233,33 @@ useful Kolmogorov inequality results
     预期关键步会是把
     `μ[X j | Filtration.natural X i]`
     在 `i < j` 时改写成常数 `μ[X j]`，然后在零均值假设下化成 `0`。
+
+2026-03-12 条件期望原子步:
+
+42. 这次没有直接写 martingale，而是先把上条 41 里点名的关键原子步单独落下。
+    新增：
+    `condExp_natural_eq_zero_of_mean_zero`。
+    它表明：若 `X_j` 独立于 `X` 的过去自然过滤，且 `μ[X_j] = 0`，那么
+    `μ[X_j | Filtration.natural X i] = 0` a.e.（当 `i < j`）。
+
+43. 搜索记录：
+    (a) 直接复用了 `Mathlib/Probability/BorelCantelli.lean` 里的
+        `iIndepFun.condExp_natural_ae_eq_of_lt`；
+    (b) 这个 theorem 已经把“未来项条件期望等于常数期望”做好了，
+        所以这里只需要再用 `hmean : μ[X j] = 0` 做一次 `simpa`；
+    (c) 为了调用它，这次在 `Kolmogorov.lean` 增加了
+        `import Mathlib.Probability.BorelCantelli`。
+
+44. 完成情况：
+    (a) 新 lemma 已加入 `Kolmogorov.lean`；
+    (b) `lake env lean Kolmogorov.lean` 已通过；
+    (c) 现在“独立 + 零均值增量”已经能直接转成条件期望为零，
+        这正是后面证明 shifted partial sums 为 martingale 时最关键的一步。
+
+45. 下一小步建议：
+    尝试把 `partialSum_succ` 和新得到的
+    `condExp_natural_eq_zero_of_mean_zero`
+    组装成一个有限步 martingale 递推 lemma，
+    先证明
+    `μ[partialSum X (j + 1) | Filtration.natural X hX i] = partialSum X (i + 1)` a.e.
+    在 `i ≤ j` 的情形。
