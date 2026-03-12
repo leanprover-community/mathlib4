@@ -176,8 +176,7 @@ theorem geometric_hahn_banach_of_nonempty_interior_point
   obtain ⟨f, u, hfne, hA', hx'⟩ :=
     geometric_hahn_banach_of_nonempty_interior hA (convex_singleton x)
       (disjoint_singleton_right.2 hxA) hAint (singleton_nonempty x)
-  refine ⟨f, hfne, fun a ha => ?_⟩
-  exact (hA' a ha).trans (hx' x (mem_singleton _))
+  exact ⟨f, hfne, fun a ha => (hA' a ha).trans (hx' x (mem_singleton _))⟩
 
 variable [LocallyConvexSpace ℝ E]
 
