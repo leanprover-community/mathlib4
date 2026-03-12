@@ -201,6 +201,7 @@ local instance [MonoidalCategory C] [MonoidalClosed C] [BraidedCategory C] :
     ∀ S : C, PreservesColimitsOfSize (tensorRight S) := fun S ↦
   preservesColimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight S)
 
+/-- The monoidal category instance induced by the pushout-product. -/
 @[simps]
 scoped instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
     [BraidedCategory C] : MonoidalCategoryStruct (Arrow C) where
@@ -266,6 +267,7 @@ lemma triangle (X Y : Arrow C) :
     exact initialIsInitial.ofIso (zeroMul initialIsInitial).symm
   · simp [← comp_whiskerRight_assoc]
 
+/-- The monoidal category instance induced by the pushout-product. -/
 scoped instance : MonoidalCategory (Arrow C) where
   tensorHom_comp_tensorHom := tensorHom_comp_tensorHom
   associator_naturality := associator_naturality
@@ -286,6 +288,7 @@ lemma hexagon_reverse (X Y Z : Arrow C) :
   refine Arrow.hom_ext _ _ (pushout.hom_ext ?_ (by simp)) (by simp)
   apply ((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
 
+/-- The braided category instance induced by the pushout-product. -/
 @[simps -isSimp]
 scoped instance braidedCategory : BraidedCategory (Arrow C) where
   braiding := braiding
@@ -293,9 +296,11 @@ scoped instance braidedCategory : BraidedCategory (Arrow C) where
   hexagon_reverse := hexagon_reverse
 
 attribute [local simp] braidedCategory_braiding in
+/-- The symmetric category instance induced by the pushout-product. -/
 @[simps! -isSimp]
 scoped instance symmetricCategory : SymmetricCategory (Arrow C) where
 
+/-- The monoidal closed instance induced by the pushout-product and pullback-hom. -/
 scoped instance [HasPullbacks C] : MonoidalClosed (Arrow C) where
   closed X := {
     rightAdj := pullbackHom.obj (Opposite.op X)
