@@ -81,7 +81,7 @@ theorem spectralNorm_eq (x : PadicAlgCl p) : spectralNorm ℚ_[p] (PadicAlgCl p)
 @[simp] theorem norm_extends (x : ℚ_[p]) : ‖(x : PadicAlgCl p)‖ = ‖x‖ :=
   spectralAlgNorm_extends (K := ℚ_[p]) (L := PadicAlgCl p) _
 
-/-- The underlying metric space of `PadicAlgCl p` is ultrametic. -/
+/-- The underlying metric space of `PadicAlgCl p` is ultrametric. -/
 instance isUltrametricDist : IsUltrametricDist (PadicAlgCl p) :=
   IsUltrametricDist.isUltrametricDist_of_forall_norm_add_le_max_norm (PadicAlgCl.isNonarchimedean p)
 
@@ -204,7 +204,7 @@ theorem norm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
 theorem norm_extends' (x : ℚ_[p]) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
   simp
 
-/-- The underlying metric space of `ℂ_[p]` is ultrametic. -/
+/-- The underlying metric space of `ℂ_[p]` is ultrametric. -/
 instance isUltrametricDist : IsUltrametricDist ℂ_[p] := IsUltrametricDist.of_normedAlgebra ℚ_[p]
 
 /-- The norm on `ℂ_[p]` is nonarchimedean. -/
@@ -250,7 +250,7 @@ instance charZero : CharZero ℂ_[p] :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] ℂ_[p]).injective).mp inferInstance
 
 set_option backward.isDefEq.respectTransparency false in
-/-- `ℂ_[p]` is algebrically closed. -/
+/-- `ℂ_[p]` is algebraically closed. -/
 instance isAlgClosed : IsAlgClosed ℂ_[p] :=
   IsAlgClosed.of_denseRange UniformSpace.Completion.denseRange_coe
 
