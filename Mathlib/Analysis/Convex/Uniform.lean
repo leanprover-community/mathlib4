@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Filippo A. E. Nuccio, Aristotle AI
+Authors: Yaël Dillies, Filippo A. E. Nuccio, Aristotle (Harmonic)
 -/
+
 module
 
 public import Mathlib.Analysis.Convex.StrictConvexSpace
