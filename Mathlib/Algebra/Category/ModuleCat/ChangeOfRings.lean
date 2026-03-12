@@ -837,6 +837,11 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y :=
         rw [mul_smul]
       | add _ _ ih1 ih2 => rw [smul_add, map_add, map_add, ih1, ih2, smul_add] }
 
+lemma Counit.map_apply_one_tmul {Y : ModuleCat S} (y : Y) :
+    Counit.map f ((1 : S) ⊗ₜ[R] y) = y := by
+  change (1 : S) • y = y
+  simp
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation from the composition of restriction and extension of scalars to the
 identity functor on `S`-module.
