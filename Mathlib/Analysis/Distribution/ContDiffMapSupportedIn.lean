@@ -716,8 +716,8 @@ noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F �
   toLinearMap := postcompLM T
   cont := show Continuous (postcompLM T) by
     refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
-      (ContDiffMapSupportedIn.withSeminorms ..) _ (fun i ↦ ⟨{i}, ‖T‖₊, fun f ↦ ?_⟩)
-    simpa [NNReal.smul_def] using seminorm_postcompLM_le 𝕜 T f
+      (ContDiffMapSupportedIn.withSeminorms ..) _ (.of_real fun i ↦ ⟨{i}, ‖T‖, fun f ↦ ?_⟩)
+    simpa using seminorm_postcompLM_le 𝕜 T f
 
 @[simp]
 lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
