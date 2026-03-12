@@ -7,9 +7,17 @@ Done:
 - Step 2: bound the tail oscillation event by `tailVarianceBound`.
 - Step 3: show `tailVarianceBound → 0` from summable variances.
 - Step 4: in the mean-zero case, partial sums are a.e. Cauchy, hence a.e. convergent in `ℝ`.
+- Step 5: center the variables and deduce the general theorem on a probability space.
 
 Current endpoint in `Kolmogorov.lean`:
-- `ae_exists_tendsto_partialSum_of_summable_variance_of_mean_zero`
+- `kolmogorov_two_series`
 
 Remaining:
-- Step 5: center the variables and deduce the full nonzero-mean Kolmogorov two-series theorem.
+- No remaining step in `notice.md`.
+
+Useful Step 5 lemmas added:
+- `centered`
+- `integral_centered_eq_zero`
+- `variance_centered_eq`
+- `partialSum_eq_partialSum_centered_add_sum_integral`
+- `ae_exists_tendsto_partialSum_of_summable_mean_of_summable_variance`

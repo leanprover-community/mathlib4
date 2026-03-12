@@ -1434,6 +1434,117 @@ theorem ae_exists_tendsto_partialSum_of_summable_variance_of_mean_zero
       (μ := μ) X hX hLp hindep hmean hvar] with ω hω
   exact cauchySeq_tendsto_of_complete hω
 
+/-- The centered version of a sequence of real random variables. -/
+noncomputable def centered {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) (X : ℕ → Ω → ℝ) :
+    ℕ → Ω → ℝ :=
+  fun n ω => X n ω - μ[X n]
+
+@[simp] lemma centered_apply {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω)
+    (X : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :
+    centered μ X n ω = X n ω - μ[X n] := rfl
+
+lemma centered_stronglyMeasurable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) :
+    ∀ k, StronglyMeasurable (centered μ X k) := by
+  intro k
+  exact (hX k).sub stronglyMeasurable_const
+
+lemma centered_memLp {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (hLp : ∀ k, MemLp (X k) 2 μ) :
+    ∀ k, MemLp (centered μ X k) 2 μ := by
+  intro k
+  exact (hLp k).sub (memLp_const (μ[X k]))
+
+lemma centered_iIndepFun {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    (X : ℕ → Ω → ℝ) (hindep : iIndepFun X μ) :
+    iIndepFun (centered μ X) μ := by
+  simpa [centered, Function.comp] using
+    hindep.comp (fun k x => x - μ[X k]) (fun k => measurable_id.sub measurable_const)
+
+lemma integral_centered_eq_zero {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ)
+    (hLp : ∀ k, MemLp (X k) 2 μ) :
+    ∀ k, μ[centered μ X k] = 0 := by
+  intro k
+  simp [centered]
+  rw [integral_sub ((hLp k).integrable (by norm_num)) (integrable_const _)]
+  simp [integral_const]
+
+lemma variance_centered_eq {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k)) :
+    ∀ k, variance (centered μ X k) μ = variance (X k) μ := by
+  intro k
+  simpa [centered] using variance_sub_const (μ := μ) ((hX k).aestronglyMeasurable) (μ[X k])
+
+lemma summable_variance_centered {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k))
+    (hvar : Summable (fun n => variance (X n) μ)) :
+    Summable (fun n => variance (centered μ X n) μ) := by
+  refine hvar.congr ?_
+  intro n
+  exact (variance_centered_eq (μ := μ) X hX n).symm
+
+lemma partialSum_centered_eq_sub_sum_integral {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    (X : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :
+    partialSum (centered μ X) n ω =
+      partialSum X n ω - ∑ i ∈ Finset.range n, μ[X i] := by
+  calc
+    partialSum (centered μ X) n ω = ∑ i ∈ Finset.range n, (X i ω - μ[X i]) := by
+      simp [partialSum, centered]
+    _ = (∑ i ∈ Finset.range n, X i ω) - ∑ i ∈ Finset.range n, μ[X i] := by
+      rw [Finset.sum_sub_distrib]
+    _ = partialSum X n ω - ∑ i ∈ Finset.range n, μ[X i] := by
+      simp [partialSum]
+
+lemma partialSum_eq_partialSum_centered_add_sum_integral
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    (X : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :
+    partialSum X n ω =
+      partialSum (centered μ X) n ω + ∑ i ∈ Finset.range n, μ[X i] := by
+  rw [partialSum_centered_eq_sub_sum_integral (μ := μ) X n ω]
+  ring
+
+theorem ae_exists_tendsto_partialSum_of_summable_mean_of_summable_variance
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ)
+    (hmean : Summable (fun n => μ[X n]))
+    (hvar : Summable (fun n => variance (X n) μ)) :
+    ∀ᵐ ω ∂μ, ∃ x : ℝ, Filter.Tendsto (fun n => partialSum X n ω) Filter.atTop (nhds x) := by
+  let Y : ℕ → Ω → ℝ := centered μ X
+  have hYX : ∀ k, StronglyMeasurable (Y k) := centered_stronglyMeasurable (μ := μ) X hX
+  have hYLp : ∀ k, MemLp (Y k) 2 μ := centered_memLp (μ := μ) X hLp
+  have hYindep : iIndepFun Y μ := centered_iIndepFun (μ := μ) X hindep
+  have hYmean : ∀ k, μ[Y k] = 0 := integral_centered_eq_zero (μ := μ) X hLp
+  have hYvar : Summable (fun n => variance (Y n) μ) :=
+    summable_variance_centered (μ := μ) X hX hvar
+  have hmean_tendsto :
+      Filter.Tendsto (fun n => ∑ i ∈ Finset.range n, μ[X i]) Filter.atTop
+        (nhds (∑' i, μ[X i])) :=
+    hmean.hasSum.tendsto_sum_nat
+  filter_upwards
+    [ae_exists_tendsto_partialSum_of_summable_variance_of_mean_zero
+      (μ := μ) Y hYX hYLp hYindep hYmean hYvar] with ω hω
+  rcases hω with ⟨x, hx⟩
+  refine ⟨x + ∑' i, μ[X i], ?_⟩
+  refine Filter.Tendsto.congr' (Filter.Eventually.of_forall fun n => ?_) (hx.add hmean_tendsto)
+  exact by
+    simpa [Y] using partialSum_eq_partialSum_centered_add_sum_integral (μ := μ) X n ω
+
+theorem kolmogorov_two_series
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ)
+    (hmean : Summable (fun n => μ[X n]))
+    (hvar : Summable (fun n => variance (X n) μ)) :
+    ∀ᵐ ω ∂μ, ∃ x : ℝ, Filter.Tendsto (fun n => partialSum X n ω) Filter.atTop (nhds x) :=
+  ae_exists_tendsto_partialSum_of_summable_mean_of_summable_variance
+    (μ := μ) X hX hLp hindep hmean hvar
+
 lemma measure_finite_tail_oscillation_event_le_four_mul_variance_div_sq_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     (X : ℕ → Ω → ℝ) (m n : ℕ)
