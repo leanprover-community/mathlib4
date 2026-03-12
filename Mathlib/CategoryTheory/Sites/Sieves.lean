@@ -1335,11 +1335,7 @@ lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
 lemma Presieve.functorPushforward_overForget
     {S : C} {X : Over S} (R : Presieve X) :
     Presieve.functorPushforward (Over.forget S) R =
-      (Sieve.generate (Presieve.map (Over.forget S) R)).arrows := by
-  refine le_antisymm ?_ ?_
-  · rintro Y _ ⟨Z, a, b, ha, rfl⟩
-    exact ⟨Z.left, b, a.left, ⟨ha⟩, rfl⟩
-  · rintro Y _ ⟨Z, a, b, ⟨hd⟩, rfl⟩
-    exact ⟨_, _, a, hd, by simp⟩
+      (Sieve.generate (Presieve.map (Over.forget S) R)).arrows :=
+  (Sieve.arrows_generate_map_eq_functorPushforward (Over.forget S)).symm
 
 end CategoryTheory
