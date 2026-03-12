@@ -67,7 +67,7 @@ instance [Std.Symm r] : Std.Symm (r on f) where
   symm _ _ := symm_of r
 
 variable {f} in
-theorem Injective.antisymm (hinj : f.Injective) [Std.Antisymm r] : Std.Antisymm (r on f) where
+theorem Injective.antisymm_onFun (hinj : f.Injective) [Std.Antisymm r] : Std.Antisymm (r on f) where
   antisymm _ _ hab hba := hinj <| antisymm_of r hab hba
 
 instance [Std.Asymm r] : Std.Asymm (r on f) where
@@ -80,7 +80,7 @@ instance [Std.Total r] : Std.Total (r on f) where
   total _ _ := total_of r _ _
 
 variable {f} in
-theorem Injective.trichotomous (hinj : f.Injective) [Std.Trichotomous r] :
+theorem Injective.trichotomous_onFun (hinj : f.Injective) [Std.Trichotomous r] :
     Std.Trichotomous (r on f) where
   trichotomous a b hab hba := hinj <| Std.Trichotomous.trichotomous (f a) (f b) hab hba
 
@@ -89,14 +89,14 @@ instance [IsEquiv β r] : IsEquiv α (r on f) where
 instance [IsPreorder β r] : IsPreorder α (r on f) where
 
 variable {f} in
-theorem Injective.isPartialOrder (hinj : f.Injective) [IsPartialOrder β r] :
+theorem Injective.isPartialOrder_onFun (hinj : f.Injective) [IsPartialOrder β r] :
     IsPartialOrder α (r on f) :=
-  { hinj.antisymm r with }
+  { hinj.antisymm_onFun r with }
 
 variable {f} in
-theorem Injective.isLinearOrder (hinj : f.Injective) [IsLinearOrder β r] :
+theorem Injective.isLinearOrder_onFun (hinj : f.Injective) [IsLinearOrder β r] :
     IsLinearOrder α (r on f) :=
-  { hinj.isPartialOrder r with }
+  { hinj.isPartialOrder_onFun r with }
 
 instance [IsStrictOrder β r] : IsStrictOrder α (r on f) where
 
@@ -104,9 +104,9 @@ instance [IsStrictWeakOrder β r] : IsStrictWeakOrder α (r on f) where
   incomp_trans _ _ _ := IsStrictWeakOrder.incomp_trans (lt := r) _ _ _
 
 variable {f} in
-theorem Injective.isStrictTotalOrder (hinj : f.Injective) [IsStrictTotalOrder β r] :
+theorem Injective.isStrictTotalOrder_onFun (hinj : f.Injective) [IsStrictTotalOrder β r] :
     IsStrictTotalOrder α (r on f) :=
-  { hinj.trichotomous r with }
+  { hinj.trichotomous_onFun r with }
 
 end onFun
 
