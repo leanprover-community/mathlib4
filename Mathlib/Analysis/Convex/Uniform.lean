@@ -255,7 +255,8 @@ theorem uniformConvexSpace_of_tendsto_norm_sub_of_tendsto_norm_add
     · have := @Tendsto.sub (G := ℝ) (α := ℕ) _ _ _ (f := fun n ↦ 2) (g := fun n ↦ 1/(n + 2))
         (l := atTop) (a := 2) (b := 0) (by simp) ?_
       · simpa [sub_zero]
-      sorry -- **asking** `Aristotle`...
+      exact tendsto_const_nhds.div_atTop <| Filter.tendsto_atTop_add_const_right _ _
+        tendsto_natCast_atTop_atTop
     · exact tendsto_const_nhds
     · intro; grind
     · intro; grind
