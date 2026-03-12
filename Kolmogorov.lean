@@ -79,6 +79,11 @@ lemma abs_partialSum_le_partialSumMax (X : ℕ → Ω → ℝ) (n k : ℕ)
     |partialSum X k ω| ≤ partialSumMax X n ω := by
   exact Finset.le_sup' (fun j => |partialSum X j ω|) hk
 
+lemma partialSumMax_nonneg (X : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :
+    0 ≤ partialSumMax X n ω := by
+  have h := abs_partialSum_le_partialSumMax X n 0 (by simp) ω
+  simpa using h
+
 /-- Any tail difference of partial sums is bounded by the maximal tail partial sum. -/
 lemma abs_sub_partialSum_le_partialSumMax_tail (X : ℕ → Ω → ℝ) (m n k : ℕ)
     (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
@@ -130,6 +135,17 @@ lemma partialSumMax_event_eq_biUnion (X : ℕ → Ω → ℝ) (n : ℕ) (ε : �
       ⋃ k ∈ Finset.range (n + 1), {ω | ε ≤ |partialSum X k ω|} := by
   ext ω
   simp [le_partialSumMax_iff]
+
+lemma event_two_mul_partialSumMax_ge_eq (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) :
+    {ω | ε ≤ 2 * partialSumMax X n ω} = {ω | ε / 2 ≤ partialSumMax X n ω} := by
+  ext ω
+  constructor <;> intro h
+  · change ε ≤ 2 * partialSumMax X n ω at h
+    change ε / 2 ≤ partialSumMax X n ω
+    nlinarith [partialSumMax_nonneg X n ω]
+  · change ε / 2 ≤ partialSumMax X n ω at h
+    change ε ≤ 2 * partialSumMax X n ω
+    nlinarith [partialSumMax_nonneg X n ω]
 
 lemma partialSumMax_tail_event_eq_biUnion_sub (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
     {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} =
