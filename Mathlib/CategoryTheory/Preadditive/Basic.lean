@@ -117,7 +117,7 @@ end InducedCategory
 
 instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
   homGroup P Q :=
-    { zero := Z.homMk 0 -- Note: Add zero field explicitly for better definitional equalities
+    { zero := Z.homMk 0 -- Note: Add zero field explicitly for a better transparency of definitional properties
       __ := InducedCategory.homEquiv.addCommGroup }
   add_comp _ _ _ _ _ _ := by ext; apply add_comp
   comp_add _ _ _ _ _ _ := by ext; apply comp_add
