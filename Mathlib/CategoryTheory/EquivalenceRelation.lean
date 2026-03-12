@@ -5,17 +5,22 @@ Authors: Benoît Guillemet, Christian Merten
 -/
 module
 
-public import Mathlib
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 
 # Equivalence relations
 
-We define internal equivalence relations (sometimes called congruences) in any category `C`.
+We define internal equivalence relations (sometimes called congruences) in any category `C`, as a
+structure on pairs of parallel morphisms `p₁, p₂ : R ⟶ X` .
 We also define effective and universally effective equivalence relations.
 
-We prove that equivalences of types are examples of equivalence relations in the category of types.
-In general, kernel pairs in any category are equivalence relations.
+We prove that equivalence relations on types provide internal equivalence relation structures in the
+category of types.
+In general, kernel pairs in any category are internal equivalence relations.
 
 ## References
 
@@ -29,7 +34,7 @@ universe w v u
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits Sieve Sheaf
+open Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
 variable {R X : C} {p₁ p₂ : R ⟶ X}
@@ -198,3 +203,5 @@ class IsUniversallyEffectiveEquivalenceRelationCategory where
     [IsEquivalenceRelation p₁ p₂] : IsUniversallyEffectiveEquivalenceRelation p₁ p₂
 
 end Effective
+
+end CategoryTheory
