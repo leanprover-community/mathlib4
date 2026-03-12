@@ -126,13 +126,12 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
     ENNReal.ofReal
       (∫ ω in {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω},
       stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω : ℕ)) ω ∂μ) := by
-  have hn : Set.Icc 0 n = {k | k ≤ n} := by ext x; simp
   have : ∀ ω, ((ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω) →
       (ε : ℝ) ≤ stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω : ℕ)) ω := by
     intro x hx
     simp_rw [le_sup'_iff, mem_range, Nat.lt_succ_iff] at hx
     refine stoppedValue_hittingBtwn_mem ?_
-    simp only [Set.mem_setOf_eq, hn]
+    simp only [Set.mem_Icc, zero_le, true_and, Set.mem_setOf_eq]
     exact
       let ⟨j, hj₁, hj₂⟩ := hx
       ⟨j, hj₁, hj₂⟩
@@ -200,8 +199,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)).aemeasurable aemeasurable_const
       rw [Set.mem_setOf_eq] at hω
       have : hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω = n := by
-        classical simp only [hittingBtwn, Set.mem_setOf_eq,
-          ite_eq_right_iff, forall_exists_index, and_imp]
+        simp only [hittingBtwn, Set.mem_setOf_eq, ite_eq_right_iff, forall_exists_index, and_imp]
         intro m hm hεm
         exact False.elim
           ((not_le.2 hω) ((le_sup'_iff _).2 ⟨m, mem_range.2 (Nat.lt_succ_of_le hm.2), hεm⟩))
