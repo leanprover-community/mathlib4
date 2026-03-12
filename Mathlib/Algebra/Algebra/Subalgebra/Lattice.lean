@@ -695,13 +695,31 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
     adjoin R s ≤ Subalgebra.centralizer R (Subalgebra.centralizer R s) :=
   adjoin_le Set.subset_centralizer_centralizer
 
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin s` is a commutative semiring. -/
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is commutative. -/
+theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+    IsMulCommutative (adjoin R s) :=
+  have := adjoin_le_centralizer_centralizer R s
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
+
+instance isMulCommutative_adjoin_singleton (x : A) :
+    IsMulCommutative (adjoin R ({x} : Set A)) :=
+  isMulCommutative_adjoin R (by simp)
+
+open scoped IsMulCommutative in
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
+semiring.
+
+See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
 abbrev adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommSemiring (adjoin R s) :=
-  { (adjoin R s).toSemiring with
-    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
-      have := adjoin_le_centralizer_centralizer R s
-      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+  have := isMulCommutative_adjoin R hcomm
+  inferInstance
+
+instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
+    [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
+  isMulCommutative_adjoin R fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 
 variable {R}
 
@@ -770,11 +788,15 @@ theorem mem_adjoin_iff {s : Set A} {x : A} :
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
+open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
 ring. -/
+@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
 abbrev adjoinCommRingOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommRing (adjoin R s) :=
-  { (adjoin R s).toRing, adjoinCommSemiringOfComm R hcomm with }
+  have := isMulCommutative_adjoin R hcomm
+  inferInstance
 
 end Ring
 
@@ -889,6 +911,25 @@ lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
 end CommSemiring
 
 namespace Subalgebra
+
+section toNonUnitalSubalgebra
+
+variable [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-- The forgetful map from subalgebras to non-unital subalgebras, as an order embedding. -/
+def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
+  toFun := toNonUnitalSubalgebra
+  inj' := toNonUnitalSubalgebra_injective
+  map_rel_iff' := by simp [SetLike.le_def]
+
+@[simp]
+lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :
+    S.toNonUnitalSubalgebra ≤ T.toNonUnitalSubalgebra ↔ S ≤ T :=
+  toNonUnitalSubalgebraOrderEmbedding.le_iff_le
+
+alias ⟨_, toNonUnitalSubalgebra_mono⟩ := toNonUnitalSubalgebra_le_toNonUnitalSubalgebra
+
+end toNonUnitalSubalgebra
 
 variable [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 

@@ -729,17 +729,29 @@ def Subgroup.connectedComponentOfOne (G : Type*) [TopologicalSpace G] [Group G]
   mul_mem' hg hh := mul_mem_connectedComponent_one hg hh
   inv_mem' hg := inv_mem_connectedComponent_one hg
 
+
+/-- If a subgroup of a topological group is commutative, then so is its topological closure. -/
+@[to_additive
+/-- If a subgroup of an additive topological group is commutative, then so is its
+topological closure. -/]
+instance Subgroup.isMulCommutative_topologicalClosure [T2Space G] (s : Subgroup G)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubmonoid.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
 /-- If a subgroup of a topological group is commutative, then so is its topological closure.
 
 See note [reducible non-instances]. -/
-@[to_additive
+@[to_additive (attr := deprecated Subgroup.isMulCommutative_topologicalClosure
+(since := "2026-03-12"))
   /-- If a subgroup of an additive topological group is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances]. -/]
 abbrev Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
     (hs : ∀ x y : s, x * y = y * x) : CommGroup s.topologicalClosure :=
-  { s.topologicalClosure.toGroup, s.toSubmonoid.commMonoidTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 variable (G) in
 @[to_additive]

@@ -141,6 +141,10 @@ theorem coe_toNonUnitalSubsemiring (S : NonUnitalSubalgebra R A) :
     (↑S.toNonUnitalSubsemiring : Set A) = S :=
   rfl
 
+instance isMulCommutative_toNonUnitalSubsemiring (S : NonUnitalSubalgebra R A)
+    [IsMulCommutative S] : IsMulCommutative S.toNonUnitalSubsemiring :=
+  ‹IsMulCommutative S›
+
 theorem mem_toSubmodule (S : NonUnitalSubalgebra R A) {x} : x ∈ S.toSubmodule ↔ x ∈ S :=
   Iff.rfl
 
@@ -199,6 +203,10 @@ theorem toNonUnitalSubring_injective :
 theorem toNonUnitalSubring_inj {S U : NonUnitalSubalgebra R A} :
     S.toNonUnitalSubring = U.toNonUnitalSubring ↔ S = U :=
   toNonUnitalSubring_injective.eq_iff
+
+instance isMulCommutative_toNonUnitalSubring (S : NonUnitalSubalgebra R A)
+    [IsMulCommutative S] : IsMulCommutative S.toNonUnitalSubring :=
+  ‹IsMulCommutative S›
 
 end NonUnitalNonAssocRing
 
@@ -986,6 +994,18 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : NonUnitalSubalgebra R A) := by
+  have := NonUnitalSubsemiring.isMulCommutative_iSup dir
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    NonUnitalSubsemiring.coe_iSup_of_directed dir]
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o NonUnitalSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : NonUnitalSubalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 /-- Define an algebra homomorphism on a directed supremum of non-unital subalgebras by defining
 it on each non-unital subalgebra, and proving that it agrees on the intersection of
 non-unital subalgebras. -/
@@ -1185,25 +1205,45 @@ lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
   commute_of_mem_adjoin_singleton_of_commute hb rfl
 
 variable (R) in
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is commutative. -/
+theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+    IsMulCommutative (adjoin R s) :=
+  have := adjoin_le_centralizer_centralizer R s
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
+
+variable (R) in
+instance isMulCommutative_adjoin_singleton (x : A) :
+    IsMulCommutative (adjoin R ({x} : Set A)) :=
+  isMulCommutative_adjoin R (by simp)
+
+open scoped IsMulCommutative in
+variable (R) in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
 semiring.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
 abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     NonUnitalCommSemiring (adjoin R s) :=
-  { (adjoin R s).toNonUnitalSemiring with
-    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
-      have := adjoin_le_centralizer_centralizer R s
-      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+  have := isMulCommutative_adjoin R hcomm
+  inferInstance
 
+instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
+    [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
+  isMulCommutative_adjoin R fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+
+open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
 ring.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
 abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
     (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (adjoin R s) :=
-  { (adjoin R s).toNonUnitalRing, adjoinNonUnitalCommSemiringOfComm R hcomm with }
+  have := isMulCommutative_adjoin R hcomm
+  inferInstance
 
 end NonUnitalAlgebra
 

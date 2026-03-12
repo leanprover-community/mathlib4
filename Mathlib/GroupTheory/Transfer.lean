@@ -181,6 +181,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
           simp only [if_neg hk, inv_mul_cancel]
           exact map_one ϕ
 
+open scoped IsMulCommutative in
 /-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
 theorem transfer_eq_pow_aux (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
@@ -202,6 +203,7 @@ theorem transfer_eq_pow_aux (g : G)
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
     simpa only [f, Finset.prod_pow_eq_pow_sum, index_eq_sum_minimalPeriod H g] using key
 
+open scoped IsMulCommutative in
 theorem transfer_eq_pow [FiniteIndex H] (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
     transfer ϕ g = ϕ ⟨g ^ H.index, transfer_eq_pow_aux g key⟩ := by
@@ -219,6 +221,7 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
     funext
     apply key
 
+open scoped IsMulCommutative in
 theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
     transfer (MonoidHom.id (center G)) g = ⟨g ^ (center G).index, (center G).pow_index_mem g⟩ :=
   transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, ← hk.comm,
@@ -241,11 +244,11 @@ section BurnsideTransfer
 variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ centralizer (P : Set G))
 include hP
 
+open scoped IsMulCommutative in
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=
-  @transfer G _ P P
-    (@CommGroup.ofIsMulCommutative P _ ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
-      (MonoidHom.id P) _
+  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  transfer (MonoidHom.id P)
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
 
@@ -260,6 +263,7 @@ theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
 
 variable [FiniteIndex (P : Subgroup G)]
 
+open scoped IsMulCommutative in
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
       ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
