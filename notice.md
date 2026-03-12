@@ -381,3 +381,46 @@ useful Kolmogorov inequality results
     证明平方过程
     `fun n ω => partialSum X (n + 1) ω ^ 2`
     是 `Submartingale`。
+
+2026-03-12 平方过程成为 submartingale:
+
+60. 这次把上条 59 真的做出来了，新增了两个关键 lemma：
+    (a) `partialSum_succ_sq_le_condExp_partialSum_succ_sq_of_mean_zero`：
+        给出一步桥接不等式
+        `(partialSum X (i+1))^2 ≤ μ[(partialSum X (i+2))^2 | G_i]` a.e.；
+    (b) `submartingale_partialSum_succ_sq_natural_of_mean_zero`：
+        平方过程 `n ↦ (partialSum X (n + 1))^2` 对自然过滤是 `Submartingale`。
+
+61. 搜索/实现记录：
+    (a) `Mathlib/Probability/CondVar.lean` 里的
+        `condVar_ae_eq_condExp_sq_sub_sq_condExp`
+        和 `condExp_nonneg`
+        已经足够推出
+        `μ[X|G]^2 ≤ μ[X^2|G]` 这种 conditional Jensen 风格不等式；
+    (b) 一开始尝试直接用 `linarith`/`eventually_sub_nonneg` 硬推，稳定性一般；
+        最后改成先手工构造差值等式，再 rewrite 到目标，证明更稳；
+    (c) `condExp_of_stronglyMeasurable` 给的是函数相等，不是 a.e. 相等，
+        这里需要额外用 `.eventuallyEq` 接到 `condExp_sub` 后面。
+
+62. 实现细节：
+    (a) 为了调用 conditional variance 接口，这次在 `Kolmogorov.lean`
+        增加了 `import Mathlib.Probability.CondVar`；
+    (b) 桥接不等式的证明核心是：
+        `0 ≤ Var[S_{i+2} | G_i] = μ[S_{i+2}^2|G_i] - μ[S_{i+2}|G_i]^2`，
+        再用 martingale lemma 把 `μ[S_{i+2}|G_i]` 改写成 `S_{i+1}`；
+    (c) 最后通过 `submartingale_of_condExp_sub_nonneg_nat`
+        把“平方过程强适应 + 可积 + 一步条件期望增量非负”组装成
+        `Submartingale`。
+
+63. 完成情况：
+    (a) `Kolmogorov.lean` 现在已经有一个真正适合拿去喂 `maximal_ineq` 的非负 submartingale；
+    (b) `lake env lean Kolmogorov.lean` 已通过；
+    (c) Doob/maximal inequality 路线的主要技术障碍已经明显减少。
+
+64. 下一小步建议：
+    直接尝试把
+    `submartingale_partialSum_succ_sq_natural_of_mean_zero`
+    和 `partialSum_succ_sq_nonneg`
+    喂给 `MeasureTheory.maximal_ineq`，
+    得到一个 finite maximal inequality，
+    然后再把 sup 事件改写回当前文件里的 `partialSumMax` 记号。

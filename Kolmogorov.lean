@@ -1,8 +1,10 @@
 import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Order.Filter.Ring
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Order.Lattice
+import Mathlib.Probability.CondVar
 import Mathlib.Probability.BorelCantelli
 import Mathlib.Probability.Martingale.Basic
 import Mathlib.Probability.Moments.Variance
@@ -154,6 +156,93 @@ lemma integrable_partialSum_succ_sq {Ω : Type*} [MeasurableSpace Ω]
     (hLp : ∀ k, MemLp (X k) 2 μ) (n : ℕ) :
     Integrable (fun ω => partialSum X (n + 1) ω ^ 2) μ := by
   exact (partialSum_memLp (μ := μ) X (n + 1) fun k _ => hLp k).integrable_sq
+
+lemma partialSum_succ_sq_le_condExp_partialSum_succ_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0) (i : ℕ) :
+    (fun ω => partialSum X (i + 1) ω ^ 2) ≤ᵐ[μ]
+      μ[(fun ω => partialSum X (i + 2) ω ^ 2) | Filtration.natural X hX i] := by
+  let S : Ω → ℝ := partialSum X (i + 2)
+  have hLpS : MemLp S 2 μ := by
+    simpa [S] using partialSum_memLp (μ := μ) X (i + 2) (fun k _ => hLp k)
+  have hcond : μ[S | Filtration.natural X hX i] =ᵐ[μ] partialSum X (i + 1) := by
+    simpa [S] using
+      (martingale_partialSum_succ_natural_of_mean_zero (μ := μ) X hX hLp hindep hmean).condExp_ae_eq
+        (i := i) (j := i + 1) i.le_succ
+  have hsq : μ[S | Filtration.natural X hX i] ^ 2 =ᵐ[μ] fun ω => partialSum X (i + 1) ω ^ 2 := by
+    simpa using hcond.pow_const 2
+  have hvar_nonneg : 0 ≤ᵐ[μ] Var[S; μ | Filtration.natural X hX i] := by
+    simpa [ProbabilityTheory.condVar, S] using
+      (condExp_nonneg (μ := μ) (m := Filtration.natural X hX i)
+        (f := fun ω => (S ω - μ[S | Filtration.natural X hX i] ω) ^ 2)
+        (Filter.Eventually.of_forall fun ω => sq_nonneg _))
+  have hvar_eq : Var[S; μ | Filtration.natural X hX i] =ᵐ[μ]
+      μ[(fun ω => S ω ^ 2) | Filtration.natural X hX i] -
+        μ[S | Filtration.natural X hX i] ^ 2 := by
+    simpa [S] using
+      (condVar_ae_eq_condExp_sq_sub_sq_condExp (μ := μ) (m := Filtration.natural X hX i)
+        ((Filtration.natural X hX).le i) hLpS)
+  filter_upwards [hvar_nonneg, hvar_eq, hsq] with ω hnn hEq hSq
+  have hEq' :
+      Var[S; μ | Filtration.natural X hX i] ω =
+        μ[(fun ω => partialSum X (i + 2) ω ^ 2) | Filtration.natural X hX i] ω -
+          μ[S | Filtration.natural X hX i] ω ^ 2 := by
+    simpa [S] using hEq
+  have hSq' : μ[S | Filtration.natural X hX i] ω ^ 2 = partialSum X (i + 1) ω ^ 2 := by
+    simpa using hSq
+  have hsub :
+      0 ≤
+        μ[(fun ω => partialSum X (i + 2) ω ^ 2) | Filtration.natural X hX i] ω -
+          partialSum X (i + 1) ω ^ 2 := by
+    have hsub_eq :
+        μ[(fun ω => partialSum X (i + 2) ω ^ 2) | Filtration.natural X hX i] ω -
+            partialSum X (i + 1) ω ^ 2 =
+          Var[S; μ | Filtration.natural X hX i] ω := by
+      calc
+        μ[(fun ω => partialSum X (i + 2) ω ^ 2) | Filtration.natural X hX i] ω -
+            partialSum X (i + 1) ω ^ 2 =
+            μ[(fun ω => partialSum X (i + 2) ω ^ 2) | Filtration.natural X hX i] ω -
+              μ[S | Filtration.natural X hX i] ω ^ 2 := by rw [← hSq']
+        _ = Var[S; μ | Filtration.natural X hX i] ω := by linarith [hEq']
+    rw [hsub_eq]
+    exact hnn
+  exact sub_nonneg.mp hsub
+
+lemma submartingale_partialSum_succ_sq_natural_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0) :
+    Submartingale (fun n ω => partialSum X (n + 1) ω ^ 2) (Filtration.natural X hX) μ := by
+  refine submartingale_of_condExp_sub_nonneg_nat
+    (𝒢 := Filtration.natural X hX)
+    (f := fun n ω => partialSum X (n + 1) ω ^ 2)
+    (hadp := stronglyAdapted_partialSum_succ_sq_natural X hX)
+    (hint := integrable_partialSum_succ_sq (μ := μ) X hLp)
+    (hf := fun i => ?_)
+  have hle :=
+    partialSum_succ_sq_le_condExp_partialSum_succ_sq_of_mean_zero
+      (μ := μ) X hX hLp hindep hmean i
+  have hnonneg :
+      0 ≤ᵐ[μ]
+        μ[(fun n ω => partialSum X (n + 1) ω ^ 2) (i + 1) | Filtration.natural X hX i] -
+          (fun n ω => partialSum X (n + 1) ω ^ 2) i := by
+    filter_upwards [hle] with ω hω
+    exact sub_nonneg.mpr hω
+  have hrewrite :
+      μ[(fun n ω => partialSum X (n + 1) ω ^ 2) (i + 1) -
+          (fun n ω => partialSum X (n + 1) ω ^ 2) i | Filtration.natural X hX i] =ᵐ[μ]
+        μ[(fun n ω => partialSum X (n + 1) ω ^ 2) (i + 1) | Filtration.natural X hX i] -
+          (fun n ω => partialSum X (n + 1) ω ^ 2) i := by
+    refine (condExp_sub
+        (integrable_partialSum_succ_sq (μ := μ) X hLp (i + 1))
+        (integrable_partialSum_succ_sq (μ := μ) X hLp i)
+        (Filtration.natural X hX i)).trans ?_
+    exact (Filter.EventuallyEq.refl _ _).sub <|
+      (condExp_of_stronglyMeasurable ((Filtration.natural X hX).le i)
+        (stronglyAdapted_partialSum_succ_sq_natural X hX i)
+        (integrable_partialSum_succ_sq (μ := μ) X hLp i)).eventuallyEq
+  exact Filter.EventuallyLE.trans hnonneg hrewrite.symm.le
 
 /-- The maximum absolute value of the partial sums `partialSum X k` for `k ≤ n`. -/
 def partialSumMax (X : ℕ → Ω → ℝ) (n : ℕ) : Ω → ℝ :=
