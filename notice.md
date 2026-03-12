@@ -299,3 +299,37 @@ D. 实现时的具体注意点
     或者直接证明
     “若所有 `j,k ≤ n` 的差都被同一个上界控制，则对应 finite window oscillation 被控制”，
     这样就能更平滑地过渡到 `limsup - liminf`。
+
+2026-03-12 本轮新增进展（三）
+
+42. 这次把 41 里提到的“数值版 finite oscillation”真正落地了。
+    新增
+    `finiteTailOscillationMax X m n ω`
+    作为 nested `sup'`：
+    先对 `j ≤ n` 取 sup，再对 `k ≤ n` 取 sup，
+    数值上表示
+    `max_{j,k≤n} |S_(m+j+1) ω - S_(m+k+1) ω|`。
+
+43. 围绕 42 新增了四个直接接口：
+    `le_finiteTailOscillationMax_iff`,
+    `finiteTailOscillationMax_le_two_mul_partialSumMax_tail`,
+    `finiteTailOscillationMax_event_eq`,
+    `measure_finiteTailOscillationMax_event_le_measure_two_mul_partialSumMax_event`.
+    这样一来，前一轮的 existential event 包装现在已经能和一个真正的数值对象双向切换。
+
+44. 本轮实现结论：
+    nested `sup'` 的这层封装是可行且比较稳的；
+    `Finset.le_sup'_iff` 足够给出
+    “阈值 ≤ finite oscillation max” 的存在性刻画，
+    `Finset.sup'_le_iff` 足够把整个对象直接压到
+    `2 * partialSumMax tail`。
+    因而目前不需要引入 `Finset.product` 或新的 finite `sup` API。
+
+45. 下一步最自然目标继续保持不变但更接近了：
+    从 `finiteTailOscillationMax` 过渡到真正的 tail oscillation / `limsup - liminf`。
+    一个合理的小步是先证明：
+    若某个上界控制所有 sufficiently large indices 的 pairwise 差，
+    则它也控制 `limsup - liminf`；
+    或者先在纯实分析层做
+    `limsup f - liminf f ≤ a`
+    的桥接 lemma。

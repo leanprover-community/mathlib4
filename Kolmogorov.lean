@@ -384,6 +384,29 @@ lemma abs_sub_partialSum_le_two_mul_partialSumMax_tail (X : ℕ → Ω → ℝ) 
         exact add_le_add hj' hk'
     _ = 2 * partialSumMax (fun l => X (m + 1 + l)) n ω := by ring
 
+/-- The maximal oscillation among the tail partial sums
+`partialSum X (m + j + 1)` for `j ≤ n`. -/
+def finiteTailOscillationMax (X : ℕ → Ω → ℝ) (m n : ℕ) : Ω → ℝ :=
+  fun ω =>
+    (Finset.range (n + 1)).sup' (by simp) fun j =>
+      (Finset.range (n + 1)).sup' (by simp) fun k =>
+        |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|
+
+lemma le_finiteTailOscillationMax_iff (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) (ω : Ω) :
+    ε ≤ finiteTailOscillationMax X m n ω ↔
+      ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
+        ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω| := by
+  simp [finiteTailOscillationMax, Finset.le_sup'_iff]
+
+lemma finiteTailOscillationMax_le_two_mul_partialSumMax_tail
+    (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
+    finiteTailOscillationMax X m n ω ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω := by
+  rw [finiteTailOscillationMax, Finset.sup'_le_iff]
+  intro j hj
+  rw [Finset.sup'_le_iff]
+  intro k hk
+  exact abs_sub_partialSum_le_two_mul_partialSumMax_tail X m n j k hj hk ω
+
 lemma partialSumMax_measurable {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ) (n : ℕ)
     (hX : ∀ k, Measurable (X k)) : Measurable (partialSumMax X n) := by
   simpa [partialSumMax] using
@@ -426,6 +449,20 @@ lemma finite_tail_oscillation_event_subset_two_mul_partialSumMax_event
   rcases hω with ⟨j, hj, k, hk, hω⟩
   exact tail_pair_event_subset_two_mul_partialSumMax_event X m n j k hj hk ε hω
 
+lemma finiteTailOscillationMax_event_eq (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
+    {ω | ε ≤ finiteTailOscillationMax X m n ω} =
+      {ω | ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
+        ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} := by
+  ext ω
+  exact le_finiteTailOscillationMax_iff X m n ε ω
+
+lemma finiteTailOscillationMax_event_subset_two_mul_partialSumMax_event
+    (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
+    {ω | ε ≤ finiteTailOscillationMax X m n ω} ⊆
+      {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
+  intro ω hω
+  exact le_trans hω (finiteTailOscillationMax_le_two_mul_partialSumMax_tail X m n ω)
+
 lemma measurableSet_tail_partialSum_sub_ge {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ)
     (m k : ℕ) (ε : ℝ) (hX : ∀ k, Measurable (X k)) :
     MeasurableSet {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} := by
@@ -445,6 +482,12 @@ lemma measure_finite_tail_oscillation_event_le_measure_two_mul_partialSumMax_eve
       ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} ≤
       μ {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
   exact measure_mono (finite_tail_oscillation_event_subset_two_mul_partialSumMax_event X m n ε)
+
+lemma measure_finiteTailOscillationMax_event_le_measure_two_mul_partialSumMax_event
+    {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
+    μ {ω | ε ≤ finiteTailOscillationMax X m n ω} ≤
+      μ {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
+  exact measure_mono (finiteTailOscillationMax_event_subset_two_mul_partialSumMax_event X m n ε)
 
 lemma le_partialSumMax_iff (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) (ω : Ω) :
     ε ≤ partialSumMax X n ω ↔ ∃ k ∈ Finset.range (n + 1), ε ≤ |partialSum X k ω| := by
