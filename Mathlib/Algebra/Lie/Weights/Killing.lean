@@ -729,8 +729,6 @@ noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | 
 omit [IsKilling K L] [IsTriangularizable K H L] [CharZero K] in
 @[simp]
 lemma _root_.LieSubalgebra.isNonZero_coe_root (α : H.root) : (α : Weight K H L).IsNonZero := by
-  have aux := α.property
-  rw [Finset.mem_filter] at aux
   aesop
 
 lemma restrict_killingForm_eq_sum :

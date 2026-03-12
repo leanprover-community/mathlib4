@@ -87,21 +87,16 @@ lemma mem_biSup_genWeightSpace_of {s : Set (H → R)} (hs : ∀ᵉ (χ₁ ∈ s)
   | add _ _ _ _ hu hv => rw [add_lie]; exact add_mem hu hv
   | mem χ₁ u hu =>
     by_cases hχ₁ : χ₁ ∈ s; swap
-    · replace hu : u = 0 := by simpa [hχ₁] using hu
-      simp [hu]
+    · simp_all
     replace hu : u ∈ rootSpace H χ₁ := by simpa [hχ₁] using hu
     induction hm using LieSubmodule.iSup_induction' with
     | zero => simp
     | add _ _ _ _ hv hw => rw [lie_add]; exact add_mem hv hw
     | mem χ₂ v hv =>
       by_cases hχ₂ : χ₂ ∈ s; swap
-      · replace hv : v = 0 := by simpa [hχ₂] using hv
-        simp [hv]
-      replace hv : v ∈ genWeightSpace M χ₂ := by simpa [hχ₂] using hv
+      · simp_all
       apply LieSubmodule.mem_iSup_of_mem (χ₁ + χ₂)
-      have hχ : χ₁ + χ₂ ∈ s := hs χ₁ hχ₁ χ₂ hχ₂
-      simp only [hχ, iSup_pos]
-      exact lie_mem_genWeightSpace_of_mem_genWeightSpace hu hv
+      simp_all [lie_mem_genWeightSpace_of_mem_genWeightSpace]
 
 variable (R L H M)
 

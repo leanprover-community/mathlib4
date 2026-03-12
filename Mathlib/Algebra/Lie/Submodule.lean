@@ -503,7 +503,7 @@ theorem mem_sup (x : M) : x ∈ N ⊔ N' ↔ ∃ y ∈ N, ∃ z ∈ N', y + z = 
 
 variable {N N'} in
 theorem mem_sup_left {x : M} (hx : x ∈ N) : x ∈ N ⊔ N' :=
-  (mem_sup _ _ _).mpr ⟨x, hx, 0, by simp, by simp⟩
+  le_sup_left (a := N) hx
 
 variable {N N'} in
 theorem mem_sup_right {x : M} (hx : x ∈ N') : x ∈ N ⊔ N' :=

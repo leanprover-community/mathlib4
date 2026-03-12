@@ -455,9 +455,9 @@ lemma iSupIndep_fin_three {α : Type*} [CompleteLattice α] {f : Fin 3 → α} :
       Disjoint (f 2) (f 0 ⊔ f 1) := by
   rw [iSupIndep_def, sup_comm (f 2) (f 0)]
   refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun ⟨h₀, h₁, h₂⟩ i ↦ ?_⟩
-  · convert h 0; simp
-  · convert h 1; simp
-  · convert h 2; simp
+  · simpa using h 0
+  · simpa using h 1
+  · simpa using h 2
   · fin_cases i <;> simpa
 
 /-- Composing an independent indexed family with an order isomorphism on the elements results in
@@ -549,9 +549,8 @@ lemma iSupIndep.disjoint_biSup_biSup' [IsModularLattice α]
 lemma iSupIndep.mem_of_biSup_eq_top {f : ι → α} {s : Set ι}
     (h₁ : iSupIndep f) (h₂ : ⨆ i ∈ s, f i = ⊤) {i : ι} (hi : f i ≠ ⊥) :
     i ∈ s := by
-  specialize h₁ i
   by_contra contra
-  replace h₁ : Disjoint (f i) (⨆ i ∈ s, f i) := h₁.mono_right <| biSup_mono <| by aesop
+  replace h₁ : Disjoint (f i) (⨆ i ∈ s, f i) := (h₁ i).mono_right <| biSup_mono <| by aesop
   aesop
 
 end CompleteLattice

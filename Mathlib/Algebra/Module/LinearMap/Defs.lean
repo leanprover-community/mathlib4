@@ -784,9 +784,7 @@ instance : Zero (M →ₛₗ[σ₁₂] M₂) :=
       map_smul' := by simp }⟩
 
 @[simp] lemma coe_zero_iff (f : M →ₛₗ[σ₁₂] M₂) : ⇑f = 0 ↔ f = 0 := by
-  change _ ↔ f = ⟨⟨0, _⟩, _⟩
-  obtain ⟨⟨f, -⟩, -⟩ := f
-  simp
+  aesop
 
 @[simp]
 theorem zero_apply (x : M) : (0 : M →ₛₗ[σ₁₂] M₂) x = 0 :=

@@ -539,8 +539,7 @@ theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
 variable {K K'} in
 @[simp] lemma disjoint_toSubmodule :
     Disjoint (K : Submodule R L) (K' : Submodule R L) ↔ Disjoint K K' := by
-  rw [disjoint_iff, disjoint_iff, ← toSubmodule_inj, inf_toSubmodule, bot_toSubmodule,
-    ← disjoint_iff]
+  simp [disjoint_iff, ← toSubmodule_inj]
 
 variable (R L)
 

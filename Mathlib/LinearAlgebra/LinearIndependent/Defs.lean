@@ -711,8 +711,7 @@ theorem LinearIndependent.neg (hv : LinearIndependent R v) : LinearIndependent R
 @[simp] theorem linearIndependent_neg_iff :
     LinearIndependent R (-v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, LinearIndependent.neg⟩
-  convert h.neg
-  simp
+  simpa using h.neg
 
 theorem linearIndependent_iff_ker :
     LinearIndependent R v ↔ LinearMap.ker (Finsupp.linearCombination R v) = ⊥ :=
