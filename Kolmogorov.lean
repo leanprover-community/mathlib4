@@ -244,6 +244,27 @@ lemma submartingale_partialSum_succ_sq_natural_of_mean_zero
         (integrable_partialSum_succ_sq (μ := μ) X hLp i)).eventuallyEq
   exact Filter.EventuallyLE.trans hnonneg hrewrite.symm.le
 
+lemma smul_measure_partialSum_succ_sq_sup_ge_le_integral_partialSum_succ_sq_of_mean_zero
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
+    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0) (ε : NNReal) (n : ℕ) :
+    ε • μ {ω | (ε : ℝ) ≤ (Finset.range (n + 1)).sup' (by simp)
+      (fun k => partialSum X (k + 1) ω ^ 2)} ≤
+      ENNReal.ofReal (∫ ω, partialSum X (n + 1) ω ^ 2 ∂μ) := by
+  refine (MeasureTheory.maximal_ineq
+      (μ := μ)
+      (𝒢 := Filtration.natural X hX)
+      (f := fun n ω => partialSum X (n + 1) ω ^ 2)
+      (submartingale_partialSum_succ_sq_natural_of_mean_zero
+        (μ := μ) X hX hLp hindep hmean)
+      (partialSum_succ_sq_nonneg X)
+      (ε := ε)
+      n).trans ?_
+  exact ENNReal.ofReal_le_ofReal <|
+    setIntegral_le_integral
+      (integrable_partialSum_succ_sq (μ := μ) X hLp n)
+      (Filter.Eventually.of_forall fun ω => sq_nonneg (partialSum X (n + 1) ω))
+
 /-- The maximum absolute value of the partial sums `partialSum X k` for `k ≤ n`. -/
 def partialSumMax (X : ℕ → Ω → ℝ) (n : ℕ) : Ω → ℝ :=
   fun ω => (Finset.range (n + 1)).sup' (by simp) (fun k => |partialSum X k ω|)

@@ -64,7 +64,8 @@ A. 已经完成的接口分层
     `stronglyAdapted_partialSum_succ_sq_natural`,
     `integrable_partialSum_succ_sq`,
     `partialSum_succ_sq_le_condExp_partialSum_succ_sq_of_mean_zero`,
-    `submartingale_partialSum_succ_sq_natural_of_mean_zero`.
+    `submartingale_partialSum_succ_sq_natural_of_mean_zero`,
+    `smul_measure_partialSum_succ_sq_sup_ge_le_integral_partialSum_succ_sq_of_mean_zero`.
 
 B. 目前最重要的判断
 
@@ -80,10 +81,14 @@ B. 目前最重要的判断
     `partialSum_succ_sq_nonneg`
     喂给 `MeasureTheory.maximal_ineq`，
     先得到一个以 `sup' (partialSum^2)` 表述的 finite maximal inequality。
+    这一层现在已经完成；当前得到的是带 `NNReal` 阈值、右端为
+    `∫ partialSum X (n + 1)^2 dμ`
+    的 Doob 型不等式。
 
 17. 做完 16 之后，还需要把 `maximal_ineq` 的 `sup'` 事件翻译回当前文件的
     `partialSumMax` / tail 记号，
     才能真正替代目前那个带 `(n + 1)` 损失的弱版 maximal bound。
+    这是下一步唯一自然目标。
 
 C. 离最终 two-series theorem 还差什么
 
@@ -119,13 +124,18 @@ D. 实现时的具体注意点
     `n ↦ partialSum X (n + 1)`
     比 `partialSum X n` 更顺手，因为时刻 `i` 的增量正好是 `X (i + 1)`。
 
-25. `condExp_of_stronglyMeasurable` 给的是函数等式；
+25. `MeasureTheory.maximal_ineq` 的准确输出形状是
+    `ε • μ {ω | ε ≤ sup' ...} ≤ ENNReal.ofReal (∫_event f n dμ)`，
+    因而第一步最好先用 `setIntegral_le_integral` 把右端放宽到全空间积分，
+    再做事件改写和除以阈值的整理。
+
+26. `condExp_of_stronglyMeasurable` 给的是函数等式；
     若要和 `condExp_sub` 等 a.e. 等式拼接，需要显式加 `.eventuallyEq`。
 
-26. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
+27. `condVar_ae_eq_condExp_sq_sub_sq_condExp` 比直接找 “square is submartingale” theorem
     更好用；当前平方过程 submartingale 的证明就是通过它手工搭起来的。
 
-27. 目前 `notice.md` 已清理过一次。
+28. 目前 `notice.md` 已清理过一次。
     以后优先维护：
     当前有效接口、
     当前真实瓶颈、
