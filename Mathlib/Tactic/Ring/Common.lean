@@ -171,7 +171,7 @@ def ExSum.eq
   | _, _ => false
 end
 
--- TODO: this should be somewhere else
+/-- TODO: this instance should probably be upstreamed -/
 local instance : Ord Rat where
   compare a b := compareOfLessAndEq a b
 
