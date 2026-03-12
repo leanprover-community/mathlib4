@@ -393,16 +393,16 @@ theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' 
     rw [hasEigenvector_iff, mem_genEigenspace_one] at hv
     exact (smul_eq_zero_iff_left hv.2).mp hv.1.symm
 
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Spectral Theorem** for compact self-adjoint operators: the eigenspaces of a compact
 self-adjoint operator have trivial orthogonal complement. -/
-set_option backward.isDefEq.respectTransparency false in
 theorem orthogonalComplement_iSup_eigenspaces_eq_bot
     (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
     (⨆ μ, eigenspace (T : Module.End 𝕜 E) μ)ᗮ = ⊥ := by
   let S : (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ →L[𝕜] (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ :=
   { __ := T.restrict hT'.orthogonalComplement_iSup_eigenspaces_invariant
-    cont := by
-      fun_prop }
+    cont := by fun_prop }
   have hS_compact : IsCompactOperator S :=
     hT.restrict' hT'.orthogonalComplement_iSup_eigenspaces_invariant
   have hS_symm : S.IsSymmetric :=
