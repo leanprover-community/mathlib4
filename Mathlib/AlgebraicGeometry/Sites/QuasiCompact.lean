@@ -217,15 +217,8 @@ lemma Cover.mem_propQCTopology {S : Scheme.{u}} (𝒰 : Cover.{u} (precoverage P
   rwa [presieve₀_mem_qcPrecoverage_iff]
 
 lemma zariskiTopology_le_propQCTopology [P.IsMultiplicative] [IsZariskiLocalAtSource P] :
-    zariskiTopology ≤ propQCTopology P := by
-  apply Precoverage.toGrothendieck_mono
-  rw [le_inf_iff]
-  refine ⟨?_, ?_⟩
-  · apply zariskiPrecoverage_le_qcPrecoverage
-  · rw [precoverage, precoverage]
-    gcongr
-    refine MorphismProperty.precoverage_monotone fun X Y h hf ↦
-      IsZariskiLocalAtSource.of_isOpenImmersion _
+    zariskiTopology ≤ propQCTopology P :=
+  Precoverage.toGrothendieck_mono zariskiPrecoverage_le_propQCPrecoverage
 
 end Property
 
