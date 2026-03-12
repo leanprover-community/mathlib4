@@ -3,9 +3,11 @@ import Mathlib.Order.ConditionallyCompleteLattice.Finset
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Order.Lattice
+import Mathlib.Probability.Moments.Variance
 
-open scoped BigOperators
+open scoped BigOperators ProbabilityTheory
 open MeasureTheory
+open ProbabilityTheory
 
 namespace Kolmogorov
 
@@ -33,6 +35,14 @@ lemma partialSum_succ (X : ℕ → Ω → α) (n : ℕ) :
 lemma partialSum_measurable {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ) (n : ℕ)
     (hX : ∀ k, Measurable (X k)) : Measurable (partialSum X n) := by
   simpa [partialSum] using Finset.measurable_sum (Finset.range n) (fun i _ => hX i)
+
+lemma partialSum_memLp {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    (X : ℕ → Ω → ℝ) (n : ℕ)
+    (hX : ∀ k ∈ Finset.range n, MemLp (X k) 2 μ) : MemLp (partialSum X n) 2 μ := by
+  let h := memLp_finset_sum' (s := Finset.range n) hX
+  refine h.ae_eq ?_
+  filter_upwards with ω
+  simp [partialSum]
 
 /-- Reindex a tail sum as the difference of two initial partial sums. -/
 lemma sum_range_shift_eq_sub (f : ℕ → α) (m n : ℕ) :
@@ -204,6 +214,22 @@ lemma measure_event_two_mul_partialSumMax_tail_le_sum_sub'
         μ {ω | ε / 2 ≤ |partialSum (fun j => X (m + 1 + j)) k ω|} := by
   rw [event_two_mul_partialSumMax_ge_eq]
   exact measure_partialSumMax_event_le_sum μ (fun j => X (m + 1 + j)) n (ε / 2)
+
+lemma measure_partialSum_ge_le_variance_div_sq {Ω : Type*} [MeasurableSpace Ω]
+    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (n : ℕ)
+    (hX : ∀ k ∈ Finset.range n, MemLp (X k) 2 μ) {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ |partialSum X n ω - μ[partialSum X n]|} ≤
+      ENNReal.ofReal (variance (partialSum X n) μ / ε ^ 2) := by
+  apply meas_ge_le_variance_div_sq
+  · exact partialSum_memLp (μ := μ) X n hX
+  · exact hε
+
+lemma measure_partialSum_tail_ge_le_variance_div_sq {Ω : Type*} [MeasurableSpace Ω]
+    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)
+    (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ) {ε : ℝ} (hε : 0 < ε) :
+    μ {ω | ε ≤ |partialSum (fun j => X (m + 1 + j)) n ω - μ[partialSum (fun j => X (m + 1 + j)) n]|} ≤
+      ENNReal.ofReal (variance (partialSum (fun j => X (m + 1 + j)) n) μ / ε ^ 2) := by
+  exact measure_partialSum_ge_le_variance_div_sq (μ := μ) (fun j => X (m + 1 + j)) n hX hε
 
 end Real
 
