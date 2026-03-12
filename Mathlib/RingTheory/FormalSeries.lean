@@ -185,6 +185,7 @@ def isFiniteFibered (G : Type*) (Γ : Type*) [SMul G Γ] : Prop :=
 
 /-- The formal series for a finite fibered convolution action.  The dependence on `h` means we don't
 make it an instance. -/
+@[reducible]
 noncomputable def FinFibSmul [SMul G Γ] (h : isFiniteFibered G Γ) : SMul G (
     FormalSeries Γ C) where
   smul := fun g f => {
@@ -218,6 +219,7 @@ noncomputable def FinFibMulAction [Monoid G] [MulAction G Γ] (h : isFiniteFiber
 /-- The formal series for a finite fibered convolution action of a monoid ring.  The dependence on
 the finite fibered hypothesis means we don't make it an instance. The `m`-th coeff is the sum over
 `{(g, n) | g • n = m}` of `x(g) • coef f(n)`. -/
+@[reducible]
 noncomputable def FinFibMonoidAlgSmul (R : Type*) [Semiring R] [SMul G Γ]
    [SMul R C] (h : isFiniteFibered G Γ) : SMul (MonoidAlgebra R G) (FormalSeries Γ C) where
   smul x f := {

@@ -182,6 +182,7 @@ lemma supp_eq_univ_of_pos (σ : Type*) (y : σ →₀ HahnSeries Γ R)
   exact Set.eq_univ_of_univ_subset fun i _ => by simp_all
 
 /-- A finsupp whose every element has positive order has fintype source. -/
+@[reducible]
 def Fintype_of_pos_order (σ : Type*) (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i : σ, 0 < (y i).order) : Fintype σ := by
   refine Set.fintypeOfFiniteUniv ?_

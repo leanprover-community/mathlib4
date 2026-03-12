@@ -45,7 +45,18 @@ class positiveEnergy [CommRing R] [IsAddTorsionFree R] [LieRing L] [LieAlgebra R
     [Module R M] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ)
     [LieRingModule (LieAlgebra.LoopAlgebra.extension R ℤ L Φ hΦ hΦs).L M] where
+  graded (by linearly ordered group): sorry
+  homogeneous_action : sorry
+  bounded_below : sorry
+
+/-- Traditionally, a representation of a topological group is smooth if all stabilizers are open
+subgroups. -/
+class smooth [CommRing R] [IsAddTorsionFree R] [LieRing L] [LieAlgebra R L] [AddCommGroup M]
+    [Module R M] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
+    (hΦs : LinearMap.BilinForm.IsSymm Φ)
+    [LieRingModule (LieAlgebra.LoopAlgebra.extension R ℤ L Φ hΦ hΦs).L M] where
   locally_finite_rank : ∀m : M, Module.rank R
+
 -/
 
 --def affineVertexOperator (x : g) (V : positiveEnergy) : VertexOperator R V :=
