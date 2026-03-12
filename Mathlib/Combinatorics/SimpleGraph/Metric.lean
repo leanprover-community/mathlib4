@@ -432,7 +432,7 @@ theorem ball_two : G.ball c 2 = insert c (G.neighborSet c) := by
 theorem ball_top :
     G.ball c ⊤ = (G.connectedComponentMk c).supp := by
   ext v
-  simp [lt_top_iff_ne_top, edist_ne_top_iff_reachable, reachable_comm]
+  simp [lt_top_iff_ne_top, edist_ne_top_iff_reachable]
 
 /-- A vertex is in the ball of radius `⊤` iff it is reachable from the center. -/
 theorem mem_ball_top : v ∈ G.ball c ⊤ ↔ G.Reachable c v := by
