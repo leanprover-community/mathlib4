@@ -85,6 +85,7 @@ instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H
 
 section Solvable
 
+open scoped IsMulCommutative in
 variable (G) in
 theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < ⊤ := by
   let p := (Nat.card G).minFac
@@ -122,6 +123,7 @@ theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card 
       ← P.card_eq_multiplicity, ← (isZGroup p hp P).exponent_eq_card]
   exact Monoid.exponent_dvd_of_monoidHom P.1.subtype P.1.subtype_injective
 
+open scoped IsMulCommutative in
 instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
   have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.1.Prime :=
     ⟨Nat.prime_of_mem_primeFactors p.2⟩
@@ -263,6 +265,7 @@ theorem normalizer_le_centralizer_or_le_commutator :
       Subgroup.map_subgroupOf_eq_of_le P.le_normalizer, Subgroup.map_subtype_commutator] at h
     exact h.trans (Subgroup.commutator_mono le_top le_top)
 
+open scoped IsMulCommutative in
 include P in
 /-- If `G` has a cyclic Sylow `p`-subgroup, then the cardinality and index of the commutator
   subgroup of `G` cannot both be divisible by `p`. -/

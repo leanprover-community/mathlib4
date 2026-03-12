@@ -1260,6 +1260,11 @@ theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x
   rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
   exact Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂
 
+variable (R) in
+instance isMulCommutative_adjoin_singleton (a : A) [IsStarNormal a] :
+    IsMulCommutative (adjoin R ({a} : Set A)) :=
+  isMulCommutative_adjoin R (by simp) (by grind)
+
 open scoped IsMulCommutative in
 variable (R) in
 /-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
