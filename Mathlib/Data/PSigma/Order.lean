@@ -11,7 +11,7 @@ public import Init.NotationExtra
 public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.Lex
 
 /-!
 # Lexicographic order on a sigma type

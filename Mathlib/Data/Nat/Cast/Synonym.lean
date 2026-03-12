@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Order.OrderDual
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.Lex
 
 /-!
 # Cast of natural numbers (additional theorems)

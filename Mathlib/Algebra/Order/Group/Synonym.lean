@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Order.OrderDual
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.Lex
 
 /-!
 # Group structure on the order type synonyms

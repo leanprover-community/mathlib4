@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.Lex
 public import Mathlib.Tactic.Tauto
 
 /-!
