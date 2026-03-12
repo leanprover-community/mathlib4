@@ -724,15 +724,38 @@ section
 variable [IsLocalRing R] [IsNoetherianRing R]
 
 lemma exists_isPrime_no_insert (p : Ideal R) [p.IsPrime] (lt : p < maximalIdeal R) :
-    ∃ q, q.IsPrime ∧ p ≤ q ∧ (∀ r, r.IsPrime → q < r → r = maximalIdeal R) := by
-  --set_has_maximal_iff_noetherian
-  sorry
+    ∃ q, q.IsPrime ∧ p ≤ q ∧ q < maximalIdeal R ∧
+      (∀ r, r.IsPrime → q < r → r = maximalIdeal R) := by
+  let S : Set (Ideal R) := {q | q.IsPrime ∧ p ≤ q ∧ q < maximalIdeal R}
+  rcases set_has_maximal_iff_noetherian.mpr ‹_› S ⟨p, by simpa [S] using ⟨‹_›, lt⟩⟩ with ⟨q, hq⟩
+  use q
+  refine ⟨hq.1.1, hq.1.2.1, hq.1.2.2, fun r rp qlt ↦ ?_⟩
+  by_contra ne
+  absurd qlt
+  exact hq.2 r ⟨rp, hq.1.2.1.trans qlt.le, lt_of_le_of_ne (le_maximalIdeal_of_isPrime r) ne⟩
 
 lemma residueField_ext_subsingleton_of_no_insert (p : Ideal R) [p.IsPrime] (lt : p < maximalIdeal R)
     (h : ∀ q, q.IsPrime → p < q → q = maximalIdeal R) (k l : ℕ) (eq : l = k + 1)
     (sub : Subsingleton (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) l)) :
     Subsingleton (Ext (ModuleCat.of (Localization.AtPrime p) p.ResidueField)
       (ModuleCat.of (Localization.AtPrime p) (Localization.AtPrime p)) k) := by
+  have : Subsingleton (Ext (ModuleCat.of R (R ⧸ p)) (ModuleCat.of R R) k) := by
+    let e (I : Ideal R) : (ModuleCat.of R (Shrink.{u, u} (R ⧸ I))) ≅ ModuleCat.of R (R ⧸ I) :=
+      (Shrink.linearEquiv _ _).toModuleIso
+    apply (((extFunctor k).mapIso (e p).op).app
+        (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mpr
+    apply ext_subsingleton_of_all_gt (ModuleCat.of R R) k p lt.ne
+    intro q qgt qp
+    rw [h q qp qgt, ← eq]
+    exact (((extFunctor l).mapIso (e (maximalIdeal R)).op).app
+      (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp sub
+  let f := Submodule.toLocalizedQuotient' (Localization.AtPrime p) p.primeCompl
+    (Algebra.linearMap R (Localization.AtPrime p)) p
+  have eqm : Submodule.localized' (Localization.AtPrime p) p.primeCompl (Algebra.linearMap R
+    (Localization.AtPrime p)) p = maximalIdeal (Localization.AtPrime p) := by
+    rw [Ideal.localized'_eq_map, Localization.AtPrime.map_eq_maximalIdeal]
+
+  --IsLocalizedModule.of_linearEquiv
   sorry
 
 lemma Module.length_ne_top_of_support_subset (M : Type*) [AddCommGroup M] [Module R M]
@@ -756,8 +779,8 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
     (h : Subsingleton (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) k)) :
     IsGorensteinLocalRing R := by
   obtain ⟨n, hn⟩ : ∃ n : ℕ, ringKrullDim R = n := exist_nat_eq' R
-  induction n generalizing R k with
-  | zero =>
+  induction n using Nat.case_strong_induction_on generalizing R k with
+  | hz =>
     let _ : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr hn
     have injlt : HasInjectiveDimensionLT (ModuleCat.of R R) k := by
       apply hasInjectiveDimensionLT_of_enoughProjectives (ModuleCat.of R R) k
@@ -769,18 +792,19 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       exact (((extFunctor k).mapIso e.op).app
         (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp h
     exact (isGorensteinLocalRing_def R).mpr (ne_top_of_lt (injectiveDimension_lt_iff.mpr injlt))
-  | succ n ih =>
+  | hi n ih =>
     have supp_eq (M : ModuleCat.{u} R) [Module.Finite R M] :
       Module.support R (Ext M (ModuleCat.of R R) k) ⊆ {closedPoint R} := by
       intro p hp
       by_contra ne
       have ltm : p.1 < maximalIdeal R := lt_of_le_of_ne (le_maximalIdeal_of_isPrime p.1) (by
         simpa [PrimeSpectrum.ext_iff, closedPoint] using ne)
-      rcases exists_isPrime_no_insert p.1 ltm with ⟨q, qp, ple, hq⟩
+      rcases exists_isPrime_no_insert p.1 ltm with ⟨q, qp, ple, qlt, hq⟩
       have isg : IsGorensteinLocalRing (Localization.AtPrime q) := by
         sorry
-      have qmem : ⟨q, qp⟩ ∈ support R (Ext M (ModuleCat.of R R) k) := by
-        sorry
+      have qmem : ⟨q, qp⟩ ∈ support R (Ext M (ModuleCat.of R R) k) :=
+        Module.mem_support_iff_of_finite.mpr ((Module.mem_support_iff_of_finite.mp hp).trans ple)
+
       --injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing
       --`Ext M_q R_q k` is localization of `Ext M R k` at `q`
       --is subsingleton by injective dimension
