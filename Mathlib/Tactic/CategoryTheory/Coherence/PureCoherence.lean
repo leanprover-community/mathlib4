@@ -193,9 +193,9 @@ def pureCoherence (ρ : Type) [Context ρ] [MkMor₂ (CoherenceM ρ)]
         let nil ← normalizedHom.nilM a
         let ⟨_, η_f⟩ ← normalize nil f
         let ⟨_, η_g⟩ ← normalize nil g
-        let Hη ← withTraceNode nm (fun ex => do return m!"{exceptEmoji ex} LHS") do
+        let Hη ← withTraceNode nm (fun _ => do return m!"LHS") do
           naturality nm nil ηIso.e
-        let Hθ ← withTraceNode nm (fun ex => do return m!"{exceptEmoji ex} RHS") do
+        let Hθ ← withTraceNode nm (fun _ => do return m!"RHS") do
           naturality nm nil θIso.e
         let H ← mkEqOfNaturality η θ ηIso θIso η_f η_g Hη Hθ
         mvarId.apply H

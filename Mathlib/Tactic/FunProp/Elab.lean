@@ -60,7 +60,7 @@ syntax (name := funPropTacStx)
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
     withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+      (fun _ => do pure s!"discharging: {← ppExpr e}") do
       pure none
 
 /-- Tactic to prove function properties -/

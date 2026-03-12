@@ -363,7 +363,7 @@ theorem Sublist.sublists' {l₁ l₂ : List α}
   | cons a _ ih =>
     rw [sublists'_cons]
     exact ih.trans (List.sublist_append_left ..)
-  | cons₂ a _ ih =>
+  | cons_cons a _ ih =>
     rw [sublists'_cons, sublists'_cons]
     exact ih.append (ih.map _)
 

@@ -421,7 +421,7 @@ where
   translated, which would create type-incorrect terms. Instead, we give the free variables
   their original type and the translated type is only used when constructing the final term. -/
   visit (e : Expr) : ReplacementM Expr :=
-    withTraceNode `translate_detail (fun res => return m!"{exceptEmoji res} translating {e}") do
+    withTraceNode `translate_detail (fun _ => return m!"translating {e}") do
     checkCache { val := e : ExprStructEq } fun _ => do
     let e ← match e with
       | .forallE .. => visitForall e
@@ -530,8 +530,8 @@ def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
 def applyReplacementForall (t : TranslateData) (dontTranslate : List Nat) (e : Expr) :
     MetaM (Expr × Option RelevantArg) :=
-  withTraceNode `translate_detail (fun res =>
-    return m!"{exceptEmoji res} translating the type {e}") do
+  withTraceNode `translate_detail (fun _ =>
+    return m!"translating the type {e}") do
   forallTelescope e fun xs e => do
     let xs := xs.map (·.fvarId!)
     let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
@@ -553,8 +553,8 @@ def applyReplacementForall (t : TranslateData) (dontTranslate : List Nat) (e : E
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
 def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : Expr) :
     MetaM (Expr × Option RelevantArg) :=
-  withTraceNode `translate_detail (fun res =>
-    return m!"{exceptEmoji res} translating the value {e}") do
+  withTraceNode `translate_detail (fun _ =>
+    return m!"translating the value {e}") do
   lambdaTelescope e fun xs e => do
     let xs := xs.map (·.fvarId!)
     let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
