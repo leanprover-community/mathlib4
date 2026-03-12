@@ -25,7 +25,7 @@ we construct a Haar measure on `B` from Haar measures on `A` and `C`.
 
 * `TopologicalGroup.IsSES.isHaarMeasure_inducedMeasure`: `inducedMeasure` is a Haar measure.
 * `TopologicalGroup.IsSES.inducedMeasure_lt_of_injOn`: If `ψ` is injective on an open set `U`,
-  then `U` has bounded measure.
+  then then the induced measure on `U` is bounded by `μC Set.univ * μA {1}` (possibly infinite).
 
 -/
 
@@ -102,15 +102,13 @@ noncomputable def pushforward :
       obtain ⟨K, hK, hf₀⟩ := exists_compact_iff_hasCompactSupport.mpr f.hasCompactSupport
       let S : Set A := φ ⁻¹' (U₀⁻¹ * K)
       have hSc : IsCompact S := H.isClosedEmbedding.isCompact_preimage (hU₀.inv.mul hK)
-      have hδ : ∃ δ > 0, ENNReal.ofReal δ * μA S < ENNReal.ofReal ε := by
+      obtain ⟨δ, hδ0, hδ⟩ : ∃ δ > 0, ENNReal.ofReal δ * μA S < ENNReal.ofReal ε := by
         rw [← ENNReal.ofReal_toReal hSc.measure_ne_top, ← measureReal_def]
         by_cases hS' : μA.real S = 0
         · simp [hS', hε, exists_gt]
-        · use ε / 2 / μA.real S
-          refine ⟨by positivity, ?_⟩
+        · refine ⟨ε / 2 / μA.real S, by positivity, ?_⟩
           rwa [← ENNReal.ofReal_mul' measureReal_nonneg, ENNReal.ofReal_lt_ofReal_iff hε,
             div_mul_cancel₀ _ hS', half_lt_self_iff]
-      obtain ⟨δ, hδ0, hδ⟩ := hδ
       have hS {x} (hx : x ∈ U₀) {y} (hy : y ∉ S) : H.pullback f x y = 0 := by
         contrapose! hy
         exact Set.mem_mul.mpr ⟨x⁻¹, Set.inv_mem_inv.mpr hx, x * φ y,
@@ -144,12 +142,12 @@ theorem pushforward_def (f : CompactlySupportedContinuousMap B E) (c : C) :
   rfl
 
 @[to_additive]
-theorem pushforward_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
+theorem pushforward_apply_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
     pushforward H μA f (ψ b) = ∫ a, pullback H f b a ∂μA :=
   integral_pullback_invFun_apply H μA f b
 
 @[to_additive]
-theorem pushforward_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
+theorem pushforward_mono {f g : CompactlySupportedContinuousMap B ℝ} (h : f ≤ g) :
     pushforward H μA f ≤ pushforward H μA g :=
   fun _ ↦ integral_mono (pullback H f _).integrable (pullback H g _).integrable (fun _ ↦ h _)
 
@@ -173,17 +171,17 @@ theorem integrate_apply (f : CompactlySupportedContinuousMap B E) :
   rfl
 
 @[to_additive]
-theorem integrate_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
+theorem integrate_mono {f g : CompactlySupportedContinuousMap B ℝ} (h : f ≤ g) :
     integrate H μA μC f ≤ integrate H μA μC g :=
-  integral_mono  (pushforward H μA f).integrable (pushforward H μA g).integrable
-    (pushforward_mono H μA f g h)
+  integral_mono (pushforward H μA f).integrable (pushforward H μA g).integrable
+    (pushforward_mono H μA h)
 
 variable [T2Space B] [MeasurableSpace B] [BorelSpace B]
 
 /-- The Haar measure on `B` induced by the Haar measures on `A` and `C`. -/
 @[to_additive /-- The Haar measure on `B` induced by the Haar measures on `A` and `C`. -/]
 noncomputable def inducedMeasure : Measure B :=
-  RealRMK.rieszMeasure ⟨integrate H μA μC, integrate_mono H μA μC⟩
+  RealRMK.rieszMeasure ⟨integrate H μA μC, fun _ _ ↦ integrate_mono H μA μC⟩
 
 @[to_additive]
 instance inducedMeasure_regular : (inducedMeasure H μA μC).Regular :=
@@ -208,10 +206,9 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     have h (x : B) : f (b * x) = f.comp (Homeomorph.mulLeft b).toCocompactMap x := rfl
     simp_rw [h, integral_inducedMeasure, integrate_apply]
     rw [← integral_mul_left_eq_self _ (ψ b)⁻¹]
-    congr
-    ext c
+    congr with c
     obtain ⟨b', rfl⟩ := H.isOpenQuotientMap.surjective c
-    rw [← map_inv, ← map_mul, pushforward_apply, pushforward_apply]
+    rw [← map_inv, ← map_mul, pushforward_apply_apply, pushforward_apply_apply]
     simp [pullback, mul_assoc]
   open_pos U hU := by
     rintro ⟨b, hb⟩
@@ -233,9 +230,11 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
-/-- If `ψ` is injective on an open set `U`, then `U` has bounded measure. -/
-@[to_additive /-- If `ψ` is injective on an open set `U`, then `U` has bounded measure. -/]
-theorem inducedMeasure_lt_of_injOn (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
+/-- If `ψ` is injective on an open set `U`, then the induced measure on `U` is bounded by
+`μC Set.univ * μA {1}` (possibly infinite). -/
+@[to_additive /-- If `ψ` is injective on an open set `U`, then the induced measure on `U` is bounded
+by `μC Set.univ * μA {1}` (possibly infinite). -/]
+theorem inducedMeasure_lt_of_injOn {U : Set B} (hU : IsOpen U) [DiscreteTopology A]
     (h : U.InjOn ψ) :
     inducedMeasure H μA μC U ≤ μC Set.univ * μA {1} := by
   contrapose! h
@@ -246,7 +245,7 @@ theorem inducedMeasure_lt_of_injOn (U : Set B) (hU : IsOpen U) [DiscreteTopology
   replace h : μC Set.univ * μA {1} < ENNReal.ofReal (∫ c : C, pushforward H μA ⟨f, hf2⟩ c ∂μC) :=
     lt_of_lt_of_le h ((RealRMK.rieszMeasure_le_of_eq_one (f := ⟨f, hf2⟩) _ (fun x ↦ (hf4 x).1)
       hK (fun x hx ↦ hf1 hx)))
-  replace h : ∃ c : C, (μA {1}).toReal < pushforward H μA ⟨f, hf2⟩ c := by
+  obtain ⟨c, hc⟩ : ∃ c : C, (μA {1}).toReal < pushforward H μA ⟨f, hf2⟩ c := by
     contrapose! h
     rcases eq_top_or_lt_top (μC Set.univ) with hC | hC
     · simp [hC, ENNReal.top_mul ho.ne']
@@ -254,10 +253,9 @@ theorem inducedMeasure_lt_of_injOn (U : Set B) (hU : IsOpen U) [DiscreteTopology
       rw [ENNReal.ofReal_le_iff_le_toReal (ENNReal.mul_lt_top hC ht).ne, ENNReal.toReal_mul,
         ← Measure.real_def, ← smul_eq_mul, ← integral_const]
       exact integral_mono (H.pushforward μA ⟨f, hf2⟩).integrable (integrable_const _) h
-  obtain ⟨c, hc⟩ := h
   contrapose! hc
   obtain ⟨b, rfl⟩ := H.isOpenQuotientMap.surjective c
-  simp only [pushforward_apply, pullback_def, CompactlySupportedContinuousMap.coe_mk]
+  simp only [pushforward_apply_apply, pullback_def, CompactlySupportedContinuousMap.coe_mk]
   rw [← setIntegral_support]
   have key : (Function.support fun a ↦ f (b * φ a)).Subsingleton := by
     intro a ha b hb
