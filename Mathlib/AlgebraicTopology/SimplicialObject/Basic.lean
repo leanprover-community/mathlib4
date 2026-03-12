@@ -62,7 +62,6 @@ scoped[Simplicial]
 
 open Simplicial
 
-set_option backward.isDefEq.respectTransparency false in
 instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (SimplicialObject C) := by
   dsimp [SimplicialObject]
@@ -71,7 +70,6 @@ instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
 instance [HasLimits C] : HasLimits (SimplicialObject C) :=
   ⟨inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
     HasColimitsOfShape J (SimplicialObject C) := by
   dsimp [SimplicialObject]
