@@ -298,3 +298,45 @@ useful Kolmogorov inequality results
     `condExp_partialSum_succ_sub_eq_zero_of_mean_zero`
     三者喂给 `martingale_of_condExp_sub_eq_zero_nat`，
     得到 `n ↦ partialSum X (n + 1)` 是 martingale。
+
+2026-03-12 partial sums 成为 martingale:
+
+50. 这次把上面 49 里的三块接口真正拼起来了，新增：
+    `martingale_partialSum_succ_natural_of_mean_zero`。
+    它表明：若 `X_n` 全部二阶可积、独立、逐项均值为零，
+    那么过程 `n ↦ partialSum X (n + 1)` 对 `X` 的自然过滤是 martingale。
+
+51. 搜索/实现记录：
+    (a) 直接使用 `Mathlib/Probability/Martingale/Basic.lean` 里的
+        `martingale_of_condExp_sub_eq_zero_nat`；
+    (b) 这个 theorem 只要求三件事：
+        强适应性 `hadp`，
+        可积性 `hint`，
+        以及一步增量条件期望为零 `hf`；
+    (c) 这三件事现在分别由
+        `stronglyAdapted_partialSum_succ_natural`、
+        `partialSum_memLp ... .integrable`、
+        `condExp_partialSum_succ_sub_eq_zero_of_mean_zero`
+        精确提供，拼装几乎是无损的。
+
+52. 实现细节：
+    (a) `hint` 里把全局假设 `∀ k, MemLp (X k) 2 μ`
+        限制到 `range (i + 1)`，再用 `MemLp.integrable (by norm_num)`；
+    (b) 由于前面已经把过程换成 shifted 版本 `n ↦ partialSum X (n + 1)`，
+        增量正好是 `X (n + 1)`，索引没有再卡住；
+    (c) 为了调用这个 martingale 构造 theorem，这次在 `Kolmogorov.lean`
+        增加了 `import Mathlib.Probability.Martingale.Basic`。
+
+53. 完成情况：
+    (a) `Kolmogorov.lean` 已经有一个真正可用的 partial-sum martingale lemma；
+    (b) `lake env lean Kolmogorov.lean` 已通过；
+    (c) 这说明 Doob/maximal inequality 路线已经不再只是“计划”，而是开始有核心对象了。
+
+54. 下一小步建议：
+    开始研究如何从这个 martingale 构造出适合 `maximal_ineq` 的非负 submartingale。
+    最自然的候选是平方过程
+    `n ↦ (partialSum X (n + 1))^2`
+    或其正部/绝对值变体；
+    下一步应优先搜索 mathlib 里已有的
+    “martingale 的 square / pos / abs 是 submartingale”
+    相关接口。

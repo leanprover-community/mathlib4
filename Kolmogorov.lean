@@ -4,6 +4,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.Probability.BorelCantelli
+import Mathlib.Probability.Martingale.Basic
 import Mathlib.Probability.Moments.Variance
 import Mathlib.Probability.Process.Adapted
 
@@ -122,6 +123,20 @@ lemma condExp_partialSum_succ_sub_eq_zero_of_mean_zero {Ω : Type*} [MeasurableS
     μ[partialSum X (i + 2) - partialSum X (i + 1) | Filtration.natural X hX i] =ᵐ[μ] 0 := by
   rw [partialSum_succ_sub_partialSum]
   exact condExp_natural_eq_zero_of_mean_zero X hX hindep i.lt_succ_self (hmean (i + 1))
+
+lemma martingale_partialSum_succ_natural_of_mean_zero {Ω : Type*} [MeasurableSpace Ω]
+    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ)
+    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
+    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0) :
+    Martingale (fun n => partialSum X (n + 1)) (Filtration.natural X hX) μ := by
+  refine martingale_of_condExp_sub_eq_zero_nat
+    (𝒢 := Filtration.natural X hX)
+    (f := fun n => partialSum X (n + 1))
+    (hadp := stronglyAdapted_partialSum_succ_natural X hX)
+    (hint := fun i => ?_)
+    (hf := fun i => ?_)
+  · exact (partialSum_memLp (μ := μ) X (i + 1) fun k _ => hLp k).integrable (by norm_num)
+  · exact condExp_partialSum_succ_sub_eq_zero_of_mean_zero X hX hindep hmean i
 
 /-- The maximum absolute value of the partial sums `partialSum X k` for `k ≤ n`. -/
 def partialSumMax (X : ℕ → Ω → ℝ) (n : ℕ) : Ω → ℝ :=
