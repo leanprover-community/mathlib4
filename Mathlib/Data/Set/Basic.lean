@@ -299,6 +299,7 @@ theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
 theorem not_univ_subset : ¬univ ⊆ s ↔ ∃ a, a ∉ s := by
   simp [not_subset]
 
+@[deprecated not_univ_subset (since := "2026-03-12")]
 theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s :=
   not_univ_subset
 
