@@ -120,6 +120,9 @@ theorem im_ne_zero (z : ℍ) : z.im ≠ 0 :=
 theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 
+lemma mem_slitPlane (z : ℍ) : (z : ℂ) ∈ Complex.slitPlane := by
+  simp [Complex.slitPlane, im_ne_zero z]
+
 end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity
@@ -174,7 +177,6 @@ lemma ne_natCast (z : ℍ) (n : ℕ) : (z : ℂ) ≠ n := mod_cast ne_intCast z 
 
 section PosRealAction
 
-set_option backward.isDefEq.respectTransparency false in
 instance posRealAction : MulAction {x : ℝ // 0 < x} ℍ where
   smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.im_pos
   one_smul _ := UpperHalfPlane.ext <| one_smul _ _

@@ -170,7 +170,6 @@ theorem measure_sUnion {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise Di
     (h : ∀ s ∈ S, MeasurableSet s) : μ (⋃₀ S) = ∑' s : S, μ s := by
   rw [sUnion_eq_biUnion, measure_biUnion hs hd h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measure_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
     μ (⋃ b ∈ s, f b) = ∑ p ∈ s, μ (f p) := by
@@ -359,7 +358,8 @@ theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → S
       exact htop b
   calc
     μ (⋃ b, t b) ≤ μ (⋃ b, M (t b)) := measure_mono (iUnion_mono fun b => subset_toMeasurable _ _)
-    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) := measure_congr (EventuallyEq.countable_iUnion H).symm
+    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) :=
+      measure_congr (Filter.EventuallyEq.countable_iUnion H).symm
     _ ≤ μ (M (⋃ b, s b)) := measure_mono (iUnion_subset fun b => inter_subset_right)
     _ = μ (⋃ b, s b) := measure_toMeasurable _
 
@@ -444,7 +444,6 @@ theorem nonempty_inter_of_measure_lt_add' {m : MeasurableSpace α} (μ : Measure
   rw [inter_comm]
   exact nonempty_inter_of_measure_lt_add μ hs h't h's h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Continuity from below:
 the measure of the union of a directed sequence of (not necessarily measurable) sets
 is the supremum of the measures. -/
@@ -873,6 +872,9 @@ theorem coe_smul {_m : MeasurableSpace α} (c : R) (μ : Measure α) : ⇑(c •
   rfl
 
 @[simp]
+lemma coe_nnreal_smul (c : ℝ≥0) (μ : Measure α) : (c : ℝ≥0∞) • μ = c • μ := rfl
+
+@[simp]
 theorem smul_apply {_m : MeasurableSpace α} (c : R) (μ : Measure α) (s : Set α) :
     (c • μ) s = c • μ s :=
   rfl
@@ -1078,7 +1080,6 @@ instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
     CompleteSemilatticeInf (Measure α) where
   isGLB_sInf _ := ⟨fun x ↦ measure_sInf_le, fun _ ↦ by exact measure_le_sInf⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
   { completeLatticeOfCompleteSemilatticeInf (Measure α) with
     top :=
@@ -1098,7 +1099,6 @@ instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure
 
 end sInf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
     (μ ⊓ ν) s = sInf {m | ∃ t, m = μ (t ∩ s) + ν (tᶜ ∩ s)} := by
   -- `(μ ⊓ ν) s` is defined as `⊓ (t : ℕ → Set α) (ht : s ⊆ ⋃ n, t n), ∑' n, μ (t n) ⊓ ν (t n)`
@@ -1174,24 +1174,20 @@ theorem toOuterMeasure_top {_ : MeasurableSpace α} :
     (⊤ : Measure α).toOuterMeasure = (⊤ : OuterMeasure α) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem top_add : ⊤ + μ = ⊤ :=
   top_unique <| Measure.le_add_right le_rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem add_top : μ + ⊤ = ⊤ :=
   top_unique <| Measure.le_add_left le_rfl
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem zero_le {_m0 : MeasurableSpace α} (μ : Measure α) : 0 ≤ μ :=
   bot_le
 
 theorem nonpos_iff_eq_zero' : μ ≤ 0 ↔ μ = 0 :=
   μ.zero_le.ge_iff_eq'
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem measure_univ_eq_zero : μ univ = 0 ↔ μ = 0 :=
   ⟨fun h => bot_unique fun s => (h ▸ measure_mono (subset_univ s) : μ s ≤ 0), fun h =>

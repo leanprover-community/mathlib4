@@ -329,7 +329,6 @@ instance : CompleteLattice (NonUnitalSubring R) :=
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff' (A : NonUnitalSubring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
@@ -505,6 +504,7 @@ theorem mem_closure_iff {s : Set R} {x} :
     | neg _ _ h => exact neg_mem h⟩
 
 /-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
+@[implicit_reducible]
 def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
     (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (closure s) :=
   { (closure s).toNonUnitalRing with
@@ -535,7 +535,6 @@ protected def gi : GaloisInsertion (@closure R _) SetLike.coe where
 theorem closure_eq (s : NonUnitalSubring R) : closure (s : Set R) = s :=
   (NonUnitalSubring.gi R).l_u_eq s
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_empty : closure (∅ : Set R) = ⊥ :=
   (NonUnitalSubring.gi R).gc.l_bot
@@ -575,12 +574,10 @@ theorem comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubring S) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_bot (f : R →ₙ+* S) : (⊥ : NonUnitalSubring R).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_top (f : R →ₙ+* S) : (⊤ : NonUnitalSubring S).comap f = ⊤ :=
   (gc_map_comap f).u_top

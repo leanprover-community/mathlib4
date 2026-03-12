@@ -596,7 +596,6 @@ namespace WithTop
 
 variable [ConditionallyCompleteLinearOrderBot α]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `sSup` of a non-empty set is its least upper bound for a conditionally
 complete lattice with a top. -/
 theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
@@ -634,13 +633,11 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
         intro a ha
         exact coe_le_coe.1 (hb ha)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp [sSup]
   · exact isLUB_sSup' hs
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `sInf` of a bounded-below set is its greatest lower bound for a conditionally
 complete lattice with a top. -/
 theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
@@ -684,7 +681,6 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
           rw [← coe_le_coe]
           exact ha hb
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
   by_cases hs : BddBelow s
   · exact isGLB_sInf' hs
@@ -694,7 +690,6 @@ theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
     intro _ _
     exact bot_le
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : CompleteLinearOrder (WithTop α) where
   __ := linearOrder
   __ := linearOrder.toBiheytingAlgebra
@@ -897,7 +892,6 @@ noncomputable instance [CompleteLattice α] : CompleteLattice (WithBot α) where
   isGLB_sInf s := ⟨fun _ ↦ csInf_le (OrderBot.bddBelow _), fun _ has ↦
     s.eq_empty_or_nonempty.elim (by rw [·, WithBot.sInf_empty]; exact le_top) (le_csInf · has)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) where
@@ -922,14 +916,12 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
           exact bot_le,
     fun a haS ↦ (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS⟩
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance WithTop.WithBot.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) where
   __ := completeLattice
   __ := linearOrder
   __ := linearOrder.toBiheytingAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithBot (WithTop α)) where
   isLUB_sSup := (WithTop.WithBot.completeLattice (α := αᵒᵈ)).isGLB_sInf

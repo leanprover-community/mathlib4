@@ -563,7 +563,7 @@ set_option backward.isDefEq.respectTransparency false in
 which is the largest ideal sheaf whose support is equal to it.
 The reduced induced scheme structure on the closed set is the quotient of this ideal. -/
 @[simps! ideal coe_support]
-nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
+noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
   mkOfMemSupportIff
     (fun U ↦ vanishingIdeal (U.2.fromSpec ⁻¹' Z))
     (fun U f ↦ by

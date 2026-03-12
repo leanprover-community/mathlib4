@@ -485,10 +485,8 @@ lemma image_latticeClosure (s : Set α) (f : α → β)
 
 lemma ofDual_preimage_latticeClosure (s : Set α) :
     ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
-  change ClosureOperator.ofCompletePred _ _ _ = ClosureOperator.ofCompletePred _ _ _
-  congr 2
   ext
-  exact ⟨fun h => ⟨h.2, h.1⟩, fun h => ⟨h.2, h.1⟩⟩
+  simp [latticeClosure, (Equiv.Set.congr toDual).surjective.forall, Equiv.image_eq_preimage_symm]
 
 lemma image_latticeClosure' (s : Set α) (f : α → β)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊓ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊔ f b) :
@@ -534,6 +532,7 @@ end DistribLattice
 
 /-- A join-semilattice where every sup-closed set has a least upper bound is automatically complete.
 -/
+@[implicit_reducible]
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)
     (h : ∀ s, SupClosed s → IsLUB s (sSup s)) : CompleteSemilatticeSup α where
   sSup := fun s => sSup (supClosure s)
@@ -541,6 +540,7 @@ def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α �
 
 /-- A meet-semilattice where every inf-closed set has a greatest lower bound is automatically
 complete. -/
+@[implicit_reducible]
 def SemilatticeInf.toCompleteSemilatticeInf [SemilatticeInf α] (sInf : Set α → α)
     (h : ∀ s, InfClosed s → IsGLB s (sInf s)) : CompleteSemilatticeInf α where
   sInf := fun s => sInf (infClosure s)

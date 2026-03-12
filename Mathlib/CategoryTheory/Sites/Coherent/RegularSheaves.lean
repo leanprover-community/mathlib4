@@ -200,7 +200,7 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     have hi := Over.w i.hom
     have hj := Over.w j.hom
     dsimp at hi hj
-    let ij := PullbackCone.IsLimit.lift hc i.hom.left j.hom.left (by aesop)
+    let ij := PullbackCone.IsLimit.lift hc i.hom.left j.hom.left (by lia)
     refine ⟨Quiver.Hom.op (ObjectProperty.homMk (Over.homMk ij)), ?_, ?_⟩
     all_goals congr; aesop
 
@@ -223,7 +223,7 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
   have : H.Initial := parallelPair_pullback_initial π c hc
   let i : H ⋙ F ≅ G := parallelPair.ext (Iso.refl _) (Iso.refl _) (by aesop) (by aesop)
   refine (IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_).trans (Functor.Initial.isLimitWhiskerEquiv H _)
-  refine Cones.ext (Iso.refl _) ?_
+  refine Cone.ext (Iso.refl _) ?_
   rintro ⟨_ | _⟩
   all_goals aesop
 

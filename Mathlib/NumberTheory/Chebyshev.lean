@@ -152,7 +152,6 @@ We isolate the contributions of different prime powers to `ψ` and use this to s
 are close.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A sum over prime powers may be written as a double sum over exponents and then primes. -/
 theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
@@ -301,7 +300,6 @@ theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
   have : x * log x ^ 2 ≠ 0 := mul_ne_zero this <| by simp; grind
   fun_prop (disch := assumption)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
 theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
@@ -318,7 +316,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     · simp [a, h]
   rw [sum_mul_eq_sub_integral_mul₁ a (f := fun n ↦ (log n)⁻¹) (by simp [a]) (by simp [a]),
     ← intervalIntegral.integral_of_le hx]
-  · -- Rewrite the derivative inside the intigral
+  · -- Rewrite the derivative inside the integral
     have int_deriv (f : ℝ → ℝ) :
         ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
         ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ :=
@@ -337,6 +335,31 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     have : log z ^ 2 ≠ 0 := by
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
     exact ContinuousAt.continuousWithinAt <| by fun_prop (disch := assumption)
+
+/-- Expresses the Chebyshev theta function `ϑ` in terms of `π` by using Abel summation. -/
+theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
+    θ x = π ⌊x⌋₊ * log x - ∫ t in 2..x, π ⌊t⌋₊ / t := by
+  -- Rewrite in a form to which Abel summation can be applied
+  rw [theta_eq_sum_Icc, sum_filter]
+  let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n ↦ 1)
+  trans ∑ n ∈ Icc 0 ⌊x⌋₊, log n * a n
+  · refine sum_congr rfl fun n hn ↦ ?_
+    split_ifs with h <;> simp [a, h]
+  rw [sum_mul_eq_sub_integral_mul₁ a (by simp [a, Nat.not_prime_zero])
+    (by simp [a, Nat.not_prime_one]) _ (fun z ⟨hz, _⟩ ↦ (by fun_prop (disch := linarith))) ?hint,
+    ←intervalIntegral.integral_of_le hx]
+  case hint =>
+    rw [deriv_log']
+    refine ContinuousOn.integrableOn_Icc ?_
+    fun_prop (disch := grind)
+  -- Rewrite the derivative inside the integral
+  simp only [primeCounting, primeCounting', count_eq_card_filter_range]
+  have int_deriv (f : ℝ → ℝ) :
+      ∫ u in 2..x, deriv (fun x ↦ log x) u * f u =
+      ∫ u in 2..x, f u / u :=
+    intervalIntegral.integral_congr fun u _ ↦ by rw [deriv_log, mul_comm, div_eq_mul_inv]
+  rw [int_deriv]
+  simp [a, Set.indicator_apply, Nat.range_succ_eq_Icc_zero, mul_comm]
 
 theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt_b : 1 < b) :
     IntervalIntegrable (fun x ↦ 1 / log x ^ 2) MeasureTheory.volume a b := by
@@ -399,7 +422,6 @@ theorem integral_one_div_log_sq_isBigO :
   conv => arg 2; ext; rw [← mul_one_div, mul_comm]
   apply IsBigO.const_mul_left sqrt_isLittleO.isBigO
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Bound on the integral in `Chebyshev.primeCounting_eq_theta_div_log_add_integral`. -/
 theorem integral_theta_div_log_sq_isBigO :
     (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =O[atTop] (fun x ↦ x / log x ^ 2) := by

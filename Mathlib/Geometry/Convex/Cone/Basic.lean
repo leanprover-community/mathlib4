@@ -172,7 +172,6 @@ variable (C₁ C₂) in
 
 @[simp, norm_cast] lemma coe_top : ↑(⊤ : ConvexCone R M) = (univ : Set M) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma disjoint_coe : Disjoint (C₁ : Set M) C₂ ↔ Disjoint C₁ C₂ := by
   simp [disjoint_iff, ← coe_inf]
 
@@ -317,6 +316,7 @@ theorem Blunt.salient : C.Blunt → C.Salient := by
   exact mt Flat.pointed
 
 /-- A pointed convex cone defines a preorder. -/
+@[implicit_reducible]
 def toPreorder (C : ConvexCone R G) (h₁ : C.Pointed) : Preorder G where
   le x y := y - x ∈ C
   le_refl x := by rw [sub_self x]; exact h₁
@@ -538,7 +538,6 @@ lemma mem_hull_of_convex (hs : Convex 𝕜 s) : x ∈ hull 𝕜 s ↔ ∃ r : �
 lemma coe_hull_of_convex (hs : Convex 𝕜 s) : hull 𝕜 s = {x | ∃ r : 𝕜, 0 < r ∧ x ∈ r • s} := by
   ext; exact mem_hull_of_convex hs
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_hull_left_of_convex (hs : Convex 𝕜 s) : Disjoint (hull 𝕜 s) C ↔ Disjoint s C where
   mp := by rw [← disjoint_coe]; exact .mono_left subset_hull
   mpr := by
