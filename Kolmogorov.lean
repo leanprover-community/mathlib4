@@ -408,6 +408,21 @@ lemma le_finiteTailOscillationMax_iff (X : ℕ → Ω → ℝ) (m n : ℕ) (ε :
         ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω| := by
   simp [finiteTailOscillationMax, Finset.le_sup'_iff]
 
+lemma partialSum_le_finiteTailSup (X : ℕ → Ω → ℝ) (m n k : ℕ)
+    (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
+    partialSum X (m + k + 1) ω ≤ finiteTailSup X m n ω := by
+  exact Finset.le_sup' (f := fun j => partialSum X (m + j + 1) ω) hk
+
+lemma finiteTailInf_le_partialSum (X : ℕ → Ω → ℝ) (m n k : ℕ)
+    (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
+    finiteTailInf X m n ω ≤ partialSum X (m + k + 1) ω := by
+  exact Finset.inf'_le (f := fun j => partialSum X (m + j + 1) ω) hk
+
+lemma partialSum_mem_Icc_finiteTailInf_finiteTailSup (X : ℕ → Ω → ℝ) (m n k : ℕ)
+    (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
+    partialSum X (m + k + 1) ω ∈ Set.Icc (finiteTailInf X m n ω) (finiteTailSup X m n ω) := by
+  exact ⟨finiteTailInf_le_partialSum X m n k hk ω, partialSum_le_finiteTailSup X m n k hk ω⟩
+
 lemma finiteTailSup_sub_finiteTailInf_le_finiteTailOscillationMax
     (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
     finiteTailSup X m n ω - finiteTailInf X m n ω ≤ finiteTailOscillationMax X m n ω := by

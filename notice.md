@@ -396,3 +396,34 @@ D. 实现时的具体注意点
     或者直接做一个
     `limsup - liminf ≤ a`
     的纯实分析桥接 lemma。
+
+2026-03-12 本轮新增进展（六）
+
+53. 这次继续只做 finite-window 的 order bridge，
+    不碰 `limsup/liminf` 本身。
+    新增：
+    `partialSum_le_finiteTailSup`,
+    `finiteTailInf_le_partialSum`,
+    `partialSum_mem_Icc_finiteTailInf_finiteTailSup`.
+    现在每个窗口内的 tail partial sum 都已经明确落在
+    `[finiteTailInf, finiteTailSup]`
+    这个区间里。
+
+54. 本轮实现结论：
+    这一层只需要
+    `Finset.le_sup'`
+    和
+    `Finset.inf'_le`；
+    不需要先引入任何 filter / limsup API。
+    这使得下一步做
+    “tail `limsup` ≤ finiteTailSup”
+    和
+    “finiteTailInf ≤ tail `liminf`”
+    时，pointwise order 输入已经准备齐了。
+
+55. 当前最自然的下一步进一步收窄为：
+    直接尝试把 53 的区间包含送到 filter-level。
+    也就是搜索并形式化：
+    若 eventually `a ≤ u n ≤ b`，则
+    `a ≤ liminf u atTop` 且 `limsup u atTop ≤ b`；
+    然后把 `a,b` 具体取成 `finiteTailInf/finiteTailSup`。
