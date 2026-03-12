@@ -96,6 +96,7 @@ abbrev closureCommSemigroupOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s,
   haveI := isMulCommutative_closure M hcomm
   inferInstance
 
+@[to_additive]
 instance instIsMulCommutative_closure {S : Type*} [SetLike S M] [MulMemClass S M] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set M)) :=
   isMulCommutative_closure _ fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
