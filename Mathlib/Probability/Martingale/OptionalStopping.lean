@@ -8,6 +8,8 @@ module
 public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Process.HittingTime
 public import Mathlib.Probability.Martingale.Basic
+public import Mathlib.Probability.CondVar
+public import Mathlib.Probability.Moments.Variance
 
 /-! # Optional stopping theorem (fair game theorem)
 
@@ -233,5 +235,58 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       simp [hittingBtwn_le]
 
 end Maximal
+
+
+
+section Kolmogorov
+
+open ProbabilityTheory
+
+variable {μ : Measure Ω} [IsProbabilityMeasure μ]
+variable {ℱ : Filtration ℕ m0}
+variable {M : ℕ → Ω → ℝ}
+
+lemma square_submartingale_of_martingale (hM : Martingale M ℱ μ) (hL2 : ∀ n, MemLp (M n) 2 μ) :
+    Submartingale (fun n ω => (M n ω) ^ 2) ℱ μ := by
+  refine MeasureTheory.submartingale_nat ?hadp ?hint ?hstep
+  · intro n
+    simpa using (hM.stronglyAdapted n).pow 2
+  · intro n
+    exact MemLp.integrable_sq (hL2 n)
+  · intro n
+    have hcv : condVar (ℱ n) (M (n + 1)) μ
+        =ᵐ[μ] μ[(M (n + 1)) ^ 2 | ℱ n] - (M n) ^ 2 := by
+      have h1 := ProbabilityTheory.condVar_ae_eq_condExp_sq_sub_sq_condExp
+            (μ := μ) (m := ℱ n) (X := M (n + 1)) (hm := ℱ.le n) (hX := hL2 (n + 1))
+      have h2 : μ[M (n + 1) | ℱ n] =ᶠ[ae μ] M n := by
+        simpa using hM.condExp_ae_eq (Nat.le_succ n)
+      filter_upwards [h1, h2] with ω h1ω h2ω
+      simp [h1ω, h2ω]
+    have hnonneg : 0 ≤ᵐ[μ] μ[(M (n + 1)) ^ 2 | ℱ n] - (M n) ^ 2 := by
+      filter_upwards [ProbabilityTheory.ae_nonneg_condVar (μ := μ) (m := ℱ n) (X := M (n + 1)),
+        hcv] with ω hω₁ hω₂
+      simpa [hω₂] using hω₁
+    filter_upwards [hnonneg] with ω hω
+    exact sub_nonneg.mp (by simpa using hω)
+
+/-- Martingale form of Kolmogorov's inequality. -/
+theorem kolmogorov_ineq_martingale_sq (hM : Martingale M ℱ μ)
+    (hL2 : ∀ n, MemLp (M n) 2 μ) (ε : NNReal) (n : ℕ) :
+    ε ^ 2 * μ {ω | ε ^ 2 ≤ (Finset.range (n + 1)).sup' (by simp) (fun k => (M k ω) ^ 2)}
+    ≤ ENNReal.ofReal (∫ ω, (M n ω) ^ 2 ∂μ) := by
+  let G : ℕ → Ω → ℝ := fun k ω => (M k ω) ^ 2
+  have hGsub : Submartingale G ℱ μ := square_submartingale_of_martingale (μ := μ) (ℱ := ℱ) hM hL2
+  have hGnonneg : 0 ≤ G := fun k ω ↦ sq_nonneg (M k ω)
+  have hdoob := MeasureTheory.maximal_ineq (μ := μ) (f := G) hGsub hGnonneg (ε := ε ^ 2) n
+  refine le_trans hdoob ?_
+  apply ENNReal.ofReal_le_ofReal
+  have hmono : ∫ ω in {ω | ε ^ 2 ≤ (Finset.range (n + 1)).sup' (by simp) (fun k => G k ω)}, G n ω ∂μ
+      ≤ ∫ ω, G n ω ∂μ := by
+    exact setIntegral_le_integral (s := {ω | ε ^ 2 ≤ (Finset.range (n + 1)).sup'
+      (Finset.nonempty_range_add_one) (fun k => G k ω)}) (hfi := hGsub.integrable n)
+      (hf := Filter.Eventually.of_forall fun ω => hGnonneg n ω)
+  simpa [G] using hmono
+
+end Kolmogorov
 
 end MeasureTheory

@@ -49,6 +49,9 @@ scoped notation "Var[" f "|" m "]" => Var[f; MeasureTheory.volume | m]
 
 lemma condVar_of_not_le (hm : ¬m ≤ m₀) : Var[X; μ | m] = 0 := by rw [condVar, condExp_of_not_le hm]
 
+lemma ae_nonneg_condVar : 0 ≤ᵐ[μ] Var[X; μ | m] := id <| condExp_nonneg <|
+  Filter.Eventually.of_forall fun ω => sq_nonneg <| X ω - μ[X | m] ω
+
 lemma condVar_of_not_sigmaFinite (hμm : ¬SigmaFinite (μ.trim hm)) :
     Var[X; μ | m] = 0 := by rw [condVar, condExp_of_not_sigmaFinite hm hμm]
 
