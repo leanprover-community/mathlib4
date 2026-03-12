@@ -741,6 +741,13 @@ theorem measurable_piEquivPiSubtypeProd (p : δ → Prop) [DecidablePred p] :
   (measurable_pi_iff.2 fun _ => measurable_pi_apply _).prodMk
     (measurable_pi_iff.2 fun _ => measurable_pi_apply _)
 
+lemma MeasurableSpace.comap_process {Ω T : Type*} {𝓧 : T → Type*} [∀ t, MeasurableSpace (𝓧 t)]
+    (X : (t : T) → Ω → 𝓧 t) :
+    MeasurableSpace.comap (fun ω t ↦ X t ω) MeasurableSpace.pi =
+      ⨆ t, MeasurableSpace.comap (X t) inferInstance := by
+  simp_rw [MeasurableSpace.pi, MeasurableSpace.comap_iSup, MeasurableSpace.comap_comp]
+  rfl
+
 end Pi
 
 instance TProd.instMeasurableSpace (X : δ → Type*) [∀ i, MeasurableSpace (X i)] :

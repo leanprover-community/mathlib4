@@ -150,4 +150,13 @@ lemma HasPDF.hasLaw [h : HasPDF X P μ] : HasLaw X (μ.withDensity (pdf X P μ))
   aemeasurable := h.aemeasurable
   map_eq := map_eq_withDensity_pdf X P μ
 
+lemma HasLaw.ae_eq_of_dirac' [MeasurableSingletonClass 𝓧] {x : 𝓧}
+    (hX : HasLaw X (.dirac x) P) : X =ᵐ[P] (fun _ ↦ x) := by
+  apply ae_of_ae_map (p := fun y ↦ y = x) hX.aemeasurable
+  rw [hX.map_eq, ae_dirac_iff]
+  simp
+
+lemma HasLaw.ae_eq_of_dirac [MeasurableSingletonClass 𝓧] {x : 𝓧} (hX : HasLaw X (.dirac x) P) :
+    ∀ᵐ ω ∂P, X ω = x := hX.ae_eq_of_dirac'
+
 end ProbabilityTheory
