@@ -11,14 +11,61 @@ public import Mathlib.LinearAlgebra.Eigenspace.Zero
 /-!
 # Singular values for finite-dimensional linear maps
 
-This file defines the singular values for finite-dimensional linear maps (but not the singular
-value decomposition). It is set up in a way that allows for generalization to continuous linear maps
-between possibly-infinite-dimensional normed vector spaces; please see the docstring of
-`LinearMap.singularValues`.
+For a linear map `T` between finite dimensional inner product spaces `E` and `F`, we define the
+singular values, the square roots of the eigenvalues of `T.adjoint ∘ₗ T`, arranged in descending
+order and repeated according to their multiplicity.
+
+With our definition, there are countably infinitely many singular values, but only the first rank(T)
+singular values are nonzero.
+The singular values are zero-indexed, so the first singular value is `T.singularValues 0`.
+
+## Main definition
+
+- `LinearMap.singularValues`: The infinite but eventually zero sequence of T's singular values.
+
+## Main Theorems
+
+- `LinearMap.support_singularValues`: The first rank(T) singular values are positive, and the rest
+are zero.
+
+## Implementation notes
+
+Suppose `T : E →ₗ[𝕜] F` where `dim(E) = n`, `dim(F) = m`.
+In mathematical literature, the number of singular values varies, with popular choices including
+- `rank(T)` singular values, all of which are positive.
+- `min(n,m)` singular values, some of which might be zero.
+- `n` singular values, some of which might be zero. This is the approach taken in [axler2024].
+- Countably infinitely many singular values, with all but finitely many of them being zero.
+
+We take the last approach for the following reasons:
+- It avoid unnecessary dependent typing.
+- You can easily convert this definition to the other three by composing with `Fin.val`, but
+converting between any two of the other definitions is more inconvenient because it involves
+multiple `Fin` types.
+- If you prefer a definition where there are `k` singular values, you can treat the singular values
+  after `k` as junk values.
+  Not having to prove that `i < k` when getting the `i`th singular value has similar advantages to
+  not having to prove that `y ≠ 0` when calculating `x / y`.
+- This API coincides with a potential future API for approximation numbers, which are a
+  generalization of singular values to continuous linear maps between possibly-infinite-dimensional
+  normed vector spaces.
+
+## TODO
+
+- Implement singular vectors and the singular value decomposition
+- Define singular values and singular value decomposition for matrices
+- Generalize singular values to the approximation numbers for maps between
+possibly-infinite-dimensional normed vector spaces
+  - This will likely have a similar type signature to the current singular values definition, except
+  it will take in a `ContinuousLinearMap` and will not be finitely supported.
 
 ## References
 
 * [Sheldon Axler, *Linear Algebra Done Right*][axler2024]
+
+## Tags
+
+singular values
 -/
 
 public section
@@ -34,29 +81,13 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   (T : E →ₗ[𝕜] F)
 
 /--
-The singular values of a finite dimensional linear map, ordered in descending order.
-This definition accounts for the multiplicity of a singular value.
+If `T : E →ₗ[𝕜] F` is a linear map between finite dimensional inner product spaces, then
+`T.singularValues` is the infinite sequence where the first dim(E) values are the square roots of
+eigenvalues of `T.adjoint ∘ₗ T` (which are guaranteed to be nonnegative real numbers), arranged
+in descending order and repeated according to their multiplicity, and the rest of the values in the
+infinite sequence are zero.
 
-Suppose `T : E →ₗ[𝕜] F` where `dim(E) = n`, `dim(F) = m`.
-In mathematical literature, the number of singular values varies, with popular choices including
-- `rank(T)` singular values, all of which are positive.
-- `min(n,m)` singular values, some of which might be zero.
-- `n` singular values, some of which might be zero.
-  This is the approach taken in [axler2024].
-- Countably infinitely many singular values, with, all but finitely many of them being zero.
-
-We take the last approach for the following reasons:
-- It avoid unnecessary dependent typing.
-- You can easily convert this definition to the other three by composing with `Fin.val`, but
-converting between any two of the other definitions is more inconvenient because it involves
-multiple `Fin` types.
-- If you prefer a definition where there are `k` singular values, you can treat the singular values
-  after `k` as junk values.
-  Not having to prove that `i < k` when getting the `i`th singular value has similar advantages to
-  not having to prove that `y ≠ 0` when calculating `x / y`.
-- This API coincides with a potential future API for approximation numbers, which are a
-  generalization of singular values to continuous linear maps between possibly-infinite-dimensional
-  normed vector spaces.
+Please see this file's module docstring for an explanation of this design decision.
 -/
 noncomputable def singularValues : ℕ →₀ ℝ≥0 :=
   Finsupp.embDomain Fin.valEmbedding <|
