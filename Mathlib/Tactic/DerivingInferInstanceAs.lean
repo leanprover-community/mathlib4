@@ -128,13 +128,13 @@ private partial def mkInstNormalized (classExpr : Expr) (declName : Name) (declV
       let instType := mkAppN cls xs'
       -- *** BEGIN NORMALIZATION ***
       -- Normalize the synthesized instance value to fix carrier type leakage.
-      -- Skip normalization gracefully when heads can't be aligned (e.g. `DecidableEq`
-      -- which unfolds to a Pi type rather than a class application).
+      -- Build replacements directly from the class args (source = classExpr with
+      -- underlying type, target = instType with definition type), avoiding
+      -- `inferType` which may unfold abbreviations like `DecidableEq` into Pi types.
       let instVal ← instantiateMVars instVal
-      let instVal ← try
-        let instValType ← inferType instVal
-        let (sourceType, expectedType) ← alignHeads instValType instType
-        let replacements := buildReplacements sourceType expectedType
+      let sourceClassExpr ← instantiateMVars classExpr
+      let replacements := buildReplacements sourceClassExpr instType
+      let instVal ←
         if replacements.isEmpty then
           pure instVal
         else
@@ -145,7 +145,6 @@ private partial def mkInstNormalized (classExpr : Expr) (declName : Name) (declV
             for w in ← warnings.get do
               logWarning w
           pure result
-      catch _ => pure instVal
       -- *** END NORMALIZATION ***
       return { instType, instVal }
     try
