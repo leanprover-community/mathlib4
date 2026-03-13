@@ -54,7 +54,12 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDim
   [MeasurableSpace E]
 
 variable (E) in
-/-- Standard Gaussian distribution on `E`. -/
+/-- Standard Gaussian distribution on a finite-dimensional real inner product space `E`.
+This is the random vector whose coordinates in an orthonormal basis are independent standard
+Gaussian.
+
+The definition uses `stdOrthonormalBasis ℝ E` but does not actually depend on the
+basis, see `stdGaussian_eq_map_pi_orthonormalBasis`. -/
 noncomputable
 def stdGaussian : Measure E :=
   (Measure.pi (fun _ : Fin (Module.finrank ℝ E) ↦ gaussianReal 0 1)).map
