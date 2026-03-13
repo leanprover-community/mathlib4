@@ -78,7 +78,7 @@ This handles two cases:
   (same constant name, different universe levels)
 - Type abbreviations: e.g. `DecidableLT α` vs `DecidableRel (· < ·)`
   (different constants that unfold to a common head) -/
-private def alignHeads (sourceType expectedType : Expr) :
+def alignHeads (sourceType expectedType : Expr) :
     MetaM (Expr × Expr) := do
   -- Fast path: same head constant name (handles universe mismatches)
   if sameHeadConstName sourceType expectedType then
@@ -106,7 +106,7 @@ private def alignHeads (sourceType expectedType : Expr) :
 `expectedType`. For each differing argument position, the source argument is mapped
 to the expected argument. Since `matchesAnyDefeq` uses `isDefEq` at `default`
 transparency, intermediate unfoldings are handled automatically. -/
-private def buildReplacements (sourceType expectedType : Expr) :
+def buildReplacements (sourceType expectedType : Expr) :
     Array (Expr × Expr) := Id.run do
   let sourceArgs := sourceType.getAppArgs
   let expectedArgs := expectedType.getAppArgs
@@ -233,7 +233,7 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
 2. Replace the carrier type parameter(s) in the constructor.
 3. For each instance-implicit, non-proof field: try synthesis (if `trySynth`), else recurse.
 4. For each non-instance function field: replace lambda binder domains only. -/
-private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × Expr))
+partial def normalizeInstance (e : Expr) (replacements : Array (Expr × Expr))
     (warnings : IO.Ref (Array MessageData)) (trySynth : Bool := true) : MetaM Expr := do
   let ty ← inferType e
   let some _className ← isClass? ty | return e
