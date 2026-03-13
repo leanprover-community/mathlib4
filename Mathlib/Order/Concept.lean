@@ -53,8 +53,8 @@ which `r` relates to all elements of `t`. -/
 def lowerPolar (t : Set β) : Set α :=
   { a | ∀ ⦃b⦄, b ∈ t → r a b }
 
-theorem upperBounds_eq_upperPolar [LE α] : upperBounds s = upperPolar (· ≤ ·) s := rfl
-theorem lowerBounds_eq_lowerPolar [LE β] : lowerBounds t = lowerPolar (· ≤ ·) t := rfl
+@[simp] theorem upperPolar_le [LE α] : upperPolar (· ≤ ·) s = upperBounds s := rfl
+@[simp] theorem lowerPolar_le [LE β] : lowerPolar (· ≤ ·) t = lowerBounds t := rfl
 
 variable {r} {a : α} {b : β}
 
