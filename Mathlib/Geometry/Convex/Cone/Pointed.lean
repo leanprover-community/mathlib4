@@ -297,4 +297,81 @@ lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
   simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
 
 end Salient
+
+section DirectedOrderRing
+
+variable {R : Type*} [Ring R] [PartialOrder R] [IsDirectedOrder R] [IsOrderedRing R]
+variable {M : Type*} [AddCommGroup M] [Module R M]
+
+variable (R) in
+@[simp] lemma span_neg_pair_eq_submodule_span_singleton (x : M) : span R {-x, x} = R ∙ x := by
+  ext y
+  rw [← Submodule.span_insert_eq_span <| neg_mem <| Submodule.mem_span_singleton_self x]
+  simp only [Submodule.restrictScalars_mem, Submodule.mem_span_pair, smul_neg, Subtype.exists]
+  constructor
+  · rintro ⟨a, _, b, _, rfl⟩
+    exact ⟨a, b, rfl⟩
+  · rintro ⟨a, b, rfl⟩
+    obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
+    refine ⟨c - b, sub_nonneg.mpr hbc, c - a, sub_nonneg.mpr hac, ?_⟩
+    calc -((c - b) • x) + (c - a) • x
+        _ = (-(c - b) + (c - a)) • x  := by rw [← neg_smul, ← add_smul]
+        _ = (b - a) • x               := by rw [neg_sub, sub_add_sub_cancel]
+        _ = -(a • x) + b • x          := by rw [sub_smul]; abel
+
+@[simp] lemma span_sup_span_neg_eq_submodule_span (s : Set M) :
+    span R s ⊔ span R (-s) = Submodule.span R s := by
+  ext x
+  constructor <;> intro h
+  · obtain ⟨_, hy, _, hz, rfl⟩ := Submodule.mem_sup.mp h
+    exact add_mem
+      (Submodule.mem_span.mpr fun p hp => Submodule.mem_span.mp hy p hp)
+      (Submodule.mem_span.mpr fun p hp => Submodule.mem_span.mp hz p <|
+        fun y hy => by simpa using p.neg_mem (hp (Set.mem_neg.mp hy)))
+  · rw [Submodule.restrictScalars_mem, Submodule.mem_span_set'] at h
+    obtain ⟨n, f, g, rfl⟩ := h
+    have hx : ∑ i, f i • (g i : M) ∈ span R (-s ∪ s) := by
+      refine sum_mem ?_
+      intro i _
+      have hpair : f i • (g i : M) ∈ span R ({-(g i : M), (g i : M)} : Set M) := by
+        rw [span_neg_pair_eq_submodule_span_singleton (R := R) (x := (g i : M))]
+        exact Submodule.mem_span_singleton.mpr ⟨f i, by simp⟩
+      exact Set.mem_of_subset_of_mem (Submodule.span_mono <| by
+        intro z hz
+        rcases Set.mem_insert_iff.mp hz with rfl | hz
+        · exact Set.mem_union_left _ (by simp [(g i).property])
+        · rcases Set.mem_singleton_iff.mp hz with rfl
+          exact Set.mem_union_right _ (g i).property) hpair
+    simpa [Submodule.span_union, sup_comm, Set.union_comm] using hx
+
+set_option backward.isDefEq.respectTransparency false in
+-- NOTE: if this is implemented, it is more general than what mathlib already provides
+-- for converting submodules into pointed cones. Especially the proof that R≥0 is an FG
+-- submodule of R should be easier with this.
+@[simp] lemma span_neg_union_eq_submodule_span (s : Set M) :
+    span R (-s ∪ s) = Submodule.span R s := by
+  ext x
+  simp only [Submodule.mem_span, Set.union_subset_iff, and_imp,
+    Submodule.restrictScalars_mem]
+  constructor <;> intros h B sB
+  · refine h (B.restrictScalars _) ?_ sB
+    rw [Submodule.coe_restrictScalars]
+    exact fun _ tm => neg_mem_iff.mp (sB tm)
+  · intro nsB
+    have : x ∈ (Submodule.span R s : PointedCone R M) :=
+      h (Submodule.span R s) Submodule.subset_span
+    rw [← span_sup_span_neg_eq_submodule_span] at this
+    obtain ⟨_, h₁, _, h₂, h⟩ := Submodule.mem_sup.mp this
+    rw [← h]
+    apply add_mem
+    · exact Set.mem_of_subset_of_mem (Submodule.span_le.mpr nsB) h₁
+    · exact Set.mem_of_subset_of_mem (Submodule.span_le.mpr sB) h₂
+
+lemma span_eq_submodule_span_of_neg_eq {s : Set M} (hs : -s = s) :
+    span R s = Submodule.span R s := by
+  nth_rw 1 [← Set.union_self s, hs.symm]
+  exact span_neg_union_eq_submodule_span s
+
+end DirectedOrderRing
+
 end PointedCone
