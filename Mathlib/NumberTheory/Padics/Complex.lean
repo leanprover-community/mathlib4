@@ -94,7 +94,6 @@ theorem valuation_def (x : PadicAlgCl p) : Valued.v x = ‖x‖₊ := rfl
 /-- The coercion of the valuation of `x : PadicAlgCl p` to `ℝ` agrees with its norm. -/
 @[simp] theorem valuation_coe (x : PadicAlgCl p) : ((Valued.v x : ℝ≥0) : ℝ) = ‖x‖ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The valuation of `p : PadicAlgCl p` is `1/p`. -/
 theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap ℚ_[p] (PadicAlgCl p))]
@@ -143,29 +142,23 @@ notation "ℂ_[" p "]" => PadicComplex p
 
 namespace PadicComplex
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ_[p]` is a valued field, where the valuation is the one extending that on `PadicAlgCl p`. -/
 instance valued : Valued ℂ_[p] ℝ≥0 := Valued.valuedCompletion
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The valuation on `ℂ_[p]` extends the valuation on `PadicAlgCl p`. -/
 theorem valuation_extends (x : PadicAlgCl p) : Valued.v (x : ℂ_[p]) = Valued.v x :=
   Valued.extensionValuation_apply_coe _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_eq (x : PadicAlgCl p) : (x : ℂ_[p]) = algebraMap (PadicAlgCl p) ℂ_[p] x := rfl
 
 @[simp] theorem coe_zero : ((0 : PadicAlgCl p) : ℂ_[p]) = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower ℚ_[p] (PadicAlgCl p) ℂ_[p] := IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_natCast (n : ℕ) : ((n : PadicAlgCl p) : ℂ_[p]) = (n : ℂ_[p]) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]) n, coe_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The valuation of `p : ℂ_[p]` is `1/p`. -/
 theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]), ← coe_eq, valuation_extends,
@@ -249,7 +242,6 @@ instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where
 instance charZero : CharZero ℂ_[p] :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] ℂ_[p]).injective).mp inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ_[p]` is algebraically closed. -/
 instance isAlgClosed : IsAlgClosed ℂ_[p] :=
   IsAlgClosed.of_denseRange UniformSpace.Completion.denseRange_coe
