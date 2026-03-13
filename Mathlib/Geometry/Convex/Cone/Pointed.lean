@@ -329,14 +329,14 @@ variable (R) in
         _ = -(a • x) + b • x          := by rw [sub_smul]; abel
 
 @[simp] lemma span_sup_span_neg_eq_submodule_span (s : Set M) :
-    span R s ⊔ span R (-s) = Submodule.span R s := by
+    span R (-s) ⊔ span R s = Submodule.span R s := by
   ext x
   constructor <;> intro h
-  · obtain ⟨_, hy, _, hz, rfl⟩ := Submodule.mem_sup.mp h
+  · obtain ⟨_, hn, _, hp, rfl⟩ := Submodule.mem_sup.mp h
     exact add_mem
-      (Submodule.mem_span.mpr fun p hp => Submodule.mem_span.mp hy p hp)
-      (Submodule.mem_span.mpr fun p hp => Submodule.mem_span.mp hz p <|
-        fun y hy => by simpa using p.neg_mem (hp (Set.mem_neg.mp hy)))
+      (Submodule.mem_span.mpr fun p hsp => Submodule.mem_span.mp hn p <|
+        fun y hy => by simpa using p.neg_mem (hsp (Set.mem_neg.mp hy)))
+      (Submodule.mem_span.mpr fun p hsp => Submodule.mem_span.mp hp p hsp)
   · rw [Submodule.restrictScalars_mem, Submodule.mem_span_set'] at h
     obtain ⟨n, f, g, rfl⟩ := h
     have hx : ∑ i, f i • (g i : M) ∈ span R (-s ∪ s) := by
@@ -353,33 +353,10 @@ variable (R) in
           exact Set.mem_union_right _ (g i).property) hpair
     simpa [Submodule.span_union, sup_comm, Set.union_comm] using hx
 
-set_option backward.isDefEq.respectTransparency false in
--- NOTE: if this is implemented, it is more general than what mathlib already provides
--- for converting submodules into pointed cones. Especially the proof that R≥0 is an FG
--- submodule of R should be easier with this.
-@[simp] lemma span_neg_union_eq_submodule_span (s : Set M) :
-    span R (-s ∪ s) = Submodule.span R s := by
-  ext x
-  simp only [Submodule.mem_span, Set.union_subset_iff, and_imp,
-    Submodule.restrictScalars_mem]
-  constructor <;> intros h B sB
-  · refine h (B.restrictScalars _) ?_ sB
-    rw [Submodule.coe_restrictScalars]
-    exact fun _ tm => neg_mem_iff.mp (sB tm)
-  · intro nsB
-    have : x ∈ (Submodule.span R s : PointedCone R M) :=
-      h (Submodule.span R s) Submodule.subset_span
-    rw [← span_sup_span_neg_eq_submodule_span] at this
-    obtain ⟨_, h₁, _, h₂, h⟩ := Submodule.mem_sup.mp this
-    rw [← h]
-    apply add_mem
-    · exact Set.mem_of_subset_of_mem (Submodule.span_le.mpr nsB) h₁
-    · exact Set.mem_of_subset_of_mem (Submodule.span_le.mpr sB) h₂
-
 lemma span_eq_submodule_span_of_neg_eq {s : Set M} (hs : -s = s) :
     span R s = Submodule.span R s := by
   nth_rw 1 [← Set.union_self s, hs.symm]
-  exact span_neg_union_eq_submodule_span s
+  simp
 
 section Pointwise
 
@@ -387,8 +364,8 @@ open Pointwise
 
 lemma sup_neg_eq_submodule_span (C : PointedCone R M) : -C ⊔ C = C.linSpan := by
   nth_rw 1 2 [← Submodule.span_eq C]
-  rw [← Submodule.span_neg_eq_neg, ← Submodule.span_union]
-  exact span_neg_union_eq_submodule_span (C : Set M)
+  rw [← Submodule.span_neg_eq_neg]
+  exact span_sup_span_neg_eq_submodule_span _
 
 lemma neg_eq_iff_eq_linSpan {C : PointedCone R M} : -C ≤ C ↔ C.linSpan = C := by
   rw [← sup_neg_eq_submodule_span, sup_eq_right]
