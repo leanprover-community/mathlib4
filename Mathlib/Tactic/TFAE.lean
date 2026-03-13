@@ -33,11 +33,13 @@ open Lean.Parser Term
 
 namespace Parser
 
-/- An arrow of the form `←`, `→`, or `↔`. -/
+-- An arrow of the form `←`, `→`, or `↔`.
 def impTo : Parser := leading_parser unicodeSymbol " → " " -> "
 def impFrom : Parser := leading_parser unicodeSymbol " ← " " <- "
 def impIff : Parser := leading_parser unicodeSymbol " ↔ " " <-> "
 def impArrow : Parser := leading_parser impTo <|> impFrom <|> impIff
+
+attribute [nolint docBlame] impTo impFrom impIff impArrow
 
 /-- A `tfae_have` type specification, e.g. `1 ↔ 3` The numbers refer to the proposition at the
 corresponding position in the `TFAE` goal (starting at 1). -/
@@ -72,6 +74,9 @@ def tfaeHavePatDecl := leading_parser (withAnonymousAntiquot := false)
 /- See `haveDecl`. Any of `tfaeHaveIdDecl`, `tfaeHavePatDecl`, or `tfaeHaveEqnsDecl`. -/
 def tfaeHaveDecl := leading_parser (withAnonymousAntiquot := false)
   tfaeHaveIdDecl <|> (ppSpace >> tfaeHavePatDecl) <|> tfaeHaveEqnsDecl
+
+attribute [nolint docBlame] binder
+  tfaeHaveIdLhs tfaeHaveIdDecl tfaeHaveEqnsDecl tfaeHavePatDecl tfaeHaveDecl
 
 end Parser
 
