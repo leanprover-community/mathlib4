@@ -72,30 +72,28 @@ You probably need to use `LinearMap.eigenvalues_adjoint_comp_self_nonneg` to mak
 of this.
 -/
 theorem singularValues_fin {n : ℕ} (hn : finrank 𝕜 E = n) (i : Fin n)
-  : T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) := by
+    : T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) := by
   subst hn
   exact Finsupp.embDomain_apply_self _ _ i
 
 theorem singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
     : T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩)
-    := T.singularValues_fin hn ⟨i, hi⟩
+  := T.singularValues_fin hn ⟨i, hi⟩
 
-theorem singularValues_of_finrank_le {i : ℕ}
-  (hi : finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
+theorem singularValues_of_finrank_le {i : ℕ} (hi : finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
   apply Finsupp.embDomain_notin_range
   simp [hi]
 
 theorem sq_singularValues_fin {n : ℕ} (hn : finrank 𝕜 E = n) (i : Fin n)
-  : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn i := by
+    : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn i := by
   simp [T.singularValues_fin hn, T.isPositive_adjoint_comp_self.nonneg_eigenvalues hn i]
 
 theorem sq_singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
-  : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩ := by
+    : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩ := by
   exact T.sq_singularValues_fin hn ⟨i, hi⟩
 
-theorem hasEigenvalue_adjoint_comp_self_sq_singularValues
-  {n : ℕ} (hn : n < finrank 𝕜 E)
-  : End.HasEigenvalue (adjoint T ∘ₗ T) ((T.singularValues n).toReal ^ 2) := by
+theorem hasEigenvalue_adjoint_comp_self_sq_singularValues {n : ℕ} (hn : n < finrank 𝕜 E)
+    : End.HasEigenvalue (adjoint T ∘ₗ T) ((T.singularValues n).toReal ^ 2) := by
   have hT := T.isSymmetric_adjoint_comp_self
   convert hT.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
   simp [← T.sq_singularValues_fin]
@@ -117,7 +115,7 @@ are only dim(domain(T)) singular values in [axler2024], so we modify the stateme
 this.
 -/
 theorem injective_iff_not_mem_image_range_singularValues
-  : Function.Injective T ↔ 0 ∉ (Finset.range (finrank 𝕜 E)).image T.singularValues := by
+    : Function.Injective T ↔ 0 ∉ (Finset.range (finrank 𝕜 E)).image T.singularValues := by
   have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 0 4
   rw [← adjoint_comp_self_injective_iff, ← coe_comp, ← ker_eq_bot, ← this, not_iff_not,
     Finset.mem_image]
@@ -162,8 +160,7 @@ theorem support_singularValues : T.singularValues.support = Finset.range (finran
     apply_fun Finset.card at hn
     simpa [card_support_singularValues] using hn
 
-theorem singularValues_lt_rank {n : ℕ} (hn : n < finrank 𝕜 (range T))
-    : 0 < T.singularValues n := by
+theorem singularValues_lt_rank {n : ℕ} (hn : n < finrank 𝕜 (range T)) : 0 < T.singularValues n := by
   rwa [zero_lt_iff, ← Finsupp.mem_support_iff, support_singularValues, Finset.mem_range]
 
 theorem singularValues_rank : T.singularValues (finrank 𝕜 (range T)) = 0 := by
@@ -171,7 +168,7 @@ theorem singularValues_rank : T.singularValues (finrank 𝕜 (range T)) = 0 := b
   exact Finset.notMem_range_self
 
 theorem singularValues_le_rank {n : ℕ}
-  (hn : finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 := by
+    (hn : finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 := by
   rw [← Finsupp.notMem_support_iff, support_singularValues, Finset.mem_range]
   order
 
@@ -181,12 +178,12 @@ theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i 
   trans 0 <;> simp
 
 theorem singularValues_id_of_lt_finrank {i : ℕ} (hi : i < finrank 𝕜 E)
-  : (id : E →ₗ[𝕜] E).singularValues i = 1 := by
+    : (id : E →ₗ[𝕜] E).singularValues i = 1 := by
   rw [id.singularValues_of_lt rfl hi]
   sorry
 
 theorem singularValues_id {i : ℕ} :
-  (id : E →ₗ[𝕜] E).singularValues i = if i < finrank 𝕜 E then 1 else 0 := by
+    (id : E →ₗ[𝕜] E).singularValues i = if i < finrank 𝕜 E then 1 else 0 := by
   split_ifs with h
   · exact singularValues_id_of_lt_finrank h
   · push_neg at h
@@ -194,7 +191,7 @@ theorem singularValues_id {i : ℕ} :
 
 @[simp]
 theorem singularValues_smul (c : 𝕜) (i : ℕ)
-  : (c • T).singularValues i = ‖c‖ * T.singularValues i := by
+    : (c • T).singularValues i = ‖c‖ * T.singularValues i := by
   -- This one might require some facts about complex numbers
   sorry
 
