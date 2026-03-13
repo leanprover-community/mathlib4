@@ -119,7 +119,7 @@ def coneEquiv : Cone K ≌ Cone (liftFromOver.obj K) where
   functor := coneLift
   inverse := coneBack
   unitIso := .refl _
-  counitIso := NatIso.ofComponents fun t ↦ Cones.ext <| .refl _
+  counitIso := NatIso.ofComponents fun t ↦ Cone.ext <| .refl _
 
 @[simp]
 lemma coneEquiv_functor_obj_π_app_star : (coneEquiv.functor.obj t).π.app star = t.pt.hom := rfl
@@ -240,7 +240,7 @@ def coconeEquiv : Cocone K ≌ Cocone (liftFromUnder.obj K) where
   functor := coconeLift
   inverse := coconeBack
   unitIso := .refl _
-  counitIso := NatIso.ofComponents fun t ↦ Cocones.ext <| .refl _
+  counitIso := NatIso.ofComponents fun t ↦ Cocone.ext <| .refl _
 
 @[simp]
 lemma coconeEquiv_functor_obj_ι_app_star : (coconeEquiv.functor.obj t).ι.app star = t.pt.hom := rfl

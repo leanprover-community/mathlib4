@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
+public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 
 /-! # The derived category of an abelian category
 
@@ -49,8 +49,8 @@ instance should be obtained at the beginning of the proof, using the term
 ## TODO (@joelriou)
 
 - construct the distinguished triangle associated to a short exact sequence
-of cochain complexes (done), and compare the associated connecting homomorphism
-with the one defined in `Algebra.Homology.HomologySequence`.
+  of cochain complexes (done), and compare the associated connecting homomorphism
+  with the one defined in `Algebra.Homology.HomologySequence`.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
@@ -215,10 +215,9 @@ lemma mappingCone_triangle_distinguished :
 lemma mappingCocone_triangle_distinguished :
     DerivedCategory.Q.mapTriangle.obj (mappingCocone.triangle φ) ∈ distTriang _ := by
   rw [rotate_distinguished_triangle]
-  refine isomorphic_distinguished _ ?_ _
-    ((DerivedCategory.Q (C := C)).mapTriangleRotateIso.app _ ≪≫
+  exact isomorphic_distinguished _ (mappingCone_triangle_distinguished φ) _
+    (DerivedCategory.Q.mapTriangleRotateIso.app _ ≪≫
     DerivedCategory.Q.mapTriangle.mapIso (mappingCocone.rotateTriangleIso φ))
-  exact mappingCone_triangle_distinguished φ
 
 end
 
