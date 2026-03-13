@@ -5,7 +5,7 @@ Authors: Yuxuan Xiao
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.MainVariable
+public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.Data.Fintype.WithTopBot
 
@@ -629,7 +629,7 @@ noncomputable def takeConcat (S : TriangularSet σ R) (p : MvPolynomial σ R) :
       Nat.find_spec <| exists_index_mainVar_between_of_mainVar_first_lt <| lt_of_not_ge hc
     have max_vars_lt : (S.take k).canConcat p := by
       rewrite [canConcat, length_take, min_eq_left hk.1, take_apply]
-      refine ⟨MvPolynomial.ne_zero_of_max_vars_ne_bot <| LT.lt.ne_bot <| lt_of_not_ge hc, ?_⟩
+      refine ⟨fun hp ↦ absurd (LT.lt.ne_bot <| lt_of_not_ge hc) (by simp [hp]), ?_⟩
       exact fun hkz ↦ if_pos (Nat.sub_one_lt_of_lt hkz) ▸ hk.2.1
     (S.take k).concat p
 
@@ -656,7 +656,8 @@ theorem takeConcat_eq_concat_of_canConcat (h : S.canConcat p) : S.takeConcat p =
   simp only [hk, take_length]
 
 theorem takeConcat_zero_eq_empty (S : TriangularSet σ R) : S.takeConcat 0 = ∅ := by
-  simp only [takeConcat, single_zero, MvPolynomial.max_vars_zero, bot_le, ↓reduceDIte, ite_self]
+  have : (0 : MvPolynomial σ R).vars.max = ⊥ := rfl
+  simp only [takeConcat, single_zero, this, bot_le, ↓reduceDIte, ite_self]
 
 theorem mem_takeConcat (S : TriangularSet σ R) {p : MvPolynomial σ R} (h : p ≠ 0) :
     p ∈ S.takeConcat p := by

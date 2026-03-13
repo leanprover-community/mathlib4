@@ -321,7 +321,7 @@ noncomputable def pseudo : PseudoResult (MvPolynomial σ R) :=
 @[simp] theorem pseudo_C {g : MvPolynomial σ R} {r : R} (hr : r ≠ 0) :
     g.pseudo (C r) = ⟨0, r⁻¹ • g, 0⟩ := by
   have : (C r : MvPolynomial σ R) ≠ 0 := C_ne_zero.mpr hr
-  simp only [pseudo, this, reduceIte, max_vars_C, coeff_C]
+  simp only [pseudo, this, ↓reduceIte, vars_C, Finset.max_empty, coeff_C]
 
 @[simp] theorem zero_pseudo : (0 : MvPolynomial σ R).pseudo f = ⟨0, 0, 0⟩ := by
   simp only [pseudo, smul_zero, zero_pseudoOf, ite_eq_left_iff]
@@ -340,7 +340,8 @@ noncomputable def pseudo : PseudoResult (MvPolynomial σ R) :=
 
 theorem pseudo_of_max_vars_isSome {c : σ} {f : MvPolynomial σ R} :
     f.vars.max = c → g.pseudo f = g.pseudoOf c f := fun h ↦ by
-  simp only [pseudo, ne_zero_of_max_vars_ne_bot (h ▸ WithBot.coe_ne_bot), h, reduceIte]
+  have : f ≠ 0 := fun hf ↦ absurd (h ▸ WithBot.coe_ne_bot) (by simp [hf])
+  simp only [pseudo, this, h, reduceIte]
 
 theorem pseudo_equation :
     f.initial ^ (g.pseudo f).exponent * g = (g.pseudo f).quotient * f + (g.pseudo f).remainder := by
@@ -349,7 +350,7 @@ theorem pseudo_equation :
   · rw [pow_zero, one_mul, zero_mul, zero_add]
   match hc : f.vars.max with
   | ⊥ =>
-    have ⟨r, hr⟩ : ∃ r, f = C r := max_vars_eq_bot_iff_eq_C.mp hc
+    have ⟨r, hr⟩ : ∃ r, f = C r := vars_eq_empty_iff_eq_C.mp <| Finset.max_eq_bot.mp hc
     simp only [pow_zero, one_mul, Algebra.smul_mul_assoc, add_zero]
     simp only [hr, coeff_C, reduceIte] at f_zero ⊢
     have : r ≠ 0 := C_ne_zero.mp f_zero
@@ -556,7 +557,8 @@ lemma setPseudoRem_reducedTo (l : List (MvPolynomial σ R)) (hl1 : ∀ ⦃p⦄, 
     · exact ih
     suffices (r'.pseudo a).remainder.degreeOf c ≤ r'.degreeOf c by exact lt_of_le_of_lt this ih
     apply degreeOf_pseudo_remainder_le_of_degreeOf_eq_zero
-    apply degreeOf_eq_zero_of_max_vars_lt
+    apply (iff_not_comm.mpr mem_vars_iff_degreeOf_ne_zero).mpr
+    apply Finset.notMem_of_max_lt_coe
     apply heq ▸ (pairwise_cons.mp hl2).1 p hp
 
 theorem setPseudo_remainder_reducedToSet : (g.setPseudo S).remainder.reducedToSet S := by
@@ -585,7 +587,8 @@ lemma setPseudoRem_eq_self_of_max_vars_lt (l : List (MvPolynomial σ R))
     rcases WithBot.ne_bot_iff_exists.mp <| LT.lt.ne_bot hg.1 with ⟨c, hc⟩
     have ih := ih (fun p hp ↦ hl1 <| mem_cons_of_mem _ hp) (pairwise_cons.mp hl2).2 hg.2
     rw [foldr_cons, ih, pseudo_remainder_eq_of_degreeOf_eq_zero hc.symm]
-    exact degreeOf_eq_zero_of_max_vars_lt (hc ▸ hg.1)
+    apply (iff_not_comm.mpr mem_vars_iff_degreeOf_ne_zero).mpr
+    apply Finset.notMem_of_max_lt_coe <| hc ▸ hg.1
 
 theorem setPseudo_remainder_eq_zero_of_mem {p : MvPolynomial σ R} (hp : p ∈ S) :
     (p.setPseudo S).remainder = 0 := by

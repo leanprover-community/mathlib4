@@ -69,7 +69,8 @@ theorem reducedTo_of_max_vars_lt (h : q.vars.max < p.vars.max) : q.reducedTo p :
   else
     rcases WithBot.ne_bot_iff_exists.mp <| LT.lt.ne_bot h with ⟨c, hc⟩
     apply (reducedTo_iff hc.symm hq).mpr
-    rewrite [degreeOf_eq_zero_of_max_vars_lt (hc ▸ h)]
+    rewrite [(iff_not_comm.mpr mem_vars_iff_degreeOf_ne_zero).mpr <|
+      Finset.notMem_of_max_lt_coe (hc ▸ h)]
     exact Nat.pos_of_ne_zero <| degreeOf_max_vars_ne_zero hc.symm
 
 theorem reducedTo_congr_right : p ≈ q → (r.reducedTo p ↔ r.reducedTo q) := fun h ↦

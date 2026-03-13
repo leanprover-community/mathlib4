@@ -837,7 +837,6 @@ public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.AscendingSet
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.CharacteristicSet
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Initial
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.MainDegree
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.MainVariable
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Order
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.PseudoDivision
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Reduce

@@ -5,7 +5,7 @@ Authors: Yuxuan Xiao
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.MainVariable
+public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 
 /-!
@@ -199,6 +199,15 @@ theorem initialOf_eq_leadingCoeff [DecidableEq σ] {p : MvPolynomial σ R} {i : 
     have : j = i := by apply f.injective; rw [this, heq]
     rw [if_pos this]
   exact this _ ▸ coeff_initialOf_eq_of_apply_eq_zero i p hs
+
+theorem vars_initialOf_subset : (p.initialOf i).vars ⊆ p.vars := by
+  classical
+  apply subset_trans (vars_sum_subset _ _)
+  simp only [Finset.biUnion_subset_iff_forall_subset, Finset.mem_filter, mem_support_iff, ne_eq]
+  intro s ⟨hs, _⟩
+  simp only [vars_monomial hs, Finsupp.support_erase]
+  apply subset_trans (Finset.erase_subset i s.support)
+  exact support_subset_vars_of_mem_support <| mem_support_iff.mpr hs
 
 theorem initialOf_eq_of_degreeOf_eq_zero {p : MvPolynomial σ R} {i : σ} :
     p.degreeOf i = 0 → p.initialOf i = p := fun h ↦ Eq.symm (by
@@ -427,20 +436,21 @@ theorem initial_of_max_vars_eq_bot (hp : p ≠ 0) : p.vars.max = ⊥ → initial
 theorem initial_of_max_vars_isSome' {c : σ} :
     p.vars.max = c → initial p = p.initialOf c := fun h ↦ by
   have : p.vars.max ≠ ⊥ := WithBot.ne_bot_iff_exists.mpr <| Exists.intro c h.symm
-  simp only [initial, ne_zero_of_max_vars_ne_bot this, ↓reduceIte, h]
+  have : p ≠ 0 := fun h ↦ absurd this (by simp [h])
+  simp only [initial, this, ↓reduceIte, h]
 
 theorem initial_of_max_vars_isSome {c : σ} : p.vars.max = c →
     initial p = ∑ s ∈ p.support with s c = p.degreeOf c, monomial (s.erase c) (p.coeff s) :=
   fun h ↦ by rw [initial_of_max_vars_isSome' h, initialOf_def]
 
 @[simp] theorem initial_C {r : R} (hr : r ≠ 0) : (C r : MvPolynomial σ R).initial = 1 :=
-  initial_of_max_vars_eq_bot (C_ne_zero.mpr hr) (max_vars_C r)
+  initial_of_max_vars_eq_bot (C_ne_zero.mpr hr) (congrArg _ vars_C)
 
 theorem initial_monomial {s : σ →₀ ℕ} (r : R) {c : σ} :
     s.support.max = c → (monomial s r).initial = monomial (s.erase c) r := fun hs ↦ by
   by_cases r_zero : r = 0
   · simp only [r_zero, initial, monomial_zero, reduceIte]
-  have : (monomial s r).vars.max = c := hs ▸ max_vars_monomial s r_zero
+  have : (monomial s r).vars.max = c := hs ▸ congrArg _ (vars_monomial r_zero)
   rw [initial_of_max_vars_isSome' this, initialOf_monomial]
 
 @[simp] theorem initial_X_pow (i : σ) {k : ℕ} (hk : k ≠ 0) :
@@ -454,30 +464,21 @@ theorem initial_monomial {s : σ →₀ ℕ} (r : R) {c : σ} :
 
 theorem max_vars_initial_lt (hp : p.vars.max ≠ ⊥) :
     (initial p).vars.max < p.vars.max := by
-  have ⟨c, hc⟩ :=  WithBot.ne_bot_iff_exists.mp hp
-  rewrite [initial_of_max_vars_isSome hc.symm, hc.symm]
-  apply lt_of_le_of_lt (max_vars_sum_le _ _)
-  simp only [WithBot.bot_lt_coe, Finset.sup_lt_iff, Finset.mem_filter, mem_support_iff]
-  intro s hs
-  simp only [max_vars_monomial _ hs.1, Finsupp.support_erase, Finset.max_eq_sup_coe]
-  rewrite [Finset.sup_lt_iff (hc ▸ WithBot.bot_lt_iff_ne_bot.mpr hp)]
-  simp only [Finset.mem_erase, WithBot.coe_lt_coe]
-  intro i hi
-  have hs : s.support.max ≤ c := by
-    refine hc ▸ (Finset.max_mono ?_)
-    exact (support_subset_vars_of_mem_support (mem_support_iff.mpr hs.1))
-  have := le_trans (Finset.le_max hi.2) hs
-  exact lt_of_le_of_ne (WithBot.coe_le_coe.mp this) hi.1
+  by_contra con
+  have ⟨c, hc⟩ := WithBot.ne_bot_iff_exists.mp hp
+  absurd p.degreeOf_initialOf_self c
+  rewrite [initial_of_max_vars_isSome' hc.symm] at con
+  have con : (p.initialOf c).vars.max = p.vars.max :=
+    eq_of_le_of_not_lt (Finset.max_mono <| vars_initialOf_subset c p) con
+  have con := Finset.mem_of_max (hc ▸ con)
+  simpa only [degreeOf, Multiset.count_ne_zero, vars_def, Multiset.mem_toFinset] using con
 
 variable (p) (i) in
 theorem degreeOf_initial_le : p.initial.degreeOf i ≤ p.degreeOf i := by
   by_cases hp : p = 0
   · simp only [hp, initial_zero, degreeOf_zero, le_refl]
   by_cases hc : p.vars.max = ⊥
-  · simp only [initial_of_max_vars_eq_bot hp hc]
-    have : (1 : MvPolynomial σ R).vars.max = ⊥ :=
-      max_vars_eq_bot_iff_eq_C.mpr (Exists.intro 1 rfl)
-    rw [degreeOf_of_max_vars_eq_bot i hc, degreeOf_of_max_vars_eq_bot i this]
+  · simp only [initial_of_max_vars_eq_bot hp hc, degreeOf_one, zero_le]
   have ⟨c, hc⟩ :=  WithBot.ne_bot_iff_exists.mp hc
   exact initial_of_max_vars_isSome' hc.symm ▸ p.degreeOf_initialOf_le c i
 

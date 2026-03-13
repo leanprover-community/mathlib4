@@ -95,7 +95,7 @@ theorem lt_of_max_vars_lt : p.vars.max < q.vars.max → p < q :=
 @[simp] theorem not_le_iff_gt : ¬(p ≤ q) ↔ q < p := by rw [le_def', lt_def', not_le]
 
 theorem X_lt_of_lt [Nontrivial R] {i j : σ} : i < j → (X i : MvPolynomial σ R) < X j := fun h ↦ by
-  apply lt_of_max_vars_lt; rewrite [max_vars_X, max_vars_X, WithBot.coe_lt_coe]; exact h
+  apply lt_of_max_vars_lt; simpa only [vars_X, Finset.max_singleton, WithBot.coe_lt_coe] using h
 
 instance instSetoid : Setoid (MvPolynomial σ R) := AntisymmRel.setoid (MvPolynomial σ R) (· ≤ ·)
 
@@ -121,10 +121,8 @@ theorem lt_of_lt_of_equiv {r : MvPolynomial σ R} : p < q → q ≈ r → p < r 
 
 theorem equiv_of_le_of_ge : p ≤ q → q ≤ p → p ≈ q := And.intro
 
-protected theorem zero_le : 0 ≤ p := by
-  apply le_def'.mpr
-  rewrite [order, max_vars_zero, mainDegree_zero]
-  exact StrictMono.minimal_preimage_bot (fun ⦃a b⦄ a ↦ a) rfl p.order
+protected theorem zero_le : 0 ≤ p :=
+  le_def'.mpr <| StrictMono.minimal_preimage_bot (fun ⦃_ _⦄ a ↦ a) rfl p.order
 
 end Order
 

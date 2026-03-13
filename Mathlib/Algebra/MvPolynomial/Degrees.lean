@@ -139,6 +139,18 @@ theorem mem_degrees {p : MvPolynomial σ R} {i : σ} :
   classical
   simp only [degrees_def, Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset]
 
+theorem degrees_eq_zero_iff_support_subset_zero : p.degrees = 0 ↔ p.support ⊆ {0} := by
+  rewrite [Finset.subset_singleton_iff', Multiset.eq_zero_iff_forall_notMem]
+  refine ⟨fun h s hs ↦ ?_, fun h i hi ↦ ?_⟩
+  · apply Finsupp.support_eq_empty.mp
+    refine Finset.eq_empty_of_forall_notMem fun i ↦ ?_
+    have := (not_iff_not.mpr mem_degrees).mp (h i)
+    have := not_and.mp <| not_exists.mp this s
+    exact this (mem_support_iff.mp hs)
+  rcases mem_degrees.mp hi with ⟨s, hs1, hs2⟩
+  have := Finsupp.support_eq_empty.mpr (h s <| mem_support_iff.mpr hs1) ▸ hs2
+  exact absurd this (Finset.notMem_empty i)
+
 theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (p + q).degrees := by
   classical
   apply Finset.sup_le
