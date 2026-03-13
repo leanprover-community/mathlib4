@@ -416,7 +416,7 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
 /-- The sheaf of sections guaranteed by the sheaf condition. -/
 @[simps]
 def sheafOver {A : Type u₂} [Category.{v₂} A] {J : GrothendieckTopology C} (ℱ : Sheaf J A) (E : A) :
-    Sheaf J TypeCat where
+    Sheaf J (Type _) where
   obj := ℱ.obj ⋙ coyoneda.obj (op E)
   property := by
     rw [isSheaf_iff_isSheaf_of_type]

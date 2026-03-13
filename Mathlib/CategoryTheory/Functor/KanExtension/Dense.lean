@@ -97,7 +97,7 @@ lemma IsDense.comp_right_iff_of_isEquivalence (G : D ⥤ C') [G.IsEquivalence] :
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
   map_injective h :=
     (F.denseAt _).hom_ext' (fun X p ↦ by
-      simpa using ULift.up_injective (ConcreteCategory.congr_hom
+      simpa using ULift.up_injective (ConcreteCategory.congr_hom (CC := fun X ↦ X)
         (NatTrans.congr_app h (op X)) (ULift.up p)))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -110,7 +110,7 @@ instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
             naturality g₁ g₂ φ := by
               simpa [uliftFunctor, uliftYoneda,
                 restrictedULiftYoneda, ← ULift.down_inj] using
-                (ConcreteCategory.congr_hom (f.naturality φ.left.op) (ULift.up g₂.hom)).symm } }
+                ((f.naturality_apply φ.left.op) (ULift.up g₂.hom)).symm } }
     refine ⟨(F.denseAt Y).desc c, ?_⟩
     ext ⟨X⟩ ⟨x⟩
     have := (F.denseAt Y).fac c (.mk x)

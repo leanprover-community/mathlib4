@@ -28,7 +28,7 @@ open CategoryTheory MonObj
 
 namespace GrpTypeEquivalenceGrp
 
-instance grpGroup (A : Type u) [GrpObj A] : Group A.carrier :=
+instance grpGroup (A : Type u) [GrpObj A] : Group A :=
   { MonTypeEquivalenceMon.monMonoid A with
     inv := ι[A]
     inv_mul_cancel a := ConcreteCategory.congr_hom (GrpObj.left_inv A) a }

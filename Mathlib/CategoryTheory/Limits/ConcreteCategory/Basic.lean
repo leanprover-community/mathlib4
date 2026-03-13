@@ -34,24 +34,24 @@ Since instance synthesis only looks through reducible definitions, we need to he
 over the instances that wouldn't be found otherwise.
 -/
 
-instance : (forget Type u).Full :=
+instance : (forget <| Type u).Full :=
   Functor.Full.id
 
-instance : PreservesLimitsOfSize (forget Type u) :=
+instance : PreservesLimitsOfSize (forget <| Type u) :=
   id_preservesLimitsOfSize
-instance : PreservesColimitsOfSize (forget Type u) :=
+instance : PreservesColimitsOfSize (forget <| Type u) :=
   id_preservesColimitsOfSize
 
-instance : ReflectsLimitsOfSize (forget Type u) :=
+instance : ReflectsLimitsOfSize (forget <| Type u) :=
   id_reflectsLimits
-instance : ReflectsColimitsOfSize (forget Type u) :=
+instance : ReflectsColimitsOfSize (forget <| Type u) :=
   id_reflectsColimits
 
-instance : (forget Type u).IsEquivalence :=
+instance : (forget <| Type u).IsEquivalence :=
   Functor.isEquivalence_refl
 
-instance : (forget Type u).IsCorepresentable :=
-  inferInstanceAs (𝟭 TypeCat).IsCorepresentable
+instance : (forget <| Type u).IsCorepresentable :=
+  inferInstanceAs (𝟭 <| Type u).IsCorepresentable
 
 end CategoryTheory.Types
 

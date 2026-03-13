@@ -145,9 +145,9 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
     let yk' : (pointwiseProduct F).obj k :=
       (pointwiseProduct F).map (IsFiltered.rightToMax ky ky') yk₀'
     obtain rfl : y = colimit.ι (pointwiseProduct F) k yk := by
-      simp only [k, yk, Types.Colimit.w_apply, hyk₀]
+      simp only [k, yk, colimit.w_apply, hyk₀]
     obtain rfl : y' = colimit.ι (pointwiseProduct F) k yk' := by
-      simp only [k, yk', Types.Colimit.w_apply, hyk₀']
+      simp only [k, yk', colimit.w_apply, hyk₀']
     dsimp only [pointwiseProduct_obj] at yk yk'
     have hch : ∀ (s : α), ∃ (i' : I s) (hi' : k s ⟶ i'),
         (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk) =
@@ -173,7 +173,7 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
       ((Types.productIso _).inv p)
     exact this.trans (by simpa using hk _)
 
-instance : IsIPC.{u} Type u where
+instance : IsIPC.{u} (Type u) where
   isIso _ _ := Types.isIso_colimitPointwiseProductToProductColimit
 
 end types

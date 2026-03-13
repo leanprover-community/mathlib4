@@ -150,7 +150,7 @@ lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma μIso_inv_freeMk {X Y : Type u} (z : (X ⊗ Y : TypeCat)) :
+lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
     (μIso R X Y).inv (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
   dsimp [μIso, freeMk]
   erw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
@@ -202,7 +202,7 @@ lemma free_μ_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
   apply FreeMonoidal.μIso_hom_freeMk_tmul_freeMk
 
 @[simp]
-lemma free_δ_freeMk {X Y : Type u} (z : (X ⊗ Y : TypeCat)) :
+lemma free_δ_freeMk {X Y : Type u} (z : X ⊗ Y) :
     δ (free R) _ _ (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
   apply FreeMonoidal.μIso_inv_freeMk
 

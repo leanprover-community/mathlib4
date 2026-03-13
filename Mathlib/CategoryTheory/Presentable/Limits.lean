@@ -90,7 +90,7 @@ lemma surjective (x : c.pt.obj cX.pt) :
         fun k k' φ ↦ ?_⟩
       simpa [ψ] using (IsCardinalFiltered.coeq_condition ψ hK (Arrow.mk φ)).symm
     exact ⟨j₁, α, fun k k' φ ↦ by simp [hα φ, hg]⟩
-  let s : (F ⋙ (evaluation C Type w').obj (X.obj j₁)).sections :=
+  let s : (F ⋙ (evaluation C (Type w')).obj (X.obj j₁)).sections :=
     { val k := (F.obj k).map (X.map α) (z k)
       property {k k'} φ := by
         dsimp
@@ -155,13 +155,13 @@ end Accessible
 
 lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
     (c : Cone F) (hc : IsLimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [HasLimitsOfShape K Type w'] (hK : HasCardinalLT (Arrow K) κ)
+    [HasLimitsOfShape K (Type w')] (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, (F.obj k).IsCardinalAccessible κ] :
     c.pt.IsCardinalAccessible κ where
   preservesColimitOfShape {J _ _} := ⟨fun {X} ↦ ⟨fun {cX} hcX ↦ by
     have := fun k ↦ preservesColimitsOfShape_of_isCardinalAccessible (F.obj k) κ J
     exact ⟨Accessible.Limits.isColimitMapCocone c
-      (fun Y ↦ isLimitOfPreserves ((evaluation C Type w').obj Y) hc) κ hK cX
+      (fun Y ↦ isLimitOfPreserves ((evaluation C (Type w')).obj Y) hc) κ hK cX
       (fun k ↦ isColimitOfPreserves (F.obj k) hcX)⟩⟩⟩
 
 end Functor
@@ -170,7 +170,7 @@ end Functor
 lemma isCardinalPresentable_of_isColimit'
     {K : Type u'} [Category.{v'} K] {Y : K ⥤ C}
     (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [HasLimitsOfShape Kᵒᵖ Type v] (hK : HasCardinalLT (Arrow K) κ)
+    [HasLimitsOfShape Kᵒᵖ (Type v)] (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
     IsCardinalPresentable c.pt κ := by
   have (k : Kᵒᵖ) : ((Y.op ⋙ coyoneda).obj k).IsCardinalAccessible κ := by
@@ -179,7 +179,7 @@ lemma isCardinalPresentable_of_isColimit'
     (coyoneda.mapCone c.op) (isLimitOfPreserves _ hc.op) κ (by simpa)
 
 lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
-    {K : Type u'} [Category.{v'} K] [HasLimitsOfShape Kᵒᵖ Type w] {Y : K ⥤ C}
+    {K : Type u'} [Category.{v'} K] [HasLimitsOfShape Kᵒᵖ (Type w)] {Y : K ⥤ C}
     (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
@@ -194,7 +194,7 @@ lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
 variable (C) in
 lemma isClosedUnderColimitsOfShape_isCardinalPresentable [LocallySmall.{w} C]
     {κ : Cardinal.{w}} [Fact κ.IsRegular]
-    {J : Type u'} [Category.{v'} J] [HasLimitsOfShape Jᵒᵖ Type w]
+    {J : Type u'} [Category.{v'} J] [HasLimitsOfShape Jᵒᵖ (Type w)]
     (hJ : HasCardinalLT (Arrow J) κ) :
     (isCardinalPresentable C κ).IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := by

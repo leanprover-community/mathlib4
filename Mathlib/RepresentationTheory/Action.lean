@@ -30,7 +30,7 @@ noncomputable section
 
 variable {k : Type u} {G : Type v} {V : Type u'} {W : Type v'} [Monoid G] [Semiring k]
   [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
-  {σ : Representation k G V} {ρ : Representation k G W} {X Y Z : Action Type w G}
+  {σ : Representation k G V} {ρ : Representation k G W} {X Y Z : Action (Type w) G}
 
 open CategoryTheory
 
@@ -69,8 +69,8 @@ attribute [local simp] types_tensorObj_def types_tensorUnit_def
 
 -- These two unification hints are to help lean understand the underlying types of these actions
 -- which it fails without them because `types` abuses defeq.
-unif_hint (X Y : Action Type w G) where ⊢ (X ⊗ Y).V ≟ X.V × Y.V
-unif_hint where ⊢ (𝟙_ (Action Type w G)).V ≟ PUnit
+unif_hint (X Y : Action (Type w) G) where ⊢ (X ⊗ Y).V ≟ X.V × Y.V
+unif_hint where ⊢ (𝟙_ (Action (Type w) G)).V ≟ PUnit
 
 lemma _root_.Action.tensor_ρ_apply (g : G) (xy : (X ⊗ Y).V) :
     (X ⊗ Y).ρ g xy = (X.ρ g xy.1, Y.ρ g xy.2) := rfl
@@ -80,7 +80,7 @@ variable (k G) in
 /-- The counit of the linearize functor. -/
 @[simps toLinearMap]
 def ε : (trivial k G k).IntertwiningMap (linearize k G (MonoidalCategoryStruct.tensorUnit
-    (Action Type w G))) where
+    (Action (Type w) G))) where
   __ := Finsupp.LinearEquiv.finsuppUnique k k PUnit|>.symm.toLinearMap
   isIntertwining' g := by ext1; simp [linearize_single _]
 
@@ -92,7 +92,7 @@ open scoped MonoidalCategory
 variable (k G) in
 /-- The unit of the linearize functor. -/
 @[simps toLinearMap]
-def η : (linearize k G (𝟙_ (Action Type u G))).IntertwiningMap (trivial k G k) where
+def η : (linearize k G (𝟙_ (Action (Type u) G))).IntertwiningMap (trivial k G k) where
   __ := (Finsupp.LinearEquiv.finsuppUnique k k PUnit).toLinearMap
   isIntertwining' g := by ext; simp [linearize_single _]
 
@@ -129,12 +129,12 @@ lemma μ_apply_apply (l1 : X.V →₀ k) (l2 : Y.V →₀ k) (xy : (X ⊗ Y).V) 
     μ X Y (l1 ⊗ₜ l2) xy = l1 xy.1 * l2 xy.2 := by
   simp [← toLinearMap_apply, types_tensorObj_def, finsuppTensorFinsupp'_apply_apply _]
 
-lemma μ_comp_rTensor (f : X ⟶ Y) (Z : Action Type w G) :
+lemma μ_comp_rTensor (f : X ⟶ Y) (Z : Action (Type w) G) :
     (μ Y Z).comp (rTensor (linearize k G Z) (linearizeMap f)) =
       (linearizeMap (f ▷ Z)).comp (μ X Z) := by
   ext; simp [linearizeMap_single _]; rfl
 
-lemma μ_comp_lTensor (f : X ⟶ Y) (Z : Action Type w G) :
+lemma μ_comp_lTensor (f : X ⟶ Y) (Z : Action (Type w) G) :
     (μ Z Y).comp ((linearizeMap f).lTensor (linearize k G Z)) =
       (linearizeMap (Z ◁ f)).comp (μ Z X) := by
   ext : 6; simp [linearizeMap_single _]; rfl
@@ -155,11 +155,11 @@ lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
     TensorProduct.assoc_tmul, LinearMap.lTensor_tmul]
   -- after fixing the defeq problems in `Action` and in the monoidal category structure of `types`
   -- this line should close the goal so this is left as an indicator.
-  convert linearizeMap_single (α_ X Y Z).hom ((x, y), z)
+  convert linearizeMap_single (α_ X Y Z).hom ((x, y), z) using 1
 
 variable (X) in
 lemma μ_leftUnitor : (lid k (linearize k G X)).toIntertwiningMap =
-    ((linearizeMap (λ_ X).hom).comp (μ (𝟙_ (Action Type w G)) X)).comp (rTensor
+    ((linearizeMap (λ_ X).hom).comp (μ (𝟙_ (Action (Type w) G)) X)).comp (rTensor
     (linearize k G X) (ε k G)) := by
   ext x1 : 5
   simpa [types_tensorObj_def, types_tensorUnit_def] using
@@ -168,7 +168,7 @@ lemma μ_leftUnitor : (lid k (linearize k G X)).toIntertwiningMap =
 variable (X) in
 set_option backward.isDefEq.respectTransparency false in
 lemma μ_rightUnitor : (rid k (linearize k G X)).toIntertwiningMap =
-    ((linearizeMap (ρ_ X).hom).comp (μ X (𝟙_ (Action Type w G)))).comp ((ε k G).lTensor
+    ((linearizeMap (ρ_ X).hom).comp (μ X (𝟙_ (Action (Type w) G)))).comp ((ε k G).lTensor
     (linearize k G X)) := by
   ext x; simp [types_tensorObj_def, types_tensorUnit_def, Action.tensorObj_V, linearizeMap,
     Action.rightUnitor_hom_hom]; rfl
@@ -212,17 +212,17 @@ lemma assoc_comp_δ : ((assoc (linearize k G X) (linearize k G Y)
   simp [linearizeMap, δ, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul k]
   rfl
 
-lemma leftUnitor_δ (X : Action Type u G) : (lid k (linearize k G X)).symm.toIntertwiningMap =
-    (((η k G).rTensor (linearize k G X) ).comp (δ (𝟙_ (Action Type u G)) X)).comp
+lemma leftUnitor_δ (X : Action (Type u) G) : (lid k (linearize k G X)).symm.toIntertwiningMap =
+    (((η k G).rTensor (linearize k G X) ).comp (δ (𝟙_ (Action (Type u) G)) X)).comp
       (linearizeMap (λ_ X).inv) := by
   ext
   -- TODO : try not to `simp` with `δ` and `linearizeMap` directly here
   simp [linearizeMap, δ, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
   rfl
 
-unif_hint (X : Action Type u G) where ⊢ (X ⊗ 𝟙_ (Action Type u G)).V ≟ X.V × PUnit in
-lemma rightUnitor_δ (X : Action Type u G) : (rid k (linearize k G X)).symm.toIntertwiningMap =
-    (((η k G).lTensor (linearize k G X)).comp (δ X (𝟙_ (Action Type u G)))).comp
+unif_hint (X : Action (Type u) G) where ⊢ (X ⊗ 𝟙_ (Action (Type u) G)).V ≟ X.V × PUnit in
+lemma rightUnitor_δ (X : Action (Type u) G) : (rid k (linearize k G X)).symm.toIntertwiningMap =
+    (((η k G).lTensor (linearize k G X)).comp (δ X (𝟙_ (Action (Type u) G)))).comp
       (linearizeMap (ρ_ X).inv) := by
   ext; simp [linearizeMap_single _, δ_apply_single _]; rfl
 

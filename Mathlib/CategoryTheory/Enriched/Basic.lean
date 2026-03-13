@@ -158,8 +158,8 @@ end
 def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Type v) C] :
     Category.{v} C where
   Hom X Y := 𝒞.Hom X Y
-  id X := eId Type v X PUnit.unit
-  comp f g := eComp Type v _ _ _ ⟨f, g⟩
+  id X := eId (Type v) X PUnit.unit
+  comp f g := eComp (Type v) _ _ _ ⟨f, g⟩
   id_comp f := ConcreteCategory.congr_hom (e_id_comp (Type v) _ _) f
   comp_id f := ConcreteCategory.congr_hom (e_comp_id (Type v) _ _) f
   assoc f g h := ConcreteCategory.congr_hom (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩
@@ -173,9 +173,6 @@ def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
   Hom X Y := (𝒞.Hom X Y)
   id X := TypeCat.ofHom ⟨fun _ ↦ 𝟙 _⟩
   comp _ _ _ := TypeCat.ofHom ⟨fun p ↦ p.1 ≫ p.2⟩
-  id_comp X Y := by ext; simp; rfl
-  comp_id X Y := by ext; simp; rfl
-  assoc W X Y Z := by ext ⟨f, g, h⟩; simp
 
 /-- We verify that an enriched category in `Type u` is just the same thing as an honest category.
 -/
@@ -230,7 +227,7 @@ theorem ForgetEnrichment.of_to (X : ForgetEnrichment W C) :
   rfl
 
 instance categoryForgetEnrichment : Category (ForgetEnrichment W C) :=
-  enrichedCategoryTypeEquivCategory C (inferInstanceAs (EnrichedCategory Type w
+  enrichedCategoryTypeEquivCategory C (inferInstanceAs (EnrichedCategory (Type w)
       (TransportEnrichment (coyoneda.obj (op (𝟙_ W))) C)))
 
 /-- We verify that the morphism types in `ForgetEnrichment W C` are `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
@@ -536,8 +533,8 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
           { app X := σ.app X x
             naturality X Y f := ConcreteCategory.congr_hom (σ.naturality X Y) ⟨x, f⟩ }⟩⟩
         inv := TypeCat.ofHom ⟨fun σ ↦
-          { app X := TypeCat.ofHom ⟨fun x => (σ x).app X⟩
-            naturality X Y := by ext ⟨x, f⟩; exact (σ x).naturality f }⟩ })
+          { app X := TypeCat.ofHom ⟨fun x => (σ.hom x).app X⟩
+            naturality X Y := by ext ⟨x, f⟩; exact (σ.hom x).naturality f }⟩ })
     (by cat_disch)
 
 end

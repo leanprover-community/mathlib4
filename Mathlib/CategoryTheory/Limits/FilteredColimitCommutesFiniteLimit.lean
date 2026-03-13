@@ -215,7 +215,7 @@ theorem colimitLimitToLimitColimit_surjective :
         ((curry.obj F).obj j').map (gf f) (F.map (𝟙 j' ×ₘ g j') (y j')) =
           ((curry.obj F).obj j').map (hf f) (F.map (f ×ₘ g j) (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
-      convert q
+      convert q using 1
       · simp [← comp_apply, -types_comp_apply]
       · simp [← comp_apply, -types_comp_apply, ← F.map_comp]
     clear_value kf gf hf

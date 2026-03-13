@@ -38,7 +38,7 @@ instance {J : Type} [SmallCategory J] (K : J ⥤ FintypeCat.{u}) (j : J) :
 /-- Any functor from a finite category to `Type*` that only involves finite objects,
 has a finite limit. -/
 noncomputable instance finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
-    (K : J ⥤ Type u) [∀ j, Finite (K.obj j)] : Fintype (limit K : TypeCat) := by
+    (K : J ⥤ Type u) [∀ j, Finite (K.obj j)] : Fintype (limit K) := by
   have : Fintype (sections K) := Fintype.ofFinite (sections K)
   exact Fintype.ofEquiv (sections K) (Types.limitEquivSections K).symm
 
@@ -71,12 +71,12 @@ noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
 as types. -/
 noncomputable def productEquiv {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u}) :
     (∏ᶜ X : FintypeCat) ≃ ∀ i, X i :=
-  letI : Fintype ι := Fintype.ofFinite _
+  have : Fintype ι := Fintype.ofFinite _
   haveI : Small.{u} ι :=
     ⟨ULift (Fin (Fintype.card ι)), ⟨(Fintype.equivFin ι).trans Equiv.ulift.symm⟩⟩
   let is₁ : FintypeCat.incl.obj (∏ᶜ fun i ↦ X i) ≅ (∏ᶜ fun i ↦ (X i)) :=
     PreservesProduct.iso FintypeCat.incl (fun i ↦ X i)
-  let is₂ : (∏ᶜ fun i ↦ (X i)) ≅ (Shrink.{u} (∀ i, X i)) :=
+  let is₂ : (∏ᶜ fun i ↦ (X i) : Type _) ≅ (Shrink.{u} (∀ i, X i)) :=
     Types.Small.productIso (fun i ↦ (X i))
   let e : (∀ i, X i) ≃ Shrink.{u} (∀ i, X i) := equivShrink _
   (equivEquivIso.symm is₁).trans ((equivEquivIso.symm is₂).trans e.symm)
@@ -113,8 +113,8 @@ lemma finite_of_isColimit {J : Type} [SmallCategory J] [FinCategory J]
 /-- Any functor from a finite category to `Type*` that only involves finite objects,
 has a finite colimit. -/
 noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
-    (K : J ⥤ Type u) [∀ j, Finite (K.obj j)] : Fintype (colimit K : TypeCat) := by
-  have : Finite (colimit K : TypeCat) := finite_of_isColimit (colimit.isColimit K)
+    (K : J ⥤ Type u) [∀ j, Finite (K.obj j)] : Fintype (colimit K) := by
+  have : Finite (colimit K) := finite_of_isColimit (colimit.isColimit K)
   apply Fintype.ofFinite
 
 noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory J] [FinCategory J] :

@@ -41,7 +41,6 @@ instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
       simp)
     (right_unitality := fun X => by
       ext ⟨f, ⟨⟩⟩
-      simp [unitors_inv_equal]
-      rfl)
+      simp [unitors_inv_equal])
 
 end CategoryTheory

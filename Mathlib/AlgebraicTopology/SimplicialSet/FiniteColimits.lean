@@ -21,7 +21,7 @@ open CategoryTheory Limits
 
 namespace SSet
 
-variable {J : Type*} [Category J] [HasColimitsOfShape J Type u]
+variable {J : Type*} [Category J] [HasColimitsOfShape J (Type u)]
   {F : J ⥤ SSet.{u}} {c : Cocone F} (hc : IsColimit c)
 
 section
@@ -70,14 +70,14 @@ instance (X Y : SSet.{u}) [X.Finite] [Y.Finite] :
 instance {ι : Type v} [Finite ι] (X : ι → SSet.{u}) [HasCoproduct X]
     [∀ j, (X j).Finite] :
     (∐ X).Finite := by
-  have : HasColimitsOfShape (Discrete ι) Type u := by
+  have : HasColimitsOfShape (Discrete ι) (Type u) := by
     obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
     exact hasColimitsOfShape_of_equivalence (Discrete.equivalence e.symm)
   exact finite_of_isColimit (coproductIsCoproduct X) (fun ⟨j⟩ ↦ by dsimp; infer_instance)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma range_eq_iSup_sigma_ι
-    {ι : Type v} [HasColimitsOfShape (Discrete ι) Type u]
+    {ι : Type v} [HasColimitsOfShape (Discrete ι) (Type u)]
     {X : ι → SSet.{u}} {Y : SSet.{u}} [HasCoproduct X]
     (f : ∐ X ⟶ Y) :
     Subcomplex.range f = ⨆ (i : ι), Subcomplex.range (Sigma.ι X i ≫ f) := by

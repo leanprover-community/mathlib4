@@ -221,7 +221,7 @@ multiplication on the first factor and by `X.ρ` on the second) is isomorphic as
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
 The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
 @[simps! hom_hom inv_hom]
-noncomputable def leftRegularTensorIso (X : Action Type u G) :
+noncomputable def leftRegularTensorIso (X : Action (Type u) G) :
     leftRegular G ⊗ X ≅ leftRegular G ⊗ trivial G X.V :=
   mkIso (Equiv.toIso {
     toFun g := ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
@@ -269,7 +269,6 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n 
     funext (x : Fin 1)
     simp [diagonalSuccIsoTensorTrivial, diagonalOneIsoLeftRegular, Subsingleton.elim x 0,
       ofMulAction_V]
-    rfl
   | succ n hn =>
     funext x
     induction x using Fin.cases with

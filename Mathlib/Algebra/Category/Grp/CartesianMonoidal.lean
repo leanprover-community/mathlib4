@@ -45,8 +45,8 @@ theorem tensorObj_eq (G H : GrpCat.{u}) : (G ⊗ H) = of (G × H) := rfl
 theorem μ_forget_apply {G H : GrpCat.{u}} (p : G) (q : H) :
     Functor.LaxMonoidal.μ (forget GrpCat.{u}) G H (p, q) = (p, q) := by
   apply Prod.ext
-  · exact congr_hom (Functor.Monoidal.μ_fst (forget GrpCat.{u}) G H) (p, q)
-  · exact congr_hom (Functor.Monoidal.μ_snd (forget GrpCat.{u}) G H) (p, q)
+  · exact congr_hom (CC := fun X ↦ X) (Functor.Monoidal.μ_fst (forget GrpCat.{u}) G H) (p, q)
+  · exact congr_hom (CC := fun X ↦ X) (Functor.Monoidal.μ_snd (forget GrpCat.{u}) G H) (p, q)
 
 end GrpCat
 
@@ -75,8 +75,8 @@ theorem tensorObj_eq (G H : AddGrpCat.{u}) : (G ⊗ H) = of (G × H) := rfl
 theorem μ_forget_apply {G H : AddGrpCat.{u}} (p : G) (q : H) :
     Functor.LaxMonoidal.μ (forget AddGrpCat.{u}) G H (p, q) = (p, q) := by
   apply Prod.ext
-  · exact congr_hom (Functor.Monoidal.μ_fst (forget AddGrpCat.{u}) G H) (p, q)
-  · exact congr_hom (Functor.Monoidal.μ_snd (forget AddGrpCat.{u}) G H) (p, q)
+  · exact congr_hom (CC := fun X ↦ X) (Functor.Monoidal.μ_fst (forget AddGrpCat.{u}) G H) (p, q)
+  · exact congr_hom (CC := fun X ↦ X) (Functor.Monoidal.μ_snd (forget AddGrpCat.{u}) G H) (p, q)
 
 end AddGrpCat
 
@@ -105,8 +105,8 @@ theorem tensorObj_eq (G H : CommGrpCat.{u}) : (G ⊗ H) = of (G × H) := rfl
 theorem μ_forget_apply {G H : CommGrpCat.{u}} (p : G) (q : H) :
     Functor.LaxMonoidal.μ (forget CommGrpCat.{u}) G H (p, q) = (p, q) := by
   apply Prod.ext
-  · exact congr_hom (Functor.Monoidal.μ_fst (forget CommGrpCat.{u}) G H) (p, q)
-  · exact congr_hom (Functor.Monoidal.μ_snd (forget CommGrpCat.{u}) G H) (p, q)
+  · exact congr_hom (CC := fun X ↦ X) (Functor.Monoidal.μ_fst (forget CommGrpCat.{u}) G H) (p, q)
+  · exact congr_hom (CC := fun X ↦ X) (Functor.Monoidal.μ_snd (forget CommGrpCat.{u}) G H) (p, q)
 
 end CommGrpCat
 
@@ -136,7 +136,7 @@ theorem tensorObj_eq (G H : AddCommGrpCat.{u}) : (G ⊗ H) = of (G × H) := rfl
 theorem μ_forget_apply {G H : AddCommGrpCat.{u}} (p : G) (q : H) :
     Functor.LaxMonoidal.μ (forget AddCommGrpCat.{u}) G H (p, q) = (p, q) := by
   apply Prod.ext
-  · exact congr_hom (Functor.Monoidal.μ_fst (forget AddCommGrpCat.{u}) G H) (p, q)
-  · exact congr_hom (Functor.Monoidal.μ_snd (forget AddCommGrpCat.{u}) G H) (p, q)
+  · exact congr_hom (CC := fun X ↦ X) (Functor.Monoidal.μ_fst (forget AddCommGrpCat.{u}) G H) (p, q)
+  · exact congr_hom (CC := fun X ↦ X) (Functor.Monoidal.μ_snd (forget AddCommGrpCat.{u}) G H) (p, q)
 
 end AddCommGrpCat

@@ -48,10 +48,10 @@ noncomputable def monoFactorisationIsImage {F G : C ⥤ Type u} (f : F ⟶ G) :
     simp
     grind
 
-instance : HasImages (C ⥤ TypeCat) where
+instance : HasImages (C ⥤ Type*) where
   has_image f := { exists_image := ⟨ { F := _, isImage := monoFactorisationIsImage f } ⟩ }
 
-instance : HasStrongEpiMonoFactorisations (C ⥤ TypeCat) where
+instance : HasStrongEpiMonoFactorisations (C ⥤ Type*) where
   has_fac {F G} f := ⟨{ I := image f, m := image.ι f, e := factorThruImage f }⟩
 
 end CategoryTheory.FunctorToTypes

@@ -75,11 +75,6 @@ def firstObjEqFamily : FirstObj P R ≅ (R.FamilyOfElements P) where
   hom := TypeCat.ofHom ⟨fun t _ _ hf ↦
     Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t⟩
   inv := Pi.lift fun f => TypeCat.ofHom ⟨fun x => x _ f.2.2⟩
-  inv_hom_id := by -- was automatic
-    ext
-    simp only [limit.cone_x, TypeCat.hom_as_apply, comp_apply, ConcreteCategory.hom_ofHom,
-      TypeCat.Fun.mk_apply, id_apply]
-    simp [← comp_apply]
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
@@ -386,7 +381,7 @@ end Arrows
 
 /-- The sheaf condition for a single morphism is the same as the canonical fork diagram being
 limiting. -/
-lemma isSheafFor_singleton_iff {F : Cᵒᵖ ⥤ TypeCat} {X Y : C} {f : X ⟶ Y}
+lemma isSheafFor_singleton_iff {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
     (c : PullbackCone f f) (hc : IsLimit c) :
     Presieve.IsSheafFor F (.singleton f) ↔
       Nonempty
@@ -401,7 +396,7 @@ lemma isSheafFor_singleton_iff {F : Cᵒᵖ ⥤ TypeCat} {X Y : C} {f : X ⟶ Y}
   simp_rw [h]
 
 /-- Special case of `isSheafFor_singleton_iff` with `c = pullback.cone f f`. -/
-lemma isSheafFor_singleton_iff_of_hasPullback {F : Cᵒᵖ ⥤ TypeCat} {X Y : C} {f : X ⟶ Y}
+lemma isSheafFor_singleton_iff_of_hasPullback {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
     [HasPullback f f] :
     Presieve.IsSheafFor F (.singleton f) ↔
       Nonempty

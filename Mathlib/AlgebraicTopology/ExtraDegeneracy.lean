@@ -216,7 +216,6 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     ext i : 2
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.stdSimplex,
       objEquiv, Equiv.ulift, uliftFunctor]
-    rfl
   s_comp_δ n i := by
     ext φ
     apply objEquiv.injective

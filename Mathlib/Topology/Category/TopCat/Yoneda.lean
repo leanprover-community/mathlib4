@@ -35,7 +35,7 @@ A universe polymorphic "Yoneda presheaf" on `C` given by continuous maps into a 
 -/
 @[simps]
 def yonedaPresheaf : Cᵒᵖ ⥤ Type (max w w') where
-  obj X := .of (C(F.obj (unop X), Y))
+  obj X := C(F.obj (unop X), Y)
   map f := TypeCat.ofHom ⟨fun g ↦ ContinuousMap.comp g (F.map f.unop).hom⟩
 
 /--
@@ -44,8 +44,9 @@ space `Y`.
 -/
 @[simps]
 def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
-  obj X := .of (C((unop X).1, Y))
-  map f := TypeCat.ofHom ⟨fun g ↦ ContinuousMap.comp g (ConcreteCategory.hom f.unop)⟩
+  obj X := C((unop X).1, Y)
+  map f := TypeCat.ofHom ⟨fun g ↦ ContinuousMap.comp g
+    (ConcreteCategory.hom f.unop)⟩
 
 theorem comp_yonedaPresheaf' : yonedaPresheaf F Y = F.op ⋙ yonedaPresheaf' Y := rfl
 
@@ -56,7 +57,7 @@ theorem piComparison_fac {α : Type} (X : α → TopCat) :
     (equivEquivIso (sigmaEquiv Y (fun x ↦ (X x).1))).inv ≫ (Types.productIso _).inv := by
   rw [← Category.assoc, Iso.eq_comp_inv]
   ext
-  simp [yonedaPresheaf', piComparison, ← opCoproductIsoProduct_inv_comp_ι, Pi.lift_π_apply]
+  simp [yonedaPresheaf', piComparison, ← opCoproductIsoProduct_inv_comp_ι]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in

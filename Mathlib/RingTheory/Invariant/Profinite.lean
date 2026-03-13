@@ -64,7 +64,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
     (hPQ : P.under A = Q.under A) :
     ∃ g : G, Q = g • P := by
   let B' := FixedPoints.subalgebra A B
-  let F : OpenNormalSubgroup G ⥤ TypeCat :=
+  let F : OpenNormalSubgroup G ⥤ Type _ :=
   { obj N := { g : G ⧸ N.1.1 // Q.under (B' N.1.1) = g • P.under (B' N.1.1) }
     map {N N'} f := TypeCat.ofHom ⟨fun x ↦ ⟨(QuotientGroup.map _ _ (.id _) (leOfHom f)) x.1, by
       have h : B' N'.1.1 ≤ B' N.1.1 := fun x hx n ↦ hx ⟨_, f.le n.2⟩

@@ -28,26 +28,26 @@ open CategoryTheory MonObj ConcreteCategory
 
 namespace MonTypeEquivalenceMon
 
-instance monMonoid (A : Type u) [MonObj A] : Monoid A.carrier where
+instance monMonoid (A : Type u) [MonObj A] : Monoid A where
   one := η[A] PUnit.unit
   mul x y := μ[A] (x, y)
-  one_mul x := by convert congr_hom (one_mul A) (PUnit.unit, x)
-  mul_one x := by convert congr_hom (mul_one A) (x, PUnit.unit)
-  mul_assoc x y z := by convert congr_hom (mul_assoc A) ((x, y), z)
+  one_mul x := by convert congr_hom (CC := fun X ↦ X) (one_mul A) (PUnit.unit, x)
+  mul_one x := by convert congr_hom (CC := fun X ↦ X) (mul_one A) (x, PUnit.unit)
+  mul_assoc x y z := by convert congr_hom (CC := fun X ↦ X) (mul_assoc A) ((x, y), z)
 
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
-noncomputable def functor : Mon Type u ⥤ MonCat.{u} where
+noncomputable def functor : Mon (Type u) ⥤ MonCat.{u} where
   obj A := MonCat.of A.X
   map f := MonCat.ofHom
     { toFun := f.hom
       map_one' := congr_hom (IsMonHom.one_hom f.hom) PUnit.unit
-      map_mul' x y := congr_hom (IsMonHom.mul_hom f.hom) (x, y) }
+      map_mul' x y := congr_hom (CC := fun X ↦ X) (IsMonHom.mul_hom f.hom) (x, y) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
-noncomputable def inverse : MonCat.{u} ⥤ Mon Type u where
+noncomputable def inverse : MonCat.{u} ⥤ Mon (Type u) where
   obj A :=
     { X := A
       mon :=
@@ -75,7 +75,7 @@ open MonTypeEquivalenceMon
 /-- The category of internal monoid objects in `Type`
 is equivalent to the category of "native" bundled monoids.
 -/
-noncomputable def monTypeEquivalenceMon : Mon Type u ≌ MonCat.{u} where
+noncomputable def monTypeEquivalenceMon : Mon (Type u) ≌ MonCat.{u} where
   functor := functor
   inverse := inverse
   unitIso := Iso.refl _
@@ -87,21 +87,21 @@ noncomputable def monTypeEquivalenceMon : Mon Type u ≌ MonCat.{u} where
 is naturally compatible with the forgetful functors to `Type u`.
 -/
 noncomputable def monTypeEquivalenceMonForget :
-    MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon.forget Type u :=
+    MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon.forget (Type u) :=
   NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
-noncomputable instance monTypeInhabited : Inhabited (Mon Type u) :=
+noncomputable instance monTypeInhabited : Inhabited (Mon (Type u)) :=
   ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid A.carrier :=
+instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid A :=
   { MonTypeEquivalenceMon.monMonoid A with
-    mul_comm := fun x y => by convert congr_hom (IsCommMonObj.mul_comm A) (y, x) }
+    mul_comm := fun x y => by convert congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/
-noncomputable def functor : CommMon Type u ⥤ CommMonCat.{u} where
+noncomputable def functor : CommMon (Type u) ⥤ CommMonCat.{u} where
   obj A := CommMonCat.of A.X
   map f := CommMonCat.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
 
@@ -123,7 +123,7 @@ open CommMonTypeEquivalenceCommMon
 /-- The category of internal commutative monoid objects in `Type`
 is equivalent to the category of "native" bundled commutative monoids.
 -/
-noncomputable def commMonTypeEquivalenceCommMon : CommMon Type u ≌ CommMonCat.{u} where
+noncomputable def commMonTypeEquivalenceCommMon : CommMon (Type u) ≌ CommMonCat.{u} where
   functor := functor
   inverse := inverse
   unitIso := Iso.refl _
@@ -136,5 +136,5 @@ are naturally compatible with the forgetful functors to `MonCat` and `Mon (Type 
 -/
 noncomputable def commMonTypeEquivalenceCommMonForget :
     CommMonTypeEquivalenceCommMon.functor ⋙ forget₂ CommMonCat MonCat ≅
-      CommMon.forget₂Mon Type u ⋙ MonTypeEquivalenceMon.functor :=
+      CommMon.forget₂Mon (Type u) ⋙ MonTypeEquivalenceMon.functor :=
   Iso.refl _

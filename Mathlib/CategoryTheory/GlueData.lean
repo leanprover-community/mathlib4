@@ -191,7 +191,7 @@ instance π_epi : Epi D.π := by
 end
 
 universe w in
-theorem types_π_surjective (D : GlueData Type w) : Function.Surjective D.π :=
+theorem types_π_surjective (D : GlueData (Type w)) : Function.Surjective D.π :=
   (epi_iff_surjective _).mp inferInstance
 
 theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
