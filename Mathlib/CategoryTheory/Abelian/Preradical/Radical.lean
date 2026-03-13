@@ -44,6 +44,7 @@ of the vanishing of `Φ.r` on `Φ.quotient`.
 
 preradical, radical, torsion theory, abelian
 -/
+
 @[expose] public section
 
 namespace CategoryTheory.Abelian
