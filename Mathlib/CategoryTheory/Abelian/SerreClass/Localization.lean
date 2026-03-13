@@ -472,9 +472,9 @@ lemma preservesFiniteLimits_comp_iff :
   letI := abelian L P
   have := preservesFiniteLimits L P
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteLimits _ _⟩
-  have := (Localization.functor_additive_iff L P.isoModSerre G).2
-    ((L ⋙ G).additive_of_preserves_binary_products)
-  refine ((Functor.preservesFiniteLimits_tfae G).out 2 3).1 (fun _ _ f ↦ ?_)
+  have := (Localization.functor_additive_iff L P.isoModSerre G).mpr
+    (L ⋙ G).additive_of_preserves_binary_products
+  refine ((Functor.preservesFiniteLimits_tfae G).out 2 3).mp (fun _ _ f ↦ ?_)
   obtain ⟨f', ⟨iso⟩⟩ :=
     (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
   have : PreservesLimit (parallelPair (L.map f'.hom) 0) G :=
