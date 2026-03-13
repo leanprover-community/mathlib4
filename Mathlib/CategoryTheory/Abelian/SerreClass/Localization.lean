@@ -502,10 +502,10 @@ lemma preservesFiniteColimits_comp_iff :
     (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
   have : PreservesColimit (parallelPair (L.map f'.hom) 0) G :=
     preservesColimit_of_preserves_colimit_cocone
-      ((CokernelCofork.isColimitMapCoconeEquiv _ _).1
+      (CokernelCofork.isColimitMapCoconeEquiv _ _
         (isColimitOfPreserves L (cokernelIsCokernel f'.hom)))
-          ((CokernelCofork.isColimitMapCoconeEquiv _ G).2
-            ((CokernelCofork.isColimitMapCoconeEquiv _ (L ⋙ G)).1
+          ((CokernelCofork.isColimitMapCoconeEquiv _ G).symm
+            (CokernelCofork.isColimitMapCoconeEquiv _ (L ⋙ G)
               (isColimitOfPreserves (L ⋙ G) (cokernelIsCokernel f'.hom))))
   exact preservesColimit_of_iso_diagram G
     (show parallelPair (L.map f'.hom) 0 ≅ parallelPair f 0 from
