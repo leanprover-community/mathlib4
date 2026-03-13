@@ -59,7 +59,7 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 @[expose] public section
 
 
-open Module Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
+open Module Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
   ComplexConjugate DirectSum WithLp
 
 noncomputable section
@@ -171,18 +171,19 @@ theorem EuclideanSpace.ball_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 �
     Metric.ball (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 < r ^ 2} := by
   ext x
   have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
-  simp_rw [mem_setOf, mem_ball_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_lt this hr]
+  simp_rw [mem_setOf, mem_ball_zero_iff, norm_eq, Real.norm_eq_abs, sq_abs, Real.sqrt_lt this hr]
 
 theorem EuclideanSpace.closedBall_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
     Metric.closedBall (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 ≤ r ^ 2} := by
   ext
-  simp_rw [mem_setOf, mem_closedBall_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_le_left hr]
+  simp_rw [mem_setOf, mem_closedBall_zero_iff, norm_eq, Real.norm_eq_abs, sq_abs,
+    Real.sqrt_le_left hr]
 
 theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
     Metric.sphere (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 = r ^ 2} := by
   ext x
   have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
-  simp_rw [mem_setOf, mem_sphere_zero_iff_norm, norm_eq, norm_eq_abs, sq_abs,
+  simp_rw [mem_setOf, mem_sphere_zero_iff_norm, norm_eq, Real.norm_eq_abs, sq_abs,
     Real.sqrt_eq_iff_eq_sq this hr]
 
 section
@@ -211,6 +212,24 @@ theorem inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
 
 lemma inner_toLp_toLp (x y : ι → 𝕜) :
     ⟪toLp 2 x, toLp 2 y⟫ = dotProduct y (star x) := rfl
+
+section restrict₂
+
+variable {I J : Finset ι'}
+
+/-- The restriction from `EuclideanSpace 𝕜 J` to `EuclideanSpace κ I` when `I ⊆ J`. -/
+noncomputable
+def restrict₂ (hIJ : I ⊆ J) :
+    EuclideanSpace 𝕜 J →L[𝕜] EuclideanSpace 𝕜 I where
+  toFun x := toLp 2 (Finset.restrict₂ (π := fun _ ↦ 𝕜) hIJ x.ofLp)
+  map_add' x y := by ext; simp
+  map_smul' m x := by ext; simp
+
+@[simp]
+lemma restrict₂_apply (hIJ : I ⊆ J) (x : EuclideanSpace 𝕜 J) (i : I) :
+    EuclideanSpace.restrict₂ hIJ x i = x ⟨i.1, hIJ i.2⟩ := rfl
+
+end restrict₂
 
 end EuclideanSpace
 

@@ -246,24 +246,6 @@ lemma charFun_multivariateGaussian (hS : S.PosSemidef) (x : EuclideanSpace ℝ �
       exp (⟪x, μ⟫ * I - x ⬝ᵥ S *ᵥ x / 2) := by
   simp [IsGaussian.charFun_eq', covarianceBilin_multivariateGaussian hS]
 
-section restrict₂
-
-variable {ι 𝕜 : Type*} [RCLike 𝕜] {I J : Finset ι}
-
-/-- The restriction from `EuclideanSpace 𝕜 J` to `EuclideanSpace κ I` when `I ⊆ J`. -/
-noncomputable
-def _root_.EuclideanSpace.restrict₂ (hIJ : I ⊆ J) :
-    EuclideanSpace 𝕜 J →L[𝕜] EuclideanSpace 𝕜 I where
-  toFun x := toLp 2 (Finset.restrict₂ (π := fun _ ↦ 𝕜) hIJ x.ofLp)
-  map_add' x y := by ext; simp
-  map_smul' m x := by ext; simp
-
-@[simp]
-lemma _root_.EuclideanSpace.restrict₂_apply (hIJ : I ⊆ J) (x : EuclideanSpace 𝕜 J) (i : I) :
-    EuclideanSpace.restrict₂ hIJ x i = x ⟨i.1, hIJ i.2⟩ := rfl
-
-end restrict₂
-
 variable {ι : Type*} [DecidableEq ι] {I J : Finset ι}
   {μ : EuclideanSpace ℝ I} {S : Matrix I I ℝ} {hS : S.PosSemidef}
 
