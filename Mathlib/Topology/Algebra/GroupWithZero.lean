@@ -49,12 +49,12 @@ variable {α β G₀ : Type*}
 
 section DivConst
 
-variable [DivInvMonoid G₀] [TopologicalSpace G₀] [ContinuousMul G₀] {f : α → G₀} {s : Set α}
-  {l : Filter α}
+variable [DivInvMonoid G₀] [TopologicalSpace G₀] [SeparatelyContinuousMul G₀]
+  {f : α → G₀} {s : Set α} {l : Filter α}
 
 theorem Filter.Tendsto.div_const {x : G₀} (hf : Tendsto f l (𝓝 x)) (y : G₀) :
     Tendsto (fun a => f a / y) l (𝓝 (x / y)) := by
-  simpa only [div_eq_mul_inv] using hf.mul tendsto_const_nhds
+  simpa only [div_eq_mul_inv] using hf.mul_const _
 
 variable [TopologicalSpace α]
 
@@ -68,11 +68,11 @@ nonrec theorem ContinuousWithinAt.div_const {a} (hf : ContinuousWithinAt f s a) 
 
 theorem ContinuousOn.div_const (hf : ContinuousOn f s) (y : G₀) :
     ContinuousOn (fun x => f x / y) s := by
-  simpa only [div_eq_mul_inv] using hf.mul continuousOn_const
+  simpa only [div_eq_mul_inv] using hf.mul_const _
 
 @[continuity, fun_prop]
 theorem Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x => f x / y := by
-  simpa only [div_eq_mul_inv] using hf.mul continuous_const
+  simpa only [div_eq_mul_inv] using hf.mul_const _
 
 end DivConst
 
@@ -268,7 +268,7 @@ end Div
 
 namespace Homeomorph
 
-variable [TopologicalSpace α] [GroupWithZero α] [ContinuousMul α]
+variable [TopologicalSpace α] [GroupWithZero α] [SeparatelyContinuousMul α]
 
 /-- Left multiplication by a nonzero element in a `GroupWithZero` with continuous multiplication
 is a homeomorphism of the underlying type. -/
@@ -306,7 +306,7 @@ end Homeomorph
 
 section map_comap
 
-variable [TopologicalSpace G₀] [GroupWithZero G₀] [ContinuousMul G₀] {a : G₀}
+variable [TopologicalSpace G₀] [GroupWithZero G₀] [SeparatelyContinuousMul G₀] {a : G₀}
 
 theorem map_mul_left_nhds₀ (ha : a ≠ 0) (b : G₀) : map (a * ·) (𝓝 b) = 𝓝 (a * b) :=
   (Homeomorph.mulLeft₀ a ha).map_nhds_eq b
