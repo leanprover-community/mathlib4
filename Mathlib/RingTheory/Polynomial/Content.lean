@@ -151,11 +151,7 @@ theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
   rw [content, Finset.gcd_eq_zero_iff]
   constructor <;> intro h
   · ext n
-    by_cases h0 : n ∈ p.support
-    · rw [h n h0, coeff_zero]
-    · rw [mem_support_iff] at h0
-      push_neg at h0
-      simp [h0]
+    simp_all
   · intro x
     simp [h]
 

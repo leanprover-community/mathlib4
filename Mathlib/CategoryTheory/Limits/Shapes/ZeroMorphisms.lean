@@ -808,9 +808,8 @@ open Limits
 variable {C : Type*} [Category* C] [HasZeroMorphisms C] (P : ObjectProperty C)
 
 instance [HasZeroMorphisms C] : HasZeroMorphisms P.FullSubcategory where
-  -- Note: We define the zero field explicitly so that `0 = P.homMk 0` holds
-  -- with reducible transparency
-  zero _ _ := ⟨P.homMk 0⟩
+  -- Note: Add zero field explicitly for a better transparency of definitional properties
+  zero _ _ := { zero := P.homMk 0}
   __ := P.fullyFaithfulι.hasZeroMorphisms
 
 @[simp]

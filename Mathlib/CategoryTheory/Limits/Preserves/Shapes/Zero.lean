@@ -127,7 +127,7 @@ omit [HasZeroMorphisms C] in
     whiskerRight (0 : F ⟶ G) H = 0 := by cat_disch
 
 omit [HasZeroMorphisms C] in
-lemma FullyFaithful.preservesZeroMoprhisms (F : C ⥤ D) (hF : F.FullyFaithful) :
+lemma FullyFaithful.preservesZeroMorphisms (F : C ⥤ D) (hF : F.FullyFaithful) :
     letI : HasZeroMorphisms C := hF.hasZeroMorphisms
     F.PreservesZeroMorphisms :=
   letI : HasZeroMorphisms C := hF.hasZeroMorphisms
