@@ -1324,7 +1324,7 @@ def shrinkFunctor [LocallySmall.{w} C] {X : C} (S : Sieve X) :
     Subfunctor (shrinkYoneda.{w}.obj X) where
   obj Y := { f | S (shrinkYonedaObjObjEquiv f) }
   map {Y Z} g f hf := by
-    simpa [shrinkYonedaObjObjEquiv_map] using S.downward_closed hf _
+    simpa [shrinkYonedaObjObjEquiv_obj_map] using S.downward_closed hf _
 
 variable (S) in
 set_option backward.isDefEq.respectTransparency false in
@@ -1342,7 +1342,7 @@ def shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max w' w} C
       dsimp
       ext
       dsimp [Equiv.subtypeEquiv]
-      rw [shrinkYonedaObjObjEquiv_map, shrinkYonedaObjObjEquiv_symm_comp]
+      rw [shrinkYonedaObjObjEquiv_obj_map, shrinkYonedaObjObjEquiv_symm_comp]
       simp
 
 @[reassoc]
@@ -1361,7 +1361,7 @@ noncomputable def shrinkFunctorIsoFunctor : (shrinkFunctor.{v₁} S).toFunctor �
     fun {U V} f ↦ by
       dsimp [Equiv.subtypeEquiv]
       ext
-      simp [shrinkYonedaObjObjEquiv_map]
+      simp [shrinkYonedaObjObjEquiv_obj_map]
 
 end Sieve
 

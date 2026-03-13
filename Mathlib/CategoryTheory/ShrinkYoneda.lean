@@ -190,7 +190,7 @@ noncomputable
 def shrinkYonedaIsoYoneda : shrinkYoneda.{v} ≅ yoneda (C := C) :=
   NatIso.ofComponents
     (fun X ↦ NatIso.ofComponents (fun Y ↦ shrinkYonedaObjObjEquiv.toIso)
-      (by intros; ext; simp [shrinkYonedaObjObjEquiv_map]))
+      (by intros; ext; simp [shrinkYonedaObjObjEquiv_obj_map]))
     (by intros; ext; simp [shrinkYonedaObjObjEquiv_map_app])
 
 set_option backward.isDefEq.respectTransparency false in
