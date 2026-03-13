@@ -874,15 +874,15 @@ end
 section
 
 variable {α : Type*} [TopologicalSpace α]
-variable {β : Type*} [LinearOrder β]
+variable {β : Type*}
 variable {γ : Type*} [TopologicalSpace γ]
 variable {f : α → β} {g : γ → α} {s : Set α} {a : α} {c : γ} {t : Set γ}
 
-theorem upperSemicontinuousOn_iff_preimage_Iio :
+theorem upperSemicontinuousOn_iff_preimage_Iio [Preorder β] :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ u : Set α, IsOpen u ∧ s ∩ f ⁻¹' Set.Iio b = s ∩ u :=
   lowerSemicontinuousOn_iff_preimage_Ioi (β := βᵒᵈ)
 
-theorem upperSemicontinuousOn_iff_preimage_Ici :
+theorem upperSemicontinuousOn_iff_preimage_Ici [LinearOrder β] :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ v : Set α, IsClosed v ∧ s ∩ f ⁻¹' Set.Ici b = s ∩ v :=
   lowerSemicontinuousOn_iff_preimage_Iic (γ := βᵒᵈ)
 
