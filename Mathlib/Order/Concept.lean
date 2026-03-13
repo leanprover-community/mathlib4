@@ -355,7 +355,7 @@ theorem leftInverse_ofObjects_extent : LeftInverse (ofObjects r) extent :=
   fun _ ↦ ofObjects_extent
 
 theorem leftInvOn_extent_ofObjects : Set.LeftInvOn extent (ofObjects r) {s | IsExtent r s} :=
-  fun _ ↦ id
+  fun _ ↦ isExtent_iff.1
 
 theorem surjective_ofObjects : Surjective (ofObjects r) :=
   leftInverse_ofObjects_extent.surjective
@@ -377,7 +377,7 @@ theorem leftInverse_ofAttributes_extent : LeftInverse (ofAttributes r) intent :=
   fun c ↦ extent_injective c.lowerPolar_intent
 
 theorem leftInvOn_ofObjects_intent : Set.LeftInvOn intent (ofAttributes r) {s | IsIntent r s} :=
-  fun _ ↦ id
+  fun _ ↦ isIntent_iff.1
 
 theorem surjective_ofAttributes : Surjective (ofAttributes r) :=
   leftInverse_ofAttributes_extent.surjective
