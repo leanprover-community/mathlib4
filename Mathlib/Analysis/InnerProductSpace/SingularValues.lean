@@ -27,52 +27,6 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [FiniteDimensional 𝕜 F]
   (T : E →ₗ[𝕜] F)
 
--- Will become available in #35174
-theorem isSymmetric_self_comp_adjoint :
-    (T ∘ₗ adjoint T).IsSymmetric := sorry
-
--- Will become available in #35174
-theorem isSymmetric_adjoint_comp_self :
-    (adjoint T ∘ₗ T).IsSymmetric := by sorry
-
-/--
-7.64(b) in [axler2024].
--/
-lemma ker_adjoint_comp_self : ker (adjoint T ∘ₗ T) = ker T := by
-  apply le_antisymm <;> intro v hv
-  · rw [mem_ker, comp_apply] at hv
-    rw [mem_ker, ← inner_self_eq_zero (𝕜 := 𝕜), ← adjoint_inner_left, hv, inner_zero_left]
-  · aesop
-
-lemma injective_adjoint_comp_self_iff
-  : Function.Injective (adjoint T ∘ₗ T) ↔ Function.Injective T := by
-  repeat rw [←LinearMap.ker_eq_bot]
-  rw [ker_adjoint_comp_self]
-
--- TODO: Prove using ContinuousLinearMap.orthogonal_range
-lemma orthogonal_ker : (ker T)ᗮ = range (adjoint T) := by
-  sorry
-
--- TODO: Place after LinearMap.IsSymmetric.orthogonal_ker
-lemma IsSymmetric.orthogonal_ker {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) : (ker T)ᗮ = range T := by
-  simp [←hT.orthogonal_range]
-
-/--
-7.64(c) in [axler2024].
--/
-lemma range_adjoint_comp_self' : range (adjoint T ∘ₗ T) = range (adjoint T) :=
-  calc
-    range (adjoint T ∘ₗ T) = (ker (adjoint T ∘ₗ T))ᗮ :=
-      T.isSymmetric_adjoint_comp_self.orthogonal_ker.symm
-    _ = (ker T)ᗮ := by rw [ker_adjoint_comp_self]
-    _ = range (adjoint T) := T.orthogonal_ker
-
-/--
-Part of 7.64(d) from [axler2024]. See also `Module.finrank_range_adjoint_comp_self`.
--/
-theorem _root_.Module.finrank_range_adjoint :
-    finrank 𝕜 (range (adjoint T)) = finrank 𝕜 (range T) := sorry
-
 /--
 The singular values of a finite dimensional linear map, ordered in descending order.
 This definition accounts for the multiplicity of a singular value.
@@ -160,7 +114,8 @@ this.
 theorem injective_iff_not_mem_image_range_singularValues
   : Function.Injective T ↔ 0 ∉ (Finset.range (finrank 𝕜 E)).image T.singularValues := by
   have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 0 4
-  rw [←injective_adjoint_comp_self_iff, ←ker_eq_bot, ←this, not_iff_not, Finset.mem_image]
+  rw [← adjoint_comp_self_injective_iff, ← coe_comp, ← ker_eq_bot, ← this, not_iff_not,
+    Finset.mem_image]
   constructor
   · intro h
     obtain ⟨i, hi⟩ := T.isSymmetric_adjoint_comp_self.exists_eigenvalues_eq rfl h
@@ -182,9 +137,9 @@ theorem card_support_singularValues : T.singularValues.support.card = finrank �
     := by ext i; simpa [T.singularValues_fin rfl] using
       (T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i).lt_iff_ne'
   rw [← T.singularValues.support.card_attachFin hS, this, Finset.card_compl, Fintype.card_fin,
-    hT.card_filter_eigenvalues_eq rfl (μ := 0) sorry, Module.End.eigenspace_zero,
+    hT.card_filter_eigenvalues_eq rfl 0, Module.End.eigenspace_zero,
     ← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker, add_tsub_cancel_right,
-    T.range_adjoint_comp_self', finrank_range_adjoint]
+    T.range_adjoint_comp_self, finrank_range_adjoint]
 
 theorem isLowerSet_support_singularValues : IsLowerSet (T.singularValues.support : Set ℕ) := by
   intro a b hl ha
