@@ -136,14 +136,19 @@ theorem opow_right_inj {a b c : Ordinal} (a1 : 1 < a) : a ^ b = a ^ c ↔ b = c 
   (isNormal_opow a1).strictMono.injective.eq_iff
 
 @[simp]
-theorem one_lt_opow {a b : Ordinal} (h : 1 < a) : 1 < a ^ b ↔ b ≠ 0 := by
-  obtain ⟨rfl, hb⟩ := eq_zero_or_pos b
-  · simp
-  · rw [← opow_zero a, opow_lt_opow_iff_right h, pos_iff_ne_zero]
+theorem one_lt_opow {a b : Ordinal} : 1 < a ^ b ↔ 1 < a ∧ b ≠ 0 := by
+  refine ⟨?_, fun ⟨ha, hb⟩ ↦ ?_⟩
+  · contrapose! +distrib
+    rw [le_one_iff]
+    rintro ((rfl | rfl) | rfl)
+    · exact zero_opow_le b
+    · simp
+    · simp
+  · rwa [← opow_zero a, opow_lt_opow_iff_right ha, pos_iff_ne_zero]
 
 @[simp]
-theorem one_lt_pow {a : Ordinal} {n : ℕ} (h : 1 < a) : 1 < a ^ n ↔ n ≠ 0 :=
-  mod_cast one_lt_opow (b := n) h
+theorem one_lt_pow {a : Ordinal} {n : ℕ} : 1 < a ^ n ↔ 1 < a ∧ n ≠ 0 :=
+  mod_cast one_lt_opow (b := n)
 
 theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
   (isNormal_opow a1).map_isSuccLimit
