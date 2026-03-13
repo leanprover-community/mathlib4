@@ -8,6 +8,7 @@ module
 public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.MeasureTheory.Measure.Count
 public import Mathlib.MeasureTheory.Constructions.Pi
+
 import Mathlib.Data.Fintype.Pi
 
 /-!
@@ -32,7 +33,7 @@ for that purpose.
 
 The original aim of this file is to provide a measure-theoretic method of describing the
 probability an element of a set `s` satisfies some predicate `P`. Our current formulation still
-allow us to describe this by abusing the definitional equality of sets and predicates by simply
+allows us to describe this by abusing the definitional equality of sets and predicates by simply
 writing `uniformOn s P`. We should avoid this however as none of the lemmas are written for
 predicates.
 -/
