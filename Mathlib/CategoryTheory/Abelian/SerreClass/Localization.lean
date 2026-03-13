@@ -444,8 +444,7 @@ def abelian : Abelian D := by
 
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
   letI := abelian L P
-  have := (Functor.preservesFiniteLimits_tfae L).out 3 2
-  rw [this]
+  rw [((Functor.preservesFiniteLimits_tfae L).out 3 2:)]
   intro _ _ f
   exact preservesKernel L P f
 
