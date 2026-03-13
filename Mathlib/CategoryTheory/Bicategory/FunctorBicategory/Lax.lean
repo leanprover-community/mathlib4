@@ -74,7 +74,7 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
   isoMk (fun a => α_ (η.app a) (θ.app a) (ι.app a)) <| by
     intro a b f
-    dsimp only [comp_app, vCompApp, comp_naturality, vCompNaturality]
+    dsimp only [comp_app, comp_naturality]
     bicategory
 
 /-- Left unitor for the vertical composition of lax natural transformations. -/
@@ -110,7 +110,7 @@ def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ �
   as := {
     app a := η.app a ◁ Γ.as.app a
     naturality {a b} f := by
-      dsimp only [comp_app, comp_naturality, vCompNaturality]
+      dsimp only [comp_app, comp_naturality]
       calc
         _ = 𝟙 _ ⊗≫ ((F.map f ≫ η.app b) ◁ Γ.as.app b ≫ η.naturality f ▷ ι.app b) ⊗≫
             η.app a ◁ ι.naturality f ⊗≫ 𝟙 _  := by
@@ -147,7 +147,7 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
   isoMk (fun a => α_ (η.app a) (θ.app a) (ι.app a)) <| by
     intro a b f
-    dsimp only [comp_app, comp_naturality, vCompNaturality]
+    dsimp only [comp_app, comp_naturality]
     bicategory
 
 /-- Left unitor for the vertical composition of oplax natural transformations. -/

@@ -37,7 +37,7 @@ def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ �
   as := {
     app a := η.app a ◁ Γ.as.app a
     naturality {a b} f := by
-      dsimp only [comp_app, comp_naturality, vCompNaturality]
+      dsimp only [comp_app, comp_naturality]
       calc
         _ =  𝟙 _ ⊗≫ η.app a ◁ (Γ.as.app a ▷ H.map f ≫ ι.naturality f) ⊗≫
                 η.naturality f ▷ ι.app b ⊗≫ 𝟙 _ := by
@@ -56,7 +56,7 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
   as := {
     app a := Γ.as.app a ▷ ι.app a
     naturality {a b} f := by
-      dsimp only [comp_app, comp_naturality, vCompNaturality]
+      dsimp only [comp_app, comp_naturality]
       calc
         _ = 𝟙 _ ⊗≫ (Γ.as.app a ▷ (ι.app a ≫ H.map f) ≫ θ.app a ◁ ι.naturality f) ⊗≫
               θ.naturality f ▷ ι.app b ⊗≫ 𝟙 _ := by
@@ -74,7 +74,7 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι := by
   exact isoMk (fun a ↦ α_ (η.app a) (θ.app a) (ι.app a)) <| by
     intro a b f
-    dsimp only [comp_app, comp_naturality, vCompNaturality]
+    dsimp only [comp_app, comp_naturality]
     bicategory
 
 /-- Left unitor for the vertical composition of lax natural transformations. -/

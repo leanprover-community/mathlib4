@@ -108,7 +108,7 @@ instance : Inhabited (Modification η η) :=
 
 /-- Vertical composition of modifications. -/
 @[simps]
-def vcomp {ι : LaxTrans F G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
+def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
   app a := Γ.app a ≫ Δ.app a
 
 end Modification
