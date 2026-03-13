@@ -142,7 +142,7 @@ theorem one_lt_opow {a b : Ordinal} (h : 1 < a) : 1 < a ^ b ↔ b ≠ 0 := by
   · rw [← opow_zero a, opow_lt_opow_iff_right h, pos_iff_ne_zero]
 
 @[simp]
-theorem one_lt_pow {x : Ordinal} {n : ℕ} (h : 1 < x) : 1 < x ^ n ↔ n ≠ 0 :=
+theorem one_lt_pow {a : Ordinal} {n : ℕ} (h : 1 < a) : 1 < a ^ n ↔ n ≠ 0 :=
   mod_cast one_lt_opow (b := n) h
 
 theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
