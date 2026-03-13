@@ -305,6 +305,53 @@ theorem meromorphicNFAt_finprod {x : 𝕜} {ι : Type*} {f : ι → 𝕜 → �
   apply AnalyticAt.meromorphicNFAt
   apply analyticAt_const
 
+/--
+ZPowers of meromorphic functions in normal form are in normal form.
+-/
+@[to_fun]
+theorem MeromorphicNFAt.zpow {f : 𝕜 → 𝕜} {n : ℤ} {x : 𝕜} (hf : MeromorphicNFAt f x) :
+    MeromorphicNFAt (f ^ n) x := by
+  by_cases hn : n = 0
+  · simp_all only [zpow_zero]
+    apply AnalyticAt.meromorphicNFAt
+    apply analyticAt_const
+  rcases hf with hf | hf
+  · left
+    filter_upwards [hf] with z hz
+    simp_all only [Pi.zero_apply, Pi.pow_apply, zero_zpow n hn]
+  · obtain ⟨m, g, h₁g, h₂g, h₃g⟩ := hf
+    right
+    use n * m, g ^ n, h₁g.zpow h₂g
+    constructor
+    · rw [Pi.pow_apply]
+      exact zpow_ne_zero n h₂g
+    · filter_upwards [h₃g] with z hz
+      simp [hz, mul_zpow, (zpow_mul' (z - x) n m).symm]
+
+/--
+If `f` is meromorphic in normal form, then so is its inverse.
+-/
+theorem MeromorphicNFAt.inv {f : 𝕜 → 𝕜} (hf : MeromorphicNFAt f x) :
+    MeromorphicNFAt f⁻¹ x := by
+  rcases hf with h | ⟨n, g, h₁, h₂, h₃⟩
+  · left
+    filter_upwards [h] with x hx
+    simp [hx]
+  · right
+    use -n, g⁻¹, h₁.inv h₂, (by simp_all)
+    filter_upwards [h₃] with y hy
+    simp only [Pi.inv_apply, hy, Pi.smul_apply', Pi.pow_apply, smul_eq_mul, mul_inv_rev, zpow_neg]
+    ring
+
+/--
+A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
+-/
+@[simp] theorem meromorphicNFAt_inv {f : 𝕜 → 𝕜} : MeromorphicNFAt f⁻¹ x ↔ MeromorphicNFAt f x where
+  mp := by
+    nth_rw 2 [← inv_inv f]
+    exact .inv
+  mpr hf := by simpa using hf.inv
+
 /-!
 ### Continuous extension and conversion to normal form
 -/
@@ -415,30 +462,6 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
           rw [hn] at this
           tauto
     · exact (hf.meromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt hz).symm
-
-/--
-If `f` is meromorphic in normal form, then so is its inverse.
--/
-theorem MeromorphicNFAt.inv {f : 𝕜 → 𝕜} (hf : MeromorphicNFAt f x) :
-    MeromorphicNFAt f⁻¹ x := by
-  rcases hf with h | ⟨n, g, h₁, h₂, h₃⟩
-  · left
-    filter_upwards [h] with x hx
-    simp [hx]
-  · right
-    use -n, g⁻¹, h₁.inv h₂, (by simp_all)
-    filter_upwards [h₃] with y hy
-    simp only [Pi.inv_apply, hy, Pi.smul_apply', Pi.pow_apply, smul_eq_mul, mul_inv_rev, zpow_neg]
-    ring
-
-/--
-A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
--/
-@[simp] theorem meromorphicNFAt_inv {f : 𝕜 → 𝕜} : MeromorphicNFAt f⁻¹ x ↔ MeromorphicNFAt f x where
-  mp := by
-    nth_rw 2 [← inv_inv f]
-    exact .inv
-  mpr hf := by simpa using hf.inv
 
 /-!
 ## Normal form of meromorphic functions on a given set
@@ -575,8 +598,16 @@ theorem meromorphicNFOn_finprod {ι : Type*} {f : ι → 𝕜 → 𝕜} (h₁f :
   fun x hx ↦ meromorphicNFAt_finprod (h₁f · hx) (h₂f x hx)
 
 /--
+ZPowers of meromorphic functions in normal form are in normal form.
+-/
+@[to_fun]
+theorem MeromorphicNFOn.zpow {f : 𝕜 → 𝕜} {n : ℤ} {U : Set 𝕜} (hf : MeromorphicNFOn f U) :
+    MeromorphicNFOn (f ^ n) U := fun _ hz ↦ (hf hz).zpow
+
+/--
 A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is.
 -/
+@[to_fun]
 theorem meromorphicNFOn_inv {f : 𝕜 → 𝕜} :
     MeromorphicNFOn f⁻¹ U ↔ MeromorphicNFOn f U where
   mp h _ hx := meromorphicNFAt_inv.1 (h hx)
