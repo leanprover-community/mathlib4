@@ -1028,17 +1028,23 @@ instance :
 end OplaxMonoidal
 
 set_option backward.isDefEq.respectTransparency false in
-def laxMonoidalOplaxMonoidalEquiv : G.LaxMonoidal ≃ F.OplaxMonoidal where
-  toFun _ := leftAdjointOplaxMonoidal adj
-  invFun _ := rightAdjointLaxMonoidal adj
+/-- If `F ⊣ G` is an adjunction, the `G` is lax monoidal iff `F` is oplax monoidal.
+It is advisable to use `Adjunction.leftAdjointOplaxMonoidal` and
+`Adjunction.rightAdjointLaxMonoidal`, because compatibilities between
+the oplax monoidal left adjoint and the lax monoidal right adjoint
+(`Adjunction.IsMonoidal`) have been stated for these definitions. -/
+def laxMonoidalEquivOplaxMonoidal : G.LaxMonoidal ≃ F.OplaxMonoidal where
+  toFun _ := adj.leftAdjointOplaxMonoidal
+  invFun _ := adj.rightAdjointLaxMonoidal
   left_inv _ := by
-    ext 
+    ext
     · simp
-    simp [homEquiv_counit, homEquiv_unit, ← μ_natural]
+    · simp [homEquiv_counit, homEquiv_unit, ← μ_natural]
   right_inv _ := by
-    ext 
+    ext
     · simp
-    simp [homEquiv_counit, homEquiv_unit, ← δ_natural_assoc]
+    · simp [homEquiv_counit, homEquiv_unit, ← δ_natural_assoc]
+
 section Monoidal
 variable [F.Monoidal] [G.Monoidal] [adj.IsMonoidal]
 
