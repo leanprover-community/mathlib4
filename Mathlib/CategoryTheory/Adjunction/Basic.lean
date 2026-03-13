@@ -122,9 +122,7 @@ set_option linter.translateOverwrite false
 
 set_option linter.translateGenerateName false in
 attribute [to_dual existing counit] Adjunction.unit
--- set_option trace.translate_detail true
--- attribute [to_dual existing (reorder := C D, 2 4, F G) right_triangle_components]
---   Adjunction.left_triangle_components
+attribute [to_dual existing right_triangle_components] Adjunction.left_triangle_components
 
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction

@@ -121,13 +121,14 @@ def Reorder.reverse (r : Reorder) : Reorder where
   univReorder := r.univReorder.reverse
   reorder := r.reorder.reverse
 
+/-- Return the minimum size of an array on which the permutation is valid. -/
 def Perm.range (p : Perm) : Nat :=
-  p.iter.flatMap (·.1.iter) |>.fold max 0
+  p.iter.flatMap (·.1.iter) |>.map (· + 1) |>.fold max 0
 
 /-- Return the minimum size of an array on which the given reorder is valid. -/
 def ArgReorder.range (r : ArgReorder) : Nat :=
-  if r.isEmpty then 0 else
-  1 + r.argReorders.foldl (max · ·.1) r.perm.range
+  r.argReorders.foldl (max · <| ·.1 + 1) <|
+    r.perm.iter.flatMap (·.1.iter) |>.map (· + 1) |>.fold max 0
 
 /-- Two permutations are considered equal if they permute in the same way. -/
 def Perm.beq (p₁ p₂ : Perm) : Bool :=
