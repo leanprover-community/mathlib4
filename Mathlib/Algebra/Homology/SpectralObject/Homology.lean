@@ -118,7 +118,7 @@ noncomputable def dShortComplex
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia)
     (hn₃ : n₂ + 1 = n₃ := by lia) (hn₄ : n₃ + 1 = n₄ := by lia) :
     ShortComplex C :=
-  ShortComplex.mk _ _ (X.d_d f₁ f₂ f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄)
+  ShortComplex.mk _ _ (X.d_d f₁ f₂ f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ n₄)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
