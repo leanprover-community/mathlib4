@@ -340,7 +340,7 @@ instance isLocallySurjective_of_iso [IsIso φ] : IsLocallySurjective φ := by
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
-instance {F G : Sheaf J Type w} (f : F ⟶ G) :
+instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallySurjective (Sheaf.toImage f) := by
   dsimp [Sheaf.toImage]
   infer_instance
@@ -351,14 +351,14 @@ instance [IsLocallySurjective φ] :
     IsLocallySurjective ((sheafCompose J (forget A)).map φ) :=
   (Presheaf.isLocallySurjective_iff_whisker_forget J φ.hom).1 inferInstance
 
-theorem isLocallySurjective_iff_isIso {F G : Sheaf J Type w} (f : F ⟶ G) :
+theorem isLocallySurjective_iff_isIso {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallySurjective f ↔ IsIso (Sheaf.imageι f) := by
   dsimp only [IsLocallySurjective]
   rw [Sheaf.imageι, Presheaf.isLocallySurjective_iff_range_sheafify_eq_top',
     Subfunctor.eq_top_iff_isIso]
-  exact isIso_iff_of_reflects_iso (f := Sheaf.imageι f) (F := sheafToPresheaf J Type w)
+  exact isIso_iff_of_reflects_iso (f := Sheaf.imageι f) (F := sheafToPresheaf J (Type w))
 
-instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J Type w} (φ : F₁ ⟶ F₂)
+instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J (Type w)} (φ : F₁ ⟶ F₂)
     [IsLocallySurjective φ] : Epi φ where
   left_cancellation {Z} f₁ f₂ h := by
     ext X x
@@ -375,8 +375,8 @@ instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J Type w} (φ : F₁ ⟶
 instance epi_of_isLocallySurjective [IsLocallySurjective φ] : Epi φ :=
   (sheafCompose J (forget A)).epi_of_epi_map inferInstance
 
-lemma isLocallySurjective_iff_epi {F G : Sheaf J Type w} (φ : F ⟶ G)
-    [HasSheafify J Type w] :
+lemma isLocallySurjective_iff_epi {F G : Sheaf J (Type w)} (φ : F ⟶ G)
+    [HasSheafify J (Type w)] :
     IsLocallySurjective φ ↔ Epi φ := by
   constructor
   · intro

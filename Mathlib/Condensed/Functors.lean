@@ -33,7 +33,7 @@ open CategoryTheory Limits
 section Universes
 
 /-- Increase the size of the target category of condensed sets. -/
-def Condensed.ulift : Condensed.{u} Type u ⥤ CondensedSet.{u} :=
+def Condensed.ulift : Condensed.{u} (Type u) ⥤ CondensedSet.{u} :=
   sheafCompose (coherentTopology CompHaus) uliftFunctor.{u + 1, u}
 
 instance : Condensed.ulift.Full := show (sheafCompose _ _).Full from inferInstance
@@ -45,7 +45,7 @@ end Universes
 section Topology
 
 /-- The functor from `CompHaus` to `Condensed.{u} (Type u)` given by the Yoneda sheaf. -/
-def compHausToCondensed' : CompHaus.{u} ⥤ Condensed.{u} Type u :=
+def compHausToCondensed' : CompHaus.{u} ⥤ Condensed.{u} (Type u) :=
   (coherentTopology CompHaus).yoneda
 
 /-- The yoneda presheaf as an actual condensed set. -/

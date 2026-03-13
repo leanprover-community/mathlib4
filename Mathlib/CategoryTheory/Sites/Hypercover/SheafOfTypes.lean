@@ -46,7 +46,7 @@ set_option backward.isDefEq.respectTransparency false in
 associated to a presheaf of types are equivalent to the compatible families on `E`. -/
 @[simps]
 def sectionsEquivOfHasPullbacks (E : PreZeroHypercover S)
-    [E.HasPullbacks] (F : Cᵒᵖ ⥤ TypeCat) :
+    [E.HasPullbacks] (F : Cᵒᵖ ⥤ Type*) :
     (E.toPreOneHypercover.multicospanIndex F).sections ≃
       Subtype (Presieve.Arrows.Compatible F E.f) where
   toFun s :=
@@ -62,7 +62,7 @@ def sectionsEquivOfHasPullbacks (E : PreZeroHypercover S)
   right_inv _ := rfl
 
 lemma isLimit_toPreOneHypercover_type_iff (E : PreZeroHypercover.{w} S) [E.HasPullbacks]
-    (F : Cᵒᵖ ⥤ TypeCat) :
+    (F : Cᵒᵖ ⥤ Type*) :
     Nonempty (IsLimit <| E.toPreOneHypercover.multifork F) ↔ E.presieve₀.IsSheafFor F := by
   rw [Multifork.isLimit_types_iff, Presieve.isSheafFor_ofArrows_iff_bijective_toCompabible,
     ← Function.Bijective.of_comp_iff' (E.sectionsEquivOfHasPullbacks F).symm.bijective]
@@ -71,7 +71,7 @@ lemma isLimit_toPreOneHypercover_type_iff (E : PreZeroHypercover.{w} S) [E.HasPu
 end PreZeroHypercover
 
 lemma Precoverage.ZeroHypercover.Hom.isSheafFor_iff [Limits.HasPullbacks C] {K : Precoverage C}
-    [K.IsStableUnderBaseChange] {S : C} {F : Cᵒᵖ ⥤ TypeCat} {𝒰 𝒱 : K.ZeroHypercover S}
+    [K.IsStableUnderBaseChange] {S : C} {F : Cᵒᵖ ⥤ Type*} {𝒰 𝒱 : K.ZeroHypercover S}
     (f : 𝒰.Hom K 𝒱) (H₁ : Presieve.IsSheafFor F (.ofArrows _ 𝒰.f))
     (H₂ : ∀ {X : C} (f : X ⟶ S),
       Presieve.IsSeparatedFor F (.ofArrows (𝒰.pullback₂ f).X (𝒰.pullback₂ f).f)) :
@@ -91,11 +91,11 @@ lemma Precoverage.ZeroHypercover.Hom.isSheafFor_iff [Limits.HasPullbacks C] {K :
 
 namespace PreOneHypercover
 
-variable {X : C} {E : PreOneHypercover.{w} X} {F : Cᵒᵖ ⥤ TypeCat}
+variable {X : C} {E : PreOneHypercover.{w} X} {F : Cᵒᵖ ⥤ Type*}
 
 /-- A presheaf `F` of types is (strongly) separated for a pre-`1`-hypercover if `F` is separated for
 both the `0` and the `1`-components. -/
-structure IsStronglySeparatedFor {X : C} (E : PreOneHypercover X) (F : Cᵒᵖ ⥤ TypeCat) : Prop where
+structure IsStronglySeparatedFor {X : C} (E : PreOneHypercover X) (F : Cᵒᵖ ⥤ Type*) : Prop where
   isSeparatedFor_presieve₀ : E.presieve₀.IsSeparatedFor F
   isSeparatedFor_sieve₁ ⦃i j : E.I₀⦄ ⦃W : C⦄ (p₁ : W ⟶ E.X i) (p₂ : W ⟶ E.X j)
     (h : p₁ ≫ E.f i = p₂ ≫ E.f j) :
@@ -107,7 +107,7 @@ both the `0` and the `1`-components.
 This implies that the multiequalizer diagram attached to `E` is exact
 (see `CategoryTheory.PreOneHypercover.IsStronglySheafFor.isLimitMultifork`).
 -/
-structure IsStronglySheafFor {X : C} (E : PreOneHypercover X) (F : Cᵒᵖ ⥤ TypeCat) : Prop where
+structure IsStronglySheafFor {X : C} (E : PreOneHypercover X) (F : Cᵒᵖ ⥤ Type*) : Prop where
   isSheafFor_presieve₀ : E.presieve₀.IsSheafFor F
   isSeparatedFor_sieve₁ ⦃i j : E.I₀⦄ ⦃W : C⦄ (p₁ : W ⟶ E.X i) (p₂ : W ⟶ E.X j)
     (h : p₁ ≫ E.f i = p₂ ≫ E.f j) :
@@ -213,7 +213,7 @@ end PreOneHypercover
 
 namespace GrothendieckTopology.OneHypercover
 
-variable {J : GrothendieckTopology C} {X : C} {E : OneHypercover.{w} J X} {F : Cᵒᵖ ⥤ TypeCat}
+variable {J : GrothendieckTopology C} {X : C} {E : OneHypercover.{w} J X} {F : Cᵒᵖ ⥤ Type*}
 
 lemma isStronglySeparatedFor (hf : Presieve.IsSeparated J F) : E.IsStronglySeparatedFor F where
   isSeparatedFor_presieve₀ := by
