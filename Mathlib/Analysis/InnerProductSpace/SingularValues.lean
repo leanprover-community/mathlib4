@@ -19,13 +19,14 @@ With our definition, there are countably infinitely many singular values, but on
 singular values are nonzero.
 
 The singular values are zero-indexed, so `T.singularValues 0` is the first singular value.
+This means the positive singular values occur at `0 ≤ i < rank(T)` and not `1 ≤ i ≤ rank(T)`.
 
 ## Main definition
 
 - `LinearMap.singularValues`: The infinite but finitely supported sequence of the singular values of
 a linear map.
 
-## Main Theorems
+## Main statements
 
 - `LinearMap.support_singularValues`: The first rank(T) many singular values are positive, and the
 rest are zero.
@@ -90,6 +91,7 @@ the infinite sequence are zero. Please see this file's module docstring for an e
 design decision.
 
 The singular values are zero-indexed, so `T.singularValues 0` refers to the first singular value.
+This means the positive singular values occur at `0 ≤ i < rank(T)` and not `1 ≤ i ≤ rank(T)`.
 -/
 @[no_expose] noncomputable def singularValues : ℕ →₀ ℝ≥0 :=
   Finsupp.embDomain Fin.valEmbedding <|
