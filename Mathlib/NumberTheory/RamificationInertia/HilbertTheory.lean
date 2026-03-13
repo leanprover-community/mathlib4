@@ -100,39 +100,40 @@ theorem IsInertiaField.of_isGaloisGroup [h : IsGaloisGroup (inertia G P) D L] :
 
 end of_isGaloisGroup
 
+variable (D' : Type*) [Field D'] [Algebra D' L] (E' : Type*) [Field E'] [Algebra E' L]
+
 /-- Two decomposition fields are isomorphic. -/
-noncomputable def IsDecompositionField.ringEquiv (D' : Type*) [Field D'] [Algebra D' L]
-    [IsDecompositionField K L P D] [IsDecompositionField K L P D'] :
+noncomputable def IsDecompositionField.ringEquiv [IsDecompositionField K L P D]
+    [IsDecompositionField K L P D'] :
     D ≃+* D' :=
   IsGaloisGroup.ringEquiv (stabilizer Gal(L/K) P) D D' L
 
 @[simp]
-theorem IsDecompositionField.algebraMap_ringEquiv_apply (D' : Type*) [Field D'] [Algebra D' L]
-    [IsDecompositionField K L P D] [IsDecompositionField K L P D'] (x : D) :
+theorem IsDecompositionField.algebraMap_ringEquiv_apply [IsDecompositionField K L P D]
+    [IsDecompositionField K L P D'] (x : D) :
     algebraMap D' L (IsDecompositionField.ringEquiv K L P D D' x) = algebraMap D L x := by
   simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
 
 @[simp]
-theorem IsDecompositionField.algebraMap_ringEquiv_symm_apply (D' : Type*) [Field D'] [Algebra D' L]
-    [IsDecompositionField K L P D] [IsDecompositionField K L P D'] (x : D') :
+theorem IsDecompositionField.algebraMap_ringEquiv_symm_apply [IsDecompositionField K L P D]
+    [IsDecompositionField K L P D'] (x : D') :
     algebraMap D L ((IsDecompositionField.ringEquiv K L P D D').symm x) = algebraMap D' L x := by
   simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
 
 /-- Two inertia fields are isomorphic. -/
-noncomputable def IsInertiaField.ringEquiv (E' : Type*) [Field E'] [Algebra E' L]
-    [IsInertiaField K L P E] [IsInertiaField K L P E'] :
+noncomputable def IsInertiaField.ringEquiv [IsInertiaField K L P E] [IsInertiaField K L P E'] :
     E ≃+* E' :=
   IsGaloisGroup.ringEquiv (inertia Gal(L/K) P) E E' L
 
 @[simp]
-theorem IsInertiaField.algebraMap_ringEquiv_apply (E' : Type*) [Field E'] [Algebra E' L]
-    [IsInertiaField K L P E] [IsInertiaField K L P E'] (x : E) :
+theorem IsInertiaField.algebraMap_ringEquiv_apply [IsInertiaField K L P E]
+    [IsInertiaField K L P E'] (x : E) :
     algebraMap E' L (IsInertiaField.ringEquiv K L P E E' x) = algebraMap E L x := by
   simp [IsInertiaField.ringEquiv, IsGaloisGroup.ringEquiv]
 
 @[simp]
-theorem IsInertiaField.algebraMap_ringEquiv_symm_apply (E' : Type*) [Field E'] [Algebra E' L]
-    [IsInertiaField K L P E] [IsInertiaField K L P E'] (x : E') :
+theorem IsInertiaField.algebraMap_ringEquiv_symm_apply [IsInertiaField K L P E]
+    [IsInertiaField K L P E'] (x : E') :
     algebraMap E L ((IsInertiaField.ringEquiv K L P E E').symm x) = algebraMap E' L x := by
   simp [IsInertiaField.ringEquiv, IsGaloisGroup.ringEquiv]
 
