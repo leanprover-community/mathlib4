@@ -258,16 +258,6 @@ lemma max_mulHeightBound_zero_one_eq_one :
   · simp
     grind
 
-lemma mulHeightBound_zero_one : mulHeightBound ![(0 : MvPolynomial (Fin 2) K), 1] = 1 := by
-  simp only [mulHeightBound, Nat.succ_eq_add_one, Nat.reduceAdd, iSup_fun_eq_max]
-  conv_rhs => rw [← one_mul 1]
-  congr
-  · convert Multiset.prod_map_one with v
-    simp [MvPolynomial.sum_def, support_one]
-  · refine finprod_eq_one_of_forall_eq_one fun v ↦ ?_
-    rw [show ![(0 : MvPolynomial (Fin 2) K), 1] 1 = 1 from rfl, support_one]
-    simp
-
 variable [Finite ι']
 
 open Function in
