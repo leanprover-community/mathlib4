@@ -234,15 +234,6 @@ lemma mulHeightBound_eq (p : ι' → MvPolynomial ι K) :
         ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val (coeff s (p j))) 1 :=
   rfl
 
-private lemma finprod_zero_le_one {M α : Type*} [CommMonoidWithZero M] [PartialOrder M]
-    [ZeroLEOneClass M] [PosMulMono M] :
-    ∏ᶠ _ : α, (0 : M) ≤ 1 := by
-  rw [← finprod_one (α := α)]
-  by_cases H : (fun _ : α ↦ (0 : M)).HasFiniteMulSupport
-  · exact finprod_le_finprod H (fun _ ↦ le_rfl) (by fun_prop) fun _ ↦ zero_le_one
-  · rw [finprod_of_not_hasFiniteMulSupport H]
-    exact finprod_one.symm.le
-
 variable (K ι ι') in
 lemma max_mulHeightBound_zero_one_eq_one :
     max (mulHeightBound (0 : ι' → MvPolynomial ι K)) 1 = 1 := by
