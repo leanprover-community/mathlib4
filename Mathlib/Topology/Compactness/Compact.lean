@@ -654,6 +654,7 @@ variable (X) in
 /-- Sets that are contained in a compact set form a bornology. Its `cobounded` filter is
 `Filter.cocompact`. See also `Bornology.relativelyCompact` the bornology of sets with compact
 closure. -/
+@[implicit_reducible]
 def inCompact : Bornology X where
   cobounded := Filter.cocompact X
   le_cofinite := Filter.cocompact_le_cofinite
@@ -1050,6 +1051,11 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
 /-- Finite topological spaces are compact. -/
 instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
   isCompact_univ := finite_univ.isCompact
+
+/-- The indiscrete topology is compact -/
+-- see note [lower instance priority]
+instance (priority := 100) instCompactSpace [IndiscreteTopology X] : CompactSpace X where
+  isCompact_univ f hf := by simp [clusterPt_of_indiscreteTopology, nonempty_of_neBot f]
 
 instance ULift.compactSpace [CompactSpace X] : CompactSpace (ULift.{v} X) :=
   IsClosedEmbedding.uliftDown.compactSpace
