@@ -432,11 +432,14 @@ theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N �
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
   ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
 
+lemma span_val_image_eq_iff (p : Submodule R M) (s : Set p) :
+    span R (Subtype.val '' s) = p ↔ span R s = ⊤ := by
+  simp [← (Submodule.map_injective_of_injective p.injective_subtype).eq_iff, Submodule.map_span]
+
 lemma span_range_subtype_eq_top_iff {ι : Type*} (p : Submodule R M) {s : ι → M}
     (hs : ∀ i, s i ∈ p) :
     span R (Set.range fun i ↦ (⟨s i, hs i⟩ : p)) = ⊤ ↔ span R (Set.range s) = p := by
-  rw [← (map_injective_of_injective p.injective_subtype).eq_iff]
-  simp [map_span, ← Set.range_comp, Function.comp_def]
+  simp [← span_val_image_eq_iff, ← Set.range_comp, Function.comp_def]
 
 lemma comap_le_comap_iff_of_le_range {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂]
     {p q : Submodule R₂ M₂} (hp : p ≤ LinearMap.range f) :
@@ -874,8 +877,3 @@ theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y 
   Subtype.ext_iff.1 <| (toSpanNonzeroSingleton R M x h).apply_symm_apply _
 
 end LinearEquiv
-
-lemma Submodule.span_val_image_eq_iff {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-    (p : Submodule R M) (s : Set p) :
-    Submodule.span R (Subtype.val '' s) = p ↔ Submodule.span R s = ⊤ := by
-  simp [← (Submodule.map_injective_of_injective p.injective_subtype).eq_iff, Submodule.map_span]
