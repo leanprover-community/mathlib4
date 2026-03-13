@@ -363,8 +363,7 @@ section Pointwise
 open Pointwise
 
 lemma neg_sup_eq_submodule_span (C : PointedCone R M) : -C ⊔ C = C.linSpan := by
-  nth_rw 1 2 [← Submodule.span_eq C]
-  rw [← Submodule.span_neg_eq_neg]
+  nth_rw 1 2 [← Submodule.span_eq C, ← Submodule.span_neg_eq_neg]
   exact span_neg_sup_span_eq_submodule_span _
 
 lemma neg_le_iff_eq_linSpan {C : PointedCone R M} : -C ≤ C ↔ C.linSpan = C := by
