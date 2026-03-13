@@ -190,14 +190,9 @@ theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
 instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
 
-/-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/
-instance _root_.AddSubgroupClass.zsmul {M S} [SubNegMonoid M] [SetLike S M]
-    [AddSubgroupClass S M] {H : S} : SMul ℤ H :=
-  ⟨fun n a => ⟨n • a.1, zsmul_mem a.2 n⟩⟩
-
 /-- A subgroup of a group inherits an integer power. -/
-@[to_additive existing]
-instance zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
+@[to_additive /-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/]
+instance instZPow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
   ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -283,7 +278,7 @@ theorem inclusion_inclusion [Preorder S] [IsConcreteLE S G]
 @[to_additive (attr := simp)]
 theorem coe_inclusion [LE S] [IsConcreteLE S G]
     {H K : S} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
-  Set.coe_inclusion (SetLike.GCongr.coe_subset_coe h) a
+  Set.coe_inclusion (SetLike.coe_subset_coe.mpr h) a
 
 @[to_additive (attr := simp)]
 theorem subtype_comp_inclusion [LE S] [IsConcreteLE S G]
@@ -508,21 +503,13 @@ instance inv : Inv H :=
 instance div : Div H :=
   ⟨fun a b => ⟨a / b, H.div_mem a.2 b.2⟩⟩
 
-/-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/
-instance _root_.AddSubgroup.nsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
-  ⟨fun n a => ⟨n • a, H.nsmul_mem a.2 n⟩⟩
-
 /-- A subgroup of a group inherits a natural power -/
-@[to_additive existing]
+@[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/]
 protected instance npow : Pow H ℕ :=
   ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
 
-/-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/
-instance _root_.AddSubgroup.zsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℤ H :=
-  ⟨fun n a => ⟨n • a, H.zsmul_mem a.2 n⟩⟩
-
 /-- A subgroup of a group inherits an integer power -/
-@[to_additive existing]
+@[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/]
 instance zpow : Pow H ℤ :=
   ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
 

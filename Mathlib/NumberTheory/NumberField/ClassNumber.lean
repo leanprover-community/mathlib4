@@ -22,7 +22,7 @@ on the class number.
 We denote by `M K` the Minkowski bound of a number field `K`, defined as
 `(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`.
 - `NumberField.classNumber`: the class number of a number field is the (finite)
-cardinality of the class group of its ring of integers
+  cardinality of the class group of its ring of integers
 - `isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc`: let `K`
   be a number field. To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
   `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P` above `p` such that
@@ -129,6 +129,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime
     absNorm_dvd_absNorm_of_le <| le_of_dvd <|
       UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hJ).trans hI
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.longLine false in
 /-- Let `K` be a number field and let `M K` be the Minkowski bound of `K`.
 To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes

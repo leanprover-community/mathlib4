@@ -86,8 +86,7 @@ variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E
 lemma charFun_map_eq [InnerProductSpace ℝ E] (t : E) (hX : HasGaussianLaw X P) :
     charFun (P.map X) t = exp ((P[fun ω ↦ ⟪t, X ω⟫] : ℝ) * I - Var[fun ω ↦ ⟪t, X ω⟫; P] / 2) := by
   rw [hX.isGaussian_map.charFun_eq, integral_map hX.aemeasurable (by fun_prop),
-    variance_map (by fun_prop) hX.aemeasurable, integral_complex_ofReal]
-  rfl
+    variance_map (by fun_prop) hX.aemeasurable, integral_complex_ofReal, Function.comp_def]
 
 lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFun_map_eq [CompleteSpace E]
     [InnerProductSpace ℝ E] [IsFiniteMeasure P] (hX : AEMeasurable X P) :
@@ -96,8 +95,7 @@ lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFun_map_eq [CompleteSpace 
   mp h := h.charFun_map_eq
   mpr h := by
     refine ⟨isGaussian_iff_charFun_eq.2 fun t ↦ ?_⟩
-    rw [h, integral_map, variance_map, integral_complex_ofReal]
-    · rfl
+    rw [h, integral_map, variance_map, integral_complex_ofReal, Function.comp_def]
     all_goals fun_prop
 
 variable [NormedSpace ℝ E]
@@ -105,8 +103,7 @@ variable [NormedSpace ℝ E]
 lemma charFunDual_map_eq (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
     charFunDual (P.map X) L = exp ((P[L ∘ X] : ℝ) * I - Var[L ∘ X; P] / 2) := by
   rw [hX.isGaussian_map.charFunDual_eq, integral_map hX.aemeasurable (by fun_prop),
-    variance_map (by fun_prop) hX.aemeasurable, integral_complex_ofReal]
-  rfl
+    variance_map (by fun_prop) hX.aemeasurable, integral_complex_ofReal, Function.comp_def]
 
 lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFunDual_map_eq
     [IsFiniteMeasure P] (hX : AEMeasurable X P) :
@@ -115,14 +112,12 @@ lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFunDual_map_eq
   mp h := h.charFunDual_map_eq
   mpr h := by
     refine ⟨isGaussian_iff_charFunDual_eq.2 fun t ↦ ?_⟩
-    rw [h, integral_map, variance_map, integral_complex_ofReal]
-    · rfl
+    rw [h, integral_map, variance_map, integral_complex_ofReal, Function.comp_def]
     all_goals fun_prop
 
 lemma charFunDual_map_eq_fun (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
     charFunDual (P.map X) L = exp ((∫ ω, L (X ω) ∂P) * I - Var[fun ω ↦ L (X ω); P] / 2) := by
-  rw [hX.charFunDual_map_eq]
-  rfl
+  rw [hX.charFunDual_map_eq, Function.comp_def]
 
 /-- A Gaussian random variable has moments of all orders. -/
 lemma memLp [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P)
@@ -142,7 +137,7 @@ lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussian
 variable [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
 
 lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ X) P :=
-    hX.map_of_measurable L (by fun_prop)
+  hX.map_of_measurable L (by fun_prop)
 
 lemma map_fun (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (fun ω ↦ L (X ω)) P :=
   hX.map L
@@ -214,8 +209,8 @@ variable [∀ i, SecondCountableTopology (E i)]
 
 lemma prodMk [Finite ι] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i j : ι) :
     HasGaussianLaw (fun ω ↦ (X i ω, X j ω)) P :=
-    letI := Fintype.ofFinite ι
-    hX.map (.prod (.proj i) (.proj j))
+  letI := Fintype.ofFinite ι
+  hX.map (.prod (.proj i) (.proj j))
 
 variable [Fintype ι]
 

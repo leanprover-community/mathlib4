@@ -11,14 +11,28 @@ jobs:
   merge-to-nightly:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      id-token: write
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-nightly-testing-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          repositories: mathlib4,mathlib4-nightly-testing
+
+      # This token is masked by the token minting action and will not be logged accidentally.
       - name: Checkout nightly-testing from fork
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: leanprover-community/mathlib4-nightly-testing
           ref: nightly-testing
           path: nightly-testing
-          token: ${{ secrets.NIGHTLY_TESTING }}
+          token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
 
       - name: Configure Lean
@@ -32,8 +46,8 @@ jobs:
       - name: Configure Git User
         run: |
           cd nightly-testing
-          git config user.name "leanprover-community-mathlib4-bot"
-          git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+          git config user.name "mathlib-nightly-testing[bot]"
+          git config user.email "mathlib-nightly-testing[bot]@users.noreply.github.com"
 
       - name: Merge master to nightly favoring nightly changes
         run: |

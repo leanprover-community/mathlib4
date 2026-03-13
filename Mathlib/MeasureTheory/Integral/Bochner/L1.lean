@@ -353,8 +353,7 @@ lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν 
     · simp [← hx]
     simp only [measureReal_def]
     gcongr
-    · exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
-    · exact hμν _
+    exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
   · suffices ν (f ⁻¹' {f x}) = 0 by
       have A : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
       simp [measureReal_def, A, this]
@@ -457,6 +456,7 @@ local notation "Integral" => integralCLM α E μ
 
 open ContinuousLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_Integral_le_one : ‖Integral‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ zero_le_one fun f ↦ by
     simpa [one_mul] using norm_integral_le_norm f

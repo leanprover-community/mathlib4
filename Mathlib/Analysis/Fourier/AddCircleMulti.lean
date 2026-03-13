@@ -20,7 +20,7 @@ Fourier series if `f` is continuous and the sequence of its Fourier coefficients
 
 noncomputable section
 
-open scoped BigOperators ComplexConjugate ENNReal
+open scoped ComplexConjugate ENNReal
 
 open Set Algebra Submodule MeasureTheory
 
@@ -184,7 +184,7 @@ end Lp
 
 section fourierCoeff
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `UnitAddTorus d → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `UnitAddTorus d` of `mFourier (-n) t • f t`. -/
@@ -207,6 +207,7 @@ monomials `mFourier n` on `UnitAddTorus d` considered as elements of `L²`. -/
 @[simp]
 theorem coe_mFourierBasis : ⇑(mFourierBasis (d := d)) = mFourierLp 2 := HilbertBasis.coe_mk _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Under the isometric isomorphism `mFourierBasis` from `L²(UnitAddTorus d)` to `ℓ²(ℤᵈ, ℂ)`,
 the `i`-th coefficient is `mFourierCoeff f i`. -/
 theorem mFourierBasis_repr (f : L²(UnitAddTorus d)) (i : d → ℤ) :
@@ -232,6 +233,7 @@ theorem hasSum_prod_mFourierCoeff (f g : L²(UnitAddTorus d)) :
   simp only [← mFourierBasis_repr, HilbertBasis.repr_apply_apply, inner_conj_symm,
     mul_comm (inner ℂ f _)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Parseval's identity** for norms: for an `L²` function `f` on `UnitAddTorus d`, the sum of the
 squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem hasSum_sq_mFourierCoeff (f : L²(UnitAddTorus d)) :
@@ -251,6 +253,7 @@ theorem mFourierCoeff_toLp (n : d → ℤ) :
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
 theorem hasSum_mFourier_series_of_summable (h : Summable (mFourierCoeff f)) :

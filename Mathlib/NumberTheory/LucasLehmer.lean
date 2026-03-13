@@ -41,17 +41,13 @@ def mersenne (p : ℕ) : ℕ :=
 theorem strictMono_mersenne : StrictMono mersenne := fun m n h ↦
   (Nat.sub_lt_sub_iff_right <| Nat.one_le_pow _ _ two_pos).2 <| by gcongr; norm_num1
 
-@[simp]
+@[simp, gcongr]
 theorem mersenne_lt_mersenne {p q : ℕ} : mersenne p < mersenne q ↔ p < q :=
   strictMono_mersenne.lt_iff_lt
 
-@[gcongr] protected alias ⟨_, GCongr.mersenne_lt_mersenne⟩ := mersenne_lt_mersenne
-
-@[simp]
+@[simp, gcongr]
 theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q :=
   strictMono_mersenne.le_iff_le
-
-@[gcongr] protected alias ⟨_, GCongr.mersenne_le_mersenne⟩ := mersenne_le_mersenne
 
 @[simp] theorem mersenne_zero : mersenne 0 = 0 := rfl
 
@@ -386,7 +382,7 @@ def α : X q := (0, 1)
   ext <;> simp [α, sq]
 
 @[simp] lemma one_add_α_sq : ((1 + α) ^ 2 : X q) = 2 * ω := by
-  ext <;> simpa [α, ω, sq] using by norm_num
+  ext <;> simp [α, ω, sq] <;> norm_num
 
 lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
   rw [pow_succ, pow_mul, α_sq]
@@ -516,6 +512,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   have : 1 ≤ 2 ^ (p' + 2) := Nat.one_le_pow _ _ (by decide)
   exact mod_cast h
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (acting on two goals with different simp sets)
 set_option linter.flexible false in
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
@@ -592,6 +589,7 @@ theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (
   have h := lt_of_lt_of_le h₁ h₂
   exact not_lt_of_ge (Nat.sub_le _ _) h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `2^p - 1` is prime then the Lucas-Lehmer test holds, `s (p - 2) % (2^p - 1) = 0`. -/
 theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime) :
     LucasLehmerTest p := by

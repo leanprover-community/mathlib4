@@ -29,6 +29,7 @@ section
 
 open Ideal Ideal.Quotient
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} (h : (p : R) ∣ a - b)
     (k : ℕ) : (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
   induction k with

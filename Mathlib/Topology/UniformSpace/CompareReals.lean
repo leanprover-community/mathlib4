@@ -63,7 +63,7 @@ theorem Rat.uniformSpace_eq :
   ext s
   rw [(AbsoluteValue.hasBasis_uniformity _).mem_iff, Metric.uniformity_basis_dist_rat.mem_iff]
   simp only [Rat.dist_eq, AbsoluteValue.abs_apply, ← Rat.cast_sub, ← Rat.cast_abs, Rat.cast_lt,
-    abs_sub_comm]
+    _root_.abs_sub_comm]
 
 /-- Cauchy reals packaged as a completion of ℚ using the absolute value route. -/
 def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).uniformSpace :=

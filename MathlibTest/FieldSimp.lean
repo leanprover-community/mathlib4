@@ -29,7 +29,7 @@ section
 
 variable {P : ℚ → Prop} {x y z : ℚ}
 
-/-- error: field_simp made no progress on goal -/
+/-- error: `field_simp` made no progress on goal -/
 #guard_msgs in
 example : P (1 : ℚ) := by test_field_simp
 
@@ -43,7 +43,7 @@ example : P (x ^ 0) := by test_field_simp
 #guard_msgs in
 example : P (x ^ 1) := by test_field_simp
 
-/-- error: field_simp made no progress on goal -/
+/-- error: `field_simp` made no progress on goal -/
 #guard_msgs in
 example : P x := by test_field_simp
 
@@ -181,7 +181,7 @@ example {a : Nat} : P (a* x - a * x) := by test_field_simp
 
 /-! ### Two atoms -/
 
-/-- error: field_simp made no progress on goal -/
+/-- error: `field_simp` made no progress on goal -/
 #guard_msgs in
 example : P (x + y) := by test_field_simp
 
@@ -959,7 +959,7 @@ example {K : Type} [Semifield K] {x y : K} (h : x + y ≠ 0) : x / (x + y) + y /
 -- Extracted from `Mathlib/Analysis/SpecificLimits/Basic.lean`
 
 -- `field_simp` assumes commutativity: in its absence, it does nothing.
-/-- error: field_simp made no progress on goal -/
+/-- error: `field_simp` made no progress on goal -/
 #guard_msgs in
 example {K : Type*} [DivisionRing K] {n' x : K} (h : n' ≠ 0) (h' : n' + x ≠ 0) :
     1 / (1 + x / n') = n' / (n' + x) := by
@@ -969,3 +969,29 @@ example {K : Type*} [DivisionRing K] {n' x : K} (h : n' ≠ 0) (h' : n' + x ≠ 
 example {K : Type*} [Field K] {n' x : K} (hn : n' ≠ 0) :
     1 / (1 + x / n') = n' / (n' + x) := by
   field_simp
+
+/-! ## Contextual rewrites in subexpressions -/
+
+-- Ensure that the discharger has access to changes in the local context, and that the simp cache
+-- does not attempt to reuse the proof in an invalid context.
+example (x : ℚ) : (if x ≠ 0 then x / x else x / x) = 1 := by
+  field_simp
+  guard_target = (if x ≠ 0 then 1 else x / x) = 1
+  exact test_sorry
+
+example (x : ℚ) : (if x = 0 then x / x else x / x) = 1 := by
+  field_simp
+  guard_target = (if x = 0 then x / x else 1) = 1
+  exact test_sorry
+
+/- Test whether the discharger has access to implication hypotheses. -/
+example (x : ℚ) : (x ≠ 0 → x / x = 1) := by
+  field_simp
+  guard_target = (x ≠ 0 → True)
+  exact test_sorry
+
+/- Ensure that the `x = 0` hypothesis isn't used by `simp` to substitute. -/
+example (x : ℚ) : (x = 0 → x / x = 1) := by
+  field_simp
+  guard_target = (x = 0 → x / x = 1)
+  exact test_sorry
