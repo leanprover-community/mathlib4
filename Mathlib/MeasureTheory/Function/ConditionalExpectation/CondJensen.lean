@@ -125,18 +125,6 @@ theorem ConvexOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   filter_upwards [h1, h2, h3] with a ha hb hc
   simpa [← ha, ← hb]
 
-lemma neg_eq_neg_comp {α β : Type*} [Neg β] (f : α → β) : -f = Neg.neg.comp f := by ext; simp
-
-theorem UpperSemicontinuousOn.neg {α β : Type*} [Preorder β] [Neg β] [TopologicalSpace α]
-    {s : Set α} (f : α → β)
-    (hφ_cont : UpperSemicontinuousOn f s) :
-    LowerSemicontinuousOn (-f) s := by
-  simp_all only [lowerSemicontinuousOn_iff_preimage_Ioi, upperSemicontinuousOn_iff_preimage_Iio]
-  intro b
-  obtain ⟨u, ho, hu⟩ := hφ_cont (-b)
-  refine ⟨u, ho, hu ▸ ?_⟩
-  simp [neg_eq_neg_comp, preimage_comp]
-
 theorem ConcaveOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConcaveOn ℝ s φ) (hφ_cont : UpperSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
     (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
