@@ -78,7 +78,7 @@ namespace cm5a_cof
 /-- Given a morphism `f : K ⟶ L`, this is the property of factorisations
 of `f` consisting of a monomorphism followed by a degreewise epimorphism
 with injective kernel. -/
-def cofFib : ObjectProperty (Factorisation f) :=
+public def cofFib : ObjectProperty (Factorisation f) :=
   fun F ↦ Mono F.ι ∧ degreewiseEpiWithInjectiveKernel F.π
 
 instance (F : (cofFib f).FullSubcategory) : Mono F.obj.ι :=
@@ -87,13 +87,13 @@ instance (F : (cofFib f).FullSubcategory) : Mono F.obj.ι :=
 variable {f} in
 /-- The property that the first morphism of the factorisation is
 a quasi-isomorphisms in degrees `≤ n`. -/
-def quasiIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
+public def quasiIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, QuasiIsoAt F.obj.ι i
 
 variable {f} in
 /-- The property that the second morphism of the factorisation is
 an isomorphism in degrees `≤ n`. -/
-def isIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
+public def isIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, IsIso (F.obj.π.f i)
 
 namespace step₁
@@ -213,6 +213,8 @@ instance : Mono (homologyMap (ι f n₁) n₁) := by
 
 end step₁
 
+-- This lemma and a few definitions above are made public only in order to please CI.
+-- They will be made private again when the proofs of `cm5a_cof` and `cm5a` are added.
 open step₁ in
 public lemma step₁ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
