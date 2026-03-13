@@ -160,7 +160,7 @@ If `J` is subcanonical, we obtain a "Yoneda" functor from the defining site
 into the sheaf category.
 -/
 @[simps]
-def yoneda [J.Subcanonical] : C ⥤ Sheaf J Type v where
+def yoneda [J.Subcanonical] : C ⥤ Sheaf J (Type v) where
   obj X := ⟨CategoryTheory.yoneda.obj X, by
     rw [isSheaf_iff_isSheaf_of_type]
     apply Subcanonical.isSheaf_of_isRepresentable⟩
@@ -190,19 +190,19 @@ The yoneda embedding into the presheaf category factors through the one
 to the sheaf category.
 -/
 def yonedaCompSheafToPresheaf :
-    J.yoneda ⋙ sheafToPresheaf J Type v ≅ CategoryTheory.yoneda :=
+    J.yoneda ⋙ sheafToPresheaf J (Type v) ≅ CategoryTheory.yoneda :=
   Iso.refl _
 
 /-- A variant of `yonedaCompSheafToPresheaf` with a raise in the universe level. -/
 @[simps!]
 def uliftYonedaCompSheafToPresheaf :
-    GrothendieckTopology.uliftYoneda.{w} J ⋙ sheafToPresheaf J Type (max v w) ≅
+    GrothendieckTopology.uliftYoneda.{w} J ⋙ sheafToPresheaf J (Type (max v w)) ≅
       CategoryTheory.uliftYoneda.{w} :=
   Iso.refl _
 
 /-- The yoneda functor into the sheaf category is fully faithful -/
 def yonedaFullyFaithful : (J.yoneda).FullyFaithful :=
-  Functor.FullyFaithful.ofCompFaithful (G := sheafToPresheaf J Type v) Yoneda.fullyFaithful
+  Functor.FullyFaithful.ofCompFaithful (G := sheafToPresheaf J (Type v)) Yoneda.fullyFaithful
 
 instance : (J.yoneda).Full := (J.yonedaFullyFaithful).full
 

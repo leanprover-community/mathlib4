@@ -70,7 +70,7 @@ lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c
   rintro ⟨W, a, ⟨i, ⟨b⟩⟩⟩
   simpa using h i =≫ F.1.map b.op
 
-lemma sections_ext (F : Sheaf J TypeCat) {x y : F.1.sections}
+lemma sections_ext (F : Sheaf J Type*) {x y : F.1.sections}
     (h : ∀ (i : I), x.1 (Opposite.op (Y i)) = y.1 (Opposite.op (Y i))) :
     x = y := by
   ext W

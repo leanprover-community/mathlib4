@@ -52,7 +52,7 @@ def homObjEquiv (F G A : C ⥤ Type w) : (HomObj F G A) ≃ (F ⊗ A ⟶ G) wher
     simpa using ConcreteCategory.congr_hom (a.naturality f y) x⟩
   invFun a := ⟨fun X y ↦ TypeCat.ofHom ⟨fun x ↦ a.app X (x, y)⟩, fun φ y ↦ by
     ext x
-    simpa using ConcreteCategory.congr_hom (a.naturality φ) (x, y)⟩
+    simpa using (a.naturality_apply φ) (x, y)⟩
   left_inv _ := by aesop
   right_inv _ := by aesop
 
@@ -91,7 +91,7 @@ end HomObj
 /-- The contravariant functor taking `A : C ⥤ Type w` to `HomObj F G A`, i.e. Hom(F ⊗ -, G). -/
 @[simps obj map]
 def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type (max w v' u) where
-  obj A := <| HomObj F G A.unop
+  obj A := HomObj F G A.unop
   map {A A'} f := TypeCat.ofHom ⟨fun x ↦
     { app := fun X a ↦ x.app X (f.unop.app _ a)
       naturality := fun {X Y} φ a ↦ by
@@ -165,13 +165,13 @@ lemma natTransEquiv_symm_app_app_apply (F G : C ⥤ D) (f : F ⟶ G)
 
 @[simp]
 lemma natTransEquiv_symm_whiskerRight_functorHom_app (K L : C ⥤ D) (X : C) (f : K ⟶ K)
-    (x : (𝟙_ _ ⊗ (K.functorHom L).obj X : TypeCat)) :
+    (x : 𝟙_ _ ⊗ (K.functorHom L).obj X) :
     ((natTransEquiv.symm f ▷ K.functorHom L).app X x) =
     (HomObj.ofNatTrans f, x.2) := rfl
 
 @[simp]
 lemma functorHom_whiskerLeft_natTransEquiv_symm_app (K L : C ⥤ D) (X : C) (f : L ⟶ L)
-    (x : ((K.functorHom L).obj X ⊗ 𝟙_ _ : TypeCat)) :
+    (x : (K.functorHom L).obj X ⊗ 𝟙_ _) :
     ((K.functorHom L ◁ natTransEquiv.symm f).app X x) =
     (x.1, HomObj.ofNatTrans f) := rfl
 
@@ -204,8 +204,6 @@ attribute [local simp] functorHom in
 instance : EnrichedCategory (C ⥤ Type (max v' v u)) (C ⥤ D) where
   Hom := functorHom
   id F := natTransEquiv.symm (𝟙 F)
-  comp F G H := { app _ := TypeCat.ofHom ⟨fun ⟨f, g⟩ ↦ f.comp g⟩ }
-  id_comp _ _ := by ext; simp [natTransEquiv]; rfl
-  comp_id _ _ := by ext; simp [natTransEquiv]; rfl
+  comp F G H := { app _ := TypeCat.ofHom ⟨fun f ↦ f.1.comp f.2⟩ }
 
 end CategoryTheory.Enriched.Functor

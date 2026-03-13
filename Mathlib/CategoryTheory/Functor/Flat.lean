@@ -411,7 +411,7 @@ instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)
     (costructuredArrowOpEquivalence _ _)] at h ⊢
   exact inferInstanceAs <| IsCofiltered (StructuredArrow (op X) (F.op ⋙ G.op))
 
-instance (G : D ⥤ TypeCat) [RepresentablyFlat F] [IsCofiltered G.Elements] :
+instance (G : D ⥤ Type*) [RepresentablyFlat F] [IsCofiltered G.Elements] :
     IsCofiltered (F ⋙ G).Elements := by
   suffices h : IsCofiltered (StructuredArrow (PUnit) (F ⋙ G)) from
     .of_equivalence (CategoryOfElements.structuredArrowEquivalence _).symm

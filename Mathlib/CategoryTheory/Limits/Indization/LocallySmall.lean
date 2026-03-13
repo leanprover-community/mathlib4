@@ -33,16 +33,16 @@ namespace CategoryTheory
 
 section
 
-variable {I : Type u₁} [Category.{v₁} I] [HasColimitsOfShape I Type v]
-  [HasLimitsOfShape Iᵒᵖ Type v]
+variable {I : Type u₁} [Category.{v₁} I] [HasColimitsOfShape I (Type v)]
+  [HasLimitsOfShape Iᵒᵖ (Type v)]
 variable {J : Type u₂} [Category.{v₂} J]
-  [HasLimitsOfShape Iᵒᵖ Type (max u v)]
+  [HasLimitsOfShape Iᵒᵖ (Type (max u v))]
 variable (F : I ⥤ C) (G : Cᵒᵖ ⥤ Type v)
 
 /-- Variant of `colimitYonedaHomIsoLimitOp`: natural transformations with domain
 `colimit (F ⋙ yoneda)` are equivalent to a limit in a lower universe. -/
 noncomputable def colimitYonedaHomEquiv :
-    (colimit (F ⋙ yoneda) ⟶ G) ≃ (limit (F.op ⋙ G) : TypeCat) :=
+    (colimit (F ⋙ yoneda) ⟶ G) ≃ (limit (F.op ⋙ G)) :=
   Equiv.symm <| Equiv.ulift.symm.trans <| Equiv.symm <| Iso.toEquiv <| calc
   (colimit (F ⋙ yoneda) ⟶ G) ≅ limit (F.op ⋙ G ⋙ uliftFunctor.{u}) :=
         colimitYonedaHomIsoLimitOp _ _
@@ -61,7 +61,7 @@ theorem colimitYonedaHomEquiv_π_apply (η : colimit (F ⋙ yoneda) ⟶ G) (i : 
     Iso.trans_def, Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, Iso.trans_inv, Iso.symm_inv,
     Category.assoc, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_mk, comp_apply,
     Equiv.ulift_apply, yoneda_obj_obj]
-  have (a : (limit ((F.op ⋙ G) ⋙ uliftFunctor.{u, v}) : TypeCat)) := congrArg ULift.down
+  have (a : limit ((F.op ⋙ G) ⋙ uliftFunctor.{u, v})) := congrArg ULift.down
     (ConcreteCategory.congr_hom (preservesLimitIso_inv_π uliftFunctor.{u, v} (F.op ⋙ G) i) a)
   refine Eq.trans (by convert this _) ?_
   erw [HasLimit.isoOfNatIso_hom_π_apply]

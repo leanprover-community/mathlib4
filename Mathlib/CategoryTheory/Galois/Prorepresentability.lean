@@ -304,7 +304,7 @@ noncomputable def endEquivSectionsFibers : End F ≃ (incl F ⋙ F').sections :=
   let i3 : (colimit ((incl F).op ⋙ coyoneda) ⟶ F') ≅
       limit ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}) :=
     colimitCoyonedaHomIsoLimit' (incl F) F'
-  let i4 : (limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) : TypeCat) ≃
+  let i4 : limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) ≃
       (((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections) :=
     Types.limitEquivSections (incl F ⋙ (F ⋙ FintypeCat.incl) ⋙ uliftFunctor.{u₁, u₂})
   let i5 : ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections ≃ (incl F ⋙ F').sections :=

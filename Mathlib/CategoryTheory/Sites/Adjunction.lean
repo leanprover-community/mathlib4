@@ -34,7 +34,7 @@ variable {F : D ⥤ E} {G : E ⥤ D}
 whose forgetful functor preserves the correct limits. -/
 abbrev sheafForget {FD : D → D → Type*} {CD : D → Type*}
     [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
-    [HasSheafCompose J (forget D)] : Sheaf J D ⥤ Sheaf J TypeCat :=
+    [HasSheafCompose J (forget D)] : Sheaf J D ⥤ Sheaf J (Type _) :=
   sheafCompose J (forget D)
 
 namespace Sheaf
