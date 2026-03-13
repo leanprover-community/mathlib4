@@ -327,34 +327,61 @@ theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
     Submodule.map_top, range_subtype, eq_comm (a := maximalIdeal R)]
   exact ⟨fun ⟨x, h⟩ ↦ ⟨_, h⟩, fun ⟨x, h⟩ ↦ ⟨⟨x, h ▸ subset_span (Set.mem_singleton x)⟩, h⟩⟩
 
+end IsLocalRing
+
 section spanRank
 
-open IsLocalRing
+open IsLocalRing TensorProduct Submodule
 
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+  {M : Type*} [AddCommGroup M] [Module R M] (N : Submodule R M)
+
+lemma TensorProduct.spanRank_baseChange_le : (N.baseChange A).spanRank ≤ N.spanRank.lift := by
+  obtain ⟨s, hs₁, hs₂⟩ := N.exists_span_set_card_eq_spanRank
+  grw [← hs₁, ← hs₂, baseChange_span, spanRank_span_le_card]
+  convert Cardinal.mk_image_le_lift (f := TensorProduct.mk R A M 1) (s := s)
+  · exact (Cardinal.lift_id' _).symm
+  · exact Cardinal.lift_umax.symm
+
+lemma TensorProduct.spanRank_top_le : (⊤ : Submodule A (A ⊗[R] N)).spanRank ≤ N.spanRank.lift := by
+  grw [← Submodule.baseChange_top, ← N.spanRank_top, spanRank_baseChange_le]
+
+lemma TensorProduct.spanFinrank_top_le (fg : N.FG) :
+    (⊤ : Submodule A (A ⊗[R] N)).spanFinrank ≤ N.spanFinrank := by
+  grw [spanFinrank, spanRank_top_le, Cardinal.toNat_lift, spanFinrank]
+  simp [Cardinal.lift_lt_aleph0, spanRank_finite_iff_fg.mpr fg]
+
+variable [IsLocalRing R]
+local notation "𝓀" => ResidueField R
+
+set_option backward.isDefEq.respectTransparency false in
+lemma TensorProduct.spanFinrank_top_eq_of_residueField (fg : N.FG) :
+    (⊤ : Submodule 𝓀 (𝓀 ⊗[R] N)).spanFinrank = N.spanFinrank := by
+  let : Module.Finite R N := Module.Finite.iff_fg.mpr fg
+  apply (TensorProduct.spanFinrank_top_le N fg).antisymm
+  obtain ⟨s, hs₁, hs₂⟩ := (⊤ : Submodule 𝓀 (𝓀 ⊗[R] N)).exists_span_set_card_eq_spanRank
+  have hs₃ : s.Finite := Cardinal.mk_lt_aleph0_iff.mp (by simpa [hs₁] using Module.Finite.fg_top)
+  let t := Function.surjInv (mk_surjective R N 𝓀 residue_surjective) '' s
+  have ht₁ : mk R 𝓀 N 1 '' t = s := by rw [← Set.image_comp, Function.comp_surjInv, s.image_id]
+  have ht₂ : span R t = ⊤ := by
+    rwa [← restrictScalars_eq_top_iff R, restrictScalars_span _ _ (by exact residue_surjective),
+      ← ht₁, ← map_span, map_tensorProduct_mk_eq_top] at hs₂
+  grw [← N.spanFinrank_top, ← ht₂, spanFinrank_span_le_ncard_of_finite (hs₃.image _), spanFinrank,
+    ← hs₁, Set.ncard_image_le hs₃]
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_eq_finrank_quotient {M : Type*} [AddCommGroup M] [Module R M]
     (N : Submodule R M) (fg : N.FG) : N.spanFinrank =
     Module.finrank (R ⧸ maximalIdeal R) (N ⧸ (maximalIdeal R) • (⊤ : Submodule R N)) := by
-  let : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
-  let fin : Module.Finite R N := Module.Finite.iff_fg.mpr fg
-  let mN := (maximalIdeal R) • (⊤ : Submodule R N)
-  have : (⊤ : Submodule R N).spanFinrank = N.spanFinrank := by simp [Submodule.spanFinrank]
-  rw [Module.finrank_eq_spanFinrank_of_free, ← this]
-  apply le_antisymm
-  · let s : Set (N ⧸ mN) := (⊤ : Submodule (R ⧸ maximalIdeal R) (N ⧸ mN)).generators
-    have fins : s.Finite := Module.Finite.fg_top.finite_generators
-    let t := Function.surjInv (Submodule.mkQ_surjective mN) '' s
-    have : Submodule.mkQ mN '' t = s := by rw [← s.image_comp, Function.comp_surjInv, s.image_id]
-    have eqtop : Submodule.span R t = ⊤ := by
-      rw [← IsLocalRing.map_mkQ_eq_top, Submodule.map_span, this, ← Submodule.coe_eq_univ,
-        ← Submodule.coe_span_eq_span_of_surjective R (R ⧸ maximalIdeal R)
-        Ideal.Quotient.mk_surjective, Submodule.coe_eq_univ, Submodule.span_generators _]
-    simp only [← eqtop, t]
-    grw [Submodule.spanFinrank_span_le_ncard_of_finite (fins.image _), Set.ncard_image_le fins,
-      Module.Finite.fg_top.generators_ncard]
-  · let f : N →ₛₗ[Ideal.Quotient.mk (maximalIdeal R)] (N ⧸ mN) := { __ := Submodule.mkQ _ }
-    convert Submodule.spanFinrank_map_le_of_fg f fin.1
-    symm
-    simpa [f, LinearMap.range_eq_top] using Submodule.mkQ_surjective _
+  let : Module 𝓀 (↥N ⧸ maximalIdeal R • (⊤ : Submodule R N)) :=
+    inferInstanceAs (Module (R ⧸ maximalIdeal R) _)
+  let : IsScalarTower R 𝓀 (N ⧸ maximalIdeal R • (⊤ : Submodule R N)) :=
+    inferInstanceAs (IsScalarTower R (R ⧸ maximalIdeal R) _)
+  rw [← spanFinrank_top_eq_of_residueField N fg, ← Module.finrank_eq_spanFinrank_of_free]
+  let e : 𝓀 ⊗[R] N ≃ₗ[𝓀] N ⧸ (maximalIdeal R) • (⊤ : Submodule R N) :=
+    (quotTensorEquivQuotSMul N (maximalIdeal R)).extendScalarsOfSurjective residue_surjective
+  exact e.finrank_eq
 
 lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (fg : (maximalIdeal R).FG) :
     (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
@@ -380,5 +407,3 @@ lemma spanFinrank_eq_of_ringEquiv {R' : Type*} [CommRing R'] [IsLocalRing R'] (e
   rw [eqmap, Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv]
 
 end spanRank
-
-end IsLocalRing
