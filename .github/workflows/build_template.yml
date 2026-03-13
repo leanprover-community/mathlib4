@@ -390,7 +390,7 @@ jobs:
 
           if [[ -n "$PREV_SHA" ]]; then
             # cf. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Mathlib.20has.20moved.20to.20the.20new.20module.20system/near/563452000
-            echo "Warming cache using previous commit: $PREV_SHA (source: $PREV_SHA_SOURCE)"
+            echo "Warming up cache using previous commit: $PREV_SHA (source: $PREV_SHA_SOURCE)"
             if git cat-file -e "$PREV_SHA^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$PREV_SHA"; then
               git checkout "$PREV_SHA"
               ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
