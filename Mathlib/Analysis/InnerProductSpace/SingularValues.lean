@@ -68,7 +68,7 @@ possibly-infinite-dimensional normed vector spaces
 singular values
 -/
 
-public section
+@[expose] public section
 
 open NNReal Module
 
