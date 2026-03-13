@@ -315,9 +315,8 @@ lemma spanRank_map_eq_of_injective [RingHomSurjective σ] (f : M →ₛₗ[σ] N
 lemma spanFinrank_map_eq_of_injective [RingHomSurjective σ] (f : M →ₛₗ[σ] L)
     (hf : Function.Injective f) {p : Submodule R M} (hp : p.FG) :
     (p.map f).spanFinrank = p.spanFinrank := by
-  rw [← (hp.map f).spanRank_eq_iff, ← Cardinal.lift_inj.{v, u}, Cardinal.lift_natCast,
-    ← Cardinal.lift_natCast.{v}, ← hp.spanRank_eq_spanFinrank]
-  exact lift_spanRank_map_eq_of_injective f hf p
+  rw [Submodule.spanFinrank, Submodule.spanFinrank, ← Cardinal.toNat_lift.{u, v},
+    ← Cardinal.toNat_lift.{v, u}, lift_spanRank_map_eq_of_injective f hf p]
 
 lemma spanRank_range_le [RingHomSurjective σ] (f : M →ₛₗ[σ] N) :
     (LinearMap.range f).spanRank ≤ (⊤ : Submodule R M).spanRank := by
@@ -371,22 +370,29 @@ lemma Ideal.lift_spanRank_map_le (f : R →+* T) (I : Ideal R) :
   rw [← map_span, ← submodule_span_eq, span_generators]
   exact mem_map_of_mem f hr
 
-open Submodule in
+lemma Ideal.lift_spanRank_map_eq_of_ringEquiv (f : R ≃+* T) (I : Ideal R) :
+    Cardinal.lift.{u} (I.map f).spanRank = Cardinal.lift.{v} I.spanRank := by
+  apply (I.lift_spanRank_map_le (f : R →+* T)).antisymm
+  nth_rw 1 [← Ideal.map_of_equiv f (I := I)]
+  exact Ideal.lift_spanRank_map_le (f.symm : T →+* R) _
+
 lemma Ideal.spanRank_map_le (f : R →+* S) (I : Ideal R) : (I.map f).spanRank ≤ I.spanRank := by
   simpa using I.lift_spanRank_map_le f
 
-open Submodule in
+lemma Ideal.spanRank_map_eq_of_ringEquiv (f : R ≃+* S) (I : Ideal R) :
+    (I.map f).spanRank = I.spanRank := by
+  simpa using I.lift_spanRank_map_eq_of_ringEquiv f
+
 lemma Ideal.spanFinrank_map_le_of_fg (f : R →+* T) {I : Ideal R} (hI : I.FG) :
     (I.map f).spanFinrank ≤ I.spanFinrank := by
   rw [← Submodule.FG.spanRank_le_iff (hI.map f), ← Cardinal.lift_le.{u}, Cardinal.lift_natCast,
     ← Cardinal.lift_natCast.{v}, ← Submodule.FG.spanRank_eq_spanFinrank hI]
   exact I.lift_spanRank_map_le f
 
-lemma Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv (f : R ≃+* T) {I : Ideal R} (hI : I.FG) :
+lemma Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv (f : R ≃+* T) {I : Ideal R} :
     (I.map f).spanFinrank = I.spanFinrank := by
-  apply (I.spanFinrank_map_le_of_fg (f : R →+* T) hI).antisymm
-  nth_rw 1 [← Ideal.map_of_equiv f (I := I)]
-  exact Ideal.spanFinrank_map_le_of_fg (f.symm : T →+* R) (hI.map (f : R →+* T))
+  rw [Submodule.spanFinrank, Submodule.spanFinrank, ← Cardinal.toNat_lift.{u, v},
+    ← Cardinal.toNat_lift.{v, u}, I.lift_spanRank_map_eq_of_ringEquiv f]
 
 end Ideal
 
