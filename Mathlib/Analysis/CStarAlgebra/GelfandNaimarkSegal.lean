@@ -131,7 +131,6 @@ lemma leftMulMapPreGNS_mul_eq_comp (a b : A) :
     f.leftMulMapPreGNS (a * b) = f.leftMulMapPreGNS a ∘L f.leftMulMapPreGNS b := by
   ext c; simp [mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The non-unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on
 a Hilbert space that is constructed from a positive linear functional `f` on a possibly non-unital
@@ -167,7 +166,6 @@ noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] 
     | hp => apply isClosed_eq <;> fun_prop
     | ih x y => simp [mul_assoc, preGNS_inner_def]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma gnsNonUnitalStarAlgHom_apply {a : A} :
     f.gnsNonUnitalStarAlgHom a = (f.leftMulMapPreGNS a).completion := rfl
 
@@ -186,7 +184,6 @@ private lemma gnsNonUnitalStarAlgHom_map_one : f.gnsNonUnitalStarAlgHom 1 = 1 :=
   | hp => apply isClosed_eq <;> fun_prop
   | ih b => simp [gnsNonUnitalStarAlgHom]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on a Hilbert
 space that is constructed from a positive linear functional `f` on a unital C⋆-algebra.

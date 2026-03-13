@@ -154,7 +154,6 @@ lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
   exact fderivWithin_eq_fderiv (uniqueDiffOn_Icc zero_lt_one _ hz)
     (ContinuousAffineMap.differentiableAt _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An inner product vector space is a Riemannian manifold, i.e., the distance between two points
 is the infimum of the lengths of paths between these points. -/
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by

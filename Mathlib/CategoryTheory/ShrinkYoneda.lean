@@ -19,7 +19,7 @@ file `CategoryTheory.Yoneda` for the other variants `yoneda` and
 
 @[expose] public section
 
-universe w w' v u
+universe w w' w'' v u
 
 namespace CategoryTheory
 
@@ -50,6 +50,16 @@ noncomputable def shrinkMap {F G : C ⥤ Type w'} (τ : F ⟶ G) [FunctorToTypes
     [FunctorToTypes.Small.{w} G] :
     shrink.{w} F ⟶ shrink.{w} G where
   app X := equivShrink.{w} _ ∘ τ.app X ∘ (equivShrink.{w} _).symm
+
+/-- Shrinking `F` to `Type w` followed by universe lifting is the same as shrinking to
+`Type (max w w')`. -/
+@[simps!]
+noncomputable
+def shrinkCompUliftFunctorIso (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F]
+    [FunctorToTypes.Small.{max w w''} F] :
+    shrink.{w} F ⋙ uliftFunctor.{w'', w} ≅ shrink.{max w w''} F :=
+  NatIso.ofComponents
+    (fun X ↦ Equiv.toIso ((Equiv.ulift.trans (equivShrink _).symm).trans (equivShrink _)))
 
 end FunctorToTypes
 
@@ -160,6 +170,16 @@ instance : (shrinkYoneda.{w} (C := C)).Faithful := (fullyFaithfulShrinkYoneda C)
 
 instance : (shrinkYoneda.{w} (C := C)).Full := (fullyFaithfulShrinkYoneda C).full
 
+set_option backward.isDefEq.respectTransparency false in
+/-- `shrinkYoneda` is compatible with `uliftFunctor`. -/
+noncomputable
+def shrinkYonedaUliftFunctorIso [LocallySmall.{max w w'} C] :
+    shrinkYoneda.{w} ⋙ (Functor.whiskeringRight Cᵒᵖ _ _).obj uliftFunctor.{w', w} ≅
+      shrinkYoneda :=
+  NatIso.ofComponents
+    (fun X ↦ FunctorToTypes.shrinkCompUliftFunctorIso.{w, v} (yoneda.obj X))
+    fun _ ↦ by ext; simp [shrinkYoneda]
+
 /-- `uliftYoneda` identifies to `shrinkYoneda`. -/
 noncomputable def uliftYonedaIsoShrinkYoneda :
     uliftYoneda.{w'} (C := C) ≅ shrinkYoneda.{max w' v} :=
@@ -181,5 +201,15 @@ noncomputable def shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor (Y :
       ext ⟨g⟩
       obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
       simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])
+
+/-- `shrinkYoneda.obj X` is represented by `X`. -/
+@[simps]
+noncomputable
+def shrinkYonedaRepresentableBy (X : C) : (shrinkYoneda.{w}.obj X).RepresentableBy X where
+  homEquiv := shrinkYonedaObjObjEquiv.symm
+  homEquiv_comp := shrinkYonedaObjObjEquiv_symm_comp
+
+instance (X : C) : (shrinkYoneda.{w}.obj X).IsRepresentable :=
+  (shrinkYonedaRepresentableBy X).isRepresentable
 
 end CategoryTheory

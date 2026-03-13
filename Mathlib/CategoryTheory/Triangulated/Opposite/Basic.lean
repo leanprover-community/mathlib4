@@ -334,10 +334,7 @@ lemma shift_opShiftFunctorEquivalence_counitIso_inv_app
     shift_shiftFunctorCompIsoId_hom_app, op_comp, unop_comp, Quiver.Hom.unop_op,
     Functor.map_comp, Iso.inv_hom_id_app_assoc, Functor.op_obj]
   apply Quiver.Hom.unop_inj
-  dsimp
-  simp only [Category.assoc, ← Functor.map_comp_assoc, Iso.unop_hom_inv_id_app_assoc]
-  congr 3
-  exact (NatIso.naturality_1 (shiftFunctorCompIsoId C n (-n) (by lia)) _).symm
+  simp
 
 /-- Given objects `X` and `Y` in `Cᵒᵖ`, this is the bijection
 `(op (X.unop⟦n⟧) ⟶ Y) ≃ (X ⟶ Y⟦n⟧)` for any `n : ℤ`. -/
