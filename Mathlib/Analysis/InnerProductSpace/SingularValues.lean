@@ -178,24 +178,19 @@ theorem card_support_singularValues : T.singularValues.support.card = finrank �
   have (i : Fin _) : hT.eigenvalues rfl i = 0 ↔ hT.eigenvalues rfl i ≤ 0 := by
     grind [T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i]
   have : T.singularValues.support.attachFin hS = ({i | hT.eigenvalues rfl i = (0 : 𝕜)} : Finset _)ᶜ
-    := by ext i; simp [T.singularValues_fin rfl, this]
-  rw [← T.singularValues.support.card_attachFin hS]
-  rw [this]
-  rw [Finset.card_compl, Fintype.card_fin]
-  rw [hT.card_filter_eigenvalues_eq rfl (μ := 0) sorry, End.eigenspace_zero]
-  rw [← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker]
-  rw [add_tsub_cancel_right]
-  rw [T.range_adjoint_comp_self', finrank_range_adjoint]
+    := by ext; simp [T.singularValues_fin rfl, this]
+  rw [← T.singularValues.support.card_attachFin hS, this, Finset.card_compl, Fintype.card_fin,
+    hT.card_filter_eigenvalues_eq rfl (μ := 0) sorry, Module.End.eigenspace_zero,
+    ← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker, add_tsub_cancel_right,
+    T.range_adjoint_comp_self', finrank_range_adjoint]
 
-theorem isLowerSet_support_singularValues
-  : IsLowerSet (T.singularValues.support : Set ℕ) := by
+theorem isLowerSet_support_singularValues : IsLowerSet (T.singularValues.support : Set ℕ) := by
   intro a b hl ha
   rw [Finset.mem_coe, Finsupp.mem_support_iff, ← zero_lt_iff] at ⊢ ha
   order [T.singularValues_antitone hl]
 
 @[simp]
-theorem support_singularValues
-  : T.singularValues.support = Finset.range (finrank 𝕜 (range T)) := by
+theorem support_singularValues : T.singularValues.support = Finset.range (finrank 𝕜 (range T)) := by
   obtain h | ⟨n, hn⟩ := T.isLowerSet_support_singularValues.eq_univ_or_Iio
   · have : (Set.univ : Set ℕ).Finite := h ▸ Finset.finite_toSet _
     have : (Set.univ : Set ℕ).Infinite := Set.infinite_univ
