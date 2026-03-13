@@ -113,7 +113,7 @@ variable {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (
   (f₅₆ : i₄ ⟶ i₆) (h₅₆ : f₅ ≫ f₆ = f₅₆)
   (n₀ n₁ n₂ n₃ n₄ : ℤ)
 
-/-- The short complex `E^{n₁}(f₅, f₆, f₇) ⟶ E^{n₀}(f₃, f₄, f₅) ⟶ E^{n₂}(f₁, f₂, f₃)`
+/-- The short complex `E^{n-1}(f₅, f₆, f₇) ⟶ E^{n}(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)`
 given by the differentials of a spectral object. -/
 @[simps!]
 noncomputable def dShortComplex
