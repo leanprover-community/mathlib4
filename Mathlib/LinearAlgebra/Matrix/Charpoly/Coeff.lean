@@ -85,8 +85,6 @@ theorem charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤
   apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) ?_
   rw [Nat.cast_le]; apply h
 
-@[deprecated (since := "2025-08-14")] alias det_of_card_zero := det_eq_one_of_card_eq_zero
-
 @[simp]
 theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.degree = Fintype.card n := by
@@ -146,6 +144,7 @@ theorem trace_eq_neg_charpoly_nextCoeff (M : Matrix n n R) : M.trace = -M.charpo
   nontriviality
   simp [trace_eq_neg_charpoly_coeff, nextCoeff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
     M.det = (-1) ^ Fintype.card n * M.charpoly.coeff 0 := by
   rw [coeff_zero_eq_eval_zero, charpoly, eval_det, matPolyEquiv_charmatrix, ← det_smul]
@@ -230,6 +229,7 @@ lemma charpoly_fin_two [Nontrivial R] (M : Matrix (Fin 2) (Fin 2) R) :
 
 end Matrix
 
+set_option backward.isDefEq.respectTransparency false in
 theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [CommRing K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
@@ -248,7 +248,7 @@ namespace Matrix
 is equivalent to a polynomial with degree less than the dimension of the matrix. -/
 theorem aeval_eq_aeval_mod_charpoly (M : Matrix n n R) (p : R[X]) :
     aeval M p = aeval M (p %ₘ M.charpoly) :=
-  (aeval_modByMonic_eq_self_of_root M.charpoly_monic M.aeval_self_charpoly).symm
+  (aeval_modByMonic_eq_self_of_root M.aeval_self_charpoly).symm
 
 /-- Any matrix power can be computed as the sum of matrix powers less than `Fintype.card n`.
 
@@ -361,7 +361,7 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
   nontriviality R
   let p : R[X] := M.charpolyRev
   have hp : p - 1 = X * (p /ₘ X) := by
-    conv_lhs => rw [← modByMonic_add_div p monic_X]
+    conv_lhs => rw [← modByMonic_add_div p X]
     simp [p, modByMonic_X]
   have : IsNilpotent (p /ₘ X) :=
     (Polynomial.isUnit_iff'.mp (isUnit_charpolyRev_of_isNilpotent hM)).2

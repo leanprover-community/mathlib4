@@ -343,6 +343,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
   field_simp [n.factorial_ne_zero]
 
 /-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
+@[implicit_reducible]
 noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : Invertible (exp x)
     where
@@ -512,6 +513,7 @@ theorem exp_add_of_commute {x y : 𝔸} (hxy : Commute x y) : exp (x + y) = exp 
     ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
 
 /-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
+@[implicit_reducible]
 noncomputable def invertibleExp (x : 𝔸) : Invertible (exp x) :=
   invertibleExpOfMemBall <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
@@ -662,6 +664,7 @@ theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
     (expSeries 𝕂 𝔸 n fun _ => x) = expSeries 𝕂' 𝔸 n fun _ => x := by
   rw [expSeries_apply_eq, expSeries_apply_eq, inv_natCast_smul_eq 𝕂 𝕂']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of `Complex.ofReal_exp` for `NormedSpace.exp` instead of `Complex.exp` -/
 @[simp, norm_cast]
 theorem ofReal_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=

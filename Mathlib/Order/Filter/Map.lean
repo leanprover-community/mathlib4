@@ -146,6 +146,10 @@ theorem eventually_pure {a : α} {p : α → Prop} : (∀ᶠ x in pure a, p x) �
   Iff.rfl
 
 @[simp]
+theorem frequently_pure {a : α} {p : α → Prop} : (∃ᶠ x in pure a, p x) ↔ p a := by
+  simp [Filter.Frequently]
+
+@[simp]
 theorem principal_singleton (a : α) : 𝓟 {a} = pure a :=
   Filter.ext fun s => by simp only [mem_pure, mem_principal, singleton_subset_iff]
 
@@ -189,6 +193,7 @@ an instance because its `Seq` projection is not equal to the `Filter.seq` functi
 section
 
 /-- The monad structure on filters. -/
+@[instance_reducible]
 protected def monad : Monad Filter where map := @Filter.map
 
 attribute [local instance] Filter.monad
@@ -664,6 +669,9 @@ theorem map_eq_bot_iff : map m f = ⊥ ↔ f = ⊥ :=
   ⟨by
     rw [← empty_mem_iff_bot, ← empty_mem_iff_bot]
     exact id, fun h => by simp only [h, map_bot]⟩
+
+@[simp]
+theorem bot_eq_map_iff : ⊥ = map m f ↔ f = ⊥ := by rw [eq_comm, map_eq_bot_iff]
 
 theorem map_neBot_iff (f : α → β) {F : Filter α} : NeBot (map f F) ↔ NeBot F := by
   simp only [neBot_iff, Ne, map_eq_bot_iff]

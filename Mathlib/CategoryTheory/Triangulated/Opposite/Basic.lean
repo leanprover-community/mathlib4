@@ -91,6 +91,7 @@ lemma shiftFunctorZero_op_hom_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).hom.app X = (shiftFunctorOpIso C 0 0 (zero_add 0)).hom.app X ≫
       ((shiftFunctorZero C ℤ).inv.app X.unop).op := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctorZero_op_inv_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).inv.app X =
       ((shiftFunctorZero C ℤ).hom.app X.unop).op ≫
@@ -111,6 +112,7 @@ lemma shiftFunctorAdd'_op_hom_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁
   rw [oppositeShiftFunctorAdd'_hom_app]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctorAdd'_op_inv_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁ + a₂ = a₃)
     (b₁ b₂ b₃ : ℤ) (h₁ : a₁ + b₁ = 0) (h₂ : a₂ + b₂ = 0) (h₃ : a₃ + b₃ = 0) :
     (shiftFunctorAdd' Cᵒᵖ a₁ a₂ a₃ h).inv.app X =
@@ -130,6 +132,7 @@ lemma shiftFunctor_op_map {K L : Cᵒᵖ} (φ : K ⟶ L) (n m : ℤ) (hnm : n + 
         (shiftFunctorOpIso C n m hnm).inv.app L :=
   (NatIso.naturality_2 (shiftFunctorOpIso C n m hnm) φ).symm
 
+set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 /-- The autoequivalence `Cᵒᵖ ≌ Cᵒᵖ` whose functor is `shiftFunctor Cᵒᵖ n` and whose inverse
 functor is `(shiftFunctor C n).op`. In most cases, it is not necessary to unfold the
@@ -204,12 +207,14 @@ lemma opShiftFunctorEquivalence_counitIso_hom_naturality (n : ℤ) {X Y : Cᵒ�
       (opShiftFunctorEquivalence C n).counitIso.hom.app X ≫ f :=
   (opShiftFunctorEquivalence C n).counitIso.hom.naturality f
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed in CategoryTheory/Triangulated/Opposite/Triangle.lean
 @[reassoc (attr := simp)]
 lemma opShiftFunctorEquivalence_counitIso_inv_naturality (n : ℤ) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     f ≫ (opShiftFunctorEquivalence C n).counitIso.inv.app Y =
       (opShiftFunctorEquivalence C n).counitIso.inv.app X ≫ f.unop⟦n⟧'.op⟦n⟧' :=
   (opShiftFunctorEquivalence C n).counitIso.inv.naturality f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma opShiftFunctorEquivalence_zero_unitIso_hom_app (X : Cᵒᵖ) :
     (opShiftFunctorEquivalence C 0).unitIso.hom.app X =
       ((shiftFunctorZero C ℤ).hom.app X.unop).op ≫
@@ -219,6 +224,7 @@ lemma opShiftFunctorEquivalence_zero_unitIso_hom_app (X : Cᵒᵖ) :
   rw [shiftFunctorZero_op_inv_app, unop_comp, Quiver.Hom.unop_op, Functor.map_comp,
     shiftFunctorCompIsoId_zero_zero_hom_app, assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma opShiftFunctorEquivalence_zero_unitIso_inv_app (X : Cᵒᵖ) :
     (opShiftFunctorEquivalence C 0).unitIso.inv.app X =
       (((shiftFunctorZero Cᵒᵖ ℤ).hom.app X).unop⟦(0 : ℤ)⟧').op ≫
@@ -228,6 +234,7 @@ lemma opShiftFunctorEquivalence_zero_unitIso_inv_app (X : Cᵒᵖ) :
   rw [shiftFunctorZero_op_hom_app, unop_comp, Quiver.Hom.unop_op, Functor.map_comp,
     shiftFunctorCompIsoId_zero_zero_inv_app, assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma opShiftFunctorEquivalence_add_unitIso_hom_app_eq
     (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p := by lia) :
     (opShiftFunctorEquivalence C p).unitIso.hom.app X =
@@ -248,6 +255,7 @@ lemma opShiftFunctorEquivalence_add_unitIso_hom_app_eq
   rw [Category.assoc, Category.assoc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma opShiftFunctorEquivalence_add_unitIso_inv_app_eq
     (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p := by lia) :
     (opShiftFunctorEquivalence C p).unitIso.inv.app X =
@@ -289,6 +297,7 @@ lemma opShiftFunctorEquivalence_counitIso_hom_app_shift (X : Cᵒᵖ) (n : ℤ) 
       ((opShiftFunctorEquivalence C n).unitIso.inv.app X)⟦n⟧' :=
   (opShiftFunctorEquivalence C n).counit_app_functor X
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftFunctorCompIsoId_op_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0 := by lia) :
     (shiftFunctorCompIsoId Cᵒᵖ n m hnm).hom.app X =
@@ -298,6 +307,7 @@ lemma shiftFunctorCompIsoId_op_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 
   simp [shiftFunctorCompIsoId, shiftFunctorZero_op_hom_app X,
     shiftFunctorAdd'_op_inv_app X n m 0 hnm m n 0 hnm (by lia) (add_zero 0)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftFunctorCompIsoId_op_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0 := by lia) :
     (shiftFunctorCompIsoId Cᵒᵖ n m hnm).inv.app X =
@@ -305,8 +315,9 @@ lemma shiftFunctorCompIsoId_op_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 
         (shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op (X.unop⟦m⟧)) ≫
           ((shiftFunctorOpIso C n m hnm).inv.app X)⟦m⟧' := by
   simp [shiftFunctorCompIsoId, shiftFunctorZero_op_inv_app X,
-    shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by omega) (add_zero 0)]
+    shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by lia) (add_zero 0)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shift_opShiftFunctorEquivalence_counitIso_inv_app
     (X : C) (m n : ℤ) (hmn : m + n = 0 := by lia) :
@@ -323,10 +334,7 @@ lemma shift_opShiftFunctorEquivalence_counitIso_inv_app
     shift_shiftFunctorCompIsoId_hom_app, op_comp, unop_comp, Quiver.Hom.unop_op,
     Functor.map_comp, Iso.inv_hom_id_app_assoc, Functor.op_obj]
   apply Quiver.Hom.unop_inj
-  dsimp
-  simp only [Category.assoc, ← Functor.map_comp_assoc, Iso.unop_hom_inv_id_app_assoc]
-  congr 3
-  exact (NatIso.naturality_1 (shiftFunctorCompIsoId C n (-n) (by lia)) _).symm
+  simp
 
 /-- Given objects `X` and `Y` in `Cᵒᵖ`, this is the bijection
 `(op (X.unop⟦n⟧) ⟶ Y) ≃ (X ⟶ Y⟦n⟧)` for any `n : ℤ`. -/
@@ -347,6 +355,7 @@ lemma opShiftFunctorEquivalenceSymmHomEquiv_left_inv
       (opShiftFunctorEquivalenceSymmHomEquiv f).unop⟦n⟧' = f.unop :=
   Quiver.Hom.op_inj (opShiftFunctorEquivalenceSymmHomEquiv.left_inv f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shift_opShiftFunctorEquivalenceSymmHomEquiv_unop
     {n : ℤ} {X Y : Cᵒᵖ} (f : Opposite.op (X.unop⟦n⟧) ⟶ Y) :

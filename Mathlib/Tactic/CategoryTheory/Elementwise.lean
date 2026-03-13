@@ -38,8 +38,8 @@ public meta section
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
-namespace Tactic.Elementwise
 open CategoryTheory
+namespace Mathlib.Tactic.Elementwise
 
 section theorems
 
@@ -74,7 +74,7 @@ def elementwiseThms : List Name :=
 /--
 Given an equation `f = g` between morphisms `X ⟶ Y` in a category `C`
 (possibly after a `∀` binder), produce the equation `∀ (x : X), f x = g x` or
-`∀ FC CC _ [ConreteCategory C FC] (x : X), f x = g x` as needed (after the `∀` binder), but
+`∀ FC CC _ [ConcreteCategory C FC] (x : X), f x = g x` as needed (after the `∀` binder), but
 with compositions fully right associated and identities removed.
 
 Returns the proof of the new theorem along with (optionally) a new level metavariable
@@ -256,4 +256,4 @@ elab "elementwise_of% " t:term : term => do
   let (pf, _) ← elementwiseExpr .anonymous e (simpSides := false)
   return pf
 
-end Tactic.Elementwise
+end Mathlib.Tactic.Elementwise

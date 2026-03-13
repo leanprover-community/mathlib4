@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.LocalProperties.Reduced
 # Strongly transcendental elements
 
 In this file, we provide basic properties for strongly transcendental elements in an algebra.
-This is a relatively niche notion, but is useful for proving Zarkisi's main theorem.
+This is a relatively niche notion, but is useful for proving Zariski's main theorem.
 
 ## Reference
 - https://stacks.math.columbia.edu/tag/00PZ
@@ -77,12 +77,12 @@ lemma IsStronglyTranscendental.of_isLocalization_left [Algebra S T] (M : Submono
     {x : T} (h : IsStronglyTranscendental R x) :
     IsStronglyTranscendental S x := by
   intro t p hp
-  obtain ⟨a, ha⟩ := IsLocalization.integerNormalization_map_to_map M p
-  have H : aeval x (IsLocalization.integerNormalization M p) = a.1 • aeval x p := by
-    simpa [AlgHom.map_smul_of_tower] using congr(aeval x $ha)
+  obtain ⟨a, ha₁, ha₂⟩ := IsLocalization.integerNormalization_spec M p
+  have H : aeval x (IsLocalization.integerNormalization M p) = a • aeval x p := by
+    simpa [AlgHom.map_smul_of_tower] using congr(aeval x $ha₂)
   have := h t (IsLocalization.integerNormalization M p) (by simp [H, hp])
-  rw [IsScalarTower.algebraMap_eq R S T, ← map_map, ha] at this
-  rw [← (((IsLocalization.map_units S a).map (algebraMap S T)).map C).mul_right_inj]
+  rw [IsScalarTower.algebraMap_eq R S T, ← map_map, ha₂] at this
+  rw [← (((IsLocalization.map_units S ⟨a, ha₁⟩).map (algebraMap S T)).map C).mul_right_inj]
   simpa [Algebra.smul_def, mul_assoc] using this
 
 lemma IsStronglyTranscendental.restrictScalars [Algebra S T] [IsScalarTower R S T]
@@ -119,6 +119,7 @@ lemma IsStronglyTranscendental.of_transcendental {K : Type*} [Field K] [Algebra 
   rw [← isStronglyTranscendental_iff_of_field] at H
   exact .of_map (f := IsScalarTower.toAlgHom R S K) (FaithfulSMul.algebraMap_injective _ _) H
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00Q0]
 lemma isStronglyTranscendental_mk_of_mem_minimalPrimes [IsReduced S]
     {x : S} (hx : IsStronglyTranscendental R x) (q : Ideal S) (hq : q ∈ minimalPrimes S) :
