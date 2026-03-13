@@ -143,7 +143,7 @@ lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
     (hc : IsLimit ((forget).mapCone c)) :
     Nonempty (IsLimit c) ↔ c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
   refine ⟨fun ⟨hc⟩ ↦ induced_of_isLimit _ hc, fun h ↦ ⟨?_⟩⟩
-  refine .ofIsoLimit (isLimitConeOfForget _ hc) (Cones.ext ?_ ?_)
+  refine .ofIsoLimit (isLimitConeOfForget _ hc) (Cone.ext ?_ ?_)
   · refine TopCat.isoOfHomeo
       { toEquiv := .refl _,
         continuous_toFun := h ▸ by fun_prop,
@@ -271,7 +271,7 @@ end IsColimit
 lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forget).mapCocone c)) :
     Nonempty (IsColimit c) ↔ c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   refine ⟨fun ⟨hc⟩ ↦ coinduced_of_isColimit _ hc, fun h ↦ ⟨?_⟩⟩
-  refine .ofIsoColimit (isColimitCoconeOfForget _ hc) (Cocones.ext ?_ ?_)
+  refine .ofIsoColimit (isColimitCoconeOfForget _ hc) (Cocone.ext ?_ ?_)
   · refine TopCat.isoOfHomeo
       { toEquiv := .refl _,
         continuous_toFun := h ▸ by fun_prop,

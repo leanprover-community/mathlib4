@@ -101,7 +101,7 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
   have πX_gen : (MeasurableSpace.pi.comap fun ω i ↦ X i ω) = generateFrom πX := by
     rw [generateFrom_squareCylinders.symm, MeasurableSpace.comap_generateFrom]
     rfl
-  -- To prove independence, we prove independence of the generating π-system with the `σ`-alebra.
+  -- To prove independence, we prove independence of the generating π-system with the `σ`-algebra.
   refine IndepSets.indep (measurable_pi_iff.2 hX).comap_le hY.comap_le
     πX_pi (@isPiSystem_measurableSet Ω (.comap Y inferInstance)) πX_gen
     (@generateFrom_measurableSet Ω (.comap Y inferInstance)).symm ?_

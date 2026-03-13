@@ -78,7 +78,6 @@ abbrev Completion := v.1.Completion
 
 namespace Completion
 
-set_option backward.isDefEq.respectTransparency false in
 instance : NormedField v.Completion :=
   letI := v.isometry_embedding.isUniformInducing.completableTopField
   UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
@@ -277,7 +276,6 @@ variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) [w.1.LiesOver
 
 attribute [local instance] WithAbs.algebraLeft
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
     simpa [WithAbs.norm_eq_apply_ofAbs] using
