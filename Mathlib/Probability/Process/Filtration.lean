@@ -399,16 +399,6 @@ def natural (u : (i : ι) → Ω → β i) (hum : ∀ i, StronglyMeasurable (u i
     rintro j _ s ⟨t, ht, rfl⟩
     exact (hum j).measurable ht
 
-lemma MeasureTheory.Filtration.natural_eq_comap {Ω ι : Type*} {m : MeasurableSpace Ω}
-    {β : ι → Type*} [(i : ι) → TopologicalSpace (β i)]
-    [∀ (i : ι), TopologicalSpace.MetrizableSpace (β i)]
-    [mβ : (i : ι) → MeasurableSpace (β i)] [∀ (i : ι), BorelSpace (β i)] [Preorder ι]
-    (u : (i : ι) → Ω → β i)
-    (hum : ∀ (i : ι), StronglyMeasurable (u i)) (i : ι) :
-    Filtration.natural u hum i = .comap (fun ω (j : Set.Iic i) ↦ u j ω) inferInstance := by
-  simp_rw [Filtration.natural, MeasurableSpace.comap_process, iSup_subtype']
-  rfl
-
 section
 
 open MeasurableSpace
