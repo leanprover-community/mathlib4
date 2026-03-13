@@ -20,7 +20,7 @@ These results are in a separate file to avoid heavy topology imports.
 
 namespace ContinuousLinearMap
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [TopologicalSpace M] [T1Space M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [TopologicalSpace M] [T0Space M]
   [ContinuousConstSMul R M] [IsTopologicalAddGroup M] (f : M →L[R] M) (μ : R) (n : ℕ)
 
 open Module End
