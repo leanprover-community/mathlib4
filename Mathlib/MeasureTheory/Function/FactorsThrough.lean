@@ -52,6 +52,7 @@ theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
   borelize Z
   exact hg.measurable.factorsThrough
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then there exists some strongly measurable function `h : Y → Z` such that `g = h ∘ f`. -/
 theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] [TopologicalSpace Z]

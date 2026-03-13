@@ -88,6 +88,7 @@ variable {R X}
 theorem Rel.addLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a + b) (a + c) := by
   rw [add_comm _ b, add_comm _ c]; exact h.add_right _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
   simpa only [neg_one_smul] using h.smul (-1)
 
@@ -216,6 +217,7 @@ def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X) where
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `X ↦ FreeLieAlgebra R X` from the category of types to the category of Lie
 algebras over `R` is adjoint to the forgetful functor in the other direction. -/
 def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where

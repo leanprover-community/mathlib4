@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 

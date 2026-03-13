@@ -62,11 +62,12 @@ open Limits Opposite
 variable {C : Type u} [Category.{v} C]
   {J : GrothendieckTopology C}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     [HasWeakSheafify J (Type v)]
     (F : Sheaf J (Type v)) (sq : Square C) :
     (sq.op.map ((yoneda ⋙ presheafToSheaf J _).op ⋙ yoneda.obj F)).IsPullback ↔
-      (sq.op.map F.val).IsPullback := by
+      (sq.op.map F.obj).IsPullback := by
   refine Square.IsPullback.iff_of_equiv _ _
     (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
     (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv)
@@ -107,7 +108,7 @@ a square `sq` such that `sq.f₁₃` is a mono and that for every
 sheaf of types `F`, the square `sq.op.map F.val` is a pullback square. -/
 @[simps toSquare]
 noncomputable def mk' (sq : Square C) [Mono sq.f₁₃]
-    (H : ∀ (F : Sheaf J (Type v)), (sq.op.map F.val).IsPullback) :
+    (H : ∀ (F : Sheaf J (Type v)), (sq.op.map F.obj).IsPullback) :
     J.MayerVietorisSquare where
   toSquare := sq
   isPushout := by
@@ -115,6 +116,7 @@ noncomputable def mk' (sq : Square C) [Mono sq.f₁₃]
     intro F
     exact (F.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff sq).2 (H F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for Mayer-Vietoris squares taking as an input
 a pullback square `sq` such that `sq.f₂₄` and `sq.f₃₄` are two monomorphisms
 which form a covering of `S.X₄`. -/
@@ -133,9 +135,9 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
           · obtain rfl : a = b := by simpa only [← cancel_mono sq.f₂₄] using fac
             rfl
           · obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' h₁.isLimit _ _ fac
-            simpa using s.condition =≫ F.val.map φ.op
+            simpa using s.condition =≫ F.obj.map φ.op
           · obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' h₁.isLimit _ _ fac.symm
-            simpa using s.condition.symm =≫ F.val.map φ.op
+            simpa using s.condition.symm =≫ F.obj.map φ.op
           · obtain rfl : a = b := by simpa only [← cancel_mono sq.f₃₄] using fac
             rfl)) (fun _ ↦ ?_) (fun _ ↦ ?_) (fun s m hm₁ hm₂ ↦ ?_)
     · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left
@@ -213,12 +215,12 @@ lemma map_f₃₄_op_glue : P.map S.f₃₄.op (h.glue u v huv) = v :=
 end SheafCondition
 
 lemma sheafCondition_of_sheaf {A : Type u'} [Category.{v} A]
-    (F : Sheaf J A) : S.SheafCondition F.val := by
+    (F : Sheaf J A) : S.SheafCondition F.obj := by
   rw [sheafCondition_iff_comp_coyoneda]
   intro X
   exact (Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff _ S.toSquare).1
     (S.isPushout.op.map
-      (yoneda.obj ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (F.cond X.unop)⟩))
+      (yoneda.obj ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (F.property X.unop)⟩))
 
 end
 
@@ -246,6 +248,7 @@ noncomputable def shortComplex :
   zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Mono S.shortComplex.f := by
   have : Mono (S.shortComplex.f ≫ biprod.snd) := by
     dsimp

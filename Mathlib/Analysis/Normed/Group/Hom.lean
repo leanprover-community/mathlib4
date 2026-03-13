@@ -354,7 +354,7 @@ variable (V)
 /-- The identity as a continuous normed group hom. -/
 @[simps!]
 def id : NormedAddGroupHom V V :=
-  (AddMonoidHom.id V).mkNormedAddGroupHom 1 (by simp [le_refl])
+  (AddMonoidHom.id V).mkNormedAddGroupHom 1 (by simp)
 
 /-- The norm of the identity is at most `1`. It is in fact `1`, except when the norm of every
 element vanishes, where it is `0`. (Since we are working with seminorms this can happen even if the

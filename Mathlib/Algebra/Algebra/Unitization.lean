@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.Star.Module
+public import Mathlib.Algebra.Star.StarProjection
 public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Tactic.Abel
@@ -127,6 +128,9 @@ theorem inl_injective [Zero A] : Function.Injective (inl : R → Unitization R A
 
 theorem inr_injective [Zero R] : Function.Injective ((↑) : A → Unitization R A) :=
   Function.LeftInverse.injective <| snd_inr _
+
+@[simp, norm_cast] theorem inr_inj (R : Type*) {A : Type*} [Zero R] {x y : A} :
+    (inr x : Unitization R A) = inr y ↔ x = y := inr_injective.eq_iff
 
 instance instNontrivialLeft {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
     Nontrivial (Unitization 𝕜 A) :=
@@ -393,7 +397,7 @@ section
 
 variable (R)
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_mul [MulZeroClass R] [AddZeroClass A] [Mul A] [SMulWithZero R A] (a₁ a₂ : A) :
     (↑(a₁ * a₂) : Unitization R A) = a₁ * a₂ :=
   ext (mul_zero _).symm <|
@@ -561,6 +565,7 @@ variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
   [IsScalarTower R A A] [SMulCommClass R A A] [Algebra S R] [DistribMulAction S A]
   [IsScalarTower S R A]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAlgebra : Algebra S (Unitization R A) where
   algebraMap := (Unitization.inlRingHom R A).comp (algebraMap S R)
   commutes' := fun s x => by
@@ -692,6 +697,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
     simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Non-unital algebra homomorphisms from `A` into a unital `R`-algebra `C` lift uniquely to
 `Unitization R A →ₐ[R] C`. This is the universal property of the unitization. -/
 @[simps! apply symm_apply apply_apply]
@@ -719,6 +725,7 @@ variable {R A C : Type*} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [St
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [Semiring C] [Algebra R C] [StarRing C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See note [partially-applied ext lemmas] -/
 @[ext]
 theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
@@ -729,6 +736,7 @@ theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
 
 variable [StarModule R C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
 @[simps! apply symm_apply apply_apply]
@@ -742,7 +750,8 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
   right_inv := fun φ => Unitization.algHom_ext'' <| by
     simp }
 
-@[simp high]
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
 theorem starLift_symm_apply_apply (φ : Unitization R A →⋆ₐ[R] C) (a : A) :
     Unitization.starLift.symm φ a = φ a :=
   rfl
@@ -767,6 +776,7 @@ This sends `φ : A →⋆ₙₐ[R] B` to a map `Unitization R A →⋆ₐ[R] Uni
 def starMap (φ : A →⋆ₙₐ[R] B) : Unitization R A →⋆ₐ[R] Unitization R B :=
   Unitization.starLift <| (Unitization.inrNonUnitalStarAlgHom R B).comp φ
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp high]
 lemma starMap_inr (φ : A →⋆ₙₐ[R] B) (a : A) :
     starMap φ (inr a) = inr (φ a) := by
@@ -777,6 +787,7 @@ lemma starMap_inl (φ : A →⋆ₙₐ[R] B) (r : R) :
     starMap φ (inl r) = algebraMap R (Unitization R B) r := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `φ : A →⋆ₙₐ[R] B` is injective, the lift `starMap φ : Unitization R A →⋆ₐ[R] Unitization R B`
 is also injective. -/
 lemma starMap_injective {φ : A →⋆ₙₐ[R] B} (hφ : Function.Injective φ) :
@@ -847,5 +858,14 @@ lemma isIdempotentElem_inr_iff (R : Type*) {A : Type*} [MulZeroClass R]
   simp only [IsIdempotentElem, ← inr_mul, inr_injective.eq_iff]
 
 alias ⟨_, IsIdempotentElem.inr⟩ := isIdempotentElem_inr_iff
+
+@[grind =]
+lemma isStarProjection_inr_iff {R A : Type*} [Semiring R] [StarRing R] [NonUnitalSemiring A]
+    [StarRing A] [Module R A] {p : A} :
+    IsStarProjection (p : Unitization R A) ↔ IsStarProjection p := by
+  simp [isStarProjection_iff]
+
+protected alias ⟨_root_.IsStarProjection.of_inr, _root_.IsStarProjection.inr⟩ :=
+  isStarProjection_inr_iff
 
 end Unitization

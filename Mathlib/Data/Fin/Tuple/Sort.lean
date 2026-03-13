@@ -46,6 +46,7 @@ def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
 -/
 def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]

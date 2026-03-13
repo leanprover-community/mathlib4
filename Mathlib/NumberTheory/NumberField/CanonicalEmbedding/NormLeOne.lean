@@ -221,7 +221,7 @@ def expMap_single (w : InfinitePlace K) : OpenPartialHomeomorph ℝ ℝ where
   left_inv' _ _ := by simp only [Real.log_exp, mul_inv_cancel_left₀ mult_coe_ne_zero]
   right_inv' _ h := by simp only [inv_mul_cancel_left₀ mult_coe_ne_zero, Real.exp_log h]
   continuousOn_toFun := (continuousOn_const.mul continuousOn_id).rexp
-  continuousOn_invFun := continuousOn_const.mul (Real.continuousOn_log.mono (by aesop))
+  continuousOn_invFun := continuousOn_const.mul (Real.continuousOn_log.mono (by simp))
 
 /--
 The derivative of `expMap_single`, see `hasDerivAt_expMap_single`.
@@ -324,6 +324,7 @@ variable [NumberField K]
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 A fixed equiv between `Fin (rank K)` and `{w : InfinitePlace K // w ≠ w₀}`.
@@ -348,8 +349,8 @@ linearly independent, see `linearIndependent_completeFamily`.
 -/
 def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
   toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
-  map_add' := fun _ _ ↦ funext fun _ ↦ by simpa [sum_add_distrib] using by ring
-  map_smul' := fun _ _ ↦ funext fun _ ↦ by simpa [← mul_sum] using by ring
+  map_add' := fun _ _ ↦ funext fun _ ↦ by simp [sum_add_distrib]; ring
+  map_smul' := fun _ _ ↦ funext fun _ ↦ by simp [← mul_sum]; ring
 
 theorem realSpaceToLogSpace_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
     realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl

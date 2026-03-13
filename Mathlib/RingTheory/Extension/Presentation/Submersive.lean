@@ -132,6 +132,7 @@ can be expressed in matrix form.
 noncomputable def jacobiMatrix : Matrix σ σ P.Ring :=
   LinearMap.toMatrix P.basis P.basis P.differential
 
+set_option backward.isDefEq.respectTransparency false in
 lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMatrix.det := by
   simp [jacobiMatrix, jacobian]
 
@@ -179,8 +180,8 @@ section Constructions
 
 /-- Transport a pre-submersive presentation along an algebra isomorphism. -/
 @[simps toPresentation map]
-def ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
-    (e : S ≃ₐ[R] T) :
+noncomputable def ofAlgEquiv
+    (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     PreSubmersivePresentation R T ι σ where
   __ := P.toPresentation.ofAlgEquiv e
   map := P.map
@@ -192,6 +193,7 @@ lemma jacobiMatrix_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Typ
     (P.ofAlgEquiv e).jacobiMatrix = P.jacobiMatrix :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T]
     [Algebra R T] (e : S ≃ₐ[R] T) [Finite σ] :
@@ -439,6 +441,7 @@ lemma jacobiMatrix_reindex {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ)
   simp [jacobiMatrix_apply,
     MvPolynomial.pderiv_rename e.symm.injective, reindex, Presentation.reindex]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma jacobian_reindex (P : PreSubmersivePresentation R S ι σ)
     {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ) [Finite σ] [Finite σ'] :
@@ -509,8 +512,8 @@ section Constructions
 variable {R S ι σ} in
 /-- Transport a submersive presentation along an algebra isomorphism. -/
 @[simps toPreSubmersivePresentation]
-def ofAlgEquiv (P : SubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
-    (e : S ≃ₐ[R] T) :
+noncomputable def ofAlgEquiv
+    (P : SubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     SubmersivePresentation R T ι σ where
   __ := P.toPreSubmersivePresentation.ofAlgEquiv e
   jacobian_isUnit := by simp [P.jacobian_isUnit]
@@ -582,6 +585,7 @@ noncomputable def reindex (P : SubmersivePresentation R S ι σ)
   __ := P.toPreSubmersivePresentation.reindex e f
   jacobian_isUnit := by simp [P.jacobian_isUnit]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S = 0`, this is the submersive presentation on one generator and one relation. -/
 @[simps]
 noncomputable def ofSubsingleton [Subsingleton S] : SubmersivePresentation R S PUnit PUnit where

@@ -70,7 +70,7 @@ lemma mconv_dirac [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] (x : M) :
 @[to_additive (attr := simp)]
 lemma dirac_mconv_dirac [MeasurableMul₂ M] (x y : M) :
     (dirac x) ∗ₘ (dirac y) = dirac (x * y) := by
-  rw [mconv_dirac, map_dirac (by fun_prop)]
+  rw [mconv_dirac, map_dirac' (by fun_prop)]
 
 /-- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
 @[to_additive (attr := simp)

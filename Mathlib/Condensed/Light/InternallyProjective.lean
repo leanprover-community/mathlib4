@@ -19,7 +19,7 @@ projective, namely the following:
 `internallyProjective_iff_tensor_condition`: `P : LightCondMod R` is internally projective if and
 only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : P ⊗ R[S] ⟶ B`, there exists a `S' : LightProfinite`
-with a surjeciton `π : S' ⟶ S` and a morphism `g' : P ⊗ R[S'] ⟶ A`, making the diagram
+with a surjection `π : S' ⟶ S` and a morphism `g' : P ⊗ R[S'] ⟶ A`, making the diagram
 ```
 P ⊗ R[S'] --> A
   |           |
@@ -48,16 +48,16 @@ namespace LightCondensed
 
 /--
 The `S`-valued points of the internal hom `A ⟶[LightCondMod R] B` are in bijection with
-morpisms `A ⊗ R[S] ⟶ B`.
+morphisms `A ⊗ R[S] ⟶ B`.
 -/
 noncomputable def ihomPoints (A B : LightCondMod.{u} R) (S : LightProfinite) :
-    (A ⟶[LightCondMod R] B).val.obj ⟨S⟩ ≃ ((A ⊗ ((free R).obj S.toCondensed)) ⟶ B) :=
+    (A ⟶[LightCondMod R] B).obj.obj ⟨S⟩ ≃ ((A ⊗ ((free R).obj S.toCondensed)) ⟶ B) :=
   (((freeForgetAdjunction R).homEquiv _ _).trans
     (coherentTopology _).yonedaEquiv).symm.trans
       ((ihom.adjunction A).homEquiv _ _).symm
 
 lemma ihomPoints_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
-    (x : (A ⟶[LightCondMod R] B).val.obj ⟨S⟩) :
+    (x : (A ⟶[LightCondMod R] B).obj.obj ⟨S⟩) :
     ihomPoints R A B S x = (MonoidalClosed.uncurry (((freeForgetAdjunction R).homEquiv _ _).symm
       ((coherentTopology LightProfinite.{u}).yonedaEquiv.symm x))) :=
   rfl
@@ -68,21 +68,23 @@ lemma ihomPoints_symm_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
       ((freeForgetAdjunction R).homEquiv _ _ (MonoidalClosed.curry x)) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A ⟶ B)
-    (x : (P ⟶[LightCondMod R] A).val.obj ⟨S⟩) :
-    (((ihom P).map e).val.app ⟨S⟩) x = (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
+    (x : (P ⟶[LightCondMod R] A).obj.obj ⟨S⟩) :
+    (((ihom P).map e).hom.app ⟨S⟩) x = (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
   apply (ihomPoints R P B S).injective
   simp only [ihomPoints_apply, Equiv.apply_symm_apply, ← MonoidalClosed.uncurry_natural_right,
     ← Adjunction.homEquiv_naturality_right_symm]
   congr
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')
     (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
     (ihomPoints R P B S).symm (P ◁ (free R).map (lightProfiniteToLightCondSet.map π) ≫ f) =
-      ((P ⟶[LightCondMod R] B).val.map π.op) ((ihomPoints R P B S').symm f) := by
-  have : (lightProfiniteToLightCondSet.map π).val.app (Opposite.op S) (𝟙 S) =
-      S'.toCondensed.val.map π.op (𝟙 S') := rfl
+      ((P ⟶[LightCondMod R] B).obj.map π.op) ((ihomPoints R P B S').symm f) := by
+  have : (lightProfiniteToLightCondSet.map π).hom.app (Opposite.op S) (𝟙 S) =
+      S'.toCondensed.obj.map π.op (𝟙 S') := rfl
   simp [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
     GrothendieckTopology.yonedaEquiv_apply, this]
   rfl
@@ -91,7 +93,7 @@ lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (�
 `P : LightCondMod R` is internally projective if and
 only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : P ⊗ R[S] ⟶ B`, there exists a `S' : LightProfinite`
-with a surjeciton `π : S' ⟶ S` and a morphism `g' : P ⊗ R[S'] ⟶ A`, making the diagram
+with a surjection `π : S' ⟶ S` and a morphism `g' : P ⊗ R[S'] ⟶ A`, making the diagram
 ```
 P ⊗ R[S'] --> A
   |           |
@@ -130,7 +132,7 @@ lemma internallyProjective_iff_tensor_condition (P : LightCondMod R) : Internall
 `P : LightCondMod R` is internally projective if and
 only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[S] ⊗ P ⟶ B`, there exists a `S' : LightProfinite`
-with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[S'] ⊗ P ⟶ A`, making the diagram
+with a surjection `π : S' ⟶ S` and a morphism `g' : R[S'] ⊗ P ⟶ A`, making the diagram
 ```
 R[S'] ⊗ P --> A
   |           |
@@ -155,11 +157,12 @@ lemma internallyProjective_iff_tensor_condition' (P : LightCondMod R) : Internal
     refine ⟨S', π, hπ, (β_ _ _).hom ≫ g', ?_⟩
     simp [← hh]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a `P : LightCondSet`, the light free light condensed module `R[P]` is internally projective if
 and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[P × S] ⟶ B`, there exists a `S' : LightProfinite`
-with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[P × S'] ⟶ A`, making the diagram
+with a surjection `π : S' ⟶ S` and a morphism `g' : R[P × S'] ⟶ A`, making the diagram
 ```
 R[P × S'] --> A
   |           |
@@ -196,7 +199,7 @@ lemma free_internallyProjective_iff_tensor_condition (P : LightCondSet.{u}) :
 Given a `P : LightCondSet`, the light free light condensed module `R[P]` is internally projective if
 and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[S × P] ⟶ B`, there exists a `S' : LightProfinite`
-with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[S' × P] ⟶ A`, making the diagram
+with a surjection `π : S' ⟶ S` and a morphism `g' : R[S' × P] ⟶ A`, making the diagram
 ```
 R[S' × P] --> A
   |           |
@@ -232,7 +235,7 @@ lemma free_internallyProjective_iff_tensor_condition' (P : LightCondSet.{u}) :
 Given a `P : LightProfinite`, the light free light condensed module `R[P]` is internally projective
 if and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[P × S] ⟶ B`, there exists a `S' : LightProfinite`
-with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[P × S'] ⟶ A`, making the diagram
+with a surjection `π : S' ⟶ S` and a morphism `g' : R[P × S'] ⟶ A`, making the diagram
 ```
 R[P × S'] --> A
   |           |
@@ -266,7 +269,7 @@ lemma free_lightProfinite_internallyProjective_iff_tensor_condition (P : LightPr
 Given a `P : LightProfinite`, the light free light condensed module `R[P]` is internally projective
 if and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[S × P] ⟶ B`, there exists a `S' : LightProfinite`
-with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[S' × P] ⟶ A`, making the diagram
+with a surjection `π : S' ⟶ S` and a morphism `g' : R[S' × P] ⟶ A`, making the diagram
 ```
 R[S' × P] --> A
   |           |

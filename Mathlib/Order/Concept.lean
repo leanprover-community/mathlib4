@@ -180,7 +180,11 @@ theorem intent_injective : Injective (@intent α β r) := fun _ _ => ext'
 /-- Copy a concept, adjusting definitional equalities. -/
 @[simps!]
 def copy (c : Concept α β r) (e : Set α) (i : Set β) (he : e = c.extent) (hi : i = c.intent) :
-    Concept α β r := ⟨e, i, he ▸ hi ▸ c.upperPolar_extent, he ▸ hi ▸ c.lowerPolar_intent⟩
+    Concept α β r where
+  extent := e
+  intent := i
+  upperPolar_extent := he ▸ hi ▸ c.upperPolar_extent
+  lowerPolar_intent := he ▸ hi ▸ c.lowerPolar_intent
 
 theorem copy_eq (c : Concept α β r) (e : Set α) (i : Set β) (he hi) : c.copy e i he hi = c := by
   ext; simp_all
@@ -312,12 +316,9 @@ instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConcept with
     sup := Concept.instSupConcept.max
-    le_sSup := fun _ _ hc => intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
-    sSup_le := fun _ _ hc =>
-      intent_subset_intent_iff.1 <| subset_iInter₂ fun d hd => intent_subset_intent_iff.2 <| hc d hd
+    isLUB_sSup _ := .of_image (f := fun x ↦ toDual x.intent) intent_subset_intent_iff isLUB_biSup
     inf := Concept.instInfConcept.min
-    sInf_le := fun _ _ => biInter_subset_of_mem
-    le_sInf := fun _ _ => subset_iInter₂ }
+    isGLB_sInf _ := .of_image extent_subset_extent_iff isGLB_biInf }
 
 @[simp]
 theorem extent_top : (⊤ : Concept α β r).extent = univ :=
@@ -368,6 +369,24 @@ theorem extent_sInf (S : Set (Concept α β r)) : (sInf S).extent = ⋂ c ∈ S,
 theorem intent_sInf (S : Set (Concept α β r)) :
     (sInf S).intent = upperPolar r (⋂ c ∈ S, extent c) :=
   rfl
+
+@[simp]
+theorem extent_iSup (f : ι → Concept α β r) :
+    (⨆ i, f i).extent = lowerPolar r (⋂ i, (f i).intent) := by
+  simp_rw [iSup, extent_sSup, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem intent_iSup (f : ι → Concept α β r) : (⨆ i, f i).intent = ⋂ i, (f i).intent := by
+  simp_rw [iSup, intent_sSup, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem extent_iInf (f : ι → Concept α β r) : (⨅ i, f i).extent = ⋂ i, (f i).extent := by
+  simp_rw [iInf, extent_sInf, ← Set.iInf_eq_iInter, iInf_range]
+
+@[simp]
+theorem intent_iInf (f : ι → Concept α β r) :
+    (⨅ i, f i).intent = upperPolar r (⋂ i, (f i).extent) := by
+  simp_rw [iInf, intent_sInf, ← Set.iInf_eq_iInter, iInf_range]
 
 instance : Inhabited (Concept α β r) :=
   ⟨⊥⟩
