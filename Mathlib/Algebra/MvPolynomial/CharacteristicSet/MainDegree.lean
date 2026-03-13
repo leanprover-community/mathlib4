@@ -56,15 +56,11 @@ theorem mainDegree_eq_zero_iff : p.mainDegree = 0 ↔ p.mainVariable = ⊥ where
     match hc : p.mainVariable with
     | ⊥ => rfl
     | some c => by
-      simp only [mainDegree_of_mainVariable_isSome hc, degreeOf_eq_sup] at h
-      rewrite [← Nat.bot_eq_zero, Finset.sup_eq_bot_iff] at h
-      simp only [mem_support_iff, ne_eq, Nat.bot_eq_zero] at h
-      have : ⊥ < p.mainVariable := by rewrite [hc]; exact compareOfLessAndEq_eq_lt.mp rfl
-      rcases (Finset.le_sup_iff this).mp le_rfl with ⟨t, ht1, ht2⟩
-      absurd (Finset.sup_le_iff.mp <| le_of_eq hc) t ht1
-      have h := Finsupp.notMem_support_iff.mpr (h t <| mem_support_iff.mp ht1)
-      have : c ≠ t.support.max := by contrapose! h; exact Finset.mem_of_max h.symm
-      exact not_le_of_gt <| lt_of_le_of_ne (le_of_eq_of_le hc.symm ht2) this
+      rewrite [mainDegree_of_mainVariable_isSome hc, degreeOf] at h
+      have : c ∉ p.degrees := by simpa only [Multiset.count_eq_zero] using h
+      have hc := Finset.mem_of_max hc
+      simp only [vars, Multiset.mem_toFinset] at hc
+      exact absurd hc this
   mpr h := by rw [mainDegree, h]
 
 theorem mainDegree_eq_zero_iff' : p.mainDegree = 0 ↔ (∃ r : R, p = C r) :=

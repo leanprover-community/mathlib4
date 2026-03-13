@@ -465,7 +465,8 @@ theorem mainVariable_initial_lt (hp : p.mainVariable ≠ ⊥) :
   intro i hi
   have hs : s.support.max ≤ c := by
     rewrite [hc, mainVariable]
-    apply Finset.le_sup <| mem_support_iff.mpr hs.1
+    apply Finset.max_mono
+    exact (support_subset_vars_of_mem_support (mem_support_iff.mpr hs.1))
   have := le_trans (Finset.le_max hi.2) hs
   exact lt_of_le_of_ne (WithBot.coe_le_coe.mp this) hi.1
 
