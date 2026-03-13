@@ -56,7 +56,6 @@ multiple `Fin` types.
 noncomputable def singularValues : ℕ →₀ ℝ≥0 :=
   Finsupp.embDomain Fin.valEmbedding <|
     Finsupp.ofSupportFinite
-      -- TODO: Consider using `NNReal.sqrt` and pushing the coercion inside.
       (fun i ↦ Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i))
       (Set.toFinite _)
 
