@@ -667,7 +667,7 @@ def lmul'' : S ⊗[R] S →ₐ[S] S :=
     (fun a₁ a₂ b₁ b₂ => by simp [mul_mul_mul_comm]) <| by simp
 
 theorem lmul''_eq_lid_comp_mapOfCompatibleSMul :
-    lmul'' R = (TensorProduct.lid S S).toAlgHom.comp (mapOfCompatibleSMul _ _ _ _ _) := by
+    lmul'' R = (TensorProduct.lid S S).toAlgHom.comp (mapOfCompatibleSMul ..) := by
   ext; rfl
 
 /-- `LinearMap.mul'` as an `AlgHom` over the base ring. -/

@@ -310,7 +310,7 @@ variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
 /-- If M and N are both R- and A-modules and their actions on them commute,
 and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
 canonical S-linear map from `M ⊗[A] N` to `M ⊗[R] N`,
-where `S` is another ring whose actions on `M` and `N` commute with the `A`-actions. -/
+where `S` is any other ring acting on `M` and whose action commute with the `A` and `R`-actions. -/
 def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
   __ :=
     lift (σ₁₂ := RingHom.id A)

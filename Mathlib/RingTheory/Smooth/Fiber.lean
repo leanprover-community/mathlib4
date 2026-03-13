@@ -227,7 +227,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
       ((TensorProduct.comm _ _ _).restrictScalars R).trans <|
       ((TensorProduct.congr (.refl (R := S)) e).restrictScalars R).trans <|
       ((TensorProduct.cancelBaseChange _ _ S _ _).restrictScalars R).trans <|
-      (TensorProduct.comm _ _ _).trans (TensorProduct.equivOfCompatibleSMul _ _ _ _ _)
+      (TensorProduct.comm _ _ _).trans (TensorProduct.equivOfCompatibleSMul ..)
     have : e'.toAlgHom.comp (IsScalarTower.toAlgHom R p.ResidueField _) =
         IsScalarTower.toAlgHom _ _ _ := by ext
     let e'' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[𝓀[Rp]] 𝓀[Rp] ⊗[Rp] Sq :=
