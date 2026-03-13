@@ -91,7 +91,7 @@ design decision.
 
 The singular values are zero-indexed, so `T.singularValues 0` refers to the first singular value.
 -/
-noncomputable def singularValues : ℕ →₀ ℝ≥0 :=
+@[no_expose] noncomputable def singularValues : ℕ →₀ ℝ≥0 :=
   Finsupp.embDomain Fin.valEmbedding <|
     Finsupp.ofSupportFinite
       (fun i ↦ Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i))
