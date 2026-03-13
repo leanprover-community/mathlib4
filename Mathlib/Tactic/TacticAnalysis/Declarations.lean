@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Tactic.TacticAnalysis
 public meta import Lean.Elab.Command
 public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Lean.Meta.Tactic.TryThis
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Util.ParseCommand
@@ -254,7 +255,7 @@ def Mathlib.TacticAnalysis.rwMerge : TacticAnalysis.Config := .ofComplex {
 
 /-- Suggest merging `tac; grind` into just `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.mergeWithGrind : Bool := {
-  defValue := false
+  defValue := true
 }
 
 private abbrev mergeWithGrindAllowed : Std.HashSet Name := { `«tactic#adaptation_note_» }
@@ -272,7 +273,10 @@ def Mathlib.TacticAnalysis.mergeWithGrind : TacticAnalysis.Config where
           catch _e =>
             pure [goal]
           if goals.isEmpty then
-            logWarningAt preI.tacI.stx m!"'{preI.tacI.stx}; grind' can be replaced with 'grind'"
+            if let some start := preI.tacI.stx.getPos? (canonicalOnly := false) then
+            if let some stop := postI.tacI.stx.getTailPos? (canonicalOnly := false) then
+            let synth := Lean.Syntax.setInfo (Lean.SourceInfo.synthetic start stop) preI.tacI.stx
+            Elab.Command.liftCoreM <| Tactic.TryThis.addSuggestion synth (← `(tactic | grind))
 
 /-- Suggest replacing a sequence of tactics with `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.terminalToGrind : Bool := {
