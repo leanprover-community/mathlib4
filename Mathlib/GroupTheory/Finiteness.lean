@@ -403,18 +403,6 @@ theorem Group.fg_iff' :
     Group.FG G ↔ ∃ (n : _) (S : Finset G), S.card = n ∧ Subgroup.closure (S : Set G) = ⊤ :=
   Group.fg_def.trans ⟨fun ⟨S, hS⟩ => ⟨S.card, S, rfl, hS⟩, fun ⟨_n, S, _hn, hS⟩ => ⟨S, hS⟩⟩
 
-/-- A group is finitely generated iff there exists a surjective homomorphism from a `FreeGroup`
-on finitely many generators. -/
-@[to_additive /-- An additive group is finitely generated iff there exists a surjective homomorphism
-from a `FreeAddGroup` on finitely many generators. -/]
-theorem Group.fg_iff_exists_freeGroup_hom_surjective :
-    Group.FG G ↔ ∃ (S : Set G) (_ : S.Finite) (φ : FreeGroup S →* G), Function.Surjective φ := by
-  refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, S.finite_toSet, FreeGroup.lift Subtype.val, ?_⟩, ?_⟩
-  · rwa [← MonoidHom.range_eq_top, ← FreeGroup.closure_eq_range]
-  · rintro ⟨S, hfin : Finite S, φ, hφ⟩
-    refine fg_iff.mpr ⟨φ '' Set.range FreeGroup.of, ?_, Set.toFinite _⟩
-    simp [← MonoidHom.map_closure, hφ, FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
-
 /-- A group is finitely generated if and only if it is finitely generated as a monoid. -/
 @[to_additive /-- An additive group is finitely generated if and only
 if it is finitely generated as an additive monoid. -/]
@@ -459,6 +447,17 @@ open FreeGroup in
 @[to_additive]
 instance (α : Type*) [Finite α] : Group.FG (FreeGroup α) :=
   Group.fg_iff.mpr ⟨Set.range of, closure_range_of α, Set.finite_range of⟩
+
+/-- A group is finitely generated iff there exists a surjective homomorphism from a `FreeGroup`
+on finitely many generators. -/
+@[to_additive /-- An additive group is finitely generated iff there exists a surjective homomorphism
+from a `FreeAddGroup` on finitely many generators. -/]
+theorem Group.fg_iff_exists_freeGroup_hom_surjective :
+    Group.FG G ↔ ∃ (S : Set G) (_ : S.Finite) (φ : FreeGroup S →* G), Function.Surjective φ := by
+  refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, S.finite_toSet, FreeGroup.lift Subtype.val, ?_⟩, ?_⟩
+  · rwa [← MonoidHom.range_eq_top, ← FreeGroup.closure_eq_range]
+  · rintro ⟨S, hfin : Finite S, φ, hφ⟩
+    exact Group.fg_of_surjective hφ
 
 /-- A group if finitely generated if and only if there exists a surjective homomorphism from a
 `FreeGroup` on an arbitrary finite type `α` to the group. -/
