@@ -294,7 +294,7 @@ lemma kfSc_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ :=
           (homOfLE (show data.i₀ r pq'' ≤ i₀' by
             simpa only [hi₀', data.i₀_prev r r' _ _ h] using data.le₀₁ r pq''))
           _ _ _ _ rfl _ _ _ _ _ n₀ n₁ n₂ (n₂ + 1),
-        Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id, ]
+        Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
       rw [hi₀', data.i₀_prev r r' _ _ h]
   · rw [ShortComplex.exact_iff_epi]; swap
     · exact (page X data r hr).shape _ _ h
