@@ -162,11 +162,21 @@ variable [DecidableEq ι]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Multivariate Gaussian measure on `EuclideanSpace ℝ ι` with mean `μ` and covariance
-matrix `S`. -/
+matrix `S`. This only makes sense when `S` is positive semidefinite,
+as then `CFC.sqrt S * CFC.sqrt S = S`. Otherwise `CFC.sqrt S = 0`, and
+`multivariateGaussian μ S = Measure.dirac μ` (see `multivariateGaussian_of_not_posSemidef`). -/
 noncomputable
 def multivariateGaussian (μ : EuclideanSpace ℝ ι) (S : Matrix ι ι ℝ) :
     Measure (EuclideanSpace ℝ ι) :=
   (stdGaussian (EuclideanSpace ℝ ι)).map (fun x ↦ μ + toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S) x)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma multivariateGaussian_of_not_posSemidef (μ : EuclideanSpace ℝ ι) {S : Matrix ι ι ℝ}
+    (hS : ¬ S.PosSemidef) : multivariateGaussian μ S = .dirac μ := by
+  rw [multivariateGaussian, CFC.sqrt, cfcₙ_apply_of_not_predicate]
+  · simp
+  change ¬ (S - 0).PosSemidef
+  simpa
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
