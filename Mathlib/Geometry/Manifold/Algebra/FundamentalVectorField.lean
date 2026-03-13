@@ -279,12 +279,12 @@ noncomputable def fundamentalVectorField
     {ι : Type*}
     (core : FiberBundleCore ι B F)
     [MulAction (MulOpposite G) (TotalSpace F core.Fiber)]
-    [ChartedSpace (ModelProd HG HF) (TotalSpace F core.Fiber)]
-    [IsManifold (IG.prod IF) ∞ (TotalSpace F core.Fiber)]
+    [ChartedSpace (ModelProd HB HF) (TotalSpace F core.Fiber)]
+    [IsManifold (IB.prod IF) ∞ (TotalSpace F core.Fiber)]
     (p : TotalSpace F core.Fiber) :
-    TangentSpace (IG.prod IF) p :=
+    TangentSpace (IB.prod IF) p :=
   have h : p <• (expLie (0 • A) : G) = p := by
     rw [zero_smul, expLie_zero]
     simp only [op_one, one_smul]
-  h ▸ (mfderiv 𝓘(ℝ, ℝ) (IG.prod IF) (fun t ↦ p <• (expLie (t • A) : G)) (0 : ℝ)
+  h ▸ (mfderiv 𝓘(ℝ, ℝ) (IB.prod IF) (fun t ↦ p <• (expLie (t • A) : G)) (0 : ℝ)
         (1 : TangentSpace 𝓘(ℝ, ℝ) (0 : ℝ)))
