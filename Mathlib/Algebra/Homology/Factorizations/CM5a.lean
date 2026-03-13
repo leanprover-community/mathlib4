@@ -214,7 +214,7 @@ instance : Mono (homologyMap (ι f n₁) n₁) := by
 end step₁
 
 open step₁ in
-lemma step₁ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
+public lemma step₁ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₀ F ∧ isIsoLE n₀ F ∧
       Mono (homologyMap F.obj.ι n₁) :=
