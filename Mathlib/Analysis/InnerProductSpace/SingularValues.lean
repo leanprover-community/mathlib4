@@ -157,8 +157,8 @@ theorem singularValues_antitone : Antitone T.singularValues := by
 are only dim(domain(T)) singular values in [axler2024], so we modify the statement to account for
 this.
 -/
-theorem injective_theorem : Function.Injective T
-    ↔ 0 ∉ (Finset.range (finrank 𝕜 E)).image T.singularValues  := by
+theorem injective_iff_not_mem_image_range_singularValues
+  : Function.Injective T ↔ 0 ∉ (Finset.range (finrank 𝕜 E)).image T.singularValues := by
   have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 0 4
   rw [←injective_adjoint_comp_self_iff, ←ker_eq_bot, ←this, not_iff_not, Finset.mem_image]
   constructor
@@ -171,6 +171,9 @@ theorem injective_theorem : Function.Injective T
       simp [hz, ←T.sq_singularValues_of_lt rfl (Finset.mem_range.mp h)]]
     exact T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, Finset.mem_range.mp h⟩
 
+/--
+7.68(b) from [axler2024]. See also `LinearMap.support_singularValues` for a stronger statement.
+-/
 theorem card_support_singularValues : T.singularValues.support.card = finrank 𝕜 T.range := by
   have hS : ∀ m ∈ T.singularValues.support, m < finrank 𝕜 E := by
     grind [singularValues_of_finrank_le]
