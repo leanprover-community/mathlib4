@@ -721,10 +721,12 @@ theorem lift_typein_top {r : α → α → Prop} {s : β → β → Prop}
   f.subrelIso.ordinal_lift_type_eq
 
 @[simp]
-theorem type_lt_Iio (o : Ordinal.{u}) : typeLT (Iio o) = lift.{u + 1} o := by
+theorem typein_lt_ordinal (o : Ordinal.{u}) : typein LT.lt o = lift.{u + 1} o := by
   convert ToType.mk.toRelIsoLT.ordinal_lift_type_eq
-  · rw [lift_id'.{u, u+1}]
+  · rw [lift_id'.{u, u+1}, type_Iio_lt]
   · rw [type_toType]
+
+theorem type_lt_Iio (o : Ordinal.{u}) : typeLT (Iio o) = lift.{u + 1} o := by simp
 
 /-- Initial segment version of the lift operation on ordinals, embedding `Ordinal.{u}` in
 `Ordinal.{v}` as an initial segment when `u ≤ v`. -/
