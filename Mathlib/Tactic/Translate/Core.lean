@@ -865,7 +865,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
   trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
   let tgt_auto := GuessName.guessName t.guessNameData s
   let depth := cfg.tgt.getNumParts
-  let pre := Name.mapPrefix (findTranslationName? (← getEnv) t) pre
+  let pre := translateNamespace (← getEnv) pre
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   if res == src then
@@ -881,6 +881,13 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
   if cfg.tgt != .anonymous then
     trace[translate_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
+where
+  translateNamespace (env : Environment) (n : Name) : Name :=
+    let n' := Name.mapPrefix (findTranslationName? env t) n
+    if n' == n && isPrivateName n then
+      mkPrivateName env <| .mapPrefix (findTranslationName? env t) (privateToUserName n)
+    else
+      n'
 
 /-- Verify that the type of `srcDecl` translates to that of `tgtDecl`.
 Also try to autogenerate the `reorder` option for this translation. -/

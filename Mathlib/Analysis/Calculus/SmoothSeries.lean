@@ -97,7 +97,6 @@ theorem hasDerivAt_tsum_of_isPreconnected (hu : Summable u) (ht : IsOpen t)
       .of_norm_bounded hu fun n ↦ hg' n y hy
   · simpa
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Consider a series of functions `∑' n, f n x`. If the series converges at a
 point, and all functions in the series are differentiable with a summable bound on the derivatives,
 then the series converges everywhere. -/
@@ -118,7 +117,6 @@ theorem summable_of_summable_hasDerivAt (hu : Summable u)
   exact summable_of_summable_hasDerivAt_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hg n x) (fun n x _ => hg' n x) (mem_univ _) hg0 (mem_univ _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Consider a series of functions `∑' n, f n x`. If the series converges at a
 point, and all functions in the series are differentiable with a summable bound on the derivatives,
 then the series is differentiable and its derivative is the sum of the derivatives. -/
