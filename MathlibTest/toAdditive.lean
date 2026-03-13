@@ -893,3 +893,8 @@ def dontTranslateId {α} : α → α := id
 @[to_additive]
 theorem functionTypeMonoid {ι : Type*} {R : ι → Type*} [(i : ι) → Monoid (R i)] (i : ι)
   (a : R (dontTranslateId i)) : a * a = a * a := rfl
+
+class AddClass (α : Type) extends Add α where
+class MulClass (α : Type) extends Mul α where
+-- Test that the reserved `MulClass.mk.congr_simp` can be translated to `AddClass.mk.congr_cimp`
+attribute [to_additive existing] MulClass MulClass.mk.congr_simp
