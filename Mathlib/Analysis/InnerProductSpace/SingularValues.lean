@@ -189,43 +189,20 @@ theorem finrank_range_adjoint_comp_self :
   Module.finrank 𝕜 (range (adjoint T ∘ₗ T)) = Module.finrank 𝕜 (range T) := by
     rw [range_adjoint_comp_self', Module.finrank_range_adjoint]
 
--- TODO: Move to Mathlib.Analysis.InnerProductSpace.Spectrum
-theorem IsSymmetric.card_filter_eigenvalues_eq_zero
-  {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {n : ℕ} (hn : Module.finrank 𝕜 E = n)
-  : Finset.card {i : Fin n | ↑(hT.eigenvalues hn i) = (0 : 𝕜)} = Module.finrank 𝕜 (ker T) := by
-  rw [hT.card_filter_eigenvalues_eq hn (μ := 0) sorry]
-  rw [Module.End.eigenspace_zero]
-
 theorem helper₀ : ∀ m ∈ T.singularValues.support, m < Module.finrank 𝕜 E := sorry
 
-noncomputable def helper₁ := Finset.attachFin T.singularValues.support T.helper₀
-
-theorem test₂₅
-  : (T.singularValues.support.attachFin T.helper₀)
-    = ({i : Fin _ | ↑(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i) = (0 : 𝕜)}
-      : Finset (Fin _))ᶜ := by
-  ext i
-  have : 0 ≤ T.isSymmetric_adjoint_comp_self.eigenvalues rfl i :=
-    T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i
-  have : T.isSymmetric_adjoint_comp_self.eigenvalues rfl i = 0 ↔
-    T.isSymmetric_adjoint_comp_self.eigenvalues rfl i ≤ 0 := by constructor <;> order
-  simp [T.singularValues_fin rfl, this]
-
 theorem test₃ : T.singularValues.support.card = Module.finrank 𝕜 T.range := by
-  rw [← Module.finrank_range_adjoint, ← T.range_adjoint_comp_self']
-  rw [← T.singularValues.support.card_attachFin T.helper₀]
-  rw [T.test₂₅]
-  rw [Finset.card_compl]
-  rw [T.isSymmetric_adjoint_comp_self.card_filter_eigenvalues_eq_zero rfl]
-  rw [← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker]
-  simp
-
-theorem test₄ : T.singularValues.support.card = Module.finrank 𝕜 T.range := by
   calc
     T.singularValues.support.card = (T.singularValues.support.attachFin T.helper₀).card :=
       by exact (T.singularValues.support.card_attachFin (helper₀ T)).symm
     _ = ({i : Fin _ | ↑(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i) = (0 : 𝕜)}
-      : Finset (Fin _))ᶜ.card := by rw [test₂₅]
+      : Finset (Fin _))ᶜ.card := by
+      congr with i
+      have : 0 ≤ T.isSymmetric_adjoint_comp_self.eigenvalues rfl i :=
+        T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i
+      have : T.isSymmetric_adjoint_comp_self.eigenvalues rfl i = 0 ↔
+        T.isSymmetric_adjoint_comp_self.eigenvalues rfl i ≤ 0 := by constructor <;> order
+      simp [T.singularValues_fin rfl, this]
     _ = Module.finrank 𝕜 E - ({i : Fin _ | ↑(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i) = (0 : 𝕜)}
       : Finset (Fin _)).card := by rw [Finset.card_compl]; simp
     _ = Module.finrank 𝕜 E - Module.finrank 𝕜 (T.adjoint ∘ₗ T).ker := by
