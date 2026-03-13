@@ -102,6 +102,15 @@ lemma extendScalars_δ_tmul (M₁ M₂ : ModuleCat R) (m₁ : M₁) (m₂ : M₂
 noncomputable instance : (restrictScalars f).LaxMonoidal :=
   (extendRestrictScalarsAdj f).rightAdjointLaxMonoidal
 
+@[simp]
+lemma restrictScalars_η (r : R) :
+    ε (restrictScalars f) r = f r := by
+  letI := f.toAlgebra
+  dsimp [Adjunction.rightAdjointLaxMonoidal_ε]
+  rw [extendRestrictScalarsAdj_homEquiv_apply, extendScalars_η]
+  erw [AlgebraTensorModule.rid_tmul]
+  rw [RingHom.smul_toAlgebra, mul_one]
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrictScalars_μ_tmul (M₁ M₂ : ModuleCat S) (m₁ : M₁) (m₂ : M₂) :
