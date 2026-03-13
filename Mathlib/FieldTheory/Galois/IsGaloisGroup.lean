@@ -288,7 +288,6 @@ instance subgroup [hGKL : IsGaloisGroup G K L] :
   commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGaloisGroup H F L] :
     FixedPoints.intermediateField H = F := by
@@ -452,7 +451,6 @@ instance : SMul (G ⧸ N) F where
 lemma coe_quotient_smul (g : G) (x : F) :
     ((g : G ⧸ N) • x : F) = g • (x : L) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : MulSemiringAction (G ⧸ N) F where
   one_smul _ := Subtype.ext <| by rw [← QuotientGroup.mk_one, coe_quotient_smul, one_smul]
   smul_zero g := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp
@@ -468,38 +466,35 @@ instance [SMulCommClass G K L] : SMulCommClass (G ⧸ N) K F :=
 
 variable [hK : IsGaloisGroup G K L] [Finite G]
 
-set_option backward.isDefEq.respectTransparency false in
 instance quotient : IsGaloisGroup (G ⧸ N) K F where
-  faithful := ⟨fun {g₁} {g₂} ↦ Quotient.inductionOn₂' g₁ g₂ fun g₁ g₂ h ↦ by
+  faithful.eq_of_smul_eq_smul := fun {g₁} {g₂} ↦ Quotient.inductionOn₂' g₁ g₂ fun g₁ g₂ h ↦ by
     rw [QuotientGroup.eq, ← fixingSubgroup_fixedPoints G K L N, subgroup_iff.mp hF,
       mem_fixingSubgroup_iff]
     intro x hx
     rw [mul_smul, inv_smul_eq_iff]
-    simpa [eq_comm, coe_quotient_smul] using congr_arg Subtype.val <| h ⟨x, hx⟩⟩
+    simpa [eq_comm, coe_quotient_smul] using congr_arg Subtype.val <| h ⟨x, hx⟩
   commutes := inferInstance
-  isInvariant := ⟨fun x h ↦ by
+  isInvariant.isInvariant := fun x h ↦ by
     have : ∀ (g : G), g • (x : L) = x := fun g ↦ by
       simpa [coe_quotient_smul] using congr_arg Subtype.val (h g)
     obtain ⟨a, ha⟩ := hK.isInvariant.isInvariant x this
-    refine ⟨a, ?_⟩
-    apply FaithfulSMul.algebraMap_injective F L
-    rw [← IsScalarTower.algebraMap_apply, ha, IntermediateField.algebraMap_apply]⟩
+    refine ⟨a, FaithfulSMul.algebraMap_injective F L ?_⟩
+    rw [← IsScalarTower.algebraMap_apply, ha, IntermediateField.algebraMap_apply]
 
 variable (E : IntermediateField K L) (H : Subgroup G) [hE : IsGaloisGroup H E L]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotientMap (h : E ≤ F) :
     letI : Algebra E F := (IntermediateField.inclusion h).toAlgebra
     IsGaloisGroup (H.map (QuotientGroup.mk' N)) E F :=
   let hFN : IsGaloisGroup (G ⧸ N) K F := inferInstance
   let : Algebra E F := (IntermediateField.inclusion h).toAlgebra
-  { faithful := by have := hFN.faithful; exact inferInstance
+  { faithful := by have := hFN.faithful; infer_instance
     commutes := ⟨by
       intro ⟨_, g, hg, rfl⟩ x y
       exact FaithfulSMul.algebraMap_injective F L (hE.commutes.smul_comm ⟨g, hg⟩ x (y : L))⟩
     isInvariant := ⟨fun x h ↦ by
       obtain ⟨a, ha⟩ := hE.isInvariant.isInvariant x
-        fun ⟨g, hg⟩ ↦ congr_arg Subtype.val (h ⟨g, ⟨g, hg, rfl⟩⟩)
+        fun ⟨g, hg⟩ ↦ congr_arg Subtype.val (h ⟨g, g, hg, rfl⟩)
       have : IsScalarTower E F L := IsScalarTower.of_algebraMap_eq' rfl
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha, IntermediateField.algebraMap_apply])⟩⟩ }
