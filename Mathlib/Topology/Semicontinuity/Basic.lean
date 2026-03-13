@@ -888,36 +888,38 @@ theorem upperSemicontinuousOn_iff_preimage_Ici [LinearOrder β] :
 
 variable [PartialOrder β] [AddCommGroup β] [IsOrderedAddMonoid β]
 
-theorem upperSemicontinuousOn_iff_lowerSemiContinuousOn_neg :
-    UpperSemicontinuousOn f s ↔ LowerSemicontinuousOn (-f) s := by
+@[simp]
+theorem lowerSemicontinuousOn_neg_iff :
+    LowerSemicontinuousOn (-f) s ↔ UpperSemicontinuousOn f s := by
   simp_all only [lowerSemicontinuousOn_iff_preimage_Ioi, upperSemicontinuousOn_iff_preimage_Iio]
   refine ⟨fun h b => ?_, fun h b => ?_⟩
   · obtain ⟨u, ho, hu⟩ := h (-b)
-    exact ⟨u, ho, hu ▸ by simp [neg_eq_neg_comp, preimage_comp]⟩
+    exact ⟨u, ho, hu ▸ by simp [Pi.neg_eq_neg_comp, preimage_comp]⟩
   · obtain ⟨u, ho, hu⟩ := h (-b)
-    exact ⟨u, ho, hu ▸ by simp [neg_eq_neg_comp, preimage_comp]⟩
+    exact ⟨u, ho, hu ▸ by simp [Pi.neg_eq_neg_comp, preimage_comp]⟩
 
-alias ⟨UpperSemicontinuousOn.neg, _⟩ := upperSemicontinuousOn_iff_lowerSemiContinuousOn_neg
+alias ⟨_, UpperSemicontinuousOn.neg⟩ := lowerSemicontinuousOn_neg_iff
 
-theorem lowerSemicontinuousOn_iff_upperSemiContinuousOn_neg :
-    LowerSemicontinuousOn f s ↔ UpperSemicontinuousOn (-f) s := by
-  simp [upperSemicontinuousOn_iff_lowerSemiContinuousOn_neg,
-    upperSemicontinuousOn_iff_lowerSemiContinuousOn_neg]
+@[simp]
+theorem upperSemicontinuousOn_neg_iff :
+    UpperSemicontinuousOn (-f) s ↔ LowerSemicontinuousOn f s := by
+  simp [← lowerSemicontinuousOn_neg_iff]
 
-alias ⟨LowerSemicontinuousOn.neg, _⟩ := lowerSemicontinuousOn_iff_upperSemiContinuousOn_neg
+alias ⟨_, LowerSemicontinuousOn.neg⟩ := upperSemicontinuousOn_neg_iff
 
-theorem upperSemicontinuous_iff_lowerSemiContinuous_neg :
-    UpperSemicontinuous f ↔ LowerSemicontinuous (-f) := by
-  simp [← upperSemicontinuousOn_univ_iff, ← lowerSemicontinuousOn_univ_iff,
-    upperSemicontinuousOn_iff_lowerSemiContinuousOn_neg]
+@[simp]
+theorem lowerSemiContinuous_neg_iff :
+    LowerSemicontinuous (-f) ↔ UpperSemicontinuous f := by
+  simp [← upperSemicontinuousOn_univ_iff, ← lowerSemicontinuousOn_univ_iff]
 
-alias ⟨UpperSemicontinuous.neg, _⟩ := upperSemicontinuous_iff_lowerSemiContinuous_neg
+alias ⟨_, UpperSemicontinuous.neg⟩ := lowerSemiContinuous_neg_iff
 
-theorem lowerSemicontinuous_iff_upperSemiContinuous_neg :
-    LowerSemicontinuous f ↔ UpperSemicontinuous (-f) := by
-  simp [upperSemicontinuous_iff_lowerSemiContinuous_neg]
+@[simp]
+theorem upperSemiContinuous_neg_iff :
+    UpperSemicontinuous (-f) ↔ LowerSemicontinuous f := by
+  simp [← upperSemicontinuousOn_univ_iff, ← lowerSemicontinuousOn_univ_iff]
 
-alias ⟨LowerSemicontinuous.neg, _⟩ := lowerSemicontinuous_iff_upperSemiContinuous_neg
+alias ⟨_, LowerSemicontinuous.neg⟩ := upperSemiContinuous_neg_iff
 
 end
 
