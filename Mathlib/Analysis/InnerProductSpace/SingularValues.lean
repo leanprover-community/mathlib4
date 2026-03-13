@@ -17,7 +17,7 @@ between possibly-infinite-dimensional normed vector spaces; please see the docst
 
 public section
 
-open NNReal
+open NNReal Module
 
 namespace LinearMap
 open InnerProductSpace
@@ -71,7 +71,7 @@ lemma range_adjoint_comp_self' : range (adjoint T ∘ₗ T) = range (adjoint T) 
 Part of 7.64(d) from [axler2024]. See also `Module.finrank_range_adjoint_comp_self`.
 -/
 theorem _root_.Module.finrank_range_adjoint :
-    Module.finrank 𝕜 (range (adjoint T)) = Module.finrank 𝕜 (range T) := sorry
+    finrank 𝕜 (range (adjoint T)) = finrank 𝕜 (range T) := sorry
 
 /--
 The singular values of a finite dimensional linear map, ordered in descending order.
@@ -112,40 +112,40 @@ Together with `LinearMap.singularValues_of_finrank_le`, this characterizes the s
 You probably need to use `LinearMap.eigenvalues_adjoint_comp_self_nonneg` to make effective use
 of this.
 -/
-theorem singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
+theorem singularValues_fin {n : ℕ} (hn : finrank 𝕜 E = n) (i : Fin n)
   : T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) := by
   subst hn
   exact Finsupp.embDomain_apply_self _ _ i
 
-theorem singularValues_of_lt {n : ℕ} (hn : Module.finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
+theorem singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
     : T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩)
     := T.singularValues_fin hn ⟨i, hi⟩
 
 theorem singularValues_of_finrank_le {i : ℕ}
-  (hi : Module.finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
+  (hi : finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
   apply Finsupp.embDomain_notin_range
   simp [hi]
 
-theorem sq_singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
+theorem sq_singularValues_fin {n : ℕ} (hn : finrank 𝕜 E = n) (i : Fin n)
   : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn i := by
   simp [T.singularValues_fin hn, T.isPositive_adjoint_comp_self.nonneg_eigenvalues hn i]
 
-theorem sq_singularValues_of_lt {n : ℕ} (hn : Module.finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
+theorem sq_singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
   : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩ := by
   exact T.sq_singularValues_fin hn ⟨i, hi⟩
 
 theorem hasEigenvalue_adjoint_comp_self_sq_singularValues
-  {n : ℕ} (hn : n < Module.finrank 𝕜 E)
-  : Module.End.HasEigenvalue (adjoint T ∘ₗ T) ((T.singularValues n).toReal ^ 2) := by
+  {n : ℕ} (hn : n < finrank 𝕜 E)
+  : End.HasEigenvalue (adjoint T ∘ₗ T) ((T.singularValues n).toReal ^ 2) := by
   have hT := T.isSymmetric_adjoint_comp_self
   convert hT.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
   simp [← T.sq_singularValues_fin]
 
 theorem singularValues_antitone : Antitone T.singularValues := by
   intro i j hij
-  by_cases! hi : Module.finrank 𝕜 E ≤ i
+  by_cases! hi : finrank 𝕜 E ≤ i
   · rw [T.singularValues_of_finrank_le hi, T.singularValues_of_finrank_le (hi.trans hij)]
-  by_cases! hj : Module.finrank 𝕜 E ≤ j
+  by_cases! hj : finrank 𝕜 E ≤ j
   · simp [T.singularValues_of_finrank_le hj]
   have : (T.singularValues j : ℝ) ^ 2 ≤ (T.singularValues i : ℝ) ^ 2 := by
     rw [T.sq_singularValues_fin rfl ⟨j, hj⟩, T.sq_singularValues_fin rfl ⟨i, hi⟩]
@@ -158,7 +158,7 @@ are only dim(domain(T)) singular values in [axler2024], so we modify the stateme
 this.
 -/
 theorem injective_theorem : Function.Injective T
-    ↔ 0 ∉ (Finset.range (Module.finrank 𝕜 E)).image T.singularValues  := by
+    ↔ 0 ∉ (Finset.range (finrank 𝕜 E)).image T.singularValues  := by
   have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 0 4
   rw [←injective_adjoint_comp_self_iff, ←ker_eq_bot, ←this, not_iff_not, Finset.mem_image]
   constructor
@@ -172,25 +172,25 @@ theorem injective_theorem : Function.Injective T
     exact T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, Finset.mem_range.mp h⟩
 
 -- 3. From 2., 0 appears as a singular value `dim(ker(T*T))` (= `n - rank(T*T)`) times
-theorem finrank_ker_adjoint_comp_self {n : ℕ} (hn : Module.finrank 𝕜 E = n) :
-  Module.finrank 𝕜 (ker (adjoint T ∘ₗ T)) = n - Module.finrank 𝕜 (range (adjoint T ∘ₗ T)) := by
+theorem finrank_ker_adjoint_comp_self {n : ℕ} (hn : finrank 𝕜 E = n) :
+  finrank 𝕜 (ker (adjoint T ∘ₗ T)) = n - finrank 𝕜 (range (adjoint T ∘ₗ T)) := by
     rw [← hn, ← LinearMap.finrank_range_add_finrank_ker (adjoint T ∘ₗ T)]
     omega
 
 
 omit [FiniteDimensional 𝕜 F] in
-theorem finrank_comp_self {n : ℕ} (hn : Module.finrank 𝕜 E = n) :
-  Module.finrank 𝕜 (ker T) = n - Module.finrank 𝕜 (range T) := by
+theorem finrank_comp_self {n : ℕ} (hn : finrank 𝕜 E = n) :
+  finrank 𝕜 (ker T) = n - finrank 𝕜 (range T) := by
     rw [← hn, ← LinearMap.finrank_range_add_finrank_ker T]
     omega
 
 -- 4. From 3., the number of positive singular values is `rank(T*T) = rank(T)`
 theorem finrank_range_adjoint_comp_self :
-  Module.finrank 𝕜 (range (adjoint T ∘ₗ T)) = Module.finrank 𝕜 (range T) := by
-    rw [range_adjoint_comp_self', Module.finrank_range_adjoint]
+  finrank 𝕜 (range (adjoint T ∘ₗ T)) = finrank 𝕜 (range T) := by
+    rw [range_adjoint_comp_self', finrank_range_adjoint]
 
-theorem test₃ : T.singularValues.support.card = Module.finrank 𝕜 T.range := by
-  have hS : ∀ m ∈ T.singularValues.support, m < Module.finrank 𝕜 E := sorry
+theorem test₃ : T.singularValues.support.card = finrank 𝕜 T.range := by
+  have hS : ∀ m ∈ T.singularValues.support, m < finrank 𝕜 E := sorry
   have hT := T.isSymmetric_adjoint_comp_self
   rw [← T.singularValues.support.card_attachFin hS]
   calc
@@ -202,15 +202,15 @@ theorem test₃ : T.singularValues.support.card = Module.finrank 𝕜 T.range :=
       have : T.isSymmetric_adjoint_comp_self.eigenvalues rfl i = 0 ↔
         T.isSymmetric_adjoint_comp_self.eigenvalues rfl i ≤ 0 := by constructor <;> order
       simp [T.singularValues_fin rfl, this]
-    _ = Module.finrank 𝕜 E - ({i | ↑(hT.eigenvalues rfl i) = (0 : 𝕜)} : Finset (Fin _)).card := by
+    _ = finrank 𝕜 E - ({i | ↑(hT.eigenvalues rfl i) = (0 : 𝕜)} : Finset (Fin _)).card := by
       rw [Finset.card_compl]; simp
-    _ = Module.finrank 𝕜 E - Module.finrank 𝕜 (T.adjoint ∘ₗ T).ker := by
+    _ = finrank 𝕜 E - finrank 𝕜 (T.adjoint ∘ₗ T).ker := by
       rw [hT.card_filter_eigenvalues_eq rfl (μ := 0) sorry]
-      rw [Module.End.eigenspace_zero]
-    _ = Module.finrank 𝕜 (T.adjoint ∘ₗ T).range := by
+      rw [End.eigenspace_zero]
+    _ = finrank 𝕜 (T.adjoint ∘ₗ T).range := by
       simp [← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker]
-    _ = Module.finrank 𝕜 T.range := by
-      rw [T.range_adjoint_comp_self', Module.finrank_range_adjoint]
+    _ = finrank 𝕜 T.range := by
+      rw [T.range_adjoint_comp_self', finrank_range_adjoint]
 
 theorem isLowerSet_support_singularValues
   : IsLowerSet (T.singularValues.support : Set ℕ) := by
@@ -220,7 +220,7 @@ theorem isLowerSet_support_singularValues
 
 @[simp]
 theorem support_singularValues
-  : T.singularValues.support = Finset.range (Module.finrank 𝕜 (range T)) := by
+  : T.singularValues.support = Finset.range (finrank 𝕜 (range T)) := by
   obtain h | ⟨n, hn⟩ := T.isLowerSet_support_singularValues.eq_univ_or_Iio
   · have : (Set.univ : Set ℕ).Finite := h ▸ Finset.finite_toSet _
     have : (Set.univ : Set ℕ).Infinite := Set.infinite_univ
@@ -230,16 +230,16 @@ theorem support_singularValues
     apply_fun Finset.card at hn
     simpa [test₃] using hn
 
-theorem singularValues_lt_rank {n : ℕ} (hn : n < Module.finrank 𝕜 (range T))
+theorem singularValues_lt_rank {n : ℕ} (hn : n < finrank 𝕜 (range T))
     : 0 < T.singularValues n := by
   rwa [zero_lt_iff, ← Finsupp.mem_support_iff, support_singularValues, Finset.mem_range]
 
-theorem singularValues_rank : T.singularValues (Module.finrank 𝕜 (range T)) = 0 := by
+theorem singularValues_rank : T.singularValues (finrank 𝕜 (range T)) = 0 := by
   rw [← Finsupp.notMem_support_iff, support_singularValues]
   exact Finset.notMem_range_self
 
 theorem singularValues_le_rank {n : ℕ}
-  (hn : Module.finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 := by
+  (hn : finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 := by
   rw [← Finsupp.notMem_support_iff, support_singularValues, Finset.mem_range]
   order
 
@@ -248,11 +248,11 @@ theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i 
   apply singularValues_le_rank
   trans 0 <;> simp
 
-theorem singularValues_id_apply_of_lt_finrank {i : ℕ} (hi : i < Module.finrank 𝕜 E)
+theorem singularValues_id_apply_of_lt_finrank {i : ℕ} (hi : i < finrank 𝕜 E)
   : (LinearMap.id : E →ₗ[𝕜] E).singularValues i = 1 := sorry
 
 theorem singularValues_id_apply {i : ℕ} :
-  (LinearMap.id : E →ₗ[𝕜] E).singularValues i = if i < Module.finrank 𝕜 E then 1 else 0 := by
+  (LinearMap.id : E →ₗ[𝕜] E).singularValues i = if i < finrank 𝕜 E then 1 else 0 := by
   split_ifs with h
   · exact singularValues_id_apply_of_lt_finrank h
   · push_neg at h
