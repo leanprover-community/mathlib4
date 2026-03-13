@@ -46,7 +46,6 @@ namespace HomologicalComplex₂
 
 variable (C : Type*) [Category* C] [Preadditive C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The shift on bicomplexes obtained by shifting the first indices (and changing the
 sign of differentials). -/
 abbrev shiftFunctor₁ (x : ℤ) :
@@ -203,7 +202,6 @@ lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : 
   dsimp [totalShift₁Iso, totalShift₁XIso]
   simp only [ι_totalDesc, comp_id, id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
     (ha' : a' + b = n') (hn' : n' = n + x) :

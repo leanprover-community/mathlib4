@@ -482,8 +482,7 @@ theorem isUnit_constantCoeff (φ : R⟦X⟧) (h : IsUnit φ) : IsUnit (constantC
 theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
     φ = (mk fun p => coeff (p + 1) φ) * X + C (constantCoeff φ) := by
   ext (_ | n)
-  · simp only [coeff_zero_eq_constantCoeff, map_add, map_mul, constantCoeff_X,
-      mul_zero, coeff_zero_C, zero_add]
+  · simp
   · simp only [coeff_succ_mul_X, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
       if_false, add_zero]
 
@@ -491,8 +490,7 @@ theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
 theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
     φ = (X * mk fun p => coeff (p + 1) φ) + C (constantCoeff φ) := by
   ext (_ | n)
-  · simp only [coeff_zero_eq_constantCoeff, map_add, map_mul, constantCoeff_X,
-      zero_mul, coeff_zero_C, zero_add]
+  · simp
   · simp only [coeff_succ_X_mul, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
       if_false, add_zero]
 
@@ -652,6 +650,17 @@ theorem rescale_rescale (f : R⟦X⟧) (a b : R) :
 theorem rescale_mul (a b : R) : rescale (a * b) = (rescale b).comp (rescale a) := by
   ext
   simp [← rescale_rescale]
+
+theorem rescale_map {S : Type*} [CommSemiring S] (φ : R →+* S) (r : R) (f : R⟦X⟧) :
+    rescale (φ r) (f.map φ) = (rescale r f).map (φ : R →+* S) := by
+  ext n
+  simp [coeff_rescale, coeff_map, map_mul, map_pow]
+
+theorem rescale_algebraMap_map {A S : Type*} [CommSemiring A] [Algebra A R] [CommSemiring S]
+    [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
+    rescale (algebraMap A S a) (f.map φ) = (rescale (algebraMap A R a) f).map φ := by
+  convert rescale_map (φ : R →+* S) _ _
+  simp
 
 end CommSemiring
 

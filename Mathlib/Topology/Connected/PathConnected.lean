@@ -99,6 +99,7 @@ theorem Joined.inv {G : Type*} [Inv G] [TopologicalSpace G] [ContinuousInv G]
 variable (X)
 
 /-- The setoid corresponding the equivalence relation of being joined by a continuous path. -/
+@[implicit_reducible]
 def pathSetoid : Setoid X where
   r := Joined
   iseqv := Equivalence.mk Joined.refl Joined.symm Joined.trans
@@ -465,11 +466,11 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
     Path.target_mem_range, and_true] at hp ⊢
   obtain ⟨hp, hx⟩ := hp
   induction p using snocInduction generalizing x with
-  | h0 =>
+  | elim0 =>
     simp only [snoc_zero]
     use Path.refl x
     simp [hx]
-  | @h n p y hp₂ =>
+  | @snoc n p y hp₂ =>
     simp only [forall_fin_succ', snoc_castSucc, snoc_last, snoc_apply_zero, Path.cast_coe] at hp ⊢
     obtain ⟨hp, hy⟩ := hp
     specialize hp₂ y hp hy

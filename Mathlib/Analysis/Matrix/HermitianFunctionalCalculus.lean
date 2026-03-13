@@ -86,7 +86,7 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   obtain ⟨x, hx⟩ := x
   obtain ⟨i, rfl⟩ := hA.spectrum_real_eq_range_eigenvalues ▸ hx
   rw [← diagonal_zero] at h2
-  have := (diagonal_eq_diagonal_iff).mp h2
+  have := diagonal_eq_diagonal_iff.mp h2
   exact RCLike.ofReal_eq_zero.mp (this i)
 
 lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
@@ -134,10 +134,12 @@ should prefer the generic API, especially because it will make rewriting easier.
 protected noncomputable def cfc (f : ℝ → ℝ) : Matrix n n 𝕜 :=
   conjStarAlgAut 𝕜 _ hA.eigenvectorUnitary (diagonal (RCLike.ofReal ∘ f ∘ hA.eigenvalues))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cfcHom_eq_cfcAux : cfcHom hA.isSelfAdjoint = hA.cfcAux :=
   cfcHom_eq_of_continuous_of_map_id hA hA.cfcAux
     hA.isClosedEmbedding_cfcAux.continuous hA.cfcAux_id
 
+set_option backward.isDefEq.respectTransparency false in
 instance instContinuousFunctionalCalculusIsClosedEmbedding :
     ClosedEmbeddingContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
   isClosedEmbedding _ hA := cfcHom_eq_cfcAux hA ▸ hA.isHermitian.isClosedEmbedding_cfcAux

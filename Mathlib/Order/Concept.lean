@@ -193,7 +193,6 @@ theorem rel_extent_intent {x y} (hx : x ∈ c.extent) (hy : y ∈ c.intent) : r 
   rw [← c.upperPolar_extent] at hy
   exact hy hx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Note that if `r'` is the `≤` relation, this theorem will often not be true! -/
 theorem disjoint_extent_intent [Std.Irrefl r'] : Disjoint c'.extent c'.intent := by
   rw [disjoint_iff_forall_ne]
@@ -317,12 +316,9 @@ instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConcept with
     sup := Concept.instSupConcept.max
-    le_sSup := fun _ _ hc => intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
-    sSup_le := fun _ _ hc =>
-      intent_subset_intent_iff.1 <| subset_iInter₂ fun d hd => intent_subset_intent_iff.2 <| hc d hd
+    isLUB_sSup _ := .of_image (f := fun x ↦ toDual x.intent) intent_subset_intent_iff isLUB_biSup
     inf := Concept.instInfConcept.min
-    sInf_le := fun _ _ => biInter_subset_of_mem
-    le_sInf := fun _ _ => subset_iInter₂ }
+    isGLB_sInf _ := .of_image extent_subset_extent_iff isGLB_biInf }
 
 @[simp]
 theorem extent_top : (⊤ : Concept α β r).extent = univ :=

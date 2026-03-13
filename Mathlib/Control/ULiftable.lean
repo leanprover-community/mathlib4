@@ -121,6 +121,7 @@ instance instULiftableId : ULiftable Id Id where
   congr F := F
 
 /-- for specific state types, this function helps to create a uliftable instance -/
+@[implicit_reducible]
 def StateT.uliftable' {m : Type u₀ → Type v₀} {m' : Type u₁ → Type v₁} [ULiftable m m']
     (F : s ≃ s') : ULiftable (StateT s m) (StateT s' m') where
   congr G :=
@@ -134,6 +135,7 @@ instance StateT.instULiftableULiftULift {m m'} [ULiftable m m'] :
   StateT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
 
 /-- for specific reader monads, this function helps to create a uliftable instance -/
+@[implicit_reducible]
 def ReaderT.uliftable' {m m'} [ULiftable m m'] (F : s ≃ s') :
     ULiftable (ReaderT s m) (ReaderT s' m') where
   congr G := ReaderT.equiv <| Equiv.piCongr F fun _ => ULiftable.congr G
@@ -146,6 +148,7 @@ instance ReaderT.instULiftableULiftULift {m m'} [ULiftable m m'] :
   ReaderT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
 
 /-- for specific continuation passing monads, this function helps to create a uliftable instance -/
+@[implicit_reducible]
 def ContT.uliftable' {m m'} [ULiftable m m'] (F : r ≃ r') :
     ULiftable (ContT r m) (ContT r' m') where
   congr := ContT.equiv (ULiftable.congr F)
@@ -158,6 +161,7 @@ instance ContT.instULiftableULiftULift {m m'} [ULiftable m m'] :
   ContT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
 
 /-- for specific writer monads, this function helps to create a uliftable instance -/
+@[implicit_reducible]
 def WriterT.uliftable' {m m'} [ULiftable m m'] (F : w ≃ w') :
     ULiftable (WriterT w m) (WriterT w' m') where
   congr G := WriterT.equiv <| ULiftable.congr <| Equiv.prodCongr G F
