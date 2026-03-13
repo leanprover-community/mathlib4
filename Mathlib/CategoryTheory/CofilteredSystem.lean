@@ -244,7 +244,7 @@ theorem isMittagLeffler_of_exists_finite_range
 @[simps obj map]
 def toEventualRanges : J ⥤ Type v where
   obj j := (F.eventualRange j)
-  map f := TypeCat.ofHom ⟨(F.eventualRange_mapsTo f).restrict _ _ _⟩
+  map f := TypeCat.ofHom ((F.eventualRange_mapsTo f).restrict _ _ _)
 
 instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.toEventualRanges.obj j) :=
   fun _ => Subtype.finite

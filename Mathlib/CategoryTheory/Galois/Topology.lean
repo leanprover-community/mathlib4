@@ -72,7 +72,7 @@ scoped instance {X Y : C} : DiscreteTopology (F.obj X  ⟶ F.obj Y) := by
     · intro _ _ _
       aesop
     · intro a
-      use ⟨TypeCat.ofHom ⟨a⟩⟩
+      use ⟨TypeCat.ofHom (a)⟩
       aesop
   exact DiscreteTopology.of_continuous_injective this.homeomorph.continuous
     this.homeomorph.injective

@@ -47,7 +47,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
     apply ULift.down_injective
-    change _ = (TypeCat.Hom.hom (TypeCat.ofHom ⟨_⟩) _)
+    change _ = (TypeCat.Hom.hom (TypeCat.ofHom (_)) _)
     dsimp
     erw [Subcomplex.yonedaEquiv_coe]
     rw [Subfunctor.lift_ι]
@@ -60,7 +60,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
     apply ULift.down_injective
-    change _ = (TypeCat.Hom.hom (TypeCat.ofHom ⟨_⟩) _)
+    change _ = (TypeCat.Hom.hom (TypeCat.ofHom (_)) _)
     dsimp
     erw [Subcomplex.yonedaEquiv_coe]
     rw [Subfunctor.lift_ι]

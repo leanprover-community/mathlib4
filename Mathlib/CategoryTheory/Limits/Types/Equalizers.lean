@@ -34,7 +34,7 @@ The converse of `unique_of_type_equalizer`.
 noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X, f x = y) :
     IsLimit (Fork.ofι _ w) :=
   Fork.IsLimit.mk' _ fun s => by
-    refine ⟨TypeCat.ofHom ⟨fun i => ?_⟩, ?_, ?_⟩
+    refine ⟨TypeCat.ofHom (fun i => ?_), ?_, ?_⟩
     · apply Classical.choose (t (s.ι i) _)
       apply congr_hom s.condition i
     · ext i
@@ -46,7 +46,7 @@ noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X
 /-- The converse of `type_equalizer_of_unique`. -/
 theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y = h y) :
     ∃! x : X, f x = y := by
-  let y' : PUnit ⟶ Y := TypeCat.ofHom ⟨fun _ => y⟩
+  let y' : PUnit ⟶ Y := TypeCat.ofHom (fun _ => y)
   have hy' : y' ≫ g = y' ≫ h := by ext; exact hy
   refine ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_hom (Fork.IsLimit.lift' t y' _).2 ⟨⟩, ?_⟩
   intro x' hx'
@@ -79,12 +79,12 @@ noncomputable def equalizerIso : equalizer g h ≅ { x : Y // g x = h x } :=
 
 @[elementwise (attr := simp)]
 theorem equalizerIso_hom_comp_subtype :
-    (equalizerIso g h).hom ≫ TypeCat.ofHom ⟨Subtype.val⟩ = equalizer.ι g h := by
+    (equalizerIso g h).hom ≫ TypeCat.ofHom (Subtype.val) = equalizer.ι g h := by
   rfl
 
 @[elementwise (attr := simp)]
 theorem equalizerIso_inv_comp_ι : (equalizerIso g h).inv ≫ equalizer.ι g h =
-    TypeCat.ofHom ⟨Subtype.val⟩ :=
+    TypeCat.ofHom (Subtype.val) :=
   limit.isoLimitCone_inv_π equalizerLimit WalkingParallelPair.zero
 
 end CategoryTheory.Limits.Types

@@ -168,7 +168,7 @@ section coprod
 @[simps obj map]
 def coprod : C ⥤ Type w where
   obj a := F.obj a ⊕ G.obj a
-  map f := TypeCat.ofHom ⟨Sum.map (F.map f) (G.map f)⟩
+  map f := TypeCat.ofHom (Sum.map (F.map f) (G.map f))
   map_id _ := by ext ⟨⟩<;> simp
   map_comp _ _ := by ext ⟨⟩<;> simp
 

@@ -147,7 +147,7 @@ lemma ConcreteCategory.forget₂_comp_apply [HasForget₂ C D] {X Y Z : C}
   rw [Functor.map_comp, CategoryTheory.comp_apply]
 
 instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
-    IsIso (C := Type _) (TypeCat.ofHom ⟨(ConcreteCategory.hom f)⟩) :=
+    IsIso (C := Type _) (TypeCat.ofHom ((ConcreteCategory.hom f))) :=
   ((forget C).mapIso (asIso f)).isIso_hom
 
 end CategoryTheory

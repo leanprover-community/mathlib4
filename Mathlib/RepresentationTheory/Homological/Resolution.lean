@@ -130,7 +130,7 @@ extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
     ExtraDegeneracy (Arrow.mk <| terminal.from (G)).augmentedCechNerve :=
   AugmentedCechNerve.extraDegeneracy (Arrow.mk <| terminal.from (G))
-    ⟨TypeCat.ofHom ⟨fun _ => (1 : G)⟩, by cat_disch⟩
+    ⟨TypeCat.ofHom (fun _ => (1 : G)), by cat_disch⟩
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
 from `Fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/

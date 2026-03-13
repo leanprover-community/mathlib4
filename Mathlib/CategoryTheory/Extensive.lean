@@ -228,7 +228,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
             (ConcreteCategory.congr_hom hαY val :).symm
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨TypeCat.ofHom ⟨l⟩, ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
+      refine ⟨TypeCat.ofHom (l), ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
       · ext x
         exact (hl x).symm
       · ext x
@@ -244,7 +244,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
         · simp
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨TypeCat.ofHom ⟨l⟩, ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
+      refine ⟨TypeCat.ofHom (l), ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
       · ext x
         exact (hl x).symm
       · ext x

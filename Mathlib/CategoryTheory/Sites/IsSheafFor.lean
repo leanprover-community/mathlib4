@@ -494,7 +494,7 @@ def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
       rw [← NatTrans.naturality_apply α g.op]
       rfl
   invFun t :=
-    { app _ := TypeCat.ofHom ⟨fun f => t.1 _ f.2⟩
+    { app _ := TypeCat.ofHom (fun f => t.1 _ f.2)
       naturality := fun Y Z g => by
         ext ⟨f, hf⟩
         apply t.2.to_sieveCompatible _ }

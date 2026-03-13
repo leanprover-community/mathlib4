@@ -96,7 +96,7 @@ def functor : HasCardinalLT.Set X κ ⥤ Type u :=
 @[simps]
 def cocone : Cocone (Set.functor X κ) where
   pt := X
-  ι.app _ := TypeCat.ofHom ⟨Subtype.val⟩
+  ι.app _ := TypeCat.ofHom (Subtype.val)
 
 /-- Any type `X` is the (filtered) colimit of its subsets of cardinality `< κ`
 when `κ` is an infinite cardinal. (This colimit is `κ`-filtered when `κ` is

@@ -159,8 +159,8 @@ def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y))
     (n : ∀ {Z Z' : C} (f : Z' ⟶ Z) (g : Z ⟶ X), p (f ≫ g) = f ≫ p g) : X ≅ Y :=
   fullyFaithful.preimageIso
     (NatIso.ofComponents fun Z =>
-      { hom := TypeCat.ofHom ⟨p⟩
-        inv := TypeCat.ofHom ⟨q⟩ })
+      { hom := TypeCat.ofHom (p)
+        inv := TypeCat.ofHom (q) })
 
 /-- If `yoneda.map f` is an isomorphism, so was `f`.
 -/

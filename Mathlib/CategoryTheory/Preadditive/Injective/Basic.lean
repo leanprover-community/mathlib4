@@ -120,7 +120,7 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
     Nonempty.intro
       { J := (WithBot X)
         injective := inferInstance
-        f := TypeCat.ofHom ⟨WithBot.some⟩
+        f := TypeCat.ofHom (WithBot.some)
         mono := by
           rw [mono_iff_injective]
           exact WithBot.coe_injective }

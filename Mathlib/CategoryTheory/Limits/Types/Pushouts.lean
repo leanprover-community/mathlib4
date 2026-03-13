@@ -54,11 +54,11 @@ namespace Pushout
 
 /-- The left inclusion in the constructed pushout `Pushout f g`. -/
 @[simp]
-def inl : X₁ ⟶ Pushout f g := TypeCat.ofHom ⟨fun x => Quot.mk _ (Sum.inl x)⟩
+def inl : X₁ ⟶ Pushout f g := TypeCat.ofHom (fun x => Quot.mk _ (Sum.inl x))
 
 /-- The right inclusion in the constructed pushout `Pushout f g`. -/
 @[simp]
-def inr : X₂ ⟶ Pushout f g := TypeCat.ofHom ⟨fun x => Quot.mk _ (Sum.inr x)⟩
+def inr : X₂ ⟶ Pushout f g := TypeCat.ofHom (fun x => Quot.mk _ (Sum.inr x))
 
 lemma condition : f ≫ inl f g = g ≫ inr f g := by
   ext x

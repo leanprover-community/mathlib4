@@ -52,7 +52,7 @@ set_option backward.privateInPublic.warn false in
 def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
   Adjunction.mk' {
     homEquiv := typeToCatObjectsAdjHomEquiv
-    unit := { app := fun _ ↦ TypeCat.ofHom ⟨Discrete.mk⟩ }
+    unit := { app := fun _ ↦ TypeCat.ofHom (Discrete.mk) }
     counit := {
       app C := (typeToCatObjectsAdjCounitApp C).toCatHom
       naturality := fun _ _ _ ↦ Hom.ext <| Functor.hext (fun _ ↦ rfl)
@@ -63,7 +63,7 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
 /-- The connected components functor -/
 def connectedComponents : Cat.{v, u} ⥤ Type u where
   obj C := ConnectedComponents C
-  map F := TypeCat.ofHom ⟨Functor.mapConnectedComponents F.toFunctor⟩
+  map F := TypeCat.ofHom (Functor.mapConnectedComponents F.toFunctor)
   map_id _ := by ext x; simpa using (Quotient.exists_rep x).elim (fun _ h ↦ by subst h; rfl)
   map_comp _ _ := by ext x; simpa using (Quotient.exists_rep x).elim (fun _ h => by subst h; rfl)
 

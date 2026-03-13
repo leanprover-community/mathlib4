@@ -411,7 +411,7 @@ def yonedaCollectionFunctor (A : Cᵒᵖ ⥤ Type v) :
 @[simps]
 def yonedaCollectionPresheafToA (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) :
     yonedaCollectionPresheaf A F ⟶ A where
-  app _ := TypeCat.ofHom ⟨YonedaCollection.yonedaEquivFst⟩
+  app _ := TypeCat.ofHom (YonedaCollection.yonedaEquivFst)
 
 /-- This is the reverse direction of the equivalence we're constructing. -/
 @[simps! obj map]
@@ -471,8 +471,8 @@ lemma unitBackward_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
 @[simps]
 def unitAuxAuxAux {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     (YonedaCollection (restrictedYonedaObj η) X) ≅ F.obj (op X) where
-  hom := TypeCat.ofHom ⟨unitForward η X⟩
-  inv := TypeCat.ofHom ⟨unitBackward η X⟩
+  hom := TypeCat.ofHom (unitForward η X)
+  inv := TypeCat.ofHom (unitBackward η X)
   hom_inv_id := ConcreteCategory.ext (TypeCat.Fun.ext (unitBackward_unitForward η X))
   inv_hom_id := ConcreteCategory.ext (TypeCat.Fun.ext (unitForward_unitBackward η X))
 
@@ -568,8 +568,8 @@ lemma counitBackward_counitForward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ T
 def counitAuxAux (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v)
     (s : CostructuredArrow yoneda A) :
     (F.obj (op s)) ≅ (OverArrows (yonedaCollectionPresheafToA F) s.hom) where
-  hom := TypeCat.ofHom ⟨counitForward F s⟩
-  inv := TypeCat.ofHom ⟨counitBackward F s⟩
+  hom := TypeCat.ofHom (counitForward F s)
+  inv := TypeCat.ofHom (counitBackward F s)
   hom_inv_id := ConcreteCategory.ext (TypeCat.Fun.ext (counitBackward_counitForward F s))
   inv_hom_id := ConcreteCategory.ext (TypeCat.Fun.ext (counitForward_counitBackward F s))
 

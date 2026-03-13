@@ -109,7 +109,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
       limit.lift (F ⋙ Cat.objects)
         { pt := s.pt
           π :=
-            { app := fun j => TypeCat.ofHom ⟨(s.π.app j).toFunctor.obj⟩
+            { app := fun j => TypeCat.ofHom ((s.π.app j).toFunctor.obj)
               naturality := fun _ _ f => objects.congr_map (s.π.naturality f) } }
     map f := by
       fapply Types.Limit.mk.{v, v}

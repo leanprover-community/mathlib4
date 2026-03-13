@@ -192,7 +192,7 @@ set_option backward.isDefEq.respectTransparency false in
 def adj : free.{u} R ⊣ forget (AlgCat.{u} R) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ =>
-        { toFun := fun f ↦ TypeCat.ofHom ⟨(FreeAlgebra.lift _).symm f.hom⟩
+        { toFun := fun f ↦ TypeCat.ofHom ((FreeAlgebra.lift _).symm f.hom)
           invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
           left_inv := fun f ↦ by aesop
           right_inv := fun f ↦ by aesop } }

@@ -53,7 +53,7 @@ set_option backward.isDefEq.respectTransparency false in
 def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦
-        { toFun := fun f ↦ TypeCat.ofHom ⟨homEquiv f.hom⟩
+        { toFun := fun f ↦ TypeCat.ofHom (homEquiv f.hom)
           invFun := fun f ↦ ofHom <| homEquiv.symm f
           left_inv := fun f ↦ congrArg ofHom (homEquiv.left_inv f.hom)
           right_inv := by cat_disch }

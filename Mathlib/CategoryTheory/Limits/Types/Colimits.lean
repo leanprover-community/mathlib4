@@ -39,7 +39,7 @@ with a point in `TypeCat u` is the same as the data of a cocone (in a categorica
 def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
   toFun c :=
     { pt := c.pt
-      ι := { app j := TypeCat.ofHom ⟨c.ι j⟩ } }
+      ι := { app j := TypeCat.ofHom (c.ι j) } }
   invFun c :=
     { pt := c.pt
       ι j := c.ι.app j
@@ -55,7 +55,7 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
   constructor
   · intro hc
     exact
-     ⟨{ desc s := TypeCat.ofHom ⟨fun x => hc.desc (F.coconeTypesEquiv.symm s) x⟩
+     ⟨{ desc s := TypeCat.ofHom (fun x => hc.desc (F.coconeTypesEquiv.symm s) x)
         fac s j := by
           ext x
           exact congr_fun (hc.fac (F.coconeTypesEquiv.symm s) j) x
@@ -73,7 +73,7 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
       obtain ⟨j, z, rfl⟩ := F.ιColimitType_jointly_surjective z
       exact ConcreteCategory.congr_hom (hc.fac _ j) z
     · let f₁ : (F.coconeTypesEquiv c).pt ⟶ (ULift.{u} Bool) :=
-        TypeCat.ofHom ⟨fun _ => ULift.up true⟩
+        TypeCat.ofHom (fun _ => ULift.up true)
       let f₂ : (F.coconeTypesEquiv c).pt ⟶ (ULift.{u} Bool) :=
         TypeCat.ofHom ⟨fun x => ULift.up (∃ a, F.descColimitType c a = x)⟩
       suffices f₁ = f₂ by

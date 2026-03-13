@@ -36,7 +36,7 @@ There is no requirement that the functions are continuous, here.
 -/
 def presheafToTypes (T : X → Type*) : X.Presheaf (Type _) where
   obj U := ∀ x : U.unop, T x
-  map {_ V} i := TypeCat.ofHom ⟨fun (g) (x : V.unop) => g (i.unop x)⟩
+  map {_ V} i := TypeCat.ofHom (fun (g) (x : V.unop) => g (i.unop x))
 
 @[simp]
 theorem presheafToTypes_obj {T : X → Type*} {U : (Opens X)ᵒᵖ} :

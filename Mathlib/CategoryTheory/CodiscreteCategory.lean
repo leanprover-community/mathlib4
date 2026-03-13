@@ -138,7 +138,7 @@ lemma adj_unit_app (X : Cat.{0, u}) :
     adj.unit.app X = (unitApp X).toCatHom := rfl
 
 lemma adj_counit_app (A : Type u) :
-    adj.counit.app A = TypeCat.ofHom ⟨counitApp A⟩ := rfl
+    adj.counit.app A = TypeCat.ofHom (counitApp A) := rfl
 
 /-- Left triangle equality of the adjunction `Cat.objects ⊣ Codiscrete.functorToCat`,
 as a universe polymorphic statement. -/

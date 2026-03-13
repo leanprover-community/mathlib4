@@ -129,7 +129,7 @@ def functorialSurjectiveInjectiveFactorizationData :
         ext x
         exact congr_hom φ.w x }
   p :=
-    { app := fun _ => TypeCat.ofHom ⟨fun y => y.1⟩
+    { app := fun _ => TypeCat.ofHom (fun y => y.1)
       naturality := by intros; rfl; }
   fac := rfl
   hi := by

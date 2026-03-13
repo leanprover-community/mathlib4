@@ -47,7 +47,7 @@ lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
     ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.hom.continuous⟩
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
-  refine ⟨i, ⟨TypeCat.ofHom ⟨g⟩⟩, ?_⟩
+  refine ⟨i, ⟨TypeCat.ofHom (g)⟩, ?_⟩
   ext x
   exact LocallyConstant.congr_fun h x
 

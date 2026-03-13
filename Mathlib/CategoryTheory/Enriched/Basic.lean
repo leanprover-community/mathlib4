@@ -514,7 +514,7 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
       map_comp := fun f g => ConcreteCategory.congr_hom (F.map_comp _ _ _) ⟨f, g⟩ }
   invFun F :=
     { obj := fun X => F.obj X
-      map := fun _ _ => TypeCat.ofHom ⟨fun f => F.map f⟩
+      map := fun _ _ => TypeCat.ofHom (fun f => F.map f)
       map_id := fun X => by ext ⟨⟩; exact F.map_id X
       map_comp := fun X Y Z => by ext ⟨f, g⟩; exact F.map_comp f g }
 
@@ -533,7 +533,7 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
           { app X := σ.app X x
             naturality X Y f := ConcreteCategory.congr_hom (σ.naturality X Y) ⟨x, f⟩ }⟩⟩
         inv := TypeCat.ofHom ⟨fun σ ↦
-          { app X := TypeCat.ofHom ⟨fun x => (σ.hom x).app X⟩
+          { app X := TypeCat.ofHom (fun x => (σ.hom x).app X)
             naturality X Y := by ext ⟨x, f⟩; exact (σ.hom x).naturality f }⟩ })
     (by cat_disch)
 

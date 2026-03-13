@@ -74,7 +74,7 @@ set_option backward.isDefEq.respectTransparency false in
 def firstObjEqFamily : FirstObj P R ≅ (R.FamilyOfElements P) where
   hom := TypeCat.ofHom ⟨fun t _ _ hf ↦
     Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t⟩
-  inv := Pi.lift fun f => TypeCat.ofHom ⟨fun x => x _ f.2.2⟩
+  inv := Pi.lift fun f => TypeCat.ofHom (fun x => x _ f.2.2)
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited

@@ -46,7 +46,7 @@ theorem isLimit_iff (c : Cone F) :
       fun x hx ↦ congr_hom (t.uniq cs (TypeCat.ofHom ⟨fun _ ↦ x⟩) fun j ↦ by ext; exact hx j) ⟨⟩⟩
   · have := fun c y ↦ h _ (sectionOfCone c y).2
     choose x hx using fun c y ↦ h _ (sectionOfCone c y).2
-    exact ⟨fun d ↦ TypeCat.ofHom ⟨x d⟩, fun c j ↦ by ext y; exact (hx c y).1 j,
+    exact ⟨fun d ↦ TypeCat.ofHom (x d), fun c j ↦ by ext y; exact (hx c y).1 j,
       fun c f hf ↦ by ext y; exact (hx c y).2 (f y) (fun j ↦ congr_hom (hf j) y)⟩
 
 theorem isLimit_iff_bijective_sectionOfCone (c : Cone F) :
@@ -108,7 +108,7 @@ implemented as flat sections of a pi type
 noncomputable def limitCone : Cone F where
   pt := (Shrink F.sections)
   π :=
-    { app j := TypeCat.ofHom ⟨fun u => ((equivShrink F.sections).symm u).val j⟩ }
+    { app j := TypeCat.ofHom (fun u => ((equivShrink F.sections).symm u).val j) }
 
 @[ext]
 lemma limitCone_pt_ext {x y : (limitCone F).pt}
@@ -144,7 +144,7 @@ implemented as flat sections of a pi type
 @[simps]
 noncomputable def limitCone (F : J ⥤ Type (max v u)) : Cone F where
   pt := F.sections
-  π := { app j := TypeCat.ofHom ⟨fun u => u.val j⟩ }
+  π := { app j := TypeCat.ofHom (fun u => u.val j) }
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]

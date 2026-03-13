@@ -35,7 +35,7 @@ instance [Inhabited α] : Inhabited (Image f) where default := ⟨f default, ⟨
 
 /-- the inclusion of `Image f` into the target -/
 def Image.ι : Image f ⟶ β :=
-  TypeCat.ofHom ⟨Subtype.val⟩
+  TypeCat.ofHom (Subtype.val)
 
 instance : Mono (Image.ι f) :=
   (mono_iff_injective _).2 Subtype.val_injective
@@ -58,7 +58,7 @@ end
 def monoFactorisation : MonoFactorisation f where
   I := Image f
   m := Image.ι f
-  e := TypeCat.ofHom ⟨Set.rangeFactorization f⟩
+  e := TypeCat.ofHom (Set.rangeFactorization f)
 
 /-- the factorisation through a mono has the universal property of the image. -/
 noncomputable def isImage : IsImage (monoFactorisation f) where

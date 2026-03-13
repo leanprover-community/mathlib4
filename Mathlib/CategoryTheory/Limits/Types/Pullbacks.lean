@@ -41,8 +41,8 @@ example (p : PullbackObj f g) : X × Y :=
 This is bundled with the `IsLimit` data as `pullbackLimitCone f g`.
 -/
 abbrev pullbackCone : Limits.PullbackCone f g :=
-  PullbackCone.mk (TypeCat.ofHom ⟨fun p : PullbackObj f g => p.1.1⟩)
-    (TypeCat.ofHom ⟨fun p => p.1.2⟩) (by ext p; exact p.2)
+  PullbackCone.mk (TypeCat.ofHom (fun p : PullbackObj f g => p.1.1))
+    (TypeCat.ofHom (fun p => p.1.2)) (by ext p; exact p.2)
 
 /-- The explicit pullback in the category of types, bundled up as a `LimitCone`
 for given `f` and `g`.
@@ -145,14 +145,14 @@ theorem pullbackIsoPullback_hom_snd (p : (pullback f g :)) :
 @[elementwise (attr := simp)]
 theorem pullbackIsoPullback_inv_fst :
     (pullbackIsoPullback f g).inv ≫ pullback.fst _ _ =
-      TypeCat.ofHom ⟨fun p => (p.1 : X × Y).fst⟩ := by
+      TypeCat.ofHom (fun p => (p.1 : X × Y).fst) := by
   ext
   exact PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst (pullbackIsPullback f g) _
 
 @[elementwise (attr := simp)]
 theorem pullbackIsoPullback_inv_snd :
     (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ =
-      TypeCat.ofHom ⟨fun p => (p.1 : X × Y).snd⟩ := by
+      TypeCat.ofHom (fun p => (p.1 : X × Y).snd) := by
   ext
   exact PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd (pullbackIsPullback f g) _
 

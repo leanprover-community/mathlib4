@@ -113,7 +113,7 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
 instance (X : Type u) : Projective X where
   factors f e _ :=
     have he : Function.Surjective e := surjective_of_epi e
-    ⟨TypeCat.ofHom ⟨fun x => (he (f x)).choose⟩, by ext x; exact (he (f x)).choose_spec⟩
+    ⟨TypeCat.ofHom (fun x => (he (f x)).choose), by ext x; exact (he (f x)).choose_spec⟩
 
 instance Type.enoughProjectives : EnoughProjectives (Type u) where
   presentation X := ⟨⟨X, 𝟙 X⟩⟩

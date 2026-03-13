@@ -125,7 +125,7 @@ def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
 @[simp, reassoc, elementwise] lemma smoothSheaf.ι_evalHom (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M N).obj) U ≫
     smoothSheaf.evalHom IM I N x =
-    TypeCat.ofHom ⟨smoothSheaf.evalAt IM I N x (unop U)⟩  :=
+    TypeCat.ofHom (smoothSheaf.evalAt IM I N x (unop U))  :=
   colimit.ι_desc _ _
 
 /-- The `eval` map is surjective at `x`. -/
@@ -347,7 +347,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_inv_comp_eval
     (x : TopCat.of M) :
     (smoothSheafCommRing.forgetStalk IM I M R x).inv ≫
-      TypeCat.ofHom ⟨(smoothSheafCommRing.evalHom IM I M R x).hom⟩ =
+      TypeCat.ofHom ((smoothSheafCommRing.evalHom IM I M R x).hom) =
     smoothSheaf.evalHom _ _ _ _ := by
   apply Limits.colimit.hom_ext
   intro U
@@ -359,7 +359,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_hom_comp_evalHom
     (x : TopCat.of M) :
     (smoothSheafCommRing.forgetStalk IM I M R x).hom ≫ (smoothSheaf.evalHom IM I R x) =
-      TypeCat.ofHom ⟨(smoothSheafCommRing.evalHom _ _ _ _ _)⟩ := by
+      TypeCat.ofHom ((smoothSheafCommRing.evalHom _ _ _ _ _)) := by
   simp_rw [← CategoryTheory.Iso.eq_inv_comp]
   rw [← smoothSheafCommRing.forgetStalk_inv_comp_eval]
 

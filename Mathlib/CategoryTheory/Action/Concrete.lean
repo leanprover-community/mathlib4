@@ -32,7 +32,7 @@ instance (X : Type u) : CoeFun (End X) (fun _ ↦ X → X) := inferInstanceAs <|
 
 @[simps apply symm_apply]
 def endEquiv (X : Type u) : Function.End X ≃* End X where
-  toFun f := TypeCat.ofHom ⟨f⟩
+  toFun f := TypeCat.ofHom (f)
   invFun f := (ConcreteCategory.hom f).as
   left_inv := by intro; rfl
   right_inv := by intro; rfl
@@ -77,7 +77,7 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
     LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G ((F i))) where
   cone :=
     { pt := Action.ofMulAction G ((∀ i : ι, F i))
-      π := Discrete.natTrans (fun i => ⟨TypeCat.ofHom ⟨fun x => x i.as⟩, fun _ => rfl⟩) }
+      π := Discrete.natTrans (fun i => ⟨TypeCat.ofHom (fun x => x i.as), fun _ => rfl⟩) }
   isLimit :=
     { lift := fun s =>
         { hom := TypeCat.ofHom ⟨fun x i => (s.π.app ⟨i⟩).hom x⟩
