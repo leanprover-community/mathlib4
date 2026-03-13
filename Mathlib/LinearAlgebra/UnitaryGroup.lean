@@ -211,20 +211,16 @@ theorem _root_.Matrix.map_star_mem_unitaryGroup_iff {U : Matrix n n α} :
   simp [← conjTranspose_transpose, transpose_mem_unitaryGroup_iff, ← star_eq_conjTranspose]
 
 /-- The transpose of a unitary matrix as a unitary matrix. -/
-@[simps]
-def transpose (U : unitaryGroup n α) : unitaryGroup n α :=
+@[simps] def transpose (U : unitaryGroup n α) : unitaryGroup n α :=
   ⟨Uᵀ, transpose_mem_unitaryGroup_iff.mpr (SetLike.coe_mem _)⟩
 
 /-- The `Matrix.map star` of a unitary matrix (i.e., taking the `star` of
 each element in the matrix) as a unitary matrix. -/
-@[simps]
-def map_star (U : unitaryGroup n α) : unitaryGroup n α :=
+@[simps] def map_star (U : unitaryGroup n α) : unitaryGroup n α :=
   ⟨(U : Matrix n n α).map star, map_star_mem_unitaryGroup_iff.mpr (SetLike.coe_mem _)⟩
 
 theorem map_star_inv_eq_transpose (U : unitaryGroup n α) :
-    (map_star U)⁻¹ = UnitaryGroup.transpose U := by
-  ext
-  simp
+    (map_star U)⁻¹ = UnitaryGroup.transpose U := by ext; simp
 
 theorem transpose_inv_eq_map_star (U : unitaryGroup n α) :
     (UnitaryGroup.transpose U)⁻¹ = map_star U := by
