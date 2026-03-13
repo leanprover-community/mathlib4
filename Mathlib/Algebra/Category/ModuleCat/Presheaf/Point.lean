@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ColimitFunctor
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ColimitFunctorMonoidal
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.PushforwardZeroMonoidal
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
@@ -73,5 +73,12 @@ noncomputable def presheafOfModulesFiber (R : Cᵒᵖ ⥤ CommRingCat.{w}) :
   Φ.presheafOfModulesFiberOfIsColimit (R := R ⋙ forget₂ _ _ )
     (isColimitOfPreserves (forget₂ _ RingCat)
       (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ R)))
+
+noncomputable instance (R : Cᵒᵖ ⥤ CommRingCat.{w}) :
+    (Φ.presheafOfModulesFiber R).Monoidal :=
+  inferInstanceAs (Functor.Monoidal
+    (PresheafOfModules.pushforward₀OfCommRingCat (CategoryOfElements.π Φ.fiber) R ⋙
+      PresheafOfModules.colimitFunctorOfCommRing
+        (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ R))))
 
 end CategoryTheory.GrothendieckTopology.Point

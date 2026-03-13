@@ -81,7 +81,6 @@ noncomputable abbrev colimitFunctorOfCommRing :
     PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat) ⥤ ModuleCat.{w} cR.pt :=
   colimitFunctor (isColimitOfPreserves (forget₂ _ RingCat) hcR)
 
-
 noncomputable abbrev colimitAdjunctionOfCommRing :
     colimitFunctorOfCommRing.{w} hcR ⊣ constFunctorOfCommRing.{w} cR :=
   colimitAdjunction _
