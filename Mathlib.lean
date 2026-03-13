@@ -6001,6 +6001,7 @@ public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Probability.Martingale.BorelCantelli
 public import Mathlib.Probability.Martingale.Centering
 public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.Probability.Martingale.Kolmogorov
 public import Mathlib.Probability.Martingale.OptionalSampling
 public import Mathlib.Probability.Martingale.OptionalStopping
 public import Mathlib.Probability.Martingale.Upcrossing
