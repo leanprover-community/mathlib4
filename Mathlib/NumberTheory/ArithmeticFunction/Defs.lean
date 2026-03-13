@@ -339,6 +339,8 @@ instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
   add_smul x y f := ext fun n ↦ add_smul x y (f n)
   mul_smul x y f := ext fun n ↦ mul_smul x y (f n)
 
+-- note that `smul_apply` would be a more suitable name, but is already in use for the action of
+-- `ArithmeticFunction R` on `ArithmeticFunction S`
 @[simp]
 theorem smul_map {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
     (x : R) (f : ArithmeticFunction S) (n : ℕ) : (x • f) n = x • f n := by
