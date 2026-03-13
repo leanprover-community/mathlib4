@@ -225,6 +225,21 @@ def findTranslation? (env : Environment) (t : TranslateData) : Name → Option T
 def findTranslationName? (env : Environment) (t : TranslateData) (n : Name) : Option Name :=
   (findTranslation? env t n).map (·.translation)
 
+/-- Check if the given constant exists in the environment, also checking for reserved names.
+This function is based on `Lean.realizeGlobalName`. -/
+private def realizeGlobalConst (c : Name) : CoreM Bool := do
+  let env ← getEnv
+  if env.contains c then
+    return true
+  unless isReservedName env c do
+    return false
+  try
+    executeReservedNameAction c
+    return (← getEnv).containsOnBranch c
+  catch ex =>
+    logError m!"Failed to realize constant {c}:{indentD ex.toMessageData}"
+    return false
+
 /-- Get the translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
 This allows translating automatically generated declarations such as `IsRegular.casesOn`.
@@ -235,12 +250,8 @@ def findPrefixTranslation? (n : Name) (t : TranslateData) : CoreM (Option Transl
     return info
   let .str n postFix := n | return none
   let some info := go env n [postFix] | return none
-  if env.contains (skipRealize := false) info.translation then
-    return info
-  if isReservedName env info.translation then
-    executeReservedNameAction info.translation
-    return info
-  return none
+  unless ← realizeGlobalConst info.translation do return none
+  return info
 where
   /-- Loop through the prefixes of `n` to try to find a translation.
   In such a case, we inherit the `relevantArg` option from the translation. -/
@@ -1141,7 +1152,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     throwError "`{t.attrName}` can only be used as a global attribute"
   withOptions (fun o => if cfg.trace then o.set `trace.translate true else o) do
   let tgt ← targetName t cfg src
-  let alreadyExists := (← getEnv).contains tgt
+  let alreadyExists ← realizeGlobalConst tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
     Linter.logLintIf linter.translateExisting cfg.ref <|
       if alreadyExists then
