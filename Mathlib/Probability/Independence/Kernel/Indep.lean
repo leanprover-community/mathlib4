@@ -717,9 +717,7 @@ theorem iIndepSets.iIndep (m : ι → MeasurableSpace Ω)
   apply iIndep.congr (Filter.EventuallyEq.symm η_eq)
   intro s f
   refine Finset.induction ?_ ?_ s
-  · simp only [Finset.notMem_empty, Set.mem_setOf_eq, IsEmpty.forall_iff, implies_true,
-      Set.iInter_of_empty, Set.iInter_univ, measure_univ, Finset.prod_empty,
-      Filter.eventually_true]
+  · simp
   · intro a S ha_notin_S h_rec hf_m
     have hf_m_S : ∀ x ∈ S, MeasurableSet[m x] (f x) := fun x hx => hf_m x (by simp [hx])
     let p := piiUnionInter π S

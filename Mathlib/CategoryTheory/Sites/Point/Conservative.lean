@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Category
+public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
 public import Mathlib.CategoryTheory.Types.Epimorphisms
@@ -91,7 +92,7 @@ lemma jointlyReflectMonomorphisms [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
 include hP hJ in
 @[stacks 00YL "(2)"]
 lemma jointlyReflectEpimorphisms
-    [J.WEqualsLocallyBijective A] [HasSheafify J A] :
+    [HasWeakSheafify J A] [HasProducts.{w} A] :
     JointlyReflectEpimorphisms
       (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := A)) :=
   (hP.jointlyReflectIsomorphisms A).jointlyReflectEpimorphisms
@@ -120,7 +121,7 @@ lemma jointly_reflect_isLocallySurjective
   exact fun Φ ↦ ((MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
     (((Functor.mapArrowFunctor _ _).mapIso
       ((Φ.obj.presheafFiberCompIso (forget A)).symm ≪≫
-        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiber (Type w)).symm)).app
+        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiberIso (Type w)).symm)).app
           (Arrow.mk f))).1 (hf Φ)
 
 end
@@ -231,7 +232,6 @@ lemma mk' [HasSheafify J (Type w)]
     JointlyFaithful.jointlyReflectsIsomorphisms
       (JointlyFaithful.of_jointly_reflects_isIso_of_mono (fun _ _ f _ hf ↦ by
         have : Epi f := by
-          have : Mono f.val := inferInstanceAs (Mono ((sheafToPresheaf _ _).map f))
           rw [← Sheaf.isLocallySurjective_iff_epi]
           exact mk'.isLocallySurjective hP _
             (fun Φ ↦ ((isIso_iff_bijective _).1 (hf Φ)).2)
