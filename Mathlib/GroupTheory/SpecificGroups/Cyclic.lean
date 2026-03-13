@@ -104,7 +104,7 @@ instance IsCyclic.commutative [Group α] [IsCyclic α] :
 
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
-@[to_additive (attr := instance_reducible)
+@[to_additive (attr := implicit_reducible)
       /-- A cyclic group is always commutative. This is not an `instance` because often we have
       a better proof of `AddCommGroup`. -/]
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
@@ -330,7 +330,6 @@ open Finset Nat
 
 section Classical
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 @[to_additive IsAddCyclic.card_nsmul_eq_zero_le]
 theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :
@@ -590,7 +589,7 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
     _ = b * a := by group
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
       /-- A group is commutative if the quotient by the center is cyclic. -/]
 def commGroupOfCyclicCenterQuotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G) :
     CommGroup G :=

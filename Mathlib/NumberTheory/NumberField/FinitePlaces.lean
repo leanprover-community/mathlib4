@@ -83,11 +83,15 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
 
 end DVR
 
-namespace NumberField.RingOfIntegers.HeightOneSpectrum
+variable {K : Type*} [Field K] [NumberField K]
+
+namespace NumberField
+
+variable (v : HeightOneSpectrum (𝓞 K))
+
+namespace RingOfIntegers.HeightOneSpectrum
 
 section AbsoluteValue
-
-variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
 /-- The norm of a maximal ideal is `> 1` -/
 lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
@@ -121,7 +125,6 @@ end AbsoluteValue
 end RingOfIntegers.HeightOneSpectrum
 
 section FinitePlace
-variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
 open RingOfIntegers.HeightOneSpectrum
 
@@ -240,7 +243,6 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 K) :
 end FinitePlace
 
 namespace FinitePlace
-variable {K : Type*} [Field K] [NumberField K]
 
 instance : FunLike (FinitePlace K) K ℝ where
   coe w x := w.1 x
@@ -350,8 +352,6 @@ end NumberField
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
-variable {K : Type*} [Field K] [NumberField K]
-
 open NumberField.FinitePlace NumberField.RingOfIntegers
   NumberField.RingOfIntegers.HeightOneSpectrum
 open scoped NumberField
@@ -373,3 +373,32 @@ lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K}
   simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
 
 end IsDedekindDomain.HeightOneSpectrum
+
+section LiesOver
+
+namespace NumberField.HeightOneSpectrum
+
+variable {L : Type*} [Field L] [NumberField L] [Algebra K L]
+variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
+variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
+    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
+    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
+
+local notation "Kv" => v.adicCompletion K
+local notation "Lw" => w.adicCompletion L
+
+open scoped TensorProduct Valued in
+instance : Module.Finite Kv Lw :=
+  let Φ : Kv ⊗[K] L →ₗ[Kv] Lw := Algebra.TensorProduct.lift (Algebra.algHom Kv Kv Lw)
+    (Algebra.algHom K L Lw) (fun _ _ ↦ mul_comm ..) |>.toLinearMap
+  have h_dense : DenseRange Φ := by
+    apply (w.denseRange_algebraMap L).mono
+    rintro _ ⟨l, rfl⟩
+    exact ⟨1 ⊗ₜ l, by simp [Φ, Algebra.algHom]⟩
+  .of_surjective Φ (by
+    rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.closed_of_finiteDimensional.closure_eq]
+    exact h_dense.closure_range)
+
+end NumberField.HeightOneSpectrum
+
+end LiesOver

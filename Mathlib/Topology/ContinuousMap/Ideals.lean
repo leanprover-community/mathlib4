@@ -349,7 +349,6 @@ theorem idealOf_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : S
 
 variable {𝕜}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] :
     ∃ x : X, setOfIdeal I = {x}ᶜ := by
   have h : (idealOfSet 𝕜 (setOfIdeal I)).IsMaximal :=
@@ -407,7 +406,6 @@ end ContinuousMapEval
 
 variable [CompactSpace X] [T2Space X] [RCLike 𝕜]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
   refine ⟨fun x y hxy => ?_, fun φ => ?_⟩
   · contrapose! hxy

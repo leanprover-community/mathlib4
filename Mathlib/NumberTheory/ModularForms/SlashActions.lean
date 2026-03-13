@@ -61,6 +61,7 @@ attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_sl
   | insert i t hi IH => simp [hi, IH]
 
 /-- `SlashAction` induced by a monoid homomorphism. -/
+@[implicit_reducible]
 def monoidHomSlashAction {β G H α : Type*} [Monoid G] [AddMonoid α] [Monoid H]
     [SlashAction β G α] (h : H →* G) : SlashAction β H α where
   map k g := SlashAction.map k (h g)
