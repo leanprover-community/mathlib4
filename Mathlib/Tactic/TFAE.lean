@@ -75,6 +75,7 @@ def tfaeHavePatDecl := leading_parser (withAnonymousAntiquot := false)
 def tfaeHaveDecl := leading_parser (withAnonymousAntiquot := false)
   tfaeHaveIdDecl <|> (ppSpace >> tfaeHavePatDecl) <|> tfaeHaveEqnsDecl
 
+-- Don't put doc-strings on these parsers in order to not override hover doc-strings.
 attribute [nolint docBlame] binder
   tfaeHaveIdLhs tfaeHaveIdDecl tfaeHaveEqnsDecl tfaeHavePatDecl tfaeHaveDecl
 
