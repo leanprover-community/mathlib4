@@ -997,40 +997,27 @@ theorem IsLittleO.add (h₁ : f₁ =o[l] g) (h₂ : f₂ =o[l] g) : (fun x => f�
     ((h₁.forall_isBigOWith <| half_pos cpos).add (h₂.forall_isBigOWith <|
       half_pos cpos)).congr_const (add_halves c)
 
-theorem IsBigOWith.add_add' {g₁ g₂ : α → ℝ} (h₁ : IsBigOWith c₁ l f₁ g₁)
-    (h₂ : IsBigOWith c₂ l f₂ g₂) (hg₁_nonneg : ∀ᶠ x in l, 0 ≤ g₁ x)
-    (hg₂_nonneg : ∀ᶠ x in l, 0 ≤ g₂ x) :
-    IsBigOWith (max c₁ c₂) l (fun x ↦ f₁ x + f₂ x) (fun x ↦ g₁ x + g₂ x) := by
+theorem IsBigOWith.add_add {g₁ g₂ : α → ℝ} (h₁ : IsBigOWith c₁ l f₁ g₁)
+    (h₂ : IsBigOWith c₂ l f₂ g₂) :
+    IsBigOWith (max c₁ c₂) l (fun x ↦ f₁ x + f₂ x) (fun x ↦ ‖g₁ x‖ + ‖g₂ x‖) := by
   rw [IsBigOWith_def] at *
-  filter_upwards [h₁, h₂, hg₁_nonneg, hg₂_nonneg] with x hx₁ hx₂ hgx₁ hgx₂
+  filter_upwards [h₁, h₂] with x hx₁ hx₂
   calc
     ‖f₁ x + f₂ x‖ ≤ c₁ * ‖g₁ x‖ + c₂ * ‖g₂ x‖ := norm_add_le_of_le hx₁ hx₂
     _ ≤ (max c₁ c₂) * ‖g₁ x‖ + (max c₁ c₂) * ‖g₂ x‖ := by
         gcongr <;> simp [le_max_left _ _, le_max_right _ _]
-    _ = (max c₁ c₂) * (g₁ x + g₂ x) := by
-        rw [Real.norm_of_nonneg hgx₁, Real.norm_of_nonneg hgx₂]; ring
-    _ = (max c₁ c₂) * ‖g₁ x + g₂ x‖ := by rw [Real.norm_of_nonneg (add_nonneg hgx₁ hgx₂)]
+    _ = (max c₁ c₂) * ‖‖g₁ x‖ + ‖g₂ x‖‖ := by
+        rw [Real.norm_of_nonneg (add_nonneg (norm_nonneg _) (norm_nonneg _)), mul_add]
 
-theorem IsBigO.add_add {g₁ g₂ : α → ℝ} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =O[l] g₂)
-    (hg₁_nonneg : ∀ᶠ x in l, 0 ≤ g₁ x) (hg₂_nonneg : ∀ᶠ x in l, 0 ≤ g₂ x) :
-    (fun x ↦ f₁ x + f₂ x) =O[l] fun x ↦ g₁ x + g₂ x := by
+theorem IsBigO.add_add {g₁ g₂ : α → ℝ} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =O[l] g₂) :
+    (fun x ↦ f₁ x + f₂ x) =O[l] fun x ↦ ‖g₁ x‖ + ‖g₂ x‖ := by
   obtain ⟨c₁, hc₁⟩ := h₁.isBigOWith
   obtain ⟨c₂, hc₂⟩ := h₂.isBigOWith
-  exact (hc₁.add_add' hc₂ hg₁_nonneg hg₂_nonneg).isBigO
+  exact (hc₁.add_add hc₂).isBigO
 
 theorem IsLittleO.add_add (h₁ : f₁ =o[l] g₁) (h₂ : f₂ =o[l] g₂) :
     (fun x => f₁ x + f₂ x) =o[l] fun x => ‖g₁ x‖ + ‖g₂ x‖ := by
   refine (h₁.trans_le fun x => ?_).add (h₂.trans_le ?_) <;> simp [abs_of_nonneg, add_nonneg]
-
-variable {g₁ g₂ : α → ℝ} in
-theorem IsLittleO.add_add' (h₁ : f₁ =o[l] g₁) (h₂ : f₂ =o[l] g₂)
-    (hg₁_nonneg : ∀ᶠ x in l, 0 ≤ g₁ x) (hg₂_nonneg : ∀ᶠ x in l, 0 ≤ g₂ x) :
-    (fun x => f₁ x + f₂ x) =o[l] fun x => g₁ x + g₂ x := by
-  calc
-    (fun x => f₁ x + f₂ x) =o[l] fun x ↦ ‖g₁ x‖ + ‖g₂ x‖ := h₁.add_add h₂
-    _ =ᶠ[l] fun x ↦ g₁ x + g₂ x := by
-      filter_upwards [hg₁_nonneg, hg₂_nonneg] with x hx₁ hx₂
-      rw [Real.norm_of_nonneg hx₁, Real.norm_of_nonneg hx₂]
 
 theorem IsBigO.add_isLittleO (h₁ : f₁ =O[l] g) (h₂ : f₂ =o[l] g) : (fun x => f₁ x + f₂ x) =O[l] g :=
   h₁.add h₂.isBigO
@@ -1437,61 +1424,55 @@ theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (fun x => ∑ i ∈ s, A
 
 variable {B : ι → α → ℝ}
 
-/-- If each term `A i` of a sum `IsBigO` of `B i` where the `B i` are (eventually) nonnegative real
-functions, then the sum of the `A i` `IsBigO` of the sum of the `B i`. Note the hypothesis
-`hB_nonneg` requires you to bound each `B` below separately. Contrast with `IsBigOWith.sum_congr'`
-which requires a _universal_ bound -/
+/-- If each term `A i` of a sum `IsBigO` of `B i`, then the sum of the `A i` `IsBigO` of the sum
+of the norms of the `B i`. -/
 theorem IsBigOWith.sum_congr
-    (hAB : ∀ i ∈ s, IsBigOWith (C i) l (A i) (B i)) (hB_nonneg : ∀ i ∈ s, 0 ≤ᶠ[l] B i) :
-    IsBigOWith (sSup (C '' s)) l (fun H ↦ ∑ i ∈ s, A i H) (fun H ↦ ∑ i ∈ s, B i H) := by
+    (hAB : ∀ i ∈ s, IsBigOWith (C i) l (A i) (B i)) :
+    IsBigOWith (sSup (C '' s)) l (fun H ↦ ∑ i ∈ s, A i H) (fun H ↦ ∑ i ∈ s, ‖B i H‖) := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [isBigOWith_zero]
   simp only [IsBigOWith_def] at *
-  filter_upwards [(eventually_all_finset s).mpr hB_nonneg, (eventually_all_finset s).mpr hAB]
-    with x hx hx'
+  filter_upwards [(eventually_all_finset s).mpr hAB]
+    with x hx
   calc
     ‖∑ i ∈ s, A i x‖ ≤ ∑ i ∈ s, ‖A i x‖ := norm_sum_le ..
-    _ ≤ ∑ i ∈ s, C i * ‖B i x‖ := Finset.sum_le_sum (fun j hj ↦ hx' j hj)
+    _ ≤ ∑ i ∈ s, C i * ‖B i x‖ := Finset.sum_le_sum (fun j hj ↦ hx j hj)
     _ ≤ ∑ i ∈ s, sSup (C '' s) * ‖B i x‖ := by
         refine Finset.sum_le_sum ?_
         intro j hj; gcongr
         rw [← s.sup'_eq_csSup_image hs, Finset.le_sup'_iff]; use j
-    _ = ∑ i ∈ s, sSup (C '' s) * (B i x) := by
-        refine s.sum_congr rfl ?_
-        intro j hj; congr; exact (Real.norm_of_nonneg (hx j hj))
-    _ = sSup (C '' s) * ∑ i ∈ s, B i x := (Finset.mul_sum ..).symm
-    _ = sSup (C '' s) * ‖∑ i ∈ s, B i x‖ := by
-        congr; exact (Real.norm_of_nonneg (Finset.sum_nonneg fun j hj ↦ hx j hj)).symm
+    _ = sSup (C '' s) * ∑ i ∈ s, ‖B i x‖ := (Finset.mul_sum ..).symm
+    _ = sSup (C '' s) * ‖∑ i ∈ s, ‖B i x‖‖ := by
+      congr; rw [Real.norm_of_nonneg (Finset.sum_nonneg (fun _ _ ↦ norm_nonneg _))]
 
-theorem IsBigO.sum_congr (hAB : ∀ i ∈ s, A i =O[l] B i) (hB_nonneg : ∀ i ∈ s, 0 ≤ᶠ[l] B i) :
-    (fun H => ∑ i ∈ s, A i H) =O[l] fun H => ∑ i ∈ s, B i H := by
+theorem IsBigO.sum_congr (hAB : ∀ i ∈ s, A i =O[l] B i) :
+    (fun H => ∑ i ∈ s, A i H) =O[l] fun H => ∑ i ∈ s, ‖B i H‖ := by
   simp only [IsBigO_def] at *
   choose! C hC using hAB
-  exact ⟨_, IsBigOWith.sum_congr hC hB_nonneg⟩
+  exact ⟨_, IsBigOWith.sum_congr hC⟩
 
 /-- Similar to `IsBigOWith.sum_congr` except the index set can change in the sum. This requires the
-constant in `hAB` to be independent of the index `i`, and hence the `⊤` in `⊤ ×ˢ l`. -/
+constant in `hAB` to be independent of the index `i` and also the big-O relationship to "kick in"
+at the same point along the running variable. Hence the `⊤` in `⊤ ×ˢ l`. -/
 theorem IsBigOWith.sum_congr' {C : ℝ} {i : α → Finset ι}
-    (hAB : IsBigOWith C (⊤ ×ˢ l) A.uncurry B.uncurry) (hB_nonneg : 0 ≤ᶠ[⊤ ×ˢ l] B.uncurry) :
-    IsBigOWith C l (fun H => ∑ j ∈ i H, A j H) (fun H => ∑ j ∈ i H, B j H) := by
+    (hAB : IsBigOWith C (⊤ ×ˢ l) A.uncurry B.uncurry) :
+    IsBigOWith C l (fun H => ∑ j ∈ i H, A j H) (fun H => ∑ j ∈ i H, ‖B j H‖) := by
   simp only [IsBigOWith_def] at *
-  obtain ⟨s₁, hs₁, s₂, hs₂, hbound⟩ := Filter.eventually_prod_iff.mp (hAB.and hB_nonneg)
+  obtain ⟨s₁, hs₁, s₂, hs₂, hbound⟩ := Filter.eventually_prod_iff.mp hAB
   filter_upwards [hs₂] with H hH
   calc
     ‖∑ j ∈ i H, A j H‖ ≤ ∑ j ∈ i H, ‖A j H‖ := norm_sum_le ..
-    _ ≤ ∑ j ∈ i H, C * ‖B j H‖ := Finset.sum_le_sum (fun j _ ↦ (hbound (hs₁ j) hH).1)
-    _ = ∑ j ∈ i H, C * (B j H) := by
-        congr; ext j; congr; exact Real.norm_of_nonneg (hbound (hs₁ j) hH).2
-    _ = C * ∑ j ∈ i H, B j H := (Finset.mul_sum ..).symm
-    _ = C * ‖∑ j ∈ i H, B j H‖ := by
-        congr; exact (Real.norm_of_nonneg (Finset.sum_nonneg fun j _ ↦ (hbound (hs₁ j) hH).2)).symm
+    _ ≤ ∑ j ∈ i H, C * ‖B j H‖ :=
+        Finset.sum_le_sum fun j _ => hbound (Filter.eventually_top.mp hs₁ j) hH
+    _ = C * ∑ j ∈ i H, ‖B j H‖ := (Finset.mul_sum ..).symm
+    _ = C * ‖∑ j ∈ i H, ‖B j H‖‖ := by
+        congr; rw [Real.norm_of_nonneg (Finset.sum_nonneg (fun _ _ ↦ norm_nonneg _))]
 
-theorem IsBigO.sum_congr' {i : α → Finset ι} (hAB : A.uncurry =O[⊤ ×ˢ l] B.uncurry)
-    (hB_nonneg : 0 ≤ᶠ[⊤ ×ˢ l] B.uncurry) :
-    (fun H => ∑ j ∈ i H, A j H) =O[l] (fun H => ∑ j ∈ i H, B j H) := by
+theorem IsBigO.sum_congr' {i : α → Finset ι} (hAB : A.uncurry =O[⊤ ×ˢ l] B.uncurry) :
+    (fun H => ∑ j ∈ i H, A j H) =O[l] (fun H => ∑ j ∈ i H, ‖B j H‖) := by
   simp only [IsBigO_def]
   obtain ⟨C, hC⟩ := hAB.isBigOWith
-  exact ⟨C, hC.sum_congr' hB_nonneg⟩
+  exact ⟨C, hC.sum_congr'⟩
 
 end Sum
 
