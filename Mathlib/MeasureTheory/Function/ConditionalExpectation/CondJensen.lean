@@ -125,7 +125,7 @@ theorem ConvexOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   filter_upwards [h1, h2, h3] with a ha hb hc
   simpa [← ha, ← hb]
 
-theorem ConcaveOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+theorem ConcaveOn.condExp_map_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConcaveOn ℝ s φ) (hφ_cont : UpperSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
     (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     μ[φ ∘ f | m] ≤ᵐ[μ] φ ∘ μ[f | m] := by
@@ -142,6 +142,14 @@ theorem ConvexOn.map_condExp_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] :=
   ConvexOn.map_condExp_le hm hφ_cvx (lowerSemicontinuousOn_univ_iff.2 hφ_cont) (by simp)
     isClosed_univ hf_int hφ_int
+
+theorem ConcaveOn.condExp_map_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+    (hφ_cvx : ConcaveOn ℝ univ φ) (hφ_cont : UpperSemicontinuous φ)
+    (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
+    μ[φ ∘ f | m] ≤ᵐ[μ] φ ∘ μ[f | m] := by
+  filter_upwards [hφ_cvx.neg.map_condExp_le_univ hm hφ_cont.neg hf_int hφ_int.neg,
+    condExp_neg (φ ∘ f) m] with a h ha
+  simp_all [Pi.neg_comp]
 
 /-- In a Banach space `X` with a measure `μ`, then for any `μ`-a.e. strongly measurable function
 `f : α → X`, we have `‖𝔼[f | m])‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
@@ -167,3 +175,11 @@ theorem ConvexOn.map_condExp_le_finiteDimensional [FiniteDimensional ℝ E] (hm 
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] :=
   hφ_cvx.map_condExp_le_univ hm
     (continuousOn_univ.1 (hφ_cvx.continuousOn isOpen_univ)).lowerSemicontinuous hf_int hφ_int
+
+theorem ConcaveOn.condExp_map_le_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
+    [SigmaFinite (μ.trim hm)] (hφ_cvx : ConcaveOn ℝ univ φ) (hf_int : Integrable f μ)
+    (hφ_int : Integrable (φ ∘ f) μ) :
+    μ[φ ∘ f | m] ≤ᵐ[μ] φ ∘ μ[f | m] := by
+  filter_upwards [hφ_cvx.neg.map_condExp_le_finiteDimensional hm hf_int hφ_int.neg,
+    condExp_neg (φ ∘ f) m] with a h ha
+  simp_all [Pi.neg_comp]
