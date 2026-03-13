@@ -472,6 +472,8 @@ instance : SemilatticeInf (Concept α β r) :=
 instance : SemilatticeSup (Concept α β r) :=
   (toDual.injective.comp intent_injective).semilatticeSup _ (by simp) (by simp) fun _ _ ↦ rfl
 
+instance : Lattice (Concept α β r) where
+
 @[simp]
 theorem ofObjects_le_iff : ofObjects r s ≤ c ↔ s ⊆ c.extent := by
   rw [← extent_subset_extent_iff]
@@ -493,14 +495,6 @@ theorem ofAttributes_le_of_subset (h : c.intent ⊆ t) : ofAttributes r t ≤ c 
 
 theorem ofObject_le_ofAttribute_iff {a b} : ofObject r a ≤ ofAttribute r b ↔ r a b := by
   simp
-
-instance instLatticeConcept : Lattice (Concept α β r) where
-  sup := (· ⊔ ·)
-  le_sup_left _ _ := intent_subset_intent_iff.1 inter_subset_left
-  le_sup_right _ _ := intent_subset_intent_iff.1 inter_subset_right
-  sup_le _ _ _ := by
-    simp_rw [← intent_subset_intent_iff]
-    exact subset_inter
 
 @[simps!]
 instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where
