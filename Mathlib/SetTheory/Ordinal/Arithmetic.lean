@@ -597,12 +597,9 @@ theorem lift_mul (a b : Ordinal.{v}) : lift.{u} (a * b) = lift.{u} a * lift.{u} 
 theorem card_mul (a b) : card (a * b) = card a * card b :=
   Quotient.inductionOn₂ a b fun ⟨α, _r, _⟩ ⟨β, _s, _⟩ => mul_comm #β #α
 
-instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
-  ⟨fun a b c =>
-    Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
-      Quotient.sound
-        ⟨⟨sumProdDistrib _ _ _, by
-          rintro ⟨a₁ | a₁, a₂⟩ ⟨b₁ | b₁, b₂⟩ <;> simp [Prod.lex_def]⟩⟩⟩
+instance leftDistribClass : LeftDistribClass Ordinal where
+  left_distrib a b c := Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ↦
+    Quotient.sound ⟨⟨sumProdDistrib .., by simp [Prod.lex_def]⟩⟩
 
 theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
