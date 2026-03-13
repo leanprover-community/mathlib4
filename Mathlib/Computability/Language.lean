@@ -287,8 +287,9 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
 
 instance : KleeneAlgebra (Language α) where
   __ : OrderBot (Language α) := inferInstance
-  one_add_mul_kstar := one_add_self_mul_kstar_eq_kstar
-  one_add_kstar_mul := one_add_kstar_mul_self_eq_kstar
+  one_le_kstar a _ hl := ⟨[], hl, by simp⟩
+  mul_kstar_le_kstar a := (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right
+  kstar_mul_le_kstar a := (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right
   kstar_mul_le_self l m h := by
     rw [kstar_eq_iSup_pow, iSup_mul]
     refine iSup_le fun n ↦ ?_
