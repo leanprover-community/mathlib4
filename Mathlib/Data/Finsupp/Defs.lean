@@ -472,6 +472,10 @@ theorem embDomain_eq_zero {f : α ↪ β} {l : α →₀ M} : embDomain f l = 0 
 theorem embDomain_mapRange (f : α ↪ β) (g : M → N) (p : α →₀ M) (hg : g 0 = 0) :
     embDomain f (mapRange g hg p) = mapRange g hg (embDomain f p) := by grind
 
+@[simp]
+lemma embDomain_refl : embDomain (M := M) (Function.Embedding.refl α) = id := by
+  ext; simp [embDomain_apply]
+
 end EmbDomain
 
 /-! ### Declarations about `zipWith` -/
