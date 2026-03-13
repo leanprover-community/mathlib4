@@ -415,15 +415,15 @@ constant depending only on `q` times the `N`th power of the mutiplicative height
 theorem mulHeight_eval_ge [Nonempty ι'] {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (hq : ∀ a, (q a).IsHomogeneous M) (p : ι' → MvPolynomial ι K) {x : ι → K}
     (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
-    mulHeight (fun j ↦ (p j).eval x) ≥
-      (Nat.card ι' ^ totalWeight K * max (mulHeightBound q) 1)⁻¹ * mulHeight x ^ N := by
+    (Nat.card ι' ^ totalWeight K * max (mulHeightBound q) 1)⁻¹ * mulHeight x ^ N ≤
+      mulHeight (fun j ↦ (p j).eval x) := by
   let q' : ι × ι' → K := fun a ↦ (q a).eval x
   have H : mulHeight x ^ (M + N) ≤
       Nat.card ι' ^ totalWeight K * mulHeight q' * mulHeight fun j ↦ (p j).eval x := by
     rw [← mulHeight_pow x (M + N)]
     have : x ^ (M + N) = fun k ↦ ∑ j, (q (k, j)).eval x * (p j).eval x := funext fun k ↦ (h k).symm
     simpa [this] using mulHeight_linearMap_apply_le q' _
-  rw [ge_iff_le, inv_mul_le_iff₀ ?hC, ← mul_le_mul_iff_left₀ (by positivity : 0 < mulHeight x ^ M)]
+  rw [inv_mul_le_iff₀ ?hC, ← mul_le_mul_iff_left₀ (by positivity : 0 < mulHeight x ^ M)]
   case hC => exact mul_pos (mod_cast Nat.one_le_pow _ _ Nat.card_pos) <| by positivity
   rw [← pow_add, add_comm]
   grw [H, mulHeight_eval_le hq x]
@@ -442,7 +442,7 @@ theorem mulHeight_eval_ge' [Nonempty ι'] {M N : ℕ} {q : ι × ι' → MvPolyn
     (hq : ∀ a, (q a).IsHomogeneous M) :
     ∃ C > 0, ∀ (p : ι' → MvPolynomial ι K) {x : ι → K}
       (_h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)),
-      mulHeight (fun j ↦ (p j).eval x) ≥ C * mulHeight x ^ N :=
+      C * mulHeight x ^ N ≤ mulHeight (fun j ↦ (p j).eval x) :=
   have : 0 < Nat.card ι' := Nat.card_pos
   ⟨_, by positivity, mulHeight_eval_ge hq⟩
 
@@ -457,8 +457,8 @@ constant depending only on `q` plus `N` times the logarithmic height of `x`. -/
 theorem logHeight_eval_ge [Nonempty ι'] {M : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (hq : ∀ a, (q a).IsHomogeneous M) (p : ι' → MvPolynomial ι K) {x : ι → K} {N : ℕ}
     (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
-    logHeight (fun j ↦ (p j).eval x) ≥
-      -log (Nat.card ι' ^ totalWeight K * max (mulHeightBound q) 1) + N * logHeight x:= by
+    -log (Nat.card ι' ^ totalWeight K * max (mulHeightBound q) 1) + N * logHeight x ≤
+      logHeight (fun j ↦ (p j).eval x) := by
   simp only [logHeight_eq_log_mulHeight]
   have : (Nat.card ι' : ℝ) ^ totalWeight K ≠ 0 := by simp
   pull (disch := first | assumption | positivity) log
@@ -477,7 +477,7 @@ theorem logHeight_eval_ge' [Nonempty ι'] {M : ℕ} {q : ι × ι' → MvPolynom
     (hq : ∀ a, (q a).IsHomogeneous M) :
     ∃ C, ∀ (p : ι' → MvPolynomial ι K) {x : ι → K} {N : ℕ}
       (_h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)),
-      logHeight (fun j ↦ (p j).eval x) ≥ C + N * logHeight x :=
+      C + N * logHeight x ≤ logHeight (fun j ↦ (p j).eval x) :=
   ⟨_, logHeight_eval_ge hq⟩
 
 end Height
