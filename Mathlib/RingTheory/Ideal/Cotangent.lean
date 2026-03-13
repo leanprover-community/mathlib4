@@ -374,20 +374,10 @@ lemma spanFinrank_le_of_surjective (fg : (maximalIdeal R).FG) {R' : Type*} [Comm
 
 lemma spanFinrank_eq_of_ringEquiv {R' : Type*} [CommRing R'] [IsLocalRing R'] (e : R ≃+* R') :
     (maximalIdeal R).spanFinrank = (maximalIdeal R').spanFinrank := by
-  by_cases fgR : (maximalIdeal R).FG
-  · have eqmap : maximalIdeal R' = (maximalIdeal R).map e := by
-      rw [← Ideal.comap_symm, eq_comm]
-      exact (((local_hom_TFAE _).out 0 4).mp (e.symm.surjective.isLocalHom (e.symm : R' →+* R)))
-    refine le_antisymm (spanFinrank_le_of_surjective ?_ e.symm.toRingHom e.symm.surjective)
-      (spanFinrank_le_of_surjective fgR e.toRingHom e.surjective)
-    simpa only [eqmap] using fgR.map e.toRingHom
-  · by_cases fgR' : (maximalIdeal R').FG
-    · have eqmap' : maximalIdeal R = (maximalIdeal R').map e.symm := by
-        rw [Ideal.map_symm, eq_comm]
-        exact ((local_hom_TFAE _).out 0 4).mp (e.surjective.isLocalHom (e : R →+* R'))
-      absurd fgR
-      simpa only [eqmap'] using fgR'.map e.symm.toRingHom
-    · rw [Submodule.spanFinrank_of_not_fg fgR, Submodule.spanFinrank_of_not_fg fgR']
+  have eqmap : maximalIdeal R = (maximalIdeal R').map e.symm := by
+    rw [Ideal.map_symm, eq_comm]
+    exact ((local_hom_TFAE _).out 0 4).mp (e.surjective.isLocalHom (e : R →+* R'))
+  rw [eqmap, Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv]
 
 end spanRank
 

@@ -313,7 +313,7 @@ lemma spanRank_map_eq_of_injective [RingHomSurjective σ] (f : M →ₛₗ[σ] N
   simpa using lift_spanRank_map_eq_of_injective f hf p
 
 lemma spanFinrank_map_eq_of_injective [RingHomSurjective σ] (f : M →ₛₗ[σ] L)
-    (hf : Function.Injective f) {p : Submodule R M} (hp : p.FG) :
+    (hf : Function.Injective f) {p : Submodule R M} :
     (p.map f).spanFinrank = p.spanFinrank := by
   rw [Submodule.spanFinrank, Submodule.spanFinrank, ← Cardinal.toNat_lift.{u, v},
     ← Cardinal.toNat_lift.{v, u}, lift_spanRank_map_eq_of_injective f hf p]
@@ -389,7 +389,7 @@ lemma Ideal.spanFinrank_map_le_of_fg (f : R →+* T) {I : Ideal R} (hI : I.FG) :
     ← Cardinal.lift_natCast.{v}, ← Submodule.FG.spanRank_eq_spanFinrank hI]
   exact I.lift_spanRank_map_le f
 
-lemma Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv (f : R ≃+* T) {I : Ideal R} :
+lemma Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv (f : R ≃+* T) (I : Ideal R) :
     (I.map f).spanFinrank = I.spanFinrank := by
   rw [Submodule.spanFinrank, Submodule.spanFinrank, ← Cardinal.toNat_lift.{u, v},
     ← Cardinal.toNat_lift.{v, u}, I.lift_spanRank_map_eq_of_ringEquiv f]
