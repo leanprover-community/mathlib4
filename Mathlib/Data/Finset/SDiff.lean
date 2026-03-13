@@ -82,9 +82,19 @@ theorem notMem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by grind
 
 theorem notMem_sdiff_of_notMem_left (h : a ∉ s) : a ∉ s \ t := by simp [h]
 
-theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t := by grind
+theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t := by
+  ext a
+  simp only [mem_union, mem_sdiff]
+  refine ⟨?_, fun ha ↦ ?_⟩
+  · rintro (ha | ⟨ha, -⟩)
+    · exact h ha
+    · exact ha
+  · by_cases has : a ∈ s
+    · exact Or.inl has
+    · exact Or.inr ⟨ha, has⟩
 
-theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂ \ s₁ ∪ s₁ = s₂ := by grind
+theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂ \ s₁ ∪ s₁ = s₂ := by
+  rw [union_comm, union_sdiff_of_subset h]
 
 /-- See also `Finset.sdiff_inter_right_comm`. -/
 lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := inf_sdiff_assoc ..
