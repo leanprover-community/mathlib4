@@ -85,7 +85,7 @@ noncomputable instance : Norm (⨂[𝕜] i, E i) :=
 
 theorem norm_def (x : ⨂[𝕜] i, E i) :
     ‖x‖ = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.val) := rfl
-    
+
 @[deprecated (since := "2026-03-13")] alias projectiveSeminormFun := norm
 
 theorem projectiveSeminorm_zero : ‖(0 : ⨂[𝕜] i, E i)‖ = 0 :=
