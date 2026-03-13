@@ -376,8 +376,7 @@ lemma Ideal.spanRank_map_le (f : R →+* S) (I : Ideal R) : (I.map f).spanRank �
   simpa using I.lift_spanRank_map_le f
 
 open Submodule in
-variable {I} in
-lemma Ideal.spanFinrank_map_le_of_fg (f : R →+* T) (I : Ideal R) (hI : I.FG) :
+lemma Ideal.spanFinrank_map_le_of_fg (f : R →+* T) {I : Ideal R} (hI : I.FG) :
     (I.map f).spanFinrank ≤ I.spanFinrank := by
   nth_rw 1 [← Submodule.FG.generators_ncard hI, ← I.span_generators, Ideal.submodule_span_eq,
     Ideal.map_span]
