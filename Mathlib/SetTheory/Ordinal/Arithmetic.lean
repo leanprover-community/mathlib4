@@ -776,6 +776,9 @@ theorem add_mul_of_isSuccLimit {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLim
     (a + b) * c = a * c :=
   add_mul_limit_aux ba l fun c' _ => add_mul_succ c' ba
 
+protected theorem mul_two (o : Ordinal) : o * 2 = o + o := by
+  rw [← one_add_one_eq_two, mul_add, mul_one]
+
 /-! ### Division on ordinals -/
 
 /-- `a / b` is the unique ordinal `q` satisfying `a = b * q + r` with `r < b`. -/
@@ -1015,6 +1018,24 @@ theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c =
 @[simp]
 theorem mod_mod (a b : Ordinal) : a % b % b = a % b :=
   mod_mod_of_dvd a dvd_rfl
+
+theorem lt_mul_iff {a b c : Ordinal} : a < b * c ↔ ∃ q < c, ∃ r < b, a = b * q + r := by
+  obtain rfl | hb₀ := eq_or_ne b 0; · simp
+  refine ⟨fun h ↦ ⟨_, (lt_mul_iff_div_lt hb₀).1 h, _, mod_lt a hb₀, (div_add_mod ..).symm⟩, ?_⟩
+  rintro ⟨q, hq, r, hr, rfl⟩
+  apply (add_right_strictMono hr).trans_le
+  simp_rw [← mul_add_one]
+  exact mul_le_mul_right (add_one_le_iff.2 hq) _
+
+theorem forall_lt_mul {b c : Ordinal} {P : Ordinal → Prop} :
+    (∀ a < b * c, P a) ↔ ∀ q < c, ∀ r < b, P (b * q + r) := by
+  simp_rw [lt_mul_iff]
+  aesop
+
+theorem exists_lt_mul {b c : Ordinal} {P : Ordinal → Prop} :
+    (∃ a < b * c, P a) ↔ ∃ q < c, ∃ r < b, P (b * q + r) := by
+  simp_rw [lt_mul_iff]
+  aesop
 
 /-! ### Casting naturals into ordinals, compatibility with operations -/
 
