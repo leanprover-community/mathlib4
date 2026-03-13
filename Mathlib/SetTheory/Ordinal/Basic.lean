@@ -722,9 +722,8 @@ theorem lift_typein_top {r : α → α → Prop} {s : β → β → Prop}
 
 @[simp]
 theorem typein_ordinal (o : Ordinal.{u}) : typein LT.lt o = lift.{u + 1} o := by
-  convert ToType.mk.toRelIsoLT.ordinal_lift_type_eq
-  · rw [lift_id'.{u, u+1}, type_Iio_lt]
-  · rw [type_toType]
+  nth_rw 2 [← o.type_toType]
+  rw [← ToType.mk.toRelIsoLT.ordinal_lift_type_eq, lift_id'.{u, u + 1}, type_Iio_lt]
 
 theorem type_lt_Iio (o : Ordinal.{u}) : typeLT (Iio o) = lift.{u + 1} o := by simp
 
