@@ -246,9 +246,6 @@ lemma charFun_multivariateGaussian (hS : S.PosSemidef) (x : EuclideanSpace ℝ �
       exp (⟪x, μ⟫ * I - x ⬝ᵥ S *ᵥ x / 2) := by
   simp [IsGaussian.charFun_eq', covarianceBilin_multivariateGaussian hS]
 
-variable {ι : Type*} [DecidableEq ι] {I J : Finset ι}
-  {μ : EuclideanSpace ℝ I} {S : Matrix I I ℝ} {hS : S.PosSemidef}
-
 set_option backward.isDefEq.respectTransparency false in
 /-- If one restricts a multivariate Gaussian measure indexed by a finite set `I` to
 coordinates indexed by `J ⊆ I`, one obtains the multivariate Gaussian measure whose
