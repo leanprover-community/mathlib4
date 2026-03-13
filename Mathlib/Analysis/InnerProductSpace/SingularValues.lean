@@ -173,27 +173,21 @@ theorem injective_theorem : Function.Injective T
 
 theorem card_support_singularValues : T.singularValues.support.card = finrank 𝕜 T.range := by
   have hS : ∀ m ∈ T.singularValues.support, m < finrank 𝕜 E := by
-    intro m hm
-    rw [Finsupp.mem_support_iff, ← zero_lt_iff] at hm
-    contrapose! hm
-    rw [le_zero_iff]
-    exact singularValues_of_finrank_le T hm
+    grind [singularValues_of_finrank_le]
   have hT := T.isSymmetric_adjoint_comp_self
   rw [← T.singularValues.support.card_attachFin hS]
+  have (i : Fin _) : T.isSymmetric_adjoint_comp_self.eigenvalues rfl i = 0 ↔
+    T.isSymmetric_adjoint_comp_self.eigenvalues rfl i ≤ 0 := by
+    grind [T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i]
   calc
-    (T.singularValues.support.attachFin hS).card
-    _ = ({i | ↑(hT.eigenvalues rfl i) = (0 : 𝕜)} : Finset _)ᶜ.card := by
+    (T.singularValues.support.attachFin hS).card =
+      ({i | ↑(hT.eigenvalues rfl i) = (0 : 𝕜)} : Finset _)ᶜ.card := by
       congr with i
-      have : 0 ≤ hT.eigenvalues rfl i :=
-        T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i
-      have : T.isSymmetric_adjoint_comp_self.eigenvalues rfl i = 0 ↔
-        T.isSymmetric_adjoint_comp_self.eigenvalues rfl i ≤ 0 := by constructor <;> order
       simp [T.singularValues_fin rfl, this]
-    _ = finrank 𝕜 E - ({i | ↑(hT.eigenvalues rfl i) = (0 : 𝕜)} : Finset _).card := by
+    _ = finrank 𝕜 E - Finset.card {i | hT.eigenvalues rfl i = (0 : 𝕜)} := by
       rw [Finset.card_compl]; simp
     _ = finrank 𝕜 E - finrank 𝕜 (T.adjoint ∘ₗ T).ker := by
-      rw [hT.card_filter_eigenvalues_eq rfl (μ := 0) sorry]
-      rw [End.eigenspace_zero]
+      rw [hT.card_filter_eigenvalues_eq rfl (μ := 0) sorry, End.eigenspace_zero]
     _ = finrank 𝕜 (T.adjoint ∘ₗ T).range := by
       simp [← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker]
     _ = finrank 𝕜 T.range := by
