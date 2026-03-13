@@ -61,7 +61,6 @@ noncomputable def linearYonedaObjResProjectiveResolutionIso
         ext
         simp [resCoindHomEquiv, resCoindToHom_hom_hom_apply_coe S.subtype, hom_comm_apply])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hⁿ(G, Coind_S^G(A)) ≅ Hⁿ(S, A).` -/
 noncomputable def coindIso (A : Rep k S) (n : ℕ) :

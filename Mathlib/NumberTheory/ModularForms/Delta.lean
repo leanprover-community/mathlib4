@@ -52,7 +52,6 @@ local notation "𝕢" => Periodic.qParam
 
 section auxiliary
 
-set_option backward.isDefEq.respectTransparency false in
 lemma csqrt_pow_24_eq {z : ℂ} (hz : z ≠ 0) : sqrt z ^ 24 = z ^ 12 := by
   rw [sqrt_eq_exp hz, ← exp_nat_mul]
   ring_nf

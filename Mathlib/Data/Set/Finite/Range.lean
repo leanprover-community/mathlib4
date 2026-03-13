@@ -96,4 +96,12 @@ theorem Finite.dependent_image {s : Set α} (hs : s.Finite) (F : ∀ i ∈ s, β
 
 end SetFiniteConstructors
 
+lemma Finite.exists_subset_finite_image_eq {f : α → β} {s : Set α} {u : Set β}
+    (hu : u.Finite) (hsu : u ⊆ f '' s) :
+    ∃ᵉ (t ⊆ s) (_ : t.Finite), f '' t = u := by
+  have : Finite u := Finite.to_subtype hu
+  choose g hg hg' using hsu
+  let g' (x : u) : α := g x.property
+  exact ⟨range g', fun a ha ↦ by aesop, finite_range _, by aesop⟩
+
 end Set

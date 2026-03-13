@@ -530,7 +530,6 @@ lemma shiftFunctorIso_ofHasShiftOfFullyFaithful (a : A) :
 
 end hasShiftOfFullyFaithful
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_shiftFunctorComm
     [AddCommMonoid A] [HasShift C A] [HasShift D A]
