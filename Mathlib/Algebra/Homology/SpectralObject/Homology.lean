@@ -96,7 +96,7 @@ lemma dKernelSequence_exact
   dsimp at hx₂ ⊢
   obtain ⟨A₁, π₁, _, y₂, hy₂⟩ :=
     surjective_up_to_refinements_of_epi (X.πE f₃ f₄ f₅ n₀ n₁ n₂) x₂
-  have hy₂' := hy₂ =≫ (X.d f₁ f₂ f₃ f₄ f₅ n₀ n₁ n₂ n₃ ≫ X.ιE ..)
+  have hy₂' := hy₂ =≫ X.d f₁ f₂ f₃ f₄ f₅ n₀ n₁ n₂ n₃ ≫ X.ιE ..
   simp only [assoc, reassoc_of% hx₂, zero_comp, comp_zero, πE_d_ιE] at hy₂'
   obtain ⟨A₂, π₂, _, y₁, hy₁⟩ :=
     ((X.sequenceΨ_exact f₂ f₃ f₄ f₂₃ h₂₃ _ rfl n₁ n₂).exact 0).exact_up_to_refinements y₂ hy₂'.symm
