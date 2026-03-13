@@ -481,7 +481,7 @@ lemma preservesFiniteLimits_comp_iff :
     preservesLimit_of_preserves_limit_cone
       (KernelFork.isLimitMapConeEquiv _ _
         (isLimitOfPreserves L (kernelIsKernel f'.hom)))
-          ((KernelFork.isLimitMapConeEquiv _ G).2
+          ((KernelFork.isLimitMapConeEquiv _ G).symm
             ((KernelFork.isLimitMapConeEquiv _ (L ⋙ G)).1
               (isLimitOfPreserves (L ⋙ G) (kernelIsKernel f'.hom))))
   exact preservesLimit_of_iso_diagram G
