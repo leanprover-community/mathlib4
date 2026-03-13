@@ -909,26 +909,6 @@ lemma summable_variance_centered {Ω : Type*} [MeasurableSpace Ω] {μ : Measure
   intro n
   exact (variance_centered_eq (μ := μ) X hX n).symm
 
-lemma partialSum_centered_eq_sub_sum_integral {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    (X : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :
-    partialSum (centered μ X) n ω =
-      partialSum X n ω - ∑ i ∈ Finset.range n, μ[X i] := by
-  calc
-    partialSum (centered μ X) n ω = ∑ i ∈ Finset.range n, (X i ω - μ[X i]) := by
-      simp [partialSum, centered]
-    _ = (∑ i ∈ Finset.range n, X i ω) - ∑ i ∈ Finset.range n, μ[X i] := by
-      rw [Finset.sum_sub_distrib]
-    _ = partialSum X n ω - ∑ i ∈ Finset.range n, μ[X i] := by
-      simp [partialSum]
-
-lemma partialSum_eq_partialSum_centered_add_sum_integral
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    (X : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :
-    partialSum X n ω =
-      partialSum (centered μ X) n ω + ∑ i ∈ Finset.range n, μ[X i] := by
-  rw [partialSum_centered_eq_sub_sum_integral (μ := μ) X n ω]
-  ring
-
 theorem kolmogorov_two_series
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ)
@@ -954,8 +934,7 @@ theorem kolmogorov_two_series
   rcases hω with ⟨x, hx⟩
   refine ⟨x + ∑' i, μ[X i], ?_⟩
   refine Filter.Tendsto.congr' (Filter.Eventually.of_forall fun n => ?_) (hx.add hmean_tendsto)
-  have hEq := partialSum_eq_partialSum_centered_add_sum_integral (μ := μ) X n ω
-  simpa [Y] using hEq
+  simp [Y]
 
 end Real
 
