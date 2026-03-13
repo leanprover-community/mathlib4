@@ -37,7 +37,7 @@ namespace SpectralObject
 
 variable (X : SpectralObject C ι)
 
-section
+section ExactSequences
 
 variable {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
   (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅)
@@ -103,7 +103,7 @@ lemma dKernelSequence_exact
   simp [sequenceΨ, hy₂, reassoc_of% hy₁, X.πE_map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃)
     (threeδ₁Toδ₀ f₂ f₃ f₄ f₂₃) n₀ n₁ n₂]
 
-end
+end ExactSequences
 
 variable {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
   (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅) (f₆ : i₅ ⟶ i₆) (f₇ : i₆ ⟶ i₇)
