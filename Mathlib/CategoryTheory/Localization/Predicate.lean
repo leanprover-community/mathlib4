@@ -268,7 +268,8 @@ lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*)
     ((whiskeringLeft C D E).obj L).Faithful :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
 
-/-- The precomposition with a localization functor gives fully faithful functors. -/
+/-- The precomposition with a localization functor gives fully faithful functors
+between functor categories. -/
 def fullyFaithfulWhiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category* E] :
     ((whiskeringLeft C D E).obj L).FullyFaithful := by
   have := full_whiskeringLeft L W E
