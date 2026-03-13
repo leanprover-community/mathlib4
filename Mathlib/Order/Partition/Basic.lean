@@ -257,7 +257,6 @@ lemma subset_sUnion_and_mem_iff_mem (hSP : S ⊆ P) : t ⊆ ⋃₀ S ∧ t ∈ P
   obtain rfl := eq_of_mem_of_mem htP (hSP hsS) hxt hxs
   exact hsS
 
-@[simp]
 lemma subset_sUnion_iff_mem (ht : t ∈ P) (hSP : S ⊆ P.parts) : t ⊆ ⋃₀ S ↔ t ∈ S := by
   rw [← subset_sUnion_and_mem_iff_mem hSP]
   simp [ht]
