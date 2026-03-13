@@ -359,6 +359,11 @@ theorem gcd_zero_right' [GCDMonoid α] (a : α) : Associated (gcd a 0) a :=
   associated_of_dvd_dvd (gcd_dvd_left a 0) (dvd_gcd (dvd_refl a) (dvd_zero _))
 
 @[simp]
+theorem gcd_zero_zero [GCDMonoid α] : gcd (0 : α) 0 = 0 := by
+  rw [← zero_dvd_iff]
+  apply dvd_gcd <;> rfl
+
+@[simp]
 theorem gcd_eq_zero_iff [GCDMonoid α] (a b : α) : gcd a b = 0 ↔ a = 0 ∧ b = 0 :=
   Iff.intro
     (fun h => by
@@ -366,9 +371,7 @@ theorem gcd_eq_zero_iff [GCDMonoid α] (a b : α) : gcd a b = 0 ↔ a = 0 ∧ b 
       let ⟨cb, hb⟩ := gcd_dvd_right a b
       rw [h, zero_mul] at ha hb
       exact ⟨ha, hb⟩)
-    fun ⟨ha, hb⟩ => by
-    rw [ha, hb, ← zero_dvd_iff]
-    apply dvd_gcd <;> rfl
+    fun ⟨ha, hb⟩ => ha.symm ▸ hb.symm ▸ gcd_zero_zero
 
 theorem gcd_ne_zero_of_left [GCDMonoid α] {a b : α} (ha : a ≠ 0) : gcd a b ≠ 0 := by
   simp_all
