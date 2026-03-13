@@ -92,12 +92,6 @@ section ConvexCone
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
 variable {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
 
-/-- Every submodule can be turned into a pointed cone by restricting to nonnegative scalars. -/
-@[coe]
-abbrev ofSubmodule (S : Submodule R E) : PointedCone R E := S.restrictScalars _
-
-instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
-
 /-- Every pointed cone is a convex cone. -/
 @[coe]
 def toConvexCone (C : PointedCone R E) : ConvexCone R E where
