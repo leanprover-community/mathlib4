@@ -650,13 +650,9 @@ theorem le_iff_mem {x : A} {s : Subalgebra R A} (hs : IsClosed (s : Set A)) :
 instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
+open scoped IsMulCommutative in
 instance [T2Space A] {x : A} : CommSemiring (elemental R x) :=
-  commSemiringTopologicalClosure _
-    letI : CommSemiring (adjoin R {x}) :=
-      adjoinCommSemiringOfComm R fun y hy z hz => by
-        rw [mem_singleton_iff] at hy hz
-        rw [hy, hz]
-    fun _ _ => mul_comm _ _
+  commSemiringTopologicalClosure _ mul_comm
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
     [IsTopologicalSemiring A] [Algebra R A] (x : A) :
