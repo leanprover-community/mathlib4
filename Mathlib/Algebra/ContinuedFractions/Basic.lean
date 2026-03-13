@@ -27,7 +27,7 @@ convergents. We follow the naming conventions from Wikipedia and [wall2018analyt
 ## Implementation notes
 
 1. The most commonly used kind of continued fractions in the literature are regular continued
-fractions. We hence just call them `ContFract` in the library.
+   fractions. We hence just call them `ContFract` in the library.
 2. We use sequences from `Data.Seq` to encode potentially infinite sequences.
 
 ## References
