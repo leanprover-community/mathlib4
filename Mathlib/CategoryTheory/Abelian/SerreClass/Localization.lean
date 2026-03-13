@@ -482,7 +482,7 @@ lemma preservesFiniteLimits_comp_iff :
       (KernelFork.isLimitMapConeEquiv _ _
         (isLimitOfPreserves L (kernelIsKernel f'.hom)))
           ((KernelFork.isLimitMapConeEquiv _ G).symm
-            ((KernelFork.isLimitMapConeEquiv _ (L ⋙ G)).1
+            (KernelFork.isLimitMapConeEquiv _ (L ⋙ G)
               (isLimitOfPreserves (L ⋙ G) (kernelIsKernel f'.hom))))
   exact preservesLimit_of_iso_diagram G
     (show parallelPair (L.map f'.hom) 0 ≅ parallelPair f 0 from
