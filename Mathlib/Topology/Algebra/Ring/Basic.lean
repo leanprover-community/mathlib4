@@ -52,30 +52,72 @@ class IsTopologicalSemiring [TopologicalSpace R] [NonUnitalNonAssocSemiring R] :
 /-- A topological ring is a ring `R` where addition, multiplication and negation are continuous.
 
 If `R` is a (unital) ring, then continuity of negation can be derived from continuity of
-multiplication as it is multiplication with `-1`. (See
-`IsTopologicalSemiring.continuousNeg_of_mul` and
-`topological_semiring.to_topological_add_group`) -/
+multiplication as it is multiplication with `-1`. (See `IsTopologicalSemiring.continuousNeg_of_mul`
+and `IsTopologicalSemiring.toIsTopologicalRing`) -/
 class IsTopologicalRing [TopologicalSpace R] [NonUnitalNonAssocRing R] : Prop
     extends IsTopologicalSemiring R, ContinuousNeg R
 
+/-- a semitopological semiring is a semiring `R` where addition is jointly continuous and
+multiplication is continuous in each variable separately.
+We allow for non-unital and non-associative semirings as well.
+
+The `IsSemitopologicalSemiring` class should *only* be instantiated in the presence of a
+`NonUnitalNonAssocSemiring` instance; if there is an instance of `NonUnitalNonAssocRing`,
+then `IsSemitopologicalRing` should be used. Note: in the presence of `NonAssocRing`, these classes
+are mathematically equivalent (see `IsTopologicalSemiring.continuousNeg_of_mul` or
+`IsSemitopologicalSemiring.toIsTopologicalRing`). -/
+class IsSemitopologicalSemiring (R : Type*) [TopologicalSpace R] [NonUnitalNonAssocSemiring R]
+  extends ContinuousAdd R, SeparatelyContinuousMul R
+
+/-- a semitopological ring is a ring `R` where addition is jointly continuous and
+multiplication is continuous in each variable separately, and negation is continuous as well.
+We allow for non-unital and non-associative rings as well.
+
+If `R` is a (unital) ring, then continuity of negation can be derived from continuity of
+multiplication as it is multiplication with `-1`. (See `IsTopologicalSemiring.continuousNeg_of_mul`
+and `IsSemitopologicalSemiring.toIsSemitopologicalRing`) -/
+class IsSemitopologicalRing (R : Type*) [TopologicalSpace R] [NonUnitalNonAssocRing R]
+  extends IsSemitopologicalSemiring R, ContinuousNeg R
+
 variable {R}
 
-/-- If `R` is a ring with a continuous multiplication, then negation is continuous as well since it
-is just multiplication with `-1`. -/
-theorem IsTopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [NonAssocRing R]
-    [ContinuousMul R] : ContinuousNeg R where
-  continuous_neg := by
-    simpa using (continuous_const.fun_mul continuous_id : Continuous fun x : R => -1 * x)
+/-- If `R` is a ring with a separately continuous multiplication, then negation is continuous as
+well since it is just multiplication with `-1`. -/
+theorem IsSemitopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [NonAssocRing R]
+    [SeparatelyContinuousMul R] : ContinuousNeg R where
+  continuous_neg := by simpa using continuous_id.const_mul (-1 : R)
+
+@[deprecated (since := "2026-03-13")] alias IsTopologicalSemiring.continuousNeg_of_mul :=
+  IsSemitopologicalSemiring.continuousNeg_of_mul
+
+/-- If `R` is a ring which is a semitopological semiring, then it is automatically a
+semitopological ring. This exists so that one can place a topological ring structure on `R` without
+explicitly proving `continuous_neg`. -/
+theorem IsSemitopologicalSemiring.toIsSemitopologicalRing [TopologicalSpace R] [NonAssocRing R]
+    (_ : IsSemitopologicalSemiring R) : IsSemitopologicalRing R where
+  toContinuousNeg := IsSemitopologicalSemiring.continuousNeg_of_mul
 
 /-- If `R` is a ring which is a topological semiring, then it is automatically a topological
 ring. This exists so that one can place a topological ring structure on `R` without explicitly
 proving `continuous_neg`. -/
 theorem IsTopologicalSemiring.toIsTopologicalRing [TopologicalSpace R] [NonAssocRing R]
     (_ : IsTopologicalSemiring R) : IsTopologicalRing R where
-  toContinuousNeg := IsTopologicalSemiring.continuousNeg_of_mul
+  toContinuousNeg := IsSemitopologicalSemiring.continuousNeg_of_mul
+
+instance (priority := 100) IsTopologicalRing.toIsSemitopologicalRing (R : Type*)
+    [TopologicalSpace R] [NonUnitalNonAssocRing R] [IsTopologicalRing R] :
+    IsSemitopologicalRing R where
+
+instance (priority := 100) IsTopologicalSemiring.toIsSemitopologicalSemiring (R : Type*)
+    [TopologicalSpace R] [NonUnitalNonAssocSemiring R] [IsTopologicalSemiring R] :
+    IsSemitopologicalSemiring R where
 
 -- See note [lower instance priority]
-instance (priority := 100) IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing R]
+instance (priority := 100) IsWeakTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing R]
+    [TopologicalSpace R] [IsSemitopologicalRing R] : IsTopologicalAddGroup R := ⟨⟩
+
+-- kept just to avoid breaking manual usage of the previous instance
+theorem IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing R]
     [TopologicalSpace R] [IsTopologicalRing R] : IsTopologicalAddGroup R := ⟨⟩
 
 instance (priority := 50) DiscreteTopology.topologicalSemiring [TopologicalSpace R]
@@ -88,10 +130,17 @@ section
 
 namespace NonUnitalSubsemiring
 
-variable [TopologicalSpace R] [NonUnitalSemiring R] [IsTopologicalSemiring R]
+variable [TopologicalSpace R] [NonUnitalSemiring R]
 
-instance instIsTopologicalSemiring (S : NonUnitalSubsemiring R) : IsTopologicalSemiring S :=
+instance instIsSemitopologicalSemiring [IsSemitopologicalSemiring R] (S : NonUnitalSubsemiring R) :
+    IsSemitopologicalSemiring S :=
+  { S.toSubsemigroup.separatelyContinuousMul, S.toAddSubmonoid.continuousAdd with }
+
+instance instIsTopologicalSemiring [IsTopologicalSemiring R] (S : NonUnitalSubsemiring R) :
+    IsTopologicalSemiring S :=
   { S.toSubsemigroup.continuousMul, S.toAddSubmonoid.continuousAdd with }
+
+variable [IsSemitopologicalSemiring R]
 
 /-- The (topological) closure of a non-unital subsemiring of a non-unital topological semiring is
 itself a non-unital subsemiring. -/
@@ -130,13 +179,18 @@ abbrev nonUnitalCommSemiringTopologicalClosure [T2Space R] (s : NonUnitalSubsemi
 
 end NonUnitalSubsemiring
 
-variable [TopologicalSpace R] [Semiring R] [IsTopologicalSemiring R]
+variable [TopologicalSpace R] [Semiring R]
 
-instance : IsTopologicalSemiring (ULift R) where
+instance [IsTopologicalSemiring R] : IsTopologicalSemiring (ULift R) where
 
 namespace Subsemiring
 
-instance topologicalSemiring (S : Subsemiring R) : IsTopologicalSemiring S :=
+instance semitopologicalSemiring [IsSemitopologicalSemiring R] (S : Subsemiring R) :
+    IsSemitopologicalSemiring S :=
+  { S.toSubmonoid.separatelyContinuousMul, S.toAddSubmonoid.continuousAdd with }
+
+instance topologicalSemiring [IsTopologicalSemiring R] (S : Subsemiring R) :
+    IsTopologicalSemiring S :=
   { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
 
 instance continuousSMul (s : Subsemiring R) (X) [TopologicalSpace X] [MulAction R X]
@@ -144,6 +198,8 @@ instance continuousSMul (s : Subsemiring R) (X) [TopologicalSpace X] [MulAction 
   Submonoid.continuousSMul
 
 end Subsemiring
+
+variable [IsSemitopologicalSemiring R]
 
 /-- The (topological-space) closure of a subsemiring of a topological semiring is
 itself a subsemiring. -/
@@ -195,14 +251,17 @@ instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [IsTopologi
 instance [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [IsTopologicalRing R]
     [IsTopologicalRing S] : IsTopologicalRing (R × S) where
 
-end
+/-- The product topology on the Cartesian product of two semitopological semirings
+  makes the product into a semitopological semiring. -/
+instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [IsSemitopologicalSemiring R]
+    [IsSemitopologicalSemiring S] : IsSemitopologicalSemiring (R × S) where
 
-#adaptation_note /-- nightly-2024-04-08
-needed to help `Pi.instIsTopologicalSemiring` -/
-instance {ι : Type*} {R : ι → Type*} [∀ i, TopologicalSpace (R i)]
-    [∀ i, NonUnitalNonAssocSemiring (R i)] [∀ i, IsTopologicalSemiring (R i)] :
-    ContinuousAdd ((i : ι) → R i) :=
-  inferInstance
+/-- The product topology on the Cartesian product of two semitopological rings
+  makes the product into a semitopological ring. -/
+instance [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [IsSemitopologicalRing R]
+    [IsSemitopologicalRing S] : IsSemitopologicalRing (R × S) where
+
+end
 
 instance Pi.instIsTopologicalSemiring {ι : Type*} {R : ι → Type*} [∀ i, TopologicalSpace (R i)]
     [∀ i, NonUnitalNonAssocSemiring (R i)] [∀ i, IsTopologicalSemiring (R i)] :
@@ -212,6 +271,14 @@ instance Pi.instIsTopologicalRing {ι : Type*} {R : ι → Type*} [∀ i, Topolo
     [∀ i, NonUnitalNonAssocRing (R i)] [∀ i, IsTopologicalRing (R i)] :
     IsTopologicalRing (∀ i, R i) := ⟨⟩
 
+instance Pi.instIsSemitopologicalSemiring {ι : Type*} {R : ι → Type*} [∀ i, TopologicalSpace (R i)]
+    [∀ i, NonUnitalNonAssocSemiring (R i)] [∀ i, IsSemitopologicalSemiring (R i)] :
+    IsSemitopologicalSemiring (∀ i, R i) where
+
+instance Pi.instIsSemitopologicalRing {ι : Type*} {R : ι → Type*} [∀ i, TopologicalSpace (R i)]
+    [∀ i, NonUnitalNonAssocRing (R i)] [∀ i, IsSemitopologicalRing (R i)] :
+    IsSemitopologicalRing (∀ i, R i) := ⟨⟩
+
 section MulOpposite
 
 open MulOpposite
@@ -219,6 +286,9 @@ open MulOpposite
 instance [NonUnitalNonAssocSemiring R] [TopologicalSpace R] [ContinuousAdd R] :
     ContinuousAdd Rᵐᵒᵖ :=
   continuousAdd_induced opAddEquiv.symm
+
+instance [NonUnitalNonAssocSemiring R] [TopologicalSpace R] [IsSemitopologicalSemiring R] :
+    IsSemitopologicalSemiring Rᵐᵒᵖ := ⟨⟩
 
 instance [NonUnitalNonAssocSemiring R] [TopologicalSpace R] [IsTopologicalSemiring R] :
     IsTopologicalSemiring Rᵐᵒᵖ := ⟨⟩
@@ -229,11 +299,24 @@ instance [NonUnitalNonAssocRing R] [TopologicalSpace R] [ContinuousNeg R] : Cont
 instance [NonUnitalNonAssocRing R] [TopologicalSpace R] [IsTopologicalRing R] :
     IsTopologicalRing Rᵐᵒᵖ := ⟨⟩
 
+instance [NonUnitalNonAssocRing R] [TopologicalSpace R] [IsSemitopologicalRing R] :
+    IsSemitopologicalRing Rᵐᵒᵖ := ⟨⟩
+
 end MulOpposite
 
 section AddOpposite
 
 open AddOpposite
+
+instance [NonUnitalNonAssocSemiring R] [TopologicalSpace R] [SeparatelyContinuousMul R] :
+    SeparatelyContinuousMul Rᵃᵒᵖ :=
+  separatelyContinuousMul_induced opMulEquiv.symm
+
+instance [NonUnitalNonAssocSemiring R] [TopologicalSpace R] [IsSemitopologicalSemiring R] :
+    IsSemitopologicalSemiring Rᵃᵒᵖ := ⟨⟩
+
+instance [NonUnitalNonAssocRing R] [TopologicalSpace R] [IsSemitopologicalRing R] :
+    IsSemitopologicalRing Rᵃᵒᵖ := ⟨⟩
 
 instance [NonUnitalNonAssocSemiring R] [TopologicalSpace R] [ContinuousMul R] :
     ContinuousMul Rᵃᵒᵖ :=
@@ -275,26 +358,36 @@ variable [TopologicalSpace R]
 
 section
 
-variable [NonUnitalNonAssocRing R] [IsTopologicalRing R]
+variable [NonUnitalNonAssocRing R]
 
-instance : IsTopologicalRing (ULift R) where
+instance [IsTopologicalRing R] : IsTopologicalRing (ULift R) where
+
+variable [IsSemitopologicalRing R]
 
 /-- In a topological semiring, the left-multiplication `AddMonoidHom` is continuous. -/
 theorem mulLeft_continuous (x : R) : Continuous (AddMonoidHom.mulLeft x) :=
-  continuous_const.mul continuous_id
+  continuous_id.const_mul _
 
 /-- In a topological semiring, the right-multiplication `AddMonoidHom` is continuous. -/
 theorem mulRight_continuous (x : R) : Continuous (AddMonoidHom.mulRight x) :=
-  continuous_id.mul continuous_const
+  continuous_id.mul_const _
 
 end
 
 namespace NonUnitalSubring
 
-variable [NonUnitalRing R] [IsTopologicalRing R]
+variable [NonUnitalRing R]
 
-instance instIsTopologicalRing (S : NonUnitalSubring R) : IsTopologicalRing S :=
+instance instIsTopologicalRing [IsTopologicalRing R] (S : NonUnitalSubring R) :
+    IsTopologicalRing S :=
   { S.toSubsemigroup.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+
+instance instIsSemitopologicalRing [IsSemitopologicalRing R] (S : NonUnitalSubring R) :
+    IsSemitopologicalRing S :=
+  { S.toSubsemigroup.separatelyContinuousMul,
+    inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+
+variable [IsSemitopologicalRing R]
 
 /-- The (topological) closure of a non-unital subring of a non-unital topological ring is
 itself a non-unital subring. -/
@@ -327,10 +420,18 @@ abbrev nonUnitalCommRingTopologicalClosure [T2Space R] (s : NonUnitalSubring R)
 
 end NonUnitalSubring
 
-variable [Ring R] [IsTopologicalRing R]
+variable [Ring R]
 
-instance Subring.instIsTopologicalRing (S : Subring R) : IsTopologicalRing S :=
+instance Subring.instIsTopologicalRing [IsTopologicalRing R] (S : Subring R) :
+    IsTopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+
+instance Subring.instIsSemitopologicalRing [IsSemitopologicalRing R] (S : Subring R) :
+    IsSemitopologicalRing S :=
+  { S.toSubmonoid.separatelyContinuousMul,
+    inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+
+variable [IsSemitopologicalRing R]
 
 instance Subring.continuousSMul (s : Subring R) (X) [TopologicalSpace X] [MulAction R X]
     [ContinuousSMul R X] : ContinuousSMul s X :=

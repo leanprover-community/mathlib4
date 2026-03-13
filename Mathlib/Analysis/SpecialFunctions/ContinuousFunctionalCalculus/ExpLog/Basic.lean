@@ -64,7 +64,7 @@ namespace CFC
 section RCLikeNormed
 
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
-  [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [ContinuousFunctionalCalculus 𝕜 A p]
+  [StarRing A] [NormedAlgebra 𝕜 A] [ContinuousFunctionalCalculus 𝕜 A p]
 
 set_option backward.isDefEq.respectTransparency false in
 open scoped ContinuousFunctionalCalculus in
@@ -83,8 +83,7 @@ end RCLikeNormed
 
 section RealNormed
 
-variable {A : Type*} [NormedRing A] [StarRing A]
-  [IsTopologicalRing A] [NormedAlgebra ℝ A]
+variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :

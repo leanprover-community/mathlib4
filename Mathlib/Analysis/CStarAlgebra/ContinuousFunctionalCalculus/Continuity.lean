@@ -388,7 +388,7 @@ section NNReal
 variable {X A : Type*} [NormedRing A] [StarRing A]
     [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [ContinuousStar A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
-    [T2Space A] [IsTopologicalRing A]
+    [T2Space A] [IsSemitopologicalRing A]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (A) in
@@ -903,7 +903,7 @@ variable {X A : Type*} [NonUnitalNormedRing A] [StarRing A]
     [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [ContinuousStar A]
     [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
-    [T2Space A] [IsTopologicalRing A]
+    [T2Space A] [IsSemitopologicalRing A]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (A) in
