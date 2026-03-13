@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
 public import Mathlib.Analysis.Normed.Group.Submodule
 public import Mathlib.Analysis.Normed.Operator.FredholmAlternative
+public import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.Data.Fin.Tuple.Sort
 
@@ -430,16 +431,16 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot
 /-- The **Spectral Theorem** for compact self-adjoint operators: the eigenspaces of a compact
 self-adjoint operator are finite-dimensional. -/
 theorem finite_dimensional_eigenspace (hT : IsCompactOperator T) (μ : 𝕜) (hμ : μ ≠ 0) :
-    FiniteDimensional 𝕜 (eigenspace (T : Module.End 𝕜 X) μ) := by
-  have inv : ∀ x ∈ eigenspace (T : Module.End 𝕜 X) μ, T x ∈ eigenspace (T : Module.End 𝕜 X) μ := by
+    FiniteDimensional 𝕜 (eigenspace (T : Module.End 𝕜 E) μ) := by
+  have inv : ∀ x ∈ eigenspace (T : Module.End 𝕜 E) μ, T x ∈ eigenspace (T : Module.End 𝕜 E) μ := by
     intro x hx
     rw [mem_eigenspace_iff, ContinuousLinearMap.coe_coe] at hx ⊢
     rw [hx, map_smul, hx]
-  have : T.restrict inv = μ • 1 := by
+  replace hT := hT.restrict' inv
+  have hx : T.restrict inv = μ • 1 := by
     ext x
     exact mem_eigenspace_iff.mp x.2
-  have h2 := hT.restrict' inv
-  rw [this, LinearMap.coe_smul, IsCompactOperator.smul_iff₀ hμ] at h2
+  rw [hx, LinearMap.coe_smul, IsCompactOperator.smul_iff₀ hμ] at hT
   rwa [← isCompactOperator_id_iff_finiteDimensional]
 
 end ContinuousLinearMap
