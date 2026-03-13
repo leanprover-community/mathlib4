@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Eigenspace.Zero
 /-!
 # Singular values for finite-dimensional linear maps
 
-For a linear map `T` between finite dimensional inner product spaces `E` and `F`, we define the
+For a linear map `T` between finite-dimensional inner product spaces `E` and `F`, we define the
 singular values, which are the square roots of the eigenvalues of `T.adjoint ∘ₗ T`, arranged in
 descending order and repeated according to their multiplicity.
 
