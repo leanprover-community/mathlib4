@@ -319,7 +319,6 @@ lemma diam_top [Nontrivial α] : (⊤ : SimpleGraph α).diam = 1 := by
 lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by
   rw [diam, ENat.toNat_eq_zero, or_comm, ediam_eq_zero_iff_subsingleton]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma diam_eq_one [Nontrivial α] : G.diam = 1 ↔ G = ⊤ := by
   rw [diam, ENat.toNat_eq_iff one_ne_zero, Nat.cast_one, ediam_eq_one]
@@ -396,6 +395,7 @@ lemma ediam_eq_top_iff_radius_eq_top [Nonempty α] : G.ediam = ⊤ ↔ G.radius 
   exact ne_top_of_lt <| lt_of_le_of_lt hdiam <| WithTop.mul_lt_top (ENat.coe_lt_top 2) <|
     lt_top_iff_ne_top.mpr (hw ▸ hr)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ediam_le_two_mul_radius : G.ediam ≤ 2 * G.radius := by
   cases isEmpty_or_nonempty α
   · rw [radius_eq_top_of_isEmpty]

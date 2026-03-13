@@ -219,7 +219,6 @@ lemma obj₀Equiv_symm_mem_face_iff
     (obj₀Equiv.symm i) ∈ (face.{u} S).obj (op (.mk 0)) ↔ i ∈ S :=
   ⟨fun h ↦ by simpa using h, by aesop⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma face_le_face_iff {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
     face.{u} S₁ ≤ face S₂ ↔ S₁ ≤ S₂ := by
   refine ⟨fun h i hi ↦ ?_, fun h d a ha ↦ ha.trans h⟩
@@ -256,7 +255,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
     { toFun f := ⟨objMk ((OrderHom.Subtype.val (· ∈ S)).comp
           (e.toOrderEmbedding.toOrderHom.comp f.toOrderHom)), fun _ ↦ by aesop⟩
       invFun := fun ⟨x, hx⟩ ↦ SimplexCategory.Hom.mk
-        { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by aesop)⟩
+        { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by simp)⟩
           monotone' i₁ i₂ h := e.symm.monotone (by
             simp only [Subtype.mk_le_mk]
             exact OrderHom.monotone _ h) }
@@ -341,7 +340,6 @@ def nonDegenerateEquiv {n d : ℕ} :
     simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
   left_inv _ := by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : (Δ[n] : SSet.{u}).HasDimensionLE n where
   degenerate_eq_top i hi := by
     ext x
@@ -352,7 +350,6 @@ instance (n : ℕ) : (Δ[n] : SSet.{u}).HasDimensionLE n where
     dsimp at this
     lia
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `i : Fin (n + 2)`, this is the order isomorphism between `Fin (n +1)`
 and the complement of `{i}` as a finset. -/
 def finSuccAboveOrderIsoFinset {n : ℕ} (i : Fin (n + 2)) :

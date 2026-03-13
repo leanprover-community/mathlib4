@@ -91,7 +91,7 @@ section Profinite
 -- Without explicit universe annotations here, Lean introduces two universe variables and
 -- unhelpfully defines a function `CompHaus.{max u₁ u₂} → Profinite.{max u₁ u₂}`.
 /--
-(Implementation) The object part of the connected_components functor from compact Hausdorff spaces
+(Implementation) The object part of the `connectedComponents` functor from compact Hausdorff spaces
 to Profinite spaces, given by quotienting a space by its connected components. -/
 @[stacks 0900]
 def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
@@ -115,7 +115,7 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
       obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
       rfl))
 
-/-- The connected_components functor from compact Hausdorff spaces to profinite spaces,
+/-- The `connectedComponents` functor from compact Hausdorff spaces to profinite spaces,
 left adjoint to the inclusion functor.
 -/
 def CompHaus.toProfinite : CompHaus ⥤ Profinite :=
@@ -155,9 +155,9 @@ instance : FintypeCat.toProfinite.Faithful := FintypeCat.toProfiniteFullyFaithfu
 
 instance : FintypeCat.toProfinite.Full := FintypeCat.toProfiniteFullyFaithful.full
 
-instance (X : FintypeCat) : Fintype (FintypeCat.toProfinite.obj X) := inferInstanceAs (Fintype X)
+instance (X : FintypeCat) : Finite (FintypeCat.toProfinite.obj X) := inferInstanceAs (Finite X)
 
-instance (X : FintypeCat) : Fintype (Profinite.of X) := inferInstanceAs (Fintype X)
+instance (X : FintypeCat) : Finite (Profinite.of X) := inferInstanceAs (Finite X)
 
 end DiscreteTopology
 

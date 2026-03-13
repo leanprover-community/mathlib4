@@ -382,7 +382,6 @@ variable (M) in
 theorem reverse_reverse : M.reverse.reverse = M := by
   simp [reverse]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_stepSet_reverse {a : α} {S S' : Set σ} :
     Disjoint S (M.reverse.stepSet S' a) ↔ Disjoint S' (M.stepSet S a) := by
   rw [← not_iff_not]
