@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 /-!
 # P-Primary Components of modules
 
-Let `A` be a commutative ring and `P`, a non zero prime ideal of `A`.
+Let `A` be a commutative ring and `P`, a nonzero prime ideal of `A`.
 Given an `A`-Module `M` it's `P`-primary component is defined as
   $$M(P) := \bigcup_{i : \mathbb{N}} \text{torsionBySet A  M }  P ^ i.$$
 
