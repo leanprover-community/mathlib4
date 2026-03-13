@@ -260,9 +260,24 @@ theorem singularValues_le_rank {n : ℕ}
   (hn : Module.finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 :=
   le_antisymm (T.singularValues_rank ▸ T.singularValues_antitone hn) (zero_le _)
 
+theorem support_singularValues_helper1
+  : IsLowerSet (T.singularValues.support : Set ℕ) := by
+  sorry
+
 @[simp]
 theorem support_singularValues
   : T.singularValues.support = Finset.range (Module.finrank 𝕜 (range T)) := by
+  rw [← Nat.Iio_eq_range]
+  --rw [← Finset.coe_inj]
+  --rw [Finset.coe_Iio]
+  obtain h | ⟨n, hn⟩ := T.support_singularValues_helper1.eq_univ_or_Iio
+  · exfalso
+    sorry
+  · rw [← Finset.coe_Iio, Finset.coe_inj] at hn
+    convert hn
+    apply_fun Finset.card at hn
+    simpa [test₃] using hn
+  /-
   ext n
   simp only [Finsupp.mem_support_iff, Finset.mem_range]
   constructor
@@ -271,6 +286,7 @@ theorem support_singularValues
     exact hn (T.singularValues_le_rank h)
   · intro hn
     exact (T.singularValues_lt_rank hn).ne'
+  -/
 
 @[simp]
 theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i = 0 := by
