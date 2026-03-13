@@ -369,7 +369,6 @@ def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D w
     ext
     simp only [WhiskeringLeftEquivalence.unitIso_hom, eqToHom_app, eqToHom_refl,
       WhiskeringLeftEquivalence.counitIso_hom, eqToHom_map, eqToHom_trans]
-    rfl
 
 end Construction
 
