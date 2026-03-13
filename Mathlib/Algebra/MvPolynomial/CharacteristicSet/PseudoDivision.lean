@@ -58,7 +58,7 @@ structure PseudoResult (α : Type*) where
   /-- The remainder `r`. -/
   remainder : α
 
-/-- The result of pseudo-dividing `g` by a sequence of polynomials (a triangulated set)
+/-- The result of pseudo-dividing `g` by a sequence of polynomials (a triangular set)
 satisfying the equation `(∏ i, (S i).initial ^ es[i]) * g = (∑ i, qs[i] * S i) + r`. -/
 structure SetPseudoResult (α : Type*) where
   /-- The powers of the initials `es`. -/
@@ -288,12 +288,12 @@ theorem isRemainder_def (r g f : MvPolynomial σ R) : r.isRemainder g f ↔
 /-- A remainder `r` of `g` by `S` is a polynomial which is reduced with respect to `S` and
 suffices `(∏ i, (S i).initial ^ es[i]) * g = (∑ i, qs[i] * S i) + r`
 for some `es : List ℕ` and `qs : List (MvPolynomial σ R)`. -/
-def isSetRemainder (r g : MvPolynomial σ R) (S : TriangulatedSet σ R) : Prop := r.reducedToSet S ∧
+def isSetRemainder (r g : MvPolynomial σ R) (S : TriangularSet σ R) : Prop := r.reducedToSet S ∧
   ∃ (es : List ℕ) (qs : List (MvPolynomial σ R)), (es.length = S.length ∧ qs.length = S.length) ∧
     (∏ i : Fin es.length, (S i).initial ^ es[i]) * g = (∑ i : Fin qs.length, qs[i] * S i) + r
 
 omit [NoZeroDivisors R] in
-theorem isSetRemainder_def (r g : MvPolynomial σ R) (S : TriangulatedSet σ R) :
+theorem isSetRemainder_def (r g : MvPolynomial σ R) (S : TriangularSet σ R) :
     r.isSetRemainder g S ↔ r.reducedToSet S ∧ ∃ (es : List ℕ) (qs : List (MvPolynomial σ R)),
       (es.length = S.length ∧ qs.length = S.length) ∧
       (∏ i : Fin es.length, (S i).initial ^ es[i]) * g = (∑ i : Fin qs.length, qs[i] * S i) + r
@@ -397,11 +397,11 @@ theorem pseudo_remainder_eq_of_degreeOf_eq_zero {g f : MvPolynomial σ R} {c : �
   simp only [h1]
   exact pseudoOf_remainder_eq_of_degreeOf_eq_zero h2 <| degreeOf_mainVariable_ne_zero h1
 
-open TriangulatedSet List
+open TriangularSet List
 
-variable (S : TriangulatedSet σ R)
+variable (S : TriangularSet σ R)
 
-/-- The recursive algorithm of successive pseudo-division by a triangulated set -/
+/-- The recursive algorithm of successive pseudo-division by a triangular set -/
 noncomputable def setPseudo.go (f : ℕ → MvPolynomial σ R) (fuel : ℕ) (es : List ℕ)
     (qs : List (MvPolynomial σ R)) (r : MvPolynomial σ R) : SetPseudoResult (MvPolynomial σ R) :=
   if fuel = 0 then ⟨es, qs, r⟩
@@ -531,7 +531,7 @@ theorem setPseudo_remainder_eq_setPseudoRem : (g.setPseudo S).remainder = g.setP
   | zero => simp [setPseudo.go, List.eq_nil_of_length_eq_zero (h ▸ length_toList S)]
   | succ n ih =>
     have := setPseudoGo_drop_succ_remainder_eq S (lt_add_one n) (h ▸ le_refl _) ([]) ([]) g
-    simp only [tsub_self, TriangulatedSet.drop_zero, add_tsub_cancel_left] at this
+    simp only [tsub_self, TriangularSet.drop_zero, add_tsub_cancel_left] at this
     rewrite [this, ih _ (by simp [h, add_tsub_cancel_right]), toList_drop_comm, drop_one]
     have h : S.toList ≠ [] := length_pos_iff.mp (length_toList S ▸ h ▸ Nat.zero_lt_succ n)
     rw [← cons_head_tail h, foldr_cons, cons_head_tail, head_eq_getElem_zero, toList_getElem]
@@ -570,7 +570,7 @@ theorem setPseudo_remainder_isSetRemainder : (g.setPseudo S).remainder.isSetRema
     ⟨g.length_setPseudo_exponents S, g.length_setPseudo_quotients S⟩, g.setPseudo_equation S⟩
 
 theorem isSetRemainder_of_eq_setPseudo_remainder {r g : MvPolynomial σ R}
-    {S : TriangulatedSet σ R} : (g.setPseudo S).remainder = r → r.isSetRemainder g S := fun h ↦
+    {S : TriangularSet σ R} : (g.setPseudo S).remainder = r → r.isSetRemainder g S := fun h ↦
   h ▸ g.setPseudo_remainder_isSetRemainder S
 
 lemma setPseudoRem_eq_self_of_mainVariable_lt (l : List (MvPolynomial σ R))

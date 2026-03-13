@@ -32,11 +32,11 @@ variable {R σ : Type*} [CommSemiring R] [DecidableEq R] [LinearOrder σ]
 
 namespace StandardAscendingSet
 
-open MvPolynomial TriangulatedSet
+open MvPolynomial TriangularSet
 
 section AscendingSet
 
-variable {S T : TriangulatedSet σ R} {p : MvPolynomial σ R}
+variable {S T : TriangularSet σ R} {p : MvPolynomial σ R}
 
 theorem isAscendingSet_def : isAscendingSet S ↔
     ∀ ⦃i j⦄, i < j → j < S.length → (S j).reducedTo (S i) := Iff.rfl
@@ -65,19 +65,19 @@ noncomputable scoped instance : AscendingSetTheory σ R where
 
 theorem isAscendingSet_concat (h : S.canConcat p) (hp : p.reducedToSet S) :
     S.isAscendingSet → (S.concat p).isAscendingSet :=
-  TriangulatedSet.isAscendingSet_concat h (reducedToSet_iff.mp hp)
+  TriangularSet.isAscendingSet_concat h (reducedToSet_iff.mp hp)
 
 theorem isAscendingSet_takeConcat (hp : p.reducedToSet S) :
     S.isAscendingSet → (S.takeConcat p).isAscendingSet :=
-  TriangulatedSet.isAscendingSet_takeConcat (reducedToSet_iff.mp hp)
+  TriangularSet.isAscendingSet_takeConcat (reducedToSet_iff.mp hp)
 
 end AscendingSet
 
 variable (l : List (MvPolynomial σ R))
 
 /-- The recursive algorithm for computing the Standard Basic Set. -/
-noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R)
-    (hl1 : ∀ p ∈ l, p ≠ 0) : TriangulatedSet σ R :=
+noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
+    (hl1 : ∀ p ∈ l, p ≠ 0) : TriangularSet σ R :=
   if h : l = [] then BS
   else
     let B : MvPolynomial σ R := l.head h
@@ -102,10 +102,10 @@ The algorithm works by:
 3. Update the current basic set `BS` with `B` using `takeConcat` (which handles replacements).
 4. Filter the remaining list to keep only elements reduced w.r.t. the new `BS` and go to step 2.
 -/
-noncomputable def basicSet : TriangulatedSet σ R :=
+noncomputable def basicSet : TriangularSet σ R :=
   basicSet.go (l.mergeSort.filter (· ≠ 0)) ∅ (fun _ h ↦ of_decide_eq_true (List.mem_filter.mp h).2)
 
-lemma basicSetGo_lt : ∀ (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R)
+lemma basicSetGo_lt : ∀ (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
     (hl1 : ∀ p ∈ l, p ≠ 0) (h : l ≠ []), (l.head h).reducedToSet BS → basicSet.go l BS hl1 < BS :=
   basicSet.go.induct _ (by simp)
     (fun l BS hl1 h ih _ hl2 ↦ by
@@ -121,14 +121,14 @@ lemma basicSetGo_lt : ∀ (l : List (MvPolynomial σ R)) (BS : TriangulatedSet �
       else
         exact lt_trans (ih h' <| of_decide_eq_true (List.mem_filter.mp <| List.head_mem h').2) this)
 
-lemma basicSetGo_le : ∀ (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R)
+lemma basicSetGo_le : ∀ (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
     (hl1 : ∀ p ∈ l, p ≠ 0), l.head?.all (fun p ↦ p.reducedToSet BS) → basicSet.go l BS hl1 ≤ BS :=
   basicSet.go.induct _ (by unfold basicSet.go; simp)
     (fun l BS hl1 h ih hl2 ↦ by
       rewrite [List.head?_eq_some_head h, Option.all_some, decide_eq_true_eq] at hl2
       exact le_of_lt <| basicSetGo_lt l BS hl1 h hl2)
 
-lemma mem_of_mem_basicSetGo : ∀ (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R)
+lemma mem_of_mem_basicSetGo : ∀ (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
     (hl1 : ∀ p ∈ l, p ≠ 0), ∀ p, p ∉ BS → p ∈ basicSet.go l BS hl1 → p ∈ l :=
   basicSet.go.induct _ (by simp [basicSet.go])
     (fun l BS hl1 h ih p hp1 hp2 ↦ by
@@ -143,7 +143,7 @@ lemma mem_of_mem_basicSetGo : ∀ (l : List (MvPolynomial σ R)) (BS : Triangula
       | .inl hm => exact hm ▸ List.head_mem h
       | .inr hm => exact List.mem_of_mem_filter <| ih p hm hp2)
 
-lemma basicSetGo_isAscendingSet : ∀ (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R)
+lemma basicSetGo_isAscendingSet : ∀ (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
     (hl1 : ∀ p ∈ l, p ≠ 0), l.head?.all (fun p ↦ p.reducedToSet BS) → BS.isAscendingSet →
     (basicSet.go l BS hl1).isAscendingSet :=
   basicSet.go.induct _ (fun BS _ _ ↦ by unfold basicSet.go; simp)
@@ -162,7 +162,7 @@ lemma basicSetGo_isAscendingSet : ∀ (l : List (MvPolynomial σ R)) (BS : Trian
 
 /-- The core lemma proving that the computed Basic Set is indeed minimal
 among all ascending sets contained in `l`. -/
-lemma basicSetGo_le_ascendingSet (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R)
+lemma basicSetGo_le_ascendingSet (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
     (hl1 : ∀ p ∈ l, p ≠ 0) : l.Pairwise (· ≤ ·) → (∀ p ∈ l, BS.canConcat p) →
     l.head?.all (reducedToSet · BS) →
     ∀ T, T.isAscendingSet → (BS.length ≤ T.length ∧ ∀ i < BS.length, BS i ≈ T i) →
@@ -181,7 +181,7 @@ lemma basicSetGo_le_ascendingSet (l : List (MvPolynomial σ R)) (BS : Triangulat
     have heq : BS' = BS.concat B := takeConcat_eq_concat_of_canConcat hB1
     by_cases hL : T.length = BS.length
     · have : BS ≈ T := equiv_iff'.mpr ⟨hL.symm, hT3⟩
-      refine le_of_lt <| TriangulatedSet.lt_of_lt_of_equiv ?_ this
+      refine le_of_lt <| TriangularSet.lt_of_lt_of_equiv ?_ this
       exact basicSetGo_lt l BS hl1 h hBS2
     have hL : BS.length < T.length := Nat.lt_of_le_of_ne hT2 (Ne.symm hL)
     rewrite [basicSet.go, dif_neg h]
@@ -202,7 +202,7 @@ lemma basicSetGo_le_ascendingSet (l : List (MvPolynomial σ R)) (BS : Triangulat
     · -- Case 1: B < q. The algorithm picked a smaller element, so BS' < T.
       have : BS' < T := by
         rewrite [heq]
-        refine TriangulatedSet.lt_def.mpr <| Or.inl ⟨BS.length, lt_add_one _, ?_, fun i hi ↦ ?_⟩
+        refine TriangularSet.lt_def.mpr <| Or.inl ⟨BS.length, lt_add_one _, ?_, fun i hi ↦ ?_⟩
         · simpa [concat_apply] using Bltq
         rewrite [concat_apply, if_pos hi]
         exact hT3 i hi
@@ -253,7 +253,7 @@ protected lemma basicSet_subset : ∀ ⦃p : MvPolynomial σ R⦄, p ∈ basicSe
   List.mem_mergeSort.mp <|
     List.mem_of_mem_filter (mem_of_mem_basicSetGo _ ∅ _ p (notMem_empty p) hp)
 
-protected lemma basicSet_minimal : ∀ ⦃S : TriangulatedSet σ R⦄, S.isAscendingSet →
+protected lemma basicSet_minimal : ∀ ⦃S : TriangularSet σ R⦄, S.isAscendingSet →
     (∀ ⦃p⦄, p ∈ S → p ∈ l) → basicSet l ≤ S := fun S hS1 hS2 ↦ by
   let sl := l.mergeSort.filter (· ≠ 0)
   have hsl1 : ∀ p ∈ sl, p ≠ 0 := fun _ hp ↦ of_decide_eq_true (List.mem_filter.mp hp).2

@@ -43,7 +43,7 @@ This file implements the core algorithms of Wu's Method for solving systems of a
 
 @[expose] public section
 
-open MvPolynomial TriangulatedSet AscendingSet
+open MvPolynomial TriangularSet AscendingSet
 
 variable {R σ : Type*}
 
@@ -85,16 +85,16 @@ variable [Membership (MvPolynomial σ R) α] (K : Type*)
 
 /-! ### Characteristic Set Properties -/
 
-/-- A Triangulated Set `CS` is a Characteristic Set for `a` if:
+/-- A Triangular Set `CS` is a Characteristic Set for `a` if:
 1. Every element in `a` reduce to 0 modulo `CS`.
 2. `Zero(a) ⊆ Zero(CS)` (geometric containment). -/
-def TriangulatedSet.isCharacteristicSet [CommSemiring K] [Algebra R K]
-    (CS : TriangulatedSet σ R) (a : α) : Prop :=
+def TriangularSet.isCharacteristicSet [CommSemiring K] [Algebra R K]
+    (CS : TriangularSet σ R) (a : α) : Prop :=
   (∀ g ∈ a, (0 : MvPolynomial σ R).isSetRemainder g CS) ∧ vanishingSet K a ⊆ vanishingSet K CS
 
 namespace CharacteristicSet
 
-variable [Field K] [Algebra R K] {PS : α} {CS : TriangulatedSet σ R}
+variable [Field K] [Algebra R K] {PS : α} {CS : TriangularSet σ R}
 
 /-- Well-Ordering Principle (1): `Zero(CS/IP) ⊆ Zero(PS)`.
 If all polynomials in `PS` reduce to 0 modulo `CS`, then any zero of `CS`
@@ -146,12 +146,12 @@ variable [Finite σ] [HasBasicSet σ R] (l₀ l : List (MvPolynomial σ R))
 
 -- A helper lemma: adding pseudo-remainders strictly decreases the order.
 omit [Finite σ] in
-lemma characteristicSetGo_decreasing (BS : TriangulatedSet σ R) (lBS RS : List (MvPolynomial σ R))
+lemma characteristicSetGo_decreasing (BS : TriangularSet σ R) (lBS RS : List (MvPolynomial σ R))
     (hRS : RS ≠ []) (hBS : BS = l.basicSet.val) (hlBS : lBS = BS.toList)
     (hRS1 : RS = ((l \ lBS).map fun p ↦ (p.setPseudo BS).remainder).filter (· ≠ 0)) :
     (l₀ ++ RS ++ lBS).basicSet < l.basicSet := by
   rewrite [hRS1, hlBS, hBS] at hRS ⊢
-  apply TriangulatedSet.lt_of_lt_of_equiv ?_ l.basicSet_toList_equiv
+  apply TriangularSet.lt_of_lt_of_equiv ?_ l.basicSet_toList_equiv
   apply basicSet_append_lt_of_exists_reducedToSet
   have ⟨p, hp⟩ := List.exists_mem_of_ne_nil _ hRS
   refine ⟨p, List.mem_append_right _ hp, of_decide_eq_true (List.mem_filter.mp hp).2, ?_⟩
@@ -163,7 +163,7 @@ lemma characteristicSetGo_decreasing (BS : TriangulatedSet σ R) (lBS RS : List 
 
 /-- The recursive algorithm for computing the Characteristic Set -/
 noncomputable def characteristicSet.go [Finite σ] (l₀ l : List (MvPolynomial σ R))
-    : TriangulatedSet σ R :=
+    : TriangularSet σ R :=
   let BS := l.basicSet.val
   let lBS := BS.toList
   let RS : List _ := ((l \ lBS).map fun p ↦ (p.setPseudo BS).remainder).filter (· ≠ 0)
@@ -183,7 +183,7 @@ Algorithm:
 5. If not, set `l = l₀ ++ RS ++ BS` and go to step 2.
 Termination is guaranteed by the well-ordering of orders.
 -/
-noncomputable def characteristicSet : TriangulatedSet σ R := characteristicSet.go l l
+noncomputable def characteristicSet : TriangularSet σ R := characteristicSet.go l l
 
 lemma zero_isSetRemainder_characteristicSetGo : l₀ ⊆ l → ∀ p ∈ l₀,
     (0 : MvPolynomial σ R).isSetRemainder p (characteristicSet.go l₀ l) := by
@@ -277,7 +277,7 @@ Decomposes the zero set of `l` into a union of zero sets of triangular sets.
 The algorithm recursively computes the characteristic set `CS`
 and adds branches for the initials of `CS`.
 -/
-noncomputable def zeroDecomposition (l : List (MvPolynomial σ R)) : List (TriangulatedSet σ R) :=
+noncomputable def zeroDecomposition (l : List (MvPolynomial σ R)) : List (TriangularSet σ R) :=
   let CS := l.characteristicSet
   -- Recurse on: Initial(p) added to the system
   let subDecomp := (CS.toList.filter fun p ↦ p.mainVariable ≠ ⊥).attach.map

@@ -842,7 +842,7 @@ public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Order
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.PseudoDivision
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Reduce
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.StandardAscendingSet
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.TriangulatedSet
+public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.TriangularSet
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.WeakAscendingSet
 public import Mathlib.Algebra.MvPolynomial.Comap
 public import Mathlib.Algebra.MvPolynomial.CommRing

@@ -6,12 +6,12 @@ Authors: Yuxuan Xiao
 module
 
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.MainDegree
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.TriangulatedSet
+public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.TriangularSet
 
 /-!
-# Orderings on polynomials and triangulated sets
+# Orderings on polynomials and triangular sets
 
-This file defines order structures on multivariate polynomials and triangulated sets,
+This file defines order structures on multivariate polynomials and triangular sets,
 which are essential for the Characteristic Set Method (Wu's Method).
 
 ## Main definitions
@@ -20,8 +20,8 @@ which are essential for the Characteristic Set Method (Wu's Method).
   ordered lexicographically. This defines a well-ordering on polynomials when the variable type
   is well-founded.
 
-* `TriangulatedSet.order`: The order of a triangulated set is a lexicographic sequence
-  of orders of its polynomials. For two triangulated sets `S` and `T`, `S < T` if either:
+* `TriangularSet.order`: The order of a triangular set is a lexicographic sequence
+  of orders of its polynomials. For two triangular sets `S` and `T`, `S < T` if either:
   1. There exists `k < S.length` such that `S₀ ≈ T₀`, `S₁ ≈ T₁`, ..., `Sₖ₋₁ ≈ Tₖ₋₁` and `Sₖ < Tₖ`;
   2. `S.length > T.length` and `∀ i < T.length, Sᵢ ≈ Tᵢ`.
 
@@ -30,7 +30,7 @@ which are essential for the Characteristic Set Method (Wu's Method).
 * `MvPolynomial.instWellFoundedLT`: When `σ` is well-founded, polynomials are well-founded
   under the order ordering.
 
-* `TriangulatedSet.instWellFoundedLT`: When `σ` is finite, triangulated sets are well-founded
+* `TriangularSet.instWellFoundedLT`: When `σ` is finite, triangular sets are well-founded
   under the order ordering. This guarantees termination of characteristic set algorithms.
 
 -/
@@ -160,9 +160,9 @@ end MvPolynomial
 
 open MvPolynomial
 
-namespace TriangulatedSet
+namespace TriangularSet
 
-variable {S T : TriangulatedSet σ R} {m n : ℕ}
+variable {S T : TriangularSet σ R} {m n : ℕ}
 
 theorem apply_lt_of_index_lt (h : n < S.length) : m < n → S m < S n :=
   fun hmn ↦ MvPolynomial.lt_of_mainVariable_lt <| mainVariable_lt_of_index_lt h hmn
@@ -181,12 +181,12 @@ theorem le_of_index_le : m ≤ n → n < S.length → S m ≤ S n := fun hmn h �
 
 section Order
 
-/-- The order of a Triangulated Set is a lexicographic sequence of orders of its polynomials.
+/-- The order of a Triangular Set is a lexicographic sequence of orders of its polynomials.
 A more intuitive definition is `order_lt_iff`, `S < T` if one of the following two occurs:
 1. There exists some `k < S.length` such that
    `S₀ ≈ T₀`, `S₁ ≈ T₁`, ..., `Sₖ₋₁ ≈ Tₖ₋₁` and `Sₖ < Tₖ`.
 2. `S.length > T.length` and `∀ i < T.length, Sᵢ ≈ Tᵢ` -/
-noncomputable def order (S : TriangulatedSet σ R) : Lex (ℕ → WithTop (WithBot σ ×ₗ ℕ)) :=
+noncomputable def order (S : TriangularSet σ R) : Lex (ℕ → WithTop (WithBot σ ×ₗ ℕ)) :=
   fun i ↦ if i < S.length then WithTop.some (S i).order else ⊤
 
 theorem order_def : S.order = fun i ↦ if i < S.length then WithTop.some (S i).order else ⊤ := rfl
@@ -281,7 +281,7 @@ theorem order_le_iff : S.order ≤ T.order ↔ (∃ k < S.length, S k < T k ∧ 
       rw [elements_eq_zero_iff.mp <| le_of_not_gt hk,
         elements_eq_zero_iff.mp <| le_of_not_gt <| h ▸ hk]⟩)
 
-instance instPreorder : Preorder (TriangulatedSet σ R) where
+instance instPreorder : Preorder (TriangularSet σ R) where
   le := InvImage (· ≤ ·) order
   le_refl := fun _ ↦ by rw [InvImage]
   le_trans := fun _ _ _ hpq hqr ↦ le_trans hpq hqr
@@ -290,12 +290,12 @@ instance instPreorder : Preorder (TriangulatedSet σ R) where
 
 theorem le_def' : S ≤ T ↔ S.order ≤ T.order := Iff.rfl
 
-noncomputable instance : DecidableLE (TriangulatedSet σ R) :=
+noncomputable instance : DecidableLE (TriangularSet σ R) :=
   fun _ _ ↦ decidable_of_iff _ le_def'.symm
 
-noncomputable instance : DecidableLT (TriangulatedSet σ R) := decidableLTOfDecidableLE
+noncomputable instance : DecidableLT (TriangularSet σ R) := decidableLTOfDecidableLE
 
-instance : Std.Total (@LE.le (TriangulatedSet σ R) _) where
+instance : Std.Total (@LE.le (TriangularSet σ R) _) where
   total S T := le_total S.order T.order
 
 theorem le_def : S ≤ T ↔ (∃ k < S.length, S k < T k ∧ ∀ i < k, S i ≈ T i) ∨
@@ -312,7 +312,7 @@ theorem lt_empty : S ≠ ∅ → S < ∅ := fun h ↦ lt_def.mpr <| Or.inr
   ⟨by rewrite [length_empty]; exact length_ge_one_iff.mpr h,
   fun i hi ↦ by rewrite [length_empty] at hi; exact absurd hi <| Nat.not_lt_zero i⟩
 
-theorem le_empty (S : TriangulatedSet σ R) : S ≤ ∅ :=
+theorem le_empty (S : TriangularSet σ R) : S ≤ ∅ :=
   Or.elim (eq_or_ne S ∅) le_of_eq <| le_of_lt ∘ lt_empty
 
 @[simp] theorem not_lt_iff_ge : ¬(S < T) ↔ T ≤ S := by rewrite [le_def', lt_def']; exact not_lt
@@ -343,9 +343,9 @@ theorem ge_of_subset : S ⊆ T → T ≤ S := fun h ↦
     have ⟨i, hi1, hi2⟩ : S n ∈ T := h <| apply_mem hn
     ⟨i, hi1, by rw [hi2]⟩
 
-instance instSetoid : Setoid (TriangulatedSet σ R) := AntisymmRel.setoid _ (· ≤ ·)
+instance instSetoid : Setoid (TriangularSet σ R) := AntisymmRel.setoid _ (· ≤ ·)
 
-noncomputable instance instDecidableRelEquiv : @DecidableRel (TriangulatedSet σ R) _ (· ≈ ·) :=
+noncomputable instance instDecidableRelEquiv : @DecidableRel (TriangularSet σ R) _ (· ≈ ·) :=
   fun _ _ ↦ instDecidableAnd
 
 theorem equiv_def'' : S ≈ T ↔ S ≤ T ∧ T ≤ S := Iff.rfl
@@ -369,10 +369,10 @@ theorem equiv_iff' : S ≈ T ↔ S.length = T.length ∧ (∀ k < S.length, S k 
 
 theorem le_iff_lt_or_equiv : S ≤ T ↔ S < T ∨ S ≈ T := le_iff_lt_or_antisymmRel
 
-theorem lt_of_equiv_of_lt {U : TriangulatedSet σ R} : S ≈ T → T < U → S < U :=
+theorem lt_of_equiv_of_lt {U : TriangularSet σ R} : S ≈ T → T < U → S < U :=
   lt_of_antisymmRel_of_lt
 
-theorem lt_of_lt_of_equiv {U : TriangulatedSet σ R} : S < T → T ≈ U → S < U :=
+theorem lt_of_lt_of_equiv {U : TriangularSet σ R} : S < T → T ≈ U → S < U :=
   lt_of_lt_of_antisymmRel
 
 theorem equiv_of_le_of_ge : S ≤ T → T ≤ S → S ≈ T := And.intro
@@ -417,7 +417,7 @@ end Order
 section WellFounded
 
 theorem wellFoundedLT_mvPolynomial_of_wellFoundedLT :
-    WellFoundedLT (TriangulatedSet σ R) → WellFoundedLT (MvPolynomial σ R) := fun h ↦ by
+    WellFoundedLT (TriangularSet σ R) → WellFoundedLT (MvPolynomial σ R) := fun h ↦ by
   rewrite [WellFoundedLT, isWellFounded_iff, wellFounded_iff_isEmpty_descending_chain] at h ⊢
   contrapose! h
   rcases nonempty_subtype.mp h with ⟨f, hf1⟩
@@ -431,19 +431,19 @@ theorem wellFoundedLT_mvPolynomial_of_wellFoundedLT :
   simpa [length_single_of_ne_zero] using hf1 n
 
 theorem wellFoundedLT_variables_of_wellFoundedLT [Nontrivial R] :
-    WellFoundedLT (TriangulatedSet σ R) → WellFoundedLT σ :=
+    WellFoundedLT (TriangularSet σ R) → WellFoundedLT σ :=
   MvPolynomial.wellFoundedLT_variables_of_wellFoundedLT ∘
     wellFoundedLT_mvPolynomial_of_wellFoundedLT
 
 theorem wellFoundedGT_variables_of_wellFoundedLT [Nontrivial R] :
-    WellFoundedLT (TriangulatedSet σ R) → WellFoundedGT σ := fun h ↦ by
+    WellFoundedLT (TriangularSet σ R) → WellFoundedGT σ := fun h ↦ by
   rewrite [WellFoundedGT, isWellFounded_iff, wellFounded_iff_isEmpty_descending_chain]
   rewrite [WellFoundedLT, isWellFounded_iff, wellFounded_iff_isEmpty_descending_chain] at h
   contrapose! h
   rcases nonempty_subtype.mp h with ⟨f, hf1⟩
   have hf2 (n : ℕ) : (MvPolynomial.X (f n) : MvPolynomial σ R) < MvPolynomial.X (f (n + 1)) :=
     MvPolynomial.X_lt_of_lt <| hf1 n
-  let S (n : ℕ) : TriangulatedSet σ R := {
+  let S (n : ℕ) : TriangularSet σ R := {
     length' := n
     seq i := if i < n then MvPolynomial.X (f i) else 0
     elements_ne_zero i := by simp
@@ -465,7 +465,7 @@ theorem length_le [Fintype σ] : S.length ≤ Fintype.card σ + 1 := by
   exact card_le
 
 /-- An auxiliary order mapping into a finite domain to prove well-foundedness. -/
-private noncomputable def _order [Fintype σ] (S : TriangulatedSet σ R) :
+private noncomputable def _order [Fintype σ] (S : TriangularSet σ R) :
   Lex (Fin (Fintype.card σ + 1) → WithTop (WithBot σ ×ₗ ℕ)) := fun i ↦ S.order i.1
 
 private theorem _order_def [Fintype σ] : S._order = fun i ↦ S.order i.1 := rfl
@@ -490,26 +490,26 @@ private theorem _order_lt_iff [Fintype σ] : S._order < T._order ↔ S.order < T
       exact (lt_self_iff_false ⊤).mp hk2
     exact Exists.intro ⟨k, kn⟩ ⟨fun _ hi ↦ hk1 _ hi, hk2⟩
 
-variable [Finite σ] (S' : Set (TriangulatedSet σ R))
+variable [Finite σ] (S' : Set (TriangularSet σ R))
 
-/-- The set of Triangulated Sets is well-founded under the lexicographic order ordering.
+/-- The set of Triangular Sets is well-founded under the lexicographic order ordering.
 This is a crucial result that guarantees the termination of the Characteristic Set Algorithm. -/
-instance instIsWellFoundedOrderLT : IsWellFounded (TriangulatedSet σ R) (InvImage (· < ·) order) :=
+instance instIsWellFoundedOrderLT : IsWellFounded (TriangularSet σ R) (InvImage (· < ·) order) :=
   haveI : Fintype σ := Fintype.ofFinite σ
   Subrelation.isWellFounded (InvImage (· < ·) _order) _order_lt_iff.mpr
 
-instance : WellFoundedLT (TriangulatedSet σ R) :=
+instance : WellFoundedLT (TriangularSet σ R) :=
   Subrelation.isWellFounded (InvImage (· < ·) order) lt_def'.mp
 
-instance : WellFoundedRelation (TriangulatedSet σ R) := ⟨(· < ·), instWellFoundedLT.wf⟩
+instance : WellFoundedRelation (TriangularSet σ R) := ⟨(· < ·), instWellFoundedLT.wf⟩
 
 theorem Set.has_min (h : S'.Nonempty) : ∃ S ∈ S', ∀ T ∈ S', S ≤ T :=
-  haveI : WellFounded (· < ·) := @wellFounded_lt (TriangulatedSet σ R) _ _
+  haveI : WellFounded (· < ·) := @wellFounded_lt (TriangularSet σ R) _ _
   have ⟨S, hS1, hS2⟩ := WellFounded.has_min this S' h
   ⟨S, hS1, fun T hT ↦ not_lt_iff_ge.mp (hS2 T hT)⟩
 
-/-- The minimal element of a nonempty set of triangulated sets. -/
-noncomputable def Set.min (h : S'.Nonempty) : TriangulatedSet σ R := Exists.choose (has_min S' h)
+/-- The minimal element of a nonempty set of triangular sets. -/
+noncomputable def Set.min (h : S'.Nonempty) : TriangularSet σ R := Exists.choose (has_min S' h)
 
 theorem Set.min_mem (h : S'.Nonempty) : min S' h ∈ S' :=
   (Exists.choose_spec (has_min S' h)).1
@@ -518,4 +518,4 @@ theorem Set.min_le (h : S'.Nonempty) : ∀ T ∈ S', min S' h ≤ T :=
   (Exists.choose_spec (has_min S' h)).2
 
 end WellFounded
-end TriangulatedSet
+end TriangularSet

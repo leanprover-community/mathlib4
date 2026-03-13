@@ -154,34 +154,34 @@ theorem initial_reducedToSet {α : Type*} [Membership (MvPolynomial σ R) α] {p
 
 end Initial
 
-section TriangulatedSet
+section TriangularSet
 
-open TriangulatedSet
+open TriangularSet
 
-variable {S T : TriangulatedSet σ R} {p q : MvPolynomial σ R}
+variable {S T : TriangularSet σ R} {p q : MvPolynomial σ R}
 
-theorem reducedToSet_empty (q : MvPolynomial σ R) : q.reducedToSet (∅ : TriangulatedSet σ R) :=
+theorem reducedToSet_empty (q : MvPolynomial σ R) : q.reducedToSet (∅ : TriangularSet σ R) :=
   fun p hp ↦ absurd hp (notMem_empty p)
 
 theorem reducedToSet_iff : q.reducedToSet S ↔ ∀ i < S.length, q.reducedTo (S i) :=
   Iff.trans Iff.rfl S.forall_mem_iff_forall_index
 
 noncomputable instance instDecidableRelReducedToSet :
-    @DecidableRel _ (TriangulatedSet σ R) reducedToSet :=
+    @DecidableRel _ (TriangularSet σ R) reducedToSet :=
   fun _ S ↦ @decidable_of_iff _ _ reducedToSet_iff.symm (S.length.decidableBallLT _)
 
 theorem reducedToSet_congr_right : S ≈ T → (q.reducedToSet S ↔ q.reducedToSet T) := fun h ↦ by
-  have := TriangulatedSet.equiv_iff.mp h
+  have := TriangularSet.equiv_iff.mp h
   rw [reducedToSet_iff, reducedToSet_iff, ← this.1, forall_congr']
   refine fun i ↦ imp_congr_right fun _ ↦ reducedTo_congr_right <| this.2 i
 
 /--
 Key Lemma for the Basic Set Algorithm:
 If `p` is non-zero and reduced with respect to `S`, then modifying `S`
-by appending `p` (using `takeConcat`) strictly decreases the order of the triangulated set.
+by appending `p` (using `takeConcat`) strictly decreases the order of the triangular set.
 This order decrease is what guarantees the termination of the characteristic set computation.
 -/
-theorem _root_.TriangulatedSet.takeConcat_lt_of_reducedToSet
+theorem _root_.TriangularSet.takeConcat_lt_of_reducedToSet
     (p_ne_zero : p ≠ 0) (hp : p.reducedToSet S) : S.takeConcat p < S := by
   unfold takeConcat
   rewrite [reducedToSet_iff] at hp
@@ -199,11 +199,11 @@ theorem _root_.TriangulatedSet.takeConcat_lt_of_reducedToSet
   have length_tk : (S.take k).length = k := min_eq_left hk.1
   change (S.take k).concat p _ < S
   by_cases keq : k = S.length
-  · refine TriangulatedSet.lt_def.mpr <| Or.inr ?_
+  · refine TriangularSet.lt_def.mpr <| Or.inr ?_
     rewrite [length_concat, length_tk]
     refine ⟨keq ▸ lt_add_one S.length, fun i hi ↦ ?_⟩
     rw [concat_apply, length_tk, keq, take_length, if_pos hi]
-  refine TriangulatedSet.lt_def.mpr <| Or.inl ?_
+  refine TriangularSet.lt_def.mpr <| Or.inl ?_
   simp only [length_concat, concat_apply, length_tk]
   refine ⟨k, lt_add_one k, ?_, fun i hi ↦ by rw [take_apply, if_pos hi, if_pos hi]⟩
   rewrite [if_neg <| Nat.lt_irrefl k, if_pos rfl]
@@ -214,6 +214,6 @@ theorem _root_.TriangulatedSet.takeConcat_lt_of_reducedToSet
   have := MvPolynomial.reducedTo_iff_gt_of_mainVariable_eq p_ne_zero this
   exact this.mp <| hp k <| Nat.lt_of_le_of_ne hk.1 keq
 
-end TriangulatedSet
+end TriangularSet
 end Reduced
 end MvPolynomial
