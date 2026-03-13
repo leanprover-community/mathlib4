@@ -96,8 +96,8 @@ section Mul
 section OneDenominator
 
 /-- Let `R` be a commutative ring and `f g : R[X]`. Let `n` be a natural number.
-Then `f` can be written in the form `g i ^ n * (q + ∑ i : Fin n, r i / g i ^ (i + 1))`, where
-`degree (r i) < degree (g i)` and the denominator cancels formally.
+Then `f` can be written in the form `g ^ n * (q + ∑ i : Fin n, r i / g ^ (i + 1))`, where
+`degree (r i) < degree g` and the denominator cancels formally.
 See `quo_mul_pow_add_sum_rem_mul_pow_unique` for the uniqueness of this representation. -/
 theorem eq_quo_mul_pow_add_sum_rem_mul_pow [Nontrivial R] (f : R[X]) {g : R[X]} (hg : g.Monic)
     (n : ℕ) : ∃ (q : R[X]) (r : Fin n → R[X]), (∀ i, (r i).degree < g.degree) ∧
@@ -116,8 +116,8 @@ theorem eq_quo_mul_pow_add_sum_rem_mul_pow [Nontrivial R] (f : R[X]) {g : R[X]} 
       simp
 
 /-- Let `R` be a commutative ring and `f g : R[X]`. Let `n` be a natural number.
-Then `f` can be written in the form `g i ^ n * (q + ∑ i : Fin n, r i / g i ^ (i + 1))`
-in at most one way, where `degree (r i) < degree (g i)` and the denominator cancels formally.
+Then `f` can be written in the form `g ^ n * (q + ∑ i : Fin n, r i / g ^ (i + 1))`
+in at most one way, where `degree (r i) < degree g` and the denominator cancels formally.
 See `eq_quo_mul_pow_add_sum_rem_mul_pow` for the existence of such a representation. -/
 theorem quo_mul_pow_add_sum_rem_mul_pow_unique {g : R[X]} (hg : g.Monic) {n : ℕ}
     {q₁ q₂ : R[X]} {r₁ r₂ : Fin n → R[X]}
