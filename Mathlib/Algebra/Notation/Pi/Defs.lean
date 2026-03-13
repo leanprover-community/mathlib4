@@ -89,7 +89,7 @@ instance instInv : Inv (∀ i, G i) where inv f i := (f i)⁻¹
 lemma inv_apply (f : ∀ i, G i) (i : ι) : f⁻¹ i = (f i)⁻¹ := rfl
 
 @[to_additive]
-lemma _root_.inv_eq_inv_comp (f : α → β) [Inv β] : f⁻¹ = Inv.inv ∘ f := rfl
+lemma inv_eq_inv_comp (f : α → β) [Inv β] : f⁻¹ = Inv.inv ∘ f := rfl
 
 @[to_additive (attr := push ←)]
 lemma inv_def (f : ∀ i, G i) : f⁻¹ = fun i ↦ (f i)⁻¹ := rfl
