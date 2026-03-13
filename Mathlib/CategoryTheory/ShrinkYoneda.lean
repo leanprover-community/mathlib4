@@ -101,6 +101,7 @@ lemma shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm
   simp [shrinkYoneda, shrinkYonedaObjObjEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
 lemma shrinkYonedaObjObjEquiv_map_app
     {X X' : C} {Y : Cᵒᵖ} (f : (shrinkYoneda.{w, v, u}.obj X).obj Y) (g : X ⟶ X') :
     shrinkYonedaObjObjEquiv ((shrinkYoneda.map g).app Y f) =
