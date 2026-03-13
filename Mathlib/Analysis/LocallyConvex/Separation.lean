@@ -162,11 +162,8 @@ theorem geometric_hahn_banach_of_nonempty_interior
     have ha' : (0 : ℝ) < u := by simpa [hzero] using hfA a ha
     have hb' : u ≤ (0 : ℝ) := by simpa [hzero] using hfB b hb
     linarith
-  · have hmem : a ∈ closure (interior A) := by
-      rw [hA.closure_interior_eq_closure_of_nonempty_interior hAint]
-      exact subset_closure ha
-    have hclosed : IsClosed {x : E | f x ≤ u} := isClosed_Iic.preimage f.continuous
-    exact closure_minimal (fun x hx => le_of_lt (hfA x hx)) hclosed hmem
+  · apply closure_minimal (fun x hx => le_of_lt (hfA x hx)) <| isClosed_Iic.preimage f.continuous  
+    simpa [hA.closure_interior_eq_closure_of_nonempty_interior hAint] using subset_closure ha
 
 /-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
 continuous linear functional whose maximum on `A` is attained at `x`. -/
