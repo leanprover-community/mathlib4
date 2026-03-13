@@ -55,14 +55,14 @@ def saturate {S : C} (E : PreZeroHypercover S) : PreOneHypercover S where
 /-- For a presheaf of types, sections over the multifork associated to `E.saturate` are equivalent
 to compatible families. -/
 @[simps]
-def sectionsSaturateEquiv {S : C} (E : PreZeroHypercover S) (F : Cᵒᵖ ⥤ TypeCat) :
+def sectionsSaturateEquiv {S : C} (E : PreZeroHypercover S) (F : Cᵒᵖ ⥤ Type*) :
     (E.saturate.multicospanIndex F).sections ≃ Subtype (Presieve.Arrows.Compatible F E.f) where
   toFun s := ⟨s.val, fun i j _ _ _ hgij ↦ s.property ⟨(i, j), ⟨_, _, _, hgij⟩⟩⟩
   invFun s := ⟨s.val, fun r ↦ s.property _ _ _ _ _ r.snd.w⟩
   left_inv _ := rfl
   right_inv _ := rfl
 
-lemma isLimit_saturate_type_iff {S : C} (E : PreZeroHypercover S) (F : Cᵒᵖ ⥤ TypeCat) :
+lemma isLimit_saturate_type_iff {S : C} (E : PreZeroHypercover S) (F : Cᵒᵖ ⥤ Type*) :
     Nonempty (IsLimit <| E.saturate.multifork F) ↔ E.presieve₀.IsSheafFor F := by
   rw [Multifork.isLimit_types_iff, Presieve.isSheafFor_ofArrows_iff_bijective_toCompabible,
     ← Function.Bijective.of_comp_iff' (E.sectionsSaturateEquiv F).symm.bijective]

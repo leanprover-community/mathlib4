@@ -43,7 +43,7 @@ variable (F G : Cᵒᵖ ⥤ A)
 this `presheafHom F G` is the presheaf of types which sends an object `X : C`
 to the type of morphisms between the "restrictions" of `F` and `G` to the category `Over X`. -/
 @[simps! obj]
-def presheafHom : Cᵒᵖ ⥤ TypeCat where
+def presheafHom : Cᵒᵖ ⥤ Type _ where
   obj X := ((Over.forget X.unop).op ⋙ F ⟶ (Over.forget X.unop).op ⋙ G)
   map f := TypeCat.ofHom ⟨Functor.whiskerLeft (Over.map f.unop).op⟩
   map_id := by
@@ -212,7 +212,7 @@ lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
 
 /-- The underlying presheaf of `sheafHom F G`. It is isomorphic to `presheafHom F.1 G.1`
 (see `sheafHom'Iso`), but has better definitional properties. -/
-def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ TypeCat where
+def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
   obj X := ((J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G)
   map f := TypeCat.ofHom ⟨(J.overMapPullback A f.unop).map⟩
   map_id X := by
@@ -231,7 +231,7 @@ def sheafHom'Iso (F G : Sheaf J A) :
 /-- Given two sheaves `F` and `G` on a site `(C, J)` with values in a category `A`,
 this `sheafHom F G` is the sheaf of types which sends an object `X : C`
 to the type of morphisms between the "restrictions" of `F` and `G` to the category `Over X`. -/
-def sheafHom (F G : Sheaf J A) : Sheaf J TypeCat where
+def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
   obj := sheafHom' F G
   property := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2 (G.2.hom F.1)
 

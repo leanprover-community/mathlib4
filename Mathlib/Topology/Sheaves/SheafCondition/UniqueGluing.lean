@@ -82,7 +82,7 @@ end
 
 section TypeValued
 
-variable {X : TopCat.{x}} {F : Presheaf TypeCat X} {ι : Type*} {U : ι → Opens X}
+variable {X : TopCat.{x}} {F : Presheaf Type* X} {ι : Type*} {U : ι → Opens X}
 
 /-- Given sections over a family of open sets, extend it to include
   sections over pairwise intersections of the open sets. -/

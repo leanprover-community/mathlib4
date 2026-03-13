@@ -123,7 +123,7 @@ variable {K}
 variable {A : Type*} [Category* A] (G : C ⥤ D)
 
 -- this is not marked with `@[ext]` because `H` cannot be inferred from the type
-theorem ext [G.IsCoverDense K] (ℱ : Sheaf K TypeCat) (X : D) {s t : ℱ.obj.obj (op X)}
+theorem ext [G.IsCoverDense K] (ℱ : Sheaf K Type*) (X : D) {s t : ℱ.obj.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.obj.map f.op s = ℱ.obj.map f.op t) : s = t := by
   apply ((isSheaf_iff_isSheaf_of_type _ _).1 ℱ.property
     (Sieve.coverByImage G X) (G.is_cover_of_isCoverDense K X)).isSeparatedFor.ext
@@ -313,8 +313,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The sheaf map given in `types.sheaf_hom` is natural in terms of `X`. -/
 @[simps]
 noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
-    coyoneda ⋙ (whiskeringLeft Dᵒᵖ A TypeCat).obj ℱ ⟶
-      coyoneda ⋙ (whiskeringLeft Dᵒᵖ A TypeCat).obj ℱ'.obj where
+    coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type _)).obj ℱ ⟶
+      coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type _)).obj ℱ'.obj where
   app X := presheafHom (homOver α (unop X))
   naturality X Y f := by
     ext U x

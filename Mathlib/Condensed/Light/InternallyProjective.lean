@@ -68,15 +68,25 @@ lemma ihomPoints_symm_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
       ((freeForgetAdjunction R).homEquiv _ _ (MonoidalClosed.curry x)) :=
   rfl
 
+-- @[local simp]
+-- lemma _root_.TypeCat.Fun.coe_mk {X Y : Type*} (f : X → Y) : (TypeCat.Fun.mk f) = f :=
+--   rfl
+
 set_option backward.isDefEq.respectTransparency false in
 lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A ⟶ B)
     (x : (P ⟶[LightCondMod R] A).obj.obj ⟨S⟩) :
     (((ihom P).map e).hom.app ⟨S⟩) x = (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
   apply (ihomPoints R P B S).injective
-  simp only [ihomPoints_apply, Equiv.apply_symm_apply, ← MonoidalClosed.uncurry_natural_right,
-    ← Adjunction.homEquiv_naturality_right_symm]
+  simp only [ihomPoints_apply, ← MonoidalClosed.uncurry_natural_right,
+    ← Adjunction.homEquiv_naturality_right_symm, Equiv.apply_symm_apply]
   congr
-  cat_disch
+  ext
+  simp
+  dsimp?
+  conv_rhs => rw [TypeCat.Fun.mk_apply, TypeCat.hom_as_apply]
+  erw? [NatTrans.naturality_apply]
+  rfl
+
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')

@@ -117,8 +117,8 @@ lemma jointly_reflect_isLocallySurjective
   rw [Presheaf.isLocallySurjective_iff_whisker_forget,
     ← Presheaf.isLocallySurjective_presheafToSheaf_map_iff,
     Sheaf.isLocallySurjective_iff_epi,
-    (hP.jointlyReflectEpimorphisms Type w).epi_iff]
-  exact fun Φ ↦ ((MorphismProperty.epimorphisms Type w).arrow_mk_iso_iff
+    (hP.jointlyReflectEpimorphisms (Type w)).epi_iff]
+  exact fun Φ ↦ ((MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
     (((Functor.mapArrowFunctor _ _).mapIso
       ((Φ.obj.presheafFiberCompIso (forget A)).symm ≪≫
         Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiberIso (Type w)).symm)).app

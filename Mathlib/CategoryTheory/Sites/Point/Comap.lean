@@ -44,7 +44,6 @@ def comap : Point.{w} J where
       Φ.jointly_surjective (Sieve.functorPushforward F R) (hF.cover_preserve hR) x
     use W, g, hg, Φ.fiber.map h y
     simp
-    rfl
 
 variable (A : Type*) [Category.{v} A] [HasProducts.{w} A]
   [Functor.IsContinuous.{v} F J K]

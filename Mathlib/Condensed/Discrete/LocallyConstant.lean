@@ -237,7 +237,7 @@ noncomputable def functorToPresheavesIso (X : Type (max u w)) :
 @[simps! obj_obj_obj obj_obj_map map_hom_app]
 def functor :
     haveI := CompHausLike.preregular hs
-    Type (max u w) ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) Type (max u w) :=
+    Type (max u w) ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) :=
   ObjectProperty.lift _ (functorToPresheaves.{u, w}) (fun X ↦ by
     rw [Presheaf.isSheaf_of_iso_iff (functorToPresheavesIso P hs X)]
     exact ((TopCat.discrete.obj X).toSheafCompHausLike P hs).property)
@@ -307,7 +307,7 @@ def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.o
   app _ := TypeCat.ofHom ⟨fun x ↦ LocallyConstant.const _ x⟩
 
 /-- The unit of the adjunction is an iso. -/
-noncomputable def unitIso : 𝟭 Type (max u w) ≅ functor.{u, w} P hs ⋙
+noncomputable def unitIso : 𝟭 (Type (max u w)) ≅ functor.{u, w} P hs ⋙
     (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ where
   hom := unit P hs
   inv := { app _ := TypeCat.ofHom ⟨fun f ↦ f.toFun PUnit.unit⟩ }
@@ -381,7 +381,7 @@ abbrev functor : Type (u + 1) ⥤ CondensedSet.{u} :=
 `CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`
 (by uniqueness of adjoints).
 -/
-noncomputable def iso : functor ≅ discrete Type (u + 1) :=
+noncomputable def iso : functor ≅ discrete (Type (u + 1)) :=
   (LocallyConstant.adjunction _ _).leftAdjointUniq (discreteUnderlyingAdj _)
 
 /-- `CondensedSet.LocallyConstant.functor` is fully faithful. -/
@@ -392,9 +392,9 @@ noncomputable instance : functor.Faithful := functorFullyFaithful.faithful
 
 noncomputable instance : functor.Full := functorFullyFaithful.full
 
-instance : (discrete TypeCat).Faithful := Functor.Faithful.of_iso iso
+instance : (discrete <| Type _).Faithful := Functor.Faithful.of_iso iso
 
-noncomputable instance : (discrete TypeCat).Full := Functor.Full.of_iso iso
+noncomputable instance : (discrete <| Type _).Full := Functor.Full.of_iso iso
 
 end CondensedSet.LocallyConstant
 
@@ -415,7 +415,7 @@ instance (S : LightProfinite.{u}) (p : S → Prop) :
 `LightCondSet.LocallyConstant.functor` is isomorphic to `LightCondensed.discrete`
 (by uniqueness of adjoints).
 -/
-noncomputable def iso : functor ≅ LightCondensed.discrete Type u :=
+noncomputable def iso : functor ≅ LightCondensed.discrete (Type u) :=
   (LocallyConstant.adjunction _ _).leftAdjointUniq (LightCondensed.discreteUnderlyingAdj _)
 
 /-- `LightCondSet.LocallyConstant.functor` is fully faithful. -/
@@ -426,9 +426,9 @@ instance : functor.{u}.Faithful := functorFullyFaithful.faithful
 
 instance : LightCondSet.LocallyConstant.functor.Full := functorFullyFaithful.full
 
-instance : (LightCondensed.discrete Type u).Faithful := Functor.Faithful.of_iso iso.{u}
+instance : (LightCondensed.discrete <| Type u).Faithful := Functor.Faithful.of_iso iso.{u}
 
-instance : (LightCondensed.discrete Type u).Full := Functor.Full.of_iso iso.{u}
+instance : (LightCondensed.discrete <| Type u).Full := Functor.Full.of_iso iso.{u}
 
 end LightCondSet.LocallyConstant
 

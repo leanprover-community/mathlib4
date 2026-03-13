@@ -63,7 +63,7 @@ Taking the free condensed module is preserved under conjugating with the equival
 light condensed objects and sheaves on a small site.
 -/
 noncomputable def equivSmallFreeIso :
-    (equivSmall Type u).inverse ⋙ free R ⋙ (equivSmall (ModuleCat R)).functor ≅
+    (equivSmall (Type u)).inverse ⋙ free R ⋙ (equivSmall (ModuleCat R)).functor ≅
     Sheaf.composeAndSheafify _ (ModuleCat.free R) :=
   conjugateIsoEquiv (Sheaf.adjunction _ (ModuleCat.adj R))
     (((equivSmall _).symm.toAdjunction.comp

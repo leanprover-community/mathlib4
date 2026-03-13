@@ -89,12 +89,12 @@ namespace TopCat
 /-- The sheaf of not-necessarily-continuous functions on `X` with values in type family
 `T : X → Type u`.
 -/
-def sheafToTypes (T : X → Type*) : Sheaf TypeCat X :=
+def sheafToTypes (T : X → Type*) : Sheaf (Type _) X :=
   ⟨presheafToTypes X T, Presheaf.toTypes_isSheaf _ _⟩
 
 /-- The sheaf of not-necessarily-continuous functions on `X` with values in a type `T`.
 -/
-def sheafToType (T : Type*) : Sheaf TypeCat X :=
+def sheafToType (T : Type*) : Sheaf (Type _) X :=
   ⟨presheafToType X T, Presheaf.toType_isSheaf _ _⟩
 
 end TopCat

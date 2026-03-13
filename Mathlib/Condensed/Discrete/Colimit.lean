@@ -160,7 +160,7 @@ lemma lanPresheafNatIso_hom_app (hF : ∀ S : Profinite, IsColimit <| F.mapCocon
 `lanPresheaf (locallyConstantPresheaf X)` is a sheaf for the coherent topology on `Profinite`.
 -/
 def lanSheafProfinite (X : Type (u + 1)) :
-    Sheaf (coherentTopology Profinite.{u}) Type (u + 1) where
+    Sheaf (coherentTopology Profinite.{u}) (Type (u + 1)) where
   obj := lanPresheaf (locallyConstantPresheaf X)
   property := by
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
@@ -293,7 +293,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
     ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, counitApp_app]
   apply presheaf_ext.{u, u + 1} (X := X) (Y := X) (f := f)
   intro x
-  erw? [incl_of_counitAppApp]
+  erw [incl_of_counitAppApp]
   simp only [counitAppAppImage]
   have : Finite (fiber.{u, u + 1} f x) :=
     Finite.of_injective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
@@ -351,6 +351,7 @@ lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (
   change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨n⟩) ≫
     (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
   rw [(isColimitLocallyConstantPresheaf c X hc).fac]
+  rfl
 
 /-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
 noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
@@ -367,6 +368,7 @@ lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : LightProfinite)
   change ((((locallyConstantPresheaf X).mapCocone (coconeRightOpOfCone S.asLimitCone)).ι.app n) ≫
     (isColimitLocallyConstantPresheafDiagram X S).desc s) _ = _
   rw [(isColimitLocallyConstantPresheafDiagram X S).fac]
+  rfl
 
 end LocallyConstantAsColimit
 

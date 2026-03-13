@@ -236,7 +236,7 @@ lemma Sheaf.ΓObjEquivHom_naturality_symm [HasWeakSheafify J (Type w)]
 /-- For sheaves of types, the global sections functor is isomorphic to the covariant hom
 functor of the terminal sheaf. -/
 noncomputable def Sheaf.ΓNatIsoCoyoneda (X : Type (max u v)) [Unique X] :
-    Γ J Type (max u v) ≅ coyoneda.obj (op ((constantSheaf J Type (max u v)).obj X)) :=
+    Γ J (Type (max u v)) ≅ coyoneda.obj (op ((constantSheaf J (Type (max u v))).obj X)) :=
   NatIso.ofComponents (fun F ↦ (F.ΓObjEquivHom J X).toIso) fun f ↦ by
     ext x
     exact ΓObjEquivHom_naturality J X f x

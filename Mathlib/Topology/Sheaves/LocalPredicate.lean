@@ -224,7 +224,7 @@ end PrelocalPredicate
 /-- The subpresheaf of dependent functions on `X` satisfying the "pre-local" predicate `P`.
 -/
 @[simps obj map]
-def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf TypeCat X where
+def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type _) X where
   obj U := { f : ∀ x : U.unop, T x // P.pred f }
   map i := TypeCat.ofHom ⟨fun f ↦ ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩⟩
 
@@ -279,7 +279,7 @@ end subpresheafToTypes
 /-- The subsheaf of the sheaf of all dependently typed functions satisfying the local predicate `P`.
 -/
 @[simps]
-def subsheafToTypes (P : LocalPredicate T) : Sheaf TypeCat X :=
+def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type _) X :=
   ⟨subpresheafToTypes P.toPrelocalPredicate, subpresheafToTypes.isSheaf P⟩
 
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
@@ -360,7 +360,7 @@ def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.
 -/
-def sheafToTop (T : TopCat) : Sheaf TypeCat X :=
+def sheafToTop (T : TopCat) : Sheaf (Type _) X :=
   ⟨presheafToTop X T,
     Presheaf.isSheaf_of_iso (subpresheafContinuousPrelocalIsoPresheafToTop T)
       (subpresheafToTypes.isSheaf (continuousLocal X T))⟩

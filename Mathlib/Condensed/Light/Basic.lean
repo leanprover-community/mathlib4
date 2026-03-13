@@ -53,7 +53,6 @@ lemma comp_hom {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[deprecated (since := "2026-03-05")] alias id_val := id_hom
 @[deprecated (since := "2026-03-05")] alias comp_val := comp_hom
 
-
 @[ext]
 lemma hom_ext {X Y : LightCondensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :
     f = g := by
@@ -64,6 +63,14 @@ lemma hom_ext {X Y : LightCondensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app
 end LightCondensed
 
 namespace LightCondSet
+
+-- @[ext high]
+-- lemma hom_ext {X Y : LightCondSet.{u}} (f g : X ⟶ Y)
+--     (h : ∀ (S : LightProfiniteᵒᵖ) (x : X.obj.obj S), f.hom.app S x = g.hom.app S x) :
+--     f = g := by
+--   apply Sheaf.hom_ext
+--   ext
+--   exact h _ _
 
 -- Note: `simp` can prove this when stated for `LightCondensed C` for a concrete category `C`.
 -- However, it doesn't seem to see through the abbreviation `LightCondSet`

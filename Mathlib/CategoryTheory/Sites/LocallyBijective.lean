@@ -157,7 +157,7 @@ instance {D : Type w} [Category.{w'} D] {FD : D → D → Type*} {CD : D → Typ
     J.WEqualsLocallyBijective D := by
   apply WEqualsLocallyBijective.mk'
 
-instance : J.WEqualsLocallyBijective Type (max u v) :=
+instance : J.WEqualsLocallyBijective (Type (max u v)) :=
   inferInstance
 
 end GrothendieckTopology
