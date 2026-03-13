@@ -395,7 +395,6 @@ section ExpNilpotent
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra ℚ L]
   (D : LieDerivation R L L)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
 automorphism. -/
 noncomputable def exp (h : IsNilpotent D.toLinearMap) :
