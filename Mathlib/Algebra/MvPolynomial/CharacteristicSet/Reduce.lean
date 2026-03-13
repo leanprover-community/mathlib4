@@ -19,7 +19,7 @@ a fundamental concept in the Characteristic Set Method.
 * `MvPolynomial.reducedTo q p`:
   A polynomial `q` is *reduced* with respect to `p` if either `q = 0` or
   the degree of `q` in `p`'s main variable is strictly less than the degree of `p`.
-  If `p` is a constant (i.e., `mainVariable p = ⊥`), then no non-zero `q` is reduced w.r.t. `p`.
+  If `p` is a constant (i.e., `max_vars p = ⊥`), then no non-zero `q` is reduced w.r.t. `p`.
 
 * `MvPolynomial.reducedToSet q a`:
   A polynomial `q` is reduced with respect to a set `a` if it is reduced
@@ -48,11 +48,11 @@ def reducedTo (q p : MvPolynomial σ R) : Prop :=
 
 theorem zero_reducedTo (p : MvPolynomial σ R) : (0 : MvPolynomial σ R).reducedTo p := trivial
 
-theorem not_reducedTo_of_bot_mainVariable (hq : q ≠ 0) : p.vars.max = ⊥ → ¬q.reducedTo p :=
+theorem not_reducedTo_of_bot_max_vars (hq : q ≠ 0) : p.vars.max = ⊥ → ¬q.reducedTo p :=
   fun hp ↦ by simp only [reducedTo, hq, reduceIte, hp, not_false_eq_true]
 
-theorem mainVariable_ne_bot_of_reducedTo (hq : q ≠ 0) : q.reducedTo p → p.vars.max ≠ ⊥ :=
-  fun hp con ↦ not_reducedTo_of_bot_mainVariable hq con hp
+theorem max_vars_ne_bot_of_reducedTo (hq : q ≠ 0) : q.reducedTo p → p.vars.max ≠ ⊥ :=
+  fun hp con ↦ not_reducedTo_of_bot_max_vars hq con hp
 
 theorem reducedTo_iff {c : σ} (hp : p.vars.max = c) (hq : q ≠ 0) :
     q.reducedTo p ↔ q.degreeOf c < p.degreeOf c := by simp only [reducedTo, hq, reduceIte, hp]
@@ -61,16 +61,16 @@ noncomputable instance : DecidableRel (@reducedTo R σ _ _ _) := fun q p ↦
   if hq : q = 0 then isTrue <| hq ▸ zero_reducedTo p
   else
     match hp : p.vars.max with
-    | ⊥ => isFalse <| not_reducedTo_of_bot_mainVariable hq hp
+    | ⊥ => isFalse <| not_reducedTo_of_bot_max_vars hq hp
     | some _ => decidable_of_iff _ (reducedTo_iff hp hq).symm
 
-theorem reducedTo_of_mainVariable_lt (h : q.vars.max < p.vars.max) : q.reducedTo p := by
+theorem reducedTo_of_max_vars_lt (h : q.vars.max < p.vars.max) : q.reducedTo p := by
   if hq : q = 0 then exact hq ▸ zero_reducedTo p
   else
     rcases WithBot.ne_bot_iff_exists.mp <| LT.lt.ne_bot h with ⟨c, hc⟩
     apply (reducedTo_iff hc.symm hq).mpr
-    rewrite [degreeOf_eq_zero_of_mainVariable_lt (hc ▸ h)]
-    exact Nat.pos_of_ne_zero <| degreeOf_mainVariable_ne_zero hc.symm
+    rewrite [degreeOf_eq_zero_of_max_vars_lt (hc ▸ h)]
+    exact Nat.pos_of_ne_zero <| degreeOf_max_vars_ne_zero hc.symm
 
 theorem reducedTo_congr_right : p ≈ q → (r.reducedTo p ↔ r.reducedTo q) := fun h ↦
   have (p q : MvPolynomial σ R) (h : p ≈ q) : r.reducedTo p → r.reducedTo q := by
@@ -81,17 +81,17 @@ theorem reducedTo_congr_right : p ≈ q → (r.reducedTo p ↔ r.reducedTo q) :=
     | none => simp [hr2, hc ▸ this.1] at hr1
     | some c =>
       have hc' := hc ▸ this.1
-      simp [hr2, hc', mainDegree_of_mainVariable_isSome hc' ▸ this.2] at hr1
-      simp only [mainDegree_of_mainVariable_isSome hc ▸ hr1]
+      simp [hr2, hc', mainDegree_of_max_vars_isSome hc' ▸ this.2] at hr1
+      simp only [mainDegree_of_max_vars_isSome hc ▸ hr1]
   ⟨this p q h, this q p h.symm⟩
 
-theorem reducedTo_iff_gt_of_mainVariable_eq (hq : q ≠ 0) (h : q.vars.max = p.vars.max) :
+theorem reducedTo_iff_gt_of_max_vars_eq (hq : q ≠ 0) (h : q.vars.max = p.vars.max) :
     q.reducedTo p ↔ q < p where
   mp hl :=
     match hp : p.vars.max with
-    | ⊥ => absurd hl <| not_reducedTo_of_bot_mainVariable hq hp
+    | ⊥ => absurd hl <| not_reducedTo_of_bot_max_vars hq hp
     | some c => lt_def.mpr <| Or.inr ⟨h, by
-      rw [mainDegree_of_mainVariable_isSome hp, mainDegree_of_mainVariable_isSome <| h.trans hp]
+      rw [mainDegree_of_max_vars_isSome hp, mainDegree_of_max_vars_isSome <| h.trans hp]
       exact (reducedTo_iff hp hq).mp hl⟩
   mpr hr :=
     have : q.mainDegree < p.mainDegree := (lt_iff_not_imp.mp hr <| Eq.not_lt h).2
@@ -100,22 +100,22 @@ theorem reducedTo_iff_gt_of_mainVariable_eq (hq : q ≠ 0) (h : q.vars.max = p.v
       rewrite [mainDegree_eq_zero_iff.mpr hp, mainDegree_eq_zero_iff.mpr (h ▸ hp)] at this
       exact absurd this <| Nat.not_lt_zero 0
     | some c => by
-      rw [mainDegree_of_mainVariable_isSome hp, mainDegree_of_mainVariable_isSome (h ▸ hp)] at this
+      rw [mainDegree_of_max_vars_isSome hp, mainDegree_of_max_vars_isSome (h ▸ hp)] at this
       exact (reducedTo_iff hp hq).mpr this
 
 theorem not_reduceTo_self (h : p ≠ 0) : ¬p.reducedTo p :=
-  mt (reducedTo_iff_gt_of_mainVariable_eq h rfl).mp (lt_irrefl p)
+  mt (reducedTo_iff_gt_of_max_vars_eq h rfl).mp (lt_irrefl p)
 
-theorem mainVariable_lt_of_reducedTo_of_le (h1 : q ≠ 0) (h2 : p ≤ q) (h3 : q.reducedTo p) :
+theorem max_vars_lt_of_reducedTo_of_le (h1 : q ≠ 0) (h2 : p ≤ q) (h3 : q.reducedTo p) :
     p.vars.max < q.vars.max := by
   by_contra con
   have con : q.vars.max = p.vars.max :=
-    le_antisymm (not_lt.mp con) (mainVariable_le_of_le h2)
-  have := (reducedTo_iff_gt_of_mainVariable_eq h1 con).mp h3
+    le_antisymm (not_lt.mp con) (max_vars_le_of_le h2)
+  have := (reducedTo_iff_gt_of_max_vars_eq h1 con).mp h3
   exact absurd h2 <| not_le_iff_gt.mpr this
 
 theorem lt_of_reducedTo_of_le (h1 : q ≠ 0) (h2 : p ≤ q) (h3 : q.reducedTo p) : p < q :=
-  lt_of_mainVariable_lt <| mainVariable_lt_of_reducedTo_of_le h1 h2 h3
+  lt_of_max_vars_lt <| max_vars_lt_of_reducedTo_of_le h1 h2 h3
 
 variable {α : Type*} [Membership (MvPolynomial σ R) α] {p q : MvPolynomial σ R} {a : α}
 
@@ -137,7 +137,7 @@ theorem initial_reducedTo : q.reducedTo p → q.initial.reducedTo p := fun h ↦
   · rewrite [hq, initial_zero]
     exact zero_reducedTo p
   by_cases hp : p.vars.max = ⊥
-  · exact absurd h <| not_reducedTo_of_bot_mainVariable hq hp
+  · exact absurd h <| not_reducedTo_of_bot_max_vars hq hp
   by_cases hqi : q.initial = 0
   · exact hqi ▸ zero_reducedTo p
   have ⟨c, hc⟩ :=  WithBot.ne_bot_iff_exists.mp hp
@@ -146,7 +146,7 @@ theorem initial_reducedTo : q.reducedTo p → q.initial.reducedTo p := fun h ↦
   exact lt_of_le_of_lt (degreeOf_initial_le q c) h
 
 theorem initial_reducedTo_self (hp : p.vars.max ≠ ⊥) : p.initial.reducedTo p :=
-  reducedTo_of_mainVariable_lt <| mainVariable_initial_lt hp
+  reducedTo_of_max_vars_lt <| max_vars_initial_lt hp
 
 theorem initial_reducedToSet {α : Type*} [Membership (MvPolynomial σ R) α] {p : MvPolynomial σ R}
     {a : α} : p.reducedToSet a → p.initial.reducedToSet a :=
@@ -189,8 +189,8 @@ theorem _root_.TriangularSet.takeConcat_lt_of_reducedToSet
   · exact hS ▸ single_lt_empty p_ne_zero
   · refine gt_single_of_first_gt p_ne_zero ?_
     rcases lt_or_eq_of_le hc with h | h
-    · exact MvPolynomial.lt_of_mainVariable_lt h
-    apply (MvPolynomial.reducedTo_iff_gt_of_mainVariable_eq p_ne_zero h).mp
+    · exact MvPolynomial.lt_of_max_vars_lt h
+    apply (MvPolynomial.reducedTo_iff_gt_of_max_vars_eq p_ne_zero h).mp
     exact hp 0 <| length_ge_one_iff.mpr hS
   let k := Nat.find <| exists_index_mainVar_between_of_mainVar_first_lt <| lt_of_not_ge hc
   have hk : k ≤ S.length ∧ (S (k - 1)).vars.max < p.vars.max ∧
@@ -207,11 +207,11 @@ theorem _root_.TriangularSet.takeConcat_lt_of_reducedToSet
   simp only [length_concat, concat_apply, length_tk]
   refine ⟨k, lt_add_one k, ?_, fun i hi ↦ by rw [take_apply, if_pos hi, if_pos hi]⟩
   rewrite [if_neg <| Nat.lt_irrefl k, if_pos rfl]
-  by_cases mainVariable_lt' : p.vars.max < (S k).vars.max
-  · exact MvPolynomial.lt_of_mainVariable_lt mainVariable_lt'
+  by_cases max_vars_lt' : p.vars.max < (S k).vars.max
+  · exact MvPolynomial.lt_of_max_vars_lt max_vars_lt'
   have : p.vars.max ≤ (S k).vars.max := (or_iff_left keq).mp hk.2.2
-  have : p.vars.max = (S k).vars.max := eq_of_le_of_ge this <| le_of_not_gt mainVariable_lt'
-  have := MvPolynomial.reducedTo_iff_gt_of_mainVariable_eq p_ne_zero this
+  have : p.vars.max = (S k).vars.max := eq_of_le_of_ge this <| le_of_not_gt max_vars_lt'
+  have := MvPolynomial.reducedTo_iff_gt_of_max_vars_eq p_ne_zero this
   exact this.mp <| hp k <| Nat.lt_of_le_of_ne hk.1 keq
 
 end TriangularSet

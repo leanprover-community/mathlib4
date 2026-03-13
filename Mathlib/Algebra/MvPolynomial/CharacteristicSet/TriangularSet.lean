@@ -15,7 +15,7 @@ public import Mathlib.Data.Fintype.WithTopBot
 This file defines the structure of a **Triangular Set** of multivariate polynomials.
 A Triangular Set is a finite ordered sequence of non-zero polynomials `[P₁, P₂, ..., Pₘ]`
 such that their main variables (main variables) are strictly increasing:
-`mainVariable(P₁) < mainVariable(P₂) < ... < mainVariable(Pₘ)`.
+`max_vars(P₁) < max_vars(P₂) < ... < max_vars(Pₘ)`.
 
 ## Main Definitions
 
@@ -50,7 +50,7 @@ structure TriangularSet (σ R : Type*) [CommSemiring R] [LinearOrder σ] where
   /-- Elements within the length bound are non-zero. -/
   elements_ne_zero : ∀ n, n < length' ↔ seq n ≠ 0
   /-- The main variables of the polynomials are strictly increasing. -/
-  ascending_mainVariable : ∀ n < length' - 1, (seq n).vars.max < (seq (n + 1)).vars.max
+  ascending_max_vars : ∀ n < length' - 1, (seq n).vars.max < (seq (n + 1)).vars.max
 
 namespace TriangularSet
 
@@ -87,57 +87,57 @@ theorem ext' (h1 : S.length = T.length) (h2 : ∀ i < S.length, S i = T i) : S =
 
 @[simp] theorem apply_length_eq_zero : S S.length = 0 := elements_eq_zero_iff.mp (le_refl _)
 
-theorem mainVariable_lt_mainVariable_next :
-    n < S.length - 1 → (S n).vars.max < (S (n + 1)).vars.max := S.ascending_mainVariable n
+theorem max_vars_lt_max_vars_next :
+    n < S.length - 1 → (S n).vars.max < (S (n + 1)).vars.max := S.ascending_max_vars n
 
-theorem mainVariable_lt_mainVariable_next' :
+theorem max_vars_lt_max_vars_next' :
     n + 1 < S.length → (S n).vars.max < (S (n + 1)).vars.max :=
-  fun h ↦ mainVariable_lt_mainVariable_next <| Nat.lt_sub_of_add_lt h
+  fun h ↦ max_vars_lt_max_vars_next <| Nat.lt_sub_of_add_lt h
 
-theorem mainVariable_lt_mainVariable_next'' :
+theorem max_vars_lt_max_vars_next'' :
     0 < n → n < S.length → (S (n - 1)).vars.max < (S n).vars.max := fun h1 h2 ↦
   have : n - 1 < S.length - 1 := Nat.sub_lt_sub_right h1 h2
-  Nat.sub_add_cancel h1 ▸ mainVariable_lt_mainVariable_next this
+  Nat.sub_add_cancel h1 ▸ max_vars_lt_max_vars_next this
 
-theorem mainVariable_lt_of_index_lt (h : n < S.length) :
+theorem max_vars_lt_of_index_lt (h : n < S.length) :
     m < n → (S m).vars.max < (S n).vars.max := fun hmn ↦ by
   induction n with
   | zero => exact absurd hmn <| Nat.not_lt_zero m
   | succ n hn => match Nat.lt_succ_iff_lt_or_eq.mp hmn with
     | Or.inl hmn =>
-      exact lt_trans (hn (Nat.lt_of_succ_lt h) hmn) <| mainVariable_lt_mainVariable_next' h
-    | Or.inr hmn => rewrite [hmn]; exact mainVariable_lt_mainVariable_next' h
+      exact lt_trans (hn (Nat.lt_of_succ_lt h) hmn) <| max_vars_lt_max_vars_next' h
+    | Or.inr hmn => rewrite [hmn]; exact max_vars_lt_max_vars_next' h
 
-theorem index_lt_of_mainVariable_lt (h : m < S.length) :
+theorem index_lt_of_max_vars_lt (h : m < S.length) :
     (S m).vars.max < (S n).vars.max → m < n := fun hs ↦
   Decidable.byContradiction fun hmn ↦ False.elim <| match Nat.eq_or_lt_of_not_lt hmn with
     | Or.inl hmn => Eq.not_lt (congrArg (fun i ↦ (S i).vars.max) hmn) hs
-    | Or.inr hmn => (not_lt.mpr <| le_of_lt hs) (mainVariable_lt_of_index_lt h hmn)
+    | Or.inr hmn => (not_lt.mpr <| le_of_lt hs) (max_vars_lt_of_index_lt h hmn)
 
-theorem false_of_mainVariable_ge_of_index_lt :
+theorem false_of_max_vars_ge_of_index_lt :
     m < n → n < S.length → (S n).vars.max ≤ (S m).vars.max → False :=
-  fun h1 h2 h3 ↦ absurd h3 <| not_le_of_gt <| mainVariable_lt_of_index_lt h2 h1
+  fun h1 h2 h3 ↦ absurd h3 <| not_le_of_gt <| max_vars_lt_of_index_lt h2 h1
 
-theorem mainVariable_le_of_index_le :
+theorem max_vars_le_of_index_le :
     m ≤ n → n < S.length → (S m).vars.max ≤ (S n).vars.max := fun hmn h ↦
   Or.elim (lt_or_eq_of_le hmn)
-    (fun hmn ↦ le_of_lt <| mainVariable_lt_of_index_lt h hmn)
+    (fun hmn ↦ le_of_lt <| max_vars_lt_of_index_lt h hmn)
     (fun hmn ↦ by simp only [hmn, le_refl])
 
-theorem index_eq_of_mainVariable_eq :
+theorem index_eq_of_max_vars_eq :
     m < S.length → n < S.length → (S m).vars.max = (S n).vars.max → m = n :=
   fun hm hn hc ↦ Decidable.byContradiction fun con ↦ by
     match Nat.lt_or_gt_of_ne con with
-    | Or.inl con => exact absurd hc <| ne_of_lt <| mainVariable_lt_of_index_lt hn con
-    | Or.inr con => exact absurd hc.symm <| ne_of_lt <| mainVariable_lt_of_index_lt hm con
+    | Or.inl con => exact absurd hc <| ne_of_lt <| max_vars_lt_of_index_lt hn con
+    | Or.inr con => exact absurd hc.symm <| ne_of_lt <| max_vars_lt_of_index_lt hm con
 
 theorem index_eq_of_apply_eq : m < S.length → n < S.length → S m = S n → m = n :=
-  fun hm hn hc ↦ index_eq_of_mainVariable_eq hm hn (congrArg (fun p ↦ p.vars.max) hc)
+  fun hm hn hc ↦ index_eq_of_max_vars_eq hm hn (congrArg (fun p ↦ p.vars.max) hc)
 
-theorem index_eq_zero_of_mainVariable_eq_bot :
+theorem index_eq_zero_of_max_vars_eq_bot :
     n < S.length → (S n).vars.max = ⊥ → n = 0 := fun h1 h2 ↦
   Decidable.byContradiction fun hn ↦
-    WithBot.not_lt_bot _ (h2 ▸ mainVariable_lt_mainVariable_next'' (Nat.zero_lt_of_ne_zero hn) h1)
+    WithBot.not_lt_bot _ (h2 ▸ max_vars_lt_max_vars_next'' (Nat.zero_lt_of_ne_zero hn) h1)
 
 theorem exists_index_mainVar_between_of_mainVar_first_lt
     (h : (S 0).vars.max < p.vars.max) : ∃ k ≤ S.length,
@@ -175,7 +175,7 @@ instance instSetLike : SetLike (TriangularSet σ R) (MvPolynomial σ R) where
       rewrite [← hj] at ht
       have h2 : j < i := lt_of_lt_of_le (elements_ne_zero_iff.mpr ht) <| elements_eq_zero_iff.mpr hs
       have hj := congrArg (fun p ↦ p.vars.max) (hi j h2 ▸ hj)
-      exact False.elim <| Eq.not_lt hj <| mainVariable_lt_of_index_lt h1 h2
+      exact False.elim <| Eq.not_lt hj <| max_vars_lt_of_index_lt h1 h2
     have : S i = 0 ↔ T i = 0 :=
       ⟨this h hi, this (fun p ↦ (h p).symm) (fun i hi' ↦ (hi i hi').symm)⟩
     by_cases hst : S i = 0 ∨ T i = 0
@@ -188,18 +188,18 @@ instance instSetLike : SetLike (TriangularSet σ R) (MvPolynomial σ R) where
     · match Nat.eq_or_lt_of_le hij with
       | .inl hij => exact (hij ▸ hj).symm
       | .inr hij =>
-        absurd (mainVariable_lt_of_index_lt h1 hij)
+        absurd (max_vars_lt_of_index_lt h1 hij)
         exact hj.symm ▸ (Eq.not_lt <| congrArg (fun p ↦ p.vars.max) <| hi j hij)
     have ⟨k ,hk⟩ := (h (T i)).mpr <| Exists.intro i rfl
     have : j < T.length := elements_ne_zero_iff.mpr <| ne_of_eq_of_ne hj hst.1
     have : (T i).vars.max < (T j).vars.max :=
-      mainVariable_lt_of_index_lt this (not_le.mp hij)
+      max_vars_lt_of_index_lt this (not_le.mp hij)
     have hs : (S k).vars.max < (S i).vars.max := by rewrite [← hk, hj] at this; exact this
     have : k < S.length := elements_ne_zero_iff.mpr <| ne_of_eq_of_ne hk hst.2
-    have klti : k < i := index_lt_of_mainVariable_lt this hs
+    have klti : k < i := index_lt_of_max_vars_lt this hs
     have : T k = T i := (hi k klti).symm.trans hk
     absurd (congrArg (fun p ↦ p.vars.max) this)
-    exact ne_of_lt <| mainVariable_lt_of_index_lt h2 klti
+    exact ne_of_lt <| max_vars_lt_of_index_lt h2 klti
 
 theorem mem_def : p ∈ S ↔ ∃ n < S.length, S n = p := Eq.to_iff rfl
 
@@ -292,7 +292,7 @@ theorem toList_non_zero : ∀ ⦃p⦄, p ∈ S.toList → p ≠ 0 :=
   fun _ hp ↦ ne_zero_of_mem <| mem_toList_iff.mp hp
 
 theorem toList_pairwise : S.toList.Pairwise fun p q ↦ p.vars.max < q.vars.max :=
-  List.pairwise_ofFn.mpr fun _ ⟨_, hn⟩ hmn ↦ mainVariable_lt_of_index_lt hn hmn
+  List.pairwise_ofFn.mpr fun _ ⟨_, hn⟩ hmn ↦ max_vars_lt_of_index_lt hn hmn
 
 instance [DecidableEq (MvPolynomial σ R)] : DecidableEq (TriangularSet σ R) :=
   fun _ _ ↦ decidable_of_iff _ toList_eq_iff_eq
@@ -302,7 +302,7 @@ protected noncomputable def empty : TriangularSet σ R where
   length' := 0
   seq := 0
   elements_ne_zero := fun n ↦ ⟨fun h ↦ absurd h <| Nat.not_lt_zero n, absurd rfl⟩
-  ascending_mainVariable := fun _ hn ↦ absurd hn <| of_decide_eq_false rfl
+  ascending_max_vars := fun _ hn ↦ absurd hn <| of_decide_eq_false rfl
 
 noncomputable instance : EmptyCollection (TriangularSet σ R) := ⟨.empty⟩
 
@@ -338,7 +338,7 @@ noncomputable def single_of_ne_zero (hp : p ≠ 0) : TriangularSet σ R where
   elements_ne_zero := fun _ ↦
     ⟨fun hn ↦ ne_of_eq_of_ne (if_pos <| Nat.lt_one_iff.mp hn) hp,
     fun hn ↦ by by_contra con; exact hn (if_neg <| Nat.ne_zero_of_lt <| Nat.le_of_not_lt con)⟩
-  ascending_mainVariable n hn := absurd hn <| Nat.not_lt_zero n
+  ascending_max_vars n hn := absurd hn <| Nat.not_lt_zero n
 
 theorem single_of_ne_zero_apply (hp : p ≠ 0) :
     (single_of_ne_zero hp) n = if n = 0 then p else 0 := rfl
@@ -354,12 +354,12 @@ noncomputable def take (S : TriangularSet σ R) (n : ℕ) : TriangularSet σ R w
     exact ⟨fun h ↦ ⟨lt_of_lt_of_le h <| Nat.min_le_left ..,
       elements_ne_zero_iff.mp <| lt_of_lt_of_le h <| Nat.min_le_right ..⟩,
       fun h ↦ lt_min h.1 (elements_ne_zero_iff.mpr h.2)⟩
-  ascending_mainVariable m hm := by
+  ascending_max_vars m hm := by
     have : n ⊓ S.length - 1 ≤ n - 1 := Nat.sub_le_sub_right (Nat.min_le_left ..) 1
     have : m + 1 < n := Nat.add_lt_of_lt_sub <| lt_of_lt_of_le hm this
     rewrite [if_pos this, if_pos <| Nat.lt_of_succ_lt this]
     have : n ⊓ S.length - 1 ≤ S.length - 1 := Nat.sub_le_sub_right (Nat.min_le_right ..) 1
-    exact mainVariable_lt_mainVariable_next <| lt_of_lt_of_le hm this
+    exact max_vars_lt_max_vars_next <| lt_of_lt_of_le hm this
 
 @[simp]
 theorem length_take (S : TriangularSet σ R) (n : ℕ) : (S.take n).length = n ⊓ S.length := rfl
@@ -395,7 +395,7 @@ def drop (S : TriangularSet σ R) (n : ℕ) : TriangularSet σ R where
   length' := S.length - n
   seq m := S (m + n)
   elements_ne_zero _ := Iff.trans ⟨Nat.add_lt_of_lt_sub, Nat.lt_sub_of_add_lt⟩ elements_ne_zero_iff
-  ascending_mainVariable m hm := mainVariable_lt_of_index_lt
+  ascending_max_vars m hm := max_vars_lt_of_index_lt
     ((add_assoc m 1 n).symm ▸ Nat.add_lt_of_lt_sub <| (add_comm n 1) ▸ hm)
     (Nat.add_lt_add_right (lt_add_one m) n)
 
@@ -450,12 +450,12 @@ noncomputable def concat (S : TriangularSet σ R) (p : MvPolynomial σ R)
       have con := not_lt.mp con
       simp only [Nat.not_lt_of_gt con, reduceIte, ne_eq, ite_eq_right_iff, Classical.not_imp] at hn
       exact (Nat.ne_of_lt con) hn.1.symm⟩
-  ascending_mainVariable n hn := by
+  ascending_max_vars n hn := by
     have hn : n < S.length := hn
     match Decidable.em (n + 1 < S.length) with
     | Or.inl h1 =>
       rewrite [if_pos hn, if_pos h1]
-      exact mainVariable_lt_mainVariable_next <| Nat.lt_sub_of_add_lt h1
+      exact max_vars_lt_max_vars_next <| Nat.lt_sub_of_add_lt h1
     | Or.inr h1 =>
       have h1 : n + 1 = S.length := Nat.le_antisymm hn <| Nat.le_of_not_lt h1
       simp only [hn, h1, lt_self_iff_false, reduceIte]
@@ -503,7 +503,7 @@ noncomputable def list (l : List (MvPolynomial σ R)) (h1 : ∀ p ∈ l, p ≠ 0
   elements_ne_zero n :=
     ⟨fun hn ↦ by simp [hn, List.forall_mem_iff_getElem.mp h1 n hn],
       fun hn ↦ by contrapose! hn; simp [hn]⟩
-  ascending_mainVariable n hn := by
+  ascending_max_vars n hn := by
     have hn1 := Nat.lt_of_lt_pred hn
     have hn2 := Nat.add_lt_of_lt_sub hn
     simp [hn1, hn2, List.pairwise_iff_getElem.mp h2 _ _ hn1 hn2 (lt_add_one n)]
@@ -600,13 +600,13 @@ theorem single_of_length_le_one : S.length ≤ 1 → S = single (S 0) :=
       have : S.length ≤ i := Nat.le_trans h <| Nat.one_le_iff_ne_zero.mpr hi
       rw [elements_eq_zero_iff.mp this, single_apply_nonzero _ hi]
 
-theorem single_of_last_mainVariable_eq_bot :
+theorem single_of_last_max_vars_eq_bot :
     (S (S.length - 1)).vars.max = ⊥ → S = single (S 0) := fun h ↦
   have : S.length ≤ 1 := by
     by_cases hl : S.length = 0
     · exact hl ▸ Nat.zero_le 1
     have : S.length - 1 < S.length := Nat.sub_one_lt hl
-    exact Nat.le_of_sub_eq_zero <| index_eq_zero_of_mainVariable_eq_bot this h
+    exact Nat.le_of_sub_eq_zero <| index_eq_zero_of_max_vars_eq_bot this h
   single_of_length_le_one this
 
 /--
@@ -627,9 +627,9 @@ noncomputable def takeConcat (S : TriangularSet σ R) (p : MvPolynomial σ R) :
     have hk : k ≤ S.length ∧ (S (k - 1)).vars.max < p.vars.max ∧
         (p.vars.max ≤ (S k).vars.max ∨ k = S.length) :=
       Nat.find_spec <| exists_index_mainVar_between_of_mainVar_first_lt <| lt_of_not_ge hc
-    have mainVariable_lt : (S.take k).canConcat p := by
+    have max_vars_lt : (S.take k).canConcat p := by
       rewrite [canConcat, length_take, min_eq_left hk.1, take_apply]
-      refine ⟨MvPolynomial.ne_zero_of_mainVariable_ne_bot <| LT.lt.ne_bot <| lt_of_not_ge hc, ?_⟩
+      refine ⟨MvPolynomial.ne_zero_of_max_vars_ne_bot <| LT.lt.ne_bot <| lt_of_not_ge hc, ?_⟩
       exact fun hkz ↦ if_pos (Nat.sub_one_lt_of_lt hkz) ▸ hk.2.1
     (S.take k).concat p
 
@@ -640,7 +640,7 @@ theorem takeConcat_eq_concat_of_canConcat (h : S.canConcat p) : S.takeConcat p =
   repeat' have h1 := length_gt_zero_iff.mpr h1
   · absurd hc
     simp only [not_le]
-    refine lt_of_le_of_lt (mainVariable_le_of_index_le (Nat.zero_le _) ?_) <| h.2 h1
+    refine lt_of_le_of_lt (max_vars_le_of_index_le (Nat.zero_le _) ?_) <| h.2 h1
     exact Nat.sub_one_lt_of_lt h1
   let k := Nat.find <| exists_index_mainVar_between_of_mainVar_first_lt <| lt_of_not_ge hc
   have hk : k = S.length := by
@@ -650,13 +650,13 @@ theorem takeConcat_eq_concat_of_canConcat (h : S.canConcat p) : S.takeConcat p =
     by_contra con
     simp only [con, or_false] at this
     absurd lt_of_le_of_ne this.1 con
-    have := index_lt_of_mainVariable_lt (Nat.sub_one_lt_of_lt h1) (lt_of_lt_of_le (h.2 h1) this.2.2)
+    have := index_lt_of_max_vars_lt (Nat.sub_one_lt_of_lt h1) (lt_of_lt_of_le (h.2 h1) this.2.2)
     exact Nat.not_lt.mpr <| Nat.le_of_pred_lt this
   change (S.take k).concat p _ = S.concat p
   simp only [hk, take_length]
 
 theorem takeConcat_zero_eq_empty (S : TriangularSet σ R) : S.takeConcat 0 = ∅ := by
-  simp only [takeConcat, single_zero, MvPolynomial.mainVariable_zero, bot_le, ↓reduceDIte, ite_self]
+  simp only [takeConcat, single_zero, MvPolynomial.max_vars_zero, bot_le, ↓reduceDIte, ite_self]
 
 theorem mem_takeConcat (S : TriangularSet σ R) {p : MvPolynomial σ R} (h : p ≠ 0) :
     p ∈ S.takeConcat p := by

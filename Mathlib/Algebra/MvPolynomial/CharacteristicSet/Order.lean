@@ -16,7 +16,7 @@ which are essential for the Characteristic Set Method (Wu's Method).
 
 ## Main definitions
 
-* `MvPolynomial.order`: The order of a polynomial `p` is the pair `(mainVariable p, mainDegree p)`,
+* `MvPolynomial.order`: The order of a polynomial `p` is the pair `(max_vars p, mainDegree p)`,
   ordered lexicographically. This defines a well-ordering on polynomials when the variable type
   is well-founded.
 
@@ -43,7 +43,7 @@ namespace MvPolynomial
 
 section Order
 
-/-- The order of a polynomial `p` is the pair `(mainVariable p, degree p)`,
+/-- The order of a polynomial `p` is the pair `(max_vars p, degree p)`,
 which is ordered lexicographically. -/
 noncomputable def order (p : MvPolynomial σ R) : WithBot σ ×ₗ ℕ := (p.vars.max, p.mainDegree)
 
@@ -72,7 +72,7 @@ theorem le_iff_not_imp : p ≤ q ↔ ¬p.vars.max < q.vars.max →
     p.vars.max = q.vars.max ∧ p.mainDegree ≤ q.mainDegree :=
   Iff.trans le_def <| Decidable.or_iff_not_imp_left
 
-theorem mainVariable_le_of_le : p ≤ q → p.vars.max ≤ q.vars.max :=
+theorem max_vars_le_of_le : p ≤ q → p.vars.max ≤ q.vars.max :=
   fun h ↦ Or.elim (le_def.mp h) le_of_lt (fun h ↦ le_of_eq h.1)
 
 theorem lt_def' : p < q ↔ p.order < q.order := Iff.trans lt_iff_le_not_ge (by
@@ -87,7 +87,7 @@ theorem lt_iff_not_imp : p < q ↔ ¬p.vars.max < q.vars.max
     → p.vars.max = q.vars.max ∧ p.mainDegree < q.mainDegree :=
   Iff.trans lt_def <| Decidable.or_iff_not_imp_left
 
-theorem lt_of_mainVariable_lt : p.vars.max < q.vars.max → p < q :=
+theorem lt_of_max_vars_lt : p.vars.max < q.vars.max → p < q :=
   fun h ↦ lt_def.mpr <| Or.inl h
 
 @[simp] theorem not_lt_iff_ge : ¬(p < q) ↔ q ≤ p := by rw [le_def', lt_def', not_lt]
@@ -95,7 +95,7 @@ theorem lt_of_mainVariable_lt : p.vars.max < q.vars.max → p < q :=
 @[simp] theorem not_le_iff_gt : ¬(p ≤ q) ↔ q < p := by rw [le_def', lt_def', not_le]
 
 theorem X_lt_of_lt [Nontrivial R] {i j : σ} : i < j → (X i : MvPolynomial σ R) < X j := fun h ↦ by
-  apply lt_of_mainVariable_lt; rewrite [mainVariable_X, mainVariable_X, WithBot.coe_lt_coe]; exact h
+  apply lt_of_max_vars_lt; rewrite [max_vars_X, max_vars_X, WithBot.coe_lt_coe]; exact h
 
 instance instSetoid : Setoid (MvPolynomial σ R) := AntisymmRel.setoid (MvPolynomial σ R) (· ≤ ·)
 
@@ -123,7 +123,7 @@ theorem equiv_of_le_of_ge : p ≤ q → q ≤ p → p ≈ q := And.intro
 
 protected theorem zero_le : 0 ≤ p := by
   apply le_def'.mpr
-  rewrite [order, mainVariable_zero, mainDegree_zero]
+  rewrite [order, max_vars_zero, mainDegree_zero]
   exact StrictMono.minimal_preimage_bot (fun ⦃a b⦄ a ↦ a) rfl p.order
 
 end Order
@@ -165,7 +165,7 @@ namespace TriangularSet
 variable {S T : TriangularSet σ R} {m n : ℕ}
 
 theorem apply_lt_of_index_lt (h : n < S.length) : m < n → S m < S n :=
-  fun hmn ↦ MvPolynomial.lt_of_mainVariable_lt <| mainVariable_lt_of_index_lt h hmn
+  fun hmn ↦ MvPolynomial.lt_of_max_vars_lt <| max_vars_lt_of_index_lt h hmn
 
 theorem index_lt_of_apply_lt (h : m < S.length) : S m < S n → m < n := fun hs ↦
   Decidable.byContradiction fun hmn ↦ False.elim <| match Nat.eq_or_lt_of_not_lt hmn with
@@ -174,7 +174,7 @@ theorem index_lt_of_apply_lt (h : m < S.length) : S m < S n → m < n := fun hs 
 
 theorem le_of_index_le : m ≤ n → n < S.length → S m ≤ S n := fun hmn h ↦
   Or.elim (lt_or_eq_of_le hmn)
-    (fun hmn ↦ le_of_lt <| MvPolynomial.lt_of_mainVariable_lt <| mainVariable_lt_of_index_lt h hmn)
+    (fun hmn ↦ le_of_lt <| MvPolynomial.lt_of_max_vars_lt <| max_vars_lt_of_index_lt h hmn)
     (fun hmn ↦ by simp only [hmn, le_refl])
 
 /-! ### Order and Ordering -/
@@ -393,8 +393,8 @@ theorem lt_drop : S ≠ ∅ → 0 < n → S < S.drop n := fun h1 h2 ↦
   if gel : S.length ≤ n then drop_eq_empty_of_ge_length gel ▸ lt_empty h1
   else lt_def.mpr <| Or.inl ⟨0, length_gt_zero_iff.mpr h1, by
       rewrite [drop_apply, zero_add]
-      apply MvPolynomial.lt_of_mainVariable_lt
-      exact mainVariable_lt_of_index_lt (Nat.lt_of_not_le gel) h2,
+      apply MvPolynomial.lt_of_max_vars_lt
+      exact max_vars_lt_of_index_lt (Nat.lt_of_not_le gel) h2,
     fun i hi ↦ absurd hi <| Nat.not_lt_zero i⟩
 
 theorem concat_lt {p : MvPolynomial σ R} (h : S.canConcat p) : S.concat p h < S := lt_def.mpr <|
@@ -447,7 +447,7 @@ theorem wellFoundedGT_variables_of_wellFoundedLT [Nontrivial R] :
     length' := n
     seq i := if i < n then MvPolynomial.X (f i) else 0
     elements_ne_zero i := by simp
-    ascending_mainVariable i hi := by simp [Nat.lt_of_lt_pred hi, Nat.add_lt_of_lt_sub hi, hf1 i]}
+    ascending_max_vars i hi := by simp [Nat.lt_of_lt_pred hi, Nat.add_lt_of_lt_sub hi, hf1 i]}
   have length_S (n : ℕ) : (S n).length = n := rfl
   have S_apply (n i : ℕ) : S n i = if i < n then MvPolynomial.X (f i) else 0 := rfl
   refine ⟨S, fun n ↦ lt_def.mpr <| Or.inr ?_⟩
@@ -458,7 +458,7 @@ theorem wellFoundedGT_variables_of_wellFoundedLT [Nontrivial R] :
 theorem length_le [Fintype σ] : S.length ≤ Fintype.card σ + 1 := by
   let f : Fin S.length → WithBot σ := fun i ↦ (S i).vars.max
   have : f.Injective :=
-    fun ⟨_, hi⟩ ⟨_, hj⟩ h ↦ Fin.mk.injEq _ hi _ hj ▸ index_eq_of_mainVariable_eq hi hj h
+    fun ⟨_, hi⟩ ⟨_, hj⟩ h ↦ Fin.mk.injEq _ hi _ hj ▸ index_eq_of_max_vars_eq hi hj h
   have card_le := Fintype.card_le_of_injective f this
   have : Fintype.card (WithBot σ) = Fintype.card (Option σ) := rfl
   rewrite [Fintype.card_fin, this, Fintype.card_option] at card_le

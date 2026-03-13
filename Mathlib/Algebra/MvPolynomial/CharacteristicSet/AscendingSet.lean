@@ -39,7 +39,7 @@ class AscendingSetTheory (σ R : Type*) [CommSemiring R] [DecidableEq R] [Linear
   /-- A key property linking the ascending set structure to the initial.
   If `S` is an ascending set, the initial of any non-constant element in `S`
   must be reduced with respect to `S`. -/
-  protected initial_reducedToSet_of_mainVariable_ne_bot : ∀ ⦃S : TriangularSet σ R⦄ ⦃i : ℕ⦄,
+  protected initial_reducedToSet_of_max_vars_ne_bot : ∀ ⦃S : TriangularSet σ R⦄ ⦃i : ℕ⦄,
     (∀ ⦃i j⦄, i < j → j < S.length → reducedTo' (S j) (S i)) →
     (S i).vars.max ≠ ⊥ → (S i).initial.reducedToSet S
 
@@ -144,14 +144,14 @@ namespace AscendingSet
 
 variable [AscendingSetTheory σ R] {S T : AscendingSet σ R} {p : MvPolynomial σ R}
 
-theorem initial_reducedToSet_of_mainVariable_ne_bot {S : TriangularSet σ R} {i : ℕ} :
+theorem initial_reducedToSet_of_max_vars_ne_bot {S : TriangularSet σ R} {i : ℕ} :
     S.isAscendingSet → (S i).vars.max ≠ ⊥ → (S i).initial.reducedToSet S := fun h ↦
-  AscendingSetTheory.initial_reducedToSet_of_mainVariable_ne_bot h
+  AscendingSetTheory.initial_reducedToSet_of_max_vars_ne_bot h
 
-theorem initial_reducedToSet_of_mainVariable_ne_bot' {S : TriangularSet σ R}
+theorem initial_reducedToSet_of_max_vars_ne_bot' {S : TriangularSet σ R}
     (h : S.isAscendingSet) :
     p ∈ S → p.vars.max ≠ ⊥ → p.initial.reducedToSet S := fun ⟨_, _, hi2⟩ hc ↦
-  hi2 ▸ AscendingSet.initial_reducedToSet_of_mainVariable_ne_bot h (hi2 ▸ hc)
+  hi2 ▸ AscendingSet.initial_reducedToSet_of_max_vars_ne_bot h (hi2 ▸ hc)
 
 /-- Construct an ascending set from a triangular set and a proof of the ascending property. -/
 def mk {S : TriangularSet σ R} (h : S.isAscendingSet) : AscendingSet σ R := ⟨S, h⟩

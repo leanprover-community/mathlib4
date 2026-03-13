@@ -404,7 +404,7 @@ section Initial
 
 variable [DecidableEq R] [LinearOrder σ] {p : MvPolynomial σ R}
 
-/-- The "Initial" of a polynomial `p` is `p.initialOf p.mainVariable` if `p` is not a constant,
+/-- The "Initial" of a polynomial `p` is `p.initialOf p.max_vars` if `p` is not a constant,
 and 1 if `p` is a non-zero constant. -/
 noncomputable def initial (p : MvPolynomial σ R) : MvPolynomial σ R :=
   if p = 0 then 0 else
@@ -421,27 +421,27 @@ theorem initial_ne_zero [Nontrivial R] {p : MvPolynomial σ R} : p ≠ 0 → p.i
   | none => simp only [one_ne_zero, not_false_eq_true]
   | some c => simp only [initialOf_ne_zero c h, not_false_eq_true]
 
-theorem initial_of_mainVariable_eq_bot (hp : p ≠ 0) : p.vars.max = ⊥ → initial p = 1 :=
+theorem initial_of_max_vars_eq_bot (hp : p ≠ 0) : p.vars.max = ⊥ → initial p = 1 :=
   fun h ↦ by simp only [initial, hp, reduceIte, h]
 
-theorem initial_of_mainVariable_isSome' {c : σ} :
+theorem initial_of_max_vars_isSome' {c : σ} :
     p.vars.max = c → initial p = p.initialOf c := fun h ↦ by
   have : p.vars.max ≠ ⊥ := WithBot.ne_bot_iff_exists.mpr <| Exists.intro c h.symm
-  simp only [initial, ne_zero_of_mainVariable_ne_bot this, ↓reduceIte, h]
+  simp only [initial, ne_zero_of_max_vars_ne_bot this, ↓reduceIte, h]
 
-theorem initial_of_mainVariable_isSome {c : σ} : p.vars.max = c →
+theorem initial_of_max_vars_isSome {c : σ} : p.vars.max = c →
     initial p = ∑ s ∈ p.support with s c = p.degreeOf c, monomial (s.erase c) (p.coeff s) :=
-  fun h ↦ by rw [initial_of_mainVariable_isSome' h, initialOf_def]
+  fun h ↦ by rw [initial_of_max_vars_isSome' h, initialOf_def]
 
 @[simp] theorem initial_C {r : R} (hr : r ≠ 0) : (C r : MvPolynomial σ R).initial = 1 :=
-  initial_of_mainVariable_eq_bot (C_ne_zero.mpr hr) (mainVariable_C r)
+  initial_of_max_vars_eq_bot (C_ne_zero.mpr hr) (max_vars_C r)
 
 theorem initial_monomial {s : σ →₀ ℕ} (r : R) {c : σ} :
     s.support.max = c → (monomial s r).initial = monomial (s.erase c) r := fun hs ↦ by
   by_cases r_zero : r = 0
   · simp only [r_zero, initial, monomial_zero, reduceIte]
-  have : (monomial s r).vars.max = c := hs ▸ mainVariable_monomial s r_zero
-  rw [initial_of_mainVariable_isSome' this, initialOf_monomial]
+  have : (monomial s r).vars.max = c := hs ▸ max_vars_monomial s r_zero
+  rw [initial_of_max_vars_isSome' this, initialOf_monomial]
 
 @[simp] theorem initial_X_pow (i : σ) {k : ℕ} (hk : k ≠ 0) :
     (X i ^ k).initial = (1 : MvPolynomial σ R) := by
@@ -452,14 +452,14 @@ theorem initial_monomial {s : σ →₀ ℕ} (r : R) {c : σ} :
 @[simp] theorem initial_X (i : σ) : (X i : MvPolynomial σ R).initial = 1 :=
   pow_one (X i : MvPolynomial σ R) ▸ initial_X_pow i one_ne_zero
 
-theorem mainVariable_initial_lt (hp : p.vars.max ≠ ⊥) :
+theorem max_vars_initial_lt (hp : p.vars.max ≠ ⊥) :
     (initial p).vars.max < p.vars.max := by
   have ⟨c, hc⟩ :=  WithBot.ne_bot_iff_exists.mp hp
-  rewrite [initial_of_mainVariable_isSome hc.symm, hc.symm]
-  apply lt_of_le_of_lt (mainVariable_sum_le _ _)
+  rewrite [initial_of_max_vars_isSome hc.symm, hc.symm]
+  apply lt_of_le_of_lt (max_vars_sum_le _ _)
   simp only [WithBot.bot_lt_coe, Finset.sup_lt_iff, Finset.mem_filter, mem_support_iff]
   intro s hs
-  simp only [mainVariable_monomial _ hs.1, Finsupp.support_erase, Finset.max_eq_sup_coe]
+  simp only [max_vars_monomial _ hs.1, Finsupp.support_erase, Finset.max_eq_sup_coe]
   rewrite [Finset.sup_lt_iff (hc ▸ WithBot.bot_lt_iff_ne_bot.mpr hp)]
   simp only [Finset.mem_erase, WithBot.coe_lt_coe]
   intro i hi
@@ -474,12 +474,12 @@ theorem degreeOf_initial_le : p.initial.degreeOf i ≤ p.degreeOf i := by
   by_cases hp : p = 0
   · simp only [hp, initial_zero, degreeOf_zero, le_refl]
   by_cases hc : p.vars.max = ⊥
-  · simp only [initial_of_mainVariable_eq_bot hp hc]
+  · simp only [initial_of_max_vars_eq_bot hp hc]
     have : (1 : MvPolynomial σ R).vars.max = ⊥ :=
-      mainVariable_eq_bot_iff_eq_C.mpr (Exists.intro 1 rfl)
-    rw [degreeOf_of_mainVariable_eq_bot i hc, degreeOf_of_mainVariable_eq_bot i this]
+      max_vars_eq_bot_iff_eq_C.mpr (Exists.intro 1 rfl)
+    rw [degreeOf_of_max_vars_eq_bot i hc, degreeOf_of_max_vars_eq_bot i this]
   have ⟨c, hc⟩ :=  WithBot.ne_bot_iff_exists.mp hc
-  exact initial_of_mainVariable_isSome' hc.symm ▸ p.degreeOf_initialOf_le c i
+  exact initial_of_max_vars_isSome' hc.symm ▸ p.degreeOf_initialOf_le c i
 
 /-- The product of initials of a set of polynomials. -/
 noncomputable def initialProd (PS : Finset (MvPolynomial σ R)) : MvPolynomial σ R :=

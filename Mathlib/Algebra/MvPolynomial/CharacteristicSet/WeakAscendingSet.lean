@@ -18,7 +18,7 @@ This is a weaker condition than the standard reduction.
 
 Consequently, the algorithm for computing a Weak Basic Set must ensure the triangular structure
 (strict ascending main variables) explicitly,
-by filtering candidates with `B.mainVariable < p.mainVariable`.
+by filtering candidates with `B.max_vars < p.max_vars`.
 
 ## Main declarations
 
@@ -53,13 +53,13 @@ theorem initial_reducedTo_of_ne {i j : ℕ} (h : isAscendingSet S) :
     i ≠ j → j < S.length → (S i).initial.reducedTo (S j) := fun hij hj ↦
   match lt_or_gt_of_ne hij with
   | .inl hij =>
-    initial_reducedTo <| reducedTo_of_mainVariable_lt <| mainVariable_lt_of_index_lt hj hij
+    initial_reducedTo <| reducedTo_of_max_vars_lt <| max_vars_lt_of_index_lt hj hij
   | .inr hij => (isAscendingSet_def'.mp h) hij hj
 
 /-- The weak ascending set theory uses weak reduction `p.initial.reducedTo`. -/
 noncomputable scoped instance : AscendingSetTheory σ R where
   reducedTo' := fun p ↦ p.initial.reducedTo
-  initial_reducedToSet_of_mainVariable_ne_bot := fun _ i h hc _ ⟨j, hj1, hj2⟩ ↦
+  initial_reducedToSet_of_max_vars_ne_bot := fun _ i h hc _ ⟨j, hj1, hj2⟩ ↦
     match em (i = j) with
     | .inl hij => hj2 ▸ hij ▸ initial_reducedTo_self hc
     | .inr hij => hj2 ▸ initial_reducedTo_of_ne h hij hj1
@@ -104,8 +104,8 @@ noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangularSet
 /--
 Computes the Weak Basic Set of a list of polynomials.
 Difference from Standard:
-The filter condition includes `B.mainVariable < p.mainVariable`.
-This is because `p.initial.reducedTo B` does NOT imply `B.mainVariable < p.mainVariable`
+The filter condition includes `B.max_vars < p.max_vars`.
+This is because `p.initial.reducedTo B` does NOT imply `B.max_vars < p.max_vars`
 (unlike strong reduction).
 We must enforce the triangular structure explicitly.
 -/
@@ -234,7 +234,7 @@ lemma basicSetGo_le_ascendingSet (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p
     refine ⟨hT4 p hp1 hp2.2, ?_, reducedToSet_iff.mpr fun i (hi : i < BS.length + 1) ↦ ?_⟩
     <;> rcases hp1 with ⟨k, hk1, hk2⟩
     · simp only [(equiv_iff.mp hBq).1, ← hk2] at hp2 ⊢
-      refine mainVariable_lt_of_index_lt hk1 ?_
+      refine max_vars_lt_of_index_lt hk1 ?_
       contrapose! hp2
       intro hk3
       rcases lt_or_eq_of_le hp2 with hk2 | hk2

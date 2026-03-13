@@ -300,7 +300,7 @@ noncomputable def zeroDecomposition (l : List (MvPolynomial σ R)) : List (Trian
     have hp : p ∈ CS ∧ ¬p.vars.max = ⊥ :=  by expose_names; simpa using property
     refine ⟨initial_ne_zero (ne_zero_of_mem hp.1), fun q hq ↦ ?_⟩
     have : p.initial.reducedToSet CS :=
-      AscendingSet.initial_reducedToSet_of_mainVariable_ne_bot' l.cs_isAscendingSet hp.1 hp.2
+      AscendingSet.initial_reducedToSet_of_max_vars_ne_bot' l.cs_isAscendingSet hp.1 hp.2
     exact this q <| mem_toList_iff.mp <| CS.toList.basicSet_subset hq
 
 theorem isAscendingSet_of_mem_zeroDecomposition :
@@ -362,7 +362,7 @@ theorem vanishingSet_eq_zeroDecomposition_union :
     fun ⟨p, ⟨hp1, _⟩, hx1, hx2⟩ ↦ ⟨fun q hq ↦ hx2 q (Or.inr hq), p, hp1, hx1⟩⟩
   · -- Forward: if p is constant, Zero(p) is empty or total, but here p != 0 (from CS)
     contrapose! hp2
-    simp [initial_of_mainVariable_eq_bot (ne_zero_of_mem hp1) hp2]
+    simp [initial_of_max_vars_eq_bot (ne_zero_of_mem hp1) hp2]
   · -- Forward: x is zero of everything in CS++l
     rcases hq with hq | hq
     · -- x ∈ Zero(CS) because x ∈ Zero(l) and CS is characteristic
