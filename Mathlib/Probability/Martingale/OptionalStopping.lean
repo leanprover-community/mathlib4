@@ -291,14 +291,14 @@ theorem kolmogorov_ineq_wiki_version (hM : Martingale M ℱ μ)
     (hL2 : ∀ n, MemLp (M n) 2 μ) (n : ℕ) (ε : NNReal) (hmean : μ[M n] = 0) :
     ε ^ 2 * μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one (fun k => |M k ω|)}
     ≤ ENNReal.ofReal (Var[M n; μ]) := by
-  set A : Set Ω := {ω | (ε : ℝ) ≤ (range (n + 1)).sup' (by simp) (fun k => |M k ω|)}
-  set B : Set Ω := {ω | (ε : ℝ) ^ 2 ≤ (range (n + 1)).sup' (by simp) (fun k => (M k ω) ^ 2)}
+  set A : Set Ω := {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one (fun k => |M k ω|)}
+  set B : Set Ω := {ω | (ε : ℝ) ^ 2 ≤ (range (n + 1)).sup' nonempty_range_add_one
+    (fun k => (M k ω) ^ 2)}
   have hAB : A ⊆ B := by
     intro ω hω
-    rcases (le_sup'_iff nonempty_range_add_one (f := fun k => |M k ω|)
-      (a := (ε : ℝ))).1 hω with ⟨k, hk, hkω⟩
-    have hk2 : (ε : ℝ) ^ 2 ≤ (M k ω) ^ 2 := by rwa [sq_le_sq, NNReal.abs_eq ε]
-    exact le_trans hk2 (le_sup' (f := fun j => (M j ω) ^ 2) hk)
+    rcases (le_sup'_iff nonempty_range_add_one (f := fun k => |M k ω|) (a := (ε : ℝ))).mp hω
+      with ⟨k, hk, hkω⟩
+    exact le_trans (by rwa [sq_le_sq, NNReal.abs_eq ε]) (le_sup' (f := fun j => (M j ω) ^ 2) hk)
   calc
     _ ≤ ε ^ 2 * μ B := mul_le_mul_right (measure_mono hAB) (ε ^ 2)
     _ ≤ ENNReal.ofReal (∫ ω, (M n ω) ^ 2 ∂μ) := by
