@@ -31,7 +31,7 @@ public import Mathlib.RingTheory.Etale.Locus
 
 ## Note
 
-For the converse that smooth imples flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
+For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
 
 -/
 
