@@ -642,6 +642,7 @@ private noncomputable local instance normedAddCommGroupAux :
   .ofCore CStarMatrix.normedSpaceCore
 
 set_option backward.isDefEq.respectTransparency false in
+@[implicit_reducible]
 private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 

@@ -157,6 +157,7 @@ lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ i, ⨆ j, f 
   simp only [inf_iSup_eq]
 
 /-- The `Order.Frame.MinimalAxioms` element corresponding to a frame. -/
+@[implicit_reducible]
 def of [Frame α] : MinimalAxioms α where
   __ := ‹Frame α›
   inf_sSup_le_iSup_inf a s := _root_.inf_sSup_eq.le
@@ -196,6 +197,7 @@ lemma sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ i, ⨅ j, f 
   simp only [sup_iInf_eq]
 
 /-- The `Order.Coframe.MinimalAxioms` element corresponding to a frame. -/
+@[implicit_reducible]
 def of [Coframe α] : MinimalAxioms α where
   __ := ‹Coframe α›
   iInf_sup_le_sup_sInf a s := _root_.sup_sInf_eq.ge
@@ -874,17 +876,10 @@ namespace PUnit
 
 variable (s : Set PUnit.{u + 1})
 
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
-  __ := PUnit.instBooleanAlgebra
-  sSup _ := unit
-  sInf _ := unit
-  le_sSup _ _ _ := trivial
-  sSup_le _ _ _ := trivial
-  sInf_le _ _ _ := trivial
-  le_sInf _ _ _ := trivial
-  iInf_iSup_eq _ := rfl
+instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit where
 
-instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
+  iInf_iSup_eq _ := rfl
 
 @[simp]
 theorem sSup_eq : sSup s = unit :=

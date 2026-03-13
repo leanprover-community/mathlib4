@@ -85,7 +85,6 @@ theorem rootDiscr_rat : rootDiscr ℚ = 1 := by
 
 end rootDiscr
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
@@ -121,7 +120,6 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ZLattice.covolume (mixedEmbedding.integerLattice K) =
@@ -132,7 +130,6 @@ theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm,
     Int.norm_eq_abs]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ZLattice.covolume (mixedEmbedding.idealLattice K I) =
@@ -145,7 +142,6 @@ theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (Fractional
     ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm, Int.norm_eq_abs,
     ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val)), mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
       |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K *
