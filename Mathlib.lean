@@ -671,6 +671,7 @@ public import Mathlib.Algebra.Homology.SingleHomology
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.SpectralObject.Cycles
 public import Mathlib.Algebra.Homology.SpectralObject.Differentials
+public import Mathlib.Algebra.Homology.SpectralObject.EpiMono
 public import Mathlib.Algebra.Homology.SpectralObject.HasSpectralSequence
 public import Mathlib.Algebra.Homology.SpectralObject.Page
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
@@ -1391,6 +1392,7 @@ public import Mathlib.AlgebraicGeometry.Restrict
 public import Mathlib.AlgebraicGeometry.Scheme
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Sites.ConstantSheaf
+public import Mathlib.AlgebraicGeometry.Sites.ElladicCohomology
 public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
@@ -2356,6 +2358,7 @@ public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Bousfield
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Localization
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
+public import Mathlib.CategoryTheory.Abelian.ShortExact
 public import Mathlib.CategoryTheory.Abelian.Subobject
 public import Mathlib.CategoryTheory.Abelian.Transfer
 public import Mathlib.CategoryTheory.Abelian.Yoneda
@@ -2431,6 +2434,7 @@ public import Mathlib.CategoryTheory.Bicategory.SingleObj
 public import Mathlib.CategoryTheory.Bicategory.Strict
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
+public import Mathlib.CategoryTheory.Bicategory.Yoneda
 public import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.CategoryTheory.Category.Bipointed
@@ -3222,6 +3226,8 @@ public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.Sites.Point.Category
 public import Mathlib.CategoryTheory.Sites.Point.Comap
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
+public import Mathlib.CategoryTheory.Sites.Point.IsMonoidalW
+public import Mathlib.CategoryTheory.Sites.Point.Monoidal
 public import Mathlib.CategoryTheory.Sites.Point.Over
 public import Mathlib.CategoryTheory.Sites.Point.Presheaf
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
@@ -3513,6 +3519,7 @@ public import Mathlib.Computability.MyhillNerode
 public import Mathlib.Computability.NFA
 public import Mathlib.Computability.Partrec
 public import Mathlib.Computability.PartrecCode
+public import Mathlib.Computability.PostTuringMachine
 public import Mathlib.Computability.Primrec
 public import Mathlib.Computability.Primrec.Basic
 public import Mathlib.Computability.Primrec.List
@@ -3520,7 +3527,12 @@ public import Mathlib.Computability.RecursiveIn
 public import Mathlib.Computability.Reduce
 public import Mathlib.Computability.RegularExpressions
 public import Mathlib.Computability.StateTransition
+public import Mathlib.Computability.TMComputable
+public import Mathlib.Computability.TMConfig
+public import Mathlib.Computability.TMToPartrec
+public import Mathlib.Computability.Tape
 public import Mathlib.Computability.TuringDegree
+public import Mathlib.Computability.TuringMachine
 public import Mathlib.Computability.TuringMachine.Computable
 public import Mathlib.Computability.TuringMachine.Config
 public import Mathlib.Computability.TuringMachine.PostTuringMachine
@@ -4441,6 +4453,7 @@ public import Mathlib.Geometry.Manifold.SmoothApprox
 public import Mathlib.Geometry.Manifold.SmoothEmbedding
 public import Mathlib.Geometry.Manifold.StructureGroupoid
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
@@ -4763,6 +4776,7 @@ public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
+public import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.LinearAlgebra.Eigenspace.Pi
@@ -5836,6 +5850,7 @@ public import Mathlib.Order.KrullDimension
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lattice.Congruence
 public import Mathlib.Order.LatticeIntervals
+public import Mathlib.Order.Lex
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.Order.Max
 public import Mathlib.Order.MinMax

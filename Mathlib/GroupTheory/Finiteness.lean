@@ -455,6 +455,26 @@ theorem Group.fg_of_surjective {G' : Type*} [Group G'] [hG : Group.FG G] {f : G 
   Group.fg_iff_monoid_fg.mpr <|
     @Monoid.fg_of_surjective G _ G' _ (Group.fg_iff_monoid_fg.mp hG) f hf
 
+open FreeGroup in
+@[to_additive]
+instance (α : Type*) [Finite α] : Group.FG (FreeGroup α) :=
+  Group.fg_iff.mpr ⟨Set.range of, closure_range_of α, Set.finite_range of⟩
+
+/-- A group if finitely generated if and only if there exists a surjective homomorphism from a
+`FreeGroup` on an arbitrary finite type `α` to the group. -/
+@[to_additive /-- An additive group is finitely generated iff there exists a surjective homomorphism
+from a `FreeAddGroup` on an arbitrary finite type `α` to the group. -/]
+theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite :
+    Group.FG G ↔ ∃ (α : Type) (_ : Finite α) (φ : FreeGroup α →* G), Function.Surjective φ := by
+  constructor
+  · rw [fg_iff_exists_freeGroup_hom_surjective]
+    intro ⟨S, hS, φ, hφ⟩
+    obtain ⟨n, ⟨e⟩⟩ := hS.exists_equiv_fin S
+    exact ⟨Fin n, inferInstance, φ.comp (FreeGroup.freeGroupCongr e).symm,
+      hφ.comp (FreeGroup.freeGroupCongr e).symm.surjective⟩
+  · intro ⟨α, _, φ, hφ⟩
+    exact Group.fg_of_surjective hφ
+
 @[to_additive]
 instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : Group.FG f.range :=
   Group.fg_of_surjective f.rangeRestrict_surjective

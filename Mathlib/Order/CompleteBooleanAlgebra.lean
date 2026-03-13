@@ -876,17 +876,10 @@ namespace PUnit
 
 variable (s : Set PUnit.{u + 1})
 
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
-  __ := PUnit.instBooleanAlgebra
-  sSup _ := unit
-  sInf _ := unit
-  le_sSup _ _ _ := trivial
-  sSup_le _ _ _ := trivial
-  sInf_le _ _ _ := trivial
-  le_sInf _ _ _ := trivial
-  iInf_iSup_eq _ := rfl
+instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit where
 
-instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
+  iInf_iSup_eq _ := rfl
 
 @[simp]
 theorem sSup_eq : sSup s = unit :=
