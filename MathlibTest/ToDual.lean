@@ -353,3 +353,11 @@ example (a : α) : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
 private theorem WithBot.coe_le_top : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
 
 run_meta guard <| (← getEnv).contains ``WithTop.coe_le_bot
+
+@[to_dual]
+private abbrev WithBotPrivate := WithBot
+
+@[to_dual]
+private theorem WithBotPrivate.coe_le_top : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+run_meta guard <| (← getEnv).contains ``WithTopPrivate.coe_le_bot
