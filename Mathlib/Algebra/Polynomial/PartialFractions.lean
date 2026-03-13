@@ -72,7 +72,7 @@ The names of these lemmas show a side of the equality hypothesis `q₁ + ∑ r�
 and are suffixed by `_unique`.
 In analogy with the existence lemmas, the variables `qᵢ` are called quotients
 and referred to as `quo` in the name of the lemma and the variables `rᵢ` are called remainders
-and reffered to as `rem` in the name of the lemma.
+and referred to as `rem` in the name of the lemma.
 For example, `quo_add_sum_rem_div_unique` has the conclusion
 ```
 ↑q₁ + ∑ i ∈ s, ↑(r₁ i) / ↑(g i) = ↑q₂ + ∑ i ∈ s, ↑(r₂ i) / ↑(g i)) →
