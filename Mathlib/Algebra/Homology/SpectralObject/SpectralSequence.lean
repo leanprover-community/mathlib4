@@ -201,10 +201,8 @@ noncomputable def shortComplexIso (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ)
     · exact (data.hc₀₂ r pq' pq'' hpq').symm
     · exact (data.hc₁₃ r pq' pq'' hpq').symm
   · dsimp
-    rw [pageD_eq X data r hr pq' pq'' hpq' _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _,
+    rw [pageD_eq X data r hr pq' pq'' hpq' _ _ _ _ _ rfl rfl _ _ _ _ _ _ _ _ _ _ _ _,
       Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
-    · rfl
-    · rfl
 
 section
 
