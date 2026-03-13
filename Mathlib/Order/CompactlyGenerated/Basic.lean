@@ -189,7 +189,7 @@ theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α
     (hbelow : ∀ x ∈ s, x < k) : sSup s < k := by
   rw [isCompactElement_iff_le_of_directed_sSup_le] at hk
   by_contra h
-  have sSup' : sSup s ≤ k := sSup_le s k fun s hs => (hbelow s hs).le
+  have sSup' : sSup s ≤ k := sSup_le fun s hs => (hbelow s hs).le
   replace sSup : sSup s = k := eq_iff_le_not_lt.mpr ⟨sSup', h⟩
   obtain ⟨x, hxs, hkx⟩ := hk s hemp hdir sSup.symm.le
   obtain hxk := hbelow x hxs
@@ -213,7 +213,7 @@ theorem WellFoundedGT.isSupFiniteCompact [WellFoundedGT α] :
     IsSupFiniteCompact α := fun s => by
   let S := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
   obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ := wellFounded_gt.has_min S ⟨⊥, ∅, by simp⟩
-  refine ⟨t, ht₁, (sSup_le _ _ fun y hy => ?_).antisymm ?_⟩
+  refine ⟨t, ht₁, (sSup_le fun y hy => ?_).antisymm ?_⟩
   · classical
     rw [eq_of_le_of_not_lt (Finset.sup_mono (t.subset_insert y))
         (hm _ ⟨insert y t, by simp [Set.insert_subset_iff, hy, ht₁]⟩)]
@@ -265,7 +265,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
       suffices t.sup id ≤ sSup s by apply le_antisymm <;> assumption
       simp only [id, Finset.sup_le_iff]
       intro x hx
-      exact le_sSup _ _ (hts hx)
+      exact le_sSup (hts hx)
     exact ⟨t, hts, this⟩
 
 open List in
@@ -297,7 +297,6 @@ alias ⟨_, WellFoundedGT.isSupClosedCompact⟩ := isSupClosedCompact_iff_wellFo
 end CompleteLattice
 
 
-set_option backward.isDefEq.respectTransparency false in
 theorem WellFoundedGT.finite_of_sSupIndep [WellFoundedGT α] {s : Set α}
     (hs : sSupIndep s) : s.Finite := by
   classical
@@ -520,6 +519,25 @@ theorem iSupIndep_sUnion_of_directed {s : Set (Set α)} (hs : DirectedOn (· ⊆
     (h : ∀ a ∈ s, sSupIndep a) : sSupIndep (⋃₀ s) := by
   rw [Set.sUnion_eq_iUnion]
   exact sSupIndep_iUnion_of_directed hs.directed_val (by simpa using h)
+
+lemma disjoint_biSup_of_finite_disjoint_biSup {ι : Type*} {f : ι → α} {s : Set ι} {a : α}
+    (hs : ∀ t ⊆ s, t.Finite → Disjoint (⨆ i ∈ t, f i) a) :
+    Disjoint (⨆ i ∈ s, f i) a := by
+  simp_rw [disjoint_iff, iSup_subtype', ← sSup_range, inf_comm, inf_sSup_eq_iSup_inf_sup_finset,
+    iSup_eq_bot]
+  intro u hu
+  obtain ⟨t, ht, ht', htu⟩ : ∃ᵉ (t ⊆ s) (hu : t.Finite), f '' t = u :=
+    Set.Finite.exists_subset_finite_image_eq u.finite_toSet <| by rwa [Set.image_eq_range f s]
+  replace htu : u.sup id = ⨆ i ∈ t, f i := by
+    simp only [Finset.sup_eq_iSup, id_eq, ← Finset.mem_coe, ← htu, iSup_image]
+  rw [inf_comm, ← disjoint_iff, htu]
+  exact hs t ht ht'
+
+lemma iSupIndep.disjoint_biSup_biSup {ι : Type*} [IsModularLattice α]
+    {f : ι → α} {s t : Set ι} (hf : iSupIndep f) (hst : Disjoint s t) :
+    Disjoint (⨆ i ∈ s, f i) (⨆ i ∈ t, f i) :=
+  disjoint_biSup_of_finite_disjoint_biSup fun _ h₁ h₂ ↦
+    disjoint_biSup_biSup' hf (Set.disjoint_of_subset_left h₁ hst) h₂
 
 end
 

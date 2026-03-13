@@ -49,7 +49,6 @@ theorem IsNatPowModT.trans (h1 : IsNatPowModT p a b m c)
     (h2 : IsNatPowModT (Nat.mod (Nat.pow a b) m = c) a b' m c') : IsNatPowModT p a b' m c' :=
   ⟨h2.run' ∘ h1.run'⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsNatPowModT.bit0 :
     IsNatPowModT (Nat.mod (Nat.pow a b) m = c) a (nat_lit 2 * b) m (Nat.mod (Nat.mul c c) m) :=
   ⟨fun h1 => by simp only [two_mul, Nat.pow_eq, pow_add, ← h1, Nat.mul_eq]; exact Nat.mul_mod ..⟩
@@ -66,7 +65,6 @@ theorem natPow_zero_natMod_succ_succ :
 
 theorem natPow_one_natMod : Nat.mod (Nat.pow a (nat_lit 1)) m = Nat.mod a m := by rw [natPow_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsNatPowModT.bit1 :
     IsNatPowModT (Nat.mod (Nat.pow a b) m = c) a (nat_lit 2 * b + 1) m
       (Nat.mod (Nat.mul c (Nat.mod (Nat.mul c a) m)) m) :=

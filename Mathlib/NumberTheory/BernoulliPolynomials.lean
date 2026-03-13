@@ -74,12 +74,10 @@ section Examples
 @[simp]
 theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulli_one : bernoulli 1 = X - C 2⁻¹ := by
   simp [bernoulli, ← smul_X_eq_monomial, sum_range_succ, ← C_1, -map_one, neg_div, sub_eq_add_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
   rw [bernoulli, eval_finset_sum, sum_range_succ]
@@ -89,7 +87,6 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
     simp [tsub_eq_zero_iff_le, mem_range.1 hx]
   simp [this]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
   simp only [bernoulli, eval_finset_sum]
@@ -145,7 +142,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
       · skip
       · rw [← Nat.cast_mul, choose_mul (le_add_right _ _), Nat.cast_mul, add_tsub_cancel_left,
           mul_assoc, mul_comm, ← smul_eq_mul, ← smul_monomial]
-  simp_rw [← sum_smul]
+  simp_rw [← sum_smul, Nat.sub_zero]
   rw [sum_range_succ_comm]
   simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
@@ -191,7 +188,6 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_one_add_X (n : ℕ) :
     (bernoulli n).comp (1 + X) = bernoulli n + n • X ^ (n - 1) := by
   refine Nat.strong_induction_on n fun d hd => ?_
@@ -244,7 +240,6 @@ theorem bernoulli_comp_neg_X (n : ℕ) :
   · grind
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_eval_neg (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (-x) = (-1) ^ n * ((bernoulli n).eval x + n * x ^ (n - 1)) := by
   simpa [mul_add] using congr_arg (Polynomial.eval x) (bernoulli_comp_neg_X n)

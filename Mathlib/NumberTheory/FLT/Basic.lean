@@ -191,7 +191,6 @@ lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {R : Type*} [CommSemiring
     FermatLastTheoremWith' R n ↔ FermatLastTheoremWith R n :=
   Iff.intro (fun h ↦ h.fermatLastTheoremWith hn) (fun h ↦ h.fermatLastTheoremWith')
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fermatLastTheoremWith'_nat_int_tfae (n : ℕ) :
     TFAE [FermatLastTheoremFor n, FermatLastTheoremWith' ℕ n, FermatLastTheoremWith' ℤ n] := by
   tfae_have 2 ↔ 1 := by

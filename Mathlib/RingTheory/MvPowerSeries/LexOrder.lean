@@ -83,7 +83,6 @@ theorem coeff_ne_zero_of_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
   rw [hφ']
   apply WellFounded.min_mem
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_eq_zero_of_lt_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : toLex d < lexOrder φ) : coeff d φ = 0 := by
   by_cases hφ : φ = 0
@@ -93,14 +92,12 @@ theorem coeff_eq_zero_of_lt_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ �
     by_contra h'
     exact WellFounded.not_lt_min _ (toLex '' φ.support) ne (Set.mem_image_equiv.mpr h') h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lexOrder_le_of_coeff_ne_zero {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : coeff d φ ≠ 0) : lexOrder φ ≤ toLex d := by
   rw [← not_lt]
   intro h'
   exact h (coeff_eq_zero_of_lt_lexOrder h')
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_lexOrder_iff {φ : MvPowerSeries σ R} {w : WithTop (Lex (σ →₀ ℕ))} :
     w ≤ lexOrder φ ↔ (∀ (d : σ →₀ ℕ) (_ : toLex d < w), coeff d φ = 0) := by
   constructor
@@ -117,7 +114,6 @@ theorem le_lexOrder_iff {φ : MvPowerSeries σ R} {w : WithTop (Lex (σ →₀ �
     refine coeff_ne_zero_of_lexOrder hd.symm (h d ?_)
     rwa [← hd]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem min_lexOrder_le {φ ψ : MvPowerSeries σ R} :
     min (lexOrder φ) (lexOrder ψ) ≤ lexOrder (φ + ψ) := by
   rw [le_lexOrder_iff]
@@ -125,7 +121,6 @@ theorem min_lexOrder_le {φ ψ : MvPowerSeries σ R} :
   simp only [lt_min_iff] at hd
   rw [map_add, coeff_eq_zero_of_lt_lexOrder hd.1, coeff_eq_zero_of_lt_lexOrder hd.2, add_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_mul_of_add_lexOrder {φ ψ : MvPowerSeries σ R}
     {p q : σ →₀ ℕ} (hp : lexOrder φ = toLex p) (hq : lexOrder ψ = toLex q) :
     coeff (p + q) (φ * ψ) = coeff p φ * coeff q ψ := by
@@ -141,7 +136,6 @@ theorem coeff_mul_of_add_lexOrder {φ ψ : MvPowerSeries σ R}
     rw [hq]
     norm_cast
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_lexOrder_mul (φ ψ : MvPowerSeries σ R) :
     lexOrder φ + lexOrder ψ ≤ lexOrder (φ * ψ) := by
   rw [le_lexOrder_iff]

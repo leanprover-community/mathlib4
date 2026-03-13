@@ -195,7 +195,6 @@ lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   simp [G2_eq_tsum_cexp,  T, denom_apply,  ← exp_periodic.nat_mul 1 (2 * π * I * z)]
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := by
   have : γ ∈ Subgroup.closure {S, T} := by simp [SpecialLinearGroup.SL2Z_generators]
   induction this using Subgroup.closure_induction with

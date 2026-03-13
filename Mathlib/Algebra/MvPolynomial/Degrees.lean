@@ -39,7 +39,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
 
 + `r : R`
 
@@ -298,7 +298,7 @@ theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
   congr
   ext
   simp only [Finsupp.single, addRightEmbedding_apply, coe_mk,
-    Pi.add_apply, comp_apply, Finsupp.coe_add, Pi.single_eq_of_ne h]
+    Pi.add_apply, comp_apply, Finsupp.coe_add, Pi.single_eq_of_ne h, add_zero]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
