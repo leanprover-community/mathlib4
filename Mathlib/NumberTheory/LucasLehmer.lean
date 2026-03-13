@@ -359,6 +359,7 @@ theorem ω_mul_ωb : (ω : X q) * ωb = 1 := by
 theorem ωb_mul_ω : (ωb : X q) * ω = 1 := by
   rw [mul_comm, ω_mul_ωb]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A closed form for the recurrence relation. -/
 theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^ 2 ^ i := by
   induction i with

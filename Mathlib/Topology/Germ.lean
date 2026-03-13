@@ -26,7 +26,7 @@ with respect to the neighbourhood filter `𝓝 x`.
 * `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
   `A : set X`, build a new predicate on germs `restrictGermPredicate P A` such that
   `(∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x near A, P x f`;
-  `forall_restrictGermPredicate_iff` is this equivalence.
+  `forall_restrictRermPredicate_iff` is this equivalence.
 
 * `Filter.Germ.sliceLeft, sliceRight`: map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y`
   to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`.

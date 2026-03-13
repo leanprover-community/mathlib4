@@ -187,8 +187,8 @@ variable {A K : Type*} (L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsD
   [IsFractionRing A K] [IsFractionRing B L] {I : FractionalIdeal A⁰ K}
 
 /--
-The ring homomorphism that extends a fractional ideal of `A` to a fractional ideal of `B` for
-an extension of domains `A ⊆ B`.
+The ring homomorphisme that extends a fractional ideal of `A` to a fractional ideal of `B` for
+`A ⊆ B` an extension of domains.
 -/
 abbrev extendedHomₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
   extendedHom L <|

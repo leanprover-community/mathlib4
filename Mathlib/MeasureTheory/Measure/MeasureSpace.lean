@@ -1076,9 +1076,11 @@ private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m 
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
-    CompleteSemilatticeInf (Measure α) where
-  isGLB_sInf _ := ⟨fun x ↦ measure_sInf_le, fun _ ↦ by exact measure_le_sInf⟩
+instance instCompleteSemilatticeInf {_ : MeasurableSpace α} : CompleteSemilatticeInf (Measure α) :=
+  { (by infer_instance : PartialOrder (Measure α)),
+    (by infer_instance : InfSet (Measure α)) with
+    sInf_le := fun _s _a => measure_sInf_le
+    le_sInf := fun _s _a => measure_le_sInf }
 
 instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
   { completeLatticeOfCompleteSemilatticeInf (Measure α) with

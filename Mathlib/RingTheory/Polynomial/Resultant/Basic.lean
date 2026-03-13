@@ -476,6 +476,7 @@ lemma resultant_eq_prod_roots_sub
   · rw [f.modByMonic_add_div, natDegree_divByMonic _ hg, Nat.sub_add_cancel hfg]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` splits with leading coeff `a` and degree `n`,
 then `Res(f, g) = aⁿ * ∏ g(α)` where `α` runs through the roots of `f`. -/
 nonrec lemma resultant_eq_prod_eval [IsDomain R]
@@ -525,6 +526,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   simp only [eval_map_algebraMap, Function.comp_apply, Multiset.map_map, L]
   congr; ext; simp [aeval_algebraMap_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.unusedVariables false in
 -- the variable names are used in the code action of `induction`.
 /-- An induction principle useful to prove statements about resultants.
@@ -952,6 +954,7 @@ lemma discr_of_degree_eq_one {f : R[X]} (hf : f.degree = 1) : discr f = 1 := by
     simp [e, sylvesterDeriv, mul_comm, hf]
   simp [discr, ← Matrix.det_reindex_self e, this, hf]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Standard formula for the discriminant of a quadratic polynomial. -/
 lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
@@ -1015,6 +1018,7 @@ private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree 
       OfNat.one_ne_ofNat, ↓reduceIte, zero_add, zero_le]
     fin_cases hj' <;> simp [mul_comm, one_add_one_eq_two, (by norm_num : (2 : R) + 1 = 3)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Standard formula for the discriminant of a cubic polynomial. -/
 lemma discr_of_degree_eq_three {f : R[X]} (hf : f.degree = 3) :
     discr f = f.coeff 2 ^ 2 * f.coeff 1 ^ 2

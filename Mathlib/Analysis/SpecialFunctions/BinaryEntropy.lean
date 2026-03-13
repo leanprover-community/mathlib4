@@ -66,6 +66,7 @@ is the Shannon entropy of a Bernoulli random variable with success probability `
 
 @[simp] lemma binEntropy_one : binEntropy 1 = 0 := by simp [binEntropy]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma binEntropy_two_inv : binEntropy 2⁻¹ = log 2 := by norm_num [binEntropy]; simp; ring
 
 lemma binEntropy_eq_negMulLog_add_negMulLog_one_sub (p : ℝ) :
@@ -392,6 +393,7 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
         linarith
     exact (ne_of_gt (lt_add_neg_iff_lt.mp this : p < 1)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Qary entropy is strictly decreasing in the interval [1 - q⁻¹, 1]. -/
 lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
     StrictAntiOn (qaryEntropy q) (Icc (1 - 1 / q) 1) := by

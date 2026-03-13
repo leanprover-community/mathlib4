@@ -145,6 +145,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   _ = ε / 2 := by simp; field
   _ < ε := by simp [hε]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `μ` be a tight sequence of probability measures and `μ₀` a probability measure.
 If `A` is a star sub-algebra of bounded continuous scalar functions that separates points
 and the integrals of elements of `A` with respect to `μ` converge to the integrals

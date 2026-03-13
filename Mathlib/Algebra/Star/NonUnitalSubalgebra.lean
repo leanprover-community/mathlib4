@@ -299,6 +299,7 @@ instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
   Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 

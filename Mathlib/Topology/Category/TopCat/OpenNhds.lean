@@ -171,7 +171,7 @@ abbrev Topology.IsOpenEmbedding.functorNhds (h : Topology.IsOpenEmbedding f) (x 
     h.isOpenMap.functorNhds x
 
 /--
-An open embedding `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`.
+An open enbedding `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`.
 We define `IsOpenEmbedding.adjunctionNhds` as `IsOpenEmbedding.isOpenMap.adjunctionNds`, so it
 won't default to `IsInducing.adjunctionNhds`, which is an adjunction in the other direction.
 -/

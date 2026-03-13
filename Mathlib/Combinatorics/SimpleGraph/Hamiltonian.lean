@@ -26,10 +26,8 @@ In this file we introduce Hamiltonian paths, cycles and graphs.
 open Finset Function
 
 namespace SimpleGraph
-
-variable {α : Type*} [DecidableEq α] {G : SimpleGraph α}
-variable {β : Type*} [DecidableEq β] {H : SimpleGraph β}
-variable {a b : α} {p : G.Walk a b} {f : G →g H}
+variable {α β : Type*} [DecidableEq α] [DecidableEq β] {G : SimpleGraph α}
+  {a b : α} {p : G.Walk a b}
 
 namespace Walk
 
@@ -37,14 +35,13 @@ namespace Walk
 this definition doesn't contain that `p` is a path, `p.isPath` gives that. -/
 def IsHamiltonian (p : G.Walk a b) : Prop := ∀ a, p.support.count a = 1
 
-variable (f) in
-lemma IsHamiltonian.map (hf : Bijective f) (hp : p.IsHamiltonian) :
+lemma IsHamiltonian.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective f) (hp : p.IsHamiltonian) :
     (p.map f).IsHamiltonian := by
   simp [IsHamiltonian, hf.surjective.forall, hf.injective, hp _]
 
 /-- A Hamiltonian path visits every vertex. -/
-@[simp] lemma IsHamiltonian.mem_support (hp : p.IsHamiltonian) (c : α) : c ∈ p.support :=
-  p.support.one_le_count_iff.mp <| hp c |>.symm.le
+@[simp] lemma IsHamiltonian.mem_support (hp : p.IsHamiltonian) (c : α) : c ∈ p.support := by
+  simp only [← List.count_pos_iff, hp _, Nat.zero_lt_one]
 
 /-- Hamiltonian paths are paths. -/
 lemma IsHamiltonian.isPath (hp : p.IsHamiltonian) : p.IsPath :=
@@ -72,21 +69,14 @@ section
 variable [Fintype α]
 
 /-- The support of a Hamiltonian walk is the entire vertex set. -/
-lemma IsHamiltonian.toFinset_support (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
+lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
   simp [eq_univ_iff_forall, hp]
-
-@[deprecated (since := "2026-03-11")]
-alias IsHamiltonian.support_toFinset := IsHamiltonian.toFinset_support
-
-omit [Fintype α] in
-theorem IsHamiltonian.setOf_support (hp : p.IsHamiltonian) : {v | v ∈ p.support} = Set.univ :=
-  Set.eq_univ_iff_forall.mpr hp.mem_support
 
 /-- The length of a Hamiltonian path is one less than the number of vertices of the graph. -/
 lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card α - 1 :=
   eq_tsub_of_add_eq <| by
     rw [← length_support, ← List.sum_toFinset_count_eq_length, Finset.sum_congr rfl fun _ _ ↦ hp _,
-      ← card_eq_sum_ones, hp.toFinset_support, card_univ]
+      ← card_eq_sum_ones, hp.support_toFinset, card_univ]
 
 /-- The length of the support of a Hamiltonian path equals the number of vertices of the graph. -/
 lemma IsHamiltonian.length_support (hp : p.IsHamiltonian) : p.support.length = Fintype.card α := by
@@ -117,12 +107,6 @@ theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : p.getVert.Surj
   .of_comp <| p.getVert_comp_val_eq_get_support ▸
     isHamiltonian_iff_support_get_bijective.mp hp |>.surjective
 
-omit [DecidableEq β] in
-theorem IsHamiltonian.injective_of_isPath_map (hp : p.IsHamiltonian) (h : (p.map f).IsPath) :
-    Function.Injective f := by
-  rw [← Set.injOn_univ, ← hp.setOf_support]
-  exact h.injOn_support_of_isPath_map
-
 lemma isHamiltonian_iff_isPath_and_length_eq [Fintype α] :
     p.IsHamiltonian ↔ p.IsPath ∧ p.length = Fintype.card α - 1 := by
   by_cases! h : IsEmpty α
@@ -142,7 +126,7 @@ variable {p : G.Walk a a}
 lemma IsHamiltonianCycle.isCycle (hp : p.IsHamiltonianCycle) : p.IsCycle :=
   hp.toIsCycle
 
-lemma IsHamiltonianCycle.map (hf : Bijective f)
+lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective f)
     (hp : p.IsHamiltonianCycle) : (p.map f).IsHamiltonianCycle where
   toIsCycle := hp.isCycle.map hf.injective
   isHamiltonian_tail := by
@@ -203,7 +187,7 @@ def IsHamiltonian (G : SimpleGraph α) : Prop :=
 
 lemma IsHamiltonian.mono {H : SimpleGraph α} (hGH : G ≤ H) (hG : G.IsHamiltonian) :
     H.IsHamiltonian :=
-  fun hα ↦ let ⟨_, p, hp⟩ := hG hα; ⟨_, p.map <| .ofLE hGH, hp.map bijective_id⟩
+  fun hα ↦ let ⟨_, p, hp⟩ := hG hα; ⟨_, p.map <| .ofLE hGH, hp.map _ bijective_id⟩
 
 lemma not_isHamiltonian_of_isEmpty [IsEmpty α] : ¬G.IsHamiltonian :=
   (IsEmpty.exists_iff.mp <| · <| by simp)

@@ -72,6 +72,7 @@ theorem trapezoidal_integral_one (f : ℝ → ℝ) (a b : ℝ) :
     trapezoidal_integral f 1 a b = (b - a) / 2 * (f a + f b) := by
   simp [trapezoidal_integral, mul_comm_div]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A basic trapezoidal equivalent to `IntervalIntegral.sum_integral_adjacent_intervals`. More
 general theorems are certainly possible, but many of them can be derived from repeated applications
 of this one. -/

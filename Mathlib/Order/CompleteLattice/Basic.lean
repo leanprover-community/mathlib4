@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Set.NAry
 public import Mathlib.Data.ULift
-public import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.Hom.Set
 
@@ -1182,9 +1181,11 @@ instance Prop.instCompleteLattice : CompleteLattice Prop where
   __ := Prop.instBoundedOrder
   __ := Prop.instDistribLattice
   sSup s := ∃ a ∈ s, a
-  isLUB_sSup _ := ⟨fun a h p ↦ ⟨a, h, p⟩, fun _ h ⟨_, h', p⟩ => h h' p⟩
-  sInf s := ∀ a ∈ s, a
-  isGLB_sInf _ := ⟨fun a h p ↦ p a h, fun _ h p _ hb ↦ h hb p⟩
+  le_sSup _ a h p := ⟨a, h, p⟩
+  sSup_le _ _ h := fun ⟨b, h', p⟩ => h b h' p
+  sInf s := ∀ a, a ∈ s → a
+  sInf_le _ a h p := p a h
+  le_sInf _ _ h p b hb := h b hb p
 
 noncomputable instance Prop.instCompleteLinearOrder : CompleteLinearOrder Prop where
   __ := Prop.instCompleteLattice
@@ -1214,6 +1215,14 @@ instance Pi.supSet {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)] : Sup
 instance Pi.infSet {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)] : InfSet (∀ i, β i) :=
   ⟨fun s i => ⨅ f : s, (f : ∀ i, β i) i⟩
 
+instance Pi.instCompleteLattice {α : Type*} {β : α → Type*} [∀ i, CompleteLattice (β i)] :
+    CompleteLattice (∀ i, β i) where
+  __ := instBoundedOrder
+  le_sSup s f hf := fun i => le_iSup (fun f : s => (f : ∀ i, β i) i) ⟨f, hf⟩
+  sInf_le s f hf := fun i => iInf_le (fun f : s => (f : ∀ i, β i) i) ⟨f, hf⟩
+  sSup_le _ _ hf := fun i => iSup_le fun g => hf g g.2 i
+  le_sInf _ _ hf := fun i => le_iInf fun g => hf g g.2 i
+
 @[simp]
 theorem sSup_apply {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)] {s : Set (∀ a, β a)} {a : α} :
     (sSup s) a = ⨆ f : s, (f : ∀ a, β a) a :=
@@ -1224,26 +1233,11 @@ theorem sInf_apply {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)] {s : 
     sInf s a = ⨅ f : s, (f : ∀ a, β a) a :=
   rfl
 
-theorem sSup_apply_eq_sSup_image {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)]
-    {s : Set (∀ a, β a)} {a : α} :
-    sSup s a = sSup (eval a '' s) := by
-  simp [sSup_apply, iSup, image_eq_range]
-
-theorem sInf_apply_eq_sInf_image {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)]
-    {s : Set (∀ a, β a)} {a : α} :
-    sInf s a = sInf (eval a '' s) := by
-  simp [sInf_apply, iInf, image_eq_range]
-
-instance Pi.instCompleteLattice {α : Type*} {β : α → Type*} [∀ i, CompleteLattice (β i)] :
-    CompleteLattice (∀ i, β i) where
-  __ := instBoundedOrder
-  isLUB_sSup _ := isLUB_pi.mpr fun _ ↦ by rw [sSup_apply_eq_sSup_image]; exact isLUB_sSup _
-  isGLB_sInf _ := isGLB_pi.mpr fun _ ↦ by rw [sInf_apply_eq_sInf_image]; exact isGLB_sInf _
-
 @[simp]
 theorem iSup_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, SupSet (β i)] {f : ι → ∀ a, β a}
     {a : α} : (⨆ i, f i) a = ⨆ i, f i a := by
-  rw [iSup, sSup_apply_eq_sSup_image, iSup, ← range_comp]; rfl
+  rw [iSup, sSup_apply, iSup, iSup, ← image_eq_range (fun f : ∀ i, β i => f a) (range f), ←
+    range_comp]; rfl
 
 @[simp]
 theorem iInf_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, InfSet (β i)] {f : ι → ∀ a, β a}
@@ -1251,19 +1245,19 @@ theorem iInf_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, InfSet 
   @iSup_apply α (fun i => (β i)ᵒᵈ) _ _ _ _
 
 theorem unary_relation_sSup_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
-    sSup s a ↔ ∃ r ∈ s, r a := by
+    sSup s a ↔ ∃ r : α → Prop, r ∈ s ∧ r a := by
   simp
 
 theorem unary_relation_sInf_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
-    sInf s a ↔ ∀ r ∈ s, r a := by
+    sInf s a ↔ ∀ r : α → Prop, r ∈ s → r a := by
   simp
 
 theorem binary_relation_sSup_iff {α β : Type*} (s : Set (α → β → Prop)) {a : α} {b : β} :
-    sSup s a b ↔ ∃ r ∈ s, r a b := by
+    sSup s a b ↔ ∃ r : α → β → Prop, r ∈ s ∧ r a b := by
   simp
 
 theorem binary_relation_sInf_iff {α β : Type*} (s : Set (α → β → Prop)) {a : α} {b : β} :
-    sInf s a b ↔ ∀ r ∈ s, r a b := by
+    sInf s a b ↔ ∀ r : α → β → Prop, r ∈ s → r a b := by
   simp
 
 section CompleteLattice
@@ -1353,8 +1347,14 @@ theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
 
 instance instCompleteLattice [CompleteLattice α] [CompleteLattice β] : CompleteLattice (α × β) where
   __ := instBoundedOrder α β
-  isLUB_sSup _ := isLUB_prod.mpr ⟨isLUB_sSup _, isLUB_sSup _⟩
-  isGLB_sInf _ := isGLB_prod.mpr ⟨isGLB_sInf _, isGLB_sInf _⟩
+  le_sSup _ _ hab := ⟨le_sSup <| mem_image_of_mem _ hab, le_sSup <| mem_image_of_mem _ hab⟩
+  sSup_le _ _ h :=
+    ⟨sSup_le <| forall_mem_image.2 fun p hp => (h p hp).1,
+      sSup_le <| forall_mem_image.2 fun p hp => (h p hp).2⟩
+  sInf_le _ _ hab := ⟨sInf_le <| mem_image_of_mem _ hab, sInf_le <| mem_image_of_mem _ hab⟩
+  le_sInf _ _ h :=
+    ⟨le_sInf <| forall_mem_image.2 fun p hp => (h p hp).1,
+      le_sInf <| forall_mem_image.2 fun p hp => (h p hp).2⟩
 
 end Prod
 
@@ -1377,5 +1377,7 @@ protected abbrev Function.Injective.completeLattice [Max α] [Min α] [LE α] [L
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompleteLattice α where
   __ := hf.lattice f le lt map_sup map_inf
   __ := BoundedOrder.lift f (fun _ _ ↦ le.1) map_top map_bot
-  isLUB_sSup _ := .of_image le (by rw [map_sSup]; exact isLUB_biSup)
-  isGLB_sInf _ := .of_image le (by rw [map_sInf]; exact isGLB_biInf)
+  le_sSup _ a h := le.1 <| (le_iSup₂ a h).trans (map_sSup _).ge
+  sSup_le _ _ h := le.1 <| (map_sSup _).trans_le <| iSup₂_le fun a ha ↦ le.2 <| h a ha
+  sInf_le _ a h := le.1 <| (map_sInf _).trans_le <| iInf₂_le a h
+  le_sInf _ _ h := le.1 <| (le_iInf₂ fun a ha ↦ le.2 <| h a ha).trans (map_sInf _).ge

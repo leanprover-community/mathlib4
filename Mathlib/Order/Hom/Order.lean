@@ -111,10 +111,11 @@ theorem coe_iSup {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
 
 instance [CompleteLattice β] : CompleteLattice (α →o β) :=
   { (_ : Lattice (α →o β)), OrderHom.orderTop, OrderHom.orderBot with
-    isLUB_sSup _ :=
-      .of_image (f := (⇑)) coe_le_coe (by simp [isLUB_pi, Set.image_image, isLUB_biSup])
-    isGLB_sInf _ :=
-      .of_image (f := (⇑)) coe_le_coe (by simp [isGLB_pi, Set.image_image, isGLB_biInf]) }
+    -- Porting note: Added `by apply`, was `fun s f hf x => le_iSup_of_le f (le_iSup _ hf)`
+    le_sSup := fun s f hf x => le_iSup_of_le f (by apply le_iSup _ hf)
+    sSup_le := fun _ _ hf x => iSup₂_le fun g hg => hf g hg x
+    le_sInf := fun _ _ hf x => le_iInf₂ fun g hg => hf g hg x
+    sInf_le := fun _ f hf _ => iInf_le_of_le f (iInf_le _ hf) }
 
 theorem iterate_sup_le_sup_iff {α : Type*} [SemilatticeSup α] (f : α →o α) :
     (∀ n₁ n₂ a₁ a₂, f^[n₁ + n₂] (a₁ ⊔ a₂) ≤ f^[n₁] a₁ ⊔ f^[n₂] a₂) ↔

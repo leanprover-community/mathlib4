@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Order.Basic
+public import Mathlib.Order.OrderDual
 public import Mathlib.Tactic.Coe
 
 /-!
@@ -48,7 +48,7 @@ decreasing, strictly decreasing
 assert_not_exists Nat.instLinearOrder Int.instLinearOrder
 
 
-open Function
+open Function OrderDual
 
 universe u v w
 

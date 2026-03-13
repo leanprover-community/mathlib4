@@ -432,7 +432,7 @@ variable {n}
 variable (e) in
 /-- Suppose `e` is a compatible trivialisation around `x ∈ M`, and `s` a bundle section.
 Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
-equals the coefficient of "`s x` read in the trivialisation `e`" for `b i`. -/
+equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
 lemma localFrame_coeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
     e.localFrame_coeff I b i x (s x) = b.repr (e ((T% s) x)).2 i := by
   simp [e.localFrame_coeff_apply_of_mem_baseSet b hxe, basisAt]
@@ -518,8 +518,8 @@ lemma contMDiffOn_baseSet_iff_localFrame_coeff :
 -- Differentiability of a section can be checked in terms of its local frame coefficients
 section MDifferentiable
 
-/-- If `s` is differentiable at `x`, so is its coefficient `b.localFrame_coeff e i` in the local
-frame near `x` induced by `e` and `b` -/
+/-- If `s` is diffentiable at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
+near `x` induced by `e` and `b` -/
 lemma mdifferentiableAt_localFrame_coeff
     (hxe : x ∈ e.baseSet) (hs : MDiffAt (T% s) x) (i : ι) :
     MDiffAt ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x := by

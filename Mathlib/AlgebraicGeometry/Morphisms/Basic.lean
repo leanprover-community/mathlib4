@@ -542,6 +542,7 @@ theorem of_iSup_eq_top
   intro V
   induction V using of_affine_open_cover U hU with
   | basicOpen U r h =>
+    haveI : IsAffine _ := U.2
     have := AffineTargetMorphismProperty.IsLocal.to_basicOpen (f ∣_ U.1) (U.1.topIso.inv r) h
     exact (Q.arrow_mk_iso_iff
       (morphismRestrictRestrictBasicOpen f _ r)).mp this
@@ -577,6 +578,8 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.X i)] :
 
 theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
   letI := isLocal_affineProperty P
+  haveI : ∀ i, IsAffine ((Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 Y)).X i) := fun i => by
+    dsimp; infer_instance
   rw [iff_of_openCover (P := P) (Scheme.coverOfIsIso.{0} (𝟙 Y))]
   trans Q (pullback.snd f (𝟙 _))
   · exact ⟨fun H => H PUnit.unit, fun H _ => H⟩

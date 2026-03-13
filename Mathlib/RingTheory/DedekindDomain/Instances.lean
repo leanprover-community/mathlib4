@@ -178,6 +178,7 @@ noncomputable abbrev Localization.AtPrime.algebra_localization_localization :
 
 attribute [local instance] Localization.AtPrime.algebra_localization_localization
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower S Sₚ Tₚ :=
   IsScalarTower.of_algebraMap_eq' <|
     by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]

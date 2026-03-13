@@ -285,6 +285,7 @@ noncomputable def mahlerSeries (a : ℕ → E) : C(ℤ_[p], E) := ∑' n, mahler
 
 variable [IsUltrametricDist E] [CompleteSpace E] {a : ℕ → E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A Mahler series whose coefficients tend to 0 is convergent. -/
 lemma hasSum_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) :
     HasSum (fun n ↦ mahlerTerm (a n) n) (mahlerSeries a : C(ℤ_[p], E)) := by

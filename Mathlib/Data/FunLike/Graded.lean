@@ -21,7 +21,7 @@ required to satisfy `x ∈ 𝒜 i ↔ e x ∈ ℬ i`.
 /-- The class `GradedFunLike F 𝒜 ℬ` expresses that terms of type `F` have an injective coercion to
 grading-preserving functions from `A` to `B`, where `𝒜` is a grading on `A` and `ℬ` is a grading on
 `B`. This typeclass has `[FunLike F A B]` as one of the assumptions. This typeclass is used in the
-characterisation of certain types of graded homomorphisms, such as `GradedRingHom` and
+charactersation of certain types of graded homomorphisms, such as `GradedRingHom` and
 `GradedAlgHom`. For example, what would be called `"GradedRingHomClass F 𝒜 ℬ`" would be expressed
 as `[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]`.
 -/

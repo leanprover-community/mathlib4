@@ -121,6 +121,7 @@ example {s : Set ℂ} (o : IsOpen s) (z) (h : z ∈ s) : ∃ r : ℝ, r > 0 := b
   clear o h bs z s
   bound
 
+set_option backward.isDefEq.respectTransparency false in
 -- Test various elaboration issues
 example {f : ℂ → ℂ} {z w : ℂ} {s r c e : ℝ}
       (sc : ∀ {w}, ‖w - z‖ < s → ‖f w - f z‖ < e) (wz : ‖w - z‖ < s) (wr : ‖w‖ < r)

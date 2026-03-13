@@ -226,12 +226,6 @@ theorem mem_sdiff_iff_union {f g : Filter α} {s : Set α} :
 
 section CompleteLattice
 
-protected lemma isLUB_sSup (s : Set (Filter α)) : IsLUB s (sSup s) :=
-  ⟨fun _ h₁ _ h₂ ↦ h₂ h₁, fun _ h₁ _ h₂ _ h₃ ↦ h₁ h₃ h₂⟩
-
-protected lemma isGLB_sInf (s : Set (Filter α)) : IsGLB s (sInf s) :=
-  isLUB_lowerBounds.mp (Filter.sSup_lowerBounds _ ▸ Filter.isLUB_sSup _)
-
 /-- Complete lattice structure on `Filter α`. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   inf a b := min a b
@@ -242,8 +236,10 @@ instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   inf_le_left _ _ _ := mem_inf_of_left
   inf_le_right _ _ _ := mem_inf_of_right
   le_inf := fun _ _ _ h₁ h₂ _s ⟨_a, ha, _b, hb, hs⟩ => hs.symm ▸ inter_mem (h₁ ha) (h₂ hb)
-  isLUB_sSup := Filter.isLUB_sSup
-  isGLB_sInf := Filter.isGLB_sInf
+  le_sSup _ _ h₁ _ h₂ := h₂ h₁
+  sSup_le _ _ h₁ _ h₂ _ h₃ := h₁ _ h₃ h₂
+  sInf_le _ _ h₁ _ h₂ := by rw [← Filter.sSup_lowerBounds]; exact fun _ h₃ ↦ h₃ h₁ h₂
+  le_sInf _ _ h₁ _ h₂ := by rw [← Filter.sSup_lowerBounds] at h₂; exact h₂ h₁
   le_top _ _ := univ_mem'
   bot_le _ _ _ := trivial
 

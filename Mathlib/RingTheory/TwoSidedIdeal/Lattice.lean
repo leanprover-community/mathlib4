@@ -82,7 +82,8 @@ lemma iSup_ringCon {ι : Type*} (I : ι → TwoSidedIdeal R) :
   simp only [iSup, sSup_ringCon]; congr; ext; simp
 
 instance : CompleteSemilatticeSup (TwoSidedIdeal R) where
-  isLUB_sSup _ := .of_image ringCon_le_iff.symm (isLUB_sSup _)
+  sSup_le s I h := by simp_rw [ringCon_le_iff] at h ⊢; exact sSup_le <| by aesop
+  le_sSup s I hI := by rw [ringCon_le_iff]; exact le_sSup <| by aesop
 
 instance : InfSet (TwoSidedIdeal R) where
   sInf s := { ringCon := sInf <| TwoSidedIdeal.ringCon '' s }
@@ -95,7 +96,8 @@ lemma iInf_ringCon {ι : Type*} (I : ι → TwoSidedIdeal R) :
   simp only [iInf, sInf_ringCon]; congr!; ext; simp
 
 instance : CompleteSemilatticeInf (TwoSidedIdeal R) where
-  isGLB_sInf _ := .of_image ringCon_le_iff.symm (isGLB_sInf _)
+  le_sInf s I h := by simp_rw [ringCon_le_iff] at h ⊢; exact le_sInf <| by aesop
+  sInf_le s I hI := by rw [ringCon_le_iff]; exact sInf_le <| by aesop
 
 lemma mem_iInf {ι : Type*} {I : ι → TwoSidedIdeal R} {x : R} :
     x ∈ iInf I ↔ ∀ i, x ∈ I i :=

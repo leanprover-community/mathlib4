@@ -530,14 +530,24 @@ lemma shiftFunctorIso_ofHasShiftOfFullyFaithful (a : A) :
 
 end hasShiftOfFullyFaithful
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_shiftFunctorComm
     [AddCommMonoid A] [HasShift C A] [HasShift D A]
     (F : C ⥤ D) [F.CommShift A] (X : C) (a b : A) :
     F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫
       ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫
-      ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) :=
-  map_shiftFunctorComm_hom_app _ _ _ _
+      ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
+  have := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add a b)) X
+  simp only [comp_obj, CommShift.isoAdd_hom_app,
+    ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)),
+    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp] at this
+  simp only [shiftFunctorComm_eq D a b _ rfl]
+  dsimp
+  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
+    ← reassoc_of% this, shiftFunctorComm_eq C a b _ rfl]
+  simp [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
+    ← Functor.map_comp_assoc]
 
 namespace CommShift
 

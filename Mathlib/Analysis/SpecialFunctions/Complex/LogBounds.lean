@@ -381,6 +381,7 @@ end Complex
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The limit of `x * log (1 + g x)` as `(x : ℝ) → ∞` is `t`,
 where `t : ℝ` is the limit of `x * g x`. -/
 lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℝ} {t : ℝ}
@@ -404,6 +405,7 @@ theorem tendsto_mul_log_one_add_div_atTop (t : ℝ) :
       (EventuallyEq.div_mul_cancel_atTop tendsto_id).symm.trans <|
         .of_eq <| funext fun _ => mul_comm _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The limit of `(1 + g x) ^ x` as `(x : ℝ) → ∞` is `exp t`,
 where `t : ℝ` is the limit of `x * g x`. -/
 lemma tendsto_one_add_rpow_exp_of_tendsto {g : ℝ → ℝ} {t : ℝ}

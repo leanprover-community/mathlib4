@@ -471,6 +471,7 @@ def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetri
     simp only [A]
     fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a Riemannian bundle structure is defined using `g.toRiemannianMetric` where `g` is
 a `ContinuousRiemannianMetric`, then we make sure typeclass inference can infer automatically
 that the bundle is a continuous Riemannian bundle. -/

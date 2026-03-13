@@ -29,8 +29,10 @@ open scoped NNReal
 public noncomputable section
 
 -- backward-compatibility fixes
+set_option backward.isDefEq.respectTransparency false in
 instance : MeasureSpace ℂ := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : FiniteDimensional ℝ ℂ := inferInstance
 
 namespace UpperHalfPlane

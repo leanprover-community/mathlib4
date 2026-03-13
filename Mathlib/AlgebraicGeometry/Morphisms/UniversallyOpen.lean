@@ -146,6 +146,7 @@ instance (priority := low) UniversallyOpen.of_flat [Flat f] [LocallyOfFinitePres
     UniversallyOpen f :=
   ⟨universally_mk' _ _ fun _ _ ↦ isOpenMap_of_generalizingMap _ (Flat.generalizingMap _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec instance (priority := low) [IsIntegral Y] [Subsingleton Y] :
     UniversallyOpen f := by
   wlog hX : ∃ S, X = Spec S generalizing X

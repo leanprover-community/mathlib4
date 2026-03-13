@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Heyting.Basic
 public import Mathlib.Order.Hom.Basic
-public import Mathlib.Order.Lex
 public import Mathlib.Order.WithBot
 
 /-!

@@ -77,7 +77,7 @@ lemma card_eq_card_units_of_hasEnoughRootsOfUnity : Nat.card (MulChar M R) = Nat
 
 /--
 Let `N` be a submonoid of `M` group and let R` be a ring with enough roots of unity.
-Then any `R`-value multiplicative character of `N` can be extended to a multiplicative
+Then any `R`-value multiplicative character of `N` can be extented to a multiplicative
 character of `M`.
 -/
 theorem restrictHom_surjective (N : Submonoid M) :

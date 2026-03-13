@@ -95,8 +95,12 @@ lemma extensiveTopology.presheafIsLocallySurjective_iff [FinitaryPreExtensive C]
   · rw [Presheaf.isLocallySurjective_iff_whisker_forget (J := extensiveTopology C)]
     exact fun h _ ↦
       surjective_of_isLocallySurjective_sheaf_of_types (Functor.whiskerRight f (forget D)) h
-  · exact fun a ↦
-      Presheaf.isLocallySurjective_of_surjective _ _ (fun _ ↦ a _)
+  · intro h
+    refine ⟨fun {X} y ↦ ?_⟩
+    obtain ⟨x, hx⟩ := h X y
+    convert (extensiveTopology C).top_mem' X
+    rw [← Sieve.id_mem_iff_eq_top]
+    simpa [Presheaf.imageSieve] using ⟨x, hx⟩
 
 lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
     {F G : Sheaf (extensiveTopology C) D} (f : F ⟶ G)

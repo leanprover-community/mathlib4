@@ -387,7 +387,18 @@ def Precoverage.toCoverage (J : Precoverage C) [J.HasPullbacks] [J.IsStableUnder
 lemma Precoverage.toGrothendieck_toCoverage {J : Precoverage C} [J.HasPullbacks]
     [J.IsStableUnderBaseChange] :
     J.toCoverage.toGrothendieck = J.toGrothendieck := by
-  grind [toGrothendieck_eq_sInf, Coverage.toGrothendieck_eq_sInf]
+  refine le_antisymm ?_ ?_
+  · intro _ _ hS
+    induction hS with
+    | of _ _ hS => exact generate_mem_toGrothendieck hS
+    | top => exact J.toGrothendieck.top_mem _
+    | transitive _ _ _ _ _ ih1 ih2 => exact J.toGrothendieck.transitive ih1 _ ih2
+  · intro _ _ hS
+    induction hS with
+    | of _ _ hS => exact .of _ _ hS
+    | top => exact J.toCoverage.toGrothendieck.top_mem _
+    | pullback _ _ _ _ _ ih => exact J.toCoverage.toGrothendieck.pullback_stable _ ih
+    | transitive _ _ _ _ _ ih1 ih2 => exact J.toCoverage.toGrothendieck.transitive ih1 _ ih2
 
 lemma Coverage.toGrothendieck_toPrecoverage (J : Coverage C) :
     J.toPrecoverage.toGrothendieck = J.toGrothendieck := by

@@ -648,7 +648,16 @@ theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
   have : NoMaxOrder R := NoTopOrder.to_noMaxOrder R
   refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
   simp_rw [measure_Ico]
-  exact ENNReal.tendsto_ofReal (Tendsto.sub_const (tendsto_leftLim_atTop_of_tendsto hf) _)
+  refine ENNReal.tendsto_ofReal (Tendsto.sub_const ?_ _)
+  apply tendsto_order.2 ⟨fun m hm ↦ ?_, fun M hM ↦ ?_⟩
+  · obtain ⟨a, ha⟩ : ∃ a, ∀ (b : R), a ≤ b → m < f b := by simpa using (tendsto_order.1 hf).1 m hm
+    obtain ⟨a', ha'⟩ : ∃ a', a < a' := exists_gt a
+    simp only [eventually_atTop]
+    refine ⟨a', fun b hb ↦ ?_⟩
+    apply (ha _ le_rfl).trans_le
+    exact f.mono.le_leftLim (ha'.trans_le hb)
+  · filter_upwards [(tendsto_order.1 hf).2 M hM] with a ha
+    exact (f.mono.leftLim_le le_rfl).trans_lt ha
 
 lemma measure_Ioi {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
     f.measure (Ioi x) = ofReal (l - f x) := by

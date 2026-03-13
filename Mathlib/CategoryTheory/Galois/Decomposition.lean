@@ -287,7 +287,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     change F.map (fi1.hom ≫ fi2.inv) x = y
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]
-    exact ConcreteCategory.congr_hom (F.mapIso fi2).hom_inv_id y
+    exact DFunLike.congr_fun (F.mapIso fi2).hom_inv_id y
   · refine ⟨evaluation_injective_of_isConnected F A X a, ?_⟩
     intro x
     use u ≫ Pi.π _ x

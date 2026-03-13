@@ -44,7 +44,7 @@ namespace RootPairing
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign.
 
-TODO Consider redefining this to make it perfectly symmetric between roots and coroots (i.e., so
+TODO Consider redefining this to make it perfectly symemtric between roots and coroots (i.e., so
 that the same demand is made of coroots) and turning `RootPairing.instFlipIsReduced` into a
 convenience constructor. -/
 @[mk_iff] class IsReduced : Prop where

@@ -54,21 +54,25 @@ variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [ContinuousFunctionalCalculus 𝕜 A p]
   [CompleteSpace A]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cfcL_integral [NormedSpace ℝ A] (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integrable f μ)
     (ha : p a := by cfc_tac) :
     ∫ x, cfcL (a := a) ha (f x) ∂μ = cfcL (a := a) ha (∫ x, f x ∂μ) := by
   rw [ContinuousLinearMap.integral_comp_comm _ hf₁]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cfcL_integrable (a : A) (f : X → C(spectrum 𝕜 a, 𝕜))
     (hf₁ : Integrable f μ) (ha : p a := by cfc_tac) :
     Integrable (fun x ↦ cfcL (a := a) ha (f x)) μ :=
   ContinuousLinearMap.integrable_comp _ hf₁
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cfcHom_integral [NormedSpace ℝ A] (a : A) (f : X → C(spectrum 𝕜 a, 𝕜))
     (hf₁ : Integrable f μ) (ha : p a := by cfc_tac) :
     ∫ x, cfcHom (a := a) ha (f x) ∂μ = cfcHom (a := a) ha (∫ x, f x ∂μ) :=
   cfcL_integral a f hf₁ ha
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An integrability criterion for the continuous functional calculus.
 For a version with stronger assumptions which in practice are often easier to verify, see
 `integrable_cfc`. -/
@@ -80,6 +84,7 @@ lemma integrable_cfc' (f : X → 𝕜 → 𝕜) (a : A)
   conv in cfc _ _ => rw [cfc_eq_cfcL_mkD _ a]
   exact cfcL_integrable _ _ hf ha
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An integrability criterion for the continuous functional calculus.
 For a version with stronger assumptions which in practice are often easier to verify, see
 `integrableOn_cfc`. -/
@@ -123,6 +128,7 @@ lemma integrableOn_cfc [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
     exact ae_restrict_of_forall_mem hs fun x hx ↦
       hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- The continuous functional calculus commutes with integration.
 For a version with stronger assumptions which in practice are often easier to verify, see
@@ -150,6 +156,7 @@ lemma cfc_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
   ext z
   rw [← key₁, key₂]
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- The continuous functional calculus commutes with integration.
 For a version with stronger assumptions which in practice are often easier to verify, see

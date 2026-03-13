@@ -158,7 +158,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
-  transformAtLocation (m ·) "`ring_nf`" loc cfg.failIfUnchanged false
+  transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
 
 @[tactic_alt ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| ring_nf ! $cfg:optConfig $(loc)?)

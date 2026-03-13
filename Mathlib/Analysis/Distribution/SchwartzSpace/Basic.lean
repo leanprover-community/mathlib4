@@ -513,6 +513,7 @@ variable (𝕜 E F)
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).moduleFilterBasis.topology'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
   have A : WithSeminorms (schwartzSeminormFamily ℝ E F) := ⟨rfl⟩
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf] at A ⊢

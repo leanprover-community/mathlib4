@@ -31,7 +31,7 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
   issues, and then `S[1/gᵢ]` is basically integral over `R[1/gᵢ]`.
 2. `Algebra.ZariskisMainProperty.of_algHom_polynomial`:
   The case where `S` is finite over `R⟨x⟩` for some `x : S`.
-  The following key results are first established:
+  The following key results are first esablished:
   - `isStronglyTranscendental_mk_radical_conductor`:
     Let `𝔣` be the conductor of `x` (i.e. the largest `S`-ideal in `R⟨x⟩`).
     `x` as an element of `S/√𝔣` is strongly transcendental over `R`.
@@ -46,7 +46,7 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
 3. `Algebra.ZariskisMainProperty.of_algHom_mvPolynomial`:
   The case where `S` is finite over `R⟨x₁,...,xₙ⟩`. This is proved using induction on `n`.
 
-## Main definition and results
+## Main definiton and results
 - `Algebra.ZariskisMainProperty`:
   We say that an `R` algebra `S` satisfies the Zariski's main property at a prime `p` of `S`
   if there exists `r ∉ p` in the integral closure `S'` of `R` in `S`, such that `S'[1/r] = S[1/r]`.
