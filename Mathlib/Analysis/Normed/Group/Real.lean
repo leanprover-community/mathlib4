@@ -114,6 +114,9 @@ theorem toNNReal_eq_nnnorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ :=
 theorem ofReal_le_enorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖ₑ := by
   rw [enorm_eq_ofReal_abs]; gcongr; exact le_abs_self _
 
+lemma sphere_eq_pair {x r : ℝ} (hr : 0 ≤ r) : Metric.sphere x r = {x - r, x + r} := by
+  ext; simp; grind
+
 end Real
 
 section SeminormedCommGroup
