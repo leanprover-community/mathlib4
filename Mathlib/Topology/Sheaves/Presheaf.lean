@@ -142,6 +142,11 @@ theorem map_restrict
   delta restrictOpen restrict
   rw [← ConcreteCategory.comp_apply, NatTrans.naturality, ConcreteCategory.comp_apply]
 
+@[simp]
+lemma restrict_self {F : X.Presheaf C} {U : Opens X} (x : ToType (F.obj (op U))) :
+    x |_ U = x := by
+  simp [restrictOpen, restrict]
+
 open CategoryTheory.Limits
 
 variable (C)

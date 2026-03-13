@@ -19,15 +19,15 @@ Results for sheaves of abelian groups on topological spaces.
 
 universe u
 
-open TopologicalSpace Opposite CategoryTheory
+open TopologicalSpace Opposite CategoryTheory TopCat
 open scoped AlgebraicGeometry
-
-namespace TopCat
 
 variable {X : TopCat.{u}} {U : Opens X}
 
+namespace ShortComplex.Exact
+
 set_option backward.isDefEq.respectTransparency false in
-theorem Presheaf.ShortComplex.sections_exact_of_exact
+theorem presheaf_sections
     {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
     (hS : S.Exact) {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) :
     ∃ (t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
@@ -36,16 +36,20 @@ theorem Presheaf.ShortComplex.sections_exact_of_exact
   exact (ShortComplex.ab_exact_iff (S.map F)).mp (((Functor.exact_tfae F).out 1 3 rfl rfl).mpr
     ⟨inferInstance, inferInstance⟩ S hS) _ h
 
+lemma sheaf_sections_of_mono {S : ShortComplex (Sheaf AddCommGrpCat X)}
+    (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.obj.obj (op U)) (h : S.g.hom.app (op U) s = 0) :
+    ∃ (t : S.X₁.obj.obj (op U)), S.f.hom.app (op U) t = s :=
+  ShortComplex.Exact.presheaf_sections (((Functor.preservesFiniteLimits_tfae
+  (Sheaf.forget AddCommGrpCat X)).out 1 3 rfl rfl).mpr (inferInstanceAs
+  (Limits.PreservesFiniteLimits (Sheaf.forget AddCommGrpCat X))) S ⟨hS, hf⟩).left h
+
+end ShortComplex.Exact
+
+namespace TopCat
+
 lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V ≤ U)
     (s t : F.obj (op U)) : (s + t) |_ V = s |_V + t |_V := by
   delta Presheaf.restrictOpen Presheaf.restrict
   cat_disch
-
-lemma Sheaf.ShortComplex.Exact.sections_exact_of_mono_f {S : ShortComplex (Sheaf AddCommGrpCat X)}
-    (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.obj.obj (op U)) (h : S.g.hom.app (op U) s = 0) :
-    ∃ (t : S.X₁.obj.obj (op U)), S.f.hom.app (op U) t = s :=
-  Presheaf.ShortComplex.sections_exact_of_exact (((Functor.preservesFiniteLimits_tfae
-  (forget AddCommGrpCat X)).out 1 3 rfl rfl).mpr (inferInstanceAs (Limits.PreservesFiniteLimits
-  (forget AddCommGrpCat X))) S ⟨hS, hf⟩).left h
 
 end TopCat

@@ -90,11 +90,11 @@ lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
     by_cases hij : i = j
     · subst hij; rfl
     obtain h₁ | h₁ := h i.property j.property (fun h ↦ hij (SetCoe.ext_iff.mp h))
-    · simp only [← CategoryOfElements.map_snd (Classical.choice h₁).2, Functor.comp_obj,
+    · simp only [← CategoryOfElements.map_snd h₁.some.2, Functor.comp_obj,
         Functor.comp_map, ConcreteCategory.forget_map_eq_coe,
         ← CategoryTheory.comp_apply, ← Functor.map_comp]
       rfl
-    · simp only [← CategoryOfElements.map_snd (Classical.choice h₁).2, Functor.comp_obj,
+    · simp only [← CategoryOfElements.map_snd h₁.some.2, Functor.comp_obj,
         Functor.comp_map, ConcreteCategory.forget_map_eq_coe, ← CategoryTheory.comp_apply,
         ← Functor.map_comp]
       rfl
@@ -117,9 +117,9 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
   -- We apply Zorn's lemma to obtain a term `t` of `Under S.g s` that is maximal.
   obtain ⟨t, ht⟩ := exists_maximal_of_chains_bounded
     (structured_arrows_elements_sheaf_chains_bounded S.g s)
-    (fun h₁ h₂ ↦ Nonempty.intro (Classical.choice h₂ ≫ Classical.choice h₁))
+    (fun ⟨f⟩ ⟨g⟩ ↦ ⟨g ≫ f⟩)
   have tle : t.right.1.unop ≤ U := leOfHom t.hom.1.unop
-  have tcomp : s |_ t.right.1.unop = (ConcreteCategory.hom (S.g.hom.app t.right.1)) t.right.2 :=
+  have tcomp : s |_ t.right.1.unop = S.g.hom.app t.right.1 t.right.2 :=
       CategoryOfElements.map_snd t.hom
   -- We get a section `t.right.2` of `S.g` defined on an open subset `t.right.1.unop` of `U`,
   -- that is sent to the restriction of `s` by `S.g`.
@@ -136,20 +136,17 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
     have : (S.g.hom.app (op (t.right.1.unop ⊓ W))) t₂ = 0 := by
       simp [map_restrict, ← tcomp, restrict_restrict, ht₁, t₂]
     -- Since `S` is exact and `t₂` maps to zero, we can lift it to a section `t₃` of `S.X₁`
-    obtain ⟨t₃, ht₃⟩ := ShortComplex.Exact.sections_exact_of_mono_f hS.1 hS.2 t₂ this
+    obtain ⟨t₃, ht₃⟩ := ShortComplex.Exact.sheaf_sections_of_mono hS.1 hS.2 t₂ this
     -- Using that `S.X₁` is flasque, we can lift `t₃` to a section on `W`.
     obtain ⟨t₄, (ht₄ : t₄ |_ (t.right.1.unop ⊓ W) = t₃)⟩ := (AddCommGrpCat.epi_iff_surjective
       (S.X₁.obj.map (homOfLE inf_le_right).op)).mp inferInstance t₃
-    let f : Fin 2 → Opens X
-    | 0 => t.right.1.unop
-    | 1 => W
+    let f : Fin 2 → Opens X := ![t.right.1.unop, W]
     let sf : (i : Fin 2) → S.X₂.obj.obj (op (f i))
     | 0 => t.right.2
     | 1 => t₁ + (S.f.hom.app (op W)) t₄
     have : sf 0 |_ (t.right.1.unop ⊓ W) = sf 1 |_ (t.right.1.unop ⊓ W) := by
-      rw [restrict_sum, ← map_restrict, ht₄]
-      simp only [ht₃, t₂, Fin.isValue, add_sub_cancel]
-      rfl
+      dsimp [sf, f]
+      simp only [restrict_sum, ← map_restrict, ht₄, ht₃, t₂, add_sub_cancel]
     -- We glue `t.right.2` and `t₁ + (S.f.hom.app (op W)) t₄` together to form `t₅`
     obtain ⟨t₅, ht₅, _⟩ : ∃! t₅, IsGluing S.X₂.obj f sf t₅ := by
       apply Sheaf.existsUnique_gluing
@@ -159,28 +156,26 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
       rw [restrict_restrict, restrict_restrict] at this
       exact this
     have le : iSup f ≤ U := iSup_le_iff.mpr (Fin.forall_fin_two.mpr ⟨tle, Wle⟩)
-    have comp : s |_ (iSup f) = S.g.hom.app (op (iSup f)) t₅:= by
-      refine (eq_app_of_locally_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨tle, Wle⟩) ?_).symm
-      rw [Fin.forall_fin_two]
-      refine ⟨tcomp.symm, ?_⟩
-      change S.g.hom.app (op W) (t₁ + (S.f.hom.app (op W)) t₄) = s |_ W
-      have : (S.f.hom.app (op W) ≫ S.g.hom.app (op W)) = 0 := by
-        rw [← NatTrans.comp_app, ← ObjectProperty.FullSubcategory.comp_hom, S.6]; rfl
-      simp [← ConcreteCategory.comp_apply, this, ht₁]
     -- We upgrade `t₅` to an object in `Under S.g s` that is defined on `t.right.1.unop ⊔ W`.
-    let t₆ : Under S.g s := by
-      refine StructuredArrow.mk (S := ⟨op U, s⟩)
+    let t₆ : Under S.g s :=
+      StructuredArrow.mk (S := ⟨op U, s⟩)
         (T := (Functor.whiskerRight S.g.hom (CategoryTheory.forget AddCommGrpCat)).mapElements)
-        (Y := ⟨op (iSup f), t₅⟩) ?_
-      exact CategoryOfElements.homMk _ _ (homOfLE le).op comp
+        (Y := ⟨op (iSup f), t₅⟩) <| CategoryOfElements.homMk _ _ (homOfLE le).op (by
+          refine (eq_app_of_locally_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨tle, Wle⟩) ?_).symm
+          rw [Fin.forall_fin_two]
+          refine ⟨tcomp.symm, ?_⟩
+          simp only [Fin.isValue, Functor.comp_obj, map_add, homOfLE_leOfHom, sf, f]
+          have : (S.f.hom.app (op W) ≫ S.g.hom.app (op W)) = 0 := by
+            rw [← NatTrans.comp_app, ← ObjectProperty.FullSubcategory.comp_hom, S.zero]
+            rfl
+          simp [← CategoryTheory.comp_apply, this, ht₁]
+          rfl)
     -- We prove that `t₆` is bigger than `t` for the preorder used on `Under S.g s`.
     have : Nonempty (t₆ ⟶ t) := Nonempty.intro (StructuredArrow.homMk (CategoryOfElements.homMk _ _
       (homOfLE (le_iSup f 0)).op (ht₅ 0)) (by cat_disch))
-    exact leOfHom (Classical.choice ((ht t₆) this)).right.1.unop ((le_iSup f 1) hW)
+    exact leOfHom ((ht t₆) this).some.right.1.unop ((le_iSup f 1) hW)
   use t.right.2 |_ U
-  rw [map_restrict, ← tcomp, restrict_restrict]
-  change (CategoryTheory.ConcreteCategory.hom (S.X₃.obj.map (𝟙 _))) s = _
-  simp [CategoryTheory.Functor.map_id]
+  simp [map_restrict, ← tcomp, restrict_restrict]
 
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
 then `𝓗` is flasque. -/
