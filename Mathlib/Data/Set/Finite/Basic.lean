@@ -318,7 +318,7 @@ a `Fintype` instance, then `s` has a `Fintype` structure as well. -/
 def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g) [Fintype (f '' s)] :
     Fintype s :=
   Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filterMap g <| injective_of_isPartialInv_right I⟩
-    fun a => by simp [I.eq]
+    (by simp [I.eq])
 
 instance fintypeMap {α β} [DecidableEq β] :
     ∀ (s : Set α) (f : α → β) [Fintype s], Fintype (f <$> s) :=
