@@ -48,7 +48,7 @@ variable (C : Type*) [Category* C] {FC : outParam <| C → C → Type*} {CC : ou
 /-- The forgetful functor from a concrete category to the category of types. -/
 abbrev forget : C ⥤ Type w where
   obj X := ToType X
-  map f := ConcreteCategory.ofHom ⟨f⟩
+  map f := TypeCat.ofHom f
 
 -- unif_hint comp_forget_obj {D : Type*} [Category* D] {F : D ⥤ C} (X X' : D) where
 --   X ≟ X' ⊢

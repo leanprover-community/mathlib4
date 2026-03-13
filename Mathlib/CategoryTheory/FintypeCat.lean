@@ -213,7 +213,7 @@ instance : incl.Full where map_surjective _ := ⟨_, rfl⟩
 
 instance : incl.Faithful where
   map_injective h := by
-    simpa [ConcreteCategory.ext_iff] using InducedCategory.homEquiv.symm.injective h
+    simpa using TypeCat.homEquiv.symm.injective (InducedCategory.homEquiv.symm.injective h)
 
 instance : incl.EssSurj :=
   Functor.EssSurj.mk fun X =>

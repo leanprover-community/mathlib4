@@ -30,6 +30,6 @@ covariant in `Y`. -/
 @[simps]
 def hom : Cᵒᵖ × C ⥤ Type v where
   obj p := (unop p.1 ⟶ p.2)
-  map f := ConcreteCategory.ofHom ⟨fun h => f.1.unop ≫ h ≫ f.2⟩
+  map f := TypeCat.ofHom fun h => f.1.unop ≫ h ≫ f.2
 
 end CategoryTheory.Functor

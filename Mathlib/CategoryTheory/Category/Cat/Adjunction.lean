@@ -34,7 +34,7 @@ set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 private def typeToCatObjectsAdjHomEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) where
-  toFun F := TypeCat.ofHom (fun x ↦ F.toFunctor.obj ⟨x)⟩
+  toFun F := TypeCat.ofHom fun x ↦ F.toFunctor.obj ⟨x⟩
   invFun f := (Discrete.functor f).toCatHom
   left_inv F := Hom.ext <| Functor.ext (fun _ ↦ rfl) (fun ⟨_⟩ ⟨_⟩ f => by
     obtain rfl := Discrete.eq_of_hom f
@@ -78,8 +78,8 @@ def connectedComponentsTypeToCatAdj : connectedComponents.{u} ⊣ typeToCat.{u} 
       { app := fun C ↦ Functor.toCatHom <|
           ConnectedComponents.functorToDiscrete _ (𝟙 (connectedComponents.obj C)) }
     counit := {
-        app := fun X => TypeCat.ofHom ⟨ConnectedComponents.liftFunctor _
-          (𝟙 typeToCat.obj X).toFunctor⟩
+        app := fun X => TypeCat.ofHom (ConnectedComponents.liftFunctor _
+          (𝟙 typeToCat.obj X).toFunctor)
         naturality := fun _ _ _ => by
           ext xcc
           obtain ⟨x, h⟩ := Quotient.exists_rep xcc

@@ -44,7 +44,7 @@ end Category
 -/
 def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   obj C := Quotient (isIsomorphicSetoid C.α)
-  map {_ _} F := TypeCat.ofHom (Quot.map F.toFunctor.obj fun _ _ ⟨f) => ⟨F.toFunctor.mapIso f⟩⟩
+  map {_ _} F := TypeCat.ofHom (Quot.map F.toFunctor.obj fun _ _ ⟨f⟩ => ⟨F.toFunctor.mapIso f⟩)
   map_id {C} := by  -- Porting note: this used to be `tidy`
     ext x
     apply @Quot.recOn _ _ _ x

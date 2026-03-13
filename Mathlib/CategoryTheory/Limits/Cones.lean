@@ -184,10 +184,10 @@ namespace Cone
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
 @[simps!]
 def equiv (F : J ⥤ C) : (Cone F) ≅ (Σ X, F.cones.obj X) where
-  hom := TypeCat.ofHom (fun c ↦ ⟨op c.pt, c.π)⟩
-  inv := TypeCat.ofHom ⟨fun c ↦
+  hom := TypeCat.ofHom fun c ↦ ⟨op c.pt, c.π⟩
+  inv := TypeCat.ofHom fun c ↦
     { pt := c.1.unop
-      π := c.2 }⟩
+      π := c.2 }
   hom_inv_id := by
     ext X
     cases X
@@ -220,10 +220,10 @@ namespace Cocone
 
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
 def equiv (F : J ⥤ C) : (Cocone F) ≅ (Σ X, F.cocones.obj X) where
-  hom := TypeCat.ofHom (fun c ↦ ⟨c.pt, c.ι)⟩
-  inv := TypeCat.ofHom ⟨fun c ↦
+  hom := TypeCat.ofHom fun c ↦ ⟨c.pt, c.ι⟩
+  inv := TypeCat.ofHom fun c ↦
     { pt := c.1
-      ι := c.2 }⟩
+      ι := c.2 }
   hom_inv_id := by
     ext X
     cases X
