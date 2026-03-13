@@ -382,8 +382,6 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
       Representation.linearizeTrivialIso_symm_apply _]
     change _ = ((standardComplex k G).d (n + 1) n).hom.toLinearMap _
     rw [d_eq]
-    -- `erw` needed: `μ_apply_single_single` and `linearizeMap_single` use `X.V`/`Y.V` types
-    -- which are only defeq (not syntactically equal) to `G`/`Fin n → G`
     erw [Representation.LinearizeMonoidal.μ_apply_single_single,
       Representation.LinearizeMonoidal.μ_apply_single_single]
     simp only [mul_one, types_tensorObj_def]
