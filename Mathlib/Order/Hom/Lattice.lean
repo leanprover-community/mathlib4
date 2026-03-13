@@ -64,6 +64,8 @@ structure InfHom (α β : Type*) [Min α] [Min β] where
 /-- The type of lattice homomorphisms from `α` to `β`. -/
 structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β, InfHom α β where
 
+attribute [nolint docBlame] LatticeHom.toInfHom
+
 attribute [to_dual existing] LatticeHom.toInfHom
 
 section
