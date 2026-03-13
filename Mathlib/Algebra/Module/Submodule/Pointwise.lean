@@ -137,6 +137,15 @@ theorem neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i
 theorem neg_iSup {ι : Sort*} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ i, -S i :=
   (negOrderIso : Submodule R M ≃o Submodule R M).map_iSup _
 
+lemma neg_le_iff_neg_eq {S : Submodule R M} : -S = S ↔ -S ≤ S := by
+  constructor
+  · exact le_of_eq
+  intro h; ext x
+  rw [Submodule.mem_neg]
+  suffices h : ∀ x, -x ∈ S → x ∈ S from by
+    exact ⟨h x, by nth_rw 1 [← neg_neg x]; exact h (-x)⟩
+  exact SetLike.le_def.mp @h
+
 end Semiring
 
 open Pointwise

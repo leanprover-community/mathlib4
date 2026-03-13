@@ -6,6 +6,7 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Geometry.Convex.Cone.Basic
 
 /-!
@@ -379,6 +380,30 @@ lemma span_eq_submodule_span_of_neg_eq {s : Set M} (hs : -s = s) :
     span R s = Submodule.span R s := by
   nth_rw 1 [← Set.union_self s, hs.symm]
   exact span_neg_union_eq_submodule_span s
+
+section Pointwise
+
+open Pointwise
+
+lemma sup_neg_eq_submodule_span (C : PointedCone R M) : -C ⊔ C = C.linSpan := by
+  nth_rw 1 2 [← Submodule.span_eq C]
+  rw [← Submodule.span_neg_eq_neg, ← Submodule.span_union]
+  exact span_neg_union_eq_submodule_span (C : Set M)
+
+lemma neg_eq_iff_eq_linSpan {C : PointedCone R M} : -C ≤ C ↔ C.linSpan = C := by
+  rw [← sup_neg_eq_submodule_span, sup_eq_right]
+
+end Pointwise
+
+lemma mem_linSpan {C : PointedCone R M} {x : M} :
+    x ∈ C.linSpan ↔ ∃ p ∈ C, ∃ n ∈ C, p = x + n := by
+  rw [← mem_ofSubmodule_iff, ← sup_neg_eq_submodule_span, Submodule.mem_sup]
+  simp only [Submodule.mem_neg]
+  constructor <;> intro h
+  · obtain ⟨y, hy', z, hz, rfl⟩ := h
+    exact ⟨z, hz, -y, hy', by simp⟩
+  · obtain ⟨p, hp, n, hn, rfl⟩ := h
+    exact ⟨-n, by simp [hn], x + n, hp, by simp⟩
 
 end DirectedOrderRing
 
