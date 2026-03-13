@@ -26,7 +26,6 @@ section OperationsAndInfty
 
 variable {α : Type*}
 
-
 @[simp]
 theorem toNat_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ∞} :
     (∏ i ∈ s, f i).toNat = ∏ i ∈ s, (f i).toNat :=
