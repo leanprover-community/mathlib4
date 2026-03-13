@@ -8,9 +8,10 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.Convex.Extreme
 
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
+import Mathlib.Analysis.Convex.Strict.Extreme
 import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 
 /-! # Extreme points of the closed unit ball in C⋆-algebras
 
@@ -21,20 +22,6 @@ This file contains results on the extreme points of the closed unit ball in (uni
 set_option backward.isDefEq.respectTransparency false
 
 open Set Metric CFC CStarAlgebra Unitization
-
-@[simp] lemma Set.extremePoints_Icc {a b : ℝ} (hab : a ≤ b) :
-    Set.extremePoints ℝ (Icc a b) = {a, b} := by
-  ext x
-  rw [convex_Icc .. |>.mem_extremePoints_iff_convex_diff]
-  constructor
-  · intro ⟨h₁, h₂⟩
-    suffices x ∉ Ioo a b by grind
-    intro hx
-    have := h₂.isPreconnected.Icc_subset (a := a) (b := b) (by grind) (by grind)
-    grind
-  · rintro (rfl | rfl)
-    · simpa using ⟨hab, convex_Ioc ..⟩
-    · simpa using ⟨hab, convex_Ico ..⟩
 
 open scoped ComplexStarModule in
 lemma CStarAlgebra.one_mem_extremePoints_closedUnitBall {A : Type*} [CStarAlgebra A] :
