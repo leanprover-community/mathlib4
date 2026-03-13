@@ -144,7 +144,7 @@ theorem preComp_φ : (f.preComp g).φ = g.app (op ⦋n + 1⦌) ≫ f.φ := by
   unfold φ preComp
   simp only [PInfty_f, comp_add]
   congr 1
-  · simp only [P_f_naturality_assoc]
+  · simp
   · simp only [comp_sum, P_f_naturality_assoc, SimplicialObject.δ_naturality_assoc]
 
 end MorphComponents

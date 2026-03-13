@@ -39,6 +39,7 @@ variable (C : Type u₁) [Category.{v} C] {C' : Type u₂} [Category.{v} C']
 3. An object `V i j` for each `i j : J`.
 4. A monomorphism `f i j : V i j ⟶ U i` for each `i j : J`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -327,7 +328,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
       (by rintro (_ | _) (_ | _) (_ | _ | _) <;> simp)
   apply IsLimit.postcomposeHomEquiv e _ _
   apply hc.ofIsoLimit
-  refine Cones.ext (Iso.refl _) ?_
+  refine Cone.ext (Iso.refl _) ?_
   rintro (_ | _ | _)
   all_goals simp [e]; rfl
 

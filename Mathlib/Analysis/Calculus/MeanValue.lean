@@ -414,12 +414,10 @@ variable {𝕜 G : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField �
   [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[𝕜] G} {φ : E →L[𝕜] G}
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) : PathConnectedSpace 𝕜 := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C`, then
 the function is `C`-Lipschitz. Version with `HasFDerivWithinAt`. -/
 theorem norm_image_sub_le_of_norm_hasFDerivWithin_le
@@ -512,7 +510,6 @@ theorem lipschitzOnWith_of_nnnorm_fderiv_le {C : ℝ≥0} (hf : ∀ x ∈ s, Dif
   hs.lipschitzOnWith_of_nnnorm_hasFDerivWithin_le
     (fun x hx => (hf x hx).hasFDerivAt.hasFDerivWithinAt) bound
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The mean value theorem: if the derivative of a function is bounded by `C`, then the function is
 `C`-Lipschitz. Version with `fderiv` and `LipschitzWith`. -/
 theorem _root_.lipschitzWith_of_nnnorm_fderiv_le
@@ -556,7 +553,6 @@ theorem norm_image_sub_le_of_norm_fderiv_le' (hf : ∀ x ∈ s, DifferentiableAt
   hs.norm_image_sub_le_of_norm_hasFDerivWithin_le'
     (fun x hx => (hf x hx).hasFDerivAt.hasFDerivWithinAt) bound xs ys
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a function has zero Fréchet derivative at every point of a convex set,
 then it is a constant on this set. -/
 theorem is_const_of_fderivWithin_eq_zero (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s)
@@ -566,7 +562,6 @@ theorem is_const_of_fderivWithin_eq_zero (hs : Convex ℝ s) (hf : Differentiabl
   simpa only [(dist_eq_norm _ _).symm, zero_mul, dist_le_zero, eq_comm] using
     hs.norm_image_sub_le_of_norm_fderivWithin_le hf bound hx hy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.is_const_of_fderiv_eq_zero
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
     (hf : Differentiable 𝕜 f) (hf' : ∀ x, fderiv 𝕜 f x = 0)
@@ -643,7 +638,6 @@ theorem _root_.IsOpen.eqOn_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
   obtain rfl := left_eq_add.mp (hfgx.symm.trans (ha hx))
   simpa using ha
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.eq_of_fderiv_eq
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f g : E → G}
     (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g)

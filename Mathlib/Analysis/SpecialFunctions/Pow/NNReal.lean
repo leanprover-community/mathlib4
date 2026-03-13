@@ -614,7 +614,6 @@ lemma rpow_add_of_add_pos {x : ℝ≥0∞} (hx : x ≠ ⊤) (y z : ℝ) (hyz : 0
       simp [ENNReal.zero_rpow_of_pos hyz, ENNReal.zero_rpow_of_pos hz']
   · rw [ENNReal.rpow_add _ _ hx' hx]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rpow_neg (x : ℝ≥0∞) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
   cases x with
   | top =>

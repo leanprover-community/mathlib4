@@ -9,8 +9,9 @@ public import Mathlib.Data.Sigma.Lex
 public import Mathlib.Util.Notation3
 public import Init.NotationExtra
 public import Mathlib.Data.Sigma.Basic
-public import Mathlib.Order.Lattice
 public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.Lex
 
 /-!
 # Lexicographic order on a sigma type
@@ -80,7 +81,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
         · exact Lex.left _ _ hij
         · exact Lex.right _ (hab.lt_of_not_ge fun h => hba <| Lex.right _ h) }
 
-/-- Dictionary / lexicographic partial_order for dependent pairs. -/
+/-- Dictionary / lexicographic `PartialOrder` for dependent pairs. -/
 instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ' i, α i) :=
   { Lex.preorder with
     le_antisymm := by
@@ -90,7 +91,7 @@ instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOr
       · exact (lt_irrefl a₁ hlt₂).elim
       · rw [hlt₁.antisymm hlt₂] }
 
-/-- Dictionary / lexicographic linear_order for pairs. -/
+/-- Dictionary / lexicographic `LinearOrder` for pairs. -/
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder (Σₗ' i, α i) :=
   { Lex.partialOrder with
     le_total := by
