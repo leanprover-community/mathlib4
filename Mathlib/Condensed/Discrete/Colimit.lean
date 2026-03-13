@@ -58,7 +58,8 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     change fi ((c.π.app k ≫ (F ⋙ toProfinite).map _) x) =
       fj ((c.π.app k ≫ (F ⋙ toProfinite).map _) x)
     have h := LocallyConstant.congr_fun h x
-    rwa [c.w, c.w]
+    dsimp
+    rwa [dsimp% c.w, dsimp% c.w]
 
 @[simp]
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
@@ -324,7 +325,8 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     change fi ((c.π.app k ≫ (F ⋙ toLightProfinite).map _) x) =
       fj ((c.π.app k ≫ (F ⋙ toLightProfinite).map _) x)
     have h := LocallyConstant.congr_fun h x
-    rwa [c.w, c.w]
+    dsimp
+    rwa [dsimp% c.w, dsimp% c.w]
 
 @[simp]
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
