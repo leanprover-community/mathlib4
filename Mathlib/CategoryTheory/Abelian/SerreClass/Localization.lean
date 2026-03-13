@@ -451,8 +451,7 @@ lemma preservesFiniteLimits : PreservesFiniteLimits L := by
 
 lemma preservesFiniteColimits : PreservesFiniteColimits L := by
   letI := abelian L P
-  have := (Functor.preservesFiniteColimits_tfae L).out 3 2
-  rw [this]
+  rw [((Functor.preservesFiniteColimits_tfae L).out 3 2:)]
   intro _ _ f
   exact preservesCokernel L P f
 
