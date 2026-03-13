@@ -1115,8 +1115,8 @@ theorem eq_natCast_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ 
 @[simp]
 theorem natCast_image_Iio (n : ℕ) : Nat.cast '' Set.Iio n = Set.Iio (n : Ordinal) := by
   ext o
-  have (h : o < n) := eq_natCast_of_le_natCast h.le
-  aesop
+  have (h : o ≤ n) := eq_natCast_of_le_natCast h
+  grind [Nat.cast_lt]
 
 @[simp]
 theorem omega0_pos : 0 < ω :=
