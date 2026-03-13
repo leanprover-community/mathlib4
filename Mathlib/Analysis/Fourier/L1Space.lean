@@ -22,78 +22,6 @@ open scoped ZeroAtInfty Filter Topology BoundedContinuousFunction
 
 variable [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
 
-def Lp.fourierTransform (f : Lp (α := V) E 1) : V →ᵇ E :=
-  BoundedContinuousFunction.ofNormedAddCommGroup (𝓕 (f : V → E))
-  (VectorFourier.fourierIntegral_continuous Real.continuous_fourierChar
-    (innerSL ℝ).continuous₂ (L1.integrable_coeFn f))
-  ‖f‖
-  (by
-    intro x
-    rw [Real.fourier_eq]
-    apply (norm_integral_le_integral_norm _).trans
-    simp_rw [Circle.norm_smul]
-    exact (L1.norm_eq_integral_norm f).symm.le)
-
-@[norm_cast]
-theorem Lp.coe_fourierTransform (f : Lp (α := V) E 1) :
-    (Lp.fourierTransform f : V → E) = 𝓕 (f : V → E) := rfl
-
-@[simp]
-theorem Lp.fourierTransform_apply (f : Lp (α := V) E 1) (x : V) :
-    Lp.fourierTransform f x = 𝓕 (f : V → E) x := rfl
-
-@[simp]
-theorem fourier_toLp {f : V → E} (hf : MemLp f 1) :
-    (Lp.fourierTransform hf.toLp : V → E) = 𝓕 f := by
-  simp only [Lp.coe_fourierTransform]
-  ext x
-  apply (Real.fourier_congr_ae hf.coeFn_toLp)
-
-def _root_.LinearMap.mkContinuous' [NormedSpace ℂ V] (f : V → E)
-    (hadd : ∀ a b, f (a + b) = f a + f b)
-    (hsmul : ∀ (c : ℂ) a, f (c • a) = c • f a)
-    (C : ℝ)
-    (hbound : ∀ a, ‖f a‖ ≤ C * ‖a‖) : V →L[ℂ] E :=
-  LinearMap.mkContinuous {toFun := f, map_add' := hadd, map_smul' := hsmul} C hbound
-
-def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
-  LinearMap.mkContinuous ⟨⟨Lp.fourierTransform,
-  by
-    intro f g
-    ext x
-    simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_add, Pi.add_apply,
-      Real.fourier_eq]
-    rw [← integral_add]
-    · apply integral_congr_ae
-      filter_upwards [Lp.coeFn_add f g] with x h₁
-      rw [h₁]
-      simp
-    · rw [Real.fourierIntegral_convergent_iff]
-      exact L1.integrable_coeFn f
-    · rw [Real.fourierIntegral_convergent_iff]
-      exact L1.integrable_coeFn g⟩,
-  by
-    intro c f
-    ext x
-    simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_smul, Real.fourier_eq]
-    rw [← integral_smul]
-    apply integral_congr_ae
-    filter_upwards [Lp.coeFn_smul c f] with x h
-    rw [h, smul_comm]
-    simp ⟩
-  1 (by
-    intro f
-    rw [one_mul, BoundedContinuousFunction.norm_le (by positivity)]
-    intro x
-    rw [LinearMap.coe_mk, AddHom.coe_mk, Lp.fourierTransform_apply, Real.fourier_eq]
-    apply (norm_integral_le_integral_norm _).trans
-    simp_rw [Circle.norm_smul]
-    exact (L1.norm_eq_integral_norm f).symm.le)
-
-@[simp]
-theorem Lp.fourierTransformCLM_apply (f : Lp (α := V) E 1) :
-  Lp.fourierTransformCLM f = Lp.fourierTransform f := rfl
-
 variable [CompleteSpace E]
 
 variable (V E) in
@@ -117,10 +45,10 @@ theorem Lp.fourierTransformZeroAtInftyCLM_toLp_one_apply (f : 𝓢(V, E)) (x : V
     _ = 𝓕 f x := by simp
 
 theorem Lp.fourierTransformZeroAtInftyCLM_toBCF (f : Lp (α := V) E 1) :
-    (Lp.fourierTransformZeroAtInftyCLM V E f).toBCF = Lp.fourierTransform f := by
+    (Lp.fourierTransformZeroAtInftyCLM V E f).toBCF = Real.Lp.fourierTransform f := by
   apply (denseRange_toLpCLM (by norm_num)).induction_on
-    (p := fun f ↦ (Lp.fourierTransformZeroAtInftyCLM V E f).toBCF = Lp.fourierTransform f) f
-    (isClosed_eq (by fun_prop) Lp.fourierTransformCLM.cont)
+    (p := fun f ↦ (Lp.fourierTransformZeroAtInftyCLM V E f).toBCF = Real.Lp.fourierTransform f) f
+    (isClosed_eq (by fun_prop) (Real.Lp.fourierTransformCLM V E).cont)
   intro f
   ext x
   simpa using Real.fourier_congr_ae (coeFn_toLp f 1 volume).symm x
@@ -132,5 +60,5 @@ theorem Lp.fourierTransformZeroAtInftyCLM_apply_apply (f : Lp (α := V) E 1) (x 
 
 theorem riemann_lebesgue (f : V → E) (hf : MemLp f 1) :
     Filter.Tendsto (𝓕 f) (Filter.cocompact V) (𝓝 0) := by
-  rw [← fourier_toLp hf, ← Lp.fourierTransformZeroAtInftyCLM_toBCF]
+  rw [← Real.fourierTransform_toLp hf, ← Lp.fourierTransformZeroAtInftyCLM_toBCF]
   apply zero_at_infty ((Lp.fourierTransformZeroAtInftyCLM V E) (hf.toLp f))

@@ -59,6 +59,124 @@ section InnerProductSpace
 variable [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V] [InnerProductSpace ℝ V]
   [FiniteDimensional ℝ V]
 
+<<<<<<< HEAD
+=======
+local notation3 "i" => fun (w : V) => (1 / (2 * ‖w‖ ^ 2) : ℝ) • w
+
+/-- Shifting `f` by `(1 / (2 * ‖w‖ ^ 2)) • w` negates the integral in the Riemann-Lebesgue lemma. -/
+theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
+    (∫ v : V, 𝐞 (-⟪v, w⟫) • f (v + i w)) = -∫ v : V, 𝐞 (-⟪v, w⟫) • f v := by
+  have hiw : ⟪i w, w⟫ = 1 / 2 := by
+    rw [inner_smul_left, inner_self_eq_norm_sq_to_K, RCLike.ofReal_real_eq_id, id,
+      RCLike.conj_to_real, ← div_div, div_mul_cancel₀]
+    rwa [Ne, sq_eq_zero_iff, norm_eq_zero]
+  have :
+    (fun v : V => 𝐞 (-⟪v, w⟫) • f (v + i w)) =
+      fun v : V => (fun x : V => -(𝐞 (-⟪x, w⟫) • f x)) (v + i w) := by
+    ext1 v
+    simp_rw [inner_add_left, hiw, Circle.smul_def, Real.fourierChar_apply, neg_add, mul_add,
+      ofReal_add, add_mul, exp_add]
+    match_scalars
+    have H : exp (- (π * I)) = (-1)⁻¹ := by rw [exp_neg, exp_pi_mul_I]
+    linear_combination (norm := ring_nf) cexp (-2 * π * ⟪v, w⟫ * I) * H
+  rw [this, integral_add_right_eq_self (fun (x : V) ↦ -(𝐞 (-⟪x, w⟫) • f x))
+        ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
+  simp only [integral_neg]
+
+/-- Rewrite the Fourier integral in a form that allows us to use uniform continuity. -/
+theorem fourierIntegral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
+    (hf : Integrable f) :
+    ∫ v : V, 𝐞 (-⟪v, w⟫) • f v = (1 / (2 : ℂ)) • ∫ v : V, 𝐞 (-⟪v, w⟫) • (f v - f (v + i w)) := by
+  simp_rw [smul_sub]
+  rw [integral_sub, fourierIntegral_half_period_translate hw, sub_eq_add_neg, neg_neg, ←
+    two_smul ℂ _, ← @smul_assoc _ _ _ _ _ _ (IsScalarTower.left ℂ), smul_eq_mul]
+  · simp
+  exacts [(Real.fourierIntegral_convergent_iff w).2 hf,
+    (Real.fourierIntegral_convergent_iff w).2 (hf.comp_add_right _)]
+
+/-- Riemann-Lebesgue Lemma for continuous and compactly-supported functions: the integral
+`∫ v, exp (-2 * π * ⟪w, v⟫ * I) • f v` tends to 0 w.r.t. `cocompact V`. Note that this is primarily
+of interest as a preparatory step for the more general result
+`tendsto_integral_exp_inner_smul_cocompact` in which `f` can be arbitrary. -/
+theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support (hf1 : Continuous f)
+    (hf2 : HasCompactSupport f) :
+    Tendsto (fun w : V => ∫ v : V, 𝐞 (-⟪v, w⟫) • f v) (cocompact V) (𝓝 0) := by
+  refine NormedAddGroup.tendsto_nhds_zero.mpr fun ε hε => ?_
+  suffices ∃ T : ℝ, ∀ w : V, T ≤ ‖w‖ → ‖∫ v : V, 𝐞 (-⟪v, w⟫) • f v‖ < ε by
+    simp_rw [← comap_dist_left_atTop_eq_cocompact (0 : V), eventually_comap, eventually_atTop,
+      dist_eq_norm', sub_zero]
+    exact
+      let ⟨T, hT⟩ := this
+      ⟨T, fun b hb v hv => hT v (hv.symm ▸ hb)⟩
+  obtain ⟨R, -, hR_bd⟩ : ∃ R : ℝ, 0 < R ∧ ∀ x : V, R ≤ ‖x‖ → f x = 0 := hf2.exists_pos_le_norm
+  let A := {v : V | ‖v‖ ≤ R + 1}
+  have mA : MeasurableSet A := by
+    suffices A = Metric.closedBall (0 : V) (R + 1) by
+      rw [this]
+      exact Metric.isClosed_closedBall.measurableSet
+    simp_rw [A, Metric.closedBall, dist_eq_norm, sub_zero]
+  obtain ⟨B, hB_pos, hB_vol⟩ : ∃ B : ℝ≥0, 0 < B ∧ volume A ≤ B := by
+    have hc : IsCompact A := by
+      simpa only [Metric.closedBall, dist_eq_norm, sub_zero] using isCompact_closedBall (0 : V) _
+    let B₀ := volume A
+    replace hc : B₀ < ⊤ := hc.measure_lt_top
+    refine ⟨B₀.toNNReal + 1, add_pos_of_nonneg_of_pos B₀.toNNReal.coe_nonneg one_pos, ?_⟩
+    rw [ENNReal.coe_add, ENNReal.coe_one, ENNReal.coe_toNNReal hc.ne]
+    exact le_self_add
+  --* Use uniform continuity to choose δ such that `‖x - y‖ < δ` implies `‖f x - f y‖ < ε / B`.
+  obtain ⟨δ, hδ1, hδ2⟩ :=
+    Metric.uniformContinuous_iff.mp (hf2.uniformContinuous_of_continuous hf1) (ε / B)
+      (div_pos hε hB_pos)
+  refine ⟨1 / 2 + 1 / (2 * δ), fun w hw_bd => ?_⟩
+  have hw_ne : w ≠ 0 := by
+    contrapose! hw_bd; rw [hw_bd, norm_zero]
+    exact add_pos one_half_pos (one_div_pos.mpr <| mul_pos two_pos hδ1)
+  have hw'_nm : ‖i w‖ = 1 / (2 * ‖w‖) := by
+    rw [norm_smul, norm_div, Real.norm_of_nonneg (mul_nonneg two_pos.le <| sq_nonneg _), norm_one,
+      sq, ← div_div, ← div_div, ← div_div, div_mul_cancel₀ _ (norm_eq_zero.not.mpr hw_ne)]
+  --* Rewrite integral in terms of `f v - f (v + w')`.
+  have : ‖(1 / 2 : ℂ)‖ = 2⁻¹ := by simp
+  rw [fourierIntegral_eq_half_sub_half_period_translate hw_ne
+      (hf1.integrable_of_hasCompactSupport hf2),
+    norm_smul, this, inv_mul_eq_div, div_lt_iff₀' two_pos]
+  refine lt_of_le_of_lt (norm_integral_le_integral_norm _) ?_
+  simp_rw [Circle.norm_smul]
+  --* Show integral can be taken over A only.
+  have int_A : ∫ v : V, ‖f v - f (v + i w)‖ = ∫ v in A, ‖f v - f (v + i w)‖ := by
+    refine (setIntegral_eq_integral_of_forall_compl_eq_zero fun v hv => ?_).symm
+    dsimp only [A] at hv
+    simp only [mem_setOf, not_le] at hv
+    rw [hR_bd v _, hR_bd (v + i w) _, sub_zero, norm_zero]
+    · rw [← sub_neg_eq_add]
+      refine le_trans ?_ (norm_sub_norm_le _ _)
+      rw [le_sub_iff_add_le, norm_neg]
+      refine le_trans ?_ hv.le
+      rw [add_le_add_iff_left, hw'_nm, ← div_div]
+      refine (div_le_one <| norm_pos_iff.mpr hw_ne).mpr ?_
+      refine le_trans (le_add_of_nonneg_right <| one_div_nonneg.mpr <| ?_) hw_bd
+      exact (mul_pos (zero_lt_two' ℝ) hδ1).le
+    · exact (le_add_of_nonneg_right zero_le_one).trans hv.le
+  rw [int_A]; clear int_A
+  --* Bound integral using fact that `‖f v - f (v + w')‖` is small.
+  have bdA : ∀ v : V, v ∈ A → ‖‖f v - f (v + i w)‖‖ ≤ ε / B := by
+    simp_rw [norm_norm]
+    simp_rw [dist_eq_norm] at hδ2
+    refine fun x _ => (hδ2 ?_).le
+    rw [sub_add_cancel_left, norm_neg, hw'_nm, ← div_div, div_lt_iff₀ (norm_pos_iff.mpr hw_ne), ←
+      div_lt_iff₀' hδ1, div_div]
+    exact (lt_add_of_pos_left _ one_half_pos).trans_le hw_bd
+  have bdA2 := norm_setIntegral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA
+  have : ‖_‖ = ∫ v : V in A, ‖f v - f (v + i w)‖ :=
+    Real.norm_of_nonneg (setIntegral_nonneg mA fun x _ => norm_nonneg _)
+  rw [this] at bdA2
+  refine bdA2.trans_lt ?_
+  rw [div_mul_eq_mul_div, div_lt_iff₀ (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
+    mul_lt_mul_iff_right₀ hε]
+  refine (ENNReal.toReal_mono ENNReal.coe_ne_top hB_vol).trans_lt ?_
+  rw [ENNReal.coe_toReal, two_mul]
+  exact lt_add_of_pos_left _ hB_pos
+
+>>>>>>> master
 variable (f)
 
 /-- Riemann-Lebesgue lemma for functions on a real inner-product space: the integral

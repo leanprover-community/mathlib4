@@ -513,6 +513,7 @@ variable (𝕜 E F)
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).moduleFilterBasis.topology'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
   have A : WithSeminorms (schwartzSeminormFamily ℝ E F) := ⟨rfl⟩
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf] at A ⊢
@@ -677,6 +678,7 @@ section bilin
 
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid a PANIC. -/
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
@@ -911,7 +913,7 @@ section Comp
 variable (𝕜)
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [NormedSpace 𝕜 F]
 
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/
@@ -1020,6 +1022,73 @@ theorem smulLeftCLM_compCLMOfContinuousLinearEquiv {u : D → 𝕜'} (hu : u.Has
   simp [smulLeftCLM_apply_apply hu, smulLeftCLM_apply_apply hu']
 
 end Comp
+
+section Postcomp
+
+variable [RCLike 𝕜]
+  [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G]
+  [NormedAddCommGroup H] [NormedSpace ℝ H] [NormedSpace 𝕜 H]
+
+/-- Postcomposition with a continuous linear map is a continuous linear map on Schwartz
+functions. -/
+def postcompCLM (L : F →L[𝕜] G) : 𝓢(E, F) →L[𝕜] 𝓢(E, G) :=
+  mkCLM (fun f ↦ L ∘ f) (fun _ _ _ ↦ by simp) (fun _ _ _ ↦ by simp)
+    (fun f ↦ (L.restrictScalars ℝ).contDiff.comp (f.smooth ⊤)) <| by
+  intro ⟨k, n⟩
+  use {⟨k, n⟩}, ‖L‖, by positivity
+  intro f x
+  simp only [Finset.sup_singleton, schwartzSeminormFamily_apply]
+  calc
+    _ = ‖x‖ ^ k * ‖(L.restrictScalars ℝ).compContinuousMultilinearMap
+        (iteratedFDeriv ℝ n f x)‖ := by
+      congr
+      exact (L.restrictScalars ℝ).iteratedFDeriv_comp_left f.smooth'.contDiffAt (mod_cast le_top)
+    _ ≤ ‖x‖ ^ k * (‖L‖ * ‖iteratedFDeriv ℝ n f x‖) := by
+      gcongr
+      apply (L.restrictScalars ℝ).norm_compContinuousMultilinearMap_le
+    _ = ‖L‖ * (‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖) := by ring
+    _ ≤ ‖L‖ * (SchwartzMap.seminorm 𝕜 k n) f := by
+      grw [le_seminorm 𝕜 k n f x]
+
+@[simp]
+theorem postcompCLM_apply (L : F →L[𝕜] G) (f : 𝓢(E, F)) (x : E) : f.postcompCLM L x = L (f x) :=
+  rfl
+
+@[simp]
+theorem postcompCLM_postcompCLM (L₁ : F →L[𝕜] G) (L₂ : G →L[𝕜] H) (f : 𝓢(E, F)) :
+  (f.postcompCLM L₁).postcompCLM L₂ = f.postcompCLM (L₂ ∘L L₁) := rfl
+
+end Postcomp
+
+section Translate
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+
+variable (𝕜) in
+/-- Translating the argument as a continuous linear map on Schwartz space. -/
+def compSubConstCLM (a : E) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
+  compCLMOfAntilipschitz (g := fun x ↦ x - a) (K := 1) 𝕜 (by fun_prop)
+    (fun _ _ ↦ by simp [edist_dist, dist_eq_norm])
+
+@[simp]
+theorem compSubConstCLM_apply (f : 𝓢(E, F)) (a x : E) :
+    f.compSubConstCLM 𝕜 a x = f (x - a) := rfl
+
+@[simp]
+theorem compSubConstCLM_zero : compSubConstCLM 𝕜 (0 : E) (F := F) = ContinuousLinearMap.id _ _ := by
+  ext f x
+  simp
+
+@[simp]
+theorem compSubConstCLM_comp (f : 𝓢(E, F)) (a b : E) :
+    (f.compSubConstCLM 𝕜 a).compSubConstCLM 𝕜 b = f.compSubConstCLM 𝕜 (a + b) := by
+  ext x
+  simp only [compSubConstCLM_apply]
+  congr 1
+  exact (sub_add_eq_sub_sub_swap x a b).symm
+
+end Translate
 
 section Integration
 
@@ -1253,51 +1322,21 @@ theorem norm_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.H
     ‖f.toLp p μ‖ = ENNReal.toReal (eLpNorm f p μ) := by
   rw [Lp.norm_def, eLpNorm_congr_ae (coeFn_toLp f p μ)]
 
-theorem norm_toLp_one {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
-    ‖f.toLp 1 μ‖ = ∫ x, ‖f x‖ ∂ μ := by
-  rw [MeasureTheory.L1.norm_eq_integral_norm]
-  apply integral_congr_ae
-  filter_upwards [coeFn_toLp f 1 μ] with x hf
-  rw [hf]
-
 theorem norm_toLp' {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} (hp₁ : p ≠ 0) (hp₂ : p ≠ ⊤)
     [hμ : μ.HasTemperateGrowth] :
     ‖f.toLp p μ‖ = (∫ x, ‖f x‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹ := by
   rw [norm_toLp, MeasureTheory.MemLp.eLpNorm_eq_integral_rpow_norm hp₁ hp₂ (f.memLp p μ),
     ENNReal.toReal_ofReal (by positivity)]
 
+theorem norm_toLp_one {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    ‖f.toLp 1 μ‖ = ∫ x, ‖f x‖ ∂ μ := by
+  simpa using norm_toLp' (p := 1) (by simp) (by simp)
+
 theorem norm_toLp_top_le {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     ‖f.toLp ⊤ μ‖ ≤ SchwartzMap.seminorm ℝ 0 0 f := by
-  rw [norm_toLp]
-  rw [← ENNReal.ofReal_le_ofReal_iff (by positivity)]
-  rw [ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
-  apply eLpNormEssSup_le_of_ae_bound
-  filter_upwards with x
-  exact norm_le_seminorm ℝ f x
-
-/-theorem norm_toLp_top {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
-    ‖f.toLp ⊤ μ‖ = SchwartzMap.seminorm ℝ 0 0 f := by
-  rw [norm_toLp]
-  rw [← ENNReal.ofReal_eq_ofReal_iff (by positivity) (by positivity)]
-  rw [ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
-
-  apply le_antisymm
-  · apply eLpNormEssSup_le_of_ae_bound
-    filter_upwards with x
-    exact norm_le_seminorm ℝ f x
-  · simp only [eLpNorm_exponent_top] --[eLpNormEssSup_eq_essSup_enorm]
-    refine ENNReal.ofReal_le_of_le_toReal ?_
-    refine seminorm_le_bound ℝ 0 0 f ?_ ?_
-    · positivity
-    intro x
-    simp only [pow_zero, norm_iteratedFDeriv_zero, one_mul]
-    refine (ENNReal.ofReal_le_iff_le_toReal ?_).mp ?_
-    · apply (memLp_top f μ).eLpNorm_ne_top
-    rw [ofReal_norm_eq_enorm]
-    have := enorm_ae_le_eLpNormEssSup f (μ := μ)
-
-    --apply?
-    sorry -- eLpNormEssSup_le_of_ae_bound-/
+  rw [norm_toLp, ← ENNReal.ofReal_le_ofReal_iff (by positivity),
+    ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
+  exact eLpNormEssSup_le_of_ae_bound <| .of_forall <| norm_le_seminorm ℝ f
 
 theorem injective_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
     [μ.IsOpenPosMeasure] : Function.Injective (fun f : 𝓢(E, F) ↦ f.toLp p μ) :=

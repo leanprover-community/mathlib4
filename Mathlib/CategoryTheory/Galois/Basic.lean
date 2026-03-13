@@ -255,8 +255,7 @@ noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
 lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
     (h : F.map f x = F.map g x) :
     F.map (equalizer.ι f g) ((fiberEqualizerEquiv F f g).symm ⟨x, h⟩) = x := by
-  simp only [fiberEqualizerEquiv, comp_obj, FintypeCat.incl_obj, Functor.comp_map, Iso.toEquiv_comp,
-    Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
+  simp only [fiberEqualizerEquiv, comp_obj, FintypeCat.incl_obj, Functor.comp_map, Iso.toEquiv_comp]
   change ((Types.equalizerIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map (equalizer.ι f g)) _ = _
   erw [PreservesEqualizer.iso_inv_ι, Types.equalizerIso_inv_comp_ι]
 

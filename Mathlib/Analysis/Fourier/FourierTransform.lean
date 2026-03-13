@@ -210,6 +210,8 @@ theorem integral_fourierIntegral_swap
     simp
 
 variable [CompleteSpace E] [CompleteSpace F]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
 
 Version where the multiplication is replaced by a general bilinear form `M`. -/
@@ -301,6 +303,7 @@ variable {𝕜 ι E F V W : Type*} [Fintype ι] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℂ E]
   {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fourierIntegral_continuousLinearMap_apply
     {f : V → (F →L[ℝ] E)} {a : F} {w : W} (he : Continuous e) (hf : Integrable f μ) :
     fourierIntegral e μ L.toLinearMap₁₂ f w a =
@@ -310,6 +313,7 @@ theorem fourierIntegral_continuousLinearMap_apply
   · apply (fourierIntegral_convergent_iff he _ _).2 hf
     exact L.continuous₂
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fourierIntegral_continuousMultilinearMap_apply
     {f : V → (ContinuousMultilinearMap ℝ M E)} {m : (i : ι) → M i} {w : W} (he : Continuous e)
     (hf : Integrable f μ) :
@@ -368,7 +372,7 @@ namespace Real
 
 open FourierTransform
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {V W E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type*} [AddCommGroup V] [Module ℝ V]
     [MeasurableSpace V] {W : Type*} [AddCommGroup W] [Module ℝ W] (L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ)
@@ -412,10 +416,9 @@ theorem fourierIntegral_continuousMultilinearMap_apply'
 
 end Apply
 
-variable {V : Type*} [NormedAddCommGroup V]
-  [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
-  {W : Type*} [NormedAddCommGroup W]
-  [InnerProductSpace ℝ W] [MeasurableSpace W] [BorelSpace W] [FiniteDimensional ℝ W]
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
+  [NormedAddCommGroup W] [InnerProductSpace ℝ W] [MeasurableSpace W] [BorelSpace W]
+  [FiniteDimensional ℝ W]
 
 open scoped RealInnerProductSpace
 
@@ -440,11 +443,6 @@ alias fourierIntegralInv := FourierTransform.fourierInv
 lemma fourier_eq (f : V → E) (w : V) :
     𝓕 f w = ∫ v, 𝐞 (-⟪v, w⟫) • f v := rfl
 
-theorem fourier_congr_ae {f₁ f₂ : V → E} (hf : f₁ =ᵐ[volume] f₂) (x : V) : 𝓕 f₁ x = 𝓕 f₂ x := by
-  apply integral_congr_ae
-  filter_upwards [hf] with _ hf'
-  rw [hf']
-
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegral_eq := fourier_eq
 
@@ -454,6 +452,11 @@ lemma fourier_eq' (f : V → E) (w : V) :
 
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegral_eq' := fourier_eq'
+
+theorem fourier_congr_ae {f₁ f₂ : V → E} (hf : f₁ =ᵐ[volume] f₂) (x : V) : 𝓕 f₁ x = 𝓕 f₂ x := by
+  apply integral_congr_ae
+  filter_upwards [hf] with _ hf'
+  rw [hf']
 
 lemma fourierInv_eq (f : V → E) (w : V) :
     𝓕⁻ f w = ∫ v, 𝐞 ⟪v, w⟫ • f v := by
@@ -542,5 +545,72 @@ theorem fourier_continuousMultilinearMap_apply {ι : Type*} [Fintype ι]
 
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegral_continuousMultilinearMap_apply := fourier_continuousMultilinearMap_apply
+
+open scoped BoundedContinuousFunction
+
+/-- The Fourier transform from `L1` functions to bounded continuous functions. -/
+def Lp.fourierTransform (f : Lp (α := V) E 1) : V →ᵇ E :=
+  BoundedContinuousFunction.ofNormedAddCommGroup (𝓕 (f : V → E))
+  (VectorFourier.fourierIntegral_continuous Real.continuous_fourierChar
+    (innerSL ℝ).continuous₂ (L1.integrable_coeFn f))
+  ‖f‖ fun x ↦ by
+    rw [Real.fourier_eq]
+    apply (norm_integral_le_integral_norm _).trans
+    simp_rw [Circle.norm_smul]
+    exact (L1.norm_eq_integral_norm f).symm.le
+
+@[norm_cast]
+theorem Lp.coe_fourierTransform (f : Lp (α := V) E 1) :
+    (Lp.fourierTransform f : V → E) = 𝓕 (f : V → E) := rfl
+
+@[simp]
+theorem Lp.fourierTransform_apply (f : Lp (α := V) E 1) (x : V) :
+    Lp.fourierTransform f x = 𝓕 (f : V → E) x := rfl
+
+@[simp]
+theorem fourierTransform_toLp {f : V → E} (hf : MemLp f 1) :
+    (Lp.fourierTransform hf.toLp : V → E) = 𝓕 f := by
+  simp only [Lp.coe_fourierTransform]
+  ext x
+  exact (Real.fourier_congr_ae hf.coeFn_toLp) x
+
+variable (V E) in
+/-- The Fourier transform from `L1` functions to bounded continuous functions as a continuous linear
+map. -/
+def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
+  LinearMap.mkContinuous
+    { toFun := Lp.fourierTransform
+      map_add' f g := by
+        ext x
+        simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_add, Pi.add_apply,
+          Real.fourier_eq]
+        rw [← integral_add]
+        · apply integral_congr_ae
+          filter_upwards [Lp.coeFn_add f g] with x h₁
+          rw [h₁]
+          simp
+        · rw [Real.fourierIntegral_convergent_iff]
+          exact L1.integrable_coeFn f
+        · rw [Real.fourierIntegral_convergent_iff]
+          exact L1.integrable_coeFn g
+      map_smul' c f := by
+        ext x
+        simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_smul, Real.fourier_eq]
+        rw [← integral_smul]
+        apply integral_congr_ae
+        filter_upwards [Lp.coeFn_smul c f] with x h
+        rw [h, smul_comm]
+        simp }
+    1 fun f ↦ by
+      rw [one_mul, BoundedContinuousFunction.norm_le (by positivity)]
+      intro x
+      rw [LinearMap.coe_mk, AddHom.coe_mk, Lp.fourierTransform_apply, Real.fourier_eq]
+      apply (norm_integral_le_integral_norm _).trans
+      simp_rw [Circle.norm_smul]
+      exact (L1.norm_eq_integral_norm f).symm.le
+
+@[simp]
+theorem Lp.fourierTransformCLM_apply (f : Lp (α := V) E 1) :
+  Lp.fourierTransformCLM V E f = Lp.fourierTransform f := rfl
 
 end Real

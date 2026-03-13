@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.Algebra.Module.Basic
 
@@ -328,23 +329,29 @@ theorem closedConvexHull_eq_closure_convexHull {s : Set E} :
 
 end ContinuousConstSMul
 
-section ContinuousSMul
-
-variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-  [ContinuousSMul ℝ E]
+section Compact
+variable (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
+  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [ContinuousAdd 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 /-- Convex hull of a finite set is compact. -/
 theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
-    IsCompact (convexHull ℝ s) := by
+    IsCompact (convexHull 𝕜 s) := by
   rw [hs.convexHull_eq_image]
-  apply (@isCompact_stdSimplex _ hs.fintype).image
-  haveI := hs.fintype
-  apply LinearMap.continuous_on_pi
+  let := hs.fintype
+  exact (isCompact_stdSimplex 𝕜 s).image (LinearMap.continuous_on_pi _)
 
 /-- Convex hull of a finite set is closed. -/
 theorem Set.Finite.isClosed_convexHull [T2Space E] {s : Set E} (hs : s.Finite) :
-    IsClosed (convexHull ℝ s) :=
-  hs.isCompact_convexHull.isClosed
+    IsClosed (convexHull 𝕜 s) :=
+  (hs.isCompact_convexHull 𝕜).isClosed
+
+end Compact
+
+section ContinuousSMul
+variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+  [ContinuousSMul ℝ E]
 
 open AffineMap
 
@@ -477,3 +484,28 @@ theorem Convex.diff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex �
       hs.Ioo_subset_of_mem_closure has hx hz.symm⟩
 
 end LinearOrderedField
+
+namespace Affine.Simplex
+
+variable {𝕜 V P : Type*}
+  [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
+  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [ContinuousAdd 𝕜]
+  [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+  [Module 𝕜 V] [ContinuousSMul 𝕜 V] [AddTorsor V P]
+  [TopologicalSpace P] [IsTopologicalAddTorsor P]
+
+/-- The closed interior of a simplex is compact. -/
+theorem isCompact_closedInterior {n : ℕ} (s : Simplex 𝕜 P n) : IsCompact s.closedInterior := by
+  suffices IsCompact ((AffineEquiv.vaddConst 𝕜 (s.points 0)).symm.toAffineMap ''
+      s.closedInterior) by
+    apply (Homeomorph.vaddConst (s.points 0)).symm.isCompact_image.mp
+    simpa
+  rw [← s.closedInterior_map (AffineEquiv.injective _), ← convexHull_eq_closedInterior]
+  exact (Set.finite_range _).isCompact_convexHull 𝕜
+
+/-- The closed interior of a simplex is a closed set. -/
+theorem isClosed_closedInterior [T2Space P] {n : ℕ} (s : Simplex 𝕜 P n) :
+    IsClosed s.closedInterior :=
+  s.isCompact_closedInterior.isClosed
+
+end Affine.Simplex
