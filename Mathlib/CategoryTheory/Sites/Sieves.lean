@@ -573,10 +573,8 @@ instance : CompleteLattice (Sieve X) where
   inf := Sieve.inter
   sSup := Sieve.sup
   sInf := Sieve.inf
-  le_sSup _ S hS _ _ hf := ⟨S, hS, hf⟩
-  sSup_le := fun _ _ ha _ _ ⟨b, hb, hf⟩ => (ha b hb) _ hf
-  sInf_le _ _ hS _ _ h := h _ hS
-  le_sInf _ _ hS _ _ hf _ hR := hS _ hR _ hf
+  isLUB_sSup _ := ⟨fun S hS _ _ hf ↦ ⟨S, hS, hf⟩, fun _ ha _ _ ⟨b, hb, hf⟩ ↦ ha hb _ hf⟩
+  isGLB_sInf _ := ⟨fun S hS _ _ h ↦ h _ hS, fun _ hS _ _ hf _ hR ↦ hS hR _ hf⟩
   le_sup_left _ _ _ _ := Or.inl
   le_sup_right _ _ _ _ := Or.inr
   sup_le _ _ _ h₁ h₂ _ f := by
@@ -1339,11 +1337,7 @@ lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
 lemma Presieve.functorPushforward_overForget
     {S : C} {X : Over S} (R : Presieve X) :
     Presieve.functorPushforward (Over.forget S) R =
-      (Sieve.generate (Presieve.map (Over.forget S) R)).arrows := by
-  refine le_antisymm ?_ ?_
-  · rintro Y _ ⟨Z, a, b, ha, rfl⟩
-    exact ⟨Z.left, b, a.left, ⟨ha⟩, rfl⟩
-  · rintro Y _ ⟨Z, a, b, ⟨hd⟩, rfl⟩
-    exact ⟨_, _, a, hd, by simp⟩
+      (Sieve.generate (Presieve.map (Over.forget S) R)).arrows :=
+  (Sieve.arrows_generate_map_eq_functorPushforward (Over.forget S)).symm
 
 end CategoryTheory

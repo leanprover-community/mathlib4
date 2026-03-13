@@ -227,7 +227,6 @@ end
 variable [HasWeakSheafify J Type v] [HasSheafify J AddCommGrpCat.{v}]
   (S : J.MayerVietorisSquare)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The short complex of abelian sheaves
 `ℤ[S.X₁] ⟶ ℤ[S.X₂] ⊞ ℤ[S.X₃] ⟶ ℤ[S.X₄]`
 where the left map is a difference and the right map a sum. -/
@@ -257,12 +256,10 @@ instance : Mono S.shortComplex.f := by
     infer_instance
   exact mono_of_mono _ biprod.snd
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Epi S.shortComplex.g :=
   (S.shortComplex.exact_and_epi_g_iff_g_is_cokernel.2
     ⟨S.isPushoutAddCommGrpFreeSheaf.isColimitCokernelCofork⟩).2
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shortComplex_exact : S.shortComplex.Exact :=
   ShortComplex.exact_of_g_is_cokernel _
     S.isPushoutAddCommGrpFreeSheaf.isColimitCokernelCofork

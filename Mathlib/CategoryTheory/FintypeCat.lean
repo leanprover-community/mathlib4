@@ -14,7 +14,7 @@ public import Mathlib.Data.Finite.Prod
 # The category of finite types.
 
 We define the category of finite types, denoted `FintypeCat` as
-(bundled) types with a `Fintype` instance.
+the full subcategory of types with a `Finite` instance.
 
 We also define `FintypeCat.Skeleton`, the standard skeleton of `FintypeCat` whose objects
 are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
@@ -45,7 +45,10 @@ instance : Inhabited FintypeCat :=
 instance {X : FintypeCat} : Finite X :=
   X.property
 
-noncomputable instance {X : FintypeCat} : Fintype X :=
+/-- A `Fintype` instance on objects on `FintypeCat`, that should be turned on as needed.
+Prefer the `Finite` instance if possible. -/
+@[implicit_reducible]
+noncomputable def fintype {X : FintypeCat} : Fintype X :=
   Fintype.ofFinite X.obj
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
@@ -151,23 +154,23 @@ universe u
 /--
 The "standard" skeleton for `FintypeCat`. This is the full subcategory of `FintypeCat`
 spanned by objects of the form `ULift (Fin n)` for `n : ℕ`. We parameterize the objects
-of `Fintype.Skeleton` directly as `ULift ℕ`, as the type `ULift (Fin m) ≃ ULift (Fin n)`
+of `FintypeCat.Skeleton` directly as `ULift ℕ`, as the type `ULift (Fin m) ≃ ULift (Fin n)`
 is nonempty if and only if `n = m`. Specifying universes, `Skeleton : Type u` is a small
-skeletal category equivalent to `Fintype.{u}`.
+skeletal category equivalent to `FintypeCat.{u}`.
 -/
 def Skeleton : Type u :=
   ULift ℕ
 
 namespace Skeleton
 
-/-- Given any natural number `n`, this creates the associated object of `Fintype.Skeleton`. -/
+/-- Given any natural number `n`, this creates the associated object of `FintypeCat.Skeleton`. -/
 def mk : ℕ → Skeleton :=
   ULift.up
 
 instance : Inhabited Skeleton :=
   ⟨mk 0⟩
 
-/-- Given any object of `Fintype.Skeleton`, this returns the associated natural number. -/
+/-- Given any object of `FintypeCat.Skeleton`, this returns the associated natural number. -/
 def len : Skeleton → ℕ :=
   ULift.down
 
@@ -201,7 +204,7 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
             simp
             rfl }
 
-/-- The canonical fully faithful embedding of `Fintype.Skeleton` into `FintypeCat`. -/
+/-- The canonical fully faithful embedding of `FintypeCat.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
   obj X := FintypeCat.of (ULift (Fin X.len))
   map f := homMk f
@@ -214,6 +217,7 @@ instance : incl.Faithful where
 
 instance : incl.EssSurj :=
   Functor.EssSurj.mk fun X =>
+    letI := X.fintype
     let F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
       Nonempty.intro
@@ -222,19 +226,21 @@ instance : incl.EssSurj :=
 
 noncomputable instance : incl.IsEquivalence where
 
-/-- The equivalence between `Fintype.Skeleton` and `Fintype`. -/
+/-- The equivalence between `FintypeCat.Skeleton` and `FintypeCat`. -/
 noncomputable def equivalence : Skeleton ≌ FintypeCat :=
   incl.asEquivalence
 
+attribute [local instance] FintypeCat.fintype in
 @[simp]
-theorem incl_mk_nat_card (n : ℕ) : Fintype.card (incl.obj (mk n)) = n := by
+theorem incl_mk_nat_card (n : ℕ) :
+    Fintype.card (incl.obj (mk n)) = n := by
   convert Finset.card_fin n
   dsimp [incl, mk, len]
   convert (Fintype.ofEquiv_card Equiv.ulift).symm
 
 end Skeleton
 
-/-- `Fintype.Skeleton` is a skeleton of `Fintype`. -/
+/-- `FintypeCat.Skeleton` is a skeleton of `FintypeCat`. -/
 lemma isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
   skel := Skeleton.is_skeletal
   eqv := by infer_instance
@@ -243,6 +249,7 @@ section Universes
 
 universe v
 
+attribute [local instance] FintypeCat.fintype in
 /-- If `u` and `v` are two arbitrary universes, we may construct a functor
 `uSwitch.{u, v} : FintypeCat.{u} ⥤ FintypeCat.{v}` by sending
 `X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
@@ -251,6 +258,7 @@ noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
   map {X Y} f :=
     homMk (ULift.up ∘ Fintype.equivFin Y ∘ f.hom ∘ (Fintype.equivFin X).symm ∘ ULift.down)
 
+attribute [local instance] FintypeCat.fintype in
 /-- Switching the universe of an object `X : FintypeCat.{u}` does not change `X` up to equivalence
 of types. This is natural in the sense that it commutes with `uSwitch.map f` for
 any `f : X ⟶ Y` in `FintypeCat.{u}`. -/

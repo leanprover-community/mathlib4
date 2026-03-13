@@ -295,8 +295,8 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   intro x
   erw? [incl_of_counitAppApp]
   simp only [counitAppAppImage]
-  letI : Fintype (fiber.{u, u + 1} f x) :=
-    Fintype.ofInjective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
+  have : Finite (fiber.{u, u + 1} f x) :=
+    Finite.of_injective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u + 1} f x)).hom
   ext y
   simp only [toProfinite_obj, isoFinYonedaComponents_hom, ConcreteCategory.hom_ofHom,
@@ -495,7 +495,7 @@ variable [PreservesFiniteProducts F]
 noncomputable instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X) F :=
   let X' := (Countable.toSmall.{0} X).equiv_small.choose
   let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
-  have : Fintype X' := Fintype.ofEquiv X e
+  have : Finite X' := Finite.of_equiv X e
   preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) F
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
@@ -569,8 +569,8 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   intro x
   rw [incl_of_counitAppApp]
   simp only [counitAppAppImage]
-  letI : Fintype (fiber.{u, u} f x) :=
-    Fintype.ofInjective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
+  have : Finite (fiber.{u, u} f x) :=
+    Finite.of_injective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom
   ext y
   simp only [isoFinYonedaComponents_hom_apply, ← FunctorToTypes.map_comp_apply, ← op_comp]
