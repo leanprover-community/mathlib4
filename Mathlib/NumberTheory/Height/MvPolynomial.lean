@@ -234,6 +234,26 @@ lemma mulHeightBound_eq (p : ι' → MvPolynomial ι K) :
         ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val (coeff s (p j))) 1 :=
   rfl
 
+lemma mulHeightBound_zero_le_one : mulHeightBound (0 : ι' → MvPolynomial ι K) ≤ 1 := by
+  rw [mulHeightBound_eq]
+  simp only [Pi.zero_apply, support_zero, coeff_zero, AbsoluteValue.map_zero, Real.iSup_of_isEmpty,
+    zero_le_one, sup_of_le_right]
+  conv_lhs => enter [1, 1, 1, v, 1, j]; erw [Finsupp.sum_zero_index]
+  simp only [Real.iSup_const_zero, Multiset.map_const', Multiset.prod_replicate]
+  rcases isEmpty_or_nonempty ι'
+  · simp only [Real.iSup_of_isEmpty]
+    rw [show (1 : ℝ) = 1 * 1 from (mul_one _).symm]
+    gcongr
+    · exact finprod_nonneg fun _ ↦ le_rfl
+    · exact zero_pow_le_one _
+    · rw [← finprod_one (α := nonarchAbsVal (K := K))]
+      by_cases H : (fun v : (nonarchAbsVal (K := K)) ↦ (0 : ℝ)).HasFiniteMulSupport
+      · exact finprod_le_finprod H (fun _ ↦ le_rfl) (by fun_prop) fun _ ↦ zero_le_one
+      · rw [finprod_of_not_hasFiniteMulSupport H]
+        exact finprod_one.symm.le
+  · simp only [ciSup_const, finprod_one, mul_one]
+    exact zero_pow_le_one _
+
 lemma mulHeightBound_zero_one : mulHeightBound ![(0 : MvPolynomial (Fin 2) K), 1] = 1 := by
   simp only [mulHeightBound, Nat.succ_eq_add_one, Nat.reduceAdd, iSup_fun_eq_max]
   conv_rhs => rw [← one_mul 1]
@@ -412,11 +432,16 @@ open AdmissibleAbsValues
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by an (explicit) positive
 constant depending only on `q` times the `N`th power of the mutiplicative height of `x`. -/
-theorem mulHeight_eval_ge [Nonempty ι'] {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
+theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (hq : ∀ a, (q a).IsHomogeneous M) (p : ι' → MvPolynomial ι K) {x : ι → K}
     (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
     (Nat.card ι' ^ totalWeight K * max (mulHeightBound q) 1)⁻¹ * mulHeight x ^ N ≤
       mulHeight (fun j ↦ (p j).eval x) := by
+  rcases isEmpty_or_nonempty ι' with hι' | hι'
+  · simp at h ⊢
+    rcases isEmpty_or_nonempty ι
+    · simp
+    ·
   let q' : ι × ι' → K := fun a ↦ (q a).eval x
   have H : mulHeight x ^ (M + N) ≤
       Nat.card ι' ^ totalWeight K * mulHeight q' * mulHeight fun j ↦ (p j).eval x := by
