@@ -104,11 +104,12 @@ def diag : TopCat ⥤ TopPair where
 @[simps]
 instance : Inhabited TopPair := ⟨incl.obj TopCat.inhabited.default⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion functor is left adjoint to the projection to the first component. -/
 def inclAdjProj₁ : incl ⊣ proj₁ where
   unit := { app X := 𝟙 X }
   counit := {
-    app X := ⟨𝟙 X.first, TopCat.isInitialPEmpty.to _, _⟩
+    app X := { first := 𝟙 X.first, second := TopCat.isInitialPEmpty.to _ }
     naturality := by
       intro X Y f
       apply Hom.ext
@@ -122,8 +123,7 @@ def inclAdjProj₁ : incl ⊣ proj₁ where
       CategoryTheory.Functor.map_id, Category.id_comp]
     apply Hom.ext
     · simp only [incl_obj_first, id_first]
-    · simp only [id_second]
-      cat_disch
+    · cat_disch
 
 /-- The projection functor to the first component is left adjoint to the diagonal functor. -/
 def proj₁AdjDiag : proj₁ ⊣ diag where
