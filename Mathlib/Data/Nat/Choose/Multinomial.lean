@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Antidiag.Pi
 public import Mathlib.Data.Finsupp.Multiset
-public import Mathlib.Data.List.ToFinsupp
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
@@ -23,7 +22,6 @@ This file defines the multinomial coefficient and several small lemma's for mani
   of a multiset
 
 - `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
-
 
 -/
 
