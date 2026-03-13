@@ -290,8 +290,7 @@ lemma kfSc_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ :=
       (pageXIso X data _ hr _ _ _ _ _ rfl (by rw [hi₀', data.i₀_prev r r' _ _ h])
       (by rw [hi₀, data.hc₀₂ r _ _ h]) (by rw [hi₁, data.hc₁₃ r _ _ h]) _ _ _
       (by have := data.hc r _ _ h; lia)) ?_ ?_
-    · dsimp
-      rw [Category.id_comp, Category.assoc, Iso.inv_hom_id, Category.comp_id]
+    · simp
     · dsimp
       rw [pageD_eq X data r hr pq' pq'' h
           (homOfLE (show data.i₀ r pq'' ≤ i₀' by
