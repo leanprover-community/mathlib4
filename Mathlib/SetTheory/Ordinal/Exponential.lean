@@ -494,6 +494,18 @@ theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a
   grw [lt_succ_iff.1 hc]
   exact omega0_pos
 
+theorem lt_omega0_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
+    a < ω ^ ω ^ b ↔ ∃ c < b, ∃ n : ℕ, a < ω ^ (ω ^ c * n) := by
+  simp_rw [lt_omega0_opow (opow_ne_zero _ omega0_ne_zero), lt_omega0_opow hb]
+  constructor
+  · intro ⟨a, ⟨b, hb, ⟨m, hm⟩⟩, ⟨n, hn⟩⟩
+    exact ⟨_, hb, _, hn.trans <| opow_mul_lt_opow (natCast_lt_omega0 _) <|
+      hm.trans_le (mul_le_mul_right (Nat.cast_le.2 m.le_succ) _)⟩
+  · intro ⟨a, ha, ⟨n, hn⟩⟩
+    refine ⟨ω ^ a * n, ⟨a, ha, n + 1, ?_⟩, 1, ?_⟩
+    · simp [mul_lt_mul_iff_right₀, opow_pos]
+    · simpa
+
 /-! ### Interaction with `Nat.cast` -/
 
 @[simp, norm_cast]
