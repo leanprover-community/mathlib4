@@ -59,8 +59,8 @@ def isRadical : ObjectProperty (Preradical C) :=
   fun Φ ↦ IsIso (toColon Φ Φ)
 
 lemma isRadical_iff_isIso (Φ : Preradical C) :
-  isRadical C Φ ↔ IsIso (toColon Φ Φ) :=
-Iff.rfl
+    isRadical C Φ ↔ IsIso (toColon Φ Φ) :=
+  Iff.rfl
 
 /-- A preradical `Φ` is radical if and only if it `Φ` vanishes on the quotient `Φ.quotient`. -/
 lemma isRadical_iff_isZero (Φ : Preradical C) :
