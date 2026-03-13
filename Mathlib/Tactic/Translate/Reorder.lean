@@ -236,7 +236,7 @@ def guessUnivReorder (reorder : ArgReorder) (src : Expr) (params : List Name) : 
   let mut map := .replicate params.length none
   for ⟨cycle, _⟩ in show List _ from reorder.perm do
     for i in cycle, i' in cycle.tail ++ [cycle.head (by grind)] do
-      for u in getUnivs (getNthHyp i src), u' in getUnivs (getNthHyp i' src) do
+      for (u, u') in matchingUnivs (getNthHyp i src) (getNthHyp i' src) do
         let some p := getParam? u | pure ()
         let some p' := getParam? u' | pure ()
         if p != p' then
@@ -248,11 +248,11 @@ where
   getNthHyp : Nat → Expr → Expr
     | 0, e => e.bindingDomain!
     | n + 1, e => getNthHyp n e.bindingBody!
-  getUnivs (e : Expr) : List Level :=
-    match e.getAppFn with
-    | .const _ us => us
-    | .sort u => [u]
-    | _ => []
+  matchingUnivs (e e' : Expr) : List (Level × Level) :=
+    match e.getAppFn, e'.getAppFn with
+    | .const n us, .const n' us' => if n == n' then us.zip us' else []
+    | .sort u, .sort u' => [(u, u')]
+    | _, _ => []
   getParam? : Level → Option Name
     | .param p => some p
     | .succ u => getParam? u
