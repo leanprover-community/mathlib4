@@ -142,7 +142,7 @@ lemma homCategory.ext {m n : η ⟶ θ} (h : ∀ a, m.as.app a = n.as.app a) : m
 /-- Construct a modification isomorphism between lax natural transformations
 by giving object level isomorphisms, and checking naturality only in the forward direction.
 -/
-@[simps!]
+@[simps]
 def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     (naturality :
       ∀ {a b} (f : a ⟶ b),
