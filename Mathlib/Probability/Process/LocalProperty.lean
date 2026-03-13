@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Kexing Ying
 module
 
 public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Data.Set.Dissipate
 
 /-! # Local properties of processes
 
@@ -189,7 +190,6 @@ end LinearOrder
 section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
-  [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
   {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} {p q : (ι → Ω → E) → Prop}
 
 lemma measure_iInter_of_ae_antitone {ι : Type*}
@@ -210,19 +210,14 @@ lemma measure_iInter_of_ae_antitone {ι : Type*}
     exact hω h
   rw [measure_congr <| Filter.EventuallyEq.countable_iInter hst, Antitone.measure_iInter]
   · exact iInf_congr <| fun i ↦ measure_congr <| (hst i).symm
-  · intros i j hij
-    simp only [ht]
-    rw [(_ : ⋂ k ≤ j, s k = (⋂ k ≤ i, s k) ∩ (⋂ k ∈ {k | k ≤ j ∧ ¬ k ≤ i}, s k))]
-    · exact Set.inter_subset_left
-    · ext ω
-      simp only [Set.mem_iInter, Set.mem_setOf_eq, Set.mem_inter_iff, and_imp]
-      grind
+  · exact Set.antitone_dissipate
   · exact fun _ ↦ NullMeasurableSet.iInter <| fun j ↦ NullMeasurableSet.iInter <| fun _ ↦ hsm j
   · obtain ⟨i, hi⟩ := hfin
     refine ⟨i, (lt_of_le_of_lt ?_ <| lt_top_iff_ne_top.2 hi).ne⟩
     rw [measure_congr (hst i)]
 
 lemma isLocalizingSequence_of_isPreLocalizingSequence
+    [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
     {τ : ℕ → Ω → WithTop ι} [IsRightContinuous 𝓕] (hτ : IsPreLocalizingSequence 𝓕 τ P) :
     IsLocalizingSequence 𝓕 (fun i ω ↦ ⨅ j ≥ i, τ j ω) P where
   isStoppingTime (n : ℕ) := IsStoppingTime.biInf (Set.to_countable {j | j ≥ n})
@@ -241,17 +236,17 @@ lemma isLocalizingSequence_of_isPreLocalizingSequence
 
 /-- A stable property satisfies `p` locally for `X` if there exists a pre-localizing sequence `τ`
 for which the stopped process of `fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)` satisfies `p`. -/
-lemma locally_of_isPreLocalizingSequence [Zero E] {τ : ℕ → Ω → WithTop ι}
+lemma locally_of_isPreLocalizingSequence
+    [Zero E] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι] {τ : ℕ → Ω → WithTop ι}
     (hp : IsStable 𝓕 p) [IsRightContinuous 𝓕] (hτ : IsPreLocalizingSequence 𝓕 τ P)
     (hpτ : ∀ n, p (stoppedProcess (fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)) (τ n))) :
     Locally p 𝓕 X P := by
   refine ⟨_, isLocalizingSequence_of_isPreLocalizingSequence hτ, fun n ↦ ?_⟩
-  have := hp _ (hpτ n) (fun ω ↦ ⨅ j ≥ n, τ j ω) <|
-    (isLocalizingSequence_of_isPreLocalizingSequence hτ).isStoppingTime n
   rw [stoppedProcess_indicator_comm', ← stoppedProcess_stoppedProcess_of_le_right
     (τ := fun ω ↦ τ n ω) (fun _ ↦ (iInf_le _ n).trans <| iInf_le _ le_rfl),
     ← stoppedProcess_indicator_comm']
-  convert this using 2
+  convert hp _ (hpτ n) (fun ω ↦ ⨅ j ≥ n, τ j ω) <|
+    (isLocalizingSequence_of_isPreLocalizingSequence hτ).isStoppingTime n using 2
   ext i ω
   rw [stoppedProcess_indicator_comm', Set.indicator_indicator]
   congr 1
@@ -261,10 +256,9 @@ lemma locally_of_isPreLocalizingSequence [Zero E] {τ : ℕ → Ω → WithTop �
 
 section
 
-omit [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
 variable [SecondCountableTopology ι] [IsFiniteMeasure P]
 
-lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
+private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     {τ : ℕ → Ω → WithTop ι} {σ : ℕ → ℕ → Ω → WithTop ι}
     (hτ : IsLocalizingSequence 𝓕 τ P) (hσ : ∀ n, IsLocalizingSequence 𝓕 (σ n) P) :
     ∃ T : ℕ → ι, Tendsto T atTop atTop
