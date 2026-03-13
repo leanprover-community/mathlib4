@@ -58,6 +58,8 @@ class IsStarNormal [Mul R] [Star R] (x : R) : Prop where
 
 export IsStarNormal (star_comm_self)
 
+attribute [grind →] star_comm_self
+
 theorem star_comm_self' [Mul R] [Star R] (x : R) [IsStarNormal x] : star x * x = x * star x :=
   IsStarNormal.star_comm_self
 
