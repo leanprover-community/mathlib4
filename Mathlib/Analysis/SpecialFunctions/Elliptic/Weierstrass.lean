@@ -68,7 +68,6 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] (L : PeriodPair)
 
 namespace PeriodPair
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `ℝ`-basis of `ℂ` determined by a pair of periods. -/
 protected def basis : Basis (Fin 2) ℝ ℂ :=
   basisOfLinearIndependentOfCardEqFinrank L.indep (by simp)
@@ -220,7 +219,6 @@ def weierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
 @[inherit_doc weierstrassPExcept]
 scoped notation3 "℘[" L:max " - " l₀ "]" => weierstrassPExcept L l₀
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly
       (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
@@ -275,7 +273,7 @@ lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
   rw [weierstrassPExcept, ← Summable.tsum_add]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *]
   · exact ⟨_, L.hasSum_weierstrassPExcept _ _⟩
-  · exact summable_of_hasFiniteSupport ((Set.finite_singleton l₀).subset (by simp_all))
+  · exact summable_of_hasFiniteSupport ((Set.finite_singleton l₀).subset (by simp))
 
 lemma weierstrassPExcept_def (l₀ : L.lattice) (z : ℂ) :
     ℘[L - l₀] z = ℘[L] z + (1 / l₀.1 ^ 2 - 1 / (z - l₀.1) ^ 2) := by
@@ -337,7 +335,6 @@ def derivWeierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
 @[inherit_doc derivWeierstrassPExcept]
 scoped notation3 "℘'[" L:max " - " l₀ "]" => derivWeierstrassPExcept L l₀
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else -2 / (z - l) ^ 3)
       ℘'[L - l₀] := by
@@ -349,7 +346,7 @@ lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
   · simpa using show 0 ≤ ‖↑l‖ ^ 3 by positivity
   have : s ≠ ↑l := by rintro rfl; exfalso; linarith
   have : l ≠ 0 := by rintro rfl; simp_all; linarith
-  simp only [Complex.norm_div, norm_neg, Complex.norm_ofNat, norm_pow, AddSubgroupClass.coe_norm]
+  simp only [Complex.norm_div, norm_neg, Complex.norm_ofNat, norm_pow]
   rw [Real.rpow_neg (by positivity), ← div_eq_mul_inv, div_le_div_iff₀, norm_sub_rev]
   · refine LE.le.trans_eq (b := 2 * (2 * ‖l - s‖) ^ 3) ?_ (by ring)
     norm_cast
@@ -413,7 +410,6 @@ lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
 @[simp] lemma deriv_weierstrassPExcept_same (l : ℂ) : deriv ℘[L - l] l = ℘'[L - l] l :=
   L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept l (x := l) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma derivWeierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
     ℘'[L - l₀] (-z) = - ℘'[L - (-l₀)] z := by
   simp only [derivWeierstrassPExcept]
@@ -437,7 +433,6 @@ lemma derivWeierstrassPExcept_add_coe (l₀ : ℂ) (z : ℂ) (l : L.lattice) :
   rw [← (Equiv.addRight l).tsum_eq]
   simp only [Equiv.coe_addRight, Submodule.coe_add, add_sub_add_right_eq_sub, eq_sub_iff_add_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 -- Subsumed by `weierstrassP_add_coe`
 private lemma weierstrassPExcept_add_coe_aux
     (l₀ : ℂ) (hl₀ : l₀ ∈ L.lattice) (l : L.lattice) (hl : l.1 / 2 ∉ L.lattice) :
@@ -529,7 +524,7 @@ lemma derivWeierstrassPExcept_sub (l₀ : L.lattice) (z : ℂ) :
   rw [derivWeierstrassP, derivWeierstrassPExcept, ← Summable.tsum_add, ← tsum_neg]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *, neg_div]
   · exact ⟨_, L.hasSum_derivWeierstrassPExcept _ _⟩
-  · exact summable_of_hasFiniteSupport ((Set.finite_singleton l₀).subset (by simp_all))
+  · exact summable_of_hasFiniteSupport ((Set.finite_singleton l₀).subset (by simp))
 
 lemma derivWeierstrassPExcept_def (l₀ : L.lattice) (z : ℂ) :
     ℘'[L - l₀] z = ℘'[L] z + 2 / (z - l₀) ^ 3 := by
@@ -608,7 +603,6 @@ section AnalyticWeierstrassPExcept
 /-- The sum `∑ (l - x)⁻ʳ` over `l ∈ L`. This converges when `2 < r`, see `hasSum_sumInvPow`. -/
 def sumInvPow (x : ℂ) (r : ℕ) : ℂ := ∑' l : L.lattice, ((l - x) ^ r)⁻¹
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasSum_sumInvPow (x : ℂ) {r : ℕ} (hr : 2 < r) :
     HasSum (fun l : L.lattice ↦ ((l - x) ^ r)⁻¹) (L.sumInvPow x r) := by
   refine Summable.hasSum (.of_norm_bounded (ZLattice.summable_norm_sub_zpow _
@@ -647,12 +641,11 @@ lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
           split_ifs with e
           · simp only [e, zpow_natCast, sub_self, mul_zero]
           · dsimp; norm_cast; ring
-        · exact summable_of_hasFiniteSupport ((Set.finite_singleton ⟨l₀, hl₀⟩).subset (by simp_all))
+        · exact summable_of_hasFiniteSupport ((Set.finite_singleton ⟨l₀, hl₀⟩).subset (by simp))
     · have h₁ (l : L.lattice) : l.1 ≠ l₀ := fun e ↦ hl₀ (e ▸ l.2)
       simp [h₁, tsum_mul_left, sumInvPow, add_assoc,
         one_add_one_eq_two, ← zpow_natCast, -neg_add_rev]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 In the power series expansion of `℘(z) = ∑ᵢ aᵢ (z - x)ⁱ` at some `x ∉ L`,
 each `aᵢ` can be writen as a sum over `l ∈ L`, i.e.
@@ -1065,7 +1058,6 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
     filter_upwards [L.isClosed_lattice.isOpen_compl.mem_nhds hx] with x hx
     simp_all [relation]
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma relation_eq_zero : L.relation = 0 := by
   ext x
   have : Differentiable ℂ L.relation := fun x ↦ (L.analyticAt_relation x).differentiableAt

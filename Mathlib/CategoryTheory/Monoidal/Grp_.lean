@@ -114,6 +114,12 @@ instance. -/
 def homMk {A B : Grp C} (f : A.X ⟶ B.X) [IsMonHom f] : A ⟶ B :=
   homMk' (.mk f)
 
+/-- Construct a morphism `Grp.mk G ⟶ Grp.mk H` from a  map `f : G ⟶ H` and a `IsMonHom f`
+instance. -/
+@[simps!]
+def ofHom {A B : C} [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] : Grp.mk A ⟶ Grp.mk B :=
+  Grp.homMk f
+
 /-- Constructor for morphisms in `Grp_ C`. -/
 @[simps!]
 def homMk'' {A B : Grp C} (f : A.X ⟶ B.X)
@@ -297,6 +303,7 @@ lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A monoid object with invertible homs is a group object. -/
+@[implicit_reducible]
 def ofInvertible (G : C) [CartesianMonoidalCategory C] [MonObj G]
     (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
   inv := Yoneda.fullyFaithful.preimage ⟨fun X f ↦ (h X.unop f).invOf, fun X Y f ↦ by

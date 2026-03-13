@@ -278,7 +278,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     compactness of `t`, there is some `0 < c` such that `c ≤ g' x` for all `x ∈ t`. Then by
     `exists_mul_le_one_eqOn_ge` there is some `g` for which `g * g'` is the desired function. -/
   obtain ⟨g', hI', hgt'⟩ := this
-  obtain ⟨c, hc, hgc'⟩ : ∃ c > 0, ∀ y : X, y ∈ t → c ≤ g' y :=
+  obtain ⟨c, hc, hgc'⟩ : ∃ c > 0, t ⊆ {y | c ≤ g' y} :=
     t.eq_empty_or_nonempty.elim
       (fun ht' => ⟨1, zero_lt_one, fun y hy => False.elim (by rwa [ht'] at hy)⟩) fun ht' =>
       let ⟨x, hx, hx'⟩ := ht.isCompact.exists_isMinOn ht' (map_continuous g').continuousOn
@@ -349,7 +349,6 @@ theorem idealOf_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : S
 
 variable {𝕜}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] :
     ∃ x : X, setOfIdeal I = {x}ᶜ := by
   have h : (idealOfSet 𝕜 (setOfIdeal I)).IsMaximal :=
@@ -407,7 +406,6 @@ end ContinuousMapEval
 
 variable [CompactSpace X] [T2Space X] [RCLike 𝕜]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
   refine ⟨fun x y hxy => ?_, fun φ => ?_⟩
   · contrapose! hxy
