@@ -282,11 +282,11 @@ theorem IsPartialInv.eq {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) :
 
 theorem IsPartialInv.get_eq {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) (h : g x |>.isSome) :
     f (g x |>.get h) = x :=
-  match hg : g x, h with | some _, _ => (H _ _).1 hg
+  (H _ _).1 (Option.eq_some_of_isSome h)
 
 theorem IsPartialInv.surjective_getD {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) :
     Function.Surjective (g · |>.getD x) :=
-  fun y => ⟨f y, by cases g (f y) <;> simp [H.eq]⟩
+  fun y => ⟨f y, by simp [H.eq]⟩
 
 @[deprecated (since := "2026-03-11")] alias isPartialInv_left := IsPartialInv.eq
 

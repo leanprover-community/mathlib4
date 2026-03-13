@@ -215,12 +215,12 @@ def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
 def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _) where
-  toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
+  toFun a := ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
       (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
-  left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
-  right_inv := fun ⟨n, x, hx⟩ => Subtype.ext <| decode₂_isPartialInv.get_eq _ _
+  left_inv _ := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
+  right_inv _ := Subtype.ext <| decode₂_isPartialInv.get_eq _ _
 
 /-- A type with unique element is encodable. This is not an instance to avoid diamonds. -/
 def _root_.Unique.encodable [Unique α] : Encodable α :=
