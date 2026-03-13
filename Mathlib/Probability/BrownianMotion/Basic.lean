@@ -17,6 +17,37 @@ import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Independence
 /-!
 # Brownian motion
 
+In this file we define two predicates over stochastic processes `X : ℝ≥0 → Ω → ℝ` given
+a probability measure `P : Measure Ω`. `IsPreBrownian X P` means that
+`X` is a pre-Brownian motion. It means that it has the law of the Brownian motion, namely that
+its finite dimensional distributions are given by `gaussianProjectiveFamily`. Then
+`IsBrownian X P` means that `X` is a Brownian motion, which means that it is a pre-Brownian
+motion with almost surely continuous paths.
+
+We prove that a centered Gaussian process `X` with covariances given by `cov[X s, X t; P] = min s t`
+is a pre-Brownian motion and provide basic invariance properties. We also prove the
+weak Markov property: if `B` is a pre-Brownian motion and `t₀ : ℝ≥0`, then the process
+`t ↦ B (t + t₀) - B t₀` is a pre-Brownian motion independent from `(B t | t ≤ t₀)`.
+
+## Main definitions
+
+* `IsPreBrownian X P`: A stochastic process is called pre-Brownian if its finite-dimensional laws
+  are those of the Brownian motion, see `gaussianProjectiveFamily`.
+* `IsBrownian X P`: A stochastic process is called Brownian if its finite-dimensional laws
+  are those of the Brownian motion, see `IsPreBrownian`,
+  and if it has almost-surely continuous paths.
+
+## Main statements
+
+* `IsGaussianProcess.isPreBrownian_of_covariance`: A centered Gaussian process with the right
+  covariance is a pre-Brownian motion.
+* `IsPreBrownian.indepFun_shift`: The weak Markov property: If `B` is a pre-Brownian motion, then
+  `B (t₀ + t) - B t₀` is a pre-Brownian motion which is independent from `(B t, t ≤ t₀)`.
+
+## Tags
+
+pre-Brownian motion, Brownian motion, Markov property
+
 -/
 
 @[expose] public section
@@ -116,22 +147,23 @@ theorem IsGaussianProcess.isPreBrownian_of_covariance (h1 : IsGaussianProcess X 
       · exact fun i ↦ ((h1.hasGaussianLaw I).isGaussian_map.hasGaussianLaw_id.eval i).memLp_two
 
 set_option backward.isDefEq.respectTransparency false in
+/-- If `B` is a pre-Brownian motion and `c > 0`, then
+`t ↦ 1/√c B (c t)` is a pre-Brownian motion. -/
 lemma IsPreBrownian.smul (hB : IsPreBrownian B P) {c : ℝ≥0} (hc : c ≠ 0) :
     IsPreBrownian (fun t ω ↦ (B (c * t) ω) / √c) P := by
   refine IsGaussianProcess.isPreBrownian_of_covariance ?_ (fun t ↦ ?_) (fun s t hst ↦ ?_)
   · have this t ω : B (c * t) ω / √c = (1 / √c) • ((B ∘ (c * ·)) t ω) := by
       simp [inv_mul_eq_div]
     simp_rw [this]
-    exact (IsGaussianProcess.comp_right hB.isGaussianProcess _).smul _
+    exact (hB.isGaussianProcess.comp_right _).smul _
   · rw [integral_div, hB.integral_eval, zero_div]
-  · rw [covariance_fun_div_left, covariance_fun_div_right, hB.covariance_eval,
-      min_eq_left]
+  · rw [covariance_fun_div_left, covariance_fun_div_right, hB.covariance_eval, min_eq_left]
     · simp [field]
     · exact mul_le_mul_right hst c
 
 set_option backward.isDefEq.respectTransparency false in
-/-- **Weak Markov property**: If `X` is a pre-Brownian motion, then
-`X (t₀ + t) - X t₀` is a pre-Brownian motion which is independent from `(B t, t ≤ t₀)`.
+/-- **Weak Markov property**: If `B` is a pre-Brownian motion, then
+`t ↦ B (t₀ + t) - B t₀` is a pre-Brownian motion which is independent from `(B t, t ≤ t₀)`.
 This is the proof that it is pre-Brownian, see `IsPreBrownian.indepFun_shift` for independence. -/
 lemma IsPreBrownian.shift (hB : IsPreBrownian B P) (t₀ : ℝ≥0) :
     IsPreBrownian (fun t ω ↦ B (t₀ + t) ω - B t₀ ω) P := by
@@ -147,27 +179,24 @@ lemma IsPreBrownian.shift (hB : IsPreBrownian B P) (t₀ : ℝ≥0) :
     exact hB.isGaussianProcess.hasGaussianLaw_sub.memLp_two
 
 set_option backward.isDefEq.respectTransparency false in
-/-- **Weak Markov property**: If `X` is a pre-Brownian motion, then
-`X (t₀ + t) - X t₀` is a pre-Brownian motion which is independent from `(B t, t ≤ t₀)`.
+/-- **Weak Markov property**: If `B` is a pre-Brownian motion, then
+`B (t₀ + t) - B t₀` is a pre-Brownian motion which is independent from `(B t, t ≤ t₀)`.
 This is the proof that of independence, see `IsPreBrownian.shift` for the proof
 that it is pre-Brownian. -/
-lemma IsPreBrownian.indepFun_shift (hB : IsPreBrownian B P) --(mX : ∀ t, Measurable (X t))
-    (t₀ : ℝ≥0) :
+lemma IsPreBrownian.indepFun_shift (hB : IsPreBrownian B P) (t₀ : ℝ≥0) :
     IndepFun (fun ω t ↦ B (t₀ + t) ω - B t₀ ω) (fun ω (t : Set.Iic t₀) ↦ B t ω) P := by
   have mX t := hB.aemeasurable t
   apply IsGaussianProcess.indepFun_of_covariance_eq_zero
   · apply hB.isGaussianProcess.of_isGaussianProcess
     rintro (t | ⟨t, ht⟩)
-    · let L : (({t₀, t₀ + t} : Finset ℝ≥0) → ℝ) →L[ℝ] ℝ :=
+    · exact ⟨{t₀, t₀ + t},
         { toFun x := x ⟨t₀ + t, by simp⟩ - x ⟨t₀, by simp⟩
           map_add' x y := by simp; abel
-          map_smul' c x := by simp; ring }
-      exact ⟨_, L, fun ω ↦ by simp [L]⟩
-    · let L : (({t} : Finset ℝ≥0) → ℝ) →L[ℝ] ℝ :=
+          map_smul' c x := by simp; ring }, by simp⟩
+    · exact ⟨{t},
         { toFun x := x ⟨t, by simp⟩
           map_add' x y := by simp
-          map_smul' c x := by simp }
-      exact ⟨_, L, fun ω ↦ by simp [L]⟩
+          map_smul' c x := by simp }, by simp⟩
   any_goals fun_prop
   · rintro s ⟨t, ht : t ≤ t₀⟩
     have := hB.isGaussianProcess.isProbabilityMeasure
@@ -178,6 +207,7 @@ lemma IsPreBrownian.indepFun_shift (hB : IsPreBrownian B P) --(mX : ∀ t, Measu
     all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
 
 set_option backward.isDefEq.respectTransparency false in
+/-- If `B` is a pre-Brownian motion and then `t ↦ t * B (1 / t)` is a pre-Brownian motion. -/
 lemma IsPreBrownian.inv (hB : IsPreBrownian B P) :
     IsPreBrownian (fun t ω ↦ t * (B (1 / t) ω)) P := by
   refine IsGaussianProcess.isPreBrownian_of_covariance ?_ (fun t ↦ ?_) (fun s t hst ↦ ?_)
@@ -200,11 +230,12 @@ section IsBrownian
 variable {B X : ℝ≥0 → Ω → ℝ}
 
 /-- A stochastic process is called **Brownian** if its finite-dimensional laws are those
-of a Brownian motion, see `IsPreBrownian`, and if it has almost-sure continuous paths. -/
+of the Brownian motion, see `IsPreBrownian`, and if it has almost-surely continuous paths. -/
 structure IsBrownian (X : ℝ≥0 → Ω → ℝ) (P : Measure Ω := by volume_tac) : Prop
     extends IsPreBrownian X P where
   cont : ∀ᵐ ω ∂P, Continuous (X · ω)
 
+/-- If `B` is a Brownian motion and `c > 0`, then `t ↦ 1/√c B (c t)` is a Brownian motion. -/
 lemma IsBrownian.smul (hB : IsBrownian B P) {c : ℝ≥0} (hc : c ≠ 0) :
     IsBrownian (fun t ω ↦ (B (c * t) ω) / √c) P where
   toIsPreBrownian := hB.toIsPreBrownian.smul hc
