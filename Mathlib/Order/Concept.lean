@@ -156,12 +156,14 @@ theorem lowerPolar_upperPolar_monotone : Monotone (lowerPolar r ∘ upperPolar r
 theorem upperPolar_lowerPolar_monotone : Monotone (upperPolar r ∘ lowerPolar r) :=
   (upperPolar_anti r).comp (lowerPolar_anti r)
 
-/-- The `extentClosure` of a set is the smallest extent containing it. -/
+/-- The `extentClosure` of a set is the smallest extent containing it. See
+`IsExtent.lowerPolar_upperPolar_subset` for this proof. -/
 @[simps!]
 def extentClosure (r : α → β → Prop) : ClosureOperator (Set α) :=
   (gc_upperPolar_lowerPolar r).closureOperator
 
-/-- The `intentClosure` of a set is the smallest intent containing it. -/
+/-- The `intentClosure` of a set is the smallest intent containing it. See
+`IsIntent.upperPolar_lowerPolar_subset` for this proof. -/
 @[simps!]
 def intentClosure (r : α → β → Prop) : ClosureOperator (Set β) :=
   (gc_lowerPolar_upperPolar r).closureOperator
