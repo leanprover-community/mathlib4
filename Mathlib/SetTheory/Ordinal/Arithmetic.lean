@@ -689,7 +689,7 @@ theorem lt_mul_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit c) :
     a < b * c ↔ ∃ c' < c, a < b * c' := by
   simpa using (mul_le_iff_of_isSuccLimit h).not
 
-theorem lt_mul_add_one {a b c : Ordinal} : a < b * (c + 1) ↔ ∃ d < b, a ≤ b * c + d := by
+theorem lt_mul_add_one_iff {a b c : Ordinal} : a < b * (c + 1) ↔ ∃ d < b, a ≤ b * c + d := by
   obtain rfl | hb := eq_or_ne b 0
   · simp
   · rw [mul_add_one, lt_add_iff hb]
