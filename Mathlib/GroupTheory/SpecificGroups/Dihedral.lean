@@ -142,6 +142,7 @@ def equivSum : DihedralGroup n ≃ (ZMod n) ⊕ (ZMod n) where
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
+/-- The equivalence between the sum of `ZMod`s and the dihedral group. -/
 @[deprecated DihedralGroup.equivSum (since := "2026-03-12")]
 abbrev fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n :=
   equivSum.symm
