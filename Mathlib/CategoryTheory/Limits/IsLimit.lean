@@ -83,13 +83,13 @@ instance subsingleton {t : Cone F} : Subsingleton (IsLimit t) :=
 
 /-- Given a natural transformation `α : F ⟶ G`, we give a morphism from the cone point
 of any cone over `F` to the cone point of a limit cone over `G`. -/
-@[to_dual
+@[to_dual (reorder := s P t)
 /-- Given a natural transformation `α : F ⟶ G`, we give a morphism from the cocone point
 of a colimit cocone over `F` to the cocone point of any cocone over `G`. -/]
 def map {F G : J ⥤ C} (s : Cone F) {t : Cone G} (P : IsLimit t) (α : F ⟶ G) : s.pt ⟶ t.pt :=
   P.lift ((Cone.postcompose α).obj s)
 
-@[to_dual (attr := reassoc (attr := simp)) ι_map]
+@[to_dual (attr := reassoc (attr := simp)) (reorder := c hd d) ι_map]
 theorem map_π {F G : J ⥤ C} (c : Cone F) {d : Cone G} (hd : IsLimit d) (α : F ⟶ G) (j : J) :
     hd.map c α ≫ d.π.app j = c.π.app j ≫ α.app j :=
   fac _ _ _
@@ -148,7 +148,7 @@ def uniqueUpToIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) : s ≅ t where
   inv_hom_id := Q.uniq_cone_morphism
 
 /-- Any cone morphism between limit cones is an isomorphism. -/
-@[to_dual /-- Any cocone morphism between colimit cocones is an isomorphism. -/]
+@[to_dual (reorder := P Q) /-- Any cocone morphism between colimit cocones is an isomorphism. -/]
 theorem hom_isIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) (f : s ⟶ t) : IsIso f :=
   ⟨⟨P.liftConeMorphism t, ⟨P.uniq_cone_morphism, Q.uniq_cone_morphism⟩⟩⟩
 
