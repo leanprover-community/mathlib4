@@ -278,7 +278,7 @@ variable [SMulCommClass R S A] [CompatibleSMul R S A B]
 /-- If A and B are both R- and S-algebras and their actions on them commute,
 and if the S-action on `A ⊗[R] B` can switch between the two factors, then there is a
 canonical T-algebra homomorphism from `A ⊗[S] B` to `A ⊗[R] B`,
-where `T` is another ring whose actions on `A` and `B` commute with the `S`-actions. -/
+where `T` is any other ring acting on `A` and whose action commutes with the `R` and `S`-actions. -/
 def mapOfCompatibleSMul : A ⊗[S] B →ₐ[T] A ⊗[R] B :=
   .ofLinearMap (_root_.TensorProduct.mapOfCompatibleSMul R S T A B) rfl fun x ↦
     x.induction_on (by simp) (fun _ _ y ↦ y.induction_on (by simp) (by simp)
