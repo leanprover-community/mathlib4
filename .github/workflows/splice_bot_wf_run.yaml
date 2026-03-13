@@ -8,14 +8,11 @@ on:
 permissions: {}
 
 jobs:
-  mint-splicebot-tokens:
+  run-splice-bot:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-    outputs:
-      token: ${{ steps.token.outputs.token }}
-      authz_token: ${{ steps.authz-token.outputs.token }}
-      branch_token: ${{ steps.branch-token.outputs.token }}
     steps:
       - name: Mint splicebot token
         id: token
@@ -47,18 +44,16 @@ jobs:
           private-key: ${{ secrets.LPC_TEAM_CHECK_PRIVATE_KEY }}
           owner: leanprover-community
 
-  run-reusable:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    needs: [mint-splicebot-tokens]
-    uses: leanprover-community/SpliceBot/.github/workflows/splice_wf_run.yaml@fdb442693d6f613b25d2599ad64fd87cf019b9ce # master
-    with:
-      source_workflow: ${{ github.event.workflow_run.name }}
-      push_to_fork: leanprover-community/mathlib4_copy
-      allow_pr_author: true
-      allowed_teams: |
-        leanprover-community/mathlib-reviewers
-        leanprover-community/mathlib-maintainers
-    secrets:
-      token: ${{ needs.mint-splicebot-tokens.outputs.token }}
-      authz_token: ${{ needs.mint-splicebot-tokens.outputs.authz_token }}
-      branch_token: ${{ needs.mint-splicebot-tokens.outputs.branch_token }}
+      - name: Run splice bot action
+        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@146ee716fab40e9cae384b9932fded8b9999b16d
+        with:
+          source_workflow: ${{ github.event.workflow_run.name }}
+          push_to_fork: leanprover-community/mathlib4_copy
+          min_repo_permission: 'write'
+          allow_pr_author: 'true'
+          allowed_teams: |
+            leanprover-community/mathlib-reviewers
+            leanprover-community/mathlib-maintainers
+          token: ${{ steps.token.outputs.token }}
+          authz_token: ${{ steps.authz-token.outputs.token }}
+          branch_token: ${{ steps.branch-token.outputs.token }}

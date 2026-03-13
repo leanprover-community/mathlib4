@@ -536,8 +536,7 @@ end DistribLattice
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)
     (h : ∀ s, SupClosed s → IsLUB s (sSup s)) : CompleteSemilatticeSup α where
   sSup := fun s => sSup (supClosure s)
-  le_sSup _ _ ha := (h _ supClosed_supClosure).1 <| subset_supClosure ha
-  sSup_le s a ha := (isLUB_le_iff <| h _ supClosed_supClosure).2 <| by rwa [upperBounds_supClosure]
+  isLUB_sSup _ := isLUB_supClosure.mp <| h _ supClosed_supClosure
 
 /-- A meet-semilattice where every inf-closed set has a greatest lower bound is automatically
 complete. -/
@@ -545,8 +544,7 @@ complete. -/
 def SemilatticeInf.toCompleteSemilatticeInf [SemilatticeInf α] (sInf : Set α → α)
     (h : ∀ s, InfClosed s → IsGLB s (sInf s)) : CompleteSemilatticeInf α where
   sInf := fun s => sInf (infClosure s)
-  sInf_le _ _ ha := (h _ infClosed_infClosure).1 <| subset_infClosure ha
-  le_sInf s a ha := (le_isGLB_iff <| h _ infClosed_infClosure).2 <| by rwa [lowerBounds_infClosure]
+  isGLB_sInf _ := isGLB_infClosure.mp <| h _ infClosed_infClosure
 
 
 section ConditionallyCompleteLattice
