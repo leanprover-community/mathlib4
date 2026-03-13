@@ -426,11 +426,11 @@ lemma isNormalEpiCategory : IsNormalEpiCategory D where
 
 /-- If `L : C ⥤ D` is a localization functor with respect to a Serre class `P` in
 the abelian category `C`, then `D` is an abelian category.
-(Note that we assume that `D` has already been equipped with a preadditive structure,
+Note that we assume that `D` has already been equipped with a preadditive structure,
 and that `L` is additive. Otherwise, see the results in the file
 `Mathlib/CategoryTheory/Localization/CalculusOfFractions/Preadditive.lean`
-which applies because `P.isoModSerre` has a calculus of left and right fractions.) -/
-@[stacks 02MS]
+which applies because `P.isoModSerre` has a calculus of left and right fractions. -/
+@[stacks 02MS, implicit_reducible]
 def abelian : Abelian D := by
   have := hasFiniteProducts L P
   have := hasKernels L P
