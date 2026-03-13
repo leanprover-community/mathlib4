@@ -112,55 +112,6 @@ section Real
 
 variable {Ω : Type*}
 
-lemma limsup_le_of_eventually_le_nat'
-    {u : ℕ → ℝ} {a : ℝ}
-    (hcu : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop u)
-    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop u)
-    (h : ∃ N : ℕ, ∀ n ≥ N, u n ≤ a) :
-    Filter.limsup u Filter.atTop ≤ a := by
-  rw [Filter.limsup_le_iff' (f := Filter.atTop) (u := u) (x := a) hcu hbu]
-  intro y hy
-  rcases h with ⟨N, hN⟩
-  exact Filter.eventually_atTop.2 ⟨N, fun n hn => (hN n hn).trans (le_of_lt hy)⟩
-
-lemma le_liminf_of_eventually_le_nat'
-    {u : ℕ → ℝ} {a : ℝ}
-    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop u)
-    (hbu : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop u)
-    (h : ∃ N : ℕ, ∀ n ≥ N, a ≤ u n) :
-    a ≤ Filter.liminf u Filter.atTop := by
-  rw [Filter.le_liminf_iff' (f := Filter.atTop) (u := u) (x := a) hcu hbu]
-  intro y hy
-  rcases h with ⟨N, hN⟩
-  exact Filter.eventually_atTop.2 ⟨N, fun n hn => (le_of_lt hy).trans (hN n hn)⟩
-
-lemma le_liminf_of_monotone_nat'
-    {u : ℕ → ℝ}
-    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop u)
-    (hbu : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop u)
-    (hmono : Monotone u) (n : ℕ) :
-    u n ≤ Filter.liminf u Filter.atTop := by
-  apply le_liminf_of_eventually_le_nat' hcu hbu
-  exact ⟨n, fun k hk => hmono hk⟩
-
-lemma limsup_sub_liminf_le_of_eventually_bounded_nat'
-    {u : ℕ → ℝ} {a b : ℝ}
-    (hcu : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop u)
-    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop u)
-    (hcl : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop u)
-    (hbl : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop u)
-    (h : ∃ N : ℕ, ∀ n ≥ N, a ≤ u n ∧ u n ≤ b) :
-    Filter.limsup u Filter.atTop - Filter.liminf u Filter.atTop ≤ b - a := by
-  have hsup : Filter.limsup u Filter.atTop ≤ b := by
-    apply limsup_le_of_eventually_le_nat' hcu hbu
-    rcases h with ⟨N, hN⟩
-    exact ⟨N, fun n hn => (hN n hn).2⟩
-  have hinf : a ≤ Filter.liminf u Filter.atTop := by
-    apply le_liminf_of_eventually_le_nat' hcl hbl
-    rcases h with ⟨N, hN⟩
-    exact ⟨N, fun n hn => (hN n hn).1⟩
-  linarith
-
 lemma condExp_natural_eq_zero_of_mean_zero {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ)
     (hX : ∀ k, StronglyMeasurable (X k)) (hindep : iIndepFun X μ)
@@ -370,14 +321,6 @@ lemma sq_le_sup_partialSum_succ_sq_iff_le_partialSumMax_succ
       simpa [sq_abs] using this
     exact le_trans hsquare <| Finset.le_sup' (f := fun k => partialSum X (k + 1) ω ^ 2) hk
 
-lemma event_sup_partialSum_succ_sq_ge_eq_event_partialSumMax_ge
-    (X : ℕ → Ω → ℝ) (ε : NNReal) (n : ℕ) :
-    {ω | (ε : ℝ) ^ 2 ≤ (Finset.range (n + 1)).sup' (by simp)
-      (fun k => partialSum X (k + 1) ω ^ 2)} =
-      {ω | (ε : ℝ) ≤ partialSumMax X (n + 1) ω} := by
-  ext ω
-  exact sq_le_sup_partialSum_succ_sq_iff_le_partialSumMax_succ X ε n ω
-
 lemma smul_measure_partialSumMax_ge_le_integral_partialSum_succ_sq_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
@@ -444,128 +387,11 @@ def finiteTailOscillationMax (X : ℕ → Ω → ℝ) (m n : ℕ) : Ω → ℝ :
 
 /-- The maximum of the finite tail window
 `partialSum X (m + j + 1)` for `j ≤ n`. -/
-def finiteTailSup (X : ℕ → Ω → ℝ) (m n : ℕ) : Ω → ℝ :=
-  fun ω => (Finset.range (n + 1)).sup' (by simp) fun j => partialSum X (m + j + 1) ω
-
-/-- The minimum of the finite tail window
-`partialSum X (m + j + 1)` for `j ≤ n`. -/
-def finiteTailInf (X : ℕ → Ω → ℝ) (m n : ℕ) : Ω → ℝ :=
-  fun ω => (Finset.range (n + 1)).inf' (by simp) fun j => partialSum X (m + j + 1) ω
-
 lemma le_finiteTailOscillationMax_iff (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) (ω : Ω) :
     ε ≤ finiteTailOscillationMax X m n ω ↔
       ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
         ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω| := by
   simp [finiteTailOscillationMax, Finset.le_sup'_iff]
-
-lemma finiteTailOscillationMax_nonneg (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
-    0 ≤ finiteTailOscillationMax X m n ω := by
-  exact (le_finiteTailOscillationMax_iff X m n 0 ω).2 ⟨0, by simp, 0, by simp, by simp⟩
-
-lemma partialSum_le_finiteTailSup (X : ℕ → Ω → ℝ) (m n k : ℕ)
-    (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
-    partialSum X (m + k + 1) ω ≤ finiteTailSup X m n ω := by
-  exact Finset.le_sup' (f := fun j => partialSum X (m + j + 1) ω) hk
-
-lemma finiteTailInf_le_partialSum (X : ℕ → Ω → ℝ) (m n k : ℕ)
-    (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
-    finiteTailInf X m n ω ≤ partialSum X (m + k + 1) ω := by
-  exact Finset.inf'_le (f := fun j => partialSum X (m + j + 1) ω) hk
-
-lemma partialSum_mem_Icc_finiteTailInf_finiteTailSup (X : ℕ → Ω → ℝ) (m n k : ℕ)
-    (hk : k ∈ Finset.range (n + 1)) (ω : Ω) :
-    partialSum X (m + k + 1) ω ∈ Set.Icc (finiteTailInf X m n ω) (finiteTailSup X m n ω) := by
-  exact ⟨finiteTailInf_le_partialSum X m n k hk ω, partialSum_le_finiteTailSup X m n k hk ω⟩
-
-lemma eventually_partialSum_le_finiteTailSup (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
-    ∀ᶠ k in Filter.atTop, partialSum X (m + n + 1) ω ≤ finiteTailSup X m k ω := by
-  refine Filter.eventually_atTop.2 ⟨n, ?_⟩
-  intro k hk
-  exact partialSum_le_finiteTailSup X m k n
-    (Finset.mem_range.mpr <| Nat.lt_succ_of_le hk) ω
-
-lemma eventually_finiteTailInf_le_partialSum (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
-    ∀ᶠ k in Filter.atTop, finiteTailInf X m k ω ≤ partialSum X (m + n + 1) ω := by
-  refine Filter.eventually_atTop.2 ⟨n, ?_⟩
-  intro k hk
-  exact finiteTailInf_le_partialSum X m k n
-    (Finset.mem_range.mpr <| Nat.lt_succ_of_le hk) ω
-
-lemma eventually_partialSum_mem_Icc_finiteTailInf_finiteTailSup
-    (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
-    ∀ᶠ k in Filter.atTop,
-      partialSum X (m + n + 1) ω ∈ Set.Icc (finiteTailInf X m k ω) (finiteTailSup X m k ω) := by
-  filter_upwards [eventually_finiteTailInf_le_partialSum X m n ω,
-    eventually_partialSum_le_finiteTailSup X m n ω] with k hk₁ hk₂
-  exact ⟨hk₁, hk₂⟩
-
-lemma limsup_partialSum_tail_le_limsup_finiteTailSup
-    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
-    (hcu : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop
-      (fun n => partialSum X (m + n + 1) ω))
-    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
-      (fun n => finiteTailSup X m n ω)) :
-    Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop ≤
-      Filter.limsup (fun n => finiteTailSup X m n ω) Filter.atTop := by
-  refine Filter.limsup_le_limsup (Filter.Eventually.of_forall ?_) hcu hbu
-  intro n
-  exact partialSum_le_finiteTailSup X m n n (by simp) ω
-
-lemma liminf_finiteTailInf_le_liminf_partialSum_tail
-    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
-    (hbu : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailInf X m n ω))
-    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun n => partialSum X (m + n + 1) ω)) :
-    Filter.liminf (fun n => finiteTailInf X m n ω) Filter.atTop ≤
-      Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop := by
-  refine Filter.liminf_le_liminf (Filter.Eventually.of_forall ?_) hbu hcu
-  intro n
-  exact finiteTailInf_le_partialSum X m n n (by simp) ω
-
-lemma limsup_sub_liminf_partialSum_tail_le_limsup_finiteTailSup_sub_liminf_finiteTailInf
-    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
-    (hcu : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop
-      (fun n => partialSum X (m + n + 1) ω))
-    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
-      (fun n => finiteTailSup X m n ω))
-    (hbl : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailInf X m n ω))
-    (hcl : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun n => partialSum X (m + n + 1) ω)) :
-    Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop -
-        Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop ≤
-      Filter.limsup (fun n => finiteTailSup X m n ω) Filter.atTop -
-        Filter.liminf (fun n => finiteTailInf X m n ω) Filter.atTop := by
-  have hsup := limsup_partialSum_tail_le_limsup_finiteTailSup X m ω hcu hbu
-  have hinf := liminf_finiteTailInf_le_liminf_partialSum_tail X m ω hbl hcl
-  linarith
-
-lemma finiteTailSup_mono (X : ℕ → Ω → ℝ) (m : ℕ) {n k : ℕ} (hnk : n ≤ k) (ω : Ω) :
-    finiteTailSup X m n ω ≤ finiteTailSup X m k ω := by
-  rw [finiteTailSup, Finset.sup'_le_iff]
-  intro j hj
-  exact partialSum_le_finiteTailSup X m k j
-    (Finset.mem_range.mpr <|
-      Nat.lt_of_lt_of_le (Finset.mem_range.mp hj) (Nat.succ_le_succ hnk)) ω
-
-lemma finiteTailInf_anti (X : ℕ → Ω → ℝ) (m : ℕ) {n k : ℕ} (hnk : n ≤ k) (ω : Ω) :
-    finiteTailInf X m k ω ≤ finiteTailInf X m n ω := by
-  rw [finiteTailInf]
-  refine Finset.le_inf' (s := Finset.range (n + 1)) (H := by simp)
-    (f := fun j => partialSum X (m + j + 1) ω) ?_
-  intro j hj
-  exact finiteTailInf_le_partialSum X m k j
-    (Finset.mem_range.mpr <|
-      Nat.lt_of_lt_of_le (Finset.mem_range.mp hj) (Nat.succ_le_succ hnk)) ω
-
-lemma finiteTailSup_sub_finiteTailInf_mono (X : ℕ → Ω → ℝ) (m : ℕ) {n k : ℕ}
-    (hnk : n ≤ k) (ω : Ω) :
-    finiteTailSup X m n ω - finiteTailInf X m n ω ≤
-      (finiteTailSup X m k ω - finiteTailInf X m k ω) := by
-  have hsup := finiteTailSup_mono X m hnk ω
-  have hinf := finiteTailInf_anti X m hnk ω
-  linarith
 
 lemma finiteTailOscillationMax_mono (X : ℕ → Ω → ℝ) (m : ℕ) {n k : ℕ}
     (hnk : n ≤ k) (ω : Ω) :
@@ -584,155 +410,6 @@ lemma finiteTailOscillationMax_mono (X : ℕ → Ω → ℝ) (m : ℕ) {n k : �
           Nat.lt_of_lt_of_le (Finset.mem_range.mp hl) (Nat.succ_le_succ hnk),
         le_rfl⟩
 
-lemma finiteTailOscillationMax_le_liminf
-    (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω)
-    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun k => finiteTailOscillationMax X m k ω))
-    (hbu : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun k => finiteTailOscillationMax X m k ω)) :
-    finiteTailOscillationMax X m n ω ≤
-      Filter.liminf (fun k => finiteTailOscillationMax X m k ω) Filter.atTop := by
-  exact le_liminf_of_monotone_nat' hcu hbu
-    (fun a b hab => finiteTailOscillationMax_mono X m hab ω) n
-
-lemma finiteTailSup_sub_finiteTailInf_le_finiteTailOscillationMax
-    (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
-    finiteTailSup X m n ω - finiteTailInf X m n ω ≤ finiteTailOscillationMax X m n ω := by
-  obtain ⟨j, hj, hjEq⟩ := Finset.exists_mem_eq_sup' (s := Finset.range (n + 1)) (H := by simp)
-    (fun j => partialSum X (m + j + 1) ω)
-  obtain ⟨k, hk, hkEq⟩ := Finset.exists_mem_eq_inf' (s := Finset.range (n + 1)) (H := by simp)
-    (fun k => partialSum X (m + k + 1) ω)
-  rw [finiteTailSup, finiteTailInf, hjEq, hkEq]
-  refine (le_abs_self _).trans ?_
-  exact (le_finiteTailOscillationMax_iff X m n
-    (|partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|) ω).2 ⟨j, hj, k, hk, le_rfl⟩
-
-lemma finiteTailSup_sub_finiteTailInf_le_liminf_finiteTailOscillationMax
-    (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω)
-    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun k => finiteTailOscillationMax X m k ω))
-    (hbu : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun k => finiteTailOscillationMax X m k ω)) :
-    finiteTailSup X m n ω - finiteTailInf X m n ω ≤
-      Filter.liminf (fun k => finiteTailOscillationMax X m k ω) Filter.atTop := by
-  exact (finiteTailSup_sub_finiteTailInf_le_finiteTailOscillationMax X m n ω).trans <|
-    finiteTailOscillationMax_le_liminf X m n ω hcu hbu
-
-lemma tendsto_finiteTailSup_ciSup
-    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
-    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
-      (fun n => finiteTailSup X m n ω)) :
-    Filter.Tendsto (fun n => finiteTailSup X m n ω) Filter.atTop
-      (nhds (⨆ n : ℕ, finiteTailSup X m n ω)) := by
-  refine tendsto_atTop_ciSup ?_ hbu.bddAbove_range
-  intro n k hnk
-  exact finiteTailSup_mono X m hnk ω
-
-lemma tendsto_finiteTailInf_ciInf
-    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
-    (hbl : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailInf X m n ω)) :
-    Filter.Tendsto (fun n => finiteTailInf X m n ω) Filter.atTop
-      (nhds (⨅ n : ℕ, finiteTailInf X m n ω)) := by
-  refine tendsto_atTop_ciInf ?_ hbl.bddBelow_range
-  intro n k hnk
-  exact finiteTailInf_anti X m hnk ω
-
-lemma limsup_finiteTailSup_eq_ciSup
-    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
-    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
-      (fun n => finiteTailSup X m n ω)) :
-    Filter.limsup (fun n => finiteTailSup X m n ω) Filter.atTop =
-      ⨆ n : ℕ, finiteTailSup X m n ω := by
-  exact (tendsto_finiteTailSup_ciSup X m ω hbu).limsup_eq
-
-lemma liminf_finiteTailInf_eq_ciInf
-    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
-    (hbl : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailInf X m n ω)) :
-    Filter.liminf (fun n => finiteTailInf X m n ω) Filter.atTop =
-      ⨅ n : ℕ, finiteTailInf X m n ω := by
-  exact (tendsto_finiteTailInf_ciInf X m ω hbl).liminf_eq
-
-lemma limsup_finiteTailSup_sub_liminf_finiteTailInf_eq_ciSup_sub_ciInf
-    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
-    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
-      (fun n => finiteTailSup X m n ω))
-    (hbl : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailInf X m n ω)) :
-    Filter.limsup (fun n => finiteTailSup X m n ω) Filter.atTop -
-        Filter.liminf (fun n => finiteTailInf X m n ω) Filter.atTop =
-      (⨆ n : ℕ, finiteTailSup X m n ω) - (⨅ n : ℕ, finiteTailInf X m n ω) := by
-  rw [limsup_finiteTailSup_eq_ciSup X m ω hbu, liminf_finiteTailInf_eq_ciInf X m ω hbl]
-
-lemma ciSup_finiteTailSup_sub_ciInf_finiteTailInf_le_liminf_finiteTailOscillationMax
-    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
-    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
-      (fun n => finiteTailSup X m n ω))
-    (hbl : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailInf X m n ω))
-    (hcu : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailOscillationMax X m n ω))
-    (hbuOsc : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailOscillationMax X m n ω)) :
-    (⨆ n : ℕ, finiteTailSup X m n ω) - (⨅ n : ℕ, finiteTailInf X m n ω) ≤
-      Filter.liminf (fun n => finiteTailOscillationMax X m n ω) Filter.atTop := by
-  let d : ℕ → ℝ := fun n => finiteTailSup X m n ω - finiteTailInf X m n ω
-  have hd_nonneg : ∀ n, 0 ≤ d n := by
-    intro n
-    have hInf : finiteTailInf X m n ω ≤ partialSum X (m + 1) ω := by
-      exact finiteTailInf_le_partialSum X m n 0 (by simp) ω
-    have hSup : partialSum X (m + 1) ω ≤ finiteTailSup X m n ω := by
-      exact partialSum_le_finiteTailSup X m n 0 (by simp) ω
-    dsimp [d]
-    linarith
-  have hd_le : ∀ n, d n ≤ Filter.liminf (fun k => finiteTailOscillationMax X m k ω) Filter.atTop := by
-    intro n
-    simpa [d] using
-      finiteTailSup_sub_finiteTailInf_le_liminf_finiteTailOscillationMax X m n ω hcu hbuOsc
-  have hcu_d : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop d := by
-    exact Filter.isCoboundedUnder_le_of_le Filter.atTop hd_nonneg
-  have hbu_d : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop d := by
-    exact Filter.isBoundedUnder_of_eventually_le (Filter.Eventually.of_forall hd_le)
-  have hlimsup_d :
-      Filter.limsup d Filter.atTop ≤
-        Filter.liminf (fun n => finiteTailOscillationMax X m n ω) Filter.atTop := by
-    apply limsup_le_of_eventually_le_nat' hcu_d hbu_d
-    exact ⟨0, fun n _ => hd_le n⟩
-  have hd_tendsto :
-      Filter.Tendsto d Filter.atTop
-        (nhds ((⨆ n : ℕ, finiteTailSup X m n ω) - (⨅ n : ℕ, finiteTailInf X m n ω))) := by
-    simpa [d] using (tendsto_finiteTailSup_ciSup X m ω hbu).sub
-      (tendsto_finiteTailInf_ciInf X m ω hbl)
-  have hd_eq :
-      Filter.limsup d Filter.atTop =
-        (⨆ n : ℕ, finiteTailSup X m n ω) - (⨅ n : ℕ, finiteTailInf X m n ω) := by
-    exact hd_tendsto.limsup_eq
-  simpa [hd_eq] using hlimsup_d
-
-lemma limsup_sub_liminf_partialSum_tail_le_liminf_finiteTailOscillationMax
-    (X : ℕ → Ω → ℝ) (m : ℕ) (ω : Ω)
-    (hcu : Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop
-      (fun n => partialSum X (m + n + 1) ω))
-    (hbu : Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
-      (fun n => finiteTailSup X m n ω))
-    (hbl : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailInf X m n ω))
-    (hcl : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun n => partialSum X (m + n + 1) ω))
-    (hcuOsc : Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailOscillationMax X m n ω))
-    (hbuOsc : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailOscillationMax X m n ω)) :
-    Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop -
-        Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop ≤
-      Filter.liminf (fun n => finiteTailOscillationMax X m n ω) Filter.atTop := by
-  refine (limsup_sub_liminf_partialSum_tail_le_limsup_finiteTailSup_sub_liminf_finiteTailInf
-      X m ω hcu hbu hbl hcl).trans ?_
-  rw [limsup_finiteTailSup_sub_liminf_finiteTailInf_eq_ciSup_sub_ciInf X m ω hbu hbl]
-  exact ciSup_finiteTailSup_sub_ciInf_finiteTailInf_le_liminf_finiteTailOscillationMax
-    X m ω hbu hbl hcuOsc hbuOsc
-
 lemma finiteTailOscillationMax_le_two_mul_partialSumMax_tail
     (X : ℕ → Ω → ℝ) (m n : ℕ) (ω : Ω) :
     finiteTailOscillationMax X m n ω ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω := by
@@ -742,55 +419,6 @@ lemma finiteTailOscillationMax_le_two_mul_partialSumMax_tail
   intro k hk
   exact abs_sub_partialSum_le_two_mul_partialSumMax_tail X m n j k hj hk ω
 
-lemma partialSumMax_measurable {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ) (n : ℕ)
-    (hX : ∀ k, Measurable (X k)) : Measurable (partialSumMax X n) := by
-  simpa [partialSumMax] using
-    (Finset.measurable_range_sup'' (n := n) (f := fun k ω => |partialSum X k ω|)
-      (fun k hk => continuous_abs.measurable.comp (partialSum_measurable X k hX)))
-
-lemma measurableSet_partialSumMax_ge {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ)
-    (n : ℕ) (ε : ℝ) (hX : ∀ k, Measurable (X k)) :
-    MeasurableSet {ω | ε ≤ partialSumMax X n ω} := by
-  exact measurableSet_le measurable_const (partialSumMax_measurable X n hX)
-
-lemma tail_event_subset_partialSumMax_event (X : ℕ → Ω → ℝ) (m n k : ℕ)
-    (hk : k ∈ Finset.range (n + 1)) (ε : ℝ) :
-    {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} ⊆
-      {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} := by
-  intro ω hω
-  exact le_trans hω (abs_sub_partialSum_le_partialSumMax_tail X m n k hk ω)
-
-lemma tail_pair_event_subset_two_mul_partialSumMax_event (X : ℕ → Ω → ℝ) (m n j k : ℕ)
-    (hj : j ∈ Finset.range (n + 1)) (hk : k ∈ Finset.range (n + 1)) (ε : ℝ) :
-    {ω | ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} ⊆
-      {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
-  intro ω hω
-  exact le_trans hω (abs_sub_partialSum_le_two_mul_partialSumMax_tail X m n j k hj hk ω)
-
-lemma finite_tail_oscillation_event_eq_biUnion (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
-    {ω | ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
-        ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} =
-      ⋃ j ∈ Finset.range (n + 1), ⋃ k ∈ Finset.range (n + 1),
-        {ω | ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} := by
-  ext ω
-  simp
-
-lemma finite_tail_oscillation_event_subset_two_mul_partialSumMax_event
-    (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
-    {ω | ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
-        ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} ⊆
-      {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
-  intro ω hω
-  rcases hω with ⟨j, hj, k, hk, hω⟩
-  exact tail_pair_event_subset_two_mul_partialSumMax_event X m n j k hj hk ε hω
-
-lemma finiteTailOscillationMax_event_eq (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
-    {ω | ε ≤ finiteTailOscillationMax X m n ω} =
-      {ω | ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
-        ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} := by
-  ext ω
-  exact le_finiteTailOscillationMax_iff X m n ε ω
-
 lemma finiteTailOscillationMax_event_subset_two_mul_partialSumMax_event
     (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
     {ω | ε ≤ finiteTailOscillationMax X m n ω} ⊆
@@ -798,95 +426,11 @@ lemma finiteTailOscillationMax_event_subset_two_mul_partialSumMax_event
   intro ω hω
   exact le_trans hω (finiteTailOscillationMax_le_two_mul_partialSumMax_tail X m n ω)
 
-lemma event_le_liminf_finiteTailOscillationMax_subset_iUnion
-    (X : ℕ → Ω → ℝ) (m : ℕ) {η ε : ℝ} (hηε : η < ε) :
-    {ω | ε ≤ Filter.liminf (fun n => finiteTailOscillationMax X m n ω) Filter.atTop} ⊆
-      ⋃ n : ℕ, {ω | η ≤ finiteTailOscillationMax X m n ω} := by
-  intro ω hω
-  have hbuOsc : Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailOscillationMax X m n ω) := by
-    exact Filter.isBoundedUnder_of ⟨0, fun k => finiteTailOscillationMax_nonneg X m k ω⟩
-  have hlt : ∀ᶠ n : ℕ in Filter.atTop, η < finiteTailOscillationMax X m n ω := by
-    exact Filter.eventually_lt_of_lt_liminf (lt_of_lt_of_le hηε hω) hbuOsc
-  simp only [Filter.eventually_atTop] at hlt
-  rcases hlt with ⟨N, hN⟩
-  refine Set.mem_iUnion.2 ⟨N, ?_⟩
-  exact le_of_lt (hN N le_rfl)
-
-lemma tail_oscillation_event_subset_iUnion_finiteTailOscillationMax_event
-    (X : ℕ → Ω → ℝ) (m : ℕ) {η ε : ℝ} (hηε : η < ε)
-    (hcu : ∀ ω, Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop
-      (fun n => partialSum X (m + n + 1) ω))
-    (hbu : ∀ ω, Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
-      (fun n => finiteTailSup X m n ω))
-    (hbl : ∀ ω, Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailInf X m n ω))
-    (hcl : ∀ ω, Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun n => partialSum X (m + n + 1) ω))
-    (hcuOsc : ∀ ω, Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailOscillationMax X m n ω))
-    (hbuOsc : ∀ ω, Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailOscillationMax X m n ω)) :
-    {ω | ε ≤ Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop -
-        Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop} ⊆
-      ⋃ n : ℕ, {ω | η ≤ finiteTailOscillationMax X m n ω} := by
-  intro ω hω
-  have hliminf :
-      ε ≤ Filter.liminf (fun n => finiteTailOscillationMax X m n ω) Filter.atTop := by
-    exact hω.trans <|
-      limsup_sub_liminf_partialSum_tail_le_liminf_finiteTailOscillationMax
-        X m ω (hcu ω) (hbu ω) (hbl ω) (hcl ω) (hcuOsc ω) (hbuOsc ω)
-  exact event_le_liminf_finiteTailOscillationMax_subset_iUnion X m hηε hliminf
-
-lemma finiteTailSup_sub_finiteTailInf_event_subset_finiteTailOscillationMax_event
-    (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
-    {ω | ε ≤ finiteTailSup X m n ω - finiteTailInf X m n ω} ⊆
-      {ω | ε ≤ finiteTailOscillationMax X m n ω} := by
-  intro ω hω
-  exact le_trans hω (finiteTailSup_sub_finiteTailInf_le_finiteTailOscillationMax X m n ω)
-
-lemma measurableSet_tail_partialSum_sub_ge {Ω : Type*} [MeasurableSpace Ω] (X : ℕ → Ω → ℝ)
-    (m k : ℕ) (ε : ℝ) (hX : ∀ k, Measurable (X k)) :
-    MeasurableSet {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} := by
-  exact measurableSet_le measurable_const
-    (continuous_abs.measurable.comp
-      ((partialSum_measurable X (m + k + 1) hX).sub (partialSum_measurable X (m + 1) hX)))
-
-lemma measure_tail_event_le_measure_partialSumMax_event {Ω : Type*} [MeasurableSpace Ω]
-    (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n k : ℕ) (hk : k ∈ Finset.range (n + 1)) (ε : ℝ) :
-    μ {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} ≤
-      μ {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} := by
-  exact measure_mono (tail_event_subset_partialSumMax_event X m n k hk ε)
-
-lemma measure_finite_tail_oscillation_event_le_measure_two_mul_partialSumMax_event
-    {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
-    μ {ω | ∃ j ∈ Finset.range (n + 1), ∃ k ∈ Finset.range (n + 1),
-      ε ≤ |partialSum X (m + j + 1) ω - partialSum X (m + k + 1) ω|} ≤
-      μ {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
-  exact measure_mono (finite_tail_oscillation_event_subset_two_mul_partialSumMax_event X m n ε)
-
 lemma measure_finiteTailOscillationMax_event_le_measure_two_mul_partialSumMax_event
     {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
     μ {ω | ε ≤ finiteTailOscillationMax X m n ω} ≤
       μ {ω | ε ≤ 2 * partialSumMax (fun l => X (m + 1 + l)) n ω} := by
   exact measure_mono (finiteTailOscillationMax_event_subset_two_mul_partialSumMax_event X m n ε)
-
-lemma measure_finiteTailSup_sub_finiteTailInf_event_le_measure_finiteTailOscillationMax_event
-    {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
-    μ {ω | ε ≤ finiteTailSup X m n ω - finiteTailInf X m n ω} ≤
-      μ {ω | ε ≤ finiteTailOscillationMax X m n ω} := by
-  exact measure_mono (finiteTailSup_sub_finiteTailInf_event_subset_finiteTailOscillationMax_event
-    X m n ε)
-
-lemma le_partialSumMax_iff (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) (ω : Ω) :
-    ε ≤ partialSumMax X n ω ↔ ∃ k ∈ Finset.range (n + 1), ε ≤ |partialSum X k ω| := by
-  simp [partialSumMax, Finset.le_sup'_iff]
-
-lemma partialSumMax_event_eq_biUnion (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) :
-    {ω | ε ≤ partialSumMax X n ω} =
-      ⋃ k ∈ Finset.range (n + 1), {ω | ε ≤ |partialSum X k ω|} := by
-  ext ω
-  simp [le_partialSumMax_iff]
 
 lemma event_two_mul_partialSumMax_ge_eq (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) :
     {ω | ε ≤ 2 * partialSumMax X n ω} = {ω | ε / 2 ≤ partialSumMax X n ω} := by
@@ -898,73 +442,6 @@ lemma event_two_mul_partialSumMax_ge_eq (X : ℕ → Ω → ℝ) (n : ℕ) (ε :
   · change ε / 2 ≤ partialSumMax X n ω at h
     change ε ≤ 2 * partialSumMax X n ω
     nlinarith [partialSumMax_nonneg X n ω]
-
-lemma partialSumMax_tail_event_eq_biUnion_sub (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
-    {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} =
-      ⋃ k ∈ Finset.range (n + 1),
-        {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} := by
-  rw [partialSumMax_event_eq_biUnion]
-  ext ω
-  simp only [Set.mem_iUnion, Set.mem_setOf_eq]
-  constructor
-  · rintro ⟨k, hk, hω⟩
-    have hEq : |partialSum (fun j => X (m + 1 + j)) k ω| =
-        |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω| := by
-      simpa using congrArg abs
-        (congrArg (fun g => g ω) (partialSum_tail_eq_sub (X := X) (m := m) (n := k)))
-    refine ⟨k, hk, ?_⟩
-    rw [← hEq]
-    exact hω
-  · rintro ⟨k, hk, hω⟩
-    have hEq : |partialSum (fun j => X (m + 1 + j)) k ω| =
-        |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω| := by
-      simpa using congrArg abs
-        (congrArg (fun g => g ω) (partialSum_tail_eq_sub (X := X) (m := m) (n := k)))
-    refine ⟨k, hk, ?_⟩
-    rw [hEq]
-    exact hω
-
-lemma measure_partialSumMax_event_le_sum {Ω : Type*} [MeasurableSpace Ω]
-    (μ : Measure Ω) (X : ℕ → Ω → ℝ) (n : ℕ) (ε : ℝ) :
-    μ {ω | ε ≤ partialSumMax X n ω} ≤
-      ∑ k ∈ Finset.range (n + 1), μ {ω | ε ≤ |partialSum X k ω|} := by
-  rw [partialSumMax_event_eq_biUnion]
-  simpa using measure_biUnion_finset_le (μ := μ) (Finset.range (n + 1))
-    (fun k => {ω | ε ≤ |partialSum X k ω|})
-
-lemma measure_partialSumMax_tail_event_le_sum_sub {Ω : Type*} [MeasurableSpace Ω]
-    (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
-    μ {ω | ε ≤ partialSumMax (fun j => X (m + 1 + j)) n ω} ≤
-      ∑ k ∈ Finset.range (n + 1),
-        μ {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} := by
-  rw [partialSumMax_tail_event_eq_biUnion_sub]
-  simpa using measure_biUnion_finset_le (μ := μ) (Finset.range (n + 1))
-    (fun k => {ω | ε ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|})
-
-lemma measure_event_two_mul_partialSumMax_tail_le_sum_sub {Ω : Type*} [MeasurableSpace Ω]
-    (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
-    μ {ω | ε ≤ 2 * partialSumMax (fun j => X (m + 1 + j)) n ω} ≤
-      ∑ k ∈ Finset.range (n + 1),
-        μ {ω | ε / 2 ≤ |partialSum X (m + k + 1) ω - partialSum X (m + 1) ω|} := by
-  rw [event_two_mul_partialSumMax_ge_eq]
-  exact measure_partialSumMax_tail_event_le_sum_sub μ X m n (ε / 2)
-
-lemma measure_event_two_mul_partialSumMax_tail_le_sum_sub'
-    {Ω : Type*} [MeasurableSpace Ω] (μ : Measure Ω) (X : ℕ → Ω → ℝ) (m n : ℕ) (ε : ℝ) :
-    μ {ω | ε ≤ 2 * partialSumMax (fun j => X (m + 1 + j)) n ω} ≤
-      ∑ k ∈ Finset.range (n + 1),
-        μ {ω | ε / 2 ≤ |partialSum (fun j => X (m + 1 + j)) k ω|} := by
-  rw [event_two_mul_partialSumMax_ge_eq]
-  exact measure_partialSumMax_event_le_sum μ (fun j => X (m + 1 + j)) n (ε / 2)
-
-lemma measure_partialSum_ge_le_variance_div_sq {Ω : Type*} [MeasurableSpace Ω]
-    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (n : ℕ)
-    (hX : ∀ k ∈ Finset.range n, MemLp (X k) 2 μ) {ε : ℝ} (hε : 0 < ε) :
-    μ {ω | ε ≤ |partialSum X n ω - μ[partialSum X n]|} ≤
-      ENNReal.ofReal (variance (partialSum X n) μ / ε ^ 2) := by
-  apply meas_ge_le_variance_div_sq
-  · exact partialSum_memLp (μ := μ) X n hX
-  · exact hε
 
 lemma integral_partialSum_eq_sum_integral {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (n : ℕ)
@@ -992,22 +469,6 @@ lemma integral_partialSum_sq_eq_variance_of_forall_mean_zero
   rw [variance_eq_integral (partialSum_memLp (μ := μ) X (n + 1) hX).aemeasurable]
   rw [integral_partialSum_eq_zero_of_forall_integral_zero (μ := μ) X (n + 1) hX hmean]
   simp
-
-lemma integral_partialSum_tail_eq_zero_of_forall_integral_zero
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
-    (X : ℕ → Ω → ℝ) (m n : ℕ)
-    (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ)
-    (hmean : ∀ k ∈ Finset.range n, μ[X (m + 1 + k)] = 0) :
-    μ[partialSum (fun j => X (m + 1 + j)) n] = 0 := by
-  rw [integral_partialSum_eq_sum_integral (μ := μ) (X := fun j => X (m + 1 + j)) n hX]
-  exact Finset.sum_eq_zero fun k hk => hmean k hk
-
-lemma measure_partialSum_tail_ge_le_variance_div_sq {Ω : Type*} [MeasurableSpace Ω]
-    {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (m n : ℕ)
-    (hX : ∀ k ∈ Finset.range n, MemLp (X (m + 1 + k)) 2 μ) {ε : ℝ} (hε : 0 < ε) :
-    μ {ω | ε ≤ |partialSum (fun j => X (m + 1 + j)) n ω - μ[partialSum (fun j => X (m + 1 + j)) n]|} ≤
-      ENNReal.ofReal (variance (partialSum (fun j => X (m + 1 + j)) n) μ / ε ^ 2) := by
-  exact measure_partialSum_ge_le_variance_div_sq (μ := μ) (fun j => X (m + 1 + j)) n hX hε
 
 lemma variance_partialSum_eq_sum_variance {Ω : Type*} [MeasurableSpace Ω]
     {μ : Measure Ω} [IsFiniteMeasure μ] (X : ℕ → Ω → ℝ) (n : ℕ)
@@ -1040,52 +501,6 @@ lemma smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero
     rw [hEq]
   rw [hEq'] at hbound
   exact hbound
-
-lemma measure_partialSumMax_ge_le_variance_partialSum_div_sq_of_mean_zero
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
-    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
-    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
-    {ε : ℝ} (hε : 0 < ε) (n : ℕ) :
-    μ {ω | ε ≤ partialSumMax X (n + 1) ω} ≤
-      ENNReal.ofReal (variance (partialSum X (n + 1)) μ / ε ^ 2) := by
-  let ε' : NNReal := ⟨ε, hε.le⟩
-  have hbound :=
-    smul_measure_partialSumMax_ge_le_variance_partialSum_of_mean_zero
-      (μ := μ) X hX hLp hindep hmean ε' n
-  rw [ENNReal.smul_def, smul_eq_mul] at hbound
-  have hdiv :
-      μ {ω | ε ≤ partialSumMax X (n + 1) ω} ≤
-        ENNReal.ofReal (variance (partialSum X (n + 1)) μ) / ((ε' : ENNReal) ^ 2) := by
-    rw [ENNReal.le_div_iff_mul_le]
-    · simpa [ε', mul_comm, mul_left_comm, mul_assoc] using hbound
-    · left
-      have hε' : (ε' : ENNReal) = ENNReal.ofReal ε := by
-        simpa [ε'] using (ENNReal.ofReal_eq_coe_nnreal hε.le).symm
-      rw [hε']
-      simpa using (ENNReal.pow_ne_zero ((ENNReal.ofReal_ne_zero_iff).2 hε) 2)
-    · right
-      exact ENNReal.ofReal_ne_top
-  refine hdiv.trans_eq ?_
-  rw [show ((ε' : ENNReal) ^ 2) = ENNReal.ofReal (ε ^ 2) by
-    have hε' : (ε' : ENNReal) = ENNReal.ofReal ε := by
-      simpa [ε'] using (ENNReal.ofReal_eq_coe_nnreal hε.le).symm
-    rw [hε']
-    exact (ENNReal.ofReal_pow hε.le 2).symm]
-  rw [← ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero hε.ne.symm)]
-
-/-- Kolmogorov's inequality in 0-indexed form:
-`partialSum X (k + 1)` plays the role of `S_k` in the wiki statement. -/
-theorem kolmogorov_inequality
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
-    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
-    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
-    {ε : ℝ} (hε : 0 < ε) (n : ℕ) :
-    μ {ω | ε ≤ (Finset.range (n + 1)).sup' (by simp)
-      (fun k => |partialSum X (k + 1) ω|)} ≤
-      ENNReal.ofReal (variance (partialSum X (n + 1)) μ / ε ^ 2) := by
-  simpa [partialSumMax_succ_eq_sup_abs_partialSum_succ] using
-    measure_partialSumMax_ge_le_variance_partialSum_div_sq_of_mean_zero
-      (μ := μ) X hX hLp hindep hmean hε n
 
 lemma smul_measure_partialSumMax_ge_le_sum_variance_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
@@ -1142,18 +557,6 @@ lemma measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero
 /-- Kolmogorov's inequality with the variance of the terminal partial sum rewritten
 as the sum of the individual variances. This matches the usual independent mean-zero statement,
 up to the repository's 0-indexing convention. -/
-theorem kolmogorov_inequality_sum_variance
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsProbabilityMeasure μ]
-    (X : ℕ → Ω → ℝ) (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
-    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
-    {ε : ℝ} (hε : 0 < ε) (n : ℕ) :
-    μ {ω | ε ≤ (Finset.range (n + 1)).sup' (by simp)
-      (fun k => |partialSum X (k + 1) ω|)} ≤
-      ENNReal.ofReal ((∑ k ∈ Finset.range (n + 1), variance (X k) μ) / ε ^ 2) := by
-  simpa [partialSumMax_succ_eq_sup_abs_partialSum_succ] using
-    measure_partialSumMax_ge_le_sum_variance_div_sq_of_mean_zero
-      (μ := μ) X hX hLp hindep hmean hε n
-
 lemma measure_partialSumMax_tail_ge_le_sum_variance_div_sq_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     (X : ℕ → Ω → ℝ) (m n : ℕ)
@@ -1234,47 +637,6 @@ lemma measure_finiteTailOscillationMax_event_le_four_mul_variance_div_sq_of_mean
 noncomputable def tailVarianceBound {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     (X : ℕ → Ω → ℝ) (η : ℝ) (m : ℕ) : ENNReal :=
   ⨆ n : ℕ, ENNReal.ofReal (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / η ^ 2)
-
-lemma measure_tail_oscillation_event_le_iSup_four_mul_variance_div_sq_of_mean_zero
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
-    (X : ℕ → Ω → ℝ) (m : ℕ)
-    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
-    (hindep : iIndepFun X μ) (hmean : ∀ k, μ[X k] = 0)
-    {η ε : ℝ} (hη : 0 < η) (hηε : η < ε)
-    (hcu : ∀ ω, Filter.IsCoboundedUnder (· ≤ ·) Filter.atTop
-      (fun n => partialSum X (m + n + 1) ω))
-    (hbu : ∀ ω, Filter.IsBoundedUnder (· ≤ ·) Filter.atTop
-      (fun n => finiteTailSup X m n ω))
-    (hbl : ∀ ω, Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailInf X m n ω))
-    (hcl : ∀ ω, Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun n => partialSum X (m + n + 1) ω))
-    (hcuOsc : ∀ ω, Filter.IsCoboundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailOscillationMax X m n ω))
-    (hbuOsc : ∀ ω, Filter.IsBoundedUnder (· ≥ ·) Filter.atTop
-      (fun n => finiteTailOscillationMax X m n ω)) :
-    μ {ω | ε ≤ Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop -
-        Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop} ≤
-      tailVarianceBound (μ := μ) X η m := by
-  let s : ℕ → Set Ω := fun n => {ω | η ≤ finiteTailOscillationMax X m n ω}
-  have hs_mono : Monotone s := by
-    intro n k hnk ω hω
-    exact le_trans hω (finiteTailOscillationMax_mono X m hnk ω)
-  calc
-    μ {ω | ε ≤ Filter.limsup (fun n => partialSum X (m + n + 1) ω) Filter.atTop -
-        Filter.liminf (fun n => partialSum X (m + n + 1) ω) Filter.atTop} ≤
-        μ (⋃ n : ℕ, s n) := by
-      refine measure_mono ?_
-      exact tail_oscillation_event_subset_iUnion_finiteTailOscillationMax_event
-        X m hηε hcu hbu hbl hcl hcuOsc hbuOsc
-    _ = ⨆ n : ℕ, μ (s n) := by
-      exact hs_mono.measure_iUnion
-    _ ≤ tailVarianceBound (μ := μ) X η m := by
-      refine iSup_le fun n => ?_
-      refine (measure_finiteTailOscillationMax_event_le_four_mul_variance_div_sq_of_mean_zero
-          (μ := μ) X m n hX hLp hindep hmean (ε := η) hη).trans ?_
-      exact le_iSup (fun n => ENNReal.ofReal
-        (4 * (∑ j ∈ Finset.range n, variance (X (m + 1 + j)) μ) / η ^ 2)) n
 
 lemma iSup_four_mul_variance_div_sq_le_ofReal_tsum_variance_tail
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
