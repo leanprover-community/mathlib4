@@ -256,7 +256,14 @@ theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔
 
 /-- A well order is a well-founded linear order. -/
 class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
-    extends Std.Trichotomous r, IsTrans α r, IsWellFounded α r
+    extends IsWellFounded α r, Std.Trichotomous r
+
+instance (r) [IsWellOrder α r] : IsTrans α r where
+  trans a b c hab hbc := by
+    rcases trichotomous_of r a c with (hac | rfl | hca)
+    · exact hac
+    · exact asymm_of r hab hbc |>.elim
+    · exact IsWellFounded.wf.asymmetric₃ a b c hab hbc hca |>.elim
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
@@ -312,20 +319,17 @@ def IsWellOrder.toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : Well
   wf := hwo.wf
 
 -- This isn't made into an instance as it loops with `Std.Irrefl r`.
-theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr : Std.Irrefl r] :
-    IsWellOrder α r :=
-  { hr with
-    trichotomous := fun a b _ _ ↦ Subsingleton.elim a b,
-    trans := fun a b _ h => (not_rel_of_subsingleton r a b h).elim,
-    wf := ⟨fun a => ⟨_, fun y h => (not_rel_of_subsingleton r y a h).elim⟩⟩ }
+theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [Std.Irrefl r] :
+    IsWellOrder α r where
+  wf := .intro fun a ↦ ⟨_, fun y h ↦ not_rel_of_subsingleton r y a h |>.elim⟩
+  trichotomous a b _ _ := Subsingleton.elim a b
 
 instance [Subsingleton α] : IsWellOrder α emptyRelation :=
   Subsingleton.isWellOrder _
 
 instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder α r where
-  trichotomous := isEmptyElim
-  trans := isEmptyElim
   wf := wellFounded_of_isEmpty r
+  trichotomous := isEmptyElim
 
 instance Prod.Lex.instIsWellFounded [IsWellFounded α r] [IsWellFounded β s] :
     IsWellFounded (α × β) (Prod.Lex r s) :=
@@ -338,10 +342,6 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
     obtain rfl := Std.Trichotomous.trichotomous a₂ b₂
       (mt (Prod.Lex.right a₁) hab) (mt (Prod.Lex.right a₁) hba)
     rfl
-  trans a b c h₁ h₂ := by
-    rcases h₁ with ⟨a₂, b₂, ab⟩ | ⟨a₁, ab⟩ <;> rcases h₂ with ⟨c₁, c₂, bc⟩ | ⟨c₂, bc⟩
-    exacts [.left _ _ (_root_.trans ab bc), .left _ _ ab, .left _ _ bc,
-      .right _ (_root_.trans ab bc)]
 
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
