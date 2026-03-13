@@ -465,7 +465,7 @@ variable {C D E : Type*} [Category* C] [Category* D]
 set_option backward.isDefEq.respectTransparency false in
 /-- If `e : F ≅ G` is an isomorphism of functors and if `F` commutes with the
 shift, then `G` also commutes with the shift. -/
-@[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app]
+@[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app, implicit_reducible]
 def ofIso : G.CommShift A where
   commShiftIso a := isoWhiskerLeft _ e.symm ≪≫ F.commShiftIso a ≪≫ isoWhiskerRight e _
   commShiftIso_zero := by
@@ -506,6 +506,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ D` is a fully faithful functor which is used
 to construct a shift by `A` on `C` from a shift on `D`,
 then the functor `F` itself commutes with the shift by `A`. -/
+@[implicit_reducible]
 def ofHasShiftOfFullyFaithful :
     letI := hF.hasShift s i; F.CommShift A := by
   letI := hF.hasShift s i
@@ -529,24 +530,14 @@ lemma shiftFunctorIso_ofHasShiftOfFullyFaithful (a : A) :
 
 end hasShiftOfFullyFaithful
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_shiftFunctorComm
     [AddCommMonoid A] [HasShift C A] [HasShift D A]
     (F : C ⥤ D) [F.CommShift A] (X : C) (a b : A) :
     F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫
       ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫
-      ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
-  have := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add a b)) X
-  simp only [comp_obj, CommShift.isoAdd_hom_app,
-    ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)),
-    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp] at this
-  simp only [shiftFunctorComm_eq D a b _ rfl]
-  dsimp
-  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
-    ← reassoc_of% this, shiftFunctorComm_eq C a b _ rfl]
-  simp [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
-    ← Functor.map_comp_assoc]
+      ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) :=
+  map_shiftFunctorComm_hom_app _ _ _ _
 
 namespace CommShift
 
@@ -591,6 +582,7 @@ end OfComp
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomorphism `e : F ⋙ G ≅ H` where `G` is fully faithful,
 the functor `F` commutes with shifts by `A` if `G` and `H` do. -/
+@[implicit_reducible]
 noncomputable def ofComp : F.CommShift A where
   commShiftIso := OfComp.iso e
   commShiftIso_zero := by

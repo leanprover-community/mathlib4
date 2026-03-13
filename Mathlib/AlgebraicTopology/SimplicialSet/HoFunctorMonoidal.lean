@@ -236,7 +236,6 @@ def iso :
   hom_inv_id := by ext; exact functor_comp_inverse X Y
   inv_hom_id := by ext; exact inverse_comp_functor X Y
 
-set_option backward.isDefEq.respectTransparency false in
 variable {X} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the first variable. -/
@@ -249,7 +248,6 @@ def mapHomotopyCategoryProdIdCompInverseIso (f : X ⟶ X') :
       obtain ⟨y, rfl⟩ := y.mk_surjective
       simp))
 
-set_option backward.isDefEq.respectTransparency false in
 variable {Y} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the second variable. -/
@@ -417,7 +415,7 @@ def hoFunctor.unitHomEquiv (X : SSet.{u}) :
 
 theorem hoFunctor.unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
     hoFunctor.unitHomEquiv X x =
-      (Functor.LaxMonoidal.ε hoFunctor).toFunctor ⋙ (hoFunctor.map x).toFunctor :=
+      (Functor.LaxMonoidal.ε hoFunctor.{u}).toFunctor ⋙ (hoFunctor.map x).toFunctor :=
   rfl
 
 end SSet
