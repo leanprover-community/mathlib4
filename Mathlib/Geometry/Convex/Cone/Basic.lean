@@ -125,8 +125,7 @@ lemma mem_iInf {ι : Sort*} {f : ι → ConvexCone R M} : x ∈ iInf f ↔ ∀ i
   mem_iInter₂.trans <| by simp
 
 instance : CompleteSemilatticeInf (ConvexCone R M) where
-  sInf_le C C hC := by rw [← SetLike.coe_subset_coe, coe_sInf]; exact biInter_subset_of_mem hC
-  le_sInf C C hC := by rw [← SetLike.coe_subset_coe, coe_sInf]; exact subset_iInter₂ hC
+  isGLB_sInf _ := .of_image SetLike.coe_subset_coe isGLB_biInf
 
 variable (R s) in
 /-- The cone hull of a set. The smallest convex cone containing that set. -/
