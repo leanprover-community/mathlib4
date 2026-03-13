@@ -6,7 +6,7 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "skimmer" from git "https://github.com/thorimur/skimmer" @ "try-this"
+require "skimmer" from git "https://github.com/thorimur/skimmer" @ "v0.0.1+try-this"
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
