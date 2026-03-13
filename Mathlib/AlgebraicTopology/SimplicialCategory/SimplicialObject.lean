@@ -38,7 +38,7 @@ instance : SimplicialCategory (SimplicialObject D) where
   homEquiv := Functor.natTransEquiv.symm
 
 instance : SimplicialCategory SSet.{v} :=
-  inferInstanceAs (SimplicialCategory (SimplicialObject Type v))
+  inferInstanceAs (SimplicialCategory (SimplicialObject (Type v)))
 
 end SimplicialObject
 

@@ -103,12 +103,12 @@ lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)
               ((isLimitPullbackConeMapOfIsLimit (sheafToPresheaf _ _) _
                 (pullbackIsPullback f f))))) }⟩⟩
 
-instance (J : GrothendieckTopology C) [HasSheafify J Type u] :
-    IsRegularEpiCategory (Sheaf J Type u) := isRegularEpiCategory_sheaf J fun f hf ↦
+instance (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
+    IsRegularEpiCategory (Sheaf J (Type u)) := isRegularEpiCategory_sheaf J fun f hf ↦
   ⟨image f.hom, factorThruImage f.hom, image.ι f.hom, inferInstance, inferInstance, by simp⟩
 
 example {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) :
-    IsRegularEpiCategory (Sheaf J Type (max u v)) :=
+    IsRegularEpiCategory (Sheaf J (Type (max u v))) :=
   inferInstance
 
 end CategoryTheory

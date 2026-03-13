@@ -26,7 +26,7 @@ namespace CategoryTheory
 
 /-- A Grothendieck topology associated to the category of all types.
 A sieve is a covering iff it is jointly surjective. -/
-def typesGrothendieckTopology : GrothendieckTopology Type u where
+def typesGrothendieckTopology : GrothendieckTopology (Type u) where
   sieves α := {S | ∀ x : α, S <| TypeCat.ofHom ⟨fun _ : PUnit => x⟩}
   top_mem' _ _ := trivial
   pullback_stable' _ _ _ f hs x := hs (f x)
@@ -69,7 +69,7 @@ theorem Presheaf.isSheaf_yoneda' {α : Type u} :
 
 /-- The yoneda functor that sends a type to a sheaf over the category of types. -/
 @[simps]
-def yoneda' : Type u ⥤ Sheaf typesGrothendieckTopology Type u where
+def yoneda' : Type u ⥤ Sheaf typesGrothendieckTopology (Type u) where
   obj α := ⟨yoneda.obj α, Presheaf.isSheaf_yoneda'⟩
   map f := ⟨yoneda.map f⟩
 
@@ -147,14 +147,14 @@ noncomputable def equivYoneda (S : Type uᵒᵖ ⥤ Type u)
 
 /-- Given a sheaf `S`, construct an isomorphism `S ≅ [-, S(*)]`. -/
 @[simps]
-noncomputable def equivYoneda' (S : Sheaf typesGrothendieckTopology Type u) :
+noncomputable def equivYoneda' (S : Sheaf typesGrothendieckTopology (Type u)) :
     S ≅ yoneda'.obj (S.1.obj (op (PUnit))) where
   hom := ⟨(equivYoneda S.1 S.2).hom⟩
   inv := ⟨(equivYoneda S.1 S.2).inv⟩
   hom_inv_id := by ext1; apply (equivYoneda S.1 S.2).hom_inv_id
   inv_hom_id := by ext1; apply (equivYoneda S.1 S.2).inv_hom_id
 
-theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology Type u) (f : S₁ ⟶ S₂)
+theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S₁ ⟶ S₂)
     (α : Type u) (s : S₁.1.obj (op α)) (x : α) :
     eval S₂.1 α (f.hom.app (op α) s) x = f.hom.app (op (PUnit)) (eval S₁.1 α s x) :=
   (ConcreteCategory.congr_hom (f.hom.naturality (TypeCat.ofHom ⟨fun _ => x⟩).op) s).symm
@@ -163,13 +163,13 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `yoneda'` induces an equivalence of categories between `Type u` and
 `Sheaf typesGrothendieckTopology Type u`. -/
 @[simps!]
-noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology Type u where
+noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology (Type u) where
   functor := yoneda'
   inverse := sheafToPresheaf _ _ ⋙ (evaluation _ _).obj (op (PUnit))
   unitIso := NatIso.ofComponents
       (fun _α => -- α ≅ PUnit ⟶ α
         { hom := TypeCat.ofHom ⟨fun x => TypeCat.ofHom ⟨fun _ => x⟩⟩
-          inv := TypeCat.ofHom ⟨fun f => f PUnit.unit⟩ })
+          inv := TypeCat.ofHom ⟨fun f => f.hom PUnit.unit⟩ })
       fun _ => rfl
   counitIso := Iso.symm <|
       NatIso.ofComponents (fun S => equivYoneda' S) (fun {S₁ S₂} f => by
@@ -187,7 +187,7 @@ instance subcanonical_typesGrothendieckTopology : typesGrothendieckTopology.{u}.
   GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ fun _ => Presieve.isSheaf_yoneda'
 
 theorem typesGrothendieckTopology_eq_canonical :
-    typesGrothendieckTopology.{u} = Sheaf.canonicalTopology Type u := by
+    typesGrothendieckTopology.{u} = Sheaf.canonicalTopology (Type u) := by
   refine le_antisymm typesGrothendieckTopology.le_canonical (sInf_le ?_)
   refine ⟨yoneda.obj ((ULift Bool)), ⟨_, rfl⟩, GrothendieckTopology.ext ?_⟩
   funext α

@@ -1035,7 +1035,7 @@ end Cover
 
 end GrothendieckTopology
 
-lemma PreZeroHypercover.ext_of_isSeparatedFor {P : Cᵒᵖ ⥤ TypeCat} {S : C} (E : PreZeroHypercover S)
+lemma PreZeroHypercover.ext_of_isSeparatedFor {P : Cᵒᵖ ⥤ Type*} {S : C} (E : PreZeroHypercover S)
     (h : E.presieve₀.IsSeparatedFor P) {x y : P.obj (.op S)}
     (hi : ∀ i, P.map (E.f i).op x = P.map (E.f i).op y) :
     x = y :=

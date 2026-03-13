@@ -247,7 +247,7 @@ lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
-instance {F G : Sheaf J Type w} (f : F ⟶ G) :
+instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallyInjective (Sheaf.imageι f) := by
   dsimp [Sheaf.imageι]
   infer_instance

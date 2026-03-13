@@ -84,7 +84,7 @@ theorem equalizerCondition_precomp_of_preservesPullback (P : Cᵒᵖ ⥤ D) (F :
         (isLimitOfPreserves F (hc.ofIsoLimit (PullbackCone.ext (Iso.refl _) (by simp) (by simp))))
 
 /-- The canonical map to the explicit equalizer. -/
-def mapToEqualizer (P : Cᵒᵖ ⥤ TypeCat) {W X B : C} (f : X ⟶ B)
+def mapToEqualizer (P : Cᵒᵖ ⥤ Type*) {W X B : C} (f : X ⟶ B)
     (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
     P.obj (op B) ⟶ { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } :=
   TypeCat.ofHom ⟨fun t ↦
@@ -92,7 +92,7 @@ def mapToEqualizer (P : Cᵒᵖ ⥤ TypeCat) {W X B : C} (f : X ⟶ B)
 
 @[deprecated (since := "2025-11-23")] alias MapToEqualizer := mapToEqualizer
 
-theorem EqualizerCondition.bijective_mapToEqualizer_pullback' {P : Cᵒᵖ ⥤ TypeCat}
+theorem EqualizerCondition.bijective_mapToEqualizer_pullback' {P : Cᵒᵖ ⥤ Type*}
     (hP : EqualizerCondition P) {X B : C} {π : X ⟶ B} [EffectiveEpi π]
     (c : PullbackCone π π) (hc : IsLimit c) :
     Function.Bijective (mapToEqualizer P π c.fst c.snd c.condition) := by
@@ -108,13 +108,13 @@ theorem EqualizerCondition.bijective_mapToEqualizer_pullback' {P : Cᵒᵖ ⥤ T
     apply ha₂ y
     simpa [mapToEqualizer, Subtype.ext_iff] using h
 
-theorem EqualizerCondition.bijective_mapToEqualizer_pullback {P : Cᵒᵖ ⥤ TypeCat}
+theorem EqualizerCondition.bijective_mapToEqualizer_pullback {P : Cᵒᵖ ⥤ Type*}
     (hP : EqualizerCondition P) {X B : C} (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π] :
     Function.Bijective
       (mapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition) :=
   bijective_mapToEqualizer_pullback' hP _ (pullback.isLimit _ _)
 
-theorem EqualizerCondition.mk' (P : Cᵒᵖ ⥤ TypeCat)
+theorem EqualizerCondition.mk' (P : Cᵒᵖ ⥤ Type*)
     (hP : ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] (c : PullbackCone π π) (_ : IsLimit c),
       Function.Bijective (mapToEqualizer P π c.fst c.snd c.condition)) :
     EqualizerCondition P := by
@@ -131,7 +131,7 @@ theorem EqualizerCondition.mk' (P : Cᵒᵖ ⥤ TypeCat)
     simpa [mapToEqualizer, Subtype.ext_iff] using h
 
 set_option backward.isDefEq.respectTransparency false in
-theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ TypeCat)
+theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
     (hP : ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], Function.Bijective
     (mapToEqualizer P π (pullback.fst π π) (pullback.snd π π)
     pullback.condition)) : EqualizerCondition P := by
@@ -151,13 +151,13 @@ theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ TypeCat)
   · simpa [mapToEqualizer] using ha₁
   · simpa [mapToEqualizer] using ha₂
 
-lemma equalizerCondition_w' (P : Cᵒᵖ ⥤ TypeCat) {X B : C} (π : X ⟶ B)
+lemma equalizerCondition_w' (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
     [HasPullback π π] : P.map π.op ≫ P.map (pullback.fst π π).op =
     P.map π.op ≫ P.map (pullback.snd π π).op := by
   simp only [← Functor.map_comp, ← op_comp, pullback.condition]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ TypeCat) {X B : C} (π : X ⟶ B) [HasPullback π π] :
+lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B) [HasPullback π π] :
     mapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition =
     equalizer.lift (P.map π.op) (equalizerCondition_w' P π) ≫
     (Types.equalizerIso _ _).hom := by
@@ -167,7 +167,7 @@ lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ TypeCat) {X B : C} (π : X ⟶ B) 
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An alternative phrasing of the explicit equalizer condition, using more categorical language. -/
-theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ TypeCat) : EqualizerCondition P ↔
+theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
     ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π],
       IsIso (equalizer.lift (P.map π.op) (equalizerCondition_w' P π)) := by
   constructor
@@ -259,7 +259,7 @@ lemma equalizerCondition_iff_isSheaf (F : Cᵒᵖ ⥤ D) [Preregular C]
     exact (equalizerConditionMap_iff_nonempty_isLimit F f).2 (hF _ ⟨_, f, rfl, inferInstance⟩)
 
 lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Projective X]
-    (F : Cᵒᵖ ⥤ TypeCat) : S.IsSheafFor F := by
+    (F : Cᵒᵖ ⥤ Type*) : S.IsSheafFor F := by
   obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (R := S)
   rw [isSheafFor_arrows_iff]
   refine fun x hx ↦ ⟨F.map (Projective.factorThru (𝟙 _) f).op <| x (), fun _ ↦ ?_, fun y h ↦ ?_⟩
