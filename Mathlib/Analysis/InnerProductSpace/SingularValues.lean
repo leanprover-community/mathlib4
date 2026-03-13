@@ -175,13 +175,15 @@ theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i 
   apply singularValues_le_rank
   trans 0 <;> simp
 
-theorem singularValues_id_apply_of_lt_finrank {i : ℕ} (hi : i < finrank 𝕜 E)
-  : (LinearMap.id : E →ₗ[𝕜] E).singularValues i = 1 := sorry
+theorem singularValues_id_of_lt_finrank {i : ℕ} (hi : i < finrank 𝕜 E)
+  : (id : E →ₗ[𝕜] E).singularValues i = 1 := by
+  rw [id.singularValues_of_lt rfl hi]
+  sorry
 
-theorem singularValues_id_apply {i : ℕ} :
-  (LinearMap.id : E →ₗ[𝕜] E).singularValues i = if i < finrank 𝕜 E then 1 else 0 := by
+theorem singularValues_id {i : ℕ} :
+  (id : E →ₗ[𝕜] E).singularValues i = if i < finrank 𝕜 E then 1 else 0 := by
   split_ifs with h
-  · exact singularValues_id_apply_of_lt_finrank h
+  · exact singularValues_id_of_lt_finrank h
   · push_neg at h
     exact singularValues_of_finrank_le id h
 
