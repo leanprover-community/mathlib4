@@ -378,10 +378,15 @@ lemma Ideal.spanRank_map_le (f : R →+* S) (I : Ideal R) : (I.map f).spanRank �
 open Submodule in
 lemma Ideal.spanFinrank_map_le_of_fg (f : R →+* T) {I : Ideal R} (hI : I.FG) :
     (I.map f).spanFinrank ≤ I.spanFinrank := by
-  nth_rw 1 [← Submodule.FG.generators_ncard hI, ← I.span_generators, Ideal.submodule_span_eq,
-    Ideal.map_span]
-  exact (Submodule.spanFinrank_span_le_ncard_of_finite ((Submodule.FG.finite_generators hI).image
-    f)).trans (Set.ncard_image_le (Submodule.FG.finite_generators hI))
+  rw [← Submodule.FG.spanRank_le_iff (hI.map f), ← Cardinal.lift_le.{u}, Cardinal.lift_natCast,
+    ← Cardinal.lift_natCast.{v}, ← Submodule.FG.spanRank_eq_spanFinrank hI]
+  exact I.lift_spanRank_map_le f
+
+lemma Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv (f : R ≃+* T) {I : Ideal R} (hI : I.FG) :
+    (I.map f).spanFinrank = I.spanFinrank := by
+  apply (I.spanFinrank_map_le_of_fg (f : R →+* T) hI).antisymm
+  nth_rw 1 [← Ideal.map_of_equiv f (I := I)]
+  exact Ideal.spanFinrank_map_le_of_fg (f.symm : T →+* R) (hI.map (f : R →+* T))
 
 end Ideal
 
