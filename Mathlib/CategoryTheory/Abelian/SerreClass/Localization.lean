@@ -479,7 +479,7 @@ lemma preservesFiniteLimits_comp_iff :
     (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
   have : PreservesLimit (parallelPair (L.map f'.hom) 0) G :=
     preservesLimit_of_preserves_limit_cone
-      ((KernelFork.isLimitMapConeEquiv _ _).1
+      (KernelFork.isLimitMapConeEquiv _ _
         (isLimitOfPreserves L (kernelIsKernel f'.hom)))
           ((KernelFork.isLimitMapConeEquiv _ G).2
             ((KernelFork.isLimitMapConeEquiv _ (L ⋙ G)).1
