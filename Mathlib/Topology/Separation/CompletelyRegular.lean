@@ -90,7 +90,6 @@ instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] :
   apply Disjoint.mono (cf.tendsto_nhdsSet_nhds hhf) cf.continuousAt
   exact disjoint_nhds_nhds.mpr (hf.symm ▸ zero_ne_one).symm
 
-set_option backward.isDefEq.respectTransparency false in
 instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] [R0Space X] :
     CompletelyRegularSpace X := by
   rw [completelyRegularSpace_iff]

@@ -292,7 +292,6 @@ include hs in
 theorem sSupIndep.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
   disjoint_sSup_right (hs hx) ((mem_diff y).mpr ⟨hy, h.symm⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sSupIndep_singleton (a : α) : sSupIndep ({a} : Set α) := fun i hi ↦ by
   simp_all
 

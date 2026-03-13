@@ -1037,7 +1037,6 @@ theorem integral_congr {a b : ℝ} (h : EqOn f g [[a, b]]) :
     simpa [hab, integral_of_le, integral_of_ge] using
       setIntegral_congr_fun measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a b)
     (hbc : IntervalIntegrable f μ b c) :
     (((∫ x in a..b, f x ∂μ) + ∫ x in b..c, f x ∂μ) + ∫ x in c..a, f x ∂μ) = 0 := by

@@ -40,7 +40,6 @@ noncomputable instance normedField (v : AbsoluteValue R ℝ) : NormedField (With
   letI := v.toNormedField
   (equiv v).normedField
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] moduleLeft in
 instance [Module R T] [FiniteDimensional R T] :
@@ -67,7 +66,6 @@ instance [Algebra T R] [Algebra.IsSeparable T R] :
 @[simp] lemma toAbs_inv (x : R) : toAbs v x⁻¹ = (toAbs v x)⁻¹ := rfl
 @[simp] lemma ofAbs_inv (x : WithAbs v) : ofAbs (x⁻¹) = (ofAbs x)⁻¹ := rfl
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /- Note that `AbsoluteValue.tendsto_div_one_add_pow_nhds_one` would follow from the below
 result if `WithAbs v` had a topology for general value rings `S`. Currently `WithAbs v` only has
@@ -143,8 +141,6 @@ abbrev Completion := UniformSpace.Completion (WithAbs v)
 
 namespace Completion
 
-/-- This is a `CoeTail` so that it does not apply to the defeq `(WithAbs v`) and replace the
-already existing `Coe (WithAbs v) v.Completion` from `UniformSpace.Completion.instCoe`. -/
 noncomputable instance : Coe K v.Completion where
   coe k : v.Completion := ↑(toAbs v k)
 
