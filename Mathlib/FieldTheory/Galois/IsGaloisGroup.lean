@@ -298,7 +298,6 @@ theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGalo
     rw [restrictScalars_bot_eq_self] at this
     rwa [← this] at hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem of_fixedPoints_eq [hGKL : IsGaloisGroup G K L] (hF : FixedPoints.intermediateField H = F) :
     IsGaloisGroup H F L := by
   rw [eq_comm] at hF
