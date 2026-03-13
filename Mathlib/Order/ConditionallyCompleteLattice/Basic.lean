@@ -219,7 +219,7 @@ theorem csInf_le_iff (h : BddBelow s) (hs : s.Nonempty) : sInf s ≤ a ↔ ∀ b
 theorem isLUB_csSup (ne : s.Nonempty) (H : BddAbove s) : IsLUB s (sSup s) :=
   ⟨fun _ => le_csSup H, fun _ => csSup_le ne⟩
 
-theorem isGLB_csInf (ne : s.Nonempty) (H : BddBelow s) : IsGLB s (sInf s) :=
+theorem isGLB_csInf (ne : s.Nonempty) (H : BddBelow s := by bddDefault) : IsGLB s (sInf s) :=
   ⟨fun _ => csInf_le H, fun _ => le_csInf ne⟩
 
 theorem IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=
@@ -594,15 +594,12 @@ theorem csSup_le_csSup' {s t : Set α} (h₁ : BddAbove t) (h₂ : s ⊆ t) : sS
     exact bot_le
   · exact csSup_le_csSup h₁ h h₂
 
-theorem isGLB_csInf' (ne : s.Nonempty) : IsGLB s (sInf s) :=
-  isGLB_csInf ne <| OrderBot.bddBelow _
-
 theorem csInf_le_csSup' (ha : BddAbove s) (ne : s.Nonempty) : sInf s ≤ sSup s :=
-  isGLB_le_isLUB (isGLB_csInf' ne) (isLUB_csSup ne ha) ne
+  isGLB_le_isLUB (isGLB_csInf ne) (isLUB_csSup ne ha) ne
 
 theorem csInf_le_csSup_of_nonempty_inter' {t : Set α} (h : (s ∩ t).Nonempty) (ht : BddAbove t) :
     sInf s ≤ sSup t :=
-  isGLB_le_isLUB_of_nonempty_inter (isGLB_csInf' h.left) (isLUB_csSup h.right ht) h
+  isGLB_le_isLUB_of_nonempty_inter (isGLB_csInf h.left) (isLUB_csSup h.right ht) h
 
 end ConditionallyCompleteLinearOrderBot
 
