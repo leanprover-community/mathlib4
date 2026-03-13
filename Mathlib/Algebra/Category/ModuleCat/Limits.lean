@@ -228,7 +228,6 @@ def directLimitDiagram : ι ⥤ ModuleCat R where
     symm
     apply Module.DirectedSystem.map_map f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `Cocone` on `directLimitDiagram` corresponding to
 the unbundled `directLimit` of modules.
 

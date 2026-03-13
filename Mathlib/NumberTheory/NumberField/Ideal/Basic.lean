@@ -35,7 +35,6 @@ variable {K : Type*} [Field K] {I : Ideal (𝓞 K)}
 
 section torsionMapQuot
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absNorm I ≠ 1) {n : ℕ}
     {ζ : K} (hn : 2 ≤ n) (hζ : IsPrimitiveRoot ζ n)
     (h : letI _ : NeZero n := NeZero.of_gt hn; Ideal.Quotient.mk I hζ.toInteger = 1) :

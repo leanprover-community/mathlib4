@@ -39,12 +39,10 @@ open Module
 -- This is necessary to avoid several timeouts
 attribute [local instance 2000] Submodule.module
 
-set_option backward.isDefEq.respectTransparency false in
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Free ℤ I := by
   refine Free.of_equiv (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm
   exact nonZeroDivisors.coe_ne_zero I.den
 
-set_option backward.isDefEq.respectTransparency false in
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Finite ℤ I := by
   refine Module.Finite.of_surjective
     (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm.toLinearMap (LinearEquiv.surjective _)

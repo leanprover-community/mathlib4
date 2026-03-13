@@ -137,7 +137,6 @@ instance normal_sup
     Normal F (E ⊔ E' : IntermediateField F K) :=
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_ | _) <;> infer_instance)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An intersection of normal extensions is normal. -/
 @[stacks 09HP]
 instance normal_iInf {ι : Type*} [hι : Nonempty ι]

@@ -97,7 +97,6 @@ local instance : IsScalarTower R T E := IsScalarTower.to₁₃₄ R S T E
 local instance : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
       (FaithfulSMul.algebraMap_injective L E).comp (FaithfulSMul.algebraMap_injective S L)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Module.IsTorsionFree S T := Subalgebra.instIsTorsionFree (integralClosure S E)
 
 instance : FaithfulSMul R T :=
@@ -132,11 +131,9 @@ instance : IsGalois K (FractionRing T) := by
 
 variable [IsDedekindDomain S]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Module.Finite S T :=
   IsIntegralClosure.finite S L E T
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Module.Finite R T :=
   Module.Finite.trans S T
 
