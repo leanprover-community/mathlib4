@@ -168,8 +168,7 @@ theorem mem_sInf {f : Set (SaturatedSubmonoid M)} {x : M} : x ∈ sInf f ↔ ∀
 variable (M) in
 @[to_additive]
 instance : CompleteSemilatticeInf (SaturatedSubmonoid M) where
-  sInf_le f s hs x hx := mem_sInf.1 hx s hs
-  le_sInf f s ih x hx := mem_sInf.2 <| by tauto
+  isGLB_sInf _ := .of_image SetLike.coe_subset_coe isGLB_biInf
 
 end SaturatedSubmonoid
 
