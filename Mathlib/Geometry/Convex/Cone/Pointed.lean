@@ -84,6 +84,14 @@ lemma ofSubmodule_sSup (s : Set (Submodule R E)) : sSup s = sSup (ofSubmodule ''
 lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s, (S : PointedCone R E) := by
   rw [← sSup_eq_iSup, ofSubmodule_sSup, sSup_eq_iSup, iSup_image]
 
+/-- The linear span of the cone. -/
+abbrev linSpan (C : PointedCone R E) : Submodule R E := .span R C
+
+@[simp] lemma coe_linSpan (S : Submodule R E) : (S : PointedCone R E).linSpan = S :=
+    by simp [linSpan]
+
+lemma le_linSpan (C : PointedCone R E) : C ≤ C.linSpan := Submodule.subset_span
+
 end Submodule
 
 section ConvexCone
