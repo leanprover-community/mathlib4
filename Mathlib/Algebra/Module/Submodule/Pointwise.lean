@@ -102,6 +102,9 @@ theorem neg_le_neg (S T : Submodule R M) : -S ≤ -T ↔ S ≤ T :=
 theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset
 
+lemma neg_le_iff_neg_eq {S : Submodule R M} : -S = S ↔ -S ≤ S :=
+  ⟨le_of_eq, fun h => antisymm h <| (Submodule.neg_le S S).mp h⟩
+
 /-- `Submodule.pointwiseNeg` as an order isomorphism. -/
 def negOrderIso : Submodule R M ≃o Submodule R M where
   toEquiv := Equiv.neg _
@@ -136,15 +139,6 @@ theorem neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i
 @[simp]
 theorem neg_iSup {ι : Sort*} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ i, -S i :=
   (negOrderIso : Submodule R M ≃o Submodule R M).map_iSup _
-
-lemma neg_le_iff_neg_eq {S : Submodule R M} : -S = S ↔ -S ≤ S := by
-  constructor
-  · exact le_of_eq
-  intro h; ext x
-  rw [Submodule.mem_neg]
-  suffices h : ∀ x, -x ∈ S → x ∈ S from by
-    exact ⟨h x, by nth_rw 1 [← neg_neg x]; exact h (-x)⟩
-  exact SetLike.le_def.mp @h
 
 end Semiring
 
