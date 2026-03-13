@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 
 /-!
-# The `fast_instance%` and `inferInstanceAs%` term elaborators
+# The `fast_instance%`, `inferInstanceAs%`, and `#check_instance` elaborators
 -/
 
 meta section
@@ -156,5 +156,60 @@ constructor applications. In that case, the parameters of the constructors will 
 using the expected type, so that the instance will unfold nicely during unification. -/
 macro "inferInstanceAs% " source:term : term =>
   `(fast_instance% inferInstanceAs $source)
+
+/--
+Check whether a named instance has leaky data-field binder types.
+
+An instance `foo : C args` is "canonical" if its body, when re-elaborated with the expected
+type `C args`, would produce a definitionally equal term at `.instances` transparency.
+If not, some data field (e.g. `smul`) has a binder type (e.g. `M`) that differs from the
+expected type (e.g. `RestrictScalars R S M`) at instance transparency — a "leak" that causes
+`rw` failures with `set_option backward.isDefEq.respectTransparency true`.
+
+The check uses constructor normalization (skipping synthesis, since the instance would always
+be found and be trivially defeq to itself) to compute the "canonical" form, then compares with
+the original at `.instances` transparency.
+-/
+def checkInstance (name : Name) : MetaM MessageData := do
+  let env ← getEnv
+  let some info := env.find? name
+    | return m!"unknown constant '{name}'"
+  let some _ := info.value?
+    | return m!"'{name}' has no definition (it is an axiom or opaque)"
+  -- Introduce the universally quantified type arguments as free variables,
+  -- so we can check the instance in a concrete context.
+  forallTelescope info.type fun xs expectedType => do
+    let instVal := mkAppN (.const name (info.levelParams.map mkLevelParam)) xs
+    -- Run constructor normalization (skipping synthesis) to get the canonical form.
+    let normalized ← mkCanonicalForm instVal expectedType
+    -- Compare at instances transparency. At this level, the instance unfolds to its body,
+    -- and we compare the actual body against the re-inferred canonical form. If they agree,
+    -- all data-field binder types are correct. If not, some data field (e.g. `smul`) has a
+    -- binder type (e.g. `M`) that differs from the expected type (e.g. `RestrictScalars R S M`)
+    -- at instances transparency — `RestrictScalars` is a `def`, not reducible/instance, so
+    -- `M` and `RestrictScalars R S M` are not defeq at `.instances`.
+    let isCanonical ← withTransparency .instances <| isDefEq instVal normalized
+    if isCanonical then
+      return m!"✅ '{name}': canonical (re-inferred form agrees at instances transparency)"
+    else
+      return m!"❌ '{name}': leaky binder types detected.\n  \
+        The body differs from the re-inferred form at instances transparency.\n  \
+        Use `fast_instance%` to repair: \
+        `instance : ... := fast_instance% <body>`"
+
+open Elab Command in
+/--
+`#check_instance foo` checks whether the instance `foo` has leaky data-field binder types.
+
+An instance has leaky binder types when a data field (e.g. `smul`) uses a binder type
+(e.g. `M`) that differs from the expected type (e.g. `RestrictScalars R S M`) at instance
+transparency. This causes `rw` failures with `set_option backward.isDefEq.respectTransparency true`.
+
+Reports `✅` if canonical (the body already has the correct binder types) or `❌` if leaky.
+-/
+elab "#check_instance " n:ident : command => do
+  let name ← liftTermElabM <| resolveGlobalConstNoOverload n
+  let result ← runTermElabM fun _ => checkInstance name
+  logInfo result
 
 end Mathlib.Elab.FastInstance

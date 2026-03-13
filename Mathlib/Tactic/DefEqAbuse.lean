@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public meta import Mathlib.Lean.MessageData.Trace
+public meta import Mathlib.Tactic.FastInstance
 
 /-!
 # The `#defeq_abuse` tactic and command combinators
@@ -274,6 +275,156 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
     return (app, ← dedupByString failures)
   return (uniqueFailures, dedupedResults)
 
+/-- Collect candidate semireducible definition names by transitively following definition values
+reachable from `roots`, up to a bounded depth. -/
+def collectCandidates (env : Environment) (roots : Array Name) : Array Name := Id.run do
+  let mut visited : Std.HashSet Name := {}
+  let mut queue := roots
+  for _ in List.range 6 do -- depth limit
+    if queue.isEmpty then break
+    let current := queue
+    queue := #[]
+    for name in current do
+      if visited.contains name then continue
+      visited := visited.insert name
+      if let some info := env.find? name then
+        if let some val := info.value? then
+          for c in val.getUsedConstants do
+            if !visited.contains c then
+              queue := queue.push c
+  let mut candidates : Array Name := #[]
+  for name in visited.toArray do
+    if getReducibilityStatusCore env name == .semireducible then
+      if let some (.defnInfo _) := env.find? name then
+        candidates := candidates.push name
+  return candidates
+
+/-- Temporarily mark constants as `@[implicit_reducible]`, run an action, then restore the
+original environment. This bypasses `allowUnsafeReducibility` validation. -/
+def withTempImplicitReducible {α : Type} (names : Array Name) (k : TacticM α) : TacticM α := do
+  let env ← getEnv
+  for name in names do
+    setReducibilityStatus name .implicitReducible
+  try k finally setEnv env
+
+/-- Temporarily mark constants as `@[implicit_reducible]`, run an action, then restore state.
+Command-level variant. -/
+def withTempImplicitReducibleCmd {α : Type} (names : Array Name)
+    (k : CommandElabM α) : CommandElabM α := do
+  let env ← getEnv
+  for name in names do
+    setReducibilityStatus name .implicitReducible
+  try k finally modifyEnv (fun _ => env)
+
+/-- Try to find a minimal set of semireducible constants that, when marked `@[implicit_reducible]`,
+make the tactic succeed with `backward.isDefEq.respectTransparency true`.
+
+Collects candidates by transitively following definition values reachable from the goal type,
+filtering to semireducible definitions. Then verifies and minimizes the set by greedy removal. -/
+def suggestAnnotationsTac (tac : Syntax) : TacticM (Option (Array Name)) := do
+  let goalType ← getMainTarget
+  let candidates := collectCandidates (← getEnv) goalType.getUsedConstants
+  if candidates.isEmpty then return none
+  let tryWith (names : Array Name) : TacticM Bool := do
+    let s ← saveState
+    let ok ← withTempImplicitReducible names do
+      withTheReader Core.Context (fun c => { c with maxHeartbeats := 0 }) do
+        withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency true) do
+          try evalTactic tac; pure true
+          catch | .internal id ref => throw (.internal id ref) | _ => pure false
+    s.restore (restoreInfo := true)
+    return ok
+  -- Verify that marking ALL candidates fixes the issue.
+  unless ← tryWith candidates do return none
+  -- Minimize by greedy removal.
+  let mut minimal := candidates
+  for name in candidates do
+    let without := minimal.filter (· != name)
+    if ← tryWith without then minimal := without
+  return some (minimal.qsort Name.quickLt)
+
+/-- Try to find a minimal set of semireducible constants that, when marked `@[implicit_reducible]`,
+make the command succeed with `backward.isDefEq.respectTransparency true`. -/
+def suggestAnnotationsCmd (cmd : Syntax) : CommandElabM (Option (Array Name)) := do
+  -- Collect roots from the command's syntax resolution
+  let env ← getEnv
+  -- Extract constant names mentioned in the command syntax by elaborating once permissively
+  -- and checking what constants appear in the resulting environment additions.
+  -- As a heuristic, use all constants from the new declarations.
+  let saved ← get
+  let roots ← try
+    withScope (fun scope =>
+      { scope with opts := (scope.opts.setBool `Elab.async false)
+          |>.setBool `backward.isDefEq.respectTransparency false }) do
+      elabCommand cmd
+      let newEnv ← getEnv
+      let mut names : Array Name := #[]
+      -- Collect constants from any new declarations added by this command
+      for (name, _) in newEnv.constants.map₂.toList do
+        if env.constants.map₂.find? name |>.isNone then
+          if let some info := newEnv.find? name then
+            names := names ++ info.type.getUsedConstants
+            if let some val := info.value? then
+              names := names ++ val.getUsedConstants
+      return names
+  catch _ => pure #[]
+  set saved
+  let candidates := collectCandidates (← getEnv) roots
+  if candidates.isEmpty then return none
+  let tryWith (names : Array Name) : CommandElabM Bool := do
+    let saved ← get
+    let ok ← withTempImplicitReducibleCmd names do
+      withScope (fun scope =>
+        { scope with opts := ((scope.opts.setBool `Elab.async false)
+            |>.setBool `backward.isDefEq.respectTransparency true)
+            |>.insert `maxHeartbeats (.ofNat 0) }) do
+        try
+          elabCommand cmd
+          let hasErrors := (← get).messages.hasErrors
+          return !hasErrors
+        catch | .internal id ref => throw (.internal id ref) | _ => return false
+    set saved
+    return ok
+  unless ← tryWith candidates do return none
+  let mut minimal := candidates
+  for name in candidates do
+    let without := minimal.filter (· != name)
+    if ← tryWith without then minimal := without
+  return some (minimal.qsort Name.quickLt)
+
+/-- Format the annotation workaround as a Lean code snippet. -/
+def formatAnnotations (names : Array Name) : MessageData :=
+  let namesList := joinSep (names.toList.map fun n => m!"  {n}") "\n"
+  m!"set_option allowUnsafeReducibility true\nattribute [implicit_reducible]\n{namesList}"
+
+/-- Log annotation suggestions as info. -/
+def logAnnotationSuggestions {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m]
+    [MonadOptions m] (names : Option (Array Name)) : m Unit := do
+  let some names := names | return
+  if names.isEmpty then return
+  logInfo m!"Workaround: the following `@[implicit_reducible]` annotations would \
+    paper over this problem, but the real issue is likely a leaky instance somewhere.\n\
+    {formatAnnotations names}"
+
+/-- Given a set of instance name strings (as they appear in synthesis trace output, possibly
+with a leading `@`), check each for leaky data-field binder types using `#check_instance` logic.
+Returns the names and diagnostic messages for instances that are detected as leaky. -/
+def findLeakyInstances (instStrings : Std.HashSet String) : MetaM (Array (Name × MessageData)) := do
+  let env ← getEnv
+  let mut leaky : Array (Name × MessageData) := #[]
+  for str in instStrings do
+    -- Strip leading `@` from trace-format names like `@RestrictScalars.module`
+    let nameStr := (if str.startsWith "@" then str.drop 1 else str).trimAscii
+    let name := nameStr.toName
+    -- Skip if not a known constant
+    let some _ := env.find? name | continue
+    -- Run checkInstance, skipping on any error
+    let msg? ← try some <$> Mathlib.Elab.FastInstance.checkInstance name catch _ => pure none
+    let some msg := msg? | continue
+    if (← msg.toString).startsWith "❌" then
+      leaky := leaky.push (name, msg)
+  return leaky
+
 /-- Format and log the `#defeq_abuse` diagnostic report.
 `kind` is `"tactic"` or `"command"`. -/
 def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m]
@@ -326,7 +477,8 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
       let result ← try
         withOptions (fun o =>
             (o.setBool `backward.isDefEq.respectTransparency strict)
-              |>.setBool `trace.Meta.isDefEq true) do
+              |>.setBool `trace.Meta.isDefEq true
+              |>.setBool `trace.Meta.synthInstance true) do
           evalTactic tac
           pure (Except.ok ())
       catch
@@ -367,6 +519,23 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
         let permMsgs := permTraces.toArray.map (·.msg)
         let (uniqueFailures, _) ← analyzeTraces strictMsgs permMsgs
         reportDefEqAbuse "tactic" uniqueFailures #[]
+        -- Check instances used in the goal type for leakiness.
+        -- The tactic fails due to an isDefEq mismatch caused by instances that were
+        -- synthesized during GOAL TYPE ELABORATION (before the tactic runs), so synthesis
+        -- traces won't contain them. Instead, inspect the elaborated goal type directly.
+        try
+          let goalType ← getMainTarget
+          let env ← getEnv
+          let instStrings : Std.HashSet String :=
+            Std.HashSet.ofArray (goalType.getUsedConstants.filterMap fun n =>
+              if isInstanceCore env n then some n.toString else none)
+          let leaky ← findLeakyInstances instStrings
+          unless leaky.isEmpty do
+            let lines := joinSep (leaky.toList.map fun (_, msg) => m!"  {msg}") "\n"
+            logInfo m!"The following instances may have leaky binder types:\n{lines}"
+        catch _ => pure ()
+        -- Attempt to find minimal @[implicit_reducible] workaround
+        try logAnnotationSuggestions (← suggestAnnotationsTac tac) catch _ => pure ()
         -- Pass 3: run the tactic with permissive setting so it actually succeeds
         withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency false) do
           evalTactic tac
@@ -442,6 +611,18 @@ elab_rules : command
         let (uniqueFailures, synthResults) ←
           analyzeTraces strictMsgData permMsgData (includeSynth := true)
         reportDefEqAbuse "command" uniqueFailures synthResults
+        -- Check which instances from the failing synthesis applications are leaky
+        try
+          let instStrings : Std.HashSet String ←
+            synthResults.foldlM (init := {}) fun acc (app, _) => do
+              return acc.insert (extractInstName (← app.toString))
+          let leaky ← runTermElabM fun _ => findLeakyInstances instStrings
+          unless leaky.isEmpty do
+            let lines := joinSep (leaky.toList.map fun (_, msg) => m!"  {msg}") "\n"
+            logInfo m!"The following instances may have leaky binder types:\n{lines}"
+        catch _ => pure ()
+        -- Attempt to find minimal @[implicit_reducible] workaround
+        try logAnnotationSuggestions (← suggestAnnotationsCmd cmd) catch _ => pure ()
         -- Pass 3: run the command with permissive setting so it actually takes effect
         withScope (fun scope =>
           { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency false }) do
