@@ -76,7 +76,7 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
-@[expose] public meta section
+public meta section
 
 assert_not_exists IsOrderedMonoid
 
@@ -171,8 +171,8 @@ def ExSum.eq
   | _, _ => false
 end
 
-/-- TODO: this instance should probably be upstreamed -/
-local instance : Ord Rat where
+-- TODO: this should be somewhere else
+private local instance : Ord Rat where
   compare a b := compareOfLessAndEq a b
 
 mutual
