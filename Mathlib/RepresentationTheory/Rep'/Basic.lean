@@ -173,6 +173,11 @@ lemma mkIso_inv_hom_toLinearMap {X Y : Type w} [AddCommGroup X] [AddCommGroup Y]
     (mkIso e).inv.hom.toLinearMap = e.symm.toIntertwiningMap.toLinearMap := rfl
 
 @[simp]
+lemma mkIso_inv_hom_apply {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
+    {σ : Representation k G X} {ρ : Representation k G Y} (e : σ.Equiv ρ) (y : Y) :
+    (mkIso e).inv.hom y = e.symm y := rfl
+
+@[simp]
 lemma mkIso_hom_hom {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
     {σ : Representation k G X} {ρ : Representation k G Y} (e : σ.Equiv ρ) :
     (mkIso e).hom.hom = e.toIntertwiningMap := rfl
@@ -475,7 +480,7 @@ abbrev leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A :=
     ⟨Finsupp.lift A k G fun g ↦ A.ρ g x, fun g ↦ by ext; simp⟩
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
+-- @[simp]
 theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
     (leftRegularHom A x).hom (.single g r) = r • A.ρ g x := by
   simp [leftRegularHom]
@@ -1061,6 +1066,32 @@ variable {k G}
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
 open scoped MonoidalCategory
+
+section
+
+open MonoidalCategory Representation.LinearizeMonoidal
+
+lemma μ_def {X Y : Action (Type u) G} : Functor.LaxMonoidal.μ (linearization k G) X Y =
+    ofHom (μ X Y) := rfl
+
+lemma μ_hom {X Y : Action (Type u) G} : (Functor.LaxMonoidal.μ (linearization k G) X Y).hom
+    = μ X Y := rfl
+
+lemma ε_def : Functor.LaxMonoidal.ε (linearization k G) = ofHom (ε k G) := rfl
+
+lemma ε_hom : (Functor.LaxMonoidal.ε (linearization k G)).hom = ε k G := rfl
+
+lemma δ_def {X Y : Action (Type u) G} : Functor.OplaxMonoidal.δ (linearization k G) X Y =
+    ofHom (δ X Y) := rfl
+
+lemma δ_hom {X Y : Action (Type u) G} : (Functor.OplaxMonoidal.δ (linearization k G) X Y).hom
+    = δ X Y := rfl
+
+lemma η_def : Functor.OplaxMonoidal.η (linearization k G) = ofHom (η k G) := rfl
+
+lemma η_hom : (Functor.OplaxMonoidal.η (linearization k G)).hom = η k G := rfl
+
+end
 
 variable (k G) in
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation

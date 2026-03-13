@@ -217,7 +217,7 @@ lemma resIndAdjunction_homEquiv_apply (A : Rep.{u} k S)
     {B : Rep.{u} k G} (f : res S.subtype B ⟶ A) :
     (resIndAdjunction k S).homEquiv _ _ f =
       resCoindHomEquiv S.subtype B A f ≫ (indCoindIso A).inv := by
-  simp only [resIndAdjunction, resCoindAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
+  simp only [resIndAdjunction, resCoindAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply _]
   rfl
 
 lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{u} k S)
@@ -254,7 +254,7 @@ lemma coindResAdjunction_unit_app (A : Rep k S) :
     (coindResAdjunction k S).unit.app A = (indResAdjunction k S.subtype).unit.app A ≫
       (resFunctor S.subtype).map (indCoindIso A).hom := by
   ext
-  simp [coindResAdjunction, Adjunction.ofNatIsoLeft, Adjunction.equivHomsetLeftOfNatIso,
+  simp [coindResAdjunction, Adjunction.ofNatIsoLeft,
     indResAdjunction, indCoindIso]
 
 lemma coindResAdjunction_homEquiv_apply (A : Rep.{u} k S)
@@ -268,7 +268,7 @@ lemma coindResAdjunction_homEquiv_symm_apply (A : Rep.{u} k S)
     ((coindResAdjunction k S).homEquiv _ _).symm f =
       (indCoindIso A).inv ≫ (indResHomEquiv S.subtype A B).symm f := by
   simp only [coindResAdjunction, indResAdjunction,
-    Adjunction.homEquiv_ofNatIsoLeft_symm_apply]
+    Adjunction.homEquiv_ofNatIsoLeft_symm_apply _]
   simp
   rfl
 

@@ -54,8 +54,8 @@ def linearizeMap (f : X ⟶ Y) : IntertwiningMap (A := k) (linearize k G X) (lin
   isIntertwining' g := by ext x y; simp [(congr($(f.comm g) x) : f.hom (X.ρ g x) = Y.ρ g (f.hom x))]
 
 @[simp]
-lemma linearizeMap_single (f : X ⟶ Y) (x : X.V) :
-    (linearizeMap f) (Finsupp.single x (1 : k)) = Finsupp.single (f.hom x) 1 := by
+lemma linearizeMap_single (f : X ⟶ Y) (x : X.V) (r : k) :
+    (linearizeMap f) (Finsupp.single x r) = Finsupp.single (f.hom x) r := by
   simp [linearizeMap]
 
 lemma linearizeMap_toLinearMap (f : X ⟶ Y) :
@@ -120,8 +120,8 @@ def μ : ((linearize k G X).tprod (linearize k G Y)).IntertwiningMap
   __ := finsuppTensorFinsupp' k X.V Y.V
   isIntertwining' g := by ext; simp [linearize_single _, Action.tensor_ρ_apply _]
 
-lemma μ_apply_single_single (x : X.V) (y : Y.V) :
-    μ (k := k) X Y (Finsupp.single x 1 ⊗ₜ Finsupp.single y 1) = Finsupp.single (x, y) 1 := by
+lemma μ_apply_single_single (x : X.V) (y : Y.V) (r s : k) :
+    μ (k := k) X Y (Finsupp.single x r ⊗ₜ Finsupp.single y s) = Finsupp.single (x, y) (r * s) := by
   ext; simp [← toLinearMap_apply]
 
 open TensorProduct in
@@ -155,7 +155,7 @@ lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
     TensorProduct.assoc_tmul, LinearMap.lTensor_tmul, toLinearMap_apply]
   -- after fixing the defeq problems in `Action` and in the monoidal category structure of `types`
   -- this line should close the goal so this is left as an indicator.
-  with_reducible convert linearizeMap_single (α_ X Y Z).hom ((x, y), z)
+  with_reducible convert linearizeMap_single (α_ X Y Z).hom ((x, y), z) _
   with_reducible simp only [Action.tensorObj_V, types_tensorObj_def, Action.associator_hom_hom]
   with_reducible refine Prod.ext ?_ (Prod.ext ?_ ?_)
   <;>  with_reducible simp
@@ -166,7 +166,7 @@ lemma μ_leftUnitor : (lid k (linearize k G X)).toIntertwiningMap =
     (linearize k G X) (ε k G)) := by
   ext x1 : 5
   simpa [types_tensorObj_def, types_tensorUnit_def] using
-    linearizeMap_single (k := k) (λ_ X).hom (PUnit.unit, x1) |>.symm
+    linearizeMap_single (k := k) (λ_ X).hom (PUnit.unit, x1) _ |>.symm
 
 variable (X) in
 set_option backward.isDefEq.respectTransparency false in
@@ -190,6 +190,11 @@ lemma δ_apply_single (xy : (X ⊗ Y).V) :
     (δ (k := k) X Y) (Finsupp.single xy 1) = Finsupp.single xy.1 1 ⊗ₜ
       Finsupp.single xy.2 1 := by
   simp [δ, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul k]
+
+lemma δ_apply_single' (xy : (X ⊗ Y).V) (r : k) :
+    (δ X Y) (Finsupp.single xy r) = Finsupp.single xy.1 r ⊗ₜ
+      Finsupp.single xy.2 1 := by
+  simp [δ, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one k]
 
 variable (Z) in
 lemma rTensor_comp_δ (f : X ⟶ Y) :
@@ -266,11 +271,20 @@ def linearizeOfMulActionIso (H : Type w) [MulAction G H] :
     (linearize k G (Action.ofMulAction G H)).Equiv (ofMulAction k G H) :=
     .mk (LinearEquiv.refl _ _) fun g ↦ by rfl
 
+lemma linearizeOfMulActionIso_apply {H : Type w} [MulAction G H] (f : H →₀ k) :
+    @DFunLike.coe ((Representation.ofMulAction k G H).Equiv (Representation.linearize k G
+    (Action.ofMulAction G H))) (H →₀ k) (fun _ ↦ (Action.ofMulAction G H).V →₀ k)
+    EquivLike.toFunLike (Representation.linearizeOfMulActionIso k G H) f = f := rfl
+
+lemma linearizeOfMulActionIso_symm_apply {H : Type w} [MulAction G H] (f : H →₀ k) :
+    @DFunLike.coe ((Representation.ofMulAction k G H).Equiv (Representation.linearize k G
+    (Action.ofMulAction G H))) (H →₀ k) (fun _ ↦ (Action.ofMulAction G H).V →₀ k)
+    EquivLike.toFunLike (Representation.linearizeOfMulActionIso k G H).symm f = f := rfl
+
 variable (k G) in
 /-- This a type-changing equivalence to avoid abusing defeq. -/
-def linearizeDiagonalEquiv (n : ℕ) : (linearize k G (Action.diagonal G n)).Equiv
-    (diagonal k G n) :=
-  .mk (LinearEquiv.refl _ _) fun g ↦ by rfl
+abbrev linearizeDiagonalEquiv (n : ℕ) : (linearize k G (Action.diagonal G n)).Equiv
+    (diagonal k G n) := linearizeOfMulActionIso k G (Fin n → G)
 
 end
 
