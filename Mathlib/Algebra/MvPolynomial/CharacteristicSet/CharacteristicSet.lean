@@ -280,7 +280,7 @@ and adds branches for the initials of `CS`.
 noncomputable def zeroDecomposition (l : List (MvPolynomial σ R)) : List (TriangularSet σ R) :=
   let CS := l.characteristicSet
   -- Recurse on: Initial(p) added to the system
-  let subDecomp := (CS.toList.filter fun p ↦ p.mainVariable ≠ ⊥).attach.map
+  let subDecomp := (CS.toList.filter fun p ↦ p.vars.max ≠ ⊥).attach.map
     fun ⟨p, _⟩ ↦ zeroDecomposition (p.initial :: CS.toList ++ l)
   CS :: subDecomp.flatten
   termination_by l.basicSet
@@ -297,7 +297,7 @@ noncomputable def zeroDecomposition (l : List (MvPolynomial σ R)) : List (Trian
     use p.initial
     simp only [List.mem_cons, List.not_mem_nil, or_false, ne_eq, true_and]
     -- Get properties of p from filter/attach
-    have hp : p ∈ CS ∧ ¬p.mainVariable = ⊥ :=  by expose_names; simpa using property
+    have hp : p ∈ CS ∧ ¬p.vars.max = ⊥ :=  by expose_names; simpa using property
     refine ⟨initial_ne_zero (ne_zero_of_mem hp.1), fun q hq ↦ ?_⟩
     have : p.initial.reducedToSet CS :=
       AscendingSet.initial_reducedToSet_of_mainVariable_ne_bot' l.cs_isAscendingSet hp.1 hp.2
@@ -307,7 +307,7 @@ theorem isAscendingSet_of_mem_zeroDecomposition :
     ∀ CS ∈ l.zeroDecomposition, CS.isAscendingSet := by
   induction l using zeroDecomposition.induct with | case1 l CS ih =>
   intro CS' hCS'
-  have hCS' : CS' = CS ∨ ∃ p, (p ∈ CS ∧ ¬p.mainVariable = ⊥) ∧
+  have hCS' : CS' = CS ∨ ∃ p, (p ∈ CS ∧ ¬p.vars.max = ⊥) ∧
       CS' ∈ (p.initial :: CS.toList ++ l).zeroDecomposition := by
     unfold zeroDecomposition at hCS'; simpa using hCS'
   rcases hCS' with hCS' | ⟨p, ⟨hp1, hp2⟩, hp3⟩
@@ -318,7 +318,7 @@ theorem zero_isSetRemainder_of_mem_zeroDecomposition :
     ∀ CS ∈ l.zeroDecomposition, ∀ g ∈ l, (0 : MvPolynomial σ R).isSetRemainder g CS := by
   induction l using zeroDecomposition.induct with | case1 l CS ih =>
   intro CS' hCS'
-  have hCS' : CS' = CS ∨ ∃ p, (p ∈ CS ∧ ¬p.mainVariable = ⊥) ∧
+  have hCS' : CS' = CS ∨ ∃ p, (p ∈ CS ∧ ¬p.vars.max = ⊥) ∧
       CS' ∈ (p.initial :: CS.toList ++ l).zeroDecomposition := by
     unfold zeroDecomposition at hCS'; simpa using hCS'
   rcases hCS' with hCS' | ⟨p, ⟨hp1, hp2⟩, hp3⟩
@@ -340,20 +340,20 @@ theorem vanishingSet_eq_zeroDecomposition_union :
   induction l using zeroDecomposition.induct with | case1 l CS ih =>
   -- 1. Unfold recursion
   suffices vanishingSet K l = vanishingSet K CS \ singleVanishingSet K (initialProd CS.toFinset) ∪
-      ⋃ p ∈ CS.toList.filter fun p ↦ p.mainVariable ≠ ⊥,
+      ⋃ p ∈ CS.toList.filter fun p ↦ p.vars.max ≠ ⊥,
         ⋃ CS' ∈ (p.initial :: CS.toList ++ l).zeroDecomposition,
           vanishingSet K CS' \ singleVanishingSet K (initialProd CS'.toFinset) by
     rewrite [zeroDecomposition]; simpa using this
   -- 2. Apply decomposition theorem to the recursive structure
   suffices ⋃ p ∈ CS, vanishingSet K l ∩ singleVanishingSet K p.initial =
-      ⋃ p ∈ CS.toList.filter fun p ↦ p.mainVariable ≠ ⊥,
+      ⋃ p ∈ CS.toList.filter fun p ↦ p.vars.max ≠ ⊥,
         vanishingSet K (p.initial :: CS.toList ++ l) by
     rw [CharacteristicSet.vanishingSet_decomposition K (l.cs_isCharacteristicSet K),
       ← Set.iUnion₂_congr ih, this]
   -- 3. Prove equality of the union components (ignoring constants)
   ext x
   suffices (x ∈ vanishingSet K l ∧ ∃ p ∈ CS, x ∈ singleVanishingSet K p.initial) ↔
-      ∃ p, (p ∈ CS ∧ ¬p.mainVariable = ⊥) ∧ x ∈ vanishingSet K (p.initial :: (CS.toList ++ l)) by
+      ∃ p, (p ∈ CS ∧ ¬p.vars.max = ⊥) ∧ x ∈ vanishingSet K (p.initial :: (CS.toList ++ l)) by
     simpa using this
   simp only [vanishingSet, Set.mem_setOf_eq, singleVanishingSet, List.mem_cons, List.mem_append,
     mem_toList_iff, forall_eq_or_imp]

@@ -41,7 +41,7 @@ class AscendingSetTheory (σ R : Type*) [CommSemiring R] [DecidableEq R] [Linear
   must be reduced with respect to `S`. -/
   protected initial_reducedToSet_of_mainVariable_ne_bot : ∀ ⦃S : TriangularSet σ R⦄ ⦃i : ℕ⦄,
     (∀ ⦃i j⦄, i < j → j < S.length → reducedTo' (S j) (S i)) →
-    (S i).mainVariable ≠ ⊥ → (S i).initial.reducedToSet S
+    (S i).vars.max ≠ ⊥ → (S i).initial.reducedToSet S
 
 attribute [instance_reducible, instance 900] AscendingSetTheory.decidableReducedTo
 
@@ -145,12 +145,12 @@ namespace AscendingSet
 variable [AscendingSetTheory σ R] {S T : AscendingSet σ R} {p : MvPolynomial σ R}
 
 theorem initial_reducedToSet_of_mainVariable_ne_bot {S : TriangularSet σ R} {i : ℕ} :
-    S.isAscendingSet → (S i).mainVariable ≠ ⊥ → (S i).initial.reducedToSet S := fun h ↦
+    S.isAscendingSet → (S i).vars.max ≠ ⊥ → (S i).initial.reducedToSet S := fun h ↦
   AscendingSetTheory.initial_reducedToSet_of_mainVariable_ne_bot h
 
 theorem initial_reducedToSet_of_mainVariable_ne_bot' {S : TriangularSet σ R}
     (h : S.isAscendingSet) :
-    p ∈ S → p.mainVariable ≠ ⊥ → p.initial.reducedToSet S := fun ⟨_, _, hi2⟩ hc ↦
+    p ∈ S → p.vars.max ≠ ⊥ → p.initial.reducedToSet S := fun ⟨_, _, hi2⟩ hc ↦
   hi2 ▸ AscendingSet.initial_reducedToSet_of_mainVariable_ne_bot h (hi2 ▸ hc)
 
 /-- Construct an ascending set from a triangular set and a proof of the ascending property. -/

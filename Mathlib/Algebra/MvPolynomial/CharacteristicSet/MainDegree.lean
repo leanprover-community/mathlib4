@@ -40,20 +40,20 @@ variable [LinearOrder σ] {i j c : σ}
 /-- The "main degree" of `p`: the degree of `p` with respect to its main variable.
 If `mainVariable p = ⊥` (i.e., `p` is a constant or zero), the degree is 0. -/
 noncomputable def mainDegree (p : MvPolynomial σ R) : ℕ :=
-  match mainVariable p with
+  match p.vars.max with
   | ⊥ => 0
   | some c => p.degreeOf c
 
-theorem mainDegree_of_mainVariable_isSome : p.mainVariable = c → p.mainDegree = p.degreeOf c :=
+theorem mainDegree_of_mainVariable_isSome : p.vars.max = c → p.mainDegree = p.degreeOf c :=
   fun h ↦ by rw [mainDegree, h]
 
 theorem mainDegree_of_mainVariable_isSome' :
-    p.mainVariable = c → p.mainDegree = p.support.sup (fun s ↦ s c) :=
+    p.vars.max = c → p.mainDegree = p.support.sup (fun s ↦ s c) :=
   fun h ↦ by rw [mainDegree_of_mainVariable_isSome h, degreeOf_eq_sup]
 
-theorem mainDegree_eq_zero_iff : p.mainDegree = 0 ↔ p.mainVariable = ⊥ where
+theorem mainDegree_eq_zero_iff : p.mainDegree = 0 ↔ p.vars.max = ⊥ where
   mp h :=
-    match hc : p.mainVariable with
+    match hc : p.vars.max with
     | ⊥ => rfl
     | some c => by
       rewrite [mainDegree_of_mainVariable_isSome hc, degreeOf] at h
@@ -66,11 +66,11 @@ theorem mainDegree_eq_zero_iff : p.mainDegree = 0 ↔ p.mainVariable = ⊥ where
 theorem mainDegree_eq_zero_iff' : p.mainDegree = 0 ↔ (∃ r : R, p = C r) :=
   Iff.trans mainDegree_eq_zero_iff mainVariable_eq_bot_iff_eq_C
 
-theorem degreeOf_mainVariable_ne_zero : p.mainVariable = c → p.degreeOf c ≠ 0 := fun h ↦
+theorem degreeOf_mainVariable_ne_zero : p.vars.max = c → p.degreeOf c ≠ 0 := fun h ↦
   have := (not_iff_not.mpr mainDegree_eq_zero_iff).mpr (h ▸ WithBot.coe_ne_bot)
   mainDegree_of_mainVariable_isSome h ▸ this
 
-theorem mainVariable_mem_degrees : p.mainVariable = c → c ∈ p.degrees := fun h ↦
+theorem mainVariable_mem_degrees : p.vars.max = c → c ∈ p.degrees := fun h ↦
   have := degreeOf_mainVariable_ne_zero h; Multiset.count_ne_zero.mp (degreeOf_def c p ▸ this)
 
 @[simp] theorem mainDegree_zero : (0 : MvPolynomial σ R).mainDegree = 0 := rfl

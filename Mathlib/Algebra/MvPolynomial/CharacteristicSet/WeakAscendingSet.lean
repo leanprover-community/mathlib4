@@ -85,7 +85,7 @@ noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangularSet
     have hB : BS.canConcat B := hl2 B (List.head_mem h)
     let BS' := BS.concat B
     -- Explicitly check main variable ordering here:
-    let l' := l.filter fun p ↦ B.mainVariable < p.mainVariable ∧ p.initial.reducedToSet BS'
+    let l' := l.filter fun p ↦ B.vars.max < p.vars.max ∧ p.initial.reducedToSet BS'
     have hl1' : ∀ p ∈ l', p ≠ 0 := fun p hp ↦ hl1 p (List.mem_of_mem_filter hp)
     have hl2' : ∀ p ∈ l', BS'.canConcat p := fun p hp ↦
       have := List.mem_filter.mp hp

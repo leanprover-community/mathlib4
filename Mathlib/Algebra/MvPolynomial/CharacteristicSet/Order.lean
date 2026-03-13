@@ -45,10 +45,10 @@ section Order
 
 /-- The order of a polynomial `p` is the pair `(mainVariable p, degree p)`,
 which is ordered lexicographically. -/
-noncomputable def order (p : MvPolynomial σ R) : WithBot σ ×ₗ ℕ := (p.mainVariable, p.mainDegree)
+noncomputable def order (p : MvPolynomial σ R) : WithBot σ ×ₗ ℕ := (p.vars.max, p.mainDegree)
 
 theorem order_eq_iff : p.order = q.order ↔
-    p.mainVariable = q.mainVariable ∧ p.mainDegree = q.mainDegree := Prod.mk_inj
+    p.vars.max = q.vars.max ∧ p.mainDegree = q.mainDegree := Prod.mk_inj
 
 instance instPreorder : Preorder (MvPolynomial σ R) where
   le := InvImage (· ≤ ·) order
@@ -65,29 +65,29 @@ noncomputable instance instDecidableLT : DecidableLT (MvPolynomial σ R) := deci
 instance instIsTotalLe : Std.Total (@LE.le (MvPolynomial σ R) _) where
   total p q := le_total p.order q.order
 
-theorem le_def : p ≤ q ↔ p.mainVariable < q.mainVariable ∨
-    p.mainVariable = q.mainVariable ∧ p.mainDegree ≤ q.mainDegree := Prod.lex_def
+theorem le_def : p ≤ q ↔ p.vars.max < q.vars.max ∨
+    p.vars.max = q.vars.max ∧ p.mainDegree ≤ q.mainDegree := Prod.lex_def
 
-theorem le_iff_not_imp : p ≤ q ↔ ¬p.mainVariable < q.mainVariable →
-    p.mainVariable = q.mainVariable ∧ p.mainDegree ≤ q.mainDegree :=
+theorem le_iff_not_imp : p ≤ q ↔ ¬p.vars.max < q.vars.max →
+    p.vars.max = q.vars.max ∧ p.mainDegree ≤ q.mainDegree :=
   Iff.trans le_def <| Decidable.or_iff_not_imp_left
 
-theorem mainVariable_le_of_le : p ≤ q → p.mainVariable ≤ q.mainVariable :=
+theorem mainVariable_le_of_le : p ≤ q → p.vars.max ≤ q.vars.max :=
   fun h ↦ Or.elim (le_def.mp h) le_of_lt (fun h ↦ le_of_eq h.1)
 
 theorem lt_def' : p < q ↔ p.order < q.order := Iff.trans lt_iff_le_not_ge (by
   rewrite [le_def', le_def', not_le, and_iff_right_iff_imp]
   exact le_of_lt)
 
-theorem lt_def : p < q ↔ p.mainVariable < q.mainVariable ∨
-    p.mainVariable = q.mainVariable ∧ p.mainDegree < q.mainDegree :=
+theorem lt_def : p < q ↔ p.vars.max < q.vars.max ∨
+    p.vars.max = q.vars.max ∧ p.mainDegree < q.mainDegree :=
   Iff.trans lt_def' Prod.lex_def
 
-theorem lt_iff_not_imp : p < q ↔ ¬p.mainVariable < q.mainVariable
-    → p.mainVariable = q.mainVariable ∧ p.mainDegree < q.mainDegree :=
+theorem lt_iff_not_imp : p < q ↔ ¬p.vars.max < q.vars.max
+    → p.vars.max = q.vars.max ∧ p.mainDegree < q.mainDegree :=
   Iff.trans lt_def <| Decidable.or_iff_not_imp_left
 
-theorem lt_of_mainVariable_lt : p.mainVariable < q.mainVariable → p < q :=
+theorem lt_of_mainVariable_lt : p.vars.max < q.vars.max → p < q :=
   fun h ↦ lt_def.mpr <| Or.inl h
 
 @[simp] theorem not_lt_iff_ge : ¬(p < q) ↔ q ≤ p := by rw [le_def', lt_def', not_lt]
@@ -110,7 +110,7 @@ theorem equiv_def' : p ≈ q ↔ p.order = q.order := Iff.trans equiv_def''
 theorem equiv_def : p ≈ q ↔ ¬p < q ∧ ¬q < p := Iff.trans equiv_def''
   (by rw [not_lt_iff_ge, not_lt_iff_ge, and_comm])
 
-theorem equiv_iff : p ≈ q ↔ p.mainVariable = q.mainVariable ∧ p.mainDegree = q.mainDegree :=
+theorem equiv_iff : p ≈ q ↔ p.vars.max = q.vars.max ∧ p.mainDegree = q.mainDegree :=
   Iff.trans equiv_def' order_eq_iff
 
 theorem le_iff_lt_or_equiv : p ≤ q ↔ p < q ∨ p ≈ q := le_iff_lt_or_antisymmRel
@@ -456,7 +456,7 @@ theorem wellFoundedGT_variables_of_wellFoundedLT [Nontrivial R] :
   simp only [Nat.lt_add_right 1 hi, ↓reduceIte, hi, Setoid.refl]
 
 theorem length_le [Fintype σ] : S.length ≤ Fintype.card σ + 1 := by
-  let f : Fin S.length → WithBot σ := fun i ↦ (S i).mainVariable
+  let f : Fin S.length → WithBot σ := fun i ↦ (S i).vars.max
   have : f.Injective :=
     fun ⟨_, hi⟩ ⟨_, hj⟩ h ↦ Fin.mk.injEq _ hi _ hj ▸ index_eq_of_mainVariable_eq hi hj h
   have card_le := Fintype.card_le_of_injective f this

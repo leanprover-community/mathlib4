@@ -269,7 +269,7 @@ theorem pseudoOf_remainder_eq_zero_of_dvd {i : σ} {g f : MvPolynomial σ R} (h1
 variable [DecidableEq R] [LinearOrder σ]
 
 theorem pseudoOf_remainder_reducedTo {c : σ} (g : MvPolynomial σ R) {f : MvPolynomial σ R}
-    (hc : f.mainVariable = c) : (g.pseudoOf c f).remainder.reducedTo f := by
+    (hc : f.vars.max = c) : (g.pseudoOf c f).remainder.reducedTo f := by
   have : f.degreeOf c ≠ 0 := degreeOf_mainVariable_ne_zero hc
   by_cases r_zero : (g.pseudoOf c f).remainder = 0
   · simp only [r_zero, reducedTo, ↓reduceIte]
@@ -311,7 +311,7 @@ If `f` is non-constant, it performs pseudo-division with respect to `mainVariabl
 noncomputable def pseudo : PseudoResult (MvPolynomial σ R) :=
   if f = 0 then ⟨0, 0, g⟩
   else
-    match f.mainVariable with
+    match f.vars.max with
     | ⊥ => ⟨0, (f.coeff 0)⁻¹ • g, 0⟩
     | some c => g.pseudoOf c f
 
@@ -326,7 +326,7 @@ noncomputable def pseudo : PseudoResult (MvPolynomial σ R) :=
 @[simp] theorem zero_pseudo : (0 : MvPolynomial σ R).pseudo f = ⟨0, 0, 0⟩ := by
   simp only [pseudo, smul_zero, zero_pseudoOf, ite_eq_left_iff]
   intro _
-  match hc : f.mainVariable with
+  match hc : f.vars.max with
   | ⊥ => simp only
   | some c =>
     simp only [PseudoResult.mk.injEq, and_self, and_true]
@@ -339,7 +339,7 @@ noncomputable def pseudo : PseudoResult (MvPolynomial σ R) :=
   split <;> simp only
 
 theorem pseudo_of_mainVariable_isSome {c : σ} {f : MvPolynomial σ R} :
-    f.mainVariable = c → g.pseudo f = g.pseudoOf c f := fun h ↦ by
+    f.vars.max = c → g.pseudo f = g.pseudoOf c f := fun h ↦ by
   simp only [pseudo, ne_zero_of_mainVariable_ne_bot (h ▸ WithBot.coe_ne_bot), h, reduceIte]
 
 theorem pseudo_equation :
@@ -347,7 +347,7 @@ theorem pseudo_equation :
   unfold pseudo
   split_ifs with f_zero
   · rw [pow_zero, one_mul, zero_mul, zero_add]
-  match hc : f.mainVariable with
+  match hc : f.vars.max with
   | ⊥ =>
     have ⟨r, hr⟩ : ∃ r, f = C r := mainVariable_eq_bot_iff_eq_C.mp hc
     simp only [pow_zero, one_mul, Algebra.smul_mul_assoc, add_zero]
@@ -361,7 +361,7 @@ theorem degreeOf_pseudo_remainder_le_of_degreeOf_eq_zero {i : σ} {f : MvPolynom
   unfold pseudo
   split_ifs with f_zero
   · exact Nat.le_refl _
-  match hc : f.mainVariable with
+  match hc : f.vars.max with
   | ⊥ => simp only [degreeOf_zero, zero_le]
   | some c =>
     have : c ≠ i := by contrapose! h; exact degreeOf_mainVariable_ne_zero <| h ▸ hc
@@ -369,7 +369,7 @@ theorem degreeOf_pseudo_remainder_le_of_degreeOf_eq_zero {i : σ} {f : MvPolynom
 
 theorem pseudo_remainder_reducedTo (h : f ≠ 0) : (g.pseudo f).remainder.reducedTo f := by
   rewrite [pseudo, if_neg h]
-  match h : f.mainVariable with
+  match h : f.vars.max with
   | ⊥ => simp only; trivial
   | some c => exact g.pseudoOf_remainder_reducedTo h
 
@@ -385,12 +385,12 @@ theorem pseudo_remainder_eq_zero_of_dvd {g f : MvPolynomial σ R} (h : f ∣ g) 
   unfold pseudo
   split <;> expose_names
   · simpa [h_1] using h
-  match hc : f.mainVariable with
+  match hc : f.vars.max with
   | ⊥ => simp only
   | some c => exact pseudoOf_remainder_eq_zero_of_dvd h <| degreeOf_mainVariable_ne_zero hc
 
 theorem pseudo_remainder_eq_of_degreeOf_eq_zero {g f : MvPolynomial σ R} {c : σ}
-    (h1 : f.mainVariable = some c) (h2 : g.degreeOf c = 0) : (g.pseudo f).remainder = g := by
+    (h1 : f.vars.max = some c) (h2 : g.degreeOf c = 0) : (g.pseudo f).remainder = g := by
   unfold pseudo
   split <;> expose_names
   · simp only
@@ -537,7 +537,7 @@ theorem setPseudo_remainder_eq_setPseudoRem : (g.setPseudo S).remainder = g.setP
     rw [← cons_head_tail h, foldr_cons, cons_head_tail, head_eq_getElem_zero, toList_getElem]
 
 lemma setPseudoRem_reducedTo (l : List (MvPolynomial σ R)) (hl1 : ∀ ⦃p⦄, p ∈ l → p ≠ 0)
-    (hl2 : l.Pairwise fun p q ↦ p.mainVariable < q.mainVariable) : ∀ g p : MvPolynomial σ R, p ∈ l →
+    (hl2 : l.Pairwise fun p q ↦ p.vars.max < q.vars.max) : ∀ g p : MvPolynomial σ R, p ∈ l →
     (l.foldr (fun p r ↦ (r.pseudo p).remainder) g).reducedTo p := by
   induction l with
   | nil => simp only [not_mem_nil, foldr_nil, IsEmpty.forall_iff, implies_true]
@@ -574,8 +574,8 @@ theorem isSetRemainder_of_eq_setPseudo_remainder {r g : MvPolynomial σ R}
   h ▸ g.setPseudo_remainder_isSetRemainder S
 
 lemma setPseudoRem_eq_self_of_mainVariable_lt (l : List (MvPolynomial σ R))
-    (hl1 : ∀ ⦃p⦄, p ∈ l → p ≠ 0) (hl2 : l.Pairwise fun p q ↦ p.mainVariable < q.mainVariable) :
-    ∀ ⦃g : MvPolynomial σ R⦄, (∀ p ∈ l, g.mainVariable < p.mainVariable) →
+    (hl1 : ∀ ⦃p⦄, p ∈ l → p ≠ 0) (hl2 : l.Pairwise fun p q ↦ p.vars.max < q.vars.max) :
+    ∀ ⦃g : MvPolynomial σ R⦄, (∀ p ∈ l, g.vars.max < p.vars.max) →
     l.foldr (fun p r ↦ (r.pseudo p).remainder) g = g := by
   induction l with
   | nil => simp only [foldr_nil, implies_true]
