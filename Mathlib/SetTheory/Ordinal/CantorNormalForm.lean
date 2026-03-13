@@ -254,6 +254,16 @@ theorem coeff_of_lt {b e : Ordinal} (hb : e < b) : coeff b e = single 0 e := by
   · simp_rw [coeff, CNF.of_lt he hb]
     exact singleton_lookupFinsupp ..
 
+theorem support_coeff_subset {b o x : Ordinal} (hx : x < b ^ o) :
+    SetLike.coe (coeff b x).support ⊆ Set.Iio o := by
+  obtain rfl | hb := eq_zero_or_pos b
+  · have := hx.trans_le (zero_opow_le _)
+    simp_all
+  · intro e
+    rw [SetLike.mem_coe, Finsupp.mem_support_iff, Set.mem_Iio]
+    contrapose!
+    exact fun he ↦ coeff_eq_zero_of_lt (hx.trans_le (opow_le_opow_right hb he))
+
 theorem coeff_opow_mul_add {b e x y : Ordinal} (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
   obtain hb | hb := le_or_gt b 1
