@@ -185,23 +185,12 @@ variable (C)
 
 instance IsStableUnderBaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderBaseChange where
-  of_isPullback {_ _ _ _ f g _ _} h hg :=
-    have : IsIso g := hg
-    have := hasPullback_of_left_iso g f
-    h.isoPullback_hom_snd ▸ inferInstanceAs (IsIso _)
+  of_isPullback h hg := h.isIso_snd_of_isIso hg
 
 set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderBaseChange.monomorphisms :
     (monomorphisms C).IsStableUnderBaseChange where
-  of_isPullback {X Y Y' S f g f' g'} h hg := by
-    have : Mono g := hg
-    constructor
-    intro Z f₁ f₂ h₁₂
-    apply PullbackCone.IsLimit.hom_ext h.isLimit
-    · rw [← cancel_mono g]
-      dsimp
-      simp only [Category.assoc, h.w, reassoc_of% h₁₂]
-    · exact h₁₂
+  of_isPullback h hg := h.mono_snd_of_mono hg
 
 variable {C P}
 
@@ -319,23 +308,13 @@ lemma IsStableUnderCobaseChange.of_forall_exists_isPullback {P : MorphismPropert
 
 instance IsStableUnderCobaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderCobaseChange where
-  of_isPushout {_ _ _ _ f g _ _} h (_ : IsIso f) :=
-    have := hasPushout_of_right_iso g f
-    h.inl_isoPushout_inv ▸ inferInstanceAs (IsIso _)
+  of_isPushout h hf := h.isIso_inl_of_isIso hf
 
 set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 instance IsStableUnderCobaseChange.epimorphisms :
     (epimorphisms C).IsStableUnderCobaseChange where
-  of_isPushout {X Y Y' S f g f' g'} h hf := by
-    have : Epi f := hf
-    constructor
-    intro Z f₁ f₂ h₁₂
-    apply PushoutCocone.IsColimit.hom_ext h.isColimit
-    · exact h₁₂
-    · rw [← cancel_epi f]
-      dsimp
-      simp only [← reassoc_of% h.w, h₁₂]
+  of_isPushout h hf := h.epi_inl_of_epi hf
 
 instance IsStableUnderCobaseChange.respectsIso
     [IsStableUnderCobaseChange P] : RespectsIso P :=

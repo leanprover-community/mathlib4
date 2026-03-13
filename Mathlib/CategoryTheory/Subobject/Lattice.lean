@@ -626,8 +626,7 @@ theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
 
 instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
   sInf := sInf
-  sInf_le := sInf_le
-  le_sInf := le_sInf
+  isGLB_sInf _ := ⟨sInf_le _, le_sInf _⟩
 
 end Inf
 
@@ -679,8 +678,7 @@ theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
 
 instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
   sSup := sSup
-  le_sSup := le_sSup
-  sSup_le := sSup_le
+  isLUB_sSup _ := ⟨le_sSup _, sSup_le _⟩
 
 end Sup
 
