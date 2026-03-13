@@ -72,10 +72,9 @@ singular values
 
 @[expose] public section
 
-open NNReal Module
+open NNReal Module InnerProductSpace
 
 namespace LinearMap
-open InnerProductSpace
 
 variable {𝕜 : Type*} [RCLike 𝕜]
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
