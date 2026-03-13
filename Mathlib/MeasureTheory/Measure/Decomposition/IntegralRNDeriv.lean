@@ -158,7 +158,8 @@ lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral (hf : StronglyMeasurable f)
   · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
   have h_ae1 : ∀ᵐ a ∂ν,
       μ.rnDeriv ν a * ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) = μ.rnDeriv ν a := by
-    filter_upwards [Measure.ae_rnDeriv_ne_zero_imp_of_ae (lintegral_rnDeriv_compProd hκη)] with a ha
+    filter_upwards [Measure.ae_rnDeriv_ne_zero_imp_of_ae _ (lintegral_rnDeriv_compProd hκη)]
+      with a ha
     by_cases h0 : μ.rnDeriv ν a = 0
     · simp [h0]
     · simp [ha h0]
