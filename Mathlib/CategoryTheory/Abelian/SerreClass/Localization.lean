@@ -497,7 +497,7 @@ lemma preservesFiniteColimits_comp_iff :
   have := (Localization.functor_additive_iff L P.isoModSerre G).2 (by
     have := preservesBinaryBiproducts_of_preservesBinaryCoproducts (L ⋙ G)
     exact Functor.additive_of_preservesBinaryBiproducts _)
-  refine ((Functor.preservesFiniteColimits_tfae G).out 2 3).1 (fun _ _ f ↦ ?_)
+  refine ((Functor.preservesFiniteColimits_tfae G).out 2 3).mp (fun _ _ f ↦ ?_)
   obtain ⟨f', ⟨iso⟩⟩ :=
     (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
   have : PreservesColimit (parallelPair (L.map f'.hom) 0) G :=
