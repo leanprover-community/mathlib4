@@ -12,21 +12,23 @@ public import Mathlib.LinearAlgebra.Eigenspace.Zero
 # Singular values for finite-dimensional linear maps
 
 For a linear map `T` between finite dimensional inner product spaces `E` and `F`, we define the
-singular values, the square roots of the eigenvalues of `T.adjoint ∘ₗ T`, arranged in descending
-order and repeated according to their multiplicity.
+singular values, which are the square roots of the eigenvalues of `T.adjoint ∘ₗ T`, arranged in
+descending order and repeated according to their multiplicity.
 
 With our definition, there are countably infinitely many singular values, but only the first rank(T)
 singular values are nonzero.
-The singular values are zero-indexed, so the first singular value is `T.singularValues 0`.
+
+The singular values are zero-indexed, so `T.singularValues 0` is the first singular value.
 
 ## Main definition
 
-- `LinearMap.singularValues`: The infinite but eventually zero sequence of T's singular values.
+- `LinearMap.singularValues`: The infinite but finitely supported sequence of the singular values of
+a linear map.
 
 ## Main Theorems
 
-- `LinearMap.support_singularValues`: The first rank(T) singular values are positive, and the rest
-are zero.
+- `LinearMap.support_singularValues`: The first rank(T) many singular values are positive, and the
+rest are zero.
 
 ## Implementation notes
 
@@ -43,9 +45,9 @@ We take the last approach for the following reasons:
 converting between any two of the other definitions is more inconvenient because it involves
 multiple `Fin` types.
 - If you prefer a definition where there are `k` singular values, you can treat the singular values
-  after `k` as junk values.
-  Not having to prove that `i < k` when getting the `i`th singular value has similar advantages to
-  not having to prove that `y ≠ 0` when calculating `x / y`.
+after `k` as junk values.
+Not having to prove that `i < k` when getting the `i`th singular value has similar advantages to not
+having to prove that `y ≠ 0` when calculating `x / y`.
 - This API coincides with a potential future API for approximation numbers, which are a
   generalization of singular values to continuous linear maps between possibly-infinite-dimensional
   normed vector spaces.
@@ -82,12 +84,13 @@ variable {𝕜 : Type*} [RCLike 𝕜]
 
 /--
 If `T : E →ₗ[𝕜] F` is a linear map between finite dimensional inner product spaces, then
-`T.singularValues` is the infinite sequence where the first dim(E) values are the square roots of
+`T.singularValues` is the infinite sequence where the first dim(E) elements are the square roots of
 eigenvalues of `T.adjoint ∘ₗ T` (which are guaranteed to be nonnegative real numbers), arranged
-in descending order and repeated according to their multiplicity, and the rest of the values in the
-infinite sequence are zero.
+in descending order and repeated according to their multiplicity, and the rest of the elements in
+the infinite sequence are zero. Please see this file's module docstring for an explanation of this
+design decision.
 
-Please see this file's module docstring for an explanation of this design decision.
+The singular values are zero-indexed, so `T.singularValues 0` refers to the first singular value.
 -/
 noncomputable def singularValues : ℕ →₀ ℝ≥0 :=
   Finsupp.embDomain Fin.valEmbedding <|
@@ -99,8 +102,8 @@ noncomputable def singularValues : ℕ →₀ ℝ≥0 :=
 Connection between `LinearMap.singularValues` and `LinearMap.IsSymmetric.eigenvalues`.
 Together with `LinearMap.singularValues_of_finrank_le`, this characterizes the singular values.
 
-You probably need to use `LinearMap.eigenvalues_adjoint_comp_self_nonneg` to make effective use
-of this.
+Because of the square root, you probably need to use
+`T.isPositive_adjoint_comp_self.nonneg_eigenvalues` to make effective use of this theorem.
 -/
 theorem singularValues_fin {n : ℕ} (hn : finrank 𝕜 E = n) (i : Fin n)
     : T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) := by
