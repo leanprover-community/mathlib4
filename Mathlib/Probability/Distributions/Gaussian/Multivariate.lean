@@ -21,13 +21,15 @@ Gaussian distributions over `EuclideanSpace ℝ ι`.
 
 ## Main definitions
 
-* `stdGaussian E`: The standard Gaussian measure over a EuclideanSpace `E`.
-* `multivariateGaussian μ S`: The multivariate Gaussian distribution with mean `μ` and covariance
-  matrix `S`.
+* `stdGaussian E`: Standard Gaussian distribution on a finite-dimensional real inner product space
+  `E`. This is the random vector whose coordinates in an orthonormal basis are independent standard
+  Gaussian.
+* `multivariateGaussian μ S`: The multivariate Gaussian distribution on `EuclideanSpace ℝ ι`
+  with mean `μ` and covariance matrix `S`, when `S` is a positive semidefinite matrix.
 
 ## TODO
 
-* Generalize `multivariateGaussian μ S` when `S` is a symmetric trace class operator over a
+- Generalize `multivariateGaussian μ S` when `S` is a symmetric trace class operator over a
   Hilbert space.
 
 ## Tags
