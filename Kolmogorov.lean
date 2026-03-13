@@ -845,7 +845,7 @@ lemma ae_cauchySeq_partialSum_of_summable_variance_of_mean_zero
     lt_trans (hN j k) hn
   simpa [Real.dist_eq, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hsmall
 
-theorem ae_exists_tendsto_partialSum_of_summable_variance_of_mean_zero
+lemma ae_exists_tendsto_partialSum_of_summable_variance_of_mean_zero
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
     (X : ℕ → Ω → ℝ)
     (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
@@ -929,7 +929,7 @@ lemma partialSum_eq_partialSum_centered_add_sum_integral
   rw [partialSum_centered_eq_sub_sum_integral (μ := μ) X n ω]
   ring
 
-theorem ae_exists_tendsto_partialSum_of_summable_mean_of_summable_variance
+theorem kolmogorov_two_series
     {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
     [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ)
     (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
@@ -956,17 +956,6 @@ theorem ae_exists_tendsto_partialSum_of_summable_mean_of_summable_variance
   refine Filter.Tendsto.congr' (Filter.Eventually.of_forall fun n => ?_) (hx.add hmean_tendsto)
   have hEq := partialSum_eq_partialSum_centered_add_sum_integral (μ := μ) X n ω
   simpa [Y] using hEq
-
-theorem kolmogorov_two_series
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    [IsProbabilityMeasure μ] (X : ℕ → Ω → ℝ)
-    (hX : ∀ k, StronglyMeasurable (X k)) (hLp : ∀ k, MemLp (X k) 2 μ)
-    (hindep : iIndepFun X μ)
-    (hmean : Summable (fun n => μ[X n]))
-    (hvar : Summable (fun n => variance (X n) μ)) :
-    ∀ᵐ ω ∂μ, ∃ x : ℝ, Filter.Tendsto (fun n => partialSum X n ω) Filter.atTop (nhds x) :=
-  ae_exists_tendsto_partialSum_of_summable_mean_of_summable_variance
-    (μ := μ) X hX hLp hindep hmean hvar
 
 end Real
 
