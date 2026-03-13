@@ -5,6 +5,7 @@ Authors: Joachim Breitner, Yaël Dillies, Bhavik Mehta
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.BigOperators.WithTop
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.ENat.Lattice
@@ -74,10 +75,8 @@ theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℕ∞} (h : ∑ x ∈ 
 infinity -/
 theorem toNat_sum {s : Finset α} {f : α → ℕ∞} (hf : ∀ a ∈ s, f a ≠ ⊤) :
     ENat.toNat (∑ a ∈ s, f a) = ∑ a ∈ s, ENat.toNat (f a) := by
-  rw [← coe_inj, coe_toNat, coe_finset_sum, sum_congr rfl]
-  · intro x hx
-    exact (coe_toNat (hf x hx)).symm
-  · exact sum_ne_top.2 hf
+  rw [← coe_inj, coe_toNat (sum_ne_top.2 hf), Nat.cast_sum]
+  exact Finset.sum_congr rfl fun x hx => (coe_toNat (hf x hx)).symm
 
 theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℕ∞}
     (Hlt : ∀ i ∈ s, f i < g i) : ∑ i ∈ s, f i < ∑ i ∈ s, g i := by
