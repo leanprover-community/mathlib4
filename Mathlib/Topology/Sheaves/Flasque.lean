@@ -46,12 +46,11 @@ variable {C : Type v} [Category.{w} C] (F : Presheaf C X)
 
 /-- A sheaf is flasque if all of the restriction morphisms are epimorphisms. -/
 class IsFlasque : Prop where
-  epi : ∀{U V : (Opens X)ᵒᵖ} (i : U ⟶ V), Epi (F.map i)
+  epi : ∀ {U V : (Opens X)ᵒᵖ} (i : U ⟶ V), Epi (F.map i)
 
 namespace IsFlasque
 
-instance (priority := low) [h : IsFlasque F]
-    {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) : Epi (F.map i) := h.epi i
+attribute [instance low] IsFlasque.epi
 
 theorem pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
     IsFlasque (f _* F) where
