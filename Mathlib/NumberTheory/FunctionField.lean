@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.RatFunc.Degree
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Function fields
@@ -106,6 +107,7 @@ instance : IsIntegralClosure (ringOfIntegers Fq F) Fq[X] F :=
 
 variable [Algebra (RatFunc Fq) F] [IsScalarTower Fq[X] (RatFunc Fq) F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem algebraMap_injective : Function.Injective (⇑(algebraMap Fq[X] (ringOfIntegers Fq F))) := by
   have hinj : Function.Injective (⇑(algebraMap Fq[X] F)) := by
     rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
@@ -116,6 +118,7 @@ theorem algebraMap_injective : Function.Injective (⇑(algebraMap Fq[X] (ringOfI
   rw [injective_iff_map_eq_zero (algebraMap Fq[X] F)] at hinj
   exact hinj p hp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_isField : ¬IsField (ringOfIntegers Fq F) := by
   simpa [← (IsIntegralClosure.isIntegral_algebra Fq[X] F).isField_iff_isField
       (algebraMap_injective Fq F)] using
@@ -129,9 +132,11 @@ instance : IsFractionRing (ringOfIntegers Fq F) F :=
 instance : IsIntegrallyClosed (ringOfIntegers Fq F) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension (RatFunc Fq)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsSeparable (RatFunc Fq) F] : IsNoetherian Fq[X] (ringOfIntegers Fq F) :=
   IsIntegralClosure.isNoetherian _ (RatFunc Fq) F _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsSeparable (RatFunc Fq) F] : IsDedekindDomain (ringOfIntegers Fq F) :=
   IsIntegralClosure.isDedekindDomain Fq[X] (RatFunc Fq) F _
 
@@ -155,9 +160,11 @@ def inftyValuationDef (r : RatFunc Fq) : ℤᵐ⁰ :=
 theorem InftyValuation.map_zero' : inftyValuationDef Fq 0 = 0 :=
   if_pos rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem InftyValuation.map_one' : inftyValuationDef Fq 1 = 1 :=
   (if_neg one_ne_zero).trans <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem InftyValuation.map_mul' (x y : RatFunc Fq) :
     inftyValuationDef Fq (x * y) = inftyValuationDef Fq x * inftyValuationDef Fq y := by
   rw [inftyValuationDef, inftyValuationDef, inftyValuationDef]
@@ -167,6 +174,7 @@ theorem InftyValuation.map_mul' (x y : RatFunc Fq) :
     · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
     · simp_all [RatFunc.intDegree_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem InftyValuation.map_add_le_max' (x y : RatFunc Fq) :
     inftyValuationDef Fq (x + y) ≤ max (inftyValuationDef Fq x) (inftyValuationDef Fq y) := by
   by_cases hx : x = 0
@@ -199,6 +207,7 @@ def inftyValuation : Valuation (RatFunc Fq) ℤᵐ⁰ where
 theorem inftyValuation_apply {x : RatFunc Fq} : inftyValuation Fq x = inftyValuationDef Fq x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
     inftyValuation Fq (RatFunc.C k) = 1 := by
@@ -210,9 +219,11 @@ theorem inftyValuation.X : inftyValuation Fq RatFunc.X = exp 1 := by
 
 lemma inftyValuation.X_zpow (m : ℤ) : inftyValuation Fq (RatFunc.X ^ m) = exp m := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inftyValuation.X_inv : inftyValuation Fq (1 / RatFunc.X) = exp (-1) := by
   rw [one_div, ← zpow_neg_one, inftyValuation.X_zpow]
 
+set_option backward.isDefEq.respectTransparency false in
 -- Dropped attribute `@[simp]` due to issue described here:
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.60synthInstance.2EmaxHeartbeats.60.20error.20but.20only.20in.20.60simpNF.60
 theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
@@ -222,6 +233,7 @@ theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
 instance : Valuation.IsNontrivial (inftyValuation Fq) := ⟨RatFunc.X, by simp⟩
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
+@[implicit_reducible]
 def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=
   Valued.mk' <| inftyValuation Fq
 
@@ -229,21 +241,28 @@ theorem inftyValuedFqt.def {x : RatFunc Fq} :
     (inftyValuedFqt Fq).v x = inftyValuationDef Fq x :=
   rfl
 
+namespace FqtInfty
+
+/- We temporarily disable the existing valued instance coming from the ideal `X` to avoid diamonds
+with the uniform space structure coming from the valuation at infinity. -/
+attribute [-instance] RatFunc.valuedRatFunc
+
+/- Locally add the uniform space structure coming from the valuation at infinity. This instance
+is scoped in the `FqtInfty` namescape in case it is needed in the future. -/
+/-- The uniform space structure on `RatFunc Fq` coming from the valuation at infinity. -/
+scoped instance : UniformSpace (RatFunc Fq) := (inftyValuedFqt Fq).toUniformSpace
+
 /-- The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the valuation at infinity. -/
-def FqtInfty :=
-  @UniformSpace.Completion (RatFunc Fq) <| (inftyValuedFqt Fq).toUniformSpace
+def _root_.FunctionField.FqtInfty := UniformSpace.Completion (RatFunc Fq)
+deriving Field, Algebra (RatFunc Fq), Coe (RatFunc Fq), Inhabited
 
-instance : Field (FqtInfty Fq) :=
-  letI := inftyValuedFqt Fq
-  UniformSpace.Completion.instField
-
-instance : Inhabited (FqtInfty Fq) :=
-  ⟨(0 : FqtInfty Fq)⟩
+end FqtInfty
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
 instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ := (inftyValuedFqt Fq).valuedCompletion
 
-theorem valuedFqtInfty.def {x : FqtInfty Fq} : Valued.v x = (inftyValuedFqt Fq).extension x := rfl
+theorem valuedFqtInfty.def {x : FqtInfty Fq} :
+  Valued.v x = (inftyValuedFqt Fq).extensionValuation x := rfl
 
 end InftyValuation
 

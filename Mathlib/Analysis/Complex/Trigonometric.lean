@@ -88,17 +88,18 @@ nonrec def tan (x : ℝ) : ℝ :=
 nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
-/-- The real hypebolic sine function, defined as the real part of the complex hyperbolic sine -/
+/-- The real hyperbolic sine function, defined as the real part of the complex hyperbolic sine -/
 @[pp_nodot]
 nonrec def sinh (x : ℝ) : ℝ :=
   (sinh x).re
 
-/-- The real hypebolic cosine function, defined as the real part of the complex hyperbolic cosine -/
+/-- The real hyperbolic cosine function, defined as the real part of the complex hyperbolic cosine
+-/
 @[pp_nodot]
 nonrec def cosh (x : ℝ) : ℝ :=
   (cosh x).re
 
-/-- The real hypebolic tangent function, defined as the real part of
+/-- The real hyperbolic tangent function, defined as the real part of
 the complex hyperbolic tangent -/
 @[pp_nodot]
 nonrec def tanh (x : ℝ) : ℝ :=
@@ -473,6 +474,9 @@ theorem cos_two_mul : cos (2 * x) = 2 * cos x ^ 2 - 1 := by
   rw [cos_two_mul', eq_sub_iff_add_eq.2 (sin_sq_add_cos_sq x), ← sub_add, sub_add_eq_add_sub,
     two_mul]
 
+theorem cos_two_mul_eq_one_sub : cos (2 * x) = 1 - 2 * sin x ^ 2 := by
+  grind [cos_two_mul, sin_sq_add_cos_sq]
+
 theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x := by
   rw [two_mul, sin_add, two_mul, add_mul, mul_comm]
 
@@ -535,6 +539,9 @@ theorem exp_ofReal_mul_I_re (x : ℝ) : (exp (x * I)).re = Real.cos x := by
 @[simp]
 theorem exp_ofReal_mul_I_im (x : ℝ) : (exp (x * I)).im = Real.sin x := by
   simp [exp_mul_I, sin_ofReal_re]
+
+theorem exp_ofReal_mul_I (x : ℝ) : exp (x * I) = Real.cos x + (Real.sin x) * I := by
+  simp [exp_mul_I]
 
 /-- **De Moivre's formula** -/
 theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
@@ -695,6 +702,9 @@ nonrec theorem cos_two_mul : cos (2 * x) = 2 * cos x ^ 2 - 1 :=
 
 nonrec theorem cos_two_mul' : cos (2 * x) = cos x ^ 2 - sin x ^ 2 :=
   ofReal_injective <| by simp [cos_two_mul']
+
+nonrec theorem cos_two_mul_eq_one_sub : cos (2 * x) = 1 - 2 * sin x ^ 2 :=
+  ofReal_injective <| by simp [cos_two_mul_eq_one_sub]
 
 nonrec theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x :=
   ofReal_injective <| by simp [sin_two_mul]

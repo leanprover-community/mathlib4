@@ -1,0 +1,58 @@
+name: splice-bot (workflow_run)
+
+on:
+  workflow_run:
+    workflows: ["splice-bot"]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  run-splice-bot:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Mint splicebot token
+        id: token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_SPLICEBOT_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-splicebot-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_SPLICEBOT }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          owner: leanprover-community
+
+      - name: Mint branch token
+        id: branch-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_COPY_SPLICEBOT_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-copy-splicebot-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_SPLICEBOT }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          owner: leanprover-community
+
+      - name: Mint authz token
+        id: authz-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.LPC_TEAM_CHECK_APP_ID }}
+          private-key: ${{ secrets.LPC_TEAM_CHECK_PRIVATE_KEY }}
+          owner: leanprover-community
+
+      - name: Run splice bot action
+        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@146ee716fab40e9cae384b9932fded8b9999b16d
+        with:
+          source_workflow: ${{ github.event.workflow_run.name }}
+          push_to_fork: leanprover-community/mathlib4_copy
+          allow_pr_author: 'true'
+          allowed_teams: |
+            leanprover-community/mathlib-reviewers
+            leanprover-community/mathlib-maintainers
+          token: ${{ steps.token.outputs.token }}
+          authz_token: ${{ steps.authz-token.outputs.token }}
+          branch_token: ${{ steps.branch-token.outputs.token }}

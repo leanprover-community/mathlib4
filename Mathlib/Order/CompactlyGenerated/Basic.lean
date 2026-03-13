@@ -189,7 +189,7 @@ theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α
     (hbelow : ∀ x ∈ s, x < k) : sSup s < k := by
   rw [isCompactElement_iff_le_of_directed_sSup_le] at hk
   by_contra h
-  have sSup' : sSup s ≤ k := sSup_le s k fun s hs => (hbelow s hs).le
+  have sSup' : sSup s ≤ k := sSup_le fun s hs => (hbelow s hs).le
   replace sSup : sSup s = k := eq_iff_le_not_lt.mpr ⟨sSup', h⟩
   obtain ⟨x, hxs, hkx⟩ := hk s hemp hdir sSup.symm.le
   obtain hxk := hbelow x hxs
@@ -213,7 +213,7 @@ theorem WellFoundedGT.isSupFiniteCompact [WellFoundedGT α] :
     IsSupFiniteCompact α := fun s => by
   let S := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
   obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ := wellFounded_gt.has_min S ⟨⊥, ∅, by simp⟩
-  refine ⟨t, ht₁, (sSup_le _ _ fun y hy => ?_).antisymm ?_⟩
+  refine ⟨t, ht₁, (sSup_le fun y hy => ?_).antisymm ?_⟩
   · classical
     rw [eq_of_le_of_not_lt (Finset.sup_mono (t.subset_insert y))
         (hm _ ⟨insert y t, by simp [Set.insert_subset_iff, hy, ht₁]⟩)]
@@ -265,7 +265,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
       suffices t.sup id ≤ sSup s by apply le_antisymm <;> assumption
       simp only [id, Finset.sup_le_iff]
       intro x hx
-      exact le_sSup _ _ (hts hx)
+      exact le_sSup (hts hx)
     exact ⟨t, hts, this⟩
 
 open List in
@@ -448,6 +448,36 @@ theorem sSupIndep_iff_finite {s : Set α} :
       · rw [Finset.coe_insert, Set.insert_subset_iff]
         exact ⟨ha, Set.Subset.trans ht diff_subset⟩⟩
 
+lemma iSupIndep_iff_supIndep {ι : Type*} {f : ι → α} :
+    iSupIndep f ↔ ∀ (s : Finset ι), s.SupIndep f := by
+  refine ⟨fun h ↦ h.supIndep', fun h ↦ iSupIndep_def'.mpr fun i ↦ ?_⟩
+  classical
+  have hf : Set.InjOn f {i : ι | f i ≠ ⊥} := by
+    by_contra! hf
+    simp_all only [Set.InjOn, ne_eq, Set.mem_setOf_eq, not_forall]
+    obtain ⟨x₁, hx₁, x₂, hx₂, hfeq, hneq⟩ := hf
+    specialize h ({x₁, x₂} : Finset ι)
+    rw [Finset.supIndep_pair hneq, disjoint_iff, hfeq, inf_idem (f x₂)] at h
+    contradiction
+  simp_rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot, ← disjoint_iff]
+  intro s hs
+  rw [← Finset.sup_erase_bot]
+  set t := s.erase ⊥
+  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by
+    refine hf ?_ ?_ hij <;> aesop (add norm simp [t])
+  have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
+    ext a
+    simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq,
+      Finset.erase_insert_eq_erase, Finset.mem_image, t]
+    refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
+    obtain ⟨j, hj, rfl⟩ := hs has
+    exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
+  rw [← this, Finset.sup_image]
+  specialize h (insert i (t.preimage _ hf))
+  rw [Finset.supIndep_iff_disjoint_erase] at h
+  exact h i (Finset.mem_insert_self i _)
+
+@[deprecated iSupIndep_iff_supIndep (since := "2026-02-18")]
 lemma iSupIndep_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
     (hf : InjOn f {i | f i ≠ ⊥}) :
     iSupIndep f ↔ ∀ (s : Finset ι), s.SupIndep f := by
@@ -537,7 +567,7 @@ If each family `f i` is `iSupIndep`, then the family of pointwise infima
 -/
 theorem iSupIndep.iInf {ι : Type*} {κ : ι → Type*} (f : (i : ι) → κ i → α)
     (h_indep : ∀ i : ι, iSupIndep (f i)) : iSupIndep (fun k : (i : ι) → κ i ↦ ⨅ i, f i (k i)) := by
-  rw [iSupIndep_iff_supIndep_of_injOn (iSupIndep.injOn_iInf _ h_indep)]
+  rw [iSupIndep_iff_supIndep]
   intro s
   induction s using Finset.strongInduction with
   | H s ih =>

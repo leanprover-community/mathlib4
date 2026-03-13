@@ -149,6 +149,7 @@ class LocallyFiniteOrderBot (α : Type*) [Preorder α] where
 /-- A constructor from a definition of `Finset.Icc` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrder.ofIcc`, this one requires `DecidableLE` but
 only `Preorder`. -/
+@[implicit_reducible]
 def LocallyFiniteOrder.ofIcc' (α : Type*) [Preorder α] [DecidableLE α]
     (finsetIcc : α → α → Finset α) (mem_Icc : ∀ a b x, x ∈ finsetIcc a b ↔ a ≤ x ∧ x ≤ b) :
     LocallyFiniteOrder α where
@@ -165,6 +166,7 @@ def LocallyFiniteOrder.ofIcc' (α : Type*) [Preorder α] [DecidableLE α]
 /-- A constructor from a definition of `Finset.Icc` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrder.ofIcc'`, this one requires `PartialOrder` but only
 `DecidableEq`. -/
+@[implicit_reducible]
 def LocallyFiniteOrder.ofIcc (α : Type*) [PartialOrder α] [DecidableEq α]
     (finsetIcc : α → α → Finset α) (mem_Icc : ∀ a b x, x ∈ finsetIcc a b ↔ a ≤ x ∧ x ≤ b) :
     LocallyFiniteOrder α where
@@ -181,6 +183,7 @@ def LocallyFiniteOrder.ofIcc (α : Type*) [PartialOrder α] [DecidableEq α]
 /-- A constructor from a definition of `Finset.Ici` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrderTop.ofIci`, this one requires `DecidableLE` but
 only `Preorder`. -/
+@[implicit_reducible]
 def LocallyFiniteOrderTop.ofIci' (α : Type*) [Preorder α] [DecidableLE α]
     (finsetIci : α → Finset α) (mem_Ici : ∀ a x, x ∈ finsetIci a ↔ a ≤ x) :
     LocallyFiniteOrderTop α where
@@ -192,6 +195,7 @@ def LocallyFiniteOrderTop.ofIci' (α : Type*) [Preorder α] [DecidableLE α]
 /-- A constructor from a definition of `Finset.Ici` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrderTop.ofIci'`, this one requires `PartialOrder` but
 only `DecidableEq`. -/
+@[implicit_reducible]
 def LocallyFiniteOrderTop.ofIci (α : Type*) [PartialOrder α] [DecidableEq α]
     (finsetIci : α → Finset α) (mem_Ici : ∀ a x, x ∈ finsetIci a ↔ a ≤ x) :
     LocallyFiniteOrderTop α where
@@ -203,6 +207,7 @@ def LocallyFiniteOrderTop.ofIci (α : Type*) [PartialOrder α] [DecidableEq α]
 /-- A constructor from a definition of `Finset.Iic` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrderBot.ofIic`, this one requires `DecidableLE` but
 only `Preorder`. -/
+@[implicit_reducible]
 def LocallyFiniteOrderBot.ofIic' (α : Type*) [Preorder α] [DecidableLE α]
     (finsetIic : α → Finset α) (mem_Iic : ∀ a x, x ∈ finsetIic a ↔ x ≤ a) :
     LocallyFiniteOrderBot α where
@@ -214,6 +219,7 @@ def LocallyFiniteOrderBot.ofIic' (α : Type*) [Preorder α] [DecidableLE α]
 /-- A constructor from a definition of `Finset.Iic` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrderBot.ofIic'`, this one requires `PartialOrder` but
 only `DecidableEq`. -/
+@[implicit_reducible]
 def LocallyFiniteOrderBot.ofIic (α : Type*) [PartialOrder α] [DecidableEq α]
     (finsetIic : α → Finset α) (mem_Iic : ∀ a x, x ∈ finsetIic a ↔ x ≤ a) :
     LocallyFiniteOrderBot α where
@@ -611,6 +617,7 @@ section Preorder
 variable [Preorder α] [Preorder β]
 
 /-- A noncomputable constructor from the finiteness of all closed intervals. -/
+@[implicit_reducible]
 noncomputable def LocallyFiniteOrder.ofFiniteIcc (h : ∀ a b : α, (Set.Icc a b).Finite) :
     LocallyFiniteOrder α :=
   @LocallyFiniteOrder.ofIcc' α _ (Classical.decRel _) (fun a b => (h a b).toFinset) fun a b x => by
@@ -678,6 +685,7 @@ instance : Subsingleton (LocallyFiniteOrderBot α) :=
 
 -- Should this be called `LocallyFiniteOrder.lift`?
 /-- Given an order embedding `α ↪o β`, pulls back the `LocallyFiniteOrder` on `β` to `α`. -/
+@[implicit_reducible]
 protected noncomputable def OrderEmbedding.locallyFiniteOrder [LocallyFiniteOrder β] (f : α ↪o β) :
     LocallyFiniteOrder α where
   finsetIcc a b := (Icc (f a) (f b)).preimage f f.toEmbedding.injective.injOn
@@ -1021,6 +1029,7 @@ variable [Preorder α] [Preorder β]
 /-! #### Transfer locally finite orders across order isomorphisms -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrder` across an `OrderIso`. -/
 abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteOrder α where
@@ -1033,6 +1042,7 @@ abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFini
   finset_mem_Ioc := by simp
   finset_mem_Ioo := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderTop` across an `OrderIso`. -/
 abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : LocallyFiniteOrderTop α where
@@ -1041,6 +1051,7 @@ abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : Local
   finset_mem_Ici := by simp
   finset_mem_Ioi := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderBot` across an `OrderIso`. -/
 abbrev locallyFiniteOrderBot [LocallyFiniteOrderBot β] (f : α ≃o β) : LocallyFiniteOrderBot α where

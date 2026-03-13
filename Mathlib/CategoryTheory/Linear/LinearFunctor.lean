@@ -70,6 +70,7 @@ variable {E : Type*} [Category* E] [Preadditive E] [CategoryTheory.Linear R E] (
 
 instance [Linear R G] : Linear R (F ⋙ G) where
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linear_of_full_essSurj_comp [F.Full] [F.EssSurj] [Functor.Linear R (F ⋙ G)] :
     Functor.Linear R G := by
   refine ⟨fun {X Y} f r ↦ ?_⟩
