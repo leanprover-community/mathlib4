@@ -356,7 +356,7 @@ theorem dist_integral_le_lintegral_edist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
     dist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
   grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
-  simp only [ofReal_norm, edist_eq_enorm_sub, le_refl]
+  simp [edist_eq_enorm_sub]
 
 theorem edist_integral_le_lintegral_edist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :

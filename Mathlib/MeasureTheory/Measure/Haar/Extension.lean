@@ -233,7 +233,7 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
 /-- If `ψ` is injective on an open set `U`, then the induced measure on `U` is bounded by
 `μC Set.univ * μA {1}` (possibly infinite). -/
 @[to_additive /-- If `ψ` is injective on an open set `U`, then the induced measure on `U` is bounded
-by `μC Set.univ * μA {1}` (possibly infinite). -/]
+by `μC Set.univ * μA {0}` (possibly infinite). -/]
 theorem inducedMeasure_lt_of_injOn {U : Set B} (hU : IsOpen U) [DiscreteTopology A]
     (h : U.InjOn ψ) :
     inducedMeasure H μA μC U ≤ μC Set.univ * μA {1} := by
