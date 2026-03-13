@@ -373,7 +373,7 @@ instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
 is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ofIsos {F₁ F₂ : C ⥤ E} {F₁' F₂' : D ⥤ E} (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') [Lifting L W F₁ F₁'] :
     Lifting L W F₂ F₂' :=
   ⟨isoWhiskerLeft L e'.symm ≪≫ iso L W F₁ F₁' ≪≫ e⟩

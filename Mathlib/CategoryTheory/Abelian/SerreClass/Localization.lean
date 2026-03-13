@@ -154,58 +154,74 @@ lemma map_comp_eq_zero_iff_of_epi_mono {X Z Y : C} (f : X ⟶ Z) (g : Z ⟶ Y)
   have := strongEpi_of_epi f
   exact P.prop_iff_of_iso (Abelian.imageIsoImage _ ≪≫ (image.isoStrongEpiMono f g rfl).symm)
 
-lemma mono_map_iff {X Y : C} (f : X ⟶ Y) :
-    Mono (L.map f) ↔ P.monoModSerre f := by
+lemma mono_map_tfae {X Y : C} (f : X ⟶ Y) :
+    List.TFAE [Mono (L.map f),
+      P.monoModSerre f,
+      ∀ ⦃Z : C⦄ (z : Z ⟶ X), L.map z ≫ L.map f = 0 → L.map z = 0] := by
   have := Localization.essSurj L P.isoModSerre
-  refine ⟨fun _ ↦ ?_, fun hf ↦ ?_⟩
-  · have hf : L.map (kernel.ι f) = 0 := by
+  tfae_have 1 → 2 := fun _ ↦ by
+    have hf : L.map (kernel.ι f) = 0 := by
       rw [← cancel_mono (L.map f), zero_comp, ← L.map_comp,
         kernel.condition, L.map_zero]
     simpa [hf] using map_comp_eq_zero_iff_of_epi_mono L P (𝟙 _) (kernel.ι f)
-  · suffices ∀ ⦃Z : C⦄ (z : Z ⟶ X) (hz : L.map z ≫ L.map f = 0), L.map z = 0 by
-      rw [Preadditive.mono_iff_cancel_zero]
-      intro W z hz
-      obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
-        ((L.objObjPreimageIso W).hom ≫ z)
-      have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
-      rw [← cancel_epi (L.objObjPreimageIso W).hom, comp_zero, hφ,
-        ← cancel_epi (L.map φ.s), comp_zero,
-        MorphismProperty.RightFraction.map_s_comp_map]
-      apply this φ.f
-      have : L.map φ.s ≫ (L.objObjPreimageIso W).hom ≫ z = L.map φ.f := by cat_disch
-      rw [← this, Category.assoc, Category.assoc, hz, comp_zero, comp_zero]
+  tfae_have 2 → 3 := fun hf ↦ by
     intro Z z hz
     rw [← L.map_comp] at hz
     rw [map_eq_zero_iff L P, ← exists_comp_monoModSerre_eq_zero_iff P] at hz ⊢
     obtain ⟨W, s, hs, eq⟩ := hz
     exact ⟨W, f ≫ s, MorphismProperty.comp_mem _ _ _ hf hs, by simpa using eq⟩
+  tfae_have 3 → 1 := fun hf ↦ by
+    rw [Preadditive.mono_iff_cancel_zero]
+    intro W z hz
+    obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
+      ((L.objObjPreimageIso W).hom ≫ z)
+    have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
+    rw [← cancel_epi (L.objObjPreimageIso W).hom, comp_zero, hφ,
+      ← cancel_epi (L.map φ.s), comp_zero,
+      MorphismProperty.RightFraction.map_s_comp_map]
+    apply hf φ.f
+    have : L.map φ.s ≫ (L.objObjPreimageIso W).hom ≫ z = L.map φ.f := by cat_disch
+    rw [← this, Category.assoc, Category.assoc, hz, comp_zero, comp_zero]
+  tfae_finish
 
-lemma epi_map_iff {X Y : C} (f : X ⟶ Y) :
-    Epi (L.map f) ↔ P.epiModSerre f := by
+lemma mono_map_iff {X Y : C} (f : X ⟶ Y) :
+    Mono (L.map f) ↔ P.monoModSerre f :=
+  (mono_map_tfae L P f).out 0 1
+
+lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
+    List.TFAE [Epi (L.map f),
+      P.epiModSerre f,
+      ∀ ⦃Z : C⦄ (z : Y ⟶ Z), L.map f ≫ L.map z = 0 → L.map z = 0] := by
   have := Localization.essSurj L P.isoModSerre
-  refine ⟨fun _ ↦ ?_, fun hf ↦ ?_⟩
-  · have hf : L.map (cokernel.π f) = 0 := by
+  tfae_have 1 → 2 := fun _ ↦ by
+    have hf : L.map (cokernel.π f) = 0 := by
       rw [← cancel_epi (L.map f), comp_zero, ← L.map_comp,
         cokernel.condition, L.map_zero]
     simpa [hf] using map_comp_eq_zero_iff_of_epi_mono L P (cokernel.π f) (𝟙 _)
-  · suffices ∀ ⦃Z : C⦄ (z : Y ⟶ Z) (hz : L.map f ≫ L.map z = 0), L.map z = 0 by
-      rw [Preadditive.epi_iff_cancel_zero]
-      intro W z hz
-      obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
-        (z ≫ (L.objObjPreimageIso W).inv)
-      have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
-      rw [← cancel_mono (L.objObjPreimageIso W).inv, zero_comp, hφ,
-        ← cancel_mono (L.map φ.s), zero_comp,
-        MorphismProperty.LeftFraction.map_comp_map_s]
-      apply this φ.f
-      have : L.map φ.f = z ≫ (L.objObjPreimageIso W).inv ≫ L.map φ.s := by
-        simp [reassoc_of% hφ]
-      rw [this, reassoc_of% hz, zero_comp]
+  tfae_have 2 → 3 := fun hf ↦ by
     intro Z z hz
     rw [← L.map_comp] at hz
     rw [map_eq_zero_iff L P, ← exists_epiModSerre_comp_eq_zero_iff P] at hz ⊢
     obtain ⟨W, s, hs, eq⟩ := hz
     refine ⟨_, s ≫ f, MorphismProperty.comp_mem _ _ _ hs hf, by simpa⟩
+  tfae_have 3 → 1 := fun hf ↦ by
+    rw [Preadditive.epi_iff_cancel_zero]
+    intro W z hz
+    obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
+      (z ≫ (L.objObjPreimageIso W).inv)
+    have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
+    rw [← cancel_mono (L.objObjPreimageIso W).inv, zero_comp, hφ,
+      ← cancel_mono (L.map φ.s), zero_comp,
+      MorphismProperty.LeftFraction.map_comp_map_s]
+    apply hf φ.f
+    have : L.map φ.f = z ≫ (L.objObjPreimageIso W).inv ≫ L.map φ.s := by
+      simp [reassoc_of% hφ]
+    rw [this, reassoc_of% hz, zero_comp]
+  tfae_finish
+
+lemma epi_map_iff {X Y : C} (f : X ⟶ Y) :
+    Epi (L.map f) ↔ P.epiModSerre f :=
+  (epi_map_tfae L P f).out 0 1
 
 lemma inverseImage_monomorphisms :
     (MorphismProperty.monomorphisms _).inverseImage L = P.monoModSerre := by
@@ -223,6 +239,7 @@ lemma preservesMonomorphisms : L.PreservesMonomorphisms where
 lemma preservesEpimorphisms : L.PreservesEpimorphisms where
   preserves f _ := by simpa only [epi_map_iff _ P] using P.epiModSerre_of_epi f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mono_iff {X Y : D} (f : X ⟶ Y) :
     Mono f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Mono f'),
       Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
@@ -246,6 +263,7 @@ lemma mono_iff {X Y : D} (f : X ⟶ Y) :
     exact ((MorphismProperty.monomorphisms D).arrow_mk_iso_iff e).1
       (by simpa using inferInstanceAs (Mono (L.map f')))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff {X Y : D} (f : X ⟶ Y) :
     Epi f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Epi f'),
       Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
@@ -268,6 +286,7 @@ lemma epi_iff {X Y : D} (f : X ⟶ Y) :
     exact ((MorphismProperty.epimorphisms D).arrow_mk_iso_iff e).1
       (by simpa using inferInstanceAs (Epi (L.map f')))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
     PreservesLimit (parallelPair f 0) L := by
   have := preservesMonomorphisms L P
@@ -292,15 +311,14 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
       rw [← hφ, Category.assoc, Category.assoc, hw, comp_zero, comp_zero]) ⟨_, rfl, by simp⟩
     exact ⟨(L.objObjPreimageIso W).inv ≫ inv (L.map φ.s) ≫ l, by simp [hl, ← hφ]⟩
   obtain ⟨Z, rfl, z, rfl⟩ := hw'
-  simp only [eqToHom_refl, Category.id_comp, ← L.map_comp] at hw
-  rw [map_eq_zero_iff L P, ← exists_isoModSerre_comp_eq_zero_iff P] at hw
+  simp only [eqToHom_refl, Category.id_comp, ← L.map_comp, map_eq_zero_iff L P,
+    ← exists_isoModSerre_comp_eq_zero_iff P] at hw
   obtain ⟨Z', t, ht, fac⟩ := hw
   have := Localization.inverts L P.isoModSerre t ht
   rw [← Category.assoc] at fac
-  refine ⟨inv (L.map t) ≫ L.map (kernel.lift _ _ fac), ?_⟩
-  simp only [Category.assoc, eqToHom_refl, Category.id_comp, IsIso.inv_comp_eq,
-    ← L.map_comp, kernel.lift_ι]
+  exact ⟨inv (L.map t) ≫ L.map (kernel.lift _ _ fac), by simp [← Functor.map_comp]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) L := by
   have := preservesEpimorphisms L P
@@ -324,13 +342,14 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by rw [← hφ, reassoc_of% hw, zero_comp]) ⟨_, rfl, by simp⟩
     exact ⟨l ≫ inv (L.map φ.s) ≫ (L.objObjPreimageIso W).hom, by simp [reassoc_of% hl, ← hφ]⟩
   obtain ⟨Z, rfl, z, rfl⟩ := hw'
-  simp only [eqToHom_refl, Category.comp_id, ← L.map_comp] at hw
-  rw [map_eq_zero_iff L P, ← exists_comp_isoModSerre_eq_zero_iff P] at hw
+  simp only [eqToHom_refl, Category.comp_id, ← L.map_comp,
+    map_eq_zero_iff L P, ← exists_comp_isoModSerre_eq_zero_iff P] at hw
   obtain ⟨Z', t, ht, fac⟩ := hw
   rw [Category.assoc] at fac
   have := Localization.inverts L P.isoModSerre t ht
   exact ⟨L.map (cokernel.desc _ _ fac) ≫ inv (L.map t), by simp [← L.map_comp_assoc]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasKernels : HasKernels D where
   has_limit f := by
     obtain ⟨g, ⟨e⟩⟩ :=
@@ -342,6 +361,7 @@ lemma hasKernels : HasKernels D where
     exact hasLimit_of_iso (show parallelPair (L.map g.hom) 0 ≅ _ from
       parallelPair.ext (Arrow.leftFunc.mapIso e) (Arrow.rightFunc.mapIso e))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasCokernels : HasCokernels D where
   has_colimit f := by
     obtain ⟨g, ⟨e⟩⟩ :=
@@ -361,16 +381,16 @@ lemma hasEqualizers : HasEqualizers D :=
 
 lemma hasCoequalizers : HasCoequalizers D :=
   have := hasCokernels L P
-  have {X Y : D} (f g : X ⟶ Y) : HasCoequalizer f g := by
-    exact Preadditive.hasCoequalizer_of_hasCokernel _ _
+  have {X Y : D} (f g : X ⟶ Y) : HasCoequalizer f g :=
+    Preadditive.hasCoequalizer_of_hasCokernel _ _
   hasCoequalizers_of_hasColimit_parallelPair _
 
-lemma hasBinaryProducts : HasBinaryProducts D := by
+lemma hasBinaryProducts : HasBinaryProducts D :=
   have := Localization.essSurj L P.isoModSerre
   have (X Y : D) : HasBinaryProduct X Y :=
     hasLimit_of_iso (show Limits.pair _ _ ≅ _ from
       mapPairIso (L.objObjPreimageIso X) (L.objObjPreimageIso Y))
-  exact hasBinaryProducts_of_hasLimit_pair D
+  hasBinaryProducts_of_hasLimit_pair D
 
 lemma hasFiniteProducts : HasFiniteProducts D :=
   have := hasZeroObject L P
@@ -409,11 +429,11 @@ lemma isNormalEpiCategory : IsNormalEpiCategory D where
 
 /-- If `L : C ⥤ D` is a localization functor with respect to a Serre class `P` in
 the abelian category `C`, then `D` is an abelian category.
-(Note that we assume that `D` has already been equipped with a preadditive structure,
+Note that we assume that `D` has already been equipped with a preadditive structure,
 and that `L` is additive. Otherwise, see the results in the file
 `Mathlib/CategoryTheory/Localization/CalculusOfFractions/Preadditive.lean`
-which applies because `P.isoModSerre` has a calculus of left and right fractions.) -/
-@[stacks 02MS]
+which applies because `P.isoModSerre` has a calculus of left and right fractions. -/
+@[stacks 02MS, implicit_reducible]
 def abelian : Abelian D := by
   have := hasFiniteProducts L P
   have := hasKernels L P
@@ -448,6 +468,7 @@ lemma inverseImage_isomorphisms :
 
 variable (G : D ⥤ E)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteLimits_comp_iff :
     PreservesFiniteLimits (L ⋙ G) ↔ PreservesFiniteLimits G := by
   letI := abelian L P
@@ -469,6 +490,7 @@ lemma preservesFiniteLimits_comp_iff :
     (show parallelPair (L.map f'.hom) 0 ≅ parallelPair f 0 from
       parallelPair.ext (Arrow.leftFunc.mapIso iso) (Arrow.rightFunc.mapIso iso))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteColimits_comp_iff :
     PreservesFiniteColimits (L ⋙ G) ↔ PreservesFiniteColimits G := by
   letI := abelian L P
@@ -525,6 +547,11 @@ instance : (whiskeringLeft L P E).Faithful :=
 instance : (whiskeringLeft L P E).Full :=
   (fullyFaithfulWhiskeringLeft L P E).full
 
+/-- Let `L : C ⥤ D` be a localization functor with respect to a Serre class `P`
+in the abelian category `C`. If `G : C ⥤ₑ E` is an exact functor to an abelian
+category, it "factors" through `D` (i.e. it is in the essential image of
+`whiskeringLeft L P E : (D ⥤ₑ E) ⥤ C ⥤ₑ E`) iff `G` inverts the class
+of morphisms `P.isoModSerre`. -/
 lemma essImage_whiskeringLeft :
     (whiskeringLeft L P E).essImage =
       fun G ↦ P.isoModSerre.IsInvertedBy G.obj := by

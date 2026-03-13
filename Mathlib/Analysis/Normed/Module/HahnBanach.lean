@@ -105,7 +105,6 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
 
 open Module
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
 from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
 with a finite-dimensional range, then `f` admits an extension to a continuous linear map `E → F`.
@@ -163,7 +162,6 @@ theorem exists_dual_vector (x : E) (h : ‖x‖ ≠ 0) : ∃ g : StrongDual 𝕜
     simp only [hval, norm_algebraMap', norm_norm] at hle
     exact one_le_of_le_mul_right₀ (by positivity) hle
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
 the dual element has norm at most `1` (this cannot be improved for the trivial
 vector space). -/

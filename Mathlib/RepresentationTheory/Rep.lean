@@ -433,7 +433,6 @@ variable (α : Type u) (A : Rep k G)
 abbrev finsupp : Rep k G :=
   Rep.of (Representation.finsupp A.ρ α)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (k G) in
 /-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
@@ -531,7 +530,6 @@ variable {α}
 
 omit [DecidableEq α]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
     DFunLike.coe (F := ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k (α →₀ k)) →ₗ[k] α →₀ G →₀ k)
@@ -539,7 +537,6 @@ lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G
       single i (single g (r * s)) := by
   simp [leftRegularTensorTrivialIsoFree, tensorObj_carrier]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
     DFunLike.coe (F := (α →₀ G →₀ k) →ₗ[k] ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k (α →₀ k)))

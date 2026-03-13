@@ -64,6 +64,7 @@ inductive GenerateOpen (g : Set (Set α)) : Set α → Prop
   | sUnion : ∀ S : Set (Set α), (∀ s ∈ S, GenerateOpen g s) → GenerateOpen g (⋃₀ S)
 
 /-- The smallest topological space containing the collection `g` of basic sets -/
+@[implicit_reducible]
 def generateFrom (g : Set (Set α)) : TopologicalSpace α where
   IsOpen := GenerateOpen g
   isOpen_univ := GenerateOpen.univ
@@ -94,6 +95,7 @@ lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α}
     tendsto_principal]; rfl
 
 /-- Construct a topology on α given the filter of neighborhoods of each point of α. -/
+@[implicit_reducible]
 protected def mkOfNhds (n : α → Filter α) : TopologicalSpace α where
   IsOpen s := ∀ a ∈ s, s ∈ n a
   isOpen_univ _ _ := univ_mem
@@ -155,6 +157,7 @@ theorem le_generateFrom_iff_subset_isOpen {g : Set (Set α)} {t : TopologicalSpa
 
 /-- If `s` equals the collection of open sets in the topology it generates, then `s` defines a
 topology. -/
+@[implicit_reducible]
 protected def mkOfClosure (s : Set (Set α)) (hs : { u | GenerateOpen s u } = s) :
     TopologicalSpace α where
   IsOpen u := u ∈ s
@@ -162,9 +165,9 @@ protected def mkOfClosure (s : Set (Set α)) (hs : { u | GenerateOpen s u } = s)
   isOpen_inter := hs ▸ TopologicalSpace.GenerateOpen.inter
   isOpen_sUnion := hs ▸ TopologicalSpace.GenerateOpen.sUnion
 
-theorem mkOfClosure_sets {s : Set (Set α)} {hs : { u | GenerateOpen s u } = s} :
+theorem mkOfClosure_sets {s : Set (Set α)} {hs : {u | GenerateOpen s u} = s} :
     TopologicalSpace.mkOfClosure s hs = generateFrom s :=
-  TopologicalSpace.ext hs.symm
+  TopologicalSpace.ext (by ext U; exact Set.ext_iff.mp hs.symm U)
 
 theorem gc_generateFrom (α) :
     GaloisConnection (fun t : TopologicalSpace α => OrderDual.toDual { s | IsOpen[t] s })
@@ -277,6 +280,11 @@ theorem IndiscreteTopology.isOpen_iff [IndiscreteTopology α] (U : Set α) :
 
 theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
   letI : TopologicalSpace α := ⊤; IndiscreteTopology.isOpen_iff _
+
+/-- Every function to the indiscrete topology is continuous -/
+theorem continuous_of_indiscreteTopology {β} [TopologicalSpace β] [IndiscreteTopology β]
+    {f : α → β} : Continuous f where
+  isOpen_preimage := by simp [IndiscreteTopology.isOpen_iff]
 
 /-- A topological space is discrete if every set is open, that is,
   its topology equals the discrete topology `⊥`. -/
@@ -616,6 +624,7 @@ lemma generateFrom_insert_empty {α : Type*} {s : Set (Set α)} :
 
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
+@[implicit_reducible]
 def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
   IsOpen s := a ∈ s → s ∈ f
   isOpen_univ _ := univ_mem
@@ -691,6 +700,10 @@ theorem IndiscreteTopology.nhds_eq [TopologicalSpace α] [IndiscreteTopology α]
   cases IndiscreteTopology.eq_top α
   exact nhds_top
 
+theorem clusterPt_of_indiscreteTopology [TopologicalSpace α] [IndiscreteTopology α]
+    {x : α} {f : Filter α} [f.NeBot] : ClusterPt x f := by
+  simpa [ClusterPt, IndiscreteTopology.nhds_eq]
+
 /-- In the indiscrete topology no points are separable.
 
 The corresponding `bot` lemma is handled more generally by `inseparable_iff_eq`. -/
@@ -744,7 +757,7 @@ theorem continuous_iff_le_induced {t₁ : TopologicalSpace α} {t₂ : Topologic
 lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
     Continuous[t, generateFrom b] f ↔ ∀ s ∈ b, IsOpen (f ⁻¹' s) := by
   rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]
-  simp only [isOpen_coinduced, preimage_id', subset_def, mem_setOf_eq]
+  simp only [isOpen_coinduced, subset_def, mem_setOf_eq]
 
 @[continuity, fun_prop]
 theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f t, t] f :=
