@@ -175,10 +175,9 @@ theorem card_support_singularValues : T.singularValues.support.card = finrank �
   have hS : ∀ m ∈ T.singularValues.support, m < finrank 𝕜 E := by
     grind [singularValues_of_finrank_le]
   have hT := T.isSymmetric_adjoint_comp_self
-  have (i : Fin _) : hT.eigenvalues rfl i = 0 ↔ hT.eigenvalues rfl i ≤ 0 := by
-    grind [T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i]
   have : T.singularValues.support.attachFin hS = ({i | hT.eigenvalues rfl i = (0 : 𝕜)} : Finset _)ᶜ
-    := by ext; simp [T.singularValues_fin rfl, this]
+    := by ext i; simpa [T.singularValues_fin rfl] using
+      (T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i).lt_iff_ne'
   rw [← T.singularValues.support.card_attachFin hS, this, Finset.card_compl, Fintype.card_fin,
     hT.card_filter_eigenvalues_eq rfl (μ := 0) sorry, Module.End.eigenspace_zero,
     ← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker, add_tsub_cancel_right,
