@@ -671,17 +671,17 @@ theorem lowerBounds_le_upperBounds (ha : a ∈ lowerBounds s) (hb : b ∈ upperB
     s.Nonempty → a ≤ b
   | ⟨_, hc⟩ => le_trans (ha hc) (hb hc)
 
-theorem lowerBounds_le_upperBounds_of_nonempty_inter (ha : a ∈ lowerBounds s)
-    (hb : b ∈ upperBounds s') (h : (s ∩ s').Nonempty) : a ≤ b := by
+theorem lowerBounds_le_upperBounds_of_nonempty_inter (h : (s ∩ s').Nonempty)
+    (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s') : a ≤ b := by
   have ⟨x, hx, hx'⟩ := h
   exact le_trans (ha hx) (hb hx')
 
 theorem isGLB_le_isLUB (ha : IsGLB s a) (hb : IsLUB s b) (hs : s.Nonempty) : a ≤ b :=
   lowerBounds_le_upperBounds ha.1 hb.1 hs
 
-theorem isGLB_le_isLUB_of_nonempty_inter (ha : IsGLB s a) (hb : IsLUB s' b)
-    (h : (s ∩ s').Nonempty) : a ≤ b :=
-  lowerBounds_le_upperBounds_of_nonempty_inter ha.left hb.left h
+theorem isGLB_le_isLUB_of_nonempty_inter (h : (s ∩ s').Nonempty) (ha : IsGLB s a)
+    (hb : IsLUB s' b) : a ≤ b :=
+  lowerBounds_le_upperBounds_of_nonempty_inter h ha.left hb.left
 
 @[to_dual lt_isGLB_iff]
 theorem isLUB_lt_iff (ha : IsLUB s a) : a < b ↔ ∃ c ∈ upperBounds s, c < b :=
