@@ -303,7 +303,6 @@ lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
   peel h₀ with r hr _
   exact this.trans hab
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
     (hb : IsStrictlyPositive b := by cfc_tac) :
     a ≤ b ↔ ‖sqrt a * (b : A) ^ (-(1 / 2) : ℝ)‖ ≤ 1 := by

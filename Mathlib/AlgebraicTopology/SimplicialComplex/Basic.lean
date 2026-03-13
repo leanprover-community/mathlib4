@@ -77,6 +77,9 @@ instance : LE (PreAbstractSimplicialComplex ι) where
 instance : LT (PreAbstractSimplicialComplex ι) where
   lt K L := K.faces ⊂ L.faces
 
+instance : IsConcreteLE (PreAbstractSimplicialComplex ι) (Finset ι) where
+  coe_subset_coe' := .rfl
+
 instance : PartialOrder (PreAbstractSimplicialComplex ι) :=
   PartialOrder.lift (fun K => K.faces) (fun _ _ => PreAbstractSimplicialComplex.ext)
 
@@ -102,12 +105,12 @@ instance : Bot (PreAbstractSimplicialComplex ι) where
       isRelLowerSet_faces := isRelLowerSet_empty }
 
 instance : CompleteSemilatticeSup (PreAbstractSimplicialComplex ι) where
-  le_sSup _ _ hK := Set.subset_biUnion_of_mem hK
-  sSup_le _ _ hK := Set.iUnion₂_subset hK
+  isLUB_sSup _ := .of_image SetLike.coe_subset_coe isLUB_biSup
 
 instance : CompleteSemilatticeInf (PreAbstractSimplicialComplex ι) where
-  sInf_le _ _ hK := Set.inter_subset_left.trans (Set.biInter_subset_of_mem hK)
-  le_sInf _ K hK _ ht := ⟨Set.mem_iInter₂.mpr fun L hL => hK L hL ht, (K.isRelLowerSet_faces ht).1⟩
+  isGLB_sInf _ :=
+    ⟨fun _ hK ↦ Set.inter_subset_left.trans (Set.biInter_subset_of_mem hK),
+      fun K hK _ ht ↦ ⟨Set.mem_iInter₂.mpr fun _ hL => hK hL ht, (K.isRelLowerSet_faces ht).1⟩⟩
 
 instance : CompleteLattice (PreAbstractSimplicialComplex ι) where
   inf := min
@@ -198,6 +201,9 @@ instance : LE (AbstractSimplicialComplex ι) where
 instance : LT (AbstractSimplicialComplex ι) where
   lt K L := K.faces ⊂ L.faces
 
+instance : IsConcreteLE (AbstractSimplicialComplex ι) (Finset ι) where
+  coe_subset_coe' := .rfl
+
 instance : PartialOrder (AbstractSimplicialComplex ι) :=
   PartialOrder.lift (fun K => K.faces) (fun _ _ => AbstractSimplicialComplex.ext)
 
@@ -260,20 +266,24 @@ instance : Bot (AbstractSimplicialComplex ι) where
       singleton_mem v := ⟨v, rfl⟩ }
 
 instance : CompleteSemilatticeSup (AbstractSimplicialComplex ι) where
-  le_sSup _ K hK _ ht := Or.inl (Set.mem_biUnion hK ht)
-  sSup_le _ L hL _ ht := by
-    cases ht with
-    | inl ht =>
-      simp only [Set.mem_iUnion] at ht
-      obtain ⟨K, hK, htK⟩ := ht
-      exact hL K hK htK
-    | inr ht =>
-      obtain ⟨v, hv⟩ := ht
-      exact hv ▸ L.singleton_mem v
+  isLUB_sSup _ := by
+    constructor
+    · intro K hK _ ht
+      exact Or.inl (Set.mem_biUnion hK ht)
+    · intro L hL _ ht
+      cases ht with
+      | inl ht =>
+        simp only [Set.mem_iUnion] at ht
+        obtain ⟨K, hK, htK⟩ := ht
+        exact hL hK htK
+      | inr ht =>
+        obtain ⟨v, hv⟩ := ht
+        exact hv ▸ L.singleton_mem v
 
 instance : CompleteSemilatticeInf (AbstractSimplicialComplex ι) where
-  sInf_le _ _ hK := Set.inter_subset_left.trans (Set.biInter_subset_of_mem hK)
-  le_sInf _ K hK _ ht := ⟨Set.mem_iInter₂.mpr fun L hL => hK L hL ht, (K.isRelLowerSet_faces ht).1⟩
+  isGLB_sInf _ :=
+    ⟨fun _ hK ↦ Set.inter_subset_left.trans (Set.biInter_subset_of_mem hK),
+      fun K hK _ ht ↦ ⟨Set.mem_iInter₂.mpr fun _ hL => hK hL ht, (K.isRelLowerSet_faces ht).1⟩⟩
 
 instance : CompleteLattice (AbstractSimplicialComplex ι) where
   inf := min
