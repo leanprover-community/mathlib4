@@ -102,7 +102,7 @@ theorem neg_le_neg (S T : Submodule R M) : -S ≤ -T ↔ S ≤ T :=
 theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset
 
-theorem neg_le_iff_neg_eq {S : Submodule R M} : -S = S ↔ -S ≤ S :=
+theorem neg_eq_iff_neg_le {S : Submodule R M} : -S = S ↔ -S ≤ S :=
   ⟨le_of_eq, fun h => antisymm h <| (Submodule.neg_le S S).mp h⟩
 
 /-- `Submodule.pointwiseNeg` as an order isomorphism. -/
