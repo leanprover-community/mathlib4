@@ -268,6 +268,7 @@ theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 �
 
 end Prime
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine binaryRec ?_ ?_

@@ -205,7 +205,6 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma powersetCard_empty_subsingleton (n : ℕ) :
     (powersetCard n (∅ : Finset α) : Set <| Finset α).Subsingleton := by
   simp [Set.Subsingleton, subset_empty]

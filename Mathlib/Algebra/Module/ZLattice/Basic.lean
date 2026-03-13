@@ -297,7 +297,6 @@ end NormedLatticeField
 
 section Real
 
-set_option backward.isDefEq.respectTransparency false in
 theorem discreteTopology_pi_basisFun [Finite ι] :
     DiscreteTopology (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
   cases nonempty_fintype ι
@@ -348,7 +347,6 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
     simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_setOf_eq, LinearEquiv.coe_coe,
       Set.mem_preimage, Basis.equivFun_apply, Set.mem_pi, Set.mem_univ, forall_true_left]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that the set defined
 by `ZSpan.fundamentalDomain` is a fundamental domain. -/
 protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensMeasurableSpace E]
@@ -364,7 +362,6 @@ protected theorem isAddFundamentalDomain' [Finite ι] [MeasurableSpace E] [Opens
     IsAddFundamentalDomain (span ℤ (Set.range b)).toAddSubgroup (fundamentalDomain b) μ :=
   ZSpan.isAddFundamentalDomain b μ
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [BorelSpace E]
     {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
@@ -380,7 +377,6 @@ theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace
       Basis.map_equiv, Equiv.refl_symm, Basis.reindex_refl]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measureReal_fundamentalDomain
     [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
@@ -395,7 +391,6 @@ theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ
     mul_one, ← Matrix.det_transpose]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem volume_real_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ (ι → ℝ)) :
     volume.real (fundamentalDomain b) = |(Matrix.of b).det| := by
@@ -514,14 +509,12 @@ instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup 
       Submodule.map_top, range_subtype, h_img]⟩
   exact ZLattice.module_finite ℝ L₀
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ZLattice.module_free [IsZLattice K L] : Module.Free ℤ L := by
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Free ℤ L := by
@@ -529,7 +522,6 @@ instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
   have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
@@ -616,7 +608,6 @@ variable {ι : Type*} [hs : IsZLattice K L] (b : Basis ι ℤ L)
 
 namespace Module.Basis
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any `ℤ`-basis of `L` is also a `K`-basis of `E`. -/
 def ofZLatticeBasis : Basis ι K E := by
   have : Module.Finite ℤ L := ZLattice.module_finite K L
@@ -628,12 +619,10 @@ def ofZLatticeBasis : Basis ι K E := by
       range_subtype, top_le_iff, hs.span_top]
   · rw [← Fintype.card_congr e, ← finrank_eq_card_chooseBasisIndex, ZLattice.rank K L]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofZLatticeBasis_apply (i : ι) : b.ofZLatticeBasis K L i = b i := by
   simp [Basis.ofZLatticeBasis]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     (b.ofZLatticeBasis K L).repr x i = b.repr x i := by
@@ -645,7 +634,6 @@ theorem ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     LinearEquiv.coe_coe, coe_subtype, ← b.ofZLatticeBasis_apply K, repr_self,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofZLatticeBasis_span : span ℤ (Set.range (b.ofZLatticeBasis K)) = L := by
   calc span ℤ (Set.range (b.ofZLatticeBasis K))
     _ = span ℤ (L.subtype '' Set.range b) := by congr; ext; simp
@@ -662,7 +650,6 @@ theorem ZLattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [Norm
   convert ZSpan.isAddFundamentalDomain (b.ofZLatticeBasis ℝ) μ
   all_goals exact (b.ofZLatticeBasis_span ℝ).symm
 
-set_option backward.isDefEq.respectTransparency false in
 instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] :
     Countable L := by
@@ -694,7 +681,6 @@ section Basis
 
 variable {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Return an arbitrary `ℤ`-basis of a lattice `L` of `ι → ℝ` indexed by `ι`.
 -/
@@ -794,7 +780,6 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] [FiniteDimensional
   [ProperSpace F]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice K L]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Module.Basis.ofZLatticeBasis_comap (e : F ≃L[K] E) {ι : Type*} (b : Basis ι ℤ L) :
     (b.ofZLatticeComap K L e.toLinearEquiv).ofZLatticeBasis K (ZLattice.comap K L e.toLinearMap) =
     (b.ofZLatticeBasis K L).map e.symm.toLinearEquiv := by
@@ -803,7 +788,6 @@ theorem Module.Basis.ofZLatticeBasis_comap (e : F ≃L[K] E) {ι : Type*} (b : B
 
 end NormedLinearOrderedField_comap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is periodic wrt a ℤ-lattice, then the range of `f` is compact. -/
 lemma IsZLattice.isCompact_range_of_periodic
     {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]

@@ -65,7 +65,6 @@ section
 
 variable {n : Type*} {R : Type*} [CommRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Polynomial in
 attribute [local simp] MvPolynomial.optionEquivLeft_X_none in -- tag simp globally?
 lemma irreducible_mul_X_add {n : Type*} {R : Type*} [CommRing R] [IsDomain R]
@@ -170,7 +169,7 @@ theorem coeff_sumSMulX (i : n) :
   · simp
   intro j hj hji
   rw [coeff_smul, coeff_X', if_neg]
-  · aesop
+  · simp
   · rwa [Finsupp.single_left_inj Nat.one_ne_zero]
 
 theorem irreducible_sumSMulX [IsDomain R]

@@ -28,9 +28,9 @@ The equational criterion for flatness can be stated in the following form
 conditions are equivalent:
 * $M$ is flat.
 * For finite free modules $R^l$, all elements $f \in R^l$, and all linear maps
-$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
-linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
-that $x = y \circ a$ and $a(f) = 0$.
+  $x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
+  linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
+  that $x = y \circ a$ and $a(f) = 0$.
 
 Of course, the module $R^l$ in this statement can be replaced by an arbitrary free module
 (`Module.Flat.exists_factorization_of_apply_eq_zero_of_free`).
@@ -109,9 +109,9 @@ Let $M$ be a module over a commutative ring $R$. The following are equivalent:
 * Every $\sum_i f_i \otimes x_i$ that vanishes in $R \otimes M$ vanishes trivially.
 * Every relation $\sum_i f_i x_i = 0$ in $M$ is trivial.
 * For all finite free modules $R^l$, all elements $f \in R^l$, and all linear maps
-$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
-linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
-that $x = y \circ a$ and $a(f) = 0$.
+  $x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
+  linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
+  that $x = y \circ a$ and $a(f) = 0$.
 -/
 @[stacks 00HK, stacks 058D "(1) ↔ (2)"]
 theorem tfae_equational_criterion : List.TFAE [
@@ -266,7 +266,6 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [A
   ⟨k, a ∘ₗ e.symm, y, by rwa [← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm], by
     rwa [comp_assoc]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every homomorphism from a finitely presented module to a flat module factors through a finite
 free module. -/
 @[stacks 058E "only if"]

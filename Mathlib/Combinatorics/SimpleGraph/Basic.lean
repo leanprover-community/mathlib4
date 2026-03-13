@@ -321,12 +321,8 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     by_cases h : G.Adj v w
     · exact Or.inl h
     · exact Or.inr ⟨hvw, h⟩
-  le_sSup _ G hG _ _ hab := ⟨G, hG, hab⟩
-  sSup_le s G hG a b := by
-    rintro ⟨H, hH, hab⟩
-    exact hG _ hH hab
-  sInf_le _ _ hG _ _ hab := hab.1 hG
-  le_sInf _ _ hG _ _ hab := ⟨fun _ hH => hG _ hH hab, hab.ne⟩
+  isLUB_sSup _ := ⟨fun G hG _ _ hab ↦ ⟨G, hG, hab⟩, fun _ hG _ _ ⟨_, hH, hab⟩ ↦ hG hH hab⟩
+  isGLB_sInf _ := ⟨fun _ hG _ _ hab ↦ hab.1 hG, fun _ hG _ _ hab ↦ ⟨fun _ hH => hG hH hab, hab.ne⟩⟩
   iInf_iSup_eq f := by ext; simp [Classical.skolem]
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
 abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
@@ -633,7 +629,6 @@ theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
 @[simp] lemma fromEdgeSet_le {s : Set (Sym2 V)} :
     fromEdgeSet s ≤ G ↔ s \ Sym2.diagSet ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s Sym2.diagSet where
   mp := by rintro rfl; simp +contextual [Set.disjoint_right]
   mpr := by rintro ⟨rfl, hs⟩; simp [hs]
@@ -763,7 +758,6 @@ theorem adj_incidenceSet_inter {v : V} {e : Sym2 V} (he : e ∈ G.edgeSet) (h : 
   · rintro rfl
     exact ⟨⟨he, h⟩, he, Sym2.other_mem _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem compl_neighborSet_disjoint (G : SimpleGraph V) (v : V) :
     Disjoint (G.neighborSet v) (Gᶜ.neighborSet v) := by
   rw [Set.disjoint_iff]

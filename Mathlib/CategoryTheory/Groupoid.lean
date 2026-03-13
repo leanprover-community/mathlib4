@@ -80,7 +80,6 @@ theorem Groupoid.inv_eq_inv (f : X ⟶ Y) : Groupoid.inv f = CategoryTheory.inv 
 def Groupoid.invEquiv : (X ⟶ Y) ≃ (Y ⟶ X) :=
   ⟨Groupoid.inv, Groupoid.inv, fun f => by simp, fun f => by simp⟩
 
-set_option backward.whnf.reducibleClassField false in
 instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveReverse C where
   reverse' f := Groupoid.inv f
   inv' f := by
@@ -135,16 +134,19 @@ noncomputable instance {C : Type u} [Groupoid.{v} C] : IsGroupoid C where
 variable {C : Type u} [Category.{v} C]
 
 /-- Promote (noncomputably) an `IsGroupoid` to a `Groupoid` structure. -/
+@[implicit_reducible]
 noncomputable def Groupoid.ofIsGroupoid [IsGroupoid C] :
     Groupoid.{v} C where
   inv := fun f => CategoryTheory.inv f
 
 /-- A category where every morphism `IsIso` is a groupoid. -/
+@[implicit_reducible]
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) :
     Groupoid.{v} C where
   inv := fun f => CategoryTheory.inv f
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
+@[implicit_reducible]
 def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupoid.{v} C where
   inv _ := all_unique.default
 
@@ -156,6 +158,7 @@ lemma isGroupoid_of_reflects_iso {C D : Type*} [Category* C] [Category* D]
   all_isIso _ := isIso_of_reflects_iso _ F
 
 /-- A category equipped with a fully faithful functor to a groupoid is fully faithful -/
+@[implicit_reducible]
 def Groupoid.ofFullyFaithfulToGroupoid {C : Type*} [𝒞 : Category C] {D : Type u} [Groupoid.{v} D]
     (F : C ⥤ D) (h : F.FullyFaithful) : Groupoid C :=
   { 𝒞 with
