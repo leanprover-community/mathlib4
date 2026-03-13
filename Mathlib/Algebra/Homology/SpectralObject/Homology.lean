@@ -65,9 +65,8 @@ lemma dCokernelSequence_exact
   intro A x₂ hx₂
   dsimp at hx₂ ⊢
   have hx₂' := hx₂ =≫ X.ιE ..
-  simp only [assoc, zero_comp] at hx₂'
-  rw [X.map_ιE f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)
-    (threeδ₃Toδ₂ f₂ f₃ f₄ f₃₄ h₃₄) n₁ n₂ n₃] at hx₂'
+  rw [assoc, zero_comp, X.map_ιE f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄)
+    (threeδ₃Toδ₂ f₂ f₃ f₄ f₃₄) n₁ n₂ n₃] at hx₂'
   obtain ⟨A₁, π₁, _, x₁, hx₁⟩ :=
     ((X.sequenceΨ_exact f₂ f₃ f₄ _ rfl f₃₄ h₃₄ n₁ n₂).exact 1).exact_up_to_refinements
       (x₂ ≫ X.ιE ..) (by dsimp [sequenceΨ, Precomp.map]; rw [assoc, hx₂'])
