@@ -185,12 +185,12 @@ variable (C)
 
 instance IsStableUnderBaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderBaseChange where
-  of_isPullback h hg := h.isIso_snd_of_isIso
+  of_isPullback h _ := h.isIso_snd_of_isIso
 
 set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderBaseChange.monomorphisms :
     (monomorphisms C).IsStableUnderBaseChange where
-  of_isPullback h hg := h.mono_snd_of_mono
+  of_isPullback h _ := h.mono_snd_of_mono
 
 variable {C P}
 
@@ -308,13 +308,13 @@ lemma IsStableUnderCobaseChange.of_forall_exists_isPullback {P : MorphismPropert
 
 instance IsStableUnderCobaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderCobaseChange where
-  of_isPushout h hf := h.isIso_inl_of_isIso
+  of_isPushout h _ := h.isIso_inl_of_isIso
 
 set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 instance IsStableUnderCobaseChange.epimorphisms :
     (epimorphisms C).IsStableUnderCobaseChange where
-  of_isPushout h hf := h.epi_inl_of_epi
+  of_isPushout h _ := h.epi_inl_of_epi
 
 instance IsStableUnderCobaseChange.respectsIso
     [IsStableUnderCobaseChange P] : RespectsIso P :=

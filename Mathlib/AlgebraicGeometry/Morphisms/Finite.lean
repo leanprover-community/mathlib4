@@ -116,7 +116,7 @@ lemma _root_.AlgebraicGeometry.IsClosedImmersion.iff_isFinite_and_mono :
     rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
-    simp_rw [this, forall_and, monomorphisms]
+    simp_rw [this, forall_and]
   rw [HasAffineProperty.iff_of_isAffine (P := @IsClosedImmersion),
     HasAffineProperty.iff_of_isAffine (P := @IsFinite),
     RingHom.surjective_iff_epi_and_finite, @and_comm (Epi _), ← and_assoc]

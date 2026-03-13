@@ -118,7 +118,7 @@ section
 
 variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y}
 
-lemma isIso_fst_of_mono (h : IsPullback fst snd f f) [Mono f] :-- (inst : Mono f := by infer_instance) :
+lemma isIso_fst_of_mono (h : IsPullback fst snd f f) [Mono f] :
     IsIso fst := h.cone.isIso_fst_of_mono_of_isLimit h.isLimit
 
 lemma isIso_snd_iso_of_mono (h : IsPullback fst snd f f) [Mono f] :
