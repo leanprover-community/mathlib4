@@ -65,6 +65,7 @@ structure InfHom (α β : Type*) [Min α] [Min β] where
 structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β, InfHom α β where
 
 attribute [to_dual existing] LatticeHom.toInfHom
+
 section
 
 /-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
