@@ -69,7 +69,7 @@ lemma dCokernelSequence_exact
     (threeδ₃Toδ₂ f₂ f₃ f₄ f₃₄) n₁ n₂ n₃] at hx₂'
   obtain ⟨A₁, π₁, _, x₁, hx₁⟩ :=
     ((X.sequenceΨ_exact f₂ f₃ f₄ _ rfl f₃₄ h₃₄ n₁ n₂).exact 1).exact_up_to_refinements
-      (x₂ ≫ X.ιE ..) (by dsimp [sequenceΨ, Precomp.map]; rw [assoc, hx₂'])
+      (x₂ ≫ X.ιE ..) (by simp [sequenceΨ, Precomp.map, hx₂'])
   dsimp [sequenceΨ, Precomp.map] at hx₁
   refine ⟨A₁, π₁, inferInstance, x₁ ≫ X.πE f₃ f₄ f₅ n₀ n₁ n₂, ?_⟩
   rw [← cancel_mono (X.ιE ..), assoc, assoc, assoc, hx₁, πE_d_ιE ..]
