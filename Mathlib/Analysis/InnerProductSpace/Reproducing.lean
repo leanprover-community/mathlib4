@@ -269,7 +269,6 @@ private abbrev kerFun (x : X) :
     _ ≤ ‖K x x‖ * ‖v‖ * ‖v‖ := by simp [mul_le_mul_of_nonneg_right, le_opNorm]
     _ ≤ _ := by simp [mul_pow, mul_assoc, ← sq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[no_expose]
 instance instRKHS : RKHS 𝕜 (OfKernel K) X V where
   coeCLM := .pi fun x ↦ (OfKernel.kerFun K x).adjoint

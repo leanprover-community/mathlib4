@@ -712,10 +712,8 @@ def getFiles
       IO.Process.exit 1
 
   if decompress then
-    -- When parallel, decompression was pipelined inside downloadFiles.
-    -- When non-parallel, fall back to batch decompression.
-    unless parallel do
-      IO.unpackCache hashMap forceUnpack
+    -- decompress anything which hasn't already been decompressed during download
+    IO.unpackCache hashMap forceUnpack
   else
     IO.println "Downloaded all files successfully!"
 

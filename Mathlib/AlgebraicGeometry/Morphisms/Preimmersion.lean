@@ -80,9 +80,6 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
 lemma SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
     IsPreimmersion (Spec.map f) ↔ IsEmbedding (PrimeSpectrum.comap f.hom) ∧
       f.hom.SurjectiveOnStalks := by
-  haveI : (RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).RespectsIso := by
-    rw [← RingHom.toMorphismProperty_respectsIso_iff]
-    exact RingHom.surjective_respectsIso
   rw [← HasRingHomProperty.Spec_iff (P := @SurjectiveOnStalks), isPreimmersion_iff, and_comm]
   rfl
 

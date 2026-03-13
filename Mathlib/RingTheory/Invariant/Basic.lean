@@ -50,6 +50,7 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
   [IsIntegrallyClosed A] [IsIntegralClosure B A L]
 
 /-- In the AKLB setup, the Galois group of `L/K` acts on `B`. -/
+@[implicit_reducible]
 noncomputable def IsIntegralClosure.MulSemiringAction [Algebra.IsAlgebraic K L] :
     MulSemiringAction Gal(L/K) B :=
   MulSemiringAction.compHom B (galRestrict A K L B).toMonoidHom

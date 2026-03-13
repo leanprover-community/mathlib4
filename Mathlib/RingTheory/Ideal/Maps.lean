@@ -114,6 +114,13 @@ theorem map_le_comap_of_inverse [RingHomClass G S R] (g : G) (I : Ideal R)
     I.map f ≤ I.comap g :=
   map_le_comap_of_inv_on _ _ _ <| h.leftInvOn _
 
+theorem eq_bot_of_comap_eq_bot' {f : R →+* S} (hf : Function.Surjective f)
+    {I : Ideal S} (h : I.comap f = ⊥) :
+    I = ⊥ := by
+  ext x
+  obtain ⟨y, hy⟩ := hf x
+  aesop (add norm [Submodule.eq_bot_iff])
+
 variable [RingHomClass F R S]
 
 instance (priority := low) [K.IsTwoSided] : (comap f K).IsTwoSided :=
@@ -980,6 +987,15 @@ theorem annihilator_span_singleton (g : M) :
 
 @[simp]
 theorem mul_annihilator (I : Ideal R) : I * annihilator I = ⊥ := by rw [mul_comm, annihilator_mul]
+
+theorem restrictScalars_map_smul_eq {S M : Type*}
+    [CommSemiring S] [Algebra S R]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower S R M]
+    (I : Ideal S) (N : Submodule R M) :
+    ((I.map (algebraMap S R)) • N).restrictScalars S = I • N.restrictScalars S := by
+  have := N.restrictScalars_image_smul_eq (I : Set S)
+  rw [coe_set_smul] at this
+  rw [Ideal.map, span_smul_eq, ← this]
 
 end Submodule
 

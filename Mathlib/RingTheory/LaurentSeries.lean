@@ -466,7 +466,7 @@ namespace RatFunc
 open IsDedekindDomain.HeightOneSpectrum PowerSeries
 open scoped LaurentSeries
 
-/-- `valuationX` is an abbrevation for the `X`-adic valuation given by
+/-- `polynomialValuationX` is an abbreviation for the `X`-adic valuation given by
 `(Polynomial.idealX K).valuation K⟮X⟯`. -/
 abbrev polynomialValuationX : Valuation K⟮X⟯ ℤᵐ⁰ :=
   (Polynomial.idealX K).valuation _
@@ -495,7 +495,6 @@ instance valued : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K
 set_option backward.isDefEq.respectTransparency false in
 lemma valuation_def : (Valued.v : Valuation K⸨X⸩ ℤᵐ⁰) = (PowerSeries.idealX K).valuation _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma valuation_coe_ratFunc (f : K⟮X⟯) :
     Valued.v (f : K⸨X⸩) = Valued.v f := by
   simp [adicValued_apply, ← valuation_eq_LaurentSeries_valuation]
@@ -876,8 +875,7 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
         ← Units.val_mk0 (a := exp f.order) exp_ne_zero, ← hη]
       apply inv_mul_lt_of_lt_mul₀
       rwa [← Units.val_mul]
-    · simp only [PowerSeries.coe_pow, pow_ne_zero, PowerSeries.coe_X, ne_eq,
-        single_eq_zero_iff, one_ne_zero, not_false_iff]
+    · simp
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg ord_nonpos)
     obtain ⟨P, hP⟩ := exists_Polynomial_intValuation_lt (PowerSeries.X ^ s * F) γ
     use P
