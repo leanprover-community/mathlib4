@@ -497,7 +497,6 @@ lemma RationalMap.mem_domain {f : X ⤏ Y} {x} :
 lemma RationalMap.dense_domain (f : X ⤏ Y) : Dense (X := X) f.domain :=
   f.inductionOn (fun g ↦ g.dense_domain.mono g.le_domain_toRationalMap)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The open cover of the domain of `f : X ⤏ Y`,
 consisting of all the domains of the partial maps in the equivalence class. -/
 noncomputable

@@ -237,7 +237,7 @@ instance : IsLocalizedModule p (M'.toLocalized₀ p f) where
       IsLocalizedModule.exists_of_eq (S := p) (f := f) (congr_arg Subtype.val e)
 
 instance isLocalizedModule : IsLocalizedModule p (M'.toLocalized' S p f) :=
-  inferInstanceAs (IsLocalizedModule p (M'.toLocalized₀ p f))
+  inferInstanceAs% (IsLocalizedModule p (M'.toLocalized₀ p f))
 
 /-- The canonical isomorphism between the localization of a submodule and its realization
 as a submodule in the localized module. -/

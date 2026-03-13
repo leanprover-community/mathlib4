@@ -25,7 +25,6 @@ namespace MvPolynomial
 
 variable {σ R : Type*} [CommRing R] {P : MvPolynomial σ R}
 
-set_option backward.isDefEq.respectTransparency false in
 -- Subsumed by `isNilpotent_iff` below.
 private theorem isNilpotent_iff_of_fintype [Finite σ] :
     IsNilpotent P ↔ ∀ i, IsNilpotent (P.coeff i) := by
@@ -76,7 +75,7 @@ instance : IsLocalHom (C : _ →+* MvPolynomial σ R) where
   map_nonunit := by classical simp +contextual [isUnit_iff, coeff_C, apply_ite]
 
 instance : IsLocalHom (algebraMap R (MvPolynomial σ R)) :=
-  inferInstanceAs (IsLocalHom C)
+  inferInstanceAs% (IsLocalHom C)
 
 theorem isUnit_iff_totalDegree_of_isReduced [IsReduced R] :
     IsUnit P ↔ IsUnit (P.coeff 0) ∧ P.totalDegree = 0 := by

@@ -160,7 +160,7 @@ lemma zero_notMem_range_coroot [NeZero (2 : R)] : 0 ∉ range P.coroot :=
   P.flip.zero_notMem_range_root
 
 lemma exists_ne_zero [Nonempty ι] [NeZero (2 : R)] : ∃ i, P.root i ≠ 0 := by
-  obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
+  obtain ⟨i⟩ := inferInstanceAs% (Nonempty ι)
   exact ⟨i, P.ne_zero i⟩
 
 lemma exists_ne_zero' [Nonempty ι] [NeZero (2 : R)] : ∃ i, P.coroot i ≠ 0 :=

@@ -85,7 +85,7 @@ instance : Inhabited (Grp C) where
   default := trivial C
 
 instance : Category (Grp C) :=
-  inferInstanceAs (Category (InducedCategory _ Grp.toMon))
+  inferInstanceAs% (Category (InducedCategory _ Grp.toMon))
 
 @[simp]
 theorem id_hom_hom (A : Grp C) : Mon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=

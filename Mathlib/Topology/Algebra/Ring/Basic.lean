@@ -294,7 +294,7 @@ namespace NonUnitalSubring
 variable [NonUnitalRing R] [IsTopologicalRing R]
 
 instance instIsTopologicalRing (S : NonUnitalSubring R) : IsTopologicalRing S :=
-  { S.toSubsemigroup.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+  { S.toSubsemigroup.continuousMul, inferInstanceAs% (IsTopologicalAddGroup S.toAddSubgroup) with }
 
 /-- The (topological) closure of a non-unital subring of a non-unital topological ring is
 itself a non-unital subring. -/
@@ -330,7 +330,7 @@ end NonUnitalSubring
 variable [Ring R] [IsTopologicalRing R]
 
 instance Subring.instIsTopologicalRing (S : Subring R) : IsTopologicalRing S :=
-  { S.toSubmonoid.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
+  { S.toSubmonoid.continuousMul, inferInstanceAs% (IsTopologicalAddGroup S.toAddSubgroup) with }
 
 instance Subring.continuousSMul (s : Subring R) (X) [TopologicalSpace X] [MulAction R X]
     [ContinuousSMul R X] : ContinuousSMul s X :=

@@ -108,7 +108,6 @@ def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
     simp [fData.tensorHom_eq, fData.associator_eq, tensorHom_def, whisker_exchange_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A faithful functor equipped with a `InducingFunctorData` structure is monoidal. -/
 def fromInducedCoreMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
@@ -195,7 +194,6 @@ variable (e : C ≌ D)
 equivalence `C ≌ Transported e`. -/
 abbrev equivalenceTransported : C ≌ Transported e := e
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (equivalenceTransported e).inverse.Monoidal := by
   dsimp +instances only [Transported.instMonoidalCategory]
   infer_instance
@@ -207,7 +205,7 @@ noncomputable instance : (equivalenceTransported e).functor.Monoidal :=
   (equivalenceTransported e).symm.inverseMonoidal
 
 noncomputable instance : (equivalenceTransported e).symm.inverse.Monoidal :=
-  inferInstanceAs (equivalenceTransported e).functor.Monoidal
+  inferInstanceAs% (equivalenceTransported e).functor.Monoidal
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (equivalenceTransported e).symm.IsMonoidal := by
@@ -215,11 +213,11 @@ instance : (equivalenceTransported e).symm.IsMonoidal := by
 
 /-- The unit isomorphism upgrades to a monoidal isomorphism. -/
 instance : NatTrans.IsMonoidal (equivalenceTransported e).unit :=
-  inferInstanceAs (NatTrans.IsMonoidal (equivalenceTransported e).symm.counitIso.inv)
+  inferInstanceAs% (NatTrans.IsMonoidal (equivalenceTransported e).symm.counitIso.inv)
 
 /-- The counit isomorphism upgrades to a monoidal isomorphism. -/
 instance : NatTrans.IsMonoidal (equivalenceTransported e).counit :=
-  inferInstanceAs (NatTrans.IsMonoidal (equivalenceTransported e).symm.unitIso.inv)
+  inferInstanceAs% (NatTrans.IsMonoidal (equivalenceTransported e).symm.unitIso.inv)
 
 end
 

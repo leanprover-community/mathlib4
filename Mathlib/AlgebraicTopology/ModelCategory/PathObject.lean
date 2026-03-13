@@ -228,7 +228,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ofFactorizationData_p : (ofFactorizationData h).p = h.p := by aesop_cat
 
 instance : (ofFactorizationData h).IsVeryGood where
-  fibration_p := by simpa using inferInstanceAs (Fibration h.p)
+  fibration_p := by simpa using inferInstanceAs% (Fibration h.p)
   cofibration_ι := by dsimp; infer_instance
 
 instance [HasInitial C] [IsCofibrant A] [(cofibrations C).IsStableUnderComposition] :

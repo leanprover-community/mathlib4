@@ -66,7 +66,7 @@ lemma turanGraph_adj {v w} : (turanGraph n r).Adj v w ↔ v % r ≠ w % r :=
   .rfl
 
 instance : DecidableRel (turanGraph n r).Adj :=
-  inferInstanceAs (DecidableRel fun v w : Fin n ↦ v % r ≠ w % r)
+  inferInstanceAs% (DecidableRel fun v w : Fin n ↦ v % r ≠ w % r)
 
 @[simp]
 lemma turanGraph_zero : turanGraph n 0 = ⊤ := by simp [turanGraph, Fin.val_inj, Top.top]

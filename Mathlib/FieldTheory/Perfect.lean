@@ -59,7 +59,7 @@ instance mul : PerfectRing M (p * q) :=
   ⟨by simp_rw [pow_mul]; exact PerfectRing.bijective_frobenius.comp PerfectRing.bijective_frobenius⟩
 
 instance pow (n : ℕ) : PerfectRing M (p ^ n) :=
-  n.recOn (inferInstanceAs (PerfectRing M 1)) fun n _ ↦ inferInstanceAs (PerfectRing M (p ^ n * p))
+  n.recOn (inferInstanceAs (PerfectRing M 1)) fun n _ ↦ inferInstanceAs% (PerfectRing M (p ^ n * p))
 
 /-- The `p`-th power automorphism for a perfect monoid. -/
 @[simps! apply]

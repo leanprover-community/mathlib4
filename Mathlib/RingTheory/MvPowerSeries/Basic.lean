@@ -292,9 +292,9 @@ protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * �
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;> aesop (add simp [add_assoc, mul_assoc])
 
 instance : Semiring (MvPowerSeries σ R) :=
-  { inferInstanceAs (AddMonoidWithOne (MvPowerSeries σ R)),
-    inferInstanceAs (Mul (MvPowerSeries σ R)),
-    inferInstanceAs (AddCommMonoid (MvPowerSeries σ R)) with
+  { inferInstanceAs% (AddMonoidWithOne (MvPowerSeries σ R)),
+    inferInstanceAs% (Mul (MvPowerSeries σ R)),
+    inferInstanceAs% (AddCommMonoid (MvPowerSeries σ R)) with
     mul_one := MvPowerSeries.mul_one
     one_mul := MvPowerSeries.one_mul
     mul_assoc := MvPowerSeries.mul_assoc
@@ -314,12 +314,12 @@ instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
           sum_antidiagonal_swap n fun a b => coeff a φ * coeff b ψ }
 
 instance [Ring R] : Ring (MvPowerSeries σ R) :=
-  { inferInstanceAs (Semiring (MvPowerSeries σ R)),
-    inferInstanceAs (AddCommGroup (MvPowerSeries σ R)) with }
+  { inferInstanceAs% (Semiring (MvPowerSeries σ R)),
+    inferInstanceAs% (AddCommGroup (MvPowerSeries σ R)) with }
 
 instance [CommRing R] : CommRing (MvPowerSeries σ R) :=
-  { inferInstanceAs (CommSemiring (MvPowerSeries σ R)),
-    inferInstanceAs (AddCommGroup (MvPowerSeries σ R)) with }
+  { inferInstanceAs% (CommSemiring (MvPowerSeries σ R)),
+    inferInstanceAs% (AddCommGroup (MvPowerSeries σ R)) with }
 
 section Semiring
 

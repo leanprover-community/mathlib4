@@ -188,7 +188,7 @@ instance IsStableUnderBaseChange.isomorphisms :
   of_isPullback {_ _ _ _ f g _ _} h hg :=
     have : IsIso g := hg
     have := hasPullback_of_left_iso g f
-    h.isoPullback_hom_snd ▸ inferInstanceAs (IsIso _)
+    h.isoPullback_hom_snd ▸ inferInstanceAs% (IsIso _)
 
 set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderBaseChange.monomorphisms :
@@ -321,7 +321,7 @@ instance IsStableUnderCobaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderCobaseChange where
   of_isPushout {_ _ _ _ f g _ _} h (_ : IsIso f) :=
     have := hasPushout_of_right_iso g f
-    h.inl_isoPushout_inv ▸ inferInstanceAs (IsIso _)
+    h.inl_isoPushout_inv ▸ inferInstanceAs% (IsIso _)
 
 set_option backward.isDefEq.respectTransparency false in
 variable (C) in

@@ -236,7 +236,7 @@ instance {α : Type w} [SmallCategory α] [FinCategory α] [HasLimitsOfShape α 
 instance {α : Type w} [SmallCategory α] [FinCategory α] [HasColimitsOfShape α C] {I : Type v}
     [SmallCategory I] [IsFiltered I] :
     PreservesColimitsOfShape α (Ind.lim I : (I ⥤ C) ⥤ _) :=
-  inferInstanceAs (PreservesColimitsOfShape α (_ ⋙ colim))
+  inferInstanceAs% (PreservesColimitsOfShape α (_ ⋙ colim))
 
 instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
     HasColimitsOfShape (Discrete α) (Ind C) := by

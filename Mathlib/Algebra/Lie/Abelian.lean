@@ -378,9 +378,9 @@ namespace TrivialLieModule
 
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
 
-instance : AddCommGroup (TrivialLieModule R L M) := inferInstanceAs (AddCommGroup M)
+instance : AddCommGroup (TrivialLieModule R L M) := inferInstanceAs% (AddCommGroup M)
 
-instance : Module R (TrivialLieModule R L M) := inferInstanceAs (Module R M)
+instance : Module R (TrivialLieModule R L M) := inferInstanceAs% (Module R M)
 
 /-- The linear equivalence between a trivial Lie module and its underlying `R`-module. -/
 def equiv : (TrivialLieModule R L M) ≃ₗ[R] M := LinearEquiv.refl R M

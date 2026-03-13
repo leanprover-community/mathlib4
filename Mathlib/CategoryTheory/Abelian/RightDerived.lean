@@ -225,7 +225,6 @@ theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
   simp only [rightDerivedToHomotopyCategory_id, Functor.whiskerRight_id']
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem NatTrans.rightDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive]
     (α : F ⟶ G) (β : G ⟶ H) (n : ℕ) :

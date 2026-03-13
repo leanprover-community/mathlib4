@@ -78,7 +78,6 @@ lemma skyscraperPresheafHomEquiv_naturality_left_symm
       Φ.presheafFiber.map f ≫ Φ.skyscraperPresheafHomEquiv.symm g := by
   cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma skyscraperPresheafHomEquiv_app_π
     (f : Φ.presheafFiber.obj P ⟶ M) (X : C) (x : Φ.fiber.obj X) :

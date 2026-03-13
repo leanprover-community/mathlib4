@@ -717,7 +717,7 @@ variable (f : F) (g : G)
 def ker : Ideal R :=
   Ideal.comap f ⊥
 
-instance (priority := low) : (ker f).IsTwoSided := inferInstanceAs (Ideal.comap f ⊥).IsTwoSided
+instance (priority := low) : (ker f).IsTwoSided := inferInstanceAs% (Ideal.comap f ⊥).IsTwoSided
 
 variable {f} in
 /-- An element is in the kernel if and only if it maps to zero. -/
@@ -808,7 +808,7 @@ end RingRing
 theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
     [FunLike F R S] [RingHomClass F R S] (f : F) :
     (ker f).IsPrime :=
-  inferInstanceAs (Ideal.comap f ⊥).IsPrime
+  inferInstanceAs% (Ideal.comap f ⊥).IsPrime
 
 /-- The kernel of a homomorphism to a division ring is a maximal ideal. -/
 theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [DivisionRing K]
@@ -834,7 +834,7 @@ theorem Module.mem_annihilator {r} : r ∈ Module.annihilator R M ↔ ∀ m : M,
   ⟨fun h ↦ (congr($h ·)), (AddMonoidHom.ext ·)⟩
 
 instance (priority := low) : (Module.annihilator R M).IsTwoSided :=
-  inferInstanceAs (RingHom.ker _).IsTwoSided
+  inferInstanceAs% (RingHom.ker _).IsTwoSided
 
 theorem LinearMap.annihilator_le_of_injective (f : M →ₗ[R] M') (hf : Function.Injective f) :
     Module.annihilator R M' ≤ Module.annihilator R M := fun x h ↦ by

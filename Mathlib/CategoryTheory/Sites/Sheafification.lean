@@ -67,7 +67,7 @@ instance : HasSheafify (⊥ : GrothendieckTopology C) A :=
     (sheafBotEquivalence A).symm.toAdjunction
 
 instance {F G : Sheaf J A} [HasWeakSheafify J A] (f : F ⟶ G) [Mono f] : Mono f.hom :=
-  inferInstanceAs (Mono ((sheafToPresheaf J A).map f))
+  inferInstanceAs% (Mono ((sheafToPresheaf J A).map f))
 
 /-- The sheafification functor, left adjoint to the inclusion. -/
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=

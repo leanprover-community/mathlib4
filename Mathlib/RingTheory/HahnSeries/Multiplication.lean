@@ -730,7 +730,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance instModule [Semiring R] [Module R V] : Module R⟦Γ⟧
     (HahnModule Γ' R V) := {
-  inferInstanceAs (DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
+  inferInstanceAs% (DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
   mul_smul := mul_smul'
   one_smul := fun _ => one_smul'
   add_smul := fun _ _ _ => add_smul Module.add_smul

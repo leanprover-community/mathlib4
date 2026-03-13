@@ -72,7 +72,7 @@ lemma irreducibleComponentι_apply (x : X.irreducibleComponent Z hZ) :
   rfl
 
 instance : IsClosedImmersion (X.irreducibleComponentι Z hZ) :=
-  inferInstanceAs (IsClosedImmersion (X.irreducibleComponentIdeal Z hZ).subschemeι)
+  inferInstanceAs% (IsClosedImmersion (X.irreducibleComponentIdeal Z hZ).subschemeι)
 
 instance : IrreducibleSpace (X.irreducibleComponent Z hZ) :=
   Subtype.irreducibleSpace hZ.1

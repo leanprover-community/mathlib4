@@ -457,7 +457,7 @@ instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
   | bot => simp [isIsoZero_iff_source_target_isZero]
   | coe b =>
     induction a using WithBotTop.rec with
-    | bot => simpa using inferInstanceAs (IsIso ((t.truncLT b).map ((t.truncLTι b).app X)))
+    | bot => simpa using inferInstanceAs% (IsIso ((t.truncLT b).map ((t.truncLTι b).app X)))
     | coe a =>
       simp only [eTruncLT_obj_coe, eTruncGE_obj_coe, Functor.comp_obj, eTruncLTGELTSelfToLTGE_app,
         eTruncLT_map_eq_truncLTι]
@@ -467,7 +467,7 @@ instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
         eTruncLT_map_eq_truncLTι, zero_map, Functor.map_zero, isIsoZero_iff_source_target_isZero]
       constructor
       all_goals exact Functor.map_isZero _ (Functor.zero_obj _)
-  | top => simpa using inferInstanceAs (IsIso (𝟙 _))
+  | top => simpa using inferInstanceAs% (IsIso (𝟙 _))
 
 variable (b : EInt) (X : C)
 
@@ -476,7 +476,7 @@ instance : IsIso (t.eTruncLTGELTSelfToGELT a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
   induction a using WithBotTop.rec with
-  | bot => simpa using inferInstanceAs (IsIso ((t.eTruncLTι b).app ((t.eTruncLT.obj b).obj X)))
+  | bot => simpa using inferInstanceAs% (IsIso ((t.eTruncLTι b).app ((t.eTruncLT.obj b).obj X)))
   | coe a =>
     induction b using WithBotTop.rec with
     | bot => simpa [isIsoZero_iff_source_target_isZero] using
@@ -485,7 +485,7 @@ instance : IsIso (t.eTruncLTGELTSelfToGELT a b) := by
       simp only [eTruncLT_obj_coe, eTruncGE_obj_coe, Functor.comp_obj, eTruncLTGELTSelfToGELT_app,
         eTruncLT_map_eq_truncLTι]
       infer_instance
-    | top => simpa using inferInstanceAs (IsIso (𝟙 _))
+    | top => simpa using inferInstanceAs% (IsIso (𝟙 _))
   | top =>
     exact ⟨0, ((t.eTruncLT.obj b).map_isZero (by simp)).eq_of_src _ _,
       IsZero.eq_of_src (by simp) _ _⟩
@@ -512,7 +512,6 @@ lemma eTruncLTGEIsoGELT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj ((t.eTruncLT.obj b).obj X)):= by
   simp [eTruncLTGEIsoGELT]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncLTGEIsoGELT_hom_app_fac' (a b : EInt) (X : C) :
     (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLTι b).app X) =

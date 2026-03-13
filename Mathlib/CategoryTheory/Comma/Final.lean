@@ -48,7 +48,6 @@ variable {B : Type v₁} [Category.{v₁} B]
 variable {T : Type v₁} [Category.{v₁} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma final_fst_small [R.Final] : (fst L R).Final := by
   rw [Functor.final_iff_isIso_colimit_pre]
   intro G

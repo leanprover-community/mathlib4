@@ -190,7 +190,6 @@ lemma isUniquelyCodimOneFace_index [h.IsProper] (s : h.ι) :
   symm
   simp [← (h.isUniquelyCodimOneFace s).δ_eq_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isUniquelyCodimOneFace_index_coe
     [h.IsProper] (s : h.ι) {d : ℕ} (hd : h.dim s = d) :
     ((h.isUniquelyCodimOneFace s).index hd).val = (h.index s).val := by

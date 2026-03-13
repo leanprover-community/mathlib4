@@ -161,10 +161,10 @@ namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal]
 
 instance : NatTrans.IsMonoidal e.unit :=
-  inferInstanceAs (NatTrans.IsMonoidal e.toAdjunction.unit)
+  inferInstanceAs% (NatTrans.IsMonoidal e.toAdjunction.unit)
 
 instance : NatTrans.IsMonoidal e.counit :=
-  inferInstanceAs (NatTrans.IsMonoidal e.toAdjunction.counit)
+  inferInstanceAs% (NatTrans.IsMonoidal e.toAdjunction.counit)
 
 end Equivalence
 

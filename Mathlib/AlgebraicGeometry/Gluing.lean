@@ -144,11 +144,11 @@ instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
     (HasColimit.isoOfNatIso (𝖣.diagramIso forgetToLocallyRingedSpace).symm)
 
 instance : PreservesColimit (𝖣.diagram.multispan) forgetToTop :=
-  inferInstanceAs (PreservesColimit (𝖣.diagram).multispan (forgetToLocallyRingedSpace ⋙
+  inferInstanceAs% (PreservesColimit (𝖣.diagram).multispan (forgetToLocallyRingedSpace ⋙
       LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCat))
 
 instance : PreservesColimit (𝖣.diagram.multispan) forget :=
-  inferInstanceAs (PreservesColimit (𝖣.diagram).multispan (forgetToTop ⋙ CategoryTheory.forget _))
+  inferInstanceAs% (PreservesColimit (𝖣.diagram).multispan (forgetToTop ⋙ CategoryTheory.forget _))
 
 instance : HasMulticoequalizer 𝖣.diagram :=
   hasColimit_of_created _ forgetToLocallyRingedSpace
@@ -554,7 +554,7 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
       (by simp)
   have : IsOpenImmersion α := by
     apply +allowSynthFailures IsOpenImmersion.of_comp
-    · exact inferInstanceAs (IsOpenImmersion (pullback.fst _ _))
+    · exact inferInstanceAs% (IsOpenImmersion (pullback.fst _ _))
     · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, α]
       infer_instance
   have : α z = x := by
@@ -804,7 +804,7 @@ def openCover : (colimit F).OpenCover :=
   simp [← Category.assoc, ← Iso.comp_inv_eq, cocone]
 
 instance (i) : IsOpenImmersion (colimit.ι F i) :=
-  inferInstanceAs (IsOpenImmersion ((openCover F).f i))
+  inferInstanceAs% (IsOpenImmersion ((openCover F).f i))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :

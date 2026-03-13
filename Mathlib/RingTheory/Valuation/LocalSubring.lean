@@ -31,7 +31,7 @@ instance (V : ValuationSubring K) : IsIntegrallyClosed V.toSubring := by
   rw [← V.integer_valuation]; infer_instance
 
 instance (V : ValuationSubring K) : IsIntegrallyClosed V :=
-  inferInstanceAs (IsIntegrallyClosed V.toSubring)
+  inferInstanceAs% (IsIntegrallyClosed V.toSubring)
 
 /-- Cast a valuation subring to a local subring. -/
 def ValuationSubring.toLocalSubring (A : ValuationSubring K) : LocalSubring K where
@@ -215,7 +215,7 @@ lemma iInf_valuationSubring_superset {s : Set K} :
   refine .trans ?_ Subring.eq_iInf_of_isIntegrallyClosedIn.symm
   simp_rw [iInf_subtype]
   congr! with V
-  have : IsIntegrallyClosedIn V.toSubring K := inferInstanceAs (IsIntegrallyClosedIn V K)
+  have : IsIntegrallyClosedIn V.toSubring K := inferInstanceAs% (IsIntegrallyClosedIn V K)
   rw [Subring.integralClosure_subring_le_iff]
   exact Subring.closure_le.symm
 

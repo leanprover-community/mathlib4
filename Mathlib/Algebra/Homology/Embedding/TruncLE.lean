@@ -164,11 +164,11 @@ lemma truncLE'ToRestriction_naturality :
     (restrictionToTruncGE'_naturality ((opFunctor C c').map φ.op) e.op))
 
 instance (i : ι) : Mono ((K.truncLE'ToRestriction e).f i) :=
-  inferInstanceAs (Mono ((K.op.restrictionToTruncGE' e.op).f i).unop)
+  inferInstanceAs% (Mono ((K.op.restrictionToTruncGE' e.op).f i).unop)
 
 instance [K.IsStrictlySupported e] (i : ι) :
     IsIso ((K.truncLE'ToRestriction e).f i) :=
-  inferInstanceAs (IsIso ((K.op.restrictionToTruncGE' e.op).f i).unop)
+  inferInstanceAs% (IsIso ((K.op.restrictionToTruncGE' e.op).f i).unop)
 
 section
 
@@ -180,13 +180,13 @@ noncomputable def ιTruncLE : K.truncLE e ⟶ K :=
   (unopFunctor C c'.symm).map (K.op.πTruncGE e.op).op
 
 instance (i' : ι') : Mono ((K.ιTruncLE e).f i') :=
-  inferInstanceAs (Mono ((K.op.πTruncGE e.op).f i').unop)
+  inferInstanceAs% (Mono ((K.op.πTruncGE e.op).f i').unop)
 
 instance : Mono (K.ιTruncLE e) := mono_of_mono_f _ (fun _ => inferInstance)
 
 instance : (K.truncLE e).IsStrictlySupported e := by
   rw [← isStrictlySupported_op_iff]
-  exact inferInstanceAs ((K.op.truncGE e.op).IsStrictlySupported e.op)
+  exact inferInstanceAs% ((K.op.truncGE e.op).IsStrictlySupported e.op)
 
 variable {K L} in
 @[reassoc (attr := simp)]
@@ -198,10 +198,10 @@ lemma ιTruncLE_naturality :
 instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
     [K.IsStrictlySupported e'] : (K.truncLE e).IsStrictlySupported e' := by
   rw [← isStrictlySupported_op_iff]
-  exact inferInstanceAs ((K.op.truncGE e.op).IsStrictlySupported e'.op)
+  exact inferInstanceAs% ((K.op.truncGE e.op).IsStrictlySupported e'.op)
 
 instance [K.IsStrictlySupported e] : IsIso (K.ιTruncLE e) :=
-  inferInstanceAs (IsIso ((unopFunctor C c'.symm).map (K.op.πTruncGE e.op).op))
+  inferInstanceAs% (IsIso ((unopFunctor C c'.symm).map (K.op.πTruncGE e.op).op))
 
 lemma isIso_ιTruncLE_iff : IsIso (K.ιTruncLE e) ↔ K.IsStrictlySupported e :=
   ⟨fun _ ↦ isStrictlySupported_of_iso (asIso (K.ιTruncLE e)) e,

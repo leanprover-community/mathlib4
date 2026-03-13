@@ -495,7 +495,6 @@ instance valued : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K
 set_option backward.isDefEq.respectTransparency false in
 lemma valuation_def : (Valued.v : Valuation K⸨X⸩ ℤᵐ⁰) = (PowerSeries.idealX K).valuation _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma valuation_coe_ratFunc (f : K⟮X⟯) :
     Valued.v (f : K⸨X⸩) = Valued.v f := by
   simp [adicValued_apply, ← valuation_eq_LaurentSeries_valuation]
@@ -1208,7 +1207,6 @@ instance : Algebra K ((idealX K).adicCompletionIntegers K⟮X⟯) :=
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C).codRestrict _
       (algebraMap_C_mem_adicCompletionIntegers K)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `K⟮X⟯`. -/
 def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers K⟮X⟯ := by

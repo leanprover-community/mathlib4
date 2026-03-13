@@ -236,8 +236,8 @@ instance : Inhabited (A →⋆ₙₐ[R] B) :=
   ⟨0⟩
 
 instance : MonoidWithZero (A →⋆ₙₐ[R] A) :=
-  { inferInstanceAs (Monoid (A →⋆ₙₐ[R] A)),
-    inferInstanceAs (Zero (A →⋆ₙₐ[R] A)) with
+  { inferInstanceAs% (Monoid (A →⋆ₙₐ[R] A)),
+    inferInstanceAs% (Zero (A →⋆ₙₐ[R] A)) with
     zero_mul := fun _ => ext fun _ => rfl
     mul_zero := fun f => ext fun _ => map_zero f }
 

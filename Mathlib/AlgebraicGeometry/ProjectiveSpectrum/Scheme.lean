@@ -325,7 +325,7 @@ theorem num_mem_carrier_iff (hm : 0 < m) (q : Spec.T A⁰_ f)
   obtain ⟨n, hn : f ^ n = _⟩ := z.den_mem
   have : f ^ n ≠ 0 := fun e ↦ by
     have := HomogeneousLocalization.subsingleton 𝒜 (x := .powers f) ⟨n, e⟩
-    exact IsEmpty.elim (inferInstanceAs (IsEmpty (PrimeSpectrum (A⁰_ f)))) q
+    exact IsEmpty.elim (inferInstanceAs% (IsEmpty (PrimeSpectrum (A⁰_ f)))) q
   convert mem_carrier_iff_of_mem_mul f_deg hm q z.num.1 (n := n) ?_ using 2
   · apply HomogeneousLocalization.val_injective; simp only [hn, HomogeneousLocalization.val_mk]
   · have := degree_eq_of_mem_mem 𝒜 (SetLike.pow_mem_graded n f_deg) (hn.symm ▸ z.den.2) this

@@ -36,7 +36,6 @@ namespace AlgebraicGeometry
 variable {I : Type u} [Category.{u} I] {S X : Scheme.{u}} (D : I ⥤ Scheme.{u})
   (t : D ⟶ (Functor.const I).obj S) (f : X ⟶ S) (c : Cone D) (hc : IsLimit c)
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 /--
 Suppose we have a cofiltered diagram of nonempty quasi-compact schemes,
@@ -54,7 +53,7 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
   · have i := Nonempty.some ‹Nonempty I›
     have : IsCofiltered I := ⟨⟩
     let 𝒰 := (D.obj i).affineCover.finiteSubcover
-    have (i' : _) : IsAffine (𝒰.X i') := inferInstanceAs (IsAffine (Spec _))
+    have (i' : _) : IsAffine (𝒰.X i') := inferInstanceAs% (IsAffine (Spec _))
     obtain ⟨j, H⟩ :
         ∃ j : 𝒰.I₀, ∀ {i'} (f : i' ⟶ i), Nonempty ((𝒰.pullback₁ (D.map f)).X j) := by
       by_contra! H
@@ -96,7 +95,6 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
     exact this.map (((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc).lift
         ((Cone.postcompose α).obj c'.1))
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 open Scheme.IdealSheafData in
 /--
@@ -192,7 +190,6 @@ lemma exists_map_eq_top
 
 attribute [local simp] Scheme.Hom.resLE_comp_resLE
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `{ Dᵢ }` of schemes and an open `U ⊆ Dᵢ`,
 this is the diagram of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 @[simps] noncomputable
@@ -206,12 +203,10 @@ def opensDiagram (i : I) (U : (D.obj i).Opens) : Over i ⥤ Scheme where
 def opensDiagramι (i : I) (U : (D.obj i).Opens) : opensDiagram D i U ⟶ Over.forget _ ⋙ D where
   app j := Scheme.Opens.ι _
 
-set_option backward.isDefEq.respectTransparency false in
 instance (i : I) (U : (D.obj i).Opens) (j : Over i) :
     IsOpenImmersion ((opensDiagramι D i U).app j) := by
   delta opensDiagramι; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `{ Dᵢ }` of schemes and an open `U ⊆ Dᵢ`,
 the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`.
 This is the underlying cone, and it is limiting as witnessed by `isLimitOpensCone` below. -/
@@ -222,7 +217,6 @@ def opensCone (i : I) (U : (D.obj i).Opens) : Cone (opensDiagram D i U) where
 
 attribute [local instance] CategoryTheory.isConnected_of_hasTerminal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and an open `U ⊆ Dᵢ`,
 the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 noncomputable
@@ -233,7 +227,6 @@ def isLimitOpensCone [IsCofiltered I] (i : I) (U : (D.obj i).Opens) :
     (fun j ↦ IsOpenImmersion.isPullback _ _ _ _ (by simp) (by simp [← Scheme.Hom.comp_preimage]))
     ((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     (U : (D.obj i).Opens) {j k : Over i} (f : j ⟶ k) :
     IsAffineHom ((opensDiagram D i U).map f) := by
@@ -259,7 +252,6 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     rw [← Scheme.Hom.comp_apply] at h₁
     rwa [← D.map_comp, Over.w f] at h₁
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_map_preimage_le_map_preimage
     [IsCofiltered I]
@@ -297,7 +289,6 @@ lemma exists_map_preimage_eq_map_preimage
   · rw [e]
     simpa only [Scheme.Hom.comp_preimage, Functor.map_comp] using Scheme.Hom.preimage_mono _ e₂
 
-set_option backward.isDefEq.respectTransparency false in
 open Scheme.Opens in
 include hc in
 lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] :
@@ -325,7 +316,6 @@ lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), I
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, ← this]
   exact ⟨hxr, hrU⟩
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 @[stacks 01Z4 "(1)"]
 lemma exists_preimage_eq
@@ -348,14 +338,12 @@ lemma exists_preimage_eq
 
 end Opens
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma isAffineHom_π_app [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] (i : I) :
     IsAffineHom (c.π.app i) where
   isAffine_preimage U hU := have (j : _) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage _
     Scheme.isAffine_of_isLimit _ (isLimitOpensCone D c hc i U)
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma Scheme.compactSpace_of_isLimit [IsCofiltered I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] [∀ i, CompactSpace (D.obj i)] :
@@ -396,7 +384,6 @@ section LocallyOfFiniteType
 
 variable [∀ i, CompactSpace (D.obj i)] [LocallyOfFiniteType f] [IsCofiltered I]
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- Subsumed by `Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType`. -/
 private nonrec lemma Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOfFiniteType
@@ -484,7 +471,6 @@ noncomputable section
 variable {D t f c} [∀ {i j : I} (f : i ⟶ j), IsAffineHom (D.map f)]
 variable (A : ExistsHomHomCompEqCompAux D t f)
 
-set_option backward.isDefEq.respectTransparency false in
 omit [LocallyOfFiniteType f] in
 lemma exists_index : ∃ (i' : I) (hii' : i' ⟶ A.i),
     ((D.map hii' ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb)) ⁻¹'
@@ -518,13 +504,11 @@ See the section docstring. -/
 def g : D.obj A.i' ⟶ pullback f f :=
   (D.map A.hii' ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb))
 
-set_option backward.isDefEq.respectTransparency false in
 omit [LocallyOfFiniteType f] in
 lemma range_g_subset :
     Set.range A.g ⊆ Scheme.Pullback.diagonalCoverDiagonalRange f A.𝒰S A.𝒰X := by
   simpa [ExistsHomHomCompEqCompAux.hii', g] using A.exists_index.choose_spec.choose_spec
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation)
 The covering of `D(i')` by the pullback of the diagonal components of `X ×ₛ X`.
 See the section docstring. -/
@@ -558,7 +542,6 @@ def hc' (j : A.𝒰D.I₀) : IsLimit (A.c' j) :=
 
 variable [∀ i, IsAffineHom (A.c.π.app i)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_eq (j : A.𝒰D.I₀) : ∃ (k : I) (hki' : k ⟶ A.i'),
     (A.𝒰D.pullback₁ (D.map hki')).f j ≫ D.map (hki' ≫ A.hii') ≫ A.a =
       (A.𝒰D.pullback₁ (D.map hki')).f j ≫ D.map (hki' ≫ A.hii') ≫ A.b := by
@@ -616,7 +599,6 @@ end ExistsHomHomCompEqCompAux
 
 variable [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
     {i : I} (a b : D.obj i ⟶ X) (ha : t.app i = a ≫ f) (hb : t.app i = b ≫ f)
@@ -660,7 +642,6 @@ lemma Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
   simp_rw [← D.map_comp_assoc, reassoc_of% this o u, D.map_comp_assoc]
   rw [← reassoc_of% hF, ← reassoc_of% hF, heq]
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 /--
 Given a cofiltered diagram `D` of quasi-compact `S`-schemes with affine transition maps,
@@ -719,7 +700,6 @@ lemma exists_appTop_map_eq_zero_of_isAffine_of_isLimit
     (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s (0 : Γ(D.obj i, ⊤))).mp (by simpa)
   exact ⟨j.unop, f.unop, by simpa using hj⟩
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     {i : I} [CompactSpace (D.obj i)] (s : Γ(D.obj i, ⊤)) (hs : (c.π.app i).appTop s = 0) :
@@ -768,7 +748,6 @@ lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom
       Scheme.Hom.appLE_comp_appLE, ← Functor.map_comp, h₁]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_app_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     {i : I} {U : (D.obj i).Opens} (hU : IsCompact (X := D.obj i) U) (s : Γ(D.obj i, U))
@@ -797,7 +776,6 @@ lemma exists_app_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D
     simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_app_map_eq_map_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     {i : I} {U : (D.obj i).Opens} (hU : IsCompact (X := D.obj i) U) (s t : Γ(D.obj i, U))
@@ -814,7 +792,6 @@ lemma exists_appTop_π_eq_of_isAffine_of_isLimit
   exact ⟨_, (Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s).choose_spec⟩
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     (s : Γ(c.pt, ⊤)) [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)] :
@@ -954,7 +931,6 @@ end sections
 
 section IsAffine
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is quasi-affine, then some `Xᵢ` is quasi-affine. -/
@@ -1006,7 +982,6 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
   rw [← Scheme.preimage_basicOpen_top, ← Scheme.preimage_basicOpen_top]
   exact ⟨((hf _).preimage _).preimage _, hy⟩
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is affine, then some `Xᵢ` is affine. -/
@@ -1049,7 +1024,6 @@ lemma exists_isAffineOpen_preimage_eq
   rw [← Scheme.Hom.comp_preimage, c.w]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 open TopologicalSpace in
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
@@ -1081,7 +1055,6 @@ end IsAffine
 
 section LocallyOfFinitePresentation
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- See `Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation` for the general case. -/
 private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
@@ -1143,7 +1116,6 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
   exact ⟨i.unop, Spec.map g, by simpa using congr(Spec.map $hg').symm,
     by simpa using congr(Spec.map $hg)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open TopologicalSpace in
 include hc in
 /--

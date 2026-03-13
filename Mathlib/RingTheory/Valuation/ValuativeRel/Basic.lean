@@ -758,7 +758,7 @@ variable (R) in
 def WithPreorder := R
 
 /-- The ring instance on `WithPreorder R` arising from the ring structure on `R`. -/
-instance : CommRing (WithPreorder R) := inferInstanceAs (CommRing R)
+instance : CommRing (WithPreorder R) := inferInstanceAs% (CommRing R)
 
 /-- The preorder on `WithPreorder R` arising from the valuative relation on `R`. -/
 instance : Preorder (WithPreorder R) where

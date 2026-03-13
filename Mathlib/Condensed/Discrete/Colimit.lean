@@ -101,7 +101,6 @@ def lanPresheafExt {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)}
   leftKanExtensionUniqueOfIso _ (pointwiseLeftKanExtensionUnit _ _) i _
     (pointwiseLeftKanExtensionUnit _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma lanPresheafExt_hom {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)} (S : Profinite.{u}ᵒᵖ)
     (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : (lanPresheafExt i).hom.app S =
@@ -111,7 +110,6 @@ lemma lanPresheafExt_hom {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)} (S : Profi
   apply colimit.hom_ext
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma lanPresheafExt_inv {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)} (S : Profinite.{u}ᵒᵖ)
     (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : (lanPresheafExt i).inv.app S =
@@ -135,14 +133,12 @@ def lanPresheafIso (hF : IsColimit <| F.mapCocone S.asLimitCone.op) :
   (Functor.Final.colimitIso (Profinite.Extend.functorOp S.asLimitCone) _).symm ≪≫
     (colimit.isColimit _).coconePointUniqueUpToIso hF
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma lanPresheafIso_hom (hF : IsColimit <| F.mapCocone S.asLimitCone.op) :
     (lanPresheafIso hF).hom = colimit.desc _ (Profinite.Extend.cocone _ _) := by
   simp [lanPresheafIso, Final.colimitIso]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `lanPresheafIso` is natural in `S`. -/
 def lanPresheafNatIso (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op) :
     lanPresheaf F ≅ F :=
@@ -256,7 +252,6 @@ def isoLocallyConstantOfIsColimit
     lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
       lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1))
     [PreservesFiniteProducts X]
     (hX : ∀ S : Profinite.{u}, (IsColimit <| X.mapCocone S.asLimitCone.op)) :
@@ -374,7 +369,6 @@ def lanPresheafExt {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u}
   leftKanExtensionUniqueOfIso _ (pointwiseLeftKanExtensionUnit _ _) i _
     (pointwiseLeftKanExtensionUnit _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma lanPresheafExt_hom {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
     (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : (lanPresheafExt i).hom.app S =
@@ -384,7 +378,6 @@ lemma lanPresheafExt_hom {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightP
   apply colimit.hom_ext
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma lanPresheafExt_inv {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
     (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : (lanPresheafExt i).inv.app S =
@@ -408,14 +401,12 @@ def lanPresheafIso (hF : IsColimit <| F.mapCocone (coconeRightOpOfCone S.asLimit
   (Functor.Final.colimitIso (LightProfinite.Extend.functorOp S.asLimitCone) _).symm ≪≫
     (colimit.isColimit _).coconePointUniqueUpToIso hF
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma lanPresheafIso_hom (hF : IsColimit <| F.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
     (lanPresheafIso hF).hom = colimit.desc _ (LightProfinite.Extend.cocone _ _) := by
   simp [lanPresheafIso, Final.colimitIso]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `lanPresheafIso` is natural in `S`. -/
 def lanPresheafNatIso
     (hF : ∀ S : LightProfinite, IsColimit <| F.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
@@ -529,7 +520,6 @@ def isoLocallyConstantOfIsColimit (hF : ∀ S : LightProfinite, IsColimit <|
     lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
       lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u)
     [PreservesFiniteProducts X] (hX : ∀ S : LightProfinite.{u}, (IsColimit <|
       X.mapCocone (coconeRightOpOfCone S.asLimitCone))) :

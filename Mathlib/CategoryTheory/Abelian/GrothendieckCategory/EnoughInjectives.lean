@@ -88,7 +88,7 @@ instance (G : C) [Small.{w} (Subobject G)] :
 lemma generatingMonomorphisms_le_monomorphisms (G : C) :
     generatingMonomorphisms G ≤ MorphismProperty.monomorphisms C := by
   rintro _ _ _ ⟨X⟩
-  exact inferInstanceAs (Mono _)
+  exact inferInstanceAs% (Mono _)
 
 variable (G : C)
 
@@ -105,7 +105,6 @@ variable {G} (hG : IsSeparator G)
 
 include hG
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `p : X ⟶ Y` is a monomorphism that is not an isomorphism, there exists
 a subobject `X'` of `Y` containing `X` (but different from `X`) such that
 the inclusion `X ⟶ X'` is a pushout of a monomorphism in the family

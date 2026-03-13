@@ -86,10 +86,10 @@ lemma singleFunctor_obj_d (X : C) (n p q : ℤ) :
     ((singleFunctor C n).obj X).d p q = 0 := rfl
 
 instance (n : ℤ) : (singleFunctor C n).Full :=
-  inferInstanceAs (single _ _ _).Full
+  inferInstanceAs% (single _ _ _).Full
 
 instance (n : ℤ) : (singleFunctor C n).Faithful :=
-  inferInstanceAs (single _ _ _).Faithful
+  inferInstanceAs% (single _ _ _).Faithful
 
 end CochainComplex
 
@@ -132,7 +132,7 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
 
 instance (R : Type*) [Ring R] [Linear R C] (n : ℤ) :
     Functor.Linear R (HomotopyCategory.singleFunctor C n) :=
-  inferInstanceAs (Functor.Linear R (CochainComplex.singleFunctor C n ⋙
+  inferInstanceAs% (Functor.Linear R (CochainComplex.singleFunctor C n ⋙
     HomotopyCategory.quotient _ _))
 
 /-- The isomorphism given by the very definition of `singleFunctors C`. -/

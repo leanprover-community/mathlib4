@@ -45,7 +45,6 @@ namespace Presheaf
 
 variable [MonoidalClosed A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Relation between `functorEnrichedHom` and `presheafHom`. -/
 noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ A)
     [HasFunctorEnrichedHom A F G] (X : C) :
@@ -164,7 +163,7 @@ of presheaves. -/
 @[instance_reducible]
 noncomputable def monoidalCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] :
     MonoidalCategory (Sheaf J A) :=
-  inferInstanceAs (MonoidalCategory
+  inferInstanceAs% (MonoidalCategory
     (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
 
 attribute [local instance] monoidalCategory
@@ -174,7 +173,7 @@ braided when `A` is braided. -/
 @[implicit_reducible]
 noncomputable def braidedCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A]
     [BraidedCategory A] : BraidedCategory (Sheaf J A) :=
-  inferInstanceAs (BraidedCategory
+  inferInstanceAs% (BraidedCategory
     (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
 
 /-- The monoidal category structure on `Sheaf J A` obtained in `Sheaf.monoidalCategory` is
@@ -183,18 +182,18 @@ symmetric when `A` is symmetric. -/
 noncomputable def symmetricCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A]
     [SymmetricCategory A] :
     SymmetricCategory (Sheaf J A) :=
-  inferInstanceAs (SymmetricCategory
+  inferInstanceAs% (SymmetricCategory
     (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
 
 noncomputable instance [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] :
     (presheafToSheaf J A).Monoidal :=
-  inferInstanceAs (Localization.Monoidal.toMonoidalCategory
+  inferInstanceAs% (Localization.Monoidal.toMonoidalCategory
     (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)).Monoidal
 
 noncomputable instance [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] [BraidedCategory A] :
     letI := braidedCategory J A
     (presheafToSheaf J A).Braided :=
-  inferInstanceAs (Localization.Monoidal.toMonoidalCategory
+  inferInstanceAs% (Localization.Monoidal.toMonoidalCategory
     (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)).Braided
 
 noncomputable example

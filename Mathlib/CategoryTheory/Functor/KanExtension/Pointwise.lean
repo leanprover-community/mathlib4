@@ -197,7 +197,7 @@ def coconeAtFunctor (Y : D) :
 def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
 
 instance (Y : D) : Subsingleton (E.IsPointwiseLeftKanExtensionAt Y) :=
-  inferInstanceAs (Subsingleton (IsColimit _))
+  inferInstanceAs% (Subsingleton (IsColimit _))
 
 variable {E} in
 lemma IsPointwiseLeftKanExtensionAt.hasPointwiseLeftKanExtensionAt
@@ -379,7 +379,7 @@ def coneAtFunctor (Y : D) :
 def IsPointwiseRightKanExtensionAt (Y : D) := IsLimit (E.coneAt Y)
 
 instance (Y : D) : Subsingleton (E.IsPointwiseRightKanExtensionAt Y) :=
-  inferInstanceAs (Subsingleton (IsLimit _))
+  inferInstanceAs% (Subsingleton (IsLimit _))
 
 variable {E} in
 lemma IsPointwiseRightKanExtensionAt.hasPointwiseRightKanExtensionAt

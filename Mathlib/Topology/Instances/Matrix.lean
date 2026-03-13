@@ -79,10 +79,10 @@ section Continuity
 variable [TopologicalSpace X] [TopologicalSpace R]
 
 instance [SMul α R] [ContinuousConstSMul α R] : ContinuousConstSMul α (Matrix m n R) :=
-  inferInstanceAs (ContinuousConstSMul α (m → n → R))
+  inferInstanceAs% (ContinuousConstSMul α (m → n → R))
 
 instance [TopologicalSpace α] [SMul α R] [ContinuousSMul α R] : ContinuousSMul α (Matrix m n R) :=
-  inferInstanceAs (ContinuousSMul α (m → n → R))
+  inferInstanceAs% (ContinuousSMul α (m → n → R))
 
 instance [Add R] [ContinuousAdd R] : ContinuousAdd (Matrix m n R) :=
   Pi.continuousAdd

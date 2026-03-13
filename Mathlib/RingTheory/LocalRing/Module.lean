@@ -79,9 +79,9 @@ theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
   constructor
   · intro hN
     letI : Module k (M ⧸ (𝔪 • ⊤ : Submodule R M)) :=
-      inferInstanceAs (Module (R ⧸ 𝔪) (M ⧸ 𝔪 • (⊤ : Submodule R M)))
+      inferInstanceAs% (Module (R ⧸ 𝔪) (M ⧸ 𝔪 • (⊤ : Submodule R M)))
     letI : IsScalarTower R k (M ⧸ (𝔪 • ⊤ : Submodule R M)) :=
-      inferInstanceAs (IsScalarTower R (R ⧸ 𝔪) (M ⧸ 𝔪 • (⊤ : Submodule R M)))
+      inferInstanceAs% (IsScalarTower R (R ⧸ 𝔪) (M ⧸ 𝔪 • (⊤ : Submodule R M)))
     let f := AlgebraTensorModule.lift (((LinearMap.ringLmapEquivSelf k k _).symm
       (Submodule.mkQ (𝔪 • ⊤ : Submodule R M))).restrictScalars R)
     have : f.comp (TensorProduct.mk R k M 1) = Submodule.mkQ (𝔪 • ⊤) := by ext; simp [f]

@@ -92,7 +92,7 @@ abbrev HasGoodTrifunctor₂₃Obj :=
 instance :
     (((GradedObject.mapBifunctor F₁₂ ι₁ ι₂).obj K₁.X).obj K₂.X).HasMap
       (ComplexShape.π c₁ c₂ c₁₂) :=
-  inferInstanceAs (HasMapBifunctor K₁ K₂ F₁₂ c₁₂)
+  inferInstanceAs% (HasMapBifunctor K₁ K₂ F₁₂ c₁₂)
 
 section
 
@@ -104,13 +104,13 @@ instance :
     (((GradedObject.mapBifunctor G ι₁₂ ι₃).obj (GradedObject.mapBifunctorMapObj F₁₂
         (ComplexShape.π c₁ c₂ c₁₂) K₁.X K₂.X)).obj K₃.X).HasMap
           (ComplexShape.π c₁₂ c₃ c₄) :=
-  inferInstanceAs (HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄)
+  inferInstanceAs% (HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄)
 
 instance :
     (((GradedObject.mapBifunctor F ι₁ ι₂₃).obj K₁.X).obj
       (GradedObject.mapBifunctorMapObj G₂₃
         (ComplexShape.π c₂ c₃ c₂₃) K₂.X K₃.X)).HasMap (ComplexShape.π c₁ c₂₃ c₄) :=
-  inferInstanceAs (HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄)
+  inferInstanceAs% (HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄)
 
 /-- The associator isomorphism for the action of bifunctors
 on homological complexes, in each degree. -/

@@ -256,9 +256,9 @@ identity functor.
 -/
 instance instId : (Adjunction.id (C := C)).CommShift A where
   commShift_counit :=
-    inferInstanceAs (NatTrans.CommShift (𝟭 C).leftUnitor.hom A)
+    inferInstanceAs% (NatTrans.CommShift (𝟭 C).leftUnitor.hom A)
   commShift_unit :=
-    inferInstanceAs (NatTrans.CommShift (𝟭 C).leftUnitor.inv A)
+    inferInstanceAs% (NatTrans.CommShift (𝟭 C).leftUnitor.inv A)
 
 variable {E : Type*} [Category* E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
   [HasShift E A] [F'.CommShift A] [G'.CommShift A] [adj.CommShift A] [adj'.CommShift A]
@@ -515,13 +515,13 @@ namespace CommShift
 variable [E.functor.CommShift A] [E.inverse.CommShift A]
 
 instance [E.CommShift A] : NatTrans.CommShift E.unitIso.hom A :=
-  inferInstanceAs (NatTrans.CommShift E.toAdjunction.unit A)
+  inferInstanceAs% (NatTrans.CommShift E.toAdjunction.unit A)
 
 instance [E.CommShift A] : NatTrans.CommShift E.counitIso.hom A :=
-  inferInstanceAs (NatTrans.CommShift E.toAdjunction.counit A)
+  inferInstanceAs% (NatTrans.CommShift E.toAdjunction.counit A)
 
-instance : E.symm.inverse.CommShift A := inferInstanceAs (E.functor.CommShift A)
-instance : E.symm.functor.CommShift A := inferInstanceAs (E.inverse.CommShift A)
+instance : E.symm.inverse.CommShift A := inferInstanceAs% (E.functor.CommShift A)
+instance : E.symm.functor.CommShift A := inferInstanceAs% (E.inverse.CommShift A)
 
 /-- Constructor for `Equivalence.CommShift`. -/
 lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
@@ -555,13 +555,13 @@ instance : (Equivalence.refl (C := C)).CommShift A := by
 If an equivalence `E : C ≌ D` is compatible with shifts, so is `E.symm`.
 -/
 instance [E.CommShift A] : E.symm.CommShift A :=
-  mk' E.symm A (inferInstanceAs (NatTrans.CommShift E.counitIso.inv A))
+  mk' E.symm A (inferInstanceAs% (NatTrans.CommShift E.counitIso.inv A))
 
 /-- Constructor for `Equivalence.CommShift`. -/
 lemma mk'' (h : NatTrans.CommShift E.counitIso.hom A) :
     E.CommShift A :=
-  have := mk' E.symm A (inferInstanceAs (NatTrans.CommShift E.counitIso.inv A))
-  inferInstanceAs (E.symm.symm.CommShift A)
+  have := mk' E.symm A (inferInstanceAs% (NatTrans.CommShift E.counitIso.inv A))
+  inferInstanceAs% (E.symm.symm.CommShift A)
 
 variable {F : Type*} [Category* F] [HasShift F A] {E' : D ≌ F} [E.CommShift A]
     [E'.functor.CommShift A] [E'.inverse.CommShift A] [E'.CommShift A]
@@ -586,7 +586,7 @@ instance : (E.trans E').inverse.CommShift A := by
 If equivalences `E : C ≌ D` and `E' : D ≌ F` are compatible with shifts, so is `E.trans E'`.
 -/
 instance : (E.trans E').CommShift A :=
-  inferInstanceAs ((E.toAdjunction.comp E'.toAdjunction).CommShift A)
+  inferInstanceAs% ((E.toAdjunction.comp E'.toAdjunction).CommShift A)
 
 end CommShift
 
@@ -616,7 +616,6 @@ this constructs the unique compatible `CommShift` structure on `E.functor`.
 noncomputable def commShiftFunctor [E.inverse.CommShift A] : E.functor.CommShift A :=
   E.symm.toAdjunction.rightAdjointCommShift A
 
-set_option backward.isDefEq.respectTransparency false in
 lemma commShift_of_inverse [E.inverse.CommShift A] :
     letI := E.commShiftFunctor A
     E.CommShift A := by

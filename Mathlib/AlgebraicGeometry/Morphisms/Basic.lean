@@ -680,7 +680,7 @@ lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismPro
 
 instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
     P.HasOfPostcompProperty @IsOpenImmersion :=
-  HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
+  HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs% (Mono f))
 
 section Deprecations
 

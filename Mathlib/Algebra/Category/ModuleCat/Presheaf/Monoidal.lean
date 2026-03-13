@@ -32,7 +32,7 @@ universe v u v₁ u₁
 variable {C : Type*} [Category* C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
 
 instance (X : Cᵒᵖ) : CommRing ((R ⋙ forget₂ _ RingCat).obj X) :=
-  inferInstanceAs (CommRing (R.obj X))
+  inferInstanceAs% (CommRing (R.obj X))
 
 namespace PresheafOfModules
 

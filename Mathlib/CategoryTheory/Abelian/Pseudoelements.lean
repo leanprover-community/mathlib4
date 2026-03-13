@@ -207,7 +207,6 @@ section
 
 attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The arrows pseudo-equal to a zero morphism are precisely the zero morphisms. -/
 theorem pseudoZero_aux {P : C} (Q : C) (f : Over P) : f ≈ (0 : Q ⟶ P) ↔ f.hom = 0 :=
   ⟨fun ⟨R, p, q, _, _, comm⟩ => zero_of_epi_comp p (by simp [comm]), fun hf =>

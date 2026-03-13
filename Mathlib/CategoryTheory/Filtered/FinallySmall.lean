@@ -64,7 +64,7 @@ lemma exists_of_isFiltered :
     let G : FinalModel.{w} C₀ ⥤ P.FullSubcategory :=
       { obj X := ⟨(fromFinalModel.{w} C₀).obj X, by tauto⟩
         map f := ObjectProperty.homMk ((fromFinalModel.{w} C₀).map f) }
-    have : (G ⋙ P.ι).Final := inferInstanceAs (fromFinalModel.{w} C₀).Final
+    have : (G ⋙ P.ι).Final := inferInstanceAs% (fromFinalModel.{w} C₀).Final
     exact ⟨P.FullSubcategory, small_of_surjective (f := G.obj)
       (by rintro ⟨_, Y, _, rfl⟩; exact ⟨Y, rfl⟩), inferInstance, inferInstance, P.ι,
       Functor.final_of_comp_full_faithful' G P.ι ⟩

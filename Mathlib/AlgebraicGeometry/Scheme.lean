@@ -425,7 +425,7 @@ instance isIso_toLRSHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toLRSHo
   forgetToLocallyRingedSpace.map_isIso f
 
 instance isIso_toPshHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toPshHom :=
-  inferInstanceAs (IsIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙
+  inferInstanceAs% (IsIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙
     SheafedSpace.forgetToPresheafedSpace).map f.toLRSHom))
 
 instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
@@ -550,7 +550,7 @@ lemma Spec.map_eqToHom {R S : CommRingCat} (e : R = S) :
   subst e; exact Spec.map_id _
 
 instance {R S : CommRingCat} (f : R ⟶ S) [IsIso f] : IsIso (Spec.map f) :=
-  inferInstanceAs (IsIso <| Scheme.Spec.map f.op)
+  inferInstanceAs% (IsIso <| Scheme.Spec.map f.op)
 
 @[simp]
 lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :

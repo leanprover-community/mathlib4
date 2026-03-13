@@ -64,25 +64,25 @@ def NormalClosure : Type _ := integralClosure S E
 
 local notation3 "T" => NormalClosure R S
 
-instance : CommRing T := inferInstanceAs (CommRing (integralClosure S E))
+instance : CommRing T := inferInstanceAs% (CommRing (integralClosure S E))
 
-instance : IsDomain T := inferInstanceAs (IsDomain (integralClosure S E))
+instance : IsDomain T := inferInstanceAs% (IsDomain (integralClosure S E))
 
-instance : Nontrivial T := inferInstanceAs (Nontrivial (integralClosure S E))
+instance : Nontrivial T := inferInstanceAs% (Nontrivial (integralClosure S E))
 
-instance : Algebra S T := inferInstanceAs (Algebra S (integralClosure S E))
+instance : Algebra S T := inferInstanceAs% (Algebra S (integralClosure S E))
 
 set_option backward.isDefEq.respectTransparency false in
 /--
 This is a local instance since it is only used in this file to construct `Ring.NormalClosure`.
 -/
-local instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E)
+local instance : Algebra T E := inferInstanceAs% (Algebra (integralClosure S E) E)
 
 instance : Algebra R T := ((algebraMap S T).comp (algebraMap R S)).toAlgebra
 
 set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower S T E :=
-  inferInstanceAs (IsScalarTower S (integralClosure S E) E)
+  inferInstanceAs% (IsScalarTower S (integralClosure S E) E)
 
 local instance : IsIntegralClosure T S E := integralClosure.isIntegralClosure S E
 
@@ -97,7 +97,6 @@ local instance : IsScalarTower R T E := IsScalarTower.to₁₃₄ R S T E
 local instance : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
       (FaithfulSMul.algebraMap_injective L E).comp (FaithfulSMul.algebraMap_injective S L)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Module.IsTorsionFree S T := Subalgebra.instIsTorsionFree (integralClosure S E)
 
 instance : FaithfulSMul R T :=
@@ -132,11 +131,9 @@ instance : IsGalois K (FractionRing T) := by
 
 variable [IsDedekindDomain S]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Module.Finite S T :=
   IsIntegralClosure.finite S L E T
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Module.Finite R T :=
   Module.Finite.trans S T
 

@@ -43,7 +43,7 @@ Instances for `ℝ≥0` are inherited from the corresponding structures on the r
 -/
 
 instance : SecondCountableTopology ℝ≥0 :=
-  inferInstanceAs (SecondCountableTopology { x : ℝ | 0 ≤ x })
+  inferInstanceAs% (SecondCountableTopology { x : ℝ | 0 ≤ x })
 
 instance instProperSpace : ProperSpace ℝ≥0 where
   isCompact_closedBall x r := by

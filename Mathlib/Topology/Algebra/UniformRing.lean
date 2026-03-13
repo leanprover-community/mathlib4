@@ -81,8 +81,8 @@ instance : ContinuousMul (Completion α) where
     exact (di.extend_Z_bilin di this :)
 
 instance ring : Ring (Completion α) :=
-  { AddMonoidWithOne.unary, (inferInstanceAs (AddCommGroup (Completion α))),
-      (inferInstanceAs (Mul (Completion α))), (inferInstanceAs (One (Completion α))) with
+  { AddMonoidWithOne.unary, (inferInstanceAs% (AddCommGroup (Completion α))),
+      (inferInstanceAs% (Mul (Completion α))), (inferInstanceAs% (One (Completion α))) with
     zero_mul a :=
       Completion.induction_on a (isClosed_eq (by fun_prop) continuous_const)
         fun a => by rw [← coe_zero, ← coe_mul, zero_mul]

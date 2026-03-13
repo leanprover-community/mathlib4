@@ -253,7 +253,7 @@ lemma isTriangulated_iff_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.
   · intro
     exact isTriangulated_of_iso e
   · intro
-    have : NatTrans.CommShift e.symm.hom ℤ := inferInstanceAs (NatTrans.CommShift e.inv ℤ)
+    have : NatTrans.CommShift e.symm.hom ℤ := inferInstanceAs% (NatTrans.CommShift e.inv ℤ)
     exact isTriangulated_of_iso e.symm
 
 lemma isTriangulated_iff_comp_right {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)

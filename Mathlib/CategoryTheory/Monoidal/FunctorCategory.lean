@@ -237,11 +237,11 @@ instance Functor.Monoidal.whiskeringLeft
 
 instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).functor.Monoidal :=
-  inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.inverse).Monoidal
+  inferInstanceAs% ((Functor.whiskeringLeft _ _ E).obj e.inverse).Monoidal
 
 instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).inverse.Monoidal :=
-  inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.functor).Monoidal
+  inferInstanceAs% ((Functor.whiskeringLeft _ _ E).obj e.functor).Monoidal
 
 set_option backward.isDefEq.respectTransparency false in
 instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :

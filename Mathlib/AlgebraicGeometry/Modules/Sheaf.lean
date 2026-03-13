@@ -43,12 +43,12 @@ def Hom (M N : X.Modules) : Type u := SheafOfModules.Hom M N
 
 instance : Category X.Modules where
   Hom := Modules.Hom
-  __ := inferInstanceAs (Category (SheafOfModules.{u} X.ringCatSheaf))
+  __ := inferInstanceAs% (Category (SheafOfModules.{u} X.ringCatSheaf))
 
 noncomputable instance : Abelian X.Modules :=
-  inferInstanceAs (Abelian (SheafOfModules.{u} X.ringCatSheaf))
-instance : HasLimits X.Modules := inferInstanceAs (HasLimits (SheafOfModules X.ringCatSheaf))
-instance : HasColimits X.Modules := inferInstanceAs (HasColimits (SheafOfModules X.ringCatSheaf))
+  inferInstanceAs% (Abelian (SheafOfModules.{u} X.ringCatSheaf))
+instance : HasLimits X.Modules := inferInstanceAs% (HasLimits (SheafOfModules X.ringCatSheaf))
+instance : HasColimits X.Modules := inferInstanceAs% (HasColimits (SheafOfModules X.ringCatSheaf))
 
 section Functor
 
@@ -352,7 +352,7 @@ def restrictAdjunction : restrictFunctor f ⊣ pushforward f := by
     exact congr($this x)
 
 instance : IsIso (restrictAdjunction f).counit :=
-  inferInstanceAs (IsIso <| (restrictFunctorAdjCounitIso f).hom)
+  inferInstanceAs% (IsIso <| (restrictFunctorAdjCounitIso f).hom)
 
 instance : (restrictFunctor f).IsLeftAdjoint := (restrictAdjunction f).isLeftAdjoint
 instance : (pushforward f).Full := (restrictAdjunction f).fullyFaithfulROfIsIsoCounit.full

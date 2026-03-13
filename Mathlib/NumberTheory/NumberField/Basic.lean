@@ -111,36 +111,36 @@ def RingOfIntegers : Type _ :=
 namespace RingOfIntegers
 
 instance : CommRing (𝓞 K) :=
-  inferInstanceAs (CommRing (integralClosure _ _))
+  inferInstanceAs% (CommRing (integralClosure _ _))
 
 instance : IsDomain (𝓞 K) :=
-  inferInstanceAs (IsDomain (integralClosure _ _))
+  inferInstanceAs% (IsDomain (integralClosure _ _))
 
 set_option backward.isDefEq.respectTransparency false in
 instance [NumberField K] : CharZero (𝓞 K) :=
-  inferInstanceAs (CharZero (integralClosure _ _))
+  inferInstanceAs% (CharZero (integralClosure _ _))
 
 instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
 
 set_option backward.isDefEq.respectTransparency false in
 instance : IsTorsionFree (𝓞 K) K :=
-  inferInstanceAs (IsTorsionFree (integralClosure _ _) _)
+  inferInstanceAs% (IsTorsionFree (integralClosure _ _) _)
 
 instance : Nontrivial (𝓞 K) :=
-  inferInstanceAs (Nontrivial (integralClosure _ _))
+  inferInstanceAs% (Nontrivial (integralClosure _ _))
 
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)
 
 instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
-  inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
+  inferInstanceAs% (IsScalarTower (integralClosure _ _) K L)
 
 instance {G : Type*} [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) :=
-  inferInstanceAs (MulSemiringAction G (integralClosure ℤ K))
+  inferInstanceAs% (MulSemiringAction G (integralClosure ℤ K))
 
 instance {G : Type*} [Group G] [MulSemiringAction G K] : SMulDistribClass G (𝓞 K) K :=
-  inferInstanceAs (SMulDistribClass G (integralClosure ℤ K) K)
+  inferInstanceAs% (SMulDistribClass G (integralClosure ℤ K) K)
 
 variable {K}
 
@@ -370,7 +370,6 @@ protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) 
 instance extension_algebra_isIntegral : Algebra.IsIntegral (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isIntegral_algebra (𝓞 K) L
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any extension between ring of integers of number fields is Noetherian. -/
 instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isNoetherian (𝓞 K) K L (𝓞 L)
@@ -386,7 +385,6 @@ theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥
 theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L)) :=
   (RingHom.injective_iff_ker_eq_bot (algebraMap (𝓞 K) (𝓞 L))).mpr (ker_algebraMap_eq_bot K L)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsTorsionFree (𝓞 K) (𝓞 L) :=
   isTorsionFree_iff_algebraMap_injective.mpr <| algebraMap.injective K L
 

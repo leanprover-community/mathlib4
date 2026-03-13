@@ -123,7 +123,6 @@ lemma pullHom'_self' (hom_self : ∀ i, pullHom' hom (f i) (𝟙 (X i)) (𝟙 (X
     pullHom' hom q g g hg hg = 𝟙 _ := by
   simp [← pullHom_pullHom' hom g (f i) q (𝟙 (X i)) (𝟙 (X i)) g g hg, hom_self, pullHom]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {sq₃} in
 @[reassoc]
 lemma comp_pullHom'' (hom_comp : ∀ (i₁ i₂ i₃ : ι),

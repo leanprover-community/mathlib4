@@ -560,19 +560,19 @@ lemma IsBasis.mapEmbedding {X : Set α} (hIX : M.IsBasis I X) (f : α ↪ β) :
   exact ⟨I, X, by simpa [preimage_image_eq _ f.injective] using hb⟩
 
 instance [M.Nonempty] {f : α ↪ β} : (M.mapEmbedding f).Nonempty :=
-  inferInstanceAs (M.map f f.injective.injOn).Nonempty
+  inferInstanceAs% (M.map f f.injective.injOn).Nonempty
 
 instance [M.Finite] {f : α ↪ β} : (M.mapEmbedding f).Finite :=
-  inferInstanceAs (M.map f f.injective.injOn).Finite
+  inferInstanceAs% (M.map f f.injective.injOn).Finite
 
 instance [M.Finitary] {f : α ↪ β} : (M.mapEmbedding f).Finitary :=
-  inferInstanceAs (M.map f f.injective.injOn).Finitary
+  inferInstanceAs% (M.map f f.injective.injOn).Finitary
 
 instance [M.RankFinite] {f : α ↪ β} : (M.mapEmbedding f).RankFinite :=
-  inferInstanceAs (M.map f f.injective.injOn).RankFinite
+  inferInstanceAs% (M.map f f.injective.injOn).RankFinite
 
 instance [M.RankPos] {f : α ↪ β} : (M.mapEmbedding f).RankPos :=
-  inferInstanceAs (M.map f f.injective.injOn).RankPos
+  inferInstanceAs% (M.map f f.injective.injOn).RankPos
 
 end mapEmbedding
 
@@ -609,19 +609,19 @@ lemma mapEquiv_eq_map (f : α ≃ β) : M.mapEquiv f = M.map f f.injective.injOn
   simpa
 
 instance [M.Nonempty] {f : α ≃ β} : (M.mapEquiv f).Nonempty :=
-  inferInstanceAs (M.map f f.injective.injOn).Nonempty
+  inferInstanceAs% (M.map f f.injective.injOn).Nonempty
 
 instance [M.Finite] {f : α ≃ β} : (M.mapEquiv f).Finite :=
-  inferInstanceAs (M.map f f.injective.injOn).Finite
+  inferInstanceAs% (M.map f f.injective.injOn).Finite
 
 instance [M.Finitary] {f : α ≃ β} : (M.mapEquiv f).Finitary :=
-  inferInstanceAs (M.map f f.injective.injOn).Finitary
+  inferInstanceAs% (M.map f f.injective.injOn).Finitary
 
 instance [M.RankFinite] {f : α ≃ β} : (M.mapEquiv f).RankFinite :=
-  inferInstanceAs (M.map f f.injective.injOn).RankFinite
+  inferInstanceAs% (M.map f f.injective.injOn).RankFinite
 
 instance [M.RankPos] {f : α ≃ β} : (M.mapEquiv f).RankPos :=
-  inferInstanceAs (M.map f f.injective.injOn).RankPos
+  inferInstanceAs% (M.map f f.injective.injOn).RankPos
 
 end mapEquiv
 

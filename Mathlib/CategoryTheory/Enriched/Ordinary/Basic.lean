@@ -171,7 +171,7 @@ def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
 
 instance ForgetEnrichment.enrichedOrdinaryCategory {D : Type*} [EnrichedCategory V D] :
     EnrichedOrdinaryCategory V (ForgetEnrichment V D) where
-  toEnrichedCategory := inferInstanceAs (EnrichedCategory V D)
+  toEnrichedCategory := inferInstanceAs% (EnrichedCategory V D)
   homEquiv := Equiv.refl _
   homEquiv_id _ := Category.id_comp _
   homEquiv_comp _ _ := Category.assoc _ _ _
@@ -218,7 +218,7 @@ variable {V} {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
   (F : V ⥤ W) [F.LaxMonoidal]
   (C)
 
-instance : Category (TransportEnrichment F C) := inferInstanceAs (Category C)
+instance : Category (TransportEnrichment F C) := inferInstanceAs% (Category C)
 
 /-- If `C` is an ordinary enriched category, the category structure on `TransportEnrichment F C`
 is trivially equivalent to the one on `C` itself. -/

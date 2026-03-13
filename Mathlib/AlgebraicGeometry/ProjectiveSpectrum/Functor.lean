@@ -173,7 +173,6 @@ theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The following square commutes:
 ```

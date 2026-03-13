@@ -239,7 +239,7 @@ lemma C_ne_zero : (C a : MvPolynomial σ R) ≠ 0 ↔ a ≠ 0 :=
 
 instance nontrivial_of_nontrivial (σ : Type*) (R : Type*) [CommSemiring R] [Nontrivial R] :
     Nontrivial (MvPolynomial σ R) :=
-  inferInstanceAs (Nontrivial <| AddMonoidAlgebra R (σ →₀ ℕ))
+  inferInstanceAs% (Nontrivial <| AddMonoidAlgebra R (σ →₀ ℕ))
 
 instance infinite_of_infinite (σ : Type*) (R : Type*) [CommSemiring R] [Infinite R] :
     Infinite (MvPolynomial σ R) :=
@@ -251,10 +251,10 @@ instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiri
     <| (monomial_left_injective one_ne_zero).comp (Finsupp.single_injective _)
 
 instance [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) :=
-  inferInstanceAs (NoZeroDivisors (AddMonoidAlgebra ..))
+  inferInstanceAs% (NoZeroDivisors (AddMonoidAlgebra ..))
 
 instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero (MvPolynomial σ R) :=
-  inferInstanceAs (IsCancelMulZero (AddMonoidAlgebra ..))
+  inferInstanceAs% (IsCancelMulZero (AddMonoidAlgebra ..))
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
 instance [IsCancelAdd R] [IsDomain R] : IsDomain (MvPolynomial σ R) where

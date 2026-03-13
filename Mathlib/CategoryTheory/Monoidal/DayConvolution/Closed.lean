@@ -242,7 +242,6 @@ lemma coev_app_π (c j : C) :
       (H.obj c) (ℌ.π c) (ℌ.hπ c),
     Wedge.IsLimit.lift_ι]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coev_naturality_app {G' H' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G')
     (ℌ' : DayConvolutionInternalHom F (F ⊛ G') H') :
     η ≫ ℌ'.coev_app =

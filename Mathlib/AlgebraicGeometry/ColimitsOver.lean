@@ -210,7 +210,6 @@ noncomputable def gluedCocone : Cocone D := by
       reassoc_of% this, Scheme.OpenCover.map_glueMorphismsOverOfLocallyDirected_left,
       ← Over.comp_left_assoc, ← Comma.comp_hom, ← Functor.comp_map, Cocone.w]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma fst_gluedCocone_ι (a : J) (i : 𝒰.I₀) :
     pullback.fst (D.obj a).hom (𝒰.f i) ≫

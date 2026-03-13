@@ -241,7 +241,6 @@ lemma mapBifunctorRightUnitor_inv_apply (j : J) :
 
 variable {Y}
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorRightUnitor_inv_naturality :
     φ ≫ (mapBifunctorRightUnitor F Y e p hp X').inv =

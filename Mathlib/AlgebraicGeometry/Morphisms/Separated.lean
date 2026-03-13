@@ -227,7 +227,7 @@ end of_injective
 
 instance : MorphismProperty.HasOfPostcompProperty @IsClosedImmersion @IsSeparated :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
-    fun _ _ _ _ ↦ inferInstanceAs (IsClosedImmersion _)
+    fun _ _ _ _ ↦ inferInstanceAs% (IsClosedImmersion _)
 
 lemma IsClosedImmersion.of_comp [IsClosedImmersion (f ≫ g)] [IsSeparated g] :
     IsClosedImmersion f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
@@ -257,7 +257,7 @@ instance : MorphismProperty.HasOfPostcompProperty @IsSeparated ⊤ where
 
 instance : MorphismProperty.HasOfPostcompProperty @IsAffineHom @IsSeparated :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
-    fun _ _ _ _ ↦ inferInstanceAs (IsAffineHom _)
+    fun _ _ _ _ ↦ inferInstanceAs% (IsAffineHom _)
 
 lemma IsAffineHom.of_comp [IsAffineHom (f ≫ g)] [IsSeparated g] :
     IsAffineHom f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
@@ -274,7 +274,7 @@ instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSepa
     ((Limits.isPullback_equalizer_prod f g).map (Over.forget _)).flip ?_
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
     (Over.prodLeftIsoPullback Y Y).hom]
-  convert (inferInstanceAs (IsClosedImmersion (pullback.diagonal Y.hom)))
+  convert (inferInstanceAs% (IsClosedImmersion (pullback.diagonal Y.hom)))
   ext1 <;> simp [← Over.comp_left]
 
 set_option backward.isDefEq.respectTransparency false in

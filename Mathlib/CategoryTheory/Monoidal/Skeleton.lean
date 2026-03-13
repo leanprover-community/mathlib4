@@ -85,10 +85,10 @@ end Skeleton
 open Functor
 
 noncomputable instance : (skeletonEquivalence C).functor.Monoidal :=
-  inferInstanceAs (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse.Monoidal
+  inferInstanceAs% (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse.Monoidal
 
 noncomputable instance : (skeletonEquivalence C).inverse.Monoidal :=
-  inferInstanceAs (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).functor.Monoidal
+  inferInstanceAs% (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).functor.Monoidal
 
 variable {D : Type*} [Category* D] [MonoidalCategory D] (F : C ⥤ D) (e : C ≌ D)
 

@@ -154,7 +154,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem symmetry (X Y : Dial C) :
     (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 (tensorObj X Y) := by cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 theorem braiding_naturality_right (X : Dial C) {Y Z : Dial C} (f : Y ⟶ Z) :
     tensorHom (𝟙 X) f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ tensorHom f (𝟙 X) := by cat_disch
 

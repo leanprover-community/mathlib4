@@ -51,7 +51,7 @@ theorem exists_isExtremal_iff_exists (p : SimpleGraph V → Prop) :
   obtain ⟨G', hp', h⟩ := by
     apply exists_max_image { G | p G } (#·.edgeFinset)
     use G, by simpa using hp
-  use G', inferInstanceAs (DecidableRel G'.Adj)
+  use G', inferInstanceAs% (DecidableRel G'.Adj)
   exact ⟨by simpa using hp', fun _ _ hp ↦ by convert h _ (by simpa using hp)⟩
 
 /-- If `H` has at least one edge, then there exists an extremal `H.Free` graph. -/

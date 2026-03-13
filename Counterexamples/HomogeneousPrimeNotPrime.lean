@@ -42,7 +42,7 @@ abbrev Two :=
   WithZero Unit
 
 instance : Fintype Two :=
-  inferInstanceAs (Fintype (Option Unit))
+  inferInstanceAs% (Fintype (Option Unit))
 
 instance : IsOrderedAddMonoid Two :=
   { add_le_add_left := by decide }
@@ -59,14 +59,14 @@ def submoduleZ : Submodule R (R × R) where
   smul_mem' a _ hb := congr_arg (a * ·) hb
 
 instance [Fintype R] [DecidableEq R] : Fintype (submoduleZ R) :=
-  inferInstanceAs (Fintype {zz : R × R // zz.1 = zz.2})
+  inferInstanceAs% (Fintype {zz : R × R // zz.1 = zz.2})
 
 /-- The grade 1 part of `R²` is `{(0, b) | b ∈ R}`. -/
 def submoduleO : Submodule R (R × R) :=
   LinearMap.ker (LinearMap.fst R R R)
 
 instance [Fintype R] [DecidableEq R] : Fintype (submoduleO R) :=
-  inferInstanceAs (Fintype {zz : R × R // zz.1 = 0})
+  inferInstanceAs% (Fintype {zz : R × R // zz.1 = 0})
 
 /-- Given the above grading (see `submoduleZ` and `submoduleO`),
   we turn `R²` into a graded ring. -/
@@ -75,8 +75,8 @@ def grading : Two → Submodule R (R × R)
   | 1 => submoduleO R
 
 instance [Fintype R] [DecidableEq R] : ∀ (i : Two), Fintype (grading R i)
-  | 0 => inferInstanceAs (Fintype (submoduleZ R))
-  | 1 => inferInstanceAs (Fintype (submoduleO R))
+  | 0 => inferInstanceAs% (Fintype (submoduleZ R))
+  | 1 => inferInstanceAs% (Fintype (submoduleO R))
 
 theorem grading.one_mem : (1 : R × R) ∈ grading R 0 :=
   Eq.refl (1, 1).fst

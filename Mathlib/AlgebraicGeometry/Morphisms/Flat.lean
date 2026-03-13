@@ -222,7 +222,7 @@ lemma isIso_pushoutSection_iff :
       (g.appLE UX UY (by simp [*])) (iY.appLE UT UY (by simp [*])) :=
   ⟨fun _ ↦ .of_iso (.of_hasPushout _ _) (.refl _) (.refl _) (.refl _)
     (asIso (pushoutSection H hUST hUSX hUY)) (by simp) (by simp) (by simp) (by simp),
-    fun h ↦ inferInstanceAs (IsIso h.isoPushout.inv)⟩
+    fun h ↦ inferInstanceAs% (IsIso h.isoPushout.inv)⟩
 
 attribute [local simp] IsAffineOpen.isoSpec_hom in
 attribute [local simp← ] Scheme.Hom.resLE_eq_morphismRestrict in

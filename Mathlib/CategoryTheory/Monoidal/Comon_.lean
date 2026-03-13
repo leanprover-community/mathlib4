@@ -180,7 +180,7 @@ instance : Category (Comon C) where
   id := id
   comp f g := comp f g
 
-instance {M N : Comon C} (f : M ⟶ N) : IsComonHom f.hom := inferInstanceAs (IsComonHom f.hom)
+instance {M N : Comon C} (f : M ⟶ N) : IsComonHom f.hom := inferInstanceAs% (IsComonHom f.hom)
 
 @[ext] lemma ext {X Y : Comon C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g := Hom.ext w
 

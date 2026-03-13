@@ -103,10 +103,10 @@ lemma LocallyOfFiniteType.stalkMap [LocallyOfFiniteType f] (x : X) :
       (RingHom.FiniteType.essFiniteType hf)) ‹_› x
 
 instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
-  inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
+  inferInstanceAs% (JacobsonSpace (PrimeSpectrum R))
 
 instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
-  inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
+  inferInstanceAs% (JacobsonSpace (PrimeSpectrum R))
 
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
     (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by

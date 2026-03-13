@@ -110,12 +110,12 @@ instance (K₁ K₂ : HomologicalComplex C c) [GradedObject.HasTensor K₁.X K�
 instance (K₁ K₂ K₃ : HomologicalComplex C c)
     [GradedObject.HasGoodTensor₁₂Tensor K₁.X K₂.X K₃.X] :
     HasGoodTensor₁₂ K₁ K₂ K₃ :=
-  inferInstanceAs (GradedObject.HasGoodTensor₁₂Tensor K₁.X K₂.X K₃.X)
+  inferInstanceAs% (GradedObject.HasGoodTensor₁₂Tensor K₁.X K₂.X K₃.X)
 
 instance (K₁ K₂ K₃ : HomologicalComplex C c)
     [GradedObject.HasGoodTensorTensor₂₃ K₁.X K₂.X K₃.X] :
     HasGoodTensor₂₃ K₁ K₂ K₃ :=
-  inferInstanceAs (GradedObject.HasGoodTensorTensor₂₃ K₁.X K₂.X K₃.X)
+  inferInstanceAs% (GradedObject.HasGoodTensorTensor₂₃ K₁.X K₂.X K₃.X)
 
 section
 
@@ -129,7 +129,7 @@ instance : GradedObject.HasTensor (tensorUnit C c).X K.X :=
   GradedObject.hasTensor_of_iso (tensorUnitIso C c) (Iso.refl _)
 
 instance : HasTensor (tensorUnit C c) K :=
-  inferInstanceAs (GradedObject.HasTensor (tensorUnit C c).X K.X)
+  inferInstanceAs% (GradedObject.HasTensor (tensorUnit C c).X K.X)
 
 @[simp]
 lemma unit_tensor_d₁ (i₁ i₂ j : I) :
@@ -151,7 +151,7 @@ instance : GradedObject.HasTensor K.X (tensorUnit C c).X :=
   GradedObject.hasTensor_of_iso (Iso.refl _) (tensorUnitIso C c)
 
 instance : HasTensor K (tensorUnit C c) :=
-  inferInstanceAs (GradedObject.HasTensor K.X (tensorUnit C c).X)
+  inferInstanceAs% (GradedObject.HasTensor K.X (tensorUnit C c).X)
 
 @[simp]
 lemma tensor_unit_d₂ (i₁ i₂ j : I) :

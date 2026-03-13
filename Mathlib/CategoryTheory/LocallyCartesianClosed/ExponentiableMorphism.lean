@@ -134,12 +134,10 @@ theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforw
     pushforwardCurry (pushforwardUncurry v) = v :=
   pullbackPushforwardAdj f |>.homEquiv A X |>.right_inv v
 
-set_option backward.isDefEq.respectTransparency false in
 instance : ChosenPullbacksAlong (Over.mk f).hom := by
   dsimp only [Over.mk_hom]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance OverMkHom : ExponentiableMorphism (Over.mk f).hom := by
   dsimp only [Over.mk_hom]
   infer_instance

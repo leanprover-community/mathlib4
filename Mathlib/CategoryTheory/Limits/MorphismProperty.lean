@@ -166,7 +166,7 @@ variable (X : T)
 noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
     CreatesLimitsOfShape (Discrete PEmpty.{1}) (Over.forget P ⊤ X) := by
   apply +allowSynthFailures forgetCreatesLimitsOfShapeOfClosed
-  · exact inferInstanceAs (HasLimitsOfShape _ (Over X))
+  · exact inferInstanceAs% (HasLimitsOfShape _ (Over X))
   · apply Over.closedUnderLimitsOfShape_discrete_empty _
 
 variable {X} in
@@ -194,7 +194,7 @@ noncomputable instance createsLimitsOfShape_walkingCospan [HasPullbacks T]
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
     CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) := by
   apply +allowSynthFailures forgetCreatesLimitsOfShapeOfClosed
-  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
+  · exact inferInstanceAs% (HasLimitsOfShape WalkingCospan (Over X))
   · apply Over.closedUnderLimitsOfShape_pullback
 
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
@@ -202,7 +202,7 @@ noncomputable instance createsLimitsOfShape_walkingCospan [HasPullbacks T]
 instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition]
     [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) := by
   apply +allowSynthFailures hasLimitsOfShape_of_closedUnderLimitsOfShape
-  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
+  · exact inferInstanceAs% (HasLimitsOfShape WalkingCospan (Over X))
   · apply Over.closedUnderLimitsOfShape_pullback
 
 variable [HasPullbacks T] [P.IsStableUnderComposition] [P.ContainsIdentities]

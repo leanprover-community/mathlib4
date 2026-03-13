@@ -501,7 +501,7 @@ end AddCommGroupWithOne
 variable [CommRing R]
 
 instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
-  __ := inferInstanceAs (AddCommGroupWithOne ℍ[R,c₁,c₂,c₃])
+  __ := inferInstanceAs% (AddCommGroupWithOne ℍ[R,c₁,c₂,c₃])
   left_distrib _ _ _ := by ext <;> simp <;> ring
   right_distrib _ _ _ := by ext <;> simp <;> ring
   zero_mul _ := by ext <;> simp
@@ -774,9 +774,9 @@ theorem Quaternion.equivTuple_apply (R : Type*) [Zero R] [One R] [Neg R] (x : �
   rfl
 
 instance {R : Type*} [Zero R] [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] :=
-  inferInstanceAs (Subsingleton <| ℍ[R,-1,0,-1])
+  inferInstanceAs% (Subsingleton <| ℍ[R,-1,0,-1])
 instance {R : Type*} [Zero R] [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
-  inferInstanceAs (Nontrivial <| ℍ[R,-1,0,-1])
+  inferInstanceAs% (Nontrivial <| ℍ[R,-1,0,-1])
 
 namespace Quaternion
 

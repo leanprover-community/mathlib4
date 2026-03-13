@@ -62,7 +62,6 @@ To endow a Polish space with a complete metric space structure, do
 class PolishSpace (α : Type*) [h : TopologicalSpace α] : Prop
     extends SecondCountableTopology α, IsCompletelyMetrizableSpace α
 
-set_option backward.isDefEq.respectTransparency false in
 instance [TopologicalSpace α] [SeparableSpace α] [IsCompletelyMetrizableSpace α] :
     PolishSpace α := by
   letI := upgradeIsCompletelyMetrizable α
@@ -71,14 +70,12 @@ instance [TopologicalSpace α] [SeparableSpace α] [IsCompletelyMetrizableSpace 
 
 namespace PolishSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any nonempty Polish space is the continuous image of the fundamental space `ℕ → ℕ`. -/
 theorem exists_nat_nat_continuous_surjective (α : Type*) [TopologicalSpace α] [PolishSpace α]
     [Nonempty α] : ∃ f : (ℕ → ℕ) → α, Continuous f ∧ Surjective f :=
   letI := upgradeIsCompletelyMetrizable α
   exists_nat_nat_continuous_surjective_of_completeSpace α
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a closed embedding into a Polish space, the source space is also Polish. -/
 theorem _root_.Topology.IsClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpace β]
     [PolishSpace β] {f : α → β} (hf : IsClosedEmbedding f) : PolishSpace α := by
@@ -179,7 +176,6 @@ instance [SecondCountableTopology α] : SecondCountableTopology (CompleteCopy s)
   inferInstanceAs (SecondCountableTopology s)
 instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 A metric space structure on a subset `s` of a metric space, designed to make it complete
 if `s` is open. It is given by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the
@@ -245,7 +241,6 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
     ge_of_tendsto' this I
   exact absurd (Hmem.2 <| lt_of_lt_of_le (div_pos one_pos Cpos) I') xs
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An open subset of a Polish space is also Polish. -/
 theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsOpen s) : PolishSpace s := by

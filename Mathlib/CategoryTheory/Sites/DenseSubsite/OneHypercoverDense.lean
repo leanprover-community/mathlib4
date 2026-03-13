@@ -702,7 +702,6 @@ lemma inv_π (i : (data (F.obj X₀)).I₀) :
       IsDenseSubsite.mapPreimage J F G₀ ((data (F.obj X₀)).f i) :=
   Multiequalizer.lift_ι _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inv_restriction {Y₀ : C₀} (f : F.obj Y₀ ⟶ F.obj X₀) :
     inv data G₀ X₀ ≫ restriction data G₀ f =

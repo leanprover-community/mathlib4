@@ -188,7 +188,7 @@ theorem is_integral_localization_at_leadingCoeff {x : S} (p : R[X]) (hp : aeval 
           Rₘ →+* _).IsIntegralElem
       (algebraMap S Sₘ x) :=
   haveI : IsLocalization (Submonoid.map (algebraMap R S) M) Sₘ :=
-    inferInstanceAs (IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ)
+    inferInstanceAs% (IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ)
   (algebraMap R S).isIntegralElem_localization_at_leadingCoeff x p hp M hM
 
 /-- If `R → S` is an integral extension, `M` is a submonoid of `R`,
@@ -395,7 +395,7 @@ the integral closure `C` of `A` in `L` has fraction field `L`. -/
 theorem isFractionRing_of_finite_extension [IsDomain A] [Algebra K L] [IsScalarTower A K L]
     [FiniteDimensional K L] : IsFractionRing C L :=
   have : Algebra.IsAlgebraic A L := IsFractionRing.comap_isAlgebraic_iff.mpr
-    (inferInstanceAs (Algebra.IsAlgebraic K L))
+    (inferInstanceAs% (Algebra.IsAlgebraic K L))
   isFractionRing_of_algebraic A C
     fun _ hx =>
     IsFractionRing.to_map_eq_zero_iff.mp

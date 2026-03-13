@@ -135,7 +135,7 @@ instance (priority := 900) (f : X ⟶ Y) [IsClosedImmersion f] : IsFinite f :=
 
 instance : MorphismProperty.HasOfPostcompProperty @IsFinite @IsSeparated :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
-    fun _ _ _ _ ↦ inferInstanceAs (IsFinite _)
+    fun _ _ _ _ ↦ inferInstanceAs% (IsFinite _)
 
 lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsFinite (f ≫ g)] [IsSeparated g] :
     IsFinite f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
@@ -154,7 +154,6 @@ instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsFinite f] [IsFinite
 
 end IsFinite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a Jacobson scheme and `k` is a field,
 `Spec(k) ⟶ X` is finite iff it is (locally) of finite type.
 (The statement is more general to allow the empty scheme as well) -/

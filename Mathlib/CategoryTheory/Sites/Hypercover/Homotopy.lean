@@ -145,7 +145,6 @@ noncomputable def cylinder (f g : E.Hom F) : PreOneHypercover.{max w w'} S where
   p₂ {p q} k := pullback.fst _ _ ≫ pullback.snd _ _
   w {_ _} k := by simp [pullback.condition]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toPullback_cylinder {i j : (cylinder f g).I₀} (k : (cylinder f g).I₁ i j) :
     (cylinder f g).toPullback k = pullback.fst _ _ := by
   apply pullback.hom_ext <;> simp [toPullback]

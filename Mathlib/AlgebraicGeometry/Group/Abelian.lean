@@ -31,7 +31,6 @@ variable {K : Type u} [Field K] {X : Scheme.{u}}
 
 open MonoidalCategory CartesianMonoidalCategory MonObj
 
-set_option backward.isDefEq.respectTransparency false in
 instance (G : Over (Spec (.of K))) [GrpObj G] : IsClosedImmersion η[G].left :=
   isClosedImmersion_of_comp_eq_id (Y := Spec (.of K)) G.hom η[G].left (by simp)
 
@@ -50,7 +49,7 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
   have : Surjective (fst G G).left := by dsimp; infer_instance
   have : IsProper ((GrpObj.commutator G).left ≫ G.hom) := by rw [Over.w]; infer_instance
   have : IsClosedImmersion ((lift η[G] η[G]).left ≫ (fst G G).left) := by
-    simpa using inferInstanceAs (IsClosedImmersion η[G].left)
+    simpa using inferInstanceAs% (IsClosedImmersion η[G].left)
   have : IsClosedImmersion (lift η[G] η[G]).left := .of_comp _ (g := (fst G G).left)
   let γ : G ⊗ G ⟶ G ⊗ G := lift (fst _ _) (GrpObj.commutator _)
   have : IsProper (γ.left ≫ (fst G G).left) := by simpa [γ]

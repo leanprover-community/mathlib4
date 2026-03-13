@@ -157,7 +157,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
   -/
   classical
   obtain ⟨n, f₀, hf₀⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp
-    (inferInstanceAs (Algebra.FiniteType R P))
+    (inferInstanceAs% (Algebra.FiniteType R P))
   let M' := M.comap f₀
   let P' := Localization M'
   let fP : P' →ₐ[R] S := IsLocalization.liftAlgHom (M := M')

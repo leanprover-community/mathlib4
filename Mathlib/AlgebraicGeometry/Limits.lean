@@ -142,7 +142,7 @@ instance initial_isEmpty : IsEmpty (⊥_ Scheme) :=
   ⟨fun x => ((initial.to Scheme.empty :) x).elim⟩
 
 theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : X.Opens) :=
-  @isAffine_of_isEmpty _ (inferInstanceAs (IsEmpty (∅ : Set X)))
+  @isAffine_of_isEmpty _ (inferInstanceAs% (IsEmpty (∅ : Set X)))
 
 instance : HasStrictInitialObjects Scheme :=
   hasStrictInitialObjects_of_initial_is_strict fun A f => by infer_instance
@@ -166,7 +166,7 @@ instance (priority := low) {X : Scheme.{u}} [Subsingleton X] : IsAffine X := by
 theorem IsAffineOpen.of_subsingleton {X : Scheme} {U : X.Opens}
     (hU : Set.Subsingleton (U : Set X)) : IsAffineOpen U :=
   have : Subsingleton U := hU.coe_sort
-  inferInstanceAs (IsAffine _)
+  inferInstanceAs% (IsAffine _)
 
 end Initial
 
@@ -181,7 +181,7 @@ instance [Small.{u} σ] :
     CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} where
 
 instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetToTop.{u} :=
-  inferInstanceAs (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
+  inferInstanceAs% (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
       LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCat))
 
 instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
@@ -713,7 +713,6 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
   · simpa using f.isOpenEmbedding.injective
   · simpa using g.isOpenEmbedding.injective
 
-set_option backward.isDefEq.respectTransparency false in
 instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
     {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
   obtain (a | (a | a)) := t
@@ -723,7 +722,6 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
   · simpa
 
 -- Test that instances on locally directed colimits fire correctly.
-set_option backward.isDefEq.respectTransparency false in
 example {U X Y : Scheme.{u}} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f] [IsOpenImmersion g] : HasPushout f g :=
   inferInstance

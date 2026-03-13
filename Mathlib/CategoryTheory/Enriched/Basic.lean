@@ -229,7 +229,7 @@ theorem ForgetEnrichment.of_to (X : ForgetEnrichment W C) :
   rfl
 
 instance categoryForgetEnrichment : Category (ForgetEnrichment W C) :=
-  enrichedCategoryTypeEquivCategory C (inferInstanceAs (EnrichedCategory (Type w)
+  enrichedCategoryTypeEquivCategory C (inferInstanceAs% (EnrichedCategory (Type w)
       (TransportEnrichment (coyoneda.obj (op (𝟙_ W))) C)))
 
 /-- We verify that the morphism types in `ForgetEnrichment W C` are `(𝟙_ W) ⟶ (X ⟶[W] Y)`.

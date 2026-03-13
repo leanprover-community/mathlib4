@@ -95,7 +95,7 @@ instance [HasFiniteColimits C] : HasFiniteColimits (Plus C) where
 variable {C} in
 lemma mono_iff [HasLimitsOfShape WalkingCospan C] {X Y : Plus C} (f : X ⟶ Y) :
     Mono f ↔ Mono f.hom :=
-  ⟨fun _ ↦ inferInstanceAs (Mono ((ι C).map f)),
+  ⟨fun _ ↦ inferInstanceAs% (Mono ((ι C).map f)),
     fun _ ↦ Functor.mono_of_mono_map (ι C) (by assumption)⟩
 
 /-- The class of quasi-isomorphisms in the category of bounded

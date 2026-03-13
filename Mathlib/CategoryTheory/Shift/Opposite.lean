@@ -91,7 +91,7 @@ instance [HasZeroObject C] : HasZeroObject (OppositeShift C A) := by
   infer_instance
 
 instance [Preadditive C] : Preadditive (OppositeShift C A) :=
-  inferInstanceAs (Preadditive Cᵒᵖ)
+  inferInstanceAs% (Preadditive Cᵒᵖ)
 
 instance [Preadditive C] (n : A) [(shiftFunctor C n).Additive] :
     (shiftFunctor (OppositeShift C A) n).Additive := by

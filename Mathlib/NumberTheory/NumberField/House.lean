@@ -210,7 +210,6 @@ variable {p q : ℕ} (h0p : 0 < p) (hpq : p < q) (x : β × (K →+* ℂ) → �
 /-- `ξ` is the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
 private def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
-set_option backward.isDefEq.respectTransparency false in
 include hxl in
 private theorem ξ_ne_0 : ξ K x ≠ 0 := by
   intro H
@@ -221,7 +220,6 @@ private theorem ξ_ne_0 : ξ K x ≠ 0 := by
   simp only [zsmul_eq_mul, Fintype.linearIndependent_iff] at hblin
   exact hblin (fun r ↦ x (l, r)) (H _) r
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem lin_1 (l k r) : a k l * (newBasis K) r =
     ∑ u, (a' K a k l r u) * (newBasis K) u := by
   simp only [Basis.sum_repr (newBasis K) (a k l * (newBasis K) r), a', ← zsmul_eq_mul]

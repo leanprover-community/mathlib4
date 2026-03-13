@@ -73,8 +73,8 @@ variable [IsNoetherianRing R]
 lemma Ideal.isOpen_of_isMaximal (I : Ideal R) [I.IsMaximal] : IsOpen (X := R) I :=
   have : I.toAddSubgroup.FiniteIndex :=
     @AddSubgroup.finiteIndex_of_finite_quotient _ _ _
-      (inferInstanceAs (Finite (R ⧸ I)))
-  I.toAddSubgroup.isOpen_of_isClosed_of_finiteIndex (inferInstanceAs (IsClosed (X := R) I))
+      (inferInstanceAs% (Finite (R ⧸ I)))
+  I.toAddSubgroup.isOpen_of_isClosed_of_finiteIndex (inferInstanceAs% (IsClosed (X := R) I))
 
 lemma Ideal.isOpen_pow_of_isMaximal (I : Ideal R) [I.IsMaximal] (n : ℕ) :
     IsOpen (X := R) ↑(I ^ n) :=
@@ -103,7 +103,7 @@ lemma isOpen_maximalIdeal : IsOpen (X := R) ↑(maximalIdeal R) :=
   Ideal.isOpen_of_isMaximal _
 
 instance finite_residueField_of_compactSpace : Finite (ResidueField R) :=
-  inferInstanceAs (Finite (R ⧸ _))
+  inferInstanceAs% (Finite (R ⧸ _))
 
 lemma isOpen_iff_finite_quotient {I : Ideal R} :
     IsOpen (X := R) I ↔ Finite (R ⧸ I) := by

@@ -134,7 +134,7 @@ instance : IsIntegrallyClosedIn (integralClosure R A) A :=
 
 set_option backward.isDefEq.respectTransparency false in
 instance : IsIntegrallyClosedIn (integralClosure R A).toSubring A :=
-  inferInstanceAs (IsIntegrallyClosedIn (integralClosure R A) A)
+  inferInstanceAs% (IsIntegrallyClosedIn (integralClosure R A) A)
 
 namespace Subring
 

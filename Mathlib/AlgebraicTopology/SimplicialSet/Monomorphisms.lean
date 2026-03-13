@@ -27,7 +27,7 @@ namespace SSet
 
 instance [HasCoproducts.{v'} (Type u)] :
     IsStableUnderCoproducts.{v'} (monomorphisms SSet.{u}) :=
-  inferInstanceAs (IsStableUnderCoproducts.{v'} (monomorphisms (_ ⥤ _)))
+  inferInstanceAs% (IsStableUnderCoproducts.{v'} (monomorphisms (_ ⥤ _)))
 
 instance : (monomorphisms SSet).IsStableUnderCobaseChange := by
   change (monomorphisms (_ ⥤ _)).IsStableUnderCobaseChange

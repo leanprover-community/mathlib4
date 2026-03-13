@@ -159,7 +159,6 @@ lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
       Category.assoc, limit.lift_π, Fan.mk_π_app, Pi.map_π]
     apply limit.lift_π
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapPower_π (U : FormalCoproduct.{w} C) {α β : Type}
     [HasProductsOfShape α C] [HasProductsOfShape β C] (f : α → β) (a : α) :

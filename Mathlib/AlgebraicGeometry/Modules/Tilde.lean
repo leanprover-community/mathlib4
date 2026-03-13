@@ -119,7 +119,7 @@ instance (f : R) : IsLocalizedModule (.powers f) (toOpen M (basicOpen f)).hom :=
 
 noncomputable
 instance (x : PrimeSpectrum.Top R) : Module R ((tilde M).presheaf.stalk x) :=
-  inferInstanceAs (Module R ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R M).presheaf x))
+  inferInstanceAs% (Module R ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R M).presheaf x))
 
 /--
 If `x` is a point of `Spec R`, this is the morphism of `R`-modules from `M` to the stalk of
@@ -131,7 +131,7 @@ noncomputable def toStalk (x : PrimeSpectrum.Top R) :
 
 instance (x : PrimeSpectrum.Top R) :
     IsLocalizedModule x.asIdeal.primeCompl (toStalk M x).hom :=
-  inferInstanceAs (IsLocalizedModule x.asIdeal.primeCompl (StructureSheaf.toStalkₗ ..))
+  inferInstanceAs% (IsLocalizedModule x.asIdeal.primeCompl (StructureSheaf.toStalkₗ ..))
 
 /-- The tilde construction is functorial. -/
 protected noncomputable def map {M N : ModuleCat R} (f : M ⟶ N) : tilde M ⟶ tilde N :=
@@ -396,7 +396,6 @@ set_option backward.isDefEq.respectTransparency false in
 instance : (tilde M).IsQuasicoherent :=
   (presentationTilde.{u} _ .univ (by simp) _ (Submodule.span_eq _)).isQuasicoherent
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_fromTildeΓ_of_presentation (M : (Spec R).Modules) (P : M.Presentation) :
     IsIso M.fromTildeΓ := by
   rw [isIso_fromTildeΓ_iff]

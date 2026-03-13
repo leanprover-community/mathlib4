@@ -181,7 +181,7 @@ noncomputable instance {P' : TopCat.{u} → Prop}
     (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     PreservesFiniteCoproducts (toCompHausLike h) := by
   have : PreservesFiniteCoproducts (toCompHausLike h ⋙ compHausLikeToTop P') :=
-    inferInstanceAs (PreservesFiniteCoproducts (compHausLikeToTop _))
+    inferInstanceAs% (PreservesFiniteCoproducts (compHausLikeToTop _))
   exact preservesFiniteCoproducts_of_reflects_of_preserves (toCompHausLike h) (compHausLikeToTop P')
 
 end FiniteCoproducts
@@ -293,7 +293,7 @@ noncomputable instance {P' : TopCat → Prop}
     (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     PreservesLimit (cospan f g) (toCompHausLike h) := by
   have : PreservesLimit (cospan f g) (toCompHausLike h ⋙ compHausLikeToTop P') :=
-    inferInstanceAs (PreservesLimit _ (compHausLikeToTop _))
+    inferInstanceAs% (PreservesLimit _ (compHausLikeToTop _))
   exact preservesLimit_of_reflects_of_preserves (toCompHausLike h) (compHausLikeToTop P')
 
 variable (P) in

@@ -39,14 +39,14 @@ open Function ZMod
 
 namespace ZMod
 
-instance : IsDomain (ZMod 0) := inferInstanceAs (IsDomain ℤ)
+instance : IsDomain (ZMod 0) := inferInstanceAs% (IsDomain ℤ)
 
 /-- For non-zero `n : ℕ`, the ring `Fin n` is equivalent to `ZMod n`. -/
 def finEquiv : ∀ (n : ℕ) [NeZero n], Fin n ≃+* ZMod n
   | 0, h => (h.ne _ rfl).elim
   | _ + 1, _ => .refl _
 
-instance charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
+instance charZero : CharZero (ZMod 0) := inferInstanceAs% (CharZero ℤ)
 
 /-- `val a` is a natural number defined as:
   - for `a : ZMod 0` it is the absolute value of `a`
@@ -1307,7 +1307,7 @@ def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
 instance ZMod.instSubsingletonModule (n : ℕ) (M : Type*) [AddCommMonoid M] :
     Subsingleton (Module (ZMod n) M) := by
   obtain _ | n := n
-  · exact inferInstanceAs (Subsingleton (Module ℤ M))
+  · exact inferInstanceAs% (Subsingleton (Module ℤ M))
   refine ⟨fun m1 m2 ↦ Module.ext' _ _ fun r m ↦ ?_⟩
   obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
   rw [(letI := m1; Nat.cast_smul_eq_nsmul _ r m), Nat.cast_smul_eq_nsmul _ r m]

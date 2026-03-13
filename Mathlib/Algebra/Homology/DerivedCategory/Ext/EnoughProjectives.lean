@@ -35,7 +35,6 @@ namespace CochainComplex
 
 open HomologicalComplex
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSplitEpi_to_singleFunctor_obj_of_projective
     {P : C} [Projective P] {K : CochainComplex C ℤ} {i : ℤ}
     (π : K ⟶ (CochainComplex.singleFunctor C i).obj P) [K.IsStrictlyLE i] [QuasiIsoAt π i] :

@@ -185,7 +185,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
       contrapose hq'q
       rw [← hq'q, Ideal.under, Ideal.comap_comap, AlgHom.toRingHom_eq_coe,
         AlgHom.comp_algebraMap, q's.over_def q'])
-    (inferInstanceAs ((q's.comap ((e.symm.toAlgHom.comp
+    (inferInstanceAs% ((q's.comap ((e.symm.toAlgHom.comp
       (IsScalarTower.toAlgHom _ _ _)).restrictScalars R)).LiesOver _))
   have : e.symm (algebraMap S (Localization.Away
       ((integralClosure R S).val.toRingHom s₂)) s₁) ∈ q's := by
@@ -273,7 +273,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     exact Ideal.one_notMem _ this
   refine ⟨_, inferInstance, inferInstance, inferInstance, P, ‹_›, ‹_›, e, he, e₀, he₀, he₀e, P',
     inferInstance, P'.2.2, hP'q, heP', hP, fun P'' _ _ H ↦ ?_, fun P'' _ _ H ↦ ?_⟩
-  · have : (P'.1.comap φ.toRingHom).LiesOver P := inferInstanceAs ((P'.1.comap φ).LiesOver P)
+  · have : (P'.1.comap φ.toRingHom).LiesOver P := inferInstanceAs% ((P'.1.comap φ).LiesOver P)
     apply Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap hP
     simp only [Ideal.comap_comap, AlgHom.toRingHom_eq_coe,
       ← @AlgHom.coe_restrictScalars R R', ← AlgHom.comp_toRingHom,

@@ -297,7 +297,7 @@ variable [HasFunctorEnrichedHom V F₁ F₂]
 instance {j j' : J} (f : j ⟶ j') :
     HasEnrichedHom V (Under.map f ⋙ Under.forget j ⋙ F₁)
       (Under.map f ⋙ Under.forget j ⋙ F₂) :=
-  inferInstanceAs (HasEnrichedHom V (Under.forget j' ⋙ F₁) (Under.forget j' ⋙ F₂))
+  inferInstanceAs% (HasEnrichedHom V (Under.forget j' ⋙ F₁) (Under.forget j' ⋙ F₂))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a category enriched in `V`,

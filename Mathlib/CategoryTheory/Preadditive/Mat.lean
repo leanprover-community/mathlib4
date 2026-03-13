@@ -307,7 +307,6 @@ open CategoryTheory.Limits
 
 variable {C}
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
 -/

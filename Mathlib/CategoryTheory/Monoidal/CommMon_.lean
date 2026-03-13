@@ -54,7 +54,7 @@ instance : Inhabited (CommMon C) :=
 variable {M : CommMon C}
 
 instance : Category (CommMon C) :=
-  inferInstanceAs (Category (InducedCategory _ CommMon.toMon))
+  inferInstanceAs% (Category (InducedCategory _ CommMon.toMon))
 
 @[simp]
 theorem id_hom (A : CommMon C) : Mon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=

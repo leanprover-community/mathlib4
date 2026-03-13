@@ -35,7 +35,7 @@ private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddC
     Module.Free R (MultilinearMap R N M₂) ∧ Module.Finite R (MultilinearMap R N M₂) := by
   induction n with
   | zero =>
-    haveI : IsEmpty (Fin Nat.zero) := inferInstanceAs (IsEmpty (Fin 0))
+    haveI : IsEmpty (Fin Nat.zero) := inferInstanceAs% (IsEmpty (Fin 0))
     exact
       ⟨Module.Free.of_equiv (constLinearEquivOfIsEmpty R R N M₂),
         Module.Finite.equiv (constLinearEquivOfIsEmpty R R N M₂)⟩

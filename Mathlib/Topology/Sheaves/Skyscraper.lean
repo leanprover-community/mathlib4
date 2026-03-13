@@ -188,7 +188,6 @@ def skyscraperPresheafCocone (y : X) :
     { app := fun _ => terminal.from _
       naturality := fun _ _ _ => terminalIsTerminal.hom_ext _ _ }
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The cocone at `*` for the stalk functor of `skyscraperPresheaf p₀ A` when `y ∉ closure {p₀}` is a
 colimit

@@ -88,7 +88,7 @@ instance (priority := 900) [IsOpenImmersion (pullback.diagonal f)] : FormallyUnr
     intro i
     have inst : IsOpenImmersion (pullback.diagonal (X.affineCover.f i ≫ f)) :=
       MorphismProperty.comp_mem (.diagonal @IsOpenImmersion) _ _
-        (inferInstanceAs (IsOpenImmersion _)) ‹_›
+        (inferInstanceAs% (IsOpenImmersion _)) ‹_›
     exact this (_ ≫ _) ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl : Spec.map φ = f⟩ := Spec.homEquiv.symm.surjective f

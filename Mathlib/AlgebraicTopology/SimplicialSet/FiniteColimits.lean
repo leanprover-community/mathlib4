@@ -43,7 +43,6 @@ lemma range_eq_iSup_of_isColimit {X : SSet.{u}} (φ : c.pt ⟶ X) :
   simp_rw [Subcomplex.range_comp, Subcomplex.range_eq_top, ← iSup_range_eq_top_of_isColimit hc,
     Subcomplex.image_iSup]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasDimensionLT_of_isColimit {n : ℕ}
     (h : ∀ (j : J), HasDimensionLT (F.obj j) n) : HasDimensionLT c.pt n := by
   rw [← hasDimensionLT_subcomplex_top_iff, ← iSup_range_eq_top_of_isColimit hc,

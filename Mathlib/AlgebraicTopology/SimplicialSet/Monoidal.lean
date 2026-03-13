@@ -102,7 +102,7 @@ lemma stdSimplex.ext₀ {X : SSet.{u}} {f g : X ⟶ Δ[0]} : f = g :=
 instance (X Y : SSet.{u}) (n : SimplexCategoryᵒᵖ)
     [Finite (X.obj n)] [Finite (Y.obj n)] :
     Finite ((X ⊗ Y).obj n) :=
-  inferInstanceAs (Finite (X.obj n × Y.obj n))
+  inferInstanceAs% (Finite (X.obj n × Y.obj n))
 
 instance : (𝟙_ SSet.{u}).Finite :=
   finite_of_iso (stdSimplex.isTerminalObj₀.{u}.uniqueUpToIso
@@ -179,7 +179,7 @@ variable (n : ℕ)
 open MonoidalCategory
 
 instance : (truncation.{u} n).Monoidal :=
-  inferInstanceAs ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
+  inferInstanceAs% ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
 
 variable {n} {X Y : Truncated.{u} n}
 

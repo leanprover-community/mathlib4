@@ -50,7 +50,7 @@ lemma QuasiFinite.comp_iff {f : S →+* T} {g : R →+* S} (hg : g.QuasiFinite) 
 
 lemma QuasiFinite.of_finite {f : S →+* T} (hf : f.Finite) : f.QuasiFinite := by
   algebraize [f]
-  exact inferInstanceAs (Algebra.QuasiFinite _ _)
+  exact inferInstanceAs% (Algebra.QuasiFinite _ _)
 
 lemma QuasiFinite.stableUnderComposition : StableUnderComposition QuasiFinite :=
   fun _ _ _ _ _ _ _ _ hf hg ↦ comp hg hf

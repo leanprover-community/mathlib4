@@ -101,7 +101,6 @@ lemma groupCohomologyπEven_eq_zero_iff (i : ℕ) [NeZero i] (hi : Even i)
   simp [groupCohomologyπEven, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
     moduleCatToCycles, -LinearMap.mem_range, LinearMap.range_codRestrict]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma groupCohomologyπEven_eq_iff (i : ℕ) [NeZero i] (hi : Even i)
     (x y : LinearMap.ker (applyAsHom A g - 𝟙 A).hom.hom) :
     groupCohomologyπEven A g hg i hi x = groupCohomologyπEven A g hg i hi y ↔

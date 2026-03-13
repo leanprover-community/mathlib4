@@ -333,10 +333,10 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
   let Sₐ (a : s) := Localization.Away (rₐ a)
   haveI (a : s) :
       IsLocalization.Away (((algebraMap S (Localization.Away a.val)).comp f) r) (Sₐ a) :=
-    inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
+    inferInstanceAs% (IsLocalization.Away (rₐ a) (Sₐ a))
   haveI (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
-    convert inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
+    convert inferInstanceAs% (IsLocalization.Away (rₐ a) (Sₐ a))
     simp [rₐ, Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
       (Submonoid.powers (rₐ a)).comap (algebraMap S (Localization.Away a.val)) := by

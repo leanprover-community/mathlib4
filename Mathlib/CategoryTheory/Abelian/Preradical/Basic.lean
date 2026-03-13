@@ -67,7 +67,7 @@ attribute [instance] IsIdempotent.isIso_whiskerLeft_r_ι
 
 instance [Φ.IsIdempotent] (X : C) :
     IsIso (Φ.ι.app (Φ.r.obj X)) :=
-  inferInstanceAs (IsIso ((Functor.whiskerLeft Φ.r Φ.ι).app X))
+  inferInstanceAs% (IsIso ((Functor.whiskerLeft Φ.r Φ.ι).app X))
 
 set_option backward.isDefEq.respectTransparency false in
 instance [Φ.IsIdempotent] (X : C) :

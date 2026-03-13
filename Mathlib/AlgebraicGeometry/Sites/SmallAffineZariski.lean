@@ -360,7 +360,7 @@ noncomputable def isColimitCocone : IsColimit (cocone X) :=
         congr with U
         simp [D, relativeGluingData, restrictIsoSpec]
       · simp
-    convert inferInstanceAs (IsIso e.hom)
+    convert inferInstanceAs% (IsIso e.hom)
     rw [← cancel_mono U.1.ι, ← Iso.inv_comp_eq]
     simp [e, ← pullback.condition, IsAffineOpen.isoSpec_hom]
   .ofPointIso (colimit.isColimit F)

@@ -119,7 +119,6 @@ instance [IsFiltered J] [∀ j, IsFiltered (I j)]
       simp only [Functor.map_comp, comp_hom, reassoc_of% hpq]
       simp [← Functor.map_comp, ← IsFiltered.coeq_condition]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P` is a colimit presentation over `J` of `X` and for every `j` we are given a colimit
 presentation `Qⱼ` over `I j` of the `P.diag.obj j`, this is the refined colimit presentation of `X`
 over `Total Q`. -/

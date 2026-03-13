@@ -161,7 +161,7 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsClosedImmersion f] :
       rw [← Set.range_eq_univ, ← f.toImage.isClosedEmbedding.isClosed_range.closure_eq]
       exact f.toImage.denseRange.closure_eq⟩
   refine isomorphisms_eq_stalkwise.ge _ ⟨?_, ?_⟩
-  · exact inferInstanceAs (IsIso (TopCat.isoOfHomeo this.homeomorph).hom)
+  · exact inferInstanceAs% (IsIso (TopCat.isoOfHomeo this.homeomorph).hom)
   · intro x
     refine ⟨?_, f.toImage.stalkMap_surjective x⟩
     change Function.Injective (CommRingCat.Hom.hom (((TopCat.Presheaf.stalkFunctor CommRingCat
@@ -239,7 +239,6 @@ variable {X Y : Scheme.{u}} [IsAffine Y] {f : X ⟶ Y}
 
 open IsClosedImmersion LocallyRingedSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⟶ Y` is a morphism of schemes with quasi-compact source and affine target,
 `f` induces an injection on global sections, then `f` is dominant. -/
 lemma isDominant_of_of_appTop_injective [CompactSpace X]
@@ -395,12 +394,11 @@ instance (f : X ⟶ Y) (V : Y.Opens) [IsClosedImmersion f] :
 instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
     LocallyOfFiniteType f := by
   rw [HasRingHomProperty.eq_affineLocally @LocallyOfFiniteType,
-    ← and_iff_right (inferInstanceAs (IsAffineHom f)) (b := affineLocally _ _),
+    ← and_iff_right (inferInstanceAs% (IsAffineHom f)) (b := affineLocally _ _),
     ← targetAffineLocally_affineAnd_iff_affineLocally RingHom.finiteType_isLocal]
   rw [HasAffineProperty.eq_targetAffineLocally @IsClosedImmersion] at h
   exact targetAffineLocally_affineAnd_le (RingHom.FiniteType.of_surjective _) _ h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A surjective closed immersion is an isomorphism when the target is reduced. -/
 lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
     [IsClosedImmersion f] [Surjective f] [IsReduced Y] :

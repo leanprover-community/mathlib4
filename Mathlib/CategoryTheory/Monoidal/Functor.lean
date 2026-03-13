@@ -755,7 +755,7 @@ variable [F.LaxMonoidal] [G.LaxMonoidal]
 
 /-- The functor `C ⥤ D × E` obtained from two lax monoidal functors is lax monoidal. -/
 instance LaxMonoidal.prod' : (prod' F G).LaxMonoidal :=
-  inferInstanceAs (diag C ⋙ prod F G).LaxMonoidal
+  inferInstanceAs% (diag C ⋙ prod F G).LaxMonoidal
 
 @[simp] lemma prod'_ε_fst : (ε (prod' F G)).1 = ε F := by
   change _ ≫ F.map (𝟙 _) = _
@@ -785,7 +785,7 @@ variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 
 /-- The functor `C ⥤ D × E` obtained from two oplax monoidal functors is oplax monoidal. -/
 instance OplaxMonoidal.prod' : (prod' F G).OplaxMonoidal :=
-  inferInstanceAs (diag C ⋙ prod F G).OplaxMonoidal
+  inferInstanceAs% (diag C ⋙ prod F G).OplaxMonoidal
 
 @[simp] lemma prod'_η_fst : (η (prod' F G)).1 = η F := by
   change F.map (𝟙 _) ≫ _ = _
@@ -984,8 +984,8 @@ namespace Equivalence
 
 variable (e : C ≌ D)
 
-instance [e.inverse.Monoidal] : e.symm.functor.Monoidal := inferInstanceAs (e.inverse.Monoidal)
-instance [e.functor.Monoidal] : e.symm.inverse.Monoidal := inferInstanceAs (e.functor.Monoidal)
+instance [e.inverse.Monoidal] : e.symm.functor.Monoidal := inferInstanceAs% (e.inverse.Monoidal)
+instance [e.functor.Monoidal] : e.symm.inverse.Monoidal := inferInstanceAs% (e.functor.Monoidal)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If a monoidal functor `F` is an equivalence of categories then its inverse is also monoidal. -/
@@ -1095,12 +1095,12 @@ lemma ε_comp_map_ε : ε e.inverse ≫ e.inverse.map (ε e.functor) = e.unit.ap
 lemma map_η_comp_η : e.functor.map (η e.inverse) ≫ η e.functor = e.counit.app (𝟙_ D) :=
   e.toAdjunction.map_η_comp_η
 
-instance : (refl (C := C)).functor.Monoidal := inferInstanceAs (𝟭 C).Monoidal
-instance : (refl (C := C)).inverse.Monoidal := inferInstanceAs (𝟭 C).Monoidal
+instance : (refl (C := C)).functor.Monoidal := inferInstanceAs% (𝟭 C).Monoidal
+instance : (refl (C := C)).inverse.Monoidal := inferInstanceAs% (𝟭 C).Monoidal
 
 /-- The obvious auto-equivalence of a monoidal category is monoidal. -/
 instance isMonoidal_refl : (Equivalence.refl (C := C)).IsMonoidal :=
-  inferInstanceAs (Adjunction.id (C := C)).IsMonoidal
+  inferInstanceAs% (Adjunction.id (C := C)).IsMonoidal
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of a monoidal category equivalence is also a monoidal category equivalence. -/

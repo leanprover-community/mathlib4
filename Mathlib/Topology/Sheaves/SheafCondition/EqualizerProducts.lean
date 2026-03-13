@@ -308,7 +308,6 @@ def coneEquivInverse :
         · dsimp
           rw [← f.w WalkingParallelPair.one, Category.assoc] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps]
 def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :

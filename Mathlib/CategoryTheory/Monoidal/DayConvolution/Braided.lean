@@ -119,7 +119,6 @@ variable
   [∀ (v : V) (d : C),
     Limits.PreservesColimitsOfShape (CostructuredArrow (tensor C) d) (tensorRight v)]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (F G) in
 lemma hexagon_forward (H : C ⥤ V)
     [DayConvolution F G] [DayConvolution G H] [DayConvolution F (G ⊛ H)]
