@@ -141,12 +141,12 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def dHomologyData
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia)
     (hn₃ : n₂ + 1 = n₃ := by lia) (hn₄ : n₃ + 1 = n₄ := by lia) :
-    (X.dShortComplex f₁ f₂ f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ ).HomologyData :=
+    (X.dShortComplex f₁ f₂ f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ n₄).HomologyData :=
   ShortComplex.HomologyData.ofEpiMonoFactorisation
-    (X.dShortComplex f₁ f₂ f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄)
-    (X.dKernelSequence_exact f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄).fIsKernel
-    (X.dCokernelSequence_exact f₃ f₄ f₅ f₆ f₇ f₅₆ h₅₆ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).gIsCokernel
-    (X.map_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃ f₂ f₃ f₄ f₅ f₆ f₂₃ h₂₃ f₅₆ h₅₆ n₁ n₂ n₃ hn₂ hn₃)
+    (X.dShortComplex f₁ f₂ f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ n₄)
+    (X.dKernelSequence_exact f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₁ n₂ n₃ n₄).fIsKernel
+    (X.dCokernelSequence_exact f₃ f₄ f₅ f₆ f₇ f₅₆ h₅₆ n₀ n₁ n₂ n₃).gIsCokernel
+    (X.map_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃ f₂ f₃ f₄ f₅ f₆ f₂₃ h₂₃ f₅₆ h₅₆ n₁ n₂ n₃)
 
 /-- The homology of the short complex
 `E^{n-1}(f₅, f₆, f₇) ⟶ E^{n}(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` identifies to
