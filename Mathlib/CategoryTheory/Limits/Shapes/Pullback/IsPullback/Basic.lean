@@ -118,33 +118,33 @@ section
 
 variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y}
 
-lemma isIso_fst_of_mono (h : IsPullback fst snd f f) (inst : Mono f := by infer_instance) :
+lemma isIso_fst_of_mono (h : IsPullback fst snd f f) [Mono f] :-- (inst : Mono f := by infer_instance) :
     IsIso fst := h.cone.isIso_fst_of_mono_of_isLimit h.isLimit
 
-lemma isIso_snd_iso_of_mono (h : IsPullback fst snd f f) (inst : Mono f := by infer_instance) :
+lemma isIso_snd_iso_of_mono (h : IsPullback fst snd f f) [Mono f] :
     IsIso snd := h.cone.isIso_snd_of_mono_of_isLimit h.isLimit
 
 end
 
 section
 
-lemma mono_fst_of_mono (h : IsPullback fst snd f g) (inst : Mono g := by infer_instance) :
+lemma mono_fst_of_mono (h : IsPullback fst snd f g) [Mono g] :
     Mono fst := by
   constructor
   intro W fst' snd' heq
   exact h.hom_ext heq (by simp [← cancel_mono g, ← h.w, reassoc_of% heq])
 
-lemma mono_snd_of_mono (h : IsPullback fst snd f g) (inst : Mono f := by infer_instance) :
+lemma mono_snd_of_mono (h : IsPullback fst snd f g) [Mono f] :
     Mono snd :=
   h.flip.mono_fst_of_mono
 
-lemma isIso_fst_of_isIso (h : IsPullback fst snd f g) (inst : IsIso g := by infer_instance) :
+lemma isIso_fst_of_isIso (h : IsPullback fst snd f g) [IsIso g] :
     IsIso fst := by
   have := h.hasPullback
   rw [← h.isoPullback_hom_fst]
   infer_instance
 
-lemma isIso_snd_of_isIso (h : IsPullback fst snd f g) (inst : IsIso f := by infer_instance) :
+lemma isIso_snd_of_isIso (h : IsPullback fst snd f g) [IsIso f] :
     IsIso snd :=
   h.flip.isIso_fst_of_isIso
 
@@ -457,32 +457,32 @@ section
 
 variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X}
 
-lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) (inst : Epi f := by infer_instance) :
+lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) [Epi f] :
     IsIso inl := h.cocone.isIso_inl_of_epi_of_isColimit h.isColimit
 
-lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) (inst : Epi f := by infer_instance) :
+lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) [Epi f] :
     IsIso inr := h.cocone.isIso_inr_of_epi_of_isColimit h.isColimit
 
 end
 
 section
 
-lemma epi_inl_of_epi (h : IsPushout f g inl inr) (inst : Epi g := by infer_instance) :
+lemma epi_inl_of_epi (h : IsPushout f g inl inr) [Epi g] :
     Epi inl := by
   constructor
   intro W fst' snd' heq
   exact h.hom_ext heq (by simp [← cancel_epi g, ← h.w_assoc,heq])
 
-lemma epi_inr_of_epi (h : IsPushout f g inl inr) (inst : Epi f := by infer_instance) :
+lemma epi_inr_of_epi (h : IsPushout f g inl inr) [Epi f] :
     Epi inr := h.flip.epi_inl_of_epi
 
-lemma isIso_inl_of_isIso (h : IsPushout f g inl inr) (inst : IsIso g := by infer_instance) :
+lemma isIso_inl_of_isIso (h : IsPushout f g inl inr) [IsIso g] :
     IsIso inl := by
   have := h.hasPushout
   rw [← h.inl_isoPushout_inv]
   infer_instance
 
-lemma isIso_inr_of_isIso (h : IsPushout f g inl inr) (inst : IsIso f := by infer_instance) :
+lemma isIso_inr_of_isIso (h : IsPushout f g inl inr) [IsIso f] :
     IsIso inr := h.flip.isIso_inl_of_isIso
 
 end
