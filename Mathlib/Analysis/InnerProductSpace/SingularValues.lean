@@ -231,35 +231,6 @@ theorem test₃ : T.singularValues.support.card = Module.finrank 𝕜 T.range :=
   rw [← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker]
   simp
 
-theorem singularValues_lt_rank {n : ℕ}
-  (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
-    contrapose! hn
-    have : T.singularValues.support ⊆ Finset.range n := by
-      intro i hi
-      rw [Finset.mem_range]
-      have hi₂ : 0 < T.singularValues i := pos_of_ne_zero (Finsupp.mem_support_iff.mp hi)
-      contrapose! hi₂
-      rw [←nonpos_iff_eq_zero.mp hn]
-      apply singularValues_antitone T
-      exact hi₂
-    calc
-      Module.finrank 𝕜 T.range = T.singularValues.support.card := T.test₃.symm
-      _ ≤ Finset.card (Finset.range n) := Finset.card_le_card this
-      _ = n := by simp
-
-
--- It's unclear what the right way to state "The rank of T, as a natural number" is,
--- I went with this approach simply because it appeared more times in Loogle, but maybe
--- `Cardinal.toNat T.rank` is better.
-theorem singularValues_rank
-  : T.singularValues (Module.finrank 𝕜 (range T)) = 0 := by
-  -- Potentially requires proof by cases on whether T is full-rank?
-  sorry
-
-theorem singularValues_le_rank {n : ℕ}
-  (hn : Module.finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 :=
-  le_antisymm (T.singularValues_rank ▸ T.singularValues_antitone hn) (zero_le _)
-
 theorem isLowerSet_support_singularValues
   : IsLowerSet (T.singularValues.support : Set ℕ) := by
   intro a b hl ha
@@ -277,6 +248,19 @@ theorem support_singularValues
     convert hn
     apply_fun Finset.card at hn
     simpa [test₃] using hn
+
+theorem singularValues_lt_rank {n : ℕ} (hn : n < Module.finrank 𝕜 (range T))
+    : 0 < T.singularValues n := by
+  rwa [zero_lt_iff, ← Finsupp.mem_support_iff, support_singularValues, Finset.mem_range]
+
+theorem singularValues_rank : T.singularValues (Module.finrank 𝕜 (range T)) = 0 := by
+  rw [← Finsupp.notMem_support_iff, support_singularValues]
+  exact Finset.notMem_range_self
+
+theorem singularValues_le_rank {n : ℕ}
+  (hn : Module.finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 := by
+  rw [← Finsupp.notMem_support_iff, support_singularValues, Finset.mem_range]
+  order
 
 @[simp]
 theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i = 0 := by
