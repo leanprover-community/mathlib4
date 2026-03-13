@@ -194,8 +194,8 @@ lemma yonedaArrow_val {Y : C} {η : yoneda.obj Y ⟶ A} {X : C} {s : yoneda.obj 
 arrows. -/
 def costructuredArrowIso (s t : CostructuredArrow yoneda A) :
     (OverArrows s.hom t.hom) ≅ (t ⟶ s) where
-  hom := TypeCat.ofHom ⟨fun p ↦ CostructuredArrow.homMk p.val (by simp)⟩
-  inv := TypeCat.ofHom ⟨fun f ↦ yonedaArrow f.left f.w⟩
+  hom := TypeCat.ofHom (fun p ↦ CostructuredArrow.homMk p.val (by simp))
+  inv := TypeCat.ofHom (fun f ↦ yonedaArrow f.left f.w)
 
 end OverArrows
 
@@ -206,13 +206,13 @@ smaller universe. -/
 def restrictedYonedaObj {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) :
     (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v where
   obj s := (OverArrows η s.unop.hom)
-  map f := TypeCat.ofHom ⟨fun u ↦ u.map₂ f.unop.left f.unop.w⟩
+  map f := TypeCat.ofHom (fun u ↦ u.map₂ f.unop.left f.unop.w)
 
 /-- Functoriality of `restrictedYonedaObj η` in `η`. -/
 @[simps]
 def restrictedYonedaObjMap₁ {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G ⟶ A} (ε : F ⟶ G)
     (hε : ε ≫ μ = η) : restrictedYonedaObj η ⟶ restrictedYonedaObj μ where
-  app _ := TypeCat.ofHom ⟨fun u ↦ u.map₁ ε hε⟩
+  app _ := TypeCat.ofHom (fun u ↦ u.map₁ ε hε)
 
 /--
 This is basically just `yoneda : Over A ⥤ (Over A)ᵒᵖ ⥤ Type (max u v)` restricted in the second
@@ -388,13 +388,13 @@ end YonedaCollection
 def yonedaCollectionPresheaf (A : Cᵒᵖ ⥤ Type v)
     (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) : Cᵒᵖ ⥤ Type v where
   obj X := YonedaCollection F X.unop
-  map f := TypeCat.ofHom ⟨YonedaCollection.map₂ F f.unop⟩
+  map f := TypeCat.ofHom (YonedaCollection.map₂ F f.unop)
 
 /-- Functoriality of `yonedaCollectionPresheaf A F` in `F`. -/
 @[simps]
 def yonedaCollectionPresheafMap₁ {F G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶ G) :
     yonedaCollectionPresheaf A F ⟶ yonedaCollectionPresheaf A G where
-  app _ := TypeCat.ofHom ⟨YonedaCollection.map₁ η⟩
+  app _ := TypeCat.ofHom (YonedaCollection.map₁ η)
   naturality := by
     intros
     ext

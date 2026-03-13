@@ -124,7 +124,7 @@ def functorialSurjectiveInjectiveFactorizationData :
         obtain ⟨_, x, rfl⟩ := y
         exact ⟨φ.left x, congr_hom φ.w x⟩ ⟩ ⟩ }
   i :=
-    { app := fun f => TypeCat.ofHom ⟨fun x => ⟨f.hom x, ⟨x, rfl⟩⟩⟩
+    { app := fun f => TypeCat.ofHom (fun x => ⟨f.hom x, ⟨x, rfl)⟩⟩
       naturality := fun f g φ => by
         ext x
         exact congr_hom φ.w x }

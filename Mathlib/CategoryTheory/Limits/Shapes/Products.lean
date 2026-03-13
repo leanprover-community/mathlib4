@@ -739,7 +739,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∏ₙ X` is left adjoint to `Hom(-, X)`. -/
 def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     (piConst.obj X).rightOp ⊣ yoneda.obj X where
-  unit := { app n := TypeCat.ofHom ⟨fun i ↦ Limits.Pi.π (fun _ : n ↦ X) i⟩ }
+  unit := { app n := TypeCat.ofHom (fun i ↦ Limits.Pi.π (fun _ : n ↦ X) i) }
   counit :=
   { app Y := (Limits.Pi.lift id).op,
     naturality _ _ _ := by apply Quiver.Hom.unop_inj; cat_disch }
@@ -755,7 +755,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∐ₙ X` is left adjoint to `Hom(X, -)`. -/
 def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
     sigmaConst.obj X ⊣ coyoneda.obj (Opposite.op X) where
-  unit := { app n := TypeCat.ofHom ⟨fun i ↦ Limits.Sigma.ι (fun _ : n ↦ X) i⟩ }
+  unit := { app n := TypeCat.ofHom (fun i ↦ Limits.Sigma.ι (fun _ : n ↦ X) i) }
   counit := { app Y := Limits.Sigma.desc id }
 
 /-!

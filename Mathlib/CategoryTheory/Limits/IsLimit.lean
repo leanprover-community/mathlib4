@@ -389,7 +389,7 @@ def homIso (h : IsLimit t) (W : C) :
 
 @[simp]
 theorem homIso_hom (h : IsLimit t) {W : C} :
-    (IsLimit.homIso h W).hom = TypeCat.ofHom ⟨fun f ↦ (t.extend f.down).π⟩ :=
+    (IsLimit.homIso h W).hom = TypeCat.ofHom (fun f ↦ (t.extend f.down).π) :=
   rfl
 
 /-- The limit of `F` represents the functor taking `W` to
@@ -889,7 +889,7 @@ def homIso (h : IsColimit t) (W : C) :
 
 @[simp]
 theorem homIso_hom (h : IsColimit t) {W : C} :
-    (IsColimit.homIso h W).hom = TypeCat.ofHom ⟨fun f ↦ (t.extend f.down).ι⟩ :=
+    (IsColimit.homIso h W).hom = TypeCat.ofHom (fun f ↦ (t.extend f.down).ι) :=
   rfl
 
 /-- The colimit of `F` represents the functor taking `W` to

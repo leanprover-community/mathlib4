@@ -419,8 +419,8 @@ in `MagmaCat` -/
     as (isomorphic to) isomorphisms in `AddMagmaCat` -/]
 def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] :
     (X ≃* Y) ≅ (MagmaCat.of X ≅ MagmaCat.of Y) where
-  hom := TypeCat.ofHom ⟨fun e ↦ e.toMagmaCatIso⟩
-  inv := TypeCat.ofHom ⟨fun i ↦ i.magmaCatIsoToMulEquiv⟩
+  hom := TypeCat.ofHom (fun e ↦ e.toMagmaCatIso)
+  inv := TypeCat.ofHom (fun i ↦ i.magmaCatIsoToMulEquiv)
 
 /-- multiplicative equivalences between `Semigroup`s are the same as (isomorphic to) isomorphisms
 in `Semigroup` -/
@@ -429,8 +429,8 @@ in `Semigroup` -/
   the same as (isomorphic to) isomorphisms in `AddSemigroup` -/]
 def mulEquivIsoSemigrpIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
     (X ≃* Y) ≅ (Semigrp.of X ≅ Semigrp.of Y) where
-  hom := TypeCat.ofHom ⟨fun e ↦ e.toSemigrpIso⟩
-  inv := TypeCat.ofHom ⟨fun i ↦ i.semigrpIsoToMulEquiv⟩
+  hom := TypeCat.ofHom (fun e ↦ e.toSemigrpIso)
+  inv := TypeCat.ofHom (fun i ↦ i.semigrpIsoToMulEquiv)
 
 @[to_additive]
 instance MagmaCat.forgetReflectsIsos : (forget MagmaCat.{u}).ReflectsIsomorphisms where

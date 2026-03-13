@@ -37,7 +37,7 @@ set_option backward.isDefEq.respectTransparency false in
 `(Opens X, Opens.grothendieckTopology X)` corresponding to `x`. -/
 def pointGrothendieckTopology : Point.{u} (grothendieckTopology X) where
   fiber.obj U := (ULift.{u} (PLift (x ∈ U)))
-  fiber.map f := TypeCat.ofHom ⟨fun h ↦ ⟨⟨leOfHom f h.down.down⟩⟩⟩
+  fiber.map f := TypeCat.ofHom (fun h ↦ ⟨⟨leOfHom f h.down.down)⟩⟩
   isCofiltered :=
     { nonempty := ⟨⊤, ⟨⟨by simp⟩⟩⟩
       cone_objs := by

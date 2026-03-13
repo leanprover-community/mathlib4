@@ -80,7 +80,7 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
       π := Discrete.natTrans (fun i => ⟨TypeCat.ofHom (fun x => x i.as), fun _ => rfl⟩) }
   isLimit :=
     { lift := fun s =>
-        { hom := TypeCat.ofHom ⟨fun x i => (s.π.app ⟨i⟩).hom x⟩
+        { hom := TypeCat.ofHom (fun x i => (s.π.app ⟨i)).hom x⟩
           comm := fun g => by
             ext x
             funext j

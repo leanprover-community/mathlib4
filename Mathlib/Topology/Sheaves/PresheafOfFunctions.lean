@@ -59,7 +59,7 @@ There is no requirement that the functions are continuous, here.
 -/
 def presheafToType (T : Type*) : X.Presheaf (Type _) where
   obj U := U.unop → T
-  map {_ _} i := TypeCat.ofHom ⟨fun g ↦ g ∘ i.unop⟩
+  map {_ _} i := TypeCat.ofHom (fun g ↦ g ∘ i.unop)
 
 @[simp]
 theorem presheafToType_obj {T : Type*} {U : (Opens X)ᵒᵖ} :

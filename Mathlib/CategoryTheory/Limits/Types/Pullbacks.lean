@@ -221,7 +221,7 @@ lemma isPullback_iff :
   · intro h
     exact ⟨h.w, fun x₁ y₁ ⟨h₁, h₂⟩ ↦ ext_of_isPullback h h₁ h₂, exists_of_isPullback h⟩
   · rintro ⟨w, h₁, h₂⟩
-    let φ : X₁ ⟶ PullbackObj r b := TypeCat.ofHom ⟨fun x₁ ↦ ⟨⟨t x₁, l x₁⟩, congr_hom w x₁⟩⟩
+    let φ : X₁ ⟶ PullbackObj r b := TypeCat.ofHom (fun x₁ ↦ ⟨⟨t x₁, l x₁), congr_hom w x₁⟩⟩
     have hφ : IsIso φ := by
       rw [isIso_iff_bijective]
       constructor

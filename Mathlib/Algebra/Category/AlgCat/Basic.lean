@@ -229,8 +229,8 @@ end CategoryTheory.Iso
 @[simps]
 def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
     (X ≃ₐ[R] Y) ≅ (AlgCat.of R X ≅ AlgCat.of R Y) where
-  hom := TypeCat.ofHom ⟨fun e ↦ e.toAlgebraIso⟩
-  inv := TypeCat.ofHom ⟨fun i ↦ i.toAlgEquiv⟩
+  hom := TypeCat.ofHom (fun e ↦ e.toAlgebraIso)
+  inv := TypeCat.ofHom (fun i ↦ i.toAlgEquiv)
 
 instance AlgCat.forget_reflects_isos : (forget (AlgCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by

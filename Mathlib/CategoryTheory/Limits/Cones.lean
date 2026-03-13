@@ -184,7 +184,7 @@ namespace Cone
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
 @[simps!]
 def equiv (F : J ⥤ C) : (Cone F) ≅ (Σ X, F.cones.obj X) where
-  hom := TypeCat.ofHom ⟨fun c ↦ ⟨op c.pt, c.π⟩⟩
+  hom := TypeCat.ofHom (fun c ↦ ⟨op c.pt, c.π)⟩
   inv := TypeCat.ofHom ⟨fun c ↦
     { pt := c.1.unop
       π := c.2 }⟩
@@ -200,7 +200,7 @@ def equiv (F : J ⥤ C) : (Cone F) ≅ (Σ X, F.cones.obj X) where
 /-- A map to the vertex of a cone naturally induces a cone by composition. -/
 @[simps]
 def extensions (c : Cone F) : uliftYoneda.obj c.pt ⟶ F.cones where
-  app _ := TypeCat.ofHom ⟨fun f ↦ (const J).map f.down ≫ c.π⟩
+  app _ := TypeCat.ofHom (fun f ↦ (const J).map f.down ≫ c.π)
 
 /-- A map to the vertex of a cone induces a cone by composition. -/
 @[simps! π_app pt]
@@ -220,7 +220,7 @@ namespace Cocone
 
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
 def equiv (F : J ⥤ C) : (Cocone F) ≅ (Σ X, F.cocones.obj X) where
-  hom := TypeCat.ofHom ⟨fun c ↦ ⟨c.pt, c.ι⟩⟩
+  hom := TypeCat.ofHom (fun c ↦ ⟨c.pt, c.ι)⟩
   inv := TypeCat.ofHom ⟨fun c ↦
     { pt := c.1
       ι := c.2 }⟩
@@ -236,7 +236,7 @@ def equiv (F : J ⥤ C) : (Cocone F) ≅ (Σ X, F.cocones.obj X) where
 /-- A map from the vertex of a cocone naturally induces a cocone by composition. -/
 @[simps]
 def extensions (c : Cocone F) : coyoneda.obj (op c.pt) ⋙ uliftFunctor.{u₁} ⟶ F.cocones where
-  app _ := TypeCat.ofHom ⟨fun f ↦ c.ι ≫ (const J).map f.down⟩
+  app _ := TypeCat.ofHom (fun f ↦ c.ι ≫ (const J).map f.down)
 
 /-- A map from the vertex of a cocone induces a cocone by composition. -/
 @[simps! pt ι_app]

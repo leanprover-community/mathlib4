@@ -83,7 +83,7 @@ open Opposite
 a map `P(α) → (α → P(*))` for all type `α`. -/
 def eval (P : Type uᵒᵖ ⥤ Type u) (α : Type u) (s : P.obj (op α)) :
   α ⟶ P.obj (op (PUnit)) :=
-  TypeCat.ofHom ⟨fun x ↦ P.map (TypeCat.ofHom (fun _ => x)).op s⟩
+  TypeCat.ofHom (fun x ↦ P.map (TypeCat.ofHom (fun _ => x)).op s)
 
 open Presieve
 

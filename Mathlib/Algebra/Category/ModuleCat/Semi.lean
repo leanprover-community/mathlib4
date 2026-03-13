@@ -273,8 +273,8 @@ in `SemimoduleCat` -/
 def linearEquivIsoModuleIsoₛ {X Y : Type u} [AddCommMonoid X] [AddCommMonoid Y] [Module R X]
     [Module R Y] : (X ≃ₗ[R] Y) ≅
       ((SemimoduleCat.of R X) ≅ (SemimoduleCat.of R Y)) where
-  hom := TypeCat.ofHom ⟨fun e ↦ e.toModuleIsoₛ⟩
-  inv := TypeCat.ofHom ⟨fun i ↦ i.toLinearEquivₛ⟩
+  hom := TypeCat.ofHom (fun e ↦ e.toModuleIsoₛ)
+  inv := TypeCat.ofHom (fun i ↦ i.toLinearEquivₛ)
 
 end
 

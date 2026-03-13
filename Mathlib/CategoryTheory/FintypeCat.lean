@@ -102,7 +102,7 @@ lemma id_hom (X : FintypeCat) : 𝟙 X.obj = TypeCat.ofHom (id) := rfl
 
 @[simp, reassoc]
 lemma comp_hom {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f.hom ≫ g.hom = TypeCat.ofHom ⟨g.hom ∘ f.hom⟩ := rfl
+    f.hom ≫ g.hom = TypeCat.ofHom (g.hom ∘ f.hom) := rfl
 
 @[simp]
 lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :

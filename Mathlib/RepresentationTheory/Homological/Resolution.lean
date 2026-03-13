@@ -85,7 +85,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G ((Fin (n.unop.len + 1) → G))
   map f :=
-    { hom := TypeCat.ofHom ⟨fun x => x ∘ f.unop.toOrderHom⟩
+    { hom := TypeCat.ofHom (fun x => x ∘ f.unop.toOrderHom)
       comm := fun _ => rfl }
   map_id _ := rfl
   map_comp _ _ := rfl

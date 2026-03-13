@@ -143,7 +143,7 @@ end SqStruct
 @[simps]
 def sqFunctor : Jᵒᵖ ⥤ Type _ where
   obj j := SqStruct c p f g j.unop
-  map α := TypeCat.ofHom ⟨fun sq' ↦ sq'.map α.unop⟩
+  map α := TypeCat.ofHom (fun sq' ↦ sq'.map α.unop)
 
 variable [F.IsWellOrderContinuous]
 

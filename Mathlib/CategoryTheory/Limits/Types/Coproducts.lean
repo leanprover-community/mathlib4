@@ -312,7 +312,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
 
 /-- Any monomorphism in `Type` is a coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
-    IsColimit (BinaryCofan.mk f (TypeCat.ofHom ⟨(Subtype.val : ↑(Set.range f)ᶜ → Y)⟩)) := by
+    IsColimit (BinaryCofan.mk f (TypeCat.ofHom ((Subtype.val : ↑(Set.range f)ᶜ → Y)))) := by
   apply Nonempty.some
   rw [binaryCofan_isColimit_iff]
   refine ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, ?_⟩
@@ -326,9 +326,9 @@ def coproductColimitCocone {J : Type v} (F : J → Type (max v u)) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
     { pt := (Σ j, F j)
-      ι := Discrete.natTrans (fun ⟨j⟩ => TypeCat.ofHom ⟨fun x => ⟨j, x⟩⟩) }
+      ι := Discrete.natTrans (fun ⟨j⟩ => TypeCat.ofHom (fun x => ⟨j, x)⟩) }
   isColimit :=
-    { desc := fun s => TypeCat.ofHom ⟨fun x => s.ι.app ⟨x.1⟩ x.2⟩
+    { desc := fun s => TypeCat.ofHom (fun x => s.ι.app ⟨x.1) x.2⟩
       uniq := fun s m w => by
         ext ⟨j, x⟩
         exact ConcreteCategory.congr_hom (w ⟨j⟩) x }
@@ -340,12 +340,12 @@ noncomputable def coproductIso {J : Type v} (F : J → Type (max v u)) :
 
 @[elementwise (attr := simp)]
 theorem coproductIso_ι_comp_hom {J : Type v} (F : J → Type (max v u)) (j : J) :
-    Sigma.ι F j ≫ (coproductIso F).hom = TypeCat.ofHom ⟨fun x => ⟨j, x⟩⟩ :=
+    Sigma.ι F j ≫ (coproductIso F).hom = TypeCat.ofHom (fun x => ⟨j, x)⟩ :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 
 @[elementwise (attr := simp)]
 theorem coproductIso_mk_comp_inv {J : Type v} (F : J → Type (max v u)) (j : J) :
-    TypeCat.ofHom ⟨fun x => ⟨j, x⟩⟩ ≫ (coproductIso F).inv = Sigma.ι F j :=
+    TypeCat.ofHom (fun x => ⟨j, x)⟩ ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
 
 end CategoryTheory.Limits.Types

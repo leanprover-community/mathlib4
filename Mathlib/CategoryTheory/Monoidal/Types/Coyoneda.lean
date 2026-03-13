@@ -24,8 +24,8 @@ set_option backward.isDefEq.respectTransparency false in
 instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     (coyoneda.obj (op (𝟙_ C))).LaxMonoidal :=
   Functor.LaxMonoidal.ofTensorHom
-    (ε := TypeCat.ofHom ⟨fun _ ↦ 𝟙 _⟩)
-    (μ := fun X Y ↦ TypeCat.ofHom ⟨fun p ↦ (λ_ (𝟙_ C)).inv ≫ (p.1 ⊗ₘ p.2)⟩)
+    (ε := TypeCat.ofHom (fun _ ↦ 𝟙 _))
+    (μ := fun X Y ↦ TypeCat.ofHom (fun p ↦ (λ_ (𝟙_ C)).inv ≫ (p.1 ⊗ₘ p.2)))
     (μ_natural := by cat_disch)
     (associativity := fun X Y Z => by
       ext ⟨⟨f, g⟩, h⟩; dsimp at f g h

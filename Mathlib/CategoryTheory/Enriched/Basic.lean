@@ -171,8 +171,8 @@ set_option backward.isDefEq.respectTransparency false in
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
     EnrichedCategory (Type v) C where
   Hom X Y := (𝒞.Hom X Y)
-  id X := TypeCat.ofHom ⟨fun _ ↦ 𝟙 _⟩
-  comp _ _ _ := TypeCat.ofHom ⟨fun p ↦ p.1 ≫ p.2⟩
+  id X := TypeCat.ofHom (fun _ ↦ 𝟙 _)
+  comp _ _ _ := TypeCat.ofHom (fun p ↦ p.1 ≫ p.2)
 
 /-- We verify that an enriched category in `Type u` is just the same thing as an honest category.
 -/

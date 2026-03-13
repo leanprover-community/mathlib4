@@ -140,9 +140,9 @@ def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
   obtain ⟨n, hn⟩ := n
   induction n using SimplexCategory.rec with | _ n
   match n with
-  | 0 => exact TypeCat.ofHom ⟨f₀⟩
-  | 1 => exact TypeCat.ofHom ⟨f₁⟩
-  | 2 => exact TypeCat.ofHom ⟨f₂ f₀ f₁ hδ₁ hδ₀ hY⟩
+  | 0 => exact TypeCat.ofHom (f₀)
+  | 1 => exact TypeCat.ofHom (f₁)
+  | 2 => exact TypeCat.ofHom (f₂ f₀ f₁ hδ₁ hδ₀ hY)
 
 /-- The property of morphisms in `SimplexCategory.Truncated 2` for
 which `liftOfStrictSegal.app` is natural. -/
@@ -183,10 +183,10 @@ def liftOfStrictSegal : X ⟶ Y where
       φ.unop (by simp)
 
 lemma liftOfStrictSegal_app_0 :
-    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = TypeCat.ofHom ⟨f₀⟩ := rfl
+    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = TypeCat.ofHom (f₀) := rfl
 
 lemma liftOfStrictSegal_app_1 :
-    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = TypeCat.ofHom ⟨f₁⟩ := rfl
+    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = TypeCat.ofHom (f₁) := rfl
 
 end liftOfStrictSegal
 

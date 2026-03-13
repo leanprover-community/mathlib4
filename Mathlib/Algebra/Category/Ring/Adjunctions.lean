@@ -75,7 +75,7 @@ def coyoneda : Type vᵒᵖ ⥤ CommRingCat.{u} ⥤ CommRingCat.{max u v} where
 /-- The adjunction `Hom_{CRing}(Fun(n, R), S) ≃ Fun(n, Hom_{CRing}(R, S))`. -/
 def coyonedaAdj (R : CommRingCat.{u}) :
     (coyoneda.flip.obj R).rightOp ⊣ yoneda.obj R where
-  unit := { app n := TypeCat.ofHom ⟨fun i ↦ CommRingCat.ofHom (Pi.evalRingHom _ i)⟩ }
+  unit := { app n := TypeCat.ofHom (fun i ↦ CommRingCat.ofHom (Pi.evalRingHom _ i)) }
   counit := { app S := (CommRingCat.ofHom (Pi.ringHom fun f ↦ f.hom)).op }
 
 instance (R : CommRingCat.{u}) : (yoneda.obj R).IsRightAdjoint := ⟨_, ⟨coyonedaAdj R⟩⟩

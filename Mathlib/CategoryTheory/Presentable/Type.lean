@@ -39,7 +39,7 @@ lemma isCardinalPresentable (hX : HasCardinalLT X κ) [Fact κ.IsRegular] :
       · dsimp at f
         choose j g hg using fun x ↦ Types.jointly_surjective_of_isColimit hc (f x)
         refine ⟨IsCardinalFiltered.max j hX,
-          TypeCat.ofHom ⟨fun x ↦ F.map (IsCardinalFiltered.toMax j hX x) (g x)⟩, ?_⟩
+          TypeCat.ofHom (fun x ↦ F.map (IsCardinalFiltered.toMax j hX x) (g x)), ?_⟩
         dsimp
         ext x
         dsimp at j g hg x ⊢

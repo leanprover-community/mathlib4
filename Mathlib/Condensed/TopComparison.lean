@@ -128,7 +128,7 @@ noncomputable def topCatToSheafCompHausLike :
     have := CompHausLike.preregular hs
     TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
   obj X := X.toSheafCompHausLike P hs
-  map f := ⟨⟨fun _ ↦ TypeCat.ofHom ⟨fun g ↦ f.hom.comp g⟩,  by aesop⟩⟩
+  map f := ⟨⟨fun _ ↦ TypeCat.ofHom (fun g ↦ f.hom.comp g),  by aesop⟩⟩
 
 end
 

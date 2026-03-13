@@ -120,8 +120,8 @@ set_option backward.isDefEq.respectTransparency false in
 instance (J : Type*) [LinearOrder J] :
     SimplicialCategory (SimplicialThickening J) where
   Hom i j := nerve (i ⟶ j)
-  id _ := ⟨fun _ ↦ TypeCat.ofHom ⟨fun _ ↦ (Functor.const _).obj (𝟙 _)⟩, fun _ _ _ ↦ by simp; rfl⟩
-  comp i j k := ⟨fun _ ↦ TypeCat.ofHom ⟨fun x ↦ x.1.prod' x.2 ⋙ compFunctor i j k⟩,
+  id _ := ⟨fun _ ↦ TypeCat.ofHom (fun _ ↦ (Functor.const _).obj (𝟙 _)), fun _ _ _ ↦ by simp; rfl⟩
+  comp i j k := ⟨fun _ ↦ TypeCat.ofHom (fun x ↦ x.1.prod' x.2 ⋙ compFunctor i j k),
     fun _ _ _ ↦ by simp; rfl⟩
   homEquiv {i j} := nerveEquiv.symm.trans (SSet.unitHomEquiv (nerve (i ⟶ j))).symm
 

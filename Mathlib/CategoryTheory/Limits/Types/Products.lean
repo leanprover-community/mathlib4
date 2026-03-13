@@ -201,7 +201,7 @@ def productLimitCone {J : Type v} (F : J → Type (max v u)) :
     { pt := (∀ j, F j)
       π := Discrete.natTrans (fun ⟨j⟩ => TypeCat.ofHom (fun f => f j)) }
   isLimit :=
-    { lift := fun s => TypeCat.ofHom ⟨fun x j => s.π.app ⟨j⟩ x⟩
+    { lift := fun s => TypeCat.ofHom (fun x j => s.π.app ⟨j) x⟩
       uniq := fun _ _ w => by
         ext x j
         exact ConcreteCategory.congr_hom (w ⟨j⟩) x }
@@ -239,10 +239,10 @@ noncomputable def productLimitCone :
   cone :=
     { pt := (Shrink (∀ j, F j))
       π := Discrete.natTrans (fun ⟨j⟩ =>
-        TypeCat.ofHom ⟨fun f => (equivShrink (∀ j, F j)).symm f j⟩) }
+        TypeCat.ofHom (fun f => (equivShrink (∀ j, F j)).symm f j)) }
   isLimit :=
     have : Small.{u} (∀ j, F j) := inferInstance
-    { lift := fun s => TypeCat.ofHom ⟨fun x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)⟩
+    { lift := fun s => TypeCat.ofHom (fun x => (equivShrink _) (fun j => s.π.app ⟨j) x)⟩
       uniq := fun s m w => ConcreteCategory.hom_ext _ _ fun x => Shrink.ext (funext fun j => by
         simpa using ConcreteCategory.congr_hom (w ⟨j⟩) x) }
 
@@ -254,14 +254,14 @@ noncomputable def productIso :
 
 @[elementwise (attr := simp)]
 theorem productIso_hom_comp_eval (j : J) :
-    ((productIso.{v, u} F).hom ≫ TypeCat.ofHom ⟨fun f => (equivShrink (∀ j, F j)).symm f j⟩) =
+    ((productIso.{v, u} F).hom ≫ TypeCat.ofHom (fun f => (equivShrink (∀ j, F j)).symm f j)) =
       Pi.π F j :=
   limit.isoLimitCone_hom_π (productLimitCone.{v, u} F) ⟨j⟩
 
 @[elementwise (attr := simp)]
 theorem productIso_inv_comp_π (j : J) :
     (productIso.{v, u} F).inv ≫ Pi.π F j =
-      TypeCat.ofHom ⟨fun f => ((equivShrink (∀ j, F j)).symm f) j⟩ :=
+      TypeCat.ofHom (fun f => ((equivShrink (∀ j, F j)).symm f) j) :=
   limit.isoLimitCone_inv_π (productLimitCone.{v, u} F) ⟨j⟩
 
 end Small

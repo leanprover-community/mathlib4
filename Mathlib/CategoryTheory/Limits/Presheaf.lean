@@ -732,7 +732,7 @@ this is the colimit cocone which identifies `F.obj X` to the colimit of
 noncomputable def coconeπOpCompShrinkYonedaObj (X : C) :
     Cocone ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj X) where
   pt := F.obj X
-  ι.app u := TypeCat.ofHom ⟨fun t ↦ F.map (shrinkYonedaObjObjEquiv t) u.unop.snd⟩
+  ι.app u := TypeCat.ofHom (fun t ↦ F.map (shrinkYonedaObjObjEquiv t) u.unop.snd)
   ι.naturality u₁ u₂ g := by
     ext f
     obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f

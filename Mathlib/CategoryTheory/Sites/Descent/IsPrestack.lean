@@ -125,7 +125,7 @@ of morphisms $p^* M ⟶ p^* N$. -/
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
   obj T := ((F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
     (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N)
-  map {T₁ T₂} p := TypeCat.ofHom ⟨fun f ↦ pullHom f p.unop.left T₂.unop.hom T₂.unop.hom⟩
+  map {T₁ T₂} p := TypeCat.ofHom (fun f ↦ pullHom f p.unop.left T₂.unop.hom T₂.unop.hom)
 
 /-- The bijection `(M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S)))`. -/
 @[simps! -isSimp]

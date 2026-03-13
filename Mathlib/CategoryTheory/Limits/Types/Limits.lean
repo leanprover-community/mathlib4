@@ -31,7 +31,7 @@ variable {J : Type v} [Category.{w} J] {F : J ⥤ Type u}
   construct a cone over F with `PUnit` as the cone point. -/
 def coneOfSection {s} (hs : s ∈ F.sections) : Cone F where
   pt := PUnit
-  π := { app j := TypeCat.ofHom ⟨fun _ ↦ s j⟩, naturality _ _ f := by ext; exact (hs f).symm }
+  π := { app j := TypeCat.ofHom (fun _ ↦ s j), naturality _ _ f := by ext; exact (hs f).symm }
 
 /-- Given a cone over a functor F into `Type*` and an element in the cone point,
   construct a section of F. -/
@@ -43,7 +43,7 @@ theorem isLimit_iff (c : Cone F) :
   refine ⟨fun ⟨t⟩ s hs ↦ ?_, fun h ↦ ⟨?_⟩⟩
   · let cs := coneOfSection hs
     exact ⟨t.lift cs ⟨⟩, fun j ↦ congr_hom (t.fac cs j) ⟨⟩,
-      fun x hx ↦ congr_hom (t.uniq cs (TypeCat.ofHom ⟨fun _ ↦ x⟩) fun j ↦ by ext; exact hx j) ⟨⟩⟩
+      fun x hx ↦ congr_hom (t.uniq cs (TypeCat.ofHom (fun _ ↦ x)) fun j ↦ by ext; exact hx j) ⟨⟩⟩
   · have := fun c y ↦ h _ (sectionOfCone c y).2
     choose x hx using fun c y ↦ h _ (sectionOfCone c y).2
     exact ⟨fun d ↦ TypeCat.ofHom (x d), fun c j ↦ by ext y; exact (hx c y).1 j,
@@ -61,7 +61,7 @@ noncomputable def isLimitEquivSections {c : Cone F} (t : IsLimit c) :
   toFun := sectionOfCone c
   invFun s := t.lift (coneOfSection s.2) ⟨⟩
   left_inv x := (congr_hom (t.uniq (coneOfSection _)
-    (TypeCat.ofHom ⟨fun _ ↦ x⟩) fun _ ↦ rfl) ⟨⟩).symm
+    (TypeCat.ofHom (fun _ ↦ x)) fun _ ↦ rfl) ⟨⟩).symm
   right_inv s := Subtype.ext (funext fun j ↦ congr_hom (t.fac (coneOfSection s.2) j) ⟨⟩)
 
 @[simp]

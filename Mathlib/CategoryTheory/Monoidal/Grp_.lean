@@ -307,7 +307,7 @@ set_option backward.isDefEq.respectTransparency false in
 def ofInvertible (G : C) [CartesianMonoidalCategory C] [MonObj G]
     (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
   inv := Yoneda.fullyFaithful.preimage
-    ⟨fun X ↦ TypeCat.ofHom ⟨fun f ↦ (h X.unop f).invOf⟩, fun X Y f ↦ by
+    ⟨fun X ↦ TypeCat.ofHom (fun f ↦ (h X.unop f).invOf), fun X Y f ↦ by
       ext g
       simp only [yoneda_obj_obj, yoneda_obj_map, TypeCat.hom_as_apply, comp_apply,
         ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, invOf_eq_iff_left]

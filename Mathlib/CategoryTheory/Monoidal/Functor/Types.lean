@@ -33,8 +33,8 @@ attribute [local simp] map_seq seq_map_assoc
 between categories of types. -/
 @[simps]
 instance : (ofTypeFunctor F).LaxMonoidal where
-  ε := TypeCat.ofHom ⟨fun _ ↦ (pure PUnit.unit : F _)⟩
-  μ _ _ := TypeCat.ofHom ⟨fun p ↦ (Prod.mk <$> p.1 <*> p.2 : F _)⟩
+  ε := TypeCat.ofHom (fun _ ↦ (pure PUnit.unit : F _))
+  μ _ _ := TypeCat.ofHom (fun p ↦ (Prod.mk <$> p.1 <*> p.2 : F _))
 
 end
 

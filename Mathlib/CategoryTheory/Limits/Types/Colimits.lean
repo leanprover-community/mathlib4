@@ -75,7 +75,7 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
     · let f₁ : (F.coconeTypesEquiv c).pt ⟶ (ULift.{u} Bool) :=
         TypeCat.ofHom (fun _ => ULift.up true)
       let f₂ : (F.coconeTypesEquiv c).pt ⟶ (ULift.{u} Bool) :=
-        TypeCat.ofHom ⟨fun x => ULift.up (∃ a, F.descColimitType c a = x)⟩
+        TypeCat.ofHom (fun x => ULift.up (∃ a, F.descColimitType c a = x))
       suffices f₁ = f₂ by
         have := ConcreteCategory.congr_hom this x
         simpa [f₁, f₂] using this
@@ -222,9 +222,9 @@ theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : I
     (x : t.pt) : ∃ j y, t.ι.app j y = x := by
   by_contra hx
   simp_rw [not_exists] at hx
-  apply (_ : (TypeCat.ofHom ⟨fun _ ↦ ULift.up True⟩ :
+  apply (_ : (TypeCat.ofHom (fun _ ↦ ULift.up True) :
       t.pt ⟶ (ULift.{u} Prop)) ≠
-    (TypeCat.ofHom ⟨fun y ↦ ULift.up (y ≠ x)⟩))
+    (TypeCat.ofHom (fun y ↦ ULift.up (y ≠ x))))
   · refine h.hom_ext fun j ↦ ?_
     ext y
     simp only [Functor.const_obj_obj, TypeCat.hom_as_apply, comp_apply, hom_ofHom,

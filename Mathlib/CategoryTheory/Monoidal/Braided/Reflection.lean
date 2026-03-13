@@ -161,7 +161,7 @@ theorem isIso_tfae : List.TFAE
     refine IsIso.comp_isIso' inferInstance ?_
     constructor
     -- We give the inverse of the bottom map in the stack of commutative squares:
-    refine ⟨TypeCat.ofHom ⟨fun f ↦ R.map ((adj.homEquiv _ _).symm f)⟩, ?_, by ext; simp⟩
+    refine ⟨TypeCat.ofHom (fun f ↦ R.map ((adj.homEquiv _ _).symm f)), ?_, by ext; simp⟩
     ext f
     simp only [comp_obj, flip_obj_obj, yoneda_obj_obj, id_obj, flip_map_app, yoneda_obj_map,
       Quiver.Hom.unop_op, Adjunction.homEquiv_counit, map_comp, TypeCat.hom_as_apply, comp_apply,
