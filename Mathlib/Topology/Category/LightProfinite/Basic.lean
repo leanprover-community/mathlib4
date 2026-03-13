@@ -109,10 +109,11 @@ instance : FintypeCat.toLightProfinite.Faithful :=
 instance : FintypeCat.toLightProfinite.Full :=
   FintypeCat.toLightProfiniteFullyFaithful.full
 
-instance (X : FintypeCat.{u}) : Fintype (FintypeCat.toLightProfinite.obj X) :=
-  inferInstanceAs (Fintype X)
+instance (X : FintypeCat.{u}) : Finite (FintypeCat.toLightProfinite.obj X) :=
+  inferInstanceAs (Finite X)
 
-instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) := inferInstanceAs (Fintype X)
+instance (X : FintypeCat.{u}) : Finite (LightProfinite.of X) :=
+  inferInstanceAs (Finite X)
 
 end DiscreteTopology
 
@@ -196,6 +197,7 @@ instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphi
   rw [isIso_iff_bijective] at hf
   exact LightProfinite.isIso_of_bijective _ hf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
   constructor
@@ -319,6 +321,7 @@ def lightDiagramToLightProfinite : LightDiagram.{u} ⥤ LightProfinite.{u} where
   obj X := LightProfinite.of X.cone.pt
   map f := InducedCategory.homMk f.hom.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories `LightProfinite ≌ LightDiagram` -/
 noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiagram.{u} where
   functor := lightProfiniteToLightDiagram

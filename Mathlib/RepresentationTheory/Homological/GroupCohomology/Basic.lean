@@ -98,6 +98,7 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) :
 
 variable [Group G] (A : Rep k G) (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem d_eq :
     d A n =
       (freeLiftLEquiv (Fin n → G) A).toModuleIso.inv ≫
@@ -114,6 +115,7 @@ variable [Group G] (n) (A : Rep k G)
 
 open inhomogeneousCochains Rep
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
@@ -139,6 +141,7 @@ theorem inhomogeneousCochains.d_comp_d :
     d A n ≫ d A (n + 1) = 0 := by
   simpa [CochainComplex.of] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso :
@@ -153,6 +156,7 @@ def inhomogeneousCochainsIso :
 `n`th differential in the complex of inhomogeneous cochains. -/
 abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
+set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- Make an `n`-cocycle out of an element of the kernel of the `n`th differential. -/
 abbrev cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
@@ -168,6 +172,7 @@ inhomogeneous cochains. -/
 abbrev toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :=
   (inhomogeneousCochains A).toCycles i j
 
+set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
     iCocycles A n (cocyclesMk f h) = f := by
@@ -188,6 +193,7 @@ abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
 
+set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
     {C : groupCohomology A n → Prop} (x : groupCohomology A n)

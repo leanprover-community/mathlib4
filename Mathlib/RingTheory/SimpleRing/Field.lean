@@ -22,6 +22,7 @@ public section
 
 namespace IsSimpleRing
 
+set_option backward.isDefEq.respectTransparency false in
 open TwoSidedIdeal in
 lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.center A) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩

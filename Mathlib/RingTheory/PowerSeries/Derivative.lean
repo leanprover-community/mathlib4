@@ -57,6 +57,7 @@ theorem derivativeFun_add (f g : R⟦X⟧) :
   rw [coeff_derivativeFun, map_add, map_add, coeff_derivativeFun,
     coeff_derivativeFun, add_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem derivativeFun_C (r : R) : derivativeFun (C r) = 0 := by
   ext n
   -- Note that `map_zero` didn't get picked up, apparently due to a missing `FunLike.coe`
@@ -78,6 +79,7 @@ private theorem derivativeFun_coe_mul_coe (f g : R[X]) : derivativeFun (f * g : 
   rw [← coe_mul, derivativeFun_coe, derivative_mul,
     add_comm, mul_comm _ g, ← coe_mul, ← coe_mul, Polynomial.coe_add]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Leibniz rule for formal power series**. -/
 theorem derivativeFun_mul (f g : R⟦X⟧) :
     derivativeFun (f * g) = f • g.derivativeFun + g • f.derivativeFun := by
@@ -92,12 +94,14 @@ theorem derivativeFun_mul (f g : R⟦X⟧) :
 theorem derivativeFun_one : derivativeFun (1 : R⟦X⟧) = 0 := by
   rw [← map_one C, derivativeFun_C (1 : R)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem derivativeFun_smul (r : R) (f : R⟦X⟧) : derivativeFun (r • f) = r • derivativeFun f := by
   rw [smul_eq_C_mul, smul_eq_C_mul, derivativeFun_mul, derivativeFun_C, smul_zero, add_zero,
     smul_eq_mul]
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The formal derivative of a formal power series -/
 noncomputable def derivative : Derivation R R⟦X⟧ R⟦X⟧ where
   toFun := derivativeFun
@@ -147,15 +151,18 @@ theorem derivative.ext {R} [CommRing R] [IsAddTorsionFree R] {f g} (hD : d⁄dX 
     rwa [coeff_derivative, coeff_derivative, ← cast_succ, mul_comm, ← nsmul_eq_mul,
       mul_comm, ← nsmul_eq_mul, smul_right_inj n.succ_ne_zero] at equ
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem derivative_inv {R} [CommRing R] (f : R⟦X⟧ˣ) :
     d⁄dX R ↑f⁻¹ = -(↑f⁻¹ : R⟦X⟧) ^ 2 * d⁄dX R f := by
   apply Derivation.leibniz_of_mul_eq_one
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem derivative_invOf {R} [CommRing R] (f : R⟦X⟧) [Invertible f] :
     d⁄dX R ⅟f = -⅟f ^ 2 * d⁄dX R f := by
   rw [Derivation.leibniz_invOf, smul_eq_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 The following theorem is stated only in the case that `R` is a field. This is because
 there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`.
@@ -168,19 +175,15 @@ there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`
   apply Derivation.leibniz_of_mul_eq_one
   exact PowerSeries.inv_mul_cancel (h := h)
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The derivative of g^n equals n * g^(n-1) * g'. -/
+theorem derivative_pow (A : Type*) [CommSemiring A] (g : A⟦X⟧) (n : ℕ) :
+    d⁄dX A (g ^ n) = n * g ^ (n - 1) * d⁄dX A g := by
+  rw [Derivation.leibniz_pow, smul_eq_mul, nsmul_eq_mul, mul_assoc]
+
 variable (A : Type*) [CommRing A]
 
-/-- The derivative of g^n equals n * g^(n-1) * g'. -/
-theorem derivative_pow (g : A⟦X⟧) (n : ℕ) :
-    d⁄dX A (g ^ n) = n * g ^ (n - 1) * d⁄dX A g := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    simp only [pow_succ, (derivative A).leibniz, ih, smul_eq_mul, add_tsub_cancel_right]
-    rcases n with _ | m
-    · simp
-    · simp only [add_tsub_cancel_right, pow_succ]; push_cast; ring
-
+set_option backward.isDefEq.respectTransparency false in
 /-- Chain rule for polynomials viewed as power series.  Use `derivative_subst` instead. -/
 private theorem derivative_subst_coe (p : Polynomial A) {g : A⟦X⟧} (hg : HasSubst g) :
     d⁄dX A ((p : A⟦X⟧).subst g) = (d⁄dX A (p : A⟦X⟧)).subst g * d⁄dX A g := by

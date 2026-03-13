@@ -189,6 +189,7 @@ set_option backward.privateInPublic.warn false in
 A constructor for lax monoidal functors whose axioms are described by `tensorHom` instead of
 `whiskerLeft` and `whiskerRight`.
 -/
+@[implicit_reducible]
 def ofTensorHom : F.LaxMonoidal where
   ε := ε
   μ := μ
@@ -615,7 +616,7 @@ attribute [reassoc] left_unitality right_unitality
 variable {F} (h : F.CoreMonoidal)
 
 /-- The lax monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def toLaxMonoidal : F.LaxMonoidal where
   ε := h.εIso.hom
   μ X Y := (h.μIso X Y).hom
@@ -623,7 +624,7 @@ def toLaxMonoidal : F.LaxMonoidal where
   right_unitality := h.right_unitality
 
 /-- The oplax monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def toOplaxMonoidal : F.OplaxMonoidal where
   η := h.εIso.inv
   δ X Y := (h.μIso X Y).inv
@@ -646,7 +647,7 @@ def toOplaxMonoidal : F.OplaxMonoidal where
 
 attribute [local simp] toLaxMonoidal_ε toLaxMonoidal_μ toOplaxMonoidal_η toOplaxMonoidal_δ in
 /-- The monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
-@[simps! toLaxMonoidal toOplaxMonoidal]
+@[simps! toLaxMonoidal toOplaxMonoidal, implicit_reducible]
 def toMonoidal : F.Monoidal where
   toLaxMonoidal := h.toLaxMonoidal
   toOplaxMonoidal := h.toOplaxMonoidal
@@ -676,12 +677,14 @@ end CoreMonoidal
 
 /-- The `Functor.Monoidal` structure given by a lax monoidal functor such
 that `ε` and `μ` are isomorphisms. -/
+@[implicit_reducible]
 noncomputable def Monoidal.ofLaxMonoidal
     [F.LaxMonoidal] [IsIso (ε F)] [∀ X Y, IsIso (μ F X Y)] :=
   (CoreMonoidal.ofLaxMonoidal F).toMonoidal
 
 /-- The `Functor.Monoidal` structure given by an oplax monoidal functor such
 that `η` and `δ` are isomorphisms. -/
+@[implicit_reducible]
 noncomputable def Monoidal.ofOplaxMonoidal
     [F.OplaxMonoidal] [IsIso (η F)] [∀ X Y, IsIso (δ F X Y)] :=
   (CoreMonoidal.ofOplaxMonoidal F).toMonoidal
@@ -808,6 +811,7 @@ end
 
 -- TODO: when clearing these deprecations, remove the `CategoryTheory.` in the proof below.
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `C ⥤ D × E` obtained from two monoidal functors is monoidal. -/
 instance Monoidal.prod' [F.Monoidal] [G.Monoidal] :
     (prod' F G).Monoidal where
@@ -850,8 +854,9 @@ open Functor.OplaxMonoidal Functor.LaxMonoidal
 section LaxMonoidal
 variable [F.OplaxMonoidal]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of an oplax monoidal functor is lax monoidal. -/
-@[simps]
+@[simps, implicit_reducible]
 def rightAdjointLaxMonoidal : G.LaxMonoidal where
   ε := adj.homEquiv _ _ (η F)
   μ X Y := adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ₘ adj.counit.app Y))
@@ -927,16 +932,19 @@ variable [G.LaxMonoidal] [adj.IsMonoidal]
 lemma unit_app_unit_comp_map_η : adj.unit.app (𝟙_ C) ≫ G.map (η F) = ε G :=
   Adjunction.IsMonoidal.leftAdjoint_ε.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma unit_app_tensor_comp_map_δ (X Y : C) :
     adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _ := by
   simp [IsMonoidal.leftAdjoint_μ (adj := adj), ← adj.unit_naturality_assoc,
     ← Functor.map_comp, ← δ_natural_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = η F := by
   simp [IsMonoidal.leftAdjoint_ε (adj := adj)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_μ_comp_counit_app_tensor (X Y : D) :
     F.map (μ G X Y) ≫ adj.counit.app (X ⊗ Y) =
@@ -979,7 +987,9 @@ variable (e : C ≌ D)
 instance [e.inverse.Monoidal] : e.symm.functor.Monoidal := inferInstanceAs (e.inverse.Monoidal)
 instance [e.functor.Monoidal] : e.symm.inverse.Monoidal := inferInstanceAs (e.functor.Monoidal)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a monoidal functor `F` is an equivalence of categories then its inverse is also monoidal. -/
+@[implicit_reducible]
 noncomputable def inverseMonoidal [e.functor.Monoidal] : e.inverse.Monoidal := by
   letI := e.toAdjunction.rightAdjointLaxMonoidal
   have : IsIso (LaxMonoidal.ε e.inverse) := by
@@ -994,6 +1004,7 @@ noncomputable def inverseMonoidal [e.functor.Monoidal] : e.inverse.Monoidal := b
 adjunction satisfies certain compatibilities with respect to the monoidal functor data. -/
 abbrev IsMonoidal [e.functor.Monoidal] [e.inverse.Monoidal] : Prop := e.toAdjunction.IsMonoidal
 
+set_option backward.isDefEq.respectTransparency false in
 example [e.functor.Monoidal] : letI := e.inverseMonoidal; e.IsMonoidal := inferInstance
 
 variable [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal]
@@ -1022,12 +1033,14 @@ lemma functor_map_μ_inverse_comp_counitIso_hom_app_tensor (X Y : D) :
       δ e.functor _ _ ≫ (e.counitIso.hom.app X ⊗ₘ e.counitIso.hom.app Y) :=
   e.toAdjunction.map_μ_comp_counit_app_tensor X Y
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma counitIso_inv_app_comp_functor_map_η_inverse :
     e.counitIso.inv.app (𝟙_ D) ≫ e.functor.map (η e.inverse) = ε e.functor := by
   rw [← cancel_epi (η e.functor), Monoidal.η_ε, ← functor_map_ε_inverse_comp_counitIso_hom_app,
     Category.assoc, Iso.hom_inv_id_app_assoc, Monoidal.map_ε_η]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma counitIso_inv_app_tensor_comp_functor_map_δ_inverse (X Y : C) :
     e.counitIso.inv.app (e.functor.obj X ⊗ e.functor.obj Y) ≫
@@ -1060,6 +1073,7 @@ lemma functor_map_μ_inverse_comp_counit_app_tensor (X Y : D) :
       δ e.functor _ _ ≫ (e.counit.app X ⊗ₘ e.counit.app Y) :=
   e.toAdjunction.map_μ_comp_counit_app_tensor X Y
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma counitInv_app_comp_functor_map_η_inverse :
     e.counitInv.app (𝟙_ D) ≫ e.functor.map (η e.inverse) = ε e.functor := by
@@ -1088,6 +1102,7 @@ instance : (refl (C := C)).inverse.Monoidal := inferInstanceAs (𝟭 C).Monoidal
 instance isMonoidal_refl : (Equivalence.refl (C := C)).IsMonoidal :=
   inferInstanceAs (Adjunction.id (C := C)).IsMonoidal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of a monoidal category equivalence is also a monoidal category equivalence. -/
 instance isMonoidal_symm [e.IsMonoidal] : e.symm.IsMonoidal where
   leftAdjoint_ε := by
@@ -1188,6 +1203,7 @@ def coreMonoidalTransport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.CoreMon
 /--
 Transport the structure of a monoidal functor along a natural isomorphism of functors.
 -/
+@[implicit_reducible]
 def transport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.Monoidal :=
   (coreMonoidalTransport i).toMonoidal
 
@@ -1222,6 +1238,7 @@ variable {C D}
 Given a functor `F` and an equivalence of categories `e` such that `e.inverse` and `e.functor ⋙ F`
 are monoidal functors, `F` is monoidal as well.
 -/
+@[implicit_reducible]
 def monoidalOfPrecompFunctor (e : C ≌ D) (F : D ⥤ E) {F' : C ⥤ E} (i : e.functor ⋙ F ≅ F')
     [e.inverse.Monoidal] [F'.Monoidal] : F.Monoidal :=
   letI : (e.functor ⋙ F).Monoidal := .transport i.symm
@@ -1231,6 +1248,7 @@ def monoidalOfPrecompFunctor (e : C ≌ D) (F : D ⥤ E) {F' : C ⥤ E} (i : e.f
 Given a functor `F` and an equivalence of categories `e` such that `e.functor` and `e.inverse ⋙ F`
 are monoidal functors, `F` is monoidal as well.
 -/
+@[implicit_reducible]
 def monoidalOfPrecompInverse (e : C ≌ D) (F : C ⥤ E) {F' : D ⥤ E} (i : e.inverse ⋙ F ≅ F')
     [e.functor.Monoidal] [F'.Monoidal] : F.Monoidal :=
   e.symm.monoidalOfPrecompFunctor F i
@@ -1239,6 +1257,7 @@ def monoidalOfPrecompInverse (e : C ≌ D) (F : C ⥤ E) {F' : D ⥤ E} (i : e.i
 Given a functor `F` and an equivalence of categories `e` such that `e.functor` and `F ⋙ e.inverse`
 are monoidal functors, `F` is monoidal as well.
 -/
+@[implicit_reducible]
 def monoidalOfPostcompInverse (e : C ≌ D) (F : E ⥤ D) {F' : E ⥤ C} (i : F ⋙ e.inverse ≅ F')
     [e.functor.Monoidal] [F'.Monoidal] : F.Monoidal :=
   .transport (Functor.isoWhiskerRight i.symm e.functor ≪≫ Functor.associator _ _ _ ≪≫
@@ -1248,6 +1267,7 @@ def monoidalOfPostcompInverse (e : C ≌ D) (F : E ⥤ D) {F' : E ⥤ C} (i : F 
 Given a functor `F` and an equivalence of categories `e` such that `e.inverse` and `F ⋙ e.functor`
 are monoidal functors, `F` is monoidal as well.
 -/
+@[implicit_reducible]
 def monoidalOfPostcompFunctor (e : C ≌ D) (F : E ⥤ C) {F' : E ⥤ D} (i : F ⋙ e.functor ≅ F')
     [e.inverse.Monoidal] [F'.Monoidal] : F.Monoidal :=
   e.symm.monoidalOfPostcompInverse _ i

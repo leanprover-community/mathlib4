@@ -96,6 +96,7 @@ noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
   -- TODO: can we write this normally after the refactor finishes?
   RingHom.toAlgebra <| by apply CommRingCat.Hom.hom; apply StructureSheaf.toStalk
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
     genericPoint (Spec R) = (⊥ : PrimeSpectrum R) := by
@@ -120,13 +121,13 @@ instance {X : Scheme} [IsIntegral X] {U : X.Opens} [Nonempty U] :
     IsIntegral U :=
   isIntegral_of_isOpenImmersion U.ι
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : X.Opens}
     (hU : IsAffineOpen U) [h : Nonempty U] :
     hU.primeIdealOf
         ⟨genericPoint X,
           ((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩ =
       genericPoint (Spec Γ(X, U)) := by
-  haveI : IsAffine _ := hU
   delta IsAffineOpen.primeIdealOf
   convert
     genericPoint_eq_of_isOpenImmersion
@@ -138,10 +139,6 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
 theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens)
     (hU : IsAffineOpen U) [Nonempty U] :
     IsFractionRing Γ(X, U) X.functionField := by
-  haveI : IsAffine _ := hU
-  haveI : IsIntegral U :=
-    @isIntegral_of_isAffine_of_isDomain _ _ _ (by rw [Scheme.Opens.toScheme_presheaf_obj,
-      U.ι.image_top_eq_opensRange, U.opensRange_ι]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X,
     (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩ using 1

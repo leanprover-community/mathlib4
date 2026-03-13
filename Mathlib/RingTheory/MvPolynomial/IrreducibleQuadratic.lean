@@ -150,11 +150,17 @@ theorem irreducible_of_totalDegree_eq_one
 
 variable (c : n →₀ R)
 
+#adaptation_note /-- Needed after leanprover/lean4#12564.
+Named to avoid collision with `MvPolynomial.instModule` from `Mathlib.RingTheory.MvPolynomial`. -/
+noncomputable instance instModuleSelf : Module R (MvPolynomial n R) :=
+  inferInstanceAs <| Module R (AddMonoidAlgebra R (n →₀ ℕ))
+
 /-- The linear polynomial $$\sum_i c_i X_i$$. -/
 noncomputable def sumSMulX :
     (n →₀ R) →ₗ[R] MvPolynomial n R :=
   Finsupp.linearCombination R X
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_sumSMulX (i : n) :
     (sumSMulX c).coeff (Finsupp.single i 1) = c i := by
   classical
@@ -163,7 +169,7 @@ theorem coeff_sumSMulX (i : n) :
   · simp
   intro j hj hji
   rw [coeff_smul, coeff_X', if_neg]
-  · aesop
+  · simp
   · rwa [Finsupp.single_left_inj Nat.one_ne_zero]
 
 theorem irreducible_sumSMulX [IsDomain R]

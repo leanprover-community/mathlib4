@@ -51,18 +51,19 @@ def goursatSnd : Submodule R N :=
 lemma goursatFst_toAddSubgroup :
     (goursatFst L).toAddSubgroup = L.toAddSubgroup.goursatFst := by
   ext x
-  simp [mem_toAddSubgroup, goursatFst, AddSubgroup.mem_goursatFst]
+  simp [goursatFst, AddSubgroup.mem_goursatFst]
 
 lemma goursatSnd_toAddSubgroup :
     (goursatSnd L).toAddSubgroup = L.toAddSubgroup.goursatSnd := by
   ext x
-  simp [mem_toAddSubgroup, goursatSnd, AddSubgroup.mem_goursatSnd]
+  simp [goursatSnd, AddSubgroup.mem_goursatSnd]
 
 variable (L) in
 lemma goursatFst_prod_goursatSnd_le : L.goursatFst.prod L.goursatSnd ≤ L := by
   simpa only [← toAddSubgroup_le, goursatFst_toAddSubgroup, goursatSnd_toAddSubgroup]
     using L.toAddSubgroup.goursatFst_prod_goursatSnd_le
 
+set_option backward.isDefEq.respectTransparency false in
 include hL₁ hL₂ in
 /-- **Goursat's lemma** for a submodule of a product with surjective projections.
 

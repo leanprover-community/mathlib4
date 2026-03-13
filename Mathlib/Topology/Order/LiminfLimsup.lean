@@ -9,6 +9,9 @@ public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.Topology.Order.Monotone
 
+import Mathlib.Data.Fintype.Order
+import Mathlib.Topology.Order.MonotoneConvergence
+
 /-!
 # Lemmas about liminf and limsup in an order topology.
 
@@ -179,6 +182,7 @@ theorem limsInf_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝
       a = (𝓝 a).limsInf := (limsInf_nhds a).symm
       _ ≤ f.limsInf := limsInf_le_limsInf_of_le h (isBounded_ge_nhds a) hb_le.isCobounded_flip)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a filter is converging, its liminf coincides with its limit. -/
 theorem limsSup_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝 a) : f.limsSup = a :=
   limsInf_eq_of_le_nhds (α := αᵒᵈ) h
@@ -277,6 +281,96 @@ theorem limsup_eq_bot : f.limsup u = ⊥ ↔ u =ᶠ[f] ⊥ :=
 theorem liminf_eq_top : f.liminf u = ⊤ ↔ u =ᶠ[f] ⊤ :=
   limsup_eq_bot (α := αᵒᵈ)
 
+/-- Let `u : ι → α → β` be a sequence of antitone functions `α → β` indexed by `ι`. Suppose that for
+all `i : ι`, `u i` tends to `c` at infinity, and that furthermore the limsup of `i ↦ u i r` along
+the cofinite filter tends to the same `c` as `r` tends to infinity.
+Then the supremum function `r ↦ ⨆ i, u i r` also tends to `c` at infinity. -/
+lemma tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLattice α]
+    [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {u : ι → α → β} {c : β}
+    (h_all : ∀ i, Tendsto (u i) atTop (𝓝 c))
+    (h_limsup : Tendsto (fun r : α ↦ limsup (fun i ↦ u i r) cofinite) atTop (𝓝 c))
+    (h_anti : ∀ i, Antitone (u i)) :
+    Tendsto (fun r : α ↦ ⨆ i, u i r) atTop (𝓝 c) := by
+  classical
+  rcases isEmpty_or_nonempty ι with hι | ⟨⟨n0⟩⟩
+  · simpa using h_limsup
+  refine tendsto_order.mpr ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
+  · filter_upwards with r
+    have : c ≤ u n0 r := (h_anti n0).le_of_tendsto (h_all n0) r
+    exact hb.trans_le (this.trans (le_iSup_iff.mpr fun b a ↦ a n0))
+  -- `⊢ ∀ᶠ (b_1 : α) in atTop, ⨆ i, u i b_1 < b` for `b > c`
+  let b' := if h : (Set.Ioo c b).Nonempty then h.some else c
+  have hb'b : b' < b := by
+    simp only [b']
+    split_ifs with h
+    exacts [h.some_mem.2, hb]
+  have : ∀ᶠ r in atTop, limsup (u · r) cofinite ≤ b' := by
+    simp only [b']
+    split_ifs with h
+    · filter_upwards [(tendsto_order.1 h_limsup).2 _ h.some_mem.1] with r hr using hr.le
+    · filter_upwards [(tendsto_order.1 h_limsup).2 b hb] with r hr
+      contrapose! h
+      exact ⟨limsup (u · r) cofinite, h, hr⟩
+  obtain ⟨r, hr⟩ : ∃ r, ∀ s ≥ r, limsup (u · s) cofinite ≤ b' := by simpa using this
+  obtain ⟨b'', hb''b, hb''⟩ : ∃ b'' ∈ Set.Ico b' b, ∀ᶠ n in cofinite, u n r ≤ b'' := by
+    rcases Set.eq_empty_or_nonempty (Set.Ioo b' b) with h | ⟨b'', hb'b'', hb''b⟩
+    · refine ⟨b', ⟨le_rfl, hb'b⟩, ?_⟩
+      have h_lt := eventually_lt_of_limsup_lt ((hr r le_rfl).trans_lt hb'b)
+      filter_upwards [h_lt] with n hn
+      contrapose! h
+      exact ⟨u n r, h, hn⟩
+    · refine ⟨b'', ⟨hb'b''.le, hb''b⟩ , ?_⟩
+      have h_lt := eventually_lt_of_limsup_lt ((hr r le_rfl).trans_lt hb'b'')
+      filter_upwards [h_lt] with n hn using hn.le
+  have A (n) : ∃ r, ∀ s ≥ r, u n s ≤ b'' := by
+    suffices ∀ᶠ r in atTop, u n r ≤ b' by
+      simp only [eventually_atTop, ge_iff_le] at this
+      rcases this with ⟨r, hr⟩
+      exact ⟨r, fun s hs ↦ (hr s hs).trans hb''b.1⟩
+    simp only [b']
+    split_ifs with h
+    · filter_upwards [(tendsto_order.1 (h_all n)).2 _ h.some_mem.1] with r hr
+      exact hr.le
+    · filter_upwards [(tendsto_order.1 (h_all n)).2 b hb] with r hr
+      contrapose! h
+      exact ⟨u n r, h, hr⟩
+  choose rs hrs using A
+  simp only [eventually_atTop, ge_iff_le]
+  refine ⟨r ⊔ ⨆ n : {n | b'' < u n r}, rs n, fun v hv ↦ ?_⟩
+  -- `⊢ ⨆ i, u i v < b`
+  apply lt_of_le_of_lt (iSup_le fun n ↦ ?_) hb''b.2
+  -- `⊢ u n v ≤ b''` for `v` such that `r ⊔ (⨆ n, rs n) ≤ v`
+  by_cases hn : b'' < u n r
+  · refine hrs n v ?_
+    calc rs n
+    _ = rs (⟨n, by simp [hn]⟩ : {n | b'' < u n r}) := rfl
+    _ ≤ ⨆ n : {n | b'' < u n r}, rs n := by
+      refine le_ciSup (f := fun (x : {n | b'' < u n r}) ↦ rs x) ?_
+        (⟨n, by simp [hn]⟩ : {n | b'' < u n r})
+      have : Finite {n | b'' < u n r} := by simpa using hb''
+      exact Finite.bddAbove_range _
+    _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_right
+    _ ≤ v := hv
+  · refine (h_anti n ?_).trans (not_lt.mp hn)
+    calc r
+    _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_left
+    _ ≤ v := hv
+
+/-- Let `u : ℕ → α → β` be a sequence of antitone functions `α → β` indexed by `ℕ`. Suppose that for
+all `n : ℕ`, `u n` tends to `c` at infinity, and that furthermore the limsup of `n ↦ u n r`
+tends to the same `c` as `r` tends to infinity.
+Then the supremum function `r ↦ ⨆ n, u n r` also tends to `c` at infinity. -/
+lemma Nat.tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLattice α]
+    [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {u : ℕ → α → β} {c : β}
+    (h_all : ∀ n, Tendsto (u n) atTop (𝓝 c))
+    (h_limsup : Tendsto (fun r : α ↦ limsup (fun n ↦ u n r) atTop) atTop (𝓝 c))
+    (h_anti : ∀ n, Antitone (u n)) :
+    Tendsto (fun r : α ↦ ⨆ n, u n r) atTop (𝓝 c) := by
+  rw [← cofinite_eq_atTop] at h_limsup
+  exact _root_.tendsto_iSup_of_tendsto_limsup h_all h_limsup h_anti
+
 end CompleteLinearOrder
 
 end LiminfLimsup
@@ -347,6 +441,7 @@ theorem Antitone.map_limsup_of_continuousAt {f : R → S} (f_decr : Antitone f) 
     f (F.limsup a) = F.liminf (f ∘ a) :=
   f_decr.map_limsSup_of_continuousAt f_cont bdd_above cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An antitone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsInf` to the `Filter.limsup` of the image if the function is continuous at the `limsInf`
 (and the filter is bounded from below and frequently bounded from above). -/
@@ -385,6 +480,7 @@ theorem Monotone.map_limsup_of_continuousAt {f : R → S} (f_incr : Monotone f) 
     f (F.limsup a) = F.limsup (f ∘ a) :=
   f_incr.map_limsSup_of_continuousAt f_cont bdd_above cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monotone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsInf` to the `Filter.liminf` of the image if the function is continuous at the `limsInf`
 (and the filter is bounded from below and frequently bounded from above). -/
@@ -405,3 +501,60 @@ theorem Monotone.map_liminf_of_continuousAt {f : R → S} (f_incr : Monotone f) 
   f_incr.map_limsInf_of_continuousAt f_cont cobdd bdd_below
 
 end Monotone
+
+section CompleteLattice
+
+variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α]
+  [CompleteLattice β] {f : α → β}
+
+lemma Antitone.liminf_nhdsGT_eq_iSup₂_of_exists_gt (hf : Antitone f) (a : α) (hb : ∃ b, a < b) :
+    (𝓝[>] a).liminf f = ⨆ r > a, f r := by
+  rw [(nhdsGT_basis_of_exists_gt hb).liminf_eq_iSup_iInf]
+  refine le_antisymm (iSup₂_mono' fun r hr ↦ ?_)
+    (iSup₂_mono' fun r hr ↦ ⟨r, hr, le_iInf₂ fun i hi ↦ hf (Set.mem_Ioo.1 hi).2.le⟩)
+  obtain ⟨b, hb⟩ := exists_between hr
+  exact ⟨b, hb.1, iInf₂_le b hb⟩
+
+lemma Antitone.liminf_nhdsGT_eq_iSup₂ [NoMaxOrder α] (hf : Antitone f) (a : α) :
+    (𝓝[>] a).liminf f = ⨆ r > a, f r :=
+  hf.liminf_nhdsGT_eq_iSup₂_of_exists_gt a (exists_gt a)
+
+lemma Monotone.liminf_nhdsLT_eq_iSup₂_of_exists_lt (hf : Monotone f) (a : α) (hb : ∃ b, b < a) :
+    (𝓝[<] a).liminf f = ⨆ r < a, f r := by
+  rw [(nhdsLT_basis_of_exists_lt hb).liminf_eq_iSup_iInf]
+  refine le_antisymm (iSup₂_mono' fun r hr ↦ ?_)
+    (iSup₂_mono' fun r hr ↦ ⟨r, hr, le_iInf₂ fun i hi ↦ hf (Set.mem_Ioo.1 hi).1.le⟩)
+  obtain ⟨b, hb⟩ := exists_between hr
+  exact ⟨b, hb.2, iInf₂_le b hb⟩
+
+lemma Monotone.liminf_nhdsLT_eq_iSup₂ [NoMinOrder α] (hf : Monotone f) (a : α) :
+    (𝓝[<] a).liminf f = ⨆ r < a, f r :=
+  hf.liminf_nhdsLT_eq_iSup₂_of_exists_lt a (exists_lt a)
+
+lemma Monotone.limsup_nhdsGT_eq_iInf₂_of_exists_gt (hf : Monotone f) (a : α) (hb : ∃ b, a < b) :
+    (𝓝[>] a).limsup f = ⨅ r > a, f r := by
+  rw [(nhdsGT_basis_of_exists_gt hb).limsup_eq_iInf_iSup]
+  refine le_antisymm
+    (iInf₂_mono' fun r hr ↦ ⟨r, hr, iSup₂_le fun i hi ↦ hf (Set.mem_Ioo.1 hi).2.le⟩)
+    (iInf₂_mono' fun r hr ↦ ?_)
+  obtain ⟨b, hb⟩ := exists_between hr
+  exact ⟨b, hb.1, le_iSup₂_of_le b hb le_rfl⟩
+
+lemma Monotone.limsup_nhdsGT_eq_iInf₂ [NoMaxOrder α] (hf : Monotone f) (a : α) :
+    (𝓝[>] a).limsup f = ⨅ r > a, f r :=
+  hf.limsup_nhdsGT_eq_iInf₂_of_exists_gt a (exists_gt a)
+
+lemma Antitone.limsup_nhdsLT_eq_iInf₂_of_exists_lt (hf : Antitone f) (a : α) (hb : ∃ b, b < a) :
+    (𝓝[<] a).limsup f = ⨅ r < a, f r := by
+  rw [(nhdsLT_basis_of_exists_lt hb).limsup_eq_iInf_iSup]
+  refine le_antisymm
+    (iInf₂_mono' fun r hr ↦ ⟨r, hr, iSup₂_le fun i hi ↦ hf (Set.mem_Ioo.1 hi).1.le⟩)
+    (iInf₂_mono' fun r hr ↦ ?_)
+  obtain ⟨b, hb⟩ := exists_between hr
+  exact ⟨b, hb.2, le_iSup₂_of_le b hb le_rfl⟩
+
+lemma Antitone.limsup_nhdsLT_eq_iInf₂ [NoMinOrder α] (hf : Antitone f) (a : α) :
+    (𝓝[<] a).limsup f = ⨅ r < a, f r :=
+  hf.limsup_nhdsLT_eq_iInf₂_of_exists_lt a (exists_lt a)
+
+end CompleteLattice

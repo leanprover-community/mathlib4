@@ -32,7 +32,7 @@ public import Mathlib.LinearAlgebra.Dual.BaseChange
 
 ## Note on terminology
 
-In the mathematical litterature, linear maps of the form `LinearMap.transvection f v`
+In the mathematical literature, linear maps of the form `LinearMap.transvection f v`
 are only called “transvections” when `f v = 0`. Otherwise, they are sometimes
 called “dilations” (especially if `f v ≠ -1`).
 
@@ -485,6 +485,7 @@ private theorem det_ofDomain [Free R V] [Module.Finite R V] [IsDomain R] (f : Du
 
 open IsBaseChange
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem det [Free R V] [Module.Finite R V] (f : Dual R V) (v : V) :
     (transvection f v).det = 1 + f v := by
   rcases subsingleton_or_nontrivial R with hR | hR

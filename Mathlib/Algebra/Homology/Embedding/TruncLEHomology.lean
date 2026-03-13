@@ -44,6 +44,7 @@ variable [HasZeroMorphisms C] (K L : HomologicalComplex C c') (φ : K ⟶ L) (e 
 
 namespace truncLE'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `K.truncLE'ToRestriction e` is a quasi-isomorphism in degrees that are not at the boundary. -/
 lemma quasiIsoAt_truncLE'ToRestriction (j : ι) (hj : ¬ e.BoundaryLE j)
     [(K.restriction e).HasHomology j] [(K.truncLE' e).HasHomology j] :
@@ -117,6 +118,7 @@ lemma mono_homologyMap_shortComplexTruncLE_g (i' : ι') (hi' : ∀ i, e.f i ≠ 
   ((K.shortComplexTruncLE_shortExact e).homology_exact₂ i').mono_g
     (by apply ((K.truncLE e).exactAt_of_isSupported e i' hi').isZero_homology.eq_of_src)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shortComplexTruncLE_shortExact_δ_eq_zero (i' j' : ι') (hij' : c'.Rel i' j') :
     (K.shortComplexTruncLE_shortExact e).δ i' j' hij' = 0 := by
@@ -144,6 +146,7 @@ lemma quasiIsoAt_shortComplexTruncLE_g (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
   rw [quasiIsoAt_iff_isIso_homologyMap]
   exact K.isIso_homologyMap_shortComplexTruncLE_g e i' hi'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shortComplexTruncLE_X₃_isSupportedOutside :
     (K.shortComplexTruncLE e).X₃.IsSupportedOutside e where
   exactAt i := by

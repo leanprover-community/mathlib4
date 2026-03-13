@@ -59,6 +59,7 @@ namespace Topology
 /-- Topology whose open sets are upper sets.
 
 Note: In general the upper set topology does not coincide with the upper topology. -/
+@[implicit_reducible]
 def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsUpperSet
   isOpen_univ := isUpperSet_univ
@@ -68,6 +69,7 @@ def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
 /-- Topology whose open sets are lower sets.
 
 Note: In general the lower set topology does not coincide with the lower topology. -/
+@[implicit_reducible]
 def lowerSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsLowerSet
   isOpen_univ := isLowerSet_univ
@@ -220,6 +222,7 @@ lemma topology_eq : ‹_› = upperSet α := topology_eq_upperSetTopology
 
 variable {α}
 
+set_option backward.isDefEq.respectTransparency false in
 instance _root_.OrderDual.instIsLowerSet : Topology.IsLowerSet αᵒᵈ where
   topology_eq_lowerSetTopology := by ext; rw [IsUpperSet.topology_eq α]
 
@@ -325,6 +328,7 @@ lemma topology_eq : ‹_› = lowerSet α := topology_eq_lowerSetTopology
 
 variable {α}
 
+set_option backward.isDefEq.respectTransparency false in
 instance _root_.OrderDual.instIsUpperSet : Topology.IsUpperSet αᵒᵈ where
   topology_eq_upperSetTopology := by ext; rw [IsLowerSet.topology_eq α]
 

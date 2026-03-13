@@ -87,6 +87,7 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
       (letI := Quotient.field I; isUnit_iff_ne_zero (G₀ := A ⧸ I))).symm : A ⧸ I →ₐ[ℂ] ℂ).comp <|
     Quotient.mkₐ ℂ I
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace

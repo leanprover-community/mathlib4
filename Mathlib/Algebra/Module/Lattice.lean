@@ -83,6 +83,7 @@ instance finite [IsLattice A M] : Module.Finite R M := by
   rw [Module.Finite.iff_fg]
   exact IsLattice.fg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The action of `Aˣ` on `R`-submodules of `V` preserves `IsLattice`. -/
 instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) where
   fg := by

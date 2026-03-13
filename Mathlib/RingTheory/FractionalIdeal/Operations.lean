@@ -587,6 +587,7 @@ theorem mem_spanSingleton {x y : P} : x ∈ spanSingleton S y ↔ ∃ z : R, z �
 theorem mem_spanSingleton_self (x : P) : x ∈ spanSingleton S x :=
   (mem_spanSingleton S).mpr ⟨1, one_smul _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (P) in
 /-- A version of `FractionalIdeal.den_mul_self_eq_num` in terms of fractional ideals. -/
 theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :
