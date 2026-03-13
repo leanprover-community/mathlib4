@@ -1,13 +1,21 @@
-import Mathlib.RingTheory.Adjoin.Polynomial.Basic
-import Mathlib.RingTheory.Algebraic.Defs
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.Polynomial.Quotient
+/-
+Copyright (c) 2026 Xavier Généreux. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Xavier Généreux, María Inés de Frutos Fernández, Miriam Philipp, Justus Springer, Junyan Xu
+-/
+module
+
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.Polynomial.Quotient
+
+
+/-!
+# Polynomials and adjoining transcendental elements
+-/
+
+@[expose] public noncomputable section
 
 variable {R S : Type*}
-
-noncomputable section
 
 open Algebra
 
@@ -58,9 +66,11 @@ theorem algEquivOfTranscendental_symm_gen (h : Transcendental R s) :
 open Ideal
 
 set_option backward.isDefEq.respectTransparency false in
+/-- Given a transcendental element `s`, we have an isomorphism
+  `R[X] / span X ≃ₐ[R] R[s] / span {s}`. -/
 def algEquivQuotientXOfTranscendental (ht : Transcendental R s) :
     (R[X] ⧸ span {(X : R[X])}) ≃ₐ[R] adjoin R {s} ⧸ span {(s : adjoin R {s})} :=
-  quotientEquivAlg _ _ (algEquivOfTranscendental R s ht) (by simp [Ideal.map_span])
+  quotientEquivAlg _ _ (algEquivOfTranscendental R s ht) (by simp [map_span])
 
 @[simp]
 theorem algEquivQuotientXOfTranscendental_apply (ht : Transcendental R s) :
@@ -79,6 +89,8 @@ namespace Algebra
 open Ideal Polynomial
 
 set_option backward.isDefEq.respectTransparency false in
+/-- Given a transcendental element `s`, we have an isomorphism `R[s] / span {s} ≃ₐ[R] R`.
+This map is equal to evaluation by 0, see _. -/
 def algEquivAdjoinQuotient (ht : Transcendental R s) :
     (adjoin R {s} ⧸ span {(s : adjoin R {s})}) ≃ₐ[R] R :=
   (algEquivQuotientXOfTranscendental s ht).symm.trans (quotientSpanXAlgEquiv)
@@ -93,18 +105,19 @@ def adjoinQuotGen (ht : Transcendental R s) :=
   (algEquivAdjoinQuotient s ht).toRingHom.comp (Ideal.Quotient.mk _)
 
 set_option backward.isDefEq.respectTransparency false in
+/-- Given a transcendental element `s`, we have a map `R[s] →ₐ[R] R` given
+This map is equal to evaluation by 0, see _. -/
 @[simp]
 theorem adjoinQuotGen_apply_polynomial (p : R[X]) (ht : Transcendental R s) :
     (adjoinQuotGen s ht) (p.aeval s : adjoin R {s}) = p.eval 0 := by
-  simp [adjoinQuotGen, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
-    AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp, RingHom.coe_coe, algEquivAdjoinQuotient]
+  simp [adjoinQuotGen, algEquivAdjoinQuotient]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem adjoinQuotGen_eq_zero_iff_gen_dvd (ht : Transcendental R s) (x : adjoin R {s}) :
     ((adjoinQuotGen s ht) x = 0 ↔ (s : adjoin R {s}) ∣ x) := by
-  simp only [adjoinQuotGen, (AlgEquiv.toRingEquiv_eq_coe), (RingEquiv.toRingHom_eq_coe),
-    (AlgEquiv.toRingEquiv_toRingHom), (RingHom.coe_comp), (RingHom.coe_coe), (Function.comp_apply),
-    (EmbeddingLike.map_eq_zero_iff), (Quotient.eq_zero_iff_dvd)]
+  simp only [adjoinQuotGen, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+    AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp, RingHom.coe_coe, (Function.comp_apply),
+    EmbeddingLike.map_eq_zero_iff, Quotient.eq_zero_iff_dvd]
 
 end Algebra
 
