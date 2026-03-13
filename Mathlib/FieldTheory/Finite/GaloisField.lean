@@ -189,17 +189,14 @@ theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^
   rw [← h, Nat.card_eq_fintype_card]
   exact FiniteField.isSplittingField_sub K (ZMod p)
 
-theorem _root_.FiniteField.exists_eval_eq_zero_of_dvd_X_pow_card_sub_X {f : K[X]}
-    (hd : f.degree ≠ 0) (h : f ∣ X ^ (Nat.card K) - X) : ∃ a, f.eval a = 0 := by
-  refine Splits.exists_eval_eq_zero ?_ hd
+theorem _root_.Polynomial.splits_X_pow_nat_card_sub_X :
+    Splits (X ^ (Nat.card K) - X : K[X]) := by
   cases fintypeOrInfinite K
-  · refine (Splits.of_dvd ?_ (FiniteField.X_pow_card_sub_X_ne_zero K (Fintype.one_lt_card))
-      (Fintype.card_eq_nat_card.symm ▸ h))
-    · have := (IsSplittingField.splits (L := K) (X ^ (Fintype.card K) - X : K[X]))
-      simpa [Algebra.algebraMap_self, map_sub, map_pow, map_X] using this
-  · rw [← dvd_neg, neg_sub] at h
-    simp only [Nat.card_eq_zero_of_infinite, pow_zero] at h
-    exact Splits.of_dvd (Splits.X_sub_C _) (X_sub_C_ne_zero _) h
+  · have := (IsSplittingField.splits (L := K) (X ^ (Fintype.card K) - X : K[X]))
+    simpa [Algebra.algebraMap_self, map_sub, map_pow, map_X] using this
+  · rw [← Polynomial.splits_neg_iff]
+    simp only [Nat.card_eq_zero_of_infinite, pow_zero, neg_sub]
+    exact Splits.X_sub_C _
 
 instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by
