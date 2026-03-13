@@ -339,7 +339,7 @@ alias mapOfCompatibleSMul' := mapOfCompatibleSMul
 
 /-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
 then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N` as `S`-modules,
-where `S` is another ring whose actions on `M` and `N` commute with the `A`-actions. -/
+where `S` is any other ring acting on `M` and whose action commutes with the `A` and `R`-actions. -/
 def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[S] M ⊗[R] N where
   __ := mapOfCompatibleSMul R A S M N
   invFun := mapOfCompatibleSMul A R S M N
