@@ -99,10 +99,9 @@ lemma dKernelSequence_exact
   simp only [assoc, reassoc_of% hx₂, zero_comp, comp_zero, πE_d_ιE] at hy₂'
   obtain ⟨A₂, π₂, _, y₁, hy₁⟩ :=
     ((X.sequenceΨ_exact f₂ f₃ f₄ f₂₃ h₂₃ _ rfl n₁ n₂).exact 0).exact_up_to_refinements y₂ hy₂'.symm
-  dsimp [sequenceΨ] at y₁ hy₁
   refine ⟨A₂, π₂ ≫ π₁, inferInstance, y₁ ≫ X.πE f₂₃ f₄ f₅ n₀ n₁ n₂, ?_⟩
-  simp [hy₂, reassoc_of% hy₁, X.πE_map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)
-    (threeδ₁Toδ₀ f₂ f₃ f₄ f₂₃ h₂₃) n₀ n₁ n₂]
+  simp [sequenceΨ, hy₂, reassoc_of% hy₁, X.πE_map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃)
+    (threeδ₁Toδ₀ f₂ f₃ f₄ f₂₃) n₀ n₁ n₂]
 
 end
 
