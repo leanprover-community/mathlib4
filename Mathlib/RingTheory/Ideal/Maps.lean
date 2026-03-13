@@ -43,7 +43,7 @@ def map (I : Ideal R) : Ideal S :=
   span (f '' I)
 
 /-- `I.comap f` is the preimage of `I` under `f`. -/
-def comap [RingHomClass F R S] (I : Ideal S) : Ideal R where
+def comap [NonUnitalRingHomClass F R S] (I : Ideal S) : Ideal R where
   carrier := f ⁻¹' I
   add_mem' {x y} hx hy := by
     simp only [Set.mem_preimage, SetLike.mem_coe, map_add f] at hx hy ⊢
@@ -54,11 +54,11 @@ def comap [RingHomClass F R S] (I : Ideal S) : Ideal R where
     exact mul_mem_left I _ hx
 
 @[simp]
-theorem coe_comap [RingHomClass F R S] (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
+theorem coe_comap [NonUnitalRingHomClass F R S] (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
 
-lemma comap_coe [RingHomClass F R S] (I : Ideal S) : I.comap (f : R →+* S) = I.comap f := rfl
+lemma comap_coe [NonUnitalRingHomClass F R S] (I : Ideal S) : I.comap (f : R →ₙ+* S) = I.comap f := rfl
 
-lemma map_coe [RingHomClass F R S] (I : Ideal R) : I.map (f : R →+* S) = I.map f := rfl
+lemma map_coe [NonUnitalRingHomClass F R S] (I : Ideal R) : I.map (f : R →ₙ+* S) = I.map f := rfl
 
 variable {f}
 
@@ -702,6 +702,20 @@ end CommRing
 end MapAndComap
 
 end Ideal
+
+namespace NonUnitalRingHom
+
+variable {R : Type u} {S : Type v} {T : Type w}
+
+variable {F : Type*}  [Semiring R] [Semiring S] [Semiring T]
+variable [FunLike F R S] [rcf : NonUnitalRingHomClass F R S]
+variable (f : F)
+
+/-- Kernel of a non-unital ring homomorphism (between unital semirings) as an ideal of the domain. -/
+def ker : Ideal R :=
+  Ideal.comap f ⊥
+
+end NonUnitalRingHom
 
 namespace RingHom
 
