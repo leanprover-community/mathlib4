@@ -111,6 +111,7 @@ def single (h : i ≠ j) : R →ₗ[R] sl n R :=
 theorem val_single (h : i ≠ j) (r : R) : (single i j h r).val = Matrix.single i j r :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The matrices with matching positive and negative elements on the diagonal are elements of
 `sl n R`. Along with `single`, a subset of these form a basis for `sl n R`. -/
 def singleSubSingle : R →ₗ[R] sl n R :=
@@ -202,6 +203,7 @@ theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := 
     simp [Pso, h, hi, one_apply]
 
 /-- There is a constructive inverse of `Pso p q R i`. -/
+@[implicit_reducible]
 def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
   invertibleOfRightInverse _ _ (pso_inv p q R hi)
 
@@ -228,6 +230,7 @@ noncomputable def soIndefiniteEquiv {i : R} (hi : i * i = -1) : so' p q R ≃ₗ
   apply LieEquiv.ofEq
   ext A; rw [indefiniteDiagonal_transform p q R hi]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (p ⊕ q) (p ⊕ q) R) =
       (Pso p q R i)⁻¹ * (A : Matrix (p ⊕ q) (p ⊕ q) R) * Pso p q R i := by

@@ -38,6 +38,7 @@ namespace Real
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Hahn-Banach theorem** for continuous linear functions over `ℝ`.
 See also `exists_extension_norm_eq` in the root namespace for a more general version
 that works both for `ℝ` and `ℂ`. -/
@@ -68,6 +69,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
 satisfying `IsRCLikeNormedField 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
@@ -85,21 +87,21 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
   obtain ⟨g, ⟨(hextends : ∀ x : p, g x = fr x), hnormeq⟩⟩ :=
     Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr
   -- Now `g` can be extended to the `StrongDual 𝕜 E` we need.
-  refine ⟨g.extendTo𝕜', ?_⟩
+  refine ⟨g.extendRCLike, ?_⟩
   -- It is an extension of `f`.
-  have h (x : p) : g.extendTo𝕜' x = f x := by
-    rw [ContinuousLinearMap.extendTo𝕜'_apply, ← Submodule.coe_smul,
+  have h (x : p) : g.extendRCLike x = f x := by
+    rw [g.extendRCLike_apply, ← Submodule.coe_smul,
       hextends, hextends]
     simp [fr, RCLike.algebraMap_eq_ofReal, mul_comm I, RCLike.re_add_im]
   -- And we derive the equality of the norms by bounding on both sides.
   refine ⟨h, le_antisymm ?_ ?_⟩
   · calc
-      ‖g.extendTo𝕜'‖ = ‖g‖ := g.norm_extendTo𝕜'
+      ‖g.extendRCLike‖ = ‖g‖ := g.norm_extendRCLike
       _ = ‖fr‖ := hnormeq
       _ ≤ ‖reCLM‖ * ‖f‖ := ContinuousLinearMap.opNorm_comp_le _ _
       _ = ‖f‖ := by rw [reCLM_norm, one_mul]
-  · exact f.opNorm_le_bound (g.extendTo𝕜' (𝕜 := 𝕜)).opNorm_nonneg
-      fun x ↦ h x ▸ (g.extendTo𝕜' (𝕜 := 𝕜) |>.le_opNorm x)
+  · exact f.opNorm_le_bound (g.extendRCLike (𝕜 := 𝕜)).opNorm_nonneg
+      fun x ↦ h x ▸ (g.extendRCLike (𝕜 := 𝕜) |>.le_opNorm x)
 
 open Module
 
@@ -141,6 +143,7 @@ section Seminormed
 
 variable {E : Type u} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Corollary of Hahn-Banach. Given an element `x` of a normed space with `‖x‖ ≠ 0`, there
 exists an element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
 theorem exists_dual_vector (x : E) (h : ‖x‖ ≠ 0) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by

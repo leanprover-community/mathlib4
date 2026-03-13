@@ -62,16 +62,17 @@ variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 /-- The canonical morphism `unit S ⟶ (pushforward.{u} φ).obj (unit R)`
 of sheaves of modules corresponding to a continuous map between ringed sites. -/
 noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
-  val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrpCat).map (φ.val.app X)) (fun r ↦ by
+  val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrpCat).map (φ.hom.app X)) (fun r ↦ by
     ext m
-    exact ((φ.val.app X).hom.map_mul _ _).symm)
+    exact ((φ.hom.app X).hom.map_mul _ _).symm)
   val.naturality f := by
     ext
-    exact ConcreteCategory.congr_hom (φ.val.naturality f) _
+    exact ConcreteCategory.congr_hom (φ.hom.naturality f) _
 
-lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.val.obj X) :
-    (unitToPushforwardObjUnit φ).val.app X a = φ.val.app X a := rfl
+lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.obj.obj X) :
+    (unitToPushforwardObjUnit φ).val.app X a = φ.hom.app X a := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pushforwardSections_unitHomEquiv
     {M : SheafOfModules.{u} R} (f : unit R ⟶ M) :
     pushforwardSections φ (M.unitHomEquiv f) =
@@ -80,7 +81,7 @@ lemma pushforwardSections_unitHomEquiv
   ext X
   have := unitToPushforwardObjUnit_val_app_apply φ (X := X) 1
   dsimp at this ⊢
-  simp [this, map_one]
+  simp +instances [this, map_one]
   rfl
 
 variable [(pushforward.{u} φ).IsRightAdjoint]
@@ -124,6 +125,7 @@ noncomputable def pullbackObjFreeIso (I : Type u) :
   (asIso (sigmaComparison _ _)).symm ≪≫
     Sigma.mapIso (fun _ ↦ asIso (pullbackObjUnitToUnit φ))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullback_map_ιFree_comp_pullbackObjFreeIso_hom {I : Type u} (i : I) :
     (pullback φ).map (ιFree i) ≫ (pullbackObjFreeIso φ I).hom =

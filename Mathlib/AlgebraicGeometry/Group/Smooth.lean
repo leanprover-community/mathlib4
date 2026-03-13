@@ -29,6 +29,7 @@ universe u
 variable {K : Type u} [Field K] [IsAlgClosed K] {G : Scheme} (f : G ⟶ Spec (.of K))
     [LocallyOfFinitePresentation f] [IsReduced G] [GrpObj (Over.mk f)]
 
+set_option backward.isDefEq.respectTransparency false in
 open MonObj MonoidalCategory CartesianMonoidalCategory in
 /--
 If `G` is a group scheme over an algebraically closed field `k` that is reduced and locally
@@ -54,7 +55,6 @@ lemma smooth_of_grpObj_of_isAlgClosed : Smooth f := by
     simp [comp_lift_assoc]
   have hα' : α.hom.left x = y := by
     simpa [x', y', pointEquivClosedPoint] using congr(($hα).left (IsLocalRing.closedPoint K))
-  have hαf : α.hom.left ≫ f = f := α.hom.w
   rw! [← hα', ← α.hom.left.mem_preimage, Scheme.Hom.preimage_smoothLocus_eq,
     show α.hom.left ≫ f = f from α.hom.w] at hy
   exact hx hy

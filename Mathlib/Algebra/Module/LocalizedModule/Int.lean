@@ -121,6 +121,7 @@ theorem finsetIntegerMultiple_image [DecidableEq M] (s : Finset M') :
   · rintro ⟨x, hx, rfl⟩
     exact ⟨_, ⟨⟨x, hx⟩, s.mem_attach _, rfl⟩, map_integerMultiple S f s id _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_mem_finsetIntegerMultiple_span [DecidableEq M] (x : M) (s : Finset M')
     (hx : f x ∈ Submodule.span R s) :
     ∃ (m : S), m • x ∈ Submodule.span R (IsLocalizedModule.finsetIntegerMultiple S f s) := by

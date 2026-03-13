@@ -19,7 +19,7 @@ for any `n : ℤ`, which we phrase here by saying that
 
 ## TODO
 * When more definitions are introduced for t-structures (e.g. the heart),
-show that the conclusion holds when `K` and `L` are cohomologically bounded.
+  show that the conclusion holds when `K` and `L` are cohomologically bounded.
 
 -/
 
@@ -37,6 +37,7 @@ open Localization Limits ZeroObject DerivedCategory Pretriangulated
 
 namespace HasExt
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 lemma hasSmallLocalizedShiftedHom_of_isLE_of_isGE
     [HasExt.{w} C] (K L : CochainComplex C ℤ)

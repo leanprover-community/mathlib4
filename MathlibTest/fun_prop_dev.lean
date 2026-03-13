@@ -558,8 +558,8 @@ example [Add α] (y : α):
 
 
 
---- pefromance tests - mainly testing fast failure ---
-------------------------------------------------------
+--- performance tests - mainly testing fast failure ---
+-------------------------------------------------------
 
 
 section PerformanceTests
@@ -579,8 +579,8 @@ example (f : R → R) (hf : Con f) :
     Con (fun x ↦ (f (x + 3)) + 2 + f (x + 1) + x + 1) := by fun_prop -- succeeds in 11ms
 
 -- This used to fail in exponentially increasing time, up to 6s for the last example
--- We set maxHearthbeats to 1000 such that the last three examples should fail if the exponential
--- blow happen again.
+-- We set maxHeartbeats to 1000 such that the last three examples should fail if the exponential
+-- blowup happens again.
 set_option maxHeartbeats 1000 in
 example (f : R → R) :
     Con (fun x ↦ f (x + 3)) := by

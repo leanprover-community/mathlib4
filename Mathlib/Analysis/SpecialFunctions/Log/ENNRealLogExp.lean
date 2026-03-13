@@ -14,7 +14,8 @@ public import Mathlib.Topology.MetricSpace.Polish
 # Properties of the extended logarithm and exponential
 
 We prove that `log` and `exp` define order isomorphisms between `ℝ≥0∞` and `EReal`.
-## Main DefinitionsP
+
+## Main Definitions
 - `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
   and `exp`.
 - `EReal.expOrderIso`: The order isomorphism between `EReal` and `ℝ≥0∞` defined by `exp`

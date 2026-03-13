@@ -41,6 +41,7 @@ attribute [local simp] Triangle.eqToHom_hom₁ Triangle.eqToHom_hom₂ Triangle.
   shiftFunctorAdd_zero_add_hom_app shiftFunctorAdd_add_zero_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd shift_shiftFunctorCompIsoId_inv_app
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor `Triangle C ⥤ Triangle C` by `n : ℤ` sends a triangle
 to the triangle obtained by shifting the objects by `n` in `C` and by
 multiplying the three morphisms by `(-1)^n`. -/
@@ -65,6 +66,7 @@ noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C wh
         erw [(shiftFunctorComm C 1 n).hom.naturality]
         rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `Triangle.shiftFunctor C 0 ≅ 𝟭 (Triangle C)`. -/
 @[simps!]
 noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭 _ :=
@@ -78,6 +80,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
           comp_id, NatTrans.naturality, Functor.id_map]))
     (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism
 `Triangle.shiftFunctor C n ≅ Triangle.shiftFunctor C a ⋙ Triangle.shiftFunctor C b`
 when `a + b = n`. -/
@@ -110,6 +113,7 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
           shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app, add_comm a]))
     (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rotating triangles three times identifies with the shift by `1`. -/
 noncomputable def rotateRotateRotateIso :
     rotate C ⋙ rotate C ⋙ rotate C ≅ Triangle.shiftFunctor C 1 :=
@@ -118,6 +122,7 @@ noncomputable def rotateRotateRotateIso :
       (by simp) (by simp) (by simp))
     (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rotating triangles three times backwards identifies with the shift by `-1`. -/
 noncomputable def invRotateInvRotateInvRotateIso :
     invRotate C ⋙ invRotate C ⋙ invRotate C ≅ Triangle.shiftFunctor C (-1) :=
@@ -151,6 +156,7 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
 
 namespace Triangle
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : HasShift (Triangle C) ℤ :=
   hasShiftMk (Triangle C) ℤ
     { F := Triangle.shiftFunctor C

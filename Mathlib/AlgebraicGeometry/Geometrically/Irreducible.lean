@@ -14,7 +14,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 ## Main results
 - `AlgebraicGeometry.GeometricallyIrreducible`:
   We say that morphism `f : X ⟶ Y` is geometrically irreducible if for all `Spec K ⟶ Y` with `K`
-  a field, `X ×[Y] Spec K` is irrreducible.
+  a field, `X ×[Y] Spec K` is irreducible.
   We also provide the fact that this is stable under base change (by infer_instance)
 - `GeometricallyIrreducible.iff_geometricallyIrreducible_fiber`:
   A scheme is geometrically irreducible over `S` iff the fibers of all
@@ -35,7 +35,7 @@ namespace AlgebraicGeometry
 variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
 
 /-- We say that morphism `f : X ⟶ Y` is geometrically irreducible if for all `Spec K ⟶ Y` with `K`
-a field, `X ×[Y] Spec K` is irrreducible. -/
+a field, `X ×[Y] Spec K` is irreducible. -/
 @[mk_iff]
 class GeometricallyIrreducible (f : X ⟶ Y) : Prop where
   geometrically_irreducibleSpace : geometrically (IrreducibleSpace ·) f
@@ -102,7 +102,7 @@ lemma GeometricallyIrreducible.irreducibleSpace_of_subsingleton
 then `X ×ₛ Y` is irreducible.
 
 The universally open assumption in particular holds when it is flat and locally of finite
-presentation, e.g. when `S` is a field and `X` is locally of finite type over `S`. -/
+presentation, or when `S` is a field. -/
 instance [GeometricallyIrreducible f] [UniversallyOpen f] [IrreducibleSpace Y] :
     IrreducibleSpace ↥(pullback f g) :=
   GeometricallyIrreducible.irreducibleSpace (pullback.snd _ _) (pullback.snd f g).isOpenMap
