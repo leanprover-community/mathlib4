@@ -494,7 +494,7 @@ lemma preservesFiniteColimits_comp_iff :
   letI := abelian L P
   have := preservesFiniteColimits L P
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteColimits _ _⟩
-  have := (Localization.functor_additive_iff L P.isoModSerre G).2 (by
+  have := (Localization.functor_additive_iff L P.isoModSerre G).mpr (by
     have := preservesBinaryBiproducts_of_preservesBinaryCoproducts (L ⋙ G)
     exact Functor.additive_of_preservesBinaryBiproducts _)
   refine ((Functor.preservesFiniteColimits_tfae G).out 2 3).mp (fun _ _ f ↦ ?_)
