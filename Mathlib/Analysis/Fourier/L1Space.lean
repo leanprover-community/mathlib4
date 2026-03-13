@@ -27,15 +27,15 @@ variable [CompleteSpace E]
 variable (V E) in
 /-- The Fourier transform on `L1` as a linear isometry equivalence. -/
 def Lp.fourierTransformZeroAtInftyCLM : (Lp (α := V) E 1) →L[ℂ] C₀(V, E) :=
-  (toZeroAtInftyCLM ℂ V E ∘L (SchwartzMap.fourierTransformCLM ℂ)).toLinearMap.extendOfNorm
+  (toZeroAtInftyCLM ℂ V E ∘L (fourierCLM ℂ 𝓢(V, E))).toLinearMap.extendOfNorm
     (toLpCLM ℂ (E := V) E 1)
 
 @[simp]
-theorem Lp.fourierTransformZeroAtInftyCLM_toLp_one_apply (f : 𝓢(V, E)) (x : V) :
+theorem Lp.fourierTransformZeroAtInftyCLM_toLp_apply (f : 𝓢(V, E)) (x : V) :
     Lp.fourierTransformZeroAtInftyCLM V E (f.toLp 1) x = 𝓕 f x := by
   calc
     _ = ((fourierTransformZeroAtInftyCLM V E) (toLpCLM ℂ (E := V) E 1 volume f)) x := by simp
-    _ = (toZeroAtInftyCLM ℂ V E ∘L (SchwartzMap.fourierTransformCLM ℂ)).toLinearMap f x := by
+    _ = (toZeroAtInftyCLM ℂ V E ∘L (fourierCLM ℂ 𝓢(V, E))) f x := by
       congr 1
       apply LinearMap.extendOfNorm_eq
       · apply SchwartzMap.denseRange_toLpCLM
@@ -62,3 +62,9 @@ theorem riemann_lebesgue (f : V → E) (hf : MemLp f 1) :
     Filter.Tendsto (𝓕 f) (Filter.cocompact V) (𝓝 0) := by
   rw [← Real.fourierTransform_toLp hf, ← Lp.fourierTransformZeroAtInftyCLM_toBCF]
   apply zero_at_infty ((Lp.fourierTransformZeroAtInftyCLM V E) (hf.toLp f))
+
+variable (V E) in
+/-- The inverse Fourier transform on `L1` as a linear isometry equivalence. -/
+def Lp.fourierTransformInvZeroAtInftyCLM : (Lp (α := V) E 1) →L[ℂ] C₀(V, E) :=
+  (toZeroAtInftyCLM ℂ V E ∘L (fourierInvCLM ℂ 𝓢(V, E))).toLinearMap.extendOfNorm
+    (toLpCLM ℂ (E := V) E 1)
