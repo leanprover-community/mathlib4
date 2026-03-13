@@ -99,7 +99,12 @@ lemma TypeCat.Fun.comp_apply {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) (x : X)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance (priority := high) : ConcreteCategory.{u} (Type u) (fun X Y ↦ Fun X Y) where
+/--
+The concrete category instance on `Type u`.
+
+Note: sometimes one needs to specify explicitly `(CC := fun X ↦ X)` to help typeclass inference.
+-/
+instance : ConcreteCategory.{u} (Type u) (fun X Y ↦ Fun X Y) where
   hom := Hom.hom'
   ofHom := Hom.mk
 
@@ -190,8 +195,8 @@ lemma types_comp_apply {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g) x = g (f x) :=
   rfl
 
-lemma types_congr_hom {X Y : Type u} (f g : X ⟶ Y) (h : f = g) (x : X) : f x = g x := by
-  rw [h]
+lemma types_congr_hom {X Y : Type u} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
+  ConcreteCategory.congr_hom h x
 
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_apply := Iso.hom_inv_id_apply
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_apply := Iso.inv_hom_id_apply

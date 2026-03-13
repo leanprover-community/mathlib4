@@ -469,11 +469,12 @@ lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
     ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
           ((F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)).app (op X)
         (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) := by
-  exact (types_congr_hom (Functor.descOfIsLeftKanExtension_fac_app _
+  exact (ConcreteCategory.congr_hom (CC := fun X ↦ X) (Functor.descOfIsLeftKanExtension_fac_app _
     (F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)) _
     (uliftYonedaMap.{w} F X) (op X)) (ULift.up (𝟙 X))).trans (by simp [uliftYonedaMap])
 
 end
+
 
 namespace compULiftYonedaIsoULiftYonedaCompLan
 
@@ -501,13 +502,13 @@ lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type (max w v₁ v₂)} {x y : P.Ele
       (by simpa only [Equiv.apply_symm_apply, ← uliftYonedaEquiv_naturality] using f.2)
   have eq₂ := ConcreteCategory.congr_hom ((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).naturality
     (F.map f.1.unop).op) ((φ.app x.1.unop).app _ (ULift.up (𝟙 _)))
-  have eq₃ := ConcreteCategory.congr_hom (congr_app (φ.naturality f.1.unop) _) (ULift.up (𝟙 _))
+  have eq₃ := ConcreteCategory.congr_hom (CC := fun X ↦ X)
+    (congr_app (φ.naturality f.1.unop) _) (ULift.up (𝟙 _))
   have eq₄ := ConcreteCategory.congr_hom ((φ.app x.1.unop).naturality (F.map f.1.unop).op)
   dsimp at eq₂ eq₃ eq₄
   apply uliftYonedaEquiv.{max w v₂}.injective
   dsimp only [coconeApp]
   rw [Equiv.apply_symm_apply, ← uliftYonedaEquiv_naturality, Equiv.apply_symm_apply]
-  simp only [comp_apply, hom_ofHom, TypeCat.Fun.mk_apply, id_comp] at eq₃ eq₄
   simp only [op_unop, Functor.comp_obj, Functor.op_obj, Functor.comp_map, Functor.op_map,
     uliftYoneda_obj_obj, yoneda_obj_obj, ← eq₃, ← eq₄, ← eq₂, ← eq₁, Functor.map_comp,
     NatTrans.comp_app, comp_apply]
@@ -603,9 +604,9 @@ lemma hom_ext {Φ : uliftYoneda.{max w v₂}.LeftExtension (F ⋙ uliftYoneda.{m
   apply (colimitOfRepresentable.{max w v₂} P).hom_ext
   intro x
   have eq := F.op.lanUnit.naturality (uliftYonedaEquiv.{max w v₂}.symm x.unop.2)
-  have eq₁ := congr_hom (congr_app (congr_app (StructuredArrow.w f) x.unop.1.unop)
+  have eq₁ := congr_hom (CC := fun X ↦ X) (congr_app (congr_app (StructuredArrow.w f) x.unop.1.unop)
     (F.op.obj x.unop.1)) (ULift.up (𝟙 _))
-  have eq₂ := congr_hom (congr_app (congr_app (StructuredArrow.w g) x.unop.1.unop)
+  have eq₂ := congr_hom (CC := fun X ↦ X) (congr_app (congr_app (StructuredArrow.w g) x.unop.1.unop)
     (F.op.obj x.unop.1)) (ULift.up (𝟙 _))
   dsimp at eq₁ eq₂ eq ⊢
   simp only [reassoc_of% eq, ← Functor.whiskerLeft_comp]
@@ -613,10 +614,7 @@ lemma hom_ext {Φ : uliftYoneda.{max w v₂}.LeftExtension (F ⋙ uliftYoneda.{m
   simp only [← cancel_epi ((compULiftYonedaIsoULiftYonedaCompLan F).hom.app x.unop.1.unop),
     NatTrans.naturality]
   apply uliftYonedaEquiv.injective
-  simp only [Functor.comp_obj, uliftYonedaEquiv_apply, NatTrans.comp_app, uliftYoneda_obj_obj,
-    comp_apply]
-  simp only [comp_apply] at eq₁ eq₂
-  rw [eq₁, eq₂]
+  simp [eq₁, eq₂, uliftYonedaEquiv_apply]
 
 end compULiftYonedaIsoULiftYonedaCompLan
 
@@ -804,7 +802,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then `F` identifies to the composition
 `shrinkYoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim`. -/
 noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso
-    [HasColimitsOfShape F.Elementsᵒᵖ Type w] :
+    [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] :
     shrinkYoneda.{w} ⋙
       (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim ≅ F :=
   NatIso.ofComponents (fun X ↦
@@ -815,7 +813,7 @@ noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso
 
 set_option backward.isDefEq.respectTransparency false in
 lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
-    [HasColimitsOfShape F.Elementsᵒᵖ Type w] (u : F.Elements) :
+    [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] (u : F.Elements) :
       (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app _ u.snd =
       (colimit.ι ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u)
         (shrinkYonedaObjObjEquiv.symm (𝟙 _))) := by

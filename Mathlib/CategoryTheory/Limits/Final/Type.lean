@@ -94,7 +94,7 @@ lemma bijective_colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Final] :
       simp [← comp_apply, ← Functor.map_comp]
     choose φ hφ using h
     let c : P.CoconeTypes :=
-      { pt := .of (F ⋙ P).ColimitType
+      { pt := (F ⋙ P).ColimitType
         ι Y := φ Y
         ι_naturality {Y₁ Y₂} f := by
           ext

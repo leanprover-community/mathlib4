@@ -50,12 +50,12 @@ namespace Limits.Types
 variable (C : Type u) [Category.{v} C]
 
 /-- The functor mapping every object to `PUnit`. -/
-def constPUnitFunctor : C ⥤ Type w := (Functor.const C).obj (.of PUnit.{w + 1})
+def constPUnitFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
 
 /-- The cocone on `constPUnitFunctor` with cone point `PUnit`. -/
 @[simps]
 def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
-  pt := .of PUnit
+  pt := PUnit
   ι := 𝟙 _
 
 set_option backward.isDefEq.respectTransparency false in
@@ -78,7 +78,7 @@ instance instHasColimitConstPUnitFunctor [IsConnected C] : HasColimit (constPUni
 
 instance instSubsingletonColimitPUnit
     [IsPreconnected C] [HasColimit (constPUnitFunctor.{w} C)] :
-    Subsingleton (colimit (constPUnitFunctor.{w} C) : TypeCat) where
+    Subsingleton <| colimit (constPUnitFunctor.{w} C) where
   allEq a b := by
     obtain ⟨c, ⟨⟩, rfl⟩ := jointly_surjective' a
     obtain ⟨d, ⟨⟩, rfl⟩ := jointly_surjective' b
@@ -87,7 +87,7 @@ instance instSubsingletonColimitPUnit
 
 /-- Given a connected index category, the colimit of the constant unit-valued functor is `PUnit`. -/
 noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
-    colimit (constPUnitFunctor.{w} C) ≅ .of PUnit.{w + 1} :=
+    colimit (constPUnitFunctor.{w} C) ≅ PUnit.{w + 1} :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitPUnitCocone.{w} C)
 
 /-- Let `F` be a `TypeCat`-valued functor. If two elements `a : F c` and `b : F d` represent the
@@ -104,7 +104,7 @@ theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
 singleton. -/
 theorem isConnected_iff_colimit_constPUnitFunctor_iso_pUnit
     [HasColimit (constPUnitFunctor.{w} C)] :
-    IsConnected C ↔ Nonempty (colimit (constPUnitFunctor.{w} C) ≅ .of PUnit) := by
+    IsConnected C ↔ Nonempty (colimit (constPUnitFunctor.{w} C) ≅ PUnit) := by
   refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ => ?_⟩
   have : Nonempty C := nonempty_of_nonempty_colimit <| Nonempty.map h.inv inferInstance
   refine zigzag_isConnected <| fun c d => ?_
