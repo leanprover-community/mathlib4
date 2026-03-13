@@ -196,22 +196,9 @@ instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
 
 namespace Measure
 
-theorem forall_measure_inter_finiteSpanningSetsIn_eq_zero [MeasurableSpace α] {μ : Measure α}
-    (s : Set α) {C : Set (Set α)} (hf : μ.FiniteSpanningSetsIn C) :
-    (∀ n, μ (s ∩ hf.set n) = 0) ↔ μ s = 0 := by
-  nth_rw 2 [show s = ⋃ n, s ∩ hf.set n by
-      rw [← inter_iUnion, hf.spanning, inter_univ]]
-  rw [measure_iUnion_null_iff]
-
-theorem exists_measure_inter_finiteSpanningSetsIn_pos [MeasurableSpace α] {μ : Measure α}
-    (s : Set α) {C : Set (Set α)} (hf : μ.FiniteSpanningSetsIn C) :
-    (∃ n, 0 < μ (s ∩ hf.set n)) ↔ 0 < μ s := by
-  contrapose!
-  simp only [nonpos_iff_eq_zero]
-  exact forall_measure_inter_finiteSpanningSetsIn_eq_zero s hf
-
 /-- A set in a σ-finite space has zero measure if and only if its intersection with
 all members of the countable family of finite measure spanning sets has zero measure. -/
+@[deprecated forall_measure_inter_finiteSpanningSetsIn_eq_zero (since := "2026-03-13")]
 theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Measure α}
     [SigmaFinite μ] (s : Set α) : (∀ n, μ (s ∩ spanningSets μ n) = 0) ↔ μ s = 0 := by
   nth_rw 2 [show s = ⋃ n, s ∩ spanningSets μ n by
@@ -220,6 +207,7 @@ theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Mea
 
 /-- A set in a σ-finite space has positive measure if and only if its intersection with
 some member of the countable family of finite measure spanning sets has positive measure. -/
+@[deprecated exists_measure_inter_finiteSpanningSetsIn_pos (since := "2026-03-13")]
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (s : Set α) : (∃ n, 0 < μ (s ∩ spanningSets μ n)) ↔ 0 < μ s := by
   contrapose!

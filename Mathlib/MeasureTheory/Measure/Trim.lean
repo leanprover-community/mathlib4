@@ -157,15 +157,4 @@ theorem _root_.ae_eq_trim_of_measurable {α β} {m m0 : MeasurableSpace α} {μ 
   rwa [Filter.EventuallyEq, ae_iff, trim_measurableSet_eq hm _]
   measurability
 
-theorem forall_measure_inter_spanningSets_trim_eq_zero (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
-    {s : Set α} (hn : ∀ n, μ (s ∩ spanningSets (μ.trim hm) n) = 0) : μ s = 0 := by
-  rw [show s = ⋃ n, s ∩ spanningSets (μ.trim hm) n by
-      rw [← Set.inter_iUnion, iUnion_spanningSets, Set.inter_univ]]
-  simpa [measure_iUnion_null_iff]
-
-theorem forall_measure_restrict_spanningSets_trim_eq_zero (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
-    {s : Set α} (hn : ∀ n, μ.restrict (spanningSets (μ.trim hm) n) s = 0) : μ s = 0 := by
-  refine forall_measure_inter_spanningSets_trim_eq_zero hm fun n => ?_
-  simpa [← μ.restrict_apply' (hm _ (measurableSet_spanningSets (μ.trim hm) n))] using hn n
-
 end MeasureTheory

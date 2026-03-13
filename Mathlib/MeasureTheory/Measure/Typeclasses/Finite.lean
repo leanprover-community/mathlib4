@@ -282,6 +282,27 @@ structure FiniteSpanningSetsIn {m0 : MeasurableSpace α} (μ : Measure α) (C : 
   protected finite : ∀ i, μ (set i) < ∞
   protected spanning : ⋃ i, set i = univ
 
+theorem forall_measure_inter_finiteSpanningSetsIn_eq_zero [MeasurableSpace α] {μ : Measure α}
+    (s : Set α) {C : Set (Set α)} (hf : μ.FiniteSpanningSetsIn C) :
+    (∀ n, μ (s ∩ hf.set n) = 0) ↔ μ s = 0 := by
+  nth_rw 2 [show s = ⋃ n, s ∩ hf.set n by
+      rw [← inter_iUnion, hf.spanning, inter_univ]]
+  rw [measure_iUnion_null_iff]
+
+theorem forall_measure_restrict_finiteSpanningSetsIn_eq_zero [MeasurableSpace α] {μ : Measure α}
+    (s : Set α) {C : Set (Set α)} (hf : μ.FiniteSpanningSetsIn C) (hC : C ⊆ MeasurableSet) :
+    (∀ n, μ.restrict (hf.set n) s = 0) ↔ μ s = 0 := by
+  rw [← forall_measure_inter_finiteSpanningSetsIn_eq_zero s hf]
+  refine ⟨fun h n => ?_, fun h n => ?_⟩
+  <;> simpa [μ.restrict_apply' (hC (hf.set_mem n))] using h n
+
+theorem exists_measure_inter_finiteSpanningSetsIn_pos [MeasurableSpace α] {μ : Measure α}
+    (s : Set α) {C : Set (Set α)} (hf : μ.FiniteSpanningSetsIn C) :
+    (∃ n, 0 < μ (s ∩ hf.set n)) ↔ 0 < μ s := by
+  contrapose!
+  simp only [nonpos_iff_eq_zero]
+  exact forall_measure_inter_finiteSpanningSetsIn_eq_zero s hf
+
 end Measure
 
 /-- A measure is called locally finite if it is finite in some neighborhood of each point. -/
