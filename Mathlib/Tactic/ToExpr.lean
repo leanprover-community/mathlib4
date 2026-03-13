@@ -34,7 +34,7 @@ open DataValue in
 /-- Core of a hand-written `ToExpr` handler for `MData`.
 Uses the `KVMap.set*` functions rather than going into the internals
 of the `KVMap` data structure. -/
-protected def _root_.Lean.MData.toExpr (md : MData) : Expr := Id.run do
+private def toExprMData (md : MData) : Expr := Id.run do
   let mut e := mkConst ``MData.empty
   for (k, v) in md do
     let k := toExpr k
@@ -47,8 +47,9 @@ protected def _root_.Lean.MData.toExpr (md : MData) : Expr := Id.run do
           | ofSyntax v => mkApp3 (mkConst ``KVMap.setSyntax) e k (toExpr v)
   return e
 
+@[no_expose]
 instance : ToExpr MData where
-  toExpr := MData.toExpr
+  toExpr := toExprMData
   toTypeExpr := mkConst ``MData
 
 deriving instance ToExpr for MVarId
