@@ -1027,6 +1027,18 @@ instance :
 
 end OplaxMonoidal
 
+set_option backward.isDefEq.respectTransparency false in
+def laxMonoidalOplaxMonoidalEquiv : G.LaxMonoidal ≃ F.OplaxMonoidal where
+  toFun _ := leftAdjointOplaxMonoidal adj
+  invFun _ := rightAdjointLaxMonoidal adj
+  left_inv _ := by
+    ext 
+    · simp
+    simp [homEquiv_counit, homEquiv_unit, ← μ_natural]
+  right_inv _ := by
+    ext 
+    · simp
+    simp [homEquiv_counit, homEquiv_unit, ← δ_natural_assoc]
 section Monoidal
 variable [F.Monoidal] [G.Monoidal] [adj.IsMonoidal]
 
