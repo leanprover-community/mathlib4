@@ -77,13 +77,6 @@ lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by
   · exact fun i _ ↦ Integrable.smul_const (integrable_eval IsGaussian.integrable_id) _
   · exact (Finset.measurable_sum _ (by fun_prop)).aemeasurable
 
-theorem _root_.OrthonormalBasis.norm_dual {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
-    [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (L : StrongDual ℝ E) :
-    ‖L‖ ^ 2 = ∑ i, L (b i) ^ 2 := by
-  have := Module.Basis.finiteDimensional_of_finite b.toBasis
-  simp_rw [← (InnerProductSpace.toDual ℝ E).symm.norm_map, ← b.sum_sq_inner_left,
-    InnerProductSpace.toDual_symm_apply]
-
 lemma variance_dual_stdGaussian (L : StrongDual ℝ E) :
     Var[L; stdGaussian E] = ‖L‖ ^ 2 := by
   rw [stdGaussian, variance_map L.continuous.aemeasurable (Measurable.aemeasurable (by fun_prop))]
