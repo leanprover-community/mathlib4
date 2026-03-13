@@ -81,7 +81,7 @@ of the differential `E^n(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` -/
 noncomputable def dKernelSequence
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     ShortComplex C :=
-  ShortComplex.mk _ _ (X.map_fourδ₁Toδ₀_d f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃)
+  ShortComplex.mk _ _ (X.map_fourδ₁Toδ₀_d f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₀ n₁ n₂ n₃)
 
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) :
     Mono (X.dKernelSequence f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).f :=
