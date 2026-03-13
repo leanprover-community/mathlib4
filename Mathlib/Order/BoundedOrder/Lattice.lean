@@ -93,38 +93,3 @@ theorem WellFoundedGT.induction_top [Preorder α] [WellFoundedGT α] [OrderTop �
       exact IH _ hM hM'
 
 end WellFounded
-
-namespace Subtype
-
-/-- If `pr` remains true for intersection and union, `Subtype Pr` carries the lattice structure. -/
-abbrev Lattice {X : Type*} [Lattice X] (pr : X → Prop)
-  (printer : ∀ s t, pr s → pr t → pr (s ⊓ t)) (prunion : ∀ s t, pr s → pr t → pr (s ⊔ t)) :
-    Lattice (Subtype pr) where
-  sup := fun ⟨s, hs⟩ ⟨t, ht⟩ => ⟨s ⊔ t, prunion s t hs ht⟩
-  inf := fun ⟨s, hs⟩ ⟨t, ht⟩ => ⟨s ⊓ t, printer s t hs ht⟩
-  le_sup_left := by simp
-  le_sup_right := by simp
-  sup_le a b c hac hbc := by
-    simp only
-    rw [← Subtype.coe_le_coe]
-    exact sup_le hac hbc
-  inf_le_left := by simp
-  inf_le_right := by simp
-  le_inf a b c hac hbc := by
-    simp only
-    rw [← Subtype.coe_le_coe]
-    exact le_inf hac hbc
-
-/-- If `pr` remains true for intersection and union, `Subtype Pr` carries the distributive lattice
-structure. -/
-abbrev DistribLattice {X : Type*} [DistribLattice X] (pr : X → Prop)
-  (printer : ∀ s t, pr s → pr t → pr (s ⊓ t)) (prunion : ∀ s t, pr s → pr t → pr (s ⊔ t)) :
-    DistribLattice (Subtype pr) :=
-  { toLattice := Subtype.Lattice pr printer prunion
-    le_sup_inf := by
-      intro a b c
-      rw [← Subtype.coe_le_coe, Subtype.coe_sup prunion, Subtype.coe_inf printer,
-        Subtype.coe_sup prunion, Subtype.coe_sup prunion, Subtype.coe_inf printer]
-      exact @DistribLattice.le_sup_inf X _ a b c }
-
-end Subtype

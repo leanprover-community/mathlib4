@@ -839,14 +839,13 @@ that `pr s` and `pr p` for each part `p`.
 -/
 noncomputable def toSubtype
   {X : Type*} [DistribLattice X] [OrderBot X] {s : X} (P : Finpartition s)
-  (pr : X → Prop) [DecidableEq (Subtype pr)] (printer : ∀ s t, pr s → pr t → pr (s ⊓ t))
-  (prunion : ∀ s t, pr s → pr t → pr (s ⊔ t))
-  (hbot : pr (⊥ : X))
+  {pr : X → Prop} [DecidableEq (Subtype pr)] (Psup : ∀ ⦃s t : X⦄, pr s → pr t → pr (s ⊔ t))
+  (Pinf : ∀ ⦃s t : X⦄, pr s → pr t → pr (s ⊓ t)) (hbot : pr (⊥ : X))
   (hs : pr s) (hP : ∀ p ∈ P.parts, pr p) :
-  @Finpartition (Subtype pr) (Subtype.Lattice pr printer prunion)
+  @Finpartition (Subtype pr) (Subtype.lattice Psup Pinf)
     (Subtype.orderBot hbot) ⟨s, hs⟩ :=
   letI : Fintype (Subtype (P.parts : Set X)) := Fintype.subtype P.parts (by intro; rfl)
-  letI : DistribLattice (Subtype pr) := Subtype.DistribLattice pr printer prunion
+  letI : DistribLattice (Subtype pr) := Subtype.distribLattice Psup Pinf
   letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
   { parts := Finset.image
       (fun p : (Subtype (P.parts : Set X)) =>
@@ -892,7 +891,7 @@ noncomputable def toSubtype
               ((Finset.univ : Finset (Subtype (P.parts : Set X))).image Subtype.val).sup id := by
                 simp only [sup_image, id_comp]
           _ = P.parts.sup id := by simp [hmap]
-      · exact fun s t hs ht ↦ prunion s t hs ht
+      · exact fun s t hs ht ↦ Psup hs ht
     bot_notMem := by
       simp only [Finset.mem_image, Finset.mem_univ, true_and]
       intro ⟨p, hp⟩
