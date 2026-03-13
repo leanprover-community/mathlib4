@@ -13,7 +13,6 @@ public import Mathlib.Analysis.Normed.Operator.Prod
 * `contMDiff_iff_contDiff`: for functions between vector spaces,
   manifold-smoothness is equivalent to usual smoothness.
 * `ContinuousLinearMap.contMDiff`: continuous linear maps between normed spaces are smooth
-* `ContMDiffConstSMul`, `ContMDiffSMul`: typeclasses for smooth scalar multiplication
 * `contMDiff_smul`: multiplication by scalars is a smooth operation
 
 -/

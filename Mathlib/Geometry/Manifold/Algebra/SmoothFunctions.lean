@@ -235,7 +235,7 @@ field `𝕜` inherit a vector space structure.
 
 instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
-  ⟨fun r f => ⟨r • ⇑f, f.contMDiff.const_smul r⟩⟩
+  ⟨fun r f => ⟨r • ⇑f, ContMDiff.const_smul (I := I) (J := 𝓘(𝕜, V)) (n := n) f.contMDiff r⟩⟩
 
 @[simp]
 theorem coe_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
@@ -282,7 +282,7 @@ def C : 𝕜 →+* C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
   map_add' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_add _ _
 
 instance algebra : Algebra 𝕜 C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
-  smul := fun r f => ⟨r • f, f.contMDiff.const_smul r⟩
+  smul := fun r f => ⟨r • ⇑f, ContMDiff.const_smul (I := I) (J := 𝓘(𝕜, A)) (n := n) f.contMDiff r⟩
   algebraMap := ContMDiffMap.C
   commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
   smul_def' := fun c f => by ext x; exact Algebra.smul_def' _ _

@@ -287,18 +287,14 @@ lemma HasMFDerivAt.smul
 
 theorem MDifferentiableWithinAt.smul
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
-    MDiffAt[s] (fun p ↦ f p • g p) x := by
-  have hsmul :=
-    ((_root_.contMDiff_smul (𝕜 := 𝕜) (V := V)).of_le le_top).mdifferentiableAt
-      (x := (f x, g x)) one_ne_zero
-  exact hsmul.comp_mdifferentiableWithinAt x (hf.prodMk hg)
+    MDiffAt[s] (fun p ↦ f p • g p) x :=
+  (((_root_.contMDiff_smul (𝕜 := 𝕜) (V := V)).of_le le_top).mdifferentiable one_ne_zero _)
+    |> fun h => h.comp_mdifferentiableWithinAt x (hf.prodMk hg)
 
 theorem MDifferentiableAt.smul (hf : MDiffAt f x)
-    (hg : MDiffAt g x) : MDiffAt (fun p ↦ f p • g p) x := by
-  have hsmul :=
-    ((_root_.contMDiff_smul (𝕜 := 𝕜) (V := V)).of_le le_top).mdifferentiableAt
-      (x := (f x, g x)) one_ne_zero
-  exact hsmul.comp x (hf.prodMk hg)
+    (hg : MDiffAt g x) : MDiffAt (fun p ↦ f p • g p) x :=
+  (((_root_.contMDiff_smul (𝕜 := 𝕜) (V := V)).of_le le_top).mdifferentiable one_ne_zero _)
+    |> fun h => h.comp x (hf.prodMk hg)
 
 theorem MDifferentiableOn.smul (hf : MDiff[s] f)
     (hg : MDiff[s] g) : MDiff[s] (fun p ↦ f p • g p) :=
