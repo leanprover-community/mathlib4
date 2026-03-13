@@ -371,7 +371,7 @@ theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o)
 
 @[simp]
 theorem card_toZFSet (o : Ordinal) : (toZFSet o).card = o.card := by
-  simpa [← coe_toZFSet, cardinalMk_coe_sort, mk_Iio_ordinal, ← lift_card] using
+  simpa [← coe_toZFSet, cardinalMk_coe_sort, Cardinal.mk_Iio_ordinal, ← lift_card] using
     Cardinal.mk_image_eq (s := Iio o) toZFSet_injective
 
 end Ordinal

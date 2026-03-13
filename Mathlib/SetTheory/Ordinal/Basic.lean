@@ -721,7 +721,7 @@ theorem lift_typein_top {r : α → α → Prop} {s : β → β → Prop}
   f.subrelIso.ordinal_lift_type_eq
 
 @[simp]
-theorem typein_lt_ordinal (o : Ordinal.{u}) : typein LT.lt o = lift.{u + 1} o := by
+theorem typein_ordinal (o : Ordinal.{u}) : typein LT.lt o = lift.{u + 1} o := by
   convert ToType.mk.toRelIsoLT.ordinal_lift_type_eq
   · rw [lift_id'.{u, u+1}, type_Iio_lt]
   · rw [type_toType]
@@ -770,6 +770,13 @@ theorem le_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
 theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     b < lift.{v} a ↔ ∃ a' < a, lift.{v} a' = b :=
   liftInitialSeg.lt_apply_iff
+
+theorem _root_.Cardinal.mk_Iio_ordinal (o : Ordinal.{u}) :
+    #(Iio o) = Cardinal.lift.{u + 1} o.card := by
+  rw [lift_card, ← typein_ordinal]
+  rfl
+
+@[deprecated (since := "2026-03-13")] alias mk_Iio_ordinal := Cardinal.mk_Iio_ordinal
 
 /-! ### The first infinite ordinal ω -/
 
