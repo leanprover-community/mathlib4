@@ -141,7 +141,6 @@ end Nilpotent
 
 section Commutator
 
-set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 /-- A finite Z-group has cyclic commutator subgroup. -/
 theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by

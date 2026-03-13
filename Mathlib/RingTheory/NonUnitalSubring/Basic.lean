@@ -395,41 +395,41 @@ end NonUnitalRing
 
 section Centralizer
 
+variable {R : Type*} [NonUnitalRing R]
+
 /-- The centralizer of a set as non-unital subring. -/
-def centralizer {R} [NonUnitalRing R] (s : Set R) : NonUnitalSubring R :=
-  { Subsemigroup.centralizer s with
+def centralizer (s : Set R) : NonUnitalSubring R :=
+  { NonUnitalSubsemiring.centralizer s with
     carrier := s.centralizer
-    zero_mem' := Set.zero_mem_centralizer
-    add_mem' := Set.add_mem_centralizer
     neg_mem' := Set.neg_mem_centralizer }
 
 @[simp, norm_cast]
-theorem coe_centralizer {R} [NonUnitalRing R] (s : Set R) :
+theorem coe_centralizer (s : Set R) :
     (centralizer s : Set R) = s.centralizer :=
   rfl
 
-theorem centralizer_toSubsemigroup {R} [NonUnitalRing R] (s : Set R) :
-    (centralizer s).toSubsemigroup = Subsemigroup.centralizer s :=
+theorem centralizer_toNonUnitalSubsemiring (s : Set R) :
+    (centralizer s).toNonUnitalSubsemiring = NonUnitalSubsemiring.centralizer s :=
   rfl
 
-theorem mem_centralizer_iff {R} [NonUnitalRing R] {s : Set R} {z : R} :
+theorem mem_centralizer_iff {s : Set R} {z : R} :
     z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
   Iff.rfl
 
-theorem center_le_centralizer {R} [NonUnitalRing R] (s) : center R ≤ centralizer s :=
+theorem center_le_centralizer (s) : center R ≤ centralizer s :=
   s.center_subset_centralizer
 
-theorem centralizer_le {R} [NonUnitalRing R] (s t : Set R) (h : s ⊆ t) :
+theorem centralizer_le (s t : Set R) (h : s ⊆ t) :
     centralizer t ≤ centralizer s :=
   Set.centralizer_subset h
 
 @[simp]
-theorem centralizer_eq_top_iff_subset {R} [NonUnitalRing R] {s : Set R} :
+theorem centralizer_eq_top_iff_subset {s : Set R} :
     centralizer s = ⊤ ↔ s ⊆ center R :=
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
 
 @[simp]
-theorem centralizer_univ {R} [NonUnitalRing R] : centralizer Set.univ = center R :=
+theorem centralizer_univ : centralizer Set.univ = center R :=
   SetLike.ext' (Set.centralizer_univ R)
 
 end Centralizer

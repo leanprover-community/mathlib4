@@ -76,7 +76,7 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
-@[expose] public meta section
+public meta section
 
 assert_not_exists IsOrderedMonoid
 
@@ -901,7 +901,6 @@ theorem mul_pow {ea₁ b c₁ : ℕ} {xa₁ : R}
     (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) : (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by
   subst_vars; simp [_root_.mul_pow, pow_mul]
 
-set_option backward.privateInPublic true in
 -- needed to lift from `OptionT CoreM` to `OptionT MetaM`
 private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
     MonadLiftT (OptionT m) (OptionT m') where

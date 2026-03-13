@@ -435,7 +435,6 @@ theorem eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : 
     all_goals assumption
   exact eq_mongePoint_of_forall_mem_mongePlane ha
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The distance from the orthocenter to the reflection of the
 circumcenter in a side equals the circumradius. -/
 theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂ : Fin 3} (h : i₁ ≠ i₂) :
