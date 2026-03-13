@@ -156,6 +156,12 @@ lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
 
 protected theorem sq_norm (z : ℂ) : ‖z‖ ^ 2 = normSq z := (normSq_eq_norm_sq z).symm
 
+lemma one_lt_normSq_iff {x : ℂ} : 1 < normSq x ↔ 1 < ‖x‖ := by
+  rw [← one_lt_sq_iff₀ (norm_nonneg _), normSq_eq_norm_sq]
+
+lemma one_le_normSq_iff {x : ℂ} : 1 ≤ normSq x ↔ 1 ≤ ‖x‖ := by
+  rw [← one_le_sq_iff₀ (norm_nonneg _), normSq_eq_norm_sq]
+
 @[simp]
 theorem sq_norm_sub_sq_re (z : ℂ) : ‖z‖ ^ 2 - z.re ^ 2 = z.im ^ 2 := by
   rw [Complex.sq_norm, normSq_apply, ← sq, ← sq, add_sub_cancel_left]

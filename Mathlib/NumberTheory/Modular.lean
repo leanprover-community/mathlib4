@@ -514,12 +514,6 @@ end UniqueRepresentative
 
 section Topology
 
-private lemma one_lt_normSq_iff {x : ℂ} : 1 < normSq x ↔ 1 < ‖x‖ := by
-  rw [← one_lt_sq_iff₀ (norm_nonneg _), normSq_eq_norm_sq]
-
-private lemma one_le_normSq_iff {x : ℂ} : 1 ≤ normSq x ↔ 1 ≤ ‖x‖ := by
-  rw [← one_le_sq_iff₀ (norm_nonneg _), normSq_eq_norm_sq]
-
 lemma fdo_subset_fd : 𝒟ᵒ ⊆ 𝒟 := fun _ ⟨hx, hx'⟩ ↦ ⟨hx.le, hx'.le⟩
 
 lemma isClosed_fd : IsClosed 𝒟 := by
@@ -559,9 +553,7 @@ lemma isClosed_coe_fd : IsClosed ((↑) '' 𝒟 : Set ℂ) := by
   convert this using 1
   ext x
   refine ⟨fun ⟨him, hre, hnorm⟩ ↦ ⟨him.le, hre, hnorm⟩, fun ⟨him, hre, hnorm⟩ ↦ ⟨?_, hre, hnorm⟩⟩
-  rcases lt_or_eq_of_le him with him | him
-  · exact him
-  · grind [abs_re_eq_norm]
+  exact him.lt_of_ne' <| by grind [abs_re_eq_norm]
 
 /--
 The points on the fundamental domain that aren't on the bottom "arc"
@@ -576,22 +568,17 @@ private lemma mem_closure_of_one_lt_norm {x : ℍ} (hxnorm : 1 < ‖(x : ℂ)‖
   apply mem_closure_of_frequently_of_tendsto (α := ℝ)
       (b := 𝓝[<] 1) (f := fun t ↦ ofComplex (t * x))
   · apply Filter.Eventually.frequently
-    simp only [fdo, Set.mem_setOf, Filter.eventually_and]
-    refine ⟨?_, ?_⟩
-    · simp only [one_lt_normSq_iff]
-      refine Filter.Tendsto.eventually_const_lt hxnorm (.mono_left ?_ nhdsWithin_le_nhds)
-      apply Filter.Tendsto.norm
-      have : ContinuousAt (fun a : ℝ ↦ (ofComplex (a * x : ℂ) : ℂ)) 1 := by
+    simp only [fdo, Set.mem_setOf, Filter.eventually_and, one_lt_normSq_iff]
+    refine ⟨Filter.Tendsto.eventually_const_lt hxnorm (.mono_left ?_ nhdsWithin_le_nhds), ?_⟩
+    · have : ContinuousAt (fun a : ℝ ↦ (ofComplex (a * x : ℂ) : ℂ)) 1 := by
         refine .comp (by fun_prop) ((OpenPartialHomeomorph.continuousAt _ ?_).comp (by fun_prop))
         simpa [ofComplex] using x.coe_im_pos
-      simpa [ofComplex_apply_of_im_pos (by simpa using x.coe_im_pos)] using
-        this.tendsto
+      simpa [ofComplex_apply_of_im_pos x.coe_im_pos] using this.tendsto.norm
     · simp only [eventually_nhdsWithin_iff]
       filter_upwards [eventually_gt_nhds zero_lt_one] with a ha ha'
-      rw [← coe_re, ofComplex_apply_of_im_pos]
-      · simp only [mul_re, ofReal_re, coe_re, ofReal_im, coe_im, zero_mul, sub_zero, abs_mul]
-        nlinarith [abs_of_nonneg ha.le, Set.mem_Iio.mp ha']
-      · simpa using mul_pos ha x.coe_im_pos
+      rw [← coe_re, ofComplex_apply_of_im_pos (by simpa using mul_pos ha x.coe_im_pos)]
+      suffices a * |x.re| < 1 / 2 by simpa [abs_of_pos ha]
+      nlinarith [Set.mem_Iio.mp ha']
   · refine .mono_left ?_ nhdsWithin_le_nhds
     rw [isOpenEmbedding_coe.tendsto_nhds_iff, Function.comp_def]
     have : Filter.Tendsto (fun t : ℝ ↦ t * (x : ℂ)) (𝓝 1) (𝓝 (x : ℂ)) := by
@@ -604,8 +591,7 @@ private lemma mem_closure_of_one_lt_norm {x : ℍ} (hxnorm : 1 < ‖(x : ℂ)‖
 open scoped NNReal in
 /-- The points on the bottom "arc" of the fundamental domain are in the closure
 of the open fundamental domain. -/
-private lemma mem_closure_of_arc {x : ℍ}
-    (hxnorm : ‖(x : ℂ)‖ = 1) (hxre : |x.re| ≤ 1 / 2) :
+private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre : |x.re| ≤ 1 / 2) :
     x ∈ closure 𝒟ᵒ := by
   -- We show that `x` is a limit of points known to be in the closure.
   rw [← closure_closure]

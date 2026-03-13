@@ -189,15 +189,14 @@ end ofComplex
 
 section IsOpenMap
 
-lemma isOpenMap_re : IsOpenMap re := by
-  apply IsOpenMap.of_sections
-  intro τ
-  use fun x ↦ ⟨x - τ.re + τ, by simpa using τ.im_pos⟩
-  exact ⟨by fun_prop, by simp, by intro; simp⟩
+lemma isOpenMap_re : IsOpenMap re :=
+  Complex.isOpenMap_re.comp isOpenEmbedding_coe.isOpenMap
+
+lemma isOpenMap_im : IsOpenMap im :=
+  Complex.isOpenMap_im.comp isOpenEmbedding_coe.isOpenMap
 
 lemma isOpenMap_norm : IsOpenMap (fun τ : ℍ ↦ ‖(τ : ℂ)‖) := by
-  apply IsOpenMap.of_nhds_le
-  intro τ U hU
+  refine .of_nhds_le fun τ U hU ↦ ?_
   obtain ⟨s, hs, hs'⟩ := Filter.mem_map_iff_exists_image.mp hU
   simp_rw [← isOpenEmbedding_coe.image_mem_nhds, Metric.mem_nhds_iff] at hs ⊢
   obtain ⟨ε, hεpos, hεs⟩ := hs
@@ -207,7 +206,7 @@ lemma isOpenMap_norm : IsOpenMap (fun τ : ℍ ↦ ‖(τ : ℂ)‖) := by
     rw [mem_ball_iff_norm, Real.norm_eq_abs, abs_lt] at hr
     have : ‖(τ : ℂ)‖ < ε := by linarith
     have : 0 ∈ Metric.ball (τ : ℂ) ε := by rwa [mem_ball_iff_norm', sub_zero]
-    simpa  [UpperHalfPlane.ne_zero] using hεs this
+    simpa [UpperHalfPlane.ne_zero] using hεs this
   have : r / ‖(τ : ℂ)‖ * (τ : ℂ) ∈ Metric.ball (τ : ℂ) ε := by
     rwa [mem_ball_iff_norm,
       show r / ‖(τ : ℂ)‖ * (τ : ℂ) - τ = ↑(r / ‖(τ : ℂ)‖ - 1) * (τ : ℂ) by simp; ring,
