@@ -366,35 +366,3 @@ noncomputable def gradedAlgebra (hM : DirectSum.IsInternal M) : GradedAlgebra M 
     right_inv := hM.coeAlgEquiv.left_inv }
 
 end DirectSum.IsInternal
-
-section
-
-open Finset DirectSum
-
-namespace GradedAlgebra
-
-section CommSemiring
-
-variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A]
-
-section AddCommMonoid
-
-variable {ι : Type*} [AddCommMonoid ι] (𝒜 : ι → Submodule R A)
-
-variable [DecidableEq ι] [GradedAlgebra 𝒜]
-
-/-- The projection from `A` to the degree `i` component `𝒜 i`, as an `R`-linear map. -/
-def proj' (i : ι) : A →ₗ[R] 𝒜 i where
-  toFun a       := decompose 𝒜 a i
-  map_add' a b  := by simp only [decompose_add, add_apply]
-  map_smul' r a := by simp only [decompose_smul, RingHom.id_apply]; rfl
-
-end AddCommMonoid
-
-end CommSemiring
-
-end GradedAlgebra
-
-end
-
-end
