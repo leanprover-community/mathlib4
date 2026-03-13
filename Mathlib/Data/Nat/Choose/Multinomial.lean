@@ -183,6 +183,7 @@ variable {α : Type*}
 -/
 noncomputable def countPerms [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
+@[deprecated (since := "2025-03-13")] alias multinomial := countPerms
 
 theorem countPerms_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     m.countPerms = m.card.choose (m.count a) * (m.filter (a ≠ ·)).countPerms := by
