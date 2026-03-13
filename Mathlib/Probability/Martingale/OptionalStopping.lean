@@ -240,7 +240,7 @@ end Maximal
 
 section Kolmogorov
 
-open ProbabilityTheory
+open ProbabilityTheory Finset
 
 variable {μ : Measure Ω} [IsProbabilityMeasure μ]
 variable {ℱ : Filtration ℕ m0}
@@ -272,7 +272,7 @@ lemma square_submartingale_of_martingale (hM : Martingale M ℱ μ) (hL2 : ∀ n
 /-- Martingale form of Kolmogorov's inequality. -/
 theorem kolmogorov_ineq_martingale_sq (hM : Martingale M ℱ μ)
     (hL2 : ∀ n, MemLp (M n) 2 μ) (ε : NNReal) (n : ℕ) :
-    ε ^ 2 * μ {ω | ε ^ 2 ≤ (Finset.range (n + 1)).sup' (by simp) (fun k => (M k ω) ^ 2)}
+    ε ^ 2 * μ {ω | ε ^ 2 ≤ (range (n + 1)).sup' nonempty_range_add_one (fun k => (M k ω) ^ 2)}
     ≤ ENNReal.ofReal (∫ ω, (M n ω) ^ 2 ∂μ) := by
   let G : ℕ → Ω → ℝ := fun k ω => (M k ω) ^ 2
   have hGsub : Submartingale G ℱ μ := square_submartingale_of_martingale (μ := μ) (ℱ := ℱ) hM hL2
@@ -280,12 +280,31 @@ theorem kolmogorov_ineq_martingale_sq (hM : Martingale M ℱ μ)
   have hdoob := MeasureTheory.maximal_ineq (μ := μ) (f := G) hGsub hGnonneg (ε := ε ^ 2) n
   refine le_trans hdoob ?_
   apply ENNReal.ofReal_le_ofReal
-  have hmono : ∫ ω in {ω | ε ^ 2 ≤ (Finset.range (n + 1)).sup' (by simp) (fun k => G k ω)}, G n ω ∂μ
+  have hmono : ∫ ω in {ω | ε ^ 2 ≤ (range (n + 1)).sup' (by simp) (fun k => G k ω)}, G n ω ∂μ
       ≤ ∫ ω, G n ω ∂μ := by
-    exact setIntegral_le_integral (s := {ω | ε ^ 2 ≤ (Finset.range (n + 1)).sup'
-      (Finset.nonempty_range_add_one) (fun k => G k ω)}) (hfi := hGsub.integrable n)
+    exact setIntegral_le_integral (s := {ω | ε ^ 2 ≤ (range (n + 1)).sup'
+      (nonempty_range_add_one) (fun k => G k ω)}) (hfi := hGsub.integrable n)
       (hf := Filter.Eventually.of_forall fun ω => hGnonneg n ω)
   simpa [G] using hmono
+
+theorem kolmogorov_ineq_wiki_version (hM : Martingale M ℱ μ)
+    (hL2 : ∀ n, MemLp (M n) 2 μ) (n : ℕ) (ε : NNReal) (hmean : μ[M n] = 0) :
+    ε ^ 2 * μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one (fun k => |M k ω|)}
+    ≤ ENNReal.ofReal (Var[M n; μ]) := by
+  set A : Set Ω := {ω | (ε : ℝ) ≤ (range (n + 1)).sup' (by simp) (fun k => |M k ω|)}
+  set B : Set Ω := {ω | (ε : ℝ) ^ 2 ≤ (range (n + 1)).sup' (by simp) (fun k => (M k ω) ^ 2)}
+  have hAB : A ⊆ B := by
+    intro ω hω
+    rcases (le_sup'_iff nonempty_range_add_one (f := fun k => |M k ω|)
+      (a := (ε : ℝ))).1 hω with ⟨k, hk, hkω⟩
+    have hk2 : (ε : ℝ) ^ 2 ≤ (M k ω) ^ 2 := by rwa [sq_le_sq, NNReal.abs_eq ε]
+    exact le_trans hk2 (le_sup' (f := fun j => (M j ω) ^ 2) hk)
+  calc
+    _ ≤ ε ^ 2 * μ B := mul_le_mul_right (measure_mono hAB) (ε ^ 2)
+    _ ≤ ENNReal.ofReal (∫ ω, (M n ω) ^ 2 ∂μ) := by
+      simpa [A, B] using kolmogorov_ineq_martingale_sq (μ := μ) (ℱ := ℱ) (M := M) hM hL2 ε n
+    _ = ENNReal.ofReal (Var[M n; μ]) := by
+      rw [← variance_of_integral_eq_zero (MemLp.aemeasurable (hL2 n)) hmean]
 
 end Kolmogorov
 
