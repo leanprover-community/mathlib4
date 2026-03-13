@@ -66,7 +66,6 @@ def TopologicalSpace.compactlyGenerated (X : Type w) [TopologicalSpace X] : Topo
   let f : (Σ (i : (S : CompHaus.{u}) × C(S, X)), i.fst) → X := fun ⟨⟨_, i⟩, s⟩ ↦ i s
   coinduced f inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma continuous_from_compactlyGenerated [TopologicalSpace X] [t : TopologicalSpace Y] (f : X → Y)
     (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) :
         Continuous[compactlyGenerated.{u} X, t] f := by

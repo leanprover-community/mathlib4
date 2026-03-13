@@ -1071,6 +1071,22 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
     lift.{u, v} ofNat(n) = OfNat.ofNat n :=
   lift_natCast n
 
+@[simp]
+theorem typein_lt_nat (x : ℕ) : typein LT.lt x = x := by
+  have : Fintype <| Iio x := Nat.fintypeIio x
+  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
+  nth_rw 2 [← Fintype.card_fin x]
+  exact Fintype.card_congr Fin.equivSubtype.symm
+
+@[simp]
+theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
+  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
+  exact Fintype.card_fin_lt_of_le x.is_le'
+
+@[simp]
+theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum LT.lt ⟨x, by simp⟩ = x := by
+  simp [← typein_inj LT.lt]
+
 /-! ### Properties of `ω` -/
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
@@ -1097,6 +1113,10 @@ theorem natCast_image_Iio (n : ℕ) : Nat.cast '' Set.Iio n = Set.Iio (n : Ordin
   ext o
   have (h : o < n) := eq_natCast_of_le_natCast h.le
   aesop
+
+@[simp]
+theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
+  simp [← typein_inj LT.lt]
 
 @[simp]
 theorem omega0_pos : 0 < ω :=

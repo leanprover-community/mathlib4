@@ -41,7 +41,7 @@ In this file, we define the notion of quasi-finite algebras and prove basic prop
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
--- See `Mathib/RingTheory/QuasiFinite/Polynomial.lean`
+-- See `Mathlib/RingTheory/QuasiFinite/Polynomial.lean`
 assert_not_exists RatFunc
 
 open TensorProduct
@@ -62,7 +62,7 @@ This is slightly different from the
 which requires `S` to be of finite type over `R`.
 
 Also see `Algebra.QuasiFinite.iff_finite_comap_preimage_singleton` that
-this is equivalent to having finite fibers for finite-type algebas.
+this is equivalent to having finite fibers for finite-type algebras.
 -/
 @[mk_iff, stacks 00PL]
 class QuasiFinite : Prop where
