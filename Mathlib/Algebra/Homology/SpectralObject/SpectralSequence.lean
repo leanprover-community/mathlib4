@@ -29,7 +29,7 @@ The construction of the spectral sequence is as follows. If `r₀ ≤ r`
 and `pq : κ`, we define the object of the spectral sequence in position `pq`
 on the `r`th page as `E^d(i₀ r pq ≤ i₁ pq ≤ i₂ pq ≤ i₃ r pq)`
 where `d := data.deg pq` and the indices `i₀`, `i₁`, `i₂`, `i₃` are given
-by data (they all depend on `pq`, and `i₀` and `i₃` also depend on the page `r`),
+by `data` (they all depend on `pq`, and `i₀` and `i₃` also depend on the page `r`),
 see `spectralSequencePageXIso`.
 
 When `(c r).Rel pq pq'`, the differential from the object in position `pq`
