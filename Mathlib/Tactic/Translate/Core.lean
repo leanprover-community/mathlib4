@@ -280,7 +280,7 @@ where
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
     trace[translate] "Added translation {src} ↦ {tgt}\
-      {if info.reorder.isEmpty then "" else s!" (reorder := {info.reorder})}"} \
+      {if info.reorder.reorder.isEmpty then "" else s!" (reorder := {info.reorder.reorder})}"} \
       (relevant_arg := {info.relevantArg})"
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
@@ -296,7 +296,7 @@ structure Config : Type where
   we check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The arguments that should be reordered when translating, using cycle notation. -/
-  reorder? : Option Reorder := none
+  reorder? : Option ArgReorder := none
   /-- The argument used to determine whether this constant should be translated. -/
   relevantArg? : Option RelevantArg := none
   /-- The attributes which we want to give to the original and translated declaration.
@@ -468,12 +468,13 @@ where
             trace[translate_detail]
               "The application of {n₀} contains the fixed type {fixed} so it is not changed."
             return mkAppN f (← args.mapM visit)
+      let { univReorder, reorder } := reorder
       -- If the number of arguments is too small for `reorder`, we need to eta expand first
       if args.size < reorder.range then
         let e' ← etaExpandN (reorder.range - args.size) e
         trace[translate_detail] "eta expanded {e} to {e'}"
         return ← visit e'
-      let f' := Expr.const n₁ (reorder.permuteUniv ls₀)
+      let f' := Expr.const n₁ (univReorder.permuteList! ls₀)
       trace[translate_detail]"changing {f} to {f'}"
       unless reorder.perm.isEmpty do
         trace[translate_detail]
@@ -576,13 +577,13 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     throwError "`{t.attrName}` does not support mutually recursive declarations."
   let decl := srcDecl.updateName tgt
   let decl := decl.updateAll [tgt]
-  let decl := decl.updateLevelParams (reorder.permuteUniv decl.levelParams)
+  let decl := decl.updateLevelParams (reorder.univReorder.permuteList! decl.levelParams)
   let mut value := decl.value! (allowOpaque := true)
   if let some b := unfoldBoundaries? then
     value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
   trace[translate] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
-  value ← reorderLambda reorder value'
+  value ← reorderLambda reorder.reorder value'
   if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   let decl := decl.updateValue value
@@ -590,7 +591,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   if let some b := unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
   let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t type
-  type ← reorderForall reorder type'
+  type ← reorderForall reorder.reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
   return (decl.updateType type, .merge .min relevantArg₁ relevantArg₂)
@@ -908,6 +909,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       pure reorder
     else
       pure reorder'
+  let univReorder := guessUnivReorder reorder srcType srcDecl.levelParams
   if cfg.self && reorder.isEmpty then
     Linter.logLintIf linter.translateRedundant cfg.ref m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered.\n\
@@ -917,7 +919,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   srcType ← reorderForall reorder srcType
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
-  let srcDecl := srcDecl.updateLevelParams (reorder.permuteUniv srcDecl.levelParams)
+  let srcDecl := srcDecl.updateLevelParams (univReorder.permuteList! srcDecl.levelParams)
   -- instantiate both types with the same universes. `instantiateLevelParams` does some
   -- normalization, so we apply it to both types.
   srcType := srcType.instantiateLevelParams
@@ -927,7 +929,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
-  return (reorder, ← getRelevantArg t cfg relevantArg? src)
+  return (⟨univReorder, reorder⟩, ← getRelevantArg t cfg relevantArg? src)
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `a_i` to `b_i`. -/
@@ -1152,7 +1154,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   else
     let reorder := cfg.reorder?.getD {}
     -- tgt doesn't exist, so let's make it
-    transformDeclRec t cfg src tgt src reorder
+    transformDeclRec t cfg src tgt src { univReorder := [], reorder }
   let nestedNames ← copyMetaData t cfg src
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)

@@ -50,30 +50,31 @@ public meta section
 namespace Mathlib.Tactic.Translate
 open Lean Meta Elab
 
-/-- `Reorder` represents a permutation of arguments in a translation. -/
-structure Reorder where
+abbrev Perm := List {l : List Nat // 2 ≤ l.length}
+
+/-- `ArgReorder` represents a permutation of arguments in a translation. -/
+structure ArgReorder where
   /-- The list of disjoint cycles that represents the permutation. -/
-  perm : List {l : List Nat // 2 ≤ l.length} := []
+  perm : Perm := []
   /-- The recursive reorders for reordering arguments of arguments.
   For the purpose of checking equality between reorders, this should be sorted. -/
-  argReorders : Array (Nat × Reorder) := #[]
+  argReorders : Array (Nat × ArgReorder) := #[]
   deriving Inhabited
 
-/-- Permute a list of either universe levels or universe parameters.
-The current heuristic is to swap the first two universes if the first argument is permuted. -/
-def Reorder.permuteUniv {α} (r : Reorder) (us : List α) : List α :=
-  if r.perm.any (·.1.contains 0) then
-    if let x :: y :: l := us then
-      y :: x :: l
-    else us
-  else us
+/-- `Reorder` represents a permutation of arguments and universe levels for translating
+a given constant. -/
+structure Reorder where
+  /-- The reordering of universe levels. -/
+  univReorder : Perm := []
+  /-- The reordering of arguments. -/
+  reorder : ArgReorder := {}
 
 /-- Return `true` if the reorder doesn't do anything. -/
-def Reorder.isEmpty (r : Reorder) : Bool := r matches {}
+def ArgReorder.isEmpty (r : ArgReorder) : Bool := r matches {}
 
 /-- Permute an array of arguments using the given reorder. -/
-def Reorder.permute! {α} [Inhabited α] (r : Reorder) : Array α → Array α :=
-  r.perm.foldl (cyclicPermute! · ·.1)
+def Perm.permute! {α} [Inhabited α] (c : Perm) : Array α → Array α :=
+  c.foldl (cyclicPermute! · ·.1)
 where
   /-- Permute the array using a sequence of indices defining a cyclic permutation.
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
@@ -87,47 +88,71 @@ where
       let (y, a) := a.swapAt! i x
       cyclicPermuteAux a is y i0
 
+/-- Permute a list of either universe levels or universe parameters. -/
+def Perm.permuteList! {α} [Inhabited α] (p : Perm) (us : List α) : List α :=
+  if p.isEmpty then us else (p.permute! us.toArray).toList
+
+/-- Permute an array of arguments using the given reorder. -/
+def ArgReorder.permute! {α} [Inhabited α] (r : ArgReorder) : Array α → Array α :=
+  r.perm.permute!
+
+/-- Return the inverse permutation. -/
+def Perm.reverse (c : Perm) : Perm :=
+  c.map (⟨·.1.reverse, by grind⟩)
+
 /-- Return the reorder that reverses the action of the given reorder. -/
-def Reorder.reverse (r : Reorder) : Reorder := {
-  perm := r.perm.map ( ⟨·.1.reverse, by grind⟩)
+def ArgReorder.reverse (r : ArgReorder) : ArgReorder := {
+  perm := r.perm.reverse
   argReorders := r.argReorders.map fun x ↦ (permuteSingle r x.1, x.2.reverse)
 }
 decreasing_by
   cases r; grind [→ Array.sizeOf_lt_of_mem]
 where
   /-- Compute where `Reorder.permute!` sends the `n`-th element in an array. -/
-  permuteSingle (r : Reorder) (n : Nat) : Nat :=
+  permuteSingle (r : ArgReorder) (n : Nat) : Nat :=
     r.perm.findSome? (fun cycle ↦ getCycleSuccessor n (cycle.1.head (by grind)) cycle.1) |>.getD n
   /-- Return the successor of `n` in a cycle, where `head` is the head of the cycle list. -/
   getCycleSuccessor (n head : Nat) : List Nat → Option Nat
     | [] => none
     | b :: bs => if b = n then bs.head?.getD head else getCycleSuccessor n head bs
 
+/-- Return the reorder that reverses the action of the given reorder. -/
+def Reorder.reverse (r : Reorder) : Reorder where
+  univReorder := r.univReorder.reverse
+  reorder := r.reorder.reverse
+
+def Perm.range (p : Perm) : Nat :=
+  p.iter.flatMap (·.1.iter) |>.fold max 0
+
 /-- Return the minimum size of an array on which the given reorder is valid. -/
-def Reorder.range (r : Reorder) : Nat :=
+def ArgReorder.range (r : ArgReorder) : Nat :=
   if r.isEmpty then 0 else
-  1 + r.argReorders.foldl (max · ·.1) (r.perm.iter.flatMap (·.1.iter) |>.fold max 0)
+  1 + r.argReorders.foldl (max · ·.1) r.perm.range
 
-/-- Two `Reorder`s are considered equal if they act on expressions in the same way. -/
-partial def Reorder.beq (r₁ r₂ : Reorder) : Bool :=
-  r₁.range == r₂.range &&
-    let rangeArr := (0...r₁.range).toArray;
-    r₁.permute! rangeArr == r₂.permute! rangeArr &&
-      have : BEq Reorder := ⟨Reorder.beq⟩
-      r₁.argReorders == r₂.argReorders
+/-- Two permutations are considered equal if they permute in the same way. -/
+def Perm.beq (p₁ p₂ : Perm) : Bool :=
+  p₁.range == p₂.range &&
+    let rangeArr := (0...p₁.range).toArray;
+    p₁.permute! rangeArr == p₂.permute! rangeArr
 
-instance : BEq Reorder := ⟨Reorder.beq⟩
+/-- Two reorders are considered equal if all permutations are the same. -/
+partial def ArgReorder.beq (r₁ r₂ : ArgReorder) : Bool :=
+  r₁.perm.beq r₂.perm &&
+    have : BEq ArgReorder := ⟨ArgReorder.beq⟩
+    r₁.argReorders == r₂.argReorders
 
-/-- Print a `Reorder`, representing the arguments by their index. -/
-protected def Reorder.toString (r : Reorder) : String :=
+instance : BEq ArgReorder := ⟨ArgReorder.beq⟩
+
+/-- Print a `ArgReorder`, representing the arguments by their index. -/
+def ArgReorder.toString (r : ArgReorder) : String :=
   let perm := r.perm.map (" ".intercalate <| ·.1.map (s!"{· + 1}"))
   let argReorders := r.argReorders.map (fun x ↦ s!"{x.1 + 1} ({x.2.toString})")
   s!"{", ".intercalate (perm ++ argReorders.toList)}"
 decreasing_by
   cases r; grind [→ Array.sizeOf_lt_of_mem]
 
-instance : ToString Reorder := ⟨fun x ↦ x.toString⟩
-instance : ToMessageData Reorder := ⟨fun x ↦ x.toString⟩
+instance : ToString ArgReorder := ⟨fun x ↦ x.toString⟩
+instance : ToMessageData ArgReorder := ⟨fun x ↦ x.toString⟩
 
 /-! ### Reordering an expression -/
 
@@ -146,8 +171,9 @@ Instead, we implicitly rely on `instantiateMVars`.
 -/
 mutual
 
-/-- Reorder the given metavariables using the given `Reorder`. -/
-private partial def reorderMVars (mvars : Array Expr) (reorder : Reorder) : MetaM (Array Expr) := do
+/-- Reorder the given metavariables using the given `ArgReorder`. -/
+private partial def reorderMVars (mvars : Array Expr) (reorder : ArgReorder) :
+    MetaM (Array Expr) := do
   let mut mvars := mvars
   for (arg, argReorder) in reorder.argReorders do
     let mvarId := mvars[arg]!.mvarId!
@@ -159,8 +185,8 @@ private partial def reorderMVars (mvars : Array Expr) (reorder : Reorder) : Meta
     mvars := mvars.set! arg mvarId'
   return reorder.permute! mvars
 
-/-- Reorder the arguments of a function type using the given `Reorder`. -/
-partial def reorderForall (reorder : Reorder) (e : Expr) : MetaM Expr := do
+/-- Reorder the arguments of a function type using the given `ArgReorder`. -/
+partial def reorderForall (reorder : ArgReorder) (e : Expr) : MetaM Expr := do
   let (mvars, bis, e) ← forallMetaBoundedTelescope e reorder.range
   unless mvars.size = reorder.range do
     throwError "the permutation (reorder := {reorder}) is out of bounds, \
@@ -169,8 +195,8 @@ partial def reorderForall (reorder : Reorder) (e : Expr) : MetaM Expr := do
   -- Note that `mkForallFVars` also works with mvars.
   fixBinderInfos bis <$> mkForallFVars (← reorderMVars mvars reorder) e
 
-/-- Reorder the arguments of a function using the given `Reorder`. -/
-partial def reorderLambda (reorder : Reorder) (e : Expr) : MetaM Expr := do
+/-- Reorder the arguments of a function using the given `ArgReorder`. -/
+partial def reorderLambda (reorder : ArgReorder) (e : Expr) : MetaM Expr := do
   let (mvars, bis, e) ← lambdaMetaTelescope e reorder.range
   let (mvars', bis', _) ← forallMetaBoundedTelescope (← inferType e) (reorder.range - mvars.size)
   let mut mvars := mvars ++ mvars'
@@ -185,6 +211,52 @@ end
 
 /-! ### Guessing the reorder given the reordered expression -/
 
+/-- Decompose the permutation `map` into its disjoint cycle representation. -/
+ private def decomposePerm {n} (map : Vector (Option (Fin n)) n) : Perm := Id.run do
+    let mut map := map
+    let mut perm := []
+    for h : i in 0...n do
+      let mut some j := map[i] | continue
+      if i = j then continue
+      let mut cycle := ⟨[i, j], by grind⟩
+      repeat do
+        let some j' := map[j] | return [] -- If the permutation is malformed, return `[]`.
+        -- To avoid computing the same cycle multiple times, and to avoid infinite loops,
+        -- we erase visited elements from `map`.
+        map := map.set! j none
+        if j' = i then break
+        j := j'
+        cycle := ⟨cycle.1 ++ [↑j], by grind⟩
+      perm := cycle :: perm
+    return perm
+
+/-- Determine the universe level reorder from the argument reorder. -/
+def guessUnivReorder (reorder : ArgReorder) (src : Expr) (params : List Name) : Perm := Id.run do
+  let mut map := .replicate params.length none
+  for ⟨cycle, _⟩ in show List _ from reorder.perm do
+    for i in cycle, i' in cycle.tail ++ [cycle.head (by grind)] do
+      for u in getUnivs (getNthHyp i src), u' in getUnivs (getNthHyp i' src) do
+        let some p := getParam? u | pure ()
+        let some p' := getParam? u' | pure ()
+        if p != p' then
+          let some n := params.finIdxOf? p | pure ()
+          let some n' := params.finIdxOf? p' | pure ()
+          map := map.set n n'
+  return decomposePerm map
+where
+  getNthHyp : Nat → Expr → Expr
+    | 0, e => e.bindingDomain!
+    | n + 1, e => getNthHyp n e.bindingBody!
+  getUnivs (e : Expr) : List Level :=
+    match e.getAppFn with
+    | .const _ us => us
+    | .sort u => [u]
+    | _ => []
+  getParam? : Level → Option Name
+    | .param p => some p
+    | .succ u => getParam? u
+    | _ => none
+
 /-- Determine how many forall binders should be introduced to get a non-dependent conclusion. -/
 private def depForallDepth : Expr → Nat
   | .forallE _ _ b _ =>
@@ -197,7 +269,7 @@ type `e₁` to type `e₂`. If there is no good guess, default to `[]`.
 The heuristic that we use is to compare the conclusions of `e₁` and `e₂`,
 and to observe which variables are swapped.
 We also apply this heuristic recursively in hypotheses. -/
-partial def guessReorder (src tgt : Expr) : MetaM Reorder := withReducible do
+partial def guessReorder (src tgt : Expr) : MetaM ArgReorder := withReducible do
   let src ← whnf src; let tgt ← whnf tgt
   let depth := depForallDepth src
   unless depth == depForallDepth tgt do return {}
@@ -224,25 +296,6 @@ partial def guessReorder (src tgt : Expr) : MetaM Reorder := withReducible do
     n := n + 1
   return { perm, argReorders }
 where
-  /-- Decompose the permutation `map` into its disjoint cycle representation. -/
-  decomposePerm {n} (map : Vector (Option (Fin n)) n) :
-      List { l : List Nat // 2 ≤ l.length } := Id.run do
-    let mut map := map
-    let mut perm := []
-    for h : i in 0...n do
-      let mut some j := map[i] | continue
-      if i = j then continue
-      let mut cycle := ⟨[i, j], by grind⟩
-      repeat do
-        let some j' := map[j] | return [] -- If the permutation is malformed, return `[]`.
-        -- To avoid computing the same cycle multiple times, and to avoid infinite loops,
-        -- we erase visited elements from `map`.
-        map := map.set! j none
-        if j' = i then break
-        j := j'
-        cycle := ⟨cycle.1 ++ [↑j], by grind⟩
-      perm := cycle :: perm
-    return perm
   /-- Determine for each `i : Fin n` to what `j : Fin n` it should get translated. -/
   visit (src tgt : Expr) {n : Nat} (map : Vector (Option (Fin n)) n) :
       ReaderT (Std.HashMap FVarId Nat × Std.HashMap FVarId Nat)
@@ -320,7 +373,7 @@ def elabArgStx (stx : TSyntax [`ident, `num]) (argNames : Array Name) (fvars : A
 
 /-- Elaborate the argument of a `(reorder := ...)` option. -/
 partial def elabReorder (stx : TSyntax `translateReorder) (argNames : Array Name)
-    (args : Array Expr) (head : MessageData) : MetaM Reorder :=
+    (args : Array Expr) (head : MessageData) : MetaM ArgReorder :=
   match stx with
   | `(reorder| $[$parts],*) => withRef stx do
     let mut perm := []
