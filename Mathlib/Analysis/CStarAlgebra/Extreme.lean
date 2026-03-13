@@ -14,7 +14,7 @@ This file contains results on the extreme points of the closed unit ball in (uni
 
 ## References
 
-[C⋆-algebras and W⋆-algebras][sakai] -/
+[C⋆-algebras and W⋆-algebras][sakai1971] -/
 
 public section
 
