@@ -150,7 +150,7 @@ noncomputable def dHomologyData
     (X.map_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃ f₂ f₃ f₄ f₅ f₆ f₂₃ h₂₃ f₅₆ h₅₆ n₁ n₂ n₃ hn₂ hn₃)
 
 /-- The homology of the short complex
-`E^{n₁}(f₅, f₆, f₇) ⟶ E^{n₀}(f₃, f₄, f₅) ⟶ E^{n₂}(f₁, f₂, f₃)` identifies to
+`E^{n-1}(f₅, f₆, f₇) ⟶ E^{n}(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` identifies to
 `E^n(f₂ ≫ f₃, f₄, f₅ ≫ f₆)`. -/
 noncomputable def dHomologyIso
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia)
