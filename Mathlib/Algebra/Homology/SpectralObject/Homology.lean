@@ -45,7 +45,7 @@ variable {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (
   (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
   (n₀ n₁ n₂ n₃ : ℤ)
 
-/-- The (exact) sequence expressing `E^n(f₁, f₂, f₃ ≫ f₄)` as the cokernel
+/-- The exact sequence expressing `E^n(f₁, f₂, f₃ ≫ f₄)` as the cokernel
 of the differential `E^{n-1}(f₃, f₄, f₅) ⟶ E^n(f₁, f₂, f₃)` -/
 @[simps!]
 noncomputable def dCokernelSequence
