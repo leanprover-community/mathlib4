@@ -70,7 +70,7 @@ The following isDefEq checks are the root causes of the failure:
 ---
 info: The following instances may have leaky binder types:
   ❌ 'myPredCompleteLattice': leaky binder types detected.
-  A data field has binder type (i : ℕ) → (fun a => Prop) i where MyPred ℕ is expected.
+  The data field `le` has binder type (i : ℕ) → (fun a => Prop) i where MyPred ℕ is expected.
   Use `fast_instance%` to repair: `instance : ... := fast_instance% <body>`
 ---
 info: Workaround: the following `@[implicit_reducible]` annotations would paper over this problem, but the real issue is likely a leaky instance somewhere.

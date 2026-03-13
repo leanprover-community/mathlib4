@@ -157,30 +157,47 @@ using the expected type, so that the instance will unfold nicely during unificat
 macro "inferInstanceAs% " source:term : term =>
   `(fast_instance% inferInstanceAs $source)
 
-/-- Find the first data-field binder type mismatch between `inst` (the actual instance body)
-and `canonical` (the constructor-normalized form from `makeFastInstance`). Returns
-`(actualBinderType, expectedBinderType)` for the first binder where the two forms disagree at
-instances transparency. Recurses into nested constructor sub-expressions (other instance
-fields) to handle multi-level hierarchies. -/
-private partial def findFirstBinderMismatch (inst canonical : Expr) :
-    MetaM (Option (Expr × Expr)) := do
+/-- Find the first data-field binder type mismatch between `inst` and `canonical`
+(the constructor-normalized form from `makeFastInstance`). Returns
+`(fieldName, actualBinderType, expectedBinderType)` for the first field where the two forms
+disagree at instances transparency and are both lambdas with different binder types.
+`className` is used to look up field names via `getStructureFields`; recursion uses the
+constructor prefix as the nested class name. -/
+private partial def findFirstBinderMismatch (className : Name) (inst canonical : Expr) :
+    MetaM (Option (Name × Expr × Expr)) := do
+  let env ← getEnv
   let instWhnf ← withTransparency .instances <| whnf inst
   let canWhnf ← withTransparency .instances <| whnf canonical
   let instArgs := instWhnf.getAppArgs
   let canArgs := canWhnf.getAppArgs
+  -- Field names for this class (empty if not a structure or unavailable).
+  let fields := if isStructure env className then getStructureFields env className else #[]
+  let numParams : Nat :=
+    match env.find? (className ++ `mk) with
+    | some (.ctorInfo ci) => ci.numParams
+    | _ => 0
   for i in List.range (min instArgs.size canArgs.size) do
     let instArg := instArgs[i]!
     let canArg := canArgs[i]!
     let same ← withNewMCtxDepth <| withTransparency .instances <| isDefEq instArg canArg
     unless same do
+      let fieldIdx := i - numParams
+      let fieldName : Name :=
+        if h : fieldIdx < fields.size then fields[fieldIdx] else `_
       -- If both are lambdas, check for a binder type mismatch at this level.
       if let .lam _ instT _ _ := instArg then
         if let .lam _ canT _ _ := canArg then
           let sameT ← withNewMCtxDepth <| withTransparency .instances <| isDefEq instT canT
           unless sameT do
-            return some (instT, canT)
-      -- Otherwise recurse into nested constructor sub-expressions (other instance fields).
-      if let some result ← findFirstBinderMismatch instArg canArg then
+            return some (fieldName, instT, canT)
+      -- Recurse into nested constructor sub-expressions (other instance fields).
+      -- Identify the nested class from the argument's own constructor, not the outer one.
+      let argWhnf ← withTransparency .instances <| whnf instArg
+      let nestedClass : Name :=
+        match argWhnf.getAppFn with
+        | .const ctorName _ => ctorName.getPrefix
+        | _ => .anonymous
+      if let some result ← findFirstBinderMismatch nestedClass instArg canArg then
         return some result
   return none
 
@@ -220,10 +237,15 @@ def checkInstance (name : Name) : MetaM MessageData := do
       return m!"✅ '{name}': canonical (re-inferred form agrees at instances transparency)"
     else
       -- Try to find the first specific binder type mismatch to help diagnose the leak.
-      let mismatch ← try findFirstBinderMismatch instVal normalized catch _ => pure none
+      let className ← isClass? expectedType
+      let mismatch ← try
+        match className with
+        | some c => findFirstBinderMismatch c instVal normalized
+        | none => pure none
+        catch _ => pure none
       let detail : MessageData := match mismatch with
-        | some (actual, expected) =>
-          m!"\n  A data field has binder type {actual} where {expected} is expected."
+        | some (field, actual, expected) =>
+          m!"\n  The data field `{field}` has binder type {actual} where {expected} is expected."
         | none => "\n  The body differs from the re-inferred form at instances transparency."
       return m!"❌ '{name}': leaky binder types detected.{detail}\n  \
         Use `fast_instance%` to repair: \
