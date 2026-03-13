@@ -63,8 +63,8 @@ namespace ObjectProperty
 set_option backward.isDefEq.respectTransparency false in
 lemma IsConservativeFamilyOfPoints.over
     {P : ObjectProperty (Point.{w} J)} [ObjectProperty.Small.{w} P]
-    [J.WEqualsLocallyBijective Type w] [HasSheafify J Type w]
-    (hP : P.IsConservativeFamilyOfPoints) (X : C) [HasSheafify (J.over X) Type w] :
+    [J.WEqualsLocallyBijective (Type w)] [HasSheafify J (Type w)]
+    (hP : P.IsConservativeFamilyOfPoints) (X : C) [HasSheafify (J.over X) (Type w)] :
     IsConservativeFamilyOfPoints
       (ObjectProperty.ofObj (fun (ψ : Σ (Φ : P.FullSubcategory),
         Φ.obj.fiber.obj X) ↦ ψ.1.obj.over ψ.2)) :=
@@ -85,9 +85,9 @@ end ObjectProperty
 
 namespace GrothendieckTopology
 
-instance [HasEnoughPoints.{w} J] [J.WEqualsLocallyBijective Type w]
-    [HasSheafify J Type w] (X : C)
-    [HasSheafify (J.over X) Type w] :
+instance [HasEnoughPoints.{w} J] [J.WEqualsLocallyBijective (Type w)]
+    [HasSheafify J (Type w)] (X : C)
+    [HasSheafify (J.over X) (Type w)] :
     HasEnoughPoints.{w} (J.over X) := by
   obtain ⟨P, _, hP⟩ := HasEnoughPoints.exists_objectProperty J
   exact ⟨_, inferInstance, hP.over X⟩

@@ -108,7 +108,7 @@ omit [(forget A).ReflectsIsomorphisms] hJ in
 include hP in
 variable {A} in
 lemma jointly_reflect_isLocallySurjective
-    [J.WEqualsLocallyBijective Type w] [HasSheafify J Type w]
+    [J.WEqualsLocallyBijective (Type w)] [HasSheafify J (Type w)]
     {X Y : Cᵒᵖ ⥤ A} (f : X ⟶ Y)
     (hf : ∀ (Φ : P.FullSubcategory),
       Function.Surjective (Φ.obj.presheafFiber.map f)) :
@@ -128,7 +128,7 @@ end
 
 set_option backward.isDefEq.respectTransparency false in
 lemma jointly_reflect_ofArrows_mem
-    [HasSheafify J Type w] [J.WEqualsLocallyBijective Type w]
+    [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
     (hP : P.IsConservativeFamilyOfPoints)
     {X : C} {ι : Type*} [Small.{w} ι] {U : ι → C} (f : ∀ i, U i ⟶ X) :
     Sieve.ofArrows _ f ∈ J X ↔
@@ -150,7 +150,7 @@ lemma jointly_reflect_ofArrows_mem
     rfl
 
 lemma jointly_reflect_ofArrows_mem_of_small
-    [HasSheafify J Type w] [J.WEqualsLocallyBijective Type w]
+    [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
     (hP : P.IsConservativeFamilyOfPoints) [ObjectProperty.Small.{w} P]
     {X : C} {ι : Type*} {U : ι → C} (f : ∀ i, U i ⟶ X) :
     Sieve.ofArrows _ f ∈ J X ↔
@@ -225,7 +225,7 @@ family of points if the following condition is satisfied (SGA 4 IV 6.5 (a)):
 for any sieve `S : Sieve X`, if the family of maps `Φ.map.fiber.map f`
 for all morphisms `f` in the sieve `S` is jointly surjective for any `Φ` in `P`,
 then `S` is a covering sieve for `J`. -/
-lemma mk' [HasSheafify J Type w]
+lemma mk' [HasSheafify J (Type w)]
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
         S ∈ J X) :

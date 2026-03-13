@@ -165,7 +165,7 @@ theorem sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (h
 
 namespace Types
 
-variable {ℱ : Dᵒᵖ ⥤ Type v} {ℱ' : Sheaf K Type v} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj)
+variable {ℱ : Dᵒᵖ ⥤ Type v} {ℱ' : Sheaf K (Type v)} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj)
 
 theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) (x) :
     ℱ'.1.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
@@ -250,7 +250,7 @@ unif_hint Functor.comp_op_obj {J J' C : Type*} [Category* J] [Category* J'] [Cat
 (Implementation). The maps given in `appIso` is inverse to each other and gives a `ℱ(X) ≅ ℱ'(X)`.
 -/
 @[simps]
-noncomputable def appIso {ℱ ℱ' : Sheaf K Type v} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj)
+noncomputable def appIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj)
     (X : D) : ℱ.obj.obj (op X) ≅ ℱ'.obj.obj (op X) where
   hom := appHom i.hom X
   inv := appHom i.inv X
@@ -289,7 +289,7 @@ where `G` is locally-full and cover-dense, and `ℱ, ℱ'` are sheaves,
 we may obtain a natural isomorphism between presheaves.
 -/
 @[simps!]
-noncomputable def presheafIso {ℱ ℱ' : Sheaf K Type v} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) :
+noncomputable def presheafIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) :
     ℱ.obj ≅ ℱ'.obj :=
   NatIso.ofComponents (fun X => appIso i (unop X)) @(presheafHom i.hom).naturality
 
@@ -299,7 +299,7 @@ where `G` is locally-full and cover-dense, and `ℱ, ℱ'` are sheaves,
 we may obtain a natural isomorphism between sheaves.
 -/
 @[simps! hom_hom inv_hom]
-noncomputable def sheafIso {ℱ ℱ' : Sheaf K Type v} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) :
+noncomputable def sheafIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) :
     ℱ ≅ ℱ' :=
   (fullyFaithfulSheafToPresheaf _ _).preimageIso (presheafIso i)
 

@@ -87,7 +87,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 section TypeCat
 
 /-- The sheaf of smooth functions from `M` to `N`, as a sheaf of types. -/
-def smoothSheaf : TopCat.Sheaf Type u (TopCat.of M) :=
+def smoothSheaf : TopCat.Sheaf (Type u) (TopCat.of M) :=
   (contDiffWithinAt_localInvariantProp (I := IM) (I' := I) ∞).sheaf M N
 
 variable {M}

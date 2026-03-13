@@ -32,20 +32,20 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [Subcanonica
 The equivalence between natural transformations from the yoneda embedding (to the sheaf category)
 and elements of `F.val.obj X`.
 -/
-def yonedaEquiv {X : C} {F : Sheaf J Type v} : (J.yoneda.obj X ⟶ F) ≃ F.obj.obj (op X) :=
+def yonedaEquiv {X : C} {F : Sheaf J (Type v)} : (J.yoneda.obj X ⟶ F) ≃ F.obj.obj (op X) :=
   (fullyFaithfulSheafToPresheaf _ _).homEquiv.trans CategoryTheory.yonedaEquiv
 
-theorem yonedaEquiv_apply {X : C} {F : Sheaf J Type v} (f : J.yoneda.obj X ⟶ F) :
+theorem yonedaEquiv_apply {X : C} {F : Sheaf J (Type v)} (f : J.yoneda.obj X ⟶ F) :
     yonedaEquiv J f = f.hom.app (op X) (𝟙 X) :=
   rfl
 
 @[simp]
-theorem yonedaEquiv_symm_app_apply {X : C} {F : Sheaf J Type v} (x : F.obj.obj (op X))
+theorem yonedaEquiv_symm_app_apply {X : C} {F : Sheaf J (Type v)} (x : F.obj.obj (op X))
     (Y : Cᵒᵖ) (f : Y.unop ⟶ X) : (J.yonedaEquiv.symm x).hom.app Y f = F.obj.map f.op x :=
   rfl
 
 /-- See also `yonedaEquiv_naturality'` for a more general version. -/
-lemma yonedaEquiv_naturality {X Y : C} {F : Sheaf J Type v} (f : J.yoneda.obj X ⟶ F)
+lemma yonedaEquiv_naturality {X Y : C} {F : Sheaf J (Type v)} (f : J.yoneda.obj X ⟶ F)
     (g : Y ⟶ X) : F.obj.map g.op (J.yonedaEquiv f) = J.yonedaEquiv (J.yoneda.map g ≫ f) := by
   simp [yonedaEquiv, CategoryTheory.yonedaEquiv_naturality]
   rfl
@@ -55,11 +55,11 @@ Variant of `yonedaEquiv_naturality` with general `g`. This is technically strict
 than `yonedaEquiv_naturality`, but `yonedaEquiv_naturality` is sometimes preferable because it
 can avoid the "motive is not type correct" error.
 -/
-lemma yonedaEquiv_naturality' {X Y : Cᵒᵖ} {F : Sheaf J Type v} (f : J.yoneda.obj (unop X) ⟶ F)
+lemma yonedaEquiv_naturality' {X Y : Cᵒᵖ} {F : Sheaf J (Type v)} (f : J.yoneda.obj (unop X) ⟶ F)
     (g : X ⟶ Y) : F.obj.map g (J.yonedaEquiv f) = J.yonedaEquiv (J.yoneda.map g.unop ≫ f) :=
   J.yonedaEquiv_naturality _ _
 
-lemma yonedaEquiv_comp {X : C} {F G : Sheaf J Type v} (α : J.yoneda.obj X ⟶ F) (β : F ⟶ G) :
+lemma yonedaEquiv_comp {X : C} {F G : Sheaf J (Type v)} (α : J.yoneda.obj X ⟶ F) (β : F ⟶ G) :
     J.yonedaEquiv (α ≫ β) = β.hom.app _ (J.yonedaEquiv α) :=
   rfl
 
@@ -68,20 +68,20 @@ lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : J.yonedaEquiv (J.yoneda.m
   rw [yonedaEquiv_apply]
   simp
 
-lemma yonedaEquiv_symm_naturality_left {X X' : C} (f : X' ⟶ X) (F : Sheaf J Type v)
+lemma yonedaEquiv_symm_naturality_left {X X' : C} (f : X' ⟶ X) (F : Sheaf J (Type v))
     (x : F.obj.obj ⟨X⟩) : J.yoneda.map f ≫ J.yonedaEquiv.symm x = J.yonedaEquiv.symm
       ((F.obj.map f.op) x) := by
   apply J.yonedaEquiv.injective
   simp only [yonedaEquiv_comp, yonedaEquiv_symm_app_apply, Equiv.apply_symm_apply]
   rw [yonedaEquiv_yoneda_map]
 
-lemma yonedaEquiv_symm_naturality_right (X : C) {F F' : Sheaf J Type v} (f : F ⟶ F')
+lemma yonedaEquiv_symm_naturality_right (X : C) {F F' : Sheaf J (Type v)} (f : F ⟶ F')
     (x : F.obj.obj ⟨X⟩) : J.yonedaEquiv.symm x ≫ f = J.yonedaEquiv.symm (f.hom.app ⟨X⟩ x) := by
   apply J.yonedaEquiv.injective
   simp [yonedaEquiv_comp]
 
 /-- See also `map_yonedaEquiv'` for a more general version. -/
-lemma map_yonedaEquiv {X Y : C} {F : Sheaf J Type v} (f : J.yoneda.obj X ⟶ F)
+lemma map_yonedaEquiv {X Y : C} {F : Sheaf J (Type v)} (f : J.yoneda.obj X ⟶ F)
     (g : Y ⟶ X) : F.obj.map g.op (J.yonedaEquiv f) = f.hom.app (op Y) g := by
   rw [yonedaEquiv_naturality, yonedaEquiv_comp, yonedaEquiv_yoneda_map]
 
@@ -90,11 +90,11 @@ Variant of `map_yonedaEquiv` with general `g`. This is technically strictly more
 than `map_yonedaEquiv`, but `map_yonedaEquiv` is sometimes preferable because it
 can avoid the "motive is not type correct" error.
 -/
-lemma map_yonedaEquiv' {X Y : Cᵒᵖ} {F : Sheaf J Type v} (f : J.yoneda.obj (unop X) ⟶ F)
+lemma map_yonedaEquiv' {X Y : Cᵒᵖ} {F : Sheaf J (Type v)} (f : J.yoneda.obj (unop X) ⟶ F)
     (g : X ⟶ Y) : F.obj.map g (J.yonedaEquiv f) = f.hom.app Y g.unop := by
   rw [yonedaEquiv_naturality', yonedaEquiv_comp, yonedaEquiv_yoneda_map]
 
-lemma yonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Sheaf J Type v} (t : F.obj.obj X) :
+lemma yonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Sheaf J (Type v)} (t : F.obj.obj X) :
     J.yonedaEquiv.symm (F.obj.map f t) = J.yoneda.map f.unop ≫ J.yonedaEquiv.symm t := by
   obtain ⟨u, rfl⟩ := J.yonedaEquiv.surjective t
   rw [yonedaEquiv_naturality', Equiv.symm_apply_apply, Equiv.symm_apply_apply]
@@ -103,7 +103,7 @@ lemma yonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Sheaf J Type v} (t
 Two morphisms of sheaves of types `P ⟶ Q` coincide if the precompositions with morphisms
 `yoneda.obj X ⟶ P` agree.
 -/
-lemma hom_ext_yoneda {P Q : Sheaf J Type v} {f g : P ⟶ Q}
+lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
     (h : ∀ (X : C) (p : J.yoneda.obj X ⟶ P), p ≫ f = p ≫ g) :
     f = g := by
   ext X x

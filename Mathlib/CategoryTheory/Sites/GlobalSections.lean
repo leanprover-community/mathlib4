@@ -182,23 +182,23 @@ noncomputable def Sheaf.natTransΓRes [HasGlobalSectionsFunctor J A] (U : Cᵒ�
   naturality _ _ f := ΓRes_naturality f U
 
 /-- Global sections of a sheaf of types correspond to sections of the underlying presheaf. -/
-noncomputable def Sheaf.ΓObjEquivSections [HasWeakSheafify J Type w]
-    [HasGlobalSectionsFunctor J Type w] (F : Sheaf J Type w) :
-      (Γ J Type w).obj F ≃ F.obj.sections :=
+noncomputable def Sheaf.ΓObjEquivSections [HasWeakSheafify J (Type w)]
+    [HasGlobalSectionsFunctor J (Type w)] (F : Sheaf J (Type w)) :
+      (Γ J (Type w)).obj F ≃ F.obj.sections :=
   (Equiv.trans (by exact (Equiv.funUnique (PUnit) _).symm.trans TypeCat.homEquiv.symm)
     ΓHomEquiv.symm).trans (F.obj.sectionsEquivHom (PUnit)).symm
 
-lemma Sheaf.ΓObjEquivSections_naturality [HasWeakSheafify J Type w]
-    [HasGlobalSectionsFunctor J Type w] {F G : Sheaf J Type w} (f : F ⟶ G)
-    (x : (Γ J Type w).obj F) :
+lemma Sheaf.ΓObjEquivSections_naturality [HasWeakSheafify J (Type w)]
+    [HasGlobalSectionsFunctor J (Type w)] {F G : Sheaf J (Type w)} (f : F ⟶ G)
+    (x : (Γ J (Type w)).obj F) :
     (ΓObjEquivSections J G) ((Γ J _).map f x) =
       (Functor.sectionsFunctor _).map f.hom ((ΓObjEquivSections J F) x) := by
   dsimp [ΓObjEquivSections]
   exact (congr_arg _ (ΓHomEquiv_naturality_right_symm (TypeCat.ofHom ⟨uniqueElim x⟩) f)).trans
     (Functor.sectionsEquivHom_naturality_symm _ _ _)
 
-lemma Sheaf.ΓObjEquivSections_naturality_symm [HasWeakSheafify J Type w]
-    [HasGlobalSectionsFunctor J Type w] {F G : Sheaf J Type w} (f : F ⟶ G)
+lemma Sheaf.ΓObjEquivSections_naturality_symm [HasWeakSheafify J (Type w)]
+    [HasGlobalSectionsFunctor J (Type w)] {F G : Sheaf J (Type w)} (f : F ⟶ G)
     (x : F.obj.sections) : (ΓObjEquivSections J G).symm ((Functor.sectionsFunctor _).map f.hom x) =
       (Γ J _).map f ((ΓObjEquivSections J F).symm x) :=
   ConcreteCategory.congr_hom (ΓHomEquiv_naturality_right (F.obj.sectionsEquivHom _ x) f) _
@@ -213,23 +213,23 @@ noncomputable def Sheaf.ΓNatIsoSectionsFunctor :
 
 /-- Global sections of a sheaf of types `F` correspond to morphisms from a terminal sheaf to `F`.
 We use the constant sheaf on a singleton type as a specific choice of terminal sheaf here. -/
-noncomputable def Sheaf.ΓObjEquivHom [HasWeakSheafify J Type w]
-    [HasGlobalSectionsFunctor J Type w] (F : Sheaf J Type w) (X : Type w)
-    [Unique X] : (Γ J Type w).obj F ≃ ((constantSheaf J Type w).obj X ⟶ F) :=
+noncomputable def Sheaf.ΓObjEquivHom [HasWeakSheafify J (Type w)]
+    [HasGlobalSectionsFunctor J (Type w)] (F : Sheaf J (Type w)) (X : Type w)
+    [Unique X] : (Γ J (Type w)).obj F ≃ ((constantSheaf J (Type w)).obj X ⟶ F) :=
   ((Equiv.funUnique X _).symm.trans TypeCat.homEquiv.symm).trans
-    ((constantSheafΓAdj J Type w).homEquiv _ _).symm
+    ((constantSheafΓAdj J (Type w)).homEquiv _ _).symm
 
 set_option backward.isDefEq.respectTransparency false in
-lemma Sheaf.ΓObjEquivHom_naturality [HasWeakSheafify J Type w]
-    [HasGlobalSectionsFunctor J Type w] (X : Type w) [Unique X]
-    {F G : Sheaf J Type w} (f : F ⟶ G) (x : (Γ J Type w).obj F) :
-    (ΓObjEquivHom J G X) ((Γ J Type w).map f x) = (ΓObjEquivHom J F X) x ≫ f :=
-  (constantSheafΓAdj J Type w).homEquiv_naturality_right_symm
+lemma Sheaf.ΓObjEquivHom_naturality [HasWeakSheafify J (Type w)]
+    [HasGlobalSectionsFunctor J (Type w)] (X : Type w) [Unique X]
+    {F G : Sheaf J (Type w)} (f : F ⟶ G) (x : (Γ J (Type w)).obj F) :
+    (ΓObjEquivHom J G X) ((Γ J (Type w)).map f x) = (ΓObjEquivHom J F X) x ≫ f :=
+  (constantSheafΓAdj J (Type w)).homEquiv_naturality_right_symm
     (TypeCat.ofHom ⟨uniqueElim x⟩) f
 
-lemma Sheaf.ΓObjEquivHom_naturality_symm [HasWeakSheafify J Type w]
-    [HasGlobalSectionsFunctor J Type w] {X : Type w} [Unique X]
-    {F G : Sheaf J Type w} (f : F ⟶ G) (x : (constantSheaf J _).obj X ⟶ F) :
+lemma Sheaf.ΓObjEquivHom_naturality_symm [HasWeakSheafify J (Type w)]
+    [HasGlobalSectionsFunctor J (Type w)] {X : Type w} [Unique X]
+    {F G : Sheaf J (Type w)} (f : F ⟶ G) (x : (constantSheaf J _).obj X ⟶ F) :
     (ΓObjEquivHom J G X).symm (x ≫ f) = (Γ J _).map f ((ΓObjEquivHom J F X).symm x) :=
   ConcreteCategory.congr_hom ((constantSheafΓAdj J _).homEquiv_naturality_right x f) default
 

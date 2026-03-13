@@ -172,7 +172,7 @@ a morphism `p : X ⟶ S` to the type of morphisms $p^* M ⟶ p^* N$. -/
 @[simps]
 def sheafHom (J : GrothendieckTopology C) [F.IsPrestack J]
     {S : C} (M N : F.obj (.mk (op S))) :
-    Sheaf (J.over S) Type v' where
+    Sheaf (J.over S) (Type v') where
   obj := F.presheafHom M N
   property := IsPrestack.isSheaf _ _ _
 

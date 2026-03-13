@@ -65,7 +65,7 @@ end Sheafify
 /-- The sheafification of a `Type`-valued presheaf, defined as the functions into the stalks which
 are locally equal to germs.
 -/
-def sheafify : Sheaf Type v X :=
+def sheafify : Sheaf (Type v) X :=
   subsheafToTypes (Sheafify.isLocallyGerm F)
 
 /-- The morphism from a presheaf to its sheafification,

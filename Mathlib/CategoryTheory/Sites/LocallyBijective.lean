@@ -36,7 +36,7 @@ namespace Sheaf
 
 section
 
-variable {F G : Sheaf J Type w} (f : F ⟶ G)
+variable {F G : Sheaf J (Type w)} (f : F ⟶ G)
 
 /-- A morphism of sheaves of types is locally bijective iff it is an isomorphism.
 (This is generalized below as `isLocallyBijective_iff_isIso`.) -/
