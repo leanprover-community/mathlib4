@@ -92,7 +92,7 @@ variable (B C)
 /-- A bicategory structure on the lax functors between bicategories, with lax transformations. -/
 @[simps! whiskerLeft_as_app whiskerRight_as_app associator_hom_as_app associator_inv_as_app
   rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]
-scoped instance LaxFunctor.bicategory : Bicategory (B ⥤ᴸC) where
+scoped instance LaxFunctor.bicategory : Bicategory (B ⥤ᴸ C) where
   whiskerLeft {_ _ _} η _ _ Γ := whiskerLeft η Γ
   whiskerRight {_ _ _} _ _ Γ := whiskerRight Γ
   associator {_ _ _} _ := associator
@@ -165,7 +165,7 @@ variable (B C)
 /-- A bicategory structure on the lax functors between bicategories, with oplax transformations. -/
 @[simps! whiskerLeft_as_app whiskerRight_as_app associator_hom_as_app associator_inv_as_app
   rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]
-scoped instance LaxFunctor.bicategory : Bicategory (B ⥤ᴸC) where
+scoped instance LaxFunctor.bicategory : Bicategory (B ⥤ᴸ C) where
   whiskerLeft {_ _ _} η _ _ Γ := whiskerLeft η Γ
   whiskerRight {_ _ _} _ _ Γ := whiskerRight Γ
   associator {_ _ _} _ := associator
