@@ -212,8 +212,8 @@ instance : Mono (homologyMap (ι f n₁) n₁) := by
 end step₁
 
 open step₁ in
-lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
-    (hf : ∀ i ≤ n₀, QuasiIsoAt f i) :
+lemma step₁ [Mono f] (n₀ n₁ : ℤ)
+    (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₀ F ∧ isIsoLE n₀ F ∧
       Mono (homologyMap F.obj.ι n₁) :=
   ⟨.mk { mid := mid K L n₁, ι := ι f n₁, π := π K L n₁ }
@@ -410,19 +410,19 @@ lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
 end step₂
 
 open step₂ in
-lemma step₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
-    (hf : ∀ i ≤ n₀, QuasiIsoAt f i) [Mono (homologyMap f n₁)] :
+lemma step₂ [Mono f] (n₀ n₁ : ℤ) (hf : ∀ i ≤ n₀, QuasiIsoAt f i)
+    [Mono (homologyMap f n₁)] (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₁ F :=
   ⟨.mk { mid := mid f n₁, ι := ι f n₁, π := π f n₁}
     ⟨inferInstance, degreewiseEpiWithInjectiveKernel_π f n₁⟩,
     fun i hi ↦ quasiIsoAt_ι f n₁ (fun j hj ↦ hf j (by lia)) _ hi,
     isIso_π_f f n₁⟩
 
-lemma step [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
-    (hf : ∀ i ≤ n₀, QuasiIsoAt f i) :
+lemma step [Mono f] (n₀ n₁ : ℤ)
+    (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₀ F := by
-  obtain ⟨F₁, h₁, h₂, _⟩ := step₁ f n₀ n₁ hn₁ hf
-  obtain ⟨F₂, h₃, h₄⟩ := step₂ F₁.obj.ι n₀ n₁ hn₁ h₁
+  obtain ⟨F₁, h₁, h₂, _⟩ := step₁ f n₀ n₁ hf
+  obtain ⟨F₂, h₃, h₄⟩ := step₂ F₁.obj.ι n₀ n₁ h₁
   refine ⟨.mk { mid := F₂.obj.mid, ι := F₂.obj.ι , π := F₂.obj.π ≫ F₁.obj.π }
     ⟨by dsimp; infer_instance, MorphismProperty.comp_mem _ _ _ F₂.property.2 F₁.property.2⟩,
     ⟨h₃, fun i hi ↦ ?_⟩⟩
@@ -457,7 +457,7 @@ lemma exists_next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (g : F'.1 ⟶ F.1),
       ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (g.hom.h.f i) := by
-  obtain ⟨F₁₂, h₁, h₂⟩ := step F.obj.obj.ι n₀ n₁ hn₁ F.property
+  obtain ⟨F₁₂, h₁, h₂⟩ := step F.obj.obj.ι n₀ n₁ F.property
   exact ⟨.mk (.mk { mid := F₁₂.obj.mid, ι := F₁₂.obj.ι, π := F₁₂.obj.π ≫ F.obj.obj.π }
     ⟨by dsimp; infer_instance,
       MorphismProperty.comp_mem _ _ _ F₁₂.property.2 F.obj.property.2⟩) h₁,
