@@ -161,6 +161,7 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
   · rw [e]
   apply h₁
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens}
     (s : Γ(X, U)) (hs : X.basicOpen s = ⊥) : s = 0 := by
   apply TopCat.Presheaf.section_ext X.sheaf U
@@ -245,6 +246,7 @@ instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U]
     Nontrivial Γ(X, U) :=
   LocallyRingedSpace.component_nontrivial (hU := ‹_›)
 
+set_option backward.isDefEq.respectTransparency false in
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := by
   by_contra H
   replace H : ¬IsPreirreducible (⊤ : Set X) := fun h =>

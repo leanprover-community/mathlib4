@@ -14,6 +14,8 @@ We show that the model with corners, charts, extended charts and their inverses 
 and that local structomorphisms are `C^n` with `C^n` inverses.
 -/
 
+assert_not_exists mfderiv
+
 public section
 
 open Set ChartedSpace IsManifold

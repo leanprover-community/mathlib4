@@ -56,12 +56,14 @@ noncomputable def asTypeToObjAsType : AsType α ⥤ ObjAsType α where
   obj := id
   map {_ _} := (Fintype.equivFin _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The "identity" functor from `ObjAsType α` to `AsType α`. -/
 @[simps]
 noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α where
   obj := id
   map {_ _} := Fintype.equivFin _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The constructed category (`AsType α`) is equivalent to `ObjAsType α`. -/
 noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where
   functor := asTypeToObjAsType α

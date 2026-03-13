@@ -108,6 +108,7 @@ section
 
 variable {F L}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `L : C ⥤ D` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
 then `e.inv` makes `G` a pointwise right Kan extension of `F` along `L` at `L.obj Y`
 for any `Y : C`. -/

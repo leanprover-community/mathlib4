@@ -32,6 +32,7 @@ universe u
 namespace Mathlib.Meta.NormNum
 
 /-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
+@[implicit_reducible]
 def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
     ∀ (a : α) [Invertible a], a = k * b → Invertible b
   | _, ⟨c, hc1, hc2⟩, rfl => by
@@ -40,6 +41,7 @@ def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
     exact ⟨_, hc1, hc2⟩
 
 /-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
+@[implicit_reducible]
 def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
     (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
@@ -234,6 +236,7 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
 /-- Consider an `Option` as an object in the `MetaM` monad, by throwing an error on `none`. -/
+@[expose, instance_reducible]
 def _root_.Mathlib.Meta.monadLiftOptionMetaM : MonadLift Option MetaM where
   monadLift
   | none => failure

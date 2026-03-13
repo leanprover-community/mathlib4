@@ -155,6 +155,7 @@ namespace Adjunction
 
 attribute [reassoc (attr := simp)] left_triangle_components right_triangle_components
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The hom set equivalence associated to an adjunction. -/
 @[simps -isSimp]
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
@@ -184,6 +185,7 @@ attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
 namespace Adjunction
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 lemma ext {F : C ⥤ D} {G : D ⥤ C} {adj adj' : F ⊣ G}
     (h : adj.unit = adj'.unit) : adj = adj' := by
@@ -212,6 +214,11 @@ variable {X' X : C} {Y Y' : D}
 theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
 
 theorem homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma homEquiv_symm_unit (X : C) : dsimp% (adj.homEquiv _ _).symm (adj.unit.app X) = 𝟙 _ := by
+  simp
 
 theorem homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
     (adj.homEquiv X' Y).symm (f ≫ g) = F.map f ≫ (adj.homEquiv X Y).symm g := by
@@ -259,10 +266,12 @@ theorem homEquiv_naturality_right_square_iff (f : X' ⟶ X) (g : X ⟶ G.obj Y')
       using homEquiv_naturality_left_square adj _ _ _ _ w,
     homEquiv_naturality_right_square adj f g h k⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 𝟙 _ := by
   ext; simp
@@ -277,10 +286,12 @@ theorem unit_naturality {X Y : C} (f : X ⟶ Y) :
     adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y :=
   (adj.unit.naturality f).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma unit_comp_map_eq_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
   ⟨fun h => by simp [← h], fun h => by simp [h]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_unit_comp_map_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     g = adj.unit.app A ≫ G.map f ↔ F.map g ≫ adj.counit.app B = f :=
   ⟨fun h => by simp [h], fun h => by simp [← h]⟩
@@ -293,6 +304,7 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
   eq_unit_comp_map_iff adj f g
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`. -/
 @[simps]
 def corepresentableBy (X : C) :
@@ -300,6 +312,7 @@ def corepresentableBy (X : C) :
   homEquiv := adj.homEquiv _ _
   homEquiv_comp := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`. -/
 @[simps]
 def representableBy (Y : D) :
@@ -395,6 +408,7 @@ variable {F : C ⥤ D} {G : D ⥤ C}
 
 attribute [local simp] CoreHomEquivUnitCounit.homEquiv_unit CoreHomEquivUnitCounit.homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Construct an adjunction from the data of a `CoreHomEquivUnitCounit`, i.e. a hom set
 equivalence, unit and counit natural transformations together with proofs of the equalities
@@ -411,6 +425,7 @@ def mk' (adj : CoreHomEquivUnitCounit F G) : F ⊣ G where
     rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply, adj.homEquiv_counit]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk'_homEquiv (adj : CoreHomEquivUnitCounit F G) : (mk' adj).homEquiv = adj.homEquiv := by
   ext
   rw [homEquiv_unit, adj.homEquiv_unit, mk'_unit]
@@ -483,16 +498,53 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
   left_inv f := by simp
   right_inv g := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transport an adjunction along a natural isomorphism on the left. -/
-def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => (equivHomsetLeftOfNatIso iso.symm).trans (adj.homEquiv X Y) }
+@[simps]
+def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H where
+  unit := adj.unit ≫ Functor.whiskerRight iso.hom _
+  counit := Functor.whiskerLeft _ iso.inv ≫ adj.counit
+  left_triangle_components X := by
+    simp only [Functor.id_obj, Functor.comp_obj, NatTrans.comp_app, Functor.whiskerRight_app,
+      Functor.map_comp, Functor.whiskerLeft_app, Category.assoc, NatTrans.naturality_assoc]
+    simp [← Functor.comp_map]
+  right_triangle_components := by simp [← Functor.map_comp]
 
+lemma homEquiv_ofNatIsoLeft_apply {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G)
+    {X : C} {Y : D} (f : G.obj X ⟶ Y) :
+    (ofNatIsoLeft adj iso).homEquiv X Y f = adj.homEquiv _ _ (iso.hom.app _ ≫ f) := by
+  simp
+
+lemma homEquiv_ofNatIsoLeft_symm_apply {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G)
+    {X : C} {Y : D} (f : X ⟶ H.obj Y) :
+    ((ofNatIsoLeft adj iso).homEquiv X Y).symm f = iso.inv.app _ ≫ (adj.homEquiv _ _).symm f := by
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
 /-- Transport an adjunction along a natural isomorphism on the right. -/
-def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }
+@[simps]
+def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H where
+  unit := adj.unit ≫ Functor.whiskerLeft _ iso.hom
+  counit := Functor.whiskerRight iso.inv _ ≫ adj.counit
+  left_triangle_components X := by simp [← Functor.map_comp_assoc]
+  right_triangle_components Y := by
+    simp only [id_obj, comp_obj, NatTrans.comp_app, whiskerLeft_app, whiskerRight_app, map_comp,
+      assoc, ← iso.hom.naturality_assoc, ← iso.hom.naturality, unit_naturality_assoc,
+      adj.right_triangle_components_assoc]
+    simp
 
+lemma homEquiv_ofNatIsoRight_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H)
+    {X : C} {Y : D} (f : F.obj X ⟶ Y) :
+    (ofNatIsoRight adj iso).homEquiv X Y f = adj.homEquiv _ _ f ≫ iso.hom.app _ := by
+  simp
+
+lemma homEquiv_ofNatIsoRight_symm_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H)
+    {X : C} {Y : D} (f : X ⟶ H.obj Y) :
+    ((ofNatIsoRight adj iso).homEquiv X Y).symm f =
+      (adj.homEquiv _ _).symm (f ≫ iso.inv.app _) := by
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -524,6 +576,7 @@ section
 variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
   (adj₁ : F ⊣ G) (adj₂ : H ⊣ I)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of adjunctions. -/
 @[simps! -isSimp unit counit, stacks 0DV0]
 def comp : F ⋙ H ⊣ I ⋙ G :=
@@ -577,6 +630,7 @@ def leftAdjointOfEquiv (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.ma
 
 variable (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Show that the functor given by `leftAdjointOfEquiv` is indeed left adjoint to `G`. Dual
 to `adjunctionOfEquivRight`. -/
 @[simps!]
@@ -616,6 +670,7 @@ def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X
       rw [← assoc, he'' e he, comp_id, Equiv.symm_apply_apply]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Show that the functor given by `rightAdjointOfEquiv` is indeed right adjoint to `F`. Dual
 to `adjunctionOfEquivLeft`. -/
 @[simps!]
@@ -631,6 +686,7 @@ def adjunctionOfEquivRight (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ 
 
 end ConstructRight
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If the unit and counit of a given adjunction are (pointwise) isomorphisms, then we can upgrade the
 adjunction to an equivalence.
@@ -660,6 +716,7 @@ namespace Equivalence
 
 variable (e : C ≌ D)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`.) -/
 @[simps]

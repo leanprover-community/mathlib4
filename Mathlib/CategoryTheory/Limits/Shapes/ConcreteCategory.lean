@@ -79,6 +79,7 @@ variable [ConcreteCategory.{max w r} D FD] (F : C ⥤ D)
   [PreservesLimitsOfShape WalkingCospan (forget D)]
   [PreservesLimit (Discrete.functor fun b ↦ F.obj (f b)) (forget D)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Pi.map_ext (x y : ToType (F.obj (∏ᶜ f : C)))
     (h : ∀ i, F.map (Pi.π f i) x = F.map (Pi.π f i) y) : x = y := by
   apply ConcreteCategory.injective_of_mono_of_preservesPullback (PreservesProduct.iso F f).hom
@@ -98,6 +99,7 @@ variable [ConcreteCategory.{w} C FC]
 
 /-- If `forget C` preserves terminals and `X` is terminal, then `ToType X` is a
 singleton. -/
+@[implicit_reducible]
 noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0} C) (forget C)]
     (X : C) (h : IsTerminal X) : Unique (ToType X) :=
   Types.isTerminalEquivUnique (ToType X) <| IsTerminal.isTerminalObj (forget C) X h
@@ -263,6 +265,7 @@ section Multiequalizer
 variable {FC : C → C → Type*} {CC : C → Type s} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 variable [ConcreteCategory.{s} C FC]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
     {I : MulticospanIndex J C} [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] (x y : ToType (multiequalizer I))
