@@ -67,6 +67,7 @@ lemma op_σ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.op.σ i x = opObjEquiv.symm (X.σ i.rev (opObjEquiv x)) := by
   simp [SimplicialObject.σ, op_map]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] op_map in
 /-- The functor `opFunctor : SSet ⥤ SSet` is an involution. -/
 @[simps!]

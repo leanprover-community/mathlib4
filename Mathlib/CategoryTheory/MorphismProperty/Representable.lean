@@ -570,6 +570,7 @@ variable [HasPullbacks D] [HasBinaryProducts D] [HasTerminal D]
 variable [Full F]
 variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assume that
 1. `C` has binary products,
 2. `D` has pullbacks, binary products and a terminal object, and

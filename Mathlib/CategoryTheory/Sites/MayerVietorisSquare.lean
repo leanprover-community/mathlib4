@@ -248,6 +248,7 @@ noncomputable def shortComplex :
   zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Mono S.shortComplex.f := by
   have : Mono (S.shortComplex.f ≫ biprod.snd) := by
     dsimp

@@ -45,6 +45,7 @@ namespace Presheaf
 
 variable [MonoidalClosed A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Relation between `functorEnrichedHom` and `presheafHom`. -/
 noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ A)
     [HasFunctorEnrichedHom A F G] (X : C) :

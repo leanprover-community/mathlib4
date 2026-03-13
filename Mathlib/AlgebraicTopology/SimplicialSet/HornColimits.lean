@@ -255,6 +255,7 @@ variable {X : SSet.{u}} (f₀ f₁ f₃ : Δ[2] ⟶ X)
   (h₁₂ : stdSimplex.δ 2 ≫ f₀ = stdSimplex.δ 0 ≫ f₃)
   (h₂₃ : stdSimplex.δ 0 ≫ f₀ = stdSimplex.δ 0 ≫ f₁)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `desc`. -/
 @[simps! pt]
 def desc.multicofork :

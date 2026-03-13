@@ -246,6 +246,7 @@ lemma fromSingleMk_postcomp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n =
   ext : 1
   exact (Cochain.fromSingleEquiv h).injective (by simp [Cochain.fromSingleMk_postcomp])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma fromSingleMk_surjective {p n : ℤ} (α : Cocycle ((singleFunctor C p).obj X) K n)
     (q : ℤ) (h : p + n = q) (q' : ℤ) (hq' : q + 1 = q') :
     ∃ (f : X ⟶ K.X q) (hf : f ≫ K.d q q' = 0), fromSingleMk f h q' hq' hf = α := by

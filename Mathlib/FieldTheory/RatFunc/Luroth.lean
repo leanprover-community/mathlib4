@@ -387,6 +387,7 @@ lemma Φ_coeff_φ_natDegree_ne_zero (h : E ≠ ⊥) :
   rw [Φ_coeff_φ_natDegree' h]
   exact num_ne_zero (c_ne_zero h)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Φ_coeff_generatorIndex (h : E ≠ ⊥) :
     algebraMap K[X] K⟮X⟯ ((Φ E).coeff (generatorIndex h)) =
     algebraMap K[X] K⟮X⟯ (c E).num * generator E := by

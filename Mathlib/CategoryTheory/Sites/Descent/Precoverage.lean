@@ -214,6 +214,7 @@ lemma familyOfElements_eq {i : ι} {Z : Over (X i)} (g : Z ⟶ Over.mk (𝟙 (X 
       exact mem_sieve _ _ fac) = mor w φ _ _ fac :=
   mor_unique _ _ _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma compatible_familyOfElements (i : ι) :
     (familyOfElements w φ i).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac

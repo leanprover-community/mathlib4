@@ -71,6 +71,7 @@ open Limits Localization Opposite
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
     (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]

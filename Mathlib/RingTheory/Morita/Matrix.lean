@@ -179,6 +179,7 @@ def MatrixModCat.counitIso (i : ι) :
     simp [toModuleCatFromModuleCatLinearEquiv]
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
+set_option backward.isDefEq.respectTransparency false in
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/
 @[simps, stacks 074D "(1)"]

@@ -31,6 +31,7 @@ variable {K : Type u} [Field K] {X : Scheme.{u}}
 
 open MonoidalCategory CartesianMonoidalCategory MonObj
 
+set_option backward.isDefEq.respectTransparency false in
 instance (G : Over (Spec (.of K))) [GrpObj G] : IsClosedImmersion η[G].left :=
   isClosedImmersion_of_comp_eq_id (Y := Spec (.of K)) G.hom η[G].left (by simp)
 

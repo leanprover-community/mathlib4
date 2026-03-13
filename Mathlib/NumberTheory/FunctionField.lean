@@ -106,6 +106,7 @@ instance : IsIntegralClosure (ringOfIntegers Fq F) Fq[X] F :=
 
 variable [Algebra (RatFunc Fq) F] [IsScalarTower Fq[X] (RatFunc Fq) F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem algebraMap_injective : Function.Injective (⇑(algebraMap Fq[X] (ringOfIntegers Fq F))) := by
   have hinj : Function.Injective (⇑(algebraMap Fq[X] F)) := by
     rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]

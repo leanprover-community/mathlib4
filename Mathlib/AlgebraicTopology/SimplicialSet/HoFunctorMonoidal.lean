@@ -368,6 +368,7 @@ def associativityIso :
     associator _ _ _ ≪≫
     isoWhiskerLeft (prod.associativity _ _ _).functor (associativity'Iso X Y Z)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {X Y Z} in
 lemma associativityIso_hom_app (xyz) :
     (associativityIso X Y Z).hom.app xyz = 𝟙 _ := by

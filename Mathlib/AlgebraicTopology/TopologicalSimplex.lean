@@ -47,6 +47,7 @@ instance : Unique (toTop₀.obj ⦋0⦌) := inferInstanceAs (Unique (stdSimplex 
 
 instance : Unique (toTop.{u}.obj ⦋0⦌) := inferInstanceAs (Unique (ULift _))
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : SimplexCategory) : PathConnectedSpace (toTop₀.obj n) := by dsimp; infer_instance
 
 instance (n : SimplexCategory) : PathConnectedSpace (toTop.{u}.obj n) :=

@@ -98,6 +98,7 @@ noncomputable abbrev groupHomologyπEven
   (ShortComplex.moduleCatCyclesIso <| subCompNormHom A g).inv ≫
     ShortComplex.homologyπ _ ≫ (groupHomologyIsoEven A g hg i hi).inv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma groupHomologyπEven_eq_zero_iff (hg : ∀ x, x ∈ Subgroup.zpowers g)
     (i : ℕ) [NeZero i] (hi : Even i) (x : LinearMap.ker A.ρ.norm) :
     groupHomologyπEven A g hg i hi x = 0 ↔

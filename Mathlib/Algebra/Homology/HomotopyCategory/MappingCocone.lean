@@ -135,6 +135,7 @@ lemma inr_comp_descCochain :
   ext p q hpq
   simp [Cochain.comp_v (n₂ := m) _ _ _ _ (p + 1) q rfl (by lia)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
     δ m n (descCochain φ α β h) =
       (Cochain.ofHom (fst φ)).comp

@@ -528,6 +528,7 @@ noncomputable def resNatTrans (n : ℕ) :
     cochainsMap, congr (MonoidHom.comp_id _) cochainsMap, Category.id_comp
     (X := (Action.res _ _).obj _)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, this is a natural transformation between the functors
 sending `A : Rep k G` to `Hⁿ(G ⧸ S, A^S)` and to `Hⁿ(G, A)`. -/
 @[simps]

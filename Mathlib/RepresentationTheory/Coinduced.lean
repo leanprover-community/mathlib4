@@ -229,6 +229,7 @@ noncomputable def coindFunctorIso : coindFunctor k φ ≅ coindFunctor' k φ :=
 end CoindIso
 section Adjunction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `G`-representation morphisms `B ⟶ A` and the
 `H`-representation morphisms `B ⟶ coind φ A`. -/

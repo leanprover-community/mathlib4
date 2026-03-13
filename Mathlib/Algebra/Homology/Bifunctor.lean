@@ -273,6 +273,7 @@ noncomputable def mapBifunctorMap : mapBifunctor K₁ K₂ F c ⟶ mapBifunctor 
   HomologicalComplex₂.total.map (((F.mapBifunctorHomologicalComplex c₁ c₂).map f₁).app K₂ ≫
     ((F.mapBifunctorHomologicalComplex c₁ c₂).obj L₁).map f₂) c
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorMap (i₁ : I₁) (i₂ : I₂) (j : J)
     (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :

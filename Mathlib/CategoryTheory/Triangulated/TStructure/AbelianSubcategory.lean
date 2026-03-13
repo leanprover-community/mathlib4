@@ -136,6 +136,7 @@ lemma epi_πQ : Epi (πQ f₂ β) := by
     exact eq_zero_of_hom_shift_pos hι _ (by lia)
   exact ι.map_injective (by rw [hm, comp_zero, ι.map_zero])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_lift_ιK {B : A} (x₁ : B ⟶ X₁) (hx₁ : x₁ ≫ f₁ = 0) :
     ∃ (k : B ⟶ K), k ≫ ιK f₃ α = x₁ := by
   suffices ∃ (k' : (ι.obj B)⟦(1 : ℤ)⟧ ⟶ (ι.obj K)⟦(1 : ℤ)⟧),
