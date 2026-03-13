@@ -75,14 +75,14 @@ infinity -/
 theorem toNat_sum {s : Finset α} {f : α → ℕ∞} (hf : ∀ a ∈ s, f a ≠ ⊤) :
     ENat.toNat (∑ a ∈ s, f a) = ∑ a ∈ s, ENat.toNat (f a) := by
   rw [← coe_inj, coe_toNat (sum_ne_top.2 hf), Nat.cast_sum]
-  exact Finset.sum_congr rfl fun x hx => (coe_toNat (hf x hx)).symm
+  exact sum_congr rfl fun x hx => (coe_toNat (hf x hx)).symm
 
 theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℕ∞}
     (Hlt : ∀ i ∈ s, f i < g i) : ∑ i ∈ s, f i < ∑ i ∈ s, g i := by
-  induction hs using Finset.Nonempty.cons_induction with
-  | singleton => simp [Hlt _ (Finset.mem_singleton_self _)]
+  induction hs using Nonempty.cons_induction with
+  | singleton => simp [Hlt _ (mem_singleton_self _)]
   | cons _ _ _ _ ih =>
-    simp only [Finset.sum_cons, forall_mem_cons] at Hlt ⊢
+    simp only [sum_cons, forall_mem_cons] at Hlt ⊢
     exact ENat.add_lt_add Hlt.1 (ih Hlt.2)
 
 theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℕ∞}
