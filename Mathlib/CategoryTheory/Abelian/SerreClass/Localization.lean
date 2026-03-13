@@ -536,8 +536,8 @@ is fully faithful. -/
 noncomputable def fullyFaithfulWhiskeringLeft :
     (whiskeringLeft L P E).FullyFaithful :=
   Functor.FullyFaithful.ofCompFaithful (G := ObjectProperty.ι _)
-   ((exactFunctor D E).fullyFaithfulι.comp
-    (Localization.fullyFaithfulWhiskeringLeft L P.isoModSerre E))
+    ((exactFunctor D E).fullyFaithfulι.comp
+      (Localization.fullyFaithfulWhiskeringLeft L P.isoModSerre E))
 
 instance : (whiskeringLeft L P E).Faithful :=
   (fullyFaithfulWhiskeringLeft L P E).faithful
