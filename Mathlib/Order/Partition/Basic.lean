@@ -205,7 +205,7 @@ instance : OrderTop (Partition s) where
   le_top P x hxP := by
     simp [P.ne_bot_of_mem' hxP, P.le_of_mem hxP]
 
-@[simp] lemma parts_top (hs : s ≠ ⊥) : (⊤ : Partition s).parts = {s} := by
+@[simp] lemma parts_top (hs : s ≠ ⊥) : ((⊤ : Partition s) : Set α) = {s} := by
   change (removeBot {s} (sSupIndep_singleton s) sSup_singleton).parts = _
   simpa
 
