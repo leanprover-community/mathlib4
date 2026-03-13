@@ -260,33 +260,23 @@ theorem singularValues_le_rank {n : ℕ}
   (hn : Module.finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 :=
   le_antisymm (T.singularValues_rank ▸ T.singularValues_antitone hn) (zero_le _)
 
-theorem support_singularValues_helper1
+theorem isLowerSet_support_singularValues
   : IsLowerSet (T.singularValues.support : Set ℕ) := by
-  sorry
+  intro a b hl ha
+  rw [Finset.mem_coe, Finsupp.mem_support_iff, ← zero_lt_iff] at ⊢ ha
+  order [T.singularValues_antitone hl]
 
 @[simp]
 theorem support_singularValues
   : T.singularValues.support = Finset.range (Module.finrank 𝕜 (range T)) := by
-  rw [← Nat.Iio_eq_range]
-  --rw [← Finset.coe_inj]
-  --rw [Finset.coe_Iio]
-  obtain h | ⟨n, hn⟩ := T.support_singularValues_helper1.eq_univ_or_Iio
-  · exfalso
-    sorry
-  · rw [← Finset.coe_Iio, Finset.coe_inj] at hn
+  obtain h | ⟨n, hn⟩ := T.isLowerSet_support_singularValues.eq_univ_or_Iio
+  · have : (Set.univ : Set ℕ).Finite := h ▸ Finset.finite_toSet _
+    have : (Set.univ : Set ℕ).Infinite := Set.infinite_univ
+    contradiction
+  · rw [← Finset.coe_Iio, Finset.coe_inj, Nat.Iio_eq_range] at hn
     convert hn
     apply_fun Finset.card at hn
     simpa [test₃] using hn
-  /-
-  ext n
-  simp only [Finsupp.mem_support_iff, Finset.mem_range]
-  constructor
-  · intro hn
-    by_contra! h
-    exact hn (T.singularValues_le_rank h)
-  · intro hn
-    exact (T.singularValues_lt_rank hn).ne'
-  -/
 
 @[simp]
 theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i = 0 := by
