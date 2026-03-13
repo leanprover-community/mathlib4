@@ -36,7 +36,6 @@ open scoped Multiplicative
 
 open IsLocalRing Module
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRing R] [IsDomain R]
     (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :
     ∃ n : ℕ, I = maximalIdeal R ^ n := by
@@ -226,7 +225,6 @@ theorem IsDiscreteValuationRing.TFAE [IsNoetherianRing R] [IsLocalRing R] [IsDom
 
 variable {R}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsLocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [IsLocalRing R]
     [IsDomain R] : finrank (ResidueField R) (CotangentSpace R) = 1 ↔ IsDiscreteValuationRing R := by
   by_cases hR : IsField R

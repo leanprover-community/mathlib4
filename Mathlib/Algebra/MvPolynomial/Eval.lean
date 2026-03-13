@@ -360,7 +360,7 @@ theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval�
   rw [h]
   congr
   · ext1 a
-    simp only [coe_eval₂Hom, RingHom.id_apply, comp_apply, eval₂_C, RingHom.coe_comp]
+    simp
   · ext1 n
     simp only [comp_apply, eval₂_X]
 

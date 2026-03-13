@@ -374,7 +374,6 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     _ ≤ |x| ^ i := by
       simpa [pow_succ] using mul_le_of_le_one_right (pow_nonneg (abs_nonneg x) i) (le_of_lt h)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Power series expansion of `log(1 + x) - log(1 - x)` for `|x| < 1`. -/
 theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * x ^ (2 * k + 1))

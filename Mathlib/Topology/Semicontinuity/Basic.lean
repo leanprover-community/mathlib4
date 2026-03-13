@@ -886,6 +886,31 @@ theorem upperSemicontinuousOn_iff_preimage_Ici [LinearOrder β] :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ v : Set α, IsClosed v ∧ s ∩ f ⁻¹' Set.Ici b = s ∩ v :=
   lowerSemicontinuousOn_iff_preimage_Iic (γ := βᵒᵈ)
 
+variable [PartialOrder β] [AddCommGroup β] [IsOrderedAddMonoid β]
+
+theorem upperSemicontinuousOn_iff_lowerSemiContinuousOn_neg :
+    UpperSemicontinuousOn f s ↔ LowerSemicontinuousOn (-f) s := by
+  simp_all only [lowerSemicontinuousOn_iff_preimage_Ioi, upperSemicontinuousOn_iff_preimage_Iio]
+  refine ⟨fun h b => ?_, fun h b => ?_⟩
+  · obtain ⟨u, ho, hu⟩ := h (-b)
+    exact ⟨u, ho, hu ▸ by simp [neg_eq_neg_comp, preimage_comp]⟩
+  · obtain ⟨u, ho, hu⟩ := h (-b)
+    exact ⟨u, ho, hu ▸ by simp [neg_eq_neg_comp, preimage_comp]⟩
+
+theorem lowerSemicontinuousOn_iff_upperSemiContinuousOn_neg :
+    LowerSemicontinuousOn f s ↔ UpperSemicontinuousOn (-f) s := by
+  simp [upperSemicontinuousOn_iff_lowerSemiContinuousOn_neg,
+    upperSemicontinuousOn_iff_lowerSemiContinuousOn_neg]
+
+theorem upperSemicontinuous_iff_lowerSemiContinuous_neg :
+    UpperSemicontinuous f ↔ LowerSemicontinuous (-f) := by
+  simp [← upperSemicontinuousOn_univ_iff, ← lowerSemicontinuousOn_univ_iff,
+    upperSemicontinuousOn_iff_lowerSemiContinuousOn_neg]
+
+theorem lowerSemicontinuous_iff_upperSemiContinuous_neg :
+    LowerSemicontinuous f ↔ UpperSemicontinuous (-f) := by
+  simp [upperSemicontinuous_iff_lowerSemiContinuous_neg]
+
 end
 
 section
