@@ -371,9 +371,6 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
   free_ext k G _ _ _ fun i ↦ by
-    -- simp [linearizationTrivialIso, leftRegularTensorTrivialIsoFree, d_single (k := k),
-    --   Rep.mkIso_inv_hom_apply _, Representation.linearizeTrivialIso_symm_apply _,
-    --   Representation.linearizeOfMulActionIso_symm_apply, μ_hom]
     simp only [Iso.trans_assoc, Action.tensorObj_V, Action.trivial_V, linearizationTrivialIso,
       leftRegularTensorTrivialIsoFree, Iso.trans_inv, tensorIso_inv, Iso.symm_inv,
       Functor.Monoidal.μIso_hom, Category.assoc, Functor.mapIso_inv, hom_comp, tensor_V, tensor_ρ,
@@ -385,16 +382,19 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
       Representation.linearizeTrivialIso_symm_apply _]
     change _ = ((standardComplex k G).d (n + 1) n).hom.toLinearMap _
     rw [d_eq]
+    -- `erw` needed: `μ_apply_single_single` and `linearizeMap_single` use `X.V`/`Y.V` types
+    -- which are only defeq (not syntactically equal) to `G`/`Fin n → G`
     erw [Representation.LinearizeMonoidal.μ_apply_single_single,
       Representation.LinearizeMonoidal.μ_apply_single_single]
     simp only [mul_one, types_tensorObj_def]
-    conv_rhs => enter [2, 2]; tactic => convert Representation.linearizeMap_single _ _ _
+    conv_rhs =>
+      enter [2, 2]; tactic => convert Representation.linearizeMap_single _ _ _
     simp only [Action.trivial_V]
     conv_rhs => enter [2, 2, 1]; rw [Action.diagonalSuccIsoTensorTrivial_inv_hom_apply, one_smul]
     change _ = standardComplex.d k G (n + 1) (Finsupp.single _ _)
     rw [d_of]
     conv_lhs =>
-      enter [2, 2, x];
+      enter [2, 2, x]
       erw [Representation.LinearizeMonoidal.μ_apply_single_single,
         Representation.linearizeMap_single]
       rw [Action.diagonalSuccIsoTensorTrivial_inv_hom_apply, one_mul, one_smul]
@@ -412,7 +412,6 @@ end barComplex
 open barComplex
 
 unif_hint (H : Type*) [MulAction G H] where ⊢ Action.V (Action.ofMulAction G H) ≟ H
-set_option maxHeartbeats 400000 in
 set_option backward.isDefEq.respectTransparency false in
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
@@ -420,26 +419,11 @@ differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..
 `j = 0, ..., n - 1`. -/
 noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
   ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun m => by
-    ext x g1 fg g2
-    simp [(diagonalSuccIsoFree k G _).comp_inv_eq.1 (d_comp_diagonalSuccIsoFree_inv_eq k G _),
-      Representation.linearizeTrivialIso_symm_apply _,
-      Representation.linearizeOfMulActionIso_symm_apply, Rep.μ_hom,
-      Representation.linearizeMap, Action.diagonalSuccIsoTensorTrivial_inv_hom_apply _,
-      d_eq, Representation.linearizeDiagonalEquiv,
-      Representation.linearizeOfMulActionIso_symm_apply (H := Fin (m + 1 + 1 + 1) → G),
-      d_of (k := k), Representation.linearizeOfMulActionIso_apply,
-      Representation.linearizeOfMulActionIso_symm_apply (H := Fin (m + 1 + 1) → G), δ_hom,
-      standardComplex.d_single _, types_tensorObj_def]
-    conv_lhs =>
-      enter [2, c, 2, y, 1, 1, 2, 2]
-      erw [Representation.LinearizeMonoidal.δ_apply_single']
-    classical
-    simp [Representation.linearizeOfMulActionIso_apply _, Representation.linearizeTrivialIso,
-      Finsupp.single_apply, DFunLike.ite_apply]
-    refine Fintype.sum_eq_zero _ fun i => Fintype.sum_eq_zero _ fun j => ?_
-    simp
-    -- grind
-    sorry
+    have key : (d k G (m + 1) ≫ d k G m) ≫ (diagonalSuccIsoFree k G m).inv = 0 := by
+      rw [Category.assoc, d_comp_diagonalSuccIsoFree_inv_eq, ← Category.assoc,
+        d_comp_diagonalSuccIsoFree_inv_eq, Category.assoc, HomologicalComplex.d_comp_d,
+        Limits.comp_zero]
+    exact (cancel_mono (diagonalSuccIsoFree k G m).inv).mp (by simpa using key)
 
 namespace barComplex
 
