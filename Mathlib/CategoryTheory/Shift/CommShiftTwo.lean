@@ -26,9 +26,9 @@ a `TwistShiftData` structure (see the file `Mathlib.CategoryTheory.Shift.Twist`)
 
 ## TODO (@joelriou)
 * Show that `G : C₁ ⥤ C₂ ⥤ D` satisfies `Functor.CommShift₂Int` iff the uncurried
-functor `C₁ × C₂ ⥤ D` commutes with the shift by `ℤ × ℤ`, where `C₁ × C₂` is
-equipped with the obvious product shift, and `D` is equipped with
-the twisted shift.
+  functor `C₁ × C₂ ⥤ D` commutes with the shift by `ℤ × ℤ`, where `C₁ × C₂` is
+  equipped with the obvious product shift, and `D` is equipped with
+  the twisted shift.
 
 -/
 

@@ -215,8 +215,7 @@ theorem exists_fixed_point_of_contractible (F : (β →ᵤ Seq α) → (β →�
   use f
   exact hF.fixedPoint_isFixedPt
 
-set_option backward.isDefEq.respectTransparency false in
-/-- Main theorem of this file. It shows that there exists a funcion satisfying the corecursive
+/-- Main theorem of this file. It shows that there exists a function satisfying the corecursive
 definition of the form `def foo (x : X) := hd x :: op (foo (tlArg x))` where `f` is friendly. -/
 theorem FriendlyOperation.exists_fixed_point (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
     [h : FriendlyOperationClass op] :

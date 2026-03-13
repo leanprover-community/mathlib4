@@ -72,7 +72,7 @@ abbrev hull (T : Set α) (a : α) := T ↓∩ Ici a
 
 variable {T : Set α}
 
-/- The set of relative-closed sets of the form `hull T a` for some `a` in `α` is closed under
+/-- The set of relative-closed sets of the form `hull T a` for some `a` in `α` is closed under
 pairwise union. -/
 lemma hull_inf (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     hull T (a ⊓ b) = hull T a ∪ hull T b := by
@@ -85,9 +85,9 @@ lemma hull_inf (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
 
 variable [OrderTop α]
 
-/- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
-relative-closed set of the form `hull T a` where `a = ⨅ F`. -/
 open Finset in
+/-- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
+relative-closed set of the form `hull T a` where `a = ⨅ F`. -/
 lemma hull_finsetInf (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     hull T (inf F id) = T ↓∩ upperClosure (F : Set α) := by
   rw [coe_upperClosure]
@@ -101,23 +101,22 @@ lemma hull_finsetInf (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr (eq_top_iff.mpr hx))
   | cons a F' _ I4 => simp [hull_inf hT, I4]
 
-/- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
-set of the form `(hull T a)ᶜ` where `a = ⨅ F`. -/
 open Finset in
+/-- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite
+is a relative-open set of the form `(hull T a)ᶜ` where `a = ⨅ F`. -/
 lemma preimage_upperClosure_compl_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     T ↓∩ (upperClosure (F : Set α))ᶜ = (hull T (inf F id))ᶜ := by
   rw [Set.preimage_compl, (hull_finsetInf hT)]
 
 variable [TopologicalSpace α] [IsLower α]
 
-set_option backward.isDefEq.respectTransparency false in
 /-
 The relative-open sets of the form `(hull T a)ᶜ` for `a` in `α` form a basis for the relative
 Lower topology.
 -/
 lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
     IsTopologicalBasis { S : Set T | ∃ (a : α), (hull T a)ᶜ = S } := by
-  convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis T
+  convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis (· ∈ T)
   ext R
   simp only [preimage_compl, mem_setOf_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
   constructor <;> intro ha
@@ -198,7 +197,7 @@ def gi (hG : OrderGenerates T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     rw [OrderDual.le_toDual, kernel, kernel]
     exact sInf_le_sInf <| image_val_mono fun c hcS => by
       rw [hull, mem_preimage, mem_Ici]
-      exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS)
+      exact sInf_le (mem_image_of_mem Subtype.val hcS)
 
 lemma kernel_hull (hG : OrderGenerates T) (a : α) : kernel (hull T a) = a := by
   conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]
@@ -216,7 +215,7 @@ lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α]
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   constructor
   · exact fun ⦃a⦄ a ↦ a (hull T (kernel S)) ⟨(isClosed_iff hT).mpr ⟨kernel S, rfl⟩,
-      image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
+      image_subset_iff.mp (fun _ hbS => sInf_le hbS)⟩
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
     rw [← (hull_kernel_of_isClosed hT hG hR.1), ← gc_closureOperator]

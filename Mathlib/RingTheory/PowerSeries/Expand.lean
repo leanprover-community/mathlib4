@@ -17,7 +17,8 @@ This operation is called `PowerSeries.expand` and it is an algebra homomorphism.
 
 ### Main declaration
 
-* `PowerSeries.expand`: expand a power series by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
+* `PowerSeries.expand`: expand a power series by a nonzero factor of p,
+so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
 
 @[expose] public section
@@ -83,9 +84,9 @@ theorem expand_subst {f : MvPowerSeries τ S} [Finite τ] (hf : HasSubst f) (φ 
   rw [PowerSeries.subst, MvPowerSeries.expand_subst _ hp (HasSubst.const hf) (φ := φ),
     PowerSeries.subst]
 
-/- TODO : In the original file of multi variate polynomial, there are two theorem about rename
-here, but we don't have rename for multi variate power series. And for `eval₂Hom`, `eval₂`
-and `aevel`, the expression does't look good. -/
+/- TODO : In the original file of multivariate polynomial, there are two theorems about rename
+here, but we don't have rename for multivariate power series. And for `eval₂Hom`, `eval₂`
+and `aeval`, the expression does not look good. -/
 
 variable (φ : PowerSeries R) (q : ℕ) (hq : 0 < q)
 

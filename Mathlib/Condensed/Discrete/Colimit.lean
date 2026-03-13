@@ -58,7 +58,8 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     change fi ((c.π.app k ≫ (F ⋙ toProfinite).map _) x) =
       fj ((c.π.app k ≫ (F ⋙ toProfinite).map _) x)
     have h := LocallyConstant.congr_fun h x
-    rwa [c.w, c.w]
+    dsimp
+    rwa [dsimp% c.w, dsimp% c.w]
 
 @[simp]
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
@@ -160,12 +161,12 @@ lemma lanPresheafNatIso_hom_app (hF : ∀ S : Profinite, IsColimit <| F.mapCocon
 -/
 def lanSheafProfinite (X : Type (u + 1)) :
     Sheaf (coherentTopology Profinite.{u}) (Type (u + 1)) where
-  val := lanPresheaf (locallyConstantPresheaf X)
-  cond := by
+  obj := lanPresheaf (locallyConstantPresheaf X)
+  property := by
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
       fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
     exact ((CompHausLike.LocallyConstant.functor.{u, u + 1}
-      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).cond
+      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).property
 
 /-- `lanPresheaf (locallyConstantPresheaf X)` as a condensed set. -/
 def lanCondensedSet (X : Type (u + 1)) : CondensedSet.{u} :=
@@ -280,8 +281,8 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   intro x
   rw [incl_of_counitAppApp]
   simp only [counitAppAppImage]
-  letI : Fintype (fiber.{u, u + 1} f x) :=
-    Fintype.ofInjective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
+  have : Finite (fiber.{u, u + 1} f x) :=
+    Finite.of_injective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u + 1} f x)).hom
   ext y
   simp only [isoFinYonedaComponents_hom_apply, ← FunctorToTypes.map_comp_apply, ← op_comp]
@@ -324,7 +325,8 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     change fi ((c.π.app k ≫ (F ⋙ toLightProfinite).map _) x) =
       fj ((c.π.app k ≫ (F ⋙ toLightProfinite).map _) x)
     have h := LocallyConstant.congr_fun h x
-    rwa [c.w, c.w]
+    dsimp
+    rwa [dsimp% c.w, dsimp% c.w]
 
 @[simp]
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
@@ -437,12 +439,12 @@ lemma lanPresheafNatIso_hom_app
 `lanPresheaf (locallyConstantPresheaf X)` as a light condensed set.
 -/
 def lanLightCondSet (X : Type u) : LightCondSet.{u} where
-  val := lanPresheaf (locallyConstantPresheaf X)
-  cond := by
+  obj := lanPresheaf (locallyConstantPresheaf X)
+  property := by
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
       fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
     exact (CompHausLike.LocallyConstant.functor.{u, u}
-      (hs := fun _ _ _ ↦ ((LightProfinite.effectiveEpi_iff_surjective _).mp)).obj X).cond
+      (hs := fun _ _ _ ↦ ((LightProfinite.effectiveEpi_iff_surjective _).mp)).obj X).property
 
 variable (F : LightProfinite.{u}ᵒᵖ ⥤ Type u)
 
@@ -479,7 +481,7 @@ variable [PreservesFiniteProducts F]
 noncomputable instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X) F :=
   let X' := (Countable.toSmall.{0} X).equiv_small.choose
   let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
-  have : Fintype X' := Fintype.ofEquiv X e
+  have : Finite X' := Finite.of_equiv X e
   preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) F
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
@@ -553,8 +555,8 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   intro x
   rw [incl_of_counitAppApp]
   simp only [counitAppAppImage]
-  letI : Fintype (fiber.{u, u} f x) :=
-    Fintype.ofInjective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
+  have : Finite (fiber.{u, u} f x) :=
+    Finite.of_injective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom
   ext y
   simp only [isoFinYonedaComponents_hom_apply, ← FunctorToTypes.map_comp_apply, ← op_comp]
