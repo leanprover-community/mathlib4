@@ -316,9 +316,12 @@ instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConcept with
     sup := Concept.instSupConcept.max
-    isLUB_sSup _ := .of_image (f := fun x ↦ toDual x.intent) intent_subset_intent_iff isLUB_biSup
+    le_sSup := fun _ _ hc => intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
+    sSup_le := fun _ _ hc =>
+      intent_subset_intent_iff.1 <| subset_iInter₂ fun d hd => intent_subset_intent_iff.2 <| hc d hd
     inf := Concept.instInfConcept.min
-    isGLB_sInf _ := .of_image extent_subset_extent_iff isGLB_biInf }
+    sInf_le := fun _ _ => biInter_subset_of_mem
+    le_sInf := fun _ _ => subset_iInter₂ }
 
 @[simp]
 theorem extent_top : (⊤ : Concept α β r).extent = univ :=

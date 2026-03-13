@@ -122,7 +122,7 @@ theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     simp [Subtype.ext_iff, Finset.ext_iff, mem_smul_finset, h]
 
 /-- If a group `G` acts faithfully on `α`, then
-it acts faithfully on `powersetCard α n` provided `1 ≤ n < ENat.card α`. -/
+it acts faithfull on `powersetCard α n` provided `1 ≤ n < ENat.card α`. -/
 theorem faithfulSMul (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulSMul G α] :
     FaithfulSMul G (powersetCard α n) := by
   rw [faithfulSMul_iff]
@@ -258,7 +258,7 @@ theorem isPreprimitive_perm {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α
 set_option backward.isDefEq.respectTransparency false in
 /-- If `3 ≤ Nat.card α`, then `alternatingGroup α` acts transitively on `Set.powersetCard α n`.
 
-If `Nat.card α ≤ 2`, then `alternatingGroup α` is trivial, and
+If `Nat.card α ≤ 2`, then `alternatinGroup α` is trivial, and
 the result only holds in the trivial case where `powersetCard α n` is a subsingleton,
 that is, when `n = 0` or `Nat.card α ≤ n`. -/
 theorem isPretransitive_alternatingGroup [Fintype α] (hα : 3 ≤ Nat.card α) :

@@ -150,11 +150,13 @@ theorem fourierMultiplierCLM_apply (g : E → ℂ) (f : 𝓢'(E, F)) :
     fourierMultiplierCLM F g f = 𝓕⁻ (smulLeftCLM F g (𝓕 f)) := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fourierMultiplierCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) :
     fourierMultiplierCLM F g f u = f (𝓕 (SchwartzMap.smulLeftCLM ℂ g (𝓕⁻ u))) := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fourierMultiplierCLM_const (c : ℂ) :
     fourierMultiplierCLM F (fun (_ : E) ↦ c) = c • ContinuousLinearMap.id _ _ := by
@@ -179,6 +181,7 @@ theorem fourierMultiplierCLM_smul {g : E → ℂ} (hg : g.HasTemperateGrowth) (c
   ext1 f
   simp [fourierMultiplierCLM_apply, smulLeftCLM_smul hg]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 theorem fourierMultiplierCLM_sum {g : ι → E → ℂ} {s : Finset ι}
     (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
@@ -209,6 +212,7 @@ theorem lineDeriv_eq_fourierMultiplierCLM (m : E) (f : 𝓢'(E, F)) :
 
 open Laplacian
 
+set_option backward.isDefEq.respectTransparency false in
 theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢'(E, F)) :
     Δ f = -(2 * π) ^ 2 • fourierMultiplierCLM F (fun x ↦ Complex.ofReal (‖x‖ ^ 2)) f := by
   let ι := Fin (Module.finrank ℝ E)

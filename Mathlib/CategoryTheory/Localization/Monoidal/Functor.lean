@@ -136,6 +136,7 @@ lemma functorMonoidalOfComp_ε : letI := functorMonoidalOfComp L W F G
     ε F = ε G ≫ e.inv.app _ ≫ F.map (η L) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
     letI e := Lifting.iso L W G F

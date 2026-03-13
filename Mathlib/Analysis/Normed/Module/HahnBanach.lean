@@ -105,6 +105,7 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
 
 open Module
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
 from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
 with a finite-dimensional range, then `f` admits an extension to a continuous linear map `E → F`.

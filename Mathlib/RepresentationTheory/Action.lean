@@ -16,7 +16,7 @@ constructing the functor from the `Representation` would reduce the amount of De
 currently are doing in the `Rep` file.
 
 TODO (Edison) : Refactor `Rep` to be a concrete category of `Representation` and
-reconstruct the current `linearize` functor using this file.
+reconstruct the current `lineaization` functor using this file.
 
 -/
 

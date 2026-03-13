@@ -255,6 +255,7 @@ theorem psi_le {x : ℝ} (hx : 1 ≤ x) :
     · exact theta_le_log4_mul_x (by linarith)
   _ = _ := by ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Chebyshev's bound `ψ x ≤ c x` with an explicit constant.
 Note that `Chebyshev.psi_le` gives a sharper bound with a better main term. -/
 theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
@@ -315,7 +316,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     · simp [a, h]
   rw [sum_mul_eq_sub_integral_mul₁ a (f := fun n ↦ (log n)⁻¹) (by simp [a]) (by simp [a]),
     ← intervalIntegral.integral_of_le hx]
-  · -- Rewrite the derivative inside the integral
+  · -- Rewrite the derivative inside the intigral
     have int_deriv (f : ℝ → ℝ) :
         ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
         ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ :=
@@ -334,31 +335,6 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     have : log z ^ 2 ≠ 0 := by
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
     exact ContinuousAt.continuousWithinAt <| by fun_prop (disch := assumption)
-
-/-- Expresses the Chebyshev theta function `ϑ` in terms of `π` by using Abel summation. -/
-theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
-    θ x = π ⌊x⌋₊ * log x - ∫ t in 2..x, π ⌊t⌋₊ / t := by
-  -- Rewrite in a form to which Abel summation can be applied
-  rw [theta_eq_sum_Icc, sum_filter]
-  let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n ↦ 1)
-  trans ∑ n ∈ Icc 0 ⌊x⌋₊, log n * a n
-  · refine sum_congr rfl fun n hn ↦ ?_
-    split_ifs with h <;> simp [a, h]
-  rw [sum_mul_eq_sub_integral_mul₁ a (by simp [a, Nat.not_prime_zero])
-    (by simp [a, Nat.not_prime_one]) _ (fun z ⟨hz, _⟩ ↦ (by fun_prop (disch := linarith))) ?hint,
-    ←intervalIntegral.integral_of_le hx]
-  case hint =>
-    rw [deriv_log']
-    refine ContinuousOn.integrableOn_Icc ?_
-    fun_prop (disch := grind)
-  -- Rewrite the derivative inside the integral
-  simp only [primeCounting, primeCounting', count_eq_card_filter_range]
-  have int_deriv (f : ℝ → ℝ) :
-      ∫ u in 2..x, deriv (fun x ↦ log x) u * f u =
-      ∫ u in 2..x, f u / u :=
-    intervalIntegral.integral_congr fun u _ ↦ by rw [deriv_log, mul_comm, div_eq_mul_inv]
-  rw [int_deriv]
-  simp [a, Set.indicator_apply, Nat.range_succ_eq_Icc_zero, mul_comm]
 
 theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt_b : 1 < b) :
     IntervalIntegrable (fun x ↦ 1 / log x ^ 2) MeasureTheory.volume a b := by

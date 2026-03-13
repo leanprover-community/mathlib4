@@ -228,7 +228,7 @@ end
 
 -- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
 -- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
-/-- error: `ring_nf` made no progress at h -/
+/-- error: ring_nf made no progress at h -/
 #guard_msgs in
 example {R : Type*} [CommSemiring R] {x y : R} : True := by
   have h : x + y = 3 := test_sorry

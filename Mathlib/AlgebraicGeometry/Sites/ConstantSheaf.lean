@@ -5,8 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Sites.Fpqc
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
+public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 
 /-!
 # Sheaf of continuous maps associated to topological space
@@ -64,26 +63,6 @@ lemma isSheaf_zariskiTopology_continuousMapPresheaf :
   rw [isSheaf_iff_isSheaf_of_type]
   exact GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable _
 
-set_option backward.isDefEq.respectTransparency false in
-lemma isSheaf_fpqcTopology_continuousMapPresheaf :
-    Presheaf.IsSheaf Scheme.fpqcTopology (continuousMapPresheaf T) := by
-  rw [isSheaf_iff_isSheaf_of_type, Scheme.fpqcTopology_eq_propQCTopology,
-    isSheaf_type_propQCTopology_iff]
-  refine ⟨?_, fun {R S} f hf₁ hf₂ ↦ ?_⟩
-  · rw [← isSheaf_iff_isSheaf_of_type]
-    exact isSheaf_zariskiTopology_continuousMapPresheaf _
-  · rw [Presieve.isSheafFor_singleton]
-    have : Topology.IsQuotientMap (Spec.map f) := Flat.isQuotientMap_of_surjective _
-    intro (x : C(Spec S, T)) h
-    refine ⟨?_, ?_, ?_⟩
-    · refine Topology.IsQuotientMap.lift this x fun a b hfab ↦ ?_
-      obtain ⟨c, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback a b hfab
-      exact congr($(h (pullback.fst (Spec.map f) (Spec.map f))
-        (pullback.snd _ _) pullback.condition).1 c)
-    · apply Topology.IsQuotientMap.lift_comp
-    · intro y hy
-      rwa [← ContinuousMap.cancel_right (Spec.map f).surjective, Topology.IsQuotientMap.lift_comp]
-
 /-- `continuousMapPresheaf` is `U ↦ C(ConnectedComponents U, T)` if `T` is totally
 disconnected. -/
 def continuousMapPresheafEquivOfTotallyDisconnectedSpace [TotallyDisconnectedSpace T]
@@ -111,10 +90,5 @@ variable (A : Type v) [TopologicalSpace A] [AddCommGroup A] [IsTopologicalAddGro
 def continuousMapPresheafAbForgetIso :
     continuousMapPresheafAb A ⋙ CategoryTheory.forget Ab ≅ continuousMapPresheaf A :=
   Iso.refl _
-
-lemma isSheaf_fpqcTopology_continuousMapPresheafAb :
-    Presheaf.IsSheaf Scheme.fpqcTopology (continuousMapPresheafAb A) := by
-  apply Presheaf.isSheaf_of_isSheaf_comp _ _ (forget Ab)
-  exact isSheaf_fpqcTopology_continuousMapPresheaf _
 
 end AlgebraicGeometry

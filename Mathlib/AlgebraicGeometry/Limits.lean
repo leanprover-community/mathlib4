@@ -713,6 +713,7 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
   · simpa using f.isOpenEmbedding.injective
   · simpa using g.isOpenEmbedding.injective
 
+set_option backward.isDefEq.respectTransparency false in
 instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
     {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
   obtain (a | (a | a)) := t
@@ -722,6 +723,7 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
   · simpa
 
 -- Test that instances on locally directed colimits fire correctly.
+set_option backward.isDefEq.respectTransparency false in
 example {U X Y : Scheme.{u}} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f] [IsOpenImmersion g] : HasPushout f g :=
   inferInstance

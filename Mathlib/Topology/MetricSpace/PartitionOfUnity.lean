@@ -62,7 +62,7 @@ theorem eventually_nhds_zero_forall_closedEBall_subset (hK : ∀ i, IsClosed (K 
     _ ≤ p.1 + (R - p.1) := add_le_add hz <| le_trans hp.2 <| tsub_le_tsub_left hp.1.out.le _
     _ = R := add_tsub_cancel_of_le (lt_trans (by exact hp.1) hrR).le
 
-/-- Auxiliary lemma for `exists_continuous_real_forall_closedEBall_subset`
+/-- Auxuliary lemma for `exists_continuous_real_forall_closedEBall_subset`
 and its smooth counterpart. -/
 theorem exists_forall_closedEBall_subset_aux₁ (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
@@ -74,7 +74,7 @@ theorem exists_forall_closedEBall_subset_aux₁ (hK : ∀ i, IsClosed (K i))
   refine ⟨r, hr.mono fun y hy => ⟨hr0, ?_⟩⟩
   rwa [mem_preimage, mem_iInter₂]
 
-/-- Auxiliary lemma for `exists_continuous_real_forall_closedEBall_subset`
+/-- Auxuliary lemma for `exists_continuous_real_forall_closedEBall_subset`
 and its smooth counterpart. -/
 theorem exists_forall_closedEBall_subset_aux₂ (y : X) :
     Convex ℝ

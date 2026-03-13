@@ -32,6 +32,7 @@ open NormedSpace
 
 namespace Quaternion
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem exp_coe (r : ℝ) : exp (r : ℍ[ℝ]) = ↑(exp r) :=
   (map_exp (algebraMap ℝ ℍ[ℝ]) (continuous_algebraMap _ _) _).symm
@@ -78,6 +79,7 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
     simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left' hqn]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary result; if the power series corresponding to `Real.cos` and `Real.sin` evaluated
 at `‖q‖` tend to `c` and `s`, then the exponential series tends to `c + (s / ‖q‖)`. -/
 theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s : ℝ}
@@ -133,6 +135,7 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp q) = exp q.re ^ 2 :=
         normSq_eq_norm_mul_self, ← sq, div_mul_cancel₀ _ (pow_ne_zero _ hv)]
     _ = exp q.re ^ 2 := by rw [Real.cos_sq_add_sin_sq, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Note that this implies that exponentials of pure imaginary quaternions are unit quaternions
 since in that case the RHS is `1` via `NormedSpace.exp_zero` and `norm_one`. -/
 @[simp]

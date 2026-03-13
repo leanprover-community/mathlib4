@@ -167,6 +167,7 @@ section NormedSpace
 
 variable [∀ i, NormedSpace ℝ (E i)] {X : Π i, Ω → (E i)}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Independent Gaussian random variables are jointly Gaussian. -/
 lemma iIndepFun.hasGaussianLaw (hX1 : ∀ i, HasGaussianLaw (X i) P) (hX2 : iIndepFun X P) :
     HasGaussianLaw (fun ω ↦ (X · ω)) P where
@@ -279,6 +280,7 @@ variable {E F : Type*}
     [NormedAddCommGroup F] [MeasurableSpace F]
     [CompleteSpace F] [BorelSpace F] [SecondCountableTopology F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Independent Gaussian random variables are jointly Gaussian. -/
 lemma IndepFun.hasGaussianLaw [NormedSpace ℝ E] [NormedSpace ℝ F] {X : Ω → E} {Y : Ω → F}
     (hX : HasGaussianLaw X P) (hY : HasGaussianLaw Y P) (hXY : X ⟂ᵢ[P] Y) :

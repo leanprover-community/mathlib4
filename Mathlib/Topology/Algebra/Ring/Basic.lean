@@ -429,7 +429,8 @@ The supremum of two ring topologies `s` and `t` is the infimum of the family of 
 contained in the intersection of `s` and `t`. -/
 instance : CompleteSemilatticeInf (RingTopology R) where
   sInf := def_sInf
-  isGLB_sInf _ := .of_image (f := toTopologicalSpace) .rfl (isGLB_sInf _)
+  sInf_le := fun _ a haS => sInf_le (α := TopologicalSpace R) ⟨a, ⟨haS, rfl⟩⟩
+  le_sInf := fun _ _ h => le_sInf (α := TopologicalSpace R) <| forall_mem_image.2 h
 
 instance : CompleteLattice (RingTopology R) :=
   completeLatticeOfCompleteSemilatticeInf _

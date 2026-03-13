@@ -44,7 +44,7 @@ We define the following variants.
   This is the height of an element of `K`.
 * `Height.mulHeight x` and `Height.logHeight x` for `x : ι → K` with `ι` finite. This is the height
   of a tuple of elements of `K` representing a point in projective space. When `x = 0`, we
-  define the multiplicative height to be `1` (so the logarithmic height is `0`).
+  define the multiplicative height to be `1` (so the loarithmic height is `0`).
   It is invariant under scaling by nonzero elements of `K`.
 * `Finsupp.mulHeight x` and `Finsupp.logHeight x` for `x : α →₀ K`. This is the same
   as the height of `x` restricted to the support of `x`.
@@ -107,7 +107,7 @@ variable {K}
 /-!
 ### Heights of field elements
 
-We use the subscript `₁` to denote multiplicative and logarithmic heights of field elements
+We use the subscipt `₁` to denote multiplicative and logarithmic heights of field elements
 (this is because we are in the one-dimensional case of (affine) heights).
 -/
 
@@ -128,7 +128,7 @@ lemma mulHeight₁_zero : mulHeight₁ (0 : K) = 1 := by
 lemma mulHeight₁_one : mulHeight₁ (1 : K) = 1 := by
   simp [mulHeight₁_eq]
 
-/-- The multiplicative height of a field element is always at least `1`. -/
+/-- The mutliplicative height of a field element is always at least `1`. -/
 lemma one_le_mulHeight₁ (x : K) : 1 ≤ mulHeight₁ x :=
   one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod_map fun _ _ ↦ le_max_right ..) <|
     one_le_finprod fun _ ↦ le_max_right ..
@@ -572,7 +572,7 @@ lemma mulHeight₁_pow (x : K) (n : ℕ) : mulHeight₁ (x ^ n) = mulHeight₁ x
   fin_cases i <;> simp
 
 /-- The logarithmic height of the `n`th power of a field element `x` (with `n : ℕ`)
-is `n` times the logarithmic height of `x`. -/
+is `n` times the logaritmic height of `x`. -/
 lemma logHeight₁_pow (x : K) (n : ℕ) : logHeight₁ (x ^ n) = n * logHeight₁ x := by
   simp only [logHeight₁_eq_log_mulHeight₁, mulHeight₁_pow, log_pow]
 

@@ -55,6 +55,7 @@ lemma smooth_of_grpObj_of_isAlgClosed : Smooth f := by
     simp [comp_lift_assoc]
   have hα' : α.hom.left x = y := by
     simpa [x', y', pointEquivClosedPoint] using congr(($hα).left (IsLocalRing.closedPoint K))
+  have hαf : α.hom.left ≫ f = f := α.hom.w
   rw! [← hα', ← α.hom.left.mem_preimage, Scheme.Hom.preimage_smoothLocus_eq,
     show α.hom.left ≫ f = f from α.hom.w] at hy
   exact hx hy

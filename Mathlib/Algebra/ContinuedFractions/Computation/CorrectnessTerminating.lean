@@ -180,6 +180,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
       have tmp_calc' :=
         compExactValue_correctness_of_stream_eq_some_aux_comp pB ppB ifp_succ_n_fr_ne_zero
       let f := Int.fract (1 / ifp_n.fr)
+      have f_ne_zero : f ≠ 0 := by simpa [f] using ifp_succ_n_fr_ne_zero
       -- now unfold the recurrence one step and simplify both sides to arrive at the conclusion
       dsimp only [conts, pconts, ppconts]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl

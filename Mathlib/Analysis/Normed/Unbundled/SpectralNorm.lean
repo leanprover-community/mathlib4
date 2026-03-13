@@ -927,6 +927,7 @@ def normedAlgebra :
   letI _ := normedField K L
   { normedSpace K L, (inferInstance : Algebra K L) with }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `L` with the spectral norm is a `NormedAlgebra` over any intermediate `E`
 that is a normed algebra over `K`. -/
 @[implicit_reducible]
@@ -951,6 +952,7 @@ def metricSpace : MetricSpace L := (normedField K L).toMetricSpace
 @[implicit_reducible]
 def uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `L/K` is finite dimensional, then `L` is a complete space with respect to topology induced
   by the spectral norm. -/
 instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :

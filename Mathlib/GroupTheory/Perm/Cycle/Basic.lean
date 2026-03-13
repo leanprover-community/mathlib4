@@ -616,7 +616,12 @@ theorem IsCycle.isCycle_pow_pos_of_lt_prime_order [Finite β] {f : Perm β} (hf 
       refine Nat.Coprime.symm ?_
       rw [Nat.Prime.coprime_iff_not_dvd hf']
       exact Nat.not_dvd_of_pos_of_lt hn hn'
-    exact (pow_iff hf).mpr this
+    obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime this
+    have hf'' := hf
+    rw [← hm] at hf''
+    refine hf''.of_pow ?_
+    rw [hm]
+    exact support_pow_le f n
 
 end IsCycle
 
@@ -648,7 +653,8 @@ theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
     IsConj σ τ ↔ #σ.support = #τ.support where
   mp h := by
     obtain ⟨π, rfl⟩ := (_root_.isConj_iff).1 h
-    exact card_support_conj.symm
+    exact Finset.card_bij (fun a _ => π a) (fun _ ha => by simpa using ha)
+      (fun _ _ _ _ ab => π.injective ab) fun b hb ↦ ⟨π⁻¹ b, by simpa using hb, π.apply_symm_apply b⟩
   mpr := hσ.isConj hτ
 
 end Conjugation
@@ -1048,7 +1054,10 @@ theorem zpow_eq_ofSubtype_subtypePerm_iff
   constructor
   · intro h
     ext ⟨x, hx⟩
-    simpa [Perm.congr_fun h _] using ofSubtype_subtypePerm_of_mem _ hx
+    simp only [Perm.congr_fun h x, subtypePerm_apply_zpow_of_mem, Subtype.coe_mk, subtypePerm_apply]
+    rw [ofSubtype_apply_of_mem]
+    · simp only [Subtype.coe_mk, subtypePerm_apply]
+    · exact hx
   · intro h; ext x
     rw [← h]
     by_cases hx : x ∈ s

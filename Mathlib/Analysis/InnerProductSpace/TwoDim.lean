@@ -403,6 +403,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
       smul_eq_mul, mul_zero, and_true]
     positivity
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A complex-valued real-bilinear map on an oriented real inner product space of dimension 2. Its
 real part is the inner product and its imaginary part is `Orientation.areaForm`.
 
@@ -522,6 +523,7 @@ protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (con
     Matrix.cons_val_one, mul_im, conj_re, conj_im]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem rightAngleRotation (z : ℂ) :
     Complex.orientation.rightAngleRotation z = I * z := by
@@ -532,6 +534,7 @@ protected theorem rightAngleRotation (z : ℂ) :
     neg_re, neg_im, I_re, I_im]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem kahler (w z : ℂ) : Complex.orientation.kahler w z = z * conj w := by
   rw [Orientation.kahler_apply_apply]

@@ -135,6 +135,7 @@ section ContinuousMap
 
 variable [TopologicalSpace Y] [CompactSpace Y]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X → C(Y, E)}
     (hf : Integrable f μ) (y : Y) : (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ := by
   calc (∫ x, f x ∂μ) y = ContinuousMap.evalCLM ℝ y (∫ x, f x ∂μ) := rfl

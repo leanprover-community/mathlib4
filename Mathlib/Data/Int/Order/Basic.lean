@@ -45,7 +45,18 @@ instance instLinearOrder : LinearOrder ℤ where
 protected alias ⟨eq_zero_or_eq_zero_of_mul_eq_zero, _⟩ := Int.mul_eq_zero
 
 theorem nonneg_or_nonpos_of_mul_nonneg : 0 ≤ a * b → 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
-  grind [Int.mul_comm, Int.mul_nonneg_iff_of_pos_right]
+  intro h
+  by_cases! ha : 0 ≤ a <;> by_cases! hb : 0 ≤ b
+  · exact .inl ⟨ha, hb⟩
+  · refine .inr ⟨?_, le_of_lt hb⟩
+    obtain _ | _ := Int.mul_eq_zero.mp <|
+      le_antisymm (Int.mul_nonpos_of_nonneg_of_nonpos ha <| le_of_lt hb) h
+    all_goals lia
+  · refine .inr ⟨le_of_lt ha, ?_⟩
+    obtain _ | _ := Int.mul_eq_zero.mp <|
+      le_antisymm (Int.mul_nonpos_of_nonpos_of_nonneg (le_of_lt ha) hb) h
+    all_goals lia
+  · exact .inr ⟨le_of_lt ha, le_of_lt hb⟩
 
 theorem mul_nonneg_of_nonneg_or_nonpos : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 → 0 ≤ a * b
   | .inl ⟨ha, hb⟩ => Int.mul_nonneg ha hb

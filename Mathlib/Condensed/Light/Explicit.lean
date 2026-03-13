@@ -11,7 +11,7 @@ public import Mathlib.Condensed.Light.Module
 
 # The explicit sheaf condition for light condensed sets
 
-We give an explicit description of light condensed sets:
+We give explicit description of light condensed sets:
 
 * `LightCondensed.ofSheafLightProfinite`: A finite-product-preserving presheaf on `LightProfinite`,
   satisfying `EqualizerCondition`.

@@ -151,6 +151,7 @@ variable {p} {T : Type uT} [CommRing T] [NoZeroDivisors T] [Algebra R T] [Faithf
 
 include bc
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_rank_eq :
     Cardinal.lift.{uM} (Module.rank T P) = Cardinal.lift.{uP} (Module.rank R M) := by
   have inj := FaithfulSMul.algebraMap_injective R T

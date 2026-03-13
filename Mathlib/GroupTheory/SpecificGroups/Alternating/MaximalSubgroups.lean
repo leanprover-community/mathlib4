@@ -97,12 +97,12 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     exact (Set.disjoint_left.mp hk_support) hx
   intro g
   rcases Int.units_eq_one_or (sign g) with hsg | hsg
-  · use! Equiv.Perm.ofSubtype g
+  · use! ofSubtype g
     · simp [mem_alternatingGroup, hsg]
     · rw [mem_stabilizer_iff, Submonoid.mk_smul]
       exact ofSubtype_mem_stabilizer g
     · aesop
-  · use! Equiv.Perm.ofSubtype g * k
+  · use! ofSubtype g * k
     · simp [mem_alternatingGroup, hk_swap.sign_eq, hsg]
     · rw [mem_stabilizer_iff, Submonoid.mk_smul, mul_smul, hks, ofSubtype_mem_stabilizer]
     · ext x

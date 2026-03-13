@@ -48,6 +48,7 @@ def geometrically (P : ObjectProperty Scheme.{u}) : MorphismProperty Scheme.{u} 
     ⦃Z : Scheme.{u}⦄ (fst : Z ⟶ X) (snd : Z ⟶ Spec (.of K)),
     IsPullback fst snd f y → P Z
 
+set_option backward.isDefEq.respectTransparency false in
 lemma geometrically_eq_universally (P : ObjectProperty Scheme.{u}) :
     geometrically P = .universally fun X Y _ ↦ IsIntegral Y → Subsingleton Y → P X := by
   ext X Y f

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Kyle Miller, Jack Cheverton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Jack Cheverton, Jeremy Tan
+Authors: Kyle Miller, Jack Cheverton, Jeremy Tan, Shreyas Srinivas
 -/
 module
 
@@ -46,50 +46,55 @@ In this treatment, a digraph may have self-loops.
 -/
 @[ext]
 structure Digraph (V : Type*) where
+  /-- The vertex set of a digraph. -/
+  verts : Set V
   /-- The adjacency relation of a digraph. -/
   Adj : V → V → Prop
+  /-- There is no edge of the digraph outside its vertices. -/
+  left_mem_verts_of_adj ⦃v w : V⦄ : Adj v w → v ∈ verts := by aesop
+  /-- There is no edge of the digraph outside its vertices. -/
+  right_mem_verts_of_adj ⦃v w : V⦄ : Adj v w → w ∈ verts := by aesop
+
+namespace Digraph
+
+attribute [aesop unsafe] left_mem_verts_of_adj right_mem_verts_of_adj
 
 /--
 Constructor for digraphs using a Boolean function.
-This is useful for creating a digraph with a decidable `Adj` relation,
-and it's used in the construction of the `Fintype (Digraph V)` instance.
+This is useful for creating a digraph with a decidable `Adj` relation.
 -/
 @[simps]
-def Digraph.mk' {V : Type*} : (V → V → Bool) ↪ Digraph V where
-  toFun x := ⟨fun v w ↦ x v w⟩
+def mk' {V : Type*} : (V → V → Bool) ↪ Digraph V where
+  toFun x := {
+    verts := {v | ∃ w, x v w ∨ x w v}
+    Adj v w := x v w
+  }
   inj' adj adj' := by
     simp_rw [mk.injEq]
-    intro h
+    intro ⟨_, h⟩
     funext v w
     simpa only [eq_iff_iff, Bool.coe_iff_coe] using congr($h v w)
 
 instance {V : Type*} (adj : V → V → Bool) : DecidableRel (Digraph.mk' adj).Adj :=
   inferInstanceAs <| DecidableRel (fun v w ↦ adj v w)
 
-instance {V : Type*} [DecidableEq V] [Fintype V] : Fintype (Digraph V) :=
-  Fintype.ofBijective Digraph.mk' <| by
-    classical
-    refine ⟨Embedding.injective _, ?_⟩
-    intro G
-    use fun v w ↦ G.Adj v w
-    ext v w
-    simp
-
-namespace Digraph
-
 /--
 The complete digraph on a type `V` (denoted by `⊤`)
 is the digraph whose vertices are all adjacent.
 Note that every vertex is adjacent to itself in `⊤`.
 -/
-protected def completeDigraph (V : Type*) : Digraph V where Adj := ⊤
+protected def completeDigraph (V : Type*) : Digraph V where
+  verts := ⊤
+  Adj := ⊤
 
 /--
 The empty digraph on a type `V` (denoted by `⊥`)
-is the digraph such that no pairs of vertices are adjacent.
-Note that `⊥` is called the empty digraph because it has no edges.
+is the digraph such that there are no vertices and therefore no pairs of vertices are adjacent.
+Note that `⊥` is called the empty digraph because it has no edges and no vertices.
 -/
-protected def emptyDigraph (V : Type*) : Digraph V where Adj _ _ := False
+protected def emptyDigraph (V : Type*) : Digraph V where
+  verts := ∅
+  Adj _ _ := False
 
 /--
 Two vertices are adjacent in the complete bipartite digraph on two vertex types
@@ -97,23 +102,23 @@ if and only if they are not from the same side.
 Any bipartite digraph may be regarded as a subgraph of one of these.
 -/
 @[simps]
-def completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
+def completeBipartite (V W : Type*) : Digraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
+  verts := Set.univ
 
 variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
-theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) := fun _ _ ↦ Digraph.ext
-
-@[simp] theorem adj_inj {G H : Digraph V} : G.Adj = H.Adj ↔ G = H := Digraph.ext_iff.symm
+@[simp] theorem adj_inj {G H : Digraph V} : verts G = verts H ∧ G.Adj = H.Adj ↔ G = H :=
+  Digraph.ext_iff.symm
 
 section Order
 
 /--
-The relation that one `Digraph` is a spanning subgraph of another.
+The relation that one `Digraph` is a subgraph of another.
 Note that `Digraph.IsSubgraph G H` should be spelled `G ≤ H`.
 -/
 protected def IsSubgraph (x y : Digraph V) : Prop :=
-  ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
+  x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
 
 /-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
@@ -121,16 +126,26 @@ instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
 @[simp]
 theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Prop) = (· ≤ ·) := rfl
 
+/-- The relation that one `Digraph` is a spanning subgraph of another. -/
+abbrev IsSpanningSubgraph (x y : Digraph V) : Prop :=
+  x ≤ y ∧ x.verts = y.verts
+
 /-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
 instance : Max (Digraph V) where
-  max x y := { Adj := x.Adj ⊔ y.Adj }
+  max x y := {
+    verts := x.verts ⊔ y.verts
+    Adj := x.Adj ⊔ y.Adj
+  }
 
 @[simp]
 theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w := Iff.rfl
 
 /-- The infimum of two digraphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
 instance : Min (Digraph V) where
-  min x y := { Adj := x.Adj ⊓ y.Adj }
+  min x y := {
+    verts := x.verts ⊓ y.verts
+    Adj := x.Adj ⊓ y.Adj
+  }
 
 @[simp]
 theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w := Iff.rfl
@@ -138,22 +153,35 @@ theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w �
 /-- We define `Gᶜ` to be the `Digraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent. -/
 instance : Compl (Digraph V) where
-  compl G := { Adj := fun v w ↦ ¬G.Adj v w }
+  compl G := {
+    verts := G.verts
+    Adj v w := v ∈ G.verts ∧ w ∈ G.verts ∧ ¬G.Adj v w
+  }
 
-@[simp] theorem compl_adj (G : Digraph V) (v w : V) : Gᶜ.Adj v w ↔ ¬G.Adj v w := Iff.rfl
+@[simp] theorem compl_adj (G : Digraph V) (v w : V) (hmem : v ∈ G.verts ∧ w ∈ G.verts) :
+  Gᶜ.Adj v w ↔ ¬G.Adj v w := ⟨fun h => h.2.2, fun h => ⟨hmem.1, hmem.2, h⟩⟩
 
 /-- The difference of two digraphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
 instance sdiff : SDiff (Digraph V) where
-  sdiff x y := { Adj := x.Adj \ y.Adj }
+  sdiff x y := {
+    verts := x.verts
+    Adj v w := x.Adj v w ∧ ¬ y.Adj v w
+  }
 
 @[simp]
 theorem sdiff_adj (x y : Digraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w := Iff.rfl
 
 instance supSet : SupSet (Digraph V) where
-  sSup s := { Adj := fun a b ↦ ∃ G ∈ s, Adj G a b }
+  sSup s := {
+    verts := {v | ∃ G ∈ s, v ∈ G.verts}
+    Adj v w := ∃ G ∈ s, Adj G v w
+  }
 
 instance infSet : InfSet (Digraph V) where
-  sInf s := { Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b) }
+  sInf s := {
+    verts := {v | ∀ G ∈ s, v ∈ G.verts}
+    Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b)
+  }
 
 @[simp]
 theorem sSup_adj {s : Set (Digraph V)} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
@@ -167,23 +195,315 @@ theorem iSup_adj {f : ι → Digraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).
 @[simp]
 theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) := by simp [iInf]
 
+instance distribLattice : DistribLattice (Digraph V) where
+    le := fun G H ↦ (G.verts ⊆ H.verts) ∧ (∀ ⦃v w⦄, G.Adj v w → H.Adj v w)
+    le_refl := by aesop
+    le_trans := by
+      intros _ _ _ h₁₂ h₂₃
+      constructor
+      · exact h₁₂.1.trans h₂₃.1
+      · aesop
+    le_antisymm := by
+      intros
+      ext v w <;> tauto
+    sup := max
+    inf := min
+    le_sup_left := by
+      intros
+      constructor <;> aesop (add simp [max, SemilatticeSup.sup])
+    le_sup_right := by
+      intros
+      constructor <;> aesop (add simp [max, SemilatticeSup.sup])
+
+    inf_le_left := by
+      intros
+      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
+
+    inf_le_right := by
+      intros
+      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
+
+    sup_le := by
+      intros
+      constructor <;> aesop (add simp [max, SemilatticeSup.sup])
+
+    le_inf := by
+      intros
+      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf])
+
+    le_sup_inf := by
+      intros
+      constructor <;> aesop (add simp [min, SemilatticeInf.inf, Lattice.inf, max,
+        SemilatticeSup.sup, Set.union_inter_distrib_left])
+
 instance : PartialOrder (Digraph V) where
-  __ := PartialOrder.lift _ adj_injective
-  le G H := ∀ ⦃a b⦄, G.Adj a b → H.Adj a b
+  le_antisymm := by
+    intro G H ⟨HsubG_verts, HsubG_edges⟩ ⟨GsubH_verts, GsubH_edges⟩
+    ext <;> grind
+section SpanningSubgraphs
 
-instance distribLattice : DistribLattice (Digraph V) :=
-  adj_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+/-!
+In this section we provide the complete boolean algebra for spanning subgraphs
+-/
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) where
+/--
+The type of spanning subgraphs of a digraph `G`
+-/
+abbrev SpanningSubgraph (G : Digraph V) := {H : Digraph V // IsSpanningSubgraph H G}
+
+/--
+The join/union of two Digraphs i.e. `G₁ ⊔ G₂`
+-/
+def sup {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) : G.SpanningSubgraph := by
+  constructor
+  case val => exact (max H₁.val H₂.val)
+  case property =>
+    have h₁verts : H₁.val.verts = G.verts := H₁.property.2
+    have h₂verts : H₂.val.verts = G.verts := H₂.property.2
+    constructor
+    · simpa [max, SemilatticeSup.sup] using
+        (show H₁.val ⊔ H₂.val ≤ G from _root_.sup_le H₁.property.1 H₂.property.1)
+    · aesop (add simp [max, SemilatticeSup.sup, h₁verts, h₂verts])
+
+@[push_cast]
+lemma sup_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
+  (sup H₁ H₂).val = (H₁.val) ⊔ (H₂.val) := by
+  obtain ⟨H₁, _, _⟩ := H₁
+  obtain ⟨H₂, _, _⟩ := H₂
+  simp [sup]
+
+
+/--
+The top subgraph `⊤`
+-/
+def top {G : Digraph V} : G.SpanningSubgraph := ⟨G, by aesop⟩
+
+/--
+The complement of a spanning subgraph `H` of `G` with respect to `G`
+-/
+def compl {G : Digraph V} (H : G.SpanningSubgraph) : G.SpanningSubgraph := by
+  constructor
+  case val => exact {
+    verts := H.val.verts
+    Adj v w := G.Adj v w ∧ ¬ H.val.Adj v w
+  }
+  case property =>
+    constructor
+    · constructor
+      · intro v hv
+        simpa [H.property.2] using hv
+      · intro _ _ h
+        exact h.1
+    · simp [H.property.2]
+
+/--
+The meet/intersection of two spanning subgraphs `H₁` and `H₂` of `G`
+-/
+def inf {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) : G.SpanningSubgraph := by
+  constructor
+  case val => exact (min H₁.val H₂.val)
+  case property =>
+    have h₁verts : H₁.val.verts = G.verts := H₁.property.2
+    have h₂verts : H₂.val.verts = G.verts := H₂.property.2
+    constructor
+    · simpa [min, SemilatticeInf.inf, Lattice.inf] using
+        (show H₁.val ⊓ H₂.val ≤ G from _root_.inf_le_left.trans H₁.property.1)
+    · aesop (add simp [min, SemilatticeInf.inf, Lattice.inf, h₁verts, h₂verts])
+
+@[push_cast]
+lemma inf_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
+  (inf H₁ H₂).val = (H₁.val) ⊓ (H₂.val) := by
+  obtain ⟨H₁, _, _⟩ := H₁
+  obtain ⟨H₂, _, _⟩ := H₂
+  simp [inf]
+
+/--
+The `⊥` subgraph according to the spanning subgraph relation
+-/
+def bot {G : Digraph V} : G.SpanningSubgraph where
+  val :=
+    ⟨G.verts, fun _ _ => False, by simp, by simp⟩
+  property := by
+    constructor
+    · constructor <;> aesop
+    · aesop
+
+private lemma by_val {G : Digraph V} {H₁ H₂ : G.SpanningSubgraph}
+    (h : H₁.val ≤ H₂.val) : H₁ ≤ H₂ := h
+
+lemma le_sup_left {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph, H₁ ≤ (sup H₁ H₂) := by
+  intro H₁ H₂
+  exact by_val <| by
+    aesop (add safe [_root_.le_sup_left]) (add simp [sup_of_val])
+
+lemma le_sup_right {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph, H₂ ≤ (sup H₁ H₂) := by
+  intro H₁ H₂
+  exact by_val <| by
+    aesop (add safe [_root_.le_sup_right]) (add simp [sup_of_val])
+
+lemma sup_le {G : Digraph V} : ∀ H₁ H₂ H₃ : G.SpanningSubgraph,
+  H₁ ≤ H₃ → H₂ ≤ H₃ → sup H₁ H₂ ≤ H₃ := by
+  intro H₁ H₂ H₃ h₁ h₂
+  exact by_val <| by
+    aesop (add safe [_root_.sup_le]) (add simp [sup_of_val])
+
+lemma inf_le_left {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph,
+  inf H₁ H₂ ≤ H₁ := by
+  intro H₁ H₂
+  exact by_val <| by
+    aesop (add safe [_root_.inf_le_left]) (add simp [inf_of_val])
+
+lemma inf_le_right {G : Digraph V} : ∀ H₁ H₂ : G.SpanningSubgraph,
+  inf H₁ H₂ ≤ H₂ := by
+  intro H₁ H₂
+  exact by_val <| by
+    aesop (add safe [_root_.inf_le_right]) (add simp [inf_of_val])
+
+lemma le_inf {G : Digraph V} : ∀ H₁ H₂ H₃ : G.SpanningSubgraph,
+  H₁ ≤ H₂ → H₁ ≤ H₃ → H₁ ≤ inf H₂ H₃ := by
+  intro H₁ H₂ H₃ h₁ h₂
+  exact by_val <| by
+    aesop (add safe [_root_.le_inf]) (add simp [inf_of_val])
+
+lemma le_top {G : Digraph V} : ∀ H : G.SpanningSubgraph,
+  H ≤ top := by
+  intro ⟨H, ⟨H_sub, H_verts⟩⟩
+  simp_all [top]
+
+lemma bot_le {G : Digraph V} : ∀ (H : G.SpanningSubgraph), bot ≤ H := by
+  intro ⟨H, ⟨H_sub, H_verts⟩⟩
+  unfold instLE LE.le Subtype.instLE
+  simp_all [Digraph.IsSubgraph, bot]
+
+/--
+The supremum of a set of spanning subgraphs of a graph `G`
+-/
+def sSup {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph where
+  val := {
+    verts := G.verts,
+    Adj v w := ∃ H ∈ ℋ, Adj H.val v w
+    left_mem_verts_of_adj := by
+      rintro v w ⟨H, -, hAdj⟩
+      exact G.left_mem_verts_of_adj (H.property.1.2 hAdj)
+    right_mem_verts_of_adj := by
+      rintro v w ⟨H, -, hAdj⟩
+      exact G.right_mem_verts_of_adj (H.property.1.2 hAdj)
+  }
+  property := by
+    constructor
+    · constructor
+      · simp
+      · rintro v w ⟨H, -, hAdj⟩
+        exact H.property.1.2 hAdj
+    · rfl
+
+/--
+The infimum of a set of spanning subgraphs of a graph `G`
+-/
+def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph where
+  val := {
+    verts := G.verts
+    Adj v w := (∀ H ∈ ℋ, Adj H.val v w) ∧ G.Adj v w
+    left_mem_verts_of_adj := by
+      intro v w h
+      apply G.left_mem_verts_of_adj h.right
+    right_mem_verts_of_adj := by
+      intro v w h
+      apply G.right_mem_verts_of_adj h.right
+  }
+  property := by
+    constructor
+    · constructor <;> aesop
+    · rfl
+
+lemma le_sSup {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph), ∀ H ∈ ℋ, H ≤ sSup ℋ := by
+  intros
+  constructor <;> aesop (add simp [sSup])
+
+lemma sSup_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
+  (H : G.SpanningSubgraph), (∀ H' ∈ ℋ, H' ≤ H) → sSup ℋ ≤ H := by
+  intro ℋ H hH
+  constructor
+  · aesop (add simp [sSup])
+  · rintro v w ⟨H', H'_mem, _⟩
+    have : ∀ ⦃v w⦄, H'.val.Adj v w → H.val.Adj v w := (hH H' H'_mem).2
+    aesop
+
+lemma top_le_sup_compl {G : Digraph V} : ∀ (H : G.SpanningSubgraph), top ≤ sup H (compl H) := by
+  intro
+  constructor
+  · intro
+    grind
+  · intro _ _ top_adj
+    push_cast
+    simp only [compl, sup_adj]
+    tauto
+
+lemma sInf_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph),
+  ∀ H ∈ ℋ, sInf ℋ ≤ H := by
+  intros
+  constructor <;> aesop (add simp [sInf])
+
+lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
+  (H : G.SpanningSubgraph), (∀ H' ∈ ℋ, H ≤ H') → H ≤ sInf ℋ := by
+  intro ℋ H h_sub
+  constructor
+  · aesop (add simp [sInf])
+  · intro v w h_adj
+    have h_adj_all : ∀ H' ∈ ℋ, H'.val.Adj v w := fun H' hH' => (h_sub H' hH').2 h_adj
+    simpa [sInf] using And.intro h_adj_all (H.property.1.2 h_adj)
+
+lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
+  inf H (compl H) ≤ bot := by
+  intro
+  constructor <;> aesop (add simp [inf, min, SemilatticeInf.inf, Lattice.inf, compl,
+    Set.inter_self, bot, Subtype.mk_le_mk, ge_iff_le])
+
+instance (G : Digraph V) : CompleteLattice G.SpanningSubgraph where
+  sup := sup
+  le_sup_left := le_sup_left
+  le_sup_right := le_sup_right
+  sup_le := sup_le
+  inf := inf
+  inf_le_left := inf_le_left
+  inf_le_right := inf_le_right
+  le_inf := le_inf
+  top := top
+  le_top := le_top
+  bot := bot
+  bot_le := bot_le
+  sSup := sSup
+  sInf := sInf
+  le_sSup := le_sSup
+  sSup_le := sSup_le
+  sInf_le := sInf_le
+  le_sInf := le_sInf
+
+instance (G : Digraph V) : DistribLattice G.SpanningSubgraph :=
+  Subtype.coe_injective.distribLattice (fun H : G.SpanningSubgraph => (H : Digraph V))
+    .rfl .rfl
+    (fun H₁ H₂ ↦ by simpa using (sup_of_val H₁ H₂))
+    (fun H₁ H₂ ↦ by simpa using (inf_of_val H₁ H₂))
+
+instance (G : Digraph V) : BooleanAlgebra G.SpanningSubgraph where
+  __ := (inferInstance : DistribLattice G.SpanningSubgraph)
+  __ := (inferInstance : Top G.SpanningSubgraph)
+  __ := (inferInstance : Bot G.SpanningSubgraph)
+  compl := compl
+  le_top := le_top
+  bot_le := bot_le
+  top_le_sup_compl := top_le_sup_compl
+  inf_compl_le_bot := inf_compl_le_bot
+
+instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
+  __ := (inferInstance : CompleteLattice G.SpanningSubgraph)
+  __ := (inferInstance : BooleanAlgebra G.SpanningSubgraph)
+
+instance Top : Top (Digraph V) where
   top := Digraph.completeDigraph V
+
+instance Bot : Bot (Digraph V) where
   bot := Digraph.emptyDigraph V
-  le_top _ _ _ _ := trivial
-  bot_le _ _ _ h := h.elim
-  inf_compl_le_bot _ _ _ h := absurd h.1 h.2
-  top_le_sup_compl G v w _ := by tauto
-  isLUB_sSup _ := ⟨fun G hG _ _ hab ↦ ⟨G, hG, hab⟩, fun _ hG _ _ ⟨_, hH, hab⟩ ↦ hG hH hab⟩
-  isGLB_sInf _ := ⟨fun _ hG _ _ hab ↦ hab hG, fun _ hG _ _ hab _ hH ↦ hG hH hab⟩
-  iInf_iSup_eq f := by ext; simp [Classical.skolem]
 
 @[simp] theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial
 
@@ -197,7 +517,11 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V)
 
 instance [IsEmpty V] : Unique (Digraph V) where
   default := ⊥
-  uniq G := by ext1; congr!
+  uniq G := by
+    ext1
+    · rw [←Digraph.emptyDigraph_eq_bot, Set.eq_empty_of_isEmpty G.verts]
+      rfl
+    · congr!
 
 instance [Nonempty V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
@@ -207,6 +531,7 @@ instance [Nonempty V] : Nontrivial (Digraph V) := by
 section Decidable
 
 variable (V) (H : Digraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
+variable [DecidablePred G.verts] [DecidablePred H.verts]
 
 instance Bot.adjDecidable : DecidableRel (⊥ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ False
@@ -223,10 +548,16 @@ instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
 instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
-instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
-  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w
+instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) := fun v w => by
+  refine (@instDecidableAnd  (v ∈ G.verts) (w ∈ G.verts ∧ ¬ G.Adj v w) ?_
+    (@instDecidableAnd (w ∈ G.verts) (¬ G.Adj v w) ?_ (
+      @instDecidableNot (G.Adj v w) ?_
+    )))
+  all_goals tauto
 
 end Decidable
+
+end SpanningSubgraphs
 
 end Order
 

@@ -55,7 +55,7 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat G}
       calc (X.ρ g⁻¹ ≫ f.hom) x
           = ((Y.ρ g⁻¹ * Y.ρ g)).hom y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
         _ = y.val := by
-          simp [← map_mul, inv_mul_cancel, Action.ρ_one])
+          rw [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_hom, id_eq])
     map_one' := by aesop
     map_mul' := by aesop
   }

@@ -192,9 +192,6 @@ set_option backward.privateInPublic true in
 private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
   Set.subset_iInter₂
 
-protected theorem isGLB_sInf {S : Set (Submodule R M)} : IsGLB S (sInf S) :=
-  .of_image SetLike.coe_subset_coe isGLB_biInf
-
 instance : Min (Submodule R M) :=
   ⟨fun p q ↦
     { carrier := p ∩ q
@@ -216,8 +213,10 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
     inf_le_left := fun _ _ ↦ Set.inter_subset_left
     inf_le_right := fun _ _ ↦ Set.inter_subset_right
     sSup S := sInf {sm | ∀ s ∈ S, s ≤ sm}
-    isLUB_sSup _ := isGLB_upperBounds.mp Submodule.isGLB_sInf
-    isGLB_sInf _ := Submodule.isGLB_sInf }
+    le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
+    sSup_le := fun _ _ hs ↦ sInf_le' hs
+    le_sInf := fun _ _ ↦ le_sInf'
+    sInf_le := fun _ _ ↦ sInf_le' }
 
 @[simp]
 theorem coe_inf : ↑(p ⊓ q) = (p ∩ q : Set M) :=

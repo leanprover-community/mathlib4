@@ -215,11 +215,6 @@ theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by s
 
 theorem homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma homEquiv_symm_unit (X : C) : dsimp% (adj.homEquiv _ _).symm (adj.unit.app X) = 𝟙 _ := by
-  simp
-
 theorem homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
     (adj.homEquiv X' Y).symm (f ≫ g) = F.map f ≫ (adj.homEquiv X Y).symm g := by
   simp
@@ -498,51 +493,15 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
   left_inv f := by simp
   right_inv g := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport an adjunction along a natural isomorphism on the left. -/
-@[simps]
-def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H where
-  unit := adj.unit ≫ Functor.whiskerRight iso.hom _
-  counit := Functor.whiskerLeft _ iso.inv ≫ adj.counit
-  left_triangle_components X := by
-    simp only [Functor.id_obj, Functor.comp_obj, NatTrans.comp_app, Functor.whiskerRight_app,
-      Functor.map_comp, Functor.whiskerLeft_app, Category.assoc, NatTrans.naturality_assoc]
-    simp [← Functor.comp_map]
-  right_triangle_components := by simp [← Functor.map_comp]
+def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun X Y => (equivHomsetLeftOfNatIso iso.symm).trans (adj.homEquiv X Y) }
 
-lemma homEquiv_ofNatIsoLeft_apply {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G)
-    {X : C} {Y : D} (f : G.obj X ⟶ Y) :
-    (ofNatIsoLeft adj iso).homEquiv X Y f = adj.homEquiv _ _ (iso.hom.app _ ≫ f) := by
-  simp
-
-lemma homEquiv_ofNatIsoLeft_symm_apply {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G)
-    {X : C} {Y : D} (f : X ⟶ H.obj Y) :
-    ((ofNatIsoLeft adj iso).homEquiv X Y).symm f = iso.inv.app _ ≫ (adj.homEquiv _ _).symm f := by
-  simp
-
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport an adjunction along a natural isomorphism on the right. -/
-@[simps]
-def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H where
-  unit := adj.unit ≫ Functor.whiskerLeft _ iso.hom
-  counit := Functor.whiskerRight iso.inv _ ≫ adj.counit
-  left_triangle_components X := by simp [← Functor.map_comp_assoc]
-  right_triangle_components Y := by
-    simp only [id_obj, comp_obj, NatTrans.comp_app, whiskerLeft_app, whiskerRight_app, map_comp,
-      assoc, ← iso.hom.naturality_assoc, ← iso.hom.naturality, unit_naturality_assoc,
-      adj.right_triangle_components_assoc]
-    simp
-
-lemma homEquiv_ofNatIsoRight_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H)
-    {X : C} {Y : D} (f : F.obj X ⟶ Y) :
-    (ofNatIsoRight adj iso).homEquiv X Y f = adj.homEquiv _ _ f ≫ iso.hom.app _ := by
-  simp
-
-lemma homEquiv_ofNatIsoRight_symm_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H)
-    {X : C} {Y : D} (f : X ⟶ H.obj Y) :
-    ((ofNatIsoRight adj iso).homEquiv X Y).symm f =
-      (adj.homEquiv _ _).symm (f ≫ iso.inv.app _) := by
-  simp
+def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun X Y => (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that

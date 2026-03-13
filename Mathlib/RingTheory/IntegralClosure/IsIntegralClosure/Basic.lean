@@ -40,6 +40,7 @@ theorem IsIntegral.isUnit [Field R] [Ring S] [IsDomain S] [Algebra R S] {x : S}
   (FiniteDimensional.isUnit R (K := adjoin R {x})
     (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (adjoin R {x}).val
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A commutative domain that is an integral algebra over a field is a field. -/
 theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
     [Algebra R S] [Algebra.IsIntegral R S] (hR : IsField R) : IsField S where

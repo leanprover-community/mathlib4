@@ -32,7 +32,7 @@ public import Mathlib.LinearAlgebra.Dual.BaseChange
 
 ## Note on terminology
 
-In the mathematical literature, linear maps of the form `LinearMap.transvection f v`
+In the mathematical litterature, linear maps of the form `LinearMap.transvection f v`
 are only called “transvections” when `f v = 0`. Otherwise, they are sometimes
 called “dilations” (especially if `f v ≠ -1`).
 

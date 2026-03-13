@@ -98,7 +98,9 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero' [Field R] {a b c x1 x2 : R} (ha : 
     (C a * X ^ 2 + C b * X + C c).roots = {x1, x2} ↔
       x1 + x2 = -b / a ∧ x1 * x2 = c / a := by
   rw [roots_quadratic_eq_pair_iff_of_ne_zero ha]
-  grind
+  field_simp
+  exact and_congr ⟨fun h => by linear_combination h, fun h => by linear_combination h⟩
+    ⟨fun h => by linear_combination -h, fun h => by linear_combination -h⟩
 
 /-- **Vieta's formula** for quadratics as an iff (`aroots, Field` version). -/
 lemma aroots_quadratic_eq_pair_iff_of_ne_zero' [CommRing T] [Field S] [Algebra T S] {a b c : T}

@@ -80,7 +80,7 @@ lemma isSMulRegular_of_nonZeroDivisors {r : R} (hr : r ∈ R⁰) [Flat R M] : Is
 /-- Flat modules have no torsion. -/
 theorem torsion_eq_bot [Flat R M] : torsion R M = ⊥ := by
   rw [eq_bot_iff]
-  -- indeed the definition of torsion means "annihilated by a nonzerodivisor"
+  -- indeed the definition of torsion means "annihiliated by a nonzerodivisor"
   rintro m ⟨⟨r, hr⟩, h⟩
   -- and we just showed that 0 is the only element with this property
   exact isSMulRegular_of_nonZeroDivisors hr (by simpa using h)

@@ -265,19 +265,11 @@ set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- The fiber functor on sheaves is obtained from the fiber functor on presheaves
 by localization with respect to the class of morphisms `J.W`. -/
-noncomputable def presheafToSheafCompSheafFiberIso [HasWeakSheafify J A] :
+noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A] :
     presheafToSheaf J A ⋙ Φ.sheafFiber ≅ Φ.presheafFiber :=
   (NatIso.ofComponents
     (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
-      (by simp [sheafFiber, ← Functor.map_comp])).symm
-
-@[deprecated (since := "2026-03-08")]
-alias presheafToSheafCompSheafFiber := presheafToSheafCompSheafFiberIso
-
-noncomputable instance [HasWeakSheafify J A] :
-    Localization.Lifting (presheafToSheaf J A) J.W
-      Φ.presheafFiber Φ.sheafFiber where
-  iso := Φ.presheafToSheafCompSheafFiberIso A
+      (by simp [← Functor.map_comp])).symm
 
 instance : PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
   have : PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) := inferInstance

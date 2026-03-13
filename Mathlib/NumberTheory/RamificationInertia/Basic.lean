@@ -1055,21 +1055,6 @@ theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
   rw [IsScalarTower.algebraMap_eq R S T] at hfg ⊢
   exact ramificationIdx_tower hg0 hfg hg
 
-theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T] [IsDomain R]
-    [Module.IsTorsionFree R S] [Module.IsTorsionFree S T] (p : Ideal R) (P : Ideal S) (Q : Ideal T)
-    [Q.IsPrime] [Q.LiesOver P] [P.LiesOver p] :
-    ramificationIdx (algebraMap R T) p Q =
-      ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
-  obtain rfl | hp := eq_or_ne p ⊥
-  · simp
-  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under S Q
-  have : Module.IsTorsionFree R T := by
-    refine Module.IsTorsionFree.of_smul_eq_zero fun r m h ↦ ?_
-    rwa [algebra_compatible_smul S, smul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff] at h
-  have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
-  exact ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot hP) (map_ne_bot_of_ne_bot hp)
-    <| map_le_iff_le_comap.mpr <| le_of_eq <| over_def Q P
-
 /-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,
   and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,
   then `f (I | p) = f (P | p) * f (I | P)`. -/

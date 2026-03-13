@@ -10,8 +10,6 @@ public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.ConstantSheaf
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-public import Mathlib.Algebra.Category.Grp.Zero
 
 /-!
 # Sheaf cohomology
@@ -61,27 +59,6 @@ def H (n : ℕ) : Type w' :=
 noncomputable instance (n : ℕ) : AddCommGroup (F.H n) := by
   dsimp only [H]
   infer_instance
-
-variable (J) in
-/-- Cohomology of an abelian sheaf in degree `n` as a functor. -/
-noncomputable def cohomologyFunctor (n : ℕ) :
-    Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} :=
-  (extFunctor.{w'} n).obj <|
-    .op <| ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift ℤ)))
-
-lemma cohomologyFunctor_obj (n : ℕ) (F : Sheaf J AddCommGrpCat.{w}) :
-    (cohomologyFunctor J n).obj F = F.H n :=
-  rfl
-
-instance (n : ℕ) : (cohomologyFunctor J n).Additive := by
-  dsimp [cohomologyFunctor]
-  infer_instance
-
-lemma subsingleton_H_of_isZero {F : Sheaf J AddCommGrpCat.{w}} (h : Limits.IsZero F) (n : ℕ) :
-    Subsingleton (F.H n) := by
-  rw [← cohomologyFunctor_obj]
-  apply AddCommGrpCat.subsingleton_of_isZero
-  exact Functor.map_isZero (cohomologyFunctor J n) h
 
 end
 

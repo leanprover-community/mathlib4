@@ -357,6 +357,7 @@ protected theorem _root_.Complex.rotation (θ : Real.Angle) (z : ℂ) :
   simp only [rotation_apply, Complex.rightAngleRotation, Real.Angle.coe_toCircle, real_smul]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rotation in an oriented real inner product space of dimension 2 can be evaluated in terms of a
 complex-number representation of the space. -/
 theorem rotation_map_complex (θ : Real.Angle) (f : V ≃ₗᵢ[ℝ] ℂ)

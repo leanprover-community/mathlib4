@@ -21,6 +21,7 @@ open Bornology Complex Real Set
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 -- Auxiliary version of Liouville's theorem, for real-valued harmonic functions on the complex
 -- plane.
 private theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant_aux (f : ℂ → ℝ)
@@ -40,6 +41,7 @@ private theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant_
   rw [← hF_re] at hM
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 **Liouville's theorem for harmonic functions on the complex plane** A bounded harmonic function on
 the complex plane is constant.
