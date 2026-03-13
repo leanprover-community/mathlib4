@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
 public import Mathlib.MeasureTheory.Measure.NullMeasurable
 public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Data.Set.Dissipate
 import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
@@ -562,6 +563,29 @@ theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirectedOrder ι]
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) :=
   hs.dual_left.measure_iInter hsm hfin
+
+lemma measure_iInter_of_ae_antitone [Preorder ι] [IsDirectedOrder ι] [Countable ι]
+    {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Antitone (s · ω))
+    (hsm : ∀ (i : ι), NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
+    μ (⋂ (i : ι), s i) = ⨅ (i : ι), μ (s i) := by
+  set t : ι → Set α := fun i ↦ ⋂ j ≤ i, s j with ht
+  have hst (i : ι) : s i =ᵐ[μ] t i := by
+    filter_upwards [hs] with ω hω
+    suffices ω ∈ s i ↔ ω ∈ t i by
+      exact propext this
+    simp only [ht, Set.mem_iInter]
+    refine ⟨fun (h : s i ω) j hj ↦ ?_, fun h ↦ h i le_rfl⟩
+    change s j ω
+    specialize hω hj
+    simp only [le_Prop_eq] at hω
+    exact hω h
+  rw [measure_congr <| Filter.EventuallyEq.countable_iInter hst, Antitone.measure_iInter]
+  · exact iInf_congr <| fun i ↦ measure_congr <| (hst i).symm
+  · exact Set.antitone_dissipate
+  · exact fun _ ↦ NullMeasurableSet.iInter <| fun j ↦ NullMeasurableSet.iInter <| fun _ ↦ hsm j
+  · obtain ⟨i, hi⟩ := hfin
+    refine ⟨i, (lt_of_le_of_lt ?_ <| lt_top_iff_ne_top.2 hi).ne⟩
+    rw [measure_congr (hst i)]
 
 /-- Continuity from above: the measure of the intersection of a sequence of
 measurable sets is the infimum of the measures of the partial intersections. -/

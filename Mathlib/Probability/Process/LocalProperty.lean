@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Kexing Ying
 module
 
 public import Mathlib.Probability.Process.Stopping
-public import Mathlib.Data.Set.Dissipate
 
 /-! # Local properties of processes
 
@@ -191,30 +190,6 @@ section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
   {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} {p q : (ι → Ω → E) → Prop}
-
-lemma measure_iInter_of_ae_antitone {ι : Type*}
-    [Countable ι] [Preorder ι] [IsDirected ι fun (x1 x2 : ι) ↦ x1 ≤ x2]
-    {s : ι → Set Ω} (hs : ∀ᵐ ω ∂P, Antitone (s · ω))
-    (hsm : ∀ (i : ι), MeasureTheory.NullMeasurableSet (s i) P) (hfin : ∃ (i : ι), P (s i) ≠ ⊤) :
-    P (⋂ (i : ι), s i) = ⨅ (i : ι), P (s i) := by
-  set t : ι → Set Ω := fun i ↦ ⋂ j ≤ i, s j with ht
-  have hst (i : ι) : s i =ᵐ[P] t i := by
-    filter_upwards [hs] with ω hω
-    suffices ω ∈ s i ↔ ω ∈ t i by
-      exact propext this
-    simp only [ht, Set.mem_iInter]
-    refine ⟨fun (h : s i ω) j hj ↦ ?_, fun h ↦ h i le_rfl⟩
-    change s j ω
-    specialize hω hj
-    simp only [le_Prop_eq] at hω
-    exact hω h
-  rw [measure_congr <| Filter.EventuallyEq.countable_iInter hst, Antitone.measure_iInter]
-  · exact iInf_congr <| fun i ↦ measure_congr <| (hst i).symm
-  · exact Set.antitone_dissipate
-  · exact fun _ ↦ NullMeasurableSet.iInter <| fun j ↦ NullMeasurableSet.iInter <| fun _ ↦ hsm j
-  · obtain ⟨i, hi⟩ := hfin
-    refine ⟨i, (lt_of_le_of_lt ?_ <| lt_top_iff_ne_top.2 hi).ne⟩
-    rw [measure_congr (hst i)]
 
 lemma isLocalizingSequence_of_isPreLocalizingSequence
     [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
