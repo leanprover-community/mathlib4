@@ -135,6 +135,16 @@ theorem opow_le_opow_iff_right {a b c : Ordinal} (a1 : 1 < a) : a ^ b ≤ a ^ c 
 theorem opow_right_inj {a b c : Ordinal} (a1 : 1 < a) : a ^ b = a ^ c ↔ b = c :=
   (isNormal_opow a1).strictMono.injective.eq_iff
 
+@[simp]
+theorem one_lt_opow {a b : Ordinal} (h : 1 < a) : 1 < a ^ b ↔ b ≠ 0 := by
+  obtain ⟨rfl, hb⟩ := eq_zero_or_pos b
+  · simp
+  · rw [← opow_zero a, opow_lt_opow_iff_right h, pos_iff_ne_zero]
+
+@[simp]
+theorem one_lt_pow {x : Ordinal} {n : ℕ} (h : 1 < x) : 1 < x ^ n ↔ n ≠ 0 :=
+  mod_cast one_lt_opow (b := n) h
+
 theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
   (isNormal_opow a1).map_isSuccLimit
 
@@ -256,6 +266,9 @@ theorem opow_mul_add_lt_opow {b u v w x : Ordinal} (hv : v < b) (hw : w < b ^ u)
 theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < b ^ u) :
     b ^ u * v + w < b ^ succ u :=
   opow_mul_add_lt_opow hvb hw (lt_succ u)
+
+theorem opow_mul_lt_opow {b u v x : Ordinal} (hv : v < b) (hu : u < x) : b ^ u * v < b ^ x := by
+  simpa using opow_mul_add_lt_opow hv (opow_pos _ hv.pos) hu
 
 /-! ### Ordinal logarithm -/
 
@@ -442,6 +455,15 @@ theorem div_opow_log_pos (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : 0 < o / b 
 theorem div_opow_log_lt {b : Ordinal} (o : Ordinal) (hb : 1 < b) : o / b ^ log b o < b := by
   rw [← lt_mul_iff_div_lt (opow_pos _ (zero_lt_one.trans hb)).ne', ← opow_succ]
   exact lt_opow_succ_log_self hb o
+
+theorem div_two_opow_log {o : Ordinal} (ho : o ≠ 0) : o / 2 ^ log 2 o = 1 := by
+  apply le_antisymm
+  · simpa [← one_add_one_eq_two] using div_opow_log_lt o one_lt_two
+  · simpa [one_le_iff_ne_zero, pos_iff_ne_zero] using div_opow_log_pos 2 ho
+
+theorem two_opow_log_add {o : Ordinal} (ho : o ≠ 0) : 2 ^ log 2 o + o % 2 ^ log 2 o = o := by
+  convert div_add_mod .. using 2
+  rw [div_two_opow_log ho, mul_one]
 
 theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y ≠ 0) :
     log b x + log b y ≤ log b (x * y) := by
