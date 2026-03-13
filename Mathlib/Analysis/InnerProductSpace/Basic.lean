@@ -957,12 +957,6 @@ def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpac
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
 
-instance : InnerProductSpace ℝ ℂ := InnerProductSpace.complexToReal
-
-@[simp]
-protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (z * conj w).re :=
-  rfl
-
 end RCLikeToReal
 
 /-- An `RCLike` field is a real inner product space. -/
@@ -976,10 +970,20 @@ noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ �
     show re (_ * _) = _ * re (_ * _) by
       simp only [mul_re, conj_re, conj_im, conj_trivial, smul_re, smul_im]; ring
 
--- The instance above does not create diamonds for concrete `𝕜`:
+-- The instance above directly subsumes the complexToReal construction for ℂ.
+-- We define this here (after `RCLike.toInnerProductSpaceReal`) rather than above, so that
+-- `fast_instance%` and instance synthesis can find the canonical non-leaky form.
+noncomputable instance : InnerProductSpace ℝ ℂ := RCLike.toInnerProductSpaceReal
+
+-- Check that this does not create diamonds for concrete `𝕜`:
 example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
 example :
     (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
+  rfl
+
+open scoped InnerProductSpace in
+@[simp]
+protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (z * conj w).re :=
   rfl
 
 section IsPosSemidef
