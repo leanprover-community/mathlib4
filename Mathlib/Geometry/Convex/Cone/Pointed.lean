@@ -328,7 +328,7 @@ variable (R) in
         _ = (b - a) • x               := by rw [neg_sub, sub_add_sub_cancel]
         _ = -(a • x) + b • x          := by rw [sub_smul]; abel
 
-@[simp] lemma span_sup_span_neg_eq_submodule_span (s : Set M) :
+@[simp] lemma span_neg_sup_span_eq_submodule_span (s : Set M) :
     span R (-s) ⊔ span R s = Submodule.span R s := by
   ext x
   constructor <;> intro h
@@ -362,19 +362,19 @@ section Pointwise
 
 open Pointwise
 
-lemma sup_neg_eq_submodule_span (C : PointedCone R M) : -C ⊔ C = C.linSpan := by
+lemma neg_sup_eq_submodule_span (C : PointedCone R M) : -C ⊔ C = C.linSpan := by
   nth_rw 1 2 [← Submodule.span_eq C]
   rw [← Submodule.span_neg_eq_neg]
-  exact span_sup_span_neg_eq_submodule_span _
+  exact span_neg_sup_span_eq_submodule_span _
 
-lemma neg_eq_iff_eq_linSpan {C : PointedCone R M} : -C ≤ C ↔ C.linSpan = C := by
-  rw [← sup_neg_eq_submodule_span, sup_eq_right]
+lemma neg_le_iff_eq_linSpan {C : PointedCone R M} : -C ≤ C ↔ C.linSpan = C := by
+  rw [← neg_sup_eq_submodule_span, sup_eq_right]
 
 end Pointwise
 
 lemma mem_linSpan {C : PointedCone R M} {x : M} :
     x ∈ C.linSpan ↔ ∃ p ∈ C, ∃ n ∈ C, p = x + n := by
-  rw [← mem_ofSubmodule_iff, ← sup_neg_eq_submodule_span, Submodule.mem_sup]
+  rw [← mem_ofSubmodule_iff, ← neg_sup_eq_submodule_span, Submodule.mem_sup]
   simp only [Submodule.mem_neg]
   constructor <;> intro h
   · obtain ⟨y, hy', z, hz, rfl⟩ := h
