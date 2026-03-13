@@ -171,24 +171,6 @@ theorem injective_theorem : Function.Injective T
       simp [hz, ←T.sq_singularValues_of_lt rfl (Finset.mem_range.mp h)]]
     exact T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, Finset.mem_range.mp h⟩
 
--- 3. From 2., 0 appears as a singular value `dim(ker(T*T))` (= `n - rank(T*T)`) times
-theorem finrank_ker_adjoint_comp_self {n : ℕ} (hn : finrank 𝕜 E = n) :
-  finrank 𝕜 (ker (adjoint T ∘ₗ T)) = n - finrank 𝕜 (range (adjoint T ∘ₗ T)) := by
-    rw [← hn, ← LinearMap.finrank_range_add_finrank_ker (adjoint T ∘ₗ T)]
-    omega
-
-
-omit [FiniteDimensional 𝕜 F] in
-theorem finrank_comp_self {n : ℕ} (hn : finrank 𝕜 E = n) :
-  finrank 𝕜 (ker T) = n - finrank 𝕜 (range T) := by
-    rw [← hn, ← LinearMap.finrank_range_add_finrank_ker T]
-    omega
-
--- 4. From 3., the number of positive singular values is `rank(T*T) = rank(T)`
-theorem finrank_range_adjoint_comp_self :
-  finrank 𝕜 (range (adjoint T ∘ₗ T)) = finrank 𝕜 (range T) := by
-    rw [range_adjoint_comp_self', finrank_range_adjoint]
-
 theorem card_support_singularValues : T.singularValues.support.card = finrank 𝕜 T.range := by
   have hS : ∀ m ∈ T.singularValues.support, m < finrank 𝕜 E := by
     intro m hm
