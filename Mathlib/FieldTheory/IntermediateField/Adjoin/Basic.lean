@@ -610,7 +610,6 @@ lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)
 noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype (F⟮α⟯ →ₐ[F] K) :=
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F α)
     (h_splits : ((minpoly F α).map (algebraMap F K)).Splits) :
     Nat.card (F⟮α⟯ →ₐ[F] K) = (minpoly F α).natDegree := by
