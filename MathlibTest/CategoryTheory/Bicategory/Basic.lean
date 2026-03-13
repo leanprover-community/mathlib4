@@ -29,6 +29,10 @@ variable {F G H I : B ⥤ᵒᵖᴸ C}
 
 open Oplax.OplaxTrans
 
+/-- error: expression contains metavariables:
+(F.map f ≫ η.app b) ≫ ?_ -/
+#guard_msgs in
+set_option pp.mvars false in
 example (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ ⟶ η ≫ ι where
   as := {
     app a := η.app a ◁ Γ.as.app a
