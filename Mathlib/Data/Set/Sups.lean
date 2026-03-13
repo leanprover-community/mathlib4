@@ -62,6 +62,7 @@ variable [SemilatticeSup α] [SemilatticeSup β] [FunLike F α β] [SupHomClass 
 variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊻ t` is the set of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
+@[instance_reducible]
 protected def hasSups : HasSups (Set α) :=
   ⟨image2 (· ⊔ ·)⟩
 
@@ -191,6 +192,7 @@ variable [SemilatticeInf α] [SemilatticeInf β] [FunLike F α β] [InfHomClass 
 variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊼ t` is the set of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
+@[instance_reducible]
 protected def hasInfs : HasInfs (Set α) :=
   ⟨image2 (· ⊓ ·)⟩
 

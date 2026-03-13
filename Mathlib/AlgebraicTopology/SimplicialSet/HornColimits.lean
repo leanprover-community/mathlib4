@@ -15,8 +15,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 In this file, we express horns as colimits:
 * horns in `Δ[2]` are pushouts of two copies of `Δ[1]`;
 * horns in `Δ[n]` are multicoequalizers of copies of the standard
-simplex of dimension `n-1` (a dedicated API is provided for inner
-horns in `Δ[3]`).
+  simplex of dimension `n-1` (a dedicated API is provided for inner
+  horns in `Δ[3]`).
 
 -/
 
@@ -169,6 +169,7 @@ variable {X : SSet.{u}} (f₀ f₂ f₃ : Δ[2] ⟶ X)
   (h₁₃ : stdSimplex.δ 1 ≫ f₀ = stdSimplex.δ 0 ≫ f₂)
   (h₂₃ : stdSimplex.δ 2 ≫ f₂ = stdSimplex.δ 2 ≫ f₃)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `desc`. -/
 @[simps! pt]
 def desc.multicofork :
@@ -254,6 +255,7 @@ variable {X : SSet.{u}} (f₀ f₁ f₃ : Δ[2] ⟶ X)
   (h₁₂ : stdSimplex.δ 2 ≫ f₀ = stdSimplex.δ 0 ≫ f₃)
   (h₂₃ : stdSimplex.δ 0 ≫ f₀ = stdSimplex.δ 0 ≫ f₁)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `desc`. -/
 @[simps! pt]
 def desc.multicofork :

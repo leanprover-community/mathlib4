@@ -20,12 +20,12 @@ that for every `b : V` there is a unique path from `root` to `b`.
 - `Quiver.Arborescence V`: a typeclass asserting that `V` is an arborescence
 - `arborescenceMk`: a convenient way of proving that a quiver is an arborescence
 - `RootedConnected r`: a typeclass asserting that there is at least one path from `r` to `b` for
-every `b`.
+  every `b`.
 - `geodesicSubtree r`: given `[RootedConnected r]`, this is a subquiver of `V` which contains
-just enough edges to include a shortest path from `r` to `b` for every `b`.
+  just enough edges to include a shortest path from `r` to `b` for every `b`.
 - `geodesicArborescence : Arborescence (geodesicSubtree r)`: an instance saying that the geodesic
-subtree is an arborescence. This proves the directed analogue of 'every connected graph has a
-spanning tree'. This proof avoids the use of Zorn's lemma.
+  subtree is an arborescence. This proves the directed analogue of 'every connected graph has a
+  spanning tree'. This proof avoids the use of Zorn's lemma.
 -/
 
 @[expose] public section
@@ -57,6 +57,7 @@ instance {V : Type u} [Quiver V] [Arborescence V] (b : V) : Unique (Path (root V
     lower vertex to a higher vertex,
   - show that every vertex has at most one arrow to it, and
   - show that every vertex other than `r` has an arrow to it. -/
+@[implicit_reducible]
 noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V → ℕ)
     (height_lt : ∀ ⦃a b⦄, (a ⟶ b) → height a < height b)
     (unique_arrow : ∀ ⦃a b c : V⦄ (e : a ⟶ c) (f : b ⟶ c), a = b ∧ e ≍ f)

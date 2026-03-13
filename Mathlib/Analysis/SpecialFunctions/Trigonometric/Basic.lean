@@ -425,9 +425,6 @@ theorem sin_neg_of_neg_of_neg_pi_lt {x : ℝ} (hx0 : x < 0) (hpx : -π < x) : si
 theorem sin_nonpos_of_nonpos_of_neg_pi_le {x : ℝ} (hx0 : x ≤ 0) (hpx : -π ≤ x) : sin x ≤ 0 :=
   neg_nonneg.1 <| sin_neg x ▸ sin_nonneg_of_nonneg_of_le_pi (neg_nonneg.2 hx0) (neg_le.1 hpx)
 
-@[deprecated (since := "2025-07-27")]
-alias sin_nonpos_of_nonnpos_of_neg_pi_le := sin_nonpos_of_nonpos_of_neg_pi_le
-
 lemma abs_sin_eq_sin_abs_of_abs_le_pi {x : ℝ} (hx : |x| ≤ π) : |sin x| = sin |x| := by
   rcases lt_or_ge x 0 with h | h
   · rw [abs_of_neg h, sin_neg,

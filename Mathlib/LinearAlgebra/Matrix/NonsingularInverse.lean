@@ -74,6 +74,7 @@ variable [Fintype n] [DecidableEq n] [CommRing α]
 variable (A : Matrix n n α) (B : Matrix n n α)
 
 /-- If `A.det` has a constructive inverse, produce one for `A`. -/
+@[implicit_reducible]
 def invertibleOfDetInvertible [Invertible A.det] : Invertible A where
   invOf := ⅟A.det • A.adjugate
   mul_invOf_self := by
@@ -86,18 +87,21 @@ theorem invOf_eq [Invertible A.det] [Invertible A] : ⅟A = ⅟A.det • A.adjug
   convert (rfl : ⅟A = _)
 
 /-- `A.det` is invertible if `A` has a left inverse. -/
+@[implicit_reducible]
 def detInvertibleOfLeftInverse (h : B * A = 1) : Invertible A.det where
   invOf := B.det
   mul_invOf_self := by rw [mul_comm, ← det_mul, h, det_one]
   invOf_mul_self := by rw [← det_mul, h, det_one]
 
 /-- `A.det` is invertible if `A` has a right inverse. -/
+@[implicit_reducible]
 def detInvertibleOfRightInverse (h : A * B = 1) : Invertible A.det where
   invOf := B.det
   mul_invOf_self := by rw [← det_mul, h, det_one]
   invOf_mul_self := by rw [mul_comm, ← det_mul, h, det_one]
 
 /-- If `A` has a constructive inverse, produce one for `A.det`. -/
+@[implicit_reducible]
 def detInvertibleOfInvertible [Invertible A] : Invertible A.det :=
   detInvertibleOfLeftInverse A (⅟A) (invOf_mul_self _)
 
@@ -438,6 +442,7 @@ theorem isUnit_nonsing_inv_iff {A : Matrix n n α} : IsUnit A⁻¹ ↔ IsUnit A 
 -- `IsUnit.invertible` lifts the proposition `IsUnit A` to a constructive inverse of `A`.
 /-- A version of `Matrix.invertibleOfDetInvertible` with the inverse defeq to `A⁻¹` that is
 therefore noncomputable. -/
+@[implicit_reducible]
 noncomputable def invertibleOfIsUnitDet (h : IsUnit A.det) : Invertible A :=
   ⟨A⁻¹, nonsing_inv_mul A h, mul_nonsing_inv A h⟩
 
@@ -488,6 +493,7 @@ end InvEqInv
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
   rcases subsingleton_or_nontrivial α with ht | ht
@@ -505,9 +511,11 @@ noncomputable instance : InvOneClass (Matrix n n α) :=
 theorem inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟k • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
   refine inv_eq_left_inv ?_
   rw [smul_mul, mul_adjugate, Units.smul_def, smul_smul, h.val_inv_mul, one_smul]
@@ -515,6 +523,7 @@ theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ 
 section Diagonal
 
 /-- `diagonal v` is invertible if `v` is -/
+@[implicit_reducible]
 def diagonalInvertible {α} [NonAssocSemiring α] (v : n → α) [Invertible v] :
     Invertible (diagonal v) :=
   Invertible.map (diagonalRingHom n α) v
@@ -525,6 +534,7 @@ theorem invOf_diagonal_eq {α} [Semiring α] (v : n → α) [Invertible v] [Inve
   rfl
 
 /-- `v` is invertible if `diagonal v` is -/
+@[implicit_reducible]
 def invertibleOfDiagonalInvertible (v : n → α) [Invertible (diagonal v)] : Invertible v where
   invOf := diag (⅟(diagonal v))
   invOf_mul_self :=
@@ -672,12 +682,14 @@ variable [Fintype m]
 variable [DecidableEq m]
 
 /-- `A.submatrix e₁ e₂` is invertible if `A` is -/
+@[implicit_reducible]
 def submatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Invertible A] :
     Invertible (A.submatrix e₁ e₂) :=
   invertibleOfRightInverse _ ((⅟A).submatrix e₂ e₁) <| by
     rw [Matrix.submatrix_mul_equiv, mul_invOf_self, submatrix_one_equiv]
 
 /-- `A` is invertible if `A.submatrix e₁ e₂` is -/
+@[implicit_reducible]
 def invertibleOfSubmatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ m)
     [Invertible (A.submatrix e₁ e₂)] : Invertible A :=
   invertibleOfRightInverse _ ((⅟(A.submatrix e₁ e₂)).submatrix e₂.symm e₁.symm) <| by

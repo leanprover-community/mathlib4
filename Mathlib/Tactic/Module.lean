@@ -139,7 +139,7 @@ instance [Neg R] : Neg (NF R M) where
   neg l := l.map fun (a, x) ↦ (-a, x)
 
 theorem eval_neg [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
-  simp only [NF.eval, List.map_map, List.sum_neg, NF.instNeg]
+  simp +instances only [NF.eval, List.map_map, List.sum_neg, NF.instNeg]
   congr
   ext p
   simp
@@ -462,7 +462,7 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     -- lift from original semiring of scalars (say `R₀`) to `R₀ ⊗ S`
     let ⟨u, R, iR, iRM, ⟨l, pf_l⟩, _, ⟨s, pf_r⟩⟩ ← qNF.matchRings iRM₀ i₁ i₂ l₀ [] s₀ y
     -- build the new list and proof
-    pure ⟨u, R, iR, iRM, l.onScalar q(HMul.hMul $s), (q(NF.smul_eq_eval $pf₀ $pf_l $pf_r):)⟩
+    pure ⟨u, R, iR, iRM, l.onScalar q(HMul.hMul $s), (q(NF.smul_eq_eval $pf₀ $pf_l $pf_r) :)⟩
   /- parse a `(0:M)` -/
   | ~q(0) =>
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [], q(NF.zero_eq_eval $M)⟩

@@ -224,12 +224,14 @@ def Inseparable (x y : X) : Prop :=
 variable (X)
 
 /-- Specialization forms a preorder on the topological space. -/
+@[instance_reducible]
 def specializationPreorder : Preorder X :=
   { Preorder.lift (OrderDual.toDual ∘ 𝓝) with
     le := fun x y => y ⤳ x
     lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
 
 /-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
+@[implicit_reducible]
 def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
 
 /-- The quotient of a topological space by its `inseparableSetoid`. Also called the Kolmogorov

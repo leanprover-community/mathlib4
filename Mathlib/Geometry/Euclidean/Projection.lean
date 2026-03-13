@@ -244,6 +244,7 @@ lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubsp
     (vsub_orthogonalProjection_mem_direction_orthogonal s q)]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the orthogonal projections of a point onto two subspaces are equal, so is the projection
 onto their supremum. -/
 lemma orthogonalProjection_sup_of_orthogonalProjection_eq {s₁ s₂ : AffineSubspace 𝕜 P} [Nonempty s₁]

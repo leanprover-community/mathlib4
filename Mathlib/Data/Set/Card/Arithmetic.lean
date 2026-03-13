@@ -116,6 +116,7 @@ lemma ncard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : ∀ i, (s i).
   rw [← finsum_mem_univ, ← finite_univ.ncard_biUnion (by simpa) (fun _ _ _ _ hab ↦ h hab)]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
     (hs : t.PairwiseDisjoint s) : (⋃ i ∈ t, s i).encard = ∑ᶠ i ∈ t, (s i).encard := by
   classical
