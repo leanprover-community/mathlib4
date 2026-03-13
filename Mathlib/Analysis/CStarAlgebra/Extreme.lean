@@ -10,7 +10,11 @@ public import Mathlib.Analysis.Convex.Extreme
 
 /-! # Extreme points of the closed unit ball in C⋆-algebras
 
-This file contains results on the extreme points of the closed unit ball in (unital) C⋆-algebras. -/
+This file contains results on the extreme points of the closed unit ball in (unital) C⋆-algebras.
+
+## References
+
+[C⋆-algebras and W⋆-algebras][sakai] -/
 
 public section
 
@@ -38,8 +42,7 @@ theorem isStarProjection_iff_mem_extremePoints_nonneg_and_mem_closedUnitBall
     and so `t • (e * (1 - a) * e)) = 0`.
     Note that we also get `0 ≤ t • a ≤ t • a + s • b = e` and so `t • e * a * e = t • a` using
     `IsStarProjection.conjugate_of_nonneg_of_le`.
-    And so the result then follows.
-     -/
+    And so the result then follows. -/
     have := calc
       t • (e * (1 - a : A⁺¹) * e) + s • (e * (1 - b) * e) = e - e * (t • a + s • b) * e := by
         simp [smul_sub, sub_add_eq_add_sub, add_sub, ← add_smul, hts, sub_mul, mul_sub,
