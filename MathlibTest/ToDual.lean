@@ -207,11 +207,11 @@ def lt_sum_eq_of_le [DecidableLE α] {a b : α} (hab : a ≤ b) :
     a < b ⊕' a = b :=
   if hba : b ≤ a then PSum.inr (le_antisymm hab hba) else PSum.inl (lt_of_le_not_ge hab hba)
 
--- set_option warn.classDefReducibility false in
+set_option warn.classDefReducibility false in
 @[to_dual DecidableLE1_dual]
 def DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
 
--- set_option warn.classDefReducibility false in
+set_option warn.classDefReducibility false in
 @[to_dual DecidableLE2_dual]
 def DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
 
