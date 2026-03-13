@@ -139,7 +139,7 @@ Then we have a bijection between 2-morphisms `g ≫ l₂ ⟶ l₁ ≫ h` and
       c --→ d             c ←-- d
     g ↓  ↗  ↓ h         g ↓  ↘  ↓ h
       e --→ f             e ←-- f
-         L₂                  R₂
+         l₂                  r₂
 ```
 
 Note that if one of the 2-morphisms is an iso, it does not imply the other is an iso.
@@ -304,7 +304,7 @@ section leftAdjointSquare.comp
 variable (α : g₁ ≫ l₃ ⟶ l₁ ≫ h₁) (β : h₁ ≫ l₄ ⟶ l₂ ≫ k₁)
 variable (γ : g₂ ≫ l₅ ⟶ l₃ ≫ h₂) (δ : h₂ ≫ l₆ ⟶ l₄ ≫ k₂)
 
-/-- Squares of squares between left adjoints can be composed by iterating vertical and horizontal
+/-- A square of squares between left adjoints can be composed by iterating vertical and horizontal
 composition.
 -/
 def leftAdjointSquare.comp :
@@ -331,7 +331,7 @@ section rightAdjointSquare.comp
 variable (α : r₁ ≫ g₁ ⟶ h₁ ≫ r₃) (β : r₂ ≫ h₁ ⟶ k₁ ≫ r₄)
 variable (γ : r₃ ≫ g₂ ⟶ h₂ ≫ r₅) (δ : r₄ ≫ h₂ ⟶ k₂ ≫ r₆)
 
-/-- Squares of squares between right adjoints can be composed by iterating vertical and horizontal
+/-- A square of squares between right adjoints can be composed by iterating vertical and horizontal
 composition.
 -/
 def rightAdjointSquare.comp :
@@ -353,7 +353,7 @@ theorem rightAdjointSquare.comp_hvcomp :
 
 end rightAdjointSquare.comp
 
-/-- The mates equivalence commutes with composition of squares of squares. These results form the
+/-- The mates equivalence commutes with composition of a square of squares. These results form the
 basis for an isomorphism of double categories to be proven later.
 -/
 theorem mateEquiv_square
@@ -385,7 +385,7 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂)
 /-- Given two adjunctions `l₁ ⊣ r₁` and `l₂ ⊣ r₂` both between objects `c`, `d`, there is a
 bijection between 2-morphisms `l₂ ⟶ l₁` and 2-morphisms `r₁ ⟶ r₂`. This is
 defined as a special case of `mateEquiv`, where the two "vertical" 1-morphisms are identities.
-Corresponding 2-morphisms are called `conjugateEquiv`.
+This bijection is `conjugateEquiv`; the image of a 2-morphism under it is called its conjugate.
 
 Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a 2-morphism is an iso
 iff its image under the bijection is an iso.
@@ -583,7 +583,7 @@ instance conjugateEquiv_symm_iso (α : r₁ ⟶ r₂) [IsIso α] :
       ⟨conjugateEquiv_symm_comm _ _ (by simp), conjugateEquiv_symm_comm _ _ (by simp)⟩⟩⟩
 
 /-- If `α` is a 2-morphism between left adjoints whose conjugate 2-morphism
-is an isomorphism, then `α` is an isomorphism. The converse is given in `Conjugate_iso`.
+is an isomorphism, then `α` is an isomorphism. The converse is given in `conjugateEquiv_iso`.
 -/
 theorem conjugateEquiv_of_iso (α : l₂ ⟶ l₁) [IsIso (conjugateEquiv adj₁ adj₂ α)] :
     IsIso α := by
@@ -636,9 +636,9 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : f₁ ⊣ u�
 /-- When all four morphisms in a square are left adjoints, the mates operation can be iterated:
 ```
          l₁                  r₁                  r₁
-      c --→ d             c ←-- d             c ←-- d
-   f₁ ↓  ↗  ↓  f₂      f₁ ↓  ↘  ↓ f₂       u₁ ↑  ↙  ↑ u₂
       a --→ b             a ←-- b             a ←-- b
+   f₁ ↓  ↗  ↓  f₂      f₁ ↓  ↘  ↓ f₂       u₁ ↑  ↙  ↑ u₂
+      c --→ d             c ←-- d             c ←-- d
          l₂                  r₂                  r₂
 ```
 In this case the iterated mate equals the conjugate of the original 2-morphism and is thus an
@@ -667,12 +667,12 @@ variable {g : a ⟶ c} {h : b ⟶ d}
 variable {l₁ : a ⟶ b} {r₁ : b ⟶ a} {l₂ : c ⟶ d} {r₂ : d ⟶ c} {l₃ : c ⟶ d} {r₃ : d ⟶ c}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : l₃ ⊣ r₃)
 
-/-- Composition of a squares between left adjoints with a conjugate square. -/
+/-- Composition of a square between left adjoints with a conjugate square. -/
 def leftAdjointSquareConjugate.vcomp (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : l₃ ⟶ l₂) :
     g ≫ l₃ ⟶ l₁ ≫ h :=
   g ◁ β ≫ α
 
-/-- Composition of a squares between right adjoints with a conjugate square. -/
+/-- Composition of a square between right adjoints with a conjugate square. -/
 def rightAdjointSquareConjugate.vcomp (α : r₁ ≫ g ⟶ h ≫ r₂) (β : r₂ ⟶ r₃) :
     r₁ ≫ g ⟶ h ≫ r₃ :=
   α ≫ h ◁ β
@@ -705,12 +705,12 @@ variable {g : a ⟶ c} {h : b ⟶ d}
 variable {l₁ : a ⟶ b} {r₁ : b ⟶ a} {l₂ : a ⟶ b} {r₂ : b ⟶ a} {l₃ : c ⟶ d} {r₃ : d ⟶ c}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : l₃ ⊣ r₃)
 
-/-- Composition of a conjugate square with a squares between left adjoints. -/
+/-- Composition of a conjugate square with a square between left adjoints. -/
 def leftAdjointConjugateSquare.vcomp (α : l₂ ⟶ l₁) (β : g ≫ l₃ ⟶ l₂ ≫ h) :
     g ≫ l₃ ⟶ l₁ ≫ h :=
   β ≫ α ▷ h
 
-/-- Composition of a conjugate square with a squares between right adjoints. -/
+/-- Composition of a conjugate square with a square between right adjoints. -/
 def rightAdjointConjugateSquare.vcomp (α : r₁ ⟶ r₂) (β : r₂ ≫ g ⟶ h ≫ r₃) :
     r₁ ≫ g ⟶ h ≫ r₃ :=
   α ▷ g ≫ β

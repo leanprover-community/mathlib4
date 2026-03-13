@@ -73,7 +73,7 @@ variable [StarOrderedRing A]
 The (semi-)inner product space whose elements are the elements of `A`, but which has an
 inner product-induced norm that is different from the norm on `A` and which is induced by `f`.
 -/
-abbrev preGNSpreInnerProdSpace : PreInnerProductSpace.Core ℂ f.PreGNS where
+noncomputable abbrev preGNSpreInnerProdSpace : PreInnerProductSpace.Core ℂ f.PreGNS where
   inner a b := f (star (f.ofPreGNS a) * f.ofPreGNS b)
   conj_inner_symm := by simp [← Complex.star_def, ← map_star f]
   re_inner_nonneg _ := RCLike.nonneg_iff.mp (f.map_nonneg (star_mul_self_nonneg _)) |>.1
@@ -176,6 +176,7 @@ lemma gnsNonUnitalStarAlgHom_apply_coe {a : A} {b : f.PreGNS} :
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 private lemma gnsNonUnitalStarAlgHom_map_one : f.gnsNonUnitalStarAlgHom 1 = 1 := by
   ext b

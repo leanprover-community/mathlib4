@@ -264,7 +264,7 @@ instance : Max (NonemptyInterval α) :=
   ⟨fun s t => ⟨⟨s.fst ⊓ t.fst, s.snd ⊔ t.snd⟩, inf_le_left.trans <| s.fst_le_snd.trans le_sup_left⟩⟩
 
 instance : SemilatticeSup (NonemptyInterval α) :=
-  toDualProd_injective.semilatticeSup _ fun _ _ => rfl
+  toDualProd_injective.semilatticeSup _ .rfl .rfl fun _ _ => rfl
 
 @[simp]
 theorem fst_sup (s t : NonemptyInterval α) : (s ⊔ t).fst = s.fst ⊓ t.fst :=
@@ -548,6 +548,7 @@ theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
 
 end Decidable
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem disjoint_coe (s t : Interval α) : Disjoint (s : Set α) t ↔ Disjoint s t := by
   classical
@@ -596,84 +597,74 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Interval α) := by
-  classical
-  exact
-      { Interval.lattice, Interval.boundedOrder with
-        sSup := fun S =>
-          if h : S ⊆ {⊥} then ⊥
-          else
-            WithBot.some
-              ⟨⟨⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
-                  ⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩, by
-                obtain ⟨s, hs, ha⟩ := not_subset.1 h
-                lift s to NonemptyInterval α using ha
-                exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
-        le_sSup := fun s s ha => by
-          split_ifs with h
-          · exact (h ha).le
-          cases s
-          · exact bot_le
-          · -- Porting note: This case was
-            -- `exact WithBot.some_le_some.2 ⟨iInf₂_le _ ha, le_iSup₂_of_le _ ha le_rfl⟩`
-            -- but there seems to be a defEq-problem at `iInf₂_le` that lean cannot resolve yet.
-            apply WithBot.coe_le_coe.2
-            constructor
-            · apply iInf₂_le
-              exact ha
-            · exact le_iSup₂_of_le _ ha le_rfl
-        sSup_le := fun s s ha => by
-          split_ifs with h
-          · exact bot_le
-          obtain ⟨b, hs, hb⟩ := not_subset.1 h
-          lift s to NonemptyInterval α using ne_bot_of_le_ne_bot hb (ha _ hs)
-          exact
-            WithBot.coe_le_coe.2
-              ⟨le_iInf₂ fun c hc => (WithBot.coe_le_coe.1 <| ha _ hc).1,
-                iSup₂_le fun c hc => (WithBot.coe_le_coe.1 <| ha _ hc).2⟩
-        sInf := fun S =>
-          if h :
-              ⊥ ∉ S ∧
-                ∀ ⦃s : NonemptyInterval α⦄,
-                  ↑s ∈ S → ∀ ⦃t : NonemptyInterval α⦄, ↑t ∈ S → s.fst ≤ t.snd then
-            WithBot.some
-              ⟨⟨⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
-                  ⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩,
-                iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
-          else ⊥
-        sInf_le := fun s₁ s ha => by
-          split_ifs with h
-          · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
-            -- Porting note: Lean failed to figure out the function `f` by itself,
-            -- so I added it through manually
-            let f := fun (s : NonemptyInterval α) (_ : ↑s ∈ s₁) => s.toProd.fst
-            exact WithBot.coe_le_coe.2 ⟨le_iSup₂ (f := f) s ha, iInf₂_le s ha⟩
-          · exact bot_le
-        le_sInf := by
-          intro S s ha
-          cases s with
-          | bot => exact bot_le
-          | coe s =>
-            split_ifs with h
-            · exact WithBot.coe_le_coe.2
-                ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
-                  le_iInf₂ fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).2⟩
-            · rw [not_and_or, not_not] at h
-              rcases h with h | h
-              · exact ha _ h
-              · -- Porting note: ungolfed, due to identification problems
-                -- between `toProd` and `toDualProd`. Original mathport output:
-                -- cases h fun t hb c hc =>
-                --   (WithBot.coe_le_coe.1 <| ha _ hb).1.trans <|
-                --     s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2 }
-                exfalso
-                apply h
-                intro b hb c hc
-                have h₁ := (WithBot.coe_le_coe.1 <| ha _ hb).1
-                repeat rw [NonemptyInterval.toDualProd_apply] at h₁
-                rw [OrderDual.toDual_le_toDual] at h₁
-                exact h₁.trans (s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2)
-  }
+open Classical in
+noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Interval α) where
+  sSup := fun S =>
+    if h : S ⊆ {⊥} then ⊥
+    else
+      WithBot.some
+        ⟨⟨⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
+            ⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩, by
+          obtain ⟨s, hs, ha⟩ := not_subset.1 h
+          lift s to NonemptyInterval α using ha
+          exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
+  isLUB_sSup _ := by
+    constructor
+    · intro s ha
+      split_ifs with h
+      · exact (h ha).le
+      cases s
+      · exact bot_le
+      · -- Porting note: This case was
+        -- `exact WithBot.some_le_some.2 ⟨iInf₂_le _ ha, le_iSup₂_of_le _ ha le_rfl⟩`
+        -- but there seems to be a defEq-problem at `iInf₂_le` that lean cannot resolve yet.
+        apply WithBot.coe_le_coe.2
+        constructor
+        · apply iInf₂_le
+          exact ha
+        · exact le_iSup₂_of_le _ ha le_rfl
+    · intro s ha
+      split_ifs with h
+      · exact bot_le
+      obtain ⟨b, hs, hb⟩ := not_subset.1 h
+      lift s to NonemptyInterval α using ne_bot_of_le_ne_bot hb (ha hs)
+      exact
+        WithBot.coe_le_coe.2
+          ⟨le_iInf₂ fun c hc => (WithBot.coe_le_coe.1 <| ha hc).1,
+            iSup₂_le fun c hc => (WithBot.coe_le_coe.1 <| ha hc).2⟩
+  sInf := fun S =>
+    if h :
+        ⊥ ∉ S ∧
+          ∀ ⦃s : NonemptyInterval α⦄,
+            ↑s ∈ S → ∀ ⦃t : NonemptyInterval α⦄, ↑t ∈ S → s.fst ≤ t.snd then
+      WithBot.some
+        ⟨⟨⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
+            ⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩,
+          iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
+    else ⊥
+  isGLB_sInf s₁ := by
+    constructor
+    · intro s ha
+      split_ifs with h
+      · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
+        -- Porting note: Lean failed to figure out the function `f` by itself,
+        -- so I added it through manually
+        let f := fun (s : NonemptyInterval α) (_ : ↑s ∈ s₁) => s.toProd.fst
+        exact WithBot.coe_le_coe.2 ⟨le_iSup₂ (f := f) s ha, iInf₂_le s ha⟩
+      · exact bot_le
+    · intro s ha
+      cases s with
+      | bot => exact bot_le
+      | coe s =>
+        split_ifs with h
+        · exact WithBot.coe_le_coe.2
+            ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha hb).1,
+              le_iInf₂ fun t hb => (WithBot.coe_le_coe.1 <| ha hb).2⟩
+        · rw [not_and_or, not_not] at h
+          rcases h with h | h
+          · exact ha h
+          · cases h fun b hb c hc ↦ (WithBot.coe_le_coe.1 <| ha hb).1.trans
+              (s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha hc).2)
 
 @[simp, norm_cast]
 theorem coe_sInf [DecidableLE α] (S : Set (Interval α)) : ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by

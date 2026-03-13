@@ -147,7 +147,7 @@ theorem coeComplex_coe (r : ℝ) : ((r : ℂ) : ℍ) = r :=
   rfl
 
 /-- Coercion `ℂ →ₐ[ℝ] ℍ` as an algebra homomorphism. -/
-def ofComplex : ℂ →ₐ[ℝ] ℍ where
+noncomputable def ofComplex : ℂ →ₐ[ℝ] ℍ where
   toFun := (↑)
   map_one' := rfl
   map_zero' := rfl
@@ -158,6 +158,7 @@ def ofComplex : ℂ →ₐ[ℝ] ℍ where
 @[simp]
 theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm of the components as a Euclidean vector equals the norm of the quaternion. -/
 lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
@@ -181,7 +182,7 @@ theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=
 @[continuity]
 theorem continuous_normSq : Continuous (normSq : ℍ → ℝ) := by
   simpa [← normSq_eq_norm_mul_self] using
-    (continuous_norm.mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
+    (continuous_norm.fun_mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
 
 @[continuity]
 theorem continuous_re : Continuous fun q : ℍ => q.re :=

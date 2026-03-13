@@ -138,6 +138,7 @@ example {α : Type} [BEq α] (f : ∀ {β : Type} [BEq β], Subsingleton β) (x 
 /-!
 The same, but now there's a universe level metavariable.
 -/
+set_option warn.classDefReducibility false in
 def fdef : ∀ {β : Type _} [BEq β], Subsingleton β := test_sorry
 
 example {α : Type} [BEq α] (x y : α) : x = y := by

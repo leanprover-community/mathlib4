@@ -210,6 +210,7 @@ theorem toSphereBallBound_pos (n : ℕ) (ε : ℝ) : 0 < toSphereBallBound n ε 
     positivity
   · positivity
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A ball of radius `ε` on the unit sphere in a real normed space
 has measure at least `toSphereBallBound n ε * μ (ball 0 1)`,
 where `n` is the dimension of the space,

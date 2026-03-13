@@ -25,7 +25,7 @@ namespace MeasureTheory
 
 open Set Filter ENNReal Topology
 
-variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
+variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α}
 
 /-- A version of **Markov's inequality** for two functions. It doesn't follow from the standard
 Markov's inequality because we only assume measurability of `g`, not `f`. -/

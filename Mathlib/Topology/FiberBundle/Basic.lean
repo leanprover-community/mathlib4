@@ -272,6 +272,25 @@ theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
+/-- An arbitrary homeomorphism between any fiber and the model fiber.
+This is useful to transfer topological properties of the model fiber. -/
+noncomputable def homeomorphAt (b : B) : E b ≃ₜ F :=
+  ((totalSpaceMk_isEmbedding F E b).toHomeomorph.trans <|
+    Homeomorph.ofEqSubtypes <| TotalSpace.range_mk b).trans <|
+    (trivializationAt F E b).preimageSingletonHomeomorph <| mem_baseSet_trivializationAt' b
+
+lemma t0Space [T0Space F] (b : B) : T0Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t0Space
+
+lemma t1Space [T1Space F] (b : B) : T1Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t1Space
+
+lemma t2Space [T2Space F] (b : B) : T2Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t2Space
+
+lemma t3Space [T3Space F] (b : B) : T3Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t3Space
+
 variable {E F}
 
 @[simp, mfld_simps]
@@ -502,7 +521,7 @@ theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
     (Z.localTrivAsPartialEquiv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 
-/-- The composition of two local trivializations is the trivialization change Z.triv_change i j. -/
+/-- The composition of two local trivializations is the trivialization change `Z.trivChange i j`. -/
 theorem localTrivAsPartialEquiv_trans (i j : ι) :
     (Z.localTrivAsPartialEquiv i).symm.trans (Z.localTrivAsPartialEquiv j) ≈
       (Z.trivChange i j).toPartialEquiv := by
@@ -672,6 +691,7 @@ theorem mem_localTrivAt_baseSet (b : B) : b ∈ (Z.localTrivAt b).baseSet := by
 theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
   simp only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A fiber bundle constructed from core is indeed a fiber bundle. -/
 instance fiberBundle : FiberBundle F Z.Fiber where
   totalSpaceMk_isInducing' b := isInducing_iff_nhds.2 fun x ↦ by
@@ -729,6 +749,7 @@ variable {F E}
 variable (a : FiberPrebundle F E) {e : Pretrivialization F (π F E)}
 
 /-- Topology on the total space that will make the prebundle into a bundle. -/
+@[implicit_reducible]
 def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace F E) :=
   ⨆ (e : Pretrivialization F (π F E)) (_ : e ∈ a.pretrivializationAtlas),
     coinduced e.setSymm instTopologicalSpaceSubtype
@@ -810,6 +831,7 @@ number of "pretrivializations" identifying parts of `E` with product spaces `U �
 establishes that for the topology constructed on the sigma-type using
 `FiberPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
+@[implicit_reducible]
 def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology _ :=
   let _ := a.totalSpaceTopology
   { totalSpaceMk_isInducing' := fun b ↦ a.inducing_totalSpaceMk_of_inducing_comp b
@@ -855,3 +877,24 @@ theorem continuousOn_of_comp_right {X : Type*} [TopologicalSpace X] {f : TotalSp
     exact a.mem_base_pretrivializationAt z.proj
 
 end FiberPrebundle
+
+namespace FiberBundle
+section extend
+
+variable {E} [(x : B) → Zero (E x)] [TopologicalSpace (TotalSpace F E)] [FiberBundle F E]
+
+/-- Extend a vector `v ∈ V x` to a section of the bundle `V`, whose value at `x` is `v`.
+The details of the extension are mostly unspecified: for covariant derivatives, the value of
+`s` at points other than `x` will not matter (except for shorter proofs).
+-/
+noncomputable def extend {x : B} (v₀ : E x) (x' : B) : E x' :=
+  letI t := trivializationAt F E x
+  letI w : F := (t ⟨x, v₀⟩).2
+  -- TODO: use the `funToSec` helper from #36036 once available
+  t.symm x' w
+
+@[simp] lemma extend_apply_self {x : B} (v : E x) : extend F v x = v := by
+  simp [extend, FiberBundle.mem_baseSet_trivializationAt' x]
+
+end extend
+end FiberBundle

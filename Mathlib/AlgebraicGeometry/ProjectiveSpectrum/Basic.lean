@@ -82,6 +82,7 @@ theorem isBasis_basicOpen :
   convert ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜
   exact (Set.range_comp _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `{ xᵢ }` spans the irrelevant ideal of `A`, then `D₊(xᵢ)` covers `Proj A`. -/
 lemma iSup_basicOpen_eq_top {ι : Type*} (f : ι → A)
     (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal ≤ Ideal.span (Set.range f)) :
@@ -171,6 +172,7 @@ def basicOpenIsoSpec : (basicOpen 𝒜 f).toScheme ≅ Spec (.of <| Away 𝒜 f)
     rfl
   asIso (basicOpenToSpec 𝒜 f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `(A_f)₀ ≅ Γ(Proj A, D₊(f))`
 when `f` is homogeneous of positive degree. -/
 @[simps! -isSimp hom]
@@ -204,6 +206,7 @@ lemma isAffineOpen_basicOpen : IsAffineOpen (basicOpen 𝒜 f) := by
   rw [← opensRange_awayι 𝒜 f f_deg hm]
   exact isAffineOpen_opensRange (awayι _ _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma awayι_toSpecZero : awayι 𝒜 f f_deg hm ≫ toSpecZero 𝒜 =
     Spec.map (CommRingCat.ofHom (fromZeroRingHom 𝒜 _)) := by
@@ -235,7 +238,7 @@ lemma awayMap_awayToSection :
   refine Localization.mk_eq_mk_iff.mpr ?_
   rw [Localization.r_iff_exists]
   use 1
-  simp only [OneMemClass.coe_one, RingHom.id_apply, one_mul, hx]
+  simp [hx]
   ring
 
 @[reassoc]
@@ -337,7 +340,7 @@ def affineOpenCoverOfIrrelevantLESpan {ι : Type*} (f : ι → A) {m : ι → �
 noncomputable alias openCoverOfISupEqTop := affineOpenCoverOfIrrelevantLESpan
 
 /-- `Proj A` is covered by `Spec (A_f)₀` for all homogeneous elements of positive degree. -/
-noncomputable
+@[simps! f] noncomputable
 def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
   affineOpenCoverOfIrrelevantLESpan 𝒜
     (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.2) (fun i ↦ i.1.2) <| by
@@ -380,6 +383,7 @@ def toBasicOpenOfGlobalSections (H : f t = x) (h0d : 0 < d) (hd : t ∈ 𝒜 d) 
   · rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_powers]
     simp [H]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homOfLE_toBasicOpenOfGlobalSections_ι
     {H : f t = x} {h0d : 0 < d} {hd : t ∈ 𝒜 d} {H' : f t' = x'} {h0d' : 0 < d'} {hd' : t' ∈ 𝒜 d'}
@@ -458,6 +462,7 @@ def fromOfGlobalSections : X ⟶ Proj 𝒜 := by
   · simpa [e, openCoverOfMapIrrelevantEqTop, Scheme.isoOfEq_inv] using
       (homOfLE_toBasicOpenOfGlobalSections_ι _ _ (mul_comm _ _) (add_comm _ _) x.2.2.2).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr : r ∈ 𝒜 n) :
     fromOfGlobalSections 𝒜 f hf ⁻¹ᵁ basicOpen 𝒜 r = X.basicOpen (f r) := by
   apply le_antisymm
@@ -511,6 +516,7 @@ lemma fromOfGlobalSections_resLE {r : A} {n : ℕ} (hn : 0 < n) (hr : r ∈ 𝒜
     ← Scheme.Hom.resLE_eq_morphismRestrict]
   simp [Scheme.isoOfEq_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma fromOfGlobalSections_toSpecZero
     (f : A →+* Γ(X, ⊤)) (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal.map f = ⊤) :

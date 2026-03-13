@@ -125,6 +125,7 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
     obtain ⟨y, hy⟩ := h ⟨r, rfl⟩
     grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
     {σ : Perm (m ⊕ n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
@@ -288,6 +289,18 @@ lemma disjoint_closure_of_disjoint_support {S T : Set (Perm α)}
   apply disjoint_of_disjoint_support
   apply disjoint_support_closure_of_disjoint_support
   exact h
+
+theorem mem_range_ofSubtype_iff {p : α → Prop} [DecidablePred p] {g : Perm α} :
+    g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔ (g.support : Set α) ⊆ setOf p := by
+  constructor
+  · rintro ⟨k, rfl⟩ x
+    simp only [Finset.mem_coe, mem_support_ofSubtype, Set.mem_setOf_eq]
+    exact fun ⟨hx, _⟩ ↦ hx
+  · intro hg
+    refine ⟨g.subtypePerm fun x ↦ ?_, ofSubtype_subtypePerm _ fun x hx ↦ hg (mem_support.mpr hx)⟩
+    by_cases hx : g x = x
+    · rw [hx]
+    · refine iff_of_true (hg ?_) (hg ?_) <;> simpa
 
 end Fintype
 

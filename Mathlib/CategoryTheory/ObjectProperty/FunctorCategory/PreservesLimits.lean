@@ -123,6 +123,7 @@ abbrev preservesFiniteColimits : ObjectProperty (J ⥤ C) := PreservesFiniteColi
 lemma preservesFiniteColimits_iff (F : J ⥤ C) :
     preservesFiniteColimits F ↔ PreservesFiniteColimits F := Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasColimitsOfShape K' C]
     [PreservesLimitsOfShape K (colim (J := K') (C := C))] :
     (preservesLimitsOfShape K : ObjectProperty (J ⥤ C)).IsClosedUnderColimitsOfShape K' where
