@@ -893,11 +893,9 @@ theorem upperSemicontinuousOn_iff_lowerSemiContinuousOn_neg :
   simp_all only [lowerSemicontinuousOn_iff_preimage_Ioi, upperSemicontinuousOn_iff_preimage_Iio]
   refine ⟨fun h b => ?_, fun h b => ?_⟩
   · obtain ⟨u, ho, hu⟩ := h (-b)
-    refine ⟨u, ho, hu ▸ ?_⟩
-    simp [neg_eq_neg_comp, preimage_comp]
+    exact ⟨u, ho, hu ▸ by simp [neg_eq_neg_comp, preimage_comp]⟩
   · obtain ⟨u, ho, hu⟩ := h (-b)
-    refine ⟨u, ho, hu ▸ ?_⟩
-    simp [neg_eq_neg_comp, preimage_comp]
+    exact ⟨u, ho, hu ▸ by simp [neg_eq_neg_comp, preimage_comp]⟩
 
 theorem lowerSemicontinuousOn_iff_upperSemiContinuousOn_neg :
     LowerSemicontinuousOn f s ↔ UpperSemicontinuousOn (-f) s := by
