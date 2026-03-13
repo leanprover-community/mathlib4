@@ -149,13 +149,10 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
         (app a).hom ▷ G.map f ≫ θ.naturality f =
           η.naturality f ≫ F.map f ◁ (app b).hom := by cat_disch) :
     η ≅ θ where
-  hom := ⟨{ app a := (app a).hom }⟩
-  inv := ⟨{
-    app a := (app a).inv
-    naturality {a b} f := by
-      simpa using (app a).inv ▷ G.map f ≫= (naturality f).symm =≫ F.map f ◁ (app b).inv }⟩
-
-@[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
+  hom.as.app a := (app a).hom
+  inv.as.app a := (app a).inv
+  inv.as.naturality {a b} f := by
+    simpa using (app a).inv ▷ G.map f ≫= (naturality f).symm =≫ F.map f ◁ (app b).inv
 
 end LaxTrans
 
@@ -253,11 +250,10 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
         F.map f ◁ (app b).hom ≫ θ.naturality f =
           η.naturality f ≫ (app a).hom ▷ G.map f := by cat_disch) :
     η ≅ θ where
-  hom := ⟨{ app a := (app a).hom }⟩
-  inv := ⟨{
-      app a := (app a).inv
-      naturality {a b} f := by
-        simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }⟩
+  hom.as.app a := (app a).hom
+  inv.as.app a := (app a).inv
+  inv.as.naturality {a b} f := by
+    simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _
 
 @[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
 
@@ -382,11 +378,10 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
       F.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
         (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by cat_disch) :
     η ≅ θ where
-  hom := ⟨{ app a := (app a).hom }⟩
-  inv := ⟨{
-      app a := (app a).inv
-      naturality {a b} f := by
-        simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }⟩
+  hom.as.app a := (app a).hom
+  inv.as.app a := (app a).inv
+  inv.as.naturality {a b} f := by
+    simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _
 
 end StrongTrans
 

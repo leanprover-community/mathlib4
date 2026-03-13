@@ -122,11 +122,10 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
         (app a).hom ▷ G.map f ≫ θ.naturality f =
           η.naturality f ≫ F.map f ◁ (app b).hom := by cat_disch) :
     η ≅ θ where
-  hom := ⟨{ app a := (app a).hom }⟩
-  inv := ⟨{
-      app a := (app a).inv
-      naturality {a b} f := by
-        simpa using (app a).inv ▷ G.map f ≫= (naturality f).symm =≫ F.map f ◁ (app b).inv }⟩
+  hom.as.app a := (app a).hom
+  inv.as.app a := (app a).inv
+  inv.as.naturality {a b} f := by
+    simpa using (app a).inv ▷ G.map f ≫= (naturality f).symm =≫ F.map f ◁ (app b).inv
 
 end LaxTrans
 
@@ -206,11 +205,10 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
         F.map f ◁ (app b).hom ≫ θ.naturality f =
           η.naturality f ≫ (app a).hom ▷ G.map f := by cat_disch) :
     η ≅ θ where
-  hom := ⟨{ app a := (app a).hom }⟩
-  inv := ⟨{
-      app a := (app a).inv
-      naturality {a b} f := by
-        simpa using F.map f ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ G.map f }⟩
+  hom.as.app a := (app a).hom
+  inv.as.app a := (app a).inv
+  inv.as.naturality {a b} f := by
+    simpa using F.map f ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ G.map f
 
 end OplaxTrans
 
