@@ -615,7 +615,7 @@ attribute [reassoc] left_unitality right_unitality
 
 variable {F}
 
-/-- Alternative constructor for `CoreMonoidal`, when the axioms are stated
+/-- Alternative constructor for `CoreMonoidal`, for which the axioms are stated
 in terms on the inverses of `εIso` and `μIso`. -/
 @[simps]
 def mk' (εIso : 𝟙_ D ≅ F.obj (𝟙_ C))
@@ -1064,6 +1064,7 @@ instance :
 
 end OplaxMonoidal
 
+attribute [local simp] rightAdjointLaxMonoidal_ε rightAdjointLaxMonoidal_μ in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F ⊣ G` is an adjunction, the `G` is lax monoidal iff `F` is oplax monoidal.
 It is advisable to use `Adjunction.leftAdjointOplaxMonoidal` and

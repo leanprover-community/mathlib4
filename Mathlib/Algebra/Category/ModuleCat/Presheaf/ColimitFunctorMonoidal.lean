@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Adjunction
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ColimitFunctor
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
 
@@ -19,88 +20,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
 universe w v u
 
 open CategoryTheory ModuleCat MonoidalCategory Limits
-
--- to be moved
-namespace ModuleCat
-
-variable {R S : Type w} [CommRing R] [CommRing S] (f : R →+* S)
-
-@[simp]
-lemma extendsScalars_map_leftUnitor_inv_one_tmul
-    (M : ModuleCat R) (m : M) :
-    letI := f.toAlgebra
-    (extendScalars f).map (λ_ M).inv ((1 : S) ⊗ₜ[R] m) = (1 : S) ⊗ₜ[R] (1 ⊗ₜ m) := rfl
-
-@[simp]
-lemma extendsScalars_map_rightUnitor_inv_one_tmul
-    (M : ModuleCat R) (m : M) :
-    letI := f.toAlgebra
-    (extendScalars f).map (ρ_ M).inv ((1 : S) ⊗ₜ[R] m) = (1 : S) ⊗ₜ[R] (m ⊗ₜ 1) := rfl
-
-@[simp]
-lemma extendRestrictScalarsAdj_counit_apply_one_tmul (M : ModuleCat S) (m : M) :
-    dsimp% (extendRestrictScalarsAdj f).counit.app M ((1 : S) ⊗ₜ[R] m) = m := by
-  apply ExtendRestrictScalarsAdj.Counit.map_apply_one_tmul
-
-open Functor.LaxMonoidal Functor.OplaxMonoidal TensorProduct
-
-open ModuleCat.MonoidalCategory in
-noncomputable instance : (extendScalars.{w} f).Monoidal :=
-  letI : Algebra R S := f.toAlgebra
-  Functor.CoreMonoidal.toMonoidal
-    (.mk'
-      (εIso := (AlgebraTensorModule.rid R S S).symm.toModuleIso)
-      (μIso := fun M₁ M₂ ↦ (AlgebraTensorModule.distribBaseChange R S M₁ M₂).symm.toModuleIso)
-      (μIso_inv_natural_left := fun {M₁ M₁'} g M₂ ↦
-        ((extendRestrictScalarsAdj f).homEquiv _ _).injective
-          (tensor_ext (fun _ _ ↦ rfl)))
-      (μIso_inv_natural_right := fun {M₂ M₂'} M₁ g ↦
-        ((extendRestrictScalarsAdj f).homEquiv _ _).injective
-          (tensor_ext (fun _ _ ↦ rfl)))
-      (oplax_associativity := fun M₁ M₂ M₃ ↦
-        ((extendRestrictScalarsAdj f).homEquiv _ _).injective
-          (tensor_ext₃' (fun _ _ _ ↦ rfl)))
-      (oplax_left_unitality := fun M ↦ by
-        ext m
-        dsimp
-        rw [MonoidalCategory.leftUnitor_inv_apply]
-        erw [AlgebraTensorModule.distribBaseChange_tmul,
-          MonoidalCategory.whiskerRight_apply,
-          AlgebraTensorModule.rid_tmul]
-        rw [one_smul]
-        rfl)
-      (oplax_right_unitality := fun M ↦ by
-        ext m
-        dsimp
-        rw [MonoidalCategory.rightUnitor_inv_apply]
-        erw [AlgebraTensorModule.distribBaseChange_tmul,
-          MonoidalCategory.whiskerLeft_apply,
-          AlgebraTensorModule.rid_tmul]
-        rw [one_smul]
-        rfl))
-
-@[simp]
-lemma extendScalars_δ_tmul (M₁ M₂ : ModuleCat R) (m₁ : M₁) (m₂ : M₂) :
-    letI := f.toAlgebra
-    dsimp% δ (extendScalars.{w} f) M₁ M₂ (((1 : S) ⊗ₜ[R] (m₁ ⊗ₜ[R] m₂) :)) =
-      ((1 : S) ⊗ₜ[R] m₁) ⊗ₜ[S] ((1 : S) ⊗ₜ[R] m₂) :=
-  rfl
-
-noncomputable instance : (restrictScalars.{w} f).LaxMonoidal :=
-  (extendRestrictScalarsAdj.{w} f).rightAdjointLaxMonoidal
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma restrictScalars_μ_tmul (M₁ M₂ : ModuleCat.{w} S) (m₁ : M₁) (m₂ : M₂) :
-    dsimp% μ (restrictScalars f) M₁ M₂ (m₁ ⊗ₜ m₂) = m₁ ⊗ₜ m₂ := by
-  dsimp [Adjunction.rightAdjointLaxMonoidal_μ]
-  rw [extendRestrictScalarsAdj_homEquiv_apply]
-  dsimp
-  rw [extendScalars_δ_tmul, tensorHom_tmul,
-    extendRestrictScalarsAdj_counit_apply_one_tmul,
-    extendRestrictScalarsAdj_counit_apply_one_tmul]
-
-end ModuleCat
+  Functor.LaxMonoidal Functor.OplaxMonoidal
 
 namespace PresheafOfModules
 
@@ -111,7 +31,7 @@ noncomputable abbrev constFunctorOfCommRing :
     ModuleCat.{w} cR.pt ⥤ PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat) :=
   (constFunctor.{w} ((forget₂ _ RingCat).mapCocone cR))
 
-open Functor.LaxMonoidal ModuleCat TensorProduct in
+open TensorProduct in
 noncomputable instance : (constFunctorOfCommRing.{w} cR).LaxMonoidal where
   ε :=
     { app U := ε (restrictScalars (cR.ι.app U).hom)
@@ -151,5 +71,30 @@ noncomputable instance : (constFunctorOfCommRing.{w} cR).LaxMonoidal where
   right_unitality _ := by
     ext U : 1
     apply right_unitality (ModuleCat.restrictScalars.{w} (cR.ι.app U).hom)
+
+variable {cR} (hcR : IsColimit cR) [LocallySmall.{w} C]
+  [IsCofiltered C] [InitiallySmall.{w} C]
+
+attribute [local instance] FinallySmall.preservesColimitsOfShape_of_isFiltered
+
+noncomputable abbrev colimitFunctorOfCommRing :
+    PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat) ⥤ ModuleCat.{w} cR.pt :=
+  colimitFunctor (isColimitOfPreserves (forget₂ _ RingCat) hcR)
+
+
+noncomputable abbrev colimitAdjunctionOfCommRing :
+    colimitFunctorOfCommRing.{w} hcR ⊣ constFunctorOfCommRing.{w} cR :=
+  colimitAdjunction _
+
+noncomputable instance : (colimitFunctorOfCommRing hcR).OplaxMonoidal :=
+  (colimitAdjunctionOfCommRing hcR).leftAdjointOplaxMonoidal
+
+instance : IsIso (η (colimitFunctorOfCommRing hcR)) := sorry
+
+instance (F₁ F₂ : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)) :
+    IsIso (δ (colimitFunctorOfCommRing hcR) F₁ F₂) := sorry
+
+noncomputable instance : (colimitFunctorOfCommRing hcR).Monoidal :=
+  Functor.Monoidal.ofOplaxMonoidal _
 
 end PresheafOfModules
