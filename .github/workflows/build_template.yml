@@ -122,6 +122,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ inputs.pr_branch_ref }}
+          fetch-depth: 2 # we may fetch cache from the commit before this one (or earlier)
           path: pr-branch
 
       - name: Prepare DownstreamTest directory
@@ -337,20 +338,65 @@ jobs:
 
       - name: get cache (3/3 - finalize cache operation)
         id: get
-        shell: bash # only runs `cache get` from `tools-branch`, so doesn't need to be inside landrun
+        shell: bash # only runs git and `cache get` from `tools-branch`, so doesn't need to be inside landrun
+        env:
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
           cd pr-branch
-          if [[ "${{ steps.get_cache_part2_test.outcome }}" == "success" ]]; then
-            echo "Fetching all remaining cache..."
-
-            ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
-
-            # Run again with --repo, to ensure we actually get the oleans.
-            ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} --skip-proofwidgets get
-          else
+          if [[ "${{ steps.get_cache_part2_test.outcome }}" != "success" ]]; then
             echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
+            exit 0
           fi
+
+          ORIG_SHA="$(git rev-parse HEAD)"
+          PREV_SHA=""
+          PREV_SHA_SOURCE=""
+
+          # When a ref is newly created, github.event.before can be all-zero.
+          if [[ "$BEFORE_SHA" =~ ^0{40}$ ]]; then
+            BEFORE_SHA=""
+          fi
+
+          if [[ -n "$BEFORE_SHA" ]]; then
+            PREV_SHA="$BEFORE_SHA"
+            PREV_SHA_SOURCE="github.event.before"
+          elif [[ -n "$BASE_SHA" ]]; then
+            PREV_SHA="$BASE_SHA"
+            PREV_SHA_SOURCE="pull_request.base.sha"
+          else
+            PREV_SHA="$(git rev-parse --verify --quiet HEAD^ || true)"
+            if [[ -n "$PREV_SHA" ]]; then
+              PREV_SHA_SOURCE="HEAD^"
+            fi
+          fi
+
+          if [[ -n "$PREV_SHA" ]]; then
+            # cf. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Mathlib.20has.20moved.20to.20the.20new.20module.20system/near/563452000
+            echo "Warming up cache using previous commit: $PREV_SHA (source: $PREV_SHA_SOURCE)"
+            if git cat-file -e "$PREV_SHA^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$PREV_SHA"; then
+              git checkout "$PREV_SHA"
+              ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
+              # Run again with --repo, to ensure we actually get the oleans.
+              ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" --skip-proofwidgets get
+
+              echo "Switching back to branch head"
+              git checkout "$ORIG_SHA"
+            else
+              echo "Could not fetch $PREV_SHA; skipping parent warmup cache fetch."
+            fi
+          else
+            echo "No previous commit candidate found; skipping parent warmup cache fetch."
+          fi
+
+          echo "Fetching all remaining cache..."
+
+          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
+
+          # Run again with --repo, to ensure we actually get the oleans.
+          ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" --skip-proofwidgets get
 
       - name: fetch ProofWidgets release
         # We need network access for ProofWidgets frontend assets.
