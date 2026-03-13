@@ -200,14 +200,10 @@ theorem helper₀ : ∀ m ∈ T.singularValues.support, m < Module.finrank 𝕜 
 
 noncomputable def helper₁ := Finset.attachFin T.singularValues.support T.helper₀
 
-theorem test {n : ℕ} (hn : Module.finrank 𝕜 E = n)
-    : T.singularValues.support.card
-      = (T.singularValues.support.attachFin T.helper₀).card := by
-  exact Eq.symm (Finset.card_attachFin T.singularValues.support (helper₀ T))
-
 theorem test₂₅
   : (T.singularValues.support.attachFin T.helper₀)
-    = ({i : Fin _ | ↑(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i) = (0 : 𝕜)} : Finset (Fin _))ᶜ := by
+    = ({i : Fin _ | ↑(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i) = (0 : 𝕜)}
+      : Finset (Fin _))ᶜ := by
   ext i
   have : 0 ≤ T.isSymmetric_adjoint_comp_self.eigenvalues rfl i :=
     T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i
@@ -217,12 +213,29 @@ theorem test₂₅
 
 theorem test₃ : T.singularValues.support.card = Module.finrank 𝕜 T.range := by
   rw [← Module.finrank_range_adjoint, ← T.range_adjoint_comp_self']
-  rw [T.test rfl]
+  rw [← T.singularValues.support.card_attachFin T.helper₀]
   rw [T.test₂₅]
   rw [Finset.card_compl]
   rw [T.isSymmetric_adjoint_comp_self.card_filter_eigenvalues_eq_zero rfl]
   rw [← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker]
   simp
+
+theorem test₄ : T.singularValues.support.card = Module.finrank 𝕜 T.range := by
+  calc
+    T.singularValues.support.card = (T.singularValues.support.attachFin T.helper₀).card :=
+      by exact (T.singularValues.support.card_attachFin (helper₀ T)).symm
+    _ = ({i : Fin _ | ↑(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i) = (0 : 𝕜)}
+      : Finset (Fin _))ᶜ.card := by rw [test₂₅]
+    _ = Module.finrank 𝕜 E - ({i : Fin _ | ↑(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i) = (0 : 𝕜)}
+      : Finset (Fin _)).card := by rw [Finset.card_compl]; simp
+    _ = Module.finrank 𝕜 E - Module.finrank 𝕜 (T.adjoint ∘ₗ T).ker := by
+      rw [T.isSymmetric_adjoint_comp_self.card_filter_eigenvalues_eq rfl (μ := 0) sorry]
+      rw [Module.End.eigenspace_zero]
+    _ = Module.finrank 𝕜 (T.adjoint ∘ₗ T).range := by
+      simp [← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker]
+    _ = Module.finrank 𝕜 T.range := by
+      rw [T.range_adjoint_comp_self', Module.finrank_range_adjoint]
+
 
 theorem isLowerSet_support_singularValues
   : IsLowerSet (T.singularValues.support : Set ℕ) := by
