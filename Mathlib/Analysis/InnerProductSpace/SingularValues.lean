@@ -189,20 +189,25 @@ theorem finrank_range_adjoint_comp_self :
   finrank 𝕜 (range (adjoint T ∘ₗ T)) = finrank 𝕜 (range T) := by
     rw [range_adjoint_comp_self', finrank_range_adjoint]
 
-theorem test₃ : T.singularValues.support.card = finrank 𝕜 T.range := by
-  have hS : ∀ m ∈ T.singularValues.support, m < finrank 𝕜 E := sorry
+theorem card_support_singularValues : T.singularValues.support.card = finrank 𝕜 T.range := by
+  have hS : ∀ m ∈ T.singularValues.support, m < finrank 𝕜 E := by
+    intro m hm
+    rw [Finsupp.mem_support_iff, ← zero_lt_iff] at hm
+    contrapose! hm
+    rw [le_zero_iff]
+    exact singularValues_of_finrank_le T hm
   have hT := T.isSymmetric_adjoint_comp_self
   rw [← T.singularValues.support.card_attachFin hS]
   calc
     (T.singularValues.support.attachFin hS).card
-    _ = ({i : Fin _ | ↑(hT.eigenvalues rfl i) = (0 : 𝕜)} : Finset (Fin _))ᶜ.card := by
+    _ = ({i | ↑(hT.eigenvalues rfl i) = (0 : 𝕜)} : Finset _)ᶜ.card := by
       congr with i
       have : 0 ≤ hT.eigenvalues rfl i :=
         T.isPositive_adjoint_comp_self.nonneg_eigenvalues rfl i
       have : T.isSymmetric_adjoint_comp_self.eigenvalues rfl i = 0 ↔
         T.isSymmetric_adjoint_comp_self.eigenvalues rfl i ≤ 0 := by constructor <;> order
       simp [T.singularValues_fin rfl, this]
-    _ = finrank 𝕜 E - ({i | ↑(hT.eigenvalues rfl i) = (0 : 𝕜)} : Finset (Fin _)).card := by
+    _ = finrank 𝕜 E - ({i | ↑(hT.eigenvalues rfl i) = (0 : 𝕜)} : Finset _).card := by
       rw [Finset.card_compl]; simp
     _ = finrank 𝕜 E - finrank 𝕜 (T.adjoint ∘ₗ T).ker := by
       rw [hT.card_filter_eigenvalues_eq rfl (μ := 0) sorry]
@@ -228,7 +233,7 @@ theorem support_singularValues
   · rw [← Finset.coe_Iio, Finset.coe_inj, Nat.Iio_eq_range] at hn
     convert hn
     apply_fun Finset.card at hn
-    simpa [test₃] using hn
+    simpa [card_support_singularValues] using hn
 
 theorem singularValues_lt_rank {n : ℕ} (hn : n < finrank 𝕜 (range T))
     : 0 < T.singularValues n := by
