@@ -175,6 +175,7 @@ attribute [local instance] FractionRing.liftAlgebra in
 Assume that `IsGaloisGroup G A B` with `A` and `B` domains, then `G` has a `MulSemiringAction`
 on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A`.
 -/
+@[implicit_reducible]
 noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [IsDomain B]
     [IsTorsionFree A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
   MulSemiringAction.compHom (FractionRing B)
@@ -298,7 +299,6 @@ theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGalo
     rw [restrictScalars_bot_eq_self] at this
     rwa [← this] at hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem of_fixedPoints_eq [hGKL : IsGaloisGroup G K L] (hF : FixedPoints.intermediateField H = F) :
     IsGaloisGroup H F L := by
   rw [eq_comm] at hF
