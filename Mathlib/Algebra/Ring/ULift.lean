@@ -117,6 +117,7 @@ section RingHom
 variable {R S : Type*} [CommRing R] [CommRing S]
 
 /-- `ULift` is functorial for ring homomorphisms. -/
+@[pp_with_univ]
 def RingHom.ulift (f : R →+* S) : ULift.{u₁} R →+* ULift.{u₂} S :=
   RingHom.comp ULift.ringEquiv.symm.toRingHom (f.comp ULift.ringEquiv.toRingHom)
 
