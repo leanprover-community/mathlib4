@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finset.Pairwise
+public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Atoms
@@ -313,6 +314,135 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
         P.ne_bot (hP _ b.2) <| disjoint_self.1 <| H.mono (hf _ b.2) <| h.le.trans <| hf _ c.2)
 
 end Order
+
+lemma Disjoint_iff {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
+  (Pinf : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊓ t)) (hbot : pr (⊥ : α)) {a b : Subtype pr} :
+    Disjoint a.val b.val ↔
+    @Disjoint (Subtype pr) (Subtype.partialOrder pr) (Subtype.orderBot hbot) a b := by
+  letI : Lattice (Subtype pr) := Subtype.lattice Psup Pinf
+  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  rw [disjoint_iff, disjoint_iff]
+  rw [← Subtype.coe_inf Pinf, ← Subtype.coe_bot hbot]
+  exact Subtype.coe_inj
+
+lemma image_coe [DecidableEq α] {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
+  (hbot : pr (⊥ : α)) {t : Finset (Subtype pr)} :
+    (t.image Subtype.val).sup id
+    = @Finset.sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot) t id := by
+  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  rw [Finset.sup_coe]
+  simp
+
+lemma sup_coe {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
+  (hbot : pr (⊥ : α)) {t : Finset (Subtype pr)} :
+    (t.sup Subtype.val)
+    = @Finset.sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot) t id := by
+  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  rw [Finset.sup_coe]
+  simp
+
+open Classical in
+theorem Finset.sup_preimage {β : Type*} {γ : Type*} [SemilatticeSup β] [OrderBot β]
+  [hg : Nonempty γ]
+  (s : Finset β) (f : γ → β) (hf : Set.BijOn f (f ⁻¹' ↑s) s) :
+    (preimage s f hf.2.1).sup f = s.sup id := by
+  set finvs := fun (x : β) => if h : x ∈ image f (preimage s f hf.2.1)
+    then Classical.choose (Finset.mem_image.mp h) else Classical.choice hg with dfinvs
+  have hfinvs : ∀ x ∈ s, f (finvs x) = x := by
+    intro x hx
+    obtain ⟨y, hy⟩ := hf.2.2 hx
+    have : x ∈ image f (s.preimage f hf.2.1) := by
+      simp only [mem_image, mem_preimage]
+      use y
+      exact And.symm ((fun {a b} ↦ And.comm.mp) hy)
+    simp_rw [dfinvs, dif_pos this]
+    have := Classical.choose_spec (Finset.mem_image.mp this)
+    exact this.2
+  have hfinvs' : ∀ x ∈ s, (f ∘ finvs) x = id x := by
+    exact fun x a ↦ Nonempty.elim hg fun a_1 ↦ hfinvs x a
+  rw [← Finset.sup_congr (Eq.refl s) hfinvs', ← Finset.sup_image]
+  congr
+  ext x
+  constructor
+  · intro hx
+    simp only [mem_image]
+    use f x
+    constructor
+    · exact mem_preimage.mp hx
+    · have : f x ∈ image f (preimage s f hf.2.1) := by
+        exact mem_image_of_mem f hx
+      rw [dfinvs]
+      simp only
+      rw [dif_pos this]
+      let hx' := Classical.choose_spec (Finset.mem_image.mp this)
+      apply hf.2.1 _ _ hx'.2
+      · rw [Set.mem_preimage, hx'.2]
+        simp only [SetLike.mem_coe]
+        rw [Finset.mem_preimage] at hx
+        exact hx
+      · simpa using hx
+  · intro hx
+    simp only [mem_image] at hx
+    obtain ⟨y, hy, hyx⟩ := hx
+    simp only [mem_preimage]
+    have hyx' : f (finvs y) = f x := by
+      exact Nonempty.elim hg fun a ↦ congrArg f hyx
+    rw [← hyx', hfinvs y hy]
+    exact hy
+
+lemma preimage_coe {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
+  (hbot : pr (⊥ : α)) {t : Finset α} (ht : ∀ x ∈ t, pr x) :
+    (⟨t.sup id, Finset.sup_induction hbot (fun _ a _ => Psup a) ht⟩ : Subtype pr)
+    = @Finset.sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot)
+      (@Finset.preimage _ _ t (fun (x :Subtype pr) => x.val)
+      (Set.injOn_of_injective Subtype.val_injective)) id := by
+  classical
+  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  ext
+  rw [Finset.sup_coe]
+  simp only [id_eq]
+  rw [← Finset.sup_preimage t (fun (x : Subtype pr) => x.val)]
+  refine ⟨?_, Set.injOn_of_injective Subtype.val_injective, ?_⟩
+  · exact Set.mapsTo_preimage (fun (x : Subtype pr) ↦ x.val) (t : Set α)
+  · intro x hx
+    simpa using ⟨hx, ht x hx⟩
+
+/-- A `Finpartition` constructor in `Subtype pr` for `pr : Set X → Prop` such that `pr` is closed
+under intersection and union and `pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
+that `pr s` and `pr p` for each part `p`. -/
+noncomputable def toSubtype {s : α} (P : Finpartition s)
+  {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
+  (Pinf : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊓ t)) (hbot : pr (⊥ : α))
+  (hs : pr s) (hP : ∀ p ∈ P.parts, pr p) :
+    @Finpartition (Subtype pr) (Subtype.lattice Psup Pinf) (Subtype.orderBot hbot) ⟨s, hs⟩ :=
+  letI : Lattice (Subtype pr) := Subtype.lattice Psup Pinf
+  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  { parts := Finset.preimage P.parts (fun (p : Subtype pr) => p.val)
+      (Set.injOn_of_injective Subtype.val_injective)
+    supIndep := by
+      classical
+      rw [SupIndep]
+      have hPd := P.supIndep
+      rw [SupIndep] at hPd
+      intro t ht i hi hi'
+      simp_all only [id_eq]
+      rw [← Disjoint_iff Psup Pinf hbot, ← image_coe Psup hbot]
+      apply hPd
+      · rw [← Finset.image_subset_iff_subset_preimage] at ht
+        exact ht
+      · simpa using hi
+      · simpa [i.property] using hi'
+    sup_parts := by
+      ext
+      simp only
+      rw [@Finset.sup_coe _ _ _ _ _ hbot Psup]
+      simp only [id_eq]
+      rw [sup_coe Psup hbot, ← preimage_coe Psup hbot hP]
+      simpa using P.sup_parts
+    bot_notMem := by
+      simp only [mem_preimage]
+      rw [Subtype.coe_bot hbot]
+      exact P.bot_notMem }
 
 end Lattice
 
@@ -831,73 +961,5 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
   simp only [insert_erase (((mem_filter.1 hi).2 _ ht).2 <| hy₂ hi)]
 
 end Atomise
-
-
-/-- A `Finpartition` constructor in `Subtype pr` for `pr : Set X → Prop` such that `pr` is closed
-under intersection and union and `pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
-that `pr s` and `pr p` for each part `p`.
--/
-noncomputable def toSubtype
-  {X : Type*} [DistribLattice X] [OrderBot X] {s : X} (P : Finpartition s)
-  {pr : X → Prop} [DecidableEq (Subtype pr)] (Psup : ∀ ⦃s t : X⦄, pr s → pr t → pr (s ⊔ t))
-  (Pinf : ∀ ⦃s t : X⦄, pr s → pr t → pr (s ⊓ t)) (hbot : pr (⊥ : X))
-  (hs : pr s) (hP : ∀ p ∈ P.parts, pr p) :
-  @Finpartition (Subtype pr) (Subtype.lattice Psup Pinf)
-    (Subtype.orderBot hbot) ⟨s, hs⟩ :=
-  letI : Fintype (Subtype (P.parts : Set X)) := Fintype.subtype P.parts (by intro; rfl)
-  letI : DistribLattice (Subtype pr) := Subtype.distribLattice Psup Pinf
-  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
-  { parts := Finset.image
-      (fun p : (Subtype (P.parts : Set X)) =>
-        (⟨p.val, hP p.val p.property⟩ : Subtype pr))
-      Finset.univ
-    supIndep := by
-      apply Finset.SupIndep.image
-      simp only [id_comp]
-      have hPd := P.supIndep
-      rw [Finset.supIndep_iff_pairwiseDisjoint]
-      rw [Finset.supIndep_iff_pairwiseDisjoint] at hPd
-      simp_all only [Finset.coe_univ]
-      intro x hx y hy h
-      refine disjoint_iff.mpr ?_
-      simp only
-      have hPd' := @Set.PairwiseDisjoint.eq_or_disjoint _ _ _ _ _ _ hPd x y (by simp) (by simp)
-      have hxy : x.val ≠ y.val := by exact Subtype.coe_ne_coe.mpr h
-      rcases hPd' with (hxy' | hxy')
-      · exfalso; exact (iff_false_intro hxy).mp hxy'
-      · rw [disjoint_iff] at hxy'
-        exact Subtype.ext (id hxy')
-    sup_parts := by
-      apply Subtype.ext
-      have Psub := P.sup_parts
-      simp only [sup_image, id_comp]
-      rw [Finset.sup_coe]
-      · simp_rw [← Psub]
-        classical
-        have hmap :
-          ((Finset.univ : Finset (Subtype (P.parts : Set X))).image Subtype.val) = P.parts := by
-          classical
-          ext x
-          constructor
-          · intro hx
-            obtain ⟨p, hp, rfl⟩ := mem_image.mp hx
-            exact p.property
-          · intro hx
-            refine mem_image.mpr ⟨⟨x, hx⟩, mem_univ _, rfl⟩
-        calc
-          (Finset.univ : Finset (Subtype (P.parts : Set X))).sup
-              (fun p : Subtype (P.parts : Set X) => p.val)
-              =
-              ((Finset.univ : Finset (Subtype (P.parts : Set X))).image Subtype.val).sup id := by
-                simp only [sup_image, id_comp]
-          _ = P.parts.sup id := by simp [hmap]
-      · exact fun s t hs ht ↦ Psup hs ht
-    bot_notMem := by
-      simp only [Finset.mem_image, Finset.mem_univ, true_and]
-      intro ⟨p, hp⟩
-      apply P.bot_notMem
-      rw [Subtype.mk_eq_bot_iff hbot] at hp
-      rw [← hp]
-      exact Finset.coe_mem p }
 
 end Finpartition
