@@ -41,8 +41,7 @@ theorem LieAlgebra.ad_nilpotent_of_nilpotent {a : A} (h : IsNilpotent a) :
   rw [LieAlgebra.ad_eq_lmul_left_sub_lmul_right]
   have hl : IsNilpotent (LinearMap.mulLeft R a) := by rwa [LinearMap.isNilpotent_mulLeft_iff]
   have hr : IsNilpotent (LinearMap.mulRight R a) := by rwa [LinearMap.isNilpotent_mulRight_iff]
-  have := @LinearMap.commute_mulLeft_right R A _ _ _ _ _ a a
-  exact this.isNilpotent_sub hl hr
+  exact (LinearMap.commute_mulLeft_right a a).isNilpotent_sub hl hr
 
 theorem LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad {R : Type*} {L : Type*}
     [CommRing R] [LieRing L] [LieAlgebra R L]
