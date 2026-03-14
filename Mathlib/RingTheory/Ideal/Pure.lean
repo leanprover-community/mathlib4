@@ -40,6 +40,7 @@ open TensorProduct PrimeSpectrum
 abbrev Ideal.Pure (I : Ideal R) : Prop :=
   Module.Flat R (R ⧸ I)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injective_lTensor_quotient_iff_inf_eq_mul (I J : Ideal R) :
     Function.Injective (J.subtype.lTensor (R ⧸ I)) ↔ I ⊓ J = I * J := by
   let f : J ⧸ (I • ⊤ : Submodule R J) →ₗ[R] R ⧸ I :=
@@ -68,6 +69,7 @@ lemma Ideal.inf_eq_mul_of_pure (I J : Ideal R) [I.Pure] :
 lemma Ideal.isIdempotentElem_of_pure (I : Ideal R) [I.Pure] : IsIdempotentElem I := by
   simp [IsIdempotentElem, ← Ideal.inf_eq_mul_of_pure]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.Pure.of_isIdempotentElem {I : Ideal R} (h : I.FG) (h' : IsIdempotentElem I) :
     I.Pure := by
   rw [Ideal.isIdempotentElem_iff_of_fg _ h] at h'

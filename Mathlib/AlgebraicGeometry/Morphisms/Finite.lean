@@ -112,11 +112,10 @@ set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AlgebraicGeometry.IsClosedImmersion.iff_isFinite_and_mono :
     IsClosedImmersion f ↔ IsFinite f ∧ Mono f := by
   wlog hY : IsAffine Y
-  · change _ ↔ _ ∧ monomorphisms _ f
-    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+  · rw [← monomorphisms.iff, IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
       IsZariskiLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
-    simp_rw [this, forall_and, monomorphisms]
+    simp_rw [this, forall_and]
   rw [HasAffineProperty.iff_of_isAffine (P := @IsClosedImmersion),
     HasAffineProperty.iff_of_isAffine (P := @IsFinite),
     RingHom.surjective_iff_epi_and_finite, @and_comm (Epi _), ← and_assoc]
@@ -154,7 +153,6 @@ instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsFinite f] [IsFinite
 
 end IsFinite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a Jacobson scheme and `k` is a field,
 `Spec(k) ⟶ X` is finite iff it is (locally) of finite type.
 (The statement is more general to allow the empty scheme as well) -/

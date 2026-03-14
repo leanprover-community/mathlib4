@@ -89,6 +89,7 @@ section Preorder
 variable [Preorder α]
 
 /-- A constructor for `SuccOrder α` usable when `α` has no maximal element. -/
+@[implicit_reducible]
 def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
     SuccOrder α where
   succ := succ
@@ -97,6 +98,7 @@ def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a �
   succ_le_of_lt := hsucc_le_iff.2
 
 /-- A constructor for `PredOrder α` usable when `α` has no minimal element. -/
+@[implicit_reducible]
 def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b) :
     PredOrder α where
   pred := pred
@@ -111,7 +113,7 @@ section LinearOrder
 variable [LinearOrder α]
 
 /-- A constructor for `SuccOrder α` for `α` a linear order. -/
-@[simps]
+@[simps, implicit_reducible]
 def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < b ↔ succ a ≤ b)
     (hm : ∀ a, IsMax a → succ a = a) : SuccOrder α where
   succ := succ
@@ -120,7 +122,7 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
   max_of_succ_le {a} := not_imp_not.mp fun h ↦ by simpa using (hn h a).not
 
 /-- A constructor for `PredOrder α` for `α` a linear order. -/
-@[simps]
+@[simps, implicit_reducible]
 def PredOrder.ofCore (pred : α → α)
     (hn : ∀ {a}, ¬IsMin a → ∀ b, b ≤ pred a ↔ b < a) (hm : ∀ a, IsMin a → pred a = a) :
     PredOrder α where
@@ -133,6 +135,7 @@ variable (α)
 
 open Classical in
 /-- A well-order is a `SuccOrder`. -/
+@[implicit_reducible]
 noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder α :=
   ofCore (fun a ↦ if h : (Ioi a).Nonempty then wellFounded_lt.min _ h else a)
     (fun ha _ ↦ by
@@ -142,7 +145,7 @@ noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder
     fun _ ha ↦ dif_neg (not_not_intro ha <| not_isMax_iff.mpr ·)
 
 /-- A linear order with well-founded greater-than relation is a `PredOrder`. -/
-@[to_dual existing]
+@[implicit_reducible, to_dual existing]
 noncomputable def PredOrder.ofLinearWellFoundedGT (α) [LinearOrder α] [WellFoundedGT α] :
     PredOrder α := letI := SuccOrder.ofLinearWellFoundedLT αᵒᵈ; inferInstanceAs (PredOrder αᵒᵈᵒᵈ)
 
@@ -916,7 +919,6 @@ section Succ
 
 variable [PartialOrder α] [SuccOrder α] [∀ a : α, Decidable (succ a = a)]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : SuccOrder (WithTop α) where
   succ a :=
     match a with
@@ -966,7 +968,6 @@ section Pred
 
 variable [Preorder α] [OrderTop α] [PredOrder α]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : PredOrder (WithTop α) where
   pred a :=
     match a with

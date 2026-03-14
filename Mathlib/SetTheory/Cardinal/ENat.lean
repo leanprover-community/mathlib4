@@ -176,6 +176,7 @@ lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (ofENat_le_aleph0 n).trans hx]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
   cases lt_or_ge x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
@@ -317,6 +318,7 @@ lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injO
 
 @[simp] lemma ofENat_add_aleph0 (m : ℕ∞) : m + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_ofENat]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ofENat_mul_aleph0 {m : ℕ∞} (hm : m ≠ 0) : ↑m * ℵ₀ = ℵ₀ := by
   induction m with
   | top => exact aleph0_mul_aleph0

@@ -40,7 +40,6 @@ variable [IsTopologicalRing A] [ContinuousStar A]
 
 open StarAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped ContinuousFunctionalCalculus in
 theorem range_cfcHom {a : A} (ha : p a) :
     (cfcHom ha (R := 𝕜)).range = elemental 𝕜 a := by
