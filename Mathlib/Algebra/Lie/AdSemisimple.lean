@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 TODO. All rights reserved.
+Copyright (c) 2026 Janos Wolosz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: TODO
+Authors: Janos Wolosz
 -/
 module
 
@@ -14,6 +14,8 @@ public import Mathlib.LinearAlgebra.Semisimple
 This file proves that the adjoint action of a semisimple endomorphism is semisimple.
 This is the semisimple analogue of `LieAlgebra.ad_nilpotent_of_nilpotent`.
 -/
+
+@[expose] public section
 
 open Polynomial in
 private lemma aeval_mulRight_apply {R : Type*} {M : Type*}
@@ -43,8 +45,7 @@ private theorem isSemisimple_mulRight_of_isSemisimple {R : Type*} {M : Type*}
   ext1 T
   simp only [LinearMap.zero_apply, aeval_mulRight_apply, minpoly.aeval, mul_zero]
 
-/-- The adjoint of a semisimple endomorphism is semisimple.
-This is the semisimple analogue of `LieAlgebra.ad_nilpotent_of_nilpotent`. -/
+/-- The adjoint of a semisimple endomorphism is semisimple. -/
 theorem LieAlgebra.ad_isSemisimple_of_isSemisimple {R : Type*} {M : Type*}
     [Field R] [AddCommGroup M] [Module R M] [FiniteDimensional R M] [PerfectField R]
     {a : Module.End R M} (ha : a.IsSemisimple) :
