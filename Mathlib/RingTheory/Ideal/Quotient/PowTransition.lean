@@ -217,7 +217,7 @@ theorem factorPow_powSMulQuotInclusion_comm {a b c d e : ℕ} (h : c = b + a) (h
       (factorPow I ↥(I ^ a • ⊤ : Submodule R M) (b.le_add_right d)) := by ext; rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem powSMulQuotInclusion_range {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
+theorem range_powSMulQuotInclusion {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
     (powSMulQuotInclusion I M h N).range = (I ^ a • N).map (mkQ (I ^ c • N)) := by
   simp [powSMulQuotInclusion, mapQ, range_liftQ, LinearMap.range_comp]
 
