@@ -25,7 +25,7 @@ terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
 
 @[expose] public section
 
-/-- A Lie-Reinhart ring is a pair consisting of a commutative ring `A` and a Lie ring `L` such that
+/-- A Lie-Rinehart ring is a pair consisting of a commutative ring `A` and a Lie ring `L` such that
 `A` and `L` are each a module over the other, satisfying compatibility conditions. -/
 class LieRinehartRing (A L : Type*) [CommRing A] [LieRing L]
     [Module A L] [LieRingModule L A] : Prop where
@@ -33,7 +33,7 @@ class LieRinehartRing (A L : Type*) [CommRing A] [LieRing L]
   leibniz_mul_right' (x : L) (a b : A) : ⁅x, a * b⁆ = a • ⁅x, b⁆ + ⁅x, a⁆ * b
   leibniz_smul_right' (x y : L) (a : A) : ⁅x, a • y⁆ = a • ⁅x, y⁆ + ⁅x, a⁆ • y
 
-/-- A Lie-Reinhart algebra with coefficients in a commutative ring `R`, is a pair consisting of a
+/-- A Lie-Rinehart algebra with coefficients in a commutative ring `R`, is a pair consisting of a
 commutative `R`-algebra `A` and a Lie algebra `L` with coefficients in `R`, such that `A` and `L`
 are each a module over the other, satisfying compatibility conditions.
 
