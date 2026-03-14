@@ -33,7 +33,7 @@ open Function
 namespace Set
 variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
-/- In #35959, to make sure that the defeq abuse between `α → Prop` and `Set α` does not leak from
+/-- In #35959, to make sure that the defeq abuse between `α → Prop` and `Set α` does not leak from
 `inferInstanceAs (BooleanAlgebra (α → Prop))`, we define explicitly the data fields. This could be
 avoided by using a better elaborator `inferInstanceAs%` fixing the defeqs. -/
 instance instBooleanAlgebra : BooleanAlgebra (Set α) where

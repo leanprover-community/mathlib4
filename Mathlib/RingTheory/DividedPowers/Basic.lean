@@ -195,7 +195,7 @@ theorem exp_add (hI : DividedPowers I) (ha : a ∈ I) (hb : b ∈ I) :
 
 variable (hI : DividedPowers I)
 
-/- ## Rewriting lemmas -/
+/-! ## Rewriting lemmas -/
 
 theorem dpow_smul {n : ℕ} (ha : a ∈ I) :
     hI.dpow n (b • a) = b ^ n • hI.dpow n a := by

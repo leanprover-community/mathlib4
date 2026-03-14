@@ -84,7 +84,7 @@ lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y
 open scoped ComplexOrder
 open Module
 
-/- This holds in any inner product space, but we need this to set up the instance.
+/-- This holds in any inner product space, but we need this to set up the instance.
 This is a helper lemma for showing that this inner product is positive definite. -/
 private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E ⊗[𝕜] F)
     (e : OrthonormalBasis ι 𝕜 E) (f : OrthonormalBasis ι' 𝕜 F) :

@@ -47,7 +47,7 @@ the simpNF linter complains about this being `@[simp]`. -/
 theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
   simp only [← comap_dist_right_atTop (0 : ℝ), Real.dist_eq, sub_zero, comap_abs_atTop]
 
-/- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
+/-! TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
 _
 

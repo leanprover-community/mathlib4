@@ -286,7 +286,7 @@ lemma HasAffineProperty : HasAffineProperty P (sourceAffineLocally Q) where
     (isLocal_ringHomProperty P).ofLocalizationSpan
   eq_targetAffineLocally' := eq_affineLocally P
 
-/- This is only `inferInstance` because of the `@[local instance]` on `HasAffineProperty` above. -/
+/-- This is only `inferInstance` because of the `@[local instance]` on `HasAffineProperty` above. -/
 instance (priority := 900) : IsZariskiLocalAtTarget P := inferInstance
 
 theorem appLE (H : P f) (U : Y.affineOpens) (V : X.affineOpens) (e) : Q (f.appLE U V e).hom := by

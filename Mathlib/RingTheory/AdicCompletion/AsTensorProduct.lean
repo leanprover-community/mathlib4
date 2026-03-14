@@ -217,13 +217,13 @@ section
 
 variable {ι : Type} (f : (ι → R) →ₗ[R] M)
 
-/- The first horizontal arrow in the top row. -/
+/-- The first horizontal arrow in the top row. -/
 private
 def lTensorKerIncl : AdicCompletion I R ⊗[R] LinearMap.ker f →ₗ[AdicCompletion I R]
     AdicCompletion I R ⊗[R] (ι → R) :=
   AlgebraTensorModule.map LinearMap.id (LinearMap.ker f).subtype
 
-/- The second horizontal arrow in the top row. -/
+/-- The second horizontal arrow in the top row. -/
 private def lTensorf :
     AdicCompletion I R ⊗[R] (ι → R) →ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] M :=
   AlgebraTensorModule.map LinearMap.id f

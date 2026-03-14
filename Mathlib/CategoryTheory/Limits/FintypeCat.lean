@@ -47,7 +47,7 @@ noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J]
   CreatesLimit {K} := createsLimitOfFullyFaithfulOfIso
     (FintypeCat.of <| limit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
-/- Help typeclass inference to infer creation of finite limits for the forgetful functor. -/
+/-- Help typeclass inference to infer creation of finite limits for the forgetful functor. -/
 noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesLimitsOfShape J (forget FintypeCat) :=
   FintypeCat.inclusionCreatesFiniteLimits
@@ -63,7 +63,7 @@ noncomputable instance inclusion_preservesFiniteLimits :
   preservesFiniteLimits _ :=
     preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape FintypeCat.incl
 
-/- Help typeclass inference to infer preservation of finite limits for the forgetful functor. -/
+/-- Help typeclass inference to infer preservation of finite limits for the forgetful functor. -/
 noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
   FintypeCat.inclusion_preservesFiniteLimits
 
@@ -120,7 +120,7 @@ noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory 
   CreatesColimit {K} := createsColimitOfFullyFaithfulOfIso
     (FintypeCat.of <| colimit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
-/- Help typeclass inference to infer creation of finite colimits for the forgetful functor. -/
+/-- Help typeclass inference to infer creation of finite colimits for the forgetful functor. -/
 noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesColimitsOfShape J (forget FintypeCat) :=
   FintypeCat.inclusionCreatesFiniteColimits
@@ -136,7 +136,7 @@ noncomputable instance inclusion_preservesFiniteColimits :
   preservesFiniteColimits _ :=
     preservesColimitOfShape_of_createsColimitsOfShape_and_hasColimitsOfShape FintypeCat.incl
 
-/- Help typeclass inference to infer preservation of finite colimits for the forgetful functor. -/
+/-- Help typeclass inference to infer preservation of finite colimits for the forgetful functor. -/
 noncomputable instance : PreservesFiniteColimits (forget FintypeCat) :=
   FintypeCat.inclusion_preservesFiniteColimits
 

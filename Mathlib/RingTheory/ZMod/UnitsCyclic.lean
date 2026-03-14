@@ -72,7 +72,7 @@ theorem isCyclic_units_four :
   simp only [Nat.card_eq_fintype_card, card_units_eq_totient]
   decide
 
-/- The multiplicative group of `ZMod p` is cyclic. -/
+/-- The multiplicative group of `ZMod p` is cyclic. -/
 theorem isCyclic_units_prime {p : ℕ} (hp : p.Prime) :
     IsCyclic (ZMod p)ˣ :=
   have : Fact (p.Prime) := ⟨hp⟩

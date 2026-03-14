@@ -274,10 +274,9 @@ theorem continuousWithinAt_insert_self :
 
 protected alias ⟨_, ContinuousWithinAt.insert⟩ := continuousWithinAt_insert_self
 
-/- `continuousWithinAt_insert` gives the same equivalence but at a point `y` possibly different
+/-- `continuousWithinAt_insert` gives the same equivalence but at a point `y` possibly different
 from `x`. As this requires the space to be T1, and this property is not available in this file,
 this is found in another file although it is part of the basic API for `continuousWithinAt`. -/
-
 theorem ContinuousWithinAt.diff_iff
     (ht : ContinuousWithinAt f t x) : ContinuousWithinAt f (s \ t) x ↔ ContinuousWithinAt f s x :=
   ⟨fun h => (h.union ht).mono <| by simp only [diff_union_self, subset_union_left], fun h =>
