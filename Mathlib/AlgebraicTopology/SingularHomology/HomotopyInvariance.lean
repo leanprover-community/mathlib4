@@ -6,7 +6,7 @@ Authors: Fabian Odermatt
 module
 
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
-public import Mathlib.AlgebraicTopology.SimplicialObject.SimplicialHomotopy
+public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialObject.ChainHomotopy
 
 /-!
