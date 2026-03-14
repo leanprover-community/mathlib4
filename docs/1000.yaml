@@ -849,8 +849,9 @@ Q766722:
 
 Q776578:
   title: Wedderburn–Artin theorem
-  decl: IsSimpleRing.exists_algEquiv_matrix_divisionRing
-  decl: IsSemisimpleRing.exists_algEquiv_pi_matrix_divisionRing
+  decls:
+    - IsSimpleRing.exists_algEquiv_matrix_divisionRing
+    - IsSemisimpleRing.exists_algEquiv_pi_matrix_divisionRing
 
 Q777924:
   title: Tijdeman's theorem
@@ -1920,6 +1921,9 @@ Q1964537:
 
 Q1966978:
   title: Lévy continuity theorem
+  decl: MeasureTheory.ProbabilityMeasure.tendsto_iff_tendsto_charFun
+  authors: Rémy Degenne
+  date: 2026
 
 Q1974087:
   title: Riemann's theorem on removable singularities
@@ -3610,6 +3614,11 @@ Q7200963:
 
 Q7208500:
   title: Poisson limit theorem
+  decls:
+    - ProbabilityTheory.tendsto_choose_mul_pow_of_tendsto_mul_atTop
+    - ProbabilityTheory.binomial_tendsto_poissonPMFReal_atTop
+  authors: Yi Yuan
+  date: 2026
 
 Q7239984:
   title: Preimage theorem

@@ -393,6 +393,47 @@ theorem center_eq_top (R) [NonUnitalCommRing R] : center R = ⊤ :=
 
 end NonUnitalRing
 
+section Centralizer
+
+variable {R : Type*} [NonUnitalRing R]
+
+/-- The centralizer of a set as non-unital subring. -/
+def centralizer (s : Set R) : NonUnitalSubring R :=
+  { NonUnitalSubsemiring.centralizer s with
+    carrier := s.centralizer
+    neg_mem' := Set.neg_mem_centralizer }
+
+@[simp, norm_cast]
+theorem coe_centralizer (s : Set R) :
+    (centralizer s : Set R) = s.centralizer :=
+  rfl
+
+theorem centralizer_toNonUnitalSubsemiring (s : Set R) :
+    (centralizer s).toNonUnitalSubsemiring = NonUnitalSubsemiring.centralizer s :=
+  rfl
+
+theorem mem_centralizer_iff {s : Set R} {z : R} :
+    z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
+  Iff.rfl
+
+theorem center_le_centralizer (s) : center R ≤ centralizer s :=
+  s.center_subset_centralizer
+
+theorem centralizer_le (s t : Set R) (h : s ⊆ t) :
+    centralizer t ≤ centralizer s :=
+  Set.centralizer_subset h
+
+@[simp]
+theorem centralizer_eq_top_iff_subset {s : Set R} :
+    centralizer s = ⊤ ↔ s ⊆ center R :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+
+@[simp]
+theorem centralizer_univ : centralizer Set.univ = center R :=
+  SetLike.ext' (Set.centralizer_univ R)
+
+end Centralizer
+
 end Center
 
 /-! ## `NonUnitalSubring` closure of a subset -/
@@ -503,7 +544,12 @@ theorem mem_closure_iff {s : Set R} {x} :
     | add _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
     | neg _ _ h => exact neg_mem h⟩
 
+lemma closure_le_centralizer_centralizer {R : Type*} [NonUnitalRing R] (s : Set R) :
+    closure s ≤ centralizer (centralizer s) :=
+  closure_le.mpr Set.subset_centralizer_centralizer
+
 /-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
+@[implicit_reducible]
 def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
     (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (closure s) :=
   { (closure s).toNonUnitalRing with

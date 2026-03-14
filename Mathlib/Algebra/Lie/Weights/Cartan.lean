@@ -78,6 +78,26 @@ lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
     convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx IH using 2
     rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
 
+lemma mem_biSup_genWeightSpace_of {s : Set (H → R)} (hs : ∀ᵉ (χ₁ ∈ s) (χ₂ ∈ s), χ₁ + χ₂ ∈ s)
+    {x : L} {m : M} (hx : x ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace H χ)
+    (hm : m ∈ ⨆ χ, ⨆ (_ : χ ∈ s), genWeightSpace M χ) :
+    ⁅x, m⁆ ∈ ⨆ χ, ⨆ (_ : χ ∈ s), genWeightSpace M χ := by
+  induction hx using LieSubmodule.iSup_induction' with
+  | zero => simp
+  | add _ _ _ _ hu hv => rw [add_lie]; exact add_mem hu hv
+  | mem χ₁ u hu =>
+    by_cases hχ₁ : χ₁ ∈ s; swap
+    · simp_all
+    replace hu : u ∈ rootSpace H χ₁ := by simpa [hχ₁] using hu
+    induction hm using LieSubmodule.iSup_induction' with
+    | zero => simp
+    | add _ _ _ _ hv hw => rw [lie_add]; exact add_mem hv hw
+    | mem χ₂ v hv =>
+      by_cases hχ₂ : χ₂ ∈ s; swap
+      · simp_all
+      apply LieSubmodule.mem_iSup_of_mem (χ₁ + χ₂)
+      simp_all [lie_mem_genWeightSpace_of_mem_genWeightSpace]
+
 variable (R L H M)
 
 /-- Auxiliary definition for `rootSpaceWeightSpaceProduct`,
@@ -226,6 +246,12 @@ theorem zeroRootSubalgebra_eq_of_is_cartan (H : LieSubalgebra R L) [H.IsCartanSu
 theorem zeroRootSubalgebra_eq_iff_is_cartan [IsNoetherian R L] :
     zeroRootSubalgebra R L H = H ↔ H.IsCartanSubalgebra :=
   ⟨is_cartan_of_zeroRootSubalgebra_eq R L H, by intros; simp⟩
+
+theorem eq_rootSpace_zero_iff_isCartan [IsNoetherian R L] :
+    H.toLieSubmodule = rootSpace H 0 ↔ H.IsCartanSubalgebra := by
+  rw [← zeroRootSubalgebra_eq_iff_is_cartan, ← LieSubalgebra.toSubmodule_inj,
+    ← LieSubmodule.toSubmodule_inj]
+  aesop
 
 @[simp]
 theorem rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoetherian R L] :

@@ -73,7 +73,7 @@ section baseChange
 variable {A : Type*} [CommRing A] [Algebra S A] [Algebra P.Ring A] [IsScalarTower P.Ring S A]
 
 variable (R S) in
-/-- This is (isomorphic to) the base change of the contangent complex to `A`, but
+/-- This is (isomorphic to) the base change of the cotangent complex to `A`, but
 the domain and codomains of this are more manageable. -/
 noncomputable
 def _root_.KaehlerDifferential.cotangentComplexBaseChange

@@ -804,7 +804,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
     tendsto_nhds_of_cauchySeq_of_subseq cau compPartialSumTarget_tendsto_atTop C
   -- Fifth step: the sum over `n` of `q.comp p n` can be expressed as a particular resummation of
   -- the sum over all compositions, by grouping together the compositions of the same
-  -- integer `n`. The convergence of the whole sum therefore implies the converence of the sum
+  -- integer `n`. The convergence of the whole sum therefore implies the convergence of the sum
   -- of `q.comp p n`
   have E : HasSum (fun n => (q.comp p) n fun _j => y) (g (f (x + y))) := by
     apply D.sigma
