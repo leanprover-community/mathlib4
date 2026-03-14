@@ -47,26 +47,7 @@ For context, here is a diagram of the possible routes from polynomials to L-func
 
 @[expose] public section
 
--- PRed
 namespace ArithmeticFunction
-
-instance {R : Type*} [Semiring R] : Module R (ArithmeticFunction R) where
-  smul x f := ⟨x • f, by simp⟩
-  smul_zero x := ext fun n ↦ smul_zero x
-  smul_add x f g := ext fun n ↦ smul_add x (f n) (g n)
-  zero_smul f := ext fun n ↦ zero_smul R (f n)
-  one_smul f := ext fun n ↦ one_smul R (f n)
-  add_smul x y f := ext fun n ↦ add_smul x y (f n)
-  mul_smul x y f := ext fun n ↦ mul_smul x y (f n)
-
-@[simp]
-theorem smul_map {R : Type*} [Semiring R] (x : R) (f : ArithmeticFunction R) (n : ℕ) :
-    (x • f) n = x • f n := by
-  rfl
-
-instance {R : Type*} [CommSemiring R] : Algebra R (ArithmeticFunction R) :=
-  .ofModule (fun x f g ↦ ext fun n ↦ by simp [mul_assoc, Finset.mul_sum])
-    fun x f g ↦ ext fun n ↦ by simp [mul_assoc, mul_comm x, Finset.sum_mul]
 
 @[simp]
 theorem algebraMap_map_one {R : Type*} [CommSemiring R] (x : R) :
