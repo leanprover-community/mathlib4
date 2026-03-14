@@ -120,15 +120,13 @@ theorem LieAlgebra.ad_isNilpotent_isSemisimple
   have hsum : ad x = ad n + ad s := by rw [h, map_add]
   have hnil := LieAlgebra.ad_nilpotent_of_nilpotent (R := K) hn₂
   have hss := ad_isSemisimple_of_isSemisimple hs₂
-  have hc : Commute n s :=
-    Algebra.commute_of_mem_adjoin_singleton_of_commute hs₁
-      (Algebra.commute_of_mem_adjoin_self hn₁).symm
+  have hc : Commute n s := Algebra.commute_of_mem_adjoin_singleton_of_commute hs₁
+    (Algebra.commute_of_mem_adjoin_self hn₁).symm
   obtain ⟨n', hn'₁, s', hs'₁, hn'₂, hs'₂, h'⟩ := (ad x).exists_isNilpotent_isSemisimple
-  have hc' : Commute n' s' :=
-    Algebra.commute_of_mem_adjoin_singleton_of_commute hs'₁
-      (Algebra.commute_of_mem_adjoin_self hn'₁).symm
-  have ⟨heqn, heqs⟩ := Module.End.isNilpotent_isSemisimple_unique
-    hn'₂ hs'₂ hnil hss hc' (commute_ad_of_commute hc) (h'.symm.trans hsum)
+  have hc' : Commute n' s' := Algebra.commute_of_mem_adjoin_singleton_of_commute hs'₁
+    (Algebra.commute_of_mem_adjoin_self hn'₁).symm
+  have ⟨heqn, heqs⟩ := Module.End.isNilpotent_isSemisimple_unique hn'₂ hs'₂ hnil hss hc'
+    (commute_ad_of_commute hc) (h'.symm.trans hsum)
   exact ⟨hsum, hnil, hss, heqs ▸ hs'₁, heqn ▸ hn'₁⟩
 
 end Field
