@@ -73,10 +73,10 @@ theorem LieAlgebra.ad_isSemisimple_of_isSemisimple {a : Module.End K V} (ha : a.
     simpa using this
   have hr : Module.End.IsSemisimple (LinearMap.mulRight K a) := by
     apply Module.End.isSemisimple_of_squarefree_aeval_eq_zero ha.minpoly_squarefree
-    have : LinearMap.mulRight K a = (Algebra.lsmul (A := (Module.End K V)ᵐᵒᵖ) K K (Module.End K V))
-        (MulOpposite.op a) := by
+    have hrw : LinearMap.mulRight K a =
+        (Algebra.lsmul (A := (Module.End K V)ᵐᵒᵖ) K K (Module.End K V)) (.op a) := by
       ext; simp [Algebra.lsmul]
-    rw [this, Polynomial.aeval_algHom_apply, Polynomial.aeval_op_apply, minpoly.aeval,
+    rw [hrw, Polynomial.aeval_algHom_apply, Polynomial.aeval_op_apply, minpoly.aeval,
       MulOpposite.op_zero, map_zero]
   exact hl.sub_of_commute (LinearMap.commute_mulLeft_right a a) hr
 
