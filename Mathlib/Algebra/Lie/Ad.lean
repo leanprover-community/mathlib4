@@ -54,46 +54,36 @@ theorem LieAlgebra.isNilpotent_ad_of_isNilpotent {L : LieSubalgebra R A} {x : L}
     (h : IsNilpotent (x : A)) : IsNilpotent (LieAlgebra.ad R L x) :=
   L.isNilpotent_ad_of_isNilpotent_ad <| LieAlgebra.ad_nilpotent_of_nilpotent h
 
+private lemma aeval_op (a : A) (p : Polynomial R) :
+    Polynomial.aeval (MulOpposite.op a) p = MulOpposite.op (Polynomial.aeval a p) := by
+  induction p using Polynomial.induction_on' with
+  | add p q hp hq => simp [map_add, hp, hq]
+  | monomial n c => simp [Polynomial.aeval_monomial, MulOpposite.op_pow, Algebra.commutes]
+
 end CommRing
 
 section Field
 
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-
-omit [FiniteDimensional K V] in
-open Polynomial in
-private lemma aeval_mulRight_apply
-    (a : Module.End K V) (p : K[X]) (T : Module.End K V) :
-    (aeval (LinearMap.mulRight K a) p) T = T * aeval a p := by
-  induction p using Polynomial.induction_on' with
-  | add p q hp hq => simp only [map_add, LinearMap.add_apply, hp, hq, mul_add]
-  | monomial n c =>
-    simp only [aeval_monomial, ← Algebra.smul_def, LinearMap.smul_apply,
-      mul_smul_comm, LinearMap.pow_mulRight, LinearMap.mulRight_apply]
-
-private theorem isSemisimple_mulLeft_of_isSemisimple {a : Module.End K V} (ha : a.IsSemisimple) :
-    Module.End.IsSemisimple (LinearMap.mulLeft K a) := by
-  apply Module.End.isSemisimple_of_squarefree_aeval_eq_zero ha.minpoly_squarefree
-  have : Polynomial.aeval (Algebra.lmul K (Module.End K V) a) (minpoly K a) = 0 := by
-    rw [Polynomial.aeval_algHom_apply, minpoly.aeval, map_zero]
-  simpa using this
-
-private theorem isSemisimple_mulRight_of_isSemisimple {a : Module.End K V} (ha : a.IsSemisimple) :
-    Module.End.IsSemisimple (LinearMap.mulRight K a) := by
-  apply Module.End.isSemisimple_of_squarefree_aeval_eq_zero ha.minpoly_squarefree
-  ext T
-  simp only [LinearMap.zero_apply, aeval_mulRight_apply, minpoly.aeval, mul_zero]
-
-variable [PerfectField K]
+variable {K V : Type*} [Field K] [PerfectField K] [AddCommGroup V] [Module K V]
+variable [FiniteDimensional K V]
 
 /-- The adjoint of a semisimple element is semisimple. -/
 theorem LieAlgebra.ad_isSemisimple_of_isSemisimple
     {a : Module.End K V} (ha : a.IsSemisimple) :
     (LieAlgebra.ad K (Module.End K V) a).IsSemisimple := by
   rw [LieAlgebra.ad_eq_lmul_left_sub_lmul_right]
-  exact (isSemisimple_mulLeft_of_isSemisimple ha).sub_of_commute
-    (LinearMap.commute_mulLeft_right a a)
-    (isSemisimple_mulRight_of_isSemisimple ha)
+  have hl : Module.End.IsSemisimple (LinearMap.mulLeft K a) := by
+    apply Module.End.isSemisimple_of_squarefree_aeval_eq_zero ha.minpoly_squarefree
+    have : Polynomial.aeval (Algebra.lmul K (Module.End K V) a) (minpoly K a) = 0 := by
+      rw [Polynomial.aeval_algHom_apply, minpoly.aeval, map_zero]
+    simpa using this
+  have hr : Module.End.IsSemisimple (LinearMap.mulRight K a) := by
+    apply Module.End.isSemisimple_of_squarefree_aeval_eq_zero ha.minpoly_squarefree
+    have : LinearMap.mulRight K a = (Algebra.lsmul (A := (Module.End K V)ᵐᵒᵖ) K K (Module.End K V))
+        (MulOpposite.op a) := by
+      ext; simp [Algebra.lsmul]
+    rw [this, Polynomial.aeval_algHom_apply, aeval_op, minpoly.aeval, MulOpposite.op_zero, map_zero]
+  exact hl.sub_of_commute (LinearMap.commute_mulLeft_right a a) hr
 
 /-- The adjoint preserves the Jordan-Chevalley decomposition: if `x = n + s` with
 `n ∈ adjoin K {x}` nilpotent and `s ∈ adjoin K {x}` semisimple, then `ad x = ad n + ad s`
