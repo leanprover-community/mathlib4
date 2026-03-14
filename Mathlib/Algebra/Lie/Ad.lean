@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Nilpotent.Lemmas
 /-!
 # Properties of the adjoint action
 
-This file collects results about the adjoint action `ad` on associative algebras.
+Theorems about the adjoint action `LieAlgebra.ad` on associative algebras.
 
 ## Main results
 
