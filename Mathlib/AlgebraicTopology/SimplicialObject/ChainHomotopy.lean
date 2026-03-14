@@ -176,7 +176,7 @@ noncomputable def toChainHomotopy (H : Homotopy f g) :
       rw [prevD_eq (j' := 1) (w := by simp), dNext_eq_zero _ _ (by simp), zero_add]
       simp [ToChainHomotopy.comm_zero H]
     | succ n =>
-      rw [dNext_eq (i' := n) (w := by simp), prevD_eq (j' := n + 1 + 1) (w := by simp)]
+      rw [dNext_eq (i' := n) (w := by simp), prevD_eq (j' := n + 2) (w := by simp)]
       simp [ToChainHomotopy.comm_succ H]
 
 theorem map_homology_eq [CategoryWithHomology C] (H : Homotopy f g) (n : ℕ) :
