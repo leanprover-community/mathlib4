@@ -98,19 +98,15 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
     (q : P.invtRootSubmodule) :
     (q : Submodule K M) = span K (P.root '' {i | P.root i ∈ (q : Submodule K M)}) := by
   set Q := (q : Submodule K M)
-  refine le_antisymm ?_ (span_le.mpr (Set.image_subset_iff.mpr fun _ h => h))
+  have hSQ : span K (P.root '' {i | P.root i ∈ Q}) ≤ Q :=
+    span_le.mpr (Set.image_subset_iff.mpr fun _ h => h)
+  refine le_antisymm ?_ hSQ
   have hq_ker : ∀ k, P.root k ∉ Q → Q ≤ ker (P.coroot' k) := fun k hk =>
     (Submodule.mem_invtSubmodule_reflection_iff (P.flip.root_coroot_two k)
       (Submodule.disjoint_span_singleton_of_notMem hk)).mp
       (P.mem_invtRootSubmodule_iff.mp q.property k)
   set S := span K (P.root '' {i | P.root i ∈ Q})
   set T := span K (P.root '' {i | P.root i ∉ Q})
-  have hT_ker : ∀ i, P.root i ∈ Q → T ≤ ker (P.coroot' i) := by
-    intro i hi; apply span_le.mpr; rintro _ ⟨j, hj, rfl⟩
-    rw [SetLike.mem_coe, LinearMap.mem_ker, P.root_coroot'_eq_pairing]
-    have h₁ := LinearMap.mem_ker.mp (hq_ker j hj hi)
-    rw [P.root_coroot'_eq_pairing] at h₁
-    exact P.pairing_eq_zero_iff'.mpr h₁
   have h_sup : S ⊔ T = ⊤ := by
     rw [← Submodule.span_union, ← Set.image_union]
     have : {i | P.root i ∈ Q} ∪ {i | P.root i ∉ Q} = Set.univ :=
@@ -120,13 +116,16 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
   intro v hv
   obtain ⟨s, hs, t, ht, rfl⟩ := Submodule.mem_sup.mp (h_sup ▸ Submodule.mem_top (x := v))
   suffices t = 0 by rw [this, add_zero]; exact hs
+  have htQ : t ∈ Q := by simpa using Q.sub_mem hv (hSQ hs)
   have h_ker : ∀ k, P.coroot' k t = 0 := fun k ↦ by
     by_cases hk : P.root k ∈ Q
-    · exact LinearMap.mem_ker.mp (hT_ker k hk ht)
-    · have h1 := LinearMap.mem_ker.mp (hq_ker k hk hv)
-      have h2 := LinearMap.mem_ker.mp (hq_ker k hk (span_le.mpr
-        (Set.image_subset_iff.mpr fun _ h => h) hs))
-      rw [map_add, h2, zero_add] at h1; exact h1
+    · refine LinearMap.mem_ker.mp (span_le.mpr ?_ ht)
+      rintro _ ⟨j, hj, rfl⟩
+      rw [SetLike.mem_coe, LinearMap.mem_ker, P.root_coroot'_eq_pairing]
+      have := LinearMap.mem_ker.mp (hq_ker j hj hk)
+      rw [P.root_coroot'_eq_pairing] at this
+      exact P.pairing_eq_zero_iff'.mpr this
+    · exact LinearMap.mem_ker.mp (hq_ker k hk htQ)
   have : IsReflexive K M := .of_isPerfPair P.toLinearMap
   exact ((Dual.eval K _).map_eq_zero_iff (bijective_dual_eval K _).injective).mp
     (LinearMap.ext_on_range P.span_coroot'_eq_top h_ker)
