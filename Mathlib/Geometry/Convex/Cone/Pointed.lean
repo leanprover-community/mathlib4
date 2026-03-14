@@ -86,7 +86,7 @@ lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s,
   rw [← sSup_eq_iSup, ofSubmodule_sSup, sSup_eq_iSup, iSup_image]
 
 /-- The linear span of the cone. -/
-abbrev linSpan (C : PointedCone R E) : Submodule R E := .span R C
+abbrev linSpan (C : PointedCone R E) : Submodule R E := Submodule.span R C
 
 @[simp] lemma coe_linSpan (S : Submodule R E) : (S : PointedCone R E).linSpan = S :=
     by simp [linSpan]
@@ -362,12 +362,12 @@ section Pointwise
 
 open Pointwise
 
-lemma neg_sup_eq_submodule_span (C : PointedCone R M) : -C ⊔ C = C.linSpan := by
+lemma neg_sup_eq_linSpan (C : PointedCone R M) : -C ⊔ C = C.linSpan := by
   nth_rw 1 2 [← Submodule.span_eq C, ← Submodule.span_neg_eq_neg]
   exact span_neg_sup_span_eq_submodule_span _
 
 lemma neg_le_iff_eq_linSpan {C : PointedCone R M} : -C ≤ C ↔ C.linSpan = C := by
-  rw [← neg_sup_eq_submodule_span, sup_eq_right]
+  rw [← neg_sup_eq_linSpan, sup_eq_right]
 
 end Pointwise
 
