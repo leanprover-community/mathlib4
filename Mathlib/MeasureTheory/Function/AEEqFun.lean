@@ -246,7 +246,7 @@ theorem compQuasiMeasurePreserving_id (g : β →ₘ[ν] γ) :
   ext
   exact coeFn_compQuasiMeasurePreserving _ _
 
-theorem compQuasiMeasurePreserving_comp {γ : Type*} [MeasurableSpace γ]
+theorem compQuasiMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ}
     {ξ : Measure γ} (g : γ →ₘ[ξ] δ) {f : β → γ} (hf : QuasiMeasurePreserving f ν ξ) {f' : α → β}
     (hf' : QuasiMeasurePreserving f' μ ν) : compQuasiMeasurePreserving g (f ∘ f') (hf.comp hf') =
     compQuasiMeasurePreserving (compQuasiMeasurePreserving g f hf) f' hf' := by
