@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 
 # Adhesive structure on slice categories
 
-We show that the slice (over) category `Over B` inherits the adhesive structure from the
+The slice (over) category `Over B` inherits the adhesive structure from the
 base category.
 
 ## Main Results
