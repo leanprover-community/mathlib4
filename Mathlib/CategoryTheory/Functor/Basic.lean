@@ -76,6 +76,7 @@ initialize_simps_projections Functor
 
 -- We don't use `@[simps]` here because we want `C` implicit for the simp lemmas.
 /-- `𝟭 C` is the identity functor on a category `C`. -/
+@[implicit_reducible]
 protected def id : C ⥤ C where
   obj X := X
   map f := f
@@ -112,7 +113,7 @@ theorem congr_map (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y}
 
 /-- `F ⋙ G` is the composition of a functor `F` and a functor `G` (`F` first, then `G`).
 -/
-@[simps (attr := grind =) obj]
+@[implicit_reducible, simps (attr := grind =) obj]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
