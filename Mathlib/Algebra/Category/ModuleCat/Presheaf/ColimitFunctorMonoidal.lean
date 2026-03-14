@@ -73,13 +73,20 @@ noncomputable instance : (constFunctorOfCommRing.{w} cR).LaxMonoidal where
     apply right_unitality (ModuleCat.restrictScalars.{w} (cR.ι.app U).hom)
 
 lemma constFunctorOfCommRing_ε_app_apply {X : Cᵒᵖ} (x : R.obj X) :
-    (ε (constFunctorOfCommRing.{w} cR)).app X x = cR.ι.app X x := by
-  apply ModuleCat.restrictScalars_ε
+    (ε (constFunctorOfCommRing.{w} cR)).app X x = cR.ι.app X x :=
+  ModuleCat.restrictScalars_ε ..
+
+lemma constFunctorOfCommRing_μ_app_apply {M₁ M₂ : ModuleCat.{w} cR.pt}
+    (X : Cᵒᵖ) (m₁ : M₁) (m₂ : M₂) :
+    (μ (constFunctorOfCommRing.{w} cR) M₁ M₂).app X (m₁ ⊗ₜ m₂) = m₁ ⊗ₜ m₂ :=
+  ModuleCat.restrictScalars_μ_tmul ..
 
 variable {cR} (hcR : IsColimit cR) [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
 
-attribute [local instance] FinallySmall.preservesColimitsOfShape_of_isFiltered
+attribute [local instance] hasColimitsOfShape_of_finallySmall
+  IsFiltered.isSifted FinallySmall.preservesColimitsOfShape_of_isFiltered
+
 
 noncomputable def colimitFunctorOfCommRing :
     PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat) ⥤ ModuleCat.{w} cR.pt :=
@@ -88,8 +95,6 @@ noncomputable def colimitFunctorOfCommRing :
 noncomputable def colimitAdjunctionOfCommRing :
     colimitFunctorOfCommRing.{w} hcR ⊣ constFunctorOfCommRing.{w} cR :=
   colimitAdjunction _
-
-attribute [local instance] hasColimitsOfShape_of_finallySmall
 
 noncomputable def ιColimitFunctorOfCommRing
     (F : PresheafOfModules.{w} (R ⋙ forget₂ _ _)) (U : Cᵒᵖ) :
@@ -115,15 +120,28 @@ noncomputable def isColimitCoconeColimitFunctorOfCommRing
   colimit.isColimit F.presheaf
 
 lemma ιColimitFunctorOfCommRing_jointly_surjective
-    (F : PresheafOfModules.{w} (R ⋙ forget₂ _ _)) (x : (colimitFunctorOfCommRing hcR).obj F) :
+    {F : PresheafOfModules.{w} (R ⋙ forget₂ _ _)} (x : (colimitFunctorOfCommRing hcR).obj F) :
     ∃ (U : Cᵒᵖ) (u : F.obj U), ιColimitFunctorOfCommRing hcR F U u = x := by
   exact Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (forget _) (isColimitCoconeColimitFunctorOfCommRing hcR F)) _
 
+lemma ιColimitFunctorOfCommRing_jointly_surjective₂
+    {F₁ F₂ : PresheafOfModules.{w} (R ⋙ forget₂ _ _)}
+    (x₁ : (colimitFunctorOfCommRing hcR).obj F₁)
+    (x₂ : (colimitFunctorOfCommRing hcR).obj F₂) :
+    ∃ (U : Cᵒᵖ) (u₁ : F₁.obj U) (u₂ : F₂.obj U),
+      ιColimitFunctorOfCommRing hcR F₁ U u₁ = x₁ ∧
+        ιColimitFunctorOfCommRing hcR F₂ U u₂ = x₂ := by
+  obtain ⟨U, ⟨u₁, u₂⟩, hu⟩ := Types.jointly_surjective_of_isColimit
+    (((isColimitOfPreserves (forget _) (isColimitCoconeColimitFunctorOfCommRing
+    hcR F₁))).tensor ((isColimitOfPreserves (forget _)
+      (isColimitCoconeColimitFunctorOfCommRing hcR F₂)))) (by exact ⟨x₁, x₂⟩)
+  exact ⟨U, u₁, u₂, _root_.Prod.ext_iff.1 hu⟩
+
 noncomputable instance : (colimitFunctorOfCommRing hcR).OplaxMonoidal :=
   (colimitAdjunctionOfCommRing hcR).leftAdjointOplaxMonoidal
 
-lemma colimitFunctorOfCommRing_η_ιColimitFunctorOfCommRing
+lemma colimitFunctorOfCommRing_η_apply
     {U : Cᵒᵖ} (x : R.obj U) :
     η (colimitFunctorOfCommRing hcR) (ιColimitFunctorOfCommRing hcR (𝟙_ _) U x) =
       cR.ι.app U x := by
@@ -140,16 +158,65 @@ instance : IsIso (η (colimitFunctorOfCommRing hcR)) := by
   have : (forget₂ _ AddCommGrpCat).map (η (colimitFunctorOfCommRing hcR)) =
     (IsColimit.coconePointUniqueUpToIso h₁ h₂).hom := by
     ext x
-    obtain ⟨U, u, rfl⟩ := ιColimitFunctorOfCommRing_jointly_surjective hcR _ x
+    obtain ⟨U, u, rfl⟩ := ιColimitFunctorOfCommRing_jointly_surjective hcR x
     dsimp
-    rw [colimitFunctorOfCommRing_η_ιColimitFunctorOfCommRing]
+    rw [colimitFunctorOfCommRing_η_apply]
     exact ConcreteCategory.congr_hom
       (IsColimit.comp_coconePointUniqueUpToIso_hom h₁ h₂ U).symm _
   rw [← isIso_iff_of_reflects_iso _ (forget₂ _ AddCommGrpCat), this]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma colimitFunctorOfCommRing_δ_apply
+    {F₁ F₂ : PresheafOfModules.{w} (R ⋙ forget₂ CommRingCat RingCat)}
+    {U : Cᵒᵖ} (m₁ : F₁.obj U) (m₂ : F₂.obj U) :
+    dsimp% δ (colimitFunctorOfCommRing hcR) F₁ F₂
+        (ιColimitFunctorOfCommRing hcR _ U (m₁ ⊗ₜ m₂)) =
+      ιColimitFunctorOfCommRing hcR _ U m₁ ⊗ₜ
+        ιColimitFunctorOfCommRing hcR _ U m₂ := by
+  dsimp [Adjunction.leftAdjointOplaxMonoidal_δ]
+  erw [PresheafOfModules.colimitAdjunction_homEquiv_symm_apply]
+  dsimp
+  let adj := colimitAdjunctionOfCommRing hcR
+  change (μ (constFunctorOfCommRing cR) _ _).app U
+    (((adj.unit.app F₁).app U ⊗ₘ (adj.unit.app F₂).app U) (m₁ ⊗ₜ m₂)) = _
+  rw [ModuleCat.MonoidalCategory.tensorHom_tmul,
+    constFunctorOfCommRing_μ_app_apply]
+  rfl
+
+namespace isIso_colimitFunctorOfCommRing_δ
+
+variable (F₁ F₂ : PresheafOfModules.{w} (R ⋙ forget₂ CommRingCat RingCat))
+
+def μ : (colimitFunctorOfCommRing hcR).obj F₁ ⊗ (colimitFunctorOfCommRing hcR).obj F₂ ⟶
+    (colimitFunctorOfCommRing hcR).obj (F₁ ⊗ F₂) := sorry
+
+@[simp]
+lemma μ_apply {X : Cᵒᵖ} (m₁ : F₁.obj X) (m₂ : F₂.obj X) :
+    dsimp% μ hcR F₁ F₂ (ιColimitFunctorOfCommRing hcR F₁ X m₁ ⊗ₜ
+        ιColimitFunctorOfCommRing hcR F₂ X m₂) =
+      ιColimitFunctorOfCommRing hcR (F₁ ⊗ F₂) X (m₁ ⊗ₜ m₂) := by
+  sorry
+
+@[reassoc (attr := simp)]
+lemma μ_δ : μ hcR F₁ F₂ ≫ δ (colimitFunctorOfCommRing hcR) F₁ F₂ = 𝟙 _ :=
+  ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₂ ↦ by
+    obtain ⟨U, m₁, m₂, rfl, rfl⟩ := ιColimitFunctorOfCommRing_jointly_surjective₂ hcR m₁ m₂
+    simp)
+
+instance : Epi (μ hcR F₁ F₂) := sorry
+
+@[reassoc (attr := simp)]
+lemma δ_μ : δ (colimitFunctorOfCommRing hcR) F₁ F₂ ≫ μ hcR F₁ F₂ = 𝟙 _ := by
+  simp [← cancel_epi (μ hcR F₁ F₂)]
+
+end isIso_colimitFunctorOfCommRing_δ
+
+open isIso_colimitFunctorOfCommRing_δ in
 instance (F₁ F₂ : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)) :
-    IsIso (δ (colimitFunctorOfCommRing hcR) F₁ F₂) := sorry
+    IsIso (δ (colimitFunctorOfCommRing hcR) F₁ F₂) :=
+  ⟨μ hcR F₁ F₂, by simp⟩
 
 noncomputable instance : (colimitFunctorOfCommRing hcR).Monoidal :=
   Functor.Monoidal.ofOplaxMonoidal _
