@@ -3,9 +3,10 @@ Copyright (c) 2026 AI Math Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: AI Math Project
 -/
-import Mathlib.Probability.Martingale.Basic
-import Mathlib.Probability.Martingale.OptionalStopping
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+module
+public import Mathlib.Probability.Martingale.Basic
+public import Mathlib.Probability.Martingale.OptionalStopping
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Ville's inequality for nonnegative supermartingales
@@ -33,7 +34,7 @@ nonnegative supermartingales in terms of their initial expectation.
 * Williams, D. (1991). *Probability with Martingales*.
   Cambridge University Press, §10.9.
 -/
-
+@[expose] public section
 noncomputable section
 
 open MeasureTheory
