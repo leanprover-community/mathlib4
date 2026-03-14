@@ -307,7 +307,6 @@ end ModuleColimit
 end
 
 /-- The colimit module of a presheaf of modules over a cofiltered category. -/
-@[simps! obj]
 noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat cR.pt where
   obj M := ModuleCat.of _ (ModuleColimit hcR (colimit.isColimit M.presheaf))
   map f := ModuleCat.ofHom (ModuleColimit.map _ _ _ f)
