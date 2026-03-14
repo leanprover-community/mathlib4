@@ -1763,6 +1763,7 @@ public import Mathlib.Analysis.Complex.JensenFormula
 public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Analysis.Complex.MeanValue
+public import Mathlib.Analysis.Complex.MeromorphicLogDeriv
 public import Mathlib.Analysis.Complex.Norm
 public import Mathlib.Analysis.Complex.OpenMapping
 public import Mathlib.Analysis.Complex.OperatorNorm
@@ -5483,7 +5484,9 @@ public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 public import Mathlib.NumberTheory.LSeries.Basic
 public import Mathlib.NumberTheory.LSeries.Convergence
 public import Mathlib.NumberTheory.LSeries.Convolution
+public import Mathlib.NumberTheory.LSeries.CriticalLine
 public import Mathlib.NumberTheory.LSeries.Deriv
+public import Mathlib.NumberTheory.LSeries.DerivFunctionalEquation
 public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.DirichletContinuation
 public import Mathlib.NumberTheory.LSeries.HurwitzZeta
