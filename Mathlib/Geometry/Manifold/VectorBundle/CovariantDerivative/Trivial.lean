@@ -15,14 +15,12 @@ Don't be afraid to ask. TODO!
 
 -/
 
-open Bundle
+open Bundle Filter Module NormedSpace Topology Set
 open scoped Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 @[expose] public section
-
-open Bundle Filter Module Topology Set
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
@@ -42,21 +40,18 @@ set_option backward.isDefEq.respectTransparency false in
 variable (I M F) in
 @[simps]
 noncomputable def trivial [IsManifold I 1 M] :
-    IsCovariantDerivativeOn F (V := Trivial M F)
-      (fun s x ↦ mfderiv I 𝓘(𝕜, F) s x) univ where
-  add {σ σ' x} hσ hσ' hx := by
+    IsCovariantDerivativeOn F (V := Trivial M F) (fun s x ↦ mfderiv I 𝓘(𝕜, F) s x) univ where
+  add hσ hσ' hx := by
     rw [mdifferentiableAt_section_trivial_iff] at hσ hσ'
     rw [mfderiv_add hσ hσ']
-  leibniz {σ f x} hσ hf hx := by
+  leibniz hσ hf hx := by
     rw [mdifferentiableAt_section] at hσ
     ext1 X₀
     exact fromTangentSpace_mfderiv_smul_apply hf hσ X₀
 
 lemma of_endomorphism (A : (x : M) → F →L[𝕜] TangentSpace I x →L[𝕜] F) :
     IsCovariantDerivativeOn F
-      (fun (s : M → F) x ↦
-        letI d : TangentSpace I x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) s x
-        d + A x (s x)) univ :=
+      (fun (s : M → F) x ↦ (fromTangentSpace (𝕜 := 𝕜) (s x) ∘L mfderiv% s x) + A x (s x)) univ :=
   trivial I M F |>.add_one_form A
 
 end trivial_bundle
@@ -67,19 +62,11 @@ namespace CovariantDerivative
 
 section trivial_bundle
 
-set_option backward.isDefEq.respectTransparency false in
 variable (I M F) in
 @[simps]
 noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial M F) where
   toFun s x := mfderiv I 𝓘(𝕜, F) s x
-  isCovariantDerivativeOnUniv := -- TODO use previous work
-  { add {σ σ' x} hσ hσ' hx := by
-      rw [mdifferentiableAt_section_trivial_iff] at hσ hσ'
-      rw [mfderiv_add hσ hσ']
-    leibniz {σ f x} hσ hf hx := by
-      rw [mdifferentiableAt_section] at hσ
-      ext1 X₀
-      exact fromTangentSpace_mfderiv_smul_apply hf hσ X₀ }
+  isCovariantDerivativeOnUniv := IsCovariantDerivativeOn.trivial ..
 
 end trivial_bundle
 
@@ -119,8 +106,8 @@ noncomputable def of_endomorphism (A : E → E' →L[𝕜] E →L[𝕜] E') :
   toFun σ := fun x ↦ fderiv 𝕜 σ x + A x (σ x)
   isCovariantDerivativeOnUniv := by
     convert IsCovariantDerivativeOn.of_endomorphism (I := 𝓘(𝕜, E)) A
-    ext f x v
-    rw [mfderiv_eq_fderiv]
+    simp [mfderiv_eq_fderiv, NormedSpace.fromTangentSpace]
+    rfl
 
 end CovariantDerivative
 
