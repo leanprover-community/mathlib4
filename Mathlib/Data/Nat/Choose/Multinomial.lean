@@ -10,16 +10,20 @@ public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+
 /-!
 # Multinomial
 
-This file defines the multinomial coefficient and several small lemma's for manipulating it.
+This file defines the multinomial coefficients and several small lemmas for manipulating them.
 
-- `Nat.multinomial`: the multinomial coefficient.
-  Given a function `f : α → ℕ` and `s : Finset α`,
+- `Nat.multinomial`: the multinomial coefficient,
+  Given a function `f : α → ℕ` and `s : Finset α`, this is the number of strings
+  consisting of symbols from `s`, where `c ∈ s` appears with multiplicity `f c`.
+
+  It is defined as `(∑ i ∈ s, f i)! / ∏ i ∈ s, (f i)!`.
 
 - `Multiset.countPerms`: multinomial coefficient associated with the `Multiset.count` function
-  of a multiset
+  of a multiset. This is the number of lists that induce the given multiset.
 
 - `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
 
@@ -178,9 +182,7 @@ namespace Multiset
 
 variable {α : Type*}
 
-/-- Alternative definition of multinomial based on `Multiset` delegating to the
-  finsupp definition
--/
+/-- The number of permutations of a given multiset. -/
 noncomputable def countPerms [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 @[deprecated (since := "2025-03-13")] alias multinomial := countPerms
