@@ -300,6 +300,7 @@ theorem diff_diff {u : Set α} : (s \ t) \ u = s \ (t ∪ u) :=
 theorem diff_diff_comm {s t u : Set α} : (s \ t) \ u = (s \ u) \ t :=
   sdiff_sdiff_comm
 
+@[simp]
 theorem diff_subset_iff {s t u : Set α} : s \ t ⊆ u ↔ s ⊆ t ∪ u :=
   show s \ t ≤ u ↔ s ≤ t ∪ u from sdiff_le_iff
 
