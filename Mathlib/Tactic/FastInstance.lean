@@ -245,10 +245,11 @@ def checkInstance (name : Name) : MetaM MessageData := do
         catch _ => pure none
       let detail : MessageData := match mismatch with
         | some (field, actual, expected) =>
-          m!"\n  The data field `{field}` has binder type {actual} where {expected} is expected."
+          m!"\n  The data field `{field}` has binder type {actual} where {expected} is expected.\
+            \n  Other data fields may also be leaky."
         | none => "\n  The body differs from the re-inferred form at instances transparency."
       return m!"❌ '{name}': leaky binder types detected.{detail}\n  \
-        Use `fast_instance%` to repair: \
+        The `fast_instance%` elaborator may be useful as a repair or band-aid:\n  \
         `instance : ... := fast_instance% <body>`"
 
 open Elab Command in

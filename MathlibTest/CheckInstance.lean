@@ -23,7 +23,8 @@ and ❌ if there is a "leak" (a data field uses a coercion-equivalent but not
 /--
 info: ❌ 'RestrictScalars.opModule': leaky binder types detected.
   The body differs from the re-inferred form at instances transparency.
-  Use `fast_instance%` to repair: `instance : ... := fast_instance% <body>`
+  The `fast_instance%` elaborator may be useful as a repair or band-aid:
+  `instance : ... := fast_instance% <body>`
 -/
 #guard_msgs in
 -- `RestrictScalars.opModule` is defined without `fast_instance%` and is leaky.

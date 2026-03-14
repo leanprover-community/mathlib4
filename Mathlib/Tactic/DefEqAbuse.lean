@@ -403,7 +403,7 @@ def logAnnotationSuggestions {m : Type → Type} [Monad m] [MonadLog m] [AddMess
   let some names := names | return
   if names.isEmpty then return
   logInfo m!"Workaround: the following `@[implicit_reducible]` annotations would \
-    paper over this problem, but the real issue is likely a leaky instance somewhere.\n\
+    paper over this problem,\nbut the real issue is likely a leaky instance somewhere.\n\
     {formatAnnotations names}"
 
 /-- Given a set of instance name strings (as they appear in synthesis trace output, possibly

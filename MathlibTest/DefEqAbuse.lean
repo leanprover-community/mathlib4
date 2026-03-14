@@ -71,9 +71,12 @@ The following isDefEq checks are the root causes of the failure:
 info: The following instances may have leaky binder types:
   ❌ 'myPredCompleteLattice': leaky binder types detected.
   The data field `le` has binder type (i : ℕ) → (fun a => Prop) i where MyPred ℕ is expected.
-  Use `fast_instance%` to repair: `instance : ... := fast_instance% <body>`
+  Other data fields may also be leaky.
+  The `fast_instance%` elaborator may be useful as a repair or band-aid:
+  `instance : ... := fast_instance% <body>`
 ---
-info: Workaround: the following `@[implicit_reducible]` annotations would paper over this problem, but the real issue is likely a leaky instance somewhere.
+info: Workaround: the following `@[implicit_reducible]` annotations would paper over this problem,
+but the real issue is likely a leaky instance somewhere.
 set_option allowUnsafeReducibility true
 attribute [implicit_reducible]
   MyPred
