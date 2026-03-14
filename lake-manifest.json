@@ -75,7 +75,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "b6b2fecdcda66e758be7a2fc124b905b11e9b708",
+   "rev": "828cc57ff0afbdf1cfcea3564712a4708229395d",
    "name": "skimmer",
    "manifestFile": "lake-manifest.json",
    "inputRev": "v0.0.1+try-this",
