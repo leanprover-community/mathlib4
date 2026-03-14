@@ -257,7 +257,7 @@ theorem compQuasiMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ}
 
 theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
     (hf : QuasiMeasurePreserving f μ μ) (n : ℕ) : (compQuasiMeasurePreserving · f hf)^[n] g =
-    compQuasiMeasurePreserving g (f^[n]) (QuasiMeasurePreserving.iterate hf n) := by
+    compQuasiMeasurePreserving g (f^[n]) (hf.iterate n) := by
   induction n with
   | zero => simp
   | succ n hind =>
