@@ -282,22 +282,6 @@ structure FiniteSpanningSetsIn {m0 : MeasurableSpace α} (μ : Measure α) (C : 
   protected finite : ∀ i, μ (set i) < ∞
   protected spanning : ⋃ i, set i = univ
 
-theorem forall_measure_inter_isCountablySpanning_eq_zero
-    (s : Set α) {C : Set (Set α)} (hC : IsCountablySpanning C)
-    (ht : ∀ t ∈ C, μ (s ∩ t) = 0) :
-    μ s = 0 := by
-  obtain ⟨t, ht1, ht2⟩ := hC
-  rw [show s = ⋃ n, s ∩ t n by rw [← inter_iUnion, ht2, inter_univ], measure_iUnion_null_iff]
-  exact fun i => ht (t i) (ht1 i)
-
-theorem forall_measure_restrict_isCountablySpanning_eq_zero
-    (s : Set α) {C : Set (Set α)} (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet)
-    (ht : ∀ t ∈ C, μ.restrict t s = 0) :
-    μ s = 0 := by
-  rw [forall_measure_inter_isCountablySpanning_eq_zero s hC]
-  refine fun t htc => ?_
-  simpa [← μ.restrict_apply' (hm htc)] using ht t htc
-
 end Measure
 
 /-- A measure is called locally finite if it is finite in some neighborhood of each point. -/

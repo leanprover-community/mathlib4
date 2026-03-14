@@ -112,6 +112,20 @@ theorem restrict_apply' (hs : MeasurableSet s) : μ.restrict s t = μ (t ∩ s) 
     Measure.restrict_toOuterMeasure_eq_toOuterMeasure_restrict hs,
     OuterMeasure.restrict_apply s t _, toOuterMeasure_apply]
 
+theorem forall_measure_inter_isCountablySpanning_eq_zero {C : Set (Set α)}
+    (hC : IsCountablySpanning C) (ht : ∀ t ∈ C, μ (s ∩ t) = 0) :
+    μ s = 0 := by
+  obtain ⟨t, ht1, ht2⟩ := hC
+  rw [show s = ⋃ n, s ∩ t n by rw [← inter_iUnion, ht2, inter_univ], measure_iUnion_null_iff]
+  exact fun i => ht (t i) (ht1 i)
+
+theorem forall_measure_restrict_isCountablySpanning_eq_zero {C : Set (Set α)}
+    (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
+    μ s = 0 := by
+  rw [forall_measure_inter_isCountablySpanning_eq_zero hC]
+  refine fun t htc => ?_
+  simpa [← μ.restrict_apply' (hm htc)] using ht t htc
+
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   rw [← restrict_congr_set hs.toMeasurable_ae_eq,
     restrict_apply' (measurableSet_toMeasurable _ _),
