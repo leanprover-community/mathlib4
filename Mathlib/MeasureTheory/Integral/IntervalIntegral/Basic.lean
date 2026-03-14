@@ -1116,19 +1116,19 @@ theorem integral_Ioi_sub_Ioi' (hf : IntegrableOn f (Ioi a) μ) (hg : IntegrableO
   · rw [integral_symm, ← this hg hf hab.le, neg_sub]
   exact integral_Ioi_sub_Ioi hf hab
 
-theorem integral_Iio_sub_Iio [NoAtoms μ] (hf : IntegrableOn f (Iio b) μ) (hab : a ≤ b) :
-    ∫ x in Iio b, f x ∂μ - ∫ x in Iio a, f x ∂μ = ∫ x in a..b, f x ∂μ := by
-  simp_rw [setIntegral_congr_set Iio_ae_eq_Iic]
-  have hb : IntegrableOn f (Iic b) μ := by rwa [integrableOn_Iic_iff_integrableOn_Iio]
-  have ha : IntegrableOn f (Iic a) μ := hb.mono_set (Iic_subset_Iic.2 hab)
-  exact integral_Iic_sub_Iic ha hb
+theorem integral_Iio_sub_Iio (hf : IntegrableOn f (Iio b) μ) (hab : a ≤ b) :
+    ∫ x in Iio b, f x ∂μ - ∫ x in Iio a, f x ∂μ = ∫ x in Ico a b, f x ∂μ := by
+  have ha : IntegrableOn f (Iio a) μ := hf.mono_set (Iio_subset_Iio hab)
+  have h : IntegrableOn f (Ico a b) μ := hf.mono_set Ico_subset_Iio_self
+  rw [sub_eq_iff_eq_add', ← setIntegral_union (by grind) measurableSet_Ico ha h,
+      Iio_union_Ico_eq_Iio hab]
 
 theorem integral_Iio_sub_Iio' [NoAtoms μ] (hf : IntegrableOn f (Iio b) μ)
     (hg : IntegrableOn f (Iio a) μ) :
     ∫ x in Iio b, f x ∂μ - ∫ x in Iio a, f x ∂μ = ∫ x in a..b, f x ∂μ := by
   wlog! hab : a ≤ b generalizing a b
   · rw [integral_symm, ← this hg hf hab.le, neg_sub]
-  exact integral_Iio_sub_Iio hf hab
+  rw [integral_Iio_sub_Iio hf hab, integral_of_le hab, integral_Ico_eq_integral_Ioc]
 
 theorem integral_Iic_add_Ioi (h_left : IntegrableOn f (Iic b) μ)
     (h_right : IntegrableOn f (Ioi b) μ) :
