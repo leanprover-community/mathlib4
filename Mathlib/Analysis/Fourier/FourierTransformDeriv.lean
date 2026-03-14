@@ -123,7 +123,6 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
     ContinuousLinearMap.neg_apply, ContinuousLinearMap.toSpanSingleton_apply, real_smul, neg_inj]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fderiv_fourierChar_neg_bilinear_right_apply (v : V) (w y : W) :
     fderiv ℝ (fun w ↦ (𝐞 (-L v w) : ℂ)) w y = -2 * π * I * L v y * 𝐞 (-L v w) := by
   simp only [(hasFDerivAt_fourierChar_neg_bilinear_right L v w).fderiv, neg_mul,
@@ -140,7 +139,6 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_left (v : V) (w : W) :
       ((-2 * π * I * 𝐞 (-L v w)) • (ofRealCLM ∘L (L.flip w))) v :=
   hasFDerivAt_fourierChar_neg_bilinear_right L.flip w v
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fderiv_fourierChar_neg_bilinear_left_apply (v y : V) (w : W) :
     fderiv ℝ (fun v ↦ (𝐞 (-L v w) : ℂ)) v y = -2 * π * I * L y w * 𝐞 (-L v w) := by
   simp only [(hasFDerivAt_fourierChar_neg_bilinear_left L v w).fderiv, neg_mul,
@@ -638,7 +636,6 @@ theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimens
     · simp only [Finset.mem_product, Finset.mem_range_succ_iff]
       exact ⟨hj, hi⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One can bound the `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`,
 in terms of integrals of iterated derivatives of `f` (of order up to `n`) multiplied by `‖v‖ ^ i`
 (for `i ≤ k`). -/

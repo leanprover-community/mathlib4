@@ -1311,4 +1311,34 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 
 end Sigma
 
+lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M) :
+    x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
+  convert mem_range_mapDomain_iff _ f.injective _
+  · ext; rw [embDomain_eq_mapDomain]
+  · grind
+
+theorem embDomain_trans_apply [AddCommMonoid M] (v : α →₀ M) (f : α ↪ β) (g : β ↪ γ) :
+    embDomain (f.trans g) v = embDomain g (embDomain f v) := by
+  simp only [embDomain_eq_mapDomain, ← mapDomain_comp, Embedding.coe_trans]
+
+theorem mapDomain_support_of_subsingletonAddUnits [DecidableEq β] [AddCommMonoid M]
+    (f : α → β) [Subsingleton (AddUnits M)] (x : α →₀ M) :
+      (x.mapDomain f).support = x.support.image f := by
+  ext t
+  rw [mem_support_iff, ne_eq, Finset.mem_image]
+  refine ⟨?_, fun ⟨i, i_in, hi⟩ ↦ ?_⟩
+  · simpa [mapDomain, sum, single_apply] using fun i h h' _ ↦ ⟨i, h, h'⟩
+  simpa [mapDomain, sum, ← hi, single_apply] using ⟨i, by simp [mem_support_iff.mp i_in]⟩
+
+theorem mapDomain_apply_eq_sum [DecidableEq β] [AddCommMonoid M] (f : α → β)
+    (x : α →₀ M) {a : α} : (x.mapDomain f) (f a) = ∑ i ∈ x.support with f i = f a, x i := by
+  simp [mapDomain, sum, single_apply, Finset.sum_ite]
+
+theorem mapDomain_apply_eq_zero_iff_of_subsingletonAddUnits [AddCommMonoid M] (f : α → β)
+    [Subsingleton (AddUnits M)] (x : α →₀ M) : mapDomain (M := M) f x = 0 ↔ x = 0 := by
+  classical
+  refine ⟨fun h ↦ Finsupp.ext (fun i ↦ ?_), fun h ↦ by rw [h, mapDomain_zero]⟩
+  replace h := Finsupp.ext_iff.mp h (f i)
+  simp [mapDomain_apply_eq_sum] at h; grind
+
 end Finsupp

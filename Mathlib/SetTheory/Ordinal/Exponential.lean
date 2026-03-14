@@ -135,6 +135,21 @@ theorem opow_le_opow_iff_right {a b c : Ordinal} (a1 : 1 < a) : a ^ b ≤ a ^ c 
 theorem opow_right_inj {a b c : Ordinal} (a1 : 1 < a) : a ^ b = a ^ c ↔ b = c :=
   (isNormal_opow a1).strictMono.injective.eq_iff
 
+@[simp]
+theorem one_lt_opow {a b : Ordinal} : 1 < a ^ b ↔ 1 < a ∧ b ≠ 0 := by
+  refine ⟨?_, fun ⟨ha, hb⟩ ↦ ?_⟩
+  · contrapose! +distrib
+    rw [le_one_iff]
+    rintro ((rfl | rfl) | rfl)
+    · exact zero_opow_le b
+    · simp
+    · simp
+  · rwa [← opow_zero a, opow_lt_opow_iff_right ha, pos_iff_ne_zero]
+
+@[simp]
+theorem one_lt_pow {a : Ordinal} {n : ℕ} : 1 < a ^ n ↔ 1 < a ∧ n ≠ 0 :=
+  mod_cast one_lt_opow (b := n)
+
 theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
   (isNormal_opow a1).map_isSuccLimit
 
@@ -256,6 +271,9 @@ theorem opow_mul_add_lt_opow {b u v w x : Ordinal} (hv : v < b) (hw : w < b ^ u)
 theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < b ^ u) :
     b ^ u * v + w < b ^ succ u :=
   opow_mul_add_lt_opow hvb hw (lt_succ u)
+
+theorem opow_mul_lt_opow {b u v x : Ordinal} (hv : v < b) (hu : u < x) : b ^ u * v < b ^ x := by
+  simpa using opow_mul_add_lt_opow hv (opow_pos _ hv.pos) hu
 
 /-! ### Ordinal logarithm -/
 
@@ -443,6 +461,15 @@ theorem div_opow_log_lt {b : Ordinal} (o : Ordinal) (hb : 1 < b) : o / b ^ log b
   rw [← lt_mul_iff_div_lt (opow_pos _ (zero_lt_one.trans hb)).ne', ← opow_succ]
   exact lt_opow_succ_log_self hb o
 
+theorem div_two_opow_log {o : Ordinal} (ho : o ≠ 0) : o / 2 ^ log 2 o = 1 := by
+  apply le_antisymm
+  · simpa [← one_add_one_eq_two] using div_opow_log_lt o one_lt_two
+  · simpa [one_le_iff_ne_zero, pos_iff_ne_zero] using div_opow_log_pos 2 ho
+
+theorem two_opow_log_add {o : Ordinal} (ho : o ≠ 0) : 2 ^ log 2 o + o % 2 ^ log 2 o = o := by
+  convert div_add_mod .. using 2
+  rw [div_two_opow_log ho, mul_one]
+
 theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y ≠ 0) :
     log b x + log b y ≤ log b (x * y) := by
   obtain hb | hb := lt_or_ge 1 b
@@ -454,7 +481,7 @@ theorem omega0_opow_mul_nat_lt {a b : Ordinal} (h : a < b) (n : ℕ) : ω ^ a * 
   apply lt_of_lt_of_le _ (opow_le_opow_right omega0_pos (succ_le_of_lt h))
   rw [opow_succ]
   gcongr
-  exacts [opow_pos a omega0_pos, nat_lt_omega0 n]
+  exacts [opow_pos a omega0_pos, natCast_lt_omega0 n]
 
 theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
     a < ω ^ b ↔ ∃ c < b, ∃ n : ℕ, a < ω ^ c * n := by
@@ -471,6 +498,18 @@ theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a
   refine ⟨n, hn.trans_le ?_⟩
   grw [lt_succ_iff.1 hc]
   exact omega0_pos
+
+theorem lt_omega0_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
+    a < ω ^ ω ^ b ↔ ∃ c < b, ∃ n : ℕ, a < ω ^ (ω ^ c * n) := by
+  simp_rw [lt_omega0_opow (opow_ne_zero _ omega0_ne_zero), lt_omega0_opow hb]
+  constructor
+  · intro ⟨a, ⟨b, hb, ⟨m, hm⟩⟩, ⟨n, hn⟩⟩
+    exact ⟨_, hb, _, hn.trans <| opow_mul_lt_opow (natCast_lt_omega0 _) <|
+      hm.trans_le (mul_le_mul_right (Nat.cast_le.2 m.le_succ) _)⟩
+  · intro ⟨a, ha, ⟨n, hn⟩⟩
+    refine ⟨ω ^ a * n, ⟨a, ha, n + 1, ?_⟩, 1, ?_⟩
+    · simp [mul_lt_mul_iff_right₀, opow_pos]
+    · simpa
 
 /-! ### Interaction with `Nat.cast` -/
 

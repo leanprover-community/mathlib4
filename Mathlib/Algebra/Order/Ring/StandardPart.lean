@@ -29,10 +29,6 @@ Given a finite element of the field, the `ArchimedeanClass.stdPart` function ret
 corresponding to this unique embedding. This function generalizes, among other things, the standard
 part function on `Hyperreal`.
 
-## TODO
-
-Redefine `Hyperreal.st` in terms of `ArchimedeanClass.stdPart`.
-
 ## References
 
 * https://en.wikipedia.org/wiki/Standard_part_function

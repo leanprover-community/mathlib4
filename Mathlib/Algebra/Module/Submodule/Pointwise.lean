@@ -309,7 +309,7 @@ When we consider subset of `R` acting on `M`
 
 #### Notes
 - If we assume the addition on subsets of `R` is the `⊔` and subtraction `⊓` i.e. use `SetSemiring`,
-then this action actually gives a module structure on submodules of `M` over subsets of `R`.
+  then this action actually gives a module structure on submodules of `M` over subsets of `R`.
 - If we generalize so that `r • N` makes sense for all `r : S`, then `Submodule.singleton_set_smul`
   and `Submodule.singleton_set_smul` can be generalized as well.
 -/
