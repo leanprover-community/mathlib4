@@ -107,6 +107,44 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter docStringLinter
 
+/--
+`linter.style.commentToDocString` checks for declarations preceded by comments that should
+become docstrings.
+-/
+public register_option linter.style.commentToDocString : Bool := {
+  defValue := false
+  descr := "lint for block comments that could become docstrings"
+}
+
+@[inherit_doc linter.style.commentToDocString]
+def commentToDocStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless getLinterValue linter.style.commentToDocString (← getLinterOptions) do
+    return
+  if (← get).messages.hasErrors then
+    return
+  -- There doesn't seem to be an efficient backwards string search; use a slower
+  -- default implementation.
+  let inst := @String.Slice.Pattern.ToBackwardSearcher.defaultImplementation String
+  -- Only lint declarations that accept docstrings.
+  if stx.getKind != ``Lean.Parser.Command.declaration then return
+  -- If we find a docstring, we skip this declaration.
+  for declMods in getDeclModifiers stx do
+    let docStx := declMods[0][0]
+    if docStx.getPos?.isSome then return
+    if !docStx.isMissing then return -- this is probably superfluous, thanks to `some pos` above.
+  -- So if we see a "-/" before this declaration, it must come from a comment which is not
+  -- the docstring of this declaration.
+  let ctx ← read
+  let untilDecl := ctx.fileMap.source.sliceTo (ctx.fileMap.source.pos! ctx.cmdPos)
+  if untilDecl.trimAsciiEnd.endsWith "-/" then
+    -- But it could still be a module doc, so make sure the opener is `/-`.
+    if let some openPos := untilDecl.revFind? "/-" then
+      if openPos.next? >>= (·.next? >>= (·.get?)) == ' ' then
+        logLint linter.style.commentToDocString stx
+          m!"error: the comment before this declaration should become a docstring"
+
+initialize addLinter commentToDocStringLinter
+
 end Style
 
 end Mathlib.Linter

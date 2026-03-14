@@ -126,3 +126,23 @@ structure X where
   spanning multiple lines.
   -/
   y : Unit
+
+set_option linter.style.commentToDocString true
+
+/- this comment should become a docstring -/
+/--
+warning: error: the comment before this declaration should become a docstring
+
+Note: This linter can be disabled with `set_option linter.style.commentToDocString false`
+-/
+#guard_msgs in
+def foo₁ := 0
+
+/-- This docstring does not cause a linting error -/
+def foo₂ := 0
+
+/- But a comment before commands that don't accept docstrings should not give linting errors. -/
+variable {n : Nat}
+
+/-! This module doc does not cause a linting error -/
+def foo₃ := 0
