@@ -200,8 +200,7 @@ def powSMulQuotInclusion {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem powSMulQuotInclusion_mk {a b c : ℕ} (h : c = b + a) (N : Submodule R M)
-    (x : ↑(I ^ a • N)) :
-    powSMulQuotInclusion I M h N (Submodule.Quotient.mk x) = Submodule.Quotient.mk (x : M) := rfl
+    (x : ↑(I ^ a • N)) : powSMulQuotInclusion I M h N (Quotient.mk x) = Quotient.mk (x : M) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem powSMulQuotInclusion_injective {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
