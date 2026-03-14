@@ -49,14 +49,12 @@ structure SupBotHom (α β : Type*) [Max α] [Max β] [Bot α] [Bot β] extends 
   map_bot' : toFun ⊥ = ⊥
 
 /-- The type of finitary infimum-preserving homomorphisms from `α` to `β`. -/
-@[to_dual existing]
+@[to_dual]
 structure InfTopHom (α β : Type*) [Min α] [Min β] [Top α] [Top β] extends InfHom α β where
   /-- An `InfTopHom` preserves the top element.
 
   Do not use this directly. Use `map_top` instead. -/
   map_top' : toFun ⊤ = ⊤
-
-attribute [to_dual existing] InfTopHom.map_top'
 
 /-- The type of bounded lattice homomorphisms from `α` to `β`. -/
 structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
@@ -69,6 +67,9 @@ structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOr
 
   Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
+
+attribute [to_dual self (reorder := map_top' map_bot')] BoundedLatticeHom.mk
+attribute [to_dual existing] BoundedLatticeHom.map_top'
 
 section
 
@@ -83,13 +84,11 @@ class SupBotHomClass (F α β : Type*) [Max α] [Max β] [Bot α] [Bot β] [FunL
 /-- `InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-@[to_dual existing]
+@[to_dual]
 class InfTopHomClass (F α β : Type*) [Min α] [Min β] [Top α] [Top β] [FunLike F α β] : Prop
   extends InfHomClass F α β where
   /-- An `InfTopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
-
-attribute [to_dual existing] InfTopHomClass.map_top
 
 /-- `BoundedLatticeHomClass F α β` states that `F` is a type of bounded lattice morphisms.
 
@@ -344,8 +343,8 @@ theorem sup_apply (f g : SupBotHom α β) (a : α) : (f ⊔ g) a = f a ⊔ g a :
 theorem bot_apply (a : α) : (⊥ : SupBotHom α β) a = ⊥ :=
   rfl
 
--- We cannot use `to_dual` because it does not support renaming the arguments
 /-- `Subtype.val` as a `SupBotHom`. -/
+@[to_dual (rename := Pbot → Ptop, Psup → Pinf) /-- `Subtype.val` as an `InfTopHom`. -/]
 def subtypeVal {P : β → Prop}
     (Pbot : P ⊥) (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
     letI := Subtype.orderBot Pbot
@@ -355,43 +354,17 @@ def subtypeVal {P : β → Prop}
   letI := Subtype.semilatticeSup Psup
   .mk (SupHom.subtypeVal Psup) (by simp [Subtype.coe_bot Pbot])
 
-@[simp]
+@[to_dual (attr := simp) (rename := Pbot → Ptop, Psup → Pinf)]
 lemma subtypeVal_apply {P : β → Prop}
     (Pbot : P ⊥) (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) (x : {x : β // P x}) :
     subtypeVal Pbot Psup x = x := rfl
 
-@[simp]
+@[to_dual (attr := simp) (rename := Pbot → Ptop, Psup → Pinf)]
 lemma subtypeVal_coe {P : β → Prop}
     (Pbot : P ⊥) (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
     ⇑(subtypeVal Pbot Psup) = Subtype.val := rfl
 
 end SupBotHom
-
-namespace InfTopHom
-
-variable [Min α] [Top α] [SemilatticeInf β] [OrderTop β]
-
-/-- `Subtype.val` as an `InfTopHom`. -/
-def subtypeVal {P : β → Prop}
-    (Ptop : P ⊤) (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
-    letI := Subtype.orderTop Ptop
-    letI := Subtype.semilatticeInf Pinf
-    InfTopHom {x : β // P x} β :=
-  letI := Subtype.orderTop Ptop
-  letI := Subtype.semilatticeInf Pinf
-  .mk (InfHom.subtypeVal Pinf) (by simp [Subtype.coe_top Ptop])
-
-@[simp]
-lemma subtypeVal_apply {P : β → Prop}
-    (Ptop : P ⊤) (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) (x : {x : β // P x}) :
-    subtypeVal Ptop Pinf x = x := rfl
-
-@[simp]
-lemma subtypeVal_coe {P : β → Prop}
-    (Ptop : P ⊤) (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
-    ⇑(subtypeVal Ptop Pinf) = Subtype.val := rfl
-
-end InfTopHom
 
 /-! ### Bounded lattice homomorphisms -/
 
