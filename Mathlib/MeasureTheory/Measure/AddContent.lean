@@ -688,6 +688,8 @@ theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum {m : AddContent ℝ≥0�
   rw [partialSups_eq_biUnion_range]
   exact addContent_biUnion_le hC (fun _ _ ↦ hf _)
 
+/-- If an additive content is continuous from below on monotone sequences of sets,
+then it is countably additive on pairwise disjoint sequences. -/
 theorem addContent_iUnion_eq_tsum_of_addContent_iUnion_eq_iSup
     (hC : IsSetRing C) (m : AddContent ℝ≥0∞ C)
     {s : ℕ → Set α} (hd : Pairwise (Disjoint on s)) (hs : ∀ i, s i ∈ C)
