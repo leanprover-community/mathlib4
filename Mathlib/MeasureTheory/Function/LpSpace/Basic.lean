@@ -579,7 +579,7 @@ theorem compMeasurePreserving_id (g : Lp E p μb) :
   rw [compMeasurePreserving_val]
   exact AEEqFun.compMeasurePreserving_id _
 
-theorem compMeasurePreserving_compMeasurePreserving {γ : Type*} [MeasurableSpace γ]
+theorem compMeasurePreserving_compMeasurePreserving {γ : Type*} {mγ : MeasurableSpace γ}
     {μc : Measure γ} (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc)
     {f' : α → β} (hf' : MeasurePreserving f' μ μb) :
     ((compMeasurePreserving f' hf') ∘ (compMeasurePreserving f hf)) g =
