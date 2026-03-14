@@ -78,7 +78,7 @@ theorem Supermartingale.integral_stoppedValue_le
   simp only [integral_neg, Pi.neg_apply,
     neg_le_neg_iff] at key
   exact key
-
+set_option linter.unusedSectionVars false in
 /-- **Ville's inequality**: if `f` is a nonnegative supermartingale,
 then for any `0 < λ` and any `n`,
 `μ.real {ω | λ ≤ f n ω} ≤ (∫ ω, f 0 ω ∂μ) / λ`.
@@ -97,6 +97,7 @@ theorem Supermartingale.measureReal_le_div
   have h_mono := hf.integral_le (Nat.zero_le n)
   rw [le_div_iff₀ hlam, mul_comm]; linarith
 
+set_option linter.unusedSectionVars false in
 /-- The uniform version of Ville's inequality, holding for all
 `n : ℕ` simultaneously. -/
 theorem Supermartingale.measureReal_le_div_forall
