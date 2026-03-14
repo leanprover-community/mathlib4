@@ -110,17 +110,16 @@ namespace MeasureTheory.LocallyIntegrable
 
 open Asymptotics Filter
 
+variable {F' : Type*} [NormedAddCommGroup F']
 
-theorem exists_compact {f : E → F} (hf : ∃ k, f =O[cocompact E] (‖·‖ ^ k)) :
-    ∃ s k c, 0 ≤ c ∧ IsCompact s ∧ ∀ y ∈ sᶜ, ‖f y‖ ≤ c * ‖y‖ ^ k := by
-  obtain ⟨k, hk⟩ := hf
-  rw [isBigO_iff'] at hk
-  obtain ⟨c, hc, hc'⟩ := hk
-  simp only [norm_pow, norm_norm] at hc'
+theorem exists_isCompact {f : E → F} {g : E → F'} (h : f =O[cocompact E] g) :
+    ∃ s c, 0 ≤ c ∧ IsCompact s ∧ ∀ y ∈ sᶜ, ‖f y‖ ≤ c * ‖g y‖ := by
+  rw [isBigO_iff'] at h
+  obtain ⟨c, hc, hc'⟩ := h
   obtain ⟨s, hs, hc'⟩ := hc'.exists_mem
   rw [Filter.mem_cocompact] at hs
   obtain ⟨t, ht₁, ht₂⟩ := hs
-  use t, k, c, hc.le, ht₁
+  use t, c, hc.le, ht₁
   intro x hx
   exact hc' x (ht₂ hx)
 
@@ -128,36 +127,33 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
 
 set_option backward.privateInPublic true in
-theorem foo {f : E → F} (hf : LocallyIntegrable f μ)
-    (hf' : ∃ k, f =O[cocompact E] (‖·‖ ^ k)) (g : 𝓢(E, ℂ)) :
+theorem foo {f : E → F} {k : ℕ} (hf : LocallyIntegrable f μ)
+    (hf' : f =O[cocompact E] (‖·‖ ^ k)) (g : 𝓢(E, ℂ)) :
     Integrable (fun x ↦ g x • f x) μ := by
-  obtain ⟨t, k, c, _hc, ht₁, ht₂⟩ := exists_compact hf'
-  have h₁ : IntegrableOn (fun x ↦ g x • f x) tᶜ μ := by
-    have := ((g.integrable_pow_mul μ k).integrableOn (s := tᶜ)).smul c
-    have hf' := hf.aestronglyMeasurable
-    apply Integrable.mono' this
-    · fun_prop
-    · rw [MeasureTheory.ae_restrict_iff₀]
-      · filter_upwards with x hx
-        rw [norm_smul]
-        simp only [Pi.smul_apply, smul_eq_mul]
-        grw [ht₂ x hx]
-        apply le_of_eq
-        ring
-      exact AEStronglyMeasurable.nullMeasurableSet_le (by fun_prop) (by fun_prop)
-  have h₂ : IntegrableOn (fun x ↦ g x • f x) t μ := by
-    apply (hf.integrableOn_isCompact ht₁).continuousOn_smul
-    · apply g.continuous.continuousOn
-    · exact ht₁
-  rw [← MeasureTheory.integrableOn_univ, ← Set.union_compl_self t]
+  obtain ⟨s, c, _hc, hs₁, hs₂⟩ := exists_isCompact hf'
+  simp only [Set.mem_compl_iff, norm_pow, norm_norm] at hs₂
+  have h₁ : IntegrableOn (fun x ↦ g x • f x) sᶜ μ := by
+    have h_int := ((g.integrable_pow_mul μ k).integrableOn (s := sᶜ)).smul c
+    have := hf.aestronglyMeasurable
+    apply h_int.mono' (by fun_prop)
+    rw [MeasureTheory.ae_restrict_iff₀]
+    · filter_upwards with x hx
+      simp only [norm_smul, Pi.smul_apply, smul_eq_mul]
+      grw [hs₂ x hx]
+      apply le_of_eq
+      ring
+    exact AEStronglyMeasurable.nullMeasurableSet_le (by fun_prop) (by fun_prop)
+  have h₂ : IntegrableOn (fun x ↦ g x • f x) s μ :=
+    (hf.integrableOn_isCompact hs₁).continuousOn_smul (by fun_prop) hs₁
+  rw [← MeasureTheory.integrableOn_univ, ← Set.union_compl_self s]
   exact h₂.union h₁
 
 variable [MeasurableSpace F] [BorelSpace F]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
-def toTemperedDistribution {f : E → F} (hf : LocallyIntegrable f μ)
-    (hf' : ∃ k, f =O[Filter.cocompact E] (‖·‖ ^ k)) : 𝓢'(E, F) :=
+def toTemperedDistribution {f : E → F} {k : ℕ} (hf : LocallyIntegrable f μ)
+    (hf' : f =O[Filter.cocompact E] (‖·‖ ^ k)) : 𝓢'(E, F) :=
   toPointwiseConvergenceCLM _ _ _ _ <| SchwartzMap.mkCLMtoNormedSpace
     (fun g ↦ ∫ x, g x • f x ∂μ) (by
   intro g₁ g₂
@@ -168,7 +164,8 @@ def toTemperedDistribution {f : E → F} (hf : LocallyIntegrable f μ)
   simp only [SchwartzMap.smul_apply, smul_assoc, RingHom.id_apply]
   apply integral_smul)
     (by
-  obtain ⟨s, k, c, hc, hs₁, hs₂⟩ := exists_compact hf'
+  obtain ⟨s, c, hc, hs₁, hs₂⟩ := exists_isCompact hf'
+  simp only [Set.mem_compl_iff, norm_pow, norm_norm] at hs₂
   set C₁ := ∫ (a : E) in s, ‖f a‖ ∂μ
   have hC₁ : 0 ≤ C₁ := by positivity
   set C₂ := c * 2 ^ μ.integrablePower * ∫ (x : E), ((1 + ‖x‖) ^ μ.integrablePower)⁻¹ ∂μ
@@ -197,7 +194,7 @@ def toTemperedDistribution {f : E → F} (hf : LocallyIntegrable f μ)
     _ ≤ ∫ x in sᶜ, ‖g x • f x‖ ∂μ := by
       grw [MeasureTheory.norm_integral_le_integral_norm]
     _ ≤ ∫ x in sᶜ, c * (‖x‖ ^ k * ‖g x‖) ∂μ := by
-      apply MeasureTheory.setIntegral_mono_on
+      apply setIntegral_mono_on
       · exact (foo μ hf hf' g).integrableOn.norm
       · apply (integrable_pow_mul μ g k).integrableOn.const_mul
       · exact hs₁.measurableSet.compl
@@ -212,7 +209,7 @@ def toTemperedDistribution {f : E → F} (hf : LocallyIntegrable f μ)
       · filter_upwards with
         positivity
       · exact integrable_pow_mul μ g k
-      exact restrict_le_self
+      · exact restrict_le_self
     _ ≤ _ := by
       have := integral_pow_mul_iteratedFDeriv_le ℂ μ g k 0
       simp only [norm_iteratedFDeriv_zero, Real.rpow_neg_natCast, zpow_neg, zpow_natCast] at this
@@ -240,6 +237,8 @@ def toTemperedDistribution {f : E → F} (hf : LocallyIntegrable f μ)
     _ = 2 * (C₁ + C₂) * (max k₁ k₂) := by ring
     _ = _ := by
       simp [k₁, k₂])
+
+#exit
 
 end MeasureTheory.LocallyIntegrable
 
