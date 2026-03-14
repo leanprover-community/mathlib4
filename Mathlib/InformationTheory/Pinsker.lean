@@ -404,6 +404,7 @@ theorem binaryKL_le_klDivFin [Fintype X] [DecidableEq X]
 
 /-! ### Full Pinsker inequality -/
 
+set_option linter.unusedDecidableInType false in
 /-- **Pinsker's inequality**: `2 * tvDistFin p q ^ 2 ≤ klDivFin p q` for probability
 distributions with strictly positive masses on a finite type with at least 2 elements. -/
 theorem pinsker_inequality [Fintype X] [DecidableEq X]
