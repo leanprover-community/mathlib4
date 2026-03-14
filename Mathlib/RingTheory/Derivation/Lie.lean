@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.Derivation.Basic
+public import Mathlib.Algebra.Lie.SemiDirect
 
 /-!
 # Lie Algebra Structure on Derivations
@@ -70,6 +71,24 @@ instance : LieModule R (Derivation R A A) A where
 
 @[simp]
 lemma bracket_eq_fun (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
+
+section CompatibleDerivations
+variable {A' : Type*} [CommRing A'] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A']
+
+variable (R A A') in
+def CompatibleDerivations : LieSubalgebra R  ( (Derivation R A' A') ⊕⁅R⁆ (Derivation R A A)) where
+  carrier := { x | (x.left).compAlgebraMapL R A A' A'
+    = (Algebra.ofId A A').toLinearMap.compDer (x.right) }
+  add_mem' {x y} hx hy  := by simp at hx hy; simp [hx,hy]
+  zero_mem' := by simp
+  smul_mem'  c x h := by simp at h; simp [h]
+  lie_mem' {x y} hx hy := by
+    have hxx (a : A) := congrArg (fun f => f a) hx
+    have hyy (a : A) := congrArg (fun f => f a) hy
+    ext z
+    simp at hxx hyy
+    simp [Derivation.commutator_apply, hxx, hyy]
+end CompatibleDerivations
 
 end LieStructures
 

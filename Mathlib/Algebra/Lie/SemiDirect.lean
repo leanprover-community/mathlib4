@@ -142,6 +142,19 @@ instance : LieAlgebra.IsExtension (inl ψ) (projr ψ) where
   range_eq_top := by simp [LieHom.range_eq_top]
   exact := by ext ⟨x, y⟩; aesop
 
+section DirectSum
+
+variable (R K L) in
+abbrev DirectLieSum := K ⋊⁅(0 : L→ₗ⁅R⁆ (LieDerivation R K K))⁆ L
+
+notation:35 K " ⊕⁅" R "⁆" L:35 => DirectLieSum R K L
+
+def projl' : (K ⊕⁅R⁆ L →ₗ⁅R⁆ K) where
+  __ := projl 0
+  map_lie' := by simp
+
+end DirectSum
+
 end SemiDirectSum
 end LieAlgebra
 end
