@@ -85,7 +85,7 @@ private theorem isSemisimple_mulRight_of_isSemisimple
     {a : Module.End K V} (ha : a.IsSemisimple) :
     Module.End.IsSemisimple (LinearMap.mulRight K a) := by
   apply Module.End.isSemisimple_of_squarefree_aeval_eq_zero ha.minpoly_squarefree
-  ext1 T
+  ext T
   simp only [LinearMap.zero_apply, aeval_mulRight_apply, minpoly.aeval, mul_zero]
 
 variable [PerfectField K]
@@ -104,10 +104,10 @@ theorem LieAlgebra.ad_isSemisimple_of_isSemisimple
 where `ad n` is nilpotent, `ad s` is semisimple, and both lie in `adjoin K {ad x}`. -/
 theorem LieAlgebra.ad_isNilpotent_isSemisimple
     {x n s : Module.End K V}
-    (hn_adj : n ∈ Algebra.adjoin K {x})
-    (hs_adj : s ∈ Algebra.adjoin K {x})
-    (hn_nil : IsNilpotent n) (hs_ss : s.IsSemisimple)
-    (hxns : x = n + s) :
+    (hn₁ : n ∈ Algebra.adjoin K {x})
+    (hs₁ : s ∈ Algebra.adjoin K {x})
+    (hn₂ : IsNilpotent n) (hs₂ : s.IsSemisimple)
+    (h : x = n + s) :
     LieAlgebra.ad K (Module.End K V) x =
       LieAlgebra.ad K (Module.End K V) n + LieAlgebra.ad K (Module.End K V) s ∧
     IsNilpotent (LieAlgebra.ad K (Module.End K V) n) ∧
@@ -117,21 +117,18 @@ theorem LieAlgebra.ad_isNilpotent_isSemisimple
     LieAlgebra.ad K (Module.End K V) n ∈
       Algebra.adjoin K {LieAlgebra.ad K (Module.End K V) x} := by
   set ad := LieAlgebra.ad K (Module.End K V)
-  have h_sum : ad x = ad n + ad s := by rw [hxns, map_add]
-  have h_ad_n_nil := LieAlgebra.ad_nilpotent_of_nilpotent (R := K) hn_nil
-  have h_ad_s_ss := ad_isSemisimple_of_isSemisimple hs_ss
-  have hc_ns : Commute n s :=
-    Algebra.commute_of_mem_adjoin_singleton_of_commute hs_adj
-      (Algebra.commute_of_mem_adjoin_self hn_adj).symm
-  have hc_ad : Commute (ad n) (ad s) := commute_ad_of_commute hc_ns
-  obtain ⟨n', hn'_adj, s', hs'_adj, hn'_nil, hs'_ss, h_jc⟩ :=
-    (ad x).exists_isNilpotent_isSemisimple
-  have hc_canonical : Commute n' s' :=
-    Algebra.commute_of_mem_adjoin_singleton_of_commute hs'_adj
-      (Algebra.commute_of_mem_adjoin_self hn'_adj).symm
-  have ⟨hn_eq, hs_eq⟩ := Module.End.isNilpotent_isSemisimple_unique
-    hn'_nil hs'_ss h_ad_n_nil h_ad_s_ss hc_canonical hc_ad (h_jc.symm.trans h_sum)
-  exact ⟨h_sum, h_ad_n_nil, h_ad_s_ss,
-    hs_eq ▸ hs'_adj, hn_eq ▸ hn'_adj⟩
+  have hsum : ad x = ad n + ad s := by rw [h, map_add]
+  have hnil := LieAlgebra.ad_nilpotent_of_nilpotent (R := K) hn₂
+  have hss := ad_isSemisimple_of_isSemisimple hs₂
+  have hc : Commute n s :=
+    Algebra.commute_of_mem_adjoin_singleton_of_commute hs₁
+      (Algebra.commute_of_mem_adjoin_self hn₁).symm
+  obtain ⟨n', hn'₁, s', hs'₁, hn'₂, hs'₂, h'⟩ := (ad x).exists_isNilpotent_isSemisimple
+  have hc' : Commute n' s' :=
+    Algebra.commute_of_mem_adjoin_singleton_of_commute hs'₁
+      (Algebra.commute_of_mem_adjoin_self hn'₁).symm
+  have ⟨heqn, heqs⟩ := Module.End.isNilpotent_isSemisimple_unique
+    hn'₂ hs'₂ hnil hss hc' (commute_ad_of_commute hc) (h'.symm.trans hsum)
+  exact ⟨hsum, hnil, hss, heqs ▸ hs'₁, heqn ▸ hn'₁⟩
 
 end Field
