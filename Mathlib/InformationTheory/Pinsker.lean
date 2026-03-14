@@ -3,11 +3,12 @@ Copyright (c) 2026 Wei Lin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wei Lin
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
-import Mathlib.Data.Fintype.Basic
+module
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Pinsker's inequality for finite distributions
@@ -55,6 +56,8 @@ The measure-theoretic KL divergence is defined separately in
 The finite-space versions here are self-contained and avoid the `ℝ≥0∞` type conversion overhead.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
