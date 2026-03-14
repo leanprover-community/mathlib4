@@ -230,7 +230,7 @@ theorem inv_subset_inv : s⁻¹ ⊆ t⁻¹ ↔ s ⊆ t :=
 theorem inv_subset : s⁻¹ ⊆ t ↔ s ⊆ t⁻¹ := by rw [← inv_subset_inv, inv_inv]
 
 @[to_additive]
-theorem inv_eq_iff_inv_subset : s⁻¹ = s ↔ s⁻¹ ⊆ s :=
+theorem inv_eq_self_iff_inv_subset : s⁻¹ = s ↔ s⁻¹ ⊆ s :=
   ⟨le_of_eq, fun h => antisymm h <| inv_subset.mp h⟩
 
 @[to_additive (attr := simp)]
