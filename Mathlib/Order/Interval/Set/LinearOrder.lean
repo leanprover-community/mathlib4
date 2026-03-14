@@ -561,7 +561,7 @@ theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
 
 @[simp]
 theorem Ioi_diff_Ioc : Ioi a \ Ioc a b = Ioi (max a b) := by
-  simp [diff_eq, compl_Ioc, inter_union_distrib_left, Ioi_inter_Iic, Ioi_inter_Ioi]
+  grind
 
 theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
   grind
