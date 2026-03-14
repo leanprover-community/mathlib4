@@ -912,7 +912,8 @@ alias ⟨_, UpperSemicontinuousAt.neg⟩ := lowerSemicontinuouAt_neg_iff
 
 @[simp]
 theorem upperSemicontinuousAt_neg_iff :
-    UpperSemicontinuousWithinAt (-f) s a ↔ LowerSemicontinuousWithinAt f s a := by simp
+    UpperSemicontinuousAt (-f) a ↔ LowerSemicontinuousAt f a := by
+  simp [← lowerSemicontinuousWithinAt_univ_iff, ← upperSemicontinuousWithinAt_univ_iff]
 
 alias ⟨_, LowerSemicontinuousAt.neg⟩ := upperSemicontinuousAt_neg_iff
 
