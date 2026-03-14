@@ -76,7 +76,7 @@ variable [J.WEqualsLocallyBijective AddCommGrpCat.{w}]
   [J.HasSheafCompose (forget₂ RingCat.{w} AddCommGrpCat)]
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable instance [(W R).IsMonoidal] :
+noncomputable instance monoidalCategory [(W R).IsMonoidal] :
     MonoidalCategory (SheafOfModules ((sheafCompose J (forget₂ _ _)).obj R)) :=
   inferInstanceAs (MonoidalCategory (LocalizedMonoidal
     (PresheafOfModules.sheafification.{w} (J := J) (R₀ := R.obj ⋙ forget₂ _ _)
