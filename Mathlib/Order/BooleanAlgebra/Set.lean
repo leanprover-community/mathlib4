@@ -393,7 +393,6 @@ lemma _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.N
 lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
   grind
 
-@[simp]
 lemma diff_singleton_subset_iff : s \ {a} ⊆ t ↔ s ⊆ insert a t := by
   rw [← union_singleton, union_comm]
   apply diff_subset_iff
