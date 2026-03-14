@@ -54,12 +54,6 @@ theorem LieAlgebra.isNilpotent_ad_of_isNilpotent {L : LieSubalgebra R A} {x : L}
     (h : IsNilpotent (x : A)) : IsNilpotent (LieAlgebra.ad R L x) :=
   L.isNilpotent_ad_of_isNilpotent_ad <| LieAlgebra.ad_nilpotent_of_nilpotent h
 
-private lemma aeval_op (a : A) (p : Polynomial R) :
-    Polynomial.aeval (MulOpposite.op a) p = MulOpposite.op (Polynomial.aeval a p) := by
-  induction p using Polynomial.induction_on' with
-  | add p q hp hq => simp [map_add, hp, hq]
-  | monomial n c => simp [Polynomial.aeval_monomial, MulOpposite.op_pow, Algebra.commutes]
-
 end CommRing
 
 section Field
@@ -82,7 +76,8 @@ theorem LieAlgebra.ad_isSemisimple_of_isSemisimple
     have : LinearMap.mulRight K a = (Algebra.lsmul (A := (Module.End K V)ᵐᵒᵖ) K K (Module.End K V))
         (MulOpposite.op a) := by
       ext; simp [Algebra.lsmul]
-    rw [this, Polynomial.aeval_algHom_apply, aeval_op, minpoly.aeval, MulOpposite.op_zero, map_zero]
+    rw [this, Polynomial.aeval_algHom_apply, Polynomial.aeval_op_apply, minpoly.aeval,
+      MulOpposite.op_zero, map_zero]
   exact hl.sub_of_commute (LinearMap.commute_mulLeft_right a a) hr
 
 /-- The adjoint preserves the Jordan-Chevalley decomposition: if `x = n + s` with
