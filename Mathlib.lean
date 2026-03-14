@@ -1,4 +1,4 @@
-﻿module  -- shake: keep-all
+module  -- shake: keep-all
 
 public import Std
 public import Batteries
