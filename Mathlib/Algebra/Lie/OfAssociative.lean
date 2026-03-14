@@ -361,6 +361,12 @@ theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra
     (ad R A : A → Module.End R A) = LinearMap.mulLeft R - LinearMap.mulRight R := by
   ext a b; simp [LieRing.of_associative_ring_bracket]
 
+theorem LieAlgebra.commute_ad_of_commute {R : Type*} [CommRing R]
+    {A : Type*} [Ring A] [Algebra R A] {a b : A} (h : Commute a b) :
+    Commute (ad R A a) (ad R A b) := by
+  rw [Commute, SemiconjBy, ← sub_eq_zero, ← Ring.lie_def,
+    ← (ad R A).map_lie, Ring.lie_def, sub_eq_zero.mpr h, map_zero]
+
 theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
     (ad R L ↑x).comp (K.incl : K →ₗ[R] L) = (K.incl : K →ₗ[R] L).comp (ad R K x) := by
   ext y
