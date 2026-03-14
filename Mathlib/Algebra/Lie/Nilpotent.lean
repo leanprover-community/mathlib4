@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Nilpotent.Lemmas
-public import Mathlib.Algebra.Lie.Ad
 
 /-!
 # Nilpotent Lie algebras

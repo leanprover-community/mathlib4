@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Algebra.Lie.Ad
 public import Mathlib.Algebra.Lie.Nilpotent
 public import Mathlib.Algebra.Lie.Normalizer
 
