@@ -311,7 +311,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
 
 set_option linter.flexible false in -- simp followed by ac_rfl
 theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
-    A⁻¹.charpoly = (-1) ^ Fintype.card n * C (Ring.inverse A.det) * A.charpolyRev := by
+    A⁻¹.charpoly = (-1) ^ Fintype.card n * C A.det⁻¹ʳ * A.charpolyRev := by
   have : Invertible A := h.invertible
   calc
   _ = (scalar n X - C.mapMatrix A⁻¹).det := rfl

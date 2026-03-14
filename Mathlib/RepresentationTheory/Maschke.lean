@@ -112,10 +112,10 @@ section
 $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 -/
 def equivariantProjection : W →ₗ[k[G]] V :=
-  Ring.inverse (Fintype.card G : k) • π.sumOfConjugatesEquivariant G
+  (Fintype.card G : k)⁻¹ʳ • π.sumOfConjugatesEquivariant G
 
 theorem equivariantProjection_apply (v : W) :
-    π.equivariantProjection G v = Ring.inverse (Nat.card G : k) • ∑ g : G, π.conjugate g v := by
+    π.equivariantProjection G v = (Nat.card G : k)⁻¹ʳ • ∑ g : G, π.conjugate g v := by
   simp only [equivariantProjection, smul_apply, sumOfConjugatesEquivariant_apply,
     Fintype.card_eq_nat_card]
 
