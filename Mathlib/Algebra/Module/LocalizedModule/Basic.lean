@@ -935,6 +935,25 @@ lemma linearEquiv_symm_apply [IsLocalizedModule S g] (x : M) :
     (linearEquiv S f g).symm (g x) = f x := by
   simp [linearEquiv]
 
+@[simp]
+lemma linearEquiv_comp [IsLocalizedModule S g] :
+    (linearEquiv S f g).toLinearMap ∘ₗ f = g :=
+  LinearMap.ext fun x => linearEquiv_apply S f g x
+
+/-- A linear map factoring between two `S`-localizations equals the canonical
+`linearEquiv` between them. -/
+theorem eq_linearEquiv [IsLocalizedModule S g]
+    (l : M' →ₗ[R] M'') (hl : l ∘ₗ f = g) :
+    l = (linearEquiv S f g).toLinearMap :=
+  linearMap_ext S f g (by rw [hl, linearEquiv_comp])
+
+/-- A linear map factoring between two `S`-localizations is bijective.
+This is the module-level analogue of `IsLocalization.bijective`. -/
+protected theorem bijective [IsLocalizedModule S g]
+    (l : M' →ₗ[R] M'') (hl : l ∘ₗ f = g) :
+    Function.Bijective l :=
+  eq_linearEquiv S f g l hl ▸ (linearEquiv S f g).bijective
+
 variable {S}
 
 include f in

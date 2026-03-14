@@ -102,3 +102,18 @@ instance [Small.{v} R] (S : Submonoid R) :
   exact this.2
 
 end ModuleCat
+
+namespace IsLocalizedModule
+
+/-- A morphism in `ModuleCat` factoring between two `S`-localizations is an isomorphism. -/
+lemma isIso_of_comp_eq {R : Type u} [CommRing R] {A B C : ModuleCat.{u} R}
+    (S : Submonoid R) (g : A ⟶ B) (h : A ⟶ C)
+    [IsLocalizedModule S g.hom] [IsLocalizedModule S h.hom]
+    (α : B ⟶ C) (fac : α.hom ∘ₗ g.hom = h.hom) :
+    IsIso α := by
+  have hα : α = (IsLocalizedModule.linearEquiv S g.hom h.hom).toModuleIso.hom :=
+    ModuleCat.hom_ext (eq_linearEquiv S g.hom h.hom α.hom fac)
+  rw [hα]
+  infer_instance
+
+end IsLocalizedModule
