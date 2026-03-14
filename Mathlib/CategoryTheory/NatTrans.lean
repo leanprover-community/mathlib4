@@ -60,6 +60,14 @@ set_option linter.translateOverwrite false in
 lemma NatTrans.naturality' {F G : C ⥤ D} (self : NatTrans G F) ⦃X Y : C⦄ (f : Y ⟶ X) :
     self.app Y ≫ F.map f = G.map f ≫ self.app X := (self.naturality f).symm
 
+set_option linter.translateOverwrite false in
+/-- `NatTrans.mk'` is the dual of `NatTrans.mk`, which we need for `to_dual`.
+Please avoid using this directly. -/
+@[to_dual existing mk]
+abbrev NatTrans.mk' {F G : C ⥤ D} (app : (X : C) → G.obj X ⟶ F.obj X)
+    (naturality : ∀ ⦃X Y : C⦄ (f : Y ⟶ X), app Y ≫ F.map f = G.map f ≫ app X) : NatTrans G F where
+  app
+
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transformations moving earlier.
 attribute [reassoc (attr := simp)] NatTrans.naturality
