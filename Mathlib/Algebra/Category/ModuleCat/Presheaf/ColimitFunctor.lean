@@ -61,7 +61,7 @@ def ModuleColimit (_ : IsColimit cR) (_ : IsColimit cM) : Type w := cM.pt
 
 namespace ModuleColimit
 
-/-- The cocone `R ⋙ forget _ ⊗ M.presheaf ⋙ forget _` with point
+/-- The cocone for `R ⋙ forget _ ⊗ M.presheaf ⋙ forget _` with point
 `ModuleColimit hcR hcM` which allows to define the scalar multiplication
 by `cR.pt` on `ModuleColimit hcR hcM`. -/
 @[simps]
