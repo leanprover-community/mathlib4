@@ -26,6 +26,8 @@ noncomputable section
 
 open Complex Filter Function Set TopologicalSpace Topology
 
+open scoped ComplexConjugate
+
 namespace UpperHalfPlane
 
 instance : TopologicalSpace ℍ :=
@@ -123,8 +125,7 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
   let n := Int.floor (z.re / N)
   use -n
   rw [modular_T_zpow_smul z (N * -n)]
-  refine ⟨?_, (by simp only [mul_neg, Int.cast_neg, Int.cast_mul, Int.cast_natCast, vadd_im,
-    le_refl])⟩
+  refine ⟨?_, by simp⟩
   have h : (N * (-n : ℝ) +ᵥ z).re = -N * Int.floor (z.re / N) + z.re := by
     simp only [n, mul_neg, vadd_re, neg_mul]
   norm_cast at *
@@ -184,6 +185,10 @@ lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
   simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq]
+
+lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
+  ext
+  rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos)]
 
 end ofComplex
 

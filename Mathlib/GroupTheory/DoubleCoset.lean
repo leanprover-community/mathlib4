@@ -70,7 +70,8 @@ theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
   have ha : a ∈ doubleCoset b H K := mem_doubleCoset_of_not_disjoint h
   apply doubleCoset_eq_of_mem ha
 
-/-- The setoid defined by the double_coset relation -/
+/-- The setoid defined by the `doubleCoset` relation -/
+@[implicit_reducible]
 def setoid (H K : Set G) : Setoid G :=
   Setoid.ker fun x => doubleCoset x H K
 
