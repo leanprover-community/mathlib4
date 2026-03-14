@@ -41,7 +41,6 @@ section
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type u₃}
   [Category.{v₃} E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `α : G ⟶ H` then `whiskerLeft F α : F ⋙ G ⟶ F ⋙ H` has components `α.app (F.obj X)`. -/
 @[simps]
 def whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) :
@@ -54,7 +53,6 @@ lemma id_hcomp (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) : 𝟙 F ◫ α = wh
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `α : G ⟶ H` then `whiskerRight α F : G ⋙ F ⟶ H ⋙ F` has components `F.map (α.app X)`. -/
 @[simps]
 def whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) :

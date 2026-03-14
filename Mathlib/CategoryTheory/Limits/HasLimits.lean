@@ -437,7 +437,6 @@ theorem limit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E) [h : Has
 
 end Post
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
     [HasLimit F] [HasLimit (E ⋙ F)] [HasLimit (F ⋙ G)]
     [h : HasLimit ((E ⋙ F) ⋙ G)] : -- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs
@@ -493,22 +492,18 @@ variable {G : J ⥤ C} (α : F ⟶ G)
 
 theorem limMap_eq : limMap α = lim.map α := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
     lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
     limit.pre F E₂ = limit.pre F E₁ ≫ lim.map (whiskerRight α F) := by
   ext1; simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.leftUnitor F).inv := by
   cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.map_post {D : Type u'} [Category.{v'} D] [HasLimitsOfShape J D] (H : C ⥤ D) :
     /- H (limit F) ⟶ H (limit G) ⟶ limit (G ⋙ H) vs
      H (limit F) ⟶ limit (F ⋙ H) ⟶ limit (G ⋙ H) -/
@@ -567,7 +562,6 @@ noncomputable def coneOfAdj (F : J ⥤ C) : Cone F where
   pt := L.obj F
   π := adj.counit.app F
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cones defined by `coneOfAdj` are limit cones. -/
 @[simps]
 def isLimitConeOfAdj (F : J ⥤ C) :
@@ -935,7 +929,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem colimit.ι_pre (k : K) : colimit.ι (E ⋙ F) k ≫ colimit.pre F E = colimit.ι F (E.obj k) := by
   simp [colimit.pre]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimit.ι_inv_pre [IsIso (pre F E)] (k : K) :
     colimit.ι F (E.obj k) ≫ inv (colimit.pre F E) = colimit.ι (E ⋙ F) k := by
@@ -951,7 +944,6 @@ theorem colimit.pre_desc (c : Cocone F) :
 variable {L : Type u₃} [Category.{v₃} L]
 variable (D : L ⥤ K)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem colimit.pre_pre [h : HasColimit (D ⋙ E ⋙ F)] :
     haveI : HasColimit ((D ⋙ E) ⋙ F) := h
@@ -1002,7 +994,6 @@ theorem colimit.post_desc (c : Cocone F) :
   rw [← assoc, colimit.ι_post, ← G.map_comp, colimit.ι_desc, colimit.ι_desc]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem colimit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E)
     -- H G (colimit F) ⟶ H (colimit (F ⋙ G)) ⟶ colimit ((F ⋙ G) ⋙ H) equals
@@ -1016,7 +1007,6 @@ theorem colimit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E)
 
 end Post
 
-set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
     [HasColimit F] [HasColimit (E ⋙ F)] [HasColimit (F ⋙ G)] [h : HasColimit ((E ⋙ F) ⋙ G)] :
     -- G (colimit F) ⟶ G (colimit (E ⋙ F)) ⟶ colimit ((E ⋙ F) ⋙ G) vs
@@ -1085,13 +1075,11 @@ theorem colimit.pre_map [HasColimitsOfShape K C] (E : K ⥤ J) :
   rw [← assoc, colimit.ι_pre, colimit.ι_map, ← assoc, colimit.ι_map, assoc, colimit.ι_pre]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
     colimit.pre F E₁ = colim.map (whiskerRight α F) ≫ colimit.pre F E₂ := by
   ext1
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_id (F : J ⥤ C) :
     colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by cat_disch
 
