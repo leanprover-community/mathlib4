@@ -7,11 +7,6 @@ on:
     types:
       - completed
 
-permissions:
-  actions: read
-  contents: read
-  pull-requests: write
-
 jobs:
   ping_zulip:
     name: Ping maintainers on Zulip
@@ -21,6 +16,7 @@ jobs:
       actions: read
       contents: read
       id-token: write
+      pull-requests: write
     steps:
       - name: Consume bridge artifact
         id: bridge

@@ -242,6 +242,18 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
     f1.support \ f2.support ⊆ (f1 - f2).support := by
   simp +contextual [subset_iff]
 
+lemma mapDomain_tsub {f : ι → κ} (h : f.Injective) (f1 f2 : ι →₀ α) :
+    (f1 - f2).mapDomain f = f1.mapDomain f - f2.mapDomain f := by
+  ext y
+  by_cases! hy : y ∉ Set.range f
+  · simp [mapDomain_notin_range _ _ hy]
+  · obtain ⟨x, rfl⟩ := hy
+    simp [mapDomain_apply h]
+
+lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
+    (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by
+  simp_rw [embDomain_eq_mapDomain, mapDomain_tsub f.injective]
+
 end PartialOrder
 
 section LinearOrder

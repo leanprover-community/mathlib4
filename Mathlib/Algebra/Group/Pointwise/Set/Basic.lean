@@ -243,6 +243,9 @@ theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i =>
   exact (range_comp ..).symm
 
 @[to_additive]
+lemma inv_range' {ι : Type*} {f : ι → α} : (range f)⁻¹ = range f⁻¹ := inv_range
+
+@[to_additive]
 theorem image_inv_of_apply_inv_eq {f g : α → β} (H : ∀ x ∈ s, f x⁻¹ = g x) :
     f '' (s⁻¹) = g '' s := by
   rw [← Set.image_inv_eq_inv, Set.image_image]; exact Set.image_congr H
