@@ -159,7 +159,7 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
       exact (Nat.not_odd_iff.mpr rfl) hOdd
     let w : (cycleGraph (n - 3 + 3)).Walk 0 0 := cycleGraph.cycle (n - 3)
     have hOdd' : Odd w.length := by
-      rw [cycleGraph.cycle_length, hn3]
+      rw [cycleGraph.length_cycle, hn3]
       exact hOdd
     rw [← hn3]
     exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'
