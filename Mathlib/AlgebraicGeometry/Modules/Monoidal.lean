@@ -17,7 +17,7 @@ public import Mathlib.Topology.Sheaves.Points
 
 @[expose] public section
 
-universe t u
+universe u
 
 open CategoryTheory Limits TopologicalSpace SheafOfModules Bicategory
 
