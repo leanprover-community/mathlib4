@@ -833,7 +833,7 @@ lemma AlgEquiv.default_apply [Subsingleton S] [Subsingleton T] (x : S) :
 end
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
-@[simps! apply, simps! -isSimp symm_apply]
+@[simps! apply, simps! -isSimp symm_apply, pp_with_univ]
 def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
