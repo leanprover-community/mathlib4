@@ -27,31 +27,24 @@ open CategoryTheory
 
 namespace Rep
 
-/--
-The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`.
--/
+/-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
 abbrev resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
   obj A := of (X := A.V) (A.ρ.comp f)
   map f' := ofHom ⟨f'.hom, fun h ↦ by simpa using f'.hom.2 (f h)⟩
 
+/-- The restriction of `X : Rep k G` associated to a monoid homomorphism `f : H →* G` -/
 abbrev res (f : H →* G) (M : Rep k G) := (resFunctor f).obj M
 
 variable (f : H →* G) (M : Rep k G)
 
-@[simp]
-lemma res_obj_ρ :
-  (res f M).ρ = (M.ρ.comp f) := rfl
+@[simp] lemma res_obj_ρ : (res f M).ρ = (M.ρ.comp f) := rfl
 
 lemma coe_res_obj_ρ' (h : H) : (res f M).ρ h = M.ρ (f h) := rfl
 
--- @[simp]
 lemma res_obj_V : (res f M).V = M.V := rfl
 
-@[simp]
 lemma res_map_hom_toLinearMap {M N : Rep k G} (p : M ⟶ N) :
     ((resFunctor f).map p).hom.toLinearMap = p.hom.toLinearMap := rfl
-
--- def
 
 section
 
@@ -61,10 +54,10 @@ instance : (resFunctor (k := k) f).Faithful where
     rw [Rep.hom_ext_iff, Representation.IntertwiningMap.ext_iff] at h
     simpa using h
 
+/-- Morphism between `X Y : Rep k G` can be lifted from restrictions associated with `f : H →* G`
+  when `f` is surjective. -/
 abbrev liftHomOfSurj {X Y : Rep k G} (hf : Function.Surjective f) (f' : res f X ⟶ res f Y) :
-    X ⟶ Y :=
-  ofHom ⟨f'.hom.toLinearMap, fun g ↦ by
-    obtain ⟨h, rfl⟩ := hf g; simpa using f'.hom.2 h⟩
+    X ⟶ Y := ofHom ⟨f'.hom.toLinearMap, fun g ↦ by obtain ⟨h, rfl⟩ := hf g; simpa using f'.hom.2 h⟩
 
 @[simp]
 lemma liftHomOfSurj_toLinearMap {X Y : Rep k G} (hf : Function.Surjective f)

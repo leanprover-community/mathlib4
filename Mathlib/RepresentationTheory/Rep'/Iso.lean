@@ -37,7 +37,7 @@ which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, 
 `(g₀, g₀g₁, ..., g₀g₁...gₙ)`. -/
 abbrev diagonalSuccIsoTensorTrivial :
     diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G ((Fin n → G) →₀ k) :=
-  linearizationObjOfMulAction k G (n + 1) ≪≫ (linearization k G).mapIso
+  linearizationOfMulActionIso k G (Fin (n + 1) → G) ≪≫ (linearization k G).mapIso
     (Action.diagonalSuccIsoTensorTrivial G n) ≪≫
     (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
     tensorIso (linearizationOfMulActionIso k G G) (linearizationTrivialIso k G (Fin n → G)) --≪≫

@@ -185,6 +185,7 @@ lemma mkIso_hom_hom {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X
     (mkIso e).hom.hom = e.toIntertwiningMap := rfl
 
 variable {A B} in
+/-- The equivalence between representations induced from iso between objects in `Rep k G`. -/
 @[simps]
 def _root_.Representation.equivOfIso (i : A ≅ B) : A.ρ.Equiv B.ρ where
   __ := i.hom.hom
@@ -192,11 +193,6 @@ def _root_.Representation.equivOfIso (i : A ≅ B) : A.ρ.Equiv B.ρ where
   invFun := i.inv
   left_inv x := by simp
   right_inv x := by simp
-
-@[simps]
-def isoEquivRepEquiv : (of A.ρ ≅ of B.ρ) ≃ (A.ρ.Equiv B.ρ) where
-  toFun := Representation.equivOfIso
-  invFun e := mkIso e
 
 instance reflectsIsomorphisms_forget : (forget (Rep.{w} k G)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
@@ -209,16 +205,18 @@ lemma hom_bijective {M N : Rep k G} :
   left _ _ h := Rep.hom_ext h
   right f := ⟨Rep.ofHom f, Rep.hom_ofHom f⟩
 
-/-- Convenience shortcut for `ModuleCat.hom_bijective.injective`. -/
+/-- Convenience shortcut for `Rep.hom_bijective.injective`. -/
 lemma hom_injective {M N : Rep k G} :
     Function.Injective (Hom.hom : (M ⟶ N) → (M.ρ.IntertwiningMap N.ρ)) :=
   hom_bijective.injective
 
-/-- Convenience shortcut for `ModuleCat.hom_bijective.surjective`. -/
+/-- Convenience shortcut for `Rep.hom_bijective.surjective`. -/
 lemma hom_surjective {M N : Rep k G} :
     Function.Surjective (Hom.hom : (M ⟶ N) → (M.ρ.IntertwiningMap N.ρ)) :=
   hom_bijective.surjective
 
+/-- The morphisms between two objects in `Rep k G` has an equivalence to the intertwining maps
+  between their underlying representations. -/
 @[simps]
 def homEquiv {M N : Rep k G} : (M ⟶ N) ≃ (M.ρ.IntertwiningMap N.ρ) where
   toFun := Hom.hom
@@ -541,6 +539,8 @@ instance hasForgetToModuleCat :
   forget₂.obj A := .of k A
   forget₂.map f := ModuleCat.ofHom f.hom.toLinearMap
 
+/-- A morphism in `Rep k G` has an underlying linear map attached to it hence induce a morphism in
+  `ModuleCat k`. -/
 abbrev Hom.toModuleCatHom (f : A ⟶ B) : ModuleCat.of k A.V ⟶ ModuleCat.of k B.V :=
   ModuleCat.ofHom f.hom.toLinearMap
 
@@ -556,39 +556,35 @@ section Action
 
 variable (k G)
 
+/-- Every object in `Rep k G` naturally correspond to an object in `Action`. -/
 @[simps]
 def RepToAction : Rep.{w} k G ⥤ Action (ModuleCat.{w} k) G where
   obj X := ⟨.of k X, (ModuleCat.endRingEquiv (.of k X)).symm.toMonoidHom.comp X.ρ⟩
-  map f := ⟨ModuleCat.ofHom f.hom.toLinearMap, fun g ↦ ModuleCat.hom_ext <| by
+  map f := ⟨f.toModuleCatHom, fun g ↦ ModuleCat.hom_ext <| by
     simp [ModuleCat.endRingEquiv, f.hom.2]⟩
 
 lemma RepToAction_obj (X : Rep.{w} k G) : (RepToAction k G).obj X =
   ⟨.of k X, (ModuleCat.endRingEquiv (.of k X)).symm.toMonoidHom.comp X.ρ⟩ := rfl
 
+/-- Every object in `ModuleCat k` that `G` acts on is an object in `Rep k G`. -/
 @[simps]
 def ActionToRep : Action (ModuleCat.{w} k) G ⥤ Rep.{w} k G where
   obj X := of <| (ModuleCat.endRingEquiv X.V).toMonoidHom.comp X.ρ
   map f := ofHom ⟨f.hom.hom, fun g ↦ by simpa using ModuleCat.hom_ext_iff.1 (f.comm g)⟩
 
-set_option backward.isDefEq.respectTransparency false in
+/-- `unitIso` of the equivalence between `Action` and `Rep`. -/
 def RepToAction_ActionToRep (A : Action (ModuleCat.{w} k) G) :
     (RepToAction k G).obj ((ActionToRep k G).obj A) ≅ A where
   hom := ⟨𝟙 _, fun g ↦ by rfl⟩
   inv := ⟨𝟙 _, fun g ↦ by rfl⟩
 
+/-- `counitIso` of the equivalence between `Action` and `Rep`. -/
 def ActionToRep_RepToAction (X : Rep.{w} k G) :
     (ActionToRep k G).obj ((RepToAction k G).obj X) ≅ X where
-  hom := ofHom ⟨LinearMap.id, fun g ↦ by
-    simp only [RepToAction_obj_V_carrier, RepToAction_obj_V_isModule, RingHom.toMonoidHom_eq_coe,
-      RingEquiv.toRingHom_eq_coe, RepToAction_obj_ρ]
-    convert_to LinearMap.id ∘ₗ X.ρ g = X.ρ g ∘ₗ LinearMap.id
-    simp⟩
-  inv := ofHom ⟨LinearMap.id, fun g ↦ by
-    simp only [RepToAction_obj_V_carrier, RepToAction_obj_V_isModule, RingHom.toMonoidHom_eq_coe,
-      RingEquiv.toRingHom_eq_coe, RepToAction_obj_ρ]
-    convert_to LinearMap.id ∘ₗ X.ρ g = X.ρ g ∘ₗ LinearMap.id
-    simp⟩
+  hom := ofHom ⟨LinearMap.id, fun g ↦ show LinearMap.id ∘ₗ X.ρ g = X.ρ g ∘ₗ LinearMap.id by simp⟩
+  inv := ofHom ⟨LinearMap.id, fun g ↦ show LinearMap.id ∘ₗ X.ρ g = X.ρ g ∘ₗ LinearMap.id by simp⟩
 
+/-- The category equivalence between `Rep` and `Action`. -/
 def repIsoAction : Rep.{w} k G ≌ Action (ModuleCat.{w} k) G where
   functor := RepToAction k G
   inverse := ActionToRep k G
@@ -604,6 +600,8 @@ instance : (ActionToRep k G).IsEquivalence :=
 instance : (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)).Additive where
   map_add {X Y} f g := by ext1; simp [add_hom]
 
+/-- Forgetting `Rep` to `ModuleCat` is the same as first map to `Action`
+  then forget to `ModuleCat`. -/
 abbrev forgetNatIsoActionForget : forget₂ (Rep.{w} k G) (ModuleCat k) ≅ (RepToAction k G) ⋙
     Action.forget (ModuleCat k) G := .refl _
 
@@ -667,6 +665,7 @@ instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
     ext1;
     simp [smul_hom]
 
+/-- The equivalence between `IntertwiningMap`s and morphism between `X Y : Rep k G` is linear. -/
 abbrev homLinearEquiv (X Y : Rep k G) : (X ⟶ Y) ≃ₗ[k] (X.ρ.IntertwiningMap Y.ρ) where
   __ := homEquiv
   map_add' := add_hom
@@ -1108,14 +1107,8 @@ theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (.single g 1) = A.ρ g x := by
   simp [homEquiv]
 
-variable (k G) in
-abbrev linearizationObjOfMulAction (n : ℕ) : diagonal k G n ≅ (linearization k G).obj
-    (Action.diagonal G n) :=
-  mkIso (Representation.linearizeDiagonalEquiv k G n)
-
 end Linearization
 
 end
 
 end Rep
--- #lint
