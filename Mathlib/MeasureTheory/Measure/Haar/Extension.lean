@@ -46,22 +46,14 @@ variable {A B C E : Type*} [Group A] [Group B] [Group C]
 continuous compactly supported function `a ↦ f (b * φ a)` on `A`. -/
 @[to_additive /--Pull back a continuous compactly supported function `f` on `B` to the
 continuous compactly supported function `a ↦ f (b * φ a)` on `A`.-/]
-noncomputable def pullback (f : CompactlySupportedContinuousMap B E) (b : B) :
-    CompactlySupportedContinuousMap A E where
-  toFun a := f (b * φ a)
-  hasCompactSupport' := by
-    obtain ⟨K, hK, hf⟩ := exists_compact_iff_hasCompactSupport.mpr f.hasCompactSupport
-    refine exists_compact_iff_hasCompactSupport.mp ⟨φ ⁻¹' (b⁻¹ • K),
-      H.isClosedEmbedding.isCompact_preimage (hK.smul b⁻¹), fun x hx ↦ hf _ ?_⟩
-    simpa [Set.mem_smul_set_iff_inv_smul_mem] using hx
-  continuous_toFun := by
-    have : Continuous φ := H.isClosedEmbedding.continuous
-    fun_prop
+noncomputable abbrev pullback (f : CompactlySupportedContinuousMap B E) (b : B) :
+    CompactlySupportedContinuousMap A E :=
+  f.pullback_monoidHom H.isClosedEmbedding b
 
 @[to_additive]
-theorem pullback_def (f : CompactlySupportedContinuousMap B E) (b : B) (a : A) :
+abbrev pullback_def (f : CompactlySupportedContinuousMap B E) (b : B) (a : A) :
     pullback H f b a = f (b * φ a) :=
-  rfl
+  f.pullback_monoidHom_def H.isClosedEmbedding b a
 
 variable [MeasurableSpace A] [BorelSpace A] (μA : Measure A) [hμA : IsHaarMeasure μA]
   [NormedSpace ℝ E]
@@ -73,7 +65,7 @@ theorem integral_pullback_invFun_apply (f : CompactlySupportedContinuousMap B E)
   rw [← ψ.mem_ker, H.mulExact.monoidHom_ker_eq] at h
   obtain ⟨a, ha⟩ := h
   rw [← integral_mul_left_eq_self _ a]
-  simp [pullback, ha, mul_assoc]
+  simp [pullback_def, ha, mul_assoc]
 
 variable [IsTopologicalGroup C] [LocallyCompactSpace B]
 
@@ -209,7 +201,7 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     congr with c
     obtain ⟨b', rfl⟩ := H.isOpenQuotientMap.surjective c
     rw [← map_inv, ← map_mul, pushforward_apply_apply, pushforward_apply_apply]
-    simp [pullback, mul_assoc]
+    simp [pullback_def, mul_assoc]
   open_pos U hU := by
     rintro ⟨b, hb⟩
     obtain ⟨K, hK, hb, hKU⟩ := exists_compact_subset hU hb
