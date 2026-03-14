@@ -116,7 +116,8 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
   obtain ⟨s, hs, t, ht, rfl⟩ := Submodule.mem_sup.mp (h_sup ▸ Submodule.mem_top (x := v))
   suffices t = 0 by rw [this, add_zero]; exact hs
   have htQ : t ∈ Q := by simpa using Q.sub_mem hv (hSQ hs)
-  have h_ker : ∀ k, P.coroot' k t = 0 := fun k ↦ by
+  have h_ker : ∀ k, P.coroot' k t = 0 := by
+    intro k
     by_cases hk : P.root k ∈ Q
     · refine LinearMap.mem_ker.mp (span_le.mpr ?_ ht)
       rintro _ ⟨j, hj, rfl⟩
