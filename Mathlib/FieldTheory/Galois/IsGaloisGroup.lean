@@ -288,6 +288,7 @@ instance subgroup [hGKL : IsGaloisGroup G K L] :
   commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGaloisGroup H F L] :
     FixedPoints.intermediateField H = F := by
@@ -451,6 +452,7 @@ instance : SMul (G ⧸ N) F where
 lemma coe_quotient_smul (g : G) (x : F) :
     ((g : G ⧸ N) • x : F) = g • (x : L) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : MulSemiringAction (G ⧸ N) F where
   one_smul _ := Subtype.ext <| by rw [← QuotientGroup.mk_one, coe_quotient_smul, one_smul]
   smul_zero g := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp
@@ -466,6 +468,7 @@ instance [SMulCommClass G K L] : SMulCommClass (G ⧸ N) K F :=
 
 variable [hK : IsGaloisGroup G K L] [Finite G]
 
+set_option backward.isDefEq.respectTransparency false in
 instance quotient : IsGaloisGroup (G ⧸ N) K F where
   faithful.eq_of_smul_eq_smul := fun {g₁} {g₂} ↦ Quotient.inductionOn₂' g₁ g₂ fun g₁ g₂ h ↦ by
     rw [QuotientGroup.eq, ← fixingSubgroup_fixedPoints G K L N, subgroup_iff.mp hF,
@@ -483,6 +486,7 @@ instance quotient : IsGaloisGroup (G ⧸ N) K F where
 
 variable (E : IntermediateField K L) (H : Subgroup G) [hE : IsGaloisGroup H E L]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientMap (h : E ≤ F) :
     letI : Algebra E F := (IntermediateField.inclusion h).toAlgebra
     IsGaloisGroup (H.map (QuotientGroup.mk' N)) E F :=

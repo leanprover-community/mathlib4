@@ -70,7 +70,6 @@ protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   change -x ∈ S.toSubalgebra; simpa
 
 /-- Reinterpret an `IntermediateField` as a `Subfield`. -/
-@[implicit_reducible]
 def toSubfield : Subfield L :=
   { S.toSubalgebra with
     neg_mem' := S.neg_mem,
