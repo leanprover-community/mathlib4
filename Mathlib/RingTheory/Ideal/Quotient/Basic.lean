@@ -116,17 +116,6 @@ theorem exists_inv [hI : I.IsMaximal] :
   rw [← eq_sub_iff_add_eq'] at abc
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 
-set_option backward.isDefEq.respectTransparency false in -- needed in mk_eq_one_iff_sub_mem
-variable {I} in
-theorem notMem_of_le_of_isUnit_mk {J : Ideal R} (hJ : J ≠ ⊤) (hIJ : I ≤ J) {a : R}
-    (ha : IsUnit (mk I a)) : a ∉ J := by
-  obtain ⟨b, hb⟩ := ha.exists_left_inv
-  obtain ⟨b, rfl⟩ := mk_surjective b
-  rw [← map_mul, mk_eq_one_iff_sub_mem] at hb
-  have hab : b * a - 1 ∈ J := Set.mem_of_mem_of_subset hb hIJ
-  contrapose! hJ with ha
-  simpa [eq_top_iff_one] using sub_mem (mul_mem_left J b ha) hab
-
 open Classical in
 /-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
 since users will have computable inverses in some applications.
