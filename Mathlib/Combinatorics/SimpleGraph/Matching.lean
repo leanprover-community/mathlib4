@@ -882,8 +882,10 @@ lemma matchingNumber.ge_iff {G : SimpleGraph V} {k : ℕ∞} :
   · intro ⟨M, hM, cardM⟩
     exact le_trans cardM <| matchingNumber.ge_of_IsMatching hM
 
-lemma matchingNumber.le_of_mono {H : SimpleGraph W} (f : H →g G) (hf : Injective f) :
+@[gcongr]
+lemma IsContained.matchingNumber_le {H : SimpleGraph W} (h : H ⊑ G) :
     matchingNumber H ≤ matchingNumber G := by
+  have ⟨⟨f, hf⟩⟩ := h
   refine matchingNumber.le_iff.mpr fun M hM ↦ ?_
   apply matchingNumber.ge_iff.2
   use Subgraph.map f M, Subgraph.IsMatching.map f hf hM
