@@ -889,14 +889,37 @@ theorem upperSemicontinuousOn_iff_preimage_Ici [LinearOrder β] :
 variable [PartialOrder β] [AddCommGroup β] [IsOrderedAddMonoid β]
 
 @[simp]
+theorem lowerSemicontinuousWithinAt_neg_iff :
+    LowerSemicontinuousWithinAt (-f) s a ↔ UpperSemicontinuousWithinAt f s a := by
+  rw [lowerSemicontinuousWithinAt_iff, neg_surjective.forall, upperSemicontinuousWithinAt_iff]
+  simp
+
+alias ⟨_, UpperSemicontinuousWithinAt.neg⟩ := lowerSemicontinuousWithinAt_neg_iff
+
+@[simp]
+theorem upperSemicontinuousWithinAt_neg_iff :
+    UpperSemicontinuousWithinAt (-f) s a ↔ LowerSemicontinuousWithinAt f s a := by
+  simp [← lowerSemicontinuousWithinAt_neg_iff]
+
+alias ⟨_, LowerSemicontinuousWithinAt.neg⟩ := upperSemicontinuousWithinAt_neg_iff
+
+@[simp]
+theorem lowerSemicontinuouAt_neg_iff :
+    LowerSemicontinuousAt (-f) a ↔ UpperSemicontinuousAt f a := by
+  simp [← lowerSemicontinuousWithinAt_univ_iff, ← upperSemicontinuousWithinAt_univ_iff]
+
+alias ⟨_, UpperSemicontinuousAt.neg⟩ := lowerSemicontinuouAt_neg_iff
+
+@[simp]
+theorem upperSemicontinuousAt_neg_iff :
+    UpperSemicontinuousWithinAt (-f) s a ↔ LowerSemicontinuousWithinAt f s a := by simp
+
+alias ⟨_, LowerSemicontinuousAt.neg⟩ := upperSemicontinuousAt_neg_iff
+
+@[simp]
 theorem lowerSemicontinuousOn_neg_iff :
     LowerSemicontinuousOn (-f) s ↔ UpperSemicontinuousOn f s := by
-  simp_all only [lowerSemicontinuousOn_iff_preimage_Ioi, upperSemicontinuousOn_iff_preimage_Iio]
-  refine ⟨fun h b => ?_, fun h b => ?_⟩
-  · obtain ⟨u, ho, hu⟩ := h (-b)
-    exact ⟨u, ho, hu ▸ by simp [Pi.neg_eq_neg_comp, preimage_comp]⟩
-  · obtain ⟨u, ho, hu⟩ := h (-b)
-    exact ⟨u, ho, hu ▸ by simp [Pi.neg_eq_neg_comp, preimage_comp]⟩
+  simp [lowerSemicontinuousOn_iff, upperSemicontinuousOn_iff]
 
 alias ⟨_, UpperSemicontinuousOn.neg⟩ := lowerSemicontinuousOn_neg_iff
 
