@@ -107,6 +107,8 @@ theorem CommaMorphism.w' {X Y : Comma R L} (self : CommaMorphism Y X) :
     Y.hom ≫ L.map self.right = R.map self.left ≫ X.hom :=
   self.w.symm
 
+/-- `CommaMorphism.mk'` is the dual of `CommaMorphism.mk`, which we need for `to_dual`.
+Please avoid using this directly. -/
 @[to_dual existing mk]
 abbrev CommaMorphism.mk' {X Y : Comma R L}
     (right : Y.right ⟶ X.right) (left : Y.left ⟶ X.left)

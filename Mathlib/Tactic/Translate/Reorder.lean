@@ -50,30 +50,13 @@ public meta section
 namespace Mathlib.Tactic.Translate
 open Lean Meta Elab
 
-abbrev Perm := List {l : List Nat // 2 ≤ l.length}
+/-- A permutation, represented using cycle notation. -/
+abbrev Permutation := List {l : List Nat // 2 ≤ l.length}
 
-/-- `ArgReorder` represents a permutation of arguments in a translation. -/
-structure ArgReorder where
-  /-- The list of disjoint cycles that represents the permutation. -/
-  perm : Perm := []
-  /-- The recursive reorders for reordering arguments of arguments.
-  For the purpose of checking equality between reorders, this should be sorted. -/
-  argReorders : Array (Nat × ArgReorder) := #[]
-  deriving Inhabited
-
-/-- `Reorder` represents a permutation of arguments and universe levels for translating
-a given constant. -/
-structure Reorder where
-  /-- The reordering of universe levels. -/
-  univReorder : Perm := []
-  /-- The reordering of arguments. -/
-  reorder : ArgReorder := {}
-
-/-- Return `true` if the reorder doesn't do anything. -/
-def ArgReorder.isEmpty (r : ArgReorder) : Bool := r matches {}
+namespace Permutation
 
 /-- Permute an array of arguments using the given reorder. -/
-def Perm.permute! {α} [Inhabited α] (c : Perm) : Array α → Array α :=
+def permute! {α} [Inhabited α] (c : Permutation) : Array α → Array α :=
   c.foldl (cyclicPermute! · ·.1)
 where
   /-- Permute the array using a sequence of indices defining a cyclic permutation.
@@ -89,19 +72,45 @@ where
       cyclicPermuteAux a is y i0
 
 /-- Permute a list of either universe levels or universe parameters. -/
-def Perm.permuteList! {α} [Inhabited α] (p : Perm) (us : List α) : List α :=
+def permuteList! {α} [Inhabited α] (p : Permutation) (us : List α) : List α :=
   if p.isEmpty then us else (p.permute! us.toArray).toList
 
-/-- Permute an array of arguments using the given reorder. -/
-def ArgReorder.permute! {α} [Inhabited α] (r : ArgReorder) : Array α → Array α :=
-  r.perm.permute!
-
 /-- Return the inverse permutation. -/
-def Perm.reverse (c : Perm) : Perm :=
+def reverse (c : Permutation) : Permutation :=
   c.map (⟨·.1.reverse, by grind⟩)
 
+/-- Return the minimum size of an array on which the permutation is valid. -/
+def range (p : Permutation) : Nat :=
+  p.iter.flatMap (·.1.iter) |>.map (· + 1) |>.fold max 0
+
+/-- Two permutations are considered equal if they permute in the same way. -/
+def beq (p₁ p₂ : Permutation) : Bool :=
+  p₁.range == p₂.range &&
+    let rangeArr := (0...p₁.range).toArray;
+    p₁.permute! rangeArr == p₂.permute! rangeArr
+
+end Permutation
+
+/-- `ArgReorder` represents a permutation of arguments in a translation. -/
+structure ArgReorder where
+  /-- The list of disjoint cycles that represents the permutation. -/
+  perm : Permutation := []
+  /-- The recursive reorders for reordering arguments of arguments.
+  For the purpose of checking equality between reorders, this should be sorted. -/
+  argReorders : Array (Nat × ArgReorder) := #[]
+  deriving Inhabited
+
+namespace ArgReorder
+
+/-- Return `true` if the reorder doesn't do anything. -/
+def isEmpty (r : ArgReorder) : Bool := r matches {}
+
+/-- Permute an array of arguments using the given reorder. -/
+def permute! {α} [Inhabited α] (r : ArgReorder) : Array α → Array α :=
+  r.perm.permute!
+
 /-- Return the reorder that reverses the action of the given reorder. -/
-def ArgReorder.reverse (r : ArgReorder) : ArgReorder := {
+def reverse (r : ArgReorder) : ArgReorder := {
   perm := r.perm.reverse
   argReorders := r.argReorders.map fun x ↦ (permuteSingle r x.1, x.2.reverse)
 }
@@ -116,36 +125,21 @@ where
     | [] => none
     | b :: bs => if b = n then bs.head?.getD head else getCycleSuccessor n head bs
 
-/-- Return the reorder that reverses the action of the given reorder. -/
-def Reorder.reverse (r : Reorder) : Reorder where
-  univReorder := r.univReorder.reverse
-  reorder := r.reorder.reverse
-
-/-- Return the minimum size of an array on which the permutation is valid. -/
-def Perm.range (p : Perm) : Nat :=
-  p.iter.flatMap (·.1.iter) |>.map (· + 1) |>.fold max 0
-
 /-- Return the minimum size of an array on which the given reorder is valid. -/
-def ArgReorder.range (r : ArgReorder) : Nat :=
+def range (r : ArgReorder) : Nat :=
   r.argReorders.foldl (max · <| ·.1 + 1) <|
     r.perm.iter.flatMap (·.1.iter) |>.map (· + 1) |>.fold max 0
 
-/-- Two permutations are considered equal if they permute in the same way. -/
-def Perm.beq (p₁ p₂ : Perm) : Bool :=
-  p₁.range == p₂.range &&
-    let rangeArr := (0...p₁.range).toArray;
-    p₁.permute! rangeArr == p₂.permute! rangeArr
-
 /-- Two reorders are considered equal if all permutations are the same. -/
-partial def ArgReorder.beq (r₁ r₂ : ArgReorder) : Bool :=
+partial def beq (r₁ r₂ : ArgReorder) : Bool :=
   r₁.perm.beq r₂.perm &&
-    have : BEq ArgReorder := ⟨ArgReorder.beq⟩
+    have : BEq ArgReorder := ⟨beq⟩
     r₁.argReorders == r₂.argReorders
 
-instance : BEq ArgReorder := ⟨ArgReorder.beq⟩
+instance : BEq ArgReorder := ⟨beq⟩
 
 /-- Print a `ArgReorder`, representing the arguments by their index. -/
-def ArgReorder.toString (r : ArgReorder) : String :=
+def toString (r : ArgReorder) : String :=
   let perm := r.perm.map (" ".intercalate <| ·.1.map (s!"{· + 1}"))
   let argReorders := r.argReorders.map (fun x ↦ s!"{x.1 + 1} ({x.2.toString})")
   s!"{", ".intercalate (perm ++ argReorders.toList)}"
@@ -154,6 +148,21 @@ decreasing_by
 
 instance : ToString ArgReorder := ⟨fun x ↦ x.toString⟩
 instance : ToMessageData ArgReorder := ⟨fun x ↦ x.toString⟩
+
+end ArgReorder
+
+/-- `Reorder` represents a permutation of arguments and universe levels for translating
+a given constant. -/
+structure Reorder where
+  /-- The reordering of universe levels. -/
+  univReorder : Permutation := []
+  /-- The reordering of arguments. -/
+  reorder : ArgReorder := {}
+
+/-- Return the reorder that reverses the action of the given reorder. -/
+def Reorder.reverse (r : Reorder) : Reorder where
+  univReorder := r.univReorder.reverse
+  reorder := r.reorder.reverse
 
 /-! ### Reordering an expression -/
 
@@ -213,7 +222,7 @@ end
 /-! ### Guessing the reorder given the reordered expression -/
 
 /-- Decompose the permutation `map` into its disjoint cycle representation. -/
- private def decomposePerm {n} (map : Vector (Option (Fin n)) n) : Perm := Id.run do
+ private def decomposePerm {n} (map : Vector (Option (Fin n)) n) : Permutation := Id.run do
     let mut map := map
     let mut perm := []
     for h : i in 0...n do
@@ -232,7 +241,8 @@ end
     return perm
 
 /-- Determine the universe level reorder from the argument reorder. -/
-def guessUnivReorder (reorder : ArgReorder) (src : Expr) (params : List Name) : Perm := Id.run do
+def guessUnivReorder (reorder : ArgReorder) (src : Expr) (params : List Name) : Permutation :=
+  Id.run do
   let mut map := .replicate params.length none
   for ⟨cycle, _⟩ in show List _ from reorder.perm do
     for i in cycle, i' in cycle.tail ++ [cycle.head (by grind)] do
