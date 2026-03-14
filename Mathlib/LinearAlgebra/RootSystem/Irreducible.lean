@@ -98,43 +98,38 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
     [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
     (q : P.invtRootSubmodule) :
     (q : Submodule K M) = span K (P.root '' {i | P.root i ∈ (q : Submodule K M)}) := by
+  set Q := (q : Submodule K M)
   refine le_antisymm ?_ (span_le.mpr (Set.image_subset_iff.mpr fun _ h => h))
-  have hq_ker : ∀ ℓ, P.root ℓ ∉ (q : Submodule K _) →
-      (q : Submodule K _) ≤ ker (P.coroot' ℓ) := fun ℓ hℓ =>
-    (Submodule.mem_invtSubmodule_reflection_iff (P.flip.root_coroot_two ℓ)
-      (Submodule.disjoint_span_singleton_of_notMem hℓ)).mp
-      (P.mem_invtRootSubmodule_iff.mp q.property ℓ)
-  set S := span K (P.root '' {i | P.root i ∈ (q : Submodule K _)})
-  set T := span K (P.root '' {i | P.root i ∉ (q : Submodule K _)})
-  have hS_ker : ∀ ℓ, P.root ℓ ∉ (q : Submodule K _) →
-      S ≤ ker (P.coroot' ℓ) := by
-    intro ℓ hℓ; apply span_le.mpr; rintro _ ⟨i, hi, rfl⟩
-    exact hq_ker ℓ hℓ hi
-  have hT_ker : ∀ i, P.root i ∈ (q : Submodule K _) →
-      T ≤ ker (P.coroot' i) := by
+  have hq_ker : ∀ k, P.root k ∉ Q → Q ≤ ker (P.coroot' k) := fun k hk =>
+    (Submodule.mem_invtSubmodule_reflection_iff (P.flip.root_coroot_two k)
+      (Submodule.disjoint_span_singleton_of_notMem hk)).mp
+      (P.mem_invtRootSubmodule_iff.mp q.property k)
+  set S := span K (P.root '' {i | P.root i ∈ Q})
+  set T := span K (P.root '' {i | P.root i ∉ Q})
+  have hT_ker : ∀ i, P.root i ∈ Q → T ≤ ker (P.coroot' i) := by
     intro i hi; apply span_le.mpr; rintro _ ⟨j, hj, rfl⟩
     rw [SetLike.mem_coe, LinearMap.mem_ker, P.root_coroot'_eq_pairing]
     have h₁ := LinearMap.mem_ker.mp (hq_ker j hj hi)
     rw [P.root_coroot'_eq_pairing] at h₁
     exact P.pairing_eq_zero_iff'.mpr h₁
   have h_sup : S ⊔ T = ⊤ := by
-    rw [← Submodule.span_union, ← Set.image_union]
-    have : {i | P.root i ∈ (q : Submodule K _)} ∪
-        {i | P.root i ∉ (q : Submodule K _)} = Set.univ := by
-      ext; exact ⟨fun _ => trivial, fun _ => em _⟩
-    rw [this, Set.image_univ]; simp
+    rw [← Submodule.span_union, ← Set.image_union,
+      show {i | P.root i ∈ Q} ∪ {i | P.root i ∉ Q} = Set.univ from
+        Set.eq_univ_of_forall fun _ => em _,
+      Set.image_univ]
+    simp
   intro v hv
   obtain ⟨s, hs, t, ht, rfl⟩ := Submodule.mem_sup.mp (h_sup ▸ Submodule.mem_top (x := v))
   suffices t = 0 by rw [this, add_zero]; exact hs
-  have h_ker : ∀ ℓ, P.coroot' ℓ t = 0 := fun ℓ ↦ by
-    by_cases hℓ : P.root ℓ ∈ (q : Submodule K _)
-    · exact LinearMap.mem_ker.mp (hT_ker ℓ hℓ ht)
-    · have h1 := LinearMap.mem_ker.mp (hq_ker ℓ hℓ hv)
-      have h2 := LinearMap.mem_ker.mp (hS_ker ℓ hℓ hs)
+  have h_ker : ∀ k, P.coroot' k t = 0 := fun k ↦ by
+    by_cases hk : P.root k ∈ Q
+    · exact LinearMap.mem_ker.mp (hT_ker k hk ht)
+    · have h1 := LinearMap.mem_ker.mp (hq_ker k hk hv)
+      have h2 := LinearMap.mem_ker.mp (hq_ker k hk (span_le.mpr
+        (Set.image_subset_iff.mpr fun _ h => h) hs))
       rw [map_add, h2, zero_add] at h1; exact h1
   have : IsReflexive K M := .of_isPerfPair P.toLinearMap
-  exact ((Module.Dual.eval K _).map_eq_zero_iff
-    (bijective_dual_eval K _).injective).mp
+  exact ((Dual.eval K _).map_eq_zero_iff (bijective_dual_eval K _).injective).mp
     (LinearMap.ext_on_range P.span_coroot'_eq_top h_ker)
 
 set_option backward.isDefEq.respectTransparency false in
