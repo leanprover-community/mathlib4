@@ -141,7 +141,6 @@ theorem isLocallyArtinian_iff_of_isOpenCover {ι : Type*} {U : ι → X.Opens}
 
 instance (priority := low) {X : Scheme} [IsEmpty X] : IsLocallyArtinian X where
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) {X : Scheme} [DiscreteTopology X] [IsReduced X] :
     IsLocallyArtinian X := by
   wlog hX : Subsingleton X generalizing X
