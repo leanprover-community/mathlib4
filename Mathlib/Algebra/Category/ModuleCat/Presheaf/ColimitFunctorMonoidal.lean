@@ -199,13 +199,25 @@ lemma μ_apply {X : Cᵒᵖ} (m₁ : F₁.obj X) (m₂ : F₂.obj X) :
       ιColimitFunctorOfCommRing hcR (F₁ ⊗ F₂) X (m₁ ⊗ₜ m₂) := by
   sorry
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma μ_δ : μ hcR F₁ F₂ ≫ δ (colimitFunctorOfCommRing hcR) F₁ F₂ = 𝟙 _ :=
   ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₂ ↦ by
     obtain ⟨U, m₁, m₂, rfl, rfl⟩ := ιColimitFunctorOfCommRing_jointly_surjective₂ hcR m₁ m₂
     simp)
 
-instance : Epi (μ hcR F₁ F₂) := sorry
+set_option backward.isDefEq.respectTransparency false in
+instance : Epi (μ hcR F₁ F₂) := by
+  suffices ∀ (U : Cᵒᵖ) (m : (F₁ ⊗ F₂).obj U),
+      ∃ z, μ hcR F₁ F₂ z = ιColimitFunctorOfCommRing hcR (F₁ ⊗ F₂) U m from
+    ConcreteCategory.epi_of_surjective _ (fun m ↦ by
+      obtain ⟨U, m, rfl⟩ := ιColimitFunctorOfCommRing_jointly_surjective hcR m
+      exact this U m)
+  intro U (m : TensorProduct (R.obj U) (F₁.obj U) (F₂.obj U))
+  induction m with
+  | zero => exact ⟨0, by simp⟩
+  | add => sorry
+  | tmul => sorry
 
 @[reassoc (attr := simp)]
 lemma δ_μ : δ (colimitFunctorOfCommRing hcR) F₁ F₂ ≫ μ hcR F₁ F₂ = 𝟙 _ := by
