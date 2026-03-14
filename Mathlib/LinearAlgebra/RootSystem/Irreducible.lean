@@ -93,7 +93,6 @@ lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [Module K M] [Module K 
   ⟨fun h ↦ by simp [h], fun h ↦ by simpa using Submodule.span_mono h (R := K)⟩
 
 open Module in
-/-- An invariant root submodule equals the span of the roots it contains. -/
 lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
     [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
     (q : P.invtRootSubmodule) :
