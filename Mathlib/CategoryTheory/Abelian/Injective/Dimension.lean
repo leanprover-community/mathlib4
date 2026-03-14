@@ -165,10 +165,6 @@ lemma Retract.hasInjectiveDimensionLT {X Y : C} (h : Retract X Y) (n : ℕ)
   rw [← x.comp_mk₀_id, ← h.retract, ← Ext.mk₀_comp_mk₀, ← Ext.comp_assoc_of_second_deg_zero,
     (x.comp (Ext.mk₀ h.i) (add_zero i)).eq_zero_of_hasInjectiveDimensionLT n hi, Ext.zero_comp]
 
-lemma Retract.injective {X Y : C} (h : Retract X Y) [Injective Y] : Injective X := by
-  rw [injective_iff_hasInjectiveDimensionLT_one]
-  apply h.hasInjectiveDimensionLT
-
 lemma hasInjectiveDimensionLT_of_iso {X X' : C} (e : X ≅ X') (n : ℕ)
     [HasInjectiveDimensionLT X n] :
     HasInjectiveDimensionLT X' n :=
