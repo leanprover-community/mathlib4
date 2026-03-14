@@ -194,13 +194,19 @@ structure BilinearMap where
   map : M₁.presheaf ⋙ forget _ ⊗ M₂.presheaf ⋙ forget _ ⟶
     N.presheaf ⋙ forget _
   map_add {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ m₂' : M₂.obj X) :
-      map.app X (m₁, m₂ + m₂') = map.app X (m₁, m₂) + map.app X (m₁, m₂')
+      dsimp% map.app X (m₁, m₂ + m₂') = map.app X (m₁, m₂) + map.app X (m₁, m₂')
   add_map {X : Cᵒᵖ} (m₁ m₁' : M₁.obj X) (m₂ : M₂.obj X) :
-      map.app X (m₁ + m₁', m₂) = map.app X (m₁, m₂) + map.app X (m₁', m₂)
+      dsimp% map.app X (m₁ + m₁', m₂) = map.app X (m₁, m₂) + map.app X (m₁', m₂)
   map_smul {X : Cᵒᵖ} (m₁ : M₁.obj X) (r : R'.obj X) (m₂ : M₂.obj X) :
       dsimp% map.app X (m₁, r • m₂) = r • show N.obj X from map.app X (m₁, m₂)
   smul_map {X : Cᵒᵖ} (r : R'.obj X) (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
       dsimp% map.app X (r • m₁, m₂) = r • show N.obj X from map.app X (m₁, m₂)
+
+namespace BilinearMap
+
+attribute [simp] map_add add_map map_smul smul_map
+
+end BilinearMap
 
 end
 
@@ -229,20 +235,69 @@ noncomputable instance :
     Module cR.pt (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcM₁) :=
   inferInstanceAs (Module ((forget₂ _ RingCat).mapCocone cR).pt _)
 
+variable (cN) in
+noncomputable def coconeDescOfBilinearMapAux :
+    Cocone (M₁.presheaf ⋙ forget _ ⊗ M₂.presheaf ⋙ forget _) where
+  pt := cN.pt
+  ι.app X := cN.ι.app X ∘ b.map.app X
+  ι.naturality V U f := by
+    ext ⟨m₁, m₂⟩
+    have := congr_fun (b.map.naturality f) (m₁, m₂)
+    dsimp at this ⊢
+    rw [this, ← cN.w f]
+    rfl
+
+noncomputable def descOfBilinearMapAux :
+    (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcM₁) →
+    (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcM₂) →
+    (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcN) :=
+  (((isColimitOfPreserves (forget _) hcM₁).tensor
+    (isColimitOfPreserves (forget _) hcM₂)).desc (coconeDescOfBilinearMapAux b cN)).curry
+
+@[simp]
+lemma descOfBilinearMapAux_apply {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
+    dsimp% descOfBilinearMapAux hcR b hcM₁ hcM₂ hcN (ιM m₁) (ιM m₂) =
+      ιM (b.map.app X (m₁, m₂)) :=
+  congr_fun ((((isColimitOfPreserves (forget _) hcM₁).tensor
+    (isColimitOfPreserves (forget _) hcM₂)).fac (coconeDescOfBilinearMapAux b cN)) X) (m₁, m₂)
+
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def descOfBilinearMap :
     TensorProduct cR.pt
       (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcM₁)
       (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcM₂) →ₗ[cR.pt]
-    (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcN) := by
-  have := b
-  apply TensorProduct.lift
-  sorry
+    (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcN) :=
+  TensorProduct.lift
+    { toFun m₁ :=
+        { toFun m₂ := descOfBilinearMapAux hcR b hcM₁ hcM₂ hcN m₁ m₂
+          map_add' m₂ m₂' := by
+            obtain ⟨U, m₁, m₂, m₂', rfl, rfl, rfl⟩ := ιM_jointly_surjective₃ m₁ m₂ m₂'
+            simp [← map_add]
+          map_smul' r m₂ := by
+            obtain ⟨U, r, m₁, m₂, rfl, rfl, rfl⟩ := jointly_surjective₃' r m₁ m₂
+            dsimp
+            erw [smul_eq]
+            rw [descOfBilinearMapAux_apply, descOfBilinearMapAux_apply]
+            erw [smul_eq]
+            rw [b.map_smul] }
+      map_add' m₁ m₁' := by
+        ext m₂
+        obtain ⟨U, m₁, m₁', m₂, rfl, rfl, rfl⟩ := ιM_jointly_surjective₃ m₁ m₁' m₂
+        simp [← map_add]
+      map_smul' r m₁ := by
+        ext m₂
+        obtain ⟨U, r, m₁, m₂, rfl, rfl, rfl⟩ := jointly_surjective₃' r m₁ m₂
+        dsimp
+        erw [smul_eq]
+        rw [descOfBilinearMapAux_apply, descOfBilinearMapAux_apply]
+        erw [smul_eq]
+        rw [b.smul_map] }
 
 @[simp]
 lemma descOfBilinearMap_tmul {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
     dsimp% (descOfBilinearMap hcR b hcM₁ hcM₂ hcN) (ιM m₁ ⊗ₜ ιM m₂) =
       ιM (b.map.app X (m₁, m₂)) := by
-  sorry
+  simp [descOfBilinearMap]
 
 end ModuleColimit
 

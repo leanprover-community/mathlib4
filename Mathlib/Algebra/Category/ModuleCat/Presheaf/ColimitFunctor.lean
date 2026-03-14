@@ -50,6 +50,8 @@ noncomputable def constFunctor : ModuleCat cR.pt ⥤ PresheafOfModules.{w} R whe
 section
 
 variable {M : PresheafOfModules.{w} R} {cM : Cocone M.presheaf} (hcM : IsColimit cM)
+  {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf} (hcM' : IsColimit cM')
+  {M'' : PresheafOfModules.{w} R} {cM'' : Cocone M''.presheaf} (hcM'' : IsColimit cM'')
 
 /-- Given a colimit cocone for a presheaf of rings `R` on a cofiltered category `C`,
 `M` a presheaf of modules over `R`, and a colimit cocone `cM` for the underlying
@@ -100,6 +102,31 @@ lemma ιM_jointly_surjective (m : ModuleColimit hcR hcM) :
   Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (forget AddCommGrpCat) hcM) m
 
+set_option backward.isDefEq.respectTransparency false in
+variable {hcR hcM hcM'} in
+lemma ιM_jointly_surjective₂ (m : ModuleColimit hcR hcM) (m' : ModuleColimit hcR hcM') :
+    ∃ (U : Cᵒᵖ) (x : M.obj U) (x' : M'.obj U), ιM x = m ∧ ιM x' = m' := by
+  obtain ⟨U, ⟨x, x'⟩, h⟩ := Types.jointly_surjective_of_isColimit
+    ((isColimitOfPreserves (forget AddCommGrpCat) hcM).tensor
+      (isColimitOfPreserves (forget AddCommGrpCat) hcM')) ⟨m, m'⟩
+  rw [Prod.ext_iff] at h
+  obtain ⟨rfl, rfl⟩ := h
+  exact ⟨U, x, x', rfl, rfl⟩
+
+set_option backward.isDefEq.respectTransparency false in
+variable {hcR hcM hcM' hcM''} in
+lemma ιM_jointly_surjective₃ (m : ModuleColimit hcR hcM) (m' : ModuleColimit hcR hcM')
+    (m'' : ModuleColimit hcR hcM'') :
+    ∃ (U : Cᵒᵖ) (x : M.obj U) (x' : M'.obj U) (x'' : M''.obj U),
+      ιM x = m ∧ ιM x' = m' ∧ ιM x'' = m'' := by
+  obtain ⟨U, ⟨x, x', x''⟩, h⟩ := Types.jointly_surjective_of_isColimit
+    ((isColimitOfPreserves (forget AddCommGrpCat) hcM).tensor
+      ((isColimitOfPreserves (forget AddCommGrpCat) hcM').tensor
+        (isColimitOfPreserves (forget AddCommGrpCat) hcM''))) ⟨m, m', m''⟩
+  rw [Prod.ext_iff, Prod.ext_iff] at h
+  obtain ⟨rfl, rfl, rfl⟩ := h
+  exact ⟨U, x, x', x'', rfl, rfl, rfl⟩
+
 include hcR in
 lemma ιR_jointly_surjective (r : cR.pt) :
     ∃ (U : Cᵒᵖ) (a : R.obj U), ιR cR a = r :=
@@ -132,14 +159,14 @@ lemma jointly_surjective₃ (r₁ r₂ : cR.pt) (m : ModuleColimit hcR hcM) :
   exact ⟨U, a₁, a₂, x, rfl, rfl, rfl⟩
 
 set_option backward.isDefEq.respectTransparency false in
-variable {hcR hcM} in
-lemma jointly_surjective₃' (r : cR.pt) (m₁ m₂ : ModuleColimit hcR hcM) :
-    ∃ (U : Cᵒᵖ) (a : R.obj U) (x₁ x₂ : M.obj U),
+variable {hcR hcM hcM'} in
+lemma jointly_surjective₃' (r : cR.pt) (m₁ : ModuleColimit hcR hcM) (m₂ : ModuleColimit hcR hcM') :
+    ∃ (U : Cᵒᵖ) (a : R.obj U) (x₁ : M.obj U) (x₂ : M'.obj U),
       ιR cR a = r ∧ ιM x₁ = m₁ ∧ ιM x₂ = m₂ := by
   obtain ⟨U, ⟨a, x₁, x₂⟩, h⟩ := Types.jointly_surjective_of_isColimit
     ((isColimitOfPreserves (forget RingCat) hcR).tensor
       ((isColimitOfPreserves (forget AddCommGrpCat) hcM).tensor
-        (isColimitOfPreserves (forget AddCommGrpCat) hcM))) ⟨r, m₁, m₂⟩
+        (isColimitOfPreserves (forget AddCommGrpCat) hcM'))) ⟨r, m₁, m₂⟩
   rw [Prod.ext_iff, Prod.ext_iff] at h
   obtain ⟨rfl, rfl, rfl⟩ := h
   exact ⟨U, a, x₁, x₂, rfl, rfl, rfl⟩
