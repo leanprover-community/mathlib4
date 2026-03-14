@@ -428,8 +428,7 @@ noncomputable def HoCat.adj :
   left_triangle_components X := by
     obtain ⟨X, rfl⟩ := toHoCat_obj_surjective X
     obtain ⟨X, _, rfl⟩ := CofibrantObject.mk_surjective X
-    rw [← cancel_mono (HoCat.adjCounitIso.inv.app _), Category.assoc]
-    erw [Iso.hom_inv_id_app]
+    rw [← cancel_mono (HoCat.adjCounitIso.inv.app _), Category.assoc, Iso.hom_inv_id_app]
     apply bifibrantResolutionObj_hom_ext
     dsimp
     simp only [HoCat.adjCounitIso_inv_app, Category.comp_id, Category.id_comp,
@@ -438,8 +437,7 @@ noncomputable def HoCat.adj :
   right_triangle_components X := by
     obtain ⟨X, rfl⟩ := BifibrantObject.toHoCat_obj_surjective X
     rw [← cancel_mono (BifibrantObject.HoCat.ιCofibrantObject.map (HoCat.adjCounitIso.inv.app _)),
-      Category.assoc, ← Functor.map_comp]
-    erw [Iso.hom_inv_id_app]
+      Category.assoc, ← Functor.map_comp, Iso.hom_inv_id_app]
     cat_disch
 
 instance : IsIso (HoCat.adj (C := C)).counit := by

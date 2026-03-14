@@ -105,7 +105,7 @@ hom set equivalence.
 
 To construct adjoints to a given functor, there are constructors `leftAdjointOfEquiv` and
 `adjunctionOfEquivLeft` (as well as their duals). -/
-@[stacks 0037, to_dual self (reorder := C D, 2 4, F G)]
+@[stacks 0037]
 structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction -/
   unit : 𝟭 C ⟶ F.comp G
@@ -113,16 +113,10 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   counit : G.comp F ⟶ 𝟭 D
   /-- Equality of the composition of the unit and counit with the identity `F ⟶ FGF ⟶ F = 𝟙` -/
   left_triangle_components (X : C) :
-    dsimp% F.map (unit.app X) ≫ counit.app (F.obj X) = 𝟙 (F.obj X) := by cat_disch
+      F.map (unit.app X) ≫ counit.app (F.obj X) = 𝟙 (F.obj X) := by cat_disch
   /-- Equality of the composition of the unit and counit with the identity `G ⟶ GFG ⟶ G = 𝟙` -/
   right_triangle_components (Y : D) :
-    dsimp% unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
-
-set_option linter.translateOverwrite false
-
-set_option linter.translateGenerateName false in
-attribute [to_dual existing counit] Adjunction.unit
-attribute [to_dual existing right_triangle_components] Adjunction.left_triangle_components
+      unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
 
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction
@@ -134,7 +128,6 @@ class IsLeftAdjoint (left : C ⥤ D) : Prop where
   exists_rightAdjoint : ∃ (right : D ⥤ C), Nonempty (left ⊣ right)
 
 /-- A class asserting the existence of a left adjoint. -/
-@[to_dual IsLeftAdjoint]
 class IsRightAdjoint (right : D ⥤ C) : Prop where
   exists_leftAdjoint : ∃ (left : C ⥤ D), Nonempty (left ⊣ right)
 
