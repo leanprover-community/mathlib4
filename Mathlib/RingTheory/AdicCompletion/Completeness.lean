@@ -55,10 +55,10 @@ def ofPowSmul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
 
 theorem ofPowSmul_val_apply {a b c : ℕ} (h : c = b + a)
     {x : AdicCompletion I ↥(I ^ a • ⊤ : Submodule R M)} : (ofPowSmul I M a x).val c =
-      powSmulQuotInclusion I M h ⊤ (x.val b) := by
+      powSMulQuotInclusion I M h ⊤ (x.val b) := by
   rw [← x.prop (show b ≤ c by lia), ofPowSmul, map_val_apply]
   refine Quotient.induction_on _ (x.val c) fun z ↦ ?_
-  simp [powSmulQuotInclusion]
+  simp [powSMulQuotInclusion]
 
 theorem ofPowSmul_val_apply_eq_zero {n i : ℕ} (h : i ≤ n)
     {x : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)} : (ofPowSmul I M n x).val i = 0 := by
@@ -72,12 +72,12 @@ theorem ofPowSmul_injective (n : ℕ) : Function.Injective (ofPowSmul I M n) := 
   simp only [AdicCompletion.ext_iff, val_zero, Pi.zero_apply] at hx
   specialize hx (i + n)
   rw [ofPowSmul_val_apply I (by rw [add_comm]),
-    LinearMap.map_eq_zero_iff _ (powSmulQuotInclusion_injective ..)] at hx
+    LinearMap.map_eq_zero_iff _ (powSMulQuotInclusion_injective ..)] at hx
   simp [hx]
 
 private lemma liftOfValZeroAux_exists {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a)
-    (ha : x.val a = 0) : ∃ t, powSmulQuotInclusion I M h ⊤ t = x.val c := by
-  simpa [← LinearMap.mem_range, powSmulQuotInclusion_range] using
+    (ha : x.val a = 0) : ∃ t, powSMulQuotInclusion I M h ⊤ t = x.val c := by
+  simpa [← LinearMap.mem_range, range_powSMulQuotInclusion] using
     (val_apply_mem_smul_top_iff I (show a ≤ c by lia)).mpr ha
 
 /-- An auxillary lift function used in the definition of `liftOfValZero`.
@@ -87,7 +87,7 @@ def liftOfValZeroAux {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a) (ha 
   Exists.choose (liftOfValZeroAux_exists I h ha)
 
 private lemma liftOfValZeroAux_prop {a b c : ℕ} {x : AdicCompletion I M} (h : c = b + a)
-    (ha : x.val a = 0) : (powSmulQuotInclusion I M h ⊤) (liftOfValZeroAux I h ha) = x.val c :=
+    (ha : x.val a = 0) : (powSMulQuotInclusion I M h ⊤) (liftOfValZeroAux I h ha) = x.val c :=
   Exists.choose_spec (liftOfValZeroAux_exists I h ha)
 
 /-- Given an element `x` in the adic completion of `M` whose projection to `M / I ^ n • M` is zero,
@@ -98,8 +98,8 @@ def liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
   val i := liftOfValZeroAux I (Eq.refl (i + n)) hxn
   property {i j} h := by
     obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
-    rw [← (powSmulQuotInclusion_injective I (by rfl) ⊤).eq_iff, liftOfValZeroAux_prop,
-      ← LinearMap.comp_apply, ← factorPow_powSmulQuotInclusion_comm I (by rfl)
+    rw [← (powSMulQuotInclusion_injective I (by rfl) ⊤).eq_iff, liftOfValZeroAux_prop,
+      ← LinearMap.comp_apply, ← factorPow_comp_powSMulQuotInclusion I (by rfl)
       (show i + k + n = k + (i + n) by ring), LinearMap.comp_apply, liftOfValZeroAux_prop]
     exact x.prop (by lia)
 
