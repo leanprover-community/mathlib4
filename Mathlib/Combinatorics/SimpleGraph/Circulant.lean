@@ -138,12 +138,12 @@ theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   (pathGraph_connected n).mono pathGraph_le_cycleGraph
 
 set_option backward.privateInPublic true in
-private def cycleGraph.cycle_cons (n : ℕ) : ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
+private def cycleGraph.cycleCons (n : ℕ) : ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
   | ⟨0, h⟩ => Walk.nil
   | ⟨m + 1, h⟩ =>
     have hadj : (cycleGraph (n + 3)).Adj ⟨m + 1, h⟩ ⟨m, Nat.lt_of_succ_lt h⟩ := by
       simp [cycleGraph_adj, Fin.ext_iff, Fin.sub_val_of_le]
-    Walk.cons hadj (cycleGraph.cycle_cons n ⟨m, Nat.lt_of_succ_lt h⟩)
+    Walk.cons hadj (cycleGraph.cycleCons n ⟨m, Nat.lt_of_succ_lt h⟩)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -151,26 +151,26 @@ set_option backward.privateInPublic.warn false in
 def cycleGraph.cycle (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
   have hadj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by
     simp [cycleGraph_adj]
-  Walk.cons hadj (cycleGraph.cycle_cons n (Fin.last (n + 2)))
+  Walk.cons hadj (cycleGraph.cycleCons n (Fin.last (n + 2)))
 
 @[deprecated (since := "2026-02-15")]
 alias cycleGraph_EulerianCircuit := cycleGraph.cycle
 
-private theorem cycleGraph.cycle_cons_length (n : ℕ) :
-    ∀ m : Fin (n + 3), (cycleGraph.cycle_cons n m).length = m.val
+private theorem cycleGraph.length_cycle_cons (n : ℕ) :
+    ∀ m : Fin (n + 3), (cycleGraph.cycleCons n m).length = m.val
   | ⟨0, h⟩ => by
-    unfold cycleGraph.cycle_cons
+    unfold cycleGraph.cycleCons
     rfl
   | ⟨m + 1, h⟩ => by
-    unfold cycleGraph.cycle_cons
+    unfold cycleGraph.cycleCons
     simp only [Walk.length_cons]
-    rw [cycleGraph.cycle_cons_length n]
+    rw [cycleGraph.length_cycle_cons n]
 
-theorem cycleGraph.cycle_length {n : ℕ} : (cycleGraph.cycle n).length = n + 3 := by
+theorem cycleGraph.length_cycle {n : ℕ} : (cycleGraph.cycle n).length = n + 3 := by
   unfold cycleGraph.cycle
-  simp [cycleGraph.cycle_cons_length]
+  simp [cycleGraph.length_cycle_cons]
 
 @[deprecated (since := "2026-02-15")]
-alias cycleGraph_EulerianCircuit_length := cycleGraph.cycle_length
+alias cycleGraph_EulerianCircuit_length := cycleGraph.length_cycle
 
 end SimpleGraph
