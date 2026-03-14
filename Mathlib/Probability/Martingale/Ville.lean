@@ -34,8 +34,6 @@ nonnegative supermartingales in terms of their initial expectation.
 * Williams, D. (1991). *Probability with Martingales*.
   Cambridge University Press, §10.9.
 -/
-
-
 @[expose] public section
 noncomputable section
 
