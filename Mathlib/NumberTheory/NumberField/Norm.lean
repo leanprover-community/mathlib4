@@ -82,8 +82,7 @@ theorem isUnit_norm_of_isGalois [FiniteDimensional K L] [IsGalois K L] {x : 𝓞
   ext
   convert_to ((univ \ {AlgEquiv.refl}).prod fun σ : Gal(L/K) => σ x) *
     ∏ σ ∈ {(AlgEquiv.refl : Gal(L/K))}, σ x = _
-  · rw [prod_singleton, AlgEquiv.coe_refl, _root_.id, RingOfIntegers.coe_eq_algebraMap, map_mul,
-      RingOfIntegers.map_mk]
+  · simp
   · rw [prod_sdiff <| subset_univ _, ← norm_eq_prod_automorphisms, coe_algebraMap_norm]
 
 /-- If `L/K` is a finite Galois extension of fields, then, for all `(x : 𝓞 L)` we have that
