@@ -582,8 +582,8 @@ theorem compMeasurePreserving_id (g : Lp E p μb) :
 theorem compMeasurePreserving_compMeasurePreserving {γ : Type*} [MeasurableSpace γ]
     {μc : Measure γ} (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc)
     {f' : α → β} (hf' : MeasurePreserving f' μ μb) :
-    ((compMeasurePreserving f' hf')∘(compMeasurePreserving f hf)) g =
-    (compMeasurePreserving (f∘f') (MeasurePreserving.comp hf hf')) g := by
+    ((compMeasurePreserving f' hf') ∘ (compMeasurePreserving f hf)) g =
+    (compMeasurePreserving (f ∘ f') (hf.comp hf')) g := by
   rw [Function.comp_apply]
   apply Subtype.ext
   repeat rw [compMeasurePreserving_val]
