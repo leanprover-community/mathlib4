@@ -146,11 +146,14 @@ lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
   obtain ⟨φ, rfl⟩ := Ext.homEquiv₀.symm.surjective φ
   exact ⟨φ, Ext.homEquiv₀.symm.injective (by simpa using hφ)⟩
 
-lemma projective_iff_hasProjectiveDimensionLT_one (X : C) :
+lemma projective_iff_hasProjectiveDimensionLT_one :
     Projective X ↔ HasProjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ projective_iff_subsingleton_ext_one.2
     (HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
+
+instance [HasProjectiveDimensionLT X 1] : Projective X :=
+  (projective_iff_hasProjectiveDimensionLT_one X).mpr ‹_›
 
 end
 
@@ -164,6 +167,10 @@ lemma Retract.hasProjectiveDimensionLT {X Y : C} (h : Retract X Y) (n : ℕ)
     Ext.comp_assoc_of_second_deg_zero,
     ((Ext.mk₀ h.r).comp x (zero_add i)).eq_zero_of_hasProjectiveDimensionLT n hi,
     Ext.comp_zero]
+
+lemma Retract.projective {X Y : C} (h : Retract X Y) [Projective Y] : Projective X := by
+  rw [projective_iff_hasProjectiveDimensionLT_one]
+  apply h.hasProjectiveDimensionLT
 
 lemma hasProjectiveDimensionLT_of_iso {X X' : C} (e : X ≅ X') (n : ℕ)
     [HasProjectiveDimensionLT X n] :
