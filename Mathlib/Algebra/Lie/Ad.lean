@@ -71,16 +71,14 @@ private lemma aeval_mulRight_apply
     simp only [aeval_monomial, ← Algebra.smul_def, LinearMap.smul_apply,
       mul_smul_comm, LinearMap.pow_mulRight, LinearMap.mulRight_apply]
 
-private theorem isSemisimple_mulLeft_of_isSemisimple
-    {a : Module.End K V} (ha : a.IsSemisimple) :
+private theorem isSemisimple_mulLeft_of_isSemisimple {a : Module.End K V} (ha : a.IsSemisimple) :
     Module.End.IsSemisimple (LinearMap.mulLeft K a) := by
   apply Module.End.isSemisimple_of_squarefree_aeval_eq_zero ha.minpoly_squarefree
   have : Polynomial.aeval (Algebra.lmul K (Module.End K V) a) (minpoly K a) = 0 := by
     rw [Polynomial.aeval_algHom_apply, minpoly.aeval, map_zero]
   simpa using this
 
-private theorem isSemisimple_mulRight_of_isSemisimple
-    {a : Module.End K V} (ha : a.IsSemisimple) :
+private theorem isSemisimple_mulRight_of_isSemisimple {a : Module.End K V} (ha : a.IsSemisimple) :
     Module.End.IsSemisimple (LinearMap.mulRight K a) := by
   apply Module.End.isSemisimple_of_squarefree_aeval_eq_zero ha.minpoly_squarefree
   ext T
