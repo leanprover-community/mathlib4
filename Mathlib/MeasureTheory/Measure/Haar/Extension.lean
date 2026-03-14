@@ -53,7 +53,7 @@ noncomputable abbrev pullback (f : CompactlySupportedContinuousMap B E) (b : B) 
   f.pullback_monoidHom H.isClosedEmbedding b
 
 @[to_additive]
-abbrev pullback_def (f : CompactlySupportedContinuousMap B E) (b : B) (a : A) :
+theorem pullback_def (f : CompactlySupportedContinuousMap B E) (b : B) (a : A) :
     pullback H f b a = f (b * φ a) :=
   f.pullback_monoidHom_def H.isClosedEmbedding b a
 
