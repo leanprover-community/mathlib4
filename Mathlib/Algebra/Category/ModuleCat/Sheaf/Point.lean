@@ -29,7 +29,7 @@ and a colimit cocone `c` for the diagram which computes the fiber of `R`, this i
 the fiber functor `SheafOfModules R ⥤ ModuleCat c.pt` for sheaves
 of modules. -/
 noncomputable abbrev sheafOfModulesFiberOfIsColimit
-    {R : Sheaf J RingCat.{w}} {c : Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ R.val)}
+    {R : Sheaf J RingCat.{w}} {c : Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ R.obj)}
     (hc : IsColimit c) : SheafOfModules.{w} R ⥤ ModuleCat c.pt :=
   SheafOfModules.forget R ⋙ Φ.presheafOfModulesFiberOfIsColimit hc
 
@@ -37,15 +37,15 @@ noncomputable abbrev sheafOfModulesFiberOfIsColimit
 that is induced by a point of a site. In case `R` is commutative,
 it is advisable to use `sheafOfModulesFiber` instead. -/
 noncomputable abbrev sheafOfModulesFiberOfRing (R : Sheaf J RingCat.{w}) :
-    SheafOfModules.{w} R ⥤ ModuleCat.{w} (Φ.presheafFiber.obj R.val :) :=
-  SheafOfModules.forget R ⋙ Φ.presheafOfModulesFiberOfRing R.val
+    SheafOfModules.{w} R ⥤ ModuleCat.{w} (Φ.presheafFiber.obj R.obj :) :=
+  SheafOfModules.forget R ⋙ Φ.presheafOfModulesFiberOfRing R.obj
 
 /-- The fiber functor for sheaves of modules over a sheaf of
 commutative rings `R` that is induced by a point of a site. -/
 noncomputable def sheafOfModulesFiber
     [J.HasSheafCompose (forget₂ CommRingCat.{w} RingCat)] (R : Sheaf J CommRingCat.{w}) :
     SheafOfModules.{w} ((sheafCompose J (forget₂ CommRingCat.{w} RingCat.{w})).obj R) ⥤
-      ModuleCat.{w} (Φ.presheafFiber.obj R.val :) :=
-  SheafOfModules.forget _ ⋙ Φ.presheafOfModulesFiber R.val
+      ModuleCat.{w} (Φ.presheafFiber.obj R.obj :) :=
+  SheafOfModules.forget _ ⋙ Φ.presheafOfModulesFiber R.obj
 
 end CategoryTheory.GrothendieckTopology.Point
