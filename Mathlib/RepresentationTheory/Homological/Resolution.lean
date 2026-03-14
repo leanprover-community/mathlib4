@@ -206,28 +206,23 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
     Projective ((standardComplex k G).X n) := by
   classical exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
-#print "fix this proof"
+unif_hint where ⊢ Action.V (Action.ofMulAction G (Fin (n + 1) → G)) ≟ Fin (n + 1) → G in
 set_option backward.isDefEq.respectTransparency false in
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom.toLinearMap =
     d k G (n + 1) := by
   refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp only [standardComplex, alternatingFaceMapComplex_obj_X, Functor.comp_obj,
-    classifyingSpaceUniversalCover_obj, SimplexCategory.len_mk, Action.ofMulAction_V,
-    alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, Int.reduceNeg,
-    SimplicialObject.δ, SimplexCategory.δ, SimplexCategory.mkHom, Fin.succAboveOrderEmb,
-    Functor.comp_map, classifyingSpaceUniversalCover_map, Quiver.Hom.unop_op,
-    SimplexCategory.Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_coe,
-    OrderEmbedding.coe_ofStrictMono, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), Int.cast_pow,
-    Int.cast_neg, Int.cast_one, ← ofHom_smul, ← ofHom_sum, hom_ofHom, LinearMap.coe_comp,
-    Representation.IntertwiningMap.coe_toLinearMap, Function.comp_apply, lsingle_apply, d_of]
-  rw [← Representation.IntertwiningMap.toLinearMap_apply,
-    Representation.IntertwiningMap.toLinearMap_sum]
-  simp_rw [Representation.IntertwiningMap.toLinearMap_smul, LinearMap.sum_apply,
-    LinearMap.smul_apply, Representation.IntertwiningMap.toLinearMap_apply]
-  conv_lhs => enter [2, y, 2]; tactic => convert Representation.linearizeMap_single _ _ _
-  simp
+  simp [standardComplex, Action.ofMulAction_V, SimplicialObject.δ, SimplexCategory.δ,
+    Fin.succAboveOrderEmb, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), ← ofHom_smul, ← ofHom_sum,
+    Representation.IntertwiningMap.coe_toLinearMap, Representation.IntertwiningMap.sum_apply,
+    Representation.IntertwiningMap.smul_apply, Representation.linearizeMap_single _, smul_single,
+    smul_eq_mul, mul_one]
+
+lemma d_apply {n : ℕ} (f : (Fin (n + 1 + 1) → G) →₀ k) :
+    ((standardComplex k G).d (n + 1) n).hom f = d k G (n + 1) f := by
+  rw [← Representation.IntertwiningMap.toLinearMap_apply, d_eq]
+  with_reducible_and_instances congr -- what's wrong here?
 
 section Exactness
 
@@ -355,51 +350,28 @@ lemma d_single (x : Gⁿ⁺¹) :
         single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
   simp [d, ← Representation.IntertwiningMap.toLinearMap_apply]
 
-unif_hint (X : Type*) where ⊢ Action.V (Action.trivial G X) ≟ X
-open MonoidalCategory in
-unif_hint (X Y : Action (Type w) G) where ⊢ (X ⊗ Y).V ≟ X.V ⊗ Y.V
-
-open MonoidalCategory in
-unif_hint (X Y : Type w) where ⊢ X ⊗ Y ≟ X × Y
-
-open MonoidalCategory in
+unif_hint (X : Type*) where ⊢ Action.V (Action.trivial G X) ≟ X in
+unif_hint where ⊢ (HomologicalComplex.X (standardComplex k G) n).V ≟ ((Fin (n + 1) → G) →₀ k) in
 set_option backward.isDefEq.respectTransparency false in
 lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
   free_ext k G _ _ _ fun i ↦ by
-    simp only [Iso.trans_assoc, Action.tensorObj_V, Action.trivial_V, linearizationTrivialIso,
-      leftRegularTensorTrivialIsoFree, Iso.trans_inv, tensorIso_inv, Iso.symm_inv,
-      Functor.Monoidal.μIso_hom, Category.assoc, Functor.mapIso_inv, hom_comp, tensor_V, tensor_ρ,
-      hom_ofHom, μ_hom, hom_tensorHom, Representation.IntertwiningMap.comp_apply, d_single (k := k),
-      Rep.mkIso_inv_hom_apply _, map_add,
-      Representation.leftRegularTensorTrivialIsoFree_symm_apply_single_single, map_sum,
-      Representation.IntertwiningMap.tensor_apply,
-      Representation.linearizeOfMulActionIso_symm_apply,
-      Representation.linearizeTrivialIso_symm_apply _]
-    change _ = ((standardComplex k G).d (n + 1) n).hom.toLinearMap _
-    rw [d_eq]
-    erw [Representation.LinearizeMonoidal.μ_apply_single_single,
-      Representation.LinearizeMonoidal.μ_apply_single_single]
-    simp only [mul_one, types_tensorObj_def]
-    conv_rhs =>
-      enter [2, 2]; tactic => convert Representation.linearizeMap_single _ _ _
-    simp only [Action.trivial_V]
-    conv_rhs => enter [2, 2, 1]; rw [Action.diagonalSuccIsoTensorTrivial_inv_hom_apply, one_smul]
-    change _ = standardComplex.d k G (n + 1) (Finsupp.single _ _)
-    rw [d_of]
-    conv_lhs =>
-      enter [2, 2, x]
-      erw [Representation.LinearizeMonoidal.μ_apply_single_single,
-        Representation.linearizeMap_single]
-      rw [Action.diagonalSuccIsoTensorTrivial_inv_hom_apply, one_mul, one_smul]
-    erw [Representation.linearizeMap_single]
-    rw [Action.diagonalSuccIsoTensorTrivial_inv_hom_apply]
-    simp only [Fin.partialProd_contractNth, Fin.sum_univ_succ, Fin.succ_zero_eq_one,
-      Fin.coe_ofNat_eq_mod, Nat.zero_mod, zero_add, pow_one, single_neg, Fin.val_succ,
-      Fin.succAbove_zero, pow_zero, add_left_inj]
-    congr
-    exact funext fun j ↦ Fin.partialProd_succ' i j|>.symm
+    have eq1 (m : ℕ) (g : G) (r s : k) (f : Fin m → G) :=
+      Representation.LinearizeMonoidal.μ_apply_single_single
+      (X := Action.leftRegular G) (Y := Action.trivial G (Fin m → G)) g f r s
+    have eq2 (m : ℕ) (g : G) (f : Fin m → G) (r : k) :=
+      Representation.linearizeMap_single (Action.diagonalSuccIsoTensorTrivial G m).inv (g, f) r
+    simp only [Action.tensorObj_V, Action.trivial_V] at eq1 eq2
+    simp [linearizationTrivialIso, leftRegularTensorTrivialIsoFree, μ_hom, d_single (k := k),
+      Rep.mkIso_inv_hom_apply _, Representation.linearizeOfMulActionIso_symm_apply,
+      Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k),
+      eq1, types_tensorObj_def, eq2, Action.diagonalSuccIsoTensorTrivial_inv_hom_apply _,
+      Representation.linearizeOfMulActionIso_symm_apply (G := G) (H := Fin _ → G) _]
+    simp [Fin.partialProd_contractNth, Fin.sum_univ_succ, Action.ofMulAction_V,
+      show single (i 0 • Fin.partialProd fun i_1 ↦ i i_1.succ) (1 : k) =
+      single (Fin.partialProd i ∘ Fin.succ) 1 by
+        congr; exact funext fun j ↦ Fin.partialProd_succ' i j|>.symm]
 
 end barComplex
 

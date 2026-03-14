@@ -119,6 +119,10 @@ lemma toLinearMap_sum {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap �
   | empty => simp
   | insert i s hi ih => simp [Finset.sum_insert hi, ih]
 
+lemma sum_apply {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) (v : V) :
+    (∑ i ∈ s, f i) v = ∑ i ∈ s, f i v := by
+  simp [← toLinearMap_apply _ _ (∑ _ ∈ s, _), toLinearMap_sum, LinearMap.sum_apply]
+
 section group
 
 variable {V W P : Type*} [AddCommMonoid V] [AddCommGroup W]
@@ -368,6 +372,9 @@ instance : SMul A (IntertwiningMap ρ σ) :=
 @[simp]
 lemma toLinearMap_smul (a : A) (f : IntertwiningMap ρ σ) :
     (a • f).toLinearMap = a • f.toLinearMap := rfl
+
+lemma smul_apply (a : A) (f : IntertwiningMap ρ σ) (v : V) :
+    (a • f) v = a • f v := rfl
 
 instance : Module A (IntertwiningMap ρ σ) :=
   fast_instance%
