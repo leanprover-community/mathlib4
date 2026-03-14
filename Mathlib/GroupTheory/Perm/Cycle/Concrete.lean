@@ -434,7 +434,6 @@ section Finite
 
 variable [Finite α] [DecidableEq α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
     ∃! s : Cycle α, ∃ h : s.Nodup, s.formPerm h = f := by
   cases nonempty_fintype α

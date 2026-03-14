@@ -275,7 +275,6 @@ theorem toMeasure_sum {ι : Type*} {s : Finset ι} {ν : ι → FiniteMeasure Ω
     ↑(∑ i ∈ s, ν i) = ∑ i ∈ s, (ν i : Measure Ω) :=
   map_sum toMeasureAddMonoidHom _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
   Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
 
@@ -315,7 +314,6 @@ lemma restrict_union {μ : FiniteMeasure Ω} {s t : Set Ω} (h : Disjoint s t) (
   ext u hu
   simp [Measure.restrict_union h ht]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset ι}
     {s : ι → Set Ω} (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = ∑ i ∈ T, μ.restrict (s i) := by

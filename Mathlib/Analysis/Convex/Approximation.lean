@@ -15,7 +15,8 @@ import Mathlib.Topology.Semicontinuity.Lindelof
 # Approximation to convex functions
 
 In this file we show that a convex lower-semicontinuous function is the upper envelope of a family
-of continuous affine linear functions. We follow the proof in [Bou87].
+of continuous affine linear functions. We follow the proof in
+[N. Bourbaki, *Topological vector spaces*, Chapter II, §5][bourbaki1987].
 
 ## Main Statement
 
@@ -40,17 +41,17 @@ variable {𝕜 E F : Type*} {s : Set E} {φ : E → ℝ} [RCLike 𝕜]
 theorem convex_re_epigraph [AddCommMonoid E] [Module ℝ E] (hφcv : ConvexOn ℝ s φ) :
     Convex ℝ { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 } := by
   have lem : { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 } =
-    ((LinearMap.id : E →ₗ[ℝ] E).prodMap reLm)⁻¹' { p : E × ℝ | p.1 ∈ s ∧ φ p.1 ≤ p.2 } := by simp
+    ((LinearMap.id : E →ₗ[ℝ] E).prodMap reLm) ⁻¹' { p : E × ℝ | p.1 ∈ s ∧ φ p.1 ≤ p.2 } := by simp
   exact lem ▸ hφcv.convex_epigraph.linear_preimage _
 
 variable [TopologicalSpace E]
 
 theorem _root_.LowerSemicontinuousOn.isClosed_re_epigraph (hsc : IsClosed s)
     (hφ_cont : LowerSemicontinuousOn φ s) :
-    IsClosed  { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 } := by
+    IsClosed { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 } := by
   let A := { p : E × EReal | p.1 ∈ s ∧ φ p.1 ≤ p.2 }
   have hC : { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 }
-    = (Prod.map id ((Real.toEReal ∘ re) : 𝕜 → EReal))⁻¹' A := by simp [A]
+    = (Prod.map id ((Real.toEReal ∘ re) : 𝕜 → EReal)) ⁻¹' A := by simp [A]
   refine hC.symm ▸ IsClosed.preimage ?_ ?_
   · exact continuous_id.prodMap <| continuous_coe_real_ereal.comp reCLM.cont
   · exact (lowerSemicontinuousOn_iff_isClosed_epigraph hsc).1
@@ -202,7 +203,7 @@ theorem univ_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E]
     ∃ (l : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ), ⨆ i, re ∘ (l i) + const E (c i) = φ := by
   obtain ⟨𝓕', h𝓕'⟩ := hφcv.univ_sSup_of_countable_affine_eq (𝕜 := 𝕜) hφc
   by_cases! he : 𝓕'.Nonempty
-  · obtain ⟨f, hf⟩ := h𝓕'.1.exists_eq_range  he
+  · obtain ⟨f, hf⟩ := h𝓕'.1.exists_eq_range he
     have (i : ℕ) : ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f i = re ∘ l + const E c := by simp_all
     choose l c hlc using this
     refine ⟨l, c, ?_⟩

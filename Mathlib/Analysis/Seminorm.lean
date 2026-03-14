@@ -80,7 +80,6 @@ def Seminorm.of [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E �
   smul' := smul
   neg' x := by rw [← neg_one_smul 𝕜, smul, norm_neg, ← smul, one_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative constructor for a `Seminorm` over a normed field `𝕜` that only assumes `f 0 = 0`
 and an inequality for the scalar multiplication. -/
 def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ) (map_zero : f 0 = 0)
@@ -337,7 +336,6 @@ theorem coe_bot : ⇑(⊥ : Seminorm 𝕜 E) = 0 :=
 theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
@@ -365,7 +363,6 @@ theorem zero_or_exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) (s : Fin
   · left; rfl
   · right; exact exists_apply_eq_finset_sup p hs x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥0) :
     s.sup (C • p) = C • s.sup p := by
   ext x
@@ -411,7 +408,6 @@ variable [SeminormedRing 𝕜] [SeminormedCommRing 𝕜₂]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comp_smul (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) :
     p.comp (c • f) = ‖c‖₊ • p.comp f :=
   ext fun _ => by
@@ -661,14 +657,12 @@ theorem ball_zero' (x : E) (hr : 0 < r) : ball (0 : Seminorm 𝕜 E) x r = Set.u
 theorem closedBall_zero' (x : E) (hr : 0 < r) : closedBall (0 : Seminorm 𝕜 E) x r = Set.univ :=
   eq_univ_of_subset (ball_subset_closedBall _ _ _) (ball_zero' x hr)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ) (x : E) :
     (c • p).ball x r = p.ball x (r / c) := by
   ext
   rw [mem_ball, mem_ball, smul_apply, NNReal.smul_def, smul_eq_mul, mul_comm,
     lt_div_iff₀ (NNReal.coe_pos.mpr hc)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ) (x : E) :
     (c • p).closedBall x r = p.closedBall x (r / c) := by
   ext
@@ -728,15 +722,29 @@ theorem sub_mem_closedBall (p : Seminorm 𝕜 E) (x₁ x₂ y : E) (r : ℝ) :
     x₁ - x₂ ∈ p.closedBall y r ↔ x₁ ∈ p.closedBall (x₂ + y) r := by
   simp_rw [mem_closedBall, sub_sub]
 
+lemma ball_eq_metric :
+    letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+    p.ball x r = Metric.ball x r := by
+  ext
+  simp only [mem_ball_iff_norm]
+  rfl
+
+lemma closedBall_eq_metric :
+    letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+    p.closedBall x r = Metric.closedBall x r := by
+  ext
+  simp only [mem_closedBall_iff_norm]
+  rfl
+
 /-- The image of a ball under addition with a singleton is another ball. -/
-theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r :=
+theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r := by
   letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
-  Metric.vadd_ball x y r
+  simp [ball_eq_metric]
 
 /-- The image of a closed ball under addition with a singleton is another closed ball. -/
-theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r :=
+theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r := by
   letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
-  Metric.vadd_closedBall x y r
+  simp [closedBall_eq_metric]
 
 end SMul
 
@@ -758,12 +766,10 @@ theorem closedBall_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E
 
 variable (p : Seminorm 𝕜 E)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preimage_metric_ball {r : ℝ} : p ⁻¹' Metric.ball 0 r = { x | p x < r } := by
   ext x
   simp only [mem_setOf, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preimage_metric_closedBall {r : ℝ} : p ⁻¹' Metric.closedBall 0 r = { x | p x ≤ r } := by
   ext x
   simp only [mem_setOf, mem_preimage, mem_closedBall_zero_iff,
@@ -815,13 +821,11 @@ theorem closedBall_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset
   simp_rw [closedBall, iInter_setOf, finset_sup_apply, NNReal.coe_le_coe, Finset.sup_le_iff, ←
     NNReal.coe_le_coe, NNReal.coe_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 < r) :
     ball (s.sup p) x r = s.inf fun i => ball (p i) x r := by
   rw [Finset.inf_eq_iInf]
   exact ball_finset_sup_eq_iInter _ _ _ hr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     closedBall (s.sup p) x r = s.inf fun i => closedBall (p i) x r := by
   rw [Finset.inf_eq_iInf]
@@ -840,7 +844,6 @@ theorem closedBall_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r <
   rw [Seminorm.mem_closedBall, Set.mem_empty_iff_false, iff_false, not_le]
   exact hr.trans_le (apply_nonneg _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_smul_ball (p : Seminorm 𝕜 E) {r₁ : ℝ} (hr₁ : r₁ ≠ 0) (r₂ : ℝ) :
     Metric.closedBall (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
   simp only [smul_subset_iff, mem_ball_zero, mem_closedBall_zero_iff, map_smul_eq_mul]
@@ -906,7 +909,6 @@ theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove
     have := Seminorm.bddAbove_range_iff.mp hp (x - e)
     simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r := by
   rcases eq_or_ne k 0 with (rfl | hk)
@@ -1191,7 +1193,7 @@ lemma uniformSpace_eq_of_hasBasis
     suffices Continuous p from this.tendsto' 0 _ (map_zero p)
     rcases h₁ with ⟨r, hr⟩
     exact p.continuous' hr
-  · rw [(@NormedAddCommGroup.nhds_zero_basis_norm_lt E
+  · rw [(@NormedAddGroup.nhds_zero_basis_norm_lt E
       p.toAddGroupSeminorm.toSeminormedAddGroup).le_basis_iff hb]
     simpa only [subset_def, mem_ball_zero] using h₂
 
@@ -1200,7 +1202,9 @@ lemma uniformity_eq_of_hasBasis
     {p' : ι → Prop} {s : ι → Set E} (p : Seminorm 𝕜 E) (hb : (𝓝 0 : Filter E).HasBasis p' s)
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
     𝓤 E = ⨅ r > 0, 𝓟 {x | p (x.1 - x.2) < r} := by
-  rw [uniformSpace_eq_of_hasBasis p hb h₁ h₂]; rfl
+  rw [uniformSpace_eq_of_hasBasis p hb h₁ h₂]
+  simp only [sub_eq_add_neg, ← map_neg_add p]
+  rfl
 
 end Continuity
 
@@ -1245,7 +1249,6 @@ lemma rescale_to_shell (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) {ε :
     ∃ d : 𝕜, d ≠ 0 ∧ p (d • x) < ε ∧ (ε / ‖c‖ ≤ p (d • x)) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x) :=
 let ⟨_, hn⟩ := p.rescale_to_shell_zpow hc εpos hx; ⟨_, hn⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `p` and `q` be two seminorms on a vector space over a `NontriviallyNormedField`.
 If we have `q x ≤ C * p x` on some shell of the form `{x | ε/‖c‖ ≤ p x < ε}` (where `ε > 0`
 and `‖c‖ > 1`), then we also have `q x ≤ C * p x` for all `x` such that `p x ≠ 0`. -/
@@ -1257,7 +1260,6 @@ lemma bound_of_shell
   simpa only [map_smul_eq_mul, mul_left_comm C, mul_le_mul_iff_right₀ (norm_pos_iff.2 hδ)]
     using hf (δ • x) leδx δxle
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of `Seminorm.bound_of_shell` expressed using pointwise scalar multiplication of
 seminorms. -/
 lemma bound_of_shell_smul
@@ -1266,7 +1268,6 @@ lemma bound_of_shell_smul
     q x ≤ (C • p) x :=
   Seminorm.bound_of_shell p q ε_pos hc hf hx
 
-set_option backward.isDefEq.respectTransparency false in
 lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
     (q : Seminorm 𝕜 E) {ε : ℝ} {C : ℝ≥0} (ε_pos : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
     (hf : ∀ x, (∀ i ∈ s, p i x < ε) → ∀ j ∈ s, ε / ‖c‖ ≤ p j x → q x ≤ (C • p j) x)

@@ -33,11 +33,18 @@ open Function
 namespace Set
 variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
+/- In #35959, to make sure that the defeq abuse between `α → Prop` and `Set α` does not leak from
+`inferInstanceAs (BooleanAlgebra (α → Prop))`, we define explicitly the data fields. This could be
+avoided by using a better elaborator `inferInstanceAs%` fixing the defeqs. -/
 instance instBooleanAlgebra : BooleanAlgebra (Set α) where
   __ : DistribLattice (Set α) := inferInstance
-  __ : BooleanAlgebra (α → Prop) := inferInstance
+  __ : BooleanAlgebra (Set α) := inferInstanceAs (BooleanAlgebra (α → Prop))
   compl := (·ᶜ)
   sdiff := (· \ ·)
+  top := univ
+  bot := ∅
+  himp s t := {x | x ∈ s → x ∈ t}
+  himp_eq s t := by ext; simp [imp_iff_or_not]
 
 /-- See also `Set.sdiff_inter_right_comm`. -/
 lemma inter_diff_assoc (a b c : Set α) : (a ∩ b) \ c = a ∩ (b \ c) := inf_sdiff_assoc ..
@@ -374,7 +381,6 @@ lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.sy
 lemma disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) : Disjoint s t ↔ s = ∅ :=
   disjoint_of_le_iff_left_eq_bot h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
   sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
@@ -420,7 +426,6 @@ lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_notMem⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma diff_singleton_eq_self (h : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [h]
@@ -484,7 +489,6 @@ theorem ite_same (t s : Set α) : t.ite s s = s :=
 @[simp]
 theorem ite_left (s t : Set α) : s.ite s t = s ∪ t := by simp [Set.ite]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ite_right (s t : Set α) : s.ite t s = t ∩ s := by simp [Set.ite]
 
@@ -502,7 +506,7 @@ theorem ite_empty_right (t s : Set α) : t.ite s ∅ = s ∩ t := by simp [Set.i
 
 theorem ite_mono (t : Set α) {s₁ s₁' s₂ s₂' : Set α} (h : s₁ ⊆ s₂) (h' : s₁' ⊆ s₂') :
     t.ite s₁ s₁' ⊆ t.ite s₂ s₂' :=
-  union_subset_union (inter_subset_inter_left _ h) (inter_subset_inter_left _ h')
+  union_subset_union (inter_subset_inter_left _ h) (diff_subset_diff_left h')
 
 theorem ite_subset_union (t s s' : Set α) : t.ite s s' ⊆ s ∪ s' :=
   union_subset_union inter_subset_left diff_subset

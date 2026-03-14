@@ -12,8 +12,8 @@ public import Mathlib.RingTheory.MvPowerSeries.Order
 /-! # ZeroDivisors in a MvPowerSeries ring
 
 - `mem_nonZeroDivisors_of_constantCoeff` proves that
-a multivariate power series whose constant coefficient is not a zero divisor
-is itself not a zero divisor
+  a multivariate power series whose constant coefficient is not a zero divisor
+  is itself not a zero divisor
 
 
 - `MvPowerSeries.order_mul` : multiplicativity of `MvPowerSeries.order`

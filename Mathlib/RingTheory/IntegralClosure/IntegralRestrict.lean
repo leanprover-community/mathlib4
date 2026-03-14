@@ -18,12 +18,12 @@ In this file, we assume `A` is an integrally closed domain; `K` is the fraction 
 `L` is a finite extension of `K`; `B` is the integral closure of `A` in `L`.
 We call this the AKLB setup.
 
-## Main definition
+## Main definitions
 - `galRestrict`: The restriction `Aut(L/K) → Aut(B/A)` as an `MulEquiv` in an AKLB setup.
 - `Algebra.intTrace`: The trace map of a finite extension of integrally closed domains `B/A` is
-defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
+  defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
 - `Algebra.intNorm`: The norm map of a finite extension of integrally closed domains `B/A` is
-defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
+  defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
 
 -/
 
@@ -528,6 +528,7 @@ lemma Algebra.algebraMap_intNorm_of_isGalois [IsGalois (FractionRing A) (Fractio
   simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe]
   convert (prod_galRestrict_eq_norm A (FractionRing A) (FractionRing B) B x).symm
 
+set_option backward.isDefEq.respectTransparency false in
 open Polynomial IsScalarTower in
 theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intNorm A B x) := by
   classical

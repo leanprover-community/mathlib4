@@ -93,6 +93,7 @@ lemma FormallyUnramified.map_maximalIdeal [FormallyUnramified R S] :
   rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient]
   exact isField_quotient_map_maximalIdeal
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 02FM]
 lemma FormallyUnramified.of_map_maximalIdeal
     [Algebra.IsSeparable (ResidueField R) (ResidueField S)]
@@ -175,7 +176,6 @@ lemma localRingHom_injective_of_primesOver_eq_singleton
   obtain ⟨r, hrp, t, e'⟩ := Ideal.exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton hq _ haq
   refine (IsLocalization.mk'_eq_zero_iff _ _).mpr
     ⟨⟨r, hrp⟩, FaithfulSMul.algebraMap_injective R S ?_⟩
-  simp only [map_mul, e', map_zero]
   grind
 
 lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p] :
@@ -194,7 +194,6 @@ lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p] :
       map_mul, mul_assoc, mul_left_comm, IsLocalization.mk'_spec'_mk, ← map_mul]
   exact Submodule.subset_span ⟨_, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma localRingHom_surjective_of_primesOver_eq_singleton
     [Module.Finite R S] [q.LiesOver p] [Algebra.IsUnramifiedAt R q]
     (H : Function.Surjective (algebraMap p.ResidueField q.ResidueField)) :

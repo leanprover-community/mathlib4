@@ -49,7 +49,6 @@ namespace Miu
 
 open MiuAtom List Nat
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We start by showing that an `Miustr` `M::w` can be derived, where `w` consists only of `I`s and
 where `count I w` is a power of 2.
 -/
@@ -175,7 +174,7 @@ theorem replicate_pow_minus_append {m : ℕ} :
   rw [cons_append, ← replicate_add, tsub_add_cancel_of_le (one_le_pow' m 1)]
 
 /--
-`der_replicate_I_of_mod3` states that `M::y` is `Derivable` if `y` is any `Miustr` consisiting just
+`der_replicate_I_of_mod3` states that `M::y` is `Derivable` if `y` is any `Miustr` consisting just
 of `I`s, where `count I y` is 1 or 2 modulo 3.
 -/
 theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
