@@ -104,10 +104,7 @@ lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
 lemma uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ}
     (hnI : (n, I) ∈ disjWithin a b) {i : ℕ} (hi : i < n) : uIoc (I i).1 (I i).2 ⊆ uIoc a b := by
   simp only [disjWithin, Finset.mem_range, mem_setOf_eq, uIcc, mem_Icc] at hnI
-  have := hnI.left i hi
-  dsimp only [uIoc]; gcongr 1
-  · simp only [le_inf_iff]; tauto
-  · simp only [sup_le_iff]; tauto
+  grind
 
 lemma biUnion_uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ}
     (hnI : (n, I) ∈ disjWithin a b) :
