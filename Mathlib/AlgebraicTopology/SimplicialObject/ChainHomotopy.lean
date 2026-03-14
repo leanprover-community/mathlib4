@@ -67,8 +67,8 @@ lemma Finset.compl_eq_of_disjoint_of_card_add_eq
 private lemma comm_succ (n : ℕ) :
     letI α : X _⦋n + 1⦌ ⟶ Y _⦋n + 1⦌ :=
       ((alternatingFaceMapComplex C).obj X).d (n + 1) n ≫ ToChainHomotopy.hom H n (n + 1)
-    letI β : X _⦋n + 1⦌ ⟶ Y _⦋n + 1⦌ := hom H (n + 1) (n + 1 + 1) ≫
-      ((alternatingFaceMapComplex C).obj Y).d (n + 1 + 1) (n + 1)
+    letI β : X _⦋n + 1⦌ ⟶ Y _⦋n + 1⦌ := hom H (n + 1) (n + 2) ≫
+      ((alternatingFaceMapComplex C).obj Y).d (n + 2) (n + 1)
     f.app (op ⦋n + 1⦌) = α + β + g.app (op ⦋n + 1⦌) := by
   rw [← H.h_zero_comp_δ_zero, ← H.h_last_comp_δ_last]
   dsimp
