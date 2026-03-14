@@ -57,7 +57,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   have hki : P.pairingIn ℤ i k ≤ -2 := by
     suffices P.pairingIn ℤ l k = 2 + P.pairingIn ℤ i k - P.pairingIn ℤ j k by linarith
     apply algebraMap_injective ℤ R
-    simp only [algebraMap_pairingIn, map_sub, map_add, map_ofNat]
+    simp only [algebraMap_pairingIn, map_sub, map_add]
     simpa using (P.coroot' k : M →ₗ[R] R).congr_arg hl
   replace hki : P.pairingIn ℤ k i = -1 := by
     replace hk' : α i ≠ - α k := by

@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Normed.Ring.InfiniteProd
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
-public import Mathlib.NumberTheory.ModularForms.QExpansion
 public import Mathlib.NumberTheory.ModularForms.LevelOne
 
 /-!
@@ -36,7 +35,7 @@ function, and proves its key properties including invariance under the generator
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open Set Function Complex Filter Topology MatrixGroups
+open Set Function Complex Topology Filter SlashInvariantForm CongruenceSubgroup
 
 open UpperHalfPlane hiding I
 
@@ -50,8 +49,6 @@ namespace ModularForm
 @[expose] public def delta (z : ℍ) := (eta z) ^ 24
 
 local notation "Δ" => delta
-
-local notation "η" => eta
 
 local notation "𝕢" => Periodic.qParam
 
@@ -128,7 +125,7 @@ lemma delta_ne_zero (z : ℍ) : Δ z ≠ 0 := by
 /-- The discriminant is invariant under `T : z ↦ z + 1`, i.e., `Δ(z + 1) = Δ(z)`. -/
 lemma delta_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
   ext z
-  rw [SL_slash_apply, denom, UpperHalfPlane.modular_T_smul, ModularGroup.T]
+  rw [SL_slash_apply, denom, modular_T_smul, ModularGroup.T]
   simp [delta_eq_q_prod, eta_q, Periodic.qParam, ← exp_periodic (2 * π * I * z)]
   ring_nf
 
@@ -149,14 +146,14 @@ lemma delta_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
     simpa [denom, ModularGroup.S]
   have he : η (-(↑z)⁻¹) = (sqrt I)⁻¹ * (sqrt z * η z) := by
     simpa [neg_div] using eta_comp_eq_csqrt_I_inv z.2
-  simp only [he, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
+  simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
   field_simp [z.ne_zero]
 
-def delta_SIF : SlashInvariantForm (CongruenceSubgroup.Gamma 1) 12 where
+def delta_SIF : SlashInvariantForm Γ(1) 12 where
   toFun := Δ
   slash_action_eq' A hA := by
     obtain ⟨A, _, rfl⟩ := hA
-    exact SlashInvariantForm.slash_action_generators_SL2Z delta_S_invariant delta_T_invariant A
+    exact slash_action_generators_SL2Z delta_S_invariant delta_T_invariant A
 
 lemma Delta_boundedfactor :
     Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - cexp (2 * π * Complex.I * (n + 1) * x)) ^ 24) atImInfty
@@ -193,7 +190,7 @@ lemma delta_isZeroAtImInfty : IsZeroAtImInfty Δ := by
     (Delta_boundedfactor.congr fun z ↦ by congr 1; ext n; rw [eta_q_eq_cexp])
 
 /-- The modular discriminant `Δ` as a cusp form of weight 12 and level 1. -/
-def deltaCuspForm : CuspForm (CongruenceSubgroup.Gamma 1) 12 where
+def discriminant : CuspForm Γ(1) 12 where
   toSlashInvariantForm := delta_SIF
   holo' := by
     rw [UpperHalfPlane.mdifferentiable_iff]
@@ -205,10 +202,8 @@ def deltaCuspForm : CuspForm (CongruenceSubgroup.Gamma 1) 12 where
     rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc
     rw [OnePoint.isZeroAt_iff_forall_SL2Z hc]
     intro γ _
-    dsimp only [delta_SIF]
-    rw [SlashInvariantForm.slash_action_generators_SL2Z delta_S_invariant delta_T_invariant]
+    rw [delta_SIF, slash_action_generators_SL2Z delta_S_invariant delta_T_invariant]
     exact delta_isZeroAtImInfty
-
 end
 
 end ModularForm

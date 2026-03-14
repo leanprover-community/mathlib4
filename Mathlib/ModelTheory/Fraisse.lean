@@ -197,6 +197,7 @@ theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Cou
     rw [← Embedding.coe_toHom, Finset.coe_image, closure_image PM.toHom, hs, ← Hom.range_eq_map]
     exact ⟨PM.equivRange.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is not a simp-lemma because it does not apply to itself.
 /-- The age of a direct limit of structures is the union of the ages of the structures. -/
 theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]

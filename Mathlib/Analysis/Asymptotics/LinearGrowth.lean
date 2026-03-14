@@ -170,6 +170,7 @@ lemma linearGrowthInf_top : linearGrowthInf ⊤ = (⊤ : EReal) := by
   refine liminf_congr (eventually_atTop.2 ?_)
   exact ⟨1, fun n n_pos ↦ top_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linearGrowthSup_top : linearGrowthSup (⊤ : ℕ → EReal) = (⊤ : EReal) := by
   apply top_le_iff.1
   rw [← linearGrowthInf_top]
@@ -295,6 +296,7 @@ noncomputable def linearGrowthInfTopHom : InfTopHom (ℕ → EReal) EReal where
   map_inf' _ _ := linearGrowthInf_inf
   map_top' := linearGrowthInf_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linearGrowthInf_biInf {α : Type*} (u : α → ℕ → EReal) {s : Set α} (hs : s.Finite) :
     linearGrowthInf (⨅ x ∈ s, u x) = ⨅ x ∈ s, linearGrowthInf (u x) := by
   have := map_finset_inf linearGrowthInfTopHom hs.toFinset u

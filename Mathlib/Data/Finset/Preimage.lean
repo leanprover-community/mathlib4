@@ -51,6 +51,12 @@ theorem preimage_univ {f : α → β} [Fintype α] [Fintype β] (hf) : preimage 
   Finset.coe_injective (by simp)
 
 @[simp]
+theorem disjoint_preimage {f : α → β} {s t : Finset β}
+    {hs : Set.InjOn f (f ⁻¹' ↑s)} {ht : Set.InjOn f (f ⁻¹' ↑t)} (hd : Disjoint s t) :
+    Disjoint (s.preimage f hs) (t.preimage f ht) := by
+  grind [not_disjoint_iff, mem_preimage]
+
+@[simp]
 theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β}
     (hs : Set.InjOn f (f ⁻¹' ↑s)) (ht : Set.InjOn f (f ⁻¹' ↑t)) :
     (preimage (s ∩ t) f fun _ hx₁ _ hx₂ =>
@@ -158,6 +164,7 @@ def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.inj
 
 end Equiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
 of this `Finset` and then reindexing. -/
 lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : α ≃ β) :

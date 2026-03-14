@@ -19,23 +19,23 @@ This file defines *Lie derivations* and establishes some basic properties.
 ## Main definitions
 
 - `LieDerivation`: A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an
-`R`-linear map that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`.
+  `R`-linear map that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`.
 - `LieDerivation.inner`: The natural map from a Lie module to the derivations taking values in it.
 
 ## Main statements
 
 - `LieDerivation.eqOn_lieSpan`: two Lie derivations equal on a set are equal on its Lie span.
 - `LieDerivation.instLieAlgebra`: the set of Lie derivations from a Lie algebra to itself is a Lie
-algebra.
+  algebra.
 
 ## Implementation notes
 
 - Mathematically, a Lie derivation is just a derivation on a Lie algebra. However, the current
-implementation of `RingTheory.Derivation` requires a commutative associative algebra, so is
-incompatible with the setting of Lie algebras. Initially, this file is a copy-pasted adaptation of
-the `RingTheory.Derivation.Basic.lean` file.
+  implementation of `RingTheory.Derivation` requires a commutative associative algebra, so is
+  incompatible with the setting of Lie algebras. Initially, this file is a copy-pasted adaptation of
+  the `RingTheory.Derivation.Basic.lean` file.
 - Since we don't have right actions of Lie algebras, the second term in the Leibniz rule is written
-as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
+  as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
 -/
 
 @[expose] public section
@@ -291,6 +291,7 @@ section
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The commutator of two Lie derivations on a Lie algebra is a Lie derivation. -/
 instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
   bracket D1 D2 := LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b => by
@@ -331,6 +332,7 @@ section
 
 variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie algebra morphism from Lie derivations into linear endormophisms. -/
 def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
   toFun := toLinearMap
@@ -353,6 +355,7 @@ section Inner
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
     [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural map from a Lie module to the derivations taking values in it. -/
 @[simps!]
 def inner : M →ₗ[R] LieDerivation R L M where

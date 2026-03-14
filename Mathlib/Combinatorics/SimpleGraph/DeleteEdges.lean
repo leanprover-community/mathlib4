@@ -72,6 +72,7 @@ lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdge
 
 lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sdiff_le_sdiff_right h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma deleteEdges_eq_self : G.deleteEdges s = G ↔ Disjoint G.edgeSet s := by
   rw [deleteEdges, sdiff_eq_left, disjoint_fromEdgeSet]
 

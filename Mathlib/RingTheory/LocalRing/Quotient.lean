@@ -33,6 +33,7 @@ namespace IsLocalRing
 local notation "p" => maximalIdeal R
 local notation "pS" => Ideal.map (algebraMap R S) p
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
     span (R ⧸ p) ((Ideal.Quotient.mk (I := pS)) '' s) = ⊤ ↔ span R s = ⊤ := by
   have H : (span (R ⧸ p) ((Ideal.Quotient.mk (I := pS)) '' s)).restrictScalars R =
