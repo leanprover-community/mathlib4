@@ -1183,20 +1183,6 @@ def powQuotPowSuccEquivMapMkPowSuccPow :
     Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) :=
   powQuotPowSuccLinearEquivMapMkPowSuccPow I n
 
-set_option backward.isDefEq.respectTransparency false in -- needed for the last add_zero
-theorem Quotient.isUnit_mk_pow_of_notMem [I.IsMaximal] (n : ℕ) {a : R} (ha : a ∉ I) :
-    IsUnit (mk (I ^ n) a) := by
-  obtain ⟨y, i, hmem, hi⟩ := IsMaximal.exists_inv_pow I ha n
-  rw [isUnit_iff_exists_inv']
-  use mk (I ^ n) y
-  convert congr(mk (I ^ n) $hi)
-  rw [map_add, map_mul, eq_zero_iff_mem.mpr hmem, add_zero]
-
-theorem Quotient.isUnit_mk_pow_iff_notMem [hI : I.IsMaximal] {n : ℕ} (hn : n ≠ 0) {a : R} :
-    IsUnit (mk (I ^ n) a) ↔ a ∉ I where
-  mp ha := notMem_of_le_of_isUnit_mk hI.ne_top (pow_le_self hn) ha
-  mpr ha := isUnit_mk_pow_of_notMem I n ha
-
 end PowQuot
 
 end Ideal
