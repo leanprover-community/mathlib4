@@ -394,8 +394,7 @@ lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
   grind
 
 lemma diff_singleton_subset_iff : s \ {a} ⊆ t ↔ s ⊆ insert a t := by
-  rw [← union_singleton, union_comm]
-  apply diff_subset_iff
+  simp
 
 lemma subset_diff_singleton (h : s ⊆ t) (ha : a ∉ s) : s ⊆ t \ {a} :=
   subset_inter h <| subset_compl_comm.1 <| singleton_subset_iff.2 ha
