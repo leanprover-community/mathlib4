@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Module.Basic
 /-!
 # Basic facts about real (semi)normed spaces
 
-In this file we prove some theorems about (semi)normed spaces over real numberes.
+In this file we prove some theorems about (semi)normed spaces over real numbers.
 
 ## Main results
 

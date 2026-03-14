@@ -62,7 +62,6 @@ theorem algebraMap_C (a : K) : algebraMap K[X] K⟮X⟯ (Polynomial.C a) = C a :
 theorem algebraMap_comp_C : (algebraMap K[X] K⟮X⟯).comp Polynomial.C = C :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_eq_C_mul (r : K) (x : K⟮X⟯) : r • x = C r * x := by
   rw [Algebra.smul_def, algebraMap_eq_C]
 
@@ -83,7 +82,6 @@ theorem algebraMap_monomial (n : ℕ) (a : K) :
     algebraMap K[X] K⟮X⟯ (Polynomial.monomial n a) = C a * X ^ n := by
   simp [← Polynomial.C_mul_X_pow_eq_monomial]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aeval_X_left_eq_algebraMap (p : K[X]) :
     p.aeval (X : K⟮X⟯) = algebraMap K[X] K⟮X⟯ p := by
@@ -234,7 +232,6 @@ theorem algEquivOfTranscendental_algebraMap (g : K[X]) :
   ext
   simp [algEquivOfTranscendental]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem algEquivOfTranscendental_X :
     algEquivOfTranscendental f h (X : RatFunc K) = f := by
@@ -327,7 +324,7 @@ lemma valuation_aeval_monomial_eq_valuation_pow (w : L) (n : ℕ) {a : K} (ha : 
 
 theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : L) (hpos : 1 < v w)
     {p : Polynomial K} (hp : p ≠ 0) : v (p.aeval w) = v w ^ p.natDegree := by
-  rw [← valuation_aeval_monomial_eq_valuation_pow _ _ hv _ _ ((leadingCoeff_ne_zero).mpr hp)]
+  rw [← valuation_aeval_monomial_eq_valuation_pow _ _ hv _ _ (leadingCoeff_ne_zero.mpr hp)]
   nth_rw 1 [as_sum_range p, map_sum]
   apply Valuation.map_sum_eq_of_lt _ (by simp)
   intro i hi
@@ -335,9 +332,9 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
     ← lt_iff_le_and_ne] at hi
   simp only [← C_mul_X_pow_eq_monomial, map_mul, aeval_C, map_pow, aeval_X, coeff_natDegree]
   by_cases h0 : (p.coeff i) = 0
-  · simp [h0, map_zero, zero_mul, one_mul, hv p.leadingCoeff ((leadingCoeff_ne_zero).mpr hp),
+  · simp [h0, map_zero, zero_mul, one_mul, hv p.leadingCoeff (leadingCoeff_ne_zero.mpr hp),
       pow_pos (lt_trans zero_lt_one hpos) p.natDegree]
-  · simp [one_mul, hv p.leadingCoeff ((leadingCoeff_ne_zero).mpr hp),
+  · simp [one_mul, hv p.leadingCoeff (leadingCoeff_ne_zero.mpr hp),
       hv _ h0, one_mul, pow_lt_pow_right₀ hpos hi]
 
 end Algebra
@@ -395,11 +392,20 @@ open scoped WithZero
 
 open Polynomial
 
-instance : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
+/- We give this instance a name so that it can be locally disabled when defining `FqtInfty`.
+Something similar might be needed after the refactor from `Valued` to `ValuativeRel`. -/
+instance valuedRatFunc : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 
 @[simp]
 theorem v_def {x : K⟮X⟯} :
     Valued.v x = (idealX K).valuation _ x := rfl
+
+lemma valuation_surjective : Function.Surjective (Valued.v (R := RatFunc K)) := by
+  intro n
+  by_cases hn0 : n = 0
+  · use 0; simp [hn0]
+  · use (RatFunc.X ^ (-WithZero.log n))
+    simp [WithZero.exp_log hn0]
 
 end RatFunc
 

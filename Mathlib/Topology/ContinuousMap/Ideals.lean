@@ -253,8 +253,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       refine ⟨g₁ + g₂, ?_, fun x hx => ?_⟩
       · convert I.add_mem hI₁ hI₂
         ext y
-        simp only [coe_add, Pi.add_apply, map_add, coe_comp, Function.comp_apply,
-          ContinuousMap.coe_coe]
+        simp
       · rcases hx with (hx | hx)
         · simpa only [zero_add] using add_lt_add_of_lt_of_le (hgt₁ x hx) zero_le'
         · simpa only [zero_add] using add_lt_add_of_le_of_lt zero_le' (hgt₂ x hx)
@@ -349,7 +348,6 @@ theorem idealOf_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : S
 
 variable {𝕜}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] :
     ∃ x : X, setOfIdeal I = {x}ᶜ := by
   have h : (idealOfSet 𝕜 (setOfIdeal I)).IsMaximal :=
@@ -407,7 +405,6 @@ end ContinuousMapEval
 
 variable [CompactSpace X] [T2Space X] [RCLike 𝕜]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
   refine ⟨fun x y hxy => ?_, fun φ => ?_⟩
   · contrapose! hxy
