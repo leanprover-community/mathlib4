@@ -373,7 +373,7 @@ end Pointwise
 
 lemma mem_linSpan {C : PointedCone R M} {x : M} :
     x ∈ C.linSpan ↔ ∃ p ∈ C, ∃ n ∈ C, p = x + n := by
-  rw [← mem_ofSubmodule_iff, ← neg_sup_eq_submodule_span, Submodule.mem_sup]
+  rw [← mem_ofSubmodule_iff, ← neg_sup_eq_linSpan, Submodule.mem_sup]
   simp only [Submodule.mem_neg]
   constructor <;> intro h
   · obtain ⟨y, hy', z, hz, rfl⟩ := h
