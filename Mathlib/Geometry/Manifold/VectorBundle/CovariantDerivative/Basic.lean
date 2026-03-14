@@ -292,6 +292,52 @@ lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifol
     simpa using ContMDiffOn.sum_section
       (fun i hi ↦ (hf i hi).smul_section <| (hcov i hi).contMDiff hσ)
 
+/-- A locally finite affine combination of covariant derivatives is a covariant derivative. -/
+theorem finsum_affine_combination {ι : Type*}
+    {cov : ι → (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
+    {U : ι → Set M}
+    (hcov : ∀ i, IsCovariantDerivativeOn F (cov i) (U i))
+    {f : ι → M → 𝕜}
+    (hf_sum : ∀ x, ∑ᶠ i, f i x = 1)
+    (hf_lf : LocallyFinite (fun i ↦ Function.support (f i)))
+    (hf_supp : ∀ i, tsupport (f i) ⊆ U i) :
+    IsCovariantDerivativeOn F
+      (fun σ x ↦ ∑ᶠ i, (f i x) • (cov i) σ x) Set.univ where
+  add {σ σ'} {x} hσ hσ' _ := by
+    have hterm : ∀ i, f i x • cov i (σ + σ') x =
+        f i x • cov i σ x + f i x • cov i σ' x := fun i ↦ by
+      by_cases hi : f i x = 0
+      · simp [hi]
+      · rw [(hcov i).add hσ hσ' (hf_supp i (subset_tsupport _ hi)), smul_add]
+    simp_rw [hterm]
+    exact finsum_add_distrib
+      ((hf_lf.point_finite x).subset
+        (Function.support_smul_subset_left (f · x) (cov · σ x)))
+      ((hf_lf.point_finite x).subset
+        (Function.support_smul_subset_left (f · x) (cov · σ' x)))
+  leibniz {σ g} {x} hσ hg _ := by
+    have hfin := hf_lf.point_finite x
+    have hs : Function.support (fun i ↦ f i x) ⊆ ↑hfin.toFinset :=
+      fun i hi ↦ hfin.mem_toFinset.mpr hi
+    have hsupp : ∀ σ, Function.support (fun i ↦ f i x • cov i σ x) ⊆ ↑hfin.toFinset :=
+      fun σ ↦ (Function.support_smul_subset_left (f · x) (cov · σ x)).trans hs
+    rw [finsum_eq_sum_of_support_subset _ (hsupp (g • σ)),
+        finsum_eq_sum_of_support_subset _ (hsupp σ)]
+    calc ∑ i ∈ hfin.toFinset, f i x • cov i (g • σ) x
+      _ = ∑ i ∈ hfin.toFinset, (g x • (f i x • cov i σ x) +
+            f i x • (extDerivFun g x).smulRight (σ x)) := by
+          apply Finset.sum_congr rfl; intro i _
+          by_cases hi : f i x = 0
+          · simp [hi]
+          · rw [(hcov i).leibniz hσ hg (hf_supp i (subset_tsupport _ hi)), smul_add]
+            module
+      _ = g x • ∑ i ∈ hfin.toFinset, f i x • cov i σ x +
+            (∑ i ∈ hfin.toFinset, f i) x • (extDerivFun g x).smulRight (σ x) := by
+          rw [Finset.sum_add_distrib, Finset.smul_sum, Finset.sum_apply, Finset.sum_smul]
+      _ = g x • ∑ i ∈ hfin.toFinset, f i x • cov i σ x +
+            (extDerivFun g x).smulRight (σ x) := by
+          rw [Finset.sum_apply, ← finsum_eq_sum_of_support_subset _ hs, hf_sum x, one_smul]
+
 /-- Adding a one-form taking values in the endomorphisms of the vector bundle to a covariant
   derivative gives a covariant derivative. -/
 lemma add_one_form (hcov : IsCovariantDerivativeOn F cov s)
@@ -468,8 +514,17 @@ lemma ContMDiffCovariantDerivative.finite_affine_combination [IsManifold I 1 M] 
     ContMDiffCovariantDerivativeOn.finite_affine_combination
       (fun i hi ↦ (hcov i hi).contMDiff) (fun i hi ↦ (hf' i hi).contMDiffOn)
 
--- TODO: prove a version with a locally finite sum, and deduce that C^k connections always
--- exist (using a partition of unity argument)
+/-- A locally finite affine combination of covariant derivatives, as a covariant derivative. -/
+def finsum_affine_combination {ι : Type*}
+    (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜}
+    (hf_sum : ∀ x, ∑ᶠ i, f i x = 1)
+    (hf_lf : LocallyFinite (fun i ↦ Function.support (f i)))
+    (hf_supp : ∀ i, tsupport (f i) ⊆ Set.univ := by intro; exact Set.subset_univ _) :
+    CovariantDerivative I F V where
+  toFun σ x := ∑ᶠ i, (f i x) • (cov i) σ x
+  isCovariantDerivativeOnUniv :=
+    IsCovariantDerivativeOn.finsum_affine_combination
+      (fun i ↦ (cov i).isCovariantDerivativeOn) hf_sum hf_lf hf_supp
 
 /-- Adding a one-form taking values in the endomorphisms of the vector bundle to a covariant
   derivative gives a covariant derivative. -/
