@@ -210,7 +210,7 @@ theorem powSMulQuotInclusion_injective {a b c : ℕ} (h : c = b + a) (N : Submod
     map_le_iff_le_comap, ← Submodule.map_le_map_iff_of_injective (I ^ a • N).subtype_injective, h]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem factorPow_powSMulQuotInclusion_comm {a b c d e : ℕ} (h : c = b + a) (h' : e = d + c) :
+theorem factorPow_comp_powSMulQuotInclusion {a b c d e : ℕ} (h : c = b + a) (h' : e = d + c) :
     (factorPow I M (show c ≤ e by lia)) ∘ₗ
       (powSMulQuotInclusion I M (show e = (b + d) + a by lia) ⊤) =
     (powSMulQuotInclusion I M h ⊤) ∘ₗ
