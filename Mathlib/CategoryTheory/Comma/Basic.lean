@@ -99,7 +99,6 @@ structure CommaMorphism (X Y : Comma L R) where
   right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by cat_disch
 
-set_option linter.translateOverwrite false in
 attribute [to_dual existing right] CommaMorphism.left
 
 @[to_dual existing w]
