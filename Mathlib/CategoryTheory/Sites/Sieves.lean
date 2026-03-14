@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.Subfunctor.Basic
+public import Mathlib.CategoryTheory.ShrinkYoneda
 
 /-!
 # Theory of sieves
@@ -26,7 +28,7 @@ sieve, pullback
 @[expose] public section
 
 
-universe w v₁ v₂ v₃ u₁ u₂ u₃
+universe w w' v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -1313,6 +1315,51 @@ lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f 
   · rintro W u ⟨Z, v, s, ⟨i⟩, heq⟩
     use P i, (h i).lift u v heq.symm, p₁ i, ⟨i⟩
     simp
+
+/-- If `C` is `w`-locally small, any sieve induces a subfunctor of `shrinkYoneda.{w}.obj X`. -/
+@[simps, pp_with_univ]
+def shrinkFunctor [LocallySmall.{w} C] {X : C} (S : Sieve X) :
+    Subfunctor (shrinkYoneda.{w}.obj X) where
+  obj Y := { f | S (shrinkYonedaObjObjEquiv f) }
+  map {Y Z} g f hf := by
+    simpa [shrinkYonedaObjObjEquiv_obj_map] using S.downward_closed hf _
+
+variable (S) in
+set_option backward.isDefEq.respectTransparency false in
+/-- `Sieve.shrinkFunctor` is compatible with universe lifting. -/
+noncomputable
+def shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max w' w} C] :
+    (shrinkFunctor.{w} S).toFunctor ⋙ CategoryTheory.uliftFunctor.{w', w} ≅
+      (shrinkFunctor.{max w' w} S).toFunctor :=
+  NatIso.ofComponents
+    (fun X ↦ Equiv.toIso
+      (.trans Equiv.ulift
+        (Equiv.subtypeEquiv (shrinkYonedaObjObjEquiv.trans shrinkYonedaObjObjEquiv.symm)
+        fun a ↦ by simp)))
+    fun {U V} f ↦ by
+      dsimp
+      ext
+      dsimp [Equiv.subtypeEquiv]
+      rw [shrinkYonedaObjObjEquiv_obj_map, shrinkYonedaObjObjEquiv_symm_comp]
+      simp
+
+@[reassoc]
+lemma shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C] [LocallySmall.{max w' w} C] :
+    (shrinkFunctorUliftFunctorIso.{w, w'} S).inv ≫
+      Functor.whiskerRight (shrinkFunctor.{w} _).ι CategoryTheory.uliftFunctor.{w', w} =
+    (shrinkFunctor.{max w' w} S).ι ≫
+      shrinkYonedaUliftFunctorIso.{w, w'}.inv.app X :=
+  rfl
+
+variable (S) in
+/-- Shrinking does nothing for the same universe level. -/
+@[simps!]
+noncomputable def shrinkFunctorIsoFunctor : (shrinkFunctor.{v₁} S).toFunctor ≅ S.functor :=
+  NatIso.ofComponents (fun Y ↦ Equiv.toIso <| Equiv.subtypeEquiv shrinkYonedaObjObjEquiv (by simp))
+    fun {U V} f ↦ by
+      dsimp [Equiv.subtypeEquiv]
+      ext
+      simp [shrinkYonedaObjObjEquiv_obj_map]
 
 end Sieve
 

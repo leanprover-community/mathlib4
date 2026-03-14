@@ -225,6 +225,21 @@ def findTranslation? (env : Environment) (t : TranslateData) : Name → Option T
 def findTranslationName? (env : Environment) (t : TranslateData) (n : Name) : Option Name :=
   (findTranslation? env t n).map (·.translation)
 
+/-- Check if the given constant exists in the environment, also checking for reserved names.
+This function is based on `Lean.realizeGlobalName`. -/
+private def realizeGlobalConst (c : Name) : CoreM Bool := do
+  let env ← getEnv
+  if env.contains c then
+    return true
+  unless isReservedName env c do
+    return false
+  try
+    executeReservedNameAction c
+    return (← getEnv).containsOnBranch c
+  catch ex =>
+    logError m!"Failed to realize constant {c}:{indentD ex.toMessageData}"
+    return false
+
 /-- Get the translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
 This allows translating automatically generated declarations such as `IsRegular.casesOn`.
@@ -235,12 +250,8 @@ def findPrefixTranslation? (n : Name) (t : TranslateData) : CoreM (Option Transl
     return info
   let .str n postFix := n | return none
   let some info := go env n [postFix] | return none
-  if env.contains (skipRealize := false) info.translation then
-    return info
-  if isReservedName env info.translation then
-    executeReservedNameAction info.translation
-    return info
-  return none
+  unless ← realizeGlobalConst info.translation do return none
+  return info
 where
   /-- Loop through the prefixes of `n` to try to find a translation.
   In such a case, we inherit the `relevantArg` option from the translation. -/
@@ -699,13 +710,13 @@ def getRelevantArg (t : TranslateData) (cfg : Config) (relevantArg? : Option Rel
   else
     return relevantArg
 
-/-- Translate the declaration `src` and recursively all declarations `pre._proof_i`
+/-- Translate the declaration `src` and recursively all declarations `rootSrc._proof_i`
 occurring in `src` using the `translations` dictionary.
 
-`replace_all`, `trace`, `ignore` and `reorder` are configuration options.
-
-`pre` is the declaration that got the translation attribute and `tgt_pre` is the target of this
-declaration. -/
+- `rootSrc` is the declaration that got the translation attribute and `rootTgt` is its target.
+- `src` is assumed to have a value available in the environment.
+- `reorder` is used only for the translation of `src`.
+-/
 partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt src : Name)
     (reorder : Reorder := {}) : CoreM Unit := do
   let env ← getEnv
@@ -734,7 +745,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `rootSrc`
   for n in ← findAuxDecls srcDecl rootSrc do
-    discard <| transformDeclRec t cfg rootSrc rootTgt n
+    transformDeclRec t cfg rootSrc rootTgt n
   -- expose target body when source body is exposed
   withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
   -- We still lack a heuristic that automatically infers the `dontTranslate`,
@@ -865,7 +876,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
   trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
   let tgt_auto := GuessName.guessName t.guessNameData s
   let depth := cfg.tgt.getNumParts
-  let pre := Name.mapPrefix (findTranslationName? (← getEnv) t) pre
+  let pre := translateNamespace (← getEnv) pre
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   if res == src then
@@ -881,6 +892,13 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
   if cfg.tgt != .anonymous then
     trace[translate_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
+where
+  translateNamespace (env : Environment) (n : Name) : Name :=
+    let n' := Name.mapPrefix (findTranslationName? env t) n
+    if n' == n && isPrivateName n then
+      mkPrivateName env <| .mapPrefix (findTranslationName? env t) (privateToUserName n)
+    else
+      n'
 
 /-- Verify that the type of `srcDecl` translates to that of `tgtDecl`.
 Also try to autogenerate the `reorder` option for this translation. -/
@@ -1134,7 +1152,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     throwError "`{t.attrName}` can only be used as a global attribute"
   withOptions (fun o => if cfg.trace then o.set `trace.translate true else o) do
   let tgt ← targetName t cfg src
-  let alreadyExists := (← getEnv).contains tgt
+  let alreadyExists ← realizeGlobalConst tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
     Linter.logLintIf linter.translateExisting cfg.ref <|
       if alreadyExists then
@@ -1150,6 +1168,8 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     trace[translate_detail] "declaration {tgt} already exists."
     proceedFields t src tgt reorder relevantArg cfg.ref
   else
+    unless (← withoutExporting do getConstInfo src).hasValue (allowOpaque := true) do
+      throwError "`{t.attrName}` cannot translate `{.ofConstName src}` because it has no value."
     let reorder := cfg.reorder?.getD {}
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg src tgt src reorder
