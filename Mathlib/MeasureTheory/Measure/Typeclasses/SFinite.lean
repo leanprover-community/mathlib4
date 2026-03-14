@@ -207,7 +207,6 @@ theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Mea
 
 /-- A set in a σ-finite space has positive measure if and only if its intersection with
 some member of the countable family of finite measure spanning sets has positive measure. -/
-@[deprecated exists_measure_inter_finiteSpanningSetsIn_pos (since := "2026-03-13")]
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (s : Set α) : (∃ n, 0 < μ (s ∩ spanningSets μ n)) ↔ 0 < μ s := by
   contrapose!
