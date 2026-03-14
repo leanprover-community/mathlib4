@@ -1,12 +1,11 @@
 /-
-Copyright (c) 2026 Wei Lin. All rights reserved.
+Copyright (c) 2026 AI Math Project. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wei Lin
+Authors: AI Math Project
 -/
-module
-public import Mathlib.Probability.Martingale.Basic
-public import Mathlib.Probability.Martingale.OptionalStopping
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.Probability.Martingale.Basic
+import Mathlib.Probability.Martingale.OptionalStopping
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Ville's inequality for nonnegative supermartingales
@@ -34,7 +33,7 @@ nonnegative supermartingales in terms of their initial expectation.
 * Williams, D. (1991). *Probability with Martingales*.
   Cambridge University Press, §10.9.
 -/
-@[expose] public section
+
 noncomputable section
 
 open MeasureTheory
@@ -87,12 +86,10 @@ This strengthens the Markov inequality by replacing
 `𝔼[f_n]` with the smaller `𝔼[f_0]`. -/
 theorem Supermartingale.measureReal_le_div
     (hf : Supermartingale f ℱ μ) [SigmaFiniteFiltration μ ℱ]
-    (__hfin : IsFiniteMeasure μ)
     (hnn : ∀ n ω, 0 ≤ f n ω)
     {lam : ℝ} (hlam : 0 < lam) (n : ℕ) :
     μ.real {ω | lam ≤ f n ω} ≤
       (∫ ω, f 0 ω ∂μ) / lam := by
-  letI := __hfin
   have h_markov := mul_meas_ge_le_integral_of_nonneg
     (ae_of_all μ (hnn n)) (hf.2.2 n) lam
   have h_mono := hf.integral_le (Nat.zero_le n)
@@ -102,12 +99,10 @@ theorem Supermartingale.measureReal_le_div
 `n : ℕ` simultaneously. -/
 theorem Supermartingale.measureReal_le_div_forall
     (hf : Supermartingale f ℱ μ) [SigmaFiniteFiltration μ ℱ]
-    (__hfin : IsFiniteMeasure μ)
     (hnn : ∀ n ω, 0 ≤ f n ω)
     {lam : ℝ} (hlam : 0 < lam) :
     ∀ n, μ.real {ω | lam ≤ f n ω} ≤
-      (∫ ω, f 0 ω ∂μ) / lam := by
-  letI := __hfin
-  exact fun n => hf.measureReal_le_div __hfin hnn hlam n
+      (∫ ω, f 0 ω ∂μ) / lam :=
+  fun n => hf.measureReal_le_div hnn hlam n
 
 end MeasureTheory
