@@ -239,6 +239,27 @@ theorem isUpperSet_iff_Ioi_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Io
 
 end PartialOrder
 
+section IsWellOrder
+
+variable {r : α → α → Prop} [IsWellOrder α r] {f : α → α} {s : Set α}
+
+theorem IsLowerSet.eqOn_id_of_injOn_of_forall_not_lt (hs : @IsLowerSet α ⟨r⟩ s) (hf : s.InjOn f)
+    (h : ∀ x ∈ s, ¬r x (f x)) : s.EqOn f id := by
+  intro x hxs
+  induction x using IsWellFounded.induction r with | ind x ih =>
+  refine Std.Trichotomous.trichotomous (f x) x (fun hrfx ↦ ?_) <| h x hxs
+  have hfxs : f x ∈ s := hs hrfx hxs
+  have hffx : f (f x) = f x := ih (f x) hrfx hfxs
+  have hfx : f x = x := hf hfxs hxs hffx
+  exact irrefl x <| hfx ▸ hrfx
+
+theorem IsWellOrder.eq_id_of_injective_of_forall_not_lt (hf : f.Injective) (h : ∀ x, ¬r x (f x)) :
+    f = id :=
+  Set.eqOn_univ f id |>.mp <|
+    @isLowerSet_univ α ⟨r⟩ |>.eqOn_id_of_injOn_of_forall_not_lt hf.injOn fun x _ ↦ h x
+
+end IsWellOrder
+
 section LinearOrder
 
 variable [LinearOrder α] {s t : Set α}
@@ -264,5 +285,14 @@ theorem IsLowerSet.eq_univ_or_Iio [WellFoundedLT α] (h : IsLowerSet s) :
     s = univ ∨ ∃ a, s = Iio a := by
   simp_rw [← @compl_inj_iff _ s]
   simpa using h.compl.eq_empty_or_Ici
+
+theorem IsLowerSet.eqOn_id_of_injOn_of_forall_le [WellFoundedLT α] (hs : IsLowerSet s) {f : α → α}
+    (hf : s.InjOn f) (h : ∀ x ∈ s, f x ≤ x) : s.EqOn f id := by
+  have hs' : @IsLowerSet α ⟨LT.lt⟩ s := isLowerSet_iff_forall_lt.mp hs
+  exact hs'.eqOn_id_of_injOn_of_forall_not_lt hf fun x hx ↦ not_lt_of_ge <| h x hx
+
+theorem IsWellOrder.eq_id_of_injective_of_le_id [WellFoundedLT α] {f : α → α} (hf : f.Injective)
+    (h : f ≤ id) : f = id :=
+  IsWellOrder.eq_id_of_injective_of_forall_not_lt (r := LT.lt) hf fun x ↦ not_lt_of_ge <| h x
 
 end LinearOrder
