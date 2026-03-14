@@ -152,7 +152,7 @@ linear functional weakly separates `s` and `t`. The proof first separates `inter
 then extends the inequality from `interior s` to all of `s` using
 `closure (interior s) = closure s`. -/
 theorem geometric_hahn_banach_of_nonempty_interior'
-    {s t : Set E} (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
+  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
     (hsint : (interior s).Nonempty) :
     ∃ (f : StrongDual ℝ E) (u : ℝ), (∀ a ∈ s, f a ≤ u) ∧ ∀ b ∈ t, u ≤ f b := by
   obtain ⟨f, u, hfA, hfB⟩ :=
@@ -166,7 +166,7 @@ continuous linear functional weakly separates `s` and `t`. The proof first separ
 from `t`, then extends the inequality from `interior s` to all of `s` using
 `closure (interior s) = closure s`. -/
 theorem geometric_hahn_banach_of_nonempty_interior
-    {s t : Set E} (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
+  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
     (hsint : (interior s).Nonempty) (htne : t.Nonempty) :
     ∃ (f : StrongDual ℝ E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ s, f a ≤ u) ∧ ∀ b ∈ t, u ≤ f b := by
   obtain ⟨f, u, hfA, hfB⟩ :=
@@ -296,7 +296,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
 
 theorem geometric_hahn_banach_of_nonempty_interior'
-    {s t : Set E} (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
+  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
     (hsint : (interior s).Nonempty) :
     ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) ≤ u) ∧ ∀ b ∈ t, u ≤ re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
@@ -306,7 +306,7 @@ theorem geometric_hahn_banach_of_nonempty_interior'
   · simpa [f.extendRCLikeₗ_apply] using hB'
 
 theorem geometric_hahn_banach_of_nonempty_interior
-    {s t : Set E} (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
+  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
     (hsint : (interior s).Nonempty) (htne : t.Nonempty) :
     ∃ (f : StrongDual 𝕜 E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ s, re (f a) ≤ u) ∧ ∀ b ∈ t, u ≤ re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
