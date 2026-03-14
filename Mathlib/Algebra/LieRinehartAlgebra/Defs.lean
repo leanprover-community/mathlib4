@@ -29,9 +29,9 @@ terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
 `A` and `L` are each a module over the other, satisfying compatibility conditions. -/
 class LieRinehartRing (A L : Type*) [CommRing A] [LieRing L]
     [Module A L] [LieRingModule L A] : Prop where
-  lie_smul_eq_mul (a b : A) (x : L) : ⁅a • x, b⁆ = a * ⁅x, b⁆
-  leibniz_mul_right (x : L) (a b : A) : ⁅x, a * b⁆ = a • ⁅x, b⁆ + ⁅x, a⁆ * b
-  leibniz_smul_right (x y : L) (a : A) : ⁅x, a • y⁆ = a • ⁅x, y⁆ + ⁅x, a⁆ • y
+  lie_smul_eq_mul' (a b : A) (x : L) : ⁅a • x, b⁆ = a * ⁅x, b⁆
+  leibniz_mul_right' (x : L) (a b : A) : ⁅x, a * b⁆ = a • ⁅x, b⁆ + ⁅x, a⁆ * b
+  leibniz_smul_right' (x y : L) (a : A) : ⁅x, a • y⁆ = a • ⁅x, y⁆ + ⁅x, a⁆ • y
 
 /-- A Lie-Reinhart algebra with coefficients in a commutative ring `R`, is a pair consisting of a
 commutative `R`-algebra `A` and a Lie algebra `L` with coefficients in `R`, such that `A` and `L`
@@ -55,10 +55,19 @@ variable {R A₁ L₁ A₂ L₂ A₃ L₃ : Type*} [CommRing R]
   [Algebra R A₃] [LieAlgebra R L₃]
   {σ₁₂ : A₁ →ₐ[R] A₂} {σ₂₃ : A₂ →ₐ[R] A₃}
 
+@[simp] lemma LieRinehartRing.lie_smul_eq_mul [LieRinehartRing A₁ L₁] (a b : A₁) (x : L₁) :
+  ⁅a • x, b⁆ = a * ⁅x, b⁆ := LieRinehartRing.lie_smul_eq_mul' a b x
+
+@[simp] lemma LieRinehartRing.leibniz_mul_right [LieRinehartRing A₁ L₁] (x : L₁) (a b : A₁) :
+  ⁅x, a * b⁆ = a • ⁅x, b⁆ + ⁅x, a⁆ * b := LieRinehartRing.leibniz_mul_right' x a b
+
+@[simp] lemma LieRinehartRing.leibniz_smul_right [LieRinehartRing A₁ L₁] (x y : L₁) (a : A₁) :
+  ⁅x, a • y⁆ = a • ⁅x, y⁆ + ⁅x, a⁆ • y := LieRinehartRing.leibniz_smul_right' x y a
+
 instance : LieRinehartRing A₁ (Derivation R A₁ A₁) where
-  lie_smul_eq_mul _ _ _ := rfl
-  leibniz_mul_right _ _ _ := by simp; ring
-  leibniz_smul_right _ _ _ := by ext; simp [Derivation.commutator_apply]; ring
+  lie_smul_eq_mul' _ _ _ := rfl
+  leibniz_mul_right' _ _ _ := by simp; ring
+  leibniz_smul_right' _ _ _ := by ext; simp [Derivation.commutator_apply]; ring
 
 /-- The derivations of a commutative Algebra themselves form a LieRinehart-Algebra. -/
 instance : LieRinehartAlgebra R A₁ (Derivation R A₁ A₁) where
@@ -78,10 +87,10 @@ structure Hom (σ : A₁ →ₐ[R] A₂) (L₁ L₂ : Type*)
   map_smul_apply' (a : A₁) (x : L₁) : toLieHom (a • x) = σ a • toLieHom x
   apply_lie' (a : A₁) (x : L₁) : σ ⁅x, a⁆ = ⁅toLieHom x, σ a⁆
 
-namespace Hom
-
 @[inherit_doc]
 scoped notation:25 L " →ₗ⁅" σ:25 "⁆ " L₂:0 => LieRinehartAlgebra.Hom σ L L₂
+
+namespace Hom
 
 instance : CoeFun (L₁ →ₗ⁅σ₁₂⁆ L₂) (fun _ => L₁ → L₂) := ⟨fun f => f.toLieHom⟩
 
@@ -118,6 +127,8 @@ protected def id : L₁ →ₗ⁅AlgHom.id R A₁⁆ L₁ where
   map_smul_apply' _ _ := by simp
   apply_lie' _ _ := by simp
 
+end Hom
+
 variable [LieRinehartRing A₁ L₁] [LieRinehartAlgebra R A₁ L₁]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -126,15 +137,16 @@ variable (R A₁ L₁) in
 to the module of derivations of `A`. -/
 def anchor : L₁ →ₗ⁅AlgHom.id R A₁⁆ Derivation R A₁ A₁ where
   toFun x := .mk' (LieModule.toEnd R L₁ A₁ x) fun a b ↦ by
-    simp [LieRinehartRing.leibniz_mul_right, mul_comm b]
+    simp [mul_comm b]
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
   map_lie' {_ _} := by ext; simp [Derivation.commutator_apply]
-  map_smul_apply' _ _ := by ext; simp [LieRinehartRing.lie_smul_eq_mul]
+  map_smul_apply' _ _ := by ext; simp
   apply_lie' _ _ := by simp
 
 @[simp] lemma anchor_derivation : anchor R A₁ (Derivation R A₁ A₁) = Hom.id := rfl
 
-end Hom
+@[simp] lemma anchor_apply (l : L₁) (a : A₁) :
+  (LieRinehartAlgebra.anchor R A₁ L₁ l) a = ⁅l, a⁆ := rfl
 
 end LieRinehartAlgebra
