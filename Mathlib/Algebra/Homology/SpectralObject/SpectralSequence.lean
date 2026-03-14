@@ -16,7 +16,7 @@ public import Mathlib.Order.WithBotTop
 The main definition in this file is `Abelian.SpectralObject.spectralSequence` (TODO).
 Assume that `X` is a spectral object indexed by `ι` in an abelian category `C`,
 and that we have `data : SpectralSequenceDataCore ι c r₀` for a family
-of complexes shapes `c : ℤ → ComplexShape κ` for a type `κ` and `r₀ : ℤ`.
+of complex shapes `c : ℤ → ComplexShape κ` for a type `κ` and `r₀ : ℤ`.
 Then, under the assumption `X.HasSpectralSequence data` (see the file
 `Mathlib/Algebra/Homology/SpectralObject/HasSpectralSequence.lean`),
 we obtain `X.spectralSequence data` (TODO) which is a spectral sequence starting
