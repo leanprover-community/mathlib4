@@ -459,7 +459,7 @@ noncomputable def quotientToCoinvariantsFunctor (S : Subgroup G) [S.Normal] :
 section Finsupp
 
 
-open MonoidalCategory Finsupp ModuleCat.MonoidalCategory
+open MonoidalCategory Finsupp
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (α : Type u) [DecidableEq α]
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the map

@@ -5,14 +5,10 @@ Authors: Edison Xie
 -/
 module
 
-public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
-public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.Equiv
-public import Mathlib.CategoryTheory.Action.Monoidal
 
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.
@@ -30,11 +26,14 @@ universe w w' u u' v v'
 open CategoryTheory
 
 set_option backward.privateInPublic true in
+/-- The category of representations of monoid `G` and their morphisms. -/
 structure Rep (k : Type u) (G : Type v) [Semiring k] [Monoid G] where
   private mk ::
+  /-- the underlying type of an object in `Rep k G` -/
   V : Type w
   [hV1 : AddCommGroup V]
   [hV2 : Module k V]
+  /-- the underlying representation of an object in `Rep k G` -/
   ρ : Representation k G V
 
 namespace Rep
@@ -55,6 +54,8 @@ attribute [coe] V
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+/-- The object in the category of representations associated to a type equipped a representation.
+This is the preferred way to construct a term of `Rep k G`. -/
 abbrev of {X : Type w} [AddCommGroup X] [Module k X] (ρ : Representation k G X) :
   Rep.{w} k G := ⟨X, ρ⟩
 
@@ -69,7 +70,7 @@ set_option backward.privateInPublic true in
 @[ext]
 structure Hom (A B : Rep.{w} k G) where
   private mk ::
-  /-- The underlying algebra map. -/
+  /-- The underlying `G`-equivariant linear map. -/
   hom' : A.ρ.IntertwiningMap B.ρ
 
 set_option backward.privateInPublic true in
@@ -151,7 +152,8 @@ lemma forget_obj (A : Rep.{w} k G) : (forget (Rep.{w} k G)).obj A = A := rfl
 
 lemma forget_map (f : A ⟶ B) : (forget (Rep.{w} k G)).map f = (f : _ → _) := rfl
 
-open LinearMap in
+/-- An equiv between the underlying representations induce isomorphism between objects in
+  `Rep k G`. -/
 def mkIso {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
     {σ : Representation k G X} {ρ : Representation k G Y} (e : σ.Equiv ρ) : of σ ≅ of ρ where
   hom := ofHom e.toIntertwiningMap
@@ -181,8 +183,6 @@ lemma mkIso_inv_hom_apply {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Modu
 lemma mkIso_hom_hom {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
     {σ : Representation k G X} {ρ : Representation k G Y} (e : σ.Equiv ρ) :
     (mkIso e).hom.hom = e.toIntertwiningMap := rfl
-
-abbrev mkIso' {X Y : Rep.{w} k G} (e : X.ρ.Equiv Y.ρ) : X ≅ Y := mkIso e
 
 variable {A B} in
 @[simps]
@@ -425,9 +425,6 @@ abbrev ofMulActionSubsingletonIsoTrivial
     (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
     ofMulAction k G H ≅ trivial k G k :=
   mkIso <| Representation.ofMulActionSubsingletonEquivTrivial k G H
-  -- letI : Unique H := uniqueOfSubsingleton 1
-  -- mkIso' <| .mk' (ofMulAction.equivFinsupp _ _ _ ≪≫ₗ Finsupp.LinearEquiv.finsuppUnique _ _ _)
-  --   fun g ↦ by ext x; simp [Subsingleton.elim (g • x) x]
 
 section
 
@@ -996,8 +993,6 @@ open MonoidalCategory
 
 variable (A B : Rep.{u} k G) (α : Type u) [DecidableEq α]
 
-open ModuleCat.MonoidalCategory
-
 set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 -- the proof below can be simplified after https://github.com/leanprover-community/mathlib4/issues/24823 is merged
@@ -1011,11 +1006,6 @@ set_option backward.isDefEq.respectTransparency false in
 `A ⊗ (α →₀ B) ≅ (A ⊗ B) →₀ α` sending `a ⊗ₜ single x b ↦ single x (a ⊗ₜ b)`. -/
 abbrev finsuppTensorRight : A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
   mkIso (Representation.finsuppTensorRight A.ρ B.ρ α)
-  -- Rep.mkIso _ _ (TensorProduct.finsuppRight k _ A B α) fun _ => by
-  --   dsimp
-  --   ext
-  --   simp
-
 
 section
 
@@ -1128,3 +1118,4 @@ end Linearization
 end
 
 end Rep
+-- #lint

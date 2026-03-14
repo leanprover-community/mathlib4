@@ -190,7 +190,7 @@ section
 
 variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep k G) (B : Rep k H)
 
-open ModuleCat.MonoidalCategory Representation
+open Representation
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
@@ -252,7 +252,7 @@ noncomputable def coinvariantsTensorIndIso :
   inv := coinvariantsTensorIndInv φ A B
   hom_inv_id := by
     ext h a b
-    simpa [tensorObj_carrier, coinvariantsTensorIndInv, coinvariantsTensorMk,
+    simpa [coinvariantsTensorIndInv, coinvariantsTensorMk,
       coinvariantsTensorIndHom, Coinvariants.mk_eq_iff] using
         Coinvariants.mem_ker_of_eq h (IndV.mk φ _ h a ⊗ₜ[k] b) _ <| by simp
   inv_hom_id := by

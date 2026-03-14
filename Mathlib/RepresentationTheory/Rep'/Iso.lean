@@ -5,8 +5,8 @@ Authors: Edison Xie
 -/
 module
 
-public import Mathlib.RepresentationTheory.Rep'.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.RepresentationTheory.Rep'.Basic
 
 /-!
 # Equivalence between `Rep k G` and `ModuleCat k[G]`
@@ -25,13 +25,11 @@ open CategoryTheory
 
 suppress_compilation
 
-attribute [local simp] ModuleCat.MonoidalCategory.tensorObj_carrier
-
 section Group
 
 variable (k G H : Type u) [Group G] [Monoid H] [MulAction G H] [CommRing k] (n : ℕ)
 
-open MonoidalCategory Finsupp ModuleCat.MonoidalCategory Representation.IntertwiningMap
+open MonoidalCategory Finsupp Representation.IntertwiningMap
 
 /-- An isomorphism of `k`-linear representations of `G` from `k[Gⁿ⁺¹]` to `k[G] ⊗ₖ k[Gⁿ]` (on
 which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, ..., gₙ)` to
