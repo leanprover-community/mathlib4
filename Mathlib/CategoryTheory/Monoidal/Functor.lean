@@ -1008,7 +1008,7 @@ variable [G.LaxMonoidal]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of a lax monoidal functor is oplax monoidal. -/
-@[simps, implicit_reducible]
+@[simps -isSimp, implicit_reducible]
 def leftAdjointOplaxMonoidal : F.OplaxMonoidal where
   η := (adj.homEquiv _ _).symm (ε G)
   δ X Y := (adj.homEquiv _ _).symm ((adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _)
@@ -1059,12 +1059,13 @@ instance :
     adj.IsMonoidal := by
   letI := adj.leftAdjointOplaxMonoidal
   refine ⟨?_, fun X Y ↦ ?_⟩
-  · simp [homEquiv_counit]
-  · simp [homEquiv_counit, ← μ_natural]
+  · simp [homEquiv_counit, leftAdjointOplaxMonoidal_η]
+  · simp [homEquiv_counit, ← μ_natural, leftAdjointOplaxMonoidal_δ]
 
 end OplaxMonoidal
 
-attribute [local simp] rightAdjointLaxMonoidal_ε rightAdjointLaxMonoidal_μ in
+attribute [local simp] rightAdjointLaxMonoidal_ε rightAdjointLaxMonoidal_μ
+  leftAdjointOplaxMonoidal_η leftAdjointOplaxMonoidal_δ in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F ⊣ G` is an adjunction, the `G` is lax monoidal iff `F` is oplax monoidal.
 It is advisable to use `Adjunction.leftAdjointOplaxMonoidal` and
