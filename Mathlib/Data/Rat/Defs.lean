@@ -148,7 +148,7 @@ variable (a b c : ℚ)
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, Rat.intCast_one]
 
 protected theorem zero_ne_one : 0 ≠ (1 : ℚ) := by
-  rw [ne_comm, ← divInt_one_one, divInt_ne_zero] <;> lia
+  rw [ne_comm, ← divInt_one_one, divInt_ne_zero] <;> omega
 
 attribute [simp] mkRat_eq_zero
 
