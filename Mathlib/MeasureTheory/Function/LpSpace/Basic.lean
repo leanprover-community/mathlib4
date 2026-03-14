@@ -577,7 +577,7 @@ theorem compMeasurePreserving_id (g : Lp E p μb) :
     compMeasurePreserving id (MeasurePreserving.id μb) g = g := by
   apply Subtype.ext
   rw [compMeasurePreserving_val]
-  apply AEEqFun.compMeasurePreserving_id
+  exact AEEqFun.compMeasurePreserving_id _
 
 theorem compMeasurePreserving_compMeasurePreserving {γ : Type*} [MeasurableSpace γ]
     {μc : Measure γ} (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc)
