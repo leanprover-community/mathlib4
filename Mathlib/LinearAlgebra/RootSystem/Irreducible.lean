@@ -121,10 +121,9 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
     by_cases hk : P.root k ∈ Q
     · refine LinearMap.mem_ker.mp (span_le.mpr ?_ ht)
       rintro _ ⟨j, hj, rfl⟩
-      rw [SetLike.mem_coe, LinearMap.mem_ker, P.root_coroot'_eq_pairing]
-      have := LinearMap.mem_ker.mp (hq_ker j hj hk)
-      rw [P.root_coroot'_eq_pairing] at this
-      exact P.pairing_eq_zero_iff'.mpr this
+      rw [SetLike.mem_coe, LinearMap.mem_ker, P.root_coroot'_eq_pairing, P.pairing_eq_zero_iff',
+        ← P.root_coroot'_eq_pairing]
+      exact LinearMap.mem_ker.mp (hq_ker j hj hk)
     · exact LinearMap.mem_ker.mp (hq_ker k hk htQ)
   have : IsReflexive K M := .of_isPerfPair P.toLinearMap
   exact ((Dual.eval K _).map_eq_zero_iff (bijective_dual_eval K _).injective).mp
