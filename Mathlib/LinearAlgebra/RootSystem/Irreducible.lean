@@ -109,8 +109,7 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
   set T := span K (P.root '' {i | P.root i ∉ Q})
   have h_sup : S ⊔ T = ⊤ := by
     rw [← Submodule.span_union, ← Set.image_union]
-    have : {i | P.root i ∈ Q} ∪ {i | P.root i ∉ Q} = Set.univ :=
-      Set.eq_univ_of_forall fun _ => em _
+    have : {i | P.root i ∈ Q} ∪ {i | P.root i ∉ Q} = Set.univ := by ext; simp [em]
     rw [this, Set.image_univ]
     simp
   intro v hv
