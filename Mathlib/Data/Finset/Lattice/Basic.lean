@@ -28,6 +28,10 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 * `Finset.instInter`: Defines `s ∩ t` (or `s ⊓ t`) as the intersection of `s` and `t`.
   See `Finset.inf` for finite intersections.
 
+## Implementation Notes
+
+All the theorems and instances expect `DecidableEq` instance for `α`
+
 ## Tags
 
 finite sets, finset
