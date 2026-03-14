@@ -85,6 +85,8 @@ def coind : Representation k H (coindV φ ρ) where
   map_mul' _ _ := by ext; simp [mul_assoc]
 
 variable {σ ρ} in
+/-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
+  natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
 def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind φ ρ) where
   __ : _ →ₗ[k] _ := (f.toLinearMap.compLeft H).restrict fun x h ↦ by
     simp only [mem_coindV, LinearMap.compLeft_apply, Function.comp_apply,
@@ -267,9 +269,11 @@ end CoindIso
 
 noncomputable section Adjunction
 
-set_option backward.isDefEq.respectTransparency false in
+/-- The morphism induced by the adjunction between `res φ` and `coind φ` sending a morphism
+  `f : res φ B ⟶ A` to the morphism `B ⟶ coind φ A` given by the underlying linear map sending
+  `b : B.V` to the function sending `h : H` to `f ((B.ρ h) b)`. -/
 def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coind φ A) :=
-  Rep.ofHom (σ := B.ρ) (ρ := (coind φ A).ρ) ⟨(LinearMap.pi fun h => f.hom.toLinearMap ∘ₗ
+  Rep.ofHom ⟨(LinearMap.pi fun h => f.hom.toLinearMap ∘ₗ
     Rep.ρ B h).codRestrict _ fun _ _ _ => by simpa using hom_comm_apply f _ _, fun g ↦ by
     dsimp; ext; simp⟩
 
