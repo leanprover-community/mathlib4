@@ -176,6 +176,13 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   · intro x hx y hy
     exact (dist_triangle_right _ _ (∏ i ∈ s, (1 + f i))).trans_lt (add_halves ε ▸ add_lt_add hx hy)
 
+/-- Splitting an infinite product `∏' k, (1 + f k)` into a finite product times the tail. -/
+lemma tprod_one_add_eq_finset_mul_compl [CompleteSpace R]
+    (hf : Summable fun i ↦ ‖f i‖) (s : Finset ι) :
+    ∏' k, (1 + f k) = (∏ k ∈ s, (1 + f k)) * ∏' k : {k // k ∉ s}, (1 + f k) :=
+  ((s.hasProd (fun k ↦ 1 + f k)).mul_compl (multipliable_one_add_of_summable
+    (hf.comp_injective Subtype.val_injective)).hasProd).tprod_eq
+
 lemma Summable.summable_log_norm_one_add (hu : Summable fun n ↦ ‖f n‖) :
     Summable fun i ↦ Real.log ‖1 + f i‖ := by
   suffices Summable (‖1 + f ·‖ - 1) from

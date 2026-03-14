@@ -457,6 +457,11 @@ lemma nnnorm_sub_mul_le (ha : ‖a‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖c - 
 chord length is a metric on the unit complex numbers. -/
 lemma nnnorm_sub_mul_le' (hb : ‖b‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖1 - a‖₊ + ‖c - b‖₊ := norm_sub_mul_le' hb
 
+lemma norm_mul_sub_mul_le (a b c d : α) :
+    ‖a * b - c * d‖ ≤ ‖a - c‖ * ‖b‖ + ‖c‖ * ‖b - d‖ := by
+  simp only [show a * b - c * d = (a - c) * b + c * (b - d) by simp [sub_mul, mul_sub]]
+  exact (norm_add_le _ _).trans (add_le_add (norm_mul_le _ _) (norm_mul_le _ _))
+
 lemma norm_commutator_units_sub_one_le (a b : αˣ) :
     ‖(a * b * a⁻¹ * b⁻¹).val - 1‖ ≤ 2 * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ * ‖a.val - 1‖ * ‖b.val - 1‖ :=
   calc
