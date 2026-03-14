@@ -371,13 +371,11 @@ theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}
       (Primrec₂.uncurry.mpr hm)
       (list_map (hl.comp fst snd) (Primrec₂.pair.comp₂ (fst.comp₂ .left) .right))
       (hg.comp₂ (fst.comp₂ .left) (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right))
-      (by simpa using Ord) (by simpa [Function.comp] using H)
+(by simpa using Ord) (by simpa [Function.comp] using H)
+
 /-- `List.drop` is primitive recursive. -/
 theorem list_drop : Primrec₂ (List.drop : ℕ → List α → List α) :=
-  (nat_rec' fst snd (list_tail.comp (snd.comp snd)).to₂).of_eq fun ⟨n, l⟩ => by
-    induction n generalizing l with
-    | zero => rfl
-    | succ n ih => simp [ih]
+  (nat_iterate fst snd (list_tail.comp₂ .right)).to₂.of_eq fun n l => l.tail_iterate n
 
 /-- `List.take` is primitive recursive. -/
 theorem list_take : Primrec₂ (List.take : ℕ → List α → List α) :=
@@ -394,8 +392,8 @@ theorem list_takeWhile {p : α → Bool} (hp : Primrec p) : Primrec (List.takeWh
 theorem list_dropWhile {p : α → Bool} (hp : Primrec p) : Primrec (List.dropWhile p) :=
   (list_drop.comp (list_findIdx Primrec.id (Primrec.not.comp (hp.comp snd)).to₂)
     Primrec.id).of_eq fun _ => List.dropWhile_eq_drop_findIdx_not.symm
-end Primrec
 
+end Primrec
 
 namespace PrimrecPred
 

@@ -82,6 +82,12 @@ lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) =
     rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
     simp [getLast_cons, hl]
 
+/-- Applying `tail` to a list `n` times is strictly equivalent to dropping `n` elements. -/
+theorem tail_iterate (l : List α) (n : ℕ) : (List.tail^[n]) l = l.drop n := by
+  induction n generalizing l with
+  | zero => rfl
+  | succ n ih => cases l <;> simp [*]
+
 section TakeI
 
 variable [Inhabited α]
@@ -164,17 +170,5 @@ theorem length_dropSlice (i j : ℕ) (xs : List α) :
 
 theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     (dropSlice i j xs).length < xs.length := by grind
-
-/-- Applying `tail` to a list `n` times is strictly equivalent to dropping `n` elements. -/
-theorem tail_iterate (l : List α) (n : ℕ) : (List.tail^[n]) l = l.drop n := by
-  induction n generalizing l with
-  | zero => rfl
-  | succ n ih =>
-    cases l with
-    | nil =>
-      change (List.tail^[n]) [] = []
-      rw [ih []]
-      cases n <;> rfl
-    | cons a as => exact ih as
 
 end List
