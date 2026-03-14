@@ -169,6 +169,10 @@ abbrev quotientToInvariants :
     Representation k (G ⧸ S) (invariants (ρ.comp S.subtype)) :=
   ofQuotient (toInvariants ρ S) S
 
+abbrev quotientToInvariants_lift :
+    Representation.IntertwiningMap (MonoidHom.comp (quotientToInvariants ρ S)
+      (QuotientGroup.mk' _)) ρ := ⟨Submodule.subtype _, fun _ ↦ rfl⟩
+
 end Subgroup
 end Invariants
 

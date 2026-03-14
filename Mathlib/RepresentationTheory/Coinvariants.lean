@@ -178,8 +178,8 @@ noncomputable def toCoinvariants :
 lemma toCoinvariants_mk (g : G) (x : V) :
     toCoinvariants ρ S g (Coinvariants.mk _ x) = Coinvariants.mk _ (ρ g x) := rfl
 
-noncomputable def toCoinvariantsMkQ : ρ.IntertwiningMap (toCoinvariants ρ S) where
-  __ : _ →ₗ[k] _ := Submodule.mkQ _
+noncomputable abbrev toCoinvariantsMkQ : ρ.IntertwiningMap (toCoinvariants ρ S) where
+  __ := Coinvariants.mk _
   isIntertwining' _ := rfl
 
 instance : IsTrivial ((toCoinvariants ρ S).comp S.subtype) where

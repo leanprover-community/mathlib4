@@ -67,9 +67,7 @@ lemma cochainsMap_id :
 
 @[simp]
 lemma cochainsMap_id_f_hom_eq_compLeft {A B : Rep k G} (f : A ⟶ B) (i : ℕ) :
-    ((cochainsMap (MonoidHom.id G) f).f i).hom = f.hom.toLinearMap.compLeft _ := by
-  ext
-  rfl
+    ((cochainsMap (MonoidHom.id G) f).f i).hom = f.hom.toLinearMap.compLeft _ := rfl
 
 @[reassoc]
 lemma cochainsMap_comp {G H K : Type u} [Group G] [Group H]
@@ -343,8 +341,6 @@ section InfRes
 
 variable (A : Rep k G) (S : Subgroup G) [S.Normal]
 
-#print "## TODO : Change this to Representation"
-
 /-- The short complex `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)`. -/
 @[simps X₁ X₂ X₃ f g]
 noncomputable def H1InfRes :
@@ -352,7 +348,7 @@ noncomputable def H1InfRes :
   X₁ := groupCohomology (A.quotientToInvariants S) 1
   X₂ := groupCohomology A 1
   X₃ := groupCohomology (res S.subtype A) 1
-  f := map (QuotientGroup.mk' S) (ofHom ⟨Submodule.subtype _, fun _ ↦ rfl⟩) 1
+  f := map (QuotientGroup.mk' S) (ofHom <| A.ρ.quotientToInvariants_lift S) 1
   g := map S.subtype (𝟙 _) 1
   zero := by rw [← map_comp, Category.comp_id, congr (QuotientGroup.mk'_comp_subtype S)
     (fun f φ => map f φ 1), map₁_one]
@@ -539,7 +535,7 @@ sending `A : Rep k G` to `Hⁿ(G ⧸ S, A^S)` and to `Hⁿ(G, A)`. -/
 @[simps]
 noncomputable def infNatTrans (S : Subgroup G) [S.Normal] (n : ℕ) :
     quotientToInvariantsFunctor k S ⋙ functor k (G ⧸ S) n ⟶ functor k G n where
-  app A := map (QuotientGroup.mk' S) (Rep.ofHom ⟨Submodule.subtype _, fun _ ↦ rfl⟩) n
+  app A := map (QuotientGroup.mk' S) (ofHom <| A.ρ.quotientToInvariants_lift S) n
   naturality {X Y} φ := by
     simp only [Functor.comp_map, functor_map, ← cancel_epi (groupCohomology.π _ n),
       HomologicalComplex.homologyπ_naturality_assoc, HomologicalComplex.homologyπ_naturality,

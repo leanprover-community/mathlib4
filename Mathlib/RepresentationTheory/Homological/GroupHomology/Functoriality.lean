@@ -573,7 +573,6 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
     chains₁ToCoinvariantsKer, d₁₀, single_sum, mul_assoc, sub_add_eq_add_sub,
     sum_sum_index, add_smul, sub_sub_sub_eq, lsingle, singleAddHom] using add_comm _ _
 
-#print "change mkQ to Representation level"
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the map
 `H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S` is an
@@ -596,9 +595,7 @@ instance : Epi (H1CoresCoinf A S).g := by
     simp only [shortComplexH1, mapShortComplexH1_τ₂, ModuleCat.ofHom_comp, MonoidHom.coe_id,
       lmapDomain_id, ModuleCat.ofHom_id, res_obj_ρ, hom_ofHom, Category.id_comp, ModuleCat.hom_comp,
       ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply,
-      IntertwiningMap.coe_toLinearMap, mapShortComplexH1_τ₃] at h'
-    change (d₁₀ (A.toCoinvariants S)).hom (mapRange (Coinvariants.mk _) _ _) =
-      Coinvariants.mk _ _ at h'
+      mapShortComplexH1_τ₃] at h'
     simp [← Coinvariants.mk_eq_zero, ← h', hY]
   /- Thus we can pick a representation of `d(Y)` as a sum `∑ ρ(sᵢ⁻¹)(aᵢ) - aᵢ`, `sᵢ ∈ S, aᵢ ∈ A`,
 and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
@@ -613,7 +610,6 @@ and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
 /- Moreover, the image of `Y - ∑ aᵢ·sᵢ` in `Z₁(G ⧸ S, A_S)` is `x - ∑ aᵢ·1`, and hence differs from
 `x` by a boundary, since `aᵢ·1 = d(aᵢ·(1, 1))`. -/
   refine (H1π_eq_iff _ _).2 ?_
-  change mapRange (A.ρ.toCoinvariantsMkQ S) _ Y = _ at hY
   simpa [← hy, mapCycles₁_hom, map_sub, Rep.hom_id (res _ _), ← mapDomain_comp,
     ← mapDomain_mapRange, hY, Function.comp_def, (QuotientGroup.eq_one_iff <| Subtype.val _).2
     (Subtype.prop _)] using Submodule.finsuppSum_mem _ _ _ _ fun _ _ ↦ single_one_mem_boundaries₁ _
@@ -667,19 +663,8 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
         LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply, mapRange_apply] at this
       simp only [← mapRange_apply (f := Coinvariants.mk <| A.ρ.comp S.subtype)
         (hf := map_zero _) (a := g), ← mapRange.linearMap_apply (R := k)]
-      simp only [map_add, mapRange.linearMap_apply, coe_add, Pi.add_apply, mapRange_apply,
-        Subgroup.coe_subtype, lmapDomain_apply, implies_true, ← mapDomain_mapRange, hZ]
-      simp only [Representation.toCoinvariantsMkQ] at this
-      change Representation.Coinvariants.mk _ _ = ((d₂₁ (A.toCoinvariants S)).hom
-        (mapRange (Coinvariants.mk (MonoidHom.comp A.ρ S.subtype)) _ W)) g at this
-      rw [this, hW, hzw]
-      simp only [coe_mapCycles₁ S.subtype, ModuleCat.ofHom_comp, Subgroup.coe_subtype, res_obj_ρ,
-        Rep.hom_id, IntertwiningMap.toLinearMap_id, mapRange.linearMap_id, ModuleCat.ofHom_id,
-        Category.comp_id, ModuleCat.hom_ofHom, lmapDomain_apply, coe_mapCycles₁ (MonoidHom.id G),
-        MonoidHom.coe_id, lmapDomain_id, hom_ofHom, Category.id_comp, mapRange.linearMap_apply,
-        coe_sub, Pi.sub_apply, mapRange_apply]
-      change _ + (_ - Coinvariants.mk _ _) = _
-      rw [add_sub_cancel]
+      simp [← mapDomain_mapRange, hZ, this, hW, hzw, coe_mapCycles₁ S.subtype,
+        coe_mapCycles₁ (MonoidHom.id G)]
 /- Let `β` be `b` considered as an element of `C₁(G, I(S)(A))`, so that `C₁(Id, i)(β) = b`. -/
   let β : G →₀ Coinvariants.ker (A.ρ.comp S.subtype) :=
     mapRange (Function.invFun <| (Coinvariants.ker (A.ρ.comp S.subtype)).subtype)
