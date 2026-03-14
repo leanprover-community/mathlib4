@@ -379,6 +379,11 @@ lemma ofDual_intermediateFieldEquivSubgroup_apply (K : IntermediateField F E) :
 lemma intermediateFieldEquivSubgroup_symm_apply_toDual (H : Subgroup Gal(E/F)) :
     intermediateFieldEquivSubgroup.symm (.toDual H) = fixedField H := rfl
 
+theorem fixedField_eq_iff_fixingSubgroup_eq {K : IntermediateField F E} {H : Subgroup Gal(E/F)} :
+    fixedField H = K ↔ K.fixingSubgroup = H := by
+  simp [← OrderIso.apply_eq_iff_eq intermediateFieldEquivSubgroup, fixingSubgroup_fixedField,
+    eq_comm]
+
 end
 
 /-- The Galois correspondence as a `GaloisInsertion`. -/

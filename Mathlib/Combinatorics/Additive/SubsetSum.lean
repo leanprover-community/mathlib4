@@ -95,8 +95,8 @@ lemma card_add_card_subsetSum_lt_card_subsetSum_insert_max (hA : ∀ x ∈ A, 0 
 theorem card_succ_choose_two_lt_card_subsetSum_of_pos (A_pos : ∀ x ∈ A, 0 < x) :
     (#A + 1).choose 2 < #A.subsetSum := by
   induction A using induction_on_max with
-  | h0 => simp
-  | step a A A_lt_a ih =>
+  | empty => simp
+  | insert a A A_lt_a ih =>
     have A_pos' : ∀ x ∈ A, 0 < x := fun x hx => A_pos x (mem_insert_of_mem hx)
     grw [card_insert_of_notMem fun ha => (A_lt_a a ha).false, Nat.choose_succ_left _ _ (by lia),
       Nat.choose_one_right, add_right_comm, add_assoc, Nat.add_one_le_iff.2 (ih A_pos')]
