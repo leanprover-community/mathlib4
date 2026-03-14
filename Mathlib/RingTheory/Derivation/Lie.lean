@@ -76,6 +76,9 @@ section CompatibleDerivations
 variable {A' : Type*} [CommRing A'] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A']
 
 variable (R A A') in
+/-- Let $\sigma: A \to A'$ be a an homomorphism. A derivation $d:A \to A$ and a derivation
+$d':A\to A'$ are called compatible if $d'\circ \sigma = \sigma \circ d$. Couples of derivations
+with this property form a Lie subalgebra of all couples of derivations. -/
 def CompatibleDerivations : LieSubalgebra R  ( (Derivation R A' A') ⊕⁅R⁆ (Derivation R A A)) where
   carrier := { x | (x.left).compAlgebraMapL R A A' A'
     = (Algebra.ofId A A').toLinearMap.compDer (x.right) }

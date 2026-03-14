@@ -145,10 +145,14 @@ instance : LieAlgebra.IsExtension (inl ψ) (projr ψ) where
 section DirectSum
 
 variable (R K L) in
+/-- The direct sum of two Lie algebras realized through a semidirect sum with trivial `ψ` -/
 abbrev DirectLieSum := K ⋊⁅(0 : L→ₗ⁅R⁆ (LieDerivation R K K))⁆ L
 
+@[inherit_doc]
 notation:35 K " ⊕⁅" R "⁆" L:35 => DirectLieSum R K L
 
+/-- When a semidirect sum is a direct sum, the projection to the left component is a Lie algebra
+homomorphism -/
 def projl' : (K ⊕⁅R⁆ L →ₗ⁅R⁆ K) where
   __ := projl 0
   map_lie' := by simp
