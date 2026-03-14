@@ -1451,6 +1451,19 @@ theorem IsBigO.sum_congr (hAB : ∀ i ∈ s, A i =O[l] B i) :
   choose! C hC using hAB
   exact ⟨_, IsBigOWith.sum_congr hC⟩
 
+theorem IsLittleO.sum_congr (hAB : ∀ i ∈ s, A i =o[l] B i) :
+    (fun H => ∑ i ∈ s, A i H) =o[l] fun H => ∑ i ∈ s, ‖B i H‖ := by
+  induction s using Finset.cons_induction with
+  | empty => simp [isLittleO_zero]
+  | cons i s his h =>
+  simp_rw [Finset.sum_cons]
+  calc (fun H => A i H + ∑ j ∈ s, A j H)
+      =o[l] fun H => ‖B i H‖ + ‖∑ j ∈ s, ‖B j H‖‖ :=
+          (hAB i (by simp)).add_add (h (fun j hj => hAB j (by simp [hj])))
+    _ =ᶠ[l] fun H => ‖B i H‖ + ∑ j ∈ s, ‖B j H‖ := by
+        refine Eventually.of_forall fun H ↦ congr_arg (‖B i H‖ + · ) ?_
+        exact Real.norm_of_nonneg (Finset.sum_nonneg fun _ _ => norm_nonneg _)
+
 /-- Similar to `IsBigOWith.sum_congr` except the index set can change in the sum. This requires the
 constant in `hAB` to be independent of the index `i` and also the big-O relationship to "kick in"
 at the same point along the running variable. Hence the `⊤` in `⊤ ×ˢ l`. -/
@@ -1473,6 +1486,12 @@ theorem IsBigO.sum_congr' {i : α → Finset ι} (hAB : A.uncurry =O[⊤ ×ˢ l]
   simp only [IsBigO_def]
   obtain ⟨C, hC⟩ := hAB.isBigOWith
   exact ⟨C, hC.sum_congr'⟩
+
+theorem IsLittleO.sum_congr' {i : α → Finset ι} (hAB : A.uncurry =o[⊤ ×ˢ l] B.uncurry) :
+    (fun H => ∑ j ∈ i H, A j H) =o[l] (fun H => ∑ j ∈ i H, ‖B j H‖) := by
+  rw [isLittleO_iff_forall_isBigOWith] at *
+  intro c hc
+  exact (hAB hc).sum_congr'
 
 end Sum
 
