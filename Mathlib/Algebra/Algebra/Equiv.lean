@@ -852,6 +852,7 @@ variable {R S T : Type*} [CommSemiring R] [Semiring S]
 
 attribute [local instance] ULift.algebra' in
 /-- `ULift` is functorial for algebra homomorphisms. -/
+@[pp_with_univ]
 def AlgHom.ulift (f : S →ₐ[R] T) :
     ULift.{u₁} S →ₐ[ULift.{u₂} R] ULift.{u₃} T where
   __ := AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom)
