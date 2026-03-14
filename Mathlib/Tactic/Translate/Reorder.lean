@@ -225,7 +225,7 @@ end
  private def decomposePerm {n} (map : Vector (Option (Fin n)) n) : Permutation := Id.run do
     let mut map := map
     let mut perm := []
-    for h : i in 0...n do
+    for h : i in *...n do
       let mut some j := map[i] | continue
       if i = j then continue
       let mut cycle := ⟨[i, j], by grind⟩
@@ -240,18 +240,18 @@ end
       perm := cycle :: perm
     return perm
 
-/-- Determine the universe level reorder from the argument reorder. -/
-def guessUnivReorder (reorder : ArgReorder) (src : Expr) (params : List Name) : Permutation :=
+/-- Determine the universe level reorder for `decl` given the argument reorder. -/
+def guessUnivReorder (reorder : ArgReorder) (decl : ConstantInfo) : Permutation :=
   Id.run do
-  let mut map := .replicate params.length none
+  let mut map := .replicate decl.levelParams.length none
   for ⟨cycle, _⟩ in show List _ from reorder.perm do
     for i in cycle, i' in cycle.tail ++ [cycle.head (by grind)] do
-      for (u, u') in matchingUnivs (getNthHyp i src) (getNthHyp i' src) do
+      for (u, u') in matchingUnivs (getNthHyp i decl.type) (getNthHyp i' decl.type) do
         let some p := getParam? u | pure ()
         let some p' := getParam? u' | pure ()
         if p != p' then
-          let some n := params.finIdxOf? p | pure ()
-          let some n' := params.finIdxOf? p' | pure ()
+          let some n := decl.levelParams.finIdxOf? p | pure ()
+          let some n' := decl.levelParams.finIdxOf? p' | pure ()
           map := map.set n n'
   return decomposePerm map
 where

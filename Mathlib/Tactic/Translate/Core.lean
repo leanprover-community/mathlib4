@@ -570,19 +570,20 @@ def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : E
 
 /-- Run `applyReplacementFun` on the given `srcDecl` to make a new declaration with name `tgt`. -/
 def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
-    (reorder : ArgReorder) (dont : List Nat)
+    (reorder : Reorder) (dont : List Nat)
     (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) :
     MetaM (ConstantInfo × Option RelevantArg) := do
   unless srcDecl.all == [srcDecl.name] do
     throwError "`{t.attrName}` does not support mutually recursive declarations."
   let decl := srcDecl.updateName tgt
   let decl := decl.updateAll [tgt]
+  let decl := decl.updateLevelParams (reorder.univReorder.permuteList! decl.levelParams)
   let mut value := decl.value! (allowOpaque := true)
   if let some b := unfoldBoundaries? then
     value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
   trace[translate] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
-  value ← reorderLambda reorder value'
+  value ← reorderLambda reorder.reorder value'
   if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   let decl := decl.updateValue value
@@ -590,7 +591,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   if let some b := unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
   let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t type
-  type ← reorderForall reorder type'
+  type ← reorderForall reorder.reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
   return (decl.updateType type, .merge .min relevantArg₁ relevantArg₂)
@@ -603,7 +604,7 @@ and only if that fails do we try to include them.
 The reason is that in the most common case, `to_dual` succeeds without needing to insert
 unfold boundaries, and figuring out whether to insert them can be quite expensive. -/
 def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
-    (reorder : ArgReorder) (dont : List Nat) : MetaM (ConstantInfo × Option RelevantArg) :=
+    (reorder : Reorder) (dont : List Nat) : MetaM (ConstantInfo × Option RelevantArg) :=
   -- Set `Elab.async` to `false` so that we can catch kernel errors.
   withOptions (Elab.async.set · false) do
   let decl ←
@@ -744,6 +745,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
       let namesPre := (← getConstInfo rootSrc).type.getForallBinderNames
       let namesSrc := (← getConstInfo src).type.getForallBinderNames
       pure <| cfg.dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
+  let reorder := { reorder, univReorder := guessUnivReorder reorder srcDecl }
   -- now transform the source declaration
   let (tgtDecl, relevantArg?) ← MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder dontTranslate
   let relevantArg ←
@@ -751,7 +753,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
       getRelevantArg t cfg relevantArg? src
     else
       pure (relevantArg?.getD .noArg)
-  insertTranslation t src tgt { univReorder := {}, reorder } relevantArg cfg.ref
+  insertTranslation t src tgt reorder relevantArg cfg.ref
   if src == rootSrc && srcDecl.isThm && tgtDecl.type == srcDecl.type then
     Linter.logLintIf linter.translateRedundant cfg.ref m!"`{t.attrName}` did not change the type \
       of theorem `{.ofConstName src}`. Please remove the attribute."
@@ -908,7 +910,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       pure reorder
     else
       pure reorder'
-  let univReorder := guessUnivReorder reorder srcType srcDecl.levelParams
+  let univReorder := guessUnivReorder reorder srcDecl
   if cfg.self && reorder.isEmpty then
     Linter.logLintIf linter.translateRedundant cfg.ref m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered.\n\
@@ -928,7 +930,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
-  return (⟨univReorder, reorder⟩, ← getRelevantArg t cfg relevantArg? src)
+  return ({ univReorder, reorder }, ← getRelevantArg t cfg relevantArg? src)
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `a_i` to `b_i`. -/
