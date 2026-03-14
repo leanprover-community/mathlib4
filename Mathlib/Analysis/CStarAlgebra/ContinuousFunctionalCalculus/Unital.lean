@@ -780,7 +780,7 @@ lemma cfcUnits_pow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℕ)
 
 lemma cfc_inv (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x ↦ (f x)⁻¹) a = Ring.inverse (cfc f a) := by
+    cfc (fun x ↦ (f x)⁻¹) a = (cfc f a)⁻¹ʳ := by
   rw [← val_inv_cfcUnits f a hf', ← val_cfcUnits f a hf', Ring.inverse_unit]
 
 lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
@@ -794,7 +794,7 @@ lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
 lemma cfc_map_div (f g : R → R) (a : A) (hg' : ∀ x ∈ spectrum R a, g x ≠ 0)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x ↦ f x / g x) a = cfc f a * Ring.inverse (cfc g a) := by
+    cfc (fun x ↦ f x / g x) a = cfc f a * (cfc g a)⁻¹ʳ := by
   simp only [div_eq_mul_inv]
   rw [cfc_mul .., cfc_inv g a hg']
 

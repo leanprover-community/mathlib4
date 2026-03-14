@@ -133,7 +133,7 @@ theorem MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
 
 @[simp]
 theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
-    MonoidWithZero.inverse a = Ring.inverse a :=
+    MonoidWithZero.inverse a = a⁻¹ʳ :=
   rfl
 
 /-- Inversion on a commutative group with zero, considered as a monoid with zero homomorphism. -/
