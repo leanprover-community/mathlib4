@@ -1456,7 +1456,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
-public import Mathlib.AlgebraicTopology.SimplicialSet.sdfasfsdf
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
 public import Mathlib.AlgebraicTopology.SingularSet
