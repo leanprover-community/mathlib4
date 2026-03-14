@@ -88,6 +88,7 @@ theorem Algebra.transcendental_iff_not_isAlgebraic :
     Algebra.Transcendental R A ↔ ¬ Algebra.IsAlgebraic R A := by
   simp [isAlgebraic_def, transcendental_def, Transcendental]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
 theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
     S.IsAlgebraic ↔ Algebra.IsAlgebraic R S := by

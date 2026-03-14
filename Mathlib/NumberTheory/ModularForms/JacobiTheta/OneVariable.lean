@@ -50,7 +50,7 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   norm_cast
   simp_rw [jacobiTheta₂_functional_equation 0 τ, zero_pow two_ne_zero, mul_zero, zero_div,
     Complex.exp_zero, mul_one, ← mul_assoc, mul_one_div, div_self h1, one_mul,
-    UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
+    inv_neg, neg_div, one_div]
 
 theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ rexp (-π * τ.im) ^ n.natAbs := by

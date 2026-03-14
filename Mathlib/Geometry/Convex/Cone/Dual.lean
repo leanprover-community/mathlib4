@@ -43,6 +43,7 @@ variable {R M N : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R] [AddCom
 
 local notation3 "R≥0" => {c : R // 0 ≤ c}
 
+set_option backward.isDefEq.respectTransparency false in
 variable (p s) in
 /-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
 points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
@@ -93,6 +94,7 @@ variable (s) in
 @[simp] lemma dual_flip_dual_dual_flip (s : Set N) :
     dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma dual_span (s : Set M) : dual p (span R s) = dual p s := by
   refine le_antisymm (dual_le_dual Submodule.subset_span) (fun x hx y hy => ?_)

@@ -239,6 +239,7 @@ namespace Subalgebra
 variable {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E] [Algebra F E]
   {S : Subalgebra F E}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S = ⊥ := by
   nontriviality E
   obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := S)
@@ -253,11 +254,13 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
   haveI := b.repr.toEquiv.subsingleton
   exact False.elim <| one_ne_zero congr(S.val $(Subsingleton.elim 1 0))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_of_finrank_one (h : finrank F S = 1) [Module.Free F S] : S = ⊥ := by
   refine Subalgebra.eq_bot_of_rank_le_one ?_
   rw [finrank, toNat_eq_one] at h
   rw [h]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 ↔ S = ⊥ := by
   refine ⟨fun h ↦ Subalgebra.eq_bot_of_rank_le_one h.le, ?_⟩
@@ -273,16 +276,19 @@ theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 �
     haveI := b.repr.toEquiv.subsingleton
     exact one_ne_zero congr((⊥ : Subalgebra F E).val $(Subsingleton.elim 1 0))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finrank_eq_one_iff [Nontrivial E] [Module.Free F S] : finrank F S = 1 ↔ S = ⊥ := by
   rw [← Subalgebra.rank_eq_one_iff]
   exact toNat_eq_iff one_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bot_eq_top_iff_rank_eq_one [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
   haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
   rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bot_eq_top_iff_finrank_eq_one [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ finrank F E = 1 := by
   haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm

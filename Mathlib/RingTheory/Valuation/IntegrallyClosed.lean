@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Tactic.NormNum.GCD

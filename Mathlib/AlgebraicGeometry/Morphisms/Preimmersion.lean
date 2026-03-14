@@ -80,9 +80,6 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
 lemma SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
     IsPreimmersion (Spec.map f) ↔ IsEmbedding (PrimeSpectrum.comap f.hom) ∧
       f.hom.SurjectiveOnStalks := by
-  haveI : (RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).RespectsIso := by
-    rw [← RingHom.toMorphismProperty_respectsIso_iff]
-    exact RingHom.surjective_respectsIso
   rw [← HasRingHomProperty.Spec_iff (P := @SurjectiveOnStalks), isPreimmersion_iff, and_comm]
   rfl
 
@@ -114,6 +111,17 @@ instance : IsStableUnderBaseChange @IsPreimmersion := by
     (SurjectiveOnStalks.isEmbedding_pullback f g)
   exact IsEmbedding.subtypeVal.comp ((TopCat.pullbackHomeoPreimage _ f.continuous _
     g.isEmbedding).isEmbedding.comp this)
+
+variable {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
+
+instance [IsPreimmersion g] : IsPreimmersion (Limits.pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g inferInstance
+
+instance [IsPreimmersion f] : IsPreimmersion (Limits.pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [IsPreimmersion f] : IsPreimmersion (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
 
 end IsPreimmersion
 

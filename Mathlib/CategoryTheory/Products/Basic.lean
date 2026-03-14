@@ -323,6 +323,7 @@ end NatIso
 
 namespace Equivalence
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Cartesian product of two equivalences of categories. -/
 @[simps]
 def prod (E₁ : A ≌ B) (E₂ : C ≌ D) : A × C ≌ B × D where

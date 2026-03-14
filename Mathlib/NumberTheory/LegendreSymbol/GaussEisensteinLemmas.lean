@@ -205,7 +205,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       tauto
   rw [sum_Ico_eq_card_lt, sum_Ico_eq_card_lt, hswap, ← card_union_of_disjoint hdisj, hunion,
     card_product]
-  simp only [card_Ico, tsub_zero, succ_sub_succ_eq_sub]
+  simp only [card_Ico, succ_sub_succ_eq_sub, Nat.sub_zero]
 
 /-- **Eisenstein's lemma** -/
 theorem eisenstein_lemma {p : ℕ} [Fact p.Prime] (hp : p ≠ 2) {a : ℕ} (ha1 : a % 2 = 1)

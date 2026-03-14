@@ -206,6 +206,11 @@ def toModuleAut : S →* M ≃ₗ[R] M where
 
 end DistribMulAction
 
+theorem LinearEquiv.smul_refl [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
+    [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M] (α : Sˣ) :
+    letI := SMulCommClass.symm R Sˣ M
+    α • refl R M = DistribMulAction.toLinearEquiv R M α := rfl
+
 namespace AddEquiv
 
 section AddCommMonoid
@@ -315,6 +320,30 @@ end AddCommGroup
 end AddEquiv
 
 namespace LinearMap
+
+/-- Pointwise application of a family of linear forms to a family of vectors -/
+def piApply {V : M → Type*} [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)] :
+    (Π x : M, V x →ₗ[R] R) →ₗ[R] (Π x : M, V x) →ₗ[R] M → R where
+  toFun e :=
+    { toFun s x := e x (s x)
+      map_add' := by intros; ext; simp
+      map_smul' := by intros; ext; simp }
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+
+@[simp]
+theorem piApply_apply {V : M → Type*}
+    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)]
+    (e : Π x : M, V x →ₗ[R] R) (s : Π x : M, V x) :
+    piApply e s = fun x ↦ e x (s x) :=
+  rfl
+
+@[simp]
+theorem piApply_apply_apply {V : M → Type*}
+    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)]
+    (e : Π x : M, V x →ₗ[R] R) (s : Π x : M, V x) (x : M) :
+    piApply e s x = e x (s x) :=
+  rfl
 
 variable (R S M)
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
@@ -543,6 +572,7 @@ See `LinearEquiv.conj` for the linear version of this isomorphism. -/
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism with respect to an action on the domains. -/
 @[simps] def domMulActCongrRight [Semiring S] [Module S M₁]
