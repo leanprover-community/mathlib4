@@ -276,15 +276,16 @@ section PartialOrder
 variable [PartialOrder α]
 
 @[to_additive]
-theorem mul_left_cancel'' [MulLeftReflectLE α] {a b c : α} (h : a * b = a * c) :
-    b = c :=
-  (le_of_mul_le_mul_left' h.le).antisymm (le_of_mul_le_mul_left' h.ge)
+instance [MulLeftReflectLE α] : IsLeftCancelMul α where
+  mul_left_cancel _ _ _ h := (le_of_mul_le_mul_left' h.le).antisymm (le_of_mul_le_mul_left' h.ge)
+
+@[deprecated (since := "2026-03-14")] alias mul_left_cancel'' := mul_left_cancel
 
 @[to_additive]
-theorem mul_right_cancel'' [MulRightReflectLE α] {a b c : α}
-    (h : a * b = c * b) :
-    a = c :=
-  (le_of_mul_le_mul_right' h.le).antisymm (le_of_mul_le_mul_right' h.ge)
+instance [MulRightReflectLE α] : IsRightCancelMul α where
+  mul_right_cancel _ _ _ h := (le_of_mul_le_mul_right' h.le).antisymm (le_of_mul_le_mul_right' h.ge)
+
+@[deprecated (since := "2026-03-14")] alias mul_right_cancel'' := mul_right_cancel
 
 @[to_additive] lemma mul_le_mul_iff_of_ge [MulLeftStrictMono α]
     [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
@@ -1115,9 +1116,7 @@ to the appropriate covariant class. -/
 @[to_additive (attr := implicit_reducible)
 /-- An additive semigroup with a partial order and satisfying `AddLeftCancelSemigroup`
 (i.e. `c + a < c + b → a < b`) is a `AddLeftCancelSemigroup`. -/]
-def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] :
-    LeftCancelSemigroup α :=
-  { ‹Semigroup α› with mul_left_cancel := fun _ _ _ => mul_left_cancel'' }
+def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] : LeftCancelSemigroup α where
 
 /- This is not instance, since we want to have an instance from `RightCancelSemigroup`s
 to the appropriate covariant class. -/
@@ -1126,9 +1125,7 @@ to the appropriate covariant class. -/
 @[to_additive (attr := implicit_reducible)
 /-- An additive semigroup with a partial order and satisfying `AddRightCancelSemigroup`
 (`a + c < b + c → a < b`) is a `AddRightCancelSemigroup`. -/]
-def Contravariant.toRightCancelSemigroup [MulRightReflectLE α] :
-    RightCancelSemigroup α :=
-  { ‹Semigroup α› with mul_right_cancel := fun _ _ _ => mul_right_cancel'' }
+def Contravariant.toRightCancelSemigroup [MulRightReflectLE α] : RightCancelSemigroup α where
 
 end PartialOrder
 
