@@ -300,10 +300,16 @@ theorem coeFn_compMeasurePreserving (g : β →ₘ[ν] γ) (hf : MeasurePreservi
     g.compMeasurePreserving f hf =ᵐ[μ] g ∘ f :=
   g.coeFn_compQuasiMeasurePreserving _
 
+lemma MeasurePreserving_congr (hf : MeasurePreserving f μ ν) {f' : α → β}
+    (hf' : Measurable f') (h : f =ᵐ[μ] f') : MeasurePreserving f' μ ν := by
+  refine ⟨hf', ?_⟩
+  rw [Measure.map_congr h.symm]
+  exact hf.map_eq
+
 theorem compMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν)
-    {f' : α → β} (hf' : MeasurePreserving f' μ ν) (h : f =ᵐ[μ] f') :
-    compMeasurePreserving g f hf = compMeasurePreserving g f' hf' :=
-  compQuasiMeasurePreserving_congr _ _ _ h
+    {f' : α → β} (hf' : Measurable f') (h : f =ᵐ[μ] f') :
+    compMeasurePreserving g f hf = compMeasurePreserving g f' (MeasurePreserving_congr hf hf' h) :=
+  compQuasiMeasurePreserving_congr _ _ hf' h
 
 @[simp]
 theorem compMeasurePreserving_id (g : β →ₘ[ν] γ) :
