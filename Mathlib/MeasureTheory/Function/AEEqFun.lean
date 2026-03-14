@@ -234,9 +234,16 @@ theorem coeFn_compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (hf : QuasiMeasu
   rw [compQuasiMeasurePreserving_eq_mk]
   apply coeFn_mk
 
+lemma QuasiMeasurePreserving_congr (hf : QuasiMeasurePreserving f μ ν) {f' : α → β}
+    (hf' : Measurable f') (h : f =ᵐ[μ] f') : QuasiMeasurePreserving f' μ ν := by
+  refine ⟨hf', ?_⟩
+  rw [Measure.map_congr h.symm]
+  exact hf.absolutelyContinuous
+
 theorem compQuasiMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν)
-    {f' : α → β} (hf' : QuasiMeasurePreserving f' μ ν) (h : f =ᵐ[μ] f') :
-    compQuasiMeasurePreserving g f hf = compQuasiMeasurePreserving g f' hf' := by
+    {f' : α → β} (hf' : Measurable f') (h : f =ᵐ[μ] f') :
+    compQuasiMeasurePreserving g f hf =
+    compQuasiMeasurePreserving g f' (QuasiMeasurePreserving_congr hf hf' h) := by
   ext
   grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving, h]
 
