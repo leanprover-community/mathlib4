@@ -112,10 +112,10 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
     rw [P.root_coroot'_eq_pairing] at h₁
     exact P.pairing_eq_zero_iff'.mpr h₁
   have h_sup : S ⊔ T = ⊤ := by
-    rw [← Submodule.span_union, ← Set.image_union,
-      show {i | P.root i ∈ Q} ∪ {i | P.root i ∉ Q} = Set.univ from
-        Set.eq_univ_of_forall fun _ => em _,
-      Set.image_univ]
+    rw [← Submodule.span_union, ← Set.image_union]
+    have : {i | P.root i ∈ Q} ∪ {i | P.root i ∉ Q} = Set.univ :=
+      Set.eq_univ_of_forall fun _ => em _
+    rw [this, Set.image_univ]
     simp
   intro v hv
   obtain ⟨s, hs, t, ht, rfl⟩ := Submodule.mem_sup.mp (h_sup ▸ Submodule.mem_top (x := v))
