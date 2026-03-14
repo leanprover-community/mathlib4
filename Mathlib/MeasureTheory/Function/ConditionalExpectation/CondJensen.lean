@@ -33,9 +33,9 @@ open MeasureTheory Function Set Filter
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {α : Type*} {f : α → E} {φ : E → ℝ} {m mα : MeasurableSpace α} {μ : Measure α} {s : Set E}
 
-/-- If `f` lies in a closed convex set `s` a.e., then `μ[f | m]` lies in `s` a.e. -/
-lemma Convex.condExp_mem [IsFiniteMeasure μ] [HereditarilyLindelofSpace E] (hm : m ≤ mα)
-    (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
+private lemma Convex.condExp_mem_hereditarilyLindelof [IsFiniteMeasure μ]
+    [HereditarilyLindelofSpace E] (hm : m ≤ mα) (hf_int : Integrable f μ) (hs : IsClosed s)
+    (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
     ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
   obtain ⟨L, c, hLc⟩ := RCLike.iInter_countable_halfSpaces_eq (𝕜 := ℝ) hc hs
   simp_all only [← hLc, RCLike.re_to_real, mem_iInter, ae_all_iff]
@@ -45,6 +45,57 @@ lemma Convex.condExp_mem [IsFiniteMeasure μ] [HereditarilyLindelofSpace E] (hm 
   filter_upwards [h1, h2] with a ha hb
   simp_all only [condExp_const, comp_apply]
   exact hb
+
+set_option backward.isDefEq.respectTransparency false
+private lemma Convex.condExp_mem_finiteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
+    (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
+    ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
+  borelize E
+  obtain ⟨t, ht, htt⟩ := hf_int.aestronglyMeasurable.isSeparable_ae_range
+  let Y := (Submodule.span ℝ t).topologicalClosure
+  have : CompleteSpace Y := (Submodule.isClosed_topologicalClosure _).completeSpace_coe
+  have : SecondCountableTopology Y := ht.span.closure.secondCountableTopology
+  classical
+  let fY : α → Y := fun a => if h : f a ∈ Y then ⟨f a, h⟩ else 0
+  let fX : α → E := Y.subtypeL ∘ fY
+  have lem0 : ∀ᵐ a ∂μ, f a ∈ Y := by
+    filter_upwards [htt] with a ha using
+      (Submodule.closure_subset_topologicalClosure_span t) (subset_closure ha)
+  have lem1 : f =ᵐ[μ] fX := by
+    filter_upwards [lem0] with a ha
+    simp_all [fX, fY]
+  have lem2 : ∀ᵐ a ∂μ, fY a ∈ Y.subtypeL ⁻¹' s := by
+    filter_upwards [lem0, hf] with a ha hs
+    simpa [fY, ha]
+  have hfY_int : Integrable fY μ := by
+    refine (hf_int.congr lem1).mono ?_ (by simp [fX])
+    obtain ⟨g, hg1, hg2, hg3⟩ := hf_int.1.exists_stronglyMeasurable_range_subset
+      ((Submodule.isClosed_topologicalClosure _).measurableSet) Nonempty.of_subtype lem0
+    refine ⟨codRestrict g Y hg2, (hg1.measurable.codRestrict hg2).stronglyMeasurable, ?_⟩
+    filter_upwards [hg3] with a ha
+    have : g a ∈ Y := hg2 a
+    simp_all [fY, codRestrict]
+  have lem3 : μ[f | m] =ᵐ[μ] Y.subtypeL ∘ μ[fY | m] := calc
+    _ =ᵐ[μ] μ[fX | m] := condExp_congr_ae lem1
+    _ =ᵐ[μ] _ := (Y.subtypeL.comp_condExp_comm hfY_int).symm
+  filter_upwards [(hc.linear_preimage Y.subtype).condExp_mem_hereditarilyLindelof hm hfY_int
+    (hs.preimage Y.subtypeL.continuous) lem2, lem3] with a ha hb
+  simp_all
+
+/-- If `f` lies in a closed convex set `s` a.e., then `μ[f | m]` lies in `s` a.e. -/
+lemma Convex.condExp_mem (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+    (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
+    ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
+  refine μ.forall_measure_restrict_isCountablySpanning_eq_zero
+    (isCountablySpanning_spanningSets (μ.trim hm)) (fun t ⟨n, hn⟩ => ?_) fun t ⟨n, hn⟩ => hn ▸ ?_
+  · exact hn ▸ hm _ (measurableSet_spanningSets (μ.trim hm) n)
+  have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hf_int
+  have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
+    ((le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)).ne
+  have h2 := hc.condExp_mem_finiteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n)) hm
+    hf_int.restrict hs (ae_restrict_of_ae hf)
+  filter_upwards [h1, h2] with a ha hb
+  simp_all
 
 /-- Conditional Jensen's inequality for hereditarily Lindelof Spaces. -/
 private lemma ConvexOn.map_condExp_le_hereditarilyLindelof [IsFiniteMeasure μ]
