@@ -19,7 +19,8 @@ This file collects results about the adjoint action `ad` on associative algebras
 * `LieAlgebra.commute_ad_of_commute`: commuting elements have commuting adjoints.
 * `LieAlgebra.ad_nilpotent_of_nilpotent`: the adjoint of a nilpotent element is nilpotent.
 * `LieAlgebra.ad_isSemisimple_of_isSemisimple`: the adjoint of a semisimple element is semisimple.
-* `LieAlgebra.ad_isNilpotent_isSemisimple`: the adjoint preserves the Jordan-Chevalley decomposition
+* `LieAlgebra.ad_isNilpotent_isSemisimple`: the adjoint preserves the Jordan-Chevalley
+  decomposition.
 -/
 
 @[expose] public section
