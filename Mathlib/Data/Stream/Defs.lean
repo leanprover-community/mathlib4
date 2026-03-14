@@ -84,6 +84,7 @@ def corec (f : α → β) (g : α → α) : α → Stream' β := fun a => map f 
 `corecOn a f g` creates a stream by repeatedly:
 1. Applying `f` to the current value to get the next stream element
 2. Applying `g` to get the next value to process
+
 This is equivalent to `corec f g a`. -/
 def corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a
@@ -91,6 +92,7 @@ def corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
 /-- Given a function `f : α → β × α`, `corec' f` creates a stream by repeatedly:
 1. Starting with an initial value `a : α`
 2. Applying `f` to get both the next stream element (β) and next state value (α)
+
 This is a more convenient form when the next element and state are computed together. -/
 def corec' (f : α → β × α) : α → Stream' β :=
   corec (Prod.fst ∘ f) (Prod.snd ∘ f)
