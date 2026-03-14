@@ -1,16 +1,25 @@
+module
 
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.Geometry.Convex.Cone.Dual
+public import Mathlib.Geometry.Convex.Cone.Dual
+public import Mathlib.RingTheory.Finiteness.Basic
 
-import Mathlib.Geometry.Convex.Cone.Pointed
-import Mathlib.Geometry.Convex.Cone.Dual
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.LinearAlgebra.PerfectPairing.Basic
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.SetTheory.Cardinal.Defs
+/-!
+# Duals of finitely generated cones
+
+This files defines the notion `FGDual` for cones that can be written as the dual of a finite set,
+or equivalently, that are duals of finitely generated cones. In geometric terms, a cone is
+FGDual if it can be written as the intersection of finitely many halfspace. This is the counterpart
+to FG (finitely generated) which states that the cone is the span of a finite set.
+
+In finite dimensional vector spaces, FG is equivalent to FGDual by the Minkowski-Weyl theorem.
+
+## Main declarations
+
+- `PointedCone.FGDual` expresses that a cone is the dual of a finite set.
+
+-/
+
+@[expose] public section
 
 namespace PointedCone
 
