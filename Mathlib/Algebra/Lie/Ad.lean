@@ -50,8 +50,9 @@ theorem LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad {L : Type*} [LieRing L] [
   use n
   exact Module.End.submodule_pow_eq_zero_of_pow_eq_zero (K.ad_comp_incl_eq x) hn
 
-theorem LieAlgebra.isNilpotent_ad_of_isNilpotent {L : LieSubalgebra R A} {x : L}
-    (h : IsNilpotent (x : A)) : IsNilpotent (LieAlgebra.ad R L x) :=
+theorem LieAlgebra.isNilpotent_ad_of_isNilpotent
+    {L : LieSubalgebra R A} {x : L} (h : IsNilpotent (x : A)) :
+    IsNilpotent (LieAlgebra.ad R L x) :=
   L.isNilpotent_ad_of_isNilpotent_ad <| LieAlgebra.ad_nilpotent_of_nilpotent h
 
 end CommRing
@@ -62,8 +63,7 @@ variable {K V : Type*} [Field K] [PerfectField K] [AddCommGroup V] [Module K V]
 variable [FiniteDimensional K V]
 
 /-- The adjoint of a semisimple element is semisimple. -/
-theorem LieAlgebra.ad_isSemisimple_of_isSemisimple
-    {a : Module.End K V} (ha : a.IsSemisimple) :
+theorem LieAlgebra.ad_isSemisimple_of_isSemisimple {a : Module.End K V} (ha : a.IsSemisimple) :
     (LieAlgebra.ad K (Module.End K V) a).IsSemisimple := by
   rw [LieAlgebra.ad_eq_lmul_left_sub_lmul_right]
   have hl : Module.End.IsSemisimple (LinearMap.mulLeft K a) := by
