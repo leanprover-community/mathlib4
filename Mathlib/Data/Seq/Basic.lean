@@ -1097,7 +1097,6 @@ instance lawfulMonad : LawfulMonad Seq1 := LawfulMonad.mk'
   (bind_assoc := @bind_assoc)
 
 private theorem warmCacheProbe : True := trivial
-private theorem warmCacheProbe' : True := trivial
 
 end Seq1
 
