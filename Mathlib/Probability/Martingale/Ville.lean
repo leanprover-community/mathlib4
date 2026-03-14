@@ -78,7 +78,7 @@ theorem Supermartingale.integral_stoppedValue_le
   simp only [integral_neg, Pi.neg_apply,
     neg_le_neg_iff] at key
   exact key
-set_option linter.unusedSectionVars false in
+
 /-- **Ville's inequality**: if `f` is a nonnegative supermartingale,
 then for any `0 < λ` and any `n`,
 `μ.real {ω | λ ≤ f n ω} ≤ (∫ ω, f 0 ω ∂μ) / λ`.
@@ -87,26 +87,27 @@ This strengthens the Markov inequality by replacing
 `𝔼[f_n]` with the smaller `𝔼[f_0]`. -/
 theorem Supermartingale.measureReal_le_div
     (hf : Supermartingale f ℱ μ) [SigmaFiniteFiltration μ ℱ]
-    [IsFiniteMeasure μ]
+    (__hfin : IsFiniteMeasure μ)
     (hnn : ∀ n ω, 0 ≤ f n ω)
     {lam : ℝ} (hlam : 0 < lam) (n : ℕ) :
     μ.real {ω | lam ≤ f n ω} ≤
       (∫ ω, f 0 ω ∂μ) / lam := by
+  letI := __hfin
   have h_markov := mul_meas_ge_le_integral_of_nonneg
     (ae_of_all μ (hnn n)) (hf.2.2 n) lam
   have h_mono := hf.integral_le (Nat.zero_le n)
   rw [le_div_iff₀ hlam, mul_comm]; linarith
 
-set_option linter.unusedSectionVars false in
 /-- The uniform version of Ville's inequality, holding for all
 `n : ℕ` simultaneously. -/
 theorem Supermartingale.measureReal_le_div_forall
     (hf : Supermartingale f ℱ μ) [SigmaFiniteFiltration μ ℱ]
-    [IsFiniteMeasure μ]
+    (__hfin : IsFiniteMeasure μ)
     (hnn : ∀ n ω, 0 ≤ f n ω)
     {lam : ℝ} (hlam : 0 < lam) :
     ∀ n, μ.real {ω | lam ≤ f n ω} ≤
-      (∫ ω, f 0 ω ∂μ) / lam :=
-  fun n => hf.measureReal_le_div hnn hlam n
+      (∫ ω, f 0 ω ∂μ) / lam := by
+  letI := __hfin
+  exact fun n => hf.measureReal_le_div __hfin hnn hlam n
 
 end MeasureTheory
