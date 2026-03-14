@@ -350,6 +350,7 @@ lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : Modular
     strictWidthInfty (Γ : Subgroup (GL (Fin 2) ℝ)) = 1 := by
   have hsp := strictPeriods_eq_zmultiples_one_of_T_mem hΓ
   have : DiscreteTopology (Γ : Subgroup (GL (Fin 2) ℝ)).strictPeriods := by
+    -- In fact the image of `Γ` in `GL (Fin 2) ℝ` is itself discrete, but this is quicker:
     rw [hsp]
     infer_instance
   rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
@@ -388,16 +389,20 @@ lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDe
     · rw [GeneralLinearGroup.isParabolic_iff_of_upperTriangular (by simp)]
       simpa using h.ne'
     · simp [smul_infty_eq_self_iff]
-  · rintro ⟨g, hgg, hgp, hgi⟩
+  · -- Hard implication: if `∞` is a cusp, show the strict width is positive.
+    rintro ⟨g, hgg, hgp, hgi⟩
     apply 𝒢.strictWidthInfty_nonneg.lt_of_ne'
     rw [← AddSubgroup.zmultiples_ne_bot]
     simp only [AddSubgroup.ne_bot_iff_exists_ne_zero, Subtype.exists, Ne, AddSubgroup.mk_eq_zero,
       exists_prop, and_comm, ← strictPeriods_eq_zmultiples_strictWidthInfty, mem_strictPeriods_iff]
+    -- We have some `g ∈ 𝒢` which is parabolic and fixes `∞`. So `g = ±[1, x; 0, 1]` some `x ≠ 0`.
     rw [smul_infty_eq_self_iff] at hgi
     rw [Subgroup.HasDetPlusMinusOne.isParabolic_iff_of_upperTriangular hgg hgi] at hgp
     rcases hgp with ⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩
-    · exact ⟨x, hx, hgg⟩
-    · exact ⟨2 • x, by grind,
+    · -- If `g = [1, x; 0, 1]`, we're done
+      exact ⟨x, hx, hgg⟩
+    · -- If `g = -[1, x; 0, 1]` then `g ^ 2 = [1, 2 * x; 0, 1]`.
+      exact ⟨2 • x, by grind,
         by simpa only [AddChar.map_nsmul_eq_pow, neg_sq] using pow_mem hgg 2⟩
 
 lemma strictWidthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.strictWidthInfty := by
