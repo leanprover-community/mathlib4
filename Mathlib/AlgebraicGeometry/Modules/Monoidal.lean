@@ -19,7 +19,7 @@ public import Mathlib.Topology.Sheaves.Points
 
 universe u
 
-open CategoryTheory Limits TopologicalSpace SheafOfModules Bicategory
+open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme.Modules
 
