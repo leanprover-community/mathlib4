@@ -98,9 +98,9 @@ def equivHollom : ℕ × ℕ × ℕ ≃ Hollom where
 namespace Hollom
 
 @[simp] lemma «forall» {p : Hollom → Prop} : (∀ x, p x) ↔ ∀ x, p (toHollom x) := by aesop
-@[simp] lemma «forall₂» {p : Hollom → Hollom → Prop} :
+@[simp] lemma forall₂ {p : Hollom → Hollom → Prop} :
     (∀ x y, p x y) ↔ ∀ x y, p (toHollom x) (toHollom y) := by aesop
-@[simp] lemma «forall₃» {p : Hollom → Hollom → Hollom → Prop} :
+@[simp] lemma forall₃ {p : Hollom → Hollom → Hollom → Prop} :
     (∀ x y z, p x y z) ↔ ∀ x y z, p (toHollom x) (toHollom y) (toHollom z) := by aesop
 @[simp] lemma «exists» {p : Hollom → Prop} : (∃ x, p x) ↔ ∃ x, p (toHollom x) := by aesop
 
@@ -235,7 +235,7 @@ lemma to prove that fact later: `no_infinite_antichain`.
 -/
 lemma no_infinite_antichain_level {n : ℕ} {A : Set Hollom} (hA : A ⊆ level n)
     (hA' : IsAntichain (· ≤ ·) A) : A.Finite :=
-  hA'.finite_of_partiallyWellOrderedOn ((level_isPWO).mono hA)
+  hA'.finite_of_partiallyWellOrderedOn (level_isPWO.mono hA)
 
 /--
 Each level is order-connected, i.e. for any `x ∈ level n` and `y ∈ level n` we have
@@ -578,7 +578,6 @@ lemma image_chainBetween_isChain {a b c d n : ℕ} :
     IsChain (· ≤ ·) ((chainBetween a b c d).image (embed n) : Set Hollom) := by
   rw [coe_image]
   apply chainBetween_isChain.image
-  simp
 
 open Finset in
 lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
@@ -715,7 +714,7 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     refine f.injOn_of_isChain ?_
     simp only [B]
     rw [coe_image]
-    refine IsChain.image (· ≤ ·) _ (embed n) (by simp) ?_
+    refine IsChain.image ?_ (embed n)
     rw [coe_union, isChain_union]
     refine ⟨chainBetween_isChain, chainBetween_isChain, ?_⟩
     simp [chainBetween, *]

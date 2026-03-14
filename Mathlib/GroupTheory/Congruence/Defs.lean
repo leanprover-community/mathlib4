@@ -364,7 +364,7 @@ instance : CompleteLattice (Con M) where
   inf c d := ⟨c.toSetoid ⊓ d.toSetoid, fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩⟩
   inf_le_left _ _ := fun _ _ h => h.1
   inf_le_right _ _ := fun _ _ h => h.2
-  le_inf  _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
+  le_inf _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
   top := { Setoid.completeLattice.top with mul' := by tauto }
   le_top _ := fun _ _ _ => trivial
   bot := { Setoid.completeLattice.bot with mul' := fun h1 h2 => h1 ▸ h2 ▸ rfl }
@@ -505,12 +505,6 @@ theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N}
     comap f H c x y ↔ c (f x) (f y) :=
   Iff.rfl
 
-section
-
-open Quotient
-
-end
-
 end
 
 section MulOneClass
@@ -560,11 +554,7 @@ instance one [Mul M] [One M] (c : Con M) : One c.Quotient where
   one := Quotient.mk'' (1 : M)
   -- one := ((1 : M) : c.Quotient)
 
-instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) :
-    SMul ℕ c.Quotient where
-  smul n := (Quotient.map' (n • ·)) fun _ _ => c.nsmul n
-
-@[to_additive existing AddCon.Quotient.nsmul]
+@[to_additive]
 instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
   pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
 
@@ -599,6 +589,7 @@ instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotie
   fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
     (fun _ _ => rfl) fun _ _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Sometimes, a group is defined as a quotient of a monoid by a congruence relation.
 Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
 This lemma allows to avoid code duplication in the definition of the inverse operation:
@@ -657,16 +648,11 @@ type with a subtraction. -/]
 instance hasDiv : Div c.Quotient :=
   ⟨(Quotient.map₂ (· / ·)) fun _ _ h₁ _ _ h₂ => c.div h₁ h₂⟩
 
-/-- The integer scaling induced on the quotient by a congruence relation on a type with a
-subtraction. -/
-instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
-    SMul ℤ c.Quotient :=
-  ⟨fun z => (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
-
 /-- The integer power induced on the quotient by a congruence relation on a type with a
 division. -/
-@[to_additive existing AddCon.Quotient.zsmul]
-instance zpowinst : Pow c.Quotient ℤ :=
+@[to_additive /-- The integer scaling induced on the quotient by a congruence relation on a type
+with a subtraction. -/]
+instance instZPow : Pow c.Quotient ℤ :=
   ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
 
 /-- The quotient of a group by a congruence relation is a group. -/

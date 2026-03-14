@@ -67,6 +67,7 @@ This is the `Fintype` projection for a `Set.Finite`.
 
 Note that because `Finite` isn't a typeclass, this definition will not fire if it
 is made into an instance -/
+@[implicit_reducible]
 protected noncomputable def Finite.fintype {s : Set α} (h : s.Finite) : Fintype s :=
   h.nonempty_fintype.some
 
@@ -237,6 +238,7 @@ instance fintypeUniv [Fintype α] : Fintype (@univ α) :=
 instance fintypeTop [Fintype α] : Fintype (⊤ : Set α) := inferInstanceAs (Fintype (univ : Set α))
 
 /-- If `(Set.univ : Set α)` is finite then `α` is a finite type. -/
+@[implicit_reducible]
 noncomputable def fintypeOfFiniteUniv (H : (univ (α := α)).Finite) : Fintype α :=
   @Fintype.ofEquiv _ (univ : Set α) H.fintype (Equiv.Set.univ _)
 
@@ -263,6 +265,7 @@ instance fintypeInterOfRight (s t : Set α) [Fintype t] [DecidablePred (· ∈ s
   Fintype.ofFinset {a ∈ t.toFinset | a ∈ s} <| by simp [and_comm]
 
 /-- A `Fintype` structure on a set defines a `Fintype` structure on its subset. -/
+@[implicit_reducible]
 def fintypeSubset (s : Set α) {t : Set α} [Fintype s] [DecidablePred (· ∈ t)] (h : t ⊆ s) :
     Fintype t := by
   rw [← inter_eq_self_of_subset_right h]
@@ -290,11 +293,13 @@ instance fintypeInsert (a : α) (s : Set α) [DecidableEq α] [Fintype s] :
   Fintype.ofFinset (insert a s.toFinset) <| by simp
 
 /-- A `Fintype` structure on `insert a s` when inserting a new element. -/
+@[implicit_reducible]
 def fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     Fintype (insert a s : Set α) :=
   Fintype.ofFinset ⟨a ::ₘ s.toFinset.1, s.toFinset.nodup.cons (by simp [h])⟩ <| by simp
 
 /-- A `Fintype` structure on `insert a s` when inserting a pre-existing element. -/
+@[implicit_reducible]
 def fintypeInsertOfMem {a : α} (s : Set α) [Fintype s] (h : a ∈ s) : Fintype (insert a s : Set α) :=
   Fintype.ofFinset s.toFinset <| by simp [h]
 
@@ -315,6 +320,7 @@ instance fintypeImage [DecidableEq β] (s : Set α) (f : α → β) [Fintype s] 
 
 /-- If a function `f` has a partial inverse `g` and the image of `s` under `f` is a set with
 a `Fintype` instance, then `s` has a `Fintype` structure as well. -/
+@[implicit_reducible]
 def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g) [Fintype (f '' s)] :
     Fintype s :=
   Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filterMap g <| injective_of_isPartialInv_right I⟩
@@ -337,6 +343,7 @@ instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := by
 
 /-- This is not an instance so that it does not conflict with the one
 in `Mathlib/Order/Interval/Finset/Defs.lean`. -/
+@[instance_reducible]
 def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
   Set.fintypeLTNat n
 
@@ -478,8 +485,7 @@ variable {s t u : Set α} {a : α}
 theorem Finite.of_subsingleton [Subsingleton α] (s : Set α) : s.Finite :=
   s.toFinite
 
-theorem finite_univ [Finite α] : (@univ α).Finite :=
-  Set.toFinite _
+@[simp] theorem finite_univ [Finite α] : (@univ α).Finite := Set.toFinite _
 
 theorem finite_univ_iff : (@univ α).Finite ↔ Finite α := (Equiv.Set.univ α).finite_iff
 
@@ -518,11 +524,12 @@ theorem Finite.inf_of_right {s : Set α} (h : s.Finite) (t : Set α) : (t ⊓ s)
 protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.Infinite :=
   mt fun ht ↦ ht.subset h
 
-theorem Finite.diff (hs : s.Finite) : (s \ t).Finite := hs.subset diff_subset
+@[simp] theorem Finite.diff (hs : s.Finite) : (s \ t).Finite := hs.subset diff_subset
 
 theorem Finite.of_diff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
   (hd.union ht).subset <| subset_diff_union _ _
 
+@[simp]
 lemma Finite.symmDiff (hs : s.Finite) (ht : t.Finite) : (s ∆ t).Finite := hs.diff.union ht.diff
 
 lemma Finite.symmDiff_congr (hst : (s ∆ t).Finite) : (s ∆ u).Finite ↔ (t ∆ u).Finite where
@@ -755,7 +762,7 @@ theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
-  simp [fintypeInsertOfNotMem, Fintype.card_ofFinset]
+  simp [Fintype.card_ofFinset]
 
 @[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)

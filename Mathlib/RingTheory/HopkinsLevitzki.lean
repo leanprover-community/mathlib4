@@ -113,7 +113,7 @@ theorem isNoetherian_iff_finite_of_jacobson_fg (fg : (Ring.jacobson R).FG) :
     (P := fun M ↦ Module.Finite R M → IsNoetherian R M)
     (fun M _ _ _ _ _ _ ↦ (IsSemisimpleModule.finite_tfae.out 0 1).mp)
     fun M _ _ _ _ hs hq fin ↦ (isNoetherian_iff_submodule_quotient (Ring.jacobson R • ⊤)).mpr
-      ⟨hs (Module.Finite.iff_fg.mpr (.smul fg fin.1)), hq inferInstance⟩⟩
+      ⟨hs (.of_fg (.smul fg fin.1)), hq inferInstance⟩⟩
 
 theorem isNoetherianRing_iff_jacobson_fg : IsNoetherianRing R ↔ (Ring.jacobson R).FG :=
   ⟨fun _ ↦ IsNoetherian.noetherian .., fun fg ↦

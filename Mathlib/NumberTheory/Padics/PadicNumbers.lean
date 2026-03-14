@@ -78,7 +78,7 @@ def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
   map_add_le_max' := by
     intros
     split_ifs
-    any_goals simp_all [- exp_neg]
+    any_goals simp_all [-exp_neg]
     rw [← min_le_iff]
     exact padicValRat.min_le_padicValRat_add ‹_›
 
@@ -321,12 +321,13 @@ end Valuation
 
 end PadicSeq
 
+-- Porting note: Commented out `padic_index_simp` tactic
+
+/-
 section
 
 open PadicSeq
 
--- Porting note: Commented out `padic_index_simp` tactic
-/-
 private unsafe def index_simp_core (hh hf hg : expr)
     (at_ : Interactive.Loc := Interactive.Loc.ns [none]) : tactic Unit := do
   let [v1, v2, v3] ← [hh, hf, hg].mapM fun n => tactic.mk_app `` stationary_point [n] <|> return n
@@ -344,9 +345,9 @@ unsafe def tactic.interactive.padic_index_simp (l : interactive.parse interactiv
     (at_ : interactive.parse interactive.types.location) : tactic Unit := do
   let [h, f, g] ← l.mapM tactic.i_to_expr
   index_simp_core h f g at_
--/
 
 end
+-/
 
 namespace PadicSeq
 
@@ -621,6 +622,7 @@ end Completion
 
 end Padic
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The rational-valued `p`-adic norm on `ℚ_[p]` is lifted from the norm on Cauchy sequences. The
 canonical form of this function is the normed space instance, with notation `‖ ‖`. -/
 def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
@@ -824,7 +826,11 @@ instance : Norm ℚ_[p] :=
 instance normedField : NormedField ℚ_[p] :=
   { Padic.field,
     Padic.metricSpace p with
-    dist_eq := fun _ _ ↦ rfl
+    dist_eq x y := by
+      rw [add_comm, ← sub_eq_add_neg]
+      change ‖x - y‖ = ‖y - x‖
+      have : y - x = (-1) * (x - y) := by ring
+      simp only [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
     norm_mul := by simp [Norm.norm, map_mul]
     norm := norm }
 
@@ -961,8 +967,6 @@ theorem norm_intCast_lt_one_iff {k : ℤ} : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
       _ < 1 := by
         rw [mul_one, norm_p]
         exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
-
-@[deprecated (since := "2025-08-15")] alias norm_int_lt_one_iff_dvd := norm_intCast_lt_one_iff
 
 @[simp]
 lemma norm_natCast_lt_one_iff {n : ℕ} :

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Free groups
@@ -244,12 +245,12 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
       | tail hLL' h ih =>
         obtain @⟨s, e, a, b⟩ := h
         rcases List.append_eq_append_iff.1 eq with (⟨s', rfl, rfl⟩ | ⟨e', rfl, rfl⟩)
-        · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) = L₁ ++ s' ++ (a, b) :: (a, not b) :: e :=
-            by simp
+        · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) =
+            L₁ ++ s' ++ (a, b) :: (a, not b) :: e := by simp
           rcases ih this with ⟨w₁, w₂, rfl, h₁, h₂⟩
           exact ⟨w₁, w₂, rfl, h₁, h₂.tail Step.not⟩
-        · have : s ++ (a, b) :: (a, not b) :: e' ++ L₂ = s ++ (a, b) :: (a, not b) :: (e' ++ L₂) :=
-            by simp
+        · have : s ++ (a, b) :: (a, not b) :: e' ++ L₂ =
+            s ++ (a, b) :: (a, not b) :: (e' ++ L₂) := by simp
           rcases ih this with ⟨w₁, w₂, rfl, h₁, h₂⟩
           exact ⟨w₁, w₂, rfl, h₁.tail Step.not, h₂⟩)
     fun ⟨_, _, Eq, h₃, h₄⟩ => Eq.symm ▸ append_append h₃ h₄
@@ -781,8 +782,19 @@ theorem map.unique (g : FreeGroup α →* FreeGroup β)
           FreeGroup.map f (FreeGroup.of x * FreeGroup.mk t) by simp [g.map_mul, hg, ih])
 
 @[to_additive]
-theorem map_eq_lift : map f x = lift (of ∘ f) x :=
-  Eq.symm <| map.unique _ fun x => by simp
+theorem map_eq_lift : map f = lift (of ∘ f) := by
+  ext; simp
+
+@[to_additive]
+theorem range_map : (map f).range = Subgroup.closure (of '' Set.range f) := by
+  rw [map_eq_lift, range_lift_eq_closure, Set.range_comp]
+
+/-- If `α` and `β` are arbitrary types and there is a surjection between them,
+then the induced map on their free groups is also surjective. -/
+@[to_additive /-- If `α` and `β` are arbitrary types and there is a surjection between them,
+then the induced map on their additive free groups is also surjective. -/]
+theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := by
+  rw [← MonoidHom.range_eq_top, range_map, hf.range_eq, Set.image_univ, closure_range_of]
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
@@ -960,9 +972,9 @@ instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
       fun x y ihx ihy => by rw [map_mul, ihx, ihy])
   (pure_bind := fun x f => pure_bind f x)
   (bind_assoc := fun x => by
-    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +contextual [instMonad])
+    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +instances +contextual [instMonad])
   (bind_pure_comp := fun f x => by
-    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +contextual [instMonad])
+    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +instances +contextual [instMonad])
 
 end Category
 

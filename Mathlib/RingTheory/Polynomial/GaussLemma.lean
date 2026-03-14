@@ -54,6 +54,7 @@ open IsIntegrallyClosed
 
 variable (K : Type*) [Field K] [Algebra R K]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) {g : K[X]}
     (hg : g.Monic) (hd : g ∣ f.map (algebraMap R K)) :
     g ∈ lifts (algebraMap (integralClosure R K) K) := by
@@ -220,8 +221,8 @@ variable [IsDomain R]
 theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCDMonoid R]
     {p : K[X]} (h0 : p ≠ 0) (h : IsUnit (integerNormalization R⁰ p).primPart) : IsUnit p := by
   rcases isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
-  obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ p
-  rw [Subtype.coe_mk, Algebra.smul_def, algebraMap_apply] at hc
+  obtain ⟨c, c0, hc⟩ := integerNormalization_spec R⁰ p
+  rw [Algebra.smul_def, algebraMap_apply] at hc
   apply isUnit_of_mul_isUnit_right
   rw [← hc, (integerNormalization R⁰ p).eq_C_content_mul_primPart, ← hu, ← map_mul, isUnit_iff]
   refine
@@ -235,6 +236,30 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCD
 
 variable [Nonempty (NormalizedGCDMonoid R)]
 
+lemma IsPrimitive.mul_map_mem_lifts_iff {f : R[X]} (hf : IsPrimitive f) {g : K[X]} :
+    g * f.map (algebraMap R K) ∈ lifts (algebraMap R K) ↔ g ∈ lifts (algebraMap R K) := by
+  let : NormalizedGCDMonoid R := Nonempty.some inferInstance
+  refine ⟨?_, fun h ↦ Subsemiring.mul_mem _ h ⟨_, rfl⟩⟩
+  intro ⟨k, (hk : Polynomial.map _ _ = _)⟩
+  let g' := integerNormalization (nonZeroDivisors R) g
+  obtain ⟨b, hb₁, (hb₂ : Polynomial.map _ g' = _)⟩ :=
+    integerNormalization_spec (nonZeroDivisors R) g
+  have g'_mul_f : g' * f = b • k := by
+    apply Polynomial.map_injective (algebraMap R K) (FaithfulSMul.algebraMap_injective R K)
+    rw [Polynomial.map_smul, algebraMap_smul, hk, ← smul_mul_assoc, ← hb₂, Polynomial.map_mul]
+  use C (normUnit b : R) * C k.content * g'.primPart
+  have := congr($(g'_mul_f).content)
+  simp only [content_mul, hf.content_eq_one, mul_one, smul_eq_C_mul, content_C,
+    normalize_apply] at this
+  rw [← smul_right_inj (nonZeroDivisors.ne_zero hb₁), ← hb₂]
+  rw (occs := [2]) [eq_C_content_mul_primPart g']
+  simp [this, Polynomial.map_mul, map_C, Algebra.smul_def, algebraMap_apply,
+    mul_assoc]
+
+lemma IsPrimitive.map_mul_mem_lifts_iff {f : R[X]} (hf : IsPrimitive f) {g : K[X]} :
+    f.map (algebraMap R K) * g ∈ lifts (algebraMap R K) ↔ g ∈ lifts (algebraMap R K) := by
+  rw [mul_comm, hf.mul_map_mem_lifts_iff]
+
 /-- **Gauss's Lemma** for GCD domains states that a primitive polynomial is irreducible iff it is
   irreducible in the fraction field. -/
 theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp : p.IsPrimitive) :
@@ -242,9 +267,9 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
   refine
     ⟨fun hi => ⟨fun h => hi.not_isUnit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
       hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective _ _)⟩
-  obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ a
-  obtain ⟨⟨d, d0⟩, hd⟩ := integerNormalization_map_to_map R⁰ b
-  rw [Algebra.smul_def, algebraMap_apply, Subtype.coe_mk] at hc hd
+  obtain ⟨c, c0, hc⟩ := integerNormalization_spec R⁰ a
+  obtain ⟨d, d0, hd⟩ := integerNormalization_spec R⁰ b
+  rw [Algebra.smul_def, algebraMap_apply] at hc hd
   rw [mem_nonZeroDivisors_iff_ne_zero] at c0 d0
   have hcd0 : c * d ≠ 0 := mul_ne_zero c0 d0
   rw [Ne, ← C_eq_zero] at hcd0
@@ -281,8 +306,8 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
 theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.IsPrimitive)
     (hq : q.IsPrimitive) (h_dvd : p.map (algebraMap R K) ∣ q.map (algebraMap R K)) : p ∣ q := by
   rcases h_dvd with ⟨r, hr⟩
-  obtain ⟨⟨s, s0⟩, hs⟩ := integerNormalization_map_to_map R⁰ r
-  rw [Subtype.coe_mk, Algebra.smul_def, algebraMap_apply] at hs
+  obtain ⟨s, s0, hs⟩ := integerNormalization_spec R⁰ r
+  rw [Algebra.smul_def, algebraMap_apply] at hs
   have h : p ∣ q * C s := by
     use integerNormalization R⁰ r
     apply map_injective (algebraMap R K) (IsFractionRing.injective _ _)

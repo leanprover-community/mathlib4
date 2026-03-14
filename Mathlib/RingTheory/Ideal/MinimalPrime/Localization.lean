@@ -182,7 +182,7 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     refine (Ideal.comap_mono <|
       hp.2 ⟨?_, Ideal.map_mono hI.2⟩ (Ideal.map_le_iff_le_comap.mpr e)).trans_eq ?_
     · exact IsLocalization.isPrime_of_isPrime_disjoint S A I hI.1 hI'
-    · exact IsLocalization.comap_map_of_isPrime_disjoint S A _ hI.1 hI'
+    · exact IsLocalization.comap_map_of_isPrime_disjoint S A hI.1 hI'
   · intro hp
     refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.1.2⟩, ?_⟩
     · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A, IsLocalization.disjoint_comap_iff S]

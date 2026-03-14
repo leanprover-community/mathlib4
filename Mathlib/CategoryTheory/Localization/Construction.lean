@@ -144,6 +144,7 @@ def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
         · haveI := hG g hg
           exact inv (G.map g) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The lifting of a functor `C ⥤ D` inverting `W` as a functor `W.Localization ⥤ D` -/
 @[simps!]
 def lift : W.Localization ⥤ D :=
@@ -152,6 +153,7 @@ def lift : W.Localization ⥤ D :=
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
       rcases r with ⟨⟩ <;> all_goals aesop)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fac : W.Q ⋙ lift G hG = G :=
   Functor.ext (fun _ => rfl)
@@ -191,6 +193,10 @@ def objEquiv : C ≃ W.Localization where
     rintro ⟨⟨X⟩⟩
     rfl
 
+instance : W.Q.EssSurj where
+  mem_essImage Y := ⟨(objEquiv W).symm Y, ⟨Iso.refl _⟩⟩
+
+set_option backward.isDefEq.respectTransparency false in
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the
 morphisms in the original category, the inverses of the morphisms
@@ -246,6 +252,7 @@ def app (X : W.Localization) : F₁.obj X ⟶ F₂.obj X :=
   eqToHom (congr_arg F₁.obj ((objEquiv W).right_inv X).symm) ≫
     τ.app ((objEquiv W).invFun X) ≫ eqToHom (congr_arg F₂.obj ((objEquiv W).right_inv X))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem app_eq (X : C) : (app τ) (W.Q.obj X) = τ.app X := by
   simp only [app, eqToHom_refl, comp_id, id_comp]
@@ -295,6 +302,7 @@ def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
   ObjectProperty.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
     MorphismProperty.IsInvertedBy.of_comp W W.Q W.Q_inverts _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `(W.FunctorsInverting D) ⥤ (W.Localization ⥤ D)` induced by
 `Construction.lift`. -/
 @[simps!]
@@ -332,6 +340,7 @@ def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
         ext X
         simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the equivalence of categories `WhiskeringLeftEquivalence W D`. -/
 @[simps!]
 def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
@@ -351,8 +360,9 @@ def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
 
 end WhiskeringLeftEquivalence
 
-/-- The equivalence of categories `(W.localization ⥤ D) ≌ (W.FunctorsInverting D)`
-induced by the composition with `W.Q : C ⥤ W.localization`. -/
+set_option backward.isDefEq.respectTransparency false in
+/-- The equivalence of categories `(W.Localization ⥤ D) ≌ (W.FunctorsInverting D)`
+induced by the composition with `W.Q : C ⥤ W.Localization`. -/
 def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D where
   functor := WhiskeringLeftEquivalence.functor W D
   inverse := WhiskeringLeftEquivalence.inverse W D

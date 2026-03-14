@@ -49,12 +49,12 @@ variable {α β G₀ : Type*}
 
 section DivConst
 
-variable [DivInvMonoid G₀] [TopologicalSpace G₀] [ContinuousMul G₀] {f : α → G₀} {s : Set α}
-  {l : Filter α}
+variable [DivInvMonoid G₀] [TopologicalSpace G₀] [SeparatelyContinuousMul G₀]
+  {f : α → G₀} {s : Set α} {l : Filter α}
 
 theorem Filter.Tendsto.div_const {x : G₀} (hf : Tendsto f l (𝓝 x)) (y : G₀) :
     Tendsto (fun a => f a / y) l (𝓝 (x / y)) := by
-  simpa only [div_eq_mul_inv] using hf.mul tendsto_const_nhds
+  simpa only [div_eq_mul_inv] using hf.mul_const _
 
 variable [TopologicalSpace α]
 
@@ -68,11 +68,11 @@ nonrec theorem ContinuousWithinAt.div_const {a} (hf : ContinuousWithinAt f s a) 
 
 theorem ContinuousOn.div_const (hf : ContinuousOn f s) (y : G₀) :
     ContinuousOn (fun x => f x / y) s := by
-  simpa only [div_eq_mul_inv] using hf.mul continuousOn_const
+  simpa only [div_eq_mul_inv] using hf.mul_const _
 
 @[continuity, fun_prop]
 theorem Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x => f x / y := by
-  simpa only [div_eq_mul_inv] using hf.mul continuous_const
+  simpa only [div_eq_mul_inv] using hf.mul_const _
 
 end DivConst
 
@@ -147,6 +147,17 @@ the set of nonzero elements. -/
 noncomputable def unitsHomeomorphNeZero : G₀ˣ ≃ₜ {g : G₀ // g ≠ 0} :=
   Units.isEmbedding_val₀.toHomeomorph.trans <| show _ ≃ₜ {g | _} from .setCongr <|
     Set.ext fun x ↦ (Units.exists_iff_ne_zero (p := (· = x))).trans <| by simp
+
+variable (G₀) in
+/-- If a group with zero has continuous inversion, then the inversion map restricts to an
+auto-homeomorphism on the set of nonzero elements. -/
+def Homeomorph.inv₀ : {g : G₀ // g ≠ 0} ≃ₜ {g : G₀ // g ≠ 0} where
+  toFun g := ⟨g⁻¹, inv_ne_zero g.2⟩
+  invFun g := ⟨g⁻¹, inv_ne_zero g.2⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+  continuous_toFun := continuous_induced_rng.mpr continuousOn_inv₀.restrict
+  continuous_invFun := continuous_induced_rng.mpr continuousOn_inv₀.restrict
 
 end GroupWithZero
 
@@ -257,21 +268,21 @@ end Div
 
 namespace Homeomorph
 
-variable [TopologicalSpace α] [GroupWithZero α] [ContinuousMul α]
+variable [TopologicalSpace α] [GroupWithZero α] [SeparatelyContinuousMul α]
 
 /-- Left multiplication by a nonzero element in a `GroupWithZero` with continuous multiplication
 is a homeomorphism of the underlying type. -/
 protected def mulLeft₀ (c : α) (hc : c ≠ 0) : α ≃ₜ α :=
   { Equiv.mulLeft₀ c hc with
-    continuous_toFun := continuous_mul_left _
-    continuous_invFun := continuous_mul_left _ }
+    continuous_toFun := continuous_const_mul _
+    continuous_invFun := continuous_const_mul _ }
 
 /-- Right multiplication by a nonzero element in a `GroupWithZero` with continuous multiplication
 is a homeomorphism of the underlying type. -/
 protected def mulRight₀ (c : α) (hc : c ≠ 0) : α ≃ₜ α :=
   { Equiv.mulRight₀ c hc with
-    continuous_toFun := continuous_mul_right _
-    continuous_invFun := continuous_mul_right _ }
+    continuous_toFun := continuous_mul_const _
+    continuous_invFun := continuous_mul_const _ }
 
 @[simp]
 theorem coe_mulLeft₀ (c : α) (hc : c ≠ 0) : ⇑(Homeomorph.mulLeft₀ c hc) = (c * ·) :=
@@ -295,7 +306,7 @@ end Homeomorph
 
 section map_comap
 
-variable [TopologicalSpace G₀] [GroupWithZero G₀] [ContinuousMul G₀] {a : G₀}
+variable [TopologicalSpace G₀] [GroupWithZero G₀] [SeparatelyContinuousMul G₀] {a : G₀}
 
 theorem map_mul_left_nhds₀ (ha : a ≠ 0) (b : G₀) : map (a * ·) (𝓝 b) = 𝓝 (a * b) :=
   (Homeomorph.mulLeft₀ a ha).map_nhds_eq b

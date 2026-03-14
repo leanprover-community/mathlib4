@@ -59,9 +59,13 @@ instance : LieRing (CommutatorRing L) := show LieRing L by infer_instance
 
 instance : LieAlgebra R (CommutatorRing L) := show LieAlgebra R L by infer_instance
 
+#adaptation_note /-- Needed after leanprover/lean4#12564 -/
+instance : SMul R (CommutatorRing L) := show SMul R L by infer_instance
+
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 reinterpret the `smul_lie` law as an `IsScalarTower`. -/
-instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) := ⟨smul_lie⟩
+instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) :=
+  ⟨smul_lie⟩
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 reinterpret the `lie_smul` law as an `SMulCommClass`. -/

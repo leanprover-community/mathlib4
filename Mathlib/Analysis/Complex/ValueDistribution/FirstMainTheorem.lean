@@ -44,7 +44,7 @@ variable {f : ℂ → ℂ} {R : ℝ}
 Helper lemma for the first part of the First Main Theorem: Given a meromorphic function `f`, compute
 difference between the characteristic functions of `f` and of its inverse.
 -/
-lemma characteristic_sub_characteristic_inv (h : MeromorphicOn f ⊤) :
+lemma characteristic_sub_characteristic_inv (h : Meromorphic f) :
     characteristic f ⊤ - characteristic f⁻¹ ⊤ =
       circleAverage (log ‖f ·‖) 0 - (divisor f Set.univ).logCounting := by
   calc characteristic f ⊤ - characteristic f⁻¹ ⊤
@@ -63,24 +63,24 @@ Helper lemma for the first part of the First Main Theorem: Away from zero, the d
 the characteristic functions of `f` and `f⁻¹` equals `log ‖meromorphicTrailingCoeffAt f 0‖`.
 -/
 lemma characteristic_sub_characteristic_inv_of_ne_zero
-    (hf : MeromorphicOn f Set.univ) (hR : R ≠ 0) :
+    (hf : Meromorphic f) (hR : R ≠ 0) :
     characteristic f ⊤ R - characteristic f⁻¹ ⊤ R = log ‖meromorphicTrailingCoeffAt f 0‖ := by
   calc characteristic f ⊤ R - characteristic f⁻¹ ⊤ R
   _ = (characteristic f ⊤ - characteristic f⁻¹ ⊤) R := by simp
   _ = circleAverage (log ‖f ·‖) 0 R - (divisor f Set.univ).logCounting R := by
     rw [characteristic_sub_characteristic_inv hf, Pi.sub_apply]
   _ = log ‖meromorphicTrailingCoeffAt f 0‖ := by
-    rw [MeromorphicOn.circleAverage_log_norm hR (hf.mono_set (by tauto))]
+    rw [MeromorphicOn.circleAverage_log_norm hR hf.meromorphicOn]
     unfold Function.locallyFinsuppWithin.logCounting
     have : (divisor f (closedBall 0 |R|)) = (divisor f Set.univ).toClosedBall R :=
-      (divisor_restrict hf (by tauto)).symm
+      (divisor_restrict hf.meromorphicOn (by tauto)).symm
     simp [this, toClosedBall, restrictMonoidHom, restrict_apply]
 
 /--
 Helper lemma for the first part of the First Main Theorem: At 0, the difference between the
 characteristic functions of `f` and `f⁻¹` equals `log ‖f 0‖`.
 -/
-lemma characteristic_sub_characteristic_inv_at_zero (h : MeromorphicOn f Set.univ) :
+lemma characteristic_sub_characteristic_inv_at_zero (h : Meromorphic f) :
     characteristic f ⊤ 0 - characteristic f⁻¹ ⊤ 0 = log ‖f 0‖ := by
   calc characteristic f ⊤ 0 - characteristic f⁻¹ ⊤ 0
   _ = (characteristic f ⊤ - characteristic f⁻¹ ⊤) 0 := by simp
@@ -94,7 +94,7 @@ First part of the First Main Theorem, quantitative version: If `f` is meromorphi
 plane, then the difference between the characteristic functions of `f` and `f⁻¹` is bounded by an
 explicit constant.
 -/
-theorem characteristic_sub_characteristic_inv_le (hf : MeromorphicOn f Set.univ) :
+theorem characteristic_sub_characteristic_inv_le (hf : Meromorphic f) :
     |characteristic f ⊤ R - characteristic f⁻¹ ⊤ R|
       ≤ max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖| := by
   by_cases h : R = 0
@@ -106,7 +106,7 @@ First part of the First Main Theorem, qualitative version: If `f` is meromorphic
 plane, then the characteristic functions of `f` and `f⁻¹` agree asymptotically up to a bounded
 function.
 -/
-theorem isBigO_characteristic_sub_characteristic_inv (h : MeromorphicOn f ⊤) :
+theorem isBigO_characteristic_sub_characteristic_inv (h : Meromorphic f) :
     (characteristic f ⊤ - characteristic f⁻¹ ⊤) =O[atTop] (1 : ℝ → ℝ) :=
   isBigO_of_le' (c := max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖|) _
     (fun R ↦ by simpa using characteristic_sub_characteristic_inv_le h (R := R))
@@ -128,13 +128,13 @@ Second part of the First Main Theorem of Value Distribution Theory, quantitative
 meromorphic on the complex plane, then the characteristic functions (for value `⊤`) of `f` and
 `f - a₀` differ at most by `log⁺ ‖a₀‖ + log 2`.
 -/
-theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : MeromorphicOn f ⊤) :
+theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphic f) :
     |characteristic f ⊤ r - characteristic (f · - a₀) ⊤ r| ≤ log⁺ ‖a₀‖ + log 2 := by
   have h₁f : CircleIntegrable (fun x ↦ log⁺ ‖f x‖) 0 r :=
-    circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h x trivial)
+    circleIntegrable_posLog_norm_meromorphicOn h.meromorphicOn
   have h₂f : CircleIntegrable (fun x ↦ log⁺ ‖f x - a₀‖) 0 r := by
     apply circleIntegrable_posLog_norm_meromorphicOn
-    apply MeromorphicOn.sub (fun x a => h x trivial) (MeromorphicOn.const a₀)
+    apply h.meromorphicOn.sub (MeromorphicOn.const a₀)
   rw [← Pi.sub_apply, characteristic_sub_characteristic_eq_proximity_sub_proximity h]
   simp only [proximity, reduceDIte, Pi.sub_apply, ← circleAverage_sub h₁f h₂f]
   apply le_trans abs_circleAverage_le_circleAverage_abs
@@ -157,7 +157,7 @@ Second part of the First Main Theorem of Value Distribution Theory, qualitative 
 meromorphic on the complex plane, then the characteristic functions for the value `⊤` of the
 function `f` and `f - a₀` agree asymptotically up to a bounded function.
 -/
-theorem isBigO_characteristic_sub_characteristic_shift (h : MeromorphicOn f ⊤) :
+theorem isBigO_characteristic_sub_characteristic_shift (h : Meromorphic f) :
     (characteristic f ⊤ - characteristic (f · - a₀) ⊤) =O[atTop] (1 : ℝ → ℝ) :=
   isBigO_of_le' (c := log⁺ ‖a₀‖ + log 2) _
     (fun R ↦ by simpa using abs_characteristic_sub_characteristic_shift_le h)

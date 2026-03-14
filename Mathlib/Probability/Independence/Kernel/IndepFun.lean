@@ -6,6 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Independence.Kernel.Indep
+public import Mathlib.MeasureTheory.MeasurableSpace.Pi
+public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!
 # Independence of random variables with respect to a kernel and a measure

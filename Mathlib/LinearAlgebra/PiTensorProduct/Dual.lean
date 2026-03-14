@@ -28,7 +28,7 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 
 namespace PiTensorProduct
 
-open PiTensorProduct BigOperators LinearMap Module TensorProduct
+open PiTensorProduct LinearMap Module TensorProduct
 
 variable {ι : Type*}
 
@@ -100,7 +100,7 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse [Finite ι] [∀ i, Fini
 /-- A linear equivalence between `⨂[R] i, Dual R (M i)` and `Dual R (⨂[R] i, M i)`
 given bases for all `M i`. If `f : (i : ι) → Dual R (s i)`, then this equivalence sends
 `⨂ₜ[R] i, f i` to the composition of `PiTensorProduct.map f` with the natural
-isomorphism `⨂[R] i, R ≃ R` given by multipliccation (`constantBaseRingEquiv`). -/
+isomorphism `⨂[R] i, R ≃ R` given by multiplication (`constantBaseRingEquiv`). -/
 @[simps!]
 noncomputable def dualDistribEquivOfBasis [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) : (⨂[R] i, Dual R (M i)) ≃ₗ[R] Dual R (⨂[R] i, M i) :=
@@ -113,7 +113,7 @@ variable [Π i, Module.Finite R (M i)] [Π i, Module.Free R (M i)]
 /-- A linear equivalence between `⨂[R] i, Dual R (M i)` and `Dual R (⨂[R] i, M i)` when all
 `M i` are finite free modules. If `f : (i : ι) → Dual R (M i)`, then this equivalence sends
 `⨂ₜ[R] i, f i` to the composition of `PiTensorProduct.map f` with the natural
-isomorphism `⨂[R] i, R ≃ R` given by multipliccation (`constantBaseRingEquiv`). -/
+isomorphism `⨂[R] i, R ≃ R` given by multiplication (`constantBaseRingEquiv`). -/
 @[simp]
 noncomputable def dualDistribEquiv [Finite ι] :
     (⨂[R] i, Dual R (M i)) ≃ₗ[R] Dual R (⨂[R] i, M i) :=

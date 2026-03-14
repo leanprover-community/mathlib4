@@ -162,6 +162,7 @@ def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.i
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
 protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism from a subgraph of `A` to its map under a copy `f : Copy A B`. -/
 noncomputable def isoSubgraphMap (f : Copy A B) (A' : A.Subgraph) :
     A'.coe ≃g (A'.map f.toHom).coe := by
@@ -351,6 +352,9 @@ protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := ⟨e⟩
 
 /-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
+
+/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
+protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := ⟨e.toCopy⟩
 
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
     G'.coe ⊴ G :=
@@ -567,7 +571,7 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     #G.edgeFinset - G.copyCount H ≤ #(G.killCopies H).edgeFinset := by
   classical
   obtain rfl | hH := eq_or_ne H ⊥
-  · simp
+  · simp [← card_edgeSet]
   let f (G' : {G' : G.Subgraph // Nonempty (H ≃g G'.coe)}) := (aux hH G'.2).some
   calc
     _ = #G.edgeFinset - card {G' : G.Subgraph // Nonempty (H ≃g G'.coe)} := ?_
@@ -575,14 +579,12 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     _ = #G.edgeFinset - #(Set.range f).toFinset := by rw [Set.toFinset_range]
     _ ≤ #(G.edgeFinset \ (Set.range f).toFinset) := le_card_sdiff ..
     _ = #(G.killCopies H).edgeFinset := ?_
-  · simp only [Set.toFinset_card]
+  · simp only [edgeFinset, Set.toFinset_card]
     rw [← Set.toFinset_card, ← edgeFinset, copyCount, ← card_subtype, subtype_univ, card_univ]
-  simp only [killCopies_of_ne_bot, hH, Ne, not_false_iff,
-    Set.toFinset_card, edgeSet_deleteEdges]
-  simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range,
-    Set.coe_toFinset, coe_filter, Set.iUnion_subtype, ← Fintype.card_coe,
-    ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.coe_toFinset, Set.compl_iUnion,
-    Fintype.card_ofFinset, f]
+  congr 1
+  ext e
+  induction e using Sym2.inductionOn with | hf v w
+  simp [mem_edgeSet, killCopies_of_ne_bot hH, f, eq_comm]
 
 /-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
 we've removed is at most the number of copies of `G` in `H`. -/

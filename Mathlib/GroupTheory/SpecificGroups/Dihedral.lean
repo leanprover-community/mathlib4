@@ -273,10 +273,10 @@ def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
     left_inv := fun
       | ⟨⟨r _, r _⟩, _⟩ => rfl
       | ⟨⟨r i, sr j⟩, h⟩ => by
-        simpa [- r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
+        simpa [-r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
           using h.eq
       | ⟨⟨sr i, r j⟩, h⟩ => by
-        simpa [- r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
+        simpa [-r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
           using h.eq
       | ⟨⟨sr i, sr j⟩, h⟩ => by
         replace h := r.inj h
@@ -302,5 +302,14 @@ lemma card_conjClasses_odd (hn : Odd n) :
   rw [← Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
     card_comm_eq_card_conjClasses_mul_card, nat_card, Nat.mul_div_left _ (mul_pos two_pos hn.pos)]
 
+theorem center_eq_bot_of_odd_ne_one (hodd : Odd n) (hne1 : n ≠ 1) :
+    Subgroup.center (DihedralGroup n) = ⊥ := by
+  simp only [Subgroup.eq_bot_iff_forall, Subgroup.mem_center_iff]
+  rintro (i | i) h
+  · have heq := sr.inj (h (sr i))
+    simp_all
+  · have heq := sr.inj (h (r 1))
+    have : Fact (1 < n) := ⟨by grind⟩
+    simp [sub_eq_iff_eq_add, add_assoc, ZMod.add_self_eq_zero_iff_eq_zero hodd] at heq
 
 end DihedralGroup

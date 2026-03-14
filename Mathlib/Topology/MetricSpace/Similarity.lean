@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid, Newell Jensen
 module
 
 public import Mathlib.Topology.MetricSpace.Congruence
+public import Mathlib.Topology.MetricSpace.Dilation
 public import Mathlib.Tactic.FinCases
 
 /-!
@@ -113,6 +114,58 @@ lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
   refine ⟨r, hr, fun i₁ i₂ => ?_⟩
   simpa [f.right_inv i₁, f.right_inv i₂] using h (f.symm i₁) (f.symm i₂)
 
+/-- Families with at most a single point are always similar. -/
+@[nontriviality, simp]
+lemma of_subsingleton_index [Subsingleton ι] : v₁ ∼ v₂ :=
+  Congruent.of_subsingleton_index.similar
+
+/-! Similarity is preserved under dilations. -/
+
+section Dilation
+variable {F}
+
+lemma comp_left [FunLike F P₁ P₃] [DilationClass F P₁ P₃] (f : F) (h : v₁ ∼ v₂) :
+    f ∘ v₁ ∼ v₂ :=
+  .trans ⟨Dilation.ratio f, Dilation.ratio_ne_zero f, fun _ _ => Dilation.edist_eq f _ _⟩ h
+
+lemma comp_right [FunLike F P₂ P₃] [DilationClass F P₂ P₃] (f : F) (h : v₁ ∼ v₂) : v₁ ∼ f ∘ v₂ :=
+  .symm (h.symm.comp_left f)
+
+@[simp]
+lemma comp_left_iff [FunLike F P₁ P₃] [DilationClass F P₁ P₃] (f : F) : f ∘ v₁ ∼ v₂ ↔ v₁ ∼ v₂ :=
+  ⟨.trans <| .comp_right f (.refl _), .comp_left f⟩
+
+@[simp]
+lemma comp_right_iff [FunLike F P₂ P₃] [DilationClass F P₂ P₃] (f : F) : v₁ ∼ f ∘ v₂ ↔ v₁ ∼ v₂ := by
+  rw [similar_comm, comp_left_iff, similar_comm]
+
+end Dilation
+
+/-! Similarity is preserved under isometries.
+
+While these are trivial consequences of the dilation results, they avoid ending up with a
+`toDilation` in the expression, and so are easier to apply to plain functions.
+If `Dilation` were a predicate like `Isometry` then these would not be needed.
+-/
+
+section Isometry
+
+lemma comp_isometry_left {f : P₁ → P₃} (hf : Isometry f) (h : v₁ ∼ v₂) : f ∘ v₁ ∼ v₂ :=
+  comp_left hf.toDilation h
+
+lemma comp_isometry_right {f : P₂ → P₃} (hf : Isometry f) (h : v₁ ∼ v₂) : v₁ ∼ f ∘ v₂ :=
+  comp_right hf.toDilation h
+
+@[simp]
+lemma comp_isometry_left_iff {f : P₁ → P₃} (hf : Isometry f) : f ∘ v₁ ∼ v₂ ↔ v₁ ∼ v₂ :=
+  comp_left_iff hf.toDilation
+
+@[simp]
+lemma comp_isometry_right_iff {f : P₂ → P₃} (hf : Isometry f) : v₁ ∼ f ∘ v₂ ↔ v₁ ∼ v₂ :=
+  comp_right_iff hf.toDilation
+
+end Isometry
+
 section Triangle
 
 variable {a b c : P₁} {a' b' c' : P₂}
@@ -122,10 +175,10 @@ theorem comm_left (h : ![a, b, c] ∼ ![a', b', c']) :
     ![b, a, c] ∼ ![b', a', c'] := by
   have hl : ![b, a, c] = ![a, b, c] ∘ Equiv.swap 0 1 := by
     ext i
-    fin_cases i <;> simp; rfl
+    fin_cases i <;> simp [Equiv.swap_apply_of_ne_of_ne]
   have hr : ![b', a', c'] = ![a', b', c'] ∘ Equiv.swap 0 1 := by
     ext i
-    fin_cases i <;> simp; rfl
+    fin_cases i <;> simp [Equiv.swap_apply_of_ne_of_ne]
   grind [index_equiv]
 
 /-- Swapping the last two vertices preserves similarity. -/
@@ -133,10 +186,10 @@ theorem comm_right (h : ![a, b, c] ∼ ![a', b', c']) :
     ![a, c, b] ∼ ![a', c', b'] := by
   have hl : ![a, c, b] = ![a, b, c] ∘ Equiv.swap 1 2 := by
     ext i
-    fin_cases i <;> simp; rfl
+    fin_cases i <;> simp [Equiv.swap_apply_of_ne_of_ne]
   have hr : ![a', c', b'] = ![a', b', c'] ∘ Equiv.swap 1 2 := by
     ext i
-    fin_cases i <;> simp; rfl
+    fin_cases i <;> simp [Equiv.swap_apply_of_ne_of_ne]
   grind [index_equiv]
 
 /-- Reversing the order of vertices preserves similarity. -/
@@ -189,34 +242,16 @@ lemma similar_iff_exists_pairwise_dist_eq :
 lemma similar_iff_exists_pos_dist_eq : Similar v₁ v₂ ↔
     (∃ r : ℝ, 0 < r ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) = r * dist (v₂ i₁) (v₂ i₂))) := by
   rw [similar_iff_exists_dist_eq]
-  constructor
-  · intro h
-    rcases h with ⟨r_nn, hr_ne, hdist⟩
-    set r : ℝ := r_nn.toReal with hr
-    have hr_pos : 0 < r := by positivity
-    use r
-  · intro h
-    rcases h with ⟨r, hr_pos, hdist⟩
-    set r_nn : ℝ≥0 := Real.toNNReal r with hr_nn
-    have hr_ne : r_nn ≠ 0 := by grind [Real.toNNReal_eq_zero]
-    have hr : r = r_nn.toReal := by grind [Real.coe_toNNReal']
-    use r_nn
-    grind
+  simp_rw [← pos_iff_ne_zero, NNReal.exists, ← NNReal.coe_pos, NNReal.coe_mk]
+  grind
 
 /-- Similarity holds iff pairwise distances are proportional with a positive ratio. -/
 lemma similar_iff_exists_pos_pairwise_dist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ, 0 < r ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) := by
   simp_rw [similar_iff_exists_pairwise_dist_eq]
-  constructor
-  · rintro ⟨r, hr0, h⟩
-    refine ⟨r, NNReal.coe_pos.mpr ?_, h⟩
-    positivity
-  · rintro ⟨r, hr0, h⟩
-    refine ⟨Real.toNNReal r, by simp [hr0], ?_⟩
-    intro i₁ i₂ hi
-    rw [h hi, Real.coe_toNNReal]
-    positivity
+  simp_rw [← pos_iff_ne_zero, NNReal.exists, ← NNReal.coe_pos, NNReal.coe_mk]
+  grind
 
 namespace Similar
 

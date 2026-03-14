@@ -56,7 +56,8 @@ theorem Quiver.Hom.unop_op' {X Y : Cᵒᵖ} {x} :
 theorem Quiver.Hom.op_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) : f.unop.op = f :=
   rfl
 
-@[simp] theorem Quiver.Hom.unop_mk {X Y : Cᵒᵖ} (f : X ⟶ Y) : Quiver.Hom.unop {unop := f} = f := rfl
+@[simp] theorem Quiver.Hom.unop_mk {X Y : Cᵒᵖ} (f : X ⟶ Y) : Quiver.Hom.unop { unop := f } = f :=
+  rfl
 
 end Quiver
 
@@ -174,12 +175,12 @@ theorem isIso_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) : IsIso f.unop ↔ IsIso f 
 instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
   (isIso_unop_iff _).2 inferInstance
 
-@[simp]
+@[simp, push ←]
 theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← op_comp, IsIso.inv_hom_id, op_id]
 
-@[simp]
+@[simp, push ←]
 theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← unop_comp, IsIso.inv_hom_id, unop_id]
@@ -293,11 +294,11 @@ instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
 protected def FullyFaithful.op {F : C ⥤ D} (hF : F.FullyFaithful) : F.op.FullyFaithful where
   preimage {X Y} f := .op <| hF.preimage f.unop
 
-/-- If F is faithful then the right_op of F is also faithful. -/
+/-- If F is faithful then the `rightOp` of F is also faithful. -/
 instance rightOp_faithful {F : Cᵒᵖ ⥤ D} [Faithful F] : Faithful F.rightOp where
   map_injective h := Quiver.Hom.op_inj (map_injective F (Quiver.Hom.op_inj h))
 
-/-- If F is faithful then the left_op of F is also faithful. -/
+/-- If F is faithful then the `leftOp` of F is also faithful. -/
 instance leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp where
   map_injective h := Quiver.Hom.unop_inj (map_injective F (Quiver.Hom.unop_inj h))
 
@@ -630,6 +631,7 @@ theorem op_trans {H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) :
 @[simp]
 theorem op_symm (α : F ≅ G) : NatIso.op α.symm = (NatIso.op α).symm := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between functors `G ≅ F` induced by a natural isomorphism
 between the opposite functors `F.op ≅ G.op`. -/
 @[simps]
@@ -727,6 +729,7 @@ namespace Equivalence
 
 variable {D : Type u₂} [Category.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence between categories gives an equivalence between the opposite categories.
 -/
 @[simps]
@@ -739,6 +742,7 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
     apply Quiver.Hom.unop_inj
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence between opposite categories gives an equivalence between the original categories.
 -/
 @[simps]

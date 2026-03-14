@@ -5,6 +5,7 @@ Authors: Joël Riou, Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.Data.ENat.Lattice
@@ -22,7 +23,7 @@ if all `Ext X Y i` vanish when `n ≤ i`. This defines a type class
 `HasProjectiveDimensionLE`.)
 
 We also define the projective dimension in `WithBot ℕ∞` as `projectiveDimension`,
-`projectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
+`projectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
 
 -/
 
@@ -220,11 +221,29 @@ end ShortExact
 
 end ShortComplex
 
-instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n]
-    [HasProjectiveDimensionLT Y n] :
+instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n] [HasProjectiveDimensionLT Y n] :
     HasProjectiveDimensionLT (X ⊞ Y) n :=
-  (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasProjectiveDimensionLT_X₂ n
-    (by assumption) (by assumption)
+  (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasProjectiveDimensionLT_X₂ n ‹_› ‹_›
+
+lemma hasProjectiveDimensionLT_of_enoughInjectives [HasExt.{w} C] [EnoughInjectives C] (X : C)
+    (n : ℕ) (hX : ∀ Y : C, Subsingleton (Ext X Y n)) : HasProjectiveDimensionLT X n := by
+  suffices ∀ ⦃d : ℕ⦄ ⦃Y : C⦄ (e : Ext X Y d) (k : ℕ), d = n + k → e = 0 from
+    HasProjectiveDimensionLT.mk (fun i hi Y e ↦ by
+      obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hi
+      exact this e k rfl)
+  intro d Y e k hd
+  induction k generalizing d Y with
+  | zero =>
+    obtain rfl : d = n := by simpa using hd
+    subsingleton
+  | succ k hk =>
+    let ⟨p⟩ := EnoughInjectives.presentation Y
+    have h : (ShortComplex.mk _ _ (cokernel.condition p.f)).ShortExact :=
+      { exact := ShortComplex.exact_cokernel p.f }
+    have hd : n + k + 1 = d := by lia
+    obtain ⟨x, rfl⟩ := Ext.covariant_sequence_exact₁ X h e
+      (by subst hd; apply Ext.eq_zero_of_injective) hd
+    simp [hk x rfl]
 
 end CategoryTheory
 
@@ -254,6 +273,7 @@ lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasProjectiveDimensionLT i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
     projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
@@ -263,11 +283,11 @@ lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
   · obtain _ | n := n
     · exact ⟨⊥, fun _ _ ↦ hasProjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
     · exact ⟨n, fun i hi ↦ hasProjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
-        by simp [WithBot.lt_add_one_iff]⟩
+        by simp [ENat.WithBot.lt_add_one_iff]⟩
 
 lemma projectiveDimension_le_iff (X : C) (n : ℕ) :
     projectiveDimension X ≤ n ↔ HasProjectiveDimensionLE X n := by
-  simp [← projectiveDimension_lt_iff, ← WithBot.lt_add_one_iff]
+  simp [← projectiveDimension_lt_iff, ← ENat.WithBot.lt_add_one_iff]
 
 lemma projectiveDimension_ge_iff (X : C) (n : ℕ) :
     n ≤ projectiveDimension X ↔ ¬ HasProjectiveDimensionLT X n := by
