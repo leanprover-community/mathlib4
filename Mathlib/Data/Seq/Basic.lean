@@ -1096,8 +1096,6 @@ instance lawfulMonad : LawfulMonad Seq1 := LawfulMonad.mk'
   (pure_bind := @ret_bind)
   (bind_assoc := @bind_assoc)
 
-private theorem warmCacheProbe : True := trivial
-
 end Seq1
 
 end Stream'
