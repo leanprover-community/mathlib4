@@ -696,6 +696,50 @@ theorem apply_mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.base
     e ⟨b, e.symm b y⟩ = (b, y) :=
   e.toPretrivialization.apply_mk_symm hb y
 
+/-- Read a section of a fiber bundle through a trivialization, producing a function
+to the fiber model. -/
+def secToFun (e : Trivialization F (π F E)) (σ : ∀ x, E x) (b : B) : F :=
+  (e ⟨b, σ b⟩).2
+
+/-- Produce a section from a function to the fiber model via the trivialization
+inverse. -/
+noncomputable def funToSec (e : Trivialization F (π F E))
+    (s : B → F) (b : B) : E b :=
+  e.symm b (s b)
+
+@[simp]
+theorem secToFun_funToSec (e : Trivialization F (π F E))
+    (s : B → F) {b : B} (hb : b ∈ e.baseSet) :
+    e.secToFun (e.funToSec s) b = s b :=
+  congrArg Prod.snd (e.apply_mk_symm hb (s b))
+
+@[simp]
+theorem funToSec_secToFun (e : Trivialization F (π F E))
+    (σ : ∀ x, E x) {b : B} (hb : b ∈ e.baseSet) :
+    e.funToSec (e.secToFun σ) b = σ b :=
+  e.symm_apply_apply_mk hb (σ b)
+
+theorem secToFun_funToSec_eventuallyEq (e : Trivialization F (π F E))
+    (s : B → F) {b : B} (hb : b ∈ e.baseSet) :
+    e.secToFun (e.funToSec s) =ᶠ[𝓝 b] s :=
+  Filter.eventuallyEq_of_mem (e.open_baseSet.mem_nhds hb) fun _ ↦ e.secToFun_funToSec s
+
+theorem funToSec_secToFun_eventually (e : Trivialization F (π F E))
+    (σ : ∀ x, E x) {b : B} (hb : b ∈ e.baseSet) :
+    ∀ᶠ y in 𝓝 b, e.funToSec (e.secToFun σ) y = σ y :=
+  Filter.eventually_of_mem (e.open_baseSet.mem_nhds hb) fun _ ↦ e.funToSec_secToFun σ
+
+omit [∀ x, Zero (E x)] in
+theorem secToFun_congr (e : Trivialization F (π F E))
+    {σ σ' : ∀ x, E x} {b : B} (h : σ b = σ' b) :
+    e.secToFun σ b = e.secToFun σ' b :=
+  congrArg (fun v ↦ (e ⟨b, v⟩).2) h
+
+theorem funToSec_congr (e : Trivialization F (π F E))
+    {s s' : B → F} {b : B} (h : s b = s' b) :
+    e.funToSec s b = e.funToSec s' b :=
+  congrArg (e.symm b) h
+
 theorem continuousOn_symm (e : Trivialization F (π F E)) :
     ContinuousOn (fun z : B × F => TotalSpace.mk' F z.1 (e.symm z.1 z.2)) (e.baseSet ×ˢ univ) := by
   have : ∀ z ∈ e.baseSet ×ˢ (univ : Set F),

@@ -327,6 +327,30 @@ theorem coordChangeL_symm_apply (e e' : Trivialization F (π F E)) [e.IsLinear R
       (e'.linearEquivAt R b hb.2).symm.trans (e.linearEquivAt R b hb.1) :=
   congr_arg LinearEquiv.invFun (dif_pos hb)
 
+/-! ### secToFun linearity -/
+
+theorem secToFun_map_add (e : Trivialization F (π F E)) [e.IsLinear R]
+    (σ σ' : ∀ x, E x) {b : B} (hb : b ∈ e.baseSet) :
+    e.secToFun (σ + σ') b = e.secToFun σ b + e.secToFun σ' b :=
+  (e.linear R hb).map_add (σ b) (σ' b)
+
+theorem secToFun_map_smul (e : Trivialization F (π F E)) [e.IsLinear R]
+    (c : R) (σ : ∀ x, E x) {b : B} (hb : b ∈ e.baseSet) :
+    e.secToFun (c • σ) b = c • e.secToFun σ b :=
+  (e.linear R hb).map_smul c (σ b)
+
+theorem secToFun_add_eventuallyEq (e : Trivialization F (π F E)) [e.IsLinear R]
+    (σ σ' : ∀ x, E x) {b : B} (hb : b ∈ e.baseSet) :
+    e.secToFun (σ + σ') =ᶠ[𝓝 b] e.secToFun σ + e.secToFun σ' :=
+  Filter.eventuallyEq_of_mem (e.open_baseSet.mem_nhds hb)
+    fun _ hy ↦ (e.linear R hy).map_add (σ _) (σ' _)
+
+theorem secToFun_smul_eventuallyEq (e : Trivialization F (π F E)) [e.IsLinear R]
+    (g : B → R) (σ : ∀ x, E x) {b : B} (hb : b ∈ e.baseSet) :
+    e.secToFun (g • σ) =ᶠ[𝓝 b] g • e.secToFun σ :=
+  Filter.eventuallyEq_of_mem (e.open_baseSet.mem_nhds hb)
+    fun _ hy ↦ (e.linear R hy).map_smul (g _) (σ _)
+
 end Bundle.Trivialization
 
 end TopologicalVectorSpace
