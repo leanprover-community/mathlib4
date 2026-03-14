@@ -656,7 +656,7 @@ variable [Ring K] [Algebra F K]
 variable {F} in
 theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
   Polynomial.Separable.of_dvd (Polynomial.separable_X_sub_C (x := x))
-    (minpoly.dvd F (algebraMap F K x) (by simp only [map_sub, aeval_X, aeval_C, sub_self]))
+    (minpoly.dvd F (algebraMap F K x) (by simp))
 
 instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
   ⟨isSeparable_algebraMap⟩

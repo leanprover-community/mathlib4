@@ -519,7 +519,7 @@ theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j 
     exact u_open.measurableSet.inter hs.compl
 
 @[to_additive]
-instance (priority := 100) ContinuousMul.measurableMul [Mul γ] [ContinuousMul γ] :
+instance (priority := 100) ContinuousMul.measurableMul [Mul γ] [SeparatelyContinuousMul γ] :
     MeasurableMul γ where
 
 instance (priority := 100) ContinuousSub.measurableSub [Sub γ] [ContinuousSub γ] :
