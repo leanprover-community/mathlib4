@@ -87,7 +87,6 @@ variable {cR} (hcR : IsColimit cR) [LocallySmall.{w} C]
 attribute [local instance] hasColimitsOfShape_of_finallySmall
   IsFiltered.isSifted FinallySmall.preservesColimitsOfShape_of_isFiltered
 
-
 noncomputable def colimitFunctorOfCommRing :
     PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat) ⥤ ModuleCat.{w} cR.pt :=
   colimitFunctor (isColimitOfPreserves (forget₂ _ RingCat) hcR)
@@ -185,19 +184,84 @@ lemma colimitFunctorOfCommRing_δ_apply
     constFunctorOfCommRing_μ_app_apply]
   rfl
 
+section
+
+variable {R' : Cᵒᵖ ⥤ RingCat.{w}} {M₁ M₂ N : PresheafOfModules R'}
+
+set_option backward.isDefEq.respectTransparency false in
+variable (M₁ M₂ N) in
+structure BilinearMap where
+  map : M₁.presheaf ⋙ forget _ ⊗ M₂.presheaf ⋙ forget _ ⟶
+    N.presheaf ⋙ forget _
+  map_add {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ m₂' : M₂.obj X) :
+      map.app X (m₁, m₂ + m₂') = map.app X (m₁, m₂) + map.app X (m₁, m₂')
+  add_map {X : Cᵒᵖ} (m₁ m₁' : M₁.obj X) (m₂ : M₂.obj X) :
+      map.app X (m₁ + m₁', m₂) = map.app X (m₁, m₂) + map.app X (m₁', m₂)
+  map_smul {X : Cᵒᵖ} (m₁ : M₁.obj X) (r : R'.obj X) (m₂ : M₂.obj X) :
+      dsimp% map.app X (m₁, r • m₂) = r • show N.obj X from map.app X (m₁, m₂)
+  smul_map {X : Cᵒᵖ} (r : R'.obj X) (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
+      dsimp% map.app X (r • m₁, m₂) = r • show N.obj X from map.app X (m₁, m₂)
+
+end
+
+def BilinearMap.tmul (M₁ M₂ : PresheafOfModules (R ⋙ forget₂ _ _)) :
+    BilinearMap M₁ M₂ (M₁ ⊗ M₂) where
+  map.app X := fun (m₁, m₂) ↦ m₁ ⊗ₜ m₂
+  map.naturality _ _ f := rfl
+  map_add _ _ _ := TensorProduct.tmul_add _ _ _
+  add_map _ _ _ := TensorProduct.add_tmul _ _ _
+  map_smul m₁ r m₂ := by
+    dsimp at m₁ r m₂ ⊢
+    exact TensorProduct.tmul_smul r m₁ m₂
+  smul_map r m₁ m₂ := by
+    dsimp at m₁ r m₂ ⊢
+    exact TensorProduct.smul_tmul' r m₁ m₂
+
+namespace ModuleColimit
+
+variable {M₁ M₂ N : PresheafOfModules (R ⋙ forget₂ _ _)}
+  (b : BilinearMap M₁ M₂ N)
+  {cM₁ : Cocone M₁.presheaf} (hcM₁ : IsColimit cM₁)
+  {cM₂ : Cocone M₂.presheaf} (hcM₂ : IsColimit cM₂)
+  {cN : Cocone N.presheaf} (hcN : IsColimit cN)
+
+noncomputable instance :
+    Module cR.pt (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcM₁) :=
+  inferInstanceAs (Module ((forget₂ _ RingCat).mapCocone cR).pt _)
+
+noncomputable def descOfBilinearMap :
+    TensorProduct cR.pt
+      (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcM₁)
+      (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcM₂) →ₗ[cR.pt]
+    (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcN) := by
+  have := b
+  apply TensorProduct.lift
+  sorry
+
+@[simp]
+lemma descOfBilinearMap_tmul {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
+    dsimp% (descOfBilinearMap hcR b hcM₁ hcM₂ hcN) (ιM m₁ ⊗ₜ ιM m₂) =
+      ιM (b.map.app X (m₁, m₂)) := by
+  sorry
+
+end ModuleColimit
+
 namespace isIso_colimitFunctorOfCommRing_δ
 
 variable (F₁ F₂ : PresheafOfModules.{w} (R ⋙ forget₂ CommRingCat RingCat))
 
-def μ : (colimitFunctorOfCommRing hcR).obj F₁ ⊗ (colimitFunctorOfCommRing hcR).obj F₂ ⟶
-    (colimitFunctorOfCommRing hcR).obj (F₁ ⊗ F₂) := sorry
+noncomputable def μ :
+    (colimitFunctorOfCommRing hcR).obj F₁ ⊗ (colimitFunctorOfCommRing hcR).obj F₂ ⟶
+    (colimitFunctorOfCommRing hcR).obj (F₁ ⊗ F₂) :=
+  ModuleCat.ofHom (ModuleColimit.descOfBilinearMap _ (.tmul _ _) _ _ _)
 
+variable {F₁ F₂} in
 @[simp]
 lemma μ_apply {X : Cᵒᵖ} (m₁ : F₁.obj X) (m₂ : F₂.obj X) :
     dsimp% μ hcR F₁ F₂ (ιColimitFunctorOfCommRing hcR F₁ X m₁ ⊗ₜ
         ιColimitFunctorOfCommRing hcR F₂ X m₂) =
-      ιColimitFunctorOfCommRing hcR (F₁ ⊗ F₂) X (m₁ ⊗ₜ m₂) := by
-  sorry
+      ιColimitFunctorOfCommRing hcR (F₁ ⊗ F₂) X (m₁ ⊗ₜ m₂) :=
+  ModuleColimit.descOfBilinearMap_tmul _ (.tmul F₁ F₂) ..
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -216,8 +280,11 @@ instance : Epi (μ hcR F₁ F₂) := by
   intro U (m : TensorProduct (R.obj U) (F₁.obj U) (F₂.obj U))
   induction m with
   | zero => exact ⟨0, by simp⟩
-  | add => sorry
-  | tmul => sorry
+  | add m₁ m₂ hm₁ hm₂ =>
+    obtain ⟨z₁, hz₁⟩ := hm₁
+    obtain ⟨z₂, hz₂⟩ := hm₂
+    exact ⟨z₁ + z₂, by simp [hz₁, hz₂]⟩
+  | tmul m₁ m₂ => exact ⟨_, μ_apply hcR m₁ m₂⟩
 
 @[reassoc (attr := simp)]
 lemma δ_μ : δ (colimitFunctorOfCommRing hcR) F₁ F₂ ≫ μ hcR F₁ F₂ = 𝟙 _ := by
