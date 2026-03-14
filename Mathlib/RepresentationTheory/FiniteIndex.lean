@@ -24,6 +24,7 @@ and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ 
   `S ≤ G` and a `k`-linear `S`-representation `A`.
 * `Rep.indCoindNatIso k S`: A natural isomorphism between the functors `Ind_S^G` and `Coind_S^G`.
 
+TODO : Fix the universe constraint
 -/
 
 @[expose] public section
@@ -273,5 +274,3 @@ lemma coindResAdjunction_homEquiv_symm_apply (A : Rep.{u} k S)
   rfl
 
 end Rep
-
-#print "fix the universe constraint"
