@@ -844,10 +844,10 @@ variable [R1Space α] [Group α] [TopologicalSpace β] [R1Space β] [Group β] [
   [NormedAddCommGroup γ] {φ : α →* β} (hφ : Topology.IsClosedEmbedding φ)
 
 open scoped Pointwise in
-/-- Pull back a continuous compactly supported function `f` on `B` to the
-continuous compactly supported function `a ↦ f (b * φ a)` on `A`. -/
-@[to_additive /--Pull back a continuous compactly supported function `f` on `B` to the
-continuous compactly supported function `a ↦ f (b * φ a)` on `A`.-/]
+/-- Pull back a continuous compactly supported function `f` on `β` along a closed embedding
+`φ : α →* β` to the continuous compactly supported function `a ↦ f (b * φ a)` on `A`. -/
+@[to_additive /-- Pull back a continuous compactly supported function `f` on `β` along a closed
+embedding `φ : α →+ β` to the continuous compactly supported function `a ↦ f (b + φ a)` on `A`. -/]
 noncomputable def pullback_monoidHom (f : CompactlySupportedContinuousMap β γ) (b : β) :
     CompactlySupportedContinuousMap α γ where
   toFun a := f (b * φ a)

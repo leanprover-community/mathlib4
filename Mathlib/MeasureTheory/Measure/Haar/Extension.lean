@@ -42,10 +42,12 @@ variable {A B C E : Type*} [Group A] [Group B] [Group C]
   {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
   [IsTopologicalGroup A] [IsTopologicalGroup B] [NormedAddCommGroup E]
 
-/-- Pull back a continuous compactly supported function `f` on `B` to the
-continuous compactly supported function `a ↦ f (b * φ a)` on `A`. -/
-@[to_additive /--Pull back a continuous compactly supported function `f` on `B` to the
-continuous compactly supported function `a ↦ f (b * φ a)` on `A`.-/]
+/-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, then we
+can pull back a continuous compactly supported function `f` on `B` along `φ` to the continuous
+compactly supported function `a ↦ f (b * φ a)` on `A`. -/
+@[to_additive /-- If `φ : A →+ B` and `ψ : B →+ C` define a short exact sequence of additive
+topological groups, then we can pull back a continuous compactly supported function `f` on `B` along
+`φ` to the continuous compactly supported function `a ↦ f (b + φ a)` on `A`. -/]
 noncomputable abbrev pullback (f : CompactlySupportedContinuousMap B E) (b : B) :
     CompactlySupportedContinuousMap A E :=
   f.pullback_monoidHom H.isClosedEmbedding b
@@ -69,9 +71,11 @@ theorem integral_pullback_invFun_apply (f : CompactlySupportedContinuousMap B E)
 
 variable [IsTopologicalGroup C] [LocallyCompactSpace B]
 
-/-- Push forward a continuous compactly supported function on `B` to a
-continuous compactly supported function on `C` by integrating over `A`. -/
-@[to_additive /-- Push forward a continuous compactly supported function on `B` to a
+/-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, then we
+can push forward a continuous compactly supported function on `B` to a continuous compactly
+supported function on `C` by integrating over `A`. -/
+@[to_additive /-- If `φ : A →+ B` and `ψ : B →+ C` define a short exact sequence of additive
+topological groups, then we can push forward a continuous compactly supported function on `B` to a
 continuous compactly supported function on `C` by integrating over `A`. -/]
 noncomputable def pushforward :
     CompactlySupportedContinuousMap B E →ₗ[ℝ] CompactlySupportedContinuousMap C E where
@@ -145,9 +149,11 @@ theorem pushforward_mono {f g : CompactlySupportedContinuousMap B ℝ} (h : f �
 
 variable [MeasurableSpace C] [BorelSpace C] (μC : Measure C) [hμC : IsHaarMeasure μC]
 
-/-- Integrate a continuous compactly supported function on `B` by integrating over `A` and `C`. -/
-@[to_additive /-- Integrate a continuous compactly supported function on `B` by integrating
-over `A` and `C`. -/]
+/-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, then we
+can integrate a continuous compactly supported function on `B` by integrating over `A` and `C`. -/
+@[to_additive /-- If `φ : A →+ B` and `ψ : B →+ C` define a short exact sequence of additive
+topological groups, then we can integrate a continuous compactly supported function on `B` by
+integrating over `A` and `C`. -/]
 noncomputable def integrate : CompactlySupportedContinuousMap B E →ₗ[ℝ] E where
   toFun f := ∫ c, pushforward H μA f c ∂μC
   map_add' f g := by
@@ -170,8 +176,11 @@ theorem integrate_mono {f g : CompactlySupportedContinuousMap B ℝ} (h : f ≤ 
 
 variable [T2Space B] [MeasurableSpace B] [BorelSpace B]
 
-/-- The Haar measure on `B` induced by the Haar measures on `A` and `C`. -/
-@[to_additive /-- The Haar measure on `B` induced by the Haar measures on `A` and `C`. -/]
+/-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, then we
+can define a Haar measure on `B` induced by the Haar measures on `A` and `C`. -/
+@[to_additive /-- If `φ : A →+ B` and `ψ : B →+ C` define a short exact sequence of additive
+topological groups, then we can define a Haar measure on `B` induced by the Haar measures on `A`
+and `C`. -/]
 noncomputable def inducedMeasure : Measure B :=
   RealRMK.rieszMeasure ⟨integrate H μA μC, fun _ _ ↦ integrate_mono H μA μC⟩
 
@@ -222,10 +231,12 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
-/-- If `ψ` is injective on an open set `U`, then the induced measure on `U` is bounded by
+/-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, and if
+`ψ` is injective on an open set `U`, then the induced measure on `U` is bounded above by
 `μC Set.univ * μA {1}` (possibly infinite). -/
-@[to_additive /-- If `ψ` is injective on an open set `U`, then the induced measure on `U` is bounded
-by `μC Set.univ * μA {0}` (possibly infinite). -/]
+@[to_additive /-- If `φ : A →+ B` and `ψ : B →+ C` define a short exact sequence of additive
+topological groups, and if `ψ` is injective on an open set `U`, then the induced measure on `U` is
+bounded above by `μC Set.univ * μA {1}` (possibly infinite). -/]
 theorem inducedMeasure_lt_of_injOn {U : Set B} (hU : IsOpen U) [DiscreteTopology A]
     (h : U.InjOn ψ) :
     inducedMeasure H μA μC U ≤ μC Set.univ * μA {1} := by
