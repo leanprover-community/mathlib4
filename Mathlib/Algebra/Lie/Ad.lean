@@ -6,7 +6,7 @@ Authors: Janos Wolosz
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Semisimple
+public import Mathlib.LinearAlgebra.JordanChevalley
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
@@ -17,9 +17,9 @@ This file collects results about the adjoint action `ad` on associative algebras
 ## Main results
 
 * `LieAlgebra.commute_ad_of_commute`: commuting elements have commuting adjoints.
-* `LieAlgebra.ad_nilpotent_of_nilpotent`: ad of a nilpotent element is nilpotent.
-* `LieAlgebra.ad_isSemisimple_of_isSemisimple`: ad of a semisimple endomorphism is semisimple.
-* `LieAlgebra.ad_semisimple_part`: ad preserves the Jordan-Chevalley decomposition.
+* `LieAlgebra.ad_nilpotent_of_nilpotent`: the adjoint of a nilpotent element is nilpotent.
+* `LieAlgebra.ad_isSemisimple_of_isSemisimple`: the adjoint of a semisimple element is semisimple.
+* `LieAlgebra.ad_isNilpotent_isSemisimple`: the adjoint preserves the Jordan-Chevalley decomposition
 -/
 
 @[expose] public section
@@ -31,6 +31,7 @@ theorem LieAlgebra.commute_ad_of_commute {R : Type*} [CommRing R]
   rw [Commute, SemiconjBy, ← sub_eq_zero, ← Ring.lie_def,
     ← (LieAlgebra.ad R A).map_lie, Ring.lie_def, sub_eq_zero.mpr h, map_zero]
 
+/-- The adjoint of a nilpotent element is nilpotent. -/
 theorem LieAlgebra.ad_nilpotent_of_nilpotent (R : Type*) {A : Type*}
     [CommRing R] [Ring A] [Algebra R A]
     {a : A} (h : IsNilpotent a) :
@@ -83,7 +84,7 @@ private theorem isSemisimple_mulRight_of_isSemisimple {R : Type*} {M : Type*}
   ext1 T
   simp only [LinearMap.zero_apply, aeval_mulRight_apply, minpoly.aeval, mul_zero]
 
-/-- The adjoint of a semisimple endomorphism is semisimple. -/
+/-- The adjoint of a semisimple element is semisimple. -/
 theorem LieAlgebra.ad_isSemisimple_of_isSemisimple {R : Type*} {M : Type*}
     [Field R] [AddCommGroup M] [Module R M] [FiniteDimensional R M] [PerfectField R]
     {a : Module.End R M} (ha : a.IsSemisimple) :
@@ -93,18 +94,38 @@ theorem LieAlgebra.ad_isSemisimple_of_isSemisimple {R : Type*} {M : Type*}
     (LinearMap.commute_mulLeft_right a a)
     (isSemisimple_mulRight_of_isSemisimple ha)
 
-/-- If `x = n + s` with `n` nilpotent and `s` semisimple, then `ad(x) = ad(n) + ad(s)`
-is the Jordan-Chevalley decomposition of `ad(x)`: `ad(n)` is nilpotent and
-`ad(s)` is semisimple. -/
-theorem LieAlgebra.ad_semisimple_part {R : Type*} {M : Type*}
+/-- The adjoint preserves the Jordan-Chevalley decomposition: if `x = n + s` with
+`n ∈ adjoin R {x}` nilpotent and `s ∈ adjoin R {x}` semisimple, then `ad x = ad n + ad s`
+where `ad n` is nilpotent, `ad s` is semisimple, and both lie in `adjoin R {ad x}`. -/
+theorem LieAlgebra.ad_isNilpotent_isSemisimple {R : Type*} {M : Type*}
     [Field R] [AddCommGroup M] [Module R M] [FiniteDimensional R M] [PerfectField R]
-    (x n s : Module.End R M)
+    {x n s : Module.End R M}
+    (hn_adj : n ∈ Algebra.adjoin R {x})
+    (hs_adj : s ∈ Algebra.adjoin R {x})
     (hn_nil : IsNilpotent n) (hs_ss : s.IsSemisimple)
     (hxns : x = n + s) :
     LieAlgebra.ad R (Module.End R M) x =
       LieAlgebra.ad R (Module.End R M) n + LieAlgebra.ad R (Module.End R M) s ∧
     IsNilpotent (LieAlgebra.ad R (Module.End R M) n) ∧
-    (LieAlgebra.ad R (Module.End R M) s).IsSemisimple :=
-  ⟨by rw [hxns, map_add],
-   LieAlgebra.ad_nilpotent_of_nilpotent R hn_nil,
-   LieAlgebra.ad_isSemisimple_of_isSemisimple hs_ss⟩
+    (LieAlgebra.ad R (Module.End R M) s).IsSemisimple ∧
+    LieAlgebra.ad R (Module.End R M) s ∈
+      Algebra.adjoin R {LieAlgebra.ad R (Module.End R M) x} ∧
+    LieAlgebra.ad R (Module.End R M) n ∈
+      Algebra.adjoin R {LieAlgebra.ad R (Module.End R M) x} := by
+  set ad := LieAlgebra.ad R (Module.End R M)
+  have h_sum : ad x = ad n + ad s := by rw [hxns, map_add]
+  have h_ad_n_nil := ad_nilpotent_of_nilpotent R hn_nil
+  have h_ad_s_ss := ad_isSemisimple_of_isSemisimple hs_ss
+  have hc_ns : Commute n s :=
+    Algebra.commute_of_mem_adjoin_singleton_of_commute hs_adj
+      (Algebra.commute_of_mem_adjoin_self hn_adj).symm
+  have hc_ad : Commute (ad n) (ad s) := commute_ad_of_commute hc_ns
+  obtain ⟨n', hn'_adj, s', hs'_adj, hn'_nil, hs'_ss, h_jc⟩ :=
+    (ad x).exists_isNilpotent_isSemisimple
+  have hc_canonical : Commute n' s' :=
+    Algebra.commute_of_mem_adjoin_singleton_of_commute hs'_adj
+      (Algebra.commute_of_mem_adjoin_self hn'_adj).symm
+  have ⟨hn_eq, hs_eq⟩ := Module.End.isNilpotent_isSemisimple_unique
+    hn'_nil hs'_ss h_ad_n_nil h_ad_s_ss hc_canonical hc_ad (h_jc.symm.trans h_sum)
+  exact ⟨h_sum, h_ad_n_nil, h_ad_s_ss,
+    hs_eq ▸ hs'_adj, hn_eq ▸ hn'_adj⟩
