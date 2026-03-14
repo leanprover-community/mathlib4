@@ -37,6 +37,8 @@ variable {ι A B C D σ τ ψ ω : Type*}
   [Semiring A] [Semiring B] [Semiring C] [Semiring D]
   [SetLike σ A] [SetLike τ B] [SetLike ψ C] [SetLike ω D]
 
+open Graded
+
 section SetLike
 
 /-- Bundled graded (semi)ring homomorphisms. Use `GradedRingHom` for the namespace and other

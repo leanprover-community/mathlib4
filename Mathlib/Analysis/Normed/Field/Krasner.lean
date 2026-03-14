@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Normed.Algebra.Ultra
 public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 public import Mathlib.FieldTheory.SeparableDegree
-public import Mathlib.Analysis.Normed.Algebra.Basic
 
 /-!
 # Krasner's Lemma

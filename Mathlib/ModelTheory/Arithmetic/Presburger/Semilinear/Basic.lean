@@ -546,7 +546,6 @@ private theorem fract_add_of_mem_closure {x y} (hy : y ∈ closure hs.basisSet) 
   rw [map_add, ← sub_add_eq_add_sub]
   simp [-nsmul_eq_mul, ← hs.basis_apply, Finsupp.single_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem fract_mem_fundamentalDomain (x) : hs.fract x ∈ hs.fundamentalDomain := by
   classical
   intro i
