@@ -72,8 +72,8 @@ macro_rules
   `(tactic| ring_nf -failIfUnchanged $[at $location]?)
 
 /-- `group` normalizes expressions in multiplicative groups that occur in the goal. `group` does not
-assume commutativity, instead using only the group axioms without any information about which group is
-manipulated. If the goal is an equality, and after normalization the two sides are equal, `group`
+assume commutativity, instead using only the group axioms without any information about which group
+is manipulated. If the goal is an equality, and after normalization the two sides are equal, `group`
 closes the goal.
 
 For additive commutative groups, use the `abel` tactic instead.
