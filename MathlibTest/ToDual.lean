@@ -341,7 +341,23 @@ inductive WithTop.LE : WithTop α → WithTop α → Prop where
   | le_top (x : WithTop α) : WithTop.LE x .top
   | coe_le_coe {a b : α} : a ≤ b → WithTop.LE (.coe a) (.coe b)
 
+attribute [to_dual existing] WithTop.LE.le_top
+
 @[to_dual]
 instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩
 
 example (a : α) : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+-- The namespace is translated correctly for private names:
+@[to_dual]
+private theorem WithBot.coe_le_top : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+run_meta guard <| (← getEnv).contains ``WithTop.coe_le_bot
+
+@[to_dual]
+private abbrev WithBotPrivate := WithBot
+
+@[to_dual]
+private theorem WithBotPrivate.coe_le_top : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+run_meta guard <| (← getEnv).contains ``WithTopPrivate.coe_le_bot

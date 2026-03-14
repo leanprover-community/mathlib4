@@ -498,7 +498,7 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
         ext ⟨f, hf⟩
         dsimp
         convert t.2.to_sieveCompatible _ _ _
-        simp only [Opposite.op_unop, shrinkYonedaObjObjEquiv_map]
+        simp only [Opposite.op_unop, shrinkYonedaObjObjEquiv_obj_map]
         rfl }
   left_inv t := by cat_disch
   right_inv x := by
@@ -506,6 +506,9 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
     dsimp
     rw! [Equiv.apply_symm_apply]
     simp
+
+@[deprecated "In terms of `Sieve.shrinkFunctor`" (since := "2026-03-13")]
+alias natTransEquivCompatibleFamily := shrinkFunctorHomEquiv
 
 set_option backward.isDefEq.respectTransparency false in
 lemma shrinkFunctor_ι_comp_eq_iff_isAmalgamation [LocallySmall.{w} C] (F : Cᵒᵖ ⥤ Type w)
@@ -522,6 +525,9 @@ lemma shrinkFunctor_ι_comp_eq_iff_isAmalgamation [LocallySmall.{w} C] (F : Cᵒ
       simp
     · rw! [Equiv.symm_apply_apply]
       rfl
+
+@[deprecated "In terms of `Sieve.shrinkFunctor`" (since := "2026-03-13")]
+alias extension_iff_amalgamation := shrinkFunctor_ι_comp_eq_iff_isAmalgamation
 
 lemma isSheafFor_iff_bijective_shrinkFunctor_ι_comp [LocallySmall.{w} C] {X : C}
     (S : Sieve X) (F : Cᵒᵖ ⥤ Type w) :

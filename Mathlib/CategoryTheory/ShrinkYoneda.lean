@@ -101,6 +101,7 @@ lemma shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm
   simp [shrinkYoneda, shrinkYonedaObjObjEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
 lemma shrinkYonedaObjObjEquiv_map_app
     {X X' : C} {Y : Cᵒᵖ} (f : (shrinkYoneda.{w, v, u}.obj X).obj Y) (g : X ⟶ X') :
     shrinkYonedaObjObjEquiv ((shrinkYoneda.map g).app Y f) =
@@ -108,7 +109,8 @@ lemma shrinkYonedaObjObjEquiv_map_app
   simp [shrinkYoneda, shrinkYonedaObjObjEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma shrinkYonedaObjObjEquiv_map {X : C} {Y Y' : Cᵒᵖ} (g : Y ⟶ Y')
+@[reassoc]
+lemma shrinkYonedaObjObjEquiv_obj_map {X : C} {Y Y' : Cᵒᵖ} (g : Y ⟶ Y')
     (f : (shrinkYoneda.{w}.obj X).obj Y) :
     shrinkYonedaObjObjEquiv ((shrinkYoneda.{w}.obj X).map g f) =
       g.unop ≫ shrinkYonedaObjObjEquiv f := by
@@ -190,7 +192,7 @@ noncomputable
 def shrinkYonedaIsoYoneda : shrinkYoneda.{v} ≅ yoneda (C := C) :=
   NatIso.ofComponents
     (fun X ↦ NatIso.ofComponents (fun Y ↦ shrinkYonedaObjObjEquiv.toIso)
-      (by intros; ext; simp [shrinkYonedaObjObjEquiv_map]))
+      (by intros; ext; simp [shrinkYonedaObjObjEquiv_obj_map]))
     (by intros; ext; simp [shrinkYonedaObjObjEquiv_map_app])
 
 set_option backward.isDefEq.respectTransparency false in
