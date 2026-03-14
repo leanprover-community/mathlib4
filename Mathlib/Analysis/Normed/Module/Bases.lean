@@ -45,8 +45,8 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * `SchauderBasis.proj b n`: The `n`-th canonical projection `X → X`,
   mapping `x ↦ ∑ i ∈ Finset.range n, b.coord i x • b i`.
 * `UnconditionalSchauderBasis.enormProjBound`: The supremum of projection norms (`ℝ≥0∞`).
-* `UnconditionalSchauderBasis.nnnormProjBound`: The supremum of projection norms (`ℝ≥0`,
-  requires `[CompleteSpace X]`).
+* `UnconditionalSchauderBasis.nnnormProjBound`: The supremum of projection norms (`ℝ≥0`),
+  requires `[CompleteSpace X]`.
 
 ## Main Results
 
@@ -95,8 +95,8 @@ and `UnconditionalSchauderBasis` for the unconditional case.
 -/
 @[ext]
 structure GeneralSchauderBasis (β : Type*) (𝕜 : Type*)
-  (X : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-  (L : SummationFilter β) where
+    (X : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X]
+    (L : SummationFilter β) where
   /-- The basis vectors. -/
   basis : β → X
   /-- Coordinate functionals. -/
@@ -137,7 +137,6 @@ attribute [coe] GeneralSchauderBasis.basis
 namespace GeneralSchauderBasis
 
 variable (b : GeneralSchauderBasis β 𝕜 X L)
-
 
 /-- The basis vectors are linearly independent. -/
 theorem linearIndependent : LinearIndependent 𝕜 b := by
@@ -368,8 +367,8 @@ lemma sum_succSub (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) :
 /-- The operators `succSub P i` satisfy a biorthogonality relation. -/
 lemma succSub_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
     (i j : ℕ) (x : X) :
-    (succSub P i) (succSub P j x) = (Pi.single j (succSub P j x) : ℕ → X) i := by
-  simp only [Pi.single_apply, succSub, ContinuousLinearMap.sub_apply, map_sub, hcomp,
+    succSub P i (succSub P j x) = if i = j then succSub P j x else 0 := by
+  simp only [succSub, ContinuousLinearMap.sub_apply, map_sub, hcomp,
     Nat.add_min_add_right]
   split_ifs with h
   · rw [h, min_self, min_eq_right (Nat.le_succ j), Nat.min_eq_left (Nat.le_succ j)]
