@@ -64,35 +64,36 @@ instance [Nontrivial M] : Nontrivial P.invtRootSubmodule where
 
 @[simp] lemma coe_top : ((⊤ : P.invtRootSubmodule) : Submodule R M) = ⊤ := rfl
 
-open Module in
+lemma eq_zero_of_forall_coroot'_eq_zero {K : Type*} [Field K] [NeZero (2 : K)]
+    [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
+    {x : M} (h : ∀ i, P.coroot' i x = 0) : x = 0 := by
+  have : Module.IsReflexive K M := .of_isPerfPair P.toLinearMap
+  exact ((Module.Dual.eval K M).map_eq_zero_iff (Module.bijective_dual_eval K M).injective).mp
+    (LinearMap.ext_on_range P.span_coroot'_eq_top h)
+
+lemma invtRootSubmodule.le_ker_coroot' {K : Type*} [Field K] [NeZero (2 : K)]
+    [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
+    (q : P.invtRootSubmodule) {k : ι} (hk : P.root k ∉ (q : Submodule K M)) :
+    (q : Submodule K M) ≤ LinearMap.ker (P.coroot' k) :=
+  (Submodule.mem_invtSubmodule_reflection_iff (P.flip.root_coroot_two k)
+    (Submodule.disjoint_span_singleton_of_notMem hk)).mp
+    (P.mem_invtRootSubmodule_iff.mp q.property k)
+
 lemma invtRootSubmodule.eq_bot_iff {K : Type*} [Field K] [NeZero (2 : K)]
     [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
     (q : P.invtRootSubmodule) :
     q = ⊥ ↔ ∀ i, P.root i ∉ (q : Submodule K M) := by
-  have : IsReflexive K M := .of_isPerfPair P.toLinearMap
   refine ⟨fun h ↦ by simp [h, P.ne_zero], fun h ↦ ?_⟩
   rw [Subtype.mk_eq_bot_iff (by simp), Submodule.eq_bot_iff]
   intro x hx
-  by_contra hx₀
-  obtain ⟨i, hi⟩ : ∃ i, P.coroot' i x ≠ 0 := by
-    contrapose! hx₀
-    suffices Dual.eval K M x = 0 from
-      ((Dual.eval K M).map_eq_zero_iff (bijective_dual_eval K M).injective).mp this
-    exact LinearMap.ext_on_range P.span_coroot'_eq_top hx₀
-  replace h : P.reflection i x ∉ (q : Submodule K M) := by
-    specialize h i
-    contrapose! h
-    rw [reflection_apply, LinearMap.flip_apply, Submodule.sub_mem_iff_right _ hx] at h
-    exact (Submodule.smul_mem_iff _ hi).mp h
-  have h' : P.reflection i x ∈ (q : Submodule K M) := P.mem_invtRootSubmodule_iff.mp q.property i hx
-  contradiction
+  exact eq_zero_of_forall_coroot'_eq_zero fun i =>
+    LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q (h i) hx)
 
 lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [Module K M] [Module K N]
     {P : RootPairing ι K M N} [P.IsRootSystem] (q : P.invtRootSubmodule) :
     q = ⊤ ↔ range P.root ⊆ q :=
   ⟨fun h ↦ by simp [h], fun h ↦ by simpa using Submodule.span_mono h (R := K)⟩
 
-open Module in
 lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
     [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
     (q : P.invtRootSubmodule) :
@@ -101,10 +102,6 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
   have hSQ : span K (P.root '' {i | P.root i ∈ Q}) ≤ Q :=
     span_le.mpr (Set.image_subset_iff.mpr fun _ h => h)
   refine le_antisymm ?_ hSQ
-  have hq_ker : ∀ k, P.root k ∉ Q → Q ≤ ker (P.coroot' k) := fun k hk =>
-    (Submodule.mem_invtSubmodule_reflection_iff (P.flip.root_coroot_two k)
-      (Submodule.disjoint_span_singleton_of_notMem hk)).mp
-      (P.mem_invtRootSubmodule_iff.mp q.property k)
   set S := span K (P.root '' {i | P.root i ∈ Q})
   set T := span K (P.root '' {i | P.root i ∉ Q})
   have h_sup : S ⊔ T = ⊤ := by
@@ -123,11 +120,9 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
       rintro _ ⟨j, hj, rfl⟩
       rw [SetLike.mem_coe, LinearMap.mem_ker, P.root_coroot'_eq_pairing, P.pairing_eq_zero_iff',
         ← P.root_coroot'_eq_pairing]
-      exact LinearMap.mem_ker.mp (hq_ker j hj hk)
-    · exact LinearMap.mem_ker.mp (hq_ker k hk htQ)
-  have : IsReflexive K M := .of_isPerfPair P.toLinearMap
-  exact ((Dual.eval K _).map_eq_zero_iff (bijective_dual_eval K _).injective).mp
-    (LinearMap.ext_on_range P.span_coroot'_eq_top h_ker)
+      exact LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q hj hk)
+    · exact LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q hk htQ)
+  exact eq_zero_of_forall_coroot'_eq_zero h_ker
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
