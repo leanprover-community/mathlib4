@@ -179,6 +179,12 @@ lemma homEquiv'_app_apply {N : ModuleCat.{w} cR.pt}
     dsimp% (homEquiv' hcR hcM α).app X x = α (cM.ι.app X x) :=
   rfl
 
+omit [LocallySmall.{w, v, u} C] [IsCofiltered C] [InitiallySmall C] in
+lemma homEquiv'_symm_apply {N : ModuleCat.{w} cR.pt}
+    (β : M.presheaf ⟶ (Functor.const _).obj (.of N)) {X : Cᵒᵖ} (x : M.obj X) :
+    (homEquiv' hcR hcM).symm β (cM.ι.app X x) = β.app X x :=
+  ConcreteCategory.congr_hom (hcM.ι_app_homEquiv_symm β X) x
+
 lemma map_smul_homEquiv'_iff {N : ModuleCat.{w} cR.pt}
     (α : ModuleColimit hcR hcM →+ N) :
     (∀ (U : Cᵒᵖ) (r : R.obj U) (m : M.obj U), (homEquiv' hcR hcM α).app U (r • m) =
@@ -228,6 +234,12 @@ lemma homEquiv_app_apply {N : ModuleCat.{w} cR.pt}
 lemma homEquiv_naturality_right {N N' : ModuleCat.{w} cR.pt}
     (φ : ModuleCat.of cR.pt (ModuleColimit hcR hcM) ⟶ N) (g : N ⟶ N') :
     homEquiv hcR hcM (φ ≫ g) = homEquiv hcR hcM φ ≫ (constFunctor cR).map g := rfl
+
+@[simp]
+lemma homEquiv_symm_apply {N : ModuleCat.{w} cR.pt} (β : M ⟶ (constFunctor cR).obj N)
+    {X : Cᵒᵖ} (x : M.obj X) :
+    dsimp% (homEquiv hcR hcM).symm β (cM.ι.app X x) = β.app X x := by
+  exact homEquiv'_symm_apply ..
 
 section
 
@@ -318,6 +330,23 @@ noncomputable def colimitAdjunction :
     { homEquiv _ _ := (ModuleColimit.homEquiv _ _).toEquiv
       homEquiv_naturality_left_symm _ _ := ModuleColimit.homEquiv_naturality_left_symm _ _ _ _ _
       homEquiv_naturality_right _ _ := ModuleColimit.homEquiv_naturality_right _ _ _ _ }
+
+lemma colimitAdjunction_homEquiv
+    (F : PresheafOfModules R) (G : ModuleCat cR.pt) :
+    dsimp% (colimitAdjunction.{w} hcR).homEquiv F G =
+      (ModuleColimit.homEquiv hcR
+        (colimit.isColimit F.presheaf)).toEquiv := by
+  simp [colimitAdjunction]
+
+open ModuleColimit in
+lemma colimitAdjunction_homEquiv_symm_apply
+    {F : PresheafOfModules R} {G : ModuleCat cR.pt}
+    (β : F ⟶ (constFunctor cR).obj G) {X : Cᵒᵖ} (m : F.obj X) :
+    ((colimitAdjunction.{w} hcR).homEquiv F G).symm β
+      (ModuleColimit.ιM (hcR := hcR) (hcM := colimit.isColimit F.presheaf) m) =
+        β.app X m := by
+  rw [colimitAdjunction_homEquiv]
+  apply homEquiv_symm_apply
 
 end
 

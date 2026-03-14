@@ -72,6 +72,10 @@ noncomputable instance : (constFunctorOfCommRing.{w} cR).LaxMonoidal where
     ext U : 1
     apply right_unitality (ModuleCat.restrictScalars.{w} (cR.ι.app U).hom)
 
+lemma constFunctorOfCommRing_ε_app_apply {X : Cᵒᵖ} (x : R.obj X) :
+    (ε (constFunctorOfCommRing.{w} cR)).app X x = cR.ι.app X x := by
+  apply ModuleCat.restrictScalars_ε
+
 variable {cR} (hcR : IsColimit cR) [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
 
@@ -124,7 +128,9 @@ lemma colimitFunctorOfCommRing_η_ιColimitFunctorOfCommRing
     η (colimitFunctorOfCommRing hcR) (ιColimitFunctorOfCommRing hcR (𝟙_ _) U x) =
       cR.ι.app U x := by
   dsimp [Adjunction.leftAdjointOplaxMonoidal_η]
-  sorry
+  erw [PresheafOfModules.colimitAdjunction_homEquiv_symm_apply]
+  rw [constFunctorOfCommRing_ε_app_apply]
+  dsimp
 
 open ModuleColimit in
 instance : IsIso (η (colimitFunctorOfCommRing hcR)) := by
