@@ -120,39 +120,37 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
 variable (R M k)
 
 theorem map_id (A : CommAlgCat R) : map A A = 𝟙 G(k, A ⊗[R] M; A)  := by
-    ext1 N
-    rw [types_id_apply]
-    ext x
-    simp only [map, cancelBaseChange_self_eq_lid, LinearMap.mem_ker, LinearMap.coe_comp,
-               LinearEquiv.coe_coe, Function.comp_apply, TensorProduct.lid_symm_apply,
-               LinearMap.baseChange_tmul, Submodule.mkQ_apply]
-    rw [← (TensorProduct.lid A ((A ⊗[R] M) ⧸ N.toSubmodule)).injective.eq_iff]
-    simp only [TensorProduct.lid_tmul, map_zero, one_smul, Submodule.Quotient.mk_eq_zero]
+  ext1 N
+  rw [types_id_apply]
+  ext x
+  simp only [map, cancelBaseChange_self_eq_lid, LinearMap.mem_ker, LinearMap.coe_comp,
+              LinearEquiv.coe_coe, Function.comp_apply, TensorProduct.lid_symm_apply,
+              LinearMap.baseChange_tmul, Submodule.mkQ_apply]
+  rw [← (TensorProduct.lid A ((A ⊗[R] M) ⧸ N.toSubmodule)).injective.eq_iff]
+  simp only [TensorProduct.lid_tmul, map_zero, one_smul, Submodule.Quotient.mk_eq_zero]
 
-theorem map_comp {A B C : CommAlgCat R}
-    [Algebra A B] [Algebra B C] [Algebra A C]
+theorem map_comp {A B C : CommAlgCat R} [Algebra A B] [Algebra B C] [Algebra A C]
     [IsScalarTower R A B] [IsScalarTower R B C] [IsScalarTower R A C]
-    [IsScalarTower A B C] (N : G(k, A ⊗[R] M; A)) :
-    map A C N = map B C (map A B N) := by
-    ext x
-    let fAB := N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange _ _ _ _ _).symm.toLinearMap
-    let fAC := N.toSubmodule.mkQ.baseChange C ∘ₗ (cancelBaseChange _ _ _ _ _).symm.toLinearMap
-    let fBC := fAB.ker.mkQ.baseChange C ∘ₗ (cancelBaseChange _ _ _ _ _).symm.toLinearMap
-    let e := (fAB.quotKerEquivOfSurjective (baseChange_mkQ_surjective _ _ _)).baseChange _ _
-        ≪≫ₗ cancelBaseChange _ _ _ C _
-    have hcomp : e.toLinearMap.comp fBC = fAC := by
-      apply LinearMap.ext
-      intro z
-      induction z using TensorProduct.induction_on with
-      | zero => simp [fAC, fBC, e]
-      | tmul c m =>
-        simp [fAB, fAC, fBC, e, LinearMap.baseChange_tmul, cancelBaseChange_symm_tmul,
-          LinearEquiv.baseChange_tmul, cancelBaseChange_tmul,
-          LinearMap.quotKerEquivOfSurjective_apply_mk]
-      | add x y hx hy =>
-        simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, map_add] at *
-        rw [hx, hy]
-    simp [map, fAB, fAC, fBC, hcomp ▸ LinearEquiv.ker_comp e fBC]
+    [IsScalarTower A B C] (N : G(k, A ⊗[R] M; A)) : map A C N = map B C (map A B N) := by
+  ext x
+  let fAB := N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange _ _ _ _ _).symm.toLinearMap
+  let fAC := N.toSubmodule.mkQ.baseChange C ∘ₗ (cancelBaseChange _ _ _ _ _).symm.toLinearMap
+  let fBC := fAB.ker.mkQ.baseChange C ∘ₗ (cancelBaseChange _ _ _ _ _).symm.toLinearMap
+  let e := (fAB.quotKerEquivOfSurjective (baseChange_mkQ_surjective _ _ _)).baseChange _ _
+      ≪≫ₗ cancelBaseChange _ _ _ C _
+  have hcomp : e.toLinearMap.comp fBC = fAC := by
+    apply LinearMap.ext
+    intro z
+    induction z using TensorProduct.induction_on with
+    | zero => simp [fAC, fBC, e]
+    | tmul c m =>
+      simp [fAB, fAC, fBC, e, LinearMap.baseChange_tmul, cancelBaseChange_symm_tmul,
+        LinearEquiv.baseChange_tmul, cancelBaseChange_tmul,
+        LinearMap.quotKerEquivOfSurjective_apply_mk]
+    | add x y hx hy =>
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, map_add] at *
+      rw [hx, hy]
+  simp [map, fAB, fAC, fBC, hcomp ▸ LinearEquiv.ker_comp e fBC]; rfl
 
 /-- The Grassmannian functor sends an `R`-algebra `A` to `G(k, A ⊗[R] M; A)`. -/
 def functor : CommAlgCat.{w, u} R ⥤ Type (max v w) where
