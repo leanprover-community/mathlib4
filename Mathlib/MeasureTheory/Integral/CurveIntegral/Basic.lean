@@ -271,7 +271,6 @@ protected theorem CurveIntegrable.trans (h₁ : CurveIntegrable ω γab) (h₂ :
   (h₁.intervalIntegrable_curveIntegralFun_trans_left γbc).trans
     (h₂.intervalIntegrable_curveIntegralFun_trans_right γab)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem curveIntegral_trans (h₁ : CurveIntegrable ω γab) (h₂ : CurveIntegrable ω γbc) :
     ∫ᶜ x in γab.trans γbc, ω x = (∫ᶜ x in γab, ω x) + ∫ᶜ x in γbc, ω x := by
   let instF := NormedSpace.restrictScalars ℝ 𝕜 F

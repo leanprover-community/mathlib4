@@ -5,6 +5,7 @@ Authors: Joël Riou, Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.Data.ENat.Lattice
@@ -220,11 +221,29 @@ end ShortExact
 
 end ShortComplex
 
-instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n]
-    [HasProjectiveDimensionLT Y n] :
+instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n] [HasProjectiveDimensionLT Y n] :
     HasProjectiveDimensionLT (X ⊞ Y) n :=
-  (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasProjectiveDimensionLT_X₂ n
-    (by assumption) (by assumption)
+  (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasProjectiveDimensionLT_X₂ n ‹_› ‹_›
+
+lemma hasProjectiveDimensionLT_of_enoughInjectives [HasExt.{w} C] [EnoughInjectives C] (X : C)
+    (n : ℕ) (hX : ∀ Y : C, Subsingleton (Ext X Y n)) : HasProjectiveDimensionLT X n := by
+  suffices ∀ ⦃d : ℕ⦄ ⦃Y : C⦄ (e : Ext X Y d) (k : ℕ), d = n + k → e = 0 from
+    HasProjectiveDimensionLT.mk (fun i hi Y e ↦ by
+      obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hi
+      exact this e k rfl)
+  intro d Y e k hd
+  induction k generalizing d Y with
+  | zero =>
+    obtain rfl : d = n := by simpa using hd
+    subsingleton
+  | succ k hk =>
+    let ⟨p⟩ := EnoughInjectives.presentation Y
+    have h : (ShortComplex.mk _ _ (cokernel.condition p.f)).ShortExact :=
+      { exact := ShortComplex.exact_cokernel p.f }
+    have hd : n + k + 1 = d := by lia
+    obtain ⟨x, rfl⟩ := Ext.covariant_sequence_exact₁ X h e
+      (by subst hd; apply Ext.eq_zero_of_injective) hd
+    simp [hk x rfl]
 
 end CategoryTheory
 
