@@ -311,7 +311,7 @@ theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ}
 
 theorem compMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
     (hf : MeasurePreserving f μ μ) (n : ℕ) : (compMeasurePreserving · f hf)^[n] g =
-    compMeasurePreserving g (f^[n]) (MeasurePreserving.iterate hf n) :=
+    compMeasurePreserving g (f^[n]) (hf.iterate n) :=
   compQuasiMeasurePreserving_iterate _ _ _
 
 end compMeasurePreserving
