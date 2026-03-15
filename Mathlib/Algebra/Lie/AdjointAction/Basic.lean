@@ -5,8 +5,9 @@ Authors: Janos Wolosz
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.JordanChevalley
+public import Mathlib.LinearAlgebra.Semisimple
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
@@ -19,8 +20,6 @@ Theorems about the adjoint action `LieAlgebra.ad` on associative algebras.
 * `LieAlgebra.commute_ad_of_commute`: commuting elements have commuting adjoints.
 * `LieAlgebra.ad_nilpotent_of_nilpotent`: the adjoint of a nilpotent element is nilpotent.
 * `LieAlgebra.ad_isSemisimple_of_isSemisimple`: the adjoint of a semisimple element is semisimple.
-* `LieAlgebra.ad_isNilpotent_isSemisimple`: the adjoint preserves the Jordan-Chevalley
-  decomposition.
 -/
 
 @[expose] public section
@@ -79,35 +78,5 @@ theorem LieAlgebra.ad_isSemisimple_of_isSemisimple {a : Module.End K V} (ha : a.
     rw [hrw, Polynomial.aeval_algHom_apply, Polynomial.aeval_op_apply, minpoly.aeval,
       MulOpposite.op_zero, map_zero]
   exact hl.sub_of_commute (LinearMap.commute_mulLeft_right a a) hr
-
-/-- The adjoint preserves the Jordan-Chevalley decomposition: if `x = n + s` with
-`n ∈ adjoin K {x}` nilpotent and `s ∈ adjoin K {x}` semisimple, then `ad x = ad n + ad s`
-where `ad n` is nilpotent, `ad s` is semisimple, and both lie in `adjoin K {ad x}`. -/
-theorem LieAlgebra.ad_isNilpotent_isSemisimple
-    {x n s : Module.End K V}
-    (hn₁ : n ∈ Algebra.adjoin K {x})
-    (hs₁ : s ∈ Algebra.adjoin K {x})
-    (hn₂ : IsNilpotent n) (hs₂ : s.IsSemisimple)
-    (h : x = n + s) :
-    LieAlgebra.ad K (Module.End K V) x =
-      LieAlgebra.ad K (Module.End K V) n + LieAlgebra.ad K (Module.End K V) s ∧
-    IsNilpotent (LieAlgebra.ad K (Module.End K V) n) ∧
-    (LieAlgebra.ad K (Module.End K V) s).IsSemisimple ∧
-    LieAlgebra.ad K (Module.End K V) s ∈
-      Algebra.adjoin K {LieAlgebra.ad K (Module.End K V) x} ∧
-    LieAlgebra.ad K (Module.End K V) n ∈
-      Algebra.adjoin K {LieAlgebra.ad K (Module.End K V) x} := by
-  set ad := LieAlgebra.ad K (Module.End K V)
-  have hsum : ad x = ad n + ad s := by rw [h, map_add]
-  have hnil := LieAlgebra.ad_nilpotent_of_nilpotent (R := K) hn₂
-  have hss := ad_isSemisimple_of_isSemisimple hs₂
-  have hc : Commute n s := Algebra.commute_of_mem_adjoin_singleton_of_commute hs₁
-    (Algebra.commute_of_mem_adjoin_self hn₁).symm
-  obtain ⟨n', hn'₁, s', hs'₁, hn'₂, hs'₂, h'⟩ := (ad x).exists_isNilpotent_isSemisimple
-  have hc' : Commute n' s' := Algebra.commute_of_mem_adjoin_singleton_of_commute hs'₁
-    (Algebra.commute_of_mem_adjoin_self hn'₁).symm
-  have ⟨heqn, heqs⟩ := Module.End.isNilpotent_isSemisimple_unique hn'₂ hs'₂ hnil hss hc'
-    (commute_ad_of_commute hc) (h'.symm.trans hsum)
-  exact ⟨hsum, hnil, hss, heqs ▸ hs'₁, heqn ▸ hn'₁⟩
 
 end Field
