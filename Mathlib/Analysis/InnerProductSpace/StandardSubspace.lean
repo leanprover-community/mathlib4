@@ -51,45 +51,14 @@ section ScalarSMulCLE
 
 variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 
-/-- If M is an `R`-module and `S`-module and `R`-module structure is defined by an action of `R` on
-`S` (formally, we have two scalar towers), then any `S`-linear equivalence on `M` is an `R`-linear
-equivalence. -/
-def ContinuousLinearEquiv.restrictScalars (R : Type*) {S : Type*} {M : Type*}
-    [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M] [TopologicalSpace M]
-    [LinearMap.CompatibleSMul M M R S] (f : M ≃L[S] M) : M ≃L[R] M where
-  toFun := f
-  map_add' := f.map_add
-  map_smul' := f.map_smul_of_tower
-  invFun := f.symm
-  left_inv x := symm_apply_apply f x
-  right_inv x := apply_symm_apply f x
-
 /-- the scalar product by a non-zero complex number as a continuous real-linear equivalence. -/
-noncomputable def scalarSMulCLE' (c : ℂˣ) : H ≃L[ℝ] H := ContinuousLinearEquiv.smulLeft c
+noncomputable def scalarSMulCLE (c : ℂˣ) : H ≃L[ℝ] H := ContinuousLinearEquiv.smulLeft c
 
 @[simp]
-lemma scalarSMulCLE'_apply (c : ℂˣ) (x : H) : scalarSMulCLE' H c x = c • x := rfl
+lemma scalarSMulCLE_apply (c : ℂˣ) (x : H) : scalarSMulCLE H c x = c • x := rfl
 
 @[simp]
-lemma scalarSMulCLE'_symm_apply (c : ℂˣ) (x : H) : (scalarSMulCLE' H c).symm x = c⁻¹ • x := rfl
-
-/-- the scalar product by a non-zero complex number as a continuous real-linear equivalence. -/
-noncomputable def scalarSMulCLE {c : ℂ} (hc : c ≠ 0) : H ≃L[ℝ] H where
-  toFun := lsmul ℂ ℂ c
-  continuous_toFun := continuous_const_smul c
-  map_add' := smul_add _
-  map_smul' := smul_comm _
-  invFun := lsmul ℂ ℂ c⁻¹
-  left_inv := fun x => inv_smul_smul₀ hc x
-  right_inv := fun x => smul_inv_smul₀ hc x
-  continuous_invFun := continuous_const_smul c⁻¹
-
-@[simp]
-lemma scalarSMulCLE_apply {c : ℂ} (hc : c ≠ 0) (x : H) : scalarSMulCLE H hc x = c • x := rfl
-
-@[simp]
-lemma scalarSMulCLE_symm_apply {c : ℂ} (hc : c ≠ 0) (x : H) :
-    (scalarSMulCLE H hc).symm x = c⁻¹ • x := rfl
+lemma scalarSMulCLE_symm_apply (c : ℂˣ) (x : H) : (scalarSMulCLE H c).symm x = c⁻¹ • x := rfl
 
 end ScalarSMulCLE
 
@@ -112,17 +81,14 @@ noncomputable scoped instance : InnerProductSpace ℝ H where
 lemma inner_real_eq_re_inner (x y : H) : inner ℝ x y = ⟪x, y⟫.re := rfl
 
 /-- The imaginary unit as an invertible element. -/
-def _root_.Complex.UnitI : ℂˣ where
+abbrev _root_.Complex.UnitI : ℂˣ where
   val := I
   inv := -I
   val_inv := by simp
   inv_val := by simp
 
 /-- The image of a closed submodule by the multiplication by `Complex.I`. -/
-noncomputable abbrev mulI' (S : ClosedSubmodule ℝ H) := S.mapEquiv (scalarSMulCLE' H UnitI)
-
-/-- The image of a closed submodule by the multiplication by `Complex.I`. -/
-noncomputable abbrev mulI (S : ClosedSubmodule ℝ H) := S.mapEquiv (scalarSMulCLE H I_ne_zero)
+noncomputable abbrev mulI (S : ClosedSubmodule ℝ H) := S.mapEquiv (scalarSMulCLE H UnitI)
 
 /-- The symplectic complement of a closed submodule with respect to `⟪⬝, ⬝⟫.im`, defined as the
 image of `mulI` and `orthogonal`. The proof that this is the symplectic complement is given by
@@ -134,8 +100,8 @@ lemma mem_iff (S : ClosedSubmodule ℝ H) {x : H} : x ∈ S ↔ x ∈ S.toSubmod
 
 lemma mem_symplComp_iff {x : H} {S : ClosedSubmodule ℝ H} :
     x ∈ S.symplComp ↔ ∀ y ∈ S, ⟪y, x⟫.im = 0 := by
-  simp only [symplComp, mem_orthogonal, mem_mapEquiv_iff, scalarSMulCLE_symm_apply, inv_I,
-    neg_smul]
+  simp only [mem_orthogonal, mem_mapEquiv_iff, scalarSMulCLE_symm_apply, Units.inv_mk,
+    Units.smul_mk_apply, neg_smul]
   constructor
   · intro h y hy
     have hiy := h (I • y)
@@ -148,7 +114,7 @@ lemma mem_symplComp_iff {x : H} {S : ClosedSubmodule ℝ H} :
 lemma mulI_orthogonal_eq_symplComp (S : ClosedSubmodule ℝ H) : Sᗮ.mulI = S.symplComp := by
   ext x
   rw [← mem_iff, ← mem_iff, mem_symplComp_iff, mem_mapEquiv_iff, scalarSMulCLE_symm_apply,
-    inv_I, neg_smul, mem_orthogonal]
+    Units.inv_mk, Units.smul_mk_apply, neg_smul, mem_orthogonal]
   simp [inner_real_eq_re_inner]
 
 lemma mulI_orthogonal (S : ClosedSubmodule ℝ H) : Sᗮ.mulI = S.mulIᗮ := by
@@ -165,7 +131,7 @@ lemma mulI_mulI_eq (S : ClosedSubmodule ℝ H) : S.mulI.mulI = S := by
   simp only [Submodule.carrier_eq_coe, coe_toSubmodule, SetLike.mem_coe]
   constructor
   · intro h
-    rw [mem_mapEquiv_iff (scalarSMulCLE H I_ne_zero), ← SetLike.forall_smul_mem_iff] at h
+    rw [mem_mapEquiv_iff (scalarSMulCLE H UnitI), ← SetLike.forall_smul_mem_iff] at h
     simpa [← smul_assoc] using (h (-1 : ℝ))
   · intro h
     rw [← SetLike.forall_smul_mem_iff] at h
@@ -186,11 +152,13 @@ lemma mulI_inf (S T : ClosedSubmodule ℝ H) :
     (S ⊓ T).mulI = S.mulI ⊓ T.mulI := by
   rw [mulI, ← mapEquiv_inf_eq]
 
+@[simp]
 lemma symplComp_sup (S T : ClosedSubmodule ℝ H) :
     (S ⊔ T).symplComp = S.symplComp ⊓ T.symplComp := by
   rw [symplComp, symplComp, symplComp, mulI_sup]
   exact Eq.symm (inf_orthogonal S.mulI T.mulI)
 
+@[simp]
 lemma symplComp_inf [CompleteSpace H] (S T : ClosedSubmodule ℝ H) :
     (S ⊓ T).symplComp = S.symplComp ⊔ T.symplComp := by
   rw [symplComp, symplComp, symplComp, mulI_inf]
@@ -240,12 +208,11 @@ noncomputable def mulI (S : StandardSubspace H) : StandardSubspace H where
 noncomputable def symplComp [CompleteSpace H] (S : StandardSubspace H) : StandardSubspace H where
   toClosedSubmodule := S.toClosedSubmodule.symplComp
   IsSeparating := by
-    rw [mulI_symplComp, ← symplComp_sup, S.IsCyclic, ClosedSubmodule.symplComp]
-    simp
+    simp [mulI_symplComp, ClosedSubmodule.symplComp, ClosedSubmodule.inf_orthogonal, sup_comm,
+      S.IsCyclic]
   IsCyclic := by
-    rw [mulI_symplComp, ← symplComp_inf, S.IsSeparating, ClosedSubmodule.symplComp,
-      ClosedSubmodule.mulI]
-    simp
+    simp [mulI_symplComp, ClosedSubmodule.symplComp, ClosedSubmodule.sup_orthogonal, sup_comm,
+      S.IsSeparating]
 
 @[simp]
 theorem symplComp_symplComp_eq [CompleteSpace H] (S : StandardSubspace H) :

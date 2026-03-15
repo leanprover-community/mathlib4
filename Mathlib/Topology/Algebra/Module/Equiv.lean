@@ -1019,6 +1019,23 @@ theorem equivOfRightInverse_symm_apply (f₁ : M →L[R] M₂) (f₂ : M₂ →L
 
 end Ring
 
+section RestrictScalars
+
+/-- If M is an `R`-module and `S`-module and `R`-module structure is defined by an action of `R` on
+`S` (formally, we have two scalar towers), then any `S`-linear equivalence on `M` is an `R`-linear
+equivalence. -/
+def restrictScalars (R : Type*) {S : Type*} {M : Type*}
+    [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M] [TopologicalSpace M]
+    [LinearMap.CompatibleSMul M M R S] (f : M ≃L[S] M) : M ≃L[R] M where
+  toFun := f
+  map_add' := f.map_add
+  map_smul' := f.map_smul_of_tower
+  invFun := f.symm
+  left_inv x := symm_apply_apply f x
+  right_inv x := apply_symm_apply f x
+
+end RestrictScalars
+
 end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
