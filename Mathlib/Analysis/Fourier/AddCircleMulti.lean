@@ -352,5 +352,3 @@ theorem hasSum_mFourier_series_apply_of_summable (h : Summable (mFourierCoeff f)
 end Convergence
 
 end UnitAddTorus
-
-#lint
