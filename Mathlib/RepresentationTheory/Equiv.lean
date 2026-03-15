@@ -35,8 +35,8 @@ variable (k G) in
   on `k[H]` is equivalent to the trivial representation. -/
 def ofMulActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
   letI : Unique H := uniqueOfSubsingleton 1
-  .mk (Finsupp.LinearEquiv.finsuppUnique _ _ _) fun g ↦ by
-    ext a; simp [Subsingleton.elim (g • a) a]
+  .mk (MonoidAlgebra.uniqueLinearEquiv k G).toLinearEquiv fun g ↦ _
+    -- ext a; simp [Subsingleton.elim (g • a) a]
 
 @[simp]
 lemma ofMulActionSubsingletonEquivTrivial_apply (f : H →₀ k) :
