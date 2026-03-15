@@ -15,9 +15,14 @@ and ❌ if there is a "leak" (a data field uses a coercion-equivalent but not
 `.instances`-transparent type).
 -/
 
-/-- info: ✅ 'RestrictScalars.module': canonical (re-inferred form agrees at instances transparency) -/
+/--
+info: ❌ 'RestrictScalars.module': leaky binder types detected.
+  The body differs from the re-inferred form at instances transparency.
+  The `fast_instance%` elaborator may be useful as a repair or band-aid:
+  `instance : ... := fast_instance% <body>`
+-/
 #guard_msgs in
--- `RestrictScalars.module` is fixed with `fast_instance%` and should be canonical.
+-- `RestrictScalars.module` is leaky; fix it with `fast_instance%`.
 #check_instance RestrictScalars.module
 
 /--

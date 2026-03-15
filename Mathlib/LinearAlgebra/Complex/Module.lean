@@ -176,7 +176,6 @@ example {ι : Type*} [Fintype ι] :
     Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
     (inst.complexToReal).toModule = (inst.toModule).complexToReal := by
   with_reducible_and_instances rfl
