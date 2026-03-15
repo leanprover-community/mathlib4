@@ -32,7 +32,8 @@ open Nat
 
 variable {p : ℕ}
 
-theorem padicValNat_eq_emultiplicity' {p n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
+set_option backward.isDefEq.respectTransparency false in
+theorem padicValNat_eq_emultiplicity_of_ne_one (hp : p ≠ 1) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p n = emultiplicity p n := by
   rw [eq_comm, emultiplicity_eq_coe, pow_dvd_iff_le_padicValNat hp hn,
     pow_dvd_iff_le_padicValNat hp hn]
@@ -44,12 +45,12 @@ theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicV
   · simp
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
-    · simp [← padicValNat_eq_emultiplicity', *]
+    · simp [← padicValNat_eq_emultiplicity_of_ne_one, *]
 
 theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
     padicValNat p n = multiplicity p n :=
   .symm <| multiplicity_eq_of_emultiplicity_eq_some <| .symm <|
-    padicValNat_eq_emultiplicity' hp hn
+    padicValNat_eq_emultiplicity_of_ne_one hp hn
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
@@ -57,12 +58,11 @@ theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
     padicValNat p n = multiplicity p n :=
   padicValNat_def' hp.out.ne_one hn
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
 theorem padicValNat_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
     padicValNat p n = emultiplicity p n :=
-  padicValNat_eq_emultiplicity' hp.elim.ne_one hn
+  padicValNat_eq_emultiplicity_of_ne_one hp.out.ne_one hn
 
 namespace padicValNat
 

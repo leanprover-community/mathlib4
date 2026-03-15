@@ -252,13 +252,11 @@ theorem integral_bilin_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[
 @[deprecated (since := "2025-11-16")]
 alias integral_bilin_fourierIntegral_eq := integral_bilin_fourier_eq
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform satisfies `∫ 𝓕 f • g = ∫ f • 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourier_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
     ∫ ξ, 𝓕 f ξ • g ξ = ∫ x, f x • 𝓕 g x :=
   integral_bilin_fourier_eq f g (.lsmul ℂ ℂ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourier_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕 f ξ * g ξ = ∫ x, f x * 𝓕 g x :=
@@ -273,13 +271,11 @@ theorem integral_bilin_fourierInv_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E �
   · exact (FourierTransform.fourier_fourierInv_eq g).symm
   · exact (FourierTransform.fourier_fourierInv_eq f).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f • g = ∫ f • 𝓕⁻ g`, i.e., it is self-adjoint. -/
 theorem integral_fourierInv_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
     ∫ ξ, 𝓕⁻ f ξ • g ξ = ∫ x, f x • 𝓕⁻ g x :=
   integral_bilin_fourierInv_eq f g (.lsmul ℂ ℂ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f * g = ∫ f * 𝓕⁻ g`, i.e., it is self-adjoint. -/
 theorem integral_fourierInv_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕⁻ f ξ * g ξ = ∫ x, f x * 𝓕⁻ g x :=
@@ -302,6 +298,28 @@ theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E �
 
 end fubini
 
+section L1
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+
+theorem norm_fourier_apply_le_toLp_one (f : 𝓢(V, F)) (x : V) :
+    ‖𝓕 f x‖ ≤ ‖f.toLp 1‖ := calc
+  _ = ‖∫ (v : V), 𝐞 (-inner ℝ v x) • f v‖ := by rw [fourier_coe, Real.fourier_eq]
+  _ ≤ ∫ (v : V), ‖𝐞 (-inner ℝ v x) • f v‖ := norm_integral_le_integral_norm _
+  _ = _ := by simp [norm_toLp_one]
+
+theorem norm_fourier_toBoundedContinuousFunction_le_toLp_one (f : 𝓢(V, F)) :
+    ‖(𝓕 f).toBoundedContinuousFunction‖ ≤ ‖f.toLp 1‖ := by
+  rw [BoundedContinuousFunction.norm_le (by positivity)]
+  simpa using norm_fourier_apply_le_toLp_one f
+
+theorem norm_fourier_Lp_top_leq_toLp_one (f : 𝓢(V, F)) :
+    ‖(𝓕 f).toLp ⊤‖ ≤ ‖f.toLp 1‖ :=
+  norm_toLp_top_le.trans (seminorm_le_bound ℝ 0 0 _ (by positivity)
+    (by simpa using norm_fourier_apply_le_toLp_one f))
+
+end L1
+
 section L2
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
@@ -311,7 +329,6 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
     ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
   integral_sesq_fourier_fourier f g (innerSL ℂ)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
     ∫ ξ, ‖𝓕 f ξ‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 := by
   apply Complex.ofRealLI.injective

@@ -251,7 +251,6 @@ theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
   obtain ⟨b, _, rfl⟩ := hy
   simp only [f, imp_self, Subtype.mk_eq_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If every finite set of algebraically independent element has cardinality at most `n`,
 then the same is true for arbitrary sets of algebraically independent elements. -/
 theorem algebraicIndependent_bounded_of_finset_algebraicIndependent_bounded {n : ℕ}

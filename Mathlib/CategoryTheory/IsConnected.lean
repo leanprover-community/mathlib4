@@ -365,6 +365,7 @@ theorem Zigzag.of_inv_inv {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₃�
 /-- The setoid given by the equivalence relation `Zigzag`. A quotient for this
 setoid is a connected component of the category.
 -/
+@[implicit_reducible]
 def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
   r := Zigzag
   iseqv := zigzag_equivalence

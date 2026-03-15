@@ -200,7 +200,7 @@ theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField
 
 variable (F E)
 
-/-- The bottom intermediate_field is isomorphic to the field. -/
+/-- The bottom `IntermediateField` is isomorphic to the field. -/
 noncomputable def botEquiv : (⊥ : IntermediateField F E) ≃ₐ[F] F :=
   (Subalgebra.equivOfEq _ _ bot_toSubalgebra).trans (Algebra.botEquiv F E)
 

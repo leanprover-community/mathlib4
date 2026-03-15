@@ -29,7 +29,7 @@ so we only state this theorem for `k = n + 1`,
 see `extDerivWithin_apply_vectorField` and `extDeriv_apply_vectorField`.
 
 In this case, we write the second term as a sum over `i j : Fin (n + 1)`, `i ≤ j`,
-where the indexes `(i, j)` in our sum currespond to `(i, j + 1)`
+where the indexes `(i, j)` in our sum correspond to `(i, j + 1)`
 (formally, `(Fin.castSucc i, Fin.succ j)`) in the formula above.
 For this reason, we have `-` before the sum in our formal statement.
 -/

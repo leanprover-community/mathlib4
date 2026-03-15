@@ -278,6 +278,7 @@ public import Mathlib.Tactic.Simproc.Divisors
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
 public import Mathlib.Tactic.Simproc.FinsetInterval
+public import Mathlib.Tactic.Simproc.VecPerm
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
@@ -303,6 +304,7 @@ public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
 public import Mathlib.Tactic.Translate.Core
 public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 public import Mathlib.Tactic.Translate.ToAdditive
 public import Mathlib.Tactic.Translate.ToDual
