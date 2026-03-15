@@ -66,16 +66,16 @@ theorem padicValNat_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0
 
 namespace padicValNat
 
-@[deprecated (since := "2026-02-20")]
+@[deprecated (since := "2026-03-15")]
 alias maxPowDiv_eq_emultiplicity := padicValNat_eq_emultiplicity
 
-@[deprecated (since := "2026-02-20")]
+@[deprecated (since := "2026-03-15")]
 alias maxPowDiv_eq_multiplicity := padicValNat_def'
 
-@[deprecated padicValNat_zero_right (since := "2026-02-20")]
+@[deprecated padicValNat_zero_right (since := "2026-03-15")]
 protected theorem zero : padicValNat p 0 = 0 := padicValNat_zero_right p
 
-@[deprecated padicValNat_one_right (since := "2026-02-20")]
+@[deprecated padicValNat_one_right (since := "2026-03-15")]
 protected theorem one : padicValNat p 1 = 0 := padicValNat_one_right p
 
 @[simp]

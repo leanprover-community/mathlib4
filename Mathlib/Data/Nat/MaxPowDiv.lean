@@ -243,25 +243,25 @@ theorem fst_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).1 = padicValNat p n :=
 @[simp]
 theorem snd_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).2 = n.divMaxPow p := rfl
 
-@[deprecated (since := "2026-02-20")]
+@[deprecated (since := "2026-03-15")]
 alias maxPowDiv := padicValNat
 
-@[deprecated (since := "2026-02-20")]
+@[deprecated (since := "2026-03-15")]
 alias maxPowDiv.base_mul_eq_succ := padicValNat_base_mul
 
-@[deprecated (since := "2026-02-20")]
+@[deprecated (since := "2026-03-15")]
 alias maxPowDiv.base_pow_mul := padicValNat_base_pow_mul
 
-@[deprecated (since := "2026-02-20")]
+@[deprecated (since := "2026-03-15")]
 alias ⟨_, maxPowDiv.le_of_dvd⟩ := pow_dvd_iff_le_padicValNat
 
-@[deprecated (since := "2026-02-20")]
+@[deprecated (since := "2026-03-15")]
 alias maxPowDiv.pow_dvd := pow_padicValNat_dvd
 
-@[deprecated (since := "2026-02-20")]
+@[deprecated (since := "2026-03-15")]
 alias maxPowDiv.zero := padicValNat_zero_right
 
-@[deprecated (since := "2026-02-20")]
+@[deprecated (since := "2026-03-15")]
 alias maxPowDiv.zero_base := padicValNat_zero_left
 
 end Nat
