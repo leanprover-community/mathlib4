@@ -284,5 +284,5 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
     le eq_le sup eq_sup inf eq_inf
   sSup := sSup
   sInf := sInf
-  isLUB_csSup := by simpa +instances only [eq_le, eq_sSup] using c.isLUB_csSup
-  isGLB_csInf := by simpa +instances only [eq_le, eq_sInf] using c.isGLB_csInf
+  isLUB_csSup := by subst_vars; exact c.isLUB_csSup
+  isGLB_csInf := by subst_vars; exact c.isGLB_csInf

@@ -220,14 +220,17 @@ open scoped Classical in
 /-- A well-founded linear order is conditionally complete, with a bottom element. -/
 noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Type*)
     [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
-    ConditionallyCompleteLinearOrderBot α :=
-  letI : InfSet α := ⟨fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥⟩
-  { i₁, i₂, LinearOrder.toLattice,
+    ConditionallyCompleteLinearOrderBot α where
+  __ := i₁
+  __ := i₂
+  __ := LinearOrder.toLattice
+  __ :=
+    letI : InfSet α := ⟨fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥⟩
     conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦ by
-      dsimp; rw [dif_pos hn]
-      exact IsLeast.isGLB ⟨h.wf.min_mem s hn, fun _ hx ↦ h.wf.min_le hx hn⟩ with
-    csSup_empty := by simpa [sSup, ← le_bot_iff] using WellFounded.min_le _ (mem_univ _)
-    csSup_of_not_bddAbove s H := by
-      rw [BddAbove] at H
-      simpa [sSup, H, eq_comm (a := ⊥), ← le_bot_iff] using WellFounded.min_le _ (mem_univ _)
-    csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim }
+      simp only [dif_pos hn]
+      exact IsLeast.isGLB ⟨h.wf.min_mem s hn, fun _ hx ↦ h.wf.min_le hx hn⟩
+  csSup_empty := by simp [sSup, bot_unique (WellFounded.min_le _ (mem_univ _))]
+  csSup_of_not_bddAbove s H := by
+    rw [BddAbove] at H
+    simp [sSup, H, bot_unique (WellFounded.min_le _ (mem_univ _))]
+  csInf_of_not_bddBelow s H := (H (OrderBot.bddBelow s)).elim

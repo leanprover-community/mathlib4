@@ -185,18 +185,14 @@ theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s) : IsLUB s (sSup s) :=
 theorem isGLB_csInf (hn : s.Nonempty) (hb : BddBelow s) : IsGLB s (sInf s) :=
   ConditionallyCompleteLattice.isGLB_csInf _ hn hb
 
-theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s := by
-  obtain rfl | hn := s.eq_empty_or_nonempty
-  · simp only [mem_empty_iff_false] at h₂
-  · exact (isLUB_csSup hn h₁).1 h₂
+theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
+  (isLUB_csSup (nonempty_of_mem h₂) h₁).1 h₂
 
 theorem csSup_le (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
   (isLUB_csSup h₁ ⟨a, h₂⟩).2 h₂
 
-theorem csInf_le (h₁ : BddBelow s) (h₂ : a ∈ s) : sInf s ≤ a := by
-  obtain rfl | hn := s.eq_empty_or_nonempty
-  · simp only [mem_empty_iff_false] at h₂
-  · exact (isGLB_csInf hn h₁).1 h₂
+theorem csInf_le (h₁ : BddBelow s) (h₂ : a ∈ s) : sInf s ≤ a :=
+  (isGLB_csInf (nonempty_of_mem h₂) h₁).1 h₂
 
 theorem le_csInf (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, a ≤ b) : a ≤ sInf s :=
   (isGLB_csInf h₁ ⟨a, h₂⟩).2 h₂
