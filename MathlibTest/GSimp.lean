@@ -28,13 +28,9 @@ private axiom test_sorry : ∀ {α}, α
 
 section binders
 
-lemma iSup_inf_le {α : Sort*} {β : Type*} [CompleteLattice β] (f : α → β) (b : β) :
-    ⨆ a, (f a ⊓ b) ≤ (⨆ a, f a) ⊓ b :=
-  iSup_le fun _ => inf_le_inf_right _ (le_iSup f _)
-
 lemma biSup_inf_le {α β : Type*} [CompleteLattice β] (f : α → β) (s : Set α) (b : β) :
     ⨆ a ∈ s, (f a ⊓ b) ≤ (⨆ a ∈ s, f a) ⊓ b := by
-  gsimp [iSup_inf_le]
+  gsimp [iSup_inf_le_iSup_inf]
 
 end binders
 
