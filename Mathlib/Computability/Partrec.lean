@@ -770,15 +770,11 @@ lemma find {P : α → ℕ → Prop} [∀ x n, Decidable (P x n)]
     (hP_comp : Computable (fun p : α × ℕ => decide (P p.1 p.2)))
     (h_ex : ∀ x, ∃ n, P x n) :
     Computable (fun x => Nat.find (h_ex x)) := by
-  have h_partrec : Partrec₂ fun x n => Part.some (decide (P x n)) :=
-    Computable.partrec hP_comp
-  exact (Partrec.rfind h_partrec).of_eq fun x => by
-    apply Part.eq_some_iff.mpr
-    apply Nat.mem_rfind.mpr
-    constructor
-    · exact ⟨trivial, decide_eq_true (Nat.find_spec (h_ex x))⟩
-    · intro m hm
-      exact ⟨trivial, decide_eq_false (Nat.find_min (h_ex x) hm)⟩
+  have h_partrec : Partrec₂ fun x n => Part.some (decide (P x n)) := hP_comp.partrec
+  refine (Partrec.rfind h_partrec).of_eq fun x => ?_
+  refine Part.eq_some_iff.mpr <| Nat.mem_rfind.mpr ⟨?_, ?_⟩
+  · exact ⟨trivial, decide_eq_true (Nat.find_spec (h_ex x))⟩
+  · exact fun hm => ⟨trivial, decide_eq_false (Nat.find_min (h_ex x) hm)⟩
 
 /--
 If a function `f` is computable and surjective, its right inverse
