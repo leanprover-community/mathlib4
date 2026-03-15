@@ -14,6 +14,12 @@ open scoped MonoidalCategory
 
 -- Internal tactics
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 theorem t (X₁ X₂ : C) :
     ((λ_ (𝟙_ C)).inv ⊗ₘ 𝟙 (X₁ ⊗ X₂)) ≫ (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫
       (𝟙 (𝟙_ C) ⊗ₘ (α_ (𝟙_ C) X₁ X₂).inv) =
@@ -32,15 +38,39 @@ example {Y Z : C} (f : Y ⟶ Z) (g) (w : false) : (λ_ _).hom ≫ f = g := by
 
 -- `coherence`
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (f : 𝟙_ C ⟶ _) : f ≫ (λ_ (𝟙_ C)).hom = f ≫ (ρ_ (𝟙_ C)).hom := by
   coherence
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (f) : (λ_ (𝟙_ C)).hom ≫ f ≫ (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom ≫ f ≫ (ρ_ (𝟙_ C)).hom := by
   coherence
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example {U : C} (f : U ⟶ 𝟙_ C) : f ≫ (ρ_ (𝟙_ C)).inv ≫ (λ_ (𝟙_ C)).hom = f := by
   coherence
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (W X Y Z : C) (f) :
     ((α_ W X Y).hom ⊗ₘ 𝟙 Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫ (𝟙 W ⊗ₘ (α_ X Y Z).hom) ≫ f ≫
       (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom =
@@ -48,24 +78,72 @@ example (W X Y Z : C) (f) :
       ((α_ W X Y).hom ⊗ₘ 𝟙 Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫ (𝟙 W ⊗ₘ (α_ X Y Z).hom) := by
   coherence
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
     f ⊗≫ g = f ≫ (α_ _ _ _).inv ≫ g := by
   coherence
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example : (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by coherence
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example : (λ_ (𝟙_ C)).inv = (ρ_ (𝟙_ C)).inv := by coherence
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (X Y Z : C) : (α_ X Y Z).inv ≫ (α_ X Y Z).hom = 𝟙 (X ⊗ Y ⊗ Z) := by coherence
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (X Y Z W : C) :
   (𝟙 X ⊗ₘ (α_ Y Z W).hom) ≫ (α_ X Y (Z ⊗ W)).inv ≫ (α_ (X ⊗ Y) Z W).inv =
     (α_ X (Y ⊗ Z) W).inv ≫ ((α_ X Y Z).inv ⊗ₘ 𝟙 W) := by
   coherence
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (X Y : C) :
   (𝟙 X ⊗ₘ (λ_ Y).inv) ≫ (α_ X (𝟙_ C) Y).inv = (ρ_ X).inv ⊗ₘ 𝟙 Y := by
   coherence
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (X Y : C) (f : 𝟙_ C ⟶ X) (g : X ⟶ Y) (_w : false) :
   (λ_ (𝟙_ C)).hom ≫ f ≫ 𝟙 X ≫ g = (ρ_ (𝟙_ C)).hom ≫ f ≫ g := by
   coherence
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (X₁ X₂ : C) :
   (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫
     (𝟙 (𝟙_ C) ⊗ₘ (α_ (𝟙_ C) X₁ X₂).inv) ≫
@@ -94,27 +172,75 @@ variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
 example {a : B} (f : a ⟶ a) : 𝟙 f ▷ f = 𝟙 (f ≫ f) := by whisker_simps
 
-example : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by bicategory_coherence
-example : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by bicategory_coherence
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
+example : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by pure_coherence
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
+example : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by pure_coherence
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
   (α_ f g h).inv ≫ (α_ f g h).hom = 𝟙 (f ≫ g ≫ h) := by
-  bicategory_coherence
+  pure_coherence
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
   f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv ≫ (α_ (f ≫ g) h i).inv =
     (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i := by
-  bicategory_coherence
+  pure_coherence
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (f : a ⟶ b) (g : b ⟶ c) :
   f ◁ (λ_ g).inv ≫ (α_ f (𝟙 b) g).inv = (ρ_ f).inv ▷ g := by
-  bicategory_coherence
+  pure_coherence
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 theorem s : 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (λ_ (𝟙 a)).hom = 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (ρ_ (𝟙 a)).hom := by
-  bicategory_coherence
+  pure_coherence
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 set_option linter.unusedVariables false in
 example (f g : a ⟶ a) (η : 𝟙 a ⟶ f) (θ : f ⟶ g) (w : false) :
   (λ_ (𝟙 a)).hom ≫ η ≫ θ = (ρ_ (𝟙 a)).hom ≫ η ≫ θ := by
   coherence
 
+/--
+warning: Usually, use `monoidal` or `bicategory` instead, depending on the context. They are given
+in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and
+`Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively.
+-/
+#guard_msgs in
 example (f₁ : a ⟶ b) (f₂ : b ⟶ c) :
   (α_ (𝟙 a) (𝟙 a) (f₁ ≫ f₂)).hom ≫
     𝟙 a ◁ (α_ (𝟙 a) f₁ f₂).inv ≫
