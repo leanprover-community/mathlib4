@@ -282,10 +282,8 @@ theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s) : IsLUB s (sSup s) :=
   (exists_isLUB_of_nonempty_of_bddAbove hn hb).rec fun _ h ↦ h.isLUB_sSup
 
 @[to_dual csInf_le]
-theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s := by
-  obtain rfl | hn := s.eq_empty_or_nonempty
-  · simp only [mem_empty_iff_false] at h₂
-  · exact (isLUB_csSup hn h₁).1 h₂
+theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
+  (isLUB_csSup (nonempty_of_mem h₂) h₁).1 h₂
 
 @[to_dual le_csInf]
 theorem csSup_le (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
@@ -320,8 +318,8 @@ theorem IsGLB.csInf_eq (H : IsGLB s a) (ne : s.Nonempty) : sInf s = a :=
 
 instance (priority := 100) ConditionallyCompleteLattice.toConditionallyCompletePartialOrder :
     ConditionallyCompletePartialOrder α where
-  isGLB_csInf_of_directed _ _ non bdd := isGLB_csInf non bdd
-  isLUB_csSup_of_directed _ _ non bdd := isLUB_csSup non bdd
+  isGLB_csInf_of_directed _ _ := isGLB_csInf
+  isLUB_csSup_of_directed _ _ := isLUB_csSup
 
 theorem subset_Icc_csInf_csSup (hb : BddBelow s) (ha : BddAbove s) : s ⊆ Icc (sInf s) (sSup s) :=
   fun _ hx => ⟨csInf_le hb hx, le_csSup ha hx⟩

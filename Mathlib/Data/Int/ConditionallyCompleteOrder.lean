@@ -39,14 +39,14 @@ instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder
     else 0
   isLUB_sSup_of_isLUB s _ h := by
     rw [dif_pos ⟨h.nonempty, h.bddAbove⟩]
-    exact (isGreatest_coe_greatestOfBdd _ _ _).isLUB
+    exact (isGreatest_coe_greatestOfBdd ..).isLUB
   isGLB_sInf_of_isGLB s _ h := by
     rw [dif_pos ⟨h.nonempty, h.bddBelow⟩]
-    exact (isLeast_coe_leastOfBdd _ _ _).isGLB
+    exact (isLeast_coe_leastOfBdd ..).isGLB
   exists_isLUB_of_nonempty_of_bddAbove _ hn hb :=
-    ⟨greatestOfBdd hb.choose hb.choose_spec hn, (isGreatest_coe_greatestOfBdd _ _ _).isLUB⟩
+    ⟨greatestOfBdd hb.choose hb.choose_spec hn, (isGreatest_coe_greatestOfBdd ..).isLUB⟩
   exists_isGLB_of_nonempty_of_bddBelow _ hn hb :=
-    ⟨leastOfBdd hb.choose hb.choose_spec hn, (isLeast_coe_leastOfBdd _ _ _).isGLB⟩
+    ⟨leastOfBdd hb.choose hb.choose_spec hn, (isLeast_coe_leastOfBdd ..).isGLB⟩
   csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
   csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
 
