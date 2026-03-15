@@ -292,8 +292,8 @@ lemma spanRank_map_le [RingHomSurjective σ] (f : M →ₛₗ[σ] N) (p : Submod
     (p.map f).spanRank ≤ p.spanRank := by
   simpa using lift_spanRank_map_le f p
 
-lemma spanFinrank_map_le_of_fg {L : Type v} [AddCommMonoid L] [Module S L] [RingHomSurjective σ]
-    (f : M →ₛₗ[σ] L) {p : Submodule R M} (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank := by
+lemma spanFinrank_map_le_of_fg [RingHomSurjective σ] (f : M →ₛₗ[σ] L) {p : Submodule R M}
+    (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank := by
   rw [← (hp.map f).spanRank_le_iff, ← Cardinal.lift_le.{u}, Cardinal.lift_natCast,
     ← Cardinal.lift_natCast.{v}, ← hp.spanRank_eq_spanFinrank]
   exact p.lift_spanRank_map_le f
