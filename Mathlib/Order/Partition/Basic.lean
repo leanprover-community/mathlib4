@@ -260,6 +260,17 @@ lemma subset_sUnion_iff_mem (ht : t ∈ P) (hSP : S ⊆ P.parts) : t ⊆ ⋃₀ 
   rw [← subset_sUnion_and_mem_iff_mem hSP]
   simp [ht]
 
+/-- Noncomputably choose a representative from an equivalence class. -/
+noncomputable def rep (P : Partition u) (ht : t ∈ P) : α := (P.nonempty_of_mem ht).some
+
+/-- The representative of a part belongs to that part. -/
+@[simp] lemma rep_mem (ht : t ∈ P) : P.rep ht ∈ t :=
+  (P.nonempty_of_mem ht).some_mem
+
+/-- The representative of a part belongs to the underlying set. -/
+@[simp] lemma rep_mem' (ht : t ∈ P) : P.rep ht ∈ u :=
+  P.subset_of_mem ht <| rep_mem ht
+
 end Set
 
 /-! ### Induced relation -/
@@ -317,7 +328,84 @@ lemma Rel.left_mem (h : P.Rel x y) : x ∈ u := by
 
 lemma Rel.right_mem (h : P.Rel x y) : y ∈ u := h.symm.left_mem
 
+/-- Any element of a part is related to the representative of that part. -/
+lemma rep_rel (ht : t ∈ P) (hx : x ∈ t) : P.Rel x (P.rep ht) :=
+  ⟨t, ht, hx, P.rep_mem ht⟩
+
 end Rel
+
+section partOf
+
+/-- The part of a partition containing a given element. If the element is not in the
+underlying set, this is empty. -/
+def partOf (P : Partition u) (a : α) : Set α := {b | P.Rel a b}
+
+lemma partOf_subset : P.partOf x ⊆ u := by
+  rintro y ⟨t, ht, hxt, hyt⟩
+  exact subset_of_mem ht hyt
+
+lemma partOf_eq_empty (P : Partition u) (hx : x ∉ u) : P.partOf x = ∅ := by
+  by_contra! h
+  obtain ⟨y, hy⟩ := h
+  exact hx <| Rel.left_mem hy
+
+@[simp] lemma mem_partOf_iff : x ∈ P.partOf y ↔ P.Rel y x := Iff.rfl
+
+lemma eq_partOf_of_mem (ht : t ∈ P) (hxt : x ∈ t) : t = P.partOf x := by
+  ext y
+  refine ⟨fun h ↦ ?_, fun ⟨s, hsP, hxs, hys⟩ ↦ ?_⟩
+  · use t
+  obtain rfl := P.eq_of_mem_of_mem ht hsP hxt hxs
+  exact hys
+
+lemma mem_iff_mem_partOf_mem : x ∈ u ↔ x ∈ P.partOf x ∧ P.partOf x ∈ P := by
+  refine ⟨fun hx ↦ ?_, fun ⟨hx, hP⟩ ↦ subset_of_mem hP hx⟩
+  obtain ⟨t, htP, hxt⟩ := P.mem_iff_exists.mp hx
+  obtain rfl := P.eq_partOf_of_mem htP hxt
+  exact ⟨hxt, htP⟩
+
+lemma mem_partOf (hxu : x ∈ u) : x ∈ P.partOf x := by
+  rw [P.mem_iff_mem_partOf_mem] at hxu
+  exact hxu.1
+
+lemma partOf_mem (hxu : x ∈ u) : P.partOf x ∈ P := by
+  rw [P.mem_iff_mem_partOf_mem] at hxu
+  exact hxu.2
+
+@[simp]
+lemma partOf_rep (hs : s ∈ P) : P.partOf (P.rep hs) = s := by
+  rw [← eq_partOf_of_mem hs (rep_mem hs)]
+
+lemma exists_partOf_iff_mem : s ∈ P ↔ ∃ x ∈ u, partOf P x = s := by
+  refine ⟨fun hs ↦ ⟨P.rep hs, rep_mem' hs, partOf_rep hs⟩, ?_⟩
+  rintro ⟨x, hxu, rfl⟩
+  exact partOf_mem hxu
+
+@[simp]
+lemma partOf_ne_bot_iff : P.partOf x ≠ ∅ ↔ x ∈ u := by
+  refine ⟨fun h => ?_, fun h => P.ne_bot_of_mem (partOf_mem h)⟩
+  obtain ⟨y, hy⟩ := Set.nonempty_iff_ne_empty.mpr h
+  exact Rel.left_mem hy
+
+@[simp]
+lemma partOf_eq_empty_iff : P.partOf x = ∅ ↔ x ∉ u := by
+  rw [← partOf_ne_bot_iff]
+  tauto
+
+lemma rel_iff_partOf_eq_partOf (P : Partition u) (hx : x ∈ u) (hy : y ∈ u) :
+    P.Rel x y ↔ P.partOf x = P.partOf y := by
+  refine ⟨fun ⟨t, htP, hxt, hyt⟩ ↦ ?_, fun h ↦ ⟨P.partOf x, P.partOf_mem hx, P.mem_partOf hx, ?_⟩⟩
+  · rw [eq_partOf_of_mem (P.partOf_mem hx)]
+    rwa [← eq_partOf_of_mem htP hxt]
+  rw [h]
+  exact mem_partOf hy
+
+lemma rel_iff_partOf_eq_partOf' (P : Partition u) :
+    P.Rel x y ↔ ∃ (_ : x ∈ u) (_ : y ∈ u), P.partOf x = P.partOf y :=
+  ⟨fun h ↦ ⟨h.left_mem, h.right_mem, (P.rel_iff_partOf_eq_partOf h.left_mem h.right_mem).1 h⟩,
+    fun ⟨hx,hy,h⟩ ↦ (P.rel_iff_partOf_eq_partOf hx hy).2 h⟩
+
+end partOf
 
 /-! ### Representative functions -/
 
@@ -434,6 +522,44 @@ theorem apply_apply (hf : IsRepFun P f) (hg : IsRepFun P g) (x : α) : f (g x) =
   obtain (hx | hx) := em (x ∈ u)
   · exact hf.apply_eq_apply (hg.rel_apply hx).symm
   rw [hg.apply_of_notMem hx, hf.apply_of_notMem hx]
+
+/-- Any partially defined representative function extends to a complete one. -/
+lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
+    (h_notMem : ∀ x : t, x.1 ∉ u → f₀ x = x) (h_mem : ∀ x : t, x.1 ∈ u → P.Rel x (f₀ x))
+    (h_eq : ∀ x y : t, P.Rel x y → f₀ x = f₀ y) : ∃ f, IsRepFun P f ∧ ∀ x : t, f x = f₀ x := by
+  classical
+  set f : α → α := fun a ↦ if ha : a ∈ u then
+    (if hb : ∃ b : t, P.Rel a b then f₀ hb.choose else P.rep (P.partOf_mem ha)) else a with hfdef
+  refine ⟨f, ⟨fun a ha ↦ by simp [hfdef, ha], fun a ha ↦ ?_, fun a b hab ↦ ?_⟩, fun a ↦ ?_⟩
+  · simp only [hfdef, ha, ↓reduceDIte]
+    split_ifs with h
+    · exact h.choose_spec.trans <| h_mem h.choose h.choose_spec.right_mem
+    push_neg at h
+    exact P.rep_rel (P.partOf_mem ha) (P.mem_partOf ha)
+  · simp_rw [hfdef, dif_pos hab.left_mem, dif_pos hab.right_mem]
+    split_ifs with h₁ h₂ h₂
+    · exact h_eq _ _ <| (hab.symm.trans h₁.choose_spec).symm.trans h₂.choose_spec
+    · exact False.elim <| h₂ ⟨_, hab.symm.trans h₁.choose_spec⟩
+    · exact False.elim <| h₁ ⟨_, hab.trans h₂.choose_spec⟩
+    congr 1
+    rwa [← rel_iff_partOf_eq_partOf _ hab.left_mem hab.right_mem]
+  obtain (ha | ha) := em (a.1 ∈ u)
+  · simp only [hfdef, ha, ↓reduceDIte]
+    split_ifs with h
+    · exact Eq.symm <| h_eq _ _ h.choose_spec
+    exact False.elim <| h ⟨a, rel_rfl_iff.mpr ha⟩
+  simp [hfdef, ha, h_notMem _ ha]
+
+/-- For any set `t` containing no two distinct related elements, there is a representative function
+equal to the identity on `t`. -/
+lemma exists_extend_partial' (P : Partition u)
+    (h : ∀ ⦃x y⦄, x ∈ t → y ∈ t → P.Rel x y → x = y) : ∃ f, IsRepFun P f ∧ EqOn f id t := by
+  simpa using exists_extend_partial P (fun x : t ↦ x) (by simp) (by simp) (fun x y ↦ h x.2 y.2)
+
+/-- Every partition has a representative function. -/
+lemma nonempty (P : Partition u) : ∃ f, IsRepFun P f := by
+  obtain ⟨f, hf, -⟩ := exists_extend_partial' P (t := ∅) (by simp)
+  exact ⟨f, hf⟩
 
 end IsRepFun
 end Partition.IsRepFun
