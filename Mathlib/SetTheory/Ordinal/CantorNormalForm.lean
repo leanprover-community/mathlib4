@@ -248,10 +248,10 @@ theorem coeff_zero_left (o : Ordinal) : coeff 0 o = single 0 o :=
 theorem coeff_one_left (o : Ordinal) : coeff 1 o = single 0 o :=
   coeff_of_le_one le_rfl o
 
-theorem coeff_of_lt {b e : Ordinal} (hb : e < b) : coeff b e = single 0 e := by
-  obtain rfl | he := eq_or_ne e 0
+theorem coeff_of_lt {b o : Ordinal} (hb : o < b) : coeff b o = single 0 o := by
+  obtain rfl | ho := eq_or_ne o 0
   · simp
-  · simp_rw [coeff, CNF.of_lt he hb]
+  · simp_rw [coeff, CNF.of_lt ho hb]
     exact singleton_lookupFinsupp ..
 
 theorem support_coeff_subset {b o x : Ordinal} (hx : x < b ^ o) :
