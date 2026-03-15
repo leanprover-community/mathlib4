@@ -91,7 +91,7 @@ else
     fi
     # Only run `lake update` if `--no-update` is not present.
     if [[ -z "$1" ]]; then
-      echo "Running \`lake update\` in \`SideSkimmer\`. Use \`runSkimmer.sh --no-update\` to skip this."
+      echo "Running \`lake update\` in \`SideSkimmer\`. Use \`runSkimmer.sh --no-update\` to skip this step."
       (cd "${pkg}" && lake update)
     fi
     for tgt in "${tgts[@]}"; do
