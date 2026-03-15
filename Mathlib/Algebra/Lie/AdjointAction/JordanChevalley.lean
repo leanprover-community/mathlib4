@@ -41,7 +41,7 @@ theorem LieAlgebra.eval_zero_of_aeval_ad_eq {x g : Module.End K V}
   have hf : (ad x) x = 0 := by simp [ad, LieAlgebra.ad_apply, lie_self]
   have hg : (Polynomial.aeval (ad x) p) x = 0 := by
     rw [← hp, LieAlgebra.ad_apply]; exact sub_eq_zero.mpr hc.eq
-  exact Module.End.eval_zero_of_aeval_apply_eq_zero hx hf hg
+  exact Module.End.eval_zero_of_aeval_apply_eq_zero (ad x) p hx hf hg
 
 end Field
 
