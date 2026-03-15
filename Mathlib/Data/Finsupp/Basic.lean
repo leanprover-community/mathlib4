@@ -1031,14 +1031,14 @@ lemma comapDomain_sumInr_sumElim [Zero γ] (f : α →₀ γ) (g : β →₀ γ)
 @[simp]
 lemma embDomain_embeddingInr [Zero M] (b : β →₀ M) :
     embDomain Function.Embedding.inr b = sumElim (0 : α →₀ M) b := by
-  ext (_|_)
+  ext (_ | _)
   · simp [embDomain_notin_range]
   rw [coe_sumElim, coe_zero, Sum.elim_inr, ← Function.Embedding.inr_apply, embDomain_apply_self]
 
 @[simp]
 lemma embDomain_embeddingInl [Zero M] (a : α →₀ M) :
     embDomain Function.Embedding.inl a = sumElim a (0 : β →₀ M) := by
-  ext (_|_)
+  ext (_ | _)
   · rw [coe_sumElim, coe_zero, Sum.elim_inl, ← Function.Embedding.inl_apply, embDomain_apply_self]
   simp [embDomain_notin_range]
 
@@ -1046,20 +1046,20 @@ lemma embDomain_embeddingInl [Zero M] (a : α →₀ M) :
 lemma comapDomain_sumElim_comapDomain [Zero M] (c : α ⊕ β →₀ M) :
     (comapDomain Sum.inl c Sum.inl_injective.injOn).sumElim
       (comapDomain Sum.inr c Sum.inr_injective.injOn) = c := by
-  ext (_|_) <;> simp
+  ext (_ | _) <;> simp
 
 lemma sumElim_add [AddZeroClass M] (a b : α →₀ M) (c d : β →₀ M) :
     a.sumElim c + b.sumElim d = (a + b).sumElim (c + d) := by
-  ext (_|_) <;> simp
+  ext (_ | _) <;> simp
 
 @[simp]
 lemma mapDomain_sumSwap_sumElim_comm [AddCommMonoid M] (x : α →₀ M) (y : β →₀ M) :
-    mapDomain (M := M) Sum.swap (y.sumElim x) = x.sumElim y := by
-  ext (_|_)
+    mapDomain Sum.swap (y.sumElim x) = x.sumElim y := by
+  ext (_ | _)
   · rw [← Sum.swap_inr, mapDomain_apply Sum.swap_leftInverse.injective]
     simp
-  rw [← Sum.swap_inl, mapDomain_apply Sum.swap_leftInverse.injective]
-  simp
+  · rw [← Sum.swap_inl, mapDomain_apply Sum.swap_leftInverse.injective]
+    simp
 
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
