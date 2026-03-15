@@ -226,6 +226,12 @@ theorem mem_sdiff_iff_union {f g : Filter α} {s : Set α} :
 
 section CompleteLattice
 
+protected lemma isLUB_sSup (s : Set (Filter α)) : IsLUB s (sSup s) :=
+  ⟨fun _ h₁ _ h₂ ↦ h₂ h₁, fun _ h₁ _ h₂ _ h₃ ↦ h₁ h₃ h₂⟩
+
+protected lemma isGLB_sInf (s : Set (Filter α)) : IsGLB s (sInf s) :=
+  isLUB_lowerBounds.mp (Filter.sSup_lowerBounds _ ▸ Filter.isLUB_sSup _)
+
 /-- Complete lattice structure on `Filter α`. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   inf a b := min a b
@@ -236,10 +242,8 @@ instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   inf_le_left _ _ _ := mem_inf_of_left
   inf_le_right _ _ _ := mem_inf_of_right
   le_inf := fun _ _ _ h₁ h₂ _s ⟨_a, ha, _b, hb, hs⟩ => hs.symm ▸ inter_mem (h₁ ha) (h₂ hb)
-  le_sSup _ _ h₁ _ h₂ := h₂ h₁
-  sSup_le _ _ h₁ _ h₂ _ h₃ := h₁ _ h₃ h₂
-  sInf_le _ _ h₁ _ h₂ := by rw [← Filter.sSup_lowerBounds]; exact fun _ h₃ ↦ h₃ h₁ h₂
-  le_sInf _ _ h₁ _ h₂ := by rw [← Filter.sSup_lowerBounds] at h₂; exact h₂ h₁
+  isLUB_sSup := Filter.isLUB_sSup
+  isGLB_sInf := Filter.isGLB_sInf
   le_top _ _ := univ_mem'
   bot_le _ _ _ := trivial
 
@@ -249,7 +253,8 @@ end CompleteLattice
 
 theorem NeBot.ne {f : Filter α} (hf : NeBot f) : f ≠ ⊥ := hf.ne'
 
-@[simp] theorem not_neBot {f : Filter α} : ¬f.NeBot ↔ f = ⊥ := neBot_iff.not_left
+@[simp, push]
+theorem not_neBot {f : Filter α} : ¬f.NeBot ↔ f = ⊥ := neBot_iff.not_left
 
 theorem NeBot.mono {f g : Filter α} (hf : NeBot f) (hg : f ≤ g) : NeBot g :=
   ⟨ne_bot_of_le_ne_bot hf.1 hg⟩
@@ -396,7 +401,6 @@ theorem compl_notMem {f : Filter α} {s : Set α} [NeBot f] (h : s ∈ f) : sᶜ
 theorem filter_eq_bot_of_isEmpty [IsEmpty α] (f : Filter α) : f = ⊥ :=
   empty_mem_iff_bot.mp <| univ_mem' isEmptyElim
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma disjoint_iff {f g : Filter α} : Disjoint f g ↔ ∃ s ∈ f, ∃ t ∈ g, Disjoint s t := by
   simp only [disjoint_iff, ← empty_mem_iff_bot, mem_inf_iff, inf_eq_inter, bot_eq_empty,
     @eq_comm _ ∅]
@@ -408,7 +412,6 @@ theorem disjoint_of_disjoint_of_mem {f g : Filter α} {s t : Set α} (h : Disjoi
 theorem NeBot.not_disjoint (hf : f.NeBot) (hs : s ∈ f) (ht : t ∈ f) : ¬Disjoint s t := fun h =>
   not_disjoint_self_iff.2 hf <| Filter.disjoint_iff.2 ⟨s, hs, t, ht, h⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inf_eq_bot_iff {f g : Filter α} : f ⊓ g = ⊥ ↔ ∃ U ∈ f, ∃ V ∈ g, U ∩ V = ∅ := by
   simp only [← disjoint_iff, Filter.disjoint_iff, Set.disjoint_iff_inter_eq_empty]
 
@@ -617,7 +620,7 @@ theorem eventually_mem_set {s : Set α} {l : Filter α} : (∀ᶠ x in l, x ∈ 
 
 protected theorem ext' {f₁ f₂ : Filter α}
     (h : ∀ p : α → Prop, (∀ᶠ x in f₁, p x) ↔ ∀ᶠ x in f₂, p x) : f₁ = f₂ :=
-  Filter.ext h
+  Filter.ext <| Set.setOf_bijective.surjective.forall.mpr h
 
 theorem Eventually.filter_mono {f₁ f₂ : Filter α} (h : f₁ ≤ f₂) {p : α → Prop}
     (hp : ∀ᶠ x in f₂, p x) : ∀ᶠ x in f₁, p x :=
@@ -795,8 +798,8 @@ theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filte
 
 theorem frequently_iff {f : Filter α} {P : α → Prop} :
     (∃ᶠ x in f, P x) ↔ ∀ {U}, U ∈ f → ∃ x ∈ U, P x := by
-  simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _)]
-  rfl
+  simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _),
+    Set.setOf_bijective.surjective.forall, Filter.Eventually, mem_setOf]
 
 @[simp, push]
 theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x) ↔ ∃ᶠ x in f, ¬p x := by

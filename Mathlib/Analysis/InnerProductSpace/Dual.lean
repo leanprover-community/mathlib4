@@ -90,7 +90,7 @@ open LinearMap
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
 lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ (toDualMap 𝕜 E x).ker :=
-  fun _ hx ↦ inner_eq_zero_of_right x ((mem_nullSubmodule_iff).mp hx)
+  fun _ hx ↦ inner_eq_zero_of_right x (mem_nullSubmodule_iff.mp hx)
 
 /-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
 lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ (toDualMap 𝕜 E).ker :=

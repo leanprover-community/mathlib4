@@ -156,31 +156,35 @@ theorem Iio_subset_Iic_iff [DenselyOrdered α] : Iio a ⊆ Iic b ↔ a ≤ b := 
 
 /-! ### Two infinite intervals -/
 
+@[to_dual]
 theorem Iic_union_Ioi_of_le (h : a ≤ b) : Iic b ∪ Ioi a = univ :=
   eq_univ_of_forall fun x => (h.gt_or_le x).symm
 
+@[to_dual]
 theorem Iio_union_Ici_of_le (h : a ≤ b) : Iio b ∪ Ici a = univ :=
   eq_univ_of_forall fun x => (h.ge_or_lt x).symm
 
+@[to_dual]
 theorem Iic_union_Ici_of_le (h : a ≤ b) : Iic b ∪ Ici a = univ :=
   eq_univ_of_forall fun x => (h.ge_or_le x).symm
 
+@[to_dual]
 theorem Iio_union_Ioi_of_lt (h : a < b) : Iio b ∪ Ioi a = univ :=
   eq_univ_of_forall fun x => (h.gt_or_lt x).symm
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iic_union_Ici : Iic a ∪ Ici a = univ :=
   Iic_union_Ici_of_le le_rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iio_union_Ici : Iio a ∪ Ici a = univ :=
   Iio_union_Ici_of_le le_rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iic_union_Ioi : Iic a ∪ Ioi a = univ :=
   Iic_union_Ioi_of_le le_rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iio_union_Ioi : Iio a ∪ Ioi a = {a}ᶜ :=
   ext fun _ => lt_or_lt_iff_ne
 

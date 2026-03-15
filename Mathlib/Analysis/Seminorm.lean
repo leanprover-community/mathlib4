@@ -766,12 +766,10 @@ theorem closedBall_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E
 
 variable (p : Seminorm 𝕜 E)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preimage_metric_ball {r : ℝ} : p ⁻¹' Metric.ball 0 r = { x | p x < r } := by
   ext x
   simp only [mem_setOf, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preimage_metric_closedBall {r : ℝ} : p ⁻¹' Metric.closedBall 0 r = { x | p x ≤ r } := by
   ext x
   simp only [mem_setOf, mem_preimage, mem_closedBall_zero_iff,
@@ -823,13 +821,11 @@ theorem closedBall_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset
   simp_rw [closedBall, iInter_setOf, finset_sup_apply, NNReal.coe_le_coe, Finset.sup_le_iff, ←
     NNReal.coe_le_coe, NNReal.coe_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 < r) :
     ball (s.sup p) x r = s.inf fun i => ball (p i) x r := by
   rw [Finset.inf_eq_iInf]
   exact ball_finset_sup_eq_iInter _ _ _ hr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     closedBall (s.sup p) x r = s.inf fun i => closedBall (p i) x r := by
   rw [Finset.inf_eq_iInf]
