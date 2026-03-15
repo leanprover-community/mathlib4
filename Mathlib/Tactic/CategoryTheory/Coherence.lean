@@ -144,9 +144,12 @@ def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
 
 open Mathlib.Tactic.BicategoryCoherence
 
+/--
+If set to `false`, the warning on the use of the deprecated coherence tactic is disabled.
+-/
 register_option warn.refl_coherence : Bool := {
   defValue := true
-  descr := "warn when the deprecated tactic `pure_coherence` is used"
+  descr := "warn when the deprecated coherence tactic is used"
 }
 
 /--
