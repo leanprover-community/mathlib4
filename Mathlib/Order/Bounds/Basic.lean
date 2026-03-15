@@ -6,9 +6,9 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Order.BoundedOrder.Monotone
-public import Mathlib.Order.Bounds.OrderSupInfSet
 public import Mathlib.Order.Directed
 public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Upper / lower bounds
