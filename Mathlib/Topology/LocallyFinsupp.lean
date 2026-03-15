@@ -5,11 +5,13 @@ Authors: Stefan Kebekus
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Tactic.Peel
@@ -346,6 +348,25 @@ instance [AddCommMonoid Y] : AddCommMonoid (locallyFinsuppWithin U Y) :=
   Injective.addCommMonoid (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_nsmul
 
+@[simp] lemma coe_sum [AddCommMonoid Y] {ι : Type*} {s : Finset ι}
+    {F : ι → locallyFinsuppWithin U Y} :
+    (↑(∑ n ∈ s, F n) : X → Y) = ∑ n ∈ s, (F n : X → Y) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp_all
+  | insert => simp_all
+@[simp] lemma coe_finsum {ι : Type*} {F : ι → locallyFinsuppWithin U ℤ} :
+    (↑(∑ᶠ i, F i) : X → ℤ) = ∑ᶠ i, (F i : X → ℤ) := by
+  have : F.support = (fun i ↦ (F i : X → ℤ)).support := by
+    ext i
+    contrapose
+    exact ⟨by simp_all, by simpa using (F i).coe_injective (a₂ := 0)⟩
+  by_cases h : F.support.Finite
+  · rw [finsum_eq_sum F h, Function.locallyFinsuppWithin.coe_sum]
+    have h₂ : (fun i ↦ (F i : X → ℤ)).support.Finite := by simp_all
+    simp_all [finsum_eq_sum _ h₂]
+  · simp_all [finsum_of_infinite_support]
+
 instance [AddGroup Y] : AddGroup (locallyFinsuppWithin U Y) :=
   Injective.addGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
@@ -584,6 +605,23 @@ noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
 lemma restrictMonoidHom_apply [AddCommGroup Y] {V : Set X} (D : locallyFinsuppWithin U Y)
     (h : V ⊆ U) :
     restrictMonoidHom h D = D.restrict h := by rfl
+
+/--
+Present a function with with finite support as a linear combination of singleton indicator
+functions.
+-/
+@[simp] lemma sum_apply_smul_single_eq_self [DecidableEq X] {U : Set X}
+    {F : Function.locallyFinsuppWithin U ℤ} (h : F.support.Finite) :
+    ∑ x ∈ h.toFinset, (F x) • ((single x (1 : ℤ)).restrict (subset_univ U)) = F := by
+  ext z
+  by_cases hz : z ∉ U
+  · aesop
+  simp only [coe_sum, coe_zsmul, zsmul_eq_mul, Finset.sum_apply, Pi.mul_apply, Pi.intCast_apply,
+    Int.cast_eq, restrict_apply]
+  by_cases hz : z ∈ F.support
+  · rw [← Finset.add_sum_erase _ _ (by aesop : z ∈ h.toFinset), Finset.sum_eq_zero (by aesop)]
+    aesop
+  · aesop
 
 /-- Restriction as a lattice morphism -/
 noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h : V ⊆ U) :
