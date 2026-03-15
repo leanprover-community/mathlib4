@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 In this file, we define strong epimorphisms. A strong epimorphism is an epimorphism `f`
 which has the (unique) left lifting property with respect to monomorphisms. Similarly,
-a strong monomorphisms in a monomorphism which has the (unique) right lifting property
+a strong monomorphism is a monomorphism which has the (unique) right lifting property
 with respect to epimorphisms.
 
 ## Main results
@@ -50,7 +50,7 @@ with respect to monomorphisms. -/
 class StrongEpi (f : P ⟶ Q) : Prop where
   /-- The epimorphism condition on `f` -/
   epi : Epi f
-  /-- The left lifting property with respect to all monomorphism -/
+  /-- The left lifting property with respect to all monomorphisms -/
   llp : ∀ ⦃X Y : C⦄ (z : X ⟶ Y) [Mono z], HasLiftingProperty f z
 
 
@@ -136,6 +136,7 @@ instance (priority := 100) strongMono_of_isIso [IsIso f] : StrongMono f where
   mono := by infer_instance
   rlp {_ _} _ := HasLiftingProperty.of_right_iso _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongEpi f] : StrongEpi g :=
   { epi := by
@@ -145,6 +146,7 @@ theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
       intro
       apply HasLiftingProperty.of_arrow_iso_left e z }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StrongMono.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongMono f] : StrongMono g :=
   { mono := by

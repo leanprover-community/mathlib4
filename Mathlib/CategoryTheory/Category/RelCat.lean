@@ -77,16 +77,13 @@ def graphFunctor : Type u ⥤ RelCat.{u} where
   obj X := X
   map f := .ofRel f.graph
 
-@[deprecated rel_graphFunctor_map (since := "2025-06-08")]
-theorem graphFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : X) (y : Y) :
-    x ~[(graphFunctor.map f).rel] y ↔ f x = y := .rfl
-
 instance graphFunctor_faithful : graphFunctor.Faithful where
   map_injective h := Function.graph_injective congr(($h).rel)
 
 instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A relation is an isomorphism in `RelCat` iff it is the image of an isomorphism in
 `Type u`. -/
 theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :

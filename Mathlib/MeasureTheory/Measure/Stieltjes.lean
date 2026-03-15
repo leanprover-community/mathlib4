@@ -38,13 +38,12 @@ two technical definitions:
 * `Iotop a b` is the interval `Ioo a b` if `b` is not top, and `Ioc a b` if `b` is top.
 * `botSet` is the empty set if there is no bot element, and `{x}` if `x` is bot.
 
-These definitions are just handy tools for some proofs of this file, so they are only included
-there, and not exported.
-
 Note that the theory of Stieltjes measures is not completely satisfactory when there is a bot
-element `x`: any Stieljes measure gives zero mass to `{x}` in this case, so the Dirac mass at `x`
-is not representable as a Stieljes measure.
+element `x`: any Stieltjes measure gives zero mass to `{x}` in this case, so the Dirac mass at `x`
+is not representable as a Stieltjes measure.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -79,40 +78,37 @@ lemma isOpen_Iotop [TopologicalSpace R] [OrderTopology R] (a b : R) : IsOpen (Io
   · simp [isOpen_Ioo]
 
 open scoped Classical in
-/-- `botSet` is the empty set if there is no bot element, and `{x}` if `x` is bot. -/
-def botSet : Set R := if h : ∃ (x : R), IsBot x then {h.choose} else ∅
+/-- `botSet` is the set of all bottom elements. -/
+def botSet : Set R := {x | IsBot x}
 
 @[simp] lemma Ioc_diff_botSet (a b : R) : Ioc a b \ botSet = Ioc a b := by
-  simp only [botSet, sdiff_eq_left]
-  split_ifs with h
-  · simp only [disjoint_singleton_right, mem_Ioc, not_and_or]
-    have : h.choose ≤ a := h.choose_spec _
-    grind
-  · simp
+  rw [sdiff_eq_left, disjoint_iff_forall_ne]
+  rintro c ⟨hc, _⟩ _ hc' rfl
+  exact (hc' a).not_gt hc
 
 lemma notMem_botSet_of_lt {x y : R} (h : x < y) : y ∉ botSet := by
-  simp only [botSet]
-  split_ifs with h'
-  · simp only [mem_singleton_iff]
-    exact (lt_of_le_of_lt (h'.choose_spec x) h).ne'
-  · simp
+  contrapose! h
+  exact h x
+
+lemma subsingleton_botSet : (botSet (R := R)).Subsingleton :=
+  subsingleton_isBot _
 
 lemma measurableSet_botSet [MeasurableSpace R] [MeasurableSingletonClass R] :
-    MeasurableSet (botSet (R := R)) := by
-  simp only [botSet]
-  split_ifs <;> simp
+    MeasurableSet (botSet (R := R)) :=
+  subsingleton_botSet.measurableSet
+
+lemma botSet_eq_singleton_of_isBot {x : R} (hx : IsBot x) : botSet = {x} :=
+  (subsingleton_botSet (R := R)).eq_singleton_of_mem hx
 
 end Prerequisites
 
-@[expose] public section
-
-variable (R : Type*) [ConditionallyCompleteLinearOrder R] [TopologicalSpace R]
+variable (R : Type*) [LinearOrder R] [TopologicalSpace R]
 
 /-! ### Basic properties of Stieltjes functions -/
 
 /-- Bundled monotone right-continuous real functions, used to construct Stieltjes measures. -/
 structure StieltjesFunction where
-  /-- The underlying function `ℝ → ℝ`.
+  /-- The underlying function `R → ℝ`.
 
   Do NOT use directly. Use the coercion instead. -/
   toFun : R → ℝ
@@ -146,8 +142,8 @@ theorem rightLim_eq [OrderTopology R]
   rw [← f.mono.continuousWithinAt_Ioi_iff_rightLim_eq, continuousWithinAt_Ioi_iff_Ici]
   exact f.right_continuous' x
 
-theorem iInf_Ioi_eq
-     (f : StieltjesFunction ℝ) (x : ℝ) : ⨅ r : Ioi x, f r = f x := by
+theorem iInf_Ioi_eq [OrderTopology R] [DenselyOrdered R] [NoMaxOrder R]
+     (f : StieltjesFunction R) (x : R) : ⨅ r : Ioi x, f r = f x := by
   suffices Function.rightLim f x = ⨅ r : Ioi x, f r by rw [← this, f.rightLim_eq]
   rw [f.mono.rightLim_eq_sInf, sInf_image']
   rw [← neBot_iff]
@@ -173,7 +169,7 @@ theorem id_leftLim (x : ℝ) : leftLim StieltjesFunction.id x = x :=
   continuousWithinAt_id.leftLim_eq
 
 variable (R) in
-/-- Constant functions are Stieltjes function. -/
+/-- A constant function is a Stieltjes function. -/
 protected def const (c : ℝ) : StieltjesFunction R where
   toFun := fun _ ↦ c
   mono' _ _ := by simp
@@ -206,7 +202,7 @@ instance : Module ℝ≥0 (StieltjesFunction R) where
   smul c f := {
     toFun := fun x ↦ c * f x
     mono' := f.mono.const_mul c.2
-    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.1}
+    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.1 }
   one_smul _ := ext fun _ ↦ one_mul _
   mul_smul _ _ _ := ext fun _ ↦ mul_assoc _ _ _
   smul_zero _ := ext fun _ ↦ mul_zero _
@@ -250,7 +246,8 @@ noncomputable def _root_.Monotone.stieltjesFunction [OrderTopology R]
         rightLim f z ≤ f a := hf.rightLim_le za
         _ < u := (h'y ⟨hz.1.trans_lt za, ay⟩).2
 
-theorem _root_.Monotone.stieltjesFunction_eq {f : ℝ → ℝ} (hf : Monotone f) (x : ℝ) :
+theorem _root_.Monotone.stieltjesFunction_eq
+    [OrderTopology R] {f : R → ℝ} (hf : Monotone f) (x : R) :
     hf.stieltjesFunction x = rightLim f x :=
   rfl
 
@@ -264,6 +261,8 @@ theorem countable_leftLim_ne [OrderTopology R] (f : StieltjesFunction R) :
 /-! ### The outer measure associated to a Stieltjes function -/
 
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 open scoped Classical in
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
@@ -274,6 +273,8 @@ def length (s : Set R) : ℝ≥0∞ :=
   -- when measuring the size of a set (the set `{x}` will have measure `0` in our construction).
   else ⨅ (a) (b) (_ : s \ botSet ⊆ Ioc a b), ofReal (f b - f a)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma length_eq [Nonempty R] (s : Set R) :
     f.length s = ⨅ (a) (b) (_ : s \ botSet ⊆ Ioc a b), ofReal (f b - f a) := by
   simp [length]
@@ -309,6 +310,8 @@ theorem length_mono {s₁ s₂ : Set R} (h : s₁ ⊆ s₂) : f.length s₁ ≤ 
   simp only [length_eq]
   exact iInf_mono fun a => biInf_mono fun b h' => (diff_subset_diff_left h).trans h'
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem length_diff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := by
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
@@ -323,8 +326,10 @@ protected def outer : OuterMeasure R :=
 theorem outer_le_length (s : Set R) : f.outer s ≤ f.length s :=
   OuterMeasure.ofFunction_le _
 
-variable [OrderTopology R]
+variable [OrderTopology R] [CompactIccSpace R]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If a compact interval `[a, b]` is covered by a union of open interval `(c i, d i)`, then
 `f b - f a ≤ ∑ f (d i) - f (c i)`. This is an auxiliary technical statement to prove the same
 statement for half-open intervals, the point of the current statement being that one can use
@@ -345,7 +350,7 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
         Finite.mem_toFinset]
     rw [ENNReal.tsum_eq_iSup_sum]
     refine le_trans ?_ (le_iSup _ hf.toFinset)
-    exact this hf.toFinset _ (by simpa only [e] )
+    exact this hf.toFinset _ (by simpa only [e])
   clear ss b
   refine fun s => Finset.strongInductionOn s fun s IH b cv => ?_
   rcases le_total b a with ab | ab
@@ -396,7 +401,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
       refine ContinuousWithinAt.sub ?_ continuousWithinAt_const
       exact (f.right_continuous a).mono Ioi_subset_Ici_self
     have B : f a - f a < δ := by rwa [sub_self, NNReal.coe_pos, ← ENNReal.coe_pos]
-    have :  (𝓝[>] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
+    have : (𝓝[>] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
     exact (((tendsto_order.1 A).2 _ B).and self_mem_nhdsWithin).exists
   have : Nonempty R := ⟨a⟩
   have : ∀ i, ∃ p : R × R, Icc a' b ∩ s i ⊆ Iotop p.1 p.2 ∧
@@ -444,7 +449,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
     _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 
-omit [OrderTopology R] in
+omit [OrderTopology R] [CompactIccSpace R] in
 theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
   refine OuterMeasure.ofFunction_caratheodory fun t => ?_
   have : Nonempty R := ⟨c⟩
@@ -507,6 +512,7 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
   apply iInf_le_of_le (MeasurableSet.iUnion fun i => (hg i).2.1) _
   exact le_trans (measure_iUnion_le _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
 
+omit [CompactIccSpace R] in
 theorem borel_le_measurable [SecondCountableTopology R] :
     borel R ≤ f.outer.caratheodory := by
   rw [borel_eq_generateFrom_Ioi]
@@ -542,9 +548,7 @@ theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) :
     rw [StieltjesFunction.measure]
     apply (outer_le_length _ _).trans
     rw [← length_diff_botSet]
-    have : ∃ x, IsBot x := ⟨a, ha⟩
-    have : botSet = {a} := by simpa [botSet, this] using subsingleton_isBot _ this.choose_spec ha
-    simp [this]
+    simp [subsingleton_botSet.eq_singleton_of_mem ha]
   obtain ⟨b, hb⟩ : ∃ b, b < a := by simpa only [IsBot, not_forall, not_le] using ha
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
     ∃ u : ℕ → R, StrictMono u ∧ (∀ n : ℕ, u n ∈ Ioo b a) ∧ Tendsto u atTop (𝓝 a) :=
@@ -608,34 +612,45 @@ theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - left
     simp [← Icc_union_Ioo_eq_Ico le_rfl hab, -singleton_union, f.mono.leftLim_le,
       measure_union A measurableSet_Ioo, f.mono.le_leftLim hab, ← ENNReal.ofReal_add]
 
-theorem measure_Iic [NoMinOrder R] {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
+@[simp]
+theorem measure_botSet : f.measure botSet = 0 := by
+  by_cases! hx : ∃ x : R, IsBot x
+  · simp [botSet_eq_singleton_of_isBot hx.choose_spec, leftLim_eq_of_isBot hx.choose_spec]
+  · simp [botSet, hx]
+
+theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     f.measure (Iic x) = ofReal (f x - l) := by
+  have : Nonempty R := ⟨x⟩
+  cases botOrderOrNoBotOrder R
+  · have : Iic x = Icc ⊥ x := by simp
+    rw [atBot_eq_pure_of_isBot isBot_bot] at hf
+    rw [this, measure_Icc, leftLim_eq_of_isBot isBot_bot,
+      tendsto_nhds_unique hf (tendsto_pure_nhds f ⊥)]
+  have : NoMinOrder R := NoBotOrder.to_noMinOrder R
   refine tendsto_nhds_unique (tendsto_measure_Ioc_atBot _ _) ?_
   simp_rw [measure_Ioc]
   exact ENNReal.tendsto_ofReal (Tendsto.const_sub _ hf)
 
-lemma measure_Iio [NoMinOrder R] {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
+lemma measure_Iio {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     f.measure (Iio x) = ofReal (leftLim f x - l) := by
+  have : Nonempty R := ⟨x⟩
   rw [← Iic_diff_right, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
     f.measure_Iic hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
     <;> simp
 
-theorem measure_Ici [NoMaxOrder R] {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
+theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
     f.measure (Ici x) = ofReal (l - leftLim f x) := by
+  have : Nonempty R := ⟨x⟩
+  cases topOrderOrNoTopOrder R
+  · have : Ici x = Icc x ⊤ := by simp
+    rw [atTop_eq_pure_of_isTop isTop_top] at hf
+    rw [this, measure_Icc, tendsto_nhds_unique hf (tendsto_pure_nhds f ⊤)]
+  have : NoMaxOrder R := NoTopOrder.to_noMaxOrder R
   refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
   simp_rw [measure_Ico]
-  refine ENNReal.tendsto_ofReal (Tendsto.sub_const ?_ _)
-  apply tendsto_order.2 ⟨fun m hm ↦ ?_, fun M hM ↦ ?_⟩
-  · obtain ⟨a, ha⟩ : ∃ a, ∀ (b : R), a ≤ b → m < f b := by simpa using (tendsto_order.1 hf).1 m hm
-    obtain ⟨a', ha'⟩ : ∃ a', a < a' := exists_gt a
-    simp only [eventually_atTop]
-    refine ⟨a', fun b hb ↦ ?_⟩
-    apply (ha _ le_rfl).trans_le
-    exact f.mono.le_leftLim (ha'.trans_le hb)
-  · filter_upwards [(tendsto_order.1 hf).2 M hM] with a ha
-    exact (f.mono.leftLim_le le_rfl).trans_lt ha
+  exact ENNReal.tendsto_ofReal (Tendsto.sub_const (tendsto_leftLim_atTop_of_tendsto hf) _)
 
-lemma measure_Ioi [NoMaxOrder R] {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
+lemma measure_Ioi {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
     f.measure (Ioi x) = ofReal (l - f x) := by
   rw [← Ici_diff_left, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
     f.measure_Ici hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
@@ -643,6 +658,7 @@ lemma measure_Ioi [NoMaxOrder R] {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : 
 
 lemma measure_Ioi_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) (x : R) :
     f.measure (Ioi x) = ∞ := by
+  have : Nonempty R := ⟨x⟩
   refine ENNReal.eq_top_of_forall_nnreal_le fun r ↦ ?_
   obtain ⟨N, hN⟩ := eventually_atTop.mp (tendsto_atTop.mp hf (r + f x))
   exact (f.measure_Ioc x (max x N) ▸ ENNReal.coe_nnreal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
@@ -655,18 +671,24 @@ lemma measure_Ici_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) (x : R) :
 
 lemma measure_Iic_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
     f.measure (Iic x) = ∞ := by
+  have : Nonempty R := ⟨x⟩
   refine ENNReal.eq_top_of_forall_nnreal_le fun r ↦ ?_
   obtain ⟨N, hN⟩ := eventually_atBot.mp (tendsto_atBot.mp hf (f x - r))
   exact (f.measure_Ioc (min x N) x ▸ ENNReal.coe_nnreal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
     le_sub_comm.mp <| hN _ (min_le_right x N))).trans (measure_mono Ioc_subset_Iic_self)
 
-lemma measure_Iio_of_tendsto_atBot_atBot [NoMinOrder R] (hf : Tendsto f atBot atBot) (x : R) :
+lemma measure_Iio_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
     f.measure (Iio x) = ∞ := by
+  have : Nonempty R := ⟨x⟩
+  cases botOrderOrNoBotOrder R
+  · rw [atBot_eq_pure_of_isBot isBot_bot] at hf
+    simpa using (tendsto_pure_left.1 hf) _ (Iio_mem_atBot (f ⊥))
+  have : NoMinOrder R := NoBotOrder.to_noMinOrder R
   obtain ⟨y, hy⟩ : ∃ y, y < x := exists_lt x
   rw [← top_le_iff, ← f.measure_Iic_of_tendsto_atBot_atBot hf y]
   exact measure_mono <| Set.Iic_subset_Iio.mpr <| hy
 
-theorem measure_univ [NoMinOrder R]
+theorem measure_univ [Nonempty R]
     {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     f.measure univ = ofReal (u - l) := by
   refine tendsto_nhds_unique (tendsto_measure_Iic_atTop _) ?_
@@ -679,17 +701,37 @@ lemma measure_univ_of_tendsto_atTop_atTop [Nonempty R] (hf : Tendsto f atTop atT
   rw [← top_le_iff, ← f.measure_Ioi_of_tendsto_atTop_atTop hf default]
   exact measure_mono (subset_univ _)
 
-lemma measure_univ_of_tendsto_atBot_atBot [Nonempty R] [NoMinOrder R] (hf : Tendsto f atBot atBot) :
+lemma measure_univ_of_tendsto_atBot_atBot [Nonempty R] (hf : Tendsto f atBot atBot) :
     f.measure univ = ∞ := by
   inhabit R
   rw [← top_le_iff, ← f.measure_Iio_of_tendsto_atBot_atBot hf default]
   exact measure_mono (subset_univ _)
 
-lemma isFiniteMeasure [NoMinOrder R] {l u : ℝ}
+lemma isFiniteMeasure {l u : ℝ}
     (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
-    IsFiniteMeasure f.measure := ⟨by simp [f.measure_univ hfl hfu]⟩
+    IsFiniteMeasure f.measure := by
+  constructor
+  cases isEmpty_or_nonempty R
+  · simp [eq_empty_of_isEmpty]
+  · simp [f.measure_univ hfl hfu]
 
-lemma isProbabilityMeasure [NoMinOrder R]
+lemma isFiniteMeasure_of_forall_abs_le {C : ℝ} (h : ∀ x, |f x| ≤ C) :
+    IsFiniteMeasure f.measure := by
+  cases isEmpty_or_nonempty R
+  · infer_instance
+  obtain ⟨u, hu⟩ : ∃ u, Tendsto f atTop (𝓝 u) := by
+    rcases tendsto_atTop_of_monotone f.mono with H | H
+    · obtain ⟨x, hx⟩ : ∃ x, C + 1 ≤ f x := (tendsto_atTop.1 H (C + 1)).exists
+      grind
+    exact H
+  obtain ⟨l, hl⟩ : ∃ l, Tendsto f atBot (𝓝 l) := by
+    rcases tendsto_atBot_of_monotone f.mono with H | H
+    · obtain ⟨x, hx⟩ : ∃ x, f x ≤ - C - 1 := (tendsto_atBot.1 H (-C - 1)).exists
+      grind
+    exact H
+  exact f.isFiniteMeasure hl hu
+
+lemma isProbabilityMeasure [Nonempty R]
     (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto f atTop (𝓝 1)) :
     IsProbabilityMeasure f.measure := ⟨by simp [f.measure_univ hf_bot hf_top]⟩
 
@@ -699,7 +741,7 @@ instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure := by
     exists_Icc_mem_subset_of_mem_nhds (by simp)
   exact ⟨Icc b c, h, by simp⟩
 
-lemma eq_of_measure_of_tendsto_atBot [NoMinOrder R] (g : StieltjesFunction R) {l : ℝ}
+lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction R) {l : ℝ}
     (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :
     f = g := by
   ext x

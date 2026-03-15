@@ -6,7 +6,6 @@ Authors: Jeremy Avigad
 module
 
 public import Batteries.Logic
-public import Batteries.Tactic.Init
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Lemma
@@ -300,8 +299,7 @@ lemma le_add_iff_lt_of_dvd_sub (ha : 0 < a) (hab : a ∣ c - b) : a + b ≤ c �
 /-! ### sign -/
 
 lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
-  have : (1 : ℤ) ≠ -1 := by decide
-  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm] <;> lia
+  lia
 
 /-! ### toNat -/
 
@@ -318,9 +316,6 @@ lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) 
   simp only [lt_toNat, Int.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
 
 lemma toNat_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by lia
-
-@[deprecated (since := "2025-05-24")]
-alias toNat_lt'' := toNat_lt_of_ne_zero
 
 /-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
 def natMod (m n : ℤ) : ℕ := (m % n).toNat

@@ -11,7 +11,7 @@ public import Mathlib.Tactic.Basic
 # Functor Laws, applicative laws, and monad Laws
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

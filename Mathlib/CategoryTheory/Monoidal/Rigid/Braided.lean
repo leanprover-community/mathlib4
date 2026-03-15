@@ -20,6 +20,7 @@ variable {C : Type*} [Category* C] [MonoidalCategory C] [BraidedCategory C] {X Y
 
 namespace CategoryTheory.BraidedCategory
 
+set_option backward.privateInPublic true in
 /-- coevaluation_evaluation' field of `ExactPairing Y X` in a braided category -/
 private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
     X ◁ (η_ X Y ≫ (β_ Y X).inv) ≫ (α_ X Y X).inv ≫ ((β_ X Y).hom ≫ ε_ X Y) ▷ X
@@ -46,6 +47,7 @@ private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
       rw [braiding_naturality_right, ← braiding_inv_naturality_right]
       simp [monoidalComp]
 
+set_option backward.privateInPublic true in
 /-- evaluation_coevaluation' field of `ExactPairing Y X` in a braided category -/
 private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
     (η_ X Y ≫ (β_ Y X).inv) ▷ Y ≫ (α_ Y X Y).hom ≫ Y ◁ ((β_ X Y).hom ≫ ε_ X Y) =
@@ -71,8 +73,11 @@ private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
       rw [braiding_naturality_left, ← braiding_inv_naturality_left]
       simp [monoidalComp]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `X` and `Y` forms an exact pairing in a braided category, then so does `Y` and `X`
 by composing the coevaluation and evaluation morphisms with associators. -/
+@[implicit_reducible]
 def exactPairing_swap (X Y : C) [ExactPairing X Y] : ExactPairing Y X where
   coevaluation' := η_ X Y ≫ (β_ Y X).inv
   evaluation' := (β_ X Y).hom ≫ ε_ X Y
@@ -80,11 +85,13 @@ def exactPairing_swap (X Y : C) [ExactPairing X Y] : ExactPairing Y X where
   evaluation_coevaluation' := evaluation_coevaluation_braided'
 
 /-- If `X` has a right dual in a braided category, then it has a left dual. -/
+@[implicit_reducible]
 def hasLeftDualOfHasRightDual [HasRightDual X] : HasLeftDual X where
   leftDual := Xᘁ
   exact := exactPairing_swap X Xᘁ
 
 /-- If `X` has a left dual in a braided category, then it has a right dual. -/
+@[implicit_reducible]
 def hasRightDualOfHasLeftDual [HasLeftDual X] : HasRightDual X where
   rightDual := ᘁX
   exact := exactPairing_swap ᘁX X

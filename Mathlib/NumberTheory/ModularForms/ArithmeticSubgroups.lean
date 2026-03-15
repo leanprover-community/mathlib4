@@ -43,6 +43,11 @@ lemma HasDetPlusMinusOne.abs_det [LinearOrder R] [IsOrderedRing R] [HasDetPlusMi
     {g} (hg : g ∈ Γ) : |g.det.val| = 1 := by
   rcases HasDetPlusMinusOne.det_eq hg with h | h <;> simp [h]
 
+lemma hasDetPlusMinusOne_iff_abs_det [LinearOrder R] [IsOrderedRing R] :
+    HasDetPlusMinusOne Γ ↔ ∀ {g}, g ∈ Γ → |g.det.val| = 1 := by
+  refine ⟨fun h {g} hg ↦ h.abs_det hg, fun h ↦ ⟨?_⟩⟩
+  simpa [-GeneralLinearGroup.val_det_apply, abs_eq zero_le_one] using @h
+
 /-- Typeclass saying that a subgroup of `GL(n, R)` is contained in `SL(n, R)`. Necessary so that
 the typeclass system can detect when the slash action is `ℂ`-linear. -/
 class HasDetOne : Prop where
@@ -102,8 +107,8 @@ instance IsArithmetic.finiteIndex_comap (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsAr
   ⟨𝒢.index_comap (mapGL (R := ℤ) ℝ) ▸ IsArithmetic.is_commensurable.1⟩
 
 instance {Γ : Subgroup (GL (Fin 2) ℝ)} [h : Γ.IsArithmetic] : HasDetPlusMinusOne Γ := by
-  refine ⟨fun {g} hg ↦ ?_⟩
-  suffices |g.det.val| = 1 by rcases abs_cases g.det.val <;> aesop
+  rw [hasDetPlusMinusOne_iff_abs_det]
+  intro g hg
   obtain ⟨n, hn, _, hgn⟩ := Subgroup.exists_pow_mem_of_relIndex_ne_zero
     Subgroup.IsArithmetic.is_commensurable.2 hg
   suffices |(g.det ^ n).val| = 1 by simpa [← abs_pow, abs_pow_eq_one _ (Nat.ne_zero_of_lt hn)]
@@ -169,8 +174,7 @@ def Subgroup.adjoinNegOne (𝒢 : Subgroup (GL n R)) : Subgroup (GL n R) where
 lemma Subgroup.le_adjoinNegOne (𝒢 : Subgroup (GL n R)) : 𝒢 ≤ 𝒢.adjoinNegOne :=
   fun _ hg ↦ .inl hg
 
-lemma Subgroup.negOne_mem_adjoinNegOne (𝒢 : Subgroup (GL n R)) : -1 ∈ 𝒢.adjoinNegOne :=
-  by simp
+lemma Subgroup.negOne_mem_adjoinNegOne (𝒢 : Subgroup (GL n R)) : -1 ∈ 𝒢.adjoinNegOne := by simp
 
 @[simp] lemma Subgroup.adjoinNegOne_eq_self_iff {𝒢 : Subgroup (GL n R)} :
     𝒢.adjoinNegOne = 𝒢 ↔ -1 ∈ 𝒢 :=

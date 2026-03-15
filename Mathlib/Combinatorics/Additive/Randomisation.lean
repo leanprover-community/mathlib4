@@ -19,13 +19,14 @@ Precisely, for `G` a finite abelian group and two functions `c : AddChar G ℂ �
 the same as the average over `a` of the product of the `c ψ + Re (d ψ * ψ a)`.
 -/
 
-@[expose] public section
+public section
 
 open Finset
 open scoped BigOperators ComplexConjugate
 
 variable {G : Type*} [Fintype G] [AddCommGroup G] {p : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- One can randomise by a function of dissociated support. -/
 lemma AddDissociated.randomisation (c : AddChar G ℂ → ℝ) (d : AddChar G ℂ → ℂ)
     (hcd : AddDissociated {ψ | d ψ ≠ 0}) : 𝔼 a, ∏ ψ, (c ψ + (d ψ * ψ a).re) = ∏ ψ, c ψ := by

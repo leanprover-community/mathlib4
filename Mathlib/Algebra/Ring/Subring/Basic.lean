@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.RingTheory.NonUnitalSubring.Defs
+public import Mathlib.RingTheory.NonUnitalSubring.Basic
 public import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -159,6 +159,15 @@ theorem mem_top (x : R) : x ∈ (⊤ : Subring R) :=
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
   rfl
+
+@[simp] lemma toSubsemiring_top : (⊤ : Subring R).toSubsemiring = ⊤ := rfl
+@[simp] lemma toAddSubgroup_top : (⊤ : Subring R).toAddSubgroup = ⊤ := rfl
+
+@[simp] lemma toSubsemiring_eq_top {S : Subring R} : S.toSubsemiring = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
+@[simp] lemma toAddSubgroup_eq_top {S : Subring R} : S.toAddSubgroup = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
 
 /-- The ring equiv between the top element of `Subring R` and `R`. -/
 @[simps!]
@@ -444,6 +453,10 @@ theorem centralizer_toSubsemiring (s : Set R) :
     (centralizer s).toSubsemiring = Subsemiring.centralizer s :=
   rfl
 
+theorem centralizer_toNonUnitalSubring (s : Set R) :
+    (centralizer s).toNonUnitalSubring = NonUnitalSubring.centralizer s :=
+  rfl
+
 theorem mem_centralizer_iff {s : Set R} {z : R} : z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
   Iff.rfl
 
@@ -482,8 +495,6 @@ theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s 
 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A subring `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]
@@ -1076,6 +1087,16 @@ instance center.smulCommClass_left : SMulCommClass (center R) R R :=
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.smulCommClass_right : SMulCommClass R (center R) R :=
   Subsemiring.center.smulCommClass_right
+
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {M : Type*} [MulAction R M] :
+    SMulCommClass R (Subring.center R) M :=
+  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
+
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {M : Type*} [MulAction R M] :
+    SMulCommClass (Subring.center R) R M :=
+  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
 
 end Subring
 

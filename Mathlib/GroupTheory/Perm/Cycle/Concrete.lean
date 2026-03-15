@@ -164,9 +164,6 @@ theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x
   induction s using Quot.inductionOn
   simpa using List.formPerm_apply_of_notMem hx
 
-@[deprecated (since := "2025-05-23")]
-alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
-
 theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∈ s) :
     formPerm s h x = next s h x hx := by
   induction s using Quot.inductionOn
@@ -500,6 +497,7 @@ set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) List.nil) "]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Represents a permutation as product of disjoint cycles:
 ```
 #eval (c[0, 1, 2, 3] : Perm (Fin 4))

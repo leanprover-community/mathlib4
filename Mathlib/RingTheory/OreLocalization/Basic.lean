@@ -78,6 +78,7 @@ section DistribMulAction
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [AddMonoid X]
 variable [DistribMulAction R X]
 
+/-- Auxiliary definition for addition on the Ore localization. -/
 private def add'' (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   (oreDenom (s₁ : R) s₂ • r₁ + oreNum (s₁ : R) s₂ • r₂) /ₒ (oreDenom (s₁ : R) s₂ * s₁)
 
@@ -102,6 +103,7 @@ private theorem add''_char (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) (rb : R) 
 
 attribute [local instance] OreLocalization.oreEqv
 
+/-- Auxiliary definition for addition on the Ore localization, with one argument fixed. -/
 private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
   (--plus tilde
       Quotient.lift
@@ -145,6 +147,7 @@ private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
       simp only [one_smul, one_mul, mul_smul, ← hb, Submonoid.smul_def, ← mul_assoc, and_true]
       simp only [smul_smul, hd])
 
+@[no_expose]
 instance : Add X[S⁻¹] :=
   ⟨add⟩
 
@@ -200,8 +203,9 @@ protected theorem add_zero (x : X[S⁻¹]) : x + 0 = x := by
   induction x
   rw [← zero_oreDiv, add_oreDiv]; simp
 
+/-- Scalar multiplication by natural numbers on the Ore localization. -/
 @[irreducible]
-private def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
+def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
 
 instance : AddMonoid X[S⁻¹] where
     add_assoc := OreLocalization.add_assoc

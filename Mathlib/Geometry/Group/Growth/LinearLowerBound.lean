@@ -15,7 +15,7 @@ public import Mathlib.Data.Nat.SuccPred
 This file proves that the growth of a set generating an infinite group is at least linear.
 -/
 
-@[expose] public section
+public section
 
 open Subgroup
 open scoped Pointwise

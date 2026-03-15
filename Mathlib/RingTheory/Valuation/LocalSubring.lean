@@ -56,13 +56,13 @@ lemma LocalSubring.map_maximalIdeal_eq_top_of_isMax {R : LocalSubring K}
     rw [Ideal.map_map]; rfl
   exact (hR.eq_of_le h_RleSₘ ▸ hS).not_ge (LocalSubring.le_ofPrime ..)
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00IC]
 -- the conclusion could be `IsIntegrallyClosedIn R.toSubring K`, which has slightly worse defeq.
 lemma LocalSubring.mem_of_isMax_of_isIntegral {R : LocalSubring K}
     (hR : IsMax R) {x : K} (hx : IsIntegral R.toSubring x) : x ∈ R.toSubring := by
   let S := Algebra.adjoin R.toSubring {x}
   have : Algebra.IsIntegral R.toSubring S := Algebra.IsIntegral.adjoin (by simpa)
-  have : FaithfulSMul R.toSubring S := NoZeroSMulDivisors.instFaithfulSMulOfNontrivial
   obtain ⟨Q : Ideal S.toSubring, hQ, e⟩ := Ideal.exists_ideal_over_maximal_of_isIntegral
     (S := S) (maximalIdeal R.toSubring) (le_maximalIdeal (by simp))
   have : R = .ofPrime S.toSubring Q := by

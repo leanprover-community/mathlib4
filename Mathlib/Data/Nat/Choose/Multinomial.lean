@@ -183,7 +183,7 @@ variable {α : Type*}
 /-- Alternative definition of multinomial based on `Multiset` delegating to the
   finsupp definition
 -/
-def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
+noncomputable def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 
 theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
@@ -351,8 +351,5 @@ theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
-
-@[deprecated (since := "2025-05-23")]
-alias multinomial_coe_fill_of_not_mem := multinomial_coe_fill_of_notMem
 
 end Sym

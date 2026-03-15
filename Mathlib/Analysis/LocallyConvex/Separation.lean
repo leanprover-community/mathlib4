@@ -210,24 +210,6 @@ end
 namespace RCLike
 
 variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
-
-/-- Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
-noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] : StrongDual ℝ E →ₗ[ℝ] StrongDual 𝕜 E :=
-  letI to𝕜 (fr : StrongDual ℝ E) : StrongDual 𝕜 E :=
-    { toLinearMap := LinearMap.extendTo𝕜' fr
-      cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
-  have h fr x : to𝕜 fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) := rfl
-  { toFun := to𝕜
-    map_add' := by intros; ext; simp [h]; ring
-    map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
-
-@[simp]
-lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : StrongDual ℝ E) (x : E) :
-    re ((extendTo𝕜'ₗ g) x : 𝕜) = g x := by
-  have h g (x : E) : extendTo𝕜'ₗ g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
-  simp only [h, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
-    sub_self, sub_zero]
-
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem separate_convex_open_set {s : Set E}
@@ -235,26 +217,23 @@ theorem separate_convex_open_set {s : Set E}
     ∃ f : StrongDual 𝕜 E, re (f x₀) = 1 ∧ ∀ x ∈ s, re (f x) < 1 := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨g, hg⟩ := _root_.separate_convex_open_set hs₀ hs₁ hs₂ hx₀
-  use extendTo𝕜'ₗ g
-  simp only [re_extendTo𝕜'ₗ]
-  exact hg
+  use g.extendRCLikeₗ
+  simpa [g.extendRCLikeₗ_apply]
 
 theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht : Convex ℝ t)
     (disj : Disjoint s t) : ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧
     ∀ b ∈ t, u ≤ re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open hs₁ hs₂ ht disj
-  use extendTo𝕜'ₗ f
-  simp only [re_extendTo𝕜'ₗ]
-  exact Exists.intro u h
+  use f.extendRCLikeₗ
+  simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
 
 theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
     ∃ f : StrongDual 𝕜 E, ∀ a ∈ s, re (f a) < re (f x) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, h⟩ := _root_.geometric_hahn_banach_open_point hs₁ hs₂ disj
-  use extendTo𝕜'ₗ f
-  simp only [re_extendTo𝕜'ₗ]
-  exact fun a a_1 ↦ h a a_1
+  use f.extendRCLikeₗ
+  simpa [f.extendRCLikeₗ_apply]
 
 theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
     ∃ f : StrongDual 𝕜 E, ∀ b ∈ t, re (f x) < re (f b) :=
@@ -266,9 +245,8 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
     ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧ ∀ b ∈ t, u < re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open_open hs₁ hs₂ ht₁ ht₃ disj
-  use extendTo𝕜'ₗ f
-  simp only [re_extendTo𝕜'ₗ]
-  exact Exists.intro u h
+  use f.extendRCLikeₗ
+  simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
 
 variable [LocallyConvexSpace ℝ E]
 
@@ -277,9 +255,8 @@ theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsC
     ∃ (f : StrongDual 𝕜 E) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨g, u, v, h1⟩ := _root_.geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj
-  use extendTo𝕜'ₗ g
-  simp only [re_extendTo𝕜'ₗ, exists_and_left]
-  exact ⟨u, h1.1, v, h1.2⟩
+  use g.extendRCLikeₗ
+  simpa [g.extendRCLikeₗ_apply, exists_and_left] using ⟨u, h1.1, v, h1.2⟩
 
 theorem geometric_hahn_banach_closed_compact (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
     (ht₁ : Convex ℝ t) (ht₂ : IsCompact t) (disj : Disjoint s t) :
@@ -316,4 +293,27 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
+
+theorem iInter_halfSpaces_eq' (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+    ⋂ (l : StrongDual 𝕜 E) (c : ℝ) (_ : ∀ y ∈ s, re (l y) ≤ c), { x | re (l x) ≤ c } = s := by
+  simp_rw [Set.iInter_setOf]
+  refine Set.Subset.antisymm (fun x hx => ?_) fun x hx l c hc => hc x hx
+  by_contra h
+  obtain ⟨l, c, hls, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
+  exact (hl.trans_le (hx l c (fun y hy ↦ (hls y hy).le))).false
+
+theorem iInter_countable_halfSpaces_eq [HereditarilyLindelofSpace E]
+    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+    ∃ l : ℕ → StrongDual 𝕜 E, ∃ c : ℕ → ℝ, ⋂ n, { x | re (l n x) ≤ c n } = s := by
+  set ι := Σ (l : StrongDual 𝕜 E), { c : ℝ // ∀ y ∈ s, re (l y) ≤ c }
+  set l : ι → StrongDual 𝕜 E := fun lc ↦ lc.1
+  set c : ι → ℝ := fun lc ↦ lc.2.val
+  set hc : ∀ i, ∀ y ∈ s, re (l i y) ≤ c i := fun lc ↦ lc.2.prop
+  have : Nonempty ι := ⟨0, 0, fun _ _ ↦ by simp⟩
+  have : ⋂ i : ι, { x | re (l i x) ≤ c i } = s := by
+    simpa only [ι, iInter_sigma, iInter_subtype, l, c] using iInter_halfSpaces_eq' hs₁ hs₂
+  obtain ⟨k, hk⟩ := eq_closed_inter_nat (fun i : ι ↦ { x | re (l i x) ≤ c i })
+    (fun i ↦ isClosed_le (continuous_re.comp (l i).continuous) continuous_const)
+  exact ⟨l ∘ k, c ∘ k, hk.trans this⟩
+
 end RCLike

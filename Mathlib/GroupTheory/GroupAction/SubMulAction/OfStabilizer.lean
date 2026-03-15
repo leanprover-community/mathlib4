@@ -87,17 +87,14 @@ lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
   congr
   simp
 
-@[deprecated (since := "2025-07-15")]
-alias Enat_card_ofStabilizer_eq_add_one := ENat_card_ofStabilizer_add_one_eq
-
 @[to_additive]
 lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) + 1 = Nat.card α := by
-  dsimp only [Nat.card]
-  rw [← Cardinal.mk_sum_compl {a},
-    Cardinal.toNat_add Cardinal.mk_lt_aleph0 Cardinal.mk_lt_aleph0]
-  simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_comm]
-  congr
+  classical
+  let := Fintype.ofFinite α
+  rw [Nat.subtype_card {a}ᶜ, ← Finset.card_singleton a, Finset.card_compl_add_card,
+    Nat.card_eq_fintype_card]
+  simp [mem_ofStabilizer_iff]
 
 @[deprecated (since := "2025-10-03")]
 alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
@@ -136,6 +133,7 @@ variable (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
 theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
     (conjMap hg x : α) = g • x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
     {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
     {g h k : G} {a b c : α} {hg : b = g +ᵥ a} {hh : c = h +ᵥ b} {hk : c = k +ᵥ a} (H : k = h + g) :
@@ -145,6 +143,7 @@ theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
     ext
     simp [AddAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {hg hh hk} in
 @[to_additive existing]
 theorem _root_.MulAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :

@@ -35,7 +35,7 @@ by a sequence of simple functions.
 
 @[expose] public section
 
-open Set Function Filter TopologicalSpace EMetric MeasureTheory
+open Set Function Filter TopologicalSpace Metric MeasureTheory
 open scoped Topology ENNReal
 
 variable {α β : Type*}
@@ -55,7 +55,7 @@ variable [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
 
 /-- `nearestPtInd e N x` is the index `k` such that `e k` is the nearest point to `x` among the
 points `e 0`, ..., `e N`. If more than one point are at the same distance from `x`, then
-`nearestPtInd e N x` returns the least of their indexes. -/
+`nearestPtInd e N x` returns the least of their indices. -/
 noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
   | 0 => const α 0
   | N + 1 =>
@@ -97,7 +97,7 @@ theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x
 theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
     edist (nearestPt e N x) x ≤ edist (e k) x := by
   induction N generalizing k with
-  | zero => simp [nonpos_iff_eq_zero.1 hk, le_refl]
+  | zero => simp [nonpos_iff_eq_zero.1 hk]
   | succ N ihN =>
     simp only [nearestPt, nearestPtInd_succ, map_apply]
     split_ifs with h

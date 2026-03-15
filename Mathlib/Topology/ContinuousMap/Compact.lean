@@ -171,8 +171,8 @@ open BoundedContinuousFunction
 instance : SeminormedAddCommGroup C(α, E) where
   __ := ContinuousMap.instPseudoMetricSpace _ _
   __ := ContinuousMap.instAddCommGroupContinuousMap
-  dist_eq x y := by
-    rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm, mkOfCompact_sub]
+  dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
+    mkOfCompact_add, mkOfCompact_neg]
   dist := dist
   norm := norm
 
@@ -388,18 +388,6 @@ theorem dist_lt_of_dist_lt_modulus (f : C(α, β)) (ε : ℝ) (h : 0 < ε) {a b 
 end UniformContinuity
 
 end ContinuousMap
-
-section CompLeft
-
-@[deprecated (since := "2025-05-18")]
-alias ContinuousLinearMap.compLeftContinuousCompact :=
-  ContinuousLinearMap.compLeftContinuous
-
-@[deprecated (since := "2025-05-18")]
-alias ContinuousLinearMap.compLeftContinuousCompact_apply :=
-  ContinuousLinearMap.compLeftContinuous_apply
-
-end CompLeft
 
 namespace ContinuousMap
 

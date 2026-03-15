@@ -16,11 +16,13 @@ This file contains results about smoothness of standard maps associated to produ
 - the component projections from a product of manifolds are smooth.
 - functions into a product (*pi type*) are `C^n` iff their components are
 - if `M` and `N` are manifolds modelled over the same space, `Sum.inl` and `Sum.inr` are
-`C^n`, as are `Sum.elim`, `Sum.map` and `Sum.swap`.
+  `C^n`, as are `Sum.elim`, `Sum.map` and `Sum.swap`.
 
 -/
 
-@[expose] public section
+assert_not_exists mfderiv
+
+public section
 
 open Set Function Filter ChartedSpace
 

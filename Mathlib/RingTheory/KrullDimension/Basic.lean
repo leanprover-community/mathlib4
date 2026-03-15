@@ -5,8 +5,7 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
-public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.MvPolynomial.Basic  -- shake: keep (used in `proof_wanted` only)
 public import Mathlib.Order.KrullDimension
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
@@ -169,7 +168,6 @@ lemma Ring.krullDimLE_one_iff_of_noZeroDivisors [NoZeroDivisors R] :
     Ring.KrullDimLE 1 R ↔ ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I.IsMaximal := by
   cases subsingleton_or_nontrivial R
   · exact iff_of_true inferInstance fun I h ↦ (h <| Subsingleton.elim ..).elim
-  have := Ideal.bot_prime (α := R)
   exact Ring.krullDimLE_one_iff_of_isPrime_bot
 
 /-- Alternative constructor for `Ring.KrullDimLE 1`, convenient for domains. -/

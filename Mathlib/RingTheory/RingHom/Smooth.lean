@@ -40,6 +40,11 @@ lemma formallySmooth_algebraMap [Algebra R S] :
     (algebraMap R S).FormallySmooth ↔ Algebra.FormallySmooth R S := by
   rw [FormallySmooth, toAlgebra_algebraMap]
 
+lemma FormallySmooth.of_bijective {f : R →+* S} (hf : Function.Bijective f) :
+    f.FormallySmooth := by
+  algebraize [f]
+  exact Algebra.FormallySmooth.of_equiv (AlgEquiv.ofBijective (Algebra.ofId R S) hf)
+
 lemma FormallySmooth.holdsForLocalizationAway : HoldsForLocalizationAway @FormallySmooth :=
   fun _ _ _ _ _ r _ ↦ formallySmooth_algebraMap.mpr <| .of_isLocalization (.powers r)
 
@@ -82,6 +87,14 @@ namespace Smooth
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
+lemma formallySmooth {f : R →+* S} (hf : f.Smooth) : f.FormallySmooth := by
+  rw [smooth_def] at hf
+  exact hf.1
+
+lemma finitePresentation {f : R →+* S} (hf : f.Smooth) : f.FinitePresentation := by
+  rw [smooth_def] at hf
+  exact hf.2
+
 /-- Composition of smooth ring homomorphisms is smooth. -/
 lemma comp {f : R →+* S} {g : S →+* T} (hf : f.Smooth) (hg : g.Smooth) : (g.comp f).Smooth := by
   algebraize [f, g, g.comp f]
@@ -100,6 +113,10 @@ lemma holdsForLocalizationAway : HoldsForLocalizationAway Smooth := by
   rw [smooth_algebraMap]
   exact ⟨Algebra.FormallySmooth.of_isLocalization (.powers r),
     IsLocalization.Away.finitePresentation r⟩
+
+lemma of_bijective {f : R →+* S} (hf : Function.Bijective f) : f.Smooth := by
+  rw [RingHom.smooth_def]
+  exact ⟨.of_bijective hf, .of_bijective hf⟩
 
 variable (R) in
 /-- The identity of a ring is smooth. -/
@@ -128,5 +145,8 @@ lemma propertyIsLocal : PropertyIsLocal Smooth where
   StableUnderCompositionWithLocalizationAwayTarget :=
     (stableUnderComposition.stableUnderCompositionWithLocalizationAway
       holdsForLocalizationAway).right
+
+lemma respectsIso : RespectsIso Smooth :=
+  propertyIsLocal.respectsIso
 
 end RingHom.Smooth

@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.Adjoin.FGBaseChange
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Flat modules
@@ -205,7 +206,7 @@ variable {ι : Type v} {M : ι → Type w} [Π i, AddCommMonoid (M i)] [Π i, Mo
 
 theorem directSum_iff : Flat R (⨁ i, M i) ↔ ∀ i, Flat R (M i) := by
   classical
-  simp_rw [iff_rTensor_injectiveₛ, ← EquivLike.comp_injective _ (directSumRight R _ _),
+  simp_rw [iff_rTensor_injectiveₛ, ← EquivLike.comp_injective _ (directSumRight R R _ _),
     ← LinearEquiv.coe_coe, ← coe_comp, directSumRight_comp_rTensor, coe_comp, LinearEquiv.coe_coe,
     EquivLike.injective_comp, lmap_injective]
   constructor <;> (intro h; intros; apply h)
@@ -294,6 +295,7 @@ lemma iff_lTensor_preserves_injective_linearMap : Flat R M ↔
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.lTensor M) :=
   iff_lTensor_preserves_injective_linearMap'
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- If `M` is flat then `M ⊗ -` is an exact functor. -/
 lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
@@ -311,6 +313,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
       simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.lTensor_exact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- If `M` is flat then `- ⊗ M` is an exact functor. -/
 lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
@@ -470,7 +473,7 @@ The flatness condition could be removed over domains.
 See `LinearIndepOn.tmul_of_isDomain`. -/
 nonrec lemma LinearIndepOn.tmul_of_flat_left [Module.Flat R M] (hv : LinearIndepOn R v s)
     (hw : LinearIndepOn R w t) : LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
-  ((hv.tmul_of_flat_left hw).comp _ (Equiv.Set.prod _ _).injective:)
+  ((hv.tmul_of_flat_left hw).comp _ (Equiv.Set.prod _ _).injective :)
 
 /-- Tensor product of linearly independent families is linearly
 independent under some flatness conditions.
@@ -490,7 +493,7 @@ The flatness condition could be removed over domains.
 See `LinearIndepOn.tmul_of_isDomain`. -/
 nonrec lemma LinearIndepOn.tmul_of_flat_right [Module.Flat R N] (hv : LinearIndepOn R v s)
     (hw : LinearIndepOn R w t) : LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
-  ((hv.tmul_of_flat_right hw).comp _ (Equiv.Set.prod _ _).injective:)
+  ((hv.tmul_of_flat_right hw).comp _ (Equiv.Set.prod _ _).injective :)
 
 variable (p : Submodule R M) (q : Submodule R N)
 
@@ -588,6 +591,7 @@ theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
 
 end IsSMulRegular
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `R` be a commutative semiring, let `C` be a commutative `R`-algebra, and let `A` be an
   `R`-algebra. If `C ⊗[R] B` is reduced for all finitely generated subalgebras `B` of `A`, then
   `C ⊗[R] A` is also reduced. -/

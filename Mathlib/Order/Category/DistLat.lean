@@ -44,6 +44,7 @@ attribute [coe] DistLat.carrier
 /-- Construct a bundled `DistLat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [DistribLattice X] : DistLat := ⟨X⟩
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `DistLat R`. -/
 @[ext]
 structure Hom (X Y : DistLat.{u}) where
@@ -51,11 +52,15 @@ structure Hom (X Y : DistLat.{u}) where
   /-- The underlying `LatticeHom`. -/
   hom' : LatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category DistLat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨LatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory DistLat (LatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -88,7 +93,7 @@ lemma coe_comp {X Y Z : DistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : DistLat} (f : X ⟶ Y) :
-    (forget DistLat).map f = f := rfl
+    (forget DistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : DistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -148,6 +153,7 @@ instance hasForgetToLat : HasForget₂ DistLat Lat where
   forget₂.obj X := .of X
   forget₂.map f := Lat.ofHom f.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between distributive lattices from an order isomorphism between them.
 -/
 @[simps]

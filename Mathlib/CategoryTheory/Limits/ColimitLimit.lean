@@ -51,6 +51,7 @@ theorem map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
 variable [HasLimitsOfShape J C]
 variable [HasColimitsOfShape K C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The universal morphism
 $\colim_k \lim_j F(j,k) → \lim_j \colim_k F(j, k)$.
 -/
@@ -82,6 +83,7 @@ noncomputable def colimitLimitToLimitColimit :
               curry_obj_obj_obj, curry_obj_map_app]
             rw [map_id_right_eq_curry_swap_map, limit.w_assoc] } }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Since `colimit_limit_to_limit_colimit` is a morphism from a colimit to a limit,
 this lemma characterises it.
 -/
@@ -98,11 +100,9 @@ theorem ι_colimitLimitToLimitColimit_π_apply [Small.{v} J] [Small.{v} K] (F : 
         (colimitLimitToLimitColimit F (colimit.ι (curry.obj (Prod.swap K J ⋙ F) ⋙ lim) k f)) =
       colimit.ι ((curry.obj F).obj j) k (limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j f) := by
   dsimp [colimitLimitToLimitColimit]
-  rw [Types.Limit.lift_π_apply]
-  dsimp only
-  rw [Types.Colimit.ι_desc_apply]
-  dsimp
+  simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `colimit_limit_to_limit_colimit` realized as a map of cones. -/
 @[simps]
 noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G] :

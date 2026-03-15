@@ -60,6 +60,7 @@ lemma mapWhiskerRight_whiskerLeft (F : A ⥤ B) {G H : B ⥤ C} (η : G ⟶ H) :
       (mapCompLeft D F H).inv := by
   apply natTrans_ext <;> ext <;> simp [mapCompLeft]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 @[reassoc]
 lemma mapWhiskerLeft_whiskerRight {F G : B ⥤ C} (η : F ⟶ G) (H : C ⥤ D) :
@@ -68,6 +69,7 @@ lemma mapWhiskerLeft_whiskerRight {F G : B ⥤ C} (η : F ⟶ G) (H : C ⥤ D) :
       (mapCompRight A G H).inv := by
   apply natTrans_ext <;> ext <;> simp [mapCompRight]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (D) in
 @[reassoc]
 lemma mapWhiskerRight_whiskerRight {F G : A ⥤ B} (η : F ⟶ G) (H : B ⥤ C) :
@@ -130,33 +132,29 @@ end
 def pseudofunctorRight (C : Type u₁) [Category.{v₁} C] :
     Pseudofunctor Cat.{v₂, u₂} Cat.{max v₁ v₂, max u₁ u₂} where
   obj D := Cat.of (C ⋆ D)
-  map F := mapPair (𝟭 C) F
-  map₂ := mapWhiskerLeft _
-  map₂_id {x y} f := by apply mapWhiskerLeft_id
-  map₂_comp η θ := by apply mapWhiskerLeft_comp
-  mapId D := mapPairId
-  mapComp := mapCompRight C
-  map₂_whisker_left := mapWhiskerLeft_whiskerLeft C
-  map₂_whisker_right := mapWhiskerLeft_whiskerRight C
-  map₂_associator := mapWhiskerLeft_associator_hom C
-  map₂_left_unitor := mapWhiskerLeft_leftUnitor_hom C
-  map₂_right_unitor := mapWhiskerLeft_rightUnitor_hom C
+  map F := (mapPair (𝟭 C) F.toFunctor).toCatHom
+  map₂ f := (mapWhiskerLeft (𝟭 C) f.toNatTrans).toCatHom₂
+  mapId D := Cat.Hom.isoMk mapPairId
+  mapComp F G:= Cat.Hom.isoMk <| mapCompRight C F.toFunctor G.toFunctor
+  map₂_whisker_left := by intros; exact congr($(mapWhiskerLeft_whiskerLeft C _ _).toCatHom₂)
+  map₂_whisker_right := by intros; exact congr($(mapWhiskerLeft_whiskerRight C _ _).toCatHom₂)
+  map₂_associator := by intros; exact congr($(mapWhiskerLeft_associator_hom C _ _ _).toCatHom₂)
+  map₂_left_unitor := by intros; exact congr($(mapWhiskerLeft_leftUnitor_hom C _).toCatHom₂)
+  map₂_right_unitor := by intros; exact congr($(mapWhiskerLeft_rightUnitor_hom C _).toCatHom₂)
 
 /-- The pseudofunctor sending `C` to `C ⋆ D`. -/
 @[simps!]
 def pseudofunctorLeft (D : Type u₂) [Category.{v₂} D] :
     Pseudofunctor Cat.{v₁, u₁} Cat.{max v₁ v₂, max u₁ u₂} where
   obj C := Cat.of (C ⋆ D)
-  map F := mapPair F (𝟭 D)
-  map₂ := (mapWhiskerRight · _)
-  map₂_id {x y} f := by apply mapWhiskerRight_id
-  map₂_comp η θ := by apply mapWhiskerRight_comp
-  mapId D := mapPairId
-  mapComp := mapCompLeft D
-  map₂_whisker_left := mapWhiskerRight_whiskerLeft D
-  map₂_whisker_right := mapWhiskerRight_whiskerRight D
-  map₂_associator := mapWhiskerRight_associator_hom D
-  map₂_left_unitor := mapWhiskerRight_leftUnitor_hom D
-  map₂_right_unitor := mapWhiskerRight_rightUnitor_hom D
+  map F := (mapPair F.toFunctor (𝟭 D)).toCatHom
+  map₂ := (mapWhiskerRight ·.toNatTrans _ |>.toCatHom₂)
+  mapId D := Cat.Hom.isoMk <| mapPairId
+  mapComp _ _ := Cat.Hom.isoMk <| mapCompLeft D _ _
+  map₂_whisker_left := by intros; exact congr($(mapWhiskerRight_whiskerLeft D _ _).toCatHom₂)
+  map₂_whisker_right := by intros; exact congr($(mapWhiskerRight_whiskerRight D _ _).toCatHom₂)
+  map₂_associator := by intros; exact congr($(mapWhiskerRight_associator_hom D _ _ _).toCatHom₂)
+  map₂_left_unitor := by intros; exact congr($(mapWhiskerRight_leftUnitor_hom D _).toCatHom₂)
+  map₂_right_unitor := by intros; exact congr($(mapWhiskerRight_rightUnitor_hom D _).toCatHom₂)
 
 end CategoryTheory.Join

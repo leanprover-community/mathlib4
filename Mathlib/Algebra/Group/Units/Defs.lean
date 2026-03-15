@@ -18,7 +18,8 @@ An element of a `Monoid` is a unit if it has a two-sided inverse.
 * `IsUnit x`: a predicate asserting that `x` is a unit (i.e., invertible element) of a monoid.
 
 For both declarations, there is an additive counterpart: `AddUnits` and `IsAddUnit`.
-See also `Prime`, `Associated`, and `Irreducible` in `Mathlib/Algebra/Associated.lean`.
+See also `Prime`, `Associated`, and `Irreducible` in
+`Mathlib/Algebra/GroupWithZero/Associated.lean`.
 
 ## Notation
 
@@ -120,8 +121,6 @@ theorem ext {u v : αˣ} (huv : u.val = v.val) : u = v := val_injective huv
 @[to_additive (attr := norm_cast)]
 theorem val_inj {a b : αˣ} : (a : α) = b ↔ a = b :=
   val_injective.eq_iff
-
-@[to_additive (attr := deprecated val_inj (since := "2025-06-21"))] alias eq_iff := val_inj
 
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive /-- Additive units have decidable equality
@@ -635,10 +634,12 @@ section NoncomputableDefs
 variable {M : Type*}
 
 /-- Constructs an inv operation for a `Monoid` consisting only of units. -/
+@[implicit_reducible]
 noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
   inv := fun a => ↑(h a).unit⁻¹
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
+@[implicit_reducible]
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     toInv := invOfIsUnit h,
@@ -647,6 +648,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
 /-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
+@[implicit_reducible]
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     toInv := invOfIsUnit h,

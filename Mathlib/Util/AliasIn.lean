@@ -6,6 +6,8 @@ Authors: Floris van Doorn
 module
 
 public meta import Mathlib.Lean.Expr.Basic
+public import Batteries.Tactic.Alias
+public import Lean.Exception
 
 /-! ## The `@[alias_in]` attribute -/
 
@@ -55,5 +57,5 @@ initialize registerBuiltinAttribute {
         components.take (components.length - 1 - num) ++ newNamespace ++ [components.getLast!]
       liftCommandElabM <| elabCommand <| ← `(command| alias $(mkIdent tgtName) := $(mkIdent src))
       -- add mouse-over text
-      addConstInfo nm tgtName
+      Term.addTermInfo' nm (← mkConstWithLevelParams tgtName) (isBinder := true) |>.run' |>.run'
     | _, _, _ => throwUnsupportedSyntax }

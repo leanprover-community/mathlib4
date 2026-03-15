@@ -29,7 +29,7 @@ example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : 
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set MeasureTheory
@@ -254,18 +254,6 @@ lemma IndepFun.integral_fun_mul_eq_mul_integral
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     ∫ ω, X ω * Y ω ∂μ = μ[X] * μ[Y] :=
   hXY.integral_mul_eq_mul_integral hX hY
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul_of_nonneg :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul_of_integrable :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul' :=
-  IndepFun.integral_fun_mul_eq_mul_integral
 
 /-- Independence of functions `f` and `g` into arbitrary types is characterized by the relation
   `E[(φ ∘ f) * (ψ ∘ g)] = E[φ ∘ f] * E[ψ ∘ g]` for all measurable `φ` and `ψ` with values in `ℝ`

@@ -177,7 +177,7 @@ instance Hom.neg {M N : SemiNormedGrp} : Neg (M ⟶ N) where
   neg f := ofHom (- f.hom)
 
 @[simp]
-theorem hom_neg {V W : SemiNormedGrp} (f : V ⟶ W) : (-f).hom = - f.hom :=
+theorem hom_neg {V W : SemiNormedGrp} (f : V ⟶ W) : (-f).hom = -f.hom :=
   rfl
 
 instance Hom.sub {M N : SemiNormedGrp} : Sub (M ⟶ N) where

@@ -20,7 +20,7 @@ satisfies the strong rank condition, we put them into a separate file.
 
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -29,6 +29,7 @@ namespace Subalgebra
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
   (A B : Subalgebra R S)
 
+set_option backward.isDefEq.respectTransparency false in
 section
 variable [Module.Free R A] [Module.Free A (Algebra.adjoin A (B : Set S))]
 
@@ -54,6 +55,7 @@ theorem finrank_left_dvd_finrank_sup_of_free :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 section
 variable [Module.Free R B] [Module.Free B (Algebra.adjoin B (A : Set S))]
 

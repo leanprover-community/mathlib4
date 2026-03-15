@@ -26,6 +26,7 @@ namespace Complex
 
 instance : FiniteDimensional ℝ ℂ := basisOneI.finiteDimensional_of_finite
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ` is a finite extension of `ℝ` of degree 2, i.e `[ℂ : ℝ] = 2` -/
 @[simp, stacks 09G4]
 theorem finrank_real_complex : finrank ℝ ℂ = 2 := by
@@ -50,7 +51,7 @@ instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommG
 
 theorem rank_real_of_complex (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module.rank ℝ E = 2 * Module.rank ℂ E :=
-  Cardinal.lift_inj.{_,0}.1 <| by
+  Cardinal.lift_inj.{_, 0}.1 <| by
     rw [← lift_rank_mul_lift_rank ℝ ℂ E, Complex.rank_real_complex']
     simp only [Cardinal.lift_id']
 

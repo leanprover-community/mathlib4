@@ -32,6 +32,7 @@ class abbrev CommGrpObj := GrpObj X, IsCommMonObj X
 
 variable (X) in
 /-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
+@[implicit_reducible]
 def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrpCat.{w})
     (α : (F ⋙ forget _).RepresentableBy X) : CommGrpObj X where
   __ := GrpObj.ofRepresentableBy X (F ⋙ forget₂ CommGrpCat GrpCat) α
@@ -47,20 +48,21 @@ def yonedaCommGrpGrpObj (G : CommGrp C) : (Grp C)ᵒᵖ ⥤ CommGrpCat where
   map {H I} f := CommGrpCat.ofHom {
     toFun := (f.unop ≫ ·)
     map_one' := by ext; simp [Mon.Hom.hom_one]
-    map_mul' g h := by ext; simpa using ((yonedaGrpObj G.X).map f.unop.1.op).hom.map_mul g.hom h.hom
-  }
+    map_mul' g h := by
+      ext
+      simpa using ((yonedaGrpObj G.X).map f.unop.hom.hom.op).hom.map_mul g.hom.hom h.hom.hom }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `CommGrp C` into presheaves of groups. -/
 @[simps]
 def yonedaCommGrpGrp : CommGrp C ⥤ (Grp C)ᵒᵖ ⥤ CommGrpCat where
   obj := yonedaCommGrpGrpObj
   map {X₁ X₂} ψ := {
     app Y := CommGrpCat.ofHom {
-      toFun := (· ≫ ψ)
+      toFun := (· ≫ ψ.hom)
       map_one' := by ext; simp
       map_mul' f g := by
-        ext; simpa using ((yonedaGrp.map ψ).app (op (unop Y).X)).hom.map_mul f.hom g.hom
-    }
-  }
+        ext
+        simpa using ((yonedaGrp.map ψ.hom).app (op (unop Y).X)).hom.map_mul f.hom.hom g.hom.hom } }
 
 end CategoryTheory

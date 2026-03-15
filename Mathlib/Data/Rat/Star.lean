@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Data.NNRat.Order
-public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Star ordered ring structures on `ℚ` and `ℚ≥0`
@@ -41,6 +40,7 @@ namespace NNRat
 @[simp] lemma addSubmonoid_closure_range_mul_self : closure (range fun x : ℚ≥0 ↦ x * x) = ⊤ := by
   simpa only [sq] using addSubmonoid_closure_range_pow two_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 instance instStarOrderedRing : StarOrderedRing ℚ≥0 where
   le_iff a b := by simp [eq_comm, le_iff_exists_nonneg_add (a := a)]
 

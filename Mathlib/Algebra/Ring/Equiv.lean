@@ -11,6 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Util.Delaborators
 
 /-!
 # (Semi)ring equivs

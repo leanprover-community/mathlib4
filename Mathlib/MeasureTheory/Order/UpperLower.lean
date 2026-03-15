@@ -47,7 +47,7 @@ any subset of the antidiagonal `{(x, y) | x + y = 0}`) is order-connected.
 Generalize so that it also applies to `ℝ × ℝ`, for example.
 -/
 
-@[expose] public section
+public section
 
 open Filter MeasureTheory Metric Set
 open scoped Topology
@@ -57,8 +57,8 @@ variable {ι : Type*} [Fintype ι] {s : Set (ι → ℝ)} {x : ι → ℝ}
 /-- If we can fit a small ball inside a set `s` intersected with any neighborhood of `x`, then the
 density of `s` near `x` is not `0`.
 
-Along with `aux₁`, this proves that `x` is a Lebesgue point of `s`. This will be used to prove that
-the frontier of an order-connected set is null. -/
+Along with `aux₁`, this proves that `x` is not a Lebesgue point of `s`. This will be used to prove
+that the frontier of an order-connected set is null. -/
 private lemma aux₀
     (h : ∀ δ, 0 < δ →
       ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s) :
@@ -86,8 +86,8 @@ private lemma aux₀
 /-- If we can fit a small ball inside a set `sᶜ` intersected with any neighborhood of `x`, then the
 density of `s` near `x` is not `1`.
 
-Along with `aux₀`, this proves that `x` is a Lebesgue point of `s`. This will be used to prove that
-the frontier of an order-connected set is null. -/
+Along with `aux₀`, this proves that `x` is not a Lebesgue point of `s`. This will be used to prove
+that the frontier of an order-connected set is null. -/
 private lemma aux₁
     (h : ∀ δ, 0 < δ →
       ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior sᶜ) :

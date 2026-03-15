@@ -73,7 +73,7 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     Splits f ↔ (⊤ : Subalgebra K L) = ⊥ where
   mp h := by
-    rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, h.map_roots, Algebra.adjoin_le_iff]
+    rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, h.roots_map, Algebra.adjoin_le_iff]
     intro y hy
     classical
     rw [Multiset.toFinset_map, Finset.mem_coe, Finset.mem_image] at hy
@@ -91,6 +91,7 @@ theorem IsScalarTower.splits (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
   rw [mapAlg_comp K L f, mapAlg_eq_map]
   apply IsSplittingField.splits
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
     [IsSplittingField K L (g.map <| algebraMap F K)] : IsSplittingField F L (f * g) := by
   constructor
@@ -99,7 +100,7 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
   · classical
     rw [rootSet, aroots_mul (mul_ne_zero hf hg),
       Multiset.toFinset_add, Finset.coe_union, Algebra.adjoin_union_eq_adjoin_adjoin,
-      aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map, (splits K f).map_roots,
+      aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map, (splits K f).roots_map,
       Multiset.toFinset_map, Finset.coe_image, Algebra.adjoin_algebraMap, ← rootSet, adjoin_rootSet,
       Algebra.map_top, IsScalarTower.adjoin_range_toAlgHom, ← map_map, ← rootSet, adjoin_rootSet,
       Subalgebra.restrictScalars_top]
@@ -156,6 +157,7 @@ open Polynomial
 
 variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]} {F : IntermediateField K L}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IntermediateField.splits_of_splits (h : (p.map (algebraMap K L)).Splits)
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : (p.map (algebraMap K F)).Splits := by
   classical
@@ -170,6 +172,7 @@ theorem IntermediateField.splits_iff_mem (h : (p.map (algebraMap K L)).Splits) :
   rw [← hF.image_rootSet F.val, Set.forall_mem_image]
   exact fun x _ ↦ x.2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
     {F : IntermediateField K L} (h : Splits ((minpoly K x).map (algebraMap K F))) : x ∈ F := by
   rw [← F.fieldRange_val]; exact int.mem_range_algebraMap_of_minpoly_splits h

@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.Ab
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
+public import Mathlib.Algebra.Category.Grp.Abelian
 
 /-!
 # Cohomology of the hom complex
@@ -58,12 +58,7 @@ lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
     α ∈ coboundaries K L n ↔ ∃ (β : Cochain K L m), δ m n β = α := by
   simp only [coboundaries, exists_prop, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
     AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
-  constructor
-  · rintro ⟨m', hm', β, hβ⟩
-    obtain rfl : m = m' := by lia
-    exact ⟨β, hβ⟩
-  · rintro ⟨β, hβ⟩
-    exact ⟨m, hm, β, hβ⟩
+  grind
 
 /-- The type of cohomology classes of degree `n` in the complex of morphisms
 from `K` to `L`. -/
@@ -98,7 +93,7 @@ lemma mk_sub (x y : Cocycle K L n) :
 
 @[simp]
 lemma mk_neg (x : Cocycle K L n) :
-    mk (-x) = - mk x := rfl
+    mk (-x) = -mk x := rfl
 
 lemma mk_eq_zero_iff (x : Cocycle K L n) :
     mk x = 0 ↔ x ∈ coboundaries K L n :=
@@ -128,6 +123,7 @@ lemma descAddMonoidHom_cohomologyClass (x : Cocycle K L n) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The additive map which sends a cohomology class to the corresponding morphism
 in the homotopy category. -/
 def toHom :
@@ -144,6 +140,7 @@ def toHom :
 lemma toHom_mk (x : Cocycle K L n) :
     toHom (mk x) = (HomotopyCategory.quotient C _).map (Cocycle.equivHomShift.symm x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
     toHom (mk x) = 0 ↔ x ∈ coboundaries K L n := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -177,6 +174,7 @@ noncomputable def homAddEquiv :
 
 end CohomologyClass
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/
 @[simps]

@@ -66,7 +66,8 @@ variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
 variable [Algebra R P]
 variable (S)
 
-/-- A submodule `I` is a fractional ideal if `a I ⊆ R` for some `a ≠ 0`. -/
+/-- A submodule `I` is a fractional ideal with respect to a submonoid `S`
+if `a I ⊆ R` for some `a ∈ S`. -/
 def IsFractional (I : Submodule R P) :=
   ∃ a ∈ S, ∀ b ∈ I, IsInteger R (a • b)
 
@@ -76,7 +77,7 @@ variable (P)
 
 More precisely, let `P` be a localization of `R` at some submonoid `S`,
 then a fractional ideal `I ⊆ P` is an `R`-submodule of `P`,
-such that there is a nonzero `a : R` with `a I ⊆ R`.
+such that there is an `a ∈ S` with `a I ⊆ R`.
 -/
 def FractionalIdeal :=
   { I : Submodule R P // IsFractional S I }
@@ -129,27 +130,40 @@ theorem den_mul_self_eq_num (I : FractionalIdeal S P) :
   exact I.2.choose_spec.2 a ha
 
 /-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
-defined by mapping `x` to `den I • x`. -/
-noncomputable def equivNum [Nontrivial P] [NoZeroSMulDivisors R P]
-    {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num := by
+defined by mapping `x` to `I.den • x`, assuming scalar multiplication by `I.den` is injective. -/
+noncomputable abbrev equivNumOfIsSMulRegular [FaithfulSMul R P] {I : FractionalIdeal S P}
+    (reg : IsSMulRegular P I.den) : I ≃ₗ[R] I.num := by
   refine LinearEquiv.trans
-    (LinearEquiv.ofBijective ((DistribMulAction.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
+    (LinearEquiv.ofBijective ((DistribSMul.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
       ⟨fun _ _ hxy ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩)
     (Submodule.equivMapOfInjective (Algebra.linearMap R P)
       (FaithfulSMul.algebraMap_injective R P) (num I)).symm
   · rw [← den_mul_self_eq_num]
     exact Submodule.smul_mem_pointwise_smul _ _ _ hx
-  · simp_rw [LinearMap.restrict_apply, DistribMulAction.toLinearMap_apply, Subtype.mk.injEq] at hxy
-    rwa [Submonoid.smul_def, Submonoid.smul_def, smul_right_inj h_nz, SetCoe.ext_iff] at hxy
+  · simpa [LinearMap.restrict_apply, reg.eq_iff] using hxy
   · rw [← den_mul_self_eq_num] at hy
     obtain ⟨x, hx, hxy⟩ := hy
     exact ⟨⟨x, hx⟩, by simp_rw [LinearMap.restrict_apply, Subtype.ext_iff, ← hxy]; rfl⟩
+
+/-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
+defined by mapping `x` to `I.den • x`. -/
+noncomputable def equivNum [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
+    {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num :=
+  equivNumOfIsSMulRegular (smul_right_injective P h_nz)
+
+/-- The linear equivalence between the fractional ideal `I` in a faithful localization
+and the integral ideal `I.num`. -/
+noncomputable def equivNumOfIsLocalization [FaithfulSMul R P] [IsLocalization S P]
+    (I : FractionalIdeal S P) : I ≃ₗ[R] I.num :=
+  equivNumOfIsSMulRegular (smul_bijective ..).1
 
 section SetLike
 
 instance : SetLike (FractionalIdeal S P) P where
   coe I := ↑(I : Submodule R P)
   coe_injective' := SetLike.coe_injective.comp Subtype.coe_injective
+
+instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P) P
 
 @[simp]
 theorem mem_coe {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
@@ -169,13 +183,13 @@ theorem ext {I J : FractionalIdeal S P} : (∀ x, x ∈ I ↔ x ∈ J) → I = J
   SetLike.ext
 
 @[simp]
- theorem equivNum_apply [Nontrivial P] [NoZeroSMulDivisors R P] {I : FractionalIdeal S P}
-    (h_nz : (I.den : R) ≠ 0) (x : I) :
+ theorem equivNum_apply [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
+    {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) (x : I) :
     algebraMap R P (equivNum h_nz x) = I.den • x := by
   change Algebra.linearMap R P _ = _
   rw [equivNum, LinearEquiv.trans_apply, LinearEquiv.ofBijective_apply, LinearMap.restrict_apply,
     Submodule.map_equivMapOfInjective_symm_apply, Subtype.coe_mk,
-    DistribMulAction.toLinearMap_apply]
+    DistribSMul.toLinearMap_apply]
 
 /-- Copy of a `FractionalIdeal` with a new underlying set equal to the old one.
 Useful to fix definitional equalities. -/
@@ -281,12 +295,10 @@ theorem coeIdeal_le_coeIdeal' [IsLocalization S P] (h : S ≤ nonZeroDivisors R)
     (I : FractionalIdeal S P) ≤ J ↔ I ≤ J :=
   coeSubmodule_le_coeSubmodule h
 
-@[simp]
+@[simp, gcongr]
 theorem coeIdeal_le_coeIdeal (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
     {I J : Ideal R} : (I : FractionalIdeal R⁰ K) ≤ J ↔ I ≤ J :=
   IsFractionRing.coeSubmodule_le_coeSubmodule
-
-@[gcongr] protected alias ⟨_, GCongr.coeIdeal_le_coeIdeal⟩ := coeIdeal_le_coeIdeal
 
 instance : Zero (FractionalIdeal S P) :=
   ⟨(0 : Ideal R)⟩
@@ -348,8 +360,8 @@ instance : Inhabited (FractionalIdeal S P) :=
 instance : One (FractionalIdeal S P) :=
   ⟨(⊤ : Ideal R)⟩
 
-theorem zero_of_num_eq_bot [NoZeroSMulDivisors R P] (hS : 0 ∉ S) {I : FractionalIdeal S P}
-    (hI : I.num = ⊥) : I = 0 := by
+theorem zero_of_num_eq_bot [IsDomain R] [Module.IsTorsionFree R P] (hS : 0 ∉ S)
+    {I : FractionalIdeal S P} (hI : I.num = ⊥) : I = 0 := by
   rw [← coeToSubmodule_eq_bot, eq_bot_iff]
   intro x hx
   suffices (den I : R) • x = 0 from
@@ -357,6 +369,7 @@ theorem zero_of_num_eq_bot [NoZeroSMulDivisors R P] (hS : 0 ∉ S) {I : Fraction
   have h_eq : I.den • (I : Submodule R P) = ⊥ := by rw [den_mul_self_eq_num, hI, Submodule.map_bot]
   exact (Submodule.eq_bot_iff _).mp h_eq (den I • x) ⟨x, hx, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem num_zero_eq (h_inj : Function.Injective (algebraMap R P)) :
     num (0 : FractionalIdeal S P) = 0 := by
   simpa [num, LinearMap.ker_eq_bot] using h_inj
@@ -367,11 +380,11 @@ variable (S)
 theorem coeIdeal_top : ((⊤ : Ideal R) : FractionalIdeal S P) = 1 :=
   rfl
 
+@[simp]
 theorem mem_one_iff {x : P} : x ∈ (1 : FractionalIdeal S P) ↔ ∃ x' : R, algebraMap R P x' = x :=
   Iff.intro (fun ⟨x', _, h⟩ => ⟨x', h⟩) fun ⟨x', h⟩ => ⟨x', ⟨⟩, h⟩
 
-theorem coe_mem_one (x : R) : algebraMap R P x ∈ (1 : FractionalIdeal S P) :=
-  (mem_one_iff S).mpr ⟨x, rfl⟩
+theorem coe_mem_one (x : R) : algebraMap R P x ∈ (1 : FractionalIdeal S P) := by simp
 
 theorem one_mem_one : (1 : P) ∈ (1 : FractionalIdeal S P) :=
   (mem_one_iff S).mpr ⟨1, map_one _⟩
@@ -458,10 +471,7 @@ theorem coe_sup (I J : FractionalIdeal S P) : ↑(I ⊔ J) = (I ⊔ J : Submodul
   rfl
 
 instance lattice : Lattice (FractionalIdeal S P) :=
-  Function.Injective.lattice _ Subtype.coe_injective coe_sup coe_inf
-
-instance : SemilatticeSup (FractionalIdeal S P) :=
-  { FractionalIdeal.lattice with }
+  Function.Injective.lattice _ Subtype.coe_injective .rfl .rfl coe_sup coe_inf
 
 end Lattice
 
@@ -701,15 +711,15 @@ end Order
 
 section FG
 
-variable {R : Type*} [CommRing R] [Nontrivial R] {S : Submonoid R}
-variable {P : Type*} [Nontrivial P] [CommRing P] [Algebra R P] [NoZeroSMulDivisors R P]
+variable {R : Type*} [CommRing R] [IsDomain R] {S : Submonoid R}
+variable {P : Type*} [Nontrivial P] [CommRing P] [Algebra R P] [Module.IsTorsionFree R P]
 
 /-- The fractional ideals of a Noetherian ring are finitely generated. -/
 lemma fg_of_isNoetherianRing [hR : IsNoetherianRing R] (hS : S ≤ R⁰) (I : FractionalIdeal S P) :
     FG I.coeToSubmodule := by
   have := hR.noetherian I.num
-  rw [← fg_top] at this ⊢
-  exact fg_of_linearEquiv (I.equivNum <| coe_ne_zero ⟨(I.den : R), hS (SetLike.coe_mem I.den)⟩) this
+  rw [← Module.Finite.iff_fg] at this ⊢
+  exact .equiv (I.equivNum <| coe_ne_zero ⟨(I.den : R), hS (SetLike.coe_mem I.den)⟩).symm
 
 end FG
 

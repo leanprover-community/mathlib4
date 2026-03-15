@@ -107,8 +107,7 @@ theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by
   simp
 
-@[instance]
-def Unique.fintype {α : Type*} [Unique α] : Fintype α :=
+instance Unique.fintype {α : Type*} [Unique α] : Fintype α :=
   Fintype.ofSubsingleton default
 
 /-- Short-circuit instance to decrease search for `Unique.fintype`,
@@ -144,10 +143,12 @@ theorem Fintype.univ_bool : @univ Bool _ = {true, false} :=
   rfl
 
 /-- Given that `α × β` is a fintype, `α` is also a fintype. -/
+@[implicit_reducible]
 def Fintype.prodLeft {α β} [DecidableEq α] [Fintype (α × β)] [Nonempty β] : Fintype α :=
   ⟨(@univ (α × β) _).image Prod.fst, fun a => by simp⟩
 
 /-- Given that `α × β` is a fintype, `β` is also a fintype. -/
+@[implicit_reducible]
 def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α] : Fintype β :=
   ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
 
@@ -284,7 +285,7 @@ some relation `r` with respect to all the points in `s`. Then one may construct 
 function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m ≠ n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
 theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : α → α → Prop)
-    [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
+    [Std.Symm r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine ⟨f, hf, fun m n hmn => ?_⟩

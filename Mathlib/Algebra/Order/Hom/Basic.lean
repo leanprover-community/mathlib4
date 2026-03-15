@@ -51,7 +51,7 @@ Finitary versions of the current lemmas.
 
 assert_not_exists Field
 
-library_note2 «out-param inheritance» /--
+library_note «out-param inheritance» /--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
 * there are three classes `Top`, `Middle`, `Bottom`
 * all of these classes have a parameter `(α : outParam _)`
@@ -216,6 +216,11 @@ theorem map_div_le_add : f (x / y) ≤ f x + f y := by
 
 @[to_additive]
 theorem map_div_rev : f (x / y) = f (y / x) := by rw [← inv_div, map_inv_eq_map]
+
+@[to_additive]
+theorem map_inv_mul {α : Type*} [FunLike F α β] [CommGroup α] [GroupSeminormClass F α β] (x y : α) :
+    f (x⁻¹ * y) = f (x * y⁻¹) := by
+  rw [← map_inv_eq_map, inv_mul', inv_inv, div_eq_mul_inv]
 
 @[to_additive]
 theorem le_map_add_map_div' : f x ≤ f y + f (y / x) := by
