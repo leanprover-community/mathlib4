@@ -13,7 +13,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
 def IsStrictMap : Prop :=
   IsQuotientMap (Set.rangeFactorization f)
 
-/-- This lemma may be put into Mathlib.Topology.Maps.Basic -/
+
 lemma IsQuotientMap.isOpenMap_of_injective {f : X → Y} (hq : IsQuotientMap f)
 (hinj : Function.Injective f) : IsOpenMap f := by
     intro s hs
