@@ -723,8 +723,8 @@ private theorem embeddingConjugateIte_neg (h : ¬ComplexEmbedding.LiesOver w.emb
 
 variable (L v)
 
-private theorem mapsTo_embeddingConjugateIte : Set.MapsTo (embeddingConjugateIte v)
-    (unramifiedPlacesOver L v) (unmixedEmbeddingsOver L v.embedding) := by
+private theorem mapsTo_embeddingConjugateIte : (unramifiedPlacesOver L v).MapsTo
+    (embeddingConjugateIte v) (unmixedEmbeddingsOver L v.embedding) := by
   rintro w ⟨_, hw⟩
   by_cases h : ComplexEmbedding.LiesOver w.embedding v.embedding
   · simpa [embeddingConjugateIte_pos h] using ⟨h, hw.isUnmixed⟩
@@ -744,8 +744,9 @@ private theorem surjOn_embeddingConjugateIte : (unramifiedPlacesOver L v).SurjOn
 open scoped Classical in
 private theorem bijOn_extensionIte : (unramifiedPlacesOver L v).BijOn (embeddingConjugateIte v)
     (unmixedEmbeddingsOver L v.embedding) :=
-  ⟨mapsTo_embeddingConjugateIte L v, star_involutive.injective_ite (embedding_injective _)
-    (fun _ _ ↦ eq_of_embedding_eq_conjugate L) |>.injOn, surjOn_embeddingConjugateIte L v⟩
+  ⟨mapsTo_embeddingConjugateIte L v, ((embedding_injective _).ite (star_injective.comp
+    (embedding_injective _)) (fun _ _ ↦ eq_of_embedding_eq_conjugate L)).injOn,
+      surjOn_embeddingConjugateIte L v⟩
 
 /-- The number of unramified places over an infinite place is equal to the number of unmixed
 embeddings over the place. -/
@@ -759,7 +760,7 @@ number of ramified places over `v`. -/
 theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L] :
     (unramifiedPlacesOver L v).ncard + 2 * (ramifiedPlacesOver L v).ncard = Module.finrank K L := by
   classical
-  letI : Algebra K ℂ := v.embedding.toAlgebra
+  let : Algebra K ℂ := v.embedding.toAlgebra
   rw [← AlgHom.card K L ℂ, ramifiedPlacesOver_ncard, unramifiedPlacesOver_ncard,
     ← Set.ncard_union_eq (disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver L v.embedding),
     union_unmixedEmbeddingsOver_mixedEmbeddingsOver, Set.ncard_eq_toFinset_card]
