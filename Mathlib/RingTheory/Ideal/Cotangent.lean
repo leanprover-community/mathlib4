@@ -115,6 +115,10 @@ lemma isTorsionBySet_cotangent :
 def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
   Submodule.map (Quotient.mk (I ^ 2) |>.toSemilinearMap) I
 
+theorem cotangentIdeal_eq_Submodule (I : Ideal R) :
+    ↥I.cotangentIdeal = Submodule.map (I ^ 2).mkQ I :=
+  rfl
+
 theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   rw [eq_bot_iff, pow_two I.cotangentIdeal, ← smul_eq_mul]
   intro x hx
@@ -259,15 +263,6 @@ lemma Cotangent.lift_surjective_iff (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (
     exact QuotientAddGroup.lift_surjective_of_surjective _ _ h _
 
 end Lift
-
-/--
-The linear equivalence of the two definitions of `I / I ^ 2`,
-either as a quotient of `I` by its submodule `I • ⊤`,
-or the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`.
--/
-noncomputable def cotangentEquivSubmodule (I : Ideal R) :
-    I.Cotangent ≃ₗ[R] Submodule.map (I ^ 2).mkQ I :=
-  I.cotangentEquivIdeal
 
 end Ideal
 
