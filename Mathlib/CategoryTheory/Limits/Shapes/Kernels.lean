@@ -495,9 +495,12 @@ variable [HasZeroObject C]
 open ZeroObject
 
 /-- The morphism from the zero object determines a cone on a kernel diagram -/
-def kernel.zeroKernelFork : KernelFork f where
-  pt := 0
-  π := { app := fun _ => 0 }
+@[simps! pt]
+def kernel.zeroKernelFork : KernelFork f :=
+  KernelFork.ofι (0 : 0 ⟶ X) zero_comp
+
+@[simp]
+lemma kernel.zeroKernelFork_ι : (kernel.zeroKernelFork f).ι = 0 := rfl
 
 /-- The map from the zero object is a kernel of a monomorphism -/
 def kernel.isLimitConeZeroCone [Mono f] : IsLimit (kernel.zeroKernelFork f) :=
@@ -1025,9 +1028,12 @@ variable [HasZeroObject C]
 open ZeroObject
 
 /-- The morphism to the zero object determines a cocone on a cokernel diagram -/
-def cokernel.zeroCokernelCofork : CokernelCofork f where
-  pt := 0
-  ι := { app := fun _ => 0 }
+@[simps! pt]
+def cokernel.zeroCokernelCofork : CokernelCofork f :=
+    CokernelCofork.ofπ (0 : Y ⟶ 0) comp_zero
+
+@[simp]
+lemma cokernel.zeroCokernelCofork_π : (cokernel.zeroCokernelCofork f).π = 0 := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism to the zero object is a cokernel of an epimorphism -/

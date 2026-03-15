@@ -139,7 +139,7 @@ def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
 @[deprecated
   "Use `Expr.lt` and `Expr.equal` or `Expr.eqv` directly. \
   If you need to order expressions, consider ordering them by order seen, with AtomM."
-  (since := "2025-08-31")]
+  (since := "2025-08-31"), implicit_reducible]
 def Expr.Ord : Ord Expr :=
 ⟨fun a b => if Expr.lt a b then .lt else if a.equal b then .eq else .gt⟩
 

@@ -70,6 +70,7 @@ theorem const_eventuallyEq [NeBot l] {a b : β} : ((fun _ => a) =ᶠ[l] fun _ =>
   @const_eventuallyEq' _ _ _ _ a b
 
 /-- Setoid used to define the space of germs. -/
+@[implicit_reducible]
 def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where
   r := EventuallyEq l
   iseqv := ⟨EventuallyEq.refl _, EventuallyEq.symm, EventuallyEq.trans⟩
@@ -80,6 +81,7 @@ def Germ (l : Filter α) (β : Type*) : Type _ :=
 
 /-- Setoid used to define the filter product. This is a dependent version of
   `Filter.germSetoid`. -/
+@[implicit_reducible]
 def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a) where
   r f g := ∀ᶠ a in l, f a = g a
   iseqv :=

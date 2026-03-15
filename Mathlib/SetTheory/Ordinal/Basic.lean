@@ -452,6 +452,11 @@ theorem typein_surjOn (r : α → α → Prop) [IsWellOrder α r] :
     Set.SurjOn (typein r) Set.univ (Set.Iio (type r)) :=
   (typein r).surjOn
 
+@[simp]
+theorem type_Iio_lt [LinearOrder α] [WellFoundedLT α] (x : α) :
+    type (α := Iio x) LT.lt = typein LT.lt x :=
+  rfl
+
 /-- A well order `r` is order-isomorphic to the set of ordinals smaller than `type r`.
 `enum r ⟨o, h⟩` is the `o`-th element of `α` ordered by `r`.
 
@@ -546,6 +551,7 @@ instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo
 instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
 
 /-- `o.ToType` is an `OrderBot` whenever `o ≠ 0`. -/
+@[implicit_reducible]
 def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
@@ -603,6 +609,13 @@ theorem card_zero : card 0 = 0 := mk_eq_zero _
 
 @[simp]
 theorem card_one : card 1 = 1 := mk_eq_one _
+
+variable (r) in
+/-- The cardinality of a set is an upper-bound for the cardinality of the order type of the set's
+mex (minimum excluded value) -/
+theorem card_typein_min_le_mk [IsWellOrder α r] {s : Set α} (hs : sᶜ.Nonempty) :
+    (typein r <| IsWellFounded.wf.min (r := r) sᶜ hs).card ≤ #s :=
+  IsWellFounded.wf.cardinalMk_subtype_lt_min_compl_le hs
 
 /-! ### Lifting ordinals to a higher universe -/
 
@@ -1319,6 +1332,7 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
 
 /-- If a cardinal `c` is nonzero, then `c.ord.ToType` has a least element. -/
+@[implicit_reducible]
 noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
     OrderBot c.ord.ToType :=
   Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))
@@ -1403,6 +1417,11 @@ theorem card_eq_zero {o} : card o = 0 ↔ o = 0 := by
 @[simp]
 theorem card_eq_one {o} : card o = 1 ↔ o = 1 := by
   simpa using card_eq_nat (n := 1)
+
+theorem _root_.Cardinal.le_ord_iff_card_le_of_lt_aleph0 (o : Ordinal) {c : Cardinal} (hc : c < ℵ₀) :
+    o ≤ c.ord ↔ o.card ≤ c := by
+  rcases lt_aleph0.mp hc with ⟨n, rfl⟩
+  simp
 
 theorem mem_range_lift_of_card_le {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card b ≤ Cardinal.lift.{v, u} a) : b ∈ Set.range lift.{v, u} := by

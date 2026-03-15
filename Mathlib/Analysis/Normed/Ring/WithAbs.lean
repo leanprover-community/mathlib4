@@ -177,7 +177,6 @@ variable [Ring R]
 set_option backward.isDefEq.respectTransparency false in
 instance (v : AbsoluteValue R S) : Ring (WithAbs v) := fast_instance% (equiv v).ring
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
   letI := v.toNormedRing
   (equiv v).normedRing
