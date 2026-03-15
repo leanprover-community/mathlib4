@@ -146,30 +146,30 @@ section Integral
 variable (a : d → ℝ) {ι : Type*} (b : ι → ℝ)
 
 /-- The measurable equivalence between `UnitAddTorus` and a product of `Ioc` intervals. -/
-def measurableEquivPiIoc : UnitAddTorus ι ≃ᵐ {x : ι → ℝ | ∀ i, x i ∈ Ioc (b i) (b i + 1)} :=
+def measurableEquivPiIoc : UnitAddTorus ι ≃ᵐ {x : ι → ℝ // ∀ i, x i ∈ Ioc (b i) (b i + 1)} :=
   (MeasurableEquiv.piCongrRight fun i => AddCircle.measurableEquivIoc 1 (b i)).trans <|
   MeasurableEquiv.subtypePiEquivPi.symm
 
 @[simp]
 theorem coe_measurableEquivPiIoc :
-    ⇑(measurableEquivPiIoc b) = fun (x : UnitAddTorus ι) =>
+    (measurableEquivPiIoc b) = fun (x : UnitAddTorus ι) =>
     (⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
     fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ :
-    {x : ι → ℝ | ∀ i, x i ∈ Ioc (b i) (b i + 1)}) := rfl
+    {x : ι → ℝ // ∀ i, x i ∈ Ioc (b i) (b i + 1)}) := rfl
 
 @[simp]
 theorem coe_measurableEquivPiIoc_apply (x : UnitAddTorus ι) :
-    ⇑(measurableEquivPiIoc b) x = ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
+    (measurableEquivPiIoc b) x = ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
     fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ := rfl
 
 @[simp]
 theorem coe_symm_measurableEquivPiIoc :
-    ⇑(measurableEquivPiIoc b).symm = fun (x : {x : ι → ℝ | ∀ i, x i ∈ Ioc (b i) (b i + 1)})
+    (measurableEquivPiIoc b).symm = fun (x : {x : ι → ℝ // ∀ i, x i ∈ Ioc (b i) (b i + 1)})
     (i : ι) => (x.1 i : UnitAddCircle) := rfl
 
 @[simp]
 theorem coe_symm_measurableEquivPiIoc_apply {x : ι → ℝ} (hx : ∀ i, x i ∈ Ioc (b i) (b i + 1)) :
-    ⇑(measurableEquivPiIoc b).symm ⟨x, hx⟩ = (fun i => (x i : UnitAddCircle)) := rfl
+    (measurableEquivPiIoc b).symm ⟨x, hx⟩ = (fun i => (x i : UnitAddCircle)) := rfl
 
 private lemma measurableSet_PiIoc [Countable ι] :
     MeasurableSet {x : ι → ℝ | ∀ i, x i ∈ Ioc (b i) (b i + 1)} :=
@@ -184,9 +184,9 @@ lemma measurePreserving_equivPiIoc :
   have := Measure.map_map (μ := volume.comap Subtype.val) (measurable_pi_lambda
     (fun (x : d → ℝ) => (fun i => x i : UnitAddTorus d))
     (fun i => AddCircle.measurable_mk'.comp (measurable_pi_apply i)))
-    measurable_subtype_coe (α := {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)})
-  simp only [coe_setOf, mem_setOf_eq, Function.comp_def] at this
-  simp_rw [coe_symm_measurableEquivPiIoc, coe_setOf, mem_setOf_eq, ← this]
+    measurable_subtype_coe (α := {x : d → ℝ // ∀ i, x i ∈ Ioc (a i) (a i + 1)})
+  simp only [Function.comp_def] at this
+  simp_rw [coe_symm_measurableEquivPiIoc, ← this]
   convert (measurePreserving_pi _ _ (fun i => AddCircle.measurePreserving_mk 1 (a i))).map_eq.symm
   · simp [volume, AddCircle.haarAddCircle]
   · convert (map_comap_subtype_coe (measurableSet_PiIoc a) volume)
@@ -198,8 +198,8 @@ theorem lintegral_preimage (f : UnitAddTorus d → ℝ≥0∞) (a : d → ℝ) :
     ∫⁻ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
   convert lintegral_map_equiv (μ := volume.comap Subtype.val) f (measurableEquivPiIoc a).symm
   · exact (measurePreserving_equivPiIoc a).symm.map_eq.symm
-  · simp [-coe_setOf, -mem_setOf_eq, ← coe_eq_subtype,
-      lintegral_subtype_comap (measurableSet_PiIoc a) (f := fun x => f (fun i => x i))]
+  · rw [← lintegral_subtype_comap (measurableSet_PiIoc a) (f := fun x => f (fun i => x i))]
+    aesop
 
 theorem integral_preimage {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : UnitAddTorus d → E) (a : d → ℝ) :
@@ -207,8 +207,8 @@ theorem integral_preimage {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     ∫ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
   convert integral_map_equiv (μ := volume.comap Subtype.val) (measurableEquivPiIoc a).symm f
   · exact (measurePreserving_equivPiIoc a).symm.map_eq.symm
-  · simp [-coe_setOf, -mem_setOf_eq, ← coe_eq_subtype,
-      integral_subtype_comap (measurableSet_PiIoc a) (f := fun x => f (fun i => x i))]
+  · rw [← integral_subtype_comap (measurableSet_PiIoc a) (f := fun x => f (fun i => x i))]
+    aesop
 
 end Integral
 
@@ -352,3 +352,5 @@ theorem hasSum_mFourier_series_apply_of_summable (h : Summable (mFourierCoeff f)
 end Convergence
 
 end UnitAddTorus
+
+#lint
