@@ -111,7 +111,9 @@ where
     else
       let candidates := candidates.insertionSort fun e₁ e₂ => e₁.priority > e₂.priority
       for thm in candidates do
-        if thm.inv != (← isInv) then continue
+        if thm.inv != (← isInv) then
+          trace[Debug.Meta.Tactic.simp] "{thm.proof} is the wrong way around"
+          continue
         if inErasedSet thm then continue
         if let some result ← tryTheorem? e thm then
           trace[Debug.Meta.Tactic.simp] "rewrite result {e} => {result.expr}"
@@ -154,14 +156,14 @@ where
 
 def rewritePre : GSimproc := fun e => do
   let thms := (← getContext).gsimpTheorems
-  if let some pre := thms.pre.find? (← getContext).relName then
+  if let some pre := thms.pre.find? (← getRelName) then
     if let some r ← grewrite? e pre thms.erased (tag := "pre") then
       return .visit r
   return .continue
 
 def rewritePost : GSimproc := fun e => do
   let thms := (← getContext).gsimpTheorems
-  if let some post := thms.post.find? (← getContext).relName then
+  if let some post := thms.post.find? (← getRelName) then
     if let some r ← grewrite? e post thms.erased (tag := "post") then
       return .visit r
   return .continue

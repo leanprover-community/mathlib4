@@ -140,9 +140,20 @@ def getGCongrTheorems : GSimpM GCongr.GCongrLemmas :=
 def getConfig : GSimpM Config :=
   return (← getContext).config
 
+def getRelName : GSimpM Name :=
+  return (← getContext).relName
+
+def getRel : GSimpM Expr :=
+  return (← getContext).rel
+
+@[inline]
+def withRel {α} (rel : Expr) (relName : Name) (x : GSimpM α) : GSimpM α :=
+  withTheReader Context (fun ctx ↦ { ctx with rel, relName }) x
+
 def isInv : GSimpM Bool :=
   return (← getContext).inv
 
+@[inline]
 def withContra {α} (isContra : Bool) (x : GSimpM α) : GSimpM α :=
   if isContra then
     withTheReader Context (fun ctx ↦ { ctx with inv := !ctx.inv }) x
@@ -187,14 +198,14 @@ def Result.getProof (rel : Expr) (idx : CacheIndex) (r : Result) : GSimpM Expr :
   | none => return .app (← getRfl rel idx) r.expr
 
 /-- `trans` is assumed to have type `∀ a b c, a ~ b → b ~ c → a ~ c`. -/
-def Result.mkTrans (e rel : Expr) (idx : CacheIndex) (r₁ r₂ : Result) :
+def Result.mkTrans (e : Expr) (idx : CacheIndex) (r₁ r₂ : Result) :
     GSimpM Result := do
   match r₁.proof? with
   | none => return r₂
   | some p₁ => match r₂.proof? with
     | none => return { r₂ with proof? := p₁ }
     | some p₂ =>
-      let trans ← getTrans rel idx
+      let trans ← getTrans (← getRel) idx
       if ← isInv then
         return { r₂ with proof? := mkApp5 trans r₂.expr r₁.expr e p₂ p₁ }
       else

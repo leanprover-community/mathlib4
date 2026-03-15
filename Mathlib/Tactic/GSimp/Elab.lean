@@ -113,13 +113,9 @@ where
 
 
 private def resolveGSimpIdTheorem? (simpArgTerm : Term) : TermElabM (Option Expr) := do
-  match simpArgTerm with
-  | `($id:ident) =>
-    if let some e ← Term.resolveId? simpArgTerm (withInfo := true) then
-      return e
-    else
-      throwUnknownIdentifierAt id id.getId
-  | _ =>
+  if simpArgTerm.raw.isIdent then
+    Term.resolveId? simpArgTerm (withInfo := true)
+  else
     return none
 
 private def elabGSimpTheorem (id : Origin) (stx : Syntax)
@@ -202,7 +198,7 @@ def mkGSimpContext (stx : Syntax) (gsimpTheorems : CoreM GSimpTheorems := pure {
     gcongrTheorems
     idx := 0 -- The index for the implication relation is 0
     rel := default
-    relName := `_Forall }
+    relName := `_Implies }
 
 open Parser.Tactic in
 /--
@@ -214,7 +210,7 @@ syntax (name := gsimpStx) "gsimp" optConfig (discharger)? (&" only")?
   "gsimp" optConfig (discharger)? (" only")? (" [" (simpLemma,*,?) "]")?
   (location)?
 -/
-@[tactic Lean.Parser.Tactic.simp] def evalGSimp : Tactic := fun stx => withMainContext do
+@[tactic gsimpStx] def evalGSimp : Tactic := fun stx => withMainContext do
   let dischargeWrapper ← mkDischargeWrapper stx[2]
   let ctx ← mkGSimpContext stx
   let stats ← dischargeWrapper.with fun discharge? =>

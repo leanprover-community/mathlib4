@@ -68,13 +68,7 @@ structure GSimpTheorems where
   pre : GSimpTheoremTree := {}
   post : GSimpTheoremTree := {}
   lemmaNames : PHashSet Origin := {}
-  /--
-  Constants (and let-declaration `FVarId`) to unfold.
-  When `zetaDelta := false`, the simplifier will expand a let-declaration if it is in this set.
-  -/
-  toUnfold : PHashSet Name := {}
   erased : PHashSet Origin := {}
-  toUnfoldThms : PHashMap Name (Array Name) := {}
   deriving Inhabited
 
 def ppGSimpTheorem {m} [Monad m] [MonadEnv m] [MonadError m] (s : GSimpTheorem) :
@@ -137,25 +131,9 @@ def mkGSimpTheoremFromExpr (id : Origin) (levelParams : Array Name) (proof : Exp
       withReducible do
         mkGSimpTheoremCore id proof levelParams inv proof post prio (noIndexAtArgs := true)
 
-
-
-
-
-partial def GSimpTheorems.eraseCore (d : GSimpTheorems) (thmId : Origin) : GSimpTheorems :=
-  let d := { d with erased := d.erased.insert thmId, lemmaNames := d.lemmaNames.erase thmId }
-  if let .decl declName .. := thmId then
-    let d := { d with toUnfold := d.toUnfold.erase declName }
-    if let some thms := d.toUnfoldThms.find? declName then
-      let dummy := true
-      thms.foldl (init := d) (eraseCore · <| .decl · dummy (inv := false))
-    else
-      d
-  else
-    d
-
 private def eraseIfExists (d : GSimpTheorems) (thmId : Origin) : GSimpTheorems :=
   if d.lemmaNames.contains thmId then
-    d.eraseCore thmId
+    { d with erased := d.erased.insert thmId, lemmaNames := d.lemmaNames.erase thmId }
   else
     d
 
@@ -178,11 +156,11 @@ def GSimpTheorems.addGSimpTheorem (d : GSimpTheorems) (e : GSimpTheorem) :
   let d := eraseFwdIfBwd d e
   if e.post then
     { d with
-      post := d.post.modify e.relation (·.insertKeyValue e.keys e)
+      post := d.post.alter e.relation (·.getD {} |>.insertKeyValue e.keys e)
       lemmaNames := updateLemmaNames d.lemmaNames }
   else
     { d with
-      pre := d.pre.modify e.relation (·.insertKeyValue e.keys e)
+      pre := d.pre.alter e.relation (·.getD {} |>.insertKeyValue e.keys e)
       lemmaNames := updateLemmaNames d.lemmaNames }
 where
   updateLemmaNames (s : PHashSet Origin) : PHashSet Origin :=
