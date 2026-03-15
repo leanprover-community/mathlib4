@@ -383,7 +383,7 @@ theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 :=
 theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
   cof_eq_zero.not
 
-@[simp]
+-- TODO: deprecate in favor of `cof_add_one`
 theorem cof_succ (o) : cof (succ o) = 1 := by
   apply le_antisymm
   · refine inductionOn o fun α r _ => ?_
@@ -394,8 +394,14 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
       rcases a with (a | ⟨⟨⟨⟩⟩⟩) <;> simp
     · simp
   · rw [← Cardinal.succ_zero, succ_le_iff]
-    simpa [lt_iff_le_and_ne, Cardinal.zero_le] using fun h =>
-      succ_ne_zero o (cof_eq_zero.1 (Eq.symm h))
+    simpa [lt_iff_le_and_ne] using fun h ↦ add_one_ne_zero o (cof_eq_zero.1 h.symm)
+
+theorem cof_add_one (o) : cof (o + 1) = 1 :=
+  cof_succ o
+
+@[simp]
+theorem cof_one : cof 1 = 1 := by
+  simpa using cof_add_one 0
 
 -- TODO: find a good way to fix the non-terminal simp
 -- it is called on four goals, only one of which requires the `exact`
@@ -426,7 +432,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
           change (a : α) = ↑(⟨a', aS⟩ : S)
           have := le_one_iff_subsingleton.1 (le_of_eq e)
           congr!,
-    fun ⟨a, e⟩ => by simp [e]⟩
+    fun ⟨a, e⟩ => by simp [e, cof_add_one]⟩
 
 /-! ### Fundamental sequences -/
 
@@ -584,7 +590,7 @@ alias IsNormal.cof_le := cof_le_of_isNormal
 theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
   rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
   · contradiction
-  · rw [add_succ, cof_succ, cof_succ]
+  · rw [succ_eq_add_one, ← add_assoc, cof_add_one, cof_add_one]
   · exact cof_eq_of_isNormal (isNormal_add_right a) hb
 
 theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by

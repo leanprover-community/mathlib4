@@ -54,7 +54,6 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) {N : �
   simpa only [eisSummand, one_div, ← zpow_neg, norm_zpow, ← Real.rpow_intCast,
     Int.cast_neg] using summand_bound_of_mem_verticalStrip (by positivity) p hB hz
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `eisensteinSeries_tendstoLocallyUniformly` formulated with maps `ℂ → ℂ`, which is
 nice to have for holomorphicity later. -/
 lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤ k)

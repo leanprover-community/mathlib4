@@ -471,7 +471,6 @@ theorem equivPair_head {i : ι} {w : Word M} :
     · subst hi; simp
     · simp [hi, Ne.symm hi]
 
-set_option backward.whnf.reducibleClassField false in
 instance summandAction (i) : MulAction (M i) (Word M) where
   smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
   one_smul w := by
@@ -931,7 +930,7 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 
 -- NB: One might expect this theorem to be phrased with ℤ, but ℤ is an additive group,
 -- and using `Multiplicative ℤ` runs into diamond issues.
-/-- A free group is a free product of copies of the free_group over one generator. -/
+/-- A free group is a free product of copies of the `FreeGroup` over one generator. -/
 @[simps!]
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
     FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by

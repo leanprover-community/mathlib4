@@ -151,7 +151,6 @@ section CompleteSpace
 
 variable [CompleteSpace H]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped InnerProductSpace in
 /-- This is a stronger version of the Hahn-Banach separation theorem for closed convex cones. This
 is also the geometric interpretation of Farkas' lemma. -/

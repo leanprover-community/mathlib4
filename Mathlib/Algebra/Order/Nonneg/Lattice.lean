@@ -54,7 +54,6 @@ protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCo
   { @ordConnectedSubsetConditionallyCompleteLinearOrderOfBotTop α (Set.Ici a) _
       _ ⟨⊥⟩ (.inl isBot_bot) (.inr inferInstance) _ with }
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
 
