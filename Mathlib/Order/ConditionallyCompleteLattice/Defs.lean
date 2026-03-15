@@ -133,14 +133,13 @@ constructor provides poor definitional equalities.  If other fields are known ex
 should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
-@[implicit_reducible]
-instance : ConditionallyCompleteLattice my_T :=
-  { inf := better_inf,
-    le_inf := ...,
-    inf_le_right := ...,
-    inf_le_left := ...
-    -- don't care to fix sup, sInf
-    ..conditionallyCompleteLatticeOfsSup my_T _ }
+instance : ConditionallyCompleteLattice my_T where
+  inf := better_inf
+  le_inf := ...
+  inf_le_right := ...
+  inf_le_left := ...
+  -- don't care to fix sup, sInf
+  __ := conditionallyCompleteLatticeOfsSup my_T ...
 ```
 -/
 @[implicit_reducible]
@@ -180,20 +179,19 @@ def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 :
     le_csInf := fun s a hs ha =>
       (isLUB_sSup (lowerBounds s) hs.bddAbove_lowerBounds ⟨a, ha⟩).1 ha }
 
-/-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `inf` function
+/-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sInf` function
 that returns the greatest lower bound of a nonempty set which is bounded below. Usually this
 constructor provides poor definitional equalities.  If other fields are known explicitly, they
 should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
-@[implicit_reducible]
 instance : ConditionallyCompleteLattice my_T :=
-  { inf := better_inf,
-    le_inf := ...,
-    inf_le_right := ...,
-    inf_le_left := ...
-    -- don't care to fix sup, sSup
-    ..conditionallyCompleteLatticeOfsInf my_T _ }
+  inf := better_inf
+  le_inf := ...
+  inf_le_right := ...
+  inf_le_left := ...
+  -- don't care to fix sup, sSup
+  __ := conditionallyCompleteLatticeOfsInf my_T ...
 ```
 -/
 @[implicit_reducible]
@@ -235,7 +233,8 @@ def conditionallyCompleteLatticeOfsInf (α : Type*) [H1 : PartialOrder α] [H2 :
 
 /-- A version of `conditionallyCompleteLatticeOfsSup` when we already know that `α` is a lattice.
 
-This should only be used when it is both hard and unnecessary to provide `inf` explicitly. -/
+This should only be used when it is both hard and unnecessary to provide `sup` & `inf`
+explicitly. -/
 @[implicit_reducible]
 def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [SupSet α]
     (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s)) :
@@ -248,7 +247,8 @@ def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [
 
 /-- A version of `conditionallyCompleteLatticeOfsInf` when we already know that `α` is a lattice.
 
-This should only be used when it is both hard and unnecessary to provide `sup` explicitly. -/
+This should only be used when it is both hard and unnecessary to provide `sup` & `inf`
+explicitly. -/
 @[implicit_reducible]
 def conditionallyCompleteLatticeOfLatticeOfsInf (α : Type*) [H1 : Lattice α] [InfSet α]
     (isGLB_sInf : ∀ s : Set α, BddBelow s → s.Nonempty → IsGLB s (sInf s)) :
