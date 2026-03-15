@@ -18,7 +18,7 @@ algebra on itself (see `Unitization.instNormedRing`).
 However, this construction is only valid (and an isometry) when `A` is a `RegularNormedAlgebra`.
 Sometimes it is useful to consider the unitization of a non-unital algebra with the $L^1$ norm
 instead. This file provides that norm on the type synonym `WithLp 1 (Unitization 𝕜 A)`, along
-with the algebra isomomorphism between `Unitization 𝕜 A` and `WithLp 1 (Unitization 𝕜 A)`.
+with the algebra isomorphism between `Unitization 𝕜 A` and `WithLp 1 (Unitization 𝕜 A)`.
 Note that `TrivSqZeroExt` is also equipped with the $L^1$ norm in the analogous way, but it is
 registered as an instance without the type synonym.
 
@@ -101,6 +101,7 @@ instance {R : Type*} [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A] [I
 lemma unitization_algebraMap (r : 𝕜) :
     ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) = algebraMap 𝕜 (Unitization 𝕜 A) r := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `equiv` bundled as an algebra isomorphism with `Unitization 𝕜 A`. -/
 @[simps!]
 def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A]
@@ -111,7 +112,7 @@ def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMu
   commutes' _ := rfl
 
 noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitization 𝕜 A)) where
-  dist_eq := dist_eq_norm
+  dist_eq := dist_eq_norm_neg_add
   norm_mul_le x y := by
     simp_rw [unitization_norm_def, add_mul, mul_add, unitization_mul, fst_mul, snd_mul]
     rw [add_assoc, add_assoc]

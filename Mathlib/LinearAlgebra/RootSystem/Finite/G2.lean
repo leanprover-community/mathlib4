@@ -78,6 +78,7 @@ section IsG2
 
 /-- By making an arbitrary choice of roots pairing to `-3`, we can obtain an embedded `𝔤₂` root
 system just from the knowledge that such a pairs exists. -/
+@[implicit_reducible]
 def IsG2.toEmbeddedG2 [P.IsG2] : P.EmbeddedG2 where
   long := (IsG2.exists_pairingIn_neg_three (P := P)).choose
   short := (IsG2.exists_pairingIn_neg_three (P := P)).choose_spec.choose
@@ -145,7 +146,6 @@ lemma chainBotCoeff_add_chainTopCoeff_le_two [P.IsNotG2] :
   have := IsNotG2.pairingIn_mem_zero_one_two (P := P) (P.chainTopIdx i j) i
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
 roots is a root, they cannot make an acute angle.
 
@@ -199,7 +199,8 @@ end IsNotG2
 namespace EmbeddedG2
 
 /-- A pair of roots which pair to `+3` are also sufficient to distinguish an embedded `𝔤₂`. -/
-@[simps] def ofPairingInThree [CharZero R] [P.IsCrystallographic] [P.IsReduced] (long short : ι)
+@[simps, implicit_reducible]
+def ofPairingInThree [CharZero R] [P.IsCrystallographic] [P.IsReduced] (long short : ι)
     (h : P.pairingIn ℤ long short = 3) : P.EmbeddedG2 where
   long := P.reflectionPerm long long
   short := short
@@ -371,7 +372,6 @@ variable (i : ι)
     P.pairingIn ℤ (shortAddLong P) i = P.pairingIn ℤ (short P) i + P.pairingIn ℤ (long P) i := by
   rw [pairingIn_eq_add_of_root_eq_add (shortAddLongRoot_eq P)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pairingIn_shortAddLong_right :
     P.pairingIn ℤ i (shortAddLong P) =
       P.pairingIn ℤ i (short P) + 3 * P.pairingIn ℤ i (long P) := by
@@ -392,7 +392,6 @@ set_option backward.isDefEq.respectTransparency false in
   · rw [B.two_mul_apply_root_root, B.two_mul_apply_root_root]
   · rw [long_eq_three_mul_short, shortAddLongRoot_shortRoot]; ring
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pairingIn_twoShortAddLong_left :
     P.pairingIn ℤ (twoShortAddLong P) i =
       2 * P.pairingIn ℤ (short P) i + P.pairingIn ℤ (long P) i := by
@@ -401,7 +400,6 @@ set_option backward.isDefEq.respectTransparency false in
   · simp only [twoShortAddLongRoot_eq, one_smul, add_left_inj]
     norm_cast
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pairingIn_twoShortAddLong_right :
     P.pairingIn ℤ i (twoShortAddLong P) =
       2 * P.pairingIn ℤ i (short P) + 3 * P.pairingIn ℤ i (long P) := by
@@ -423,7 +421,6 @@ set_option backward.isDefEq.respectTransparency false in
   · rw [B.two_mul_apply_root_root, B.two_mul_apply_root_root, mul_assoc]
   · rw [long_eq_three_mul_short, twoShortAddLongRoot_shortRoot]; ring
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Finite ι] [IsDomain R] in
 @[simp] lemma pairingIn_threeShortAddLong_left :
     P.pairingIn ℤ (threeShortAddLong P) i =
@@ -463,7 +460,6 @@ omit [Finite ι] [IsDomain R] in
   · simp only [threeShortAddTwoLongRoot_eq]
     norm_cast
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pairingIn_threeShortAddTwoLong_right :
     P.pairingIn ℤ i (threeShortAddTwoLong P) =
       P.pairingIn ℤ i (short P) + 2 * P.pairingIn ℤ i (long P) := by

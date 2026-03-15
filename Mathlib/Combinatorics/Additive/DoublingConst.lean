@@ -107,7 +107,6 @@ lemma mulConst_inv_right (A B : Finset G) : σₘ[A, B⁻¹] = δₘ[A, B] := by
 lemma divConst_inv_right (A B : Finset G) : δₘ[A, B⁻¹] = σₘ[A, B] := by
   rw [mulConst, divConst, div_inv_eq_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma one_le_mulConst (hA : A.Nonempty) (hB : B.Nonempty) : 1 ≤ σₘ[A, B] := by
   rw [mulConst, one_le_div₀]
@@ -142,11 +141,13 @@ lemma divConst_le_card : δₘ[A, B] ≤ #B := by
 section Fintype
 variable [Fintype G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Dense sets have small doubling. -/
 @[to_additive addConst_le_inv_dens /-- Dense sets have small doubling. -/]
 lemma mulConst_le_inv_dens : σₘ[A, B] ≤ A.dens⁻¹ := by
   rw [dens, inv_div, mulConst]; gcongr; exact card_le_univ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Dense sets have small difference constant. -/
 @[to_additive subConst_le_inv_dens /-- Dense sets have small difference constant. -/]
 lemma divConst_le_inv_dens : δₘ[A, B] ≤ A.dens⁻¹ := by

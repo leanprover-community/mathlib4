@@ -192,7 +192,9 @@ theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
 instance : NormedCommRing ℤ_[p] where
   __ := instCommRing
-  dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ ↦ rfl
+  dist_eq := by
+    rintro ⟨x, hx⟩ ⟨y, hy⟩
+    exact dist_eq_norm_neg_add x y
   norm_mul_le := by simp [norm_def]
 
 instance : NormOneClass ℤ_[p] :=
@@ -417,7 +419,6 @@ theorem unitCoeff_spec {x : ℤ_[p]} (hx : x ≠ 0) :
   · simp
   · exact NeZero.ne _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_den {p : ℕ} [hp_prime : Fact p.Prime] (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     IsUnit (r.den : ℤ_[p]) := by
   rw [isUnit_iff]
@@ -562,7 +563,6 @@ instance algebra : Algebra ℤ_[p] ℚ_[p] :=
 theorem algebraMap_apply (x : ℤ_[p]) : algebraMap ℤ_[p] ℚ_[p] x = x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
   map_units := fun ⟨x, hx⟩ => by
     rwa [algebraMap_apply, isUnit_iff_ne_zero, PadicInt.coe_ne_zero, ←

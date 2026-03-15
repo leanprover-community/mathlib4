@@ -123,6 +123,15 @@ theorem measurable_comp_iff (hg : MeasurableEmbedding g) : Measurable (g ∘ f) 
     rwa [(rightInverse_rangeSplitting hg.injective).comp_eq_id] at this
   exact hg.measurable_rangeSplitting.comp H.subtype_mk
 
+lemma natCast {α : Type*} [MeasurableSpace α]
+    [MeasurableSingletonClass α] [AddMonoidWithOne α] [CharZero α] :
+    MeasurableEmbedding (Nat.cast : ℕ → α) where
+  injective := Nat.cast_injective
+  measurable := measurable_from_nat
+  measurableSet_image' := fun _ _ =>
+    ((Set.countable_range (Nat.cast : ℕ → α)).mono
+      (Set.image_subset_range _ _)).measurableSet
+
 end MeasurableEmbedding
 
 section gluing

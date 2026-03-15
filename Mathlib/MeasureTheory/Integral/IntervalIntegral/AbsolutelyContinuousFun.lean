@@ -34,7 +34,6 @@ open Filter Fin.NatCast Function MeasureTheory Set
 
 open scoped Topology
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has derivative `f'` a.e. on `[d, b]` and `η` is positive, then there is a collection of
 pairwise disjoint closed subintervals of `[a, b]` of total length `b - a` where the slope of `f`
 on each subinterval `[x, y]` differs from `f' x` by at most `η`. -/
@@ -97,7 +96,6 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
   apply_fun fun x ↦ x.toReal at vol_sum
   rw [ENNReal.tsum_toReal_eq (by simp), ENNReal.toReal_ofReal (by linarith),
       ← Summable.hasSum_iff (by grind [tsum_def])] at vol_sum
-  convert vol_sum with z
   grind [ENNReal.toReal_ofReal]
 
 /-- If `f` is absolutely continuous on `[d, b]` and there is a collection of pairwise disjoint
@@ -189,7 +187,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
   · simp [hr.le]
   replace hf₀ : ∀ᵐ x, x ∈ Ioo d b → HasDerivAt f 0 x := by
     filter_upwards [hf₀] with x _ _ using by grind
-  have hfdb': 0 < r / (b - d) := by apply div_pos <;> linarith
+  have hfdb' : 0 < r / (b - d) := by apply div_pos <;> linarith
   have ⟨u, hu₁, hu₂, hu₃⟩ :=
     exists_dist_slope_lt_pairwiseDisjoint_hasSum hd.right hf₀ hfdb'
   let g := fun (z : u) ↦ dist (f z.val.1) (f z.val.2)

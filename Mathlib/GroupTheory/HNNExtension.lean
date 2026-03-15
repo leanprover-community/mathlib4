@@ -418,7 +418,6 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]
@@ -567,7 +566,6 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     rw [← mul_right_inj x, ← ih]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
 set_option linter.flexible false in
 @[simp]
