@@ -267,8 +267,8 @@ theorem support_coeff_subset {b o x : Ordinal} (hx : x < b ^ o) :
 theorem coeff_opow_mul_add {b e x y : Ordinal} (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
   obtain hb | hb := le_or_gt b 1
-  · have := hxb.trans_le hb
-    simp_all
+  · grw [hb, lt_one_iff_zero] at hxb
+    simp [hxb]
   obtain rfl | hx := eq_or_ne x 0
   · simp
   ext e'
