@@ -13,6 +13,7 @@ public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
+public import Mathlib.Order.Interval.Finset.Fin
 
 /-!
 Results about "big operations" over a `Fintype`, and consequent
@@ -293,5 +294,17 @@ theorem Fintype.prod_prod_type_right [CommMonoid γ] (f : α₁ × α₂ → γ)
 theorem Fintype.prod_prod_type_right' [CommMonoid γ] (f : α₁ → α₂ → γ) :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ y, ∏ x, f x y :=
   Finset.prod_product_right' ..
+
+/-- Telescopic product over `Fin`. -/
+@[to_additive /-- Telescopic sum over `Fin`. -/]
+lemma Fin.prod_Iic_div {M : Type*} [CommGroup M] {n : ℕ} (a : Fin n) (f : Fin (n + 1) → M) :
+    ∏ i ∈ Finset.Iic a, (f i.succ / f i.castSucc) = f a.succ / f 0 := by
+  rw [← Finset.prod_ite_mem_eq, Finset.prod_fin_eq_prod_range]
+  convert Finset.prod_range_div (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1) (a + 1)
+    using 1 with k hk
+  · refine Finset.prod_congr_of_eq_on_inter (by grind) (by grind) ?_
+    simp_all
+    grind
+  · grind
 
 end
