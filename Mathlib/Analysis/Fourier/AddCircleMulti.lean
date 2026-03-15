@@ -152,24 +152,24 @@ def measurableEquivPiIoc : UnitAddTorus ι ≃ᵐ {x : ι → ℝ | ∀ i, x i �
 
 @[simp]
 theorem coe_measurableEquivPiIoc :
-  measurableEquivPiIoc b = fun (x : UnitAddTorus ι) =>
-  (⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1, fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ :
-  {x : ι → ℝ | ∀ i, x i ∈ Ioc (b i) (b i + 1)}) := rfl
+    ⇑(measurableEquivPiIoc b) = fun (x : UnitAddTorus ι) =>
+    (⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
+    fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ :
+    {x : ι → ℝ | ∀ i, x i ∈ Ioc (b i) (b i + 1)}) := rfl
 
 @[simp]
 theorem coe_measurableEquivPiIoc_apply (x : UnitAddTorus ι) :
-  measurableEquivPiIoc b x =
-  ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1, fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ :=
-  rfl
+    ⇑(measurableEquivPiIoc b) x = ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
+    fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ := rfl
 
 @[simp]
 theorem coe_symm_measurableEquivPiIoc :
-    (measurableEquivPiIoc b).symm = fun (x : {x : ι → ℝ | ∀ i, x i ∈ Ioc (b i) (b i + 1)})
+    ⇑(measurableEquivPiIoc b).symm = fun (x : {x : ι → ℝ | ∀ i, x i ∈ Ioc (b i) (b i + 1)})
     (i : ι) => (x.1 i : UnitAddCircle) := rfl
 
 @[simp]
 theorem coe_symm_measurableEquivPiIoc_apply {x : ι → ℝ} (hx : ∀ i, x i ∈ Ioc (b i) (b i + 1)) :
-    (measurableEquivPiIoc b).symm ⟨x, hx⟩ = (fun i => (x i : UnitAddCircle)) := rfl
+    ⇑(measurableEquivPiIoc b).symm ⟨x, hx⟩ = (fun i => (x i : UnitAddCircle)) := rfl
 
 private lemma measurableSet_PiIoc [Countable ι] :
     MeasurableSet {x : ι → ℝ | ∀ i, x i ∈ Ioc (b i) (b i + 1)} :=
