@@ -282,3 +282,26 @@ lemma Module.length_eq_finrank
     (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] [Module.Finite K M] :
     Module.length K M = Module.finrank K M := by
   simp [Module.length_of_free]
+
+theorem Submodule.length_le_restrictScalar (A : Type*) [CommRing A] [Algebra A R] [Module A M]
+    [IsScalarTower A R M] (p : Submodule R M) :
+      Module.length R p ≤ Module.length A (p.restrictScalars A) := by
+  rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
+  let e : Submodule R ↥p ↪o Submodule A ↥(restrictScalars A p) := restrictScalarsEmbedding A R p
+  have (p : Submodule A ↥(restrictScalars A p)) : Subsingleton (e ⁻¹' {p}) := ⟨by
+    rintro ⟨x, hx⟩ ⟨y, hy⟩
+    simp only [Subtype.mk.injEq]
+    apply e.injective; grind⟩
+  have : ∀ p : Submodule A ↥(restrictScalars A p), Order.krullDim (e ⁻¹' {p}) ≤ (0 : ℕ) := by
+    intro p; by_cases h : Nonempty (e ⁻¹' {p})
+    · simp [Order.krullDim_eq_zero]
+    rw [not_nonempty_iff] at h
+    simp [Order.krullDim_eq_bot]
+  simpa using Order.krullDim_le_of_krullDim_preimage_le' e e.monotone this
+
+theorem Submodule.length_quotient_lt [IsArtinian R M] [IsNoetherian R M] (p : Submodule R M)
+    (h : p ≠ ⊥) : Module.length R (M ⧸ p) < Module.length R M := by
+  rw [Module.length_eq_add_of_exact p.subtype p.mkQ p.subtype_injective p.mkQ_surjective
+    (LinearMap.exact_subtype_mkQ p)]
+  nth_rw 1 [← zero_add (Module.length R (M ⧸ p)), ENat.add_lt_add_iff_right Module.length_ne_top]
+  exact Module.length_pos_iff.mpr (nontrivial_iff_ne_bot.mpr h)
