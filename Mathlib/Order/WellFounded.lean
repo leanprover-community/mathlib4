@@ -116,7 +116,7 @@ theorem min_eq_of_forall_not_lt [Std.Trichotomous r] (wf : WellFounded r) {s : S
 
 theorem notMem_of_lt_min {wf : WellFounded r} {s : Set α} {hs : s.Nonempty} {x : α}
     (hx : r x (wf.min s hs)) : x ∉ s :=
-  (wf.not_lt_min s hs · hx)
+  (wf.not_lt_min s · hx)
 
 theorem mem_of_lt_min_compl {wf : WellFounded r} {s : Set α} {hs : sᶜ.Nonempty} {x : α}
     (hx : r x (wf.min sᶜ hs)) : x ∈ s :=
