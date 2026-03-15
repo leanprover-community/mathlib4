@@ -485,7 +485,7 @@ def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : T
   I
 
 /-- Warning: This declaration should be used judiciously.
-Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
+Please consider using `IsScalarTower` instead.
 
 This definition allows the `RestrictScalars.normedSpace` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
@@ -493,8 +493,11 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
-  RestrictScalars.normedSpace _ 𝕜' E
+@[implicit_reducible]
+def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
+  { RestrictScalars.module 𝕜 𝕜' E with
+    norm_smul_le := fun c x =>
+      (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
 
 theorem NormedSpace.restrictScalars_eq {E : Type*} [SeminormedAddCommGroup E]
     [h : NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
@@ -527,7 +530,7 @@ def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E :
   I
 
 /-- Warning: This declaration should be used judiciously.
-Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
+Please consider using `IsScalarTower` instead.
 
 This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
@@ -535,9 +538,9 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-abbrev NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
-  RestrictScalars.normedAlgebra _ 𝕜' _
-
+@[implicit_reducible]
+def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
+  { NormedSpace.restrictScalars 𝕜 𝕜' E, Algebra.restrictScalars 𝕜 𝕜' E with }
 end NormedAlgebra
 
 end RestrictScalars

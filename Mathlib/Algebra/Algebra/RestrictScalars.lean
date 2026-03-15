@@ -26,6 +26,8 @@ typeclass instead.
   but sometimes it is helpful to avoid using this fact, to keep instances from leaking).
 * `RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A`: the ring equivalence
   between the restricted and original space when the module is an algebra.
+* `Module.restrictScalars R S M`, `Algebra.restrictScalars R S A`: non-instance definitons for
+  `Module R M` and `Algebra R A`.
 
 ## See also
 
@@ -102,12 +104,21 @@ section
 attribute [local instance] RestrictScalars.moduleOrig
 
 /-- When `M` is a module over a ring `S`, and `S` is an algebra over `R`, then `M` inherits a
+module structure over `R`. Not an instance because `S` cannot be inferred.
+
+The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTower R S M]`.
+-/
+@[implicit_reducible]
+def Module.restrictScalars [Module S M] : Module R M :=
+  Module.compHom M (algebraMap R S)
+
+/-- When `M` is a module over a ring `S`, and `S` is an algebra over `R`, then `M` inherits a
 module structure over `R`.
 
 The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTower R S M]`.
 -/
 instance RestrictScalars.module [Module S M] : Module R (RestrictScalars R S M) :=
-  Module.compHom M (algebraMap R S)
+  Module.restrictScalars R S M
 
 /-- This instance is only relevant when `RestrictScalars.moduleOrig` is available as an instance.
 -/
@@ -201,6 +212,11 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
     RestrictScalars.ringEquiv R S A (r • x) =
       algebraMap R S r • RestrictScalars.ringEquiv R S A x :=
   rfl
+
+/-- `R ⟶ S` induces `S-Alg ⥤ R-Alg`. Not an instance because `S` cannot be inferred. -/
+@[implicit_reducible]
+def Algebra.restrictScalars : Algebra R A :=
+  Algebra.compHom A (algebraMap R S)
 
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
 instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) where
