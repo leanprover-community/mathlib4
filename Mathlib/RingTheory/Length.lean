@@ -286,13 +286,13 @@ lemma Module.length_eq_finrank
 theorem Submodule.length_le_restrictScalar (A : Type*) [CommRing A] [Algebra A R] [Module A M]
     [IsScalarTower A R M] (p : Submodule R M) :
       Module.length R p ≤ Module.length A (p.restrictScalars A) := by
-  rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
+rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
   let e : Submodule R ↥p ↪o Submodule A ↥(restrictScalars A p) := restrictScalarsEmbedding A R p
-  have (p : Submodule A ↥(restrictScalars A p)) : Subsingleton (e ⁻¹' {p}) := ⟨by
+  have (q : Submodule A ↥(restrictScalars A p)) : Subsingleton (e ⁻¹' {q}) := ⟨by
     rintro ⟨x, hx⟩ ⟨y, hy⟩
     simp only [Subtype.mk.injEq]
     apply e.injective; grind⟩
-  have : ∀ p : Submodule A ↥(restrictScalars A p), Order.krullDim (e ⁻¹' {p}) ≤ (0 : ℕ) := by
+  have : ∀ q : Submodule A ↥(restrictScalars A p), Order.krullDim (e ⁻¹' {q}) ≤ (0 : ℕ) := by
     intro p; by_cases h : Nonempty (e ⁻¹' {p})
     · simp [Order.krullDim_eq_zero]
     rw [not_nonempty_iff] at h
