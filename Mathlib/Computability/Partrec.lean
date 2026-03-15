@@ -783,7 +783,6 @@ If a function `f` is computable and surjective, its right inverse
 lemma rightInverse_of_surjective {f : ℕ → ℕ} (hf : Computable f) (h_surj : ∀ y, ∃ x, f x = y) :
     Computable (fun y => Nat.find (h_surj y)) := by
   refine find ?_ h_surj
-  exact (Primrec.to_comp Primrec.beq).comp
-    (Computable.pair (hf.comp Computable.snd) Computable.fst)
+  exact (Primrec.to_comp Primrec.beq).comp <| (hf.comp Computable.snd).pair Computable.fst
 
 end Computable
