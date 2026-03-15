@@ -15,8 +15,8 @@ Let `c₁` (resp. `c₂`) be a cokernel cofork for a morphism `f₁ : X₁ ⟶ Y
 in a category `C₁` (resp. `f₂ : X₂ ⟶ Y₂` in `C₂`). Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C`,
 we construct a cokernel cofork with point `(F.obj c₁.pt).obj c₂.pt` for
 the obvious morphism `(F.obj X₁).obj Y₂ ⨿ (F.obj Y₁).obj X₂ ⟶ (F.obj Y₁).obj Y₂`,
-and show that it is a colimit when the cokernel of `f₁` is preserved
-by `F.obj c₁.pt` and the cokernel of `f₂` is perserved by
+and show that it is a colimit when both coforks are colimit, the cokernel of `f₁`
+is preserved by `F.obj c₁.pt` and the cokernel of `f₂` is preserved by
 `F.flip.obj X₁` and `F.flip.obj Y₁`.
 
 -/
