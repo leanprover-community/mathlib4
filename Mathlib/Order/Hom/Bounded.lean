@@ -61,8 +61,6 @@ structure BoundedOrderHom (α β : Type*) [Preorder α] [Preorder β] [BoundedOr
 attribute [to_dual self (reorder := map_top' map_bot')] BoundedOrderHom.mk
 attribute [to_dual existing] BoundedOrderHom.map_bot'
 
-section
-
 /-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
 You should extend this class when you extend `TopHom`. -/
@@ -85,33 +83,15 @@ class BotHomClass (F : Type*) (α β : outParam Type*) [Bot α] [Bot β] [FunLik
 You should extend this class when you extend `BoundedOrderHom`. -/
 class BoundedOrderHomClass (F α β : Type*) [LE α] [LE β]
     [BoundedOrder α] [BoundedOrder β] [FunLike F α β] : Prop
-  extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
-  /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
-  map_top (f : F) : f ⊤ = ⊤
-  /-- Morphisms preserve the bottom element. The preferred spelling is `_root_.map_bot`. -/
-  map_bot (f : F) : f ⊥ = ⊥
+  extends OrderHomClass F α β, TopHomClass F α β, BotHomClass F α β where
 
-attribute [to_dual existing] BoundedOrderHomClass.map_bot
-
-end
+attribute [to_dual existing] BoundedOrderHomClass.toTopHomClass
 
 export TopHomClass (map_top)
 
 export BotHomClass (map_bot)
 
 attribute [simp] map_top map_bot
-
-section Hom
-
-variable [FunLike F α β]
-
--- See note [lower instance priority]
-@[to_dual]
-instance (priority := 100) BoundedOrderHomClass.toTopHomClass [LE α] [LE β]
-    [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : TopHomClass F α β where
-  __ := ‹BoundedOrderHomClass F α β›
-
-end Hom
 
 section Equiv
 
