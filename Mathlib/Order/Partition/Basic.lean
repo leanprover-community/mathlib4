@@ -291,7 +291,7 @@ lemma Rel.forall (h : P.Rel x y) (ht : T ∈ P) : x ∈ T ↔ y ∈ T := by
   exact ⟨fun h ↦ by rwa [P.eq_of_mem_of_mem ht ht' h hx],
     fun h ↦ by rwa [P.eq_of_mem_of_mem ht ht' h hy]⟩
 
-lemma rel_symmectric (P : Partition u) : Symmetric P.Rel :=
+lemma rel_symmetric (P : Partition u) : Symmetric P.Rel :=
   fun _ _ ⟨t, ht, ha, hb⟩ ↦ ⟨t, ht, hb, ha⟩
 
 instance (P : Partition u) : Std.Symm P.Rel where
@@ -362,13 +362,12 @@ lemma mapsTo_supp (hf : IsRepFun P f) : Set.MapsTo f u u :=
 lemma mapsTo {S : Set α} (hf : IsRepFun P f) (hS : u ⊆ S) : Set.MapsTo f S S :=
   fun x h ↦ hf.image_subset hS ⟨x, h, rfl⟩
 
-@[simp]
 lemma apply_mem_iff (hf : IsRepFun P f) : f a ∈ u ↔ a ∈ u := by
   refine ⟨fun h ↦ ?_, hf.apply_mem⟩
   by_contra ha
   exact ha <| hf.apply_of_notMem ha ▸ h
 
-lemma apply_mem_iff_of_subset {S} (hf : IsRepFun P f) (hS : u ⊆ S) : f a ∈ S ↔ a ∈ S := by
+lemma apply_mem_iff_of_subset (hf : IsRepFun P f) (hS : u ⊆ S) : f a ∈ S ↔ a ∈ S := by
   obtain haS | haS := em (a ∈ u)
   · simp [hS haS, hS <| hf.apply_mem haS]
   rw [hf.apply_of_notMem haS]
@@ -421,14 +420,13 @@ lemma apply_eq_apply_iff' (hf : IsRepFun P f) :
     exact hf.apply_eq_apply h
   grind
 
-@[simp]
 lemma idem (hf : IsRepFun P f) : f (f a) = f a := by
   obtain (ha | ha) := em (a ∈ u)
   · rw [eq_comm, hf.apply_eq_apply_iff_rel ha]
     exact hf.rel_apply ha
   simp_rw [hf.apply_of_notMem ha]
 
-theorem isRepFun_isRepFun (hf : IsRepFun P f) (hg : IsRepFun P g) (x : α) : f (g x) = f x := by
+theorem apply_apply (hf : IsRepFun P f) (hg : IsRepFun P g) (x : α) : f (g x) = f x := by
   obtain (hx | hx) := em (x ∈ u)
   · exact hf.apply_eq_apply (hg.rel_apply hx).symm
   rw [hg.apply_of_notMem hx, hf.apply_of_notMem hx]
