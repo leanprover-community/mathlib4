@@ -42,7 +42,7 @@ variable {C : Type u} [Category.{v} C]
 creates all colimits and creates connected limits (in particular pullbacks), so
 `adhesive_of_preserves_and_reflects_isomorphism` transfers the adhesive structure.
 
-See [adhesive2004], Proposition 3.5(ii). -/
+See [adhesive2004], Proposition 8 (ii). -/
 instance adhesive_over [Adhesive C] [HasPullbacks C] [HasPushouts C] (B : C) :
     Adhesive (Over B) :=
   adhesive_of_preserves_and_reflects_isomorphism (Over.forget B)
