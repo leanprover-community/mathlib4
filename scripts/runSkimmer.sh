@@ -21,13 +21,13 @@ pkg="${side_pkg_dir}/SideSkimmer"
 # The package containing the targets we want to run `lake build <tgt>:applyCurrentTryThis` on.
 # Expected to be local relative to the location of this script.
 target_pkg="mathlib"
-# The lakefile syntax for the relative path to the package from `side_pkg_dir` / SideSkimmer.
-# E.g. if we have pkg / scripts / SideSkimmer, use `'".." / ".."'`
+# The lakefile syntax for the relative path to the target package from `side_pkg_dir` / SideSkimmer.
+# E.g. if we have target_pkg / scripts / SideSkimmer, use `'".." / ".."'`
 relative_path='".." / ".."'
 
-# The targets in that package we want to apply `lake build <tgt>:applyCurrentTryThis` to.
-# May be the package, libraries in the package, or modules in the package.
-# May be a bash array `("tgt1" "tgt2" ...)`
+# The targets in the target package on which we will run `lake build <tgt>:applyCurrentTryThis`.
+# May use lake target syntax; may be the whole package or libraries or modules in the package.
+# May be a bash array `("tgt1" "tgt2" ...)`; will refactor each in turn.
 tgts=("Mathlib")
 
 echo "Note: the functionality provided by this script is experimental and subject to change. This script will become unnecessary in the future."
