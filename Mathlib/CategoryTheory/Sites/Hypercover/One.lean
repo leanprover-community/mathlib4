@@ -427,7 +427,7 @@ section
 variable {S : C} {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S}
   {i i' j j' : E.I₀} (hii' : i = i') (hjj' : j = j')
 
-/-- If `i = i'` and `j = j'` this is an equivalence betweeen the `1`-index type at `i`, `j` and
+/-- If `i = i'` and `j = j'` this is an equivalence between the `1`-index type at `i`, `j` and
 the one at `i'`, `j'`. -/
 def congrIndexOneOfEq {E : PreOneHypercover.{w} S} {i i' j j' : E.I₀}
     (hii' : i = i') (hjj' : j = j') :
@@ -477,8 +477,8 @@ lemma I₁'.ext {a b : E.I₁'} (left : a.1.1 = b.1.1) (right : a.1.2 = b.1.2)
   simpa using h
 
 /--
-If `i = i'` and `j = j'` this is the isomorphism betweeen the `1`-component at
-`congrIndexOneOfEq k : E.I₁ i' j'` and the `1``-compontent at `k : E.I₁ i j`.
+If `i = i'` and `j = j'` this is the isomorphism between the `1`-component at
+`congrIndexOneOfEq k : E.I₁ i' j'` and the `1`-component at `k : E.I₁ i j`.
 
 Note: This isomorphism could also be constructed inline from `eqToIso`. We only
 use `eqToIso` directly to construct isomorphisms `E.Y k ≅ E.Y k'` where `k k' : E.I₁ i j`

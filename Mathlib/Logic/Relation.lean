@@ -741,6 +741,7 @@ theorem is_equivalence : Equivalence (@EqvGen α r) :=
 
 The motivation for this definition is that `Quot r` behaves like `Quotient (EqvGen.setoid r)`,
 see for example `Quot.eqvGen_exact` and `Quot.eqvGen_sound`. -/
+@[implicit_reducible]
 def setoid : Setoid α :=
   Setoid.mk _ (EqvGen.is_equivalence r)
 

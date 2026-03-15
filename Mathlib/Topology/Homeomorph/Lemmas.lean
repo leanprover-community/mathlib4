@@ -293,7 +293,7 @@ def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι
     | .inr i => by apply (continuous_apply _).comp' continuous_snd
 
 private theorem _root_.Fin.appendEquiv_eq_homeomorph (m n : ℕ) : Fin.appendEquiv m n =
-    ((sumArrowHomeomorphProdArrow).symm.trans
+    (sumArrowHomeomorphProdArrow.symm.trans
     (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)).toEquiv := by
   apply Equiv.symm_bijective.injective
   ext x i <;> simp
