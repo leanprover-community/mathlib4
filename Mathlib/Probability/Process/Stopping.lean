@@ -440,6 +440,7 @@ section Preorder
 variable [Preorder ι] {f : Filtration ι m} {τ π : Ω → WithTop ι}
 
 /-- The associated σ-algebra with a stopping time. -/
+@[implicit_reducible]
 protected def measurableSpace (hτ : IsStoppingTime f τ) : MeasurableSpace Ω where
   MeasurableSet' s := MeasurableSet s ∧ ∀ i : ι, MeasurableSet[f i] (s ∩ {ω | τ ω ≤ i})
   measurableSet_empty := by simp
@@ -760,7 +761,7 @@ theorem measurableSet_stopping_time_le [TopologicalSpace ι] [SecondCountableTop
     MeasurableSet[hπ.measurableSpace] {ω | τ ω ≤ π ω} := by
   have : MeasurableSet[(hτ.min hπ).measurableSpace] {ω | τ ω ≤ π ω} :=
     measurableSet_stopping_time_le_min hτ hπ
-  rw [measurableSet_min_iff hτ hπ] at this; exact (this).2
+  rw [measurableSet_min_iff hτ hπ] at this; exact this.2
 
 theorem measurableSet_eq_stopping_time_min [TopologicalSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι]
