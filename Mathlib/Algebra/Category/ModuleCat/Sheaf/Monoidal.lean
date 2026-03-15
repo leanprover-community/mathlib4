@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
-public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
+public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ColimitFunctorMonoidal
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Point
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Localization
@@ -20,7 +20,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Localization
 
 universe w v u
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory BraidedCategory Limits
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
@@ -74,10 +74,11 @@ example [LocallySmall.{w} C] [GrothendieckTopology.HasEnoughPoints.{w} J] :
 variable [J.WEqualsLocallyBijective AddCommGrpCat.{w}]
   [J.HasSheafCompose (forget₂ CommRingCat.{w} RingCat)]
   [J.HasSheafCompose (forget₂ RingCat.{w} AddCommGrpCat)]
+  [(W R).IsMonoidal]
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable instance monoidalCategory [(W R).IsMonoidal] :
-    MonoidalCategory (SheafOfModules ((sheafCompose J (forget₂ _ _)).obj R)) :=
+noncomputable instance monoidalCategory :
+    MonoidalCategory (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)) :=
   inferInstanceAs (MonoidalCategory (LocalizedMonoidal
     (PresheafOfModules.sheafification.{w} (J := J) (R₀ := R.obj ⋙ forget₂ _ _)
       (R := ((sheafCompose J (forget₂ _ _)).obj R)) (𝟙 _)) (W R) (unit := unit _)
@@ -86,7 +87,17 @@ noncomputable instance monoidalCategory [(W R).IsMonoidal] :
             (𝟙 _)).counit.app (unit _)) :)))
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable instance [(W R).IsMonoidal] :
+noncomputable instance symmetricCategory :
+    SymmetricCategory (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)) :=
+  inferInstanceAs (SymmetricCategory (LocalizedMonoidal
+    (PresheafOfModules.sheafification.{w} (J := J) (R₀ := R.obj ⋙ forget₂ _ _)
+      (R := ((sheafCompose J (forget₂ _ _)).obj R)) (𝟙 _)) (W R) (unit := unit _)
+        (asIso (((PresheafOfModules.sheafificationAdjunction.{w} (J := J)
+          (R₀ := R.obj ⋙ forget₂ _ _) (R := ((sheafCompose J (forget₂ _ _)).obj R)))
+            (𝟙 _)).counit.app (unit _)) :)))
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable instance :
   (PresheafOfModules.sheafification.{w} (J := J) (R₀ := R.obj ⋙ forget₂ _ _)
     (R := ((sheafCompose J (forget₂ _ _)).obj R)) (𝟙 _)).Monoidal :=
   inferInstanceAs (Localization.Monoidal.toMonoidalCategory
@@ -96,5 +107,36 @@ noncomputable instance [(W R).IsMonoidal] :
           (R₀ := R.obj ⋙ forget₂ _ _) (R := ((sheafCompose J (forget₂ _ _)).obj R)))
             (𝟙 _)).counit.app (unit _)) :)).Monoidal
 
+set_option backward.isDefEq.respectTransparency false in
+instance (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R))) :
+    PreservesColimitsOfSize.{w, w} (tensorLeft F) where
+  preservesColimitsOfShape {K _}:= ⟨fun {G} ↦ by
+    let R' := (sheafCompose J (forget₂ _ RingCat)).obj R
+    let α : R.obj ⋙ forget₂ CommRingCat RingCat ⟶ R'.obj := 𝟙 _
+    let S := PresheafOfModules.sheafification.{w} α
+    let T : SheafOfModules.{w} R' ⥤ PresheafOfModules (R.obj ⋙ forget₂ _ _) := forget R'
+    let adj : S ⊣ T := PresheafOfModules.sheafificationAdjunction.{w} α
+    suffices PreservesColimit (G ⋙ forget R') (S ⋙ tensorLeft F) by
+      let iso : (G ⋙ forget R') ⋙ S ≅ G :=
+        Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (asIso adj.counit) ≪≫
+          G.rightUnitor
+      let hc := colimit.isColimit (G ⋙ forget R')
+      refine preservesColimit_of_preserves_colimit_cocone
+        ((IsColimit.precomposeInvEquiv iso _).2
+          (isColimitOfPreserves S hc)) ?_
+      refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
+        (isColimitOfPreserves (S ⋙ tensorLeft F) hc)
+      · exact Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _
+          ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight (asIso adj.counit) _ ≪≫
+          Functor.leftUnitor _)
+      · exact Cocone.ext (Iso.refl _)
+    let e : S ⋙ tensorLeft F ≅ tensorLeft (T.obj F) ⋙ S :=
+      Functor.isoWhiskerLeft _ ((curriedTensor _).mapIso
+        (asIso (adj.counit.app F)).symm) ≪≫ Functor.Monoidal.commTensorLeft S _
+    apply preservesColimit_of_natIso _ e.symm⟩
+
+instance (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R))) :
+    PreservesColimitsOfSize.{w, w} (tensorRight F) :=
+  preservesColimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight F)
 
 end SheafOfModules
