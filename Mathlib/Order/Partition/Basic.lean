@@ -381,7 +381,6 @@ lemma exists_partOf_iff_mem : s ∈ P ↔ ∃ x ∈ u, partOf P x = s := by
   rintro ⟨x, hxu, rfl⟩
   exact partOf_mem hxu
 
-@[simp]
 lemma partOf_ne_bot_iff : P.partOf x ≠ ∅ ↔ x ∈ u := by
   refine ⟨fun h => ?_, fun h => P.ne_bot_of_mem (partOf_mem h)⟩
   obtain ⟨y, hy⟩ := Set.nonempty_iff_ne_empty.mpr h
