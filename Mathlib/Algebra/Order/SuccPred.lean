@@ -138,6 +138,10 @@ theorem one_le_iff_pos [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 : α
     [SuccAddOrder α] : 1 ≤ x ↔ 0 < x := by
   rw [← succ_le_iff_of_not_isMax not_isMax_zero, succ_eq_add_one, zero_add]
 
+theorem one_le_iff_ne_zero [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 : α)]
+    [SuccAddOrder α] [CanonicallyOrderedAdd α] : 1 ≤ x ↔ x ≠ 0 := by
+  rw [Order.one_le_iff_pos, pos_iff_ne_zero]
+
 theorem covBy_iff_add_one_eq [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] :
     x ⋖ y ↔ x + 1 = y := by
   rw [← succ_eq_add_one]

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Algebra.NeZero
 public import Mathlib.Order.BoundedOrder.Basic
 
@@ -206,6 +207,24 @@ theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * 
 end PartialOrder
 
 end MulOneClass
+
+section AddZeroClass
+variable [PartialOrder α] [AddZeroClass α] [CanonicallyOrderedAdd α]
+  [One α] [ZeroLEOneClass α] [NeZero (1 : α)]
+
+theorem add_one_pos (x : α) : 0 < x + 1 :=
+  zero_lt_one.trans_le le_add_self
+
+theorem add_one_ne_zero (x : α) : x + 1 ≠ 0 :=
+  (add_one_pos x).ne'
+
+theorem one_add_pos (x : α) : 0 < 1 + x :=
+  zero_lt_one.trans_le le_self_add
+
+theorem one_add_ne_zero (x : α) : 1 + x ≠ 0 :=
+  (one_add_pos _).ne'
+
+end AddZeroClass
 
 section Semigroup
 variable [Semigroup α]

@@ -909,19 +909,21 @@ theorem succ_one : succ (1 : Ordinal) = 2 := one_add_one_eq_two
 theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
   (add_assoc _ _ _).symm
 
-theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
-  rw [Order.one_le_iff_pos, pos_iff_ne_zero]
+@[deprecated Order.one_le_iff_ne_zero (since := "2026-03-15")]
+theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 :=
+  Order.one_le_iff_ne_zero
 
+@[deprecated add_one_pos (since := "2026-02-27")]
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
-  bot_lt_succ o
+  add_one_pos o
 
--- TODO: generalize to `SuccAddOrder`
+@[deprecated _root_.add_one_ne_zero (since := "2026-02-27")]
 theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
-  (succ_pos o).ne'
+  _root_.add_one_ne_zero o
 
-@[deprecated add_one_ne_zero (since := "2026-02-27")]
+@[deprecated _root_.add_one_ne_zero (since := "2026-02-27")]
 theorem succ_ne_zero (o : Ordinal) : succ o ≠ 0 :=
-  add_one_ne_zero o
+  _root_.add_one_ne_zero o
 
 @[simp]
 theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 := by
