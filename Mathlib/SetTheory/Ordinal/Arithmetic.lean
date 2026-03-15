@@ -776,7 +776,7 @@ theorem add_mul_of_isSuccLimit {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLim
     (a + b) * c = a * c :=
   add_mul_limit_aux ba l fun c' _ => add_mul_succ c' ba
 
-theorem addCommute_iff_mul {o₁ o₂ : Ordinal} :
+theorem addCommute_iff_eq_mul_natCast {o₁ o₂ : Ordinal} :
     AddCommute o₁ o₂ ↔ ∃ (o : Ordinal) (n₁ n₂ : ℕ), o₁ = o * n₁ ∧ o₂ = o * n₂ := by
   refine ⟨fun hcomm ↦ ?_, ?_⟩
   · induction h : o₁ + o₂ using WellFoundedLT.induction generalizing o₁ o₂ with | ind o ih
