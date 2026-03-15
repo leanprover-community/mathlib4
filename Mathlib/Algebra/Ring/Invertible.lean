@@ -15,6 +15,8 @@ public import Mathlib.Algebra.Ring.Defs
 
 @[expose] public section
 
+open scoped Ring
+
 variable {R : Type*}
 
 section NonUnitalNonAssocSemiring
