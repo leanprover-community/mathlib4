@@ -170,4 +170,3 @@ def testVirtualParentFixed {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) 
   myOp x
 
 end VirtualParentAbuse
-
