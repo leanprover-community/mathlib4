@@ -226,7 +226,7 @@ theorem ne_zero_of_isUnit [Nontrivial Γ₀] (v : Valuation K Γ₀) (x : K) (hx
 def comap {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) : Valuation S Γ₀ :=
   { v.toMonoidWithZeroHom.comp f.toMonoidWithZeroHom with
     toFun := v ∘ f
-    map_add_le_max' := fun x y => by simp only [comp_apply, v.map_add, map_add] }
+    map_add_le_max' := fun x y => by simp }
 
 @[simp]
 theorem comap_apply {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) (s : S) :

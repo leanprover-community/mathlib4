@@ -1239,7 +1239,7 @@ lemma le_induce_top_verts : G' ≤ (⊤ : G.Subgraph).induce G'.verts :=
 
 lemma le_induce_union : G'.induce s ⊔ G'.induce s' ≤ G'.induce (s ∪ s') := by
   constructor
-  · simp only [verts_sup, induce_verts, Set.Subset.rfl]
+  · simp
   · simp only [sup_adj, induce_adj, Set.mem_union]
     rintro v w (h | h) <;> simp [h]
 

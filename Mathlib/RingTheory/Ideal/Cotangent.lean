@@ -333,7 +333,7 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
       Submodule.span R s = ⊤ := by
   rw [← map_eq_top_iff, ← (Submodule.restrictScalars_injective R ..).eq_iff,
     Submodule.restrictScalars_span]
-  · simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
+  · simp
   · exact Ideal.Quotient.mk_surjective
 
 open Module

@@ -166,7 +166,7 @@ theorem memLp_finset_sum [ContinuousAdd ε']
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
-  · simp only [MemLp.zero', Finset.sum_empty, imp_true_iff]
+  · simp
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))

@@ -485,4 +485,4 @@ theorem Quot.subsingleton_iff (r : α → α → Prop) :
   refine Quot.mk_surjective.forall.trans (forall_congr' fun a => ?_)
   refine Quot.mk_surjective.forall.trans (forall_congr' fun b => ?_)
   rw [Quot.eq]
-  simp only [forall_const, le_Prop_eq, Prop.top_eq_true]
+  simp

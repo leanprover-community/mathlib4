@@ -483,8 +483,8 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
     · simp only [EReal.coe_ennreal_lt_coe_ennreal_iff]; exact fp_lt_gp x
     · simp only [ENNReal.coe_le_coe, EReal.coe_ennreal_le_coe_ennreal_iff]
       exact gm_le_fm x
-    · simp only [EReal.coe_ennreal_ne_bot, Ne, not_false_iff]
-    · simp only [EReal.coe_nnreal_ne_top, Ne, not_false_iff]
+    · simp
+    · simp
   case lsc =>
     show LowerSemicontinuous g
     apply LowerSemicontinuous.add'
