@@ -72,6 +72,7 @@ lemma tendsto_integral_cexp_sq_smul (hf : Integrable f) :
 
 variable [CompleteSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕 f)) (v : V) :
     Tendsto (fun (c : ℝ) ↦
       ∫ w : V, ((π * c) ^ (finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * c * ‖v - w‖ ^ 2)) • f w)

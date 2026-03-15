@@ -152,6 +152,7 @@ Note: Property `(2)` is denoted as `EqualCharZero` in the statement names below.
 
 namespace EqualCharZero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ℚ`-algebra implies equal characteristic. -/
 theorem of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI
@@ -167,6 +168,7 @@ section ConstructionAlgebraRat
 
 variable {R}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Internal: Not intended to be used outside this local construction. -/
 theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))]
     (n : ℕ+) : IsUnit (n : R) := by
@@ -207,6 +209,7 @@ theorem pnatCast_eq_natCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R �
   simp only [IsUnit.unit_spec]
 
 /-- Equal characteristic implies `ℚ`-algebra. -/
+@[implicit_reducible]
 noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
     Algebra ℚ R :=
   haveI : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) := ⟨h⟩

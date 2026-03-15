@@ -33,6 +33,7 @@ section Limits
 
 variable [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ forget _).sections]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cone in the category `PresheafOfModules R` is limit if it is so after the application
 of the functors `evaluation R X` for all `X`. -/
 def evaluationJointlyReflectsLimits (c : Cone F)
@@ -62,6 +63,7 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f).hom)
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the presheaf of modules obtained by
 taking a limit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
@@ -104,6 +106,7 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
     erw [limMap_π_assoc]
     dsimp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The (limit) cone for `F : J ⥤ PresheafOfModules.{v} R` that is constructed from the limit
 of `F ⋙ evaluation R X` for all `X`. -/
 @[simps]

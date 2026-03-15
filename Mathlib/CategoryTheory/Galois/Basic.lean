@@ -255,8 +255,7 @@ noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
 lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
     (h : F.map f x = F.map g x) :
     F.map (equalizer.ι f g) ((fiberEqualizerEquiv F f g).symm ⟨x, h⟩) = x := by
-  simp only [fiberEqualizerEquiv, comp_obj, FintypeCat.incl_obj, Functor.comp_map, Iso.toEquiv_comp,
-    Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
+  simp only [fiberEqualizerEquiv, comp_obj, FintypeCat.incl_obj, Functor.comp_map, Iso.toEquiv_comp]
   change ((Types.equalizerIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map (equalizer.ι f g)) _ = _
   erw [PreservesEqualizer.iso_inv_ι, Types.equalizerIso_inv_comp_ι]
 
@@ -330,7 +329,7 @@ epimorphism. -/
 lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
     (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
   apply evaluation_injective_of_isConnected F A Z (F.map f (Classical.arbitrary _))
-  simpa using DFunLike.congr_fun (F.congr_map huv) _
+  simpa using ConcreteCategory.congr_hom (F.congr_map huv) _
 
 /-- An epimorphism induces a surjective map on fibers. -/
 lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=
@@ -356,6 +355,7 @@ section CardFiber
 
 open ConcreteCategory
 
+attribute [local instance] FintypeCat.fintype in
 /-- A mono between objects with equally sized fibers is an iso. -/
 lemma isIso_of_mono_of_eq_card_fiber {X Y : C} (f : X ⟶ Y) [Mono f]
     (h : Nat.card (F.obj X) = Nat.card (F.obj Y)) : IsIso f := by

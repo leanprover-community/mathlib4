@@ -52,6 +52,8 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
+instance : PartialOrder (ValuationSubring K) := .ofSetLike (ValuationSubring K) K
+
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 
 @[simp]
@@ -647,6 +649,7 @@ def principalUnitGroupOrderEmbedding : ValuationSubring K ↪o (Subgroup Kˣ)ᵒ
   inj' := principalUnitGroup_injective
   map_rel_iff' {_A _B} := principalUnitGroup_le_principalUnitGroup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔
       A.unitGroupMulEquiv x ∈ (Units.map (IsLocalRing.residue A).toMonoidHom).ker := by
@@ -687,6 +690,7 @@ theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
       Ideal.Quotient.mk _ (A.unitGroupMulEquiv x : A) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ker_unitGroupToResidueFieldUnits :
     A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by
   ext
@@ -704,9 +708,10 @@ theorem surjective_unitGroupToResidueFieldUnits :
 the units of the residue field of `A`. -/
 def unitsModPrincipalUnitsEquivResidueFieldUnits :
     A.unitGroup ⧸ A.principalUnitGroup.comap A.unitGroup.subtype ≃* (IsLocalRing.ResidueField A)ˣ :=
-  (QuotientGroup.quotientMulEquivOfEq A.ker_unitGroupToResidueFieldUnits.symm).trans
-    (QuotientGroup.quotientKerEquivOfSurjective _ A.surjective_unitGroupToResidueFieldUnits)
+  QuotientGroup.liftEquiv _ A.surjective_unitGroupToResidueFieldUnits
+    A.ker_unitGroupToResidueFieldUnits.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp
         (QuotientGroup.mk' (A.principalUnitGroup.subgroupOf A.unitGroup)) =
@@ -740,6 +745,7 @@ variable {G : Type*} [Group G] [MulSemiringAction G K]
 /-- The action on a valuation subring corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 def pointwiseHasSMul : SMul G (ValuationSubring K) where
   smul g S := -- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
     { g • S.toSubring with
@@ -763,6 +769,7 @@ theorem pointwise_smul_toSubring (g : G) (S : ValuationSubring K) :
 This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `ValuationSubring.pointwiseSMul`. -/
+@[instance_reducible]
 def pointwiseMulAction : MulAction G (ValuationSubring K) :=
   toSubring_injective.mulAction toSubring pointwise_smul_toSubring
 

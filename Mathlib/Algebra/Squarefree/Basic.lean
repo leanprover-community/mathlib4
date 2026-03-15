@@ -83,6 +83,10 @@ theorem Squarefree.of_mul_right [CommMonoid R] {m n : R} (hmn : Squarefree (m * 
 theorem Squarefree.squarefree_of_dvd [Monoid R] {x y : R} (hdvd : x ∣ y) (hsq : Squarefree y) :
     Squarefree x := fun _ h => hsq _ (h.trans hdvd)
 
+theorem Associated.squarefree_iff [Monoid R] {x y : R} (h : Associated x y) :
+    Squarefree x ↔ Squarefree y :=
+  ⟨fun hx ↦ hx.squarefree_of_dvd h.dvd', fun hy ↦ hy.squarefree_of_dvd h.dvd⟩
+
 theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [Monoid R] {x : R} {n : ℕ}
     (h : Squarefree (x ^ n)) (h' : ¬ IsUnit x) :
     n = 0 ∨ n = 1 := by
@@ -261,6 +265,7 @@ lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
         mul_dvd_mul_left p hyx, mul_pow p y n ▸ mul_dvd_mul (dvd_pow_self p hn.ne') hy'⟩
       exact squarefree_mul_iff.mpr ⟨hp.isRelPrime_iff_not_dvd.mpr hp', hp.squarefree, hy⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
   classical

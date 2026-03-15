@@ -161,7 +161,7 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
   have ba : ¬r b a := IsWellFounded.wf.min_mem _ this
   refine ⟨b, ⟨b.2, fun c => not_imp_not.1 fun h => ?_⟩, ba⟩
   rw [show ∀ b : S, (⟨b, b.2⟩ : S) = b by intro b; cases b; rfl]
-  exact IsWellFounded.wf.not_lt_min _ this (IsOrderConnected.neg_trans h ba)
+  exact IsWellFounded.wf.not_lt_min _ (IsOrderConnected.neg_trans h ba)
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
@@ -208,7 +208,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
 @[simp]
 theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o) := by
   refine inductionOn o fun α r _ ↦ ?_
-  rw [← type_uLift, cof_type, cof_type, ← Cardinal.lift_id'.{v, u} (Order.cof _),
+  rw [← type_ulift, cof_type, cof_type, ← Cardinal.lift_id'.{v, u} (Order.cof _),
     ← Cardinal.lift_umax]
   apply RelIso.cof_eq_lift ⟨Equiv.ulift.symm, _⟩
   simp [swap]
@@ -383,7 +383,7 @@ theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 :=
 theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
   cof_eq_zero.not
 
-@[simp]
+-- TODO: deprecate in favor of `cof_add_one`
 theorem cof_succ (o) : cof (succ o) = 1 := by
   apply le_antisymm
   · refine inductionOn o fun α r _ => ?_
@@ -394,8 +394,14 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
       rcases a with (a | ⟨⟨⟨⟩⟩⟩) <;> simp
     · simp
   · rw [← Cardinal.succ_zero, succ_le_iff]
-    simpa [lt_iff_le_and_ne, Cardinal.zero_le] using fun h =>
-      succ_ne_zero o (cof_eq_zero.1 (Eq.symm h))
+    simpa [lt_iff_le_and_ne] using fun h ↦ add_one_ne_zero o (cof_eq_zero.1 h.symm)
+
+theorem cof_add_one (o) : cof (o + 1) = 1 :=
+  cof_succ o
+
+@[simp]
+theorem cof_one : cof 1 = 1 := by
+  simpa using cof_add_one 0
 
 -- TODO: find a good way to fix the non-terminal simp
 -- it is called on four goals, only one of which requires the `exact`
@@ -426,7 +432,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
           change (a : α) = ↑(⟨a', aS⟩ : S)
           have := le_one_iff_subsingleton.1 (le_of_eq e)
           congr!,
-    fun ⟨a, e⟩ => by simp [e]⟩
+    fun ⟨a, e⟩ => by simp [e, cof_add_one]⟩
 
 /-! ### Fundamental sequences -/
 
@@ -523,7 +529,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     · obtain ⟨hji, hij⟩ := wo.wf.min_mem _ h
       refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _ _, ?_⟩
       · by_contra! H
-        exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
+        exact (wo.wf.not_lt_min {j | r j i ∧ f i ≤ f j} ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
 
 @[simp]
@@ -584,7 +590,7 @@ alias IsNormal.cof_le := cof_le_of_isNormal
 theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
   rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
   · contradiction
-  · rw [add_succ, cof_succ, cof_succ]
+  · rw [succ_eq_add_one, ← add_assoc, cof_add_one, cof_add_one]
   · exact cof_eq_of_isNormal (isNormal_add_right a) hb
 
 theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by

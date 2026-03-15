@@ -193,6 +193,11 @@ end setOption
 section cdotLinter
 set_option linter.style.cdot true
 
+-- After https://github.com/leanprover/lean4/pull/12263,
+-- we need to add `instance_reducible` before we can add `instance` to `Int.add` in the tests below.
+set_option allowUnsafeReducibility true in
+attribute [instance_reducible] Int.add
+
 set_option linter.globalAttributeIn false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
@@ -648,7 +653,7 @@ meta def ErrorContext.isValid_parse?_error_context (ec : ErrorContext) : Bool :=
 set_option linter.unusedTactic false in
 set_option linter.flexible false in
 /-- An error in this proof could mean that `replaceDisallowed` contains a character
-which is not dissallowed by `isAllowedCharacter`. -/
+which is not disallowed by `isAllowedCharacter`. -/
 private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallowed c ≠ none) :
     !isAllowedCharacter c := by
   contrapose creplaced

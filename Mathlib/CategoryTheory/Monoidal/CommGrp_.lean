@@ -210,6 +210,7 @@ variable {F F' : C ⥤ D} [F.Braided] [F'.Braided] {G : D ⥤ E} [G.Braided]
 
 open Monoidal
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- A finite-product-preserving functor takes commutative group objects to commutative group
 objects. -/
@@ -256,12 +257,14 @@ theorem comp_mapCommGrp_mul (A : CommGrp C) :
     μ[((F ⋙ G).mapCommGrp.obj A).X] = LaxMonoidal.μ (F ⋙ G) _ _ ≫ (F ⋙ G).map μ[A.X] :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity functor is also the identity on commutative group objects. -/
 @[simps!]
 def mapCommGrpIdIso : mapCommGrp (𝟭 C) ≅ 𝟭 (CommGrp C) :=
   NatIso.ofComponents (fun X ↦ CommGrp.mkIso (.refl _) (by simp)
     (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition functor is also the composition on commutative group objects. -/
 @[simps!]
 def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :=
@@ -272,6 +275,7 @@ def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :
 def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
   app X := InducedCategory.homMk ((mapGrpNatTrans f).app X.toGrp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Natural isomorphisms between functors lift to commutative group objects. -/
 @[simps!]
 def mapCommGrpNatIso (e : F ≅ F') : F.mapCommGrp ≅ F'.mapCommGrp :=
@@ -291,6 +295,7 @@ open Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.Braided]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative group
 objects. -/
 @[simps] noncomputable def mapCommGrp : F.mapCommGrp ⊣ G.mapCommGrp where
@@ -302,6 +307,7 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories lifts to an equivalence of their commutative group objects. -/
 @[simps] noncomputable def mapCommGrp : CommGrp C ≌ CommGrp D where
   functor := e.functor.mapCommGrp
