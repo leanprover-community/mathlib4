@@ -152,7 +152,7 @@ lemma projective_iff_hasProjectiveDimensionLT_one :
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ projective_iff_subsingleton_ext_one.2
     (HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
-instance [HasProjectiveDimensionLT X 1] : Projective X :=
+instance (priority := low) [HasProjectiveDimensionLT X 1] : Projective X :=
   (projective_iff_hasProjectiveDimensionLT_one X).mpr ‹_›
 
 end

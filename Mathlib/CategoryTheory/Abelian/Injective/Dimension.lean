@@ -151,7 +151,7 @@ lemma injective_iff_hasInjectiveDimensionLT_one :
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ injective_iff_subsingleton_ext_one.2
     (HasInjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
-instance [HasInjectiveDimensionLT X 1] : Injective X :=
+instance (priority := low) [HasInjectiveDimensionLT X 1] : Injective X :=
   (injective_iff_hasInjectiveDimensionLT_one X).mpr ‹_›
 
 end
