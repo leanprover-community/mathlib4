@@ -128,12 +128,12 @@ theorem fst_decompLinearIsometryEquiv (f : V →ᴬ[𝕜] W) :
 
 @[simp]
 theorem snd_decompLinearIsometryEquiv (f : V →ᴬ[𝕜] W) :
-    (decompLinearIsometryEquiv 𝕜 R V W f).2 = f.linear :=
+    (decompLinearIsometryEquiv 𝕜 R V W f).2 = f.contLinear :=
   rfl
 
 @[simp]
 theorem decompLinearIsometryEquiv_symm_apply (p : W × (V →L[𝕜] W)) (x : V) :
-    (decompLinearIsometryEquiv 𝕜 R V W).symm p x = p.2 x +ᵥ p.1 :=
+    (decompLinearIsometryEquiv 𝕜 R V W).symm p x = p.2 x + p.1 :=
   rfl
 
 @[simp]

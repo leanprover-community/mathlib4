@@ -514,7 +514,7 @@ theorem fst_decompEquiv (f : V →ᴬ[R] Q) :
 
 @[simp]
 theorem snd_decompEquiv (f : V →ᴬ[R] Q) :
-    (decompEquiv R V Q f).2 = f.linear :=
+    (decompEquiv R V Q f).2 = f.contLinear :=
   rfl
 
 @[simp]
@@ -523,7 +523,7 @@ theorem decompEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
   rfl
 
 @[simp]
-theorem decompEquiv_symm_linear (p : Q × (V →L[R] W)) :
+theorem decompEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
     ((decompEquiv R V Q).symm p).contLinear = p.2 := by
   haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
   ext; simp [decompEquiv]
@@ -549,12 +549,12 @@ theorem fst_decompLinearEquiv (f : V →ᴬ[R] W) :
 
 @[simp]
 theorem snd_decompLinearEquiv (f : V →ᴬ[R] W) :
-    (decompLinearEquiv R S V W f).2 = f.linear :=
+    (decompLinearEquiv R S V W f).2 = f.contLinear :=
   rfl
 
 @[simp]
 theorem decompLinearEquiv_symm_apply (p : W × (V →L[R] W)) (x : V) :
-    (decompLinearEquiv R S V W).symm p x = p.2 x +ᵥ p.1 :=
+    (decompLinearEquiv R S V W).symm p x = p.2 x + p.1 :=
   rfl
 
 @[simp]
@@ -584,7 +584,7 @@ theorem fst_decompAffineEquiv (f : V →ᴬ[R] Q) :
 
 @[simp]
 theorem snd_decompAffineEquiv (f : V →ᴬ[R] Q) :
-    (decompAffineEquiv R S V Q f).2 = f.linear :=
+    (decompAffineEquiv R S V Q f).2 = f.contLinear :=
   rfl
 
 @[simp]
@@ -593,9 +593,9 @@ theorem decompAffineEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
   rfl
 
 @[simp]
-theorem decompAffineEquiv_symm_contLinear (p : W × (V →L[R] W)) :
-    ((decompAffineEquiv R S V W).symm p).contLinear = p.2 := by
-  rw [decompAffineEquiv, ← AffineEquiv.coe_symm_toEquiv, decompEquiv_symm_linear]
+theorem decompAffineEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
+    ((decompAffineEquiv R S V Q).symm p).contLinear = p.2 := by
+  rw [decompAffineEquiv, ← AffineEquiv.coe_symm_toEquiv, decompEquiv_symm_contLinear]
 
 end
 
