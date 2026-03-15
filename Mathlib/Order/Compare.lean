@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Ordering.Basic
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.OrderDual
 
 /-!
 # Comparison
@@ -151,6 +151,7 @@ theorem cmp_ofDual [LT α] [DecidableLT α] (x y : αᵒᵈ) : cmp (ofDual x) (o
   rfl
 
 /-- Generate a linear order structure from a preorder and `cmp` function. -/
+@[implicit_reducible]
 def linearOrderOfCompares [Preorder α] (cmp : α → α → Ordering)
     (h : ∀ a b, (cmp a b).Compares a b) : LinearOrder α :=
   let H : DecidableLE α := fun a b => decidable_of_iff _ (h a b).ne_gt
