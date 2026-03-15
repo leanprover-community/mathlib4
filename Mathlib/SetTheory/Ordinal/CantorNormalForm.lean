@@ -294,8 +294,8 @@ theorem coeff_opow_mul_add {b e x y : Ordinal} (hxb : x < b) (hy : y < b ^ e) :
 theorem coeff_opow_mul {b e x : Ordinal} (hxb : x < b) :
     coeff b (b ^ e * x) = single e x := by
   obtain hb | hb := le_or_gt b 1
-  · have := hxb.trans_le hb
-    simp_all
+  · grw [hb, lt_one_iff_zero] at hxb
+    simp [hxb]
   · simpa using coeff_opow_mul_add hxb (opow_pos e hb.pos)
 
 @[simp]
