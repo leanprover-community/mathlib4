@@ -32,6 +32,37 @@ tgts=("Mathlib")
 
 echo "Note: the functionality provided by this script is experimental and subject to change. This script will become unnecessary in the future."
 
+usage() {
+  cat <<EOF
+Usage: runSkimmer.sh [--init | --lake-update | --no-update | -h | --help]
+
+Options:
+  [no arguments]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` on targets configured in \`runSkimmer.sh\`.
+  --init          Set up the \`SideSkimmer\` side package. This only needs to be done when first introducing \`runSkimmer.sh\` to a new repo.
+  --lake-update   Only run \`lake update\` in \`SideSkimmer\`. Note: this is done by default on each run, unless \`--no-update\` is present.
+  --no-update     Only run \`lake build <tgt>:applyCurrentTryThis\` without first running \`lake update\` in \`SideSkimmer\`.
+EOF
+}
+
+# Argument cleaning:
+if [[ -n "$2" ]]; then
+  echo "Unexpected argument \`$2\`"
+  usage
+  exit 1
+elif [[ -n "$1" && \
+    "$1" != "--lake-update" && \
+    "$1" != "--no-update" && \
+    "$1" != "--init" && \
+    "$1" != "-h" && \
+    "$1" != "--help" ]]; then
+  echo "Unexpected argument \`$1\`"
+  usage
+  exit 1
+elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
 if [[ "$1" == "--init" ]]; then
 
   mkdir -p "${pkg}"
