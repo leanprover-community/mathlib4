@@ -208,11 +208,9 @@ noncomputable def mulI (S : StandardSubspace H) : StandardSubspace H where
 noncomputable def symplComp [CompleteSpace H] (S : StandardSubspace H) : StandardSubspace H where
   toClosedSubmodule := S.toClosedSubmodule.symplComp
   IsSeparating := by
-    simp [mulI_symplComp, ClosedSubmodule.symplComp, ClosedSubmodule.inf_orthogonal, sup_comm,
-      S.IsCyclic]
+    simp [mulI_symplComp, ClosedSubmodule.inf_orthogonal, sup_comm, S.IsCyclic]
   IsCyclic := by
-    simp [mulI_symplComp, ClosedSubmodule.symplComp, ClosedSubmodule.sup_orthogonal, sup_comm,
-      S.IsSeparating]
+    simp [mulI_symplComp, ClosedSubmodule.sup_orthogonal, inf_comm, S.IsSeparating]
 
 @[simp]
 theorem symplComp_symplComp_eq [CompleteSpace H] (S : StandardSubspace H) :
