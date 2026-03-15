@@ -938,7 +938,7 @@ lemma linearEquiv_symm_apply [IsLocalizedModule S g] (x : M) :
 @[simp]
 lemma linearEquiv_comp [IsLocalizedModule S g] :
     (linearEquiv S f g).toLinearMap ∘ₗ f = g :=
-  LinearMap.ext fun x => linearEquiv_apply S f g x
+  LinearMap.ext fun x ↦ linearEquiv_apply S f g x
 
 /-- A linear map factoring between two `S`-localizations equals the canonical
 `linearEquiv` between them. -/
