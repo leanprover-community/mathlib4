@@ -35,7 +35,7 @@ be expressed as `q * ∏' (1 - q ^ (n + 1)) ^ 24` where `q = e ^ (2πiz)`.
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open Set Function Complex Topology Filter SlashInvariantForm CongruenceSubgroup
+open Function Complex Topology Filter SlashInvariantForm CongruenceSubgroup
 
 open UpperHalfPlane hiding I
 

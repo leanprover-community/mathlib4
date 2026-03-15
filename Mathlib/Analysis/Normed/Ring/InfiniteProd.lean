@@ -22,7 +22,7 @@ This file proves a dominated convergence theorem for infinite products of terms 
   `∏' k, (1 + f n k) → ∏' k, (1 + g k)`.
 -/
 
-open Topology Filter Metric Real Set
+open Topology Filter
 
 variable {α R β : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] {g : β → R}
   {bound : β → ℝ}
