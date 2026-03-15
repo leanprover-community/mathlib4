@@ -753,9 +753,12 @@ theorem isSuccPrelimit_mul_left {a b : Ordinal} (ha : IsSuccLimit a) : IsSuccPre
     exact isSuccPrelimit_zero
   · exact (isSuccLimit_mul_left ha hb).isSuccPrelimit
 
-theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
+@[simp]
+theorem nsmul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
   | n + 1, a => by rw [succ_nsmul, Nat.cast_add, mul_add, Nat.cast_one, mul_one, smul_eq_mul n]
+
+@[deprecated (since := "2026-03-14")] alias smul_eq_mul := nsmul_eq_mul
 
 private theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLimit c)
     (IH : ∀ c' < c, (a + b) * succ c' = a * succ c' + b) : (a + b) * c = a * c :=
