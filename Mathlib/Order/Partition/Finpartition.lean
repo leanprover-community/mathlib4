@@ -316,65 +316,27 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
 end Order
 
 @[simp]
-lemma _root_.disjoint_subtype_iff {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
-  (Pinf : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊓ t)) (hbot : pr (⊥ : α)) {a b : Subtype pr} :
-    Disjoint a.val b.val ↔
-    @Disjoint (Subtype pr) (Subtype.partialOrder pr) (Subtype.orderBot hbot) a b := by
-  letI : Lattice (Subtype pr) := Subtype.lattice Psup Pinf
-  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
-  rw [disjoint_iff, disjoint_iff, ← Subtype.coe_inf Pinf, ← Subtype.coe_bot hbot]
-  exact Subtype.coe_inj
-
-lemma sup_image_val_eq_coe_sup_id [DecidableEq α] {pr : α → Prop}
-  (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t)) (hbot : pr (⊥ : α)) {t : Finset (Subtype pr)} :
-    (t.image Subtype.val).sup id
-     = @Finset.sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot) t id := by
-  simp [Finset.sup_coe]
-
-lemma sup_val_eq_coe_id {pr : α → Prop} (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t))
-  (hbot : pr (⊥ : α)) {t : Finset (Subtype pr)} :
-    (t.sup Subtype.val)
-    = @Finset.sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot) t id := by
-  simp [Finset.sup_coe]
-
-theorem preimage_eq_image_of_bij {α : Type*} {β : Type*} [Nonempty α] [DecidableEq α]
-  (f : α → β) (s : Finset β) (hf : Set.BijOn f (f ⁻¹' s) s) :
-    (s.preimage f hf.2.1) = s.image (Function.invFunOn f (f ⁻¹' ↑s)) := by
-  ext x
-  simp only [mem_preimage, mem_image]
-  constructor
-  · intro hx
-    exact ⟨f x, ⟨hx, (Set.BijOn.invOn_invFunOn hf).1 (Set.mem_preimage.mpr hx)⟩⟩
-  · intro hx
-    obtain ⟨y, hy, hyx⟩ := hx
-    have : y = f x := by
-      have : f ((Function.invFunOn f (f ⁻¹' ↑s)) y) = f x := by congr
-      rw [(Set.BijOn.invOn_invFunOn hf).2 hy] at this
-      exact this
-    rw [← this]; exact hy
-
-@[simp]
-theorem Finset.sup_preimage {α β : Type*} [hnea : Nonempty α] [SemilatticeSup β] [OrderBot β]
+theorem _root_.Finset.sup_preimage {α β : Type*} [hnea : Nonempty α] [SemilatticeSup β] [OrderBot β]
   (s : Finset β) (f : α → β) (hf : Set.BijOn f (f ⁻¹' ↑s) s) :
     (preimage s f hf.2.1).sup f = s.sup id := by
   classical
-  set finvs := Function.invFunOn f (f ⁻¹' ↑s) with dfinvs
+  let finvs := invFunOn f (f ⁻¹' ↑s)
   have hfinvs : ∀ x ∈ s, f (finvs x) = x := (Set.BijOn.invOn_invFunOn hf).2
   have hfinvs' : ∀ x ∈ s, (f ∘ finvs) x = id x := (Set.BijOn.invOn_invFunOn hf).2
-  rw [← Finset.sup_congr (Eq.refl s) hfinvs', ← Finset.sup_image]
+  rw [← sup_congr (Eq.refl s) hfinvs', ← sup_image]
   congr
-  exact preimage_eq_image_of_bij f s hf
+  exact preimage_eq_image_invFunOn_of_bij f s hf
 
-lemma sup_preimage_val_id_eq_sup_toSubtype_id {pr : α → Prop}
+lemma _root_.Finset.sup_preimage_val_id_eq_sup_toSubtype_id {pr : α → Prop}
   (Psup : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊔ t)) (hbot : pr (⊥ : α)) {t : Finset α}
   (ht : ∀ x ∈ t, pr x) :
-    @Finset.sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot)
-      (@Finset.preimage _ _ t (fun (x :Subtype pr) => x.val)
+    @sup _ _ (Subtype.semilatticeSup Psup) (Subtype.orderBot hbot)
+      (@preimage _ _ t (fun (x :Subtype pr) => x.val)
       (Set.injOn_of_injective Subtype.val_injective)) id
-    = (⟨t.sup id, Finset.sup_induction hbot (fun _ h _ => Psup h) ht⟩ : Subtype pr) := by
+    = (⟨t.sup id, sup_induction hbot (fun _ h _ => Psup h) ht⟩ : Subtype pr) := by
   letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
   ext
-  simp only [Finset.sup_coe, id_eq]
+  simp only [sup_coe, id_eq]
   apply Finset.sup_preimage t (fun (x : Subtype pr) => x.val)
   refine ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective, ?_⟩
   intro x hx; simpa using ⟨hx, ht x hx⟩
@@ -389,7 +351,7 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
     @Finpartition (Subtype pr) (Subtype.lattice Psup Pinf) (Subtype.orderBot hbot) ⟨s, hs⟩ :=
   letI : Lattice (Subtype pr) := Subtype.lattice Psup Pinf
   letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
-  { parts := Finset.preimage P.parts (fun (p : Subtype pr) => p.val)
+  { parts := preimage P.parts (fun (p : Subtype pr) => p.val)
       (Set.injOn_of_injective Subtype.val_injective)
     supIndep := by
       classical
@@ -398,16 +360,16 @@ noncomputable def toSubtype {s : α} (P : Finpartition s)
       rw [SupIndep] at hPd
       intro t ht i hi hi'
       simp_all only [id_eq]
-      rw [← disjoint_subtype_iff Psup Pinf hbot, ← sup_image_val_eq_coe_sup_id Psup hbot]
+      rw [← disjoint_subtype_iff Pinf hbot, ← sup_image_val_eq_coe_sup_id Psup hbot]
       apply hPd
-      · simpa [Finset.image_subset_iff_subset_preimage] using ht
+      · simpa [image_subset_iff_subset_preimage] using ht
       · simpa using hi
       · simpa [i.property] using hi'
     sup_parts := by
       ext
-      rw [@Finset.sup_coe _ _ _ _ _ hbot Psup]
+      rw [@sup_coe _ _ _ _ _ hbot Psup]
       simp only [id_eq]
-      rw [sup_val_eq_coe_id Psup hbot, sup_preimage_val_id_eq_sup_toSubtype_id Psup hbot hP]
+      rw [sup_val_eq_coe_id Psup hbot, Finset.sup_preimage_val_id_eq_sup_toSubtype_id Psup hbot hP]
       simpa using P.sup_parts
     bot_notMem := by
       simp only [mem_preimage]

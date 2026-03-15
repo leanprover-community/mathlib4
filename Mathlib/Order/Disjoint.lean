@@ -164,6 +164,16 @@ theorem disjoint_iff_inf_le : Disjoint a b ↔ a ⊓ b ≤ ⊥ :=
 theorem disjoint_iff : Disjoint a b ↔ a ⊓ b = ⊥ :=
   disjoint_iff_inf_le.trans le_bot_iff
 
+@[to_dual, simp]
+lemma _root_.disjoint_subtype_iff {pr : α → Prop} (Pinf : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊓ t))
+  (hbot : pr (⊥ : α)) {a b : Subtype pr} :
+    Disjoint a.val b.val ↔
+    @Disjoint (Subtype pr) (Subtype.partialOrder pr) (Subtype.orderBot hbot) a b := by
+  letI : SemilatticeInf (Subtype pr) := Subtype.semilatticeInf Pinf
+  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  rw [disjoint_iff, disjoint_iff, ← Subtype.coe_inf Pinf, ← Subtype.coe_bot hbot]
+  exact Subtype.coe_inj
+
 @[to_dual top_le]
 theorem Disjoint.le_bot : Disjoint a b → a ⊓ b ≤ ⊥ :=
   disjoint_iff_inf_le.mp
