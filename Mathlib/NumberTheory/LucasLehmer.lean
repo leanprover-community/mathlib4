@@ -359,7 +359,6 @@ theorem ω_mul_ωb : (ω : X q) * ωb = 1 := by
 theorem ωb_mul_ω : (ωb : X q) * ω = 1 := by
   rw [mul_comm, ω_mul_ωb]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A closed form for the recurrence relation. -/
 theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^ 2 ^ i := by
   induction i with
@@ -383,7 +382,7 @@ def α : X q := (0, 1)
   ext <;> simp [α, sq]
 
 @[simp] lemma one_add_α_sq : ((1 + α) ^ 2 : X q) = 2 * ω := by
-  ext <;> simpa [α, ω, sq] using by norm_num
+  ext <;> simp [α, ω, sq] <;> norm_num
 
 lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
   rw [pow_succ, pow_mul, α_sq]

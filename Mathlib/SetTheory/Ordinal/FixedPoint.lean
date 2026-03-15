@@ -463,19 +463,12 @@ theorem deriv_add_eq_mul_omega0_add (a b : Ordinal.{u}) : deriv (a + ·) b = a *
 @[simp]
 theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = a ^ ω := by
   rw [← iSup_iterate_eq_nfp, ← iSup_pow_natCast ha]
-  congr
-  funext n
-  induction n with
-  | zero => rw [pow_zero, iterate_zero_apply]
-  | succ n hn => rw [iterate_succ_apply', Nat.add_comm, pow_add, pow_one, hn]
+  simp
 
 @[simp]
 theorem nfp_mul_zero (a : Ordinal) : nfp (a * ·) 0 = 0 := by
   rw [← nonpos_iff_eq_zero, nfp_le_iff]
-  intro n
-  induction n with
-  | zero => rfl
-  | succ n hn => dsimp only; rwa [iterate_succ_apply, mul_zero]
+  simp
 
 theorem nfp_mul_eq_opow_omega0 {a b : Ordinal} (hb : 0 < b) (hba : b ≤ a ^ ω) :
     nfp (a * ·) b = a ^ ω := by

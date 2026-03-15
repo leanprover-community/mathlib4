@@ -54,7 +54,6 @@ un-`@[simp]`ed):
 
 open Function
 
-set_option backward.isDefEq.respectTransparency false in
 instance Rat.instPosMulMono : PosMulMono ℚ where
   mul_le_mul_of_nonneg_left r hr p q hpq := by
     simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
