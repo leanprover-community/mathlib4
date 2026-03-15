@@ -266,11 +266,8 @@ either as a quotient of `I` by its submodule `I • ⊤`,
 or the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`.
 -/
 noncomputable def cotangentEquivSubmodule (I : Ideal R) :
-    I.Cotangent ≃ₗ[R] Submodule.map (I ^ 2).mkQ I where
-  __ := Cotangent.lift (((I ^ 2).mkQ).restrict (sorry)) (sorry)
-  invFun := sorry
-  right_inv := sorry
-  left_inv := sorry
+    I.Cotangent ≃ₗ[R] Submodule.map (I ^ 2).mkQ I :=
+  I.cotangentEquivIdeal
 
 end Ideal
 
