@@ -25,7 +25,7 @@ by `F.obj c₁.pt` and the cokernel of `f₂` is perserved by
 
 namespace CategoryTheory.Limits
 
-variable {C₁ C₂ C : Type*} [Category C₁] [Category C₂] [Category C]
+variable {C₁ C₂ C : Type*} [Category* C₁] [Category* C₂] [Category* C]
   [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroMorphisms C]
 
 namespace CokernelCofork
