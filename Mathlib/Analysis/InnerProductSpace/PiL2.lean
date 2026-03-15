@@ -659,7 +659,7 @@ theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq 
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))
     (j : (i : η) × (ι i)) :
-    Pi.orthonormalBasis B j = toLp _ (Pi.single _ (B j.fst j.snd)) := by
+    Pi.orthonormalBasis B j = PiLp.single 2 j.fst (B j.fst j.snd) := by
   classical
   ext k
   obtain ⟨i, j⟩ := j
@@ -669,8 +669,8 @@ theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq 
     LinearIsometryEquiv.piLpCurry_apply, PiLp.ofLp_single, PiLp.toLp_apply,
     Sigma.curry_single (γ := fun _ _ => 𝕜)]
   obtain rfl | hi := Decidable.eq_or_ne i k
-  · simp only [Pi.single_eq_same, PiLp.toLp_single, OrthonormalBasis.repr_symm_single]
-  · simp only [Pi.single_eq_of_ne' hi, toLp_zero, map_zero]
+  · simp
+  · simp [hi]
 
 @[simp]
 theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η] {ι : η → Type*}
