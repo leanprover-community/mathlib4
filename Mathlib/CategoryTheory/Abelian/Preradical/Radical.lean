@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Abelian.Preradical.Colon
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
 /-!
-# Radicals of preradicals
+# Radicals
 
 In this file we define what it means for a preradical `Φ : Preradical C` on an
 abelian category `C` to be *radical*, and we define `Radical C` as the full
