@@ -197,7 +197,8 @@ def mkGSimpContext (stx : Syntax) (gsimpTheorems : CoreM GSimpTheorems := pure {
     gsimpTheorems
     gcongrTheorems
     idx := 0 -- The index for the implication relation is 0
-    rel := default
+    relType := .sort 0
+    rel := none
     relName := `_Implies }
 
 open Parser.Tactic in

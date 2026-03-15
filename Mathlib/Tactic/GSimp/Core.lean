@@ -26,45 +26,52 @@ partial def processGCongrSubgoal (h : Expr) (hType : Expr) (numIntro : Nat) :
     GSimpM Bool := do
   forallBoundedTelescope hType numIntro fun xs hType =>
     (if xs.isEmpty then id else withFreshCache) do
-    let (idx, relName, rel, lhs, rhs) ← match hType with
-      | .forallE _ lhs rhs _ => pure (0, `_Implies, default, lhs, rhs)
-      | mkApp2 rel lhs rhs => pure (← getCacheIdx rel, rel.getAppFn.constName, rel, lhs, rhs)
+    let (rel, lhs, rhs) ← match hType with
+      | .forallE _ lhs rhs _ =>
+        pure (none, lhs, rhs)
+      | mkApp2 rel lhs rhs =>
+        pure (some rel, lhs, rhs)
       | _ => throwError "invalid `gcongr` subgoal {hType}"
-    withRel rel relName do
+    withRel rel do
     let (lhs, rhs) := if ← isInv then (rhs, lhs) else (lhs, rhs)
     let lhs ← instantiateMVars lhs
-    let r ← gsimp lhs idx
+    let r ← gsimp lhs
+    logInfo m!"simplified to {r.expr} with proof {r.proof?}"
     rhs.withApp fun m zs => do
       unless zs.all (·.isFVar) do failure -- TODO: this should be checked by `@[gcongr]`
       let val ← mkLambdaFVars zs r.expr
       unless (← isDefEq m val) do
         failure
-      let proof ← r.getProof rel idx
+      let proof ← r.getProof
       unless (← isDefEq h (← mkLambdaFVars xs proof)) do
+        logInfo m!"{h}, {xs}, {proof}"
         failure
       return r.proof?.isSome
 
 /-- Try to rewrite `e` children using the given gcongr lemma. -/
-partial def tryGCongrTheorem? (lem : GCongr.GCongrLemma) (e : Expr) : GSimpM (Option Result) :=
-  withNewMCtxDepth do
-  trace[Debug.Meta.Tactic.simp.congr] "{lem.declName}, {e}"
-  let thm ← mkConstWithFreshMVarLevels lem.declName
+partial def tryGCongrTheorem? (thm : Expr) (numHyps : Nat)
+    (mainSubgoals : Array (Nat × Nat × Bool)) (e : Expr) :
+    GSimpM (Option Result) := do
   let type ← inferType thm
-  let (xs, bis, type) ← withDefault <| forallMetaTelescopeReducing type lem.numHyps
+  let (xs, bis, type) ← withDefault <| forallMetaTelescopeReducing type numHyps
+  logInfo m!"{xs}, {type}"
   let (lhs, rhs) ← match type with
     | .forallE _ lhs rhs _ => pure (lhs, rhs)
     | mkApp2 rel' lhs rhs =>
-      if ← isDefEq (← getRel) rel' then
-        pure (lhs, rhs)
+      if let some rel ← getRel then
+        if ← isDefEq rel rel' then
+          pure (lhs, rhs)
+        else
+          return none
       else
         return none
-    | _ => throwError "invalid `gcongr` theorem {lem.declName}`"
+    | _ => throwError "invalid `gcongr` theorem {thm}`"
   let (lhs, rhs) := if ← isInv then (rhs, lhs) else (lhs, rhs)
   unless ← isDefEq lhs e do
     return none
   -- First, ensure that all side goals can be solved
   for x in xs, bi in bis, i in 0...* do
-    if !(← x.mvarId!.isAssigned) && !lem.mainSubgoals.any (·.1 == i) then
+    if !(← x.mvarId!.isAssigned) && !mainSubgoals.any (·.1 == i) then
       -- TODO: improve the detection of whether there are unsolved side goals
       -- The `gcongr` lemma should store which goals are side goals.
       let type ← x.mvarId!.getType
@@ -80,53 +87,85 @@ partial def tryGCongrTheorem? (lem : GCongr.GCongrLemma) (e : Expr) : GSimpM (Op
           return none
   -- Then, recurse into the subexpressions
   let mut modified := false
-  for (i, numIntro, isContra) in lem.mainSubgoals do
+  for (i, numIntro, isContra) in mainSubgoals do
     let h := xs[i]!
     let hType ← instantiateMVars (← inferType h)
     try
       if ← withContra isContra <| processGCongrSubgoal h hType numIntro then
         modified := true
-    catch _ =>
-      trace[Meta.Tactic.simp.congr] "processCongrHypothesis {lem.declName} failed {hType}"
+    catch e =>
+      trace[Meta.Tactic.simp.congr] "processCongrHypothesis {thm} failed {hType}"
+      logInfo m!"error {e.toMessageData}"
       return none
   unless modified do
-    trace[Meta.Tactic.simp.congr] "{lem.declName} not modified"
+    trace[Meta.Tactic.simp.congr] "{thm} not modified"
     return none
   let eNew ← instantiateMVars rhs
   let mut proof ← instantiateMVars (mkAppN thm xs)
   if (← hasAssignableMVar proof <||> hasAssignableMVar eNew) then
-    trace[Meta.Tactic.simp.congr] "{lem.declName} has unassigned metavariables"
+    trace[Meta.Tactic.simp.congr] "{thm} has unassigned metavariables"
     return none
   return some { expr := eNew, proof? := proof }
 
+/-- Try to rewrite the goal using reflexivity or transitivity. -/
+partial def tryBuiltinGSimpTheorems? (e : Expr) : GSimpM (Option Result) := do
+  unless (← getRelName) == `_Implies do return none
+  let mkApp2 rel lhs rhs := e | return none
+  try
+    withRel rel do
+    let inv ← isInv
+    -- reflexivity
+    if inv then
+      if ← isDefEq lhs rhs then
+        return some {
+          expr := mkConst ``True
+          proof? := some <| .lam `t (mkConst ``True) ((← getRfl).app lhs) .default }
+    let trans ← getTrans
+    -- transitivity on the left
+    let mvar ← mkFreshExprMVar (← getRelType)
+    let thm := if inv then mkApp3 trans lhs mvar rhs else mkApp3 trans mvar lhs rhs
+    if let some r ← tryGCongrTheorem? thm 1 #[(0, 0, true)] e then
+      return some r
+    -- transitivity on the right
+    let mvar ← mkFreshExprMVar (← getRelType)
+    let thm ← mkAppM ``flip
+      #[if inv then mkApp3 trans lhs mvar rhs else mkApp3 trans mvar lhs rhs]
+    if let some r ← tryGCongrTheorem? thm 1 #[(0, 0, false)] e then
+      return some r
+    return none
+  catch _ =>
+    return none
 
-partial def gsimpStep (e : Expr) (idx : CacheIndex) : GSimpM Result := do
+partial def gsimpStep (e : Expr) : GSimpM Result := do
   let e ← instantiateMVars e
   match e with
-  | .mdata m e => let r ← gsimp e idx; return { r with expr := mkMData m r.expr }
-  | _ =>
+  | .mdata m e => let r ← gsimp e; return { r with expr := mkMData m r.expr }
+  | _ => withNewMCtxDepth do
+
   let some (head, args) := GCongr.getCongrAppFnArgs e | return { expr := e }
   let key : GCongr.GCongrKey := { relName := ← getRelName, head, arity := args.size }
   let some lemmas := (← getGCongrTheorems)[key]? | return { expr := e }
   for lem in lemmas do
-    if let some r ← tryGCongrTheorem? lem e then
+    let thm ← mkConstWithFreshMVarLevels lem.declName
+    if let some r ← tryGCongrTheorem? thm lem.numHyps lem.mainSubgoals e then
       return r
-  -- TODO: also do the `rel_imp_rel` lemma
+  if let some r ← tryBuiltinGSimpTheorems? e then
+    return r
   return { expr := e }
 
 
 /-- A copy of `Simp.cacheResult`. -/
-partial def cacheResult (idx : CacheIndex) (e : Expr) (r : Result) : GSimpM Result := do
+partial def cacheResult (e : Expr) (r : Result) : GSimpM Result := do
   let inv ← isInv
-  modify fun s => { s with cache := s.cache.insert idx inv e r }
+  modifyCacheEntry (·.insert inv e r)
   return r
 
 /-- A copy of `Simp.simpLoop`. -/
-partial def gsimpLoop (e : Expr) (idx : CacheIndex) : GSimpM Result :=
+partial def gsimpLoop (e : Expr) : GSimpM Result :=
   withIncRecDepth do
   let cfg ← getConfig
-  let cache := (← get).cache
-  if let some result := cache.find? idx (← isInv) e then
+  let cache ← getCacheEntry
+  if let some result := cache.find? (← isInv) e then
     return result
   if (← get).numSteps > cfg.maxSteps then
     throwError "`gsimp` failed: maximum number of steps exceeded"
@@ -134,36 +173,36 @@ partial def gsimpLoop (e : Expr) (idx : CacheIndex) : GSimpM Result :=
     checkSystem "gsimp"
     modify fun s => { s with numSteps := s.numSteps + 1 }
     match (← pre e) with
-    | .done r  => cacheResult idx e r
-    | .visit r => cacheResult idx e <|
-      (← r.mkTrans e idx (← gsimpLoop r.expr idx))
+    | .done r  => cacheResult e r
+    | .visit r => cacheResult e <|
+      (← r.mkTrans e (← gsimpLoop r.expr))
     | .continue none => visitPreContinue cfg { expr := e }
     | .continue (some r) => visitPreContinue cfg r
 where
   visitPreContinue (cfg : Config) (r : Result) : GSimpM Result := do
-    let r ← r.mkTrans e idx (← gsimpStep r.expr idx)
+    let r ← r.mkTrans e (← gsimpStep r.expr)
     visitPost cfg r
   visitPost (cfg : Config) (r : Result) : GSimpM Result := do
     match (← post r.expr) with
-    | .done r' => cacheResult idx e (← r.mkTrans e idx r')
+    | .done r' => cacheResult e (← r.mkTrans e r')
     | .continue none => visitPostContinue cfg r
-    | .visit r' | .continue (some r') => visitPostContinue cfg (← r.mkTrans e idx r')
+    | .visit r' | .continue (some r') => visitPostContinue cfg (← r.mkTrans e r')
   visitPostContinue (cfg : Config) (r : Result) : GSimpM Result := do
     let mut r := r
     unless cfg.singlePass || e == r.expr do
-      r ← r.mkTrans e idx (← gsimpLoop r.expr idx)
-    cacheResult idx e r
+      r ← r.mkTrans e (← gsimpLoop r.expr)
+    cacheResult e r
 
-partial def gsimp (e : Expr) (idx : CacheIndex) : GSimpM Result :=
+partial def gsimp (e : Expr) : GSimpM Result :=
   withIncRecDepth do
   checkSystem "gsimp"
-  gsimpLoop e idx
+  gsimpLoop e
 
 end
 
 def mainCore (e : Expr) (ctx : Context) (methods : Methods) :
     MetaM Result := do
-  GSimpM.run ctx {} methods <| gsimp e default
+  GSimpM.run ctx {} methods <| gsimp e
 
 def defaultDischarger (e : Expr) : MetaM (Option Expr) := do
   let mvar ← mkFreshExprMVar e

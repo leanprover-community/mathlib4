@@ -39,6 +39,9 @@ def CacheEntry.insert (entry : CacheEntry) (inv : Bool) (e : Expr) (r : Result) 
   else
     { entry with invCache := entry.invCache.insert e r }
 
+def CacheEntry.find? (entry : CacheEntry) (inv : Bool) (e : Expr) : Option Result :=
+  if inv then entry.invCache[e]? else entry.cache[e]?
+
 theorem imp_rfl (p : Prop) : p → p := id
 theorem imp_trans (p q r : Prop) : (p → q) → (q → r) → p → r := flip Function.comp
 
@@ -60,13 +63,9 @@ structure Cache where
   entries : Array CacheEntry := #[{
     trans? := Expr.const ``imp_trans [], rfl? := Expr.const ``imp_rfl [] }]
 
--- Instead of returning none, this should modify the `entries` to create a new index.
-def Cache.findIdx? (c : Cache) (rel : Expr) : Option CacheIndex :=
-  c.relMap[rel]?
-
-def Cache.find? (c : Cache) (idx : CacheIndex) (inv : Bool) (e : Expr) : Option Result :=
-  let entry := c.entries[idx]!
-  if inv then entry.invCache[e]? else entry.cache[e]?
+-- -- Instead of returning none, this should modify the `entries` to create a new index.
+-- def Cache.findIdx? (c : Cache) (rel : Expr) : Option CacheIndex :=
+--   c.relMap[rel]?
 
 def Cache.insert (c : Cache) (idx : CacheIndex) (inv : Bool) (e : Expr) (r : Result) : Cache :=
   { c with entries := c.entries.modify idx (·.insert inv e r)}
@@ -114,8 +113,10 @@ structure Context where
   gcongrTheorems : GCongr.GCongrLemmas
   /-- The index in the array of caches that is relevant to the current relation. -/
   idx : CacheIndex
-  /-- The current relation. -/
-  rel : Expr
+  /-- The type on which the current relation operates. -/
+  relType : Expr
+  /-- The current relation. Set to `none` if the relation is implication. -/
+  rel : Option Expr
   /-- The name of the current relation. -/
   relName : Name
   /-- Whether we are using the relation in the reverse direction. -/
@@ -140,15 +141,47 @@ def getGCongrTheorems : GSimpM GCongr.GCongrLemmas :=
 def getConfig : GSimpM Config :=
   return (← getContext).config
 
+def getCacheEntry : GSimpM CacheEntry := do
+  match (← get).cache.entries[(← getContext).idx]? with
+  | some entry => return entry
+  | none => throwError "Interal `gsimp` error: no cache entry"
+
+def modifyCacheEntry (f : CacheEntry → CacheEntry) : GSimpM Unit := do
+  let idx := (← getContext).idx
+  modify fun s ↦ { s with cache.entries := s.cache.entries.modify idx f }
+
+def getRelType : GSimpM Expr :=
+  return (← getContext).relType
+
 def getRelName : GSimpM Name :=
   return (← getContext).relName
 
-def getRel : GSimpM Expr :=
+def getRel : GSimpM (Option Expr) :=
   return (← getContext).rel
 
 @[inline]
-def withRel {α} (rel : Expr) (relName : Name) (x : GSimpM α) : GSimpM α :=
-  withTheReader Context (fun ctx ↦ { ctx with rel, relName }) x
+def withRel {α} (rel : Option Expr) (x : GSimpM α) : GSimpM α := do
+  let (idx, relType, relName) ← match rel with
+    | some rel =>
+      let .forallE _ type _ _ ← whnf (← inferType rel)
+        | throwError "expected a relation{indentExpr rel}"
+      let .const name _ := rel.getAppFn
+        | throwError "expected a constant application{indentExpr rel}"
+      pure (← getCacheIdx rel, type, name)
+    | none =>
+      pure (0,.sort 0, `_Implies)
+  withTheReader Context (fun ctx ↦ { ctx with idx, relType, rel, relName }) x
+where
+  getCacheIdx (rel : Expr) : GSimpM CacheIndex := do
+    let c := (← get).cache
+    if let some idx := c.relMap[rel]? then
+      return idx
+    else
+      let idx := c.entries.size
+      modify fun s ↦ { s with
+        cache.entries := s.cache.entries.push {}
+        cache.relMap := s.cache.relMap.insert rel idx }
+      return idx
 
 def isInv : GSimpM Bool :=
   return (← getContext).inv
@@ -165,51 +198,44 @@ def withContra {α} (isContra : Bool) (x : GSimpM α) : GSimpM α :=
   modify fun s => { s with cache := {} }
   try x finally modify fun s => { s with cache := cacheSaved }
 
-def getCacheIdx (rel : Expr) : GSimpM CacheIndex := do
-  let c := (← get).cache
-  if let some idx := c.relMap[rel]? then
-    return idx
-  else
-    let idx := c.entries.size
-    modify fun s ↦ { s with
-      cache.entries := s.cache.entries.push {}
-      cache.relMap := s.cache.relMap.insert rel idx }
-    return idx
 
-def getRfl (rel : Expr) (idx : CacheIndex) : GSimpM Expr := do
-  let entry := (← get).cache.entries[idx]!
+/-- Get a proof of `∀ x, x ~ x`. -/
+def getRfl : GSimpM Expr := do
+  let entry ← getCacheEntry
   if let some proof := entry.rfl? then
     return proof
-  let proof ← mkAppOptM ``refl #[none, rel, none]
-  modify fun s ↦ { s with cache.entries := s.cache.entries.set! idx { entry with rfl? := proof } }
+  let some rel ← getRel | unreachable!
+  let proof ← mkAppOptM ``refl #[← getRelType, rel, none]
+  modifyCacheEntry ({ · with rfl? := proof })
   return proof
 
-def getTrans (rel : Expr) (idx : CacheIndex) : GSimpM Expr := do
-  let entry := (← get).cache.entries[idx]!
+/-- Get a proof of `∀ x y z, x ~ y → y ~ z → x ~ z`. -/
+def getTrans : GSimpM Expr := do
+  let entry ← getCacheEntry
   if let some proof := entry.trans? then
     return proof
-  let proof ← mkAppOptM ``IsTrans.trans #[none, rel, none]
-  modify fun s ↦ { s with cache.entries := s.cache.entries.set! idx { entry with trans? := proof } }
+  let some rel ← getRel | unreachable!
+  let proof ← mkAppOptM ``IsTrans.trans #[← getRelType, rel, none]
+  modifyCacheEntry ({ · with trans? := proof })
   return proof
 
-def Result.getProof (rel : Expr) (idx : CacheIndex) (r : Result) : GSimpM Expr := do
+def Result.getProof (r : Result) : GSimpM Expr := do
   match r.proof? with
   | some p => return p
-  | none => return .app (← getRfl rel idx) r.expr
+  | none => return .app (← getRfl) r.expr
 
 /-- `trans` is assumed to have type `∀ a b c, a ~ b → b ~ c → a ~ c`. -/
-def Result.mkTrans (e : Expr) (idx : CacheIndex) (r₁ r₂ : Result) :
+def Result.mkTrans (e : Expr) (r₁ r₂ : Result) :
     GSimpM Result := do
   match r₁.proof? with
   | none => return r₂
   | some p₁ => match r₂.proof? with
     | none => return { r₂ with proof? := p₁ }
     | some p₂ =>
-      let trans ← getTrans (← getRel) idx
       if ← isInv then
-        return { r₂ with proof? := mkApp5 trans r₂.expr r₁.expr e p₂ p₁ }
+        return { r₂ with proof? := mkApp5 (← getTrans) r₂.expr r₁.expr e p₂ p₁ }
       else
-        return { r₂ with proof? := mkApp5 trans e r₁.expr r₂.expr p₁ p₂ }
+        return { r₂ with proof? := mkApp5 (← getTrans) e r₁.expr r₂.expr p₁ p₂ }
 
 /-- `symmRel` is assumed to have type `∀ a b, a ~ b → b ~ a`. -/
 def mkSymm (e symmRel : Expr) (r : Result) : GSimpM Result := do

@@ -77,11 +77,11 @@ example {n : ℕ} (bound : n ≤ 5) : n ≤ 10 := by
   gsimp [h'] at bound
   assumption
 
-example (h₁ : a ≤ b) : a + 5 ≤ b + 5 := by gsimp [h₁]; rfl
+example (h₁ : a ≤ b) : a + 5 ≤ b + 5 := by gsimp [h₁]
 
-example (h₁ : a ≤ b) : a * 5 ≤ b * 5 := by gsimp [h₁]; rfl
+example (h₁ : a ≤ b) : a * 5 ≤ b * 5 := by gsimp [h₁]
 
-example (h₁ : a ≤ b) (h₂ : c ≥ 0) : a * c ≤ b * c := by gsimp [h₁]; rfl
+example (h₁ : a ≤ b) (h₂ : c ≥ 0) : a * c ≤ b * c := by gsimp [h₁]
 
 /- This example has behaviour which might be weaker than some users would desire: it would be
 mathematically sound to transform the goal here to `2 * y ≤ z`, not `2 * y < z`.
@@ -107,18 +107,18 @@ example (h₁ : X ⊆ Y) (h₂ : Y ⊆ Z) (h₃ : a ∈ X) : False := by
   exact test_sorry
 
 example (h₁ : Y ⊇ W) : X ⊂ (Y ∪ Z) := by
-  gsimp [h₁]
+  gsimp [← h₁.subset]
   guard_target =ₛ X ⊂ (W ∪ Z)
   exact test_sorry
 
 example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
-  gsimp [← h₁]
+  gsimp [← h₁.subset]
   guard_target =ₛ X ⊂ (W ∪ Z)
   exact h₂
 
 example {a b : Nat} (h : a < b) (f : Nat → Nat) (hf : ∀ i, 0 ≤ f i) :
     ∑ i ∈ ({x | x ≤ a} : Set Nat), f i ≤ ∑ i ∈ ({x | x ≤ b} : Set Nat), f i := by
-  gsimp [h]
+  gsimp [h.le]
 
 end subsets
 
