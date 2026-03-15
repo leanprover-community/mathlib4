@@ -119,7 +119,6 @@ As one may use the same right invariant measure, this shows that two different l
 measures will give the same integral, up to some fixed scalar.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a group with a left invariant measure `μ` and a right invariant measure `ν`, one can express
 integrals with respect to `μ` as integrals with respect to `ν` up to a constant scaling factor
 (given in the statement as `∫ x, g x ∂μ` where `g` is a fixed reference function) and an
@@ -305,22 +304,30 @@ lemma haarScalarFactor_eq_integral_div (μ' μ : Measure G) [IsHaarMeasure μ]
   rw [integral_smul_nnreal_measure] at this
   exact EuclideanDomain.eq_div_of_mul_eq_left int_nonzero this.symm
 
+@[to_additive addHaarScalarFactor_eq_integral_div_of_continuous_nonneg_pos]
+lemma haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos
+    (μ' μ : Measure G) [IsHaarMeasure μ]
+    [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
+    {f : C(G, ℝ)} (hf : HasCompactSupport f ∧ 0 ≤ f ∧ f 1 ≠ 0) :
+    haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
+  obtain ⟨f_comp, f_nonneg, f_one⟩ := hf
+  have int_f_ne_zero : ∫ (x : G), f x ∂μ ≠ 0 :=
+    ne_of_gt (f.2.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_one)
+  exact haarScalarFactor_eq_integral_div _ _ f.2 f_comp int_f_ne_zero
+
 @[to_additive (attr := simp) addHaarScalarFactor_smul]
 lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsHaarMeasure μ]
     [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {c : ℝ≥0} :
     haarScalarFactor (c • μ') μ = c • haarScalarFactor μ' μ := by
-  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
-    ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
-    ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+  obtain ⟨g, hg⟩ := exists_continuous_nonneg_pos (1 : G)
   apply NNReal.coe_injective
   calc
     haarScalarFactor (c • μ') μ = (∫ x, g x ∂(c • μ')) / ∫ x, g x ∂μ :=
-      haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero
+      haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hg
     _ = (c • (∫ x, g x ∂μ')) / ∫ x, g x ∂μ := by simp
     _ = c • ((∫ x, g x ∂μ') / ∫ x, g x ∂μ) := smul_div_assoc c _ _
     _ = c • haarScalarFactor μ' μ := by
-      rw [← haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero]
+      rw [← haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hg]
 
 @[to_additive mul_addHaarScalarFactor_smul]
 lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
@@ -329,20 +336,17 @@ lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
     haveI : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
     c * haarScalarFactor μ' (c • μ) = haarScalarFactor μ' μ := by
   have : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
-  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
-    ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
-    ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+  obtain ⟨g, hg⟩ := exists_continuous_nonneg_pos (1 : G)
   apply NNReal.coe_injective
   calc
     c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) := by
-      rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp (by simp [int_g_ne_zero, hc])]
+      rw [haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hg]
     _ = c * ((∫ x, g x ∂μ') / (c • ∫ x, g x ∂μ)) := by simp
     _ = (∫ x, g x ∂μ') / (∫ x, g x ∂μ) := by
       rw [NNReal.smul_def, smul_eq_mul, ← mul_div_assoc]
       exact mul_div_mul_left (∫ (x : G), g x ∂μ') (∫ (x : G), g x ∂μ) (by simp [hc])
     _ = μ'.haarScalarFactor μ :=
-      (haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero).symm
+      (haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hg).symm
 
 @[to_additive addHaarScalarFactor_smul_smul]
 lemma haarScalarFactor_smul_smul [LocallyCompactSpace G] (μ' μ : Measure G)
@@ -357,14 +361,13 @@ lemma haarScalarFactor_self (μ : Measure G) [IsHaarMeasure μ] :
     haarScalarFactor μ μ = 1 := by
   by_cases hG : LocallyCompactSpace G; swap
   · simp [haarScalarFactor, hG]
-  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
-    ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  obtain ⟨g, hg⟩ := exists_continuous_nonneg_pos (1 : G)
   have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
-    ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+    ne_of_gt (g.2.integral_pos_of_hasCompactSupport_nonneg_nonzero hg.1 hg.2.1 hg.2.2)
   apply NNReal.coe_injective
   calc
     haarScalarFactor μ μ = (∫ x, g x ∂μ) / ∫ x, g x ∂μ :=
-      haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero
+      haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hg
     _ = 1 := div_self int_g_ne_zero
 
 @[to_additive addHaarScalarFactor_eq_mul]
@@ -388,6 +391,24 @@ lemma haarScalarFactor_eq_mul (μ' μ ν : Measure G)
   change (haarScalarFactor μ' ν : ℝ) * ∫ (x : G), g x ∂ν =
     (haarScalarFactor μ' μ * haarScalarFactor μ ν : ℝ≥0) * ∫ (x : G), g x ∂ν at Z
   simpa only [mul_eq_mul_right_iff (M₀ := ℝ), int_g_pos.ne', or_false, ← NNReal.eq_iff] using Z
+
+@[to_additive]
+lemma haarScalarFactor_map (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ'] (φ : G ≃ₜ* G) :
+    (map φ μ').haarScalarFactor (map φ μ) = μ'.haarScalarFactor μ := by
+  -- The group has to be locally compact, otherwise the scalar factor is 1 by definition.
+  by_cases hG : LocallyCompactSpace G; swap
+  · simp [haarScalarFactor, hG]
+  obtain ⟨⟨f, f_cont⟩, hf⟩ := exists_continuous_nonneg_pos (1 : G)
+  have int_f_ne_zero : ∫ (x : G), f x ∂(map φ μ) ≠ 0 :=
+    ne_of_gt (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero hf.1 hf.2.1 hf.2.2)
+  rw [← NNReal.coe_inj, haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hf,
+    haarScalarFactor_eq_integral_div μ' μ (f_cont.comp φ.continuous),
+    integral_map (by fun_prop) (by fun_prop),
+    integral_map (by fun_prop) (by fun_prop)]
+  · rfl
+  · exact hf.1.comp_homeomorph φ.toHomeomorph
+  · change ∫ x, f (φ x) ∂μ ≠ 0
+    rwa [← integral_map (by fun_prop) f_cont.aestronglyMeasurable]
 
 /-- The scalar factor between two left-invariant measures is non-zero when both measures are
 positive on open sets. -/
@@ -434,7 +455,6 @@ and `μ'` coincide on these supersets, this yields `μ s = μ' s`.
 See `measure_isMulInvariant_eq_smul_of_isCompact_closure`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two left invariant measures give the same mass to level sets of continuous compactly supported
 functions, up to the scalar `haarScalarFactor μ' μ`.
 
@@ -689,7 +709,6 @@ Two Haar measures give the same measure to open sets (or more generally to sets 
 positive), up to the scalar `haarScalarFactor μ' μ `.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive measure_isAddHaarMeasure_eq_smul_of_isEverywherePos]
 theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ']

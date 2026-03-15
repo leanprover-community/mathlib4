@@ -132,6 +132,18 @@ lemma hasZeroObject_of_additive [HasZeroObject C] :
     HasZeroObject D where
   zero := ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
 
+open Limits ZeroObject
+
+lemma Additive.of_isZero {F : C ⥤ D} (hF : IsZero F) :
+    F.Additive where
+  map_add {_ _ _ _} :=
+    IsZero.eq_of_tgt (by
+      rw [IsZero.iff_id_eq_zero]
+      exact NatTrans.congr_app ((IsZero.iff_id_eq_zero _).1 hF) _) _ _
+
+instance [HasZeroObject D] : Functor.Additive (0 : C ⥤ D) :=
+  .of_isZero (isZero_zero _)
+
 end
 
 section InducedCategory

@@ -198,7 +198,6 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
   simp only [mem_insert_iff, mem_singleton_iff] at h₀ h₁ h₂ h₃ hA
   rcases hA with hA | hA | hA | hA | hA <;> rw [hA] at h₀ h₁ h₂ h₃ <;> lia
 
-set_option backward.isDefEq.respectTransparency false in
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
     (hki : P.pairingIn ℤ k i = 0) :
@@ -261,7 +260,6 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   simp only [P.chainBotCoeff_if_one_zero, hik_mem, him_mem, hjl_mem, hjk_mem]
   simp [key₁, key₂, key₃, key₄]
 
-set_option backward.isDefEq.respectTransparency false in
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 open RootPositiveForm in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
