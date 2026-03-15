@@ -47,8 +47,6 @@ section CommRing
 
 variable {R : Type v} {M : Type w} [CommRing R] [AddCommGroup M] [Module R M] {f : End R M} {μ : R}
 
-/-- If `f x = μ • x`, then `(aeval f p) x = (eval μ p) • x`. This generalizes
-`aeval_apply_of_hasEigenvector` by not requiring `x ≠ 0`. -/
 theorem aeval_apply_of_mem_eigenspace {f : End R M} {p : R[X]} {μ : R} {x : M}
     (hx : f x = μ • x) : aeval f p x = p.eval μ • x := by
   refine p.induction_on ?_ ?_ ?_
@@ -114,7 +112,6 @@ section Field
 
 variable {K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V]
 
-/-- If `q(f) v = 0`, `f v = 0`, and `v ≠ 0`, then `q(0) = 0`. -/
 theorem eval_zero_of_aeval_apply_eq_zero (f : End K V) (q : K[X]) {v : V}
     (hv : v ≠ 0) (hf : f v = 0) (hq : (aeval f q) v = 0) : q.eval 0 = 0 := by
   have h := aeval_apply_of_mem_eigenspace (p := q) (show f v = 0 • v by simp [hf])
