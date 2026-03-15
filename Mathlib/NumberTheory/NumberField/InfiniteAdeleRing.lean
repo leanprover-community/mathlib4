@@ -5,9 +5,9 @@ Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
 module
 
+public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
-public import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # The infinite adele ring of a number field
@@ -116,8 +116,8 @@ theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K (Infi
       (.piMap fun _ => UniformSpace.Completion.continuous_coe _)
 
 /-- The norm on the infinite adele ring is given by the product of the normalized norms
-across infinite places, which is the regular norm if the place is real, or the square
-of the regular norm if the place is complex. -/
+across infinite places. The normalized norm is the real norm at real places and the
+square of the complex norm at complex places. -/
 instance [NumberField K] : Norm (InfiniteAdeleRing K) where
   norm x := ∏ v, ‖x v‖ ^ v.mult
 

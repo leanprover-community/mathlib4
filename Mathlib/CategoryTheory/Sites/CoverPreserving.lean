@@ -118,7 +118,7 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   intro ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ e
   -- First, `f₁` and `f₂` form a cone over `cospan g₁ g₂ ⋙ u`.
   let c : Cone (cospan g₁ g₂ ⋙ G) :=
-    (Cones.postcompose (diagramIsoCospan (cospan g₁ g₂ ⋙ G)).inv).obj (PullbackCone.mk f₁ f₂ e)
+    (Cone.postcompose (diagramIsoCospan (cospan g₁ g₂ ⋙ G)).inv).obj (PullbackCone.mk f₁ f₂ e)
   /-
     This can then be viewed as a cospan of structured arrows, and we may obtain an arbitrary cone
     over it since `StructuredArrow W u` is cofiltered.

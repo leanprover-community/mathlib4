@@ -89,6 +89,10 @@ ofUnits_units_gci.gc
 lemma ofUnits_le_iff_le_units (S : Submonoid M) (H : Subgroup Mˣ) :
     H.ofUnits ≤ S ↔ H ≤ S.units := ofUnits_units_gc _ _
 
+@[to_additive]
+theorem IsUnit.coe {S : Type*} [SetLike S M] [SubmonoidClass S M] {N : S} {a : N}
+    (ha : IsUnit a) : IsUnit (a : M) := ha.map (SubmonoidClass.subtype N)
+
 namespace Submonoid
 
 section Units
@@ -135,7 +139,8 @@ lemma inv_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) : x⁻¹ ∈
 lemma inv_mem_units_iff (S : Submonoid M) {x : Mˣ} : x⁻¹ ∈ S.units ↔ x ∈ S.units := inv_mem_iff
 
 /-- The equivalence between the subgroup of units of `S` and the type of units of `S`. -/
-@[to_additive /-- The equivalence between the additive subgroup of additive units of
+@[to_additive (attr := simps)
+/-- The equivalence between the additive subgroup of additive units of
 `S` and the type of additive units of `S`. -/]
 def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
   toFun := fun ⟨_, h⟩ => ⟨⟨_, h.1⟩, ⟨_, h.2⟩, S.mk_mul_mk_inv_eq_one h, S.mk_inv_mul_mk_eq_one h⟩

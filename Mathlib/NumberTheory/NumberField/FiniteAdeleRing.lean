@@ -6,7 +6,7 @@ Authors: Salvatore Mercuri
 
 module
 
-public import Mathlib.NumberTheory.NumberField.FinitePlaces
+public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.NumberTheory.NumberField.ProductFormula

@@ -57,6 +57,7 @@ public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 public import Mathlib.Tactic.ComputeDegree
 public import Mathlib.Tactic.CongrExclamation
@@ -278,6 +279,7 @@ public import Mathlib.Tactic.Simproc.Divisors
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
 public import Mathlib.Tactic.Simproc.FinsetInterval
+public import Mathlib.Tactic.Simproc.VecPerm
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
