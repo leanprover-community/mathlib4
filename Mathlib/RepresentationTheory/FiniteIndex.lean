@@ -212,16 +212,13 @@ lemma resIndAdjunction_homEquiv_apply
     {B : Rep k G} (f : (Action.res _ S.subtype).obj B ⟶ A) :
     (resIndAdjunction k S).homEquiv _ _ f =
       resCoindHomEquiv S.subtype B A f ≫ (indCoindIso A).inv := by
-  simp only [resIndAdjunction, Adjunction.ofNatIsoRight, resCoindAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
+  simp only [resIndAdjunction, resCoindAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
   rfl
 
 lemma resIndAdjunction_homEquiv_symm_apply
     {B : Rep k G} (f : B ⟶ (indFunctor k S.subtype).obj A) :
     ((resIndAdjunction k S).homEquiv _ _).symm f =
       (resCoindHomEquiv S.subtype B A).symm (f ≫ (indCoindIso A).hom) := by
-  simp only [resIndAdjunction, Adjunction.ofNatIsoRight, resCoindAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
   rfl
 
 variable (k S) in
@@ -241,31 +238,27 @@ set_option backward.isDefEq.respectTransparency false in
 lemma coindResAdjunction_counit_app (B : Rep k G) :
     (coindResAdjunction k S).counit.app B = (indCoindIso <| (Action.res _ S.subtype).obj B).inv ≫
       (indResAdjunction k S.subtype).counit.app B := by
-  simp [coindResAdjunction, Adjunction.ofNatIsoLeft, Adjunction.equivHomsetLeftOfNatIso,
-    indResAdjunction]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coindResAdjunction_unit_app :
     (coindResAdjunction k S).unit.app A = (indResAdjunction k S.subtype).unit.app A ≫
       (Action.res _ S.subtype).map (indCoindIso A).hom := by
-  ext
-  simp [coindResAdjunction, Adjunction.ofNatIsoLeft, Adjunction.equivHomsetLeftOfNatIso,
-    indResAdjunction]
+  rfl
 
 lemma coindResAdjunction_homEquiv_apply {B : Rep k G} (f : coind S.subtype A ⟶ B) :
     (coindResAdjunction k S).homEquiv _ _ f =
       indResHomEquiv S.subtype A B ((indCoindIso A).hom ≫ f) := by
-  simp only [coindResAdjunction, Adjunction.ofNatIsoLeft, indResAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
   rfl
 
 lemma coindResAdjunction_homEquiv_symm_apply
     {B : Rep k G} (f : A ⟶ (Action.res _ S.subtype).obj B) :
     ((coindResAdjunction k S).homEquiv _ _).symm f =
       (indCoindIso A).inv ≫ (indResHomEquiv S.subtype A B).symm f := by
-  simp only [coindResAdjunction, Adjunction.ofNatIsoLeft, indResAdjunction,
-    Adjunction.mkOfHomEquiv_homEquiv]
+  simp only [coindResAdjunction, indResAdjunction,
+    Adjunction.homEquiv_ofNatIsoLeft_symm_apply]
+  simp
   rfl
 
 end Rep
