@@ -20,8 +20,8 @@ function, and proves its key properties including invariance under the generator
 
 ## Main definitions
 
-* `ModularForm.discriminant`: The modular discriminant function `Δ(z) = η(z) ^ 24`, which can also be
-  expressed as `q * ∏' (1 - q ^ (n + 1)) ^ 24` where `q = e ^ (2πiz)`.
+* `ModularForm.discriminant`: The modular discriminant function `Δ(z) = η(z) ^ 24`, which can also
+be expressed as `q * ∏' (1 - q ^ (n + 1)) ^ 24` where `q = e ^ (2πiz)`.
 
 ## Main results
 
