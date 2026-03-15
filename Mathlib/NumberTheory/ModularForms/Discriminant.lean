@@ -157,8 +157,7 @@ def discriminantSIF : SlashInvariantForm Γ(1) 12 where
     exact slash_action_generators_SL2Z discriminant_S_invariant discriminant_T_invariant A
 
 lemma discriminant_bounded_factor :
-    Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - cexp (2 * π * I * (n + 1) * x)) ^ 24)
-      atImInfty (𝓝 1) := by
+    Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - eta_q n x) ^ 24) atImInfty (𝓝 1) := by
   have htprod : Tendsto (fun q : ℂ ↦ ∏' (n : ℕ), (1 - q ^ (n + 1))) (𝓝 0) (𝓝 1) := by
     have := tendsto_tprod_one_add_of_dominated_convergence (𝓕 := 𝓝 0) (g := 0)
       (f := fun q : ℂ ↦ fun n : ℕ ↦ -q ^ (n + 1)) (bound := fun n : ℕ ↦ (1 / 2 : ℝ) ^ (n + 1))
@@ -171,21 +170,17 @@ lemma discriminant_bounded_factor :
       exact pow_le_pow_left₀ (norm_nonneg _)
         (by rw [Metric.mem_ball, dist_zero_right] at hq; exact hq.le) _
   have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
-  simp only [one_pow, comp_def, Periodic.qParam, ofReal_one, div_one] at this
+  simp only [one_pow, comp_def, Periodic.qParam, ofReal_one, div_one, eta_q] at *
   convert this using 2 with τ
   rw [Multipliable.tprod_pow]
-  · congr
-    congr 1 with n
-    rw [← exp_nat_mul]
-    grind
-  · exact (ModularForm.multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr fun x ↦ by
-      simp [eta_q, Periodic.qParam, ofReal_one, div_one, ← exp_nat_mul]; ring_nf
+  exact (ModularForm.multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr fun x ↦ by
+    simp [eta_q, Periodic.qParam, ofReal_one, div_one, ← exp_nat_mul]
 
 lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
   apply Tendsto.congr (fun z ↦ (discriminant_eq_q_prod z).symm)
   rw [show (0 : ℂ) = 0 * 1 by ring]
   exact (qParam_tendsto_atImInfty zero_lt_one).mul
-    (discriminant_bounded_factor.congr fun z ↦ by congr 1; simp_rw [eta_q_eq_cexp])
+    (discriminant_bounded_factor.congr fun z ↦ by congr 1)
 
 /-- The modular discriminant `Δ` as a cusp form of weight 12 and level 1. -/
 def discriminantCuspForm : CuspForm Γ(1) 12 where
