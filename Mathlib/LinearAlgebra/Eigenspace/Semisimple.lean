@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 public import Mathlib.LinearAlgebra.Semisimple
 
 /-!
@@ -65,5 +66,28 @@ lemma IsFinitelySemisimple.maxGenEigenspace_eq_eigenspace
     (hf : f.IsFinitelySemisimple) (μ : R) :
     f.maxGenEigenspace μ = f.eigenspace μ :=
   hf.genEigenspace_eq_eigenspace μ ENat.top_pos
+
+section AlgClosed
+
+variable {K V : Type*} [Field K] [IsAlgClosed K] [AddCommGroup V] [Module K V]
+  [FiniteDimensional K V] {f : End K V}
+
+lemma IsFinitelySemisimple.iSup_eigenspace_eq_top (hf : f.IsFinitelySemisimple) :
+    ⨆ μ : K, f.eigenspace μ = ⊤ := by
+  have := iSup_maxGenEigenspace_eq_top f
+  simp_rw [hf.maxGenEigenspace_eq_eigenspace] at this
+  exact this
+
+lemma IsFinitelySemisimple.eq_zero_of_forall_eigenvalue_eq_zero (hf : f.IsFinitelySemisimple)
+    (h : ∀ μ : K, f.HasEigenvalue μ → μ = 0) : f = 0 := by
+  suffices f.eigenspace 0 = ⊤ by rwa [eigenspace_zero, LinearMap.ker_eq_top] at this
+  rw [← hf.iSup_eigenspace_eq_top]
+  refine le_antisymm (le_iSup _ 0) (iSup_le fun μ ↦ ?_)
+  rcases eq_or_ne μ 0 with rfl | hμ
+  · exact le_refl _
+  · have : f.eigenspace μ = ⊥ := not_not.mp (hasEigenvalue_iff.not.mp fun he ↦ hμ (h μ he))
+    simp [this]
+
+end AlgClosed
 
 end Module.End
