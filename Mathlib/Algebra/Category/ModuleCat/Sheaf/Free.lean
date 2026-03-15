@@ -146,22 +146,16 @@ instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) where
           dsimp
           rw [← s.w f]
           dsimp
-          rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap, Function.comp_apply,
-            freeHomEquiv_apply] }
-    let desc (s : Cocone (K ⋙ freeFunctor (R := R))) :
-        free c.pt ⟶ s.pt :=
-      (freeHomEquiv _).symm (hc.desc (coconeTypes s))
-    have fac (s : Cocone (K ⋙ freeFunctor (R := R))) (j : J) :
-        freeMap (c.ι.app j) ≫ desc s = s.ι.app j :=
-      (freeHomEquiv _).injective (by
-      funext x
-      dsimp [desc]
-      rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap, Function.comp_apply,
-        sectionsMap_freeHomEquiv_symm_freeSection]
-      apply hc.fac_apply)
+          rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap,
+            Function.comp_apply, freeHomEquiv_apply] }
     exact {
-      desc := desc
-      fac := fac
+      desc s := (freeHomEquiv _).symm (hc.desc (coconeTypes s))
+      fac s j := (freeHomEquiv _).injective (by
+        funext x
+        dsimp
+        rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap, Function.comp_apply,
+          sectionsMap_freeHomEquiv_symm_freeSection,
+          dsimp% hc.fac_apply (coconeTypes s) j x])
       uniq s m hm := (freeHomEquiv _).injective (by
         funext x
         obtain ⟨j, x, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective hc x
