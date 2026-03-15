@@ -781,6 +781,6 @@ variable [Preorder α]
 lemma exists_covBy_of_wellFoundedLT [wf : WellFoundedLT α] ⦃a : α⦄ (h : ¬ IsMax a) :
     ∃ a', a ⋖ a' := by
   rw [not_isMax_iff] at h
-  exact ⟨_, wellFounded_lt.min_mem _ h, fun a' ↦ wf.not_lt_min _ h⟩
+  exact ⟨_, wellFounded_lt.min_mem (Ioi a) h, fun a' ↦ wf.not_lt_min (Ioi a)⟩
 
 end WellFounded

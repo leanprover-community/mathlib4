@@ -305,7 +305,7 @@ theorem fix_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, y < x →
 
 -- TODO: rename to `WellFoundedRelation.ofWellFoundedLT`
 /-- Derive a `WellFoundedRelation` instance from a `WellFoundedLT` instance. -/
-@[to_dual (attr := instance_reducible)
+@[to_dual (attr := implicit_reducible)
   /-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/]
 def toWellFoundedRelation : WellFoundedRelation α :=
   WellFounded.toWellFoundedRelation (· < ·)
@@ -314,6 +314,7 @@ end WellFoundedLT
 
 open Classical in
 /-- Construct a decidable linear order from a well-founded linear order. -/
+@[implicit_reducible]
 noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
   linearOrderOfSTO r
 

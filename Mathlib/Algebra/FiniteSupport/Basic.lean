@@ -184,6 +184,13 @@ lemma HasFiniteMulSupport.fun_comp_of_injective (hg : Injective g) (hf : f.HasFi
     (fun a ↦ f (g a)).HasFiniteMulSupport :=
   hf.comp_of_injective hg
 
+@[to_additive]
+lemma HasFiniteMulSupport.of_comp [One β] (hfg : (f ∘ g).HasFiniteMulSupport) (h : f 1 = 1)
+    (hf : Injective f) :
+    g.HasFiniteMulSupport := by
+  refine Set.Finite.subset hfg fun _ ha ↦ Set.mem_setOf.mpr fun H ↦ Set.mem_setOf.mp ha ?_
+  grind
+
 end Function
 
 end
