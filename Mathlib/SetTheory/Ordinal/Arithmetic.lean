@@ -110,8 +110,7 @@ instance instAddRightReflectLT : AddRightReflectLT Ordinal.{u} :=
 
 theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ a ≤ b
   | 0 => by simp
-  | n + 1 => by
-    simp only [natCast_succ, add_succ, add_succ, succ_le_succ_iff, add_le_add_iff_right]
+  | n + 1 => by simpa [← add_assoc] using add_le_add_iff_right n
 
 theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := by
   simp only [le_antisymm_iff, add_le_add_iff_right]
@@ -513,7 +512,7 @@ theorem lt_add_iff_of_isSuccLimit {a b c : Ordinal} (hc : IsSuccLimit c) :
   rw [lt_add_iff hc.ne_bot]
   constructor <;> rintro ⟨d, hd, ha⟩
   · refine ⟨_, hc.succ_lt hd, ?_⟩
-    rwa [add_succ, lt_succ_iff]
+    rwa [succ_eq_add_one, ← add_assoc, lt_add_one_iff]
   · exact ⟨d, hd, ha.le⟩
 
 theorem add_le_iff_of_isSuccLimit {a b c : Ordinal} (hb : IsSuccLimit b) :
@@ -532,7 +531,7 @@ theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccPrelimit a) (h : b < a) :
   rw [isSuccLimit_iff, Ordinal.sub_ne_zero_iff_lt, isSuccPrelimit_iff_succ_lt]
   refine ⟨h, fun c hc ↦ ?_⟩
   rw [lt_sub] at hc ⊢
-  rw [add_succ]
+  rw [succ_eq_add_one, ← add_assoc]
   exact ha.succ_lt hc
 
 /-! ### Multiplication of ordinals -/
@@ -1188,17 +1187,16 @@ theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by
   rw [add_comm, ← card_ord c, ← card_one, ← card_add, one_add_of_omega0_le]
   rwa [← ord_aleph0, ord_le_ord]
 
-theorem isSuccLimit_ord {c} (co : ℵ₀ ≤ c) : IsSuccLimit (ord c) := by
-  rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
-  refine ⟨fun h => aleph0_ne_zero ?_, fun a => lt_imp_lt_of_le_imp_le fun h => ?_⟩
-  · rw [← nonpos_iff_eq_zero, ord_le] at h
-    simpa only [card_zero, nonpos_iff_eq_zero] using co.trans h
-  · rw [ord_le] at h ⊢
-    rwa [← @add_one_of_aleph0_le (card a), ← card_succ]
-    rw [← ord_le, ← IsSuccLimit.le_succ_iff, ord_le]
-    · exact co.trans h
-    · rw [ord_aleph0]
-      exact Ordinal.isSuccLimit_omega0
+theorem isSuccLimit_ord {c} (hc : ℵ₀ ≤ c) : IsSuccLimit (ord c) := by
+  constructor
+  · simpa using (aleph0_pos.trans_le hc).ne'
+  · simp_rw [isSuccPrelimit_iff_succ_lt, succ_eq_add_one, lt_ord, card_add_one]
+    refine fun a ha ↦ ?_
+    contrapose! ha
+    rwa [add_one_of_aleph0_le] at ha
+    rw [← ord_le, ← IsSuccLimit.le_succ_iff, succ_eq_add_one, ord_le, card_add_one]
+    · exact hc.trans ha
+    · simpa using isSuccLimit_omega0
 
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType :=
   toType_noMax_of_succ_lt fun _ ↦ (isSuccLimit_ord h).succ_lt
