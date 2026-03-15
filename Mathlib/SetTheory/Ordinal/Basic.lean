@@ -1089,6 +1089,11 @@ def ord (c : Cardinal) : Ordinal :=
     refine ⟨⟨_, RelIso.IsWellOrder.preimage r ?_⟩, type_preimage _ _⟩
   exacts [f.symm, f]
 
+theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
+  (rfl)
+
+@[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
+
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
@@ -1096,10 +1101,6 @@ theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord 
 
 theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
   ciInf_le' _ (Subtype.mk r h)
-
-@[deprecated ord_le_type (since := "2026-02-02")]
-theorem ord_eq_Inf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
-  (rfl)
 
 theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card := by
   refine c.inductionOn fun α ↦ o.inductionOn fun β s _ ↦ ?_
