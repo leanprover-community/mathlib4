@@ -250,6 +250,7 @@ theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
 theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / algebraMap A K s :=
   mk'_mk_eq_div s.2
 
+variable (A) in
 theorem div_surjective (z : K) :
     ∃ x y : A, y ∈ nonZeroDivisors A ∧ algebraMap _ _ x / algebraMap _ _ y = z :=
   let ⟨x, ⟨y, hy⟩, h⟩ := exists_mk'_eq (nonZeroDivisors A) z
