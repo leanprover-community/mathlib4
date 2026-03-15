@@ -568,7 +568,7 @@ lemma card_symbols_not_in
     ∀ j, Finset.card (symbolsNotIn A j) = Fintype.card n - Fintype.card k := by
   simp [symbolsNotIn,
         Finset.card_sdiff,
-        A.exactly_n_symbols, 
+        A.exactly_n_symbols,
         col_card A]
 
 lemma row_entry_to_column_entry
@@ -846,7 +846,7 @@ theorem latin_rectangle_extends_one_row
   rw [Function.invFun_comp ι.injective]
   simp
   rfl
- 
+
 /-- Being a subrectangle of a `LatinRectangle` is a transitive property. -/
 lemma subrect_transitive {m'' : Type*} [Fintype m'']
     {n : Type*} [Fintype n]
@@ -854,7 +854,7 @@ lemma subrect_transitive {m'' : Type*} [Fintype m'']
     {A' : LatinRectangle m' n α}
     {A'' : LatinRectangle m'' n α}
     (h₁ : IsSubrect A A')
-    (h₂ : IsSubrect A' A'') : 
+    (h₂ : IsSubrect A' A'') :
     IsSubrect A A'' := by
   unfold IsSubrect at *
   obtain ⟨f,g,h,h₁⟩ := h₁
