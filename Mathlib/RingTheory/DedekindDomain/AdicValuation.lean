@@ -478,6 +478,7 @@ ring of integers, denoted `v.adicCompletionIntegers`. -/
 
 
 /-- `K` as a valued field with the `v`-adic valuation. -/
+@[implicit_reducible]
 def adicValued : Valued K ℤᵐ⁰ :=
   Valued.mk' (v.valuation K)
 
@@ -801,3 +802,5 @@ theorem valuation_le_one_iff_den {𝔭 : HeightOneSpectrum R} {x : ℚ} :
     (Ideal.IsPrime.notMem_of_isCoprime_of_mem (mod_cast x.isCoprime_num_den.symm.intCast))]
 
 end Rat
+
+section LiesOver
