@@ -232,6 +232,15 @@ theorem _root_.Submodule.topologicalClosure_map [RingHomSurjective σ₁₂] [To
       (s.map (f : M₁ →ₛₗ[σ₁₂] M₂)).topologicalClosure :=
   image_closure_subset_closure_image f.continuous
 
+/-- If a continuous linear map stabilizes a submodule, then it stabilizes its topological
+closure. -/
+theorem _root_.Submodule.topologicalClosure_mem_invtSubmodule [TopologicalSpace R₁]
+    [ContinuousSMul R₁ M₁] [ContinuousAdd M₁] {f : M₁ →L[R₁] M₁} {s : Submodule R₁ M₁}
+    (hs : s ∈ Module.End.invtSubmodule f) :
+    s.topologicalClosure ∈ Module.End.invtSubmodule f := by
+  rw [Module.End.mem_invtSubmodule_iff_map_le] at hs ⊢
+  exact (s.topologicalClosure_map f).trans (Submodule.topologicalClosure_mono hs)
+
 /-- Under a dense continuous linear map, a submodule whose `TopologicalClosure` is `⊤` is sent to
 another such submodule.  That is, the image of a dense set under a map with dense range is dense.
 -/
@@ -591,6 +600,18 @@ theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
     (ofNat(n) : M₁ →L[R₁] M₁) m = OfNat.ofNat n • m :=
   rfl
 
+/-- Construct a homeomorphism from an invertible continuous linear map. -/
+@[simps]
+def homeomorphOfUnit (T : (M₁ →L[R₁] M₁)ˣ) : M₁ ≃ₜ M₁ where
+  toFun := T.1
+  invFun := T⁻¹.1
+  left_inv x := by rw [← mul_apply, Units.inv_mul, one_apply]
+  right_inv x := by rw [← mul_apply, Units.mul_inv, one_apply]
+
+theorem isHomeomorph_of_isUnit {T : M₁ →L[R₁] M₁} (hT : IsUnit T) : IsHomeomorph T := by
+  obtain ⟨T, rfl⟩ := hT
+  exact (homeomorphOfUnit T).isHomeomorph
+
 section ApplyAction
 
 variable [ContinuousAdd M₁]
@@ -711,6 +732,12 @@ def smulRight (c : M₁ →L[R] S) (f : M₂) : M₁ →L[R] M₂ :=
 theorem smulRight_apply {c : M₁ →L[R] S} {f : M₂} {x : M₁} :
     (smulRight c f : M₁ → M₂) x = c x • f :=
   rfl
+
+@[simp]
+lemma smulRight_zero (f : M₁ →L[R] S) : f.smulRight (0 : M₂) = 0 := by ext; simp
+
+@[simp]
+theorem zero_smulRight {x : M₂} : (0 : M₁ →L[R] S).smulRight x = 0 := by ext; simp
 
 end
 

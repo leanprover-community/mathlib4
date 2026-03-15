@@ -574,23 +574,16 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
     [IsWellOrder β s] : type (Prod.Lex s r) = type r * type s :=
   rfl
 
-set_option backward.privateInPublic true in
-private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
-  inductionOn a fun α _ _ =>
-    inductionOn b fun β _ _ => by
-      simp_rw [← type_prod_lex, type_eq_zero_iff_isEmpty]
-      rw [or_comm]
-      exact isEmpty_prod
+private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 := by
+  induction a, b using inductionOn₂ with | _ α _ β _
+  simp_rw [← type_prod_lex, type_eq_zero_iff_isEmpty, isEmpty_prod, iff_true_intro or_comm]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance monoidWithZero : MonoidWithZero Ordinal :=
-  { Ordinal.monoid with
-    mul_zero := fun _a => mul_eq_zero'.2 <| Or.inr rfl
-    zero_mul := fun _a => mul_eq_zero'.2 <| Or.inl rfl }
+instance monoidWithZero : MonoidWithZero Ordinal where
+  mul_zero _ := by exact mul_eq_zero'.2 (.inr rfl)
+  zero_mul _ := by exact mul_eq_zero'.2 (.inl rfl)
 
-instance noZeroDivisors : NoZeroDivisors Ordinal :=
-  ⟨fun {_ _} => mul_eq_zero'.1⟩
+instance noZeroDivisors : NoZeroDivisors Ordinal where
+  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_zero'.1
 
 @[simp]
 theorem lift_mul (a b : Ordinal.{v}) : lift.{u} (a * b) = lift.{u} a * lift.{u} b :=
@@ -1078,14 +1071,36 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
     lift.{u, v} ofNat(n) = OfNat.ofNat n :=
   lift_natCast n
 
+@[simp]
+theorem typein_lt_nat (x : ℕ) : typein LT.lt x = x := by
+  have : Fintype <| Iio x := Nat.fintypeIio x
+  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
+  nth_rw 2 [← Fintype.card_fin x]
+  exact Fintype.card_congr Fin.equivSubtype.symm
+
+@[simp]
+theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
+  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
+  exact Fintype.card_fin_lt_of_le x.is_le'
+
+@[simp]
+theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum LT.lt ⟨x, by simp⟩ = x := by
+  simp [← typein_inj LT.lt]
+
 /-! ### Properties of `ω` -/
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
 
 @[simp]
-theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
+theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
+
+@[deprecated (since := "2026-03-08")] alias nat_lt_omega0 := natCast_lt_omega0
+
+@[simp]
+theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
+  simp [← typein_inj LT.lt]
 
 theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
   obtain ho | ho := lt_or_ge o ω
@@ -1094,23 +1109,23 @@ theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o :=
 
 @[simp]
 theorem omega0_pos : 0 < ω :=
-  nat_lt_omega0 0
+  natCast_lt_omega0 0
 
 @[simp]
 theorem omega0_ne_zero : ω ≠ 0 :=
   omega0_pos.ne'
 
 @[simp]
-theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omega0 1
+theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using natCast_lt_omega0 1
 
 theorem isSuccLimit_omega0 : IsSuccLimit ω := by
   rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
   refine ⟨omega0_ne_zero, fun o h => ?_⟩
   obtain ⟨n, rfl⟩ := lt_omega0.1 h
-  exact nat_lt_omega0 (n + 1)
+  exact natCast_lt_omega0 (n + 1)
 
 theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
-  ⟨fun h n => (nat_lt_omega0 _).le.trans h, fun H =>
+  ⟨fun h n => (natCast_lt_omega0 _).le.trans h, fun H =>
     le_of_forall_lt fun a h => by
       let ⟨n, e⟩ := lt_omega0.1 h
       rw [e, ← succ_le_iff]; exact H (n + 1)⟩
@@ -1123,7 +1138,7 @@ theorem natCast_add_omega0 (n : ℕ) : n + ω = ω := by
   obtain ⟨b, hb', hb⟩ := (lt_add_iff omega0_ne_zero).1 ha
   obtain ⟨m, rfl⟩ := lt_omega0.1 hb'
   apply hb.trans_lt
-  exact_mod_cast nat_lt_omega0 (n + m)
+  exact_mod_cast natCast_lt_omega0 (n + m)
 
 theorem one_add_omega0 : 1 + ω = ω :=
   mod_cast natCast_add_omega0 1
@@ -1160,7 +1175,7 @@ theorem isSuccLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧
 
 @[simp]
 theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=
-  mod_eq_of_lt (nat_lt_omega0 n)
+  mod_eq_of_lt (natCast_lt_omega0 n)
 
 end Ordinal
 
