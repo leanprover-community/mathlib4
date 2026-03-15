@@ -1057,7 +1057,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
   let newArgs := args ++ typeArgs
   let lhsAp := lhs.instantiateLambdasOrApps typeArgs
   let rhsAp := rhs.instantiateLambdasOrApps typeArgs
-  let str := tgt.getAppFn.constName
+  let str := tgtWhnf.getAppFn.constName
   trace[simps.debug] "todo: {todo}, toApply: {toApply}"
   -- We want to generate the current projection if it is in `todo`
   let todoNext := todo.filter (·.1 ≠ "")
