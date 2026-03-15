@@ -300,6 +300,7 @@ theorem diff_diff {u : Set α} : (s \ t) \ u = s \ (t ∪ u) :=
 theorem diff_diff_comm {s t u : Set α} : (s \ t) \ u = (s \ u) \ t :=
   sdiff_sdiff_comm
 
+@[simp]
 theorem diff_subset_iff {s t u : Set α} : s \ t ⊆ u ↔ s ⊆ t ∪ u :=
   show s \ t ≤ u ↔ s ≤ t ∪ u from sdiff_le_iff
 
@@ -392,10 +393,8 @@ lemma _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.N
 lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
   grind
 
-@[simp]
 lemma diff_singleton_subset_iff : s \ {a} ⊆ t ↔ s ⊆ insert a t := by
-  rw [← union_singleton, union_comm]
-  apply diff_subset_iff
+  simp
 
 lemma subset_diff_singleton (h : s ⊆ t) (ha : a ∉ s) : s ⊆ t \ {a} :=
   subset_inter h <| subset_compl_comm.1 <| singleton_subset_iff.2 ha
