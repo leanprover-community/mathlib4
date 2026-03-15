@@ -232,6 +232,12 @@ theorem prod_Ico_succ_div_top (hmn : m ≤ n) :
 theorem prod_Ico_div (hmn : m ≤ n) : ∏ i ∈ Ico m n, f (i + 1) / f i = f n / f m := by
   rw [prod_Ico_eq_div _ hmn, prod_range_div, prod_range_div, div_div_div_cancel_right]
 
+@[to_additive]
+theorem prod_Icc_div (hmn : m ≤ n) (f : ℕ → M) :
+    ∏ i ∈ Icc m n, f (i + 1) / f i = f (n + 1) / f m := by
+  rw [← Finset.Ico_add_one_right_eq_Icc, prod_Ico_div]
+  omega
+
 end Group
 
 end Nat

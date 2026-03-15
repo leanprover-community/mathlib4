@@ -13,7 +13,7 @@ public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
-public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Algebra.BigOperators.Intervals
 
 /-!
 Results about "big operations" over a `Fintype`, and consequent
@@ -239,6 +239,12 @@ theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → �
   simp only [hi, dif_pos]
 
 @[to_additive]
+lemma Finset.prod_fin_Icc_eq_prod_Icc [CommMonoid α] {n : ℕ} (a b : Fin n) (f : Fin n → α) :
+    ∏ i ∈ Finset.Icc a b, f i = ∏ i ∈ Finset.Icc (a : ℕ) b, if h : i < n then f ⟨i, h⟩ else 1 := by
+  rw [← Finset.prod_ite_mem_eq, Finset.prod_fin_eq_prod_range]
+  exact Finset.prod_congr_of_eq_on_inter (by grind) (by grind) (by grind)
+
+@[to_additive]
 theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)
     [DecidablePred p] (f : α → M) : ∏ a ∈ { x | p x }.toFinset, f a = ∏ a : Subtype p, f a := by
   rw [← Finset.prod_subtype]
@@ -306,5 +312,18 @@ lemma Fin.prod_Iic_div {M : Type*} [CommGroup M] {n : ℕ} (a : Fin n) (f : Fin 
     simp_all
     grind
   · grind
+
+/-- Telescopic product over `Fin`. -/
+@[to_additive /-- Telescopic sum over `Fin`. -/]
+lemma Fin.prod_Icc_div {M : Type*} [CommGroup M] {n : ℕ} {a b : Fin n} (hab : a ≤ b)
+    (f : Fin (n + 1) → M) :
+    ∏ i ∈ Finset.Icc a b, (f i.succ / f i.castSucc) = f b.succ / f a.castSucc := by
+  rw [Finset.prod_fin_Icc_eq_prod_Icc]
+  convert Finset.prod_Icc_div (Fin.le_def.1 hab) (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1)
+  · simp_all
+    grind
+  · grind
+  · simp only [Order.lt_add_one_iff, is_le', ↓reduceDIte]
+    rfl
 
 end
