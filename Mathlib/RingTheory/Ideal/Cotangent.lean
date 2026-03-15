@@ -336,12 +336,17 @@ open IsLocalRing TensorProduct Submodule
 variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
   {M : Type*} [AddCommGroup M] [Module R M] (N : Submodule R M)
 
-lemma TensorProduct.spanRank_baseChange_le : (N.baseChange A).spanRank ≤ N.spanRank.lift := by
+lemma Submodule.spanRank_baseChange_le : (N.baseChange A).spanRank ≤ N.spanRank.lift := by
   obtain ⟨s, hs₁, hs₂⟩ := N.exists_span_set_card_eq_spanRank
   grw [← hs₁, ← hs₂, baseChange_span, spanRank_span_le_card]
   convert Cardinal.mk_image_le_lift (f := TensorProduct.mk R A M 1) (s := s)
   · exact (Cardinal.lift_id' _).symm
   · exact Cardinal.lift_umax.symm
+
+lemma Submodule.spanFinrank_baseChange_le (fg : N.FG) :
+    (N.baseChange A).spanFinrank ≤ N.spanFinrank := by
+  grw [spanFinrank, spanRank_baseChange_le, Cardinal.toNat_lift, spanFinrank]
+  simp [Cardinal.lift_lt_aleph0, spanRank_finite_iff_fg.mpr fg]
 
 lemma TensorProduct.spanRank_top_le : (⊤ : Submodule A (A ⊗[R] N)).spanRank ≤ N.spanRank.lift := by
   grw [← Submodule.baseChange_top, ← N.spanRank_top, spanRank_baseChange_le]
