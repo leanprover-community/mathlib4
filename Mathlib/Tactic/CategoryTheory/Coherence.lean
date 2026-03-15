@@ -144,6 +144,11 @@ def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
 
 open Mathlib.Tactic.BicategoryCoherence
 
+register_option warn.refl_coherence : Bool := {
+  defValue := true
+  descr := "warn when the deprecated tactic `pure_coherence` is used"
+}
+
 /--
 `pure_coherence` uses the coherence theorem for monoidal categories to prove the goal.
 It can prove any equality made up only of associators, unitors, and identities.
@@ -159,7 +164,9 @@ which can also cope with identities of the form
 where `a = a'`, `b = b'`, and `c = c'` can be proved using `pure_coherence`
 -/
 elab (name := pure_coherence) "pure_coherence" : tactic => do
-  logWarning  "Usually, use `monoidal` or `bicategory` instead, depending on the context. \
+  if warn.refl_coherence.get (← getOptions) then
+    Lean.logWarning
+      "Usually, use `monoidal` or `bicategory` instead, depending on the context. \
     They are given in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and \
     `Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively."
   let g ← getMainGoal
@@ -297,7 +304,9 @@ syntax (name := coherence) "coherence" : tactic
 @[inherit_doc coherence]
 elab_rules : tactic
 | `(tactic| coherence) => do
-  logWarning  "Usually, use `monoidal` or `bicategory` instead, depending on the context. \
+  if warn.refl_coherence.get (← getOptions) then
+    Lean.logWarning
+      "Usually, use `monoidal` or `bicategory` instead, depending on the context. \
     They are given in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and \
     `Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively."
   evalTactic (← `(tactic|
