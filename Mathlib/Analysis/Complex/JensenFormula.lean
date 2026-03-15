@@ -196,6 +196,9 @@ theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
     (h₂f : f c ≠ 0)
     (f_bound : ∀ z ∈ sphere c |R|, ‖f z‖ ≤ M) :
     ∑ᶠ u, divisor f (closedBall c |r|) u ≤ Real.log (M / ‖f c‖) / Real.log (R / r) := by
+  trans ∑ᶠ u, (divisor f (closedBall c |r|) u : ℝ)
+  · exact map_finsum (Int.castRingHom ℝ)
+      ((divisor _ _).finiteSupport <| isCompact_closedBall ..) |>.le
   have jensen := h₁f.meromorphicOn.circleAverage_log_norm (abs_ne_zero.mp (by linarith))
   rw [divisor_apply h₁f.meromorphicOn (by simp),
     AnalyticAt.meromorphicOrderAt_eq (h₁f c (by simp)),
@@ -264,11 +267,10 @@ theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
   have := next.trans this
   conv at this => lhs; arg 1; ext; rw [← smul_eq_mul]
   rw [← finsum_smul, smul_eq_mul] at this
-  have : ∑ᶠ i, (divisor f (closedBall c |r|) i : ℝ) ≤ Real.log (M / ‖f c‖) / Real.log (R / r) := by
-    apply le_div_iff₀ _|>.mpr this
-    rw [← log_abs]
-    apply log_pos
-    rw [abs_div]
-    exact one_lt_div r_pos|>.mpr r_lt_R
-  convert this
-  exact map_finsum (Int.castRingHom ℝ) ((divisor _ _).finiteSupport <| isCompact_closedBall ..)
+  apply le_div_iff₀ _|>.mpr this
+  rw [← log_abs]
+  apply log_pos
+  rw [abs_div]
+  exact one_lt_div r_pos|>.mpr r_lt_R
+
+
