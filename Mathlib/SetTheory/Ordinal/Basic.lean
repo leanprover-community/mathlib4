@@ -933,7 +933,7 @@ theorem Iio_one : Set.Iio (1 : Ordinal) = {0} := by
 
 @[simp]
 theorem Iio_two : Set.Iio (2 : Ordinal) = {0, 1} := by
-  rw [← succ_one, Order.Iio_succ]
+  rw [← one_add_one_eq_two, ← Order.succ_eq_add_one, Order.Iio_succ]
   ext
   simp [le_one_iff]
 
