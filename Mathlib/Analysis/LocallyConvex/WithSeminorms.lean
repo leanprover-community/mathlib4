@@ -423,7 +423,6 @@ section TopologicalSpace
 
 variable [t : TopologicalSpace E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem SeminormFamily.withSeminorms_of_nhds [IsTopologicalAddGroup E] (p : SeminormFamily 𝕜 E ι)
     (h : 𝓝 (0 : E) = p.moduleFilterBasis.toFilterBasis.filter) : WithSeminorms p := by
   refine
@@ -919,7 +918,6 @@ open LocallyConvexSpace
 variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommGroup E] [Module 𝕜 E] [Module ℝ E]
   [IsScalarTower ℝ 𝕜 E] [TopologicalSpace E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
     LocallyConvexSpace ℝ E := by
   have := hp.topologicalAddGroup
