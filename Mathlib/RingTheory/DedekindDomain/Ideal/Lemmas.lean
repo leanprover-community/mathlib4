@@ -1038,6 +1038,7 @@ theorem equivPrimesOver_apply (hp : p ≠ 0)
 
 variable (A) {B} in
 /-- The pullback of a height one prime in `B` to `A`. -/
+@[simps]
 def under [Algebra.IsIntegral A B] (w : HeightOneSpectrum B) : HeightOneSpectrum A where
   asIdeal := w.asIdeal.under A
   isPrime := .under A w.asIdeal
