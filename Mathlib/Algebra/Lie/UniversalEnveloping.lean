@@ -82,6 +82,7 @@ def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
 
 variable {A : Type u₃} [Ring A] [Algebra R A] (f : L →ₗ⁅R⁆ A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The universal property of the universal enveloping algebra: Lie algebra morphisms into
 associative algebras lift to associative algebra morphisms from the universal enveloping algebra. -/
 def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) where

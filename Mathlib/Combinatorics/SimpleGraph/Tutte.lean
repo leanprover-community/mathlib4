@@ -150,6 +150,7 @@ lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfec
 
 open scoped symmDiff
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma constructs a perfect matching on `G` from two near-matchings. -/
 private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     {M1 : Subgraph (G ⊔ edge x b)} {M2 : Subgraph (G ⊔ edge a c)} (hxa : G.Adj x a)
@@ -304,7 +305,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       rwa [edge_le_iff (v := a.1.1) (w := c), adj_comm, not_or])
     have hcnex : c ≠ x.val.val := by rintro rfl; exact hc.2 hxa
     obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa
-      hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by aesop) hcnex.symm hc.1 hbnec hG1 hG2
+      hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by lia) hcnex.symm hc.1 hbnec hG1 hG2
     exact hMatchingFree Mcon hMcon
 
 /-- **Tutte's theorem**

@@ -47,6 +47,7 @@ open scoped TensorProduct
 
 namespace Algebra.FormallyEtale
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 This is a weaker version of `of_isSeparable` that additionally assumes `EssFiniteType K L`.
 Use that instead.
@@ -94,6 +95,7 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
     apply Ideal.pow_mem_pow
     rw [← Ideal.Quotient.eq_zero_iff_mem, map_mul, hx', mul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped IntermediateField in
 lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`.

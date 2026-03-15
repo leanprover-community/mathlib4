@@ -156,6 +156,7 @@ lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
 A finite extension of a differential field has a unique derivation which agrees with the one on the
 base field.
 -/
+@[implicit_reducible]
 noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional F K] :
     Unique {_a : Differential K // DifferentialAlgebra F K} := by
   let default : {_a : Differential K // DifferentialAlgebra F K} :=
@@ -177,12 +178,15 @@ noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional 
     apply natDegree_derivative_lt
     exact Nat.ne_zero_of_lt this
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (B : IntermediateField F K) [FiniteDimensional F B] : Differential B :=
   differentialFiniteDimensional F B
 
+set_option backward.isDefEq.respectTransparency false in
 instance (B : IntermediateField F K) [FiniteDimensional F B] :
     DifferentialAlgebra F B := differentialAlgebraFiniteDimensional
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Differential K] [DifferentialAlgebra F K] (B : IntermediateField F K)
     [FiniteDimensional F B] : DifferentialAlgebra B K where
   deriv_algebraMap a := by

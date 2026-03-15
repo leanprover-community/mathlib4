@@ -30,6 +30,7 @@ open Category Limits Functor
 variable {J₁ J₂ : Type*} [Category* J₁] [Category* J₂]
   {C₁ C₂ C : Type*} [Category* C₁] [Category* C₂] [Category* C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a bifunctor `G : C₁ ⥤ C₂ ⥤ C`, diagrams `K₁ : J₁ ⥤ C₁` and `K₂ : J₂ ⥤ C₂`, and cocones
 over these diagrams, `G.mapCocone₂ c₁ c₂` is the cocone over the diagram `J₁ × J₂ ⥤ C` obtained
 by applying `G` to both `c₁` and `c₂`. -/
@@ -47,6 +48,7 @@ def Functor.mapCocone₂ (G : C₁ ⥤ C₂ ⥤ C) {K₁ : J₁ ⥤ C₁} {K₂ 
           ← Functor.map_comp, NatTrans.naturality, const_obj_map, const_obj_obj,
           ← NatTrans.comp_app_assoc, c₁.w] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a bifunctor `G : C₁ ⥤ C₂ ⥤ C`, diagrams `K₁ : J₁ ⥤ C₁` and `K₂ : J₂ ⥤ C₂`, and cones
 over these diagrams, `G.mapCone₂ c₁ c₂` is the cone over the diagram `J₁ × J₂ ⥤ C` obtained
 by applying `G` to both `c₁` and `c₂`. -/
@@ -143,6 +145,7 @@ variable {c₁ : Cocone K₁} (hc₁ : IsColimit c₁)
   {c₃ : Cocone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
   (hc₃ : IsColimit c₃)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Characterize the inverse direction of the isomorphism
 `PreservesColimit₂.isoObjCoconePointsOfIsColimit` w.r.t. the canonical maps to the colimit. -/
 @[reassoc (attr := simp)]
@@ -153,6 +156,7 @@ lemma ι_comp_isoObjConePointsOfIsColimit_inv (j : J₁ × J₂) :
   dsimp [isoObjCoconePointsOfIsColimit, Functor.mapCocone₂]
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Characterize the forward direction of the isomorphism
 `PreservesColimit₂.isoObjCoconePointsOfIsColimit` w.r.t. the canonical maps to the colimit. -/
 @[reassoc (attr := simp)]
@@ -201,6 +205,7 @@ lemma map_ι_comp_isoColimitUncurryWhiskeringLeft₂_inv (j : J₁ × J₂) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a bifunctor preserves separately colimits of `K₁` in the first variable and colimits
 of `K₂` in the second variable, then it preserves colimit of the pair `K₁, K₂`. -/
 instance of_preservesColimits_in_each_variable
@@ -212,9 +217,9 @@ instance of_preservesColimits_in_each_variable
         map f := { hom := G.map (K₁.map f) |>.app c₂.pt } }
     let P : ∀ j₁, IsColimit (Q₀.obj j₁) := fun j ↦ isColimitOfPreserves _ hc₂
     let E₀ : Q₀.coconePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
-    let E₁ : (Cocones.precompose E₀.hom).obj (coconeOfCoconeUncurry P <| G.mapCocone₂ c₁ c₂) ≅
+    let E₁ : (Cocone.precompose E₀.hom).obj (coconeOfCoconeUncurry P <| G.mapCocone₂ c₁ c₂) ≅
         (G.flip.obj c₂.pt).mapCocone c₁ :=
-      Cocones.ext
+      Cocone.ext
         (Iso.refl _)
         (fun j₁ => by
           dsimp [E₀, Q₀]
@@ -245,7 +250,7 @@ theorem of_preservesColimit₂_flip : PreservesColimit₂ K₂ K₁ G.flip where
     apply IsColimit.ofWhiskerEquivalence (e := Prod.braiding _ _)
     refine IsColimit.equivOfNatIsoOfIso (Iso.refl _) (G.mapCocone₂ c₂ c₁) _ ?_ |>.toFun <|
       isColimitOfPreserves₂ G hc₂ hc₁
-    exact Cocones.ext (Iso.refl _) (fun ⟨j₁, j₂⟩ ↦ by simp [E₁, E₀])
+    exact Cocone.ext (Iso.refl _) (fun ⟨j₁, j₂⟩ ↦ by simp [E₁, E₀])
 
 end PreservesColimit₂
 
@@ -271,6 +276,7 @@ variable {c₁ : Cone K₁} (hc₁ : IsLimit c₁)
   {c₃ : Cone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
   (hc₃ : IsLimit c₃)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Characterize the forward direction of the isomorphism
 `PreservesLimit₂.isoObjConePointsOfIsLimit` w.r.t. the canonical maps to the limit. -/
 @[reassoc (attr := simp)]
@@ -280,6 +286,7 @@ lemma isoObjConePointsOfIsLimit_hom_comp_π (j : J₁ × J₂) :
   dsimp [isoObjConePointsOfIsLimit, Functor.mapCocone₂]
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Characterize the inverse direction of the isomorphism
 `PreservesLimit₂.isoObjConePointsOfIsLimit` w.r.t. the canonical maps to the limit. -/
 @[reassoc (attr := simp)]
@@ -339,9 +346,9 @@ instance of_preservesLimits_in_each_variable
         map f := { hom := G.map (K₁.map f) |>.app c₂.pt } }
     let P : ∀ j₁, IsLimit (Q₀.obj j₁) := fun _ => isLimitOfPreserves _ hc₂
     let E₀ : Q₀.conePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
-    let E₁ : (Cones.postcompose E₀.hom).obj (coneOfConeUncurry P <| G.mapCone₂ c₁ c₂) ≅
+    let E₁ : (Cone.postcompose E₀.hom).obj (coneOfConeUncurry P <| G.mapCone₂ c₁ c₂) ≅
         (G.flip.obj c₂.pt).mapCone c₁ :=
-      Cones.ext
+      Cone.ext
         (Iso.refl _)
         (fun j₁ => by
           dsimp [E₀, Q₀]
@@ -372,7 +379,7 @@ theorem of_preservesLimit₂_flip : PreservesLimit₂ K₂ K₁ G.flip where
     apply IsLimit.ofWhiskerEquivalence (e := Prod.braiding _ _)
     refine IsLimit.equivOfNatIsoOfIso (Iso.refl _) (G.mapCone₂ c₂ c₁) _ ?_ |>.toFun <|
       isLimitOfPreserves₂ G hc₂ hc₁
-    exact Cones.ext (Iso.refl _) (fun ⟨j₁, j₂⟩ ↦ by simp [E₁, E₀])
+    exact Cone.ext (Iso.refl _) (fun ⟨j₁, j₂⟩ ↦ by simp [E₁, E₀])
 
 end PreservesLimit₂
 

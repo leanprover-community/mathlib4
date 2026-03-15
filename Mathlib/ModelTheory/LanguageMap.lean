@@ -65,6 +65,7 @@ namespace LHom
 variable (ϕ : L →ᴸ L')
 
 /-- Pulls a structure back along a language map. -/
+@[implicit_reducible]
 def reduct (M : Type*) [L'.Structure M] : L.Structure M where
   funMap f xs := funMap (ϕ.onFunction f) xs
   RelMap r xs := RelMap (ϕ.onRelation r) xs
@@ -181,6 +182,7 @@ protected structure Injective : Prop where
 
 /-- Pulls an `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
   to an `L'`-structure arbitrarily. -/
+@[implicit_reducible]
 noncomputable def defaultExpansion (ϕ : L →ᴸ L')
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => onFunction ϕ f)]
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => onRelation ϕ r)]
@@ -345,6 +347,7 @@ theorem card_constantsOn : (constantsOn α).card = #α := by
   simp [card_eq_card_functions_add_card_relations, sum_nat_eq_add_sum_succ]
 
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
+@[implicit_reducible]
 def constantsOn.structure (f : α → M) : (constantsOn α).Structure M where
   funMap := fun {n} c _ =>
     match n, c with
@@ -414,6 +417,7 @@ instance paramsStructure (A : Set α) : (constantsOn A).Structure α :=
 
 variable (L)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The language map removing an empty constant set. -/
 @[simps]
 def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where

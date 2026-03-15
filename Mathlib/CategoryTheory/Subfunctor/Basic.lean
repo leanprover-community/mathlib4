@@ -75,15 +75,13 @@ instance : CompleteLattice (Subfunctor F) where
         simp only [Set.sSup_eq_sUnion, Set.sUnion_image, Set.preimage_iUnion,
           Set.mem_iUnion, Set.mem_preimage, exists_prop]
         exact ⟨_, h, F.map f h'⟩ }
-  le_sSup _ _ _ _ _ := by aesop
-  sSup_le _ _ _ _ _ := by aesop
+  isLUB_sSup _ := ⟨fun _ _ _ _ ↦ by aesop, fun _ _ _ ↦ by aesop⟩
   sInf S :=
     { obj U := sInf (Set.image (fun T ↦ T.obj U) S)
       map f x hx := by
         rintro _ ⟨F, h, rfl⟩
         exact F.map f (hx _ ⟨_, h, rfl⟩) }
-  sInf_le _ _ _ _ _ := by aesop
-  le_sInf _ _ _ _ _ := by aesop
+  isGLB_sInf _ := ⟨fun _ _ _ _ ↦ by aesop, fun _ _ _ ↦ by aesop⟩
   bot :=
     { obj U := ⊥
       map := by simp }
@@ -189,7 +187,6 @@ instance : IsIso (Subfunctor.ι (⊤ : Subfunctor F)) := by
   rw [isIso_iff_bijective]
   exact ⟨Subtype.coe_injective, fun x => ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
   constructor
   · rintro rfl

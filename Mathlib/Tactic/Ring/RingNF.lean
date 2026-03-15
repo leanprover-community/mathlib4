@@ -5,14 +5,10 @@ Authors: Mario Carneiro, Anne Baanen
 -/
 module
 
-public meta import Mathlib.Tactic.Ring.Basic
-public meta import Mathlib.Tactic.Conv
-public meta import Mathlib.Util.AtLocation
-public meta import Mathlib.Util.AtomM.Recurse
-public meta import Mathlib.Util.Qq
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Util.AtomM.Recurse
+public meta import Mathlib.Util.AtomM.Recurse
 
 /-!
 # `ring_nf` tactic
@@ -27,8 +23,7 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 public meta section
 
 namespace Mathlib.Tactic
-open Lean
-open Qq Meta
+open Lean Meta Qq
 
 namespace Ring
 
@@ -163,7 +158,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
-  transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
+  transformAtLocation (m ·) "`ring_nf`" loc cfg.failIfUnchanged false
 
 @[tactic_alt ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| ring_nf ! $cfg:optConfig $(loc)?)

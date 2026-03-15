@@ -270,8 +270,8 @@ lemma tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries {k : ℕ} (hk : 3 ≤ 
 lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     E hk z = 1 + (riemannZeta k)⁻¹ * (-2 * π * I) ^ k / (k - 1)! *
     ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
-  have : eisensteinSeries_MF (Int.toNat_le.mp hk) 0 z = eisensteinSeries_SIF (N := 1) 0 k z := rfl
-  rw [E, ModularForm.IsGLPos.smul_apply, this, eisensteinSeries_SIF_apply 0 k z, eisensteinSeries]
+  have : eisensteinSeriesMF (Int.toNat_le.mp hk) 0 z = eisensteinSeriesSIF (N := 1) 0 k z := rfl
+  rw [E, ModularForm.IsGLPos.smul_apply, this, eisensteinSeriesSIF_apply 0 k z, eisensteinSeries]
   have HE1 := tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow hk hk2 z
   have HE2 := tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries hk z
   have z2 : riemannZeta k ≠ 0 := riemannZeta_ne_zero_of_one_lt_re <| by norm_cast; grind

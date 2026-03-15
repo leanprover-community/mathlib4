@@ -75,6 +75,7 @@ namespace LiftLeftAdjoint
 variable {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (F' : C ⥤ A)
 variable (adj₁ : F ⊣ U) (adj₂ : F' ⊣ R ⋙ U)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To show that `ε_X` is a coequalizer for `(FUε_X, ε_FUX)`, it suffices to assume it's always a
 coequalizer of something (i.e. a regular epi).
 -/
@@ -106,6 +107,7 @@ We will show that this coequalizer exists and that it forms the object map for a
 def otherMap (X) : F'.obj (U.obj (F.obj (U.obj X))) ⟶ F'.obj (U.obj X) :=
   F'.map (U.map (F.map (adj₂.unit.app _) ≫ adj₁.counit.app _)) ≫ adj₂.counit.app _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `(F'Uε_X, otherMap X)` is a reflexive pair: in particular if `A` has reflexive coequalizers then
 this pair has a coequalizer.
 -/
@@ -128,6 +130,7 @@ variable [HasReflexiveCoequalizers A]
 noncomputable def constructLeftAdjointObj (Y : B) : A :=
   coequalizer (F'.map (U.map (adj₁.counit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homset equivalence which helps show that `R` is a right adjoint. -/
 @[simps!]
 noncomputable def constructLeftAdjointEquiv (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (Y : A)
@@ -158,6 +161,7 @@ noncomputable def constructLeftAdjointEquiv (h : ∀ X : B, RegularEpi (adj₁.c
 
 attribute [local simp] Adjunction.homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct the left adjoint to `R`, with object map `constructLeftAdjointObj`. -/
 noncomputable def constructLeftAdjoint (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) : B ⥤ A := by
   refine Adjunction.leftAdjointOfEquiv (fun X Y => constructLeftAdjointEquiv R _ adj₁ adj₂ h Y X) ?_
