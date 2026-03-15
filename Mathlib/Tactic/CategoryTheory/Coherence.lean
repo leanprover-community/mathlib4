@@ -172,7 +172,8 @@ elab (name := pure_coherence) "pure_coherence" : tactic => do
   let g ← getMainGoal
   monoidal_coherence g <|> bicategory_coherence g
 
-elab (name := pure_coherence_inner) "pure_coherence_inner" : tactic => do
+/-- The same as `pure_coherence`, but used internally in `coherence` without the warning. -/
+elab (name := pure_coherence_internal) "pure_coherence_internal" : tactic => do
   let g ← getMainGoal
   monoidal_coherence g <|> bicategory_coherence g
 
@@ -240,7 +241,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
   | maxSteps' + 1 => do
     -- To prove an equality `f = g` in a monoidal category,
     -- first try the `pure_coherence` tactic on the entire equation:
-    evalTactic (← `(tactic| pure_coherence_inner)) <|> do
+    evalTactic (← `(tactic| pure_coherence_internal)) <|> do
     -- Otherwise, rearrange so we have a maximal prefix of each side
     -- that is built out of unitors and associators:
     evalTactic (← `(tactic| liftable_prefixes)) <|>
@@ -250,7 +251,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
     liftMetaTactic MVarId.congrCore
     -- and now we have two goals `f₀ = g₀` and `f₁ = g₁`.
     -- Discharge the first using `coherence`,
-    evalTactic (← `(tactic| { pure_coherence_inner })) <|>
+    evalTactic (← `(tactic| { pure_coherence_internal })) <|>
       exception' "`coherence` tactic failed, subgoal not true in the free monoidal category"
     -- Then check that either `g₀` is identically `g₁`,
     evalTactic (← `(tactic| rfl)) <|> do
