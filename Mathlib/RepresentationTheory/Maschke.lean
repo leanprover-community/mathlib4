@@ -39,6 +39,7 @@ of a finite group is semisimple (i.e. a direct sum of irreducibles).
 noncomputable section
 
 open Module MonoidAlgebra
+open scoped Ring
 
 /-!
 We now do the key calculation in Maschke's theorem.

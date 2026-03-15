@@ -64,6 +64,7 @@ universe u u' v
 variable {l : Type*} {m : Type u} {n : Type u'} {α : Type v}
 
 open Matrix Equiv Equiv.Perm Finset
+open scoped Ring
 
 /-! ### Matrices are `Invertible` iff their determinants are -/
 

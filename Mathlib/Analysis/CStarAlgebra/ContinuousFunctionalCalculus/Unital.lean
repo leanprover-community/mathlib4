@@ -142,6 +142,7 @@ goals, but it can be modified to become more sophisticated as the need arises.
 
 @[expose] public section
 
+open scoped Ring
 open Topology ContinuousMap
 
 section Basic

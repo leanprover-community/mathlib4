@@ -45,7 +45,7 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 
 open Set
 
-open scoped Pointwise
+open scoped Pointwise Ring
 
 universe u v
 

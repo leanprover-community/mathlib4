@@ -18,6 +18,8 @@ public section
 
 assert_not_exists DenselyOrdered Ring
 
+open scoped Ring
+
 variable {M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
 

@@ -40,7 +40,7 @@ material proven here gets used in contexts that have nothing to do with complex 
 
 variable {𝕜 A : Type*}
 
-open scoped NNReal Topology
+open scoped NNReal Topology Ring
 open Filter ENNReal
 
 namespace spectrum

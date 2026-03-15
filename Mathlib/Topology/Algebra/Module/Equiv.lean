@@ -21,6 +21,7 @@ assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise
+open scoped Ring
 
 universe u v w u'
 

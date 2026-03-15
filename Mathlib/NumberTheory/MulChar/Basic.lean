@@ -39,6 +39,8 @@ multiplicative character
 
 @[expose] public section
 
+open scoped Ring
+
 
 /-!
 ### Definitions related to multiplicative characters

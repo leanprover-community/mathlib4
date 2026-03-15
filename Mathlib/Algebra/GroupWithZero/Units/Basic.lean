@@ -83,7 +83,8 @@ Note that while this is in the `Ring` namespace for brevity, it requires the wea
 `MonoidWithZero M₀` instead of `Ring M₀`. -/
 noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
 
-@[inherit_doc] postfix:max "⁻¹ʳ" => inverse
+@[inherit_doc]
+scoped postfix:max "⁻¹ʳ" => inverse
 
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
 theorem inverse_unit (u : M₀ˣ) : (u : M₀)⁻¹ʳ = (u⁻¹ : M₀ˣ) := by
@@ -136,6 +137,8 @@ theorem inverse_zero : (0 : M₀)⁻¹ʳ = 0 := by
   exact inverse_non_unit _ not_isUnit_zero
 
 end Ring
+
+open scoped Ring
 
 theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit a⁻¹ʳ
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inverse_unit u).symm⟩

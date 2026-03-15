@@ -96,7 +96,7 @@ namespace NormedSpace
 
 open Filter RCLike ContinuousMultilinearMap NormedField Asymptotics FormalMultilinearSeries
 
-open scoped Nat Topology ENNReal
+open scoped Nat Topology ENNReal Ring
 
 section TopologicalAlgebra
 

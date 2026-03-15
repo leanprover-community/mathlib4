@@ -41,6 +41,7 @@ noncomputable section
 universe u v w z
 
 open Finset Matrix Polynomial
+open scoped Ring
 
 variable {R : Type u} [CommRing R]
 variable {n G : Type v} [DecidableEq n] [Fintype n]

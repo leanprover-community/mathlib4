@@ -37,6 +37,8 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 
 assert_not_exists Finset Subgroup Rat.instField
 
+open scoped Ring
+
 universe u v w
 
 open MulOpposite

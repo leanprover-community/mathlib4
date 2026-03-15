@@ -18,6 +18,8 @@ We intentionally keep imports minimal here as this file is used by `Mathlib/Tact
 
 assert_not_exists DenselyOrdered Ring
 
+open scoed Ring
+
 universe u
 
 variable {α : Type u}

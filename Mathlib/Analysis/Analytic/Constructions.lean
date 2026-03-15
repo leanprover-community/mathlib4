@@ -25,7 +25,7 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Topology
+open scoped Topology Ring
 open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}

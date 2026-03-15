@@ -35,6 +35,7 @@ properties of `Ring.inverse (x + t)` as `t → 0`.
 noncomputable section
 
 open Topology
+open scoped Ring
 
 variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R]
 
