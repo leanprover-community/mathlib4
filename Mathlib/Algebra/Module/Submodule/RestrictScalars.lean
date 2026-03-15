@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 
@@ -25,6 +26,8 @@ this restriction of scalars for submodules.
 @[expose] public section
 
 namespace Submodule
+
+section Semiring
 
 variable (S : Type*) {R M : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]
   [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
@@ -167,5 +170,53 @@ lemma restrictScalars_sup (s t : Submodule R M) :
 lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) :
     N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
+
+end Semiring
+
+section Ring
+
+variable (S : Type*) {R M : Type*} [Ring R] [AddCommGroup M] [Semiring S]
+  [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
+
+/-- Submodules over a ring are right modular in the lattice of submodules over a semiring.
+  This is a version of `IsModularLattice.sup_inf_assoc_of_le` for the non-modular lattice
+  of submodules over a semiring. -/
+lemma sup_inf_assoc_of_le_restrictScalars {s : Submodule S M} (t : Submodule S M)
+    {p : Submodule R M} (hsp : s ≤ p.restrictScalars S) :
+    s ⊔ (t ⊓ p.restrictScalars S) = (s ⊔ t) ⊓ p.restrictScalars S := by
+  ext x
+  simp only [mem_sup, mem_inf, restrictScalars_mem]
+  constructor <;> intro h
+  · obtain ⟨y, hy, z, ⟨hz, hz'⟩, hyzx⟩ := h
+    refine ⟨⟨y, hy, z, hz, hyzx⟩, ?_⟩
+    simpa [← hyzx] using p.add_mem (hsp hy) hz'
+  · obtain ⟨⟨y, hy, z, hz, hyzx⟩, hx⟩ := h
+    refine ⟨y, hy, z, ⟨hz, ?_⟩, hyzx⟩
+    rw [← add_right_inj (-y), neg_add_cancel_left] at hyzx
+    rw [hyzx]
+    specialize hsp hy
+    rw [restrictScalars_mem, ← neg_mem_iff] at hsp
+    exact p.add_mem hsp hx
+
+/-- Submodules over a ring are left modular in the lattice of submodules over a semiring.
+  This is a version of `IsModularLattice.inf_sup_assoc_of_le` for the non-modular lattice
+  of submodules over a semiring. -/
+lemma inf_sup_assoc_of_restrictScalars_le {s : Submodule S M} (t : Submodule S M)
+    {p : Submodule R M} (hsp : p.restrictScalars S ≤ s) :
+    s ⊓ (t ⊔ p.restrictScalars S) = (s ⊓ t) ⊔ p.restrictScalars S := by
+  ext x
+  simp only [mem_inf, mem_sup, restrictScalars_mem]
+  constructor <;> intro h
+  · obtain ⟨hxs, y, hyt, z, hzp, hyzx⟩ := h
+    use y
+    constructor
+    · refine ⟨?_, hyt⟩
+      rw [← add_left_inj (-z), add_neg_cancel_right] at hyzx
+      simpa [hyzx] using add_mem hxs <| hsp <| neg_mem (S := Submodule R M) hzp
+    · use z
+  · obtain ⟨y, ⟨hys, hyt⟩, z, hzp, hyzx⟩ := h
+    exact ⟨by simpa [← hyzx] using add_mem hys (hsp hzp), ⟨y, hyt, z, hzp, hyzx⟩⟩
+
+end Ring
 
 end Submodule
