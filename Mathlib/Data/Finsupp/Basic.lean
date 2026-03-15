@@ -1033,14 +1033,14 @@ lemma embDomain_embeddingInr [Zero M] (b : β →₀ M) :
     embDomain Function.Embedding.inr b = sumElim (0 : α →₀ M) b := by
   ext (_ | _)
   · simp [embDomain_notin_range]
-  rw [coe_sumElim, coe_zero, Sum.elim_inr, ← Function.Embedding.inr_apply, embDomain_apply_self]
+  · rw [coe_sumElim, coe_zero, Sum.elim_inr, ← Function.Embedding.inr_apply, embDomain_apply_self]
 
 @[simp]
 lemma embDomain_embeddingInl [Zero M] (a : α →₀ M) :
     embDomain Function.Embedding.inl a = sumElim a (0 : β →₀ M) := by
   ext (_ | _)
   · rw [coe_sumElim, coe_zero, Sum.elim_inl, ← Function.Embedding.inl_apply, embDomain_apply_self]
-  simp [embDomain_notin_range]
+  · simp [embDomain_notin_range]
 
 @[simp]
 lemma comapDomain_sumElim_comapDomain [Zero M] (c : α ⊕ β →₀ M) :
