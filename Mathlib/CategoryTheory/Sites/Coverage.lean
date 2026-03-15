@@ -164,9 +164,6 @@ structure Coverage extends Precoverage C where
 
 namespace Coverage
 
-@[deprecated (since := "2025-08-28")]
-alias covering := Precoverage.coverings
-
 instance : CoeFun (Coverage C) (fun _ => (X : C) → Set (Presieve X)) where
   coe J := J.coverings
 
