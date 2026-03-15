@@ -490,7 +490,7 @@ theorem eq_zero_or_opow_omega0_le_of_mul_eq_right {a b : Ordinal} (hab : a * b =
   rw [or_iff_not_imp_left]
   intro hb
   rw [← nfp_mul_one ha]
-  rw [← Ne, ← one_le_iff_ne_zero] at hb
+  rw [← Ne, ← Order.one_le_iff_ne_zero] at hb
   exact nfp_le_fp (isNormal_mul_right ha).monotone hb (le_of_eq hab)
 
 theorem mul_eq_right_iff_opow_omega0_dvd {a b : Ordinal} : a * b = b ↔ a ^ ω ∣ b := by

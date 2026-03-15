@@ -47,7 +47,7 @@ theorem zero_opow_le (a : Ordinal) : (0 : Ordinal) ^ a ≤ 1 := by
 
 @[simp]
 theorem zero_opow {a : Ordinal} (a0 : a ≠ 0) : (0 : Ordinal) ^ a = 0 := by
-  rwa [zero_opow', Ordinal.sub_eq_zero_iff_le, one_le_iff_ne_zero]
+  rwa [zero_opow', Ordinal.sub_eq_zero_iff_le, Order.one_le_iff_ne_zero]
 
 @[simp]
 theorem opow_zero (a : Ordinal) : a ^ (0 : Ordinal) = 1 := by
@@ -208,7 +208,7 @@ theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
     have : b + c ≠ 0 := (hc.trans_le le_add_self).ne'
     rw [zero_opow hc.ne', zero_opow, mul_zero]
     exact (hc.trans_le le_add_self).ne'
-  obtain rfl | ha' := (one_le_iff_ne_zero.2 ha.ne').eq_or_lt; · simp
+  obtain rfl | ha' := (Order.one_le_iff_ne_zero.2 ha.ne').eq_or_lt; · simp
   induction c using limitRecOn with
   | zero => simp
   | succ c IH => rw [succ_eq_add_one, ← add_assoc, opow_add_one, IH, opow_add_one, mul_assoc]
@@ -228,7 +228,7 @@ theorem opow_dvd_opow_iff {a b c : Ordinal} (a1 : 1 < a) : a ^ b ∣ a ^ c ↔ b
   ⟨fun h =>
     le_of_not_gt fun hn =>
       not_le_of_gt ((opow_lt_opow_iff_right a1).2 hn) <|
-        le_of_dvd (opow_ne_zero _ <| one_le_iff_ne_zero.1 <| a1.le) h,
+        le_of_dvd (opow_ne_zero _ <| Order.one_le_iff_ne_zero.1 <| a1.le) h,
     opow_dvd_opow _⟩
 
 theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
@@ -236,7 +236,7 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
   obtain rfl | ha := eq_or_ne a 0
   · have := hb.ne'
     by_cases c = 0 <;> simp_all
-  obtain rfl | ha' := (one_le_iff_ne_zero.2 ha).eq_or_lt; · simp
+  obtain rfl | ha' := (Order.one_le_iff_ne_zero.2 ha).eq_or_lt; · simp
   induction c using limitRecOn with
   | zero => simp
   | succ c IH => rw [mul_succ, opow_add, IH, opow_succ]
@@ -291,7 +291,7 @@ theorem log_of_left_le_one {b : Ordinal} (h : b ≤ 1) (x : Ordinal) : log b x =
   · apply (csSup_of_not_bddAbove _).trans csSup_empty
     by_contra! hb
     refine not_bddAbove_Ici 1 (hb.mono fun a ↦ ?_)
-    simp +contextual [one_le_iff_ne_zero]
+    simp +contextual [Order.one_le_iff_ne_zero]
   · simp_rw [log, one_opow, preimage_const]
     split_ifs <;> simp
 
@@ -313,7 +313,7 @@ See `opow_le_iff_le_log'` for a variant assuming `c ≠ 0` rather than `x ≠ 0`
 assumptions. -/
 theorem opow_le_iff_le_log {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
     b ^ c ≤ x ↔ c ≤ log b x :=
-  (isNormal_opow hb).le_iff_le_sSup' ⟨0, by simpa [one_le_iff_ne_zero]⟩
+  (isNormal_opow hb).le_iff_le_sSup' ⟨0, by simpa [Order.one_le_iff_ne_zero]⟩
 
 /-- `opow b` and `log b` (almost) form a Galois connection.
 
@@ -368,7 +368,7 @@ theorem lt_opow_succ_log_self {b : Ordinal} (hb : 1 < b) (x : Ordinal) :
 
 theorem opow_log_le_self (b : Ordinal) {x : Ordinal} (hx : x ≠ 0) : b ^ log b x ≤ x := by
   obtain hb | hb := le_or_gt b 1
-  · rw [← one_le_iff_ne_zero] at hx
+  · rw [← Order.one_le_iff_ne_zero] at hx
     obtain rfl | rfl := le_one_iff.1 hb <;> simpa
   · rw [opow_le_iff_le_log hb hx]
 
@@ -415,7 +415,7 @@ theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (hbo : b ≤ o
     log b (o % (b ^ log b o)) < log b o := by
   rcases eq_or_ne (o % (b ^ log b o)) 0 with h | h
   · rw [h, log_zero_right]
-    exact log_pos hb (one_le_iff_ne_zero.1 (hb.le.trans hbo)) hbo
+    exact log_pos hb (Order.one_le_iff_ne_zero.1 (hb.le.trans hbo)) hbo
   · rw [← lt_opow_iff_log_lt hb h]
     exact mod_lt _ (opow_pos _ hb.pos).ne'
 
@@ -464,7 +464,7 @@ theorem div_opow_log_lt {b : Ordinal} (o : Ordinal) (hb : 1 < b) : o / b ^ log b
 theorem div_two_opow_log {o : Ordinal} (ho : o ≠ 0) : o / 2 ^ log 2 o = 1 := by
   apply le_antisymm
   · simpa [← one_add_one_eq_two] using div_opow_log_lt o one_lt_two
-  · simpa [one_le_iff_ne_zero, pos_iff_ne_zero] using div_opow_log_pos 2 ho
+  · simpa [Order.one_le_iff_ne_zero, pos_iff_ne_zero] using div_opow_log_pos 2 ho
 
 theorem two_opow_log_add {o : Ordinal} (ho : o ≠ 0) : 2 ^ log 2 o + o % 2 ^ log 2 o = o := by
   convert div_add_mod .. using 2

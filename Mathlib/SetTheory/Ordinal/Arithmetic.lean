@@ -926,12 +926,12 @@ theorem div_mul_cancel : ∀ {a b : Ordinal}, a ≠ 0 → a ∣ b → a * (b / a
   | a, _, a0, ⟨b, rfl⟩ => by rw [mul_div_cancel _ a0]
 
 theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
-  | a, _, b0, ⟨b, e⟩ => by
-    subst e
-    simpa only [mul_one] using
-      mul_le_mul_right
-        (one_le_iff_ne_zero.2 fun h : b = 0 => by simp [h] at b0)
-        a
+  | a, _, hb => by
+    rintro ⟨b, rfl⟩
+    apply le_mul_left
+    rw [pos_iff_ne_zero]
+    contrapose! hb
+    rw [hb, mul_zero]
 
 theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :=
   if a0 : a = 0 then by subst a; exact (eq_zero_of_zero_dvd h₁).symm

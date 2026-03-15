@@ -405,9 +405,8 @@ theorem principal_opow_omega0 : Principal (· ^ ·) ω := fun a b ha hb =>
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by simp [← natCast_pow]
 
 theorem opow_omega0 (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
-  ((opow_le_of_isSuccLimit (one_le_iff_ne_zero.1 <| le_of_lt a1) isSuccLimit_omega0).2 fun _ hb =>
-      (principal_opow_omega0 h hb).le).antisymm
-  (right_le_opow _ a1)
+  (right_le_opow _ a1).antisymm' <| (opow_le_of_isSuccLimit a1.ne_bot isSuccLimit_omega0).2
+    fun _ hb ↦ (principal_opow_omega0 h hb).le
 
 theorem natCast_opow_omega0 {n : ℕ} (hn : 1 < n) : n ^ ω = ω :=
   opow_omega0 (mod_cast hn) (natCast_lt_omega0 n)

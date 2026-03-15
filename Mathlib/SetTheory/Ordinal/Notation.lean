@@ -333,7 +333,7 @@ theorem NF.of_dvd_omega0_opow {b e n a} (h : NF (ONote.oadd e n a))
 
 theorem NF.of_dvd_omega0 {e n a} (h : NF (ONote.oadd e n a)) :
     ω ∣ repr (ONote.oadd e n a) → repr e ≠ 0 ∧ ω ∣ repr a := by
-  (rw [← opow_one ω, ← one_le_iff_ne_zero]; exact h.of_dvd_omega0_opow)
+  (rw [← opow_one ω, ← Order.one_le_iff_ne_zero]; exact h.of_dvd_omega0_opow)
 
 /-- `TopBelow b o` asserts that the largest exponent in `o`, if it exists, is less than `b`. This is
 an auxiliary definition for decidability of `NF`. -/
@@ -567,7 +567,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       have := mt repr_inj.1 e0
       rw [add_mul_of_isSuccLimit ao (isSuccLimit_opow_left isSuccLimit_omega0 this), mul_assoc,
         mul_omega0_dvd (Nat.cast_pos'.2 n₁.pos) (natCast_lt_omega0 _)]
-      simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 this)
+      simpa using opow_dvd_opow ω (Order.one_le_iff_ne_zero.2 this)
 
 /-- Calculate division and remainder of `o` mod `ω`:
 
@@ -647,7 +647,7 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
         refine repr_inj.1 ?_
         simp only [repr_add, repr_one, Nat.cast_one, repr_sub]
         have := mt repr_inj.1 e0
-        exact Ordinal.add_sub_cancel_of_le <| one_le_iff_ne_zero.2 this
+        exact Ordinal.add_sub_cancel_of_le <| Order.one_le_iff_ne_zero.2 this
       intros
       substs o' m
       simp [scale, this]
@@ -669,7 +669,7 @@ theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ r
       substs o' m
       have : (ω : Ordinal.{0}) ^ repr e = ω ^ (1 : Ordinal.{0}) * ω ^ (repr e - 1) := by
         have := mt repr_inj.1 e0
-        rw [← opow_add, Ordinal.add_sub_cancel_of_le (one_le_iff_ne_zero.2 this)]
+        rw [← opow_add, Ordinal.add_sub_cancel_of_le (Order.one_le_iff_ne_zero.2 this)]
       refine ⟨NF.oadd (by infer_instance) _ ?_, ?_⟩
       · simp only [opow_one, repr_sub, repr_one, Nat.cast_one] at this ⊢
         refine IH₁.below_of_lt' <| (mul_lt_mul_iff_right₀ omega0_pos).1 <|
@@ -717,7 +717,7 @@ theorem split_add_lt {o e n a m} [NF o] (h : split o = (oadd e n a, m)) :
   obtain ⟨h₁, h₂⟩ := nf_repr_split h
   obtain ⟨e0, d⟩ := h₁.of_dvd_omega0 (split_dvd h)
   apply principal_add_omega0_opow _ h₁.snd'.repr_lt (lt_of_lt_of_le (natCast_lt_omega0 _) _)
-  simpa using opow_le_opow_right omega0_pos (one_le_iff_ne_zero.2 e0)
+  simpa using opow_le_opow_right omega0_pos (Order.one_le_iff_ne_zero.2 e0)
 
 @[simp]
 theorem mulNat_eq_mul (n o) : mulNat o n = o * ofNat n := by cases o <;> cases n <;> rfl
@@ -784,7 +784,7 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
       · exact succ_le_iff.2 <| by gcongr; exact isSuccLimit_omega0.succ_lt l
     · exact omega0_pos
   · grw [show _ * _ < _ from principal_mul_omega0 (isSuccLimit_omega0.succ_lt h) l]
-    · simpa using mul_le_mul_left (one_le_iff_ne_zero.2 e0) ω
+    · simpa using mul_le_mul_left (Order.one_le_iff_ne_zero.2 e0) ω
     · exact omega0_pos
 
 section
@@ -819,7 +819,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   have Rl : R < ω ^ (repr a0 * succ ↑k) := by
     by_cases k0 : k = 0
     · simp only [k0, Nat.cast_zero, succ_eq_add_one, _root_.zero_add, mul_one, R]
-      refine lt_of_lt_of_le ?_ (opow_le_opow_right omega0_pos (one_le_iff_ne_zero.2 e0))
+      refine lt_of_lt_of_le ?_ (opow_le_opow_right omega0_pos (Order.one_le_iff_ne_zero.2 e0))
       rcases m with - | m <;> simp [opowAux, omega0_pos]
       rw [← Nat.cast_add_one]
       apply natCast_lt_omega0
@@ -847,8 +847,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     _ = ((ω0 ^ (k : Ordinal)) * α' + R) * α' + ((ω0 ^ (k : Ordinal)) * α' + R) * m := ?_
     _ = (α' + m) ^ succ (k.succ : Ordinal) := by rw [← mul_add, natCast_succ, opow_succ, IH.2]
   congr 1
-  · have αd : ω ∣ α' :=
-      dvd_add (dvd_mul_of_dvd_left (by simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 e0)) _) d
+  · have αd : ω ∣ α' := dvd_add (dvd_mul_of_dvd_left
+      (by simpa using opow_dvd_opow ω (Order.one_le_iff_ne_zero.2 e0)) _) d
     have α0 : ¬IsMin α' := by
       rw [isMin_iff_eq_bot]
       exact α0.ne'

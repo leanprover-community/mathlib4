@@ -918,7 +918,7 @@ theorem succ_pos (o : Ordinal) : 0 < succ o :=
   add_one_pos o
 
 @[deprecated _root_.add_one_ne_zero (since := "2026-02-27")]
-theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
+protected theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
   _root_.add_one_ne_zero o
 
 @[deprecated _root_.add_one_ne_zero (since := "2026-02-27")]
