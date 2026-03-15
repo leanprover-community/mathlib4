@@ -64,11 +64,11 @@ instance [Nontrivial M] : Nontrivial P.invtRootSubmodule where
 
 @[simp] lemma coe_top : ((⊤ : P.invtRootSubmodule) : Submodule R M) = ⊤ := rfl
 
-lemma eq_zero_of_forall_coroot'_eq_zero {K : Type*} [Field K] [Module K M] [Module K N]
-    {P : RootPairing ι K M N} [P.IsRootSystem] {x : M} (h : ∀ i, P.coroot' i x = 0) : x = 0 := by
-  have : Module.IsReflexive K M := .of_isPerfPair P.toLinearMap
-  exact ((Module.Dual.eval K M).map_eq_zero_iff (Module.bijective_dual_eval K M).injective).mp
-    (LinearMap.ext_on_range P.span_coroot'_eq_top h)
+lemma eq_zero_iff_forall_coroot'_eq_zero [P.IsRootSystem] {x : M} :
+    x = 0 ↔ ∀ i, P.coroot' i x = 0 := by
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  replace h : x ∈ ⨅ i, ker (P.coroot' i) := by aesop
+  simpa [← P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot'] using h
 
 lemma invtRootSubmodule.le_ker_coroot' {K : Type*} [Field K] [NeZero (2 : K)]
     [Module K M] [Module K N] {P : RootPairing ι K M N}
