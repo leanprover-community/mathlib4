@@ -588,8 +588,11 @@ namespace NumberField.InfinitePlace
 
 open ComplexEmbedding AbsoluteValue
 
-variable {K L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
-  [w.1.LiesOver v.1]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+
+section LiesOver
+
+variable (w : InfinitePlace L) (v : InfinitePlace K) [w.1.LiesOver v.1]
 
 namespace LiesOver
 
@@ -637,7 +640,11 @@ theorem IsUnramified.liesOver_isReal_over (hw : w.IsUnramified K) (hv : v.IsReal
   (InfinitePlace.isUnramified_iff.1 hw).resolve_right
     (by simpa [LiesOver.comap_eq w v] using not_isComplex_iff_isReal.2 hv)
 
-variable (L)
+end LiesOver
+
+section placesOver
+
+variable (v : InfinitePlace K) (w : InfinitePlace L) (L)
 
 /-- The set of infinite places of `L` that lie above a given infinite place of `K`. -/
 def placesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 }
@@ -687,8 +694,6 @@ theorem union_ramifiedPlacesOver_unramifiedPlacesOver :
     (ramifiedPlacesOver L v) ∪ (unramifiedPlacesOver L v) = placesOver L v := by
   rw [placesOver, ramifiedPlacesOver, unramifiedPlacesOver, ← Set.setOf_or]
   grind
-
-variable (v : InfinitePlace K) (w : InfinitePlace L)
 
 theorem bijOn_sumElim_conjugate :
     (Set.sumEquiv.symm (ramifiedPlacesOver L v, ramifiedPlacesOver L v)).BijOn
@@ -768,5 +773,7 @@ theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L]
     AlgHom.coe_ringHom_injective.injOn (fun ψ hψ ↦ ?_)).symm
   simp only [Set.Finite.toFinset_setOf, coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hψ
   exact ⟨⟨ψ, fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, ← hψ.over]⟩, by simp⟩
+
+end placesOver
 
 end NumberField.InfinitePlace
