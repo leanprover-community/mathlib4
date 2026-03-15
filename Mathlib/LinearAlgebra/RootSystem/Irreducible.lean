@@ -120,7 +120,7 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
         ← P.root_coroot'_eq_pairing]
       exact LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q hj hk)
     · exact LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q hk htQ)
-  exact eq_zero_of_forall_coroot'_eq_zero h_ker
+  exact P.eq_zero_iff_forall_coroot'_eq_zero.mpr h_ker
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
