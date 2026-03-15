@@ -237,6 +237,21 @@ theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     · obtain ⟨x, z, hz, rfl⟩ := x
       exact (hz _ hxy').asymm hxy
 
+@[simp]
+theorem _root_.Order.cof_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+    (Order.cof α).ord.cof = Order.cof α := by
+  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
+  rw [← hs', cof_type]
+  apply le_antisymm
+  · rw [← card_ord (Order.cof α), ← hs', card_type]
+    exact cof_le_cardinalMk s
+  · rw [le_cof_iff]
+    exact fun t ht ↦ (cof_le (hs.trans ht)).trans_eq (mk_image_eq Subtype.val_injective)
+
+@[simp]
+theorem cof_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
+  simpa using Order.cof_cof o.ToType
+
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
 -- TODO: use `⨆ i, succ (f i)` instead of `lsub`
@@ -519,12 +534,6 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
       · by_contra! H
         exact (wo.wf.not_lt_min {j | r j i ∧ f i ≤ f j} ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
-
-@[simp]
-theorem cof_cof (a : Ordinal.{u}) : cof (cof a).ord = cof a := by
-  obtain ⟨f, hf⟩ := exists_fundamental_sequence a
-  obtain ⟨g, hg⟩ := exists_fundamental_sequence a.cof.ord
-  exact ord_injective (hf.trans hg).cof_eq.symm
 
 theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     {a o} (ha : IsSuccLimit a) {g} (hg : IsFundamentalSequence a o g) :
