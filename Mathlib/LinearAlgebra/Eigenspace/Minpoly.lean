@@ -116,9 +116,9 @@ variable {K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V]
 
 /-- If `q(f) v = 0`, `f v = 0`, and `v ≠ 0`, then `q(0) = 0`. -/
 theorem eval_zero_of_aeval_apply_eq_zero (f : End K V) (q : K[X]) {v : V}
-    (hv : v ≠ 0) (hf : f v = 0) (hg : (aeval f q) v = 0) : q.eval 0 = 0 := by
+    (hv : v ≠ 0) (hf : f v = 0) (hq : (aeval f q) v = 0) : q.eval 0 = 0 := by
   have h := aeval_apply_of_mem_eigenspace (p := q) (show f v = 0 • v by simp [hf])
-  rw [hg] at h
+  rw [hq] at h
   exact smul_eq_zero.mp h.symm |>.resolve_right hv
 
 theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degree q = 1) :
