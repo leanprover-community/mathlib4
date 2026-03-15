@@ -93,10 +93,8 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   __ := ‹BoundedOrder α›
   sSup := fun s => s.toFinset.sup id
   sInf := fun s => s.toFinset.inf id
-  le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
-  sSup_le := fun _ _ ha => Finset.sup_le fun _ hb => ha _ <| Set.mem_toFinset.mp hb
-  sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
-  le_sInf := fun _ _ ha => Finset.le_inf fun _ hb => ha _ <| Set.mem_toFinset.mp hb
+  isLUB_sSup s := Set.coe_toFinset s ▸ Finset.isLUB_sup_id
+  isGLB_sInf s := Set.coe_toFinset s ▸ Finset.isGLB_inf_id
 
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/

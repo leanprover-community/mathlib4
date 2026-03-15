@@ -79,7 +79,7 @@ These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
   is one guess correct more often than the other?
 * alternatively, can the elaborator generate two `Try this` suggestions, corresponding to the
   possible options?
-* add delaborators for these elaborators
+* not all those elaborators have corresponding delaborators yet, this should be fixed
 * add elaborators for more notation
 * make the model finding extensible, by converting it to an environment extension
 
@@ -946,3 +946,89 @@ Trace class for the `MDiff` elaborator and friends, which infer a model with cor
 initialize registerTraceClass `Elab.DiffGeo.MDiff (inherited := true)
 
 end trace
+
+section delaborators
+
+/-!
+### Delaborators
+
+In this section we make sure the info view also uses those notations. Not all notations are
+supported so far.
+-/
+open Bundle PrettyPrinter Delaborator SubExpr
+
+/-- Delaborator for `Bundle.TotalSpace.mk` using anonymous constructor notation. -/
+@[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 5 do
+  let bd ← withNaryArg 3 <| delab
+  let vd ← withNaryArg 4 <| delab
+  `(⟨$bd, $vd⟩)
+
+/-- Delaborator for `Bundle.TotalSpace.mk'` using anonymous constructor notation. -/
+@[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpace_mk' : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 5 do
+  let bd ← withNaryArg 3 <| delab
+  let vd ← withNaryArg 4 <| delab
+  `(⟨$bd, $vd⟩)
+
+/-- Delaborator for `mfderiv` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab mfderiv] meta def delab_mfderiv : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 21 do
+  try
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `(T% $σs) >>= annotateGoToSyntaxDef
+    `(mfderiv% ($Tσs)) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    `(mfderiv% $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `MDifferentiableAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 21 do
+  try
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    `(MDiffAt $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `MDifferentiableWithinAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab MDifferentiableWithinAt] meta def delabMDifferentiableWithinAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do
+  let ss ← withAppArg delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let s := b.getAppArgs[4]!.getAppFn
+    guard <| s.isFVar
+    let fs ← withNaryArg 20 do
+      let fs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $fs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 <| delab
+    `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
+
+end delaborators

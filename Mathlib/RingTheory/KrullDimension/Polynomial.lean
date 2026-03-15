@@ -46,7 +46,6 @@ namespace Polynomial
 
 open Ideal IsLocalization
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `p` be a maximal ideal of `A`. If `P` is a maximal ideal of `A[X]` lying above `p`,
 then `ht(P) = ht(p) + 1`.

@@ -111,54 +111,60 @@ end NormedField
 
 end
 
-namespace Valued
+
+namespace Valuation
 
 variable {L : Type*} [Field L] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-  [val : Valued L Γ₀] [hv : RankOne val.v]
-
---TODO: replace by Valuation.norm
+  (v : Valuation L Γ₀) [hv : RankOne v]
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/
-def norm : L → ℝ := fun x : L => hv.hom _ (Valued.v.restrict x)
+def norm : L → ℝ := fun x : L => hv.hom _ (v.restrict x)
 
-theorem norm_def {x : L} : Valued.norm x = hv.hom _ (Valued.v.restrict x) := rfl
+theorem norm_def {x : L} : v.norm x = hv.hom _ (v.restrict x) := rfl
 
-theorem norm_nonneg (x : L) : 0 ≤ norm x := by simp only [norm, NNReal.zero_le_coe]
+theorem norm_nonneg (x : L) : 0 ≤ v.norm x := by simp only [norm, NNReal.zero_le_coe]
 
-theorem norm_add_le (x y : L) : norm (x + y) ≤ max (norm x) (norm y) := by
+theorem norm_add_le (x y : L) : v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
   simp only [norm, NNReal.coe_le_coe, le_max_iff, StrictMono.le_iff_le hv.strictMono]
-  exact le_max_iff.mp (Valuation.map_add_le_max' val.v.restrict _ _)
+  exact le_max_iff.mp (Valuation.map_add_le_max' v.restrict _ _)
 
-theorem norm_eq_zero {x : L} (hx : norm x = 0) : x = 0 := by
+theorem norm_eq_zero {x : L} (hx : v.norm x = 0) : x = 0 := by
   simpa [v.restrict_def, norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
 
 set_option backward.isDefEq.respectTransparency false in
-theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) < v x := by
-  rw [norm_def, ← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankOne.hom (v (R := L))),
+theorem norm_pos_iff_valuation_pos {x : L} : 0 < v.norm x ↔ (0 : Γ₀) < v x := by
+  rw [norm_def, ← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankOne.hom v),
     StrictMono.lt_iff_lt (RankOne.strictMono v)]
   rw [v.restrict_pos_iff]
 
-variable (L) (Γ₀)
+end Valuation
+
+namespace Valued
+
+variable (L : Type*) [Field L] (Γ₀ : Type*) [LinearOrderedCommGroupWithZero Γ₀]
+  [val : Valued L Γ₀] [hv : RankOne val.v]
+
+open Valuation
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The normed field structure determined by a rank one valuation. -/
 @[instance_reducible]
 def toNormedField : NormedField L :=
   { (inferInstance : Field L) with
-    norm := norm
-    dist := fun x y => norm (x - y)
+    norm := val.v.norm
+    dist := fun x y => val.v.norm (x - y)
     dist_self := fun x => by
-      simp only [sub_self, norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
-    dist_comm := fun x y => by simp only [norm]; rw [← neg_sub, Valuation.map_neg]
+      simp only [sub_self, Valuation.norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
+    dist_comm := fun x y => by simp only [Valuation.norm]; rw [← neg_sub, Valuation.map_neg]
     dist_triangle := fun x y z => by
       simp only [← sub_add_sub_cancel x y z]
-      exact le_trans (norm_add_le _ _)
-        (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
-    eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
+      exact le_trans (val.v.norm_add_le _ _)
+        (max_le_add_of_nonneg (val.v.norm_nonneg _) (val.v.norm_nonneg _))
+    eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (val.v.norm_eq_zero hxy)
     dist_eq := fun x y => by
-      simp only [norm]
+      simp only [Valuation.norm]
       rw [← v.restrict.map_neg, neg_sub, sub_eq_add_neg, add_comm]
-    norm_mul := fun x y => by simp only [norm, ← NNReal.coe_mul, map_mul]
+    norm_mul := fun x y => by simp only [Valuation.norm, ← NNReal.coe_mul, map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
       haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
@@ -173,7 +179,7 @@ def toNormedField : NormedField L :=
           use δ, hδ_pos
           apply subset_trans _ hε
           intro x hx
-          simp only [mem_setOf_eq, norm, hδ, NNReal.coe_lt_coe] at hx
+          simp only [mem_setOf_eq, Valuation.norm, hδ, NNReal.coe_lt_coe] at hx
           rw [mem_setOf, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
         · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
@@ -182,7 +188,7 @@ def toNormedField : NormedField L :=
           use u
           apply subset_trans _ hr
           intro x hx
-          simp only [norm, mem_setOf_eq]
+          simp only [Valuation.norm, mem_setOf_eq]
           apply lt_trans _ hu
           rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx
@@ -202,11 +208,12 @@ section NormedField
 
 open scoped Valued
 
-protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖) : L → ℝ) := Valued.norm_add_le
+protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖) : L → ℝ) :=
+  Valuation.norm_add_le _
 
 instance : IsUltrametricDist L :=
   ⟨fun x y z ↦ by
-    refine (Valued.norm_add_le (x - y) (y - z)).trans_eq' ?_
+    refine (Valuation.norm_add_le _ (x - y) (y - z)).trans_eq' ?_
     simp only [sub_add_sub_cancel]
     rfl ⟩
 
@@ -214,10 +221,9 @@ lemma coe_valuation_eq_rankOne_hom_comp_valuation :
     ⇑NormedField.valuation = hv.hom ∘ val.v.restrict := rfl
 
 end NormedField
-
-variable {L} {Γ₀}
-
 namespace toNormedField
+
+variable {L Γ₀}
 
 variable {x x' : L}
 
