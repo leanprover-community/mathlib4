@@ -106,7 +106,7 @@ def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 
 /-- A "canonical" type order-isomorphic to the ordinal `o`, living in the same universe. This is
-defined through the axiom of choice.
+defined through the axiom of choice; in particular, it has no useful def-eqs, and it is not exposed.
 
 Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`,
 and convert using
