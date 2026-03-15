@@ -83,10 +83,9 @@ lemma invtRootSubmodule.eq_bot_iff {K : Type*} [Field K] [NeZero (2 : K)]
     (q : P.invtRootSubmodule) :
     q = ⊥ ↔ ∀ i, P.root i ∉ (q : Submodule K M) := by
   refine ⟨fun h ↦ by simp [h, P.ne_zero], fun h ↦ ?_⟩
-  rw [Subtype.mk_eq_bot_iff (by simp), Submodule.eq_bot_iff]
-  intro x hx
-  exact eq_zero_of_forall_coroot'_eq_zero fun i =>
-    LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q (h i) hx)
+  simp_rw [Subtype.mk_eq_bot_iff (invtRootSubmodule.bot_mem P), Submodule.eq_bot_iff,
+    P.eq_zero_iff_forall_coroot'_eq_zero, ← LinearMap.mem_ker]
+  exact fun x hx i ↦ invtRootSubmodule.le_ker_coroot' q (h i) hx
 
 lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [Module K M] [Module K N]
     {P : RootPairing ι K M N} [P.IsRootSystem] (q : P.invtRootSubmodule) :
