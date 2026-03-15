@@ -756,7 +756,7 @@ theorem isSuccPrelimit_mul_left {a b : Ordinal} (ha : IsSuccLimit a) : IsSuccPre
 @[simp]
 theorem nsmul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
-  | n + 1, a => by rw [succ_nsmul, nsmul_eq_mul n, Nat.cast_add_one, mul_add_one]
+  | n + 1, a => by rw [succ_nsmul, nsmul_eq_mul, Nat.cast_add_one, mul_add_one]
 
 @[deprecated (since := "2026-03-14")] alias smul_eq_mul := nsmul_eq_mul
 
