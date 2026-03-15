@@ -84,7 +84,16 @@ else
       -f "${pkg}/.gitignore" && \
       -f "${pkg}/lean-toolchain" && \
       -f "${pkg}/lake-manifest.json" ]]; then
-    (cd "${pkg}" && lake update)
+    if [[ "$1" == "--lake-update" ]]; then
+      echo "Only running \`lake update\` in \`SideSkimmer\`; skipping run."
+      (cd "${pkg}" && lake update)
+      exit 0
+    fi
+    # Only run `lake update` if `--no-update` is not present.
+    if [[ -z "$1" ]]; then
+      echo "Running \`lake update\` in \`SideSkimmer\`. Use \`runSkimmer.sh --no-update\` to skip this."
+      (cd "${pkg}" && lake update)
+    fi
     for tgt in "${tgts[@]}"; do
       cmd=(lake build "${tgt}:applyCurrentTryThis")
       echo "Running \`${cmd[@]}\`."
