@@ -6,7 +6,6 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.GSimp.Rewrite
-public import Mathlib.Tactic.GCongr.Core
 
 /-!
 # generalized rewriting
@@ -114,7 +113,8 @@ partial def gsimpStep (e rel : Expr) (relName : Name) (idx : CacheIndex) : GSimp
 
 /-- A copy of `Simp.cacheResult`. -/
 partial def cacheResult (idx : CacheIndex) (e : Expr) (r : Result) : GSimpM Result := do
-  modify fun s => { s with cache := s.cache.insert idx e r }
+  let inv ← isInv
+  modify fun s => { s with cache := s.cache.insert idx inv e r }
   return r
 
 /-- A copy of `Simp.simpLoop`. -/
@@ -122,7 +122,7 @@ partial def gsimpLoop (e rel : Expr) (relName : Name) (idx : CacheIndex) : GSimp
   withIncRecDepth do
   let cfg ← getConfig
   let cache := (← get).cache
-  if let some result := cache.find? idx e then
+  if let some result := cache.find? idx (← isInv) e then
     return result
   if (← get).numSteps > cfg.maxSteps then
     throwError "`gsimp` failed: maximum number of steps exceeded"

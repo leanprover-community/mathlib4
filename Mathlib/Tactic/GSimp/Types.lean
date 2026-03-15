@@ -23,13 +23,21 @@ structure Result where
 
 /-- The cache associated to a relation. -/
 structure CacheEntry where
+  /-- Cached simplification results for rewriting left to right. -/
   cache : Std.HashMap Expr Result := {}
+  /-- Cached simplification results for rewriting right to left. -/
+  invCache : Std.HashMap Expr Result := {}
+  /-- An optional proof that `∀ x, x ~ x`. -/
   rfl? : Option Expr := none
+  /-- An optional proof that `∀ x y z, x ~ y → y ~ z → x ~ z`. -/
   trans? : Option Expr := none
   deriving Inhabited
 
-def CacheEntry.insert (entry : CacheEntry) (e : Expr) (r : Result) : CacheEntry :=
-  { entry with cache := entry.cache.insert e r }
+def CacheEntry.insert (entry : CacheEntry) (inv : Bool) (e : Expr) (r : Result) : CacheEntry :=
+  if inv then
+    { entry with cache := entry.cache.insert e r }
+  else
+    { entry with invCache := entry.invCache.insert e r }
 
 theorem imp_rfl (p : Prop) : p → p := id
 theorem imp_trans (p q r : Prop) : (p → q) → (q → r) → p → r := flip Function.comp
@@ -47,24 +55,21 @@ As a result, the expressions appearing in the `DefEqMap` are always valid.
 structure Cache where
   /-- Map from relations to array index. -/
   relMap : Std.HashMap Expr CacheIndex := {}
-  /-- Map for relations in the reverse direction. -/
-  invRelMap : Std.HashMap Expr CacheIndex := {}
   /-- For each relation, a proof of transitivity, and a cache of previously handled expressions.
   By convention, the first element in the array corresponds to the implication relation. -/
   entries : Array CacheEntry := #[{
     trans? := Expr.const ``imp_trans [], rfl? := Expr.const ``imp_rfl [] }]
 
-
-
 -- Instead of returning none, this should modify the `entries` to create a new index.
-def Cache.findIdx? (c : Cache) (rel : Expr) (inv : Bool) : Option CacheIndex :=
-  if inv then c.invRelMap[rel]? else c.relMap[rel]?
+def Cache.findIdx? (c : Cache) (rel : Expr) : Option CacheIndex :=
+  c.relMap[rel]?
 
-def Cache.find? (c : Cache) (idx : CacheIndex) (e : Expr) : Option Result :=
-  c.entries[idx]!.cache[e]?
+def Cache.find? (c : Cache) (idx : CacheIndex) (inv : Bool) (e : Expr) : Option Result :=
+  let entry := c.entries[idx]!
+  if inv then entry.invCache[e]? else entry.cache[e]?
 
-def Cache.insert (c : Cache) (idx : CacheIndex) (e : Expr) (r : Result) : Cache :=
-  { c with entries := c.entries.modify idx (·.insert e r)}
+def Cache.insert (c : Cache) (idx : CacheIndex) (inv : Bool) (e : Expr) (r : Result) : Cache :=
+  { c with entries := c.entries.modify idx (·.insert inv e r)}
 
 /-- The state of the `GSimpM` monad. -/
 structure State where
@@ -151,34 +156,30 @@ def withContra {α} (isContra : Bool) (x : GSimpM α) : GSimpM α :=
 
 def getCacheIdx (rel : Expr) : GSimpM CacheIndex := do
   let c := (← get).cache
-  if ← isInv then
-    if let some idx := c.invRelMap[rel]? then
-      return idx
-    else
-      let idx := c.entries.size
-      modify fun s ↦ { s with
-        cache.entries := s.cache.entries.push {}
-        cache.invRelMap := s.cache.invRelMap.insert rel idx }
-      return idx
+  if let some idx := c.relMap[rel]? then
+    return idx
   else
-    if let some idx := c.relMap[rel]? then
-      return idx
-    else
-      let idx := c.entries.size
-      modify fun s ↦ { s with
-        cache.entries := s.cache.entries.push {}
-        cache.relMap := s.cache.relMap.insert rel idx }
-      return idx
+    let idx := c.entries.size
+    modify fun s ↦ { s with
+      cache.entries := s.cache.entries.push {}
+      cache.relMap := s.cache.relMap.insert rel idx }
+    return idx
 
 def getRfl (rel : Expr) (idx : CacheIndex) : GSimpM Expr := do
-  if let some rflPf := (← get).cache.entries[idx]!.rfl? then
-    return rflPf
-  mkAppOptM ``refl #[none, rel, none]
+  let entry := (← get).cache.entries[idx]!
+  if let some proof := entry.rfl? then
+    return proof
+  let proof ← mkAppOptM ``refl #[none, rel, none]
+  modify fun s ↦ { s with cache.entries := s.cache.entries.set! idx { entry with rfl? := proof } }
+  return proof
 
 def getTrans (rel : Expr) (idx : CacheIndex) : GSimpM Expr := do
-  if let some transPf := (← get).cache.entries[idx]!.trans? then
-    return transPf
-  mkAppOptM ``IsTrans.trans #[none, rel, none]
+  let entry := (← get).cache.entries[idx]!
+  if let some proof := entry.trans? then
+    return proof
+  let proof ← mkAppOptM ``IsTrans.trans #[none, rel, none]
+  modify fun s ↦ { s with cache.entries := s.cache.entries.set! idx { entry with trans? := proof } }
+  return proof
 
 def Result.getProof (rel : Expr) (idx : CacheIndex) (r : Result) : GSimpM Expr := do
   match r.proof? with

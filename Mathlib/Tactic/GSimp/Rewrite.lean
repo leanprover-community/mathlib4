@@ -33,9 +33,6 @@ def synthesizeArgs (bis : Array BinderInfo) (xs : Array Expr) : GSimpM Bool := d
       return false
   return true
 
-
-
-
 private def tryTheoremCore (lhs rhs : Expr) (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr) (thm : GSimpTheorem) : GSimpM (Option Result) := do
   let rec go (e : Expr) : GSimpM (Option Result) := do
     trace[Debug.Meta.Tactic.simp] "trying {← ppGSimpTheorem thm} to rewrite{indentExpr e}"
