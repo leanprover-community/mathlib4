@@ -115,7 +115,8 @@ lemma isTorsionBySet_cotangent :
 def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
   Submodule.map (Quotient.mk (I ^ 2) |>.toSemilinearMap) I
 
-theorem cotangentIdeal_eq_Submodule (I : Ideal R) :
+/-- `I.cotangentIdeal` is also the image of `I` via `R`-module quotient map `R → R ⧸ I ^ 2`. -/
+theorem cotangentIdeal_eq_submodule (I : Ideal R) :
     ↥I.cotangentIdeal = Submodule.map (I ^ 2).mkQ I :=
   rfl
 
