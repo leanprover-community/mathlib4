@@ -34,8 +34,9 @@ variable (k G) in
 /-- If there exists `G`-action on a trivial monoid `H` then the induced representation
   on `k[H]` is equivalent to the trivial representation. -/
 def ofMulActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
-  .mk (Finsupp.uniqueLinearEquiv _ _ 1) fun g ↦ by
-    ext a; simp [Subsingleton.elim (g • a) a]
+  letI : Unique H := uniqueOfSubsingleton 1
+  .mk (MonoidAlgebra.uniqueLinearEquiv k G).toLinearEquiv fun g ↦ _
+    -- ext a; simp [Subsingleton.elim (g • a) a]
 
 @[simp]
 lemma ofMulActionSubsingletonEquivTrivial_apply (f : H →₀ k) :
