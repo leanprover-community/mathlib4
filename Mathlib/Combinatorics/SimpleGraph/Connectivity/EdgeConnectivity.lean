@@ -76,9 +76,11 @@ lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
 lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) : G.Reachable u v :=
   isEdgeReachable_one.mp (huv.anti (Nat.one_le_iff_ne_zero.mpr hk))
 
+@[nontriviality]
 lemma IsEdgeReachable.of_subsingleton [Subsingleton V] : G.IsEdgeReachable k u v :=
   fun _ _ ↦ .of_subsingleton
 
+@[nontriviality]
 lemma IsEdgeConnected.of_subsingleton [Subsingleton V] : G.IsEdgeConnected k :=
   fun _ _ ↦ .of_subsingleton
 
