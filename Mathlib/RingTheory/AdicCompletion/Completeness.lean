@@ -17,7 +17,7 @@ when the ideal `I` is finitely generated.
 
 ## Main definitions
 
-* `AdicCompletion.ofPowSmul`: The canonical inclusion between adic completions
+* `AdicCompletion.ofPowSMul`: The canonical inclusion between adic completions
   induced by the inclusion from `I ^ n • M` to `M`.
 
 * `AdicCompletion.liftOfValZero`: Given `x` in `AdicCompletion I M` projecting to zero
@@ -50,28 +50,28 @@ namespace AdicCompletion
 variable (M) in
 /-- The canonical inclusion from the adic completion of `I ^ n • M` to
 the adic completion of `M`. -/
-def ofPowSmul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
+def ofPowSMul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
     →ₗ[AdicCompletion I R] AdicCompletion I M := map I (I ^ n • ⊤ : Submodule R M).subtype
 
-theorem ofPowSmul_val_apply {a b c : ℕ} (h : c = b + a)
-    {x : AdicCompletion I ↥(I ^ a • ⊤ : Submodule R M)} : (ofPowSmul I M a x).val c =
+theorem ofPowSMul_val_apply {a b c : ℕ} (h : c = b + a)
+    {x : AdicCompletion I ↥(I ^ a • ⊤ : Submodule R M)} : (ofPowSMul I M a x).val c =
       powSMulQuotInclusion I M h ⊤ (x.val b) := by
-  rw [← x.prop (show b ≤ c by lia), ofPowSmul, map_val_apply]
+  rw [← x.prop (show b ≤ c by lia), ofPowSMul, map_val_apply]
   refine Quotient.induction_on _ (x.val c) fun z ↦ ?_
   simp [powSMulQuotInclusion]
 
-theorem ofPowSmul_val_apply_eq_zero {n i : ℕ} (h : i ≤ n)
-    {x : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)} : (ofPowSmul I M n x).val i = 0 := by
-  rw [ofPowSmul, map_val_apply]
+theorem ofPowSMul_val_apply_eq_zero {n i : ℕ} (h : i ≤ n)
+    {x : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)} : (ofPowSMul I M n x).val i = 0 := by
+  rw [ofPowSMul, map_val_apply]
   refine Quotient.induction_on _ (x.val i) fun z ↦ ?_
   simpa using pow_smul_top_le _ _ h z.prop
 
-theorem ofPowSmul_injective (n : ℕ) : Function.Injective (ofPowSmul I M n) := by
+theorem ofPowSMul_injective (n : ℕ) : Function.Injective (ofPowSMul I M n) := by
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro x hx; ext i
   simp only [AdicCompletion.ext_iff, val_zero, Pi.zero_apply] at hx
   specialize hx (i + n)
-  rw [ofPowSmul_val_apply I (by rw [add_comm]),
+  rw [ofPowSMul_val_apply I (by rw [add_comm]),
     LinearMap.map_eq_zero_iff _ (powSMulQuotInclusion_injective ..)] at hx
   simp [hx]
 
@@ -104,19 +104,19 @@ def liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
     exact x.prop (by lia)
 
 @[simp]
-theorem ofPowSmul_liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
-    ofPowSmul I M n (liftOfValZero I hxn) = x := by
+theorem ofPowSMul_liftOfValZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
+    ofPowSMul I M n (liftOfValZero I hxn) = x := by
   ext i; by_cases h : n ≤ i
   · obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le' h
-    rw [ofPowSmul_val_apply _ (by rfl), liftOfValZero, liftOfValZeroAux_prop]
+    rw [ofPowSMul_val_apply _ (by rfl), liftOfValZero, liftOfValZeroAux_prop]
   replace h : i ≤ n := by lia
-  rw [ofPowSmul_val_apply_eq_zero _ h, ← x.prop h, hxn, _root_.map_zero]
+  rw [ofPowSMul_val_apply_eq_zero _ h, ← x.prop h, hxn, _root_.map_zero]
 
-theorem restrictScalars_ofPowSmul_range_eq_eval_ker {n : ℕ} :
-    (ofPowSmul I M n).range.restrictScalars R = (eval I M n).ker := by
+theorem restrictScalars_ofPowSMul_range_eq_eval_ker {n : ℕ} :
+    (ofPowSMul I M n).range.restrictScalars R = (eval I M n).ker := by
   refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
   · rcases hx with ⟨y, rfl⟩
-    rw [LinearMap.mem_ker, eval_apply, ofPowSmul_val_apply_eq_zero _ (by rfl)]
+    rw [LinearMap.mem_ker, eval_apply, ofPowSMul_val_apply_eq_zero _ (by rfl)]
   simp only [LinearMap.mem_ker, coe_eval] at hx
   use liftOfValZero I hx; simp
 
@@ -143,7 +143,7 @@ theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
   rw [← restrictScalars_top R (AdicCompletion I R) (AdicCompletion I M),
     ← restrictScalars_image_smul_eq (R := AdicCompletion I R), show
     ⇑(algebraMap R (AdicCompletion I R)) = of I R by rfl,
-    ← restrictScalars_ofPowSmul_range_eq_eval_ker, restrictScalars_le,
+    ← restrictScalars_ofPowSMul_range_eq_eval_ker, restrictScalars_le,
     image_smul_top_eq_range_lsum]
   simp only [SetLike.coe_sort_coe, ← map_lsum_smul_comp_finsuppSum]
   rw [LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_eq_top_of_surjective _ <|
@@ -156,7 +156,7 @@ theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
       smul_top_eq_range_lsum]
     simp
   rcases map_surjective I this x with ⟨x, rfl⟩
-  exact ⟨x, by rw [ofPowSmul, ← LinearMap.comp_apply, map_comp]; rfl⟩
+  exact ⟨x, by rw [ofPowSMul, ← LinearMap.comp_apply, map_comp]; rfl⟩
 
 variable {I} in
 /-- `AdicCompletion I M` is adic complete when `I` is finitely generated. -/
