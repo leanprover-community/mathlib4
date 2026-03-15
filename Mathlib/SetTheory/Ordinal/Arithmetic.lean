@@ -535,7 +535,7 @@ theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccPrelimit a) (h : b < a) :
   rw [add_succ]
   exact ha.succ_lt hc
 
-theorem addCommute_iff_nsmul (o₁ o₂ : Ordinal) :
+theorem addCommute_iff_nsmul {o₁ o₂ : Ordinal} :
     AddCommute o₁ o₂ ↔ ∃ (o : Ordinal) (n₁ n₂ : ℕ), o₁ = n₁ • o ∧ o₂ = n₂ • o := by
   refine ⟨fun hcomm ↦ ?_, ?_⟩
   · induction h : o₁ + o₂ using WellFoundedLT.induction generalizing o₁ o₂ with | ind o ih
@@ -548,7 +548,7 @@ theorem addCommute_iff_nsmul (o₁ o₂ : Ordinal) :
     have hsub : o₁ + o₃ = o₂ := Ordinal.add_sub_cancel_of_le hle
     have hcomm' : AddCommute o₁ o₃ := add_left_cancel (a := o₁) <| by grind
     have hlt : o₁ + o₃ < o₁ + o₂ := by simpa [hsub, hcomm.eq] using h₁.pos
-    rcases ih _ hlt o₁ o₃ hcomm' rfl with ⟨o, n₁, n₃, hn₁, hn₃⟩
+    rcases ih _ hlt hcomm' rfl with ⟨o, n₁, n₃, hn₁, hn₃⟩
     use o, n₁, n₁ + n₃, hn₁
     rw [add_nsmul, ← hn₁, ← hn₃, hsub]
   · rintro ⟨o, n₁, n₂, rfl, rfl⟩
@@ -795,7 +795,7 @@ theorem add_mul_of_isSuccLimit {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLim
     (a + b) * c = a * c :=
   add_mul_limit_aux ba l fun c' _ => add_mul_succ c' ba
 
-theorem addCommute_iff_mul (o₁ o₂ : Ordinal) :
+theorem addCommute_iff_mul {o₁ o₂ : Ordinal} :
     AddCommute o₁ o₂ ↔ ∃ (o : Ordinal) (n₁ n₂ : ℕ), o₁ = o * n₁ ∧ o₂ = o * n₂ := by
   rw [addCommute_iff_nsmul]
   refine ⟨?_, ?_⟩
