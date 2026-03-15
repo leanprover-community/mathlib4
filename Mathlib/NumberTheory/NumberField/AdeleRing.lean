@@ -6,7 +6,7 @@ Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 module
 
 public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
-public import Mathlib.NumberTheory.NumberField.FinitePlaces
+public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 
 /-!
