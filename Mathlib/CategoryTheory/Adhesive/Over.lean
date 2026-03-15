@@ -16,10 +16,6 @@ public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 The slice (over) category `Over B` inherits the adhesive structure from the
 base category.
 
-## Main Results
-- `CategoryTheory.adhesive_over`: `Over B` is adhesive when the base
-  category is adhesive with pullbacks and pushouts.
-
 ## TODO
 - The dual result for `Under B` (coslice).
 
@@ -38,11 +34,7 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
-/-- Slices of adhesive categories are adhesive. The forgetful functor `Over.forget B : Over B ⥤ C`
-creates all colimits and creates connected limits (in particular pullbacks), so
-`adhesive_of_preserves_and_reflects_isomorphism` transfers the adhesive structure.
-
-See [adhesive2004], Proposition 8 (ii). -/
+/-- Slices of adhesive categories are adhesive. See [adhesive2004], Proposition 8 (ii). -/
 instance adhesive_over [Adhesive C] [HasPullbacks C] [HasPushouts C] (B : C) :
     Adhesive (Over B) :=
   adhesive_of_preserves_and_reflects_isomorphism (Over.forget B)
