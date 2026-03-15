@@ -242,10 +242,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
     δ i ≫ δ j.succ = δ j ≫ δ i.castSucc := by
   ext k
   dsimp [δ, Fin.succAbove]
-  rcases i with ⟨i, _⟩
-  rcases j with ⟨j, _⟩
-  rcases k with ⟨k, _⟩
-  split_ifs <;> · simp at * <;> lia
+  grind
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : i.castSucc < j) :
     δ i ≫ δ j =

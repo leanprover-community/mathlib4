@@ -570,12 +570,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
   have k_ne_succ : (Fin.castSucc k) ≠ k.succ := Fin.castSucc_lt_succ.ne
   have M_k : M (Fin.castSucc k) = M' (Fin.castSucc k) := (updateRow_ne k_ne_succ).symm
   rw [hM, M_k, det_updateRow_add_smul_self M' k_ne_succ.symm, ih (Function.update c k 0)]
-  · intro i hi
-    rw [Fin.lt_def, Fin.val_castSucc, Fin.val_succ, Nat.lt_succ_iff] at hi
-    rw [Function.update_apply]
-    split_ifs with hik
-    · rfl
-    exact hc _ (Fin.succ_lt_succ_iff.mpr (lt_of_le_of_ne hi (Ne.symm hik)))
+  · grind
   · rwa [hM', updateRow_ne (Fin.succ_ne_zero _).symm]
   intro i j
   rw [Function.update_apply]
