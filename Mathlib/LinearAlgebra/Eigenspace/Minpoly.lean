@@ -63,15 +63,6 @@ theorem aeval_apply_of_hasEigenvector {f : End R M} {p : R[X]} {μ : R} {x : M}
     (h : f.HasEigenvector μ x) : aeval f p x = p.eval μ • x :=
   aeval_apply_of_mem_eigenspace (mem_eigenspace_iff.mp h.1)
 
-/-- If `p(f) v = 0`, `f v = 0`, and `v ≠ 0`, then `p(0) = 0`. -/
-theorem eval_zero_of_aeval_apply_eq_zero
-    {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
-    {f : End K V} {p : K[X]} {v : V}
-    (hv : v ≠ 0) (hf : f v = 0) (hg : (aeval f p) v = 0) : p.eval 0 = 0 := by
-  have h := aeval_apply_of_mem_eigenspace (p := p) (show f v = 0 • v by simp [hf])
-  rw [hg] at h
-  exact smul_eq_zero.mp h.symm |>.resolve_right hv
-
 theorem isRoot_of_hasEigenvalue [IsDomain R] [IsTorsionFree R M] {f : End R M} {μ : R}
     (h : f.HasEigenvalue μ) : (minpoly R f).IsRoot μ := by
   rcases (Submodule.ne_bot_iff _).1 h with ⟨w, ⟨H, ne0⟩⟩
@@ -122,6 +113,13 @@ end CommRing
 section Field
 
 variable {K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V]
+
+/-- If `q(f) v = 0`, `f v = 0`, and `v ≠ 0`, then `q(0) = 0`. -/
+theorem eval_zero_of_aeval_apply_eq_zero (f : End K V) (q : K[X]) {v : V}
+    (hv : v ≠ 0) (hf : f v = 0) (hg : (aeval f q) v = 0) : q.eval 0 = 0 := by
+  have h := aeval_apply_of_mem_eigenspace (p := q) (show f v = 0 • v by simp [hf])
+  rw [hg] at h
+  exact smul_eq_zero.mp h.symm |>.resolve_right hv
 
 theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degree q = 1) :
     eigenspace f (-q.coeff 0 / q.leadingCoeff) = LinearMap.ker (aeval f q) :=

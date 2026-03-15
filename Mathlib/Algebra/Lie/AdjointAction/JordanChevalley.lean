@@ -12,9 +12,8 @@ public import Mathlib.LinearAlgebra.JordanChevalley
 /-!
 # Jordan–Chevalley decomposition and the adjoint action
 
-This file shows that the Jordan–Chevalley decomposition of `n + s` lifts through the adjoint
-action: `ad(n + s) = ad(n) + ad(s)` is again a JC decomposition, and `ad(n)`, `ad(s)` lie in
-`adjoin K {ad(n + s)}`.
+This file contains results about the interaction between the adjoint action `LieAlgebra.ad` and
+the Jordan–Chevalley decomposition.
 
 ## Main results
 
@@ -28,6 +27,7 @@ action: `ad(n + s) = ad(n) + ad(s)` is again a JC decomposition, and `ad(n)`, `a
 @[expose] public section
 
 section Field
+
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 /-- If `g` commutes with `x ≠ 0` and `ad(g) = p(ad(x))`, then `p(0) = 0`. This applies to both
@@ -35,7 +35,7 @@ the semisimple and nilpotent parts of a JC decomposition lifted through `ad`. -/
 theorem LieAlgebra.eval_zero_of_aeval_ad_eq {x g : Module.End K V}
     (hx : x ≠ 0) (hc : Commute g x) {p : Polynomial K}
     (hp : LieAlgebra.ad K (Module.End K V) g =
-        Polynomial.aeval (LieAlgebra.ad K (Module.End K V) x) p) :
+      Polynomial.aeval (LieAlgebra.ad K (Module.End K V) x) p) :
     p.eval 0 = 0 := by
   set ad := LieAlgebra.ad K (Module.End K V)
   have hf : (ad x) x = 0 := by simp [ad, LieAlgebra.ad_apply, lie_self]
@@ -46,6 +46,7 @@ theorem LieAlgebra.eval_zero_of_aeval_ad_eq {x g : Module.End K V}
 end Field
 
 section PerfectField
+
 variable {K V : Type*} [Field K] [PerfectField K] [AddCommGroup V] [Module K V]
 variable [FiniteDimensional K V] {n s : Module.End K V}
 
@@ -54,7 +55,7 @@ the adjoint of the sum. -/
 theorem LieAlgebra.ad_semisimplePart_mem_adjoin
     (hc : Commute n s) (hn : IsNilpotent n) (hs : s.IsSemisimple) :
     LieAlgebra.ad K (Module.End K V) s ∈
-        Algebra.adjoin K {LieAlgebra.ad K (Module.End K V) (n + s)} := by
+      Algebra.adjoin K {LieAlgebra.ad K (Module.End K V) (n + s)} := by
   set ad := LieAlgebra.ad K (Module.End K V)
   obtain ⟨n', hn'_adj, s', hs'_adj, hn'_nil, hs'_ss, h_jc⟩ :=
     (ad (n + s)).exists_isNilpotent_isSemisimple
@@ -72,7 +73,7 @@ the adjoint of the sum. -/
 theorem LieAlgebra.ad_nilpotentPart_mem_adjoin
     (hc : Commute n s) (hn : IsNilpotent n) (hs : s.IsSemisimple) :
     LieAlgebra.ad K (Module.End K V) n ∈
-        Algebra.adjoin K {LieAlgebra.ad K (Module.End K V) (n + s)} := by
+      Algebra.adjoin K {LieAlgebra.ad K (Module.End K V) (n + s)} := by
   set ad := LieAlgebra.ad K (Module.End K V)
   have : ad n = ad (n + s) - ad s := by simp [map_add]
   rw [this]

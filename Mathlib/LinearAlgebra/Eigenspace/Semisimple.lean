@@ -17,8 +17,12 @@ endomorphisms.
 
 ## Main definitions / results
 
-* `Module.End.IsSemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
+* `Module.End.IsFinitelySemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
   a generalized eigenspace is an eigenspace.
+* `Module.End.IsFinitelySemisimple.iSup_eigenspace_eq_top`: over an algebraically closed field,
+  the eigenspaces of a semisimple endomorphism span the whole space.
+* `Module.End.IsFinitelySemisimple.eq_zero_of_forall_eigenvalue_eq_zero`: a semisimple endomorphism
+  over an algebraically closed field with all eigenvalues equal to zero must be zero.
 
 -/
 
