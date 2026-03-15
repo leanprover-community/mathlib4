@@ -579,27 +579,42 @@ theorem compMeasurePreserving_id (g : Lp E p μb) :
   rw [compMeasurePreserving_val]
   exact AEEqFun.compMeasurePreserving_id _
 
-theorem compMeasurePreserving_compMeasurePreserving {γ : Type*} {mγ : MeasurableSpace γ}
-    {μc : Measure γ} (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc)
-    {f' : α → β} (hf' : MeasurePreserving f' μ μb) :
-    ((compMeasurePreserving f' hf') ∘ (compMeasurePreserving f hf)) g =
-    (compMeasurePreserving (f ∘ f') (hf.comp hf')) g := by
-  rw [Function.comp_apply]
+theorem compMeasurePreserving_id' :
+    compMeasurePreserving (E:=E) (p:=p) id (MeasurePreserving.id μb) = id (α:=Lp E p μb) := by
+  funext g
+  exact compMeasurePreserving_id g
+
+theorem compMeasurePreserving_id'_ :
+    compMeasurePreserving (E:=E) (p:=p) id (MeasurePreserving.id μb) = AddMonoidHom.id _ := by
+  ext g
+  simp
+
+theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
+    (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β}
+    (hf' : MeasurePreserving f' μ μb) : (compMeasurePreserving (f ∘ f') (hf.comp hf')) g =
+    (compMeasurePreserving f' hf') ((compMeasurePreserving f hf) g) := by
   apply Subtype.ext
   repeat rw [compMeasurePreserving_val]
-  symm
-  apply AEEqFun.compMeasurePreserving_comp
+  exact AEEqFun.compMeasurePreserving_comp _ _ _
 
-theorem compMeasurePreserving_iterate {f : α → α} (g : Lp E p μ) (hf : MeasurePreserving f μ μ)
-    (n : ℕ) : (compMeasurePreserving f hf)^[n] g =
-    compMeasurePreserving f^[n] (MeasurePreserving.iterate hf n) g := by
+theorem compMeasurePreserving_comp' {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
+    {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β} (hf' : MeasurePreserving f' μ μb) :
+    (compMeasurePreserving (E:=E) (p:=p) (f ∘ f') (hf.comp hf')) =
+    ((compMeasurePreserving f' hf').comp (compMeasurePreserving f hf)) := by
+  ext g
+  rw [compMeasurePreserving_comp g hf hf']
+  rfl
+
+theorem compMeasurePreserving_iterate {f : α → α} (hf : MeasurePreserving f μ μ) (n : ℕ) :
+    (compMeasurePreserving (E:=E) (p:=p) f hf)^[n] =
+    compMeasurePreserving f^[n] (MeasurePreserving.iterate hf n) := by
+  funext g
   induction n with
   | zero => simp
   | succ n h =>
     nth_rewrite 1 [add_comm]
-    rw [Function.iterate_add, Function.iterate_one, Function.comp_apply, h]
-    change (_ ∘ compMeasurePreserving _ _) _ = _
-    rw [compMeasurePreserving_compMeasurePreserving]
+    rw [Function.iterate_add, Function.iterate_one, Function.comp_apply, h,
+      ← compMeasurePreserving_comp]
     simp
 
 variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
