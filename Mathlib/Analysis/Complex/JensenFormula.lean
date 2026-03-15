@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 
+import Mathlib.Algebra.FiniteSupport.Basic
+
 /-!
 # Jensen's Formula of Complex Analysis
 
@@ -183,3 +185,90 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     apply Filter.codiscreteWithin.mono (U := CB) sphere_subset_closedBall
     filter_upwards [this] with z hz
     simp_all
+
+lemma log_le_log_of_abs_le_abs {x y : ℝ} (h0 : 0 < |x|) (h : |x| ≤ |y|) :
+    Real.log x ≤ Real.log y := by
+  rw [← log_abs, ← log_abs y]
+  exact log_le_log h0 h
+
+theorem AnalyticOnNhd.count_zeros_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (r_pos : 0 < |r|)
+    (r_lt_R : |r| < |R|) (hM : 1 ≤ M) (h₁f : AnalyticOnNhd ℂ f (closedBall c |R|))
+    (h₂f : f c ≠ 0)
+    (f_bound : ∀ z ∈ sphere c |R|, ‖f z‖ ≤ M) :
+    ∑ᶠ u, divisor f (closedBall c |r|) u ≤ Real.log (M / ‖f c‖) / Real.log (R / r) := by
+  have jensen := h₁f.meromorphicOn.circleAverage_log_norm (abs_ne_zero.mp (by linarith))
+  rw [divisor_apply h₁f.meromorphicOn (by simp),
+    AnalyticAt.meromorphicOrderAt_eq (h₁f c (by simp)),
+    (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f,
+    (h₁f c (by simp)).meromorphicTrailingCoeffAt_of_ne_zero h₂f] at jensen
+  simp only [ENat.map_zero, CharP.cast_eq_zero, WithTop.coe_zero, WithTop.untop₀_zero,
+    Int.cast_zero, zero_mul, add_zero] at jensen
+  have : circleAverage (fun x ↦ Real.log ‖f x‖) c R ≤ Real.log M := by
+    apply circleAverage_mono_on_of_le_circle
+    · exact circleIntegrable_log_norm_meromorphicOn 
+        (h₁f.mono sphere_subset_closedBall).meromorphicOn
+    · intro z hz
+      by_cases! h : f z = 0
+      · simpa [h] using log_nonneg hM
+      · exact log_le_log (norm_pos_iff.mpr h) (f_bound z hz)
+  have : ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹)
+    ≤ Real.log M - Real.log ‖f c‖ := by linarith
+  rw [← log_div (by linarith) (norm_ne_zero_iff.mpr h₂f)] at this
+  have next : ∑ᶠ u, divisor f (closedBall c |r|) u * Real.log (R / r)
+      ≤ ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹) := by
+    apply finsum_le_finsum'
+    · apply (divisor f (closedBall c |r|)).finiteSupport (isCompact_closedBall ..) |>.subset
+      intro z hz
+      simp_all
+    · apply (divisor f (closedBall c |R|)).finiteSupport (isCompact_closedBall ..) |>.subset
+      intro z hz
+      simp_all
+    · intro u
+      by_cases h1 : u ∈ closedBall c |R|
+      · by_cases h2 : u ∈ closedBall c |r|
+        · simp only [(h₁f.mono (closedBall_subset_closedBall r_lt_R.le)).meromorphicOn, h2,
+            divisor_apply, h₁f.meromorphicOn, h1]
+          by_cases! h3 : u = c
+          · rw [h3, AnalyticAt.meromorphicOrderAt_eq (h₁f c (by simp)),
+              (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f]
+            simp
+          gcongr 1
+          · simp only [Int.cast_nonneg_iff, WithTop.untop₀_nonneg]
+            exact (h₁f u h1).meromorphicOrderAt_nonneg
+          · apply log_le_log_of_abs_le_abs
+            · rw [abs_div]
+              apply div_pos <;>linarith
+            · rw [abs_div, div_eq_mul_inv, abs_mul, abs_inv, abs_norm]
+              gcongr
+              · exact norm_pos_iff.mpr (by grind)
+              · simp only [mem_closedBall, dist_eq_norm_sub'] at h2
+                exact h2
+        · simp only [h2, not_false_eq_true, Function.locallyFinsuppWithin.apply_eq_zero_of_notMem,
+          Int.cast_zero, zero_mul]
+          apply mul_nonneg
+          · norm_cast
+            apply h₁f.divisor_nonneg
+          · rw [← log_one]
+            apply log_le_log_of_abs_le_abs (by norm_num)
+            rw [abs_one, abs_mul, abs_inv, abs_norm]
+            apply inv_le_iff_one_le_mul₀' (by linarith)|>.mp
+            gcongr
+            · simp only [mem_closedBall, dist_eq_norm_sub', not_le] at h2
+              exact lt_of_le_of_lt (abs_nonneg r) h2
+            · simp only [mem_closedBall, dist_eq_norm_sub'] at h1
+              exact h1
+      · have : u ∉ closedBall c |r| := by
+          simp_all
+          linarith
+        simp [h1, this]
+  have := next.trans this
+  conv at this => lhs; arg 1; ext; rw [← smul_eq_mul]
+  rw [← finsum_smul, smul_eq_mul] at this
+  have : ∑ᶠ i, (divisor f (closedBall c |r|) i : ℝ) ≤ Real.log (M / ‖f c‖) / Real.log (R / r) := by
+    apply le_div_iff₀ _|>.mpr this
+    rw [← log_abs]
+    apply log_pos
+    rw [abs_div]
+    exact one_lt_div r_pos|>.mpr r_lt_R
+  convert this
+  exact map_finsum (Int.castRingHom ℝ) ((divisor _ _).finiteSupport <| isCompact_closedBall ..)
