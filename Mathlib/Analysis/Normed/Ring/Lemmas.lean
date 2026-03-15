@@ -212,9 +212,9 @@ namespace NNReal
 
 set_option backward.isDefEq.respectTransparency false in
 lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
-  rw [← NNReal.isometry_toReal.lipschitzWith_iff]
+  rw [← NNReal.isometry_coe.lipschitzWith_iff]
   have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
-    NNReal.isometry_toReal.prodMap NNReal.isometry_toReal
+    NNReal.isometry_coe.prodMap NNReal.isometry_coe
   convert (((LipschitzWith.prod_fst.comp this.lipschitz).sub
     (LipschitzWith.prod_snd.comp this.lipschitz)).max_const 0)
   norm_num
