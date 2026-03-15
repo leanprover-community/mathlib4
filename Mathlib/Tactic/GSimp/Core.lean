@@ -36,7 +36,6 @@ partial def processGCongrSubgoal (h : Expr) (hType : Expr) (numIntro : Nat) :
     let (lhs, rhs) := if ← isInv then (rhs, lhs) else (lhs, rhs)
     let lhs ← instantiateMVars lhs
     let r ← gsimp lhs
-    logInfo m!"simplified to {r.expr} with proof {r.proof?}"
     rhs.withApp fun m zs => do
       unless zs.all (·.isFVar) do failure -- TODO: this should be checked by `@[gcongr]`
       let val ← mkLambdaFVars zs r.expr
@@ -44,7 +43,6 @@ partial def processGCongrSubgoal (h : Expr) (hType : Expr) (numIntro : Nat) :
         failure
       let proof ← r.getProof
       unless (← isDefEq h (← mkLambdaFVars xs proof)) do
-        logInfo m!"{h}, {xs}, {proof}"
         failure
       return r.proof?.isSome
 
@@ -54,7 +52,6 @@ partial def tryGCongrTheorem? (thm : Expr) (numHyps : Nat)
     GSimpM (Option Result) := do
   let type ← inferType thm
   let (xs, bis, type) ← withDefault <| forallMetaTelescopeReducing type numHyps
-  logInfo m!"{xs}, {type}"
   let (lhs, rhs) ← match type with
     | .forallE _ lhs rhs _ => pure (lhs, rhs)
     | mkApp2 rel' lhs rhs =>
@@ -95,7 +92,6 @@ partial def tryGCongrTheorem? (thm : Expr) (numHyps : Nat)
         modified := true
     catch e =>
       trace[Meta.Tactic.simp.congr] "processCongrHypothesis {thm} failed {hType}"
-      logInfo m!"error {e.toMessageData}"
       return none
   unless modified do
     trace[Meta.Tactic.simp.congr] "{thm} not modified"

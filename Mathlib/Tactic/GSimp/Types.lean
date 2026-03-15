@@ -42,8 +42,8 @@ def CacheEntry.insert (entry : CacheEntry) (inv : Bool) (e : Expr) (r : Result) 
 def CacheEntry.find? (entry : CacheEntry) (inv : Bool) (e : Expr) : Option Result :=
   if inv then entry.invCache[e]? else entry.cache[e]?
 
-theorem imp_rfl (p : Prop) : p → p := id
-theorem imp_trans (p q r : Prop) : (p → q) → (q → r) → p → r := flip Function.comp
+theorem imp_rfl {p : Prop} : p → p := id
+theorem imp_trans {p q r : Prop} : (p → q) → (q → r) → p → r := flip Function.comp
 
 abbrev CacheIndex := Nat
 

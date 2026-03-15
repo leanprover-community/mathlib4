@@ -21,11 +21,22 @@ set_option linter.unusedVariables false
 private axiom test_sorry : ∀ {α}, α
 
 
-set_option trace.Meta.Tactic.simp true
-set_option trace.Meta.Tactic.simp.congr true
-set_option trace.Debug.Meta.Tactic.simp.congr true
-set_option trace.Debug.Meta.Tactic.simp true
+-- set_option trace.Meta.Tactic.simp true
+-- set_option trace.Meta.Tactic.simp.congr true
+-- set_option trace.Debug.Meta.Tactic.simp.congr true
+-- set_option trace.Debug.Meta.Tactic.simp true
 
+section binders
+
+lemma iSup_inf_le {α : Sort*} {β : Type*} [CompleteLattice β] (f : α → β) (b : β) :
+    ⨆ a, (f a ⊓ b) ≤ (⨆ a, f a) ⊓ b :=
+  iSup_le fun _ => inf_le_inf_right _ (le_iSup f _)
+
+lemma biSup_inf_le {α β : Type*} [CompleteLattice β] (f : α → β) (s : Set α) (b : β) :
+    ⨆ a ∈ s, (f a ⊓ b) ≤ (⨆ a ∈ s, f a) ⊓ b := by
+  gsimp [iSup_inf_le]
+
+end binders
 
 section inequalities
 
