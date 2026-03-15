@@ -538,7 +538,7 @@ theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccPrelimit a) (h : b < a) :
 theorem addCommute_iff_nsmul (o₁ o₂ : Ordinal) :
     AddCommute o₁ o₂ ↔ ∃ (o : Ordinal) (n₁ n₂ : ℕ), o₁ = n₁ • o ∧ o₂ = n₂ • o := by
   refine ⟨fun hcomm ↦ ?_, ?_⟩
-  · induction h : o₁ + o₂ using WellFoundedLT.induction generalizing o₁ o₂ with | ind o ih =>
+  · induction h : o₁ + o₂ using WellFoundedLT.induction generalizing o₁ o₂ with | ind o ih
     subst h
     wlog hle : o₁ ≤ o₂
     · grind [hcomm.symm]
@@ -547,10 +547,7 @@ theorem addCommute_iff_nsmul (o₁ o₂ : Ordinal) :
     let o₃ := o₂ - o₁
     have hsub : o₁ + o₃ = o₂ := Ordinal.add_sub_cancel_of_le hle
     have hcomm' : AddCommute o₁ o₃ := add_left_cancel (a := o₁) <| by grind
-    have hlt : o₁ + o₃ < o₁ + o₂ := by
-      rw [hsub, hcomm.eq]
-      nth_rw 1 [← add_zero o₂]
-      apply add_lt_add_right h₁.pos o₂
+    have hlt : o₁ + o₃ < o₁ + o₂ := by simpa [hsub, hcomm.eq] using h₁.pos
     rcases ih _ hlt o₁ o₃ hcomm' rfl with ⟨o, n₁, n₃, hn₁, hn₃⟩
     use o, n₁, n₁ + n₃, hn₁
     rw [add_nsmul, ← hn₁, ← hn₃, hsub]
