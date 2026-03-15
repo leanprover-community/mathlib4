@@ -222,6 +222,7 @@ variable (L X Y)
 
 /-- The abelian group structure on `L.obj X ⟶ L.obj Y` when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
+@[implicit_reducible]
 noncomputable def addCommGroup' : AddCommGroup (L.obj X ⟶ L.obj Y) := by
   letI : Zero (L.obj X ⟶ L.obj Y) := ⟨L.map 0⟩
   letI : Add (L.obj X ⟶ L.obj Y) := ⟨add' W⟩
@@ -278,6 +279,7 @@ lemma add_eq_add {X'' Y'' : C} (eX' : L.obj X'' ≅ X') (eY' : L.obj Y'' ≅ Y')
 variable (L X' Y') in
 /-- The abelian group structure on morphisms in `D`, when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
+@[implicit_reducible]
 noncomputable def addCommGroup : AddCommGroup (X' ⟶ Y') := by
   have := Localization.essSurj L W
   letI := addCommGroup' L W (L.objPreimage X') (L.objPreimage Y')
@@ -304,6 +306,7 @@ variable [W.HasLeftCalculusOfFractions]
 
 /-- The preadditive structure on `D`, when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
+@[implicit_reducible]
 noncomputable def preadditive : Preadditive D where
   homGroup := Preadditive.addCommGroup L W
   add_comp _ _ _ _ _ _ := by apply Preadditive.add_comp
@@ -316,6 +319,8 @@ lemma functor_additive :
   ⟨by apply Preadditive.map_add⟩
 
 attribute [irreducible] preadditive
+
+set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditive D] [L.Additive]
     (G : D ⥤ E) :

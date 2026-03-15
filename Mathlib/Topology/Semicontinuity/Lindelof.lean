@@ -9,7 +9,7 @@ public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.Compactness.Lindelof
 
 /-!
-# Enveloppes of Semicontinuous functions on Hereditarily Lindelöf spaces
+# Envelopes of Semicontinuous functions on Hereditarily Lindelöf spaces
 
 In this file, we show that, if `X` is a hereditarily Lindelöf space and `𝓕` is any family
 of upper semicontinuous functions on `X`, then there is a countable subfamily `𝓕'`

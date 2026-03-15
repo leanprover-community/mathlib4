@@ -91,6 +91,13 @@ lemma singleton_mem_precoverage_iff {X S : Scheme.{u}} (f : X ⟶ S) :
   rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ofArrows_mem_precoverage_iff]
   aesop
 
+lemma bot_mem_precoverage (X : Scheme.{u}) [IsEmpty X] : ⊥ ∈ Scheme.precoverage P X :=
+  ⟨fun x ↦ ‹IsEmpty X›.elim x, P.bot_mem_precoverage _⟩
+
+lemma precoverage_mono {P Q : MorphismProperty Scheme.{u}} (h : P ≤ Q) :
+    precoverage P ≤ precoverage Q := by
+  grw [precoverage, precoverage, MorphismProperty.precoverage_monotone h]
+
 instance [P.IsStableUnderComposition] : (precoverage P).IsStableUnderComposition := by
   dsimp only [precoverage]; infer_instance
 

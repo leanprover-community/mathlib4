@@ -32,6 +32,8 @@ and `Frac R` denotes the fraction field of a domain `R`.
 
 open FractionalIdeal nonZeroDivisors IntermediateField Algebra Module Submodule
 
+set_option backward.isDefEq.respectTransparency false
+
 variable (A B : Type*) {K L : Type*} [CommRing A] [Field K] [Algebra A K] [IsFractionRing A K]
   [CommRing B] [Field L] [Algebra B L] [Algebra A L] [Algebra K L] [FiniteDimensional K L]
   [IsScalarTower A K L]

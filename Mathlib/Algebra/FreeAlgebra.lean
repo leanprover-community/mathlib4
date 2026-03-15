@@ -72,26 +72,33 @@ instance : Inhabited (Pre R X) := ⟨ofScalar 0⟩
 
 -- Note: These instances are only used to simplify the notation.
 /-- Coercion from `X` to `Pre R X`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasCoeGenerator : Coe X (Pre R X) := ⟨of⟩
 
 /-- Coercion from `R` to `Pre R X`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasCoeSemiring : Coe R (Pre R X) := ⟨ofScalar⟩
 
 /-- Multiplication in `Pre R X` defined as `Pre.mul`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasMul : Mul (Pre R X) := ⟨mul⟩
 
 /-- Addition in `Pre R X` defined as `Pre.add`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasAdd : Add (Pre R X) := ⟨add⟩
 
 /-- Zero in `Pre R X` defined as the image of `0` from `R`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasZero : Zero (Pre R X) := ⟨ofScalar 0⟩
 
 /-- One in `Pre R X` defined as the image of `1` from `R`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasOne : One (Pre R X) := ⟨ofScalar 1⟩
 
 /-- Scalar multiplication defined as multiplication by the image of elements from `R`.
 Note: Used for notation only.
 -/
+@[instance_reducible]
 def hasSMul : SMul R (Pre R X) := ⟨fun r m ↦ mul (ofScalar r) m⟩
 
 end Pre
@@ -238,7 +245,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     exact Quot.sound Rel.zero_mul
   nsmul_succ n := by
     rintro ⟨a⟩
-    dsimp only [HSMul.hSMul, instSMul, Quot.map]
+    dsimp +instances only [HSMul.hSMul, instSMul, Quot.map]
     rw [map_add, map_one, mk_mul, mk_mul, ← add_one_mul (_ : FreeAlgebra R X)]
     congr 1
     exact Quot.sound Rel.add_scalar

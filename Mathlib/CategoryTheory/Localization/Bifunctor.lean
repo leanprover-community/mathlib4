@@ -71,6 +71,7 @@ variable (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
 
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then `Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁))`
 holds for any `X₁ : C₁`. -/
+@[implicit_reducible]
 noncomputable def Lifting₂.fst (X₁ : C₁) :
     Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁)) where
   iso := ((evaluation _ _).obj X₁).mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
@@ -80,11 +81,12 @@ noncomputable instance Lifting₂.flip : Lifting₂ L₂ L₁ W₂ W₁ F.flip F
 
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then
 `Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂))` holds for any `X₂ : C₂`. -/
+@[implicit_reducible]
 noncomputable def Lifting₂.snd (X₂ : C₂) :
     Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂)) :=
   Lifting₂.fst L₂ L₁ W₂ W₁ F.flip F'.flip X₂
 
-noncomputable instance Lifting₂.uncurry [Lifting₂ L₁ L₂ W₁ W₂ F F'] :
+noncomputable instance Lifting₂.uncurry :
     Lifting (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F) (uncurry.obj F') where
   iso := Functor.uncurry.mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
 
@@ -180,6 +182,7 @@ theorem natTrans₂_ext {τ τ' : F₁' ⟶ F₂'}
       (τ'.app (L₁.obj X₁)).app (L₂.obj X₂)) : τ = τ' :=
   uncurry.map_injective (natTrans_ext (L₁.prod L₂) (W₁.prod W₂) (fun _ ↦ h _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `F₁' ≅ F₂'` of bifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'`
 and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/

@@ -195,13 +195,12 @@ end Zero
 
 /-- Corresponds to `dist_eq_norm`. -/
 theorem hammingDist_eq_hammingNorm [∀ i, AddGroup (β i)] (x y : ∀ i, β i) :
-    hammingDist x y = hammingNorm (x - y) := by
-  simp_rw [hammingNorm, hammingDist, Pi.sub_apply, sub_ne_zero]
+    hammingDist x y = hammingNorm (-x + y) := by
+  simp_rw [hammingNorm, hammingDist, Pi.add_apply, Pi.neg_apply, ne_eq, neg_add_eq_zero]
 
 end HammingDistNorm
 
 /-! ### The `Hamming` type synonym -/
-
 
 /-- Type synonym for a Pi type which inherits the usual algebraic instances, but is equipped with
 the Hamming metric and norm, instead of `Pi.normedAddCommGroup` which uses the sup norm. -/

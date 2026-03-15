@@ -52,7 +52,7 @@ namespace ProperCone
 /-- The dual cone of a set `s` is the cone consisting of all points `y` such that for all points
 `x ∈ s` we have `0 ≤ ⟪x, y⟫`. -/
 @[simps! toSubmodule]
-def innerDual (s : Set E) : ProperCone ℝ E := .dual (innerₗ E) s
+noncomputable def innerDual (s : Set E) : ProperCone ℝ E := .dual (innerₗ E) s
 
 @[simp] lemma mem_innerDual : y ∈ innerDual s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ ⟪x, y⟫ := .rfl
 

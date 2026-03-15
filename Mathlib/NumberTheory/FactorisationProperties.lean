@@ -5,15 +5,12 @@ Authors: Colin Jones
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Data.Finset.NatDivisors
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.NormNum.Prime
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Factorisation properties of natural numbers
@@ -220,7 +217,6 @@ theorem abundancyIndex_le_of_dvd (hn : n ≠ 0) (hd : m ∣ n) :
 
 theorem Abundant.of_dvd (h : Abundant m) (hd : m ∣ n) (hn : n ≠ 0) : Abundant n := by
   have := abundancyIndex_le_of_dvd hn hd
-  have := ne_zero_of_dvd_ne_zero hn hd
   grind [abundant_iff_two_lt_abundancyIndex]
 
 theorem Abundant.mul_left (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := by
