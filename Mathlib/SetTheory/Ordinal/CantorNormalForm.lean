@@ -69,7 +69,7 @@ We special-case `CNF 0 o = CNF 1 o = [(0, o)]` for `o ≠ 0`.
 `CNF b (b ^ u₁ * v₁ + b ^ u₂ * v₂) = [(u₁, v₁), (u₂, v₂)]` -/
 @[pp_nodot]
 def _root_.Ordinal.CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
-  CNF.rec b [] (fun o _ IH ↦ (log b o, o / b ^ log b o)::IH) o
+  CNF.rec b [] (fun o _ IH ↦ (log b o, o / b ^ log b o) :: IH) o
 
 @[simp]
 theorem zero_right (b : Ordinal) : CNF b 0 = [] :=
@@ -89,6 +89,13 @@ protected theorem opow_mul_add {b e x y : Ordinal}
       mul_add_div _ (opow_ne_zero _ hb'), Ordinal.div_eq_zero_of_lt hy, add_zero,
       mul_add_mod_self, mod_eq_of_lt hy]
   · simp_all
+
+protected theorem opow_mul {b e x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) (hxb : x < b) :
+    CNF b (b ^ e * x) = [(e, x)] := by
+  simpa using CNF.opow_mul_add hb hx hxb <| opow_pos e hb.pos
+
+protected theorem opow {b e : Ordinal} (hb : 1 < b) : CNF b (b ^ e) = [(e, 1)] := by
+  simpa using CNF.opow_mul hb one_ne_zero hb
 
 protected theorem zero_left {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [(0, o)] := by
   simp [CNF.ne_zero ho]
@@ -231,7 +238,7 @@ theorem coeff_zero_right (b : Ordinal) : coeff b 0 = 0 := by
 
 @[simp]
 theorem coeff_one_right (b : Ordinal) : coeff b 1 = single 0 1 := by
-  simp_rw [coeff, CNF.one]
+  simp_rw [coeff, CNF.one_right]
   exact singleton_lookupFinsupp ..
 
 theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) : coeff b o = single 0 o := by
@@ -254,15 +261,15 @@ theorem coeff_of_lt {b o : Ordinal} (hb : o < b) : coeff b o = single 0 o := by
   · simp_rw [coeff, CNF.of_lt ho hb]
     exact singleton_lookupFinsupp ..
 
-theorem support_coeff_subset {b o x : Ordinal} (hx : x < b ^ o) :
-    SetLike.coe (coeff b x).support ⊆ Set.Iio o := by
+theorem support_coeff_subset {b o e : Ordinal} (h : o < b ^ e) :
+    ↑(coeff b o).support ⊆ Set.Iio e := by
   obtain rfl | hb := eq_zero_or_pos b
-  · have := hx.trans_le (zero_opow_le _)
-    simp_all
-  · intro e
-    rw [SetLike.mem_coe, Finsupp.mem_support_iff, Set.mem_Iio]
+  · grw [zero_opow_le, lt_one_iff_zero] at h
+    simp [h]
+  · intro x
+    rw [SetLike.mem_coe, mem_support_iff, Set.mem_Iio]
     contrapose!
-    exact fun he ↦ coeff_eq_zero_of_lt (hx.trans_le (opow_le_opow_right hb he))
+    exact fun hx ↦ coeff_eq_zero_of_lt (h.trans_le (opow_le_opow_right hb hx))
 
 theorem coeff_opow_mul_add {b e x y : Ordinal} (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
