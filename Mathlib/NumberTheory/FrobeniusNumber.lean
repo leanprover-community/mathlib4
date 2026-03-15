@@ -63,7 +63,7 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
   constructor
   · push_neg
     intro a b h
-    apply cop.mul_add_mul_ne_mul (add_one_ne_zero a) (add_one_ne_zero b)
+    apply cop.mul_add_mul_ne_mul (Nat.add_one_ne_zero a) (Nat.add_one_ne_zero b)
     simp only [Nat.sub_sub, smul_eq_mul] at h
     zify [hmn] at h ⊢
     rw [← sub_eq_zero] at h ⊢
