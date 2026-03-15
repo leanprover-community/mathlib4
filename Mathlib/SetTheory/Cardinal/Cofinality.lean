@@ -161,7 +161,7 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
   have ba : ¬r b a := IsWellFounded.wf.min_mem _ this
   refine ⟨b, ⟨b.2, fun c => not_imp_not.1 fun h => ?_⟩, ba⟩
   rw [show ∀ b : S, (⟨b, b.2⟩ : S) = b by intro b; cases b; rfl]
-  exact IsWellFounded.wf.not_lt_min _ this (IsOrderConnected.neg_trans h ba)
+  exact IsWellFounded.wf.not_lt_min _ (IsOrderConnected.neg_trans h ba)
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
@@ -529,7 +529,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     · obtain ⟨hji, hij⟩ := wo.wf.min_mem _ h
       refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _ _, ?_⟩
       · by_contra! H
-        exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
+        exact (wo.wf.not_lt_min {j | r j i ∧ f i ≤ f j} ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
 
 @[simp]
