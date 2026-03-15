@@ -696,8 +696,8 @@ lemma concat_dropLast (p : G.Walk u v) (hp : G.Adj p.penultimate v) :
   rw [← support_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
 theorem support_dropLast_concat {p : G.Walk u v} (hp : ¬p.Nil) :
-    p.dropLast.support.concat v = p.support := by
-  rw [← support_concat _ <| adj_penultimate hp, concat_dropLast]
+    p.dropLast.support ++ [v] = p.support := by
+  rw [← List.concat_eq_append, ← support_concat _ <| adj_penultimate hp, concat_dropLast]
 
 @[simp]
 theorem support_dropLast {p : G.Walk u v} (hp : ¬p.Nil) :
