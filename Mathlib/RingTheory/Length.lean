@@ -286,7 +286,7 @@ lemma Module.length_eq_finrank
 theorem Submodule.length_le_restrictScalar (A : Type*) [CommRing A] [Algebra A R] [Module A M]
     [IsScalarTower A R M] (p : Submodule R M) :
       Module.length R p ≤ Module.length A (p.restrictScalars A) := by
-rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
+  rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
   let e : Submodule R ↥p ↪o Submodule A ↥(restrictScalars A p) := restrictScalarsEmbedding A R p
   have (q : Submodule A ↥(restrictScalars A p)) : Subsingleton (e ⁻¹' {q}) := ⟨by
     rintro ⟨x, hx⟩ ⟨y, hy⟩
