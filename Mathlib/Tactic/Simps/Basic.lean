@@ -1052,7 +1052,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do
   trace[simps.debug] "Type after removing pi's: {tgt}"
-  let tgt ← whnfD tgt
+  let tgtWhnf ← whnfD tgt
   trace[simps.debug] "Type after reduction: {tgt}"
   let newArgs := args ++ typeArgs
   let lhsAp := lhs.instantiateLambdasOrApps typeArgs
@@ -1143,7 +1143,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     return #[nm.toName]
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
-  let projInfo ← getProjectionExprs ref tgt rhsWhnf cfg
+  let projInfo ← getProjectionExprs ref tgtWhnf rhsWhnf cfg
   trace[simps.debug] "Raw projection information:{indentD m!"{projInfo}"}"
   -- If we are in the middle of a composite projection.
   if let idx :: rest := toApply then
