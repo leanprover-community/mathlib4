@@ -6,6 +6,7 @@ Authors: Janos Wolosz
 module
 
 public import Mathlib.Algebra.Lie.AdjointAction.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.LinearAlgebra.JordanChevalley
 
 /-!
@@ -17,6 +18,8 @@ action: `ad(n + s) = ad(n) + ad(s)` is again a JC decomposition, and `ad(n)`, `a
 
 ## Main results
 
+* `LieAlgebra.eval_zero_of_aeval_ad_eq`: if `g` commutes with `x ≠ 0` and `ad(g) = p(ad(x))`, then
+`p(0) = 0`.
 * `LieAlgebra.ad_semisimplePart_mem_adjoin`: `ad(s) ∈ adjoin K {ad(n + s)}`.
 * `LieAlgebra.ad_nilpotentPart_mem_adjoin`: `ad(n) ∈ adjoin K {ad(n + s)}`.
 
@@ -24,6 +27,27 @@ action: `ad(n + s) = ad(n) + ad(s)` is again a JC decomposition, and `ad(n)`, `a
 
 @[expose] public section
 
+section Field
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+  {x g : Module.End K V}
+
+/-- If `g` commutes with `x ≠ 0` and `ad(g) = p(ad(x))`, then `p(0) = 0`. This applies to both
+the semisimple and nilpotent parts of a JC decomposition lifted through `ad`. -/
+theorem LieAlgebra.eval_zero_of_aeval_ad_eq
+    (hx : x ≠ 0) (hc : Commute g x) {p : Polynomial K}
+    (hp : LieAlgebra.ad K (Module.End K V) g =
+      Polynomial.aeval (LieAlgebra.ad K (Module.End K V) x) p) :
+    p.eval 0 = 0 := by
+  set f := LieAlgebra.ad K (Module.End K V) x
+  have hf : f x = 0 := by
+    simp only [f, LieAlgebra.ad_apply]; exact lie_self _
+  have hg : (Polynomial.aeval f p) x = 0 := by
+    rw [← hp, LieAlgebra.ad_apply]; exact sub_eq_zero.mpr hc.eq
+  exact Module.End.eval_zero_of_aeval_apply_eq_zero hx hf hg
+
+end Field
+
+section PerfectField
 variable {K V : Type*} [Field K] [PerfectField K] [AddCommGroup V] [Module K V]
   [FiniteDimensional K V] {n s : Module.End K V}
 
@@ -54,3 +78,5 @@ theorem LieAlgebra.ad_nilpotentPart_mem_adjoin
   have : ad n = ad (n + s) - ad s := by simp [map_add]
   rw [this]
   exact sub_mem (Algebra.self_mem_adjoin_singleton K _) (ad_semisimplePart_mem_adjoin hc hn hs)
+
+end PerfectField
