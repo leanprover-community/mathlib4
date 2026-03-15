@@ -198,7 +198,6 @@ lemma sigmaToPi_bijective {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)
   obtain ⟨i, q, rfl⟩ := exists_comap_evalRingHom_eq q
   exact ⟨⟨i, q⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iUnion_range_comap_comp_evalRingHom
     {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)] [Finite ι]
     {S : Type*} [CommRing S] (f : S →+* Π i, R i) :

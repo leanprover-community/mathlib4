@@ -20,7 +20,7 @@ This operation is called `MvPowerSeries.expand` and it is an algebra homomorphis
 ### Main declaration
 
 * `MvPowerSeries.expand`: expand a multi variate power series by a nonzero factor of p,
-so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
+  so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
 
 @[expose] public section
@@ -158,6 +158,7 @@ theorem support_expand (φ : MvPowerSeries σ R) :
   rw [Function.mem_support, ← coeff_apply φ, ← coeff_expand_smul p hp, coeff_apply, hc] at hn₁
   contradiction
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem order_expand (φ : MvPowerSeries σ R) :
     (φ.expand p hp).order = p • φ.order := by

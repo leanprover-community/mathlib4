@@ -146,7 +146,6 @@ lemma eventually_nhdsWithin_sign_eq_of_deriv_pos (hf : deriv f x₀ > 0) (hx : f
   · rw [sign_neg (neg_of_slope_pos hx' hx₀ hx), sign_neg (sub_neg.mpr hx')]
   · rw [sign_pos (pos_of_slope_pos hx' hx₀ hx), sign_pos (sub_pos.mpr hx')]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the derivative of `f` is negative at a root `x₀` of `f`, then locally the sign of `f x`
 matches `x₀ - x`. -/
 lemma eventually_nhdsWithin_sign_eq_of_deriv_neg (hf : deriv f x₀ < 0) (hx : f x₀ = 0) :
@@ -190,7 +189,6 @@ theorem isLocalMax_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ} (h : ContinuousA
   exact isLocalMax_of_deriv h (hf.mono fun x hx ↦ differentiableAt_of_deriv_ne_zero hx)
     (hl.mono fun _ => le_of_lt) (hg.mono fun _ => le_of_lt)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The First Derivative test with a hypothesis on the sign of the derivative, minimum version. -/
 theorem isLocalMin_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ} (h : ContinuousAt f x₀)
     (hf : ∀ᶠ x in 𝓝[≠] x₀, sign (deriv f x) = sign (x - x₀)) :
@@ -206,7 +204,6 @@ theorem isLocalMin_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0) (hd : deri
   isLocalMin_of_sign_deriv hc <| nhdsWithin_le_nhds <|
     eventually_nhdsWithin_sign_eq_of_deriv_pos hf hd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Second-Derivative Test from calculus, maximum version. -/
 theorem isLocalMax_of_deriv_deriv_neg (hf : deriv (deriv f) x₀ < 0) (hd : deriv f x₀ = 0)
     (hc : ContinuousAt f x₀) : IsLocalMax f x₀ := by
