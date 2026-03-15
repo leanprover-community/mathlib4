@@ -82,7 +82,7 @@ attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
 /-- Transfer `MonObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
+@[simps! -isSimp, implicit_reducible]
 def ofIso (e : M ≅ X) : MonObj X where
   one := η[M] ≫ e.hom
   mul := (e.inv ⊗ₘ e.inv) ≫ μ[M] ≫ e.hom
