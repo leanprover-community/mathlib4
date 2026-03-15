@@ -104,7 +104,7 @@ protected theorem of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = 
   rw [CNF.ne_zero ho, log_eq_zero hb, opow_zero, div_one, mod_one, zero_right]
 
 @[simp]
-protected theorem one (b : Ordinal) : CNF b 1 = [(0, 1)] := by
+protected theorem one_right (b : Ordinal) : CNF b 1 = [(0, 1)] := by
   obtain hb | hb := le_or_gt b 1
   · exact CNF.of_le_one hb one_ne_zero
   · exact CNF.of_lt one_ne_zero hb
