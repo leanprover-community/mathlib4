@@ -219,9 +219,9 @@ lemma parts_top_subset : ((⊤ : Partition s) : Set α) ⊆ {s} := by
 
 end Order
 
-section Set
+variable {S : Set (Set α)} {u s t : Set α} {a b c : α} {P Q : Partition u}
 
-variable {s t u : Set α} {S T : Set (Set α)} {P Q : Partition s}
+section Set
 
 @[simp] protected lemma sUnion_eq (P : Partition s) : ⋃₀ P = s := P.sSup_eq
 
@@ -230,26 +230,24 @@ lemma nonempty_of_mem (ht : t ∈ P) : t.Nonempty :=
 
 lemma empty_not_mem : ∅ ∉ P := P.bot_notMem
 
-lemma subset_of_mem (ht : t ∈ P) : t ⊆ s := P.le_of_mem ht
+lemma subset_of_mem (ht : t ∈ P) : t ⊆ u := P.le_of_mem ht
 
-lemma mem_iff_exists : x ∈ s ↔ ∃ t ∈ P, x ∈ t := by
+lemma mem_iff_exists : x ∈ u ↔ ∃ t ∈ P, x ∈ t := by
   refine ⟨fun hx ↦ ?_, fun ⟨t, htP, hxt⟩ ↦ subset_of_mem htP hxt⟩
   rwa [← P.sUnion_eq, mem_sUnion] at hx
 
-lemma eq_of_mem_inter (ht : t ∈ P) (hu : u ∈ P) (hx : x ∈ t ∩ u) : t = u :=
-  PairwiseDisjoint.elim P.pairwiseDisjoint ht hu fun
-    (hdj : Disjoint t u) ↦ by simp [hdj.inter_eq] at hx
+lemma eq_of_mem_inter (ht : t ∈ P) (hs : s ∈ P) (hx : x ∈ t ∩ s) : t = s :=
+  PairwiseDisjoint.elim P.pairwiseDisjoint ht hs fun
+    (hdj : Disjoint t s) ↦ by simp [hdj.inter_eq] at hx
 
-lemma eq_of_mem_of_mem (ht : t ∈ P) (hu : u ∈ P) (hxt : x ∈ t) (hxu : x ∈ u) : t = u :=
-  eq_of_mem_inter ht hu ⟨hxt, hxu⟩
+lemma eq_of_mem_of_mem (ht : t ∈ P) (hus : s ∈ P) (hxt : x ∈ t) (hxs : x ∈ s) : t = s :=
+  eq_of_mem_inter ht hus ⟨hxt, hxs⟩
 
-lemma exists_unique_of_mem (hx : x ∈ s) : ∃! t, t ∈ P ∧ x ∈ t := by
+lemma mem_iff_unique : x ∈ u ↔ ∃! t, t ∈ P ∧ x ∈ t := by
+  refine ⟨fun hx ↦ ?_, fun ⟨_, ⟨htP, hxt⟩, _⟩ ↦ subset_of_mem htP hxt⟩
   rw [← P.sUnion_eq, mem_sUnion] at hx
-  obtain ⟨t, hxt⟩ := hx
-  exact ⟨t, hxt, fun u ⟨huP, hxu⟩ ↦ eq_of_mem_inter huP hxt.1 ⟨hxu, hxt.2⟩⟩
-
-lemma mem_iff_unique : x ∈ s ↔ ∃! t, t ∈ P ∧ x ∈ t :=
-  ⟨exists_unique_of_mem, fun ⟨_, ⟨htP, hxt⟩, _⟩ ↦ subset_of_mem htP hxt⟩
+  obtain ⟨t, ht, hxt⟩ := hx
+  exact ⟨t, ⟨ht, hxt⟩, fun s ⟨hsP, hxs⟩ ↦ P.eq_of_mem_of_mem hsP ht hxs hxt⟩
 
 lemma subset_sUnion_and_mem_iff_mem (hSP : S ⊆ P) : t ⊆ ⋃₀ S ∧ t ∈ P ↔ t ∈ S := by
   refine ⟨fun ⟨htsu, htP⟩ ↦ ?_, fun htS ↦ ⟨subset_sUnion_of_mem htS, hSP htS⟩⟩
@@ -268,8 +266,6 @@ end Set
 
 section Rel
 
-variable {S T u : Set α} {a b c : α} {P Q : Partition u}
-
 /-- Every partition of `s : Set α` induces a transitive, symmetric Binary relation on `α`
   whose equivalence classes are the parts of `P`. The relation is irreflexive outside `s`. -/
 def Rel (P : Partition u) (a b : α) : Prop :=
@@ -286,10 +282,18 @@ lemma le_of_rel_le (h : P.Rel ≤ Q.Rel) : P ≤ Q := by
 
 lemma Rel.exists (h : P.Rel x y) : ∃ t ∈ P, x ∈ t ∧ y ∈ t := h
 
-lemma Rel.forall (h : P.Rel x y) (ht : T ∈ P) : x ∈ T ↔ y ∈ T := by
+lemma Rel.forall (h : P.Rel x y) (ht : t ∈ P) : x ∈ t ↔ y ∈ t := by
   obtain ⟨t, ht', hx, hy⟩ := h
   exact ⟨fun h ↦ by rwa [P.eq_of_mem_of_mem ht ht' h hx],
     fun h ↦ by rwa [P.eq_of_mem_of_mem ht ht' h hy]⟩
+
+@[simp]
+lemma rel_rfl_iff : P.Rel x x ↔ x ∈ u := by
+  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · obtain ⟨t, ht, hxP, -⟩ := hx
+    exact subset_of_mem ht hxP
+  obtain ⟨t, ⟨ht, hxt⟩, -⟩ := P.mem_iff_unique.mp hx
+  exact ⟨t, ht, hxt, hxt⟩
 
 lemma rel_symmetric (P : Partition u) : Symmetric P.Rel :=
   fun _ _ ⟨t, ht, ha, hb⟩ ↦ ⟨t, ht, hb, ha⟩
@@ -367,10 +371,10 @@ lemma apply_mem_iff (hf : IsRepFun P f) : f a ∈ u ↔ a ∈ u := by
   by_contra ha
   exact ha <| hf.apply_of_notMem ha ▸ h
 
-lemma apply_mem_iff_of_subset (hf : IsRepFun P f) (hS : u ⊆ S) : f a ∈ S ↔ a ∈ S := by
-  obtain haS | haS := em (a ∈ u)
-  · simp [hS haS, hS <| hf.apply_mem haS]
-  rw [hf.apply_of_notMem haS]
+lemma apply_mem_iff_of_subset (hf : IsRepFun P f) (hs : u ⊆ s) : f a ∈ s ↔ a ∈ s := by
+  obtain ha | ha := em (a ∈ u)
+  · simp [hs ha, hs <| hf.apply_mem ha]
+  rw [hf.apply_of_notMem ha]
 
 lemma rel_of_apply_eq_apply (hf : IsRepFun P f) (ha : a ∈ u) (hab : f a = f b) : P.Rel a b := by
   refine (hf.rel_apply ha).trans ?_
