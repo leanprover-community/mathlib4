@@ -225,7 +225,15 @@ def checkInstance (name : Name) : MetaM MessageData := do
   forallTelescope info.type fun xs expectedType => do
     let instVal := mkAppN (.const name (info.levelParams.map mkLevelParam)) xs
     -- Run constructor normalization (skipping synthesis) to get the canonical form.
-    let normalized ← mkCanonicalForm instVal expectedType
+    -- If normalization fails (e.g. the instance doesn't reduce to a constructor application),
+    -- that itself is a sign the instance is not in verifiable canonical form.
+    let normalized ← try
+        mkCanonicalForm instVal expectedType
+      catch e =>
+        return m!"❌ '{name}': cannot be verified (fast_instance% fails).\
+          \n  {e.toMessageData}\
+          \n  The `fast_instance%` elaborator may be useful as a repair or band-aid:\
+          \n  `instance : ... := fast_instance% <body>`"
     -- Compare at instances transparency. At this level, the instance unfolds to its body,
     -- and we compare the actual body against the re-inferred canonical form. If they agree,
     -- all data-field binder types are correct. If not, some data field (e.g. `smul`) has a
@@ -243,11 +251,21 @@ def checkInstance (name : Name) : MetaM MessageData := do
         | some c => findFirstBinderMismatch c instVal normalized
         | none => pure none
         catch _ => pure none
-      let detail : MessageData := match mismatch with
-        | some (field, actual, expected) =>
-          m!"\n  The data field `{field}` has binder type {actual} where {expected} is expected.\
-            \n  Other data fields may also be leaky."
-        | none => "\n  The body differs from the re-inferred form at instances transparency."
+      -- Eagerly pretty-print binder types while still in MetaM context so that any
+      -- pp failure produces a graceful fallback instead of a raw "failed to pretty print" string.
+      let detail : MessageData ← match mismatch with
+        | some (field, actual, expected) => do
+          let actualStr : String ← try
+              let fmt ← ppExpr actual
+              pure fmt.pretty
+            catch _ => pure "<unprintable>"
+          let expectedStr : String ← try
+              let fmt ← ppExpr expected
+              pure fmt.pretty
+            catch _ => pure "<unprintable>"
+          pure m!"\n  The data field `{field}` has binder type {actualStr} \
+            where {expectedStr} is expected.\n  Other data fields may also be leaky."
+        | none => pure "\n  The body differs from the re-inferred form at instances transparency."
       return m!"❌ '{name}': leaky binder types detected.{detail}\n  \
         The `fast_instance%` elaborator may be useful as a repair or band-aid:\n  \
         `instance : ... := fast_instance% <body>`"

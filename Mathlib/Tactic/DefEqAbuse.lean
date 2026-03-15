@@ -244,7 +244,7 @@ partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet Strin
 and (optionally) synthesis-grouped failures.
 Returns `(flatFailures, synthGroupedFailures)`. -/
 def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool := false) :
-    BaseIO (Array MessageData × Array (MessageData × Array MessageData)) := do
+    BaseIO (Array MessageData × Array (MessageData × Array MessageData) × Std.HashSet String) := do
   -- Build sets of permissive successes and failures for transition-point detection.
   let mut permSuccesses : Std.HashSet String := {}
   let mut permFailures : Std.HashSet String := {}
@@ -257,12 +257,13 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
     transitionFailures := transitionFailures ++
       (← findTransitionFailures permSuccesses permFailures msg)
   let uniqueFailures ← dedupByString transitionFailures
-  -- Optionally find synthesis-grouped failures.
-  if !includeSynth then
-    return (uniqueFailures, #[])
+  -- Always collect permissive success apps (used downstream for leaky instance detection).
   let mut permissiveSuccessApps : Std.HashSet String := {}
   for msg in permMsgs do
     permissiveSuccessApps := permissiveSuccessApps.union (← findSynthSuccessApps msg)
+  -- Optionally find synthesis-grouped failures.
+  if !includeSynth then
+    return (uniqueFailures, #[], permissiveSuccessApps)
   let mut synthResults : Array (MessageData × Array MessageData) := #[]
   for msg in strictMsgs do
     synthResults := synthResults.append
@@ -273,7 +274,7 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
   -- Dedup failures within each synth result.
   let dedupedResults ← filteredResults.mapM fun (app, failures) => do
     return (app, ← dedupByString failures)
-  return (uniqueFailures, dedupedResults)
+  return (uniqueFailures, dedupedResults, permissiveSuccessApps)
 
 /-- Collect candidate semireducible definition names by transitively following definition values
 reachable from `roots`, up to a bounded depth. -/
@@ -412,16 +413,44 @@ Returns the names and diagnostic messages for instances that are detected as lea
 def findLeakyInstances (instStrings : Std.HashSet String) : MetaM (Array (Name × MessageData)) := do
   let env ← getEnv
   let mut leaky : Array (Name × MessageData) := #[]
+  let mut seen : Std.HashSet Name := {}
   for str in instStrings do
     -- Strip leading `@` from trace-format names like `@RestrictScalars.module`
-    let nameStr := (if str.startsWith "@" then str.drop 1 else str).trimAscii
+    let nameStr := ((if str.startsWith "@" then str.drop 1 else str).trimAscii).toString
+    -- Strip universe parameter suffixes like `.{?_uniq.1758}` from trace strings
+    let nameStr := match nameStr.splitOn ".{" with
+      | base :: _ => base
+      | _ => nameStr
     let name := nameStr.toName
-    -- Skip if not a known constant
+    -- Skip if already processed this name (multiple trace strings may strip to the same name)
+    if seen.contains name then continue
+    seen := seen.insert name
+    -- Skip if not a known constant or not a registered typeclass instance
     let some _ := env.find? name | continue
+    unless isInstanceCore env name do continue
+    -- Skip auto-generated structural instances that `checkInstance` can't verify by design:
+    -- • toXxx   — parent coercions (e.g. ConditionallyCompleteLattice.toLattice)
+    -- • isXxx   — field accessors (e.g. AlgCat.isAlgebra)
+    -- • ofIsXxx — forwarding instances (e.g. CommGroup.ofIsMulCommutative)
+    -- None of these are concrete instances with potentially leaky data-field binder types.
+    let lastComp := name.lastComponentAsString
+    let upAt (s : String) (n : Nat) := s.toList[n]? |>.any Char.isUpper
+    let isStructural :=
+      (lastComp.startsWith "to"   && upAt lastComp 2) ||
+      (lastComp.startsWith "is"   && upAt lastComp 2) ||
+      (lastComp.startsWith "ofIs" && upAt lastComp 4)
+    if isStructural then continue
+    -- Skip prop-valued instances (proofs don't need normalization and generate spurious warnings)
+    if let some info := env.find? name then
+      let isPropInst ← forallTelescopeReducing info.type fun _ t => isProp t
+      if isPropInst then continue
     -- Run checkInstance, skipping on any error
-    let msg? ← try some <$> Mathlib.Elab.FastInstance.checkInstance name catch _ => pure none
+    let msg? ← try some <$> Mathlib.Elab.FastInstance.checkInstance name
+      catch _ => pure none
     let some msg := msg? | continue
-    if (← msg.toString).startsWith "❌" then
+    let msgStr ← msg.toString
+    -- Only report instances confirmed to have leaky binder types, not "cannot be verified" ones.
+    if msgStr.contains "leaky binder" then
       leaky := leaky.push (name, msg)
   return leaky
 
@@ -517,7 +546,7 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
       | .ok () =>
         let strictMsgs := strictTraces.toArray.map (·.msg)
         let permMsgs := permTraces.toArray.map (·.msg)
-        let (uniqueFailures, _) ← analyzeTraces strictMsgs permMsgs
+        let (uniqueFailures, _, _) ← analyzeTraces strictMsgs permMsgs
         reportDefEqAbuse "tactic" uniqueFailures #[]
         -- Check instances used in the goal type for leakiness.
         -- The tactic fails due to an isDefEq mismatch caused by instances that were
@@ -608,14 +637,22 @@ elab_rules : command
       | .ok () =>
         let strictMsgData := strictMsgs.map (·.data) |>.toArray
         let permMsgData := permissiveMsgs.map (·.data) |>.toArray
-        let (uniqueFailures, synthResults) ←
+        let (uniqueFailures, synthResults, permSuccessApps) ←
           analyzeTraces strictMsgData permMsgData (includeSynth := true)
         reportDefEqAbuse "command" uniqueFailures synthResults
-        -- Check which instances from the failing synthesis applications are leaky
+        -- Check for leaky instances.
+        -- We check two sources:
+        -- (1) Instances named in failing synthesis apps (from extractInstName).
+        -- (2) ALL registered instances that succeeded in the permissive run.
+        --     Failing apps name projections (e.g. HeytingAlgebra.toOrderBot), not the underlying
+        --     registered instance (e.g. instFrame). Permissive success apps include the latter.
         try
-          let instStrings : Std.HashSet String ←
+          let mut instStrings : Std.HashSet String ←
             synthResults.foldlM (init := {}) fun acc (app, _) => do
               return acc.insert (extractInstName (← app.toString))
+          -- Also add all permissive-success synthesis apps; findLeakyInstances will filter to
+          -- registered instances that are actually leaky.
+          instStrings := instStrings.union permSuccessApps
           let leaky ← runTermElabM fun _ => findLeakyInstances instStrings
           unless leaky.isEmpty do
             let lines := joinSep (leaky.toList.map fun (_, msg) => m!"  {msg}") "\n"
