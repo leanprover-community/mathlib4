@@ -206,10 +206,8 @@ def CompleteLattice.copy (c : CompleteLattice α)
   bot := bot
   sSup := sSup
   sInf := sInf
-  le_sSup := by intro _ _ h; simp +instances [eq_le, eq_sSup, le_sSup _ _ h]
-  sSup_le := by intro _ _ h; simpa +instances [eq_le, eq_sSup] using h
-  sInf_le := by intro _ _ h; simp +instances [eq_le, eq_sInf, sInf_le _ _ h]
-  le_sInf := by intro _ _ h; simpa +instances [eq_le, eq_sInf] using h
+  isLUB_sSup _ := by simp +instances only [eq_le, eq_sSup, isLUB_sSup]
+  isGLB_sInf _ := by simp +instances only [eq_le, eq_sInf, isGLB_sInf]
   le_top := by intros; simp +instances [eq_le, eq_top]
   bot_le := by intros; simp +instances [eq_le, eq_bot]
 
