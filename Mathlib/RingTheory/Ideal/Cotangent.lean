@@ -406,9 +406,6 @@ lemma spanFinrank_le_of_surjective (fg : (maximalIdeal R).FG) {R' : Type*} [Comm
 
 lemma spanFinrank_eq_of_ringEquiv {R' : Type*} [CommRing R'] [IsLocalRing R'] (e : R ≃+* R') :
     (maximalIdeal R).spanFinrank = (maximalIdeal R').spanFinrank := by
-  have eqmap : maximalIdeal R = (maximalIdeal R').map e.symm := by
-    rw [Ideal.map_symm, eq_comm]
-    exact ((local_hom_TFAE _).out 0 4).mp (e.surjective.isLocalHom (e : R →+* R'))
-  rw [eqmap, Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv]
+  rw [maximalIdeal_eq_map_ringEquiv e, Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv]
 
 end spanRank
