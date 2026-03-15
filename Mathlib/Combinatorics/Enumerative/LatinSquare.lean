@@ -36,22 +36,16 @@ filled" Latin square can be completed to a Latin square.  In general,
 it is an open question to figure out the number of distinct $n \times
 n$ Latin squares, up to equivalence, although bounds exist.
 
-A classical result in combinatorics, Hall's Marriage Theorem, can be
+A classical result in combinatorics, **Hall's Marriage Theorem**, can be
 used to show that any Latin rectangle can be extended to a Latin
 square; this theorem is formalized as
 `latin_rectangle_extends_to_latin_square`.
-
-## Main definitions
-
-- `LatinRectangle`:
-- `LatinSquare`:
-- `LREquiv`:
 
 ## Main results
 
 - `group_to_cayley_table`: every finite group `G` yields a `LatinSquare G G`.
 - `latin_rectangle_extends_one_row`: a (non-square) `LatinRectangle` extends to a `LatinRectangle`
-   with one more row. This is an application of Hall's Marriage Theorem, `hallMatchingsOn.nonempty`.
+   with one more row. This is an application of **Hall's Marriage Theorem**, `hallMatchingsOn.nonempty`.
 - `latin_rectangle_extends_to_latin_square`:  a `LatinRectangle` extends to a `LatinSquare`.
 
 ## Notation
