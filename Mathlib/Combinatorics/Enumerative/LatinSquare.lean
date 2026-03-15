@@ -86,17 +86,17 @@ section LatinSquare
 
 /-- This condition is that an entry appears exactly once in a given row.
     Equivalently, ∀ i : m, ∀ y : α, ∃! j: n, M i j = y. -/
-abbrev once_per_row (M : Matrix m n α) : Prop :=
+abbrev OncePerRow (M : Matrix m n α) : Prop :=
   ∀ i, Function.Bijective (M.row i)
 
 /-- This condition states that entries are not repeated in a given column.
     Equivalently, ∀ y : n, ∀ x₁ x₂ : m, x₁ ≠ x₂ → M x₁ y ≠ M x₂ y. -/
-abbrev distinct_col_entries (M : Matrix m n α) : Prop :=
+abbrev DistinctColEntries (M : Matrix m n α) : Prop :=
   ∀ y, Function.Injective (M.col y)
 
 /-- This condition states that entries are not repeated in a given row.
     Equivalently, ∀ x : m, ∀ y₁ y₂ : n, y₁ ≠ y₂ → M x y₁ ≠ M x y₂. -/
-abbrev distinct_row_entries (M : Matrix m n α) : Prop :=
+abbrev DistinctRowEntries (M : Matrix m n α) : Prop :=
   ∀ y, Function.Injective (M.row y)
 
 /-- For m ≤ n, an m × n Latin rectangle is a partial n × n Latin Square where
@@ -108,9 +108,9 @@ class LatinRectangle (m : Type*) (n : Type*) (α : Type*)
   /-- An $m × n$ Latin rectangle contains $n$ distinct entries. -/
   exactly_n_symbols : Fintype.card α = Fintype.card n
   /-- Each row contains each symbol exactly once. -/
-  once_per_row : once_per_row M
+  once_per_row : OncePerRow M
   /-- Entries cannot repeat in a given column. -/
-  distinct_col_entries : distinct_col_entries M
+  distinct_col_entries : DistinctColEntries M
   /-- The number of rows is less than or equal to the number of columns. -/
   m_le_n : Fintype.card m ≤ Fintype.card n := by simp
 
@@ -124,7 +124,7 @@ instance {m n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
 
 /-- This condition is that an entry appears exactly once in a given column.
     Equivalently, ∀ j : n, ∀ x : α, ∃! i : m, M i j = x. -/
-abbrev once_per_column (M : Matrix m n α) : Prop :=
+abbrev OncePerColumn (M : Matrix m n α) : Prop :=
   ∀ j, Function.Bijective (M.col j)
 
 /-- If a matrix has each symbol appearing exactly once in every column,
@@ -132,10 +132,10 @@ abbrev once_per_column (M : Matrix m n α) : Prop :=
 lemma latin_square_col_implies_latin_rectangle_col
     {n : Type*} {α : Type*}
     (M : Matrix n n α)
-    (h₂ : once_per_column M) :
-    distinct_col_entries M := by
-  rw [once_per_column] at h₂
-  rw [distinct_col_entries]
+    (h₂ : OncePerColumn M) :
+    DistinctColEntries M := by
+  rw [OncePerColumn] at h₂
+  rw [DistinctColEntries]
   intro j
   specialize h₂ j
   exact h₂.1
@@ -145,7 +145,7 @@ lemma latin_square_col_implies_latin_rectangle_col
 class LatinSquare (n : Type*) (α : Type*) [Fintype n] [Fintype α] [DecidableEq α]
   extends LatinRectangle n n α where
   /-- Each column contains each symbol exactly once. -/
-  once_per_column : once_per_column M
+  once_per_column : OncePerColumn M
   /-- If each column contains each symbol exactly once, then there are no repeats across columns. -/
   distinct_col_entries := latin_square_col_implies_latin_rectangle_col M once_per_column
   m_le_n := by rfl
@@ -155,13 +155,13 @@ example : LatinRectangle (Fin 5) (Fin 5) (Fin 5) := LatinRectangle.mk (fun x y �
   (by decide) (by decide) (by decide)
 
 @[coe]
-abbrev to_matrix : (LatinRectangle m n α) → (Matrix m n α)
+abbrev toMatrix : (LatinRectangle m n α) → (Matrix m n α)
  | A => A.M
 
 instance {m : Type*} {n : Type*} {α : Type*} [Fintype m]
   [Fintype n] [Fintype α] [DecidableEq α] :
   Coe (LatinRectangle m n α) (Matrix m n α) where
-  coe := to_matrix
+  coe := toMatrix
 
 instance {n : Type*} {α : Type*}
   [Fintype n] [Fintype α] [DecidableEq α] :
@@ -173,16 +173,16 @@ abbrev row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
 
 /-- An n × n Latin rectangle is a Latin square. -/
 @[coe]
-def lr_to_ls : (LatinRectangle n n α) → (LatinSquare n α)
+def toLatinSquare : (LatinRectangle n n α) → (LatinSquare n α)
   | A => {
       M := A.M,
       exactly_n_symbols := A.exactly_n_symbols,
       once_per_row := A.once_per_row,
       m_le_n := A.m_le_n,
       once_per_column := by
-        unfold once_per_column
+        unfold OncePerColumn
         have h := A.distinct_col_entries
-        unfold distinct_col_entries at h
+        unfold DistinctColEntries at h
         intro j
         specialize h j
         rw [Fintype.bijective_iff_injective_and_card]
@@ -191,15 +191,15 @@ def lr_to_ls : (LatinRectangle n n α) → (LatinSquare n α)
       }
 
 instance : Coe (LatinRectangle n n α) (LatinSquare n α) where
-  coe := lr_to_ls
+  coe := toLatinSquare
 
 theorem lr_as_ls_as_lr_is_eq (A : LatinRectangle n n α) :
     ((A : LatinSquare n α) : LatinRectangle n n α) = A := by
-  simp[LatinSquare.toLatinRectangle, lr_to_ls]
+  simp[LatinSquare.toLatinRectangle, toLatinSquare]
 
 theorem ls_as_lr_as_ls_is_eq (A : LatinSquare n α) :
     ((A : LatinRectangle n n α) : LatinSquare n α) = A := by
-  simp[lr_to_ls, LatinSquare.toLatinRectangle]
+  simp[toLatinSquare, LatinSquare.toLatinRectangle]
 
 instance {n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
     Repr (LatinSquare (Fin n) α) where
@@ -207,15 +207,15 @@ instance {n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
 
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
 @[to_additive]
-def group_to_cayley_table (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
+def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
   LatinSquare G G := {
     M := fun i j ↦ i * j,
     exactly_n_symbols := by rfl,
     once_per_row := by
-      simp only [once_per_row, Matrix.row]
+      simp only [OncePerRow, Matrix.row]
       exact Group.mulLeft_bijective (G := G),
     once_per_column := by
-      simp only [once_per_column, Matrix.col]
+      simp only [OncePerColumn, Matrix.col]
       exact Group.mulRight_bijective (G := G)
    }
 
@@ -224,7 +224,7 @@ section Equivalence
 
 /-- Given relabeling maps for the rows, columns, and symbols,
     produce the relabeled Latin rectangle. -/
-def relabel_latin_rectangle
+def renameLatinRectangle
     (f : m ≃ m')
     (g : n ≃ n')
     (h : α ≃ β)
@@ -237,9 +237,9 @@ def relabel_latin_rectangle
     have k' := A.exactly_n_symbols
     omega,
   once_per_row := by
-    simp only [once_per_row, Matrix.row]
+    simp only [OncePerRow, Matrix.row]
     have h' := A.once_per_row
-    simp only [once_per_row, Matrix.row] at h'
+    simp only [OncePerRow, Matrix.row] at h'
     intro i'
     specialize h' (f.symm i') --(h.symm b')
     have h_comp :
@@ -254,9 +254,9 @@ def relabel_latin_rectangle
       · exact h'
       · exact Equiv.bijective g.symm,
   distinct_col_entries := by
-    simp only [distinct_col_entries, Matrix.col]
+    simp only [DistinctColEntries, Matrix.col]
     have h' := A.distinct_col_entries
-    simp only [distinct_col_entries, Matrix.col] at h'
+    simp only [DistinctColEntries, Matrix.col] at h'
     intro j'
     specialize h' (g.symm j')
     have h_comp :
@@ -290,24 +290,24 @@ structure LREquiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) whe
 
 /-- Two Latin rectangles are equivalent if one can be obtained from the other by some combination
     of relabeling the row indices, column indices, and symbols. -/
-def latin_rectangle_equiv_relation (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) :=
+def LatinRectangleEquivRelation (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) :=
     Nonempty (LREquiv A A')
 
-infixl:25 " ≃ " => latin_rectangle_equiv_relation
+infixl:25 " ≃ " => LatinRectangleEquivRelation
 
 lemma induced_latin_rectangle_is_equiv
     (f : m ≃ m')
     (g : n ≃ n')
     (h : α ≃ β)
-    (A : LatinRectangle m n α) : A ≃ (relabel_latin_rectangle f g h A) :=
-  ⟨f, g, h, by simp [relabel_latin_rectangle]⟩
+    (A : LatinRectangle m n α) : A ≃ (renameLatinRectangle f g h A) :=
+  ⟨f, g, h, by simp [renameLatinRectangle]⟩
 
 end Equivalence
 
 section Nonvacuous
 
 instance Zn_nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
-  addGroup_to_cayley_table (ZMod n)
+  addGroupToCayleyTable (ZMod n)
 
 /-- For any positive natural number n, there exists an n × n Latin square. -/
 noncomputable instance n_nonempty
@@ -315,11 +315,11 @@ noncomputable instance n_nonempty
     (h : Fintype.card n = Fintype.card α) :
     LatinSquare n α := by
   haveI := Fin.addCommGroup (Fintype.card n)
-  let a := addGroup_to_cayley_table (Fin (Fintype.card n))
+  let a := addGroupToCayleyTable (Fin (Fintype.card n))
   have f :=  Fintype.equivFin n
   have h' := Fintype.equivFinOfCardEq h.symm
   have h'' := Fintype.equivFin α
-  have b := relabel_latin_rectangle f.symm f.symm h'.symm a
+  have b := renameLatinRectangle f.symm f.symm h'.symm a
   exact (b : LatinSquare n α)
 
 end Nonvacuous
@@ -329,11 +329,11 @@ section Completion
 variable {n : Type*} [Fintype n] [Nonempty n] [DecidableEq n]
 variable {k : Type*} [Fintype k] [Nonempty k] [DecidableEq k]
 
-def is_subrect (A : LatinRectangle m n α) (B : LatinRectangle m' n' α) :=
+def IsSubrect (A : LatinRectangle m n α) (B : LatinRectangle m' n' α) :=
   ∃ (ι : m ↪ m') (ι' : n ↪ n') (h : α ≃ α), ∀ (i : m), ∀ (j : n), B.M (ι i) (ι' j) = h (A.M i j)
 
 /-- A map returning the set of symbols in α not in column j. -/
-def symbols_not_in (A : LatinRectangle k n α) (j : n) :=
+def symbolsNotIn (A : LatinRectangle k n α) (j : n) :=
   let D := Finset.image (col A j) Finset.univ
   Finset.univ \ D
 
@@ -564,15 +564,15 @@ lemma col_card
     ∀ j, (Finset.image (col A j) Finset.univ).card = Fintype.card k := by
   intro j
   have h_inj := A.distinct_col_entries
-  unfold distinct_col_entries at h_inj
+  unfold DistinctColEntries at h_inj
   exact Finset.card_image_of_injective Finset.univ (h_inj j)
 
 lemma card_symbols_not_in
     {k : Type*} [Fintype k]
     {n : Type*} [Fintype n]
     (A : LatinRectangle k n α) :
-    ∀ j, Finset.card (symbols_not_in A j) = Fintype.card n - Fintype.card k := by
-  simp [symbols_not_in,
+    ∀ j, Finset.card (symbolsNotIn A j) = Fintype.card n - Fintype.card k := by
+  simp [symbolsNotIn,
         Finset.card_sdiff,
         A.exactly_n_symbols, 
         col_card A]
@@ -585,7 +585,7 @@ lemma row_entry_to_column_entry
     ∃ f : k → n,
     ∀ {a : k} {b : n}, LatinRectangle.M a b = x ↔ f a = b := by
   have hrow := A.once_per_row
-  unfold once_per_row at hrow
+  unfold OncePerRow at hrow
   conv at hrow =>
     ext
     rw [Function.bijective_iff_existsUnique]
@@ -633,9 +633,9 @@ theorem latin_rectangle_extends_one_row
     {k' : Type*} [Fintype k']
     (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) :
-    ∃ (A' : LatinRectangle k' n α), is_subrect A A' := by
+    ∃ (A' : LatinRectangle k' n α), IsSubrect A A' := by
   classical
-  let B := symbols_not_in A
+  let B := symbolsNotIn A
   have Bj_size (j : n) : Finset.card (B j) = (Fintype.card n) - (Fintype.card k) :=
     card_symbols_not_in A j
   have exactly_n_minus_k_cols_without_x : ∀ x,
@@ -657,7 +657,7 @@ theorem latin_rectangle_extends_one_row
       rw [h₁''] at h₁'
       rw [<-h₁'] at h₁
       have hinj := A.distinct_col_entries
-      unfold distinct_col_entries at hinj
+      unfold DistinctColEntries at hinj
       specialize hinj (f a2)
       simp only [Function.Injective, Matrix.col] at hinj
       exact hinj h₁
@@ -706,7 +706,7 @@ theorem latin_rectangle_extends_one_row
       rw [Finset.mem_image]
       intro ha
       have h := A.once_per_row
-      unfold once_per_row at h
+      unfold OncePerRow at h
       obtain ⟨a, ha⟩ := ha
       use a
       refine ⟨ ?_, ha.2 ⟩
@@ -723,10 +723,10 @@ theorem latin_rectangle_extends_one_row
       exact Finset.card_eq_of_equiv As_to_Cs.symm
     have h_intersect : As ∩ Bs = ∅ := by
       ext
-      simp [As, Bs, B, symbols_not_in]
+      simp [As, Bs, B, symbolsNotIn]
     have h_union_card : Finset.card (As ∪ Bs) = Fintype.card n := by
       congr
-      simp only [As, Bs, B, symbols_not_in]
+      simp only [As, Bs, B, symbolsNotIn]
       ext
       simp [exists_or_forall_not]
     have h_card := Finset.card_union As Bs
@@ -754,7 +754,7 @@ theorem latin_rectangle_extends_one_row
     M := M'
     exactly_n_symbols := A.exactly_n_symbols
     once_per_row := by
-      unfold once_per_row
+      unfold OncePerRow
       simp only [Matrix.row, M']
       intro y
       split_ifs
@@ -767,7 +767,7 @@ theorem latin_rectangle_extends_one_row
         simp only [Function.Embedding.toFun_eq_coe] at h₁'
         rw [h₁']
         have h := A.once_per_row
-        simp only [once_per_row,Matrix.row] at h
+        simp only [OncePerRow,Matrix.row] at h
         apply h
       · simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
         have h₂ := A.exactly_n_symbols.symm
@@ -784,14 +784,14 @@ theorem latin_rectangle_extends_one_row
           exact h
         · simp only [Function.Surjective]
           intro b
-          simp only [B, symbols_not_in] at hf
+          simp only [B, symbolsNotIn] at hf
           unfold Function.Bijective Function.Surjective at h₃
           replace h₃ := h₃.2
           specialize h₃ b
           simp only [Subtype.exists, Finset.mem_univ, exists_true_left] at h₃
           exact h₃
     distinct_col_entries := by
-      unfold distinct_col_entries
+      unfold DistinctColEntries
       intro y
       simp only [Function.Injective, Matrix.col, Matrix.transpose,
                  Finset.mem_image, Finset.mem_univ, true_and,
@@ -808,7 +808,7 @@ theorem latin_rectangle_extends_one_row
         simp only [Function.Embedding.toFun_eq_coe] at h₂'
         rw [<- ha2',h₂']
         have h := A.distinct_col_entries
-        unfold distinct_col_entries at h
+        unfold DistinctColEntries at h
         unfold Function.Injective at h
         intro hM
         apply h at hM
@@ -816,14 +816,14 @@ theorem latin_rectangle_extends_one_row
       · simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
         intro h
         have hfy := hf.2 y
-        simp only [symbols_not_in, Finset.mem_sdiff, Finset.mem_univ,
+        simp only [symbolsNotIn, Finset.mem_sdiff, Finset.mem_univ,
                    Finset.mem_image, Matrix.col_apply, true_and, not_exists, B] at hfy
         have hfyi := hfy (Function.invFun (⇑ι) a1)
         contradiction
       · intro h
         simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
         have hfy := hf.2 y
-        simp only [symbols_not_in, Finset.mem_sdiff, Finset.mem_univ,
+        simp only [symbolsNotIn, Finset.mem_sdiff, Finset.mem_univ,
                    Finset.mem_image, Matrix.col_apply, true_and, not_exists, B]  at hfy
         have hfyi := (hfy (Function.invFun (⇑ι) a2))
         have h := h.symm
@@ -841,7 +841,7 @@ theorem latin_rectangle_extends_one_row
     m_le_n := by omega
   }
   use A'
-  unfold is_subrect
+  unfold IsSubrect
   unfold LatinRectangle.M
   simp only [A', M']
   use ι
@@ -859,10 +859,10 @@ lemma subrect_transitive {m'' : Type*} [Fintype m'']
     {A : LatinRectangle m n α}
     {A' : LatinRectangle m' n α}
     {A'' : LatinRectangle m'' n α}
-    (h₁ : is_subrect A A')
-    (h₂ : is_subrect A' A'') : 
-    is_subrect A A'' := by
-  unfold is_subrect at *
+    (h₁ : IsSubrect A A')
+    (h₂ : IsSubrect A' A'') : 
+    IsSubrect A A'' := by
+  unfold IsSubrect at *
   obtain ⟨f,g,h,h₁⟩ := h₁
   obtain ⟨f',g',h',h₂⟩ := h₂
   set f'' := Function.Embedding.trans f f'
@@ -876,9 +876,9 @@ lemma subrect_refl
     {n : Type*} [Fintype n]
     {A : LatinRectangle m n α}
     {A' : LatinRectangle m' n α} (h : A ≃ A') :
-    is_subrect A A' := by
+    IsSubrect A A' := by
   obtain ⟨f,g,h,hrfl⟩ := h
-  simp only [is_subrect]
+  simp only [IsSubrect]
   use f
   use g
   use h
@@ -892,13 +892,13 @@ theorem latin_rectangle_extends_to_latin_square
     {k : Type*} [Fintype k] [Nonempty k]
     (A : LatinRectangle k n α)
     (h : Fintype.card k ≤ Fintype.card n := by omega) :
-    ∃ (A' : LatinRectangle n n α), is_subrect A A' := by
+    ∃ (A' : LatinRectangle n n α), IsSubrect A A' := by
   induction h_gap : (Fintype.card n - Fintype.card k) using
     Nat.strong_induction_on generalizing k A with
   | h a ih =>
     by_cases h_full : Fintype.card k = Fintype.card n
     · let f : k ≃ n := Fintype.equivOfCardEq h_full
-      let A' := relabel_latin_rectangle f (Equiv.refl n) (Equiv.refl α) A
+      let A' := renameLatinRectangle f (Equiv.refl n) (Equiv.refl α) A
       have h_sim : A ≃ A' := by
         simp [induced_latin_rectangle_is_equiv f (Equiv.refl n) (Equiv.refl α) A,A']
       use A'
