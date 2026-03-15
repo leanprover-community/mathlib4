@@ -104,7 +104,7 @@ protected theorem of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = 
   rw [CNF.ne_zero ho, log_eq_zero hb, opow_zero, div_one, mod_one, zero_right]
 
 @[simp]
-protected theorem one (b : Ordinal) : CNF b 1 = [(0, 1)] := by
+protected theorem one_right (b : Ordinal) : CNF b 1 = [(0, 1)] := by
   obtain hb | hb := le_or_gt b 1
   · exact CNF.of_le_one hb one_ne_zero
   · exact CNF.of_lt one_ne_zero hb
@@ -205,9 +205,9 @@ alias coeff_of_not_mem_CNF := coeff_of_notMem_CNF
 theorem coeff_lt {b : Ordinal} (hb : 1 < b) (o e : Ordinal) : coeff b o e < b := by
   by_cases he : e ∈ (CNF b o).map Prod.fst
   · rw [List.mem_map, Prod.exists] at he
-    obtain ⟨c, _, hc, rfl⟩ := he
-    rw [coeff_of_mem_CNF hc]
-    exact snd_lt hb hc
+    obtain ⟨e, c, h, rfl⟩ := he
+    rw [coeff_of_mem_CNF h]
+    exact snd_lt hb h
   · rw [coeff_of_notMem_CNF he]
     exact hb.pos
 
@@ -267,8 +267,8 @@ theorem support_coeff_subset {b o x : Ordinal} (hx : x < b ^ o) :
 theorem coeff_opow_mul_add {b e x y : Ordinal} (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
   obtain hb | hb := le_or_gt b 1
-  · have := hxb.trans_le hb
-    simp_all
+  · grw [hb, lt_one_iff_zero] at hxb
+    simp [hxb]
   obtain rfl | hx := eq_or_ne x 0
   · simp
   ext e'
@@ -294,8 +294,8 @@ theorem coeff_opow_mul_add {b e x y : Ordinal} (hxb : x < b) (hy : y < b ^ e) :
 theorem coeff_opow_mul {b e x : Ordinal} (hxb : x < b) :
     coeff b (b ^ e * x) = single e x := by
   obtain hb | hb := le_or_gt b 1
-  · have := hxb.trans_le hb
-    simp_all
+  · grw [hb, lt_one_iff_zero] at hxb
+    simp [hxb]
   · simpa using coeff_opow_mul_add hxb (opow_pos e hb.pos)
 
 @[simp]
