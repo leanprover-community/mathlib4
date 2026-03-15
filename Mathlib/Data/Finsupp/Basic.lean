@@ -1018,13 +1018,13 @@ lemma sumElim_inr (f : α →₀ γ) (g : β →₀ γ) (x : β) : sumElim f g (
     sumElim (single a m₁) (single b m₂) = single (.inl a) m₁ + single (.inr b) m₂ := by
   classical ext (_ | _) <;> simp [single_apply]
 
+lemma sumElim_eq_add [AddCommMonoid M] (f : α →₀ M) (g : β →₀ M) :
+    sumElim f g = mapDomain Sum.inl f + mapDomain Sum.inr g := by
+  ext (_ | _) <;> simp [mapDomain_notin_range, Sum.inl_injective, Sum.inr_injective]
+
 @[simp] lemma mapDomain_swap_sumElim [AddCommMonoid M] (f : α →₀ M) (g : β →₀ M) :
     mapDomain Sum.swap (sumElim f g) = sumElim g f := by
-  ext (_ | _)
-  · simp [← Sum.swap_inr, Sum.swap_leftInverse.injective]
-    simp
-  · simp [← Sum.swap_inl, Sum.swap_leftInverse.injective]
-    simp
+  simp [sumElim_eq_add, mapDomain_add, ← mapDomain_comp, Function.comp_def, add_comm]
 
 @[to_additive]
 lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
