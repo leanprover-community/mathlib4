@@ -205,9 +205,9 @@ alias coeff_of_not_mem_CNF := coeff_of_notMem_CNF
 theorem coeff_lt {b : Ordinal} (hb : 1 < b) (o e : Ordinal) : coeff b o e < b := by
   by_cases he : e ∈ (CNF b o).map Prod.fst
   · rw [List.mem_map, Prod.exists] at he
-    obtain ⟨c, _, hc, rfl⟩ := he
-    rw [coeff_of_mem_CNF hc]
-    exact snd_lt hb hc
+    obtain ⟨e, c, h, rfl⟩ := he
+    rw [coeff_of_mem_CNF h]
+    exact snd_lt hb h
   · rw [coeff_of_notMem_CNF he]
     exact hb.pos
 
