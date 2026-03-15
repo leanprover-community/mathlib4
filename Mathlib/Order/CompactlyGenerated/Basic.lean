@@ -520,6 +520,25 @@ theorem iSupIndep_sUnion_of_directed {s : Set (Set α)} (hs : DirectedOn (· ⊆
   rw [Set.sUnion_eq_iUnion]
   exact sSupIndep_iUnion_of_directed hs.directed_val (by simpa using h)
 
+lemma disjoint_biSup_of_finite_disjoint_biSup {ι : Type*} {f : ι → α} {s : Set ι} {a : α}
+    (hs : ∀ t ⊆ s, t.Finite → Disjoint (⨆ i ∈ t, f i) a) :
+    Disjoint (⨆ i ∈ s, f i) a := by
+  simp_rw [disjoint_iff, iSup_subtype', ← sSup_range, inf_comm, inf_sSup_eq_iSup_inf_sup_finset,
+    iSup_eq_bot]
+  intro u hu
+  obtain ⟨t, ht, ht', htu⟩ : ∃ᵉ (t ⊆ s) (hu : t.Finite), f '' t = u :=
+    Set.Finite.exists_subset_finite_image_eq u.finite_toSet <| by rwa [Set.image_eq_range f s]
+  replace htu : u.sup id = ⨆ i ∈ t, f i := by
+    simp only [Finset.sup_eq_iSup, id_eq, ← Finset.mem_coe, ← htu, iSup_image]
+  rw [inf_comm, ← disjoint_iff, htu]
+  exact hs t ht ht'
+
+lemma iSupIndep.disjoint_biSup_biSup {ι : Type*} [IsModularLattice α]
+    {f : ι → α} {s t : Set ι} (hf : iSupIndep f) (hst : Disjoint s t) :
+    Disjoint (⨆ i ∈ s, f i) (⨆ i ∈ t, f i) :=
+  disjoint_biSup_of_finite_disjoint_biSup fun _ h₁ h₂ ↦
+    disjoint_biSup_biSup' hf (Set.disjoint_of_subset_left h₁ hst) h₂
+
 end
 
 namespace CompleteLattice
