@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card.Arithmetic
 public import Mathlib.Data.Set.Functor
 
@@ -260,6 +261,21 @@ lemma IsPerfectMatching.toSubgraph_iff (h : M.spanningCoe ≤ G') :
   simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
 
 end Subgraph
+
+section matchingNumber
+
+/-- The matching number of a simple graph, i.e. the size of a largest matching. -/
+noncomputable def matchingNumber (G : SimpleGraph V) : ℕ∞ :=
+  ⨆ (M : G.Subgraph) (_ : M.IsMatching), M.edgeSet.encard
+
+lemma Subgraph.IsMatching.edgeSet_encard_le_matchingNumber (hM : M.IsMatching) :
+    M.edgeSet.encard ≤ G.matchingNumber := by
+  rw [matchingNumber]
+  refine le_iSup_of_le M ?_
+  simpa using (le_iSup_of_le hM le_rfl :
+    M.edgeSet.encard ≤ ⨆ (_ : M.IsMatching), M.edgeSet.encard)
+
+end matchingNumber
 
 lemma IsClique.even_iff_exists_isMatching {u : Set V} (hc : G.IsClique u)
     (hu : u.Finite) : Even u.ncard ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
