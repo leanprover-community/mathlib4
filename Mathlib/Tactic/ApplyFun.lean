@@ -7,7 +7,6 @@ module
 
 public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Order.Hom.Basic
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The `apply_fun` tactic.

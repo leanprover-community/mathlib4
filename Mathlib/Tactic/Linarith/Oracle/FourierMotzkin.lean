@@ -6,7 +6,6 @@ Authors: Robert Y. Lewis
 module
 
 public meta import Batteries.Lean.HashMap
-public meta import Mathlib.Tactic.Linarith.Datatypes
 public import Batteries.Lean.HashMap
 public import Mathlib.Tactic.Linarith.Datatypes
 

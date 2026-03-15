@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.Multiset.Bind
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Big operators

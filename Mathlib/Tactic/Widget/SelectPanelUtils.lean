@@ -6,7 +6,6 @@ Authors: Patrick Massot
 module
 
 public meta import Lean.Meta.ExprLens
-public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass
 public import Mathlib.Tactic.Widget.SelectInsertParamsClass
 public import ProofWidgets.Component.MakeEditLink
 public import ProofWidgets.Data.Html

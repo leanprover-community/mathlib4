@@ -7,7 +7,6 @@ module
 
 public meta import Mathlib.Util.AddRelatedDecl
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories

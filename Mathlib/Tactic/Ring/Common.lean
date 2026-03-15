@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
-public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `ring` tactic
