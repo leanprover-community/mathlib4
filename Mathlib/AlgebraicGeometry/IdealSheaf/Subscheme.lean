@@ -109,7 +109,6 @@ lemma isLocalization_away {U V : X.affineOpens}
       letI := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal h)).toAlgebra
       IsLocalization.Away (Ideal.Quotient.mk (I.ideal V) f) (Γ(X, U) ⧸ (I.ideal U)) := by
   letI := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal h)).toAlgebra
-  let f' : Γ(X, V) ⧸ I.ideal V := Ideal.Quotient.mk _ f
   letI := (X.presheaf.map (homOfLE (X := X.Opens) h).op).hom.toAlgebra
   have : IsLocalization.Away f Γ(X, U) := by
     subst hU; exact V.2.isLocalization_of_eq_basicOpen _ _ rfl
@@ -659,6 +658,7 @@ abbrev Hom.image : Scheme.{u} := f.ker.subscheme
 /-- The embedding from the scheme-theoretic image to the codomain. -/
 abbrev Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
     f.ker.ideal U ≤ RingHom.ker ((ΓSpecIso Γ(Y, ↑U)).inv ≫
       (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).appTop).hom := by

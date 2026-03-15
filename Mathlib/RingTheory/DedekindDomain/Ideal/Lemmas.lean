@@ -276,7 +276,6 @@ and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
   letI := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
@@ -521,6 +520,37 @@ theorem iInf_localization_eq_bot [Algebra R K] [hK : IsFractionRing R K] :
   · exact fun hx ⟨v, hv⟩ => hx ((equivMaximalSpectrum hR).symm ⟨v, hv⟩)
   · exact fun hx ⟨v, hv, hbot⟩ => hx ⟨v, hv.isMaximal hbot⟩
 
+section RingEquiv
+
+variable {R} {S : Type*} [CommRing S]
+
+/-- A surjective ring homomorphism `f : R →+* S` induces a map from `HeightOneSpectrum S` to
+  `HeightOneSpectrum R` sending `v` to `v.asIdeal.comap f`. -/
+@[simps]
+def comap (f : R →+* S) (hf : Function.Surjective f) (v : HeightOneSpectrum S) :
+    (HeightOneSpectrum R) where
+  asIdeal := v.asIdeal.comap f
+  isPrime := v.asIdeal.comap_isPrime f
+  ne_bot := (Ideal.eq_bot_of_comap_eq_bot' hf).mt v.ne_bot
+
+/-- The isomorphism between `HeightOneSpectrum`s of isomorphic rings. -/
+@[simps]
+def equivOfRingEquiv (e : R ≃+* S) : (HeightOneSpectrum R) ≃ (HeightOneSpectrum S) where
+  toFun := HeightOneSpectrum.comap e.symm e.symm.surjective
+  invFun := HeightOneSpectrum.comap e e.surjective
+  left_inv x := by ext; simp
+  right_inv x := by
+    ext
+    rw [← Ideal.map_comap_eq_self_of_equiv e x.asIdeal]
+    simp only [comap_asIdeal, Ideal.mem_comap, RingHom.coe_coe, Ideal.symm_apply_mem_of_equiv_iff]
+    exact Iff.rfl
+
+theorem RingEquiv.nontrivial_heightOneSpectrum {R S : Type*} [CommRing R] [CommRing S]
+    [Nontrivial (HeightOneSpectrum S)] (e : R ≃+* S) : Nontrivial (HeightOneSpectrum R) :=
+  (equivOfRingEquiv e).surjective.nontrivial
+
+end RingEquiv
+
 end HeightOneSpectrum
 
 end IsDedekindDomain
@@ -579,7 +609,6 @@ theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J �
 
 variable [IsDedekindDomain R] (f : R ⧸ I ≃+* A ⧸ J)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between ideals of `R` dividing `I` and the ideals of `A` dividing `J` induced by
   an isomorphism `f : R/I ≅ A/J`. -/
 def idealFactorsEquivOfQuotEquiv : { p : Ideal R | p ∣ I } ≃o { p : Ideal A | p ∣ J } := by

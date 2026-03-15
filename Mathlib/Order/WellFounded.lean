@@ -110,6 +110,14 @@ theorem min_eq_of_forall_not_lt [Std.Trichotomous r] (wf : WellFounded r) {s : S
     (hms : m ∈ s) (hrm : ∀ x ∈ s, ¬r x m) : wf.min s ⟨m, hms⟩ = m :=
   Std.Trichotomous.trichotomous _ m (hrm _ <| wf.min_mem s _) (wf.not_lt_min s _ hms)
 
+theorem notMem_of_lt_min {wf : WellFounded r} {s : Set α} {hs : s.Nonempty} {x : α}
+    (hx : r x (wf.min s hs)) : x ∉ s :=
+  (wf.not_lt_min s hs · hx)
+
+theorem mem_of_lt_min_compl {wf : WellFounded r} {s : Set α} {hs : sᶜ.Nonempty} {x : α}
+    (hx : r x (wf.min sᶜ hs)) : x ∈ s :=
+  Set.notMem_compl_iff.mp <| notMem_of_lt_min hx
+
 theorem wellFounded_iff_has_min {r : α → α → Prop} :
     WellFounded r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m := by
   refine ⟨fun h => h.has_min, fun h => ⟨fun x => ?_⟩⟩
@@ -312,7 +320,7 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 end Induction
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
-@[to_dual (attr := instance_reducible)
+@[to_dual (attr := implicit_reducible)
 /-- A nonempty linear order with well-founded `>` has a top element. -/]
 noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where

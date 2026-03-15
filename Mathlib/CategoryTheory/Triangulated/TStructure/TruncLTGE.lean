@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 /-!
 # Truncations for a t-structure
@@ -18,6 +19,8 @@ In this file, for any `n : ℤ`, we construct truncation functors `t.truncLT n :
 part of a distinguished triangle
 `(t.truncLT n).obj X ⟶ X ⟶ (t.truncGE n).obj X ⟶ ((t.truncLT n).obj X)⟦1⟧` for any `X : C`,
 with `(t.truncLT n).obj X < n` and `(t.truncGE n).obj X ≥ n`.
+
+We obtain various properties of these truncation functors.
 
 -/
 
@@ -36,6 +39,7 @@ namespace TStructure
 
 variable (t : TStructure C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two morphisms `T ⟶ T'` between distinguished triangles must coincide when
 they coincide on the middle object, and there are integers `a ≤ b` such that
 for a t-structure, we have `T.obj₁ ≤ a` and `T'.obj₃ ≥ b`. -/
@@ -211,6 +215,7 @@ is the `< n`-truncation functor. See also the natural transformation `truncLTι`
 noncomputable def truncLT (n : ℤ) : C ⥤ C :=
   TruncAux.triangleFunctor t n ⋙ Triangle.π₁
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : (t.truncLT n).Additive where
   map_add {_ _ _ _} := by
     dsimp only [truncLT, Functor.comp_map]
@@ -227,6 +232,7 @@ is the `≥ n`-truncation functor. See also the natural transformation `truncGE�
 noncomputable def truncGE (n : ℤ) : C ⥤ C :=
   TruncAux.triangleFunctor t n ⋙ Triangle.π₃
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : (t.truncGE n).Additive where
   map_add {_ _ _ _} := by
     dsimp only [truncGE, Functor.comp_map]
@@ -302,15 +308,18 @@ lemma truncGEδLT_comp_truncLTι_app (n : ℤ) (X : C) :
     (t.truncGEδLT n).app X ≫ ((t.truncLTι n).app X)⟦(1 : ℤ)⟧' = 0 :=
   comp_distTriang_mor_zero₃₁ _ (t.triangleLTGE_distinguished n X)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma truncLTι_comp_truncGEπ (n : ℤ) :
     t.truncLTι n ≫ t.truncGEπ n = 0 := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma truncGEπ_comp_truncGEδLT (n : ℤ) :
     t.truncGEπ n ≫ t.truncGEδLT n = 0 := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma truncGEδLT_comp_truncLTι (n : ℤ) :
     t.truncGEδLT n ≫ Functor.whiskerRight (t.truncLTι n) (shiftFunctor C (1 : ℤ)) = 0 := by
@@ -331,6 +340,7 @@ lemma natTransTruncLTOfLE_ι_app (a b : ℤ) (h : a ≤ b) (X : C) :
     (t.natTransTruncLTOfLE a b h).app X ≫ (t.truncLTι b).app X = (t.truncLTι a).app X := by
   simpa using ((TruncAux.triangleFunctorNatTransOfLE t a b h).app X).comm₁.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma natTransTruncLTOfLE_ι (a b : ℤ) (h : a ≤ b) :
     t.natTransTruncLTOfLE a b h ≫ t.truncLTι b = t.truncLTι a := by
@@ -356,6 +366,7 @@ lemma truncGEδLT_comp_whiskerRight_natTransTruncLTOfLE (a b : ℤ) (h : a ≤ b
   ext X
   exact t.truncGEδLT_comp_natTransTruncLTOfLE_app a b h X
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_natTransTruncGEOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncGEπ a ≫ t.natTransTruncGEOfLE a b h = t.truncGEπ b := by
@@ -431,6 +442,7 @@ instance (n : ℤ) : t.IsLE (0 : C) n := t.isLE_of_isZero (isZero_zero C) n
 
 instance (n : ℤ) : t.IsGE (0 : C) n := t.isGE_of_isZero (isZero_zero C) n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLE_iff_isIso_truncLTι_app (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
     t.IsLE X n₀ ↔ IsIso (((t.truncLTι n₁)).app X) := by
   subst h
@@ -449,6 +461,7 @@ lemma isLE_iff_isIso_truncLTι_app (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : 
   rw [this]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
     t.IsGE X n ↔ IsIso ((t.truncGEπ n).app X) := by
   constructor
@@ -492,6 +505,7 @@ lemma isZero_truncGE_obj_of_isLE (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C)
   rw [← t.isLE_iff_isZero_truncGE_obj _ _ h X]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma from_truncGE_obj_ext {n : ℤ} {X : C} {Y : C}
     {f₁ f₂ : (t.truncGE n).obj X ⟶ Y} (h : (t.truncGEπ n).app X ≫ f₁ = (t.truncGEπ n).app X ≫ f₂)
     [t.IsGE Y n] :
@@ -505,6 +519,7 @@ lemma from_truncGE_obj_ext {n : ℤ} {X : C} {Y : C}
     (by exact t.isLE_shift _ (n-1) 1 (n-2) (by lia)) inferInstance
   rw [hg, hg', comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma to_truncLT_obj_ext {n : ℤ} {Y : C} {X : C}
     {f₁ f₂ : Y ⟶ (t.truncLT n).obj X}
     (h : f₁ ≫ (t.truncLTι n).app X = f₂ ≫ (t.truncLTι n).app X)
@@ -519,11 +534,13 @@ lemma to_truncLT_obj_ext {n : ℤ} {Y : C} {X : C}
     (by dsimp; apply (t.isGE_shift _ n (-1) (n + 1) (by lia)))
   rw [hg, hg', zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma truncLT_map_truncLTι_app (n : ℤ) (X : C) :
     (t.truncLT n).map ((t.truncLTι n).app X) = (t.truncLTι n).app ((t.truncLT n).obj X) :=
   t.to_truncLT_obj_ext (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma truncGE_map_truncGEπ_app (n : ℤ) (X : C) :
     (t.truncGE n).map ((t.truncGEπ n).app X) = (t.truncGEπ n).app ((t.truncGE n).obj X) :=
@@ -548,6 +565,309 @@ noncomputable def liftTruncLT {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n�
 lemma liftTruncLT_ι {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [t.IsLE X n₀] :
     t.liftTruncLT f n₀ n₁ h ≫ (t.truncLTι n₁).app Y = f :=
   (t.liftTruncLT_aux f n₀ n₁ h).choose_spec.symm
+
+end
+
+section
+
+variable {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n]
+
+lemma descTruncGE_aux :
+  ∃ (f' : (t.truncGE n).obj X ⟶ Y), f = (t.truncGEπ n).app X ≫ f' :=
+  Triangle.yoneda_exact₂ _ (t.triangleLTGE_distinguished n X) f
+    (t.zero_of_isLE_of_isGE _ (n-1)  n (by lia) (by dsimp; infer_instance) inferInstance)
+
+/-- Constructor for morphisms from `(t.truncGE n).obj X`. -/
+noncomputable def descTruncGE :
+    (t.truncGE n).obj X ⟶ Y :=
+  (t.descTruncGE_aux f n).choose
+
+@[reassoc (attr := simp)]
+lemma π_descTruncGE {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n] :
+    (t.truncGEπ n).app X ≫ t.descTruncGE f n  = f :=
+  (t.descTruncGE_aux f n).choose_spec.symm
+
+end
+
+lemma isLE_iff_orthogonal (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
+    t.IsLE X n₀ ↔ ∀ (Y : C) (f : X ⟶ Y) (_ : t.IsGE Y n₁), f = 0 := by
+  refine ⟨fun _ Y f _ ↦ t.zero f n₀ n₁ (by lia), fun hX ↦ ?_⟩
+  rw [t.isLE_iff_isZero_truncGE_obj n₀ n₁ h, IsZero.iff_id_eq_zero]
+  exact t.from_truncGE_obj_ext (by simpa using hX _ _ inferInstance)
+
+lemma isGE_iff_orthogonal (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
+    t.IsGE X n₁ ↔ ∀ (Y : C) (f : Y ⟶ X) (_ : t.IsLE Y n₀), f = 0 := by
+  refine ⟨fun _ Y f _ ↦ t.zero f n₀ n₁ (by lia), fun hX ↦ ?_⟩
+  rw [t.isGE_iff_isZero_truncLT_obj n₁ X, IsZero.iff_id_eq_zero]
+  exact t.to_truncLT_obj_ext (by simpa using hX _ _ (by rw [← h]; infer_instance))
+
+lemma isLE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsLE T.obj₁ n)
+    (h₃ : t.IsLE T.obj₃ n) : t.IsLE T.obj₂ n := by
+  rw [t.isLE_iff_orthogonal n (n+1) rfl]
+  intro Y f hY
+  obtain ⟨f', hf'⟩ := Triangle.yoneda_exact₂ _ hT f
+    (t.zero _ n (n + 1) (by lia) )
+  rw [hf', t.zero f' n (n + 1) (by lia), comp_zero]
+
+lemma isGE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsGE T.obj₁ n)
+    (h₃ : t.IsGE T.obj₃ n) : t.IsGE T.obj₂ n := by
+  rw [t.isGE_iff_orthogonal (n-1) n (by lia)]
+  intro Y f hY
+  obtain ⟨f', hf'⟩ := Triangle.coyoneda_exact₂ _ hT f (t.zero _ (n-1) n (by lia))
+  rw [hf', t.zero f' (n-1) n (by lia), zero_comp]
+
+instance : t.minus.IsTriangulated where
+  exists_zero := ⟨0, isZero_zero C, 0, inferInstance⟩
+  toIsTriangulatedClosed₂ := .mk' (fun T hT ↦ by
+    rintro ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
+    exact ⟨max i₁ i₃, t.isLE₂ T hT _ (t.isLE_of_le _ _ _ (le_max_left i₁ i₃))
+      (t.isLE_of_le _ _ _ (le_max_right i₁ i₃))⟩)
+
+instance : t.plus.IsTriangulated where
+  exists_zero := ⟨0, isZero_zero C, 0, inferInstance⟩
+  toIsTriangulatedClosed₂ := .mk' (fun T hT ↦ by
+    rintro ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
+    exact ⟨min i₁ i₃, t.isGE₂ T hT _ (t.isGE_of_ge _ _ _ (min_le_left i₁ i₃))
+      (t.isGE_of_ge _ _ _ (min_le_right i₁ i₃))⟩)
+
+instance : t.bounded.IsTriangulated := by
+  dsimp [bounded]
+  infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isIso_truncLT_map_iff {X Y : C} (f : X ⟶ Y) (n : ℤ) :
+    IsIso ((t.truncLT n).map f) ↔
+      ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ ((t.truncLT n).obj X)⟦1⟧)
+        (_ : Triangle.mk ((t.truncLTι n).app X ≫ f) g h ∈ distTriang _), t.IsGE Z n := by
+  refine ⟨fun hf ↦ ?_, fun ⟨Z, g, h, mem, _⟩ ↦ ?_⟩
+  · refine ⟨(t.truncGE n).obj Y, (t.truncGEπ n).app Y,
+      (t.truncGEδLT n).app Y ≫ (inv ((t.truncLT n).map f))⟦1⟧',
+      isomorphic_distinguished _ (t.triangleLTGE_distinguished n Y) _ ?_, inferInstance⟩
+    exact Triangle.isoMk _ _ (asIso ((t.truncLT n).map f)) (Iso.refl _) (Iso.refl _)
+  · obtain ⟨e, he⟩ := t.triangle_iso_exists
+      mem (t.triangleLTGE_distinguished n Y) (Iso.refl _) (n - 1) n
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
+    suffices ((t.truncLT n).map f) = e.hom.hom₁ by rw [this]; infer_instance
+    exact t.to_truncLT_obj_ext (Eq.trans (by cat_disch) e.hom.comm₁)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isIso_truncGE_map_iff {Y Z : C} (g : Y ⟶ Z) (n₀ n₁ : ℤ) (hn : n₀ + 1 = n₁) :
+    IsIso ((t.truncGE n₁).map g) ↔
+      ∃ (X : C) (f : X ⟶ Y) (h : ((t.truncGE n₁).obj Z) ⟶ X⟦(1 : ℤ)⟧)
+        (_ : Triangle.mk f (g ≫ (t.truncGEπ n₁).app Z) h ∈ distTriang _), t.IsLE X n₀ := by
+  refine ⟨fun hf ↦ ?_, fun ⟨X, f, h, mem, _⟩ ↦ ?_⟩
+  · refine ⟨_, (t.truncLTι n₁).app Y, inv ((t.truncGE n₁).map g) ≫ (t.truncGEδLT n₁).app Y,
+      isomorphic_distinguished _ (t.triangleLTGE_distinguished n₁ Y) _ ?_,
+      by subst hn; infer_instance⟩
+    exact Iso.symm (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+      (asIso ((t.truncGE n₁).map g)) (by simp) (by simp) (by simp))
+  · obtain ⟨e, he⟩ :=
+      t.triangle_iso_exists (t.triangleLTGE_distinguished n₁ Y) mem (Iso.refl _) n₀ n₁
+        (by dsimp; rw [← hn]; infer_instance) (by dsimp; infer_instance)
+        (by dsimp; infer_instance) (by dsimp; infer_instance)
+    suffices ((t.truncGE n₁).map g) = e.hom.hom₃ by rw [this]; infer_instance
+    exact t.from_truncGE_obj_ext (Eq.trans (by cat_disch) e.hom.comm₂.symm)
+
+instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncLT a).obj X) b := by
+  by_cases h : a ≤ b + 1
+  · exact t.isLE_truncLT_obj ..
+  · have := (t.isLE_iff_isIso_truncLTι_app (a - 1) a (by lia) X).1 (t.isLE_of_le _ b _ (by lia))
+    exact t.isLE_of_iso (show X ≅ _ from (asIso ((t.truncLTι a).app X)).symm) _
+
+set_option backward.isDefEq.respectTransparency false in
+instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGE b).obj X) a := by
+  by_cases h : a ≤ b
+  · exact t.isGE_truncGE_obj ..
+  · have : t.IsGE X b := t.isGE_of_ge X b a (by lia)
+    exact t.isGE_of_iso (show X ≅ _ from asIso ((t.truncGEπ b).app X)) _
+
+/-- The composition `t.truncLT b ⋙ t.truncGE a`. -/
+noncomputable abbrev truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncGE a
+
+/-- The composition `t.truncGE b ⋙ t.truncLT a`. -/
+noncomputable abbrev truncLTGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLT b
+
+instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELT a b).obj X) a := by
+  dsimp; infer_instance
+
+instance (X : C) (a b : ℤ) : t.IsLE ((t.truncLTGE a b).obj X) (b - 1) := by
+  dsimp; infer_instance
+
+section
+
+variable [IsTriangulated C]
+
+lemma isIso₁_truncLT_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n : ℤ) (h₃ : t.IsGE T.obj₃ n) :
+    IsIso ((t.truncLT n).map T.mor₁) := by
+  rw [isIso_truncLT_map_iff]
+  obtain ⟨Z, g, k, mem⟩ := distinguished_cocone_triangle ((t.truncLTι n).app T.obj₁ ≫ T.mor₁)
+  refine ⟨_, _, _, mem, ?_⟩
+  let H := someOctahedron rfl (t.triangleLTGE_distinguished n T.obj₁) hT mem
+  exact t.isGE₂ _ H.mem n (by dsimp; infer_instance) (by dsimp; infer_instance)
+
+lemma isIso₂_truncGE_map_of_isLE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) :
+    IsIso ((t.truncGE n₁).map T.mor₂) := by
+  rw [isIso_truncGE_map_iff _ _ _ _ h]
+  obtain ⟨X, f, k, mem⟩ := distinguished_cocone_triangle₁ (T.mor₂ ≫ (t.truncGEπ n₁).app T.obj₃)
+  refine ⟨_, _, _, mem, ?_⟩
+  subst h
+  have H := someOctahedron rfl (rot_of_distTriang _ hT)
+    (rot_of_distTriang _ (t.triangleLTGE_distinguished (n₀ + 1) T.obj₃))
+    (rot_of_distTriang _ mem)
+  have : t.IsLE (X⟦(1 : ℤ)⟧) (n₀ - 1) :=
+    t.isLE₂ _ H.mem (n₀ - 1) (t.isLE_shift T.obj₁ n₀ 1 (n₀ - 1) (by lia))
+      (t.isLE_shift ((t.truncLT (n₀ + 1)).obj T.obj₃) n₀ 1 (n₀-1) (by lia))
+  exact t.isLE_of_shift X n₀ 1 (n₀ - 1) (by lia)
+
+set_option backward.isDefEq.respectTransparency false in
+instance (X : C) (a b : ℤ) [t.IsGE X a] :
+    t.IsGE ((t.truncLT b).obj X) a := by
+  rw [t.isGE_iff_isZero_truncLT_obj]
+  have := t.isIso₁_truncLT_map_of_isGE _ ((t.triangleLTGE_distinguished b X)) a
+    (by dsimp; infer_instance)
+  dsimp at this
+  refine IsZero.of_iso ?_ (asIso ((t.truncLT a).map ((t.truncLTι b).app X)))
+  rwa [← isGE_iff_isZero_truncLT_obj]
+
+set_option backward.isDefEq.respectTransparency false in
+instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
+  rw [t.isLE_iff_isZero_truncGE_obj b (b + 1) rfl]
+  have := t.isIso₂_truncGE_map_of_isLE _ (t.triangleLTGE_distinguished a X) b _ rfl
+    (by dsimp; infer_instance)
+  dsimp at this
+  refine IsZero.of_iso ?_ (asIso ((t.truncGE (b + 1)).map ((t.truncGEπ a).app X))).symm
+  rwa [← isLE_iff_isZero_truncGE_obj _ _ _ rfl]
+
+instance (X : C) (a b : ℤ) :
+    t.IsLE ((t.truncGELT a b).obj X) (b - 1) := by
+  dsimp; infer_instance
+
+instance (X : C) (a b : ℤ) :
+    t.IsGE ((t.truncLTGE a b).obj X) a := by
+  dsimp; infer_instance
+
+lemma isIso_truncGE_map_truncGEπ_app (a b : ℤ) (h : b ≤ a) (X : C) :
+    IsIso ((t.truncGE a).map ((t.truncGEπ b).app X)) :=
+  t.isIso₂_truncGE_map_of_isLE _ (t.triangleLTGE_distinguished b X)
+    (a - 1) a (by lia) (t.isLE_truncLT_obj _ _ _ (by simpa))
+
+lemma isIso_truncLT_map_truncLTι_app (a b : ℤ) (h : a ≤ b) (X : C) :
+    IsIso ((t.truncLT a).map ((t.truncLTι b).app X)) :=
+  t.isIso₁_truncLT_map_of_isGE _ (t.triangleLTGE_distinguished b X) a
+    (t.isGE_of_ge ((t.truncGE b).obj X) a b (by lia))
+
+instance (X : C) (n : ℤ) : IsIso ((t.truncLT n).map ((t.truncLTι n).app X)) :=
+  isIso_truncLT_map_truncLTι_app t _ _ (by rfl) X
+
+instance (X : C) (n : ℤ) : IsIso ((t.truncGE n).map ((t.truncGEπ n).app X)) :=
+  t.isIso_truncGE_map_truncGEπ_app _ _ (by rfl) _
+
+instance (a b : ℤ) (X : C) :
+    IsIso ((t.truncLTι b).app ((t.truncGE a).obj ((t.truncLT b).obj X))) := by
+  rw [← t.isLE_iff_isIso_truncLTι_app (b - 1) b (by lia)]
+  infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The natural transformation `t.truncGELT a b ⟶ t.truncLTGE a b`
+(which is an isomorphism, see `truncGELTIsoLTGE`.) -/
+noncomputable def truncGELTToLTGE (a b : ℤ) :
+    t.truncGELT a b ⟶ t.truncLTGE a b where
+  app X := t.liftTruncLT (t.descTruncGE
+    ((t.truncLTι b).app X ≫ (t.truncGEπ a).app X) a) (b - 1) b (by lia)
+  naturality _ _ _ :=
+    t.to_truncLT_obj_ext (by dsimp; exact t.from_truncGE_obj_ext (by simp))
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma truncGELTToLTGE_app_pentagon (a b : ℤ) (X : C) :
+    (t.truncGEπ a).app _ ≫ (t.truncGELTToLTGE a b).app X ≫ (t.truncLTι b).app _ =
+      (t.truncLTι b).app X ≫ (t.truncGEπ a).app X := by
+  simp [truncGELTToLTGE]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma truncGELTToLTGE_app_pentagon_uniqueness {a b : ℤ} {X : C}
+    (φ : (t.truncGELT a b).obj X ⟶ (t.truncLTGE a b).obj X)
+    (hφ : (t.truncGEπ a).app _ ≫ φ ≫ (t.truncLTι b).app _ =
+      (t.truncLTι b).app X ≫ (t.truncGEπ a).app X) :
+    (t.truncGELTToLTGE a b).app X = φ :=
+  t.to_truncLT_obj_ext (by dsimp; exact t.from_truncGE_obj_ext (by cat_disch))
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma truncLT_map_truncGE_map_truncLTι_app_fac (a b : ℤ) (X : C) :
+    (t.truncLTι b).app ((t.truncGE a).obj ((t.truncLT b).obj X)) ≫
+        (t.truncGELTToLTGE a b).app X =
+    (t.truncLT b).map ((t.truncGE a).map ((t.truncLTι b).app X)) := by
+  rw [← cancel_epi (inv ((t.truncLTι b).app ((t.truncGE a).obj ((t.truncLT b).obj X)))),
+    IsIso.inv_hom_id_assoc]
+  exact t.truncGELTToLTGE_app_pentagon_uniqueness _ (by simp)
+
+/-- The connecting homomorphism
+`(t.truncGELT a b).obj X ⟶ ((t.truncLT a).obj X)⟦1⟧`,
+as a natural transformation. -/
+@[expose, simps!]
+noncomputable def truncGELTδLT (a b : ℤ) :
+    t.truncGELT a b ⟶ t.truncLT a ⋙ shiftFunctor C (1 : ℤ) :=
+  Functor.whiskerLeft (t.truncLT b) (t.truncGEδLT a) ≫
+    Functor.whiskerRight (t.truncLTι b) (t.truncLT a ⋙ shiftFunctor C (1 : ℤ))
+
+/-- The functorial (distinguished) triangle
+`(t.truncLT a).obj X ⟶ (t.truncLT b).obj X ⟶ (t.truncGELT a b).obj X ⟶ ...`
+when `a ≤ b`. -/
+@[expose, simps!]
+noncomputable def triangleLTLTGELT (a b : ℤ) (h : a ≤ b) : C ⥤ Triangle C :=
+  Triangle.functorMk (t.natTransTruncLTOfLE a b h)
+    (Functor.whiskerLeft (t.truncLT b) (t.truncGEπ a)) (t.truncGELTδLT a b)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma triangleLTLTGELT_distinguished (a b : ℤ) (h : a ≤ b) (X : C) :
+    (t.triangleLTLTGELT a b h).obj X ∈ distTriang C := by
+  have := t.isIso_truncLT_map_truncLTι_app a b h X
+  refine isomorphic_distinguished _ (t.triangleLTGE_distinguished a ((t.truncLT b).obj X)) _ ?_
+  refine Triangle.isoMk _ _ ((asIso ((t.truncLT a).map ((t.truncLTι b).app X))).symm)
+    (Iso.refl _) (Iso.refl _) ?_ (by simp) (by simp)
+  dsimp
+  simp only [Category.comp_id, IsIso.eq_inv_comp]
+  exact t.to_truncLT_obj_ext (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
+instance (a b : ℤ) : IsIso (t.truncGELTToLTGE a b) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro X
+  by_cases h : a ≤ b
+  · let u₁₂ := (t.natTransTruncLTOfLE a b h).app X
+    let u₂₃ : (t.truncLT b).obj X ⟶ X := (t.truncLTι b).app X
+    let u₁₃ : _ ⟶ X := (t.truncLTι a).app X
+    have eq : u₁₂ ≫ u₂₃ = u₁₃ := by simp [u₁₂, u₂₃, u₁₃]
+    have H := someOctahedron eq (t.triangleLTLTGELT_distinguished a b h X)
+      (t.triangleLTGE_distinguished b X) (t.triangleLTGE_distinguished a X)
+    let m₁ : (t.truncGELT a b).obj X ⟶  _ := H.m₁
+    have : IsIso ((t.truncLT b).map H.m₁) :=
+      t.isIso₁_truncLT_map_of_isGE _ H.mem b (by dsimp; infer_instance)
+    have eq' : t.liftTruncLT m₁ (b - 1) b (by lia) = (t.truncGELTToLTGE a b).app X :=
+      t.to_truncLT_obj_ext
+        (by dsimp; exact t.from_truncGE_obj_ext (by simpa using H.comm₁))
+    rw [← eq']
+    have fac : (t.truncLTι b).app ((t.truncGE a).obj ((t.truncLT b).obj X)) ≫
+        t.liftTruncLT m₁ (b - 1) b (by lia) = (t.truncLT b).map m₁ :=
+      t.to_truncLT_obj_ext (by simp [truncGELT])
+    exact IsIso.of_isIso_fac_left fac
+  · simp at h
+    refine ⟨0, ?_, ?_⟩
+    all_goals exact IsZero.eq_of_src (t.isZero _ (b-1) a (by lia)) _ _
+
+set_option backward.isDefEq.respectTransparency false in
+instance (a b : ℤ) (X : C) :
+    IsIso ((t.truncLT b).map ((t.truncGE a).map ((t.truncLTι b).app X))) := by
+  rw [← t.truncLT_map_truncGE_map_truncLTι_app_fac a b X]
+  infer_instance
+
+/-- The natural transformation `t.truncGELT a b ≅ t.truncLTGE a b`. -/
+noncomputable def truncGELTIsoLTGE (a b : ℤ) : t.truncGELT a b ≅ t.truncLTGE a b :=
+  asIso (t.truncGELTToLTGE a b)
 
 end
 

@@ -139,7 +139,6 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   simp [inv_apply, Perm.inv_def,
     ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding]
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : AnalyticOn 𝕜 f s)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
