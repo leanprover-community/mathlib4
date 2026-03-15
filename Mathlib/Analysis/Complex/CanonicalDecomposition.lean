@@ -121,7 +121,8 @@ theorem meromorphicNFOn_canonicalFactor (h : w ∈ ball 0 R) :
 /--
 The canonical factor `CanonicalFactor R w` has no zeros inside the ball of radius `R`.
 -/
-theorem nonzero_canonicalFactor {z : ℂ} (hw : w ∈ ball 0 R) (h₁z : z ∈ ball 0 R) (h₂z : z ≠ w) :
+theorem canonicalFactor_ne_zero {z : ℂ} (hw : w ∈ ball 0 R) (h₁z : z ∈ closedBall 0 R)
+    (h₂z : z ≠ w) :
     CanonicalFactor R w z ≠ 0 := by
   have h_denom_ne_zero : R * (z - w) ≠ 0 := by
     apply mul_ne_zero _ (sub_ne_zero.2 h₂z)
@@ -130,11 +131,13 @@ theorem nonzero_canonicalFactor {z : ℂ} (hw : w ∈ ball 0 R) (h₁z : z ∈ b
     subst hCon
     simp_all
   have h_num_ne_zero : R^2 - (conj w) * z ≠ 0 := by
+    by_cases hz : z = 0
+    · simp_all
     by_contra h
     rw [sub_eq_zero] at h
     have : ‖(starRingEnd ℂ) w * z‖ < R ^ 2 := by
-      simpa [Complex.norm_mul, RCLike.norm_conj, pow_two] using
-        mul_lt_mul' (mem_ball_zero_iff.mp hw).le h₁z dist_nonneg (pos_of_mem_ball hw)
+      simpa [pow_two] using mul_lt_mul (mem_ball_zero_iff.mp hw) (mem_closedBall_zero_iff.mp h₁z)
+        (norm_pos_iff.mpr hz) (pos_of_mem_ball hw).le
     simp [← h] at this
   exact div_ne_zero h_num_ne_zero h_denom_ne_zero
 
