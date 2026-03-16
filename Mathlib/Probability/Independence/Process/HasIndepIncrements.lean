@@ -114,8 +114,8 @@ protected lemma HasIndepIncrements.map {R F : Type*} [Semiring R] [SeminormedAdd
     HasIndepIncrements (fun t ω ↦ L (X t ω)) P :=
   hX.map' L.measurable
 
-protected lemma HasIndepIncrements.smul {R : Type*} [MeasurableSpace R] [AddGroup E]
-    [DistribSMul R E] [MeasurableConstSMul R E] (hX : HasIndepIncrements X P) (c : R) :
+protected lemma HasIndepIncrements.smul {R : Type*} [AddGroup E] [DistribSMul R E]
+    [MeasurableConstSMul R E] (hX : HasIndepIncrements X P) (c : R) :
     HasIndepIncrements (fun t ω ↦ c • (X t ω)) P :=
   hX.map' (f := DistribSMul.toAddMonoidHom E c) (MeasurableConstSMul.measurable_const_smul c)
 
