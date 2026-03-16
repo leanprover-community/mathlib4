@@ -10,6 +10,9 @@ This script works by using a "side package" relative to the location of this scr
 
 `runSkimmer.sh --init` will create this side package, as long as it is local to the target package (e.g. at `packageToRefactor/scripts/runSkimmer.sh`) and all of the variables have been configured to match the refactor targets.
 
+Report issues to Thomas Murrills, on Zulip, either by DM or on the following channel:
+https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/automatically.20apply.20code.20actions
+
 BASH_MODULE_DOC
 
 # ---------------------------------------------
@@ -39,6 +42,7 @@ tgts=("Mathlib")
 # --------------------
 
 echo "Note: the functionality provided by this script is experimental and subject to change. This script will become unnecessary in the future."
+echo "Please report any issues—especially incomprehensible ones—to Thomas Murrills on Zulip."
 
 usage() {
   cat <<EOF
