@@ -162,27 +162,25 @@ lemma IsStable.isStable_locally (hp : IsStable 𝓕 p) :
 lemma locally_and (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
     Locally (fun Y ↦ p Y ∧ q Y) 𝓕 X P ↔ Locally p 𝓕 X P ∧ Locally q 𝓕 X P := by
   refine ⟨Locally.of_and, fun ⟨hpX, hqX⟩ ↦
-    ⟨_, hpX.IsLocalizingSequence.min hqX.IsLocalizingSequence, fun n ↦ ⟨?_, ?_⟩⟩⟩
-  · convert hp _ (hpX.stoppedProcess n) _ <| hqX.IsLocalizingSequence.isStoppingTime n using 1
-    ext i ω
-    rw [stoppedProcess_indicator_comm]
-    simp_rw [Pi.inf_apply, lt_inf_iff, inf_comm (hpX.localSeq n)]
-    rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm,
-      (_ : {ω | ⊥ < hpX.localSeq n ω ∧ ⊥ < hqX.localSeq n ω}
-        = {ω | ⊥ < hpX.localSeq n ω} ∩ {ω | ⊥ < hqX.localSeq n ω}), Set.inter_comm]
-    · simp_rw [← Set.indicator_indicator]
-      rfl
-    · rfl
-  · convert hq _ (hqX.stoppedProcess n) _ <| hpX.IsLocalizingSequence.isStoppingTime n using 1
-    ext i ω
-    rw [stoppedProcess_indicator_comm]
-    simp_rw [Pi.inf_apply, lt_inf_iff]
-    rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm,
-      (_ : {ω | ⊥ < hpX.localSeq n ω ∧ ⊥ < hqX.localSeq n ω}
-        = {ω | ⊥ < hpX.localSeq n ω} ∩ {ω | ⊥ < hqX.localSeq n ω})]
-    · simp_rw [← Set.indicator_indicator]
-      rfl
-    · rfl
+    ⟨_, hpX.IsLocalizingSequence.min hqX.IsLocalizingSequence, fun n ↦ ?_⟩⟩
+  suffices ∀ (p q : (ι → Ω → E) → Prop) (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q)
+      (hpX : Locally p 𝓕 X P) (hqX : Locally q 𝓕 X P),
+      p (stoppedProcess (fun i ↦ {ω | ⊥ < (hpX.localSeq ⊓ hqX.localSeq) n ω}.indicator (X i))
+      ((hpX.localSeq ⊓ hqX.localSeq) n)) by
+    refine ⟨this p q hp hq hpX hqX, ?_⟩
+    simp_rw [inf_comm hpX.localSeq]
+    exact this q p hq hp hqX hpX
+  intro p q hp hq hpX hqX
+  convert hp _ (hpX.stoppedProcess n) _ <| hqX.IsLocalizingSequence.isStoppingTime n using 1
+  ext i ω
+  rw [stoppedProcess_indicator_comm]
+  simp_rw [Pi.inf_apply, lt_inf_iff, inf_comm (hpX.localSeq n)]
+  rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm,
+    (_ : {ω | ⊥ < hpX.localSeq n ω ∧ ⊥ < hqX.localSeq n ω}
+      = {ω | ⊥ < hpX.localSeq n ω} ∩ {ω | ⊥ < hqX.localSeq n ω}), Set.inter_comm]
+  · simp_rw [← Set.indicator_indicator]
+    rfl
+  · rfl
 
 end LinearOrder
 
