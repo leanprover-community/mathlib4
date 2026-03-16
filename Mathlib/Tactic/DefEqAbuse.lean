@@ -300,6 +300,11 @@ def collectCandidates (env : Environment) (roots : Array Name) : Array Name := I
         candidates := candidates.push name
   return candidates
 
+/-- Apply `@[implicit_reducible]` marks to the given constants. -/
+private def markImplicitReducible {m : Type → Type} [Monad m] [MonadEnv m]
+    (names : Array Name) : m Unit := do
+  for name in names do setReducibilityStatus name .implicitReducible
+
 /-- Temporarily mark constants as `@[implicit_reducible]`, run an action, then restore all state.
 
 Both the environment (which carries the reducibility marks) and the full tactic state (metavar
@@ -309,8 +314,7 @@ def withTempImplicitReducible {α : Type} (names : Array Name) (k : TacticM α) 
   let s ← saveState
   let savedEnv ← getEnv
   try
-    for name in names do
-      setReducibilityStatus name .implicitReducible
+    markImplicitReducible names
     k
   finally
     setEnv savedEnv
@@ -324,8 +328,7 @@ def withTempImplicitReducibleCmd {α : Type} (names : Array Name)
     (k : CommandElabM α) : CommandElabM α := do
   let saved ← get
   try
-    for name in names do
-      setReducibilityStatus name .implicitReducible
+    markImplicitReducible names
     k
   finally
     set saved
@@ -442,9 +445,9 @@ def findLeakyInstances (instStrings : Std.HashSet String) : MetaM (Array (Name �
     if let some info := env.find? name then
       let isPropInst ← forallTelescopeReducing info.type fun _ t => isProp t
       if isPropInst then continue
-    -- Run checkInstance, skipping on any error
+    -- Run checkInstance. Re-throw internal exceptions (panics, OOM, etc.); skip all others.
     let result ← try Mathlib.Elab.FastInstance.checkInstance name
-      catch _ => continue
+      catch | .internal id ref => throw (.internal id ref) | _ => continue
     -- Only report instances confirmed to have leaky binder types, not "cannot be verified" ones.
     if let .leaky _ := result then
       leaky := leaky.push (name, result.toMessageData name)
