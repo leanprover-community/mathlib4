@@ -937,7 +937,7 @@ def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
   right_inv _ := by simp
   map_mul' _ _  := by simp [equivIntOfUnique]
 
-/-- A free group over one generator is an instance of cyclic group. -/
+/-- A free group over one generator is an instance of a cyclic group. -/
 instance [Unique α] : IsCyclic (FreeGroup α) :=
   ⟨of default, fun x => ⟨equivIntOfUnique x, equivIntOfUnique.left_inv x⟩⟩
 
@@ -953,6 +953,11 @@ def _root_.FreeAddGroup.addEquivIntOfUnique [Unique α] : FreeAddGroup α ≃+ �
     | add x y hx hy => simp [add_zsmul, hx, hy]
   right_inv x := by induction x <;> simp
   map_add' x y := by simp
+
+/-- A free additive group over one generator is an instance of a cyclic group. -/
+instance [Unique α] : IsAddCyclic (FreeAddGroup α) :=
+  ⟨FreeAddGroup.of default, fun x =>
+  ⟨_root_.FreeAddGroup.addEquivIntOfUnique x, _root_.FreeAddGroup.addEquivIntOfUnique.left_inv x⟩⟩
 
 section Category
 
