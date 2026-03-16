@@ -60,32 +60,32 @@ We now construct as morphisms various inclusions of closed sets.
 -- This is tedious, but necessary because we decided not to allow Prop as morphisms in a category...
 /-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of closed sets.
 -/
-def infLELeft (U V : Closeds X) : U ⊓ V ⟶ U :=
+abbrev infLELeft (U V : Closeds X) : U ⊓ V ⟶ U :=
   inf_le_left.hom
 
 /-- The inclusion `U ⊓ V ⟶ V` as a morphism in the category of closed sets.
 -/
-def infLERight (U V : Closeds X) : U ⊓ V ⟶ V :=
+abbrev infLERight (U V : Closeds X) : U ⊓ V ⟶ V :=
   inf_le_right.hom
 
 /-- The inclusion `U i ⟶ iSup U` as a morphism in the category of closed sets.
 -/
-def leSupr {ι : Type*} (U : ι → Closeds X) (i : ι) : U i ⟶ iSup U :=
+abbrev leSupr {ι : Type*} (U : ι → Closeds X) (i : ι) : U i ⟶ iSup U :=
   (le_iSup U i).hom
 
 /-- The inclusion `iInf U ⟶ U i` as a morphism in the category of closed sets.
 -/
-def leInfr {ι : Type*} (U : ι → Closeds X) (i : ι) : iInf U ⟶ U i :=
+abbrev leInfr {ι : Type*} (U : ι → Closeds X) (i : ι) : iInf U ⟶ U i :=
   (iInf_le U i).hom
 
 /-- The inclusion `⊥ ⟶ U` as a morphism in the category of closed sets.
 -/
-def botLE (U : Closeds X) : ⊥ ⟶ U :=
+abbrev botLE (U : Closeds X) : ⊥ ⟶ U :=
   bot_le.hom
 
 /-- The inclusion `U ⟶ ⊤` as a morphism in the category of closed sets.
 -/
-def leTop (U : Closeds X) : U ⟶ ⊤ :=
+abbrev leTop (U : Closeds X) : U ⟶ ⊤ :=
   le_top.hom
 
 -- We do not mark this as a simp lemma because it breaks open `x`.
