@@ -48,7 +48,7 @@ def error {α : Type _} (trace : Array Name) (m : MessageData) : MetaM α :=
 
 We don't put this in a more generic location (e.g. `Mathlib.Lean.Meta.Basic`) because it will be
 moved to Lean 4 core. -/
-def withDisabledInstance {α : Type} (instName : Name) (x : MetaM α) : MetaM α := do
+def withDisabledInstance {α : Type _} (instName : Name) (x : MetaM α) : MetaM α := do
   if !(instanceExtension.getState (← getEnv)).instanceNames.contains instName then
     return ← x
   withoutModifyingEnv do
@@ -103,7 +103,7 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
                 instances transparency (e.g. in `grind`). \
                 Consider redefining it with `fast_instance%` or `inferInstanceAs%`.\n\
                 To suppress: `set_option Elab.fast_instance.warnLeakySubInstances false`"
-        catch _ => pure ()
+        catch e => trace[Elab.fast_instance] "leakiness check failed: {e.toMessageData}"
       trace[Elab.fast_instance] "replaced with synthesized instance"
       return new
     else
