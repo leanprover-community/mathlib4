@@ -110,27 +110,14 @@ namespace MeasureTheory.LocallyIntegrable
 
 open Asymptotics Filter
 
-variable {F' : Type*} [NormedAddCommGroup F']
-
-theorem exists_isCompact {f : E → F} {g : E → F'} (h : f =O[cocompact E] g) :
-    ∃ s c, 0 ≤ c ∧ IsCompact s ∧ ∀ y ∈ sᶜ, ‖f y‖ ≤ c * ‖g y‖ := by
-  rw [isBigO_iff'] at h
-  obtain ⟨c, hc, hc'⟩ := h
-  obtain ⟨s, hs, hc'⟩ := hc'.exists_mem
-  rw [Filter.mem_cocompact] at hs
-  obtain ⟨t, ht₁, ht₂⟩ := hs
-  use t, c, hc.le, ht₁
-  intro x hx
-  exact hc' x (ht₂ hx)
-
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
-  (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
+  {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
 set_option backward.privateInPublic true in
-theorem foo {f : E → F} {k : ℕ} (hf : LocallyIntegrable f μ)
+theorem integrable_schwartzMap_smul {f : E → F} {k : ℕ} (hf : LocallyIntegrable f μ)
     (hf' : f =O[cocompact E] (‖·‖ ^ k)) (g : 𝓢(E, ℂ)) :
     Integrable (fun x ↦ g x • f x) μ := by
-  obtain ⟨s, c, _hc, hs₁, hs₂⟩ := exists_isCompact hf'
+  obtain ⟨c, _hc, s, hs₁, hs₂⟩ := isBigO_cocompact_iff.mp hf'
   simp only [Set.mem_compl_iff, norm_pow, norm_norm] at hs₂
   have h₁ : IntegrableOn (fun x ↦ g x • f x) sᶜ μ := by
     have h_int := ((g.integrable_pow_mul μ k).integrableOn (s := sᶜ)).smul c
@@ -154,89 +141,82 @@ set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 def toTemperedDistribution {f : E → F} {k : ℕ} (hf : LocallyIntegrable f μ)
     (hf' : f =O[Filter.cocompact E] (‖·‖ ^ k)) : 𝓢'(E, F) :=
-  toPointwiseConvergenceCLM _ _ _ _ <| SchwartzMap.mkCLMtoNormedSpace
-    (fun g ↦ ∫ x, g x • f x ∂μ) (by
-  intro g₁ g₂
-  simp only [SchwartzMap.add_apply, add_smul]
-  apply integral_add (foo μ hf hf' g₁) (foo μ hf hf' g₂))
-    (by
-  intro c g
-  simp only [SchwartzMap.smul_apply, smul_assoc, RingHom.id_apply]
-  apply integral_smul)
-    (by
-  obtain ⟨s, c, hc, hs₁, hs₂⟩ := exists_isCompact hf'
-  simp only [Set.mem_compl_iff, norm_pow, norm_norm] at hs₂
-  set C₁ := ∫ (a : E) in s, ‖f a‖ ∂μ
-  have hC₁ : 0 ≤ C₁ := by positivity
-  set C₂ := c * 2 ^ μ.integrablePower * ∫ (x : E), ((1 + ‖x‖) ^ μ.integrablePower)⁻¹ ∂μ
-  have hC₂ : 0 ≤ C₂ := by positivity
-  use {(0,0), (k + μ.integrablePower, 0)}, 2 * (C₁ + C₂), by positivity
-  intro g
-  set k₁ := g.seminorm ℂ 0 0
-  set k₂ := g.seminorm ℂ (k + μ.integrablePower) 0
-  have hs : ‖∫ x in s, g x • f x ∂μ‖ ≤ C₁ * k₁ := calc
-    _ ≤ ∫ x in s, ‖g x • f x‖ ∂μ := by
-      grw [MeasureTheory.norm_integral_le_integral_norm]
-    _ ≤ ∫ x in s, k₁ * ‖f x‖ ∂μ := by
-      simp_rw [norm_smul]
-      have hf : IntegrableOn (fun x ↦ ‖f x‖) s μ := by
-        apply MeasureTheory.Integrable.norm
-        refine integrableOn_isCompact hf hs₁
-      apply MeasureTheory.setIntegral_mono_on
-      · refine IntegrableOn.continuousOn_mul (by fun_prop) hf hs₁
-      · apply MeasureTheory.Integrable.const_mul hf
-      · exact hs₁.measurableSet
-      intro x hx
-      grw [norm_le_seminorm ℂ g]
-    _ ≤ _ := by
-      rw [integral_const_mul, mul_comm]
-  have hsc : ‖∫ (x : E) in sᶜ, g x • f x ∂μ‖ ≤ C₂ * (k₁ + k₂) := calc
-    _ ≤ ∫ x in sᶜ, ‖g x • f x‖ ∂μ := by
-      grw [MeasureTheory.norm_integral_le_integral_norm]
-    _ ≤ ∫ x in sᶜ, c * (‖x‖ ^ k * ‖g x‖) ∂μ := by
-      apply setIntegral_mono_on
-      · exact (foo μ hf hf' g).integrableOn.norm
-      · apply (integrable_pow_mul μ g k).integrableOn.const_mul
-      · exact hs₁.measurableSet.compl
-      intro x hx
-      simp_rw [norm_smul]
-      grw [hs₂ x hx]
-      apply le_of_eq
-      ring
-    _ ≤ c * ∫ x, ‖x‖ ^ k * ‖g x‖ ∂μ := by
-      simp_rw [integral_const_mul]
-      gcongr
-      · filter_upwards with
-        positivity
-      · exact integrable_pow_mul μ g k
-      · exact restrict_le_self
-    _ ≤ _ := by
-      have := integral_pow_mul_iteratedFDeriv_le ℂ μ g k 0
-      simp only [norm_iteratedFDeriv_zero, Real.rpow_neg_natCast, zpow_neg, zpow_natCast] at this
-      grw [this]
-      apply le_of_eq
-      ring
-  calc
-    _ = ‖∫ (x : E), g x • f x ∂μ‖ := rfl
-    _ ≤ ‖∫ x in s, g x • f x ∂μ‖ + ‖∫ x in sᶜ, g x • f x ∂μ‖ := by
-      rw [← MeasureTheory.integral_add_compl₀ (s := s)]
-      · apply norm_add_le
-      · exact IsCompact.nullMeasurableSet hs₁
-      · exact foo μ hf hf' g
-    _ ≤ C₁ * k₁ + C₂ * (k₁ + k₂) := by
-      grw [hs, hsc]
-    _ = (C₁ + C₂) * k₁ + C₂ * k₂ := by ring
-    _ ≤ (C₁ + C₂) * k₁ + (C₁ + C₂) * k₂ := by
-      gcongr
-      grw [← hC₁]
-      simp
-    _ = (C₁ + C₂) * (k₁ + k₂) := by ring
-    _ ≤ (C₁ + C₂) * (2 * max k₁ k₂) := by
-      gcongr
-      grind
-    _ = 2 * (C₁ + C₂) * (max k₁ k₂) := by ring
-    _ = _ := by
-      simp [k₁, k₂])
+  toPointwiseConvergenceCLM _ _ _ _ <|
+    SchwartzMap.mkCLMtoNormedSpace (fun g ↦ ∫ x, g x • f x ∂μ) ?_ ?_ ?_
+  where finally
+  · intro g₁ g₂
+    simp only [SchwartzMap.add_apply, add_smul]
+    apply integral_add (hf.integrable_schwartzMap_smul hf' g₁)
+      (hf.integrable_schwartzMap_smul hf' g₂)
+  · intro c g
+    simp only [SchwartzMap.smul_apply, smul_assoc, RingHom.id_apply]
+    apply integral_smul
+  · obtain ⟨c, _hc, s, hs₁, hs₂⟩ := isBigO_cocompact_iff.mp hf'
+    simp only [Set.mem_compl_iff, norm_pow, norm_norm] at hs₂
+    set C₁ := ∫ (a : E) in s, ‖f a‖ ∂μ
+    have hC₁ : 0 ≤ C₁ := by positivity
+    set C₂ := c * 2 ^ μ.integrablePower * ∫ (x : E), ((1 + ‖x‖) ^ μ.integrablePower)⁻¹ ∂μ
+    use {(0,0), (k + μ.integrablePower, 0)}, 2 * (C₁ + C₂), by positivity
+    intro g
+    set k₁ := g.seminorm ℂ 0 0
+    set k₂ := g.seminorm ℂ (k + μ.integrablePower) 0
+    have hs : ‖∫ x in s, g x • f x ∂μ‖ ≤ C₁ * k₁ := calc
+      _ ≤ ∫ x in s, ‖g x • f x‖ ∂μ := by
+        grw [MeasureTheory.norm_integral_le_integral_norm]
+      _ ≤ ∫ x in s, k₁ * ‖f x‖ ∂μ := by
+        simp_rw [norm_smul]
+        have hf : IntegrableOn (‖f ·‖) s μ :=
+          MeasureTheory.Integrable.norm (hf.integrableOn_isCompact hs₁)
+        apply MeasureTheory.setIntegral_mono_on (hf.continuousOn_mul (by fun_prop) hs₁)
+          (hf.const_mul _) hs₁.measurableSet
+        intro x _hx
+        grw [norm_le_seminorm ℂ g]
+      _ ≤ _ := by
+        rw [integral_const_mul, mul_comm]
+    have hsc : ‖∫ (x : E) in sᶜ, g x • f x ∂μ‖ ≤ C₂ * (k₁ + k₂) := calc
+      _ ≤ ∫ x in sᶜ, ‖g x • f x‖ ∂μ := by
+        grw [MeasureTheory.norm_integral_le_integral_norm]
+      _ ≤ ∫ x in sᶜ, c * (‖x‖ ^ k * ‖g x‖) ∂μ := by
+        apply setIntegral_mono_on (hf.integrable_schwartzMap_smul hf' g).integrableOn.norm
+          ((integrable_pow_mul μ g k).integrableOn.const_mul _) hs₁.measurableSet.compl
+        intro x hx
+        simp_rw [norm_smul]
+        grw [hs₂ x hx]
+        apply le_of_eq
+        ring
+      _ ≤ c * ∫ x, ‖x‖ ^ k * ‖g x‖ ∂μ := by
+        simp_rw [integral_const_mul]
+        gcongr
+        · filter_upwards with
+          positivity
+        · exact integrable_pow_mul μ g k
+        · exact restrict_le_self
+      _ ≤ _ := by
+        have := integral_pow_mul_iteratedFDeriv_le ℂ μ g k 0
+        simp only [norm_iteratedFDeriv_zero, Real.rpow_neg_natCast, zpow_neg, zpow_natCast] at this
+        grw [this]
+        apply le_of_eq
+        ring
+    calc
+      _ = ‖∫ (x : E), g x • f x ∂μ‖ := rfl
+      _ ≤ ‖∫ x in s, g x • f x ∂μ‖ + ‖∫ x in sᶜ, g x • f x ∂μ‖ := by
+        rw [← MeasureTheory.integral_add_compl₀ hs₁.nullMeasurableSet
+          (hf.integrable_schwartzMap_smul hf' g)]
+        apply norm_add_le
+      _ ≤ C₁ * k₁ + C₂ * (k₁ + k₂) := by
+        grw [hs, hsc]
+      _ = (C₁ + C₂) * k₁ + C₂ * k₂ := by ring
+      _ ≤ (C₁ + C₂) * k₁ + (C₁ + C₂) * k₂ := by
+        gcongr
+        grw [← hC₁]
+        simp
+      _ = (C₁ + C₂) * (k₁ + k₂) := by ring
+      _ ≤ (C₁ + C₂) * (2 * max k₁ k₂) := by
+        gcongr
+        grind
+      _ = 2 * (C₁ + C₂) * (max k₁ k₂) := by ring
+      _ = _ := by
+        simp [k₁, k₂]
 
 #exit
 
