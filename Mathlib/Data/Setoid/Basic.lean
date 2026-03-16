@@ -115,7 +115,8 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     fun x y hxy ↦ Prod.ext (by simpa [Quotient.eq] using hxy.1) (by simpa [Quotient.eq] using hxy.2)
   left_inv q := by
     rcases q with ⟨qa, qb⟩
-    induction qa, qb using Quotient.inductionOn₂'; rfl
+    induction qa, qb using Quotient.inductionOn₂'
+    rfl
   right_inv q := by induction q using Quotient.inductionOn'; rfl
 
 /-- A bijection between an indexed product of quotients and the quotient by the product of the
