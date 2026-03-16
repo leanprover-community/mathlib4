@@ -12,24 +12,18 @@ public import Mathlib.LinearAlgebra.RootSystem.Irreducible
 /-!
 # Lie ideals and invariant root submodules
 
-This file develops the correspondence between Lie ideals of a Killing Lie algebra and invariant
-root submodules of the associated root system. The forward map sends a Lie ideal to the span of
-roots whose root space is contained in the ideal; this span is invariant under Weyl reflections.
-
-The backward map (`invtSubmoduleToLieIdeal`, currently in `Weights.IsSimple`) and the
-order isomorphism will be added in follow-up work.
+We construct the forward map `lieIdealToInvtRootSubmodule` from Lie ideals of a Killing Lie
+algebra to invariant root submodules of the associated root system.
 
 ## Main definitions
-
 * `LieAlgebra.IsKilling.lieIdealRootSet`: the set of roots whose root space is contained in a
   given Lie ideal.
-* `LieAlgebra.IsKilling.lieIdealToInvtRootSubmodule`: maps a Lie ideal to its corresponding
-  invariant root submodule.
+* `LieAlgebra.IsKilling.lieIdealToSubmodule`: the submodule of the dual spanned by
+  `lieIdealRootSet`.
 
 ## Main results
-
-* `LieAlgebra.IsKilling.lieIdealRootSet_reflectionPerm_invariant`: the root set of a Lie ideal
-  is closed under Weyl reflections.
+* `LieAlgebra.IsKilling.lieIdealToSubmodule_mem_invtRootSubmodule`: `lieIdealToSubmodule` is an
+  invariant submodule.
 
 -/
 
