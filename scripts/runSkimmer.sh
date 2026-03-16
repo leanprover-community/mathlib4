@@ -130,6 +130,7 @@ else
       echo "Please exclude the \`--no-update\` flag to create one."
       exit 1
     fi
+    echo "Note: getting the cache or building prior to \`runSkimmer.sh\` should speed things up."
     for tgt in "${tgts[@]}"; do
       cmd=(lake build "${tgt}:applyCurrentTryThis")
       echo "Running \`${cmd[@]}\`."
