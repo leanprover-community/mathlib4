@@ -262,17 +262,17 @@ def sndₛₗ : (E ×[σ] F) →ₛₗ[σ] F where
 @[simp] lemma snd_apply (x : E ×[σ] F) :
     sndₛₗ σ E F x = x.snd := rfl
 
-@[simp, norm_cast] lemma coe_fst : ⇑(fstₛₗ σ E F) = fun x => x.fst := rfl
+@[simp, norm_cast] lemma coe_fstₛₗ : ⇑(fstₛₗ σ E F) = fun x => x.fst := rfl
 
-@[simp, norm_cast] lemma coe_snd : ⇑(sndₛₗ σ E F) = fun x => x.snd := rfl
+@[simp, norm_cast] lemma coe_sndₛₗ : ⇑(sndₛₗ σ E F) = fun x => x.snd := rfl
 
-theorem fst_surjective : Function.Surjective (fstₛₗ σ E F) :=
+theorem fstₛₗ_surjective : Function.Surjective (fstₛₗ σ E F) :=
   fun x => ⟨SemilinearProdModule.mk x 0, rfl⟩
 
-theorem snd_surjective : Function.Surjective (sndₛₗ σ E F) :=
+theorem sndₛₗ_surjective : Function.Surjective (sndₛₗ σ E F) :=
   fun x => ⟨SemilinearProdModule.mk 0 x, rfl⟩
 
-section prod
+section prodₛₗ
 
 variable {E F}
 
@@ -292,9 +292,9 @@ def prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) : M →ₗ[R] E ×[σ
 @[simp] lemma snd_prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
     (sndₛₗ σ E F).comp (prodₛₗ σ f g) = g := by ext x; rfl
 
-end prod
+end prodₛₗ
 
-section coprod
+section coprodₛₗ
 
 variable {M : Type*} [AddCommGroup M] [Module S M]
 
@@ -376,7 +376,7 @@ theorem coprodₛₗ_apply (f : E →ₛₗ[σ] F) (g : F →ₗ[S] F) (x : E ×
 --     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) :=
 --   (coprodEquiv ℕ).symm.injective.eq_iff.symm.trans Prod.ext_iff
 
-end coprod
+end coprodₛₗ
 
 section Graph
 
