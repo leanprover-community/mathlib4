@@ -168,6 +168,33 @@ instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) where
           Functor.coconeTypesEquiv_symm_apply_ι,
           dsimp% hc.fac_apply (coconeTypes s) j x, hm]) }⟩⟩⟩
 
+
+section
+
+variable (I J : Type u)
+
+/-- A binary coproduct of free sheaves of modules is the free sheaf
+of modules on the sum type. -/
+noncomputable def freeSumIso : free I ⨿ free J ≅ free (R := R) (I ⊕ J) :=
+  IsColimit.coconePointUniqueUpToIso
+    (coprodIsCoprod (free (R := R) I) (free J))
+    (mapIsColimitOfPreservesOfIsColimit (freeFunctor (R := R)) _ _
+      (Types.binaryCoproductColimit I J))
+
+@[reassoc (attr := simp)]
+lemma inl_freeSumIso_hom :
+    coprod.inl ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inl :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom
+    (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .left)
+
+@[reassoc (attr := simp)]
+lemma inr_freeSumIso_hom :
+    coprod.inr ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inr :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom
+    (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .right)
+
+end
+
 section
 
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
