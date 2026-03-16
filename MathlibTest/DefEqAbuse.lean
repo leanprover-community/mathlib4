@@ -129,19 +129,21 @@ instance mySub₂MyAction {G : Type} [AddCommGroup G] (s : MySub₂ G) :
 def myOp {α : Type} [AddCommGroup α] [MyAction ℕ α] (x : α) : α :=
   -(MyAction.mySmul (R := ℕ) 1 x)
 
--- The warning output contains fvar IDs that vary between runs, so we just check it produces
--- a warning (not info or error).
--- It should produce something like:
-/-
+set_option pp.fvars.anonymous true in
+/--
 warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following synthesis applications fail due to transparency:
-  ❌️ apply @mySub₂MyAction to MyAction ℕ ↥s
-    ❌️ s.toAddSubgroup =?= s.1
-    ❌️ s.toAddSubgroup =?= s.toAddSubmonoid
+  ❌️ apply @mySub₂MyAction to failed to pretty print expression (use 'set_option pp.rawOnError true' for raw representation)
     ❌️ s.toAddSubgroup.1 =?= s.1
-    ❌️ ↑s.toAddSubgroup =?= ↑s.toAddSubmonoid
+    ❌️ (↑s.toAddSubgroup).Mem x =?= (↑s.toAddSubmonoid).Mem x
+---
+info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem,
+but the real issue is likely a leaky instance somewhere.
+set_option allowUnsafeReducibility true
+attribute [implicit_reducible]
+  MySub₂.toAddSubgroup
 -/
-#guard_msgs (drop warning) in
+#guard_msgs in
 #defeq_abuse in
 def testVirtualParent {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) : s :=
   myOp x
