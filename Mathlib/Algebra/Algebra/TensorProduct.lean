@@ -40,7 +40,7 @@ variable (R A M N) in
 def elem_rel : SubMulAction A (M ⊗[R] N) where
   carrier :=  { (a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n) | (a : A) (m: M) (n : N)}
   smul_mem' := by
-    intros a x hx
+    intros a _ hx
     obtain ⟨a', m, n, h⟩ := hx
     use  a',  a • m, n
     simp_rw [←h, smul_sub, ←smul_tmul', sub_left_inj, smul_smul, mul_comm]
@@ -48,7 +48,7 @@ def elem_rel : SubMulAction A (M ⊗[R] N) where
 omit [IsScalarTower R A N] in
 lemma elem_rel_mem (x : (M ⊗[R] N)) : x ∈ (elem_rel R A M N) ↔
     (∃ (a : A) (m : M) (n : N), x = (a • m) ⊗ₜ[R] n - m ⊗ₜ[R] (a • n)) := by
-  simp_rw [← SetLike.mem_coe, ← SubMulAction.mem_carrier, elem_rel, Set.mem_setOf, eq_comm]
+  simp_rw [←SetLike.mem_coe, ←SubMulAction.mem_carrier, elem_rel, Set.mem_setOf, eq_comm]
 
 variable (R A M N) in
 /-- The module of relations in `(M ⊗[R] N)` that have to be divided out to obtain `(M ⊗[A] N)` -/
@@ -65,8 +65,8 @@ def bil_to_mk : M →ₗ[A] N →ₗ[A] (mk R A M N) where
     toFun n := (rels R A M N).mkQ (m⊗ₜn)
     map_add' _ _ := by simp [tmul_add]
     map_smul' a n := by
-      rw [RingHom.id_apply, ←LinearMap.map_smul, ←sub_eq_zero, ← LinearMap.map_sub,smul_tmul',
-        ← LinearMap.mem_ker, Submodule.ker_mkQ, ←neg_mem_iff]
+      rw [RingHom.id_apply, ←LinearMap.map_smul, ←sub_eq_zero, ←LinearMap.map_sub,smul_tmul',
+        ←LinearMap.mem_ker, Submodule.ker_mkQ, ←neg_mem_iff]
       refine Submodule.mem_span_of_mem ?_
       rw [SetLike.mem_coe, elem_rel_mem]
       use a, m, n
@@ -93,9 +93,9 @@ lemma span_in_ker : (rels R A M N) ≤ (mapOfCompatibleSMul' A R M N).ker := by
   simp_rw [LinearMap.le_ker_iff_comp_subtype_eq_zero, Submodule.linearMap_eq_zero_iff_of_eq_span
    (S:=((elem_rel R A M N) : Set (M ⊗[R] N) )) , LinearMap.coe_comp, Submodule.coe_subtype,
    Function.comp_apply, Subtype.forall]
-  intro x hx
+  intro _ hx
   rw [SetLike.mem_coe, elem_rel_mem] at hx
-  obtain ⟨a, m, n, heq⟩ := hx
+  obtain ⟨_, _, _, heq⟩ := hx
   simp [heq, mapOfCompatibleSMul', smul_tmul]
 
 
@@ -117,19 +117,16 @@ def quot_equi_tens :(mk R A M N) ≃ₗ[A] M ⊗[A] N where
   left_inv := by
     rw [Function.leftInverse_iff_comp]
     ext z
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Function.comp_apply, id_eq]
     obtain ⟨y, hy⟩ := Quotient.exists_rep z
-    obtain ⟨S, h⟩ := exists_finset (y)
-    simp_rw [← hy, h, Submodule.Quotient.mk''_eq_mk, ← Submodule.mkQ_apply, map_sum,
-      Submodule.mkQ_apply, ← Submodule.Quotient.mk''_eq_mk]
-    simp only [mk_to_tens_apply, tens_to_mk_apply]
+    obtain ⟨_, h⟩ := exists_finset (y)
+    simp_rw [←hy, h, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Function.comp_apply, id_eq,
+      Submodule.Quotient.mk''_eq_mk, ←Submodule.mkQ_apply, map_sum, Submodule.mkQ_apply,
+      ←Submodule.Quotient.mk''_eq_mk, mk_to_tens_apply, tens_to_mk_apply]
   right_inv := by
     rw [Function.rightInverse_iff_comp]
     ext z
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Function.comp_apply, id_eq]
-    obtain ⟨S, h⟩ := exists_finset (z)
-    simp_rw [h]
-    simp
+    obtain ⟨_, h⟩ := exists_finset (z)
+    simp [h]
 
 variable (R A M N) in
 lemma compose_eq_mkQ :(tens_to_mk R A M N) ∘ₗ (mapOfCompatibleSMul' A R M N)
@@ -140,10 +137,9 @@ lemma compose_eq_mkQ :(tens_to_mk R A M N) ∘ₗ (mapOfCompatibleSMul' A R M N)
 variable (R A M N) in
 lemma CompatibleSMul_ker_eq_span : (mapOfCompatibleSMul' A R M N).ker = (rels R A M N)
     := by
-  rw [← LinearEquiv.ker_comp (quot_equi_tens R A M N).symm (mapOfCompatibleSMul' A R M N)]
   have h : (quot_equi_tens R A M N).symm.toLinearMap = tens_to_mk R A M N := rfl
-  rw [h, compose_eq_mkQ]
-  simp
+  simp_rw [←LinearEquiv.ker_comp (quot_equi_tens R A M N).symm (mapOfCompatibleSMul' A R M N),
+  h, compose_eq_mkQ, Submodule.ker_mkQ]
 
 end Algebra.TensorProduct.FromRing
 
