@@ -48,7 +48,7 @@ its valid paths to values of `α`
 @[expose] public section
 
 
-universe u v w
+universe u v
 
 namespace MvPFunctor
 
@@ -139,7 +139,7 @@ theorem wpRec_eq {α : TypeVec n} {C : Sort*}
 
 /-- Induction principle for an unfolded `W` -/
 @[elab_as_elim]
-def wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort w}
+def wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort v}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
         (∀ i : P.last.B a, C (f i) (P.wPathDestRight f' i)) → C ⟨a, f⟩ f') :
     ∀ (x : P.last.W) (f' : P.WPath x ⟹ α), C x f'
@@ -176,7 +176,7 @@ theorem wRec_eq {α : TypeVec n} {C : Sort*}
 
 /-- Induction principle for `W` -/
 @[elab_as_elim]
-def w_ind {α : TypeVec n} {C : P.W α → Sort w}
+def w_ind {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
     ∀ x, C x := fun ⟨hd, ch⟩ =>
@@ -187,12 +187,12 @@ def w_ind {α : TypeVec n} {C : P.W α → Sort w}
 
 /-- Cases lemma for `W` types -/
 @[elab_as_elim]
-def w_cases {α : TypeVec n} {C : P.W α → Sort w}
+def w_cases {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α), C (P.wMk a f' f)) :
     ∀ x, C x := P.w_ind fun a f' f _ih' => ih a f' f
 
 @[simp]
-theorem w_ind_wMk {α : TypeVec n} {C : P.W α → Sort w}
+theorem w_ind_wMk {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f))
     {a} {f' : P.drop.B a ⟹ α} {f}
