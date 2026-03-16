@@ -35,7 +35,6 @@ def ltb (s₁ s₂ : Legacy.Iterator) : Bool :=
 instance LT' : LT String :=
   ⟨fun s₁ s₂ ↦ ltb (String.Legacy.iter s₁) (String.Legacy.iter s₂)⟩
 
-set_option backward.whnf.reducibleClassField false in
 /-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
 instance decidableLT' : DecidableLT String := by
   simp +instances only [DecidableLT, LT']
@@ -125,7 +124,6 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
 instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 
-set_option backward.whnf.reducibleClassField false in
 instance decidableLE : DecidableLE String := by
   simp +instances only [DecidableLE, LE]
   infer_instance -- short-circuit type class inference
@@ -154,7 +152,6 @@ theorem toList_nonempty :
 theorem head_empty : "".toList.head! = default :=
   rfl
 
-set_option backward.whnf.reducibleClassField false in
 instance : LinearOrder String where
   le_refl _ := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by

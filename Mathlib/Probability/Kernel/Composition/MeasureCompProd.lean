@@ -125,6 +125,16 @@ lemma ae_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (∀ᵐ x ∂(μ ⊗ₘ κ), p x) ↔ ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
   Kernel.ae_compProd_iff hp
 
+lemma ae_compProd_of_ae_fst (κ : Kernel α β) {p : α → Prop} (hp : MeasurableSet {x | p x})
+    (h : ∀ᵐ a ∂μ, p a) :
+    ∀ᵐ x ∂(μ ⊗ₘ κ), p x.1 :=
+  ae_compProd_of_ae_ae (measurable_fst hp) <| by filter_upwards [h] with a ha using by simp [ha]
+
+lemma ae_eq_compProd_of_ae_eq_fst {γ : Type*} {mγ : MeasurableSpace γ} [MeasurableEq γ]
+    (κ : Kernel α β) {f g : α → γ} (hf : Measurable f) (hg : Measurable g) (h : f =ᵐ[μ] g) :
+    (fun p ↦ f p.1) =ᵐ[μ ⊗ₘ κ] (fun p ↦ g p.1) :=
+  ae_compProd_of_ae_fst κ (measurableSet_eq_fun hf hg) h
+
 /-- The composition product of a measure and a constant kernel is the product between the two
 measures. -/
 @[simp]

@@ -709,7 +709,6 @@ lemma nnrealPart_smul_pos (f : C_c(α, ℝ)) {a : ℝ} (ha : 0 ≤ a) :
   · simp [ha, hfx, mul_nonneg]
   · simp [mul_nonpos_iff, ha, hfx]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
     (a • f).nnrealPart = (-a).toNNReal • (-f).nnrealPart := by
   ext x
@@ -748,7 +747,6 @@ noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
 @[simp] lemma toReal_smul (r : ℝ≥0) (f : C_c(α, ℝ≥0)) : (r • f).toReal = r • f.toReal := by
   ext; simp [NNReal.smul_def]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma nnrealPart_sub_nnrealPart_neg (f : C_c(α, ℝ)) :
     (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by ext x; simp
@@ -839,6 +837,33 @@ lemma eq_toNNRealLinear_toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ�
   simp
 
 end toRealPositiveLinear
+
+section pullback
+
+variable [R1Space α] [Group α] [TopologicalSpace β] [R1Space β] [Group β] [ContinuousMul β]
+  [NormedAddCommGroup γ] {φ : α →* β} (hφ : Topology.IsClosedEmbedding φ)
+
+open scoped Pointwise in
+/-- Pull back a continuous compactly supported function `f` on `β` along a closed embedding
+`φ : α →* β` to the continuous compactly supported function `a ↦ f (b * φ a)` on `A`. -/
+@[to_additive /-- Pull back a continuous compactly supported function `f` on `β` along a closed
+embedding `φ : α →+ β` to the continuous compactly supported function `a ↦ f (b + φ a)` on `A`. -/]
+noncomputable def pullback_monoidHom (f : CompactlySupportedContinuousMap β γ) (b : β) :
+    CompactlySupportedContinuousMap α γ where
+  toFun a := f (b * φ a)
+  hasCompactSupport' := by
+    obtain ⟨K, hK, hf⟩ := exists_compact_iff_hasCompactSupport.mpr f.hasCompactSupport
+    refine exists_compact_iff_hasCompactSupport.mp ⟨φ ⁻¹' (b⁻¹ • K),
+      hφ.isCompact_preimage (hK.smul b⁻¹), fun x hx ↦ hf _ ?_⟩
+    simpa [Set.mem_smul_set_iff_inv_smul_mem] using hx
+  continuous_toFun := by fun_prop
+
+@[to_additive]
+theorem pullback_monoidHom_def (f : CompactlySupportedContinuousMap β γ) (b : β) (a : α) :
+    pullback_monoidHom hφ f b a = f (b * φ a) :=
+  rfl
+
+end pullback
 
 end CompactlySupportedContinuousMap
 

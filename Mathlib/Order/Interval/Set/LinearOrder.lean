@@ -92,13 +92,13 @@ theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b�
 theorem Ico_eq_Ico_iff (h : a < b ∨ c < d) : Ico a b = Ico c d ↔ a = c ∧ b = d := by
   refine ⟨fun h ↦ ?_, by grind⟩
   have : c ≤ a ∧ b ≤ d := (Ico_subset_Ico_iff (show a < b by grind [Set.nonempty_Ico])).1 h.subset
-  have : a ≤ c ∧ d ≤ b := (Ico_subset_Ico_iff (show c < d by grind [Set.nonempty_Ico])).1 h.superset
+  have : a ≤ c ∧ d ≤ b := (Ico_subset_Ico_iff (show c < d by grind)).1 h.superset
   grind
 
 theorem Ioc_eq_Ioc_iff (hab : a < b ∨ c < d) : Ioc a b = Ioc c d ↔ a = c ∧ b = d := by
   refine ⟨fun h ↦ ?_, by grind⟩
   have : b ≤ d ∧ c ≤ a := (Ioc_subset_Ioc_iff (show a < b by grind [Set.nonempty_Ioc])).1 h.subset
-  have : d ≤ b ∧ a ≤ c := (Ioc_subset_Ioc_iff (show c < d by grind [Set.nonempty_Ioc])).1 h.superset
+  have : d ≤ b ∧ a ≤ c := (Ioc_subset_Ioc_iff (show c < d by grind)).1 h.superset
   grind
 
 theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
@@ -156,31 +156,35 @@ theorem Iio_subset_Iic_iff [DenselyOrdered α] : Iio a ⊆ Iic b ↔ a ≤ b := 
 
 /-! ### Two infinite intervals -/
 
+@[to_dual]
 theorem Iic_union_Ioi_of_le (h : a ≤ b) : Iic b ∪ Ioi a = univ :=
   eq_univ_of_forall fun x => (h.gt_or_le x).symm
 
+@[to_dual]
 theorem Iio_union_Ici_of_le (h : a ≤ b) : Iio b ∪ Ici a = univ :=
   eq_univ_of_forall fun x => (h.ge_or_lt x).symm
 
+@[to_dual]
 theorem Iic_union_Ici_of_le (h : a ≤ b) : Iic b ∪ Ici a = univ :=
   eq_univ_of_forall fun x => (h.ge_or_le x).symm
 
+@[to_dual]
 theorem Iio_union_Ioi_of_lt (h : a < b) : Iio b ∪ Ioi a = univ :=
   eq_univ_of_forall fun x => (h.gt_or_lt x).symm
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iic_union_Ici : Iic a ∪ Ici a = univ :=
   Iic_union_Ici_of_le le_rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iio_union_Ici : Iio a ∪ Ici a = univ :=
   Iio_union_Ici_of_le le_rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iic_union_Ioi : Iic a ∪ Ioi a = univ :=
   Iic_union_Ioi_of_le le_rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iio_union_Ioi : Iio a ∪ Ioi a = {a}ᶜ :=
   ext fun _ => lt_or_lt_iff_ne
 

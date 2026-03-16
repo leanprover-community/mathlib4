@@ -247,13 +247,13 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
 /-- **Cantor's diagonal argument** implies that there are no surjective functions from `α`
 to `Set α`. -/
 theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
-  | h => let ⟨D, e⟩ := h {a | ¬ f a a}
+  | h => let ⟨D, e⟩ := h {a | a ∉ f a}
         @iff_not_self (D ∈ f D) <| iff_of_eq <| congr_arg (D ∈ ·) e
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
 theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
-  | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → U b}) <|
+  | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → b ∈ U}) <|
          RightInverse.surjective (fun U ↦ Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 
 /-- There is no surjection from `α : Type u` into `Type (max u v)`. This theorem

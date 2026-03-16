@@ -570,7 +570,6 @@ namespace ZMod
 
 variable {p : ℕ} [Fact p.Prime]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Subsingleton (Subfield (ZMod p)) :=
   subsingleton_of_bot_eq_top <| top_unique (a := ⊥) fun n _ ↦
   have := zsmul_mem (one_mem (⊥ : Subfield (ZMod p))) n.val
@@ -724,6 +723,7 @@ theorem Subfield.card_bot : Nat.card (⊥ : Subfield F) = p := by
     ← Nat.card_eq_of_bijective _ (RingHom.rangeRestrictField_bijective _), Nat.card_zmod]
 
 /-- The prime subfield is finite. -/
+@[implicit_reducible]
 def Subfield.fintypeBot : Fintype (⊥ : Subfield F) :=
   Fintype.subtype (univ.map ⟨_, (ZMod.castHom (m := p) dvd_rfl F).injective⟩)
     fun _ ↦ by simp_rw [Finset.mem_map, mem_univ, true_and, ← fieldRange_castHom_eq_bot p]; rfl

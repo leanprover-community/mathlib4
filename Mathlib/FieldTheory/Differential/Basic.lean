@@ -156,6 +156,7 @@ lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
 A finite extension of a differential field has a unique derivation which agrees with the one on the
 base field.
 -/
+@[implicit_reducible]
 noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional F K] :
     Unique {_a : Differential K // DifferentialAlgebra F K} := by
   let default : {_a : Differential K // DifferentialAlgebra F K} :=
