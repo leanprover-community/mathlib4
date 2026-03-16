@@ -35,26 +35,9 @@ namespace LieAlgebra.IsKilling
 
 open LieAlgebra LieModule Module
 
-variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
-  {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsKilling K L] [IsTriangularizable K H L]
+variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
+  {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
 
-noncomputable section
-
-/-- The set of roots whose root space is contained in a given Lie ideal. -/
-def lieIdealRootSet (I : LieIdeal K L) : Set H.root :=
-  { α | (rootSpace H α.1).toSubmodule ≤ I.toSubmodule }
-
-/-- The submodule of `Dual K H` spanned by the roots associated to a Lie ideal. -/
-def lieIdealRootSpan (I : LieIdeal K L) : Submodule K (Dual K H) :=
-  Submodule.span K ((↑) '' lieIdealRootSet (H := H) I)
-
-omit [CharZero K] in
-lemma coroot_mem_corootSubmodule (α : Weight K H L) :
-    (coroot α : L) ∈ corootSubmodule α :=
-  (LieSubmodule.mem_map _).mpr
-    ⟨⟨coroot α, (coroot α).property⟩, coroot_mem_corootSpace α, rfl⟩
-
-omit [CharZero K] [IsKilling K L] [IsTriangularizable K H L] in
 /-- If the root space of `α` is contained in a Lie ideal `I`, then the coroot submodule of `α`
 is also contained in `I`. -/
 lemma corootSubmodule_le_lieIdeal (I : LieIdeal K L) {α : Weight K H L}
@@ -68,8 +51,16 @@ lemma corootSubmodule_le_lieIdeal (I : LieIdeal K L) {α : Weight K H L}
   rintro _ ⟨y, hy, _, -, rfl⟩
   exact lie_mem_left K L I y _ (hα hy)
 
-/-- If the root space of `α` is contained in a Lie ideal `I` and `γ(coroot α) ≠ 0` for
-some weight `γ`, then the root space of `γ` is also contained in `I`. -/
+variable [IsKilling K L] [IsTriangularizable K H L] [CharZero K]
+
+/-- The set of roots whose root space is contained in a given Lie ideal. -/
+noncomputable def lieIdealRootSet (I : LieIdeal K L) : Set H.root :=
+  { α | (rootSpace H α.1).toSubmodule ≤ I.toSubmodule }
+
+/-- The submodule of `Dual K H` spanned by the roots associated to a Lie ideal. -/
+noncomputable def lieIdealRootSpan (I : LieIdeal K L) : Submodule K (Dual K H) :=
+  Submodule.span K ((↑) '' lieIdealRootSet (H := H) I)
+
 lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
     {α : Weight K H L} (hI : (rootSpace H α).toSubmodule ≤ I.toSubmodule)
     {γ : H → K} (hγ_ne : γ (coroot α) ≠ 0) :
@@ -83,7 +74,6 @@ lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
     lie_eq_smul_of_mem_rootSpace hy ⟨coroot α, (coroot α).property⟩
   rwa [h_eq, I.toSubmodule.smul_mem_iff (by exact_mod_cast hγ_ne)] at h_lie
 
-/-- The root set of a Lie ideal is closed under Weyl reflections. -/
 lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
     {α : H.root} (hα : α ∈ lieIdealRootSet (H := H) I) :
     (rootSystem H).reflectionPerm i α ∈ lieIdealRootSet (H := H) I := by
@@ -114,16 +104,13 @@ lemma lieIdealRootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
   exact Submodule.subset_span ⟨_, lieIdealRootSet_reflectionPerm_invariant I i hα, rfl⟩
 
 /-- Maps a Lie ideal to its corresponding invariant root submodule. -/
-def lieIdealToInvtRootSubmodule (I : LieIdeal K L) :
+noncomputable def lieIdealToInvtRootSubmodule (I : LieIdeal K L) :
     (rootSystem H).invtRootSubmodule :=
   ⟨lieIdealRootSpan (H := H) I, lieIdealRootSpan_mem_invtRootSubmodule I⟩
 
-/-- The forward map `lieIdealToInvtRootSubmodule` is monotone. -/
 lemma lieIdealToInvtRootSubmodule_mono {I J : LieIdeal K L} (h : I ≤ J) :
     lieIdealToInvtRootSubmodule (H := H) I ≤ lieIdealToInvtRootSubmodule J :=
   Submodule.span_mono (Set.image_mono
     fun α (hα : (rootSpace H α.1).toSubmodule ≤ I.toSubmodule) ↦ hα.trans h)
-
-end
 
 end LieAlgebra.IsKilling
