@@ -295,12 +295,7 @@ instance {X} [IsAffine X] (i) :
   dsimp; infer_instance
 
 theorem Scheme.isBasis_affineOpens (X : Scheme) : Opens.IsBasis X.affineOpens := by
-  rw [Opens.isBasis_iff_nbhd]
-  rintro U x (hU : x ∈ (U : Set X))
-  obtain ⟨S, hS, hxS, hSU⟩ := X.affineBasisCover_is_basis.exists_subset_of_mem_open hU U.isOpen
-  refine ⟨⟨S, X.affineBasisCover_is_basis.isOpen hS⟩, ?_, hxS, hSU⟩
-  rcases hS with ⟨i, rfl⟩
-  exact isAffineOpen_opensRange _
+  grind [Opens.isBasis_iff_nbhd, exists_isAffineOpen_mem_and_subset]
 
 @[deprecated (since := "2025-10-07")] alias isBasis_affine_open := Scheme.isBasis_affineOpens
 
