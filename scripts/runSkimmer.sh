@@ -90,7 +90,12 @@ package "side-skimmer"
 require "skimmer" from git "https://github.com/thorimur/skimmer" @ "v0.0.1+try-this"
 require ${target_pkg} from ${relative_path}
 EOF
-  echo "/.lake" > "${pkg}/.gitignore"
+  # Ignore things changed by `lake update`, update locally on individual runs.
+  cat <<EOF > "${pkg}/.gitignore"
+/.lake
+/lake-manifest.json
+/lean-toolchain
+EOF
   # Creates toolchain, manifest, etc.
   (cd "${pkg}" && MATHLIB_NO_CACHE_ON_UPDATE=1 lake update)
 else
