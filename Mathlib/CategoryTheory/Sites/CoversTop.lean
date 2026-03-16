@@ -78,6 +78,25 @@ lemma sections_ext (F : Sheaf J (Type _)) {x y : F.1.sections}
   rintro T a ⟨i, ⟨b⟩⟩
   simpa using congr_arg (F.1.map b.op) (h i)
 
+lemma prod_of_hasBinaryProduct {I' : Type*} {Z : I' → C} (hZ : J.CoversTop Z)
+    [∀ i i', HasBinaryProduct (Y i) (Z i')] :
+    J.CoversTop (fun (i, i') ↦ Y i ⨯ Z i') := by
+  intro X
+  refine J.transitive (hZ X) _ ?_
+  rintro X' f ⟨i', ⟨g⟩⟩
+  refine J.superset_covering ?_ (hY X')
+  rintro X'' p ⟨i, ⟨q⟩⟩
+  exact ⟨(i, i'), ⟨prod.lift q (p ≫ g)⟩⟩
+
+lemma prod {I' : Type*} {Z : I' → C} (hZ : J.CoversTop Z) :
+    J.CoversTop (fun (z : Σ (A : C) (i : I) (i' : I'), (A ⟶ Y i) × (A ⟶ Z i')) ↦ z.1) := by
+  intro X
+  refine J.transitive (hZ X) _ ?_
+  rintro X' f ⟨i', ⟨g⟩⟩
+  refine J.superset_covering ?_ (hY X')
+  rintro X'' p ⟨i, ⟨q⟩⟩
+  exact ⟨⟨X'', i, i', q, p ≫ g⟩, ⟨𝟙 X''⟩⟩
+
 end CoversTop
 
 end GrothendieckTopology

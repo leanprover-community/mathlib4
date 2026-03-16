@@ -48,10 +48,16 @@ noncomputable def pushforward : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S wh
   map f :=
     { val := (PresheafOfModules.pushforward φ.hom).map f.val }
 
+variable (R) in
+/-- The restriction functor `SheafOfModules.{v} R ⥤ SheafOfModules.{v} (R.over X)`. -/
+noncomputable abbrev overFunctor (X : D) :
+    SheafOfModules.{v} R ⥤ SheafOfModules.{v} (R.over X) :=
+  pushforward.{v} (𝟙 _)
+
 /-- Given `M : SheafOfModules R` and `X : D`, this is the restriction of `M`
 over the sheaf of rings `R.over X` on the category `Over X`. -/
 noncomputable abbrev over (M : SheafOfModules.{v} R) (X : D) : SheafOfModules.{v} (R.over X) :=
-  (pushforward.{v} (𝟙 _)).obj M
+  (overFunctor R X).obj M
 
 section
 

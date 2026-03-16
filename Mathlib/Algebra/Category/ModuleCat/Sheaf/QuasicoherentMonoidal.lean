@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.FreeMonoidal
 public import Mathlib.CategoryTheory.Monoidal.Limits.Cokernels
+public import Mathlib.CategoryTheory.Monoidal.Subcategory
 
 /-!
 # Tensor product of quasicoherent sheaves
@@ -16,11 +17,13 @@ public import Mathlib.CategoryTheory.Monoidal.Limits.Cokernels
 
 @[expose] public section
 
-universe w v u
+universe w v v' u u'
 
 open CategoryTheory MonoidalCategory Limits
 
 namespace SheafOfModules
+
+section
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
   {R : Sheaf J CommRingCat.{w}}
@@ -82,5 +85,70 @@ noncomputable def tensor : (M₁ ⊗ M₂).Presentation :=
     (isColimitCokernelCoforkTensor P₁ P₂)
 
 end Presentation
+
+variable [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat.{w} AddCommGrpCat)]
+  [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat.{w}]
+  [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrpCat.{w}]
+  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat.{w} AddCommGrpCat.{w})]
+  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ CommRingCat.{w} RingCat)]
+  [(W R).IsMonoidal] [∀ (X : C), (W ((R.over X))).IsMonoidal]
+
+namespace QuasicoherentData
+
+variable (R) in
+noncomputable abbrev overFunctorOfCommRing (X : C) :
+    SheafOfModules.{w} (((sheafCompose J (forget₂ _ RingCat)).obj R)) ⥤
+      SheafOfModules.{w} (((sheafCompose (J.over X) (forget₂ _ RingCat)).obj (R.over X))) :=
+  overFunctor _ X
+
+variable (R) in
+noncomputable abbrev overPullbackOfCommRing {X Y : C} (f : X ⟶ Y) :
+    SheafOfModules.{w} (((sheafCompose (J.over Y) (forget₂ _ RingCat)).obj (R.over Y))) ⥤
+      SheafOfModules.{w} (((sheafCompose (J.over X) (forget₂ _ RingCat)).obj (R.over X))) :=
+  pushforward (F := Over.map f) (𝟙 _)
+
+instance {X Y : C} (f : X ⟶ Y) :
+    PreservesColimitsOfSize.{w, w} (overPullbackOfCommRing R f) := sorry
+
+variable (R) in
+def overFunctorOfCommRingCompOverPullbackOfCommRing {X Y : C} (f : X ⟶ Y) :
+    overFunctorOfCommRing R Y ⋙ overPullbackOfCommRing R f ≅ overFunctorOfCommRing R X :=
+  sorry
+
+instance (X : C) : (overFunctorOfCommRing.{w} R X).Monoidal := sorry
+
+instance {X Y : C} (f : X ⟶ Y) : (overPullbackOfCommRing.{w} R f).Monoidal := sorry
+
+noncomputable def tensor (d₁ : M₁.QuasicoherentData) (d₂ : M₂.QuasicoherentData) :
+    (M₁ ⊗ M₂).QuasicoherentData where
+  I := _
+  X := _
+  coversTop := d₁.coversTop.prod d₂.coversTop
+  presentation := fun ⟨A, i, i', p, p'⟩ ↦
+    Presentation.of_isIso
+      (Functor.Monoidal.μIso (overFunctorOfCommRing.{w} R A) M₁ M₂).hom (by
+        apply Presentation.tensor
+        · exact Presentation.of_isIso
+            ((overFunctorOfCommRingCompOverPullbackOfCommRing.{w} R p).hom.app M₁)
+              (Presentation.map (by exact (d₁.presentation i))
+                  (overPullbackOfCommRing R p)
+                    (Functor.Monoidal.εIso _).symm)
+        · exact Presentation.of_isIso
+            ((overFunctorOfCommRingCompOverPullbackOfCommRing.{w} R p').hom.app M₂)
+              (Presentation.map (by exact (d₂.presentation i'))
+                  (overPullbackOfCommRing R p')
+                    (Functor.Monoidal.εIso _).symm))
+
+end QuasicoherentData
+
+instance [M₁.IsQuasicoherent] [M₂.IsQuasicoherent] : (M₁ ⊗ M₂).IsQuasicoherent :=
+  QuasicoherentData.isQuasicoherent
+    (M₁.quasicoherentData.tensor M₂.quasicoherentData)
+
+instance : (isQuasicoherent ((sheafCompose J (forget₂ _ RingCat)).obj R)).IsMonoidal where
+  prop_unit := sorry
+  prop_tensor M₁ M₂ _ _ := by infer_instance
+
+end
 
 end SheafOfModules
