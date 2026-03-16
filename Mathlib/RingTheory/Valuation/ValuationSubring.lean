@@ -283,7 +283,6 @@ theorem mapOfLE_valuation_apply (R S : ValuationSubring K) (h : R ≤ S) (x : K)
 def idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : Ideal R :=
   (IsLocalRing.maximalIdeal S).comap (R.inclusion S h)
 
-@[simp]
 theorem idealOfLE_self : A.idealOfLE A (refl _) = IsLocalRing.maximalIdeal A := rfl
 
 @[simp]
