@@ -300,7 +300,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     subst e
     apply TopCat.Sheaf.eq_of_locally_eq X.sheaf fun i : s => (i : X.Opens)
     intro i
-    change _ = (X.sheaf.val.map _) 0
+    change _ = (X.sheaf.obj.map _) 0
     rw [map_zero]
     apply this
   intro i

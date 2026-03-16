@@ -591,7 +591,6 @@ variable (A : Type*) [CommSemiring A] [Algebra R A]
 defined to be the kernel of `Pic.mapAlgebra R A`. -/
 noncomputable def relPic : Subgroup (Pic R) := (Pic.mapAlgebra R A).ker
 
-set_option backward.isDefEq.respectTransparency false in
 theorem relPic_eq_top [Subsingleton (Pic A)] : relPic R A = ⊤ :=
   top_unique fun _ _ ↦ Subsingleton.elim ..
 
@@ -849,6 +848,7 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
   (QuotientGroup.congr _ _ (.refl _) ((Subgroup.map_id _).trans (ker_unitsToPic R A).symm)).trans <|
   (quotientKerEquivRange _).trans <| .subgroupCongr (range_unitsToPic R A)
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- The class group of a domain is isomorphic to the Picard group. -/
 @[simps!] noncomputable def ClassGroup.equivPic (R) [CommRing R] [IsDomain R] :
     ClassGroup R ≃* Pic R :=

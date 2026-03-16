@@ -263,7 +263,6 @@ lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
   ext
   simp [mem_bot]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fixingSubgroup_sup {K L : IntermediateField F E} :
     (K ⊔ L).fixingSubgroup = K.fixingSubgroup ⊓ L.fixingSubgroup := by
   ext φ
@@ -379,6 +378,11 @@ lemma ofDual_intermediateFieldEquivSubgroup_apply (K : IntermediateField F E) :
 
 lemma intermediateFieldEquivSubgroup_symm_apply_toDual (H : Subgroup Gal(E/F)) :
     intermediateFieldEquivSubgroup.symm (.toDual H) = fixedField H := rfl
+
+theorem fixedField_eq_iff_fixingSubgroup_eq {K : IntermediateField F E} {H : Subgroup Gal(E/F)} :
+    fixedField H = K ↔ K.fixingSubgroup = H := by
+  simp [← OrderIso.apply_eq_iff_eq intermediateFieldEquivSubgroup, fixingSubgroup_fixedField,
+    eq_comm]
 
 end
 
@@ -575,7 +579,6 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   refine LinearEquiv.finrank_eq ?_
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalent characterizations of a Galois extension of finite degree. -/
 theorem tfae [FiniteDimensional F E] : List.TFAE [
     IsGalois F E,

@@ -17,15 +17,15 @@ uniform ideal filters in terms of ring filter bases.
 
 ## Main definitions
 * `WithIdealFilter`: Type synonym for a ring that depends on a choice of ideal filter. This can be
-used to assign and infer instances on a ring that depend on an ideal filter.
+  used to assign and infer instances on a ring that depend on an ideal filter.
 * `IdealFilter.addGroupFilterBasis`: the `AddGroupFilterBasis` with sets the ideals of `F`.
 * `IdealFilter.ringFilterBasis`: under `[F.IsUniform]`, the `RingFilterBasis` with sets the ideals
-of `F`.
+  of `F`.
 
 ## Main statements
 
 * `IdealFilter.isUniform_iff_exists_ringFilterBasis`: An `IdealFilter` on a ring `A` is uniform if
-and only if its ideals form a `RingFilterBasis` for `A`.
+  and only if its ideals form a `RingFilterBasis` for `A`.
 
 ## References
 
@@ -43,6 +43,7 @@ open scoped Pointwise Topology
 namespace IdealFilter
 
 /-- The additive-group filter basis whose sets are the ideals belonging to the ideal filter `F`. -/
+@[implicit_reducible]
 def addGroupFilterBasis {A : Type*} [Ring A] (F : IdealFilter A) : AddGroupFilterBasis A where
   sets := {(I : Set A) | I ∈ F}
   nonempty := ⟨_, ⟨_, F.nonempty.choose_spec, rfl⟩⟩
@@ -55,7 +56,7 @@ def addGroupFilterBasis {A : Type*} [Ring A] (F : IdealFilter A) : AddGroupFilte
   conj' := by aesop
 
 /-- Under `[F.IsUniform]`, the ring filter basis obtained from `addGroupFilterBasis`. -/
-@[simps! -isSimp sets]
+@[simps! -isSimp sets, implicit_reducible]
 def ringFilterBasis {A : Type*} [Ring A] {F : IdealFilter A} [F.IsUniform] :
     RingFilterBasis A where
   __ := F.addGroupFilterBasis

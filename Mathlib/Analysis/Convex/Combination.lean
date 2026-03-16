@@ -5,7 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
@@ -223,7 +224,7 @@ that `z i ∈ s` whenever `w i ≠ 0`, then the sum `∑ᶠ i, w i • z i` belo
 theorem Convex.finsum_mem {ι : Sort*} {w : ι → R} {z : ι → E} {s : Set E} (hs : Convex R s)
     (h₀ : ∀ i, 0 ≤ w i) (h₁ : ∑ᶠ i, w i = 1) (hz : ∀ i, w i ≠ 0 → z i ∈ s) :
     (∑ᶠ i, w i • z i) ∈ s := by
-  have hfin_w : (support (w ∘ PLift.down)).Finite := by
+  have hfin_w : HasFiniteSupport (w ∘ PLift.down) := by
     by_contra H
     rw [finsum, dif_neg H] at h₁
     exact zero_ne_one h₁
