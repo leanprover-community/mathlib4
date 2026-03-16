@@ -165,7 +165,6 @@ noncomputable def equivOfIsEmpty [IsEmpty S] : S.ProEt ≌ Discrete PUnit :=
   MorphismProperty.overEquivOfIsInitial _ _ _ isInitialOfIsEmpty
 
 variable {S} in
-set_option backward.isDefEq.respectTransparency false in
 lemma bot_mem_topology (X : S.ProEt) [IsEmpty X.left] : ⊥ ∈ topology S X := by
   simp [topology_eq_inducedTopology, GrothendieckTopology.mem_over_iff,
     proetaleTopology_eq_propQCTopology, bot_mem_propQCTopology]

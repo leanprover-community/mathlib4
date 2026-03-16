@@ -813,11 +813,9 @@ section Monoid
 
 variable [Monoid M]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofMul_list_prod (s : List M) : ofMul s.prod = (s.map ofMul).sum := by simp [ofMul]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toMul_list_sum (s : List (Additive M)) : s.sum.toMul = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
@@ -828,11 +826,9 @@ section AddMonoid
 
 variable [AddMonoid M]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofAdd_list_prod (s : List M) : ofAdd s.sum = (s.map ofAdd).prod := by simp [ofAdd]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toAdd_list_sum (s : List (Multiplicative M)) : s.prod.toAdd = (s.map toAdd).sum := by
   simp [toAdd, ofAdd]; rfl
@@ -843,12 +839,10 @@ section CommMonoid
 
 variable [CommMonoid M]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofMul_multiset_prod (s : Multiset M) : ofMul s.prod = (s.map ofMul).sum := by
   simp [ofMul]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toMul_multiset_sum (s : Multiset (Additive M)) : s.sum.toMul = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
@@ -868,12 +862,10 @@ section AddCommMonoid
 
 variable [AddCommMonoid M]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofAdd_multiset_prod (s : Multiset M) : ofAdd s.sum = (s.map ofAdd).prod := by
   simp [ofAdd]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toAdd_multiset_sum (s : Multiset (Multiplicative M)) :
     s.prod.toAdd = (s.map toAdd).sum := by

@@ -37,7 +37,6 @@ noncomputable def freeYoneda (X : C) (M : A) : Cᵒᵖ ⥤ A where
   obj Y := ∐ (fun (i : (yoneda.obj X).obj Y) ↦ M)
   map f := Sigma.map' ((yoneda.obj X).map f) (fun _ ↦ 𝟙 M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(Presheaf.freeYoneda X M ⟶ F) ≃ (M ⟶ F.obj (op X))`. -/
 noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Cᵒᵖ ⥤ A} :
     (freeYoneda X M ⟶ F) ≃ (M ⟶ F.obj (op X)) where

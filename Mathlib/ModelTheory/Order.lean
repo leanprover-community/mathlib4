@@ -494,7 +494,6 @@ lemma dlo_isExtensionPair
   refine congr_fun hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩
   simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
     Infinite M := by
   letI := orderStructure ℚ
@@ -521,7 +520,6 @@ theorem isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} M :=
   ⟨(isUltrahomogeneous_iff_IsExtensionPair cg_of_countable).2 (dlo_isExtensionPair M M), dlo_age M⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The class of finite models of the theory of linear orders is Fraïssé. -/
 theorem isFraisse_finite_linear_order :
     IsFraisse {M : CategoryTheory.Bundled.{0} Language.order.Structure |
@@ -538,7 +536,6 @@ theorem aleph0_categorical_dlo : (ℵ₀).Categorical Language.order.dlo := fun 
   exact (isFraisseLimit_of_countable_nonempty_dlo M₁).nonempty_equiv
     (isFraisseLimit_of_countable_nonempty_dlo M₂)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The theory of dense linear orders is `ℵ₀`-complete. -/
 theorem dlo_isComplete : Language.order.dlo.IsComplete :=
   aleph0_categorical_dlo.{0}.isComplete ℵ₀ _ le_rfl (by simp [one_le_aleph0])
@@ -557,7 +554,6 @@ namespace Order
 
 open FirstOrder FirstOrder.Language
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A model-theoretic adaptation of the proof of `Order.iso_of_countable_dense`: two countable,
   dense, nonempty linear orders without endpoints are order isomorphic. -/
 example (α β : Type w') [LinearOrder α] [LinearOrder β]

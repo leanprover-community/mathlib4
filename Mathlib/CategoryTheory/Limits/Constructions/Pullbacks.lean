@@ -25,7 +25,6 @@ open CategoryTheory
 
 namespace CategoryTheory.Limits
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the product `X ⨯ Y` and the equalizer of `π₁ ≫ f` and `π₂ ≫ g` exist, then the
 pullback of `f` and `g` exists: It is given by composing the equalizer with the projections. -/
 theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [𝒞 : Category.{v} C]
@@ -62,7 +61,6 @@ theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [Categor
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the coproduct `Y ⨿ Z` and the coequalizer of `f ≫ ι₁` and `g ≫ ι₂` exist, then the
 pushout of `f` and `g` exists: It is given by composing the inclusions with the coequalizer. -/
 theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type u}

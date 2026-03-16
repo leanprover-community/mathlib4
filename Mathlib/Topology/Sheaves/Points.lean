@@ -32,7 +32,6 @@ open CategoryTheory GrothendieckTopology TopologicalSpace
 
 variable {X : Type u} [TopologicalSpace X] (x : X)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a topological space `X` and `x : X`, this is the point of the site
 `(Opens X, Opens.grothendieckTopology X)` corresponding to `x`. -/
 def pointGrothendieckTopology : Point.{u} (grothendieckTopology X) where
@@ -69,7 +68,6 @@ instance : HasEnoughPoints.{u} (grothendieckTopology X) where
   exists_objectProperty :=
     ⟨_, inferInstance, isConservativeFamilyOfPoints_pointsGrothendieckTopology X⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance (U : Opens X) (Φ : Point.{u} (grothendieckTopology X)) :
     Subsingleton (Φ.fiber.obj U) :=
   Φ.subsingleton_fiber_obj (homOfLE le_top) Limits.isTerminalTop

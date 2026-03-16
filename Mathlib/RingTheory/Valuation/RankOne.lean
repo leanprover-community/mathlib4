@@ -57,7 +57,6 @@ class RankOne (v : Valuation R Γ₀) extends RankLeOne v, Valuation.IsNontrivia
 
 open WithZero
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivial] :
     Nonempty v.RankOne ↔ MulArchimedean (ValueGroup₀ v) := by
   constructor
@@ -146,7 +145,6 @@ lemma restrict_RankOne_hom_eq :
   RankOne.hom v.restrict = (RankOne.hom v).comp embedding := rfl
 
 variable {K} in
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom v (v.restrict x) < γ := by
   have hγ_pos : 0 < γ := pos_iff_ne_zero.mpr hγ
   obtain ⟨x, h⟩ := NNReal.exists_lt_of_strictMono (RankOne.strictMono v.restrict) hγ_pos

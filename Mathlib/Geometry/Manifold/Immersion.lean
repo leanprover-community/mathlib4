@@ -335,7 +335,6 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.sm
   unfold smallComplement
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := by
   haveI := hf.small
   unfold smallComplement
@@ -370,7 +369,6 @@ lemma _root_.IsOpen.isImmersionAtOfComplement :
   simp_rw [IsImmersionAtOfComplement_def]
   exact .liftSourceTargetPropertyAt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}

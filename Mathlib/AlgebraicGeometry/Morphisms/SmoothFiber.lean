@@ -28,7 +28,6 @@ namespace AlgebraicGeometry
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⟶ Y` is locally of finite presentation, flat and has smooth fibers, then `f` is
 smooth. -/
 lemma Smooth.of_smooth_fiberToSpecResidueField [LocallyOfFinitePresentation f] [Flat f]

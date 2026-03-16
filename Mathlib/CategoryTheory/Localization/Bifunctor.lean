@@ -182,7 +182,6 @@ theorem natTrans₂_ext {τ τ' : F₁' ⟶ F₂'}
       (τ'.app (L₁.obj X₁)).app (L₂.obj X₂)) : τ = τ' :=
   uncurry.map_injective (natTrans_ext (L₁.prod L₂) (W₁.prod W₂) (fun _ ↦ h _ _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `F₁' ≅ F₂'` of bifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'`
 and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/

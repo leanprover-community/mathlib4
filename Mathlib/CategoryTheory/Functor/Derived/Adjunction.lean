@@ -46,7 +46,6 @@ namespace Adjunction
 
 open Functor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `Adjunction.derived`. -/
 @[simps]
 def derived' [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
@@ -130,7 +129,6 @@ lemma derivedε_fac_app (X₂ : C₂) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction between functors induces an adjunction between the
 corresponding left/right derived functors, when these derived
 functors are *absolute*, i.e. they remain derived functors

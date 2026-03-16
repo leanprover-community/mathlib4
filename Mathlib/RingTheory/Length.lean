@@ -65,7 +65,6 @@ lemma Module.length_pos_iff : 0 < Module.length R M ↔ Nontrivial M := by
 lemma Module.length_pos [Nontrivial M] : 0 < Module.length R M :=
   Module.length_pos_iff.mpr ‹_›
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.length_compositionSeries (s : CompositionSeries (Submodule R M)) (h₁ : s.head = ⊥)
     (h₂ : s.last = ⊤) : s.length = Module.length R M := by
   have H := isFiniteLength_of_exists_compositionSeries ⟨s, h₁, h₂⟩
@@ -149,7 +148,6 @@ variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R 
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
 variable (H : Function.Exact f g)
 
-set_option backward.isDefEq.respectTransparency false in
 include hf hg H in
 /-- Length is additive in exact sequences. -/
 lemma Module.length_eq_add_of_exact :

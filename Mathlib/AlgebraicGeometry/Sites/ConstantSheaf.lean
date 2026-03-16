@@ -64,7 +64,6 @@ lemma isSheaf_zariskiTopology_continuousMapPresheaf :
   rw [isSheaf_iff_isSheaf_of_type]
   exact GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSheaf_fpqcTopology_continuousMapPresheaf :
     Presheaf.IsSheaf Scheme.fpqcTopology (continuousMapPresheaf T) := by
   rw [isSheaf_iff_isSheaf_of_type, Scheme.fpqcTopology_eq_propQCTopology,

@@ -132,7 +132,6 @@ variable [HasLimits A] [PreservesLimits (CategoryTheory.forget A)]
 variable [PreservesFilteredColimits (CategoryTheory.forget A)]
 variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The pullback of a sheaf by an open embedding `f` is isomorphic to its naive pullback
 `IsOpenEmbedding.sheafPullback`, i.e. to the composition by the functor `IsOpenMap.functor f`.

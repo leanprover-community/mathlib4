@@ -451,7 +451,6 @@ def Coalgebra.toAlgebraOf (adj : F ⊣ G) : Coalgebra G ⥤ Algebra F where
     { f := f.1
       h := Coalgebra.homEquiv_naturality_str_symm adj _ _ f }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction, assigning to an algebra over the left adjoint a coalgebra over its right
 adjoint and going back is isomorphic to the identity functor. -/
 @[simps!]
@@ -459,7 +458,6 @@ def AlgCoalgEquiv.unitIso (adj : F ⊣ G) :
     𝟭 (Algebra F) ≅ Algebra.toCoalgebraOf adj ⋙ Coalgebra.toAlgebraOf adj :=
   NatIso.ofComponents (fun _ ↦ Algebra.isoMk <| Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction, assigning to a coalgebra over the right adjoint an algebra over the left
 adjoint and going back is isomorphic to the identity functor. -/
 @[simps!]

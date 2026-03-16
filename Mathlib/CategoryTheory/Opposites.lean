@@ -631,7 +631,6 @@ theorem op_trans {H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) :
 @[simp]
 theorem op_symm (α : F ≅ G) : NatIso.op α.symm = (NatIso.op α).symm := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between functors `G ≅ F` induced by a natural isomorphism
 between the opposite functors `F.op ≅ G.op`. -/
 @[simps]
@@ -729,7 +728,6 @@ namespace Equivalence
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence between categories gives an equivalence between the opposite categories.
 -/
 @[simps]
@@ -742,7 +740,6 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
     apply Quiver.Hom.unop_inj
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence between opposite categories gives an equivalence between the original categories.
 -/
 @[simps]

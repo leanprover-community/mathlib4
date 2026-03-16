@@ -26,7 +26,6 @@ open Limits
 
 variable {C : Type*} [Category* C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has strict initial objects and `X` is an initial object, the category
 `Over X` is equivalent to a point. -/
 @[simps, pp_with_univ]
@@ -40,7 +39,6 @@ def overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
     Over.isoMk (asIso A.hom)
   counitIso := Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has strict terminal objects and `X` is a terminal object, the category
 `Under X` is equivalent to a point. -/
 @[simps, pp_with_univ]
@@ -56,7 +54,6 @@ def underEquivOfIsTerminal [HasStrictTerminalObjects C] (X : C) (h : IsTerminal 
 
 variable (P Q : MorphismProperty C) [P.ContainsIdentities] [Q.IsMultiplicative] [Q.RespectsIso]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has strict initial objects and `X` is an initial object, the category
 `P.Over Q X` is equivalent to a point. -/
 @[simps, pp_with_univ]
@@ -70,7 +67,6 @@ def MorphismProperty.overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h
     Over.isoMk (asIso A.hom)
   counitIso := Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has strict terminal objects and `X` is a terminal object, the category
 `P.Under Q X` is equivalent to a point. -/
 @[simps, pp_with_univ]

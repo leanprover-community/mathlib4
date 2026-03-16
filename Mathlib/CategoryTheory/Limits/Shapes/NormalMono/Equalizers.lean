@@ -30,7 +30,6 @@ namespace CategoryTheory.NormalMonoCategory
 
 variable [HasFiniteProducts C] [HasKernels C] [IsNormalMonoCategory C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pullback of two monomorphisms exists. -/
 lemma pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
     HasLimit (cospan a b) :=
@@ -101,7 +100,6 @@ private abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (
     C :=
   pullback (prod.lift (𝟙 X) f) (prod.lift (𝟙 X) g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equalizer of `f` and `g` exists. -/
 lemma hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   have huv : (pullback.fst _ _ : P f g ⟶ X) = pullback.snd _ _ :=
@@ -141,7 +139,6 @@ instance (priority := 100) hasEqualizers : HasEqualizers C :=
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a zero morphism is a cokernel of `f`, then `f` is an epimorphism. -/
 theorem epi_of_zero_cokernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsColimit (CokernelCofork.ofπ (0 : Y ⟶ Z) (show f ≫ 0 = 0 by simp))) : Epi f :=
@@ -183,7 +180,6 @@ namespace CategoryTheory.NormalEpiCategory
 
 variable [HasFiniteCoproducts C] [HasCokernels C] [IsNormalEpiCategory C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pushout of two epimorphisms exists. -/
 lemma pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
     HasColimit (span a b) :=
@@ -261,7 +257,6 @@ private abbrev Q {X Y : C} (f g : X ⟶ Y) [Epi (coprod.desc (𝟙 Y) f)] [Epi (
     C :=
   pushout (coprod.desc (𝟙 Y) f) (coprod.desc (𝟙 Y) g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The coequalizer of `f` and `g` exists. -/
 lemma hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair f g) :=
   have huv : (pushout.inl _ _ : Y ⟶ Q f g) = pushout.inr _ _ :=
@@ -303,7 +298,6 @@ instance (priority := 100) hasCoequalizers : HasCoequalizers C :=
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a zero morphism is a kernel of `f`, then `f` is a monomorphism. -/
 theorem mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsLimit (KernelFork.ofι (0 : Z ⟶ X) (show 0 ≫ f = 0 by simp))) : Mono f :=

@@ -99,7 +99,6 @@ local notation "𝖣" => D.toGlueData
 theorem π_surjective : Function.Surjective 𝖣.π :=
   (TopCat.epi_iff_surjective 𝖣.π).mp inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i ⁻¹' U) := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
@@ -144,7 +143,6 @@ theorem rel_equiv : Equivalence D.Rel :=
 
 open CategoryTheory.Limits.WalkingParallelPair
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eqvGen_of_π_eq
     {x y : ↑(∐ D.U)} (h : 𝖣.π x = 𝖣.π y) :
     Relation.EqvGen
@@ -315,7 +313,6 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     exact h.t_inter _ ⟨x, hx⟩ hx'
   fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a constructor of `TopCat.GlueData` whose arguments are in terms of elements and
 intersections rather than subobjects and pullbacks. Please refer to `TopCat.GlueData.MkCore` for
 details. -/
@@ -386,7 +383,6 @@ theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue 
   rw [(ofOpenSubsets U).ι_eq_iff_rel]
   exact ⟨⟨⟨x, hx⟩, hy⟩, rfl, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   intro s hs
   rw [(ofOpenSubsets U).isOpen_iff] at hs

@@ -98,7 +98,6 @@ def affineOneHypercover (X : Scheme.{u}) : zariskiTopology.OneHypercover X :=
 
 end Scheme
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Zariski sheaves preserve products. -/
 lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}ᵒᵖ ⥤ Type v}
     {ι : Type*} [Small.{u} ι] [Small.{v} ι] (hF : Presieve.IsSheaf Scheme.zariskiTopology F) :

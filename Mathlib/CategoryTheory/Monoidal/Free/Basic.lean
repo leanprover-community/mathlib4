@@ -306,7 +306,6 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.whiskerRight p X => projectMapAux p ▷ projectObj f X
   | _, _, Hom.tensor f g => projectMapAux f ⊗ₘ projectMapAux g
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
 @[simp]
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
@@ -364,7 +363,6 @@ def project : F C ⥤ D where
   map := projectMap f _ _
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (project f).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _

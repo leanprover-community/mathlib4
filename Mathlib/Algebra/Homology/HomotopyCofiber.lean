@@ -243,7 +243,6 @@ noncomputable def inr : G ⟶ homotopyCofiber φ where
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition `φ ≫ mappingCone.inr φ` is homotopic to `0`. -/
 noncomputable def inrCompHomotopy (hc : ∀ j, ∃ i, c.Rel i j) :
     Homotopy (φ ≫ inr φ) 0 where
@@ -357,7 +356,6 @@ lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
     · exact h _ _ hij
     · simp only [Homotopy.zero _ _ _ hij]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms `homotopyCofiber φ ⟶ K` are uniquely determined by
 a morphism `α : G ⟶ K` and a homotopy from `φ ≫ α` to `0`. -/
 noncomputable def descEquiv (K : HomologicalComplex C c) (hc : ∀ j, ∃ i, c.Rel i j) :
@@ -458,7 +456,6 @@ noncomputable def nullHomotopicMap : K.cylinder ⟶ K.cylinder :=
 noncomputable def nullHomotopy : Homotopy (nullHomotopicMap K) 0 :=
   Homotopy.nullHomotopy' _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (nullHomotopicMap K).f j =
       inlX K i j hij ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
@@ -479,7 +476,6 @@ lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
 
 include hc
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inrX_nullHomotopy_f (j : ι) :
     inrX K j ≫ (nullHomotopicMap K).f j = inrX K j ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
   have : biprod.lift (𝟙 K) (-𝟙 K) = biprod.inl - biprod.inr :=

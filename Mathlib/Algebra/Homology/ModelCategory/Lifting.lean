@@ -71,7 +71,6 @@ lemma comp_coe_cocyle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
   dsimp at fac_left
   simp [cocycle₁', fac_left, reassoc_of% fac_left]
 
-set_option backward.isDefEq.respectTransparency false in
 include hQ hK in
 lemma exists_hom (n m : ℤ) (hnm : n + 1 = m := by lia) :
     ∃ (φ : Q.X n ⟶ K.X m), π.f n ≫ φ ≫ ι.f m = (cocycle₁' sq hsq).1.v n m hnm := by

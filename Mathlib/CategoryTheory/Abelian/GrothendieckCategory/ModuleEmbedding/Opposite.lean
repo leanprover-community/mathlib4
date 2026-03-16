@@ -45,7 +45,6 @@ set_option backward.privateInPublic true in
 private noncomputable def generator : Cᵒᵖ :=
   ∐ (fun (X : D) => ∐ fun (_ : projectiveSeparator C ⟶ F.obj X) => projectiveSeparator C)
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem exists_epi (X : D) : ∃ f : generator F ⟶ F.obj X, Epi f := by
   classical
   refine ⟨Sigma.desc (Pi.single X (𝟙 _)) ≫ Sigma.desc (fun f => f), ?_⟩
@@ -88,7 +87,6 @@ instance faithful_embedding [Nonempty D] : (embedding F).Faithful :=
 instance full_embedding [Nonempty D] [F.Full] : (F ⋙ embedding F).Full :=
   full_comp_preadditiveCoyonedaObj _ (isSeparator F) (exists_epi F)
 
-set_option backward.isDefEq.respectTransparency false in
 instance preservesFiniteLimits_embedding : PreservesFiniteLimits (embedding F) := by
   rw [embedding]
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize

@@ -47,7 +47,6 @@ See note [reducible non-instances]. -/
 abbrev algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
   algebra' R p dvd_rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any ring with a `ZMod p`-module structure can be upgraded to a `ZMod p`-algebra. Not an
 instance because this is usually not the default way, and this will cause typeclass search loop. -/
 @[implicit_reducible]

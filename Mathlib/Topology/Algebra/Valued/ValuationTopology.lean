@@ -55,7 +55,6 @@ lemma map_eq_one_of_forall_lt [MulArchimedean Γ₀] {v : Valuation K Γ₀} {r 
     simp only [zpow_neg, zpow_natCast, map_inv₀, map_pow] at h
     simp [← Units.val_lt_val, h.not_gt, inv_pow] at hk
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem subgroups_basis :
     RingSubgroupsBasis fun γ : (ValueGroup₀ v)ˣ ↦
@@ -228,7 +227,6 @@ theorem cauchy_iff {F : Filter R} : Cauchy F ↔
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An open ball centred at the origin in a valued ring is open. -/
 theorem isOpen_ball (r : ValueGroup₀ _i.v) : IsOpen (X := R) {x | v.restrict x < r} := by
   rw [isOpen_iff_mem_nhds]
@@ -240,7 +238,6 @@ theorem isOpen_ball (r : ValueGroup₀ _i.v) : IsOpen (X := R) {x | v.restrict x
   exact ⟨Units.mk0 _ hr,
     fun y hy ↦ (sub_add_cancel y x).symm ▸ (v.restrict.map_add _ x).trans_lt (max_lt hy hx)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An open ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_ball (r : ValueGroup₀ _i.v) : IsClosed (X := R) {x | v.restrict x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
@@ -294,14 +291,12 @@ theorem isOpen_sphere {r : ValueGroup₀ _i.v} (hr : r ≠ 0) :
     IsOpen (X := R) {x | v.restrict x = r} :=
   isClopen_sphere _ hr |>.isOpen
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A sphere centred at the origin in a valued ring is closed. -/
 theorem isClosed_sphere (r : ValueGroup₀ _i.v) : IsClosed (X := R) {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simpa using isClosed_closedBall R 0
   exact isClopen_sphere _ hr |>.isClosed
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The closed unit ball in a valued ring is open. -/
 theorem isOpen_integer : IsOpen (_i.v.integer : Set R) := by
   simp only [integer, Subring.coe_set_mk, Subsemiring.coe_set_mk, Submonoid.coe_set_mk,

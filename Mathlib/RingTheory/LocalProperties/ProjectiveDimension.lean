@@ -30,7 +30,6 @@ namespace ModuleCat
 
 open CategoryTheory
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Small.{v} R] (S : Submonoid R) :
     (ModuleCat.localizedModuleFunctor.{v} S).PreservesProjectiveObjects where
   projective_obj X {proj} := by

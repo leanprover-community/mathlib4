@@ -204,7 +204,6 @@ section Real
 -- set flag locally in this section; every decl fails without it
 -- the underlying problem seems to be elsewhere, something to do with unifying different
 -- `ℝ`-module structures on `ℂ`
-set_option backward.isDefEq.respectTransparency false
 
 /-- `ℝ`-linear map from `ℂ` to itself, which we shall show is the real derivative of the
 `GL(2, ℝ)`-action on `ℍ`. -/

@@ -80,7 +80,6 @@ lemma enrichedHom_condition' {i j : J} (f : i ⟶ j) :
 
 variable {F₁ F₂}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a `V`-enriched ordinary category,
 this is the bijection `(F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁ F₂)`. -/
 noncomputable def homEquiv : (F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁ F₂) where
@@ -105,7 +104,6 @@ noncomputable def homEquiv : (F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁
   left_inv τ := by aesop
   right_inv g := by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma homEquiv_apply_π (τ : F₁ ⟶ F₂) (j : J) :
     homEquiv V τ ≫ enrichedHomπ V _ _ j = eHomEquiv V (τ.app j) := by
@@ -164,7 +162,6 @@ noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ 
           Iso.inv_hom_id_assoc]
       conv_rhs => rw [assoc, tensorHom_def'_assoc])
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma enrichedComp_π (j : J) :
     enrichedComp V F₁ F₂ F₃ ≫ end_.π _ j =
@@ -173,7 +170,6 @@ lemma enrichedComp_π (j : J) :
 
 variable {F₁ F₂ F₃}
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homEquiv_comp (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
     (homEquiv V) (f ≫ g) = (λ_ (𝟙_ V)).inv ≫ ((homEquiv V) f ⊗ₘ (homEquiv V) g) ≫
@@ -184,7 +180,6 @@ lemma homEquiv_comp (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma enriched_id_comp [HasEnrichedHom V F₁ F₁] [HasEnrichedHom V F₁ F₂] :
     (λ_ (enrichedHom V F₁ F₂)).inv ≫ enrichedId V F₁ ▷ enrichedHom V F₁ F₂ ≫
@@ -196,7 +191,6 @@ lemma enriched_id_comp [HasEnrichedHom V F₁ F₁] [HasEnrichedHom V F₁ F₂]
   dsimp
   rw [e_id_comp, comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma enriched_comp_id [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₂ F₂] :
     (ρ_ (enrichedHom V F₁ F₂)).inv ≫ enrichedHom V F₁ F₂ ◁ enrichedId V F₂ ≫
@@ -209,7 +203,6 @@ lemma enriched_comp_id [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₂ F₂]
   dsimp
   rw [e_comp_id, comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma enriched_assoc [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₃] [HasEnrichedHom V F₁ F₄]
     [HasEnrichedHom V F₂ F₃] [HasEnrichedHom V F₂ F₄] [HasEnrichedHom V F₃ F₄] :
@@ -250,7 +243,6 @@ section
 
 variable (G : K ⥤ J) [HasEnrichedHom V F₁ F₂]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F₁ F₂} in
 /-- If `F₁` and `F₂` are functors `J ⥤ C`, `G : K ⥤ J`, and
 `F₁'` and `F₂'` are functors `K ⥤ C` that are respectively
@@ -299,7 +291,6 @@ instance {j j' : J} (f : j ⟶ j') :
       (Under.map f ⋙ Under.forget j ⋙ F₂) :=
   inferInstanceAs (HasEnrichedHom V (Under.forget j' ⋙ F₁) (Under.forget j' ⋙ F₂))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a category enriched in `V`,
 this is the enriched hom functor from `F₁` to `F₂` in `J ⥤ V`. -/
 @[simps!]
@@ -326,7 +317,6 @@ noncomputable def functorEnrichedHom : J ⥤ V where
 
 variable [HasEnrichedHom V F₁ F₂]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The (limit) cone expressing that the limit of `functorEnrichedHom V F₁ F₂`
 is `enrichedHom V F₁ F₂`. -/
 @[simps]
@@ -338,7 +328,6 @@ namespace isLimitConeFunctorEnrichedHom
 
 variable {V F₁ F₂} (s : Cone (functorEnrichedHom V F₁ F₂))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `Enriched.FunctorCategory.isLimitConeFunctorEnrichedHom`. -/
 noncomputable def lift : s.pt ⟶ enrichedHom V F₁ F₂ :=
   end_.lift (fun j ↦ s.π.app j ≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))) (fun j j' f ↦ by
@@ -356,7 +345,6 @@ noncomputable def lift : s.pt ⟶ enrichedHom V F₁ F₂ :=
     simp [Under.map, Comma.mapLeft]
     rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fac (j : J) : lift s ≫ (coneFunctorEnrichedHom V F₁ F₂).π.app j = s.π.app j := by
   dsimp [coneFunctorEnrichedHom]
   ext k
@@ -372,7 +360,6 @@ lemma fac (j : J) : lift s ≫ (coneFunctorEnrichedHom V F₁ F₂).π.app j = s
 
 end isLimitConeFunctorEnrichedHom
 
-set_option backward.isDefEq.respectTransparency false in
 open isLimitConeFunctorEnrichedHom in
 /-- The limit of `functorEnrichedHom V F₁ F₂` is `enrichedHom V F₁ F₂`. -/
 noncomputable def isLimitConeFunctorEnrichedHom :
@@ -386,14 +373,12 @@ noncomputable def isLimitConeFunctorEnrichedHom :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The identity for the `J ⥤ V`-enrichment of the category `J ⥤ C`. -/
 @[simps]
 noncomputable def functorEnrichedId [HasFunctorEnrichedHom V F₁ F₁] :
     𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₁ where
   app j := enrichedId V _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition for the `J ⥤ V`-enrichment of the category `J ⥤ C`. -/
 @[simps]
 noncomputable def functorEnrichedComp [HasFunctorEnrichedHom V F₁ F₂]
@@ -453,11 +438,9 @@ noncomputable def functorHomEquiv [HasFunctorEnrichedHom V F₁ F₂] [HasEnrich
     (F₁ ⟶ F₂) ≃ (𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₂) :=
   (homEquiv V).trans (isLimitConeFunctorEnrichedHom V F₁ F₂).homEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 lemma functorHomEquiv_id [HasFunctorEnrichedHom V F₁ F₁] [HasEnrichedHom V F₁ F₁] :
     (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F₁ F₂ F₃} in
 lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂]
     [HasFunctorEnrichedHom V F₂ F₃] [HasEnrichedHom V F₂ F₃]

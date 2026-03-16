@@ -94,7 +94,6 @@ lemma killingForm_restrict_range_ad_nondegenerate :
   convert LieAlgebra.IsKilling.killingForm_nondegenerate R 𝕀
   exact killingForm_restrict_range_ad R L
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The range of the adjoint action on a finite-dimensional Killing Lie algebra is full. -/
 @[simp]
 lemma range_ad_eq_top : 𝕀 = ⊤ := by

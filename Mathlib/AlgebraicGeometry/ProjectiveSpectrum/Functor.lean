@@ -57,7 +57,6 @@ noncomputable def comapStructureSheafFun
     (s : ∀ x : U, AtPrime 𝒜 x.1.1.1) (y : V) : AtPrime ℬ y.1.1.1 :=
   localRingHom f _ y.1.1.1 rfl <| s ⟨.comap f hf y.1, hUV y.2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLocallyFraction_comapStructureSheafFun
     (s : ∀ x : U, AtPrime 𝒜 x.1.1.1) (hs : (isLocallyFraction 𝒜).pred s) :
     (isLocallyFraction ℬ).pred (comapStructureSheafFun f hf U V hUV s) := by
@@ -70,7 +69,6 @@ lemma isLocallyFraction_comapStructureSheafFun
   specialize h_frac ⟨_, hqW⟩
   simp_all [comapStructureSheafFun]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The underlying ring hom of `Proj ℬ ⟶ Proj 𝒜` on the level of structure sheaves. -/
 noncomputable def comapStructureSheaf :
     (Proj.structureSheaf 𝒜).1.obj (.op U) →+* (Proj.structureSheaf ℬ).1.obj (.op V) where
@@ -139,7 +137,6 @@ lemma germ_map_sectionInBasicOpen {p : ProjectiveSpectrum ℬ}
   erw [stalkIso'_germ]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functoriality of `Proj`. -/
 noncomputable def map : Proj ℬ ⟶ Proj 𝒜 where
   __ := (sheafedSpaceMap f hf).hom
@@ -173,7 +170,6 @@ theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The following square commutes:
 ```
@@ -200,14 +196,12 @@ an affine open cover of `Proj ℬ` consisting of `D(f(s))` for `s ∈ A` positiv
     Ideal.map_le_of_le_comap <| (toIdeal_irrelevant_le _).mpr fun i hi x hx ↦
     Ideal.subset_span ⟨⟨⟨i, hi⟩, ⟨x, hx⟩⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_comp : map (g.comp f) (irrelevant_le_map_comp hf hg) = map g hg ≫ map f hf := by
   refine (mapAffineOpenCover _ <| irrelevant_le_map_comp hf hg).openCover.hom_ext _ _ fun s ↦ ?_
   simp only [Scheme.AffineOpenCover.openCover_X, Scheme.AffineOpenCover.openCover_f,
     mapAffineOpenCover_f, awayι_comp_map (g.comp f) _ s.1.2 _ s.2.2]
   simp [awayι_comp_map_assoc _ _ _ _ (map_mem f s.2.2), awayι_comp_map _ _ _ _ s.2.2]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_id : map (.id 𝒜) (by simp) = 𝟙 (Proj 𝒜) := by
   refine (affineOpenCover _).openCover.hom_ext _ _ fun s ↦ ?_
   convert awayι_comp_map (.id 𝒜) _ _ _ s.2.2 using 1

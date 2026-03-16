@@ -389,7 +389,6 @@ variable [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
 
 open HahnModule
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isPWO_iUnion_support_prod_smul {s : α → R⟦Γ⟧} {t : β → V⟦Γ'⟧}
     (hs : (⋃ a, (s a).support).IsPWO) (ht : (⋃ b, (t b).support).IsPWO) :
     (⋃ (a : α × β), ((fun a ↦ (of R).symm
@@ -442,7 +441,6 @@ theorem sum_vAddAntidiagonal_eq (s : SummableFamily Γ R α) (t : SummableFamily
     · exact smul_eq_zero_of_left hs ((t a.2).coeff gh.2)
     · simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) (g : Γ') :
     (smul s t).hsum.coeff g = ∑ gh ∈ VAddAntidiagonal s.isPWO_iUnion_support

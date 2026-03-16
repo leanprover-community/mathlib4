@@ -65,7 +65,6 @@ def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
     rfl
   map_comp f g := (Path.Homotopic.comp_pi_eq_pi_comp f g).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Shows `piToPiTop` is an isomorphism, whose inverse is precisely the pi product
 of the induced projections. This shows that `fundamentalGroupoidFunctor` preserves products.
 -/
@@ -168,7 +167,6 @@ theorem prodToProdTop_map {x₀ x₁ : πₓ A} {y₀ y₁ : πₓ B} (p₀ : x�
       Path.Homotopic.prod p₀ p₁ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Shows `prodToProdTop` is an isomorphism, whose inverse is precisely the product
 of the induced left and right projections.
 -/

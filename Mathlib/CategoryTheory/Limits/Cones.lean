@@ -939,7 +939,6 @@ def Cone.unop (c : Cone F.op) : Cocone F where
 
 variable (F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The category of cocones on `F`
 is equivalent to the opposite category of
 the category of cones on the opposite of `F`.

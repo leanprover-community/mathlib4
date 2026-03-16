@@ -154,7 +154,6 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
 #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
 the fields `whiskerList_eq` and following were all filled by the `cat_disch` auto_param. -/
 attribute [local simp] transportStruct in
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
 @[implicit_reducible]
@@ -207,7 +206,6 @@ noncomputable instance : (equivalenceTransported e).functor.Monoidal :=
 noncomputable instance : (equivalenceTransported e).symm.inverse.Monoidal :=
   inferInstanceAs (equivalenceTransported e).functor.Monoidal
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (equivalenceTransported e).symm.IsMonoidal := by
   infer_instance
 

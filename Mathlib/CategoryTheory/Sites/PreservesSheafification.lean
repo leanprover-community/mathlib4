@@ -128,7 +128,6 @@ section
 variable {G₁ : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj₁ : G₁ ⊣ sheafToPresheaf J A)
   {G₂ : (Cᵒᵖ ⥤ B) ⥤ Sheaf J B}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
     (adj₂ : G₂ ⊣ sheafToPresheaf J B) :
     J.PreservesSheafification F ↔ ∀ (P : Cᵒᵖ ⥤ A),
@@ -171,7 +170,6 @@ def sheafComposeNatTrans :
     dsimp at this ⊢
     grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =
@@ -179,7 +177,6 @@ lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
   simp [sheafComposeNatTrans, -ObjectProperty.ι_obj, -ObjectProperty.ι_map,
     Adjunction.homEquiv_counit]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
     (α : G₂.obj (P ⋙ F) ⟶ (sheafCompose J F).obj (G₁.obj P))
     (hα : adj₂.unit.app (P ⋙ F) ≫ (sheafToPresheaf J B).map α =
@@ -191,7 +188,6 @@ lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
   rw [← hα]
   apply adj₂.homEquiv_unit
 
-set_option backward.isDefEq.respectTransparency false in
 lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions_of_hasSheafCompose :
     J.PreservesSheafification F ↔ IsIso (sheafComposeNatTrans J F adj₁ adj₂) := by
   rw [J.preservesSheafification_iff_of_adjunctions F adj₁ adj₂,
@@ -266,7 +262,6 @@ variable {D E : Type*} [Category* D] [Category* E] (F : D ⥤ E)
   [PreservesLimitsOfSize.{max v u, max v u} (forget E)]
   [(forget D).ReflectsIsomorphisms] [(forget E).ReflectsIsomorphisms]
 
-set_option backward.isDefEq.respectTransparency false in
 include instCCD instCCE in
 lemma sheafToPresheaf_map_sheafComposeNatTrans_eq_sheafifyCompIso_inv (P : Cᵒᵖ ⥤ D) :
     (sheafToPresheaf J E).map

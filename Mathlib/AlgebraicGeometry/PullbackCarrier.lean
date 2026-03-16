@@ -128,7 +128,6 @@ end Congr
 
 variable (T : Triplet f g)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma SpecMap_tensorInl_fromSpecResidueField :
     (Spec.map T.tensorInl ≫ X.fromSpecResidueField T.x) ≫ f =
       (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y) ≫ g := by
@@ -148,7 +147,6 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
     (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y)
     (SpecMap_tensorInl_fromSpecResidueField _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.fst f g (T.SpecTensorTo p) = T.x := by
@@ -158,7 +156,6 @@ lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
 
 @[deprecated (since := "2025-10-11")] alias specTensorTo_base_fst := fst_SpecTensorTo_apply
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma snd_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.snd f g (T.SpecTensorTo p) = T.y := by
@@ -207,7 +204,6 @@ def ofPointTensor (t : ↑(pullback f g)) :
     ((pullback.snd f g).residueFieldMap t)
     (residueFieldCongr_inv_residueFieldMap_ofPoint t)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ofPointTensor_SpecTensorTo (t : ↑(pullback f g)) :
     Spec.map (ofPointTensor t) ≫ (Triplet.ofPoint t).SpecTensorTo =
@@ -222,7 +218,6 @@ lemma ofPointTensor_SpecTensorTo (t : ↑(pullback f g)) :
     rw [← pushout.inr_desc _ _ (residueFieldCongr_inv_residueFieldMap_ofPoint t), Spec.map_comp]
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `t` is a point in `X ×[S] Y` above `(x, y, s)`, then this is the image of the unique
 point of `Spec κ(s)` in `Spec κ(x) ⊗[κ(s)] κ(y)`. -/
 def SpecOfPoint (t : ↑(pullback f g)) : Spec (Triplet.ofPoint t).tensor :=
@@ -263,7 +258,6 @@ lemma carrierEquiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :
     rintro ⟨rfl : T = T', e⟩
     simpa [e]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The points of the underlying topological space of `X ×[S] Y` bijectively correspond to
 pairs of triples `x : X`, `y : Y`, `s : S` with `f x = s = f y` and prime ideals of
@@ -349,7 +343,6 @@ lemma range_snd_comp :
     Set.range (pullback.snd f g ≫ g) = Set.range f ∩ Set.range g := by
   rw [← pullback.condition, range_fst_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ : X ⟶ X')
     (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f')
     (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :

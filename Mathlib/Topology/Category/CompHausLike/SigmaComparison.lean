@@ -43,7 +43,6 @@ values on the components.
 def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.obj ⟨of P (σ a)⟩) :=
   fun x a ↦ X.map (ofHom _ ⟨Sigma.mk a, continuous_sigmaMk⟩).op x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
     (X.mapIso (opCoproductIsoProduct'
       (finiteCoproduct.isColimit.{u, u} (fun a ↦ of P (σ a)))
@@ -65,7 +64,6 @@ theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
   erw [IsColimit.fac]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance isIsoSigmaComparison : IsIso <| sigmaComparison X σ := by
   rw [sigmaComparison_eq_comp_isos]
   infer_instance

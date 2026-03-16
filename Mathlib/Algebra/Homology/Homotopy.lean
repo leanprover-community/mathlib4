@@ -286,7 +286,6 @@ theorem comp_nullHomotopicMap' (f : C ⟶ D) (hom : ∀ i j, c.Rel j i → (D.X 
   · rfl
   · rw [comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Compatibility of `nullHomotopicMap` with the application of additive functors -/
 theorem map_nullHomotopicMap {W : Type*} [Category* W] [Preadditive W] (G : V ⥤ W) [G.Additive]
     (hom : ∀ i j, C.X i ⟶ D.X j) :
@@ -296,7 +295,6 @@ theorem map_nullHomotopicMap {W : Type*} [Category* W] [Preadditive W] (G : V �
   dsimp [nullHomotopicMap, dNext, prevD]
   simp only [G.map_comp, Functor.map_add]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Compatibility of `nullHomotopicMap'` with the application of additive functors -/
 theorem map_nullHomotopicMap' {W : Type*} [Category* W] [Preadditive W] (G : V ⥤ W) [G.Additive]
     (hom : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
@@ -729,7 +727,6 @@ namespace CategoryTheory
 
 variable {W : Type*} [Category* W] [Preadditive W]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An additive functor takes homotopies to homotopies. -/
 @[simps]
 def Functor.mapHomotopy (F : V ⥤ W) [F.Additive] {f g : C ⟶ D} (h : Homotopy f g) :
@@ -763,7 +760,6 @@ open HomologicalComplex CategoryTheory
 variable {C : Type*} [Category* C] [Preadditive C] {ι : Type _} {c : ComplexShape ι}
   [DecidableRel c.Rel] {K L : HomologicalComplex C c} {f g : K ⟶ L}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A homotopy between morphisms of homological complexes `K ⟶ L` induces a homotopy
 between morphisms of short complexes `K.sc i ⟶ L.sc i`. -/
 noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :

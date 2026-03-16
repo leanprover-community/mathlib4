@@ -91,7 +91,6 @@ instance [IsLocallyArtinian X] {U : X.Opens} : IsLocallyArtinian U := .of_isOpen
 instance [IsLocallyArtinian X] {U : X.OpenCover} (i) : IsLocallyArtinian (U.X i) :=
   .of_isOpenImmersion (U.f i)
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian X] :
     DiscreteTopology X := by
   apply discreteTopology_iff_isOpen_singleton.mpr

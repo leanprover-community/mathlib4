@@ -77,7 +77,6 @@ def Lattice.copy (c : Lattice α)
 
 -- adding `@[implicit_reducible]` causes downstream breakage
 set_option warn.classDefReducibility false in
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a distributive lattice
 with possibly different definitional equalities. -/
 def DistribLattice.copy (c : DistribLattice α)
@@ -89,7 +88,6 @@ def DistribLattice.copy (c : DistribLattice α)
 
 -- adding `@[implicit_reducible]` causes downstream breakage
 set_option warn.classDefReducibility false in
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a generalised heyting algebra
 with possibly different definitional equalities. -/
 def GeneralizedHeytingAlgebra.copy (c : GeneralizedHeytingAlgebra α)
@@ -107,7 +105,6 @@ def GeneralizedHeytingAlgebra.copy (c : GeneralizedHeytingAlgebra α)
 
 -- adding `@[implicit_reducible]` causes downstream breakage
 set_option warn.classDefReducibility false in
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a generalised co-Heyting algebra
 with possibly different definitional equalities. -/
 def GeneralizedCoheytingAlgebra.copy (c : GeneralizedCoheytingAlgebra α)
@@ -125,7 +122,6 @@ def GeneralizedCoheytingAlgebra.copy (c : GeneralizedCoheytingAlgebra α)
 
 -- adding `@[implicit_reducible]` causes downstream breakage
 set_option warn.classDefReducibility false in
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a heyting algebra
 with possibly different definitional equalities. -/
 def HeytingAlgebra.copy (c : HeytingAlgebra α)
@@ -147,7 +143,6 @@ def HeytingAlgebra.copy (c : HeytingAlgebra α)
 
 -- adding `@[implicit_reducible]` causes downstream breakage
 set_option warn.classDefReducibility false in
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a co-Heyting algebra
 with possibly different definitional equalities. -/
 def CoheytingAlgebra.copy (c : CoheytingAlgebra α)
@@ -189,7 +184,6 @@ def BiheytingAlgebra.copy (c : BiheytingAlgebra α)
 
 -- adding `@[implicit_reducible]` causes downstream breakage
 set_option warn.classDefReducibility false in
-set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a complete lattice
 with possibly different definitional equalities. -/
 def CompleteLattice.copy (c : CompleteLattice α)

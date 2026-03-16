@@ -278,7 +278,6 @@ def corootSpace : LieIdeal R H :=
   rw [← rootSpace_zero_eq]
   exact fun p ↦ (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) p).property)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_corootSpace {x : H} :
     x ∈ corootSpace α ↔
     (x : L) ∈ Submodule.span R {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} := by

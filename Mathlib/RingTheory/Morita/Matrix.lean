@@ -129,7 +129,6 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
   right_inv x := by simp
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism showing that `toModuleCat` is the left inverse of `toMatrixModCat`. -/
 def MatrixModCat.unitIso (i : ι) :
     ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R i ≅ 𝟭 (ModuleCat R) :=
@@ -169,7 +168,6 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     obtain ⟨y, hy⟩ := by simpa [-SetLike.coe_mem] using (v i).2
     simp [← SemigroupAction.mul_smul, ← hy]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism showing that `toMatrixModCat` is the right inverse of `toModuleCat`. -/
 def MatrixModCat.counitIso (i : ι) :
     MatrixModCat.toModuleCat R i ⋙ ModuleCat.toMatrixModCat R ι ≅ 𝟭 (ModuleCat (Matrix ι ι R)) :=
@@ -179,7 +177,6 @@ def MatrixModCat.counitIso (i : ι) :
     simp [toModuleCatFromModuleCatLinearEquiv]
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
-set_option backward.isDefEq.respectTransparency false in
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/
 @[simps, stacks 074D "(1)"]
@@ -197,7 +194,6 @@ def ModuleCat.matrixEquivalence (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι 
     simp [unitIso, toModuleCatFromModuleCatLinearEquiv, fromModuleCatToModuleCatLinearEquiv,
       fromModuleCatToModuleCatLinearEquivtoModuleCatObj, Finset.univ_sum_single]
 
-set_option backward.isDefEq.respectTransparency false in
 open ModuleCat.Algebra in
 /-- Moreover `ModuleCat.matrixEquivalence` is a `MoritaEquivalence`. -/
 @[simps]

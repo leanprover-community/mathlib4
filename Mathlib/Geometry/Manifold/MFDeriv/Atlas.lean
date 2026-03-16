@@ -326,7 +326,6 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
     simp only [Function.comp_def, PartialEquiv.left_inv (extChartAt I x) hz, id_eq]
   · simp only [Function.comp_def, PartialEquiv.right_inv (extChartAt I x) hy, id_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the derivative of the inverse of `extChartAt` with the derivative of
 `extChartAt` gives the identity.
 Version where the basepoint belongs to `(extChartAt I x).source`. -/
@@ -352,7 +351,6 @@ lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).sourc
   have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
   rwa [this] at Z
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The trivialization of the tangent bundle at a point is the manifold derivative of the
 extended chart.
 Use with care as this abuses the defeq `TangentSpace 𝓘(𝕜, E) y = E` for `y : E`. -/
@@ -365,7 +363,6 @@ theorem TangentBundle.continuousLinearMapAt_trivializationAt
     ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe] at this
   simp [hx, mfderiv, this]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse trivialization of the tangent bundle at a point is the manifold derivative of the
 inverse of the extended chart.
 Use with care as this abuses the defeq `TangentSpace 𝓘(𝕜, E) y = E` for `y : E`. -/
@@ -398,7 +395,6 @@ lemma mfderiv_extChartAt_self :
   ext v
   simpa using (tangentBundleCore I M).coordChange_self (achart H x) x (mem_chart_source H x) v
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: should there be a version for `extChartAt`?
 /-- The manifold derivative within `range I` of `(extChartAt I x).symm` at the chart point is
 the identity. -/
@@ -410,7 +406,6 @@ lemma mfderivWithin_range_extChartAt_symm :
   rw [mfderiv_extChartAt_self, ContinuousLinearMap.comp_id] at hcomp
   simpa using hcomp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of the derivative of `(extChartAt I x).symm` at the chart point,
 applied to a tangent vector, gives back the tangent vector. -/
 lemma mfderivWithin_extChartAt_symm_inverse_apply (v : TangentSpace I x) :

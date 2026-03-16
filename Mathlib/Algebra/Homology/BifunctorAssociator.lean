@@ -38,7 +38,6 @@ the associator for the monoidal category structure on homological complexes.
 
 @[expose] public section
 
-set_option backward.isDefEq.respectTransparency false
 
 assert_not_exists TwoSidedIdeal
 

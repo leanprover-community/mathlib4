@@ -628,7 +628,6 @@ attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
 
 end norm_num_erase
 
-set_option backward.isDefEq.respectTransparency false
 
 -- auto gen tests
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]

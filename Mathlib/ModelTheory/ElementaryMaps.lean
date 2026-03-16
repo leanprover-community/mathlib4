@@ -203,7 +203,6 @@ variable (L) (M)
 abbrev elementaryDiagram : L[[M]].Theory :=
   L[[M]].completeTheory M
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical elementary embedding of an `L`-structure into any model of its elementary diagram
 -/
 @[simps]

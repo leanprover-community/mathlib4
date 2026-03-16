@@ -78,7 +78,6 @@ def eta : G ⟶ GrpCat.of (completion G) := GrpCat.ofHom {
   map_mul' _ _ := rfl
 }
 
-set_option backward.isDefEq.respectTransparency false in
 lemma denseRange : DenseRange (etaFn G) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
@@ -182,7 +181,6 @@ def homEquiv (G : GrpCat.{u}) (P : ProfiniteGrp.{u}) :
   left_inv f := by apply lift_unique; simp
   right_inv f := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The profinite completion is left adjoint to the forgetful functor. -/
 noncomputable
 def adjunction : profiniteCompletion ⊣ forget₂ _ _ :=

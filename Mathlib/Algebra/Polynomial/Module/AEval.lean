@@ -134,7 +134,6 @@ section Submodule
 
 variable (R M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural order isomorphism between the two ways to represent invariant submodules. -/
 noncomputable def mapSubmodule :
     (Algebra.lsmul R R M a).invtSubmodule ≃o Submodule R[X] (AEval R M a) where

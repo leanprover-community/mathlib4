@@ -108,7 +108,6 @@ protected def unopSymm (X : HomologicalComplex Vᵒᵖ c.symm) : HomologicalComp
 
 variable (V c)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
 @[simps]
 def opFunctor : (HomologicalComplex V c)ᵒᵖ ⥤ HomologicalComplex Vᵒᵖ c.symm where
@@ -117,7 +116,6 @@ def opFunctor : (HomologicalComplex V c)ᵒᵖ ⥤ HomologicalComplex Vᵒᵖ c.
     { f := fun i => (f.unop.f i).op
       comm' := fun i j _ => by simp only [op_d, ← op_comp, f.unop.comm] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
 @[simps]
 def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)ᵒᵖ where
@@ -126,7 +124,6 @@ def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)�
     { f := fun i => (f.f i).unop
       comm' := fun i j _ => by simp only [unopSymm_d, ← unop_comp, f.comm] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
 def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInverse V c :=
   NatIso.ofComponents
@@ -160,7 +157,6 @@ def opEquivalence : (HomologicalComplex V c)ᵒᵖ ≌ HomologicalComplex Vᵒ�
       opFunctor_map_f, Hom.isoOfComponents_hom_f]
     exact Category.comp_id _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
 @[simps]
 def unopFunctor : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ⥤ HomologicalComplex V c.symm where
@@ -169,7 +165,6 @@ def unopFunctor : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ⥤ HomologicalComplex V 
     { f := fun i => (f.unop.f i).unop
       comm' := fun i j _ => by simp only [unop_d, ← unop_comp, f.unop.comm] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
 @[simps]
 def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)ᵒᵖ where
@@ -178,7 +173,6 @@ def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)
     { f := fun i => (f.f i).op
       comm' := fun i j _ => by simp only [opSymm_d, ← op_comp, f.comm] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c ⋙ unopInverse V c :=
   NatIso.ofComponents
@@ -337,7 +331,6 @@ def opcyclesOpIso : K.op.opcycles i ≅ op (K.cycles i) :=
 
 variable (j : ι)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opcyclesOpIso_hom_toCycles_op :
     (K.opcyclesOpIso i).hom ≫ (K.toCycles j i).op = K.op.fromOpcycles i j := by
@@ -346,7 +339,6 @@ lemma opcyclesOpIso_hom_toCycles_op :
     exact (K.sc i).opcyclesOpIso_hom_toCycles_op
   · rw [K.toCycles_eq_zero hij, K.op.fromOpcycles_eq_zero hij, op_zero, comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma fromOpcycles_op_cyclesOpIso_inv :
     (K.fromOpcycles i j).op ≫ (K.cyclesOpIso i).inv = K.op.toCycles j i := by
@@ -374,7 +366,6 @@ lemma opcyclesOpIso_hom_naturality :
       (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op :=
   ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
 
-set_option backward.isDefEq.respectTransparency false in -- This is needed in Algebra/Homology/Embedding/TruncLE.lean
 @[reassoc]
 lemma opcyclesOpIso_inv_naturality :
     (cyclesMap φ i).op ≫ (K.opcyclesOpIso i).inv =
@@ -426,10 +417,8 @@ section
 
 variable [Preadditive V]
 
-set_option backward.isDefEq.respectTransparency false in
 instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
 
-set_option backward.isDefEq.respectTransparency false in
 instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
 
 end

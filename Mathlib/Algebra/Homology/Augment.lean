@@ -35,7 +35,6 @@ def truncate [HasZeroMorphisms V] : ChainComplex V ℕ ⥤ ChainComplex V ℕ wh
       shape := fun i j w => C.shape _ _ <| by simpa }
   map f := { f := fun i => f.f (i + 1) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There is a canonical chain map from the truncation of a chain map `C` to
 the "single object" chain complex consisting of the truncated object `C.X 0` in degree 0.
 The components of this chain map are `C.d 1 0` in degree 0, and zero otherwise.
@@ -191,7 +190,6 @@ def truncate [HasZeroMorphisms V] : CochainComplex V ℕ ⥤ CochainComplex V �
         simpa }
   map f := { f := fun i => f.f (i + 1) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There is a canonical chain map from the truncation of a cochain complex `C` to
 the "single object" cochain complex consisting of the truncated object `C.X 0` in degree 0.
 The components of this chain map are `C.d 0 1` in degree 0, and zero otherwise.

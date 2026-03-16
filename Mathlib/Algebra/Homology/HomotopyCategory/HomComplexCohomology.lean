@@ -123,7 +123,6 @@ lemma descAddMonoidHom_cohomologyClass (x : Cocycle K L n) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The additive map which sends a cohomology class to the corresponding morphism
 in the homotopy category. -/
 def toHom :
@@ -140,7 +139,6 @@ def toHom :
 lemma toHom_mk (x : Cocycle K L n) :
     toHom (mk x) = (HomotopyCategory.quotient C _).map (Cocycle.equivHomShift.symm x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
     toHom (mk x) = 0 ↔ x ∈ coboundaries K L n := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -174,7 +172,6 @@ noncomputable def homAddEquiv :
 
 end CohomologyClass
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/
 @[simps]

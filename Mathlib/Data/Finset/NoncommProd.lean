@@ -50,7 +50,6 @@ def noncommFoldr (s : Multiset α)
       comm.of_refl hx hy⟩
   s.attach.foldr (f ∘ Subtype.val) b
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem noncommFoldr_coe (l : List α) (comm) (b : β) :
     noncommFoldr f (l : Multiset α) comm b = l.foldr f b := by

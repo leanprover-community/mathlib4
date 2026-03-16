@@ -239,7 +239,6 @@ lemma preservesMonomorphisms : L.PreservesMonomorphisms where
 lemma preservesEpimorphisms : L.PreservesEpimorphisms where
   preserves f _ := by simpa only [epi_map_iff _ P] using P.epiModSerre_of_epi f
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_iff {X Y : D} (f : X ⟶ Y) :
     Mono f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Mono f'),
       Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
@@ -263,7 +262,6 @@ lemma mono_iff {X Y : D} (f : X ⟶ Y) :
     exact ((MorphismProperty.monomorphisms D).arrow_mk_iso_iff e).1
       (by simpa using inferInstanceAs (Mono (L.map f')))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff {X Y : D} (f : X ⟶ Y) :
     Epi f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Epi f'),
       Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
@@ -286,7 +284,6 @@ lemma epi_iff {X Y : D} (f : X ⟶ Y) :
     exact ((MorphismProperty.epimorphisms D).arrow_mk_iso_iff e).1
       (by simpa using inferInstanceAs (Epi (L.map f')))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
     PreservesLimit (parallelPair f 0) L := by
   have := preservesMonomorphisms L P
@@ -318,7 +315,6 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
   rw [← Category.assoc] at fac
   exact ⟨inv (L.map t) ≫ L.map (kernel.lift _ _ fac), by simp [← Functor.map_comp]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) L := by
   have := preservesEpimorphisms L P
@@ -349,7 +345,6 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
   have := Localization.inverts L P.isoModSerre t ht
   exact ⟨L.map (cokernel.desc _ _ fac) ≫ inv (L.map t), by simp [← L.map_comp_assoc]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasKernels : HasKernels D where
   has_limit f := by
     obtain ⟨g, ⟨e⟩⟩ :=
@@ -361,7 +356,6 @@ lemma hasKernels : HasKernels D where
     exact hasLimit_of_iso (show parallelPair (L.map g.hom) 0 ≅ _ from
       parallelPair.ext (Arrow.leftFunc.mapIso e) (Arrow.rightFunc.mapIso e))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasCokernels : HasCokernels D where
   has_colimit f := by
     obtain ⟨g, ⟨e⟩⟩ :=
@@ -466,7 +460,6 @@ lemma inverseImage_isomorphisms :
 
 variable (G : D ⥤ E)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteLimits_comp_iff :
     PreservesFiniteLimits (L ⋙ G) ↔ PreservesFiniteLimits G := by
   letI := abelian L P
@@ -488,7 +481,6 @@ lemma preservesFiniteLimits_comp_iff :
     (show parallelPair (L.map f'.hom) 0 ≅ parallelPair f 0 from
       parallelPair.ext (Arrow.leftFunc.mapIso iso) (Arrow.rightFunc.mapIso iso))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteColimits_comp_iff :
     PreservesFiniteColimits (L ⋙ G) ↔ PreservesFiniteColimits G := by
   letI := abelian L P

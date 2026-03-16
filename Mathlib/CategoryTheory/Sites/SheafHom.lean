@@ -98,7 +98,6 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
 
 variable {F G}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
     (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows)
     (hx : x.Compatible) (y : (presheafHom F G).obj (op X)) :
@@ -126,7 +125,6 @@ namespace PresheafHom.IsSheafFor
 
 variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) {Y : C}
 
-set_option backward.isDefEq.respectTransparency false in
 include hG in
 lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
     ∃ (φ : F.obj (op Y) ⟶ G.obj (op Y)),
@@ -164,7 +162,6 @@ end PresheafHom.IsSheafFor
 
 variable (F G S)
 
-set_option backward.isDefEq.respectTransparency false in
 include hG in
 open PresheafHom.IsSheafFor in
 lemma presheafHom_isSheafFor :

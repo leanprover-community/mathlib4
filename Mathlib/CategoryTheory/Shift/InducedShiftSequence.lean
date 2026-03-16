@@ -78,7 +78,6 @@ end induced
 
 variable [HasShift D M] [L.CommShift M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomorphism of functors `e : L ⋙ F ≅ G` relating functors `L : C ⥤ D`,
 `F : D ⥤ A` and `G : C ⥤ A`, an additive monoid `M`, a family of functors `F' : M → D ⥤ A`
 equipped with isomorphisms `e' : ∀ m, L ⋙ F' m ≅ G.shift m`, this is the shift sequence
@@ -128,7 +127,6 @@ lemma induced_shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
         (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X := by
   apply induced.shiftIso_hom_app_obj
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma induced_shiftMap {n : M} {X Y : C} (f : X ⟶ Y⟦n⟧) (a a' : M) (h : n + a = a') :
     letI := induced e M F' e'

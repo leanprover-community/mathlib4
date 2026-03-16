@@ -176,11 +176,9 @@ end SMul
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_add (f g : R[G]) : ⇑(f + g) = f + g := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := by simp [single]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r₁ + single m r₂ := by
   simp [single]
@@ -284,7 +282,6 @@ lemma mul_def (x y : R[M]) :
     x * y = x.sum fun m₁ r₁ ↦ y.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂) := by
   with_unfolding_all rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring R[M] where
   zero_mul := by simp [mul_def]
@@ -292,7 +289,6 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring R[M] where
   left_distrib := by classical simp [mul_def]; simp [MonoidAlgebra, sum_add_index, mul_add]
   right_distrib := by classical simp [mul_def]; simp [MonoidAlgebra, sum_add_index, add_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) mul_apply]
 lemma mul_apply [DecidableEq M] (x y : R[M]) (m : M) :
     (x * y) m = x.sum fun m₁ r₁ ↦ y.sum fun m₂ r₂ ↦ if m₁ * m₂ = m then r₁ * r₂ else 0 := by
@@ -320,7 +316,6 @@ lemma mul_apply_antidiagonal (x y : R[M]) (m : M) (s : Finset (M × M))
         · rw [h1, zero_mul]
         · rw [hp hps h1, mul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) (dont_translate := R) single_mul_single]
 lemma single_mul_single (m₁ m₂ : M) (r₁ r₂ : R) :
     single m₁ r₁ * single m₂ r₂ = single (m₁ * m₂) (r₁ * r₂) := by simp [mul_def]
@@ -387,7 +382,6 @@ end Semigroup
 section MulOneClass
 variable [MulOneClass M]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonAssocSemiring : NonAssocSemiring R[M] where
   natCast n := single 1 n
@@ -590,7 +584,6 @@ instance addCommGroup : AddCommGroup R[M] :=
 @[to_additive (attr := simp) (dont_translate := R)]
 lemma neg_apply (m : M) (x : R[M]) : (-x) m = -x m := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := by simp [single]
 
@@ -600,7 +593,6 @@ instance nonUnitalNonAssocRing [Mul M] : NonUnitalNonAssocRing R[M] where
 @[to_additive (dont_translate := R)]
 instance nonUnitalRing [Semigroup M] : NonUnitalRing R[M] where
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonAssocRing [MulOneClass M] : NonAssocRing R[M] where
   intCast z := single 1 z

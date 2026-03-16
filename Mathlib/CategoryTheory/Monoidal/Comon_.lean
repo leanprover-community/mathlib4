@@ -228,7 +228,6 @@ def mkIso {M N : Comon C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ ε[N.X] = ε[M
   have : IsComonHom f.hom := ⟨f_counit, f_comul⟩
   ⟨⟨f.hom⟩, ⟨f.inv⟩, by cat_disch, by cat_disch⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance uniqueHomToTrivial (A : Comon C) : Unique (A ⟶ trivial C) where
   default.hom := ε[A.X]
@@ -322,7 +321,6 @@ def MonOpOpToComon : (Mon Cᵒᵖ)ᵒᵖ ⥤ Comon C where
 
 @[deprecated (since := "2025-09-15")] alias Mon_OpOpToComon_ := MonOpOpToComon
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Comonoid objects are contravariantly equivalent to monoid objects in the opposite category.
 -/
@@ -385,7 +383,6 @@ theorem tensorObj_comul (A B : C) [ComonObj A] [ComonObj B] :
     Δ[A ⊗ B] = (Δ[A] ⊗ₘ Δ[B]) ≫ tensorμ A A B B := by
   simp [tensorObj_comul']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `Comon C` to `C` is monoidal when `C` is monoidal. -/
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal

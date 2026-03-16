@@ -167,7 +167,6 @@ namespace LeftExtension
 variable {F L}
 variable (E : LeftExtension L F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cocone for `CostructuredArrow.proj L Y ⋙ F` attached to `E : LeftExtension L F`.
 The point of this cocone is `E.right.obj Y` -/
 @[simps]
@@ -300,7 +299,6 @@ lemma IsPointwiseLeftKanExtension.hasPointwiseLeftKanExtension :
     HasPointwiseLeftKanExtension L F :=
   fun Y => (h Y).hasPointwiseLeftKanExtensionAt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The (unique) morphism from a pointwise left Kan extension. -/
 def IsPointwiseLeftKanExtension.homFrom (G : LeftExtension L F) : E ⟶ G :=
   StructuredArrow.homMk
@@ -331,7 +329,6 @@ lemma IsPointwiseLeftKanExtension.isLeftKanExtension :
     E.right.IsLeftKanExtension E.hom where
   nonempty_isUniversal := ⟨h.isUniversal⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPointwiseLeftKanExtension.hasLeftKanExtension :
     HasLeftKanExtension L F :=
   have := h.isLeftKanExtension
@@ -349,7 +346,6 @@ namespace RightExtension
 variable {F L}
 variable (E E' : RightExtension L F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cone for `StructuredArrow.proj Y L ⋙ F` attached to `E : RightExtension L F`.
 The point of this cone is `E.left.obj Y` -/
 @[simps]
@@ -475,7 +471,6 @@ lemma IsPointwiseRightKanExtension.hasPointwiseRightKanExtension :
     HasPointwiseRightKanExtension L F :=
   fun Y => (h Y).hasPointwiseRightKanExtensionAt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The (unique) morphism to a pointwise right Kan extension. -/
 def IsPointwiseRightKanExtension.homTo (G : RightExtension L F) : G ⟶ E :=
   CostructuredArrow.homMk
@@ -505,7 +500,6 @@ lemma IsPointwiseRightKanExtension.isRightKanExtension :
     E.left.IsRightKanExtension E.hom where
   nonempty_isUniversal := ⟨h.isUniversal⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPointwiseRightKanExtension.hasRightKanExtension :
     HasRightKanExtension L F :=
   have := h.isRightKanExtension
@@ -522,7 +516,6 @@ section
 
 variable [HasPointwiseLeftKanExtension L F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The constructed pointwise left Kan extension when `HasPointwiseLeftKanExtension L F` holds. -/
 @[simps]
 noncomputable def pointwiseLeftKanExtension : D ⥤ H where
@@ -546,7 +539,6 @@ noncomputable def pointwiseLeftKanExtension : D ⥤ H where
     congr 1
     apply CostructuredArrow.map_comp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unit of the constructed pointwise left Kan extension when
 `HasPointwiseLeftKanExtension L F` holds. -/
 @[simps]
@@ -561,7 +553,6 @@ noncomputable def pointwiseLeftKanExtensionUnit : F ⟶ L ⋙ pointwiseLeftKanEx
       CostructuredArrow.homMk f
     exact colimit.w (CostructuredArrow.proj L (L.obj X₂) ⋙ F) φ
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `pointwiseLeftKanExtension L F` is a pointwise left Kan
 extension of `F` along `L`. -/
 noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtension :
@@ -584,7 +575,6 @@ instance : (pointwiseLeftKanExtension L F).IsLeftKanExtension
 instance : HasLeftKanExtension L F :=
   HasLeftKanExtension.mk _ (pointwiseLeftKanExtensionUnit L F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary cocone used in the lemma `pointwiseLeftKanExtension_desc_app` -/
 @[simps]
 def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
@@ -594,7 +584,6 @@ def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
     app := fun f ↦ α.app f.left ≫ G.map f.hom
     naturality := by simp [← G.map_comp] }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
     ((pointwiseLeftKanExtension L F).descOfIsLeftKanExtension (pointwiseLeftKanExtensionUnit L F)
@@ -625,7 +614,6 @@ section
 
 variable [HasPointwiseRightKanExtension L F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The constructed pointwise right Kan extension
 when `HasPointwiseRightKanExtension L F` holds. -/
 @[simps]
@@ -649,7 +637,6 @@ noncomputable def pointwiseRightKanExtension : D ⥤ H where
     congr 1
     apply StructuredArrow.map_comp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit of the constructed pointwise right Kan extension when
 `HasPointwiseRightKanExtension L F` holds. -/
 @[simps]
@@ -665,7 +652,6 @@ noncomputable def pointwiseRightKanExtensionCounit :
       StructuredArrow.homMk f
     exact (limit.w (StructuredArrow.proj (L.obj X₁) L ⋙ F) φ).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `pointwiseRightKanExtension L F` is a pointwise right Kan
 extension of `F` along `L`. -/
 noncomputable def pointwiseRightKanExtensionIsPointwiseRightKanExtension :
@@ -688,7 +674,6 @@ instance : (pointwiseRightKanExtension L F).IsRightKanExtension
 instance : HasRightKanExtension L F :=
   HasRightKanExtension.mk _ (pointwiseRightKanExtensionCounit L F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary cocone used in the lemma `pointwiseRightKanExtension_lift_app` -/
 @[simps]
 def structuredArrowMapCone (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :
@@ -698,7 +683,6 @@ def structuredArrowMapCone (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :
     app := fun f ↦ G.map f.hom ≫ α.app f.right
     naturality := by simp [← α.naturality, ← G.map_comp_assoc] }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pointwiseRightKanExtension_lift_app (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :
     ((pointwiseRightKanExtension L F).liftOfIsRightKanExtension

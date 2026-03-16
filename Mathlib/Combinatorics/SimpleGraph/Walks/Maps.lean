@@ -124,13 +124,10 @@ variable {G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v)
 abbrev mapLe : G'.Walk u v :=
   p.map (.ofLE h)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma support_mapLe_eq_support : (p.mapLe h).support = p.support := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma edges_mapLe_eq_edges : (p.mapLe h).edges = p.edges := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma edgeSet_mapLe_eq_edgeSet : (p.mapLe h).edgeSet = p.edgeSet := by simp
 
 end mapLe

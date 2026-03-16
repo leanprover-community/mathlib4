@@ -61,7 +61,6 @@ namespace LocalRepresentability
 
 variable {F f} (i j k : ι)
 
-set_option backward.isDefEq.respectTransparency false in
 open Functor.relativelyRepresentable in
 /-- We get a family of gluing data by taking `U i = X i` and `V i j = (hf i).rep.pullback (f j)`. -/
 @[simps]
@@ -90,7 +89,6 @@ noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
 instance : IsOpenImmersion (toGlued hf i) :=
   inferInstanceAs (IsOpenImmersion ((glueData hf).ι i))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map from the glued scheme `(glueData hf).glued`, treated as a sheaf, to `F`. -/
 noncomputable def yonedaGluedToSheaf :
     zariskiTopology.yoneda.obj (glueData hf).glued ⟶ F where
@@ -126,7 +124,6 @@ lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ 
       F.obj.map γ.op ((yonedaGluedToSheaf hf).hom.app (op U) α) :=
   congr_fun ((yonedaGluedToSheaf hf).hom.naturality γ.op) α
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
     Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
   Presheaf.isLocallySurjective_of_isLocallySurjective_fac _

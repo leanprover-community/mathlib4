@@ -90,7 +90,6 @@ def limitCone : Cone F where
       naturality := fun {_ _} f ↦ hom_ext <| RingHom.coe_inj
         ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `SemiRingCat` is a limit cone.
 (Internal use only; use the limits API.)
 -/

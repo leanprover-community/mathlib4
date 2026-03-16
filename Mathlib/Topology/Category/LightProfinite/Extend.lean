@@ -69,7 +69,6 @@ example : functorOp c ⋙ CostructuredArrow.proj toLightProfinite.op ⟨c.pt⟩ 
 example : functor c ⋙ (StructuredArrow.post _ _ lightToProfinite) =
     Profinite.Extend.functor (lightToProfinite.mapCone c) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
 `LightProfinite.Extend.functor` is initial.
@@ -96,7 +95,6 @@ section Limit
 
 variable {C : Type*} [Category* C] (G : LightProfinite ⥤ C)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a functor `G` from `LightProfinite` and `S : LightProfinite`, we obtain a cone on
 `(StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite ⋙ G)` with cone point `G.obj S`.

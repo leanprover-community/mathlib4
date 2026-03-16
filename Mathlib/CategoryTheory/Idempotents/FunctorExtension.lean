@@ -51,7 +51,6 @@ def obj (F : C ⥤ Karoubi D) : Karoubi C ⥤ Karoubi D where
     ⟨(F.obj P.X).X, (F.map P.p).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map P.idem⟩
   map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map f.comm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Extension of a natural transformation `φ` between functors
 `C ⥤ Karoubi D` to a natural transformation between the
 extension of these functors to `Karoubi C ⥤ Karoubi D` -/
@@ -80,7 +79,6 @@ end FunctorExtension₁
 
 variable (C D E)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical functor `(C ⥤ Karoubi D) ⥤ (Karoubi C ⥤ Karoubi D)` -/
 @[simps]
 def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
@@ -112,7 +110,6 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
       (fun {X Y} f => by simp))
     (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 def KaroubiUniversal₁.counitIso :
     (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ⋙ functorExtension₁ C D ≅ 𝟭 _ :=
@@ -250,7 +247,6 @@ theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
 
 end IsIdempotentComplete
 
-set_option backward.isDefEq.respectTransparency false in
 variable {C D} in
 /-- The precomposition of functors with `toKaroubi C` is fully faithful. -/
 def whiskeringLeftObjToKaroubiFullyFaithful :

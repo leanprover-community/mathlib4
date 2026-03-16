@@ -227,13 +227,11 @@ variable {R p}
 theorem ext {f g : Perfection R p} (h : ∀ n, coeff R p n f = coeff R p n g) : f = g :=
   extMonoid h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pthRoot_eq_symm_frobeniusEquiv :
     pthRoot R p = RingHomClass.toRingHom (frobeniusEquiv _ p).symm := by
   ext : 1
   simpa [RingEquiv.eq_symm_apply] using ext <| coeffMonoidHom_pow_p' _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_pthRoot_eq_symm_frobeniusEquiv : ⇑(pthRoot R p) = (frobeniusEquiv _ p).symm :=
   congr($pthRoot_eq_symm_frobeniusEquiv)
 
@@ -241,7 +239,6 @@ lemma coe_pthRoot_eq_symm_frobeniusEquiv : ⇑(pthRoot R p) = (frobeniusEquiv _ 
 
 lemma pthRootMonoidHom_eq_pthRoot : ⇑(pthRootMonoidHom R p) = pthRoot R p := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pthRootMonoidHom_eq_symm_frobeniusEquiv :
     ⇑(pthRootMonoidHom R p) = RingHomClass.toRingHom (frobeniusEquiv _ p).symm := by
   simp; rfl
@@ -251,13 +248,11 @@ lemma coeff_toMonoidHom (n : ℕ) : (coeff R p n).toMonoidHom = coeffMonoidHom R
 @[simp]
 theorem coeff_mk (f : ℕ → R) (hf) (n : ℕ) : coeff R p n ⟨f, hf⟩ = f n := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_symm_frobeniusEquiv (f : Perfection R p) (n : ℕ) :
     coeff R p n ((frobeniusEquiv _ p).symm f) = coeff R p (n + 1) f :=
   coeffMonoidHom_symm_powMulEquiv ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_iterate_symm_frobeniusEquiv (f : Perfection R p) (n m : ℕ) :
     coeff R p n ((frobeniusEquiv _ p).symm^[m] f) = coeff R p (n + m) f :=
@@ -423,7 +418,6 @@ theorem mk' {f : P →+* R} (g : P ≃+* Perfection R p) (hfg : Perfection.lift 
 
 variable (p R P)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical perfection map from the perfection of a ring. -/
 theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
   mk' (RingEquiv.refl _) <| (Equiv.apply_eq_iff_eq_symm_apply _).2 rfl
@@ -508,7 +502,6 @@ theorem map_map {π : P →+* R} (m : PerfectionMap p π) {σ : Q →+* S} (n : 
     (φ : R →+* S) (x : P) : σ (map p m n φ x) = φ (π x) :=
   RingHom.ext_iff.1 (comp_map p m n φ) x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_eq_map (φ : R →+* S) : map p (of p R) (of p S) φ = Perfection.map p φ :=
   hom_ext _ (of p S) fun f => by rw [map_map, Perfection.coeff_map]
 
@@ -567,7 +560,6 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
     preVal K v O p (x * y) = preVal K v O p x * preVal K v O p y := by
   have hx0 : x ≠ 0 := mt (by rintro rfl; rw [zero_mul]) hxy0
@@ -577,7 +569,6 @@ theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
   rw [← map_mul (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hv hx0, preVal_mk hv hy0, preVal_mk hv hxy0, map_mul, v.map_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preVal_add (x y : ModP O p) :
     preVal K v O p (x + y) ≤ max (preVal K v O p x) (preVal K v O p y) := by
   by_cases hx0 : x = 0
@@ -648,11 +639,9 @@ variable [Fact p.Prime] [Fact (¬ IsUnit (p : O))]
 instance : CommRing (PreTilt O p) :=
   inferInstanceAs <| CommRing <| Perfection _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CharP (PreTilt O p) p :=
   inferInstanceAs <| CharP (Perfection _ _) _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : PerfectRing (PreTilt O p) p :=
   inferInstanceAs <| PerfectRing (Perfection _ _) p
 
@@ -666,13 +655,11 @@ def coeff (n : ℕ) : PreTilt O p →+* ModP O p := Perfection.coeff (ModP O p) 
 theorem coeff_def (n : ℕ) (x : PreTilt O p) : coeff n x = Perfection.coeff _ _ n x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_frobenius (n : ℕ) (x : PreTilt O p) :
     (coeff (n + 1) (frobenius _ p x)) = coeff n x := by
   simp [PreTilt, coeff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_iterate_frobenius (m n : ℕ) (x : PreTilt O p) :
     (coeff (m + n) ((frobenius _ p)^[n] x)) = coeff m x := by
@@ -687,13 +674,11 @@ theorem coeff_iterate_frobenius' (x : PreTilt O p) {m n : ℕ} (hmn : m ≤ n) :
 theorem coeff_pow_p (x : PreTilt O p) (n : ℕ) : coeff (n + 1) x ^ p = coeff n x :=
   Perfection.coeff_pow_p x n
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_frobeniusEquiv_symm (n : ℕ) (x : PreTilt O p) :
     (coeff n (((frobeniusEquiv _ p).symm) x)) = coeff (n + 1) x := by
   simp [PreTilt, coeff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_iterate_frobeniusEquiv_symm (m n : ℕ) (x : PreTilt O p) :
     (coeff m (((frobeniusEquiv _ p).symm^[n]) x)) = coeff (m + n) x := by
@@ -743,7 +728,6 @@ theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff n f ≠ 0) :
   rw [ih (coeff_nat_find_add_ne_zero k), ← add_assoc, ← hx, ← coeff_pow_p, ← hx, ← map_pow,
     ModP.preVal_mk hv h1, ModP.preVal_mk hv h2, map_pow, v.map_pow, ← pow_mul, pow_succ']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem valAux_one : valAux K v O p 1 = 1 :=
   (valAux_eq (hv := hv) <| show coeff 0 1 ≠ 0 from one_ne_zero).trans <| by
     rw [pow_zero, pow_one, map_one, ← (Ideal.Quotient.mk _).map_one, ModP.preVal_mk hv,
@@ -770,7 +754,6 @@ theorem valAux_mul (f g : PreTilt O p) :
       valAux_eq hv (coeff_add_ne_zero hn 1), valAux_eq hv hfg]
   rw [map_mul] at hfg ⊢; rw [ModP.preVal_mul hv hfg, mul_pow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem valAux_add (f g : PreTilt O p) :
     valAux K v O p (f + g) ≤ max (valAux K v O p f) (valAux K v O p g) := by
   by_cases hf : f = 0

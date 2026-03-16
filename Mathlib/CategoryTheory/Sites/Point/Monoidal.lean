@@ -31,7 +31,6 @@ open Limits MonoidalCategory Functor
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C} (Φ : Point.{w} J)
   {A : Type u'} [Category.{v'} A] [MonoidalCategory A] [HasColimitsOfSize.{w, w} A]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     (Φ.presheafFiber (A := A)).OplaxMonoidal where
   η := Φ.presheafFiberDesc (fun _ _ ↦ 𝟙 _)
@@ -100,12 +99,10 @@ instance (P₁ P₂ : Cᵒᵖ ⥤ A) :
 noncomputable instance : (Φ.presheafFiber (A := A)).Monoidal :=
   .ofOplaxMonoidal _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toPresheafFiber_ε (X : C) (x : Φ.fiber.obj X) :
     LaxMonoidal.ε Φ.presheafFiber = Φ.toPresheafFiber X x (𝟙_ (Cᵒᵖ ⥤ A)) := by
   simp [← cancel_mono (OplaxMonoidal.η Φ.presheafFiber)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma tensorHom_comp_toPresheafFiber_μ (X : C) (x : Φ.fiber.obj X) (G₁ G₂ : Cᵒᵖ ⥤ A) :
     (Φ.toPresheafFiber X x G₁ ⊗ₘ Φ.toPresheafFiber X x G₂) ≫

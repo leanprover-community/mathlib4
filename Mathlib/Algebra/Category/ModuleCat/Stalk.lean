@@ -60,7 +60,6 @@ def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).Colimi
 #adaptation_note /-- As of nightly-2026-02-10, we need to increase the maxHeartbeats limits here,
 and as of nightly-2026-02-23, we also need `backward.whnf.reducibleClassField`
 to avoid needing even more. -/
-set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 600000 in --
 set_option synthInstance.maxHeartbeats 40000 in
 /-- (Implementation). The module structure on `AddCommGrpCat.FilteredColimits.colimit`. -/
@@ -130,7 +129,6 @@ noncomputable abbrev IsColimit.module {cR : Cocone R} (hcR : IsColimit cR) {cM :
     (IsColimit.coconePointUniqueUpToIso hcR
           (RingCat.FilteredColimits.colimitCoconeIsColimit R)).ringCatIsoToRingEquiv.toRingHom
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsColimit.ι_smul {cR : Cocone R} (hcR : IsColimit cR) {cM : Cocone M}
     (hcM : IsColimit cM) (i : C) (r : R.obj i) (m : M.obj i) :
     letI := IsColimit.module R M H hcR hcM
@@ -159,7 +157,6 @@ variable {X : TopCat.{u}} {R : X.Presheaf RingCat.{u}} (M : PresheafOfModules.{u
 
 variable (x : X)
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance : Module (R.stalk x) ↑(TopCat.Presheaf.stalk M.presheaf x) :=
   letI (i : (OpenNhds x)ᵒᵖ) : Module (((OpenNhds.inclusion x).op ⋙ R).obj i)
@@ -168,7 +165,6 @@ instance : Module (R.stalk x) ↑(TopCat.Presheaf.stalk M.presheaf x) :=
   Limits.IsColimit.module ((OpenNhds.inclusion x).op ⋙ R) ((OpenNhds.inclusion x).op ⋙ M.presheaf)
     (fun f r m ↦ M.map_smul _ _ _) (Limits.colimit.isColimit _) (Limits.colimit.isColimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma germ_ringCat_smul (U : Opens X) (hx : x ∈ U) (r : R.obj (op U)) (m : M.obj (op U)) :
     TopCat.Presheaf.germ M.presheaf U x hx (r • m) =
       R.germ U x hx r • TopCat.Presheaf.germ M.presheaf U x hx m :=
@@ -184,7 +180,6 @@ section CommRingCat
 variable {X : TopCat.{u}} {R : X.Presheaf CommRingCat.{u}}
   (M : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance (x : X) : Module (R.stalk x) ↑(TopCat.Presheaf.stalk M.presheaf x) :=
   letI (i : (OpenNhds x)ᵒᵖ) : Module (((OpenNhds.inclusion x).op ⋙ R ⋙ forget₂ _ RingCat).obj i)
@@ -195,7 +190,6 @@ instance (x : X) : Module (R.stalk x) ↑(TopCat.Presheaf.stalk M.presheaf x) :=
     (fun f r m ↦ M.map_smul _ _ _) (Limits.isColimitOfPreserves (forget₂ _ _)
       (Limits.colimit.isColimit ((OpenNhds.inclusion x).op ⋙ R))) (Limits.colimit.isColimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma germ_smul (x : X) (U : Opens X) (hx : x ∈ U) (r : R.obj (op U)) (m : M.obj (op U)) :
     TopCat.Presheaf.germ M.presheaf U x hx (r • m) =
       R.germ U x hx r • TopCat.Presheaf.germ M.presheaf U x hx m :=

@@ -67,7 +67,6 @@ instance (s : S) [GeometricallyReduced f] :
 instance (s : S) [GeometricallyReduced f] : IsReduced (f.fiber s) :=
   GeometricallyReduced.geometrically_isReduced _ _ _ (.of_hasPullback _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma GeometricallyReduced.isReduced_of_flat_of_finite_irreducibleComponents
     (f : X ⟶ Y) [GeometricallyReduced f] [Flat f]
     [IsReduced Y] [Finite (irreducibleComponents Y)] : IsReduced X := by
@@ -102,7 +101,6 @@ lemma GeometricallyReduced.isReduced_of_flat_of_finite_irreducibleComponents
   apply +allowSynthFailures @IsReduced.of_openCover (𝒰 := sigmaOpenCover _)
   exact fun i ↦ GeometricallyReduced.geometrically_isReduced _ _ _ (.of_hasPullback _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian
     (f : X ⟶ Y) [GeometricallyReduced f] [Flat f]
     [IsReduced Y] [IsLocallyNoetherian Y] : IsReduced X := by

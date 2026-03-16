@@ -821,7 +821,6 @@ lemma cfcₙHom_of_cfcHom_map_quasispectrum [ContinuousFunctionalCalculus R A p]
 -- gives access to the `ContinuousFunctionalCalculus.compactSpace_spectrum` instance
 open scoped ContinuousFunctionalCalculus
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctionalCalculus R A p]
     [CompleteSpace R] {a : A} (ha : p a) :
     IsClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by

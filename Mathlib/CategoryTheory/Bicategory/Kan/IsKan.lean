@@ -101,7 +101,6 @@ of extensions. -/
 def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
   Limits.IsInitial.ofIso P i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `t : LeftExtension f (g ≫ 𝟙 c)` is a Kan extension, then `t.ofCompId : LeftExtension f g`
 is also a Kan extension. -/
 def ofCompId (t : LeftExtension f (g ≫ 𝟙 c)) (P : IsKan t) : IsKan t.ofCompId :=
@@ -193,7 +192,6 @@ theorem uniqueUpToIso_inv_right (P : IsKan s) (Q : IsKan t) :
 def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
   Limits.IsInitial.ofIso P i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `t : LeftLift f (𝟙 c ≫ g)` is a Kan lift, then `t.ofIdComp : LeftLift f g` is also
 a Kan lift. -/
 def ofIdComp (t : LeftLift f (𝟙 c ≫ g)) (P : IsKan t) : IsKan t.ofIdComp :=

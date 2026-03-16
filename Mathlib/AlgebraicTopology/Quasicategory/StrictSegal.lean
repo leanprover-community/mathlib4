@@ -28,7 +28,6 @@ open Simplicial SimplicialObject SimplexCategory
 
 namespace SSet.StrictSegal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
 theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := by
   apply quasicategory_of_filler X

@@ -34,7 +34,6 @@ commutes with shifts by `ℤ`.
 
 assert_not_exists TwoSidedIdeal
 
-set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory Category Limits HomologicalComplex
 

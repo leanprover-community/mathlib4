@@ -261,7 +261,6 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
         simp [Vector.mOfFn, hg₁, hl]
         rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (operates on two goals, with long simp sets)
 set_option linter.flexible false in
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :

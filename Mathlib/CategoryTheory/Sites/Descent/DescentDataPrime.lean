@@ -84,7 +84,6 @@ lemma pullHom'₂₃_eq_pullHom_of_chosenPullback₃ (i₁ i₂ i₃ : ι) :
       pullHom (hom i₂ i₃) (sq₃ i₁ i₂ i₃).p₂₃ _ _ :=
   pullHom'_eq_pullHom _ _ _ ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma pullHom_pullHom' ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S)
     ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂)
@@ -117,13 +116,11 @@ lemma pullHom'_p₁_p₂ (i₁ i₂ : ι) :
     pullHom' hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (by simp) (by simp) = hom i₁ i₂ := by
   simp [pullHom'_eq_pullHom hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (𝟙 _)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pullHom'_self' (hom_self : ∀ i, pullHom' hom (f i) (𝟙 (X i)) (𝟙 (X i)) = 𝟙 _)
     ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (hg : g ≫ f i = q := by cat_disch) :
     pullHom' hom q g g hg hg = 𝟙 _ := by
   simp [← pullHom_pullHom' hom g (f i) q (𝟙 (X i)) (𝟙 (X i)) g g hg, hom_self, pullHom]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {sq₃} in
 @[reassoc]
 lemma comp_pullHom'' (hom_comp : ∀ (i₁ i₂ i₃ : ι),
@@ -227,7 +224,6 @@ lemma hom_ext {D₁ D₂ : F.DescentData' sq sq₃} {f g : D₁ ⟶ D₂}
     (h : ∀ i, f.hom i = g.hom i) : f = g :=
   Hom.ext (funext h)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma comm {D₁ D₂ : F.DescentData' sq sq₃} (φ : D₁ ⟶ D₂)
     ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)

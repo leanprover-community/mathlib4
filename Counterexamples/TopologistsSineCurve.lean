@@ -152,7 +152,6 @@ lemma exists_mem_Ioc_of_y {y : ℝ} (hy : y ∈ Icc (-1) 1) {a : ℝ} (ha : 0 < 
   rw [dist_eq, sub_zero, abs_of_pos (xSeq_pos _ N)] at h_dist
   linarith
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The set `T` is not path-connected. -/
 theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   -- **Step 1**:

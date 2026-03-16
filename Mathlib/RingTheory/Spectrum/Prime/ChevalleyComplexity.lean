@@ -169,7 +169,6 @@ open InductionObj
 
 universe u
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The structure of the induction in the proof of Chevalley's theorem:
 Consider a property on a vector `e` of polynomials. Suppose that it holds for the following cases:
@@ -273,7 +272,6 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (large simp set)
 set_option linter.flexible false in
 open IsLocalization in
@@ -430,7 +428,6 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
       · exact one_le_coeffSubmodule
       · lia
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/
 private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
@@ -670,7 +667,6 @@ lemma degBound_pos (k : ℕ) (D : ℕ → ℕ) : ∀ n, 0 < degBound k D n
 
 end MvPolynomialC
 
-set_option backward.isDefEq.respectTransparency false in
 open MvPolynomialC in
 /-- The `C : R → R[X₁, ..., Xₘ]` case of **Chevalley's theorem** with complexity bound. -/
 lemma chevalley_mvPolynomialC
@@ -799,7 +795,6 @@ end ChevalleyThm
 
 open ChevalleyThm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Chevalley's theorem** with complexity bound.
 
 A constructible set of complexity at most `M` in `Spec R[X₁, ..., Xₘ]` gets mapped under

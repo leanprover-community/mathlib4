@@ -35,7 +35,6 @@ theorem AddMonoid.End.natCast_def (n : ℕ) :
 
 variable (R M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `(•)` as an `AddMonoidHom`.
 
 This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/

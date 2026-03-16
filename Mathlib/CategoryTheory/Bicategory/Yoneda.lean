@@ -52,7 +52,6 @@ def associatorNatIsoRightCat {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (d : B) :
       (precomposingCat ..).obj g ≫ (precomposingCat ..).obj f :=
   Cat.Hom.isoMk <| NatIso.ofComponents (α_ f g ·)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Middle component of the associator as a 2-isomorphism in `Cat`. -/
 @[simps!]
 def associatorNatIsoMiddleCat {a b c d : B} (f : a ⟶ b) (h : c ⟶ d) :
@@ -65,7 +64,6 @@ def associatorNatIsoMiddleCat {a b c d : B} (f : a ⟶ b) (h : c ⟶ d) :
 def rightUnitorNatIsoCat (a b : B) : (postcomposingCat a _ _).obj (𝟙 b) ≅ 𝟙 (Cat.of (a ⟶ b)) :=
   Cat.Hom.isoMk <| NatIso.ofComponents (ρ_ ·)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Left component of the associator as a 2-isomorphism in `Cat`. -/
 @[simps!]
 def associatorNatIsoLeftCat (a : B) {b c d : B} (g : b ⟶ c) (h : c ⟶ d) :
@@ -73,7 +71,6 @@ def associatorNatIsoLeftCat (a : B) {b c d : B} (g : b ⟶ c) (h : c ⟶ d) :
       (postcomposingCat ..).obj (g ≫ h) :=
   Cat.Hom.isoMk <| NatIso.ofComponents (α_ · g h)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map on objects underlying the Yoneda embedding. It sends an object `x` to
 the pseudofunctor defined by:
 * Objects: `a ↦ (a ⟶ x)`
@@ -87,14 +84,12 @@ def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
   mapId a := leftUnitorNatIsoCat (unop a) x
   mapComp f g := associatorNatIsoRightCat g.unop f.unop x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Postcomposing of a 1-morphism seen as a strong transformation between pseudofunctors. -/
 @[simps!]
 def postcomp₂ {a b : B} (f : a ⟶ b) : yoneda₀ a ⟶ yoneda₀ b where
   app x := (postcomposingCat (unop x) a b).obj f
   naturality g := associatorNatIsoMiddleCat g.unop f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Postcomposing of `1`-morphisms seen as a functor from `a ⟶ b` to the hom-category of the
 corresponding pseudofunctors.
 
@@ -104,7 +99,6 @@ def postcomposing₂ (a b : B) : (a ⟶ b) ⥤ (yoneda₀ a ⟶ yoneda₀ b) whe
   obj := postcomp₂
   map η := { as := { app x := (postcomposingCat (unop x) a b).map η }}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Yoneda pseudofunctor from `B` to `Bᵒᵖ ⥤ᵖ Cat`.
 
 It consists of the following:

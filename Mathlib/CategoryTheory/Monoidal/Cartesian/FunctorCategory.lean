@@ -88,7 +88,6 @@ lemma snd_app (F₁ F₂ : J ⥤ C) (j : J) : (snd F₁ F₂).app j = snd (F₁.
 lemma leftUnitor_hom_app (F : J ⥤ C) (j : J) :
     (λ_ F).hom.app j = (λ_ (F.obj j)).hom := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
     (λ_ F).inv.app j = (λ_ (F.obj j)).inv := by
@@ -99,7 +98,6 @@ lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
 lemma rightUnitor_hom_app (F : J ⥤ C) (j : J) :
     (ρ_ F).hom.app j = (ρ_ (F.obj j)).hom := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rightUnitor_inv_app (F : J ⥤ C) (j : J) :
     (ρ_ F).inv.app j = (ρ_ (F.obj j)).inv := by
@@ -130,7 +128,6 @@ lemma whiskerRight_app_snd {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J
     (f ▷ F₂).app j ≫ snd _ _ = snd _ _ := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).hom.app j = (α_ _ _ _).hom := by
@@ -145,7 +142,6 @@ lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
         associator_hom_snd_snd]
       simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := by

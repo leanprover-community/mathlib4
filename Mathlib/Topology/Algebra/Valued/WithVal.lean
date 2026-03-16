@@ -188,7 +188,6 @@ section CommRing
 
 variable [CommRing R] (v : Valuation R Γ₀)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 
 instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
@@ -233,7 +232,6 @@ instance {P : Type*} [Ring S] [SMul P R] [SMul S R] [SMul P S]
 instance [AddCommMonoid S] [Module R S] : Module (WithVal v) S :=
   .compHom S (equiv v).toRingHom
 
-set_option backward.isDefEq.respectTransparency false in
 instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
@@ -318,10 +316,8 @@ section Field
 
 variable [Field R] (v : Valuation R Γ₀)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Field (WithVal v) := fast_instance% (equiv v).field
 
-set_option backward.isDefEq.respectTransparency false in
 instance [NumberField R] : NumberField (WithVal v) where
 
 @[simp] lemma toVal_div (x y : R) : toVal v (x / y) = toVal v x / toVal v y := rfl
@@ -466,7 +462,6 @@ theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : v.IsEquiv w) : UniformContinuous (WithVal.equiv v) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
@@ -493,7 +488,6 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   rw [restrict_lt_iff] at hx
   exact hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : w.IsEquiv v) : UniformContinuous (WithVal.equiv v).symm := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
@@ -519,7 +513,6 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   · rw [restrict_pos_iff, hv, h.pos_iff]
     exact hs₀
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsEquiv.uniformContinuous (h : v.IsEquiv w) :
     @UniformContinuous R R (Valued.mk' w).toUniformSpace (Valued.mk' v).toUniformSpace
       (RingHom.id R) := by
@@ -590,7 +583,6 @@ theorem restrict_exists_div_eq {K : Type*} [Field K] {Γ₀ : Type*}
       embedding_strictMono.lt_iff_lt, map_zero]
     refine WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
     {w : Valuation K Γ₀'} (h : v.IsEquiv w) {x : v.Completion} :
@@ -621,7 +613,6 @@ instance : CoeHead (𝓞 (WithVal v)) (WithVal v) where
 instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     IsIntegralClosure R ℤ (WithVal v) := .of_algEquiv _ (WithVal.algEquiv ℤ v).symm (fun _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
 `ℤ` in `K`. -/
 @[simps!]

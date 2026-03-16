@@ -138,7 +138,6 @@ def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u�
 
 variable (u₁₂ u₁₃ u₂₃ comm h₁₂ h₁₃ h₂₃)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When two diagrams are isomorphic, an octahedron for one gives an octahedron for the other. -/
 def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃') (u₁₃' : X₁' ⟶ X₃')
     (comm' : u₁₂' ≫ u₂₃' = u₁₃')
@@ -318,7 +317,6 @@ variable {C}
     Octahedron comm h₁₂ h₂₃ h₁₃ :=
   (IsTriangulated.octahedron_axiom comm h₁₂ h₂₃ h₁₃).some
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A choice of octahedron' given by the octahedron axiom. -/
 @[no_expose] def Triangulated.someOctahedron' [IsTriangulated C]
     {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}

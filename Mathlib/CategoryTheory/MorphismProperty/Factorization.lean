@@ -138,7 +138,6 @@ def ofLE {W₁' W₂' : MorphismProperty C} (le₁ : W₁ ≤ W₁') (le₂ : W�
   hi f := le₁ _ (data.hi f)
   hp f := le₂ _ (data.hp f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The term in `FactorizationData W₁ W₂` that is deduced from a functorial factorization. -/
 def factorizationData : FactorizationData W₁ W₂ := fun f =>
   { Z := data.Z.obj (Arrow.mk f)
@@ -183,7 +182,6 @@ section
 
 variable (J : Type*) [Category* J]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
 @[simps]
 def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where

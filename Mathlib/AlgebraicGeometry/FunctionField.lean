@@ -96,7 +96,6 @@ noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
   -- TODO: can we write this normally after the refactor finishes?
   RingHom.toAlgebra <| by apply CommRingCat.Hom.hom; apply StructureSheaf.toStalk
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
     genericPoint (Spec R) = (⊥ : PrimeSpectrum R) := by
@@ -121,7 +120,6 @@ instance {X : Scheme} [IsIntegral X] {U : X.Opens} [Nonempty U] :
     IsIntegral U :=
   isIntegral_of_isOpenImmersion U.ι
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : X.Opens}
     (hU : IsAffineOpen U) [h : Nonempty U] :
     hU.primeIdealOf

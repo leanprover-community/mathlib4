@@ -281,7 +281,6 @@ def sieve : Sieve X₀ where
     rintro Y₀ Z₀ g ⟨h⟩ p
     exact ⟨{ i₀ := h.i₀, q := F.map p ≫ h.q, fac := by rw [assoc, h.fac, map_comp_assoc]}⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sieve_mem : sieve data f ∈ J₀ X₀ := by
   have := IsDenseSubsite.isCoverDense J₀ J F
   have := IsDenseSubsite.isLocallyFull J₀ J F
@@ -359,7 +358,6 @@ lemma lift_map (i : (data X).I₀) :
     lift hG₀ hG s ≫ G.map ((data X).f i).op = liftAux hG₀ s i :=
   Multifork.IsLimit.fac _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma fac (a : S.Arrow) :
     lift hG₀ hG s ≫ G.map a.f.op = s.ι a :=
@@ -385,7 +383,6 @@ lemma fac (a : S.Arrow) :
             r := ⟨_, 𝟙 _, F.map d ≫ F.map b ≫ (data a.Y).f i, by
               simp only [fac₁, fac₂, assoc, id_comp]⟩ }))
 
-set_option backward.isDefEq.respectTransparency false in
 variable {s} in
 include hG hG₀ in
 lemma hom_ext {f₁ f₂ : s.pt ⟶ G.obj (op X)}
@@ -488,7 +485,6 @@ noncomputable abbrev presheafObjMultifork (X : C) :
   Multifork.ofι _ (presheafObj data G₀ X) (presheafObjπ data G₀ X)
     (fun _ ↦ presheafObj_condition _ _ _ _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The multifork `presheafObjMultifork` is a limit. -/
 noncomputable def presheafObjIsLimit (X : C) :
     IsLimit (presheafObjMultifork data G₀ X) :=
@@ -586,7 +582,6 @@ lemma presheafMap_π {X Y : C} (f : X ⟶ Y) (i : (data X).I₀) :
       restriction data G₀ ((data X).f i ≫ f) :=
   Multiequalizer.lift_ι _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g : X ⟶ Y) :
     presheafMap data G₀ g ≫ restriction data G₀ f = restriction data G₀ (f ≫ g) := by
@@ -642,7 +637,6 @@ namespace presheafObjObjIso
 
 variable (X₀ : C₀)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `OneHypercoverDenseData.essSurj.presheafObjObjIso`. -/
 noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.obj.obj (op X₀) :=
   G₀.2.amalgamate ⟨_, cover_lift F J₀ _ (data (F.obj X₀)).mem₀⟩ (fun ⟨W₀, a, ha⟩ ↦
@@ -702,7 +696,6 @@ lemma inv_π (i : (data (F.obj X₀)).I₀) :
       IsDenseSubsite.mapPreimage J F G₀ ((data (F.obj X₀)).f i) :=
   Multiequalizer.lift_ι _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inv_restriction {Y₀ : C₀} (f : F.obj Y₀ ⟶ F.obj X₀) :
     inv data G₀ X₀ ≫ restriction data G₀ f =
@@ -723,7 +716,6 @@ lemma inv_restriction {Y₀ : C₀} (f : F.obj Y₀ ⟶ F.obj X₀) :
 
 end presheafObjObjIso
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf `presheaf data G₀` extends `G₀`. -/
 noncomputable def presheafObjObjIso (X₀ : C₀) :
     (presheaf data G₀).obj (op (F.obj X₀)) ≅ G₀.obj.obj (op X₀) where
@@ -740,7 +732,6 @@ noncomputable def presheafObjObjIso (X₀ : C₀) :
     dsimp at i b fac ⊢
     simp [presheafObjObjIso.hom_map data G₀ _ b fac, ← IsDenseSubsite.mapPreimage_comp, fac]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
     presheafMap data G₀ ((data X).f i) ≫ (presheafObjObjIso data G₀ ((data X).X i)).hom =
@@ -753,7 +744,6 @@ lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
   apply restriction_eq_of_fac
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma presheafObjObjIso_inv_naturality {X₀ Y₀ : C₀} (f : X₀ ⟶ Y₀) :
     G₀.obj.map f.op ≫ (presheafObjObjIso data G₀ X₀).inv =

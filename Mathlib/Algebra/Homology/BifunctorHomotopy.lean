@@ -31,7 +31,6 @@ variable {C₁ C₂ D I₁ I₂ J : Type*} [Category* C₁] [Category* C₂] [Ca
 
 namespace HomologicalComplex
 
-set_option backward.isDefEq.respectTransparency false
 
 variable {K₁ L₁ : HomologicalComplex C₁ c₁} {f₁ f₁' : K₁ ⟶ L₁} (h₁ : Homotopy f₁ f₁')
   {K₂ L₂ : HomologicalComplex C₂ c₂} (f₂ f₂' : K₂ ⟶ L₂) (h₂ : Homotopy f₂ f₂')

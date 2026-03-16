@@ -210,7 +210,6 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt :=
       induction y using Quot.inductionOn
       solve_by_elim }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s

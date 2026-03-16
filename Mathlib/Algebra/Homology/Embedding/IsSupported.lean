@@ -152,7 +152,6 @@ section
 variable {C D : Type*} [Category* C] [Category* D] [HasZeroMorphisms C] [HasZeroMorphisms D]
   (K : HomologicalComplex C c') (F : C ⥤ D) [F.PreservesZeroMorphisms] (e : c.Embedding c')
 
-set_option backward.isDefEq.respectTransparency false in
 instance map_isStrictlySupported [K.IsStrictlySupported e] :
     ((F.mapHomologicalComplex c').obj K).IsStrictlySupported e where
   isZero i' hi' := by

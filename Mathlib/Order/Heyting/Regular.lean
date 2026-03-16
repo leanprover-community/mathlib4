@@ -196,7 +196,6 @@ instance lattice : Lattice (Regular α) :=
 theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜᶜ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : BooleanAlgebra (Regular α) :=
   { Regular.lattice, Regular.boundedOrder, Regular.himp,
     Regular.instCompl with

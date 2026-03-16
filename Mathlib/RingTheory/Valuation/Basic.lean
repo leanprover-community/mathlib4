@@ -457,7 +457,6 @@ lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup 
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
 def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀)) where
   __ := restrict₀ v
@@ -480,7 +479,6 @@ lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) :
   classical
   simp [restrict_def, restrict₀_apply, dif_neg hx, valueGroup.mk]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
@@ -488,51 +486,42 @@ lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   · simp [h]
   · simp [zero_lt_iff.mpr h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ v} :
     v.restrict x < g ↔ v x < embedding g := by
   conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
   rw [embedding_strictMono.lt_iff_lt, restrict_def]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ v} :
     v.restrict x ≤ g ↔ v x ≤ embedding g := by
   conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
   rw [embedding_strictMono.le_iff_le, restrict_def]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_lt_one_iff {x : R} : v.restrict x < 1 ↔ v x < 1 := by
   rw [restrict_lt_iff_lt_embedding, map_one]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
   rw [restrict_le_iff_le_embedding, map_one]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
   rw [restrict_def,restrict₀_eq_zero_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
   rw [restrict_def,restrict₀_eq_one_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [← Units.val_le_val]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
   simp only [restrict_def, restrict₀_apply]
@@ -542,7 +531,6 @@ lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
 lemma embedding_restrict (x : R) : ValueGroup₀.embedding (v.restrict x) = v x :=
   embedding_restrict₀ x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
   set u := WithZero.unzero (Units.ne_zero γ) with hu_def
@@ -829,7 +817,6 @@ theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs :
 
 theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by simp [valueGroup₀Fun]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
 noncomputable def orderMonoidIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w where
   toFun := valueGroup₀Fun h
@@ -874,7 +861,6 @@ noncomputable def orderMonoidIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o Value
       · rw [← map_mul w, ne_eq, ← h.eq_zero, map_mul v]
         exact mul_ne_zero hx20 hy10
 
-set_option backward.isDefEq.respectTransparency false in
 theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
     h.orderMonoidIso (v.restrict a) = w.restrict a := by
   have h_res := h.restrict
@@ -1056,7 +1042,6 @@ section Basic
 
 section Monoid
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where

@@ -27,7 +27,6 @@ open Scheme
 
 variable {P : MorphismProperty Scheme.{u}} [P.IsStableUnderBaseChange]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A presheaf of types is a sheaf for the `P`-qc topology if and only if it is a sheaf
 for the Zariski topology and satisfies the sheaf property for all single object coverings
 `{ f : Spec S ⟶ Spec R }` where `f` satisfies `P`. -/

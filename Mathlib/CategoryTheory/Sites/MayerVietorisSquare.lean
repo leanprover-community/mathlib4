@@ -62,7 +62,6 @@ open Limits Opposite
 variable {C : Type u} [Category.{v} C]
   {J : GrothendieckTopology C}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     [HasWeakSheafify J (Type v)]
     (F : Sheaf J (Type v)) (sq : Square C) :
@@ -116,7 +115,6 @@ noncomputable def mk' (sq : Square C) [Mono sq.f₁₃]
     intro F
     exact (F.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff sq).2 (H F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for Mayer-Vietoris squares taking as an input
 a pullback square `sq` such that `sq.f₂₄` and `sq.f₃₄` are two monomorphisms
 which form a covering of `S.X₄`. -/
@@ -248,7 +246,6 @@ noncomputable def shortComplex :
   zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Mono S.shortComplex.f := by
   have : Mono (S.shortComplex.f ≫ biprod.snd) := by
     dsimp

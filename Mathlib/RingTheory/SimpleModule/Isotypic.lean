@@ -44,7 +44,6 @@ isotypic component, fully invariant submodule
 
 @[expose] public section
 
-set_option backward.isDefEq.respectTransparency false
 
 universe u
 

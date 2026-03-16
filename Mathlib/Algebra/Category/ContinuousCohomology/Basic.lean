@@ -113,7 +113,6 @@ lemma d_succ (n : ℕ) :
     d R G (n + 1) = whiskerLeft (functor R G (n + 1)) (const R G) -
       (by exact whiskerRight (d R G n) (I R G)) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma d_comp_d (n : ℕ) :
     d R G n ≫ d R G (n + 1) = 0 := by
@@ -163,7 +162,6 @@ noncomputable
 def _root_.continuousCohomology (n : ℕ) : Action (TopModuleCat R) G ⥤ TopModuleCat R :=
   homogeneousCochains R G ⋙ HomologicalComplex.homologyFunctor _ _ n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `0`-homogeneous cochains are isomorphic to `Xᴳ`. -/
 def kerHomogeneousCochainsZeroEquiv
     (X : Action (TopModuleCat R) G) (n : ℕ) (hn : n = 1) :
@@ -200,7 +198,6 @@ def kerHomogeneousCochainsZeroEquiv
     (continuous_induced_rng.mpr ((ContinuousLinearMap.const R G).cont.comp continuous_subtype_val))
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
-set_option backward.isDefEq.respectTransparency false in
 open ShortComplex HomologyData in
 /-- `H⁰_cont(G, X) ≅ Xᴳ`. -/
 noncomputable

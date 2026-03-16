@@ -153,7 +153,6 @@ lemma stalkMap [FormallyUnramified f] (x : X) : (f.stalkMap x).hom.FormallyUnram
         RingHom.FormallyUnramified.stableUnderComposition
         RingHom.FormallyUnramified.isStableUnderBaseChange.localizationPreserves _ hf) ‹_› x
 
-set_option backward.isDefEq.respectTransparency false in
 instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
     letI : Algebra (Y.residueField (f.base x)) (X.residueField x) :=
       (f.residueFieldMap x).hom.toAlgebra
@@ -176,7 +175,6 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
     exact stalkMap f x
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given any commuting diagram
 ```

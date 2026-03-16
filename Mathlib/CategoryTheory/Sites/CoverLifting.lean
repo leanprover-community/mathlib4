@@ -92,7 +92,6 @@ section
 
 variable {F : C ⥤ D} {G : D ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Adjunction.isCocontinuous_iff_coverPreserving (adj : F ⊣ G) :
     F.IsCocontinuous J K ↔ CoverPreserving K J G := by
   refine ⟨fun h ↦ ⟨?_⟩, fun h ↦ ⟨?_⟩⟩
@@ -146,7 +145,6 @@ variable {R : Dᵒᵖ ⥤ A} (α : G.op ⋙ R ⟶ F)
 variable (hR : (Functor.RightExtension.mk _ α).IsPointwiseRightKanExtension)
 variable {X : D} {S : K.Cover X} (s : Multifork (S.index R))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `lift`. -/
 def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
   Multifork.IsLimit.lift (hF.isLimitMultifork ⟨_, G.cover_lift J K (K.pullback_stable f S.2)⟩)
@@ -219,7 +217,6 @@ lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   rw [Category.assoc, eq]
   simpa using liftAux_map hF α s (j.hom.unop ≫ i.f) (𝟙 _) i j.hom.unop (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 include hR hF in
 variable (K) in
 lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
@@ -315,7 +312,6 @@ lemma sheafAdjunctionCocontinuous_unit_app_hom (F : Sheaf K A) :
 alias sheafAdjunctionCocontinuous_unit_app_val :=
   sheafAdjunctionCocontinuous_unit_app_hom
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sheafAdjunctionCocontinuous_counit_app_hom (F : Sheaf J A) :
     ((G.sheafAdjunctionCocontinuous A J K).counit.app F).hom =
       (G.op.ranAdjunction A).counit.app F.obj :=
@@ -329,7 +325,6 @@ lemma sheafAdjunctionCocontinuous_counit_app_hom (F : Sheaf J A) :
 alias sheafAdjunctionCocontinuous_counit_app_val :=
   sheafAdjunctionCocontinuous_counit_app_hom
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sheafAdjunctionCocontinuous_homEquiv_apply_hom {F : Sheaf K A} {H : Sheaf J A}
     (f : (G.sheafPushforwardContinuous A J K).obj F ⟶ H) :
     ((G.sheafAdjunctionCocontinuous A J K).homEquiv F H f).hom =
@@ -356,7 +351,6 @@ def pushforwardContinuousSheafificationCompatibility [G.IsContinuous J K] :
   ((G.op.ranAdjunction A).comp (sheafificationAdjunction J A)).leftAdjointUniq
     ((sheafificationAdjunction K A).comp (G.sheafAdjunctionCocontinuous A J K))
 
-set_option backward.isDefEq.respectTransparency false in
 /- Implementation: This is primarily used to prove the lemma
 `pullbackSheafificationCompatibility_hom_app_hom`. -/
 lemma toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :

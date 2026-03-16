@@ -118,7 +118,6 @@ def normalOfIsPullbackFstOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
     NormalMono f :=
   normalOfIsPullbackSndOfNormal comm.symm (PullbackCone.flipIsLimit t)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport a `NormalMono` structure via an isomorphism of arrows. -/
 @[implicit_reducible]
 def NormalMono.ofArrowIso {X Y : C} {f : X ⟶ Y}
@@ -243,7 +242,6 @@ open Opposite
 
 variable [HasZeroMorphisms C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport a `NormalEpi` structure via an isomorphism of arrows. -/
 @[implicit_reducible]
 def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}

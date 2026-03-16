@@ -322,7 +322,6 @@ def toCatCommSqOver : (X ⥤ F ⊡ G) ⥤ CatCommSqOver F G X where
   map_id := by intros; ext <;> simp
   map_comp := by intros; ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a `CatCommSqOver` as a functor to the categorical pullback. -/
 @[simps!]
 def CatCommSqOver.toFunctorToCategoricalPullback :
@@ -420,7 +419,6 @@ lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso
       (by simpa [functorEquiv, toCatCommSqOver] using coh) := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Comparing mkNatIso with the corresponding construction one can deduce from
 `functorEquiv`. -/
 lemma mkNatIso_eq
@@ -457,7 +455,6 @@ variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
   [Category.{v₄} A₁] [Category.{v₅} B₁] [Category.{v₆} C₁]
   {F₁ : A₁ ⥤ B₁} {G₁ : C₁ ⥤ B₁}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functorially transform a `CatCommSqOver F G X` by whiskering it with a
 `CatCospanTransform`. -/
 @[simps!]
@@ -503,7 +500,6 @@ variable {A₂ : Type u₇} {B₂ : Type u₈} {C₂ : Type u₉}
   [Category.{v₇} A₂] [Category.{v₈} B₂] [Category.{v₉} C₂]
   {F₂ : A₂ ⥤ B₂} {G₂ : C₂ ⥤ B₂}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The construction `CatCommSqOver.transform` respects vertical composition
 of `CatCospanTransform`s. -/
 @[simps!]
@@ -516,7 +512,6 @@ def transformObjComp (X : Type u₁₀) [Category.{v₁₀} X]
       (Functor.associator _ _ _).symm)
     (fun {x y} f ↦ by ext <;> simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The construction `CatCommSqOver.transform` respects the identity
 `CatCospanTransform`s. -/
 @[simps!]
@@ -592,7 +587,6 @@ variable
     {X : Type u₄} {Y : Type u₅} {Z : Type u₆}
     [Category.{v₄} X] [Category.{v₅} Y] [Category.{v₆} Z]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A functor `U : X ⥤ Y` (functorially) induces a functor
 `CatCommSqOver F G Y ⥤ CatCommSqOver F G X` by whiskering left the underlying
 categorical commutative square by U. -/

@@ -69,7 +69,6 @@ lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
   exact SetLike.coe_injective (Set.image_preimage_eq_of_subset
     (hrU.trans (Set.image_subset_range _ _)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A quasi-compact scheme is quasi-affine if
 it can be covered by affine basic opens of global sections. -/
 lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpace X]
@@ -99,7 +98,6 @@ lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasi
   rw [← preimage_basicOpen_top]
   exact ⟨hr.preimage _, hxr⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The affine basic opens of a quasi-affine scheme form an open cover. -/
 @[simps! f] def openCoverBasicOpenTop (X : Scheme.{u}) [X.IsQuasiAffine] :
     X.OpenCover :=
@@ -109,7 +107,6 @@ set_option backward.isDefEq.respectTransparency false in
     (IsQuasiAffine.isBasis_basicOpen X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   exact Opens.mem_iSup.mpr ⟨⟨r, hr⟩, hxr⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⟶ Y` is an affine morphism between quasi-affine schemes, then it is the pullback of
   `Spec Γ(X, ⊤) ⟶ Spec Γ(Y, ⊤)` along the open immersion `Y ⟶ Spec Γ(Y, ⊤)`. -/
 lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffine] :

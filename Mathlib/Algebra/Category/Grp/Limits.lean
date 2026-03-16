@@ -440,7 +440,6 @@ end CommGrpCat
 
 namespace AddCommGrpCat
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The categorical kernel of a morphism in `AddCommGrpCat`
 agrees with the usual group-theoretical kernel.
 -/

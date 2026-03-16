@@ -80,7 +80,6 @@ section StrongEpiMonoFactorisation
 local instance : HasCoequalizer (pullback.fst f f) (pullback.snd f f) :=
   Regular.hasCoequalizer_of_isKernelPair <| IsKernelPair.of_hasPullback f
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Mono (coequalizer.desc f pullback.condition) := by
   -- It suffices to show that the two projections from the kernel pair are equal:
   apply (IsKernelPair.of_hasPullback _).mono_of_eq_fst_snd
@@ -132,7 +131,6 @@ instance : Mono (coequalizer.desc f pullback.condition) := by
   convert coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
   all_goals cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a regular category, every morphism `f : X ⟶ Y` factors as `e ≫ m`, where `e` is the projection
 map to the coequalizer of the kernel pair of `f`, and `m` is the canonical map from that
@@ -154,7 +152,6 @@ and `m` a monomorphism.
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a regular category, every extremal epimorphism is a regular epimorphism. -/
 noncomputable def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
   have := h.isIso (strongEpiMonoFactorisation f).e (strongEpiMonoFactorisation f).m (by simp)
@@ -172,7 +169,6 @@ open Subobject
 
 variable {A B : C} (f : A ⟶ B) (A' : Subobject A) (B' : Subobject B)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a morphism `f : A ⟶ B` and subobjects `A' ⟶ A` and `B' ⟶ B`, we have a canonical morphism
 `(A' ⊓ (Subobject.pullback f).obj B') ⟶ ((«exists» f).obj A' ⊓ B')`.
@@ -187,7 +183,6 @@ noncomputable def frobeniusMorphism :
     ((ofLE _ _ (inf_le_left A' ((Subobject.pullback f).obj B'))) ≫ (imageFactorisation f A').F.e)
     (by simp [← imageFactorisation_F_m, (isPullback _ _).w])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma frobeniusMorphism_isPullback :
     IsPullback (frobeniusMorphism f A' B')
       ((ofLE _ _ (inf_le_left A' ((Subobject.pullback f).obj B'))))
@@ -199,7 +194,6 @@ lemma frobeniusMorphism_isPullback :
     (isPullback f B').paste_horiz_iff] using
     (inf_isPullback A' ((Subobject.pullback f).obj B')).flip
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsRegularEpi (frobeniusMorphism f A' B') := by
   apply regularEpiIsStableUnderBaseChange.of_isPullback (frobeniusMorphism_isPullback f A' B').flip
   have := strongEpi_of_strongEpiMonoFactorisation (strongEpiMonoFactorisation (A'.arrow ≫ f))
@@ -207,7 +201,6 @@ instance : IsRegularEpi (frobeniusMorphism f A' B') := by
   simp only [MorphismProperty.regularEpi_iff]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a morphism `f : A ⟶ B` and subobjects `A' ⟶ A` and `B' ⟶ B`, the `frobeniusMorphism`
 gives a `StrongEpiMonoFactorisation` of `(A' ⊓ (Subobject.pullback f).obj B').arrow ≫ f` through

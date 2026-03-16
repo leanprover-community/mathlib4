@@ -64,7 +64,6 @@ instance AffineTargetMorphismProperty.diagonal_respectsIso (P : AffineTargetMorp
     rw [pullback.mapDesc_comp, P.cancel_right_of_respectsIso]
     apply H
 
-set_option backward.isDefEq.respectTransparency false in
 theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
     {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{v} Y) [∀ i, IsAffine (𝒰.X i)]
     (𝒰' : ∀ i, Scheme.OpenCover.{w} (pullback f (𝒰.f i))) [∀ i j, IsAffine ((𝒰' i).X j)]
@@ -96,7 +95,6 @@ theorem HasAffineProperty.diagonal_of_openCover_diagonal
   diagonal_of_openCover P f 𝒰 (fun _ ↦ Scheme.affineCover _)
     (fun _ _ _ ↦ h𝒰 _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem HasAffineProperty.diagonal_of_diagonal_of_isPullback
     (P) {Q} [HasAffineProperty P Q]
     {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y}
@@ -125,7 +123,6 @@ theorem HasAffineProperty.diagonal_iff
   exact HasAffineProperty.diagonal_of_openCover.{u, u, u} P f (Scheme.coverOfIsIso (𝟙 _))
     (fun _ ↦ 𝒰) (fun _ _ _ ↦ hf _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AffineTargetMorphismProperty.diagonal_of_openCover_source
     {Q : AffineTargetMorphismProperty} [Q.IsLocal]
     {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{v} X) [∀ i, IsAffine (𝒰.X i)]
@@ -305,7 +302,6 @@ lemma topologically_isZariskiLocalAtTarget [(topologically P).RespectsIso]
 @[deprecated (since := "2025-10-07")]
 alias topologically_isLocalAtTarget := topologically_isZariskiLocalAtTarget
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `topologically_isZariskiLocalAtTarget`
 that takes one iff statement instead of two implications. -/
 lemma topologically_isZariskiLocalAtTarget' [(topologically P).RespectsIso]
@@ -338,7 +334,6 @@ lemma topologically_isZariskiLocalAtSource [(topologically P).RespectsIso]
 @[deprecated (since := "2025-10-07")]
 alias topologically_isLocalAtSource := topologically_isZariskiLocalAtSource
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `topologically_isZariskiLocalAtSource`
 that takes one iff statement instead of two implications. -/
 lemma topologically_isZariskiLocalAtSource' [(topologically P).RespectsIso]
@@ -399,7 +394,6 @@ lemma stalkwiseIsZariskiLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P
 @[deprecated (since := "2025-10-07")]
 alias stalkwiseIsLocalAtTarget_of_respectsIso := stalkwiseIsZariskiLocalAtTarget_of_respectsIso
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P` respects isos, then `stalkwise P` is local at the source. -/
 lemma stalkwise_isZariskiLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
     IsZariskiLocalAtSource (stalkwise P) := by

@@ -116,7 +116,6 @@ lemma ι_toBase (i : 𝒰.I₀) :
     colimit.ι d.functor i ≫ d.toBase = d.natTrans.app i ≫ 𝒰.f i := by
   simp [toBase]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : d.cover.LocallyDirected where
   trans {i j} hij := d.functor.map hij
   directed {i j} x := by
@@ -138,7 +137,6 @@ instance : d.cover.LocallyDirected where
     rw [← Scheme.Hom.comp_apply]
     simp [h1, xj]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preimage_toBase_eq_range_ι (i : 𝒰.I₀) :
     d.toBase ⁻¹' (Set.range <| 𝒰.f i) = Set.range (colimit.ι d.functor i) := by
   ext x
@@ -162,7 +160,6 @@ lemma toBase_preimage_eq_opensRange_ι (i : 𝒰.I₀) :
     d.toBase ⁻¹ᵁ (𝒰.f i).opensRange = (colimit.ι d.functor i).opensRange :=
   TopologicalSpace.Opens.coe_inj.mp (preimage_toBase_eq_range_ι d i)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_natTrans_ι_toBase (i : 𝒰.I₀) :
     IsPullback (d.natTrans.app i) (colimit.ι d.functor i) (𝒰.f i) d.toBase := by
   refine ⟨by simp, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩

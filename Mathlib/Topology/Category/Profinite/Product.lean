@@ -135,7 +135,6 @@ instance isIso_indexCone_lift :
             (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))
         exact ⟨x, Set.mem_iInter.1 hx⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map from `C` to the explicit limit as an isomorphism. -/
 noncomputable
 def isoindexConeLift :

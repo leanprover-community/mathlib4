@@ -56,7 +56,6 @@ noncomputable def isColimitFreeCofan (I : Type u) :
     IsColimit (freeCofan (R := R) I) :=
   coproductIsCoproduct _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The data of a morphism `free I ⟶ M` from a free sheaf of modules is
 equivalent to the data of a family `I → M.sections` of sections of `M`. -/
 noncomputable def freeHomEquiv (M : SheafOfModules.{u} R) {I : Type u} :
@@ -139,7 +138,6 @@ noncomputable def mapFree : F.obj (free I) ≅ free (R := S) I :=
   (isColimitOfPreserves F (isColimitFreeCofan I)).coconePointsIsoOfEquivalence
     (isColimitFreeCofan I) CategoryTheory.Equivalence.refl (Discrete.natIso fun _ ↦ η).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιFree_mapFree_inv :
     ιFree i ≫ (mapFree F η I).inv = η.inv ≫ F.map (ιFree i) := by

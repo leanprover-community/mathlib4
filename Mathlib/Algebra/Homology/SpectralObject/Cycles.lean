@@ -71,12 +71,10 @@ noncomputable def pOpcycles :
     (X.H n).obj (mk₁ f) ⟶ X.opcycles f g n :=
   cokernel.π _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Mono (X.iCycles f g n) := by
   dsimp [iCycles]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Epi (X.pOpcycles f g n) := by
   dsimp [pOpcycles]
   infer_instance
@@ -97,14 +95,12 @@ section
 
 variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (n₀ n₁ : ℤ)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma iCycles_δ (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.iCycles f g n₀ ≫ X.δ f g n₀ n₁ hn₁ = 0 := by
   subst hn₁
   simp [iCycles]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma δ_pOpcycles (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.δ f g n₀ n₁ hn₁ ≫ X.pOpcycles f g n₁ = 0 := by
@@ -376,7 +372,6 @@ instance (n : ℤ) : Mono (X.kernelSequenceOpcycles f g fg h n).f := by
   dsimp
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Z^n(f, g)` identifies to a cokernel of the `H^n(f) ⟶ H^n(f ≫ g)`. -/
 lemma cokernelSequenceCycles_exact (n : ℤ) :
     (X.cokernelSequenceCycles f g fg h n).Exact := by
@@ -385,7 +380,6 @@ lemma cokernelSequenceCycles_exact (n : ℤ) :
     (Cofork.ext (X.cokernelIsoCycles f g fg h n) (by
       simp [← cancel_mono (X.iCycles f g n)]))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `opZ^n(f, g)` identifies to the kernel of `H^n(f ≫ g) ⟶ H^n(g)`. -/
 lemma kernelSequenceOpcycles_exact (n : ℤ) :
     (X.kernelSequenceOpcycles f g fg h n).Exact := by

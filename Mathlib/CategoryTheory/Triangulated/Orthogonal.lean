@@ -36,13 +36,11 @@ section
 
 variable {M : Type*} [AddGroup M] [HasShift C M] [HasZeroMorphisms C]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.IsStableUnderShift M] : P.rightOrthogonal.IsStableUnderShift M where
   isStableUnderShiftBy n := ⟨fun Y hY X f hX ↦ by
     obtain ⟨g, rfl⟩ := ((shiftEquiv C n).symm.toAdjunction.homEquiv _ _).surjective f
     simp [hY g (P.le_shift (-n) _ hX), Adjunction.homEquiv_unit]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.IsStableUnderShift M] : P.leftOrthogonal.IsStableUnderShift M where
   isStableUnderShiftBy n := ⟨fun X hX Y f hY ↦ by
     obtain ⟨g, rfl⟩ := ((shiftEquiv C n).toAdjunction.homEquiv _ _).symm.surjective f
@@ -71,7 +69,6 @@ example [P.IsTriangulated] : P.rightOrthogonal.IsTriangulated := inferInstance
 
 example [P.IsTriangulated] : P.leftOrthogonal.IsTriangulated := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_trW [P.IsTriangulated] :
     P.trW.isLocal = P.rightOrthogonal := by
   ext Y
@@ -86,7 +83,6 @@ lemma isLocal_trW [P.IsTriangulated] :
       α (hY _ (P.le_shift _ _ hX₃))
     exact ⟨β, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isColocal_trW [P.IsTriangulated] :
     P.trW.isColocal = P.leftOrthogonal := by
   ext X

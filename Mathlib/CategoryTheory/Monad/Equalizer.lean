@@ -67,7 +67,6 @@ theorem CofreeEqualizer.condition :
       CofreeEqualizer.ι X ≫ CofreeEqualizer.bottomMap X :=
   Coalgebra.Hom.ext X.coassoc.symm
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsCoreflexivePair (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) := by
   apply IsCoreflexivePair.mk' _ _ _
   · apply (cofree T).map (T.ε.app X.A)
@@ -84,7 +83,6 @@ equalizer.
 def beckCoalgebraFork : Fork (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) :=
   Fork.ofι _ (CofreeEqualizer.condition X)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The fork constructed is a limit. This shows that any coalgebra is a (coreflexive) equalizer of
 cofree coalgebras.
 -/

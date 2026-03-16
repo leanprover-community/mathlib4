@@ -324,7 +324,6 @@ variable [NumberField K]
 
 variable {K}
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 A fixed equiv between `Fin (rank K)` and `{w : InfinitePlace K // w ≠ w₀}`.

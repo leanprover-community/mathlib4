@@ -91,7 +91,6 @@ end Induced
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When `F : C ⥤ D` is a functor satisfying suitable technical assumptions,
 this is the induced term of type `HasShift D A` deduced from `[HasShift C A]`. -/
 @[implicit_reducible]
@@ -207,7 +206,6 @@ lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When the target category of a functor `F : C ⥤ D` is equipped with
 the induced shift, this is the compatibility of `F` with the shifts on
 the categories `C` and `D`. -/

@@ -43,7 +43,6 @@ theorem galEquivZMod_apply_of_pow_eq (σ : Gal(K/ℚ)) {x : K} (hx : x ^ n = 1) 
   rw [map_pow, pow_right_comm, galEquivZMod, autEquivPow_apply, OneHom.toFun_eq_coe,
     MonoidHom.toOneHom_coe, IsPrimitiveRoot.autToPow_spec]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem galEquivZMod_smul_of_pow_eq (σ : Gal(K/ℚ)) {x : 𝓞 K} (hx : x ^ n = 1) :
     σ • x = x ^ (galEquivZMod n K σ).val.val := by
   apply FaithfulSMul.algebraMap_injective (𝓞 K) K

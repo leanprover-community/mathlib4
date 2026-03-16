@@ -56,7 +56,6 @@ abbrev HasExt : Prop :=
   ∀ (X Y : C), HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) ℤ
     ((CochainComplex.singleFunctor C 0).obj X) ((CochainComplex.singleFunctor C 0).obj Y)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasExt_iff [HasDerivedCategory.{w'} C] :
     HasExt.{w} C ↔ ∀ (X Y : C) (n : ℤ) (_ : 0 ≤ n), Small.{w}
       ((singleFunctor C 0).obj X ⟶
@@ -94,7 +93,6 @@ lemma HasExt.standard : HasExt.{max u v} C := by
   letI := HasDerivedCategory.standard
   exact hasExt_of_hasDerivedCategory _
 
-set_option backward.isDefEq.respectTransparency false in
 instance [HasExt.{w} C] (X Y : C) (a b : ℤ) [HasDerivedCategory.{w'} C] :
     Small.{w} ((singleFunctor C a).obj X ⟶ (singleFunctor C b).obj Y) := by
   have (a b : ℤ) :
@@ -430,7 +428,6 @@ noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrpCat.{w} wher
     apply Ext.comp_assoc
     lia
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Cᵒᵖ ⥤ C ⥤ AddCommGrpCat` which sends `X : C` and `Y : C`
 to `Ext X Y n`. -/
 @[simps]

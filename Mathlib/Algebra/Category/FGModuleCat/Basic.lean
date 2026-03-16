@@ -144,7 +144,6 @@ def _root_.LinearEquiv.toFGModuleCatIso
   hom_inv_id := by ext x; exact e.left_inv x
   inv_hom_id := by ext x; exact e.right_inv x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Universe lifting as a functor on `FGModuleCat`. -/
 def ulift : FGModuleCat.{v} R ⥤ FGModuleCat.{max v w} R where
   obj M := .of R <| ULift M
@@ -194,7 +193,6 @@ section Field
 
 variable (K : Type u) [Field K]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (V W : FGModuleCat.{v} K) : Module.Finite K (V.obj ⟶ W.obj) :=
   (inferInstanceAs <| Module.Finite K (V →ₗ[K] W)).equiv ModuleCat.homLinearEquiv.symm
 
@@ -240,7 +238,6 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
     (FGModuleCatEvaluation K V).hom (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `@[simp]`-normal form of `FGModuleCatEvaluation_apply`, where the carriers have been unfolded.
 -/
 @[simp]

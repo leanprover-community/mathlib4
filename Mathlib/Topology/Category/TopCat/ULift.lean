@@ -68,7 +68,6 @@ instance : uliftFunctor.{v, u}.Faithful :=
 
 open Limits
 
-set_option backward.isDefEq.respectTransparency false in
 instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} := by
   refine ⟨⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩
   rw [nonempty_isLimit_iff_eq_induced]
@@ -86,7 +85,6 @@ instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} := by
       exact ⟨i, ULift.down ⁻¹' t, Homeomorph.ulift.continuous_toFun.isOpen_preimage _ ht, rfl⟩
   · exact isLimitOfPreserves (forget TopCat ⋙ CategoryTheory.uliftFunctor) hc
 
-set_option backward.isDefEq.respectTransparency false in
 instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} := by
   refine ⟨⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩
   rw [nonempty_isColimit_iff_eq_coinduced]

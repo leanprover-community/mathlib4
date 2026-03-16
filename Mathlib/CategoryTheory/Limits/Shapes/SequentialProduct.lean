@@ -63,7 +63,6 @@ noncomputable def functorMap : ∀ n,
     if h' : m < n + 1 then eqToHom ?_ ≫ f m ≫ eqToHom ?_ else eqToHom ?_
   all_goals split_ifs; try rfl; try lia
 
-set_option backward.isDefEq.respectTransparency false in
 lemma functorMap_commSq_succ (n : ℕ) :
     (Functor.ofOpSequence (functorMap f)).map (homOfLE (by lia : n ≤ n + 1)).op ≫ Pi.π _ n ≫
       eqToHom (functorObj_eq_neg (by lia : ¬(n < n))) =
@@ -71,7 +70,6 @@ lemma functorMap_commSq_succ (n : ℕ) :
           eqToHom (functorObj_eq_pos (by lia)) ≫ f n := by
   simp [functorMap]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
     (Functor.ofOpSequence (functorMap f)).map (homOfLE h).op ≫ Pi.π _ k ≫
       eqToHom (functorObj_eq_neg (by lia : ¬(k < n))) =
@@ -90,7 +88,6 @@ lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
     split_ifs
     simp [dif_neg (by lia : ¬(k < m))]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
     (Functor.ofOpSequence (functorMap f)).map (homOfLE (by lia : n ≤ m + 1)).op ≫ Pi.π _ m ≫
       eqToHom (functorObj_eq_neg (by lia : ¬(m < n))) =
@@ -113,7 +110,6 @@ lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
       congr 1
       exact functorMap_commSq_aux f (by lia) (by lia)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The cone over the tower
 ```
@@ -142,7 +138,6 @@ lemma cone_π_app (n : ℕ) : (cone f).π.app ⟨n⟩ =
     Limits.Pi.map fun m ↦ if h : m < n then eqToHom (functorObj_eq_pos h).symm else
     f m ≫ eqToHom (functorObj_eq_neg h).symm := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m⟩ ≫
     Pi.π (fun i ↦ if _ : i < m then M i else N i) n =
@@ -151,7 +146,6 @@ lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m�
     Discrete.functor_obj_eq_as, Discrete.natTrans_app]
   rw [dif_pos h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_neg (m n : ℕ) (h : ¬(n < m)) : (cone f).π.app ⟨m⟩ ≫ Pi.π _ n =
     Pi.π _ n ≫ f n ≫ eqToHom (functorObj_eq_neg h).symm := by
@@ -159,7 +153,6 @@ lemma cone_π_app_comp_Pi_π_neg (m n : ℕ) (h : ¬(n < m)) : (cone f).π.app �
     Discrete.functor_obj_eq_as, Discrete.natTrans_app]
   rw [dif_neg h]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The cone over the tower
 ```

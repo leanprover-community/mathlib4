@@ -155,7 +155,6 @@ lemma isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top :
   simpa only [Pi.top_apply, Prop.top_eq_true, iff_true]
     using leftAdjointObjIsDefined_of_adjunction (Adjunction.ofIsRightAdjoint F) X
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `leftAdjointObjIsDefined_of_isColimit`. -/
 noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Category* J]
     {R : J ⥤ F.PartialLeftAdjointSource}
@@ -311,7 +310,6 @@ lemma isLeftAdjoint_iff_rightAdjointObjIsDefined_eq_top :
   simpa only [Pi.top_apply, Prop.top_eq_true, iff_true]
     using rightAdjointObjIsDefined_of_adjunction (Adjunction.ofIsLeftAdjoint F) X
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `rightAdjointObjIsDefined_of_isLimit`. -/
 noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category* J]
     {R : J ⥤ F.PartialRightAdjointSource}

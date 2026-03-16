@@ -101,7 +101,6 @@ theorem equivalence_functor : (equivalence : SimplicialObject C ≌ _).functor =
 theorem equivalence_inverse : (equivalence : SimplicialObject C ≌ _).inverse = Γ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `NΓ'` satisfies the compatibility that is needed
 for the construction of our counit isomorphism `η`. -/
 theorem hη :
@@ -122,7 +121,6 @@ theorem equivalence_counitIso :
     DoldKan.equivalence.counitIso = (η : Γ ⋙ N ≅ 𝟭 (ChainComplex C ℕ)) :=
   Compatibility.equivalenceCounitIso_eq hη
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hε :
     Compatibility.υ (isoN₁) =
       (Γ₂N₁ : (toKaroubiEquivalence _).functor ≅

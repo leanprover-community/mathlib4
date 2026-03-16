@@ -99,7 +99,6 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [hf : LocallyOfFinitePresentation f] :
   refine affineLocally_le (fun hf ↦ ?_) f hf
   exact RingHom.FiniteType.of_finitePresentation hf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Chevalley's Theorem**: The image of a locally constructible set under a
 morphism of finite presentation is locally constructible. -/
 @[stacks 054K]

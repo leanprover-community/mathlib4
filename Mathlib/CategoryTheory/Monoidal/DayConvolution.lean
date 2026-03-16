@@ -116,7 +116,6 @@ lemma unit_naturality (f : x ⟶ x') (g : y ⟶ y') :
   simpa [tensorHom_def] using (unit F G).naturality (f ×ₘ g)
 
 variable (y) in
-set_option backward.isDefEq.respectTransparency false in -- Needed in DayConvolution.lean
 @[reassoc (attr := simp)]
 lemma whiskerRight_comp_unit_app (f : x ⟶ x') :
     F.map f ▷ G.obj y ≫ (unit F G).app (x', y) =
@@ -145,7 +144,6 @@ def map (f : F ⟶ F') (g : G ⟶ G') : F ⊛ G ⟶ F' ⊛ G' :=
 
 variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 
-set_option backward.isDefEq.respectTransparency false in -- Needed in DayConvolution.lean
 @[reassoc (attr := simp)]
 lemma unit_app_map_app :
     (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
@@ -158,7 +156,6 @@ end map
 
 variable (F G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The universal property of left Kan extensions characterizes the functor
 corepresented by `F ⊛ G`. -/
 @[simps!]
@@ -198,7 +195,6 @@ instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
   (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _ <|
     isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `CorepresentableBy` structure asserting that the Type-valued functor
 `Y ↦ (F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ Y)` is corepresented by
 `F ⊛ G ⊛ H`. -/
@@ -212,7 +208,6 @@ def corepresentableBy₂ :
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitRight (G ⊛ H) (unit G H) F) _
   homEquiv_comp := by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `CorepresentableBy` structure asserting that the Type-valued functor
 `Y ↦ ((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ Y)` is corepresented by
 `(F ⊛ G) ⊛ H`. -/
@@ -263,7 +258,6 @@ def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
   corepresentableBy₂' F G H |>.ofIso (associatorCorepresentingIso F G H) |>.uniqueUpToIso <|
     corepresentableBy₂ F G H
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the forward direction of the associator isomorphism
 with respect to the unit transformations. -/
 @[reassoc (attr := simp)]
@@ -286,7 +280,6 @@ lemma associator_hom_unit_unit (x y z : C) :
   simp only [Category.assoc, this]
   simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the inverse direction of the associator
 with respect to the unit transformations -/
 @[reassoc (attr := simp)]
@@ -308,7 +301,6 @@ lemma associator_inv_unit_unit (x y z : C) :
   simp only [this]
   simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F G H} in
 theorem associator_naturality {F' G' H' : C ⥤ V}
     [DayConvolution F' G'] [DayConvolution G' H']
@@ -338,7 +330,6 @@ section pentagon
 variable [∀ (v : V) (d : C × C),
     Limits.PreservesColimitsOfShape (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pentagon (H K : C ⥤ V)
     [DayConvolution G H] [DayConvolution (F ⊛ G) H] [DayConvolution F (G ⊛ H)]
     [DayConvolution H K] [DayConvolution G (H ⊛ K)] [DayConvolution (G ⊛ H) K]
@@ -445,7 +436,6 @@ instance : (U ⊠ F).IsLeftKanExtension <| extensionUnitLeft U (φ U) F :=
   isPointwiseLeftKanExtensionExtensionUnitLeft
     U (φ U) F isPointwiseLeftKanExtensionCan |>.isLeftKanExtension
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A `CorepresentableBy` structure that characterizes maps out of `U ⊛ F`
 by leveraging the fact that `U ⊠ F` is a left Kan extension of `(fromPUnit 𝟙_ V) ⊠ F`. -/
 @[simps]
@@ -458,7 +448,6 @@ def corepresentableByLeft [DayConvolution U F] :
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitLeft U (φ U) F) _
   homEquiv_comp := by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A `CorepresentableBy` structure that characterizes maps out of `F ⊛ U` by
 leveraging the fact that `F ⊠ U` is a left Kan extension of `F ⊠ (fromPUnit 𝟙_ V)`. -/
 @[simps]
@@ -543,7 +532,6 @@ omit [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
   (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorLeft v)]
 variable [DayConvolution U F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the forward direction of `leftUnitor` via the universal maps. -/
 @[reassoc (attr := simp)]
 lemma leftUnitor_hom_unit_app (y : C) :
@@ -561,7 +549,6 @@ lemma leftUnitor_hom_unit_app (y : C) :
   simp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 lemma leftUnitor_inv_app (x : C) :
     (leftUnitor U F).inv.app x =
@@ -573,7 +560,6 @@ lemma leftUnitor_inv_app (x : C) :
   simp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 @[reassoc (attr := simp)]
 lemma leftUnitor_naturality {G : C ⥤ V} [DayConvolution U G] (f : F ⟶ G) :
@@ -592,7 +578,6 @@ omit [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
   (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorRight v)]
 variable [DayConvolution F U]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the forward direction of `rightUnitor` via the universal maps. -/
 @[reassoc (attr := simp)]
 lemma rightUnitor_hom_unit_app (x : C) :
@@ -611,7 +596,6 @@ lemma rightUnitor_hom_unit_app (x : C) :
   simp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 lemma rightUnitor_inv_app (x : C) :
     (rightUnitor U F).inv.app x =
@@ -623,7 +607,6 @@ lemma rightUnitor_inv_app (x : C) :
   simp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 @[reassoc (attr := simp)]
 lemma rightUnitor_naturality {G : C ⥤ V} [DayConvolution G U] (f : F ⟶ G) :
@@ -655,7 +638,6 @@ variable [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
   [∀ (v : V) (d : C × C), Limits.PreservesColimitsOfShape
     (CostructuredArrow ((𝟭 C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma DayConvolution.triangle (F G U : C ⥤ V) [DayConvolutionUnit U]
     [DayConvolution F U] [DayConvolution U G]
     [DayConvolution F (U ⊛ G)] [DayConvolution (F ⊛ U) G] [DayConvolution F G] :
@@ -804,7 +786,6 @@ def convolution₂' (d d' d'' : D) :
 
 attribute [local instance] convolution₂ convolution₂'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ι_map_tensorHom_hom_eq_tensorHom
     {d₁ d₂ : D} {d₁' d₂' : D}
     (f : d₁ ⟶ d₂) (f' : d₁' ⟶ d₂') :
@@ -819,7 +800,6 @@ lemma ι_map_tensorHom_hom_eq_tensorHom
     DayConvolution.unit_app_map_app]
   exact convolutionExtensionUnit_comp_ι_map_tensorHom_app C V _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 open DayConvolution in
 lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
@@ -849,7 +829,6 @@ def convolutionUnit : DayConvolutionUnit (ι C V D |>.obj <| 𝟙_ D) where
 
 attribute [local instance] convolutionUnit
 
-set_option backward.isDefEq.respectTransparency false in
 open DayConvolutionUnit in
 lemma ι_map_leftUnitor_hom_eq_leftUnitor_hom (d : D)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
@@ -866,7 +845,6 @@ lemma ι_map_leftUnitor_hom_eq_leftUnitor_hom (d : D)
     DayConvolutionUnit.leftUnitor_hom_unit_app]
   exact leftUnitor_hom_unit_app V d x
 
-set_option backward.isDefEq.respectTransparency false in
 open DayConvolutionUnit in
 lemma ι_map_rightUnitor_hom_eq_rightUnitor_hom (d : D)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
@@ -885,7 +863,6 @@ lemma ι_map_rightUnitor_hom_eq_rightUnitor_hom (d : D)
 
 end LawfulDayConvolutionMonoidalCategoryStruct
 
-set_option backward.isDefEq.respectTransparency false in
 open LawfulDayConvolutionMonoidalCategoryStruct in
 attribute [local instance] convolution convolution₂ convolution₂' convolutionUnit in
 open DayConvolution DayConvolutionUnit in
@@ -1083,7 +1060,6 @@ section
 variable (D : Type u₃) [Category.{v₃} D]
     [InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {D} in
 /-- With the data of chosen isomorphic objects to given day convolutions,
 and provably equal unit maps through these isomorphisms,
@@ -1164,7 +1140,6 @@ lemma tensorHom_id {x x' : D} (f : x ⟶ x') (y : D) :
     f ⊗ₘ (𝟙 y) = f ▷ y :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ι_map_tensorHom_eq {d₁ d₁' d₂ d₂' : D} (f : d₁ ⟶ d₂) (f' : d₁' ⟶ d₂') :
     letI := mkMonoidalCategoryStruct C V D
     (ι C V D).map (f ⊗ₘ f') =
@@ -1178,7 +1153,6 @@ lemma ι_map_tensorHom_eq {d₁ d₁' d₂ d₂' : D} (f : d₁ ⟶ d₂) (f' : 
   simp only [DayConvolution.unit_app_map_app, Functor.comp_obj, tensor_obj]
   simp +instances [convolutions, convolutionUnitApp_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal category struct constructed in `DayConvolution.mkMonoidalCategoryStruct` extends
 to a `LawfulDayConvolutionMonoidalCategoryStruct`. -/
 @[implicit_reducible]

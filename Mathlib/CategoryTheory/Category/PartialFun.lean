@@ -99,7 +99,6 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
     rintro rfl
     refine ⟨fun h => hc.symm <| g.map_point ▸ congr_arg g.toFun h, hc.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
 be computable because `= Option.none` is decidable while the domain of a general `Part` isn't. -/
@@ -116,7 +115,6 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
         dsimp [CategoryStruct.comp]
         rw [Part.bind_toOption g (f a), Option.elim'_eq_elim] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
 @[simps!]
@@ -153,7 +151,6 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
     · simp
       rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/
 @[simps!]

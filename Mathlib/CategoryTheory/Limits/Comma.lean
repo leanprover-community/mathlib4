@@ -68,7 +68,6 @@ noncomputable def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Con
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Provided that `R` preserves the appropriate limit, then the cone in `coneOfPreserves` is a
 limit. -/
 noncomputable def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c₁ : Cone (F ⋙ fst L R)}
@@ -116,7 +115,6 @@ noncomputable def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ :
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Provided that `L` preserves the appropriate colimit, then the cocone in `coconeOfPreserves` is
 a colimit. -/
 noncomputable def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L]
@@ -177,7 +175,6 @@ end Comma
 
 namespace Arrow
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasLimit (F : J ⥤ Arrow T) [i₁ : HasLimit (F ⋙ leftFunc)] [i₂ : HasLimit (F ⋙ rightFunc)] :
     HasLimit F := by
   haveI : HasLimit (F ⋙ Comma.fst _ _) := i₁
@@ -189,7 +186,6 @@ instance hasLimitsOfShape [HasLimitsOfShape J T] : HasLimitsOfShape J (Arrow T) 
 instance hasLimits [HasLimits T] : HasLimits (Arrow T) :=
   ⟨fun _ _ => inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasColimit (F : J ⥤ Arrow T) [i₁ : HasColimit (F ⋙ leftFunc)]
     [i₂ : HasColimit (F ⋙ rightFunc)] : HasColimit F := by
   haveI : HasColimit (F ⋙ Comma.fst _ _) := i₁
@@ -215,7 +211,6 @@ namespace StructuredArrow
 
 variable {X : T} {G : A ⥤ T} (F : J ⥤ StructuredArrow X G)
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasLimit [i₁ : HasLimit (F ⋙ proj X G)] [i₂ : PreservesLimit (F ⋙ proj X G) G] :
     HasLimit F := by
   haveI : HasLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) := i₁
@@ -229,7 +224,6 @@ instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} A] [PreservesLimitsOfSize.{w, 
     HasLimitsOfSize.{w, w'} (StructuredArrow X G) :=
   ⟨fun J hJ => by infer_instance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance createsLimit [i : PreservesLimit (F ⋙ proj X G) G] :
     CreatesLimit F (proj X G) :=
   letI : PreservesLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) G := i
@@ -262,7 +256,6 @@ instance hasTerminal [G.Faithful] [G.Full] {Y : A} :
     HasTerminal (CostructuredArrow G (G.obj Y)) :=
   CostructuredArrow.mkIdTerminal.hasTerminal
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasColimit [i₁ : HasColimit (F ⋙ proj G X)] [i₂ : PreservesColimit (F ⋙ proj G X) G] :
     HasColimit F := by
   haveI : HasColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) := i₁
@@ -276,7 +269,6 @@ instance hasColimitsOfSize [HasColimitsOfSize.{w, w'} A] [PreservesColimitsOfSiz
     HasColimitsOfSize.{w, w'} (CostructuredArrow G X) :=
   ⟨fun _ _ => inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance createsColimit [i : PreservesColimit (F ⋙ proj G X) G] :
     CreatesColimit F (proj G X) :=
   letI : PreservesColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) G := i

@@ -45,7 +45,6 @@ def x : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
 def y : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
   Over.mk (biprod.lift (𝟙 _) (𝟙 _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `biprod.fst ≫ x` is pseudoequal to `biprod.fst y`. -/
 theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst y) := by
   refine ⟨of ℤ ℚ, 𝟙 _, 𝟙 _, inferInstance, ?_, ?_⟩
@@ -53,7 +52,6 @@ theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst
   · dsimp [x, y]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `biprod.snd ≫ x` is pseudoequal to `biprod.snd y`. -/
 theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd y) := by
   refine ⟨of ℤ ℚ, 𝟙 _, 2 • 𝟙 _, inferInstance, ?_, ?_⟩
@@ -63,7 +61,6 @@ theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd
     refine ConcreteCategory.hom_ext _ _ fun a => ?_
     simp_rw [biprod.lift_snd]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 -- Porting note: locally disable instance to avoid inferred/synthesized clash
 attribute [-instance] AddCommGroup.toIntModule in
 /-- `x` is not pseudoequal to `y`. -/

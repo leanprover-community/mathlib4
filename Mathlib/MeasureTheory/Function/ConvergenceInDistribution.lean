@@ -83,7 +83,6 @@ lemma tendstoInDistribution_of_isEmpty [IsEmpty E] :
     simp only [Subsingleton.elim _ (0 : Measure E)]
     exact tendsto_const_nhds
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendstoInDistribution_unique [HasOuterApproxClosed E] [BorelSpace E]
     (X : (i : ι) → Ω i → E) {Z : Ω' → E} {W : Ω'' → E} [l.NeBot]
     (h1 : TendstoInDistribution X l Z μ μ') (h2 : TendstoInDistribution X l W μ μ'') :

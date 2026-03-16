@@ -46,7 +46,6 @@ def mkOfBot : Φ.Iteration (⊥ : J) where
 
 variable {Φ}
 
-set_option backward.isDefEq.respectTransparency false in
 open Functor in
 /-- When `j : J` is not maximal, this is the extension in `Φ.Iteration (Order.succ j)`
 of any `iter : Φ.Iteration j`. -/

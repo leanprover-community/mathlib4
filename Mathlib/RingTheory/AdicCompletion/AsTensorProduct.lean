@@ -80,7 +80,6 @@ lemma ofTensorProduct_tmul (r : AdicCompletion I R) (x : M) :
     ofTensorProduct I M (r ⊗ₜ x) = r • of I M x := by
   simp [ofTensorProduct]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {M} in
 /-- `ofTensorProduct` is functorial in `M`. -/
 lemma ofTensorProduct_naturality (f : M →ₗ[R] N) :
@@ -101,7 +100,6 @@ section DecidableEq
 
 variable [Fintype ι] [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
     piEquivOfFintype I (fun _ : ι ↦ R) ∘ₗ ofTensorProduct I (ι → R) =
       (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
@@ -161,7 +159,6 @@ lemma ofTensorProduct_bijective_of_pi_of_fintype [Finite ι] :
 
 end PiFintype
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is a finite `R`-module, then the canonical map
 `AdicCompletion I R ⊗[R] M →ₗ AdicCompletion I M` is surjective. -/
 lemma ofTensorProduct_surjective_of_finite [Module.Finite R M] :
@@ -320,7 +317,6 @@ variable {M : Type u} [AddCommGroup M] [Module R M]
 variable {N : Type u} [AddCommGroup N] [Module R N] (f : M →ₗ[R] N)
 variable [Module.Finite R M] [Module.Finite R N]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tensor_map_id_left_eq_map :
     (AlgebraTensorModule.map LinearMap.id f) =
       (ofTensorProductEquivOfFiniteNoetherian I N).symm.toLinearMap ∘ₗ

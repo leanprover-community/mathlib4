@@ -70,13 +70,11 @@ def ballInclusion (n : ℕ) : 𝔹 n ⟶ 𝔻 n :=
         rw [isOpen_induced_iff, ← hst, ← hrs]
         tauto⟩ }
 
-set_option backward.isDefEq.respectTransparency false in
 instance {n : ℕ} : Mono (diskBoundaryInclusion n) := mono_iff_injective _ |>.mpr <| by
   intro ⟨x, hx⟩ ⟨y, hy⟩ h
   obtain rfl : x = y := by simpa [diskBoundaryInclusion, disk] using h
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 instance {n : ℕ} : Mono (ballInclusion n) := TopCat.mono_iff_injective _ |>.mpr <| by
   intro ⟨x, hx⟩ ⟨y, hy⟩ h
   obtain rfl : x = y := by simpa [ballInclusion, disk] using h

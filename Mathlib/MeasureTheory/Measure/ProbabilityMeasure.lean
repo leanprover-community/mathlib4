@@ -488,7 +488,6 @@ theorem toMeasure_normalize_eq_of_nonzero (nonzero : μ ≠ 0) :
     ENNReal.coe_mul, ennreal_coeFn_eq_coeFn_toMeasure]
   exact Measure.coe_nnreal_smul_apply _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.ProbabilityMeasure.toFiniteMeasure_normalize_eq_self {m0 : MeasurableSpace Ω}
     (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.normalize = μ := by

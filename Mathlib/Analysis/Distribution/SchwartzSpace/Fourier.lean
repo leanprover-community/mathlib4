@@ -162,7 +162,6 @@ variable {𝕜' : Type*} [NormedField 𝕜']
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜') in
 theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
     𝓕 (SchwartzMap.evalCLM 𝕜' V G m f) = SchwartzMap.evalCLM 𝕜' V G m (𝓕 f) := by
@@ -173,7 +172,6 @@ end eval
 
 section deriv
 
-set_option backward.isDefEq.respectTransparency false
 
 /-- The derivative of the Fourier transform is given by the Fourier transform of the multiplication
 with `-(2 * π * Complex.I) • innerSL ℝ`. -/

@@ -55,7 +55,6 @@ def functorObjObj (A : C ⥤ D) [MonObj A] (X : C) : Mon D where
     mul_one := congr_app (mul_one A) X
     mul_assoc := congr_app (mul_assoc A) X }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps]
 def functorObj (A : C ⥤ D) [MonObj A] : C ⥤ Mon D where
@@ -108,7 +107,6 @@ def unitIso : 𝟭 (Mon (C ⥤ D)) ≅ functor ⋙ inverse :=
   { hom := .mk' { app := fun _ => 𝟙 _ }
     inv := .mk' { app := fun _ => 𝟙 _ } })
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the equivalence `Mon (C ⥤ D) ≌ C ⥤ Mon D`.
 -/
 @[simps!]
@@ -146,7 +144,6 @@ def functorObjObj (A : C ⥤ D) [ComonObj A] (X : C) : Comon D where
     comul_counit := congr_app (comul_counit A) X
     comul_assoc := congr_app (comul_assoc A) X }
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 A comonoid object in a functor category induces a functor to the category of comonoid objects.
 -/
@@ -206,7 +203,6 @@ private def unitIso : 𝟭 (Comon (C ⥤ D)) ≅ functor ⋙ inverse :=
     { hom := .mk' { app := fun _ => 𝟙 _ }
       inv := .mk' { app := fun _ => 𝟙 _ } })
 
-set_option backward.isDefEq.respectTransparency false in
 -- probably this was originally also intended to be a private def
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

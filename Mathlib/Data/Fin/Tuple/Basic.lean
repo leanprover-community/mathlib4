@@ -183,7 +183,6 @@ def consCases {motive : (∀ i : Fin n.succ, α i) → Sort v} (cons : ∀ x₀ 
     (x : ∀ i : Fin n.succ, α i) : motive x :=
   _root_.cast (by rw [cons_self_tail]) <| cons (x 0) (tail x)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem consCases_cons {motive : (∀ i : Fin n.succ, α i) → Sort v}
     (cons : ∀ x₀ x, motive (Fin.cons x₀ x))

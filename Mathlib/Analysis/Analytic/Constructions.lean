@@ -259,7 +259,6 @@ end
 ### Cartesian products are analytic
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The radius of the Cartesian product of two formal series is the minimum of their radii. -/
 lemma FormalMultilinearSeries.radius_prod_eq_min
     (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :

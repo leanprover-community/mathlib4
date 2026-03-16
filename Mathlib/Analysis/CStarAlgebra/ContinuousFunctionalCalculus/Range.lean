@@ -111,7 +111,6 @@ variable [ContinuousConstSMul 𝕜 A] [StarModule 𝕜 A] [IsTopologicalRing A] 
 
 open NonUnitalStarAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped NonUnitalContinuousFunctionalCalculus in
 theorem range_cfcₙHom {a : A} (ha : p a) :
     NonUnitalStarAlgHom.range (cfcₙHom ha (R := 𝕜)) = elemental 𝕜 a := by
@@ -148,7 +147,6 @@ variable [NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoi
 variable [IsTopologicalRing A] [T2Space A] [PartialOrder A] [NonnegSpectrumClass ℝ A]
 variable [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real (a : A) (ha : 0 ≤ a) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = (cfcₙ · a) '' {f | ∀ x ∈ quasispectrum ℝ a, 0 ≤ f x} := by
   ext
@@ -162,7 +160,6 @@ lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real (a : A) (ha : 0 ≤ a) :
 
 variable [StarModule ℝ A] [ContinuousStar A] [ContinuousConstSMul ℝ A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_cfcₙ_nnreal (a : A) (ha : 0 ≤ a) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = {x | x ∈ NonUnitalStarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
   rw [range_cfcₙ_nnreal_eq_image_cfcₙ_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,

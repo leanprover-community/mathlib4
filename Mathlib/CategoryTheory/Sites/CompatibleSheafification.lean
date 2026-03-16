@@ -63,7 +63,6 @@ noncomputable def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
   refine isoWhiskerRight ?_ _
   exact J.plusFunctorWhiskerLeftIso _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sheafificationWhiskerLeftIso_hom_app (P : Cᵒᵖ ⥤ D) (F : D ⥤ E)
     [∀ (F : D ⥤ E) (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
@@ -93,7 +92,6 @@ noncomputable def sheafificationWhiskerRightIso :
   refine (associator _ _ _).symm ≪≫ ?_
   exact isoWhiskerRight (J.plusFunctorWhiskerRightIso _) (J.plusFunctor E)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sheafificationWhiskerRightIso_hom_app :
     (J.sheafificationWhiskerRightIso F).hom.app P = (J.sheafifyCompIso F P).hom := by
@@ -101,7 +99,6 @@ theorem sheafificationWhiskerRightIso_hom_app :
   simp only [Category.id_comp, Category.comp_id]
   erw [Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sheafificationWhiskerRightIso_inv_app :
     (J.sheafificationWhiskerRightIso F).inv.app P = (J.sheafifyCompIso F P).inv := by
@@ -109,7 +106,6 @@ theorem sheafificationWhiskerRightIso_inv_app :
   simp only [Category.comp_id]
   erw [Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem whiskerRight_toSheafify_sheafifyCompIso_hom :
     whiskerRight (J.toSheafify _) _ ≫ (J.sheafifyCompIso F P).hom = J.toSheafify _ := by

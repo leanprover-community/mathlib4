@@ -71,7 +71,6 @@ noncomputable def freeObjDesc (φ : F ⟶ G.presheaf ⋙ forget _) : freeObj F �
     ext x
     simpa using NatTrans.naturality_apply φ f x
 
-set_option backward.isDefEq.respectTransparency false in
 variable (F R) in
 /-- The unit of `PresheafOfModules.freeAdjunction`. -/
 @[simps]
@@ -79,7 +78,6 @@ noncomputable def freeAdjunctionUnit : F ⟶ (freeObj (R := R) F).presheaf ⋙ f
   app X x := ModuleCat.freeMk x
   naturality X Y f := by ext; simp [presheaf]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(freeObj F ⟶ G) ≃ (F ⟶ G.presheaf ⋙ forget _)` when
 `F` is a presheaf of types and `G` a presheaf of modules. -/
 noncomputable def freeHomEquiv : (freeObj F ⟶ G) ≃ (F ⟶ G.presheaf ⋙ forget _) where
@@ -93,7 +91,6 @@ lemma free_hom_ext {ψ ψ' : freeObj F ⟶ G}
       freeAdjunctionUnit R F ≫ Functor.whiskerRight ((toPresheaf _).map ψ') _) : ψ = ψ' :=
   freeHomEquiv.injective h
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- The free presheaf of modules functor is left adjoint to the forget functor
 `PresheafOfModules.{u} R ⥤ Cᵒᵖ ⥤ Type u`. -/

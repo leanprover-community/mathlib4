@@ -35,7 +35,6 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 namespace GrothendieckTopology.Point
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a point `Φ` of a site `(C, J)`, an object `X : C`, and `x : Φ.fiber.obj X`,
 this is the point of the site `(Over X, J.over X)` such that the fiber of
 an object of `Over X` corresponding to a morphism `f : Y ⟶ X` identifies
@@ -60,7 +59,6 @@ end GrothendieckTopology.Point
 
 namespace ObjectProperty
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsConservativeFamilyOfPoints.over
     {P : ObjectProperty (Point.{w} J)} [ObjectProperty.Small.{w} P]
     [J.WEqualsLocallyBijective (Type w)] [HasSheafify J (Type w)]

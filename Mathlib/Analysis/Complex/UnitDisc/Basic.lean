@@ -41,10 +41,8 @@ instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer
 
 instance instSemigroupWithZero : SemigroupWithZero UnitDisc := by unfold UnitDisc; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance instIsCancelMulZero : IsCancelMulZero UnitDisc := by unfold UnitDisc; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
 
 instance instCoe : Coe UnitDisc ℂ := ⟨UnitDisc.coe⟩
@@ -295,7 +293,6 @@ alias re_conj := UnitDisc.re_star
 instance : StarMul 𝔻 where
   star_mul z w := coe_injective <| by simp [mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated star_mul' (since := "2026-01-06")]
 theorem conj_mul (z w : 𝔻) : star (z * w) = star z * star w :=
   star_mul' z w
