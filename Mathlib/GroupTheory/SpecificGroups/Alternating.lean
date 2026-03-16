@@ -171,9 +171,10 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
         exact ⟨Finset.mem_compl.1 ha, Finset.mem_compl.1 hb⟩
       simp [mul_assoc, hd.commute.eq]
 
-theorem isThreeCycle_isConj (h5 : 5 ≤ Fintype.card α) {σ τ : alternatingGroup α}
-    (hσ : IsThreeCycle (σ : Perm α)) (hτ : IsThreeCycle (τ : Perm α)) : IsConj σ τ :=
-  alternatingGroup.isConj_of (isConj_iff_cycleType_eq.2 (hσ.trans hτ.symm))
+theorem isThreeCycle_isConj (h5 : 5 ≤ Nat.card α) {σ τ : alternatingGroup α}
+    (hσ : IsThreeCycle (σ : Perm α)) (hτ : IsThreeCycle (τ : Perm α)) : IsConj σ τ := by
+  simp only [Nat.card_eq_fintype_card] at h5
+  exact alternatingGroup.isConj_of (isConj_iff_cycleType_eq.2 (hσ.trans hτ.symm))
     (by rwa [hσ.card_support])
 
 end alternatingGroup
@@ -257,7 +258,7 @@ theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ 
 
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
-theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f : Perm α}
+theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Nat.card α) {f : Perm α}
     (hf : IsThreeCycle f) :
     normalClosure ({⟨f, hf.mem_alternatingGroup⟩} : Set (alternatingGroup α)) = ⊤ := by
   rw [eq_top_iff, ← map_subtype_le_map_subtype, ← MonoidHom.range_eq_map, range_subtype,
@@ -319,7 +320,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
       have h3 :
         IsThreeCycle (Fin.cycleRange 2 * finRotate 5 * (Fin.cycleRange 2)⁻¹ * (finRotate 5)⁻¹) :=
         card_support_eq_three_iff.1 (by decide)
-      rw [← h3.alternating_normalClosure (by rw [card_fin])]
+      rw [← h3.alternating_normalClosure (by rw [Nat.card_eq_fintype_card, card_fin])]
       refine normalClosure_le_normal ?_
       rw [Set.singleton_subset_iff, SetLike.mem_coe]
       have h :
@@ -415,7 +416,7 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     -- If `n = 3`, then `g` has a 3-cycle in its decomposition, so `g^2` is a 3-cycle.
     -- `g^2` is in the normal closure of `g`, so that normal closure must be $A_5$.
     · rw [eq_top_iff, ← (isThreeCycle_sq_of_three_mem_cycleType_five ng).alternating_normalClosure
-        (by rw [card_fin])]
+        (by rw [Nat.card_eq_fintype_card, card_fin])]
       refine normalClosure_le_normal ?_
       rw [Set.singleton_subset_iff, SetLike.mem_coe]
       have h := SetLike.mem_coe.1 (subset_normalClosure

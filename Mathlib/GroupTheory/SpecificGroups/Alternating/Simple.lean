@@ -69,10 +69,8 @@ def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     convert (conj_smul_range_ofSubtype g s).symm
   is_generator := by
     rw [eq_top_iff, ← Equiv.Perm.closure_isSwap, Subgroup.closure_le]
-    intro g hg
-    obtain ⟨a, b, hab, rfl⟩ := hg
-    let s : Set.powersetCard α 2 := ⟨{a, b}, Finset.card_pair hab⟩
-    apply Subgroup.mem_iSup_of_mem s
+    rintro g ⟨a, b, hab, rfl⟩
+    apply Subgroup.mem_iSup_of_mem ⟨{a, b}, Finset.card_pair hab⟩
     exact ⟨swap ⟨a, by aesop⟩ ⟨b, by aesop⟩, Equiv.Perm.ofSubtype_swap_eq _ _⟩
 
 /-- If `α` has at least 5 elements, then the only nontrivial
@@ -81,9 +79,7 @@ theorem alternatingGroup_of_le_of_normal
     {α : Type*} [DecidableEq α] [Fintype α] (hα : 5 ≤ Nat.card α)
     {N : Subgroup (Perm α)} (hnN : N.Normal) (ntN : Nontrivial N) :
     alternatingGroup α ≤ N := by
-  rw [Nat.card_eq_fintype_card] at hα
   rw [← alternatingGroup.commutator_perm_eq hα]
-  rw [← Nat.card_eq_fintype_card] at hα
   have : IsPreprimitive (Perm α) (Set.powersetCard α 2) := by
     apply Set.powersetCard.isPreprimitive_perm (by norm_num) (lt_of_lt_of_le (by norm_num) hα)
     aesop
