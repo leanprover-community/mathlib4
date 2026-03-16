@@ -99,8 +99,7 @@ EOF
   # Creates toolchain, manifest, etc.
   (cd "${pkg}" && MATHLIB_NO_CACHE_ON_UPDATE=1 lake update)
 else
-  if [[ -f "${pkg}/lakefile.lean" && \
-      -f "${pkg}/.gitignore" ]]; then
+  if [[ -f "${pkg}/lakefile.lean" && -f "${pkg}/.gitignore" ]]; then
     if [[ "${lakeUpdate}" ]]; then
       echo "Only running \`lake update -v\` in \`SideSkimmer\`; skipping run."
       (cd "${pkg}" && MATHLIB_NO_CACHE_ON_UPDATE=1 lake update -v)
@@ -110,6 +109,14 @@ else
     if [[ ! "${noUpdate}" ]]; then
       echo "Running \`lake update\` in \`SideSkimmer\`. Use \`runSkimmer.sh --no-update\` to skip this step."
       (cd "${pkg}" && MATHLIB_NO_CACHE_ON_UPDATE=1 lake update)
+    elif [[ ! -f "${pkg}/lake-manifest.json" ]]; then
+      echo "Expected manifest at \`${pkg}/lake-manifest.json\`."
+      echo "Please exclude the \`--no-update\` flag to create one."
+      exit 1
+    elif [[ ! -f "${pkg}/lean-toolchain" ]]; then
+      echo "Expected toolchain at \`${pkg}/lean-toolchain\`."
+      echo "Please exclude the \`--no-update\` flag to create one."
+      exit 1
     fi
     for tgt in "${tgts[@]}"; do
       cmd=(lake build "${tgt}:applyCurrentTryThis")
