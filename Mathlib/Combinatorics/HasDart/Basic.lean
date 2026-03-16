@@ -46,6 +46,7 @@ namespace HasDart
 
 variable {α Gr : Type*} [HasDart α Gr] {G : Gr} {v w : α}
 
+@[inherit_doc verts]
 scoped notation "V(" G ")" => verts G
 
 /-- Dot notation for reverse direction of `adj_iff_nonempty_dart`. -/
