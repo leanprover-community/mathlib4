@@ -166,7 +166,9 @@ class ZoC (α : Type _) where
 class GrC (α : Type _) extends ZoC α where
   add : α → α → α
 
+set_option warn.classDefReducibility false in
 def zoDirectC : ZoC Int := ⟨True, 0⟩
+set_option warn.classDefReducibility false in
 def zoFromGrC : ZoC Int := ⟨False, 0⟩
 
 instance instZoCInt : ZoC Int := zoDirectC
