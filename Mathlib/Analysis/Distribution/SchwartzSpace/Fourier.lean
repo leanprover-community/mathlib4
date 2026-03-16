@@ -55,8 +55,7 @@ def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) :=
       ((fourierIntegral_convergent_iff _).mpr f.integrable)
       ((fourierIntegral_convergent_iff _).mpr g.integrable)]
   · simp [fourier_eq, smul_comm, integral_smul]
-  · intro f
-    exact contDiff_fourier (fun n _ ↦ integrable_pow_mul volume f n)
+  · exact fun f ↦ contDiff_fourier (fun n _ ↦ integrable_pow_mul volume f n)
   · intro ⟨k, n⟩
     refine ⟨Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1),
       (2 * π) ^ n * (2 * n + 2) ^ k * (Finset.range (n + 1) ×ˢ Finset.range (k + 1)).card *
@@ -83,7 +82,7 @@ def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) :=
       · have : (p.1 + integrablePower (volume : Measure V), p.2) ∈ Finset.range
             (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1) := by simp_all
         apply Seminorm.le_def.mp (Finset.le_sup (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2) this)
-  _ = _ := by simp [mul_assoc]
+    _ = _ := by simp [mul_assoc]
 
 instance instFourierTransform : FourierTransform 𝓢(V, E) 𝓢(V, E) where
   fourier f := fourierTransformCLM ℂ f
