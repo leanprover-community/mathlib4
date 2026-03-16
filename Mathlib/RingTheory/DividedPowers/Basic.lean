@@ -43,13 +43,13 @@ For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 ## References
 
 * [P. Berthelot (1974), *Cohomologie cristalline des schémas de
-caractéristique $p$ > 0*][Berthelot-1974]
+  caractéristique $p$ > 0*][Berthelot-1974]
 
 * [P. Berthelot and A. Ogus (1978), *Notes on crystalline
-cohomology*][BerthelotOgus-1978]
+  cohomology*][BerthelotOgus-1978]
 
 * [N. Roby (1963), *Lois polynomes et lois formelles en théorie des
-modules*][Roby-1963]
+  modules*][Roby-1963]
 
 * [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
 

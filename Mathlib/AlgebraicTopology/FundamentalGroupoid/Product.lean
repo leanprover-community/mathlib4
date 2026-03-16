@@ -94,7 +94,7 @@ open CategoryTheory
 /-- Equivalence between the categories of cones over the objects `π Xᵢ` written in two ways -/
 def coneDiscreteComp :
     Limits.Cone (Discrete.functor X ⋙ π) ≌ Limits.Cone (Discrete.functor fun i => πₓ (X i)) :=
-  Limits.Cones.postcomposeEquivalence (Discrete.compNatIsoDiscrete X π)
+  Limits.Cone.postcomposeEquivalence (Discrete.compNatIsoDiscrete X π)
 
 theorem coneDiscreteComp_obj_mapCone :
     (coneDiscreteComp X).functor.obj (Functor.mapCone π (TopCat.piFan X)) =
@@ -108,7 +108,7 @@ def piTopToPiCone :
 
 instance : IsIso (piTopToPiCone X) :=
   haveI : IsIso (piTopToPiCone X).hom := (inferInstance : IsIso (piIso X).inv)
-  Limits.Cones.cone_iso_of_hom_iso (piTopToPiCone X)
+  Limits.Cone.cone_iso_of_hom_iso (piTopToPiCone X)
 
 /-- The fundamental groupoid functor preserves products -/
 lemma preservesProduct : Limits.PreservesLimit (Discrete.functor X) π := by
