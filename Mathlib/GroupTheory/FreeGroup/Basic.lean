@@ -898,9 +898,6 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
 
--- TODO: find a good way to fix the linter
--- simp applies to two goals at once, with different simp sets
-set_option linter.flexible false in
 /-- The bijection between the free group on a singleton, and the integers. -/
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
@@ -913,7 +910,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
     exact List.recOn L
      (by rfl)
      (fun ⟨⟨⟩, b⟩ tl ih => by
-        cases b <;> simp [zpow_add] at ih ⊢ <;> rw [ih] <;> rfl)
+        cases b <;> simp [zpow_add, ih] <;> rfl)
   right_inv x :=
     Int.induction_on x (by simp)
       (fun i ih => by
