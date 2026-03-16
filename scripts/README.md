@@ -50,13 +50,15 @@ under `ci-tools/`).
 - `create_deprecated_modules.lean` defines the `#create_deprecated_modules` command that
   automatically generates the `deprecated_module` entries, gathering information from `git`.
   The expectation is that this will be expanded to a fully automated process that happens in CI.
-- `runSkimmer.sh` applies all interactive text suggestions generated within Mathlib (the `lean_lib`).
-  `runSkimmer.sh --on tgt1 tgt2 ...` applies only to those lake targets (libraries, modules) within mathlib.
-  If oleans for the refactored targets are already present, it will use them; else it will build any
-  necessary oleans. This script may be copy-pasted to other repos with altered config variables, then set up
-  with `runSkimmer.sh --init`. See `runSkimmer.sh -h` and the bash module doc for more details. NOTE: the
-  functionality exposed by this script is very experimental, and subject to change. Please report issues to
-  Thomas Murrills on Zulip.
+- `runSkimmer.sh` applies all interactive text suggestions generated within Mathlib (the
+  `lean_lib`). `runSkimmer.sh --on tgt1 tgt2 ...` applies only to those lake targets (libraries,
+  modules) within mathlib. If oleans for the refactored targets are already present, it will use them;
+  else it will build any necessary oleans. This script may be copy-pasted to other repos with altered
+  config variables, then set up with `runSkimmer.sh --init`. This sets up a minimal side package
+  `SideSkimmer` which avoids the need for including `skimmer` as a dependency.
+  See `runSkimmer.sh -h` and the bash module doc for more details.
+  NOTE: the functionality exposed by this script is very experimental, and subject to change.
+  Please report issues to Thomas Murrills on Zulip.
 - `migrate_to_fork.py`
   Helps contributors migrate from having direct write access to the main repository
   to using a fork-based workflow. This comprehensive script automates the entire migration process:
