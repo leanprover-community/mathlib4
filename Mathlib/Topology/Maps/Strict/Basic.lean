@@ -36,6 +36,8 @@ lemma isHomeomorph_iff_isQuotientMap_injective {f : X → Y} :
     fun h ↦ ⟨h.1.continuous, fun s hs ↦ ?_, h.2, h.1.surjective⟩⟩
   rwa [← h.1.isOpen_preimage, Set.preimage_image_eq _ h.2]
 
+variable {f}
+
 theorem isStrictMap_iff_isHomeomorph_quotientKerEquivRange :
     IsStrictMap f ↔
       IsHomeomorph (Setoid.quotientKerEquivRange f : Quotient (Setoid.ker f) → Set.range f) := by
