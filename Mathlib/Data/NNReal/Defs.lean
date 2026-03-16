@@ -1029,7 +1029,8 @@ meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.nnabs $a) =>
     assertInstancesCommute
-    match (← core q(inferInstance) (some q(inferInstance)) a).toNonzero with
+    match (← core q(inferInstance) (some q(inferInstance)) a).toNonzero
+      _ (some q(inferInstance)) with
     | some pa => pure (.positive q(nnabs_pos_of_pos $pa))
     | _ => failure
   | _, _, _ => throwError "not Real.nnabs"

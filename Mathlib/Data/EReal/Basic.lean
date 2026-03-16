@@ -907,7 +907,7 @@ meta def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(Real), ~q(EReal.toReal $a) =>
     assertInstancesCommute
-    match (← core q(inferInstance) (some q(inferInstance)) a).toNonneg with
+    match (← core q(inferInstance) (some q(inferInstance)) a).toNonneg _ _ with
     | .some pa => pure (.nonnegative q(EReal.toReal_nonneg $pa))
     | _ => pure .none
   | _, _, _ => throwError "not EReal.toReal"

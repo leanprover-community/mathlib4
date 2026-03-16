@@ -88,7 +88,7 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e := do
       return .positive p_pos
     -- Fall back to showing that the sum is nonnegative
     else
-      let pbody ← rbody.toNonneg
+      let pbody ← rbody.toNonneg _ pα
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
       let pα' ← synthInstanceQ q(AddLeftMono $α)
       assertInstancesCommute
