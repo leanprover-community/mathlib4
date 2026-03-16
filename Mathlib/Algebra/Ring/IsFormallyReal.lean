@@ -46,13 +46,13 @@ theorem IsSumNonzeroSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
     (h₁ : IsSumNonzeroSq s₁) (h₂ : IsSumNonzeroSq s₂) : IsSumNonzeroSq (s₁ + s₂) := by
   induction h₁ <;> simp_all [sq_add, add_assoc]
 
-theorem IsSumSq.isSumNonzeroSq [AddMonoid R] [Mul R] {s : R}
+theorem IsSumNonzeroSq.isSumSq [AddMonoid R] [Mul R] {s : R}
     (h : IsSumNonzeroSq s) : IsSumSq s := by
   induction h <;> aesop
 
 theorem isSumNonzeroSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s ≠ 0) :
     IsSumNonzeroSq s ↔ IsSumSq s where
-  mp := IsSumSq.isSumNonzeroSq
+  mp := IsSumNonzeroSq.isSumSq
   mpr h := by
     induction h with
     | zero => grind
@@ -67,20 +67,18 @@ alias ⟨_, IsSumSq.isSumNonzeroSq_of_ne_zero⟩ := isSumNonzeroSq_iff_isSumSq
 
 namespace AddSubsemigroup
 
-variable {T : Type*} [AddMonoid T] [Mul T] {s : T}
+variable [AddMonoid R] [Mul R] {s : R}
 
-variable (T) in
+variable (R) in
 /-- The subsemigroup of sums of squares of nonzero elements. -/
 @[simps]
-def sumNonzeroSq : AddSubsemigroup T where
-  carrier := {s : T | IsSumNonzeroSq s}
+def sumNonzeroSq : AddSubsemigroup R where
+  carrier := {s : R | IsSumNonzeroSq s}
   add_mem' := .add
 
 attribute [norm_cast] coe_sumNonzeroSq
 
-@[simp] theorem mem_sumNonzeroSq : s ∈ sumNonzeroSq T ↔ IsSumNonzeroSq s := .rfl
-
-end AddSubsemigroup
+@[simp] theorem mem_sumNonzeroSq : s ∈ sumNonzeroSq R ↔ IsSumNonzeroSq s := .rfl
 
 @[simp]
 theorem AddSubsemigroup.closure_mul_self [AddMonoid R] [Mul R] :
@@ -95,6 +93,8 @@ theorem AddSubsemigroup.closure_mul_self [AddMonoid R] [Mul R] :
     · apply AddSubsemigroup.mem_closure_of_mem
       aesop
     aesop
+
+end AddSubsemigroup
 
 end IsSumNonzeroSq
 
