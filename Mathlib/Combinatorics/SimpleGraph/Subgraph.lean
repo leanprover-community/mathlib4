@@ -1290,7 +1290,7 @@ theorem deleteVerts_empty : G'.deleteVerts ∅ = G' := by
   simp [deleteVerts]
 
 theorem deleteVerts_le : G'.deleteVerts s ≤ G' := by
-  constructor <;> simp [Set.diff_subset]
+  constructor <;> simp
 
 @[gcongr, mono]
 theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
