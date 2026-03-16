@@ -341,7 +341,33 @@ inductive WithTop.LE : WithTop α → WithTop α → Prop where
   | le_top (x : WithTop α) : WithTop.LE x .top
   | coe_le_coe {a b : α} : a ≤ b → WithTop.LE (.coe a) (.coe b)
 
+attribute [to_dual existing] WithTop.LE.le_top
+
 @[to_dual]
 instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩
 
 example (a : α) : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+-- The namespace is translated correctly for private names:
+@[to_dual]
+private theorem WithBot.coe_le_top : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+run_meta guard <| (← getEnv).contains ``WithTop.coe_le_bot
+
+@[to_dual]
+private abbrev WithBotPrivate := WithBot
+
+@[to_dual]
+private theorem WithBotPrivate.coe_le_top : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
+
+run_meta guard <| (← getEnv).contains ``WithTopPrivate.coe_le_bot
+
+set_option linter.unusedVariables false in
+@[to_dual (rename := x → y, Pbot ↔ Ptop) renameTest']
+def renameTest [Top α] [Bot α] (x : α) {P : α → Prop} (Ptop : P ⊤) (Pbot : P ⊥) : True := trivial
+
+/--
+info: renameTest' {α : Type} [Bot α] [Top α] (y : α) {P : α → Prop} (Pbot : P ⊥) (Ptop : P ⊤) : True
+-/
+#guard_msgs in
+#check renameTest'

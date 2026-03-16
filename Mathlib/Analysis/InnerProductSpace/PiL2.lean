@@ -212,6 +212,24 @@ theorem inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
 lemma inner_toLp_toLp (x y : ι → 𝕜) :
     ⟪toLp 2 x, toLp 2 y⟫ = dotProduct y (star x) := rfl
 
+section restrict₂
+
+variable {I J : Finset ι'}
+
+/-- The restriction from `EuclideanSpace 𝕜 J` to `EuclideanSpace 𝕜 I` when `I ⊆ J`. -/
+noncomputable
+def restrict₂ (hIJ : I ⊆ J) :
+    EuclideanSpace 𝕜 J →L[𝕜] EuclideanSpace 𝕜 I where
+  toFun x := toLp 2 (Finset.restrict₂ («π» := fun _ ↦ 𝕜) hIJ x.ofLp)
+  map_add' x y := by ext; simp
+  map_smul' m x := by ext; simp
+
+@[simp]
+lemma restrict₂_apply (hIJ : I ⊆ J) (x : EuclideanSpace 𝕜 J) (i : I) :
+    EuclideanSpace.restrict₂ hIJ x i = x ⟨i.1, hIJ i.2⟩ := rfl
+
+end restrict₂
+
 end EuclideanSpace
 
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
