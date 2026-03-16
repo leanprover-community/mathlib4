@@ -134,6 +134,9 @@ noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
   map_id X := (freeHomEquiv _).injective (by ext1 i; simp)
   map_comp {I J K} f g := (freeHomEquiv _).injective (by ext1; simp [freeHomEquiv_comp_apply])
 
+/- If `C` was in `Type u`, we could show that `freeFunctor` is a left adjoint, and
+deduce that `freeFunctor` preserves all colimits. Instead, we use
+the natural bijection `freeHomEquiv`, which is as close as an adjunction we can get. -/
 instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) where
   preservesColimitsOfShape {J} _ := ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨by
     replace hc := (Types.isColimit_iff_coconeTypesIsColimit c).1 ⟨hc⟩
