@@ -100,6 +100,7 @@ theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
   simp only [deriv, fderiv_pi h]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivWithinAt_pi_piLp [Finite ι] {p : ENNReal} [Fact (1 ≤ p)] {f : 𝕜 → PiLp p E'}
   {f' : PiLp p E'} {s : Set 𝕜} {x : 𝕜} :
     HasDerivWithinAt f f' s x ↔ ∀ i, HasDerivWithinAt (fun t ↦ f t i) (f' i) s x := by
@@ -109,6 +110,7 @@ theorem hasDerivWithinAt_pi_piLp [Finite ι] {p : ENNReal} [Fact (1 ≤ p)] {f :
   rw [hd, hasFDerivWithinAt_piLp]
   congr! 3
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivWithinAt_pi_euclidean [Finite ι] {f : 𝕜 → EuclideanSpace 𝕜 ι}
   {f' : EuclideanSpace 𝕜 ι} {s : Set 𝕜} {x : 𝕜} :
     HasDerivWithinAt f f' s x ↔ ∀ i, HasDerivWithinAt (fun t ↦  f t i) (f' i) s x := by
