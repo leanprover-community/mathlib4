@@ -8,7 +8,6 @@ module
 public meta import Batteries.Lean.Expr
 public meta import Batteries.Lean.Meta.UnusedNames
 public meta import Lean.Elab.Tactic.RCases
-public import Mathlib.Init
 public import Mathlib.Tactic.TypeStar
 
 /-!
