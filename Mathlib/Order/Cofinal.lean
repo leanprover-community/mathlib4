@@ -52,7 +52,7 @@ theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofin
 end LE
 
 section Preorder
-variable [Preorder α]
+variable [Preorder α] [Preorder β]
 
 theorem IsCofinal.univ : IsCofinal (@Set.univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
@@ -68,14 +68,20 @@ theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofi
   obtain ⟨c, hc, hc'⟩ := ht ⟨b, hb⟩
   exact ⟨c, Set.mem_image_of_mem _ hc, hb'.trans hc'⟩
 
-theorem GaloisConnection.map_cofinal [Preorder β] {f : β → α} {g : α → β}
+theorem GaloisConnection.map_cofinal {f : β → α} {g : α → β}
     (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) := by
   intro a
   obtain ⟨b, hb, hb'⟩ := hs (f a)
   exact ⟨g b, Set.mem_image_of_mem _ hb, h.le_iff_le.1 hb'⟩
 
-theorem OrderIso.map_cofinal [Preorder β] (e : α ≃o β) {s : Set α} (hs : IsCofinal s) :
-    IsCofinal (e '' s) :=
+theorem IsCofinal.image {f : α → β} {s : Set α} (hs : IsCofinal s)
+    (hf : Monotone f) (hf' : IsCofinal (.range f)) : IsCofinal (f '' s) := by
+  intro a
+  obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' a
+  obtain ⟨c, hc, hc'⟩ := hs b
+  exact ⟨_, Set.mem_image_of_mem f hc, hb.trans (hf hc')⟩
+
+theorem OrderIso.map_cofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) : IsCofinal (e '' s) :=
   e.symm.to_galoisConnection.map_cofinal hs
 
 end Preorder
