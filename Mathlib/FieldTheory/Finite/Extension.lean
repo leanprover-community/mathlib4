@@ -114,12 +114,11 @@ noncomputable def Extension.frob :
 
 @[simp]
 theorem Extension.frob_iterate_apply (i : ℕ) {x : Extension k p n} :
-    (frob k p n)^[i] x = x ^ (Nat.card k ^ i) := by
-  induction i with
+    (frob k p n ^ i) x = x ^ (Nat.card k ^ i) := by
+  induction i generalizing x with
   | zero => simp
   | succ i ih =>
-      rw [Function.iterate_add_apply, Function.iterate_one, frob_apply, iterate_map_pow, ih,
-        ← pow_mul, ← Nat.pow_succ]
+      rw [pow_add, pow_one, AlgEquiv.mul_apply, ih, frob_apply, ← pow_mul, ← Nat.pow_add_one']
 
 theorem Extension.exists_frob_pow_eq (g : Gal(Extension k p n/k)) :
     ∃ i < n, Extension.frob k p n ^ i = g := by
