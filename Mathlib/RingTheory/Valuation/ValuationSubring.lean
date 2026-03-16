@@ -287,7 +287,7 @@ def idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : Ideal R :=
 theorem idealOfLE_self : A.idealOfLE A (refl _) = IsLocalRing.maximalIdeal A := rfl
 
 @[simp]
-theorem idealOfLE_top : A.idealOfLE ⊤ (fun _ _ => trivial) = ⊥ := by
+theorem idealOfLE_top : A.idealOfLE ⊤ (le_top _) = ⊥ := by
   rw [ValuationSubring.idealOfLE, IsLocalRing.maximalIdeal_eq_bot, Ideal.comap_bot_of_injective]
   exact Subring.inclusion_injective _
 
@@ -354,7 +354,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
     · simp
 
 @[simp]
-theorem ofPrime_bot : A.ofPrime (⊥ : Ideal A) = ⊤ := by
+theorem ofPrime_bot : A.ofPrime ⊥ = ⊤ := by
   simp [← idealOfLE_top, ValuationSubring.ofPrime_idealOfLE]
 
 @[simp]
