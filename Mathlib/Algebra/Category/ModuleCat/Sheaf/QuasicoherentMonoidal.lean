@@ -145,7 +145,8 @@ instance [M₁.IsQuasicoherent] [M₂.IsQuasicoherent] : (M₁ ⊗ M₂).IsQuasi
   QuasicoherentData.isQuasicoherent
     (M₁.quasicoherentData.tensor M₂.quasicoherentData)
 
-instance : (isQuasicoherent ((sheafCompose J (forget₂ _ RingCat)).obj R)).IsMonoidal where
+instance isMonoidal_isQuasicoherent :
+    (isQuasicoherent ((sheafCompose J (forget₂ _ RingCat)).obj R)).IsMonoidal where
   prop_unit := sorry
   prop_tensor M₁ M₂ _ _ := by infer_instance
 

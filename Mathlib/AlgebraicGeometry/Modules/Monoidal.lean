@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Monoidal
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.QuasicoherentMonoidal
+public import Mathlib.CategoryTheory.Sites.Point.Over
 public import Mathlib.Topology.Sheaves.Points
 
 /-!
@@ -23,7 +24,15 @@ open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme.Modules
 
-noncomputable instance (X : Scheme.{u}) : MonoidalCategory X.Modules :=
+variable (X : Scheme.{u})
+
+noncomputable instance : MonoidalCategory X.Modules :=
   SheafOfModules.monoidalCategory X.sheaf
+
+abbrev isQuasicoherent : ObjectProperty X.Modules :=
+  SheafOfModules.isQuasicoherent X.ringCatSheaf
+
+instance : (isQuasicoherent X).IsMonoidal :=
+  SheafOfModules.isMonoidal_isQuasicoherent (R := X.sheaf)
 
 end AlgebraicGeometry.Scheme.Modules
