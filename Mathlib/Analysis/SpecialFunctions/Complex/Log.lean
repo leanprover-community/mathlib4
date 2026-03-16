@@ -155,6 +155,11 @@ theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y
 theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x = y + n * (2 * π * I) := by
   simp only [exp_eq_exp_iff_exp_sub_eq_one, exp_eq_one_iff, sub_eq_iff_eq_add']
 
+@[grind .] lemma re_eq_re_of_cexp_eq_cexp {x y : ℂ} (h : cexp x = cexp y) :
+    x.re = y.re := by
+  obtain ⟨n, hn⟩ := exp_eq_exp_iff_exists_int.1 h
+  simp [hn]
+
 theorem log_exp_exists (z : ℂ) :
     ∃ n : ℤ, log (exp z) = z + n * (2 * π * I) := by
   rw [← exp_eq_exp_iff_exists_int, exp_log]
@@ -229,7 +234,7 @@ theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x :
   · refine continuous_ofReal.continuousAt.comp ?_
     refine (Real.continuousAt_log ?_).comp continuous_norm.continuousAt
     exact norm_ne_zero_iff.mpr <| slitPlane_ne_zero h
-  · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
+  · have h_cont_mul : Continuous fun x : ℂ => x * I := by fun_prop
     refine h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp ?_)
     exact continuousAt_arg h
 

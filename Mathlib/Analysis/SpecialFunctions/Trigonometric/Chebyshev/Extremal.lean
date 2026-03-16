@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.Polynomial.Chebyshev
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.LinearAlgebra.Lagrange
-public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Chebyshev polynomials over the reals: some extremal properties
@@ -39,7 +39,7 @@ namespace Polynomial.Chebyshev
 
 open Polynomial Real
 
-/-- For `n ≠ 0` and `i ≤ n`, `node n i` is one of the extremal points of the Chebyhsev `T`
+/-- For `n ≠ 0` and `i ≤ n`, `node n i` is one of the extremal points of the Chebyshev `T`
 polynomial over the interval `[-1, 1]`. -/
 noncomputable def node (n i : ℕ) : ℝ := cos (i * π / n)
 

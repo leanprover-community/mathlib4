@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 
 /-! # The derived category of an abelian category
@@ -48,8 +49,8 @@ instance should be obtained at the beginning of the proof, using the term
 ## TODO (@joelriou)
 
 - construct the distinguished triangle associated to a short exact sequence
-of cochain complexes (done), and compare the associated connecting homomorphism
-with the one defined in `Algebra.Homology.HomologySequence`.
+  of cochain complexes (done), and compare the associated connecting homomorphism
+  with the one defined in `Algebra.Homology.HomologySequence`.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
@@ -76,6 +77,7 @@ abbrev HasDerivedCategory := MorphismProperty.HasLocalization.{w}
 /-- The derived category obtained using the constructed localized category of cochain complexes
 with respect to quasi-isomorphisms. This should be used only while proving statements
 which do not involve the derived category. -/
+@[instance_reducible]
 def HasDerivedCategory.standard : HasDerivedCategory.{max u v} C :=
   MorphismProperty.HasLocalization.standard _
 
@@ -95,6 +97,7 @@ variable {C}
 /-- The localization functor `CochainComplex C ℤ ⥤ DerivedCategory C`. -/
 def Q : CochainComplex C ℤ ⥤ DerivedCategory C := HomologicalComplexUpToQuasiIso.Q
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (Q (C := C)).IsLocalization
     (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) := by
   dsimp only [Q, DerivedCategory]
@@ -115,6 +118,7 @@ variable (C)
 def quotientCompQhIso : HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh ≅ Q :=
   HomologicalComplexUpToQuasiIso.quotientCompQhIso C (ComplexShape.up ℤ)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Qh.IsLocalization (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)) := by
   dsimp [Qh, DerivedCategory]
   infer_instance
@@ -197,6 +201,26 @@ lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
       (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).app _)
     exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
 
+section
+
+open CochainComplex
+
+variable {C} {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+
+lemma mappingCone_triangle_distinguished :
+    DerivedCategory.Q.mapTriangle.obj (mappingCone.triangle φ) ∈ distTriang _ := by
+  rw [mem_distTriang_iff]
+  exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
+
+lemma mappingCocone_triangle_distinguished :
+    DerivedCategory.Q.mapTriangle.obj (mappingCocone.triangle φ) ∈ distTriang _ := by
+  rw [rotate_distinguished_triangle]
+  exact isomorphic_distinguished _ (mappingCone_triangle_distinguished φ) _
+    (DerivedCategory.Q.mapTriangleRotateIso.app _ ≪≫
+    DerivedCategory.Q.mapTriangle.mapIso (mappingCocone.rotateTriangleIso φ))
+
+end
+
 /-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
 their compatibilities with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
@@ -241,6 +265,7 @@ lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
   erw [Category.id_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
   ext X

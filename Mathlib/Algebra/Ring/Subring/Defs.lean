@@ -174,6 +174,8 @@ lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).In
 lemma toSubmonoid_injective : (fun s : Subring R => s.toSubmonoid).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
 
+instance : PartialOrder (Subring R) := .ofSetLike (Subring R) R
+
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
 /-- The actual `Subring` obtained from an element of a `SubringClass`. -/

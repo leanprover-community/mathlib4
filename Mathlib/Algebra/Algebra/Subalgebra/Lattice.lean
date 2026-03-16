@@ -819,6 +819,11 @@ theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) 
     φ₁ = φ₂ := by
   subst hS; exact adjoin_ext h
 
+theorem _root_.Algebra.forall_mem_adjoin_smul_eq_self_iff (S : Set A) {M : Type*} [Monoid M]
+    [MulSemiringAction M A] [SMulCommClass M R A] (m : M) :
+    (∀ x ∈ adjoin R S, m • x = x) ↔ (∀ x ∈ S, m • x = x) :=
+  AlgHom.eqOn_adjoin_iff (φ := MulSemiringAction.toAlgHom R A m) (ψ := .id R A)
+
 end AlgHom
 
 section NatInt
@@ -884,6 +889,25 @@ lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
 end CommSemiring
 
 namespace Subalgebra
+
+section toNonUnitalSubalgebra
+
+variable [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-- The forgetful map from subalgebras to non-unital subalgebras, as an order embedding. -/
+def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
+  toFun := toNonUnitalSubalgebra
+  inj' := toNonUnitalSubalgebra_injective
+  map_rel_iff' := by simp [SetLike.le_def]
+
+@[simp]
+lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :
+    S.toNonUnitalSubalgebra ≤ T.toNonUnitalSubalgebra ↔ S ≤ T :=
+  toNonUnitalSubalgebraOrderEmbedding.le_iff_le
+
+alias ⟨_, toNonUnitalSubalgebra_mono⟩ := toNonUnitalSubalgebra_le_toNonUnitalSubalgebra
+
+end toNonUnitalSubalgebra
 
 variable [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 

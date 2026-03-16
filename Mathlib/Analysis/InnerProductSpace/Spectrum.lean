@@ -205,6 +205,37 @@ private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.
   @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 
+private theorem hasEigenvalue_unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+    (i : Fin n) : HasEigenvalue T (hT.unsortedEigenvalues hn i) := by
+  unfold unsortedEigenvalues
+  let ⟨x, hx⟩ := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+    hT.orthogonalFamily_eigenspaces'
+  rwa [Eigenvalues.val_mk, RCLike.conj_eq_iff_re.mp (hT.conj_eigenvalue_eq_self hx)]
+
+private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+    {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.unsortedEigenvalues hn i = μ := by
+  let (eq := hx) x : Eigenvalues T := ⟨μ, hμ⟩
+  obtain ⟨i, hi⟩ := hT.direct_sum_isInternal.exists_subordinateOrthonormalBasisIndex_eq hn
+    hT.orthogonalFamily_eigenspaces' (hasEigenvalue_iff.mp x.prop)
+  use i
+  rw [unsortedEigenvalues, hi, hx, Eigenvalues.val_mk, ← RCLike.conj_eq_iff_re,
+    hT.conj_eigenvalue_eq_self hμ]
+
+private theorem card_filter_unsortedEigenvalues_eq (hT : T.IsSymmetric)
+    (hn : Module.finrank 𝕜 E = n) (μ : 𝕜) :
+    Finset.card {i | hT.unsortedEigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
+  by_cases hμ : HasEigenvalue T μ
+  · convert hT.direct_sum_isInternal.card_filter_subordinateOrthonormalBasisIndex_eq hn
+      hT.orthogonalFamily_eigenspaces' ⟨μ, hμ⟩ with i
+    unfold unsortedEigenvalues
+    let ⟨x, hx⟩ := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+      hT.orthogonalFamily_eigenspaces'
+    rw [Eigenvalues.val_mk, RCLike.conj_eq_iff_re.mp (hT.conj_eigenvalue_eq_self hx)]
+    exact Subtype.mk_eq_mk.symm
+  · rw [Module.End.hasEigenvalue_iff.not_left.mp hμ, finrank_bot, Finset.card_filter_eq_zero_iff]
+    intro i _ rfl
+    exact hμ (hT.hasEigenvalue_unsortedEigenvalues hn i)
+
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) : OrthonormalBasis (Fin n) 𝕜 E :=
   hT.direct_sum_isInternal.subordinateOrthonormalBasis hn hT.orthogonalFamily_eigenspaces'
@@ -238,6 +269,18 @@ finite-dimensional inner product space `E`, sorted in decreasing order -/
 noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     Fin n → ℝ :=
   (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
+
+theorem exists_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) {μ : 𝕜}
+    (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.eigenvalues hn i = μ := by
+  obtain ⟨i, hi⟩ := hT.exists_unsortedEigenvalues_eq hn hμ
+  use ((Tuple.sort (hT.unsortedEigenvalues hn)).symm i).revPerm
+  simp [eigenvalues_def, hi]
+
+theorem card_filter_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) (μ : 𝕜) :
+    Finset.card {i | hT.eigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
+  rw [← hT.card_filter_unsortedEigenvalues_eq hn, eigenvalues_def]
+  apply Finset.card_equiv (Fin.revPerm.trans (Tuple.sort (hT.unsortedEigenvalues hn)))
+  simp
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

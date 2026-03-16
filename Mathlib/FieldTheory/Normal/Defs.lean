@@ -71,6 +71,10 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
     exact ⟨hx.tower_top, hhx.of_dvd (map_ne_zero (map_ne_zero (minpoly.ne_zero hx)))
       ((map_dvd_map' _).mpr (minpoly.dvd_map_of_isScalarTower F K x))⟩
 
+set_option backward.isDefEq.respectTransparency false in
+instance IntermediateField.normal (K : IntermediateField F E) [Normal F E] : Normal K E :=
+  Normal.tower_top_of_normal F K E
+
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
   h.toIsAlgebraic.bijective_of_isScalarTower' ϕ
 
@@ -184,6 +188,7 @@ theorem AlgEquiv.restrictNormal_trans [Normal F E] :
 def AlgEquiv.restrictNormalHom [Normal F E] : Gal(K₁/F) →* Gal(E/F) :=
   MonoidHom.mk' (fun χ => χ.restrictNormal E) fun ω χ => χ.restrictNormal_trans ω E
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AlgEquiv.restrictNormalHom_apply (L : IntermediateField F K₁) [Normal F L]
     (σ : Gal(K₁/F)) (x : L) : restrictNormalHom L σ x = σ x :=
   AlgEquiv.restrictNormal_commutes σ L x
