@@ -3,14 +3,16 @@ Copyright (c) 2026 Michael Novak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Novak
 -/
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-import Mathlib.Analysis.Calculus.Deriv.Prod
-import Mathlib.Data.Real.CompleteField
-import Mathlib.Data.Real.StarOrdered
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-import Mathlib.Order.BourbakiWitt
+module
+
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.Calculus.Deriv.Prod
+public import Mathlib.Data.Real.CompleteField
+public import Mathlib.Data.Real.StarOrdered
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+public import Mathlib.Order.BourbakiWitt
 
 /-!
 # Plane curves
