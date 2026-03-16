@@ -106,7 +106,7 @@ theorem Ideal.ufd_iff_height_one_primes_principal :
     · exact Prime.irreducible
 
 theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
-    (x : R) (hx : Prime x) (p : Ideal R) [p.IsPrime] (hpx : x ∉ p)
+    {x : R} (hx : Prime x) {p : Ideal R} [p.IsPrime] (hpx : x ∉ p)
     (hprincipal : (map (algebraMap R (Localization.Away x)) p).IsPrincipal) :
     p.IsPrincipal := by
   let M : Submonoid R := Submonoid.powers x
@@ -281,9 +281,9 @@ theorem ufd_of_ufd_localization_away_of_prime {x : R} (hx : Prime x)
       exact hxp (Ideal.IsPrime.mem_of_pow_mem inferInstance n hs')
     have : (Ideal.map (algebraMap R (Localization.Away x)) p).IsPrime :=
       IsLocalization.isPrime_of_isPrime_disjoint M (Localization.Away x) p inferInstance hd
-    exact Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime x hx p hxp <|
-      (Ideal.ufd_iff_height_one_primes_principal).1 inferInstance
-        (Ideal.map (algebraMap R (Localization.Away x)) p) <| by
+    exact p.isPrincipal_of_isPrincipal_localization_away_of_prime hx hxp <|
+      Ideal.ufd_iff_height_one_primes_principal.1 inferInstance
+        (p.map (algebraMap R (Localization.Away x))) <| by
           simpa [IsLocalization.comap_map_of_isPrime_disjoint M (Localization.Away x)
-            inferInstance hd, hheight] using (IsLocalization.primeHeight_comap M
-              (Ideal.map (algebraMap R (Localization.Away x)) p)).symm
+            inferInstance hd, hheight] using
+              (IsLocalization.primeHeight_comap M (p.map (algebraMap R (Localization.Away x)))).symm
