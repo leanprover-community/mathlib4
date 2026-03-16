@@ -39,7 +39,7 @@ walks
 namespace HasDart
 
 universe u'' u'
-variable {α Gr : Type*} {u v : α} {G : Gr}
+variable {α Gr : Type*} {u v w : α} {G : Gr}
 
 /-- A walk is a sequence of adjacent vertices.  For vertices `u v : α`, the type `Walk u v` consists
 of all walks starting at `u` and ending at `v`.
