@@ -80,6 +80,11 @@ lemma freeHomEquiv_symm_comp {M N : SheafOfModules.{u} R} {I : Type u} (s : I �
 noncomputable abbrev freeSection {I : Type u} (i : I) : (free (R := R) I).sections :=
   (free (R := R) I).freeHomEquiv (𝟙 (free I)) i
 
+lemma freeHomEquiv_apply {M : SheafOfModules.{u} R} {I : Type u}
+    (f : free I ⟶ M) (i : I) :
+    freeHomEquiv M f i = sectionsMap f (freeSection i) :=
+  rfl
+
 lemma unitHomEquiv_symm_freeHomEquiv_apply
     {I : Type u} {M : SheafOfModules.{u} R} (f : free I ⟶ M) (i : I) :
     M.unitHomEquiv.symm (M.freeHomEquiv f i) = ιFree i ≫ f := by
@@ -104,6 +109,12 @@ lemma sectionMap_freeMap_freeSection (i : I) :
     sectionsMap (freeMap (R := R) f) (freeSection i) = freeSection (f i) := by
   simp [← freeHomEquiv_comp_apply]
 
+lemma sectionsMap_freeHomEquiv_symm_freeSection
+    {M : SheafOfModules.{u} R} (f : I → M.sections) (i : I) :
+    sectionsMap ((freeHomEquiv M).symm f) (freeSection i) = f i := by
+  obtain ⟨f, rfl⟩ := (freeHomEquiv M).surjective f
+  rw [Equiv.symm_apply_apply, freeHomEquiv_apply]
+
 @[reassoc (attr := simp)]
 lemma ιFree_freeMap (i : I) :
     ιFree (R := R) i ≫ freeMap f = ιFree (f i) := by
@@ -122,6 +133,67 @@ noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
   map f := freeMap f
   map_id X := (freeHomEquiv _).injective (by ext1 i; simp)
   map_comp {I J K} f g := (freeHomEquiv _).injective (by ext1; simp [freeHomEquiv_comp_apply])
+
+instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) where
+  preservesColimitsOfShape {J} _ := ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨by
+    replace hc := (Types.isColimit_iff_coconeTypesIsColimit c).1 ⟨hc⟩
+    let coconeTypes (s : Cocone (K ⋙ freeFunctor (R := R))) :
+        K.CoconeTypes :=
+      { pt := s.pt.sections
+        ι j := freeHomEquiv _ (s.ι.app j)
+        ι_naturality {j j'} f := by
+          funext x
+          dsimp
+          rw [← s.w f]
+          dsimp
+          rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap,
+            Function.comp_apply, freeHomEquiv_apply] }
+    exact {
+      desc s := (freeHomEquiv _).symm (hc.desc (coconeTypes s))
+      fac s j := (freeHomEquiv _).injective (by
+        funext x
+        dsimp
+        rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap, Function.comp_apply,
+          sectionsMap_freeHomEquiv_symm_freeSection,
+          dsimp% hc.fac_apply (coconeTypes s) j x])
+      uniq s m hm := (freeHomEquiv _).injective (by
+        funext x
+        obtain ⟨j, x, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective hc x
+        replace hm := congr_fun ((freeHomEquiv _).congr_arg (hm j)) x
+        dsimp at hm
+        rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap,
+          Function.comp_apply] at hm
+        rw [freeHomEquiv_apply, freeHomEquiv_apply,
+          sectionsMap_freeHomEquiv_symm_freeSection,
+          Functor.coconeTypesEquiv_symm_apply_ι,
+          dsimp% hc.fac_apply (coconeTypes s) j x, hm]) }⟩⟩⟩
+
+
+section
+
+variable (I J : Type u)
+
+/-- A binary coproduct of free sheaves of modules is the free sheaf
+of modules on the sum type. -/
+noncomputable def freeSumIso : free I ⨿ free J ≅ free (R := R) (I ⊕ J) :=
+  IsColimit.coconePointUniqueUpToIso
+    (coprodIsCoprod (free (R := R) I) (free J))
+    (mapIsColimitOfPreservesOfIsColimit (freeFunctor (R := R)) _ _
+      (Types.binaryCoproductColimit I J))
+
+@[reassoc (attr := simp)]
+lemma inl_freeSumIso_hom :
+    coprod.inl ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inl :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom
+    (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .left)
+
+@[reassoc (attr := simp)]
+lemma inr_freeSumIso_hom :
+    coprod.inr ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inr :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom
+    (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .right)
+
+end
 
 section
 
