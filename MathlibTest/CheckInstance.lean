@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Eric Wieser. All rights reserved.
+Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Kim Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Tactic.FastInstance
@@ -17,7 +17,8 @@ and ❌ if there is a "leak" (a data field uses a coercion-equivalent but not
 
 /--
 info: ❌ 'RestrictScalars.module': leaky binder types detected.
-  The body differs from the re-inferred form at instances transparency.
+  The data field `smul` differs from the re-inferred canonical form at instances transparency.
+  Other data fields may also be leaky.
   The `fast_instance%` elaborator may be useful as a repair or band-aid:
   `instance : ... := fast_instance% <body>`
 -/
@@ -25,12 +26,12 @@ info: ❌ 'RestrictScalars.module': leaky binder types detected.
 -- `RestrictScalars.module` is leaky; fix it with `fast_instance%`.
 #check_instance RestrictScalars.module
 
-/--
-info: ❌ 'RestrictScalars.opModule': leaky binder types detected.
-  The body differs from the re-inferred form at instances transparency.
-  The `fast_instance%` elaborator may be useful as a repair or band-aid:
-  `instance : ... := fast_instance% <body>`
--/
+-- A minimal type alias to demonstrate the ✅ canonical case.
+-- Without `fast_instance%`, the `add` field binder type would be `ℕ` rather than `MyNat`,
+-- which differs at instances transparency.
+def MyNat := ℕ
+instance myNatInstAdd : Add MyNat := fast_instance% ⟨Nat.add⟩
+
+/-- info: ✅ 'myNatInstAdd': canonical (re-inferred form agrees at instances transparency) -/
 #guard_msgs in
--- `RestrictScalars.opModule` is defined without `fast_instance%` and is leaky.
-#check_instance RestrictScalars.opModule
+#check_instance myNatInstAdd

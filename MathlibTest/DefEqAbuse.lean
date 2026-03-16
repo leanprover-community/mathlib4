@@ -75,7 +75,7 @@ info: The following instances may have leaky binder types:
   The `fast_instance%` elaborator may be useful as a repair or band-aid:
   `instance : ... := fast_instance% <body>`
 ---
-info: Workaround: the following `@[implicit_reducible]` annotations would paper over this problem,
+info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem,
 but the real issue is likely a leaky instance somewhere.
 set_option allowUnsafeReducibility true
 attribute [implicit_reducible]

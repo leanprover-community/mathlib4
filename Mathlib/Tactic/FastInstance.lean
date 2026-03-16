@@ -159,12 +159,13 @@ macro "inferInstanceAs% " source:term : term =>
 
 /-- Find the first data-field binder type mismatch between `inst` and `canonical`
 (the constructor-normalized form from `makeFastInstance`). Returns
-`(fieldName, actualBinderType, expectedBinderType)` for the first field where the two forms
-disagree at instances transparency and are both lambdas with different binder types.
+`(fieldName, some (actualBinderType, expectedBinderType))` for the first field where both forms
+are lambdas with different binder types at instances transparency, or `(fieldName, none)` if a
+mismatch is found but cannot be characterized as a binder type difference.
 `className` is used to look up field names via `getStructureFields`; recursion uses the
 constructor prefix as the nested class name. -/
 private partial def findFirstBinderMismatch (className : Name) (inst canonical : Expr) :
-    MetaM (Option (Name × Expr × Expr)) := do
+    MetaM (Option (Name × Option (Expr × Expr))) := do
   let env ← getEnv
   let instWhnf ← withTransparency .instances <| whnf inst
   let canWhnf ← withTransparency .instances <| whnf canonical
@@ -176,12 +177,15 @@ private partial def findFirstBinderMismatch (className : Name) (inst canonical :
     match env.find? (className ++ `mk) with
     | some (.ctorInfo ci) => ci.numParams
     | _ => 0
-  for i in List.range (min instArgs.size canArgs.size) do
+  -- Start from `numParams` to skip constructor parameters: they are shared between `inst`
+  -- and `canonical` (both were built for the same `expectedType`), so any mismatch will be
+  -- in a field position. Starting here also makes `i - numParams` safe (no underflow).
+  for i in [numParams : min instArgs.size canArgs.size] do
     let instArg := instArgs[i]!
     let canArg := canArgs[i]!
     let same ← withNewMCtxDepth <| withTransparency .instances <| isDefEq instArg canArg
     unless same do
-      let fieldIdx := i - numParams
+      let fieldIdx := i - numParams  -- safe: i ≥ numParams
       let fieldName : Name :=
         if h : fieldIdx < fields.size then fields[fieldIdx] else `_
       -- If both are lambdas, check for a binder type mismatch at this level.
@@ -189,7 +193,7 @@ private partial def findFirstBinderMismatch (className : Name) (inst canonical :
         if let .lam _ canT _ _ := canArg then
           let sameT ← withNewMCtxDepth <| withTransparency .instances <| isDefEq instT canT
           unless sameT do
-            return some (fieldName, instT, canT)
+            return some (fieldName, some (instT, canT))
       -- Recurse into nested constructor sub-expressions (other instance fields).
       -- Identify the nested class from the argument's own constructor, not the outer one.
       let argWhnf ← withTransparency .instances <| whnf instArg
@@ -199,7 +203,35 @@ private partial def findFirstBinderMismatch (className : Name) (inst canonical :
         | _ => .anonymous
       if let some result ← findFirstBinderMismatch nestedClass instArg canArg then
         return some result
+      -- Fallback: we found a mismatch at this field but couldn't characterize it as a binder
+      -- type difference (e.g., not a lambda, or binder types agree but bodies differ).
+      return some (fieldName, none)
   return none
+
+/-- Structured result of checking whether an instance has leaky data-field binder types. -/
+inductive CheckInstanceResult where
+  /-- The instance is canonical: its data-field binder types match the class declaration. -/
+  | canonical : CheckInstanceResult
+  /-- The instance has leaky data-field binder types. `detail` describes the first detected
+  field mismatch (if identified). -/
+  | leaky (detail : MessageData) : CheckInstanceResult
+  /-- The instance cannot be verified (e.g., the constant has no definition, or
+  `fast_instance%` fails on it). `err` describes why. -/
+  | unverifiable (err : MessageData) : CheckInstanceResult
+
+/-- Format a `CheckInstanceResult` as `MessageData` for user display. -/
+def CheckInstanceResult.toMessageData (name : Name) : CheckInstanceResult → MessageData
+  | .canonical =>
+    m!"✅ '{name}': canonical (re-inferred form agrees at instances transparency)"
+  | .leaky detail =>
+    m!"❌ '{name}': leaky binder types detected.{detail}\n  \
+      The `fast_instance%` elaborator may be useful as a repair or band-aid:\n  \
+      `instance : ... := fast_instance% <body>`"
+  | .unverifiable err =>
+    m!"❌ '{name}': cannot be verified (fast_instance% fails).\
+      \n  {err}\
+      \n  The `fast_instance%` elaborator may be useful as a repair or band-aid:\
+      \n  `instance : ... := fast_instance% <body>`"
 
 /--
 Check whether a named instance has leaky data-field binder types.
@@ -214,12 +246,12 @@ The check uses constructor normalization (skipping synthesis, since the instance
 be found and be trivially defeq to itself) to compute the "canonical" form, then compares with
 the original at `.instances` transparency.
 -/
-def checkInstance (name : Name) : MetaM MessageData := do
+def checkInstance (name : Name) : MetaM CheckInstanceResult := do
   let env ← getEnv
   let some info := env.find? name
-    | return m!"unknown constant '{name}'"
+    | return .unverifiable m!"unknown constant '{name}'"
   let some _ := info.value?
-    | return m!"'{name}' has no definition (it is an axiom or opaque)"
+    | return .unverifiable m!"'{name}' has no definition (it is an axiom or opaque)"
   -- Introduce the universally quantified type arguments as free variables,
   -- so we can check the instance in a concrete context.
   forallTelescope info.type fun xs expectedType => do
@@ -230,10 +262,7 @@ def checkInstance (name : Name) : MetaM MessageData := do
     let normalized ← try
         mkCanonicalForm instVal expectedType
       catch e =>
-        return m!"❌ '{name}': cannot be verified (fast_instance% fails).\
-          \n  {e.toMessageData}\
-          \n  The `fast_instance%` elaborator may be useful as a repair or band-aid:\
-          \n  `instance : ... := fast_instance% <body>`"
+        return .unverifiable e.toMessageData
     -- Compare at instances transparency. At this level, the instance unfolds to its body,
     -- and we compare the actual body against the re-inferred canonical form. If they agree,
     -- all data-field binder types are correct. If not, some data field (e.g. `smul`) has a
@@ -242,7 +271,7 @@ def checkInstance (name : Name) : MetaM MessageData := do
     -- `M` and `RestrictScalars R S M` are not defeq at `.instances`.
     let isCanonical ← withTransparency .instances <| isDefEq instVal normalized
     if isCanonical then
-      return m!"✅ '{name}': canonical (re-inferred form agrees at instances transparency)"
+      return .canonical
     else
       -- Try to find the first specific binder type mismatch to help diagnose the leak.
       let className ← isClass? expectedType
@@ -254,7 +283,7 @@ def checkInstance (name : Name) : MetaM MessageData := do
       -- Eagerly pretty-print binder types while still in MetaM context so that any
       -- pp failure produces a graceful fallback instead of a raw "failed to pretty print" string.
       let detail : MessageData ← match mismatch with
-        | some (field, actual, expected) => do
+        | some (field, some (actual, expected)) => do
           let actualStr : String ← try
               let fmt ← ppExpr actual
               pure fmt.pretty
@@ -265,10 +294,11 @@ def checkInstance (name : Name) : MetaM MessageData := do
             catch _ => pure "<unprintable>"
           pure m!"\n  The data field `{field}` has binder type {actualStr} \
             where {expectedStr} is expected.\n  Other data fields may also be leaky."
+        | some (field, none) =>
+          pure m!"\n  The data field `{field}` differs from the re-inferred canonical form \
+            at instances transparency.\n  Other data fields may also be leaky."
         | none => pure "\n  The body differs from the re-inferred form at instances transparency."
-      return m!"❌ '{name}': leaky binder types detected.{detail}\n  \
-        The `fast_instance%` elaborator may be useful as a repair or band-aid:\n  \
-        `instance : ... := fast_instance% <body>`"
+      return .leaky detail
 
 open Elab Command in
 /--
@@ -283,6 +313,6 @@ Reports `✅` if canonical (the body already has the correct binder types) or `�
 elab "#check_instance " n:ident : command => do
   let name ← liftTermElabM <| resolveGlobalConstNoOverload n
   let result ← runTermElabM fun _ => checkInstance name
-  logInfo result
+  logInfo (result.toMessageData name)
 
 end Mathlib.Elab.FastInstance
