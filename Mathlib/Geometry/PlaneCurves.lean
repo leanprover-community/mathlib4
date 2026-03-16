@@ -26,7 +26,7 @@ theorem of plane curves.
 ## Main results
 
 - `second_deriv_eq_orientedCurvature_times_normal`: the first Frenet equation for plane curves.
-- `deriv_normal_eq_minus_orientedCurvature_times_deriv`: the second Frenet equation for plane 
+- `deriv_normal_eq_minus_orientedCurvature_times_deriv`: the second Frenet equation for plane
   curves.
 - `initialCurve_of_orientedCurvature`: the construction of a plane curve from a given curvature
   function, initial position, initial direction (angle) for the velocity vector, as given by the
