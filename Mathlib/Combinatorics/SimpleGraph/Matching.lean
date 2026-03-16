@@ -256,14 +256,13 @@ theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts
   rw [← two_mul, ← M.coe.sum_degrees_eq_twice_card_edges]
   simp [h, Finset.card_univ]
 
-
 private lemma helper (f : V → W) (hf : ∀ y : W, (f⁻¹' {y}).Finite) (hW : Finite W) :
     Finite V := by
   have : (Set.univ : Set V) = ⋃ y : W, (f⁻¹' {y}) := by
     ext x; constructor
     · exact fun _ ↦ Set.mem_iUnion_of_mem (f x) rfl
     exact fun _ ↦ Set.mem_univ x
-  suffices Finite (Set.univ : Set V) by exact Set.finite_univ_iff.mp this
+  apply Set.finite_univ_iff.mp
   rw [this]
   simpa using Set.finite_iUnion (fun y => hf y)
 
@@ -276,7 +275,7 @@ theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
       rfl
     by_contra!
     refine hMf <| helper h.toEdge (fun y ↦ ?_) this
-    obtain ⟨x, hx⟩ : ∃ x : V × V, s(x.1, x.2) = y.1 := by apply Sym2.mk_surjective
+    obtain ⟨x, hx⟩ : ∃ x : V × V, s(x.1, x.2) = y.1 := Sym2.mk_surjective _
     have : M.Adj x.1 x.2 := by
       refine Subgraph.mem_edgeSet.mp ?_
       rw [hx]
@@ -287,13 +286,11 @@ theorem isMatching.encard_eq_twice_edgeSet_encard (h : M.IsMatching) :
   have : Fintype M.verts := Set.Finite.fintype hMf
   have : M.coe.edgeSet.encard = M.edgeSet.encard := by
     refine Set.encard_congr ?_
-    refine Set.BijOn.equiv (Sym2.map fun a ↦ a.1) ?_
-    refine Set.BijOn.mk ?_ ?_ ?_
+    refine Set.BijOn.equiv (Sym2.map fun a ↦ a.1) <| Set.BijOn.mk ?_ ?_ ?_
     · refine Sym2.ind fun x y hxy ↦ ?_
-      simp at hxy
-      simpa
-    · refine Sym2.ind fun _ _ _ ↦ ?_
-      refine Sym2.ind fun _ _ _ hf ↦ ?_
+      simp only [edgeSet_coe, Set.mem_preimage] at hxy
+      exact Set.mem_preimage.mp hxy
+    · refine Sym2.ind fun _ _ _ ↦ Sym2.ind fun _ _ _ hf ↦ ?_
       simp [Subtype.val_inj] at hf
       simpa
     refine Sym2.ind fun x y hxy ↦ ?_
@@ -711,44 +708,31 @@ lemma matchingNumber.le_iff {G : SimpleGraph V} {k : ℕ∞} :
     matchingNumber G ≤ k ↔ ∀ (M : G.Subgraph) (_ : M.IsMatching), M.edgeSet.encard ≤ k :=
   ⟨fun h _ hM ↦ le_trans (matchingNumber.ge_of_IsMatching hM) h, fun h ↦ iSup₂_le h⟩
 
-/-- Matchings `G` is the subtype of Matchings of `G` -/
-noncomputable def Matchings (G : SimpleGraph V) := {M : G.Subgraph // M.IsMatching}
-
-instance : PartialOrder (Matchings G) := {
-  le M N := M.val ≤ N.val
-  le_refl M := le_refl M.val
-  le_trans := fun _ _ _ h1 h2 ↦ le_trans h1 h2
-  le_antisymm := fun _ _ h1 h2 ↦ Subtype.ext <| le_antisymm h1 h2
-}
-
-lemma exists_max_matching (G : SimpleGraph V) : ∃ M : Matchings G, IsMax M := by
-  apply zorn_le
-  intro c hchain
-  let M := sSup (Subtype.val '' c)
+lemma exists_maximal_isMatching (G : SimpleGraph V) :
+    ∃ M : G.Subgraph, Maximal Subgraph.IsMatching M := by
+  apply zorn_le₀ {M : Subgraph G | M.IsMatching}
+  intro c hc hchain
+  let M := sSup c
   have : M.IsMatching := by
     intro v hv
-    simp only [Subgraph.verts_sSup, Set.mem_image, Subtype.exists, exists_and_right,
-      exists_eq_right, Set.iUnion_exists, Set.mem_iUnion, exists_prop, M] at hv
-    rcases hv with ⟨N, ⟨⟨h_matching, hNc⟩, hv⟩⟩
-    rcases h_matching hv with ⟨w, hw⟩
+    simp only [Subgraph.verts_sSup, Set.mem_iUnion, exists_prop, M] at hv
+    rcases hv with ⟨N, h_matching, hv⟩
+    rcases hc h_matching hv with ⟨w, hw⟩
     use w
     constructor
-    · simp only [Subgraph.sSup_adj, Set.mem_image, Subtype.exists, exists_and_right,
-      exists_eq_right, M]
-      exact ⟨ N, ⟨h_matching, hNc⟩, hw.1⟩
+    · simp only [Subgraph.sSup_adj, M]
+      exact ⟨N, h_matching, hw.1⟩
     intro u huv
-    simp only [Subgraph.sSup_adj, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-      M] at huv
-    rcases huv with ⟨N', ⟨⟨h_matching', hN'c⟩, huv⟩⟩
+    simp only [Subgraph.sSup_adj, M] at huv
+    rcases huv with ⟨N', ⟨hN'c, huv⟩⟩
     by_cases hN'N : N' ≤ N
     · exact hw.2 u (hN'N.2 huv)
-    specialize hchain hNc hN'c (Ne.symm (ne_of_not_le hN'N))
-    have : N ≤ N' ∨ N' ≤ N := Or.comm.mp (id (Or.symm hchain))
-    simp only [hN'N, or_false] at this
-    obtain ⟨z, hz⟩ := h_matching' (this.1 hv)
-    exact Eq.trans (hz.2 u huv) (Eq.symm (hz.2 w (this.2 hw.1)))
-  use ⟨M, this⟩
-  exact fun _ hN ↦ le_sSup <| Set.mem_image_of_mem Subtype.val hN
+    specialize hchain h_matching hN'c (Ne.symm (ne_of_not_le hN'N))
+    simp only [hN'N, or_false] at hchain
+    obtain ⟨z, hz⟩ := hc hN'c (hchain.1 hv)
+    exact Eq.trans (hz.2 u huv) (Eq.symm (hz.2 w (hchain.2 hw.1)))
+  use M, this
+  exact fun _ hN ↦ le_sSup <| Set.mem_of_subset_of_mem (fun ⦃a⦄ a_1 ↦ a_1) hN
 
 lemma matchingNumber.isAttained (G : SimpleGraph V) :
     ∃ (M : G.Subgraph), M.IsMatching ∧ M.edgeSet.encard = matchingNumber G := by
@@ -766,8 +750,8 @@ lemma matchingNumber.isAttained (G : SimpleGraph V) :
     exact ⟨M, ⟨matching, by rw [hM]; rfl⟩⟩
   simp only [not_lt, top_le_iff] at h_top
   rw [h_top]
-  obtain ⟨⟨M, matching⟩, hM⟩ := exists_max_matching G
-  use M, matching
+  obtain ⟨M, hM⟩ := exists_maximal_isMatching G
+  use M, hM.1
   by_contra
   obtain ⟨k, hk⟩ := ENat.ne_top_iff_exists.mp this
   obtain ⟨N, hN⟩ : ∃ (N : Subgraph G), N.IsMatching ∧ N.edgeSet.encard > 2*k := by
@@ -828,17 +812,17 @@ lemma matchingNumber.isAttained (G : SimpleGraph V) :
         exact Sym2.congr_right.mpr <| Subgraph.IsMatching.eq_of_adj_left hN.1 hab.symm hcd.symm
     have := by calc
       _ ≤ _ := Embedding.encard_le ⟨N.edgeSet.restrict f, Set.injOn_iff_injective.mp hf⟩
-      _ = 2 * k := by rw [matching.support_eq_verts,
-       Subgraph.isMatching.encard_eq_twice_edgeSet_encard matching, hk]
+      _ = 2 * k := by rw [(hM.1).support_eq_verts,
+       Subgraph.isMatching.encard_eq_twice_edgeSet_encard hM.1, hk]
       _ < N.edgeSet.encard := hN.2
-    simp at this
+    simp only [lt_self_iff_false] at this
   let M' := M  ⊔ (subgraphOfAdj G (N.adj_sub huv.1))
   have M'_matching : M'.IsMatching := by
-    refine Subgraph.IsMatching.sup matching ?_ ?_
+    refine Subgraph.IsMatching.sup hM.1 ?_ ?_
     · exact Subgraph.IsMatching.subgraphOfAdj (N.adj_sub huv.left)
     simp [huv]
-  have h1: (⟨M', M'_matching⟩: Matchings G) ≥ ⟨M, matching⟩ := Subtype.mk_le_mk.mpr le_sup_left
-  have h2: (⟨M', M'_matching⟩: Matchings G) ≤ ⟨M, matching⟩ := hM (Subtype.mk_le_mk.mpr le_sup_left)
+  have h1: M' ≥ M := le_sup_left
+  have h2: M' ≤ M := hM.2 M'_matching h1
   have : M < M' := by
     apply left_lt_sup.mpr
     intro h
@@ -846,9 +830,8 @@ lemma matchingNumber.isAttained (G : SimpleGraph V) :
     apply Subgraph.support_mono h
     apply (Subgraph.mem_support (G.subgraphOfAdj (N.adj_sub huv.left))).mpr
     exact ⟨v, Subgraph.adj_symm (G.subgraphOfAdj (N.adj_sub huv.left)) (Subgraph.Adj.symm rfl)⟩
-  have : M < M := Std.lt_of_lt_of_le this h2
   exact (and_not_self_iff ((fun G' ↦ (G'.verts, G'.spanningCoe)) M
-    ≤ (fun G' ↦ (G'.verts, G'.spanningCoe)) M)).mp this
+    ≤ (fun G' ↦ (G'.verts, G'.spanningCoe)) M)).mp <| Std.lt_of_lt_of_le this h2
 
 lemma matchingNumber.ge_iff {G : SimpleGraph V} {k : ℕ∞} :
     k ≤ G.matchingNumber ↔ ∃ M : G.Subgraph, M.IsMatching ∧ k ≤ M.edgeSet.encard := by
@@ -885,7 +868,7 @@ lemma matchingNumber.ge_iff {G : SimpleGraph V} {k : ℕ∞} :
 @[gcongr]
 lemma IsContained.matchingNumber_le {H : SimpleGraph W} (h : H ⊑ G) :
     matchingNumber H ≤ matchingNumber G := by
-  have ⟨⟨f, hf⟩⟩ := h
+  obtain ⟨f, hf⟩ := h
   refine matchingNumber.le_iff.mpr fun M hM ↦ ?_
   apply matchingNumber.ge_iff.2
   use Subgraph.map f M, Subgraph.IsMatching.map f hf hM
@@ -896,14 +879,13 @@ lemma IsContained.matchingNumber_le {H : SimpleGraph W} (h : H ⊑ G) :
   exact fun _ _ _ _ h ↦ Sym2.map.injective hf h
 
 lemma matchingNumber.le_of_subgraph (G : SimpleGraph V) (H : Subgraph G) :
-    matchingNumber H.coe ≤ matchingNumber G :=
-  matchingNumber.le_of_mono H.hom Subgraph.hom_injective
+    matchingNumber H.coe ≤ matchingNumber G := IsContained.matchingNumber_le H.coe_isContained
 
 lemma matchingNumber.eq_of_iso {H : SimpleGraph W} (f : H ≃g G) :
     matchingNumber H = matchingNumber G := by
   apply le_antisymm
-  · exact matchingNumber.le_of_mono f.toHom <| EquivLike.injective f.toEquiv
-  exact matchingNumber.le_of_mono f.symm.toHom  <| EquivLike.injective f.symm.toEquiv
+  · exact IsContained.matchingNumber_le f.isContained
+  exact IsContained.matchingNumber_le f.symm.isContained
 
 lemma matchingNumber.of_subgraph {G : SimpleGraph V} (H : Subgraph G) :
     matchingNumber H.coe = ⨆ (M ≤ H) (_ : M.IsMatching), M.edgeSet.encard := by
