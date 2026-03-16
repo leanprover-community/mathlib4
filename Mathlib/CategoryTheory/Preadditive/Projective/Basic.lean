@@ -267,4 +267,10 @@ theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProj
 
 end Equivalence
 
+lemma Retract.projective {X Y : C} (h : Retract X Y) [p : Projective Y] : Projective X := by
+  refine Projective.mk (fun {A B} f e _ ↦ ?_)
+  rcases p.factors (h.r ≫ f) e with ⟨g, hg⟩
+  use h.i ≫ g
+  simp [hg]
+
 end CategoryTheory
