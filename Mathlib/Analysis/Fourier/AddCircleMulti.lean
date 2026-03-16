@@ -196,8 +196,8 @@ theorem lintegral_preimage (f : UnitAddTorus d → ℝ≥0∞) (a : d → ℝ) :
     ∫⁻ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
   convert lintegral_map_equiv (μ := volume.comap Subtype.val) f (measurableEquivPiIoc a).symm
   · exact (measurePreserving_equivPiIoc a).symm.map_eq.symm
-  · rw [← lintegral_subtype_comap (measurableSet_PiIoc a) (f := fun x => f (fun i => x i))]
-    aesop
+  · rw [← lintegral_subtype_comap (measurableSet_PiIoc a)]
+    rfl
 
 theorem integral_preimage {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : UnitAddTorus d → E) (a : d → ℝ) :
