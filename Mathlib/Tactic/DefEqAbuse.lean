@@ -309,7 +309,7 @@ def findLeakyInstances (instNames : Array Name) : MetaM (Array (Name × MessageD
     -- Skip prop-valued instances (proofs don't need normalization and generate spurious warnings)
     let isPropInst ← forallTelescopeReducing info.type fun _ t => isProp t
     if isPropInst then continue
-    -- Run checkInstance. Re-throw internal exceptions (panics, OOM, etc.); skip all others.
+    -- Run checkInstance. Re-throw internal exceptions; skip all others.
     let result ← try Mathlib.Elab.FastInstance.checkInstance name
       catch | .internal id ref => throw (.internal id ref) | _ => continue
     -- Only report instances confirmed to have leaky binder types, not "cannot be verified" ones.
