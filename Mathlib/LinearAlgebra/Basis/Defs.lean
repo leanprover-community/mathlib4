@@ -262,6 +262,12 @@ theorem Basis.sum_repr [Fintype ι] (b : Basis ι R M) (u : M) : ∑ i, b.repr u
 theorem Basis.equivFun_self [Finite ι] [DecidableEq ι] (b : Basis ι R M) (i j : ι) :
     b.equivFun (b i) j = if i = j then 1 else 0 := by rw [b.equivFun_apply, b.repr_self_apply]
 
+@[simp]
+theorem Basis.equivFun_symm_single [Finite ι] [DecidableEq ι] (b : Basis ι R M) (i : ι) :
+    b.equivFun.symm (Pi.single i 1) = b i := by
+  cases nonempty_fintype ι
+  simp [Pi.single_apply]
+
 theorem Basis.repr_sum_self [Fintype ι] (b : Basis ι R M) (c : ι → R) :
     b.repr (∑ i, c i • b i) = c := by
   simp_rw [← b.equivFun_symm_apply, ← b.equivFun_apply, b.equivFun.apply_symm_apply]
