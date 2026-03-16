@@ -21,12 +21,12 @@ open Lean.Meta
 
 namespace Lean.Elab.Tactic
 
-/-- Returns the free variable IDs that can be cleared, excluding those in the preserve list
-and class instances. -/
+/-- Returns the free variable IDs that can be cleared, excluding those in the preserve list,
+class instances, and auxiliary declarations (e.g. recursive hypotheses). -/
 def getVarsToClear (preserve : Array FVarId) : MetaM (Array FVarId) := do
   let mut toClear : Array FVarId := #[]
   for decl in ← getLCtx do
-    unless preserve.contains decl.fvarId do
+    unless preserve.contains decl.fvarId || decl.isAuxDecl do
       if let none ← isClass? decl.type then
         toClear := toClear.push decl.fvarId
   return toClear
