@@ -19,8 +19,8 @@ the Jordan–Chevalley decomposition.
 
 * `LieAlgebra.eval_zero_of_aeval_ad_eq`: if `g` commutes with `x ≠ 0` and `ad(g) = p(ad(x))`,
   then `p(0) = 0`.
-* `LieAlgebra.ad_semisimplePart_mem_adjoin`: `ad(s) ∈ adjoin K {ad(n + s)}`.
-* `LieAlgebra.ad_nilpotentPart_mem_adjoin`: `ad(n) ∈ adjoin K {ad(n + s)}`.
+* `LieAlgebra.ad_semisimplePart_mem_adjoin`: for a JC decomposition, `ad(s) ∈ adjoin K {ad(n + s)}`.
+* `LieAlgebra.ad_nilpotentPart_mem_adjoin`: for a JC decomposition, `ad(n) ∈ adjoin K {ad(n + s)}`.
 
 -/
 
