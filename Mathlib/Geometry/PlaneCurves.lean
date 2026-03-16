@@ -90,8 +90,9 @@ theorem normal_is_unit_of_unit_speed {I : Set ℝ} [I.OrdConnected] {c : ℝ →
   rw [← hc t ht]
   simp [norm]
 
-/-- For every plane curve parametrized by arc-length, the velocity vectors and the normal vector at
-each point form an orthonormal basis of the plane which we call `frameAt`. -/
+/-- For every plane curve parametrized by arc-length, the velocity vector and the normal vector at
+each point form an orthonormal basis of the plane, which is sometimes called the moving frame of the
+curve or the Frenet frame, which we call `frameAt`. -/
 def frameAt {I : Set ℝ} [I.OrdConnected] {c : ℝ → EuclideanSpace ℝ (Fin 2)}
   (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) :
   OrthonormalBasis (Fin 2) ℝ (EuclideanSpace ℝ (Fin 2)) :=
