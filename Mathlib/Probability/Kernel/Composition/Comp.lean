@@ -147,7 +147,7 @@ theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : Kernel γ δ)
 
 lemma comp_discard' (κ : Kernel α β) :
     discard β ∘ₖ κ =
-      { toFun a := κ a .univ • Measure.dirac PUnit.unit
+      { toFun a := κ a .univ • Measure.dirac default
         measurable' := (κ.measurable_coe .univ).smul_measure _ } := by
   ext a s hs
   simp [comp_apply' _ _ _ hs, mul_comm]

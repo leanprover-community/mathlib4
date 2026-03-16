@@ -143,12 +143,12 @@ section Discard
 /-- The Markov kernel to the `Unit` type. -/
 noncomputable
 def discard (α : Type*) [MeasurableSpace α] : Kernel α PUnit :=
-  Kernel.deterministic (fun _ ↦ PUnit.unit) measurable_const
+  Kernel.deterministic (fun _ ↦ default) measurable_const
 
 instance : IsMarkovKernel (discard α) := by rw [discard]; infer_instance
 
 @[simp]
-lemma discard_apply (a : α) : discard α a = Measure.dirac PUnit.unit := deterministic_apply _ _
+lemma discard_apply (a : α) : discard α a = Measure.dirac default := deterministic_apply _ _
 
 end Discard
 
@@ -228,7 +228,7 @@ theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
 theorem setLIntegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} {s : Set β} :
     ∫⁻ x in s, f x ∂const α μ a = ∫⁻ x in s, f x ∂μ := by rw [const_apply]
 
-lemma discard_eq_const : discard α = const α (Measure.dirac PUnit.unit) := rfl
+lemma discard_eq_const : discard α = const α (Measure.dirac default) := rfl
 
 end Const
 
