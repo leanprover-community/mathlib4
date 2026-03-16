@@ -185,6 +185,9 @@ scoped instance : CategoryStruct (B ⥤ᴸ C) where
   id := LaxTrans.id
   comp := LaxTrans.vComp
 
+@[deprecated (since := "2026-03-16")] alias vComp_app := comp_app
+@[deprecated (since := "2026-03-16")] alias vComp_naturality := comp_naturality
+
 end LaxTrans
 
 /-- If `η` is an oplax transformation between `F` and `G`, we have a 1-morphism
