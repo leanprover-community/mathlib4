@@ -691,6 +691,7 @@ theorem CommGroup.nilpotencyClass_le_one {G : Type*} [CommGroup G] :
   apply CommGroup.center_eq_top
 
 /-- Groups with nilpotency class at most one are abelian -/
+@[implicit_reducible]
 def commGroupOfNilpotencyClass [IsNilpotent G] (h : Group.nilpotencyClass G ≤ 1) : CommGroup G :=
   Group.commGroupOfCenterEqTop <| by
     rw [← upperCentralSeries_one]

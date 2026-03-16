@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.GCD.BigOperators
@@ -328,6 +329,30 @@ instance [CommRing R] : CommRing (ArithmeticFunction R) :=
     mul_comm := mul_comm
     zsmul := (· • ·) }
 
+instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
+    Module R (ArithmeticFunction S) where
+  smul x f := ⟨x • f, by simp⟩
+  smul_zero x := ext fun n ↦ smul_zero x
+  smul_add x f g := ext fun n ↦ smul_add x (f n) (g n)
+  zero_smul f := ext fun n ↦ zero_smul R (f n)
+  one_smul f := ext fun n ↦ one_smul R (f n)
+  add_smul x y f := ext fun n ↦ add_smul x y (f n)
+  mul_smul x y f := ext fun n ↦ mul_smul x y (f n)
+
+-- note that `smul_apply` would be a more suitable name, but is already in use for the action of
+-- `ArithmeticFunction R` on `ArithmeticFunction S`
+@[simp]
+theorem smul_map {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
+    (x : R) (f : ArithmeticFunction S) (n : ℕ) : (x • f) n = x • f n := by
+  rfl
+
+-- We can deduce the `Algebra` structure from the `Module` structure here due to the lack of
+-- a more natural definition of `algebraMap`.
+instance {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] :
+    Algebra R (ArithmeticFunction S) :=
+  .ofModule (fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum])
+    fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum]
+
 instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
   one_smul := one_smul'
@@ -618,10 +643,20 @@ theorem eq_zero_of_squarefree_of_dvd_eq_zero [MonoidWithZero R] {f : ArithmeticF
 
 end IsMultiplicative
 
-@[arith_mult]
+@[simp, arith_mult]
 theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : ArithmeticFunction R) :=
   IsMultiplicative.iff_ne_zero.2 ⟨by simp, by
     intro m n hm hn hmn
     by_cases h : m = 1 <;> aesop⟩
+
+@[arith_mult]
+theorem isMultiplicative_finsetProd [CommSemiring R] {ι : Type*}
+    (f : ι → ArithmeticFunction R) (s : Finset ι) (hf : ∀ i ∈ s, IsMultiplicative (f i)) :
+    IsMultiplicative (∏ i ∈ s, f i) := by
+  induction s using Finset.cons_induction
+  case empty => simp
+  case cons a s ha ih =>
+    rw [Finset.prod_cons]
+    exact (hf a (by grind)).mul (by grind)
 
 end ArithmeticFunction

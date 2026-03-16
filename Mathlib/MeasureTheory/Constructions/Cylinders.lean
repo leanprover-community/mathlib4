@@ -389,6 +389,7 @@ variable {α ι : Type*} {X : ι → Type*} {mα : MeasurableSpace α} [m : ∀ 
 
 /-- The σ-algebra of cylinder events on `Δ`. It is the smallest σ-algebra making the projections
 on the `i`-th coordinate measurable for all `i ∈ Δ`. -/
+@[implicit_reducible]
 def cylinderEvents (Δ : Set ι) : MeasurableSpace (∀ i, X i) := ⨆ i ∈ Δ, (m i).comap fun σ ↦ σ i
 
 @[simp] lemma cylinderEvents_univ : cylinderEvents (X := X) univ = MeasurableSpace.pi := by

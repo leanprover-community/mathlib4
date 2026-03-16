@@ -96,6 +96,9 @@ def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
   hom_inv_id := hX.eq_of_src _ _
   inv_hom_id := hY.eq_of_src _ _
 
+lemma isIso (hX : IsZero X) (hY : IsZero Y) (f : X ⟶ Y) : IsIso f :=
+  ⟨hY.to_ _, hX.eq_of_src _ _, hY.eq_of_src _ _⟩
+
 /-- A zero object is in particular initial. -/
 protected def isInitial (hX : IsZero X) : IsInitial X :=
   @IsInitial.ofUnique _ _ X fun Y => (hX.unique_to Y).some

@@ -388,7 +388,7 @@ set_option backward.isDefEq.respectTransparency false in
 mediated by the underlying functor of the iterated slice equivalence.
 Note that `iteratedSliceForward` can in fact be considered as a natural transformation from the
 2-functor `Over (C := Over X) : Over X ⥤ Cat` to the composite 2-functor
-`forget X ⋙ Over : Over X ⥤ Cat`, and the naturality isormphism is then given by
+`forget X ⋙ Over : Over X ⥤ Cat`, and the naturality isomorphism is then given by
 `iteratedSliceEquivOverMapIso`.
 -/
 @[simps! hom_app_left_left inv_app_left_left]

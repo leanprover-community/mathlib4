@@ -175,6 +175,7 @@ attribute [local instance] FractionRing.liftAlgebra in
 Assume that `IsGaloisGroup G A B` with `A` and `B` domains, then `G` has a `MulSemiringAction`
 on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A`.
 -/
+@[implicit_reducible]
 noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [IsDomain B]
     [IsTorsionFree A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
   MulSemiringAction.compHom (FractionRing B)
@@ -286,6 +287,27 @@ instance subgroup [hGKL : IsGaloisGroup G K L] :
   faithful := have := hGKL.faithful; inferInstance
   commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
+
+set_option backward.isDefEq.respectTransparency false in
+open IntermediateField in
+theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGaloisGroup H F L] :
+    FixedPoints.intermediateField H = F := by
+  refine IntermediateField.ext_iff.mpr fun x ↦ ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · obtain ⟨a, rfl⟩ := hHFL.isInvariant.isInvariant x hx
+    exact a.prop
+  · have := congr_arg (restrictScalars K) <| IsGaloisGroup.fixedPoints_eq_bot H F L
+    rw [restrictScalars_bot_eq_self] at this
+    rwa [← this] at hx
+
+theorem of_fixedPoints_eq [hGKL : IsGaloisGroup G K L] (hF : FixedPoints.intermediateField H = F) :
+    IsGaloisGroup H F L := by
+  rw [eq_comm] at hF
+  convert IsGaloisGroup.subgroup G K L H
+
+variable {G K L H F} in
+theorem subgroup_iff [hGKL : IsGaloisGroup G K L] :
+    IsGaloisGroup H F L ↔ FixedPoints.intermediateField H = F :=
+  ⟨fun _ ↦ fixedPoints_of_isGaloisGroup G K L H F, fun h ↦ of_fixedPoints_eq G K L H F h⟩
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

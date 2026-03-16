@@ -71,6 +71,7 @@ variable (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
 
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then `Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁))`
 holds for any `X₁ : C₁`. -/
+@[implicit_reducible]
 noncomputable def Lifting₂.fst (X₁ : C₁) :
     Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁)) where
   iso := ((evaluation _ _).obj X₁).mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
@@ -80,6 +81,7 @@ noncomputable instance Lifting₂.flip : Lifting₂ L₂ L₁ W₂ W₁ F.flip F
 
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then
 `Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂))` holds for any `X₂ : C₂`. -/
+@[implicit_reducible]
 noncomputable def Lifting₂.snd (X₂ : C₂) :
     Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂)) :=
   Lifting₂.fst L₂ L₁ W₂ W₁ F.flip F'.flip X₂

@@ -1,7 +1,13 @@
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Geometry.Manifold.Notation
 
-/-! ## Tests for the differential geometry elaborators for spheres in metric spaces -/
+/-! ## Tests for the differential geometry elaborators for spheres in metric spaces
+
+**Note.**
+This file also acts as a test for the delaborators corresponding to the custom elaborators,
+so the resulting test output often does not show the inferred model with corners.
+As that output is also tested elsewhere, this is fine.
+-/
 
 open Bundle Filter Function Topology Manifold
 
@@ -30,11 +36,11 @@ variable {g : Circle → N} {h : E'' → Circle} {k : Circle → ℝ} {y : Circl
 #guard_msgs in
 #check CMDiff 2 g
 
-/-- info: MDifferentiableAt 𝓘(ℝ, E'') (𝓡 1) h : E'' → Prop -/
+/-- info: MDiffAt h : E'' → Prop -/
 #guard_msgs in
 #check MDiffAt h
 
-/-- info: MDifferentiableAt (𝓡 1) 𝓘(ℝ, ℝ) k y : Prop -/
+/-- info: MDiffAt k y : Prop -/
 #guard_msgs in
 #check MDiffAt k y
 
