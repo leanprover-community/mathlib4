@@ -95,7 +95,17 @@ def LAKEPACKAGESDIR : FilePath :=
 def getCurl : IO String := do
   return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
 
+/-- Path to the `leantar` binary bundled with the Lean toolchain, if available.
+    This has been bundled since `nightly-2026-03-09` (lean4#12822). -/
+private initialize leantarSysrootBin : Option String ← do
+  let out ← IO.Process.output { cmd := "lean", args := #["--print-prefix"] }
+  if out.exitCode == 0 then
+    let path : FilePath := out.stdout.trimAscii.toString / "bin" / s!"leantar{EXE}"
+    if ← path.pathExists then return some path.toString
+  return none
+
 def getLeanTar : IO String := do
+  if let some path := leantarSysrootBin then return path
   return if (← LEANTARBIN.pathExists) then LEANTARBIN.toString else "leantar"
 
 /-- Spawn a `leantar` process for decompression, writing the given JSON config to its stdin.
@@ -249,6 +259,7 @@ def parseVersion (s : String) : Option Version := do
   some (← String.toNat? maj, ← String.toNat? min, ← String.toNat? patch)
 
 def validateLeanTar : IO Unit := do
+  if leantarSysrootBin.isSome then return
   if (← LEANTARBIN.pathExists) then return
   if let some version ← some <$> runCmd "leantar" #["--version"] <|> pure none then
     let "leantar" :: v :: _ := version.splitOn " "
