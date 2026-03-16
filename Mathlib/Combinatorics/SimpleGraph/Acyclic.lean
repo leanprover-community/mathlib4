@@ -649,10 +649,10 @@ lemma exists_isCycle_of_isEdgeReachable_two {u v : V} (huv : u ≠ v)
 
 lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
     G.IsAcyclic ↔ Pairwise (¬G.IsEdgeReachable 2 · ·) := by
-  refine ⟨fun h u v hne he ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h _ _ hne he ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨w, hw⟩ := exists_isCycle_of_isEdgeReachable_two hne he
     exact h w hw
-  · refine isAcyclic_iff_forall_adj_isBridge.mpr fun u v huv ↦ ?_
-    exact isBridge_iff_adj_and_not_isEdgeConnected_two.mpr ⟨huv, h huv.ne⟩
+  · refine isAcyclic_iff_forall_adj_isBridge.mpr fun _ _ hadj ↦ ?_
+    exact isBridge_iff_adj_and_not_isEdgeConnected_two.mpr ⟨hadj, h hadj.ne⟩
 
 end SimpleGraph

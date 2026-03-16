@@ -145,7 +145,7 @@ lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e
 lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
   simp [isEdgeConnected_add_one]
 
-lemma exists_adj_isEdgeReachable_two (huv : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
+lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
   obtain ⟨w, hw⟩ := h.reachable (by simp) |>.exists_isPath
   have : G.Adj u w.snd := Walk.adj_snd (by grind [Walk.not_nil_of_ne])
@@ -155,8 +155,7 @@ lemma exists_adj_isEdgeReachable_two (huv : u ≠ v) (h : G.IsEdgeReachable 2 u 
     refine Reachable.trans (h hs) <| w.tail.toDeleteEdge _ (fun hh ↦ ?_) |>.reachable.symm
     have := hw.tail.eq_snd_of_mem_edges (Sym2.eq_swap ▸ hh)
     simp only [Walk.getVert_tail, Nat.reduceAdd] at this
-    have := hw.getVert_eq_start_iff_of_not_nil (Walk.not_nil_of_ne huv) |>.mp this.symm
-    simp at this
+    simpa using hw.getVert_eq_start_iff_of_not_nil (Walk.not_nil_of_ne hne) |>.mp this.symm
   · refine Walk.reachable <| Walk.cons (deleteEdges_adj.mpr ⟨this, ?_⟩) Walk.nil
     contrapose! h'
     refine (Set.subsingleton_iff_singleton h').mp ?_
