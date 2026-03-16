@@ -139,7 +139,11 @@ open scoped Lax.OplaxTrans
 
 variable (η θ : F ⟶ G)
 
-/-- A modification between oplax natural transformations of lexfunctors. -/
+/-- A modification `Γ` between oplax natural transformations `η` and `θ` (between lax functors)
+consists of a family of 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which satisfies the equation
+`(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ (app a ▷ G.map f)`
+for each 1-morphism `f : a ⟶ b`.
+-/
 @[ext]
 structure Modification where
   /-- The underlying family of 2-morphisms. -/
