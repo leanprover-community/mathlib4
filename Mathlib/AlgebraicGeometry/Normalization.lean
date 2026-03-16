@@ -274,6 +274,7 @@ lemma normalizationObjIso_hom_val {U : Y.Opens} (hU : IsAffineOpen U) :
     f.toNormalization.appLE _ _ (by simp [← Scheme.Hom.comp_preimage]) := by
   rw [appLE, f.toNormalization_app_preimage ⟨U, hU⟩, Category.assoc]
   simp [← Functor.map_comp]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[stacks 03GP]
@@ -462,6 +463,7 @@ lemma normalization.hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [I
       rw [this, f.toNormalization_app_preimage U]
       simp [appIso_hom', IsAffineOpen.SpecMap_appLE_fromSpec_assoc _ _ (isAffineOpen_top (Spec _)),
         IsAffineOpen.fromSpec_top, normalizationObjIso, normalizationDiagram]
+      erw [Spec.map_id]
       rfl
     · simp only [AlgHom.toRingHom_eq_coe, hf₀, comp_appLE, Spec.map_comp, Category.assoc,
         app_eq_appLE]
@@ -474,6 +476,7 @@ lemma normalization.hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [I
       rw [this, f.toNormalization_app_preimage U]
       simp [appIso_hom', IsAffineOpen.SpecMap_appLE_fromSpec_assoc _ _ (isAffineOpen_top (Spec _)),
         IsAffineOpen.fromSpec_top, normalizationObjIso, normalizationDiagram]
+      erw [Spec.map_id]
       rfl
 
 end UniversalProperty

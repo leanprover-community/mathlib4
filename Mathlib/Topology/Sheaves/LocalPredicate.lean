@@ -226,7 +226,7 @@ end PrelocalPredicate
 @[simps obj map]
 def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type _) X where
   obj U := { f : ∀ x : U.unop, T x // P.pred f }
-  map i := TypeCat.ofHom (fun f ↦ ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2)⟩
+  map i := TypeCat.ofHom fun f ↦ ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
 
 namespace subpresheafToTypes
 
@@ -355,8 +355,8 @@ the presheaf of continuous functions.
 def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{u}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X ↦
-    { hom := TypeCat.ofHom (by rintro ⟨f, c); exact ofHom ⟨f, c⟩⟩
-      inv := TypeCat.ofHom (by rintro ⟨f, c); exact ⟨f, c⟩⟩ }
+    { hom := TypeCat.ofHom <| by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩
+      inv := TypeCat.ofHom <| by rintro ⟨f, c⟩; exact ⟨f, c⟩ }
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.
 -/

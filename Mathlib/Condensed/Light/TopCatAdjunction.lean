@@ -104,13 +104,13 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
 @[simps hom_app]
 noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
   hom := {
-    app S := TypeCat.ofHom ⟨fun x ↦ {
+    app S := TypeCat.ofHom fun x ↦ {
       toFun := fun s ↦ X.obj.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : LightProfinite.{u}) × X.obj.obj ⟨T⟩),
           Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
         rw [← continuous_sigma_iff]
-        apply continuous_coinduced_rng }⟩
+        apply continuous_coinduced_rng }
     naturality := fun _ _ _ ↦ by
       ext
       simp only [TopCat.toSheafCompHausLike_obj_obj, Opposite.op_unop, TypeCat.hom_as_apply,

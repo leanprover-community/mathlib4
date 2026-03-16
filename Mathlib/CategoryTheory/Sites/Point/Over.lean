@@ -53,7 +53,7 @@ def over : Point.{w} (J.over X) where
     simp only [mem_over_iff, Equiv.apply_symm_apply] at hR
     obtain ⟨Y, f, hf, v, rfl⟩ := Φ.jointly_surjective R hR u
     refine ⟨Over.mk (f ≫ U.hom), Over.homMk f, hf, ⟨v, ?_⟩, rfl⟩
-    rw [FunctorToTypes.mem_fromOverSubfunctor_iff'] at hu ⊢
+    rw [FunctorToTypes.mem_fromOverSubfunctor_iff] at hu ⊢
     simpa
 
 end GrothendieckTopology.Point
@@ -76,7 +76,7 @@ lemma IsConservativeFamilyOfPoints.over
     rw [hP.jointly_reflect_ofArrows_mem_of_small]
     intro Φ y
     obtain ⟨T, a, ⟨_, b, _, ⟨i⟩, hb⟩, ⟨z, hz₁⟩, hz₂⟩ := hS (⟨_, ⟨⟨Φ, Φ.obj.fiber.map f y⟩⟩⟩)
-      (⟨by exact y, by rw [FunctorToTypes.mem_fromOverSubfunctor_iff']; rfl⟩)
+      (⟨by exact y, by rw [FunctorToTypes.mem_fromOverSubfunctor_iff]; rfl⟩)
     rw [Subtype.ext_iff] at hz₂
     exact ⟨i, Φ.obj.fiber.map b z,
       (ConcreteCategory.congr_hom (Φ.obj.fiber.map_comp b (g i)) _).symm.trans (by rwa [hb])⟩)

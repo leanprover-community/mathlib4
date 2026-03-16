@@ -97,8 +97,8 @@ def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
     (LocallyConstant Y X) ≅ C(Y, TopCat.discrete.obj (X)) :=
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
-  { hom := TypeCat.ofHom (fun f ↦ (f : C(Y, X)))
-    inv := TypeCat.ofHom (fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr f.2)⟩ }
+  { hom := TypeCat.ofHom fun f ↦ (f : C(Y, X))
+    inv := TypeCat.ofHom fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr f.2⟩ }
 
 section Adjunction
 
@@ -152,8 +152,8 @@ noncomputable def counitAppApp (S : CompHausLike.{u} P)
     (Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type (max u w))
     [PreservesFiniteProducts Y] [HasExplicitFiniteCoproducts.{u} P] :
     (LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u + 1})))) ⟶ Y.obj ⟨S⟩ :=
-  TypeCat.ofHom ⟨fun r ↦ ((inv (sigmaComparison Y (fun a ↦ (fiber r a).1))) ≫
-    (Y.mapIso (sigmaIso r).op).inv) (counitAppAppImage r)⟩
+  TypeCat.ofHom fun r ↦ ((inv (sigmaComparison Y (fun a ↦ (fiber r a).1))) ≫
+    (Y.mapIso (sigmaIso r).op).inv) (counitAppAppImage r)
 
 -- This is the key lemma to prove naturality of the counit:
 /--
@@ -328,7 +328,7 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
   intro a
   erw [incl_of_counitAppApp]
   simp only [functor_obj_obj_obj, Functor.id_obj, Functor.comp_obj, Functor.flip_obj_obj,
-    ObjectProperty.ι_obj, unit_app, TypeCat.ofHom_hom, counitAppAppImage, functor_obj_obj_map,
+    ObjectProperty.ι_obj, unit_app, counitAppAppImage, functor_obj_obj_map,
     Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom]
   ext x
   erw [← map_eq_image _ a x]

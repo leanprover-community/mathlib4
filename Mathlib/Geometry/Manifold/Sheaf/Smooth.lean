@@ -298,8 +298,8 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
   preservesColimitIso (forget CommRingCat) _
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_hom (x : TopCat.of M) (U) :
-    TypeCat.ofHom ⟨(colimit.ι ((OpenNhds.inclusion x).op ⋙
-      (smoothSheafCommRing IM I M R).presheaf) U).hom⟩ ≫ (forgetStalk IM I M R x).hom =
+    TypeCat.ofHom (colimit.ι ((OpenNhds.inclusion x).op ⋙
+      (smoothSheafCommRing IM I M R).presheaf) U).hom ≫ (forgetStalk IM I M R x).hom =
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U :=
   ι_preservesColimitIso_hom (forget CommRingCat) _ _
 
@@ -307,8 +307,8 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_inv (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U ≫
     (smoothSheafCommRing.forgetStalk IM I M R x).inv =
-    TypeCat.ofHom ⟨(colimit.ι ((OpenNhds.inclusion x).op ⋙
-      (smoothSheafCommRing IM I M R).presheaf) U)⟩  := by
+    TypeCat.ofHom (colimit.ι ((OpenNhds.inclusion x).op ⋙
+      (smoothSheafCommRing IM I M R).presheaf) U).hom  := by
   rw [Iso.comp_inv_eq, ← smoothSheafCommRing.ι_forgetStalk_hom]
 
 /-- Given a smooth commutative ring `R` and a manifold `M`, and an open neighbourhood `U` of a point

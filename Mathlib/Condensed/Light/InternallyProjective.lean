@@ -68,10 +68,6 @@ lemma ihomPoints_symm_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
       ((freeForgetAdjunction R).homEquiv _ _ (MonoidalClosed.curry x)) :=
   rfl
 
--- @[local simp]
--- lemma _root_.TypeCat.Fun.coe_mk {X Y : Type*} (f : X → Y) : (TypeCat.Fun.mk f) = f :=
---   rfl
-
 set_option backward.isDefEq.respectTransparency false in
 lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A ⟶ B)
     (x : (P ⟶[LightCondMod R] A).obj.obj ⟨S⟩) :
@@ -80,23 +76,26 @@ lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A 
   simp only [ihomPoints_apply, ← MonoidalClosed.uncurry_natural_right,
     ← Adjunction.homEquiv_naturality_right_symm, Equiv.apply_symm_apply]
   congr
-  ext
+  apply (coherentTopology LightProfinite.{u}).yonedaEquiv.injective
+  rw [GrothendieckTopology.yonedaEquiv_comp]
   simp
-  dsimp?
-  conv_rhs => rw [TypeCat.Fun.mk_apply, TypeCat.hom_as_apply]
-  erw? [NatTrans.naturality_apply]
-  rfl
 
-
+-- set_option trace.Meta.isDefEq true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')
     (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
     (ihomPoints R P B S).symm (P ◁ (free R).map (lightProfiniteToLightCondSet.map π) ≫ f) =
       ((P ⟶[LightCondMod R] B).obj.map π.op) ((ihomPoints R P B S').symm f) := by
-  have : (lightProfiniteToLightCondSet.map π).hom.app (Opposite.op S) (𝟙 S) =
+  have : ((lightProfiniteToLightCondSet.map π).hom.app (Opposite.op S)) (𝟙 S) =
       S'.toCondensed.obj.map π.op (𝟙 S') := rfl
-  simp [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
-    GrothendieckTopology.yonedaEquiv_apply, this]
+  -- simp? [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
+  --   GrothendieckTopology.yonedaEquiv_apply] says:
+  simp only [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
+    comp_obj, map_comp, Adjunction.unit_naturality_assoc, GrothendieckTopology.yonedaEquiv_apply,
+    GrothendieckTopology.yoneda_obj_obj, yoneda_obj_obj, comp_hom, NatTrans.comp_app, comp_apply,
+    forget_map_hom_app_hom_apply]
+  erw [this] -- why?
+  simp
   rfl
 
 /--
