@@ -114,6 +114,8 @@ theorem counitIso_functor_comp (e : C ≌ D) (X : C) :
   simpa [functor_unitIso_comp] using Iso.inv_eq_inv
     (e.functor.mapIso (e.unitIso.app X) ≪≫ e.counitIso.app (e.functor.obj X)) (Iso.refl _)
 
+/-- `Equivalence.mk'` is the dual of `Equivalence.mk`, which we need for `to_dual`.
+Please avoid using this directly. -/
 @[to_dual existing mk']
 abbrev mk''
     {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
