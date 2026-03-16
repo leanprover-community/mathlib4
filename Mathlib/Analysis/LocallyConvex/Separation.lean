@@ -147,20 +147,6 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
   exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
 
-/-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a continuous
-linear functional weakly separates `s` and `t`. The proof first separates `interior s` from `t`,
-then extends the inequality from `interior s` to all of `s` using
-`closure (interior s) = closure s`. -/
-theorem geometric_hahn_banach_of_nonempty_interior'
-  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
-    (hsint : (interior s).Nonempty) :
-    ∃ (f : StrongDual ℝ E) (u : ℝ), (∀ a ∈ s, f a ≤ u) ∧ ∀ b ∈ t, u ≤ f b := by
-  obtain ⟨f, u, hfA, hfB⟩ :=
-    geometric_hahn_banach_open hs.interior isOpen_interior ht hst
-  refine ⟨f, u, fun a ha => ?_, hfB⟩
-  apply closure_minimal (fun x hx => le_of_lt (hfA x hx)) <| isClosed_Iic.preimage f.continuous
-  simpa [hs.closure_interior_eq_closure_of_nonempty_interior hsint] using subset_closure ha
-
 /-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a nonzero
 continuous linear functional weakly separates `s` and `t`. The proof first separates `interior s`
 from `t`, then extends the inequality from `interior s` to all of `s` using
@@ -171,7 +157,7 @@ theorem geometric_hahn_banach_of_nonempty_interior
     ∃ (f : StrongDual ℝ E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ s, f a ≤ u) ∧ ∀ b ∈ t, u ≤ f b := by
   obtain ⟨f, u, hfA, hfB⟩ :=
     geometric_hahn_banach_open hs.interior isOpen_interior ht hst
-  refine ⟨f, u, ?_, fun a ha => ?_, hfB⟩
+  refine ⟨f, u, ?_, fun a ha ↦ ?_, hfB⟩
   · obtain ⟨a, ha⟩ := hsint
     obtain ⟨b, hb⟩ := htne
     intro hzero
@@ -180,6 +166,20 @@ theorem geometric_hahn_banach_of_nonempty_interior
     linarith
   · apply closure_minimal (fun x hx => le_of_lt (hfA x hx)) <| isClosed_Iic.preimage f.continuous
     simpa [hs.closure_interior_eq_closure_of_nonempty_interior hsint] using subset_closure ha
+
+/-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a continuous
+linear functional weakly separates `s` and `t`. The proof first separates `interior s` from `t`,
+then extends the inequality from `interior s` to all of `s` using
+`closure (interior s) = closure s`. -/
+theorem geometric_hahn_banach_of_nonempty_interior'
+  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
+    (hsint : (interior s).Nonempty) :
+    ∃ (f : StrongDual ℝ E) (u : ℝ), (∀ a ∈ s, f a ≤ u) ∧ ∀ b ∈ t, u ≤ f b := by
+  by_cases htne : t.Nonempty
+  · obtain ⟨f, u, -, hs', ht'⟩ :=
+      geometric_hahn_banach_of_nonempty_interior hs ht hst hsint htne
+    exact ⟨f, u, hs', ht'⟩
+  · exact ⟨0, 0, by simp [Set.not_nonempty_iff_eq_empty.mp htne]⟩
 
 /-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
 continuous linear functional whose maximum on `A` is attained at `x`. -/
