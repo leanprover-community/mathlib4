@@ -111,7 +111,7 @@ lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
 def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I where
   app := fun X : C => β.app (F.obj X) ≫ I.map (α.app X)
 
--- Horizontal composition has two possible definitions that are dual to eachother,
+-- Horizontal composition has two possible definitions that are dual to each other,
 -- and we need to prove to `to_dual` that these are equivalent.
 attribute [to_dual none] hcomp._proof_2
 to_dual_insert_cast hcomp := by ext x; exact β.naturality' (α.app x)

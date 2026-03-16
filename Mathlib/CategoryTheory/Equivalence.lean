@@ -138,6 +138,26 @@ abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
 abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
   e.counitIso.hom
 
+@[reassoc (attr := simp)]
+lemma unitIso_hom_inv_id_app (e : C ≌ D) (X : C) :
+    dsimp% e.unit.app X ≫ e.unitInv.app X = 𝟙 X :=
+  e.unitIso.hom_inv_id_app X
+
+@[reassoc (attr := simp)]
+lemma unitIso_inv_hom_id_app (e : C ≌ D) (X : C) :
+    dsimp% e.unitInv.app X ≫ e.unit.app X = 𝟙 _ :=
+  e.unitIso.inv_hom_id_app X
+
+@[reassoc (attr := simp)]
+lemma counitIso_hom_inv_id_app (e : C ≌ D) (Y : D) :
+    dsimp% e.counit.app Y ≫ e.counitInv.app Y = 𝟙 _ :=
+  e.counitIso.hom_inv_id_app Y
+
+@[reassoc (attr := simp)]
+lemma counitIso_inv_hom_id_app (e : C ≌ D) (Y : D) :
+    dsimp% e.counitInv.app Y ≫ e.counit.app Y = 𝟙 Y :=
+  e.counitIso.inv_hom_id_app Y
+
 section CategoryStructure
 
 instance : Category (C ≌ D) where
@@ -226,12 +246,12 @@ theorem Equivalence_mk'_counitInv (functor inverse unit_iso counit_iso f) :
 
 @[to_dual (attr := reassoc) counitInv_naturality]
 theorem counit_naturality (e : C ≌ D) {X Y : D} (f : X ⟶ Y) :
-    e.functor.map (e.inverse.map f) ≫ e.counit.app Y = e.counit.app X ≫ f :=
+    dsimp% e.functor.map (e.inverse.map f) ≫ e.counit.app Y = e.counit.app X ≫ f :=
   e.counit.naturality f
 
 @[to_dual (attr := reassoc) unitInv_naturality]
 theorem unit_naturality (e : C ≌ D) {X Y : C} (f : X ⟶ Y) :
-    e.unit.app X ≫ e.inverse.map (e.functor.map f) = f ≫ e.unit.app Y :=
+    dsimp% e.unit.app X ≫ e.inverse.map (e.functor.map f) = f ≫ e.unit.app Y :=
   (e.unit.naturality f).symm
 
 @[to_dual (attr := reassoc (attr := simp)) counitInv_functor_comp]
@@ -259,7 +279,9 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
     rw [← Iso.hom_inv_id_assoc (e.inverse.mapIso (e.counitIso.app _)) (e.unitInv.app _)]
   slice_lhs 3 4 =>
     dsimp only [Functor.mapIso_hom, Iso.app_hom]
-    rw [← map_comp e.inverse, e.counit_naturality, e.counitIso.hom_inv_id_app]
+    rw [← map_comp e.inverse]
+    dsimp
+    rw [e.counit_naturality, e.counitIso.hom_inv_id_app]
     dsimp only [Functor.comp_obj]
     rw [map_id]
   dsimp only [comp_obj, id_obj]

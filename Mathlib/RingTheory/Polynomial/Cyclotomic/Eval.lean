@@ -113,8 +113,7 @@ theorem cyclotomic_pos_and_nonneg (n : ℕ) {R}
     (1 < x → 0 < eval x (cyclotomic n R)) ∧ (1 ≤ x → 0 ≤ eval x (cyclotomic n R)) := by
   rcases n with (_ | _ | _ | n)
   · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one, and_self]
-  · simp only [zero_add, cyclotomic_one, eval_sub, eval_X, eval_one, sub_pos, imp_self, sub_nonneg,
-      and_self]
+  · simp
   · simp only [zero_add, reduceAdd, cyclotomic_two, eval_add, eval_X, eval_one]
     constructor <;> intro <;> linarith
   · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by lia)
