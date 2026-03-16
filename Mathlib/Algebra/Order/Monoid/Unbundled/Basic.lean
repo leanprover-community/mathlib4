@@ -279,13 +279,19 @@ variable [PartialOrder α]
 instance [MulLeftReflectLE α] : IsLeftCancelMul α where
   mul_left_cancel _ _ _ h := (le_of_mul_le_mul_left' h.le).antisymm (le_of_mul_le_mul_left' h.ge)
 
-@[deprecated (since := "2026-03-14")] alias mul_left_cancel'' := mul_left_cancel
+@[deprecated (since := "2026-03-14")]
+alias add_left_cancel'' := add_left_cancel
+@[to_additive existing, deprecated (since := "2026-03-14")]
+alias mul_left_cancel'' := mul_left_cancel
 
 @[to_additive]
 instance [MulRightReflectLE α] : IsRightCancelMul α where
   mul_right_cancel _ _ _ h := (le_of_mul_le_mul_right' h.le).antisymm (le_of_mul_le_mul_right' h.ge)
 
-@[deprecated (since := "2026-03-14")] alias mul_right_cancel'' := mul_right_cancel
+@[deprecated (since := "2026-03-14")]
+alias add_right_cancel'' := add_right_cancel
+@[to_additive existing, deprecated (since := "2026-03-14")]
+alias mul_right_cancel'' := mul_right_cancel
 
 @[to_additive] lemma mul_le_mul_iff_of_ge [MulLeftStrictMono α]
     [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
