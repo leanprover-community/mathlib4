@@ -6,6 +6,7 @@ Authors: Gabriel Ebner, Yury Kudryashov, Eric Wieser
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.FDeriv.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 
