@@ -38,8 +38,13 @@ Core algorithm for normalizing instances.
 
 Many reductions for typeclasses are done with reducible transparency, so the entire body
 is `withReducible` with some exceptions.
+
+When `skipSynth` is `true`, the synthesis step is skipped and we go directly to constructor
+normalization. This is needed when checking an instance against itself, since synthesis would
+always return the instance being checked, making the check trivial.
 -/
-partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #[]) :
+partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #[])
+    (skipSynth : Bool := false) :
     MetaM Expr := withReducible do
   withTraceNode `Elab.fast_instance (fun e => return m!"{exceptEmoji e} type: {expectedType}") do
   let some className ← isClass? expectedType
@@ -50,8 +55,12 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
       is a proof, which does not need normalization."
     return inst
 
-  -- Try to synthesize a total replacement for this term:
-  if let .some new ← trySynthInstance expectedType then
+  -- Try to synthesize a total replacement for this term (unless skipSynth):
+  let synth? : Option Expr ← if skipSynth then pure none else do
+    match ← trySynthInstance expectedType with
+    | .some e => pure (some e)
+    | _ => pure none
+  if let .some new := synth? then
     if ← withDefault <| isDefEq inst new then
       trace[Elab.fast_instance] "replaced with synthesized instance"
       return new
@@ -96,7 +105,10 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
           mvarId.assign <| ← mkAuxTheorem argExpectedType arg (zetaDelta := true)
         else
           throwError "Proof `{arg}` does not have expected type `{argExpectedType}`"
-      -- Recurse into instance arguments of the constructor
+      -- Recurse into instance arguments of the constructor.
+      -- Note: we do NOT propagate `skipSynth` here. `skipSynth` is only for the
+      -- outermost call (to avoid synthesis trivially finding the instance being checked).
+      -- Sub-instances should be replaced by synthesis if possible.
       else if bi.isInstImplicit then
         let trace' := trace.push (className ++ mvarDecl.userName)
         mvarId.assign (← makeFastInstance arg argExpectedType (trace := trace'))
@@ -105,6 +117,7 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
         forallTelescopeReducing argExpectedType fun xs _ ↦ do
           mvarId.assign <| ← mkLambdaFVars xs (arg.beta xs)
     return mkAppN f (← mvars.mapM instantiateMVars)
+
 
 /--
 `fast_instance% inst` takes an expression for a typeclass instance `inst`, and unfolds it into
