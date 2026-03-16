@@ -72,13 +72,13 @@ theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofi
     IsCofinal (Subtype.val '' t) :=
   ht.image (Subtype.mono_coe _) (by simpa)
 
-theorem GaloisConnection.cofinal_range {f : β → α} {g : α → β} (h : GaloisConnection f g) :
+theorem GaloisConnection.isCofinal_range {f : β → α} {g : α → β} (h : GaloisConnection f g) :
     IsCofinal (.range g) :=
   fun a ↦ ⟨_, Set.mem_range_self _, le_u_l h a⟩
 
 theorem GaloisConnection.map_cofinal {f : β → α} {g : α → β}
     (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) :=
-  hs.image h.monotone_u h.cofinal_range
+  hs.image h.monotone_u h.isCofinal_range
 
 theorem OrderIso.map_cofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) : IsCofinal (e '' s) :=
   e.symm.to_galoisConnection.map_cofinal hs
