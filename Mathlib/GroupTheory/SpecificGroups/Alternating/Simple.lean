@@ -89,26 +89,7 @@ theorem alternatingGroup_of_le_of_normal
     aesop
   classical
   apply iwasawaStructure_two.commutator_le
-  intro h
-  obtain ⟨g, hgN, hg_ne⟩ := N.nontrivial_iff_exists_ne_one.mp ntN
-  suffices ∃ s : Set.powersetCard α 2, g • s ≠ s by
-    obtain ⟨s, hs⟩ := this
-    have := Set.mem_univ s
-    rw [← h, mem_fixedPoints] at this
-    apply hs
-    rw [← Subgroup.mk_smul g hgN, this]
-  contrapose! hg_ne
-  replace hg_ne : (toPerm g : Perm (Set.powersetCard α 2)) = 1 := by
-    ext1 s
-    exact hg_ne s
-  convert hg_ne
-  symm
-  apply Set.powersetCard.mulAction_faithful
-  · norm_num
-  · have : CharZero ℕ∞ := instCharZeroENat
-    rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
-          Nat.ofNat_lt_cast, ← Nat.card_eq_fintype_card]
-    exact le_trans (by norm_num) hα
+  exact fixedPoints_ne_univ_of_isPreprimitive 2 (by norm_num) (by grind)
 
 end Equiv.Perm
 
@@ -152,27 +133,8 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
     · simpa using hα'
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top (by simpa using hα)]
   apply iwasawaStructure_three.commutator_le
-  intro h
-  simp_rw [Set.eq_univ_iff_forall, mem_fixedPoints] at h
-  rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot, Subgroup.nontrivial_iff_exists_ne_one] at hN
-  obtain ⟨g, hgN, hg_ne⟩ := hN
-  suffices ∃ s : Set.powersetCard α 3, g • s ≠ s by
-    obtain ⟨s, hs⟩ := this
-    apply hs
-    rw [← Subgroup.mk_smul g hgN, h]
-  contrapose! hg_ne
-  rw [← Subtype.coe_inj]
-  replace hg_ne : (toPerm g : Perm (Set.powersetCard α 3)) = 1 := by
-    ext1 s
-    exact hg_ne s
-  convert hg_ne
-  symm
-  apply Set.powersetCard.mulAction_faithful
-  · norm_num
-  · have : CharZero ℕ∞ := instCharZeroENat
-    rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
-          Nat.ofNat_lt_cast, ← Nat.card_eq_fintype_card]
-    apply le_trans (by norm_num) hα
+  rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot] at hN
+  exact fixedPoints_ne_univ_of_isPreprimitive 3 (by norm_num) (by grind)
 
 theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
@@ -255,27 +217,8 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top
     (by simpa using hα)]
   apply (iwasawaStructure_four hα).commutator_le
-  intro h
-  simp_rw [Set.eq_univ_iff_forall, mem_fixedPoints] at h
-  rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot, Subgroup.nontrivial_iff_exists_ne_one] at hN
-  obtain ⟨g, hgN, hg_ne⟩ := hN
-  suffices ∃ s : Set.powersetCard α 4, g • s ≠ s by
-    obtain ⟨s, hs⟩ := this
-    apply hs
-    rw [← Subgroup.mk_smul g hgN, h]
-  contrapose! hg_ne
-  replace hg_ne : (toPerm g : Perm (Set.powersetCard α 4)) = 1 := by
-    ext1 s
-    exact hg_ne s
-  convert hg_ne
-  rw [← Subtype.coe_inj]
-  symm
-  apply Set.powersetCard.mulAction_faithful
-  · norm_num
-  · have : CharZero ℕ∞ := instCharZeroENat
-    rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
-          Nat.ofNat_lt_cast]
-    simpa using hα
+  rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot] at hN
+  exact fixedPoints_ne_univ_of_isPreprimitive 4 (by norm_num) (by grind)
 
 /-- If `α` has at least 5 elements,
 then the only nontrivial normal subgroup of `alternatingGroup α`
