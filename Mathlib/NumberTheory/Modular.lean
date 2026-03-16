@@ -60,6 +60,8 @@ instead using abstract theory on the properness of certain maps (phrased in term
 `Filter.cocompact`, `Filter.cofinite`, etc) to deduce existence theorems, first to prove the
 existence of `g` maximizing `(g•z).im` (see `ModularGroup.exists_max_im`), and then among
 those, to minimize `|(g•z).re|` (see `ModularGroup.exists_row_one_eq_and_min_re`).
+
+The characterization of cases with `z ∈ 𝒟` and `g • z ∈ 𝒟` follows Theorem VII.1 [serre1973].
 -/
 
 @[expose] public section
@@ -742,6 +744,23 @@ lemma cases_of_mem_fd_smul_mem_fd (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) :
     · grind [cases_c_one_d_zero hz hg him.le hc hd] -- ± S, T⁻¹S, TS
     · grind [case_c_one_d_one hz hg him.le hc hd] -- ± ST, TST
     · grind [case_c_one_d_neg_one hz hg him.le hc hd] -- ± ST⁻¹, T⁻¹ST⁻¹
+
+/-- If `z ∈ 𝒟` and `z ≠ I, ρ, 1 + ρ`, then the stabilizer of `z` in `SL(2, ℤ)` is `± 1`. -/
+lemma stabilizer_of_ne (hz : z ∈ 𝒟) (hg : g • z = z)
+    (hzI : z ≠ I) (hzρ : z ≠ ρ) (hzρ' : z ≠ (1 : ℝ) +ᵥ ρ) :
+    g = 1 ∨ g = -1 := by
+  have : T • z ≠ z := by
+    apply_fun UpperHalfPlane.re
+    simp [-sl_moeb, re_T_smul]
+  have : T⁻¹ • z ≠ z := by rwa [ne_eq, inv_smul_eq_iff, eq_comm]
+  have : (z : ℂ) ≠ -I := by grind [neg_im, coe_I, Complex.I_im, z.coe_im_pos]
+  have : S • z ≠ z := by
+    contrapose! hzI
+    rw [UpperHalfPlane.ext_iff, modular_S_smul, coe_mk, ← mul_one (_ : ℂ)⁻¹,
+      inv_mul_eq_iff_eq_mul₀ (neg_ne_zero.mpr z.ne_zero), neg_mul, ← neg_eq_iff_eq_neg, ← I_sq,
+      ← sq, sq_eq_sq_iff_eq_or_eq_neg, ← coe_I, ← UpperHalfPlane.ext_iff] at hzI
+    grind
+  all_goals grind [cases_of_mem_fd_smul_mem_fd hz (hg ▸ hz), SL_neg_smul]
 
 lemma stabilizer_I : g • I = I ↔ g ∈ ({1, -1, S, -S} : Finset SL(2, ℤ)) := by
   constructor
