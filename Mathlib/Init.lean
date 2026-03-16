@@ -5,6 +5,7 @@ public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tac
 public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
+public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Linter.DocPrime
 public import Mathlib.Tactic.Linter.DocString
 public import Mathlib.Tactic.Linter.EmptyLine

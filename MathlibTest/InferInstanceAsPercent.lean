@@ -111,3 +111,50 @@ example : testField_leaky = testField_direct := by with_reducible_and_instances 
 
 -- The fixed instance IS defeq at `instances` transparency.
 example : testField_fixed = testField_direct := by with_reducible_and_instances rfl
+
+/-! ## Warning for leaky sub-instances
+
+When `fast_instance%` or `inferInstanceAs%` encounters a synthesized sub-instance that has
+leaky binder types, it warns the user so they can fix it with `fast_instance%` or
+`inferInstanceAs%`. The warning is suppressed with
+`set_option Elab.fast_instance.warnLeakySubInstances false`.
+-/
+
+-- A two-level class hierarchy.
+class WarnSub (α : Type) where
+  warnSubOp : α → α
+
+class WarnParent (α : Type) extends WarnSub α where
+  warnParentOp : α → α → α
+
+def WarnMyNat : Type := Nat
+
+instance : WarnSub Nat where warnSubOp n := n + 1
+instance : WarnParent Nat where warnParentOp := Nat.add
+
+-- A leaky sub-instance: binder type is `Nat` instead of `WarnMyNat`.
+instance warnLeakySub : WarnSub WarnMyNat := inferInstanceAs (WarnSub Nat)
+
+-- When `inferInstanceAs%` normalizes a `WarnParent WarnMyNat` instance, synthesis finds
+-- `warnLeakySub` for the sub-instance field. Because `warnLeakySub` is leaky, a warning fires.
+/--
+warning: fast_instance%: 'warnLeakySub' (for
+  WarnSub
+    WarnMyNat) has leaky data-field binder types, which may cause `isDefEq` failures at instances transparency (e.g. in `grind`). Consider redefining it with `fast_instance%` or `inferInstanceAs%`.
+To suppress: `set_option Elab.fast_instance.warnLeakySubInstances false`
+-/
+#guard_msgs in
+@[implicit_reducible] def warnParentLeaky : WarnParent WarnMyNat := inferInstanceAs% (WarnParent Nat)
+
+-- The warning is suppressed with the option:
+#guard_msgs in
+set_option Elab.fast_instance.warnLeakySubInstances false in
+@[implicit_reducible] def warnParentSuppressed : WarnParent WarnMyNat := inferInstanceAs% (WarnParent Nat)
+
+-- Using a fresh alias shows that fixing the sub-instance eliminates the warning.
+-- (Using a different alias avoids conflicting with `warnLeakySub` above.)
+def WarnMyNat2 : Type := Nat
+instance warnFixedSub2 : WarnSub WarnMyNat2 := inferInstanceAs% (WarnSub Nat)
+-- No warning because `warnFixedSub2` is canonical:
+#guard_msgs in
+@[implicit_reducible] def warnParentFixed : WarnParent WarnMyNat2 := inferInstanceAs% (WarnParent Nat)

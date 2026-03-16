@@ -5,15 +5,27 @@ Authors: Eric Wieser, Kyle Miller, Jovan Gerbscheid
 -/
 module
 
+import Mathlib.Tactic.Linter.Header
+public meta import Lean.Data.Options
+public meta import Lean.Meta.Closure
 public meta import Lean.Elab.SyntheticMVars
-public meta import Lean.Meta.Reduce
-public import Mathlib.Init
+public meta import Lean.Elab.Term
+public meta import Lean.Elab.Command
 
 /-!
 # The `fast_instance%`, `inferInstanceAs%`, and `#check_instance` elaborators
 -/
 
-meta section
+public meta section
+
+/-- When `true` (the default), `fast_instance%` and `inferInstanceAs%` warn when a synthesized
+sub-instance has leaky data-field binder types. Such instances may cause `isDefEq` failures at
+instances transparency (for example, in `grind`). Set to `false` to suppress these warnings. -/
+public register_option Elab.fast_instance.warnLeakySubInstances : Bool := {
+  defValue := true
+  descr := "Warn when fast_instance% uses a synthesized sub-instance that has leaky \
+    data-field binder types."
+}
 
 namespace Mathlib.Elab.FastInstance
 
@@ -51,8 +63,13 @@ Core algorithm for normalizing instances.
 
 Many reductions for typeclasses are done with reducible transparency, so the entire body
 is `withReducible` with some exceptions.
+
+When `warnLeaky` is `true` (the default), a warning is emitted when synthesis finds a
+sub-instance that is not canonical at instances transparency. Pass `warnLeaky := false` to
+suppress this (used internally to prevent nested warnings during leakiness checks).
 -/
-partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #[]) :
+partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #[])
+    (warnLeaky : Bool := true) :
     MetaM Expr := withReducible do
   withTraceNode `Elab.fast_instance (fun e => return m!"{exceptEmoji e} type: {expectedType}") do
   let some className ← isClass? expectedType
@@ -70,6 +87,23 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
     | _ => pure none
   if let .some new := synth? then
     if ← withDefault <| isDefEq inst new then
+      -- Optionally warn if the synthesized instance has leaky binder types.
+      -- We temporarily evict the instance so synthesis won't trivially find it again,
+      -- and pass warnLeaky := false to prevent nested warnings.
+      if warnLeaky && (← getOptions).getBool `Elab.fast_instance.warnLeakySubInstances true then
+        try
+          if let .const instName _ := new.getAppFn then
+            let canonical ← withDisabledInstance instName <| withNewMCtxDepth <|
+              makeFastInstance new expectedType (warnLeaky := false)
+            let isClean ← withNewMCtxDepth <|
+              withTransparency .instances <| isDefEq new canonical
+            unless isClean do
+              logWarning m!"fast_instance%: '{instName}' (for{indentExpr expectedType}) \
+                has leaky data-field binder types, which may cause `isDefEq` failures at \
+                instances transparency (e.g. in `grind`). \
+                Consider redefining it with `fast_instance%` or `inferInstanceAs%`.\n\
+                To suppress: `set_option Elab.fast_instance.warnLeakySubInstances false`"
+        catch _ => pure ()
       trace[Elab.fast_instance] "replaced with synthesized instance"
       return new
     else
@@ -114,9 +148,11 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
         else
           throwError "Proof `{arg}` does not have expected type `{argExpectedType}`"
       -- Recurse into instance arguments of the constructor.
+      -- We propagate `warnLeaky` so that nested leakiness checks respect the flag.
       else if bi.isInstImplicit then
         let trace' := trace.push (className ++ mvarDecl.userName)
-        mvarId.assign (← makeFastInstance arg argExpectedType (trace := trace'))
+        mvarId.assign (← makeFastInstance arg argExpectedType (trace := trace')
+          (warnLeaky := warnLeaky))
       else
         -- For data fields, make sure that the lambda binders have the right type.
         forallTelescopeReducing argExpectedType fun xs _ ↦ do
@@ -268,7 +304,7 @@ public def checkInstance (name : Name) : MetaM CheckInstanceResult := do
     -- that itself is a sign the instance is not in verifiable canonical form.
     let normalized ← try
         withDisabledInstance name <| withNewMCtxDepth <|
-          makeFastInstance instVal expectedType
+          makeFastInstance instVal expectedType (warnLeaky := false)
       catch e =>
         return .unverifiable e.toMessageData
     -- Compare at instances transparency. At this level, the instance unfolds to its body,

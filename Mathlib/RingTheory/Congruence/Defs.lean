@@ -339,11 +339,13 @@ The operations above on the quotient by `c : RingCon R` preserve the algebraic s
 
 section Algebraic
 
+set_option Elab.fast_instance.warnLeakySubInstances false in
 instance [NonUnitalNonAssocSemiring R] (c : RingCon R) :
     NonUnitalNonAssocSemiring c.Quotient := fast_instance%
   Function.Surjective.nonUnitalNonAssocSemiring _ Quotient.mk''_surjective rfl
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
+set_option Elab.fast_instance.warnLeakySubInstances false in
 instance [NonAssocSemiring R] (c : RingCon R) : NonAssocSemiring c.Quotient := fast_instance%
   Function.Surjective.nonAssocSemiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
@@ -352,6 +354,7 @@ instance [NonUnitalSemiring R] (c : RingCon R) : NonUnitalSemiring c.Quotient :=
   Function.Surjective.nonUnitalSemiring _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
+set_option Elab.fast_instance.warnLeakySubInstances false in
 instance [Semiring R] (c : RingCon R) : Semiring c.Quotient := fast_instance%
   Function.Surjective.semiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
@@ -360,11 +363,13 @@ instance [CommSemiring R] (c : RingCon R) : CommSemiring c.Quotient := fast_inst
   Function.Surjective.commSemiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
+set_option Elab.fast_instance.warnLeakySubInstances false in
 instance [NonUnitalNonAssocRing R] (c : RingCon R) :
     NonUnitalNonAssocRing c.Quotient := fast_instance%
   Function.Surjective.nonUnitalNonAssocRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
+set_option Elab.fast_instance.warnLeakySubInstances false in
 instance [NonAssocRing R] (c : RingCon R) : NonAssocRing c.Quotient := fast_instance%
   Function.Surjective.nonAssocRing _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
@@ -374,6 +379,7 @@ instance [NonUnitalRing R] (c : RingCon R) : NonUnitalRing c.Quotient := fast_in
   Function.Surjective.nonUnitalRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
+set_option Elab.fast_instance.warnLeakySubInstances false in
 instance [Ring R] (c : RingCon R) : Ring c.Quotient := fast_instance%
   Function.Surjective.ring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
