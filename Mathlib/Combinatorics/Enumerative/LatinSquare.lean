@@ -150,6 +150,7 @@ class LatinSquare (n : Type*) (α : Type*) [Fintype n] [Fintype α] [DecidableEq
 example : LatinRectangle (Fin 5) (Fin 5) (Fin 5) := LatinRectangle.mk (fun x y ↦ ((x + y) : Fin 5))
   (by decide) (by decide) (by decide)
 
+/-- Get the underlying `Matrix` of the LatinRectangle. -/
 @[coe]
 abbrev toMatrix : (LatinRectangle m n α) → (Matrix m n α)
  | A => A.M
@@ -164,7 +165,10 @@ instance {n : Type*} {α : Type*}
   Coe (LatinSquare n α) (LatinRectangle n n α) where
   coe := fun A => A.toLatinRectangle
 
+/-- Get a specific column of the LatinRectangle. -/
 abbrev col (A : LatinRectangle m n α) : n → m → α := Matrix.col A
+
+/-- Get a specific row of the LatinRectangle. -/
 abbrev row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
 
 /-- An n × n Latin rectangle is a Latin square. -/
@@ -202,7 +206,8 @@ instance {n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
     reprPrec L prec := Repr.reprPrec L.toLatinRectangle prec
 
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
-@[to_additive, reducible]
+@[to_additive /-- Every Additive Finite Group's Cayley table is an example of a Latin Square -/,
+  reducible]
 def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
   LatinSquare G G := {
     M := fun i j ↦ i * j,
@@ -274,6 +279,7 @@ def renameLatinRectangle
     omega
   }
 
+/-- An equivalence of Latin Rectangles -/
 structure LREquiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) where
   /-- A row relabeling. -/
   (f : m ≃ m')
@@ -290,6 +296,7 @@ structure LREquiv (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) whe
 def LatinRectangleEquivRelation (A : LatinRectangle m n α) (A' : LatinRectangle m' n' β) :=
     Nonempty (LREquiv A A')
 
+/-- Notation for two `LatinRectangle`s to be equivalent. -/
 infixl:25 " ≃ " => LatinRectangleEquivRelation
 
 lemma induced_latin_rectangle_is_equiv
@@ -326,6 +333,7 @@ end Nonvacuous
 variable {n : Type*} [Fintype n] [Nonempty n] [DecidableEq n]
 variable {k : Type*} [Fintype k] [Nonempty k] [DecidableEq k]
 
+/-- Property of `LatinRectangle` being contained in another `LatinRectangle` -/
 def IsSubrect (A : LatinRectangle m n α) (B : LatinRectangle m' n' α) :=
   ∃ (ι : m ↪ m') (ι' : n ↪ n') (h : α ≃ α), ∀ (i : m), ∀ (j : n), B.M (ι i) (ι' j) = h (A.M i j)
 
