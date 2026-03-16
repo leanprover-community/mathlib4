@@ -307,7 +307,7 @@ def stoppers : Std.HashSet Name :=
   `continuity` and `measurability`, `finiteness`, `finiteness?`,
   `split`, `split_ifs`.
 -/
-def flexible : Std.HashSet Name :=
+public def flexible : Std.HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,

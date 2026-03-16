@@ -11,6 +11,7 @@ public meta import Mathlib.Lean.Elab.InfoTree
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Util.ParseCommand
+public import Mathlib.Tactic.Linter.FlexibleLinter
 
 /-!
 # Tactic linters
@@ -273,6 +274,68 @@ def Mathlib.TacticAnalysis.mergeWithGrind : TacticAnalysis.Config where
             pure [goal]
           if goals.isEmpty then
             logWarningAt preI.tacI.stx m!"'{preI.tacI.stx}; grind' can be replaced with 'grind'"
+
+/-- Suggest replacing the squeezed formed of a terminal tactic. This includes both flexible tactics
+  that occur syntactically as the last tactic to close a goal as well as those proceeded only by tactics
+  permitted to follow a fexible tactic. -/
+register_option linter.tacticAnalysis.unsqueezeTerminal : Bool := {
+  defValue := false
+}
+
+/-- If applicable, convert the squeezed variant of a flexible tactic into the unsqueezed variant. -/
+def unsqueeze? (stx : Syntax) : Option Syntax :=
+  match stx with
+  | .node _ ``Lean.Parser.Tactic.simp args =>
+    if args[3]![0].getAtomVal == "only" then
+      some <| stx.setArgs <| args.set! 3 (mkOptionalNode none)
+    else
+      none
+  | _ => none
+
+@[tacticAnalysis linter.tacticAnalysis.unsqueezeTerminal, inherit_doc linter.tacticAnalysis.unsqueezeTerminal]
+def Mathlib.TacticAnalysis.unsqueeze : TacticAnalysis.Config where
+  run seq := do
+    -- `flextail` contains flexible tactics used to close a goal
+    let mut flextail : List (TSyntax `tactic) := []
+
+    for i in seq.reverse do
+      -- if we reach a squeezed flexible tactic, analyze its replacement with the unsqueezed equivalent
+      if let some unsqueeze := unsqueeze? i.tacI.stx then
+        if let [goal] := i.tacI.goalsBefore then
+
+          -- the original sequence of tactics
+          let before := ⟨i.tacI.stx⟩ :: flextail
+          let before_seq ← `(tactic| $before.toArray;*)
+
+          -- with the unsqueezed replacement
+          let after := ⟨unsqueeze⟩ :: flextail
+          let after_seq ← `(tactic| $after.toArray;*)
+
+          let (_, oldHeartbeats) ← withHeartbeats <|
+            try
+              i.runTacticCode goal before_seq
+            catch _e =>
+              pure [goal]
+
+          let (goals, newHeartbeats) ← withHeartbeats <|
+            try
+              i.runTacticCode goal after_seq
+            catch _e =>
+              pure [goal]
+
+          if goals.isEmpty then
+            logWarningAt i.tacI.stx m!"'{i.tacI.stx}' can be replaced with '{unsqueeze}'"
+
+          if oldHeartbeats * 2 < newHeartbeats then
+            logWarningAt i.tacI.stx m!"replacement is slower than the original: {oldHeartbeats} -> {newHeartbeats}"
+
+          break
+      else
+        -- continue only if we get another tactic permitted to follow a flexible tactic
+        if i.tacI.stx.getKind ∈ Mathlib.Linter.Flexible.flexible then
+          flextail := ⟨i.tacI.stx⟩ :: flextail
+        else
+          break
 
 /-- Suggest replacing a sequence of tactics with `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.terminalToGrind : Bool := {
