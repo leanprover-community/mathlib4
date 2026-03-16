@@ -371,7 +371,7 @@ theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
     (expand R (p ^ n) f).roots.toFinset.image (iterateFrobenius R p n) ⊆ f.roots.toFinset := by
   rw [Finset.image_toFinset, ← (roots f).toFinset_nsmul _ (expChar_pow_pos R p n).ne',
     toFinset_subset]
-  exact subset_of_le (roots_expand_pow_map_iterateFrobenius_le p n f)
+  exact roots_expand_pow_map_iterateFrobenius_le p n f
 
 theorem roots_expand_image_frobenius_subset [DecidableEq R] :
     (expand R p f).roots.toFinset.image (frobenius R p) ⊆ f.roots.toFinset := by
