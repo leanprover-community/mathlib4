@@ -211,10 +211,11 @@ theorem powSMulQuotInclusion_injective {a b c : ℕ} (h : c = b + a) (N : Submod
 
 set_option backward.isDefEq.respectTransparency false in
 theorem factorPow_comp_powSMulQuotInclusion {a b c d e : ℕ} (h : c = b + a) (h' : e = d + c) :
-    (factorPow I M (show c ≤ e by lia)) ∘ₗ
-      (powSMulQuotInclusion I M (show e = (b + d) + a by lia) ⊤) =
-    (powSMulQuotInclusion I M h ⊤) ∘ₗ
-      (factorPow I ↥(I ^ a • ⊤ : Submodule R M) (b.le_add_right d)) := by ext; rfl
+    factorPow I M (show c ≤ e by lia) ∘ₗ
+      powSMulQuotInclusion I M (show e = (b + d) + a by lia) ⊤ =
+    powSMulQuotInclusion I M h ⊤ ∘ₗ
+      factorPow I ↥(I ^ a • ⊤ : Submodule R M) (b.le_add_right d) := by
+  ext; rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem range_powSMulQuotInclusion {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
