@@ -260,7 +260,7 @@ theorem lift_id' (o : OrderType.{max u v}) : lift.{u} o = o :=
 theorem lift_id (o : OrderType) : lift.{u, u} o = o :=
   lift_id'.{u, u} o
 
-/-- A OrderType lifted to the zero universe equals itself. -/
+/-- An order type lifted to the zero universe equals itself. -/
 @[simp]
 theorem lift_uzero (o : OrderType.{u}) : lift.{0} o = o :=
   lift_id'.{0, u} o
@@ -269,13 +269,13 @@ theorem lift_uzero (o : OrderType.{u}) : lift.{0} o = o :=
 theorem lift_lift.{u_1} (o : OrderType.{u_1}) : lift.{u} (lift.{v} o) = lift.{max v u} o :=
   inductionOn o fun _ => (ULift.orderIso.trans <| ULift.orderIso.trans ULift.orderIso.symm).type_congr
 
-theorem out_lift_equiv (o : OrderType.{u}) : Nonempty ((lift.{v} o).ToType ≃o o.ToType) := by
+theorem nonempty_toType_lift_orderIso (o : OrderType.{u}) : Nonempty ((lift.{v} o).ToType ≃o o.ToType) := by
   rw [← type_toType o, ← type_uLift, type_toType]
   exact ⟨toType_orderIso.trans ULift.orderIso⟩
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 @[expose]
-def omega0 : OrderType := OrderType.lift <| type ℕ
+def omega0 : OrderType := lift <| type ℕ
 
 @[inherit_doc]
 scoped notation "ω" => OrderType.omega0
