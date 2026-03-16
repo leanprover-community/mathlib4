@@ -185,7 +185,7 @@ noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [
 attribute [local instance] FractionRing.liftAlgebra in
 /--
 If `G` is finite and `IsGaloisGroup G A B` with `A` and `B` domains, then `G` is also
-a Galois group for `FractionRing A / FractionRing B` for the action defined by
+a Galois group for `FractionRing B / FractionRing A` for the action defined by
 `FractionRing.mulSemiringAction_of_isGaloisGroup`.
 -/
 theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [IsTorsionFree A B] [Finite G]
@@ -490,7 +490,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem quotientMap (h : E ≤ F) :
     letI : Algebra E F := (IntermediateField.inclusion h).toAlgebra
     IsGaloisGroup (H.map (QuotientGroup.mk' N)) E F :=
-  let hFN : IsGaloisGroup (G ⧸ N) K F := inferInstance
+  have hFN : IsGaloisGroup (G ⧸ N) K F := inferInstance
   let : Algebra E F := (IntermediateField.inclusion h).toAlgebra
   { faithful := by have := hFN.faithful; infer_instance
     commutes := ⟨by
