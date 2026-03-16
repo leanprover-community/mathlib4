@@ -653,6 +653,17 @@ theorem rescale_mul (a b : R) : rescale (a * b) = (rescale b).comp (rescale a) :
   ext
   simp [← rescale_rescale]
 
+theorem rescale_map {S : Type*} [CommSemiring S] (φ : R →+* S) (r : R) (f : R⟦X⟧) :
+    rescale (φ r) (f.map φ) = (rescale r f).map (φ : R →+* S) := by
+  ext n
+  simp [coeff_rescale, coeff_map, map_mul, map_pow]
+
+theorem rescale_algebraMap_map {A S : Type*} [CommSemiring A] [Algebra A R] [CommSemiring S]
+    [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
+    rescale (algebraMap A S a) (f.map φ) = (rescale (algebraMap A R a) f).map φ := by
+  convert rescale_map (φ : R →+* S) _ _
+  simp
+
 end CommSemiring
 
 section CommSemiring

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Eric Wieser
+Authors: Kenny Lau, Eric Wieser, Antoine Chambert-Loir, María-Inés de Frutos-Fernández
 -/
 module
 

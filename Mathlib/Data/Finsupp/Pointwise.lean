@@ -104,7 +104,7 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
 abbrev pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α → β) (α →₀ M) where
   smul f g :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
-      apply Set.Finite.subset g.finite_support
+      apply Set.Finite.subset g.hasFiniteSupport
       simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne,
         Finsupp.fun_support_eq, Finset.mem_coe]
       intro x hx h

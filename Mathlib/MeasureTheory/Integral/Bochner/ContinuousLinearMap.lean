@@ -160,6 +160,7 @@ end ContinuousMap
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
   (@RCLike.ofRealLI 𝕜 _).integral_comp_comm f
 
+@[norm_cast]
 theorem integral_complex_ofReal {f : X → ℝ} : ∫ x, (f x : ℂ) ∂μ = ∫ x, f x ∂μ := integral_ofReal
 
 theorem integral_re {f : X → 𝕜} (hf : Integrable f μ) :

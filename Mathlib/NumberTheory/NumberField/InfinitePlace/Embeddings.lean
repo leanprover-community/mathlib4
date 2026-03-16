@@ -303,17 +303,24 @@ lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
 
 section Extension
 
-variable {K : Type*} (L : Type*) [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+variable {K : Type*} {L : Type*} [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+
+/-- If `L/K`, `ψ : K →+* ℂ`, and `φ : L →+* ℂ`, then `φ` lies over `ψ` if the restriction of
+`φ` to `K` is `ψ`. -/
+class LiesOver (ψ : K →+* ℂ) (φ : L →+* ℂ) : Prop where
+  over (ψ φ) : φ.comp (algebraMap K L) = ψ
+
+variable (L)
 
 /-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexEmbedding.Extension L ψ` consists of all
 `φ : L →+* ℂ` such that `φ.comp (algebraMap K L) = ψ`. -/
-protected abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+protected abbrev Extension := { φ : L →+* ℂ // LiesOver ψ φ }
 
 namespace Extension
 
 variable (φ : ComplexEmbedding.Extension L ψ) {L ψ}
 
-theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2
+theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2.over
 
 theorem conjugate_comp_ne (h : ¬IsReal ψ) : (conjugate φ).comp (algebraMap K L) ≠ ψ := by
   simp_all [ComplexEmbedding.isReal_iff, comp_eq]

@@ -440,7 +440,7 @@ section Finsupp
 
 /-- Create a `HahnSeries` with a `Finsupp` as coefficients. -/
 def ofFinsupp : ZeroHom (Γ →₀ R) R⟦Γ⟧ where
-  toFun f := { coeff := f, isPWO_support' := f.finite_support.isPWO }
+  toFun f := { coeff := f, isPWO_support' := f.hasFiniteSupport.isPWO }
   map_zero' := by simp
 
 @[simp]
