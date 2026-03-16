@@ -864,7 +864,8 @@ def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(
     (by intro c g x; ext v; simpa using smul_comm (L x v) c (g x))
     (by fun_prop) <| by
       intro ⟨k, n⟩
-      use {(k + 1, n), (k, n - 1)}, 2 * ‖L‖ * (max 1 n), by positivity
+      let s : Finset (ℕ × ℕ) := {(k + 1, n), (k, n - 1)}
+      use s, 2 * ‖L‖ * (max 1 n), by positivity
       intro f x
       calc
         _ ≤ ‖x‖ ^ k * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
@@ -887,20 +888,21 @@ def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(
             simp [Finset.sum_range_succ', this]
         _ = ‖x‖ ^ k * ‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ +
               ‖x‖ ^ k * n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖ := by ring
-        _ ≤ ‖L‖ * 1 * (SchwartzMap.seminorm 𝕜 (k + 1) n) f +
-              ‖L‖ * n * (SchwartzMap.seminorm 𝕜 k (n - 1) f) := by
-          grw [le_opNorm, ← le_seminorm 𝕜 (k + 1) n f x, ← le_seminorm 𝕜 k (n - 1) f x]
-          apply le_of_eq
-          ring
-        _ ≤ ‖L‖ * max 1 n *
-            max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) +
-            ‖L‖ * max 1 n *
-            max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) := by
-          gcongr <;> simp
-        _ = _ := by
-          simp only [Finset.sup_insert, schwartzSeminormFamily_apply, Finset.sup_singleton,
-            Seminorm.coe_sup, Pi.sup_apply]
-          ring
+        _ ≤ ‖L‖ * (max 1 n) * (f.seminorm 𝕜 (k + 1) n + f.seminorm 𝕜 k (n - 1)) := by
+          rw [mul_add]
+          gcongr 1
+          · grw [le_opNorm, ← Nat.le_max_left 1 n, ← le_seminorm 𝕜 (k + 1) n f x]
+            apply le_of_eq
+            ring
+          · grw [← Nat.le_max_right 1 n, ← le_seminorm 𝕜 k (n - 1) f x]
+            apply le_of_eq
+            ring
+        _ = ‖L‖ * (max 1 n) * ∑ i ∈ s, schwartzSeminormFamily 𝕜 E F i f := by simp [s]
+        _ ≤ ‖L‖ * (max 1 n) * (2 • (s.sup (schwartzSeminormFamily 𝕜 E F)) f) := by
+          gcongr
+          convert Seminorm.finset_sum_apply_le_card_smul_sup _ _
+          simp [s]
+        _ = _ := by ring
 
 @[simp]
 theorem smulRightCLM_apply_apply (L : E →L[ℝ] G →L[ℝ] ℝ) (f : 𝓢(E, F)) (x : E) :

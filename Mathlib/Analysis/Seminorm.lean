@@ -377,6 +377,39 @@ theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p
   rw [Finset.sum_eq_sum_diff_singleton_add hi, le_add_iff_nonneg_left]
   exact bot_le
 
+variable {ι M : Type*} [AddCommMonoid M] [SemilatticeSup M] [OrderBot M]
+  [AddLeftMono M]
+
+open Classical in
+theorem _root_.Finset.sup_le_card_smul_sum (p : ι → M) (s : Finset ι) :
+    ∑ i ∈ s, p i ≤ s.card • s.sup p := by
+  induction s using Finset.induction with
+  | empty => simp
+  | insert n s hn hs =>
+    simp only [hn, not_false_eq_true, Finset.sum_insert, Finset.card_insert_of_notMem,
+      Finset.sup_insert, add_smul]
+    nth_rw 1 [add_comm]
+    gcongr
+    · grw [hs]
+      gcongr
+      exact le_sup_right
+    · simp
+
+open Classical in
+theorem finset_sum_apply_le_card_smul_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) {x : E} :
+    ∑ i ∈ s, p i x ≤ s.card • s.sup p x := by
+  induction s using Finset.induction with
+  | empty => simp
+  | insert n s hn hs =>
+    simp only [hn, not_false_eq_true, Finset.sum_insert, Finset.card_insert_of_notMem,
+      Finset.sup_insert, add_smul]
+    nth_rw 1 [add_comm]
+    gcongr
+    · grw [hs]
+      gcongr
+      exact le_sup_right
+    · simp
+
 theorem finset_sup_apply_le {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 ≤ a)
     (h : ∀ i, i ∈ s → p i x ≤ a) : s.sup p x ≤ a := by
   lift a to ℝ≥0 using ha
