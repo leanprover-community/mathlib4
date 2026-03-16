@@ -64,13 +64,13 @@ noncomputable def lieIdealRootSpan (I : LieIdeal K L) : Submodule K (Dual K H) :
   Submodule.span K ((rootSystem H).root '' lieIdealRootSet (H := H) I)
 
 lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
-    {α : Weight K H L} (hI : rootSpace H α ≤ I.restr H)
+    {α : Weight K H L} (hα : rootSpace H α ≤ I.restr H)
     {γ : H → K} (hγ_ne : γ (coroot α) ≠ 0) :
     rootSpace H γ ≤ I.restr H := by
   intro y hy
   have : γ (coroot α) • y ∈ I.toSubmodule := by
     rw [← lie_eq_smul_of_mem_rootSpace hy (coroot α)]
-    exact lie_mem_left K L I _ y (corootSubmodule_le_lieIdeal I hI (coroot_mem_corootSubmodule α))
+    exact lie_mem_left K L I _ y (corootSubmodule_le_lieIdeal I hα (coroot_mem_corootSubmodule α))
   exact I.toSubmodule.smul_mem_iff hγ_ne |>.mp this
 
 lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
