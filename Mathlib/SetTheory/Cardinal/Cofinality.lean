@@ -619,7 +619,7 @@ theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) := by
   classical
   let := linearOrderOfSTO r
-  have : WellFoundedLT α := H.toIsWellFounded
+  have : WellFoundedLT α := H.wf
   have : NoMaxOrder α := isSuccPrelimit_type_lt_iff.1 h.isSuccPrelimit
   obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
   refine ⟨s, ?_, hs'⟩
