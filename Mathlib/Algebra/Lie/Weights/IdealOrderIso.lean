@@ -55,13 +55,13 @@ def lieIdealRootSet (I : LieIdeal K L) : Set H.root :=
 
 @[simp]
 lemma mem_lieIdealRootSet {I : LieIdeal K L} {α : H.root} :
-    α ∈ lieIdealRootSet (H := H) I ↔ rootSpace H α.1 ≤ I.restr H := Iff.rfl
+    α ∈ lieIdealRootSet I ↔ rootSpace H α.1 ≤ I.restr H := Iff.rfl
 
 variable [IsKilling K L] [IsTriangularizable K H L] [CharZero K]
 
 /-- The submodule of `Dual K H` spanned by the roots associated to a Lie ideal. -/
 noncomputable def lieIdealRootSpan (I : LieIdeal K L) : Submodule K (Dual K H) :=
-  Submodule.span K ((rootSystem H).root '' lieIdealRootSet (H := H) I)
+  Submodule.span K ((rootSystem H).root '' lieIdealRootSet I)
 
 lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
     {α : Weight K H L} (hα : rootSpace H α ≤ I.restr H)
@@ -74,8 +74,8 @@ lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
   exact I.toSubmodule.smul_mem_iff hγ_ne |>.mp this
 
 lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
-    {α : H.root} (hα : α ∈ lieIdealRootSet (H := H) I) :
-    (rootSystem H).reflectionPerm i α ∈ lieIdealRootSet (H := H) I := by
+    {α : H.root} (hα : α ∈ lieIdealRootSet I) :
+    (rootSystem H).reflectionPerm i α ∈ lieIdealRootSet I := by
   simp only [mem_lieIdealRootSet] at hα ⊢
   by_cases hp : (rootSystem H).pairing α i = 0
   · rwa [(rootSystem H).reflectionPerm_eq_of_pairing_eq_zero hp]
@@ -88,7 +88,7 @@ lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
 
 /-- The submodule spanned by roots of a Lie ideal is invariant under all root reflections. -/
 lemma lieIdealRootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
-    lieIdealRootSpan (H := H) I ∈ (rootSystem H).invtRootSubmodule := by
+    lieIdealRootSpan I ∈ (rootSystem H).invtRootSubmodule := by
   rw [RootPairing.mem_invtRootSubmodule_iff]
   intro i; rw [Module.End.mem_invtSubmodule]
   apply Submodule.span_le.mpr
@@ -101,7 +101,7 @@ lemma lieIdealRootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
 /-- Maps a Lie ideal to its corresponding invariant root submodule. -/
 noncomputable def lieIdealToInvtRootSubmodule (I : LieIdeal K L) :
     (rootSystem H).invtRootSubmodule :=
-  ⟨lieIdealRootSpan (H := H) I, lieIdealRootSpan_mem_invtRootSubmodule I⟩
+  ⟨lieIdealRootSpan I, lieIdealRootSpan_mem_invtRootSubmodule I⟩
 
 lemma lieIdealToInvtRootSubmodule_mono {I J : LieIdeal K L} (h : I ≤ J) :
     lieIdealToInvtRootSubmodule (H := H) I ≤ lieIdealToInvtRootSubmodule J :=
