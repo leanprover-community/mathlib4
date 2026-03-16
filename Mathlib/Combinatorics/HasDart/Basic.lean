@@ -76,6 +76,7 @@ lemma dart.right_mem (d : dart G v w) : w ∈ V(G) :=
 This terminology comes from combinatorial maps, and they are also known as "half-edges"
 or "bonds." -/
 structure prodDart [HasDart α Gr] (G : Gr) : Type (max u' u_1) extends α × α where
+  /-- `fst` and `snd` have `dart` between them. -/
   dart' : (dart G fst snd : Sort u')
 
 initialize_simps_projections prodDart (+toProd, -fst, -snd)
