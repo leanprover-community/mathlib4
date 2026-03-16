@@ -286,10 +286,10 @@ def prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) : M →ₗ[R] E ×[σ
 @[simp] lemma prodₛₗ_apply (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) (x : M) :
     prodₛₗ σ f g x = SemilinearProdModule.mk (f x) (g x) := rfl
 
-@[simp] lemma fst_prod (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
+@[simp] lemma fst_prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
     (fstₛₗ σ E F).comp (prodₛₗ σ f g) = f := by ext x; rfl
 
-@[simp] lemma snd_prod (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
+@[simp] lemma snd_prodₛₗ (f : M →ₗ[R] E) (g : M →ₛₗ[σ] F) :
     (sndₛₗ σ E F).comp (prodₛₗ σ f g) = g := by ext x; rfl
 
 end prod
@@ -396,15 +396,15 @@ def graphₛₗ : Submodule R (E ×[σ] F) where
     rw [hx, map_smulₛₗ]
 
 @[simp]
-theorem mem_graph_iff (x : E ×[σ] F) : x ∈ f.graphₛₗ ↔ x.2 = f x.1 :=
+theorem mem_graphₛₗ_iff (x : E ×[σ] F) : x ∈ f.graphₛₗ ↔ x.2 = f x.1 :=
   Iff.rfl
 
-theorem graph_eq_ker_coprod : f.graphₛₗ = ker (coprodₛₗ σ (-f) LinearMap.id) := by
+theorem graphₛₗ_eq_ker_coprodₛₗ : f.graphₛₗ = ker (coprodₛₗ σ (-f) LinearMap.id) := by
   ext x
   change _ = _ ↔ -f x.1 + x.2 = _
   rw [add_comm, add_neg_eq_zero]
 
-theorem graph_eq_range_prod : f.graphₛₗ = range (prodₛₗ σ LinearMap.id f) := by
+theorem graphₛₗ_eq_range_prodₛₗ : f.graphₛₗ = range (prodₛₗ σ LinearMap.id f) := by
   ext x
   refine ⟨fun hx => ⟨x.1, ?_⟩, fun ⟨u, hu⟩ => hu ▸ rfl⟩
   ext
