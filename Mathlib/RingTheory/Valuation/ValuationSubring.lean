@@ -353,8 +353,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
     · simp
 
 @[simp]
-theorem ofPrime_bot : A.ofPrime ⊥ = ⊤ := by
-  simp [← idealOfLE_top, ValuationSubring.ofPrime_idealOfLE]
+theorem ofPrime_bot : A.ofPrime ⊥ = ⊤ := by simp [← idealOfLE_top]
 
 @[simp]
 theorem ofPrime_top : A.ofPrime (IsLocalRing.maximalIdeal A) = A := by simp [← idealOfLE_self]
