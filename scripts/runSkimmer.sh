@@ -51,7 +51,7 @@ Usage: runSkimmer.sh [[--no-update] [--on [tgts...]] | --lake-update | --init | 
 Options:
   [no arguments]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` on targets configured in \`runSkimmer.sh\`. (Does not get mathlib's cache.)
   --on [tgts...]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` for \`tgt\` in the supplied \`tgts\`. (Does not get mathlib's cache.)
-  --no-update     Only run \`lake build <tgts>:applyCurrentTryThis\`, without first running \`lake update\` in \`SideSkimmer\`. Applies both when there are no other arguments and when \`--on\` is used.
+  --no-update     Only run \`lake build <tgts>:applyCurrentTryThis\`, without first running \`lake update\` in \`SideSkimmer\`. Applies both the default targets and those supplied with \`--on\`.
   --init          Set up the \`SideSkimmer\` side package. This only needs to be done when first introducing \`runSkimmer.sh\` to a new repo.
   --lake-update   Only run \`lake update -v\` in \`SideSkimmer\`, and do not get mathlib's cache while doing so.
 EOF
