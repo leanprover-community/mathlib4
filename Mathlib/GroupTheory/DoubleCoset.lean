@@ -252,7 +252,7 @@ theorem iUnion_finset_leftRel_eq_univ_of_leftRel (H K : Subgroup G) (t : Finset 
   exact ⟨1, one_mem H, MulOpposite.unop a'⁻¹, Subgroup.mem_op.mp (by simp), by simpa
     using (eq_mul_inv_of_mul_eq ha')⟩
 
-theorem iUnion_finset_rightRel_eq_univ_of_rightRel (H K : Subgroup G) (t : Finset (Quotient H K))
+theorem iUnion_finset_rightRel_eq_univ_of_rightRel {H K : Subgroup G} {t : Finset (Quotient H K)}
     (ht : Set.univ ⊆ ⋃ i ∈ t, Quot.mk (rightRel H) '' doubleCoset (out i) H K) :
     ⋃ q ∈ t, doubleCoset (out q) H K = Set.univ := by
   contrapose ht
