@@ -86,7 +86,7 @@ variable (R A M N) in
 abbrev tens_to_mk := TensorProduct.lift (bil_to_mk R A M N)
 
 omit [IsScalarTower R A N] in
-@[simp] lemma tens_to_mk_apply (m : M) (n : N) : tens_to_mk R A M N (m⊗ₜn) = ⟦m⊗ₜn⟧ := by rfl
+lemma tens_to_mk_apply (m : M) (n : N) : tens_to_mk R A M N (m⊗ₜn) = ⟦m⊗ₜn⟧ := by rfl
 
 variable (R A M N) in
 lemma span_in_ker : (rels R A M N) ≤ (mapOfCompatibleSMul' A R M N).ker := by
