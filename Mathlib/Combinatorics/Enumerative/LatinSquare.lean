@@ -1,8 +1,8 @@
 /-
-  Copyright (c) 2026 Christopher J. R. Lloyd and George H. Seelinger. All rights reserved.
-  Released under Apache 2.0 license as described in the file LICENSE.
-  Authors: Christopher J. R. Lloyd, George H. Seelinger
-  -/
+Copyright (c) 2026 Christopher J. R. Lloyd and George H. Seelinger. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christopher J. R. Lloyd, George H. Seelinger
+-/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.Card
@@ -13,7 +13,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Data.ZMod.Basic
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.LinearAlgebra.Matrix.Defs
 import Mathlib.Logic.Equiv.Embedding
@@ -45,7 +44,8 @@ square; this theorem is formalized as
 
 - `group_to_cayley_table`: every finite group `G` yields a `LatinSquare G G`.
 - `latin_rectangle_extends_one_row`: a (non-square) `LatinRectangle` extends to a `LatinRectangle`
-   with one more row. This is an application of **Hall's Marriage Theorem**, `hallMatchingsOn.nonempty`.
+   with one more row. This is an application of **Hall's Marriage Theorem**, 
+   `hallMatchingsOn.nonempty`.
 - `latin_rectangle_extends_to_latin_square`:  a `LatinRectangle` extends to a `LatinSquare`.
 
 ## Notation
@@ -166,7 +166,7 @@ abbrev col (A : LatinRectangle m n α) : n → m → α := Matrix.col A
 abbrev row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
 
 /-- An n × n Latin rectangle is a Latin square. -/
-@[coe]
+@[reducible]
 def toLatinSquare : (LatinRectangle n n α) → (LatinSquare n α)
   | A => {
       M := A.M,
@@ -189,18 +189,18 @@ instance : Coe (LatinRectangle n n α) (LatinSquare n α) where
 
 theorem lr_as_ls_as_lr_is_eq (A : LatinRectangle n n α) :
     ((A : LatinSquare n α) : LatinRectangle n n α) = A := by
-  simp[LatinSquare.toLatinRectangle, toLatinSquare]
+  simp[LatinSquare.toLatinRectangle]
 
 theorem ls_as_lr_as_ls_is_eq (A : LatinSquare n α) :
     ((A : LatinRectangle n n α) : LatinSquare n α) = A := by
-  simp[toLatinSquare, LatinSquare.toLatinRectangle]
+  simp[toLatinSquare]
 
 instance {n : Nat} {α : Type*} [DecidableEq α] [Fintype α] [ToString α] :
     Repr (LatinSquare (Fin n) α) where
     reprPrec L prec := Repr.reprPrec L.toLatinRectangle prec
 
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
-@[to_additive]
+@[to_additive, reducible]
 def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
   LatinSquare G G := {
     M := fun i j ↦ i * j,
@@ -218,6 +218,7 @@ section Equivalence
 
 /-- Given relabeling maps for the rows, columns, and symbols,
     produce the relabeled Latin rectangle. -/
+@[reducible]
 def renameLatinRectangle
     (f : m ≃ m')
     (g : n ≃ n')
@@ -294,7 +295,9 @@ lemma induced_latin_rectangle_is_equiv
     (g : n ≃ n')
     (h : α ≃ β)
     (A : LatinRectangle m n α) : A ≃ (renameLatinRectangle f g h A) :=
-  ⟨f, g, h, by simp [renameLatinRectangle]⟩
+  ⟨f, g, h, by simp [LatinRectangle.M]⟩
+  
+ 
 
 end Equivalence
 
@@ -498,7 +501,7 @@ lemma exists_larger_subset
   have hc' : (∀ i ∈ s.biUnion B, Finset.card {j | j ∈ s ∧ i ∈ B j} ≤ k) := by
     intro i h
     have h' := hc i
-    rw [ Finset.mem_biUnion ] at h
+    rw [Finset.mem_biUnion] at h
     obtain ⟨ a, i ⟩ := h
     specialize h' a
     specialize h' i.left
