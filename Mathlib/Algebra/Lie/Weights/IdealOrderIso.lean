@@ -41,8 +41,8 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [FiniteDimensional
 /-- If the root space of `α` is contained in a Lie ideal `I`, then the coroot submodule of `α`
 is also contained in `I`. -/
 lemma corootSubmodule_le_lieIdeal (I : LieIdeal K L) {α : Weight K H L}
-    (hα : (rootSpace H α).toSubmodule ≤ I.toSubmodule) :
-    (corootSubmodule α).toSubmodule ≤ I.toSubmodule := by
+    (hα : rootSpace H α ≤ I.restr H) :
+    corootSubmodule α ≤ I.restr H := by
   intro x hx
   obtain ⟨h, hh, rfl⟩ := (LieSubmodule.mem_map _).mp hx
   have key : (⟨h.val, h.property⟩ : H) ∈ corootSpace α := hh
@@ -55,24 +55,24 @@ variable [IsKilling K L] [IsTriangularizable K H L] [CharZero K]
 
 /-- The set of roots whose root space is contained in a given Lie ideal. -/
 noncomputable def lieIdealRootSet (I : LieIdeal K L) : Set H.root :=
-  { α | (rootSpace H α.1).toSubmodule ≤ I.toSubmodule }
+  { α | rootSpace H α.1 ≤ I.restr H }
 
 /-- The submodule of `Dual K H` spanned by the roots associated to a Lie ideal. -/
 noncomputable def lieIdealRootSpan (I : LieIdeal K L) : Submodule K (Dual K H) :=
   Submodule.span K ((↑) '' lieIdealRootSet (H := H) I)
 
 lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
-    {α : Weight K H L} (hI : (rootSpace H α).toSubmodule ≤ I.toSubmodule)
+    {α : Weight K H L} (hI : rootSpace H α ≤ I.restr H)
     {γ : H → K} (hγ_ne : γ (coroot α) ≠ 0) :
-    (rootSpace H γ).toSubmodule ≤ I.toSubmodule := by
-  have h_coroot_I : (coroot α : L) ∈ I.toSubmodule :=
+    rootSpace H γ ≤ I.restr H := by
+  have h_coroot_I : (coroot α : L) ∈ I.restr H :=
     corootSubmodule_le_lieIdeal I hI (coroot_mem_corootSubmodule α)
   intro y hy
-  have h_lie : ⁅(coroot α : L), y⁆ ∈ I.toSubmodule :=
-    lie_mem_left K L I (coroot α : L) y h_coroot_I
   have h_eq : ⁅(coroot α : L), y⁆ = γ ⟨coroot α, (coroot α).property⟩ • y :=
     lie_eq_smul_of_mem_rootSpace hy ⟨coroot α, (coroot α).property⟩
-  rwa [h_eq, I.toSubmodule.smul_mem_iff (by exact_mod_cast hγ_ne)] at h_lie
+  have h_smul : γ ⟨coroot α, (coroot α).property⟩ • y ∈ I.toSubmodule := by
+    rw [← h_eq]; exact lie_mem_left K L I _ y h_coroot_I
+  exact I.toSubmodule.smul_mem_iff (by exact_mod_cast hγ_ne) |>.mp h_smul
 
 lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
     {α : H.root} (hα : α ∈ lieIdealRootSet (H := H) I) :
@@ -111,6 +111,6 @@ noncomputable def lieIdealToInvtRootSubmodule (I : LieIdeal K L) :
 lemma lieIdealToInvtRootSubmodule_mono {I J : LieIdeal K L} (h : I ≤ J) :
     lieIdealToInvtRootSubmodule (H := H) I ≤ lieIdealToInvtRootSubmodule J :=
   Submodule.span_mono (Set.image_mono
-    fun α (hα : (rootSpace H α.1).toSubmodule ≤ I.toSubmodule) ↦ hα.trans h)
+    fun α (hα : rootSpace H α.1 ≤ I.restr H) ↦ hα.trans (show I.restr H ≤ J.restr H from h))
 
 end LieAlgebra.IsKilling
