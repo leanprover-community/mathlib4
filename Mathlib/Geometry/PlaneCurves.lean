@@ -703,3 +703,5 @@ theorem initialCurve_of_orientedCurvature_is_unique {I : Set ℝ} [hIoC : I.OrdC
   · exact heqd
   · exact ht₀
   · exact hct₀eq
+
+end PlaneCurve
