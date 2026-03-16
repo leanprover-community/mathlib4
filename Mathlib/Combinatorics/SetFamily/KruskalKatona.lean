@@ -109,7 +109,7 @@ protected lemma IsInitSeg.shadow [Finite α] (h₁ : IsInitSeg 𝒜 r) : IsInitS
   obtain rfl | hr := Nat.eq_zero_or_pos r
   · have : 𝒜 ⊆ {∅} := fun s hs ↦ by rw [mem_singleton, ← Finset.card_eq_zero]; exact h₁.1 hs
     have := shadow_monotone this
-    simp only [subset_empty, le_eq_subset, shadow_singleton_empty] at this
+    simp only [subset_empty, shadow_singleton_empty] at this
     simp [this]
   obtain rfl | h𝒜 := 𝒜.eq_empty_or_nonempty
   · simp

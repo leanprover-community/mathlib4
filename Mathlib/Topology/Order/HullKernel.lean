@@ -216,7 +216,7 @@ lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α]
   constructor
   · exact fun ⦃a⦄ a ↦ a (hull T (kernel S)) ⟨(isClosed_iff hT).mpr ⟨kernel S, rfl⟩,
       image_subset_iff.mp (fun _ hbS => sInf_le hbS)⟩
-  · simp_rw [le_eq_subset, subset_sInter_iff]
+  · simp_rw [subset_sInter_iff]
     intro R hR
     rw [← (hull_kernel_of_isClosed hT hG hR.1), ← gc_closureOperator]
     exact ClosureOperator.monotone _ hR.2

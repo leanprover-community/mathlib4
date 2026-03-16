@@ -107,8 +107,8 @@ theorem sdiff_empty : s \ ∅ = s :=
 theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v := by grind
 
 theorem sdiff_subset_sdiff_iff_subset {r : Finset α} (hs : s ⊆ r) (ht : t ⊆ r) :
-    r \ s ⊆ r \ t ↔ t ⊆ s := by
-  simpa only [← le_eq_subset] using sdiff_le_sdiff_iff_le hs ht
+    r \ s ⊆ r \ t ↔ t ⊆ s :=
+  sdiff_le_sdiff_iff_le hs ht
 
 @[simp, grind =, norm_cast]
 theorem coe_sdiff (s₁ s₂ : Finset α) : ↑(s₁ \ s₂) = (s₁ \ s₂ : Set α) :=

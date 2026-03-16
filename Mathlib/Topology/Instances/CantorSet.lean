@@ -89,7 +89,6 @@ theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_pre
 
 theorem preCantorSet_antitone : Antitone preCantorSet := by
   refine antitone_nat_of_succ_le fun m ↦ ?_
-  simp only [Set.le_eq_subset]
   induction m with grind [preCantorSet_zero, preCantorSet_succ]
 
 lemma preCantorSet_subset_unitInterval {n : ℕ} : preCantorSet n ⊆ Set.Icc 0 1 := by

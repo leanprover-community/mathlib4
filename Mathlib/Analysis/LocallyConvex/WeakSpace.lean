@@ -89,7 +89,7 @@ theorem LinearEquiv.image_closure_of_convex {s : Set E} (hs : Convex ℝ s) (e :
     (he₂ : ∀ f : StrongDual 𝕜 E, Continuous (e.symm.dualMap f)) :
     e '' (closure s) = closure (e '' s) := by
   refine le_antisymm ((e : E →ₗ[𝕜] F).image_closure_of_convex hs he₁) ?_
-  simp only [Set.le_eq_subset, ← Set.image_subset_image_iff e.symm.injective]
+  simp only [← Set.image_subset_image_iff e.symm.injective]
   simpa [Set.image_image]
     using (e.symm : F →ₗ[𝕜] E).image_closure_of_convex (hs.linear_image (e : E →ₗ[𝕜] F)) he₂
 

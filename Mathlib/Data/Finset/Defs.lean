@@ -73,7 +73,7 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
-@[use_set_notation]
+@[use_set_notation, to_dual_dont_translate]
 structure Finset (α : Type*) where
   /-- The underlying multiset -/
   val : Multiset α
@@ -190,8 +190,6 @@ theorem coe_sort_coe (s : Finset α) : ((s : Set α) : Sort _) = s :=
 section Subset
 
 variable {s t : Finset α}
-
-instance partialOrder : PartialOrder (Finset α) := inferInstance
 
 theorem subset_of_le : s ≤ t → s ⊆ t := id
 

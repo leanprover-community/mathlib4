@@ -608,7 +608,7 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     (id (propext Subtype.mk_eq_mk)).mpr (stabilizer_orbit_eq hH)
   map_rel_iff' := by
     rintro ⟨B, ha, hB⟩; rintro ⟨B', ha', hB'⟩
-    simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Set.le_eq_subset]
+    simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk]
     constructor
     · rintro hBB' b hb
       obtain ⟨k, rfl⟩ := htGX.exists_smul_eq a b
@@ -633,11 +633,11 @@ instance (a : X) : BoundedOrder (BlockMem G a) where
   top := ⟨Set.univ, Set.mem_univ a, .univ⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
-    simp only [Subtype.mk_le_mk, le_eq_subset, subset_univ]
+    simp only [Subtype.mk_le_mk, subset_univ]
   bot := ⟨{a}, Set.mem_singleton a, IsBlock.singleton⟩
   bot_le := by
     rintro ⟨B, ha, hB⟩
-    simp only [Subtype.mk_le_mk, Set.le_eq_subset, Set.singleton_subset_iff]
+    simp only [Subtype.mk_le_mk, Set.singleton_subset_iff]
     exact ha
 
 @[to_additive (attr := simp, norm_cast)]

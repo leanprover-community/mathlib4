@@ -154,8 +154,7 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   obtain ⟨r₁, hr₁, s₁, hs₁⟩ :=
     (multipliable_norm_one_add_of_summable_norm hf).eventually_bounded_finset_prod
   obtain ⟨s₂, hs₂⟩ := prod_vanishing_of_summable_norm hf (show 0 < ε / (2 * r₁) by positivity)
-  simp only [unconditional, Filter.mem_map, mem_atTop_sets, ge_iff_le, le_eq_subset,
-    Set.mem_preimage]
+  simp only [unconditional, Filter.mem_map, mem_atTop_sets, Set.mem_preimage]
   let s := s₁ ∪ s₂
   -- The idea here is that if `s` is a large enough finset, then the product over `s` is bounded
   -- by some `r`, and the product over finsets disjoint from `s` is within `ε / (2 * r)` of 1.

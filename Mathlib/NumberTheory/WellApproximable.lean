@@ -279,7 +279,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     replace h_div : n / p * p = n := Nat.div_mul_cancel h_div
     have hf : f = (fun y => x + y) ∘ fun y => p • y := by
       ext; simp [f, add_comm x]
-    simp_rw [Function.comp_apply, le_eq_subset]
+    simp_rw [Function.comp_apply]
     rw [sSupHom.setImage_toFun, hf, image_comp]
     have := @monotone_image 𝕊 𝕊 fun y => x + y
     specialize this (approxAddOrderOf.image_nsmul_subset (δ n) (n / p) hp.pos)

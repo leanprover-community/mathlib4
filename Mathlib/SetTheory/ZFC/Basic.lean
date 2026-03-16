@@ -167,31 +167,25 @@ theorem sound {x y : PSet} (h : PSet.Equiv x y) : mk x = mk y :=
 theorem exact {x y : PSet} : mk x = mk y → PSet.Equiv x y :=
   Quotient.exact
 
-/-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
-protected def Mem : ZFSet → ZFSet → Prop :=
-  Quotient.lift₂ (· ∈ ·) fun _ _ _ _ hx hy =>
-    propext ((Mem.congr_left hx).trans (Mem.congr_right hy))
+/-- Convert a ZFC set into a `Set` of ZFC sets -/
+def toSet (x : ZFSet) : Set ZFSet :=
+  {y | Quotient.lift₂ (· ∈ ·) (fun _ _ _ _ hx hy =>
+    propext ((Mem.congr_left hx).trans (Mem.congr_right hy))) y x}
 
-instance : Membership ZFSet ZFSet where
-  mem t s := ZFSet.Mem s t
+private lemma extAux : (∀ z : ZFSet.{u}, z ∈ x.toSet ↔ z ∈ y.toSet) → x = y :=
+  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
+
+instance : SetLike ZFSet.{u} ZFSet.{u} where
+  coe := toSet
+  coe_injective' x y hxy := by apply extAux; intro z; exact congr(z ∈ $hxy)
 
 @[simp]
 theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
   Iff.rfl
 
-@[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y :=
-  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
-
-instance : SetLike ZFSet.{u} ZFSet.{u} where
-  coe x := {y | y ∈ x}
-  coe_injective' x y hxy := by ext z; exact congr(z ∈ $hxy)
+@[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y := extAux
 
 instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
-
-/-- Convert a ZFC set into a `Set` of ZFC sets -/
-@[deprecated SetLike.coe (since := "2025-11-05")]
-def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
-  { x | x ∈ u }
 
 @[deprecated SetLike.mem_coe (since := "2025-11-05")]
 theorem mem_toSet (a u : ZFSet.{u}) : a ∈ (u : Set ZFSet.{u}) ↔ a ∈ u :=
@@ -221,8 +215,6 @@ theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
 
 @[deprecated (since := "2025-11-05")] alias nonempty_toSet_iff := nonempty_coe
 
-instance : Preorder ZFSet := inferInstance
-
 @[simp] lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
 @[simp] lemma lt_def : x < y ↔ x ⊂ y := .rfl
 
@@ -243,7 +235,7 @@ theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
         let ⟨b, ab⟩ := h a
         ⟨b, za.trans ab⟩⟩
 
-lemma coe_subset_coe : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := by simp
+lemma coe_subset_coe : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := by simp only [SetLike.coe_subset_coe]
 
 @[deprecated (since := "2025-11-05")] alias toSet_subset_iff := coe_subset_coe
 
