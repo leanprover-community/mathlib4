@@ -65,8 +65,9 @@ end IsOpenCover
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Opens.IsBasis.isOpenCover {S : Set (Opens X)} (hS : Opens.IsBasis S) :
-    IsOpenCover (fun U : S ↦ (U : Opens X)) :=
-  top_le_iff.mp (subset_trans hS.2.superset (by simp))
+    IsOpenCover (fun U : S ↦ (U : Opens X)) := by
+  ext1
+  simp [← hS.2]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an open cover and a basis,

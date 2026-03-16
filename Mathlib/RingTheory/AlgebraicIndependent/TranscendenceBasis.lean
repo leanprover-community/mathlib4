@@ -333,7 +333,7 @@ theorem matroid_isBasis_iff_of_subsingleton [Subsingleton A] {s t : Set A} :
     (matroid R A).IsBasis s t ↔ s = t := by
   have := (FaithfulSMul.algebraMap_injective R A).subsingleton
   simp_rw [Matroid.IsBasis, matroid_indep_iff, of_subsingleton, true_and,
-    matroid_e, subset_univ, and_true, ← le_iff_subset, maximal_le_iff]
+    matroid_e, subset_univ, and_true, maximal_le_iff]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_adjoin_iff_of_matroid_isBasis [NoZeroDivisors A] {s t : Set A} {a : A}

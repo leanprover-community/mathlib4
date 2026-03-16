@@ -405,7 +405,7 @@ theorem comap' {mβ : MeasurableSpace β} [TopologicalSpace β] (μ : Measure β
   outerRegular A hA r hr := by
     rw [f_me.comap_apply] at hr
     obtain ⟨U, hUA, Uopen, hμU⟩ := OuterRegular.outerRegular (f_me.measurableSet_image' hA) r hr
-    refine ⟨f ⁻¹' U, by rwa [Superset, ← image_subset_iff], Uopen.preimage f_cont, ?_⟩
+    refine ⟨f ⁻¹' U, by rwa [ge_iff_le, ← image_subset_iff], Uopen.preimage f_cont, ?_⟩
     rw [f_me.comap_apply]
     exact (measure_mono (image_preimage_subset _ _)).trans_lt hμU
 

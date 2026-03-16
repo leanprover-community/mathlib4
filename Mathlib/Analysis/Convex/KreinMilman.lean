@@ -103,6 +103,7 @@ theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex
   have h : IsExposed ℝ s ({ y ∈ s | ∀ z ∈ s, l z ≤ l y }) := fun _ => ⟨l, rfl⟩
   obtain ⟨z, hzA, hz⟩ := hscomp.exists_isMaxOn ⟨x, hxA⟩ l.continuous.continuousOn
   obtain ⟨y, hy⟩ := (h.isCompact hscomp).extremePoints_nonempty ⟨z, hzA, hz⟩
+  clear hs -- This is needed because of a bug in linarith.
   linarith [hlr _ (subset_closure <| subset_convexHull _ _ <|
     h.isExtreme.extremePoints_subset_extremePoints hy), hy.1.2 x hxA]
 
