@@ -482,14 +482,14 @@ the `V`-object of natural transformations from `F` to `G`.
 @[simps]
 def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type (max u₁ w) where
   obj A := (GradedNatTrans ((Center.ofBraided V).obj (unop A)) F G)
-  map f := TypeCat.ofHom ⟨fun σ ↦
+  map f := TypeCat.ofHom fun σ ↦
     { app X := f.unop ≫ σ.app X
       naturality X Y := by
         have p := σ.naturality X Y
         dsimp at p ⊢
         rw [← id_tensor_comp_tensor_id (f.unop ≫ σ.app Y) _, id_tensor_comp, Category.assoc,
           Category.assoc, ← braiding_naturality_assoc, id_tensor_comp_tensor_id_assoc, p,
-          tensorHom_comp_tensorHom_assoc, Category.id_comp] }⟩
+          tensorHom_comp_tensorHom_assoc, Category.id_comp] }
 
 
 -- TODO assuming `[HasLimits C]` construct the actual object of natural transformations
@@ -529,12 +529,12 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
         enrichedFunctorTypeEquivFunctor G)) :=
   NatIso.ofComponents
     (fun α =>
-      { hom := TypeCat.ofHom ⟨fun σ ↦ TypeCat.ofHom ⟨fun x =>
+      { hom := TypeCat.ofHom fun σ ↦ TypeCat.ofHom fun x =>
           { app X := σ.app X x
-            naturality X Y f := ConcreteCategory.congr_hom (σ.naturality X Y) ⟨x, f⟩ }⟩⟩
-        inv := TypeCat.ofHom ⟨fun σ ↦
+            naturality X Y f := ConcreteCategory.congr_hom (σ.naturality X Y) ⟨x, f⟩ }
+        inv := TypeCat.ofHom fun σ ↦
           { app X := TypeCat.ofHom (fun x => (σ.hom x).app X)
-            naturality X Y := by ext ⟨x, f⟩; exact (σ.hom x).naturality f }⟩ })
+            naturality X Y := by ext ⟨x, f⟩; exact (σ.hom x).naturality f } })
     (by cat_disch)
 
 end

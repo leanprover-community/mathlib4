@@ -59,9 +59,10 @@ instance : (forget C).Faithful where
 
 variable {C}
 
+-- TODO: rename
 @[simp]
 lemma ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) :
-    (forget C).map f = ofHom ⟨f⟩ :=
+    (forget C).map f = TypeCat.ofHom f :=
   rfl
 
 theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl

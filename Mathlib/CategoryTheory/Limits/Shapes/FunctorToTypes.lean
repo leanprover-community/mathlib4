@@ -55,7 +55,7 @@ a natural transformation `F ⟶ prod F₁ F₂`. -/
 @[simps]
 def prod.lift {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     F ⟶ prod F₁ F₂ where
-  app x := TypeCat.ofHom (fun y ↦ ⟨τ₁.app x y, τ₂.app x y)⟩
+  app x := TypeCat.ofHom fun y ↦ ⟨τ₁.app x y, τ₂.app x y⟩
 
 @[simp]
 lemma prod.lift_fst {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :

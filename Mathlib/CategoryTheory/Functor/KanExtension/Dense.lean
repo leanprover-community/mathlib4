@@ -125,7 +125,7 @@ lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
   isDenseAt Y := by
     let φ (s : Cocone (CostructuredArrow.proj F Y ⋙ F)) :
         (restrictedULiftYoneda.{w} F).obj Y ⟶ (restrictedULiftYoneda F).obj s.pt :=
-      { app := fun ⟨X⟩ ↦ TypeCat.ofHom (fun ⟨x) ↦ ULift.up (s.ι.app (.mk x))⟩
+      { app := fun ⟨X⟩ ↦ TypeCat.ofHom fun ⟨x⟩ ↦ ULift.up (s.ι.app (.mk x))
         naturality := by
           rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f⟩
           ext ⟨x⟩
@@ -144,8 +144,9 @@ lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
       ⟨{desc s := (h.preimage (φ s))
         fac s j := h.map_injective (by simp [hφ])
         uniq s m hm := h.map_injective (by
-          ext ⟨X⟩ ⟨x⟩
-          simp [φ, ← hm])}⟩
+          ext
+          simp [φ, ← hm]
+          rfl)}⟩
 
 lemma isDense_iff_fullyFaithful_restrictedULiftYoneda [F.Full] :
     F.IsDense ↔ Nonempty (restrictedULiftYoneda.{w} F).FullyFaithful :=

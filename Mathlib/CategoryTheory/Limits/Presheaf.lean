@@ -95,8 +95,8 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
       (Functor.const (CostructuredArrow uliftYoneda.{max w v₂} P)).obj E) ≃
       (P ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E) where
   toFun f :=
-    { app _ := TypeCat.ofHom ⟨fun x ↦ ULift.up
-        (f.app (CostructuredArrow.mk (uliftYonedaEquiv.symm x)))⟩
+    { app _ := TypeCat.ofHom fun x ↦ ULift.up
+        (f.app (CostructuredArrow.mk (uliftYonedaEquiv.symm x)))
       naturality _ _ g := by
         ext x
         let φ : CostructuredArrow.mk (uliftYonedaEquiv.{max w v₂}.symm (P.map g x)) ⟶
@@ -281,8 +281,8 @@ The result of [MM92], Chapter I, Section 5, Corollary 3.
 def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type (max w v₁)) :
     IsColimit (coconeOfRepresentable P) where
   desc s :=
-    { app X := TypeCat.ofHom ⟨fun x ↦ uliftYonedaEquiv
-        (s.ι.app (Opposite.op (Functor.elementsMk P X x)))⟩
+    { app X := TypeCat.ofHom fun x ↦ uliftYonedaEquiv
+        (s.ι.app (Opposite.op (Functor.elementsMk P X x)))
       naturality X Y f := by
         ext x
         have := s.w (Quiver.Hom.op (CategoryOfElements.homMk (P.elementsMk X x)
@@ -303,7 +303,9 @@ def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type (max w v₁)) :
     simp [uliftYoneda]
   uniq s m hm := by
     ext X x
-    dsimp at hm ⊢
+    simp only [functorToRepresentables_obj, coconeOfRepresentable_pt, Functor.const_obj_obj,
+      coconeOfRepresentable_ι_app, Functor.leftOp_obj, CategoryOfElements.π_obj, op_unop,
+      TypeCat.Fun.as_apply, hom_ofHom, TypeCat.Fun.mk_apply] at hm ⊢
     rw [← hm, uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
 
 variable {A : C ⥤ ℰ}

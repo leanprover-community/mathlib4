@@ -299,8 +299,8 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
       · intro T f g
         ext x
         dsimp
-        simp only [Set.mem_range, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
-          Equiv.ofInjective_symm_apply, dite_eq_right_iff, forall_exists_index]
+        simp only [Set.mem_range, Equiv.ofInjective_symm_apply, dite_eq_right_iff,
+          forall_exists_index]
         intro y e
         have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
         rw [disjoint_iff.mp h₃.1] at this
@@ -308,6 +308,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
       · rintro T _ _ m rfl rfl
         ext x
         dsimp
+        simp only [Set.mem_range, TypeCat.Fun.as_apply, TypeCat.Fun.mk_apply]
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 
 /-- Any monomorphism in `Type` is a coproduct injection. -/
@@ -326,9 +327,9 @@ def coproductColimitCocone {J : Type v} (F : J → Type (max v u)) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
     { pt := (Σ j, F j)
-      ι := Discrete.natTrans (fun ⟨j⟩ => TypeCat.ofHom (fun x => ⟨j, x)⟩) }
+      ι := Discrete.natTrans (fun ⟨j⟩ => TypeCat.ofHom fun x => ⟨j, x⟩) }
   isColimit :=
-    { desc := fun s => TypeCat.ofHom (fun x => s.ι.app ⟨x.1) x.2⟩
+    { desc := fun s => TypeCat.ofHom fun x => s.ι.app ⟨x.1⟩ x.2
       uniq := fun s m w => by
         ext ⟨j, x⟩
         exact ConcreteCategory.congr_hom (w ⟨j⟩) x }
@@ -340,12 +341,12 @@ noncomputable def coproductIso {J : Type v} (F : J → Type (max v u)) :
 
 @[elementwise (attr := simp)]
 theorem coproductIso_ι_comp_hom {J : Type v} (F : J → Type (max v u)) (j : J) :
-    Sigma.ι F j ≫ (coproductIso F).hom = TypeCat.ofHom (fun x => ⟨j, x)⟩ :=
+    Sigma.ι F j ≫ (coproductIso F).hom = TypeCat.ofHom fun x => ⟨j, x⟩ :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 
 @[elementwise (attr := simp)]
 theorem coproductIso_mk_comp_inv {J : Type v} (F : J → Type (max v u)) (j : J) :
-    TypeCat.ofHom (fun x => ⟨j, x)⟩ ≫ (coproductIso F).inv = Sigma.ι F j :=
+    TypeCat.ofHom (fun x => ⟨j, x⟩) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
 
 end CategoryTheory.Limits.Types

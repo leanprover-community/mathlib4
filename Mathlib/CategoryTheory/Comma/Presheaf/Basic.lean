@@ -541,7 +541,7 @@ lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f 
     apply Quiver.Hom.unop_inj
     simp
   simp only [OverArrows.map₂_val, yonedaCollectionPresheaf_obj, yonedaCollectionPresheaf_map,
-    Quiver.Hom.unop_op, TypeCat.ofHom_hom, TypeCat.Fun.mk_apply, YonedaCollection.map₂_snd,
+    Quiver.Hom.unop_op, TypeCat.hom_ofHom, TypeCat.Fun.mk_apply, YonedaCollection.map₂_snd,
     Functor.map_comp, counitForward_val_snd, op_unop, comp_apply, eqToHom_map_comp_apply]
   erw [map_mkPrecomp_eqToHom (h := by simp)]
   simp [this]

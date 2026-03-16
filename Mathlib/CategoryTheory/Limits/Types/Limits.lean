@@ -43,7 +43,8 @@ theorem isLimit_iff (c : Cone F) :
   refine ⟨fun ⟨t⟩ s hs ↦ ?_, fun h ↦ ⟨?_⟩⟩
   · let cs := coneOfSection hs
     exact ⟨t.lift cs ⟨⟩, fun j ↦ congr_hom (t.fac cs j) ⟨⟩,
-      fun x hx ↦ congr_hom (t.uniq cs (TypeCat.ofHom (fun _ ↦ x)) fun j ↦ by ext; exact hx j) ⟨⟩⟩
+      fun x hx ↦ congr_hom (CC := fun X ↦ X)
+        (t.uniq cs (TypeCat.ofHom (fun _ ↦ x)) fun j ↦ by ext; exact hx j) ⟨⟩⟩
   · have := fun c y ↦ h _ (sectionOfCone c y).2
     choose x hx using fun c y ↦ h _ (sectionOfCone c y).2
     exact ⟨fun d ↦ TypeCat.ofHom (x d), fun c j ↦ by ext y; exact (hx c y).1 j,
@@ -118,9 +119,9 @@ lemma limitCone_pt_ext {x y : (limitCone F).pt}
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
 noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) where
-  lift s := TypeCat.ofHom ⟨fun v ↦ equivShrink F.sections
+  lift s := TypeCat.ofHom fun v ↦ equivShrink F.sections
     { val := fun j => s.π.app j v
-      property := fun f => congr_hom (Cone.w s f) _ }⟩
+      property := fun f => congr_hom (Cone.w s f) _ }
   uniq := fun _ _ w => by
     ext x j
     simpa using congr_hom (w j) x
@@ -149,9 +150,9 @@ noncomputable def limitCone (F : J ⥤ Type (max v u)) : Cone F where
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
 noncomputable def limitConeIsLimit (F : J ⥤ Type (max v u)) : IsLimit (limitCone F) where
-  lift s := TypeCat.ofHom ⟨fun v ↦
+  lift s := TypeCat.ofHom fun v ↦
     { val := fun j => s.π.app j v
-      property := fun f => congr_hom (Cone.w s f) _ }⟩
+      property := fun f => congr_hom (Cone.w s f) _ }
   uniq := fun _ _ w => by
     ext x
     apply Subtype.ext

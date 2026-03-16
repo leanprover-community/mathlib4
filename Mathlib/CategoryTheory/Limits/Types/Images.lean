@@ -75,9 +75,9 @@ set_option backward.isDefEq.respectTransparency false in
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
-      (TypeCat.ofHom ⟨fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
+      (TypeCat.ofHom (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
         rw [dsimp% (elementwise_of% st.w)]
-        rw [Classical.choose_spec x.2]⟩⟩⟩) rfl
+        rw [Classical.choose_spec x.2]⟩⟩)) rfl
 
 variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
   (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))

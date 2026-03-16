@@ -79,11 +79,11 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
     limit (F ⋙ coyoneda.obj (op X)) ≅ ((const J).obj X ⟶ F) where
-  hom := TypeCat.ofHom ⟨fun a ↦ {
+  hom := TypeCat.ofHom fun a ↦ {
     app j := limit.π (F ⋙ coyoneda.obj (op X)) j a
-    naturality _ _ _ := by simpa using (limit.w_apply _ _ _).symm }⟩
-  inv := TypeCat.ofHom ⟨fun t ↦ limit.lift _ (Types.coneOfSection (s := t.app) <| by
-    simp [Functor.sections, ← t.naturality]) ⟨⟩⟩
+    naturality _ _ _ := by simpa using (limit.w_apply _ _ _).symm }
+  inv := TypeCat.ofHom fun t ↦ limit.lift _ (Types.coneOfSection (s := t.app) <| by
+    simp [Functor.sections, ← t.naturality]) ⟨⟩
 
 attribute [local simp←] comp_apply in
 set_option backward.isDefEq.respectTransparency false in
@@ -102,11 +102,11 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
     limit (F.op ⋙ yoneda.obj X) ≅ (F ⟶ (const J).obj X) where
-  hom := TypeCat.ofHom ⟨fun a ↦ {
+  hom := TypeCat.ofHom fun a ↦ {
     app j := limit.π (F.op ⋙ yoneda.obj X) ⟨j⟩ a
-    naturality _ _ f := by simpa using (limit.w_apply (F.op ⋙ yoneda.obj X) f.op a) }⟩
-  inv := TypeCat.ofHom ⟨fun t ↦ limit.lift _ (Types.coneOfSection (s := fun j ↦ t.app j.unop) <| by
-    simp [Functor.sections]) ⟨⟩⟩
+    naturality _ _ f := by simpa using (limit.w_apply (F.op ⋙ yoneda.obj X) f.op a) }
+  inv := TypeCat.ofHom fun t ↦ limit.lift _ (Types.coneOfSection (s := fun j ↦ t.app j.unop) <| by
+    simp [Functor.sections]) ⟨⟩
 
 attribute [local simp←] comp_apply in
 set_option backward.isDefEq.respectTransparency false in

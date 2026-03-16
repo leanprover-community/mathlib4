@@ -190,8 +190,7 @@ instance π_epi : Epi D.π := by
 
 end
 
-universe w in
-theorem types_π_surjective (D : GlueData (Type w)) : Function.Surjective D.π :=
+theorem types_π_surjective (D : GlueData Type*) : Function.Surjective D.π :=
   (epi_iff_surjective _).mp inferInstance
 
 theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
@@ -199,14 +198,12 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ D.diagram]
   rcases D.types_π_surjective x with ⟨x', rfl⟩
-  --have := colimit.isoColimitCocone (Types.coproductColimitCocone _)
-  rw [← show (colimit.isoColimitCocone (Types.coproductColimitCocone.{v, v} _)).inv _ = x' from
-      ConcreteCategory.congr_hom
-        (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
+  rw [← dsimp% ConcreteCategory.congr_hom
+    (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
   rcases (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
-  exact ⟨i, y, by
-    simp
-    rfl ⟩
+  refine ⟨i, y, ?_⟩
+  simp
+  rfl
 
 variable (F : C ⥤ C')
 

@@ -165,11 +165,11 @@ theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), Func
 @[simps obj map]
 def toPreimages : J ⥤ Type v where
   obj j := (⋂ f : j ⟶ i, F.map f ⁻¹' s)
-  map g := TypeCat.ofHom ⟨MapsTo.restrict (F.map g) _ _ fun x h => by
+  map g := TypeCat.ofHom (MapsTo.restrict (F.map g) _ _ fun x h => by
     rw [mem_iInter] at h ⊢
     intro f
     rw [← mem_preimage, preimage_preimage, mem_preimage]
-    convert h (g ≫ f); rw [F.map_comp]; rfl⟩
+    convert h (g ≫ f); rw [F.map_comp]; rfl)
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
   fun _ => Subtype.finite

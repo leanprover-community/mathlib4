@@ -49,10 +49,10 @@ the diagram whose limit gives the morphism space between two objects of the limi
 def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : (limit (F ⋙ Cat.objects.{v, v}) :)) :
     J ⥤ Type v where
   obj j := limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
-  map f := TypeCat.ofHom ⟨fun g ↦ by
+  map f := TypeCat.ofHom fun g ↦ by
     refine eqToHom ?_ ≫ (F.map f).toFunctor.map g ≫ eqToHom ?_
     · exact (congr_hom (limit.w (F ⋙ Cat.objects) f) X).symm
-    · exact congr_hom (limit.w (F ⋙ Cat.objects) f) Y⟩
+    · exact congr_hom (limit.w (F ⋙ Cat.objects) f) Y
   map_id X := by
     ext f
     letI : Category (objects.obj (F.obj X)) := (inferInstance : Category (F.obj X))

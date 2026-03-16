@@ -96,9 +96,9 @@ instance monoCoprodType : MonoCoprod (Type u) :=
     refine ⟨BinaryCofan.mk (TypeCat.ofHom ((Sum.inl : A → A ⊕ B)))
       (TypeCat.ofHom ((Sum.inr : B → A ⊕ B))), ?_, ?_⟩
     · exact BinaryCofan.IsColimit.mk _
-        (fun f₁ f₂ => TypeCat.ofHom ⟨fun x => by
+        (fun f₁ f₂ => TypeCat.ofHom fun x => by
           rcases x with x | x
-          exacts [f₁ x, f₂ x]⟩)
+          exacts [f₁ x, f₂ x])
         (fun f₁ f₂ => by rfl)
         (fun f₁ f₂ => by rfl)
         (fun f₁ f₂ m h₁ h₂ => by

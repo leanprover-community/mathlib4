@@ -70,11 +70,11 @@ def cocone : PushoutCocone f g := PushoutCocone.mk _ _ (condition f g)
 
 /-- The cocone `cocone f g` is colimit. -/
 def isColimitCocone : IsColimit (cocone f g) :=
-  PushoutCocone.IsColimit.mk _ (fun s => TypeCat.ofHom ⟨Quot.lift (fun x => match x with
+  PushoutCocone.IsColimit.mk _ (fun s => TypeCat.ofHom (Quot.lift (fun x => match x with
       | Sum.inl x₁ => s.inl x₁
       | Sum.inr x₂ => s.inr x₂) (by
     rintro _ _ ⟨t⟩
-    exact ConcreteCategory.congr_hom s.condition t)⟩) (fun _ => rfl) (fun _ => rfl)
+    exact ConcreteCategory.congr_hom s.condition t))) (fun _ => rfl) (fun _ => rfl)
       (fun s m h₁ h₂ => by
       ext ⟨x₁ | x₂⟩
       · exact ConcreteCategory.congr_hom h₁ x₁

@@ -47,7 +47,7 @@ structure HomObj (A : C ⥤ Type w) where
 bijection with `F ⊗ A ⟶ G`. -/
 @[simps]
 def homObjEquiv (F G A : C ⥤ Type w) : (HomObj F G A) ≃ (F ⊗ A ⟶ G) where
-  toFun a := ⟨fun X ↦ TypeCat.ofHom (fun ⟨x, y) ↦ a.app X y x⟩, fun X Y f ↦ by
+  toFun a := ⟨fun X ↦ TypeCat.ofHom fun ⟨x, y⟩ ↦ a.app X y x, fun X Y f ↦ by
     ext ⟨x, y⟩
     simpa using ConcreteCategory.congr_hom (a.naturality f y) x⟩
   invFun a := ⟨fun X y ↦ TypeCat.ofHom (fun x ↦ a.app X (x, y)), fun φ y ↦ by
@@ -92,12 +92,12 @@ end HomObj
 @[simps obj map]
 def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type (max w v' u) where
   obj A := HomObj F G A.unop
-  map {A A'} f := TypeCat.ofHom ⟨fun x ↦
+  map {A A'} f := TypeCat.ofHom fun x ↦
     { app := fun X a ↦ x.app X (f.unop.app _ a)
       naturality := fun {X Y} φ a ↦ by
         rw [← HomObj.naturality]
         congr 2
-        exact ConcreteCategory.congr_hom (f.unop.naturality φ) a }⟩
+        exact ConcreteCategory.congr_hom (f.unop.naturality φ) a }
 
 /-- Composition of `homObjFunctor` with the co-Yoneda embedding, i.e. Hom(F ⊗ coyoneda(-), G).
 When `F G : C ⥤ Type max v' v u`, this is the internal hom of `F` and `G`: see

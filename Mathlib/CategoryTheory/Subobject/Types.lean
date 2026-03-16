@@ -51,7 +51,7 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
   inverse :=
     { obj := fun s => MonoOver.mk <| TypeCat.ofHom ((Subtype.val : s → α))
       map := fun {s t} b => MonoOver.homMk (TypeCat.ofHom
-        ⟨fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩⟩) }
+        fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
   unitIso :=
     NatIso.ofComponents fun f =>
       MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso

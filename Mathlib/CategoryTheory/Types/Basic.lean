@@ -49,6 +49,8 @@ instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe f x := f.as x
   coe_injective' _ := by aesop
 
+initialize_simps_projections Fun (as → apply)
+
 def Fun.mk {X Y : Type*} (f : X → Y) : Fun X Y where
   as := f
 
@@ -167,10 +169,10 @@ lemma ofHom_eq {X Y : Type u} (f : X ⟶ Y) : ofHom f = f :=
   rfl
 
 @[simp]
-lemma ofHom_hom {X Y : Type u} (f : X → Y) : Hom.hom (ofHom f) = Fun.mk f := rfl
+lemma hom_ofHom {X Y : Type u} (f : X → Y) : Hom.hom (ofHom f) = Fun.mk f := rfl
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
+lemma ofHom_hom {X Y : Type u} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_apply {X Y : Type u} (f : X → Y) (x : X) :
@@ -459,24 +461,17 @@ open CategoryTheory
 variable {X Y : Type u}
 
 /-- Any isomorphism between types gives an equivalence. -/
+@[simps]
 def toEquiv (i : X ≅ Y) : X ≃ Y where
   toFun := i.hom
   invFun := i.inv
   left_inv x := by simp
   right_inv y := by simp
 
-@[simp]
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
   rfl
 
-theorem toEquiv_fun_apply (i : X ≅ Y) (x : X) : i.toEquiv x = i.hom x :=
-  rfl
-
-@[simp]
 theorem toEquiv_symm_fun (i : X ≅ Y) : (i.toEquiv.symm :) = (ConcreteCategory.hom i.inv).as :=
-  rfl
-
-theorem toEquiv_symm_fun_apply (i : X ≅ Y) (y : Y) : i.toEquiv.symm y = i.inv y :=
   rfl
 
 @[simp]

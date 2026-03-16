@@ -111,7 +111,7 @@ variable (X)
 
 /-- If `X : SSet`, this is the isomorphism of simplicial sets
 from `⊤ : X.Subcomplex` to `X`. -/
-@[simps! inv_app_hom_coe]
+@[simps! inv_app_hom_apply]
 def topIso : ((⊤ : X.Subcomplex) : SSet) ≅ X :=
   NatIso.ofComponents (fun n ↦ (Equiv.Set.univ (X.obj n)).toIso)
 
@@ -128,7 +128,7 @@ instance : Subsingleton (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
 
 instance : Unique (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
   default :=
-    { app _ := TypeCat.ofHom (fun ⟨_, h) ↦ by tauto⟩
+    { app _ := TypeCat.ofHom fun ⟨_, h⟩ ↦ by tauto
       naturality _ _ _ := by ext ⟨_, h⟩; tauto }
   uniq := by subsingleton
 

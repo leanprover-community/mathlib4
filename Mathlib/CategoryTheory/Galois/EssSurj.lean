@@ -187,10 +187,7 @@ private def coconeQuotientDiagDesc
         s.ι.naturality m
       conv_rhs => rw [← h1]
       have h2 : (J'.map m).hom (u.inv.hom ⟦τ⟧) = u.inv.hom ⟦σ⟧ := by
-        simp only [comp_obj, quotientDiag_obj, Functor.comp_map, quotientDiag_map, J',
-          functorToAction_map_quotientToEndObjectHom V h u m]
-        change (u.inv ≫ u.hom ≫ _ ≫ u.inv).hom ⟦τ⟧ = u.inv.hom ⟦σ⟧
-        simp [m]
+        simp [J', functorToAction_map_quotientToEndObjectHom V h u m, ← comp_apply, m]
       simp [← h2, J'])
   comm g := by
     ext (x : Aut F ⧸ V.toSubgroup)

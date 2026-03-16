@@ -310,7 +310,7 @@ lemma associator_inv_unit_unit (x y z : C) :
   simp only [whiskerRight_tensor, id_whiskerRight, Category.id_comp, Iso.inv_hom_id] at this
   simp only [this]
   dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
-  erw [id_apply, TypeCat.Fun.mk_apply] -- regression
+  erw [id_apply] -- regression
   simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -560,22 +560,12 @@ lemma leftUnitor_hom_unit_app (y : C) :
         ((leftUnitorCorepresentingIso F).symm.hom.app F) (𝟙 _)
   dsimp [leftUnitor, Coyoneda.fullyFaithful, corepresentableByLeft,
     leftUnitorCorepresentingIso, Functor.CorepresentableBy.ofIso,
-    Functor.corepresentableByEquiv, Iso.toEquiv, Equiv.toIso] at this ⊢
+    Functor.corepresentableByEquiv] at this ⊢
   simp only [whiskerLeft_id, Category.comp_id] at this
-  erw [this]
-  simp only [FullyFaithful.homEquiv, whiskeringLeft_obj_obj, Equivalence.fullyFaithfulFunctor,
-    prod.leftUnitorEquivalence, Equivalence.congrLeft, comp_obj, NatIso.ofComponents_hom_app,
-    id_obj, Iso.symm_hom, whiskeringLeft_obj_map, NatIso.ofComponents_inv_app, Iso.symm_inv,
-    Equiv.coe_fn_symm_mk, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
-    NatTrans.comp_app, externalProductBifunctor_obj_obj, const_obj_obj, prod.leftUnitor_obj,
-    prod.leftInverseUnitor_obj, prod_obj, tensor_obj, Equivalence.funInvIdAssoc_inv_app,
-    Equivalence.Equivalence_mk'_unit, Iso.refl_hom, NatTrans.id_app, prod_id,
-    externalProductBifunctor_obj_map, Discrete.functor_map_id, id_whiskerRight, map_id,
-    whiskerLeft_id, Category.comp_id, whiskerLeft_app, Equivalence.funInvIdAssoc_hom_app,
-    Equivalence.Equivalence_mk'_unitInv, Iso.refl_inv, Functor.comp_map, prod_map, Functor.id_map,
-    tensor_map, tensorHom_id, Category.id_comp]
-  erw [id_apply, TypeCat.Fun.mk_apply] -- regression
-  simp
+  simp only [Category.comp_id, this]
+  simp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
+    Functor.FullyFaithful.homEquiv]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
@@ -585,10 +575,10 @@ lemma leftUnitor_inv_app (x : C) :
       (U ⊛ F).map (λ_ x).hom := by
   dsimp [leftUnitor, Coyoneda.fullyFaithful, corepresentableByLeft,
     leftUnitorCorepresentingIso, Functor.CorepresentableBy.ofIso,
-    Functor.corepresentableByEquiv, Iso.toEquiv, Equiv.toIso]
+    Functor.corepresentableByEquiv]
   dsimp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
-  erw [id_apply, TypeCat.Fun.mk_apply] -- regression
+  erw [id_apply] -- regression
   simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -622,22 +612,13 @@ lemma rightUnitor_hom_unit_app (x : C) :
         ((rightUnitorCorepresentingIso F).symm.hom.app F) (𝟙 _)
   dsimp [rightUnitor, Coyoneda.fullyFaithful, corepresentableByRight,
     rightUnitorCorepresentingIso, Functor.CorepresentableBy.ofIso,
-    Functor.corepresentableByEquiv, Iso.toEquiv, Equiv.toIso] at this ⊢
-  simp only [whiskerRight_id, Category.id_comp, Iso.hom_inv_id, comp_apply,
-    ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply] at this
-  erw [this]
-  simp only [FullyFaithful.homEquiv, whiskeringLeft_obj_obj, Equivalence.fullyFaithfulFunctor,
-    prod.rightUnitorEquivalence, Equivalence.congrLeft, comp_obj, NatIso.ofComponents_hom_app,
-    id_obj, Iso.symm_hom, whiskeringLeft_obj_map, NatIso.ofComponents_inv_app, Iso.symm_inv,
-    Equiv.coe_fn_symm_mk, NatTrans.comp_app, externalProductBifunctor_obj_obj, const_obj_obj,
-    prod.rightUnitor_obj, prod.rightInverseUnitor_obj, prod_obj, tensor_obj,
-    Equivalence.funInvIdAssoc_inv_app, Equivalence.Equivalence_mk'_unit, Iso.refl_hom,
-    NatTrans.id_app, prod_id, externalProductBifunctor_obj_map, map_id, whiskerRight_id,
-    Category.id_comp, Iso.hom_inv_id, Discrete.functor_map_id, whiskerLeft_id, Category.comp_id,
-    whiskerLeft_app, Equivalence.funInvIdAssoc_hom_app, Equivalence.Equivalence_mk'_unitInv,
-    Iso.refl_inv, Functor.comp_map, prod_map, Functor.id_map, tensor_map, tensorHom_id]
-  erw [id_apply, TypeCat.Fun.mk_apply] -- regression
-  simp
+    Functor.corepresentableByEquiv] at this ⊢
+  simp only [MonoidalCategory.whiskerRight_id, Category.id_comp, Iso.hom_inv_id,
+    Category.comp_id] at this
+  simp only [Category.comp_id, this]
+  simp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
+    Functor.FullyFaithful.homEquiv]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
@@ -650,7 +631,7 @@ lemma rightUnitor_inv_app (x : C) :
     Functor.corepresentableByEquiv, Iso.toEquiv, Equiv.toIso]
   dsimp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
     Functor.FullyFaithful.homEquiv]
-  erw [id_apply, TypeCat.Fun.mk_apply] -- regression
+  erw [id_apply] -- regression
   simp
 
 set_option backward.isDefEq.respectTransparency false in

@@ -72,8 +72,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
 def firstObjEqFamily : FirstObj P R ≅ (R.FamilyOfElements P) where
-  hom := TypeCat.ofHom ⟨fun t _ _ hf ↦
-    Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t⟩
+  hom := TypeCat.ofHom fun t _ _ hf ↦
+    Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
   inv := Pi.lift fun f => TypeCat.ofHom (fun x => x _ f.2.2)
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
@@ -155,7 +155,7 @@ theorem equalizer_sheaf_condition :
   rw [Types.type_equalizer_iff_unique,
     ← Equiv.forall_congr_right (firstObjEqFamily P (S : Presieve X)).toEquiv.symm]
   simp_rw [← compatible_iff]
-  conv => enter [2, a, 1, 1, 2]; rw [(firstObjEqFamily P S.arrows).toEquiv_symm_fun_apply]
+  conv => enter [2, a, 1, 1, 2]; rw [(firstObjEqFamily P S.arrows).toEquiv_symm_apply]
   simp only [Iso.inv_hom_id_apply]
   apply forall₂_congr
   intro x _
@@ -242,7 +242,7 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
   rw [Types.type_equalizer_iff_unique,
     ← Equiv.forall_congr_right (firstObjEqFamily P R).toEquiv.symm]
   simp_rw [← compatible_iff] --, ← Iso.toEquiv_fun_apply, Equiv.apply_symm_apply]
-  conv => enter [2, a, 1, 1]; rw [← Iso.toEquiv_fun_apply]
+  conv => enter [2, a, 1, 1]; rw [← Iso.toEquiv_apply]
   simp_rw [Equiv.apply_symm_apply]
   apply forall₂_congr
   intro x _
@@ -361,7 +361,7 @@ theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
   simp only [FirstObj]
   rw [← Equiv.forall_congr_right ((equivShrink _).trans (Types.Small.productIso _).toEquiv.symm)]
   simp_rw [← compatible_iff_of_small]
-  conv => enter [2, a, 1, 3, 2]; rw [← Iso.toEquiv_fun_apply]
+  conv => enter [2, a, 1, 3, 2]; rw [← Iso.toEquiv_apply]
   simp_rw [Equiv.trans_apply, Equiv.apply_symm_apply,
     Equiv.symm_apply_apply]
   apply forall₂_congr
