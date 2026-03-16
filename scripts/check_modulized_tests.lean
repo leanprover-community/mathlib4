@@ -5,7 +5,8 @@ public import Lean
 open Lean System Parser.Module
 
 public def main : IO UInt32 := do
-  let pathStrs ← FilePath.walkDir "MathlibTest"
+  let pathStrs :=
+    (← FilePath.walkDir "MathlibTest").qsort (lt := fun p₁ p₂ ↦ p₁.toString < p₂.toString)
   for pathStr in pathStrs do
     unless !(← pathStr.isDir) do continue
     let mut text ← IO.FS.readFile pathStr
