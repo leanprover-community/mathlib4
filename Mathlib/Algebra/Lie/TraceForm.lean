@@ -427,7 +427,7 @@ lemma traceForm_eq_sum_finrank_nsmul :
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
-  simp
+  simp [-LinearMap.coe_smul]
 
 /-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
 non-zero weights. -/
