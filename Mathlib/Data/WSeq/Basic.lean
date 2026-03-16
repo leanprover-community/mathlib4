@@ -578,7 +578,6 @@ theorem toList'_think (l : List α) (s : WSeq α) :
         | some (some a, s') => Sum.inr (a::l, s')) (l, s)).think :=
   destruct_eq_think <| by simp [think]
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem toList'_map (l : List α) (s : WSeq α) :
     Computation.corec (fun ⟨l, s⟩ =>
       match Seq.destruct s with
@@ -601,7 +600,8 @@ theorem toList'_map (l : List α) (s : WSeq α) :
               | some (some a, s') => Sum.inr (a::l, s')) (l', s)))
       ?_ ⟨[], s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨l', s, h⟩; rw [h.left, h.right]
-  induction s using WSeq.recOn <;> simp [nil, cons, think]
+  induction s using WSeq.recOn
+  case nil => simp
   case cons a s => refine ⟨a :: l', s, ?_, ?_⟩ <;> simp
   case think s => refine ⟨l', s, ?_, ?_⟩ <;> simp
 
