@@ -55,7 +55,7 @@ instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
   ⟨fun x hx ↦
     let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
     let : Module ℝ E := .restrictScalars ℝ 𝕜 E
-    have : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower ℝ 𝕜 E
+    have : IsScalarTower ℝ 𝕜 E := .restrictScalars ℝ 𝕜 E
     have : LocallyConvexSpace ℝ E := NormedSpace.toLocallyConvexSpace' 𝕜
     RCLike.geometric_hahn_banach_point_point hx |>.imp fun f hf hf' ↦ by simp [hf'] at hf⟩
 

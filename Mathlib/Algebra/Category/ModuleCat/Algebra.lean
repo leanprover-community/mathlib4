@@ -51,7 +51,7 @@ def moduleOfAlgebraModule (M : ModuleCat.{v} A) : Module k M :=
 attribute [scoped instance] ModuleCat.moduleOfAlgebraModule
 
 theorem isScalarTower_of_algebra_moduleCat (M : ModuleCat.{v} A) : IsScalarTower k A M :=
-  RestrictScalars.isScalarTower k A M
+  IsScalarTower.restrictScalars k A M
 
 attribute [scoped instance] ModuleCat.isScalarTower_of_algebra_moduleCat
 

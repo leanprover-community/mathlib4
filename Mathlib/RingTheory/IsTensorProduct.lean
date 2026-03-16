@@ -523,7 +523,7 @@ lemma IsBaseChange.of_comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
   apply IsBaseChange.of_lift_unique
   intro Q _ _ _ _ r
   letI : Module R Q := .restrictScalars R S Q
-  haveI : IsScalarTower R S Q := RestrictScalars.isScalarTower R S Q
+  haveI : IsScalarTower R S Q := .restrictScalars R S Q
   haveI : IsScalarTower R T Q := IsScalarTower.of_algebraMap_smul fun r x ↦ by
     simp [IsScalarTower.algebraMap_apply R S T]
   let r' : M →ₗ[R] Q := r ∘ₗ f

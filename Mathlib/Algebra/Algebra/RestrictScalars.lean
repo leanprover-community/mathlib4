@@ -26,7 +26,7 @@ typeclass instead.
   but sometimes it is helpful to avoid using this fact, to keep instances from leaking).
 * `RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A`: the ring equivalence
   between the restricted and original space when the module is an algebra.
-* `Module.restrictScalars R S M`, `Algebra.restrictScalars R S A`: non-instance definitons for
+* `Module.restrictScalars R S M`, `Algebra.restrictScalars R S A`: non-instance definitions for
   `Module R M` and `Algebra R A`.
 
 ## See also
@@ -120,12 +120,16 @@ The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTowe
 instance RestrictScalars.module [Module S M] : Module R (RestrictScalars R S M) :=
   Module.restrictScalars R S M
 
+/-- `Module.restrictScalars` forms a scalar tower. -/
+theorem IsScalarTower.restrictScalars [Module S M] :
+    letI := Module.restrictScalars R S M
+    IsScalarTower R S M :=
+  IsScalarTower.of_compHom R S M
+
 /-- This instance is only relevant when `RestrictScalars.moduleOrig` is available as an instance.
 -/
 instance RestrictScalars.isScalarTower [Module S M] : IsScalarTower R S (RestrictScalars R S M) :=
-  ⟨fun r S M ↦ by
-    rw [Algebra.smul_def, mul_smul]
-    rfl⟩
+   IsScalarTower.restrictScalars R S M
 
 end
 
@@ -219,10 +223,8 @@ def Algebra.restrictScalars : Algebra R A :=
   Algebra.compHom A (algebraMap R S)
 
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
-instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) where
-  algebraMap := (algebraMap S A).comp (algebraMap R S)
-  commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _
-  smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _
+instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) :=
+  Algebra.restrictScalars R S A
 
 @[simp]
 theorem RestrictScalars.ringEquiv_algebraMap (r : R) :
