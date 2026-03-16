@@ -9,6 +9,8 @@ public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
 public meta import Mathlib.Tactic.NormNum.Result
 
+meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+
 /-!
 # `ring` tactic
 
@@ -170,10 +172,6 @@ def ExSum.eq
   | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
   | _, _ => false
 end
-
--- TODO: this should be somewhere else
-private local instance : Ord Rat where
-  compare a b := compareOfLessAndEq a b
 
 mutual
 /--
