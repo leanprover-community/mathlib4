@@ -486,8 +486,7 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
     show ∀ i, ∃ s, t i ⊆ s ∧ MeasurableSet s ∧ f.outer s ≤ f.length (t i) + ofReal (ε' i) by
       intro i
       rcases isEmpty_or_nonempty R with hR | hR
-      · refine ⟨∅, ?_, MeasurableSet.empty, by simp⟩
-        simpa using eq_empty_of_isEmpty (t i)
+      · exact ⟨∅, by simp, MeasurableSet.empty, by simp⟩
       have hl :=
         ENNReal.lt_add_right ((ENNReal.le_tsum i).trans_lt h).ne (ENNReal.coe_pos.2 (ε'0 i)).ne'
       conv at hl =>
