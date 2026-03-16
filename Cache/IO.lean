@@ -238,19 +238,6 @@ def validateCurl : IO Bool := do
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
 
-def Version := Nat × Nat × Nat
-  deriving Inhabited, DecidableEq
-
-instance : Ord Version := let _ := @lexOrd; lexOrd
-instance : LE Version := leOfOrd
-
-def parseVersion (s : String) : Option Version := do
-  let [maj, min, patch] := s.trimAscii.toString.splitOn "." | none
-  some (← String.toNat? maj, ← String.toNat? min, ← String.toNat? patch)
-
-def validateLeanTar : IO Unit := do
-  discard <| getLeanTar
-
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
   (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
