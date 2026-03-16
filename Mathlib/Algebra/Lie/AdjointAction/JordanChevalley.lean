@@ -30,8 +30,7 @@ section Field
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
-/-- If `g` commutes with `x ≠ 0` and `ad(g) = p(ad(x))`, then `p(0) = 0`. This applies to both
-the semisimple and nilpotent parts of a JC decomposition lifted through `ad`. -/
+/-- If `g` commutes with `x ≠ 0` and `ad(g) = p(ad(x))`, then `p(0) = 0`. -/
 theorem LieAlgebra.eval_zero_of_aeval_ad_eq {x g : Module.End K V}
     (hx : x ≠ 0) (hc : Commute g x) {p : Polynomial K}
     (hp : LieAlgebra.ad K (Module.End K V) g =
