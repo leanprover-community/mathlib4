@@ -24,6 +24,8 @@ We define a `SemilatticeInf` with `OrderBot` instance on this, and define three 
 
 Moreover, we define
 * `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
+TODO: This should be also generalized to semilinear maps, but one has to definea new type where `R`
+acts on `E` normally while `R` acts on `F` through `σ`.
 
 Partially defined maps are currently used in `Mathlib` to prove the Hahn-Banach theorem
 and its variations. Namely, `LinearPMap.sSup` implies that every chain of `LinearPMap`s
@@ -34,10 +36,7 @@ They are also the basis for the theory of unbounded operators.
 
 @[expose] public section
 
--- universe u v w
-
-/-- A `LinearPMap σ E F` or `E →ₛₗ.[σ] F` is a semilinear map from a submodule of `E` to
-`F`. -/
+/-- A `LinearPMap σ E F` or `E →ₛₗ.[σ] F` is a (semi)linear map from a submodule of `E` to `F`. -/
 structure LinearPMap {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*)
     [AddCommGroup E] [Module R E] (F : Type*) [AddCommGroup F] [Module S F] where
   domain : Submodule R E
@@ -45,7 +44,8 @@ structure LinearPMap {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*
 
 @[inherit_doc] notation:25 E " →ₛₗ.[" σ:25 "] " F:0 => LinearPMap σ E F
 
-@[inherit_doc] notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap (RingHom.id R) E F
+/-- `E →ₗ.[R] F` is the abbreviation of `E →ₛₗ.[RingHom.id R] F`. -/
+notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap (RingHom.id R) E F
 
 variable {R S T : Type*} [Ring R] [Ring S] [Ring T] {σ : R →+* S} {τ : S →+* T} {E : Type*}
   [AddCommGroup E] [Module R E] {F : Type*} [AddCommGroup F] [Module S F] {G : Type*}
@@ -102,8 +102,7 @@ theorem dExt_iff {f g : E →ₛₗ.[σ] F} :
         exact mod_cast h⟩,
     fun ⟨deq, feq⟩ => dExt deq feq⟩
 
-theorem ext' {s : Submodule R E} {f g : s →ₛₗ[σ] F} (h : f = g) :
-    LinearPMap.mk s f = LinearPMap.mk s g :=
+theorem ext' {s : Submodule R E} {f g : s →ₛₗ[σ] F} (h : f = g) : mk s f = mk s g :=
   h ▸ rfl
 
 theorem map_add (f : E →ₛₗ.[σ] F) (x y : f.domain) : f (x + y) = f x + f y :=
@@ -119,13 +118,12 @@ theorem map_smul (f : E →ₛₗ.[σ] F) (c : R) (x : f.domain) : f (c • x) =
   f.toFun.map_smulₛₗ c x
 
 @[simp]
-theorem mk_apply (p : Submodule R E) (f : p →ₛₗ[σ] F) (x : p) : LinearPMap.mk p f x = f x :=
-  rfl
+theorem mk_apply (p : Submodule R E) (f : p →ₛₗ[σ] F) (x : p) : mk p f x = f x := rfl
 
 /-- The unique `LinearPMap` on `R ∙ x` that sends `x` to `y`. This version works for modules
 over rings, and requires a proof of `∀ c, c • x = 0 → c • y = 0`. -/
-noncomputable def mkSpanSingleton' (x : E) (y : F)
-    (H : ∀ c : R, c • x = 0 → σ c • y = 0) : E →ₛₗ.[σ] F where
+noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 → σ c • y = 0) :
+    E →ₛₗ.[σ] F where
   domain := R ∙ x
   toFun :=
     have H : ∀ c₁ c₂ : R, c₁ • x = c₂ • x → σ c₁ • y = σ c₂ • y := by
@@ -145,13 +143,13 @@ noncomputable def mkSpanSingleton' (x : E) (y : F)
         apply coe_smul }
 
 @[simp]
-theorem domain_mkSpanSingleton (x : E) (y : F)
-    (H : ∀ c : R, c • x = 0 → σ c • y = 0) : (mkSpanSingleton' x y H).domain = R ∙ x :=
+theorem domain_mkSpanSingleton (x : E) (y : F) (H : ∀ c : R, c • x = 0 → σ c • y = 0) :
+    (mkSpanSingleton' x y H).domain = R ∙ x :=
   rfl
 
 @[simp]
-theorem mkSpanSingleton'_apply (x : E) (y : F) (H : ∀ c : R, c • x = 0 → σ c • y = 0)
-    (c : R) (h) : mkSpanSingleton' x y H ⟨c • x, h⟩ = σ c • y := by
+theorem mkSpanSingleton'_apply (x : E) (y : F) (H : ∀ c : R, c • x = 0 → σ c • y = 0) (c : R) (h) :
+    mkSpanSingleton' x y H ⟨c • x, h⟩ = σ c • y := by
   dsimp [mkSpanSingleton']
   rw [← sub_eq_zero, ← sub_smul, ← RingHom.map_sub]
   apply H
@@ -184,14 +182,13 @@ theorem mkSpanSingleton_apply (K L : Type*) {E F : Type*} [DivisionRing K] [Divi
   LinearPMap.mkSpanSingleton'_apply_self _ _ _ _
 
 /-- Projection to the first coordinate as a `LinearPMap` -/
-protected def fst [Module R F] (p : Submodule R E) (p' : Submodule R F) :
-    E × F →ₗ.[R] E where
+protected def fst [Module R F] (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] E where
   domain := p.prod p'
   toFun := (LinearMap.fst R E F).comp (p.prod p').subtype
 
 @[simp]
-theorem fst_apply [Module R F] (p : Submodule R E) (p' : Submodule R F)
-    (x : p.prod p') : LinearPMap.fst p p' x = (x : E × F).1 :=
+theorem fst_apply [Module R F] (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
+    LinearPMap.fst p p' x = (x : E × F).1 :=
   rfl
 
 /-- Projection to the second coordinate as a `LinearPMap` -/
@@ -215,8 +212,8 @@ theorem exists_of_le {T S : E →ₛₗ.[σ] F} (h : T ≤ S) (x : T.domain) :
     ∃ y : S.domain, (x : E) = y ∧ T x = S y :=
   ⟨⟨x.1, h.1 x.2⟩, ⟨rfl, h.2 rfl⟩⟩
 
-theorem eq_of_le_of_domain_eq {f g : E →ₛₗ.[σ] F} (hle : f ≤ g)
-    (heq : f.domain = g.domain) : f = g :=
+theorem eq_of_le_of_domain_eq {f g : E →ₛₗ.[σ] F} (hle : f ≤ g) (heq : f.domain = g.domain) :
+    f = g :=
   dExt heq hle.2
 
 /-- Given two partial linear maps `f`, `g`, the set of points `x` such that
@@ -229,8 +226,8 @@ def eqLocus (f g : E →ₛₗ.[σ] F) : Submodule R E where
       simp_all [← AddMemClass.mk_add_mk, f.map_add, g.map_add]⟩
   smul_mem' c x := fun ⟨hfx, hgx, hx⟩ ↦
     ⟨smul_mem _ c hfx, smul_mem _ c hgx, by
-      have {f : E →ₛₗ.[σ] F} (hfx) : (⟨c • x, smul_mem _ c hfx⟩ : f.domain) = c • ⟨x, hfx⟩ :=
-        by simp
+      have {f : E →ₛₗ.[σ] F} (hfx) : (⟨c • x, smul_mem _ c hfx⟩ : f.domain) = c • ⟨x, hfx⟩ := by
+        simp
       rw [this hfx, this hgx, f.map_smul, g.map_smul, hx]⟩
 
 instance bot : Bot (E →ₛₗ.[σ] F) :=
@@ -721,9 +718,6 @@ theorem domRestrict_le {f : E →ₛₗ.[σ] F} {S : Submodule R E} : f.domRestr
 
 
 section Graph
-
--- TODO need to define a new instance `Module R (E × F)` using `σ`.
--- see also above when `E × F` appears.
 
 /-- The graph of a `LinearPMap` viewed as a submodule on `E × F`. -/
 def graph [Module R F] (f : E →ₗ.[R] F) : Submodule R (E × F) :=
