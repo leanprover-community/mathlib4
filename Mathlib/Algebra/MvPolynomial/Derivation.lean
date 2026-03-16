@@ -83,6 +83,7 @@ theorem derivation_ext {D₁ D₂ : Derivation R (MvPolynomial σ R) A} (h : ∀
 
 variable [IsScalarTower R (MvPolynomial σ R) A]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
     (∀ p q, D (p * q) = p • D q + q • D p) ↔ ∀ s i, D (monomial s 1 * X i) =
     (monomial s 1 : MvPolynomial σ R) • D (X i) + (X i : MvPolynomial σ R) • D (monomial s 1) := by

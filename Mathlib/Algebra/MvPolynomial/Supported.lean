@@ -42,8 +42,9 @@ noncomputable def supported (s : Set σ) : Subalgebra R (MvPolynomial σ R) :=
 
 open Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 theorem supported_eq_range_rename (s : Set σ) : supported R s = (rename ((↑) : s → σ)).range := by
-  rw [supported, Set.image_eq_range, adjoin_range_eq_range_aeval, rename]
+  rw [supported, Set.image_eq_range, adjoin_range_eq_range_aeval, rename_eq]
   congr
 
 /-- The isomorphism between the subalgebra of polynomials supported by `s` and
