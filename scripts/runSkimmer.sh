@@ -12,6 +12,10 @@ This script works by using a "side package" relative to the location of this scr
 
 BASH_MODULE_DOC
 
+# ---------------------------------------------
+# Config variables (specific to target package)
+# ---------------------------------------------
+
 # The directory in which the side-skimmer package will be created.
 # I.e., the package is expected to live in `side_pkg_dir/SideSkimmer/`.
 # `"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"` yields the absolute directory containing this script, no matter the invocation location.
@@ -29,6 +33,10 @@ relative_path='".." / ".."'
 # May use lake target syntax; may be the whole package or libraries or modules in the package.
 # May be a bash array `("tgt1" "tgt2" ...)`; will refactor each in turn.
 tgts=("Mathlib")
+
+# --------------------
+# End config variables
+# --------------------
 
 echo "Note: the functionality provided by this script is experimental and subject to change. This script will become unnecessary in the future."
 
