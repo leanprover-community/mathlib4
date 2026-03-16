@@ -519,7 +519,39 @@ theorem isDecompositionField_inf [MulSemiringAction Gal(L/F) B] [SMulDistribClas
   refine (isDecompositionField_iff _ _ _ _).mpr <| IsGaloisGroup.of_mulEquiv (hG := this) e ?_
   intro g x
   obtain ⟨g, rfl⟩ := Ideal.stabilizerMapOfLiesOver_surjective K L F P 𝓟F g
-  rw [MulEquiv.trans_apply, MulEquiv.trans_apply, QuotientGroup.liftEquiv_symm_apply_map,
+  rw [MulEquiv.trans_apply, MulEquiv.trans_apply, QuotientGroup.liftEquiv_symm_apply,
+    QuotientGroup.quotientInfEquivProdNormalQuotient_coe_apply, subgroup_smul_def,
+    QuotientGroup.subgroupOfEquivMapQuotient_coe_apply]
+  simp [Subtype.ext_iff, subgroup_smul_def, AlgEquiv.restrictNormalHom_apply]
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+Let `E` be the inertia field of `P` in `L/K` and let `F` be a subextension of `L/K`.
+Then, the inertia field of `𝓟F` in `F/K` is `E ⊓ F` where `𝓟F` is the prime of `F`
+below `P`.
+-/
+theorem isInertiaField_inf [IsIntegrallyClosed A] [Algebra A K] [IsFractionRing A K]
+    [Algebra A L] [Algebra.IsIntegral A B] [Algebra A 𝓞F] [IsScalarTower A 𝓞F B]
+    [IsScalarTower A K L] [IsScalarTower A B L]
+    [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
+    [hE : IsInertiaField K L P E] [IsFractionRing 𝓞F F] [MulSemiringAction Gal(F/K) 𝓞F]
+    [SMulDistribClass Gal(F/K) 𝓞F F] [P.IsMaximal] [IsGalois K F] (p : Ideal A) [P.LiesOver p] :
+    IsInertiaField K F 𝓟F (E ⊓ F : IntermediateField K L) := by
+  let H : Subgroup Gal(L/K) := inertia Gal(L/K) P ⊔ F.fixingSubgroup
+  have : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
+  have : IsGaloisGroup H ↥(E ⊓ F) L := by
+    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
+      fixingSubgroup_inf, (isInertiaField_iff_fixingSubgroup K L P).mp hE]
+  let e : inertia Gal(F/K) 𝓟F ≃* Subgroup.map (QuotientGroup.mk' F.fixingSubgroup) H :=
+      ((QuotientGroup.liftEquiv _ (Ideal.inertiaMapOfLiesOver_surjective K L F P 𝓟F p)
+        (by rw [Ideal.inertiaMapOfLiesOver_ker])).symm).trans
+      ((QuotientGroup.quotientInfEquivProdNormalQuotient (inertia Gal(L/K) P)
+        F.fixingSubgroup).trans (QuotientGroup.subgroupOfEquivMapQuotient _ _))
+  have := IsGaloisGroup.quotientMap Gal(L/K) K L F F.fixingSubgroup (E ⊓ F) H inf_le_right
+  refine (isInertiaField_iff _ _ _ _).mpr <| IsGaloisGroup.of_mulEquiv (hG := this) e ?_
+  intro g x
+  obtain ⟨g, rfl⟩ := Ideal.inertiaMapOfLiesOver_surjective K L F P 𝓟F p g
+  rw [MulEquiv.trans_apply, MulEquiv.trans_apply, QuotientGroup.liftEquiv_symm_apply,
     QuotientGroup.quotientInfEquivProdNormalQuotient_coe_apply, subgroup_smul_def,
     QuotientGroup.subgroupOfEquivMapQuotient_coe_apply]
   simp [Subtype.ext_iff, subgroup_smul_def, AlgEquiv.restrictNormalHom_apply]
