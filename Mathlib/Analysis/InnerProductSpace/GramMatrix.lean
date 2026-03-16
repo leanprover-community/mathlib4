@@ -117,9 +117,9 @@ theorem posDef_gram_iff_linearIndependent {v : n → E} :
   ⟨linearIndependent_of_posDef_gram, posDef_gram_of_linearIndependent⟩
 
 omit [Finite n] in
-theorem gram_eq_star_mul [Fintype n] (b : OrthonormalBasis n 𝕜 E) (v : n → E) :
+theorem gram_eq_conjTranspose_mul {ι : Type*} [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) (v : n → E) :
     letI m := of fun i j ↦ b.repr (v j) i
-    gram 𝕜 v = star m * m := by
+    gram 𝕜 v = m.conjTranspose * m := by
   ext i j
   simp [mul_apply, b.repr_apply_apply, b.sum_inner_mul_inner]
 
