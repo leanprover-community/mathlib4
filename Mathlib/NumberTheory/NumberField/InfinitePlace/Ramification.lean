@@ -644,7 +644,7 @@ end LiesOver
 
 section placesOver
 
-variable (v : InfinitePlace K) (w : InfinitePlace L) (L)
+variable (v : InfinitePlace K) (L)
 
 /-- The set of infinite places of `L` that lie above a given infinite place of `K`. -/
 def placesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 }
@@ -655,36 +655,37 @@ def unramifiedPlacesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 ∧ w
 /-- The set of infinite places of `L` that are ramified over a given infinite place of `K`. -/
 def ramifiedPlacesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 ∧ w.IsRamified K }
 
-variable {L}
+variable {L} {v} {w : InfinitePlace L}
 
-theorem mk_mem_unramifiedPlacesOver {φ : L →+* ℂ} {v : InfinitePlace K}
-    (h : φ ∈ unmixedEmbeddingsOver L (v.embedding)) : mk φ ∈ unramifiedPlacesOver L v :=
+theorem mk_mem_unramifiedPlacesOver {φ : L →+* ℂ} (h : φ ∈ unmixedEmbeddingsOver L (v.embedding)) :
+    mk φ ∈ unramifiedPlacesOver L v :=
   ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.comp_eq (mk φ).1 (mk v.embedding).1⟩,
     h.2.mk_isUnramified⟩
 
-theorem liesOver_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L} {v : InfinitePlace K}
-    (hw : w ∈ ramifiedPlacesOver L v) : ComplexEmbedding.LiesOver w.embedding v.embedding where
+theorem liesOver_embedding_of_mem_ramifiedPlacesOver (hw : w ∈ ramifiedPlacesOver L v) :
+    ComplexEmbedding.LiesOver w.embedding v.embedding where
   over := have := hw.1; hw.2.comap_embedding ▸ congrArg embedding (LiesOver.comap_eq w v)
 
-theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L}
-    {v : InfinitePlace K} (hw : w ∈ ramifiedPlacesOver L v) :
+theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver
+    (hw : w ∈ ramifiedPlacesOver L v) :
     ComplexEmbedding.LiesOver (conjugate w.embedding) v.embedding where
   over := have := hw.1; hw.2.comap_embedding_conjugate ▸ congrArg embedding (LiesOver.comap_eq w v)
 
-theorem mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} {v : InfinitePlace K}
-    (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) : mk φ ∈ ramifiedPlacesOver L v :=
+theorem mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) :
+    mk φ ∈ ramifiedPlacesOver L v :=
   ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.comp_eq (mk φ).1 (mk v.embedding).1⟩, h.2.mk_isRamified⟩
 
-theorem embedding_mem_mixedEmbeddingsOver {v : InfinitePlace K} (w : InfinitePlace L)
-    (hw : w ∈ ramifiedPlacesOver L v) : w.embedding ∈ mixedEmbeddingsOver L (v.embedding) :=
+variable (w)
+
+theorem embedding_mem_mixedEmbeddingsOver (hw : w ∈ ramifiedPlacesOver L v) :
+    w.embedding ∈ mixedEmbeddingsOver L (v.embedding) :=
   ⟨liesOver_embedding_of_mem_ramifiedPlacesOver hw, hw.2.isMixed_embedding⟩
 
-theorem conjugate_embedding_mem_mixedEmbeddingsOver {v : InfinitePlace K} (w : InfinitePlace L)
-    (hw : w ∈ ramifiedPlacesOver L v) :
+theorem conjugate_embedding_mem_mixedEmbeddingsOver (hw : w ∈ ramifiedPlacesOver L v) :
     conjugate w.embedding ∈ mixedEmbeddingsOver L (v.embedding) :=
   ⟨liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver hw, hw.2.isMixed_conjugate_embedding⟩
 
-variable (L)
+variable (L) (v)
 
 theorem disjoint_ramifiedPlacesOver_unramifiedPlacesOver :
     Disjoint (ramifiedPlacesOver L v) (unramifiedPlacesOver L v) := by
