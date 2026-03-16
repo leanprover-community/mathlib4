@@ -18,11 +18,13 @@ algebra to invariant root submodules of the associated root system.
 ## Main definitions
 * `LieAlgebra.IsKilling.lieIdealRootSet`: the set of roots whose root space is contained in a
   given Lie ideal.
-* `LieAlgebra.IsKilling.lieIdealToSubmodule`: the submodule of the dual spanned by
+* `LieAlgebra.IsKilling.lieIdealRootSpan`: the submodule of `Dual K H` spanned by
   `lieIdealRootSet`.
+* `LieAlgebra.IsKilling.lieIdealToInvtRootSubmodule`: the forward map from Lie ideals to
+  invariant root submodules.
 
 ## Main results
-* `LieAlgebra.IsKilling.lieIdealToSubmodule_mem_invtRootSubmodule`: `lieIdealToSubmodule` is an
+* `LieAlgebra.IsKilling.lieIdealRootSpan_mem_invtRootSubmodule`: `lieIdealRootSpan` is an
   invariant submodule.
 
 -/
@@ -43,7 +45,7 @@ def lieIdealRootSet (I : LieIdeal K L) : Set H.root :=
   { α | (rootSpace H α.1).toSubmodule ≤ I.toSubmodule }
 
 /-- The submodule of `Dual K H` spanned by the roots associated to a Lie ideal. -/
-def lieIdealToSubmodule (I : LieIdeal K L) : Submodule K (Dual K H) :=
+def lieIdealRootSpan (I : LieIdeal K L) : Submodule K (Dual K H) :=
   Submodule.span K ((↑) '' lieIdealRootSet (H := H) I)
 
 omit [CharZero K] in
@@ -99,8 +101,8 @@ lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
     exact rootSpace_le_ideal_of_apply_coroot_ne_zero I hi h_neg
 
 /-- The submodule spanned by roots of a Lie ideal is invariant under all root reflections. -/
-lemma lieIdealToSubmodule_mem_invtRootSubmodule (I : LieIdeal K L) :
-    lieIdealToSubmodule (H := H) I ∈ (rootSystem H).invtRootSubmodule := by
+lemma lieIdealRootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
+    lieIdealRootSpan (H := H) I ∈ (rootSystem H).invtRootSubmodule := by
   rw [RootPairing.mem_invtRootSubmodule_iff]
   intro i; rw [Module.End.mem_invtSubmodule]
   apply Submodule.span_le.mpr
@@ -114,7 +116,7 @@ lemma lieIdealToSubmodule_mem_invtRootSubmodule (I : LieIdeal K L) :
 /-- Maps a Lie ideal to its corresponding invariant root submodule. -/
 def lieIdealToInvtRootSubmodule (I : LieIdeal K L) :
     (rootSystem H).invtRootSubmodule :=
-  ⟨lieIdealToSubmodule (H := H) I, lieIdealToSubmodule_mem_invtRootSubmodule I⟩
+  ⟨lieIdealRootSpan (H := H) I, lieIdealRootSpan_mem_invtRootSubmodule I⟩
 
 /-- The forward map `lieIdealToInvtRootSubmodule` is monotone. -/
 lemma lieIdealToInvtRootSubmodule_mono {I J : LieIdeal K L} (h : I ≤ J) :
