@@ -110,10 +110,16 @@ noncomputable abbrev overPullbackOfCommRing {X Y : C} (f : X ⟶ Y) :
 instance {X Y : C} (f : X ⟶ Y) :
     PreservesColimitsOfSize.{w, w} (overPullbackOfCommRing R f) := sorry
 
+-- to be moved
+instance {X Y : C} (f : X ⟶ Y) :
+    (Over.map f ⋙ Over.forget Y).IsContinuous (J.over X) J := by
+  rw [Over.mapForget_eq]
+  infer_instance
+
 variable (R) in
-def overFunctorOfCommRingCompOverPullbackOfCommRing {X Y : C} (f : X ⟶ Y) :
+noncomputable def overFunctorOfCommRingCompOverPullbackOfCommRing {X Y : C} (f : X ⟶ Y) :
     overFunctorOfCommRing R Y ⋙ overPullbackOfCommRing R f ≅ overFunctorOfCommRing R X :=
-  sorry
+  pushforwardComp _ _
 
 instance (X : C) : (overFunctorOfCommRing.{w} R X).Monoidal := sorry
 
