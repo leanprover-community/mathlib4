@@ -315,16 +315,17 @@ instance Zn_nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
 
 /-- For any positive natural number n, there exists an n × n Latin square. -/
 noncomputable instance n_nonempty
-    (nezero_n : NeZero (Fintype.card n))
-    (h : Fintype.card n = Fintype.card α) :
-    LatinSquare n α := by
+    {n : Type*} [Fintype n]
+    [nezero_n : NeZero (Fintype.card n)]
+    [h : Fact (Fintype.card n = Fintype.card α)] :
+    Nonempty (LatinSquare n α) := by
   haveI := Fin.addCommGroup (Fintype.card n)
   let a := addGroupToCayleyTable (Fin (Fintype.card n))
   have f :=  Fintype.equivFin n
-  have h' := Fintype.equivFinOfCardEq h.symm
+  have h' := Fintype.equivFinOfCardEq h.out.symm
   have h'' := Fintype.equivFin α
   have b := renameLatinRectangle f.symm f.symm h'.symm a
-  exact (b : LatinSquare n α)
+  exact Nonempty.intro (b : LatinSquare n α)
 
 end Nonvacuous
 
