@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn, Ashton Jenson, Thomas Browning
+Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 -/
 module
 
@@ -17,31 +17,11 @@ It states that $n!$ grows asymptotically like $\sqrt{2\pi n}(\frac{n}{e})^n$.
 
 Also some _global_ bounds on the factorial function and the Stirling sequence are proved.
 
-## Main results
-
-* `tendsto_stirlingSeq_sqrt_pi`: Stirling's formula (the sequence `stirlingSeq` tends to `√π`)
-* `factorial_isEquivalent_stirling`: Asymptotic equivalence formulation of Stirling's formula
-* `le_factorial_stirling`: Global lower bound for `n!`
-* `le_log_factorial_stirling`: Global lower bound for `log n!`
-* `log_stirlingSeq_diff_le`: Robbins' sharp bound of 1/(12k(k+1)) for successive differences
-  in the Stirling sequence
-
-## References
-
-* <https://proofwiki.org/wiki/Stirling%27s_Formula>
-* H. Robbins, *A Remark on Stirling's Formula*, The American Mathematical Monthly 62:1 (1955),
-  26-29. <https://dornsife.usc.edu/sergey-lototsky/wp-content/uploads/sites/211/2024/02/Stirling-Robbins.pdf>
-
-
-## Tags
-
-stirling, factorial, asymptotic, approximation, robbins, bounds
-
 ## Proof outline
 
 The proof follows: <https://proofwiki.org/wiki/Stirling%27s_Formula>.
 
-We proceed in three parts.
+We proceed in two parts.
 
 **Part 1**: We consider the sequence $a_n$ of fractions $\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}$
 and prove that this sequence converges to a real, positive number $a$. For this the two main
@@ -115,8 +95,8 @@ theorem log_stirlingSeq'_antitone : Antitone (Real.log ∘ stirlingSeq ∘ succ)
   antitone_nat_of_succ_le fun n =>
     sub_nonneg.mp <| (log_stirlingSeq_diff_hasSum n).nonneg fun m => by positivity
 
-/-- We have a bound for successive elements in the sequence `log (stirlingSeq k)`.
--/
+/-- We have a bound for successive elements in the sequence `log (stirlingSeq k)`. -/
+@[deprecated "Use `log_stirlingSeq_diff_le` instead." (since := "2026-03-16")]
 theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     log (stirlingSeq (n + 1)) - log (stirlingSeq (n + 2)) ≤
       ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (1 - ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) := by
@@ -142,7 +122,7 @@ theorem log_stirlingSeq_diff_le (n : ℕ) :
   rcases n with (_ | n)
   · suffices 0 ≤ Real.log (Real.exp 1 / Real.sqrt 2) by simpa
     apply Real.log_nonneg
-    grw [one_le_div (by positivity), ← Real.add_one_le_exp, Real.sqrt_le_left (by positivity)]
+    grw [one_le_div (by positivity), Real.sqrt_le_left (by positivity), ← Real.add_one_le_exp]
     norm_num
   set r := ((1 : ℝ) / (2 * (n + 1) + 1)) ^ 2 with hr
   have hr1 : r < 1 := by grw [hr, ← n.zero_le]; norm_num
@@ -156,6 +136,7 @@ theorem log_stirlingSeq_diff_le (n : ℕ) :
   field
 
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (4 n ^ 2)`. -/
+@[deprecated "Use `log_stirlingSeq_diff_le` instead." (since := "2026-03-16")]
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
     log (stirlingSeq n) - log (stirlingSeq (n + 1)) ≤ 1 / (4 * n ^ 2) := by
   grw [log_stirlingSeq_diff_le]
@@ -164,31 +145,26 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   · simp [field]
     grind
 
-/-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2` -/
-theorem log_stirlingSeq_bounded_aux :
-    ∃ c : ℝ, ∀ n : ℕ, log (stirlingSeq 1) - log (stirlingSeq (n + 1)) ≤ c := by
-  let d : ℝ := ∑' k : ℕ, (1 : ℝ) / (↑(k + 1) : ℝ) ^ 2
-  use 1 / 4 * d
-  let log_stirlingSeq' : ℕ → ℝ := fun k => log (stirlingSeq (k + 1))
-  intro n
-  have h₁ k : log_stirlingSeq' k - log_stirlingSeq' (k + 1) ≤ 1 / 4 * (1 / (↑(k + 1) : ℝ) ^ 2) := by
-    convert log_stirlingSeq_sub_log_stirlingSeq_succ (k + 1) using 1; field
-  have h₂ : (∑ k ∈ range n, 1 / (↑(k + 1) : ℝ) ^ 2) ≤ d := by
-    have := (summable_nat_add_iff 1).mpr <| Real.summable_one_div_nat_pow.mpr one_lt_two
-    exact this.sum_le_tsum (range n) (fun k _ => by positivity)
-  calc
-    log (stirlingSeq 1) - log (stirlingSeq (n + 1)) = log_stirlingSeq' 0 - log_stirlingSeq' n :=
-      rfl
-    _ = ∑ k ∈ range n, (log_stirlingSeq' k - log_stirlingSeq' (k + 1)) := by
-      rw [← sum_range_sub' log_stirlingSeq' n]
-    _ ≤ ∑ k ∈ range n, 1 / 4 * (1 / ↑((k + 1)) ^ 2) := sum_le_sum fun k _ => h₁ k
-    _ = 1 / 4 * ∑ k ∈ range n, 1 / ↑((k + 1)) ^ 2 := by rw [mul_sum]
-    _ ≤ 1 / 4 * d := by gcongr
+/-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1 / 12` -/
+theorem log_stirlingSeq_bounded_aux (n : ℕ) :
+    log (stirlingSeq 1) - log (stirlingSeq (n + 1)) ≤ 12⁻¹ := by
+  let f k := log (stirlingSeq (k + 1))
+  have hf k (hk : k ∈ range n) :
+      f k - (f (k + 1)) ≤ 1 / (12 * (k + 1)) - 1 / (12 * ((k + 1 : ℕ) + 1)) := by
+    grw [log_stirlingSeq_diff_le]
+    simp [field]
+  have := Finset.sum_range_sub' f n
+  conv_rhs at this => simp only [f, zero_add]
+  grw [← this, Finset.sum_le_sum hf, Finset.sum_range_sub']
+  simpa using by positivity
 
 /-- The sequence `log_stirlingSeq` is bounded below for `n ≥ 1`. -/
-theorem log_stirlingSeq_bounded_by_constant : ∃ c, ∀ n : ℕ, c ≤ log (stirlingSeq (n + 1)) := by
-  obtain ⟨d, h⟩ := log_stirlingSeq_bounded_aux
-  exact ⟨log (stirlingSeq 1) - d, fun n => sub_le_comm.mp (h n)⟩
+theorem log_stirlingSeq_bounded_by_constant (n : ℕ) :
+    1 - 12⁻¹ - log 2 / 2 ≤ log (stirlingSeq (n + 1)) := by
+  have := log_stirlingSeq_bounded_aux n
+  rw [stirlingSeq_one, log_div (by positivity) (by positivity), log_exp,
+    log_sqrt (by positivity)] at this
+  grind
 
 /-- The sequence `stirlingSeq` is positive for `n > 0` -/
 theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirlingSeq; positivity
@@ -196,7 +172,8 @@ theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirli
 /-- The sequence `stirlingSeq` has a positive lower bound.
 -/
 theorem stirlingSeq'_bounded_by_pos_constant : ∃ a, 0 < a ∧ ∀ n : ℕ, a ≤ stirlingSeq (n + 1) := by
-  obtain ⟨c, h⟩ := log_stirlingSeq_bounded_by_constant
+  let c := 1 - 12⁻¹ - log 2 / 2
+  have h := log_stirlingSeq_bounded_by_constant
   refine ⟨exp c, exp_pos _, fun n => ?_⟩
   rw [← le_log_iff_exp_le (stirlingSeq'_pos n)]
   exact h n
