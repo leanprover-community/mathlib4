@@ -44,7 +44,7 @@ public noncomputable section
 
 open Function Set Equiv Order
 
-universe u v w
+universe u v
 variable {α β : Type u} [LinearOrder α] [LinearOrder β] {δ : Sort v}
 
 /-- Equivalence relation on linear orders on arbitrary types in universe `u`, given by order
@@ -266,7 +266,7 @@ theorem lift_uzero (o : OrderType.{u}) : lift.{0} o = o :=
   lift_id'.{0, u} o
 
 @[simp]
-theorem lift_lift.{u_1} (o : OrderType.{u_1}) : lift.{w} (lift.{v} o) = lift.{max v w} o :=
+theorem lift_lift.{u_1} (o : OrderType.{u_1}) : lift.{u} (lift.{v} o) = lift.{max v u} o :=
   inductionOn o fun _ => (ULift.orderIso.trans <| ULift.orderIso.trans ULift.orderIso.symm).type_congr
 
 theorem out_lift_equiv (o : OrderType.{u}) : Nonempty ((lift.{v} o).ToType ≃o o.ToType) := by
