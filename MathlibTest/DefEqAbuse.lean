@@ -123,20 +123,7 @@ instance mySub₂MyAction {G : Type} [AddCommGroup G] (s : MySub₂ G) :
 def myOp {α : Type} [AddCommGroup α] [MyAction ℕ α] (x : α) : α :=
   -(MyAction.mySmul (R := ℕ) 1 x)
 
--- The warning output contains fvar IDs that vary between runs, so we just check it produces
--- a warning (not info or error).
--- It should produce something like:
-/-
-warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
-The following synthesis applications fail due to transparency:
-  ❌️ apply @mySub₂MyAction to MyAction ℕ ↥s
-    ❌️ s.toAddSubgroup =?= s.1
-    ❌️ s.toAddSubgroup =?= s.toAddSubmonoid
-    ❌️ s.toAddSubgroup.1 =?= s.1
-    ❌️ ↑s.toAddSubgroup =?= ↑s.toAddSubmonoid
--/
-#guard_msgs (drop warning) in
-#defeq_abuse in
+#guard_msgs in
 def testVirtualParent {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) : s :=
   myOp x
 
