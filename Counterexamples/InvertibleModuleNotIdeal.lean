@@ -3,7 +3,7 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.TrivSqZeroExt
+import Mathlib.Algebra.TrivSqZeroExt.Basic
 import Mathlib.Data.DFinsupp.Module
 import Mathlib.RingTheory.PicardGroup
 
@@ -35,6 +35,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- R as an algebra over `SqZeroExtQuotMax R`. -/
 abbrev SqZeroExtQuotMax.algebraBase : Algebra (SqZeroExtQuotMax R) R := TrivSqZeroExt.algebraBase ..
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 set_option backward.isDefEq.respectTransparency false in
 open CommRing (Pic) in
 /-- If the Picard group of a commutative ring R is nontrivial, then `SqZeroExtQuotMax R`

@@ -196,7 +196,6 @@ theorem map_toLinearMap (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
 
 variable (R S M N P)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The associator for tensor products of R-coalgebras, as a coalgebra equivalence. -/
 protected noncomputable def assoc :
     (M ⊗[S] N) ⊗[R] P ≃ₗc[S] M ⊗[S] (N ⊗[R] P) :=
@@ -228,7 +227,6 @@ theorem assoc_toLinearEquiv :
 
 variable (R P)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The base ring is a left identity for the tensor product of coalgebras, up to
 coalgebra equivalence. -/
 protected noncomputable def lid : R ⊗[R] P ≃ₗc[R] P :=

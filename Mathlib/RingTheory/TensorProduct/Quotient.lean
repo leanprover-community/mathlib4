@@ -6,6 +6,7 @@ Authors: Christian Merten, Yi Song, Sihan Su
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -26,6 +27,8 @@ This file proves algebra analogs of the isomorphisms in
 open TensorProduct
 
 namespace Algebra.TensorProduct
+
+section
 
 variable {A : Type*} (B : Type*) [CommRing A] [CommRing B] [Algebra A B] (I : Ideal A)
 
@@ -65,5 +68,42 @@ lemma quotIdealMapEquivTensorQuot_mk (b : B) :
 lemma quotIdealMapEquivTensorQuot_symm_tmul (b : B) (a : A) :
     (quotIdealMapEquivTensorQuot B I).symm (b ⊗ₜ[A] a) = Submodule.Quotient.mk (a • b) :=
   rfl
+
+end
+
+section
+
+variable {R : Type*} (S T A : Type*) [CommRing R] [CommRing S] [Algebra R S]
+  [CommRing T] [Algebra R T] [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+
+/-- The tensor product of an `S`-algebra `A` over `R` with the quotient of `T` by an ideal `I`
+is isomorphic to the quotient of `A ⊗[R] T` by the extended ideal, as an `S`-algebra. -/
+noncomputable def tensorQuotientEquiv (I : Ideal T) :
+    A ⊗[R] (T ⧸ I) ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (includeRight (A := A) (R := R)) :=
+  letI g : (A ⊗[R] T ⧸ LinearMap.range (AlgebraTensorModule.lTensor S A
+      (I.subtype.restrictScalars R))) ≃ₗ[S]
+      A ⊗[R] T ⧸ (I.map (includeRight (A := A) (R := R))).restrictScalars S :=
+    Submodule.quotEquivOfEq _ _ (AlgebraTensorModule.range_lTensor_idealMap _ _ _)
+  .ofLinearEquiv (AlgebraTensorModule.tensorQuotientEquiv (R := R) S T A I ≪≫ₗ g) rfl <| by
+    refine LinearMap.map_mul_of_map_mul_tmul fun a₁ a₂ b₁ b₂ ↦ ?_
+    obtain ⟨b₁, rfl⟩ := Ideal.Quotient.mk_surjective b₁
+    obtain ⟨b₂, rfl⟩ := Ideal.Quotient.mk_surjective b₂
+    rw [← map_mul]
+    simp only [LinearEquiv.coe_coe, LinearEquiv.trans_apply, g,
+      AlgebraTensorModule.tensorQuotientEquiv_apply_tmul, ← Ideal.Quotient.mk_eq_mk,
+      ← Algebra.TensorProduct.tmul_mul_tmul]
+    rfl
+
+@[simp]
+lemma tensorQuotientEquiv_apply_tmul (I : Ideal T) (a : A) (t : T) :
+    tensorQuotientEquiv (R := R) S T A I (a ⊗ₜ t) = a ⊗ₜ[R] t :=
+  rfl
+
+@[simp]
+lemma tensorQuotientEquiv_symm_apply_tmul (I : Ideal T) (a : A) (t : T) :
+    (tensorQuotientEquiv (R := R) S T A I).symm (a ⊗ₜ[R] t) = a ⊗ₜ[R] (Ideal.Quotient.mk I t) :=
+  rfl
+
+end
 
 end Algebra.TensorProduct

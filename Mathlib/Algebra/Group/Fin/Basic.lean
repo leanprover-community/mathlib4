@@ -101,7 +101,6 @@ theorem intCast_def' {n : Nat} [NeZero n] (x : Int) :
     (x : Fin n) = if 0 ≤ x then ↑x.natAbs else -↑x.natAbs :=
   Fin.intCast_def _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_sub_one (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 := by
   cases n
   · simp

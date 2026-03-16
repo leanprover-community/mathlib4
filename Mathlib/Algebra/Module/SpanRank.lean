@@ -152,8 +152,9 @@ lemma spanRank_span_of_linearIndepOn [RankCondition R] (s : Set M) (hs : LinearI
 
 lemma spanFinrank_span_le_encard (s : Set M) : (span R s).spanFinrank ≤ s.encard := by
   rw [spanFinrank, Set.encard, ENat.card]
-  exact le_trans (by simp) ((toENat).monotone' (spanRank_span_le_card (R := R) s))
+  exact le_trans (by simp) (toENat.monotone' (spanRank_span_le_card (R := R) s))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_span_le_ncard_of_finite {s : Set M} (hs : s.Finite) :
     (span R s).spanFinrank ≤ s.ncard := by
   rw [← Nat.cast_le (α := ℕ∞)]
@@ -308,7 +309,7 @@ lemma le_spanRank_restrictScalars (N : Submodule S M) :
     N.spanRank ≤ (N.restrictScalars R).spanRank := by
   obtain ⟨s, hs, e⟩ := (N.restrictScalars R).exists_span_set_card_eq_spanRank
   obtain rfl : span S s = N :=
-    le_antisymm (span_le.mpr (span_le.mp e.le:)) (e.ge.trans (span_le_restrictScalars R S s))
+    le_antisymm (span_le.mpr (span_le.mp e.le :)) (e.ge.trans (span_le_restrictScalars R S s))
   grw [← hs, spanRank_span_le_card]
 
 lemma spanRank_restrictScalars_eq (H : Function.Surjective (algebraMap R S))
