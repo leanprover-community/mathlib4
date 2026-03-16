@@ -603,15 +603,15 @@ also has `(· > ·)` well-founded. -/]
 protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α where
   wf := f.wellFounded IsWellFounded.wf
 
--- `to_dual` cannot yet reorder arguments of arguments
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
 -/
+@[to_dual self]
 def ofMapLEIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀ a b, f a ≤ f b ↔ a ≤ b) :
     α ↪o β :=
   RelEmbedding.ofMapRelIff f hf
 
-@[simp]
+@[simp, to_dual self]
 theorem coe_ofMapLEIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
     ⇑(ofMapLEIff f h) = f :=
   rfl
@@ -1029,29 +1029,20 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show
 that `g` is the inverse of `f`. -/
-@[simps! apply]
-def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
-    [OrderHomClass G β α] (f : F) (g : G)
-    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
-    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) :
+@[simps apply]
+def ofHomInv (f : α →o β) (g : β →o α) (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) :
     α ≃o β where
   toFun := f
   invFun := g
   left_inv := DFunLike.congr_fun h₂
   right_inv := DFunLike.congr_fun h₁
-  map_rel_iff' := @fun a b =>
-    ⟨fun h => by
-      replace h := map_rel g h
-      rwa [Equiv.coe_fn_mk, show g (f a) = (g : β →o α).comp (f : α →o β) a from rfl,
-        show g (f b) = (g : β →o α).comp (f : α →o β) b from rfl, h₂] at h,
-      fun h => (f : α →o β).monotone h⟩
+  map_rel_iff' :=
+    { mp h := by simpa [h₂] using show g.comp f _ ≤ g.comp f _ from map_rel g h
+      mpr h := f.monotone h }
 
 @[simp]
-theorem ofHomInv_symm_apply {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
-    [OrderHomClass G β α] (f : F) (g : G)
-    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
-    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) (a : β) :
-    (ofHomInv f g h₁ h₂).symm a = g a := rfl
+theorem ofHomInv_symm_apply (f : α →o β) (g : β →o α) (h₁ : f.comp g = .id) (h₂ : g.comp f = .id)
+    (a : β) : (ofHomInv f g h₁ h₂).symm a = g a := rfl
 
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
 @[simps! toEquiv apply]

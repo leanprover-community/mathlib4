@@ -130,7 +130,6 @@ theorem UniformContinuous.inv₀ {X : Type*} [UniformSpace X] {f : X → α}
   simp only [← uniformContinuousOn_univ, ← Set.image_univ] at *
   exact hf.inv₀ hf₀
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_fun]
 theorem TendstoLocallyUniformlyOn.inv₀_of_disjoint {X ι : Type*} [TopologicalSpace X]
     {s : Set X} {F : ι → X → α} {f : X → α} {l : Filter ι}
@@ -315,7 +314,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
     rw [div_le_one (kpos.trans_lt hx)]
     exact hx.le.trans' (hk (by simp))
   obtain ⟨a, -, ha'⟩ := cauchySeq_tendsto_of_isComplete h hb hu'
-  refine ⟨a * x, (((continuous_mul_right x).tendsto a).comp ha').congr ?_⟩
+  refine ⟨a * x, (((continuous_mul_const x).tendsto a).comp ha').congr ?_⟩
   have hx' : x ≠ 0 := by
     contrapose! hx
     simp [hx, kpos]

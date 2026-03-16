@@ -654,6 +654,7 @@ variable (X) in
 /-- Sets that are contained in a compact set form a bornology. Its `cobounded` filter is
 `Filter.cocompact`. See also `Bornology.relativelyCompact` the bornology of sets with compact
 closure. -/
+@[implicit_reducible]
 def inCompact : Bornology X where
   cobounded := Filter.cocompact X
   le_cofinite := Filter.cocompact_le_cofinite
@@ -662,6 +663,16 @@ theorem inCompact.isBounded_iff : @IsBounded _ (inCompact X) s ↔ ∃ t, IsComp
   change sᶜ ∈ Filter.cocompact X ↔ _
   rw [Filter.mem_cocompact]
   simp
+
+/-- A locally bounded function maps a compact set to a bounded set. -/
+lemma isBounded_image_of_isLocallyBounded_of_isCompact {Y : Type*}
+    [Bornology Y] {s : Set X} (hs : IsCompact s) {f : X → Y}
+    (hf : ∀ x, ∃ t ∈ 𝓝 x, IsBounded (f '' t)) :
+    IsBounded (f '' s) := by
+  choose U hU using hf
+  obtain ⟨I, hI⟩ := hs.elim_nhds_subcover U (fun x _ => (hU x).1)
+  have : f '' ⋃ x ∈ I, U x = ⋃ x ∈ I, f '' U x := by simp [Set.image_iUnion₂]
+  exact ((isBounded_biUnion_finset I).2 fun i _ => (hU i).2).subset (this ▸ Set.image_mono hI.2)
 
 end Bornology
 
@@ -1040,6 +1051,11 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
 /-- Finite topological spaces are compact. -/
 instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
   isCompact_univ := finite_univ.isCompact
+
+/-- The indiscrete topology is compact -/
+-- see note [lower instance priority]
+instance (priority := 100) instCompactSpace [IndiscreteTopology X] : CompactSpace X where
+  isCompact_univ f hf := by simp [clusterPt_of_indiscreteTopology, nonempty_of_neBot f]
 
 instance ULift.compactSpace [CompactSpace X] : CompactSpace (ULift.{v} X) :=
   IsClosedEmbedding.uliftDown.compactSpace
