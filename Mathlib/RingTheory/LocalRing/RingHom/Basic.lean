@@ -136,14 +136,15 @@ instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
     (f : K →+* R) : IsLocalHom f where
   map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
 
-lemma maximalIdeal_eq_map_of_surjective [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
-    (f : R →+* S) (hf : Function.Surjective f) : maximalIdeal S = (maximalIdeal R).map f := by
+lemma map_maximalIdeal_of_surjective [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+    (f : R →+* S) (hf : Function.Surjective f) : (maximalIdeal R).map f = maximalIdeal S := by
   let := IsLocalHom.of_surjective f hf
   rw [← maximalIdeal_comap f, Ideal.map_comap_of_surjective f hf]
 
-lemma maximalIdeal_eq_map_ringEquiv [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
-    (e : R ≃+* S) : maximalIdeal S = (maximalIdeal R).map e :=
-  maximalIdeal_eq_map_of_surjective (e : R →+* S) e.surjective
+@[simp]
+lemma map_ringEquiv_maximalIdeal [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+    (e : R ≃+* S) : (maximalIdeal R).map e = maximalIdeal S :=
+  map_maximalIdeal_of_surjective (e : R →+* S) e.surjective
 
 end IsLocalRing
 

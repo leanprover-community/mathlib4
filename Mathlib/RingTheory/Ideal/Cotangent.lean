@@ -400,12 +400,10 @@ lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace [IsNoetherianRing R] :
 lemma spanFinrank_le_of_surjective (fg : (maximalIdeal R).FG) {R' : Type*} [CommRing R']
     [IsLocalRing R'] (f : R →+* R') (surj : Function.Surjective f) :
     (maximalIdeal R').spanFinrank ≤ (maximalIdeal R).spanFinrank := by
-  have comapeq := ((local_hom_TFAE f).out 0 4).mp (surj.isLocalHom f)
-  rw [← Ideal.map_comap_of_surjective f surj (maximalIdeal R'), comapeq]
-  exact (maximalIdeal R).spanFinrank_map_le_of_fg f fg
+  grw [← map_maximalIdeal_of_surjective f surj, (maximalIdeal R).spanFinrank_map_le_of_fg f fg]
 
 lemma spanFinrank_eq_of_ringEquiv {R' : Type*} [CommRing R'] [IsLocalRing R'] (e : R ≃+* R') :
     (maximalIdeal R).spanFinrank = (maximalIdeal R').spanFinrank := by
-  rw [maximalIdeal_eq_map_ringEquiv e, Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv]
+  rw [← map_ringEquiv_maximalIdeal e, Ideal.spanFinrank_map_eq_of_fg_of_ringEquiv]
 
 end spanRank
