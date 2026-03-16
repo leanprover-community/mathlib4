@@ -33,6 +33,7 @@ Normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$.
 @[expose] public noncomputable def normalizedDerivOfComplex (F : ℍ → ℂ) : ℍ → ℂ :=
   fun (z : ℍ) => (2 * π * I)⁻¹ * deriv (F ∘ ofComplex) z
 
+/-- We denote the normalized derivative by `D`. -/
 scoped notation "D" => normalizedDerivOfComplex
 
 /--
