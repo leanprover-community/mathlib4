@@ -150,7 +150,8 @@ theorem serreDerivative_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F
   ring_nf
 
 theorem serreDerivative_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    serreDerivative (k₁ + k₂) (F * G) = (serreDerivative k₁ F) * G + F * (serreDerivative k₂ G) := by
+    serreDerivative (k₁ + k₂) (F * G) = (serreDerivative k₁ F) * G + F * (serreDerivative k₂ G)
+    := by
   ext z
   simp [serreDerivative, normalizedDerivOfComplex_mul F G hF hG]
   ring_nf
