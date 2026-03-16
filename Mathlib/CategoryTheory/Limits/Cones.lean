@@ -155,8 +155,7 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
 @[to_dual (attr := reassoc (attr := simp))]
 theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
     dsimp% c.π.app j ≫ F.map f = c.π.app j' := by
-  rw [← c.π.naturality f]
-  apply id_comp
+  simpa using (c.π.naturality f).symm
 
 end
 
@@ -733,28 +732,18 @@ section
 variable {F : J ⥤ Cᵒᵖ}
 
 /-- Change a cocone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
-@[simps!]
+@[to_dual (attr := simps!)
+/-- Change a cone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/]
 def coneOfCoconeLeftOp (c : Cocone F.leftOp) : Cone F where
   pt := op c.pt
   π := NatTrans.removeLeftOp c.ι
 
 /-- Change a cone on `F : J ⥤ Cᵒᵖ` to a cocone on `F.leftOp : Jᵒᵖ ⥤ C`. -/
-@[simps!]
+@[to_dual (attr := simps!)
+/-- Change a cocone on `F : J ⥤ Cᵒᵖ` to a cone on `F.leftOp : Jᵒᵖ ⥤ C`. -/]
 def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp where
   pt := unop c.pt
   ι := NatTrans.leftOp c.π
-
-/-- Change a cone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
-@[simps!]
-def coconeOfConeLeftOp (c : Cone F.leftOp) : Cocone F where
-  pt := op c.pt
-  ι := NatTrans.removeLeftOp c.π
-
-/-- Change a cocone on `F : J ⥤ Cᵒᵖ` to a cone on `F.leftOp : Jᵒᵖ ⥤ C`. -/
-@[simps!]
-def coneLeftOpOfCocone (c : Cocone F) : Cone F.leftOp where
-  pt := unop c.pt
-  π := NatTrans.leftOp c.ι
 
 end
 
@@ -763,28 +752,18 @@ section
 variable {F : Jᵒᵖ ⥤ C}
 
 /-- Change a cocone on `F.rightOp : J ⥤ Cᵒᵖ` to a cone on `F : Jᵒᵖ ⥤ C`. -/
-@[simps]
+@[to_dual (attr := simps)
+/-- Change a cone on `F.rightOp : J ⥤ Cᵒᵖ` to a cocone on `F : Jᵒᵖ ⥤ C`. -/]
 def coneOfCoconeRightOp (c : Cocone F.rightOp) : Cone F where
   pt := unop c.pt
   π := NatTrans.removeRightOp c.ι
 
 /-- Change a cone on `F : Jᵒᵖ ⥤ C` to a cocone on `F.rightOp : Jᵒᵖ ⥤ C`. -/
-@[simps]
+@[to_dual (attr := simps)
+/-- Change a cocone on `F : Jᵒᵖ ⥤ C` to a cone on `F.rightOp : J ⥤ Cᵒᵖ`. -/]
 def coconeRightOpOfCone (c : Cone F) : Cocone F.rightOp where
   pt := op c.pt
   ι := NatTrans.rightOp c.π
-
-/-- Change a cone on `F.rightOp : J ⥤ Cᵒᵖ` to a cocone on `F : Jᵒᵖ ⥤ C`. -/
-@[simps]
-def coconeOfConeRightOp (c : Cone F.rightOp) : Cocone F where
-  pt := unop c.pt
-  ι := NatTrans.removeRightOp c.π
-
-/-- Change a cocone on `F : Jᵒᵖ ⥤ C` to a cone on `F.rightOp : J ⥤ Cᵒᵖ`. -/
-@[simps]
-def coneRightOpOfCocone (c : Cocone F) : Cone F.rightOp where
-  pt := op c.pt
-  π := NatTrans.rightOp c.ι
 
 end
 
@@ -793,28 +772,18 @@ section
 variable {F : Jᵒᵖ ⥤ Cᵒᵖ}
 
 /-- Change a cocone on `F.unop : J ⥤ C` into a cone on `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
-@[simps]
+@[to_dual (attr := simps)
+/-- Change a cone on `F.unop : J ⥤ C` into a cocone on `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/]
 def coneOfCoconeUnop (c : Cocone F.unop) : Cone F where
   pt := op c.pt
   π := NatTrans.removeUnop c.ι
 
 /-- Change a cone on `F : Jᵒᵖ ⥤ Cᵒᵖ` into a cocone on `F.unop : J ⥤ C`. -/
-@[simps]
+@[to_dual (attr := simps)
+/-- Change a cocone on `F : Jᵒᵖ ⥤ Cᵒᵖ` into a cone on `F.unop : J ⥤ C`. -/]
 def coconeUnopOfCone (c : Cone F) : Cocone F.unop where
   pt := unop c.pt
   ι := NatTrans.unop c.π
-
-/-- Change a cone on `F.unop : J ⥤ C` into a cocone on `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
-@[simps]
-def coconeOfConeUnop (c : Cone F.unop) : Cocone F where
-  pt := op c.pt
-  ι := NatTrans.removeUnop c.π
-
-/-- Change a cocone on `F : Jᵒᵖ ⥤ Cᵒᵖ` into a cone on `F.unop : J ⥤ C`. -/
-@[simps]
-def coneUnopOfCocone (c : Cocone F) : Cone F.unop where
-  pt := unop c.pt
-  π := NatTrans.unop c.ι
 
 end
 
@@ -824,22 +793,13 @@ namespace CategoryTheory.Functor
 
 open CategoryTheory.Limits
 
-variable {F : J ⥤ C}
-
-section
-
-variable (G : C ⥤ D)
+variable {F : J ⥤ C} (G : C ⥤ D)
 
 /-- The opposite cocone of the image of a cone is the image of the opposite cocone. -/
-@[simps!]
+@[to_dual (attr := simps!)
+/-- The opposite cone of the image of a cocone is the image of the opposite cone. -/]
 def mapConeOp (t : Cone F) : (mapCone G t).op ≅ mapCocone G.op t.op :=
   Cocone.ext (Iso.refl _)
 
-/-- The opposite cone of the image of a cocone is the image of the opposite cone. -/
-@[simps!]
-def mapCoconeOp {t : Cocone F} : (mapCocone G t).op ≅ mapCone G.op t.op :=
-  Cone.ext (Iso.refl _)
-
-end
 
 end CategoryTheory.Functor

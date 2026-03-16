@@ -401,7 +401,7 @@ lemma op_whiskerLeft {E : Type*} [Category* E] {H : E ⥤ C} (α : F ⟶ G) :
   cat_disch
 
 /-- The "unopposite" of a natural transformation. -/
-@[simps]
+@[simps, to_dual self]
 protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ⟶ G) : G.unop ⟶ F.unop where
   app X := (α.app (op X)).unop
   naturality X Y f := Quiver.Hom.op_inj (by simp)
@@ -444,7 +444,7 @@ theorem removeOp_id (F : C ⥤ D) : NatTrans.removeOp (𝟙 F.op) = 𝟙 F :=
 
 /-- Given a natural transformation `α : F.unop ⟶ G.unop`, we can take the opposite of each
 component obtaining a natural transformation `G ⟶ F`. -/
-@[simps]
+@[simps, to_dual self]
 protected def removeUnop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F.unop ⟶ G.unop) : G ⟶ F where
   app X := (α.app (unop X)).op
   naturality X Y f :=
@@ -505,7 +505,7 @@ variable {F G H : Cᵒᵖ ⥤ D}
 /-- Given a natural transformation `α : F ⟶ G`, for `F G : Cᵒᵖ ⥤ D`,
 taking `op` of each component gives a natural transformation `G.rightOp ⟶ F.rightOp`.
 -/
-@[simps]
+@[simps, to_dual self]
 protected def rightOp (α : F ⟶ G) : G.rightOp ⟶ F.rightOp where
   app _ := (α.app _).op
   naturality X Y f := Quiver.Hom.unop_inj (by simp)
@@ -528,7 +528,7 @@ lemma rightOpWhiskerRight {E : Type*} [Category* E] {H : D ⥤ E} (α : F ⟶ G)
 /-- Given a natural transformation `α : F.rightOp ⟶ G.rightOp`, for `F G : Cᵒᵖ ⥤ D`,
 taking `unop` of each component gives a natural transformation `G ⟶ F`.
 -/
-@[simps]
+@[simps, to_dual self]
 protected def removeRightOp (α : F.rightOp ⟶ G.rightOp) : G ⟶ F where
   app X := (α.app X.unop).unop
   naturality X Y f :=
