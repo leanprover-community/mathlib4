@@ -73,7 +73,10 @@ jobs:
 
       - name: Update dependencies
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        run: lake update -v
+        run: |
+          lake update -v
+          # Update SideSkimmer
+          ./scripts/runSkimmer.sh --lake-update
 
       - name: Check if lean-toolchain was modified
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
