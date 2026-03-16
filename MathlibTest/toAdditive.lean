@@ -900,3 +900,8 @@ class AddClass (α : Type) extends Add α where
 class MulClass (α : Type) extends Mul α where
 -- Test that the reserved `MulClass.mk.congr_simp` can be translated to `AddClass.mk.congr_cimp`
 attribute [to_additive existing] MulClass MulClass.mk.congr_simp
+
+/-- error: `to_additive` cannot translate `MulAxiom` because it has no value. -/
+#guard_msgs in
+@[to_additive]
+axiom MulAxiom {α} : Mul α
