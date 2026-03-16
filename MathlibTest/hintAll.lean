@@ -56,7 +56,7 @@ example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 exact Std.not_gt_of_lt h
+  [apply] 🎉️ exact Std.not_gt_of_lt h
   [apply] norm_num
   Remaining subgoals:
   ⊢ a ≤ b
@@ -75,7 +75,7 @@ example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 norm_num
+  [apply] 🎉️ norm_num
   [apply] noncomm_ring
   Remaining subgoals:
   ⊢ 1369 • 1 - 1225 • 1 = 72 • 2
@@ -85,7 +85,7 @@ example : 37^2 - 35^2 = 72 * 2 := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 decide
+  [apply] 🎉️ decide
   [apply] norm_num
   Remaining subgoals:
   ⊢ Nat.Prime 37
@@ -98,7 +98,7 @@ example : Nat.Prime 37 := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 grind
+  [apply] 🎉️ grind
   [apply] norm_num
   Remaining subgoals:
   ⊢ ∃ x, P x
@@ -151,7 +151,7 @@ end multiline_hint
 section finiteness
 /--
 info: Try these:
-  [apply] 🎉 norm_num
+  [apply] 🎉️ norm_num
 -/
 #guard_msgs in
 open ENNReal in
@@ -195,7 +195,7 @@ example : 2 ≤ 1 := by hint
 section compute_degree
 /--
 info: Try these:
-  [apply] 🎉 compute_degree
+  [apply] 🎉️ compute_degree
   [apply] norm_num
   Remaining subgoals:
   ⊢ (X + 1).natDegree ≤ 1
@@ -214,7 +214,7 @@ this test no longer reports `field_simp` amongst the successful tactics.
 
 /--
 info: Try these:
-  [apply] 🎉 exact Units.divp_add_divp_same a b u₁
+  [apply] 🎉️ exact Units.divp_add_divp_same a b u₁
   [apply] norm_num
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁

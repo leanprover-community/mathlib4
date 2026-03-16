@@ -624,17 +624,6 @@ open Mathlib.Linter.TextBased.UnicodeLinter
 /- Ensure each character can only be listed in either selector-list. -/
 #guard emojis.toList ∩ nonEmojis.toList = ∅
 
-set_option linter.unusedTactic false in
-set_option linter.flexible false in
-/-- An error in this proof could mean that `replaceDisallowed` contains a character
-which is not dissallowed by `isAllowedCharacter`. -/
-private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallowed c ≠ none) :
-    !isAllowedCharacter c := by
-  contrapose creplaced
-  simp [isAllowedCharacter, Array.contains] at creplaced
-  repeat obtain ⟨_, creplaced⟩ := creplaced
-  simp [replaceDisallowed]
-
 /-!
 Ensure parsing back error messages in `parse?_errorContext` works.
 -/
