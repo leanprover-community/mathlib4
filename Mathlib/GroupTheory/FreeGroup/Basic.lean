@@ -937,6 +937,10 @@ def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
   right_inv _ := by simp
   map_mul' _ _  := by simp [equivIntOfUnique]
 
+/-- A free group over one generator is an instance of cyclic group. -/
+instance [Unique α] : IsCyclic (FreeGroup α) :=
+  ⟨of default, fun x => ⟨equivIntOfUnique x, equivIntOfUnique.left_inv x⟩⟩
+
 /-- The isomorphism between the free additive group on a unique type and the integers. -/
 def _root_.FreeAddGroup.addEquivIntOfUnique [Unique α] : FreeAddGroup α ≃+ ℤ where
   toFun x := FreeAddGroup.sum (FreeAddGroup.map 1 x)
