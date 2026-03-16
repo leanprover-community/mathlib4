@@ -67,6 +67,12 @@ noncomputable instance myPredCompleteLattice : CompleteLattice (MyPred ℕ) wher
 warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
   ❌️ (i : ℕ) → (fun a => Prop) i =?= MyPred ℕ
+---
+info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem,
+but the real issue is likely a leaky instance somewhere.
+set_option allowUnsafeReducibility true
+attribute [implicit_reducible]
+  MyPred
 -/
 #guard_msgs in
 noncomputable example (s : MyPred ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a} := by
