@@ -52,12 +52,6 @@ ingredients are
 **Part 2**: We use the fact that the series defined in part 1 converges against a real number $a$
 and prove that $a = \sqrt{\pi}$. Here the main ingredient is the convergence of Wallis' product
 formula for `π`.
-
-**Part 3**: We establish the sharp bound
-$\log(\mathrm{stirlingSeq}(n)) - \log(\mathrm{stirlingSeq}(n+1)) \le 1/(12n(n+1))$ on successive
-differences. This is achieved by
-- bounding each term in the series expansion from Part 1 by a geometric series, and
-- summing this geometric series to obtain the sharp constant $1/(12n(n+1))$.
 -/
 
 @[expose] public section
@@ -141,20 +135,34 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     exact inv_le_one_of_one_le₀ (le_add_of_nonneg_left <| by positivity)
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
 
-/-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1))` ≤ 1/(4 n^2)
--/
-theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
-    log (stirlingSeq (n + 1)) - log (stirlingSeq (n + 2)) ≤ 1 / (4 * (↑(n + 1) : ℝ) ^ 2) := by
-  have h₁ : (0 : ℝ) < ((n : ℝ) + 1) ^ 2 * 4 := by positivity
-  have h₃ : (0 : ℝ) < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by
-    ring_nf
-    positivity
-  refine (log_stirlingSeq_diff_le_geo_sum n).trans ?_
+/-- **Robbins' sharp stepwise bound** for the Stirling sequence:
+`log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (12 n (n + 1))`. -/
+theorem log_stirlingSeq_diff_le (n : ℕ) :
+    log (stirlingSeq n) - log (stirlingSeq (n + 1)) ≤ 1 / (12 * n * (n + 1)) := by
+  rcases n with (_ | n)
+  · suffices 0 ≤ Real.log (Real.exp 1 / Real.sqrt 2) by simpa
+    apply Real.log_nonneg
+    grw [one_le_div (by positivity), ← Real.add_one_le_exp, Real.sqrt_le_left (by positivity)]
+    norm_num
+  set r := ((1 : ℝ) / (2 * (n + 1) + 1)) ^ 2 with hr
+  have hr1 : r < 1 := by grw [hr, ← n.zero_le]; norm_num
+  suffices HasSum (fun j ↦ r ^ (j + 1) / 3) ((1 : ℝ) / (12 * (n + 1 : ℕ) * ((n + 1 : ℕ) + 1))) by
+    refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_diff_hasSum n) this
+    simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by norm_cast; grind
+  convert ((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3 using 1
   push_cast
-  field_simp
+  simp only [hr, field]
   ring_nf
-  norm_cast
-  lia
+  field
+
+/-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (4 n ^ 2)`. -/
+theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
+    log (stirlingSeq n) - log (stirlingSeq (n + 1)) ≤ 1 / (4 * n ^ 2) := by
+  grw [log_stirlingSeq_diff_le]
+  cases n
+  · simp
+  · simp [field]
+    grind
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2` -/
 theorem log_stirlingSeq_bounded_aux :
@@ -164,7 +172,7 @@ theorem log_stirlingSeq_bounded_aux :
   let log_stirlingSeq' : ℕ → ℝ := fun k => log (stirlingSeq (k + 1))
   intro n
   have h₁ k : log_stirlingSeq' k - log_stirlingSeq' (k + 1) ≤ 1 / 4 * (1 / (↑(k + 1) : ℝ) ^ 2) := by
-    convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field
+    convert log_stirlingSeq_sub_log_stirlingSeq_succ (k + 1) using 1; field
   have h₂ : (∑ k ∈ range n, 1 / (↑(k + 1) : ℝ) ^ 2) ≤ d := by
     have := (summable_nat_add_iff 1).mpr <| Real.summable_one_div_nat_pow.mpr one_lt_two
     exact this.sum_le_tsum (range n) (fun k _ => by positivity)
@@ -313,37 +321,5 @@ theorem le_log_factorial_stirling {n : ℕ} (hn : n ≠ 0) :
       rw [log_mul (x := √_), log_sqrt, log_mul (x := 2 * π), log_pow, log_div, log_exp] <;>
       positivity
     _ ≤ _ := log_le_log (by positivity) (le_factorial_stirling n)
-
-
-/-!
-### Part 3
-<https://dornsife.usc.edu/sergey-lototsky/wp-content/uploads/sites/211/2024/02/Stirling-Robbins.pdf>
--/
-
-/-- **Robbins' sharp stepwise bound** for the Stirling sequence.
-
-For all natural numbers `k`, successive differences in `log (stirlingSeq n)` are bounded by
-`1/(12k(k+1))`:
-$$|\log(\mathrm{stirlingSeq}(k)) - \log(\mathrm{stirlingSeq}(k+1))| \le \frac{1}{12k(k+1)}$$
-
-This improves upon the bound of 1/(4n²) given in `log_stirlingSeq_sub_log_stirlingSeq_succ`.
--/
-theorem log_stirlingSeq_diff_le (k : ℕ) :
-    Real.log (stirlingSeq k) - Real.log (stirlingSeq (k + 1)) ≤ (1 : ℝ) / (12 * k * (k + 1)) := by
-  rcases k with (_ | k)
-  · suffices 0 ≤ Real.log (Real.exp 1 / Real.sqrt 2) by simpa
-    apply Real.log_nonneg
-    grw [one_le_div (by positivity), ← Real.add_one_le_exp, Real.sqrt_le_left (by positivity)]
-    norm_num
-  set r := ((1 : ℝ) / (2 * (k + 1) + 1)) ^ 2 with hr
-  have hr1 : r < 1 := by grw [hr, ← k.zero_le]; norm_num
-  suffices HasSum (fun j ↦ r ^ (j + 1) / 3) ((1 : ℝ) / (12 * (k + 1 : ℕ) * ((k + 1 : ℕ) + 1))) by
-    refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_diff_hasSum k) this
-    simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by norm_cast; grind
-  convert ((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3 using 1
-  push_cast
-  simp only [hr, field]
-  ring_nf
-  field
 
 end Stirling
