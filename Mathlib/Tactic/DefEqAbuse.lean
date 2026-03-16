@@ -515,7 +515,8 @@ elab_rules : command
             result.synthGroupedFailures.foldlM (init := {}) fun acc (app, _) => do
               return acc.insert (extractInstName (← app.toString))
           instStrings := instStrings.union result.permissiveSuccessApps
-          let instNames := (Std.HashSet.ofArray (instStrings.toArray.map parseTraceInstName)).toArray
+          let instNames :=
+            (Std.HashSet.ofArray (instStrings.toArray.map parseTraceInstName)).toArray
           runTermElabM fun _ => findLeakyInstances instNames
         catch _ => pure #[]
         unless leaky.isEmpty do
