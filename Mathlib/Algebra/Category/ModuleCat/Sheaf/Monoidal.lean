@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ColimitFunctorMonoidal
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Point
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Localization
 
@@ -107,9 +108,12 @@ noncomputable instance :
           (R₀ := R.obj ⋙ forget₂ _ _) (R := ((sheafCompose J (forget₂ _ _)).obj R)))
             (𝟙 _)).counit.app (unit _)) :)).Monoidal
 
+section
+
+variable (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)))
+
 set_option backward.isDefEq.respectTransparency false in
-instance (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R))) :
-    PreservesColimitsOfSize.{w, w} (tensorLeft F) where
+instance : PreservesColimitsOfSize.{w, w} (tensorLeft F) where
   preservesColimitsOfShape {K _}:= ⟨fun {G} ↦ by
     let R' := (sheafCompose J (forget₂ _ RingCat)).obj R
     let α : R.obj ⋙ forget₂ CommRingCat RingCat ⟶ R'.obj := 𝟙 _
@@ -135,18 +139,27 @@ instance (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R))) :
         (asIso (adj.counit.app F)).symm) ≪≫ Functor.Monoidal.commTensorLeft S _
     apply preservesColimit_of_natIso _ e.symm⟩
 
-instance (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R))) :
-    PreservesColimitsOfSize.{w, w} (tensorRight F) :=
+instance : PreservesColimitsOfSize.{w, w} (tensorRight F) :=
   preservesColimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight F)
 
-instance (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R))) :
-    PreservesFiniteColimits (tensorLeft F) :=
+instance : PreservesFiniteColimits (tensorLeft F) :=
   PreservesColimitsOfSize.preservesFiniteColimits (tensorLeft F)
 
-instance (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R))) :
-    PreservesFiniteColimits (tensorRight F) :=
+instance : PreservesFiniteColimits (tensorRight F) :=
   PreservesColimitsOfSize.preservesFiniteColimits (tensorRight F)
 
-instance : MonoidalPreadditive (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)) := sorry
+instance : (tensorLeft F).Additive :=
+  Functor.additive_of_preserves_binary_coproducts _
+
+instance : (tensorRight F).Additive :=
+  Functor.additive_of_preserves_binary_coproducts _
+
+end
+
+instance : MonoidalPreadditive (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)) where
+  whiskerLeft_zero {F _ _} := by apply (tensorLeft F).map_zero
+  whiskerLeft_add {F _ _} _ _ := by apply (tensorLeft F).map_add
+  zero_whiskerRight {F} := by apply (tensorRight F).map_zero
+  add_whiskerRight {F _ _} _ _ := by apply (tensorRight F).map_add
 
 end SheafOfModules

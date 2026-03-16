@@ -207,6 +207,13 @@ lemma additive_of_preserves_binary_products
   have := preservesBinaryBiproducts_of_preservesBinaryProducts F
   exact Functor.additive_of_preservesBinaryBiproducts F
 
+lemma additive_of_preserves_binary_coproducts
+    [HasBinaryCoproducts C] [PreservesColimitsOfShape (Discrete WalkingPair) F]
+    [F.PreservesZeroMorphisms] : F.Additive := by
+  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryCoproducts
+  have := preservesBinaryBiproducts_of_preservesBinaryCoproducts F
+  exact Functor.additive_of_preservesBinaryBiproducts F
+
 end
 
 end
