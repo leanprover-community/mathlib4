@@ -221,6 +221,17 @@ theorem ramificationIdxIn_mul_ramificationIdxIn [IsDomain A] [IsTorsionFree A B]
   rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
     ramificationIdxIn_eq_ramificationIdx P Q GBC, ramificationIdx_algebra_tower' p P Q]
 
+variable {p} in
+omit hp in
+include G GAC GBC in
+theorem ramificationIdxIn_mul_ramificationIdxIn' [IsDomain A] [IsTorsionFree A B]
+    [IsDedekindDomain B] [IsDedekindDomain C] [P.LiesOver p] :
+    p.ramificationIdxIn B * P.ramificationIdxIn C = p.ramificationIdxIn C := by
+  obtain ⟨⟨Q, _, hQ⟩⟩ := P.nonempty_primesOver (S := C)
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
+    ramificationIdxIn_eq_ramificationIdx P Q GBC, ramificationIdx_algebra_tower' p P Q]
+
 end tower
 
 end RamificationInertia
@@ -274,7 +285,7 @@ theorem ncard_primesOver_mul_ncard_primesOver (hp : p ≠ ⊥) :
     _ = ((p.primesOver B).ncard * (p.ramificationIdxIn B * p.inertiaDegIn B)) *
           ((P.primesOver C).ncard * (P.ramificationIdxIn C * P.inertiaDegIn C)) := by
       rw [← inertiaDegIn_mul_inertiaDegIn p P G C GAC GBC,
-        ← ramificationIdxIn_mul_ramificationIdxIn P G C GAC GBC]
+        ← ramificationIdxIn_mul_ramificationIdxIn' P G C GAC GBC]
       ring
     _ = Nat.card GAC := by
       rw [ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B G,
