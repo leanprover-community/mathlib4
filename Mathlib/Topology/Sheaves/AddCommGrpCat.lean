@@ -24,26 +24,26 @@ open scoped AlgebraicGeometry
 
 variable {X : TopCat.{u}} {U : Opens X}
 
-namespace ShortComplex.Exact
+namespace CategoryTheory.ShortComplex.Exact
 
 set_option backward.isDefEq.respectTransparency false in
 theorem presheaf_sections
     {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
-    (hS : S.Exact) {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) :
-    ∃ (t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
+    (hS : S.Exact) {s : S.X₂.obj (Opposite.op U)} (h : S.g.app (Opposite.op U) s = 0) :
+    ∃ (t : S.X₁.obj (Opposite.op U)), S.f.app (Opposite.op U) t = s := by
   dsimp [Presheaf] at S
-  let F := (evaluation (Opens X)ᵒᵖ AddCommGrpCat.{u}).obj (op U)
+  let F := (evaluation (Opens X)ᵒᵖ AddCommGrpCat.{u}).obj (Opposite.op U)
   exact (ShortComplex.ab_exact_iff (S.map F)).mp (((Functor.exact_tfae F).out 1 3 rfl rfl).mpr
     ⟨inferInstance, inferInstance⟩ S hS) _ h
 
-lemma sheaf_sections_of_mono {S : ShortComplex (Sheaf AddCommGrpCat X)}
-    (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.obj.obj (op U)) (h : S.g.hom.app (op U) s = 0) :
-    ∃ (t : S.X₁.obj.obj (op U)), S.f.hom.app (op U) t = s :=
-  ShortComplex.Exact.presheaf_sections (((Functor.preservesFiniteLimits_tfae
-  (Sheaf.forget AddCommGrpCat X)).out 1 3 rfl rfl).mpr (inferInstanceAs
-  (Limits.PreservesFiniteLimits (Sheaf.forget AddCommGrpCat X))) S ⟨hS, hf⟩).left h
+lemma sheaf_sections_of_mono {S : ShortComplex (TopCat.Sheaf AddCommGrpCat X)}
+    (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.obj.obj (Opposite.op U))
+    (h : S.g.hom.app (Opposite.op U) s = 0) :
+    ∃ (t : S.X₁.obj.obj (Opposite.op U)), S.f.hom.app (Opposite.op U) t = s :=
+  (((Functor.preservesFiniteLimits_tfae (Sheaf.forget ..)).out 1 3 rfl rfl).mpr
+    inferInstance S ⟨hS, hf⟩).left.presheaf_sections h
 
-end ShortComplex.Exact
+end CategoryTheory.ShortComplex.Exact
 
 namespace TopCat
 
