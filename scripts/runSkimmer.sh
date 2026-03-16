@@ -95,9 +95,7 @@ fi
 # TODO: duplicating the oleans is not ideal. Can we re-use the packages already available locally?
 # Setting `packagesDir` does not seem to work.
 if [[ "${target_pkg}" == "mathlib" ]]; then
-  with_cache="MATHLIB_NO_CACHE_ON_UPDATE=1 "
-else
-  with_cache=""
+  export MATHLIB_NO_CACHE_ON_UPDATE=1
 fi
 
 if [[ "${shouldInit}" ]]; then
@@ -119,18 +117,18 @@ EOF
 /lean-toolchain
 EOF
   # Creates toolchain, manifest, etc.
-  (cd "${pkg}" && ${with_cache}lake update)
+  (cd "${pkg}" && lake update)
 else
   if [[ -f "${pkg}/lakefile.lean" && -f "${pkg}/.gitignore" ]]; then
     if [[ "${lakeUpdate}" ]]; then
       echo "Only running \`lake update -v\` in \`SideSkimmer\`; skipping run."
-      (cd "${pkg}" && ${with_cache}lake update -v)
+      (cd "${pkg}" && lake update -v)
       exit 0
     fi
     # Only run `lake update` if `--no-update` is not present.
     if [[ ! "${noUpdate}" ]]; then
       echo "Running \`lake update\` in \`SideSkimmer\`. Use \`runSkimmer.sh --no-update\` to skip this step."
-      (cd "${pkg}" && ${with_cache}lake update)
+      (cd "${pkg}" && lake update)
     elif [[ ! -f "${pkg}/lake-manifest.json" ]]; then
       echo "Expected manifest at \`${pkg}/lake-manifest.json\`."
       echo "Please exclude the \`--no-update\` flag to create one."
