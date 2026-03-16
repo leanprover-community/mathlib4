@@ -81,10 +81,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · cases m
     · cases hm rfl
     · simp
-  · cases m
-    · cases hm rfl
-    simp only [zero_add, digits_one, List.getLast_replicate_succ]
-    exact Nat.one_ne_zero
+  · simp
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro hn
@@ -436,7 +433,8 @@ theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
 theorem fixedLengthDigits_zero {b : ℕ} (hb : 1 < b) :
     fixedLengthDigits hb 0 = {[]} := by
   ext
-  simpa [eq_comm, fixedLengthDigits] using by grind
+  simp [fixedLengthDigits]
+  grind
 
 @[simp]
 theorem fixedLengthDigits_one {b : ℕ} (hb : 1 < b) :

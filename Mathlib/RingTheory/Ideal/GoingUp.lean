@@ -367,7 +367,6 @@ lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
     I.map f = ⊤ ↔ I = ⊤ :=
   map_eq_top_iff_of_ker_le f (by simp [(RingHom.injective_iff_ker_eq_bot f).mp hf₁]) hf₂
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
 a prime `p` of `R`, then any `x ∉ q` divides some `r ∉ p`. -/
 lemma exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton
