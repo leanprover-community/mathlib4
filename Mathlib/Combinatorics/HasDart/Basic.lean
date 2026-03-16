@@ -33,8 +33,9 @@ graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 universe u'
 
 /-- The `HasDart` typeclass abstracts over graph-like structures by encoding the minimal structure
-required to reason about directed edges ("darts") and adjacency. `HasDart.{0}` can be used to reason
-about graphs with `Prop`-valued darts. (`SimpleGraph` & `Digraph`) -/
+required to reason about directed edges ("darts") and adjacency. This terminology comes from
+combinatorial maps, and they are also known as "half-edges" or "bonds." `HasDart.{0}` can be used to
+reason about graphs with `Prop`-valued darts. (`SimpleGraph` & `Digraph`) -/
 class HasDart (α : outParam Type*) (Gr : Type*) where
   /-- The set of vertices of a graph-like structure. -/
   verts (G : Gr) : Set α
@@ -72,9 +73,8 @@ lemma dart.left_mem (d : dart G v w) : v ∈ V(G) :=
 lemma dart.right_mem (d : dart G v w) : w ∈ V(G) :=
   d.adj.right_mem
 
-/-- A `prodDart` is an oriented edge, implemented as an ordered pair of vertices with .
-This terminology comes from combinatorial maps, and they are also known as "half-edges"
-or "bonds." -/
+/-- A `prodDart` is an oriented edge or A form of dart that does not have its end points in its
+type. -/
 structure prodDart [HasDart α Gr] (G : Gr) : Type (max u' u_1) extends α × α where
   /-- `fst` and `snd` have `dart` between them. -/
   dart' : (dart G fst snd : Sort u')
