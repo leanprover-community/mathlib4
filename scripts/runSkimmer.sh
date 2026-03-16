@@ -49,11 +49,11 @@ usage() {
 Usage: runSkimmer.sh [[--no-update] [--on [tgts...]] | --lake-update | --init | -h | --help]
 
 Options:
-  [no arguments]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` on targets configured in \`runSkimmer.sh\`. (Does not get mathlib's cache.)
-  --on [tgts...]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` for \`tgt\` in the supplied \`tgts\`. Each `tgt` may be lake target syntax for the current package or a library or module therein. (Does not get mathlib's cache.)
+  [no arguments]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` on targets configured in \`runSkimmer.sh\`. (When refactoring mathlib, does not get mathlib's cache.)
+  --on [tgts...]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` for \`tgt\` in the supplied \`tgts\`. Each `tgt` may be lake target syntax for the current package or a library or module therein. (When refactoring mathlib, does not get mathlib's cache.)
   --no-update     Only run \`lake build <tgts>:applyCurrentTryThis\`, without first running \`lake update\` in \`SideSkimmer\`. Applies both the default targets and those supplied with \`--on\`.
   --init          Set up the \`SideSkimmer\` side package. This only needs to be done when first introducing \`runSkimmer.sh\` to a new repo.
-  --lake-update   Only run \`lake update -v\` in \`SideSkimmer\`, and do not get mathlib's cache while doing so.
+  --lake-update   Only run \`lake update -v\` in \`SideSkimmer\`, and if refactoring mathlib, do not get mathlib's cache while doing so.
 EOF
 }
 
@@ -90,6 +90,16 @@ else
   checkNoArg "$1"
 fi
 
+# If we're refactoring mathlib, don't get the cache.
+# If not, mathlib may be a dependency, in which case it will live in `SideSkimmer/.lake/packages`.
+# TODO: duplicating the oleans is not ideal. Can we re-use the packages already available locally?
+# Setting `packagesDir` does not seem to work.
+if [[ "${target_pkg}" == "mathlib" ]]; then
+  with_cache="MATHLIB_NO_CACHE_ON_UPDATE=1 "
+else
+  with_cache=""
+fi
+
 if [[ "${shouldInit}" ]]; then
   mkdir -p "${pkg}"
   cat <<EOF > "${pkg}/lakefile.lean"
@@ -109,18 +119,18 @@ EOF
 /lean-toolchain
 EOF
   # Creates toolchain, manifest, etc.
-  (cd "${pkg}" && MATHLIB_NO_CACHE_ON_UPDATE=1 lake update)
+  (cd "${pkg}" && ${with_cache}lake update)
 else
   if [[ -f "${pkg}/lakefile.lean" && -f "${pkg}/.gitignore" ]]; then
     if [[ "${lakeUpdate}" ]]; then
       echo "Only running \`lake update -v\` in \`SideSkimmer\`; skipping run."
-      (cd "${pkg}" && MATHLIB_NO_CACHE_ON_UPDATE=1 lake update -v)
+      (cd "${pkg}" && ${with_cache}lake update -v)
       exit 0
     fi
     # Only run `lake update` if `--no-update` is not present.
     if [[ ! "${noUpdate}" ]]; then
       echo "Running \`lake update\` in \`SideSkimmer\`. Use \`runSkimmer.sh --no-update\` to skip this step."
-      (cd "${pkg}" && MATHLIB_NO_CACHE_ON_UPDATE=1 lake update)
+      (cd "${pkg}" && ${with_cache}lake update)
     elif [[ ! -f "${pkg}/lake-manifest.json" ]]; then
       echo "Expected manifest at \`${pkg}/lake-manifest.json\`."
       echo "Please exclude the \`--no-update\` flag to create one."
