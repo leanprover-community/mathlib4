@@ -76,14 +76,14 @@ lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
 lemma reflectionPerm_mem_lieIdealRootSet (I : LieIdeal K L) (i : H.root)
     {α : H.root} (hα : α ∈ lieIdealRootSet I) :
     (rootSystem H).reflectionPerm i α ∈ lieIdealRootSet I := by
+  let S := rootSystem H
   simp only [mem_lieIdealRootSet] at hα ⊢
-  by_cases hp : (rootSystem H).pairing α i = 0
-  · rwa [(rootSystem H).reflectionPerm_eq_of_pairing_eq_zero hp]
+  by_cases hp : S.pairing α i = 0
+  · rwa [S.reflectionPerm_eq_of_pairing_eq_zero hp]
   · have hi := rootSpace_le_ideal_of_apply_coroot_ne_zero I hα
-      (mt (rootSystem H).pairing_eq_zero_iff.mpr hp)
-    have h_neg : (rootSystem H).pairing ((rootSystem H).reflectionPerm i α) i ≠ 0 := by
-      rwa [← (rootSystem H).pairing_reflectionPerm i α i,
-        (rootSystem H).pairing_reflectionPerm_self_right, neg_ne_zero]
+      (mt S.pairing_eq_zero_iff.mpr hp)
+    have h_neg : S.pairing (S.reflectionPerm i α) i ≠ 0 := by
+      rwa [← S.pairing_reflectionPerm i α i, S.pairing_reflectionPerm_self_right, neg_ne_zero]
     exact rootSpace_le_ideal_of_apply_coroot_ne_zero I hi h_neg
 
 /-- The submodule spanned by roots of a Lie ideal is invariant under all root reflections. -/
