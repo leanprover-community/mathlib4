@@ -375,7 +375,7 @@ theorem scanl_get (i : Fin n) :
   | succ n hn =>
     rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine Fin.cases ?_ ?_ i
-    · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
+    · simp
     · intro i'
       simp only [hn, Fin.castSucc_succ, get_cons_succ]
 
