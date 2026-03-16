@@ -44,7 +44,7 @@ public noncomputable section
 
 open Function Set Equiv Order
 
-universe u v
+universe u v w
 variable {α β : Type u} [LinearOrder α] [LinearOrder β] {δ : Sort v}
 
 /-- Equivalence relation on linear orders on arbitrary types in universe `u`, given by order
@@ -93,6 +93,9 @@ theorem type_toType (o : OrderType) : type o.ToType = o := surjInv_eq Quot.exist
 
 theorem type_eq_type : type α = type β ↔ Nonempty (α ≃o β) :=
   Quotient.eq'
+
+def toType_orderIso : (type β).ToType ≃o β :=
+  Nonempty.some <| type_eq_type.mp (by simp)
 
 theorem type_congr (h : α ≃o β) : type α = type β :=
   type_eq_type.2 ⟨h⟩
@@ -236,10 +239,43 @@ theorem pos_iff_ne_zero {o : OrderType} : 0 < o ↔ o ≠ 0 where
     rw [← type_toType o]
     exact ⟨⟨Function.Embedding.ofIsEmpty, nofun⟩, fun ⟨f⟩ ↦ IsEmpty.elim inferInstance f.toFun⟩
 
+/-- The universe lift operation on order types. You can specify the universes explicitly with
+  `lift.{u v} : OrderType.{v} → OrderType.{max v u}` -/
+@[pp_with_univ]
+def lift (o : OrderType.{v}) : OrderType.{max v u} :=
+  o.liftOn (δ := OrderType.{max v u}) (fun w _ ↦ type (ULift.{u,v} w)) (fun α _ β _ e ↦
+    type_congr <| ((ULift.orderIso.{u, v} (α := α)).trans (type_eq_type.mp e).some).trans
+    (ULift.orderIso.{u, v} (α := β)).symm)
+
+@[simp]
+theorem type_uLift : type (ULift.{v, u} α) = lift.{v} (type α) := by
+  rfl
+
+/-- An order type lifted to a lower or equal universe equals itself. -/
+theorem lift_id' (o : OrderType.{max u v}) : lift.{u} o = o :=
+  inductionOn o fun _ ↦ type_congr ULift.orderIso
+
+/-- An order type lifted to the same universe equals itself. -/
+@[simp]
+theorem lift_id (o : OrderType) : lift.{u, u} o = o :=
+  lift_id'.{u, u} o
+
+/-- A OrderType lifted to the zero universe equals itself. -/
+@[simp]
+theorem lift_uzero (o : OrderType.{u}) : lift.{0} o = o :=
+  lift_id'.{0, u} o
+
+@[simp]
+theorem lift_lift.{u_1} (o : OrderType.{u_1}) : lift.{w} (lift.{v} o) = lift.{max v w} o :=
+  inductionOn o fun _ => (ULift.orderIso.trans <| ULift.orderIso.trans ULift.orderIso.symm).type_congr
+
+theorem out_lift_equiv (o : OrderType.{u}) : Nonempty ((lift.{v} o).ToType ≃o o.ToType) := by
+  rw [← type_toType o, ← type_uLift, type_toType]
+  exact ⟨toType_orderIso.trans ULift.orderIso⟩
+
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
--- TODO: define `OrderType.lift` and redefine this using it.
 @[expose]
-def omega0 : OrderType := type <| ULift ℕ
+def omega0 : OrderType := OrderType.lift <| type ℕ
 
 @[inherit_doc]
 scoped notation "ω" => OrderType.omega0
