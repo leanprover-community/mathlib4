@@ -138,7 +138,7 @@ else
       echo "Please exclude the \`--no-update\` flag to create one."
       exit 1
     fi
-    echo "Note: \`runSkimmer.sh\` uses available oleans and builds necessary ones. Consider getting the cache prior to running if possible."
+    echo "Note: \`runSkimmer.sh\` uses available oleans from the targeted package and builds necessary ones. Consider getting the cache prior to running if possible."
     for tgt in "${tgts[@]}"; do
       cmd=(lake build "${tgt}:applyCurrentTryThis")
       echo "Running \`${cmd[@]}\`."
