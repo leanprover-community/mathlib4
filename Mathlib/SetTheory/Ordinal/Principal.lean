@@ -450,8 +450,8 @@ theorem add_lt_add_of_lt_omega0_opow_log_add_mod {o o' : Ordinal} (hle : ω ^ lo
   have hr := mod_lt o <| opow_ne_zero (log ω o) omega0_ne_zero
   have hr' := mod_lt o' <| opow_ne_zero (log ω o) omega0_ne_zero
   have hlog : log ω o' = log ω o := log_eq_iff one_lt_omega0 h0' _ |>.mpr <| by
-    refine ⟨hle, lt_omega0_opow_succ.mpr ⟨1 + 1, hlt.trans_le ?_⟩⟩
-    grw [hr, Nat.cast_add, Nat.cast_one, mul_add_one, mul_one]
+    refine ⟨hle, lt_omega0_opow_succ.mpr ⟨2, hlt.trans_le ?_⟩⟩
+    grw [hr, Nat.cast_two, Ordinal.mul_two]
   have hc' := hlog ▸ div_opow_log_pos ω h0'
   rw [add_assoc, ← add_assoc <| o % _, add_absorp hr <| le_mul_left _ hc', add_assoc,
     ← add_assoc <| o' % _, add_absorp hr' <| le_mul_left _ <| div_opow_log_pos ω h0, ← add_assoc,
