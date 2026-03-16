@@ -410,7 +410,9 @@ def whiskering (E : K ⥤ J) : Cone F ⥤ Cone (E ⋙ F) where
 
 /-- Whiskering by an equivalence gives an equivalence between categories of cones.
 -/
-@[simps]
+@[to_dual (attr := simps)
+/-- Whiskering by an equivalence gives an equivalence between categories of cones.
+-/]
 def whiskeringEquivalence (e : K ≌ J) : Cone F ≌ Cone (e.functor ⋙ F) where
   functor := whiskering e.functor
   inverse := whiskering e.inverse ⋙ postcompose (e.invFunIdAssoc F).hom
@@ -426,7 +428,10 @@ def whiskeringEquivalence (e : K ≌ J) : Cone F ≌ Cone (e.functor ⋙ F) wher
 /-- The categories of cones over `F` and `G` are equivalent if `F` and `G` are naturally isomorphic
 (possibly after changing the indexing category by an equivalence).
 -/
-@[simps! functor inverse unitIso counitIso]
+@[to_dual (attr := simps! functor inverse unitIso counitIso)
+/-- The categories of cocones over `F` and `G` are equivalent if `F` and `G` are naturally
+isomorphic (possibly after changing the indexing category by an equivalence).
+-/]
 def equivalenceOfReindexing {G : K ⥤ C} (e : K ≌ J) (α : e.functor ⋙ F ≅ G) : Cone F ≌ Cone G :=
   (whiskeringEquivalence e).trans (postcomposeEquivalence α)
 
@@ -475,7 +480,10 @@ instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful wher
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cones over `F` and cones over `F ⋙ e.functor`.
 -/
-@[simps]
+@[to_dual (attr := simps)
+/-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
+equivalence between cocones over `F` and cocones over `F ⋙ e.functor`.
+-/]
 def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :=
   let f : (F ⋙ e.functor) ⋙ e.inverse ≅ F :=
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
@@ -503,47 +511,6 @@ instance reflects_cone_isomorphism (F : C ⥤ D) [F.ReflectsIsomorphisms] (K : J
 end
 
 end Cone
-
-namespace Cocone
-
-/-- Whiskering by an equivalence gives an equivalence between categories of cones.
--/
-@[to_dual existing, simps]
-def whiskeringEquivalence (e : K ≌ J) : Cocone F ≌ Cocone (e.functor ⋙ F) where
-  functor := whiskering e.functor
-  inverse :=
-    whiskering e.inverse ⋙
-      precompose
-        ((Functor.leftUnitor F).inv ≫
-          whiskerRight e.counitIso.inv F ≫ (Functor.associator _ _ _).inv)
-  unitIso := NatIso.ofComponents fun s => ext (Iso.refl _)
-  counitIso := NatIso.ofComponents fun s =>
-    ext (Iso.refl _) fun k => by simpa [e.counitInv_app_functor k] using s.w (e.unit.app k)
-
-/--
-The categories of cocones over `F` and `G` are equivalent if `F` and `G` are naturally isomorphic
-(possibly after changing the indexing category by an equivalence).
--/
-@[to_dual existing, simps! functor_obj]
-def equivalenceOfReindexing {G : K ⥤ C} (e : K ≌ J) (α : e.functor ⋙ F ≅ G) : Cocone F ≌ Cocone G :=
-  (whiskeringEquivalence e).trans (precomposeEquivalence α)
-
-variable (F)
-
-
-/-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
-equivalence between cocones over `F` and cocones over `F ⋙ e.functor`.
--/
-@[to_dual existing, simps]
-def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functor) :=
-  let f : (F ⋙ e.functor) ⋙ e.inverse ≅ F :=
-    Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
-  { functor := functoriality F e.functor
-    inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (precomposeEquivalence f).functor
-    unitIso := NatIso.ofComponents fun c => ext (e.unitIso.app _)
-    counitIso := NatIso.ofComponents fun c => ext (e.counitIso.app _) }
-
-end Cocone
 
 namespace Cones
 
