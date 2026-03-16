@@ -42,7 +42,7 @@ tgts=("Mathlib")
 # --------------------
 
 echo "Note: the functionality provided by this script is experimental and subject to change. This script will become unnecessary in the future."
-echo "Please report any issues—especially incomprehensible ones—to Thomas Murrills on Zulip."
+echo "Please report any issues (especially incomprehensible ones!) to Thomas Murrills on Zulip."
 
 usage() {
   cat <<EOF
@@ -130,7 +130,7 @@ else
       echo "Please exclude the \`--no-update\` flag to create one."
       exit 1
     fi
-    echo "Note: getting the cache or building prior to \`runSkimmer.sh\` should speed things up."
+    echo "Note: \`runSkimmer.sh\` uses available oleans and builds necessary ones. Consider getting the cache prior to running if possible."
     for tgt in "${tgts[@]}"; do
       cmd=(lake build "${tgt}:applyCurrentTryThis")
       echo "Running \`${cmd[@]}\`."
