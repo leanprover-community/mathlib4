@@ -129,7 +129,6 @@ theorem fermatPsp_base_one {n : ℕ} (h₁ : 1 < n) (h₂ : ¬n.Prime) : FermatP
 -- pseudoprimes
 section HelperLemmas
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a ^ b - 1) / (a - 1) := by
   change 1 < _
   have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using Nat.sub_dvd_pow_sub_pow a 1 b
@@ -144,7 +143,6 @@ private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^
     _ = a ^ 3 := by rw [Nat.pow_succ a 2]
     _ ≤ a ^ b := pow_right_mono₀ (Nat.le_of_succ_le ha) hb
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem AB_id_helper (b p : ℕ) (_ : 2 ≤ b) (hp : Odd p) :
     (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := by
   have q₁ : b - 1 ∣ b ^ p - 1 := by simpa only [one_pow] using Nat.sub_dvd_pow_sub_pow b 1 p
@@ -186,7 +184,6 @@ because those are the hypotheses for `psp_from_prime_psp`.
 private def psp_from_prime (b : ℕ) (p : ℕ) : ℕ :=
   (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1))
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This is a proof that the number produced using `psp_from_prime` is actually pseudoprime to base `b`.
 The primary purpose of this lemma is to help prove `exists_infinite_pseudoprimes`.
@@ -286,7 +283,6 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   -- Therefore, `A * B ∣ b ^ (A * B - 1) - 1`.
   exact dvd_trans ha₇ ha₈
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This is a proof that the number produced using `psp_from_prime` is greater than the prime `p` used
 to create it. The primary purpose of this lemma is to help prove `exists_infinite_pseudoprimes`.

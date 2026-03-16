@@ -72,7 +72,6 @@ theorem basis_repr_tmul (a : A) (m : M) :
     (basis A b).repr (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) :=
   basisAux_tmul b _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem basis_repr_symm_apply (a : A) (i : ι) :
     (basis A b).repr.symm (Finsupp.single i a) = a ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
   simp [basis, LinearEquiv.coe_symm_mk', Equiv.uniqueProd_symm_apply, basisAux]

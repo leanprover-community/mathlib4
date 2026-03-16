@@ -36,6 +36,15 @@ namespace algebraAdjoinAdjoin
 scoped instance : Algebra (Algebra.adjoin F S) (adjoin F S) :=
   (Subalgebra.inclusion <| algebra_adjoin_le_adjoin F S).toAlgebra
 
+@[simp]
+theorem coe_algebraMap (x : Algebra.adjoin F S) :
+    (algebraMap (Algebra.adjoin F S) (adjoin F S) x : E) = x := rfl
+
+@[simp]
+theorem algebraMap_eq_gen_self {x : E} :
+    algebraMap (Algebra.adjoin F {x}) F⟮x⟯ ⟨x, Algebra.self_mem_adjoin_singleton F x⟩ =
+    AdjoinSimple.gen F x := rfl
+
 scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
     IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
   Subalgebra.inclusion.isScalarTower_left (algebra_adjoin_le_adjoin F S) _
@@ -109,7 +118,6 @@ variable (F E) in
 lemma fg_top [Algebra.EssFiniteType F E] : (⊤ : IntermediateField F E).FG := by
   rwa [fg_top_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma essFiniteType_iff {K : IntermediateField F E} :
     Algebra.EssFiniteType F K ↔ K.FG := by
   suffices (∃ s : Finset E, (s : Set E) ⊆ K ∧ adjoin F ↑s = K) ↔

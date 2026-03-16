@@ -34,12 +34,12 @@ section Unital
 section RCLike
 
 variable (𝕜 : Type*) {A : Type*} {p : A → Prop} [RCLike 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A]
-variable [TopologicalSpace A] [StarModule 𝕜 A] [ContinuousFunctionalCalculus 𝕜 A p]
+variable [TopologicalSpace A] [StarModule 𝕜 A]
+variable [ClosedEmbeddingContinuousFunctionalCalculus 𝕜 A p]
 variable [IsTopologicalRing A] [ContinuousStar A]
 
 open StarAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped ContinuousFunctionalCalculus in
 theorem range_cfcHom {a : A} (ha : p a) :
     (cfcHom ha (R := 𝕜)).range = elemental 𝕜 a := by
@@ -68,8 +68,8 @@ end RCLike
 
 open scoped NNReal
 variable {A : Type*} [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalSpace A]
-variable [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [IsTopologicalRing A] [T2Space A]
-variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
+variable [ClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [IsTopologicalRing A]
+variable [T2Space A] [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
 lemma range_cfc_nnreal_eq_image_cfc_real (a : A) (ha : 0 ≤ a) :
     Set.range (cfc (R := ℝ≥0) · a) = (cfc · a) '' {f | ∀ x ∈ spectrum ℝ a, 0 ≤ f x} := by
@@ -106,7 +106,7 @@ section RCLike
 
 variable (𝕜 : Type*) {A : Type*} {p : A → Prop} [RCLike 𝕜] [NonUnitalRing A] [StarRing A]
 variable [Module 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
-variable [TopologicalSpace A] [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
+variable [TopologicalSpace A] [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 𝕜 A p]
 variable [ContinuousConstSMul 𝕜 A] [StarModule 𝕜 A] [IsTopologicalRing A] [ContinuousStar A]
 
 open NonUnitalStarAlgebra
@@ -144,8 +144,9 @@ end RCLike
 open scoped NNReal
 variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℝ A] [IsScalarTower ℝ A A]
 variable [SMulCommClass ℝ A A] [TopologicalSpace A]
-variable [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [IsTopologicalRing A] [T2Space A]
-variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
+variable [NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+variable [IsTopologicalRing A] [T2Space A] [PartialOrder A] [NonnegSpectrumClass ℝ A]
+variable [StarOrderedRing A]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real (a : A) (ha : 0 ≤ a) :

@@ -21,7 +21,6 @@ topological space.
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E]
   [ContinuousSMul ℝ E] {s : Set E} {x : E}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A non-empty star convex set is a contractible space. -/
 protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s.Nonempty) :
     ContractibleSpace s := by

@@ -21,8 +21,8 @@ Ostrowski's Theorem for the field `ℚ`: every absolute value on `ℚ` is equiva
 ## Main results
 
 - `Rat.AbsoluteValue.equiv_real_or_padic`: given an absolute value on `ℚ`, it is equivalent
-to the standard Archimedean (Euclidean) absolute value `Rat.AbsoluteValue.real` or to a `p`-adic
-absolute value `Rat.AbsoluteValue.padic p` for a unique prime number `p`.
+  to the standard Archimedean (Euclidean) absolute value `Rat.AbsoluteValue.real` or to a `p`-adic
+  absolute value `Rat.AbsoluteValue.padic p` for a unique prime number `p`.
 
 ## TODO
 
@@ -229,7 +229,6 @@ lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
 
 -- ## Non-archimedean case: end goal
 
-set_option backward.isDefEq.respectTransparency false in
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem equiv_padic_of_bounded :

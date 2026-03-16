@@ -40,7 +40,6 @@ namespace RootPairing
 
 variable {P : RootPairing ι R M N} [P.IsCrystallographic] {i j : ι}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Note that it is often more convenient to use `RootPairing.root_add_zsmul_mem_range_iff` than
 to invoke this lemma directly. -/
 lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
@@ -167,14 +166,12 @@ lemma Iic_chainBotCoeff_eq :
     Iic (P.chainBotCoeff i j) = {k | P.root j - k • P.root i ∈ range P.root} := by
   ext; simp [← P.root_sub_nsmul_mem_range_iff_le_chainBotCoeff h]
 
-set_option backward.isDefEq.respectTransparency false in
 omit h in
 lemma one_le_chainTopCoeff_of_root_add_mem [P.IsReduced] (h : P.root i + P.root j ∈ range P.root) :
     1 ≤ P.chainTopCoeff i j := by
   have h' := P.linearIndependent_of_add_mem_range_root' h
   rwa [← root_add_nsmul_mem_range_iff_le_chainTopCoeff h', one_smul, add_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 omit h in
 lemma one_le_chainBotCoeff_of_root_add_mem [P.IsReduced] (h : P.root i - P.root j ∈ range P.root) :
     1 ≤ P.chainBotCoeff i j := by
@@ -299,7 +296,6 @@ lemma chainBotCoeff_reflectionPerm_right :
   · simpa using this (-P.chainBotCoeff i (-j))
   · simpa using this (-P.chainTopCoeff i j)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma chainBotCoeff_eq_zero_iff :
     P.chainBotCoeff i j = 0 ↔
       ¬ LinearIndependent R ![P.root i, P.root j] ∨ P.root j - P.root i ∉ range P.root := by

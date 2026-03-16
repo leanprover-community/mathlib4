@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Order.OrderDual
+public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Coe
 
 /-!
@@ -48,7 +48,7 @@ decreasing, strictly decreasing
 assert_not_exists Nat.instLinearOrder Int.instLinearOrder
 
 
-open Function OrderDual
+open Function
 
 universe u v w
 
@@ -490,11 +490,11 @@ end Preorder
 
 end LinearOrder
 
-theorem Subtype.mono_coe [Preorder α] (t : Set α) : Monotone ((↑) : Subtype t → α) :=
+theorem Subtype.mono_coe [Preorder α] (p : α → Prop) : Monotone ((↑) : Subtype p → α) :=
   fun _ _ ↦ id
 
-theorem Subtype.strictMono_coe [Preorder α] (t : Set α) :
-    StrictMono ((↑) : Subtype t → α) :=
+theorem Subtype.strictMono_coe [Preorder α] (p : α → Prop) :
+    StrictMono ((↑) : Subtype p → α) :=
   fun _ _ ↦ id
 
 section Preorder
