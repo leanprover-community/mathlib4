@@ -149,7 +149,7 @@ lemma velocity_hasDerivAt_aux {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I) {ι
 point the velocity vector is perpendicular to the acceleration vector. -/
 theorem inner_of_velocity_accel_of_const_speed_eq_zero {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I)
   {ι : Type u} [Finite ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) {r : ℝ}
-  (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = r) {t : ℝ} (ht : t ∈ I) : 
+  (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = r) {t : ℝ} (ht : t ∈ I) :
   inner ℝ (iteratedDeriv 2 c t) (deriv c t) = 0 := by
   have := Fintype.ofFinite ι
   let f (x : ℝ) := inner ℝ (deriv c x) (deriv c x)
