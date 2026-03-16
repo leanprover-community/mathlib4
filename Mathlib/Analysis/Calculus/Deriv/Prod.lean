@@ -98,15 +98,15 @@ theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
   simp only [deriv, fderiv_pi h]
   simp
 
-theorem hasDerivWithinAt_pi_piLp [Fintype ι] {p : ENNReal} [Fact (1 ≤ p)] {f : 𝕜 → PiLp p E'} 
+theorem hasDerivWithinAt_pi_piLp [Fintype ι] {p : ENNReal} [Fact (1 ≤ p)] {f : 𝕜 → PiLp p E'}
   {f' : PiLp p E'} {s : Set 𝕜} {x : 𝕜} :
     HasDerivWithinAt f f' s x ↔ ∀ i, HasDerivWithinAt (fun t ↦ f t i) (f' i) s x := by
-  have hd : HasDerivWithinAt f f' s x ↔ HasFDerivWithinAt f (ContinuousLinearMap.smulRight 
+  have hd : HasDerivWithinAt f f' s x ↔ HasFDerivWithinAt f (ContinuousLinearMap.smulRight
                  (1 : 𝕜 →L[𝕜] 𝕜) f') s x := hasDerivWithinAt_iff_hasFDerivWithinAt
   rw [hd, hasFDerivWithinAt_piLp]
   congr! 3
 
-theorem hasDerivWithinAt_pi_euclidean [Fintype ι] {f : 𝕜 → EuclideanSpace 𝕜 ι} 
+theorem hasDerivWithinAt_pi_euclidean [Fintype ι] {f : 𝕜 → EuclideanSpace 𝕜 ι}
   {f' : EuclideanSpace 𝕜 ι} {s : Set 𝕜} {x : 𝕜} :
     HasDerivWithinAt f f' s x ↔ ∀ i, HasDerivWithinAt (fun t ↦  f t i) (f' i) s x := by
   convert hasDerivWithinAt_pi_piLp using 1
