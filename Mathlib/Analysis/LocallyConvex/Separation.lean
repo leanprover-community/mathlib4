@@ -295,16 +295,6 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   use f.extendRCLikeₗ
   simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
 
-theorem geometric_hahn_banach_of_nonempty_interior'
-  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
-    (hsint : (interior s).Nonempty) :
-    ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) ≤ u) ∧ ∀ b ∈ t, u ≤ re (f b) := by
-  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
-  obtain ⟨f, u, hA', hB'⟩ := _root_.geometric_hahn_banach_of_nonempty_interior' hs ht hst hsint
-  refine ⟨f.extendRCLikeₗ, u, ?_, ?_⟩
-  · simpa [f.extendRCLikeₗ_apply] using hA'
-  · simpa [f.extendRCLikeₗ_apply] using hB'
-
 theorem geometric_hahn_banach_of_nonempty_interior
   (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
     (hsint : (interior s).Nonempty) (htne : t.Nonempty) :
@@ -312,10 +302,23 @@ theorem geometric_hahn_banach_of_nonempty_interior
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, hfne, hA', hB'⟩ :=
     _root_.geometric_hahn_banach_of_nonempty_interior hs ht hst hsint htne
-  refine ⟨f.extendRCLikeₗ, u, fun hzero => ?_, ?_, ?_⟩
+  refine ⟨f.extendRCLikeₗ, u, fun hzero ↦ ?_, ?_, ?_⟩
   · exact hfne <| (StrongDual.extendRCLikeₗ (𝕜 := 𝕜)).injective (by simpa using hzero)
   · simpa [f.extendRCLikeₗ_apply] using hA'
   · simpa [f.extendRCLikeₗ_apply] using hB'
+
+theorem geometric_hahn_banach_of_nonempty_interior'
+  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
+    (hsint : (interior s).Nonempty) :
+    ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) ≤ u) ∧ ∀ b ∈ t, u ≤ re (f b) := by
+  by_cases htne : t.Nonempty
+  · have hsep :
+        ∃ (f : StrongDual 𝕜 E) (u : ℝ),
+          f ≠ 0 ∧ (∀ a ∈ s, re (f a) ≤ u) ∧ ∀ b ∈ t, u ≤ re (f b) :=
+        geometric_hahn_banach_of_nonempty_interior hs ht hst hsint htne
+    obtain ⟨f, u, -, hs', ht'⟩ := hsep
+    exact ⟨f, u, hs', ht'⟩
+  · exact ⟨0, 0, by simp [Set.not_nonempty_iff_eq_empty.mp htne]⟩
 
 /-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
 continuous `𝕜`-linear functional whose real part attains its maximum on `A` at `x`. -/
@@ -324,7 +327,7 @@ theorem geometric_hahn_banach_of_nonempty_interior_point
     ∃ f : StrongDual 𝕜 E, f ≠ 0 ∧ ∀ a ∈ A, re (f a) ≤ re (f x) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, hfne, hA'⟩ := _root_.geometric_hahn_banach_of_nonempty_interior_point hA hxA hAint
-  refine ⟨f.extendRCLikeₗ, fun hzero => ?_, ?_⟩
+  refine ⟨f.extendRCLikeₗ, fun hzero ↦ ?_, ?_⟩
   · exact hfne <| (StrongDual.extendRCLikeₗ (𝕜 := 𝕜)).injective (by simpa using hzero)
   · simpa [f.extendRCLikeₗ_apply] using hA'
 
