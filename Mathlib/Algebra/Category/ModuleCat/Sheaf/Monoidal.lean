@@ -139,4 +139,14 @@ instance (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R))) :
     PreservesColimitsOfSize.{w, w} (tensorRight F) :=
   preservesColimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight F)
 
+instance (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R))) :
+    PreservesFiniteColimits (tensorLeft F) :=
+  PreservesColimitsOfSize.preservesFiniteColimits (tensorLeft F)
+
+instance (F : (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R))) :
+    PreservesFiniteColimits (tensorRight F) :=
+  PreservesColimitsOfSize.preservesFiniteColimits (tensorRight F)
+
+instance : MonoidalPreadditive (SheafOfModules.{w} ((sheafCompose J (forget₂ _ _)).obj R)) := sorry
+
 end SheafOfModules
