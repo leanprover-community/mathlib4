@@ -78,7 +78,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
   · rw [m.choose_zero_right, one_smul, eval_mul, m.sub_zero, iterate_derivative_X_sub_pow_self,
       eval_natCast, nsmul_eq_mul]; rfl
   · intro b hb hb0
-    rw [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_smul, eval_pow,
+    erw [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_smul, eval_pow,
       Nat.sub_sub_self (mem_range_succ_iff.mp hb), eval_sub, eval_X, eval_C, sub_self,
       zero_pow hb0, smul_zero, zero_mul, smul_zero]
 

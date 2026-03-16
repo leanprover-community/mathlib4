@@ -149,8 +149,8 @@ lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
     simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
     cases q <;> simp [Pi.single_apply]
 
-lemma pderiv_sumToIter {σ ι} (p i) :
-    (sumToIter R σ ι p).pderiv i = sumToIter R σ ι (p.pderiv (.inl i)) := by
+lemma pderiv_sumRingEquiv {σ ι} (p i) :
+    (sumRingEquiv R σ ι p).pderiv i = sumRingEquiv R σ ι (p.pderiv (.inl i)) := by
   classical
   induction p using MvPolynomial.induction_on with
   | C a => simp

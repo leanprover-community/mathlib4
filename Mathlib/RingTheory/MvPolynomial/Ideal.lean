@@ -71,6 +71,7 @@ variable (σ R) in
 lemma idealOfVars_fg [Finite σ] : (idealOfVars σ R).FG :=
   Submodule.fg_span <| Set.finite_range _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma idealOfVars_eq_restrictSupportIdeal :
     idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
   apply le_antisymm
@@ -84,6 +85,7 @@ lemma idealOfVars_eq_restrictSupportIdeal :
     simpa [monomial_add_single] using Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
 
 open Pointwise in
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_idealOfVars (n : ℕ) :
     idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((isUpperSet_Ici n).preimage degree_mono) := by
   rw [idealOfVars_eq_restrictSupportIdeal]

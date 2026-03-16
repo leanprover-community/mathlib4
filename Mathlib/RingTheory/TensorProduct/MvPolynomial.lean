@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.Algebra.MvPolynomial.Eval
-public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.IsTensorProduct
 
@@ -58,151 +58,30 @@ variable {σ ι : Type*}
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
 
-section Module
-
-variable [DecidableEq σ]
-variable [AddCommMonoid N] [Module R N]
-
-/-- The tensor product of a polynomial ring by a module is
-  linearly equivalent to a Finsupp of a tensor product -/
-noncomputable def rTensor :
-    MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
-  TensorProduct.finsuppLeft _ _ _ _ _
-
-lemma rTensor_apply_tmul (p : MvPolynomial σ S) (n : N) :
-    rTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
-  TensorProduct.finsuppLeft_apply_tmul p n
-
-lemma rTensor_apply_tmul_apply (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
-    rTensor (p ⊗ₜ[R] n) d = (coeff d p) ⊗ₜ[R] n :=
-  TensorProduct.finsuppLeft_apply_tmul_apply p n d
-
-lemma rTensor_apply_monomial_tmul (e : σ →₀ ℕ) (s : S) (n : N) (d : σ →₀ ℕ) :
-    rTensor (monomial e s ⊗ₜ[R] n) d = if e = d then s ⊗ₜ[R] n else 0 := by
-  simp only [rTensor_apply_tmul_apply, coeff_monomial, ite_tmul]
-
-lemma rTensor_apply_X_tmul (s : σ) (n : N) (d : σ →₀ ℕ) :
-    rTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then (1 : S) ⊗ₜ[R] n else 0 := by
-  rw [rTensor_apply_tmul_apply, coeff_X', ite_tmul]
-
-lemma rTensor_apply (t : MvPolynomial σ S ⊗[R] N) (d : σ →₀ ℕ) :
-    rTensor t d = ((lcoeff S d).restrictScalars R).rTensor N t :=
-  TensorProduct.finsuppLeft_apply t d
-
-@[simp]
-lemma rTensor_symm_apply_single (d : σ →₀ ℕ) (s : S) (n : N) :
-    rTensor.symm (Finsupp.single d (s ⊗ₜ n)) =
-      (monomial d s) ⊗ₜ[R] n :=
-  TensorProduct.finsuppLeft_symm_apply_single (R := R) d s n
-
-/-- The tensor product of the polynomial algebra by a module
-  is linearly equivalent to a Finsupp of that module -/
-noncomputable def scalarRTensor :
-    MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N :=
-  TensorProduct.finsuppScalarLeft _ _ _
-
-lemma scalarRTensor_apply_tmul (p : MvPolynomial σ R) (n : N) :
-    scalarRTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m • n)) :=
-  TensorProduct.finsuppScalarLeft_apply_tmul p n
-
-lemma scalarRTensor_apply_tmul_apply (p : MvPolynomial σ R) (n : N) (d : σ →₀ ℕ) :
-    scalarRTensor (p ⊗ₜ[R] n) d = coeff d p • n :=
-  TensorProduct.finsuppScalarLeft_apply_tmul_apply p n d
-
-lemma scalarRTensor_apply_monomial_tmul (e : σ →₀ ℕ) (r : R) (n : N) (d : σ →₀ ℕ) :
-    scalarRTensor (monomial e r ⊗ₜ[R] n) d = if e = d then r • n else 0 := by
-  rw [scalarRTensor_apply_tmul_apply, coeff_monomial, ite_smul, zero_smul]
-
-lemma scalarRTensor_apply_X_tmul_apply (s : σ) (n : N) (d : σ →₀ ℕ) :
-    scalarRTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then n else 0 := by
-  rw [scalarRTensor_apply_tmul_apply, coeff_X', ite_smul, one_smul, zero_smul]
-
-lemma scalarRTensor_symm_apply_single (d : σ →₀ ℕ) (n : N) :
-    scalarRTensor.symm (Finsupp.single d n) = (monomial d 1) ⊗ₜ[R] n :=
-  TensorProduct.finsuppScalarLeft_symm_apply_single d n
-
-end Module
-
 section Algebra
 
 variable [CommSemiring N] [Algebra R N]
 
 /-- The algebra morphism from a tensor product of a polynomial algebra
   by an algebra to a polynomial algebra -/
-noncomputable def rTensorAlgHom :
-    (MvPolynomial σ S) ⊗[R] N →ₐ[S] MvPolynomial σ (S ⊗[R] N) :=
-  Algebra.TensorProduct.lift
-    (mapAlgHom Algebra.TensorProduct.includeLeft)
-    ((IsScalarTower.toAlgHom R (S ⊗[R] N) _).comp Algebra.TensorProduct.includeRight)
-    (fun p n => by simp [commute_iff_eq, algebraMap_eq, mul_comm])
+noncomputable def rTensorAlgEquiv : S ⊗[R] MvPolynomial σ N ≃ₐ[S] MvPolynomial σ (S ⊗[R] N) :=
+  AddMonoidAlgebra.tensorEquiv R _ _
 
 @[simp]
-lemma coeff_rTensorAlgHom_tmul
-    (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
-    coeff d (rTensorAlgHom (p ⊗ₜ[R] n)) = (coeff d p) ⊗ₜ[R] n := by
-  rw [rTensorAlgHom, Algebra.TensorProduct.lift_tmul]
-  rw [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply,
-    Algebra.TensorProduct.includeRight_apply]
-  rw [algebraMap_eq, mul_comm, coeff_C_mul]
-  simp [coeff_map]
+lemma coeff_rTensorAlgEquiv_tmul (s : S) (p : MvPolynomial σ N) (d : σ →₀ ℕ) :
+    coeff d (rTensorAlgEquiv (s ⊗ₜ[R] p)) = s ⊗ₜ[R] coeff d p := by
+  simp [rTensorAlgEquiv, coeff, MvPolynomial, ← tmul_eq_smul_one_tmul]
 
-section DecidableEq
-variable [DecidableEq σ]
-
-lemma coeff_rTensorAlgHom_monomial_tmul
-    (e : σ →₀ ℕ) (s : S) (n : N) (d : σ →₀ ℕ) :
-    coeff d (rTensorAlgHom (monomial e s ⊗ₜ[R] n)) =
-      if e = d then s ⊗ₜ[R] n else 0 := by
-  simp [ite_tmul]
-
-lemma rTensorAlgHom_toLinearMap :
-    (rTensorAlgHom :
-      MvPolynomial σ S ⊗[R] N →ₐ[S] MvPolynomial σ (S ⊗[R] N)).toLinearMap =
-      rTensor.toLinearMap := by
-  ext d n e
-  dsimp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
-    LinearMap.coe_restrictScalars, AlgHom.toLinearMap_apply]
-  simp only [coe_comp, Function.comp_apply, AlgebraTensorModule.curry_apply, curry_apply,
-    LinearMap.coe_restrictScalars, AlgHom.toLinearMap_apply]
-  rw [coeff_rTensorAlgHom_tmul]
-  simp only [coeff]
-  exact (finsuppLeft_apply_tmul_apply _ _ _).symm
-
-lemma rTensorAlgHom_apply_eq (p : MvPolynomial σ S ⊗[R] N) :
-    rTensorAlgHom (S := S) p = rTensor p := by
-  rw [← AlgHom.toLinearMap_apply, rTensorAlgHom_toLinearMap]
-  rfl
-
-set_option backward.isDefEq.respectTransparency false in
-/-- The tensor product of a polynomial algebra by an algebra
-  is algebraically equivalent to a polynomial algebra -/
-noncomputable def rTensorAlgEquiv :
-    (MvPolynomial σ S) ⊗[R] N ≃ₐ[S] MvPolynomial σ (S ⊗[R] N) := by
-  apply AlgEquiv.ofLinearEquiv rTensor
-  · simp only [Algebra.TensorProduct.one_def]
-    apply symm
-    rw [← LinearEquiv.symm_apply_eq]
-    exact finsuppLeft_symm_apply_single (R := R) (0 : σ →₀ ℕ) (1 : S) (1 : N)
-  · intro x y
-    erw [← rTensorAlgHom_apply_eq (S := S)]
-    simp only [map_mul, rTensorAlgHom_apply_eq]
-    rfl
-
-@[simp]
-lemma rTensorAlgEquiv_apply (x : (MvPolynomial σ S) ⊗[R] N) :
-    rTensorAlgEquiv x = rTensorAlgHom x := by
-  rw [← AlgHom.coe_coe, ← AlgEquiv.toAlgHom_eq_coe]
-  congr 1
-  ext _ d <;> simpa [rTensorAlgEquiv] using rTensor_apply_tmul_apply _ _ d
+lemma coeff_rTensorAlgEquiv_monomial_tmul [DecidableEq σ] (e : σ →₀ ℕ) (s : S) (n : N)
+    (d : σ →₀ ℕ) :
+    coeff d (rTensorAlgEquiv (s ⊗ₜ[R] monomial e n)) = if e = d then s ⊗ₜ[R] n else 0 := by
+  simp [tmul_ite]
 
 /-- The tensor product of the polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra with
   coefficients in that algebra -/
-noncomputable def scalarRTensorAlgEquiv :
-    MvPolynomial σ R ⊗[R] N ≃ₐ[R] MvPolynomial σ N :=
-  rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))
-
-end DecidableEq
+noncomputable def scalarRTensorAlgEquiv : N ⊗[R] MvPolynomial σ R ≃ₐ[N] MvPolynomial σ N :=
+  AddMonoidAlgebra.scalarTensorEquiv R N
 
 variable (R)
 variable (A : Type*) [CommSemiring A] [Algebra R A]
@@ -210,35 +89,23 @@ variable (A : Type*) [CommSemiring A] [Algebra R A]
 /-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
 equivalent to `MvPolynomial σ A`. -/
 noncomputable def algebraTensorAlgEquiv :
-    A ⊗[R] MvPolynomial σ R ≃ₐ[A] MvPolynomial σ A := AlgEquiv.ofAlgHom
-  (Algebra.TensorProduct.lift
-    (Algebra.ofId A (MvPolynomial σ A))
-    (MvPolynomial.mapAlgHom <| Algebra.ofId R A) (fun _ _ ↦ Commute.all _ _))
-  (aeval (fun s ↦ 1 ⊗ₜ X s))
-  (by ext s; simp)
-  (by ext s; simp)
+    A ⊗[R] MvPolynomial σ R ≃ₐ[A] MvPolynomial σ A :=
+  AddMonoidAlgebra.scalarTensorEquiv ..
 
 @[simp]
 lemma algebraTensorAlgEquiv_tmul (a : A) (p : MvPolynomial σ R) :
-    algebraTensorAlgEquiv R A (a ⊗ₜ p) = a • MvPolynomial.map (algebraMap R A) p := by
-  simp [algebraTensorAlgEquiv, Algebra.smul_def]
+    algebraTensorAlgEquiv R A (a ⊗ₜ p) = a • MvPolynomial.map (algebraMap R A) p :=
+  AddMonoidAlgebra.scalarTensorEquiv_tmul ..
 
 @[simp]
 lemma algebraTensorAlgEquiv_symm_X (s : σ) :
-    (algebraTensorAlgEquiv R A).symm (X s) = 1 ⊗ₜ X s := by
-  simp [algebraTensorAlgEquiv]
+    (algebraTensorAlgEquiv R A).symm (X s) = 1 ⊗ₜ X s :=
+  AddMonoidAlgebra.scalarTensorEquiv_symm_single ..
 
 @[simp]
 lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
-    (algebraTensorAlgEquiv R A).symm (monomial m a) = a ⊗ₜ monomial m 1 := by
-  apply @Finsupp.induction σ ℕ _ _ m
-  · simp [algebraTensorAlgEquiv]
-  · intro i n f _ _ hfa
-    simp only [algebraTensorAlgEquiv, AlgEquiv.ofAlgHom_symm_apply] at hfa ⊢
-    simp only [add_comm, monomial_add_single, map_mul, map_pow, aeval_X,
-      Algebra.TensorProduct.tmul_pow, one_pow, hfa]
-    nth_rw 2 [← mul_one a]
-    rw [Algebra.TensorProduct.tmul_mul_tmul]
+    (algebraTensorAlgEquiv R A).symm (monomial m a) = a ⊗ₜ monomial m 1 :=
+  AddMonoidAlgebra.scalarTensorEquiv_symm_single ..
 
 @[simp]
 lemma algebraTensorAlgEquiv_symm_comp_aeval :
@@ -246,8 +113,7 @@ lemma algebraTensorAlgEquiv_symm_comp_aeval :
         MvPolynomial σ A →ₐ[R] A ⊗[R] MvPolynomial σ R).comp
       (MvPolynomial.mapAlgHom (R := R) (S₁ := R) (S₂ := A) (Algebra.ofId R A)) =
       Algebra.TensorProduct.includeRight := by
-  ext
-  simp
+  ext; simp [mapAlgHom, algebraTensorAlgEquiv, X, monomial]
 
 @[simp]
 lemma algebraTensorAlgEquiv_symm_map (x : MvPolynomial σ R) :
@@ -275,29 +141,37 @@ variable {R}
 attribute [local simp] Algebra.smul_def
 
 @[simp] lemma tensorEquivSum_X_tmul_one (i) :
-    tensorEquivSum R σ ι S (.X i ⊗ₜ 1) = .X (.inl i) := by simp [tensorEquivSum]
+    tensorEquivSum R σ ι S (.X i ⊗ₜ 1) = .X (.inl i) := by
+  simp [tensorEquivSum, algebraTensorAlgEquiv, sumAlgEquiv, renameEquiv, rename, X, X, C, monomial]
 
 @[simp] lemma tensorEquivSum_C_tmul_one (r) :
-    tensorEquivSum R σ ι S (.C r ⊗ₜ 1) = .C r := by simp [tensorEquivSum]
+    tensorEquivSum R σ ι S (.C r ⊗ₜ 1) = .C r := by
+  simp [tensorEquivSum, algebraTensorAlgEquiv, sumAlgEquiv, renameEquiv, rename, C, monomial]
 
 @[simp] lemma tensorEquivSum_one_tmul_X (i) :
-    tensorEquivSum R σ ι S (1 ⊗ₜ .X i) = .X (.inr i) := by simp [tensorEquivSum]
+    tensorEquivSum R σ ι S (1 ⊗ₜ .X i) = .X (.inr i) := by
+  simp [tensorEquivSum, algebraTensorAlgEquiv, sumAlgEquiv, renameEquiv, rename, X, C, monomial]
 
 @[simp] lemma tensorEquivSum_one_tmul_C (r) :
-    tensorEquivSum R σ ι S (1 ⊗ₜ .C r) = .C (algebraMap R S r) := by simp [tensorEquivSum]
+    tensorEquivSum R σ ι S (1 ⊗ₜ .C r) = .C (algebraMap R S r) := by
+  simp [tensorEquivSum, algebraTensorAlgEquiv, sumAlgEquiv, renameEquiv, rename, C, monomial]
 
 @[simp] lemma tensorEquivSum_C_tmul_C (r : R) (s : S) :
-    tensorEquivSum R σ ι S (.C s ⊗ₜ .C r) = .C (r • s) := by simp [tensorEquivSum, mul_comm (C s)]
+    tensorEquivSum R σ ι S (.C s ⊗ₜ .C r) = .C (r • s) := by
+  simp [tensorEquivSum, algebraTensorAlgEquiv, sumAlgEquiv, renameEquiv, rename, C, monomial,
+    mul_comm]
 
 @[simp] lemma tensorEquivSum_X_tmul_X (i j) :
-    tensorEquivSum R σ ι S (.X i ⊗ₜ .X j) = .X (.inl i) * .X (.inr j) := by simp [tensorEquivSum]
+    tensorEquivSum R σ ι S (.X i ⊗ₜ .X j) = .X (.inl i) * .X (.inr j) := by
+  simp [tensorEquivSum, algebraTensorAlgEquiv, sumAlgEquiv, renameEquiv, rename, X, C, monomial,
+    Finsupp.mapDomain_add, add_comm]
 
 section Pushout
 
 attribute [local instance] algebraMvPolynomial
 
-instance : Algebra.IsPushout R S (MvPolynomial σ R) (MvPolynomial σ S) where
-  out := .of_equiv (algebraTensorAlgEquiv R S).toLinearEquiv fun _ ↦ by simp
+instance : Algebra.IsPushout R S (MvPolynomial σ R) (MvPolynomial σ S) :=
+  AddMonoidAlgebra.instIsPushout
 
 instance : Algebra.IsPushout R (MvPolynomial σ R) S (MvPolynomial σ S) := .symm inferInstance
 

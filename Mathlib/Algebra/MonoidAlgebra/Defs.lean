@@ -143,36 +143,26 @@ lemma coeff_inj : x.coeff = y.coeff ↔ x = y := coeff_injective.eq_iff
 @[to_additive]
 lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoeff_injective.eq_iff
 
-@[to_additive] instance inhabited : Inhabited R[M] :=
-  inferInstanceAs <| Inhabited <| M →₀ R
+@[to_additive (attr := ext)] alias ⟨ext, _⟩ := coeff_inj
 
-@[to_additive] instance nontrivial [Nontrivial R] [Nonempty M] : Nontrivial R[M] :=
-  inferInstanceAs <| Nontrivial <| M →₀ R
+@[to_additive]
+instance instInhabited : Inhabited R[M] := fast_instance% coeffEquiv.inhabited
 
-@[to_additive] instance unique [Subsingleton R] : Unique R[M] :=
-  inferInstanceAs <| Unique <| M →₀ R
+@[to_additive]
+instance instNontrivial [Nontrivial R] [Nonempty M] : Nontrivial R[M] := coeffEquiv.nontrivial
 
-@[to_additive] instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
-  inferInstanceAs <| DecidableEq <| M →₀ R
+@[to_additive]
+instance instUnique [Subsingleton R] : Unique R[M] := fast_instance% coeffEquiv.unique
 
--- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
-@[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
-  fast_instance% { (inferInstance : AddCommMonoid <| M →₀ R) with
-    nsmul n x := x.mapRange (n • ·) (smul_zero _) }
+@[to_additive]
+instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
+  coeffEquiv.decidableEq
 
-@[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
-  inferInstanceAs <| IsCancelAdd <| M →₀ R
+@[to_additive instAddCommMonoid]
+instance instAddCommMonoid : AddCommMonoid R[M] := fast_instance% coeffEquiv.addCommMonoid
 
--- TODO: Replace this with `coeff`. See https://github.com/leanprover-community/mathlib4/pull/36746
-#adaptation_note /-- Since nightly-2026-03-22,
-this is needed or we get errors in UniversalFactorizationRing.lean -/
-set_option backward.inferInstanceAs.wrap false in
-@[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
-  inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
-
-/-- A copy of `Finsupp.ext` for `MonoidAlgebra`. -/
-@[to_additive (attr := ext) /-- A copy of `Finsupp.ext` for `AddMonoidAlgebra`. -/]
-lemma ext ⦃f g : R[M]⦄ (hfg : ∀ m, f m = g m) : f = g := Finsupp.ext hfg
+@[to_additive]
+instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] := coeffEquiv.isCancelAdd
 
 /-- `MonoidAlgebra.coeff` as an `AddEquiv`. -/
 @[to_additive (attr := simps! apply symm_apply)
@@ -213,7 +203,34 @@ lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → M
 /-- `MonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/
 @[to_additive
 /-- `AddMonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/]
-abbrev single (m : M) (r : R) : R[M] := Finsupp.single m r
+def single (m : M) (r : R) : R[M] := .ofCoeff <| .single m r
+
+@[to_additive (attr := simp)]
+lemma coeff_single (m : M) (r : R) : (single m r).coeff = .single m r := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_single (m : M) (r : R) : ofCoeff (.single m r) = single m r := rfl
+
+@[to_additive]
+lemma single_inj : single m₁ r₁ = single m₂ r₂ ↔ m₁ = m₂ ∧ r₁ = r₂ ∨ r₁ = 0 ∧ r₂ = 0 := by
+  simp [← coeff_inj, Finsupp.single_eq_single_iff]
+
+@[to_additive]
+lemma single_left_inj (hr : r ≠ 0) : single m₁ r = single m₂ r ↔ m₁ = m₂ := by simp [single_inj, hr]
+
+@[to_additive (attr := simp)]
+lemma single_right_inj : single m r₁ = single m r₂ ↔ r₁ = r₂ := by simp +contextual [single_inj]
+
+/-- `MonoidAlgebra.single m r` is injective in `m` if `r ≠ 0`. For injectivity in `r`, see
+`MonoidAlgebra.single_injective`. -/
+@[to_additive
+/-- `AddMonoidAlgebra.single m r` is injective in `m` if `r ≠ 0`. For injectivity in `r`, see
+`AddMonoidAlgebra.single_injective`.-/]
+lemma single_left_injective (hr : r ≠ 0) : Function.Injective fun m : M ↦ single m r :=
+  fun _ _ ↦ (single_left_inj hr).1
+
+@[to_additive]
+lemma single_right_injective : (single m : R → R[M]).Injective := fun _ _ ↦ single_right_inj.1
 
 /-- Remove a term from an element of the monoid algebra. -/
 @[to_additive /-- Remove a term from an element of the additive monoid algebra. -/]
@@ -226,11 +243,10 @@ lemma coeff_erase (m : M) (x : R[M]) : (x.erase m).coeff = x.coeff.erase m := rf
 lemma ofCoeff_erase (m : M) (x : M →₀ R) : ofCoeff (x.erase m) = (ofCoeff x).erase m := rfl
 
 @[to_additive (attr := simp)]
-lemma erase_zero (m : M) : erase m (0 : R[M]) = 0 := by simp [erase]
+lemma erase_zero (m : M) : erase m (0 : R[M]) = 0 := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma erase_single (m : M) (r : R) : erase m (single m r) = 0 := by
-  simp [erase, ofCoeff, coeff]; rfl
+lemma erase_single (m : M) (r : R) : erase m (single m r) = 0 := by ext; simp
 
 /-- Replace the `m`-th coefficient of an element `x` of the monoid algebra by a given value `r : R`.
 If `r = 0`, this is equal to `x.erase m`. -/
@@ -260,15 +276,12 @@ Further results on scalar multiplication can be found in
 
 variable {A : Type*} [SMulZeroClass A R]
 
--- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
 @[to_additive (dont_translate := A) smulZeroClass]
-instance smulZeroClass : SMulZeroClass A R[M] :=
-  fast_instance% { (inferInstance : SMulZeroClass A (M →₀ R)) with
-    smul a x := x.mapRange (a • ·) (smul_zero _) }
+instance smulZeroClass : SMulZeroClass A R[M] := coeffEquiv.smulZeroClass _
 
 section
 -- Ensure that the different smul instances do not create a diamond.
-example : (smulZeroClass (A := ℕ) (R := R) (M := M)).toSMul = addCommMonoid.toNSMul := by
+example : (smulZeroClass (A := ℕ) (R := R) (M := M)).toSMul = instAddCommMonoid.toNSMul := by
   with_reducible_and_instances rfl
 
 -- Ensure that smul has good defeq properties
@@ -278,19 +291,20 @@ example [Monoid A] (a : Units A) (x : R[M]) :
   with_reducible_and_instances rfl
 end
 
-@[to_additive (dont_translate := A) (attr := simp) coeff_smul]
+@[to_additive (attr := simp) (dont_translate := A) coeff_smul]
 lemma coeff_smul (a : A) (x : R[M]) : coeff (a • x) = a • coeff x := rfl
 
-@[to_additive (dont_translate := A) (attr := simp) ofCoeff_smul]
+@[to_additive (attr := simp) (dont_translate := A) ofCoeff_smul]
 lemma ofCoeff_smul (a : A) (x : M →₀ R) : ofCoeff (a • x) = a • ofCoeff x := rfl
 
-@[to_additive (attr := simp) (dont_translate := A) smul_apply]
-lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl
+@[to_additive (dont_translate := A) coeff_smul_apply]
+lemma coeff_smul_apply (a : A) (x : R[M]) (m : M) : coeff (a • x) m = a • coeff x m := rfl
+
+@[deprecated (since := "2026-03-15")] alias smul_apply := coeff_smul_apply
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by
-  ext
-  simp [single, ← Finsupp.smul_single]
+  ext; simp [← Finsupp.smul_single]
 
 @[to_additive (dont_translate := R) smul_single']
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
@@ -316,15 +330,23 @@ instance isCentralScalar [SMulZeroClass N R] [SMulZeroClass Nᵐᵒᵖ R] [IsCen
 
 end SMul
 
-@[to_additive (attr := simp, norm_cast)]
-lemma coe_add (f g : R[G]) : ⇑(f + g) = f + g := rfl
+@[to_additive (attr := simp)]
+lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := by simp [single]
 
-@[to_additive]
-lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := Finsupp.single_zero m
+@[to_additive (attr := simp)]
+lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r₁ + single m r₂ := by
+  ext; simp
 
-@[to_additive]
-lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r₁ + single m r₂ :=
-  Finsupp.single_add m r₁ r₂
+@[to_additive (attr := deprecated coeff_add (since := "2026-03-27"))]
+lemma coe_add (f g : R[M]) : ⇑(f + g).coeff = f.coeff + g.coeff := rfl
+
+@[to_additive (attr := simp)]
+lemma single_add_erase (m : M) (x : R[M]) : single m (x.coeff m) + x.erase m = x := by
+  ext; simp [Finsupp.single_add_erase]
+
+@[to_additive (attr := simp)]
+  lemma erase_add_single (m : M) (x : R[M]) : x.erase m + single m (x.coeff m) = x := by
+  ext; simp [Finsupp.erase_add_single]
 
 /-- `MonoidAlgebra.single` as an `AddMonoidHom`.
 
@@ -358,23 +380,31 @@ lemma addHom_ext' {N : Type*} [AddZeroClass N] ⦃f g : R[M] →+ N⦄
     (hfg : ∀ m, f.comp (singleAddHom m) = g.comp (singleAddHom m)) : f = g :=
   Finsupp.addHom_ext' hfg
 
-@[to_additive]
+@[to_additive (attr := deprecated Finsupp.sum_single_index (since := "2026-03-27"))]
 lemma sum_single_index [AddCommMonoid N] {m : M} {r : R} {h : M → R → N} (h_zero : h m 0 = 0) :
-    (single m r).sum h = h m r := by
+    (single m r).coeff.sum h = h m r := by
   simp [h_zero]
 
 @[to_additive (attr := simp)]
-lemma sum_single (x : R[M]) : x.sum single = x := Finsupp.sum_single _
+lemma sum_coeff_single (f : R[M]) : f.coeff.sum single = f := by ext; simp
 
-@[to_additive]
-theorem single_apply {a a' : M} {b : R} [Decidable (a = a')] :
-    single a b a' = if a = a' then b else 0 :=
+@[to_additive (attr := deprecated Finsupp.single_apply (since := "2026-03-27"))]
+protected theorem coeff_single_apply {a a' : M} {b : R} [Decidable (a = a')] :
+    (single a b).coeff a' = if a = a' then b else 0 :=
   Finsupp.single_apply
 
 @[to_additive (attr := simp)]
-lemma single_eq_zero : single m r = 0 ↔ r = 0 := Finsupp.single_eq_zero
+lemma single_eq_zero : single m r = 0 ↔ r = 0 := by simp [← coeff_inj]
 
-@[to_additive] lemma single_ne_zero : single m r ≠ 0 ↔ r ≠ 0 := by simp [single]
+@[to_additive] lemma single_ne_zero : single m r ≠ 0 ↔ r ≠ 0 := single_eq_zero.not
+
+@[to_additive (attr := elab_as_elim)]
+lemma induction {motive : R[M] → Prop} (x : R[M])
+    (zero : motive 0)
+    (single_add : ∀ m r x, m ∉ x.coeff.support → r ≠ 0 → motive x → motive (single m r + x)) :
+    motive x :=
+  Finsupp.induction (motive := fun x ↦ motive <| ofCoeff x) x.coeff
+    (by simpa using zero) (fun m r x ↦ single_add m r (ofCoeff x))
 
 @[to_additive (attr := elab_as_elim)]
 lemma induction_linear {p : R[M] → Prop} (x : R[M]) (zero : p 0)
@@ -394,6 +424,9 @@ instance one : One R[M] where one := single 1 1
 
 @[to_additive (dont_translate := R) one_def]
 lemma one_def : (1 : R[M]) = single 1 1 := rfl
+
+@[to_additive (attr := simp) (dont_translate := R)]
+lemma coeff_one_one : (1 : R[M]).coeff 1 = 1 := by simp [one_def]
 
 end One
 
@@ -422,46 +455,49 @@ instance instMul : Mul R[M] where mul := mul'
 
 @[to_additive (dont_translate := R) mul_def]
 lemma mul_def (x y : R[M]) :
-    x * y = x.sum fun m₁ r₁ ↦ y.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂) := by
+    x * y = x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂) := by
   with_unfolding_all rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring R[M] where
   zero_mul := by simp [mul_def]
   mul_zero := by simp [mul_def]
-  left_distrib := by classical simp [mul_def]; simp [MonoidAlgebra, sum_add_index, mul_add]
-  right_distrib := by classical simp [mul_def]; simp [MonoidAlgebra, sum_add_index, add_mul]
+  left_distrib := by classical simp [mul_def, mul_add, sum_add, sum_add_index]
+  right_distrib := by classical simp [mul_def, add_mul, sum_add, sum_add_index]
 
-set_option backward.isDefEq.respectTransparency false in
-@[to_additive (dont_translate := R) mul_apply]
-lemma mul_apply [DecidableEq M] (x y : R[M]) (m : M) :
-    (x * y) m = x.sum fun m₁ r₁ ↦ y.sum fun m₂ r₂ ↦ if m₁ * m₂ = m then r₁ * r₂ else 0 := by
-  -- Porting note: `reducible` cannot be `local` so proof gets long.
-  rw [mul_def, Finsupp.sum_apply]; congr; ext
-  rw [Finsupp.sum_apply]; congr; ext
-  apply single_apply
+@[to_additive (dont_translate := R) coeff_mul]
+lemma coeff_mul [DecidableEq M] (x y : R[M]) (m : M) :
+    (x * y).coeff m =
+      x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ if m₁ * m₂ = m then r₁ * r₂ else 0 := by
+  simp [mul_def, Finsupp.single_apply]
+
+@[to_additive (attr := deprecated coeff_mul (since := "2026-03-27")) (dont_translate := R)
+  mul_apply]
+alias mul_apply := coeff_mul
 
 open Finset in
-@[to_additive (dont_translate := R) mul_apply_antidiagonal]
-lemma mul_apply_antidiagonal (x y : R[M]) (m : M) (s : Finset (M × M))
-    (hs : ∀ {p}, p ∈ s ↔ p.1 * p.2 = m) : (x * y) m = ∑ p ∈ s, x p.1 * y p.2 := by
+@[to_additive (dont_translate := R) coeff_mul_antidiag]
+lemma coeff_mul_antidiag (x y : R[M]) (m : M) (s : Finset (M × M))
+    (hs : ∀ {p}, p ∈ s ↔ p.1 * p.2 = m) : (x * y).coeff m = ∑ p ∈ s, x.coeff p.1 * y.coeff p.2 := by
   classical
-  let F (p : M × M) : R := if p.1 * p.2 = m then x p.1 * y p.2 else 0
+  let F (p : M × M) : R := if p.1 * p.2 = m then x.coeff p.1 * y.coeff p.2 else 0
   calc
-    (x * y) m = ∑ m₁ ∈ x.support, ∑ m₂ ∈ y.support, F (m₁, m₂) := mul_apply ..
-    _ = ∑ p ∈ x.support ×ˢ y.support with p.1 * p.2 = m, x p.1 * y p.2 := by
+    (x * y).coeff m = ∑ m₁ ∈ x.coeff.support, ∑ m₂ ∈ y.coeff.support, F (m₁, m₂) := coeff_mul ..
+    _ = ∑ p ∈ x.coeff.support ×ˢ y.coeff.support with p.1 * p.2 = m, x.coeff p.1 * y.coeff p.2 := by
       rw [Finset.sum_filter, Finset.sum_product]
-    _ = ∑ p ∈ s with p.1 ∈ x.support ∧ p.2 ∈ y.support, x p.1 * y p.2 := by
+    _ = ∑ p ∈ s with p.1 ∈ x.coeff.support ∧ p.2 ∈ y.coeff.support, x.coeff p.1 * y.coeff p.2 := by
       congr! 1; ext; simp only [mem_filter, mem_product, hs, and_comm]
-    _ = ∑ p ∈ s, x p.1 * y p.2 :=
+    _ = ∑ p ∈ s, x.coeff p.1 * y.coeff p.2 :=
       sum_subset (filter_subset _ _) fun p hps hp => by
         simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
-        by_cases h1 : x p.1 = 0
+        by_cases h1 : x.coeff p.1 = 0
         · rw [h1, zero_mul]
         · rw [hp hps h1, mul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
+@[to_additive (attr := deprecated coeff_mul_antidiag (since := "2026-03-27")) (dont_translate := R)
+  mul_apply_antidiagonal]
+alias mul_apply_antidiagonal := coeff_mul_antidiag
+
 @[to_additive (attr := simp) (dont_translate := R) single_mul_single]
 lemma single_mul_single (m₁ m₂ : M) (r₁ r₂ : R) :
     single m₁ r₁ * single m₂ r₂ = single (m₁ * m₂) (r₁ * r₂) := by simp [mul_def]
@@ -477,42 +513,52 @@ lemma single_commute (hm : ∀ m', Commute m m') (hr : ∀ r', Commute r r') (x 
     ext m' r' : 2; exact single_commute_single (hm m') (hr r')
   exact congr($this x)
 
-@[to_additive (dont_translate := R) mul_single_apply_aux]
-lemma mul_single_apply_aux (H : ∀ m' ∈ x.support, m' * m = m₁ ↔ m' = m₂) :
-    (x * single m r) m₁ = x m₂ * r := by
+@[to_additive (dont_translate := R) coeff_mul_single_eq_coeff_mul]
+lemma coeff_mul_single_eq_coeff_mul (m₂ : M) (H : ∀ m' ∈ x.coeff.support, m' * m = m₁ ↔ m' = m₂) :
+    (x * single m r).coeff m₁ = x.coeff m₂ * r := by
   classical
   calc
-    (x * single m r) m₁
-    _ = x.sum fun m' r' ↦ if m' * m = m₁ then r' * r else 0 := by simp [mul_apply]
-    _ = x.sum fun m' r' ↦ if m' = m₂ then r' * r else 0 := by
-      dsimp [Finsupp.sum]; congr! 2; simp [*]
-    _ = x m₂ * r := by simp +contextual [Finsupp.sum_eq_single m₂]
+    (x * single m r).coeff m₁
+    _ = x.coeff.sum fun m' r' ↦ if m' * m = m₁ then r' * r else 0 := by simp [coeff_mul]
+    _ = x.coeff.sum fun m' r' ↦ if m' = m₂ then r' * r else 0 := by gcongr; simp [*]
+    _ = x.coeff m₂ * r := by simp +contextual [Finsupp.sum_eq_single m₂]
 
-@[to_additive (dont_translate := R) single_mul_apply_aux]
-lemma single_mul_apply_aux (H : ∀ m' ∈ x.support, m * m' = m₁ ↔ m' = m₂) :
-    (single m r * x) m₁ = r * x m₂ := by
+@[to_additive (dont_translate := R) coeff_single_mul_eq_mul_coeff]
+lemma coeff_single_mul_eq_mul_coeff (m₂ : M) (H : ∀ m' ∈ x.coeff.support, m * m' = m₁ ↔ m' = m₂) :
+    (single m r * x).coeff m₁ = r * x.coeff m₂ := by
   classical
   calc
-    (single m r * x) m₁
-    _ = x.sum fun m' r' ↦ if m * m' = m₁ then r * r' else 0 := by simp [mul_apply]
-    _ = x.sum fun m' r' ↦ if m' = m₂ then r * r' else 0 := by
-      dsimp [Finsupp.sum]; congr! 2; simp [*]
-    _ = r * x m₂ := by simp +contextual [Finsupp.sum_eq_single m₂]
+    (single m r * x).coeff m₁
+    _ = x.coeff.sum fun m' r' ↦ if m * m' = m₁ then r * r' else 0 := by simp [coeff_mul]
+    _ = x.coeff.sum fun m' r' ↦ if m' = m₂ then r * r' else 0 := by gcongr; simp [*]
+    _ = r * x.coeff m₂ := by simp +contextual [Finsupp.sum_eq_single m₂]
 
-@[to_additive (attr := simp) (dont_translate := R) mul_single_apply_of_not_exists_add]
-lemma mul_single_apply_of_not_exists_mul (r : R) (x : R[M]) (h : ¬ ∃ d, m' = d * m) :
-    (x * single m r) m' = 0 := by classical simp_all [mul_apply, eq_comm]
+@[to_additive (attr := simp) (dont_translate := R) coeff_mul_single_of_forall_add_ne]
+lemma coeff_mul_single_of_forall_mul_ne (r : R) (x : R[M]) (h : ∀ d, d * m ≠ m') :
+    (x * single m r).coeff m' = 0 := by classical simp [coeff_mul, h]
 
-@[to_additive (attr := simp) (dont_translate := R) single_mul_apply_of_not_exists_add]
-lemma single_mul_apply_of_not_exists_mul (r : R) (x : R[M]) (h : ¬ ∃ d, m' = m * d) :
-    (single m r * x) m' = 0 := by classical simp_all [mul_apply, eq_comm]
+@[to_additive (attr := simp) (dont_translate := R) coeff_single_mul_of_forall_add_ne]
+lemma coeff_single_mul_of_forall_mul_ne (r : R) (x : R[M]) (h : ∀ d, m * d ≠ m') :
+    (single m r * x).coeff m' = 0 := by classical simp [coeff_mul, h]
+
+@[to_additive (attr := deprecated coeff_mul_single_of_forall_mul_ne (since := "2026-01-02"))
+  (dont_translate := R)]
+lemma mul_single_apply_of_not_exists_mul (r : R) {g g' : M} (x : R[M])
+    (h : ¬∃ d, g' = d * g) : (x * single g r).coeff g' = 0 :=
+  coeff_mul_single_of_forall_mul_ne _ _ <| by simpa [eq_comm] using h
+
+@[to_additive (attr := deprecated coeff_single_mul_of_forall_mul_ne (since := "2026-01-02"))
+  (dont_translate := R)]
+lemma single_mul_apply_of_not_exists_mul (r : R) {g g' : M} (x : R[M])
+    (h : ¬∃ d, g' = g * d) : (single g r * x).coeff g' = 0 :=
+  coeff_single_mul_of_forall_mul_ne _ _ <| by simpa [eq_comm] using h
 
 variable (R M : Type*) [Semiring R] [Mul M] in
 /-- The embedding of a magma into its magma algebra. -/
 @[simps]
 def ofMagma : M →ₙ* R[M] where
   toFun a := single a 1
-  map_mul' a b := by simp only [mul_def, mul_one, sum_single_index, single_eq_zero, mul_zero]
+  map_mul' a b := by ext; simp [mul_def, Finsupp.sum_single_index]
 
 end Mul
 
@@ -522,14 +568,13 @@ variable [Semigroup M]
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonUnitalSemiring : NonUnitalSemiring R[M] where
-  mul_assoc := by simp [mul_def]; simp [MonoidAlgebra, sum_sum_index, mul_add, add_mul, mul_assoc]
+  mul_assoc := by simp [mul_def, sum_sum_index, mul_add, add_mul, mul_assoc]
 
 end Semigroup
 
 section MulOneClass
 variable [MulOneClass M]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonAssocSemiring : NonAssocSemiring R[M] where
   natCast n := single 1 n
@@ -539,15 +584,29 @@ instance nonAssocSemiring : NonAssocSemiring R[M] where
   mul_one := by simp [mul_def, one_def]
 
 @[to_additive (dont_translate := R)]
-lemma natCast_def (n : ℕ) : (n : R[M]) = single (1 : M) (n : R) := rfl
+lemma natCast_def (n : ℕ) : (n : R[M]) = single 1 (n : R) := rfl
 
-@[to_additive (dont_translate := R) mul_single_zero_apply]
-lemma mul_single_one_apply (x : R[M]) (r : R) (m : M) : (x * single 1 r : R[M]) m = x m * r :=
-  x.mul_single_apply_aux (by simp)
+@[to_additive (dont_translate := R)]
+lemma ofNat_def (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[M]) = single 1 ofNat(n) := rfl
 
-@[to_additive (dont_translate := R) single_zero_mul_apply]
-lemma single_one_mul_apply (x : R[M]) (r : R) (m : M) : (single 1 r * x : R[M]) m = r * x m :=
-  x.single_mul_apply_aux (by simp)
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma coeff_natCast (n : ℕ) : (n : R[M]).coeff = .single 1 (n : R) := rfl
+
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma coeff_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[M]).coeff = .single 1 ofNat(n) := rfl
+
+@[to_additive (dont_translate := R) coeff_mul_single_zero]
+lemma coeff_mul_single_one (x : R[M]) (r : R) (m : M) :
+    (x * single 1 r).coeff m = x.coeff m * r :=
+  coeff_mul_single_eq_coeff_mul _ (by simp)
+
+@[to_additive (dont_translate := R) coeff_single_zero_mul]
+lemma coeff_single_one_mul (x : R[M]) (r : R) (m : M) :
+    (single 1 r * x).coeff m = r * x.coeff m :=
+  x.coeff_single_mul_eq_mul_coeff _ (by simp)
+
+@[deprecated (since := "2026-01-02")] alias mul_single_one_apply := coeff_mul_single_one
+@[deprecated (since := "2026-01-02")] alias single_one_mul_apply := coeff_single_one_mul
 
 variable (R M : Type*) [Semiring R] [MulOneClass M] in
 /-- The embedding of a unital magma into its magma algebra. -/
@@ -627,28 +686,22 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
   map_nonunit := by
     simp_rw [isUnit_iff_exists]
     rintro a ⟨x, hax, hxa⟩
-    refine ⟨x 1, ?_, ?_⟩
-    · simpa [single_one_mul_apply, one_def] using congr($hax 1)
-    · simpa [mul_single_one_apply, one_def] using congr($hxa 1)
+    refine ⟨x.coeff 1, ?_, ?_⟩
+    · simpa [coeff_single_one_mul] using congr(($hax).coeff 1)
+    · simpa [coeff_mul_single_one] using congr(($hxa).coeff 1)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/
 @[to_additive (dont_translate := R) (attr := simps! apply)
 /-- The trivial additive monoid algebra is the base ring. -/]
 def uniqueRingEquiv [Unique M] : R[M] ≃+* R where
-  toAddEquiv := .finsuppUnique
-  map_mul' x y :=
-    (mul_apply ..).trans <| by simp [Finsupp.sum_unique, Unique.eq_default, MonoidAlgebra]
+  toAddEquiv := coeffAddEquiv.trans .finsuppUnique
+  map_mul' x y := (coeff_mul ..).trans <| by simp [Finsupp.sum_unique, Unique.eq_default]
 
 variable (M) in
 @[to_additive (attr := simp)]
 lemma uniqueRingEquiv_symm_apply [Unique M] (r : R) : (uniqueRingEquiv M).symm r = single 1 r := by
-  classical
-  ext m
-  simp only [uniqueRingEquiv, AddEquiv.toEquiv_eq_coe, RingEquiv.symm_mk, RingEquiv.coe_mk,
-    Subsingleton.elim m 1, single_eq_same]
-  erw [AddEquiv.finsuppUnique_symm_apply_apply]
+  classical ext; simp [uniqueRingEquiv, Subsingleton.elim (1 : M) default]
 
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R)
@@ -672,34 +725,47 @@ lemma curryRingEquiv_symm_single (m : M) (n : N) (r : R) :
     curryRingEquiv.symm (single m <| single n r) = (single (m, n) r) := by
   classical exact Finsupp.uncurry_single ..
 
+variable [IsCancelMul M]
+
+@[to_additive (dont_translate := R) (attr := simp) coeff_mul_single_add]
+lemma coeff_mul_single_mul (x : R[M]) (r : R) (m m' : M) :
+    (x * single m r).coeff (m' * m) = x.coeff m' * r :=
+  coeff_mul_single_eq_coeff_mul _ (by simp)
+
+@[to_additive (dont_translate := R) (attr := simp) coeff_single_mul_add]
+lemma coeff_single_mul_mul (x : R[M]) (r : R) (m m' : M) :
+    (single m r * x).coeff (m * m') = r * x.coeff m' :=
+  x.coeff_single_mul_eq_mul_coeff _ (by simp)
+
 end Monoid
 
 section Group
 variable [Group G]
 
-@[to_additive (attr := simp) (dont_translate := R) mul_single_apply]
-lemma mul_single_apply (x : R[G]) (r : R) (g h : G) : (x * single g r) h = x (h * g⁻¹) * r :=
-  mul_single_apply_aux <| by simp [eq_mul_inv_iff_mul_eq]
+@[to_additive (attr := simp) (dont_translate := R) coeff_mul_single_apply]
+lemma coeff_mul_single_apply (x : R[G]) (r : R) (g h : G) :
+    (x * single g r).coeff h = x.coeff (h * g⁻¹) * r :=
+  coeff_mul_single_eq_coeff_mul _ <| by simp [eq_mul_inv_iff_mul_eq]
 
-@[to_additive (attr := simp) (dont_translate := R) single_mul_apply]
-lemma single_mul_apply (x : R[G]) (r : R) (g h : G) : (single g r * x) h = r * x (g⁻¹ * h) :=
-  single_mul_apply_aux <| by simp [eq_inv_mul_iff_mul_eq]
+@[to_additive (attr := simp) (dont_translate := R) coeff_single_mul_apply]
+lemma coeff_single_mul_apply (x : R[G]) (r : R) (g h : G) :
+    (single g r * x).coeff h = r * x.coeff (g⁻¹ * h) :=
+  coeff_single_mul_eq_mul_coeff _ <| by simp [eq_inv_mul_iff_mul_eq]
 
-@[to_additive (dont_translate := R) mul_apply_left]
-lemma mul_apply_left (x y : R[G]) (g : G) : (x * y) g = x.sum fun h r ↦ r * y (h⁻¹ * g) := by
-  classical
-  rw [mul_apply]
-  dsimp [Finsupp.sum]
-  congr! 1
-  simp +contextual [← eq_inv_mul_iff_mul_eq]
+@[to_additive (dont_translate := R) coeff_mul_apply_left]
+lemma coeff_mul_apply_left (x y : R[G]) (g : G) :
+    (x * y).coeff g = x.coeff.sum fun h r ↦ r * y.coeff (h⁻¹ * g) := by
+  classical rw [coeff_mul]; gcongr; simp +contextual [← eq_inv_mul_iff_mul_eq]
 
-@[to_additive (dont_translate := R) mul_apply_right]
-lemma mul_apply_right (x y : R[G]) (g : G) : (x * y) g = y.sum fun h r ↦ x (g * h⁻¹) * r := by
-  classical
-  rw [mul_apply, Finsupp.sum_comm]
-  dsimp [Finsupp.sum]
-  congr! 1
-  simp +contextual [← eq_mul_inv_iff_mul_eq]
+@[to_additive (dont_translate := R) coeff_mul_apply_right]
+lemma coeff_mul_apply_right (x y : R[G]) (g : G) :
+    (x * y).coeff g = y.coeff.sum fun h r ↦ x.coeff (g * h⁻¹) * r := by
+  classical rw [coeff_mul, Finsupp.sum_comm]; gcongr; simp +contextual [← eq_mul_inv_iff_mul_eq]
+
+@[deprecated (since := "2026-01-02")] alias mul_single_apply := coeff_mul_single_apply
+@[deprecated (since := "2026-01-02")] alias single_mul_apply := coeff_single_mul_apply
+@[deprecated (since := "2026-01-02")] alias mul_apply_left := coeff_mul_apply_left
+@[deprecated (since := "2026-01-02")] alias mul_apply_right := coeff_mul_apply_right
 
 end Group
 end Semiring
@@ -709,7 +775,7 @@ variable [CommSemiring R]
 
 @[to_additive (dont_translate := R)]
 instance nonUnitalCommSemiring [CommSemigroup M] : NonUnitalCommSemiring R[M] where
-  mul_comm f g := by simp [mul_def, Finsupp.sum, mul_comm, f.support.sum_comm]
+  mul_comm f g := by simp [mul_def, Finsupp.sum, mul_comm, f.coeff.support.sum_comm]
 
 @[to_additive (dont_translate := R)]
 lemma single_one_comm [MulOneClass M] (r : R) (f : R[M]) :
@@ -723,7 +789,7 @@ variable [CommMonoid M]
 instance commSemiring : CommSemiring R[M] where
 
 open Finset in
-@[to_additive (dont_translate := R) prod_single]
+@[to_additive (dont_translate := R) (attr := simp) prod_single]
 lemma prod_single (s : Finset ι) (m : ι → M) (r : ι → R) :
     ∏ i ∈ s, single (m i) (r i) = single (∏ i ∈ s, m i) (∏ i ∈ s, r i) :=
   Finset.cons_induction_on s rfl fun i s hi ih ↦ by
@@ -752,10 +818,10 @@ lemma coeff_sub (x y : R[M]) : coeff (x - y) = coeff x - coeff y := rfl
 lemma ofCoeff_sub (x y : M →₀ R) : ofCoeff (x - y) = ofCoeff x - ofCoeff y := rfl
 
 @[to_additive (attr := simp) (dont_translate := R)]
-lemma neg_apply (m : M) (x : R[M]) : (-x) m = -x m := rfl
+lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := by ext; simp
 
-@[to_additive (dont_translate := R)]
-lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := Finsupp.single_neg m r
+@[to_additive (attr := simp) (dont_translate := R)]
+lemma single_sub (m : M) (r s : R) : single m (r - s) = single m r - single m s := by ext; simp
 
 @[to_additive (dont_translate := R)]
 instance nonUnitalNonAssocRing [Mul M] : NonUnitalNonAssocRing R[M] where

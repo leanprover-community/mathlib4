@@ -185,7 +185,7 @@ variable {K : Type*} [Field K] {ι : Type*}
 -- The "local" version of the height bound for (archimedean) absolute values.
 lemma AbsoluteValue.eval_mvPolynomial_le [Finite ι] (v : AbsoluteValue K ℝ)
     {p : MvPolynomial ι K} {N : ℕ} (hp : p.IsHomogeneous N) (x : ι → K) :
-    v (p.eval x) ≤ p.sum (fun _ c ↦ v c) * (⨆ i, v (x i)) ^ N := by
+    v (p.eval x) ≤ (AddMonoidAlgebra.coeff p).sum (fun _ c ↦ v c) * (⨆ i, v (x i)) ^ N := by
   rw [eval_eq, sum_def, Finset.sum_mul]
   grw [AbsoluteValue.sum_le]
   simp_rw [v.map_mul, v.map_prod, v.map_pow]
@@ -225,12 +225,12 @@ open AdmissibleAbsValues
 /-- The constant in the (upper) height bound on values of `p`. -/
 @[expose] noncomputable
 def mulHeightBound (p : ι' → MvPolynomial ι K) : ℝ :=
-  (archAbsVal.map fun v ↦ ⨆ j, (p j).sum (fun _ c ↦ v c)).prod *
+  (archAbsVal.map fun v ↦ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum (fun _ c ↦ v c)).prod *
     ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val (coeff s (p j))) 1
 
 lemma mulHeightBound_eq (p : ι' → MvPolynomial ι K) :
     mulHeightBound p =
-     (archAbsVal.map fun v ↦ ⨆ j, (p j).sum (fun _ c ↦ v c)).prod *
+     (archAbsVal.map fun v ↦ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum (fun _ c ↦ v c)).prod *
         ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val (coeff s (p j))) 1 :=
   rfl
 
@@ -238,10 +238,9 @@ variable (K ι ι') in
 lemma max_mulHeightBound_zero_one_eq_one :
     max (mulHeightBound (0 : ι' → MvPolynomial ι K)) 1 = 1 := by
   simp only [mulHeightBound_eq, Pi.zero_apply, support_zero, coeff_zero, AbsoluteValue.map_zero,
-    Real.iSup_of_isEmpty, zero_le_one, sup_of_le_right]
-  set_option backward.isDefEq.respectTransparency false in -- temporary measure
-  simp only [Finsupp.sum_zero_index] -- singling this out for needing the above
-  simp only [Real.iSup_const_zero, Multiset.map_const', Multiset.prod_replicate, zero_pow_eq]
+    Real.iSup_of_isEmpty, zero_le_one, sup_of_le_right, AddMonoidAlgebra.coeff_zero,
+    Finsupp.sum_zero_index, Real.iSup_const_zero, Multiset.map_const', Multiset.prod_replicate,
+    sup_eq_right, zero_pow_eq]
   rcases isEmpty_or_nonempty ι'
   · split_ifs
     · simpa using finprod_zero_le_one
@@ -270,7 +269,8 @@ private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomia
   gcongr
   · exact finprod_nonneg fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..
   · exact prod_map_nonneg fun v _ ↦ iSup_nonneg fun _ ↦ sum_nonneg fun _ _ ↦ by positivity
-  · have H (v : AbsoluteValue K ℝ) (j : ι') : v (constantCoeff (p j)) ≤ sum (p j) fun _ c ↦ v c :=
+  · have H (v : AbsoluteValue K ℝ) (j : ι') :
+        v (constantCoeff (p j)) ≤ (AddMonoidAlgebra.coeff <| p j).sum fun _ c ↦ v c :=
       single_eval_le_sum _ v.map_zero (fun _ ↦ by positivity) _
     exact prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..)
       fun v _ ↦ Finite.ciSup_mono (H v)
@@ -302,10 +302,11 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
   rcases eq_or_ne (fun j ↦ eval x (p j)) 0 with h₀ | h₀
   · grw [← le_max_right]
     simpa [h₀, mulHeight_zero] using one_le_pow₀ <| one_le_mulHeight x
-  have H₀ (v : AbsoluteValue K ℝ) : 0 ≤ ⨆ j, Finsupp.sum (p j) fun _ c ↦ v c :=
+  have H₀ (v : AbsoluteValue K ℝ) : 0 ≤ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum fun _ c ↦ v c :=
     iSup_nonneg (fun j ↦ sum_nonneg' <| fun s ↦ by positivity)
   -- The following four statements are used in the `gcongr`s below.
-  have H₁ : 0 ≤ (archAbsVal.map (fun v ↦ ⨆ j, Finsupp.sum (p j) fun _ c ↦ v c)).prod :=
+  have H₁ :
+     0 ≤ (archAbsVal.map (fun v ↦ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum fun _ c ↦ v c)).prod :=
     prod_map_nonneg fun v _ ↦ H₀ v
   have H₂ : 0 ≤ (archAbsVal.map (fun v ↦ ⨆ i, v (x i))).prod :=
     prod_map_nonneg fun _ _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..
@@ -328,7 +329,7 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     grw [v.eval_mvPolynomial_le (hp j) x]
     gcongr
     · exact HH₁ v
-    · exact HH₂ (fun j ↦ Finsupp.sum (p j) fun _ c ↦ v c) j
+    · exact HH₂ (fun j ↦ (AddMonoidAlgebra.coeff <| p j).sum fun _ c ↦ v c) j
   · -- nonarchimedean part: reduce to "local" statement `eval_mvPolynomial_le`
     have := (Function.ne_iff.mp h₀).nonempty
     have F := hasFiniteMulSupport_iSup_nonarchAbsVal hx

@@ -202,24 +202,22 @@ theorem isUnitTrinomial_iff'' (h : p * p.mirror = q * q.mirror) :
 
 namespace IsUnitTrinomial
 
-set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Units ℤ)
     (hp : p = trinomial k m n (u : ℤ) v w) :
     C (v : ℤ) * (C (u : ℤ) * X ^ (m + n) + C (w : ℤ) * X ^ (n - m + k + n)) =
-      ⟨Finsupp.filter (· ∈ Set.Ioo (k + n) (n + n)) (p * p.mirror).toFinsupp⟩ := by
+      ⟨.ofCoeff <| (p * p.mirror).toFinsupp.coeff.filter (· ∈ Set.Ioo (k + n) (n + n))⟩ := by
   have key : n - m + k < n := by rwa [← lt_tsub_iff_right, tsub_lt_tsub_iff_left_of_le hmn.le]
   rw [hp, trinomial_mirror hkm hmn u.ne_zero w.ne_zero]
   simp_rw [trinomial_def, C_mul_X_pow_eq_monomial, add_mul, mul_add, monomial_mul_monomial,
-    toFinsupp_add, toFinsupp_monomial, AddMonoidAlgebra, Finsupp.filter_add]
+    toFinsupp_add, toFinsupp_monomial, AddMonoidAlgebra.coeff_add, Finsupp.filter_add,
+    AddMonoidAlgebra.coeff_single]
   rw [Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos, Finsupp.filter_single_of_neg]
-  · simp only [add_zero, zero_add]
-    -- Porting note: the next `rw` is needed to see through the defeq `Finsupp = AddMonoidAlgebra`
-    rw [ofFinsupp_add]
-    simp only [ofFinsupp_single]
-    rw [C_mul_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
-  · exact fun h => h.2.ne rfl
+  · simp only [add_zero, zero_add, AddMonoidAlgebra.ofCoeff_add, ofFinsupp_add,
+      AddMonoidAlgebra.ofCoeff_single, ofFinsupp_single, C_mul_monomial, C_mul_monomial,
+      mul_comm (v : ℤ) w, add_comm (n - m + k) n]
+  · simp
   · refine ⟨?_, by gcongr⟩
     rwa [add_comm, add_lt_add_iff_left, lt_add_iff_pos_left, tsub_pos_iff_lt]
   · exact fun h => h.1.ne (add_comm k n)

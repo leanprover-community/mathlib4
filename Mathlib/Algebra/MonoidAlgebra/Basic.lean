@@ -60,28 +60,14 @@ non-associative algebras over `R` is adjoint to the forgetful functor in the oth
 @[simps apply_apply symm_apply]
 def liftMagma [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] :
     (M →ₙ* A) ≃ (R[M] →ₙₐ[R] A) where
-  toFun f :=
-    { liftAddHom fun x => (smulAddHom R A).flip (f x) with
-      toFun := fun a => a.sum fun m t => t • f m
-      map_smul' := fun t' a => by
-        rw [Finsupp.smul_sum, sum_smul_index']
-        · simp_rw [smul_assoc, MonoidHom.id_apply]
-        · intro m
-          exact zero_smul R (f m)
-      map_mul' := fun a₁ a₂ => by
-        let g : M → R → A := fun m t => t • f m
-        have h₁ : ∀ m, g m 0 = 0 := by
-          intro m
-          exact zero_smul R (f m)
-        have h₂ : ∀ (m) (t₁ t₂ : R), g m (t₁ + t₂) = g m t₁ + g m t₂ := by
-          intros
-          rw [← add_smul]
-        -- Porting note: `reducible` cannot be `local` so proof gets long.
-        simp_rw [Finsupp.mul_sum, Finsupp.sum_mul, smul_mul_smul_comm, ← f.map_mul, mul_def,
-          sum_comm a₂ a₁]
-        rw [sum_sum_index h₁ h₂]; congr; ext
-        rw [sum_sum_index h₁ h₂]; congr; ext
-        rw [sum_single_index (h₁ _)] }
+  toFun f := {
+    toAddMonoidHom :=
+      (liftAddHom fun x ↦ (smulAddHom R A).flip (f x)).comp coeffAddEquiv.toAddMonoidHom
+    map_smul' t' a := by simp [Finsupp.smul_sum, sum_smul_index', mul_smul]
+    map_mul' a₁ a₂ := by
+      simpa [mul_def, sum_sum_index, add_smul, Finsupp.mul_sum, Finsupp.sum_mul,
+        smul_mul_smul_comm] using Finsupp.sum_comm ..
+  }
   invFun F := F.toMulHom.comp (ofMagma R M)
   left_inv f := by ext; simp
   right_inv F := by ext; simp
@@ -102,14 +88,8 @@ In particular this provides the instance `Algebra R R[M]`. -/
 In particular this provides the instance `Algebra R R[M]`. -/]
 instance algebra : Algebra R A[M] where
   algebraMap := singleOneRingHom.comp (algebraMap R A)
-  smul_def' := fun r a => by
-    ext
-    dsimp
-    rw [single_one_mul_apply, Algebra.smul_def]
-  commutes' := fun r f => by
-    ext
-    dsimp
-    rw [single_one_mul_apply, mul_single_one_apply, Algebra.commutes]
+  smul_def' r a := by ext; simp [coeff_single_one_mul, Algebra.smul_def]
+  commutes' r f := by ext; simp [coeff_single_one_mul, coeff_mul_single_one, Algebra.commutes]
 
 /-- `MonoidAlgebra.single 1` as an `AlgHom` -/
 @[to_additive (dont_translate := R A) (attr := simps! apply)
@@ -165,8 +145,8 @@ def curryAlgEquiv : A[M × N] ≃ₐ[R] A[N][M] where
   toRingEquiv := curryRingEquiv
   commutes' r := by
     ext
-    simp [MonoidAlgebra, algebraMap, Algebra.algebraMap, singleOneRingHom, curryRingEquiv,
-      EquivLike.toEquiv, singleAddHom, curryAddEquiv]
+    simp [curryRingEquiv, curryAddEquiv, algebraMap, MonoidAlgebra, algebraMap, Algebra.algebraMap,
+      singleOneRingHom, singleAddHom, curryAddEquiv, ← ofCoeff_single, ofCoeff]
 
 @[to_additive (attr := simp)]
 lemma curryAlgEquiv_single (m : M) (n : N) (a : A) :
@@ -236,11 +216,11 @@ def lift : (M →* A) ≃ (R[M] →ₐ[R] A) where
   right_inv F := by ext; simp
 
 theorem lift_apply' (F : M →* A) (f : R[M]) :
-    lift R A M F f = f.sum fun a b => algebraMap R A b * F a :=
+    lift R A M F f = f.coeff.sum fun a b => algebraMap R A b * F a :=
   rfl
 
 theorem lift_apply (F : M →* A) (f : R[M]) :
-    lift R A M F f = f.sum fun a b => b • F a := by simp only [lift_apply', Algebra.smul_def]
+    lift R A M F f = f.coeff.sum fun a b => b • F a := by simp only [lift_apply', Algebra.smul_def]
 
 theorem lift_def (F : M →* A) : ⇑(lift R A M F) = liftNC (algebraMap R A) F := rfl
 
@@ -259,17 +239,16 @@ theorem lift_unique' (F : R[M] →ₐ[R] A) : F = lift R A M ((F : R[M] →* A).
 /-- Decomposition of a `R`-algebra homomorphism from `R[M]` by
 its values on `F (single a 1)`. -/
 theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
-    F f = f.sum fun a b => b • F (single a 1) := by
+    F f = f.coeff.sum fun a b => b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A]
     [Algebra R S] [IsScalarTower R S A]
     (f : M →* A) (x : R[M]) :
     lift _ _ _ f (mapRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
-  induction x using Finsupp.induction with
+  induction x using induction with
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
 
@@ -306,15 +285,15 @@ def domCongr (e : M ≃* N) : A[M] ≃ₐ[R] A[N] where
   commutes' _ := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma domCongr_apply (e : M ≃* N) (x : A[M]) (n : N) : domCongr R A e x n = x (e.symm n) := by
-  simp [domCongr]
+lemma coeff_domCongr (e : M ≃* N) (f : A[M]) (n : N) :
+    (domCongr R A e f).coeff n = f.coeff (e.symm n) := by simp [domCongr]
 
 @[to_additive]
 theorem domCongr_toAlgHom (e : M ≃* N) : (domCongr R A e).toAlgHom = mapDomainAlgHom R A e := rfl
 
 @[to_additive (attr := simp)]
-lemma domCongr_support (e : M ≃* N) (f : A[M]) : (domCongr R A e f).support = f.support.map e := by
-  ext; simp
+lemma domCongr_support (e : M ≃* N) (x : A[M]) :
+    (domCongr R A e x).coeff.support = x.coeff.support.map e := by simp [domCongr, equivMapDomain]
 
 @[to_additive (attr := simp)]
 theorem domCongr_single (e : M ≃* N) (m : M) (a : A) :
@@ -404,10 +383,10 @@ lemma toRingHom_mapAlgHom (f : A →ₐ[R] B) :
 @[deprecated (since := "2026-03-20")] alias toRingHom_mapRangeAlgHom := toRingHom_mapAlgHom
 
 @[to_additive (attr := simp)]
-lemma mapAlgHom_apply (f : A →ₐ[R] B) (x : A[M]) (m : M) :
-    mapAlgHom M f x m = f (x m) := mapRingHom_apply f.toRingHom x m
+lemma coeff_mapAlgHom (f : A →ₐ[R] B) (x : A[M]) (m : M) :
+    (mapAlgHom M f x).coeff m = f (x.coeff m) := by simp [mapAlgHom]
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_apply := mapAlgHom_apply
+@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_apply := coeff_mapAlgHom
 
 @[to_additive (attr := simp)]
 lemma mapAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
@@ -483,7 +462,6 @@ variable [Monoid M] [CommSemiring R] {V W : Type*} [AddCommMonoid V] [Module R V
   [Module R W] [Module R[M] W] [IsScalarTower R R[M] W]
   (f : V →ₗ[R] W)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Build a `R[M]`-linear map from a `R`-linear map and evidence that it is `M`-equivariant. -/
 def equivariantOfLinearOfComm
     (h : ∀ (g : M) (v : V), f (single g (1 : R) • v) = single g (1 : R) • f v) :
@@ -491,7 +469,7 @@ def equivariantOfLinearOfComm
   toFun := f
   map_add' v v' := by simp
   map_smul' c v := by
-    refine Finsupp.induction c ?_ ?_
+    refine induction c ?_ ?_
     · simp
     · intro g r c' _nm _nz w
       dsimp at *
@@ -598,11 +576,10 @@ def lift : (Multiplicative M →* A) ≃ (R[M] →ₐ[R] A) where
   right_inv F := by ext; simp
 
 theorem lift_apply' (F : Multiplicative M →* A) (f : R[M]) :
-    lift R A M F f = f.sum fun a b => algebraMap R A b * F (Multiplicative.ofAdd a) :=
-  rfl
+    lift R A M F f = f.coeff.sum fun a b => algebraMap R A b * F (.ofAdd a) := rfl
 
 theorem lift_apply (F : Multiplicative M →* A) (f : R[M]) :
-    lift R A M F f = f.sum fun a b => b • F (Multiplicative.ofAdd a) := by
+    lift R A M F f = f.coeff.sum fun a b => b • F (.ofAdd a) := by
   simp only [lift_apply', Algebra.smul_def]
 
 theorem lift_def (F : Multiplicative M →* A) :
@@ -633,17 +610,15 @@ theorem lift_unique' (F : R[M] →ₐ[R] A) :
 /-- Decomposition of a `R`-algebra homomorphism from `R[M]` by
 its values on `F (single a 1)`. -/
 theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
-    F f = f.sum fun a b => b • F (single a 1) := by
+    F f = f.coeff.sum fun m r => r • F (single m 1) := by
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
 
-set_option backward.isDefEq.respectTransparency false in
-theorem lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A]
-    [Algebra R S] [IsScalarTower R S A]
+lemma lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A] [Algebra R S] [IsScalarTower R S A]
     (f : Multiplicative M →* A) (x : R[M]) :
     lift _ _ _ f (mapRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
-  induction x using Finsupp.induction with
+  induction x using induction with
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
 

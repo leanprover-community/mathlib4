@@ -188,6 +188,7 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_one_add_X (n : ℕ) :
     (bernoulli n).comp (1 + X) = bernoulli n + n • X ^ (n - 1) := by
   refine Nat.strong_induction_on n fun d hd => ?_
