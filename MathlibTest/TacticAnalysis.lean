@@ -465,6 +465,11 @@ set_option linter.tacticAnalysis.unsqueezeTerminal true
 example : x = y := by
   simp only [x, y]
 
+/-- warning: 'simp_all only [x, y]' can be replaced with 'simp_all [x, y]' -/
+#guard_msgs in
+example : x = y := by
+  simp_all only [x, y]
+
 #guard_msgs in
 example : x = y := by
   simp [x]

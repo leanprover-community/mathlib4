@@ -285,7 +285,7 @@ register_option linter.tacticAnalysis.unsqueezeTerminal : Bool := {
 /-- If applicable, convert the squeezed variant of a flexible tactic into the unsqueezed variant. -/
 def unsqueeze? (stx : Syntax) : Option Syntax :=
   match stx with
-  | .node _ ``Lean.Parser.Tactic.simp args =>
+  | .node _ ``Lean.Parser.Tactic.simp args | .node _ ``Lean.Parser.Tactic.simpAll args =>
     if args[3]![0].getAtomVal == "only" then
       some <| stx.setArgs <| args.set! 3 (mkOptionalNode none)
     else
