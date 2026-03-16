@@ -248,9 +248,9 @@ structure AnalyzeTracesResult where
   `includeSynth` is `false`. -/
   synthGroupedFailures : Array (MessageData × Array MessageData)
   /-- Instance name strings from successful `apply` trace nodes in the permissive run.
-  These are string-formatted because the trace `MessageData` doesn't embed structured `Name`s.
-  TODO: once https://github.com/leanprover/lean4/pull/12698 (structured `TraceResult`) is
-  available, replace with `Std.HashSet Name`. -/
+  These are string-formatted because we parse trace `MessageData` text.
+  TODO: extract `Name`s directly from the `FormatWithInfos` data embedded in `MessageData.ofLazy`
+  expression nodes, rather than parsing rendered strings. -/
   permissiveSuccessApps : Std.HashSet String
 
 /-- Analyze strict and permissive trace messages to find isDefEq transition failures
@@ -290,10 +290,8 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
 
 /-- Parse a trace-format instance name string (e.g. `"@RestrictScalars.module.{?_uniq.42}"`)
 into a `Name`, stripping leading `@` and universe suffixes.
-TODO: once https://github.com/leanprover/lean4/pull/12698 (structured `TraceResult`) and
-https://github.com/leanprover/lean4/pull/12699 (`Meta.synthInstance.apply` trace class) are
-available in the toolchain, trace nodes will embed structured data and this parsing can be
-replaced with direct `Name` extraction. -/
+TODO: extract `Name`s directly from the `FormatWithInfos` data embedded in `MessageData.ofLazy`
+expression nodes, rather than parsing rendered strings. -/
 def parseTraceInstName (s : String) : Name :=
   let s := (if s.startsWith "@" then s.drop 1 else s).trimAscii.toString
   let s := match s.splitOn ".{" with | base :: _ => base | _ => s
@@ -507,9 +505,8 @@ elab_rules : command
         --     Failing apps name projections (e.g. HeytingAlgebra.toOrderBot), not the underlying
         --     registered instance (e.g. instFrame). Permissive success apps include the latter.
         -- Both sources are string-based because we parse trace `MessageData` text.
-        -- TODO: once https://github.com/leanprover/lean4/pull/12699 and
-        -- https://github.com/leanprover/lean4/pull/12698 are in the toolchain, extract
-        -- `Name`s directly from structured trace data instead of parsing strings.
+        -- TODO: extract `Name`s directly from the `FormatWithInfos` data embedded in
+        -- `MessageData.ofLazy` expression nodes, rather than parsing rendered strings.
         let leaky ← try
           let mut instStrings : Std.HashSet String ←
             result.synthGroupedFailures.foldlM (init := {}) fun acc (app, _) => do
