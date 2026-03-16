@@ -789,7 +789,6 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
 
 section
 
-set_option linter.flexible false in -- simp used on two different goals
 theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω ∣ repr a')
     (e0 : repr a0 ≠ 0) (h : repr a' + m < (ω ^ repr a0)) (n : ℕ+) (k : ℕ) :
     let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
@@ -820,9 +819,9 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     by_cases k0 : k = 0
     · simp only [k0, Nat.cast_zero, succ_eq_add_one, _root_.zero_add, mul_one, R]
       refine lt_of_lt_of_le ?_ (opow_le_opow_right omega0_pos (one_le_iff_ne_zero.2 e0))
-      rcases m with - | m <;> simp [opowAux, omega0_pos]
-      rw [← Nat.cast_add_one]
-      apply natCast_lt_omega0
+      rcases m with - | m
+      · simp [opowAux, omega0_pos]
+      · simpa [opowAux] using natCast_lt_omega0 (m + 1)
     · rw [opow_mul]
       exact IH.1 k0
   refine ⟨fun _ => ?_, ?_⟩
