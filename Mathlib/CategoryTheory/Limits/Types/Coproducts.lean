@@ -307,8 +307,8 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
         exact this.elim
       · rintro T _ _ m rfl rfl
         ext x
-        dsimp
-        simp only [Set.mem_range, TypeCat.Fun.as_apply, TypeCat.Fun.mk_apply]
+        simp only [TypeCat.Fun.as_apply, Functor.const_obj_obj, pair_obj_left, Set.mem_range,
+          comp_apply, pair_obj_right, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply]
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 
 /-- Any monomorphism in `Type` is a coproduct injection. -/
