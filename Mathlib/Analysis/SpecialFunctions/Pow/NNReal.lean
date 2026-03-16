@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public meta import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Tactic.Rify
 public import Qq
 
 /-!
@@ -62,6 +63,9 @@ lemma rpow_eq_zero (hy : y ≠ 0) : x ^ y = 0 ↔ x = 0 := by simp [hy]
 @[simp]
 theorem zero_rpow {x : ℝ} (h : x ≠ 0) : (0 : ℝ≥0) ^ x = 0 :=
   NNReal.eq <| Real.zero_rpow h
+
+theorem zero_rpow_def (y : ℝ) : (0 : ℝ≥0) ^ y = if y = 0 then 1 else 0 := by
+  split_ifs with h <;> simp [h]
 
 @[simp]
 theorem rpow_one (x : ℝ≥0) : x ^ (1 : ℝ) = x :=
@@ -391,6 +395,25 @@ theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun 
 theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0 => y ^ x :=
   ⟨rpow_left_injective hx, rpow_left_surjective hx⟩
 
+lemma rpow_right_inj {y z : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) : x ^ y = x ^ z ↔ y = z := by
+  rw [← pos_iff_ne_zero] at hx₀
+  rify at *
+  grind [Real.rpow_right_inj]
+
+lemma rpow_eq_rpow_right_iff {y z : ℝ} :
+    x ^ y = x ^ z ↔ y = z ∨ x = 1 ∨ (x = 0 ∧ (y = 0 ↔ z = 0)) := by
+  obtain rfl | hx₀ := eq_or_ne x 0
+  · obtain rfl | hz := eq_or_ne z 0
+    · simp [zero_rpow_def]
+    · simp +contextual [hz]
+  obtain rfl | hx₁ := eq_or_ne x 1
+  · simp
+  simpa [hx₀, hx₁] using rpow_right_inj (y := y) (z := z) hx₀ hx₁
+
+@[simp]
+lemma rpow_eq_left_iff {y : ℝ} : x ^ y = x ↔ x = 1 ∨ y = 1 ∨ (x = 0 ∧ y ≠ 0) := by
+  simpa [or_left_comm] using rpow_eq_rpow_right_iff (x := x) (y := y) (z := 1)
+
 theorem eq_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x = y ^ z⁻¹ ↔ x ^ z = y := by
   rw [← rpow_eq_rpow_iff hz, ← one_div, rpow_self_rpow_inv hz]
 
@@ -402,6 +425,14 @@ theorem rpow_inv_eq_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ z⁻¹ = 
 
 @[simp] lemma rpow_inv_rpow {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ y⁻¹) ^ y = x := by
   rw [← rpow_mul, inv_mul_cancel₀ hy, rpow_one]
+
+@[simp]
+lemma rpow_rpow_inv_eq_iff {y : ℝ} : (x ^ y) ^ y⁻¹ = x ↔ y ≠ 0 ∨ x = 1 := by
+  grind only [rpow_rpow_inv, rpow_zero]
+
+@[simp]
+lemma rpow_inv_rpow_eq_iff {y : ℝ} : (x ^ y⁻¹) ^ y = x ↔ y ≠ 0 ∨ x = 1 := by
+  grind [rpow_rpow_inv_eq_iff]
 
 theorem pow_rpow_inv_natCast (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
   rw [← NNReal.coe_inj, coe_rpow, NNReal.coe_pow]
@@ -944,6 +975,14 @@ theorem ofReal_rpow_of_nonneg {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp_nonneg : 0 �
 
 @[simp] lemma rpow_inv_rpow {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0∞) : (x ^ y⁻¹) ^ y = x := by
   rw [← rpow_mul, inv_mul_cancel₀ hy, rpow_one]
+
+@[simp]
+lemma rpow_rpow_inv_eq_iff {x : ℝ≥0∞} {y : ℝ} : (x ^ y) ^ y⁻¹ = x ↔ y ≠ 0 ∨ x = 1 := by
+  grind [rpow_zero, rpow_rpow_inv]
+
+@[simp]
+lemma rpow_inv_rpow_eq_iff {x : ℝ≥0∞} {y : ℝ} : (x ^ y⁻¹) ^ y = x ↔ y ≠ 0 ∨ x = 1 := by
+  grind [rpow_rpow_inv_eq_iff]
 
 lemma pow_rpow_inv_natCast {n : ℕ} (hn : n ≠ 0) (x : ℝ≥0∞) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
   rw [← rpow_natCast, ← rpow_mul, mul_inv_cancel₀ (by positivity), rpow_one]
