@@ -44,7 +44,7 @@ square; this theorem is formalized as
 
 - `group_to_cayley_table`: every finite group `G` yields a `LatinSquare G G`.
 - `latin_rectangle_extends_one_row`: a (non-square) `LatinRectangle` extends to a `LatinRectangle`
-   with one more row. This is an application of **Hall's Marriage Theorem**, 
+   with one more row. This is an application of **Hall's Marriage Theorem**,
    `hallMatchingsOn.nonempty`.
 - `latin_rectangle_extends_to_latin_square`:  a `LatinRectangle` extends to a `LatinSquare`.
 
@@ -296,8 +296,6 @@ lemma induced_latin_rectangle_is_equiv
     (h : α ≃ β)
     (A : LatinRectangle m n α) : A ≃ (renameLatinRectangle f g h A) :=
   ⟨f, g, h, by simp [LatinRectangle.M]⟩
-  
- 
 
 end Equivalence
 
