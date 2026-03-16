@@ -31,30 +31,17 @@ lemma isHomeomorph_iff_isQuotientMap_injective {f : X → Y} :
     fun h ↦ ⟨h.1.continuous, fun s hs ↦ ?_, h.2, h.1.surjective⟩⟩
   rwa [← h.1.isOpen_preimage, Set.preimage_image_eq _ h.2]
 
-theorem isStrictMap_iff_kerLift_isEmbedding :
-    IsStrictMap f ↔ IsEmbedding (Setoid.kerLift f) := by
-  let e := Setoid.quotientKerEquivRange f
-  let q := @Quotient.mk X (Setoid.ker f)
-  have hq : IsStrictMap f ↔ IsQuotientMap e :=
-    ⟨fun hf => IsQuotientMap.of_comp_isQuotientMap isQuotientMap_quotient_mk' hf,
-     fun he => he.comp isQuotientMap_quotient_mk'⟩
-  have he : IsQuotientMap e ↔ IsEmbedding e := by
-    refine ⟨fun hqe => ?_, fun hee => ?_⟩
-    · exact (IsOpenEmbedding.of_continuous_injective_isOpenMap hqe.continuous
-        e.injective (hqe.isOpenMap_of_injective e.injective)).isEmbedding
-    · exact (hee.isOpenEmbedding_of_surjective e.surjective).isOpenMap.isQuotientMap
-        hee.continuous e.surjective
-  rw [hq, he]
-  exact (IsEmbedding.of_comp_iff (f := e) (g := (Subtype.val : Set.range f → Y)) .subtypeVal).symm
-
 theorem isStrictMap_iff_quotientKerEquivRange_isHomeomorph :
     IsStrictMap f ↔
       IsHomeomorph (Setoid.quotientKerEquivRange f : Quotient (Setoid.ker f) → Set.range f) := by
-  let e := Setoid.quotientKerEquivRange f
-  rw [isStrictMap_iff_kerLift_isEmbedding, isHomeomorph_iff_isEmbedding_surjective]
-  have h_comp : IsEmbedding (Setoid.kerLift f) ↔ IsEmbedding e :=
-    IsEmbedding.of_comp_iff (f := e) (g := (Subtype.val : Set.range f → Y)) .subtypeVal
-  rw [h_comp]
-  exact (and_iff_left e.surjective).symm
+  simp only [IsStrictMap, isHomeomorph_iff_isQuotientMap_injective, Equiv.injective, and_true]
+  exact ⟨fun h => IsQuotientMap.of_comp_isQuotientMap isQuotientMap_quotient_mk' h,
+         fun h ↦ h.comp isQuotientMap_quotient_mk'⟩
+
+theorem isStrictMap_iff_kerLift_isEmbedding :
+    IsStrictMap f ↔ IsEmbedding (Setoid.kerLift f) := by
+  simp only [isStrictMap_iff_quotientKerEquivRange_isHomeomorph,
+    isHomeomorph_iff_isEmbedding_surjective, Equiv.surjective, and_true]
+  exact (IsEmbedding.of_comp_iff .subtypeVal).symm
 
 end Topology
