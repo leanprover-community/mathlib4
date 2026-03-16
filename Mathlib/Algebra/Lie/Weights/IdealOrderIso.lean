@@ -43,9 +43,9 @@ lemma corootSubmodule_le_lieIdeal (I : LieIdeal K L) {α : Weight K H L}
     corootSubmodule α ≤ I.restr H := by
   intro x hx
   obtain ⟨h, hh, rfl⟩ := (LieSubmodule.mem_map _).mp hx
-  have hh : (⟨h.val, h.property⟩ : H) ∈ corootSpace α := hh
-  rw [mem_corootSpace] at hh
-  refine (Submodule.span_le.mpr ?_) hh
+  have : (⟨h.val, h.property⟩ : H) ∈ corootSpace α := hh
+  rw [mem_corootSpace] at this
+  refine (Submodule.span_le.mpr ?_) this
   rintro _ ⟨y, hy, _, -, rfl⟩
   exact lie_mem_left K L I y _ (hα hy)
 
@@ -67,14 +67,11 @@ lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
     {α : Weight K H L} (hI : rootSpace H α ≤ I.restr H)
     {γ : H → K} (hγ_ne : γ (coroot α) ≠ 0) :
     rootSpace H γ ≤ I.restr H := by
-  have h_coroot_I : (coroot α : L) ∈ I.restr H :=
-    corootSubmodule_le_lieIdeal I hI (coroot_mem_corootSubmodule α)
   intro y hy
-  have h_eq : ⁅(coroot α : L), y⁆ = γ (coroot α) • y :=
-    lie_eq_smul_of_mem_rootSpace hy (coroot α)
-  have h_smul : γ (coroot α) • y ∈ I.toSubmodule := by
-    rw [← h_eq]; exact lie_mem_left K L I _ y h_coroot_I
-  exact I.toSubmodule.smul_mem_iff hγ_ne |>.mp h_smul
+  have : γ (coroot α) • y ∈ I.toSubmodule := by
+    rw [← lie_eq_smul_of_mem_rootSpace hy (coroot α)]
+    exact lie_mem_left K L I _ y (corootSubmodule_le_lieIdeal I hI (coroot_mem_corootSubmodule α))
+  exact I.toSubmodule.smul_mem_iff hγ_ne |>.mp this
 
 lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
     {α : H.root} (hα : α ∈ lieIdealRootSet (H := H) I) :
