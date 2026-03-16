@@ -137,8 +137,7 @@ instance [Ring R] [IsFormallyReal R] : IsReduced R := by
   rw [isReduced_iff_pow_one_lt 2 (by lia)]
   intro x hx
   by_contra! hc
-  exact IsFormallyReal.not_isSumNonzeroSq_zero <| by
-    simpa [← pow_two, hx] using IsSumNonzeroSq.sq hc
+exact not_isSumNonzeroSq_zero <| by simpa [← pow_two, hx] using IsSumNonzeroSq.sq hc
 
 theorem eq_zero_of_add_right [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
     {s₁ s₂ : R} (hs₁ : IsSumSq s₁) (hs₂ : IsSumSq s₂) (h : s₁ + s₂ = 0) : s₁ = 0 := by
@@ -146,7 +145,7 @@ theorem eq_zero_of_add_right [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
   have h₂ : s₂ ≠ 0 := fun hc ↦ by simp_all
   rw [← isSumNonzeroSq_iff_isSumSq h₁] at hs₁
   rw [← isSumNonzeroSq_iff_isSumSq h₂] at hs₂
-  exact IsFormallyReal.not_isSumNonzeroSq_zero (h ▸ IsSumNonzeroSq.add hs₁ hs₂)
+  exact not_isSumNonzeroSq_zero (h ▸ IsSumNonzeroSq.add hs₁ hs₂)
 
 theorem eq_zero_of_add_left [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
     {s₁ s₂ : R} (hs₁ : IsSumSq s₁) (hs₂ : IsSumSq s₂) (h : s₁ + s₂ = 0) : s₂ = 0 := by
@@ -154,6 +153,6 @@ theorem eq_zero_of_add_left [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
 
 theorem eq_zero_of_isSumSq_of_neg_isSumSq [NonUnitalNonAssocRing R] [IsFormallyReal R]
     {s : R} (h₁ : IsSumSq s) (h₂ : IsSumSq (-s)) : s = 0 :=
-  IsFormallyReal.eq_zero_of_add_right h₁ h₂ (by simp)
+eq_zero_of_add_right h₁ h₂ (by simp)
 
 end IsFormallyReal
