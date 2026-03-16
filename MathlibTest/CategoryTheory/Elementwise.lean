@@ -1,7 +1,6 @@
 module
--- TODO: remove `public`s after #34466 is in release
-public import Mathlib.Tactic.CategoryTheory.Elementwise
-public import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Algebra.Category.MonCat.Basic
 
 set_option autoImplicit true
 
@@ -155,9 +154,9 @@ end HasForget
 
 namespace ConcreteCategory
 
-attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
+attribute [local simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 
-attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
+attribute [local simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 
 variable {C : Type*} {FC : C → C → Type*} {CC : C → Type*}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
