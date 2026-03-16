@@ -76,17 +76,10 @@ variable {R : Type*} [Semiring R]
   {U V : Type*} [AddCommMonoid U] [AddCommMonoid V]
   [Module R U] [Module R V] (e : V ≃ₗ[R] V)
 
-theorem smul_submodule_def (W : Submodule R V) :
-    e • W = map e.toLinearMap W := rfl
-
-theorem mem_stabilizer_submodule_iff_map_eq (W : Submodule R V) :
-    e ∈ stabilizer (V ≃ₗ[R] V) W ↔ map e.toLinearMap W = W := by
-  rfl
-
 variable {P : Submodule R U} {Q : Submodule R V}
 
 theorem fixedSubmodule_eq_top_iff {f : V ≃ₗ[R] V} :
-    f.fixedSubmodule = ⊤ ↔ f = 1 := by
+    f.fixedSubmodule = ⊤ ↔ f = .refl R V := by
   simp [LinearEquiv.ext_iff, Submodule.ext_iff]
 
 theorem mem_stabilizer_submodule_of_le_fixedSubmodule
@@ -95,26 +88,18 @@ theorem mem_stabilizer_submodule_of_le_fixedSubmodule
   rw [mem_stabilizer_submodule_iff_map_eq]
   apply le_antisymm
   · rintro _ ⟨x, hx : x ∈ W, rfl⟩
-    suffices e x = x by simpa only [this, coe_coe]
+    suffices e x = x by simpa [this, coe_coe]
     rw [← coe_toLinearMap, ← mem_fixedSubmodule_iff]
     exact hW hx
   · intro x hx
     refine ⟨x, hx, ?_⟩
-    rw [coe_coe, ← coe_toLinearMap, ← mem_fixedSubmodule_iff]
+    simp only [DistribSMul.toLinearMap_apply, LinearEquiv.smul_def]
+    rw [← coe_toLinearMap, ← mem_fixedSubmodule_iff]
     exact hW hx
 
 theorem mem_stabilizer_fixedSubmodule (e : V ≃ₗ[R] V) :
     e ∈ stabilizer _ e.fixedSubmodule :=
   mem_stabilizer_submodule_of_le_fixedSubmodule (le_refl _)
-
-/-
-theorem fixingSubgroup_le_stabilizer (W : Submodule R V) :
-    fixingSubgroup (V ≃ₗ[R] V) (W : Set V) ≤ stabilizer _ W := by
-  intro u
-  rw [mem_stabilizer_iff, SetLike.ext'_iff, coe_pointwise_smul,
-    ← mem_stabilizer_iff]
-  apply MulAction.fixingSubgroup_le_stabilizer
--/
 
 theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
     (he : e ∈ fixingSubgroup _ W.carrier) :

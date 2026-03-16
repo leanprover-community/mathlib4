@@ -726,6 +726,7 @@ theorem submoduleMap_symm_apply (p : Submodule R M)
 
 end
 
+/-
 section restrict
 
 variable {R U V : Type*} [Semiring R] [AddCommMonoid U] [AddCommMonoid V] [Module R U] [Module R V]
@@ -747,6 +748,7 @@ theorem coe_restrict (e : U ≃ₗ[R] V) (h : P.map e.toLinearMap = Q) :
   rfl
 
 end restrict
+-/
 
 end AddCommMonoid
 

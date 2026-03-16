@@ -311,7 +311,6 @@ section divisionRing
 
 variable {K : Type*} [DivisionRing K] [Module K V]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Over a division ring, `dilatransvections` correspond to linear
 equivalences `e` such that the linear map `e - id` has rank at most 1.
 
@@ -409,8 +408,14 @@ theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
       rw [← Nat.add_left_inj, Submodule.finrank_quotient_add_finrank]
       rw [← f.finrank_ker_add_one_of_ne_zero, add_comm]
       aesop
-    have eq_top : e.fixedSubmodule ⊔ Submodule.span K {w} = ⊤ :=
-      Submodule.sup_span_eq_top he hw
+    have eq_top : e.fixedSubmodule ⊔ Submodule.span K {w} = ⊤ := by
+      rw [Submodule.sup_span_eq_top_iff hw]
+      apply le_antisymm he
+      apply Nat.one_le_of_lt
+      rw [← Nat.ne_zero_iff_zero_lt]
+      contrapose hefixed_ne_top
+      apply eq_top_of_finrank_eq
+      rw [← Nat.add_left_cancel_iff, finrank_quotient_add_finrank, hefixed_ne_top, zero_add]
     set v := (f w)⁻¹ • (e w - w)
     suffices hfv : f v = 0 by
       use f, v, hfv
