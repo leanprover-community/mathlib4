@@ -100,9 +100,7 @@ EOF
   (cd "${pkg}" && MATHLIB_NO_CACHE_ON_UPDATE=1 lake update)
 else
   if [[ -f "${pkg}/lakefile.lean" && \
-      -f "${pkg}/.gitignore" && \
-      -f "${pkg}/lean-toolchain" && \
-      -f "${pkg}/lake-manifest.json" ]]; then
+      -f "${pkg}/.gitignore" ]]; then
     if [[ "${lakeUpdate}" ]]; then
       echo "Only running \`lake update -v\` in \`SideSkimmer\`; skipping run."
       (cd "${pkg}" && MATHLIB_NO_CACHE_ON_UPDATE=1 lake update -v)
