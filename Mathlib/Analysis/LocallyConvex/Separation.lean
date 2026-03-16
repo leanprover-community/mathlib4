@@ -168,9 +168,8 @@ theorem geometric_hahn_banach_of_nonempty_interior
     simpa [hs.closure_interior_eq_closure_of_nonempty_interior hsint] using subset_closure ha
 
 /-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a continuous
-linear functional weakly separates `s` and `t`. The proof first separates `interior s` from `t`,
-then extends the inequality from `interior s` to all of `s` using
-`closure (interior s) = closure s`. -/
+linear functional weakly separates `s` and `t`. If `t` is nonempty, this follows from
+`geometric_hahn_banach_of_nonempty_interior`; if `t = ∅`, the zero functional works. -/
 theorem geometric_hahn_banach_of_nonempty_interior'
   (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
     (hsint : (interior s).Nonempty) :
@@ -179,7 +178,7 @@ theorem geometric_hahn_banach_of_nonempty_interior'
   · obtain ⟨f, u, -, hs', ht'⟩ :=
       geometric_hahn_banach_of_nonempty_interior hs ht hst hsint htne
     exact ⟨f, u, hs', ht'⟩
-  · exact ⟨0, 0, by simp [Set.not_nonempty_iff_eq_empty.mp htne]⟩
+  · exact ⟨0, 0, by simp⟩
 
 /-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
 continuous linear functional whose maximum on `A` is attained at `x`. -/
@@ -307,6 +306,9 @@ theorem geometric_hahn_banach_of_nonempty_interior
   · simpa [f.extendRCLikeₗ_apply] using hA'
   · simpa [f.extendRCLikeₗ_apply] using hB'
 
+/-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a continuous
+`𝕜`-linear functional weakly separates `s` and `t`. If `t` is nonempty, this follows from
+`geometric_hahn_banach_of_nonempty_interior`; if `t = ∅`, the zero functional works. -/
 theorem geometric_hahn_banach_of_nonempty_interior'
   (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
     (hsint : (interior s).Nonempty) :
@@ -318,7 +320,7 @@ theorem geometric_hahn_banach_of_nonempty_interior'
         geometric_hahn_banach_of_nonempty_interior hs ht hst hsint htne
     obtain ⟨f, u, -, hs', ht'⟩ := hsep
     exact ⟨f, u, hs', ht'⟩
-  · exact ⟨0, 0, by simp [Set.not_nonempty_iff_eq_empty.mp htne]⟩
+  · exact ⟨0, 0, by simp⟩
 
 /-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
 continuous `𝕜`-linear functional whose real part attains its maximum on `A` at `x`. -/
