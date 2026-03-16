@@ -216,7 +216,7 @@ section restrict₂
 
 variable {I J : Finset ι'}
 
-/-- The restriction from `EuclideanSpace 𝕜 J` to `EuclideanSpace κ I` when `I ⊆ J`. -/
+/-- The restriction from `EuclideanSpace 𝕜 J` to `EuclideanSpace 𝕜 I` when `I ⊆ J`. -/
 noncomputable
 def restrict₂ (hIJ : I ⊆ J) :
     EuclideanSpace 𝕜 J →L[𝕜] EuclideanSpace 𝕜 I where
