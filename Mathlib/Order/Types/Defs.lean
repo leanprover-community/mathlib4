@@ -248,7 +248,6 @@ def lift (o : OrderType.{v}) : OrderType.{max v u} :=
 theorem type_uLift : type (ULift.{v, u} α) = lift.{v} (type α) := Eq.refl (type (ULift.{v, u} α))
 
 /-- An order type lifted to a lower or equal universe equals itself. -/
-@[simp]
 theorem lift_id' (o : OrderType.{max u v}) : lift.{u} o = o :=
   inductionOn o fun _ ↦ type_congr ULift.orderIso
 
@@ -256,6 +255,11 @@ theorem lift_id' (o : OrderType.{max u v}) : lift.{u} o = o :=
 @[simp]
 theorem lift_id (o : OrderType) : lift.{u, u} o = o :=
   lift_id'.{u, u} o
+
+/-- An order type lifted to the zero universe equals itself. -/
+@[simp]
+theorem lift_uzero (o : OrderType.{u}) : lift.{0} o = o :=
+  lift_id'.{0, u} o
 
 @[simp]
 theorem lift_lift.{u_1} (o : OrderType.{u_1}) : lift.{u} (lift.{v} o) = lift.{max v u} o :=
