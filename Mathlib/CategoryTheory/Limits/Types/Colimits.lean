@@ -236,12 +236,12 @@ theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : I
     exact of_eq_true (congrArg ULift.down this).symm rfl
 
 theorem jointly_surjective (F : J ⥤ Type u) {t : Cocone F} (h : IsColimit t) (x : t.pt) :
-    ∃ j y, t.ι.app j y = x := jointly_surjective_of_isColimit h x
+    ∃ (j : J) (y : F.obj j), t.ι.app j y = x := jointly_surjective_of_isColimit h x
 
 variable {F} in
 /-- A variant of `jointly_surjective` for `x : colimit F`. -/
 theorem jointly_surjective' (x : (colimit F : Type u)) :
-    ∃ j y, colimit.ι F j y = x :=
+    ∃ (j : J) (y : F.obj j), colimit.ι F j y = x :=
   jointly_surjective F (colimit.isColimit F) x
 
 /-- If a colimit is nonempty, also its index category is nonempty. -/
