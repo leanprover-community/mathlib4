@@ -85,7 +85,7 @@ theorem alternatingGroup_of_le_of_normal
     aesop
   classical
   apply iwasawaStructure_two.commutator_le
-  exact fixedPoints_ne_univ_of_isPreprimitive 2 (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul 2 (by norm_num) (by grind)
 
 end Equiv.Perm
 
@@ -130,11 +130,7 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top (by simpa using hα)]
   apply iwasawaStructure_three.commutator_le
   rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot] at hN
-  convert fixedPoints_ne_univ_of_isPreprimitive (N := N) (α := α) 3 (by norm_num) (by grind)
-  apply isPreprimitive_alternatingGroup  (by norm_num)
-  · exact Nat.lt_of_add_left_lt hα
-  · contrapose hα'
-    rw [hα']
+  exact fixedPoints_ne_univ_of_faithfulSMul 3 (by norm_num) (by grind)
 
 theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
@@ -217,8 +213,7 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
     (by simpa using hα)]
   apply (iwasawaStructure_four hα).commutator_le
   rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot] at hN
-  convert fixedPoints_ne_univ_of_isPreprimitive (N := N) (α := α) 4 (by norm_num) (by grind)
-  refine isPreprimitive_alternatingGroup (by norm_num) hα hα'
+  exact fixedPoints_ne_univ_of_faithfulSMul 4 (by norm_num) (by grind)
 
 /- If `α` has at least 5 elements,
 then the only nontrivial normal subgroup of `alternatingGroup α`
