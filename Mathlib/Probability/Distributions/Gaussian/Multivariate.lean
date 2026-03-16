@@ -21,13 +21,15 @@ Gaussian distributions over `EuclideanSpace ℝ ι`.
 
 ## Main definitions
 
-* `stdGaussian E`: The standard Gaussian measure over a EuclideanSpace `E`.
-* `multivariateGaussian μ S`: The multivariate Gaussian distribution with mean `μ` and covariance
-  matrix `S`.
+* `stdGaussian E`: Standard Gaussian distribution on a finite-dimensional real inner product space
+  `E`. This is the random vector whose coordinates in an orthonormal basis are independent standard
+  Gaussian.
+* `multivariateGaussian μ S`: The multivariate Gaussian distribution on `EuclideanSpace ℝ ι`
+  with mean `μ` and covariance matrix `S`, when `S` is a positive semidefinite matrix.
 
 ## TODO
 
-* Generalize `multivariateGaussian μ S` when `S` is a symmetric trace class operator over a
+- Generalize `multivariateGaussian μ S` when `S` is a symmetric trace class operator over a
   Hilbert space.
 
 ## Tags
@@ -54,7 +56,12 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDim
   [MeasurableSpace E]
 
 variable (E) in
-/-- Standard Gaussian distribution on `E`. -/
+/-- Standard Gaussian distribution on a finite-dimensional real inner product space `E`.
+This is the random vector whose coordinates in an orthonormal basis are independent standard
+Gaussian.
+
+The definition uses `stdOrthonormalBasis ℝ E` but does not actually depend on the
+basis, see `stdGaussian_eq_map_pi_orthonormalBasis`. -/
 noncomputable
 def stdGaussian : Measure E :=
   (Measure.pi (fun _ : Fin (Module.finrank ℝ E) ↦ gaussianReal 0 1)).map
@@ -63,7 +70,7 @@ def stdGaussian : Measure E :=
 variable [BorelSpace E]
 
 instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E) :=
-    Measure.isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+  Measure.isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
 
 @[simp]
 lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by
@@ -71,13 +78,6 @@ lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by
   · simp [integral_smul_const, integral_eval]
   · exact fun i _ ↦ Integrable.smul_const (integrable_eval IsGaussian.integrable_id) _
   · exact (Finset.measurable_sum _ (by fun_prop)).aemeasurable
-
-theorem _root_.OrthonormalBasis.norm_dual {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
-    [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (L : StrongDual ℝ E) :
-    ‖L‖ ^ 2 = ∑ i, L (b i) ^ 2 := by
-  have := Module.Basis.finiteDimensional_of_finite b.toBasis
-  simp_rw [← (InnerProductSpace.toDual ℝ E).symm.norm_map, ← b.sum_sq_inner_left,
-    InnerProductSpace.toDual_symm_apply]
 
 lemma variance_dual_stdGaussian (L : StrongDual ℝ E) :
     Var[L; stdGaussian E] = ‖L‖ ^ 2 := by
@@ -164,11 +164,21 @@ variable [DecidableEq ι]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Multivariate Gaussian measure on `EuclideanSpace ℝ ι` with mean `μ` and covariance
-matrix `S`. -/
+matrix `S`. This only makes sense when `S` is positive semidefinite,
+as then `CFC.sqrt S * CFC.sqrt S = S`. Otherwise `CFC.sqrt S = 0`, and
+`multivariateGaussian μ S = Measure.dirac μ` (see `multivariateGaussian_of_not_posSemidef`). -/
 noncomputable
 def multivariateGaussian (μ : EuclideanSpace ℝ ι) (S : Matrix ι ι ℝ) :
     Measure (EuclideanSpace ℝ ι) :=
   (stdGaussian (EuclideanSpace ℝ ι)).map (fun x ↦ μ + toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S) x)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma multivariateGaussian_of_not_posSemidef (μ : EuclideanSpace ℝ ι) {S : Matrix ι ι ℝ}
+    (hS : ¬ S.PosSemidef) : multivariateGaussian μ S = .dirac μ := by
+  rw [multivariateGaussian, CFC.sqrt, cfcₙ_apply_of_not_predicate]
+  · simp
+  change ¬ (S - 0).PosSemidef
+  simpa
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -237,27 +247,6 @@ lemma charFun_multivariateGaussian (hS : S.PosSemidef) (x : EuclideanSpace ℝ �
     charFun (multivariateGaussian μ S) x =
       exp (⟪x, μ⟫ * I - x ⬝ᵥ S *ᵥ x / 2) := by
   simp [IsGaussian.charFun_eq', covarianceBilin_multivariateGaussian hS]
-
-section restrict₂
-
-variable {ι 𝕜 : Type*} [RCLike 𝕜] {I J : Finset ι}
-
-/-- The restriction from `EuclideanSpace 𝕜 J` to `EuclideanSpace κ I` when `I ⊆ J`. -/
-noncomputable
-def _root_.EuclideanSpace.restrict₂ (hIJ : I ⊆ J) :
-    EuclideanSpace 𝕜 J →L[𝕜] EuclideanSpace 𝕜 I where
-  toFun x := toLp 2 (Finset.restrict₂ (π := fun _ ↦ 𝕜) hIJ x.ofLp)
-  map_add' x y := by ext; simp
-  map_smul' m x := by ext; simp
-
-@[simp]
-lemma _root_.EuclideanSpace.restrict₂_apply (hIJ : I ⊆ J) (x : EuclideanSpace 𝕜 J) (i : I) :
-    EuclideanSpace.restrict₂ hIJ x i = x ⟨i.1, hIJ i.2⟩ := rfl
-
-end restrict₂
-
-variable {ι : Type*} [DecidableEq ι] {I J : Finset ι}
-  {μ : EuclideanSpace ℝ I} {S : Matrix I I ℝ} {hS : S.PosSemidef}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If one restricts a multivariate Gaussian measure indexed by a finite set `I` to
