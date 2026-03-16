@@ -67,9 +67,8 @@ lemma upperHemicontinuousWithinAt_iff_preimage_Iic :
   simp_rw [upperHemicontinuousWithinAt_iff]
   rw [hasBasis_nhdsSet (f x) |>.forall_iff ?h₁, hasBasis_nhdsSet (f x) |>.forall_iff ?h₂]
   case h₂ =>
-    refine fun s t hst hs ↦ Filter.mem_of_superset hs ?_
+    intro s t hst
     gcongr
-    exact hst
   case h₁ =>
     intro s t hst hs
     filter_upwards [hs] with x hx

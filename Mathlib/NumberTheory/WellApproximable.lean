@@ -253,7 +253,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     suffices
       f '' A p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) atTop fun n => 0 < n ∧ p∤n by
       apply (ergodic_nsmul hp.one_lt).ae_empty_or_univ_of_image_ae_le (hA₀ p).nullMeasurableSet
-      apply (HasSubset.Subset.eventuallyLE this).congr EventuallyEq.rfl
+      apply (LE.le.eventuallyLE this).congr EventuallyEq.rfl
       exact blimsup_thickening_mul_ae_eq μ (fun n => 0 < n ∧ p∤n) (fun n => {y | addOrderOf y = n})
         (Nat.cast_pos.mpr hp.pos) _ hδ
     refine (sSupHom.setImage f).apply_blimsup_le.trans (mono_blimsup fun n hn => ?_)
@@ -267,7 +267,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       f '' B p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) atTop fun n => 0 < n ∧ p∣∣n by
       apply (ergodic_nsmul_add x hp.one_lt).ae_empty_or_univ_of_image_ae_le
         (hB₀ p).nullMeasurableSet
-      apply (HasSubset.Subset.eventuallyLE this).congr EventuallyEq.rfl
+      apply (LE.le.eventuallyLE this).congr EventuallyEq.rfl
       exact blimsup_thickening_mul_ae_eq μ (fun n => 0 < n ∧ p∣∣n) (fun n => {y | addOrderOf y = n})
         (Nat.cast_pos.mpr hp.pos) _ hδ
     refine (sSupHom.setImage f).apply_blimsup_le.trans (mono_blimsup ?_)
