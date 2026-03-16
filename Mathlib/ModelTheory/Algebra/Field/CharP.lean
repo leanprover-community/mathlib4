@@ -83,7 +83,7 @@ instance model_fieldOfChar_of_charP [Field K] [CompatibleRing K]
   charP_iff_model_fieldOfChar.2 inferInstance
 
 variable (p) (K)
-/- Not an instance because it caused performance problems in a different file. -/
+/-- Not an instance because it caused performance problems in a different file. -/
 theorem charP_of_model_fieldOfChar [Field K] [CompatibleRing K]
     [h : (Theory.fieldOfChar p).Model K] : CharP K p :=
   charP_iff_model_fieldOfChar.1 h

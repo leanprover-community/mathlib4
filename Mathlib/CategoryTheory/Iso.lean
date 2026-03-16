@@ -314,7 +314,7 @@ variable {f : X ⟶ Y} {h : Y ⟶ Z}
 instance inv_isIso [IsIso f] : IsIso (inv f) :=
   (asIso f).isIso_inv
 
-/- The following instance has lower priority for the following reason:
+/-- The following instance has lower priority for the following reason:
 Suppose we are given `f : X ≅ Y` with `X Y : Type u`.
 Without the lower priority, typeclass inference cannot deduce `IsIso f.hom`
 because `f.hom` is defeq to `(fun x ↦ x) ≫ f.hom`, triggering a loop. -/

@@ -155,15 +155,11 @@ theorem toFinset_compl [Fintype α] [Fintype (sᶜ : Set _)] : sᶜ.toFinset = s
 
 end DecidableEq
 
--- TODO The `↥` circumvents an elaboration bug. See comment on `Set.toFinset_univ`.
 @[simp]
 theorem toFinset_empty [Fintype (∅ : Set α)] : (∅ : Set α).toFinset = ∅ := by
   ext
   simp
 
-/- TODO Without the coercion arrow (`↥`) there is an elaboration bug in the following two;
-it essentially infers `Fintype.{v} (Set.univ.{u} : Set α)` with `v` and `u` distinct.
-Reported in https://github.com/leanprover-community/lean/issues/672 -/
 @[simp]
 theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
     (Set.univ : Set α).toFinset = Finset.univ := by

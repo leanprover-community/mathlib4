@@ -278,7 +278,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 /-! ### Commutative ring instance and lemmas -/
 
 
-/- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
+/-- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
 defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=

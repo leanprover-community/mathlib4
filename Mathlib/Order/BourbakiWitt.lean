@@ -214,7 +214,7 @@ end IsExtremePt
 
 open Function IsExtremePt
 
-/- **The Bourbaki-Witt Theorem**: If `α` is a chain complete partial order and `f : α → α` is
+/-- **The Bourbaki-Witt Theorem**: If `α` is a chain complete partial order and `f : α → α` is
 inflationary, then `f` has a fixed point -/
 theorem nonempty_fixedPoints_of_inflationary [Nonempty α] (le_map : ∀ x, x ≤ f x) :
     (fixedPoints f).Nonempty := by

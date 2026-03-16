@@ -364,7 +364,7 @@ lemma scott_eq_upper_of_completeLinearOrder : scott α univ = upper α := by
   letI := scott α univ
   rw [@isOpen_iff_Iic_compl_or_univ _ _ (scott α univ) ({ topology_eq_scott := rfl }) U]
 
-/- The upper topology on a complete linear order is the Scott topology -/
+/-- The upper topology on a complete linear order is the Scott topology -/
 instance [TopologicalSpace α] [IsUpper α] : IsScott α univ where
   topology_eq_scott := by
     rw [scott_eq_upper_of_completeLinearOrder]

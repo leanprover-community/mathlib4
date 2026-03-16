@@ -55,7 +55,7 @@ def Ultrafilter.mul {M} [Mul M] : Mul (Ultrafilter M) where mul U V := (· * ·)
 
 attribute [local instance] Ultrafilter.mul Ultrafilter.add
 
-/- We could have taken this as the definition of `U * V`, but then we would have to prove that it
+/-- We could have taken this as the definition of `U * V`, but then we would have to prove that it
 defines an ultrafilter. -/
 @[to_additive]
 theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → Prop) :

@@ -217,7 +217,7 @@ theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap
 lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
   Circle.isCoveringMap_exp.isLocalHomeomorph
 
-/- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
+/-- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
 topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
 and https://www.math.uwaterloo.ca/~cgodsil/pdfs/topology/topgr.pdf), and discreteness of the
 kernel (see https://gemini.google.com/share/6e9ab4abcb95). -/

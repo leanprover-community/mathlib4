@@ -250,7 +250,7 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
     R.prop.proj.eq, ← coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute Pᶜ.prop).eq, ← mul_assoc,
     Pᶜ.prop.proj.eq]
 
-/- This instance was created as an auxiliary definition when defining `Subtype.distribLattice`
+/-- This instance was created as an auxiliary definition when defining `Subtype.distribLattice`
 all at once would cause a timeout. That is no longer the case. Keeping this as a useful shortcut.
 -/
 instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where

@@ -89,6 +89,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.refine
   linter.style.cdot
   linter.style.docString
+  linter.style.commentToDocString
   linter.style.dollarSyntax
   linter.style.emptyLine
   linter.style.header

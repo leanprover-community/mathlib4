@@ -688,8 +688,8 @@ theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (Equiv.piCongrLeft 
   simp_rw [Equiv.piCongrLeft_apply_eq_cast]
   exact Measurable.eq_mp X (f.apply_symm_apply i) <| measurable_pi_apply <| f.symm i
 
-/- Even though we cannot use projection notation, we still keep a dot to be consistent with similar
-  lemmas, like `MeasurableSet.prod`. -/
+/-- Even though we cannot use projection notation, we still keep a dot to be consistent with similar
+lemmas, like `MeasurableSet.prod`. -/
 @[measurability]
 protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (X i)} (hs : s.Countable)
     (ht : ∀ i ∈ s, MeasurableSet (t i)) : MeasurableSet (s.pi t) := by

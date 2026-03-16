@@ -202,8 +202,9 @@ def functorFunctor : (C ≌ D) ⥤ C ⥤ D where
 
 end CategoryStructure
 
-/- While these abbreviations are convenient, they also cause some trouble,
+/-! While these abbreviations are convenient, they also cause some trouble,
 preventing structure projections from unfolding. -/
+
 @[simp]
 theorem Equivalence_mk'_unit (functor inverse unit_iso counit_iso f) :
     (⟨functor, inverse, unit_iso, counit_iso, f⟩ : C ≌ D).unit = unit_iso.hom :=

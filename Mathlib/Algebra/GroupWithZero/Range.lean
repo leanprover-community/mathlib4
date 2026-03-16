@@ -221,10 +221,10 @@ open Function
 
 end GroupWithZero
 section CommGroupWithZero
---
+
 variable [MonoidWithZero A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
 
-/- See also `mem_valueGroup_iff_of_comm'` for a version proving that `f x ≠ 0`. -/
+/-- See also `mem_valueGroup_iff_of_comm'` for a version proving that `f x ≠ 0`. -/
 theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
     y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, x, hy⟩ ↦ ?_⟩

@@ -927,7 +927,7 @@ lemma DiscreteTopology.of_forall_le_dist {α} [PseudoMetricSpace α] {r : ℝ} (
     (hr : Pairwise (r ≤ dist · · : α → α → Prop)) : DiscreteTopology α :=
   ⟨by rw [Metric.uniformSpace_eq_bot.2 ⟨r, hpos, hr⟩, UniformSpace.toTopologicalSpace_bot]⟩
 
-/- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
+/-! Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 

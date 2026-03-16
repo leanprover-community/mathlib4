@@ -271,7 +271,7 @@ lemma dist_inr (a b : A) : dist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A
 lemma nndist_inr (a b : A) : nndist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = nndist a b :=
   isometry_inr.nndist_eq a b
 
-/- These examples verify that the bornology and uniformity (hence also the topology) are the
+/-! These examples verify that the bornology and uniformity (hence also the topology) are the
 correct ones. -/
 example : (instNormedRing (𝕜 := 𝕜) (A := A)).toMetricSpace = instMetricSpace := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toBornology = instBornology := rfl

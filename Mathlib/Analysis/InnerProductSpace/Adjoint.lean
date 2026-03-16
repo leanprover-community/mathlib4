@@ -683,7 +683,7 @@ theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
   intro x y
   simp [adjoint_inner_left]
 
-/- This next batch of lemmas is based on theorems like `LinearMap.IsPositive.conj_adjoint`, which
+/-! This next batch of lemmas is based on theorems like `LinearMap.IsPositive.conj_adjoint`, which
 are in a downstream file but historically existed before these lemmas. We can't put them in the file
 where `LinearMap.IsSymmetric` is defined because they depend on the adjoint. -/
 

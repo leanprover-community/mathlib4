@@ -82,7 +82,7 @@ private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _
   ext i v
   cases i using Fin.cases <;> simp
 
-/- `T1 f 1` leads to an algebra equiv `T f`. -/
+/-- `T1 f 1` leads to an algebra equiv `T f`. -/
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
   (t1_comp_t1_neg f 1) (by simpa using t1_comp_t1_neg f (-1))
 
@@ -111,7 +111,7 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
     add_right_inj] using Finset.sum_congr rfl (fun i _ ↦ by
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
 
-/- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
+/-- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
 private lemma degreeOf_t_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) (ne : v ≠ w) :
     (T f <| monomial v <| coeff v f).degreeOf 0 ≠
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
@@ -139,7 +139,7 @@ private lemma leadingCoeff_finSuccEquiv_t :
   exact fun i ↦ pow_zero _
 
 set_option backward.isDefEq.respectTransparency false in
-/- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
+/-- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
 private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     IsUnit (finSuccEquiv k n (T f f)).leadingCoeff := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
@@ -173,20 +173,20 @@ section intmaps
 
 variable (I : Ideal (MvPolynomial (Fin (n + 1)) k))
 
-/- `hom1` is a homomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]/φ(T(I))`,
+/-- `hom1` is a homomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]/φ(T(I))`,
 where `φ` is the isomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]`. -/
 private noncomputable abbrev hom1 : MvPolynomial (Fin n) k →ₐ[MvPolynomial (Fin n) k]
     (MvPolynomial (Fin n) k)[X] ⧸ (I.map <| T f).map (finSuccEquiv k n) :=
   (Quotient.mkₐ (MvPolynomial (Fin n) k) (map (finSuccEquiv k n) (map (T f) I))).comp
   (Algebra.ofId (MvPolynomial (Fin n) k) ((MvPolynomial (Fin n) k)[X]))
 
-/- `hom1 f I` is integral. -/
+/-- `hom1 f I` is integral. -/
 private lemma hom1_isIntegral (fne : f ≠ 0) (fi : f ∈ I) : (hom1 f I).IsIntegral := by
   obtain u := T_leadingcoeff_isUnit f fne
   exact (monic_of_isUnit_leadingCoeff_inv_smul u).quotient_isIntegral <|
     Submodule.smul_of_tower_mem _ u.unit⁻¹.val <| mem_map_of_mem _ <| mem_map_of_mem _ fi
 
-/- `eqv1` is the isomorphism from `k[X_1,...X_n][X]/φ(T(I))`
+/-- `eqv1` is the isomorphism from `k[X_1,...X_n][X]/φ(T(I))`
 to `k[X_0,...,X_n]/T(I)`, induced by `φ`. -/
 private noncomputable abbrev eqv1 :
     ((MvPolynomial (Fin n) k)[X] ⧸ (I.map (T f)).map (finSuccEquiv k n)) ≃ₐ[k]
@@ -202,7 +202,7 @@ private noncomputable abbrev eqv1 :
       congrFun (congrArg Ideal.map this.symm) (I.map (T f))
     _ = _ := by simp [← Ideal.map_map, Ideal.map_coe]
 
-/- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
+/-- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
     (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
@@ -216,11 +216,11 @@ private noncomputable abbrev eqv2 :
       rw [← Ideal.map_map, Ideal.map_coe, Ideal.map_coe]
       exact congrArg _ rfl
 
-/- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
+/-- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
 private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
   (eqv2 f I).toAlgHom.comp ((eqv1 f I).toAlgHom.comp ((hom1 f I).restrictScalars k))
 
-/- `hom2 f I` is integral. -/
+/-- `hom2 f I` is integral. -/
 private lemma hom2_isIntegral (fne : f ≠ 0) (fi : f ∈ I) : (hom2 f I).IsIntegral :=
   ((hom1_isIntegral f I fne fi).trans _ _ <| isIntegral_of_surjective _ (eqv1 f I).surjective).trans
     _ _ <| isIntegral_of_surjective _ (eqv2 f I).surjective

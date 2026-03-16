@@ -204,8 +204,8 @@ section Submonoid
 variable {S : Submonoid M} [Fintype S]
 open Fintype
 
-/- curly brackets `{}` are used here instead of instance brackets `[]` because
-  the instance in a goal is often not the same as the one inferred by type class inference. -/
+/-- curly brackets `{}` are used here instead of instance brackets `[]` because
+the instance in a goal is often not the same as the one inferred by type class inference. -/
 @[to_additive]
 theorem card_bot {_ : Fintype (⊥ : Submonoid M)} : card (⊥ : Submonoid M) = 1 :=
   card_eq_one_iff.2

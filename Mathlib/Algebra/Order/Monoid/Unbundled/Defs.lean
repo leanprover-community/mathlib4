@@ -528,7 +528,7 @@ theorem contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
   elim := (contravariant_le_iff_contravariant_lt_and_eq M N μ).mpr
     ⟨ContravariantClass.elim, ContravariantClass.elim⟩
 
-/- TODO:
+/-! TODO:
   redefine `IsLeftCancel N mu` as abbrev of `ContravariantClass N N mu (· = ·)`,
   redefine `IsRightCancel N mu` as abbrev of `ContravariantClass N N (flip mu) (· = ·)`,
   redefine `IsLeftCancelMul` as abbrev of `IsLeftCancel`,
