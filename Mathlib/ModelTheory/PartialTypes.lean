@@ -139,6 +139,7 @@ def RealizedBy {M : Type w'} [L.Structure M] (p : T.PartialType α) (v : α → 
   ∀ φ ∈ p, φ.Realize v
 
 /-- A partial type is realized in a structure if some tuple realizes it. -/
+@[nolint unusedArguments]
 def IsRealizedIn (p : T.PartialType α) (M : Type w') [L.Structure M] [M ⊨ T] [Nonempty M] :
     Prop :=
   ∃ v : α → M, p.RealizedBy v
