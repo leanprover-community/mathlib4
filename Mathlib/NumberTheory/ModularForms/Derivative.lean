@@ -31,7 +31,7 @@ namespace Derivative
 Normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$.
 -/
 @[expose] public noncomputable def normalizedDerivOfComplex (F : ℍ → ℂ) : ℍ → ℂ :=
-  fun (z : ℍ) => (2 * π * I)⁻¹ * deriv (F ∘ ofComplex) z
+  fun (z : ℍ) ↦ (2 * π * I)⁻¹ * deriv (F ∘ ofComplex) z
 
 /-- We denote the normalized derivative by `D`. -/
 scoped notation "D" => normalizedDerivOfComplex
@@ -43,7 +43,7 @@ If `F : ℍ → ℂ` is MDifferentiable, then `D F` is also MDifferentiable.
 theorem normalizedDerivOfComplex_mdifferentiable {F : ℍ → ℂ} (hF : MDiff F) : MDiff (D F) := by
   rw [UpperHalfPlane.mdifferentiable_iff] at hF ⊢
   let c : ℂ := (2 * π * I)⁻¹
-  have hDeriv : DifferentiableOn ℂ (fun z => c * deriv (F ∘ ofComplex) z) upperHalfPlaneSet := by
+  have hDeriv : DifferentiableOn ℂ (fun z ↦ c * deriv (F ∘ ofComplex) z) upperHalfPlaneSet := by
     simpa [c] using (hF.deriv isOpen_upperHalfPlaneSet).const_mul ((2 * π * I)⁻¹)
   refine hDeriv.congr ?_
   intro z hz
@@ -111,59 +111,60 @@ theorem normalizedDerivOfComplex_sq (F : ℍ → ℂ) (hF : MDiff F) : D (F ^ 2)
 @[simp]
 theorem normalizedDerivOfComplex_const (c : ℂ) : D (Function.const _ c) = 0 := by
   ext z
-  change (2 * π * I)⁻¹ * deriv (fun _ : ℂ => c) (z : ℂ) = 0
+  change (2 * π * I)⁻¹ * deriv (fun _ : ℂ ↦ c) (z : ℂ) = 0
   simp [deriv_const]
 
 /--
 Serre derivative of weight $k$.
 -/
-@[expose] public noncomputable def SerreD (k : ℂ) (F : ℍ → ℂ) : ℍ → ℂ :=
-  fun z => D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z
+@[expose] public noncomputable def serreDerivative (k : ℂ) (F : ℍ → ℂ) : ℍ → ℂ :=
+  fun z ↦ D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z
 
 @[simp]
-lemma SerreD_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
-    SerreD k F z = D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
+lemma serreDerivative_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
+    serreDerivative k F z = D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
 @[simp]
-lemma SerreD_eq (k : ℂ) (F : ℍ → ℂ) :
-    SerreD k F = fun z => D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
+lemma serreDerivative_eq (k : ℂ) (F : ℍ → ℂ) :
+    serreDerivative k F = fun z ↦ D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
 /--
 Basic properties of Serre derivative.
 -/
-theorem SerreD_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    SerreD k (F + G) = SerreD k F + SerreD k G := by
+theorem serreDerivative_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+    serreDerivative k (F + G) = serreDerivative k F + serreDerivative k G := by
   ext z
-  simp [SerreD, normalizedDerivOfComplex_add F G hF hG]
+  simp [serreDerivative, normalizedDerivOfComplex_add F G hF hG]
   ring_nf
 
-theorem SerreD_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    SerreD k (F - G) = SerreD k F - SerreD k G := by
+theorem serreDerivative_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+    serreDerivative k (F - G) = serreDerivative k F - serreDerivative k G := by
   ext z
-  simp [SerreD, normalizedDerivOfComplex_sub F G hF hG]
+  simp [serreDerivative, normalizedDerivOfComplex_sub F G hF hG]
   ring_nf
 
-theorem SerreD_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) :
-    SerreD k (c • F) = c • (SerreD k F) := by
+theorem serreDerivative_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) :
+    serreDerivative k (c • F) = c • (serreDerivative k F) := by
   ext z
-  simp [SerreD, normalizedDerivOfComplex_smul c F hF, smul_eq_mul]
+  simp [serreDerivative, normalizedDerivOfComplex_smul c F hF, smul_eq_mul]
   ring_nf
 
-theorem SerreD_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    SerreD (k₁ + k₂) (F * G) = (SerreD k₁ F) * G + F * (SerreD k₂ G) := by
+theorem serreDerivative_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+    serreDerivative (k₁ + k₂) (F * G) = (serreDerivative k₁ F) * G + F * (serreDerivative k₂ G) := by
   ext z
-  simp [SerreD, normalizedDerivOfComplex_mul F G hF hG]
+  simp [serreDerivative, normalizedDerivOfComplex_mul F G hF hG]
   ring_nf
 
 /--
 The Serre derivative preserves MDifferentiability.
-If `F : ℍ → ℂ` is MDifferentiable, then `SerreD k F` is also MDifferentiable.
+If `F : ℍ → ℂ` is MDifferentiable, then `serreDerivative k F` is also MDifferentiable.
 -/
-theorem SerreD_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F) : MDiff (SerreD k F) := by
+theorem serreDerivative_mdifferentiable {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F) :
+    MDiff (serreDerivative k F) := by
   refine (normalizedDerivOfComplex_mdifferentiable hF).sub ?_
   convert
     (MDifferentiable.mul mdifferentiable_const (E2_mdifferentiable.mul hF) :
-      MDiff (fun z => (k * 12⁻¹) * (EisensteinSeries.E2 z * F z)))
+      MDiff (fun z ↦ (k * 12⁻¹) * (EisensteinSeries.E2 z * F z)))
   simp [Pi.mul_apply, mul_assoc, mul_left_comm, mul_comm]
 
 end
