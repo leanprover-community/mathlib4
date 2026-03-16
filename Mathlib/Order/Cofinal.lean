@@ -74,7 +74,7 @@ theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofi
 
 theorem GaloisConnection.cofinal_range {f : β → α} {g : α → β} (h : GaloisConnection f g) :
     IsCofinal (.range g) :=
-  fun a ↦ ⟨_, Set.mem_range_self (f a), le_u_l h a⟩
+  fun a ↦ ⟨_, Set.mem_range_self _, le_u_l h a⟩
 
 theorem GaloisConnection.map_cofinal {f : β → α} {g : α → β}
     (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) :=
