@@ -256,10 +256,10 @@ def sndₛₗ : (E ×[σ] F) →ₛₗ[σ] F where
   map_add' _x _y := rfl
   map_smul' _x _y := rfl
 
-@[simp] lemma fst_apply (x : E ×[σ] F) :
+@[simp] lemma fstₛₗ_apply (x : E ×[σ] F) :
     fstₛₗ σ E F x = x.fst := rfl
 
-@[simp] lemma snd_apply (x : E ×[σ] F) :
+@[simp] lemma sndₛₗ_apply (x : E ×[σ] F) :
     sndₛₗ σ E F x = x.snd := rfl
 
 @[simp, norm_cast] lemma coe_fstₛₗ : ⇑(fstₛₗ σ E F) = fun x => x.fst := rfl
