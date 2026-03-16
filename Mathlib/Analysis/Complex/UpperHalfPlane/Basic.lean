@@ -37,9 +37,10 @@ attribute [coe] UpperHalfPlane.coe
 
 instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
-/-- Define I := √-1 as an element on the upper half plane. -/
+/-- Define `I := √-1` as an element of the upper half plane. -/
 def I : ℍ := ⟨Complex.I, zero_lt_one⟩
 
+/-- Define the cube root of unity `ρ := (-1 + √-3) / 2` as an element of the upper half plane. -/
 def ρ : ℍ := ⟨⟨-1 / 2, Real.sqrt 3 / 2⟩, by positivity⟩
 
 lemma ρ_sq : (ρ : ℂ) ^ 2 = -ρ - 1 := by
