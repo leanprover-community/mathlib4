@@ -489,7 +489,7 @@ lemma polynomial_induction
     refine fg_ker _ _ _ (hg.comp (MvPolynomial.C_surjective (Fin 0))) ?_
     rw [← comap_ker]
     convert hg'.map (MvPolynomial.isEmptyRingEquiv R (Fin 0)).toRingHom using 1
-    simp only [RingEquiv.toRingHom_eq_coe]
+    simp only [RingEquiv.toRingHom_eq_coe, ← MvPolynomial.isEmptyRingEquiv_symm_toRingHom]
     exact Ideal.comap_symm (MvPolynomial.isEmptyRingEquiv R (Fin 0))
   | succ n IH =>
     let e : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] MvPolynomial (Fin n) R[X] :=

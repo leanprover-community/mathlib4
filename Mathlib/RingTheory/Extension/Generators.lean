@@ -218,14 +218,15 @@ noncomputable
 def comp [Algebra S T] [IsScalarTower R S T]
     (Q : Generators S T ι') (P : Generators R S ι) : Generators R T (ι' ⊕ ι) where
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
-  σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
+  σ' x := (AddMonoidAlgebra.coeff <| Q.σ x).sum fun n r ↦
+    rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1
   aeval_val_σ' s := by
     have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
       rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
     conv_rhs => rw [← Q.aeval_val_σ s, ← (Q.σ s).sum_single]
-    simp only [map_finsuppSum, map_mul, aeval_rename, Sum.elim_comp_inr, this, aeval_val_σ,
+    simp [map_finsuppSum, map_mul, aeval_rename, Sum.elim_comp_inr, this, aeval_val_σ,
       aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective, Sum.elim_inl,
-      one_mul, single_eq_monomial]
+      one_mul]
 
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`

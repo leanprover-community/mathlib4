@@ -46,7 +46,7 @@ set_option backward.isDefEq.respectTransparency false in
 omit [CommMonoid M] in
 variable (R A B) [AddCommMonoid M] in
 lemma _root_.AddMonoidAlgebra.tensorEquiv.invFun_tmul (a : A) (m : M) (b : B) :
-    AddMonoidAlgebra.tensorEquiv.invFun (single m (a ⊗ₜ[R] b)) = a ⊗ₜ single m b := by
+    AddMonoidAlgebra.tensorEquiv.invFun (.single m (a ⊗ₜ[R] b)) = a ⊗ₜ .single m b := by
   simp [AddMonoidAlgebra.tensorEquiv.invFun]
 
 set_option backward.isDefEq.respectTransparency false in

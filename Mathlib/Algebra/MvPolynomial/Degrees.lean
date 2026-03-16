@@ -472,7 +472,7 @@ theorem totalDegree_X {R} [CommSemiring R] [Nontrivial R] (s : σ) :
 
 theorem totalDegree_add (a b : MvPolynomial σ R) :
     (a + b).totalDegree ≤ max a.totalDegree b.totalDegree :=
-  sup_support_add_le _ _ _
+  sup_support_coeff_add_le _ _ _
 
 theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
     (h : q.totalDegree < p.totalDegree) : (p + q).totalDegree = p.totalDegree := by
@@ -483,8 +483,7 @@ theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
     by_cases hp : p = 0
     · simp [hp]
     obtain ⟨b, hb₁, hb₂⟩ :=
-      p.support.exists_mem_eq_sup (Finsupp.support_nonempty_iff.mpr hp) fun m : σ →₀ ℕ =>
-        Multiset.card (toMultiset m)
+      p.support.exists_mem_eq_sup (by simpa) fun m : σ →₀ ℕ => Multiset.card (toMultiset m)
     have hb : b ∉ q.support := by
       contrapose! h
       rw [totalDegree_eq p, hb₂, totalDegree_eq]
@@ -502,7 +501,7 @@ theorem totalDegree_add_eq_right_of_totalDegree_lt {p q : MvPolynomial σ R}
 
 theorem totalDegree_mul (a b : MvPolynomial σ R) :
     (a * b).totalDegree ≤ a.totalDegree + b.totalDegree :=
-  sup_support_mul_le (fun _ _ ↦ (Finsupp.sum_add_index' (fun _ => rfl) (fun _ _ _ => rfl)).le) _ _
+  sup_support_coeff_mul_le (fun _ _ ↦ by simp [Finsupp.sum_add_index']) _ _
 
 theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f : MvPolynomial σ S) :
     (a • f).totalDegree ≤ f.totalDegree :=
@@ -597,10 +596,8 @@ theorem totalDegree_eq_zero_iff_eq_C {p : MvPolynomial σ R} :
 
 theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
     (rename f p).totalDegree ≤ p.totalDegree :=
-  Finset.sup_le fun b => by
+  Finset.sup_le fun b h => by
     classical
-    intro h
-    rw [rename_eq] at h
     have h' := Finsupp.mapDomain_support h
     rw [Finset.mem_image] at h'
     rcases h' with ⟨s, hs, rfl⟩
@@ -616,6 +613,7 @@ section degreesLE
 variable {s t : Multiset σ}
 
 variable (R σ s) in
+set_option backward.isDefEq.respectTransparency false in
 /-- The submodule of multivariate polynomials of degrees bounded by a monomial `s`. -/
 def degreesLE : Submodule R (MvPolynomial σ R) where
   carrier := {p | p.degrees ≤ s}
@@ -630,6 +628,7 @@ def degreesLE : Submodule R (MvPolynomial σ R) where
 @[simp] lemma mem_degreesLE : p ∈ degreesLE R σ s ↔ p.degrees ≤ s := Iff.rfl
 
 variable (s t) in
+set_option backward.isDefEq.respectTransparency false in
 lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ t := by
   classical
   rw [le_antisymm_iff, Submodule.mul_le]
@@ -644,6 +643,7 @@ lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ
   rw [show monomial i (x.coeff i) = monomial a (x.coeff i) * monomial b 1 by simp [this]]
   exact Submodule.mul_mem_mul ((degrees_monomial _ _).trans ha) ((degrees_monomial _ _).trans hb)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma degreesLE_zero : degreesLE R σ 0 = 1 := by
   refine le_antisymm (fun x hx ↦ ?_) (by simp)
   simp only [mem_degreesLE, nonpos_iff_eq_zero] at hx

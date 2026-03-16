@@ -55,14 +55,15 @@ noncomputable def mvPolynomialSupportLEEquiv
     { p : ι → MvPolynomial κ R // ∀ i, (p i).support ⊆ monoms i } ≃
       ((Σ i, monoms i) → R) :=
   { toFun := fun p i => (p.1 i.1).coeff i.2,
-    invFun := fun p => ⟨fun i =>
+    invFun p := ⟨fun i => .ofCoeff
       { toFun := fun m => if hm : m ∈ monoms i then p ⟨i, ⟨m, hm⟩⟩ else 0
         support := {m ∈ monoms i | ∃ hm : m ∈ monoms i, p ⟨i, ⟨m, hm⟩⟩ ≠ 0},
         mem_support_toFun := by simp },
       fun i => Finset.filter_subset _ _⟩,
     left_inv := fun p => by
       ext i m
-      simp only [coeff, ne_eq, exists_prop, dite_eq_ite, Finsupp.coe_mk, ite_eq_left_iff]
+      simp only [coeff, ne_eq, exists_prop, dite_eq_ite, AddMonoidAlgebra.coeff_ofCoeff,
+        Finsupp.coe_mk, ite_eq_left_iff]
       intro hm
       have : m ∉ (p.1 i).support := fun h => hm (p.2 i h)
       simpa [coeff, eq_comm, MvPolynomial.mem_support_iff] using this
@@ -84,9 +85,9 @@ theorem lift_genericPolyMap [DecidableEq κ] [CommRing R]
       MvPolynomial.eval (f ∘ Sum.inr)
         (((mvPolynomialSupportLEEquiv monoms).symm
           (f ∘ Sum.inl)).1 i) := by
-  simp only [genericPolyMap, map_sum, map_mul, lift_of, support,
-    mvPolynomialSupportLEEquiv, coeff, Finset.sum_filter, MvPolynomial.eval_eq,
-    ne_eq, Function.comp, Equiv.coe_fn_symm_mk, Finsupp.coe_mk]
+  simp only [genericPolyMap, map_sum, map_mul, lift_of, support, mvPolynomialSupportLEEquiv, coeff,
+    ne_eq, Equiv.coe_fn_symm_mk, Function.comp, eval_eq, AddMonoidAlgebra.coeff_ofCoeff,
+    Finsupp.coe_mk, dite_mul, zero_mul, Finset.sum_filter]
   conv_rhs => rw [← Finset.sum_attach]
   refine Finset.sum_congr rfl ?_
   intro m _
