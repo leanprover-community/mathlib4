@@ -141,14 +141,15 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 12⁻¹`. -/
 theorem log_stirlingSeq_bounded_aux (n : ℕ) :
     log (stirlingSeq 1) - log (stirlingSeq (n + 1)) ≤ 12⁻¹ := by
-  let f k := log (stirlingSeq (k + 1))
-  have hf k (hk : k ∈ range n) :
-      f k - (f (k + 1)) ≤ 1 / (12 * (k + 1)) - 1 / (12 * ((k + 1 : ℕ) + 1)) := by
+  let f (k : ℕ) : ℝ := log (stirlingSeq (k + 1))
+  let g (k : ℕ) : ℝ := 1 / (12 * (k + 1))
+  have hf k (hk : k ∈ range n) : f k - (f (k + 1)) ≤ g k - g (k + 1) := by
     grw [log_stirlingSeq_diff_le]
     simp [field]
-  have := Finset.sum_range_sub' f n
-  conv_rhs at this => simp only [f, zero_add]
-  grw [← this, Finset.sum_le_sum hf, Finset.sum_range_sub']
+  replace hf := Finset.sum_le_sum hf
+  rw [Finset.sum_range_sub', Finset.sum_range_sub'] at hf
+  simp only [f, g, zero_add] at hf
+  grw [hf]
   simp
   grind
 
@@ -158,7 +159,7 @@ theorem log_stirlingSeq_bounded_by_constant (n : ℕ) :
   have := log_stirlingSeq_bounded_aux n
   rw [stirlingSeq_one, log_div (by positivity), log_exp, log_sqrt] at this <;> grind
 
-/-- The sequence `stirlingSeq` is positive for `n > 0` -/
+/-- The sequence `stirlingSeq` is positive for `n > 0`. -/
 theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirlingSeq; positivity
 
 /-- The sequence `stirlingSeq` has a positive lower bound. -/
