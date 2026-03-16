@@ -332,6 +332,7 @@ public import Mathlib.Algebra.FreeMonoid.Symbols
 public import Mathlib.Algebra.FreeMonoid.UniqueProds
 public import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.GCDMonoid.DistribLattice
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
