@@ -90,7 +90,8 @@ noncomputable instance hasLimitParallelPairInclusion {X Y : P.FullSubcategory}
     HasLimit (parallelPair f 0 ⋙ P.ι) :=
   hasLimit_of_iso (F := parallelPair f.hom 0) (Iso.symm (diagramIsoParallelPair _))
 
-noncomputable instance createsKernels [P.IsClosedUnderKernels] {X Y : P.FullSubcategory}
+@[reducible]
+noncomputable def createsKernels [P.IsClosedUnderKernels] {X Y : P.FullSubcategory}
     (f : X ⟶ Y) [HasKernel f.hom] : CreatesLimit (parallelPair f 0) P.ι := by
   fapply createsLimitFullSubcategoryInclusion'
   · exact (Cone.postcompose (Iso.symm (diagramIsoParallelPair _)).hom).obj
@@ -98,11 +99,10 @@ noncomputable instance createsKernels [P.IsClosedUnderKernels] {X Y : P.FullSubc
   · exact (IsLimit.postcomposeInvEquiv _ _).symm (kernelIsKernel f.hom)
   · exact P.prop_kernel f.hom X.property Y.property
 
-instance [P.IsClosedUnderKernels] {X Y : P.FullSubcategory} (f : X ⟶ Y) [HasKernel f.hom] :
-    HasKernel f :=
-  hasLimit_of_created _ P.ι
-
 instance [P.IsClosedUnderKernels] [HasKernels C] : HasKernels P.FullSubcategory where
+  has_limit f :=
+    letI := P.createsKernels f
+    hasLimit_of_created _ P.ι
 
 /-- A property of objects satisfies `P.IsClosedUnderCokernels` if whenever `X` and `Y`
 satisfy `P`, all kernels of morphisms from `X` to `Y` satisfy `P`. -/
@@ -132,7 +132,8 @@ noncomputable instance hasColimitParallelPairInclusion {X Y : P.FullSubcategory}
     HasColimit (parallelPair f 0 ⋙ P.ι) :=
   hasColimit_of_iso (F := parallelPair f.hom 0) (diagramIsoParallelPair _)
 
-noncomputable instance createsCokernels [P.IsClosedUnderCokernels] {X Y : P.FullSubcategory}
+@[reducible]
+noncomputable def createsCokernels [P.IsClosedUnderCokernels] {X Y : P.FullSubcategory}
     (f : X ⟶ Y) [HasCokernel f.hom] : CreatesColimit (parallelPair f 0) P.ι := by
   fapply createsColimitFullSubcategoryInclusion'
   · exact (Cocone.precompose (diagramIsoParallelPair _).hom).obj
@@ -140,11 +141,10 @@ noncomputable instance createsCokernels [P.IsClosedUnderCokernels] {X Y : P.Full
   · exact (IsColimit.precomposeHomEquiv _ _).symm (cokernelIsCokernel f.hom)
   · exact P.prop_cokernel f.hom X.property Y.property
 
-instance [P.IsClosedUnderCokernels] {X Y : P.FullSubcategory} (f : X ⟶ Y) [HasCokernel f.hom] :
-    HasCokernel f :=
-  hasColimit_of_created _ P.ι
-
 instance [P.IsClosedUnderCokernels] [HasCokernels C] : HasCokernels P.FullSubcategory where
+  has_colimit f :=
+    letI := P.createsCokernels f
+    hasColimit_of_created _ P.ι
 
 end ObjectProperty
 
