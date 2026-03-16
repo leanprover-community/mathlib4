@@ -375,8 +375,7 @@ lemma TensorProduct.spanFinrank_top_eq_of_residueField (fg : N.FG) :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-lemma spanFinrank_eq_finrank_quotient {M : Type*} [AddCommGroup M] [Module R M]
-    (N : Submodule R M) (fg : N.FG) :
+lemma spanFinrank_eq_finrank_quotient (N : Submodule R M) (fg : N.FG) :
     N.spanFinrank =
       Module.finrank (R ⧸ maximalIdeal R) (N ⧸ (maximalIdeal R) • (⊤ : Submodule R N)) := by
   let : Module 𝓀 (N ⧸ maximalIdeal R • (⊤ : Submodule R N)) :=
