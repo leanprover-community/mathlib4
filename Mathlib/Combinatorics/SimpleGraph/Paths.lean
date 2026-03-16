@@ -60,7 +60,7 @@ variable (G : SimpleGraph V) (G' : SimpleGraph V')
 
 namespace Walk
 
-variable {G} {u u' v w : V}
+variable {G G'} {u u' v w : V} {p : G.Walk u v} {f : G →g G'}
 
 /-! ### Trails, paths, circuits, cycles -/
 
@@ -247,6 +247,22 @@ theorem concat_isPath_iff {p : G.Walk u v} (h : G.Adj v w) :
 theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
     (h : G.Adj v w) : (p.concat h).IsPath :=
   (concat_isPath_iff h).mpr ⟨hp, hw⟩
+
+lemma IsPath.take_of_take {n k} {p : G.Walk u v} (h : (p.take k).IsPath) (hle : n ≤ k) :
+    (p.take n).IsPath :=
+  isPath_of_isSubwalk (p.take_isSubwalk_take hle) h
+
+lemma IsPath.drop_of_drop {n k} {p : G.Walk u v} (h : (p.drop k).IsPath) (hle : k ≤ n) :
+    (p.drop n).IsPath :=
+  isPath_of_isSubwalk (p.drop_isSubwalk_drop hle) h
+
+lemma IsPath.take {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
+    (p.take n).IsPath :=
+  isPath_of_isSubwalk (p.isSubwalk_take n) h
+
+lemma IsPath.drop {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
+    (p.drop n).IsPath :=
+  isPath_of_isSubwalk (p.isSubwalk_drop n) h
 
 lemma IsPath.mem_support_iff_exists_append {p : G.Walk u v} (hp : p.IsPath) :
     w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), q.IsPath ∧ r.IsPath ∧ p = q.append r := by
@@ -443,6 +459,17 @@ theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath)
     (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
   simpa [hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
 
+theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
+    Set.InjOn f {w | w ∈ p.support} := by
+  intro u hu v hv hf
+  obtain ⟨u, rfl⟩ := List.get_of_mem hu
+  obtain ⟨v, rfl⟩ := List.get_of_mem hv
+  congr
+  have := List.nodup_iff_injective_getElem.mp h.support_nodup
+  rw! (castMode := .all) [support_map, List.length_map] at this
+  apply this
+  simpa
+
 /-! ### About cycles -/
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
@@ -454,7 +481,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
     (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_setOf] at hn hm
   have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
     (by lia : n - 1 ≤ p.tail.length) (by lia : m - 1 ≤ p.tail.length)
-    (by simp_all [SimpleGraph.Walk.getVert_tail, Nat.sub_add_cancel hn.1, Nat.sub_add_cancel hm.1])
+    (by simp_all)
   lia
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
@@ -822,7 +849,7 @@ theorem map_isTrail_iff_of_injective (hinj : Function.Injective f) :
   | cons _ _ ih =>
     rw [map_cons, isTrail_cons, ih, isTrail_cons]
     apply and_congr_right'
-    rw [← Sym2.map_pair_eq, edges_map, ← List.mem_map_of_injective (Sym2.map.injective hinj)]
+    rw [← Sym2.map_mk, edges_map, ← List.mem_map_of_injective (Sym2.map.injective hinj)]
 
 alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
 

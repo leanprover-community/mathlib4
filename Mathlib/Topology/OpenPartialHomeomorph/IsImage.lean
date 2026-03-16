@@ -295,8 +295,8 @@ theorem ofSet_symm : (ofSet s hs).symm = ofSet s hs :=
   rfl
 
 @[simp, mfld_simps]
-theorem ofSet_univ_eq_refl : ofSet univ isOpen_univ = OpenPartialHomeomorph.refl X :=
-  by ext <;> simp
+theorem ofSet_univ_eq_refl : ofSet univ isOpen_univ = OpenPartialHomeomorph.refl X := by
+  ext <;> simp
 
 end ofSet
 

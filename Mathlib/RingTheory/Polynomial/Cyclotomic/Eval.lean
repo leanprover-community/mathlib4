@@ -113,8 +113,7 @@ theorem cyclotomic_pos_and_nonneg (n : ℕ) {R}
     (1 < x → 0 < eval x (cyclotomic n R)) ∧ (1 ≤ x → 0 ≤ eval x (cyclotomic n R)) := by
   rcases n with (_ | _ | _ | n)
   · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one, and_self]
-  · simp only [zero_add, cyclotomic_one, eval_sub, eval_X, eval_one, sub_pos, imp_self, sub_nonneg,
-      and_self]
+  · simp
   · simp only [zero_add, reduceAdd, cyclotomic_two, eval_add, eval_X, eval_one]
     constructor <;> intro <;> linarith
   · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by lia)
@@ -167,6 +166,7 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     apply Nat.succ_injective
     exact Nat.pow_right_injective hp.two_le hxy
 
+set_option backward.isDefEq.respectTransparency false in
 -- Fix the non-terminal simp!
 set_option linter.flexible false in
 theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ n) (hq' : 1 < q) :
@@ -222,6 +222,7 @@ theorem sub_one_pow_totient_le_cyclotomic_eval {q : ℝ} (hq' : 1 < q) :
   | 1 => by simp only [totient_one, pow_one, cyclotomic_one, eval_sub, eval_X, eval_one, le_refl]
   | _ + 2 => (sub_one_pow_totient_lt_cyclotomic_eval le_add_self hq').le
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: non-terminal simps followed by positivity
 set_option linter.flexible false in
 theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ n) (hq' : 1 < q) :

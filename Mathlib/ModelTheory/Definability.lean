@@ -79,6 +79,7 @@ theorem definable_iff_exists_formula_sum :
   congr 1 with a
   rcases a with (_ | _) | _ <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem empty_definable_iff :
     (∅ : Set M).Definable L s ↔ ∃ φ : L.Formula α, s = setOf φ.Realize := by
   rw [Definable, Equiv.exists_congr_left (LEquiv.addEmptyConstants L (∅ : Set M)).onFormula]
@@ -428,6 +429,7 @@ theorem TermDefinable.map_expansion (h : A.TermDefinable L f) (φ : L →ᴸ L')
   use (φ.addConstants A).onTerm ψ
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem termDefinable_empty_iff :
     (∅ : Set M).TermDefinable L f ↔ ∃ φ : L.Term α, f = φ.realize := by
   rw [TermDefinable, Equiv.exists_congr_left (LEquiv.addEmptyConstants L (∅ : Set M)).onTerm]

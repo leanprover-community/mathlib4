@@ -42,7 +42,7 @@ protected def sum (G : SimpleGraph V) (H : SimpleGraph W) : SimpleGraph (V ⊕ W
     | Sum.inl u, Sum.inl v => G.adj_symm
     | Sum.inr u, Sum.inr v => H.adj_symm
     | Sum.inl _, Sum.inr _ | Sum.inr _, Sum.inl _ => id
-  loopless u := by cases u <;> simp
+  loopless := ⟨fun u ↦ by cases u <;> simp⟩
 
 @[inherit_doc] infixl:60 " ⊕g " => SimpleGraph.sum
 

@@ -257,6 +257,7 @@ lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
       (IsAffineOpen.arrowStalkMapIso f U hU V hV hVU hx)
   · exact Algebra.FormallySmooth.iff_restrictScalars.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_smooth_of_formallySmooth_stalk
     (f : X ⟶ Y) [LocallyOfFinitePresentation f]
     (x : X) (H : (f.stalkMap x).hom.FormallySmooth) :
@@ -301,6 +302,7 @@ def Scheme.Hom.smoothLocus (f : X ⟶ Y) [LocallyOfFinitePresentation f] : X.Ope
 lemma Scheme.Hom.mem_smoothLocus {f : X ⟶ Y} [LocallyOfFinitePresentation f] {x : X} :
     x ∈ f.smoothLocus ↔ (f.stalkMap x).hom.FormallySmooth := .rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
     f.smoothLocus = ⊤ := by
   rw [← top_le_iff]
@@ -335,6 +337,7 @@ lemma Scheme.Hom.preimage_smoothLocus_eq {U : Scheme.{u}}
   rw [← CommRingCat.hom_comp, ← stalkMap_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.genericPoint_mem_smoothLocus_of_perfectField
     {K : Type u} [Field K] [PerfectField K] [IsIntegral X]
     (f : X ⟶ Spec (.of K)) [LocallyOfFinitePresentation f] : genericPoint X ∈ f.smoothLocus := by
