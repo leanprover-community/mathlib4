@@ -729,6 +729,7 @@ public import Mathlib.Algebra.Lie.UniversalEnveloping
 public import Mathlib.Algebra.Lie.Weights.Basic
 public import Mathlib.Algebra.Lie.Weights.Cartan
 public import Mathlib.Algebra.Lie.Weights.Chain
+public import Mathlib.Algebra.Lie.Weights.IdealOrderIso
 public import Mathlib.Algebra.Lie.Weights.IsSimple
 public import Mathlib.Algebra.Lie.Weights.Killing
 public import Mathlib.Algebra.Lie.Weights.Linear
