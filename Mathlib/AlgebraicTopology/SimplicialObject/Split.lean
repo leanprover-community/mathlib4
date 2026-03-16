@@ -118,6 +118,7 @@ element `Splitting.IndexSet.Id Δ`. -/
 def EqId : Prop :=
   A = id _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eqId_iff_eq : A.EqId ↔ A.1 = Δ := by
   constructor
   · intro h
@@ -237,6 +238,7 @@ simplicial object to any simplicial object is determined by its restrictions
 def φ (f : X ⟶ Y) (n : ℕ) : s.N n ⟶ Y _⦋n⦌ :=
   s.ι n ≫ f.app (op ⦋n⦌)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem cofan_inj_comp_app (f : X ⟶ Y) {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     (s.cofan Δ).inj A ≫ f.app Δ = s.φ f A.1.unop.len ≫ Y.map A.e.op := by
@@ -247,6 +249,7 @@ theorem hom_ext' {Z : C} {Δ : SimplexCategoryᵒᵖ} (f g : X.obj Δ ⟶ Z)
     (h : ∀ A : IndexSet Δ, (s.cofan Δ).inj A ≫ f = (s.cofan Δ).inj A ≫ g) : f = g :=
   Cofan.IsColimit.hom_ext (s.isColimit Δ) _ _ h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g := by
   ext ⟨Δ⟩
   apply s.hom_ext'
@@ -375,6 +378,7 @@ theorem comp_f {S₁ S₂ S₃ : Split C} (Φ₁₂ : S₁ ⟶ S₂) (Φ₂₃ :
     (Φ₁₂ ≫ Φ₂₃).f n = Φ₁₂.f n ≫ Φ₂₃.f n :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is not a `@[simp]` lemma as it can later be proved by `simp`.
 @[reassoc]
 theorem cofan_inj_naturality_symm {S₁ S₂ : Split C} (Φ : S₁ ⟶ S₂) {Δ : SimplexCategoryᵒᵖ}

@@ -174,6 +174,7 @@ theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N :=
 theorem LinearDisjoint.of_subsingleton_top [Subsingleton S] : M.LinearDisjoint N :=
   ⟨Function.injective_of_subsingleton _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Linear disjointness is preserved by taking multiplicative opposite. -/
 theorem linearDisjoint_op :
     M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint

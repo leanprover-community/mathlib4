@@ -153,7 +153,7 @@ alias ramificationIdx_eq_of_isGalois := ramificationIdx_eq_of_isGaloisGroup
 
 include G in
 /-- All the `Ideal.inertiaDeg` over a fixed maximal ideal are the same. -/
-theorem inertiaDeg_eq_of_isGaloisGroup [p.IsMaximal] :
+theorem inertiaDeg_eq_of_isGaloisGroup :
     inertiaDeg p P = inertiaDeg p Q := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
   exact (inertiaDeg_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
@@ -180,7 +180,7 @@ theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime]
 
 include G in
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
-theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] :
+theorem inertiaDegIn_eq_inertiaDeg :
     inertiaDegIn p B = inertiaDeg p P := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
@@ -220,6 +220,17 @@ theorem ramificationIdxIn_mul_ramificationIdxIn [IsDedekindDomain B] [IsDedekind
   rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
     ramificationIdxIn_eq_ramificationIdx P Q GBC, ramificationIdx_algebra_tower hP hp]
   exact over_def Q P ▸ map_comap_le
+
+variable {p} in
+omit hp in
+include G GAC GBC in
+theorem ramificationIdxIn_mul_ramificationIdxIn' [IsDomain A] [IsTorsionFree A B]
+    [IsDedekindDomain B] [IsDedekindDomain C] [P.LiesOver p] :
+    p.ramificationIdxIn B * P.ramificationIdxIn C = p.ramificationIdxIn C := by
+  obtain ⟨⟨Q, _, hQ⟩⟩ := P.nonempty_primesOver (S := C)
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
+    ramificationIdxIn_eq_ramificationIdx P Q GBC, ramificationIdx_algebra_tower' p P Q]
 
 end tower
 
@@ -274,8 +285,7 @@ theorem ncard_primesOver_mul_ncard_primesOver (hp : p ≠ ⊥) :
     _ = ((p.primesOver B).ncard * (p.ramificationIdxIn B * p.inertiaDegIn B)) *
           ((P.primesOver C).ncard * (P.ramificationIdxIn C * P.inertiaDegIn C)) := by
       rw [← inertiaDegIn_mul_inertiaDegIn p P G C GAC GBC,
-        ← ramificationIdxIn_mul_ramificationIdxIn P G C GAC GBC
-        (map_ne_bot_of_ne_bot hp) (map_ne_bot_of_ne_bot hP)]
+        ← ramificationIdxIn_mul_ramificationIdxIn' P G C GAC GBC]
       ring
     _ = Nat.card GAC := by
       rw [ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B G,
@@ -351,6 +361,7 @@ variable (R K L S : Type*) [CommRing R] [CommRing S] [Algebra R S] [Field K] [Fi
     [Algebra K L] [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L]
     [IsIntegralClosure S R L] [FiniteDimensional K L]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_comap_galRestrict_eq [IsDedekindDomain R] [IsGalois K L] {p : Ideal R}
     {P₁ P₂ : Ideal S} (hP₁ : P₁ ∈ primesOver p S) (hP₂ : P₂ ∈ primesOver p S) :
     ∃ σ, P₁.comap (galRestrict R K L S σ) = P₂ := by

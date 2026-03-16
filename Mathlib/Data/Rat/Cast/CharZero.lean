@@ -70,8 +70,6 @@ lemma cast_zpow (p : ℚ) (n : ℤ) : ↑(p ^ n) = (p ^ n : α) := map_zpow₀ (
 theorem cast_divInt (a b : ℤ) : (a /. b : α) = a / b := by
   simp only [divInt_eq_div, cast_div, cast_intCast]
 
-@[deprecated (since := "2025-08-13")] alias cast_mk := cast_divInt
-
 end Rat
 
 namespace NNRat

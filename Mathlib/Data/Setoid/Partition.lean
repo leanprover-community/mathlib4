@@ -47,6 +47,7 @@ theorem eq_of_mem_eqv_class {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b
   (H x).unique ⟨hc, hb⟩ ⟨hc', hb'⟩
 
 /-- Makes an equivalence relation from a set of sets partitioning α. -/
+@[implicit_reducible]
 def mkClasses (c : Set (Set α)) (H : ∀ a, ∃! b ∈ c, a ∈ b) : Setoid α where
   r x y := ∀ s ∈ c, x ∈ s → y ∈ s
   iseqv.refl := fun _ _ _ hx => hx
@@ -142,6 +143,7 @@ theorem eqv_classes_of_disjoint_union {c : Set (Set α)} (hu : Set.sUnion c = @S
   ExistsUnique.intro b ⟨hc, ha⟩ fun _ hc' => H.elim_set hc'.1 hc _ hc'.2 ha
 
 /-- Makes an equivalence relation from a set of disjoints sets covering α. -/
+@[implicit_reducible]
 def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
     (H : c.PairwiseDisjoint id) : Setoid α :=
   Setoid.mkClasses c <| eqv_classes_of_disjoint_union hu H
@@ -503,14 +505,15 @@ some of the sets to obtain a coarser partition. -/
 noncomputable def coarserPartition (hs : IndexedPartition s) {κ : Type*} (g : ι → κ)
     (hg : g.Surjective) :
     IndexedPartition (fun k : κ => ⋃ i ∈ g ⁻¹' {k}, s i) where
-  eq_of_mem {_x _i _j} hxi hxj := by
+  eq_of_mem {x _i _j} hxi hxj := by
     obtain ⟨a, ⟨c, hc⟩, ha⟩ := hxi
     obtain ⟨b, ⟨d, hd⟩, hb⟩ := hxj
-    simp only [← hc, mem_iUnion] at ha
-    simp only [← hd, mem_iUnion] at hb
-    have : c = d := hs.eq_of_mem ha.2 hb.2
-    by_contra!
-    grind [disjoint_iff_forall_ne.mp ((disjoint_singleton.mpr this).preimage g) ha.1 hb.1]
+    grind =>
+      instantiate [mem_iUnion]
+      have hb : x ∈ s d
+      have ha : x ∈ s c
+      have : c = d := hs.eq_of_mem ha hb
+      finish
   some k := hs.some ((singleton_nonempty k).preimage hg).some
   some_mem k := by
     refine mem_iUnion_of_mem ((singleton_nonempty k).preimage hg).some ?_

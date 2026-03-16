@@ -51,6 +51,7 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommShift ℤ]
   [adj.CommShift ℤ]
 
+set_option backward.isDefEq.respectTransparency false in
 include adj in
 /--
 The right adjoint of a triangulated functor is triangulated.
@@ -204,6 +205,7 @@ lemma mk' (h : E.functor.IsTriangulated) : E.IsTriangulated where
 lemma mk'' (h : E.inverse.IsTriangulated) : E.IsTriangulated where
   leftAdjoint_isTriangulated := (mk' E.symm h).rightAdjoint_isTriangulated
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The identity equivalence is triangulated.
 -/
@@ -220,6 +222,7 @@ variable {D' : Type*} [Category* D'] [HasZeroObject D'] [Preadditive D'] [HasShi
   [∀ (n : ℤ), (shiftFunctor D' n).Additive] [Pretriangulated D'] {E' : D ≌ D'}
   [E'.functor.CommShift ℤ] [E'.inverse.CommShift ℤ] [E'.CommShift ℤ]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If equivalences `E : C ≌ D` and `E' : D ≌ F` are triangulated, so is `E.trans E'`.
 -/

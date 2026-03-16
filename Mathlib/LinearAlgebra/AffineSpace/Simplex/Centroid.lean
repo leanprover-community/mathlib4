@@ -28,7 +28,7 @@ of the simplex.
 * `centroid` is the centroid of a simplex, defined via `Finset.univ.centroid` on its vertices.
 
 * `faceOppositeCentroid` is the centroid of the facet obtained by removing one vertex from the
-simplex.
+  simplex.
 
 * `median` is the line connecting a vertex to the corresponding faceOppositeCentroid.
 

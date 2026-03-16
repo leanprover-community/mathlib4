@@ -58,6 +58,7 @@ section contractLeft
 
 variable (d d' : Module.Dual R M)
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed below
 /-- Auxiliary construction for `CliffordAlgebra.contractLeft` -/
 @[simps!]
 def contractLeftAux (d : Module.Dual R M) :
@@ -66,6 +67,7 @@ def contractLeftAux (d : Module.Dual R M) :
   d.smulRight (LinearMap.fst _ (CliffordAlgebra Q) (CliffordAlgebra Q)) -
     v_mul.compl₂ (LinearMap.snd _ (CliffordAlgebra Q) _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contractLeftAux_contractLeftAux (v : M) (x : CliffordAlgebra Q) (fx : CliffordAlgebra Q) :
     contractLeftAux Q d v (ι Q v * x, contractLeftAux Q d v (x, fx)) = Q v • fx := by
   simp only [contractLeftAux_apply_apply]
@@ -217,12 +219,14 @@ local infixl:70 "⌋" => contractLeft
 
 local infixl:70 "⌊" => contractRight
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `CliffordAlgebra.changeForm` -/
 @[simps!]
 def changeFormAux (B : BilinForm R M) : M →ₗ[R] CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
   haveI v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
   v_mul - contractLeft ∘ₗ B
 
+set_option backward.isDefEq.respectTransparency false in
 theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlgebra Q) :
     changeFormAux Q B v (changeFormAux Q B v x) = (Q v - B v v) • x := by
   simp only [changeFormAux_apply_apply]
@@ -272,6 +276,7 @@ theorem changeForm_algebraMap (r : R) : changeForm h (algebraMap R _ r) = algebr
 theorem changeForm_one : changeForm h (1 : CliffordAlgebra Q) = 1 := by
   simpa using changeForm_algebraMap h (1 : R)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem changeForm_ι (m : M) : changeForm h (ι (M := M) Q m) = ι (M := M) Q' m :=
   (foldr_ι _ _ _ _ _).trans <|

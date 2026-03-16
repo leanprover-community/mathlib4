@@ -80,6 +80,7 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
       use 1
       simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true, Subgroup.one_mem]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     IntermediateField.fixedField L.fixingSubgroup = L := by
   apply le_antisymm
@@ -113,6 +114,7 @@ theorem mem_range_algebraMap_iff_fixed [IsGalois k K] (x : K) :
     x ∈ Set.range (algebraMap k K) ↔ ∀ f : Gal(K/k), f x = x :=
   mem_bot_iff_fixed x
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 /-- For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to
 a normal intermediate field `E` is equal to the fixed field of `H` in `K` intersecting with `E`. -/
@@ -140,6 +142,7 @@ lemma restrict_fixedField (H : Subgroup Gal(K/k)) (L : IntermediateField k K) [N
     nth_rw 2 [← this]
     exact (AlgEquiv.restrictNormal_commutes σ L ⟨x, xL⟩).symm
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
     (IntermediateField.fixedField H).fixingSubgroup = H.1 := by
@@ -220,6 +223,7 @@ def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
   u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
   choice_eq _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 /-- If `H` is a closed normal subgroup of `Gal(K / k)`,
 then `Gal(fixedField H / k)` is isomorphic to `Gal(K / k) ⧸ H`. -/
@@ -229,11 +233,13 @@ noncomputable def normalAutEquivQuotient [IsGalois k K]
   QuotientGroup.liftEquiv _ (restrictNormalHom_surjective K)
     ((fixingSubgroup_fixedField H).symm.trans (fixedField H.1).restrictNormalHom_ker.symm)
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 lemma normalAutEquivQuotient_apply [IsGalois k K]
     (H : ClosedSubgroup Gal(K/k)) [H.Normal] (σ : Gal(K/k)) :
     normalAutEquivQuotient H σ = restrictNormalHom (fixedField H.1) σ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     IsOpen L.fixingSubgroup.carrier ↔ FiniteDimensional k L := by
@@ -255,6 +261,7 @@ theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
   let _ : Algebra L L'.1 := RingHom.toAlgebra (IntermediateField.inclusion this)
   exact FiniteDimensional.left k L L'.1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
     L.fixingSubgroup.Normal ↔ IsGalois k L := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩

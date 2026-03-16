@@ -177,6 +177,7 @@ instance : IsCofilteredOrEmpty (PointedGaloisObject F) where
     apply evaluation_injective_of_isConnected F Z B z
     simp [hhz, hf, hg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `cocone F` is a colimit cocone, i.e. `F` is pro-represented by `incl F`. -/
 noncomputable def isColimit : IsColimit (cocone F) := by
   refine evaluationJointlyReflectsColimits _ (fun X ↦ ?_)
@@ -307,6 +308,7 @@ noncomputable def endEquivSectionsFibers : End F ≃ (incl F ⋙ F').sections :=
     (Types.sectionsEquiv (incl F ⋙ F')).symm
   i1.trans <| i2.toEquiv.trans <| i3.toEquiv.trans <| i4.trans i5
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
     (endEquivSectionsFibers F f).val A = f.app A A.pt := by
@@ -321,6 +323,7 @@ lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
   simp
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
 noncomputable def autIsoFibers :
     autGaloisSystem F ⋙ forget GrpCat ≅ incl F ⋙ F' :=
@@ -340,6 +343,7 @@ noncomputable def endEquivAutGalois : End F ≃ AutGalois F :=
   let e2 := ((Functor.sectionsFunctor _).mapIso (autIsoFibers F).symm).toEquiv
   e1.trans e2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
     F.map (AutGalois.π F A (endEquivAutGalois F f)).hom A.pt = f.app A A.pt := by
   dsimp [endEquivAutGalois, AutGalois.π_apply]

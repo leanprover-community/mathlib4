@@ -10,7 +10,20 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
-# The group `GL (Fin 2) R`
+# Classification of elements of `GL (Fin 2) R`
+
+Here we classify `2 × 2` matrices over the reals (or more generally over `R` where `R` is a
+suitable ring, but `ℝ` is the motivating case), into the following classes:
+
+* scalars
+* parabolic elements (`Matrix.IsParabolic`) - one eigenvalue with non-semisimple generalized
+  eigenspace
+* hyperbolic elements (`Matrix.IsHyperbolic`) - two distinct real eigenvalues
+* elliptic elements (`Matrix.IsElliptic`) - two distinct non-real complex eigenvalues
+
+This classification is used (among other places) in classifying the fixed points of elements of
+`GL(2, ℝ)⁺` acting on the upper half-plane. See [Wikipedia:SL2(R)#Classification_of_elements]
+(https://en.wikipedia.org/wiki/SL2(R)#Classification_of_elements).
 -/
 
 @[expose] public section
@@ -236,6 +249,7 @@ lemma isParabolic_iff_of_upperTriangular {g : GL (Fin 2) K} (hg : g 1 0 = 0) :
     g.IsParabolic ↔ g 0 0 = g 1 1 ∧ g 0 1 ≠ 0 :=
   Matrix.isParabolic_iff_of_upperTriangular hg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Specialized version of `isParabolic_iff_of_upperTriangular` intended for use with
 discrete subgroups of `GL(2, ℝ)`. -/
 lemma isParabolic_iff_of_upperTriangular_of_det [LinearOrder K] [IsStrictOrderedRing K]
