@@ -610,9 +610,9 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 variable (r) in
 /-- The cardinality of a set is an upper-bound for the cardinality of the order type of the set's
 mex (minimum excluded value) -/
-theorem card_typein_min_le_mk [IsWellOrder α r] {s : Set α} (hs : sᶜ.Nonempty) :
-    (typein r <| IsWellFounded.wf.min (r := r) sᶜ hs).card ≤ #s :=
-  IsWellFounded.wf.cardinalMk_subtype_lt_min_compl_le hs
+theorem card_typein_min_le_mk [h : IsWellOrder α r] {s : Set α} (hs : sᶜ.Nonempty) :
+    (typein r <| WellFounded.min h.wf sᶜ hs).card ≤ #s :=
+  WellFounded.cardinalMk_subtype_lt_min_compl_le _ hs
 
 /-! ### Lifting ordinals to a higher universe -/
 
