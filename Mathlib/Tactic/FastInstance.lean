@@ -220,7 +220,7 @@ public inductive CheckInstanceResult where
   | unverifiable (err : MessageData) : CheckInstanceResult
 
 /-- Format a `CheckInstanceResult` as `MessageData` for user display. -/
-def CheckInstanceResult.toMessageData (name : Name) : CheckInstanceResult → MessageData
+public def CheckInstanceResult.toMessageData (name : Name) : CheckInstanceResult → MessageData
   | .canonical =>
     m!"✅ '{name}': canonical (re-inferred form agrees at instances transparency)"
   | .leaky detail =>
