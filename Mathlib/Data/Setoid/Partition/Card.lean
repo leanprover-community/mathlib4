@@ -16,11 +16,9 @@ public import Mathlib.Data.Setoid.Partition
 
 -/
 
-@[expose] public section
+public section
 
 section Finite
-
-open scoped BigOperators
 
 /-- Given a partition of the ambient type, the cardinal of a finite set
   is the `finsum` of the cardinalities of its traces on the parts of the partition -/

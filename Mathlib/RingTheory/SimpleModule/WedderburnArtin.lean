@@ -106,7 +106,7 @@ theorem exists_algEquiv_matrix_end_mulOpposite :
       Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
   have ⟨n, hn, S, hS, ⟨e⟩⟩ := (isIsotypic R R).linearEquiv_fun
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R₀ R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
-  exact .trans (.moduleEndSelf R₀) <| .trans (e.algConj R₀) (endVecAlgEquivMatrixEnd ..)
+  exact .trans (.moduleEndSelf R₀) <| .trans (e.conjAlgEquiv R₀) (endVecAlgEquivMatrixEnd ..)
 
 /-- The **Wedderburn–Artin Theorem**, algebra form: an Artinian simple algebra is isomorphic
 to a matrix algebra over a division algebra. -/
@@ -116,6 +116,7 @@ theorem exists_algEquiv_matrix_divisionRing :
   have ⟨n, hn, I, _, ⟨e⟩⟩ := exists_algEquiv_matrix_end_mulOpposite R₀ R
   classical exact ⟨n, hn, _, _, _, ⟨e⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**, algebra form, finite case: a finite Artinian simple algebra is
 isomorphic to a matrix algebra over a finite division algebra. -/
 theorem exists_algEquiv_matrix_divisionRing_finite [Module.Finite R₀ R] :
@@ -143,7 +144,7 @@ theorem exists_end_algEquiv_pi_matrix_end :
   choose d pos S _ simple e using fun c : isotypicComponents R M ↦
     (IsIsotypic.isotypicComponents c.2).submodule_linearEquiv_fun
   classical exact ⟨_, _, _, fun _ ↦ simple _, fun _ ↦ pos _, ⟨.trans (endAlgEquiv R₀ R M) <| .trans
-    (.piCongrRight fun c ↦ ((e c).some.algConj R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
+    (.piCongrRight fun c ↦ ((e c).some.conjAlgEquiv R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
     (.piCongrLeft' R₀ _ (Finite.equivFin _))⟩⟩
 
 theorem exists_end_ringEquiv_pi_matrix_end :
@@ -170,6 +171,7 @@ theorem exists_end_ringEquiv_pi_matrix_divisionRing :
   have ⟨n, D, d, _, _, hd, ⟨e⟩⟩ := exists_end_algEquiv_pi_matrix_divisionRing ℕ R M
   ⟨n, D, d, _, hd, ⟨e⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.IsSemisimpleRing.moduleEnd : IsSemisimpleRing (Module.End R M) :=
   have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_end_ringEquiv_pi_matrix_divisionRing R M
   e.symm.isSemisimpleRing
@@ -229,6 +231,7 @@ theorem exists_ringEquiv_pi_matrix_divisionRing :
   have ⟨n, D, d, _, _, hd, ⟨e⟩⟩ := exists_algEquiv_pi_matrix_divisionRing ℕ R
   ⟨n, D, d, _, hd, ⟨e⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n) [Fintype n] [DecidableEq n] : IsSemisimpleRing (Matrix n n R) :=
   (isEmpty_or_nonempty n).elim (fun _ ↦ inferInstance) fun _ ↦
     have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_ringEquiv_pi_matrix_divisionRing R

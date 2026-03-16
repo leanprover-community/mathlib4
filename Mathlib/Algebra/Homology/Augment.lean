@@ -35,6 +35,7 @@ def truncate [HasZeroMorphisms V] : ChainComplex V ℕ ⥤ ChainComplex V ℕ wh
       shape := fun i j w => C.shape _ _ <| by simpa }
   map f := { f := fun i => f.f (i + 1) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- There is a canonical chain map from the truncation of a chain map `C` to
 the "single object" chain complex consisting of the truncated object `C.X 0` in degree 0.
 The components of this chain map are `C.d 1 0` in degree 0, and zero otherwise.
@@ -123,17 +124,17 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
 def augmentTruncate (C : ChainComplex V ℕ) :
     augment (truncate.obj C) (C.d 1 0) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         match i with
-        | 0 | 1 | n+2 =>
+        | 0 | 1 | n + 2 =>
           rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   inv :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         match i with
-          | 0 | 1 | n+2 =>
+          | 0 | 1 | n + 2 =>
           rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   hom_inv_id := by
@@ -190,6 +191,7 @@ def truncate [HasZeroMorphisms V] : CochainComplex V ℕ ⥤ CochainComplex V �
         simpa }
   map f := { f := fun i => f.f (i + 1) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- There is a canonical chain map from the truncation of a cochain complex `C` to
 the "single object" cochain complex consisting of the truncated object `C.X 0` in degree 0.
 The components of this chain map are `C.d 0 1` in degree 0, and zero otherwise.
@@ -200,6 +202,8 @@ def toTruncate [HasZeroObject V] [HasZeroMorphisms V] (C : CochainComplex V ℕ)
 
 variable [HasZeroMorphisms V]
 
+-- TODO: fix non-terminal simp (acting on six goals, with different simp sets)
+set_option linter.flexible false in
 /-- We can "augment" a cochain complex by inserting an arbitrary object in degree zero
 (shifting everything else up), along with a suitable differential.
 -/
@@ -285,11 +289,11 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
 def augmentTruncate (C : CochainComplex V ℕ) :
     augment (truncate.obj C) (C.d 0 1) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;> aesop }
   inv :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> rcases i with - | i <;> aesop }
 

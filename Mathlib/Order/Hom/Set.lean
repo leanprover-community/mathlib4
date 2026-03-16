@@ -20,11 +20,12 @@ public import Mathlib.Tactic.MinImports
 
 open OrderDual Set
 
-variable {α β : Type*}
+variable {α β γ : Type*}
 
 namespace Set
 
 /-- Sets on sum types are order-equivalent to pairs of sets on each summand. -/
+@[simps apply]
 def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
   toFun s := (Sum.inl ⁻¹' s, Sum.inr ⁻¹' s)
   invFun s := Sum.inl '' s.1 ∪ Sum.inr '' s.2
@@ -32,6 +33,20 @@ def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
   right_inv s := by
     simp [preimage_image_eq _ Sum.inl_injective, preimage_image_eq _ Sum.inr_injective]
   map_rel_iff' := by simp [subset_def]
+
+@[simp]
+theorem sumEquiv_symm_apply {s : Set α × Set β} :
+    sumEquiv.symm s = Sum.inl '' s.1 ∪ Sum.inr '' s.2 := rfl
+
+theorem MapsTo.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β} {t : Set γ}
+    (hf : Set.MapsTo f s.1 t) (hg : Set.MapsTo g s.2 t) :
+    Set.MapsTo (Sum.elim f g) (Set.sumEquiv.symm s) t := by
+  rintro (a | b) <;> aesop
+
+theorem InjOn.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β}
+    (hf : Set.InjOn f s.1) (hg : Set.InjOn g s.2) (hfg : ∀ᵉ (a ∈ s.1) (b ∈ s.2), f a ≠ g b) :
+    Set.InjOn (Sum.elim f g) (Set.sumEquiv.symm s) := by
+  rintro (a₁ | b₁) h₁ (a₂ | b₂) h₂ heq <;> aesop
 
 end Set
 
@@ -177,6 +192,7 @@ instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Pre
 
 instance unique_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] : Unique (α ≃o α) := Unique.mk' _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
@@ -187,6 +203,7 @@ protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
   right_inv y := by simp
   map_rel_iff' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Ici [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
@@ -197,6 +214,7 @@ protected def Ici [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
   right_inv y := by simp
   map_rel_iff' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Icc [Lattice α] [Lattice β] (e : α ≃o β) (x y : α) :
@@ -216,8 +234,8 @@ variable (α) [BooleanAlgebra α]
 /-- Taking complements as an order isomorphism to the order dual. -/
 @[simps!]
 def OrderIso.compl : α ≃o αᵒᵈ where
-  toFun := OrderDual.toDual ∘ HasCompl.compl
-  invFun := HasCompl.compl ∘ OrderDual.ofDual
+  toFun := OrderDual.toDual ∘ Compl.compl
+  invFun := Compl.compl ∘ OrderDual.ofDual
   left_inv := compl_compl
   right_inv := compl_compl (α := αᵒᵈ)
   map_rel_iff' := compl_le_compl_iff_le

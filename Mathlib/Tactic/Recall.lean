@@ -44,17 +44,19 @@ open Lean Meta Elab Command Term
 elab_rules : command
   | `(recall $id $sig:optDeclSig $[$val?]?) => withoutModifyingEnv do
     let declName := id.getId
-    let some info := (← getEnv).find? declName
-      | throwError "unknown constant '{declName}'"
+    addConstInfo id declName
+    let info ← getConstInfo declName
     let declConst : Expr := mkConst declName <| info.levelParams.map Level.param
-    discard <| liftTermElabM <| addTermInfo id declConst
-    let newId := ({ namePrefix := declName : DeclNameGenerator }.mkUniqueName (← getEnv) `recall).1
-    let newId := mkIdentFrom id newId
+    let recallName := Name.mkSimple
+      s!"_recall_{(← liftTermElabM Lean.mkFreshId)}"
+    let newId := mkIdentFrom id recallName
     if let some val := val? then
       let some infoVal := info.value?
         | throwErrorAt val "constant '{declName}' has no defined value"
       elabCommand <| ← `(noncomputable def $newId $sig:optDeclSig $val)
-      let some newInfo := (← getEnv).find? newId.getId | return -- def already threw
+      let ns ← getCurrNamespace
+      let some newInfo := (← getEnv).find? (ns ++ recallName)
+        | return -- def already threw
       liftTermElabM do
         let mvs ← newInfo.levelParams.mapM fun _ => mkFreshLevelMVar
         let newType := newInfo.type.instantiateLevelParams newInfo.levelParams mvs

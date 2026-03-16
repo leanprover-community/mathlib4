@@ -19,6 +19,7 @@ Note: This linter can be disabled with `set_option linter.dupNamespace false`
 #guard_msgs in
 def Foo.foo := True
 
+set_option linter.translateRedundant false in
 /--
 warning: The namespace 'add' is duplicated in the declaration 'Foo.add.add'
 

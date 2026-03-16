@@ -57,6 +57,9 @@ def range (n : ℕ) : Finset ℕ :=
 theorem range_val (n : ℕ) : (range n).1 = Multiset.range n :=
   rfl
 
+@[simp] lemma _root_.Multiset.toFinset_range (n : ℕ) : (Multiset.range n).toFinset = .range n :=
+  Finset.val_injective (Finset.range n).nodup.dedup
+
 @[simp, grind =]
 theorem mem_range : m ∈ range n ↔ m < n :=
   Multiset.mem_range
@@ -80,8 +83,6 @@ theorem range_succ : range (succ n) = insert n (range n) := range_add_one
 
 theorem notMem_range_self : n ∉ range n := by grind
 
-@[deprecated (since := "2025-05-23")] alias not_mem_range_self := notMem_range_self
-
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) := by grind
 
 @[grind =]
@@ -89,12 +90,10 @@ theorem range_subset {n s} : range n ⊆ s ↔ ∀ x, x < n → x ∈ s := by gr
 
 theorem subset_range {s n} : s ⊆ range n ↔ ∀ x, x ∈ s → x < n := by grind
 
-@[simp]
+@[simp, gcongr]
 theorem range_subset_range {n m} : range n ⊆ range m ↔ n ≤ m := by grind
 
 theorem range_mono : Monotone range := fun _ _ => range_subset_range.2
-
-@[gcongr] alias ⟨_, _root_.GCongr.finset_range_subset_of_le⟩ := range_subset_range
 
 theorem mem_range_succ_iff {a b : ℕ} : a ∈ range b.succ ↔ a ≤ b := by grind
 

@@ -96,6 +96,7 @@ lemma isNormalClosure_iff : IsNormalClosure F K L ↔
     simpa only [normalClosure_eq_iSup_adjoin_of_splits splits] using h
 -- TODO: IntermediateField.isNormalClosure_iff similar to IntermediateField.isSplittingField_iff
 
+set_option backward.isDefEq.respectTransparency false in
 include splits in
 /-- `normalClosure F K L` is a valid normal closure if `K/F` is algebraic
   and all minimal polynomials of `K/F` splits in `L/F`. -/
@@ -123,8 +124,8 @@ noncomputable def IsNormalClosure.lift [h : IsNormalClosure F K L] {L'} [Field L
     (fun x hx ↦ ⟨isAlgebraic_iff_isIntegral.mp ((h.normal).isAlgebraic x), ?_⟩) this
   obtain ⟨y, hx⟩ := Set.mem_iUnion.mp hx
   by_cases iy : IsIntegral F y
-  · exact splits_of_splits_of_dvd _ (minpoly.ne_zero iy)
-      (splits y) (minpoly.dvd F x (mem_rootSet.mp hx).2)
+  · exact (splits y).of_dvd (map_ne_zero (minpoly.ne_zero iy))
+      ((map_dvd_map' _).mpr (minpoly.dvd F x (mem_rootSet.mp hx).2))
   · simp [minpoly.eq_zero iy] at hx
 
 /-- Normal closures of `K/F` are unique up to F-algebra isomorphisms. -/
@@ -190,9 +191,11 @@ instance : IsScalarTower F K (normalClosure F K L) := by
   ext x
   exact algebraMap_apply F K L x
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower K (normalClosure F K L) L :=
   of_algebraMap_eq' rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrictScalars_eq :
     (toAlgHom K (normalClosure F K L) L).fieldRange.restrictScalars F = normalClosure F K L :=
   SetLike.ext' Subtype.range_val
@@ -216,8 +219,8 @@ noncomputable def Algebra.IsAlgebraic.algHomEmbeddingOfSplits [Algebra.IsAlgebra
       obtain ⟨y, hx⟩ := Set.mem_iUnion.mp hx
       refine ⟨isAlgebraic_iff_isIntegral.mp (isAlgebraic_of_mem_rootSet hx), ?_⟩
       by_cases iy : IsIntegral F y
-      · exact splits_of_splits_of_dvd _ (minpoly.ne_zero iy)
-          (h y) (minpoly.dvd F x (mem_rootSet.mp hx).2)
+      · exact (h y).of_dvd (map_ne_zero (minpoly.ne_zero iy))
+          ((map_dvd_map' _).mpr (minpoly.dvd F x (mem_rootSet.mp hx).2))
       · simp [minpoly.eq_zero iy] at hx
   let φ' := (φ.comp <| inclusion normalClosure_le_iSup_adjoin)
   { toFun := φ'.comp ∘ (normalClosure.algHomEquiv F K L').symm
@@ -237,6 +240,7 @@ lemma normalClosure_of_normal [Normal F K] : normalClosure F K L = K := by
 
 variable [Normal F L]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma normalClosure_def' : normalClosure F K L = ⨆ f : L →ₐ[F] L, K.map f := by
   refine (normalClosure_def F K L).trans (le_antisymm (iSup_le (fun f ↦ ?_)) (iSup_le (fun f ↦ ?_)))
   · exact le_iSup_of_le (f.liftNormal L) (fun b ⟨a, h⟩ ↦ ⟨a, a.2, h ▸ f.liftNormal_commutes L a⟩)

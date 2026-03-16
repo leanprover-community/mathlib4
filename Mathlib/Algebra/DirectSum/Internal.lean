@@ -149,6 +149,7 @@ theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i)
     (coeRingHom A : _ →+* R) (of (fun i => A i) i x) = x :=
   DirectSum.toSemiring_of _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
@@ -156,6 +157,7 @@ theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
   rw [mul_eq_sum_support_ghas_mul, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) = r.sum fun i ri => r'.sum fun j rj => if i + j = n then (ri * rj : R)
@@ -382,7 +384,7 @@ def subring : Subring R where
   __ := subsemiring A
   neg_mem' := neg_mem
 
--- TODO: it might be expensive to unify `A` in this instances in practice
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instRing : Ring (A 0) := (subring A).toRing
 
@@ -394,7 +396,7 @@ section CommRing
 variable [CommRing R] [AddCommMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
--- TODO: it might be expensive to unify `A` in this instances in practice
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The commutative ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instCommRing : CommRing (A 0) := (subring A).toCommRing
 
@@ -410,7 +412,7 @@ def subalgebra : Subalgebra S R where
   __ := subsemiring A
   algebraMap_mem' := algebraMap_mem_graded A
 
--- TODO: it might be expensive to unify `A` in this instances in practice
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The `S`-algebra `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgebra A)
 
@@ -452,8 +454,7 @@ theorem mul_apply_eq_zero {r r' : ⨁ i, A i} {m n : ι}
   rw [Subtype.ext_iff, ZeroMemClass.coe_zero, coe_mul_apply]
   apply Finset.sum_eq_zero fun x hx ↦ ?_
   obtain (hx | hx) : x.1 < m ∨ x.2 < n := by
-    by_contra! h
-    obtain ⟨hm, hn⟩ := h
+    by_contra! ⟨hm, hn⟩
     obtain rfl : x.1 + x.2 = k := by simp_all
     apply lt_irrefl (m + n) <| lt_of_le_of_lt (by gcongr) hk
   all_goals simp [hr, hr', hx]

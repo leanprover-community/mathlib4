@@ -106,6 +106,7 @@ instance _root_.Finset.countable [Countable α] : Countable (Finset α) :=
   Finset.val_injective.countable
 
 /-- A listable type with decidable equality is encodable. -/
+@[implicit_reducible]
 def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encodable α :=
   ⟨fun a => idxOf a l, (l[·]?), fun _ => getElem?_idxOf (H _)⟩
 
@@ -118,6 +119,7 @@ def _root_.Fintype.truncEncodable (α : Type*) [DecidableEq α] [Fintype α] : T
 /-- A noncomputable way to arbitrarily choose an ordering on a finite type.
 It is not made into a global instance, since it involves an arbitrary choice.
 This can be locally made into an instance with `attribute [local instance] Fintype.toEncodable`. -/
+@[implicit_reducible]
 noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodable α := by
   classical exact (Fintype.truncEncodable α).out
 
@@ -151,6 +153,8 @@ instance denumerableList : Denumerable (List α) :=
 @[simp]
 theorem list_ofNat_zero : ofNat (List α) 0 = [] := by rw [← @encode_list_nil α, ofNat_encode]
 
+-- TODO: find a good way to fix the linter
+set_option linter.flexible false in
 @[simp]
 theorem list_ofNat_succ (v : ℕ) :
     ofNat (List α) (succ v) = ofNat α v.unpair.1 :: ofNat (List α) v.unpair.2 :=

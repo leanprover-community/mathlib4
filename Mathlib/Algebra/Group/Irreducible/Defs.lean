@@ -47,10 +47,6 @@ structure Irreducible (p : M) : Prop where
   /-- If an irreducible element factors, then one factor is a unit. -/
   isUnit_or_isUnit ⦃a b : M⦄ : p = a * b → IsUnit a ∨ IsUnit b
 
-namespace Irreducible
-
-end Irreducible
-
 @[to_additive] lemma irreducible_iff :
     Irreducible p ↔ ¬IsUnit p ∧ ∀ ⦃a b⦄, p = a * b → IsUnit a ∨ IsUnit b where
   mp hp := ⟨hp.not_isUnit, hp.isUnit_or_isUnit⟩

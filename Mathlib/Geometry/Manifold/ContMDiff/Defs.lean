@@ -73,7 +73,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : WithTop ℕ∞}
 
 variable (I I') in
-/-- Property in the model space of a model with corners of being `C^n` within at set at a point,
+/-- Property in the model space of a model with corners of being `C^n` within a set at a point,
 when read in the model vector space. This property will be lifted to manifolds to define `C^n`
 functions between manifolds. -/
 def ContDiffWithinAtProp (n : WithTop ℕ∞) (f : H → H') (s : Set H) (x : H) : Prop :=

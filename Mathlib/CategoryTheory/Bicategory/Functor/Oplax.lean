@@ -12,7 +12,7 @@ public import Mathlib.Tactic.CategoryTheory.ToApp
 # Oplax functors
 
 An oplax functor `F` between bicategories `B` and `C` consists of
-* a function between objects `F.obj : B ⟶ C`,
+* a function between objects `F.obj : B → C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
 * a family of 2-morphisms `F.mapId a : F.map (𝟙 a) ⟶ 𝟙 (F.obj a)`,
@@ -45,11 +45,11 @@ variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 /-- An oplax functor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
-Unlike functors between categories, `F.map` do not need to strictly commute with the composition,
-and do not need to strictly preserve the identity. Instead, there are specified 2-morphisms
+Unlike functors between categories, `F.map` does not need to strictly commute with composition,
+and does not need to strictly preserve the identity. Instead, there are specified 2-morphisms
 `F.map (𝟙 a) ⟶ 𝟙 (F.obj a)` and `F.map (f ≫ g) ⟶ F.map f ≫ F.map g`.
 
-`F.map₂` strictly commute with compositions and preserve the identity. They also preserve the
+`F.map₂` strictly commutes with compositions and preserves the identity. It also preserves the
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
@@ -64,7 +64,7 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
     ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
       map₂ (η ▷ g) ≫ mapComp f' g = mapComp f g ≫ map₂ η ▷ map g := by
     cat_disch
-  /-- Naturality of the lax functoriality constraint, on the right. -/
+  /-- Naturality of the oplax functoriality constraint, on the right. -/
   mapComp_naturality_right :
     ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
       map₂ (f ◁ η) ≫ mapComp f g' = mapComp f g ≫ map f ◁ map₂ η := by
@@ -86,7 +86,7 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
       map₂ (ρ_ f).hom = mapComp f (𝟙 b) ≫ map f ◁ mapId b ≫ (ρ_ (map f)).hom := by
     cat_disch
 
-/-- Notation for a pseudofunctor between bicategories. -/
+/-- Notation for an oplax functor between bicategories. -/
 -- Given similar precedence as ⥤ (26).
 scoped[CategoryTheory.Bicategory] infixr:26 " ⥤ᵒᵖᴸ " => OplaxFunctor -- type as \func\op\^L
 
@@ -94,9 +94,9 @@ initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂
 
 namespace OplaxFunctor
 
-attribute [reassoc (attr := simp), to_app (attr := simp)]
+attribute [to_app (attr := reassoc (attr := simp))]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
-attribute [simp, reassoc, to_app] map₂_leftUnitor map₂_rightUnitor
+attribute [simp, to_app (attr := reassoc)] map₂_leftUnitor map₂_rightUnitor
 
 section
 
@@ -105,7 +105,7 @@ add_decl_doc OplaxFunctor.toPrelaxFunctor
 
 variable (F : B ⥤ᵒᵖᴸ C)
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h = F.map₂ (α_ f g h).inv ≫
     F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h ≫
@@ -113,7 +113,7 @@ lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d
   rw [← F.map₂_associator, ← F.map₂_comp_assoc]
   simp
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h =
     F.map₂ (α_ f g h).hom ≫ F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h
@@ -134,6 +134,7 @@ theorem mapComp_id_right {a b : B} (f : a ⟶ b) :
   simp only [Category.assoc]
   rw [← F.map₂_rightUnitor]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity oplax functor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵒᵖᴸ B where
@@ -165,6 +166,7 @@ lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶
     F.mapComp' f g _ rfl = F.mapComp f g := by
   simp [mapComp']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of oplax functors. -/
 --@[simps]
 def comp (F : B ⥤ᵒᵖᴸ C) (G : C ⥤ᵒᵖᴸ D) : B ⥤ᵒᵖᴸ D where

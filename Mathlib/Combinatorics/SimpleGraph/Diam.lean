@@ -97,6 +97,27 @@ lemma eq_top_iff_forall_eccent_eq_one [Nontrivial α] :
   rw [Order.one_le_iff_pos, pos_iff_ne_zero, edist_eq_zero_iff.ne]
   exact huv.ne
 
+lemma eccent_le_iff (u : α) (k : ℕ∞) : G.eccent u ≤ k ↔ ∀ v, G.edist u v ≤ k :=
+  iSup_le_iff
+
+lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
+  constructor
+  · intro h v huv
+    have hd : G.edist u v ≤ 1 := edist_le_eccent.trans h
+    have hd' : 1 ≤ G.edist u v := Order.one_le_iff_pos.mpr (G.edist_pos_of_ne huv)
+    exact edist_eq_one_iff_adj.mp (le_antisymm (hd') hd).symm
+  · intro hall
+    rw [eccent_le_iff]
+    intro v
+    rw [edist_le_one_iff_adj_or_eq]
+    exact or_iff_not_imp_right.mpr (hall v)
+
+lemma eccent_eq_one_iff [Nontrivial α] (u : α) :
+    G.eccent u = 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
+  have h : 1 ≤ G.eccent u := ENat.one_le_iff_ne_zero.mpr (eccent_ne_zero u)
+  rw [← h.ge_iff_eq']
+  exact eccent_le_one_iff u
+
 end eccent
 
 section ediam
@@ -225,6 +246,15 @@ lemma ediam_eq_one [Nontrivial α] : G.ediam = 1 ↔ G = ⊤ := by
   rw [Order.one_le_iff_pos, pos_iff_ne_zero]
   exact eccent_ne_zero u
 
+lemma ediam_le_two_mul_eccent (u : α) : G.ediam ≤ 2 * G.eccent u := by
+  refine ediam_le_of_edist_le fun v w ↦ ?_
+  calc
+    G.edist v w
+      ≤ G.edist v u + G.edist u w := G.edist_triangle
+    _ = G.edist u v + G.edist u w := by rw [edist_comm]
+    _ ≤ G.eccent u + G.eccent u := add_le_add edist_le_eccent edist_le_eccent
+    _ = 2 * G.eccent u := (two_mul _).symm
+
 end ediam
 
 section diam
@@ -243,7 +273,6 @@ lemma dist_le_diam (h : G.ediam ≠ ⊤) {u v : α} : G.dist u v ≤ G.diam :=
   ENat.toNat_le_toNat edist_le_ediam h
 
 lemma nontrivial_of_diam_ne_zero (h : G.diam ≠ 0) : Nontrivial α := by
-  apply G.nontrivial_of_ediam_ne_zero
   contrapose! h
   simp [diam, h]
 
@@ -317,7 +346,7 @@ lemma radius_eq_iInf_iSup_edist : G.radius = ⨅ u, ⨆ v, G.edist u v :=
 lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=
   iInf_le G.eccent u
 
-lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius  :=
+lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius :=
   ENat.exists_eq_iInf G.eccent
 
 lemma exists_edist_eq_radius_of_finite [Nonempty α] [Finite α] :
@@ -357,18 +386,27 @@ lemma radius_eq_zero_iff : G.radius = 0 ↔ Nonempty α ∧ Subsingleton α := b
 lemma radius_le_ediam [Nonempty α] : G.radius ≤ G.ediam :=
   iInf_le_iSup
 
-lemma ediam_le_two_mul_radius [Finite α] : G.ediam ≤ 2 * G.radius := by
+lemma ediam_eq_top_iff_radius_eq_top [Nonempty α] : G.ediam = ⊤ ↔ G.radius = ⊤ := by
+  refine ⟨?_, fun hr ↦ eq_top_iff.mpr (hr ▸ radius_le_ediam)⟩
+  contrapose
+  intro hr
+  obtain ⟨w, hw⟩ := G.exists_eccent_eq_radius
+  have hdiam : G.ediam ≤ 2 * G.eccent w := ediam_le_two_mul_eccent w
+  exact ne_top_of_lt <| lt_of_le_of_lt hdiam <| WithTop.mul_lt_top (ENat.coe_lt_top 2) <|
+    lt_top_iff_ne_top.mpr (hw ▸ hr)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma ediam_le_two_mul_radius : G.ediam ≤ 2 * G.radius := by
   cases isEmpty_or_nonempty α
   · rw [radius_eq_top_of_isEmpty]
     exact le_top
-  · by_cases h : G.Connected
+  · by_cases hdiam : G.ediam = ⊤
+    · simp [hdiam, ediam_eq_top_iff_radius_eq_top.mp hdiam]
     · obtain ⟨w, hw⟩ := G.exists_eccent_eq_radius
-      obtain ⟨_, _, h⟩ := G.exists_edist_eq_ediam_of_ne_top (connected_iff_ediam_ne_top.mp h)
+      obtain ⟨_, _, h⟩ := G.exists_edist_eq_ediam_of_ne_top hdiam
       apply le_trans (h ▸ G.edist_triangle (v := w))
       rw [two_mul]
       exact hw ▸ add_le_add (G.edist_comm ▸ G.edist_le_eccent) G.edist_le_eccent
-    · rw [G.radius_eq_top_of_not_connected h]
-      exact le_top
 
 lemma radius_eq_ediam_iff [Nonempty α] :
     G.radius = G.ediam ↔ ∃ e, ∀ u, G.eccent u = e := by

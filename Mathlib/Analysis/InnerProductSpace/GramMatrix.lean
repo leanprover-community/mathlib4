@@ -67,43 +67,45 @@ variable (𝕜) in
 lemma isHermitian_gram (v : n → E) : (gram 𝕜 v).IsHermitian :=
   Matrix.ext fun _ _ ↦ inner_conj_symm _ _
 
-variable [Fintype n]
-
-theorem star_dotProduct_gram_mulVec (v : n → E) (x y : n → 𝕜) :
+theorem star_dotProduct_gram_mulVec [Fintype n] (v : n → E) (x y : n → 𝕜) :
     star x ⬝ᵥ (gram 𝕜 v) *ᵥ y = ⟪∑ i, x i • v i, ∑ i, y i • v i⟫_𝕜 := by
   trans ∑ i, ∑ j, conj (x i) * y j * ⟪v i, v j⟫_𝕜
   · simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec, dotProduct, mul_comm, ← star_def,
       gram_apply, Pi.star_apply]
   · simp_rw [sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
 
+variable [Finite n]
+
 variable (𝕜) in
 /-- A Gram matrix is positive semidefinite. -/
 theorem posSemidef_gram (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
-  refine ⟨isHermitian_gram _ _, fun x ↦ ?_⟩
+  have := Fintype.ofFinite n
+  refine .of_dotProduct_mulVec_nonneg (isHermitian_gram _ _) fun x ↦ ?_
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
   simp
 
 /-- In a normed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v`. -/
 theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
+  have := Fintype.ofFinite n
   rw [Fintype.linearIndependent_iff]
   intro y hy
-  obtain ⟨h1, h2⟩ := h_gram
-  specialize h2 y
+  have := h_gram.dotProduct_mulVec_pos (x := y)
   simp_all [star_dotProduct_gram_mulVec]
 
 end SemiInnerProductSpace
 
 section NormedInnerProductSpace
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Fintype n]
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Finite n]
 
 /-- In a normed space, linear independence of `v` implies positive definiteness of `gram 𝕜 v`. -/
 theorem posDef_gram_of_linearIndependent
     {v : n → E} (h_li : LinearIndependent 𝕜 v) : PosDef (gram 𝕜 v) := by
+  have := Fintype.ofFinite n
   rw [Fintype.linearIndependent_iff] at h_li
-  obtain ⟨h0, h1⟩ := posSemidef_gram 𝕜 v
-  refine ⟨h0, fun x hx ↦ (h1 x).lt_of_ne' ?_⟩
+  refine .of_dotProduct_mulVec_pos (isHermitian_gram _ _) fun x hx ↦
+    ((posSemidef_gram ..).dotProduct_mulVec_nonneg _).lt_of_ne' ?_
   rw [star_dotProduct_gram_mulVec, inner_self_eq_zero.ne]
   exact mt (h_li x) (mt funext hx)
 

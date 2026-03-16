@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.ULift
 public import Mathlib.Util.Delaborators
-public import Mathlib.Util.AssertExists
 
 /-!
 # Cardinal Numbers
@@ -228,6 +227,9 @@ theorem mk_ne_zero_iff {α : Type u} : #α ≠ 0 ↔ Nonempty α :=
 @[simp]
 theorem mk_ne_zero (α : Type u) [Nonempty α] : #α ≠ 0 :=
   mk_ne_zero_iff.2 ‹_›
+
+theorem nonempty_out {x : Cardinal} (h : x ≠ 0) : Nonempty x.out := by
+  rwa [← mk_ne_zero_iff, mk_out]
 
 instance : One Cardinal.{u} :=
   -- `PUnit` might be more canonical, but this is convenient for defeq with natCast
@@ -474,8 +476,8 @@ theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
 def aleph0 : Cardinal.{u} :=
   lift #ℕ
 
-@[inherit_doc]
-scoped notation "ℵ₀" => Cardinal.aleph0
+@[inherit_doc] scoped notation "ℵ₀" => Cardinal.aleph0
+recommended_spelling "aleph0" for "ℵ₀" in [aleph0, «termℵ₀»]
 
 theorem mk_nat : #ℕ = ℵ₀ :=
   (lift_id _).symm

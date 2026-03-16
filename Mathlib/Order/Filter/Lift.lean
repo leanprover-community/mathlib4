@@ -7,14 +7,15 @@ module
 
 public import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.Filter.Finite
 public import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # Lift filters along filter and set functions
 -/
 
-@[expose] public section
+assert_not_exists Set.Finite
+
+public section
 
 open Set Filter Function
 

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Defs
 
 /-!
 # Tensor products of cones
@@ -75,8 +75,8 @@ theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {
       ∀ φ ∈ PointedCone.dual (dualPairing R G).flip C₁,
       ∀ ψ ∈ PointedCone.dual (dualPairing R H).flip C₂,
       0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-  simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2]
-  rfl
+  simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2,
+    SetLike.mem_coe, mem_dual, LinearMap.flip_apply, dualPairing_apply]
 
 /-- Elementary tensors are members of the maximal tensor product. -/
 theorem tmul_mem_maxTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)
@@ -103,5 +103,65 @@ theorem tmul_subset_minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCon
 theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
   exact Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
+
+variable {C₁ C₁' : PointedCone R G} {C₂ C₂' : PointedCone R H} {z : G ⊗[R] H}
+
+/-- The minimal tensor product is commutative. -/
+@[simp]
+theorem minTensorProduct_comm :
+    (minTensorProduct C₁ C₂).map (TensorProduct.comm R G H) = minTensorProduct C₂ C₁ := by
+  simp [minTensorProduct, map, span, Submodule.map_span, Set.image_image2,
+    Set.image2_swap (· ⊗ₜ[R] · : H → G → _)]
+
+/-- The maximal tensor product is commutative. -/
+@[simp]
+theorem maxTensorProduct_comm :
+    (maxTensorProduct C₁ C₂).map (TensorProduct.comm R G H) = maxTensorProduct C₂ C₁ := by
+  ext z
+  simp only [mem_map, mem_maxTensorProduct]
+  refine ⟨?_, fun hz ↦
+    ⟨(TensorProduct.comm R H G) z, ?_, (TensorProduct.comm R H G).symm_apply_apply z⟩⟩
+  · rintro ⟨w, hw, rfl⟩ ψ hψ φ hφ
+    simpa [dualDistrib_apply_comm] using hw φ hφ ψ hψ
+  · intro φ hφ ψ hψ
+    simpa [dualDistrib_apply_comm] using hz ψ hψ φ hφ
+
+/-- `minTensorProduct` is monotone. -/
+@[gcongr]
+theorem minTensorProduct_mono (h₁ : C₁ ≤ C₁') (h₂ : C₂ ≤ C₂') :
+    minTensorProduct C₁ C₂ ≤ minTensorProduct C₁' C₂' :=
+  Submodule.span_mono <| Set.image2_subset h₁ h₂
+
+/-- `maxTensorProduct` is monotone. -/
+theorem maxTensorProduct_mono (h₁ : C₁ ≤ C₁') (h₂ : C₂ ≤ C₂') :
+    maxTensorProduct C₁ C₂ ≤ maxTensorProduct C₁' C₂' :=
+  fun _ hz => mem_maxTensorProduct.mpr fun φ hφ ψ hψ =>
+    mem_maxTensorProduct.mp hz φ (dual_le_dual h₁ hφ) ψ (dual_le_dual h₂ hψ)
+
+variable {G' H' : Type*} [AddCommGroup G'] [Module R G'] [AddCommGroup H'] [Module R H']
+
+/-- `minTensorProduct` is functorial: the image of a minimal tensor product under
+`TensorProduct.map f g` is contained in the minimal tensor product of the images. -/
+theorem minTensorProduct_map_le (f : G →ₗ[R] G') (g : H →ₗ[R] H')
+    (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
+    (minTensorProduct C₁ C₂).map (TensorProduct.map f g) ≤
+      minTensorProduct (C₁.map f) (C₂.map g) :=
+  (Submodule.map_span_le _ _ _).mpr fun _ ⟨x, hx, y, hy, h⟩ ↦
+    h ▸ map_tmul f g x y ▸ tmul_mem_minTensorProduct ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩
+
+/-- `maxTensorProduct` is functorial: the image of a maximal tensor product under
+`TensorProduct.map f g` is contained in the maximal tensor product of the images. -/
+theorem maxTensorProduct_map_le (f : G →ₗ[R] G') (g : H →ₗ[R] H')
+    (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
+    (maxTensorProduct C₁ C₂).map (TensorProduct.map f g) ≤
+      maxTensorProduct (C₁.map f) (C₂.map g) := by
+  rintro _ ⟨w, hw, rfl⟩
+  simp only [SetLike.mem_coe, mem_maxTensorProduct] at hw ⊢
+  intro φ hφ ψ hψ
+  have h_eq : ((dualDistrib R G' H') (φ ⊗ₜ[R] ψ)).comp (TensorProduct.map f g) =
+      ((dualDistrib R G H) ((φ.comp f) ⊗ₜ[R] (ψ.comp g))) :=
+    TensorProduct.ext' fun x y ↦ by simp [map_tmul]
+  convert hw (φ.comp f) (fun x hx ↦ hφ ⟨x, hx, rfl⟩) (ψ.comp g) (fun y hy ↦ hψ ⟨y, hy, rfl⟩)
+  exact DFunLike.congr_fun h_eq w
 
 end PointedCone

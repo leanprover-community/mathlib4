@@ -43,6 +43,10 @@ variable (L : C ⥤ D) [L.IsLocalization W] (X Y Z : C)
 /-- This property holds if the type of morphisms between `X` and `Y`
 in the localized category with respect to `W : MorphismProperty C`
 is small. -/
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the universe `w` would default to a
+-- universe output parameter. See Note [universe output parameters and typeclass caching].
+@[univ_out_params]
 class HasSmallLocalizedHom : Prop where
   small : Small.{w} (W.Q.obj X ⟶ W.Q.obj Y)
 
@@ -109,6 +113,7 @@ noncomputable def equiv (L : C ⥤ D) [L.IsLocalization W] {X Y : C}
   letI := small_of_hasSmallLocalizedHom.{w} W W.Q X Y
   (equivShrink _).symm.trans (homEquiv W W.Q L)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_equiv_symm (L : C ⥤ D) [L.IsLocalization W]
     (L' : C ⥤ D') [L'.IsLocalization W] (G : D ⥤ D')
     (e : L ⋙ G ≅ L') {X Y : C} [HasSmallLocalizedHom.{w} W X Y]
@@ -124,6 +129,7 @@ noncomputable def mk {X Y : C} [HasSmallLocalizedHom.{w} W X Y] (f : X ⟶ Y) :
     SmallHom.{w} W X Y :=
   (equiv.{w} W W.Q).symm (W.Q.map f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equiv_mk (L : C ⥤ D) [L.IsLocalization W] {X Y : C}
     [HasSmallLocalizedHom.{w} W X Y] (f : X ⟶ Y) :
@@ -137,6 +143,7 @@ noncomputable def mkInv {X Y : C} (f : Y ⟶ X) (hf : W f) [HasSmallLocalizedHom
     SmallHom.{w} W X Y :=
   (equiv.{w} W W.Q).symm (Localization.isoOfHom W.Q W f hf).inv
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equiv_mkInv (L : C ⥤ D) [L.IsLocalization W] {X Y : C} (f : Y ⟶ X) (hf : W f)
     [HasSmallLocalizedHom.{w} W X Y] :
@@ -151,6 +158,7 @@ noncomputable def comp {X Y Z : C} [HasSmallLocalizedHom.{w} W X Y]
     SmallHom.{w} W X Z :=
   (equiv W W.Q).symm (equiv W W.Q α ≫ equiv W W.Q β)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_comp (L : C ⥤ D) [L.IsLocalization W] {X Y Z : C} [HasSmallLocalizedHom.{w} W X Y]
     [HasSmallLocalizedHom.{w} W Y Z] [HasSmallLocalizedHom.{w} W X Z]
     (α : SmallHom.{w} W X Y) (β : SmallHom.{w} W Y Z) :
@@ -255,6 +263,7 @@ noncomputable def smallHomMap (f : SmallHom.{w} W₁ X Y) :
       ((CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm.app _)
       ((Φ.localizedFunctor W₁.Q W₂.Q).map ((SmallHom.equiv W₁ W₁.Q) f)))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
     (f : SmallHom.{w} W₁ X Y) :
     (SmallHom.equiv W₂ L₂) (Φ.smallHomMap f) =
@@ -278,16 +287,16 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
       E₂.map (β.inv.app X) ≫ α₂.hom.app (Φ.functor.obj X) ≫
         e.hom.app X ≫ G.map (α₁.inv.app X) := fun X ↦ by
     simp [γ, id_comp, comp_id]
-  simp only [Functor.map_comp, assoc]
-  erw [← NatIso.naturality_1 γ]
-  simp only [Functor.comp_map, ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),
+  simp only [Functor.map_comp, ← NatIso.naturality_1 γ, ← Functor.comp_map,
+    ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),
     ← cancel_epi (γ.hom.app (W₁.Q.obj X)), assoc, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp,
     Iso.hom_inv_id_app_assoc]
   simp only [hγ, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
     Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
-    Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
+    Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma smallHomMap_mk (f : X ⟶ Y) :
     Φ.smallHomMap (SmallHom.mk _ f) =
@@ -307,6 +316,7 @@ variable [HasSmallLocalizedHom.{w} W₁ X Y] [HasSmallLocalizedHom.{w} W₁ Y Z]
   [HasSmallLocalizedHom.{w'} W₂ (Φ.functor.obj Y) (Φ.functor.obj Z)]
   [HasSmallLocalizedHom.{w'} W₂ (Φ.functor.obj X) (Φ.functor.obj Z)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smallHomMap_comp (f : SmallHom.{w} W₁ X Y) (g : SmallHom.{w} W₁ Y Z) :
     Φ.smallHomMap (f.comp g) = (Φ.smallHomMap f).comp (Φ.smallHomMap g) := by
   apply (SmallHom.equiv W₂ W₂.Q).injective

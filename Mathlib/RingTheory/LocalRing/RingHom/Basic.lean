@@ -80,7 +80,7 @@ i.e. any preimage of a unit is still a unit. -/
 @[stacks 07BJ]
 theorem local_hom_TFAE (f : R →+* S) :
     List.TFAE
-      [IsLocalHom f, f '' (maximalIdeal R).1 ⊆ maximalIdeal S,
+      [IsLocalHom f, f '' maximalIdeal R ⊆ maximalIdeal S,
         (maximalIdeal R).map f ≤ maximalIdeal S, maximalIdeal R ≤ (maximalIdeal S).comap f,
         (maximalIdeal S).comap f = maximalIdeal R] := by
   tfae_have 1 → 2

@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Monad.Algebra
 # Algebras for the coproduct monad
 
 The functor `Y ↦ X ⨿ Y` forms a monad, whose category of monads is equivalent to the under category
-of `X`. Similarly, `Y ↦ X ⨯ Y` forms a comonad, whose category of comonads is equivalent to the
+of `X`. Similarly, `Y ↦ X ⨯ Y` forms a comonad, whose category of coalgebras is equivalent to the
 over category of `X`.
 
 ## TODO
@@ -41,6 +41,7 @@ open Comonad
 
 variable [HasBinaryProducts C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `X ⨯ -` has a comonad structure. This is sometimes called the writer comonad. -/
 @[simps!]
 def prodComonad : Comonad C where
@@ -48,6 +49,7 @@ def prodComonad : Comonad C where
   ε := { app := fun _ => Limits.prod.snd }
   δ := { app := fun _ => prod.lift Limits.prod.fst (𝟙 _) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forward direction of the equivalence from coalgebras for the product comonad to the over
 category.
 -/
@@ -60,6 +62,7 @@ def coalgebraToOver : Coalgebra (prodComonad X) ⥤ Over X where
         rw [Over.mk_hom, ← f.h_assoc]
         simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The backward direction of the equivalence from coalgebras for the product comonad to the over
 category.
 -/
@@ -70,6 +73,7 @@ def overToCoalgebra : Over X ⥤ Coalgebra (prodComonad X) where
       a := prod.lift f.hom (𝟙 _) }
   map g := { f := g.left }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence from coalgebras for the product comonad to the over category. -/
 @[simps]
 def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X where
@@ -87,6 +91,7 @@ open Monad
 
 variable [HasBinaryCoproducts C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `X ⨿ -` has a monad structure. This is sometimes called the either monad. -/
 @[simps!]
 def coprodMonad : Monad C where
@@ -94,6 +99,7 @@ def coprodMonad : Monad C where
   η := { app := fun _ => coprod.inr }
   μ := { app := fun _ => coprod.desc coprod.inl (𝟙 _) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forward direction of the equivalence from algebras for the coproduct monad to the under
 category.
 -/
@@ -106,6 +112,7 @@ def algebraToUnder : Monad.Algebra (coprodMonad X) ⥤ Under X where
         rw [Under.mk_hom, Category.assoc, ← f.h]
         simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The backward direction of the equivalence from algebras for the coproduct monad to the under
 category.
 -/
@@ -116,6 +123,7 @@ def underToAlgebra : Under X ⥤ Monad.Algebra (coprodMonad X) where
       a := coprod.desc f.hom (𝟙 _) }
   map g := { f := g.right }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence from algebras for the coproduct monad to the under category.
 -/
 @[simps]

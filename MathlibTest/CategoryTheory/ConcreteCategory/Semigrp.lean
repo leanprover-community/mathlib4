@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Category.Semigrp.Basic
 
 universe v u

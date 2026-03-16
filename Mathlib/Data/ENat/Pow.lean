@@ -41,6 +41,7 @@ lemma epow_natCast {y : ℕ} : x ^ (y : ℕ∞) = x ^ y := rfl
 @[simp]
 lemma zero_epow_top : (0 : ℕ∞) ^ (⊤ : ℕ∞) = 0 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zero_epow (h : y ≠ 0) : (0 : ℕ∞) ^ y = 0 := by
   induction y with
   | top => exact zero_epow_top
@@ -55,6 +56,7 @@ lemma one_epow : (1 : ℕ∞) ^ y = 1 := by
 @[simp]
 lemma top_epow_top : (⊤ : ℕ∞) ^ (⊤ : ℕ∞) = ⊤ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma top_epow (h : y ≠ 0) : (⊤ : ℕ∞) ^ y = ⊤ := by
   induction y with
   | top => exact top_epow_top
@@ -69,8 +71,9 @@ lemma epow_one : x ^ (1 : ℕ∞) = x := by
   rw [← coe_one, epow_natCast, pow_one]
 
 lemma epow_top (h : 1 < x) : x ^ (⊤ : ℕ∞) = ⊤ := by
-  simp only [instHPow, instPow, (zero_le_one.trans_lt h).ne.symm, ↓reduceIte, h.ne.symm]
+  simp +instances only [instHPow, instPow, (zero_le_one.trans_lt h).ne.symm, ↓reduceIte, h.ne.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
   intro y z y_z
   induction y
@@ -126,6 +129,7 @@ lemma epow_add : x ^ (y + z) = x ^ y * x ^ z := by
       exact one_le_iff_ne_zero.1 (one_le_epow (one_le_iff_ne_zero.1 x_2.le))
     simp only [← Nat.cast_add, epow_natCast, pow_add x]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_epow : (x * y) ^ z = x ^ z * y ^ z := by
   induction z
   · rcases lt_trichotomy x 1 with x_0 | rfl | x_2

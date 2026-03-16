@@ -5,8 +5,8 @@ Authors: Jireh Loreaux, Kim Morrison, Oliver Nash
 -/
 module
 
-public meta import Mathlib.Algebra.Group.Action.Defs
-public meta import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Group.Action.Defs  -- shake: keep (metaprogram output dependency)
+public import Mathlib.Tactic.Abel
 
 /-! # The `noncomm_ring` tactic
 
@@ -81,3 +81,4 @@ We register `noncomm_ring` with the `hint` tactic.
 -/
 
 register_hint 1000 noncomm_ring
+register_try?_tactic (priority := 1000) noncomm_ring

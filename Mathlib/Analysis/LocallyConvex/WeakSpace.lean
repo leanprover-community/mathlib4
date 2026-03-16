@@ -19,7 +19,7 @@ Of course, we phrase this in terms of linear maps between locally convex spaces,
 creating two separate topologies on the same space.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E F : Type*}
 variable [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
@@ -56,6 +56,7 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     simpa [f'] using (hus y <| subset_closure hy).le
   exact (hux'.not_ge <| hus' ·)
 
+set_option backward.isDefEq.respectTransparency false in
 open ComplexOrder in
 theorem toWeakSpace_closedConvexHull_eq {s : Set E} :
     (toWeakSpace 𝕜 E) '' (closedConvexHull 𝕜 s) = closedConvexHull 𝕜 (toWeakSpace 𝕜 E '' s) := by

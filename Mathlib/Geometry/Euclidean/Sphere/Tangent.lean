@@ -86,6 +86,7 @@ lemma IsTangentAt.eq_of_isTangentAt {s : Sphere P} {p q : P} {as : AffineSubspac
     ← inner_sub_right, vsub_sub_vsub_cancel_right] at hqp
   simpa using hqp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isTangentAt_center_iff {s : Sphere P} {as : AffineSubspace ℝ P} :
     s.IsTangentAt s.center as ↔ s.radius = 0 ∧ s.center ∈ as := by
   refine ⟨?_, ?_⟩
@@ -130,6 +131,13 @@ lemma IsTangentAt.dist_eq_of_mem_of_mem {s : Sphere P} {p₁ p₂ q : P}
   have h1 := dist_sq_eq_of_mem h₁ hq_mem₁
   have h2 := dist_sq_eq_of_mem h₂ hq_mem₂
   rwa [h1, add_left_cancel_iff, sq_eq_sq₀ dist_nonneg dist_nonneg] at h2
+
+lemma IsTangentAt.radius_lt_dist_center {s : Sphere P} {as : AffineSubspace ℝ P} {p q : P}
+    (h : s.IsTangentAt p as) (hq : q ∈ as) (hqp : q ≠ p) : s.radius < dist q s.center := by
+  suffices s.radius ^ 2 < dist q s.center ^ 2 by
+    simpa [sq_lt_sq, abs_of_nonneg (s.radius_nonneg_of_mem h.mem_sphere)] using this
+  rw [h.dist_sq_eq_of_mem hq]
+  simp [hqp]
 
 lemma IsTangentAt.eq_orthRadius_of_finrank_add_one_eq {s : Sphere P} {as : AffineSubspace ℝ P}
     {p : P} (ht : s.IsTangentAt p as) (hr : s.radius ≠ 0)
@@ -190,7 +198,7 @@ lemma dist_orthogonalProjection_eq_radius_iff_isTangentAt {s : Sphere P} {as : A
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · refine ⟨?_, orthogonalProjection_mem _, fun p hp ↦ ?_⟩
     · rwa [mem_sphere']
-    · rw [SetLike.mem_coe, mem_orthRadius_iff_inner_left]
+    · rw [mem_orthRadius_iff_inner_left]
       exact orthogonalProjection_vsub_mem_direction_orthogonal as s.center _
         (vsub_orthogonalProjection_mem_direction s.center hp)
   · rw [dist_orthogonalProjection_eq_infDist, h.isTangent.infDist_eq_radius]

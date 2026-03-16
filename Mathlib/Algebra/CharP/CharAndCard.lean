@@ -19,7 +19,7 @@ We prove some results relating characteristic and cardinality of finite rings
 characteristic, cardinality, ring
 -/
 
-@[expose] public section
+public section
 
 
 /-- A prime `p` is a unit in a commutative ring `R` of nonzero characteristic iff it does not divide

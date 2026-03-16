@@ -5,12 +5,9 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.List.Defs
-public import Mathlib.Tactic.Convert
-public import Mathlib.Tactic.Says
-public import Mathlib.Util.AssertExists
+public import Mathlib.Tactic.Basic
 
 /-!
 # Additional properties of binary recursion on `Nat`
@@ -103,7 +100,7 @@ lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
     refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
     · simp
-    · simp; cutsat
+    · simp; lia
 
 @[grind =]
 lemma div2_val (n) : div2 n = n / 2 := by
@@ -220,15 +217,15 @@ theorem div2_bit1 (n) : div2 (2 * n + 1) = n :=
 /-! ### `bit0` and `bit1` -/
 
 theorem bit_add : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit false n + bit b m
-  | true, _, _ => by dsimp [bit]; cutsat
-  | false, _, _ => by dsimp [bit]; cutsat
+  | true, _, _ => by dsimp [bit]; lia
+  | false, _, _ => by dsimp [bit]; lia
 
 theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit false m
-  | true, _, _ => by dsimp [bit]; cutsat
-  | false, _, _ => by dsimp [bit]; cutsat
+  | true, _, _ => by dsimp [bit]; lia
+  | false, _, _ => by dsimp [bit]; lia
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
-  cases b <;> dsimp [bit] <;> omega
+  cases b <;> dsimp [bit] <;> lia
 
 @[simp]
 theorem bitCasesOn_bit0 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)) (n : ℕ) :
@@ -252,12 +249,12 @@ theorem bit_cases_on_inj {motive : ℕ → Sort u} (H₁ H₂ : ∀ b n, motive 
   bit_cases_on_injective.eq_iff
 
 lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
-  | true, _, _, h => by dsimp [bit]; cutsat
-  | false, _, _, h => by dsimp [bit]; cutsat
+  | true, _, _, h => by dsimp [bit]; lia
+  | false, _, _, h => by dsimp [bit]; lia
 
 lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
-  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> omega
-        _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
+  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> lia
+        _ ≤ bit b n := by cases b <;> dsimp [bit] <;> lia
 
 @[simp]
 theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
@@ -277,9 +274,7 @@ theorem bit1_bits (n : ℕ) : (2 * n + 1).bits = true :: n.bits :=
   bits_append_bit n true fun _ => rfl
 
 @[simp]
-theorem one_bits : Nat.bits 1 = [true] := by
-  convert bit1_bits 0
-  simp
+theorem one_bits : Nat.bits 1 = [true] := bit1_bits 0
 
 -- TODO Find somewhere this can live.
 -- example : bits 3423 = [true, true, true, true, true, false, true, false, true, false, true, true]

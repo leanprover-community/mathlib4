@@ -75,7 +75,7 @@ theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
 
 theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
     (∑ i ∈ t, B i) v w = ∑ i ∈ t, B i v w := by
-  simp only [coeFn_sum, Finset.sum_apply]
+  simp only [coe_sum, Finset.sum_apply]
 
 variable {B}
 

@@ -31,7 +31,7 @@ for the Bochner integral.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Metric
 

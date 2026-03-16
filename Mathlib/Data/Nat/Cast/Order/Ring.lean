@@ -15,7 +15,7 @@ public import Mathlib.Data.Nat.Cast.Order.Basic
 
 -/
 
-@[expose] public section
+public section
 
 variable {R α : Type*}
 

@@ -5,7 +5,6 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
@@ -110,6 +109,15 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
   exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
 
 variable {R K}
+
+section CommSemiring
+
+theorem of_ringEquiv_left {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
+    {K : Type*} [CommSemiring K] [Algebra R K] (e : R ≃+* S) [Algebra S K]
+    (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsFractionRing S K] :
+    IsFractionRing R K := IsLocalization.of_ringEquiv_left e (MulEquivClass.map_nonZeroDivisors e) h
+
+end CommSemiring
 
 section CommRing
 
@@ -538,11 +546,10 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
 
 theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
-  by_contra! h'
-  rcases h' with ⟨_, _⟩ | ⟨_, _⟩
+  by_contra! ⟨_, _⟩ | ⟨_, _⟩
   · obtain ⟨c, hc⟩ := h.exists_of_eq (x := 1) (y := 0) (Subsingleton.elim _ _)
     simp at hc
-  · apply (h.map_units 1).ne_zero
+  · apply (h.map_units S 1).ne_zero
     rw [Subsingleton.eq_zero ((1 : nonZeroDivisors R) : R), map_zero]
 
 protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
@@ -587,6 +594,14 @@ instance unique [Subsingleton R] : Unique (FractionRing R) := inferInstance
 
 instance [Nontrivial R] : Nontrivial (FractionRing R) := inferInstance
 
+variable {R} in
+instance [DecidableEq R] : DecidableEq (FractionRing R) := by
+  intro x y
+  apply Localization.recOnSubsingleton₂ x y (r := fun x y ↦ Decidable (x = y))
+  intro a c b d
+  simp only [Localization.mk_eq_mk_iff, Localization.r_iff_of_le_nonZeroDivisors (le_refl _)]
+  infer_instance
+
 variable [IsDomain A]
 
 noncomputable instance field : Field (FractionRing A) := inferInstance
@@ -605,18 +620,18 @@ variable [Field K] [Algebra R K] [FaithfulSMul R K]
 Should usually be introduced locally along with `isScalarTower_liftAlgebra`
 See note [reducible non-instances]. -/
 noncomputable abbrev liftAlgebra : Algebra (FractionRing R) K :=
-  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  have := IsDomain.of_faithfulSMul R K
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R K))
 
 attribute [local instance] liftAlgebra
 
 instance isScalarTower_liftAlgebra : IsScalarTower R (FractionRing R) K :=
-  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  have := IsDomain.of_faithfulSMul R K
   .of_algebraMap_eq fun x ↦
     (IsFractionRing.lift_algebraMap (FaithfulSMul.algebraMap_injective R K) x).symm
 
 lemma algebraMap_liftAlgebra :
-    have := (FaithfulSMul.algebraMap_injective R K).isDomain
+    have := IsDomain.of_faithfulSMul R K
     algebraMap (FractionRing R) K = IsFractionRing.lift (FaithfulSMul.algebraMap_injective R _) :=
   rfl
 

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Tactic.Spread
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Definitions of group actions
@@ -56,7 +57,7 @@ attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instS
 
 -- see Note [lower instance priority]
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[deprecated instSMulOfMul (since := "2025-10-18")]
+@[deprecated instSMulOfMul (since := "2025-10-18"), implicit_reducible]
 def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
@@ -77,6 +78,32 @@ lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b =
 @[to_additive (attr := simp)]
 lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := rfl
 
+/-- Type class for actions by additive semigroups, with notation `g +ᵥ p`.
+
+The `AddSemigroupAction G P` typeclass says that the additive semigroup `G` acts additively on a
+type `P`.  More precisely this means that the action satisfies the axiom
+`(g₁ + g₂) +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)`.  A mathematician might simply say that the additive semigroup
+`G` acts on `P`.
+
+For example, if `A` is an additive semigroup and `X` is a type, if a mathematician says
+say "let `A` act on the set `X`" they will usually mean `[AddSemigroupAction A X]`. -/
+class AddSemigroupAction (G P : Type*) [AddSemigroup G] extends VAdd G P where
+  /-- Associativity of `+ᵥ` and `+` -/
+  add_vadd : ∀ (g₁ g₂ : G) (p : P), (g₁ + g₂) +ᵥ p = g₁ +ᵥ g₂ +ᵥ p
+
+/-- Type class for actions by semigroups, with notation `g • p`.
+
+The `SemigroupAction G P` typeclass says that the semigroup `G` acts multiplicatively on a type `P`.
+More precisely this means that the action satisfies the axiom `(g₁ * g₂) • p = g₁ • (g₂ • p)`.
+A mathematician might simply say that the semigroup `G` acts on `P`.
+
+For example, if `G` is a semigroup and `X` is a type, if a mathematician says
+say "let `G` act on the set `X`" they will probably mean  `[SemigroupAction G X]`. -/
+@[to_additive (attr := ext)]
+class SemigroupAction (α β : Type*) [Semigroup α] extends SMul α β where
+  /-- Associativity of `•` and `*` -/
+  mul_smul (x y : α) (b : β) : (x * y) • b = x • y • b
+
 /--
 Type class for additive monoid actions on types, with notation `g +ᵥ p`.
 
@@ -88,11 +115,9 @@ acts on `P`.
 For example, if `A` is an additive group and `X` is a type, if a mathematician says
 say "let `A` act on the set `X`" they will usually mean `[AddAction A X]`.
 -/
-class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
+class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends AddSemigroupAction G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
-  /-- Associativity of `+` and `+ᵥ` -/
-  add_vadd : ∀ (g₁ g₂ : G) (p : P), (g₁ + g₂) +ᵥ p = g₁ +ᵥ g₂ +ᵥ p
 
 /--
 Type class for monoid actions on types, with notation `g • p`.
@@ -106,11 +131,9 @@ For example, if `G` is a group and `X` is a type, if a mathematician says
 say "let `G` act on the set `X`" they will probably mean  `[AddAction G X]`.
 -/
 @[to_additive (attr := ext)]
-class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
+class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
-  /-- Associativity of `•` and `*` -/
-  mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
 
 /-! ### Scalar tower and commuting actions -/
 
@@ -125,12 +148,12 @@ class SMulCommClass (M N α : Type*) [SMul M α] [SMul N α] : Prop where
   /-- `•` is left commutative -/
   smul_comm : ∀ (m : M) (n : N) (a : α), m • n • a = n • m • a
 
-export MulAction (mul_smul)
-export AddAction (add_vadd)
+export SemigroupAction (mul_smul)
+export AddSemigroupAction (add_vadd)
 export SMulCommClass (smul_comm)
 export VAddCommClass (vadd_comm)
 
-library_note2 «bundled maps over different rings» /--
+library_note «bundled maps over different rings» /--
 Frequently, we find ourselves wanting to express a bilinear map `M →ₗ[R] N →ₗ[R] P` or an
 equivalence between maps `(M →ₗ[R] N) ≃ₗ[R] (M' →ₗ[R] N')` where the maps have an associated ring
 `R`. Unfortunately, using definitions like these requires that `R` satisfy `CommSemiring R`, and
@@ -591,6 +614,7 @@ end MulDistribMulAction
 section IsCancelSMul
 
 variable (G P : Type*)
+-- TODO: IsRightCancelSmul
 
 /-- A vector addition is left-cancellative if it is pointwise injective on the left. -/
 class IsLeftCancelVAdd [VAdd G P] : Prop where

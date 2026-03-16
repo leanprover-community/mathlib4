@@ -12,8 +12,8 @@ public import Mathlib.Algebra.Polynomial.Module.AEval
 /-!
 # Annihilating Ideal
 
-Given a commutative ring `R` and an `R`-algebra `A`
-Every element `a : A` defines
+Given a commutative ring `R` and an `R`-algebra `A`,
+every element `a : A` defines
 an ideal `Polynomial.annIdeal a ⊆ R[X]`.
 Simply put, this is the set of polynomials `p` where
 the polynomial evaluation `p(a)` is 0.
@@ -48,7 +48,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable (R) in
 /-- `annIdeal R a` is the *annihilating ideal* of all `p : R[X]` such that `p(a) = 0`.
 
-The informal notation `p(a)` stand for `Polynomial.aeval a p`.
+The informal notation `p(a)` stands for `Polynomial.aeval a p`.
 Again informally, the annihilating ideal of `a` is
 `{ p ∈ R[X] | p(a) = 0 }`. This is an ideal in `R[X]`.
 The formal definition uses the kernel of the aeval map. -/

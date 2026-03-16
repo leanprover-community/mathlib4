@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.Basic
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Free monoid over a given alphabet
@@ -216,11 +220,6 @@ instance : Membership α (FreeMonoid α) := ⟨mem⟩
 @[to_additive]
 theorem notMem_one : m ∉ (1 : FreeMonoid α) := List.not_mem_nil
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.FreeAddMonoid.not_mem_zero := FreeAddMonoid.notMem_zero
-
-@[to_additive existing, deprecated (since := "2025-05-23")] alias not_mem_one := notMem_one
-
 @[to_additive (attr := simp)]
 theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
 
@@ -290,7 +289,7 @@ theorem casesOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid �
 @[to_additive (attr := ext)]
 theorem hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
   MonoidHom.ext fun l ↦ recOn l (f.map_one.trans g.map_one.symm)
-    (fun x xs hxs ↦ by simp only [h, hxs, MonoidHom.map_mul])
+    (fun x xs hxs ↦ by simp only [h, hxs, map_mul])
 
 /-- A variant of `List.prod` that has `[x].prod = x` true definitionally.
 The purpose is to make `FreeMonoid.lift_eval_of` true by `rfl`. -/
@@ -345,7 +344,8 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
   DFunLike.ext_iff.1 (comp_lift g f) x
 
 /-- Define a multiplicative action of `FreeMonoid α` on `β`. -/
-@[to_additive /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
 def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b
   one_smul _ := rfl

@@ -255,7 +255,7 @@ lemma isProperMap_iff_isClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Inje
   rw [isProperMap_iff_isClosedMap_and_compact_fibers]
   exact ⟨f_cont, h, fun y ↦ (subsingleton_singleton.preimage f_inj).isCompact⟩
 
-/-- A injective continuous and closed map is proper. -/
+/-- An injective continuous and closed map is proper. -/
 lemma isProperMap_of_isClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Injective)
     (f_closed : IsClosedMap f) : IsProperMap f :=
   (isProperMap_iff_isClosedMap_of_inj f_cont f_inj).2 f_closed

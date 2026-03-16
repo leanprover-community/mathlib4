@@ -75,8 +75,6 @@ theorem id_tensorHom_id (M N : SemimoduleCat R) :
   apply TensorProduct.ext
   rfl
 
-@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
-
 theorem tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : SemimoduleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
     (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ = tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) := by
@@ -132,22 +130,16 @@ theorem leftUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
-  ext x
-  dsimp
-  erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
-  rw [LinearMap.map_smul]
-  rfl
+  ext
+  simp [tensorHom, tensorObj, leftUnitor]
 
 theorem rightUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (SemimoduleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
-  ext x
-  dsimp
-  erw [TensorProduct.rid_tmul, TensorProduct.rid_tmul]
-  rw [LinearMap.map_smul]
-  rfl
+  ext
+  simp [tensorHom, tensorObj, rightUnitor]
 
 theorem triangle (M N : SemimoduleCat.{u} R) :
     (associator M (SemimoduleCat.of R R) N).hom ≫ tensorHom (𝟙 M) (leftUnitor N).hom =
@@ -490,6 +482,7 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
     erw [MonoidalCategory.whiskerRight_apply]
     simp [TensorProduct.add_tmul]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : MonoidalLinear R (ModuleCat.{u} R) := by
   refine ⟨?_, ?_⟩
   · intros

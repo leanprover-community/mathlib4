@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Sub.Defs
-public import Mathlib.Util.AssertExists
 
 /-!
 # Ordered groups
@@ -52,7 +51,7 @@ attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
 -- See note [lower instance priority]
 @[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid]
 instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
-    [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
+    [CommGroup α] [Preorder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
   le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_right bc a⁻¹
   le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_right bc a⁻¹
 
@@ -116,10 +115,10 @@ theorem inv_le_self_iff : a⁻¹ ≤ a ↔ 1 ≤ a := by simp [inv_le_iff_one_le
 theorem inv_lt_self_iff : a⁻¹ < a ↔ 1 < a := by simp [inv_lt_iff_one_lt_mul]
 
 @[to_additive (attr := simp)]
-theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by simp [← not_iff_not]
+theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by contrapose!; exact inv_lt_self_iff
 
 @[to_additive (attr := simp)]
-theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by simp [← not_iff_not]
+theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by contrapose!; exact inv_le_self_iff
 
 end LinearOrderedCommGroup
 

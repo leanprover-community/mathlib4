@@ -5,8 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import ImportGraph.Imports
-public meta import Mathlib.Tactic.MinImports
+public meta import ImportGraph.Imports.ImportGraph
+public meta import ImportGraph.Graph.TransitiveClosure
+public import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
 
@@ -20,7 +21,7 @@ It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
@@ -51,7 +52,7 @@ structure ImportState where
 /--
 `minImportsRef` keeps track of cumulative imports across multiple commands, using `ImportState`.
 -/
-initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
+private initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
 
 /-- `#reset_min_imports` sets to empty the current list of cumulative imports. -/
 elab "#reset_min_imports" : command => minImportsRef.set {}
@@ -70,7 +71,7 @@ Another important difference is that the `minImports` *linter* starts counting i
 where the option is set to `true` *downwards*, whereas the `#min_imports` *command* looks at the
 imports needed from the command *upwards*.
 -/
-register_option linter.minImports : Bool := {
+public register_option linter.minImports : Bool := {
   defValue := false
   descr := "enable the minImports linter"
 }
@@ -79,7 +80,7 @@ register_option linter.minImports : Bool := {
 change in number of imports, when it reports import changes.
 Setting this option to `false` helps with test stability.
 -/
-register_option linter.minImports.increases : Bool := {
+public register_option linter.minImports.increases : Bool := {
   defValue := true
   descr := "enable reporting increase-size change in the minImports linter"
 }

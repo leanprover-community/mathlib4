@@ -205,11 +205,12 @@ lemma two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even {k : ℕ} (hk : 2 ≤ k) (
     2 * riemannZeta k = ∑' (n : ℤ), ((n : ℂ) ^ k)⁻¹ := by
   have hkk : 1 < k := by linarith
   rw [tsum_int_eq_zero_add_two_mul_tsum_pnat]
-  · have h0 : (0 ^ k : ℂ)⁻¹ = 0 := by simp; omega
+  · have h0 : (0 ^ k : ℂ)⁻¹ = 0 := by simp; lia
     norm_cast
     simp [h0, zeta_eq_tsum_one_div_nat_add_one_cpow (s := k) (by simp [hkk]),
       tsum_pnat_eq_tsum_succ (f := fun n => ((n : ℂ) ^ k)⁻¹)]
-  · simp [Even.neg_pow hk2]
+  · intro n
+    simp [Even.neg_pow hk2]
   · exact (Summable.of_nat_of_neg (by simp [hkk]) (by simp [hkk])).of_norm
 
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1. -/
@@ -220,7 +221,7 @@ lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (�
 theorem tendsto_sub_mul_tsum_nat_cpow :
     Tendsto (fun s : ℂ ↦ (s - 1) * ∑' (n : ℕ), 1 / (n : ℂ) ^ s) (𝓝[{s | 1 < re s}] 1) (𝓝 1) := by
   refine (tendsto_nhdsWithin_mono_left ?_ riemannZeta_residue_one).congr' ?_
-  · simp only [subset_compl_singleton_iff, mem_setOf_eq, one_re, not_lt, le_refl]
+  · simp
   · filter_upwards [eventually_mem_nhdsWithin] with s hs using
       congr_arg _ <| zeta_eq_tsum_one_div_nat_cpow hs
 

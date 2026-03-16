@@ -22,7 +22,7 @@ but the proof would be more painful. Since our only use for now is for `ℝ≥0�
 as possible.
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory Set TopologicalSpace

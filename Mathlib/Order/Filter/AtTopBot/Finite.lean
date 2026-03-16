@@ -16,7 +16,7 @@ This file contains results on `Filter.atTop` and `Filter.atBot` that depend on
 the finiteness theory developed in Mathlib.
 -/
 
-@[expose] public section
+public section
 
 variable {ι ι' α β γ : Type*}
 
@@ -65,14 +65,7 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
     push_neg at hn_min
     exact ⟨n, hnN, hnk, hn_min⟩
   use n, hnN
-  rintro (l : ℕ) (hl : l < n)
-  have hlk : u l ≤ u k := by
-    rcases (le_total l N : l ≤ N ∨ N ≤ l) with H | H
-    · exact hku l H
-    · exact hn_min l hl H
-  calc
-    u l ≤ u k := hlk
-    _ < u n := hnk
+  grind
 
 -- see Note [nolint_ge]
 /-- If `u` is a sequence which is unbounded below,
@@ -147,9 +140,9 @@ theorem eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n <
   convert_to (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
   · rw [← pow_mul, ← pow_add]
     congr 1
-    cutsat
+    lia
   · congr 1
-    cutsat
+    lia
   refine (lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial).trans_le <|
     (factorial_le (Nat.le_succ _))
   rw [← one_mul (_ ^ _ : ℕ)]

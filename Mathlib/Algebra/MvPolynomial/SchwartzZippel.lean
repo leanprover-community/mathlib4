@@ -52,7 +52,7 @@ of the field. This lemma is useful as a probabilistic polynomial identity test.
 * [zippel_1979]
 -/
 
-@[expose] public section
+public section
 
 open Fin Finset Fintype
 
@@ -158,7 +158,7 @@ lemma schwartz_zippel_sup_sum :
           _ ≤ p.degreeOf 0 := by
             have :
               (ofLex (AddMonoidAlgebra.supDegree toLex p'.leadingCoeff)).cons k ∈ p.support := by
-              rwa [← support_coeff_finSuccEquiv, mem_support_iff, ← hp', hk,
+              rwa [← mem_support_coeff_finSuccEquiv, mem_support_iff, ← hp', hk,
                 ← Polynomial.leadingCoeff, ← hpₖ, ← leadingCoeff_toLex,
                 AddMonoidAlgebra.leadingCoeff_ne_zero toLex.injective]
             simpa using monomial_le_degreeOf 0 this
@@ -184,6 +184,7 @@ lemma schwartz_zippel_sum_degreeOf {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 
     _ ≤ ∑ i, (p.degreeOf i / #(S i) : ℚ≥0) := Finset.sup_le fun s hs ↦ by
       gcongr with i; exact monomial_le_degreeOf i hs
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Schwartz-Zippel lemma**
 
 For a nonzero multivariable polynomial `p` over an integral domain, the probability that `p`
@@ -199,7 +200,7 @@ lemma schwartz_zippel_totalDegree {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0
       · simp
         simp only [← _root_.bot_eq_zero, sup_bot]
       simp_rw [totalDegree, Nat.cast_finsetSup]
-      rw [sup_div₀ (ha := show 0 < (#S : ℚ≥0) by positivity)]
+      rw [sup_div₀ (by positivity)]
       simp [← sum_div, Finsupp.sum_fintype]
 
 end MvPolynomial

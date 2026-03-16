@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Closed.Types
+public import Mathlib.CategoryTheory.Monoidal.Closed.Types
 public import Mathlib.CategoryTheory.Sites.CartesianClosed
 public import Mathlib.Condensed.Basic
 public import Mathlib.CategoryTheory.Sites.LeftExact
@@ -25,5 +25,5 @@ open CategoryTheory
 instance : CartesianMonoidalCategory (CondensedSet.{u}) :=
   inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance : CartesianClosed (CondensedSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))
+set_option backward.isDefEq.respectTransparency false in
+instance : MonoidalClosed (CondensedSet.{u}) := inferInstanceAs (MonoidalClosed (Sheaf _ _))

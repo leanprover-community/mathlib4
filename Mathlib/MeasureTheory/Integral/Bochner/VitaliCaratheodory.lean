@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Measure.Regular
-public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Topology.Instances.EReal.Lemmas
 
@@ -71,7 +71,7 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped ENNReal NNReal
@@ -315,24 +315,10 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
       (∫⁻ x, f x ∂μ) ≤ (∫⁻ x, g x ∂μ) + ε := by
   induction f using MeasureTheory.SimpleFunc.induction generalizing ε with
   | @const c s hs =>
+    classical
     by_cases hc : c = 0
-    · refine ⟨fun _ => 0, ?_, upperSemicontinuous_const, ?_⟩
-      · classical
-        simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
-          SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
-          SimpleFunc.coe_piecewise, le_zero_iff]
-      · classical
-        simp only [hc, Set.indicator_zero', lintegral_const, zero_mul, Pi.zero_apply,
-          SimpleFunc.const_zero, zero_add, zero_le', SimpleFunc.coe_zero,
-          Set.piecewise_eq_indicator, ENNReal.coe_zero, SimpleFunc.coe_piecewise]
-    have μs_lt_top : μ s < ∞ := by
-      classical
-      simpa only [hs, hc, lt_top_iff_ne_top, true_and, SimpleFunc.coe_const, or_false,
-        lintegral_const, ENNReal.coe_indicator, Set.univ_inter, ENNReal.coe_ne_top,
-        Measure.restrict_apply MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero,
-        Function.const_apply, lintegral_indicator, ENNReal.coe_eq_zero, Ne, not_false_iff,
-        SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise,
-        false_and] using int_f
+    · exact ⟨fun _ => 0, by simp [hc, upperSemicontinuous_const]⟩
+    have μs_lt_top : μ s < ∞ := by simpa [hs, hc, ENNReal.mul_eq_top, lt_top_iff_ne_top] using int_f
     have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
     obtain ⟨F, Fs, F_closed, μF⟩ : ∃ (F : _), F ⊆ s ∧ IsClosed F ∧ μ s < μ F + ε / c :=
       hs.exists_isClosed_lt_add μs_lt_top.ne this.ne'
@@ -343,7 +329,6 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, ← Function.const_def]
       grw [Fs]
     · suffices (c : ℝ≥0∞) * μ s ≤ c * μ F + ε by
-        classical
         simpa only [hs, F_closed.measurableSet, SimpleFunc.coe_const, Function.const_apply,
           lintegral_const, ENNReal.coe_indicator, Set.univ_inter, MeasurableSet.univ,
           SimpleFunc.const_zero, lintegral_indicator, SimpleFunc.coe_zero,
@@ -437,6 +422,7 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
 /-! ### Vitali-Carathéodory theorem -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Vitali-Carathéodory Theorem**: given an integrable real function `f`, there exists an
 integrable function `g > f` which is lower semicontinuous, with integral arbitrarily close
 to that of `f`. This function has to be `EReal`-valued in general. -/
@@ -515,6 +501,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
     · intro x
       exact EReal.continuousAt_add (by simp) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Vitali-Carathéodory Theorem**: given an integrable real function `f`, there exists an
 integrable function `g < f` which is upper semicontinuous, with integral arbitrarily close to that
 of `f`. This function has to be `EReal`-valued in general. -/

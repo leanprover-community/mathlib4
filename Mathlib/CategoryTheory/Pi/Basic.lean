@@ -74,6 +74,7 @@ def comap (h : J → I) : (∀ i, C i) ⥤ (∀ j, C (h j)) where
 
 variable (I)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between
 pulling back a grading along the identity function,
 and the identity functor. -/
@@ -87,6 +88,7 @@ example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance
 variable {I}
 variable {K : Type w₂}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism comparing between
 pulling back along two successive functions, and
 pulling back along their composition
@@ -119,6 +121,7 @@ instance sumElimCategory : ∀ s : I ⊕ J, Category.{v₁} (Sum.elim C D s)
     dsimp
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bifunctor combining an `I`-indexed family of objects with a `J`-indexed family of objects
 to obtain an `I ⊕ J`-indexed family of objects.
 -/
@@ -142,6 +145,13 @@ def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : I ⊕ J, Sum.elim C D s wher
 end
 
 variable {C}
+
+/-- A family of isomorphisms gives rise to an isomorphism of families. -/
+@[simps]
+def isoMk {X Y : ∀ i, C i} (iso : ∀ i, X i ≅ Y i) :
+    X ≅ Y where
+  hom := fun i => (iso i).hom
+  inv := fun i => (iso i).inv
 
 /-- An isomorphism between `I`-indexed objects gives an isomorphism between each
 pair of corresponding components. -/
@@ -186,7 +196,7 @@ def pi' (f : ∀ i, A ⥤ C i) : A ⥤ ∀ i, C i where
 
 /-- The projections of `Functor.pi' F` are isomorphic to the functors of the family `F` -/
 @[simps!]
-def pi'CompEval {A : Type*} [Category A] (F : ∀ i, A ⥤ C i) (i : I) :
+def pi'CompEval {A : Type*} [Category* A] (F : ∀ i, A ⥤ C i) (i : I) :
     pi' F ⋙ Pi.eval C i ≅ F i :=
   Iso.refl _
 
@@ -238,7 +248,7 @@ def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.
 -/
 @[simps]
-def pi' {E : Type*} [Category E] {F G : E ⥤ ∀ i, C i}
+def pi' {E : Type*} [Category* E] {F G : E ⥤ ∀ i, C i}
     (τ : ∀ i, F ⋙ Pi.eval C i ⟶ G ⋙ Pi.eval C i) : F ⟶ G where
   app := fun X i => (τ i).app X
   naturality _ _ f := by
@@ -260,10 +270,11 @@ def pi (e : ∀ i, F i ≅ G i) : Functor.pi F ≅ Functor.pi G where
   hom := NatTrans.pi (fun i => (e i).hom)
   inv := NatTrans.pi (fun i => (e i).inv)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
 -/
 @[simps]
-def pi' {E : Type*} [Category E] {F G : E ⥤ ∀ i, C i}
+def pi' {E : Type*} [Category* E] {F G : E ⥤ ∀ i, C i}
     (e : ∀ i, F ⋙ Pi.eval C i ≅ G ⋙ Pi.eval C i) : F ≅ G where
   hom := NatTrans.pi' (fun i => (e i).hom)
   inv := NatTrans.pi' (fun i => (e i).inv)
@@ -339,6 +350,7 @@ namespace Equivalence
 variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assemble an `I`-indexed family of equivalences of categories
 into a single equivalence. -/
 @[simps]

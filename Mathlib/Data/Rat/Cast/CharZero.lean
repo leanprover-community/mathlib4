@@ -21,6 +21,8 @@ variable {F ι α β : Type*}
 namespace Rat
 variable [DivisionRing α] [CharZero α] {p q : ℚ}
 
+-- TODO: find a good way to fix the linter; simp applies to several goals at once
+set_option linter.flexible false in
 @[stacks 09FR "Characteristic zero case."]
 lemma cast_injective : Injective ((↑) : ℚ → α)
   | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩, h => by
@@ -67,8 +69,6 @@ lemma cast_zpow (p : ℚ) (n : ℤ) : ↑(p ^ n) = (p ^ n : α) := map_zpow₀ (
 @[norm_cast]
 theorem cast_divInt (a b : ℤ) : (a /. b : α) = a / b := by
   simp only [divInt_eq_div, cast_div, cast_intCast]
-
-@[deprecated (since := "2025-08-13")] alias cast_mk := cast_divInt
 
 end Rat
 

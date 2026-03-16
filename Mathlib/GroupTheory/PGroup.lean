@@ -22,7 +22,7 @@ open Fintype MulAction
 
 variable (p : ℕ) (G : Type*) [Group G]
 
-/-- A p-group is a group in which every element has prime power order -/
+/-- A p-group is a group in which the order of every element is a power of `p`. -/
 def IsPGroup : Prop :=
   ∀ g : G, ∃ k : ℕ, g ^ p ^ k = 1
 
@@ -183,7 +183,7 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
     rw [Nat.card_eq_fintype_card] at hk
     have : k = 0 := by
       contrapose! hb
-      simp [-Quotient.eq, key, hk, hb]
+      simp [key, hk, hb]
     exact
       ⟨⟨b, mem_fixedPoints_iff_card_orbit_eq_one.2 <| by rw [hk, this, pow_zero]⟩,
         Finset.mem_univ _, ne_of_eq_of_ne Nat.cast_one one_ne_zero, rfl⟩
@@ -366,6 +366,7 @@ theorem cyclic_center_quotient_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) :
 
 /-- A group of order `p ^ 2` is commutative. See also `IsPGroup.commutative_of_card_eq_prime_sq`
 for just the proof that `∀ a b, a * b = b * a` -/
+@[implicit_reducible]
 def commGroupOfCardEqPrimeSq (hG : Nat.card G = p ^ 2) : CommGroup G :=
   @commGroupOfCyclicCenterQuotient _ _ _ _ (cyclic_center_quotient_of_card_eq_prime_sq hG) _
     (QuotientGroup.ker_mk' (center G)).le

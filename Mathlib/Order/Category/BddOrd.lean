@@ -42,6 +42,7 @@ instance : CoeSort BddOrd Type* :=
 abbrev of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `BddOrd R`. -/
 @[ext]
 structure Hom (X Y : BddOrd.{u}) where
@@ -49,11 +50,15 @@ structure Hom (X Y : BddOrd.{u}) where
   /-- The underlying `BoundedOrderHom`. -/
   hom' : BoundedOrderHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category BddOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨BoundedOrderHom.id _⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BddOrd (BoundedOrderHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -86,7 +91,7 @@ lemma coe_comp {X Y Z : BddOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[simp]
 lemma forget_map {X Y : BddOrd} (f : X ⟶ Y) :
-    (forget BddOrd).map f = f := rfl
+    (forget BddOrd).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BddOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -163,6 +168,7 @@ def dual : BddOrd ⥤ BddOrd where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between bounded orders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BddOrd.{u}} (e : α ≃o β) : α ≅ β where

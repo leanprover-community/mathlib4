@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
 Given a short exact short complex `S` in the category `CochainComplex C ℤ`,
 we construct a distinguished triangle
-`Q.obj S.X₁ ⟶ Q.obj S.X₂ ⟶  Q.obj S.X₃ ⟶ (Q.obj S.X₃)⟦1⟧`
+`Q.obj S.X₁ ⟶ Q.obj S.X₂ ⟶ Q.obj S.X₃ ⟶ (Q.obj S.X₃)⟦1⟧`
 in the derived category of `C`.
 (See `triangleOfSES` and `triangleOfSES_distinguished`.)
 
@@ -48,8 +48,9 @@ exact sequence of cochain complexes. -/
 noncomputable def triangleOfSES : Triangle (DerivedCategory C) :=
   Triangle.mk (Q.map S.f) (Q.map S.g) (triangleOfSESδ hS)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `triangleOfSES` attached to a short exact sequence `S` of cochain
-complexes is isomorphism to the standard distinguished triangle associated to
+complexes is isomorphic to the standard distinguished triangle associated to
 the morphism `S.f`. -/
 noncomputable def triangleOfSESIso :
     triangleOfSES hS ≅ Q.mapTriangle.obj (CochainComplex.mappingCone.triangle S.f) := by
@@ -67,5 +68,34 @@ lemma triangleOfSES_distinguished :
     triangleOfSES hS ∈ distTriang (DerivedCategory C) := by
   rw [mem_distTriang_iff]
   exact ⟨_, _, S.f, ⟨triangleOfSESIso hS⟩⟩
+
+section map
+
+variable {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact)
+  (f : S₁ ⟶ S₂)
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+The morphism `triangleOfSES h₁ ⟶ triangleOfSES h₂` that is induced by a morphism of short
+exact sequences of cochain complexes.
+-/
+@[simps]
+noncomputable def triangleOfSES.map : triangleOfSES h₁ ⟶ triangleOfSES h₂ where
+  hom₁ := Q.map f.τ₁
+  hom₂ := Q.map f.τ₂
+  hom₃ := Q.map f.τ₃
+  comm₁ := by simp [← Functor.map_comp, f.comm₁₂]
+  comm₂ := by simp [← Functor.map_comp, f.comm₂₃]
+  comm₃ := by
+    dsimp [triangleOfSES, triangleOfSESδ]
+    rw [assoc, assoc, IsIso.inv_comp_eq, ← Functor.map_comp_assoc,
+      ← CochainComplex.mappingCone.map_descShortComplex,
+      Functor.map_comp_assoc, IsIso.hom_inv_id_assoc,
+      ← Functor.commShiftIso_hom_naturality,
+      ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
+    congr 2
+    exact (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm).comm₃
+
+end map
 
 end DerivedCategory
