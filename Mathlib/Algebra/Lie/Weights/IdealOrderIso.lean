@@ -73,7 +73,7 @@ lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
     exact lie_mem_left K L I _ y (corootSubmodule_le_lieIdeal I hα (coroot_mem_corootSubmodule α))
   exact I.toSubmodule.smul_mem_iff hγ_ne |>.mp this
 
-lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
+lemma reflectionPerm_mem_lieIdealRootSet (I : LieIdeal K L) (i : H.root)
     {α : H.root} (hα : α ∈ lieIdealRootSet I) :
     (rootSystem H).reflectionPerm i α ∈ lieIdealRootSet I := by
   simp only [mem_lieIdealRootSet] at hα ⊢
@@ -96,7 +96,7 @@ lemma lieIdealRootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
   simp only [SetLike.mem_coe, Submodule.mem_comap]
   change (rootSystem H).reflection i ((rootSystem H).root α) ∈ _
   rw [← (rootSystem H).root_reflectionPerm i α]
-  exact Submodule.subset_span ⟨_, lieIdealRootSet_reflectionPerm_invariant I i hα, rfl⟩
+  exact Submodule.subset_span ⟨_, reflectionPerm_mem_lieIdealRootSet I i hα, rfl⟩
 
 /-- Maps a Lie ideal to its corresponding invariant root submodule. -/
 noncomputable def lieIdealToInvtRootSubmodule (I : LieIdeal K L) :
