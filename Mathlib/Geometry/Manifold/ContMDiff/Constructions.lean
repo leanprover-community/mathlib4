@@ -387,8 +387,6 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ
 
 open Topology
 
--- The non-terminal simp has a large simp set
-set_option linter.flexible false in
 lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   intro x
   rw [contMDiffAt_iff]
@@ -396,8 +394,7 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   -- In extended charts, .inl equals the identity (on the chart sources).
   apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
   · simp [ChartedSpace.sum_chartAt_inl]
-    congr
-    apply Sum.inl_injective.extend_apply (chartAt _ x)
+    grind [Sum.inl_injective.extend_apply]
   set C := chartAt H x with hC
   have : I.symm ⁻¹' C.target ∩ range I ∈ 𝓝[range I] (extChartAt I x) x := by
     rw [← I.image_eq (chartAt H x).target]

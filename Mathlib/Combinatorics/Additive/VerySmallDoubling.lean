@@ -372,7 +372,6 @@ private lemma card_mul_eq_mul_card_of_injOn_opSMul {H : Subgroup G} [Fintype H]
     simpa [eq_inv_mul_iff_mul_eq.2 h, mul_assoc] using mul_mem (inv_mem hh₂) hh₁
   simp_all
 
-set_option linter.flexible false in -- simp followed by positivity
 open goldenRatio in
 /-- If `A` has doubling `K` strictly less than `φ`, then `A * A⁻¹` is covered by
 at most a constant number of cosets of a finite subgroup of `G`. -/
@@ -390,7 +389,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
   have const_pos : 0 < K * (2 - K) / ((φ - K) * (K - ψ)) := by positivity
   -- We dispatch the trivial case `A = ∅` separately.
   obtain rfl | A_nonempty := A.eq_empty_or_nonempty
-  · exact ⟨⊥, inferInstance, ∅, by simp; positivity⟩
+  · exact ⟨⊥, inferInstance, ∅, by simp; grind⟩
   -- In the case where `A` is non-empty, we consider the set `S := A * A⁻¹` and its stabilizer `H`.
   let S := A * A⁻¹
   let H := stabilizer G S

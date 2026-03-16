@@ -263,14 +263,12 @@ theorem sin_angle_mul_dist_eq_sin_angle_mul_dist (p₁ p₂ p₃ : P) :
 
 alias law_sin := sin_angle_mul_dist_eq_sin_angle_mul_dist
 
-set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- A variant of the law of sines, angle-at-point form. -/
 theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23 : p₂ ≠ p₃) (h31 : p₃ ≠ p₁) :
     Real.sin (∠ p₁ p₂ p₃) / dist p₃ p₁ = Real.sin (∠ p₃ p₁ p₂) / dist p₂ p₃ := by
-  simp [field, dist_ne_zero.mpr h23, dist_ne_zero.mpr h31, mul_comm (dist ..)]
-  exact law_sin _ _ _
+  grind [dist_ne_zero.mpr h23, dist_ne_zero.mpr h31, law_sin]
 
 /-- A variant of the law of sines, requiring that the points not be collinear. -/
 theorem dist_eq_dist_mul_sin_angle_div_sin_angle {p₁ p₂ p₃ : P}

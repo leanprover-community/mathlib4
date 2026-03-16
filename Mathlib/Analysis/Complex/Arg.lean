@@ -31,8 +31,6 @@ variable {x y : ℂ}
 namespace Complex
 
 set_option backward.isDefEq.respectTransparency false in
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := by
@@ -42,7 +40,7 @@ theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := b
   · simp
   simp only [hx, hy, sameRay_iff_norm_smul_eq, arg_eq_arg_iff hx hy]
   simp [field, hx]
-  rw [mul_comm, eq_comm]
+  grind [mul_comm]
 
 theorem sameRay_iff_arg_div_eq_zero : SameRay ℝ x y ↔ arg (x / y) = 0 := by
   rw [← Real.Angle.toReal_zero, ← arg_coe_angle_eq_iff_eq_toReal, sameRay_iff]
