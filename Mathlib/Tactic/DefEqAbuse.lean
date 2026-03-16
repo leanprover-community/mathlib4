@@ -296,7 +296,9 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
 /-- Check whether a rendered isDefEq check string has syntactically identical LHS and RHS
 (e.g. `"❌️ ⊤ =?= ⊤"` or `"Quiver C =?= Quiver C"`).
 Comparison is whitespace-insensitive to handle cases where LHS and RHS are semantically identical
-but rendered with different line breaks or spacing. -/
+but rendered with different line breaks or spacing.
+TODO: once https://github.com/leanprover/lean4/pull/12698 is available, refactor to use
+`TraceData.result?` and compare the LHS/RHS `Expr`s structurally instead of string-matching. -/
 private def isIdenticalSidesStr (raw : String) : Bool :=
   if let [lhsRaw, rhs] := raw.splitOn " =?= " then
     -- Strip the leading status emoji/word (first whitespace-delimited token).
