@@ -167,31 +167,28 @@ theorem sound {x y : PSet} (h : PSet.Equiv x y) : mk x = mk y :=
 theorem exact {x y : PSet} : mk x = mk y → PSet.Equiv x y :=
   Quotient.exact
 
-/-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
-protected def Mem : ZFSet → ZFSet → Prop :=
-  Quotient.lift₂ (· ∈ ·) fun _ _ _ _ hx hy =>
-    propext ((Mem.congr_left hx).trans (Mem.congr_right hy))
+/-- Convert a ZFC set into a `Set` of ZFC sets -/
+def toSet (x : ZFSet) : Set ZFSet :=
+  {y | Quotient.lift₂ (· ∈ ·) (fun _ _ _ _ hx hy =>
+    propext ((Mem.congr_left hx).trans (Mem.congr_right hy))) y x}
 
-instance : Membership ZFSet ZFSet where
-  mem t s := ZFSet.Mem s t
+private lemma ext_aux : (∀ z : ZFSet.{u}, z ∈ x.toSet ↔ z ∈ y.toSet) → x = y :=
+  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
+
+instance : SetLike ZFSet.{u} ZFSet.{u} where
+  coe := toSet
+  coe_injective' x y hxy := by apply ext_aux; intro z; exact congr(z ∈ $hxy)
+
+@[deprecated "use `∈` notation" (since := "2026-03-16")]
+protected def Mem : ZFSet → ZFSet → Prop := (· ∈ ·)
 
 @[simp]
 theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
   Iff.rfl
 
-@[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y :=
-  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
-
-instance : SetLike ZFSet.{u} ZFSet.{u} where
-  coe x := {y | y ∈ x}
-  coe_injective' x y hxy := by ext z; exact congr(z ∈ $hxy)
+@[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y := ext_aux
 
 instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
-
-/-- Convert a ZFC set into a `Set` of ZFC sets -/
-@[deprecated SetLike.coe (since := "2025-11-05")]
-def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
-  { x | x ∈ u }
 
 @[deprecated SetLike.mem_coe (since := "2025-11-05")]
 theorem mem_toSet (a u : ZFSet.{u}) : a ∈ (u : Set ZFSet.{u}) ↔ a ∈ u :=
