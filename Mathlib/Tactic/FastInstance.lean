@@ -209,7 +209,7 @@ private partial def findFirstBinderMismatch (className : Name) (inst canonical :
   return none
 
 /-- Structured result of checking whether an instance has leaky data-field binder types. -/
-inductive CheckInstanceResult where
+public inductive CheckInstanceResult where
   /-- The instance is canonical: its data-field binder types match the class declaration. -/
   | canonical : CheckInstanceResult
   /-- The instance has leaky data-field binder types. `detail` describes the first detected
@@ -246,7 +246,7 @@ The check uses constructor normalization (skipping synthesis, since the instance
 be found and be trivially defeq to itself) to compute the "canonical" form, then compares with
 the original at `.instances` transparency.
 -/
-def checkInstance (name : Name) : MetaM CheckInstanceResult := do
+public def checkInstance (name : Name) : MetaM CheckInstanceResult := do
   let env ← getEnv
   let some info := env.find? name
     | return .unverifiable m!"unknown constant '{name}'"
