@@ -576,8 +576,8 @@ an `AddCommSemigroup`. -/]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
   Function.Surjective.commSemigroup _ Quotient.mk''_surjective fun _ _ => rfl
 
-/-- The quotient of a monoid by a congruence relation is a monoid. -/
 set_option Elab.fast_instance.warnLeakySubInstances false in
+/-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`. -/]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient := fast_instance%
