@@ -189,7 +189,7 @@ def w_ind {α : TypeVec n} {C : P.W α → Sort v}
 theorem w_ind_wMk {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f))
-    {a} {f' : P.drop.B a ⟹ α} {f}
+    {a : P.drop.A} {f' : P.drop.B a ⟹ α} {f : P.last.B a → P.W α}
     : w_ind P ih (wMk P a f' f) = ih a f' f (fun i => w_ind P ih (f i)) := rfl
 
 /-- Cases lemma for `W` types -/
