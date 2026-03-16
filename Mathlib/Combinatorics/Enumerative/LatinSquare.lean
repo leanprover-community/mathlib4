@@ -3,19 +3,21 @@ Copyright (c) 2026 Christopher J. R. Lloyd and George H. Seelinger. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher J. R. Lloyd, George H. Seelinger
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Tactic.Group
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.LinearAlgebra.Matrix.Defs
-import Mathlib.Logic.Equiv.Embedding
+module 
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Tactic.Group
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Combinatorics.Hall.Basic
+public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.Logic.Equiv.Embedding
 
 /-!
 # LatinSquare
@@ -76,7 +78,7 @@ variable {m m' : Type*} [Fintype m] [Fintype m']
 variable {n n' : Type*} [Fintype n] [Fintype n']
 variable {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq β]
 
-section LatinSquare
+@[expose] public section LatinSquare
 
 /-- This condition is that an entry appears exactly once in a given row.
     Equivalently, ∀ i : m, ∀ y : α, ∃! j: n, M i j = y. -/
@@ -214,7 +216,7 @@ def groupToCayleyTable (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
    }
 
 
-section Equivalence
+@[expose] public section Equivalence
 
 /-- Given relabeling maps for the rows, columns, and symbols,
     produce the relabeled Latin rectangle. -/
@@ -299,7 +301,7 @@ lemma induced_latin_rectangle_is_equiv
 
 end Equivalence
 
-section Nonvacuous
+@[expose] public section Nonvacuous
 
 instance Zn_nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
   addGroupToCayleyTable (ZMod n)
@@ -319,7 +321,7 @@ noncomputable instance n_nonempty
 
 end Nonvacuous
 
-section Completion
+@[expose] public section Completion
 
 variable {n : Type*} [Fintype n] [Nonempty n] [DecidableEq n]
 variable {k : Type*} [Fintype k] [Nonempty k] [DecidableEq k]
