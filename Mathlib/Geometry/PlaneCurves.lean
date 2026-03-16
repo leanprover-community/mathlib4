@@ -26,7 +26,8 @@ theorem of plane curves.
 ## Main results
 
 - `second_deriv_eq_orientedCurvature_times_normal`: the first Frenet equation for plane curves.
-- `deriv_normal_eq_minus_orientedCurvature_times_deriv`: the second Frenet equation for plane curves.
+- `deriv_normal_eq_minus_orientedCurvature_times_deriv`: the second Frenet equation for plane 
+  curves.
 - `initialCurve_of_orientedCurvature`: the construction of a plane curve from a given curvature
   function, initial position, initial direction (angle) for the velocity vector, as given by the
   fundamental theorem of plane curves.
@@ -120,7 +121,6 @@ def frameAt {I : Set ℝ} [I.OrdConnected] {c : ℝ → EuclideanSpace ℝ (Fin 
     simp
   OrthonormalBasis.mk (v := B) (hon := hBon) (hsp := hBsp)
 
-#defeq_abuse in
 set_option backward.isDefEq.respectTransparency false in
 /-- A simpler formula for the curvature of a plane curve parametrized by arc-length, or in other
 words with unit speed. -/
@@ -139,10 +139,10 @@ universe u
 
 /-- Auxiliary lemma: If `c` is a twice continuously differentiable plane curve on an interval `I`,
 then the velocity vector `deriv c` has a derivative at every point of `I`. -/
-lemma velocity_hasDerivAt_aux {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I) {ι : Type u} [Finite ι]
+lemma velocity_hasDerivAt_aux {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I) {ι : Type u} [Fintype ι]
   {c : ℝ → EuclideanSpace ℝ ι} (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) :
   HasDerivAt (deriv c) (iteratedDeriv 2 c t) t := by
-  have := Fintype.ofFinite ι
+  --have := Fintype.ofFinite ι
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
   simpa [iteratedDeriv_succ] using hd.differentiableOn (by norm_num)
     |> DifferentiableOn.hasDerivAt <| hI.mem_nhds ht
@@ -150,10 +150,10 @@ lemma velocity_hasDerivAt_aux {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I) {ι
 /-- For any twice continuously differentiable parametrized curve with constant speed, at any given
 point the velocity vector is perpendicular to the acceleration vector. -/
 theorem inner_of_velocity_accel_of_const_speed_eq_zero {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I)
-  {ι : Type u} [Finite ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) {r : ℝ}
+  {ι : Type u} [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) {r : ℝ}
   (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = r) {t : ℝ} (ht : t ∈ I) :
   inner ℝ (iteratedDeriv 2 c t) (deriv c t) = 0 := by
-  have := Fintype.ofFinite ι
+  --have := Fintype.ofFinite ι
   let f (x : ℝ) := inner ℝ (deriv c x) (deriv c x)
   have h₁ : ∀ x ∈ I, f x = r^2 := by
     intro τ hτ
@@ -558,9 +558,9 @@ theorem velocity_initial_condition_initialCurve_of_orientedCurvature {I : Set �
   simp
 
 lemma deriv_differentiableAt_of_2_contDiffOn_open {I : Set ℝ} (hI : IsOpen I) {ι : Type u}
-  [Finite ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) (i : ι) {s : ℝ} (hs : s ∈ I) :
+  [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) (i : ι) {s : ℝ} (hs : s ∈ I) :
   DifferentiableAt ℝ (fun t ↦  (deriv c t) i) s := by
-  have := Fintype.ofFinite ι
+  --have := Fintype.ofFinite ι
   apply (differentiableAt_piLp 2).mp
   have h : I.EqOn (deriv c) (iteratedDerivWithin 1 c I) := by
     intro x hx
