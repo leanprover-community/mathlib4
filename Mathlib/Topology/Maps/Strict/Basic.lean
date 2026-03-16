@@ -3,16 +3,21 @@ Copyright (c) 2026 Ziyan Wei. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ziyan Wei
 -/
-import Mathlib.Topology.Maps.Basic
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Constructions
-import Mathlib.Data.Setoid.Basic
+module
+
+public import Mathlib.Topology.Maps.Basic
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Constructions
+public import Mathlib.Data.Setoid.Basic
 /-!
 # Bourbaki Strict Maps
 
 This file defines Bourbaki strict maps and proves some of their basic properties.
 A map `f` is strict if the quotient map to its image is a quotient map.
 -/
+
+@[expose] public section
+
 open Function Set Topology
 
 
