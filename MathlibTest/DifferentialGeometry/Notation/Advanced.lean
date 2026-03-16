@@ -234,7 +234,7 @@ Hint: Additional diagnostic information may be available using the `set_option d
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `TotalSpace F (TangentSpace I)`
 [Elab.DiffGeo.MDiff] ✅️ TotalSpace
-  [Elab.DiffGeo.MDiff] ❌️ From base info
+  [Elab.DiffGeo.MDiff] 💥️ From base info
     [Elab.DiffGeo.MDiff] Failed with error:
         No `baseInfo` provided
   [Elab.DiffGeo.MDiff] ✅️ TangentSpace
@@ -242,10 +242,10 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `TotalSpace F (Tan
     [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
   [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `F`
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+[Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `F` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+[Elab.DiffGeo.MDiff] 💥️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
       `F` is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ✅️ NormedSpace
@@ -329,13 +329,13 @@ variable {f : M → E'' →SL[id'] E'''} in
 error: Could not find a model with corners for `ContinuousLinearMap id' E'' E'''`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+[Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `M` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+[Elab.DiffGeo.MDiff] 💥️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
       `M` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+[Elab.DiffGeo.MDiff] 💥️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on `M` among local instances.
 [Elab.DiffGeo.MDiff] ✅️ Manifold
@@ -343,51 +343,51 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
   [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²²`
   [Elab.DiffGeo.MDiff] Found model: `I`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `ContinuousLinearMap id' E'' E'''`
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+[Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+[Elab.DiffGeo.MDiff] 💥️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+[Elab.DiffGeo.MDiff] 💥️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on `ContinuousLinearMap id' E'' E'''` among local instances.
-[Elab.DiffGeo.MDiff] ❌️ Manifold
+[Elab.DiffGeo.MDiff] 💥️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `ChartedSpace` structure on `ContinuousLinearMap id' E''
         E'''` among local instances, and `ContinuousLinearMap id' E''
         E'''` is not the charted space of some type in the local context either.
-[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+[Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] `ContinuousLinearMap id' E'' E'''` is a space of continuous (semi-)linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
       Coefficients `Real` and `RealCopy` of `ContinuousLinearMap id' E'' E'''` are not reducibly definitionally equal
-[Elab.DiffGeo.MDiff] ❌️ RealInterval
+[Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a coercion of a set to a type
-[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+[Elab.DiffGeo.MDiff] 💥️ EuclideanSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a Euclidean space, half-space or quadrant
-[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+[Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not the complex upper half plane
-[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+[Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a set of units, in particular not of a complete normed algebra
-[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+[Elab.DiffGeo.MDiff] 💥️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not the complex unit circle
-[Elab.DiffGeo.MDiff] ❌️ Sphere
+[Elab.DiffGeo.MDiff] 💥️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a coercion of a set to a type
-[Elab.DiffGeo.MDiff] ❌️ NormedField
+[Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize instance of type class
         NontriviallyNormedField (ContinuousLinearMap id' E'' E''')
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
-[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+[Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `ContinuousLinearMap id' E'' E'''` among local instances.
 -/
@@ -432,13 +432,13 @@ variable {f : M → E'' →SL[σ] E''''} in
 error: Could not find a model with corners for `ContinuousLinearMap σ E'' E''''`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+[Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `M` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+[Elab.DiffGeo.MDiff] 💥️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
       `M` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+[Elab.DiffGeo.MDiff] 💥️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on `M` among local instances.
 [Elab.DiffGeo.MDiff] ✅️ Manifold
@@ -446,51 +446,51 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
   [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²⁵`
   [Elab.DiffGeo.MDiff] Found model: `I`
 [Elab.DiffGeo.MDiff] Finding a model with corners for: `ContinuousLinearMap σ E'' E''''`
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+[Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+[Elab.DiffGeo.MDiff] 💥️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+[Elab.DiffGeo.MDiff] 💥️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on `ContinuousLinearMap σ E'' E''''` among local instances.
-[Elab.DiffGeo.MDiff] ❌️ Manifold
+[Elab.DiffGeo.MDiff] 💥️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `ChartedSpace` structure on `ContinuousLinearMap σ E''
         E''''` among local instances, and `ContinuousLinearMap σ E''
         E''''` is not the charted space of some type in the local context either.
-[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+[Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] `ContinuousLinearMap σ E'' E''''` is a space of continuous (semi-)linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is a space of continuous (semi-)linear maps over `σ`, which is not the identity
-[Elab.DiffGeo.MDiff] ❌️ RealInterval
+[Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a coercion of a set to a type
-[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+[Elab.DiffGeo.MDiff] 💥️ EuclideanSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a Euclidean space, half-space or quadrant
-[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+[Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not the complex upper half plane
-[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+[Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a set of units, in particular not of a complete normed algebra
-[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+[Elab.DiffGeo.MDiff] 💥️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not the complex unit circle
-[Elab.DiffGeo.MDiff] ❌️ Sphere
+[Elab.DiffGeo.MDiff] 💥️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a coercion of a set to a type
-[Elab.DiffGeo.MDiff] ❌️ NormedField
+[Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize instance of type class
         NontriviallyNormedField (ContinuousLinearMap σ E'' E'''')
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
-[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+[Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `ContinuousLinearMap σ E'' E''''` among local instances.
 -/
@@ -650,16 +650,16 @@ set_option trace.Elab.DiffGeo.MDiff true in
 error: Could not find a model with corners for `↑(Set.Icc x y)`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+[Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+[Elab.DiffGeo.MDiff] 💥️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+[Elab.DiffGeo.MDiff] 💥️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on `↑(Set.Icc x y)` among local instances.
-[Elab.DiffGeo.MDiff] ❌️ Manifold
+[Elab.DiffGeo.MDiff] 💥️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H N`
@@ -667,34 +667,34 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
       Couldn't find a `ChartedSpace` structure on `↑(Set.Icc x
           y)` among local instances, and `↑(Set.Icc x
           y)` is not the charted space of some type in the local context either.
-[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+[Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a space of continuous linear maps
-[Elab.DiffGeo.MDiff] ❌️ RealInterval
+[Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Set.Icc x y` is a closed interval of type `RealCopy'`, which is not reducibly definitionally equal to ℝ
-[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+[Elab.DiffGeo.MDiff] 💥️ EuclideanSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a Euclidean space, half-space or quadrant
-[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+[Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not the complex upper half plane
-[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+[Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a set of units, in particular not of a complete normed algebra
-[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+[Elab.DiffGeo.MDiff] 💥️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not the complex unit circle
-[Elab.DiffGeo.MDiff] ❌️ Sphere
+[Elab.DiffGeo.MDiff] 💥️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
       `Set.Icc x y` is not a sphere in a real normed space
-[Elab.DiffGeo.MDiff] ❌️ NormedField
+[Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize instance of type class
         NontriviallyNormedField ↑(Set.Icc x y)
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
-[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+[Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `↑(Set.Icc x y)` among local instances.
 -/

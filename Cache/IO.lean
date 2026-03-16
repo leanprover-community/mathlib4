@@ -212,7 +212,9 @@ def validateCurl : IO Bool := do
   match (← runCmd "curl" #["--version"]).splitOn " " with
   | "curl" :: v :: _ => match v.splitOn "." with
     | maj :: min :: _ =>
-      let version := (maj.toNat!, min.toNat!)
+      let some majN := String.toNat? maj | throw <| IO.userError "Invalidly formatted version of `curl`"
+      let some minN := String.toNat? min | throw <| IO.userError "Invalidly formatted version of `curl`"
+      let version := (majN, minN)
       let _ := @lexOrd
       let _ := @leOfOrd
       if version >= (7, 81) then return true
@@ -243,8 +245,8 @@ instance : Ord Version := let _ := @lexOrd; lexOrd
 instance : LE Version := leOfOrd
 
 def parseVersion (s : String) : Option Version := do
-  let [maj, min, patch] := s.splitOn "." | none
-  some (maj.toNat!, min.toNat!, patch.toNat!)
+  let [maj, min, patch] := s.trimAscii.toString.splitOn "." | none
+  some (← String.toNat? maj, ← String.toNat? min, ← String.toNat? patch)
 
 def validateLeanTar : IO Unit := do
   if (← LEANTARBIN.pathExists) then return

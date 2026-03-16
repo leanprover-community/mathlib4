@@ -186,40 +186,40 @@ variable [Fact (Module.finrank ℝ E = 3)] in
 error: Could not find a model with corners for `↑(Metric.sphere 0 1)`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Metric.sphere 0 1)`
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+[Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+[Elab.DiffGeo.MDiff] 💥️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+[Elab.DiffGeo.MDiff] 💥️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on `↑(Metric.sphere 0 1)` among local instances.
-[Elab.DiffGeo.MDiff] ❌️ Manifold
+[Elab.DiffGeo.MDiff] 💥️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `ChartedSpace` structure on `↑(Metric.sphere 0
           1)` among local instances, and `↑(Metric.sphere 0
           1)` is not the charted space of some type in the local context either.
-[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+[Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a space of continuous linear maps
-[Elab.DiffGeo.MDiff] ❌️ RealInterval
+[Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Metric.sphere 0 1` is not a closed real interval
-[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+[Elab.DiffGeo.MDiff] 💥️ EuclideanSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a Euclidean space, half-space or quadrant
-[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+[Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not the complex upper half plane
-[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+[Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a set of units, in particular not of a complete normed algebra
-[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+[Elab.DiffGeo.MDiff] 💥️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not the complex unit circle
-[Elab.DiffGeo.MDiff] ❌️ Sphere
+[Elab.DiffGeo.MDiff] 💥️ Sphere
   [Elab.DiffGeo.MDiff] `Metric.sphere 0 1` is a metric sphere in `E''`
   [Elab.DiffGeo.MDiff] considering instance of type `InnerProductSpace ℝ E''`
   [Elab.DiffGeo.MDiff] `E''` is a `ℝ`-inner product space via `inst✝¹`
@@ -228,13 +228,13 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Metric.sphere
   [Elab.DiffGeo.MDiff] found a fact about finrank, but not about `finrank ℝ E`: continue the search
   [Elab.DiffGeo.MDiff] Failed with error:
       Found no fact `finrank ℝ E'' = n + 1` in the local context
-[Elab.DiffGeo.MDiff] ❌️ NormedField
+[Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize instance of type class
         NontriviallyNormedField ↑(Metric.sphere 0 1)
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
-[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+[Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `↑(Metric.sphere 0 1)` among local instances.
 -/
