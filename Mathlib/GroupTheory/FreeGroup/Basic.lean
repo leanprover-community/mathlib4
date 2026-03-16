@@ -891,12 +891,14 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
 end Sum
 
 /-- The bijection between the free group on the empty type, and a type with one element. -/
-@[to_additive /-- The bijection between the additive free group on the empty type, and a type with
-  one element. -/]
-def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
-  toFun _ := ()
-  invFun _ := 1
-  left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
+@[to_additive
+  (attr := deprecated "Use `Equiv.ofUnique (FreeGroup Empty) Unit` instead,
+or `MulEquiv.ofUnique (FreeGroup Empty) Unit` for the multiplicative version instead."
+(since := "2026-02-11"))
+  /-- The bijection between the additive free group on the empty type,
+  and a type with one element. -/]
+abbrev freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit :=
+  Equiv.ofUnique (FreeGroup Empty) Unit
 
 -- TODO: find a good way to fix the linter
 -- simp applies to two goals at once, with different simp sets
@@ -922,6 +924,52 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
       (fun i ih => by
         simp only [zpow_neg, zpow_natCast, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
+
+/-- The bijection between the free group on a unique type and the integers. -/
+def equivIntOfUnique [Unique α] : FreeGroup α ≃ ℤ where
+  toFun x := sum (map 1 x)
+  invFun x := of default ^ x
+  left_inv x := by
+    induction x with
+    | C1 => simp
+    | of x => simp [Unique.default_eq x]
+    | inv_of x hx => simp [Unique.default_eq x]
+    | mul x y hx hy => simp [zpow_add, hx, hy]
+  right_inv x := by
+    induction x with
+    | zero => simp
+    | succ x hx => simpa [zpow_add_one] using hx
+    | pred x hx => simpa [zpow_sub_one, ← sub_eq_add_neg] using hx
+
+/-- The isomorphism between the free group on a unique type and the integers. -/
+def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
+  toFun := Multiplicative.ofAdd ∘ equivIntOfUnique
+  invFun := equivIntOfUnique.symm ∘ Multiplicative.toAdd
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_mul' _ _  := by simp [equivIntOfUnique]
+
+/-- A free group over one generator is an instance of a cyclic group. -/
+instance [Unique α] : IsCyclic (FreeGroup α) :=
+  ⟨of default, fun x => ⟨equivIntOfUnique x, equivIntOfUnique.left_inv x⟩⟩
+
+/-- The isomorphism between the free additive group on a unique type and the integers. -/
+def _root_.FreeAddGroup.addEquivIntOfUnique [Unique α] : FreeAddGroup α ≃+ ℤ where
+  toFun x := FreeAddGroup.sum (FreeAddGroup.map 1 x)
+  invFun x := x • FreeAddGroup.of default
+  left_inv x := by
+    induction x with
+    | C1 => simp
+    | of x => simp [Unique.default_eq x]
+    | neg_of x hx => simp [Unique.default_eq x]
+    | add x y hx hy => simp [add_zsmul, hx, hy]
+  right_inv x := by induction x <;> simp
+  map_add' x y := by simp
+
+/-- A free additive group over one generator is an instance of a cyclic group. -/
+instance [Unique α] : IsAddCyclic (FreeAddGroup α) :=
+  ⟨FreeAddGroup.of default, fun x =>
+  ⟨_root_.FreeAddGroup.addEquivIntOfUnique x, _root_.FreeAddGroup.addEquivIntOfUnique.left_inv x⟩⟩
 
 section Category
 
