@@ -489,11 +489,11 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
   toFun t := ⟨fun Y f hf ↦ t.app _ ⟨shrinkYonedaObjObjEquiv.symm f, by simpa⟩, by
     rw [Presieve.compatible_iff_sieveCompatible]
     intro Y Z f g hf
-    simp only [shrinkFunctor_obj, ← FunctorToTypes.naturality]
+    simp only [shrinkFunctor_obj, ← NatTrans.naturality_apply]
     rw! [shrinkYonedaObjObjEquiv_symm_comp]
     rfl⟩
   invFun t :=
-    { app X f := t.1 _ f.mem
+    { app X := TypeCat.ofHom fun f ↦ t.1 _ f.mem
       naturality Y Z g := by
         ext ⟨f, hf⟩
         dsimp
@@ -538,6 +538,7 @@ lemma isSheafFor_iff_bijective_shrinkFunctor_ι_comp [LocallySmall.{w} C] {X : C
     Subtype.forall]
   exact forall₂_congr fun x hx ↦ by simp [Equiv.existsUnique_congr_right]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
 
 C2.1.4 of [Elephant].
@@ -553,11 +554,11 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
   dsimp
   rw [NatTrans.ext_iff, NatTrans.ext_iff, funext_iff, funext_iff]
   congr!
-  rw [funext_iff, funext_iff]
+  rw [ConcreteCategory.hom_ext_iff, ConcreteCategory.hom_ext_iff]
   dsimp [functor]
   simp only [Subtype.forall, shrinkYonedaObjObjEquiv.forall_congr_left, Equiv.apply_symm_apply]
   congr!
-  simp
+  simp [Equiv.subtypeEquiv]
 
 /--
 If `P` is a sheaf for the sieve `S` on `X`, a natural transformation from `S` (viewed as a functor)

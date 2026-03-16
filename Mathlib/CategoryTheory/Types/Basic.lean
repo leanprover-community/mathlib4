@@ -54,9 +54,9 @@ initialize_simps_projections Fun (as → apply)
 def Fun.mk {X Y : Type*} (f : X → Y) : Fun X Y where
   as := f
 
--- @[simp]
--- lemma Fun.coe_mk {X Y : Type*} (f : X → Y) : (Fun.mk f).as = f := by
---   with_reducible rfl
+@[simp]
+lemma Fun.mk_as {X Y : Type*} (f : X → Y) : (Fun.mk f).as = f :=
+  rfl
 
 @[simp]
 lemma Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=

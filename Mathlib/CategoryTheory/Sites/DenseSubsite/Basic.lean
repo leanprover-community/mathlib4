@@ -221,10 +221,10 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     Category.assoc, e]
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
-noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.obj.obj (op X) := TypeCat.ofHom ⟨fun x =>
+noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.obj.obj (op X) := TypeCat.ofHom fun x =>
   ((isSheaf_iff_isSheaf_of_type _ _).1 ℱ'.property _
     (G.is_cover_of_isCoverDense _ X)).amalgamate (pushforwardFamily α x)
-      (pushforwardFamily_compatible α x)⟩
+      (pushforwardFamily_compatible α x)
 
 @[simp]
 theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
@@ -401,17 +401,15 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
   · exact (pushforwardFamily_compatible _ _)
   intro Y f hf
   conv_lhs => rw [← hf.some.fac]
-  simp only [op_unop, comp_obj, flip_obj_obj, yoneda_obj_obj, op_comp, comp_map, flip_obj_map,
-    yoneda_map_app, TypeCat.ofHom_hom, op_obj, TypeCat.Fun.mk_apply,
-    pushforwardFamily_def, sheafOver_obj, homOver_app, Functor.map_comp, Category.assoc]
-  have := naturality_apply (G := G) (ℱ := ℱ ⋙ coyoneda.obj (op <| (G.op ⋙ ℱ).obj X))
+  dsimp
+  simp only [Functor.map_comp, ← Category.assoc]
+  congr 1
+  simp only [Category.assoc]
+  congr 1
+  simpa using naturality_apply (G := G) (ℱ := ℱ ⋙ coyoneda.obj (op <| (G.op ⋙ ℱ).obj X))
     (ℱ' := ⟨_, Presheaf.isSheaf_comp_of_isSheaf K ℱ'.obj
       (coyoneda.obj (op ((G.op ⋙ ℱ).obj X))) ℱ'.property⟩)
     (whiskerRight α (coyoneda.obj _)) hf.some.map (𝟙 _)
-  simp only [comp_obj, op_obj, flip_obj_obj, yoneda_obj_obj, comp_map, flip_obj_map, yoneda_map_app,
-    ConcreteCategory.hom_ofHom, op_unop, whiskerRight_app, TypeCat.Fun.mk_apply,
-    Category.id_comp] at this
-  simp [this]
 
 variable (G) in
 set_option backward.isDefEq.respectTransparency false in

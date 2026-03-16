@@ -42,12 +42,12 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps! obj_obj obj_map map_app]
 def rightAdj : (C ⥤ Type (max w v u)) ⥤ C ⥤ Type (max w v u) where
   obj G := F.functorHom G
-  map f := { app X := TypeCat.ofHom ⟨fun a ↦ {
+  map f := { app X := TypeCat.ofHom fun a ↦ {
     app d b := a.app d b ≫ f.app d
     naturality g h := by
       have := a.naturality g h
       change (F.map g ≫ a.app _ (h ≫ g)) ≫ _ = _
-      aesop  }⟩}
+      aesop  }}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/

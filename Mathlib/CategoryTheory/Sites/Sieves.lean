@@ -1357,7 +1357,7 @@ lemma shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C] [LocallySmall.{ma
 
 variable (S) in
 /-- Shrinking does nothing for the same universe level. -/
-@[simps!]
+@[simps! hom_app inv_app]
 noncomputable def shrinkFunctorIsoFunctor : (shrinkFunctor.{v₁} S).toFunctor ≅ S.functor :=
   NatIso.ofComponents (fun Y ↦ Equiv.toIso <| Equiv.subtypeEquiv shrinkYonedaObjObjEquiv (by simp))
     fun {U V} f ↦ by

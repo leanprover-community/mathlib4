@@ -186,7 +186,7 @@ instance : (shrinkYoneda.{w} (C := C)).Faithful := (fullyFaithfulShrinkYoneda C)
 instance : (shrinkYoneda.{w} (C := C)).Full := (fullyFaithfulShrinkYoneda C).full
 
 /-- `shrinkYoneda` at the morphism universe level is `yoneda`. -/
-@[simps!]
+@[simps! hom_app inv_app]
 noncomputable
 def shrinkYonedaIsoYoneda : shrinkYoneda.{v} ≅ yoneda (C := C) :=
   NatIso.ofComponents

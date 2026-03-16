@@ -111,7 +111,7 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
     using congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
 
 /-- The Yoneda lemma for sheaves. -/
-@[simps! hom_app_app_hom_coe_down inv_app_app]
+@[simps! hom_app_app_hom_apply_down inv_app_app]
 def yonedaOpCompCoyoneda :
     J.yoneda.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
@@ -252,7 +252,7 @@ def uliftYonedaOpCompCoyoneda :
     (isoWhiskerRight CategoryTheory.uliftYonedaOpCompCoyoneda
     ((whiskeringLeft _ _ _).obj _))
 
-attribute [simp] uliftYonedaOpCompCoyoneda_hom_app_app_hom_coe_down
+attribute [simp] uliftYonedaOpCompCoyoneda_hom_app_app_hom_apply_down
 
 @[simp]
 lemma uliftYonedaOpCompCoyoneda_inv_app_app (X : Cᵒᵖ) (F : Sheaf J (Type (max v v')))
@@ -294,8 +294,8 @@ noncomputable def isColimitCofanMkYoneda {ι : Type*} (X : ι → C) {c : Cofan 
       exact Subsingleton.elim _ _
   refine mkCofanColimit _ (fun s ↦ ⟨?_⟩) (fun s j ↦ ?_) fun s m hm ↦ ?_
   · refine (s.pt.2.isSheafFor _ H).extend ?_
-    refine ⟨fun Y ↦ TypeCat.ofHom ⟨fun g ↦ ((s.inj (Sieve.ofArrows.i g.2)).hom.app Y)
-      (Sieve.ofArrows.h g.2)⟩, ?_⟩
+    refine ⟨fun Y ↦ TypeCat.ofHom fun g ↦ ((s.inj (Sieve.ofArrows.i g.2)).hom.app Y)
+      (Sieve.ofArrows.h g.2), ?_⟩
     intro ⟨Y⟩ ⟨Z⟩ ⟨(g : Z ⟶ Y)⟩
     ext u
     simp only [Sieve.functor_obj, Sieve.generate_apply, Sieve.functor_map, Quiver.Hom.unop_op',

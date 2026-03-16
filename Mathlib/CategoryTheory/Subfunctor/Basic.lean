@@ -47,8 +47,8 @@ structure Subfunctor (F : C ⥤ Type w) where
 
 variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 
-instance (F : C ⥤ Type w) (G : Subfunctor F) (U : C) : Membership (F.obj U) (G.obj U) where
-  mem _ := G.obj U
+-- instance (F : C ⥤ Type w) (G : Subfunctor F) (U : C) : Membership (F.obj U) (G.obj U) where
+--   mem _ := G.obj U
 
 instance : PartialOrder (Subfunctor F) :=
   PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
@@ -144,7 +144,7 @@ instance : Nonempty (Subfunctor F) :=
 /-- The subfunctor as a functor. -/
 @[simps obj map]
 def toFunctor : C ⥤ Type w where
-  obj U := (Subtype (G.obj U))
+  obj U := G.obj U
   map i := TypeCat.ofHom fun x => ⟨F.map i x, G.map i x.prop⟩
 
 instance {U} : CoeHead (G.toFunctor.obj U) (F.obj U) where
