@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Module.Torsion.Field
-public import Mathlib.Algebra.Module.SemilinearModuleProd
 public import Mathlib.LinearAlgebra.Prod
 
 /-!
