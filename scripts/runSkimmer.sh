@@ -34,37 +34,51 @@ echo "Note: the functionality provided by this script is experimental and subjec
 
 usage() {
   cat <<EOF
-Usage: runSkimmer.sh [--init | --lake-update | --no-update | -h | --help]
+Usage: runSkimmer.sh [[--no-update] [--on [tgts...]] | --lake-update | --init | -h | --help]
 
 Options:
   [no arguments]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` on targets configured in \`runSkimmer.sh\`.
+  --on [tgts...]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` for \`tgt\` in the supplied \`tgts\`.
+  --no-update     Only run \`lake build <tgts>:applyCurrentTryThis\`, without first running \`lake update\` in \`SideSkimmer\`. Applies both when there are no other arguments and when \`--on\` is used.
   --init          Set up the \`SideSkimmer\` side package. This only needs to be done when first introducing \`runSkimmer.sh\` to a new repo.
   --lake-update   Only run \`lake update\` in \`SideSkimmer\`. Note: this is done by default on each run, unless \`--no-update\` is present.
-  --no-update     Only run \`lake build <tgt>:applyCurrentTryThis\` without first running \`lake update\` in \`SideSkimmer\`.
 EOF
 }
 
-# Argument cleaning:
-if [[ -n "$2" ]]; then
-  echo "Unexpected argument \`$2\`"
-  usage
-  exit 1
-elif [[ -n "$1" && \
-    "$1" != "--lake-update" && \
-    "$1" != "--no-update" && \
-    "$1" != "--init" && \
-    "$1" != "-h" && \
-    "$1" != "--help" ]]; then
-  echo "Unexpected argument \`$1\`"
-  usage
-  exit 1
-elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
+checkNoArg() {
+  if [[ -n "$1" ]]; then
+    echo "Unexpected argument \`$1\`"
+    usage
+    exit 1
+  fi
+}
+
+# Argument handling:
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  checkNoArg "$2"
   usage
   exit 0
+elif [[ "$1" == "--init" ]]; then
+  checkNoArg "$2"
+  shouldInit=true
+elif [[ "$1" == "--lake-update" ]]; then
+  checkNoArg "$2"
+  lakeUpdate=true
+elif [[ "$1" == "--no-update" || "$1" == "--on" ]]; then
+  if [[ "$1" == "--no-update" ]]; then
+    noUpdate=true
+    shift
+  fi
+  if [[ "$1" == "--on" ]]; then
+    tgts=("${@:2}")
+  else
+    checkNoArg "$1"
+  fi
+else
+  checkNoArg "$1"
 fi
 
-if [[ "$1" == "--init" ]]; then
-
+if [[ "${shouldInit}" ]]; then
   mkdir -p "${pkg}"
   cat <<EOF > "${pkg}/lakefile.lean"
 import Lake
@@ -84,13 +98,13 @@ else
       -f "${pkg}/.gitignore" && \
       -f "${pkg}/lean-toolchain" && \
       -f "${pkg}/lake-manifest.json" ]]; then
-    if [[ "$1" == "--lake-update" ]]; then
+    if [[ "${lakeUpdate}" ]]; then
       echo "Only running \`lake update\` in \`SideSkimmer\`; skipping run."
       (cd "${pkg}" && lake update)
       exit 0
     fi
     # Only run `lake update` if `--no-update` is not present.
-    if [[ -z "$1" ]]; then
+    if [[ ! "${noUpdate}" ]]; then
       echo "Running \`lake update\` in \`SideSkimmer\`. Use \`runSkimmer.sh --no-update\` to skip this step."
       (cd "${pkg}" && lake update)
     fi
