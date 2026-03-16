@@ -30,7 +30,7 @@ variable {f g : α → Set β} {s : Set α} {x : α}
 lemma upperHemicontinuousWithinAt_iff_forall_isOpen :
     UpperHemicontinuousWithinAt f s x ↔ ∀ u, IsOpen u → f x ⊆ u → ∀ᶠ x' in 𝓝[s] x, f x' ⊆ u := by
   rw [upperHemicontinuousWithinAt_iff, hasBasis_nhdsSet _ |>.forall_iff ?mono]
-  case mono => exact fun t₁ t₂ ht h ↦ h.mp <| .of_forall fun x' hx' ↦ mem_of_superset hx' ht
+  case mono => exact fun t₁ t₂ ht h ↦ h.mp <| .of_forall fun x' ↦ by gcongr
   simp only [and_imp]
   apply forall₂_congr
   simp +contextual [← subset_interior_iff_mem_nhdsSet, IsOpen.interior_eq]
@@ -70,9 +70,8 @@ lemma upperHemicontinuousWithinAt_iff_preimage_Iic :
     intro s t hst
     gcongr
   case h₁ =>
-    intro s t hst hs
-    filter_upwards [hs] with x hx
-    exact Filter.mem_of_superset hx hst
+    intro s t hst
+    gcongr
   refine forall₂_congr fun u ⟨hu, hfu⟩ ↦ ?_
   simp [hu.mem_nhdsSet, eventually_iff, Iic]
 
