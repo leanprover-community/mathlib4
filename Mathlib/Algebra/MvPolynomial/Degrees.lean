@@ -258,8 +258,9 @@ theorem degreeOf_X [DecidableEq σ] (i j : σ) [Nontrivial R] :
   · simp only [c, if_true, degreeOf_def, degrees_X, Multiset.count_singleton]
   simp [c, degreeOf_def, degrees_X]
 
-@[simp] theorem degreeOf_X_self [Nontrivial R] (i : σ) : (X i : MvPolynomial σ R).degreeOf i = 1 :=
-  by classical rw [degreeOf_X, if_pos rfl]
+@[simp] theorem degreeOf_X_self [Nontrivial R] (i : σ) :
+    (X i : MvPolynomial σ R).degreeOf i = 1 := by
+  classical rw [degreeOf_X, if_pos rfl]
 
 lemma ne_zero_of_degreeOf_ne_zero {i : σ} : p.degreeOf i ≠ 0 → p ≠ 0 :=
   mt fun h ↦ h ▸ degreeOf_zero i
