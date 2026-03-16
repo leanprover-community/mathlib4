@@ -28,6 +28,19 @@ theorem of plane curves.
 - `initialCurve_of_orientedCurvature`: the construction of a plane curve from a given curvature
   function, initial position, initial direction (angle) for the velocity vector, as given by the
   fundamental theorem of plane curves.
+- `_root_.ContDiffOn.initialCurve_of_orientedCurvature`: Showing that the curve we construct in the 
+  fundamental theorem of plane curves is twice continuously differentiable.
+- `initialCurve_of_orientedCurvature_has_unit_speed`: Showing that the curve we construct in the 
+  fundamental theorem of plane curves is parametrized by arc-length, or in other words has unit 
+  speed.
+- `orientedCurvature_initialCurve_of_orientedCurvature`: Showing that the curve we construct in the 
+  fundamental theorem of plane curves has the given curvature function.
+- `position_initial_condition_initialCurve_of_orientedCurvature`: Showing that the curve we 
+  construct in the fundamental theorem of plane curves has the desired initial position.
+- `velocity_initial_condition_initialCurve_of_orientedCurvature`: Showing that the curve we 
+  construct in the fundamental theorem of plane curves has the desired initial velocity vector.
+- `initialCurve_of_orientedCurvature_is_unique`: The uniqueness part of the fundamental theorem of 
+  plane curves.
 
 ## References
 
