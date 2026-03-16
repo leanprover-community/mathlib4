@@ -6,7 +6,6 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-public import Mathlib.Data.Fintype.Parity
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
