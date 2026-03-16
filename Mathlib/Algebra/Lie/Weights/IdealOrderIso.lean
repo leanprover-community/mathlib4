@@ -38,8 +38,6 @@ open LieAlgebra LieModule Module
 variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
   {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
 
-/-- If the root space of `α` is contained in a Lie ideal `I`, then the coroot submodule of `α`
-is also contained in `I`. -/
 lemma corootSubmodule_le_lieIdeal (I : LieIdeal K L) {α : Weight K H L}
     (hα : rootSpace H α ≤ I.restr H) :
     corootSubmodule α ≤ I.restr H := by
