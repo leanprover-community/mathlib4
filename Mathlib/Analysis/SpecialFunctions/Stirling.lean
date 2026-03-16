@@ -129,23 +129,16 @@ theorem log_stirlingSeq_diff_le (n : ℕ) :
   suffices HasSum (fun j ↦ r ^ (j + 1) / 3) ((1 : ℝ) / (12 * (n + 1 : ℕ) * ((n + 1 : ℕ) + 1))) by
     refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_diff_hasSum n) this
     simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by norm_cast; grind
-  convert ((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3 using 1
-  push_cast
-  simp only [hr, field]
-  ring_nf
-  field
+  grind [((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3]
 
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (4 n ^ 2)`. -/
 @[deprecated "Use `log_stirlingSeq_diff_le` instead." (since := "2026-03-16")]
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
     log (stirlingSeq n) - log (stirlingSeq (n + 1)) ≤ 1 / (4 * n ^ 2) := by
   grw [log_stirlingSeq_diff_le]
-  cases n
-  · simp
-  · simp [field]
-    grind
+  cases n <;> simp [field]; grind
 
-/-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1 / 12` -/
+/-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 12⁻¹`. -/
 theorem log_stirlingSeq_bounded_aux (n : ℕ) :
     log (stirlingSeq 1) - log (stirlingSeq (n + 1)) ≤ 12⁻¹ := by
   let f k := log (stirlingSeq (k + 1))
@@ -156,21 +149,19 @@ theorem log_stirlingSeq_bounded_aux (n : ℕ) :
   have := Finset.sum_range_sub' f n
   conv_rhs at this => simp only [f, zero_add]
   grw [← this, Finset.sum_le_sum hf, Finset.sum_range_sub']
-  simpa using by positivity
+  simp
+  grind
 
 /-- The sequence `log_stirlingSeq` is bounded below for `n ≥ 1`. -/
 theorem log_stirlingSeq_bounded_by_constant (n : ℕ) :
     1 - 12⁻¹ - log 2 / 2 ≤ log (stirlingSeq (n + 1)) := by
   have := log_stirlingSeq_bounded_aux n
-  rw [stirlingSeq_one, log_div (by positivity) (by positivity), log_exp,
-    log_sqrt (by positivity)] at this
-  grind
+  rw [stirlingSeq_one, log_div (by positivity), log_exp, log_sqrt] at this <;> grind
 
 /-- The sequence `stirlingSeq` is positive for `n > 0` -/
 theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirlingSeq; positivity
 
-/-- The sequence `stirlingSeq` has a positive lower bound.
--/
+/-- The sequence `stirlingSeq` has a positive lower bound. -/
 theorem stirlingSeq'_bounded_by_pos_constant : ∃ a, 0 < a ∧ ∀ n : ℕ, a ≤ stirlingSeq (n + 1) := by
   let c := 1 - 12⁻¹ - log 2 / 2
   have h := log_stirlingSeq_bounded_by_constant
