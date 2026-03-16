@@ -17,7 +17,7 @@ and ❌ if there is a "leak" (a data field uses a coercion-equivalent but not
 
 /--
 info: ❌ 'RestrictScalars.module': leaky binder types detected.
-  The data field `smul` differs from the re-inferred canonical form at instances transparency.
+  The data field `_` differs from the re-inferred canonical form at instances transparency.
   Other data fields may also be leaky.
   The `fast_instance%` elaborator may be useful as a repair or band-aid:
   `instance : ... := fast_instance% <body>`
