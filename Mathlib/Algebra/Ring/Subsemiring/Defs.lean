@@ -79,7 +79,8 @@ instance (priority := 75) toNonAssocSemiring : NonAssocSemiring s := fast_instan
     (fun _ _ => rfl) fun _ => rfl
 
 /-- A subsemiring of a `NonAssocCommSemiring` inherits a `NonAssocCommSemiring` structure -/
-instance (priority := 75) toNonAssocCommSemiring {R} [NonAssocCommSemiring R] [SetLike S R] [SubsemiringClass S R] : NonAssocCommSemiring s := fast_instance%
+instance (priority := 75) toNonAssocCommSemiring {R} [NonAssocCommSemiring R] [SetLike S R]
+    [SubsemiringClass S R] : NonAssocCommSemiring s := fast_instance%
   Subtype.coe_injective.nonAssocCommSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 

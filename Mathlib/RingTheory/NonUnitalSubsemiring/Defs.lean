@@ -79,8 +79,9 @@ instance (priority := 75) toNonUnitalNonAssocSemiring :
 `NonUnitalSubsemiringClass`. -/
 /-- A non-unital subsemiring of a `NonUnitalNonAssocCommSemiring` inherits a
 `NonUnitalNonAssocCommSemiring` structure -/
-instance (priority := 75) toNonUnitalNonAssocCommSemiring {R} [NonUnitalNonAssocCommSemiring R] [SetLike S R]
-    [NonUnitalSubsemiringClass S R] : NonUnitalNonAssocCommSemiring s := fast_instance%
+instance (priority := 75) toNonUnitalNonAssocCommSemiring {R} [NonUnitalNonAssocCommSemiring R]
+    [SetLike S R] [NonUnitalSubsemiringClass S R] :
+    NonUnitalNonAssocCommSemiring s := fast_instance%
   Subtype.coe_injective.nonUnitalNonAssocCommSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
     fun _ _ => rfl
 
@@ -107,7 +108,8 @@ theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s := fast_instance%
-  Subtype.coe_injective.nonUnitalSemiring Subtype.val rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.nonUnitalSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
+    fun _ _ => rfl
 
 /-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/
 instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]

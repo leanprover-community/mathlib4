@@ -115,7 +115,8 @@ namespace Subring
 variable (s : Subring R)
 
 /-- Product of a list of elements in a subring is in the subring. -/
-protected theorem list_prod_mem {R} [Ring R] (s : Subring R) {l : List R} : (∀ x ∈ l, x ∈ s) → l.prod ∈ s :=
+protected theorem list_prod_mem {R} [Ring R] (s : Subring R) {l : List R} :
+    (∀ x ∈ l, x ∈ s) → l.prod ∈ s :=
   list_prod_mem
 
 /-- Sum of a list of elements in a subring is in the subring. -/
@@ -387,8 +388,8 @@ variable {R}
 theorem mem_center_iff {R} [Ring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
   Subsemigroup.mem_center_iff
 
-instance decidableMemCenter {R} [Ring R] [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
-  decidable_of_iff' _ mem_center_iff
+instance decidableMemCenter {R} [Ring R] [DecidableEq R] [Fintype R] :
+    DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
 
 @[simp]
 theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
@@ -442,7 +443,7 @@ def centralizer {R} [Ring R] (s : Set R) : Subring R :=
   { Subsemiring.centralizer s with neg_mem' := Set.neg_mem_centralizer }
 
 @[simp, norm_cast]
-theorem coe_centralizer {R} [Ring R]  (s : Set R) : (centralizer s : Set R) = s.centralizer :=
+theorem coe_centralizer {R} [Ring R] (s : Set R) : (centralizer s : Set R) = s.centralizer :=
   rfl
 
 theorem centralizer_toSubmonoid {R} [Ring R] (s : Set R) :
@@ -457,8 +458,8 @@ theorem centralizer_toNonUnitalSubring {R} [Ring R] (s : Set R) :
     (centralizer s).toNonUnitalSubring = NonUnitalSubring.centralizer s :=
   rfl
 
-theorem mem_centralizer_iff {R} [Ring R] {s : Set R} {z : R} : z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
-  Iff.rfl
+theorem mem_centralizer_iff {R} [Ring R] {s : Set R} {z : R} :
+    z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g := Iff.rfl
 
 theorem center_le_centralizer {R} [Ring R] (s) : center R ≤ centralizer s :=
   s.center_subset_centralizer
@@ -960,7 +961,8 @@ namespace Subring
 variable {s : Set R}
 
 @[elab_as_elim]
-protected theorem InClosure.recOn {R} [Ring R] {s : Set R} {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
+protected theorem InClosure.recOn {R} [Ring R] {s : Set R}
+    {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :
     C x := by
   have h0 : C 0 := add_neg_cancel (1 : R) ▸ ha h1 hneg1
@@ -1057,12 +1059,12 @@ instance {R} [Ring R] [MulAction R α] (S : Subring R) : MulAction S α :=
   inferInstanceAs (MulAction S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance {R} [Ring R] [AddMonoid α] [DistribMulAction R α] (S : Subring R) : DistribMulAction S α :=
-  inferInstanceAs (DistribMulAction S.toSubsemiring α)
+instance {R} [Ring R] [AddMonoid α] [DistribMulAction R α] (S : Subring R) :
+    DistribMulAction S α := inferInstanceAs (DistribMulAction S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance {R} [Ring R] [Monoid α] [MulDistribMulAction R α] (S : Subring R) : MulDistribMulAction S α :=
-  inferInstanceAs (MulDistribMulAction S.toSubsemiring α)
+instance {R} [Ring R] [Monoid α] [MulDistribMulAction R α] (S : Subring R) :
+    MulDistribMulAction S α := inferInstanceAs (MulDistribMulAction S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α :=
@@ -1077,8 +1079,8 @@ instance {R} [Ring R] [AddCommMonoid α] [Module R α] (S : Subring R) : Module 
   inferInstanceAs (Module S.toSubsemiring α)
 
 /-- The action by a subsemiring is the action by the underlying ring. -/
-instance {R} [Ring R] [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAction S α :=
-  inferInstanceAs (MulSemiringAction S.toSubmonoid α)
+instance {R} [Ring R] [Semiring α] [MulSemiringAction R α] (S : Subring R) :
+    MulSemiringAction S α := inferInstanceAs (MulSemiringAction S.toSubmonoid α)
 
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.smulCommClass_left {R} [Ring R] : SMulCommClass (center R) R R :=

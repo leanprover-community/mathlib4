@@ -99,19 +99,20 @@ instance (priority := 75) toHasIntCast : IntCast s :=
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a non-unital ring inherits a non-unital ring structure -/
 instance (priority := 75) toNonAssocRing (s : S) : NonAssocRing s := fast_instance%
-  Subtype.coe_injective.nonAssocRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+  Subtype.coe_injective.nonAssocRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/
-instance (priority := 75) toRing {R} [Ring R] [SetLike S R] [SubringClass S R] : Ring s := fast_instance%
+instance (priority := 75) toRing {R} [Ring R] [SetLike S R] [SubringClass S R] :
+    Ring s := fast_instance%
   Subtype.coe_injective.ring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `NonAssocCommRing` is a `NonAssocCommRing`. -/
-instance (priority := 75) toNonAssocCommRing {R} [NonAssocCommRing R] [SetLike S R] [SubringClass S R] :
-    NonAssocCommRing s := fast_instance%
+instance (priority := 75) toNonAssocCommRing {R} [NonAssocCommRing R] [SetLike S R]
+    [SubringClass S R] : NonAssocCommRing s := fast_instance%
   Subtype.coe_injective.nonAssocCommRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     fun _ => rfl
