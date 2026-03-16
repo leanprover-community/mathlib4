@@ -40,7 +40,7 @@ lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A)
   apply +allowSynthFailures comp_preservesFiniteProducts
   have : ∀ (i : J), PreservesFiniteProducts ((G ⋙ sheafToPresheaf _ A).obj i) := fun i ↦ by
     rw [← Presheaf.isSheaf_iff_preservesFiniteProducts]
-    exact Sheaf.cond _
+    exact (G.obj i).property
   exact ⟨fun _ ↦ preservesLimitsOfShape_of_evaluation _ _ fun d ↦
     inferInstanceAs (PreservesLimitsOfShape _ ((G ⋙ sheafToPresheaf _ _).obj d))⟩
 

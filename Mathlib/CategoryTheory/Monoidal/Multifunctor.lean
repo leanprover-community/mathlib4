@@ -271,6 +271,7 @@ variable {F : C ⥤ D}
 `μ : F - ⊗ F - ⟶ F (- ⊗ -)` as a natural transformation between bifunctors, satisfying the
 relevant compatibilities.
 -/
+@[implicit_reducible]
 def ofBifunctor : F.LaxMonoidal where
   ε := ε
   μ X Y := (μ.app X).app Y
@@ -457,6 +458,7 @@ variable {F : C ⥤ D}
 `δ : F (- ⊗ -) ⟶ F - ⊗ F -` as a natural transformation between bifunctors, satisfying the
 relevant compatibilities.
 -/
+@[implicit_reducible]
 def ofBifunctor : F.OplaxMonoidal where
   η := η
   δ X Y := (δ.app X).app Y
@@ -503,6 +505,7 @@ variable {F : C ⥤ D}
 `μ / δ : F - ⊗ F - ↔ F (- ⊗ -)` as natural transformations between bifunctors, satisfying the
 relevant compatibilities.
 -/
+@[implicit_reducible]
 def ofBifunctor (ε_η : ε ≫ η = 𝟙 _) (η_ε : η ≫ ε = 𝟙 _) (μ_δ : μ ≫ δ = 𝟙 _)
     (δ_μ : δ ≫ μ = 𝟙 _) : F.Monoidal where
   toLaxMonoidal := .ofBifunctor ε μ associativity left_unitality right_unitality

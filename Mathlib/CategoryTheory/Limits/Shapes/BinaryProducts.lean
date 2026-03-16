@@ -203,7 +203,7 @@ theorem BinaryFan.π_app_right {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨Walki
 the projections. -/
 def BinaryFan.ext {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) : c ≅ c' :=
-  Cones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
+  Cone.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
 @[simp]
 lemma BinaryFan.ext_hom_hom {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
@@ -243,7 +243,7 @@ abbrev BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPai
 the injections. -/
 def BinaryCofan.ext {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) : c ≅ c' :=
-  Cocones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
+  Cocone.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
 @[simp]
 lemma BinaryCofan.ext_hom_hom {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
@@ -319,11 +319,11 @@ theorem BinaryCofan.mk_inr {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (Binary
 
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryFanMk {X Y : C} (c : BinaryFan X Y) : c ≅ BinaryFan.mk c.fst c.snd :=
-    Cones.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
+    Cone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryCofanMk {X Y : C} (c : BinaryCofan X Y) : c ≅ BinaryCofan.mk c.inl c.inr :=
-    Cocones.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
+    Cocone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
 /-- This is a more convenient formulation to show that a `BinaryFan` constructed using
 `BinaryFan.mk` is a limit cone.
@@ -516,7 +516,7 @@ noncomputable abbrev coprod.inr {X Y : C} [HasBinaryCoproduct X Y] : Y ⟶ X ⨿
 /-- The binary fan constructed from the projection maps is a limit. -/
 noncomputable def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
     IsLimit (BinaryFan.mk (prod.fst : X ⨯ Y ⟶ X) prod.snd) :=
-  (limit.isLimit _).ofIsoLimit (Cones.ext (Iso.refl _) (fun ⟨u⟩ => by
+  (limit.isLimit _).ofIsoLimit (Cone.ext (Iso.refl _) (fun ⟨u⟩ => by
     cases u
     · simp [Category.id_comp]
     · simp [Category.id_comp]
@@ -525,7 +525,7 @@ noncomputable def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
 /-- The binary cofan constructed from the coprojection maps is a colimit. -/
 noncomputable def coprodIsCoprod (X Y : C) [HasBinaryCoproduct X Y] :
     IsColimit (BinaryCofan.mk (coprod.inl : X ⟶ X ⨿ Y) coprod.inr) :=
-  (colimit.isColimit _).ofIsoColimit (Cocones.ext (Iso.refl _) (fun ⟨u⟩ => by
+  (colimit.isColimit _).ofIsoColimit (Cocone.ext (Iso.refl _) (fun ⟨u⟩ => by
     cases u
     · dsimp; simp only [Category.comp_id]
     · dsimp; simp only [Category.comp_id]
