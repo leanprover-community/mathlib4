@@ -219,15 +219,12 @@ private theorem iUnion_image_mk {H K : Subgroup G} :
   constructor
   all_goals
   have cover := iUnion_quotToDoubleCoset H K
-  apply Set.Subset.antisymm_iff.mpr
-  simp only [Set.subset_univ, true_and]
-  intro x hx
-  simp only [Set.mem_iUnion, Set.mem_image]
+  rw [Set.iUnion_eq_univ_iff]
+  intro x
   obtain ⟨y, hy⟩ := exists_rep x
   have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K  := by
     contrapose cover
-    refine (Set.ne_univ_iff_exists_notMem _).mpr ?_
-    exact ⟨y, by simpa using cover⟩
+    exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
   exact ⟨i, y, hi, hy⟩
 
 theorem iUnion_image_mk_leftRel (H K : Subgroup G) :
