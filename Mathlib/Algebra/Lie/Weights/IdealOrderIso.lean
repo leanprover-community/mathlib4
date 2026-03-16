@@ -45,21 +45,25 @@ lemma corootSubmodule_le_lieIdeal (I : LieIdeal K L) {α : Weight K H L}
     corootSubmodule α ≤ I.restr H := by
   intro x hx
   obtain ⟨h, hh, rfl⟩ := (LieSubmodule.mem_map _).mp hx
-  have key : (⟨h.val, h.property⟩ : H) ∈ corootSpace α := hh
-  rw [mem_corootSpace] at key
-  refine (Submodule.span_le.mpr ?_) key
+  have hh : (⟨h.val, h.property⟩ : H) ∈ corootSpace α := hh
+  rw [mem_corootSpace] at hh
+  refine (Submodule.span_le.mpr ?_) hh
   rintro _ ⟨y, hy, _, -, rfl⟩
   exact lie_mem_left K L I y _ (hα hy)
 
-variable [IsKilling K L] [IsTriangularizable K H L] [CharZero K]
-
 /-- The set of roots whose root space is contained in a given Lie ideal. -/
-noncomputable def lieIdealRootSet (I : LieIdeal K L) : Set H.root :=
+def lieIdealRootSet (I : LieIdeal K L) : Set H.root :=
   { α | rootSpace H α.1 ≤ I.restr H }
+
+@[simp]
+lemma mem_lieIdealRootSet {I : LieIdeal K L} {α : H.root} :
+    α ∈ lieIdealRootSet (H := H) I ↔ rootSpace H α.1 ≤ I.restr H := Iff.rfl
+
+variable [IsKilling K L] [IsTriangularizable K H L] [CharZero K]
 
 /-- The submodule of `Dual K H` spanned by the roots associated to a Lie ideal. -/
 noncomputable def lieIdealRootSpan (I : LieIdeal K L) : Submodule K (Dual K H) :=
-  Submodule.span K ((↑) '' lieIdealRootSet (H := H) I)
+  Submodule.span K ((rootSystem H).root '' lieIdealRootSet (H := H) I)
 
 lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
     {α : Weight K H L} (hI : rootSpace H α ≤ I.restr H)
@@ -77,7 +81,7 @@ lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
 lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
     {α : H.root} (hα : α ∈ lieIdealRootSet (H := H) I) :
     (rootSystem H).reflectionPerm i α ∈ lieIdealRootSet (H := H) I := by
-  simp only [lieIdealRootSet, Set.mem_setOf_eq] at hα ⊢
+  simp only [mem_lieIdealRootSet] at hα ⊢
   by_cases hp : (rootSystem H).pairing α i = 0
   · rwa [(rootSystem H).reflectionPerm_eq_of_pairing_eq_zero hp]
   · have hi := rootSpace_le_ideal_of_apply_coroot_ne_zero I hα
@@ -95,9 +99,8 @@ lemma lieIdealRootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
   apply Submodule.span_le.mpr
   rintro _ ⟨α, hα, rfl⟩
   simp only [SetLike.mem_coe, Submodule.mem_comap]
-  rw [show (↑((rootSystem H).reflection i) : Dual K H →ₗ[K] Dual K H)
-      (Weight.toLinear K H L ↑α) = (rootSystem H).reflection i ((rootSystem H).root α) from rfl,
-    ← (rootSystem H).root_reflectionPerm i α]
+  change (rootSystem H).reflection i ((rootSystem H).root α) ∈ _
+  rw [← (rootSystem H).root_reflectionPerm i α]
   exact Submodule.subset_span ⟨_, lieIdealRootSet_reflectionPerm_invariant I i hα, rfl⟩
 
 /-- Maps a Lie ideal to its corresponding invariant root submodule. -/
