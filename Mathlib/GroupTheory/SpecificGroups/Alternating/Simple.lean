@@ -49,7 +49,7 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 
 open scoped Pointwise
 
-open MulAction Equiv.Perm Equiv
+open MulAction Equiv.Perm Equiv Set.powersetCard
 
 namespace Equiv.Perm
 
@@ -134,12 +134,15 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top (by simpa using hα)]
   apply iwasawaStructure_three.commutator_le
   rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot] at hN
-  exact fixedPoints_ne_univ_of_isPreprimitive 3 (by norm_num) (by grind)
+  convert fixedPoints_ne_univ_of_isPreprimitive (N := N) (α := α) 3 (by norm_num) (by grind)
+  apply isPreprimitive_alternatingGroup  (by norm_num)
+  · exact Nat.lt_of_add_left_lt hα
+  · contrapose hα'
+    rw [hα']
 
 theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
-      (k : Perm α).support ⊆ s ∧
-        ((k : Perm α) = 1 ∨ (k : Perm α).cycleType = {2, 2}) := by
+      (k : Perm α).support ⊆ s ∧ ((k : Perm α) = 1 ∨ (k : Perm α).cycleType = {2, 2}) := by
   have hs : Nat.card s = 4 := by aesop
   constructor
   · rintro ⟨k, hk, rfl⟩
@@ -218,9 +221,10 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
     (by simpa using hα)]
   apply (iwasawaStructure_four hα).commutator_le
   rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot] at hN
-  exact fixedPoints_ne_univ_of_isPreprimitive 4 (by norm_num) (by grind)
+  convert fixedPoints_ne_univ_of_isPreprimitive (N := N) (α := α) 4 (by norm_num) (by grind)
+  refine isPreprimitive_alternatingGroup (by norm_num) hα hα'
 
-/-- If `α` has at least 5 elements,
+/- If `α` has at least 5 elements,
 then the only nontrivial normal subgroup of `alternatingGroup α`
 is `⊤`. -/
 theorem normal_subgroup_eq_bot_or_eq_top

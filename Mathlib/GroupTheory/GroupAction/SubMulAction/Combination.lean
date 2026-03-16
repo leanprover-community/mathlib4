@@ -208,7 +208,7 @@ theorem mulActionHom_compl_bijective :
 
 end compl
 
-
+variable {G} in
 set_option backward.isDefEq.respectTransparency false in
 theorem fixedPoints_ne_univ_of_isPreprimitive
     {N : Subgroup G} [Nontrivial N] [FaithfulSMul N α]
