@@ -139,7 +139,7 @@ private lemma W_map_of_adjunction_of_isContinuous_aux (F : C ⥤ D)
     [Functor.IsContinuous F J K] {G G' : Cᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂} (f : G ⟶ G') (hf : J.W f) :
     K.W (H.map f) := by
   intro U hU
-  rw [adj.bijective_map_comp_iff]
+  rw [adj.map_comp_bijective_iff]
   apply hf
   rw [isSheaf_iff_isSheaf_of_type]
   exact IsContinuous.op_comp_isSheaf_of_types (F := F) ⟨U, hU⟩
@@ -202,7 +202,7 @@ lemma W_map_of_adjunction_of_isContinuous (F : C ⥤ D) (H : (Cᵒᵖ ⥤ A) ⥤
     [Functor.IsContinuous F J K] {G G' : Cᵒᵖ ⥤ A} (f : G ⟶ G') (hf : J.W f) :
     K.W (H.map f) := by
   intro U hU
-  rw [adj.bijective_map_comp_iff]
+  rw [adj.map_comp_bijective_iff]
   exact hf _ (F.op_comp_isSheaf_of_isSheaf _ _ _ hU)
 
 lemma isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)

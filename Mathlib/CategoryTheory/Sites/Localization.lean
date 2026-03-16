@@ -115,7 +115,7 @@ lemma Presieve.IsSheaf.comp_of_W_map_of_adjunction
     Presieve.IsSheaf J (F.op ⋙ G) := by
   intro X S hS
   rw [Presieve.isSheafFor_iff_bijective_shrinkFunctor_ι_comp, ← Functor.whiskeringLeft_obj_obj,
-    ← adj.bijective_map_comp_iff]
+    ← adj.map_comp_bijective_iff]
   refine h hS _ ?_
   rwa [isSheaf_iff_isSheaf_of_type]
 
