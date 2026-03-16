@@ -782,6 +782,7 @@ theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
   simp only [hasFTaylorSeriesUpToOn_succ_nat_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasFTaylorSeriesUpTo.tsupport_mono {k m : ℕ} (h : k ≤ m) (h2 : m ≤ n)
     (hf : HasFTaylorSeriesUpTo n f p) :
     tsupport (p · m) ⊆ tsupport (p · k) := by
