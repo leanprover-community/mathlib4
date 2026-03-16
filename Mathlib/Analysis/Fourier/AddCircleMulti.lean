@@ -205,8 +205,8 @@ theorem integral_preimage {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     ∫ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
   convert integral_map_equiv (μ := volume.comap Subtype.val) (measurableEquivPiIoc a).symm f
   · exact (measurePreserving_equivPiIoc a).symm.map_eq.symm
-  · rw [← integral_subtype_comap (measurableSet_PiIoc a) (f := fun x => f (fun i => x i))]
-    aesop
+  · rw [← integral_subtype_comap (measurableSet_PiIoc a)]
+    rfl
 
 end Integral
 
