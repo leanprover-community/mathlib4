@@ -240,11 +240,23 @@ partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet Strin
         return .descend (butFirst := some {extractInstName headerStr})
     return .descend
 
+/-- Result of analyzing strict/permissive trace messages. -/
+structure AnalyzeTracesResult where
+  /-- isDefEq checks that fail with strict transparency but succeed with permissive. -/
+  flatFailures : Array MessageData
+  /-- Synthesis-grouped failures: each entry is `(synthApp, failures)`. Empty when
+  `includeSynth` is `false`. -/
+  synthGroupedFailures : Array (MessageData × Array MessageData)
+  /-- Instance name strings from successful `apply` trace nodes in the permissive run.
+  These are string-formatted because the trace `MessageData` doesn't embed structured `Name`s.
+  TODO: once https://github.com/leanprover/lean4/pull/12698 (structured `TraceResult`) is
+  available, replace with `Std.HashSet Name`. -/
+  permissiveSuccessApps : Std.HashSet String
+
 /-- Analyze strict and permissive trace messages to find isDefEq transition failures
-and (optionally) synthesis-grouped failures.
-Returns `(flatFailures, synthGroupedFailures)`. -/
+and (optionally) synthesis-grouped failures. -/
 def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool := false) :
-    BaseIO (Array MessageData × Array (MessageData × Array MessageData) × Std.HashSet String) := do
+    BaseIO AnalyzeTracesResult := do
   -- Build sets of permissive successes and failures for transition-point detection.
   let mut permSuccesses : Std.HashSet String := {}
   let mut permFailures : Std.HashSet String := {}
@@ -263,7 +275,7 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
     permissiveSuccessApps := permissiveSuccessApps.union (← findSynthSuccessApps msg)
   -- Optionally find synthesis-grouped failures.
   if !includeSynth then
-    return (uniqueFailures, #[], permissiveSuccessApps)
+    return ⟨uniqueFailures, #[], permissiveSuccessApps⟩
   let mut synthResults : Array (MessageData × Array MessageData) := #[]
   for msg in strictMsgs do
     synthResults := synthResults.append
@@ -274,33 +286,31 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
   -- Dedup failures within each synth result.
   let dedupedResults ← filteredResults.mapM fun (app, failures) => do
     return (app, ← dedupByString failures)
-  return (uniqueFailures, dedupedResults, permissiveSuccessApps)
+  return ⟨uniqueFailures, dedupedResults, permissiveSuccessApps⟩
 
-/-- Given a set of instance name strings (as they appear in synthesis trace output, possibly
-with a leading `@`), check each for leaky data-field binder types using `#check_instance` logic.
-Returns the names and diagnostic messages for instances that are detected as leaky. -/
-def findLeakyInstances (instStrings : Std.HashSet String) : MetaM (Array (Name × MessageData)) := do
+/-- Parse a trace-format instance name string (e.g. `"@RestrictScalars.module.{?_uniq.42}"`)
+into a `Name`, stripping leading `@` and universe suffixes.
+TODO: once https://github.com/leanprover/lean4/pull/12698 (structured `TraceResult`) and
+https://github.com/leanprover/lean4/pull/12699 (`Meta.synthInstance.apply` trace class) are
+available in the toolchain, trace nodes will embed structured data and this parsing can be
+replaced with direct `Name` extraction. -/
+def parseTraceInstName (s : String) : Name :=
+  let s := (if s.startsWith "@" then s.drop 1 else s).trimAscii.toString
+  let s := match s.splitOn ".{" with | base :: _ => base | _ => s
+  s.toName
+
+/-- Check a collection of instance `Name`s for leaky data-field binder types using
+`checkInstance`. Returns the names and diagnostic messages for instances detected as leaky. -/
+def findLeakyInstances (instNames : Array Name) : MetaM (Array (Name × MessageData)) := do
   let env ← getEnv
   let mut leaky : Array (Name × MessageData) := #[]
-  let mut seen : Std.HashSet Name := {}
-  for str in instStrings do
-    -- Strip leading `@` from trace-format names like `@RestrictScalars.module`
-    let nameStr := ((if str.startsWith "@" then str.drop 1 else str).trimAscii).toString
-    -- Strip universe parameter suffixes like `.{?_uniq.1758}` from trace strings
-    let nameStr := match nameStr.splitOn ".{" with
-      | base :: _ => base
-      | _ => nameStr
-    let name := nameStr.toName
-    -- Skip if already processed this name (multiple trace strings may strip to the same name)
-    if seen.contains name then continue
-    seen := seen.insert name
+  for name in instNames do
     -- Skip if not a known constant or not a registered typeclass instance
-    let some _ := env.find? name | continue
+    let some info := env.find? name | continue
     unless isInstanceCore env name do continue
     -- Skip prop-valued instances (proofs don't need normalization and generate spurious warnings)
-    if let some info := env.find? name then
-      let isPropInst ← forallTelescopeReducing info.type fun _ t => isProp t
-      if isPropInst then continue
+    let isPropInst ← forallTelescopeReducing info.type fun _ t => isProp t
+    if isPropInst then continue
     -- Run checkInstance. Re-throw internal exceptions (panics, OOM, etc.); skip all others.
     let result ← try Mathlib.Elab.FastInstance.checkInstance name
       catch | .internal id ref => throw (.internal id ref) | _ => continue
@@ -401,23 +411,21 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
       | .ok () =>
         let strictMsgs := strictTraces.toArray.map (·.msg)
         let permMsgs := permTraces.toArray.map (·.msg)
-        let (uniqueFailures, _, _) ← analyzeTraces strictMsgs permMsgs
-        reportDefEqAbuse "tactic" uniqueFailures #[]
+        let result ← analyzeTraces strictMsgs permMsgs
+        reportDefEqAbuse "tactic" result.flatFailures #[]
         -- Check instances used in the goal type for leakiness.
         -- The tactic fails due to an isDefEq mismatch caused by instances that were
         -- synthesized during GOAL TYPE ELABORATION (before the tactic runs), so synthesis
         -- traces won't contain them. Instead, inspect the elaborated goal type directly.
-        try
+        let leaky ← try
           let goalType ← getMainTarget
           let env ← getEnv
-          let instStrings : Std.HashSet String :=
-            Std.HashSet.ofArray (goalType.getUsedConstants.filterMap fun n =>
-              if isInstanceCore env n then some n.toString else none)
-          let leaky ← findLeakyInstances instStrings
-          unless leaky.isEmpty do
-            let lines := joinSep (leaky.toList.map fun (_, msg) => m!"  {msg}") "\n"
-            logInfo m!"The following instances may have leaky binder types:\n{lines}"
-        catch _ => pure ()
+          let instNames := goalType.getUsedConstants.filter (isInstanceCore env ·)
+          findLeakyInstances instNames
+        catch _ => pure #[]
+        unless leaky.isEmpty do
+          let lines := joinSep (leaky.toList.map fun (_, msg) => m!"  {msg}") "\n"
+          logInfo m!"The following instances may have leaky binder types:\n{lines}"
         -- Pass 3: run the tactic with permissive setting so it actually succeeds
         withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency false) do
           evalTactic tac
@@ -490,27 +498,29 @@ elab_rules : command
       | .ok () =>
         let strictMsgData := strictMsgs.map (·.data) |>.toArray
         let permMsgData := permissiveMsgs.map (·.data) |>.toArray
-        let (uniqueFailures, synthResults, permSuccessApps) ←
-          analyzeTraces strictMsgData permMsgData (includeSynth := true)
-        reportDefEqAbuse "command" uniqueFailures synthResults
+        let result ← analyzeTraces strictMsgData permMsgData (includeSynth := true)
+        reportDefEqAbuse "command" result.flatFailures result.synthGroupedFailures
         -- Check for leaky instances.
         -- We check two sources:
         -- (1) Instances named in failing synthesis apps (from extractInstName).
         -- (2) ALL registered instances that succeeded in the permissive run.
         --     Failing apps name projections (e.g. HeytingAlgebra.toOrderBot), not the underlying
         --     registered instance (e.g. instFrame). Permissive success apps include the latter.
-        try
+        -- Both sources are string-based because we parse trace `MessageData` text.
+        -- TODO: once https://github.com/leanprover/lean4/pull/12699 and
+        -- https://github.com/leanprover/lean4/pull/12698 are in the toolchain, extract
+        -- `Name`s directly from structured trace data instead of parsing strings.
+        let leaky ← try
           let mut instStrings : Std.HashSet String ←
-            synthResults.foldlM (init := {}) fun acc (app, _) => do
+            result.synthGroupedFailures.foldlM (init := {}) fun acc (app, _) => do
               return acc.insert (extractInstName (← app.toString))
-          -- Also add all permissive-success synthesis apps; findLeakyInstances will filter to
-          -- registered instances that are actually leaky.
-          instStrings := instStrings.union permSuccessApps
-          let leaky ← runTermElabM fun _ => findLeakyInstances instStrings
-          unless leaky.isEmpty do
-            let lines := joinSep (leaky.toList.map fun (_, msg) => m!"  {msg}") "\n"
-            logInfo m!"The following instances may have leaky binder types:\n{lines}"
-        catch _ => pure ()
+          instStrings := instStrings.union result.permissiveSuccessApps
+          let instNames := (Std.HashSet.ofArray (instStrings.toArray.map parseTraceInstName)).toArray
+          runTermElabM fun _ => findLeakyInstances instNames
+        catch _ => pure #[]
+        unless leaky.isEmpty do
+          let lines := joinSep (leaky.toList.map fun (_, msg) => m!"  {msg}") "\n"
+          logInfo m!"The following instances may have leaky binder types:\n{lines}"
         -- Pass 3: run the command with permissive setting so it actually takes effect
         withScope (fun scope =>
           { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency false }) do
