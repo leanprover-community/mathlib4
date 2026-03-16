@@ -343,7 +343,7 @@ lemma Submodule.spanRank_baseChange_le : (N.baseChange A).spanRank ≤ N.spanRan
   · exact (Cardinal.lift_id' _).symm
   · exact Cardinal.lift_umax.symm
 
-lemma Submodule.spanFinrank_baseChange_le (fg : N.FG) :
+lemma Submodule.FG.spanFinrank_baseChange_le (fg : N.FG) :
     (N.baseChange A).spanFinrank ≤ N.spanFinrank := by
   grw [spanFinrank, spanRank_baseChange_le, Cardinal.toNat_lift, spanFinrank]
   simp [Cardinal.lift_lt_aleph0, spanRank_finite_iff_fg.mpr fg]
@@ -351,10 +351,9 @@ lemma Submodule.spanFinrank_baseChange_le (fg : N.FG) :
 lemma TensorProduct.spanRank_top_le : (⊤ : Submodule A (A ⊗[R] N)).spanRank ≤ N.spanRank.lift := by
   grw [← Submodule.baseChange_top, ← N.spanRank_top, spanRank_baseChange_le]
 
-lemma TensorProduct.spanFinrank_top_le (fg : N.FG) :
+lemma TensorProduct.spanFinrank_top_le_of_fg (fg : N.FG) :
     (⊤ : Submodule A (A ⊗[R] N)).spanFinrank ≤ N.spanFinrank := by
-  grw [spanFinrank, spanRank_top_le, Cardinal.toNat_lift, spanFinrank]
-  simp [Cardinal.lift_lt_aleph0, spanRank_finite_iff_fg.mpr fg]
+  grw [← Submodule.baseChange_top, ← N.spanFinrank_top, (N.fg_top.mpr fg).spanFinrank_baseChange_le]
 
 variable [IsLocalRing R]
 local notation "𝓀" => ResidueField R
@@ -363,7 +362,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma TensorProduct.spanFinrank_top_eq_of_residueField (fg : N.FG) :
     (⊤ : Submodule 𝓀 (𝓀 ⊗[R] N)).spanFinrank = N.spanFinrank := by
   let : Module.Finite R N := Module.Finite.iff_fg.mpr fg
-  apply (TensorProduct.spanFinrank_top_le N fg).antisymm
+  apply (TensorProduct.spanFinrank_top_le_of_fg N fg).antisymm
   obtain ⟨s, hs₁, hs₂⟩ := (⊤ : Submodule 𝓀 (𝓀 ⊗[R] N)).exists_span_set_card_eq_spanRank
   have hs₃ : s.Finite := Cardinal.mk_lt_aleph0_iff.mp (by simpa [hs₁] using Module.Finite.fg_top)
   let t := Function.surjInv (mk_surjective R N 𝓀 residue_surjective) '' s
@@ -377,9 +376,10 @@ lemma TensorProduct.spanFinrank_top_eq_of_residueField (fg : N.FG) :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_eq_finrank_quotient {M : Type*} [AddCommGroup M] [Module R M]
-    (N : Submodule R M) (fg : N.FG) : N.spanFinrank =
-    Module.finrank (R ⧸ maximalIdeal R) (N ⧸ (maximalIdeal R) • (⊤ : Submodule R N)) := by
-  let : Module 𝓀 (↥N ⧸ maximalIdeal R • (⊤ : Submodule R N)) :=
+    (N : Submodule R M) (fg : N.FG) :
+    N.spanFinrank =
+      Module.finrank (R ⧸ maximalIdeal R) (N ⧸ (maximalIdeal R) • (⊤ : Submodule R N)) := by
+  let : Module 𝓀 (N ⧸ maximalIdeal R • (⊤ : Submodule R N)) :=
     inferInstanceAs (Module (R ⧸ maximalIdeal R) _)
   let : IsScalarTower R 𝓀 (N ⧸ maximalIdeal R • (⊤ : Submodule R N)) :=
     inferInstanceAs (IsScalarTower R (R ⧸ maximalIdeal R) _)
@@ -387,6 +387,8 @@ lemma spanFinrank_eq_finrank_quotient {M : Type*} [AddCommGroup M] [Module R M]
   let e : 𝓀 ⊗[R] N ≃ₗ[𝓀] N ⧸ (maximalIdeal R) • (⊤ : Submodule R N) :=
     (quotTensorEquivQuotSMul N (maximalIdeal R)).extendScalarsOfSurjective residue_surjective
   exact e.finrank_eq
+
+namespace IsLocalRing
 
 lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (fg : (maximalIdeal R).FG) :
     (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
@@ -396,5 +398,7 @@ variable (R) in
 lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace [IsNoetherianRing R] :
     (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
   spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (maximalIdeal R).fg_of_isNoetherianRing
+
+end IsLocalRing
 
 end spanRank
