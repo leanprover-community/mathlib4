@@ -25,10 +25,11 @@ def IsStrictMap : Prop :=
   IsQuotientMap (Set.rangeFactorization f)
 
 
-lemma IsQuotientMap.isOpenMap_of_injective {f : X → Y} (hq : IsQuotientMap f)
-(hinj : Function.Injective f) : IsOpenMap f := by
-    intro s hs
-    rwa [← hq.isOpen_preimage, Set.preimage_image_eq _ hinj]
+lemma isHomeomorph_iff_isQuotientMap_injective {f : X → Y} :
+    IsHomeomorph f ↔ IsQuotientMap f ∧ Injective f := by
+  refine ⟨fun h ↦ ⟨h.isQuotientMap, h.injective⟩,
+    fun h ↦ ⟨h.1.continuous, fun s hs ↦ ?_, h.2, h.1.surjective⟩⟩
+  rwa [← h.1.isOpen_preimage, Set.preimage_image_eq _ h.2]
 
 theorem isStrictMap_iff_kerLift_isEmbedding :
     IsStrictMap f ↔ IsEmbedding (Setoid.kerLift f) := by
