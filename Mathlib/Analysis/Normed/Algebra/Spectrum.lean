@@ -173,6 +173,7 @@ section QuasispectrumCompact
 variable {B : Type*} [NonUnitalNormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
 variable [IsScalarTower 𝕜 B B] [SMulCommClass 𝕜 B B] [ProperSpace 𝕜]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.quasispectrum.isCompact (a : B) : IsCompact (quasispectrum 𝕜 a) := by
   rw [Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜,
@@ -185,6 +186,7 @@ instance _root_.quasispectrum.instCompactSpace (a : B) :
     CompactSpace (quasispectrum 𝕜 a) :=
   isCompact_iff_compactSpace.mp <| quasispectrum.isCompact a
 
+set_option backward.isDefEq.respectTransparency false in
 instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScalarTower ℝ B B]
     [SMulCommClass ℝ B B] (a : B) [CompactSpace (quasispectrum ℝ a)] :
     CompactSpace (quasispectrum ℝ≥0 a) := by
@@ -319,6 +321,7 @@ open scoped NNReal ENNReal
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
 power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻¹` in a disk of
@@ -514,6 +517,7 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
   apply Units.mul_eq_one_iff_inv_eq.mp
   simpa [-IsUnit.mul_val_inv] using congr(($hx.mul_val_inv : A))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S : Subalgebra 𝕜 A` is a closed subalgebra of a Banach algebra `A`, then for any
 `x : S`, the boundary of the spectrum of `x` relative to `S` is a subset of the spectrum of
 `↑x : A` relative to `A`. -/
@@ -549,6 +553,7 @@ lemma Subalgebra.frontier_subset_frontier :
 
 open Set Notation
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the spectrum of `x`
 is the spectrum of `↑x : A` along with the connected components of the complement of the spectrum of
 `↑x : A` which contain an element of the spectrum of `x : S`. -/
@@ -574,6 +579,7 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
   refine inter_subset_inter_right _ ?_ |>.trans <| inter_subset_right
   exact frontier_subset_frontier S x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`, and let `x : S`. If `z` is in the
 spectrum of `x`, then the connected component of `z` in the complement of the spectrum of `↑x : A`
 is bounded (or else `z` actually belongs to the spectrum of `↑x : A`). -/
@@ -727,6 +733,7 @@ theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A]
   obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
 
+set_option backward.isDefEq.respectTransparency false in
 open WithLp in
 /-- The map `a ↦ quasispectrum 𝕜 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
@@ -740,6 +747,7 @@ theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [Proper
     ← AlgEquiv.spectrum_eq (unitizationAlgEquiv 𝕜 (𝕜 := 𝕜) (A := A) |>.symm)]
   congr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `a ↦ quasispectrum ℝ≥0 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_quasispectrum_nnreal [NonUnitalNormedRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [CompleteSpace A] :

@@ -531,7 +531,7 @@ theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
     norm_cast
     ring
   rw [hsum]
-  refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by aesop) (by simp)
+  refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by simp_all) (by simp)
   rcases le_or_gt k m with hkm | hkm
   · replace hk' : n < k := by simpa [hkm] using hk'
     simp [Nat.choose_eq_zero_of_lt hk']

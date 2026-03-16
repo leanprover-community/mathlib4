@@ -184,18 +184,8 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   · simp at hk
   · rw [nodup_iff_injective_get] at hl
     rw [length, Nat.succ_inj]
-    refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
-      ⟨tl.length, by simp⟩ ?_
-    rw [← Option.some_inj] at hk'
-    rw [← getElem?_eq_getElem, dropLast_eq_take, getElem?_take_of_lt, getElem?_cons_succ,
-      getElem?_eq_getElem, Option.some_inj] at hk'
-    · rw [get_eq_getElem, hk']
-      simp only [getLast_eq_getElem, length_cons, Nat.succ_sub_succ_eq_sub,
-        Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
-    · simp only [dropLast_cons₂, length_cons, length_dropLast, Nat.add_one_sub_one,
-        Nat.add_lt_add_iff_right] at hk ⊢
-      lia
-    simpa using hk
+    exact Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
+      ⟨tl.length, by simp⟩ (by grind)
 
 theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
     prev (y :: l) x hxy = getLast (y :: l) (cons_ne_nil _ _) := by cases l <;> simp [prev, hx]

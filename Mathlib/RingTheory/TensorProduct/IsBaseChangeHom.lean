@@ -51,7 +51,7 @@ def linearMapRightBaseChangeHom (ε : N →ₗ[R] P) :
   toAddHom := (TensorProduct.lift {
     toFun s := s • (LinearMap.compRight R ε (M := M))
     map_add' x y := by ext; simp [add_smul]
-    map_smul' r s := by aesop }).toAddHom
+    map_smul' r s := by simp }).toAddHom
   map_smul' s x := by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom, RingHom.id_apply]
     induction x using TensorProduct.induction_on with

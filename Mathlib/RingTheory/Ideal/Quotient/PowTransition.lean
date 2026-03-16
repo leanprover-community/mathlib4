@@ -13,17 +13,20 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`
+
 In this file we define the canonical quotient linear map from
 `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` and canonical quotient ring map from
 `R ⧸ I ^ m` to `R ⧸ I ^ n`. These definitions will be used in theorems
 related to `IsAdicComplete` to find a lift element from compatible sequences in the quotients.
 We also include results about the relation between quotients of submodules and quotients of
 ideals here.
+
 ## Main definitions
 - `Submodule.factorPow`: the linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
-the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
+  the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 - `Ideal.Quotient.factorPow`: the ring homomorphism from `R ⧸ I ^ m`
-to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
+  to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
+
 ## Main results
 -/
 
@@ -40,6 +43,7 @@ open Ideal Quotient
 variable {R : Type*} [Ring R] {I J K : Ideal R}
     {M : Type*} [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
     RingHom.ker (factor H) = J.map (Ideal.Quotient.mk I) := by
   ext x
@@ -158,6 +162,7 @@ lemma Ideal.map_mk_comap_factorPow {a b : ℕ} (apos : 0 < a) (le : a ≤ b) :
   apply Ideal.map_mk_comap_factor
   exact pow_le_self (Nat.ne_zero_of_lt apos)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
     (h : IsUnit (factorPow I n.le_succ a)) : IsUnit a := by

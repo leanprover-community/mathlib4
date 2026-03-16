@@ -96,6 +96,7 @@ noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
   -- TODO: can we write this normally after the refactor finishes?
   RingHom.toAlgebra <| by apply CommRingCat.Hom.hom; apply StructureSheaf.toStalk
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
     genericPoint (Spec R) = (⊥ : PrimeSpectrum R) := by
@@ -120,6 +121,7 @@ instance {X : Scheme} [IsIntegral X] {U : X.Opens} [Nonempty U] :
     IsIntegral U :=
   isIntegral_of_isOpenImmersion U.ι
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : X.Opens}
     (hU : IsAffineOpen U) [h : Nonempty U] :
     hU.primeIdealOf
@@ -135,6 +137,7 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
   apply Subtype.ext
   exact (genericPoint_eq_of_isOpenImmersion U.ι).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens)
     (hU : IsAffineOpen U) [Nonempty U] :
     IsFractionRing Γ(X, U) X.functionField := by
@@ -151,6 +154,7 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens
 instance (x : X) : IsAffine (X.affineCover.X x) :=
   AlgebraicGeometry.isAffine_Spec _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsIntegral X] (x : X) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : X.Opens := (X.affineCover.f ((X.affineCover.idx x))).opensRange
@@ -166,6 +170,7 @@ instance [IsIntegral X] (x : X) :
   .isFractionRing_of_isDomain_of_isLocalization M ↑(Presheaf.stalk X.presheaf x)
     (Scheme.functionField X)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsIntegral X] {x : X} : IsDomain (X.presheaf.stalk x) :=
   Function.Injective.isDomain _ (IsFractionRing.injective (X.presheaf.stalk x) (X.functionField))
 

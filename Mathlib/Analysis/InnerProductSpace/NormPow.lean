@@ -29,12 +29,13 @@ open scoped NNReal
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
     HasFDerivAt (fun x : E ↦ ‖x‖ ^ p) ((p * ‖x‖ ^ (p - 2)) • innerSL ℝ x) x := by
   by_cases hx : x = 0
   · simp only [hx, norm_zero, map_zero, smul_zero]
     have h2p : 0 < p - 1 := sub_pos.mpr hp
-    rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO]
+    refine .of_isLittleO ?_
     calc (fun x : E ↦ ‖x‖ ^ p - ‖(0 : E)‖ ^ p - 0)
         = (fun x : E ↦ ‖x‖ ^ p) := by simp [zero_lt_one.trans hp |>.ne']
       _ = (fun x : E ↦ ‖x‖ * ‖x‖ ^ (p - 1)) := by
@@ -56,6 +57,7 @@ theorem differentiable_norm_rpow {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x : E ↦ ‖x‖ ^ p) :=
   fun x ↦ hasFDerivAt_norm_rpow x hp |>.differentiableAt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivAt_norm_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
     HasDerivAt (fun x : ℝ ↦ ‖x‖ ^ p) (p * ‖x‖ ^ (p - 2) * x) x := by
   convert hasFDerivAt_norm_rpow x hp |>.hasDerivAt using 1; simp

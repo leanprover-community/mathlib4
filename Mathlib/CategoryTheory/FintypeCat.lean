@@ -35,6 +35,17 @@ structure FintypeCat where
   carrier : Type*
   [str : Fintype carrier]
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `FintypeCat.of X` being printed as `{ carrier := X, str := ... }` by
+`delabStructureInstance`. -/
+@[app_delab FintypeCat.of]
+meta def FintypeCat.delabOf : Delab := delabApp
+
+end Notation
+
 attribute [instance] FintypeCat.str
 
 namespace FintypeCat
@@ -263,6 +274,7 @@ noncomputable def uSwitchEquiv (X : FintypeCat.{u}) :
     uSwitch.{u, v}.obj X ≃ X :=
   Equiv.ulift.trans (Fintype.equivFin X).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma uSwitchEquiv_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y)
     (x : uSwitch.{u, v}.obj X) :
     f (X.uSwitchEquiv x) = Y.uSwitchEquiv (uSwitch.map f x) := by
@@ -281,6 +293,7 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
       Y.uSwitchEquiv)).inv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] uSwitch_map_uSwitch_map in
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
 noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where

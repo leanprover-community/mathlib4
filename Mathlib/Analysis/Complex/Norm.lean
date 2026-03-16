@@ -30,49 +30,43 @@ theorem norm_def (z : ℂ) : ‖z‖ = √(normSq z) := rfl
 theorem norm_mul_self_eq_normSq (z : ℂ) : ‖z‖ * ‖z‖ = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
 
-private theorem norm_nonneg (z : ℂ) : 0 ≤ ‖z‖ :=
+protected theorem norm_nonneg (z : ℂ) : 0 ≤ ‖z‖ :=
   Real.sqrt_nonneg _
 
 @[bound]
 theorem abs_re_le_norm (z : ℂ) : |z.re| ≤ ‖z‖ := by
-  rw [mul_self_le_mul_self_iff (abs_nonneg z.re) (norm_nonneg _), abs_mul_abs_self,
+  rw [mul_self_le_mul_self_iff (abs_nonneg z.re) (Complex.norm_nonneg _), abs_mul_abs_self,
     norm_mul_self_eq_normSq]
   apply re_sq_le_normSq
 
 theorem re_le_norm (z : ℂ) : z.re ≤ ‖z‖ :=
   (abs_le.1 (abs_re_le_norm _)).2
 
-set_option backward.privateInPublic true in
-private theorem norm_add_le' (z w : ℂ) : ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
-  (mul_self_le_mul_self_iff (norm_nonneg (z + w)) (add_nonneg (norm_nonneg z)
-    (norm_nonneg w))).2 <| by
+protected theorem norm_add_le' (z w : ℂ) : ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
+  (mul_self_le_mul_self_iff (Complex.norm_nonneg (z + w)) (add_nonneg (Complex.norm_nonneg z)
+    (Complex.norm_nonneg w))).2 <| by
     rw [norm_mul_self_eq_normSq, add_mul_self_eq, norm_mul_self_eq_normSq, norm_mul_self_eq_normSq,
       add_right_comm, normSq_add, mul_assoc, norm_def, norm_def, ← Real.sqrt_mul <| normSq_nonneg z,
       ← normSq_conj w, ← map_mul]
     gcongr
     exact re_le_norm (z * conj w)
 
-set_option backward.privateInPublic true in
-private theorem norm_eq_zero_iff {z : ℂ} : ‖z‖ = 0 ↔ z = 0 :=
+protected theorem norm_eq_zero_iff {z : ℂ} : ‖z‖ = 0 ↔ z = 0 :=
   (Real.sqrt_eq_zero <| normSq_nonneg _).trans normSq_eq_zero
 
-set_option backward.privateInPublic true in
-private theorem norm_map_zero' : ‖(0 : ℂ)‖ = 0 :=
-  norm_eq_zero_iff.mpr rfl
+protected theorem norm_map_zero' : ‖(0 : ℂ)‖ = 0 :=
+  Complex.norm_eq_zero_iff.mpr rfl
 
-set_option backward.privateInPublic true in
-private theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
+protected theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
   rw [Complex.norm_def, norm_def, normSq_neg]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
   { toFun := norm
-    map_zero' := norm_map_zero'
-    add_le' := norm_add_le'
-    neg' := norm_neg'
-    eq_zero_of_map_eq_zero' := fun _ ↦ norm_eq_zero_iff.mp }
+    map_zero' := Complex.norm_map_zero'
+    add_le' := Complex.norm_add_le'
+    neg' := Complex.norm_neg'
+    eq_zero_of_map_eq_zero' := fun _ ↦ Complex.norm_eq_zero_iff.mp }
 
 @[simp 1100]
 protected theorem norm_mul (z w : ℂ) : ‖z * w‖ = ‖z‖ * ‖w‖ := by
@@ -84,7 +78,7 @@ protected theorem norm_div (z w : ℂ) : ‖z / w‖ = ‖z‖ / ‖w‖ := by
 
 instance isAbsoluteValueNorm : IsAbsoluteValue (‖·‖ : ℂ → ℝ) where
   abv_nonneg' := norm_nonneg
-  abv_eq_zero' := norm_eq_zero_iff
+  abv_eq_zero' := Complex.norm_eq_zero_iff
   abv_add' := norm_add_le
   abv_mul' := Complex.norm_mul
 
@@ -102,6 +96,7 @@ theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
 
 @[simp] lemma norm_I : ‖I‖ = 1 := by simp [norm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
 
 @[simp 1100, norm_cast]
@@ -146,6 +141,7 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := Complex.norm_of_nonn
 @[simp 1100, norm_cast]
 lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp 1100, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm]
 
@@ -228,10 +224,10 @@ theorem abs_im_div_norm_le_one (z : ℂ) : |z.im / ‖z‖| ≤ 1 :=
   else by
     simp_rw [_root_.abs_div, abs_norm, div_le_iff₀ (norm_pos_iff.mpr hz), one_mul, abs_im_le_norm]
 
-theorem dist_eq (z w : ℂ) : dist z w = ‖z - w‖ := rfl
+theorem dist_eq (z w : ℂ) : dist z w = ‖z - w‖ := dist_eq_norm _ _
 
 theorem dist_eq_re_im (z w : ℂ) : dist z w = √((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
-  rw [sq, sq]
+  rw [sq, sq, dist_eq]
   rfl
 
 @[simp]
@@ -290,7 +286,7 @@ noncomputable def cauSeqIm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
 theorem isCauSeq_norm {f : ℕ → ℂ} (hf : IsCauSeq (‖·‖) f) :
     IsCauSeq abs ((‖·‖) ∘ f) := fun ε ε0 ↦
   let ⟨i, hi⟩ := hf ε ε0
-  ⟨i, fun j hj ↦  lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
+  ⟨i, fun j hj ↦ lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
 /-- The limit of a Cauchy sequence of complex numbers. -/
 noncomputable def limAux (f : CauSeq ℂ (‖·‖)) : ℂ :=

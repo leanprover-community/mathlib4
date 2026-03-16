@@ -739,6 +739,7 @@ variable [UniformSpace F] [IsUniformAddGroup F] [Module 𝕜 F]
   (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isUniformEmbedding_restrictScalars :
     IsUniformEmbedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) := by
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
@@ -830,9 +831,9 @@ variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Modul
 def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
   toLinearEquiv := toSpanSingletonLE ..
   continuous_toFun := by
-    apply continuous_of_continuousAt_zero (toSpanSingletonLE _ _ _)
+    apply continuous_of_tendsto_nhds_zero (toSpanSingletonLE _ _ _)
     suffices ∀ s : Set 𝕜, IsVonNBounded 𝕜 s → ∀ U ∈ 𝓝 0, ∀ᶠ (a : E) in 𝓝 0, ∀ x ∈ s, x • a ∈ U by
-      simpa [ContinuousAt, ContinuousLinearMap.nhds_zero_eq, MapsTo]
+      simpa [ContinuousLinearMap.nhds_zero_eq, MapsTo]
     intro s hsb U hU
     rcases mem_nhds_prod_iff.mp <| continuous_smul.tendsto' (0 : 𝕜 × E) 0 (by simp) hU
       with ⟨V, hV, W, hW, hVW⟩

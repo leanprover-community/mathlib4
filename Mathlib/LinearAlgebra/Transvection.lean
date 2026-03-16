@@ -26,7 +26,7 @@ public import Mathlib.LinearAlgebra.Dual.BaseChange
 * `LinearMap.transvections R V`: the set of transvections.
 
 * `LinearEquiv.dilatransvections R V`: the set of linear equivalences
-whose associated linear map is of the form `LinearMap.transvection f v`.
+  whose associated linear map is of the form `LinearMap.transvection f v`.
 
 * `LinearEquiv.transvection.det` shows that it has determinant `1`.
 
@@ -485,6 +485,7 @@ private theorem det_ofDomain [Free R V] [Module.Finite R V] [IsDomain R] (f : Du
 
 open IsBaseChange
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem det [Free R V] [Module.Finite R V] (f : Dual R V) (v : V) :
     (transvection f v).det = 1 + f v := by
   rcases subsingleton_or_nontrivial R with hR | hR

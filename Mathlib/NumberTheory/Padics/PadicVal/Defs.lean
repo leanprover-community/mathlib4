@@ -36,6 +36,7 @@ that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults t
 def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
   if h : p ≠ 1 ∧ 0 < n then Nat.find (finiteMultiplicity_iff.2 h) else 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
     padicValNat p n = multiplicity p n := by
   simp only [padicValNat, ne_eq, hp, not_false_eq_true, Nat.pos_iff_ne_zero.mpr hn, and_self,
@@ -49,6 +50,7 @@ theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
     padicValNat p n = multiplicity p n :=
   padicValNat_def' hp.out.ne_one hn
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
 theorem padicValNat_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
@@ -84,6 +86,7 @@ theorem le_emultiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n :
   (replicate_subperm_primeFactorsList_iff ha hb).trans
     pow_dvd_iff_le_emultiplicity |>.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
     (hb : b ≠ 0) :
     n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by

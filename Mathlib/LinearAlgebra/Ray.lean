@@ -378,6 +378,7 @@ instance {R : Type*} : Neg (RayVector R M) :=
 theorem coe_neg {R : Type*} (v : RayVector R M) : ↑(-v) = -(v : M) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Negating a nonzero vector twice produces the original vector. -/
 instance {R : Type*} : InvolutiveNeg (RayVector R M) where
   neg_neg v := by rw [Subtype.ext_iff, coe_neg, coe_neg, neg_neg]

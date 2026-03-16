@@ -103,6 +103,7 @@ theorem hom_id (X : WidePullbackShape J) : Hom.id X = 𝟙 X :=
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a functor out of the wide pullback shape given a J-indexed collection of arrows to a
 fixed object.
 -/
@@ -114,11 +115,13 @@ def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : Wid
     · apply 𝟙 _
     · exact arrows j
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideCospan` -/
 def diagramIsoWideCospan (F : WidePullbackShape J ⥤ C) :
     F ≅ wideCospan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.term j) :=
   NatIso.ofComponents fun j => eqToIso <| by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a cone over a wide cospan. -/
 @[simps]
 def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : ∀ j, X ⟶ F.obj (some j))
@@ -132,6 +135,7 @@ def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : 
         naturality := fun j j' f => by
           cases j <;> cases j' <;> cases f <;> simp [w] } }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Wide pullback diagrams of equivalent index types are equivalent. -/
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
     WidePullbackShape J ≌ WidePullbackShape J' where
@@ -159,6 +163,7 @@ def uliftEquivalence :
   (ULiftHomULiftCategory.equiv.{w', w', w, w} (WidePullbackShape J)).symm.trans
     (equivalenceOfEquiv _ (Equiv.ulift.{w', w}.symm : J ≃ ULift.{w'} J))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Show two functors out of a wide pullback shape are isomorphic by showing their components are
 isomorphic. -/
 @[simps!]
@@ -242,11 +247,13 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
     · cases g
       simp only [hom_id, Category.comp_id]; congr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
 def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
     F ≅ wideSpan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.init j) :=
   NatIso.ofComponents fun j => eqToIso <| by cases j; repeat rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a cocone over a wide span. -/
 @[simps]
 def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι : ∀ j, F.obj (some j) ⟶ X)
@@ -260,6 +267,7 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
         naturality := fun j j' f => by
           cases j <;> cases j' <;> cases f <;> simp [w] } }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Wide pushout diagrams of equivalent index types are equivalent. -/
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J' where
   functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
@@ -334,10 +342,12 @@ noncomputable abbrev lift {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
 
 variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem lift_base : lift f fs w ≫ base arrows = f := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
@@ -352,6 +362,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
   · apply h2
   · apply h1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by simp) := by
   aesop
@@ -448,7 +459,7 @@ def ext {ι : Type*}
     (base : e.hom ≫ t.base = s.base := by cat_disch)
     (π : ∀ i, e.hom ≫ t.π i = s.π i := by cat_disch) :
     s ≅ t :=
-  Cones.ext e <| by
+  Cone.ext e <| by
     rintro (_ | _)
     · exact base.symm
     · exact (π _).symm
@@ -470,6 +481,7 @@ lemma reindex_π {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X} (s :
     {ι' : Type*} (e : ι' ≃ ι) (i : ι') :
     (s.reindex e).π i = s.π (e i) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing a pullback cone preserves being limiting. -/
 def reindexIsLimitEquiv {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X}
     (s : WidePullbackCone f) {ι' : Type*} (e : ι' ≃ ι) :
@@ -510,10 +522,12 @@ noncomputable abbrev desc {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
 
 variable {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem head_desc : head arrows ≫ desc f fs w = f := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
@@ -528,6 +542,7 @@ theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
   · apply h2
   · apply h1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
     g =
       desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j => by
@@ -556,6 +571,7 @@ def widePullbackShapeOpMap :
   | _, _, WidePullbackShape.Hom.id X => Quiver.Hom.op (WidePushoutShape.Hom.id _)
   | _, _, WidePullbackShape.Hom.term _ => Quiver.Hom.op (WidePushoutShape.Hom.init _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The obvious functor `WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ` -/
 @[simps]
 def widePullbackShapeOp : WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ where
@@ -570,6 +586,7 @@ def widePushoutShapeOpMap :
   | _, _, WidePushoutShape.Hom.id X => Quiver.Hom.op (WidePullbackShape.Hom.id _)
   | _, _, WidePushoutShape.Hom.init _ => Quiver.Hom.op (WidePullbackShape.Hom.term _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The obvious functor `WidePushoutShape J ⥤ (WidePullbackShape J)ᵒᵖ` -/
 @[simps]
 def widePushoutShapeOp : WidePushoutShape J ⥤ (WidePullbackShape J)ᵒᵖ where
@@ -586,21 +603,25 @@ def widePullbackShapeUnop : (WidePullbackShape J)ᵒᵖ ⥤ WidePushoutShape J :
 def widePushoutShapeUnop : (WidePushoutShape J)ᵒᵖ ⥤ WidePullbackShape J :=
   (widePushoutShapeOp J).leftOp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of the unit isomorphism of the equivalence
 `widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
 def widePushoutShapeOpUnop : widePushoutShapeUnop J ⋙ widePullbackShapeOp J ≅ 𝟭 _ :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the equivalence
 `widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
 def widePushoutShapeUnopOp : widePushoutShapeOp J ⋙ widePullbackShapeUnop J ≅ 𝟭 _ :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of the unit isomorphism of the equivalence
 `widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
 def widePullbackShapeOpUnop : widePullbackShapeUnop J ⋙ widePushoutShapeOp J ≅ 𝟭 _ :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the equivalence
 `widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
 def widePullbackShapeUnopOp : widePullbackShapeOp J ⋙ widePushoutShapeUnop J ≅ 𝟭 _ :=

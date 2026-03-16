@@ -243,23 +243,23 @@ section PartialOrder
 
 variable [PartialOrder α] [Preorder β] {f : α → β} {s : Set α}
 
-@[to_dual monotone_iff_forall_lt']
+@[to_dual none]
 theorem monotone_iff_forall_lt : Monotone f ↔ ∀ ⦃a b⦄, a < b → f a ≤ f b :=
   forall₂_congr fun _ _ ↦
     ⟨fun hf h ↦ hf h.le, fun hf h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).le) hf⟩
 
-@[to_dual antitone_iff_forall_lt']
+@[to_dual none]
 theorem antitone_iff_forall_lt : Antitone f ↔ ∀ ⦃a b⦄, a < b → f b ≤ f a :=
   forall₂_congr fun _ _ ↦
     ⟨fun hf h ↦ hf h.le, fun hf h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).ge) hf⟩
 
-@[to_dual monotoneOn_iff_forall_lt']
+@[to_dual none]
 theorem monotoneOn_iff_forall_lt :
     MonotoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f a ≤ f b :=
   ⟨fun hf _ ha _ hb h ↦ hf ha hb h.le,
    fun hf _ ha _ hb h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).le) (hf ha hb)⟩
 
-@[to_dual antitoneOn_iff_forall_lt']
+@[to_dual none]
 theorem antitoneOn_iff_forall_lt :
     AntitoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b ≤ f a :=
   ⟨fun hf _ ha _ hb h ↦ hf ha hb h.le,
@@ -341,7 +341,7 @@ theorem strictAnti_of_le_iff_le [Preorder α] [Preorder β] {f : α → β}
     (h : ∀ x y, x ≤ y ↔ f y ≤ f x) : StrictAnti f :=
   fun _ _ ↦ (lt_iff_lt_of_le_iff_le' (h _ _) (h _ _)).1
 
-@[to_dual of_lt_imp_ne']
+@[to_dual none]
 theorem Function.Injective.of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
     Injective f := by
   grind [Injective]
@@ -490,11 +490,11 @@ end Preorder
 
 end LinearOrder
 
-theorem Subtype.mono_coe [Preorder α] (t : Set α) : Monotone ((↑) : Subtype t → α) :=
+theorem Subtype.mono_coe [Preorder α] (p : α → Prop) : Monotone ((↑) : Subtype p → α) :=
   fun _ _ ↦ id
 
-theorem Subtype.strictMono_coe [Preorder α] (t : Set α) :
-    StrictMono ((↑) : Subtype t → α) :=
+theorem Subtype.strictMono_coe [Preorder α] (p : α → Prop) :
+    StrictMono ((↑) : Subtype p → α) :=
   fun _ _ ↦ id
 
 section Preorder

@@ -79,6 +79,7 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lif
         -- Porting note: end replacement block
         apply hb)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `X` and the explicit limit of `X.diagram`,
 induced by lifting `X.asLimitCone`.
 -/
@@ -89,7 +90,7 @@ def isoAsLimitConeLift : X ≅ (limitCone.{u, u} X.diagram).pt :=
 The underlying isomorphism is defeq to `X.isoAsLimitConeLift`.
 -/
 def asLimitConeIso : X.asLimitCone ≅ limitCone.{u, u} _ :=
-  Limits.Cones.ext (isoAsLimitConeLift _) fun _ => rfl
+  Limits.Cone.ext (isoAsLimitConeLift _) fun _ => rfl
 
 /-- `X.asLimitCone` is indeed a limit cone. -/
 def asLimit : CategoryTheory.Limits.IsLimit X.asLimitCone :=

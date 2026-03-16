@@ -36,6 +36,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] {n : ℕ} {S : Composable
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S` is a complex, this is the morphism from a cokernel of `S.map' k (k + 1)`
 to a kernel of `S.map' (k + 2) (k + 3)`. -/
 def cokerToKer' (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
@@ -45,6 +46,7 @@ def cokerToKer' (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
     (show S.map' k (k + 1) ≫ IsLimit.lift hkf (KernelFork.ofι _ (hS.zero (k + 1))) = _ from
       Fork.IsLimit.hom_ext hkf (by simpa using hS.zero k)))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cokerToKer'_fac (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
     (kf : KernelFork (S.map' (k + 2) (k + 3))) (hcc : IsColimit cc) (hkf : IsLimit kf) :
@@ -106,6 +108,7 @@ variable (hS : S.IsComplex) (k : ℕ) (hk : k ≤ n)
   (cc : CokernelCofork (S.map' k (k + 1))) (kf : KernelFork (S.map' (k + 2) (k + 3)))
   (hcc : IsColimit cc) (hkf : IsLimit kf)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma epi_cokerToKer' (hS' : (S.sc hS (k + 1)).Exact) :
     Epi (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have := hS'.hasZeroObject
@@ -118,6 +121,7 @@ lemma epi_cokerToKer' (hS' : (S.sc hS (k + 1)).Exact) :
       assoc, IsComplex.cokerToKer'_fac]
   exact epi_of_epi_fac fac
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mono_cokerToKer' (hS' : (S.sc hS k).Exact) :
     Mono (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have := hS'.hasZeroObject

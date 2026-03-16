@@ -578,8 +578,9 @@ theorem codisjoint_himp_self_left : Codisjoint (x ⇨ y) x :=
 theorem codisjoint_himp_self_right : Codisjoint x (x ⇨ y) :=
   @disjoint_sdiff_self_right αᵒᵈ _ _ _
 
-theorem himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z :=
-  (@le_sdiff αᵒᵈ _ _ _ _).trans <| and_congr_right' <| @codisjoint_comm _ (_) _ _ _
+theorem himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z := by
+  rw [himp_eq, sup_le_iff, and_congr_right_iff]
+  exact fun _ => hnot_le_iff_codisjoint_right
 
 @[simp] lemma himp_le_left : x ⇨ y ≤ x ↔ x = ⊤ :=
   ⟨fun h ↦ codisjoint_self.1 <| codisjoint_himp_self_right.mono_right h, fun h ↦ le_top.trans h.ge⟩

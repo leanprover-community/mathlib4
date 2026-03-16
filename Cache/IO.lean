@@ -98,6 +98,15 @@ def getCurl : IO String := do
 def getLeanTar : IO String := do
   return if (← LEANTARBIN.pathExists) then LEANTARBIN.toString else "leantar"
 
+/-- Spawn a `leantar` process for decompression, writing the given JSON config to its stdin.
+    Returns the process exit code. -/
+def spawnLeanTarDecompress (config : Array Lean.Json) (force : Bool) : IO UInt32 := do
+  let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
+  let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
+  let (stdin, child) ← child.takeStdin
+  stdin.putStr <| Lean.Json.compress <| .arr config
+  child.wait
+
 /-- Bump this number to invalidate the cache, in case the existing hashing inputs are insufficient.
 It is not a global counter, and can be reset to 0 as long as the lean githash or lake manifest has
 changed since the last time this counter was touched. -/
@@ -109,7 +118,7 @@ def rootHashGeneration : UInt64 := 4
 * the Lean search path. This contains
   paths to the source directory of each imported package, i.e. where the `.lean` files
   can be found.
-  (Note: in a standard setup these might also be the paths where the correpsponding `.lake`
+  (Note: in a standard setup these might also be the paths where the corresponding `.lake`
   folders are located. However, `lake` has multiple options to customise these paths, like
   setting `srcDir` in a `lean_lib`. See `mkBuildPaths` below which currently assumes
   that no such options are set in any mathlib dependency)
@@ -462,9 +471,6 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
       IO.println s!"Decompressing {size} file(s) ({skipped} already decompressed)"
     else
       IO.println s!"Decompressing {size} file(s)"
-    let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
-    let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
-    let (stdin, child) ← child.takeStdin
     /-
     TODO: The case distinction below could be avoided by making use of the `leantar` option `-C`
     (rsp the `"base"` field in JSON format, see below) here and in `packCache`.
@@ -489,8 +495,7 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
       else
         -- only mathlib files, when not in the mathlib4 repo, need to be redirected
         config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
-    stdin.putStr <| Lean.Json.compress <| .arr config
-    let exitCode ← child.wait
+    let exitCode ← spawnLeanTarDecompress config force
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
     IO.println s!"Decompressed in {(← IO.monoMsNow) - now} ms"
     IO.println "Completed successfully!"

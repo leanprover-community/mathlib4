@@ -67,8 +67,6 @@ set, image, preimage
 
 @[expose] public section
 
-attribute [ext] Set.ext
-
 universe u v w
 
 namespace Set

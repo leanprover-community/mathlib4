@@ -233,6 +233,7 @@ variable [IsDedekindDomain A] {I : Ideal A}
 
 open Ideal
 
+set_option backward.isDefEq.respectTransparency false in
 lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     ¬(I⁻¹ : FractionalIdeal A⁰ K) ≤ 1 := by
   have hNF : ¬IsField A := fun h ↦ letI := h.toField; (eq_bot_or_eq_top I).elim hI0 hI1

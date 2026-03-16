@@ -79,9 +79,9 @@ attribute [to_dual existing] LinearOrder.toMax
 
 variable [LinearOrder α] {a b c : α}
 
-attribute [instance 900] LinearOrder.toDecidableLT
-attribute [instance 900] LinearOrder.toDecidableLE
-attribute [instance 900] LinearOrder.toDecidableEq
+attribute [instance_reducible, instance 900] LinearOrder.toDecidableLT
+attribute [instance_reducible, instance 900] LinearOrder.toDecidableLE
+attribute [instance_reducible, instance 900] LinearOrder.toDecidableEq
 
 instance : Std.IsLinearOrder α where
   le_total := LinearOrder.le_total

@@ -190,7 +190,24 @@ instance [IsArtinian R M] (N : LieSubmodule R L M) : IsArtinian R N :=
 instance [Module.IsTorsionFree R M] : Module.IsTorsionFree R N :=
   inferInstanceAs <| Module.IsTorsionFree R N.toSubmodule
 
-variable [LieAlgebra R L] [LieModule R L M]
+variable [LieAlgebra R L]
+
+/-- Given a Lie submodule `N` of a Lie module `M` over a Lie algebra `L`, and a Lie subalgebra
+`H ≤ L`, `N.restr H` is the same submodule but viewed as a Lie submodule over `H`. -/
+def restr (N : LieSubmodule R L M) (H : LieSubalgebra R L) : LieSubmodule R H M where
+  carrier := N
+  add_mem' := N.add_mem'
+  zero_mem' := N.zero_mem'
+  smul_mem' := SMulMemClass.smul_mem
+  lie_mem hm := N.lie_mem hm
+
+@[simp] lemma mem_restr {N : LieSubmodule R L M} {H : LieSubalgebra R L} {m : M} :
+    m ∈ N.restr H ↔ m ∈ N := Iff.rfl
+
+@[simp] lemma restr_toSubmodule (N : LieSubmodule R L M) (H : LieSubalgebra R L) :
+    (N.restr H).toSubmodule = N.toSubmodule := rfl
+
+variable [LieModule R L M]
 
 instance instLieModule : LieModule R L N where
   lie_smul := by intro t x y; apply SetCoe.ext; apply lie_smul
@@ -941,6 +958,10 @@ theorem comap_incl_self : comap N.incl N = ⊤ := by
   rw [Submodule.comap_subtype_self]
 
 theorem map_incl_top : (⊤ : LieSubmodule R L N).map N.incl = N := by simp
+
+theorem map_restrictLie_incl_top [LieAlgebra R L] (H : LieSubalgebra R L) :
+    (⊤ : LieSubmodule R H N).map (N.incl.restrictLie H) = N.restr H := by
+  ext; simp
 
 variable {N}
 

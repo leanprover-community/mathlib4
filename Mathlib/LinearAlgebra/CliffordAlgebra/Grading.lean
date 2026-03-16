@@ -27,15 +27,18 @@ open scoped DirectSum
 
 variable (Q)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The even or odd submodule, defined as the supremum of the even or odd powers of
 `(ι Q).range`. `evenOdd 0` is the even submodule, and `evenOdd 1` is the odd submodule. -/
 def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
   ⨆ j : { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (j : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_le_evenOdd_zero : 1 ≤ evenOdd Q 0 := by
   refine le_trans ?_ (le_iSup _ ⟨0, Nat.cast_zero⟩)
   exact (pow_zero _).ge
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_ι_le_evenOdd_one : LinearMap.range (ι Q) ≤ evenOdd Q 1 := by
   refine le_trans ?_ (le_iSup _ ⟨1, Nat.cast_one⟩)
   exact (pow_one _).ge
@@ -43,6 +46,7 @@ theorem range_ι_le_evenOdd_one : LinearMap.range (ι Q) ≤ evenOdd Q 1 := by
 theorem ι_mem_evenOdd_one (m : M) : ι Q m ∈ evenOdd Q 1 :=
   range_ι_le_evenOdd_one Q <| LinearMap.mem_range_self _ m
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ evenOdd Q 0 :=
   Submodule.mem_iSup_of_mem ⟨2, rfl⟩
     (by
@@ -51,6 +55,7 @@ theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ e
         Submodule.mul_mem_mul (LinearMap.mem_range_self (ι Q) m₁)
           (LinearMap.mem_range_self (ι Q) m₂))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q (i + j) := by
   simp_rw [evenOdd, Submodule.iSup_eq_span, Submodule.span_mul_span]
   apply Submodule.span_mono
@@ -78,6 +83,7 @@ nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
   exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     lift Q ⟨GradedAlgebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩ x' =
       DirectSum.of (fun i => evenOdd Q i) i' x' := by
@@ -107,6 +113,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
   | add x y hx hy ihx ihy =>
     rw [map_add, ihx, ihy, ← map_add]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
   GradedAlgebra.ofAlgHom (evenOdd Q)
@@ -121,6 +128,7 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
       rw [lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     (by apply GradedAlgebra.lift_ι_eq Q)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
   calc
@@ -132,11 +140,13 @@ theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := 
     _ = ⨆ i : ℕ, LinearMap.range (ι Q) ^ i :=
       Function.Surjective.iSup_congr (fun i => i.2) (fun i => ⟨⟨_, i, rfl⟩, rfl⟩) fun _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
   (DirectSum.Decomposition.isInternal (evenOdd Q)).isCompl zero_ne_one <| by
     have : (Finset.univ : Finset (ZMod 2)) = {0, 1} := rfl
     simpa using congr_arg ((↑) : Finset (ZMod 2) → Set (ZMod 2)) this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To show a property is true on the even or odd part, it suffices to show it is true on the
 scalars or vectors (respectively), closed under addition, and under left-multiplication by a pair
 of vectors. -/
@@ -198,6 +208,7 @@ theorem even_induction {motive : ∀ x, x ∈ evenOdd Q 0 → Prop}
   obtain ⟨r, rfl⟩ := Submodule.mem_one.mp h
   exact algebraMap r
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To show a property is true on the odd parts, it suffices to show it is true on the
 vectors, closed under addition, and under left-multiplication by a pair of vectors. -/
 @[elab_as_elim]

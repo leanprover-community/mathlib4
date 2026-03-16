@@ -294,6 +294,10 @@ lemma comm_comp_comm_assoc (f : P →ₗ[R] M ⊗[R] N) :
     (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap ∘ₗ f = f := by
   rw [← LinearMap.comp_assoc, comm_comp_comm, LinearMap.id_comp]
 
+@[simp] theorem comm_comm (x) :
+    TensorProduct.comm R M N (TensorProduct.comm R N M x) = x :=
+  congr($(comm_trans_comm _ _ _) x)
+
 end
 
 section CompatibleSMul

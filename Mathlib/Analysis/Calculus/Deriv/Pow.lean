@@ -31,24 +31,22 @@ section NormedRing
 variable [NontriviallyNormedField 𝕜] [NormedRing 𝔸]
 variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s : Set 𝕜}
 
-nonrec theorem HasStrictDerivAt.fun_pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
+theorem HasStrictDerivAt.fun_pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
     HasStrictDerivAt (fun x ↦ f x ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := by
-  unfold HasStrictDerivAt
-  convert h.pow' n
-  ext
-  simp
+  simpa using h.hasStrictFDerivAt.pow' n |>.hasStrictDerivAt
 
-nonrec theorem HasStrictDerivAt.pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
+theorem HasStrictDerivAt.pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
     HasStrictDerivAt (f ^ n)
-      (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := h.fun_pow' n
+      (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x :=
+  h.fun_pow' n
 
-nonrec theorem HasDerivWithinAt.fun_pow' (h : HasDerivWithinAt f f' s x) (n : ℕ) :
+theorem HasDerivWithinAt.fun_pow' (h : HasDerivWithinAt f f' s x) (n : ℕ) :
     HasDerivWithinAt (fun x ↦ f x ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) s x := by
   simpa using h.hasFDerivWithinAt.pow' n |>.hasDerivWithinAt
 
-nonrec theorem HasDerivWithinAt.pow' (h : HasDerivWithinAt f f' s x) (n : ℕ) :
+theorem HasDerivWithinAt.pow' (h : HasDerivWithinAt f f' s x) (n : ℕ) :
     HasDerivWithinAt (f ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) s x := h.fun_pow' n
 
@@ -93,21 +91,18 @@ variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s
 
 open scoped RightActions
 
-nonrec theorem HasStrictDerivAt.fun_pow (h : HasStrictDerivAt f f' x) (n : ℕ) :
+theorem HasStrictDerivAt.fun_pow (h : HasStrictDerivAt f f' x) (n : ℕ) :
     HasStrictDerivAt (fun x ↦ f x ^ n) (n * f x ^ (n - 1) * f') x := by
-  unfold HasStrictDerivAt
-  convert h.pow n
-  ext
-  simp [mul_assoc]
+  simpa using h.hasStrictFDerivAt.pow n |>.hasStrictDerivAt
 
-nonrec theorem HasStrictDerivAt.pow (h : HasStrictDerivAt f f' x) (n : ℕ) :
+theorem HasStrictDerivAt.pow (h : HasStrictDerivAt f f' x) (n : ℕ) :
     HasStrictDerivAt (f ^ n) (n * f x ^ (n - 1) * f') x := h.fun_pow n
 
-nonrec theorem HasDerivWithinAt.fun_pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
+theorem HasDerivWithinAt.fun_pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
     HasDerivWithinAt (fun x ↦ f x ^ n) (n * f x ^ (n - 1) * f') s x := by
   simpa using h.hasFDerivWithinAt.pow n |>.hasDerivWithinAt
 
-nonrec theorem HasDerivWithinAt.pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
+theorem HasDerivWithinAt.pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
     HasDerivWithinAt (f ^ n) (n * f x ^ (n - 1) * f') s x := h.fun_pow n
 
 theorem HasDerivAt.fun_pow (h : HasDerivAt f f' x) (n : ℕ) :

@@ -70,6 +70,7 @@ namespace Friendship
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 include hG in
 /-- One characterization of a friendship graph is that there is exactly one walk of length 2

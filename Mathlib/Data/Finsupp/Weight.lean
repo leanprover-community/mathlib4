@@ -133,7 +133,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
   classical
   simp only [weight_apply, Finsupp.sum]
   by_cases h : s ∈ f.support
-  · rw [Finset.sum_eq_add_sum_diff_singleton h]
+  · rw [Finset.sum_eq_add_sum_diff_singleton_of_mem h]
     refine le_trans ?_ (Nat.le_add_right _ _)
     apply Nat.le_mul_of_pos_right
     exact Nat.zero_lt_of_ne_zero hs
@@ -154,7 +154,7 @@ theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ
   · apply le_smul_of_one_le_left (hw s)
     exact Nat.one_le_iff_ne_zero.mpr hs
   · rw [← Finsupp.mem_support_iff] at hs
-    rw [Finset.sum_eq_add_sum_diff_singleton hs]
+    rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hs]
     exact le_add_of_nonneg_right <| Finset.sum_nonneg <|
       fun i _ ↦ nsmul_nonneg (hw i) (f i)
 

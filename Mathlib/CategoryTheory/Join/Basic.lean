@@ -209,6 +209,7 @@ section Functoriality
 
 variable {C D} {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pair of functors `F : C ⥤ E, G : D ⥤ E` as well as a natural transformation
 `α : (Prod.fst C D) ⋙ F ⟶ (Prod.snd C D) ⋙ G` defines a functor out of `C ⋆ D`.
 This is the main entry point to define functors out of a join of categories. -/
@@ -344,6 +345,7 @@ lemma eq_mkNatTrans {F F' : C ⋆ D ⥤ E} (α : F ⟶ F') :
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `mkNatTrans` respects vertical composition. -/
 lemma mkNatTransComp
     {F F' F'' : C ⋆ D ⥤ E}
@@ -361,6 +363,7 @@ lemma mkNatTransComp
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two functors out of a join of categories are naturally isomorphic if their
 compositions with the inclusions are isomorphic and the whiskering with the canonical
 transformation is respected through these isomorphisms. -/
@@ -569,6 +572,7 @@ variable {C' : Type u₃} [Category.{v₃} C']
 
 variable {C D}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalent categories have equivalent joins. -/
 @[simps]
 def mapPairEquiv (e : C ≌ C') (e' : D ≌ D') : C ⋆ D ≌ C' ⋆ D' where

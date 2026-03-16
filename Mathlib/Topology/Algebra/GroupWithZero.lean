@@ -274,15 +274,15 @@ variable [TopologicalSpace α] [GroupWithZero α] [ContinuousMul α]
 is a homeomorphism of the underlying type. -/
 protected def mulLeft₀ (c : α) (hc : c ≠ 0) : α ≃ₜ α :=
   { Equiv.mulLeft₀ c hc with
-    continuous_toFun := continuous_mul_left _
-    continuous_invFun := continuous_mul_left _ }
+    continuous_toFun := continuous_const_mul _
+    continuous_invFun := continuous_const_mul _ }
 
 /-- Right multiplication by a nonzero element in a `GroupWithZero` with continuous multiplication
 is a homeomorphism of the underlying type. -/
 protected def mulRight₀ (c : α) (hc : c ≠ 0) : α ≃ₜ α :=
   { Equiv.mulRight₀ c hc with
-    continuous_toFun := continuous_mul_right _
-    continuous_invFun := continuous_mul_right _ }
+    continuous_toFun := continuous_mul_const _
+    continuous_invFun := continuous_mul_const _ }
 
 @[simp]
 theorem coe_mulLeft₀ (c : α) (hc : c ≠ 0) : ⇑(Homeomorph.mulLeft₀ c hc) = (c * ·) :=

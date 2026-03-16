@@ -593,6 +593,7 @@ eventually. Nor is it clear whether, if so, there are any bounds on how many ite
 -- modified from 2021 American Mathematics Competition 12B, problem 9
 section
 
+set_option backward.isDefEq.respectTransparency false in
 example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
   ring_nf
@@ -605,6 +606,7 @@ example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
   guard_target = P 2
   exact test_sorry
 
+set_option backward.isDefEq.respectTransparency false in
 example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
   field_simp

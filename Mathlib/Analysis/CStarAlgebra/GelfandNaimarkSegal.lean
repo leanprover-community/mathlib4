@@ -73,7 +73,7 @@ variable [StarOrderedRing A]
 The (semi-)inner product space whose elements are the elements of `A`, but which has an
 inner product-induced norm that is different from the norm on `A` and which is induced by `f`.
 -/
-abbrev preGNSpreInnerProdSpace : PreInnerProductSpace.Core ℂ f.PreGNS where
+noncomputable abbrev preGNSpreInnerProdSpace : PreInnerProductSpace.Core ℂ f.PreGNS where
   inner a b := f (star (f.ofPreGNS a) * f.ofPreGNS b)
   conj_inner_symm := by simp [← Complex.star_def, ← map_star f]
   re_inner_nonneg _ := RCLike.nonneg_iff.mp (f.map_nonneg (star_mul_self_nonneg _)) |>.1
@@ -131,6 +131,7 @@ lemma leftMulMapPreGNS_mul_eq_comp (a b : A) :
     f.leftMulMapPreGNS (a * b) = f.leftMulMapPreGNS a ∘L f.leftMulMapPreGNS b := by
   ext c; simp [mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The non-unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on
 a Hilbert space that is constructed from a positive linear functional `f` on a possibly non-unital
@@ -166,6 +167,7 @@ noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] 
     | hp => apply isClosed_eq <;> fun_prop
     | ih x y => simp [mul_assoc, preGNS_inner_def]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma gnsNonUnitalStarAlgHom_apply {a : A} :
     f.gnsNonUnitalStarAlgHom a = (f.leftMulMapPreGNS a).completion := rfl
 
@@ -176,6 +178,7 @@ lemma gnsNonUnitalStarAlgHom_apply_coe {a : A} {b : f.PreGNS} :
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 private lemma gnsNonUnitalStarAlgHom_map_one : f.gnsNonUnitalStarAlgHom 1 = 1 := by
   ext b
@@ -183,6 +186,7 @@ private lemma gnsNonUnitalStarAlgHom_map_one : f.gnsNonUnitalStarAlgHom 1 = 1 :=
   | hp => apply isClosed_eq <;> fun_prop
   | ih b => simp [gnsNonUnitalStarAlgHom]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on a Hilbert
 space that is constructed from a positive linear functional `f` on a unital C⋆-algebra.

@@ -379,6 +379,13 @@ theorem mem_left_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p 
     (x : M) ∈ p ↔ x = 0 :=
   ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h => h.symm ▸ p.zero_mem⟩
 
+/-- Version of `AddSubgroup.disjoint_iff_add_eq_zero` for submodules. -/
+theorem disjoint_iff_add_eq_zero {M R : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {N₁ N₂ : Submodule R M} :
+    Disjoint N₁ N₂ ↔ ∀ {x y : M}, x ∈ N₁ → y ∈ N₂ → x + y = 0 → x = 0 ∧ y = 0 := by
+  simp only [← Submodule.mem_toAddSubgroup, ← AddSubgroup.disjoint_iff_add_eq_zero]
+  aesop (add norm [disjoint_def', AddSubgroup.disjoint_def'])
+
 end Submodule
 
 section NatSubmodule

@@ -9,7 +9,6 @@ public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.SetNotation
 public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.Bounds.Defs
-public import Aesop
 
 /-!
 # Definitions about filters
@@ -272,6 +271,7 @@ class NeBot (f : Filter α) : Prop where
   /-- The filter is nontrivial: `f ≠ ⊥` or equivalently, `∅ ∉ f`. -/
   ne' : f ≠ ⊥
 
+@[push ←]
 theorem neBot_iff {f : Filter α} : NeBot f ↔ f ≠ ⊥ :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
