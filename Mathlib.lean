@@ -3388,6 +3388,7 @@ public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
 public import Mathlib.Combinatorics.HasDart.Basic
+public import Mathlib.Combinatorics.HasDart.Walks.Basic
 public import Mathlib.Combinatorics.Hindman
 public import Mathlib.Combinatorics.KatonaCircle
 public import Mathlib.Combinatorics.Matroid.Basic
