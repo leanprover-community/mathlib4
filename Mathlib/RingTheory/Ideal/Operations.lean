@@ -775,6 +775,7 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
   simp only [isCoprime_iff_add, one_eq_top] at hf ⊢
   exact sup_iInf_eq_top hf
 
+-- TODO: Deprecate `Ideal.mul_eq_inf_of_coprime` in favor of this lemma.
 theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
   (Ideal.mul_eq_inf_of_coprime coprime.sup_eq)
 

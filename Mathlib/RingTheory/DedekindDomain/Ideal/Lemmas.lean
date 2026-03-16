@@ -758,7 +758,8 @@ theorem Ideal.le_mul_of_no_prime_factors {I J K : Ideal R}
   exact fun hPJ hPK => mt Ideal.isPrime_of_prime (coprime _ hPJ hPK)
 
 /-- The intersection of distinct prime powers in a Dedekind domain is the product of these
-prime powers. -/
+prime powers.
+See `IsDedekindDomain.inf_pow_eq_prod_of_prime` for the version in terms of `Ideal R`. -/
 theorem IsDedekindDomain.HeightOneSpectrum.inf_pow_eq_prod (s : Finset ι) (e : ι → ℕ)
     (f : ι → HeightOneSpectrum R) (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
     (s.inf fun i => (f i).asIdeal ^ e i) = ∏ i ∈ s, (f i).asIdeal ^ e i := by
@@ -783,7 +784,8 @@ theorem IsDedekindDomain.inf_pow_eq_prod_of_prime (s : Finset ι) (f : ι → Id
   IsDedekindDomain.inf_pow_eq_prod_of_prime
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
-`∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
+`∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`.
+See `IsDedekindDomain.quotientEquivPiOfProdEq` for the version in terms of `Ideal R`. -/
 def IsDedekindDomain.HeightOneSpectrum.quotientEquivPiOfProdEq [Fintype ι] (I : Ideal R)
     (P : ι → HeightOneSpectrum R) (e : ι → ℕ) (coprime : Pairwise fun i j => P i ≠ P j)
     (prod_eq : ∏ i, (P i).asIdeal ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ (P i).asIdeal ^ e i :=
