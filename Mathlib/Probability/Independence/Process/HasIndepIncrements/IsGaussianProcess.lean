@@ -7,7 +7,7 @@ module
 
 public import Mathlib
 
-open MeasureTheory
+open MeasureTheory Finset
 
 variable {T Ω E : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
@@ -89,10 +89,6 @@ lemma monotone_ofFin' [OrderBot T] : Monotone (I.ofFin') := by
 
 end Finset
 
-public section
-
-
-
 /-- `incrementsToRestrict I` is a continuous linear map `f` such that
 `f (xₜ₁, xₜ₂ - xₜ₁, ..., xₜₙ - xₜₙ₋₁) = (xₜ₁, ..., xₜₙ)`. -/
 noncomputable def incrementsToRestrict [LinearOrder T] (R : Type*) [Semiring R] [AddCommMonoid E]
@@ -118,7 +114,7 @@ lemma incrementsToRestrict_increments_ofFin'_ae_eq_restrict [LinearOrder T] (R :
 
 /-- A stochastic process `X` with independent increments and such that `X t` is gaussian for
 all `t` is a Gaussian process. -/
-lemma HasIndepIncrements.isGaussianProcess [LinearOrder T] [OrderBot T]
+public lemma ProbabilityTheory.HasIndepIncrements.isGaussianProcess [LinearOrder T] [OrderBot T]
     [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
     [SecondCountableTopology E] [CompleteSpace E]
     {X : T → Ω → E} (law : ∀ t, HasGaussianLaw (X t) P) (h_bot : ∀ᵐ ω ∂P, X ⊥ ω = 0)
