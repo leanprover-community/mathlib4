@@ -158,21 +158,14 @@ theorem coe_measurableEquivPiIoc :
 @[simp]
 theorem coe_measurableEquivPiIoc_apply (x : UnitAddTorus ι) :
     (measurableEquivPiIoc b) x = ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
-    fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ := rfl
+      fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ := rfl
 
-@[simp]
 theorem coe_symm_measurableEquivPiIoc :
-    (measurableEquivPiIoc b).symm = fun (x : {x : ι → ℝ // ∀ i, x i ∈ Ioc (b i) (b i + 1)})
-    (i : ι) => (x.1 i : UnitAddCircle) := rfl
+    ⇑(measurableEquivPiIoc b).symm = fun x i => x.1 i := rfl
 
 @[simp]
 theorem coe_symm_measurableEquivPiIoc_apply {x : ι → ℝ} (hx : ∀ i, x i ∈ Ioc (b i) (b i + 1)) :
-    (measurableEquivPiIoc b).symm ⟨x, hx⟩ = (fun i => (x i : UnitAddCircle)) := rfl
-
-private lemma measurableSet_PiIoc [Countable ι] :
-    MeasurableSet {x : ι → ℝ | ∀ i, x i ∈ Ioc (b i) (b i + 1)} :=
-  (MeasurableSet.univ_pi (fun i : ι => measurableSet_Ioc (a := b i) (b := b i + 1))).congr
-  (by grind)
+    (measurableEquivPiIoc b).symm ⟨x, hx⟩ = fun i => (x i : UnitAddCircle) := rfl
 
 /-- The equivalence `measurableEquivPiIoc` is measure preserving. -/
 lemma measurePreserving_equivPiIoc :
@@ -187,7 +180,8 @@ lemma measurePreserving_equivPiIoc :
   simp_rw [coe_symm_measurableEquivPiIoc, ← this]
   convert (measurePreserving_pi _ _ (fun i => AddCircle.measurePreserving_mk 1 (a i))).map_eq.symm
   · simp [volume, AddCircle.haarAddCircle]
-  · convert (map_comap_subtype_coe (measurableSet_PiIoc a) volume)
+  · convert (map_comap_subtype_coe (MeasurableSet.univ_pi'
+      (fun i => measurableSet_Ioc (a := a i))) volume)
     convert (Measure.restrict_pi_pi (fun i => volume) (fun i => Ioc (a i) (a i + 1))).symm
     grind
 
@@ -196,7 +190,7 @@ theorem lintegral_preimage (f : UnitAddTorus d → ℝ≥0∞) (a : d → ℝ) :
     ∫⁻ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
   convert lintegral_map_equiv (μ := volume.comap Subtype.val) f (measurableEquivPiIoc a).symm
   · exact (measurePreserving_equivPiIoc a).symm.map_eq.symm
-  · rw [← lintegral_subtype_comap (measurableSet_PiIoc a)]
+  · rw [← lintegral_subtype_comap (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc))]
     rfl
 
 theorem integral_preimage {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -205,7 +199,7 @@ theorem integral_preimage {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     ∫ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
   convert integral_map_equiv (μ := volume.comap Subtype.val) (measurableEquivPiIoc a).symm f
   · exact (measurePreserving_equivPiIoc a).symm.map_eq.symm
-  · rw [← integral_subtype_comap (measurableSet_PiIoc a)]
+  · rw [← integral_subtype_comap (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc))]
     rfl
 
 end Integral
