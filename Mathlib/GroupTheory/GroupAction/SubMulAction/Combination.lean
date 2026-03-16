@@ -208,6 +208,24 @@ theorem mulActionHom_compl_bijective :
 
 end compl
 
+
+set_option backward.isDefEq.respectTransparency false in
+theorem fixedPoints_ne_univ_of_isPreprimitive
+    {N : Subgroup G} [Nontrivial N] [FaithfulSMul N α]
+    (n : ℕ) (hn : 0 < n) (hn' : n < Nat.card α) [IsPreprimitive G (Set.powersetCard α n)] :
+    fixedPoints N (Set.powersetCard α n) ≠ _root_.Set.univ := by
+  have : Finite α := Nat.finite_of_card_ne_zero (Nat.ne_zero_of_lt hn')
+  obtain ⟨g, h⟩ := exists_ne (1 : N)
+  contrapose! h
+  replace h : (toPerm g : Perm (Set.powersetCard α n)) = 1 := by
+    ext1 s
+    exact Set.eq_univ_iff_forall.mp h s g
+  rwa [← toPermHom_apply, map_eq_one_iff] at h
+  have := Set.powersetCard.faithfulSMul (G := N) (α := α) (n := n) ?_ ?_
+  · exact MulAction.toPerm_injective
+  · exact hn
+  · rwa [ENat.card_eq_coe_natCard, Nat.cast_lt]
+
 variable (α)
 
 /-- The obvious map from a type to its 1-combinations, as an equivariant map. -/
