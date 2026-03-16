@@ -5,8 +5,11 @@ Authors: Joël Riou, Jack McKoen
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Leibniz Constructions
@@ -50,7 +53,7 @@ pushout-product, pullback-hom, pullback-power, Leibniz
 
 @[expose] public section
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -484,6 +487,47 @@ def leibnizAdjunction (adj₂ : F ⊣₂ G) [HasPullbacks C₂] [HasPushouts C�
     · apply pullback.hom_ext <;> simp [← homEquiv_naturality_one, ← homEquiv_naturality_three]
 
 end
+
+open PushoutObjObj in
+def preserves_pushouts [HasPushouts C₃]
+    {A B K L : C₂} {f : A ⟶ B} {g : K ⟶ L} {s : K ⟶ A} {t : L ⟶ B}
+    (ι : Arrow C₁) (h : IsPushout s g f t)
+    [PreservesColimit (span s g) (F.obj ι.left)]
+    [PreservesColimit (span s g) (F.obj ι.right)] :
+    IsPushout
+      ((F.leibnizPushout.obj ι).map (Arrow.homMk' s t h.w)).left
+      ((F.leibnizPushout.obj ι).obj g).hom
+      ((F.leibnizPushout.obj ι).obj f).hom
+      ((F.leibnizPushout.obj ι).map (Arrow.homMk' s t h.w)).right := by
+  have P₁ := h.map (F.obj ι.right)
+  have h₁ : pushout.inl _ _ ≫ ((F.leibnizPushout.obj ι).obj g).hom = ((F.obj ι.right).map g) :=
+    (ofHasPushout F ι.hom g).inl_ι
+  have h₂ : pushout.inl _ _ ≫ ((F.leibnizPushout.obj ι).obj f).hom = ((F.obj ι.right).map f) :=
+    (ofHasPushout F ι.hom f).inl_ι
+  rw [← h₁, ← h₂] at P₁
+  apply P₁.of_top
+  · ext
+    · simp [ofHasPushout_ι, ofHasPushout_inl, ← Functor.map_comp, h.w]
+    · simp [ofHasPushout_ι, ofHasPushout_inr]
+  · refine IsPushout.of_left ?_ (by cat_disch) ((ofHasPushout F ι.hom g).isPushout)
+    simpa using (h.map (F.obj ι.left)).paste_horiz ((ofHasPushout F ι.hom f).isPushout)
+
+open MorphismProperty in
+lemma temp [HasPushouts C₃] (W : MorphismProperty C₂) [IsStableUnderCobaseChange W]
+    (ι : Arrow C₁) : IsStableUnderCobaseChange (W.map (F.leibnizPushout.obj ι)) := sorry
+
+/-
+if `f` is a pushout of `g` in `C₂`, then ∀ `ι` in `Arrow C₁`, `(F.leibnizPushout.obj ι).obj f`
+  is a pushout of `(F.leibnizPushout.obj ι).obj g`
+
+let `W : MorphismProperty C₂`. if `W` is stable under cobase change, then
+  `W.map (F.leibnizPushout.obj ι) : MorphismProperty C₃` is.
+
+-/
+
+#check MorphismProperty.functorCategory
+
+#check MorphismProperty.IsStableUnderCobaseChange
 
 end Functor
 
