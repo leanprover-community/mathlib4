@@ -90,6 +90,8 @@ noncomputable instance hasLimitParallelPairInclusion {X Y : P.FullSubcategory}
     HasLimit (parallelPair f 0 ⋙ P.ι) :=
   hasLimit_of_iso (F := parallelPair f.hom 0) (Iso.symm (diagramIsoParallelPair _))
 
+/-- If an object property `P` is closed under kernels, then `P.ι` creates kernels.
+In particular, this implies `P.ι` preserves kernels. -/
 @[reducible]
 noncomputable def createsKernels [P.IsClosedUnderKernels] {X Y : P.FullSubcategory}
     (f : X ⟶ Y) [HasKernel f.hom] : CreatesLimit (parallelPair f 0) P.ι := by
@@ -132,6 +134,8 @@ noncomputable instance hasColimitParallelPairInclusion {X Y : P.FullSubcategory}
     HasColimit (parallelPair f 0 ⋙ P.ι) :=
   hasColimit_of_iso (F := parallelPair f.hom 0) (diagramIsoParallelPair _)
 
+/-- If an object property `P` is closed under cokernels, then `P.ι` creates cokernels.
+In particular, this implies `P.ι` preserves cokernels. -/
 @[reducible]
 noncomputable def createsCokernels [P.IsClosedUnderCokernels] {X Y : P.FullSubcategory}
     (f : X ⟶ Y) [HasCokernel f.hom] : CreatesColimit (parallelPair f 0) P.ι := by
