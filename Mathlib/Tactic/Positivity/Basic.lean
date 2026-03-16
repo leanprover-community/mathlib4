@@ -115,18 +115,20 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(min)
   match ← core zα pα? a, ← core zα pα? b with
-  | .positive (ltα := ltα) pa, .positive pb =>
-    haveI' : $ltα =Q ($lα).toLT := ⟨⟩
+  | .positive (pα := pα') pa, .positive pb =>
+    haveI' : $pα' =Q ($lα).toPartialOrder := ⟨⟩
     assumeInstancesCommute
     pure (.positive q(lt_min $pa $pb))
-  | .positive pa, .nonnegative pb =>
+  | .positive (pα := pα') pa, .nonnegative pb =>
+    haveI' : $pα' =Q ($lα).toPartialOrder := ⟨⟩
     assumeInstancesCommute
     pure (.nonnegative q(le_min_of_lt_of_le $pa $pb))
-  | .nonnegative pa, .positive pb =>
+  | .nonnegative (pα := pα') pa, .positive pb =>
+    haveI' : $pα' =Q ($lα).toPartialOrder := ⟨⟩
     assumeInstancesCommute
     pure (.nonnegative q(le_min_of_le_of_lt $pa $pb))
-  | .nonnegative pa (leα := leα), .nonnegative pb =>
-    haveI' : $leα =Q ($lα).toLE := ⟨⟩
+  | .nonnegative pa (pα := pα'), .nonnegative pb =>
+    haveI' : $pα' =Q ($lα).toPartialOrder := ⟨⟩
     assumeInstancesCommute
     pure (.nonnegative q(le_min $pa $pb))
   | .positive pa, .nonzero pb =>
@@ -149,7 +151,7 @@ is nonnegative, strictly positive if at least one is positive, and nonzero if bo
   let _a ← synthInstanceQ q(LinearOrder $α)
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(max)
-  let result : Strictness zα pα? e ← catchNone do
+  let result : Strictness zα e ← catchNone do
     let ra ← core zα pα? a
     match ra with
     | .positive pa =>
@@ -187,11 +189,10 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HAdd.hAdd)
   let ra ← core zα pα? a; let rb ← core zα pα? b
-  let some pα := pα? | pure .none
+  let some _pα := pα? | pure .none
   match ra, rb with
-  | .positive (ltα := ltα) pa, .positive pb =>
+  | .positive pa, .positive pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
-    haveI' : $ltα =Q ($pα).toLT := ⟨⟩
     assumeInstancesCommute
     pure (.positive q(add_pos' $pa $pb))
   | .positive pa, .nonnegative pb =>
@@ -202,9 +203,8 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     let _a ← synthInstanceQ q(AddRightMono $α)
     assumeInstancesCommute
     pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
-  | .nonnegative (leα := leα) pa, .nonnegative pb =>
+  | .nonnegative pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
-    haveI' : $leα =Q ($pα).toLE := ⟨⟩
     assumeInstancesCommute
     pure (.nonnegative q(add_nonneg $pa $pb))
   | _, _ => failure
@@ -218,38 +218,39 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let _a ← synthInstanceQ q(Mul $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HMul.hMul)
   let ra ← core zα pα? a; let rb ← core zα pα? b
-  let tryProveNonzero (pα? : Option Q(PartialOrder $α))
-      (pa? : Option Q($a ≠ 0)) (pb? : Option Q($b ≠ 0)) :
-      MetaM (Strictness zα pα? e) := do
+  let tryProveNonzero (pa? : Option Q($a ≠ 0)) (pb? : Option Q($b ≠ 0)) :
+      MetaM (Strictness zα e) := do
     let pa ← liftOption pa?
     let pb ← liftOption pb?
     let _a ← synthInstanceQ q(NoZeroDivisors $α)
     pure (.nonzero q(mul_ne_zero $pa $pb))
-  let tryProveNonneg (pα : Q(PartialOrder $α)) (pa? : Option Q(0 ≤ $a)) (pb? : Option Q(0 ≤ $b)) :
-      MetaM (Strictness zα (some pα) e) := do
-    let pa ← liftOption pa?
-    let pb ← liftOption pb?
+  let tryProveNonneg (pa? : Option <| (_ : Q(PartialOrder «$α»)) × Q(0 ≤ $a))
+      (pb? : Option <| (_ : Q(PartialOrder «$α»)) × Q(0 ≤ $b)) :
+      MetaM (Strictness zα e) := do
+    let ⟨_, pa⟩ ← liftOption pa?
+    let ⟨_, pb⟩ ← liftOption pb?
     let _a ← synthInstanceQ q(MulZeroClass $α)
     let _a ← synthInstanceQ q(PosMulMono $α)
     assumeInstancesCommute
     pure (.nonnegative q(mul_nonneg $pa $pb))
-  let tryProvePositive (pα : Q(PartialOrder $α)) (pa? : Option Q(0 < $a)) (pb? : Option Q(0 < $b)) :
-      MetaM (Strictness zα (some pα) e) := do
-    let pa ← liftOption pa?
-    let pb ← liftOption pb?
+  let tryProvePositive (pa? : Option <| (_ : Q(PartialOrder «$α»)) × Q(0 < $a))
+      (pb? : Option <| (_ : Q(PartialOrder «$α»)) × Q(0 < $b)) :
+      MetaM (Strictness zα e) := do
+    let ⟨_, pa⟩ ← liftOption pa?
+    let ⟨_, pb⟩ ← liftOption pb?
     let _a ← synthInstanceQ q(MulZeroClass $α)
     let _a ← synthInstanceQ q(PosMulStrictMono $α)
     assumeInstancesCommute
     pure (.positive q(mul_pos $pa $pb))
   match pα? with
-  | .some pα =>
-    let mut result : Strictness zα (some pα) e := .none
-    result ← orElse result (tryProvePositive pα ra.toPositive rb.toPositive)
-    result ← orElse result (tryProveNonneg pα ra.toNonneg rb.toNonneg)
-    result ← orElse result (tryProveNonzero (some pα) ra.toNonzero rb.toNonzero)
+  | .some _ =>
+    let mut result : Strictness zα e := .none
+    result ← orElse result (tryProvePositive ra.toPositive rb.toPositive)
+    result ← orElse result (tryProveNonneg ra.toNonneg rb.toNonneg)
+    result ← orElse result (tryProveNonzero ra.toNonzero rb.toNonzero)
     return result
   | .none =>
-    return ← catchNone <| tryProveNonzero .none ra.toNonzero rb.toNonzero
+    return ← catchNone <| tryProveNonzero ra.toNonzero rb.toNonzero
 
 lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
   rw [Int.ediv_self ha.ne']; exact zero_lt_one
@@ -274,8 +275,10 @@ where `a` and `b` are integers. -/
     match ra, rb with
     | .positive (pa : Q(0 < $a)), .positive (pb : Q(0 < $b)) =>
       -- Only attempts to prove `0 < a / a`, otherwise falls back to `0 ≤ a / b`
+      let _ := q(int_div_self_pos $pa)
       match ← isDefEqQ a b with
-      | .defEq _ => pure (.positive q(int_div_self_pos $pa))
+      | .defEq _ =>
+        pure (.positive q(int_div_self_pos $pa))
       | .notDefEq => pure (.nonnegative q(int_div_nonneg_of_pos_of_pos $pa $pb))
     | .positive (pa : Q(0 < $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
       pure (.nonnegative q(int_div_nonneg_of_pos_of_nonneg $pa $pb))
@@ -318,7 +321,7 @@ meta def evalPow : PositivityExt where eval {u α} zα pα? e := do
     haveI' : $e =Q $a ^ $b := ⟨⟩
     let .nonzero nza ← core zα .none a | pure .none
     pure (.nonzero q(pow_ne_zero $b $nza))
-  let result ← catchNone do
+  let result : Strictness zα e ← catchNone do
     let _a ← synthInstanceQ q(Ring $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
@@ -333,12 +336,12 @@ meta def evalPow : PositivityExt where eval {u α} zα pα? e := do
   orElse result do
     let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a)) (_rα : Q(Semiring $α)) (_oα : Q(IsOrderedRing $α)) :
-        MetaM (Strictness zα pα e) := do
+        MetaM (Strictness zα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       pure (.nonnegative q(pow_nonneg $pa $b))
     let ofNonzero (pa : Q($a ≠ 0)) (_rα : Q(Semiring $α)) (_oα : Q(IsOrderedRing $α)) :
-        MetaM (Strictness zα pα e) := do
+        MetaM (Strictness zα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       let _a ← synthInstanceQ q(NoZeroDivisors $α)
@@ -375,19 +378,19 @@ theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
 @[positivity |_|]
 meta def evalAbs : PositivityExt where eval {_u} (α zα pα?) (e : Q($α)) := do
   let ~q(@abs _ (_) (_) $a) := e | throwError "not |·|"
-  let some pα := pα? | pure .none
+  let some pα' := pα? | pure .none
   try
-    match ← core zα (some pα) a with
+    match ← core zα (some pα') a with
     | .positive pa =>
       let pa' ← mkAppM ``abs_pos_of_pos #[pa]
-      pure (.positive (ltα := q(($pα).toLT)) pa')
+      pure (.positive (pα := pα') pa')
     | .nonzero pa =>
       let pa' ← mkAppM ``abs_pos_of_ne_zero #[pa]
-      pure (.positive (ltα := q(($pα).toLT)) pa')
+      pure (.positive (pα := pα') pa')
     | _ => throwError "goto catch"
   catch _ => do
     let pa' ← mkAppM ``abs_nonneg #[a]
-    pure (.nonnegative (leα := q(($pα).toLE)) pa')
+    pure (.nonnegative (pα := pα') pa')
 
 theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
   Int.natAbs_pos.mpr hn.ne'
@@ -566,10 +569,10 @@ meta def evalIntGCD : PositivityExt where eval {u α} _ _ e := do
     let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
     let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
     assertInstancesCommute
-    match (← catchNone (core z (some p) a)).toNonzero with
+    match (← catchNone (core z (some p) a)).toNonzero z with
     | some na => return .positive q(Int.gcd_pos_of_ne_zero_left $b $na)
     | none =>
-      match (← core z (some p) b).toNonzero with
+      match (← core z (some p) b).toNonzero z with
       | some nb => return .positive q(Int.gcd_pos_of_ne_zero_right $a $nb)
       | none => failure
   | _, _, _ => throwError "not Int.gcd"
@@ -582,9 +585,9 @@ meta def evalIntLCM : PositivityExt where eval {u α} _ _ e := do
     let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
     let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
     assertInstancesCommute
-    match (← core z (some p) a).toNonzero with
+    match (← core z (some p) a).toNonzero z with
     | some na =>
-      match (← core z (some p) b).toNonzero with
+      match (← core z (some p) b).toNonzero z with
       | some nb => return .positive q(Int.lcm_pos $na $nb)
       | _ => failure
     | _ => failure
@@ -702,7 +705,7 @@ meta def evalMap : PositivityExt where eval {_ β} _ pβ? e := do
   let .app (.app _ f) a ← whnfR e
     | throwError "not ↑f · where f is of NonnegHomClass"
   let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
-  pure (.nonnegative (leα := q(($pβ).toLE)) pa)
+  pure (.nonnegative (pα := pβ) pa)
 
 end Positivity
 
