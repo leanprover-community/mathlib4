@@ -54,7 +54,7 @@ protected theorem down_up (s : Set α) : s.up.down = s :=
 protected theorem up_down (s : SetSemiring α) : s.down.up = s :=
   rfl
 
--- TODO: These lemmas are not tagged `simp` because `Set.le_eq_subset` simplifies the LHS
+-- TODO: These lemmas are not tagged `simp` because `Set.le_eq_subset` used to simplify the LHS
 theorem up_le_up {s t : Set α} : s.up ≤ t.up ↔ s ⊆ t :=
   Iff.rfl
 

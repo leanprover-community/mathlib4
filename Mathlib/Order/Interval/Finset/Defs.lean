@@ -901,7 +901,7 @@ using `WithTop.some` and then insert `⊤`. -/
 def insertTop : Finset α ↪o Finset (WithTop α) :=
   OrderEmbedding.ofMapLEIff
     (fun s => cons ⊤ (s.map Embedding.coeWithTop) <| by simp)
-    (fun s t => by rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset])
+    (fun s t => by rw [cons_subset_cons, map_subset_map])
 
 @[simp]
 theorem some_mem_insertTop {s : Finset α} {a : α} : ↑a ∈ insertTop s ↔ a ∈ s := by
@@ -979,7 +979,7 @@ using `WithBot.some` and then insert `⊥`. -/
 def insertBot : Finset α ↪o Finset (WithBot α) :=
   OrderEmbedding.ofMapLEIff
     (fun s => cons ⊥ (s.map Embedding.coeWithBot) <| by simp)
-    (fun s t => by rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset])
+    (fun s t => by rw [cons_subset_cons, map_subset_map])
 
 @[simp]
 theorem some_mem_insertBot {s : Finset α} {a : α} : ↑a ∈ insertBot s ↔ a ∈ s := by

@@ -125,14 +125,14 @@ theorem coe_union (s₁ s₂ : Finset α) : ↑(s₁ ∪ s₂) = (s₁ ∪ s₂ 
   Set.ext fun _ => mem_union
 
 theorem union_subset (hs : s ⊆ u) : t ⊆ u → s ∪ t ⊆ u :=
-  sup_le <| le_iff_subset.2 hs
+  sup_le hs
 
 @[simp] lemma subset_union_left : s₁ ⊆ s₁ ∪ s₂ := fun _ ↦ mem_union_left _
 @[simp] lemma subset_union_right : s₂ ⊆ s₁ ∪ s₂ := fun _ ↦ mem_union_right _
 
 @[gcongr]
 theorem union_subset_union (hsu : s ⊆ u) (htv : t ⊆ v) : s ∪ t ⊆ u ∪ v :=
-  sup_le_sup (le_iff_subset.2 hsu) htv
+  sup_le_sup hsu htv
 
 theorem union_subset_union_left (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
   union_subset_union h Subset.rfl
@@ -254,7 +254,7 @@ theorem inter_subset_inter_right (h : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
   inter_subset_inter h Subset.rfl
 
 theorem inter_subset_union : s ∩ t ⊆ s ∪ t :=
-  le_iff_subset.1 inf_le_sup
+  inf_le_sup
 
 instance : DistribLattice (Finset α) :=
   { le_sup_inf := fun a b c => by

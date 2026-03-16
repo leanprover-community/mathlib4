@@ -101,22 +101,26 @@ theorem sup_eq_union : ((· ⊔ ·) : Set α → Set α → Set α) = (· ∪ ·
 theorem inf_eq_inter : ((· ⊓ ·) : Set α → Set α → Set α) = (· ∩ ·) :=
   rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
 theorem le_eq_subset : (· ≤ ·) = ((· ⊆ ·) : Set α → Set α → Prop) :=
   rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
 theorem lt_eq_ssubset : ((· < ·) : Set α → Set α → Prop) = (· ⊂ ·) :=
   rfl
 
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
 theorem le_iff_subset : s ≤ t ↔ s ⊆ t :=
   Iff.rfl
 
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16")]
 theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 
+@[deprecated "this is now a syntactic identitiy" (since := "2026-03-16")]
 alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 
+@[deprecated "this is now a syntactic identitiy" (since := "2026-03-16")]
 alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :

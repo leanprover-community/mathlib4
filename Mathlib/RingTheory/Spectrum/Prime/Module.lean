@@ -38,7 +38,7 @@ lemma LocalizedModule.subsingleton_iff_disjoint {f : R} :
     Subsingleton (LocalizedModule (.powers f) M) ↔
       Disjoint ↑(PrimeSpectrum.basicOpen f) (Module.support R M) := by
   rw [subsingleton_iff_support_subset, PrimeSpectrum.basicOpen_eq_zeroLocus_compl,
-    disjoint_compl_left_iff, Set.le_iff_subset]
+    disjoint_compl_left_iff]
 
 lemma Module.stableUnderSpecialization_support : StableUnderSpecialization (Module.support R M) :=
   fun x y e ↦ mem_support_mono <| (PrimeSpectrum.le_iff_specializes x y).mpr e
