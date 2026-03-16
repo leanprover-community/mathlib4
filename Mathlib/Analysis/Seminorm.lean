@@ -6,6 +6,7 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 module
 
 public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.Normed.Module.Basic
@@ -221,6 +222,14 @@ instance instModule [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower 
     Module R (Seminorm 𝕜 E) :=
   (coeFnAddMonoidHom_injective 𝕜 E).module R _ (by intros; rfl)
 
+open Classical in
+@[simp]
+theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → Seminorm 𝕜 E) (x : E) :
+    (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x := by
+  induction s using Finset.induction with
+  | empty => simp
+  | insert i s his h => simp [his, h]
+
 instance instSup : Max (Seminorm 𝕜 E) where
   max p q :=
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
@@ -376,6 +385,12 @@ theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p
   intro i hi
   rw [Finset.sum_eq_sum_diff_singleton_add hi, le_add_iff_nonneg_left]
   exact bot_le
+
+open Classical in
+theorem finset_sum_apply_le_card_smul_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) {x : E} :
+    ∑ i ∈ s, p i x ≤ s.card • s.sup p x := by
+  rw [← Seminorm.sum_apply]
+  exact (s.sum_le_card_smul_sup p) x
 
 theorem finset_sup_apply_le {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 ≤ a)
     (h : ∀ i, i ∈ s → p i x ≤ a) : s.sup p x ≤ a := by

@@ -75,7 +75,7 @@ variable {ι M : Type*} [AddCommMonoid M] [SemilatticeSup M] [OrderBot M]
   [AddLeftMono M]
 
 open Classical in
-theorem sup_le_card_smul_sum (p : ι → M) (s : Finset ι) :
+theorem Finset.sum_le_card_smul_sup (p : ι → M) (s : Finset ι) :
     ∑ i ∈ s, p i ≤ s.card • s.sup p := by
   induction s using Finset.induction with
   | empty => simp
