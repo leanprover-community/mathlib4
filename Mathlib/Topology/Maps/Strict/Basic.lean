@@ -43,7 +43,7 @@ theorem isStrictMap_iff_isHomeomorph_quotientKerEquivRange :
   exact ⟨fun h => IsQuotientMap.of_comp_isQuotientMap isQuotientMap_quotient_mk' h,
          fun h ↦ h.comp isQuotientMap_quotient_mk'⟩
 
-theorem isStrictMap_iff_kerLift_isEmbedding :
+theorem isStrictMap_iff_isEmbedding_kerLift :
     IsStrictMap f ↔ IsEmbedding (Setoid.kerLift f) := by
   simp only [isStrictMap_iff_quotientKerEquivRange_isHomeomorph,
     isHomeomorph_iff_isEmbedding_surjective, Equiv.surjective, and_true]
