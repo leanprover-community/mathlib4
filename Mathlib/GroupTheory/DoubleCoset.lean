@@ -235,7 +235,7 @@ theorem iUnion_image_mk_rightRel (H K : Subgroup G) :
     ⋃ q : Quotient H K, Quot.mk (rightRel H) '' doubleCoset (out q : G) H K = Set.univ :=
   iUnion_image_mk.2
 
-theorem iUnion_finset_leftRel_eq_univ_of_leftRel (H K : Subgroup G) (t : Finset (Quotient H K))
+theorem iUnion_finset_leftRel_eq_univ_of_leftRel {H K : Subgroup G} {t : Finset (Quotient H K)}
     (ht : Set.univ ⊆ ⋃ i ∈ t, Quot.mk (leftRel K) '' doubleCoset (out i) H K) :
     ⋃ q ∈ t, doubleCoset (out q) H K = Set.univ := by
   contrapose ht
