@@ -593,7 +593,8 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} 
       Subtype.ext (Quotient.sound ((h _ _).1 hab))
   left_inv a := by
     obtain ⟨a, ha⟩ := a
-    induction a using Quotient.inductionOn; rfl
+    induction a using Quotient.inductionOn
+    rfl
   right_inv a := by induction a using Quotient.inductionOn; rfl
 
 @[simp]

@@ -254,7 +254,8 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSu
 theorem typein_ordinal (o : Ordinal.{u}) :
     @typein Ordinal (· < ·) _ o = Ordinal.lift.{u + 1} o := by
   induction o using Quotient.inductionOn with | _ w
-  obtain ⟨α, r, wo⟩ := w; apply Quotient.sound
+  obtain ⟨α, r, wo⟩ := w
+  apply Quotient.sound
   constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
 
 theorem mk_Iio_ordinal (o : Ordinal.{u}) :

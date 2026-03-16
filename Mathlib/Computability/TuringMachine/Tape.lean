@@ -227,13 +227,15 @@ theorem ListBlank.nth_mk {Γ} [Inhabited Γ] (l : List Γ) (n : ℕ) :
 @[simp]
 theorem ListBlank.nth_zero {Γ} [Inhabited Γ] (l : ListBlank Γ) : l.nth 0 = l.head := by
   rw [← ListBlank.cons_head_tail l]
-  induction l.tail using Quotient.inductionOn'; rfl
+  induction l.tail using Quotient.inductionOn'
+  rfl
 
 @[simp]
 theorem ListBlank.nth_succ {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) :
     l.nth (n + 1) = l.tail.nth n := by
   rw [← ListBlank.cons_head_tail l]
-  induction l.tail using Quotient.inductionOn'; rfl
+  induction l.tail using Quotient.inductionOn'
+  rfl
 
 @[ext]
 theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
@@ -314,13 +316,15 @@ theorem ListBlank.map_mk {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap
 theorem ListBlank.head_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) : (l.map f).head = f l.head := by
   rw [← ListBlank.cons_head_tail l]
-  induction l using Quotient.inductionOn'; rfl
+  induction l using Quotient.inductionOn'
+  rfl
 
 @[simp]
 theorem ListBlank.tail_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) : (l.map f).tail = l.tail.map f := by
   rw [← ListBlank.cons_head_tail l]
-  induction l using Quotient.inductionOn'; rfl
+  induction l using Quotient.inductionOn'
+  rfl
 
 @[simp]
 theorem ListBlank.map_cons {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
