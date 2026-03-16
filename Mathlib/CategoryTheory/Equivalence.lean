@@ -140,22 +140,22 @@ abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
 abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
   e.counitIso.hom
 
-@[reassoc (attr := simp)]
+@[reassoc +to_dual (attr := simp)]
 lemma unitIso_hom_inv_id_app (e : C ≌ D) (X : C) :
     dsimp% e.unit.app X ≫ e.unitInv.app X = 𝟙 X :=
   e.unitIso.hom_inv_id_app X
 
-@[reassoc (attr := simp)]
+@[reassoc +to_dual (attr := simp)]
 lemma unitIso_inv_hom_id_app (e : C ≌ D) (X : C) :
     dsimp% e.unitInv.app X ≫ e.unit.app X = 𝟙 _ :=
   e.unitIso.inv_hom_id_app X
 
-@[reassoc (attr := simp)]
+@[reassoc +to_dual (attr := simp)]
 lemma counitIso_hom_inv_id_app (e : C ≌ D) (Y : D) :
     dsimp% e.counit.app Y ≫ e.counitInv.app Y = 𝟙 _ :=
   e.counitIso.hom_inv_id_app Y
 
-@[reassoc (attr := simp)]
+@[reassoc +to_dual (attr := simp)]
 lemma counitIso_inv_hom_id_app (e : C ≌ D) (Y : D) :
     dsimp% e.counitInv.app Y ≫ e.counit.app Y = 𝟙 Y :=
   e.counitIso.inv_hom_id_app Y
