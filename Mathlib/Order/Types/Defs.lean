@@ -257,9 +257,6 @@ theorem lift_id' (o : OrderType.{max u v}) : lift.{u} o = o :=
 theorem lift_id (o : OrderType) : lift.{u, u} o = o :=
   lift_id'.{u, u} o
 
-/-- An order type lifted to the zero universe equals itself. -/
-theorem lift_uzero (o : OrderType.{u}) : lift.{0} o = o := by simp
-
 @[simp]
 theorem lift_lift.{u_1} (o : OrderType.{u_1}) : lift.{u} (lift.{v} o) = lift.{max v u} o :=
   inductionOn o fun _ ↦
