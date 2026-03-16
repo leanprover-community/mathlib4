@@ -282,7 +282,7 @@ theorem one_snd : (1 : X q).2 = 0 :=
   rfl
 
 instance : Monoid (X q) :=
-  { inferInstanceAs (Mul (X q)), inferInstanceAs (One (X q)) with
+  { (inferInstance : Mul (X q)), (inferInstance : One (X q)) with
     mul_assoc := fun x y z => by ext <;> dsimp <;> ring
     one_mul := fun x => by ext <;> simp
     mul_one := fun x => by ext <;> simp }
@@ -303,8 +303,8 @@ instance : NatCast (X q) where
   rfl
 
 instance : AddGroupWithOne (X q) :=
-  { inferInstanceAs (Monoid (X q)), inferInstanceAs (AddCommGroup (X q)),
-      inferInstanceAs (NatCast (X q)) with
+  { (inferInstance : Monoid (X q)), (inferInstance : AddCommGroup (X q)),
+      (inferInstance : NatCast (X q)) with
     natCast_zero := by ext <;> simp
     natCast_succ := fun _ ↦ by ext <;> simp
     intCast := fun n => ⟨n, 0⟩
@@ -318,15 +318,15 @@ theorem right_distrib (x y z : X q) : (x + y) * z = x * z + y * z := by
   ext <;> dsimp <;> ring
 
 instance : Ring (X q) :=
-  { inferInstanceAs (AddGroupWithOne (X q)), inferInstanceAs (AddCommGroup (X q)),
-      inferInstanceAs (Monoid (X q)) with
+  { (inferInstance : AddGroupWithOne (X q)), (inferInstance : AddCommGroup (X q)),
+      (inferInstance : Monoid (X q)) with
     left_distrib := left_distrib
     right_distrib := right_distrib
     mul_zero := fun _ ↦ by ext <;> simp
     zero_mul := fun _ ↦ by ext <;> simp }
 
 instance : CommRing (X q) :=
-  { inferInstanceAs (Ring (X q)) with
+  { (inferInstance : Ring (X q)) with
     mul_comm := fun _ _ ↦ by ext <;> dsimp <;> ring }
 
 instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=

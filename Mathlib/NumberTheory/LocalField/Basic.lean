@@ -117,7 +117,7 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
   letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   obtain ⟨_⟩ := Valued.integer.locallyFiniteOrder_units_mrange_of_isCompact_integer
-    (isCompact_iff_compactSpace.mpr (inferInstanceAs (CompactSpace 𝒪[K])))
+    (isCompact_iff_compactSpace.mpr (inferInstance : CompactSpace 𝒪[K]))
   let e : (MonoidHom.mrange (valuation K)) ≃*o ValueGroupWithZero K :=
     ⟨.ofBijective (MonoidHom.mrange (valuation K)).subtype ⟨Subtype.val_injective, fun x ↦
       ⟨⟨x, ValuativeRel.valuation_surjective x⟩, rfl⟩⟩, .rfl⟩
