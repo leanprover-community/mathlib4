@@ -58,13 +58,19 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 variable (F) in
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
-  mkCLM (deriv ·) (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
-    (fun a f _ => deriv_const_smul a f.differentiableAt)
-    (fun f => (contDiff_succ_iff_deriv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
-    ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
-      simpa only [Real.norm_eq_abs, Finset.sup_singleton, schwartzSeminormFamily_apply, one_mul,
-        norm_iteratedFDeriv_eq_norm_iteratedDeriv, ← iteratedDeriv_succ'] using
-        f.le_seminorm' 𝕜 k (n + 1) x⟩
+  mkCLM (deriv ·) ?_ ?_ ?_ ?_ where finally
+  · intro f g _
+    exact deriv_add f.differentiableAt g.differentiableAt
+  · intro a f _
+    exact deriv_const_smul a f.differentiableAt
+  · intro f
+    exact (contDiff_succ_iff_deriv.mp (f.smooth ⊤)).2.2
+  · intro ⟨k, n⟩
+    use {⟨k, n + 1⟩}, 1, zero_le_one
+    intro f x
+    simpa only [Real.norm_eq_abs, Finset.sup_singleton, schwartzSeminormFamily_apply, one_mul,
+      norm_iteratedFDeriv_eq_norm_iteratedDeriv, ← iteratedDeriv_succ'] using
+      f.le_seminorm' 𝕜 k (n + 1) x
 
 @[simp]
 theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 F f x = deriv f x :=
@@ -82,12 +88,18 @@ variable [SMulCommClass ℝ 𝕜 F]
 variable (E F) in
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
-  mkCLM (fderiv ℝ ·) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
-    (fun a f _ => fderiv_const_smul f.differentiableAt a)
-    (fun f => (contDiff_succ_iff_fderiv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
-    ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
-      simpa only [schwartzSeminormFamily_apply, Seminorm.comp_apply, Finset.sup_singleton,
-        one_smul, norm_iteratedFDeriv_fderiv, one_mul] using f.le_seminorm 𝕜 k (n + 1) x⟩
+  mkCLM (fderiv ℝ ·) ?_ ?_ ?_ ?_ where finally
+  · intro f g _
+    exact fderiv_add f.differentiableAt g.differentiableAt
+  · intro a f _
+    exact fderiv_const_smul f.differentiableAt a
+  · intro f
+    exact (contDiff_succ_iff_fderiv.mp (f.smooth ⊤)).2.2
+  · intro ⟨k, n⟩
+    use {⟨k, n + 1⟩}, 1, zero_le_one
+    intro f x
+    simpa only [schwartzSeminormFamily_apply, Seminorm.comp_apply, Finset.sup_singleton,
+      one_smul, norm_iteratedFDeriv_fderiv, one_mul] using f.le_seminorm 𝕜 k (n + 1) x
 
 @[simp]
 theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 E F f x = fderiv ℝ f x :=

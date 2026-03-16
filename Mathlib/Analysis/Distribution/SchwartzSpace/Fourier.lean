@@ -49,38 +49,40 @@ Schwartz space.
 This definition is only to define the Fourier transform, use `FourierTransform.fourierCLM` instead.
 -/
 def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) :=
-  mkCLM ((𝓕 : (V → E) → (V → E)) ·)
-    (fun f g ↦ by simp [fourier_eq, integral_add
+  mkCLM ((𝓕 : (V → E) → (V → E)) ·) ?_ ?_ ?_ ?_ where finally
+  · intro f g
+    simp [fourier_eq, integral_add
       ((fourierIntegral_convergent_iff _).mpr f.integrable)
-      ((fourierIntegral_convergent_iff _).mpr g.integrable)])
-    (by simp [fourier_eq, smul_comm, integral_smul])
-    (fun f ↦ contDiff_fourier (fun n _ ↦ integrable_pow_mul volume f n)) <| by
-  intro ⟨k, n⟩
-  refine ⟨Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1),
-    (2 * π) ^ n * (2 * n + 2) ^ k * (Finset.range (n + 1) ×ˢ Finset.range (k + 1)).card *
-      2 ^ integrablePower (volume : Measure V) *
-      (∫ x : V, (1 + ‖x‖) ^ (- integrablePower (volume : Measure V) : ℝ)) * 2, by positivity,
-    fun f x ↦ ?_⟩
-  apply (pow_mul_norm_iteratedFDeriv_fourier_le (f.smooth ⊤)
-    (fun k n _hk _hn ↦ integrable_pow_mul_iteratedFDeriv _ f k n) le_top le_top x).trans
-  simp only [mul_assoc]
-  gcongr
-  calc
-  _ ≤ ∑ _ ∈ Finset.range (n + 1) ×ˢ Finset.range (k + 1),
-      2 ^ integrablePower (volume : Measure V) *
-        (∫ x : V, (1 + ‖x‖) ^ (- integrablePower (volume : Measure V) : ℝ)) * 2 *
-        (Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1)).sup
-        (schwartzSeminormFamily 𝕜 V E) f := by
-    gcongr with p
-    apply (f.integral_pow_mul_iteratedFDeriv_le 𝕜 ..).trans
-    simp only [mul_assoc, two_mul]
+      ((fourierIntegral_convergent_iff _).mpr g.integrable)]
+  · simp [fourier_eq, smul_comm, integral_smul]
+  · intro f
+    exact contDiff_fourier (fun n _ ↦ integrable_pow_mul volume f n)
+  · intro ⟨k, n⟩
+    refine ⟨Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1),
+      (2 * π) ^ n * (2 * n + 2) ^ k * (Finset.range (n + 1) ×ˢ Finset.range (k + 1)).card *
+        2 ^ integrablePower (volume : Measure V) *
+        (∫ x : V, (1 + ‖x‖) ^ (- integrablePower (volume : Measure V) : ℝ)) * 2, by positivity,
+      fun f x ↦ ?_⟩
+    apply (pow_mul_norm_iteratedFDeriv_fourier_le (f.smooth ⊤)
+      (fun k n _hk _hn ↦ integrable_pow_mul_iteratedFDeriv _ f k n) le_top le_top x).trans
+    simp only [mul_assoc]
     gcongr
-    · have : (0, p.2) ∈ Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ
-          Finset.range (k + 1) := by simp_all
-      apply Seminorm.le_def.mp (Finset.le_sup (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2) this)
-    · have : (p.1 + integrablePower (volume : Measure V), p.2) ∈ Finset.range
-          (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1) := by simp_all
-      apply Seminorm.le_def.mp (Finset.le_sup (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2) this)
+    calc
+    _ ≤ ∑ _ ∈ Finset.range (n + 1) ×ˢ Finset.range (k + 1),
+        2 ^ integrablePower (volume : Measure V) *
+          (∫ x : V, (1 + ‖x‖) ^ (- integrablePower (volume : Measure V) : ℝ)) * 2 *
+          (Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1)).sup
+          (schwartzSeminormFamily 𝕜 V E) f := by
+      gcongr with p
+      apply (f.integral_pow_mul_iteratedFDeriv_le 𝕜 ..).trans
+      simp only [mul_assoc, two_mul]
+      gcongr
+      · have : (0, p.2) ∈ Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ
+            Finset.range (k + 1) := by simp_all
+        apply Seminorm.le_def.mp (Finset.le_sup (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2) this)
+      · have : (p.1 + integrablePower (volume : Measure V), p.2) ∈ Finset.range
+            (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1) := by simp_all
+        apply Seminorm.le_def.mp (Finset.le_sup (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2) this)
   _ = _ := by simp [mul_assoc]
 
 instance instFourierTransform : FourierTransform 𝓢(V, E) 𝓢(V, E) where
