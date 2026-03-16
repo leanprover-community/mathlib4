@@ -12,7 +12,8 @@ public import Mathlib.LinearAlgebra.Prod
 /-!
 # Partially defined linear maps
 
-A `LinearPMap σ E F` or `E →ₛₗ.[σ] F` is a semilinear map from a submodule of `E` to `F`.
+A `LinearPMap σ E F` or `E →ₛₗ.[σ] F` is a semilinear map from a submodule of `E` to `F` with a ring
+homomorphism `σ` between the scalars. This reduces to a linear map when `σ` is the identity.
 We define a `SemilatticeInf` with `OrderBot` instance on this, and define three operations:
 
 * `mkSpanSingleton` defines a partial linear map defined on the span of a singleton.
@@ -157,8 +158,8 @@ theorem mkSpanSingleton'_apply (x : E) (y : F) (H : ∀ c : R, c • x = 0 → �
   apply Classical.choose_spec (mem_span_singleton.1 h)
 
 @[simp]
-theorem mkSpanSingleton'_apply_self (x : E) (y : F)
-    (H : ∀ c : R, c • x = 0 → σ c • y = 0) (h) : mkSpanSingleton' x y H ⟨x, h⟩ = y := by
+theorem mkSpanSingleton'_apply_self (x : E) (y : F) (H : ∀ c : R, c • x = 0 → σ c • y = 0) (h) :
+    mkSpanSingleton' x y H ⟨x, h⟩ = y := by
   conv_rhs => rw [← one_smul S y]
   rw [← RingHom.map_one, ← mkSpanSingleton'_apply x y H 1 ?_]
   · congr
