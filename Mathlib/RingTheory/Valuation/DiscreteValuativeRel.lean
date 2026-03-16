@@ -56,7 +56,8 @@ lemma IsDiscrete.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Com
   have : IsRankLeOne R := .of_compatible_mulArchimedean v
   by_cases h : IsNontrivial R
   · by_cases H : DenselyOrdered (ValueGroupWithZero R)
-    · exfalso
+    · classical
+      exfalso
       refine (MonoidWithZeroHom.range_nontrivial (ValueGroupWithZero.embed v)).not_subsingleton ?_
       rw [← WithZero.denselyOrdered_set_iff_subsingleton]
       exact (ValueGroupWithZero.embed_strictMono v).denselyOrdered_range

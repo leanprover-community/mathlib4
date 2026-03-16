@@ -63,7 +63,7 @@ noncomputable def coinvariantsTensorResolutionIso (hg : ∀ x, x ∈ Subgroup.zp
     · simpa [hj, whiskerLeft_def, coinvariantsTensorMk,
         tensorObj_carrier, ofCoinvariantsTprodLeftRegular, Representation.norm,
         ← Module.End.mul_apply, ← map_mul, mul_comm g⁻¹]
-        using Finset.sum_bijective _ (MulEquiv.inv G).bijective (by aesop) (by aesop)
+        using Finset.sum_bijective _ (MulEquiv.inv G).bijective (by simp) (by simp)
     · simp [hj, whiskerLeft_def, coinvariantsTensorMk, tensorObj_carrier,
         ← Module.End.mul_apply, ← map_mul, mul_comm g⁻¹]))
 
@@ -86,7 +86,7 @@ noncomputable def groupHomologyIsoEven
     groupHomology A i ≅ (subCompNormHom A g).homology :=
   groupHomologyIso A i (resolution k g⁻¹ <| (@Subgroup.zpowers_inv G ..).symm ▸ hg) ≪≫
   (HomologicalComplex.homologyMapIso (coinvariantsTensorResolutionIso A g hg) i) ≪≫
-  HomologicalComplex.alternatingConstHomologyIsoEven A.V (by ext; simp) (by ext; simp) _ (by aesop)
+  HomologicalComplex.alternatingConstHomologyIsoEven A.V (by ext; simp) (by ext; simp) _ (by simp)
     (by induction i generalizing h₀ with | zero => exact (NeZero.ne 0 rfl).elim | succ n _ => simp)
     hi
 

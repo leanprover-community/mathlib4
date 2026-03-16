@@ -169,7 +169,7 @@ theorem convex_segment [IsOrderedRing 𝕜] (x y : E) : Convex 𝕜 [x -[𝕜] y
   · rw [add_add_add_comm, ← mul_add, ← mul_add, habp, habq, mul_one, mul_one, hab]
   · match_scalars <;> noncomm_ring
 
-/-- See `Convex.semilinear_image` for a version for semilinar maps, but requiring that `𝕜` be a
+/-- See `Convex.semilinear_image` for a version for semilinear maps, but requiring that `𝕜` be a
   linear order, instead of just a partial order. -/
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab

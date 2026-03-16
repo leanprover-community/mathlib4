@@ -25,7 +25,7 @@ noncomputable section
 
 namespace Complex
 
-/-- The complex unit disc, denoted as `𝔻` withinin the Complex namespace -/
+/-- The complex unit disc, denoted as `𝔻` within the Complex namespace -/
 def UnitDisc : Type :=
   ball (0 : ℂ) 1 deriving TopologicalSpace
 
