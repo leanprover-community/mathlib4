@@ -880,7 +880,7 @@ theorem coe_inclusion {S T : Subring R} (h : S ≤ T) (x : S) :
 
 theorem inclusion_injective {S T : Subring R} (h : S ≤ T) :
     Function.Injective (Subring.inclusion h) :=
-  RingHom.injective_codRestrict.mpr (S.subtype_injective)
+  RingHom.injective_codRestrict.mpr S.subtype_injective
 
 @[simp]
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
