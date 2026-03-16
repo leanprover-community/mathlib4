@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Data.Fintype.BigOperators
 
 import Mathlib.Algebra.Module.End
@@ -69,3 +70,21 @@ lemma sum_single_smul
   rw [Finset.sum_eq_single i₀, Pi.single_eq_same] <;> aesop
 
 end Fintype
+
+variable {ι M : Type*} [AddCommMonoid M] [SemilatticeSup M] [OrderBot M]
+  [AddLeftMono M]
+
+open Classical in
+theorem sup_le_card_smul_sum (p : ι → M) (s : Finset ι) :
+    ∑ i ∈ s, p i ≤ s.card • s.sup p := by
+  induction s using Finset.induction with
+  | empty => simp
+  | insert n s hn hs =>
+    simp only [hn, not_false_eq_true, Finset.sum_insert, Finset.card_insert_of_notMem,
+      Finset.sup_insert, add_smul]
+    nth_rw 1 [add_comm]
+    gcongr
+    · grw [hs]
+      gcongr
+      exact le_sup_right
+    · simp
