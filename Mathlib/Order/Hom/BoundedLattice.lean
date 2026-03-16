@@ -374,12 +374,8 @@ variable [Lattice α] [Lattice β] [Lattice γ] [Lattice δ] [BoundedOrder α] [
   [BoundedOrder γ] [BoundedOrder δ]
 
 /-- Reinterpret a `BoundedLatticeHom` as a `SupBotHom`. -/
+@[to_dual /-- Reinterpret a `BoundedLatticeHom` as an `InfTopHom`. -/]
 def toSupBotHom (f : BoundedLatticeHom α β) : SupBotHom α β :=
-  { f with }
-
-/-- Reinterpret a `BoundedLatticeHom` as an `InfTopHom`. -/
-@[to_dual existing]
-def toInfTopHom (f : BoundedLatticeHom α β) : InfTopHom α β :=
   { f with }
 
 /-- Reinterpret a `BoundedLatticeHom` as a `BoundedOrderHom`. -/
