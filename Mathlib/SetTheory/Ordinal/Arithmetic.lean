@@ -925,13 +925,11 @@ theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ 
 theorem div_mul_cancel : ∀ {a b : Ordinal}, a ≠ 0 → a ∣ b → a * (b / a) = b
   | a, _, a0, ⟨b, rfl⟩ => by rw [mul_div_cancel _ a0]
 
-theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
-  | a, _, hb => by
-    rintro ⟨b, rfl⟩
-    apply le_mul_left
-    rw [pos_iff_ne_zero]
-    contrapose! hb
-    rw [hb, mul_zero]
+theorem le_of_dvd {a b : Ordinal} (hb : b ≠ 0) (ha : a ∣ b) : a ≤ b := by
+  obtain ⟨b, rfl⟩ := ha
+  apply le_mul_left _ (pos_of_ne_zero _)
+  contrapose! hb
+  rw [hb, mul_zero]
 
 theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :=
   if a0 : a = 0 then by subst a; exact (eq_zero_of_zero_dvd h₁).symm
