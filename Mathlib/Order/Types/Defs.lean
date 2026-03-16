@@ -94,9 +94,6 @@ theorem type_toType (o : OrderType) : type o.ToType = o := surjInv_eq Quot.exist
 theorem type_eq_type : type α = type β ↔ Nonempty (α ≃o β) :=
   Quotient.eq'
 
-def toType_orderIso : (type β).ToType ≃o β :=
-  Nonempty.some <| type_eq_type.mp (by simp)
-
 theorem type_congr (h : α ≃o β) : type α = type β :=
   type_eq_type.2 ⟨h⟩
 
@@ -248,10 +245,10 @@ def lift (o : OrderType.{v}) : OrderType.{max v u} :=
     (ULift.orderIso.{u, v} (α := β)).symm)
 
 @[simp]
-theorem type_uLift : type (ULift.{v, u} α) = lift.{v} (type α) := by
-  rfl
+theorem type_uLift : type (ULift.{v, u} α) = lift.{v} (type α) := Eq.refl (type (ULift.{v, u} α))
 
 /-- An order type lifted to a lower or equal universe equals itself. -/
+@[simp]
 theorem lift_id' (o : OrderType.{max u v}) : lift.{u} o = o :=
   inductionOn o fun _ ↦ type_congr ULift.orderIso
 
@@ -261,17 +258,17 @@ theorem lift_id (o : OrderType) : lift.{u, u} o = o :=
   lift_id'.{u, u} o
 
 /-- An order type lifted to the zero universe equals itself. -/
-@[simp]
-theorem lift_uzero (o : OrderType.{u}) : lift.{0} o = o :=
-  lift_id'.{0, u} o
+theorem lift_uzero (o : OrderType.{u}) : lift.{0} o = o := by simp
 
 @[simp]
 theorem lift_lift.{u_1} (o : OrderType.{u_1}) : lift.{u} (lift.{v} o) = lift.{max v u} o :=
-  inductionOn o fun _ => (ULift.orderIso.trans <| ULift.orderIso.trans ULift.orderIso.symm).type_congr
+  inductionOn o fun _ ↦
+    (ULift.orderIso.trans <| ULift.orderIso.trans ULift.orderIso.symm).type_congr
 
-theorem nonempty_toType_lift_orderIso (o : OrderType.{u}) : Nonempty ((lift.{v} o).ToType ≃o o.ToType) := by
+theorem nonempty_toType_lift_orderIso (o : OrderType.{u}) :
+    Nonempty ((lift.{v} o).ToType ≃o o.ToType) := by
   rw [← type_toType o, ← type_uLift, type_toType]
-  exact ⟨toType_orderIso.trans ULift.orderIso⟩
+  exact ⟨(Nonempty.some <| type_eq_type.mp <| type_toType (type _)).trans ULift.orderIso⟩
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 @[expose]
