@@ -141,7 +141,6 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
 
 end InductionHyp
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
