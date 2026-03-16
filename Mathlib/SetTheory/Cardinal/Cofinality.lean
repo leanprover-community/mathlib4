@@ -253,8 +253,8 @@ theorem cof_succ (o) : cof (succ o) = 1 :=
   cof_add_one o
 
 theorem cof_eq_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
-  have := (cof_eq_of_strictMono (hf.to_Iio a).strictMono ?_).symm
-  · simpa [← lift_cof] using this
+  have := cof_eq_of_strictMono (hf.to_Iio a).strictMono ?_
+  · simpa [← lift_cof] using this.symm
   · intro b
     obtain ⟨c, hca, hbc⟩ := (hf.lt_iff_exists_lt ha).1 b.2
     exact ⟨_, Set.mem_range_self ⟨c, hca⟩, hbc.le⟩
