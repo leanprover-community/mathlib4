@@ -37,8 +37,12 @@ theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
   refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty _⟩
   simpa using h a
 
-theorem IsCofinal.singleton_top [OrderTop α] : IsCofinal {(⊤ : α)} :=
-  fun _ ↦ ⟨⊤, Set.mem_singleton _, le_top⟩
+@[simp]
+theorem isCofinal_singleton_iff {x : α} : IsCofinal {x} ↔ IsTop x := by
+  simp [IsCofinal, IsTop]
+
+theorem IsCofinal.singleton_top [OrderTop α] : IsCofinal {(⊤ : α)} := by
+  simp
 
 theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofinal t := by
   intro a
