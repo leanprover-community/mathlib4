@@ -150,12 +150,10 @@ def measurableEquivPiIoc : UnitAddTorus ι ≃ᵐ {x : ι → ℝ // ∀ i, x i 
   (MeasurableEquiv.piCongrRight fun i => AddCircle.measurableEquivIoc 1 (b i)).trans <|
   MeasurableEquiv.subtypePiEquivPi.symm
 
-@[simp]
 theorem coe_measurableEquivPiIoc :
-    (measurableEquivPiIoc b) = fun (x : UnitAddTorus ι) =>
-    (⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
-    fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ :
-    {x : ι → ℝ // ∀ i, x i ∈ Ioc (b i) (b i + 1)}) := rfl
+    ⇑(measurableEquivPiIoc b) = fun x =>
+      ⟨fun i => (AddCircle.equivIoc 1 (b i) (x i)).1,
+      fun i => (AddCircle.equivIoc 1 (b i) (x i)).2⟩ := rfl
 
 @[simp]
 theorem coe_measurableEquivPiIoc_apply (x : UnitAddTorus ι) :
