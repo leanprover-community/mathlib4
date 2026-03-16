@@ -84,7 +84,9 @@ theorem inner_of_normal_velocity_eq_zero (c : ℝ → EuclideanSpace ℝ (Fin 2)
 has length 1 (is a unit vector). -/
 theorem normal_is_unit_of_unit_speed {I : Set ℝ} [I.OrdConnected] {c : ℝ → EuclideanSpace ℝ (Fin 2)}
   (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) : ‖normal c t‖ = 1 := by
-  simp [normal, norm]
+  simp only [norm, OfNat.ofNat_ne_zero, ↓reduceIte, ENNReal.ofNat_ne_top, normal, Fin.isValue, 
+             ENNReal.toReal_ofNat,Real.rpow_ofNat, sq_abs, Fin.sum_univ_two, Matrix.cons_val_zero, 
+             even_two, Even.neg_pow, Matrix.cons_val_one,Matrix.cons_val_fin_one, one_div]
   rw [add_comm]
   symm
   rw [← hc t ht]
@@ -101,23 +103,23 @@ def frameAt {I : Set ℝ} [I.OrdConnected] {c : ℝ → EuclideanSpace ℝ (Fin 
     constructor
     · intro i
       rcases (eq_or_ne i 0) with h | h
-      · simp [h]; exact hc t ht
+      · simp only [h, Fin.isValue]; exact hc t ht
       · have h' : i=1 := Fin.eq_one_of_ne_zero i h
-        simp [h']; exact normal_is_unit_of_unit_speed hc ht
+        simp only [h', Fin.isValue]; exact normal_is_unit_of_unit_speed hc ht
     · intro i j hinej
       rcases (eq_or_ne i 0) with h | h
-      · simp [h] at hinej
+      · simp only [h, Fin.isValue] at hinej
         have h' : j=1 := Fin.eq_one_of_ne_zero j fun a ↦ hinej (id (Eq.symm a))
-        simp [h, h']; exact inner_of_normal_velocity_eq_zero c t
+        simp only [h, Fin.isValue, h']; exact inner_of_normal_velocity_eq_zero c t
       · have h' : i=1 := Fin.eq_one_of_ne_zero i h
         have h'' : j=0 := by
           rw [h'] at hinej
           apply Fin.le_zero_iff.mp ?_
           grind
-        simp [h', h'']
+        simp only [h', Fin.isValue, h'']        
         rw [real_inner_comm]; exact inner_of_normal_velocity_eq_zero c t
   have hBsp : ⊤ ≤ Submodule.span ℝ (Set.range B) := by
-    simp
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, top_le_iff]    
     apply hBon.linearIndependent.span_eq_top_of_card_eq_finrank
     simp
   OrthonormalBasis.mk (v := B) (hon := hBon) (hsp := hBsp)
@@ -130,9 +132,10 @@ theorem orientedCurvature_of_unit_speed_curve {I : Set ℝ} [I.OrdConnected]
   orientedCurvature c t = inner ℝ (iteratedDeriv 2 c t) (normal c t) := by
   unfold orientedCurvature normal
   rw [hc t ht]
-  simp
+  simp only [Fin.isValue, Matrix.det_fin_two_of, one_pow, div_one]  
   rw [EuclideanSpace.inner_eq_star_dotProduct]
-  simp
+  simp only [Fin.isValue, star_trivial, Matrix.cons_dotProduct, neg_mul, 
+             Matrix.dotProduct_of_isEmpty, add_zero]  
   exact sub_eq_neg_add ((deriv c t).ofLp 0 * (iteratedDeriv 2 c t).ofLp 1)
     ((deriv c t).ofLp 1 * (iteratedDeriv 2 c t).ofLp 0)
 
@@ -176,7 +179,7 @@ theorem inner_of_velocity_accel_of_const_speed_eq_zero {I : Set ℝ} [I.OrdConne
     _ = (deriv f t) / 2 := by symm; simp [h₅]
     _ = ((inner ℝ (deriv c t) (iteratedDeriv 2 c t)) +
          (inner ℝ (iteratedDeriv 2 c t) (deriv c t))) / 2 := by
-      simp; unfold f
+      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj']; unfold f
       have hd : HasDerivAt (deriv c) (iteratedDeriv 2 c t) t := velocity_hasDerivAt_aux hI hc₁ ht
       apply (HasDerivAt.inner ℝ hd hd).deriv
     _ = inner ℝ (iteratedDeriv 2 c t) (deriv c t) := by
@@ -194,7 +197,9 @@ theorem second_deriv_eq_orientedCurvature_times_normal {I : Set ℝ} [I.OrdConne
     iteratedDeriv 2 c t = inner ℝ (iteratedDeriv 2 c t) (deriv c t) • deriv c t +
                           inner ℝ (iteratedDeriv 2 c t) (normal c t) • normal c t := by
       nth_rewrite 1 [← (frameAt hc₂ ht).sum_repr' (iteratedDeriv 2 c t)]
-      simp [frameAt]
+      simp only [frameAt, Nat.succ_eq_add_one, Nat.reduceAdd, OrthonormalBasis.coe_mk, 
+                 Fin.sum_univ_two, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, 
+                 Matrix.cons_val_fin_one]
       rw [real_inner_comm (deriv c t) (iteratedDeriv 2 c t),
           real_inner_comm (iteratedDeriv 2 c t) (normal c t)]
     _ =  inner ℝ (iteratedDeriv 2 c t) (normal c t) • normal c t := by
@@ -210,7 +215,7 @@ lemma normal_hasDerivAt_aux {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I)
   have h_diff : DifferentiableOn ℝ (deriv c) I := hd.differentiableOn (by norm_num)
   unfold normal; simp
   have h : DifferentiableOn ℝ (fun t ↦ !₂[-(deriv c t) 1, (deriv c t) 0]) I := by
-    rw [differentiableOn_piLp] at *;
+    rw [differentiableOn_piLp] at *
     intro i
     fin_cases i <;> simp [h_diff]
   exact h.differentiableAt (hI.mem_nhds ht)
@@ -243,7 +248,7 @@ theorem inner_of_normal_deriv_normal_of_unit_speed_eq_zero {I : Set ℝ} [I.OrdC
     _ = (deriv f t) / 2 := by symm; simp [h₅]
     _ = ((inner ℝ (normal c t) (deriv (normal c) t)) +
          (inner ℝ (deriv (normal c) t) (normal c t))) / 2 := by
-      simp; unfold f
+      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj']; unfold f
       have hn : HasDerivAt (normal c) (deriv (normal c) t) t := normal_hasDerivAt_aux hI hc₁ ht
       apply (HasDerivAt.inner ℝ hn hn).deriv
     _ = inner ℝ (normal c t) (deriv (normal c) t) := by
@@ -258,7 +263,9 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} [I.Ord
   (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) :
     deriv (normal c) t = -(orientedCurvature c t)•(deriv c t) := by
   rw [← (frameAt hc₂ ht).sum_repr' (deriv (normal c) t)]
-  simp [frameAt]
+  simp only [frameAt, Nat.succ_eq_add_one, Nat.reduceAdd, OrthonormalBasis.coe_mk, 
+             Fin.sum_univ_two, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, 
+             Matrix.cons_val_fin_one, neg_smul]
   rw [inner_of_normal_deriv_normal_of_unit_speed_eq_zero hI hc₁ hc₂ ht]; simp
   have h : inner ℝ (deriv c t) (deriv (normal c) t) = - orientedCurvature c t := by
     have h' : inner ℝ (deriv c t) (deriv (normal c) t) + orientedCurvature c t = 0 := by
@@ -270,7 +277,7 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} [I.Ord
         simp
       have h₃ : Set.EqOn f g I := by
         intro x hx
-        simp [f, g]
+        simp only [f, g]
         rw [real_inner_comm, inner_of_normal_velocity_eq_zero c x]
       have h₄ : f t = g t := h₃ ht
       calc
@@ -290,7 +297,8 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} [I.Ord
           rw [real_inner_comm (orientedCurvature c t • normal c t),
               inner_smul_left_eq_smul (normal c t) (normal c t)]
         _ = inner ℝ (deriv c t) (deriv (normal c) t) + (orientedCurvature c t) := by
-          simp [normal_is_unit_of_unit_speed hc₂ ht]
+          simp only [inner_self_eq_norm_sq_to_K, normal_is_unit_of_unit_speed hc₂ ht, 
+                     Real.ringHom_apply, one_pow, smul_eq_mul, mul_one]          
           rw [add_comm, real_inner_comm]
     linarith [h']
   simp [h]
@@ -335,11 +343,12 @@ protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature {I : Set ℝ
     have h₀ := continuousOn_angle_fun_aux hI hκ ht₀ θ₀
     intro i
     fin_cases i
-    · simp
+    · simp only [Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero, hasDerivWithinAt_const_add_iff]
       have h' : ContinuousOn (fun x ↦  Real.cos (θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ)) I := by
         exact Real.continuous_cos.comp_continuousOn' h₀
       exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval h' ht₀ ht
-    · simp
+    · simp only [Fin.mk_one, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one, 
+                 hasDerivWithinAt_const_add_iff]
       have h' : ContinuousOn (fun x ↦  Real.sin (θ₀ + ∫ (ξ : ℝ) in t₀..x, κ ξ)) I := by
         exact Real.continuous_sin.comp_continuousOn' h₀
       exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval h' ht₀ ht
@@ -367,7 +376,7 @@ lemma second_deriv_of_initialCurve_of_orientedCurvature {I : Set ℝ} [h_int: I.
     rw [hasDerivWithinAt_pi_euclidean]
     intro i
     fin_cases i
-    · simp
+    · simp only [Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero, neg_mul]
       have h₁ : HasDerivAt Real.cos (-Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ))
         ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_cos]
       have hint := h₁.comp_hasDerivWithinAt t h₀
@@ -378,7 +387,7 @@ lemma second_deriv_of_initialCurve_of_orientedCurvature {I : Set ℝ} [h_int: I.
                    -(κ t * Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)) := by ring
       rw [help'] at hint
       exact hint
-    · simp
+    · simp only [Fin.mk_one, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one, neg_mul]
       have h₁ : HasDerivAt Real.sin (Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ))
         ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_sin]
       have hint := h₁.comp_hasDerivWithinAt t h₀
@@ -412,7 +421,7 @@ lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature {I : Set ℝ} [h
     rw [hasDerivWithinAt_pi_euclidean]
     intro i
     fin_cases i
-    · simp
+    · simp only [Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero, neg_mul]
       have h₁ : HasDerivAt Real.cos (-Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ))
         ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_cos]
       have hint := h₁.comp_hasDerivWithinAt t h₀
@@ -423,7 +432,7 @@ lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature {I : Set ℝ} [h
                    -(κ t * Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)) := by ring
       rw [help'] at hint
       exact hint
-    · simp
+    · simp only [Fin.mk_one, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one, neg_mul]
       have h₁ : HasDerivAt Real.sin (Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ))
         ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_sin]
       have hint := h₁.comp_hasDerivWithinAt t h₀
@@ -471,24 +480,24 @@ protected theorem _root_.ContDiffOn.initialCurve_of_orientedCurvature {I : Set �
         apply contDiffWithinAt_piLp'
         intro i
         fin_cases i
-        · simp
+        · simp only [neg_mul, Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero]
           rw [contDiffWithinAt_zero ht]
           use I
           · constructor
             · exact self_mem_nhdsWithin
-            · simp
+            · simp only [Set.inter_self]
               apply ContinuousOn.neg
               apply ContinuousOn.mul
               · exact hκ
               · apply Continuous.comp_continuousOn'
                 · exact Real.continuous_sin
                 · exact continuousOn_angle_fun_aux hI hκ ht₀ θ₀
-        · simp
+        · simp only [neg_mul, Fin.mk_one, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one]
           rw [contDiffWithinAt_zero ht]
           use I
           · constructor
             · exact self_mem_nhdsWithin
-            · simp
+            · simp only [Set.inter_self]              
               apply ContinuousOn.mul
               · exact hκ
               · apply Continuous.comp_continuousOn'
@@ -543,7 +552,7 @@ theorem position_initial_condition_initialCurve_of_orientedCurvature (κ : ℝ �
   := by
   unfold initialCurve_of_orientedCurvature
   ext i
-  simp
+  simp only [Fin.isValue, intervalIntegral.integral_same, add_zero]
   fin_cases i
   · simp
   · simp
@@ -628,7 +637,7 @@ theorem initialCurve_of_orientedCurvature_is_unique {I : Set ℝ} [hIoC : I.OrdC
   have hDOnh : DifferentiableOn ℝ h I := fun s hs ↦  (hDh hs).differentiableWithinAt
   have hdf : ∀s ∈ I, deriv f s = - κ s * g s := by
     intro s hs
-    simp [f, g]
+    simp only [Fin.isValue, neg_mul, f, g]
     rw [deriv_fun_sub (hDdc₀ hs) (hDdα₀ hs)]
     have hddc₀s : deriv (fun t ↦ (deriv c t) 0) s = - κ s * (deriv c s) 1 := by
       have help₁ : deriv (fun t ↦ (deriv c t) 0) s = (deriv (deriv c) s) 0 := by
@@ -650,7 +659,7 @@ theorem initialCurve_of_orientedCurvature_is_unique {I : Set ℝ} [hIoC : I.OrdC
     ring
   have hdg : ∀s ∈ I, deriv g s = κ s * f s := by
     intro s hs
-    simp [f, g]
+    simp only [Fin.isValue, g, f]
     rw [deriv_fun_sub (hDdc₁ hs) (hDdα₁ hs)]
     have hddc₁s : deriv (fun t ↦ (deriv c t) 1) s = κ s * (deriv c s) 0 := by
       have help₁ : deriv (fun t ↦ (deriv c t) 1) s = (deriv (deriv c) s) 1 := by
@@ -687,14 +696,14 @@ theorem initialCurve_of_orientedCurvature_is_unique {I : Set ℝ} [hIoC : I.OrdC
   have hf : ∀s ∈ I, f s = 0 := by
     intro s hs
     have help₁ := hh s hs
-    simp [h] at help₁
+    simp only [Fin.isValue] at help₁
     have help₂ : (f s)^2 = 0 := by
       linarith [pow_two_nonneg (f s), pow_two_nonneg (g s), help₁]
     simp_all
   have hg : ∀s ∈ I, g s = 0 := by
     intro s hs
     have help₁ := hh s hs
-    simp [h] at help₁
+    simp only [Fin.isValue, h] at help₁
     have help₂ : (f s)^2 = 0 := by
       linarith [pow_two_nonneg (f s), pow_two_nonneg (g s), help₁]
     simp_all
