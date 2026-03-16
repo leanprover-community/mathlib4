@@ -5,6 +5,8 @@ Authors: Eric Wieser, Kyle Miller, Jovan Gerbscheid
 -/
 module
 
+public meta import Lean.Elab.SyntheticMVars
+public meta import Lean.Meta.Reduce
 public import Mathlib.Init
 
 /-!
@@ -30,6 +32,17 @@ def error {α : Type _} (trace : Array Name) (m : MessageData) : MetaM α :=
     Use `set_option trace.Elab.fast_instance true` to analyze the error.\n\n\
     Trace of fields visited: {trace}"
 
+/-- Run `x` in a modified environment where `instName` no longer has the `instance` attribute.
+
+We don't put this in a more generic location (e.g. `Mathlib.Lean.Meta.Basic`) because it will be
+moved to Lean 4 core. -/
+def withDisabledInstance {α : Type} (instName : Name) (x : MetaM α) : MetaM α := do
+  if !(instanceExtension.getState (← getEnv)).instanceNames.contains instName then
+    return ← x
+  withoutModifyingEnv do
+    Attribute.erase instName `instance
+    x
+
 /--
 Core algorithm for normalizing instances.
 * Ideally, the term is replaced with a synthesized instance.
@@ -38,13 +51,8 @@ Core algorithm for normalizing instances.
 
 Many reductions for typeclasses are done with reducible transparency, so the entire body
 is `withReducible` with some exceptions.
-
-When `skipSynth` is `true`, the synthesis step is skipped and we go directly to constructor
-normalization. This is needed when checking an instance against itself, since synthesis would
-always return the instance being checked, making the check trivial.
 -/
-partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #[])
-    (skipSynth : Bool := false) :
+partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #[]) :
     MetaM Expr := withReducible do
   withTraceNode `Elab.fast_instance (fun e => return m!"{exceptEmoji e} type: {expectedType}") do
   let some className ← isClass? expectedType
@@ -55,8 +63,8 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
       is a proof, which does not need normalization."
     return inst
 
-  -- Try to synthesize a total replacement for this term (unless skipSynth):
-  let synth? : Option Expr ← if skipSynth then pure none else do
+  -- Try to synthesize a total replacement for this term:
+  let synth? : Option Expr ← do
     match ← trySynthInstance expectedType with
     | .some e => pure (some e)
     | _ => pure none
@@ -106,9 +114,6 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
         else
           throwError "Proof `{arg}` does not have expected type `{argExpectedType}`"
       -- Recurse into instance arguments of the constructor.
-      -- Note: we do NOT propagate `skipSynth` here. `skipSynth` is only for the
-      -- outermost call (to avoid synthesis trivially finding the instance being checked).
-      -- Sub-instances should be replaced by synthesis if possible.
       else if bi.isInstImplicit then
         let trace' := trace.push (className ++ mvarDecl.userName)
         mvarId.assign (← makeFastInstance arg argExpectedType (trace := trace'))
@@ -242,9 +247,9 @@ If not, some data field (e.g. `smul`) has a binder type (e.g. `M`) that differs 
 expected type (e.g. `RestrictScalars R S M`) at instance transparency — a "leak" that causes
 `rw` failures with `set_option backward.isDefEq.respectTransparency true`.
 
-The check uses constructor normalization (skipping synthesis, since the instance would always
-be found and be trivially defeq to itself) to compute the "canonical" form, then compares with
-the original at `.instances` transparency.
+The check temporarily evicts `name` from the instance discrimination tree (as though we'd
+run `attribute [-instance]`) and then uses constructor normalization to compute the
+"canonical" form, comparing with the original at `.instances` transparency.
 -/
 public def checkInstance (name : Name) : MetaM CheckInstanceResult := do
   let env ← getEnv
@@ -256,11 +261,14 @@ public def checkInstance (name : Name) : MetaM CheckInstanceResult := do
   -- so we can check the instance in a concrete context.
   forallTelescope info.type fun xs expectedType => do
     let instVal := mkAppN (.const name (info.levelParams.map mkLevelParam)) xs
-    -- Run constructor normalization (skipping synthesis) to get the canonical form.
+    -- Temporarily evict `name` from the instance discrimination tree so that
+    -- `trySynthInstance` won't trivially find the instance being checked, then run
+    -- constructor normalization to get the canonical form.
     -- If normalization fails (e.g. the instance doesn't reduce to a constructor application),
     -- that itself is a sign the instance is not in verifiable canonical form.
     let normalized ← try
-        withNewMCtxDepth <| makeFastInstance instVal expectedType (skipSynth := true)
+        withDisabledInstance name <| withNewMCtxDepth <|
+          makeFastInstance instVal expectedType
       catch e =>
         return .unverifiable e.toMessageData
     -- Compare at instances transparency. At this level, the instance unfolds to its body,

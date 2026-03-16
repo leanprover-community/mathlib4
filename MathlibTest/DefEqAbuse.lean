@@ -70,7 +70,7 @@ The following isDefEq checks are the root causes of the failure:
 ---
 info: The following instances may have leaky binder types:
   ❌ 'myPredCompleteLattice': leaky binder types detected.
-  The data field `isLUB_sSup` differs from the re-inferred canonical form at instances transparency.
+  The data field `le` has binder type (i : ℕ) → (fun a => Prop) i where MyPred ℕ is expected.
   Other data fields may also be leaky.
   The `fast_instance%` elaborator may be useful as a repair or band-aid:
   `instance : ... := fast_instance% <body>`
