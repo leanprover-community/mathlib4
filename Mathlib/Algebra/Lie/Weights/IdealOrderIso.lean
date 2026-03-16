@@ -68,11 +68,11 @@ lemma rootSpace_le_ideal_of_apply_coroot_ne_zero (I : LieIdeal K L)
   have h_coroot_I : (coroot α : L) ∈ I.restr H :=
     corootSubmodule_le_lieIdeal I hI (coroot_mem_corootSubmodule α)
   intro y hy
-  have h_eq : ⁅(coroot α : L), y⁆ = γ ⟨coroot α, (coroot α).property⟩ • y :=
-    lie_eq_smul_of_mem_rootSpace hy ⟨coroot α, (coroot α).property⟩
-  have h_smul : γ ⟨coroot α, (coroot α).property⟩ • y ∈ I.toSubmodule := by
+  have h_eq : ⁅(coroot α : L), y⁆ = γ (coroot α) • y :=
+    lie_eq_smul_of_mem_rootSpace hy (coroot α)
+  have h_smul : γ (coroot α) • y ∈ I.toSubmodule := by
     rw [← h_eq]; exact lie_mem_left K L I _ y h_coroot_I
-  exact I.toSubmodule.smul_mem_iff (by exact_mod_cast hγ_ne) |>.mp h_smul
+  exact I.toSubmodule.smul_mem_iff hγ_ne |>.mp h_smul
 
 lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
     {α : H.root} (hα : α ∈ lieIdealRootSet (H := H) I) :
@@ -83,11 +83,8 @@ lemma lieIdealRootSet_reflectionPerm_invariant (I : LieIdeal K L) (i : H.root)
   · have hi := rootSpace_le_ideal_of_apply_coroot_ne_zero I hα
       (mt (rootSystem H).pairing_eq_zero_iff.mpr hp)
     have h_neg : (rootSystem H).pairing ((rootSystem H).reflectionPerm i α) i ≠ 0 := by
-      rw [show (rootSystem H).pairing ((rootSystem H).reflectionPerm i α) i =
-          -(rootSystem H).pairing α i from
-        ((rootSystem H).pairing_reflectionPerm i α i).symm.trans
-          ((rootSystem H).pairing_reflectionPerm_self_right α i)]
-      exact neg_ne_zero.mpr hp
+      rwa [← (rootSystem H).pairing_reflectionPerm i α i,
+        (rootSystem H).pairing_reflectionPerm_self_right, neg_ne_zero]
     exact rootSpace_le_ideal_of_apply_coroot_ne_zero I hi h_neg
 
 /-- The submodule spanned by roots of a Lie ideal is invariant under all root reflections. -/
