@@ -140,7 +140,7 @@ end Copy
 
 section Discard
 
-/-- The Markov kernel to the `Unit` type. -/
+/-- The Markov kernel to the `PUnit` type. -/
 noncomputable
 def discard (α : Type*) [MeasurableSpace α] : Kernel α PUnit :=
   Kernel.deterministic (fun _ ↦ default) measurable_const
