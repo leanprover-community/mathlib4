@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.FieldTheory.Finite.GaloisField
-public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.Ideal.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
 /-!
@@ -494,6 +494,35 @@ instance isInertiaField_sup [FaithfulSMul B L] [MulSemiringAction Gal(L/F) B]
 variable [IsFractionRing B L] (𝓞F : Type*) [CommRing 𝓞F] [IsIntegrallyClosed 𝓞F] [Algebra 𝓞F F]
   [Algebra 𝓞F B] [Algebra.IsIntegral 𝓞F B] [Algebra 𝓞F L]
   [IsScalarTower 𝓞F F L] [IsScalarTower 𝓞F B L] (𝓟F : Ideal 𝓞F) [P.LiesOver 𝓟F]
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+Let `D` be the decomposition field of `P` in `L/K` and let `F` be a subextension of `L/K`.
+Then, the decomposition field of `𝓟F` in `F/K` is `D ⊓ F` where `𝓟F` is the prime of `F`
+below `P`.
+-/
+theorem isDecompositionField_inf [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
+    [hD : IsDecompositionField K L P D] [IsFractionRing 𝓞F F] [MulSemiringAction Gal(F/K) 𝓞F]
+    [SMulDistribClass Gal(F/K) 𝓞F F] [P.IsPrime] [IsGalois K F] :
+    IsDecompositionField K F 𝓟F (D ⊓ F : IntermediateField K L) := by
+  let H : Subgroup Gal(L/K) := stabilizer Gal(L/K) P ⊔ F.fixingSubgroup
+  have : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
+  have : IsGaloisGroup H ↥(D ⊓ F) L := by
+    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
+      fixingSubgroup_inf, (isDecompositionField_iff_fixingSubgroup K L P).mp hD]
+  let e : stabilizer Gal(F/K) 𝓟F ≃* Subgroup.map (QuotientGroup.mk' F.fixingSubgroup) H :=
+      ((QuotientGroup.liftEquiv _ (Ideal.stabilizerMapOfLiesOver_surjective K L F P 𝓟F)
+        (by rw [Ideal.stabilizerMapOfLiesOver_ker])).symm).trans
+      ((QuotientGroup.quotientInfEquivProdNormalQuotient (stabilizer Gal(L/K) P)
+        F.fixingSubgroup).trans (QuotientGroup.subgroupOfEquivMapQuotient _ _))
+  have := IsGaloisGroup.quotientMap Gal(L/K) K L F F.fixingSubgroup (D ⊓ F) H inf_le_right
+  refine (isDecompositionField_iff _ _ _ _).mpr <| IsGaloisGroup.of_mulEquiv (hG := this) e ?_
+  intro g x
+  obtain ⟨g, rfl⟩ := Ideal.stabilizerMapOfLiesOver_surjective K L F P 𝓟F g
+  rw [MulEquiv.trans_apply, MulEquiv.trans_apply, QuotientGroup.liftEquiv_symm_apply_map,
+    QuotientGroup.quotientInfEquivProdNormalQuotient_coe_apply, subgroup_smul_def,
+    QuotientGroup.subgroupOfEquivMapQuotient_coe_apply]
+  simp [Subtype.ext_iff, subgroup_smul_def, AlgEquiv.restrictNormalHom_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 /--

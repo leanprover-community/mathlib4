@@ -353,6 +353,13 @@ variable [IsFractionRing (A ⧸ P) K] [IsFractionRing (B ⧸ Q) L]
 noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* Gal(L/K) :=
   MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (Ideal.Quotient.stabilizerHom Q P G)
 
+omit [Finite G] [Q.IsPrime] [Algebra.IsInvariant A B G] in
+@[simp]
+theorem IsFractionRing.stabilizerHom_algebraMap_mk (g : MulAction.stabilizer G Q) (x : B) :
+    IsFractionRing.stabilizerHom G P Q K L g (algebraMap (B ⧸ Q) L x) =
+      algebraMap (B ⧸ Q) L (g.val • x : B) := by
+  simp [IsFractionRing.stabilizerHom, MulAction.subgroup_smul_def]
+
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
 private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
     (hx : ∀ g : MulAction.stabilizer G Q, IsFractionRing.stabilizerHom G P Q K L g x = x) :

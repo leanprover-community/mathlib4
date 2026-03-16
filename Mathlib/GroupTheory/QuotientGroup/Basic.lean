@@ -294,6 +294,25 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [hN : N.
     H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
   quotientInfEquivProdNormalizerQuotient H N le_normalizer_of_normal
 
+@[simp]
+theorem quotientInfEquivProdNormalQuotient_coe_apply (H N : Subgroup G) [hN : N.Normal] (x : H) :
+    quotientInfEquivProdNormalQuotient H N x = ↑(⟨x, mem_sup_left x.prop⟩ : ↥(H ⊔ N)) := rfl
+
+/-- The canonical isomorphism between the two natural ways to express the quotient of `H` by
+`H ∩ N`: as `H ⧸ N.subgroupOf H` (quotienting `H` by the restriction of `N`), or as
+`H.map (mk' N)` (the image of `H` in `G ⧸ N`). -/
+@[to_additive /-- The canonical isomorphism between the two natural ways to express the quotient of
+`H` by `H ⊓ N`: as `H ⧸ N.subgroupOf H` (quotienting `H` by the restriction of `N`), or as
+`H.map (mk' N)` (the image of `H` in `G ⧸ N`). -/]
+noncomputable def subgroupOfEquivMapQuotient (H N : Subgroup G) [N.Normal] :
+    H ⧸ N.subgroupOf H ≃* H.map (QuotientGroup.mk' N) :=
+  QuotientGroup.liftEquiv _ (MonoidHom.subgroupMap_surjective (QuotientGroup.mk' N) H)
+    (by simp [Subgroup.ker_subgroupMap])
+
+@[to_additive (attr := simp)]
+theorem subgroupOfEquivMapQuotient_coe_apply (H N : Subgroup G) [N.Normal] (x : H) :
+    QuotientGroup.subgroupOfEquivMapQuotient H N x = QuotientGroup.mk' N x := rfl
+
 end SndIsomorphismThm
 
 section ThirdIsoThm
