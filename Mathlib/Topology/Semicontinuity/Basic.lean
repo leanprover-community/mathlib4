@@ -886,64 +886,72 @@ theorem upperSemicontinuousOn_iff_preimage_Ici [LinearOrder β] :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ v : Set α, IsClosed v ∧ s ∩ f ⁻¹' Set.Ici b = s ∩ v :=
   lowerSemicontinuousOn_iff_preimage_Iic (γ := βᵒᵈ)
 
-variable [PartialOrder β] [AddCommGroup β] [IsOrderedAddMonoid β]
+variable [PartialOrder β] [CommGroup β] [IsOrderedMonoid β]
 
-@[simp]
-theorem lowerSemicontinuousWithinAt_neg_iff :
-    LowerSemicontinuousWithinAt (-f) s a ↔ UpperSemicontinuousWithinAt f s a := by
-  rw [lowerSemicontinuousWithinAt_iff, neg_surjective.forall, upperSemicontinuousWithinAt_iff]
+@[to_additive (attr := simp)]
+theorem lowerSemicontinuousWithinAt_inv_iff :
+    LowerSemicontinuousWithinAt f⁻¹ s a ↔ UpperSemicontinuousWithinAt f s a := by
+  rw [lowerSemicontinuousWithinAt_iff, inv_surjective.forall, upperSemicontinuousWithinAt_iff]
   simp
 
-alias ⟨_, UpperSemicontinuousWithinAt.neg⟩ := lowerSemicontinuousWithinAt_neg_iff
+@[to_additive]
+alias ⟨_, UpperSemicontinuousWithinAt.inv⟩ := lowerSemicontinuousWithinAt_inv_iff
 
-@[simp]
-theorem upperSemicontinuousWithinAt_neg_iff :
-    UpperSemicontinuousWithinAt (-f) s a ↔ LowerSemicontinuousWithinAt f s a := by
-  simp [← lowerSemicontinuousWithinAt_neg_iff]
+@[to_additive (attr := simp)]
+theorem upperSemicontinuousWithinAt_inv_iff :
+    UpperSemicontinuousWithinAt f⁻¹ s a ↔ LowerSemicontinuousWithinAt f s a := by
+  simp [← lowerSemicontinuousWithinAt_inv_iff]
 
-alias ⟨_, LowerSemicontinuousWithinAt.neg⟩ := upperSemicontinuousWithinAt_neg_iff
+@[to_additive]
+alias ⟨_, LowerSemicontinuousWithinAt.inv⟩ := upperSemicontinuousWithinAt_inv_iff
 
-@[simp]
-theorem lowerSemicontinuouAt_neg_iff :
-    LowerSemicontinuousAt (-f) a ↔ UpperSemicontinuousAt f a := by
+@[to_additive (attr := simp)]
+theorem lowerSemicontinuouAt_inv_iff :
+    LowerSemicontinuousAt f⁻¹ a ↔ UpperSemicontinuousAt f a := by
   simp [← lowerSemicontinuousWithinAt_univ_iff, ← upperSemicontinuousWithinAt_univ_iff]
 
-alias ⟨_, UpperSemicontinuousAt.neg⟩ := lowerSemicontinuouAt_neg_iff
+@[to_additive]
+alias ⟨_, UpperSemicontinuousAt.inv⟩ := lowerSemicontinuouAt_inv_iff
 
-@[simp]
-theorem upperSemicontinuousAt_neg_iff :
-    UpperSemicontinuousAt (-f) a ↔ LowerSemicontinuousAt f a := by
+@[to_additive (attr := simp)]
+theorem upperSemicontinuousAt_inv_iff :
+    UpperSemicontinuousAt f⁻¹ a ↔ LowerSemicontinuousAt f a := by
   simp [← lowerSemicontinuousWithinAt_univ_iff, ← upperSemicontinuousWithinAt_univ_iff]
 
-alias ⟨_, LowerSemicontinuousAt.neg⟩ := upperSemicontinuousAt_neg_iff
+@[to_additive]
+alias ⟨_, LowerSemicontinuousAt.inv⟩ := upperSemicontinuousAt_inv_iff
 
-@[simp]
-theorem lowerSemicontinuousOn_neg_iff :
-    LowerSemicontinuousOn (-f) s ↔ UpperSemicontinuousOn f s := by
+@[to_additive (attr := simp)]
+theorem lowerSemicontinuousOn_inv_iff :
+    LowerSemicontinuousOn f⁻¹ s ↔ UpperSemicontinuousOn f s := by
   simp [lowerSemicontinuousOn_iff, upperSemicontinuousOn_iff]
 
-alias ⟨_, UpperSemicontinuousOn.neg⟩ := lowerSemicontinuousOn_neg_iff
+@[to_additive]
+alias ⟨_, UpperSemicontinuousOn.inv⟩ := lowerSemicontinuousOn_inv_iff
 
-@[simp]
-theorem upperSemicontinuousOn_neg_iff :
-    UpperSemicontinuousOn (-f) s ↔ LowerSemicontinuousOn f s := by
-  simp [← lowerSemicontinuousOn_neg_iff]
+@[to_additive (attr := simp)]
+theorem upperSemicontinuousOn_inv_iff :
+    UpperSemicontinuousOn f⁻¹ s ↔ LowerSemicontinuousOn f s := by
+  simp [← lowerSemicontinuousOn_inv_iff]
 
-alias ⟨_, LowerSemicontinuousOn.neg⟩ := upperSemicontinuousOn_neg_iff
+@[to_additive]
+alias ⟨_, LowerSemicontinuousOn.inv⟩ := upperSemicontinuousOn_inv_iff
 
-@[simp]
-theorem lowerSemiContinuous_neg_iff :
-    LowerSemicontinuous (-f) ↔ UpperSemicontinuous f := by
+@[to_additive (attr := simp)]
+theorem lowerSemiContinuous_inv_iff :
+    LowerSemicontinuous f⁻¹ ↔ UpperSemicontinuous f := by
   simp [← upperSemicontinuousOn_univ_iff, ← lowerSemicontinuousOn_univ_iff]
 
-alias ⟨_, UpperSemicontinuous.neg⟩ := lowerSemiContinuous_neg_iff
+@[to_additive]
+alias ⟨_, UpperSemicontinuous.inv⟩ := lowerSemiContinuous_inv_iff
 
-@[simp]
-theorem upperSemiContinuous_neg_iff :
-    UpperSemicontinuous (-f) ↔ LowerSemicontinuous f := by
+@[to_additive (attr := simp)]
+theorem upperSemiContinuous_inv_iff :
+    UpperSemicontinuous f⁻¹ ↔ LowerSemicontinuous f := by
   simp [← upperSemicontinuousOn_univ_iff, ← lowerSemicontinuousOn_univ_iff]
 
-alias ⟨_, LowerSemicontinuous.neg⟩ := upperSemiContinuous_neg_iff
+@[to_additive]
+alias ⟨_, LowerSemicontinuous.inv⟩ := upperSemiContinuous_inv_iff
 
 end
 
