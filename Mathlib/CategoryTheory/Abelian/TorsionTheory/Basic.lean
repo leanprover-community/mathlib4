@@ -98,9 +98,8 @@ def torsionClosure (P : ObjectProperty C) : ObjectProperty C := (freeClosure P).
 
 instance instTorsionTheoryGeneratedBy (P : ObjectProperty C) :
     TorsionTheory P.rightOrthogonal.leftOrthogonal P.rightOrthogonal where
-  T_leftOrthogonal := by
-    intro T hT
-    exact (ObjectProperty.leftOrthogonal_iff P.rightOrthogonal T).mpr hT
+  T_leftOrthogonal :=
+    le_refl P.rightOrthogonal.leftOrthogonal
   F_rightOrthogonal := by
     intro F hF
     exact
@@ -116,6 +115,23 @@ instance instTorsionTheoryGeneratedBy (P : ObjectProperty C) :
     apply ((P.rightOrthogonal.leftOrthogonal).rightOrthogonal_iff F).mp hF f
     exact (ObjectProperty.leftOrthogonal_iff P.rightOrthogonal X).mpr fun Y f a ↦ a f hX
 
+instance instTorsionTheoryCogeneratedBy (P : ObjectProperty C) :
+    TorsionTheory P.leftOrthogonal P.leftOrthogonal.rightOrthogonal where
+      T_leftOrthogonal := by
+        intro T hT
+        apply ((P.leftOrthogonal.rightOrthogonal).leftOrthogonal_iff T).mpr
+        intro Y f hY
+        exact hY f hT
+      F_rightOrthogonal :=
+        le_refl P.leftOrthogonal.rightOrthogonal
+      le_leftOrthogonal := by
+        intro F hF
+        apply (P.leftOrthogonal_iff F).mpr
+        intro Y f hY
+        apply ((P.leftOrthogonal.rightOrthogonal).leftOrthogonal_iff F).mp hF f
+        exact (ObjectProperty.rightOrthogonal_iff P.leftOrthogonal Y).mpr fun X f a ↦ a f hY
+      le_rightOrthogonal := by
+        exact ObjectProperty.le_def.mpr fun X a ↦ a
 
 theorem isTorsionClass_iff {T : ObjectProperty C} : (∃ F : ObjectProperty C, TorsionTheory T F) ↔
     (T.IsClosedUnderQuotients ∧ T.IsClosedUnderExtensions ∧
@@ -147,8 +163,16 @@ theorem isTorsionClass_iff {T : ObjectProperty C} : (∃ F : ObjectProperty C, T
       simpa [Limits.comp_zero] using
         (mem_torsion_iff T F).mp (hX.prop_diag_obj j) (hX.ι.app j ≫ f) hY
   · rintro ⟨hquot, hext, hcoprod⟩
+    refine ⟨T.leftOrthogonal.rightOrthogonal, ?_⟩
+    refine
+      { T_leftOrthogonal := ?_, F_rightOrthogonal := ?_, le_leftOrthogonal := ?_,
+        le_rightOrthogonal := ?_ }
+    · intro X hX Y f hY
 
-    sorry
+      sorry
+    · sorry
+    · sorry
+    · sorry
 
 end TorsionTheory
 
