@@ -42,8 +42,8 @@ lemma corootSubmodule_le_lieIdeal (I : LieIdeal K L) {α : Weight K H L}
     (hα : rootSpace H α ≤ I.restr H) :
     corootSubmodule α ≤ I.restr H := by
   intro x hx
-  obtain ⟨h, hh, rfl⟩ := (LieSubmodule.mem_map _).mp hx
-  have : (⟨h.val, h.property⟩ : H) ∈ corootSpace α := hh
+  obtain ⟨a, ha, rfl⟩ := (LieSubmodule.mem_map _).mp hx
+  have : (⟨a.val, a.property⟩ : H) ∈ corootSpace α := ha
   rw [mem_corootSpace] at this
   refine (Submodule.span_le.mpr ?_) this
   rintro _ ⟨y, hy, _, -, rfl⟩
