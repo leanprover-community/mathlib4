@@ -200,7 +200,7 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
         rw [orderedInsert_cons, if_neg hr] at ih
         exact .cons _ ih
-      · simp_all only [pairwise_cons, cons_sublist_cons]
+      · simp_all
       · exact .cons_cons _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
 
 section TotalAndTransitive
