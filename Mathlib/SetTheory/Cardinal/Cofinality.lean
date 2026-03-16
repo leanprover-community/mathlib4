@@ -241,6 +241,7 @@ theorem cof_eq_one_iff {o} : cof o = 1 ↔ o ∈ range succ := by
   rw [cof_type, Order.cof_eq_one_iff, type_lt_mem_range_succ_iff]
   simp_rw [isTop_iff_isMax]
 
+@[simp]
 theorem cof_add_one (o) : cof (o + 1) = 1 :=
   cof_eq_one_iff.2 (mem_range_self o)
 
@@ -252,12 +253,20 @@ theorem cof_one : cof 1 = 1 := by
 theorem cof_succ (o) : cof (succ o) = 1 :=
   cof_add_one o
 
+theorem cof_iSup_Iio {f} (hf : StrictMono f) {a} (ha : IsSuccPrelimit a) :
+    cof (⨆ i : Iio a, f i.1) = cof a := by
+  have : StrictMono (β := Iio (⨆ i : Iio a, f i.1)) (fun i : Iio a ↦ ⟨f i, ?_⟩) := fun x y h ↦ hf h
+  · have := cof_eq_of_strictMono this ?_
+    · simpa [← lift_cof] using this.symm
+    · intro ⟨b, hb⟩
+      rw [mem_Iio, lt_ciSup_iff' (bddAbove_of_small _)] at hb
+      obtain ⟨i, hi⟩ := hb
+      exact ⟨_, Set.mem_range_self i, hi.le⟩
+  · exact (hf (lt_add_one _)).trans_le <|
+      le_ciSup (ι := Iio a) (bddAbove_of_small _) ⟨_, ha.succ_lt i.2⟩
+
 theorem cof_eq_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a := by
-  have := cof_eq_of_strictMono (hf.to_Iio a).strictMono ?_
-  · simpa [← lift_cof] using this.symm
-  · intro b
-    obtain ⟨c, hca, hbc⟩ := (hf.lt_iff_exists_lt ha).1 b.2
-    exact ⟨_, Set.mem_range_self ⟨c, hca⟩, hbc.le⟩
+  rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio hf.strictMono ha.isSuccPrelimit]
 
 @[deprecated (since := "2025-12-25")]
 alias IsNormal.cof_eq := cof_eq_of_isNormal
