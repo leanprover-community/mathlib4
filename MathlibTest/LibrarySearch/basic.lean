@@ -29,7 +29,7 @@ example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
 /--
 info: Try this:
-  [apply] exact Nat.zero_lt_succ 1
+  [apply] exact one_add_pos 1
 -/
 #guard_msgs in
 example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
