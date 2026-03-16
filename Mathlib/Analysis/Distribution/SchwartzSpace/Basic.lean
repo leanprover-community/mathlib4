@@ -865,7 +865,7 @@ def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(
     (by fun_prop) <| by
       intro ⟨k, n⟩
       let s : Finset (ℕ × ℕ) := {(k + 1, n), (k, n - 1)}
-      use s, 2 * ‖L‖ * (max 1 n), by positivity
+      use s, s.card * ‖L‖ * (max 1 n), by positivity
       intro f x
       calc
         _ ≤ ‖x‖ ^ k * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
@@ -886,22 +886,16 @@ def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(
               apply Finset.sum_eq_zero
               simp [iteratedFDeriv_succ_eq_comp_right, iteratedFDeriv_succ_const]
             simp [Finset.sum_range_succ', this]
-        _ = ‖x‖ ^ k * ‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ +
-              ‖x‖ ^ k * n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖ := by ring
         _ ≤ ‖L‖ * (max 1 n) * (f.seminorm 𝕜 (k + 1) n + f.seminorm 𝕜 k (n - 1)) := by
-          rw [mul_add]
+          rw [mul_add, mul_add]
           gcongr 1
           · grw [le_opNorm, ← Nat.le_max_left 1 n, ← le_seminorm 𝕜 (k + 1) n f x]
-            apply le_of_eq
-            ring
+            apply le_of_eq; ring
           · grw [← Nat.le_max_right 1 n, ← le_seminorm 𝕜 k (n - 1) f x]
-            apply le_of_eq
-            ring
+            apply le_of_eq; ring
         _ = ‖L‖ * (max 1 n) * ∑ i ∈ s, schwartzSeminormFamily 𝕜 E F i f := by simp [s]
-        _ ≤ ‖L‖ * (max 1 n) * (2 • (s.sup (schwartzSeminormFamily 𝕜 E F)) f) := by
-          gcongr
-          convert Seminorm.finset_sum_apply_le_card_smul_sup _ _
-          simp [s]
+        _ ≤ ‖L‖ * (max 1 n) * (s.card • (s.sup (schwartzSeminormFamily 𝕜 E F)) f) := by
+          grw [Seminorm.finset_sum_apply_le_card_smul_sup]
         _ = _ := by ring
 
 @[simp]
