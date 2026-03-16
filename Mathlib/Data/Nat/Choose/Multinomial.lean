@@ -84,17 +84,17 @@ theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
   · exact Finset.prod_congr rfl fun a ha => by rw [h a ha]
 
 theorem multinomial_congr_of_sdiff [DecidableEq α] {f g : α → ℕ} {s t : Finset α}
-    (hst : s ⊆ t) (hf : ∀ a ∈ t \ s, g a = 0) (hg : ∀ a ∈ s, f a = g a) :
+    (hst : s ⊆ t) (hg : ∀ a ∈ t \ s, g a = 0) (hfg : ∀ a ∈ s, f a = g a) :
     multinomial s f = multinomial t g := by
   rw [← Nat.mul_right_inj (prod_ne_zero_iff.mpr (fun x _ ↦ factorial_ne_zero (g x))),
-    multinomial_spec, ← sum_subset_zero_on_sdiff hst hf hg, ← multinomial_spec s f]
-  apply congr_arg₂ _ _ rfl
+    multinomial_spec, ← sum_subset_zero_on_sdiff hst hg hfg, ← multinomial_spec s f]
+  congr 1
   symm
   apply prod_subset_one_on_sdiff hst
   · intro x hx
-    rw [hf x hx, factorial_zero]
+    rw [hg x hx, factorial_zero]
   · intro x hx
-    rw [hg x hx]
+    rw [hfg x hx]
 
 variable (s a) in
 theorem multinomial_single [DecidableEq α] :
