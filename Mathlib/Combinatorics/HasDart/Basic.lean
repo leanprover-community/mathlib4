@@ -29,9 +29,14 @@ graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 universe u'
 
+/-- The `HasDart` typeclass abstracts over graph-like structures by encoding the minimal structure
+required to reason about directed edges ("darts") and adjacency. -/
 class HasDart (α : outParam Type*) (Gr : Type*) where
+  /-- The set of vertices of a graph-like structure. -/
   verts (G : Gr) : Set α
+  /-- The type of darts (oriented edges) of a graph-like structure. -/
   dart : Gr → α → α → Sort u'
+  /-- The adjacency relation of a graph-like structure. -/
   Adj (G : Gr) (u v : α) : Prop := Nonempty (dart G u v)
   adj_iff_nonempty_dart {G : Gr} {u v : α} : Adj G u v ↔ Nonempty (dart G u v) := by rfl
   left_mem_verts_of_adj {G : Gr} {u v : α} (h : Adj G u v) : u ∈ verts G
