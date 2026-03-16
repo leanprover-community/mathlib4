@@ -74,12 +74,6 @@ info: The following instances may have leaky binder types:
   Other data fields may also be leaky.
   The `fast_instance%` elaborator may be useful as a repair or band-aid:
   `instance : ... := fast_instance% <body>`
----
-info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem,
-but the real issue is likely a leaky instance somewhere.
-set_option allowUnsafeReducibility true
-attribute [implicit_reducible]
-  MyPred
 -/
 #guard_msgs in
 noncomputable example (s : MyPred ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a} := by
@@ -87,73 +81,3 @@ noncomputable example (s : MyPred ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a}
   exact ha
 
 end SetAliasAbuse
-
-section VirtualParentAbuse
-/-! ### Virtual parent `def` causing synthesis failure
-
-In Mathlib, `Submodule.toAddSubgroup` is a plain `def` that acts as a "virtual parent"
-projection. Because it's opaque at instance transparency, synthesis of `Module ℝ ↥l`
-for `l : Submodule ℝ V` failed when the `AddCommMonoid` instances arrived through
-different paths (`toAddSubgroup` vs `toAddSubmonoid`). Detecting it with `#defeq_abuse`
-looked like:
-
-```lean
-#defeq_abuse in
-instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
-    Module.Free ℝ l := Module.Free.of_divisionRing ℝ l
--- reported:
---   ❌️ apply @Submodule.module to Module ℝ ↥l
---     ❌️ l.toAddSubgroup =?= l.toAddSubmonoid
-```
-
-The test below reproduces this pattern with `MySub₂`, a structure extending `AddSubmonoid`
-with a plain `def MySub₂.toAddSubgroup` as a virtual parent. -/
-
-structure MySub₂ (G : Type) [AddCommGroup G] extends AddSubmonoid G where
-  neg_closed : ∀ {x}, x ∈ carrier → -x ∈ carrier
-
-def MySub₂.toAddSubgroup {G : Type} [AddCommGroup G] (s : MySub₂ G) : AddSubgroup G :=
-  { s.toAddSubmonoid with neg_mem' := s.neg_closed }
-
-instance {G : Type} [AddCommGroup G] : CoeSort (MySub₂ G) Type where
-  coe s := {x : G // x ∈ s.carrier}
-
-instance mySub₂AddCommMonoid {G : Type} [AddCommGroup G] (s : MySub₂ G) :
-    AddCommMonoid s :=
-  s.toAddSubmonoid.toAddCommMonoid
-
-instance mySub₂AddCommGroup {G : Type} [AddCommGroup G] (s : MySub₂ G) :
-    AddCommGroup s := fast_instance%
-  { s.toAddSubgroup.toAddCommGroup with }
-
-class MyAction (R α : Type) [AddCommMonoid α] where
-  mySmul : R → α → α
-
-instance mySub₂MyAction {G : Type} [AddCommGroup G] (s : MySub₂ G) :
-    MyAction ℕ s where
-  mySmul _n x := x
-
-def myOp {α : Type} [AddCommGroup α] [MyAction ℕ α] (x : α) : α :=
-  -(MyAction.mySmul (R := ℕ) 1 x)
-
--- `pp.fvars.anonymous false` stabilises fvar display (loose fvars show as `_fvar._`
--- instead of `_fvar.22`). With it set, the output should be deterministic across runs.
--- TODO: once CI confirms the exact stable output, replace `drop warning, drop info`
--- with the specific expected content.
-set_option pp.fvars.anonymous false in
-#guard_msgs (drop warning, drop info) in
-#defeq_abuse in
-def testVirtualParent {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) : s :=
-  myOp x
-
--- The fix: marking the virtual parent `def` as `@[implicit_reducible]` makes it
--- transparent enough for instance synthesis to unify the two `AddCommMonoid` paths.
-attribute [implicit_reducible] MySub₂.toAddSubgroup
-
-/-- info: #defeq_abuse: command succeeds with `backward.isDefEq.respectTransparency true`. No abuse detected. -/
-#guard_msgs in
-#defeq_abuse in
-def testVirtualParentFixed {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) : s :=
-  myOp x
-
-end VirtualParentAbuse

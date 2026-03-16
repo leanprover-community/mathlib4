@@ -260,7 +260,7 @@ public def checkInstance (name : Name) : MetaM CheckInstanceResult := do
     -- If normalization fails (e.g. the instance doesn't reduce to a constructor application),
     -- that itself is a sign the instance is not in verifiable canonical form.
     let normalized ← try
-        mkCanonicalForm instVal expectedType
+        withNewMCtxDepth <| makeFastInstance instVal expectedType (skipSynth := true)
       catch e =>
         return .unverifiable e.toMessageData
     -- Compare at instances transparency. At this level, the instance unfolds to its body,
