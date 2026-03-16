@@ -47,6 +47,7 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Rank
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Algebra.Subalgebra.Unitization
+public import Mathlib.Algebra.Algebra.TensorProduct
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Algebra.Unitization
