@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import mathlib.Init
+public import Mathlib.Init
 public import Batteries.Util.LibraryNote
 
 /-!
