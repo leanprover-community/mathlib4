@@ -186,7 +186,7 @@ theorem inner_of_velocity_accel_of_const_speed_eq_zero {I : Set ℝ} (hI : IsOpe
 /-- The first Frenet equation for plane curves: For any twice continously differentiable plane curve
 parametrized by arc-length (i.e., with unit speed), the second derivative, i.e. acceleration vector
 is equal to the curvature times the normal vector. -/
-theorem second_deriv_eq_orientedCurvature_times_normal {I : Set ℝ} [I.OrdConnected] (hI : IsOpen I)
+theorem second_deriv_eq_orientedCurvature_times_normal {I : Set ℝ} (hI : IsOpen I)
   {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1)
   {t : ℝ} (ht : t ∈ I) : iteratedDeriv 2 c t = (orientedCurvature c t)•(normal c t) := by
   rw [orientedCurvature_of_unit_speed_curve hc₂ ht]
