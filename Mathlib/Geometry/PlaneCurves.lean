@@ -81,7 +81,7 @@ theorem inner_of_normal_velocity_eq_zero (c : ℝ → EuclideanSpace ℝ (Fin 2)
 /-- The normal vector at point of a plane curve parametrized by arc-length (i.e., with unit-speed)
 has length 1 (is a unit vector). -/
 theorem normal_is_unit_of_unit_speed {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)}
-  (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) : ‖normal c t‖ = 1 := by
+    (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) : ‖normal c t‖ = 1 := by
   simp only [norm, OfNat.ofNat_ne_zero, ↓reduceIte, ENNReal.ofNat_ne_top, normal, Fin.isValue,
              ENNReal.toReal_ofNat,Real.rpow_ofNat, sq_abs, Fin.sum_univ_two, Matrix.cons_val_zero,
              even_two, Even.neg_pow, Matrix.cons_val_one,Matrix.cons_val_fin_one, one_div]
