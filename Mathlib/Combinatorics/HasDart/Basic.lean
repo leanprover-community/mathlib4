@@ -20,7 +20,8 @@ graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
   The field `verts` gives the set of vertices of a graph-like structure,
   the field `dart` gives the type of darts, which is an oriented edge, of a graph-like structure,
   and the field `Adj` gives the adjacency relation between vertices.
-* A `prodDart` or half-edge or bond in a graph is an ordered pair of vertices with a `dart` between.
+* `HasSymmDart`: extends `HasDart` for graph-like structures with symmetric darts.
+* A `Dart` or half-edge or bond in a graph is an ordered pair of vertices with a `dart` between.
   It is regarded as an oriented edge.
 
 ## TODO
@@ -47,7 +48,9 @@ class HasDart (α : outParam Type*) (Gr : Type*) where
   left_mem_verts_of_adj {G : Gr} {u v : α} (h : Adj G u v) : u ∈ verts G
   right_mem_verts_of_adj {G : Gr} {u v : α} (h : Adj G u v) : v ∈ verts G
 
+/-- `HasSymmDart` extends `HasDart` for graph-like structures with symmetric darts. -/
 class HasSymmDart (α : outParam Type*) (Gr : Type*) extends HasDart α Gr where
+  /-- The equivalence between darts in the forward and backward directions. -/
   dartsEquiv (G : Gr) (u v : α) : darts G u v ≃ darts G v u
   dartsEquiv_symm (G : Gr) (u v : α) : (dartsEquiv G u v).symm = dartsEquiv G v u
 
@@ -79,29 +82,29 @@ lemma darts.right_mem (d : darts G v w) : w ∈ V(G) :=
 
 /-- A `prodDart` is an oriented edge or a form of dart that does not have its end points in its
 type. -/
-structure prodDart [HasDart α Gr] (G : Gr) : Type (max u' u_1) extends α × α where
+structure Dart [HasDart α Gr] (G : Gr) : Type (max u' u_1) extends α × α where
   /-- `fst` and `snd` have `dart` between them. -/
   dart' : (darts G fst snd : Sort u')
 
-initialize_simps_projections prodDart (+toProd, -fst, -snd)
+initialize_simps_projections Dart (+toProd, -fst, -snd)
 
-namespace prodDart
+namespace Dart
 
 attribute [simp] dart'
 
-lemma ext_iff (d₁ d₂ : prodDart G) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd ∧ d₁.dart' ≍ d₂.dart' := by
+lemma ext_iff (d₁ d₂ : Dart G) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd ∧ d₁.dart' ≍ d₂.dart' := by
   cases d₁; cases d₂; simp
 
 @[ext]
-theorem ext (d₁ d₂ : prodDart G) (h : d₁.toProd = d₂.toProd) (h' : d₁.dart' ≍ d₂.dart') : d₁ = d₂ :=
+theorem ext (d₁ d₂ : Dart G) (h : d₁.toProd = d₂.toProd) (h' : d₁.dart' ≍ d₂.dart') : d₁ = d₂ :=
   (ext_iff d₁ d₂).mpr ⟨h, h'⟩
 
-end prodDart
+end Dart
 
 /-- Two darts are said to be adjacent if they could be consecutive
 darts in a walk -- that is, the first dart's second vertex is equal to
 the second dart's first vertex. -/
-def prodDartAdj (G : Gr) (d d' : prodDart G) : Prop :=
+def DartAdj (G : Gr) (d d' : Dart G) : Prop :=
   d.snd = d'.fst
 
 end HasDart
@@ -112,6 +115,7 @@ open HasSymmDart
 
 variable {α Gr : Type*} [HasSymmDart α Gr] {G : Gr} {v w : α}
 
+/-- The reverse direction of a dart. -/
 def darts.symm (d : darts G v w) : darts G w v := dartsEquiv G v w d
 
 @[simp]
@@ -143,7 +147,7 @@ exists a generality for such structures, separate from the general graph-like st
 This section assumes `HasDart.{0} α Gr` to proves lemmas for `Prop`-valued darts.
 -/
 
-namespace prodDart
+namespace Dart
 
 variable {α Gr : Type*} [HasDart.{0} α Gr] {G : Gr}
 
@@ -151,32 +155,32 @@ variable {α Gr : Type*} [HasDart.{0} α Gr] {G : Gr}
 lemma darts_iff_adj {u v : α} : darts G u v ↔ Adj G u v := by
   simp [← nonempty_darts_iff_adj]
 
-theorem ext_iff' (d₁ d₂ : prodDart G) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
+theorem ext_iff' (d₁ d₂ : Dart G) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
   simp +contextual only [ext_iff, and_iff_left_iff_imp, HEq.rfl, implies_true]
 
 @[ext]
-theorem ext' (d₁ d₂ : prodDart G) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
+theorem ext' (d₁ d₂ : Dart G) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
   (ext_iff' d₁ d₂).mpr h
 
-theorem toProd_injective : Function.Injective (toProd : prodDart G → α × α) :=
+theorem toProd_injective : Function.Injective (toProd : Dart G → α × α) :=
   ext'
 
-instance [DecidableEq α] (G : Gr) : DecidableEq (prodDart G) :=
+instance [DecidableEq α] (G : Gr) : DecidableEq (Dart G) :=
   toProd_injective.decidableEq
 
-instance fintype [Fintype α] [DecidableRel (darts G)] : Fintype (prodDart G) :=
+instance fintype [Fintype α] [DecidableRel (darts G)] : Fintype (Dart G) :=
   Fintype.ofEquiv (Σ v, { w | darts G v w })
     { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
       invFun := fun d => ⟨d.fst, d.snd, d.dart'⟩ }
 
-lemma prodDart_finite (hV : V(G).Finite) : Finite (prodDart G) := by
+lemma dart_finite (hV : V(G).Finite) : Finite (Dart G) := by
   haveI := Set.finite_coe_iff.mpr hV
   refine Finite.of_injective
-    (fun d => (⟨d.fst, d.dart'.left_mem⟩, ⟨d.snd, d.dart'.right_mem⟩) : prodDart G → V(G) × V(G)) ?_
+    (fun d => (⟨d.fst, d.dart'.left_mem⟩, ⟨d.snd, d.dart'.right_mem⟩) : Dart G → V(G) × V(G)) ?_
   intro d₁ d₂ h
   simp only [Prod.mk.injEq, Subtype.mk.injEq] at h
   ext <;> tauto
 
-end prodDart
+end Dart
 end HasAdj
 end HasDart
