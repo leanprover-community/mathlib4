@@ -1,8 +1,21 @@
+/-
+Copyright (c) 2026 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 module
 
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+/-!
+# Filtered colimits in concrete categories
+
+In this file, we provide analogues to some of the API in the
+`CategoryTheory.Limits.Types.FilteredColimit` namespace, for concrete categories for which the
+forgetful functor preserves filtered colimits.
+-/
 
 @[expose] public section
 
