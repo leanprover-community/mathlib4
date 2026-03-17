@@ -405,14 +405,9 @@ lemma count_by_group_or_element_indicator
       simp [p1,amb] at hp1
       exact hp1.symm
     · simp [Function.RightInverse, Function.LeftInverse]
-  have h₁'set : ∀ j ∈ s, Finset.card {a | p1 a = j} = (B j).card := by
-    intro j hj
-    specialize p1_im j hj
-    simp only [Set.coe_setOf] at p1_im
-    apply Finset.card_eq_of_equiv
-    simp only [Finset.univ_eq_attach, Finset.mem_filter, Finset.mem_attach, true_and]
-    exact p1_im
-  have h₁'' := Finset.sum_congr (by rfl) h₁'set
+  have h₁'set (j : ι) (hj : j ∈ s) : Finset.card {a | p1 a = j} = (B j).card :=
+    Finset.card_eq_of_equiv (by simpa using p1_im j hj)
+  have h₁'' := Finset.sum_congr rfl h₁'set
     (f := fun j => Finset.card {a | p1 a = j}) (g := fun j => Finset.card (B j))
   rw [← h₁'']
   simp only [Finset.univ_eq_attach]
