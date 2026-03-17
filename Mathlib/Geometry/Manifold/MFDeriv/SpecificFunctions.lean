@@ -492,7 +492,6 @@ lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N
         ((extChartAt I' p.2).symm ⁻¹' (Prod.snd '' s) ∩ range I') := by
     simp only [mfld_simps]
     rw [range_prodMap, I.toPartialEquiv.prod_symm, (chartAt H p.1).toPartialEquiv.prod_symm]
-    -- This is very tedious; a nicer proof is welcome!
     intro p₀ ⟨hp₀, ⟨hp₁₁, hp₁₂⟩⟩
     exact ⟨⟨by simp_all; grind, by assumption⟩, ⟨by simp_all; grind, by assumption⟩⟩
   rw [writtenInExtChartAt_prod]
