@@ -95,11 +95,11 @@ theorem IsDecompositionField.of_isGaloisGroup [h : IsGaloisGroup (stabilizer G P
 
 /--
 If `G` is a Galois group for `L/K` and the inertia group of `P` in `G` is a Galois group for
-`L/D`, then `D` is an inertia field for `P`.
+`L/E`, then `E` is an inertia field for `P`.
 -/
-theorem IsInertiaField.of_isGaloisGroup [h : IsGaloisGroup (inertia G P) D L] :
-    IsInertiaField K L P D := by
-  refine (isInertiaField_iff K L P D).mpr <| .of_mulEquiv (hG := h) ?_ fun _ x ↦ ?_
+theorem IsInertiaField.of_isGaloisGroup [h : IsGaloisGroup (inertia G P) E L] :
+    IsInertiaField K L P E := by
+  refine (isInertiaField_iff K L P E).mpr <| .of_mulEquiv (hG := h) ?_ fun _ x ↦ ?_
   · refine (inertiaEquiv _ (IsGaloisGroup.mulEquivAlgEquiv G K L) fun _ _ ↦ ?_).symm
     apply FaithfulSMul.algebraMap_injective B L
     simp [algebraMap.smul']
