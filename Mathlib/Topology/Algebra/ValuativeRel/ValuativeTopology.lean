@@ -19,6 +19,18 @@ values in a group with zero. Other instances are then deduced from this.
 The `Valued` class defined in this file will eventually get replaced with `ValuativeRel`
 from `Mathlib.RingTheory.Valuation.ValuativeRel.Basic`. New developments on valued rings/fields
 should take this into consideration.
+
+*NOTE* (2026-03-17): After the above refactoring, the `Valued` instance on a ring `R` would be
+replaced by `[ValuativeRel R] [UniformSpace R] [IsValuativeTopology R] [IsUniformAddGroup R]`
+(or `[ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]` when the uniformity is
+not relevant). Additional input `(v : Valuation R A) [v.Compatible]` can be introduced whenever
+a specific compatible valuation is chosen.
+
+The canonical way to introduce the topological structure from a chosen valuation is:
+1. First define the `ValuativeRel` structure using `ValuationRel.ofValuation`;
+2. Then define the `UniformSpace` structure using `ValuativeRel.uniformSpace`.
+
+
 -/
 
 @[expose] public section
@@ -51,47 +63,27 @@ namespace ValuativeRel
 
 variable (R : Type u) [CommRing R] [ValuativeRel R]
 
--- Add to doc string: The canonical way of add a topology defined by valuation is use
--- ValuativeRel.ofValuation then use
--- ValuativeRel.uniformSpace.
-instance nonarchimedeanRing : @NonarchimedeanRing R _ (valuation R).subgroups_basis.topology :=
+@[implicit_reducible]
+def topologicalSpace : TopologicalSpace R := (valuation R).subgroups_basis.topology
+
+instance nonarchimedeanRing : @NonarchimedeanRing R _ (topologicalSpace R) :=
   (valuation R).subgroups_basis.nonarchimedean
 
 @[implicit_reducible]
 def uniformSpace : UniformSpace R :=
-  @IsTopologicalAddGroup.rightUniformSpace R _ (valuation R).subgroups_basis.topology _
+  @IsTopologicalAddGroup.rightUniformSpace R _ (topologicalSpace R) _
 
 instance isUniformAddGroup : @IsUniformAddGroup R (uniformSpace R) _ :=
-  @isUniformAddGroup_of_addCommGroup _ _ (valuation R).subgroups_basis.topology _
+  @isUniformAddGroup_of_addCommGroup _ _ (topologicalSpace R) _
 
-instance isValuativeTopology :
-    @IsValuativeTopology R _ _ (valuation R).subgroups_basis.topology :=
-  letI := (valuation R).subgroups_basis.topology
+instance isValuativeTopology : @IsValuativeTopology R _ _ (topologicalSpace R) :=
+  letI := topologicalSpace R
   { mem_nhds_iff {s x} := by
       rw [Filter.hasBasis_iff.mp ((valuation R).subgroups_basis.hasBasis_nhds x) s]
       simp [neg_add_eq_sub, ← (valuation R).exists_setOf_restrict_le_iff,
         ← restrict_lt_iff_lt_embedding] }
 
 end ValuativeRel
-
--- namespace Valuation
-
--- variable {R : Type u} [Ring R] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
---   (v : Valuation R Γ₀)
-
--- -- Question: can valuative rel gives these structure? these then should be defined as first induce
--- -- valuative rel, then these lemma
--- instance nonarchimedeanRing : @NonarchimedeanRing R _ v.subgroups_basis.topology :=
---   v.subgroups_basis.nonarchimedean
-
--- @[implicit_reducible]
--- def uniformSpace : UniformSpace R :=
---   @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
-
--- instance isUniformAddGroup : @IsUniformAddGroup R v.uniformSpace _ :=
---   @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
-
--- end Valuation
 
 variable {R K : Type u} [CommRing R] [Field K] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
   [ValuativeRel R] [ValuativeRel K]
