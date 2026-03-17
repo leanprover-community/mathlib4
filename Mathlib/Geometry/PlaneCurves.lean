@@ -106,7 +106,7 @@ def frameAt {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ∀ t �
     · intro i j hinej
       rcases (eq_or_ne i 0) with h | h
       · simp only [h, Fin.isValue] at hinej
-        have h' : j=1 := Fin.eq_one_of_ne_zero j fun a ↦ hinej (id (Eq.symm a))
+        have h' : j = 1 := Fin.eq_one_of_ne_zero j hinej.symm
         simp only [h, Fin.isValue, h']; exact inner_of_normal_velocity_eq_zero c t
       · have h' : i=1 := Fin.eq_one_of_ne_zero i h
         have h'' : j=0 := by
