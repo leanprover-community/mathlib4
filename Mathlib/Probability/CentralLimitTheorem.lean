@@ -19,9 +19,9 @@ We prove the central limit theorem in dimension 1.
 
 ## Main statement
 
-* `tendstoInDistribution_sqrt_inv_mul_sum`: Given a sequence of random variables `X : ℕ → Ω → ℝ`
-  that are independent, identically distributed with mean `μ` and non-zero variance `v`,
-  and a random variable `Y : Ω → ℝ` following `gaussianReal 0 1`, the sequence
+* `tendstoInDistribution_sqrt_mul_var_inv_mul_sum_sub`: Given a sequence of random variables
+  `X : ℕ → Ω → ℝ` that are independent, identically distributed with mean `μ` and non-zero
+  variance `v`, and a random variable `Y : Ω → ℝ` following `gaussianReal 0 1`, the sequence
   `n ↦ (√(n * v)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution.
 
 ## Tags
