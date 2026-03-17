@@ -6,8 +6,8 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.RepresentationTheory.Rep'.Res
-public import Mathlib.RepresentationTheory.Rep'.Iso
+public import Mathlib.RepresentationTheory.Rep.Res
+public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
 # Coinvariants of a group representation

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 public import Mathlib.RepresentationTheory.Intertwining
-public import Mathlib.RepresentationTheory.Rep'.Basic
-public import Mathlib.RepresentationTheory.Rep'.Res
+public import Mathlib.RepresentationTheory.Rep.Basic
+public import Mathlib.RepresentationTheory.Rep.Res
 
 /-!
 # Coinduced representations

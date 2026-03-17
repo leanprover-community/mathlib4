@@ -185,16 +185,10 @@ def δ : (linearize k G (X ⊗ Y)).IntertwiningMap
     ext; simp [types_tensorObj_def, linearize_single _, Action.tensor_ρ_apply g,
       finsuppTensorFinsupp'_symm_single_eq_single_one_tmul k]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma δ_apply_single (xy : (X ⊗ Y).V) :
     (δ (k := k) X Y) (Finsupp.single xy 1) = Finsupp.single xy.1 1 ⊗ₜ
       Finsupp.single xy.2 1 := by
   simp [δ, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul k]
-
-lemma δ_apply_single' (xy : (X ⊗ Y).V) (r : k) :
-    (δ X Y) (Finsupp.single xy r) = Finsupp.single xy.1 r ⊗ₜ
-      Finsupp.single xy.2 1 := by
-  simp [δ, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one k]
 
 variable (Z) in
 lemma rTensor_comp_δ (f : X ⟶ Y) :

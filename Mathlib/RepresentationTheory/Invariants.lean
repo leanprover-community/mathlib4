@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.FDRep
-public import Mathlib.RepresentationTheory.Rep'.Res
+public import Mathlib.RepresentationTheory.Rep.Res
 
 /-!
 # Subspace of invariants a group representation

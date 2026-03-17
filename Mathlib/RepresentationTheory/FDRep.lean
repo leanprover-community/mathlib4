@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Category.FGModuleCat.Colimits
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`example`)
 public import Mathlib.CategoryTheory.Preadditive.Schur
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.RepresentationTheory.Rep'.Basic
+public import Mathlib.RepresentationTheory.Rep.Basic
 
 /-!
 # `FDRep k G` is the category of finite-dimensional `k`-linear representations of `G`.

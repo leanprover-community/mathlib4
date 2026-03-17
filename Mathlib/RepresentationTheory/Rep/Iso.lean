@@ -6,7 +6,7 @@ Authors: Edison Xie
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.RepresentationTheory.Rep'.Basic
+public import Mathlib.RepresentationTheory.Rep.Basic
 
 /-!
 # Equivalence between `Rep k G` and `ModuleCat k[G]`
