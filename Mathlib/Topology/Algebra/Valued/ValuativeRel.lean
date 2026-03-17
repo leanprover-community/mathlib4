@@ -32,17 +32,16 @@ open ValuativeRel TopologicalSpace Filter Topology Set
 
 local notation "v" => valuation R
 
--- /-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order
--- to
--- prove `IsValuativeTopology R`. -/
--- theorem of_zero [ContinuousConstVAdd R R]
---     (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
---     IsValuativeTopology R where
---   mem_nhds_iff {s x} := by
---     simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
---       h₀ ((x + ·) ⁻¹' s)
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order
+to
+prove `IsValuativeTopology R`. -/
+theorem of_zero [ContinuousConstVAdd R R]
+    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
+    IsValuativeTopology R where
+  mem_nhds_iff {s x} := by
+    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
+      h₀ ((x + ·) ⁻¹' s)
 
--- #find_home! IsValuativeTopology.of_zero
 end
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
