@@ -75,12 +75,12 @@ def normal (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ) : EuclideanSpace �
 
 /-- The normal vector at point of a plane curve is orthogonal to the velocity vector at the point.
 -/
-theorem inner_of_normal_velocity_eq_zero (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ) :
+theorem inner_of_velocity_normal_eq_zero (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ) :
     inner ℝ (deriv c t) (normal c t) = 0 := by simp [normal, inner]; ring
 
 /-- The normal vector at point of a plane curve parametrized by arc-length (i.e., with unit-speed)
 has length 1 (is a unit vector). -/
-theorem normal_is_unit_of_unit_speed {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)}
+theorem norm_normal_eq_one_of_unit_speed {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)}
     (hc : ∀ t ∈ I, ‖deriv c t‖ = 1) {t : ℝ} (ht : t ∈ I) : ‖normal c t‖ = 1 := by
   simp only [norm, OfNat.ofNat_ne_zero, ↓reduceIte, ENNReal.ofNat_ne_top, normal, Fin.isValue,
              ENNReal.toReal_ofNat,Real.rpow_ofNat, sq_abs, Fin.sum_univ_two, Matrix.cons_val_zero,
@@ -102,19 +102,19 @@ def frameAt {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc : ∀ t �
       rcases eq_or_ne i 0 with h | h
       · simp only [h, Fin.isValue]; exact hc t ht
       · have h' : i = 1 := Fin.eq_one_of_ne_zero i h
-        simp only [h', Fin.isValue]; exact normal_is_unit_of_unit_speed hc ht
+        simp only [h', Fin.isValue]; exact norm_normal_eq_one_of_unit_speed hc ht
     · intro i j hinej
       rcases (eq_or_ne i 0) with h | h
       · simp only [h, Fin.isValue] at hinej
         have h' : j = 1 := Fin.eq_one_of_ne_zero j hinej.symm
-        simp only [h, Fin.isValue, h']; exact inner_of_normal_velocity_eq_zero c t
+        simp only [h, Fin.isValue, h']; exact inner_of_velocity_normal_eq_zero c t
       · have h' : i=1 := Fin.eq_one_of_ne_zero i h
         have h'' : j=0 := by
           rw [h'] at hinej
           apply Fin.le_zero_iff.mp ?_
           grind
         simp only [h', Fin.isValue, h'']
-        rw [real_inner_comm]; exact inner_of_normal_velocity_eq_zero c t
+        rw [real_inner_comm]; exact inner_of_velocity_normal_eq_zero c t
   have hBsp : ⊤ ≤ Submodule.span ℝ (Set.range B) := by
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, top_le_iff]
     apply hBon.linearIndependent.span_eq_top_of_card_eq_finrank
@@ -143,18 +143,16 @@ then the velocity vector `deriv c` has a derivative at every point of `I`. -/
 lemma velocity_hasDerivAt_aux {I : Set ℝ} (hI : IsOpen I) {ι : Type u} [Fintype ι]
   {c : ℝ → EuclideanSpace ℝ ι} (hc : ContDiffOn ℝ 2 c I) {t : ℝ} (ht : t ∈ I) :
   HasDerivAt (deriv c) (iteratedDeriv 2 c t) t := by
-  --have := Fintype.ofFinite ι
   have hd : ContDiffOn ℝ 1 (deriv c) I := hc.deriv_of_isOpen hI (by norm_num)
   simpa [iteratedDeriv_succ] using hd.differentiableOn (by norm_num)
     |> DifferentiableOn.hasDerivAt <| hI.mem_nhds ht
 
 /-- For any twice continuously differentiable parametrized curve with constant speed, at any given
 point the velocity vector is perpendicular to the acceleration vector. -/
-theorem inner_of_velocity_accel_of_const_speed_eq_zero {I : Set ℝ} (hI : IsOpen I) {ι : Type u}
+theorem inner_of_accel_velocity_of_const_speed_eq_zero {I : Set ℝ} (hI : IsOpen I) {ι : Type u}
   [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) {r : ℝ}
   (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = r) {t : ℝ} (ht : t ∈ I) :
   inner ℝ (iteratedDeriv 2 c t) (deriv c t) = 0 := by
-  --have := Fintype.ofFinite ι
   let f (x : ℝ) := inner ℝ (deriv c x) (deriv c x)
   have h₁ : ∀ x ∈ I, f x = r^2 := by
     intro τ hτ
@@ -200,7 +198,7 @@ theorem second_deriv_eq_orientedCurvature_times_normal {I : Set ℝ} (hI : IsOpe
       rw [real_inner_comm (deriv c t) (iteratedDeriv 2 c t),
           real_inner_comm (iteratedDeriv 2 c t) (normal c t)]
     _ =  inner ℝ (iteratedDeriv 2 c t) (normal c t) • normal c t := by
-      rw [inner_of_velocity_accel_of_const_speed_eq_zero hI hc₁ hc₂ ht]; simp
+      rw [inner_of_accel_velocity_of_const_speed_eq_zero hI hc₁ hc₂ ht]; simp
 
 /-- Auxiliary lemma: If `c` is a twice continuously differentiable plane curve on an interval `I`,
 then the normal has a derivative at every point of `I`. -/
@@ -226,7 +224,7 @@ theorem inner_of_normal_deriv_normal_of_unit_speed_eq_zero {I : Set ℝ} (hI : I
   have h₁ : ∀ x ∈ I, f x = 1 := by
     intro τ hτ
     unfold f
-    rw [real_inner_self_eq_norm_sq, normal_is_unit_of_unit_speed hc₂ hτ]
+    rw [real_inner_self_eq_norm_sq, norm_normal_eq_one_of_unit_speed hc₂ hτ]
     ring
   let g : ℝ → ℝ := fun x ↦  1
   have h₂ : derivWithin g I t = 0 := by
@@ -273,7 +271,7 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} (hI : 
       have h₃ : Set.EqOn f g I := by
         intro x hx
         simp only [f, g]
-        rw [real_inner_comm, inner_of_normal_velocity_eq_zero c x]
+        rw [real_inner_comm, inner_of_velocity_normal_eq_zero c x]
       have h₄ : f t = g t := h₃ ht
       calc
         (0 : ℝ) = deriv f t := by rw [← derivWithin_of_isOpen hI ht, derivWithin_congr h₃ h₄, h₂]
@@ -292,7 +290,7 @@ theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} (hI : 
           rw [real_inner_comm (orientedCurvature c t • normal c t),
               inner_smul_left_eq_smul (normal c t) (normal c t)]
         _ = inner ℝ (deriv c t) (deriv (normal c) t) + (orientedCurvature c t) := by
-          simp only [inner_self_eq_norm_sq_to_K, normal_is_unit_of_unit_speed hc₂ ht,
+          simp only [inner_self_eq_norm_sq_to_K, norm_normal_eq_one_of_unit_speed hc₂ ht,
                      RCLike.ofReal_real_eq_id, id_eq, one_pow, smul_eq_mul, mul_one]
           rw [add_comm, real_inner_comm]
     linarith [h']
@@ -316,7 +314,6 @@ lemma continuousOn_angle_fun_aux {I : Set ℝ} [hIoC : I.OrdConnected] (hI : IsO
   have h₂ : ContinuousOn (fun x ↦ ∫ (ξ : ℝ) in t₀..x, κ ξ) I := by
     -- Since I is open, we can find an ε  > 0 such that (t₀ - ε, t₀ + ε) ⊆  I.
     obtain ⟨ε, hε_pos, hε⟩ : ∃ ε > 0, Metric.ball t₀ ε ⊆ I := Metric.isOpen_iff.mp hI t₀ ht₀
-    -- Since κ is continuous on I, the function F(x) = ∫ ξ in t₀..x, κ ξ is differentiable on I.
     intro x hx
     have hd : HasDerivAt (fun x => ∫ ξ in t₀..x, κ ξ) (κ x) x := by
       apply_rules [intervalIntegral.integral_hasDerivAt_right]
@@ -565,7 +562,6 @@ theorem velocity_initial_condition_initialCurve_of_orientedCurvature {I : Set �
 lemma deriv_differentiableAt_of_2_contDiffOn_open {I : Set ℝ} (hI : IsOpen I) {ι : Type u}
   [Fintype ι] {c : ℝ → EuclideanSpace ℝ ι} (hc₁ : ContDiffOn ℝ 2 c I) (i : ι) {s : ℝ} (hs : s ∈ I) :
   DifferentiableAt ℝ (fun t ↦  (deriv c t) i) s := by
-  --have := Fintype.ofFinite ι
   apply (differentiableAt_piLp 2).mp
   have h : I.EqOn (deriv c) (iteratedDerivWithin 1 c I) := by
     intro x hx
