@@ -5,7 +5,7 @@ Authors: Jun Kwon
 -/
 module
 
-public import Mathlib.Data.Fintype.Sets
+public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Fintype.Sigma
 
 /-!
@@ -118,6 +118,10 @@ namespace prodDart
 
 variable {α Gr : Type*} [HasDart.{0} α Gr] {G : Gr}
 
+@[simp]
+lemma dart_iff_adj {u v : α} : dart G u v ↔ Adj G u v := by
+  simp [← nonempty_dart_iff_adj]
+
 theorem ext_iff' (d₁ d₂ : prodDart G) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
   simp +contextual only [ext_iff, and_iff_left_iff_imp, HEq.rfl, implies_true]
 
@@ -135,6 +139,14 @@ instance fintype [Fintype α] [DecidableRel (dart G)] : Fintype (prodDart G) :=
   Fintype.ofEquiv (Σ v, { w | dart G v w })
     { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
       invFun := fun d => ⟨d.fst, d.snd, d.dart'⟩ }
+
+lemma prodDart_finite (hV : V(G).Finite) : Finite (prodDart G) := by
+  haveI := Set.finite_coe_iff.mpr hV
+  refine Finite.of_injective
+    (fun d => (⟨d.fst, d.dart'.left_mem⟩, ⟨d.snd, d.dart'.right_mem⟩) : prodDart G → V(G) × V(G)) ?_
+  intro d₁ d₂ h
+  simp only [Prod.mk.injEq, Subtype.mk.injEq] at h
+  ext <;> tauto
 
 end prodDart
 end HasPDart
