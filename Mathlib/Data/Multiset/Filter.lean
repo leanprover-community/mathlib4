@@ -283,7 +283,7 @@ theorem countP_eq_countP_filter_add (s) (p q : α → Prop) [DecidablePred p] [D
 theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
     countP p (map f s) = card (s.filter fun a => p (f a)) := by
   refine Multiset.induction_on s ?_ fun a t IH => ?_
-  · rw [map_zero, countP_zero, filter_zero, card_zero]
+  · simp
   · rw [map_cons, countP_cons, IH, filter_cons, card_add, apply_ite card, card_zero, card_singleton,
       Nat.add_comm]
 

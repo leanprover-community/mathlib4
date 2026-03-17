@@ -69,7 +69,7 @@ theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.s
 theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by
   refine f.induction ?_ ?_
-  · rw [toMultiset_zero, Multiset.map_zero, mapDomain_zero, toMultiset_zero]
+  · simp
   · intro a n f _ _ ih
     rw [toMultiset_add, Multiset.map_add, ih, mapDomain_add, mapDomain_single,
       toMultiset_single, toMultiset_add, toMultiset_single, ← Multiset.coe_mapAddMonoidHom,

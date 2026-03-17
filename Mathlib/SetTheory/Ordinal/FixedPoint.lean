@@ -532,7 +532,7 @@ theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
   rw [← funext_iff,
     IsNormal.ext_iff (isNormal_deriv _) (isNormal_mul_right (opow_pos ω ha))]
   refine ⟨?_, fun c h => ?_⟩
-  · rw [bot_eq_zero, deriv_zero_right, nfp_mul_zero, mul_zero]
+  · simp
   · rw [deriv_succ, h]
     exact nfp_mul_opow_omega0_add c ha zero_lt_one (one_le_iff_pos.2 (opow_pos _ ha))
 

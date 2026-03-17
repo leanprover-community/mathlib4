@@ -359,7 +359,7 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
     h.symm.imp_left <| mul_ne_zero two_ne_zero
   have help (x : ℝ) : ((1 / x) ^ 3 * x ^ 4 * 1 : ℂ) = x := by
     rcases eq_or_ne x 0 with rfl | h
-    · rw [ofReal_zero, zero_pow (by lia), mul_zero, mul_one]
+    · simp
     · rw [one_div, inv_pow, pow_succ _ 3, ← mul_assoc,
         inv_mul_cancel₀ <| pow_ne_zero 3 (ofReal_ne_zero.mpr h), one_mul, mul_one]
   -- put together the various `IsBigO` statements and `norm_LFunction_product_ge_one`

@@ -283,7 +283,7 @@ theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
 @[simp, push]
 theorem log_zpow (x : ℝ) (n : ℤ) : log (x ^ n) = n * log x := by
   cases n
-  · rw [Int.ofNat_eq_natCast, zpow_natCast, log_pow, Int.cast_natCast]
+  · simp
   · rw [zpow_negSucc, log_inv, log_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
 
 @[push]
