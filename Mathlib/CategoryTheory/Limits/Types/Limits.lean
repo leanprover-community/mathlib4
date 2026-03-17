@@ -204,7 +204,7 @@ theorem limitEquivSections_symm_apply (x : F.sections) (j : J) :
     limit.π F j ((limitEquivSections F).symm x) = (x : ∀ j, F.obj j) j :=
   isLimitEquivSections_symm_apply _ _ _
 
-/-- The limit of a functor `F : J ⥤ TypeCat _` is naturally isomorphic to `F.sections`. -/
+/-- The limit of a functor `F : J ⥤ Type _` is naturally isomorphic to `F.sections`. -/
 noncomputable def limNatIsoSectionsFunctor :
     (lim : (J ⥤ Type (max u v)) ⥤ Type (max u v)) ≅ Functor.sectionsFunctor J :=
   NatIso.ofComponents (fun F ↦ (limitEquivSections F).toIso)

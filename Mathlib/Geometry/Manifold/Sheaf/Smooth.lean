@@ -279,7 +279,7 @@ def smoothSheafCommRing : TopCat.Sheaf CommRingCat.{u} (TopCat.of M) where
       (CategoryTheory.forget CommRingCat)]
     exact (smoothSheaf IM I M R).property
 
--- sanity check: applying the `CommRingCat`-to-`TypeCat` forgetful functor to the sheaf-of-rings of
+-- sanity check: applying the `CommRingCat`-to-`Type` forgetful functor to the sheaf-of-rings of
 -- smooth functions gives the sheaf-of-types of smooth functions.
 example : (CategoryTheory.sheafCompose _ (CategoryTheory.forget CommRingCat.{u})).obj
     (smoothSheafCommRing IM I M R) = (smoothSheaf IM I M R) := rfl

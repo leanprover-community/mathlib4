@@ -72,15 +72,6 @@ def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
 @[simps!]
 def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.as ∘ g.as)
 
--- @[simp]
--- lemma Fun.comp_apply {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) (x : X) :
---     (f.comp g) x = f.as (g.as x) :=
---   rfl
-
--- @[simp]
--- lemma Fun.mk_as {X Y : Type*} (f : X → Y) : (Fun.mk f).as = f :=
---   by with_reducible rfl
-
 def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
   toFun f := f
   invFun f := ⟨f⟩
@@ -88,7 +79,7 @@ def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
   right_inv := by intro; rfl
 
 set_option backward.privateInPublic true in
-/-- The type of morphisms in `TypeCat`. -/
+/-- The type of morphisms in `Type`. -/
 @[ext]
 structure Hom (X Y : Type u) where
   private mk ::
@@ -132,11 +123,11 @@ example (X Y : Type*) (f : Fun X Y) (x : X) : f x = (f : X → Y) x := by
 
 namespace TypeCat
 
-/-- Turn a morphism in `TypeCat` back into a function. -/
+/-- Turn a morphism in `Type` back into a function. -/
 abbrev Hom.hom {X Y : Type u} (f : Hom X Y) : Fun X Y :=
   ConcreteCategory.hom (C := Type u) f
 
-/-- Typecheck a function as a morphism in `TypeCat`. -/
+/-- Typecheck a function as a morphism in `Type`. -/
 abbrev ofHom {X Y : Type u} (f : X → Y) : X ⟶ Y :=
   ConcreteCategory.ofHom (Fun.mk f)
 
@@ -145,10 +136,6 @@ def Hom.Simps.hom (X Y : Type u) (f : X ⟶ Y) :=
   ConcreteCategory.hom f
 
 initialize_simps_projections Hom (hom' → hom)
-
--- example (X Y : Type u) (f : X ⟶ Y) : ConcreteCategory.hom f =
---     TypeCat.Fun.mk (ConcreteCategory.hom f).as := by
---   with_reducible rfl
 
 @[simp]
 lemma Fun.as_apply {X Y : Type u} (f : Fun X Y) (x : X) : f.as x = f x := by
@@ -160,13 +147,6 @@ lemma hom_as_apply {X Y : Type u} (f : X ⟶ Y) (x : X) : (ConcreteCategory.hom 
   rfl
 
 example (X : Type u) : CategoryTheory.ToType X = X := by with_reducible rfl
-
--- @[simp]
--- lemma hom_id {X : Type u} : (𝟙 X : X ⟶ X).hom = Fun.id _ := rfl
-
--- @[simp]
--- lemma hom_comp {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) :
---     (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 @[simp]
 lemma ofHom_eq {X Y : Type u} (f : X ⟶ Y) : ofHom f = f :=
@@ -200,23 +180,9 @@ lemma homEquiv_symm_apply {X Y : Type u} (f : X → Y) :
 lemma congr_arg {X Y : Type u} (f : X ⟶ Y) {x x' : X} (h : x = x') : f x = f x' := by
   rw [h]
 
--- @[simp]
--- lemma Fun.mk_apply' {C : Type*} [Category* C] {CC : C → Type*} {FC : C → C → Type*}
---     [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] {X Y : C} (f : X ⟶ Y)
---     (x : ToType X) : (Fun.mk f) x = f x :=
---   rfl
-
 end TypeCat
 
 namespace CategoryTheory
-
--- @[ext]
--- lemma types_ext {X Y : Type u} (f g : X ⟶ Y) (h : ∀ (x : X), f x = g x) :
---     f = g := by
---   ext
---   apply TypeCat.Fun.ext
---   ext
---   exact h _
 
 theorem types_id (X : Type u) : (𝟙 X : _ → _) = id :=
   rfl
@@ -349,8 +315,6 @@ def uliftFunctor : Type u ⥤ Type (max u v) where
   obj X := (ULift.{v} X)
   map {X} {_} f := ofHom fun x : ULift.{v} X => ULift.up (f x.down)
 
--- @[deprecated (since := "2026-02-09")] alias uliftFunctor_obj := uliftFunctor_obj_carrier
-
 /-- `uliftFunctor : Type u ⥤ Type max u v` is fully faithful. -/
 def fullyFaithfulULiftFunctor : (uliftFunctor.{v, u}).FullyFaithful where
   preimage f := ofHom fun x ↦ (f (ULift.up x)).down
@@ -395,7 +359,7 @@ theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.In
 theorem injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.Injective f :=
   (mono_iff_injective f).1 hf
 
-/-- A morphism in `TypeCat` is an epimorphism if and only if it is surjective. -/
+/-- A morphism in `Type _` is an epimorphism if and only if it is surjective. -/
 @[stacks 003C]
 theorem ofHom_epi_iff_surjective {X Y : Type u} (f : X → Y) :
     Epi (ofHom f) ↔ Function.Surjective f := by

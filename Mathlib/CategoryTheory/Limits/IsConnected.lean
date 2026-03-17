@@ -90,7 +90,7 @@ noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
     colimit (constPUnitFunctor.{w} C) ≅ PUnit.{w + 1} :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitPUnitCocone.{w} C)
 
-/-- Let `F` be a `TypeCat`-valued functor. If two elements `a : F c` and `b : F d` represent the
+/-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the
 same element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
 theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
     (h : Relation.EqvGen F.ColimitTypeRel c d) : Zigzag c.1 d.1 := by
