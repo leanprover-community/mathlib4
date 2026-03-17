@@ -162,7 +162,7 @@ notation3 "∑' "(...)", "r:67:(scoped f => tsum f (unconditional _)) => r
 @[to_additive]
 lemma hasProd_bot (hL : ¬L.NeBot) (f : β → α) (a : α) :
     HasProd f a L := by
-  have : L.filter = ⊥ := by contrapose! hL; exact ⟨⟨hL⟩⟩
+  have : L.filter = ⊥ := by contrapose! hL; exact ⟨hL⟩
   rw [HasProd, this]
   exact tendsto_bot
 

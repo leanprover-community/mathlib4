@@ -131,10 +131,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @IsTopological
           map id (@nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0) :=
         map_id.symm
       _ = map (fun x => id x • (1 : 𝕜)) (@nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0) := by
-        conv_rhs =>
-          congr
-          ext
-          rw [smul_eq_mul, mul_one]
+        simp
       _ ≤ @nhds 𝕜 t ((0 : 𝕜) • (1 : 𝕜)) :=
         (@Tendsto.smul_const _ _ _ hnorm.toUniformSpace.toTopologicalSpace t _ _ _ _ _
           tendsto_id (1 : 𝕜))

@@ -124,14 +124,8 @@ def continuousLinearMap :
 instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)] :
     (Pretrivialization.continuousLinearMap σ e₁ e₂).IsLinear 𝕜₂ where
   linear x _ :=
-    { map_add := fun L L' ↦
-        show (e₂.continuousLinearMapAt 𝕜₂ x).comp ((L + L').comp (e₁.symmL 𝕜₁ x)) = _ by
-          simp_rw [add_comp, comp_add]
-          rfl
-      map_smul := fun c L ↦
-        show (e₂.continuousLinearMapAt 𝕜₂ x).comp ((c • L).comp (e₁.symmL 𝕜₁ x)) = _ by
-          simp_rw [smul_comp, comp_smulₛₗ, RingHom.id_apply]
-          rfl }
+    { map_add L L' := by simp [continuousLinearMap, Pretrivialization.toFun']
+      map_smul c L := by simp [continuousLinearMap, Pretrivialization.toFun'] }
 
 theorem continuousLinearMap_apply (p : TotalSpace (F₁ →SL[σ] F₂) fun x ↦ E₁ x →SL[σ] E₂ x) :
     (continuousLinearMap σ e₁ e₂) p =
@@ -357,9 +351,7 @@ lemma ContinuousWithinAt.clm_apply_of_inCoordinates
     apply hb₂
     apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
     exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
-  filter_upwards [A, A'] with m hm h'm
-  simp [inCoordinates_eq hm h'm,
-        Trivialization.symm_apply_apply_mk (trivializationAt F₁ E₁ (b₁ m₀)) hm (v m)]
+  filter_upwards [A, A'] with m hm h'm using by simp [inCoordinates_eq hm h'm, hm]
 
 
 /-- Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and

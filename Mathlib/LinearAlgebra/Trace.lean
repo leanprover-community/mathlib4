@@ -22,7 +22,7 @@ See also `Mathlib/LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 
 ## Tags
 
-linear_map, trace, diagonal
+linear map, trace, diagonal
 -/
 
 @[expose] public section

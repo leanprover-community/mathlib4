@@ -293,7 +293,6 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
 
 open Multiset
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
 value of a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the
 maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
@@ -499,7 +498,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
         (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
       rw [← hσ]
-      apply le_ciSup (Finite.bddAbove_range _) σ
+      apply Finite.le_ciSup _ σ
     · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
 
 open IsUltrametricDist
@@ -801,6 +800,16 @@ theorem spectralNorm_unique_field_norm_ext [CompleteSpace K]
   have hgx : f x = g x := rfl
   rw [hgx, spectralNorm_unique hg_pow, spectralAlgNorm_def]
 
+variable (K) in
+/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
+  `L/K` is an algebraic normed field extension, then the norm on `L` coincides with the spectral
+  norm. -/
+theorem NormedAlgebra.norm_eq_spectralNorm {L : Type*} [NormedField L] [NormedAlgebra K L]
+    [Algebra.IsAlgebraic K L] [CompleteSpace K] (x : L) : ‖x‖ = spectralNorm K L x := by
+  rw [← toMulAlgebraNorm_apply K L x, ← spectralAlgNorm_def, ← MulAlgebraNorm.coe_AlgebraNorm,
+      spectralNorm_unique (f := (toMulAlgebraNorm K L).toAlgebraNorm)
+      (MulRingNorm.isPowMul (toMulAlgebraNorm K L).toMulRingNorm)]
+
 /-- Given a nonzero `x : L`, and assuming that `(spectralAlgNorm h_alg hna) 1 ≤ 1`, this is
   the real-valued function sending `y ∈ L` to the limit of  `(f (y * x^n))/((f x)^n)`,
   regarded as an algebra norm. -/
@@ -858,6 +867,7 @@ namespace spectralNorm
 variable (K L)
 
 /-- `L` with the spectral norm is a `NormedField`. -/
+@[implicit_reducible]
 def normedField : NormedField L :=
   { (inferInstance : Field L) with
     norm x := (spectralNorm K L x : ℝ)
@@ -876,23 +886,33 @@ def normedField : NormedField L :=
     edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal] }
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
+@[implicit_reducible]
 def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
   __ := spectralNorm.normedField K L
   non_trivial :=
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
     ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩
 
-/-- `L` with the spectral norm is a `normed_add_comm_group`. -/
+/-- `L` with the spectral norm is a `SeminormedRing`. -/
+@[implicit_reducible]
+def seminormedRing : SeminormedRing L := by
+  letI : NormedField L := normedField K L
+  infer_instance
+
+/-- `L` with the spectral norm is a `NormedAddCommGroup`. -/
+@[implicit_reducible]
 def normedAddCommGroup : NormedAddCommGroup L := by
   haveI : NormedField L := normedField K L
   infer_instance
 
-/-- `L` with the spectral norm is a `seminormed_add_comm_group`. -/
+/-- `L` with the spectral norm is a `SeminormedAddCommGroup`. -/
+@[implicit_reducible]
 def seminormedAddCommGroup : SeminormedAddCommGroup L := by
   have : NormedField L := normedField K L
   infer_instance
 
-/-- `L` with the spectral norm is a `normed_space` over `K`. -/
+/-- `L` with the spectral norm is a `NormedSpace` over `K`. -/
+@[implicit_reducible]
 def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
   letI _ := seminormedAddCommGroup K L
   { (inferInstance : Module K L) with
@@ -900,13 +920,37 @@ def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
       change spectralAlgNorm K L (r • x) ≤ ‖r‖ * spectralAlgNorm K L x
       exact le_of_eq (map_smul_eq_mul _ _ _) }
 
+/-- `L` with the spectral norm is a `NormedAlgebra` over `K`. -/
+@[implicit_reducible]
+def normedAlgebra :
+    @NormedAlgebra K L _ (seminormedRing K L) :=
+  letI _ := normedField K L
+  { normedSpace K L, (inferInstance : Algebra K L) with }
+
+/-- `L` with the spectral norm is a `NormedAlgebra` over any intermediate `E`
+that is a normed algebra over `K`. -/
+@[implicit_reducible]
+def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormedField E]
+    [NormedAlgebra K E] [Algebra E L] [IsScalarTower K E L] :
+    @NormedAlgebra E L _ (seminormedRing K L) :=
+  letI _ := normedField K L
+  letI _ := normedAlgebra K L
+  letI _ := Algebra.IsAlgebraic.tower_bot K E L
+  { (inferInstance : Algebra E L) with
+    norm_smul_le _ _ := by
+      apply le_of_eq
+      simp only [Algebra.smul_def, norm_mul, mul_eq_mul_right_iff, _root_.norm_eq_zero]
+      simp only [NormedAlgebra.norm_eq_spectralNorm K]
+      exact Or.inl <| (spectralNorm.eq_of_tower _).symm }
+
 /-- The metric space structure on `L` induced by the spectral norm. -/
+@[implicit_reducible]
 def metricSpace : MetricSpace L := (normedField K L).toMetricSpace
 
 /-- The uniform space structure on `L` induced by the spectral norm. -/
+@[implicit_reducible]
 def uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `L/K` is finite dimensional, then `L` is a complete space with respect to topology induced
   by the spectral norm. -/
 instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :

@@ -1319,6 +1319,14 @@ lemma Topology.IsClosedEmbedding.uliftDown [TopologicalSpace X] :
 instance [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (ULift X) :=
   IsEmbedding.uliftDown.discreteTopology
 
+/-- Continuous maps between `ULift X` and `ULift Y` are equivalent to continuous maps between `X`
+and `Y`. -/
+@[simps]
+def ContinuousMap.uliftEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] :
+    C(ULift.{v} X, ULift.{u} Y) ≃ C(X, Y) where
+  toFun f := ⟨ULift.down ∘ f ∘ ULift.up, by fun_prop⟩
+  invFun f := ⟨ULift.up ∘ f ∘ ULift.down, by fun_prop⟩
+
 end ULift
 
 section Monad

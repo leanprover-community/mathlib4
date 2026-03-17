@@ -109,7 +109,6 @@ theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fs
   have w := t.π.naturality WalkingCospan.Hom.inl
   dsimp at w; simpa using w
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pullback cone on `f` and `g` is determined by morphisms `fst : W ⟶ X` and `snd : W ⟶ Y`
 such that `fst ≫ f = snd ≫ g`. -/
 @[simps]
@@ -295,10 +294,10 @@ set_option backward.isDefEq.respectTransparency false in
 composing with `diagramIsoCospan`. -/
 @[simps!]
 def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
-    (Cones.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
+    (Cone.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
       PullbackCone.mk (t.π.app WalkingCospan.left) (t.π.app WalkingCospan.right)
         ((t.π.naturality inl).symm.trans (t.π.naturality inr :)) :=
-  Cones.ext (Iso.refl _) <| by
+  Cone.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;> simp
 
 /-- A pushout cocone is just a cocone on the span formed by two morphisms `f : X ⟶ Y` and
@@ -329,7 +328,6 @@ theorem condition_zero (t : PushoutCocone f g) : t.ι.app WalkingSpan.zero = f �
   have w := t.ι.naturality WalkingSpan.Hom.fst
   dsimp at w; simpa using w.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pushout cocone on `f` and `g` is determined by morphisms `inl : Y ⟶ W` and `inr : Z ⟶ W` such
 that `f ≫ inl = g ↠ inr`. -/
 @[simps]
@@ -515,10 +513,10 @@ set_option backward.isDefEq.respectTransparency false in
 `diagramIsoSpan`. -/
 @[simps!]
 def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
-    (Cocones.precompose (diagramIsoSpan.{v} _).inv).obj t ≅
+    (Cocone.precompose (diagramIsoSpan.{v} _).inv).obj t ≅
       PushoutCocone.mk (t.ι.app WalkingSpan.left) (t.ι.app WalkingSpan.right)
         ((t.ι.naturality fst).trans (t.ι.naturality snd).symm) :=
-  Cocones.ext (Iso.refl _) <| by
+  Cocone.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;> simp
 
 end Limits

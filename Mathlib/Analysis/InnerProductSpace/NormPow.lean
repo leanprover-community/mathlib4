@@ -29,7 +29,6 @@ open scoped NNReal
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
     HasFDerivAt (fun x : E ↦ ‖x‖ ^ p) ((p * ‖x‖ ^ (p - 2)) • innerSL ℝ x) x := by
   by_cases hx : x = 0
@@ -107,7 +106,6 @@ lemma enorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
   simpa [enorm, ← ENNReal.coe_rpow_of_nonneg _ (sub_nonneg.2 <| NNReal.one_le_coe.2 hp.le),
     ← ENNReal.coe_mul] using nnnorm_fderiv_norm_rpow_le hf hp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E ↦ ‖x‖ ^ p) := by
   rw [contDiff_one_iff_fderiv]
   refine ⟨fun x ↦ hasFDerivAt_norm_rpow x hp |>.differentiableAt, ?_⟩
