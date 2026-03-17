@@ -158,9 +158,23 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
+lemma toSubsemiring_injective : (toSubsemiring : Subring R → Subsemiring R).Injective :=
+  fun ⟨s, hs⟩ t ↦ by congr!
+
+@[simp] lemma toSubsemiring_inj {s t : Subring R} : s.toSubsemiring = t.toSubsemiring ↔ s = t :=
+  toSubsemiring_injective.eq_iff
+
 instance : SetLike (Subring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective' := SetLike.coe_injective.comp toSubsemiring_injective
+
+lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).Injective :=
+  fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
+
+lemma toSubmonoid_injective : (fun s : Subring R => s.toSubmonoid).Injective :=
+  fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
+
+instance : PartialOrder (Subring R) := .ofSetLike (Subring R) R
 
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
@@ -230,15 +244,6 @@ protected def copy (S : Subring R) (s : Set R) (hs : s = ↑S) : Subring R :=
 
 theorem copy_eq (S : Subring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
-
-theorem toSubsemiring_injective : Function.Injective (toSubsemiring : Subring R → Subsemiring R)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
-
-theorem toAddSubgroup_injective : Function.Injective (toAddSubgroup : Subring R → AddSubgroup R)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
-
-theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSubmonoid)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 /-- Construct a `Subring R` from a set `s`, a submonoid `sm`, and an additive
 subgroup `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
@@ -335,6 +340,8 @@ theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
 
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
   ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
+
+@[simp] lemma mk_eq_zero {x : R} (hx : x ∈ s) : (⟨x, hx⟩ : s) = 0 ↔ x = 0 := Subtype.ext_iff
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=

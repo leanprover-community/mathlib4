@@ -151,7 +151,7 @@ protected theorem dist : LipschitzWith 2 (Function.uncurry <| @dist α _) := by
   exact LipschitzWith.uncurry LipschitzWith.dist_left LipschitzWith.dist_right
 
 theorem dist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
-    dist (f^[n] x) (f^[n+1] x) ≤ dist x (f x) * (K : ℝ) ^ n := by
+    dist (f^[n] x) (f^[n + 1] x) ≤ dist x (f x) * (K : ℝ) ^ n := by
   rw [iterate_succ, mul_comm]
   simpa only [NNReal.coe_pow] using (hf.iterate n).dist_le_mul x (f x)
 
@@ -182,12 +182,14 @@ protected theorem min (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => min (f x) (g x) := by
   simpa only [(· ∘ ·), one_mul] using lipschitzWith_min.comp (hf.prodMk hg)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem max_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max (f x) a := by
   simpa only [max_eq_left (zero_le Kf)] using hf.max (LipschitzWith.const a)
 
 theorem const_max (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max a (f x) := by
   simpa only [max_comm] using hf.max_const a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem min_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => min (f x) a := by
   simpa only [max_eq_left (zero_le Kf)] using hf.min (LipschitzWith.const a)
 
@@ -207,12 +209,6 @@ lemma LipschitzWith.properSpace {X Y : Type*} [PseudoMetricSpace X]
     {K : ℝ≥0} (hf' : LipschitzWith K f) : ProperSpace X :=
   ⟨fun x r ↦ (hf.isCompact_preimage (isCompact_closedBall (f x) (K * r))).of_isClosed_subset
     Metric.isClosed_closedBall (hf'.mapsTo_closedBall x r).subset_preimage⟩
-
-namespace Metric
-
-variable [PseudoMetricSpace α] [PseudoMetricSpace β] {s : Set α} {t : Set β}
-
-end Metric
 
 namespace LipschitzOnWith
 

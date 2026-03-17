@@ -56,9 +56,7 @@ def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph
     rintro v w
     rw [Fin.mk.injEq]
     exact Fin.ext
-  map_rel_iff' := by
-    intro v w
-    fin_cases v <;> fin_cases w <;> simp [pathGraph, ← Fin.coe_covBy_iff]
+  map_rel_iff' := by simp [pathGraph]
 
 theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     (pathGraph n).chromaticNumber = 2 := by
@@ -170,7 +168,7 @@ section CompleteEquipartiteGraph
 
 variable {r t : ℕ}
 
-/-- The injection `(x₁, x₂) ↦ x₁` is always a `r`-coloring of a `completeEquipartiteGraph r ·`. -/
+/-- The injection `(x₁, x₂) ↦ x₁` is always an `r`-coloring of a `completeEquipartiteGraph r ·`. -/
 def Coloring.completeEquipartiteGraph :
   (completeEquipartiteGraph r t).Coloring (Fin r) := ⟨Prod.fst, id⟩
 

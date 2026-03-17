@@ -103,6 +103,7 @@ lemma measurable_betaPDFReal (α β : ℝ) : Measurable (betaPDFReal α β) :=
 lemma stronglyMeasurable_betaPDFReal (α β : ℝ) :
     StronglyMeasurable (betaPDFReal α β) := (measurable_betaPDFReal α β).stronglyMeasurable
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pdf of the beta distribution integrates to 1. -/
 @[simp]
 lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :

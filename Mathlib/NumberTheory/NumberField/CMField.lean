@@ -86,6 +86,7 @@ instance isQuadraticExtension : IsQuadraticExtension K⁺ K :=
 instance isTotallyComplex : IsTotallyComplex K :=
   IsCMField.to_isTotallyComplex
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_infinitePlace_eq_card_infinitePlace [NumberField K] :
     Fintype.card (InfinitePlace K⁺) = Fintype.card (InfinitePlace K) := by
   rw [card_eq_nrRealPlaces_add_nrComplexPlaces, card_eq_nrRealPlaces_add_nrComplexPlaces,
@@ -204,6 +205,7 @@ theorem complexConj_eq_self_iff (x : K) :
   · rw [IsGalois.fixedField_top, IntermediateField.mem_bot]
     aesop
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem RingOfIntegers.complexConj_eq_self_iff (x : 𝓞 K) :
     complexConj K x = x ↔ ∃ y : 𝓞 K⁺, algebraMap (𝓞 K⁺) K y = x := by
   rw [complexConj_eq_self_iff]
@@ -276,7 +278,7 @@ theorem mem_realUnits_iff (u : (𝓞 K)ˣ) :
 
 theorem unitsComplexConj_eq_self_iff [Algebra.IsIntegral ℚ K] (u : (𝓞 K)ˣ) :
     unitsComplexConj K u = u ↔ u ∈ realUnits K := by
-  simp_rw [Units.ext_iff,  mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
+  simp_rw [Units.ext_iff, mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
     AlgEquiv.toRingEquiv_eq_coe, RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
     AlgEquiv.coe_ringEquiv, Units.complexConj_eq_self_iff,
     IsScalarTower.algebraMap_apply (𝓞 K⁺) (𝓞 K) K]
@@ -455,6 +457,7 @@ namespace CMExtension
 variable (F K : Type*) [Field F] [IsTotallyReal F] [Field K] [CharZero K] [Algebra.IsIntegral ℚ K]
   [IsTotallyComplex K] [Algebra F K] [IsQuadraticExtension F K]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticExtension E K] :
     E = maximalRealSubfield K := by
   refine le_antisymm (IsTotallyReal.le_maximalRealSubfield E) ?_
@@ -514,6 +517,7 @@ theorem ofCMExtension :
   is_quadratic := ⟨(IsQuadraticExtension.finrank_eq_two F K) ▸ finrank_eq_of_equiv_equiv
       (CMExtension.equivMaximalRealSubfield F K).symm (RingEquiv.refl K) (by ext; simp)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 /--
 A totally complex field that has a unique complex conjugation is CM.
@@ -561,6 +565,7 @@ namespace IsCyclotomicExtension.Rat
 
 variable (K : Type*) [Field K] [CharZero K]
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 /--
 A nontrivial abelian extension of `ℚ` is CM.

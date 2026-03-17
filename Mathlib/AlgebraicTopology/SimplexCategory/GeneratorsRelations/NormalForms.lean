@@ -121,7 +121,7 @@ theorem sortedLT {m L} (hL : IsAdmissible m L) : L.SortedLT :=
 
 @[deprecated (since := "2025-11-27")] alias pairwise := sortedLT
 
-@[deprecated  (since := "2025-10-16")]
+@[deprecated (since := "2025-10-16")]
 alias sorted := pairwise
 
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
@@ -232,13 +232,15 @@ def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
 lemma simplicialEvalσ_of_le_mem (j : ℕ) (hj : ∀ k ∈ L, j ≤ k) : simplicialEvalσ L j = j := by
   induction L with | nil => grind | cons _ _ _ => simp only [List.forall_mem_cons] at hj; grind
 
-@[deprecated  (since := "2025-10-16")]
+@[deprecated (since := "2025-10-16")]
 alias simplicialEvalσ_of_lt_mem := simplicialEvalσ_of_le_mem
 
 lemma simplicialEvalσ_monotone (L : List ℕ) : Monotone (simplicialEvalσ L) := by
   induction L <;> grind [Monotone]
 
 variable {m}
+
+set_option backward.isDefEq.respectTransparency false in
 /- We prove that `simplicialEvalσ` is indeed a lift of
 `(toSimplexCategory.map (standardσ m L _ _)).toOrderHom` when the list is admissible. -/
 lemma simplicialEvalσ_of_isAdmissible
@@ -288,6 +290,7 @@ lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : 
         convert σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
       grind [standardσ_cons]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local grind! .] simplicialInsert_length simplicialInsert_isAdmissible in
 /-- Using `standardσ_simplicialInsert`, we can prove that every morphism satisfying `P_σ` is equal
 to some `standardσ` for some admissible list of indices. -/

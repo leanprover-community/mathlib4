@@ -13,7 +13,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 # A map is proper iff it is continuous and universally closed
 -/
 
-@[expose] public section
+public section
 
 open Filter
 

@@ -25,7 +25,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 norm, nonarchimedean, rank one, compact, locally compact
 -/
 
-@[expose] public section
+public section
 
 open NNReal
 
@@ -54,6 +54,7 @@ lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 := by
   simpa [← NNReal.coe_inj] using
     (Valuation.integer.integers (NormedField.valuation (K := K))).valuation_unit u
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
   simp
 
@@ -67,15 +68,18 @@ lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1
 lemma norm_irreducible_pos {ϖ : 𝒪[K]} (h : Irreducible ϖ) : 0 < ‖ϖ‖ :=
   Valuation.integer.v_irreducible_pos h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_span_singleton_eq_closedBall (x : 𝒪[K]) :
     (Ideal.span {x} : Set 𝒪[K]) = Metric.closedBall 0 ‖x‖ := by
   simp [Valuation.integer.coe_span_singleton_eq_setOf_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Irreducible.maximalIdeal_eq_closedBall [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
     (𝓂[K] : Set 𝒪[K]) = Metric.closedBall 0 ‖ϖ‖ := by
   simp [h.maximalIdeal_eq_setOf_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) (n : ℕ) :
     ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K]) = Metric.closedBall 0 (‖ϖ‖ ^ n) := by
@@ -125,6 +129,8 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuati
         (Ideal.powQuotPowSuccEquivMapMkPowSuccPow _ n))
 
 open scoped Valued
+
+set_option backward.isDefEq.respectTransparency false in
 lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).RankOne]
     [IsDiscreteValuationRing 𝒪[K]] :
     TotallyBounded (Set.univ (α := 𝒪[K])) ↔ Finite 𝓀[K] := by
@@ -158,7 +164,7 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
       (toNormedField.norm_lt_one_iff.mpr hp')
     have hF := finite_quotient_maximalIdeal_pow_of_finite_residueField H n
     refine ⟨Quotient.out '' (Set.univ (α := 𝒪[K] ⧸ (𝓂[K] ^ n))), Set.toFinite _, ?_⟩
-    have : {y : 𝒪[K] | v (y : K) ≤ v (p : K) ^ n} = Metric.closedBall 0 (‖p‖ ^ n)  := by
+    have : {y : 𝒪[K] | v (y : K) ≤ v (p : K) ^ n} = Metric.closedBall 0 (‖p‖ ^ n) := by
       ext
       simp [← norm_pow]
     simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n), hp.maximalIdeal_pow_eq_setOf_le_v_coe_pow,
@@ -173,8 +179,9 @@ section CompactDVR
 
 open Valued
 
+set_option backward.isDefEq.respectTransparency false in
 lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
-    Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ):= by
+    Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ) := by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
   -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   constructor
@@ -226,9 +233,16 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · intro w
     simp only [U]
     split_ifs with hw
-    · exact Valued.isOpen_closedBall _ z0.ne'
-    · refine Valued.isOpen_sphere _ ?_
+    · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.1.2
+      rw [← hb] at z0 ⊢
+      simp_rw [← v.restrict_le_iff]
+      refine Valued.isOpen_closedBall _ ?_
+      rw [ne_eq, ← map_zero v.restrict, v.restrict_inj, map_zero]
+      exact z0.ne'
+    · simp_rw [← v.restrict_inj]
+      refine Valued.isOpen_sphere _ ?_
       push_neg at hw
+      rw [← map_zero v.restrict, ne_eq, v.restrict_inj]
       refine (hw.trans' ?_).ne'
       simp [z0]
   · intro w
@@ -263,12 +277,14 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
       rw [dif_neg hcj]
       simp [← hj', hc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by
   rw [← Units.mulArchimedean_iff]
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
   exact MulArchimedean.of_locallyFiniteOrder
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
     IsPrincipalIdealRing 𝒪[K] := by
   -- The strategy to show that we have a PIR is by contradiction,

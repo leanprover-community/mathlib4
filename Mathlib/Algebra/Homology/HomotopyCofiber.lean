@@ -190,7 +190,7 @@ lemma d_sndX (i j : ι) (hij : c.Rel i j) :
 lemma inlX_d (i j k : ι) (hij : c.Rel i j) (hjk : c.Rel j k) :
     inlX φ j i hij ≫ d φ i j = -F.d j k ≫ inlX φ k j hjk + φ.f j ≫ inrX φ j := by
   apply ext_to_X φ j k hjk
-  · simp [d_fstX φ  _ _ _ hij hjk]
+  · simp [d_fstX φ _ _ _ hij hjk]
   · simp [d_sndX φ _ _ hij]
 
 @[reassoc]
@@ -243,6 +243,7 @@ noncomputable def inr : G ⟶ homotopyCofiber φ where
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition `φ ≫ mappingCone.inr φ` is homotopic to `0`. -/
 noncomputable def inrCompHomotopy (hc : ∀ j, ∃ i, c.Rel i j) :
     Homotopy (φ ≫ inr φ) 0 where
@@ -256,7 +257,7 @@ noncomputable def inrCompHomotopy (hc : ∀ j, ∃ i, c.Rel i j) :
     · simp only [comp_f, homotopyCofiber_d, zero_f, add_zero,
         inlX_d φ i j _ hij hj, dNext_eq _ hj, dif_pos hj,
         add_neg_cancel_left, inr_f]
-    · rw [dNext_eq_zero _ _  hj, zero_add, zero_f, add_zero, homotopyCofiber_d,
+    · rw [dNext_eq_zero _ _ hj, zero_add, zero_f, add_zero, homotopyCofiber_d,
         inlX_d' _ _ _ _ hj, comp_f, inr_f]
 
 variable (hc : ∀ j, ∃ i, c.Rel i j)
@@ -356,6 +357,7 @@ lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
     · exact h _ _ hij
     · simp only [Homotopy.zero _ _ _ hij]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms `homotopyCofiber φ ⟶ K` are uniquely determined by
 a morphism `α : G ⟶ K` and a homotopy from `φ ≫ α` to `0`. -/
 noncomputable def descEquiv (K : HomologicalComplex C c) (hc : ∀ j, ∃ i, c.Rel i j) :
@@ -456,6 +458,7 @@ noncomputable def nullHomotopicMap : K.cylinder ⟶ K.cylinder :=
 noncomputable def nullHomotopy : Homotopy (nullHomotopicMap K) 0 :=
   Homotopy.nullHomotopy' _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (nullHomotopicMap K).f j =
       inlX K i j hij ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
@@ -476,6 +479,7 @@ lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
 
 include hc
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inrX_nullHomotopy_f (j : ι) :
     inrX K j ≫ (nullHomotopicMap K).f j = inrX K j ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
   have : biprod.lift (𝟙 K) (-𝟙 K) = biprod.inl - biprod.inr :=

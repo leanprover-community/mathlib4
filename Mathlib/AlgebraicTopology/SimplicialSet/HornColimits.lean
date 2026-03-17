@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Horns as colimits
@@ -14,8 +15,8 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 In this file, we express horns as colimits:
 * horns in `Δ[2]` are pushouts of two copies of `Δ[1]`;
 * horns in `Δ[n]` are multicoequalizers of copies of the standard
-simplex of dimension `n-1` (a dedicated API is provided for inner
-horns in `Δ[3]`).
+  simplex of dimension `n-1` (a dedicated API is provided for inner
+  horns in `Δ[3]`).
 
 -/
 
@@ -86,7 +87,7 @@ abbrev ι₁₂ : Δ[1] ⟶ Λ[2, 1] := horn.ι.{u} 1 0 (by simp)
 lemma isPushout :
     IsPushout (stdSimplex.{u}.δ (0 : Fin 2))
       (stdSimplex.{u}.δ (1 : Fin 2)) ι₀₁ ι₁₂ := by
-  apply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _ )
+  apply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _)
     (stdSimplex.facePairIso _ _ (by simp)) (stdSimplex.facePairIso _ _ (by simp))
     (Iso.refl _)
   all_goals decide
@@ -119,7 +120,7 @@ abbrev ι₁₂ : Δ[1] ⟶ Λ[2, 2] := horn.ι.{u} 2 0 (by simp)
 lemma isPushout :
     IsPushout (stdSimplex.{u}.δ (0 : Fin 2))
       (stdSimplex.{u}.δ (0 : Fin 2)) ι₀₂ ι₁₂ := by
-  fapply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _ )
+  fapply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _)
     (stdSimplex.facePairIso _ _ (by simp)) (stdSimplex.facePairIso _ _ (by simp))
     (Iso.refl _)
   all_goals decide
@@ -135,7 +136,7 @@ of all `1`-codimensional faces of the standard simplex but one
 along suitable `2`-codimensional faces. -/
 lemma multicoequalizerDiagram :
     Subcomplex.MulticoequalizerDiagram Λ[n, i]
-      (ι := ({i}ᶜ : Set (Fin (n +1)))) (fun j ↦ stdSimplex.face {j.1}ᶜ)
+      (ι := ({i}ᶜ : Set (Fin (n + 1)))) (fun j ↦ stdSimplex.face {j.1}ᶜ)
       (fun j k ↦ stdSimplex.face {j.1, k.1}ᶜ) where
   iSup_eq := by rw [horn_eq_iSup]
   eq_inf j k := by
@@ -168,6 +169,7 @@ variable {X : SSet.{u}} (f₀ f₂ f₃ : Δ[2] ⟶ X)
   (h₁₃ : stdSimplex.δ 1 ≫ f₀ = stdSimplex.δ 0 ≫ f₂)
   (h₂₃ : stdSimplex.δ 2 ≫ f₂ = stdSimplex.δ 2 ≫ f₃)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `desc`. -/
 @[simps! pt]
 def desc.multicofork :
@@ -253,6 +255,7 @@ variable {X : SSet.{u}} (f₀ f₁ f₃ : Δ[2] ⟶ X)
   (h₁₂ : stdSimplex.δ 2 ≫ f₀ = stdSimplex.δ 0 ≫ f₃)
   (h₂₃ : stdSimplex.δ 0 ≫ f₀ = stdSimplex.δ 0 ≫ f₁)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `desc`. -/
 @[simps! pt]
 def desc.multicofork :

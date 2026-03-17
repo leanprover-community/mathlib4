@@ -41,6 +41,7 @@ variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 
 open IntermediateField
 
+set_option backward.privateInPublic true in
 /- The normalized trace function from an extension `K` to the base field `F`.
 Note: this definition does not require the extension `K / F` to be integral (algebraic)
 nor the fields to be of characteristic zero. -/
@@ -50,6 +51,7 @@ private noncomputable def normalizedTraceAux (a : K) : F :=
 private theorem normalizedTraceAux_def (a : K) : normalizedTraceAux F K a =
     (Module.finrank F F⟮a⟯ : F)⁻¹ • trace F F⟮a⟯ (AdjoinSimple.gen F a) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem normalizedTraceAux_map {E : Type*} [Field E] [Algebra F E] (f : E →ₐ[F] K) (a : E) :
     normalizedTraceAux F K (f a) = normalizedTraceAux F E a := by
   let e := (F⟮a⟯.equivMap f).trans (equivOfEq <| Set.image_singleton ▸ adjoin_map F {a} f)
@@ -63,6 +65,7 @@ private theorem normalizedTraceAux_intermediateField {E : IntermediateField F K}
 
 variable [CharZero F]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K} in
 private theorem normalizedTraceAux_eq_of_finiteDimensional [FiniteDimensional F K] (a : K) :
     normalizedTraceAux F K a = (Module.finrank F K : F)⁻¹ • trace F K a := by
@@ -74,6 +77,9 @@ private theorem normalizedTraceAux_eq_of_finiteDimensional [FiniteDimensional F 
 
 variable [Algebra.IsIntegral F K]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The normalized trace map from an algebraic extension `K` to the base field `F`. -/
 noncomputable def normalizedTrace : K →ₗ[F] F where
   toFun := normalizedTraceAux F K
@@ -185,6 +191,7 @@ theorem normalizedTrace_algebraMap_of_lifts [CharZero E] [Algebra.IsIntegral E K
   simp [normalizedTrace_minpoly F a, normalizedTrace_minpoly E a, ← minpoly.map_algebraMap ha h,
     (minpoly F a).nextCoeff_map_eq, map_mul, map_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 /- An auxiliary result to prove `normalizedTrace_trans_apply`. It differs from
 `normalizedTrace_trans_apply` only by the extra assumption about finiteness of `E` over `F`. -/
 private theorem normalizedTrace_trans_apply_aux [FiniteDimensional F E] [Algebra.IsIntegral E K]
@@ -206,6 +213,7 @@ private theorem normalizedTrace_trans_apply_aux [FiniteDimensional F E] [Algebra
     ← normalizedTrace_intermediateField F K a']
   congr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a tower `K / E / F` of algebraic extensions, the normalized trace from `K` to `E` composed
 with the normalized trace from `E` to `F` equals the normalized trace from `K` to `F`. -/
 theorem normalizedTrace_trans_apply [Algebra.IsIntegral E K] [CharZero E] (a : K) :

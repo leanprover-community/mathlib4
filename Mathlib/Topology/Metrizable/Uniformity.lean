@@ -58,6 +58,7 @@ namespace PseudoMetricSpace
 
 /-- The maximal pseudometric space structure on `X` such that `dist x y ≤ d x y` for all `x y`,
 where `d : X → X → ℝ≥0` is a function such that `d x x = 0` and `d x y = d y x` for all `x`, `y`. -/
+@[implicit_reducible]
 noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) : PseudoMetricSpace X where
   dist x y := ↑(⨅ l : List X, ((x::l).zipWith d (l ++ [y])).sum : ℝ≥0)
@@ -96,6 +97,7 @@ theorem dist_ofPreNNDist_le (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x 
       d x y :=
   NNReal.coe_le_coe.2 <| (ciInf_le (OrderBot.bddBelow _) []).trans_eq <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Consider a function `d : X → X → ℝ≥0` such that `d x x = 0` and `d x y = d y x` for all `x`,
 `y`. Let `dist` be the largest pseudometric distance such that `dist x y ≤ d x y`, see
 `PseudoMetricSpace.ofPreNNDist`. Suppose that `d` satisfies the following triangle-like
@@ -176,6 +178,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
 
 end PseudoMetricSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a uniform space with countably generated uniformity filter, there exists a
 `PseudoMetricSpace` structure compatible with the `UniformSpace` structure. Use
 `UniformSpace.pseudoMetricSpace` or `UniformSpace.metricSpace` instead. -/
@@ -282,21 +285,6 @@ noncomputable abbrev TopologicalSpace.metrizableSpaceMetric (X : Type*) [Topolog
 example {X : Type*} [t : TopologicalSpace X] [t.MetrizableSpace] :
     t.metrizableSpaceMetric.toPseudoMetricSpace = t.pseudoMetrizableSpacePseudoMetric := by
   with_reducible_and_instances rfl
-
-/-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
-from the more general `EMetric.subset_countable_closure_of_almost_dense_set`. -/
-lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (𝓤 X)]
-    {s : Set X} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s := by
-  letI := (UniformSpace.pseudoMetricSpace (X := X)).toPseudoEMetricSpace
-  rw [EMetric.totallyBounded_iff] at h
-  have h' : ∀ ε > 0, ∃ t, Set.Countable t ∧ s ⊆ ⋃ y ∈ t, EMetric.closedBall y ε := by
-    intro ε hε
-    obtain ⟨t, ht⟩ := h ε hε
-    refine ⟨t, ht.1.countable, subset_trans ht.2 ?_⟩
-    gcongr
-    exact EMetric.ball_subset_closedBall
-  obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
-  exact ⟨t, htc, hts⟩
 
 variable {α : Type*}
 open TopologicalSpace

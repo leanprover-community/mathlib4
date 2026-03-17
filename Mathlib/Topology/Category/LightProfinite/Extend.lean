@@ -69,6 +69,7 @@ example : functorOp c ⋙ CostructuredArrow.proj toLightProfinite.op ⟨c.pt⟩ 
 example : functor c ⋙ (StructuredArrow.post _ _ lightToProfinite) =
     Profinite.Extend.functor (lightToProfinite.mapCone c) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
 `LightProfinite.Extend.functor` is initial.
@@ -85,8 +86,8 @@ If the projection maps in the cone are epimorphic and the cone is limiting, then
 -/
 theorem functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (functorOp c) := by
   have := functor_initial c hc
-  have : ((StructuredArrow.toCostructuredArrow toLightProfinite c.pt)).IsEquivalence  :=
-    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence )
+  have : ((StructuredArrow.toCostructuredArrow toLightProfinite c.pt)).IsEquivalence :=
+    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence)
   have : (functor c).rightOp.Final :=
     inferInstanceAs ((opOpEquivalence ℕ).inverse ⋙ (functor c).op).Final
   exact Functor.final_comp (functor c).rightOp _
@@ -95,6 +96,7 @@ section Limit
 
 variable {C : Type*} [Category* C] (G : LightProfinite ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a functor `G` from `LightProfinite` and `S : LightProfinite`, we obtain a cone on
 `(StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite ⋙ G)` with cone point `G.obj S`.

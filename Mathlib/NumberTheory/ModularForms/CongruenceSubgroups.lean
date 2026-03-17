@@ -233,11 +233,6 @@ lemma conjGL_coe (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
   simp_rw [mem_conjGL, ← map_inv, ← map_mul, toGL_injective.eq_iff, map_intCast_injective.eq_iff,
     exists_eq_right, toConjAct_inv, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
 
-@[deprecated (since := "2025-05-15")] alias conjGLPos := conjGL
-@[deprecated (since := "2025-05-15")] alias conjGLPos_coe := conjGL_coe
-@[deprecated (since := "2025-05-15")] alias mem_conjGLPos := mem_conjGL
-@[deprecated (since := "2025-05-15")] alias mem_conjGLPos' := mem_conjGL'
-
 theorem Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = Gamma N := by
   apply Subgroup.Normal.conjAct (Gamma_normal N)
 
@@ -248,6 +243,7 @@ theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
   rw [← Gamma_cong_eq_self N g, Subgroup.pointwise_smul_le_pointwise_smul_iff]
   exact HN
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g x g⁻¹ ∈ Γ(M)` for all
 `x ∈ Γ(N)`. -/
 theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :

@@ -39,7 +39,7 @@ or establish appropriate generalizations.
 
 ## Main definitions/lemmas
 
-* Instance : `Module R (M →ₚₗ[R] N)` shows that polynomial laws form a `R`-module.
+* Instance : `Module R (M →ₚₗ[R] N)` shows that polynomial laws form an `R`-module.
 
 * `PolynomialLaw.ground f` is the map `M → N` corresponding to `PolynomialLaw.toFun' f R` under
   the isomorphisms `R ⊗[R] M ≃ₗ[R] M`, and similarly for `N`.
@@ -55,7 +55,7 @@ only assumes `R` is a commutative semiring.
 ## References
 
 * [Roby, Norbert. 1963. «Lois polynomes et lois formelles en théorie des modules».
-Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
+  Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
 
@@ -302,7 +302,7 @@ def lifts : Type _ := Σ (s : Finset S), (MvPolynomial (Fin s.card) R) ⊗[R] M
 
 variable {S}
 
-/-- The lift of `f.toFun to the type `lifts` -/
+/-- The lift of `f.toFun` to the type `lifts` -/
 def φ (s : Finset S) : MvPolynomial (Fin s.card) R →ₐ[R] S :=
   aeval (R := R) (fun n ↦ (s.equivFin.symm n : S))
 
@@ -341,7 +341,7 @@ variable
     {B : Type u} [CommSemiring B] [Algebra R B] {ψ : B →ₐ[R] T} (q : B ⊗[R] M)
     (g : A →ₐ[R] B) (h : S →ₐ[R] T)
 
-/-- Compare the values of `PolynomialLaw.toFun' in a square diagram -/
+/-- Compare the values of `PolynomialLaw.toFun'` in a square diagram -/
 theorem toFun'_eq_of_diagram
     (h : S →ₐ[R] T) (h' : φ.range →ₐ[R] ψ.range)
     (hh' : ψ.range.val.comp h' = h.comp φ.range.val)
@@ -352,7 +352,7 @@ theorem toFun'_eq_of_diagram
   let θ := (quotientKerEquivRangeₐ (R := R) ψ).symm.toAlgHom.comp
     (h'.comp (quotientKerEquivRangeₐ φ).toAlgHom)
   have ht : (h.comp φ.range.val).comp (quotientKerEquivRangeₐ φ).toAlgHom =
-      ψ.range.val.comp ((quotientKerEquivRangeₐ ψ).toAlgHom.comp  θ) := by
+      ψ.range.val.comp ((quotientKerEquivRangeₐ ψ).toAlgHom.comp θ) := by
     simp only [θ, ← AlgHom.comp_assoc, ← hh']
     simp [AlgHom.comp_assoc]
   rw [← φ.val_comp_rangeRestrict, ← quotientKerEquivRangeₐ_comp_mkₐ φ,
@@ -370,7 +370,7 @@ theorem toFun'_eq_of_diagram
     ← quotientKerEquivRangeₐ_comp_mkₐ, ← AlgHom.comp_assoc]
   simp
 
-/-- Compare the values of `PolynomialLaw.toFun' in a square diagram,
+/-- Compare the values of `PolynomialLaw.toFun'` in a square diagram,
   when one of the maps is a subalgebra inclusion. -/
 theorem toFun'_eq_of_inclusion {ψ : B →ₐ[R] S} (h : φ.range ≤ ψ.range)
     (hpq : ((Subalgebra.inclusion h).comp
@@ -388,12 +388,10 @@ theorem factorsThrough_toFunLifted_π :
   have uFG : Subalgebra.FG (R := R) (φ R s).range := by
     rw [← Algebra.map_top]
     exact Subalgebra.FG.map _ Algebra.FiniteType.out
-    -- (Algebra.FiniteType.mvPolynomial R (Fin s.card)).out
   set u' := rTensor M (φ R s').rangeRestrict.toLinearMap p' with hu'
   have u'FG : Subalgebra.FG (R := R) (φ R s').range := by
     rw [← Algebra.map_top]
     exact Subalgebra.FG.map _ Algebra.FiniteType.out
-    -- (Algebra.FiniteType.mvPolynomial R (Fin s'.card)).out
   have huu' : rTensor M (Subalgebra.val _).toLinearMap u =
     rTensor M (Subalgebra.val _).toLinearMap u' := by
     simp only [π] at h
@@ -428,12 +426,12 @@ theorem exists_lift_of_mem_range_rTensor
     (ht : t ∈ range ((Subalgebra.val A).toLinearMap.rTensor M)) :
     ∃ s : S ⊗[R] M, φ.toLinearMap.rTensor M s = t := by
   obtain ⟨u, hu⟩ := ht
-  suffices h_surj: Function.Surjective ((φ.rangeRestrict.toLinearMap).rTensor M) by
+  suffices h_surj : Function.Surjective ((φ.rangeRestrict.toLinearMap).rTensor M) by
     obtain ⟨p, hp⟩ := h_surj ((Subalgebra.inclusion hφ).toLinearMap.rTensor M u)
     use p
     rw [← hu, ← Subalgebra.val_comp_inclusion hφ, comp_toLinearMap, rTensor_comp,
       LinearMap.comp_apply, ← hp, ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap]
-    rfl
+    simp
   exact rTensor_surjective M (rangeRestrict_surjective φ)
 
 /-- Tensor products in `S ⊗[R] M` can be lifted to some
@@ -464,7 +462,7 @@ theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial
   have hAB : A ≤ A ⊔ Algebra.adjoin R ({s} : Finset S) := le_sup_left
   rw [← hgen] at hAB
   obtain ⟨p, hp⟩ := exists_lift_of_mem_range_rTensor _ hAB ht
-  have hs : s ∈ (φ R gen).range  := by
+  have hs : s ∈ (φ R gen).range := by
     rw [hgen]
     apply Algebra.subset_adjoin
     simp only [Finset.coe_singleton, Set.sup_eq_union, Set.mem_union, SetLike.mem_coe]
@@ -502,7 +500,7 @@ theorem isCompat_apply {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ
     congr
     ext n
     simp only [Function.comp_apply, Equiv.symm_apply_apply, j]
-  let p' := rTensor M (rename j).toLinearMap  p
+  let p' := rTensor M (rename j).toLinearMap p
   have ha' : π R M T (⟨s', p'⟩ : lifts R M T) = rTensor M h.toLinearMap t := by
     simp only [← ha, π, p', ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap, eq_h_comp]
   rw [toFun_eq_rTensor_φ_toFun' f ha, toFun_eq_rTensor_φ_toFun' f ha', ← LinearMap.comp_apply,
@@ -533,6 +531,7 @@ variable
   (r a b : R) (f g : M →ₚₗ[R] N)
   {S : Type*} [CommSemiring S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Extension of `PolynomialLaw.zero_def` -/
 @[simp]
 theorem toFun_zero : (0 : M →ₚₗ[R] N).toFun S = 0 := by

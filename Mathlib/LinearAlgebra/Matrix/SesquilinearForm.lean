@@ -173,7 +173,7 @@ theorem Matrix.toLinearMapₛₗ₂'_aux_eq (M : Matrix n m N₂) :
 
 theorem Matrix.toLinearMapₛₗ₂'_apply (M : Matrix n m N₂) (x : n → R₁) (y : m → R₂) :
     -- porting note: we don't seem to have `∑ i j` as valid notation yet
-    Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) •  σ₂ (y j) • M i j := by
+    Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) • σ₂ (y j) • M i j := by
   rw [toLinearMapₛₗ₂', toMatrixₛₗ₂', LinearEquiv.coe_symm_mk, toLinearMap₂'Aux, mk₂'ₛₗ_apply]
   apply Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by
     rw [smul_comm]
@@ -274,7 +274,7 @@ theorem LinearMap.toMatrix₂'_compl₁₂ (B : (n → R) →ₗ[R] (m → R) �
     · intros
       simp only [zero_smul, smul_zero]
   · intros
-    simp only [zero_smul, Finsupp.sum_zero]
+    simp
 
 theorem LinearMap.toMatrix₂'_comp (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (f : (n' → R) →ₗ[R] n → R) :
     toMatrix₂' R (B.comp f) = (toMatrix' f)ᵀ * toMatrix₂' R B := by
@@ -482,7 +482,7 @@ theorem LinearMap.toMatrix₂_compl₁₂ (B : M₁ →ₗ[R] M₂ →ₗ[R] R) 
     · intros
       simp only [zero_smul, smul_zero]
   · intros
-    simp only [zero_smul, Finsupp.sum_zero]
+    simp
 
 theorem LinearMap.toMatrix₂_comp (B : M₁ →ₗ[R] M₂ →ₗ[R] R) (f : M₁' →ₗ[R] M₁) :
     LinearMap.toMatrix₂ b₁' b₂ (B.comp f) =
@@ -661,80 +661,222 @@ namespace LinearMap
 
 /-! ### Nondegenerate bilinear forms -/
 
-
-section Det
-
 open Matrix
 
-variable [CommRing R₁] [AddCommMonoid M₁] [Module R₁ M₁]
-variable [DecidableEq ι] [Fintype ι]
+variable [CommRing R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
+  {M : Matrix m n R}
 
-theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂
-    {M : Matrix ι ι R₁} (b : Basis ι R₁ M₁) :
-    (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) ↔
-      (Matrix.toLinearMap₂ b b M).SeparatingLeft :=
-  (separatingLeft_congr_iff b.equivFun.symm b.equivFun.symm).symm
+section StandardBasis
 
--- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
-theorem _root_.Matrix.Nondegenerate.toLinearMap₂' {M : Matrix ι ι R₁} (h : M.Nondegenerate) :
-    (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) := fun x hx =>
-  h.eq_zero_of_ortho fun y => by simpa only [toLinearMap₂'_apply'] using hx y
+variable {B : (m → R) →ₗ[R] (n → R) →ₗ[R] R}
+
+/-!
+Lemmas transferring nondegeneracy (or left/right separating) between a matrix and its associated
+bilinear form (for the standard basis)
+-/
+
+theorem _root_.Matrix.SeparatingLeft.toLinearMap₂' (h : M.SeparatingLeft) :
+    (toLinearMap₂' R M).SeparatingLeft (R := R) := by
+  simpa [SeparatingLeft, toLinearMap₂'_apply', separatingLeft_def] using h
+
+theorem _root_.Matrix.SeparatingRight.toLinearMap₂' (h : M.SeparatingRight) :
+    (toLinearMap₂' R M).SeparatingRight (R := R) := by
+  simpa [SeparatingRight, toLinearMap₂'_apply', separatingRight_def] using h
+
+theorem _root_.Matrix.Nondegenerate.toLinearMap₂' (h : M.Nondegenerate) :
+    (toLinearMap₂' R M).Nondegenerate (R := R) :=
+  ⟨h.1.toLinearMap₂', h.2.toLinearMap₂'⟩
 
 @[simp]
-theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff {M : Matrix ι ι R₁} :
-    (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) ↔ M.Nondegenerate := by
-  refine ⟨fun h ↦ Matrix.nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toLinearMap₂'⟩
+theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff :
+    (toLinearMap₂' R M).SeparatingLeft (R := R) ↔ M.SeparatingLeft := by
+  refine ⟨fun h ↦ separatingLeft_def.mpr ?_, SeparatingLeft.toLinearMap₂'⟩
   exact fun v hv => h v fun w => (M.toLinearMap₂'_apply' _ _).trans <| hv w
 
-theorem _root_.Matrix.Nondegenerate.toLinearMap₂ {M : Matrix ι ι R₁} (h : M.Nondegenerate)
-    (b : Basis ι R₁ M₁) : (toLinearMap₂ b b M).SeparatingLeft :=
-  (Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂ b).mp h.toLinearMap₂'
+@[simp]
+theorem _root_.Matrix.separatingRight_toLinearMap₂'_iff :
+    (toLinearMap₂' R M).SeparatingRight (R := R) ↔ M.SeparatingRight := by
+  refine ⟨fun h ↦ separatingRight_def.mpr ?_, SeparatingRight.toLinearMap₂'⟩
+  exact fun v hv => h v fun w => (M.toLinearMap₂'_apply' _ _).trans <| hv w
 
 @[simp]
-theorem _root_.Matrix.separatingLeft_toLinearMap₂_iff {M : Matrix ι ι R₁} (b : Basis ι R₁ M₁) :
-    (toLinearMap₂ b b M).SeparatingLeft ↔ M.Nondegenerate := by
-  rw [← Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂,
-    Matrix.separatingLeft_toLinearMap₂'_iff]
+theorem _root_.Matrix.nondegenerate_toLinearMap₂'_iff :
+    (toLinearMap₂' R M).Nondegenerate (R := R) ↔ M.Nondegenerate :=
+  ⟨fun h ↦ ⟨separatingLeft_toLinearMap₂'_iff.mp h.1, separatingRight_toLinearMap₂'_iff.mp h.2⟩,
+   fun h ↦ ⟨separatingLeft_toLinearMap₂'_iff.mpr h.1, separatingRight_toLinearMap₂'_iff.mpr h.2⟩⟩
 
--- Lemmas transferring nondegeneracy between a bilinear form and its associated matrix
 @[simp]
-theorem nondegenerate_toMatrix₂'_iff {B : (ι → R₁) →ₗ[R₁] (ι → R₁) →ₗ[R₁] R₁} :
-    (LinearMap.toMatrix₂' R₁ B).Nondegenerate ↔ B.SeparatingLeft :=
-  Matrix.separatingLeft_toLinearMap₂'_iff.symm.trans <|
-    (Matrix.toLinearMap₂'_toMatrix' (R := R₁) B).symm ▸ Iff.rfl
+theorem separatingLeft_toMatrix₂'_iff :
+    (toMatrix₂' R B).SeparatingLeft ↔ B.SeparatingLeft :=
+  separatingLeft_toLinearMap₂'_iff.symm.trans <| (toLinearMap₂'_toMatrix' (R := R) B).symm ▸ Iff.rfl
 
-theorem SeparatingLeft.toMatrix₂' {B : (ι → R₁) →ₗ[R₁] (ι → R₁) →ₗ[R₁] R₁} (h : B.SeparatingLeft) :
-    (LinearMap.toMatrix₂' R₁ B).Nondegenerate :=
+@[simp]
+theorem separatingRight_toMatrix₂'_iff :
+    (toMatrix₂' R B).SeparatingRight ↔ B.SeparatingRight :=
+  separatingRight_toLinearMap₂'_iff.symm.trans
+    <| (toLinearMap₂'_toMatrix' (R := R) B).symm ▸ Iff.rfl
+
+@[simp]
+theorem nondegenerate_toMatrix₂'_iff :
+    (toMatrix₂' R B).Nondegenerate ↔ B.Nondegenerate :=
+  nondegenerate_toLinearMap₂'_iff.symm.trans <| (toLinearMap₂'_toMatrix' (R := R) B).symm ▸ Iff.rfl
+
+theorem SeparatingLeft.toMatrix₂' (h : B.SeparatingLeft) : (toMatrix₂' R B).SeparatingLeft :=
+  separatingLeft_toMatrix₂'_iff.mpr h
+
+theorem SeparatingRight.toMatrix₂' (h : B.SeparatingRight) : (toMatrix₂' R B).SeparatingRight :=
+  separatingRight_toMatrix₂'_iff.mpr h
+
+theorem Nondegenerate.toMatrix₂' (h : B.Nondegenerate) : (toMatrix₂' R B).Nondegenerate :=
   nondegenerate_toMatrix₂'_iff.mpr h
 
+end StandardBasis
+
+section GeneralBasis
+
+/-!
+Lemmas transferring nondegeneracy (or left/right separating) between a matrix and its associated
+bilinear form (for an arbitrary basis of a free module)
+-/
+
+variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
+  (b₁ : Basis m R M₁) (b₂ : Basis n R M₂) {B : M₁ →ₗ[R] M₂ →ₗ[R] R}
+
+theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂ :
+    (toLinearMap₂' R M).SeparatingLeft (R := R) ↔ (toLinearMap₂ b₁ b₂ M).SeparatingLeft :=
+  (separatingLeft_congr_iff b₁.equivFun.symm b₂.equivFun.symm).symm
+
+theorem _root_.Matrix.separatingRight_toLinearMap₂'_iff_separatingRight_toLinearMap₂ :
+    (toLinearMap₂' R M).SeparatingRight (R := R) ↔ (toLinearMap₂ b₁ b₂ M).SeparatingRight :=
+  (separatingRight_congr_iff b₁.equivFun.symm b₂.equivFun.symm).symm
+
+theorem _root_.Matrix.nondegenerate_toLinearMap₂'_iff_nondegenerate_toLinearMap₂ :
+    (toLinearMap₂' R M).Nondegenerate (R := R) ↔ (toLinearMap₂ b₁ b₂ M).Nondegenerate :=
+  (nondegenerate_congr_iff b₁.equivFun.symm b₂.equivFun.symm).symm
+
 @[simp]
-theorem nondegenerate_toMatrix_iff {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (b : Basis ι R₁ M₁) :
-    (toMatrix₂ b b B).Nondegenerate ↔ B.SeparatingLeft :=
-  (Matrix.separatingLeft_toLinearMap₂_iff b).symm.trans <|
-    (Matrix.toLinearMap₂_toMatrix₂ b b B).symm ▸ Iff.rfl
+theorem _root_.Matrix.separatingLeft_toLinearMap₂_iff :
+    (toLinearMap₂ b₁ b₂ M).SeparatingLeft ↔ M.SeparatingLeft := by
+  rw [← separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂,
+    separatingLeft_toLinearMap₂'_iff]
 
-theorem SeparatingLeft.toMatrix₂ {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (h : B.SeparatingLeft)
-    (b : Basis ι R₁ M₁) : (toMatrix₂ b b B).Nondegenerate :=
-  (nondegenerate_toMatrix_iff b).mpr h
+@[simp]
+theorem _root_.Matrix.separatingRight_toLinearMap₂_iff :
+    (toLinearMap₂ b₁ b₂ M).SeparatingRight ↔ M.SeparatingRight := by
+  rw [← separatingRight_toLinearMap₂'_iff_separatingRight_toLinearMap₂,
+    separatingRight_toLinearMap₂'_iff]
 
--- Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero`
-variable [IsDomain R₁]
+@[simp]
+theorem _root_.Matrix.nondegenerate_toLinearMap₂_iff :
+    (toLinearMap₂ b₁ b₂ M).Nondegenerate ↔ M.Nondegenerate := by
+  rw [← nondegenerate_toLinearMap₂'_iff_nondegenerate_toLinearMap₂,
+    nondegenerate_toLinearMap₂'_iff]
 
-theorem separatingLeft_toLinearMap₂'_iff_det_ne_zero {M : Matrix ι ι R₁} :
-    (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) ↔ M.det ≠ 0 := by
-  rw [Matrix.separatingLeft_toLinearMap₂'_iff, Matrix.nondegenerate_iff_det_ne_zero]
+theorem _root_.Matrix.SeparatingLeft.toLinearMap₂ (h : M.SeparatingLeft) :
+    (toLinearMap₂ b₁ b₂ M).SeparatingLeft :=
+  (separatingLeft_toLinearMap₂_iff b₁ b₂).mpr h
 
-theorem separatingLeft_toLinearMap₂'_of_det_ne_zero' (M : Matrix ι ι R₁) (h : M.det ≠ 0) :
-    (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) :=
+theorem _root_.Matrix.SeparatingRight.toLinearMap₂ (h : M.SeparatingRight) :
+    (toLinearMap₂ b₁ b₂ M).SeparatingRight :=
+  (separatingRight_toLinearMap₂_iff b₁ b₂).mpr h
+
+theorem _root_.Matrix.Nondegenerate.toLinearMap₂ (h : M.Nondegenerate) :
+    (toLinearMap₂ b₁ b₂ M).Nondegenerate :=
+  (nondegenerate_toLinearMap₂_iff b₁ b₂).mpr h
+
+@[simp]
+theorem separatingLeft_toMatrix₂_iff :
+    (toMatrix₂ b₁ b₂ B).SeparatingLeft ↔ B.SeparatingLeft :=
+  (Matrix.separatingLeft_toLinearMap₂_iff b₁ b₂).symm.trans <|
+    (Matrix.toLinearMap₂_toMatrix₂ b₁ b₂ B).symm ▸ Iff.rfl
+
+@[simp]
+theorem separatingRight_toMatrix₂_iff :
+    (toMatrix₂ b₁ b₂ B).SeparatingRight ↔ B.SeparatingRight :=
+  (Matrix.separatingRight_toLinearMap₂_iff b₁ b₂).symm.trans <|
+    (Matrix.toLinearMap₂_toMatrix₂ b₁ b₂ B).symm ▸ Iff.rfl
+
+@[simp]
+theorem nondegenerate_toMatrix₂_iff :
+    (toMatrix₂ b₁ b₂ B).Nondegenerate ↔ B.Nondegenerate :=
+  (Matrix.nondegenerate_toLinearMap₂_iff b₁ b₂).symm.trans <|
+    (Matrix.toLinearMap₂_toMatrix₂ b₁ b₂ B).symm ▸ Iff.rfl
+
+theorem SeparatingLeft.toMatrix₂ (h : B.SeparatingLeft) :
+    (toMatrix₂ b₁ b₂ B).SeparatingLeft :=
+  (separatingLeft_toMatrix₂_iff b₁ b₂).mpr h
+
+theorem SeparatingRight.toMatrix₂ (h : B.SeparatingRight) :
+    (toMatrix₂ b₁ b₂ B).SeparatingRight :=
+  (separatingRight_toMatrix₂_iff b₁ b₂).mpr h
+
+theorem Nondegenerate.toMatrix₂ (h : B.Nondegenerate) :
+    (toMatrix₂ b₁ b₂ B).Nondegenerate :=
+  (nondegenerate_toMatrix₂_iff b₁ b₂).mpr h
+
+end GeneralBasis
+
+section Det
+/-!
+Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero` in the
+case of a domain
+-/
+
+
+variable [IsDomain R] {M : Matrix n n R}
+
+section DecidableEq
+variable [DecidableEq m]
+
+theorem nondegenerate_toLinearMap₂'_iff_det_ne_zero :
+    (Matrix.toLinearMap₂' R M).Nondegenerate (R := R) ↔ M.det ≠ 0 := by
+  rw [nondegenerate_toLinearMap₂'_iff, Matrix.nondegenerate_iff_det_ne_zero]
+
+theorem separatingLeft_toLinearMap₂'_iff_det_ne_zero :
+    (Matrix.toLinearMap₂' R M).SeparatingLeft (R := R) ↔ M.det ≠ 0 := by
+  simpa using separatingLeft_iff_det_ne_zero
+
+theorem separatingRight_toLinearMap₂'_iff_det_ne_zero :
+    (Matrix.toLinearMap₂' R M).SeparatingRight (R := R) ↔ M.det ≠ 0 := by
+  simpa using separatingRight_iff_det_ne_zero
+
+theorem separatingLeft_toLinearMap₂'_of_det_ne_zero' (h : M.det ≠ 0) :
+    (Matrix.toLinearMap₂' R M).SeparatingLeft (R := R) :=
   separatingLeft_toLinearMap₂'_iff_det_ne_zero.mpr h
 
-theorem separatingLeft_iff_det_ne_zero {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (b : Basis ι R₁ M₁) :
-    B.SeparatingLeft ↔ (toMatrix₂ b b B).det ≠ 0 := by
-  rw [← Matrix.nondegenerate_iff_det_ne_zero, nondegenerate_toMatrix_iff]
+theorem separatingRight_toLinearMap₂'_of_det_ne_zero' (h : M.det ≠ 0) :
+    (Matrix.toLinearMap₂' R M).SeparatingRight (R := R) :=
+  separatingRight_toLinearMap₂'_iff_det_ne_zero.mpr h
 
-theorem separatingLeft_of_det_ne_zero {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (b : Basis ι R₁ M₁)
-    (h : (toMatrix₂ b b B).det ≠ 0) : B.SeparatingLeft :=
+theorem nondegenerate_toLinearMap₂'_of_det_ne_zero' (h : M.det ≠ 0) :
+    (Matrix.toLinearMap₂' R M).Nondegenerate (R := R) :=
+  nondegenerate_toLinearMap₂'_iff_det_ne_zero.mpr h
+
+end DecidableEq
+
+variable [AddCommMonoid M₁] [Module R M₁]
+  (b : Basis m R M₁) {B : M₁ →ₗ[R] M₁ →ₗ[R] R}
+
+theorem separatingLeft_iff_det_ne_zero :
+    B.SeparatingLeft ↔ (toMatrix₂ b b B).det ≠ 0 := by
+  rw [← Matrix.separatingLeft_iff_det_ne_zero, separatingLeft_toMatrix₂_iff]
+
+theorem separatingLeft_of_det_ne_zero (h : (toMatrix₂ b b B).det ≠ 0) : B.SeparatingLeft :=
   (separatingLeft_iff_det_ne_zero b).mpr h
+
+theorem separatingRight_iff_det_ne_zero :
+    B.SeparatingRight ↔ (toMatrix₂ b b B).det ≠ 0 := by
+  rw [← Matrix.separatingRight_iff_det_ne_zero, separatingRight_toMatrix₂_iff]
+
+theorem separatingRight_of_det_ne_zero (h : (toMatrix₂ b b B).det ≠ 0) : B.SeparatingRight :=
+  (separatingRight_iff_det_ne_zero b).mpr h
+
+theorem nondegenerate_iff_det_ne_zero :
+    B.Nondegenerate ↔ (toMatrix₂ b b B).det ≠ 0 := by
+  rw [← Matrix.nondegenerate_iff_det_ne_zero, nondegenerate_toMatrix₂_iff]
+
+theorem nondegenerate_of_det_ne_zero (h : (toMatrix₂ b b B).det ≠ 0) : B.Nondegenerate :=
+  (nondegenerate_iff_det_ne_zero b).mpr h
 
 end Det
 

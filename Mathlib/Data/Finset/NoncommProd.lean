@@ -46,10 +46,11 @@ def noncommFoldr (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise fun x y => ∀ b, f x (f y b) = f y (f x b)) (b : β) : β :=
   letI : LeftCommutative (α := { x // x ∈ s }) (f ∘ Subtype.val) :=
     ⟨fun ⟨_, hx⟩ ⟨_, hy⟩ =>
-      haveI : IsRefl α fun x y => ∀ b, f x (f y b) = f y (f x b) := ⟨fun _ _ => rfl⟩
+      haveI : Std.Refl fun x y => ∀ b, f x (f y b) = f y (f x b) := ⟨fun _ _ => rfl⟩
       comm.of_refl hx hy⟩
   s.attach.foldr (f ∘ Subtype.val) b
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem noncommFoldr_coe (l : List α) (comm) (b : β) :
     noncommFoldr f (l : Multiset α) comm b = l.foldr f b := by
@@ -234,10 +235,7 @@ open scoped Function -- required for scoped `on` notation
 @[to_additive]
 theorem noncommProd_lemma (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise (Commute on f)) :
-    Set.Pairwise { x | x ∈ Multiset.map f s.val } Commute := by
-  simp_rw [Multiset.mem_map]
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ _
-  exact comm.of_refl ha hb
+    Set.Pairwise { x | x ∈ Multiset.map f s.val } Commute := Multiset.map_set_pairwise comm
 
 /-- Product of a `s : Finset α` mapped with `f : α → β` with `[Monoid β]`,
 given a proof that `*` commutes on all elements `f x` for `x ∈ s`. -/
@@ -298,24 +296,12 @@ theorem noncommProd_insert_of_notMem [DecidableEq α] (s : Finset α) (a : α) (
       f a * noncommProd s f (comm.mono fun _ => mem_insert_of_mem) := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons]
 
-@[deprecated (since := "2025-05-23")]
-alias noncommSum_insert_of_not_mem := noncommSum_insert_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias noncommProd_insert_of_not_mem := noncommProd_insert_of_notMem
-
 @[to_additive]
 theorem noncommProd_insert_of_notMem' [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
     (ha : a ∉ s) :
     noncommProd (insert a s) f comm =
       noncommProd s f (comm.mono fun _ => mem_insert_of_mem) * f a := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons']
-
-@[deprecated (since := "2025-05-23")]
-alias noncommSum_insert_of_not_mem' := noncommSum_insert_of_notMem'
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias noncommProd_insert_of_not_mem' := noncommProd_insert_of_notMem'
 
 @[to_additive (attr := simp)]
 theorem noncommProd_singleton (a : α) (f : α → β) :
@@ -373,20 +359,14 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
 /-- The non-commutative version of `Finset.prod_union` -/
 @[to_additive /-- The non-commutative version of `Finset.sum_union` -/]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
-    (f : α → β) (comm : { x | x ∈ s ∪ t }.Pairwise (Commute on f)) :
+    (f : α → β) (comm : Set.Pairwise ↑(s ∪ t) (Commute on f)) :
     noncommProd (s ∪ t) f comm =
       noncommProd s f (comm.mono <| coe_subset.2 subset_union_left) *
         noncommProd t f (comm.mono <| coe_subset.2 subset_union_right) := by
-  obtain ⟨sl, sl', rfl⟩ := exists_list_nodup_eq s
-  obtain ⟨tl, tl', rfl⟩ := exists_list_nodup_eq t
-  rw [List.disjoint_toFinset_iff_disjoint] at h
-  calc noncommProd (List.toFinset sl ∪ List.toFinset tl) f comm
-    _ = noncommProd ⟨↑(sl ++ tl), Multiset.coe_nodup.2 (sl'.append tl' h)⟩ f
-          (by convert comm; simp [Set.ext_iff]) :=
-      noncommProd_congr (by ext; simp) (by simp) _
-    _ = noncommProd (List.toFinset sl) f (comm.mono <| coe_subset.2 subset_union_left) *
-         noncommProd (List.toFinset tl) f (comm.mono <| coe_subset.2 subset_union_right) := by
-      simp [noncommProd, List.dedup_eq_self.2 sl', List.dedup_eq_self.2 tl']
+  rcases s with ⟨⟨sl⟩, hsl⟩
+  rcases t with ⟨⟨tl⟩, htl⟩
+  simp only [← Finset.disjoint_val, Multiset.quot_mk_to_coe'] at h
+  simp [noncommProd, ← Multiset.add_eq_union_iff_disjoint.mpr h]
 
 @[to_additive]
 theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → β}

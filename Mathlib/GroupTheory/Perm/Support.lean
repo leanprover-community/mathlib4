@@ -5,10 +5,10 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.NoncommProd
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # support of a permutation
@@ -53,7 +53,7 @@ theorem Disjoint.symm : Disjoint f g → Disjoint g f := by simp only [Disjoint,
 
 theorem Disjoint.symmetric : Symmetric (@Disjoint α) := fun _ _ => Disjoint.symm
 
-instance : IsSymm (Perm α) Disjoint :=
+instance : Std.Symm (α := Perm α) Disjoint :=
   ⟨Disjoint.symmetric⟩
 
 theorem disjoint_comm : Disjoint f g ↔ Disjoint g f :=
@@ -273,8 +273,6 @@ theorem mem_support {x : α} : x ∈ f.support ↔ f x ≠ x := by
 
 theorem notMem_support {x : α} : x ∉ f.support ↔ f x = x := by simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_support := notMem_support
-
 theorem coe_support_eq_set_support (f : Perm α) : (f.support : Set α) = { x | f x ≠ x } := by
   ext
   simp
@@ -292,11 +290,7 @@ theorem support_refl : support (Equiv.refl α) = ∅ :=
   support_one
 
 theorem support_congr (h : f.support ⊆ g.support) (h' : ∀ x ∈ g.support, f x = g x) : f = g := by
-  ext x
-  by_cases hx : x ∈ g.support
-  · exact h' x hx
-  · rw [notMem_support.mp hx, ← notMem_support]
-    exact fun H => hx (h H)
+  grind [notMem_support]
 
 /-- If g and c commute, then g stabilizes the support of c -/
 theorem mem_support_iff_of_commute {g c : Perm α} (hgc : Commute g c) (x : α) :
@@ -370,6 +364,10 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype
   by_cases hx : p x
   · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
   · simp only [forall_prop_of_false hx, ofSubtype_apply_of_not_mem u hx]
+
+theorem mem_support_ofSubtype {p : α → Prop} [DecidablePred p] (x : α) (u : Perm (Subtype p)) :
+    x ∈ (ofSubtype u).support ↔ ∃ (hx : p x), ⟨x, hx⟩ ∈ u.support := by
+  simp [support_ofSubtype]
 
 theorem mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [Fintype β]
     {s : Finset α} {f : α → Perm β}
@@ -509,6 +507,11 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (
   simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff] at *
   grind
 
+omit [Fintype α] in
+theorem disjoint_swap_swap {x y z t : α} (h : [x, y, z, t].Nodup) :
+    Disjoint (swap x y) (swap z t) := by
+  intro; grind
+
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
   disjoint_left.mp h.disjoint_support hx
 
@@ -639,8 +642,6 @@ end support
 theorem support_subtypePerm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
     (f.subtypePerm h : Perm s).support = ({x | f x ≠ x} : Finset s) := by
   ext; simp [Subtype.ext_iff]
-
-@[deprecated (since := "2025-05-19")] alias support_subtype_perm := support_subtypePerm
 
 end Equiv.Perm
 

@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.Extension.Basic
 
 ## Main definition
 
-- `Algebra.Generators`: A family of generators of a `R`-algebra `S` consists of
+- `Algebra.Generators`: A family of generators of an `R`-algebra `S` consists of
   1. `vars`: The type of variables.
   2. `val : vars → S`: The assignment of each variable to a value.
   3. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
@@ -54,7 +54,7 @@ open TensorProduct MvPolynomial
 
 variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
-/-- A family of generators of a `R`-algebra `S` consists of
+/-- A family of generators of an `R`-algebra `S` consists of
 1. `vars`: The type of variables.
 2. `val : vars → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
@@ -161,6 +161,7 @@ def self : Generators R S S where
   σ' := X
   aeval_val_σ' := aeval_X _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
 @[simps]
 noncomputable
@@ -168,6 +169,21 @@ def toExtension : Extension R S where
   Ring := P.Ring
   σ := P.σ
   algebraMap_σ := by simp
+
+/-- Transport generators along an algebra isomorphism. -/
+noncomputable def ofAlgEquiv
+    (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    Generators R T ι where
+  val := e ∘ P.val
+  σ' := P.σ ∘ e.symm
+  aeval_val_σ' t := by
+    rw [Function.comp_def, ← AlgHom.coe_coe e, ← MvPolynomial.comp_aeval_apply]
+    simp
+
+@[simp]
+lemma ofAlgEquiv_val (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    (P.ofAlgEquiv e).val = e ∘ P.val :=
+  rfl
 
 section Localization
 
@@ -196,6 +212,7 @@ end Localization
 
 variable {ι' : Type*} {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
 @[simps val, simps -isSimp σ]
@@ -221,6 +238,7 @@ def extendScalars (P : Generators R T ι) : Generators S T ι where
   σ' x := map (algebraMap R S) (P.σ x)
   aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` is a family of generators of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
 @[simps! val]
@@ -286,6 +304,7 @@ variable {σ : Type*} {I : Ideal (MvPolynomial σ R)}
   (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R)
   (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The naive generators for a quotient `R[Xᵢ] ⧸ I`.
 If the definitional equality of the section matters, it can be explicitly provided.
@@ -520,6 +539,7 @@ def toExtendScalars (P : Generators R T ι) : Hom P (P.extendScalars S) where
   val := X
   aeval_val i := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P P'} in
 /-- Reinterpret a hom between generators as a hom between extensions. -/
 @[simps]
@@ -530,9 +550,11 @@ def Hom.toExtensionHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S
   toRingHom_algebraMap x := by simp
   algebraMap_toRingHom x := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
     [Algebra R R''] [Algebra R S''] [IsScalarTower R R'' S'']
@@ -548,6 +570,7 @@ lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
   simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
   rfl
@@ -560,13 +583,27 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (Generators.naive s hs).ker = I :=
   I.mk_ker
 
-@[simp]
+set_option backward.isDefEq.respectTransparency false in
+-- FIXME: `simpNF` times out synthesizing
+-- `FaithfulSMul (Algebra.Generators.ofAlgHom f h).toExtension.Ring S`.
+@[simp, nolint simpNF]
 lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective ⇑f) :
     (ofAlgHom f h).ker = RingHom.ker f.toRingHom := by
   change RingHom.ker _ = _
   congr
   exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
 
+-- FIXME: `simpNF` times out synthesizing
+-- `FaithfulSMul (P.ofAlgEquiv e).toExtension.Ring T`.
+@[simp, nolint simpNF]
+lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    (P.ofAlgEquiv e).ker = P.ker := by
+  rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_coe,
+    ← MvPolynomial.comp_aeval, ← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom,
+    AlgHomClass.toRingHom_toAlgHom, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
+    ← ker_eq_ker_aeval_val]
+
+set_option backward.isDefEq.respectTransparency false in
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
   letI : DecidableEq (ι' →₀ ℕ) := Classical.decEq _

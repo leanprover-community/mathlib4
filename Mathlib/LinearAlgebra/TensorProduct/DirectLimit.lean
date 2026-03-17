@@ -6,7 +6,7 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.Algebra.Colimit.Module
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # Tensor product and direct limits commute with each other.
@@ -89,7 +89,7 @@ noncomputable def directLimitLeft :
 
 lemma directLimitLeft_rTensor_of {i : ι} (x : G i ⊗[R] M) :
     directLimitLeft f M (LinearMap.rTensor M (of ..) x) = of _ _ _ (f ▷ M) _ x :=
-  x.induction_on (by simp) (by simp+contextual) (by simp+contextual)
+  x.induction_on (by simp) (by simp +contextual) (by simp +contextual)
 
 /--
 `M ⊗ (limᵢ Gᵢ)` and `limᵢ (M ⊗ Gᵢ)` are isomorphic as modules

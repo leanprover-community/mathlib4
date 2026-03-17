@@ -5,8 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Util.WhatsNew
-public meta import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Init
 
 /-!
 # `ToExpr` instances for Mathlib
@@ -48,6 +47,7 @@ private def toExprMData (md : MData) : Expr := Id.run do
           | ofSyntax v => mkApp3 (mkConst ``KVMap.setSyntax) e k (toExpr v)
   return e
 
+@[no_expose]
 instance : ToExpr MData where
   toExpr := toExprMData
   toTypeExpr := mkConst ``MData

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Tactic.Finiteness
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
@@ -244,36 +245,22 @@ lemma pow_ne_top_iff : a ^ n ≠ ∞ ↔ a ≠ ∞ ∨ n = 0 := WithTop.pow_ne_t
 
 lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ∞) : a = ∞ := WithTop.eq_top_of_pow n ha
 
-@[deprecated (since := "2025-04-24")] alias pow_eq_top := eq_top_of_pow
-
 @[aesop (rule_sets := [finiteness]) safe apply]
 lemma pow_ne_top (ha : a ≠ ∞) : a ^ n ≠ ∞ := WithTop.pow_ne_top ha
 lemma pow_lt_top (ha : a < ∞) : a ^ n < ∞ := WithTop.pow_lt_top ha
 
 end OperationsAndInfty
 
--- TODO: generalize to `WithTop`
-@[gcongr] protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
-  lift a to ℝ≥0 using ac.ne_top
-  lift b to ℝ≥0 using bd.ne_top
-  cases c; · simp
-  cases d; · simp
-  simp only [← coe_add, coe_lt_coe] at *
-  exact add_lt_add ac bd
+protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d :=
+  WithTop.add_lt_add ac bd
 
 section Cancel
 
--- TODO: generalize to `WithTop`
 /-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
   This is true in `ℝ≥0∞` for all elements except `∞`. -/
 @[simp]
-theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ := by
-  constructor
-  · rintro h rfl
-    refine zero_lt_one.not_ge (h ?_)
-    simp
-  · rintro h b c hbc
-    apply ENNReal.le_of_add_le_add_left h hbc
+theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
+  WithTop.addLECancellable_iff_ne_top
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
 theorem cancel_of_ne {a : ℝ≥0∞} (h : a ≠ ∞) : AddLECancellable a :=
@@ -513,12 +500,15 @@ theorem image_coe_Ioc (x y : ℝ≥0) : (↑) '' Ioc x y = Ioc (x : ℝ≥0∞) 
 @[simp]
 theorem image_coe_Ioo (x y : ℝ≥0) : (↑) '' Ioo x y = Ioo (x : ℝ≥0∞) y := WithTop.image_coe_Ioo
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem image_coe_uIcc (x y : ℝ≥0) : (↑) '' uIcc x y = uIcc (x : ℝ≥0∞) y := by simp [uIcc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem image_coe_uIoc (x y : ℝ≥0) : (↑) '' uIoc x y = uIoc (x : ℝ≥0∞) y := by simp [uIoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem image_coe_uIoo (x y : ℝ≥0) : (↑) '' uIoo x y = uIoo (x : ℝ≥0∞) y := by simp [uIoo]
 

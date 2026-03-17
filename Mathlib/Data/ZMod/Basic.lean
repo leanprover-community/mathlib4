@@ -63,6 +63,8 @@ theorem val_lt {n : ℕ} [NeZero n] (a : ZMod n) : a.val < n := by
   · cases NeZero.ne 0 rfl
   exact Fin.is_lt a
 
+grind_pattern val_lt => a.val
+
 theorem val_le {n : ℕ} [NeZero n] (a : ZMod n) : a.val ≤ n :=
   a.val_lt.le
 
@@ -98,6 +100,7 @@ lemma val_ofNat (n a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ZMod n).val = ofNat(a) 
 lemma val_ofNat_of_lt {n a : ℕ} [a.AtLeastTwo] (han : a < n) : (ofNat(a) : ZMod n).val = ofNat(a) :=
   val_natCast_of_lt han
 
+set_option backward.isDefEq.respectTransparency false in
 theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
   simp only [val]
   rw [Int.isUnit_iff, Int.natAbs_eq_iff, Nat.cast_one]
@@ -109,7 +112,7 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff := by
     intro k
     rcases n with - | n
-    · simp [zero_dvd_iff]
+    · simp
     · exact Fin.natCast_eq_zero
 
 -- Verify that `grind` can see that `ZMod n` has characteristic `n`.
@@ -146,6 +149,7 @@ theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
 theorem natCast_self' (n : ℕ) : (n + 1 : ZMod (n + 1)) = 0 := by
   rw [← Nat.cast_add_one, natCast_self (n + 1)]
 
+@[aesop unsafe 75%]
 lemma natCast_pow_eq_zero_of_le (p : ℕ) {m n : ℕ} (h : n ≤ m) :
     (p ^ m : ZMod (p ^ n)) = 0 := by
   obtain ⟨q, rfl⟩ := Nat.exists_eq_add_of_le h
@@ -209,6 +213,7 @@ theorem natCast_rightInverse [NeZero n] : Function.RightInverse val ((↑) : ℕ
 theorem natCast_zmod_surjective [NeZero n] : Function.Surjective ((↑) : ℕ → ZMod n) :=
   natCast_rightInverse.surjective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- So-named because the outer coercion is `Int.cast` into `ZMod`. For `Int.cast` into an arbitrary
 ring, see `ZMod.intCast_cast`. -/
 @[norm_cast]
@@ -296,6 +301,7 @@ theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   · exact Nat.cast_one
   exact Nat.lt_of_sub_eq_succ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = cast a + cast b := by
   cases n
@@ -306,6 +312,7 @@ theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = ca
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cast_mul (h : m ∣ n) (a b : ZMod n) : (cast (a * b : ZMod n) : R) = cast a * cast b := by
   cases n
@@ -419,6 +426,7 @@ noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fi
 lemma ringEquivOfPrime_eq_ringEquiv [Fintype R] {p : ℕ} [CharP R p] (hp : p.Prime)
     (hR : Fintype.card R = p) : ringEquivOfPrime R hp hR = ringEquiv R hR := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity between `ZMod m` and `ZMod n` when `m = n`, as a ring isomorphism. -/
 def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
   rcases m with - | m <;> rcases n with - | n
@@ -474,6 +482,7 @@ end UniversalProperty
 
 variable {m n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
   | 0, _ => Int.natAbs_eq_zero
@@ -508,8 +517,7 @@ theorem intCast_eq_intCast_iff_dvd_sub (a b : ℤ) (c : ℕ) : (a : ZMod c) = �
 theorem natCast_eq_zero_iff (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
   rw [← Nat.cast_zero, ZMod.natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd]
 
-@[deprecated (since := "2025-06-30")] alias natCast_zmod_eq_zero_iff_dvd := natCast_eq_zero_iff
-
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_intCast (a : ℤ) : cast (a : ZMod n) = a % n := by
   cases n
   · rw [Int.ofNat_zero, Int.emod_zero, Int.cast_id]; rfl
@@ -527,6 +535,7 @@ lemma intCast_cast_sub (x y : ZMod n) : (cast (x - y) : ℤ) = (cast x - cast y)
 lemma intCast_cast_neg (x : ZMod n) : (cast (-x) : ℤ) = -cast x % n := by
   rw [← ZMod.coe_intCast, Int.cast_neg, ZMod.intCast_zmod_cast]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
   dsimp [val, Fin.val_neg']
@@ -535,12 +544,14 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
   · dsimp [ZMod, ZMod.cast]
     rw [Fin.coe_neg_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `-1 : ZMod n` lifts to `n - 1 : R`. This avoids the characteristic assumption in `cast_neg`. -/
 theorem cast_neg_one {R : Type*} [Ring R] (n : ℕ) : cast (-1 : ZMod n) = (n - 1 : R) := by
   rcases n with - | n
   · dsimp [ZMod, ZMod.cast]; simp
   · rw [← natCast_val, val_neg_one, Nat.cast_succ, add_sub_cancel_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cast_sub_one {R : Type*} [Ring R] {n : ℕ} (k : ZMod n) :
     (cast (k - 1 : ZMod n) : R) = (if k = 0 then (n : R) else cast k) - 1 := by
   split_ifs with hk
@@ -732,13 +743,9 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
   · exact Subsingleton.elim _ _
   · simpa [ZMod.val_one'' hn] using mul_inv_eq_gcd (1 : ZMod n)
 
-@[simp]
+@[simp, grind =]
 theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a :=
   (CharP.cast_eq_mod (ZMod n) n a).symm
-
-@[deprecated natCast_eq_natCast_iff (since := "2025-08-12")]
-theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [MOD n] :=
-  natCast_eq_natCast_iff a b n
 
 theorem intCast_eq_zero_iff_even {n : ℤ} : (n : ZMod 2) = 0 ↔ Even n :=
   (CharP.intCast_eq_zero_iff (ZMod 2) 2 n).trans even_iff_two_dvd.symm
@@ -797,6 +804,7 @@ theorem coe_unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     (unitOfCoprime x h : ZMod n) = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod n).val n := by
   rcases n with - | n
   · rcases Int.units_eq_one_or u with (rfl | rfl) <;> simp
@@ -813,6 +821,11 @@ lemma isUnit_iff_coprime (m n : ℕ) : IsUnit (m : ZMod n) ↔ m.Coprime n := by
   rw [IsUnit.unit_spec, val_natCast, Nat.coprime_iff_gcd_eq_one] at H'
   rw [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm, ← H']
   exact Nat.gcd_rec n m
+
+@[simp]
+lemma coprime_mod_iff_coprime (m n : ℕ) : (m % n).Coprime n ↔ m.Coprime n := by
+  suffices (m % n).gcd n = m.gcd n by grind
+  exact Nat.ModEq.gcd_eq (by simp [Nat.ModEq])
 
 lemma isUnit_prime_iff_not_dvd {n p : ℕ} (hp : p.Prime) : IsUnit (p : ZMod n) ↔ ¬p ∣ n := by
   rw [isUnit_iff_coprime, Nat.Prime.coprime_iff_not_dvd hp]
@@ -940,6 +953,7 @@ theorem ne_neg_self {n : ℕ} (hn : Odd n) {a : ZMod n} (ha : a ≠ 0) : a ≠ -
 theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
   CharP.neg_one_ne_one (ZMod n) n
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
   fin_cases a <;> apply Fin.ext <;> simp; rfl
@@ -958,6 +972,7 @@ theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
 theorem val_pos {n : ℕ} {a : ZMod n} : 0 < a.val ↔ a ≠ 0 := by
   simp [pos_iff_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
   | 0, hn, _
   | 1, hn, _ => by simp at hn
@@ -966,10 +981,7 @@ theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
-  · rw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
-    exact
-      ⟨fun h => h.elim (by simp) Or.inl, fun h =>
-        Or.inr (h.elim id fun h => h.elim (by simp) id)⟩
+  · simp
   conv_lhs =>
     rw [← a.natCast_zmod_val, ← Nat.cast_two, ← Nat.cast_mul, natCast_eq_zero_iff]
   constructor
@@ -995,9 +1007,9 @@ theorem val_cast_of_lt {n : ℕ} {a : ℕ} (h : a < n) : (a : ZMod n).val = a :=
 
 theorem val_cast_zmod_lt {m : ℕ} [NeZero m] (n : ℕ) [NeZero n] (a : ZMod m) :
     (a.cast : ZMod n).val < m := by
-  rcases m with (⟨⟩|⟨m⟩); · cases NeZero.ne 0 rfl
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (NeZero.ne m)
   by_cases! h : m < n
-  · rcases n with (⟨⟩|⟨n⟩); · simp at h
+  · obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (NeZero.ne n)
     rw [← natCast_val, val_cast_of_lt]
     · apply a.val_lt
     apply lt_of_le_of_lt (Nat.le_of_lt_succ (ZMod.val_lt a)) h
@@ -1017,12 +1029,10 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   by_cases h : a = 0; · rw [if_pos h, h, val_zero, tsub_zero, Nat.mod_self]
   rw [if_neg h]
   apply Nat.mod_eq_of_lt
-  apply Nat.sub_lt (NeZero.pos n)
-  contrapose! h
-  rwa [Nat.le_zero, val_eq_zero] at h
+  exact Nat.sub_lt (NeZero.pos n) (val_pos.mpr h)
 
 theorem val_neg_of_ne_zero {n : ℕ} [nz : NeZero n] (a : ZMod n) [na : NeZero a] :
-    (- a).val = n - a.val := by simp_all [neg_val a, na.out]
+    (-a).val = n - a.val := by simp_all [neg_val a, na.out]
 
 theorem val_sub {n : ℕ} [NeZero n] {a b : ZMod n} (h : b.val ≤ a.val) :
     (a - b).val = a.val - b.val := by
@@ -1035,13 +1045,9 @@ theorem val_sub {n : ℕ} [NeZero n] {a b : ZMod n} (h : b.val ≤ a.val) :
 
 theorem val_cast_eq_val_of_lt {m n : ℕ} [nzm : NeZero m] {a : ZMod m}
     (h : a.val < n) : (a.cast : ZMod n).val = a.val := by
-  have nzn : NeZero n := by constructor; rintro rfl; simp at h
-  cases m with
-  | zero => cases nzm; simp_all
-  | succ m =>
-    cases n with
-    | zero => cases nzn; simp_all
-    | succ n => exact Fin.val_cast_of_lt h
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (NeZero.ne m)
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero <| by rintro (rfl : n = 0); simp at h
+  exact Fin.val_cast_of_lt h
 
 theorem cast_cast_zmod_of_le {m n : ℕ} [hm : NeZero m] (h : m ≤ n) (a : ZMod m) :
     (cast (cast a : ZMod n) : ZMod m) = a := by
@@ -1110,7 +1116,8 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
 @[simp]
 theorem ringHom_map_cast [NonAssocRing R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
   cases n
-  · dsimp [ZMod, ZMod.cast] at f k ⊢; simp
+  · dsimp +instances [ZMod, ZMod.cast] at f k ⊢
+    simp
   · dsimp [ZMod.cast]
     rw [map_natCast, natCast_zmod_val]
 

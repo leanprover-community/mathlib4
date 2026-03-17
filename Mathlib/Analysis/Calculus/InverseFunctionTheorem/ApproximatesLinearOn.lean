@@ -217,7 +217,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
       dist (u n) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
         (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := fun n ↦ by
     induction n with
-    | zero => simp [hu, le_refl]
+    | zero => simp [hu]
     | succ n IH => ?_
     rw [usucc]
     have Ign : dist (g (u n)) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
@@ -233,7 +233,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
                   · exact IH.2
         _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
               (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
-          replace Jcf' : (1:ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
+          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
           simp [field, pow_succ, -mul_eq_mul_left_iff]
           ring
     refine ⟨?_, Ign⟩
@@ -285,8 +285,8 @@ theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRi
 theorem image_mem_nhds (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse)
     {x : E} (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : f '' s ∈ 𝓝 (f x) := by
   obtain ⟨t, hts, ht, xt⟩ : ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := _root_.mem_nhds_iff.1 hs
-  have := IsOpen.mem_nhds ((hf.mono_set hts).open_image f'symm ht hc) (mem_image_of_mem _ xt)
-  exact mem_of_superset this (image_mono hts)
+  grw [← hts]
+  exact IsOpen.mem_nhds ((hf.mono_set hts).open_image f'symm ht hc) (mem_image_of_mem _ xt)
 
 theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse) {x : E}
     (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : map f (𝓝 x) = 𝓝 (f x) := by

@@ -150,7 +150,7 @@ lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
 -/
 
 
-section Edist
+section EDist
 
 variable [∀ i, EDist (β i)]
 
@@ -180,9 +180,9 @@ theorem edist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
 
 theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := rfl
 
-end Edist
+end EDist
 
-section EdistProp
+section EDistProp
 
 variable {β}
 variable [∀ i, PseudoEMetricSpace (β i)]
@@ -203,7 +203,7 @@ protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   · simp only [edist_eq_iSup, edist_comm]
   · simp only [edist_eq_sum h, edist_comm]
 
-end EdistProp
+end EDistProp
 
 section Dist
 
@@ -298,6 +298,7 @@ with the product one. Therefore, we do not register it as an instance. Using thi
 pseudoemetric space instance, we will show that the uniform structure is equal (but not defeq) to
 the product one, and then register an instance in which we replace the uniform structure by the
 product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
+@[instance_reducible]
 def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
   edist_self := PiLp.edist_self p
   edist_comm := PiLp.edist_comm p
@@ -418,6 +419,7 @@ private lemma isUniformInducing_ofLp_aux : IsUniformInducing (@ofLp p (∀ i, β
     (antilipschitzWith_ofLp_aux p β).isUniformInducing
       (lipschitzWith_ofLp_aux p β).uniformContinuous
 
+set_option backward.privateInPublic true in
 private lemma uniformity_aux : 𝓤 (PiLp p β) = 𝓤[UniformSpace.comap ofLp inferInstance] := by
   rw [← (isUniformInducing_ofLp_aux p β).comap_uniformity]
   rfl
@@ -425,6 +427,7 @@ private lemma uniformity_aux : 𝓤 (PiLp p β) = 𝓤[UniformSpace.comap ofLp i
 instance bornology (p : ℝ≥0∞) (β : ι → Type*) [∀ i, Bornology (β i)] :
     Bornology (PiLp p β) := Bornology.induced ofLp
 
+set_option backward.privateInPublic true in
 private lemma cobounded_aux : @cobounded _ PseudoMetricSpace.toBornology = cobounded (PiLp p α) :=
   le_antisymm (antilipschitzWith_ofLp_aux p α).tendsto_cobounded.le_comap
     (lipschitzWith_ofLp_aux p α).comap_cobounded_le
@@ -502,6 +505,8 @@ section Fintype
 variable [hp : Fact (1 ≤ p)]
 variable [Fintype ι]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) :=
@@ -512,6 +517,8 @@ edistance, and having as uniformity the product uniformity. -/
 instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
   EMetricSpace.ofT0PseudoEMetricSpace (PiLp p α)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
@@ -582,16 +589,18 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
     SeminormedAddCommGroup (PiLp p β) where
   dist_eq := fun x y => by
     rcases p.dichotomy with (rfl | h)
-    · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, sub_apply]
+    · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, add_apply, neg_apply, norm_neg_add]
     · have : p ≠ ∞ := by
         intro hp
         rw [hp, ENNReal.toReal_top] at h
         linarith
       simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
-        dist_eq_norm, sub_apply]
+        dist_eq_norm, add_apply, neg_apply, norm_neg_add]
 
-lemma isUniformInducing_toLp [∀ i, PseudoEMetricSpace (β i)] :
+omit [Fintype ι] in
+lemma isUniformInducing_toLp [Finite ι] [∀ i, PseudoEMetricSpace (β i)] :
     IsUniformInducing (@toLp p (Π i, β i)) :=
+  have := Fintype.ofFinite ι
   (antilipschitzWith_toLp p β).isUniformInducing
     (lipschitzWith_toLp p β).uniformContinuous
 
@@ -900,7 +909,7 @@ def sumPiLpEquivProdLpPiLp :
       ≪≫ₗ LinearEquiv.sumPiEquivProdPi _ _ _ α
       ≪≫ₗ LinearEquiv.prodCongr (WithLp.linearEquiv p _ _).symm
         (WithLp.linearEquiv _ _ _).symm
-      ≪≫ₗ (WithLp.linearEquiv  p _ _).symm
+      ≪≫ₗ (WithLp.linearEquiv p _ _).symm
   norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
     obtain rfl | hp := p.dichotomy
     · simp [← Finset.univ_disjSum_univ, Finset.sup_disjSum, Pi.norm_def]
@@ -916,6 +925,7 @@ section Single
 variable (p)
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_toLp_single (i : ι) (b : β i) :
     ‖toLp p (Pi.single i b)‖₊ = ‖b‖₊ := by
@@ -1121,7 +1131,7 @@ abbrev seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_sub]
+    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
 
 lemma norm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
     @Norm.norm _ (seminormedAddCommGroupToPi p α).toNorm x = ‖toLp p x‖ := rfl
@@ -1168,7 +1178,7 @@ abbrev normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_sub]
+    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
   eq_of_dist_eq_zero {x y} h := by
     rw [dist_pseudoMetricSpaceToPi] at h
     apply eq_of_dist_eq_zero at h

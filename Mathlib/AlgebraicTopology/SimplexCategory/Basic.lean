@@ -9,7 +9,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 public import Mathlib.Data.Fintype.Sort
 public import Mathlib.Order.Category.NonemptyFinLinOrd
 public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
 /-! # Basic properties of the simplex category
 
@@ -87,6 +87,7 @@ theorem Hom.ext_one_left {n : SimplexCategory} (f g : ⦋1⦌ ⟶ n)
   | 0 => exact h0 ▸ rfl
   | 1 => exact h1 ▸ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_one_to_one (f : ⦋1⦌ ⟶ ⦋1⦌) :
     (∃ a, f = const ⦋1⦌ _ a) ∨ f = 𝟙 _ := by
   match e0 : f.toOrderHom 0, e1 : f.toOrderHom 1 with
@@ -162,7 +163,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
   SimplexCategory.mkHom {
     toFun := fun | 0 => i | 1 => j | 2 => k
     monotone' := fun
-      | 0, 0, _ | 1, 1, _ | 2, 2, _  => le_rfl
+      | 0, 0, _ | 1, 1, _ | 2, 2, _ => le_rfl
       | 0, 1, _ => h₁
       | 1, 2, _ => h₂
       | 0, 2, _ => Fin.le_trans h₁ h₂
@@ -176,6 +177,7 @@ def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
   }
 
+set_option backward.isDefEq.respectTransparency false in
 lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
     ⦋0⦌.const ⦋l⦌ i ≫ subinterval j l hjl =
     ⦋0⦌.const ⦋n⦌ ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
@@ -185,6 +187,7 @@ lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1))
   dsimp [subinterval]
   rw [add_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
@@ -193,6 +196,7 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
   ext (i : Fin 2)
   match i with | 0 | 1 => simp; lia
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
@@ -232,6 +236,7 @@ def δ {n} (i : Fin (n + 2)) : ⦋n⦌ ⟶ ⦋n + 1⦌ :=
 def σ {n} (i : Fin (n + 1)) : ⦋n + 1⦌ ⟶ ⦋n⦌ :=
   mkHom i.predAboveOrderHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The generic case of the first simplicial identity -/
 theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
     δ i ≫ δ j.succ = δ j ≫ δ i.castSucc := by
@@ -269,6 +274,7 @@ theorem δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = i.cast
   subst H
   rw [δ_comp_δ_self]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The second simplicial identity -/
 @[reassoc]
 theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.castSucc) :
@@ -290,6 +296,7 @@ theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.ca
       Fin.castSucc_castPred]
     rwa [Fin.castSucc_castPred]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The first part of the third simplicial identity -/
 @[reassoc]
 theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
@@ -309,6 +316,7 @@ theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.cast
   subst H
   rw [δ_comp_σ_self]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The second part of the third simplicial identity -/
 @[reassoc]
 theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ⦋n⦌ := by
@@ -324,6 +332,7 @@ theorem δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ
   subst H
   rw [δ_comp_σ_succ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fourth simplicial identity -/
 @[reassoc]
 theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc < i) :
@@ -358,6 +367,7 @@ theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < 
   · rw [Fin.castSucc_castLT, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
     exact H
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fifth simplicial identity -/
 @[reassoc]
 theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
@@ -404,6 +414,7 @@ then `factor_δ f j` is a morphism `⦋m⦌ ⟶ ⦋n⦌` such that
 def factor_δ {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2)) : ⦋m⦌ ⟶ ⦋n⦌ :=
   f ≫ σ (Fin.predAbove 0 j)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2))
     (hj : ∀ (k : Fin (m + 1)), f.toOrderHom k ≠ j) :
     factor_δ f j ≫ δ j = f := by
@@ -424,6 +435,7 @@ lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
   fin_cases x
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `i + 1 < j`, `mkOfSucc i ≫ δ j` is the morphism `⦋1⦌ ⟶ ⦋n⦌` that
 sends `0` and `1` to `i` and `i + 1`, respectively. -/
 lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
@@ -434,6 +446,7 @@ lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
   · simp [δ, Fin.succAbove_of_castSucc_lt _ _ (Nat.lt_trans _ h)]
   · simp [δ, Fin.succAbove_of_castSucc_lt _ _ h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `i + 1 > j`, `mkOfSucc i ≫ δ j` is the morphism `⦋1⦌ ⟶ ⦋n⦌` that
 sends `0` and `1` to `i + 1` and `i + 2`, respectively. -/
 lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
@@ -448,6 +461,7 @@ lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
   · rfl
   · exact Nat.le_of_lt h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `i + 1 = j`, `mkOfSucc i ≫ δ j` is the morphism `⦋1⦌ ⟶ ⦋n⦌` that
 sends `0` and `1` to `i` and `i + 2`, respectively. -/
 lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
@@ -525,7 +539,7 @@ def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd where
   map f := NonemptyFinLinOrd.ofHom f.toOrderHom
 
 theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
-    ↑(skeletalFunctor.map f).hom = f.toOrderHom :=
+    ↑(skeletalFunctor.map f).hom.hom = f.toOrderHom :=
   rfl
 
 theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
@@ -538,7 +552,7 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 namespace SkeletalFunctor
 
 instance : skeletalFunctor.Full where
-  map_surjective f := ⟨SimplexCategory.Hom.mk f.hom, rfl⟩
+  map_surjective f := ⟨SimplexCategory.Hom.mk f.hom.hom, rfl⟩
 
 instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
@@ -554,8 +568,8 @@ instance : skeletalFunctor.EssSurj where
         let f := monoEquivOfFin X aux
         have hf := (Finset.univ.orderEmbOfFin aux).strictMono
         refine
-          { hom := LinOrd.ofHom ⟨f, hf.monotone⟩
-            inv := LinOrd.ofHom ⟨f.symm, ?_⟩
+          { hom := InducedCategory.homMk (LinOrd.ofHom ⟨f, hf.monotone⟩)
+            inv := InducedCategory.homMk (LinOrd.ofHom ⟨f.symm, ?_⟩)
             hom_inv_id := by ext; apply f.symm_apply_apply
             inv_hom_id := by ext; apply f.apply_symm_apply }
         intro i j h
@@ -657,7 +671,7 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                   apply not_le.mpr h'
                   convert f.toOrderHom.monotone (le_of_not_ge h'')
                   all_goals
-                    exact (congr_hom (Iso.inv_hom_id
+                    exact (ConcreteCategory.congr_hom (Iso.inv_hom_id
                       (asIso ((forget SimplexCategory).map f))) _).symm
                 · rw [eq_of_le_of_not_lt h h'] }
         hom_inv_id := by
@@ -722,6 +736,7 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
   congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (i : Fin (n + 1)) (hi : θ.toOrderHom (Fin.castSucc i) = θ.toOrderHom i.succ) :
     ∃ θ' : ⦋n⦌ ⟶ Δ', θ = σ i ≫ θ' := by
@@ -753,6 +768,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
       lia
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :
     ∃ (i : Fin (n + 1)) (θ' : ⦋n⦌ ⟶ Δ'), θ = σ i ≫ θ' := by

@@ -14,7 +14,7 @@ public import Mathlib.Order.SuccPred.Limit
 We establish some connections between initial segment embeddings and successors and predecessors.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*} {a b : α} [PartialOrder α] [PartialOrder β]
 

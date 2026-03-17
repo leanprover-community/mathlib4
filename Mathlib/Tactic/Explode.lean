@@ -8,7 +8,8 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.PrettyPrinter
 public meta import Mathlib.Tactic.Explode.Datatypes
-public meta import Mathlib.Tactic.Explode.Pretty
+public import Mathlib.Tactic.Explode.Datatypes
+public import Mathlib.Tactic.Explode.Pretty
 
 /-!
 # Explode command

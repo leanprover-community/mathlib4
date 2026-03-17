@@ -5,10 +5,11 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public meta import Mathlib.NumberTheory.Real.Irrational
-public meta import Mathlib.Tactic.NormNum.GCD
-public meta import Mathlib.Tactic.Rify
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Qify
+public import Mathlib.Tactic.Rify
 
 /-! # `norm_num` extension for `Irrational`
 
@@ -37,8 +38,6 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
 
--- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
-set_option linter.flexible false in
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
     (h : ∀ p : ℚ, q ^ a ≠ p ^ b) (hb : 0 < b) (hq : 0 ≤ q) :
     Irrational (Real.rpow q (a / b : ℚ)) := by
@@ -47,9 +46,8 @@ private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
   intro x hx
   absurd h x
   rify
-  rw [hx, ← Real.rpow_mul_natCast, div_mul_cancel₀] <;> simp
-  · lia
-  · assumption
+  rw [hx, ← Real.rpow_mul_natCast (by simpa), div_mul_cancel₀ _ (by simp; lia)]
+  simp
 
 private theorem not_power_nat_pow {n p q : ℕ}
     (h_coprime : p.Coprime q)

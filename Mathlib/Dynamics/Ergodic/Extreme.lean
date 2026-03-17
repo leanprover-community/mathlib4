@@ -18,7 +18,7 @@ iff it is an extreme point of the set of invariant measures of `f` with the same
 We also specialize this result to probability measures.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Function MeasureTheory Measure ProbabilityTheory
 open scoped NNReal ENNReal Topology

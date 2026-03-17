@@ -18,7 +18,7 @@ If `a` is any complex number, `circleAverage_log_norm_sub_const_eq_posLog` repre
 the circle average of `log ‖· - a‖` over the unit circle.
 -/
 
-@[expose] public section
+public section
 
 open Filter Interval intervalIntegral MeasureTheory Metric Real
 

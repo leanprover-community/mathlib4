@@ -233,6 +233,7 @@ def AdjoinRootXPowSubCEquivToRootsOfUnity [NeZero n] (σ : K[n√a] ≃ₐ[K] K[
     rw [div_self]
     rwa [Ne, map_eq_zero_iff _ (algebraMap K _).injective]))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the roots of unity of `K` and `Gal(K[ⁿ√a]/K)`. -/
 noncomputable
 def autAdjoinRootXPowSubCEquiv [NeZero n] :
@@ -405,7 +406,7 @@ lemma autEquivRootsOfUnity_smul [NeZero n] (σ : Gal(L/K)) :
     autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
   exact smul_comm _ _ _
 
-/-- Suppose `L/K` is the splitting field of `Xⁿ - a`, and `ζ` is a `n`-th primitive root of unity
+/-- Suppose `L/K` is the splitting field of `Xⁿ - a`, and `ζ` is an `n`-th primitive root of unity
 in `K`, then `Gal(L/K)` is isomorphic to `ZMod n`. -/
 noncomputable
 def autEquivZmod [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) :

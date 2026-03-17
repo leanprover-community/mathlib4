@@ -6,8 +6,6 @@ Authors: Mario Carneiro, Kenny Lau
 module
 
 public import Mathlib.Data.List.Forall2
-public import Mathlib.Data.Nat.Basic
-public import Mathlib.Order.Basic
 
 /-!
 # Lists with no duplicates
@@ -16,7 +14,7 @@ public import Mathlib.Order.Basic
 predicate.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -26,7 +24,7 @@ variable {α : Type u} {β : Type v} {l l₁ l₂ : List α} {r : α → α → 
 
 namespace List
 
-protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrrefl α r] (h : Pairwise r l) :
+protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [Std.Irrefl r] (h : Pairwise r l) :
     Nodup l :=
   h.imp ne_of_irrefl
 
@@ -51,8 +49,6 @@ theorem Nodup.of_cons (h : Nodup (a :: l)) : Nodup l :=
 
 theorem Nodup.notMem (h : (a :: l).Nodup) : a ∉ l :=
   (nodup_cons.1 h).1
-
-@[deprecated (since := "2025-05-23")] alias Nodup.not_mem := Nodup.notMem
 
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
   imp_not_comm.1 Nodup.notMem

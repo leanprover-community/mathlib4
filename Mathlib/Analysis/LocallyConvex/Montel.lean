@@ -68,7 +68,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
 theorem finiteDimensional_of_normedSpace : FiniteDimensional 𝕜 E :=
   FiniteDimensional.of_isCompact_closedBall₀ 𝕜 zero_lt_one
     (isCompact_of_isClosed_of_isVonNBounded 𝕜 Metric.isClosed_closedBall
-      (NormedSpace.isVonNBounded_closedBall _ _ _) )
+      (NormedSpace.isVonNBounded_closedBall _ _ _))
 
 end MontelSpace
 
@@ -83,6 +83,7 @@ variable {E F : Type*}
 
 open CompactConvergenceCLM
 
+set_option backward.privateInPublic true in
 variable (σ E F) in
 /-- The linear equivalence that sends a continuous linear map to the type copy endowed with the
 topology of compact convergence.
@@ -92,6 +93,8 @@ private def _root_.LinearEquiv.toCompactConvergenceCLM :
     (E →SL[σ] F) ≃ₗ[𝕜₂] E →SL_c[σ] F :=
   LinearEquiv.refl 𝕜₂ _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 variable (σ E F) in
 /-- If `E` is a Montel space, then the strong topology on `E →L[𝕜] F` coincides with the topology
 of compact convergence.

@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Maps.Basic
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Open quotient maps
@@ -24,7 +25,7 @@ Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Function Set Topology
 
@@ -63,6 +64,15 @@ theorem continuousAt_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} {x : X} :
 theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻¹' s) ↔ Dense s :=
   ⟨fun hs ↦ h.surjective.denseRange.dense_of_mapsTo h.continuous hs (mapsTo_preimage _ _),
     fun hs ↦ hs.preimage h.isOpenMap⟩
+
+/-- If `f` is an open quotient map and `X` is Baire, then `Y` is Baire. -/
+theorem baireSpace {f : X → Y} [BaireSpace X] (hf : IsOpenQuotientMap f) :
+    BaireSpace Y := by
+  constructor
+  intro u hou hdu
+  have := dense_iInter_of_isOpen_nat (fun n => hf.continuous.isOpen_preimage (u n) (hou n))
+    (fun n => (IsOpenQuotientMap.dense_preimage_iff hf).mpr (hdu n))
+  simp_all [← preimage_iInter, IsOpenQuotientMap.dense_preimage_iff]
 
 end IsOpenQuotientMap
 

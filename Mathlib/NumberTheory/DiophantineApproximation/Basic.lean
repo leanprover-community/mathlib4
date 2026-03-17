@@ -49,7 +49,7 @@ Both statements are combined to give an equivalence,
 There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
 `Real.convergent`, a simple recursive definition of the convergents that is also defined
 in this file, whereas the other, `Real.exists_convs_eq_rat` defined in the file
-`Mathlib/NumberTheory/DiophantineApproximation/ContinuedFraction.lean`, uses
+`Mathlib/NumberTheory/DiophantineApproximation/ContinuedFractions.lean`, uses
 `GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
