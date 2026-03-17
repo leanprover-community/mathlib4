@@ -228,7 +228,7 @@ abbrev hasRightDual_of_hasLeftDual {X : C} [HasLeftDual X]
   rightDual := ᘁX
   exact := ExactPairing.symm ᘁX X
 
-/-- The right adjoint mate `fᘁ : Xᘁ ⟶ Yᘁ` of a morphism `f : X ⟶ Y`. -/
+/-- The right adjoint mate `fᘁ : Yᘁ ⟶ Xᘁ` of a morphism `f : X ⟶ Y`. -/
 def rightAdjointMate {X Y : C} [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) : Yᘁ ⟶ Xᘁ :=
   (ρ_ _).inv ≫ _ ◁ η_ _ _ ≫ _ ◁ f ▷ _ ≫ (α_ _ _ _).inv ≫ ε_ _ _ ▷ _ ≫ (λ_ _).hom
 
@@ -645,7 +645,7 @@ def ExactPairing.rightDualLeftDualIso {Xₗ X Xᵣ : C} (p : ExactPairing Xₗ X
 class RightRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   [rightDual : ∀ X : C, HasRightDual X]
 
-/-- A left rigid monoidal category is one in which every object has a right dual. -/
+/-- A left rigid monoidal category is one in which every object has a left dual. -/
 class LeftRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   [leftDual : ∀ X : C, HasLeftDual X]
 
