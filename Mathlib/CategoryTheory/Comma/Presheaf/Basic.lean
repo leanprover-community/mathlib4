@@ -540,12 +540,11 @@ lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f 
       f ≫ eqToHom (by simp [← CostructuredArrow.eq_mk]) := by
     apply Quiver.Hom.unop_inj
     simp
-  simp only [OverArrows.map₂_val, yonedaCollectionPresheaf_obj, yonedaCollectionPresheaf_map,
-    Quiver.Hom.unop_op, TypeCat.hom_ofHom, TypeCat.Fun.mk_apply, YonedaCollection.map₂_snd,
-    Functor.map_comp, counitForward_val_snd, op_unop, comp_apply, eqToHom_map_comp_apply]
-  erw [map_mkPrecomp_eqToHom (h := by simp)]
-  simp [this]
-  rfl
+  have : (F.map (CostructuredArrow.mkPrecomp
+      (YonedaCollection.fst (counitForward F (unop t) x).val) f.unop.left).op)
+      (((F.map (eqToHom (by simp; rfl)))) x) = _ :=
+    map_mkPrecomp_eqToHom (h := by simp)
+  cat_disch
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Backward direction of the counit. -/
