@@ -188,10 +188,12 @@ theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
     (l₁ l₂ : (G.sheafify J).toFunctor ⟶ F')
     (e : Subfunctor.homOfLe (G.le_sheafify J) ≫ l₁ = Subfunctor.homOfLe (G.le_sheafify J) ≫ l₂) :
     l₁ = l₂ := by
-  ext U ⟨s, hs⟩
-  apply (h _ hs).isSeparatedFor.ext
+  ext U s
+  apply (h _ s.prop).isSeparatedFor.ext
   rintro V i hi
-  erw [← NatTrans.naturality_apply, ← NatTrans.naturality_apply]
+  dsimp at hi
+  dsimp
+  rw [← dsimp% l₁.naturality_apply, ← dsimp% l₂.naturality_apply]
   exact ConcreteCategory.congr_hom (congr_app e <| op V) ⟨_, hi⟩
 
 @[deprecated (since := "2025-12-11")]
