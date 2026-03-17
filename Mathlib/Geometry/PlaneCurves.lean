@@ -346,52 +346,6 @@ protected lemma _root_.HasDerivAt.initialCurve_of_orientedCurvature {I : Set ℝ
       exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval h' ht₀ ht
   · exact hI.mem_nhds ht
 
-lemma second_deriv_of_initialCurve_of_orientedCurvature {I : Set ℝ} [hIoC : I.OrdConnected]
-  (hI : IsOpen I) {κ : ℝ → ℝ} (hκ : ContinuousOn κ I) {t₀ : ℝ} (ht₀ : t₀ ∈ I)
-  (p₀ : EuclideanSpace ℝ (Fin 2)) (θ₀ : ℝ) {t : ℝ} (ht : t ∈ I) :
-  iteratedDeriv 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t =
-    !₂[-(κ t)*Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ), (κ t)*Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ)] := by
-  have h₀ : HasDerivWithinAt (fun x ↦  θ₀ + ∫ξ in t₀..x, κ ξ) (κ t) I t := by
-    have hyp₁ : HasDerivWithinAt (fun x ↦ θ₀) 0 I t := by apply hasDerivWithinAt_const
-    have hyp₂ :=  intervalIntegral.hasDerivWithinAt_of_continuousOn_interval hκ ht₀ ht
-    have hyp₃ := hyp₁.add hyp₂
-    have help : (fun x↦ θ₀)+(fun t↦ ∫τ in t₀..t, κ τ) = fun x↦ θ₀+∫ξ in t₀..x, κ ξ := by rfl
-    rw [help, zero_add] at hyp₃
-    exact hyp₃
-  have h : I.EqOn (deriv (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀))
-            (fun x ↦  !₂[Real.cos (θ₀+∫ξ in t₀..x, κ ξ), Real.sin (θ₀+∫ξ in t₀..x, κ ξ)]) :=
-    fun x hx ↦  (HasDerivAt.initialCurve_of_orientedCurvature hI hκ ht₀ p₀ θ₀ hx).deriv
-  rw [iteratedDeriv_succ, iteratedDeriv_one, h.deriv hI ht, ← derivWithin_of_isOpen hI ht]
-  have h' : HasDerivWithinAt (fun x ↦ !₂[Real.cos (θ₀ + ∫ ξ in t₀..x, κ ξ),
-                                         Real.sin (θ₀ + ∫ ξ in t₀..x, κ ξ)])
-            !₂[-κ t *Real.sin (θ₀+∫ξ in t₀..t, κ ξ),κ t *Real.cos (θ₀+∫ξ in t₀..t, κ ξ)] I t := by
-    rw [hasDerivWithinAt_pi_euclidean]
-    intro i
-    fin_cases i
-    · simp only [Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero, neg_mul]
-      have h₁ : HasDerivAt Real.cos (-Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ))
-        ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_cos]
-      have hint := h₁.comp_hasDerivWithinAt t h₀
-      have help : (fun t↦ Real.cos (θ₀+∫ξ in t₀..t, κ ξ)) =
-                  Real.cos ∘ (fun x↦ θ₀+∫ξ in t₀..x, κ ξ) := by rfl
-      rw [help]
-      have help' : -Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ) * κ t =
-                   -(κ t * Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ)) := by ring
-      rw [help'] at hint
-      exact hint
-    · simp only [Fin.mk_one, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one, neg_mul]
-      have h₁ : HasDerivAt Real.sin (Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ))
-        ((fun τ ↦  θ₀ + ∫ξ in t₀..τ, κ ξ) t) := by simp [Real.hasDerivAt_sin]
-      have hint := h₁.comp_hasDerivWithinAt t h₀
-      have help : (fun t↦ Real.sin (θ₀+∫ξ in t₀..t, κ ξ)) =
-                  Real.sin ∘ (fun x↦ θ₀+∫ξ in t₀..x, κ ξ) := by rfl
-      rw [help]
-      have help' : Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ) * κ t =
-                   κ t * Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ) := by ring
-      rw [help'] at hint
-      exact hint
-  exact h'.derivWithin (hI.uniqueDiffWithinAt ht)
-
 lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature {I : Set ℝ} [hIoC : I.OrdConnected]
   (hI : IsOpen I) {κ : ℝ → ℝ} (hκ : ContinuousOn κ I) {t₀ : ℝ} (ht₀ : t₀ ∈ I)
   (p₀ : EuclideanSpace ℝ (Fin 2)) (θ₀ : ℝ) {t : ℝ} (ht : t ∈ I) :
@@ -438,6 +392,14 @@ lemma _root_.HasDerivAt.deriv_initialCurve_of_orientedCurvature {I : Set ℝ} [h
   apply HasDerivWithinAt.hasDerivAt
   · exact h'.congr h (h ht)
   · exact hI.mem_nhds ht
+
+lemma second_deriv_of_initialCurve_of_orientedCurvature {I : Set ℝ} [hIoC : I.OrdConnected]
+  (hI : IsOpen I) {κ : ℝ → ℝ} (hκ : ContinuousOn κ I) {t₀ : ℝ} (ht₀ : t₀ ∈ I)
+  (p₀ : EuclideanSpace ℝ (Fin 2)) (θ₀ : ℝ) {t : ℝ} (ht : t ∈ I) :
+  iteratedDeriv 2 (initialCurve_of_orientedCurvature κ t₀ p₀ θ₀) t =
+    !₂[-(κ t)*Real.sin (θ₀ + ∫ξ in t₀..t, κ ξ), (κ t)*Real.cos (θ₀ + ∫ξ in t₀..t, κ ξ)] := by
+  rw [iteratedDeriv_succ, iteratedDeriv_one, 
+      (HasDerivAt.deriv_initialCurve_of_orientedCurvature hI hκ ht₀ p₀ θ₀ ht).deriv]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The plane curve we construct from the given orientedCurvature function κ is twice continuously
