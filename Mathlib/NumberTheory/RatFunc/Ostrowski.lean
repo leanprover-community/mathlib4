@@ -169,8 +169,8 @@ lemma valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one
     exact Valuation.map_add_eq_of_lt_left _ h₂
   constructor
   · rw [← coePolynomial_eq_algebraMap]
-    have hnπ : q % π ∉ _ :=
-      imp_not_comm.mp (degree_lt_wf.not_lt_min _ hne) (EuclideanDomain.remainder_lt q hπ.2)
+    have hnπ : q % π ∉ {p : K[X] | v ↑p < 1 ∧ p ≠ 0} :=
+      imp_not_comm.mp (degree_lt_wf.not_lt_min _) (EuclideanDomain.remainder_lt q hπ.2)
     have := Polynomial.valuation_le_one_of_valuation_X_le_one _ hle (q % π)
     grind
   · simpa only [map_mul, ← coePolynomial_eq_algebraMap]
