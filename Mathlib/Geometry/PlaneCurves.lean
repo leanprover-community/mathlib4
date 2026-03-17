@@ -254,8 +254,8 @@ theorem inner_of_normal_deriv_normal_of_unit_speed_eq_zero {I : Set ℝ} (hI : I
 /-- The second Frenet equation for plane curves: For any twice continously differentiable plane
 curve parametrized by arc-length (i.e., with unit speed), the derivative of the normal vector is
 equal to minus the curvature times the velocity vector (first derivative). -/
-theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} (hI : IsOpen I) 
-  {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1) 
+theorem deriv_normal_eq_minus_orientedCurvature_times_deriv {I : Set ℝ} (hI : IsOpen I)
+  {c : ℝ → EuclideanSpace ℝ (Fin 2)} (hc₁ : ContDiffOn ℝ 2 c I) (hc₂ : ∀ t ∈ I, ‖deriv c t‖ = 1)
   {t : ℝ} (ht : t ∈ I) : deriv (normal c) t = -(orientedCurvature c t)•(deriv c t) := by
   rw [← (frameAt hc₂ ht).sum_repr' (deriv (normal c) t)]
   simp only [frameAt, Nat.succ_eq_add_one, Nat.reduceAdd, OrthonormalBasis.coe_mk,
